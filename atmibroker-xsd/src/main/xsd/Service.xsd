@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		targetNamespace="http://www.jboss.org"
+		xmlns="http://www.jboss.org"
+		elementFormDefault="qualified">
+    <xsd:element name="SERVICE">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="SERVICE_DESCRIPTION" minOccurs="1" maxOccurs="1"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="SERVICE_DESCRIPTION">
+        <xsd:complexType>
+  		<xsd:sequence>
+  			<xsd:element name="LOGLEVEL" type="xsd:string"/>
+  			<xsd:element name="MAX" type="xsd:string"/>
+  			<xsd:element name="MIN" type="xsd:string"/>
+  			<xsd:element name="AVAILABLE" type="xsd:string"/>
+  		</xsd:sequence>
+	</xsd:complexType>
+    </xsd:element>
+</xsd:schema>

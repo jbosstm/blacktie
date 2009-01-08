@@ -1,0 +1,185 @@
+
+	<!--
+		JBoss, Home of Professional Open Source Copyright 2008, Red Hat
+		Middleware LLC, and others contributors as indicated by the @authors
+		tag. All rights reserved. See the copyright.txt in the distribution
+		for a full listing of individual contributors. This copyrighted
+		material is made available to anyone wishing to use, modify, copy, or
+		redistribute it subject to the terms and conditions of the GNU Lesser
+		General Public License, v. 2.1. This program is distributed in the
+		hope that it will be useful, but WITHOUT A WARRANTY; without even the
+		implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+		PURPOSE. See the GNU Lesser General Public License for more details.
+		You should have received a copy of the GNU Lesser General Public
+		License, v.2.1 along with this distribution; if not, write to the Free
+		Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+		02110-1301, USA.
+	-->
+<assembly>
+	<id>bin</id>
+	<formats>
+		<format>dir</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<moduleSets>
+		<moduleSet>
+			<includes>
+				<include>org.jboss.blacktie:codeGeneration
+				</include>
+			</includes>
+			<binaries>
+				<outputDirectory>codeGeneration</outputDirectory>
+				<outputFileNameMapping>${module.artifactId}.${module.extension}
+				</outputFileNameMapping>
+				<unpack>false</unpack>
+			</binaries>
+		</moduleSet>
+		<moduleSet>
+			<includes>
+				<include>org.jboss.blacktie:jab</include>
+			</includes>
+			<binaries>
+				<outputDirectory>connectors/jab</outputDirectory>
+				<unpack>false</unpack>
+			</binaries>
+		</moduleSet>
+		<moduleSet>
+			<includes>
+				<include>org.jboss.blacktie:ejb-connector-ear
+				</include>
+			</includes>
+			<binaries>
+				<includeDependencies>false</includeDependencies>
+				<outputDirectory>connectors/ejb</outputDirectory>
+				<unpack>false</unpack>
+			</binaries>
+		</moduleSet>
+		<moduleSet>
+			<includes>
+				<include>org.jboss.blacktie:ejb-connector
+				</include>
+			</includes>
+			<binaries>
+				<includeDependencies>false</includeDependencies>
+				<outputDirectory>connectors/ejb</outputDirectory>
+				<unpack>false</unpack>
+			</binaries>
+		</moduleSet>
+	</moduleSets>
+	<fileSets>
+		<fileSet>
+			<directory>../codeGeneration/src/main/scripts/
+			</directory>
+			<outputDirectory>bin</outputDirectory>
+			<includes>
+				<include>*.*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../atmibroker-xatmi/src/example/fooapp/
+			</directory>
+			<outputDirectory>examples/xatmi/fooapp
+			</outputDirectory>
+			<includes>
+				<include>*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../jab/src/example/fooapp/
+			</directory>
+			<outputDirectory>examples/jab/fooapp
+			</outputDirectory>
+			<includes>
+				<include>*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../ejb-connector/src/example/fooapp/
+			</directory>
+			<outputDirectory>examples/ejb-connector/fooapp
+			</outputDirectory>
+			<includes>
+				<include>*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../atmibroker-xatmi/src/export/include/
+			</directory>
+			<outputDirectory>include</outputDirectory>
+			<includes>
+				<include>*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../atmibroker-tx/src/export/include/
+			</directory>
+			<outputDirectory>include</outputDirectory>
+			<includes>
+				<include>*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../atmibroker-xsd/src/main/xsd/
+			</directory>
+			<outputDirectory>schemas/xsd</outputDirectory>
+			<includes>
+				<include>*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../scripts/services/</directory>
+			<outputDirectory>bin/services-scripts
+			</outputDirectory>
+			<includes>
+				<include>*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../scripts/setup/</directory>
+			<outputDirectory>.</outputDirectory>
+			<includes>
+				<include>*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../atmibroker-idl/target/debug/shared
+			</directory>
+			<outputDirectory>libTao</outputDirectory>
+			<includes>
+				<include>*.dll</include>
+				<include>*.lib</include>
+				<include>*.so</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../atmibroker-core/target/debug/shared
+			</directory>
+			<outputDirectory>libTao</outputDirectory>
+			<includes>
+				<include>*.dll</include>
+				<include>*.lib</include>
+				<include>*.so</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../atmibroker-tx/target/debug/shared
+			</directory>
+			<outputDirectory>libTao</outputDirectory>
+			<includes>
+				<include>*.dll</include>
+				<include>*.lib</include>
+				<include>*.so</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../atmibroker-xatmi/target/debug/shared
+			</directory>
+			<outputDirectory>libTao</outputDirectory>
+			<includes>
+				<include>*.dll</include>
+				<include>*.lib</include>
+				<include>*.so</include>
+			</includes>
+		</fileSet>
+	</fileSets>
+</assembly> 

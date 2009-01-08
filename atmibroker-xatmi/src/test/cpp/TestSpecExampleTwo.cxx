@@ -1,0 +1,94 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2008, Red Hat Middleware LLC, and others contributors as indicated
+ * by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU Lesser General Public License, v. 2.1.
+ * This program is distributed in the hope that it will be useful, but WITHOUT A
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+ * You should have received a copy of the GNU Lesser General Public License,
+ * v.2.1 along with this distribution; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA  02110-1301, USA.
+ */
+#include <cppunit/extensions/HelperMacros.h>
+#include "BaseServerTest.h"
+#include "XATMITestSuite.h"
+#include "xatmi.h"
+#include "tx.h"
+#include <string.h>
+
+#include "TestSpecExampleTwo.h"
+
+extern void inquiry_svc(TPSVCINFO *svcinfo);
+
+void TestSpecExampleTwo::setUp() {
+	// Setup server
+	BaseServerTest::setUp();
+	BaseServerTest::registerService("TestSpecExampleTwo", inquiry_svc);
+
+	// Do local work
+}
+
+void TestSpecExampleTwo::tearDown() {
+	// Do local work
+
+	// Clean up server
+	BaseServerTest::tearDown();
+}
+
+void TestSpecExampleTwo::test_specexampletwo() {
+	DATA_BUFFER *ptr; /* DATA_BUFFER is a typed buffer of type */
+	long len, event; /* X_C_TYPE and subtype inq_buf. The structure */
+	int cd; /* contains a character array named input and an */
+	/* array of integers named output. */
+	/* allocate typed buffer */
+	ptr = (DATA_BUFFER *) tpalloc("X_C_TYPE", "inq_buf", 0);
+	/* populate typed buffer with input data */
+	strcpy(ptr->input, "retrieve all accounts with balances less than 0");
+	tx_begin(); /* start global transaction */
+	/*connect to conversational service, send input data, & yield control*/
+	cd = tpconnect("INQUIRY", (char *) ptr, 0, TPRECVONLY|TPSIGRSTRT);
+	do {
+		/* receive 10 account records at a time */
+		tprecv(cd, (char **) &ptr, &len, TPSIGRSTRT, &event);
+		/*
+		 * Format & display in AP-specific manner the accounts returned.
+		 */
+	} while (tperrno!= TPEEVENT);
+	if (event == TPEV_SVCSUCC)
+		tx_commit(); /* commit global transaction */
+	else
+		tx_rollback(); /* rollback global transaction */
+}
+
+/* this routine is used for INQUIRY */
+void inquiry_svc(TPSVCINFO *svcinfo) {
+	DATA_BUFFER *ptr;
+	long event;
+	int rval;
+	/* extract initial typed buffer sent as part of tpconnect() */
+	ptr = (DATA_BUFFER *) svcinfo->data;
+	/*
+	 * Parse input string, ptr->input, and retrieve records.
+	 * Return 10 records at a time to client. Records are
+	 * placed in ptr->output, an array of account records.
+	 */
+	for (int i = 0; i < 5; i++) {
+		/* gather from DBMS next 10 records into ptr->output array */
+		tpsend(svcinfo->cd, (char *) ptr, 0, TPSIGRSTRT, &event);
+	}
+	// TODO DO OK AND FAIL
+	if (!ptr->failTest) {
+		rval = TPSUCCESS;
+	} else {
+		rval = TPFAIL; /* global transaction will not commit */
+	}
+	/* terminate service routine, send no data, and */
+	/* terminate connection */
+	tpreturn(rval, 0, NULL, 0, 0);
+}

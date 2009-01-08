@@ -1,0 +1,260 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2008, Red Hat Middleware LLC, and others contributors as indicated
+ * by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU Lesser General Public License, v. 2.1.
+ * This program is distributed in the hope that it will be useful, but WITHOUT A
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+ * You should have received a copy of the GNU Lesser General Public License,
+ * v.2.1 along with this distribution; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA  02110-1301, USA.
+ */
+/*
+ * BREAKTHRUIT PROPRIETARY - NOT TO BE DISCLOSED OUTSIDE BREAKTHRUIT, LLC.
+ */
+// copyright 2006, 2008 BreakThruIT
+
+#ifndef _ATMI_BROKER_IDL
+#define _ATMI_BROKER_IDL
+
+#include "CosTransactions.idl"
+
+
+// ***************************************************************
+//       module:  AtmiBroker
+// ***************************************************************
+module AtmiBroker {
+
+	typedef sequence<octet> octetSeq;
+	typedef sequence<octetSeq> octetSeqSeq;
+
+	struct TypedBufferMember
+	{
+			string 		name;
+			string 		value;
+			string 		type;
+			short 		number;
+			string 		fieldName;
+			short 		seqSize;
+			string 		flag;
+			string 		initialValue;
+	};
+	typedef sequence<TypedBufferMember> TypedBufferMemberSeq;
+	
+
+	struct TypedBuffer
+	{
+			string 			name;
+			string 			type;
+			string 			schemaName;
+			TypedBufferMemberSeq 	members;
+	};
+	typedef sequence<TypedBuffer> TypedBufferSeq;
+	typedef sequence<TypedBufferSeq> TypedBufferSeqSeq;
+
+	
+	interface ClientCallback
+	{
+		oneway void client_callback(in octetSeq idata,
+				  in long ilen, 
+				  in long flags,
+				  in string id);
+
+		oneway void client_typed_buffer_callback(in TypedBuffer idata,
+				  in long ilen, 
+				  in long flags,
+				  in string id);
+	};
+
+        struct ClientInfo 
+	{
+		       string   	callback_ior;
+		       string   	user_id;
+		       string   	user_password;
+		       long   		client_id;
+		       short   		maxChannels;
+		       short   		maxSuppliers;
+		       short   		maxConsumers;
+		       short   		maxReplicas;
+		       short   		logLevel;
+        };
+	typedef sequence<ClientInfo> ClientInfoSeq;
+
+        struct EnvVariableInfo 
+	{
+		       string   	name;
+		       string   	value;
+        };
+	typedef sequence<EnvVariableInfo> EnvVariableInfoSeq;
+	
+	struct ServiceInfo 
+	{
+		       string		serviceName;
+		       short   		maxSize;
+		       short   		minSize;
+		       short   		minAvailableSize;
+		       short   		inUse;
+		       short   		available;
+		       short   		logLevel;
+		       string  		securityType;
+        };
+	typedef sequence<ServiceInfo> ServiceInfoSeq;
+
+	typedef sequence<octetSeq> ServiceNameSeq;
+	struct ServerInfo 
+	{
+		       short   		maxChannels;
+		       short   		maxSuppliers;
+		       short   		maxConsumers;
+		       short   		maxReplicas;
+		       short   		logLevel;
+		       string  		securityType;
+		       string  		orbType;
+		       string  		queueSpaceName;
+		       ServiceNameSeq	serviceNames;
+        };
+	typedef sequence<ServerInfo> ServerInfoSeq;
+
+
+	interface Server
+	{
+		short server_init();
+
+		long register_client(in ClientInfo client_info);
+
+		long get_queue_log(in string queue_name);
+
+		boolean deregister_client(in ClientInfo client_info);
+		
+		string get_client_callback(in ClientInfo client_info);
+		
+		void  server_done();
+		
+		ServerInfo  get_server_info();
+		
+		ServiceInfoSeq  get_all_service_info();
+		
+		ServiceInfo  get_service_info(in string service_name);
+		
+		EnvVariableInfoSeq  get_environment_variable_info();
+		
+		ClientInfoSeq  get_client_info();
+		
+		void  set_server_descriptor(in string xml_descriptor);
+		
+		void  set_service_descriptor(in string serviceName, in string xml_descriptor);
+		
+		void  set_environment_descriptor(in string xml_descriptor);
+		
+		void  stop_service(in string service_name);
+		
+		void  start_service(in string service_name);
+	};
+
+
+	interface Service
+	{
+		readonly attribute string serviceName;
+
+		short service_request_explicit(in octetSeq idata, 
+				  in long ilen, 
+				  out octetSeq odata, 
+				  out long    olen, 
+				  in long flags,
+				  in CosTransactions::Control control);
+
+		short service_typed_buffer_request_explicit(in TypedBuffer idata, 
+				  in long ilen, 
+				  out TypedBuffer odata, 
+				  out long    olen, 
+				  in long flags,
+				  in CosTransactions::Control control_ior);
+
+		oneway void service_request_async(in octetSeq idata,
+				  in long ilen, 
+				  in long flags);
+
+		oneway void service_typed_buffer_request_async(in TypedBuffer idata,
+				  in long ilen, 
+				  in long flags);
+
+		short service_response(out octetSeq odata,
+				  out long    olen,
+				  in long flags,
+				  out long event);
+
+		short service_typed_buffer_response(out TypedBuffer odata,
+				  out long    olen,
+				  in long flags,
+				  out long event);
+	};
+
+
+	interface ServiceManager
+	{
+		readonly attribute string serviceName;
+
+		short service_request_explicit(in string ior,
+				   in octetSeq idata, 
+				  in long ilen, 
+				  out octetSeq odata, 
+				  out long    olen, 
+				  in long flags,
+				  in  CosTransactions::Control control);
+
+		short service_typed_buffer_request_explicit(in string ior,
+				   in TypedBuffer idata, 
+				  in long ilen, 
+				  out TypedBuffer odata, 
+				  out long    olen, 
+				  in long flags,
+				  in  CosTransactions::Control control);
+
+		oneway void service_request_async(in string ior,
+				  in octetSeq idata,
+				  in long ilen, 
+				  in long flags);
+
+		oneway void service_typed_buffer_request_async(in string ior,
+				  in TypedBuffer idata,
+				  in long ilen, 
+				  in long flags);
+
+		short service_response(in string ior,
+				  out octetSeq odata,
+				  out long    olen,
+				  in long flags,
+				  out long event);
+
+		short service_typed_buffer_response(in string ior,
+				  out TypedBuffer odata,
+				  out long    olen,
+				  in long flags,
+				  out long event);
+	};
+
+
+	interface ServiceFactory
+	{
+		Service get_service(in long client_id, in boolean conversation, out string id);
+	
+		string get_service_id(in long client_id, in boolean conversation, out string id);
+	
+		void end_conversation(in long client_id, in string id);
+	
+		Service find_service(in long client_id, in string id);
+	
+		string find_service_id(in long client_id, in string id);
+
+		ServiceInfo  get_service_info();		
+	};
+
+};
+
+#endif  // _ATMI_BROKER_IDL

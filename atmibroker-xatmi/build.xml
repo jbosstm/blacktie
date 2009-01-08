@@ -1,0 +1,299 @@
+<!--
+  JBoss, Home of Professional Open Source
+  Copyright 2008, Red Hat Middleware LLC, and others contributors as indicated
+  by the @authors tag. All rights reserved.
+  See the copyright.txt in the distribution for a
+  full listing of individual contributors.
+  This copyrighted material is made available to anyone wishing to use,
+  modify, copy, or redistribute it subject to the terms and conditions
+  of the GNU Lesser General Public License, v. 2.1.
+  This program is distributed in the hope that it will be useful, but WITHOUT A
+  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+  PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+  You should have received a copy of the GNU Lesser General Public License,
+  v.2.1 along with this distribution; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+  MA  02110-1301, USA.
+-->
+<!DOCTYPE project [
+<!ENTITY includepath-log4cxx '
+<includepath path="${LOG4CXX_ROOT}/src/main/include" />
+'>
+<!ENTITY libdir-log4cxx '
+<property name="log4cxx.lib.dir" value="${LOG4CXX_ROOT}/target/debug/shared"/>
+'>
+<!ENTITY libsets-log4cxx '
+<libset libs="log4cxx" dir="${log4cxx.lib.dir}"/>
+'>
+<!ENTITY includepath-expat '
+<includepath path="${EXPAT_ROOT}/Source/lib"  if="is-msvc"/>
+'>
+<!ENTITY libdir-expat '
+<property name="expat.lib.dir" value="${EXPAT_ROOT}/Bin"/>
+'>
+<!ENTITY libsets-expat '
+<libset libs="libexpat" dir="${expat.lib.dir}" if="is-msvc"/>
+'>
+<!ENTITY includepath-cppunit '
+<includepath path="${CPPUNIT_ROOT}/include"  if="is-msvc"/>
+'>
+<!ENTITY libdir-cppunit '
+<property name="cppunit.lib.dir" value="${CPPUNIT_ROOT}/lib"/>
+'>
+<!ENTITY libsets-cppunit '
+<libset libs="cppunit${lib.suffix}" dir="${cppunit.lib.dir}" if="is-msvc" />
+<libset libs="cppunit" unless="is-msvc"/>
+'>
+<!ENTITY includepath-tao '
+<includepath path="${ACE_ROOT}" />
+<includepath path="${TAO_ROOT}" />
+<includepath path="${TAO_ROOT}/orbsvcs" />
+'>
+<!ENTITY libdir-tao '
+<property name="tao.lib.dir" value="${ACE_ROOT}/lib"/>
+'>
+<!ENTITY libsets-tao '
+<libset libs="TAO_CosNaming${lib.suffix}" dir="${tao.lib.dir}" />
+<libset libs="TAO_AnyTypeCode${lib.suffix}" dir="${tao.lib.dir}" />
+<libset libs="TAO${lib.suffix}" dir="${tao.lib.dir}" />
+<libset libs="TAO_PortableServer${lib.suffix}" dir="${tao.lib.dir}" />
+<libset libs="ACE${lib.suffix}" dir="${tao.lib.dir}"/>
+'>
+<!ENTITY libsets-sys '
+<syslibset libs="advapi32 mswsock ws2_32 shell32" if="is-msvc" />
+<syslibset libs="stdc++" if="is-gcc"/>
+'>
+<!ENTITY includepath-main-atmibroker-idl '
+<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-idl/src/main/include" />
+<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-idl/target/generated/tao_idl" />
+'>
+<!ENTITY libdir-atmibroker-idl '
+<property name="atmibroker-idl.lib.dir" value="${ATMIBROKER_SRC_DIR}/atmibroker-idl/target/${configuration.type}/${lib.type}" />
+'>
+<!ENTITY libsets-atmibroker-idl '
+<libset libs="atmibroker-idl" dir="${atmibroker-idl.lib.dir}" />
+'>
+<!ENTITY includepath-main-atmibroker-core '
+<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-core/src/main/include" />
+'>
+<!ENTITY includepath-export-atmibroker-core '
+<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-core/src/export/include" />
+'>
+<!ENTITY libdir-atmibroker-core '
+<property name="atmibroker-core.lib.dir" value="${ATMIBROKER_SRC_DIR}/atmibroker-core/target/${configuration.type}/${lib.type}" />
+'>
+<!ENTITY libsets-atmibroker-core '
+<libset libs="atmibroker-core" dir="${atmibroker-core.lib.dir}" />
+'>
+<!ENTITY includepath-main-atmibroker-xatmi '
+<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/src/main/include" />
+'>
+<!ENTITY includepath-export-atmibroker-xatmi '
+<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/src/export/include" />
+'>
+<!ENTITY libdir-atmibroker-xatmi '
+<property name="atmibroker-xatmi.lib.dir" value="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/target/${configuration.type}/${lib.type}" />
+'>
+<!ENTITY libsets-atmibroker-xatmi '
+<libset libs="atmibroker-xatmi" dir="${atmibroker-xatmi.lib.dir}" />
+'>
+<!ENTITY includepath-main-atmibroker-tx '
+<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-tx/src/main/include" />
+'>
+<!ENTITY includepath-export-atmibroker-tx '
+<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-tx/src/export/include" />
+'>
+<!ENTITY libdir-atmibroker-tx '
+<property name="atmibroker-tx.lib.dir" value="${ATMIBROKER_SRC_DIR}/atmibroker-tx/target/${configuration.type}/${lib.type}" />
+'>
+<!ENTITY libsets-atmibroker-tx '
+<libset libs="atmibroker-tx" dir="${atmibroker-tx.lib.dir}" />
+'>
+<!ENTITY compiler-args-gcc '
+<compilerarg value="-O0" if="debug" />
+<compilerarg value="-g3" if="debug" />
+<compilerarg value="-O3" unless="debug" />
+<compilerarg value="-Wall" />
+<compilerarg value="-c" />
+<compilerarg value="-fmessage-length=0" />
+<compilerarg value="-fPIC" />
+'>
+<!ENTITY compiler-args-msvc '
+<compilerarg value="/wd4820" />
+<compilerarg value="/wd4668" />
+<compilerarg value="/wd4365" />
+<compilerarg value="/wd4996" />
+<compilerarg value="/wd4625" />
+<compilerarg value="/wd4626" />
+<compilerarg value="/wd4619" />
+<compilerarg value="/wd4505" />
+<compilerarg value="/wd4640"/>
+'>
+<!ENTITY runtime-path-gcc '
+<property name="runtime.path" value="${log4cxx.lib.dir}:${tao.lib.dir}:${atmibroker-idl.lib.dir}:${atmibroker-core.lib.dir}:${atmibroker-tx.lib.dir}:${atmibroker-xatmi.lib.dir}"/>
+'>
+<!ENTITY runtime-path-msvc '
+<property name="runtime.path" value="${cppunit.lib.dir};${log4cxx.lib.dir};${tao.lib.dir};${expat.lib.dir};${atmibroker-idl.lib.dir};${atmibroker-core.lib.dir};${atmibroker-tx.lib.dir};${atmibroker-xatmi.lib.dir}"/>
+'>
+<!ENTITY libdir-dependencies '
+	&libdir-expat;
+	&libdir-cppunit;
+	&libdir-log4cxx;
+	&libdir-tao;
+	&libdir-atmibroker-idl;
+	&libdir-atmibroker-core;
+	&libdir-atmibroker-tx;
+	&libdir-atmibroker-xatmi;
+'>
+<!ENTITY includepath-main-dependencies '
+	&includepath-expat;
+	&includepath-log4cxx;
+	&includepath-tao;
+	&includepath-main-atmibroker-idl;
+	&includepath-main-atmibroker-core;
+	&includepath-main-atmibroker-tx;
+	&includepath-export-atmibroker-tx;
+'>
+<!ENTITY libsets-main-dependencies '
+	&libsets-expat;
+	&libsets-log4cxx;
+	&libsets-tao;
+	&libsets-sys;
+	&libsets-atmibroker-idl;
+	&libsets-atmibroker-core;
+	&libsets-atmibroker-tx;
+'>
+<!ENTITY includepath-test-dependencies '
+	&includepath-cppunit;
+	&includepath-tao;
+	&includepath-export-atmibroker-tx;
+'>
+<!ENTITY libsets-test-dependencies '
+	&libsets-cppunit;
+	&libsets-log4cxx;
+	&libsets-tao;
+	&libsets-atmibroker-idl;
+	&libsets-atmibroker-core;
+	&libsets-atmibroker-tx;
+	&libsets-atmibroker-xatmi;
+'>
+]>
+<project name="atmibroker-xatmi">
+	<taskdef resource="cpptasks.tasks" />
+	<property file="build.properties" />
+	<property environment="env" />
+	<property name="src.main" value="src/main/cpp" />
+	<property name="src.excludes" value="" />
+	<property name="test.excludes" value="" />
+	<property name="lib.type" value="shared" />
+	<property name="runtime" value="dynamic" />
+
+	<target name="init">
+		<fail unless="ATMIBROKER_SRC_DIR" />
+		<fail unless="configuration.type" />
+		<fail unless="toolchain.compiler" />
+		<condition property="is-msvc">
+			<equals arg1="${toolchain.compiler}" arg2="msvc" />
+		</condition>
+		<condition property="export.dir">
+			<available file="src/export/include" />
+		</condition>
+		<condition property="debug" value="true">
+			<equals arg1="${configuration.type}" arg2="debug" casesensitive="false" />
+		</condition>
+		<condition property="lib.suffix" value="d">
+			<and>
+				<isset property="is-msvc" />
+				<isset property="debug" />
+			</and>
+		</condition>
+		<condition property="lib.suffix" value="">
+			<not>
+				<equals arg1="lib.suffix" arg2="d" />
+			</not>
+		</condition>
+
+		<condition property="have.expat">
+			<and>
+				<isset property="is-msvc" />
+				<isset property="EXPAT_ROOT" />
+			</and>
+		</condition>
+		<fail if="is-msvc" unless="have.expat" />
+		&libdir-dependencies;
+	</target>
+
+	<target name="compile" depends="init">
+		<mkdir dir="target/classes" />
+		<mkdir dir="target/${configuration.type}/${lib.type}" />
+		<cc name="${toolchain.compiler}" exceptions="true" outfile="target/${configuration.type}/${lib.type}/${ant.project.name}" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="${lib.type}" objdir="target/classes" debug="${debug}">
+			<compiler name="${toolchain.compiler}" unless="is-msvc">
+				&compiler-args-gcc;
+			</compiler>
+			<compiler name="${toolchain.compiler}" if="is-msvc">
+				&compiler-args-msvc;
+			</compiler>
+
+			<fileset dir="${src.main}" includes="**/*.c*" excludes="${src.excludes}" />
+
+			<defineset define="TAO_COMP" />
+			<defineset define="${export.dll}" if="export.dll" />
+			<defineset define="WIN32" if="is-msvc" />
+
+			<includepath path="src/export/include" if="export.dir" />
+			<includepath path="src/main/include" />
+
+			&includepath-main-dependencies;
+			&libsets-main-dependencies;
+		</cc>
+	</target>
+
+	<target name="test-compile" depends="init">
+		<mkdir dir="target/test-classes" />
+		<cc name="${toolchain.compiler}" exceptions="true" outfile="target/testsuite" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="executable" objdir="target/test-classes" debug="${debug}">
+			<compiler name="${toolchain.compiler}" unless="is-msvc">
+				&compiler-args-gcc;
+			</compiler>
+			<compiler name="${toolchain.compiler}" if="is-msvc">
+				&compiler-args-msvc;
+			</compiler>
+
+			<fileset dir="src/test/cpp" includes="**/*.c*" excludes="${test.excludes}" />
+
+
+			<defineset define="TAO_COMP" />
+			<defineset define="WIN32" if="is-msvc" />
+
+			<includepath path="src/test/include" />
+			<includepath path="src/export/include" if="export.dir" />
+			<includepath path="src/main/include" />
+			
+			&includepath-test-dependencies;
+			&libsets-test-dependencies;
+		</cc>
+	</target>
+
+	<target name="test" depends="init,test-msvc,test-gcc" />
+	<target name="test-gcc" depends="init" unless="is-msvc">
+		&runtime-path-gcc;
+		<mkdir dir="target/cppunit" />
+		<copy todir="target/test-classes" failonerror="false">
+			<fileset dir="src/test/resources" />
+		</copy>
+		<exec dir="target/test-classes" resolveexecutable="true" executable="../testsuite" output="target/cppunit/run.txt" outputproperty="cppunit-run" failonerror="false">
+			<env key="LD_LIBRARY_PATH" path="${runtime.path}" />
+		</exec>
+		<echo message="${cppunit-run}" />
+	</target>
+	<target name="test-msvc" depends="init" if="is-msvc">
+		&runtime-path-msvc;
+		<mkdir dir="target/cppunit" />
+		<copy todir="target/test-classes" failonerror="false">
+			<fileset dir="src/test/resources" />
+		</copy>
+		<exec dir="target/test-classes" executable="${ATMIBROKER_SRC_DIR}/${ant.project.name}/target/testsuite" output="target/cppunit/run.txt" outputproperty="cppunit-run" failonerror="false">
+			<env key="Path" path="${env.Path};${runtime.path}" />
+		</exec>
+		<echo message="${cppunit-run}" />
+	</target>
+</project>

@@ -1,0 +1,10 @@
+ATMIBROKER_SRC_DIR=
+ACE_ROOT=
+TAO_ROOT=
+LOG4CXX_ROOT=
+configuration.type=
+toolchain.compiler=
+#only required if toolchain.compiler=msvc
+#export.dll=_ATMIBROKER_TX_DLL
+#EXPAT_ROOT=
+#CPPUNIT_ROOT=
