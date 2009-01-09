@@ -9,3 +9,4 @@ test.output.type=executable
 src.main=target/generated/tao_idl
 #only required if toolchain.compiler=msvc
 #export.dll=_ATMIBROKER_IDL_DLL
+#EXPAT_ROOT=
