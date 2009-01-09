@@ -16,28 +16,6 @@
   MA  02110-1301, USA.
 -->
 <!DOCTYPE project [
-<!ENTITY includepath-log4cxx '
-<includepath path="${env.LOG4CXX_ROOT}/src/main/include" />
-'>
-<!ENTITY libsets-log4cxx '
-<libset libs="log4cxx" dir="${env.LOG4CXX_ROOT}/target/debug/shared"/>
-'>
-<!ENTITY includepath-tao '
-<includepath path="${env.ACE_ROOT}" />
-<includepath path="${env.TAO_ROOT}" />
-<includepath path="${env.TAO_ROOT}/orbsvcs" />
-'>
-<!ENTITY libsets-tao '
-<libset libs="TAO_CosNaming${lib.suffix}" dir="${env.ACE_ROOT}/lib" />
-<libset libs="TAO_AnyTypeCode${lib.suffix}" dir="${env.ACE_ROOT}/lib" />
-<libset libs="TAO${lib.suffix}" dir="${env.ACE_ROOT}/lib" />
-<libset libs="TAO_PortableServer${lib.suffix}" dir="${env.ACE_ROOT}/lib" />
-<libset libs="ACE${lib.suffix}" dir="${env.ACE_ROOT}/lib"/>
-'>
-<!ENTITY libsets-sys '
-<syslibset libs="advapi32 mswsock ws2_32 shell32" if="is-msvc" />
-<syslibset libs="stdc++" if="is-gcc"/>
-'>
 <!ENTITY compiler-args-gcc '
 <compilerarg value="-O0" if="debug" />
 <compilerarg value="-g3" if="debug" />
@@ -49,28 +27,20 @@
 '>
 <!ENTITY compiler-args-msvc '
 <compilerarg value="/wd4820" />
-<compilerarg value="/wd4668"/>
-<compilerarg value="/wd4365"/>
-<compilerarg value="/wd4996"/>
-<compilerarg value="/wd4625"/>
-<compilerarg value="/wd4626"/>
-<compilerarg value="/wd4619"/>
-<compilerarg value="/wd4505"/>
+<compilerarg value="/wd4668" />
+<compilerarg value="/wd4365" />
+<compilerarg value="/wd4996" />
+<compilerarg value="/wd4625" />
+<compilerarg value="/wd4626" />
+<compilerarg value="/wd4619" />
+<compilerarg value="/wd4505" />
 <compilerarg value="/wd4640"/>
 '>
 <!ENTITY includepath-main-dependencies '
-	&includepath-log4cxx;
-	&includepath-tao;
 	<includepath path="${env.ATMIBROKER_BIN_DIR}/include"/>
 '>
 <!ENTITY libsets-main-dependencies '
-	&libsets-log4cxx;
-	&libsets-tao;
-	&libsets-sys;
-	<libset libs="atmibroker-idl" dir="${env.ATMIBROKER_BIN_DIR}/libTao"/>
-<libset libs="atmibroker-core" dir="${env.ATMIBROKER_BIN_DIR}/libTao"/>
-<libset libs="atmibroker-tx" dir="${env.ATMIBROKER_BIN_DIR}/libTao"/>
-<libset libs="atmibroker-xatmi" dir="${env.ATMIBROKER_BIN_DIR}/libTao"/>
+	<libset dir="${env.ATMIBROKER_BIN_DIR}/libTao" libs="expat TAO_CosNaming TAO_AnyTypeCode TAO TAO_PortableServer ACE log4cxx atmibroker-idl atmibroker-core atmibroker-tx atmibroker-xatmi" />
 '>
 ]>
 <project name="generate-executables">
@@ -84,9 +54,6 @@
 
 	<target name="init">
 		<fail unless="env.ATMIBROKER_BIN_DIR" />
-		<fail unless="env.ACE_ROOT" />
-		<fail unless="env.TAO_ROOT" />
-		<fail unless="env.LOG4CXX_ROOT" />
 		<fail unless="configuration.type" />
 		<fail unless="toolchain.compiler" />
 		<condition property="is-msvc">
@@ -123,10 +90,10 @@
 		</unzip>
 		<antcall target="generate-server" />
 
-		<property name="server.executable.file" value="server"/>
-		<property name="server.src.tobuild" value="server.c ${server.includes}"/>
-		<propertycopy property="executable.file" from="server.executable.file" override="true"/>
-		<propertycopy property="src.tobuild" from="server.src.tobuild" override="true"/>
+		<property name="server.executable.file" value="server" />
+		<property name="server.src.tobuild" value="server.c ${server.includes}" />
+		<propertycopy property="executable.file" from="server.executable.file" override="true" />
+		<propertycopy property="src.tobuild" from="server.src.tobuild" override="true" />
 		<antcall target="compile" />
 	</target>
 
@@ -144,10 +111,10 @@
 
 	<target name="client" depends="init,clean-client">
 		<fail unless="client.includes" />
-		<property name="client.executable.file" value="client"/>
-		<property name="client.src.tobuild" value="${client.includes}"/>
-		<propertycopy property="executable.file" from="client.executable.file" override="true"/>
-		<propertycopy property="src.tobuild" from="client.src.tobuild" override="true"/>
+		<property name="client.executable.file" value="client" />
+		<property name="client.src.tobuild" value="${client.includes}" />
+		<propertycopy property="executable.file" from="client.executable.file" override="true" />
+		<propertycopy property="src.tobuild" from="client.src.tobuild" override="true" />
 		<antcall target="compile" />
 	</target>
 
@@ -173,15 +140,15 @@
 	</target>
 
 	<target name="clean-server" depends="init">
-		<property name="server.executable.file" value="server"/>
-		<propertycopy property="executable.file" from="server.executable.file" override="true"/>
+		<property name="server.executable.file" value="server" />
+		<propertycopy property="executable.file" from="server.executable.file" override="true" />
 		<delete file="${executable.file}" />
 		<delete dir="target" />
 	</target>
 
 	<target name="clean-client" depends="init">
-		<property name="client.executable.file" value="client"/>
-		<propertycopy property="executable.file" from="client.executable.file" override="true"/>
+		<property name="client.executable.file" value="client" />
+		<propertycopy property="executable.file" from="client.executable.file" override="true" />
 		<delete file="${executable.file}" />
 		<delete dir="target" />
 	</target>

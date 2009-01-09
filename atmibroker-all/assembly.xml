@@ -181,5 +181,13 @@
 				<include>*.so</include>
 			</includes>
 		</fileSet>
+		<fileSet>
+			<directory>../atmibroker-xatmi/target/dependencies
+			</directory>
+			<outputDirectory>libTao</outputDirectory>
+			<includes>
+				<include>*</include>
+			</includes>
+		</fileSet>
 	</fileSets>
 </assembly> 

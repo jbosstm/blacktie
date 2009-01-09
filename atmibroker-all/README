@@ -182,7 +182,7 @@ Run the required services for the tests (TAO Name Service/JBoss Transaction Serv
 	<JBOSSTS_HOME>/bin/start-recovery-manager.sh|bat
 	<JBOSSTS_HOME>/bin/start-transaction-service.sh|bat
 set PATH/LD_LIBRARY_PATH to include
-	../../../target/test-lib
+	../../../target/dependencies:../../../target
 mvn clean install 
 mvn package assembly:assembly
 
