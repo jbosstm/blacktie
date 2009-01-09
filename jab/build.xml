@@ -295,7 +295,6 @@
 	</target>
 
 	<target name="package" depends="init">
-		<delete dir="target/dependencies" />
 		<mkdir dir="target/dependencies" />
 		<copy todir="target/dependencies">
 			&libsets-runtime-dependencies;
