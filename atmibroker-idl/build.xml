@@ -24,19 +24,19 @@
 <includepath path="${LOG4CXX_ROOT}/src/main/include" />
 '>
 <!ENTITY libsets-log4cxx '
-<fileset dir="${LOG4CXX_ROOT}/target/debug/shared/" includes="liblog4cxx${lib.suffix}.*"/>
+<fileset dir="${LOG4CXX_ROOT}/target/debug/shared/" includes="${lib.prefix}log4cxx${lib.suffix}.*"/>
 '>
 <!ENTITY includepath-expat '
 <includepath path="${EXPAT_ROOT}/Source/lib"  if="is-msvc"/>
 '>
 <!ENTITY libsets-expat '
-<fileset dir="${EXPAT_LIB_DIR}" includes="libexpat${lib.suffix}.*"/>
+<fileset dir="${EXPAT_LIB_DIR}" includes="${lib.prefix}expat${lib.suffix}.*"/>
 '>
 <!ENTITY includepath-cppunit '
 <includepath path="${CPPUNIT_ROOT}/include"  if="is-msvc"/>
 '>
 <!ENTITY libsets-cppunit '
-<fileset dir="${CPPUNIT_LIB_DIR}" includes="libcppunit${lib.suffix}.*"/>
+<fileset dir="${CPPUNIT_LIB_DIR}" includes="${lib.prefix}cppunit${lib.suffix}.*"/>
 '>
 <!ENTITY includepath-tao '
 <includepath path="${ACE_ROOT}" />
@@ -44,11 +44,11 @@
 <includepath path="${TAO_ROOT}/orbsvcs" />
 '>
 <!ENTITY libsets-tao '
-<fileset dir="${ACE_ROOT}/lib/" includes="libTAO_CosNaming${lib.suffix}.*" />
-<fileset dir="${ACE_ROOT}/lib/" includes="libTAO_AnyTypeCode${lib.suffix}.*" />
-<fileset dir="${ACE_ROOT}/lib/" includes="libTAO${lib.suffix}.*" />
-<fileset dir="${ACE_ROOT}/lib/" includes="libTAO_PortableServer${lib.suffix}.*" />
-<fileset dir="${ACE_ROOT}/lib/" includes="libACE${lib.suffix}.*"/>
+<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO_CosNaming${lib.suffix}.*" />
+<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO_AnyTypeCode${lib.suffix}.*" />
+<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO${lib.suffix}.*" />
+<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO_PortableServer${lib.suffix}.*" />
+<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}ACE${lib.suffix}.*"/>
 '>
 <!ENTITY libsets-sys '
 <syslibset libs="advapi32 mswsock ws2_32 shell32" if="is-msvc" />
@@ -59,7 +59,7 @@
 <includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-idl/target/generated/tao_idl" />
 '>
 <!ENTITY libsets-atmibroker-idl '
-<fileset includes="libatmibroker-idl${lib.suffix}.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-idl/target/${configuration.type}/${lib.type}" />
+<fileset includes="${lib.prefix}atmibroker-idl${lib.suffix}.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-idl/target/${configuration.type}/${lib.type}" />
 '>
 <!ENTITY includepath-main-atmibroker-core '
 <includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-core/src/main/include" />
@@ -68,7 +68,7 @@
 <includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-core/src/export/include" />
 '>
 <!ENTITY libsets-atmibroker-core '
-<fileset includes="libatmibroker-core${lib.suffix}.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-core/target/${configuration.type}/${lib.type}" />
+<fileset includes="${lib.prefix}atmibroker-core${lib.suffix}.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-core/target/${configuration.type}/${lib.type}" />
 '>
 <!ENTITY includepath-main-atmibroker-xatmi '
 <includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/src/main/include" />
@@ -77,7 +77,7 @@
 <includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/src/export/include" />
 '>
 <!ENTITY libsets-atmibroker-xatmi '
-<fileset includes="libatmibroker-xatmi${lib.suffix}.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/target/${configuration.type}/${lib.type}" />
+<fileset includes="${lib.prefix}atmibroker-xatmi${lib.suffix}.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/target/${configuration.type}/${lib.type}" />
 '>
 <!ENTITY includepath-main-atmibroker-tx '
 <includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-tx/src/main/include" />
@@ -86,7 +86,7 @@
 <includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-tx/src/export/include" />
 '>
 <!ENTITY libsets-atmibroker-tx '
-<fileset includes="libatmibroker-tx${lib.suffix}.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-tx/target/${configuration.type}/${lib.type}" />
+<fileset includes="${lib.prefix}atmibroker-tx${lib.suffix}.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-tx/target/${configuration.type}/${lib.type}" />
 '>
 <!ENTITY compiler-args-gcc '
 <compilerarg value="-O0" if="debug" />
@@ -158,14 +158,14 @@
 				<equals arg1="lib.suffix" arg2="d" />
 			</not>
 		</condition>
-
-		<condition property="have.expat">
-			<and>
+		<condition property="lib.prefix" value="lib">
+			<not>
 				<isset property="is-msvc" />
-				<isset property="EXPAT_ROOT" />
-			</and>
+			</not>
 		</condition>
-		<fail if="is-msvc" unless="have.expat" />
+		<condition property="lib.prefix" value="">
+			<isset property="is-msvc" />
+		</condition>
 	</target>
 
 	<target name="clean" depends="init">
@@ -227,9 +227,7 @@
 			<includepath path="src/main/include" />
 
 			&includepath-main-dependencies;
-			<linker>
-				&libsets-main-dependencies;
-			</linker>
+			&libsets-main-dependencies;
 		</cc>
 	</target>
 
@@ -255,10 +253,8 @@
 			<includepath path="src/main/include" />
 			
 			&includepath-test-dependencies;
-			<linker>
-				&libsets-test-dependencies;
-				<libset dir="target/${configuration.type}/${lib.type}" libs="${ant.project.name}" if="main.built" />
-			</linker>
+			&libsets-test-dependencies;
+			<libset dir="target/${configuration.type}/${lib.type}" libs="${ant.project.name}" if="main.built" />
 		</cc>
 		<antcall target="_test-compile-msvc" />
 	</target>
