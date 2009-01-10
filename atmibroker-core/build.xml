@@ -105,6 +105,7 @@
 <compilerarg value="/wd4640"/>
 '>
 <!ENTITY includepath-main-dependencies '
+	&includepath-expat;
 	&includepath-log4cxx;
 	&includepath-tao;
 	&includepath-main-atmibroker-idl;
