@@ -18,7 +18,7 @@ rem MA  02110-1301, USA.
 rem
 call ..\..\setenv.bat
 
-start runNamingService.bat
+start %JACORB_HOME%\bin\ns.bat -DOAPort=3528
 PING 1.1.1.1 -n 1 -w 1000 >NUL
 start %JBOSSTS_HOME%\bin\start-recovery-manager.bat
 start %JBOSSTS_HOME%\bin\start-transaction-service.bat

@@ -16,7 +16,7 @@
 # MA  02110-1301, USA.
 #
 
-. $ATMIBROKER_BIN_DIR/bin/services-scripts/runNamingService.sh&
+. $JACORB_HOME/bin/ns -DOAPort=3528&
 sleep 1
 . $JBOSSTS_HOME/bin/start-recovery-manager.sh&
 . $JBOSSTS_HOME/bin/start-transaction-service.sh&
