@@ -112,7 +112,7 @@
 	&includepath-tao;
 '>
 <!ENTITY libsets-main-dependencies '
-	<libset dir="target/dependencies" libs="${lib.prefix}TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix}" />
+	<libset dir="target/dependencies" libs="TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix}" />
 '>
 <!ENTITY includepath-test-dependencies '
 	&includepath-tao;
