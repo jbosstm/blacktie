@@ -55,7 +55,7 @@
 <includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-idl/target/generated/tao_idl" />
 '>
 <!ENTITY libsets-atmibroker-idl '
-<fileset includes="${lib.prefix}atmibroker-idl${lib.suffix}.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-idl/target/${configuration.type}/${lib.type}" />
+<fileset includes="${lib.prefix}atmibroker-idl.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-idl/target/${configuration.type}/${lib.type}" />
 '>
 <!ENTITY includepath-main-atmibroker-core '
 <includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-core/src/main/include" />
@@ -64,7 +64,7 @@
 <includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-core/src/export/include" />
 '>
 <!ENTITY libsets-atmibroker-core '
-<fileset includes="${lib.prefix}atmibroker-core${lib.suffix}.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-core/target/${configuration.type}/${lib.type}" />
+<fileset includes="${lib.prefix}atmibroker-core.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-core/target/${configuration.type}/${lib.type}" />
 '>
 <!ENTITY includepath-main-atmibroker-xatmi '
 <includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/src/main/include" />
@@ -73,7 +73,7 @@
 <includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/src/export/include" />
 '>
 <!ENTITY libsets-atmibroker-xatmi '
-<fileset includes="${lib.prefix}atmibroker-xatmi${lib.suffix}.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/target/${configuration.type}/${lib.type}" />
+<fileset includes="${lib.prefix}atmibroker-xatmi.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/target/${configuration.type}/${lib.type}" />
 '>
 <!ENTITY includepath-main-atmibroker-tx '
 <includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-tx/src/main/include" />
@@ -82,7 +82,7 @@
 <includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-tx/src/export/include" />
 '>
 <!ENTITY libsets-atmibroker-tx '
-<fileset includes="${lib.prefix}atmibroker-tx${lib.suffix}.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-tx/target/${configuration.type}/${lib.type}" />
+<fileset includes="${lib.prefix}atmibroker-tx.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-tx/target/${configuration.type}/${lib.type}" />
 '>
 <!ENTITY compiler-args-gcc '
 <compilerarg value="-O0" if="debug" />
@@ -111,14 +111,14 @@
 	&includepath-main-atmibroker-idl;
 '>
 <!ENTITY libsets-main-dependencies '
-	<libset dir="target/dependencies" libs="libexpat ${lib.prefix}TAO_CosNaming${lib.suffix} ${lib.prefix}TAO_AnyTypeCode${lib.suffix} ${lib.prefix}TAO${lib.suffix} ${lib.prefix}TAO_PortableServer${lib.suffix} ${lib.prefix}ACE${lib.suffix} ${lib.prefix}log4cxx ${lib.prefix}atmibroker-idl${lib.suffix}" />
+	<libset dir="target/dependencies" libs="libexpat ${lib.prefix}TAO_CosNaming${lib.suffix} ${lib.prefix}TAO_AnyTypeCode${lib.suffix} ${lib.prefix}TAO${lib.suffix} ${lib.prefix}TAO_PortableServer${lib.suffix} ${lib.prefix}ACE${lib.suffix} ${lib.prefix}log4cxx ${lib.prefix}atmibroker-idl" />
 '>
 <!ENTITY includepath-test-dependencies '
 	&includepath-cppunit;
 	&includepath-tao;
 '>
 <!ENTITY libsets-test-dependencies '
-	<libset dir="target/dependencies" libs="${lib.prefix}cppunit${lib.suffix} libexpat ${lib.prefix}TAO_CosNaming${lib.suffix} ${lib.prefix}TAO_AnyTypeCode${lib.suffix} ${lib.prefix}TAO${lib.suffix} ${lib.prefix}TAO_PortableServer${lib.suffix} ${lib.prefix}ACE${lib.suffix} ${lib.prefix}log4cxx ${lib.prefix}atmibroker-idl${lib.suffix}" />
+	<libset dir="target/dependencies" libs="${lib.prefix}cppunit${lib.suffix} libexpat ${lib.prefix}TAO_CosNaming${lib.suffix} ${lib.prefix}TAO_AnyTypeCode${lib.suffix} ${lib.prefix}TAO${lib.suffix} ${lib.prefix}TAO_PortableServer${lib.suffix} ${lib.prefix}ACE${lib.suffix} ${lib.prefix}log4cxx ${lib.prefix}atmibroker-idl" />
 '>
 <!ENTITY libsets-runtime-dependencies '
 	&libsets-cppunit;
