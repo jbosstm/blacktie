@@ -30,7 +30,7 @@
 <includepath path="${EXPAT_ROOT}/Source/lib"  if="is-msvc"/>
 '>
 <!ENTITY libsets-expat '
-<fileset dir="${EXPAT_LIB_DIR}" includes="libexpat.*"/>
+<fileset dir="${EXPAT_LIB_DIR}" includes="${expat.prefix}expat.*"/>
 '>
 <!ENTITY includepath-cppunit '
 <includepath path="${CPPUNIT_ROOT}/include"  if="is-msvc"/>
@@ -111,14 +111,14 @@
 	&includepath-main-atmibroker-idl;
 '>
 <!ENTITY libsets-main-dependencies '
-	<libset dir="target/dependencies" libs="libexpat ${lib.prefix}TAO_CosNaming${lib.suffix} ${lib.prefix}TAO_AnyTypeCode${lib.suffix} ${lib.prefix}TAO${lib.suffix} ${lib.prefix}TAO_PortableServer${lib.suffix} ${lib.prefix}ACE${lib.suffix} ${lib.prefix}log4cxx ${lib.prefix}atmibroker-idl" />
+	<libset dir="target/dependencies" libs="${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} log4cxx atmibroker-idl" />
 '>
 <!ENTITY includepath-test-dependencies '
 	&includepath-cppunit;
 	&includepath-tao;
 '>
 <!ENTITY libsets-test-dependencies '
-	<libset dir="target/dependencies" libs="${lib.prefix}cppunit${lib.suffix} libexpat ${lib.prefix}TAO_CosNaming${lib.suffix} ${lib.prefix}TAO_AnyTypeCode${lib.suffix} ${lib.prefix}TAO${lib.suffix} ${lib.prefix}TAO_PortableServer${lib.suffix} ${lib.prefix}ACE${lib.suffix} ${lib.prefix}log4cxx ${lib.prefix}atmibroker-idl" />
+	<libset dir="target/dependencies" libs="cppunit${lib.suffix} ${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} log4cxx atmibroker-idl" />
 '>
 <!ENTITY libsets-runtime-dependencies '
 	&libsets-cppunit;
@@ -170,6 +170,14 @@
 			</not>
 		</condition>
 		<condition property="lib.prefix" value="">
+			<isset property="is-msvc" />
+		</condition>
+		<condition property="expat.prefix" value="">
+			<not>
+				<isset property="is-msvc" />
+			</not>
+		</condition>
+		<condition property="expat.prefix" value="lib">
 			<isset property="is-msvc" />
 		</condition>
 	</target>

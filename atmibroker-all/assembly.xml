@@ -186,7 +186,10 @@
 			</directory>
 			<outputDirectory>libTao</outputDirectory>
 			<includes>
-				<include>*</include>
+				<include>*.dll</include>
+				<include>*.lib</include>
+				<include>*.so</include>
+				<include>*.so.*</include>
 			</includes>
 		</fileSet>
 	</fileSets>

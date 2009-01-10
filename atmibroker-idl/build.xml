@@ -30,7 +30,7 @@
 <includepath path="${EXPAT_ROOT}/Source/lib"  if="is-msvc"/>
 '>
 <!ENTITY libsets-expat '
-<fileset dir="${EXPAT_LIB_DIR}" includes="libexpat.*"/>
+<fileset dir="${EXPAT_LIB_DIR}" includes="${expat.prefix}expat.*"/>
 '>
 <!ENTITY includepath-cppunit '
 <includepath path="${CPPUNIT_ROOT}/include"  if="is-msvc"/>
@@ -112,7 +112,7 @@
 	&includepath-tao;
 '>
 <!ENTITY libsets-main-dependencies '
-	<libset dir="target/dependencies" libs="${lib.prefix}TAO_CosNaming${lib.suffix} ${lib.prefix}TAO_AnyTypeCode${lib.suffix} ${lib.prefix}TAO${lib.suffix} ${lib.prefix}TAO_PortableServer${lib.suffix} ${lib.prefix}ACE${lib.suffix}" />
+	<libset dir="target/dependencies" libs="${lib.prefix}TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix}" />
 '>
 <!ENTITY includepath-test-dependencies '
 	&includepath-tao;
@@ -165,6 +165,14 @@
 			</not>
 		</condition>
 		<condition property="lib.prefix" value="">
+			<isset property="is-msvc" />
+		</condition>
+		<condition property="expat.prefix" value="">
+			<not>
+				<isset property="is-msvc" />
+			</not>
+		</condition>
+		<condition property="expat.prefix" value="lib">
 			<isset property="is-msvc" />
 		</condition>
 	</target>
