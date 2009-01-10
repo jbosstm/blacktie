@@ -289,7 +289,7 @@
 	</target>
 	<target name="_test-msvc" depends="init" if="is-msvc">
 		<exec dir="target/cpp-test-classes" newenvironment="true" executable="${ATMIBROKER_SRC_DIR}/${ant.project.name}/target/testsuite" failonerror="${failOnErrorTests}" output="target/cppunit/run.txt" outputproperty="cppunit-run" logError="true">
-			<env key="PATH" value="${env.PATH};../dependencies;../../target/${configuration.type}/${lib.type}" />
+			<env key="Path" value="${env.Path};../dependencies;../../target/${configuration.type}/${lib.type}" />
 		</exec>
 		<echo message="${cppunit-run}" />
 	</target>
