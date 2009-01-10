@@ -279,7 +279,7 @@
 		<available file="target/testsuite.dll.manifest" property="manifest.towrap"/>
 		<antcall target="_test-compile-msvc" />
 	</target>
-	<target name="_test-compile-msvc" if="is-msvc,manifest.towrap">
+	<target name="_test-compile-msvc" if="manifest.towrap">
 		<exec dir="target" executable="mt">
 			<arg value="-outputresource:testsuite.dll;#2" />
 			<arg value="-manifest" />
