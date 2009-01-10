@@ -132,6 +132,7 @@
 <project name="jab">
 	<taskdef resource="net/sf/antcontrib/antlib.xml" />
 	<taskdef resource="cpptasks.tasks" />
+	<property environment="env" />
 	<property file="build.properties" />
 	<property name="src.main" value="src/main/cpp" />
 	<property name="src.excludes" value="" />
