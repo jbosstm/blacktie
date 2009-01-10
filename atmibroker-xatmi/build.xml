@@ -118,7 +118,7 @@
 	&includepath-export-atmibroker-tx;
 '>
 <!ENTITY libsets-main-dependencies '
-	<libset dir="target/dependencies" libs="expat TAO_CosNaming TAO_AnyTypeCode TAO TAO_PortableServer ACE log4cxx atmibroker-idl atmibroker-core atmibroker-tx" />
+	<libset dir="target/dependencies" libs="${lib.prefix}expat${lib.suffix} ${lib.prefix}TAO_CosNaming${lib.suffix} ${lib.prefix}TAO_AnyTypeCode${lib.suffix} ${lib.prefix}TAO${lib.suffix} ${lib.prefix}TAO_PortableServer${lib.suffix} ${lib.prefix}ACE${lib.suffix} ${lib.prefix}log4cxx${lib.suffix} ${lib.prefix}atmibroker-idl${lib.suffix} ${lib.prefix}atmibroker-core${lib.suffix} ${lib.prefix}atmibroker-tx${lib.suffix}" />
 '>
 <!ENTITY includepath-test-dependencies '
 	&includepath-cppunit;
@@ -126,7 +126,7 @@
 	&includepath-export-atmibroker-tx;
 '>
 <!ENTITY libsets-test-dependencies '
-	<libset dir="target/dependencies" libs="cppunit expat TAO_CosNaming TAO_AnyTypeCode TAO TAO_PortableServer ACE log4cxx atmibroker-idl atmibroker-core atmibroker-tx" />
+	<libset dir="target/dependencies" libs="${lib.prefix}cppunit${lib.suffix} ${lib.prefix}expat${lib.suffix} ${lib.prefix}TAO_CosNaming${lib.suffix} ${lib.prefix}TAO_AnyTypeCode${lib.suffix} ${lib.prefix}TAO${lib.suffix} ${lib.prefix}TAO_PortableServer${lib.suffix} ${lib.prefix}ACE${lib.suffix} ${lib.prefix}log4cxx${lib.suffix} ${lib.prefix}atmibroker-idl${lib.suffix} ${lib.prefix}atmibroker-core${lib.suffix} ${lib.prefix}atmibroker-tx${lib.suffix}" />
 '>
 <!ENTITY libsets-runtime-dependencies '
 	&libsets-cppunit;
@@ -271,9 +271,10 @@
 			&libsets-test-dependencies;
 			<libset dir="target/${configuration.type}/${lib.type}" libs="${ant.project.name}" if="main.built" />
 		</cc>
+		<available file="target/testsuite.dll.manifest" property="manifest.towrap"/>
 		<antcall target="_test-compile-msvc" />
 	</target>
-	<target name="_test-compile-msvc" if="is-msvc">
+	<target name="_test-compile-msvc" if="is-msvc,manifest.towrap">
 		<exec dir="target" executable="mt">
 			<arg value="-outputresource:testsuite.dll;#2" />
 			<arg value="-manifest" />
