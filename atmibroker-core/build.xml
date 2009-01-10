@@ -190,6 +190,7 @@
 		<apply executable="${TAO_IDL}" parallel="false" failonerror="true">
 			<env key="ACE_ROOT" path="${ACE_ROOT}" />
 			<env key="LD_LIBRARY_PATH" path="${ACE_ROOT}/lib:${ACE_ROOT}/TAO/TAO_IDL" />
+			<env key="Path" path="${env.Path}:${ACE_ROOT}/lib:${ACE_ROOT}/TAO/TAO_IDL" />
 			<arg line="-o target/generated/tao_idl/ -Wb,pre_include=ace/pre.h -Wb,post_include=ace/post.h -I${ace.root}/TAO -I${ace.root}/TAO/tao -I${ace.root}/TAO/tao/orbsvcs -Isrc/main/idl -Wb,export_macro=ATMIBROKER_IDL_DLL -Wb,export_include=atmiBrokerIdlMacro.h" />
 			<fileset dir="src" casesensitive="yes">
 				<patternset id="idl.sources">
