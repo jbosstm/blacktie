@@ -24,13 +24,13 @@
 <includepath path="${LOG4CXX_ROOT}/src/main/include" />
 '>
 <!ENTITY libsets-log4cxx '
-<fileset dir="${LOG4CXX_ROOT}/target/debug/shared/" includes="${lib.prefix}log4cxx${lib.suffix}.*"/>
+<fileset dir="${LOG4CXX_ROOT}/target/debug/shared/" includes="${lib.prefix}log4cxx.*"/>
 '>
 <!ENTITY includepath-expat '
 <includepath path="${EXPAT_ROOT}/Source/lib"  if="is-msvc"/>
 '>
 <!ENTITY libsets-expat '
-<fileset dir="${EXPAT_LIB_DIR}" includes="${lib.prefix}expat${lib.suffix}.*"/>
+<fileset dir="${EXPAT_LIB_DIR}" includes="libexpat.*"/>
 '>
 <!ENTITY includepath-cppunit '
 <includepath path="${CPPUNIT_ROOT}/include"  if="is-msvc"/>
@@ -117,7 +117,7 @@
 	&includepath-export-atmibroker-xatmi;
 '>
 <!ENTITY libsets-test-dependencies '
-	<libset dir="target/dependencies" libs="${lib.prefix}expat${lib.suffix} ${lib.prefix}TAO_CosNaming${lib.suffix} ${lib.prefix}TAO_AnyTypeCode${lib.suffix} ${lib.prefix}TAO${lib.suffix} ${lib.prefix}TAO_PortableServer${lib.suffix} ${lib.prefix}ACE${lib.suffix} ${lib.prefix}log4cxx${lib.suffix} ${lib.prefix}atmibroker-idl${lib.suffix} ${lib.prefix}atmibroker-core${lib.suffix} ${lib.prefix}atmibroker-tx${lib.suffix} ${lib.prefix}atmibroker-xatmi${lib.suffix}" />
+	<libset dir="target/dependencies" libs="libexpat ${lib.prefix}TAO_CosNaming${lib.suffix} ${lib.prefix}TAO_AnyTypeCode${lib.suffix} ${lib.prefix}TAO${lib.suffix} ${lib.prefix}TAO_PortableServer${lib.suffix} ${lib.prefix}ACE${lib.suffix} ${lib.prefix}log4cxx ${lib.prefix}atmibroker-idl${lib.suffix} ${lib.prefix}atmibroker-core${lib.suffix} ${lib.prefix}atmibroker-tx${lib.suffix} ${lib.prefix}atmibroker-xatmi${lib.suffix}" />
 '>
 <!ENTITY libsets-runtime-dependencies '
 	&libsets-expat;

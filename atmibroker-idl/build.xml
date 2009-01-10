@@ -24,13 +24,13 @@
 <includepath path="${LOG4CXX_ROOT}/src/main/include" />
 '>
 <!ENTITY libsets-log4cxx '
-<fileset dir="${LOG4CXX_ROOT}/target/debug/shared/" includes="${lib.prefix}log4cxx${lib.suffix}.*"/>
+<fileset dir="${LOG4CXX_ROOT}/target/debug/shared/" includes="${lib.prefix}log4cxx.*"/>
 '>
 <!ENTITY includepath-expat '
 <includepath path="${EXPAT_ROOT}/Source/lib"  if="is-msvc"/>
 '>
 <!ENTITY libsets-expat '
-<fileset dir="${EXPAT_LIB_DIR}" includes="${lib.prefix}expat${lib.suffix}.*"/>
+<fileset dir="${EXPAT_LIB_DIR}" includes="libexpat.*"/>
 '>
 <!ENTITY includepath-cppunit '
 <includepath path="${CPPUNIT_ROOT}/include"  if="is-msvc"/>
