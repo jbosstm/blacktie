@@ -18,6 +18,9 @@
 <assembly>
 	<id>bin</id>
 	<includeBaseDirectory>false</includeBaseDirectory>
+	<formats>
+		<format>tar.gz</format>
+	</formats>
 	<moduleSets>
 		<moduleSet>
 			<includes>
@@ -93,13 +96,11 @@
 			</directory>
 			<outputDirectory>
 				examples/ejb-connector/fooapp/ejb-connector-example
-				</outputDirectory>
+			</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<excludes>
-				<exclude>../ejb-connector-example/target
-				</exclude>
-				<exclude>../ejb-connector-example/build.properties
-				</exclude>
+				<exclude>target/**</exclude>
+				<exclude>build.properties</exclude>
 			</excludes>
 		</fileSet>
 		<fileSet>
@@ -110,7 +111,7 @@
 			</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<excludes>
-				<exclude>target</exclude>
+				<exclude>target/**</exclude>
 				<exclude>build.properties</exclude>
 			</excludes>
 		</fileSet>

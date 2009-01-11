@@ -1,0 +1,134 @@
+
+	<!--
+		JBoss, Home of Professional Open Source Copyright 2008, Red Hat
+		Middleware LLC, and others contributors as indicated by the @authors
+		tag. All rights reserved. See the copyright.txt in the distribution
+		for a full listing of individual contributors. This copyrighted
+		material is made available to anyone wishing to use, modify, copy, or
+		redistribute it subject to the terms and conditions of the GNU Lesser
+		General Public License, v. 2.1. This program is distributed in the
+		hope that it will be useful, but WITHOUT A WARRANTY; without even the
+		implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+		PURPOSE. See the GNU Lesser General Public License for more details.
+		You should have received a copy of the GNU Lesser General Public
+		License, v.2.1 along with this distribution; if not, write to the Free
+		Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+		02110-1301, USA.
+	-->
+<assembly>
+	<id>project</id>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<formats>
+		<format>tar.gz</format>
+	</formats>
+	<fileSets>
+		<fileSet>
+			<directory>../atmibroker-all</directory>
+			<outputDirectory>atmibroker-all</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../atmibroker-core</directory>
+			<outputDirectory>atmibroker-core</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../atmibroker-idl</directory>
+			<outputDirectory>atmibroker-idl</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../atmibroker-tx</directory>
+			<outputDirectory>atmibroker-tx</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../atmibroker-xatmi</directory>
+			<outputDirectory>atmibroker-xatmi</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../atmibroker-xsd</directory>
+			<outputDirectory>atmibroker-xsd</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../codeGeneration</directory>
+			<outputDirectory>codeGeneration</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../ejb-connector</directory>
+			<outputDirectory>ejb-connector</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../ejb-connector-example
+			</directory>
+			<outputDirectory>ejb-connector-example
+			</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../ejb-connector-example-ear
+			</directory>
+			<outputDirectory>ejb-connector-example-ear
+			</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../jab</directory>
+			<outputDirectory>jab</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../jatmibroker-core</directory>
+			<outputDirectory>jatmibroker-core</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../scripts</directory>
+			<outputDirectory>scripts</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+	</fileSets>
+</assembly>

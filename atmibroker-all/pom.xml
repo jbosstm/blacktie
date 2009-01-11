@@ -31,6 +31,7 @@
 				<configuration>
 					<descriptors>
 						<descriptor>assembly.xml</descriptor>
+						<descriptor>src-assembly.xml</descriptor>
 					</descriptors>
 				</configuration>
 				<executions>
@@ -38,6 +39,7 @@
 						<id>make-assembly</id>
 						<phase>package</phase>
 						<goals>
+							<goal>single</goal>
 							<goal>directory</goal>
 						</goals>
 					</execution>
@@ -45,7 +47,6 @@
 			</plugin>
 		</plugins>
 	</build>
-
 	<modules>
 		<module>../atmibroker-idl</module>
 		<module>../atmibroker-core</module>
