@@ -58,6 +58,23 @@
 	</moduleSets>
 	<fileSets>
 		<fileSet>
+			<directory>../atmibroker-all/
+			</directory>
+			<outputDirectory>.</outputDirectory>
+			<includes>
+				<include>copyright.txt</include>
+				<include>JBossORG-EULA.txt</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../atmibroker-all/licence
+			</directory>
+			<outputDirectory>licence</outputDirectory>
+			<includes>
+				<include>*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
 			<directory>../codeGeneration/src/main/scripts/
 			</directory>
 			<outputDirectory>bin</outputDirectory>

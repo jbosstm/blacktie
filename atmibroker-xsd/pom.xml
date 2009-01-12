@@ -24,7 +24,7 @@
 	<build>
 		<resources>
 			<resource>
-				<directory>src/template/cpp</directory>
+				<directory>src/main/xsd</directory>
 			</resource>
 		</resources>
 	</build>

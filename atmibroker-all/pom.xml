@@ -30,8 +30,8 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
 					<descriptors>
-						<descriptor>assembly.xml</descriptor>
-						<descriptor>src-assembly.xml</descriptor>
+						<descriptor>src/main/assembly/bin.xml</descriptor>
+						<descriptor>src/main/assembly/project.xml</descriptor>
 					</descriptors>
 				</configuration>
 				<executions>
