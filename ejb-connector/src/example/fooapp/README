@@ -34,22 +34,22 @@ cd ..
 cd ejb-connector-example-ear
 mvn install
 
-2. DEPLOY THE EXAMPLE EJB CONNECTOR EAR
+3. DEPLOY THE EXAMPLE EJB CONNECTOR EAR
 While the application server is stopped:
 cd ejb-connector-example-ear
 cp target/ejb-connector-example-ear-1.0-SNAPSHOT.ear <JBOSS_HOME>/server/<configuration>/deploy/
 
-3. RUN THE REQUIRED SERVICES
+4. RUN THE REQUIRED SERVICES
 Make sure that the naming and transaction services are running, if not, run the script under
 Linux:
 	$ATMIBROKER_BIN_DIR/bin/services-scripts/start_all.sh
 Windows: 
 	%ATMIBROKER_BIN_DIR%\bin\services-scripts\start_all.bat
 
-2. RUN THE JBOSS SERVER
+5. RUN THE JBOSS SERVER
 cd into the <JBOSS_HOME>/bin folder
 run -c <configuration>
 
-4. RUN THE EJB CONNECTOR TEST CASES
+6. RUN THE EJB CONNECTOR TEST CASES
 The simplest way to do this is to run the BarServiceTestCase under ejb-connector-example/src/test/java
-The testConnectorCall and testEJBCall should work when the application server is running
+The testConnectorCall should work when the application server is running
