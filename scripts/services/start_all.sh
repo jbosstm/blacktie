@@ -15,6 +15,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA  02110-1301, USA.
 #
+. ../../setenv.sh
 
 . $JACORB_HOME/bin/ns -DOAPort=3528&
 sleep 1
