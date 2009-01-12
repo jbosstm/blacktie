@@ -56,16 +56,15 @@
 			</binaries>
 		</moduleSet>
 	</moduleSets>
+	<files>
+		<file>
+			<source>copyright.txt</source>
+		</file>
+		<file>
+			<source>JBossORG-EULA.txt</source>
+		</file>
+	</files>
 	<fileSets>
-		<fileSet>
-			<directory>../atmibroker-all/
-			</directory>
-			<outputDirectory>.</outputDirectory>
-			<includes>
-				<include>copyright.txt</include>
-				<include>JBossORG-EULA.txt</include>
-			</includes>
-		</fileSet>
 		<fileSet>
 			<directory>../atmibroker-all/licence
 			</directory>
