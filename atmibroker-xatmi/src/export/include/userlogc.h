@@ -23,7 +23,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern ATMIBROKER_DLL int userlogc(char * format, ...);
+extern ATMIBROKER_DLL int userlogc(const char * format, ...);
 #ifdef __cplusplus
 }
 #endif

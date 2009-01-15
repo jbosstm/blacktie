@@ -20,9 +20,6 @@
  */
 // copyright 2006, 2008 BreakThruIT
 
-#ifdef TAO_COMP
-#include <tao/ORB.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,11 +37,11 @@ using namespace log4cxx::helpers;
 LoggerPtr loggerAtmiBrokerLogc(Logger::getLogger("AtmiBrokerLogc"));
 
 extern "C"ATMIBROKER_DLL
-int userlogc(char * format, va_list *pargs) {
+int userlogc(const char * format, va_list *pargs) {
 	return userlog(Level::getInfo(), loggerAtmiBrokerLogc, format, pargs);
 }
 
-int userlog(const LevelPtr& level, LoggerPtr& logger, char * format, ...) {
+int userlog(const LevelPtr& level, LoggerPtr& logger, const char * format, ...) {
 	if (logger->isEnabledFor(level)) {
 		char str[2048];
 		va_list args;

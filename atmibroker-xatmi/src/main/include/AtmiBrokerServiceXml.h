@@ -25,15 +25,6 @@
 
 #include "atmiBrokerMacro.h"
 
-#ifdef TAO_COMP
-#include "tao/ORB.h"
-#elif ORBIX_COMP
-#include <omg/orb.hh>
-#endif
-#ifdef VBC_COMP
-#include <orb.h>
-#endif
-
 #include <string.h>
 
 #include "AtmiBroker_ServiceFactoryImpl.h"

@@ -20,10 +20,6 @@
  */
 // copyright 2006, 2008 BreakThruIT
 
-#ifdef TAO_COMP
-#include <tao/ORB.h>
-#include "tao/ORB_Core.h"
-#endif
 #include <stdio.h>
 #include <string.h>
 #include <iostream>
@@ -107,8 +103,6 @@ AtmiBrokerServerXml::writeXmlDescriptor(AtmiBroker::ServerInfo* serverData) {
 static void XMLCALL startElement
 (void *userData, const char *name, const char **atts)
 {
-	ServerMetadata* aServerStructPtr = (ServerMetadata*)userData;
-
 	if (strcmp(name, "SERVER xmnls") == 0)
 	{
 		userlog(Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "new server ");
@@ -228,8 +222,6 @@ static void XMLCALL endElement
 static void XMLCALL characterData
 (void *userData, const char *cdata, int len)
 {
-	ServerMetadata* aServerStructPtr = (ServerMetadata*)userData;
-
 	int i = 0;
 	int j = 0;
 	int priorLength = strlen(value);
@@ -265,7 +257,7 @@ void AtmiBrokerServerXml::parseXmlDescriptor(ServerMetadata* aServerStructPtr, c
 		/* malloc failed */
 		userlog(Level::getError(), loggerAtmiBrokerServerXml, (char*) "loadfile: Could not allocate enough memory to load file %s", aDescriptorFileName);
 	}
-	for (int i = 0; i < sizeof(buf); i++)
+	for (unsigned int i = 0; i < sizeof(buf); i++)
 		*(buf + i) = '\0';
 	//memcpy(buf,'\0',s.st_size);
 	userlog(Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "loadfile: Allocated enough memory to load file %d", s.st_size);

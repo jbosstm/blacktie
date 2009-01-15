@@ -320,9 +320,8 @@ bool TypedBufferMessage::getBooleanDef(char * name, bool val) {
 bool TypedBufferMessage::getBooleanItemDef(char * name, int itemNo, bool val) {
 	userlog(Level::getInfo(), loggerTypedBufferMessage, (char*) "TypedBufferMessage getBooleanItemDef name: %s occurence: %d", name, itemNo);
 
-	int i = 0;
 	int count = 0;
-	for (unsigned i = 0; i < typedBuffer.members.length(); i++) {
+	for (unsigned int i = 0; i < typedBuffer.members.length(); i++) {
 		if (strcmp(name, typedBuffer.members[i].name) == 0) {
 			count++;
 			if (count == itemNo) {

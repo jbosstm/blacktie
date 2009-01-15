@@ -20,10 +20,6 @@
  */
 // copyright 2006, 2008 BreakThruIT
 
-#ifdef TAO_COMP
-#include <tao/ORB.h>
-#include "tao/ORB_Core.h"
-#endif
 #include <stdio.h>
 #include <string.h>
 #include <iostream>
@@ -60,9 +56,6 @@ static char value[50];
 
 static int depth = 0;
 
-static int indexTraitArray = 0;
-static int processingTraitArray = false;
-
 static bool processingService = false;
 static bool processingMaxCache = false;
 static bool processingMinCache = false;
@@ -82,8 +75,6 @@ AtmiBrokerServiceXml::writeXmlDescriptor(AtmiBroker::ServiceInfo* serviceData) {
 static void XMLCALL startElement
 (void *userData, const char *name, const char **atts)
 {
-	AtmiBroker::ServiceInfo* aServiceStructPtr = (AtmiBroker::ServiceInfo*)userData;
-
 	if (strcmp(name, "SERVICE ") == 0)
 	{
 		userlog(Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "new service ");
@@ -142,8 +133,6 @@ static void XMLCALL endElement
 static void XMLCALL characterData
 (void *userData, const char *cdata, int len)
 {
-	AtmiBroker::ServiceInfo* aServiceStructPtr = (AtmiBroker::ServiceInfo*)userData;
-
 	int i = 0;
 	int j = 0;
 	int priorLength = strlen(value);
@@ -183,7 +172,7 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(AtmiBroker::ServiceInfo* aServiceS
 		/* malloc failed */
 		userlog(Level::getError(), loggerAtmiBrokerServiceXml, (char*) "loadfile: Could not allocate enough memory to load file %s", aDescriptorFileName);
 	}
-	for (int i = 0; i < sizeof(buf); i++)
+	for (unsigned int i = 0; i < sizeof(buf); i++)
 		*(buf + i) = '\0';
 	//memcpy(buf,'\0',s.st_size);
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "loadfile: Allocated enough memory to load file %d", s.st_size);

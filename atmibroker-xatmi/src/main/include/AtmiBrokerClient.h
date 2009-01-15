@@ -113,4 +113,6 @@ extern ATMIBROKER_DLL AtmiBrokerPoaFac * clientPoaFactory;
 extern ATMIBROKER_DLL AtmiBrokerClient * ptrAtmiBrokerClient;
 extern ATMIBROKER_DLL CORBA::PolicyList *policyList;
 
+extern ATMIBROKER_DLL AtmiBroker::ClientInfo clientInfo;
+
 #endif

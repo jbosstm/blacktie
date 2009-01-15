@@ -15,9 +15,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifdef TAO_COMP
-#include <tao/ORB.h>
-#endif
 
 #include "AtmiBrokerServer.h"
 #include "AtmiBrokerServerControl.h"

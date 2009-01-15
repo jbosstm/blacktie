@@ -24,5 +24,5 @@ using namespace log4cxx;
 using namespace log4cxx::helpers;
 
 //extern ATMIBROKER_DLL int userlog(char * format, ...);
-extern ATMIBROKER_DLL int userlog(const LevelPtr& level, LoggerPtr& logger, char * format, ...);
+extern ATMIBROKER_DLL int userlog(const LevelPtr& level, LoggerPtr& logger, const char * format, ...);
 #endif

@@ -23,14 +23,6 @@
 // IT_ServantBase -- base class to override PortableServer::ServantBase
 // functions for all our servants.
 //
-#ifdef TAO_COMP
-#include <tao/ORB.h>
-#elif ORBIX_COMP
-#include <omg/orb.hh>
-#endif
-#ifdef VBC_COMP
-#include <orb.h>
-#endif
 #include "it_servant_base_overrides.h"
 
 IT_ServantBaseOverrides::IT_ServantBaseOverrides(PortableServer::POA_ptr the_poa) :

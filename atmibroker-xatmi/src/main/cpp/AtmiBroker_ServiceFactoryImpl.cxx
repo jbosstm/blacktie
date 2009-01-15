@@ -73,7 +73,7 @@ LoggerPtr loggerAtmiBroker_ServiceFactoryImpl(Logger::getLogger("AtmiBroker_Serv
 AtmiBroker_ServiceFactoryImpl::AtmiBroker_ServiceFactoryImpl(PortableServer::POA_ptr the_poa, char *svcName, char *svcPoaName, char *svcDescriptror
 
 ) :
-	IT_ServantBaseOverrides(the_poa), factoryPoaPtr(the_poa), serviceName(svcName), servicePoaName(svcPoaName), descriptorFileName(svcDescriptror) {
+	IT_ServantBaseOverrides(the_poa), serviceName(svcName), servicePoaName(svcPoaName), descriptorFileName(svcDescriptror), factoryPoaPtr(the_poa) {
 	// Intentionally empty.
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "constructor() ");
 

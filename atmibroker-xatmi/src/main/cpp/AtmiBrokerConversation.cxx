@@ -120,8 +120,6 @@ int AtmiBrokerConversation::tpcall(char * svc, char* idata, long ilen, char ** o
 		return status;
 
 	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "object id is %s", id);
-	char * aStr = client_orb->object_to_string(aCorbaService);
-
 	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "validating connection ");
 #ifdef TAO_COMP
 	CORBA::Boolean aBoolean = aCorbaService->_validate_connection(policyList);

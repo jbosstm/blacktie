@@ -72,7 +72,7 @@ AtmiBroker_ServiceImpl::_create(AtmiBroker_ServiceFactoryImpl* aParent, Portable
 // require arguments, even those that we inherit indirectly.
 //
 AtmiBroker_ServiceImpl::AtmiBroker_ServiceImpl(AtmiBroker_ServiceFactoryImpl* aParent, PortableServer::POA_ptr the_poa, int aIndex, char *serviceName, void(*func)(TPSVCINFO *)) :
-	IT_ServantBaseOverrides(the_poa), parent(aParent), callbackRef(NULL), inConversation(false), inUse(false), conversationCount(0), index(aIndex), returnStatus(-1), m_serviceName(serviceName), m_func(func) {
+	IT_ServantBaseOverrides(the_poa), parent(aParent), returnStatus(-1), inConversation(false), inUse(false), callbackRef(NULL), conversationCount(0), index(aIndex), m_serviceName(serviceName), m_func(func) {
 	// Initialise instance variables used for attributes
 	//
 	//TJJ key = getKey();
@@ -176,9 +176,9 @@ void AtmiBroker_ServiceImpl::service_request_async(const AtmiBroker::octetSeq& i
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_async()");
 
 	AtmiBroker::ClientInfo client_info;
-	clientInfo.client_id = clientId;
+	client_info.client_id = clientId;
 
-	char * callback_ior = ptrServer->get_client_callback(clientInfo);
+	char * callback_ior = ptrServer->get_client_callback(client_info);
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "client callback_ior for id %d is %s", clientId, callback_ior);
 
 	if (callback_ior != NULL && strcmp(callback_ior, "") != 0) {
@@ -212,9 +212,9 @@ void AtmiBroker_ServiceImpl::service_typed_buffer_request_async(const AtmiBroker
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_typed_buffer_request_async()");
 
 	AtmiBroker::ClientInfo client_info;
-	clientInfo.client_id = clientId;
+	client_info.client_id = clientId;
 
-	char * callback_ior = ptrServer->get_client_callback(clientInfo);
+	char * callback_ior = ptrServer->get_client_callback(client_info);
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "client callback_ior for id %d is %s", clientId, callback_ior);
 
 	if (callback_ior != NULL && strcmp(callback_ior, "") != 0) {

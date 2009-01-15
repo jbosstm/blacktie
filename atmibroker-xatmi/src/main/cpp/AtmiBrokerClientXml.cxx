@@ -20,10 +20,6 @@
  */
 // copyright 2006, 2008 BreakThruIT
 
-#ifdef TAO_COMP
-#include <tao/ORB.h>
-#include "tao/ORB_Core.h"
-#endif
 #include <stdio.h>
 #include <string.h>
 #include <iostream>
@@ -110,8 +106,6 @@ AtmiBrokerClientXml::writeXmlDescriptor(std::vector<ClientServerInfo*>* serverDa
 static void XMLCALL startElement
 (void *userData, const char *name, const char **atts)
 {
-	std::vector<ClientServerInfo*>* aClientServerVectorPtr = (std::vector<ClientServerInfo*>*)userData;
-
 	if (strcmp(name, "SERVER xmnls") == 0)
 	{
 		userlog(Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "new server ");
@@ -228,8 +222,6 @@ static void XMLCALL endElement
 static void XMLCALL characterData
 (void *userData, const char *cdata, int len)
 {
-	std::vector<ClientServerInfo*>* aClientServerVectorPtr = (std::vector<ClientServerInfo*>*)userData;
-
 	int i = 0;
 	int j = 0;
 	int priorLength = strlen(value);
@@ -265,7 +257,7 @@ void AtmiBrokerClientXml::parseXmlDescriptor(std::vector<ClientServerInfo*>* aCl
 		/* malloc failed */
 		userlog(Level::getError(), loggerAtmiBrokerClientXml, (char*) "loadfile: Could not allocate enough memory to load file %s", aDescriptorFileName);
 	}
-	for (int i = 0; i < sizeof(buf); i++)
+	for (unsigned int i = 0; i < sizeof(buf); i++)
 		*(buf + i) = '\0';
 	//memcpy(buf,'\0',s.st_size);
 	userlog(Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "loadfile: Allocated enough memory to load file %d", s.st_size);

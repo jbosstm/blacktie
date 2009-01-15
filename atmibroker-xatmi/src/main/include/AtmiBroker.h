@@ -29,16 +29,13 @@
 
 #ifdef TAO_COMP
 #include <tao/ORB.h>
-#include <orbsvcs/CosNamingS.h>
-#include <tao/PortableServer/PortableServerC.h>
+#include <tao/PortableServer/PortableServer.h>
 #elif ORBIX_COMP
 #include <omg/orb.hh>
-#include <omg/CosNaming.hh>
 #include <omg/PortableServer.hh>
 #endif
 #ifdef VBC_COMP
 #include <orb.h>
-#include <CosNaming_c.hh>
 #include <PortableServerExt_c.hh>
 #endif
 
@@ -55,8 +52,6 @@ extern bool checkForInitialized();
 
 extern ATMIBROKER_DLL int _tperrno;
 extern ATMIBROKER_DLL long _tpurcode;
-
-extern ATMIBROKER_DLL AtmiBroker::ClientInfo clientInfo;
 
 // Constants
 //TODO REPLACED WITH XATMI EQUIVALENT extern ATMIBROKER_DLL int						SERVICE_ID_SIZE;

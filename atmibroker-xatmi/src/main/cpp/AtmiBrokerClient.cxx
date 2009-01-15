@@ -20,11 +20,6 @@
  */
 // copyright 2006, 2008 BreakThruIT
 
-#ifdef TAO_COMP
-#include <tao/ORB.h>
-#include "tao/ORB_Core.h"
-#endif
-
 #include <iostream>
 #include <stdio.h>
 
@@ -41,15 +36,13 @@
 using namespace log4cxx;
 using namespace log4cxx::helpers;
 LoggerPtr loggerAtmiBrokerClient(Logger::getLogger("AtmiBrokerClient"));
+
+// Corba Callback
+AtmiBroker::ClientInfo clientInfo;
+
 AtmiBrokerClient::AtmiBrokerClient(CORBA::Boolean createCallbackInd, CORBA::Boolean createChannels, CORBA::Boolean createSuppliers, CORBA::Boolean createConsumers) {
 
 	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "constructor ");
-
-	ClientServerInfo* aClientServerInfo = NULL;
-
-	//int size = (sizeof(char *) * MAX_SERVICES);
-	//serviceNameArray = (char**)malloc(size);
-	//memset(serviceNameArray, '\0', size);
 
 	char *clientFileName = (char*) malloc(sizeof(char) * XATMI_SERVICE_NAME_LENGTH);
 	strcpy(clientFileName, "CLIENT.xml");

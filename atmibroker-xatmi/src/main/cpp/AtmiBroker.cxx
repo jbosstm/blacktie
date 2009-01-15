@@ -20,9 +20,6 @@
  */
 // copyright 2006, 2008 BreakThruIT
 
-#ifdef TAO_COMP
-#include <tao/ORB.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -87,9 +84,6 @@ void (*callbackTypedBufferFunctionPtr)(const AtmiBroker::TypedBuffer& idata, COR
 
 // Corba Client
 AtmiBrokerClient * ptrAtmiBrokerClient;
-
-// Corba Callback
-AtmiBroker::ClientInfo clientInfo;
 
 // Client Policies
 CORBA::PolicyList clientPolicies;
