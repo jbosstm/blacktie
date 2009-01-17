@@ -22,14 +22,11 @@
 package org.jboss.blacktie.jatmibroker.core.proxy;
 
 import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
-
-import AtmiBroker.TypedBuffer;
+import org.omg.CosTransactions.Control;
 
 public interface AtmiBrokerServiceManager {
 
-	short service_request_explicit(byte[] idata, int ilen, AtmiBroker.octetSeqHolder odata, org.omg.CORBA.IntHolder olen, int flags, Object control) throws JAtmiBrokerException;
-
-	short service_typed_buffer_request_explicit(TypedBuffer idata, int ilen, AtmiBroker.TypedBufferHolder odata, org.omg.CORBA.IntHolder olen, int flags, Object control) throws JAtmiBrokerException;
+	void send_data(String ior, boolean inConversation, byte[] idata, int ilen, int flags, Control control) throws JAtmiBrokerException;
 
 	public void close();
 }

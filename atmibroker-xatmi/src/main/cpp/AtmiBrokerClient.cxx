@@ -147,8 +147,13 @@ void AtmiBrokerClient::createAndRegisterCallback(ClientServerInfo * aClientServe
 	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "activated poa - started processing requests ");
 }
 
-void AtmiBrokerClient::getService(char * serviceName, CORBA::Boolean aConversation, char ** idPtr, AtmiBroker::Service_var * refPtr) {
-	get_service(getClientId(serviceName), get_service_factory(serviceName), aConversation, idPtr, refPtr);
+AtmiBroker::ClientCallback_var AtmiBrokerClient::getClientCallback() {
+	return clientCallback;
+}
+
+
+void AtmiBrokerClient::getService(char * serviceName, char ** idPtr, AtmiBroker::Service_var * refPtr) {
+	get_service(getClientId(serviceName), get_service_factory(serviceName), idPtr, refPtr);
 }
 
 void AtmiBrokerClient::findService(char * serviceAndIndex, AtmiBroker::Service_var * refPtr) {

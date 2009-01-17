@@ -73,7 +73,7 @@ public:
 
 	void getServer(ClientServerInfo * aClientServerInfo, char * serverName);
 
-	void getService(char * serviceName, CORBA::Boolean conversation, char ** id, AtmiBroker::Service_var* refPtr);
+	void getService(char * serviceName, char ** id, AtmiBroker::Service_var* refPtr);
 
 	void findService(char * serviceAndIndex, AtmiBroker::Service_var* refPtr);
 
@@ -89,6 +89,8 @@ public:
 
 	long getQueueId(char* aQueueName);
 
+	AtmiBroker::ClientCallback_var getClientCallback();
+
 protected:
 
 	std::vector<char *> serviceNameArray;
@@ -96,11 +98,6 @@ protected:
 	AtmiBroker::ClientCallback_var clientCallback;
 	CORBA::String_var clientCallbackIOR;
 };
-
-// FOR TPACALL
-extern ATMIBROKER_DLL void (*callbackFunctionPtr)(const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, const char * id);
-// FOR TPACALL
-extern ATMIBROKER_DLL void (*callbackTypedBufferFunctionPtr)(const AtmiBroker::TypedBuffer& idata, CORBA::Long ilen, CORBA::Long flags, const char * id);
 
 extern ATMIBROKER_DLL CORBA::ORB_var client_orb;
 extern ATMIBROKER_DLL PortableServer::POA_var client_root_poa;

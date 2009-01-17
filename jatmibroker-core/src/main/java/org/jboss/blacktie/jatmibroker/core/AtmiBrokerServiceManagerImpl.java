@@ -28,11 +28,11 @@ import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServiceManager;
 import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
+import org.omg.CosTransactions.Control;
 import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 
 import AtmiBroker.ServiceManager;
 import AtmiBroker.ServiceManagerHelper;
-import AtmiBroker.TypedBuffer;
 
 public class AtmiBrokerServiceManagerImpl implements BTServiceManagerAdministration, AtmiBrokerServiceManager {
 	private static final Logger log = LogManager.getLogger(AtmiBrokerServiceManagerImpl.class);
@@ -71,42 +71,10 @@ public class AtmiBrokerServiceManagerImpl implements BTServiceManagerAdministrat
 		return serviceManager.serviceName();
 	}
 
-	public short service_request_explicit(byte[] idata, int ilen, AtmiBroker.octetSeqHolder odata, org.omg.CORBA.IntHolder olen, int flags, Object control) throws JAtmiBrokerException {
-		org.omg.CORBA.StringHolder cid = new org.omg.CORBA.StringHolder();
-		String ior = serviceFactoryImpl.get_service_id(false, cid);
-		log.debug("ServiceManagerProxy's service_request ior: " + ior + " idata: " + idata + " ilen: " + ilen + " flags: " + flags + " control_ior: " + control);
-		return serviceManager.service_request_explicit(ior, idata, ilen, odata, olen, flags, (org.omg.CosTransactions.Control) control);
-	}
+	public void send_data(String ior, boolean inConversation, byte[] idata, int ilen, int flags, Control control) throws JAtmiBrokerException {
+		log.debug("ServiceManagerProxy's service_request_async ior: " + ior + " idata: " + idata + " ilen: " + ilen + " inConversation: " + inConversation + " flags: " + flags);
 
-	public short service_typed_buffer_request_explicit(TypedBuffer idata, int ilen, AtmiBroker.TypedBufferHolder odata, org.omg.CORBA.IntHolder olen, int flags, Object control) throws JAtmiBrokerException {
-		org.omg.CORBA.StringHolder cid = new org.omg.CORBA.StringHolder();
-		String ior = serviceFactoryImpl.get_service_id(false, cid);
-		log.debug("ServiceManagerProxy's service_typed_buffer_request ior: " + ior + " idata: " + idata + " ilen: " + ilen + " flags: " + flags + " control_ior: " + control);
-		return serviceManager.service_typed_buffer_request_explicit(ior, idata, ilen, odata, olen, flags, (org.omg.CosTransactions.Control) control);
-	}
-
-	public void service_request_async(String ior, byte[] idata, int ilen, int flags) throws Exception {
-		log.debug("ServiceManagerProxy's service_request_async ior: " + ior + " idata: " + idata + " ilen: " + ilen + " flags: " + flags);
-
-		serviceManager.service_request_async(ior, idata, ilen, flags);
-	}
-
-	public void service_typed_buffer_request_async(String ior, TypedBuffer idata, int ilen, int flags) throws Exception {
-		log.debug("ServiceManagerProxy's service_typed_buffer_request_async ior: " + ior + " idata: " + idata + " ilen: " + ilen + " flags: " + flags);
-
-		serviceManager.service_typed_buffer_request_async(ior, idata, ilen, flags);
-	}
-
-	public short service_response(String ior, AtmiBroker.octetSeqHolder odata, org.omg.CORBA.IntHolder olen, int flags, org.omg.CORBA.IntHolder event) throws Exception {
-		log.debug("ServiceManagerProxy's service_response ior: " + ior);
-
-		return serviceManager.service_response(ior, odata, olen, flags, event);
-	}
-
-	public short service_typed_buffer_response(String ior, AtmiBroker.TypedBufferHolder odata, org.omg.CORBA.IntHolder olen, int flags, org.omg.CORBA.IntHolder event) throws Exception {
-		log.debug("ServiceManagerProxy's service_typed_buffer_response ior: " + ior);
-
-		return serviceManager.service_typed_buffer_response(ior, odata, olen, flags, event);
+		serviceManager.send_data(ior, inConversation, idata, ilen, flags, control);
 	}
 
 	public void close() {

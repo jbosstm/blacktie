@@ -22,6 +22,7 @@
 
 #ifdef TAO_COMP
 #include "tao/ORB.h"
+#include "AtmiBrokerC.h"
 #include "CosTransactionsS.h"
 #elif ORBIX_COMP
 #include <omg/CosTransactions.hh>
@@ -49,6 +50,7 @@
 #include "AtmiBrokerPoaFac.h"
 #include "userlog.h"
 #include "xatmi.h"
+#include "tx.h"
 
 #include "log4cxx/logger.h"
 using namespace log4cxx;
@@ -82,220 +84,84 @@ AtmiBrokerConversation::~AtmiBrokerConversation() {
 
 int AtmiBrokerConversation::tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen, long flags) {
 	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "tpcall - svc: %s idata: %s ilen: %d flags: %d", svc, idata, ilen, flags);
-
-	AtmiBroker::octetSeq * a_idata = NULL;
-	CORBA::Long a_ilen = ilen;
-	AtmiBroker::octetSeq * a_odata = NULL;
-	AtmiBroker::TypedBuffer * a_oTypedBufferdata;
-	CORBA::Long a_olen = 0;
-	CORBA::Long a_flags = flags;
-	CORBA::Short a_result = 0;
-
-	AtmiBroker::Service_var aCorbaService;
-
-	char type[25];
-	strcpy(type, "");
-	char subtype[25];
-	strcpy(subtype, "");
-	long atype = AtmiBrokerMem::get_instance()->tptypes(idata, type, subtype);
-	if (atype == -1L) {
-		userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "MEMORY NOT ALLOCATED THRU TPALLOC!!!");
-		return -1;
+	int cd = tpacall(svc, idata, ilen, flags);
+	if (cd != -1) {
+		return tpgetrply(&cd, odata, olen, flags);
 	} else {
-		userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "type of memory: '%s'  subtype: '%s'", type, subtype);
-	}
-
-	int status = -1;
-	char *id = (char*) malloc(sizeof(char*) * XATMI_SERVICE_NAME_LENGTH);
-
-	try {
-		mAtmiBrokerClient->getService(svc, false, &id, &aCorbaService);
-	} catch (CORBA::Exception &ex) {
-		userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "tpcall Could not lookup service '%s' %s", svc, ex._name());
-		tperrno = TPENOENT;
 		return -1;
 	}
-
-	if (CORBA::is_nil(aCorbaService))
-		return status;
-
-	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "object id is %s", id);
-	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "validating connection ");
-#ifdef TAO_COMP
-	CORBA::Boolean aBoolean = aCorbaService->_validate_connection(policyList);
-#else
-	//#elif ORBIX_COMP
-	CORBA::Boolean aBoolean = aCorbaService->_validate_connection(*policyList);
-#endif
-	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "validated connection %d", aBoolean);
-
-	try {
-		// execute 'tpcall'
-
-
-		CurrentImpl* currentImpl = AtmiBrokerOTS::get_instance()->getCurrentImpl();
-		CosTransactions::Control_ptr aControlPtr = NULL;
-		if (currentImpl == NULL) {
-			aControlPtr = CosTransactions::Control::_nil();
-		} else {
-			aControlPtr = currentImpl->get_control();
-		}
-		if (strcmp(type, TYPE1) == 0)
-			a_result = aCorbaService->service_typed_buffer_request_explicit((AtmiBroker::TypedBuffer&) *idata, a_ilen, a_oTypedBufferdata, a_olen, a_flags, aControlPtr);
-		else {
-			a_idata = new AtmiBroker::octetSeq(a_ilen, a_ilen, (unsigned char *) idata, true);
-			a_result = aCorbaService->service_request_explicit(*a_idata, a_ilen, a_odata, a_olen, a_flags, aControlPtr);
-		}
-		status = a_result;
-
-		if (a_odata) {
-			// TODO set the error code when there is no output
-			// populated odata and olen
-			*odata = (char*) a_odata->get_buffer();
-		} else {
-			tperrno = TPESVCERR;
-			return -1;
-		}
-
-	} catch (const CORBA::SystemException &ex) {
-		userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "aCorbaService->service_request(): call failed. %s", ex._name());
-	}
-	free(id);
-	return status;
 }
 
 int AtmiBrokerConversation::tpacall(char * svc, char* idata, long ilen, long flags) {
 	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "tpacall - svc: %s idata: %s ilen: %d flags: %d", svc, idata, ilen, flags);
-
-	AtmiBroker::octetSeq * a_idata;
-	CORBA::Long a_ilen = ilen;
-
-	AtmiBroker::Service_var aCorbaService;
-
-	char type[25];
-	strcpy(type, "");
-	char subtype[25];
-	strcpy(subtype, "");
-	long atype = AtmiBrokerMem::get_instance()->tptypes(idata, type, subtype);
-	if (atype == -1L) {
-		userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "MEMORY NOT ALLOCATED THRU TPALLOC!!!");
-		return -1;
-	} else {
-		userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "type of memory: '%s'  subtype: '%s'", type, subtype);
-	}
-
-	int status = -1;
-	char *id = (char*) malloc(sizeof(char*) * XATMI_SERVICE_NAME_LENGTH);
-
-	//CORBA::Boolean 	conversation = false;  	// false uses Callback
-	CORBA::Boolean conversation = true; // true use tpgetrply
-
-	mAtmiBrokerClient->getService(svc, conversation, &id, &aCorbaService);
-	if (CORBA::is_nil(aCorbaService))
-		return status;
-
-	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "object id is %s", id);
-
-	int idInt = mAtmiBrokerClient->convertIdToInt(id);
-	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "object int id is %d", idInt);
-
-	//userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "validating connection ");
-	//CORBA::Boolean aBoolean = aCorbaService->_validate_connection(policyList);
-	//userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "validated connection %d" aBoolean);
-
-	try {
-		// execute 'tpacall'
-		if (strcmp(type, TYPE1) == 0)
-			aCorbaService->service_typed_buffer_request_async((AtmiBroker::TypedBuffer&) *idata, a_ilen, flags);
-		else {
-
-			a_idata = new AtmiBroker::octetSeq(a_ilen, a_ilen, (unsigned char *) idata, true);
-			aCorbaService->service_request_async(*a_idata, a_ilen, flags);
+	int cd = tpconnect(svc, idata, ilen, flags);
+	if (cd != -1) {
+		if (TPNOREPLY & flags) {
+			end(cd);
+			return 0;
 		}
-	} catch (const CORBA::SystemException &ex) {
-		userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "aCorbaService->service_request_async(): call failed. %s", ex._name());
+		return cd;
+	} else {
+		return -1;
 	}
-	free(id);
-	return idInt;
 }
 
 int AtmiBrokerConversation::tpconnect(char * svc, char* idata, long ilen, long flags) {
 	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "tpconnect - svc: %s idata: %s ilen: %d flags: %d", svc, idata, ilen, flags);
 
-	AtmiBroker::octetSeq * a_idata;
-	CORBA::Long a_ilen = ilen;
-	AtmiBroker::octetSeq * a_odata;
-	AtmiBroker::TypedBuffer * a_oTypedBufferdata;
-	CORBA::Long a_olen = 0;
-	CORBA::Long a_flags = flags;
-	CORBA::Short a_result;
+	tperrno = 0;
+	int status = 0;
 
-	AtmiBroker::Service_var aCorbaService;
-
-	char type[25];
-	strcpy(type, "");
-	char subtype[25];
-	strcpy(subtype, "");
-	long atype = AtmiBrokerMem::get_instance()->tptypes(idata, type, subtype);
-	if (atype == -1L) {
-		userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "MEMORY NOT ALLOCATED THRU TPALLOC!!!");
-		return -1;
-	} else {
-		userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "type of memory: '%s'  subtype: '%s'", type, subtype);
-	}
-
-	int status = -1;
 	char *id = (char*) malloc(sizeof(char*) * XATMI_SERVICE_NAME_LENGTH);
-
-	mAtmiBrokerClient->getService(svc, true, &id, &aCorbaService);
-	if (CORBA::is_nil(aCorbaService))
-		return status;
-
-	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "object id is %s", id);
-
-	int idInt = mAtmiBrokerClient->convertIdToInt(id);
-	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "object int id is %d", idInt);
-
-	//userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "validating connection ");
-	//CORBA::Boolean aBoolean = aCorbaService->_validate_connection(policyList);
-	//userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "validated connection %d" aBoolean);
-
-	try {
-		// execute 'tpconnect'
-
-		CurrentImpl * currentImpl = AtmiBrokerOTS::get_instance()->getCurrentImpl();
-		CosTransactions::Control_ptr aControlPtr = NULL;
-		if (currentImpl == NULL) {
-			aControlPtr = CosTransactions::Control::_nil();
-		} else {
-			aControlPtr = currentImpl->get_control();
-		}
-		if (strcmp(type, TYPE1) == 0)
-			a_result = aCorbaService->service_typed_buffer_request_explicit((AtmiBroker::TypedBuffer&) *idata, a_ilen, a_oTypedBufferdata, a_olen, a_flags, aControlPtr);
-		else {
-			a_idata = new AtmiBroker::octetSeq(a_ilen, a_ilen, (unsigned char *) idata, true);
-			a_result = aCorbaService->service_request_explicit(*a_idata, a_ilen, a_odata, a_olen, a_flags, aControlPtr);
-		}
-		status = a_result;
-	} catch (const CORBA::SystemException &ex) {
-		userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "aCorbaService->service_request(): call failed. %s", ex._name());
+	AtmiBroker::Service_var aCorbaService;
+	mAtmiBrokerClient->getService(svc, &id, &aCorbaService);
+	if (CORBA::is_nil(aCorbaService)) {
+		tperrno = TPENOENT;
+		status = -1;
+	} else {
+		userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "object id is %s", id);
+		long revent = 0;
+		status = send(aCorbaService, idata, ilen, false, flags, &revent);
 	}
 	free(id);
-	return idInt;
+	return status;
 }
 
 int AtmiBrokerConversation::tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "tpsend - id: %d idata: %s ilen: %d flags: %d", id, idata, ilen, flags);
 
-	AtmiBroker::octetSeq * a_idata;
-	CORBA::Long a_ilen = ilen;
-	AtmiBroker::octetSeq * a_odata;
-	AtmiBroker::TypedBuffer * a_oTypedBufferdata;
-	CORBA::Long a_olen = 0;
-	CORBA::Long a_flags = flags;
-	CORBA::Short a_result;
+	tperrno = 0;
+	int status = 0;
 
-	AtmiBroker::Service_var aCorbaService;
+	// validate flags
+	if (TPNOTRAN & flags) {
+		tperrno = TPEINVAL;
+		status = -1;
+	} else {
+		char * idStr = mAtmiBrokerClient->convertIdToString(id);
+		if (idStr == NULL) {
+			tperrno = TPEBADDESC;
+			status = -1;
+		} else {
+			userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "object string id is %s", idStr);
+			AtmiBroker::Service_var aCorbaService;
+			mAtmiBrokerClient->findService(idStr, &aCorbaService);
+			if (CORBA::is_nil(aCorbaService)) {
+				tperrno = TPEBADDESC;
+				status = -1;
+			} else {
+				status = send(aCorbaService, idata, ilen, true, flags, revent);
+			}
+		}
+	}
+	return status;
+}
+
+int AtmiBrokerConversation::send(AtmiBroker::Service_var aCorbaService, char* idata, long ilen, bool conversation, long flags, long *revent) {
+	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "send - idata: %s ilen: %d flags: %d revent: %d", idata, ilen, flags, revent);
+
+	tperrno = 0;
+	int status = 0;
 
 	char type[25];
 	strcpy(type, "");
@@ -304,65 +170,47 @@ int AtmiBrokerConversation::tpsend(int id, char* idata, long ilen, long flags, l
 	long atype = AtmiBrokerMem::get_instance()->tptypes(idata, type, subtype);
 	if (atype == -1L) {
 		userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "MEMORY NOT ALLOCATED THRU TPALLOC!!!");
-		return -1;
+		tperrno = TPEITYPE; // TODO THE SPEC DOES NOT SAY THIS IS NECCESARY FOR TPSEND...
+		status = -1;
 	} else {
 		userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "type of memory: '%s'  subtype: '%s'", type, subtype);
-	}
+		try {
+			CosTransactions::Control_ptr aControlPtr = CosTransactions::Control::_nil();
+			if (TPNOTRAN & flags) {
+				CurrentImpl* currentImpl = AtmiBrokerOTS::get_instance()->getCurrentImpl();
+				if (currentImpl != NULL) {
+					aControlPtr = currentImpl->get_control();
+				}
+			}
 
-	int status = -1;
-
-	char * idStr = mAtmiBrokerClient->convertIdToString(id);
-	if (idStr == NULL) {
-		// TODO
-		return -1;
-	}
-
-	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "object string id is %s", idStr);
-
-	mAtmiBrokerClient->findService(idStr, &aCorbaService);
-	if (CORBA::is_nil(aCorbaService))
-		return status;
-
-	//userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "validating connection ");
-	//CORBA::Boolean aBoolean = aCorbaService->_validate_connection(policyList);
-	//userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "validated connection %d" aBoolean);
-
-	try {
-		// execute 'tpsend'
-
-		CurrentImpl * currentImpl = AtmiBrokerOTS::get_instance()->getCurrentImpl();
-		CosTransactions::Control_ptr aControlPtr = NULL;
-		if (currentImpl == NULL) {
-			aControlPtr = CosTransactions::Control::_nil();
-		} else {
-			aControlPtr = currentImpl->get_control();
+			CORBA::Long a_ilen = ilen;
+			// TODO TYPED BUFFER (AtmiBroker::TypedBuffer&) *idata for a_idata
+			AtmiBroker::octetSeq * a_idata = new AtmiBroker::octetSeq(a_ilen, a_ilen, (unsigned char *) idata, true);
+			aCorbaService->send_data(conversation, *a_idata, a_ilen, flags, aControlPtr);
+		} catch (const CORBA::SystemException &ex) {
+			userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "aCorbaService->send_data(): call failed. %s", ex._name());
+			tperrno = TPESYSTEM;
+			status = -1;
 		}
-		if (strcmp(type, TYPE1) == 0)
-			a_result = aCorbaService->service_typed_buffer_request_explicit((AtmiBroker::TypedBuffer&) *idata, a_ilen, a_oTypedBufferdata, a_olen, a_flags, aControlPtr);
-		else {
-			a_idata = new AtmiBroker::octetSeq(a_ilen, a_ilen, (unsigned char *) idata, true);
-			a_result = aCorbaService->service_request_explicit(*a_idata, a_ilen, a_odata, a_olen, a_flags, aControlPtr);
-		}
-		status = a_result;
-
-		if (a_odata) {
-			// populated odata and olen
-			char * odata = (char*) a_odata->get_buffer();
-			userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "odata %s", odata);
-		}
-		//TODO IS THIS AN ERROR CONDITION?
-	} catch (const CORBA::SystemException &ex) {
-		userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "aCorbaService->service_request(): call failed. %s", ex._name());
 	}
-	free(idStr);
+	return status;
+}
+
+int AtmiBrokerConversation::tpgetrply(int * id, char ** odata, long *olen, long flags) {
+	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "tpgetrply - id: %d odata: %s olen: %p flags: %d", *id, *odata, olen, flags);
+	long events;
+	int status = tprecv(*id, odata, olen, flags, &events);
+	tpdiscon(*id);
 	return status;
 }
 
 int AtmiBrokerConversation::tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "tprecv - id: %d odata: %s olen: %p flags: %d", id, *odata, olen, flags);
 
+	tperrno = 0;
+	int status = 0;
+
 	AtmiBroker::octetSeq * a_odata;
-	AtmiBroker::TypedBuffer * a_oTypedBufferData;
 	CORBA::Long a_olen = 0;
 	CORBA::Long a_flags = flags;
 	CORBA::Long a_oevent;
@@ -370,111 +218,81 @@ int AtmiBrokerConversation::tprecv(int id, char ** odata, long *olen, long flags
 
 	AtmiBroker::Service_var aCorbaService;
 
-	int status = -1;
-
 	char * idStr = mAtmiBrokerClient->convertIdToString(id);
 	if (idStr == NULL) {
-		// TODO
-		return -1;
-	}
+		tperrno = TPEBADDESC;
+		status = -1;
+	} else {
+		userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "object string id is %s", idStr);
 
-	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "object string id is %s", idStr);
-
-	mAtmiBrokerClient->findService(idStr, &aCorbaService);
-	if (CORBA::is_nil(aCorbaService))
-		return status;
-
-	//userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "validating connection ");
-	//CORBA::Boolean aBoolean = aCorbaService->_validate_connection(policyList);
-	//userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "validated connection %d" aBoolean);
-
-	try {
-		// execute 'tprecv'
-
-		a_result = aCorbaService->service_response(a_odata, a_olen, a_flags, a_oevent);
+		AtmiBroker::ClientCallback_var callback = mAtmiBrokerClient->getClientCallback();
+		// TODO CANNOT CHECK THE TYPE OF THE REFERENCE
+		a_result = callback->dequeue_data(a_odata, a_olen, a_flags, a_oevent);
 		status = a_result;
 
 		if (status != -1) {
+			// TODO Handle TPNOCHANGE
 			// populated odata and olen
 			*odata = (char*) a_odata->get_buffer();
 			*olen = a_olen;
 			*event = a_oevent;
+		} else {
+			// TODO SET TPERRNO
 		}
-
-	} catch (const CORBA::SystemException &ex) {
-		userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "aCorbaService->service_response(): call failed. %s", ex._name());
-
-		// TODO WHY IS THIS DONE?
-		a_result = aCorbaService->service_typed_buffer_response(a_oTypedBufferData, a_olen, a_flags, a_oevent);
-		status = a_result;
-
-		// populated odata and olen
-		*odata = (char*) a_odata->get_buffer();
-		*olen = a_olen;
-		*event = a_oevent;
-
 	}
 	free(idStr);
-	return status;
-}
-
-/*
- int
- tpgetrply (int *idPtr, char ** odata, long *olen, long flags)
- {
- userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "tpgetrply - id: %d odata: %s olen: %p flags: %d", *idPtr, *odata, olen, flags);
-
- long events;
- int status =  tprecv(*idPtr, odata, olen, flags, &events);
- tpdiscon(*idPtr);
- return status;
- }
- */
-
-int AtmiBrokerConversation::tpdiscon(int id) {
-	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "tpdiscon - id: %d", id);
-
-	AtmiBroker::ServiceFactory_var aCorbaServiceFactory;
-
-	char index[5];
-
-	char *serviceName = (char*) malloc(sizeof(char) * XATMI_SERVICE_NAME_LENGTH);
-
-	int status = -1;
-
-	char * idStr = mAtmiBrokerClient->convertIdToString(id);
-	if (idStr == NULL) {
-		// TODO
-		return -1;
-	}
-
-	mAtmiBrokerClient->extractServiceAndIndex(idStr, serviceName, index);
-
-	aCorbaServiceFactory = get_service_factory(serviceName);
-	if (CORBA::is_nil(aCorbaServiceFactory))
-		return status;
-
-	//userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "validating connection ");
-	//CORBA::Boolean aBoolean = aCorbaService->_validate_connection(policyList);
-	//userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "validated connection %d" aBoolean);
-
-	try {
-		// execute 'tpdiscon'
-
-		aCorbaServiceFactory->end_conversation(mAtmiBrokerClient->getClientId(serviceName), index);
-		status = 1;
-	} catch (const CORBA::SystemException &ex) {
-		userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "aCorbaService->end_conversation(): call failed. %s", ex._name());
-		status = -1;
-	}
-	free(idStr);
-	free(serviceName);
 	return status;
 }
 
 int AtmiBrokerConversation::tpcancel(int id) {
-	//TODO THIS IS JUST A PASS THRU
-	userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "tpcancel - id: %d", id);
-	return -1;
-	//return tpdiscon(id);
+	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "tpcancel - id: %d", id);
+	CurrentImpl* currentImpl = AtmiBrokerOTS::get_instance()->getCurrentImpl();
+	if (currentImpl != NULL) {
+		tperrno = TPETRAN;
+		return -1;
+	}
+	return end(id);
+}
+
+int AtmiBrokerConversation::tpdiscon(int id) {
+	userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "tpdiscon - id: %d", id);
+	int status = end(id);
+	if (status == 0) {
+		status = tx_rollback();
+	}
+	return status;
+}
+
+int AtmiBrokerConversation::end(int id) {
+	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "end - id: %d", id);
+
+	tperrno = 0;
+	int status = 0;
+
+	char * idStr = mAtmiBrokerClient->convertIdToString(id);
+	if (idStr == NULL) {
+		tperrno = TPEBADDESC;
+		status = -1;
+	} else {
+		char *serviceName = (char*) malloc(sizeof(char) * XATMI_SERVICE_NAME_LENGTH);
+		char index[5];
+		mAtmiBrokerClient->extractServiceAndIndex(idStr, serviceName, index);
+
+		AtmiBroker::ServiceFactory_var aCorbaServiceFactory = get_service_factory(serviceName);
+		if (CORBA::is_nil(aCorbaServiceFactory)) {
+			tperrno = TPEBADDESC;
+			status = -1;
+		} else {
+			try {
+				aCorbaServiceFactory->end_conversation(mAtmiBrokerClient->getClientId(serviceName), index);
+			} catch (const CORBA::SystemException &ex) {
+				userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "aCorbaService->end_conversation(): call failed. %s", ex._name());
+				tperrno = TPESYSTEM;
+				status = -1;
+			}
+		}
+		free(serviceName);
+	}
+	free(idStr);
+	return status;
 }

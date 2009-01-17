@@ -72,42 +72,9 @@ AtmiBroker_ServiceManagerImpl::~AtmiBroker_ServiceManagerImpl() {
 	//
 }
 
-// service_request_explicit() -- Implements IDL operation "AtmiBroker::ServiceManager::service_request_explicit_ior".
-//
-CORBA::Short AtmiBroker_ServiceManagerImpl::service_request_explicit(const char* ior, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, AtmiBroker::octetSeq_out odata, CORBA::Long_out olen, CORBA::Long flags, const  CosTransactions::Control_ptr control) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "service_request_explicit_ior() ior: %s ", ior);
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "string_to_object ");
-	CORBA::Object_var tmp_ref = server_orb->string_to_object(ior);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "tmp_ref %d", (void*) tmp_ref);
-
-	AtmiBroker::Service_var aItrPtr = AtmiBroker::Service::_narrow(tmp_ref);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "aItrPtr %d", (void*) aItrPtr);
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "calling service_request_explicit_ior on iterator %d", (void*) aItrPtr);
-	return aItrPtr->service_request_explicit(idata, ilen, odata, olen, flags, control);
-
-}
-
-// service_typed_buffer_request_explicit_ior() -- Implements IDL operation "AtmiBroker::ServiceManager::service_typed_buffer_request_explicit_ior".
-//
-CORBA::Short AtmiBroker_ServiceManagerImpl::service_typed_buffer_request_explicit(const char* ior, const AtmiBroker::TypedBuffer& idata, CORBA::Long ilen, AtmiBroker::TypedBuffer_out odata, CORBA::Long_out olen, CORBA::Long flags, const  CosTransactions::Control_ptr control) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "service_typed_buffer_request_explicit_ior() ior: %s ", ior);
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "string_to_object ");
-	CORBA::Object_var tmp_ref = server_orb->string_to_object(ior);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "tmp_ref %d", (void*) tmp_ref);
-
-	AtmiBroker::Service_var aItrPtr = AtmiBroker::Service::_narrow(tmp_ref);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "aItrPtr %d", (void*) aItrPtr);
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "calling service_typed_buffer_request_explicit_ior on iterator %d", (void*) aItrPtr);
-	return aItrPtr->service_typed_buffer_request_explicit(idata, ilen, odata, olen, flags, control);
-}
-
 // service_request_async() -- Implements IDL operation "AtmiBroker::ServiceManager::service_request_async".
 //
-void AtmiBroker_ServiceManagerImpl::service_request_async(const char* ior, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags) throw (CORBA::SystemException ) {
+void AtmiBroker_ServiceManagerImpl::send_data(const char* ior, CORBA::Boolean inConversation, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CosTransactions::Control_ptr control) throw (CORBA::SystemException ) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "service_request_async() ior: %s ", ior);
 
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "string_to_object ");
@@ -118,57 +85,8 @@ void AtmiBroker_ServiceManagerImpl::service_request_async(const char* ior, const
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "aItrPtr %d", (void*) aItrPtr);
 
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "calling service_request_async on iterator %d", (void*) aItrPtr);
-	aItrPtr->service_request_async(idata, ilen, flags);
+	aItrPtr->send_data(inConversation, idata, ilen, flags, control);
 
-}
-
-// service_typed_buffer_request_async() -- Implements IDL operation "AtmiBroker::ServiceManager::service_typed_buffer_request_async".
-//
-void AtmiBroker_ServiceManagerImpl::service_typed_buffer_request_async(const char* ior, const AtmiBroker::TypedBuffer& idata, CORBA::Long ilen, CORBA::Long flags) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "service_typed_buffer_request_async() ior: %s ", ior);
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "string_to_object ");
-	CORBA::Object_var tmp_ref = server_orb->string_to_object(ior);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "tmp_ref %d", (void*) tmp_ref);
-
-	AtmiBroker::Service_var aItrPtr = AtmiBroker::Service::_narrow(tmp_ref);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "aItrPtr %d", (void*) aItrPtr);
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "calling service_typed_buffer_request_async on iterator %d", (void*) aItrPtr);
-	aItrPtr->service_typed_buffer_request_async(idata, ilen, flags);
-
-}
-
-// service_response() -- Implements IDL operation "AtmiBroker::ServiceManager::service_response".
-//
-CORBA::Short AtmiBroker_ServiceManagerImpl::service_response(const char* ior, AtmiBroker::octetSeq_out odata, CORBA::Long_out olen, CORBA::Long flags, CORBA::Long_out event) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "service_response() ior: %s ", ior);
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "string_to_object ");
-	CORBA::Object_var tmp_ref = server_orb->string_to_object(ior);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "tmp_ref %d", (void*) tmp_ref);
-
-	AtmiBroker::Service_var aItrPtr = AtmiBroker::Service::_narrow(tmp_ref);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "aItrPtr %d", (void*) aItrPtr);
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "calling service_response on iterator %d", (void*) aItrPtr);
-	return aItrPtr->service_response(odata, olen, flags, event);
-}
-
-// service_typed_buffer_response() -- Implements IDL operation "AtmiBroker::ServiceManager::service_typed_buffer_response".
-//
-CORBA::Short AtmiBroker_ServiceManagerImpl::service_typed_buffer_response(const char* ior, AtmiBroker::TypedBuffer_out odata, CORBA::Long_out olen, CORBA::Long flags, CORBA::Long_out event) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "service_response() ior: %s ", ior);
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "string_to_object ");
-	CORBA::Object_var tmp_ref = server_orb->string_to_object(ior);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "tmp_ref %d", (void*) tmp_ref);
-
-	AtmiBroker::Service_var aItrPtr = AtmiBroker::Service::_narrow(tmp_ref);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "aItrPtr %d", (void*) aItrPtr);
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "calling service_typed_buffer_response on iterator %d", (void*) aItrPtr);
-	return aItrPtr->service_typed_buffer_response(odata, olen, flags, event);
 }
 
 // serviceName() -- Accessor for IDL attribute "AtmiBroker::ServiceManager::serviceName".

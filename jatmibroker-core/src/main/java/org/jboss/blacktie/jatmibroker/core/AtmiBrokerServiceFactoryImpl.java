@@ -58,18 +58,18 @@ public class AtmiBrokerServiceFactoryImpl implements BTServiceFactoryAdministrat
 		log.debug("ServiceFactory is " + serviceFactory);
 	}
 
-	public AtmiBroker.Service get_service(int client_id, boolean conversation, org.omg.CORBA.StringHolder id) throws Exception {
-		return serviceFactory.get_service(client_id, conversation, id);
+	public AtmiBroker.Service get_service(int client_id, org.omg.CORBA.StringHolder id) throws Exception {
+		return serviceFactory.get_service(client_id, id);
 	}
 
 	public AtmiBroker.Service find_service(int client_id, java.lang.String id) throws Exception {
 		return serviceFactory.find_service(client_id, id);
 	}
 
-	public String get_service_id(boolean conversation, org.omg.CORBA.StringHolder id) {
-		log.debug("ServiceFactoryProxy's get_service_id conversation: " + conversation);
+	public String get_service_id(org.omg.CORBA.StringHolder id) {
+		log.debug("ServiceFactoryProxy's get_service_id");
 
-		return serviceFactory.get_service_id(server.getClientId(), conversation, id);
+		return serviceFactory.get_service_id(server.getClientId(), id);
 	}
 
 	public void end_conversation(int client_id, String id) throws Exception {

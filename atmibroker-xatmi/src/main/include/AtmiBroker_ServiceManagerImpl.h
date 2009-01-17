@@ -61,17 +61,7 @@ public:
 
 	// IDL operations
 	//
-	virtual CORBA::Short service_request_explicit(const char* ior, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, AtmiBroker::octetSeq_out odata, CORBA::Long_out olen, CORBA::Long flags, const  CosTransactions::Control_ptr control) throw (CORBA::SystemException );
-
-	virtual CORBA::Short service_typed_buffer_request_explicit(const char* ior, const AtmiBroker::TypedBuffer& idata, CORBA::Long ilen, AtmiBroker::TypedBuffer_out odata, CORBA::Long_out olen, CORBA::Long flags, const  CosTransactions::Control_ptr control) throw (CORBA::SystemException );
-
-	virtual void service_request_async(const char* ior, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags) throw (CORBA::SystemException );
-
-	virtual void service_typed_buffer_request_async(const char* ior, const AtmiBroker::TypedBuffer& idata, CORBA::Long ilen, CORBA::Long flags) throw (CORBA::SystemException );
-
-	virtual CORBA::Short service_response(const char* ior, AtmiBroker::octetSeq_out odata, CORBA::Long_out olen, CORBA::Long flags, CORBA::Long_out event) throw (CORBA::SystemException );
-
-	virtual CORBA::Short service_typed_buffer_response(const char* ior, AtmiBroker::TypedBuffer_out odata, CORBA::Long_out olen, CORBA::Long flags, CORBA::Long_out event) throw (CORBA::SystemException );
+	virtual void send_data(const char* ior, CORBA::Boolean inConversation, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CosTransactions::Control_ptr control) throw (CORBA::SystemException );
 
 	// IDL attributes
 	//

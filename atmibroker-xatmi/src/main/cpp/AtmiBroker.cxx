@@ -78,9 +78,6 @@ AtmiBrokerPoaFac * clientPoaFactory;
 
 // Memory management
 AtmiBrokerMem * ptrAtmiBrokerMem;
-void (*callbackFunctionPtr)(const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, const char * id);
-
-void (*callbackTypedBufferFunctionPtr)(const AtmiBroker::TypedBuffer& idata, CORBA::Long ilen, CORBA::Long flags, const char * id);
 
 // Corba Client
 AtmiBrokerClient * ptrAtmiBrokerClient;

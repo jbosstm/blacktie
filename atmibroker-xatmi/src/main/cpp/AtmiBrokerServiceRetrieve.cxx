@@ -107,8 +107,8 @@ AtmiBroker::ServiceFactory_ptr get_service_factory(const char * serviceName) {
 	return AtmiBroker::ServiceFactory::_duplicate(factoryPtr);
 }
 
-void get_service(long clientId, AtmiBroker::ServiceFactory_ptr aFactoryPtr, CORBA::Boolean aConversation, char **idPtr, AtmiBroker::Service_var* refPtr) {
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "get_service - conversation: %d", aConversation);
+void get_service(long clientId, AtmiBroker::ServiceFactory_ptr aFactoryPtr, char **idPtr, AtmiBroker::Service_var* refPtr) {
+	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "get_service");
 
 	CORBA::String_var aId = "";
 	CORBA::String_var aIor = "";
@@ -117,7 +117,7 @@ void get_service(long clientId, AtmiBroker::ServiceFactory_ptr aFactoryPtr, CORB
 	//*refPtr 	= aFactoryPtr->get_service(aConversation, aId);
 
 	// get service ior from factory
-	aIor = aFactoryPtr->get_service_id(clientId, aConversation, aId);
+	aIor = aFactoryPtr->get_service_id(clientId, aId);
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "got back ior %s", (char*) aIor);
 
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "string_to_object ");

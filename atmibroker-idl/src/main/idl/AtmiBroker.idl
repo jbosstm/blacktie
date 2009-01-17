@@ -61,15 +61,15 @@ module AtmiBroker {
 	
 	interface ClientCallback
 	{
-		oneway void client_callback(in octetSeq idata,
+		oneway void enqueue_data(in octetSeq idata,
 				  in long ilen, 
 				  in long flags,
-				  in string id);
+				  in string id);	
+ 		short dequeue_data(out octetSeq odata,
+				  out long    olen,
+				  in long flags,
+				  out long event);		  
 
-		oneway void client_typed_buffer_callback(in TypedBuffer idata,
-				  in long ilen, 
-				  in long flags,
-				  in string id);
 	};
 
         struct ClientInfo 
@@ -162,37 +162,12 @@ module AtmiBroker {
 	{
 		readonly attribute string serviceName;
 
-		short service_request_explicit(in octetSeq idata, 
+		oneway void send_data(in boolean conversation,
+				  in octetSeq idata,
 				  in long ilen, 
-				  out octetSeq odata, 
-				  out long    olen, 
-				  in long flags,
-				  in CosTransactions::Control control);
-
-		short service_typed_buffer_request_explicit(in TypedBuffer idata, 
-				  in long ilen, 
-				  out TypedBuffer odata, 
-				  out long    olen, 
 				  in long flags,
 				  in CosTransactions::Control control_ior);
 
-		oneway void service_request_async(in octetSeq idata,
-				  in long ilen, 
-				  in long flags);
-
-		oneway void service_typed_buffer_request_async(in TypedBuffer idata,
-				  in long ilen, 
-				  in long flags);
-
-		short service_response(out octetSeq odata,
-				  out long    olen,
-				  in long flags,
-				  out long event);
-
-		short service_typed_buffer_response(out TypedBuffer odata,
-				  out long    olen,
-				  in long flags,
-				  out long event);
 	};
 
 
@@ -200,51 +175,21 @@ module AtmiBroker {
 	{
 		readonly attribute string serviceName;
 
-		short service_request_explicit(in string ior,
-				   in octetSeq idata, 
-				  in long ilen, 
-				  out octetSeq odata, 
-				  out long    olen, 
-				  in long flags,
-				  in  CosTransactions::Control control);
-
-		short service_typed_buffer_request_explicit(in string ior,
-				   in TypedBuffer idata, 
-				  in long ilen, 
-				  out TypedBuffer odata, 
-				  out long    olen, 
-				  in long flags,
-				  in  CosTransactions::Control control);
-
-		oneway void service_request_async(in string ior,
+		oneway void send_data(in string ior,
+				  in boolean conversation,
 				  in octetSeq idata,
-				  in long ilen, 
-				  in long flags);
-
-		oneway void service_typed_buffer_request_async(in string ior,
-				  in TypedBuffer idata,
-				  in long ilen, 
-				  in long flags);
-
-		short service_response(in string ior,
-				  out octetSeq odata,
-				  out long    olen,
+				  in long ilen,
 				  in long flags,
-				  out long event);
+				  in CosTransactions::Control control_ior);
 
-		short service_typed_buffer_response(in string ior,
-				  out TypedBuffer odata,
-				  out long    olen,
-				  in long flags,
-				  out long event);
 	};
 
 
 	interface ServiceFactory
 	{
-		Service get_service(in long client_id, in boolean conversation, out string id);
+		Service get_service(in long client_id, out string id);
 	
-		string get_service_id(in long client_id, in boolean conversation, out string id);
+		string get_service_id(in long client_id, out string id);
 	
 		void end_conversation(in long client_id, in string id);
 	

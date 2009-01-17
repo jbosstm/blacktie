@@ -27,6 +27,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServiceManager;
 import org.omg.CORBA.Any;
+import org.omg.CORBA.IntHolder;
 import org.omg.CosTransactions.Control;
 
 public class JABRemoteService implements Message {
@@ -58,24 +59,28 @@ public class JABRemoteService implements Message {
 		try {
 			org.omg.CORBA.IntHolder olen = new org.omg.CORBA.IntHolder();
 			int flags = 0;
-			short retVal = 0;
 			Control control = null;
 			if (aJABTransaction != null) {
 				control = aJABTransaction.getControl();
 			}
 
-			if (!useData) {
-				AtmiBroker.TypedBufferHolder odata = new AtmiBroker.TypedBufferHolder();
-				retVal = serviceManagerControl.service_typed_buffer_request_explicit(typedBuffer.getTypedBuffer(), typedBuffer.size(), odata, olen, flags, control);
-				result = new JABMessage(odata.value, olen.value);
-				log.debug("service_request response is " + odata.value);
-			} else {
-				AtmiBroker.octetSeqHolder odata = new AtmiBroker.octetSeqHolder();
-				retVal = serviceManagerControl.service_request_explicit(data, data.length, odata, olen, flags, control);
-				data = new byte[olen.value];
-				System.arraycopy(odata.value, 0, data, 0, olen.value);
-				log.debug("service_request response is " + odata.value);
-			}
+			// if (!useData) {
+			// AtmiBroker.TypedBufferHolder odata = new
+			// AtmiBroker.TypedBufferHolder();
+			// retVal =
+			// serviceManagerControl.service_typed_buffer_request_explicit(typedBuffer.getTypedBuffer(),
+			// typedBuffer.size(), odata, olen, flags, control);
+			// result = new JABMessage(odata.value, olen.value);
+			// log.debug("service_request response is " + odata.value);
+			// } else {
+			AtmiBroker.octetSeqHolder odata = new AtmiBroker.octetSeqHolder();
+			serviceManagerControl.send_data(null, false, data, data.length, flags, control);
+			IntHolder event = new IntHolder();
+			short retVal = jabSession.getServerProxy().dequeue_data(odata, olen, flags, event);
+			data = new byte[olen.value];
+			System.arraycopy(odata.value, 0, data, 0, olen.value);
+			log.debug("service_request response is " + odata.value);
+			// }
 
 			log.debug("service_request retVal " + retVal);
 			log.debug("service_request size of response is " + olen.value);

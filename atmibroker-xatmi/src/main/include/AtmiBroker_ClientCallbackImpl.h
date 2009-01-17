@@ -45,6 +45,7 @@
 #include "AtmiBroker_s.hh"
 #endif
 #include "it_servant_base_overrides.h"
+#include <queue>
 
 class ATMIBROKER_DLL AtmiBroker_ClientCallbackImpl: public virtual IT_ServantBaseOverrides, public virtual POA_AtmiBroker::ClientCallback {
 public:
@@ -60,15 +61,16 @@ public:
 
 	// IDL operations
 	//
-	virtual void client_callback(const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, const char * id) throw (CORBA::SystemException );
+	virtual void enqueue_data(const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, const char * id) throw (CORBA::SystemException );
 
-	virtual void client_typed_buffer_callback(const AtmiBroker::TypedBuffer& idata, CORBA::Long ilen, CORBA::Long flags, const char * id) throw (CORBA::SystemException );
+	virtual CORBA::Short dequeue_data(AtmiBroker::octetSeq_out odata, CORBA::Long_out olen, CORBA::Long flags, CORBA::Long_out event);
 
 private:
 	// The following are not implemented
 	//
 	AtmiBroker_ClientCallbackImpl(const AtmiBroker_ClientCallbackImpl &);
 	AtmiBroker_ClientCallbackImpl& operator=(const AtmiBroker_ClientCallbackImpl &);
+	std::queue<AtmiBroker::octetSeq *> returnData;
 
 };
 

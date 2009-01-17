@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.omg.CORBA.IntHolder;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
 import org.omg.CosNaming.NameComponent;
@@ -40,9 +39,6 @@ import org.omg.PortableServer.POAPackage.WrongPolicy;
 import AtmiBroker.Service;
 import AtmiBroker.ServiceManager;
 import AtmiBroker.ServiceManagerPOA;
-import AtmiBroker.TypedBuffer;
-import AtmiBroker.TypedBufferHolder;
-import AtmiBroker.octetSeqHolder;
 
 public class AtmiBroker_ServiceManagerImpl extends ServiceManagerPOA {
 	private static final Logger log = LogManager.getLogger(AtmiBroker_ServiceManagerImpl.class);
@@ -93,39 +89,9 @@ public class AtmiBroker_ServiceManagerImpl extends ServiceManagerPOA {
 		return null;
 	}
 
-	public void service_request_async(String ior, byte[] idata, int ilen, int flags) {
-		log.error("NO-OP service_request_async");
-		// TODO Auto-generated method stub
-
-	}
-
-	public short service_request_explicit(String ior, byte[] idata, int ilen, octetSeqHolder odata, IntHolder olen, int flags, Control control) {
+	public void send_data(String ior, boolean inConversation, byte[] idata, int ilen, int flags, Control control) {
 		Object tmp_ref = AtmiBrokerServerImpl.orb.string_to_object(ior);
 		Service aItrPtr = AtmiBroker.ServiceHelper.narrow(tmp_ref);
-		return aItrPtr.service_request_explicit(idata, ilen, odata, olen, flags, control);
+		aItrPtr.send_data(inConversation, idata, ilen, flags, control);
 	}
-
-	public short service_response(String ior, octetSeqHolder odata, IntHolder olen, int flags, IntHolder event) {
-		log.error("NO-OP service_response");
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public void service_typed_buffer_request_async(String ior, TypedBuffer idata, int ilen, int flags) {
-		log.error("NO-OP service_typed_buffer_request_async");
-		// TODO Auto-generated method stub
-
-	}
-
-	public short service_typed_buffer_response(String ior, TypedBufferHolder odata, IntHolder olen, int flags, IntHolder event) {
-		log.error("NO-OP service_typed_buffer_response");
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public short service_typed_buffer_request_explicit(String ior, TypedBuffer idata, int ilen, TypedBufferHolder odata, IntHolder olen, int flags, Control control) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 }

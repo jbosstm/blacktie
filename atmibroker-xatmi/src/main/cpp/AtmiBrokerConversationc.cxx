@@ -92,24 +92,15 @@ int tpcancel(int id) {
 		return -1;
 }
 
+int tpgetrply(int *id, char ** odata, long *olen, long flags) {
+	if (clientinit() != -1)
+		return AtmiBrokerConversation::get_instance()->tpgetrply(id, odata, olen, flags);
+	else
+		return -1;
+}
+
 void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 	// TJJ
 	AtmiBroker_ServiceImpl* thread = (AtmiBroker_ServiceImpl*) getSpecific(1);
 	thread->mytpreturn(rval, rcode, data, len, flags);
-}
-
-int tpgetrply(int *idPtr, char ** odata, long *olen, long flags) {
-	if (clientinit() != -1) {
-		if (idPtr && odata) {
-			userlog(Level::getDebug(), loggerAtmiBrokerConversationc, (char*) "tpgetrply - id: %d odata: %s olen: %p flags: %d", *idPtr, *odata, olen, flags);
-			long events;
-			int status = tprecv(*idPtr, odata, olen, flags, &events);
-			tpdiscon(*idPtr);
-			return status;
-		} else {
-			return -1;
-		}
-	} else {
-		return -1;
-	}
 }

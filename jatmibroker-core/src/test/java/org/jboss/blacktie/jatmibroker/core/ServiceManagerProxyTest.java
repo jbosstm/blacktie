@@ -57,11 +57,10 @@ public class ServiceManagerProxyTest extends TestCase {
 		AtmiBroker.octetSeqHolder odata = new AtmiBroker.octetSeqHolder();
 		org.omg.CORBA.IntHolder olen = new org.omg.CORBA.IntHolder();
 
-		short retVal = serviceManagerControl.service_request_explicit(aString.getBytes(), aString.length(), odata, olen, flags, null);
-		log.debug("Bar ServiceManager service_request retVal " + retVal);
+		serviceManagerControl.send_data(null, false, aString.getBytes(), aString.length(), flags, null);
 		log.debug("Bar ServiceManager service_request response is " + new String(odata.value));
 		log.debug("Bar ServiceManager service_request size of response is " + olen.value);
-
+		assertEquals(odata.value, "BAR");
 		AtmiBrokerServerImpl.discardOrb();
 	}
 }

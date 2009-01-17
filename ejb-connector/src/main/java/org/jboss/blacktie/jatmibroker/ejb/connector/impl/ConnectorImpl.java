@@ -12,6 +12,7 @@ import org.jboss.blacktie.jatmibroker.ejb.connector.Connector;
 import org.jboss.blacktie.jatmibroker.ejb.connector.ConnectorException;
 import org.jboss.blacktie.jatmibroker.ejb.connector.Response;
 import org.jboss.blacktie.jatmibroker.ejb.connector.buffers.Buffer;
+import org.omg.CORBA.IntHolder;
 
 /**
  * Handles the connector to the server
@@ -68,11 +69,15 @@ public class ConnectorImpl implements Connector {
 		AtmiBroker.octetSeqHolder odata = new AtmiBroker.octetSeqHolder();
 		org.omg.CORBA.IntHolder olen = new org.omg.CORBA.IntHolder();
 		try {
-			getProxy().getServiceManagerProxy(svc).service_request_explicit(idata.getData(), idata.getSize(), odata, olen, flags, null);
+			// TODO HANDLE TRANSACTION
+			getProxy().getServiceManagerProxy(svc).send_data(null, false, idata.getData(), idata.getSize(), flags, null);
+			IntHolder event = new IntHolder();
+			getProxy().dequeue_data(odata, olen, flags, event);
 		} catch (JAtmiBrokerException e) {
 			throw new ConnectorException(-1, e);
 		}
 
+		// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
 		Buffer buffer = new Buffer("unknown", "unknown", odata.value.length);
 		buffer.setData(odata.value);
 		return new Response(buffer);

@@ -25,7 +25,7 @@ import AtmiBroker.ServiceInfo;
 
 public interface BTServiceFactoryAdministration {
 
-	AtmiBroker.Service get_service(int client_id, boolean conversation, org.omg.CORBA.StringHolder id) throws Exception;
+	AtmiBroker.Service get_service(int client_id, org.omg.CORBA.StringHolder id) throws Exception;
 
 	AtmiBroker.Service find_service(int client_id, java.lang.String id) throws Exception;
 

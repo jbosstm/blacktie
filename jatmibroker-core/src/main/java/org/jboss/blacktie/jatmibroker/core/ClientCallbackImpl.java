@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.omg.CORBA.IntHolder;
 import org.omg.CORBA.Policy;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAPackage.AdapterAlreadyExists;
@@ -37,11 +38,13 @@ import org.omg.PortableServer.POAPackage.WrongPolicy;
 
 import AtmiBroker.ClientCallbackPOA;
 import AtmiBroker.TypedBuffer;
+import AtmiBroker.octetSeqHolder;
 
 public class ClientCallbackImpl extends ClientCallbackPOA {
 	private static final Logger log = LogManager.getLogger(ClientCallbackImpl.class);
 	private POA m_default_poa;
 	private String callbackIOR;
+	private List<byte[]> returnData = new ArrayList<byte[]>();
 
 	public ClientCallbackImpl(POA poa, String aServerName) throws AdapterNonExistent, InvalidPolicy, ServantAlreadyActive, WrongPolicy, ServantNotActive {
 		super();
@@ -77,7 +80,7 @@ public class ClientCallbackImpl extends ClientCallbackPOA {
 	// client_callback() -- Implements IDL operation
 	// "AtmiBroker.ClientCallback.client_callback".
 	//
-	public void client_callback(byte[] idata, int ilen, int flags, String id) throws org.omg.CORBA.SystemException {
+	public void enqueue_data(byte[] idata, int ilen, int flags, String id) throws org.omg.CORBA.SystemException {
 		log.error("Default client_callback called");
 		log.debug("client_callback(): called.");
 
@@ -86,6 +89,7 @@ public class ClientCallbackImpl extends ClientCallbackPOA {
 		log.debug("    flags = " + flags);
 		log.debug("    id = " + id);
 		log.debug("client_callback(): returning.");
+		returnData.add(idata);
 	}
 
 	// client_callback() -- Implements IDL operation
@@ -104,5 +108,12 @@ public class ClientCallbackImpl extends ClientCallbackPOA {
 
 	public String getCallbackIOR() {
 		return callbackIOR;
+	}
+
+	public short dequeue_data(octetSeqHolder odata, IntHolder olen, int flags, IntHolder event) {
+		// TODO
+		odata.value = returnData.get(0);
+		returnData.remove(0);
+		return 0;
 	}
 }

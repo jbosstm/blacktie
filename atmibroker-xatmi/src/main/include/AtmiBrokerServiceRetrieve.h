@@ -40,7 +40,7 @@ extern ATMIBROKER_DLL void get_server(const char * serverName, AtmiBroker::Serve
 
 extern ATMIBROKER_DLL AtmiBroker::ServiceFactory_ptr get_service_factory(const char * serviceName);
 
-extern ATMIBROKER_DLL void get_service(long clientId, AtmiBroker::ServiceFactory_ptr, CORBA::Boolean, char**, AtmiBroker::Service_var*);
+extern ATMIBROKER_DLL void get_service(long clientId, AtmiBroker::ServiceFactory_ptr, char**, AtmiBroker::Service_var*);
 
 extern ATMIBROKER_DLL void find_service(long clientId, AtmiBroker::ServiceFactory_ptr, char*, AtmiBroker::Service_var*);
 

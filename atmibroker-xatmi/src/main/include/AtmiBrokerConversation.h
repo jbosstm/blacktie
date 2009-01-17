@@ -52,7 +52,7 @@ public:
 
 	int tprecv(int id, char ** odata, long *olen, long flags, long* event);
 
-	//int tpgetrply (int *idPtr, char ** odata, long *olen, long flags);
+	int tpgetrply(int *id, char ** odata, long *olen, long flags);
 
 	int tpdiscon(int id);
 
@@ -62,6 +62,8 @@ public:
 	static void discard_instance();
 
 private:
+	int send(AtmiBroker::Service_var, char* idata, long ilen, bool inConversation, long flags, long *revent);
+	int end(int id);
 
 	AtmiBrokerClient* mAtmiBrokerClient;
 

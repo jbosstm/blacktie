@@ -62,8 +62,6 @@ AtmiBroker_ClientCallbackImpl::_create(PortableServer::POA_ptr the_poa) {
 //
 AtmiBroker_ClientCallbackImpl::AtmiBroker_ClientCallbackImpl(PortableServer::POA_ptr the_poa) :
 	IT_ServantBaseOverrides(the_poa) {
-	callbackFunctionPtr = NULL;
-	callbackTypedBufferFunctionPtr = NULL;
 }
 
 // ~AtmiBroker_ClientCallbackImpl destructor.
@@ -73,9 +71,9 @@ AtmiBroker_ClientCallbackImpl::~AtmiBroker_ClientCallbackImpl() {
 	//
 }
 
-// client_callback() -- Implements IDL operation "AtmiBroker::ClientCallback::client_callback".
+// client_callback() -- Implements IDL operation "AtmiBroker::ClientCallback::send_data".
 //
-void AtmiBroker_ClientCallbackImpl::client_callback(const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, const char * id) throw (CORBA::SystemException ) {
+void AtmiBroker_ClientCallbackImpl::enqueue_data(const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, const char * id) throw (CORBA::SystemException ) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "client_callback(): called.");
 
 	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "client_callback():    idata = %s", idata.get_buffer());
@@ -83,32 +81,21 @@ void AtmiBroker_ClientCallbackImpl::client_callback(const AtmiBroker::octetSeq& 
 	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "client_callback():    flags = %d", flags);
 	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "client_callback():    id = %s", id);
 
-	if (callbackFunctionPtr != NULL) {
-		userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "client_callback():calling application callback");
-		(*callbackFunctionPtr)(idata, ilen, flags, id);
-		userlog(Level::getInfo(), loggerAtmiBroker_ClientCallbackImpl, (char*) "client_callback():called application callback");
-	} else {
-		userlog(Level::getError(), loggerAtmiBroker_ClientCallbackImpl, (char*) "Unhandled response");
-	}
+	returnData.push(new AtmiBroker::octetSeq(idata));
 }
 
-// client_typed_buffer_callback() -- Implements IDL operation "AtmiBroker::ClientCallback::client_typed_buffer_callback".
-//
-void AtmiBroker_ClientCallbackImpl::client_typed_buffer_callback(const AtmiBroker::TypedBuffer& idata, CORBA::Long ilen, CORBA::Long flags, const char * id) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "client_typed_buffer_callback(): called.");
+CORBA::Short AtmiBroker_ClientCallbackImpl::dequeue_data(AtmiBroker::octetSeq_out odata, CORBA::Long_out olen, CORBA::Long flags, CORBA::Long_out event) {
+	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "service_response()");
 
-	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "client_typed_buffer_callback():    idata = %s", (const char *) idata.name);
-	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "client_typed_buffer_callback():    ilen = %d", ilen);
-	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "client_typed_buffer_callback():    flags = %d", flags);
-	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "client_typed_buffer_callback():    id = %s", id);
-
-	if (callbackTypedBufferFunctionPtr != NULL) {
-		userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "client_typed_buffer_callback():calling application ptr");
-		(*callbackTypedBufferFunctionPtr)(idata, ilen, flags, id);
-		userlog(Level::getInfo(), loggerAtmiBroker_ClientCallbackImpl, (char*) "client_typed_buffer_callback():called application ptr");
-	} else {
-		userlog(Level::getError(), loggerAtmiBroker_ClientCallbackImpl, (char*) "Unhandled response");
+	// TODO THIS SHOULD CHECK THE FLAGS TO WAIT FOR THE DATA.. (on the client-side most likely!)
+	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "    fronting octet array of size %d ", returnData.size());
+	if (returnData.size() > 0) {
+		AtmiBroker::octetSeq * aOctetSeq = (AtmiBroker::octetSeq *) returnData.front();
+		returnData.pop();
+		userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "    fronted octet array %s", (char*) aOctetSeq->get_buffer());
+		odata = new AtmiBroker::octetSeq(*aOctetSeq);
+		userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "   odata = %s", odata->get_buffer());
+		return 0;
 	}
-
+	return -1;
 }
-

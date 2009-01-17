@@ -29,6 +29,18 @@ import org.omg.CosNotifyChannelAdmin.EventChannelFactory;
 import org.omg.CosTransactions.TransactionFactory;
 
 public interface AtmiBrokerServer {
+	/**
+	 * This method will retrieve any information from the callback that has been
+	 * sent.
+	 * 
+	 * @param odata
+	 * @param olen
+	 * @param flags
+	 * @param event
+	 * @return
+	 */
+	public short dequeue_data(AtmiBroker.octetSeqHolder odata, org.omg.CORBA.IntHolder olen, int flags, org.omg.CORBA.IntHolder event);
+
 	public TransactionFactory getTransactionFactory(String transactionManagerServiceName) throws NotFound, CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName;
 
 	public EventChannelFactory getEventChannelFactory() throws InvalidName;

@@ -71,17 +71,7 @@ public:
 
 	// IDL operations
 	//
-	virtual CORBA::Short service_request_explicit(const AtmiBroker::octetSeq& idata, CORBA::Long ilen, AtmiBroker::octetSeq_out odata, CORBA::Long_out olen, CORBA::Long flags, CosTransactions::Control_ptr control) throw (CORBA::SystemException );
-
-	virtual CORBA::Short service_typed_buffer_request_explicit(const AtmiBroker::TypedBuffer& idata, CORBA::Long ilen, AtmiBroker::TypedBuffer_out odata, CORBA::Long_out olen, CORBA::Long flags, CosTransactions::Control_ptr control) throw (CORBA::SystemException );
-
-	virtual void service_request_async(const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags) throw (CORBA::SystemException );
-
-	virtual void service_typed_buffer_request_async(const AtmiBroker::TypedBuffer& idata, CORBA::Long ilen, CORBA::Long flags) throw (CORBA::SystemException );
-
-	virtual CORBA::Short service_response(AtmiBroker::octetSeq_out odata, CORBA::Long_out olen, CORBA::Long flags, CORBA::Long_out event) throw (CORBA::SystemException );
-
-	virtual CORBA::Short service_typed_buffer_response(AtmiBroker::TypedBuffer_out odata, CORBA::Long_out olen, CORBA::Long flags, CORBA::Long_out event) throw (CORBA::SystemException );
+	virtual void send_data(CORBA::Boolean inConversation, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CosTransactions::Control_ptr control) throw (CORBA::SystemException );
 
 	// IDL attributes
 	//
@@ -89,9 +79,6 @@ public:
 
 	void mytpreturn(int rval, long rcode, char* data, long len, long flags);
 	int tpsend(int id, char* idata, long ilen, long flags, long *revent);
-
-	CORBA::Boolean isInConversation();
-	void setInConversation(CORBA::Boolean anInd);
 
 	CORBA::Boolean isInUse();
 	void setInUse(CORBA::Boolean anInd);
@@ -103,12 +90,8 @@ public:
 protected:
 	AtmiBroker_ServiceFactoryImpl* parent;
 	CORBA::Short returnStatus;
-	std::queue<AtmiBroker::octetSeq *> returnData;
-	std::queue<AtmiBroker::TypedBuffer *> returnTypedBufferData;
-	CORBA::Boolean inConversation;
 	CORBA::Boolean inUse;
 	AtmiBroker::ClientCallback_ptr callbackRef;
-	int conversationCount;
 	int index;
 	long clientId;
 	char* dataType;

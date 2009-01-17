@@ -72,7 +72,7 @@ AtmiBroker_ServiceImpl::_create(AtmiBroker_ServiceFactoryImpl* aParent, Portable
 // require arguments, even those that we inherit indirectly.
 //
 AtmiBroker_ServiceImpl::AtmiBroker_ServiceImpl(AtmiBroker_ServiceFactoryImpl* aParent, PortableServer::POA_ptr the_poa, int aIndex, char *serviceName, void(*func)(TPSVCINFO *)) :
-	IT_ServantBaseOverrides(the_poa), parent(aParent), returnStatus(-1), inConversation(false), inUse(false), callbackRef(NULL), conversationCount(0), index(aIndex), m_serviceName(serviceName), m_func(func) {
+	IT_ServantBaseOverrides(the_poa), parent(aParent), returnStatus(-1), inUse(false), callbackRef(NULL), index(aIndex), m_serviceName(serviceName), m_func(func) {
 	// Initialise instance variables used for attributes
 	//
 	//TJJ key = getKey();
@@ -85,10 +85,31 @@ AtmiBroker_ServiceImpl::~AtmiBroker_ServiceImpl() {
 	//
 }
 
-//CosTransactions::Control::_nil()
-// service_request_explicit() -- Implements IDL operation "AtmiBroker::Service::service_request_explicit".
+// service_request_async() -- Implements IDL operation "AtmiBroker::Service::send_data".
 //
-CORBA::Short AtmiBroker_ServiceImpl::service_request_explicit(const AtmiBroker::octetSeq& idata, CORBA::Long ilen, AtmiBroker::octetSeq_out odata, CORBA::Long_out olen, CORBA::Long flags, CosTransactions::Control_ptr control) throw (CORBA::SystemException ) {
+void AtmiBroker_ServiceImpl::send_data(CORBA::Boolean inConversation, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CosTransactions::Control_ptr control) throw (CORBA::SystemException ) {
+	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_async()");
+
+	AtmiBroker::ClientInfo client_info;
+	client_info.client_id = clientId;
+
+	char * callback_ior = ptrServer->get_client_callback(client_info);
+	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "client callback_ior for id %d is %s", clientId, callback_ior);
+
+	CORBA::Object_var tmp_ref = server_orb->string_to_object(callback_ior);
+	callbackRef = AtmiBroker::ClientCallback::_narrow(tmp_ref);
+	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   callback 	= %p", (void*) callbackRef);
+
+	// TODO TYPED BUFFER userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   idata = %s", (const char*) idata.name);
+	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   idata = %s", idata.get_buffer());
+	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   ilen = %d", ilen);
+	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   flags = %d", flags);
+
+	AtmiBroker::octetSeq* odata;
+	CORBA::Long olen;
+
+	// TODO TYPED BUFFER dataType = (char*) TYPE1;
+	// TODO TYPED BUFFER m_typedBuffer = &idata;
 	dataType = (char*) X_OCTET;
 	m_octetSeq = &idata;
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_explicit() dataType: %s", dataType);
@@ -98,202 +119,24 @@ CORBA::Short AtmiBroker_ServiceImpl::service_request_explicit(const AtmiBroker::
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_explicit()    ilen = %d", ilen);
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_explicit()    flags = %d", flags);
 
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_explicit() about to call createConnectionTransactionAssociation");
-	createConnectionTransactionAssociation(control);
+	if (!CORBA::is_nil(control)) {
+		userlog(Level::getInfo(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_explicit() about to call createConnectionTransactionAssociation");
+		createConnectionTransactionAssociation(control);
+	}
 
 	memset(&tpsvcinfo, '\0', sizeof(tpsvcinfo));
 	strcpy(tpsvcinfo.name, m_serviceName);
 	tpsvcinfo.flags = flags;
+	// TODO TYPED BUFFER tpsvcinfo.data = (char*) &idata;
 	tpsvcinfo.data = (char*) idata.get_buffer();
 	tpsvcinfo.len = ilen;
 
-	setSpecific(1, this);
-	m_func(&tpsvcinfo);
-	destroySpecific(1);
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_explicit()    octet array of size %d ", returnData.size());
-	if (returnData.size() > 0) {
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_explicit()    fronting octet array of size %d ", returnData.size());
-		AtmiBroker::octetSeq * aOctetSeq = (AtmiBroker::octetSeq *) returnData.front();
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_explicit()    fronted octet array %s", (char*) aOctetSeq->get_buffer());
-		odata = new AtmiBroker::octetSeq(*aOctetSeq);
-		olen = odata->length();
-
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_explicit()    odata = %s", odata->get_buffer());
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_explicit()    olen = %d", olen);
+	if (!inConversation) {
+		setSpecific(1, this);
+		m_func(&tpsvcinfo);
+		destroySpecific(1);
 	}
-
-	// Return normally.
-	//
-	return returnStatus;
-}
-
-// service_typed_buffer_request_explicit() -- Implements IDL operation "AtmiBroker::Service::service_typed_buffer_request_explicit".
-//
-CORBA::Short AtmiBroker_ServiceImpl::service_typed_buffer_request_explicit(const AtmiBroker::TypedBuffer& idata, CORBA::Long ilen, AtmiBroker::TypedBuffer_out odata, CORBA::Long_out olen, CORBA::Long flags, CosTransactions::Control_ptr control) throw (CORBA::SystemException ) {
-	dataType = (char*) TYPE1;
-	m_typedBuffer = &idata;
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_typed_buffer_request_explicit() dataType %s", dataType);
-	TPSVCINFO tpsvcinfo;
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_typed_buffer_request_explicit()    idata = %s", (const char *) idata.name);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_typed_buffer_request_explicit()    ilen = %d", ilen);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_typed_buffer_request_explicit()    flags = %d", flags);
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_typed_buffer_request_explicit() about to call createConnectionTransactionAssociation");
-	createConnectionTransactionAssociation(control);
-
-	memset(&tpsvcinfo, '\0', sizeof(tpsvcinfo));
-	strcpy(tpsvcinfo.name, m_serviceName);
-	tpsvcinfo.flags = flags;
-	tpsvcinfo.data = (char*) &idata;
-	tpsvcinfo.len = ilen;
-
-	setSpecific(1, this);
-	m_func(&tpsvcinfo);
-	destroySpecific(1);
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_typed_buffer_request_explicit()    typed buffer of size %d ", returnTypedBufferData.size());
-	if (returnTypedBufferData.size() > 0) {
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_typed_buffer_request_explicit()    fronting typed buffer of size %d ", returnTypedBufferData.size());
-		AtmiBroker::TypedBuffer * aTypedBuffer = (AtmiBroker::TypedBuffer *) returnTypedBufferData.front();
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_typed_buffer_request_explicit()    fronted typed buffer %p", aTypedBuffer);
-		odata = new AtmiBroker::TypedBuffer(*aTypedBuffer);
-		olen = sizeof(odata);
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_typed_buffer_request_explicit()    fronted typed buffer %p", (void*) odata);
-
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_typed_buffer_request_explicit()    odata = %p", (void*) odata);
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_typed_buffer_request_explicit()    olen = %d", olen);
-	}
-	// Return normally.
-	//
-	return returnStatus;
-}
-
-// service_request_async() -- Implements IDL operation "AtmiBroker::Service::service_request_async".
-//
-void AtmiBroker_ServiceImpl::service_request_async(const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_async()");
-
-	AtmiBroker::ClientInfo client_info;
-	client_info.client_id = clientId;
-
-	char * callback_ior = ptrServer->get_client_callback(client_info);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "client callback_ior for id %d is %s", clientId, callback_ior);
-
-	if (callback_ior != NULL && strcmp(callback_ior, "") != 0) {
-		CORBA::Object_var tmp_ref = server_orb->string_to_object(callback_ior);
-		callbackRef = AtmiBroker::ClientCallback::_narrow(tmp_ref);
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   callback 	= %p", (void*) callbackRef);
-	} else
-		userlog(Level::getError(), loggerAtmiBroker_ServiceImpl, (char*) "   NO callback");
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   idata = %s", idata.get_buffer());
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   ilen = %d", ilen);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   flags = %d", flags);
-
-	AtmiBroker::octetSeq* odata;
-	CORBA::Long olen;
-
-	// TODO NO transaction
-	CORBA::Short _result = service_request_explicit(idata, ilen, odata, olen, flags, CosTransactions::Control::_nil());
-
-	if (inConversation) {
-		returnStatus = _result;
-		returnData.push(new AtmiBroker::octetSeq(*odata));
-	}
-
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_async(): returning.");
-}
-
-// service_typed_buffer_request_async() -- Implements IDL operation "AtmiBroker::Service::service_typed_buffer_request_async".
-//
-void AtmiBroker_ServiceImpl::service_typed_buffer_request_async(const AtmiBroker::TypedBuffer& idata, CORBA::Long ilen, CORBA::Long flags) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_typed_buffer_request_async()");
-
-	AtmiBroker::ClientInfo client_info;
-	client_info.client_id = clientId;
-
-	char * callback_ior = ptrServer->get_client_callback(client_info);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "client callback_ior for id %d is %s", clientId, callback_ior);
-
-	if (callback_ior != NULL && strcmp(callback_ior, "") != 0) {
-		CORBA::Object_var tmp_ref = server_orb->string_to_object(callback_ior);
-		callbackRef = AtmiBroker::ClientCallback::_narrow(tmp_ref);
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   callback 	= %p", (void*) callbackRef);
-	} else
-		userlog(Level::getError(), loggerAtmiBroker_ServiceImpl, (char*) "   NO callback");
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   idata = %s", (const char*) idata.name);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   ilen = %d", ilen);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   flags = %d", flags);
-
-	AtmiBroker::TypedBuffer* odata;
-	CORBA::Long olen;
-
-	// TODO NO TRANSACTION
-	CORBA::Short _result = service_typed_buffer_request_explicit(idata, ilen, odata, olen, flags, CosTransactions::Control::_nil());
-
-	if (inConversation) {
-		returnStatus = _result;
-		returnTypedBufferData.push(new AtmiBroker::TypedBuffer(*odata));
-	}
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_typed_buffer_request_async(): returning.");
-}
-
-// service_response() -- Implements IDL operation "AtmiBroker::Service::service_response".
-//
-CORBA::Short AtmiBroker_ServiceImpl::service_response(AtmiBroker::octetSeq_out odata, CORBA::Long_out olen, CORBA::Long flags, CORBA::Long_out event) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_response() dataType: %s", dataType);
-
-	if (strcmp(dataType, X_OCTET) == 0 || strcmp(dataType, X_C_TYPE) == 0 || strcmp(dataType, X_COMMON) == 0) {
-		// TODO THIS SHOULD CHECK THE FLAGS TO WAIT FOR THE DATA.. (on the client-side most likely!)
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "    fronting octet array of size %d ", returnData.size());
-		if (returnData.size() > 0) {
-			AtmiBroker::octetSeq * aOctetSeq = (AtmiBroker::octetSeq *) returnData.front();
-			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "    fronted octet array %s", (char*) aOctetSeq->get_buffer());
-			odata = new AtmiBroker::octetSeq(*aOctetSeq);
-			olen = strlen((char*) odata->get_buffer());
-
-			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   odata = %s", odata->get_buffer());
-			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   olen  = %d", olen);
-			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   event = %d", event);
-
-			returnData.pop();
-
-			returnStatus = 1;
-			return returnStatus;
-		} else {
-			return -1;
-		}
-	}
-	return -1;
-}
-
-// service_typed_buffer_response() -- Implements IDL operation "AtmiBroker::Service::service_typed_buffer_response".
-//
-CORBA::Short AtmiBroker_ServiceImpl::service_typed_buffer_response(AtmiBroker::TypedBuffer_out odata, CORBA::Long_out olen, CORBA::Long flags, CORBA::Long_out event) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_typed_buffer_response() dataType %s", dataType);
-
-	if (strcmp(dataType, TYPE1) == 0 ) {
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "    fronting typed buffer of size %d ", returnTypedBufferData.size());
-		AtmiBroker::TypedBuffer * aTypedBuffer = (AtmiBroker::TypedBuffer *) returnTypedBufferData.front();
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "    fronted typed buffer %p", aTypedBuffer);
-		odata = new AtmiBroker::TypedBuffer(*aTypedBuffer);
-		olen = sizeof(odata);
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "    fronted typed buffer %p", (void *) odata);
-
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   odata = %p", (void*) odata);
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   olen  = %d", olen);
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   event = %d", event);
-
-		returnTypedBufferData.pop();
-
-		returnStatus = 1;
-		return returnStatus;
-	}
-	return -1;
 }
 
 // serviceName() -- Accessor for IDL attribute "AtmiBroker::Service::serviceName".
@@ -323,39 +166,16 @@ void AtmiBroker_ServiceImpl::mytpreturn(int rval, long rcode, char* data, long l
 
 	endConnectionTransactionAssociation();
 
-	if (strcmp(dataType, X_OCTET) == 0 || strcmp(dataType, X_C_TYPE) == 0 || strcmp(dataType, X_COMMON) == 0) {
-		if (!CORBA::is_nil(callbackRef)) //dispatcherThread->
-		{
-			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "Calling back ");
-			AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(len, len, (unsigned char *) data, true);
-			callbackRef->client_callback(aOctetSeq, len, flags, id); //dispatcherThread->
-			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "Called back ");
-			aOctetSeq = NULL;
-		} else {
-			AtmiBroker::octetSeq * aOctetSeq = new AtmiBroker::octetSeq(len, len, (unsigned char *) data, true);
-			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "pushing octet data %s", (char*) aOctetSeq->get_buffer());
-			returnData.push(aOctetSeq);
-			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "pushed octet  data %s", (char*) aOctetSeq->get_buffer());
-		}
-	} else {
-		if (!CORBA::is_nil(callbackRef)) {
-			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "Calling back ");
-			AtmiBroker::TypedBuffer_var aTypedBuffer = new AtmiBroker::TypedBuffer((AtmiBroker::TypedBuffer&) *data);
-			callbackRef->client_typed_buffer_callback(aTypedBuffer, len, flags, id); //dispatcherThread->
-			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "Called back ");
-		} else {
-			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "pushing typed buffer data %p", data);
-			AtmiBroker::TypedBuffer * aTypedBuffer = new AtmiBroker::TypedBuffer((AtmiBroker::TypedBuffer&) *data);
-			returnTypedBufferData.push(aTypedBuffer); //dispatcherThread->
-			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "pushed typed buffer data %p", data);
-		}
-	}
+	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "Calling back ");
+	// TODO TYPED BUFFER AtmiBroker::TypedBuffer_var aTypedBuffer = new AtmiBroker::TypedBuffer((AtmiBroker::TypedBuffer&) *data);
+	AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(len, len, (unsigned char *) data, true);
+	callbackRef->enqueue_data(aOctetSeq, len, flags, id);
+	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "Called back ");
+	aOctetSeq = NULL;
 
-	inConversation = false; //dispatcherThread->
-	conversationCount = 0; //dispatcherThread->
-	inUse = false; //dispatcherThread->
-	clientId = 0; //dispatcherThread->
-	callbackRef = NULL; //dispatcherThread->
+	inUse = false;
+	clientId = 0;
+	callbackRef = NULL;
 	free(idStr);
 }
 
@@ -363,34 +183,12 @@ void AtmiBroker_ServiceImpl::mytpreturn(int rval, long rcode, char* data, long l
 //
 int AtmiBroker_ServiceImpl::tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "tpsend()");
-
-	if (strcmp(dataType, X_OCTET) == 0 || strcmp(dataType, X_C_TYPE) == 0 || strcmp(dataType, X_COMMON) == 0) {
-		AtmiBroker::octetSeq * aOctetSeq = new AtmiBroker::octetSeq(ilen, ilen, (unsigned char *) idata, true);
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "pushing octet data %s", (char*) aOctetSeq->get_buffer());
-		returnData.push(aOctetSeq);
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "pushed octet  data %s", (char*) aOctetSeq->get_buffer());
-	} else {
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "pushing typed buffer data %p", idata);
-		AtmiBroker::TypedBuffer * aTypedBuffer = new AtmiBroker::TypedBuffer((AtmiBroker::TypedBuffer&) *idata);
-		returnTypedBufferData.push(aTypedBuffer);
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "pushed typed buffer data %p", idata);
-	}
+	// TODO TYPED BUFFER AtmiBroker::TypedBuffer * aTypedBuffer = new AtmiBroker::TypedBuffer((AtmiBroker::TypedBuffer&) *idata);
+	AtmiBroker::octetSeq * aOctetSeq = new AtmiBroker::octetSeq(ilen, ilen, (unsigned char *) idata, true);
+	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "pushing octet data %s", (char*) aOctetSeq->get_buffer());
+	//TODO returnData.push(aOctetSeq);
+	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "pushed octet  data %s", (char*) aOctetSeq->get_buffer());
 	return 1;
-}
-
-CORBA::Boolean AtmiBroker_ServiceImpl::isInConversation() {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "isInConversation() %d", inConversation);
-	return inConversation;
-}
-
-void AtmiBroker_ServiceImpl::setInConversation(CORBA::Boolean aInd) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "setInConversation() %d", aInd);
-	conversationCount = 0;
-	inConversation = aInd;
-	for (; returnData.size() > 0;)
-		returnData.pop();
-	for (; returnTypedBufferData.size() > 0;)
-		returnTypedBufferData.pop();
 }
 
 CORBA::Boolean AtmiBroker_ServiceImpl::isInUse() {
@@ -417,11 +215,6 @@ void AtmiBroker_ServiceImpl::createConnectionTransactionAssociation(CosTransacti
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "createConnectionTransactionAssociation %p", control);
 
 	try {
-		if (CORBA::is_nil(control)) {
-			userlog(Level::getError(), loggerAtmiBroker_ServiceImpl, (char*) "NO  TRANSACTION associated with this call");
-			return;
-		}
-
 		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "about to duplicate control: %p", (void*) control);
 		tx_control = CosTransactions::Control::_duplicate(control);
 		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "control: %p", (void*) tx_control);

@@ -91,51 +91,22 @@ public class AtmiBroker_ServiceImpl extends ServicePOA {
 		return ior;
 	}
 
-	public short service_request_explicit(byte[] idata, int ilen, octetSeqHolder odata, IntHolder olen, int flags, Control control) {
+	public void send_data(boolean inConversation, byte[] idata, int ilen, int flags, Control control) {
 		// TODO HANDLE CONTROL
-		short returnStatus = 0;
-		AtmiBroker_Response serviceRequest;
 		try {
-			serviceRequest = atmiBroker_CallbackConverter.serviceRequest(callback, serviceName, idata, ilen, flags);
-			odata.value = serviceRequest.getBytes();
-			olen.value = serviceRequest.getLength();
+			// THIS IS THE FIRST CALL
+			if (!inConversation) {
+				AtmiBroker_Response serviceRequest = atmiBroker_CallbackConverter.serviceRequest(callback, serviceName, idata, ilen, flags);
+			}
+			// TODO THIS SHOULD INVOKE THE CLIENT HANDLER
+			// odata.value = serviceRequest.getBytes();
+			// olen.value = serviceRequest.getLength();
 		} catch (Throwable t) {
 			log.error("Could not service the request");
 		}
-		return returnStatus;
 	}
 
 	public String serviceName() {
 		return serviceName;
-	}
-
-	public void service_request_async(byte[] idata, int ilen, int flags) {
-		log.error("NO-OP service_request_async");
-		// TODO Auto-generated method stub
-
-	}
-
-	public short service_response(octetSeqHolder odata, IntHolder olen, int flags, IntHolder event) {
-		log.error("NO-OP service_response");
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public void service_typed_buffer_request_async(TypedBuffer idata, int ilen, int flags) {
-		log.error("NO-OP service_typed_buffer_request_async");
-		// TODO Auto-generated method stub
-
-	}
-
-	public short service_typed_buffer_request_explicit(TypedBuffer idata, int ilen, TypedBufferHolder odata, IntHolder olen, int flags, Control control) {
-		log.error("NO-OP service_typed_buffer_request_explicit_ior");
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public short service_typed_buffer_response(TypedBufferHolder odata, IntHolder olen, int flags, IntHolder event) {
-		log.error("NO-OP service_typed_buffer_response");
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

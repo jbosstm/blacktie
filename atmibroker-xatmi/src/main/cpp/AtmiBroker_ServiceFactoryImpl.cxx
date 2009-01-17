@@ -129,15 +129,13 @@ AtmiBroker_ServiceFactoryImpl::~AtmiBroker_ServiceFactoryImpl() {
 
 // get_service() -- Implements IDL operation "AtmiBroker::ServiceFactory::get_service".
 //
-AtmiBroker::Service_ptr AtmiBroker_ServiceFactoryImpl::get_service(CORBA::Long client_id, CORBA::Boolean conversation, CORBA::String_out id) throw (CORBA::SystemException ) {
+AtmiBroker::Service_ptr AtmiBroker_ServiceFactoryImpl::get_service(CORBA::Long client_id, CORBA::String_out id) throw (CORBA::SystemException ) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "get_service()");
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "conversation %d", conversation);
 
 	int index = 0;
 	CORBA::Boolean found = false;
 	for (index = 0; index < serviceInfo.maxSize; index++) {
 		if (servantVector[index] != NULL && !servantVector[index]->isInUse()) {
-			servantVector[index]->setInConversation(conversation);
 			servantVector[index]->setInUse(true);
 			servantVector[index]->setClientId(client_id);
 			found = true;
@@ -167,15 +165,13 @@ AtmiBroker::Service_ptr AtmiBroker_ServiceFactoryImpl::get_service(CORBA::Long c
 // get_service_id() -- Implements IDL operation "AtmiBroker::ServiceFactory::get_service_id".
 //
 char *
-AtmiBroker_ServiceFactoryImpl::get_service_id(CORBA::Long client_id, CORBA::Boolean conversation, CORBA::String_out id) throw (CORBA::SystemException ) {
+AtmiBroker_ServiceFactoryImpl::get_service_id(CORBA::Long client_id, CORBA::String_out id) throw (CORBA::SystemException ) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "get_service_id()");
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "conversation %d", conversation);
 
 	int index = 0;
 	CORBA::Boolean found = false;
 	for (index = 0; index < serviceInfo.maxSize; index++) {
 		if (servantVector[index] != NULL && !servantVector[index]->isInUse()) {
-			servantVector[index]->setInConversation(conversation);
 			servantVector[index]->setInUse(true);
 			servantVector[index]->setClientId(client_id);
 			found = true;
@@ -211,7 +207,6 @@ void AtmiBroker_ServiceFactoryImpl::end_conversation(CORBA::Long client_id, cons
 	if (servantVector[index]->isInUse()) {
 		userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "conversation ended for %s", id);
 		servantVector[index]->setInUse(false);
-		servantVector[index]->setInConversation(false);
 	} else
 		userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "conversation ALREADY ended for %s", id);
 

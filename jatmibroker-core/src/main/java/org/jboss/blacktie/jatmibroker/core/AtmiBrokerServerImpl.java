@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.administration.BTServerAdministration;
 import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServer;
 import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServiceManager;
+import org.omg.CORBA.IntHolder;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.ORBPackage.InvalidName;
@@ -58,6 +59,7 @@ import org.omg.PortableServer.POAPackage.WrongPolicy;
 
 import AtmiBroker.Server;
 import AtmiBroker.ServerHelper;
+import AtmiBroker.octetSeqHolder;
 
 public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerServer, Runnable {
 
@@ -324,5 +326,9 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 			}
 		}
 		return serviceManagerProxy;
+	}
+
+	public short dequeue_data(octetSeqHolder odata, IntHolder olen, int flags, IntHolder event) {
+		return clientCallbackImpl.dequeue_data(odata, olen, flags, event);
 	}
 }

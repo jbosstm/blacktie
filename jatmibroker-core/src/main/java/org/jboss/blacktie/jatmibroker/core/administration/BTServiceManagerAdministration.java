@@ -21,17 +21,7 @@
 // copyright 2006, 2008 BreakThruIT
 package org.jboss.blacktie.jatmibroker.core.administration;
 
-import AtmiBroker.TypedBuffer;
-
 public interface BTServiceManagerAdministration {
 
 	java.lang.String serviceName() throws Exception;
-
-	void service_request_async(java.lang.String ior, byte[] idata, int ilen, int flags) throws Exception;
-
-	void service_typed_buffer_request_async(java.lang.String ior, TypedBuffer idata, int ilen, int flags) throws Exception;
-
-	short service_response(java.lang.String ior, AtmiBroker.octetSeqHolder odata, org.omg.CORBA.IntHolder olen, int flags, org.omg.CORBA.IntHolder event) throws Exception;
-
-	short service_typed_buffer_response(java.lang.String ior, AtmiBroker.TypedBufferHolder odata, org.omg.CORBA.IntHolder olen, int flags, org.omg.CORBA.IntHolder event) throws Exception;
 }
