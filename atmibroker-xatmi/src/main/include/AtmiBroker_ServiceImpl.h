@@ -77,8 +77,9 @@ public:
 	//
 	char* serviceName() throw (CORBA::SystemException);
 
-	void mytpreturn(int rval, long rcode, char* data, long len, long flags);
+	void tpreturn(int rval, long rcode, char* data, long len, long flags);
 	int tpsend(int id, char* idata, long ilen, long flags, long *revent);
+	int tprecv(int id, char ** odata, long *olen, long flags, long* event);
 
 	CORBA::Boolean isInUse();
 	void setInUse(CORBA::Boolean anInd);

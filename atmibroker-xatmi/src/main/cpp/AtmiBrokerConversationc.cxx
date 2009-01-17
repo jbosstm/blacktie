@@ -65,17 +65,26 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 }
 
 int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
-	if (clientinit() != -1)
-		return AtmiBrokerConversation::get_instance()->tpsend(id, idata, ilen, flags, revent);
+	AtmiBroker_ServiceImpl* thread = (AtmiBroker_ServiceImpl*) getSpecific(1);
+	if (thread == NULL)
+		if (clientinit() != -1)
+			return AtmiBrokerConversation::get_instance()->tpsend(id, idata, ilen, flags, revent);
+		else
+			return -1;
 	else
-		return -1;
+		thread->tpsend(id, idata, ilen, flags, revent);
 }
 
 int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
-	if (clientinit() != -1)
-		return AtmiBrokerConversation::get_instance()->tprecv(id, odata, olen, flags, event);
+	AtmiBroker_ServiceImpl* thread = (AtmiBroker_ServiceImpl*) getSpecific(1);
+	if (thread == NULL)
+		if (clientinit() != -1)
+			return AtmiBrokerConversation::get_instance()->tprecv(id, odata, olen, flags, event);
+		else
+			return -1;
 	else
-		return -1;
+		thread->tprecv(id, odata, olen, flags, revent);
+
 }
 
 int tpdiscon(int id) {
@@ -102,5 +111,5 @@ int tpgetrply(int *id, char ** odata, long *olen, long flags) {
 void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 	// TJJ
 	AtmiBroker_ServiceImpl* thread = (AtmiBroker_ServiceImpl*) getSpecific(1);
-	thread->mytpreturn(rval, rcode, data, len, flags);
+	thread->tpreturn(rval, rcode, data, len, flags);
 }
