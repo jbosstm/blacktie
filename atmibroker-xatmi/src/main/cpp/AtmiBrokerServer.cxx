@@ -87,14 +87,14 @@ int serverinit(int argc, char ** argv) {
 	if (!serverInitialized) {
 		userlog(Level::getInfo(), loggerAtmiBrokerServer, (char*) "serverinit called");
 
-		if (AtmiBrokerEnv::get_instance()->getenv("LOG4CXXCONFIG") != NULL) {
-			PropertyConfigurator::configure(AtmiBrokerEnv::get_instance()->getenv("LOG4CXXCONFIG"));
+		if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG") != NULL) {
+			PropertyConfigurator::configure(AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG"));
 		} else {
 			BasicConfigurator::configure();
 		}
 
 		try {
-			initOrb("server", server_orb);
+			initOrb((char*) "server", server_orb);
 			AtmiBrokerMem::get_instance();
 			getRootPOAAndManager(server_orb, server_root_poa, server_root_poa_manager);
 			getNamingServiceAndContext(server_orb, server_default_context, server_name_context);

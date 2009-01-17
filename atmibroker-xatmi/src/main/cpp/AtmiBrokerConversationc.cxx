@@ -72,7 +72,7 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 		else
 			return -1;
 	else
-		thread->tpsend(id, idata, ilen, flags, revent);
+		return thread->tpsend(id, idata, ilen, flags, revent);
 }
 
 int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
@@ -83,8 +83,7 @@ int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 		else
 			return -1;
 	else
-		thread->tprecv(id, odata, olen, flags, revent);
-
+		return thread->tprecv(id, odata, olen, flags, event);
 }
 
 int tpdiscon(int id) {

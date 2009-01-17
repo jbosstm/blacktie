@@ -105,9 +105,6 @@ void AtmiBroker_ServiceImpl::send_data(CORBA::Boolean inConversation, const Atmi
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   ilen = %d", ilen);
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   flags = %d", flags);
 
-	AtmiBroker::octetSeq* odata;
-	CORBA::Long olen;
-
 	// TODO TYPED BUFFER dataType = (char*) TYPE1;
 	// TODO TYPED BUFFER m_typedBuffer = &idata;
 	dataType = (char*) X_OCTET;
@@ -181,9 +178,24 @@ void AtmiBroker_ServiceImpl::tpreturn(int rval, long rcode, char* data, long len
 // tpsend()
 //
 int AtmiBroker_ServiceImpl::tpsend(int id, char* idata, long ilen, long flags, long *revent) {
+	// Assemble the ID out
+	char *idStr = (char*) malloc(sizeof(char) * (XATMI_SERVICE_NAME_LENGTH *2));
+	strcpy(idStr, m_serviceName);
+	strcat(idStr, ":");
+	// ltoa
+	std::ostringstream oss;
+	oss << id << std::dec;
+	const char* indexStr = oss.str().c_str();
+
+	strcat(idStr, indexStr);
+	CORBA::String_var idout = CORBA::string_dup(idStr);
+
+	// Assemble the buffer out
+	AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(ilen, ilen, (unsigned char *) idata, true);
+
+	// Send the buffer
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "tpsend octet data %s", (char*) aOctetSeq->get_buffer());
-	AtmiBroker::octetSeq * aOctetSeq = new AtmiBroker::octetSeq(ilen, ilen, (unsigned char *) idata, true);
-	callbackRef->enqueue_data(aOctetSeq, len, flags, id);
+	callbackRef->enqueue_data(aOctetSeq, ilen, flags, idout);
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "tpsent octet data %s", (char*) aOctetSeq->get_buffer());
 	return 0;
 }

@@ -80,7 +80,7 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size) {
 	if (strcmp(type, "X_OCTET") == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "tpalloc mallocing character array ");
 		memPtr = (char*) malloc((size + 1) * sizeof(char));
-		subtype = "";
+		subtype = (char*)"";
 		memPtr[size] = NULL;
 	} else if (strcmp(type, TYPE1) == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "tpalloc mallocing TYPE1 struct ");
@@ -88,7 +88,7 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size) {
 			size = 1024;
 		memPtr = (char*) malloc(size * sizeof(char));
 		memset(memPtr, '\0', size);
-		subtype = "";
+		subtype = (char*)"";
 	} else if (strncmp(type, "X_COMMON", 8) == 0 || strncmp(type, "X_C_TYPE", 8) == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "tpalloc mallocing X_COMMON/X_C_TYPE");
 		if (size < 1024)

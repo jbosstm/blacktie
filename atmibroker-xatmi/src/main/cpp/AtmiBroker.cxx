@@ -179,14 +179,14 @@ int clientinit() {
 
 		signal(SIGINT, client_termination_handler_callback);
 
-		if (AtmiBrokerEnv::get_instance()->getenv("LOG4CXXCONFIG") != NULL) {
-			PropertyConfigurator::configure(AtmiBrokerEnv::get_instance()->getenv("LOG4CXXCONFIG"));
+		if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG") != NULL) {
+			PropertyConfigurator::configure(AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG"));
 		} else {
 			BasicConfigurator::configure();
 		}
 
 		try {
-			initOrb("client", client_orb);
+			initOrb((char*) "client", client_orb);
 			getNamingServiceAndContext(client_orb, client_default_context, client_name_context);
 
 			getRootPOAAndManager(client_orb, client_root_poa, client_root_poa_manager);
@@ -250,7 +250,6 @@ int clientdone() {
 	}
 	return 0;
 }
-
 
 int * _get_tperrno(void) {
 	userlog(Level::getDebug(), loggerAtmiBroker, (char*) "_get_tperrno");
