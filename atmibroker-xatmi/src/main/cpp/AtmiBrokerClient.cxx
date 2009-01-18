@@ -115,17 +115,14 @@ void AtmiBrokerClient::getServer(ClientServerInfo* aClientServerInfo, char* aSer
 void AtmiBrokerClient::createAndRegisterCallback(ClientServerInfo * aClientServerInfo) {
 	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "createAndRegisterCallback ");
 
-	CORBA::Object_ptr tmp_ref;
-	AtmiBroker_ClientCallbackImpl * tmp_servant;
-
 	if (CORBA::is_nil(clientCallback)) {
-		tmp_servant = new AtmiBroker_ClientCallbackImpl(client_poa);
-		userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "tmp_servant %p", (void*) tmp_servant);
+		clientCallbackImpl = new AtmiBroker_ClientCallbackImpl(client_poa);
+		userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "tmp_servant %p", (void*) clientCallbackImpl);
 
-		client_poa->activate_object(tmp_servant);
-		userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "activated tmp_servant %p", (void*) tmp_servant);
+		client_poa->activate_object(clientCallbackImpl);
+		userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "activated tmp_servant %p", (void*) clientCallbackImpl);
 
-		tmp_ref = client_poa->servant_to_reference(tmp_servant);
+		CORBA::Object_ptr tmp_ref = client_poa->servant_to_reference(clientCallbackImpl);
 		clientCallback = AtmiBroker::ClientCallback::_narrow(tmp_ref);
 		clientCallbackIOR = client_orb->object_to_string(clientCallback);
 		userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "created AtmiBroker::ClientCallback %s", (char*) clientCallbackIOR);
@@ -147,8 +144,8 @@ void AtmiBrokerClient::createAndRegisterCallback(ClientServerInfo * aClientServe
 	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "activated poa - started processing requests ");
 }
 
-AtmiBroker::ClientCallback_var AtmiBrokerClient::getClientCallback() {
-	return clientCallback;
+AtmiBroker_ClientCallbackImpl * AtmiBrokerClient::getClientCallback() {
+	return clientCallbackImpl;
 }
 
 

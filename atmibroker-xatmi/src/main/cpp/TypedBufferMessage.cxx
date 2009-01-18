@@ -169,7 +169,7 @@ void TypedBufferMessage::addLong(char * name, long val) {
 	aTypedBufferMember->name = strdup(name);
 
 	char aStr[10];
-	sprintf(aStr, "%u", val);
+	sprintf(aStr, "%li", val); // TODO WAS u
 	aTypedBufferMember->value = strdup(aStr);
 
 	typedBuffer.members.length(typedBuffer.members.length() + 1);
@@ -452,7 +452,7 @@ short TypedBufferMessage::getShortItemDef(char * name, int itemNo, short val) {
 			if (count == itemNo) {
 				userlog(Level::getInfo(), loggerTypedBufferMessage, (char*) "found name: %s ", name);
 				short aShort;
-				sscanf(typedBuffer.members[i].value, "%d", &aShort);
+				sscanf(typedBuffer.members[i].value, "%hi", &aShort); // TODO was d
 				return aShort;
 			}
 		}
@@ -477,7 +477,7 @@ long TypedBufferMessage::getLongItemDef(char * name, int itemNo, long val) {
 			if (count == itemNo) {
 				userlog(Level::getInfo(), loggerTypedBufferMessage, (char*) "found name: %s ", name);
 				long aLong;
-				sscanf(typedBuffer.members[i].value, "%u", &aLong);
+				sscanf(typedBuffer.members[i].value, "%li", &aLong); // TODO was u
 				return aLong;
 			}
 		}
@@ -716,7 +716,7 @@ void TypedBufferMessage::setLongItem(char * name, int itemNo, long val) {
 			if (count == itemNo) {
 				userlog(Level::getInfo(), loggerTypedBufferMessage, (char*) "found name: %s ", name);
 				char str[15];
-				sprintf(str, "%u", val);
+				sprintf(str, "%li", val); // TODO was u
 				typedBuffer.members[i].value = strdup(str);
 			}
 		}

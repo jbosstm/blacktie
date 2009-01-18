@@ -49,6 +49,7 @@
 #endif
 
 #include "AtmiBrokerPoaFac.h"
+#include "AtmiBroker_ClientCallbackImpl.h"
 
 #include <iostream>
 #include <vector>
@@ -89,13 +90,14 @@ public:
 
 	long getQueueId(char* aQueueName);
 
-	AtmiBroker::ClientCallback_var getClientCallback();
+	AtmiBroker_ClientCallbackImpl * getClientCallback();
 
 protected:
 
 	std::vector<char *> serviceNameArray;
 	std::vector<ClientServerInfo*> clientServerVector;
 	AtmiBroker::ClientCallback_var clientCallback;
+	AtmiBroker_ClientCallbackImpl * clientCallbackImpl;
 	CORBA::String_var clientCallbackIOR;
 };
 

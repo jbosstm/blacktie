@@ -87,6 +87,10 @@ void AtmiBroker_ClientCallbackImpl::enqueue_data(const AtmiBroker::octetSeq& ida
 CORBA::Short AtmiBroker_ClientCallbackImpl::dequeue_data(AtmiBroker::octetSeq_out odata, CORBA::Long_out olen, CORBA::Long flags, CORBA::Long_out event) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "service_response()");
 
+	if (client_orb->work_pending()) {
+		client_orb->perform_work();
+	}
+
 	// TODO THIS SHOULD CHECK THE FLAGS TO WAIT FOR THE DATA.. (on the client-side most likely!)
 	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "    fronting octet array of size %d ", returnData.size());
 	if (returnData.size() > 0) {

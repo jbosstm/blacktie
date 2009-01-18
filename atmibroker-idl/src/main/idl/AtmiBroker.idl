@@ -64,11 +64,7 @@ module AtmiBroker {
 		oneway void enqueue_data(in octetSeq idata,
 				  in long ilen, 
 				  in long flags,
-				  in string id);	
- 		short dequeue_data(out octetSeq odata,
-				  out long    olen,
-				  in long flags,
-				  out long event);		  
+				  in string id);	  
 
 	};
 
