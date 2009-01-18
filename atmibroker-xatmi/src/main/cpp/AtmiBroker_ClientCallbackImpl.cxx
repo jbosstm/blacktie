@@ -87,7 +87,7 @@ void AtmiBroker_ClientCallbackImpl::enqueue_data(const AtmiBroker::octetSeq& ida
 CORBA::Short AtmiBroker_ClientCallbackImpl::dequeue_data(AtmiBroker::octetSeq_out odata, CORBA::Long_out olen, CORBA::Long flags, CORBA::Long_out event) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "service_response()");
 
-	if (client_orb->work_pending()) {
+	while (client_orb->work_pending()) {
 		client_orb->perform_work();
 	}
 
