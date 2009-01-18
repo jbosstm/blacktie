@@ -270,21 +270,7 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 	}
 
 	public void run() {
-		log.error("This uses a busy wait implementation which delays work for up to five seconds");
-		synchronized (this) {
-			while (!finished) {
-				log.debug("work_pending " + AtmiBrokerServerImpl.orb.work_pending());
-				if (AtmiBrokerServerImpl.orb.work_pending()) {
-					AtmiBrokerServerImpl.orb.perform_work();
-				} else {
-					try {
-						this.wait(5000);
-					} catch (Exception e) {
-						log.error("Exception " + e.getMessage(), e);
-					}
-				}
-			}
-		}
+		AtmiBrokerServerImpl.orb.run();
 	}
 
 	public synchronized void stopThread() {

@@ -55,18 +55,20 @@ bool serverInitialized;
 AtmiBroker_ServerImpl * ptrServer;
 AtmiBrokerServerFac * ptrServerFactory;
 
-/*
- CosNaming::NamingContext_ptr            create_name_context(
- CosNaming::NamingContextExt_ptr default_context,
- const char* name_string
- ) throw (
- CORBA::Exception
- );
- */
+
+Worker* server_worker;
+CORBA::ORB_var server_orb;
+PortableServer::POA_var server_root_poa;
+PortableServer::POAManager_var server_root_poa_manager;
+CosNaming::NamingContextExt_var server_default_context;
+CosNaming::NamingContext_var server_name_context;
+PortableServer::POA_var server_poa;
+AtmiBrokerPoaFac * serverPoaFactory;
+
 
 void createServerPOA();
 
-extern void shutdownBindings(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, PortableServer::POAManager_var& poa_manager, CosNaming::NamingContextExt_var& ctx, CosNaming::NamingContext_var& nameCtx, PortableServer::POA_var& innerPoa);
+
 
 int serverrun() {
 	int toReturn = 0;
@@ -94,7 +96,7 @@ int serverinit(int argc, char ** argv) {
 		}
 
 		try {
-			initOrb((char*) "server", server_orb);
+			initOrb((char*) "server", server_worker, server_orb);
 			AtmiBrokerMem::get_instance();
 			getRootPOAAndManager(server_orb, server_root_poa, server_root_poa_manager);
 			getNamingServiceAndContext(server_orb, server_default_context, server_name_context);
@@ -120,10 +122,16 @@ int serverinit(int argc, char ** argv) {
 			userlog(Level::getError(), loggerAtmiBrokerServer, (char*) "serverinit - Unexpected CORBA exception: %s", e._name());
 			tperrno = TPESYSTEM;
 
-			// TODO CLEAN UP TRANSACTION CURRENT, LOG FACTORY
-			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverinit shut down services ");
+			// TODO CLEAN UP TRANSACTION CURRENT
+			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverinit deleting services");
+			AtmiBrokerMem::get_instance()->freeAllMemory();
+			AtmiBrokerServiceFacMgr::discard_instance();
+			//TODO READD AtmiBrokerNotify::discard_instance();
+			AtmiBrokerOTS::discard_instance();
+			AtmiBrokerEnv::discard_instance();
+			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverinit deleted services");
 
-			shutdownBindings(server_orb, server_root_poa, server_root_poa_manager, server_default_context, server_name_context, server_poa);
+			shutdownBindings(server_orb, server_root_poa, server_root_poa_manager, server_default_context, server_name_context, server_poa, server_worker);
 			return -1;
 		}
 		userlog(Level::getInfo(), loggerAtmiBrokerServer, (char*) "serverinit done");
@@ -154,10 +162,16 @@ void serverdone() {
 			}
 			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone deleted Server Factory ");
 
-			// This should be picked up by clientdone
+			// TODO CLEAN UP TRANSACTION CURRENT
+			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone deleting services");
 			AtmiBrokerMem::get_instance()->freeAllMemory();
+			AtmiBrokerServiceFacMgr::discard_instance();
+			//TODO READD AtmiBrokerNotify::discard_instance();
+			AtmiBrokerOTS::discard_instance();
+			AtmiBrokerEnv::discard_instance();
+			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone deleted services");
 
-			shutdownBindings(server_orb, server_root_poa, server_root_poa_manager, server_default_context, server_name_context, server_poa);
+			shutdownBindings(server_orb, server_root_poa, server_root_poa_manager, server_default_context, server_name_context, server_poa, server_worker);
 
 			userlog(Level::getInfo(), loggerAtmiBrokerServer, (char*) "serverdone returning");
 			serverInitialized = false;

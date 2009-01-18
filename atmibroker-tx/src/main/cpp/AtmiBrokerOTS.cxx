@@ -33,6 +33,8 @@
 
 #include "tx.h"
 
+#include "Worker.h"
+
 #include "log4cxx/logger.h"
 using namespace log4cxx;
 using namespace log4cxx::helpers;
@@ -62,7 +64,7 @@ AtmiBrokerOTS::AtmiBrokerOTS() {
 	nextControlId = 1;
 	currentImpl = NULL;
 	tx_current = NULL;
-	initOrb("client", ots_orb);
+	initOrb((char*) "client", ots_worker, ots_orb);
 	getNamingServiceAndContext(ots_orb, ots_namingContextExt, ots_namingContext);
 }
 

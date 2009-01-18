@@ -43,6 +43,8 @@
 #include <iostream>
 #include <vector>
 
+#include "Worker.h"
+
 #include "CurrentImpl.h"
 
 extern "C" {
@@ -100,6 +102,7 @@ private:
 
 	CORBA::Policy_var transactionPolicy;
 
+	Worker* ots_worker;
 	CORBA::ORB_var ots_orb;
 	CosNaming::NamingContextExt_var ots_namingContextExt;
 	CosNaming::NamingContext_var ots_namingContext;

@@ -52,16 +52,18 @@
 #include "AtmiBrokerPoaFac.h"
 #include "AtmiBrokerServerFac.h"
 #include "AtmiBroker_ServerImpl.h"
+#include "Worker.h"
 
-extern ATMIBROKER_DLL CORBA::ORB_var server_orb;
-extern ATMIBROKER_DLL PortableServer::POA_var server_root_poa;
-extern ATMIBROKER_DLL PortableServer::POAManager_var server_root_poa_manager;
-extern ATMIBROKER_DLL CosNaming::NamingContextExt_var server_default_context;
-extern ATMIBROKER_DLL CosNaming::NamingContext_var server_name_context;
-extern ATMIBROKER_DLL PortableServer::POA_var server_poa;
-extern ATMIBROKER_DLL AtmiBrokerPoaFac * serverPoaFactory;
+extern Worker* server_worker;
+extern CORBA::ORB_var server_orb;
+extern PortableServer::POA_var server_root_poa;
+extern PortableServer::POAManager_var server_root_poa_manager;
+extern CosNaming::NamingContextExt_var server_default_context;
+extern CosNaming::NamingContext_var server_name_context;
+extern PortableServer::POA_var server_poa;
+extern AtmiBrokerPoaFac * serverPoaFactory;
 
-extern ATMIBROKER_DLL AtmiBrokerServerFac * ptrServerFactory;
-extern ATMIBROKER_DLL AtmiBroker_ServerImpl * ptrServer;
+extern AtmiBrokerServerFac * ptrServerFactory;
+extern AtmiBroker_ServerImpl * ptrServer;
 
 #endif

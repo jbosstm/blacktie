@@ -60,14 +60,7 @@ int _tperrno = 0;
 long _tpurcode = -1;
 
 // ORB and Naming Service References
-
-CORBA::ORB_var server_orb;
-PortableServer::POA_var server_root_poa;
-PortableServer::POAManager_var server_root_poa_manager;
-CosNaming::NamingContextExt_var server_default_context;
-CosNaming::NamingContext_var server_name_context;
-PortableServer::POA_var server_poa;
-AtmiBrokerPoaFac * serverPoaFactory;
+Worker* client_worker;
 CORBA::ORB_var client_orb;
 PortableServer::POA_var client_root_poa;
 PortableServer::POAManager_var client_root_poa_manager;
@@ -106,72 +99,6 @@ void createClientCallbackPOA();
 void createClientBindingPolicies();
 void destroyAllLogs();
 
-void shutdownBindings(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, PortableServer::POAManager_var& poa_manager, CosNaming::NamingContextExt_var& ctx, CosNaming::NamingContext_var& nameCtx, PortableServer::POA_var& innerPoa) {
-
-	userlog(Level::getDebug(), loggerAtmiBroker, (char*) "shutdownBindings deleting Service Factory Manager ");
-	AtmiBrokerServiceFacMgr::discard_instance();
-	userlog(Level::getDebug(), loggerAtmiBroker, (char*) "shutdownBindings deleted Service Factory Manager ");
-	userlog(Level::getDebug(), loggerAtmiBroker, (char*) "shutdownBindings deleting Service Factory Manager ");
-	//TODO READD AtmiBrokerNotify::discard_instance();
-	userlog(Level::getDebug(), loggerAtmiBroker, (char*) "shutdownBindings deleted Service Factory Manager ");
-	userlog(Level::getDebug(), loggerAtmiBroker, (char*) "shutdownBindings deleting AtmiBrokerOTS");
-	AtmiBrokerOTS::discard_instance();
-	userlog(Level::getDebug(), loggerAtmiBroker, (char*) "shutdownBindings deleted AtmiBrokerOTS");
-
-	userlog(Level::getInfo(), loggerAtmiBroker, "Closing Bindings");
-
-	if (!CORBA::is_nil(orbRef)) {
-		userlog(Level::getDebug(), loggerAtmiBroker, "shutdownBindings shutting down ORB ");
-		try {
-			orbRef->shutdown(1);
-			userlog(Level::getDebug(), loggerAtmiBroker, "shutdownBindings shut down ORB ");
-		} catch (CORBA::Exception &ex) {
-			userlog(Level::getError(), loggerAtmiBroker, (char*) "shutdownBindings Unexpected CORBA exception shutting down orb: %s", ex._name());
-		} catch (...) {
-			userlog(Level::getFatal(), loggerAtmiBroker, (char*) "shutdownBindings Unexpected fatal exception");
-		}
-		//}
-		//if (!CORBA::is_nil(orbRef)) {
-		try {
-			// TODO DOES NOT WORK WHEN NO ORB WORK DONE
-			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "shutdownBindings destroying ORB ");
-			orbRef->destroy();
-		} catch (CORBA::Exception &ex) {
-			userlog(Level::getError(), loggerAtmiBroker, (char*) "shutdownBindings Unexpected CORBA exception destroying orb: %s", ex._name());
-		}
-	}
-
-	// TODO
-	//	if (innerPoa) {
-	//innerPoa->destroy(true, true);
-	//CORBA::release(innerPoa);
-	innerPoa = NULL;
-	//	}
-	//	if (ctx) {
-	//CORBA::release(ctx);
-	ctx = NULL;
-	//	}
-	//	if (nameCtx) {
-	//CORBA::release(nameCtx);
-	nameCtx = NULL;
-	//	}
-	//	if (poa_manager) {
-	//poa_manager->deactivate();
-	//CORBA::release(poa_manager);
-	poa_manager = NULL;
-	//	}
-	//	if (poa) {
-	//poa->destroy(true, true);
-	//CORBA::release(poa);
-	poa = NULL;
-	//	}
-	orbRef = NULL;
-
-	AtmiBrokerEnv::discard_instance();
-
-	userlog(Level::getInfo(), loggerAtmiBroker, (char*) "Closed Bindings");
-}
-
 int clientinit() {
 	if (!clientInitialized) {
 		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientinit called");
@@ -186,7 +113,7 @@ int clientinit() {
 		}
 
 		try {
-			initOrb((char*) "client", client_orb);
+			initOrb((char*) "client", client_worker, client_orb);
 			getNamingServiceAndContext(client_orb, client_default_context, client_name_context);
 
 			getRootPOAAndManager(client_orb, client_root_poa, client_root_poa_manager);
@@ -218,9 +145,16 @@ int clientinit() {
 				userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleted Corba Client ");
 			}
 
+			// TODO CLEAN UP TRANSACTION CURRENT
+			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleting services");
 			AtmiBrokerMem::get_instance()->freeAllMemory();
+			AtmiBrokerServiceFacMgr::discard_instance();
+			//TODO READD AtmiBrokerNotify::discard_instance();
+			AtmiBrokerOTS::discard_instance();
+			AtmiBrokerEnv::discard_instance();
+			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleted services");
 
-			shutdownBindings(client_orb, client_root_poa, client_root_poa_manager, client_default_context, client_name_context, client_poa);
+			shutdownBindings(client_orb, client_root_poa, client_root_poa_manager, client_default_context, client_name_context, client_poa, client_worker);
 			return -1;
 		}
 		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientinit finished");
@@ -241,12 +175,19 @@ int clientdone() {
 			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleted Corba Client ");
 		}
 
+		// TODO CLEAN UP TRANSACTION CURRENT
+		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleting services");
 		AtmiBrokerMem::get_instance()->freeAllMemory();
+		AtmiBrokerServiceFacMgr::discard_instance();
+		//TODO READD AtmiBrokerNotify::discard_instance();
+		AtmiBrokerOTS::discard_instance();
+		AtmiBrokerEnv::discard_instance();
+		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleted services");
 
-		shutdownBindings(client_orb, client_root_poa, client_root_poa_manager, client_default_context, client_name_context, client_poa);
+		shutdownBindings(client_orb, client_root_poa, client_root_poa_manager, client_default_context, client_name_context, client_poa, client_worker);
 
 		clientInitialized = false;
-		userlog(Level::getInfo(), loggerAtmiBroker, (char*) "clientdone returning");
+		userlog(Level::getInfo(), loggerAtmiBroker, (char*) "clientdone returningshutdownBindings");
 	}
 	return 0;
 }

@@ -15,21 +15,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef OrbManagement_H
-#define OrbManagement_H
+#ifndef WORKER_H
+#define WORKER_H
 
-#include "atmiBrokerCoreMacro.h"
+#include "log4cxx/logger.h"
+using namespace log4cxx;
 
-#include "Worker.h"
-
-#ifdef TAO_COMP
 #include <tao/ORB.h>
-#include <orbsvcs/CosNamingS.h>
-#include <tao/PortableServer/PortableServerC.h>
-#endif
+#include <ace/Task.h>
+class Worker: public ACE_Task_Base {
+	CORBA::ORB_var m_orb;
+public:
+	Worker(CORBA::ORB_ptr orb);
+	int svc();
 
-extern ATMIBROKER_CORE_DLL void initOrb(char* name, Worker* worker, CORBA::ORB_ptr& orbRef);
-extern ATMIBROKER_CORE_DLL void getNamingServiceAndContext(CORBA::ORB_ptr& orbRef, CosNaming::NamingContextExt_var& default_ctx, CosNaming::NamingContext_var& name_ctx);
-extern ATMIBROKER_CORE_DLL void shutdownBindings(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, PortableServer::POAManager_var& poa_manager, CosNaming::NamingContextExt_var& ctx, CosNaming::NamingContext_var& nameCtx, PortableServer::POA_var& innerPoa, Worker* worker);
-
+private:
+	static LoggerPtr logger;
+};
 #endif

@@ -25,7 +25,7 @@ using namespace log4cxx;
 using namespace log4cxx::helpers;
 LoggerPtr loggerOrbManagement(Logger::getLogger("OrbManagment"));
 
-void initOrb(char* name, CORBA::ORB_ptr& orbRef) {
+void initOrb(char* name, Worker* worker, CORBA::ORB_ptr& orbRef) {
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "initOrb");
 
 	if (CORBA::is_nil(orbRef)) {
@@ -48,8 +48,54 @@ void initOrb(char* name, CORBA::ORB_ptr& orbRef) {
 		orbRef = CORBA::ORB_init(i, vals);
 
 		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "initOrb inited ORB %p ");
-	} else
-	LOG4CXX_ERROR(loggerOrbManagement, (char*) "initOrb already inited ORB");
+		worker = new Worker(orbRef);
+		if (worker->activate(THR_NEW_LWP | THR_JOINABLE, 10) != 0) {
+			delete worker;
+			worker = 0;
+			LOG4CXX_ERROR(loggerOrbManagement, (char*) "Could not start thread pool");
+		}
+
+	} else {
+		LOG4CXX_ERROR(loggerOrbManagement, (char*) "initOrb already inited ORB");
+	}
+}
+
+void shutdownBindings(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, PortableServer::POAManager_var& poa_manager, CosNaming::NamingContextExt_var& ctx, CosNaming::NamingContext_var& nameCtx, PortableServer::POA_var& innerPoa, Worker* worker) {
+	LOG4CXX_INFO(loggerOrbManagement, "Closing Bindings");
+
+	if (worker != 0) {
+		worker->thr_mgr()->wait();
+		delete worker;
+		worker = 0;
+	}
+
+	if (!CORBA::is_nil(orbRef)) {
+		LOG4CXX_DEBUG(loggerOrbManagement, "shutdownBindings shutting down ORB ");
+		try {
+			orbRef->shutdown(1);
+			LOG4CXX_DEBUG(loggerOrbManagement, "shutdownBindings shut down ORB ");
+		} catch (CORBA::Exception &ex) {
+			LOG4CXX_ERROR(loggerOrbManagement, (char*) "shutdownBindings Unexpected CORBA exception shutting down orb: " << ex._name());
+		} catch (...) {
+			LOG4CXX_FATAL(loggerOrbManagement, (char*) "shutdownBindings Unexpected fatal exception");
+		}
+
+		try {
+			// TODO DOES NOT WORK WHEN NO ORB WORK DONE
+			LOG4CXX_DEBUG(loggerOrbManagement, (char*) "shutdownBindings destroying ORB ");
+			orbRef->destroy();
+		} catch (CORBA::Exception &ex) {
+			LOG4CXX_ERROR(loggerOrbManagement, (char*) "shutdownBindings Unexpected CORBA exception destroying orb: " << ex._name());
+		}
+	}
+
+	innerPoa = NULL;
+	ctx = NULL;
+	nameCtx = NULL;
+	poa_manager = NULL;
+	poa = NULL;
+	orbRef = NULL;
+	LOG4CXX_INFO(loggerOrbManagement, (char*) "Closed Bindings");
 }
 
 void getNamingServiceAndContext(CORBA::ORB_ptr& orbRef, CosNaming::NamingContextExt_var& default_ctx, CosNaming::NamingContext_var& name_ctx) {

@@ -15,21 +15,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef OrbManagement_H
-#define OrbManagement_H
-
-#include "atmiBrokerCoreMacro.h"
-
 #include "Worker.h"
 
-#ifdef TAO_COMP
-#include <tao/ORB.h>
-#include <orbsvcs/CosNamingS.h>
-#include <tao/PortableServer/PortableServerC.h>
-#endif
+#include "log4cxx/logger.h"
+using namespace log4cxx;
+using namespace log4cxx::helpers;
+LoggerPtr Worker::logger(Logger::getLogger("OrbManagment"));
 
-extern ATMIBROKER_CORE_DLL void initOrb(char* name, Worker* worker, CORBA::ORB_ptr& orbRef);
-extern ATMIBROKER_CORE_DLL void getNamingServiceAndContext(CORBA::ORB_ptr& orbRef, CosNaming::NamingContextExt_var& default_ctx, CosNaming::NamingContext_var& name_ctx);
-extern ATMIBROKER_CORE_DLL void shutdownBindings(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, PortableServer::POAManager_var& poa_manager, CosNaming::NamingContextExt_var& ctx, CosNaming::NamingContext_var& nameCtx, PortableServer::POA_var& innerPoa, Worker* worker);
+Worker::Worker(CORBA::ORB_ptr orb) {
+	m_orb = CORBA::ORB::_duplicate(orb);
+}
 
-#endif
+int Worker::svc(void) {
+	try {
+		m_orb->run();
+	} catch (...) {
+		LOG4CXX_ERROR(logger, (char*) "Worker caught error running orb");
+	}
+	return 0;
+}
