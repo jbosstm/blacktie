@@ -26,7 +26,7 @@ import org.omg.CosTransactions.Control;
 
 public interface AtmiBrokerServiceManager {
 
-	void send_data(String ior, boolean inConversation, byte[] idata, int ilen, int flags, Control control) throws JAtmiBrokerException;
+	void send_data(String ior, boolean inConversation, byte[] idata, int ilen, int flags, int revent, Control control) throws JAtmiBrokerException;
 
 	public void close();
 }

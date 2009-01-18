@@ -61,9 +61,13 @@ module AtmiBroker {
 	
 	interface ClientCallback
 	{
-		oneway void enqueue_data(in octetSeq idata,
+		oneway void enqueue_data(
+				  in short rval,
+				  in long rcode, 
+				  in octetSeq idata,
 				  in long ilen, 
 				  in long flags,
+				  in long revent,
 				  in string id);	  
 
 	};
@@ -162,6 +166,7 @@ module AtmiBroker {
 				  in octetSeq idata,
 				  in long ilen, 
 				  in long flags,
+				  in long revent,
 				  in CosTransactions::Control control_ior);
 
 	};
@@ -176,6 +181,7 @@ module AtmiBroker {
 				  in octetSeq idata,
 				  in long ilen,
 				  in long flags,
+				  in long revent,
 				  in CosTransactions::Control control_ior);
 
 	};

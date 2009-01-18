@@ -189,7 +189,8 @@ int AtmiBrokerConversation::send(AtmiBroker::Service_var aCorbaService, char* id
 			CORBA::Long a_ilen = ilen;
 			// TODO TYPED BUFFER (AtmiBroker::TypedBuffer&) *idata for a_idata
 			AtmiBroker::octetSeq * a_idata = new AtmiBroker::octetSeq(a_ilen, a_ilen, (unsigned char *) idata, true);
-			aCorbaService->send_data(conversation, *a_idata, a_ilen, flags, aControlPtr);
+			// TODO NOTIFY SERVER OF POSSIBLE CONDITIONS
+			aCorbaService->send_data(conversation, *a_idata, a_ilen, flags, 0, aControlPtr);
 		} catch (const CORBA::SystemException &ex) {
 			userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "aCorbaService->send_data(): call failed. %s", ex._name());
 			tperrno = TPESYSTEM;
@@ -213,6 +214,8 @@ int AtmiBrokerConversation::tprecv(int id, char ** odata, long *olen, long flags
 	tperrno = 0;
 	int toReturn = 0;
 
+	CORBA::Short a_rval;
+	CORBA::Long a_rcode;
 	AtmiBroker::octetSeq * a_odata;
 	CORBA::Long a_olen = 0;
 	CORBA::Long a_flags = flags;
@@ -230,7 +233,7 @@ int AtmiBrokerConversation::tprecv(int id, char ** odata, long *olen, long flags
 
 		AtmiBroker_ClientCallbackImpl * callback = mAtmiBrokerClient->getClientCallback();
 		// TODO CANNOT CHECK THE TYPE OF THE REFERENCE
-		a_result = callback->dequeue_data(a_odata, a_olen, a_flags, a_oevent);
+		a_result = callback->dequeue_data(a_rval, a_rcode, a_odata, a_olen, a_flags, a_oevent);
 		toReturn = a_result;
 
 		if (toReturn != -1) {

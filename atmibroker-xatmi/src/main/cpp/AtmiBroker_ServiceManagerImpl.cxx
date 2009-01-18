@@ -74,7 +74,7 @@ AtmiBroker_ServiceManagerImpl::~AtmiBroker_ServiceManagerImpl() {
 
 // service_request_async() -- Implements IDL operation "AtmiBroker::ServiceManager::service_request_async".
 //
-void AtmiBroker_ServiceManagerImpl::send_data(const char* ior, CORBA::Boolean inConversation, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CosTransactions::Control_ptr control) throw (CORBA::SystemException ) {
+void AtmiBroker_ServiceManagerImpl::send_data(const char* ior, CORBA::Boolean inConversation, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent, CosTransactions::Control_ptr control) throw (CORBA::SystemException ) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "service_request_async() ior: %s ", ior);
 
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "string_to_object ");
@@ -85,7 +85,7 @@ void AtmiBroker_ServiceManagerImpl::send_data(const char* ior, CORBA::Boolean in
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "aItrPtr %d", (void*) aItrPtr);
 
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "calling service_request_async on iterator %d", (void*) aItrPtr);
-	aItrPtr->send_data(inConversation, idata, ilen, flags, control);
+	aItrPtr->send_data(inConversation, idata, ilen, flags, revent, control);
 
 }
 

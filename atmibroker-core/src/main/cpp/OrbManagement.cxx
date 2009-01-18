@@ -49,7 +49,7 @@ void initOrb(char* name, Worker* worker, CORBA::ORB_ptr& orbRef) {
 
 		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "initOrb inited ORB %p ");
 		worker = new Worker(orbRef);
-		if (worker->activate(THR_NEW_LWP | THR_JOINABLE, 10) != 0) {
+		if (worker->activate(THR_NEW_LWP | THR_JOINABLE, 1) != 0) {
 			delete worker;
 			worker = 0;
 			LOG4CXX_ERROR(loggerOrbManagement, (char*) "Could not start thread pool");

@@ -47,6 +47,17 @@
 #include "it_servant_base_overrides.h"
 #include <queue>
 
+struct message_t {
+	int rval;
+	long rcode;
+	AtmiBroker::octetSeq * octetSeq;
+	long len;
+	long flags;
+	long event;
+	const char * id;
+};
+typedef struct message_t MESSAGE;
+
 class ATMIBROKER_DLL AtmiBroker_ClientCallbackImpl: public virtual IT_ServantBaseOverrides, public virtual POA_AtmiBroker::ClientCallback {
 public:
 	AtmiBroker_ClientCallbackImpl(PortableServer::POA_ptr);
@@ -61,16 +72,16 @@ public:
 
 	// IDL operations
 	//
-	virtual void enqueue_data(const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, const char * id) throw (CORBA::SystemException );
+	virtual void enqueue_data(CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent, const char * id) throw (CORBA::SystemException );
 
-	virtual CORBA::Short dequeue_data(AtmiBroker::octetSeq_out odata, CORBA::Long_out olen, CORBA::Long flags, CORBA::Long_out event);
+	virtual CORBA::Short dequeue_data(CORBA::Short_out rval, CORBA::Long_out rcode, AtmiBroker::octetSeq_out odata, CORBA::Long_out olen, CORBA::Long_out flags, CORBA::Long_out event);
 
 private:
 	// The following are not implemented
 	//
 	AtmiBroker_ClientCallbackImpl(const AtmiBroker_ClientCallbackImpl &);
 	AtmiBroker_ClientCallbackImpl& operator=(const AtmiBroker_ClientCallbackImpl &);
-	std::queue<AtmiBroker::octetSeq *> returnData;
+	std::queue<MESSAGE> returnData;
 
 };
 

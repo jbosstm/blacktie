@@ -44,7 +44,7 @@ public class ClientCallbackImpl extends ClientCallbackPOA {
 	private static final Logger log = LogManager.getLogger(ClientCallbackImpl.class);
 	private POA m_default_poa;
 	private String callbackIOR;
-	private List<byte[]> returnData = new ArrayList<byte[]>();
+	private List<Message> returnData = new ArrayList<Message>();
 
 	public ClientCallbackImpl(POA poa, String aServerName) throws AdapterNonExistent, InvalidPolicy, ServantAlreadyActive, WrongPolicy, ServantNotActive {
 		super();
@@ -80,7 +80,7 @@ public class ClientCallbackImpl extends ClientCallbackPOA {
 	// client_callback() -- Implements IDL operation
 	// "AtmiBroker.ClientCallback.client_callback".
 	//
-	public void enqueue_data(byte[] idata, int ilen, int flags, String id) throws org.omg.CORBA.SystemException {
+	public void enqueue_data(short rval, int rcode, byte[] idata, int ilen, int flags, int revent, String id) throws org.omg.CORBA.SystemException {
 		log.error("Default client_callback called");
 		log.debug("client_callback(): called.");
 
@@ -89,7 +89,15 @@ public class ClientCallbackImpl extends ClientCallbackPOA {
 		log.debug("    flags = " + flags);
 		log.debug("    id = " + id);
 		log.debug("client_callback(): returning.");
-		returnData.add(idata);
+		Message message = new Message();
+		message.rval = rval;
+		message.rcode = rcode;
+		message.octetSeq = idata;
+		message.len = ilen;
+		message.flags = flags;
+		message.event = revent;
+		message.id = id;
+		returnData.add(message);
 	}
 
 	// client_callback() -- Implements IDL operation
@@ -112,8 +120,20 @@ public class ClientCallbackImpl extends ClientCallbackPOA {
 
 	public short dequeue_data(octetSeqHolder odata, IntHolder olen, int flags, IntHolder event) {
 		// TODO
-		odata.value = returnData.get(0);
-		returnData.remove(0);
+		Message message = returnData.remove(0);
+		odata.value = message.octetSeq;
+		olen.value = message.len;
+		event.value = message.event;
 		return 0;
+	}
+
+	private class Message {
+		short rval;
+		int rcode;
+		byte[] octetSeq;
+		int len;
+		int flags;
+		int event;
+		String id;
 	}
 }

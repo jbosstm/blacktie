@@ -89,9 +89,9 @@ public class AtmiBroker_ServiceManagerImpl extends ServiceManagerPOA {
 		return null;
 	}
 
-	public void send_data(String ior, boolean inConversation, byte[] idata, int ilen, int flags, Control control) {
+	public void send_data(String ior, boolean inConversation, byte[] idata, int ilen, int flags, int revent, Control control) {
 		Object tmp_ref = AtmiBrokerServerImpl.orb.string_to_object(ior);
 		Service aItrPtr = AtmiBroker.ServiceHelper.narrow(tmp_ref);
-		aItrPtr.send_data(inConversation, idata, ilen, flags, control);
+		aItrPtr.send_data(inConversation, idata, ilen, flags, revent, control);
 	}
 }

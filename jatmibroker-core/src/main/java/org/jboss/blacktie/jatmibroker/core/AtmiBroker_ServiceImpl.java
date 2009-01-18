@@ -91,7 +91,7 @@ public class AtmiBroker_ServiceImpl extends ServicePOA {
 		return ior;
 	}
 
-	public void send_data(boolean inConversation, byte[] idata, int ilen, int flags, Control control) {
+	public void send_data(boolean inConversation, byte[] idata, int ilen, int flags, int revent, Control control) {
 		// TODO HANDLE CONTROL
 		try {
 			// THIS IS THE FIRST CALL

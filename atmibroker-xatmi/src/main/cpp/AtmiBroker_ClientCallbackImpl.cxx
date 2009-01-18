@@ -73,7 +73,7 @@ AtmiBroker_ClientCallbackImpl::~AtmiBroker_ClientCallbackImpl() {
 
 // client_callback() -- Implements IDL operation "AtmiBroker::ClientCallback::send_data".
 //
-void AtmiBroker_ClientCallbackImpl::enqueue_data(const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, const char * id) throw (CORBA::SystemException ) {
+void AtmiBroker_ClientCallbackImpl::enqueue_data(CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent, const char * id) throw (CORBA::SystemException ) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "client_callback(): called.");
 
 	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "client_callback():    idata = %s", idata.get_buffer());
@@ -81,25 +81,36 @@ void AtmiBroker_ClientCallbackImpl::enqueue_data(const AtmiBroker::octetSeq& ida
 	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "client_callback():    flags = %d", flags);
 	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "client_callback():    id = %s", id);
 
-	returnData.push(new AtmiBroker::octetSeq(idata));
+	MESSAGE message;
+	message.rval = rval;
+	message.rcode = rcode;
+	message.octetSeq = new AtmiBroker::octetSeq(idata);
+	message.len = ilen;
+	message.flags = flags;
+	message.event = revent;
+	message.id = id;
+
+	returnData.push(message);
 }
 
-CORBA::Short AtmiBroker_ClientCallbackImpl::dequeue_data(AtmiBroker::octetSeq_out odata, CORBA::Long_out olen, CORBA::Long flags, CORBA::Long_out event) {
+CORBA::Short AtmiBroker_ClientCallbackImpl::dequeue_data(CORBA::Short_out rval, CORBA::Long_out rcode, AtmiBroker::octetSeq_out odata, CORBA::Long_out olen, CORBA::Long_out flags, CORBA::Long_out event) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "service_response()");
 
-	while (client_orb->work_pending()) {
-		client_orb->perform_work();
-	}
-
-	// TODO THIS SHOULD CHECK THE FLAGS TO WAIT FOR THE DATA.. (on the client-side most likely!)
+	// TODO THIS SHOULD USE THE ID TO CHECK DIFFERENT QUEUES
 	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "    fronting octet array of size %d ", returnData.size());
-	if (returnData.size() > 0) {
-		AtmiBroker::octetSeq * aOctetSeq = (AtmiBroker::octetSeq *) returnData.front();
-		returnData.pop();
-		userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "    fronted octet array %s", (char*) aOctetSeq->get_buffer());
-		odata = new AtmiBroker::octetSeq(*aOctetSeq);
-		userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "   odata = %s", odata->get_buffer());
-		return 0;
+	while (returnData.size() == 0) {
+		userlog(Level::getError(), loggerAtmiBroker_ClientCallbackImpl, (char*) "very busy wait");
 	}
-	return -1;
+	MESSAGE message = returnData.front();
+	returnData.pop();
+
+	rval = message.rval;
+	rcode = message.rcode;
+	AtmiBroker::octetSeq * aOctetSeq = message.octetSeq;
+	odata = new AtmiBroker::octetSeq(*aOctetSeq);
+	olen = message.len;
+	event = message.event;
+	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "    fronted octet array %s", (char*) aOctetSeq->get_buffer());
+	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "   odata = %s", odata->get_buffer());
+	return 0;
 }

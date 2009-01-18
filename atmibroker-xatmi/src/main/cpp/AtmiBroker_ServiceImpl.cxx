@@ -87,7 +87,7 @@ AtmiBroker_ServiceImpl::~AtmiBroker_ServiceImpl() {
 
 // service_request_async() -- Implements IDL operation "AtmiBroker::Service::send_data".
 //
-void AtmiBroker_ServiceImpl::send_data(CORBA::Boolean inConversation, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CosTransactions::Control_ptr control) throw (CORBA::SystemException ) {
+void AtmiBroker_ServiceImpl::send_data(CORBA::Boolean inConversation, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent, CosTransactions::Control_ptr control) throw (CORBA::SystemException ) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_async()");
 
 	AtmiBroker::ClientInfo client_info;
@@ -165,7 +165,7 @@ void AtmiBroker_ServiceImpl::tpreturn(int rval, long rcode, char* data, long len
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "Calling back ");
 	// TODO TYPED BUFFER AtmiBroker::TypedBuffer_var aTypedBuffer = new AtmiBroker::TypedBuffer((AtmiBroker::TypedBuffer&) *data);
 	AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(len, len, (unsigned char *) data, true);
-	callbackRef->enqueue_data(aOctetSeq, len, flags, id);
+	callbackRef->enqueue_data(rval, rcode, aOctetSeq, len, flags, 0, id);
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "Called back ");
 	aOctetSeq = NULL;
 
@@ -195,7 +195,7 @@ int AtmiBroker_ServiceImpl::tpsend(int id, char* idata, long ilen, long flags, l
 
 	// Send the buffer
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "tpsend octet data %s", (char*) aOctetSeq->get_buffer());
-	callbackRef->enqueue_data(aOctetSeq, ilen, flags, idout);
+	callbackRef->enqueue_data(0, 0, aOctetSeq, ilen, flags, 0, idout);
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "tpsent octet data %s", (char*) aOctetSeq->get_buffer());
 	return 0;
 }

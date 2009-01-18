@@ -74,7 +74,7 @@ public class JABRemoteService implements Message {
 			// log.debug("service_request response is " + odata.value);
 			// } else {
 			AtmiBroker.octetSeqHolder odata = new AtmiBroker.octetSeqHolder();
-			serviceManagerControl.send_data(null, false, data, data.length, flags, control);
+			serviceManagerControl.send_data(null, false, data, data.length, flags, 0, control);
 			IntHolder event = new IntHolder();
 			short retVal = jabSession.getServerProxy().dequeue_data(odata, olen, flags, event);
 			data = new byte[olen.value];

@@ -57,7 +57,7 @@ public class ServiceManagerProxyTest extends TestCase {
 		AtmiBroker.octetSeqHolder odata = new AtmiBroker.octetSeqHolder();
 		org.omg.CORBA.IntHolder olen = new org.omg.CORBA.IntHolder();
 
-		serviceManagerControl.send_data(null, false, aString.getBytes(), aString.length(), flags, null);
+		serviceManagerControl.send_data(null, false, aString.getBytes(), aString.length(), flags, 0, null);
 		log.debug("Bar ServiceManager service_request response is " + new String(odata.value));
 		log.debug("Bar ServiceManager service_request size of response is " + olen.value);
 		assertEquals(odata.value, "BAR");
