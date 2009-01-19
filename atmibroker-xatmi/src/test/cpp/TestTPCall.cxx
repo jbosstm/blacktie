@@ -44,8 +44,6 @@ void TestTPCall::tearDown() {
 }
 
 void TestTPCall::test_tpcall_systemerr() {
-	CPPUNIT_ASSERT("Memory fault when name service dies" == "true");
-
 	sendlen = strlen("hello");
 	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc("X_OCTET", NULL, sendlen + 1)) != NULL);
 	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc("X_OCTET", NULL, sendlen + 1)) != NULL);

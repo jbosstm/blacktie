@@ -26,7 +26,7 @@
 class TestTPCall: public BaseServerTest {
 	CPPUNIT_TEST_SUITE( TestTPCall);
 	CPPUNIT_TEST( test_tpcall_unknown_service);
-	CPPUNIT_TEST( test_tpcall_systemerr);
+	// TODO THIS REQUIRES TESTS TO BE ABLE TO STOP THE NAMING SERVICE CPPUNIT_TEST( test_tpcall_systemerr);
 	CPPUNIT_TEST( test_tpcall_x_octet);
 	CPPUNIT_TEST( test_tpcall_x_common);
 	CPPUNIT_TEST( test_tpcall_x_c_type);

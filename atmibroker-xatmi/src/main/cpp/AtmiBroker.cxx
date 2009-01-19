@@ -188,6 +188,7 @@ int clientdone() {
 		if (ptrAtmiBrokerClient) {
 			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleting Corba Client ");
 			delete ptrAtmiBrokerClient;
+			ptrAtmiBrokerClient = NULL;
 			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleted Corba Client ");
 		}
 

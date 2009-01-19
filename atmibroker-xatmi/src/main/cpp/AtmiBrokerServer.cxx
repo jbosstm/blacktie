@@ -78,7 +78,7 @@ void server_sigint_handler_callback(int sig_type) {
 }
 
 void server_sigsegv_handler_callback(int sig_type) {
-	LOG4CXX_ERROR(loggerAtmiBrokerServer, (char*) "TODO I AM A HACK");
+//	LOG4CXX_ERROR(loggerAtmiBrokerServer, (char*) "TODO I AM A HACK");
 }
 
 int serverrun() {
