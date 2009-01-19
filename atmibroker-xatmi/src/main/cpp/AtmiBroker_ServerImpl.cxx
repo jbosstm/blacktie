@@ -172,6 +172,17 @@ bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPS
 		tperrno = TPEINVAL;
 		return false;
 	}
+
+	bool found = false;
+	for (unsigned int i = 0; i < serverInfo.serviceNames.size(); i++) {
+		if (strcmp(serverInfo.serviceNames[i].c_str(), serviceName) == 0) {
+			found = true;
+		}
+	}
+	if (!found) {
+		tperrno = TPELIMIT;
+		return false;
+	}
 	void (*serviceFunction)(TPSVCINFO*) = AtmiBrokerServiceFacMgr::get_instance()->getServiceMethod(serviceName);
 	if (serviceFunction != NULL) {
 		if (serviceFunction == func) {
