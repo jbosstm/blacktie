@@ -15,17 +15,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef USERLOG_H
-#define USERLOG_H
+/* Export/Include macros for Win32 compilation */
+#ifndef ATMIBROKER_MACRO
+#define ATMIBROKER_MACRO
 
-#include "atmiBrokerMacro.h"
+/* Only do defines if we're compiling on Win32 */
+#ifdef WIN32
 
-#ifdef __cplusplus
-extern "C" {
+#ifdef _ATMIBROKER_CORE_DLL
+#define ATMIBROKER_CORE_DLL __declspec(dllexport)
+#else
+#define ATMIBROKER_CORE_DLL __declspec(dllimport)
 #endif
-extern ATMIBROKER_DLL int userlogc(const char * format, ...);
-#ifdef __cplusplus
-}
+
+#else /* Non-win32 platform. Macros need to pre-process away */
+
+/* examples */
+
+#define ATMIBROKER_CORE_DLL
+
 #endif
 
 #endif

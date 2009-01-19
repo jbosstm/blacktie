@@ -15,40 +15,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-/*
- * BREAKTHRUIT PROPRIETARY - NOT TO BE DISCLOSED OUTSIDE BREAKTHRUIT, LLC.
- */
-// copyright 2006, 2008 BreakThruIT
+#ifndef USERLOG_H
+#define USERLOG_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
-#include <iostream>
+#include "atmiBrokerCoreMacro.h"
 
-#include "userlog.h"
+#ifdef __cplusplus
 extern "C" {
-#include "userlogc.h"
+#endif
+extern ATMIBROKER_CORE_DLL void userlogc(const char * format, ...);
+#ifdef __cplusplus
 }
+#endif
 
-#include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerAtmiBrokerLogc(Logger::getLogger("AtmiBrokerLogc"));
-
-extern "C"ATMIBROKER_DLL
-int userlogc(const char * format, va_list *pargs) {
-	return userlog(Level::getInfo(), loggerAtmiBrokerLogc, format, pargs);
-}
-
-int userlog(const LevelPtr& level, LoggerPtr& logger, const char * format, ...) {
-	if (logger->isEnabledFor(level)) {
-		char str[2048];
-		va_list args;
-		va_start(args, format);
-		vsprintf(str, format, args);
-		va_end(args);
-		LOG4CXX_LOGLS(logger, level, str);
-	}
-	return 1;
-}
+#endif

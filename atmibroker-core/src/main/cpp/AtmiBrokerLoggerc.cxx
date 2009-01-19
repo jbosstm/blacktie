@@ -15,14 +15,46 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef USERLOG_H
-#define USERLOG_H
+/*
+ * BREAKTHRUIT PROPRIETARY - NOT TO BE DISCLOSED OUTSIDE BREAKTHRUIT, LLC.
+ */
+// copyright 2006, 2008 BreakThruIT
 
-#include "atmiBrokerMacro.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdarg.h>
+#include <iostream>
+
+#include "userlog.h"
+extern "C" {
+#include "userlogc.h"
+}
+
 #include "log4cxx/logger.h"
 using namespace log4cxx;
 using namespace log4cxx::helpers;
+LoggerPtr loggerAtmiBrokerLogc(Logger::getLogger("AtmiBrokerLogc"));
 
-//extern ATMIBROKER_DLL int userlog(char * format, ...);
-extern ATMIBROKER_DLL int userlog(const LevelPtr& level, LoggerPtr& logger, const char * format, ...);
-#endif
+extern "C"ATMIBROKER_CORE_DLL
+void userlogc(const char * format, ...) {
+	if (loggerAtmiBrokerLogc->isEnabledFor(Level::getInfo())) {
+		char str[2048];
+		va_list args;
+		va_start(args, format);
+		vsprintf(str, format, args);
+		va_end(args);
+		LOG4CXX_LOGLS(loggerAtmiBrokerLogc, Level::getInfo(), str);
+	}
+}
+
+void userlog(const LevelPtr& level, LoggerPtr& logger, const char * format, ...) {
+	if (logger->isEnabledFor(level)) {
+		char str[2048];
+		va_list args;
+		va_start(args, format);
+		vsprintf(str, format, args);
+		va_end(args);
+		LOG4CXX_LOGLS(logger, level, str);
+	}
+}

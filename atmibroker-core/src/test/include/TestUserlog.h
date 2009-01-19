@@ -22,14 +22,16 @@
 #include <cppunit/TestFixture.h>
 
 class TestUserlog: public CppUnit::TestFixture {
-	CPPUNIT_TEST_SUITE( TestUserlog);
-	CPPUNIT_TEST( testLogString);
-	CPPUNIT_TEST( testLogDecimal);
-CPPUNIT_TEST_SUITE_END();
+CPPUNIT_TEST_SUITE( TestUserlog)
+	;
+		CPPUNIT_TEST( testLogString);
+		CPPUNIT_TEST( testLogDecimal);
+	CPPUNIT_TEST_SUITE_END()
+	;
 
 public:
-void testLogString();
-void testLogDecimal();
+	void testLogString();
+	void testLogDecimal();
 };
 
-#endif LOGTEST
+#endif

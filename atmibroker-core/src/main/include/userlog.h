@@ -15,11 +15,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "SimpleOrbTest.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( SimpleOrbTest);
-#include "ExceptionCase.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( ExceptionCase);
-#include "ODBCTest.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( ODBCTest);
-#include "TestUserlog.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestUserlog);
+#ifndef USERLOG_H
+#define USERLOG_H
+
+#include "atmiBrokerCoreMacro.h"
+#include "log4cxx/logger.h"
+using namespace log4cxx;
+using namespace log4cxx::helpers;
+
+extern ATMIBROKER_CORE_DLL void userlog(const LevelPtr& level, LoggerPtr& logger, const char * format, ...);
+#endif

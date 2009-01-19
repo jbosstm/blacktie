@@ -42,9 +42,9 @@ void SimpleOrbTest::tearDown() {
 void SimpleOrbTest::test() {
 	int argc = 3;
 	char *argv[3];
-	argv[0] = "server";
-	argv[1] = "-ORBInitRef";
-	argv[2] = "NameService=corbaloc::localhost:3528/NameService";
+	argv[0] = (char*) "server";
+	argv[1] = (char*) "-ORBInitRef";
+	argv[2] = (char*) "NameService=corbaloc::localhost:3528/NameService";
 	CORBA::ORB_ptr orbRef = CORBA::ORB_init(argc, argv);
 	CORBA::Object_var tmp_ref = orbRef->resolve_initial_references("RootPOA");
 	PortableServer::POA_var poa = PortableServer::POA::_narrow(tmp_ref);
@@ -55,8 +55,6 @@ void SimpleOrbTest::test() {
 		CosNaming::NamingContextExt_var default_ctx = CosNaming::NamingContextExt::_narrow(tmp_ref);
 		CPPUNIT_FAIL("Narrowed the default context");
 	} catch (CORBA::Exception &e) {
-		const char* cause = e._name();
-		//		poa->destroy(true, true);
 		if (!CORBA::is_nil(orbRef))
 			orbRef->shutdown(1);
 		if (!CORBA::is_nil(orbRef))
