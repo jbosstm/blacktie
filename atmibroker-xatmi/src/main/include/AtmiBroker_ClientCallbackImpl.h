@@ -46,6 +46,7 @@
 #endif
 #include "it_servant_base_overrides.h"
 #include <queue>
+#include "SynchronizableObject.h"
 
 struct message_t {
 	int rval;
@@ -82,6 +83,7 @@ private:
 	AtmiBroker_ClientCallbackImpl(const AtmiBroker_ClientCallbackImpl &);
 	AtmiBroker_ClientCallbackImpl& operator=(const AtmiBroker_ClientCallbackImpl &);
 	std::queue<MESSAGE> returnData;
+	SynchronizableObject* synchronizableObject;
 
 };
 

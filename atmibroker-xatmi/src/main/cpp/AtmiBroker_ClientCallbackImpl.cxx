@@ -39,6 +39,8 @@
 #include "AtmiBrokerClient.h"
 #include "userlog.h"
 
+#include "xatmi.h"
+
 #include "log4cxx/logger.h"
 using namespace log4cxx;
 using namespace log4cxx::helpers;
@@ -61,7 +63,7 @@ AtmiBroker_ClientCallbackImpl::_create(PortableServer::POA_ptr the_poa) {
 // require arguments, even those that we inherit indirectly.
 //
 AtmiBroker_ClientCallbackImpl::AtmiBroker_ClientCallbackImpl(PortableServer::POA_ptr the_poa) :
-	IT_ServantBaseOverrides(the_poa) {
+	IT_ServantBaseOverrides(the_poa), synchronizableObject(SynchronizableObject::create(true)) {
 }
 
 // ~AtmiBroker_ClientCallbackImpl destructor.
@@ -90,28 +92,45 @@ void AtmiBroker_ClientCallbackImpl::enqueue_data(CORBA::Short rval, CORBA::Long 
 	message.event = revent;
 	message.id = id;
 
+	synchronizableObject->lock();
 	returnData.push(message);
+	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "notifying");
+	synchronizableObject->notify();
+	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "notified");
+	synchronizableObject->unlock();
 }
 
 CORBA::Short AtmiBroker_ClientCallbackImpl::dequeue_data(CORBA::Short_out rval, CORBA::Long_out rcode, AtmiBroker::octetSeq_out odata, CORBA::Long_out olen, CORBA::Long_out flags, CORBA::Long_out event) {
+	// TODO THIS SHOULD USE THE ID TO CHECK DIFFERENT QUEUES
 	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "service_response()");
 
-	// TODO THIS SHOULD USE THE ID TO CHECK DIFFERENT QUEUES
-	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "    fronting octet array of size %d ", returnData.size());
+	// Default wait time is 10 seconds
+	long time = 10; // TODO Make configurable
+	synchronizableObject->lock();
 	while (returnData.size() == 0) {
-		userlog(Level::getError(), loggerAtmiBroker_ClientCallbackImpl, (char*) "very busy wait");
-		sleep(1);// TODO ARGH!
+		userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "waiting for %d", time);
+		synchronizableObject->wait(time);
+		userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "out of wait");
+		if (!(TPNOTIME & flags)) {
+			break;
+		}
 	}
-	MESSAGE message = returnData.front();
-	returnData.pop();
+	synchronizableObject->unlock();
 
-	rval = message.rval;
-	rcode = message.rcode;
-	AtmiBroker::octetSeq * aOctetSeq = message.octetSeq;
-	odata = new AtmiBroker::octetSeq(*aOctetSeq);
-	olen = message.len;
-	event = message.event;
-	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "    fronted octet array %s", (char*) aOctetSeq->get_buffer());
-	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "   odata = %s", odata->get_buffer());
-	return 0;
+	if (returnData.size() != 0) {
+		MESSAGE message = returnData.front();
+		returnData.pop();
+
+		rval = message.rval;
+		rcode = message.rcode;
+		AtmiBroker::octetSeq * aOctetSeq = message.octetSeq;
+		odata = new AtmiBroker::octetSeq(*aOctetSeq);
+		olen = message.len;
+		event = message.event;
+		userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "    fronted octet array %s", (char*) aOctetSeq->get_buffer());
+		userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "   odata = %s", odata->get_buffer());
+		return 0;
+	} else {
+		return -1;
+	}
 }
