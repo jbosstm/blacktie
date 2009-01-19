@@ -256,7 +256,7 @@ void createClientCallbackPOA() {
 }
 
 void createClientBindingPolicies() {
-	userlog(Level::getWarn(), loggerAtmiBroker, (char*) "createClientBindingPolicies - Not implemented");
+	// TODO userlog(Level::getWarn(), loggerAtmiBroker, (char*) "createClientBindingPolicies - Not implemented");
 
 	/*********
 	 CORBA::Object_var 	tmp_ref;  // For temporary object references.
