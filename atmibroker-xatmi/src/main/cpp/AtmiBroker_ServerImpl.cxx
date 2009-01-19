@@ -175,7 +175,7 @@ bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPS
 
 	bool found = false;
 	for (unsigned int i = 0; i < serverInfo.serviceNames.size(); i++) {
-		if (strcmp(serverInfo.serviceNames[i].c_str(), serviceName) == 0) {
+		if (strncmp(serverInfo.serviceNames[i].c_str(), serviceName, XATMI_SERVICE_NAME_LENGTH) == 0) {
 			found = true;
 		}
 	}

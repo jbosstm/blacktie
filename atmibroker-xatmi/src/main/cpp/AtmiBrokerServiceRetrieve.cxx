@@ -93,10 +93,14 @@ AtmiBroker::ServiceFactory_ptr get_service_factory(const char * serviceName) {
 	CosNaming::Name * name = client_default_context->to_name(serviceName);
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "Service name %p", (void*) name);
 
-	CORBA::Object_var tmp_ref = client_name_context->resolve(*name);
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "Service ref %p", (void*) tmp_ref);
+	try {
+		CORBA::Object_var tmp_ref = client_name_context->resolve(*name);
+		userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "Service ref %p", (void*) tmp_ref);
+		factoryPtr = AtmiBroker::ServiceFactory::_narrow(tmp_ref);
+	} catch (...) {
+		userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "Could not access the service factory %p", (void*) name);
+	}
 
-	factoryPtr = AtmiBroker::ServiceFactory::_narrow(tmp_ref);
 	if (CORBA::is_nil(factoryPtr)) {
 		userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "Could not retrieve Factory for %s", serviceName);
 	} else

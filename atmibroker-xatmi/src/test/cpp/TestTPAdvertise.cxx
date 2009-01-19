@@ -53,13 +53,13 @@ void TestTPAdvertise::tearDown() {
 // TODO THIS SHOULD BE ILLEGAL FOR THE CLIENT
 void TestTPAdvertise::test_tpadvertise_new_service() {
 	int id = ::tpadvertise("TestTPAdvertise", testtpadvertise_service);
-	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(tperrno!= TPEINVAL);
 	CPPUNIT_ASSERT(tperrno!= TPELIMIT);
 	CPPUNIT_ASSERT(tperrno!= TPEMATCH);
 	CPPUNIT_ASSERT(tperrno!= TPEPROTO);
 	CPPUNIT_ASSERT(tperrno!= TPESYSTEM);
 	CPPUNIT_ASSERT(tperrno!= TPEOS);
+	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(id != -1);
 
 	id = ::tpcall("TestTPAdvertise", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, (long) 0);

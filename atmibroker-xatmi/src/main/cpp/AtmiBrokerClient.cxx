@@ -148,12 +148,13 @@ AtmiBroker_ClientCallbackImpl * AtmiBrokerClient::getClientCallback() {
 	return clientCallbackImpl;
 }
 
-
 void AtmiBrokerClient::getService(char * serviceName, char ** idPtr, AtmiBroker::Service_var * refPtr) {
 	long clientId = getClientId(serviceName);
 	if (clientId != -1) {
 		AtmiBroker::ServiceFactory_ptr ptr = get_service_factory(serviceName);
-		get_service(clientId, ptr, idPtr, refPtr);
+		if (!CORBA::is_nil(ptr)) {
+			get_service(clientId, ptr, idPtr, refPtr);
+		}
 	}
 }
 
