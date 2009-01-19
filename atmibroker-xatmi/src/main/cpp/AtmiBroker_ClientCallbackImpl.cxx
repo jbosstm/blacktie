@@ -100,6 +100,7 @@ CORBA::Short AtmiBroker_ClientCallbackImpl::dequeue_data(CORBA::Short_out rval, 
 	userlog(Level::getDebug(), loggerAtmiBroker_ClientCallbackImpl, (char*) "    fronting octet array of size %d ", returnData.size());
 	while (returnData.size() == 0) {
 		userlog(Level::getError(), loggerAtmiBroker_ClientCallbackImpl, (char*) "very busy wait");
+		sleep(1);// TODO ARGH!
 	}
 	MESSAGE message = returnData.front();
 	returnData.pop();
