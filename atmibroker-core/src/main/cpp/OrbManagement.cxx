@@ -25,7 +25,7 @@ using namespace log4cxx;
 using namespace log4cxx::helpers;
 LoggerPtr loggerOrbManagement(Logger::getLogger("OrbManagment"));
 
-void initOrb(char* name, Worker* worker, CORBA::ORB_ptr& orbRef) {
+void initOrb(char* name, Worker*& worker, CORBA::ORB_ptr& orbRef) {
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "initOrb");
 
 	if (CORBA::is_nil(orbRef)) {
@@ -51,7 +51,7 @@ void initOrb(char* name, Worker* worker, CORBA::ORB_ptr& orbRef) {
 		worker = new Worker(orbRef);
 		if (worker->activate(THR_NEW_LWP| THR_JOINABLE, 1, 0, ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
 			delete worker;
-			worker = 0;
+			worker = NULL;
 			LOG4CXX_ERROR(loggerOrbManagement, (char*) "Could not start thread pool");
 		}
 
@@ -62,12 +62,6 @@ void initOrb(char* name, Worker* worker, CORBA::ORB_ptr& orbRef) {
 
 void shutdownBindings(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, PortableServer::POAManager_var& poa_manager, CosNaming::NamingContextExt_var& ctx, CosNaming::NamingContext_var& nameCtx, PortableServer::POA_var& innerPoa, Worker* worker) {
 	LOG4CXX_INFO(loggerOrbManagement, "Closing Bindings");
-
-	if (worker != 0) {
-		worker->thr_mgr()->wait();
-		delete worker;
-		worker = 0;
-	}
 
 	if (!CORBA::is_nil(orbRef)) {
 		LOG4CXX_DEBUG(loggerOrbManagement, "shutdownBindings shutting down ORB ");
@@ -87,6 +81,12 @@ void shutdownBindings(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, Port
 		} catch (CORBA::Exception &ex) {
 			LOG4CXX_ERROR(loggerOrbManagement, (char*) "shutdownBindings Unexpected CORBA exception destroying orb: " << ex._name());
 		}
+	}
+
+	if (worker != NULL) {
+		worker->thr_mgr()->wait();
+		delete worker;
+		worker = NULL;
 	}
 
 	innerPoa = NULL;

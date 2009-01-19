@@ -96,13 +96,6 @@ AtmiBrokerClientXml::AtmiBrokerClientXml() {
 AtmiBrokerClientXml::~AtmiBrokerClientXml() {
 }
 
-const char *
-AtmiBrokerClientXml::writeXmlDescriptor(std::vector<ClientServerInfo*>* serverData) {
-	userlog(Level::getError(), loggerAtmiBrokerClientXml, (char*) "writeXmlDescriptor() - Not implemented");
-	return NULL;
-	//return NULL;
-}
-
 static void XMLCALL startElement
 (void *userData, const char *name, const char **atts)
 {
@@ -275,8 +268,8 @@ void AtmiBrokerClientXml::parseXmlDescriptor(std::vector<ClientServerInfo*>* aCl
 		userlog(Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "buf is %s", buf);
 		done = len < sizeof(buf);
 		if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR) {
-			userlog(Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "%d at line %d", XML_ErrorString(XML_GetErrorCode(parser)), XML_GetCurrentLineNumber(parser));
-			return;
+			userlog(Level::getError(), loggerAtmiBrokerClientXml, (char*) "%d at line %d", XML_ErrorString(XML_GetErrorCode(parser)), XML_GetCurrentLineNumber(parser));
+			break;
 		}
 	} while (!done);
 	free(buf);

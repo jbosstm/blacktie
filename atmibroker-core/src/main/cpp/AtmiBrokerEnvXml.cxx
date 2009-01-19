@@ -20,6 +20,7 @@
  */
 // copyright 2006, 2008 BreakThruIT
 
+#include <sys/stat.h>
 #include <stdio.h>
 #include <string.h>
 #include <iostream>
@@ -49,69 +50,69 @@ bool xaThreadModel;
 bool xaAutomaticAssociation;
 bool xaDynamicRegistrationOptimization;
 
-const char* AtmiBrokerEnvXml::Environment_Begin_Tag = (char*) "<?xml version=\"1.0\"?>\n<ENVIRONMENT xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n";
-
-const char* AtmiBrokerEnvXml::Environment_End_Tag = (char*) "</ENVIRONMENT>\n";
-
-const char* AtmiBrokerEnvXml::Environment_Desc_Begin_Tag = (char*) "  <ENVIRONMENT_DESCRIPTION>\n";
-const char* AtmiBrokerEnvXml::Environment_Desc_End_Tag = (char*) "  </ENVIRONMENT_DESCRIPTION>\n";
-
-const char* AtmiBrokerEnvXml::Server_Begin_Tag = (char*) "    <SERVER>";
-const char* AtmiBrokerEnvXml::Server_End_Tag = (char*) "</SERVER>\n";
-
-const char* AtmiBrokerEnvXml::Company_Begin_Tag = (char*) "    <COMPANY>";
-const char* AtmiBrokerEnvXml::Company_End_Tag = (char*) "</COMPANY>\n";
-
-const char* AtmiBrokerEnvXml::Domain_Begin_Tag = (char*) "    <DOMAIN>";
-const char* AtmiBrokerEnvXml::Domain_End_Tag = (char*) "</DOMAIN>\n";
-
-const char* AtmiBrokerEnvXml::QSpace_Name_Begin_Tag = (char*) "    <QSPACE_NAME>";
-const char* AtmiBrokerEnvXml::QSpace_Name_End_Tag = (char*) "</QSPACE_NAME>\n";
-
-const char* AtmiBrokerEnvXml::Naming_Service_Id_Begin_Tag = (char*) "    <NAMING_SERVICE_ID>";
-const char* AtmiBrokerEnvXml::Naming_Service_Id_End_Tag = (char*) "</NAMING_SERVICE_ID>\n";
-
-const char* AtmiBrokerEnvXml::Notify_Service_Id_Begin_Tag = (char*) "    <NOTIFY_SERVICE_ID>";
-const char* AtmiBrokerEnvXml::Notify_Service_Id_End_Tag = (char*) "</NOTIFY_SERVICE_ID>\n";
-
-const char* AtmiBrokerEnvXml::Logging_Service_Id_Begin_Tag = (char*) "    <LOGGING_SERVICE_ID>";
-const char* AtmiBrokerEnvXml::Logging_Service_Id_End_Tag = (char*) "</LOGGING_SERVICE_ID>\n";
-
-const char* AtmiBrokerEnvXml::Trans_Factory_Id_Begin_Tag = (char*) "    <TRANS_FACTORY_ID>";
-const char* AtmiBrokerEnvXml::Trans_Factory_Id_End_Tag = (char*) "</TRANS_FACTORY_ID>\n";
-
-const char* AtmiBrokerEnvXml::XA_Resource_Mgr_Id_Begin_Tag = (char*) "    <XA_RESOURCE_MGR_ID>";
-const char* AtmiBrokerEnvXml::XA_Resource_Mgr_Id_End_Tag = (char*) "</XA_RESOURCE_MGR_ID>\n";
-
-const char* AtmiBrokerEnvXml::XA_Resource_Name_Begin_Tag = (char*) "    <XA_RESOURCE_NAME>";
-const char* AtmiBrokerEnvXml::XA_Resource_Name_End_Tag = (char*) "</XA_RESOURCE_NAME>\n";
-
-const char* AtmiBrokerEnvXml::XA_Open_String_Begin_Tag = (char*) "    <XA_OPEN_STRING>";
-const char* AtmiBrokerEnvXml::XA_Open_String_End_Tag = (char*) "</XA_OPEN_STRING>\n";
-
-const char* AtmiBrokerEnvXml::XA_Close_String_Begin_Tag = (char*) "    <XA_CLOSE_STRING>";
-const char* AtmiBrokerEnvXml::XA_Close_String_End_Tag = (char*) "</XA_CLOSE_STRING>\n";
-
-const char* AtmiBrokerEnvXml::XA_Thread_Model_Begin_Tag = (char*) "    <XA_THREAD_MODEL>";
-const char* AtmiBrokerEnvXml::XA_Thread_Model_End_Tag = (char*) "</XA_THREAD_MODEL>\n";
-
-const char* AtmiBrokerEnvXml::XA_Automatic_Association_Begin_Tag = (char*) "    <XA_AUTOMATIC_ASSOCIATION>";
-const char* AtmiBrokerEnvXml::XA_Automatic_Association_End_Tag = (char*) "</XA_AUTOMATIC_ASSOCIATION>\n";
-
-const char* AtmiBrokerEnvXml::XA_Dynamic_Registration_Optimization_Begin_Tag = (char*) "    <XA_DYNAMIC_REGISTRATION_OPTIMIZATION>";
-const char* AtmiBrokerEnvXml::XA_Dynamic_Registration_Optimization_End_Tag = (char*) "</XA_DYNAMIC_REGISTRATION_OPTIMIZATION>\n";
-
-const char* AtmiBrokerEnvXml::Env_Variables_Begin_Tag = (char*) "    <ENV_VARIABLES>\n";
-const char* AtmiBrokerEnvXml::Env_Variables_End_Tag = (char*) "    </ENV_VARIABLES>\n";
-
-const char* AtmiBrokerEnvXml::Env_Variable_Begin_Tag = (char*) "      <ENV_VARIABLE>\n";
-const char* AtmiBrokerEnvXml::Env_Variable_End_Tag = (char*) "      </ENV_VARIABLE>\n";
-
-const char* AtmiBrokerEnvXml::Env_Name_Begin_Tag = (char*) "        <NAME>";
-const char* AtmiBrokerEnvXml::Env_Name_End_Tag = (char*) "</NAME>\n";
-
-const char* AtmiBrokerEnvXml::Env_Value_Begin_Tag = (char*) "        <VALUE>";
-const char* AtmiBrokerEnvXml::Env_Value_End_Tag = (char*) "</VALUE>\n";
+//const char* AtmiBrokerEnvXml::Environment_Begin_Tag = (char*) "<?xml version=\"1.0\"?>\n<ENVIRONMENT xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n";
+//
+//const char* AtmiBrokerEnvXml::Environment_End_Tag = (char*) "</ENVIRONMENT>\n";
+//
+//const char* AtmiBrokerEnvXml::Environment_Desc_Begin_Tag = (char*) "  <ENVIRONMENT_DESCRIPTION>\n";
+//const char* AtmiBrokerEnvXml::Environment_Desc_End_Tag = (char*) "  </ENVIRONMENT_DESCRIPTION>\n";
+//
+//const char* AtmiBrokerEnvXml::Server_Begin_Tag = (char*) "    <SERVER>";
+//const char* AtmiBrokerEnvXml::Server_End_Tag = (char*) "</SERVER>\n";
+//
+//const char* AtmiBrokerEnvXml::Company_Begin_Tag = (char*) "    <COMPANY>";
+//const char* AtmiBrokerEnvXml::Company_End_Tag = (char*) "</COMPANY>\n";
+//
+//const char* AtmiBrokerEnvXml::Domain_Begin_Tag = (char*) "    <DOMAIN>";
+//const char* AtmiBrokerEnvXml::Domain_End_Tag = (char*) "</DOMAIN>\n";
+//
+//const char* AtmiBrokerEnvXml::QSpace_Name_Begin_Tag = (char*) "    <QSPACE_NAME>";
+//const char* AtmiBrokerEnvXml::QSpace_Name_End_Tag = (char*) "</QSPACE_NAME>\n";
+//
+//const char* AtmiBrokerEnvXml::Naming_Service_Id_Begin_Tag = (char*) "    <NAMING_SERVICE_ID>";
+//const char* AtmiBrokerEnvXml::Naming_Service_Id_End_Tag = (char*) "</NAMING_SERVICE_ID>\n";
+//
+//const char* AtmiBrokerEnvXml::Notify_Service_Id_Begin_Tag = (char*) "    <NOTIFY_SERVICE_ID>";
+//const char* AtmiBrokerEnvXml::Notify_Service_Id_End_Tag = (char*) "</NOTIFY_SERVICE_ID>\n";
+//
+//const char* AtmiBrokerEnvXml::Logging_Service_Id_Begin_Tag = (char*) "    <LOGGING_SERVICE_ID>";
+//const char* AtmiBrokerEnvXml::Logging_Service_Id_End_Tag = (char*) "</LOGGING_SERVICE_ID>\n";
+//
+//const char* AtmiBrokerEnvXml::Trans_Factory_Id_Begin_Tag = (char*) "    <TRANS_FACTORY_ID>";
+//const char* AtmiBrokerEnvXml::Trans_Factory_Id_End_Tag = (char*) "</TRANS_FACTORY_ID>\n";
+//
+//const char* AtmiBrokerEnvXml::XA_Resource_Mgr_Id_Begin_Tag = (char*) "    <XA_RESOURCE_MGR_ID>";
+//const char* AtmiBrokerEnvXml::XA_Resource_Mgr_Id_End_Tag = (char*) "</XA_RESOURCE_MGR_ID>\n";
+//
+//const char* AtmiBrokerEnvXml::XA_Resource_Name_Begin_Tag = (char*) "    <XA_RESOURCE_NAME>";
+//const char* AtmiBrokerEnvXml::XA_Resource_Name_End_Tag = (char*) "</XA_RESOURCE_NAME>\n";
+//
+//const char* AtmiBrokerEnvXml::XA_Open_String_Begin_Tag = (char*) "    <XA_OPEN_STRING>";
+//const char* AtmiBrokerEnvXml::XA_Open_String_End_Tag = (char*) "</XA_OPEN_STRING>\n";
+//
+//const char* AtmiBrokerEnvXml::XA_Close_String_Begin_Tag = (char*) "    <XA_CLOSE_STRING>";
+//const char* AtmiBrokerEnvXml::XA_Close_String_End_Tag = (char*) "</XA_CLOSE_STRING>\n";
+//
+//const char* AtmiBrokerEnvXml::XA_Thread_Model_Begin_Tag = (char*) "    <XA_THREAD_MODEL>";
+//const char* AtmiBrokerEnvXml::XA_Thread_Model_End_Tag = (char*) "</XA_THREAD_MODEL>\n";
+//
+//const char* AtmiBrokerEnvXml::XA_Automatic_Association_Begin_Tag = (char*) "    <XA_AUTOMATIC_ASSOCIATION>";
+//const char* AtmiBrokerEnvXml::XA_Automatic_Association_End_Tag = (char*) "</XA_AUTOMATIC_ASSOCIATION>\n";
+//
+//const char* AtmiBrokerEnvXml::XA_Dynamic_Registration_Optimization_Begin_Tag = (char*) "    <XA_DYNAMIC_REGISTRATION_OPTIMIZATION>";
+//const char* AtmiBrokerEnvXml::XA_Dynamic_Registration_Optimization_End_Tag = (char*) "</XA_DYNAMIC_REGISTRATION_OPTIMIZATION>\n";
+//
+//const char* AtmiBrokerEnvXml::Env_Variables_Begin_Tag = (char*) "    <ENV_VARIABLES>\n";
+//const char* AtmiBrokerEnvXml::Env_Variables_End_Tag = (char*) "    </ENV_VARIABLES>\n";
+//
+//const char* AtmiBrokerEnvXml::Env_Variable_Begin_Tag = (char*) "      <ENV_VARIABLE>\n";
+//const char* AtmiBrokerEnvXml::Env_Variable_End_Tag = (char*) "      </ENV_VARIABLE>\n";
+//
+//const char* AtmiBrokerEnvXml::Env_Name_Begin_Tag = (char*) "        <NAME>";
+//const char* AtmiBrokerEnvXml::Env_Name_End_Tag = (char*) "</NAME>\n";
+//
+//const char* AtmiBrokerEnvXml::Env_Value_Begin_Tag = (char*) "        <VALUE>";
+//const char* AtmiBrokerEnvXml::Env_Value_End_Tag = (char*) "</VALUE>\n";
 
 static char last_element[50];
 static char last_value[1024];
@@ -150,208 +151,208 @@ AtmiBrokerEnvXml::AtmiBrokerEnvXml() {
 AtmiBrokerEnvXml::~AtmiBrokerEnvXml() {
 }
 
-void AtmiBrokerEnvXml::writeXmlDescriptor(AtmiBroker::EnvVariableInfoSeq* aEnvironmentStructPtr, const char * aDescriptorFileName) {
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "writeXmlDescriptor() ");
-
-	char fileName[50];
-	strcpy(fileName, AtmiBrokerEnv::ENVIRONMENT_FILE);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "file name %s" << aDescriptorFileName);
-	FILE* aTempFile = fopen(fileName, "w");
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "file opened %p" << aTempFile);
-
-	// Environment
-	fputs(Environment_Begin_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Environment_Begin_Tag);
-
-	// Environment Desc
-	fputs(Environment_Desc_Begin_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Environment_Desc_Begin_Tag);
-
-	// Server
-	fputs(Server_Begin_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Server_Begin_Tag);
-	fputs(server, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << server);
-	fputs(Server_End_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Server_End_Tag);
-
-	// Company
-	fputs(Company_Begin_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Company_Begin_Tag);
-	fputs(company, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << company);
-	fputs(Company_End_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Company_End_Tag);
-
-	// Domain
-	fputs(Domain_Begin_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Domain_Begin_Tag);
-	fputs(domain, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << domain);
-	fputs(Domain_End_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Domain_End_Tag);
-
-	// QSpace Name
-	fputs(QSpace_Name_Begin_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << QSpace_Name_Begin_Tag);
-	fputs(queue_name, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << queue_name);
-	fputs(QSpace_Name_End_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << QSpace_Name_End_Tag);
-
-	// Naming Service Id
-	fputs(Naming_Service_Id_Begin_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Naming_Service_Id_Begin_Tag);
-	fputs(namingServiceId, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << namingServiceId);
-	fputs(Naming_Service_Id_End_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Naming_Service_Id_End_Tag);
-
-	// Notify Service Id
-	fputs(Notify_Service_Id_Begin_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Notify_Service_Id_Begin_Tag);
-	fputs(notifyServiceId, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << notifyServiceId);
-	fputs(Notify_Service_Id_End_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Notify_Service_Id_End_Tag);
-
-	// Logging Service Id
-	fputs(Logging_Service_Id_Begin_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Logging_Service_Id_Begin_Tag);
-	fputs(loggingServiceId, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << loggingServiceId);
-	fputs(Logging_Service_Id_End_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Logging_Service_Id_End_Tag);
-
-	// Transaction Factory Id
-	fputs(Trans_Factory_Id_Begin_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Trans_Factory_Id_Begin_Tag);
-	fputs(transFactoryId, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << transFactoryId);
-	fputs(Trans_Factory_Id_End_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Trans_Factory_Id_End_Tag);
-
-	// XA Resource Id
-	fputs(XA_Resource_Mgr_Id_Begin_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Resource_Mgr_Id_Begin_Tag);
-	fputs(xaResourceMgrId, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << xaResourceMgrId);
-	fputs(XA_Resource_Mgr_Id_End_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Resource_Mgr_Id_End_Tag);
-
-	// XA Resource Name
-	fputs(XA_Resource_Name_Begin_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Resource_Name_Begin_Tag);
-	fputs(xaResourceName, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << xaResourceName);
-	fputs(XA_Resource_Name_End_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Resource_Name_End_Tag);
-
-	// XA Open String
-	fputs(XA_Open_String_Begin_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Open_String_Begin_Tag);
-	fputs(xaOpenString, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << xaOpenString);
-	fputs(XA_Open_String_End_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Open_String_End_Tag);
-
-	// XA Close String
-	fputs(XA_Close_String_Begin_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Close_String_Begin_Tag);
-	fputs(xaCloseString, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << xaCloseString);
-	fputs(XA_Close_String_End_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Close_String_End_Tag);
-
-	// XA Thread Model
-	fputs(XA_Thread_Model_Begin_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Thread_Model_Begin_Tag);
-	if (xaThreadModel) {
-		fputs("TRUE", aTempFile);
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote TRUE");
-	} else {
-		fputs("FALSE", aTempFile);
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote FALSE");
-	}
-	fputs(XA_Thread_Model_End_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Thread_Model_End_Tag);
-
-	// XA Automatic Association
-	fputs(XA_Automatic_Association_Begin_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Automatic_Association_Begin_Tag);
-	if (xaAutomaticAssociation) {
-		fputs("TRUE", aTempFile);
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote TRUE");
-	} else {
-		fputs("FALSE", aTempFile);
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote FALSE");
-	}
-	fputs(XA_Automatic_Association_End_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Automatic_Association_End_Tag);
-
-	// XA Dynamic Registration Optimization
-	fputs(XA_Dynamic_Registration_Optimization_Begin_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Dynamic_Registration_Optimization_Begin_Tag);
-	if (xaDynamicRegistrationOptimization) {
-		fputs("TRUE", aTempFile);
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote TRUE");
-	} else {
-		fputs("FALSE", aTempFile);
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote FALSE");
-	}
-	fputs(XA_Dynamic_Registration_Optimization_End_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Dynamic_Registration_Optimization_End_Tag);
-
-	// Env Variables
-	fputs(Env_Variables_Begin_Tag, aTempFile);
-
-	for (unsigned int i = 0; i < aEnvironmentStructPtr->length(); i++) {
-		// Env Variable
-		fputs(Env_Variable_Begin_Tag, aTempFile);
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Env_Variable_Begin_Tag);
-
-		// Env Name
-		fputs(Env_Name_Begin_Tag, aTempFile);
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Env_Name_Begin_Tag);
-		fputs((const char*) (*aEnvironmentStructPtr)[i].name, aTempFile);
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << (const char*)(*aEnvironmentStructPtr)[i].name);
-		fputs(Env_Name_End_Tag, aTempFile);
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Env_Name_End_Tag);
-
-		// Env Value
-		fputs(Env_Value_Begin_Tag, aTempFile);
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Env_Value_Begin_Tag);
-		fputs((const char*) (*aEnvironmentStructPtr)[i].value, aTempFile);
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << (const char*)(*aEnvironmentStructPtr)[i].value);
-		fputs(Env_Value_End_Tag, aTempFile);
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Env_Value_End_Tag);
-
-		// Env Variable
-		fputs(Env_Variable_End_Tag, aTempFile);
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Env_Variable_End_Tag);
-	}
-
-	// Env Variables
-	fputs(Env_Variables_End_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Env_Variables_End_Tag);
-
-	// Environment Desc
-	fputs(Environment_Desc_End_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Environment_Desc_End_Tag);
-
-	// Environment
-	fputs(Environment_End_Tag, aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Environment_End_Tag);
-
-	fflush(aTempFile);
-	fclose(aTempFile);
-
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "leaving writeXmlDescriptor() ");
-}
+//void AtmiBrokerEnvXml::writeXmlDescriptor(AtmiBroker::EnvVariableInfoSeq* aEnvironmentStructPtr, const char * aDescriptorFileName) {
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "writeXmlDescriptor() ");
+//
+//	char fileName[50];
+//	strcpy(fileName, AtmiBrokerEnv::ENVIRONMENT_FILE);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "file name %s" << aDescriptorFileName);
+//	FILE* aTempFile = fopen(fileName, "w");
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "file opened %p" << aTempFile);
+//
+//	// Environment
+//	fputs(Environment_Begin_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Environment_Begin_Tag);
+//
+//	// Environment Desc
+//	fputs(Environment_Desc_Begin_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Environment_Desc_Begin_Tag);
+//
+//	// Server
+//	fputs(Server_Begin_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Server_Begin_Tag);
+//	fputs(server, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << server);
+//	fputs(Server_End_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Server_End_Tag);
+//
+//	// Company
+//	fputs(Company_Begin_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Company_Begin_Tag);
+//	fputs(company, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << company);
+//	fputs(Company_End_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Company_End_Tag);
+//
+//	// Domain
+//	fputs(Domain_Begin_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Domain_Begin_Tag);
+//	fputs(domain, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << domain);
+//	fputs(Domain_End_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Domain_End_Tag);
+//
+//	// QSpace Name
+//	fputs(QSpace_Name_Begin_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << QSpace_Name_Begin_Tag);
+//	fputs(queue_name, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << queue_name);
+//	fputs(QSpace_Name_End_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << QSpace_Name_End_Tag);
+//
+//	// Naming Service Id
+//	fputs(Naming_Service_Id_Begin_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Naming_Service_Id_Begin_Tag);
+//	fputs(namingServiceId, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << namingServiceId);
+//	fputs(Naming_Service_Id_End_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Naming_Service_Id_End_Tag);
+//
+//	// Notify Service Id
+//	fputs(Notify_Service_Id_Begin_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Notify_Service_Id_Begin_Tag);
+//	fputs(notifyServiceId, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << notifyServiceId);
+//	fputs(Notify_Service_Id_End_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Notify_Service_Id_End_Tag);
+//
+//	// Logging Service Id
+//	fputs(Logging_Service_Id_Begin_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Logging_Service_Id_Begin_Tag);
+//	fputs(loggingServiceId, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << loggingServiceId);
+//	fputs(Logging_Service_Id_End_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Logging_Service_Id_End_Tag);
+//
+//	// Transaction Factory Id
+//	fputs(Trans_Factory_Id_Begin_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Trans_Factory_Id_Begin_Tag);
+//	fputs(transFactoryId, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << transFactoryId);
+//	fputs(Trans_Factory_Id_End_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Trans_Factory_Id_End_Tag);
+//
+//	// XA Resource Id
+//	fputs(XA_Resource_Mgr_Id_Begin_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Resource_Mgr_Id_Begin_Tag);
+//	fputs(xaResourceMgrId, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << xaResourceMgrId);
+//	fputs(XA_Resource_Mgr_Id_End_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Resource_Mgr_Id_End_Tag);
+//
+//	// XA Resource Name
+//	fputs(XA_Resource_Name_Begin_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Resource_Name_Begin_Tag);
+//	fputs(xaResourceName, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << xaResourceName);
+//	fputs(XA_Resource_Name_End_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Resource_Name_End_Tag);
+//
+//	// XA Open String
+//	fputs(XA_Open_String_Begin_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Open_String_Begin_Tag);
+//	fputs(xaOpenString, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << xaOpenString);
+//	fputs(XA_Open_String_End_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Open_String_End_Tag);
+//
+//	// XA Close String
+//	fputs(XA_Close_String_Begin_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Close_String_Begin_Tag);
+//	fputs(xaCloseString, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << xaCloseString);
+//	fputs(XA_Close_String_End_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Close_String_End_Tag);
+//
+//	// XA Thread Model
+//	fputs(XA_Thread_Model_Begin_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Thread_Model_Begin_Tag);
+//	if (xaThreadModel) {
+//		fputs("TRUE", aTempFile);
+//		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote TRUE");
+//	} else {
+//		fputs("FALSE", aTempFile);
+//		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote FALSE");
+//	}
+//	fputs(XA_Thread_Model_End_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Thread_Model_End_Tag);
+//
+//	// XA Automatic Association
+//	fputs(XA_Automatic_Association_Begin_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Automatic_Association_Begin_Tag);
+//	if (xaAutomaticAssociation) {
+//		fputs("TRUE", aTempFile);
+//		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote TRUE");
+//	} else {
+//		fputs("FALSE", aTempFile);
+//		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote FALSE");
+//	}
+//	fputs(XA_Automatic_Association_End_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Automatic_Association_End_Tag);
+//
+//	// XA Dynamic Registration Optimization
+//	fputs(XA_Dynamic_Registration_Optimization_Begin_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Dynamic_Registration_Optimization_Begin_Tag);
+//	if (xaDynamicRegistrationOptimization) {
+//		fputs("TRUE", aTempFile);
+//		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote TRUE");
+//	} else {
+//		fputs("FALSE", aTempFile);
+//		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote FALSE");
+//	}
+//	fputs(XA_Dynamic_Registration_Optimization_End_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Dynamic_Registration_Optimization_End_Tag);
+//
+//	// Env Variables
+//	fputs(Env_Variables_Begin_Tag, aTempFile);
+//
+//	for (unsigned int i = 0; i < aEnvironmentStructPtr->length(); i++) {
+//		// Env Variable
+//		fputs(Env_Variable_Begin_Tag, aTempFile);
+//		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Env_Variable_Begin_Tag);
+//
+//		// Env Name
+//		fputs(Env_Name_Begin_Tag, aTempFile);
+//		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Env_Name_Begin_Tag);
+//		fputs((const char*) (*aEnvironmentStructPtr)[i].name, aTempFile);
+//		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << (const char*)(*aEnvironmentStructPtr)[i].name);
+//		fputs(Env_Name_End_Tag, aTempFile);
+//		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Env_Name_End_Tag);
+//
+//		// Env Value
+//		fputs(Env_Value_Begin_Tag, aTempFile);
+//		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Env_Value_Begin_Tag);
+//		fputs((const char*) (*aEnvironmentStructPtr)[i].value, aTempFile);
+//		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << (const char*)(*aEnvironmentStructPtr)[i].value);
+//		fputs(Env_Value_End_Tag, aTempFile);
+//		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Env_Value_End_Tag);
+//
+//		// Env Variable
+//		fputs(Env_Variable_End_Tag, aTempFile);
+//		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Env_Variable_End_Tag);
+//	}
+//
+//	// Env Variables
+//	fputs(Env_Variables_End_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Env_Variables_End_Tag);
+//
+//	// Environment Desc
+//	fputs(Environment_Desc_End_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Environment_Desc_End_Tag);
+//
+//	// Environment
+//	fputs(Environment_End_Tag, aTempFile);
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Environment_End_Tag);
+//
+//	fflush(aTempFile);
+//	fclose(aTempFile);
+//
+//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "leaving writeXmlDescriptor() ");
+//}
 
 static void XMLCALL
 startElement(void *userData, const char *name, const char **atts) {
-	AtmiBroker::EnvVariableInfoSeq* aEnvironmentStructPtr = (AtmiBroker::EnvVariableInfoSeq*) userData;
+	std::vector<envVar_t>* aEnvironmentStructPtr = (std::vector<envVar_t>*) userData;
 
 	if (strcmp(name, "ENVIRONMENT xmnls") == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "new server ");
@@ -409,7 +410,8 @@ startElement(void *userData, const char *name, const char **atts) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "processing Env Variable for environment ");
 		processingEnvVariable = true;
 		envVariableCount++;
-		(*aEnvironmentStructPtr).length(envVariableCount);
+		envVar_t envVar;
+		(*aEnvironmentStructPtr).push_back(envVar);
 	} else if (strcmp(last_element, "NAME") == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "processing Env Name for environment ");
 		processingEnvName = true;
@@ -425,7 +427,7 @@ startElement(void *userData, const char *name, const char **atts) {
 
 static void XMLCALL
 endElement(void *userData, const char *name) {
-	AtmiBroker::EnvVariableInfoSeq* aEnvironmentStructPtr = (AtmiBroker::EnvVariableInfoSeq*) userData;
+	std::vector<envVar_t>* aEnvironmentStructPtr = (std::vector<envVar_t>*) userData;
 
 	bool storedElement = false;
 	strcpy(last_element, name);
@@ -510,30 +512,12 @@ endElement(void *userData, const char *name) {
 		int index = envVariableCount - 1;
 		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "storing EnvName '%s' at index %d" << last_value << index);
 		processingEnvName = false;
-		(*aEnvironmentStructPtr)[index].name = CORBA::string_dup(last_value);
+		(*aEnvironmentStructPtr)[index].name = strdup(last_value);
 	} else if (strcmp(last_element, "VALUE") == 0) {
 		int index = envVariableCount - 1;
 		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "storing Env Value '%s' at index %d" << last_value << index);
 		processingEnvValue = false;
-
-		(*aEnvironmentStructPtr)[index].value = CORBA::string_dup(last_value);
-		int size = strlen((*aEnvironmentStructPtr)[index].name) + strlen((*aEnvironmentStructPtr)[index].value) + strlen("=") + 1;
-		char *envNameValue = (char*) malloc(sizeof(char) * size);
-		strcpy(envNameValue, (*aEnvironmentStructPtr)[index].name);
-		strcat(envNameValue, "=");
-		strcat(envNameValue, (*aEnvironmentStructPtr)[index].value);
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) " putenv'ing '%s'" << envNameValue);
-		putenv(envNameValue);
-	}
-	if (storedElement) {
-		int size = strlen(last_element) + strlen(last_value) + strlen("=") + 1;
-		char *envNameValue = (char*) malloc(sizeof(char) * size);
-		strcpy(envNameValue, last_element);
-		strcat(envNameValue, "=");
-		strcat(envNameValue, last_value);
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) " putenv'ing '%s'" << envNameValue);
-		putenv(envNameValue);
-		storedElement = false;
+		(*aEnvironmentStructPtr)[index].value = strdup(last_value);
 	}
 	depth -= 1;
 }
@@ -554,8 +538,10 @@ characterData(void *userData, const char *cdata, int len) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "value is '%s'" << value);
 }
 
-bool AtmiBrokerEnvXml::parseXmlDescriptor(AtmiBroker::EnvVariableInfoSeq* aEnvironmentStructPtr, const char * aDescriptorFileName) {
+bool AtmiBrokerEnvXml::parseXmlDescriptor(std::vector<envVar_t>* aEnvironmentStructPtr, const char * aDescriptorFileName) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "in parseXmlDescriptor() %s" << aDescriptorFileName);
+
+	bool toReturn = true;
 
 	struct stat s; /* file stats */
 	FILE *aDescriptorFile = fopen(aDescriptorFileName, "r");
@@ -604,8 +590,9 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(AtmiBroker::EnvVariableInfoSeq* aEnvir
 		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "length is '%d'" << len);
 		done = len < sizeof(buf);
 		if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR) {
-			LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "%d at line %d" << XML_ErrorString(XML_GetErrorCode(parser)) << XML_GetCurrentLineNumber(parser));
-			return false;
+			LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "%d at line %d" << XML_ErrorString(XML_GetErrorCode(parser)) << XML_GetCurrentLineNumber(parser));
+			toReturn = false;
+			break;
 		}
 	} while (!done);
 	free(buf);
@@ -615,6 +602,6 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(AtmiBroker::EnvVariableInfoSeq* aEnvir
 	fclose(aDescriptorFile);
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "leaving parseXmlDescriptor() %s" << aDescriptorFileName);
-	return true;
+	return toReturn;
 }
 

@@ -78,7 +78,7 @@ void server_sigint_handler_callback(int sig_type) {
 }
 
 void server_sigsegv_handler_callback(int sig_type) {
-//	LOG4CXX_ERROR(loggerAtmiBrokerServer, (char*) "TODO I AM A HACK");
+	LOG4CXX_ERROR(loggerAtmiBrokerServer, (char*) "TODO I AM A HACK");
 }
 
 int serverrun() {
@@ -98,7 +98,7 @@ int serverinit(int argc, char ** argv) {
 		userlog(Level::getInfo(), loggerAtmiBrokerServer, (char*) "serverinit called");
 		_tperrno = 0;
 		signal(SIGINT, server_sigint_handler_callback);
-		signal(SIGSEGV, server_sigsegv_handler_callback);
+		//		signal(SIGSEGV, server_sigsegv_handler_callback);
 
 		if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG") != NULL) {
 			PropertyConfigurator::configure(AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG"));

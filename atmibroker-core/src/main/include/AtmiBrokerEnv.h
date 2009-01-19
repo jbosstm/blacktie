@@ -27,17 +27,13 @@
 
 #include "atmiBrokerCoreMacro.h"
 
-#ifdef TAO_COMP
-#include "AtmiBrokerC.h"
-#elif ORBIX_COMP
-#include "AtmiBroker.hh"
-#endif
-#ifdef VBC_COMP
-#include "AtmiBroker_c.hh"
-#endif
-
 #include <iostream>
 #include <vector>
+
+typedef struct {
+	char * name;
+	char * value;
+} envVar_t;
 
 class ATMIBROKER_CORE_DLL AtmiBrokerEnv {
 
@@ -51,7 +47,7 @@ public:
 
 	int putenv(char* anEnvNameValue);
 
-	AtmiBroker::EnvVariableInfoSeq& getEnvVariableInfoSeq();
+	std::vector<envVar_t>& getEnvVariableInfoSeq();
 
 	static AtmiBrokerEnv* get_instance();
 	static void discard_instance();
@@ -63,7 +59,7 @@ private:
 
 	int readenv(char* aEnvFileName, char* label);
 
-	AtmiBroker::EnvVariableInfoSeq envVariableInfoSeq;
+	std::vector<envVar_t> envVariableInfoSeq;
 	bool readEnvironment;
 
 	static AtmiBrokerEnv* ptrAtmiBrokerEnv;

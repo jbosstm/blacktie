@@ -53,8 +53,8 @@ void SimpleOrbTest::test() {
 	tmp_ref = orbRef->resolve_initial_references("NameService");
 	try {
 		CosNaming::NamingContextExt_var default_ctx = CosNaming::NamingContextExt::_narrow(tmp_ref);
-		CPPUNIT_FAIL("Narrowed the default context");
 	} catch (CORBA::Exception &e) {
+		CPPUNIT_FAIL("COULDN'T Narrow the default context");
 		if (!CORBA::is_nil(orbRef))
 			orbRef->shutdown(1);
 		if (!CORBA::is_nil(orbRef))

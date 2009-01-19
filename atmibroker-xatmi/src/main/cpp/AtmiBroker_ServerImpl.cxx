@@ -396,17 +396,19 @@ AtmiBroker::EnvVariableInfoSeq*
 AtmiBroker_ServerImpl::get_environment_variable_info() throw (CORBA::SystemException ) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_environment_variable_info()");
 
-	AtmiBroker::EnvVariableInfoSeq& aEnvVarInfoSeq = AtmiBrokerEnv::get_instance()->getEnvVariableInfoSeq();
+	std::vector<envVar_t> & aEnvVarInfoSeq = AtmiBrokerEnv::get_instance()->getEnvVariableInfoSeq();
 
 	AtmiBroker::EnvVariableInfoSeq* aEnvVariableInfoSeqPtr = new AtmiBroker::EnvVariableInfoSeq();
 
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_environment_variable_info() setting length to %d", aEnvVarInfoSeq.length());
-	aEnvVariableInfoSeqPtr->length(aEnvVarInfoSeq.length());
+	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_environment_variable_info() setting length to %d", aEnvVarInfoSeq.size());
+	aEnvVariableInfoSeqPtr->length(aEnvVarInfoSeq.size());
 	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_environment_variable_info() set length to %d", aEnvVariableInfoSeqPtr->length());
-	for (unsigned int i = 0; i < aEnvVarInfoSeq.length(); i++) {
-		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_environment_variable_info() env[%d].name %s ", i, (const char *) aEnvVarInfoSeq[i].name);
-		(*aEnvVariableInfoSeqPtr)[i].name = CORBA::string_dup(aEnvVarInfoSeq[i].name);
-		(*aEnvVariableInfoSeqPtr)[i].value = CORBA::string_dup(aEnvVarInfoSeq[i].value);
+	int j = 0;
+	for (std::vector<envVar_t>::iterator i = aEnvVarInfoSeq.begin(); i != aEnvVarInfoSeq.end(); i++) {
+		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_environment_variable_info() env name %s ", (*i).name);
+		(*aEnvVariableInfoSeqPtr)[j].name = strdup((*i).name);
+		(*aEnvVariableInfoSeqPtr)[j].value = strdup((*i).value);
+		j++;
 	}
 	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_environment_variable_info() returning ");
 	return aEnvVariableInfoSeqPtr;

@@ -47,9 +47,9 @@ void BaseServerTest::setUp() {
 }
 
 void BaseServerTest::tearDown() {
-	// Stop the server
-	serverdone();
 
 	// Perform additional clean up
 	BaseTest::tearDown();
+	// Stop the server
+	serverdone();
 }

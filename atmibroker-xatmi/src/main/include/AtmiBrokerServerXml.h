@@ -70,8 +70,6 @@ public:
 
 	~AtmiBrokerServerXml();
 
-	const char * writeXmlDescriptor(AtmiBroker::ServerInfo* serverData);
-
 	void parseXmlDescriptor(ServerMetadata*, const char * aDescriptorFileName);
 };
 

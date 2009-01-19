@@ -197,6 +197,8 @@ int AtmiBroker_ServiceImpl::tpsend(int id, char* idata, long ilen, long flags, l
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "tpsend octet data %s", (char*) aOctetSeq->get_buffer());
 	callbackRef->enqueue_data(0, 0, aOctetSeq, ilen, flags, 0, idout);
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "tpsent octet data %s", (char*) aOctetSeq->get_buffer());
+
+	free(idStr);
 	return 0;
 }
 

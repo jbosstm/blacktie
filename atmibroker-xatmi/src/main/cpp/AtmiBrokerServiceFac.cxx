@@ -75,6 +75,7 @@ void remove_service_manager(char* serviceName) {
 
 	AtmiBrokerServiceFacMgr::get_instance()->removeServiceManager(serviceName);
 
+	free(serviceManagerName);
 	userlog(Level::getInfo(), loggerAtmiBrokerServiceFac, (char*) " service manager %s removed", serviceName);
 }
 
@@ -102,7 +103,7 @@ PortableServer::POA_ptr create_service_manager_poa(char *serviceName) {
 	aPoaPtr = serverPoaFactory->createServiceManagerPoa(serviceManagerName, server_poa, server_root_poa_manager);
 
 	userlog(Level::getInfo(), loggerAtmiBrokerServiceFac, (char*) "created service_manager_poa name: %s", serviceManagerName);
-
+	free(serviceManagerName);
 	return aPoaPtr._retn();
 }
 

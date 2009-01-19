@@ -44,9 +44,6 @@ AtmiBrokerClient::AtmiBrokerClient(CORBA::Boolean createCallbackInd, CORBA::Bool
 
 	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "constructor ");
 
-	char *clientFileName = (char*) malloc(sizeof(char) * XATMI_SERVICE_NAME_LENGTH);
-	strcpy(clientFileName, "CLIENT.xml");
-
 	AtmiBrokerClientXml aAtmiBrokerClientXml;
 	aAtmiBrokerClientXml.parseXmlDescriptor(&clientServerVector, "CLIENT.xml");
 
@@ -251,6 +248,7 @@ char*
 AtmiBrokerClient::convertIdToString(int id) {
 	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "convertIdToString %d", id);
 
+	char * toReturn = NULL;
 	char *anIdStr = (char*) malloc(sizeof(char*) * XATMI_SERVICE_NAME_LENGTH);
 
 	unsigned int i = id / 1000;
@@ -271,9 +269,10 @@ AtmiBrokerClient::convertIdToString(int id) {
 		strcat(anIdStr, indexStr);
 
 		userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "anIdStr %s", anIdStr);
-		return anIdStr;
+		toReturn = strdup(anIdStr);
 	}
-	return NULL;
+	free(anIdStr);
+	return toReturn;
 }
 
 long AtmiBrokerClient::getClientId(char* aServiceName) {

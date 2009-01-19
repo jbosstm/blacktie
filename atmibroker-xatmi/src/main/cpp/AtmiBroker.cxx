@@ -120,7 +120,7 @@ int clientinit() {
 		_tperrno = 0;
 
 		signal(SIGINT, client_sigint_handler_callback);
-		signal(SIGSEGV, client_sigsegv_handler_callback);
+		//		signal(SIGSEGV, client_sigsegv_handler_callback);
 
 		if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG") != NULL) {
 			PropertyConfigurator::configure(AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG"));
@@ -204,7 +204,7 @@ int clientdone() {
 		shutdownBindings(client_orb, client_root_poa, client_root_poa_manager, client_default_context, client_name_context, client_poa, client_worker);
 
 		clientInitialized = false;
-		userlog(Level::getInfo(), loggerAtmiBroker, (char*) "clientdone returningshutdownBindings");
+		userlog(Level::getInfo(), loggerAtmiBroker, (char*) "clientdone returning");
 	}
 	return 0;
 }

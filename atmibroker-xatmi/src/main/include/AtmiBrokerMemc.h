@@ -27,12 +27,12 @@
 
 #include "atmiBrokerMacro.h"
 
-struct ATMIBROKER_DLL _memory_info {
 #define MAX_TYPE_SIZE 8
 #define MAX_SUBTYPE_SIZE 16
+struct ATMIBROKER_DLL _memory_info {
 	void* memoryPtr;
-	char type[MAX_TYPE_SIZE];
-	char subtype[MAX_SUBTYPE_SIZE];
+	char* type;
+	char* subtype;
 	int size;
 };
 

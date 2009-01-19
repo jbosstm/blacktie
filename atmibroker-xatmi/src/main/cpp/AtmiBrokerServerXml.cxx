@@ -95,11 +95,6 @@ AtmiBrokerServerXml::AtmiBrokerServerXml() {
 AtmiBrokerServerXml::~AtmiBrokerServerXml() {
 }
 
-const char *
-AtmiBrokerServerXml::writeXmlDescriptor(AtmiBroker::ServerInfo* serverData) {
-	return NULL;
-}
-
 static void XMLCALL startElement
 (void *userData, const char *name, const char **atts)
 {
@@ -275,8 +270,8 @@ void AtmiBrokerServerXml::parseXmlDescriptor(ServerMetadata* aServerStructPtr, c
 		userlog(Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "buf is %s", buf);
 		done = len < sizeof(buf);
 		if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR) {
-			userlog(Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "%d at line %d", XML_ErrorString(XML_GetErrorCode(parser)), XML_GetCurrentLineNumber(parser));
-			return;
+			userlog(Level::getError(), loggerAtmiBrokerServerXml, (char*) "%d at line %d", XML_ErrorString(XML_GetErrorCode(parser)), XML_GetCurrentLineNumber(parser));
+			break;
 		}
 	} while (!done);
 	free(buf);

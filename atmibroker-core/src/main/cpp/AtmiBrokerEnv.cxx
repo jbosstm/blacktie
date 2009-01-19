@@ -20,12 +20,6 @@
  */
 // copyright 2006, 2008 BreakThruIT
 
-/*
-#ifdef TAO_COMP
-#include <tao/ORB.h>
-#include "tao/ORB_Core.h"
-#endif
-*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -60,18 +54,16 @@ void AtmiBrokerEnv::discard_instance() {
 AtmiBrokerEnv::AtmiBrokerEnv() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "constructor");
 	readEnvironment = false;
-	// THIS WILL LOAD THE ENV FILE IF NOT LOADED
 	readenv(NULL, NULL);
 }
 
 AtmiBrokerEnv::~AtmiBrokerEnv() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "destructor");
-	for (unsigned int i = 0; i < envVariableInfoSeq.length(); i++) {
-		//free((char*)envVariableInfoSeq[i].name);
-		//free((char*)envVariableInfoSeq[i].value);
+	for (std::vector<envVar_t>::iterator i = envVariableInfoSeq.begin(); i != envVariableInfoSeq.end(); i++) {
+		free((*i).name);
+		free((*i).value);
 	}
-	//envVariableInfoSeq.length(0);
-	envVariableInfoSeq = NULL;
+	envVariableInfoSeq.clear();
 	readEnvironment = false;
 }
 
@@ -82,18 +74,14 @@ AtmiBrokerEnv::getenv(char* anEnvName) {
 	char *envValue = ::getenv(anEnvName);
 	if (envValue != NULL) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "getenv env is %s"<< envValue);
-		return strdup(envValue);
+		return envValue;
 	}
 
-	for (unsigned int i = 0; i < envVariableInfoSeq.length(); i++) {
-		if (strcmp(anEnvName, envVariableInfoSeq[i].name) == 0) {
-			LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "getenv found env name '%s'" << (const char*)envVariableInfoSeq[i].value);
-			const char * aValue = (const char *) envVariableInfoSeq[i].value;
-			return (char *) aValue;
+	for (std::vector<envVar_t>::iterator i = envVariableInfoSeq.begin(); i != envVariableInfoSeq.end(); i++) {
+		if (strcmp(anEnvName, (*i).name) == 0) {
+			LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "getenv found env name '%s'" << (*i).value);
+			return (*i).value;
 		}
-	}
-	if (envValue != NULL) {
-		return strdup(envValue);
 	}
 	return NULL;
 }
@@ -125,15 +113,16 @@ int AtmiBrokerEnv::putenv(char* anEnvNameValue) {
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "putenv name '%s' value '%s'" << name << value);
 
-	int numEnvs = envVariableInfoSeq.length();
-	envVariableInfoSeq.length(numEnvs + 1);
-	envVariableInfoSeq[numEnvs].name = strdup(name);
-	envVariableInfoSeq[numEnvs].value = strdup(value);
+	envVar_t envVar;
+	envVar.name = strdup(name);
+	envVar.value = strdup(value);
+	envVariableInfoSeq.push_back(envVar);
+
 	free(name);
 	free(value);
 
-	AtmiBrokerEnvXml aAtmiBrokerEnvXml;
-	aAtmiBrokerEnvXml.writeXmlDescriptor(&envVariableInfoSeq, ENVIRONMENT_FILE);
+	//	AtmiBrokerEnvXml aAtmiBrokerEnvXml;
+	//	aAtmiBrokerEnvXml.writeXmlDescriptor(&envVariableInfoSeq, ENVIRONMENT_FILE);
 
 	return 1;
 }
@@ -158,8 +147,7 @@ int AtmiBrokerEnv::readenv(char* aEnvFileName, char* label) {
 	return 1;
 }
 
-AtmiBroker::EnvVariableInfoSeq &
-AtmiBrokerEnv::getEnvVariableInfoSeq() {
+std::vector<envVar_t>& AtmiBrokerEnv::getEnvVariableInfoSeq() {
 	return envVariableInfoSeq;
 }
 

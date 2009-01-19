@@ -27,17 +27,8 @@
 
 #include <string.h>
 
-#ifdef TAO_COMP
-#include "tao/ORB.h"
-#include "AtmiBrokerC.h"
-#elif ORBIX_COMP
-#include <omg/orb.hh>
-#endif
-#ifdef VBC_COMP
-#include <orb.h>
-#endif
-
-//#include "AtmiBroker_ServerImpl.h"
+#include "AtmiBrokerEnv.h"
+#include <vector>
 
 class ATMIBROKER_CORE_DLL AtmiBrokerEnvXml {
 public:
@@ -109,9 +100,9 @@ public:
 
 	~AtmiBrokerEnvXml();
 
-	void writeXmlDescriptor(AtmiBroker::EnvVariableInfoSeq* serverData, const char * aDescriptorFileName);
+//	void writeXmlDescriptor(AtmiBroker::EnvVariableInfoSeq* serverData, const char * aDescriptorFileName);
 
-	bool parseXmlDescriptor(AtmiBroker::EnvVariableInfoSeq*, const char * aDescriptorFileName);
+	bool parseXmlDescriptor(std::vector<envVar_t>* , const char * aDescriptorFileName);
 
 };
 

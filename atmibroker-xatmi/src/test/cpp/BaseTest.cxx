@@ -33,13 +33,14 @@ void BaseTest::setUp() {
 }
 
 void BaseTest::tearDown() {
+	// Perform global clean up
+	TestFixture::tearDown();
+
 	// Perform clean up
 	::clientdone();
 	CPPUNIT_ASSERT(tperrno == 0);
-	stopNamingService();
 
-	// Perform global clean up
-	TestFixture::tearDown();
+	stopNamingService();
 }
 
 void BaseTest::startNamingService() {

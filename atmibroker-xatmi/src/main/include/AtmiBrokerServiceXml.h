@@ -51,8 +51,6 @@ public:
 
 	~AtmiBrokerServiceXml();
 
-	const char * writeXmlDescriptor(AtmiBroker::ServiceInfo* serviceData);
-
 	void parseXmlDescriptor(AtmiBroker::ServiceInfo* serviceData, const char * aDescriptorFileName);
 };
 

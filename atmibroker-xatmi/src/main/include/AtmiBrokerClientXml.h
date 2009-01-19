@@ -77,8 +77,6 @@ public:
 
 	~AtmiBrokerClientXml();
 
-	const char * writeXmlDescriptor(std::vector<ClientServerInfo*>* serverData);
-
 	void parseXmlDescriptor(std::vector<ClientServerInfo*>*, const char * aDescriptorFileName);
 };
 
