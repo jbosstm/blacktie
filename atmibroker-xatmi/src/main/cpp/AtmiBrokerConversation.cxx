@@ -204,7 +204,7 @@ int AtmiBrokerConversation::tpgetrply(int * id, char ** odata, long *olen, long 
 	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "tpgetrply - id: %d odata: %s olen: %p flags: %d", *id, *odata, olen, flags);
 	long events;
 	int toReturn = tprecv(*id, odata, olen, flags, &events);
-	tpdiscon(*id);
+	end(*id);
 	return toReturn;
 }
 
