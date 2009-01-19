@@ -49,7 +49,7 @@ void initOrb(char* name, Worker* worker, CORBA::ORB_ptr& orbRef) {
 
 		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "initOrb inited ORB %p ");
 		worker = new Worker(orbRef);
-		if (worker->activate(THR_NEW_LWP | THR_JOINABLE, 1, 0, ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
+		if (worker->activate(THR_NEW_LWP| THR_JOINABLE, 1, 0, ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
 			delete worker;
 			worker = 0;
 			LOG4CXX_ERROR(loggerOrbManagement, (char*) "Could not start thread pool");
@@ -139,5 +139,29 @@ void getNamingServiceAndContext(CORBA::ORB_ptr& orbRef, CosNaming::NamingContext
 		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext got Naming Service Instance  ");
 	} else
 	LOG4CXX_ERROR(loggerOrbManagement, (char*) "getNamingServiceAndContext already got Naming Service Instance  ");
+}
+
+void getRootPOAAndManager(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, PortableServer::POAManager_var& poa_manager) {
+	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getRootPOAAndManager");
+
+	CORBA::Object_var tmp_ref;
+
+	if (CORBA::is_nil(poa)) {
+		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getRootPOAAndManager resolving the root POA ");
+		tmp_ref = orbRef->resolve_initial_references("RootPOA");
+		poa = PortableServer::POA::_narrow(tmp_ref);
+		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getRootPOAAndManager resolved the root POA: " << (void*) poa);
+	} else {
+		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getRootPOAAndManager already resolved the root POA: " << (void*) poa);
+	}
+
+	if (CORBA::is_nil(poa_manager)) {
+		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getRootPOAAndManager getting the root POA manager");
+		poa_manager = poa->the_POAManager();
+		//assert(!CORBA::is_nil(poa_manager));
+		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getRootPOAAndManager got the root POA manager: " << (void*) poa_manager);
+	} else {
+		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getRootPOAAndManager already resolved the root POA manager: " << (void*) poa_manager);
+	}
 }
 

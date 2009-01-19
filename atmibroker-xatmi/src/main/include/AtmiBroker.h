@@ -27,26 +27,6 @@
 
 #include "atmiBrokerMacro.h"
 
-#ifdef TAO_COMP
-#include <tao/ORB.h>
-#include <tao/PortableServer/PortableServer.h>
-#elif ORBIX_COMP
-#include <omg/orb.hh>
-#include <omg/PortableServer.hh>
-#endif
-#ifdef VBC_COMP
-#include <orb.h>
-#include <PortableServerExt_c.hh>
-#endif
-
-extern "C" {
-#include "xatmi.h"
-}
-
-#include <time.h>
-
-#include "AtmiBrokerServerFac.h"
-
 extern bool initialized;
 extern bool checkForInitialized();
 
@@ -54,22 +34,16 @@ extern ATMIBROKER_DLL int _tperrno;
 extern ATMIBROKER_DLL long _tpurcode;
 
 // Constants
-//TODO REPLACED WITH XATMI EQUIVALENT extern ATMIBROKER_DLL int						SERVICE_ID_SIZE;
-extern ATMIBROKER_DLL int MAX_SERVERS;
-extern ATMIBROKER_DLL int MAX_SERVICES;
-extern ATMIBROKER_DLL int MAX_SERVICE_CACHE_SIZE;
-extern ATMIBROKER_DLL int MIN_SERVICE_CACHE_SIZE;
-extern ATMIBROKER_DLL int MIN_AVAILABLE_SERVICE_CACHE_SIZE;
-extern ATMIBROKER_DLL int MAX_COMPANY_SIZE;
-extern ATMIBROKER_DLL const char * SERVER_LIT;
-extern ATMIBROKER_DLL const char * MAX_REPLICAS;
-extern ATMIBROKER_DLL const char * MIN;
-extern ATMIBROKER_DLL const char * MAX;
-extern ATMIBROKER_DLL const char * AVAILABLE;
-
-extern ATMIBROKER_DLL void getRootPOAAndManager(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, PortableServer::POAManager_var& poa_manager);
-extern ATMIBROKER_DLL void termination_handler_callback(long);
-extern ATMIBROKER_DLL void client_termination_handler_callback(int);
-extern ATMIBROKER_DLL void server_termination_handler_callback(int);
+extern int MAX_SERVERS;
+extern int MAX_SERVICES;
+extern int MAX_SERVICE_CACHE_SIZE;
+extern int MIN_SERVICE_CACHE_SIZE;
+extern int MIN_AVAILABLE_SERVICE_CACHE_SIZE;
+extern int MAX_COMPANY_SIZE;
+extern const char * SERVER_LIT;
+extern const char * MAX_REPLICAS;
+extern const char * MIN;
+extern const char * MAX;
+extern const char * AVAILABLE;
 
 #endif //AtmiBroker_H

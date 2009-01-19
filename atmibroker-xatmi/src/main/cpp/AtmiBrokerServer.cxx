@@ -55,7 +55,6 @@ bool serverInitialized;
 AtmiBroker_ServerImpl * ptrServer;
 AtmiBrokerServerFac * ptrServerFactory;
 
-
 Worker* server_worker;
 CORBA::ORB_var server_orb;
 PortableServer::POA_var server_root_poa;
@@ -65,10 +64,22 @@ CosNaming::NamingContext_var server_name_context;
 PortableServer::POA_var server_poa;
 AtmiBrokerPoaFac * serverPoaFactory;
 
-
 void createServerPOA();
 
+void server_sigint_handler_callback(int sig_type) {
+	userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "server_termination_handler_callback Received shutdown signal: %d", sig_type);
 
+	if (!CORBA::is_nil(server_orb)) {
+		serverdone();
+	} else {
+		userlog(Level::getWarn(), loggerAtmiBrokerServer, (char*) "server_termination_handler_callback ORB not initialised, aborting.");
+		abort(); // TODO REMOVE ABORT
+	}
+}
+
+void server_sigsegv_handler_callback(int sig_type) {
+	LOG4CXX_ERROR(loggerAtmiBrokerServer, (char*) "TODO I AM A HACK");
+}
 
 int serverrun() {
 	int toReturn = 0;
@@ -83,11 +94,11 @@ int serverrun() {
 }
 
 int serverinit(int argc, char ** argv) {
-	//TODO signal(SIGINT, client_termination_handler_callback);
-
-	_tperrno = 0;
 	if (!serverInitialized) {
 		userlog(Level::getInfo(), loggerAtmiBrokerServer, (char*) "serverinit called");
+		_tperrno = 0;
+		signal(SIGINT, server_sigint_handler_callback);
+		signal(SIGSEGV, server_sigsegv_handler_callback);
 
 		if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG") != NULL) {
 			PropertyConfigurator::configure(AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG"));
@@ -230,16 +241,3 @@ void createServerPOA() {
 		userlog(Level::getError(), loggerAtmiBrokerServer, (char*) "createServerPOA already created POA: %p", (void*) server_poa);
 }
 
-// server_termination_handler_callback() -- handle fatal signals/events gracefully.
-//
-void server_termination_handler_callback(int sig_type) {
-	userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "server_termination_handler_callback Received shutdown signal: %d", sig_type);
-
-	// TODO not sure where this is called from
-	if (!CORBA::is_nil(server_orb)) {
-		serverdone();
-	} else {
-		userlog(Level::getWarn(), loggerAtmiBrokerServer, (char*) "server_termination_handler_callback ORB not initialised, aborting.");
-		abort();
-	}
-}

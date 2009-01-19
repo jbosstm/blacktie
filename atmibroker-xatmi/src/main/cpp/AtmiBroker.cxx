@@ -99,12 +99,28 @@ void createClientCallbackPOA();
 void createClientBindingPolicies();
 void destroyAllLogs();
 
+void client_sigint_handler_callback(int sig_type) {
+	userlog(Level::getDebug(), loggerAtmiBroker, (char*) "client_termination_handler_callback Received shutdown signal: %d", sig_type);
+
+	if (!CORBA::is_nil(client_orb)) {
+		clientdone();
+	} else {
+		userlog(Level::getWarn(), loggerAtmiBroker, (char*) "client_termination_handler_callback ORB not initialised, aborting.");
+		abort(); // TODO REMOVE ABORT
+	}
+}
+
+void client_sigsegv_handler_callback(int sig_type) {
+	LOG4CXX_ERROR(loggerAtmiBroker, (char*) "TODO I AM A HACK");
+}
+
 int clientinit() {
 	if (!clientInitialized) {
 		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientinit called");
 		_tperrno = 0;
 
-		signal(SIGINT, client_termination_handler_callback);
+		signal(SIGINT, client_sigint_handler_callback);
+		signal(SIGSEGV, client_sigsegv_handler_callback);
 
 		if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG") != NULL) {
 			PropertyConfigurator::configure(AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG"));
@@ -200,45 +216,6 @@ int * _get_tperrno(void) {
 long * _get_tpurcode(void) {
 	userlog(Level::getError(), loggerAtmiBroker, (char*) "_get_tpurcode - Not implemented");
 	return &_tpurcode;
-}
-
-// client_termination_handler_callback() -- handle fatal signals/events gracefully.
-//
-void client_termination_handler_callback(int sig_type) {
-	userlog(Level::getDebug(), loggerAtmiBroker, (char*) "client_termination_handler_callback Received shutdown signal: %d", sig_type);
-
-	// TODO no abort
-	if (!CORBA::is_nil(client_orb)) {
-		clientdone();
-	} else {
-		userlog(Level::getWarn(), loggerAtmiBroker, (char*) "client_termination_handler_callback ORB not initialised, aborting.");
-		abort();
-	}
-}
-
-void getRootPOAAndManager(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, PortableServer::POAManager_var& poa_manager) {
-	userlog(Level::getDebug(), loggerAtmiBroker, (char*) "getRootPOAAndManager");
-
-	CORBA::Object_var tmp_ref;
-
-	if (CORBA::is_nil(poa)) {
-		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "getRootPOAAndManager resolving the root POA ");
-		tmp_ref = orbRef->resolve_initial_references("RootPOA");
-		poa = PortableServer::POA::_narrow(tmp_ref);
-		//assert(!CORBA::is_nil(poa));
-		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "getRootPOAAndManager resolved the root POA: %p", (void*) poa);
-	} else {
-		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "getRootPOAAndManager already resolved the root POA: %p", (void*) poa);
-	}
-
-	if (CORBA::is_nil(poa_manager)) {
-		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "getRootPOAAndManager getting the root POA manager");
-		poa_manager = poa->the_POAManager();
-		//assert(!CORBA::is_nil(poa_manager));
-		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "getRootPOAAndManager got the root POA manager: %p", (void*) poa_manager);
-	} else {
-		userlog(Level::getError(), loggerAtmiBroker, (char*) "getRootPOAAndManager already resolved the root POA manager: %p", (void*) poa_manager);
-	}
 }
 
 void createClientCallbackPOA() {

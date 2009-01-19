@@ -66,4 +66,6 @@ extern AtmiBrokerPoaFac * serverPoaFactory;
 extern AtmiBrokerServerFac * ptrServerFactory;
 extern AtmiBroker_ServerImpl * ptrServer;
 
+extern void server_termination_handler_callback(int);
+
 #endif
