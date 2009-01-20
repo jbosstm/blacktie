@@ -25,8 +25,6 @@
 
 class BaseServerTest: public BaseTest {
 public:
-	void registerService(char* name, void(*serviceMethod)(TPSVCINFO *svcinfo));
-
 	virtual void setUp();
 	virtual void tearDown();
 };

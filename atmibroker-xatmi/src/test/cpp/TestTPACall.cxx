@@ -26,9 +26,11 @@ extern void testtpacall_service(TPSVCINFO *svcinfo);
 void TestTPACall::setUp() {
 	// Set up server
 	BaseServerTest::setUp();
-	BaseServerTest::registerService("TestTPACall", testtpacall_service);
 
 	// Set up local
+	int toCheck = tpadvertise((char*) "TestTPACall", testtpacall_service);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
 }
 
 void TestTPACall::tearDown() {
@@ -39,6 +41,9 @@ void TestTPACall::tearDown() {
 	if (rcvbuf) {
 		::tpfree(rcvbuf);
 	}
+	int toCheck = tpunadvertise((char*) "TestTPACall");
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
 
 	// Clean up server
 	BaseServerTest::tearDown();
@@ -46,11 +51,11 @@ void TestTPACall::tearDown() {
 
 void TestTPACall::test_tpacall() {
 	sendlen = strlen("hello");
-	sendbuf = tpalloc("X_OCTET", NULL, sendlen + 1);
+	sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen + 1);
 	strcpy(sendbuf, "hello");
 
 	// TODO Changed length from 0 to strlen(sendbuf)+1
-	int cd = ::tpacall("TestTPACall", (char *) sendbuf, strlen(sendbuf) + 1, TPNOREPLY);
+	int cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, strlen(sendbuf) + 1, TPNOREPLY);
 	CPPUNIT_ASSERT(cd == 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(tperrno!= TPEINVAL);
@@ -68,11 +73,11 @@ void TestTPACall::test_tpacall() {
 
 void TestTPACall::test_tpacall_systemerr() {
 	sendlen = strlen("hello");
-	sendbuf = tpalloc("X_OCTET", NULL, sendlen + 1);
+	sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen + 1);
 	strcpy(sendbuf, "hello");
 
 	// TODO Changed length from 0 to strlen(sendbuf)+1
-	int cd = ::tpacall("TestTPACall", (char *) sendbuf, strlen(sendbuf) + 1, TPNOREPLY);
+	int cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, strlen(sendbuf) + 1, TPNOREPLY);
 	CPPUNIT_ASSERT(tperrno== TPESYSTEM);
 	CPPUNIT_ASSERT(cd == -1);
 }
@@ -80,7 +85,7 @@ void TestTPACall::test_tpacall_systemerr() {
 // 9.1.1
 void TestTPACall::test_tpacall_x_octet() {
 	char *ptr1, *ptr2;
-	sendbuf = tpalloc("X_OCTET", NULL, 25);
+	sendbuf = tpalloc((char*) "X_OCTET", NULL, 25);
 	ptr1 = sendbuf;
 	ptr2 = sendbuf + 10;
 	strcpy(ptr1, "hello");

@@ -39,7 +39,7 @@ void TestTPFree::tearDown() {
 
 // X_OCTET
 void TestTPFree::test_tpfree_alloc_x_octet() {
-	m_allocated = tpalloc("X_OCTET", NULL, 10);
+	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	::tpfree(m_allocated);
@@ -53,7 +53,7 @@ void TestTPFree::test_tpfree_alloc_x_octet() {
 }
 
 void TestTPFree::test_tpfree_realloc_x_octet() {
-	m_allocated = tpalloc("X_OCTET", NULL, 10);
+	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	::tprealloc(m_allocated, 20);
@@ -68,7 +68,7 @@ void TestTPFree::test_tpfree_realloc_x_octet() {
 }
 
 void TestTPFree::test_tpfree_free_free_x_octet() {
-	m_allocated = tpalloc("X_OCTET", NULL, 10);
+	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	::tpfree(m_allocated);
@@ -95,7 +95,7 @@ void TestTPFree::test_tpfree_nonbuffer() {
 // X_COMMON
 void TestTPFree::test_tpfree_alloc_x_common() {
 	DEPOSIT *dptr;
-	dptr = (DEPOSIT*) tpalloc("X_COMMON", "deposit", 0);
+	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	m_allocated = (char*) dptr;
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -114,7 +114,7 @@ void TestTPFree::test_tpfree_alloc_x_common() {
 
 void TestTPFree::test_tpfree_realloc_x_common() {
 	DEPOSIT *dptr;
-	dptr = (DEPOSIT*) tpalloc("X_COMMON", "deposit", 0);
+	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	m_allocated = (char*) dptr;
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -134,7 +134,7 @@ void TestTPFree::test_tpfree_realloc_x_common() {
 
 void TestTPFree::test_tpfree_free_free_x_common() {
 	DEPOSIT *dptr;
-	dptr = (DEPOSIT*) tpalloc("X_COMMON", "deposit", 0);
+	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	m_allocated = (char*) dptr;
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -157,7 +157,7 @@ void TestTPFree::test_tpfree_free_free_x_common() {
 // X_C_TYPE
 void TestTPFree::test_tpfree_alloc_x_c_type() {
 	ACCT_INFO *aptr;
-	aptr = (ACCT_INFO*) tpalloc("X_C_TYPE", "acct_info", 0);
+	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	m_allocated = (char*) aptr;
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -176,7 +176,7 @@ void TestTPFree::test_tpfree_alloc_x_c_type() {
 
 void TestTPFree::test_tpfree_realloc_x_c_type() {
 	ACCT_INFO *aptr;
-	aptr = (ACCT_INFO*) tpalloc("X_C_TYPE", "acct_info", 0);
+	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	m_allocated = (char*) aptr;
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -196,7 +196,7 @@ void TestTPFree::test_tpfree_realloc_x_c_type() {
 
 void TestTPFree::test_tpfree_free_free_x_c_type() {
 	ACCT_INFO *aptr;
-	aptr = (ACCT_INFO*) tpalloc("X_C_TYPE", "acct_info", 0);
+	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	m_allocated = (char*) aptr;
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);

@@ -28,20 +28,25 @@ extern void testtpcancel_service(TPSVCINFO *svcinfo);
 void TestTPCancel::setUp() {
 	// Setup server
 	BaseServerTest::setUp();
-	BaseServerTest::registerService("TestTPCancel", testtpcancel_service);
 
 	// Do local work
 	sendlen = strlen("hello");
-	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc("X_OCTET", NULL, sendlen + 1)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc("X_OCTET", NULL, sendlen + 1)) != NULL);
+	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1)) != NULL);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1)) != NULL);
 	strcpy(sendbuf, "hello");
 	CPPUNIT_ASSERT(tperrno == 0);
+	int toCheck = tpadvertise((char*) "TestTPCancel", testtpcancel_service);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
 }
 
 void TestTPCancel::tearDown() {
 	// Do local work
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
+	int toCheck = tpunadvertise((char*) "TestTPCancel");
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
 
 	// Clean up server
 	BaseServerTest::tearDown();
@@ -49,7 +54,7 @@ void TestTPCancel::tearDown() {
 
 void TestTPCancel::test_tpcancel() {
 	// TODO Changed length from 0 to strlen(sendbuf)+1
-	int cd = ::tpacall("TestTPCancel", (char *) sendbuf, strlen(sendbuf) + 1, 0);
+	int cd = ::tpacall((char*) "TestTPCancel", (char *) sendbuf, strlen(sendbuf) + 1, 0);
 	CPPUNIT_ASSERT(cd != -1);
 	CPPUNIT_ASSERT(cd != 0);
 	CPPUNIT_ASSERT(tperrno == 0);

@@ -45,14 +45,14 @@ void TestTPCall::tearDown() {
 
 void TestTPCall::test_tpcall_systemerr() {
 	sendlen = strlen("hello");
-	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc("X_OCTET", NULL, sendlen + 1)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc("X_OCTET", NULL, sendlen + 1)) != NULL);
+	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1)) != NULL);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1)) != NULL);
 	(void) strcpy(sendbuf, "hello");
 	CPPUNIT_ASSERT(tperrno == 0);
 
 	stopNamingService();
 
-	int id = ::tpcall("TestTPCall", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, (long) 0);
+	int id = ::tpcall((char*) "TestTPCall", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, (long) 0);
 	CPPUNIT_ASSERT(tperrno== TPESYSTEM);
 	CPPUNIT_ASSERT(id == -1);
 	CPPUNIT_ASSERT(strcmp(rcvbuf, "testtpcall") == -1);
@@ -60,12 +60,12 @@ void TestTPCall::test_tpcall_systemerr() {
 
 void TestTPCall::test_tpcall_unknown_service() {
 	sendlen = strlen("hello");
-	sendbuf = (char *) tpalloc("X_OCTET", NULL, sendlen + 1);
-	rcvbuf = (char *) tpalloc("X_OCTET", NULL, sendlen + 1);
+	sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1);
+	rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1);
 	strcpy(sendbuf, "hello");
 
 	// TODO Changed length from 0 to strlen(sendbuf)+1
-	int id = ::tpcall("UNKNOWN_SERVICE", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, (long) 0);
+	int id = ::tpcall((char*) "UNKNOWN_SERVICE", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, (long) 0);
 	CPPUNIT_ASSERT(tperrno== TPENOENT);
 	CPPUNIT_ASSERT(id == -1);
 	CPPUNIT_ASSERT(tperrno != 0);
@@ -76,16 +76,16 @@ void TestTPCall::test_tpcall_x_octet_lessdata() {
 }
 
 void TestTPCall::test_tpcall_x_octet() {
-	tpadvertise("tpcall_x_octet", test_tpcall_x_octet_service);
+	tpadvertise((char*) "tpcall_x_octet", test_tpcall_x_octet_service);
 
 	sendlen = strlen("hello");
-	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc("X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc("X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	(void) strcpy(sendbuf, "hello");
 	CPPUNIT_ASSERT(tperrno == 0);
 
 	// TODO Changed length from 0 to sendlen
-	int id = ::tpcall("tpcall_x_octet", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
+	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
 	CPPUNIT_ASSERT(tperrno!= TPEINVAL);
 	CPPUNIT_ASSERT(tperrno!= TPENOENT);
 	CPPUNIT_ASSERT(tperrno!= TPEITYPE);
@@ -106,32 +106,32 @@ void TestTPCall::test_tpcall_x_octet() {
 
 // 9.1.2
 void TestTPCall::test_tpcall_x_common() {
-	tpadvertise("tpcall_x_common", test_tpcall_x_common_service);
+	tpadvertise((char*) "tpcall_x_common", test_tpcall_x_common_service);
 
 	DEPOSIT *dptr;
-	dptr = (DEPOSIT*) tpalloc("X_COMMON", "deposit", 0);
+	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	sendbuf = (char*) dptr;
 	dptr->acct_no = 12345678;
 	dptr->amount = 50;
 
-	int id = ::tpcall("tpcall_x_common", (char*) dptr, 0, (char**) &rcvbuf, &rcvlen, 0);
+	int id = ::tpcall((char*) "tpcall_x_common", (char*) dptr, 0, (char**) &rcvbuf, &rcvlen, 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(id != -1);
 	CPPUNIT_ASSERT(strcmp(rcvbuf, "tpcall_x_common") == 0);
 }
 // 9.1.3
 void TestTPCall::test_tpcall_x_c_type() {
-	tpadvertise("tpcall_x_c_type", test_tpcall_x_c_type_service);
+	tpadvertise((char*) "tpcall_x_c_type", test_tpcall_x_c_type_service);
 
 	ACCT_INFO *aptr;
-	aptr = (ACCT_INFO*) tpalloc("X_C_TYPE", "acct_info", 0);
+	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	sendbuf = (char*) aptr;
 	aptr->acct_no = 12345678;
 	strcpy(aptr->name, "TOM");
 	aptr->balances[0] = 1.1F;
 	aptr->balances[1] = 2.2F;
 
-	int id = ::tpcall("tpcall_x_c_type", (char*) aptr, 0, (char**) &rcvbuf, &rcvlen, TPNOCHANGE);
+	int id = ::tpcall((char*) "tpcall_x_c_type", (char*) aptr, 0, (char**) &rcvbuf, &rcvlen, TPNOCHANGE);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(id != -1);
 	CPPUNIT_ASSERT(strcmp(rcvbuf, "tpcall_x_c_type") == 0);

@@ -25,12 +25,6 @@ extern "C" {
 
 #include "xatmi.h"
 
-void BaseServerTest::registerService(char* name, void(*serviceMethod)(TPSVCINFO *svcinfo)) {
-	int toCheck = tpadvertise(name, serviceMethod);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
-}
-
 void BaseServerTest::setUp() {
 	// Perform initial start up
 	BaseTest::setUp();

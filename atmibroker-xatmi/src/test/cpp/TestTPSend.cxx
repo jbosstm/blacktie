@@ -28,14 +28,17 @@ extern void testtpsend_service(TPSVCINFO *svcinfo);
 void TestTPSend::setUp() {
 	// Setup server
 	BaseServerTest::setUp();
-	BaseServerTest::registerService("TestTPSend", testtpsend_service);
+
 
 	// Do local work
 	cd = -1;
+	int toCheck = tpadvertise((char*) "TestTPSend", testtpsend_service);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
 
 	sendlen = strlen("hello") + 1;
-	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc("X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc("X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	strcpy(sendbuf, "hello");
 	CPPUNIT_ASSERT(tperrno == 0);
 }
@@ -47,13 +50,16 @@ void TestTPSend::tearDown() {
 	}
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
+	int toCheck = tpunadvertise((char*) "TestTPSend");
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
 
 	// Clean up server
 	BaseServerTest::tearDown();
 }
 
 void TestTPSend::test_tpsend_recvonly() {
-	cd = ::tpconnect("TestTPSend", sendbuf, sendlen, TPRECVONLY);
+	cd = ::tpconnect((char*) "TestTPSend", sendbuf, sendlen, TPRECVONLY);
 	int result = ::tpsend(cd, sendbuf, sendlen, 0, 0);
 	CPPUNIT_ASSERT(tperrno== TPEPROTO);
 	CPPUNIT_ASSERT(result == -1);

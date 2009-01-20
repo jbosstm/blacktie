@@ -28,15 +28,17 @@ extern void testtpconnect_service(TPSVCINFO *svcinfo);
 void TestTPConnect::setUp() {
 	// Setup server
 	BaseServerTest::setUp();
-	BaseServerTest::registerService("TestTPConnect", testtpconnect_service);
 
 	// Do local work
 	cd = -1;
 	cd2 = -1;
+	int toCheck = tpadvertise((char*) "TestTPConnect", testtpconnect_service);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
 
 	sendlen = strlen("hello") + 1;
-	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc("X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc("X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	strcpy(sendbuf, "hello");
 	CPPUNIT_ASSERT(tperrno == 0);
 }
@@ -51,19 +53,22 @@ void TestTPConnect::tearDown() {
 	}
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
+	int toCheck = tpunadvertise((char*) "TestTPConnect");
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
 
 	// Clean up server
 	BaseServerTest::tearDown();
 }
 
 void TestTPConnect::test_tpconnect() {
-	cd = ::tpconnect("TestTPConnect", sendbuf, sendlen, 0);
+	cd = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, 0);
 	CPPUNIT_ASSERT(cd != -1);
 }
 
 void TestTPConnect::test_tpconnect_double_connect() {
-	cd = ::tpconnect("TestTPConnect", sendbuf, sendlen, 0);
-	cd2 = ::tpconnect("TestTPConnect", sendbuf, sendlen, 0);
+	cd = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, 0);
+	cd2 = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, 0);
 	CPPUNIT_ASSERT(cd != -1);
 	CPPUNIT_ASSERT(cd2 != -1);
 	CPPUNIT_ASSERT(cd != cd2);
@@ -82,7 +87,7 @@ void TestTPConnect::test_tpconnect_double_connect() {
 }
 
 void TestTPConnect::test_tpconnect_nodata() {
-	cd = ::tpconnect("TestTPConnect", NULL, 0, 0);
+	cd = ::tpconnect((char*) "TestTPConnect", NULL, 0, 0);
 	CPPUNIT_ASSERT(cd != -1);
 }
 

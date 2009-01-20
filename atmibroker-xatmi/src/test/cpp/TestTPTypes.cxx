@@ -39,7 +39,7 @@ void TestTPTypes::tearDown() {
 }
 
 void TestTPTypes::test_tptypes_x_octet() {
-	m_allocated = ::tpalloc("X_OCTET", NULL, 10);
+	m_allocated = ::tpalloc((char*) "X_OCTET", NULL, 10);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	char type[8];
@@ -52,7 +52,7 @@ void TestTPTypes::test_tptypes_x_octet() {
 }
 
 void TestTPTypes::test_tptypes_x_common() {
-	m_allocated = ::tpalloc("X_COMMON", "deposit", sizeof(DEPOSIT));
+	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", sizeof(DEPOSIT));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	char type[8];
@@ -65,7 +65,7 @@ void TestTPTypes::test_tptypes_x_common() {
 }
 
 void TestTPTypes::test_tptypes_x_common_bigdata() {
-	m_allocated = ::tpalloc("X_COMMON", "deposit", sizeof(BIGDATA));
+	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	char type[8];
@@ -78,7 +78,7 @@ void TestTPTypes::test_tptypes_x_common_bigdata() {
 }
 
 void TestTPTypes::test_tptypes_x_c_type() {
-	m_allocated = ::tpalloc("X_C_TYPE", "acct_info", sizeof(ACCT_INFO));
+	m_allocated = ::tpalloc((char*) "X_C_TYPE", (char*) "acct_info", sizeof(ACCT_INFO));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	char type[8];
@@ -91,7 +91,7 @@ void TestTPTypes::test_tptypes_x_c_type() {
 }
 
 void TestTPTypes::test_tptypes_x_c_type_bigdata() {
-	m_allocated = ::tpalloc("X_C_TYPE", "acct_info", sizeof(BIGDATA));
+	m_allocated = ::tpalloc((char*) "X_C_TYPE", (char*) "acct_info", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	char type[8];
@@ -107,7 +107,7 @@ void TestTPTypes::test_tptypes_x_c_type_bigdata() {
 void TestTPTypes::test_tptypes_unallocated() {
 	char type[8];
 	char subtype[16];
-	int toTest = ::tptypes("test", type, subtype);
+	int toTest = ::tptypes((char*) "test", type, subtype);
 	CPPUNIT_ASSERT(tperrno== TPEINVAL);
 	CPPUNIT_ASSERT(toTest == -1);
 }
@@ -121,7 +121,7 @@ void TestTPTypes::test_tptypes_null_ptr() {
 }
 
 void TestTPTypes::test_tptypes_null_type() {
-	m_allocated = ::tpalloc("X_COMMON", "deposit", sizeof(BIGDATA));
+	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	char subtype[16];
@@ -132,7 +132,7 @@ void TestTPTypes::test_tptypes_null_type() {
 }
 
 void TestTPTypes::test_tptypes_null_subtype() {
-	m_allocated = ::tpalloc("X_COMMON", "deposit", sizeof(BIGDATA));
+	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	char type[8];
@@ -143,7 +143,7 @@ void TestTPTypes::test_tptypes_null_subtype() {
 }
 
 void TestTPTypes::test_tptypes_max_type() {
-	m_allocated = ::tpalloc("X_COMMON", "deposit", sizeof(BIGDATA));
+	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	char type[8];
@@ -154,7 +154,7 @@ void TestTPTypes::test_tptypes_max_type() {
 }
 
 void TestTPTypes::test_tptypes_max_subtype() {
-	m_allocated = ::tpalloc("X_COMMON", "1234567890123456", sizeof(BIGDATA));
+	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "1234567890123456", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	char subtype[16];
@@ -168,7 +168,7 @@ void TestTPTypes::test_tptypes_small_type() {
 	// TODO
 	CPPUNIT_ASSERT("test_tptypes_small_type" == "throws memory fault");
 
-	m_allocated = ::tpalloc("X_COMMON", "deposit", sizeof(BIGDATA));
+	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	char type[7];
@@ -182,7 +182,7 @@ void TestTPTypes::test_tptypes_small_subtype() {
 	// TODO
 	CPPUNIT_ASSERT("test_tptypes_small_subtype" == "throws memory fault");
 
-	m_allocated = ::tpalloc("X_COMMON", "1234567890123456", sizeof(BIGDATA));
+	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "1234567890123456", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	char subtype[15];
@@ -194,7 +194,7 @@ void TestTPTypes::test_tptypes_small_subtype() {
 
 void TestTPTypes::test_tptypes_large_type() {
 
-	m_allocated = ::tpalloc("X_COMMON", "deposit", sizeof(BIGDATA));
+	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	char type[9];
@@ -206,7 +206,7 @@ void TestTPTypes::test_tptypes_large_type() {
 }
 
 void TestTPTypes::test_tptypes_large_subtype() {
-	m_allocated = ::tpalloc("X_COMMON", "1234567890123456", sizeof(BIGDATA));
+	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "1234567890123456", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	char subtype[17];

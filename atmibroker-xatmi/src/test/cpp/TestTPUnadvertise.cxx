@@ -28,12 +28,14 @@ extern void testtpunadvertise_service(TPSVCINFO *svcinfo);
 void TestTPUnadvertise::setUp() {
 	// Setup server
 	BaseServerTest::setUp();
-	BaseServerTest::registerService("TestTPUnadvertise", testtpunadvertise_service);
+	int toCheck = tpadvertise((char*) "TestTPUnadvertise", testtpunadvertise_service);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
 
 	// Do local work
 	sendlen = strlen("hello");
-	sendbuf = (char *) tpalloc("X_OCTET", NULL, sendlen + 1);
-	rcvbuf = (char *) tpalloc("X_OCTET", NULL, sendlen + 1);
+	sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1);
+	rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1);
 	(void) strcpy(sendbuf, "hello");
 }
 
@@ -42,13 +44,15 @@ void TestTPUnadvertise::tearDown() {
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
 
+	tpunadvertise((char*) "TestTPUnadvertise");
+
 	// Clean up server
 	BaseServerTest::tearDown();
 }
 
 // TODO THIS SHOULD BE ILLEGAL FOR THE CLIENT
 void TestTPUnadvertise::test_tpunadvertise() {
-	int id = ::tpunadvertise("TestTPUnadvertise");
+	int id = ::tpunadvertise((char*) "TestTPUnadvertise");
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(tperrno!= TPEINVAL);
 	CPPUNIT_ASSERT(tperrno!= TPENOENT);
@@ -57,14 +61,14 @@ void TestTPUnadvertise::test_tpunadvertise() {
 	CPPUNIT_ASSERT(tperrno!= TPEOS);
 	CPPUNIT_ASSERT(id != -1);
 
-	id = ::tpcall("TestTPUnadvertise", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, (long) 0);
+	id = ::tpcall((char*) "TestTPUnadvertise", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, (long) 0);
 	CPPUNIT_ASSERT(tperrno== TPENOENT);
 	CPPUNIT_ASSERT(id == -1);
 	CPPUNIT_ASSERT(strcmp(rcvbuf, "testtpunadvertise_service") != 0);
 }
 
 void TestTPUnadvertise::test_tpunadvertise_twice() {
-	int id = ::tpunadvertise("TestTPUnadvertise");
+	int id = ::tpunadvertise((char*) "TestTPUnadvertise");
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(tperrno!= TPEINVAL);
 	CPPUNIT_ASSERT(tperrno!= TPENOENT);
@@ -73,7 +77,7 @@ void TestTPUnadvertise::test_tpunadvertise_twice() {
 	CPPUNIT_ASSERT(tperrno!= TPEOS);
 	CPPUNIT_ASSERT(id != -1);
 
-	id = ::tpunadvertise("TestTPUnadvertise");
+	id = ::tpunadvertise((char*) "TestTPUnadvertise");
 	CPPUNIT_ASSERT(tperrno== TPENOENT);
 	CPPUNIT_ASSERT(id == -1);
 }

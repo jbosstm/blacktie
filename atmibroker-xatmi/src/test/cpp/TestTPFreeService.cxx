@@ -28,25 +28,30 @@ extern void testtpfreeservice_service(TPSVCINFO *svcinfo);
 void TestTPFreeService::setUp() {
 	// Start server
 	BaseServerTest::setUp();
-	BaseServerTest::registerService("TestTPFree", testtpfreeservice_service);
 
 	// Do local work
+	int toCheck = tpadvertise((char*) "TestTPFree", testtpfreeservice_service);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
 }
 
 void TestTPFreeService::tearDown() {
 	// Do local work
 	::tpfree(m_allocated);
 	::tpfree(m_rcvbuf);
+	int toCheck = tpunadvertise((char*) "TestTPFree");
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
 
 	// Clean up server
 	BaseServerTest::tearDown();
 }
 
 void TestTPFreeService::test_tpfree_x_octet() {
-	m_allocated = tpalloc("X_OCTET", NULL, 10);
+	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
-	int toCheck = ::tpcall("TestTPFree", (char*) m_allocated, 0, (char**) &m_rcvbuf, &m_rcvlen, 0);
+	int toCheck = ::tpcall((char*) "TestTPFree", (char*) m_allocated, 0, (char**) &m_rcvbuf, &m_rcvlen, 0);
 	CPPUNIT_ASSERT(toCheck != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(m_rcvbuf[0] == '1');
@@ -54,12 +59,12 @@ void TestTPFreeService::test_tpfree_x_octet() {
 
 void TestTPFreeService::test_tpfree_x_common() {
 	DEPOSIT *dptr;
-	dptr = (DEPOSIT*) tpalloc("X_COMMON", "deposit", 0);
+	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	m_allocated = (char*) dptr;
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	int toCheck = ::tpcall("TestTPFree", (char*) m_allocated, 0, (char**) &m_rcvbuf, &m_rcvlen, 0);
+	int toCheck = ::tpcall((char*) "TestTPFree", (char*) m_allocated, 0, (char**) &m_rcvbuf, &m_rcvlen, 0);
 	CPPUNIT_ASSERT(toCheck != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(m_rcvbuf[0] == '1');
@@ -67,12 +72,12 @@ void TestTPFreeService::test_tpfree_x_common() {
 
 void TestTPFreeService::test_tpfree_x_c_type() {
 	ACCT_INFO *aptr;
-	aptr = (ACCT_INFO*) tpalloc("X_C_TYPE", "acct_info", 0);
+	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	m_allocated = (char*) aptr;
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	int toCheck = ::tpcall("TestTPFree", (char*) m_allocated, 0, (char**) &m_rcvbuf, &m_rcvlen, 0);
+	int toCheck = ::tpcall((char*) "TestTPFree", (char*) m_allocated, 0, (char**) &m_rcvbuf, &m_rcvlen, 0);
 	CPPUNIT_ASSERT(toCheck != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(m_rcvbuf[0] == '1');
@@ -80,7 +85,7 @@ void TestTPFreeService::test_tpfree_x_c_type() {
 
 void testtpfreeservice_service(TPSVCINFO *svcinfo) {
 	// Allocate a buffer to return
-	char *toReturn = tpalloc("X_OCTET", "acct_info", 1);
+	char *toReturn = tpalloc((char*) "X_OCTET", "acct_info", 1);
 
 	// Free should be idempotent on the inbound buffer
 	::tpfree(svcinfo->data);

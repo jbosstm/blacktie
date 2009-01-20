@@ -28,14 +28,16 @@ extern void testtpdiscon_service(TPSVCINFO *svcinfo);
 void TestTPDiscon::setUp() {
 	// Setup server
 	BaseServerTest::setUp();
-	BaseServerTest::registerService("TestTPDiscon", testtpdiscon_service);
 
 	// Do local work
 	sendlen = strlen("hello") + 1;
-	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc("X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	strcpy(sendbuf, "hello");
 	CPPUNIT_ASSERT(tperrno == 0);
-	cd = ::tpconnect("TestTPDiscon", sendbuf, sendlen, 0);
+	cd = ::tpconnect((char*) "TestTPDiscon", sendbuf, sendlen, 0);
+	int toCheck = tpadvertise((char*) "TestTPDiscon", testtpdiscon_service);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
 }
 
 void TestTPDiscon::tearDown() {
@@ -44,6 +46,9 @@ void TestTPDiscon::tearDown() {
 	if (cd != -1) {
 		::tpdiscon(cd);
 	}
+	int toCheck = tpunadvertise((char*) "TestTPDiscon");
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
 
 	// Clean up server
 	BaseServerTest::tearDown();

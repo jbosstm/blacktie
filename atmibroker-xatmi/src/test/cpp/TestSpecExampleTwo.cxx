@@ -29,13 +29,18 @@ extern void inquiry_svc(TPSVCINFO *svcinfo);
 void TestSpecExampleTwo::setUp() {
 	// Setup server
 	BaseServerTest::setUp();
-	BaseServerTest::registerService("TestSpecExampleTwo", inquiry_svc);
 
 	// Do local work
+	int toCheck = tpadvertise((char*) "TestSpecExampleTwo", inquiry_svc);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
 }
 
 void TestSpecExampleTwo::tearDown() {
 	// Do local work
+	int toCheck = tpunadvertise((char*) "TestSpecExampleTwo");
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
 
 	// Clean up server
 	BaseServerTest::tearDown();
@@ -47,7 +52,7 @@ void TestSpecExampleTwo::test_specexampletwo() {
 	int cd; /* contains a character array named input and an */
 	/* array of integers named output. */
 	/* allocate typed buffer */
-	ptr = (DATA_BUFFER *) tpalloc("X_C_TYPE", "inq_buf", 0);
+	ptr = (DATA_BUFFER *) tpalloc((char*) "X_C_TYPE", (char*) "inq_buf", 0);
 	/* populate typed buffer with input data */
 	strcpy(ptr->input, "retrieve all accounts with balances less than 0");
 	tx_begin(); /* start global transaction */

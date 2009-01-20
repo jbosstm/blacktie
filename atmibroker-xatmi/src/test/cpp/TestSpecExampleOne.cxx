@@ -29,13 +29,19 @@ extern void debit_credit_svc(TPSVCINFO *svcinfo);
 void TestSpecExampleOne::setUp() {
 	// Setup server
 	BaseServerTest::setUp();
-	BaseServerTest::registerService("TestSpecExampleOne", debit_credit_svc);
+
 
 	// Do local work
+	int toCheck = tpadvertise((char*) "TestSpecExampleOne", debit_credit_svc);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
 }
 
 void TestSpecExampleOne::tearDown() {
 	// Do local work
+	int toCheck = tpunadvertise((char*) "TestSpecExampleOne");
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
 
 	// Clean up server
 	BaseServerTest::tearDown();
@@ -49,16 +55,16 @@ void TestSpecExampleOne::test_specexampleone() {
 	long dlen, clen; /* contains a character array named input and an */
 	int cd; /* integer named output. */
 	/* allocate typed buffers */
-	dptr = (DATA_BUFFER *) tpalloc("X_C_TYPE", "dc_buf", 0);
-	cptr = (DATA_BUFFER *) tpalloc("X_C_TYPE", "dc_buf", 0);
+	dptr = (DATA_BUFFER *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", 0);
+	cptr = (DATA_BUFFER *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", 0);
 	/* populate typed buffers with input data */
 	strcpy(dptr->input, "debit account 123 by 50");
 	strcpy(cptr->input, "credit account 456 by 50");
 	tx_begin(); /* start global transaction */
 	/* issue asynchronous request to DEBIT, while it is processing... */
-	cd = tpacall("DEBIT", (char *) dptr, 0, TPSIGRSTRT);
+	cd = tpacall((char*) "DEBIT", (char *) dptr, 0, TPSIGRSTRT);
 	/* ...issue synchronous request to CREDIT */
-	tpcall("CREDIT", (char *) cptr, 0, (char **) &cptr, &clen, TPSIGRSTRT);
+	tpcall((char*) "CREDIT", (char *) cptr, 0, (char **) &cptr, &clen, TPSIGRSTRT);
 	/* retrieve DEBIT�s reply */
 	tpgetrply(&cd, (char **) &dptr, &dlen, TPSIGRSTRT);
 	if (dptr->output == OK && cptr->output == OK)

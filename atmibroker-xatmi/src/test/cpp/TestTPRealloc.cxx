@@ -41,7 +41,7 @@ void TestTPRealloc::tearDown() {
 
 // X_OCTET
 void TestTPRealloc::test_tprealloc_negative_x_octet() {
-	m_allocated = tpalloc("X_OCTET", NULL, 10);
+	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	m_allocated = ::tprealloc(m_allocated, -1);
@@ -49,7 +49,7 @@ void TestTPRealloc::test_tprealloc_negative_x_octet() {
 }
 
 void TestTPRealloc::test_tprealloc_zero_x_octet() {
-	m_allocated = tpalloc("X_OCTET", NULL, 10);
+	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	m_allocated = ::tprealloc(m_allocated, 0);
@@ -65,7 +65,7 @@ void TestTPRealloc::test_tprealloc_zero_x_octet() {
 }
 
 void TestTPRealloc::test_tprealloc_larger_x_octet() {
-	m_allocated = tpalloc("X_OCTET", NULL, 10);
+	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	m_allocated = ::tprealloc(m_allocated, 20);
@@ -81,7 +81,7 @@ void TestTPRealloc::test_tprealloc_larger_x_octet() {
 }
 
 void TestTPRealloc::test_tprealloc_smaller_x_octet() {
-	m_allocated = tpalloc("X_OCTET", NULL, 10);
+	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	m_allocated = ::tprealloc(m_allocated, 5);
@@ -97,7 +97,7 @@ void TestTPRealloc::test_tprealloc_smaller_x_octet() {
 }
 
 void TestTPRealloc::test_tprealloc_samesize_x_octet() {
-	m_allocated = tpalloc("X_OCTET", NULL, 10);
+	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	m_allocated = ::tprealloc(m_allocated, 10);
@@ -113,7 +113,7 @@ void TestTPRealloc::test_tprealloc_samesize_x_octet() {
 }
 
 void TestTPRealloc::test_tprealloc_multi_x_octet() {
-	m_allocated = tpalloc("X_OCTET", NULL, 10);
+	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	for (int i = 32; i <= 128; i++) {
@@ -144,7 +144,7 @@ void TestTPRealloc::test_tprealloc_null() {
 
 // X_COMMON
 void TestTPRealloc::test_tprealloc_negative_x_common() {
-	m_allocated = tpalloc("X_COMMON", "deposit", 2048);
+	m_allocated = tpalloc((char*) "X_COMMON", (char*) "deposit", 2048);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	m_allocated = ::tprealloc(m_allocated, -1);
@@ -152,7 +152,7 @@ void TestTPRealloc::test_tprealloc_negative_x_common() {
 }
 
 void TestTPRealloc::test_tprealloc_zero_x_common() {
-	m_allocated = tpalloc("X_COMMON", "deposit", 2048);
+	m_allocated = tpalloc((char*) "X_COMMON", (char*) "deposit", 2048);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	m_allocated = ::tprealloc(m_allocated, 0);
@@ -168,7 +168,7 @@ void TestTPRealloc::test_tprealloc_zero_x_common() {
 }
 
 void TestTPRealloc::test_tprealloc_larger_x_common() {
-	m_allocated = tpalloc("X_COMMON", "deposit", 2048);
+	m_allocated = tpalloc((char*) "X_COMMON", (char*) "deposit", 2048);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	m_allocated = ::tprealloc(m_allocated, 3072);
@@ -184,7 +184,7 @@ void TestTPRealloc::test_tprealloc_larger_x_common() {
 }
 
 void TestTPRealloc::test_tprealloc_smaller_x_common() {
-	m_allocated = tpalloc("X_COMMON", "deposit", 2048);
+	m_allocated = tpalloc((char*) "X_COMMON", (char*) "deposit", 2048);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	m_allocated = ::tprealloc(m_allocated, 512);
@@ -200,7 +200,7 @@ void TestTPRealloc::test_tprealloc_smaller_x_common() {
 }
 
 void TestTPRealloc::test_tprealloc_samesize_x_common() {
-	m_allocated = tpalloc("X_COMMON", "deposit", 2048);
+	m_allocated = tpalloc((char*) "X_COMMON", (char*) "deposit", 2048);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	m_allocated = ::tprealloc(m_allocated, 2048);
@@ -216,7 +216,7 @@ void TestTPRealloc::test_tprealloc_samesize_x_common() {
 }
 
 void TestTPRealloc::test_tprealloc_multi_x_common() {
-	m_allocated = tpalloc("X_COMMON", "deposit", 2048);
+	m_allocated = tpalloc((char*) "X_COMMON", (char*) "deposit", 2048);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	for (int i = 1024; i <= 1124; i++) {
@@ -235,7 +235,7 @@ void TestTPRealloc::test_tprealloc_multi_x_common() {
 
 // X_C_TYPE
 void TestTPRealloc::test_tprealloc_negative_x_c_type() {
-	m_allocated = tpalloc("X_C_TYPE", "test", 2048);
+	m_allocated = tpalloc((char*) "X_C_TYPE", (char*) "test", 2048);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	m_allocated = ::tprealloc(m_allocated, -1);
@@ -243,7 +243,7 @@ void TestTPRealloc::test_tprealloc_negative_x_c_type() {
 }
 
 void TestTPRealloc::test_tprealloc_zero_x_c_type() {
-	m_allocated = tpalloc("X_C_TYPE", "test", 2048);
+	m_allocated = tpalloc((char*) "X_C_TYPE", (char*) "test", 2048);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	m_allocated = ::tprealloc(m_allocated, 0);
@@ -259,7 +259,7 @@ void TestTPRealloc::test_tprealloc_zero_x_c_type() {
 }
 
 void TestTPRealloc::test_tprealloc_larger_x_c_type() {
-	m_allocated = tpalloc("X_C_TYPE", "test", 2048);
+	m_allocated = tpalloc((char*) "X_C_TYPE", (char*) "test", 2048);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	m_allocated = ::tprealloc(m_allocated, 3072);
@@ -275,7 +275,7 @@ void TestTPRealloc::test_tprealloc_larger_x_c_type() {
 }
 
 void TestTPRealloc::test_tprealloc_smaller_x_c_type() {
-	m_allocated = tpalloc("X_C_TYPE", "test", 2048);
+	m_allocated = tpalloc((char*) "X_C_TYPE", (char*) "test", 2048);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	m_allocated = ::tprealloc(m_allocated, 512);
@@ -291,7 +291,7 @@ void TestTPRealloc::test_tprealloc_smaller_x_c_type() {
 }
 
 void TestTPRealloc::test_tprealloc_samesize_x_c_type() {
-	m_allocated = tpalloc("X_C_TYPE", "test", 2048);
+	m_allocated = tpalloc((char*) "X_C_TYPE", (char*) "test", 2048);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	m_allocated = ::tprealloc(m_allocated, 2048);
@@ -307,7 +307,7 @@ void TestTPRealloc::test_tprealloc_samesize_x_c_type() {
 }
 
 void TestTPRealloc::test_tprealloc_multi_x_c_type() {
-	m_allocated = tpalloc("X_C_TYPE", "test", 2048);
+	m_allocated = tpalloc((char*) "X_C_TYPE", (char*) "test", 2048);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	for (int i = 1024; i <= 1124; i++) {

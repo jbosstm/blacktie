@@ -28,15 +28,20 @@ extern void testtpreturn_service(TPSVCINFO *svcinfo);
 void TestTPReturn::setUp() {
 	// Setup server
 	BaseServerTest::setUp();
-	BaseServerTest::registerService("TestTPReturn", testtpreturn_service);
 
 	// Do local work
+	int toCheck = tpadvertise((char*) "TestTPReturn", testtpreturn_service);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
 }
 
 void TestTPReturn::tearDown() {
 	// Do local work
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
+	int toCheck = tpunadvertise((char*) "TestTPReturn");
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
 
 	// Clean up server
 	BaseServerTest::tearDown();
@@ -53,12 +58,12 @@ void TestTPReturn::test_tpreturn_nonservice() {
 
 void TestTPReturn::test_tpreturn_nonbuffer() {
 	sendlen = strlen("hello");
-	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc("X_OCTET", NULL, sendlen + 1)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc("X_OCTET", NULL, sendlen + 1)) != NULL);
+	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1)) != NULL);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1)) != NULL);
 	(void) strcpy(sendbuf, "hello");
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	int id = ::tpcall("TestTPReturn", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, (long) 0);
+	int id = ::tpcall((char*) "TestTPReturn", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, (long) 0);
 	CPPUNIT_ASSERT(tperrno== TPESVCERR);
 	CPPUNIT_ASSERT(id == -1);
 	CPPUNIT_ASSERT(strcmp(rcvbuf, "testtpreturn_service") == -1);
