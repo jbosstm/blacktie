@@ -35,8 +35,7 @@ void initOrb(char* name, Worker*& worker, CORBA::ORB_ptr& orbRef) {
 		char * cstr, *p;
 		cstr = new char[values.size() + 1];
 		strcpy(cstr, values.c_str());
-		char** vals = new char*[values.size() + 1];
-		vals[0] = name;
+		char** vals = new char*[values.size()];
 		p = strtok(cstr, " ");
 		int i = 1;
 		while (p != NULL) {
@@ -45,7 +44,7 @@ void initOrb(char* name, Worker*& worker, CORBA::ORB_ptr& orbRef) {
 			i++;
 		}
 
-		orbRef = CORBA::ORB_init(i, vals);
+		orbRef = CORBA::ORB_init(i, vals, name);
 
 		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "initOrb inited ORB %p ");
 		worker = new Worker(orbRef);
@@ -84,17 +83,35 @@ void shutdownBindings(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, Port
 	}
 
 	if (worker != NULL) {
-		worker->thr_mgr()->wait();
+		//worker->thr_mgr()->wait();
 		delete worker;
 		worker = NULL;
 	}
 
-	innerPoa = NULL;
-	ctx = NULL;
-	nameCtx = NULL;
-	poa_manager = NULL;
-	poa = NULL;
-	orbRef = NULL;
+	if (innerPoa) {
+//		delete innerPoa;
+		innerPoa = NULL;
+	}
+	if (ctx) {
+//		delete ctx;
+		ctx = NULL;
+	}
+	if (nameCtx) {
+//		delete nameCtx;
+		nameCtx = NULL;
+	}
+	if (poa_manager) {
+//		delete poa_manager;
+		poa_manager = NULL;
+	}
+	if (poa) {
+//		delete poa;
+		poa = NULL;
+	}
+	if (orbRef) {
+//		delete orbRef;
+		orbRef = NULL;
+	}
 	LOG4CXX_INFO(loggerOrbManagement, (char*) "Closed Bindings");
 }
 

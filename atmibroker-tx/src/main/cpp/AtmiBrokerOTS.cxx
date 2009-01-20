@@ -64,12 +64,17 @@ AtmiBrokerOTS::AtmiBrokerOTS() {
 	nextControlId = 1;
 	currentImpl = NULL;
 	tx_current = NULL;
-	initOrb((char*) "client", ots_worker, ots_orb);
+	initOrb((char*) "ots", ots_worker, ots_orb);
 	getNamingServiceAndContext(ots_orb, ots_namingContextExt, ots_namingContext);
 }
 
 AtmiBrokerOTS::~AtmiBrokerOTS() {
 	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "destructor");
+	PortableServer::POA_var ots_root_poa;
+	PortableServer::POAManager_var ots_root_poa_manager;
+	PortableServer::POA_var ots_poa;
+
+	shutdownBindings(ots_orb, ots_root_poa, ots_root_poa_manager, ots_namingContextExt, ots_namingContext, ots_poa, ots_worker);
 	/* TODO
 	 if (xaResourceMgrId)
 	 //free (xaResourceMgrId);

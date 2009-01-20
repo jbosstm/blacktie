@@ -24,11 +24,11 @@ using namespace log4cxx;
 #include <tao/ORB.h>
 #include <ace/Task.h>
 class Worker: public ACE_Task_Base {
-	CORBA::ORB_var m_orb;
 public:
 	Worker(CORBA::ORB_ptr orb);
 	int svc();
-
+private:
+	CORBA::ORB_var m_orb;
 private:
 	static LoggerPtr logger;
 };
