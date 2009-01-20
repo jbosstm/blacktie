@@ -91,7 +91,7 @@ void TestTPACall::test_tpacall_x_octet() {
 	strcpy(ptr1, "hello");
 	strcpy(ptr2, "goodbye");
 
-	tpacall("GREETSVC", sendbuf, 25, TPNOREPLY);
+	tpacall((char*) "GREETSVC", sendbuf, 25, TPNOREPLY);
 }
 
 void testtpacall_service(TPSVCINFO *svcinfo) {

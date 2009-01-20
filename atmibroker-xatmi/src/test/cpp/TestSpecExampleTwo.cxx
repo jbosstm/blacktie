@@ -57,7 +57,7 @@ void TestSpecExampleTwo::test_specexampletwo() {
 	strcpy(ptr->input, "retrieve all accounts with balances less than 0");
 	tx_begin(); /* start global transaction */
 	/*connect to conversational service, send input data, & yield control*/
-	cd = tpconnect("INQUIRY", (char *) ptr, 0, TPRECVONLY|TPSIGRSTRT);
+	cd = tpconnect((char*) "INQUIRY", (char *) ptr, 0, TPRECVONLY|TPSIGRSTRT);
 	do {
 		/* receive 10 account records at a time */
 		tprecv(cd, (char **) &ptr, &len, TPSIGRSTRT, &event);

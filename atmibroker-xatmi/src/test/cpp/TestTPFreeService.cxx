@@ -85,7 +85,7 @@ void TestTPFreeService::test_tpfree_x_c_type() {
 
 void testtpfreeservice_service(TPSVCINFO *svcinfo) {
 	// Allocate a buffer to return
-	char *toReturn = tpalloc((char*) "X_OCTET", "acct_info", 1);
+	char *toReturn = tpalloc((char*) "X_OCTET", (char*) "acct_info", 1);
 
 	// Free should be idempotent on the inbound buffer
 	::tpfree(svcinfo->data);

@@ -43,8 +43,8 @@ void TestTPAdvertise::tearDown() {
 	::tpfree(rcvbuf);
 
 	::tpunadvertise((char*) "TestTPAdvertise");
-	::tpunadvertise("1234567890123456");
-	::tpunadvertise("1234567890123457");
+	::tpunadvertise((char*) "1234567890123456");
+	::tpunadvertise((char*) "1234567890123457");
 
 	// Clean up server
 	BaseServerTest::tearDown();

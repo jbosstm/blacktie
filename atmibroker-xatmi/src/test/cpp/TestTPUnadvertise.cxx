@@ -89,14 +89,14 @@ void TestTPUnadvertise::test_tpunadvertise_null() {
 }
 
 void TestTPUnadvertise::test_tpunadvertise_empty() {
-	int id = ::tpunadvertise("");
+	int id = ::tpunadvertise((char*) "");
 	CPPUNIT_ASSERT(tperrno== TPEINVAL);
 	CPPUNIT_ASSERT(id == -1);
 }
 
 // 8.4
 void TestTPUnadvertise::test_tpunadvertise_not_advertised() {
-	int id = ::tpunadvertise("NONE");
+	int id = ::tpunadvertise((char*) "NONE");
 	CPPUNIT_ASSERT(tperrno== TPENOENT);
 	CPPUNIT_ASSERT(id == -1);
 }

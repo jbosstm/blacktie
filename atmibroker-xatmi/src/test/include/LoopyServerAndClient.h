@@ -15,29 +15,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-/*
- * BREAKTHRUIT PROPRIETARY - NOT TO BE DISCLOSED OUTSIDE BREAKTHRUIT, LLC.
- */
-// copyright 2006, 2008 BreakThruIT
+#ifndef LoopyServerAndClient_H
+#define LoopyServerAndClient_H
 
-//-----------------------------------------------------------------------------
-// Edit the idlgen.cfg to have your own copyright notice placed here.
-//-----------------------------------------------------------------------------
+#include <cppunit/extensions/HelperMacros.h>
+#include "cppunit/TestFixture.h"
 
+class LoopyServerAndClient: public CppUnit::TestFixture {
+	CPPUNIT_TEST_SUITE( LoopyServerAndClient);
+	CPPUNIT_TEST( testLoopy);
+CPPUNIT_TEST_SUITE_END();
 
-#ifndef ATMIBROKER_SERVERCONTROL_H_
-#define ATMIBROKER_SERVERCONTROL_H_
+public:
+void setUp();
+void tearDown();
+void testLoopy();
+};
 
-#include "atmiBrokerMacro.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern ATMIBROKER_DLL int serverinit(int argc, char ** argv);
-extern ATMIBROKER_DLL int serverrun();
-extern ATMIBROKER_DLL int serverdone();
-#ifdef __cplusplus
-}
-#endif
-
-#endif
+#endif // LoopyServerAndClient_H

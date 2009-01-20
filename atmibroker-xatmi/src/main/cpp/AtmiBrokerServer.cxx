@@ -151,7 +151,7 @@ int serverinit(int argc, char ** argv) {
 	return 0;
 }
 
-void serverdone() {
+int serverdone() {
 	try {
 		_tperrno = 0;
 		if (serverInitialized) {
@@ -187,8 +187,10 @@ void serverdone() {
 			userlog(Level::getInfo(), loggerAtmiBrokerServer, (char*) "serverdone returning");
 			serverInitialized = false;
 		}
+		return 0;
 	} catch (...) {
 		userlog(Level::getError(), loggerAtmiBrokerServer, (char*) "main Unexpected exception in serverdone");
+		return -1;
 	}
 }
 

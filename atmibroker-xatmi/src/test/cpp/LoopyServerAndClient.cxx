@@ -15,29 +15,42 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-/*
- * BREAKTHRUIT PROPRIETARY - NOT TO BE DISCLOSED OUTSIDE BREAKTHRUIT, LLC.
- */
-// copyright 2006, 2008 BreakThruIT
+#include <cppunit/extensions/HelperMacros.h>
 
-//-----------------------------------------------------------------------------
-// Edit the idlgen.cfg to have your own copyright notice placed here.
-//-----------------------------------------------------------------------------
+#include "LoopyServerAndClient.h"
 
+#include "xatmi.h"
+#include "AtmiBrokerServerControl.h"
+#include "AtmiBrokerClientControl.h"
 
-#ifndef ATMIBROKER_SERVERCONTROL_H_
-#define ATMIBROKER_SERVERCONTROL_H_
-
-#include "atmiBrokerMacro.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern ATMIBROKER_DLL int serverinit(int argc, char ** argv);
-extern ATMIBROKER_DLL int serverrun();
-extern ATMIBROKER_DLL int serverdone();
-#ifdef __cplusplus
+void LoopyServerAndClient::setUp() {
+	// Perform global set up
+	TestFixture::setUp();
 }
-#endif
 
-#endif
+void LoopyServerAndClient::tearDown() {
+	// Perform global clean up
+	TestFixture::tearDown();
+}
+
+void LoopyServerAndClient::testLoopy() {
+	int result = 0;
+	int argc = 0;
+	char** argv = NULL;
+
+	result = serverinit(argc, argv);
+	CPPUNIT_ASSERT(result != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	result = clientinit();
+	CPPUNIT_ASSERT(result != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	result = clientdone();
+	CPPUNIT_ASSERT(result != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	result = serverdone();
+	CPPUNIT_ASSERT(result != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+}
