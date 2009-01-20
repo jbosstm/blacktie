@@ -165,9 +165,6 @@ void TestTPTypes::test_tptypes_max_subtype() {
 }
 
 void TestTPTypes::test_tptypes_small_type() {
-	// TODO
-	CPPUNIT_ASSERT("test_tptypes_small_type" == "throws memory fault");
-
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
@@ -179,9 +176,6 @@ void TestTPTypes::test_tptypes_small_type() {
 }
 
 void TestTPTypes::test_tptypes_small_subtype() {
-	// TODO
-	CPPUNIT_ASSERT("test_tptypes_small_subtype" == "throws memory fault");
-
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "1234567890123456", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 

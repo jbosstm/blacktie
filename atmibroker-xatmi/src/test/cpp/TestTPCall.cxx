@@ -72,7 +72,7 @@ void TestTPCall::test_tpcall_unknown_service() {
 }
 
 void TestTPCall::test_tpcall_x_octet_lessdata() {
-	CPPUNIT_ASSERT(strcmp("UNIMPLEMENTED", "TRUE") == 0);
+	CPPUNIT_FAIL("UNIMPLEMENTED");
 }
 
 void TestTPCall::test_tpcall_x_octet() {

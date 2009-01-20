@@ -59,7 +59,7 @@ void TestTPAlloc::test_tpalloc_negative() {
 }
 
 void TestTPAlloc::test_tpalloc_x_octet_subtype_ignored() {
-	m_allocated = tpalloc((char*) "X_OCTET", "fail", 25);
+	m_allocated = tpalloc((char*) "X_OCTET", (char*) "fail", 25);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
 }
@@ -130,6 +130,8 @@ void TestTPAlloc::test_tpalloc_x_c_type() {
 	// ASSIGN SOME VALUES
 	aptr->acct_no = 12345678;
 	strcpy(aptr->name, "12345678901234567890123456789012345678901234567890");
+	aptr->balances[0] = 0;
+	aptr->balances[1] = 0;
 
 	// CHECK THE ASSIGNATIONS
 	CPPUNIT_ASSERT(aptr->acct_no == 12345678);
