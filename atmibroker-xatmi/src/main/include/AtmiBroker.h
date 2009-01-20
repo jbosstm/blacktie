@@ -46,4 +46,6 @@ extern const char * MIN;
 extern const char * MAX;
 extern const char * AVAILABLE;
 
+extern bool loggerInitialized;
+
 #endif //AtmiBroker_H

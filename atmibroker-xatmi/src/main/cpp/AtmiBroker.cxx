@@ -51,10 +51,12 @@ extern "C" {
 #include "log4cxx/basicconfigurator.h"
 #include "log4cxx/propertyconfigurator.h"
 #include "log4cxx/logger.h"
+#include "log4cxx/logmanager.h"
 using namespace log4cxx;
 using namespace log4cxx::helpers;
 LoggerPtr loggerAtmiBroker(Logger::getLogger("AtmiBroker"));
 
+bool loggerInitialized;
 bool clientInitialized;
 int _tperrno = 0;
 long _tpurcode = -1;
@@ -122,10 +124,13 @@ int clientinit() {
 		signal(SIGINT, client_sigint_handler_callback);
 		//		signal(SIGSEGV, client_sigsegv_handler_callback);
 
-		if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG") != NULL) {
-			PropertyConfigurator::configure(AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG"));
-		} else {
-			BasicConfigurator::configure();
+		if (!loggerInitialized) {
+			if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG") != NULL) {
+				PropertyConfigurator::configure(AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG"));
+			} else {
+				BasicConfigurator::configure();
+			}
+			loggerInitialized = true;
 		}
 
 		try {
@@ -166,7 +171,7 @@ int clientinit() {
 			AtmiBrokerMem::get_instance()->freeAllMemory();
 			AtmiBrokerServiceFacMgr::discard_instance();
 			//TODO READD AtmiBrokerNotify::discard_instance();
-//			AtmiBrokerOTS::discard_instance();
+			//			AtmiBrokerOTS::discard_instance();
 			AtmiBrokerEnv::discard_instance();
 			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleted services");
 
@@ -197,7 +202,7 @@ int clientdone() {
 		AtmiBrokerMem::get_instance()->freeAllMemory();
 		AtmiBrokerServiceFacMgr::discard_instance();
 		//TODO READD AtmiBrokerNotify::discard_instance();
-//		AtmiBrokerOTS::discard_instance();
+		//		AtmiBrokerOTS::discard_instance();
 		AtmiBrokerEnv::discard_instance();
 		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleted services");
 

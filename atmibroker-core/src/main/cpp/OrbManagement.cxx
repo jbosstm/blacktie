@@ -83,7 +83,7 @@ void shutdownBindings(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, Port
 	}
 
 	if (worker != NULL) {
-		//worker->thr_mgr()->wait();
+		worker->wait();
 		delete worker;
 		worker = NULL;
 	}
