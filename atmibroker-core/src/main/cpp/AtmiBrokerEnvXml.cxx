@@ -50,70 +50,6 @@ bool xaThreadModel;
 bool xaAutomaticAssociation;
 bool xaDynamicRegistrationOptimization;
 
-//const char* AtmiBrokerEnvXml::Environment_Begin_Tag = (char*) "<?xml version=\"1.0\"?>\n<ENVIRONMENT xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n";
-//
-//const char* AtmiBrokerEnvXml::Environment_End_Tag = (char*) "</ENVIRONMENT>\n";
-//
-//const char* AtmiBrokerEnvXml::Environment_Desc_Begin_Tag = (char*) "  <ENVIRONMENT_DESCRIPTION>\n";
-//const char* AtmiBrokerEnvXml::Environment_Desc_End_Tag = (char*) "  </ENVIRONMENT_DESCRIPTION>\n";
-//
-//const char* AtmiBrokerEnvXml::Server_Begin_Tag = (char*) "    <SERVER>";
-//const char* AtmiBrokerEnvXml::Server_End_Tag = (char*) "</SERVER>\n";
-//
-//const char* AtmiBrokerEnvXml::Company_Begin_Tag = (char*) "    <COMPANY>";
-//const char* AtmiBrokerEnvXml::Company_End_Tag = (char*) "</COMPANY>\n";
-//
-//const char* AtmiBrokerEnvXml::Domain_Begin_Tag = (char*) "    <DOMAIN>";
-//const char* AtmiBrokerEnvXml::Domain_End_Tag = (char*) "</DOMAIN>\n";
-//
-//const char* AtmiBrokerEnvXml::QSpace_Name_Begin_Tag = (char*) "    <QSPACE_NAME>";
-//const char* AtmiBrokerEnvXml::QSpace_Name_End_Tag = (char*) "</QSPACE_NAME>\n";
-//
-//const char* AtmiBrokerEnvXml::Naming_Service_Id_Begin_Tag = (char*) "    <NAMING_SERVICE_ID>";
-//const char* AtmiBrokerEnvXml::Naming_Service_Id_End_Tag = (char*) "</NAMING_SERVICE_ID>\n";
-//
-//const char* AtmiBrokerEnvXml::Notify_Service_Id_Begin_Tag = (char*) "    <NOTIFY_SERVICE_ID>";
-//const char* AtmiBrokerEnvXml::Notify_Service_Id_End_Tag = (char*) "</NOTIFY_SERVICE_ID>\n";
-//
-//const char* AtmiBrokerEnvXml::Logging_Service_Id_Begin_Tag = (char*) "    <LOGGING_SERVICE_ID>";
-//const char* AtmiBrokerEnvXml::Logging_Service_Id_End_Tag = (char*) "</LOGGING_SERVICE_ID>\n";
-//
-//const char* AtmiBrokerEnvXml::Trans_Factory_Id_Begin_Tag = (char*) "    <TRANS_FACTORY_ID>";
-//const char* AtmiBrokerEnvXml::Trans_Factory_Id_End_Tag = (char*) "</TRANS_FACTORY_ID>\n";
-//
-//const char* AtmiBrokerEnvXml::XA_Resource_Mgr_Id_Begin_Tag = (char*) "    <XA_RESOURCE_MGR_ID>";
-//const char* AtmiBrokerEnvXml::XA_Resource_Mgr_Id_End_Tag = (char*) "</XA_RESOURCE_MGR_ID>\n";
-//
-//const char* AtmiBrokerEnvXml::XA_Resource_Name_Begin_Tag = (char*) "    <XA_RESOURCE_NAME>";
-//const char* AtmiBrokerEnvXml::XA_Resource_Name_End_Tag = (char*) "</XA_RESOURCE_NAME>\n";
-//
-//const char* AtmiBrokerEnvXml::XA_Open_String_Begin_Tag = (char*) "    <XA_OPEN_STRING>";
-//const char* AtmiBrokerEnvXml::XA_Open_String_End_Tag = (char*) "</XA_OPEN_STRING>\n";
-//
-//const char* AtmiBrokerEnvXml::XA_Close_String_Begin_Tag = (char*) "    <XA_CLOSE_STRING>";
-//const char* AtmiBrokerEnvXml::XA_Close_String_End_Tag = (char*) "</XA_CLOSE_STRING>\n";
-//
-//const char* AtmiBrokerEnvXml::XA_Thread_Model_Begin_Tag = (char*) "    <XA_THREAD_MODEL>";
-//const char* AtmiBrokerEnvXml::XA_Thread_Model_End_Tag = (char*) "</XA_THREAD_MODEL>\n";
-//
-//const char* AtmiBrokerEnvXml::XA_Automatic_Association_Begin_Tag = (char*) "    <XA_AUTOMATIC_ASSOCIATION>";
-//const char* AtmiBrokerEnvXml::XA_Automatic_Association_End_Tag = (char*) "</XA_AUTOMATIC_ASSOCIATION>\n";
-//
-//const char* AtmiBrokerEnvXml::XA_Dynamic_Registration_Optimization_Begin_Tag = (char*) "    <XA_DYNAMIC_REGISTRATION_OPTIMIZATION>";
-//const char* AtmiBrokerEnvXml::XA_Dynamic_Registration_Optimization_End_Tag = (char*) "</XA_DYNAMIC_REGISTRATION_OPTIMIZATION>\n";
-//
-//const char* AtmiBrokerEnvXml::Env_Variables_Begin_Tag = (char*) "    <ENV_VARIABLES>\n";
-//const char* AtmiBrokerEnvXml::Env_Variables_End_Tag = (char*) "    </ENV_VARIABLES>\n";
-//
-//const char* AtmiBrokerEnvXml::Env_Variable_Begin_Tag = (char*) "      <ENV_VARIABLE>\n";
-//const char* AtmiBrokerEnvXml::Env_Variable_End_Tag = (char*) "      </ENV_VARIABLE>\n";
-//
-//const char* AtmiBrokerEnvXml::Env_Name_Begin_Tag = (char*) "        <NAME>";
-//const char* AtmiBrokerEnvXml::Env_Name_End_Tag = (char*) "</NAME>\n";
-//
-//const char* AtmiBrokerEnvXml::Env_Value_Begin_Tag = (char*) "        <VALUE>";
-//const char* AtmiBrokerEnvXml::Env_Value_End_Tag = (char*) "</VALUE>\n";
-
 static char last_element[50];
 static char last_value[1024];
 
@@ -146,6 +82,29 @@ static bool processingEnvName = false;
 static bool processingEnvValue = false;
 
 AtmiBrokerEnvXml::AtmiBrokerEnvXml() {
+	depth = 0;
+	envVariableCount = 0;
+
+	processingEnvironment = false;
+	processingServer = false;
+	processingCompany = false;
+	processingQSpaceName = false;
+	processingNamingServiceId = false;
+	processingNotifyServiceId = false;
+	processingLoggingServiceId = false;
+	processingTransFactoryId = false;
+	processingXaResourceMgrId = false;
+	processingXaResourceName = false;
+	processingXaOpenString = false;
+	processingXaCloseString = false;
+	processingXaThreadModel = false;
+	processingXaAutomaticAssociation = false;
+	processingXaDynamicRegistrationOptimization = false;
+	processingDomain = false;
+	processingEnvVariables = false;
+	processingEnvVariable = false;
+	processingEnvName = false;
+	processingEnvValue = false;
 }
 
 AtmiBrokerEnvXml::~AtmiBrokerEnvXml() {

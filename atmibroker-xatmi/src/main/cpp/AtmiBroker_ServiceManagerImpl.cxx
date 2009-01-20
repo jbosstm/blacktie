@@ -93,7 +93,6 @@ void AtmiBroker_ServiceManagerImpl::send_data(const char* ior, CORBA::Boolean in
 //
 char*
 AtmiBroker_ServiceManagerImpl::serviceName() throw (CORBA::SystemException) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceManagerImpl, (char*) "serviceName() %s", m_serviceName);
 	return strdup((char*) m_serviceName);
 }
 

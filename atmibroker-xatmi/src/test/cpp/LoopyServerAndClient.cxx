@@ -38,19 +38,21 @@ void LoopyServerAndClient::testLoopy() {
 	int argc = 0;
 	char** argv = NULL;
 
-	result = serverinit(argc, argv);
-	CPPUNIT_ASSERT(result != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+	for (int i = 0; i < 50; i++) {
+		result = serverinit(argc, argv);
+		CPPUNIT_ASSERT(result != -1);
+		CPPUNIT_ASSERT(tperrno == 0);
 
-	result = clientinit();
-	CPPUNIT_ASSERT(result != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+		result = clientinit();
+		CPPUNIT_ASSERT(result != -1);
+		CPPUNIT_ASSERT(tperrno == 0);
 
-	result = clientdone();
-	CPPUNIT_ASSERT(result != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+		result = clientdone();
+		CPPUNIT_ASSERT(result != -1);
+		CPPUNIT_ASSERT(tperrno == 0);
 
-	result = serverdone();
-	CPPUNIT_ASSERT(result != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+		result = serverdone();
+		CPPUNIT_ASSERT(result != -1);
+		CPPUNIT_ASSERT(tperrno == 0);
+	}
 }

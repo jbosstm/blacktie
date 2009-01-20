@@ -24,7 +24,7 @@
 class ODBCTest: public CppUnit::TestFixture {
 CPPUNIT_TEST_SUITE( ODBCTest )
 	;
-		CPPUNIT_TEST( test );
+//TODO ADD WHEN WE HAVE A TEST		CPPUNIT_TEST( test );
 	CPPUNIT_TEST_SUITE_END()
 	;
 

@@ -137,11 +137,10 @@ void AtmiBroker_ServerImpl::server_done() throw (CORBA::SystemException ) {
 	// unadvertise(); // DO NOT DO THIS SINCE THE NamingService needs the Persistant IOR for re-launching!!!
 
 	for (unsigned int i = 0; i < serverInfo.serviceNames.size(); i++) {
-#ifndef VBC_COMP
-		tpunadvertise((char*) serverInfo.serviceNames[i].c_str());
-#else
-		tpunadvertise((char*)serverInfo.serviceNames[i]);
-#endif
+		char* svcname = (char*) serverInfo.serviceNames[i].c_str();
+		if (isAdvertised(svcname)) {
+			unadvertiseService(svcname);
+		}
 	}
 	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "server_done(): returning.");
 }
