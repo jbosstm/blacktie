@@ -166,7 +166,7 @@ int clientinit() {
 			AtmiBrokerMem::get_instance()->freeAllMemory();
 			AtmiBrokerServiceFacMgr::discard_instance();
 			//TODO READD AtmiBrokerNotify::discard_instance();
-			AtmiBrokerOTS::discard_instance();
+//			AtmiBrokerOTS::discard_instance();
 			AtmiBrokerEnv::discard_instance();
 			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleted services");
 
@@ -197,7 +197,7 @@ int clientdone() {
 		AtmiBrokerMem::get_instance()->freeAllMemory();
 		AtmiBrokerServiceFacMgr::discard_instance();
 		//TODO READD AtmiBrokerNotify::discard_instance();
-		AtmiBrokerOTS::discard_instance();
+//		AtmiBrokerOTS::discard_instance();
 		AtmiBrokerEnv::discard_instance();
 		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleted services");
 

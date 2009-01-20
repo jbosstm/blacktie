@@ -138,7 +138,7 @@ int serverinit(int argc, char ** argv) {
 			AtmiBrokerMem::get_instance()->freeAllMemory();
 			AtmiBrokerServiceFacMgr::discard_instance();
 			//TODO READD AtmiBrokerNotify::discard_instance();
-			AtmiBrokerOTS::discard_instance();
+//			AtmiBrokerOTS::discard_instance();
 			AtmiBrokerEnv::discard_instance();
 			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverinit deleted services");
 
@@ -178,7 +178,7 @@ int serverdone() {
 			AtmiBrokerMem::get_instance()->freeAllMemory();
 			AtmiBrokerServiceFacMgr::discard_instance();
 			//TODO READD AtmiBrokerNotify::discard_instance();
-			AtmiBrokerOTS::discard_instance();
+//			AtmiBrokerOTS::discard_instance();
 			AtmiBrokerEnv::discard_instance();
 			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone deleted services");
 
