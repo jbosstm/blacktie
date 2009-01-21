@@ -25,6 +25,8 @@
 
 #include "atmiBrokerMacro.h"
 
+#include <vector>
+
 #ifdef TAO_COMP
 #include "AtmiBrokerS.h"
 #elif ORBIX_COMP
@@ -54,7 +56,7 @@ class ATMIBROKER_DLL AtmiBrokerServiceFacMgr {
 
 public:
 
-	AtmiBrokerServiceFacMgr(int numFactories);
+	AtmiBrokerServiceFacMgr();
 
 	~AtmiBrokerServiceFacMgr();
 	void (*getServiceMethod(const char * aServiceName))(TPSVCINFO *);
@@ -68,16 +70,12 @@ public:
 	void removeServiceManager(const char * aServiceName);
 
 	static AtmiBrokerServiceFacMgr* get_instance();
-	static AtmiBrokerServiceFacMgr* get_instance(int numFactories);
 	static void discard_instance();
 
 private:
 
-	ServiceFactoryData * serviceFactoryDataArray;
-	int numServiceFactories;
-
-	ServiceManagerData * serviceManagerDataArray;
-	int numServiceManagers;
+	std::vector<ServiceFactoryData*> serviceFactoryData;
+	std::vector<ServiceManagerData*> serviceManagerData;
 
 	static AtmiBrokerServiceFacMgr* ptrAtmiBrokerServiceFacMgr;
 };

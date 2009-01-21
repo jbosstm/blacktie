@@ -141,10 +141,6 @@ int clientinit() {
 			createClientBindingPolicies();
 			AtmiBrokerMem::get_instance();
 
-			userlog(Level::getDebug(), loggerAtmiBroker, (char*) " about to create service factory manager ");
-			AtmiBrokerServiceFacMgr::get_instance(MAX_SERVICES);
-			userlog(Level::getDebug(), loggerAtmiBroker, (char*) " created service factory manager ");
-
 			ptrAtmiBrokerClient = new AtmiBrokerClient(true, false, true, false);
 
 			clientInitialized = true;

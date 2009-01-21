@@ -46,11 +46,11 @@ void LoopyServerAndClient::testLoopyAll() {
 		CPPUNIT_ASSERT(result != -1);
 		CPPUNIT_ASSERT(tperrno == 0);
 
-		tpadvertise((char*) "LOOPY", loopy);
-
 		result = clientinit();
 		CPPUNIT_ASSERT(result != -1);
 		CPPUNIT_ASSERT(tperrno == 0);
+
+		tpadvertise((char*) "LOOPY", loopy);
 
 		result = clientdone();
 		CPPUNIT_ASSERT(result != -1);

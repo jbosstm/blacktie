@@ -115,10 +115,6 @@ int serverinit(int argc, char ** argv) {
 			getRootPOAAndManager(server_orb, server_root_poa, server_root_poa_manager);
 			createServerPOA();
 
-			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverinit about to create service factory manager ");
-			AtmiBrokerServiceFacMgr::get_instance(MAX_SERVICES);
-			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverinit created service factory manager ");
-
 			//TODO READD AtmiBrokerNotify::get_instance()->setPOAAndContext(server_root_poa, server_default_context);
 
 			server_root_poa_manager->activate();

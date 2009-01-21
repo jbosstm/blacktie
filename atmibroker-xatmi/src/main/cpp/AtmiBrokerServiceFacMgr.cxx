@@ -33,6 +33,9 @@ AtmiBrokerServiceFacMgr *AtmiBrokerServiceFacMgr::ptrAtmiBrokerServiceFacMgr = N
 
 AtmiBrokerServiceFacMgr *
 AtmiBrokerServiceFacMgr::get_instance() {
+	if (ptrAtmiBrokerServiceFacMgr == NULL) {
+		ptrAtmiBrokerServiceFacMgr = new AtmiBrokerServiceFacMgr();
+	}
 	return ptrAtmiBrokerServiceFacMgr;
 }
 
@@ -43,114 +46,75 @@ void AtmiBrokerServiceFacMgr::discard_instance() {
 	}
 }
 
-AtmiBrokerServiceFacMgr *
-AtmiBrokerServiceFacMgr::get_instance(int aServiceFactoryNumber) {
-	if (ptrAtmiBrokerServiceFacMgr == NULL)
-		ptrAtmiBrokerServiceFacMgr = new AtmiBrokerServiceFacMgr(aServiceFactoryNumber);
-	return ptrAtmiBrokerServiceFacMgr;
-}
-
-AtmiBrokerServiceFacMgr::AtmiBrokerServiceFacMgr(int aServiceFactoryNumber) {
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "constructor %d", aServiceFactoryNumber);
-
-	numServiceFactories = aServiceFactoryNumber;
-	numServiceManagers = aServiceFactoryNumber;
-
-	serviceFactoryDataArray = new ServiceFactoryData[numServiceFactories];
-
-	for (int i = 0; i < numServiceFactories; i++) {
-		serviceFactoryDataArray[i].serviceName = (char*) NULL;
-		serviceFactoryDataArray[i].factoryPtr = NULL;
-	}
-
-	serviceManagerDataArray = new ServiceManagerData[numServiceManagers];
-
-	for (int j = 0; j < numServiceFactories; j++) {
-		serviceManagerDataArray[j].serviceName = (char*) NULL;
-		serviceManagerDataArray[j].managerPtr = NULL;
-	}
+AtmiBrokerServiceFacMgr::AtmiBrokerServiceFacMgr() {
+	userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "constructor");
 }
 
 AtmiBrokerServiceFacMgr::~AtmiBrokerServiceFacMgr() {
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "destructor ");
 
-	if (serviceFactoryDataArray) {
-		userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "deleting service factory array %p", (void*) serviceFactoryDataArray);
-		delete[] serviceFactoryDataArray;
-		serviceFactoryDataArray = NULL;
-		userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "deleted service factory array ");
-	}
+	serviceFactoryData.clear();
+	userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "deleted service factory array ");
 
-	if (serviceManagerDataArray) {
-		userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "deleting service manager array %p", (void*) serviceManagerDataArray);
-		delete[] serviceManagerDataArray;
-		serviceManagerDataArray = NULL;
-		userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "deleted service manager array ");
-	}
+	serviceManagerData.clear();
+	userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "deleted service manager array ");
 }
 
 AtmiBroker::ServiceFactory_ptr AtmiBrokerServiceFacMgr::getServiceFactory(const char * aServiceName) {
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "getServiceFactory: %d", numServiceFactories);
+	userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "getServiceFactory: %s", aServiceName);
 
-	for (int i = 0; i < numServiceFactories; i++) {
-		if (serviceFactoryDataArray[i].serviceName != NULL && strcmp(serviceFactoryDataArray[i].serviceName, aServiceName) == 0) {
-			userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "found: %s", (char*) serviceFactoryDataArray[i].serviceName);
-			return serviceFactoryDataArray[i].factoryPtr;
+	for (std::vector<ServiceFactoryData*>::iterator i = serviceFactoryData.begin(); i != serviceFactoryData.end(); i++) {
+		if (strncmp((*i)->serviceName, aServiceName, XATMI_SERVICE_NAME_LENGTH) == 0) {
+			userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "found: %s", (char*) (*i)->serviceName);
+			return (*i)->factoryPtr;
 		}
 	}
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "getServiceManager out: %s", aServiceName);
-	return (AtmiBroker::ServiceFactory*) NULL;
+	return NULL;
 }
 
 AtmiBroker::ServiceManager_ptr AtmiBrokerServiceFacMgr::getServiceManager(const char * aServiceName) {
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "getServiceManager: %s", aServiceName);
 
-	for (int i = 0; i < numServiceManagers; i++) {
-		if (serviceManagerDataArray[i].serviceName != NULL && strcmp(serviceManagerDataArray[i].serviceName, aServiceName) == 0) {
-			userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "found: %s", (char*) serviceManagerDataArray[i].serviceName);
-			return serviceManagerDataArray[i].managerPtr;
+	for (std::vector<ServiceManagerData*>::iterator i = serviceManagerData.begin(); i != serviceManagerData.end(); i++) {
+		if (strncmp((*i)->serviceName, aServiceName, XATMI_SERVICE_NAME_LENGTH) == 0) {
+			userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "found: %s", (char*) (*i)->serviceName);
+			return (*i)->managerPtr;
 		}
 	}
-	return (AtmiBroker::ServiceManager*) NULL;
+	return NULL;
 }
 
 void AtmiBrokerServiceFacMgr::addServiceFactory(const char * aServiceName, const AtmiBroker::ServiceFactory_var& aFactoryPtr, void(*func)(TPSVCINFO *)) {
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "addServiceFactory: %s", aServiceName);
 
-	for (int i = 0; i < numServiceFactories; i++) {
-		if (serviceFactoryDataArray[i].serviceName == NULL) {
-			serviceFactoryDataArray[i].serviceName = aServiceName;
-			serviceFactoryDataArray[i].factoryPtr = aFactoryPtr;
-			serviceFactoryDataArray[i].func = func;
-			userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "added: %s at %d", (char*) serviceFactoryDataArray[i].serviceName, i);
-			return;
-		}
-	}
+	ServiceFactoryData entry;
+	entry.serviceName = aServiceName;
+	entry.factoryPtr = aFactoryPtr;
+	entry.func = func;
+	serviceFactoryData.push_back(&entry);
+	userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "added: %s", (char*) aServiceName);
 }
 
 void AtmiBrokerServiceFacMgr::addServiceManager(const char * aServiceName, const AtmiBroker::ServiceManager_var& aManagerPtr) {
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "addServiceManager: %s", aServiceName);
 
-	for (int i = 0; i < numServiceManagers; i++) {
-		if (serviceManagerDataArray[i].serviceName == NULL) {
-			serviceManagerDataArray[i].serviceName = aServiceName;
-			serviceManagerDataArray[i].managerPtr = aManagerPtr;
-			userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "added: %s at %d", (char*) serviceManagerDataArray[i].serviceName, i);
-			return;
-		}
-	}
+	ServiceManagerData entry;
+	entry.serviceName = aServiceName;
+	entry.managerPtr = aManagerPtr;
+	serviceManagerData.push_back(&entry);
+	userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "added: %s", (char*) aServiceName);
 }
 
 void AtmiBrokerServiceFacMgr::removeServiceFactory(const char * aServiceName) {
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "removeServiceFactory: %s", aServiceName);
 
-	for (int i = 0; i < numServiceFactories; i++) {
-		if (serviceFactoryDataArray[i].serviceName != NULL && strcmp(serviceFactoryDataArray[i].serviceName, aServiceName) == 0) {
-			userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "removing service %s", (const char*) serviceFactoryDataArray[i].serviceName);
-			serviceFactoryDataArray[i].serviceName = (char *) NULL;
-			serviceFactoryDataArray[i].factoryPtr = NULL;
-			userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "removed: %s at %d", aServiceName, i);
-			return;
+	for (std::vector<ServiceFactoryData*>::iterator i = serviceFactoryData.begin(); i != serviceFactoryData.end(); i++) {
+		if (strncmp((*i)->serviceName, aServiceName, XATMI_SERVICE_NAME_LENGTH) == 0) {
+			userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "removing service %s", (char*) (*i)->serviceName);
+			serviceFactoryData.erase(i);
+			userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "removed: %s", aServiceName);
+			break;
 		}
 	}
 }
@@ -158,25 +122,23 @@ void AtmiBrokerServiceFacMgr::removeServiceFactory(const char * aServiceName) {
 void AtmiBrokerServiceFacMgr::removeServiceManager(const char * aServiceName) {
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "removeServiceManager: %s", aServiceName);
 
-	for (int i = 0; i < numServiceManagers; i++) {
-		if (serviceManagerDataArray[i].serviceName != NULL && strcmp(serviceManagerDataArray[i].serviceName, aServiceName) == 0) {
-			userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "removing service %s", (const char*) serviceManagerDataArray[i].serviceName);
-			serviceManagerDataArray[i].serviceName = (char*) NULL;
-			serviceManagerDataArray[i].managerPtr = NULL;
-			userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "removed: %s at %d", aServiceName, i);
-			return;
+	for (std::vector<ServiceManagerData*>::iterator i = serviceManagerData.begin(); i != serviceManagerData.end(); i++) {
+		if (strncmp((*i)->serviceName, aServiceName, XATMI_SERVICE_NAME_LENGTH) == 0) {
+			userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "removing service %s", (const char*) (*i)->serviceName);
+			serviceManagerData.erase(i);
+			userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "removed: %s", aServiceName);
+			break;
 		}
 	}
 }
 
-void
-(*AtmiBrokerServiceFacMgr::getServiceMethod(const char * aServiceName))(TPSVCINFO *) {
-			userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "getServiceFactory: %d", numServiceFactories);
+void (*AtmiBrokerServiceFacMgr::getServiceMethod(const char * aServiceName))(TPSVCINFO *) {
+			userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "getServiceFactory: %s", aServiceName);
 
-			for (int i = 0; i < numServiceFactories; i++) {
-				if (serviceFactoryDataArray[i].serviceName != NULL && strncmp(serviceFactoryDataArray[i].serviceName, aServiceName, XATMI_SERVICE_NAME_LENGTH) == 0) {
-					userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "found: %s", (char*) serviceFactoryDataArray[i].serviceName);
-					return serviceFactoryDataArray[i].func;
+			for (std::vector<ServiceFactoryData*>::iterator i = serviceFactoryData.begin(); i != serviceFactoryData.end(); i++) {
+				if (strncmp((*i)->serviceName, aServiceName, XATMI_SERVICE_NAME_LENGTH) == 0) {
+					userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "found: %s", (char*) (*i)->serviceName);
+					return (*i)->func;
 				}
 			}
 			userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "getServiceManager out: %s", aServiceName);
