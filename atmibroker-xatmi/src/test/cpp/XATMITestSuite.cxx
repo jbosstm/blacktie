@@ -67,3 +67,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestTPCall);
  #include "TestSpecExampleTwo.h"
  CPPUNIT_TEST_SUITE_REGISTRATION( TestSpecExampleTwo );
  */
+
+/* SERVER MANAGEMENT FUNCTIONS */
+#include "LoopyServerAndClient.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( LoopyServerAndClient);
