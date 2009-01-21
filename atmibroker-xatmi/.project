@@ -3,9 +3,6 @@
 	<name>atmibroker-xatmi</name>
 	<comment></comment>
 	<projects>
-		<project>atmibroker-core</project>
-		<project>atmibroker-idl</project>
-		<project>atmibroker-tx</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -3,8 +3,6 @@
 	<name>atmibroker-tx</name>
 	<comment></comment>
 	<projects>
-		<project>atmibroker-core</project>
-		<project>atmibroker-idl</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
