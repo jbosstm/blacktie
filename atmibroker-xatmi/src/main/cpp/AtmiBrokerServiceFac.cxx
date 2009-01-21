@@ -48,21 +48,15 @@ LoggerPtr loggerAtmiBrokerServiceFac(Logger::getLogger("AtmiBrokerServiceFac"));
 
 void remove_service_factory(char* serviceName) {
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "remove_service_factory: %s", serviceName);
-
-	CosNaming::Name * name;
-
-	name = server_default_context->to_name(serviceName);
-	server_name_context->unbind(*name);
-
 	AtmiBrokerServiceFacMgr::get_instance()->removeServiceFactory(serviceName);
-
+	CosNaming::Name * name = server_default_context->to_name(serviceName);
+	server_name_context->unbind(*name);
 	userlog(Level::getInfo(), loggerAtmiBrokerServiceFac, (char*) " service factory %s removed", serviceName);
 }
 
 void remove_service_manager(char* serviceName) {
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "remove_service_manager: %s", serviceName);
-
-	CosNaming::Name * name;
+	AtmiBrokerServiceFacMgr::get_instance()->removeServiceManager(serviceName);
 
 	int size = strlen(serviceName) + strlen("Manager") + 1;
 	char *serviceManagerName = (char*) malloc(sizeof(char) * size);
@@ -70,10 +64,8 @@ void remove_service_manager(char* serviceName) {
 	strcat(serviceManagerName, "Manager");
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "manager name: %s", serviceManagerName);
 
-	name = server_default_context->to_name(serviceManagerName);
+	CosNaming::Name * name = server_default_context->to_name(serviceManagerName);
 	server_name_context->unbind(*name);
-
-	AtmiBrokerServiceFacMgr::get_instance()->removeServiceManager(serviceName);
 
 	free(serviceManagerName);
 	userlog(Level::getInfo(), loggerAtmiBrokerServiceFac, (char*) " service manager %s removed", serviceName);

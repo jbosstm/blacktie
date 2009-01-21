@@ -39,7 +39,6 @@
 
 #include "AtmiBrokerClient.h"
 
-#include "AtmiBrokerServiceFacMgr.h"
 #include "AtmiBrokerServiceRetrieve.h"
 #include "userlog.h"
 #include "log4cxx/logger.h"
@@ -83,15 +82,10 @@ void get_server(const char * serverName, AtmiBroker::Server_ptr * aServicePtrAdd
 AtmiBroker::ServiceFactory_ptr get_service_factory(const char * serviceName) {
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "get_service_factory: %s", serviceName);
 
-	AtmiBroker::ServiceFactory_ptr factoryPtr = AtmiBrokerServiceFacMgr::get_instance()->getServiceFactory(serviceName);
-
-	if (!CORBA::is_nil(factoryPtr)) {
-		userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "retrieved  %s Factory %p", serviceName, (void*) factoryPtr);
-		return AtmiBroker::ServiceFactory::_duplicate(factoryPtr);
-	}
-
 	CosNaming::Name * name = client_default_context->to_name(serviceName);
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "Service name %p", (void*) name);
+
+	AtmiBroker::ServiceFactory_ptr factoryPtr = NULL;
 
 	try {
 		CORBA::Object_var tmp_ref = client_name_context->resolve(*name);
@@ -105,8 +99,6 @@ AtmiBroker::ServiceFactory_ptr get_service_factory(const char * serviceName) {
 		userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "Could not retrieve Factory for %s", serviceName);
 	} else
 		userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "retrieved  %s Factory %p", serviceName, (void*) factoryPtr);
-
-	//TODO CLIENT CACHE AtmiBrokerServiceFacMgr::get_instance()->addServiceFactory(serviceName, factoryPtr);
 
 	return AtmiBroker::ServiceFactory::_duplicate(factoryPtr);
 }

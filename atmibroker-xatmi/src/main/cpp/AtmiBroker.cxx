@@ -35,7 +35,6 @@ extern "C" {
 }
 
 #include "AtmiBrokerEnv.h"
-#include "AtmiBrokerServiceFacMgr.h"
 #include "AtmiBrokerMem.h"
 #include "AtmiBroker.h"
 #include "AtmiBrokerConversation.h"
@@ -159,10 +158,8 @@ int clientinit() {
 				userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleted Corba Client ");
 			}
 
-			// TODO CLEAN UP TRANSACTION CURRENT
 			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleting services");
 			AtmiBrokerMem::get_instance()->freeAllMemory();
-			AtmiBrokerServiceFacMgr::discard_instance();
 			//TODO READD AtmiBrokerNotify::discard_instance();
 			AtmiBrokerOTS::discard_instance();
 			AtmiBrokerEnv::discard_instance();
@@ -190,10 +187,8 @@ int clientdone() {
 			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleted Corba Client ");
 		}
 
-		// TODO CLEAN UP TRANSACTION CURRENT
 		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleting services");
 		AtmiBrokerMem::get_instance()->freeAllMemory();
-		AtmiBrokerServiceFacMgr::discard_instance();
 		//TODO READD AtmiBrokerNotify::discard_instance();
 		AtmiBrokerOTS::discard_instance();
 		AtmiBrokerEnv::discard_instance();

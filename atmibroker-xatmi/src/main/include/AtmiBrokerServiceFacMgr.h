@@ -74,8 +74,8 @@ public:
 
 private:
 
-	std::vector<ServiceFactoryData*> serviceFactoryData;
-	std::vector<ServiceManagerData*> serviceManagerData;
+	std::vector<ServiceFactoryData> serviceFactoryData;
+	std::vector<ServiceManagerData> serviceManagerData;
 
 	static AtmiBrokerServiceFacMgr* ptrAtmiBrokerServiceFacMgr;
 };
