@@ -36,7 +36,7 @@ void LoopyServerAndClient::tearDown() {
 void loopy(TPSVCINFO* tpsvcinfo) {
 }
 
-void LoopyServerAndClient::testLoopy() {
+void LoopyServerAndClient::testLoopyAll() {
 	int result = 0;
 	int argc = 0;
 	char** argv = NULL;
@@ -46,7 +46,7 @@ void LoopyServerAndClient::testLoopy() {
 		CPPUNIT_ASSERT(result != -1);
 		CPPUNIT_ASSERT(tperrno == 0);
 
-		tpadvertise("LOOPY", loopy);
+		tpadvertise((char*) "LOOPY", loopy);
 
 		result = clientinit();
 		CPPUNIT_ASSERT(result != -1);
@@ -60,4 +60,30 @@ void LoopyServerAndClient::testLoopy() {
 		CPPUNIT_ASSERT(result != -1);
 		CPPUNIT_ASSERT(tperrno == 0);
 	}
+}
+
+void LoopyServerAndClient::testLoopyAdvertise() {
+	int result = 0;
+	int argc = 0;
+	char** argv = NULL;
+	result = serverinit(argc, argv);
+	CPPUNIT_ASSERT(result != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	result = clientinit();
+	CPPUNIT_ASSERT(result != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	for (int i = 0; i < 3; i++) {
+		tpadvertise((char*) "LOOPY", loopy);
+		tpunadvertise((char*) "LOOPY");
+	}
+
+	result = clientdone();
+	CPPUNIT_ASSERT(result != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	result = serverdone();
+	CPPUNIT_ASSERT(result != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
 }

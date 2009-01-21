@@ -23,13 +23,15 @@
 
 class LoopyServerAndClient: public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE( LoopyServerAndClient);
-	CPPUNIT_TEST( testLoopy);
+	CPPUNIT_TEST( testLoopyAll);
+	CPPUNIT_TEST( testLoopyAdvertise);
 CPPUNIT_TEST_SUITE_END();
 
 public:
 void setUp();
 void tearDown();
-void testLoopy();
+void testLoopyAll();
+void testLoopyAdvertise();
 };
 
 #endif // LoopyServerAndClient_H
