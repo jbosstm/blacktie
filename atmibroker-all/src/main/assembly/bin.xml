@@ -149,6 +149,14 @@
 			</includes>
 		</fileSet>
 		<fileSet>
+			<directory>../atmibroker-core/src/export/include/
+			</directory>
+			<outputDirectory>include</outputDirectory>
+			<includes>
+				<include>*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
 			<directory>../atmibroker-xsd/src/main/xsd/
 			</directory>
 			<outputDirectory>schemas/xsd</outputDirectory>
