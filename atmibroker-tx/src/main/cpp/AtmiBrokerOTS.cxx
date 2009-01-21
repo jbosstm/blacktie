@@ -65,6 +65,7 @@ AtmiBrokerOTS::AtmiBrokerOTS() {
 	currentImpl = NULL;
 	tx_current = NULL;
 	initOrb((char*) "ots", ots_worker, ots_orb, ots_namingContextExt, ots_namingContext);
+	//	createTransactionPolicy();
 }
 
 AtmiBrokerOTS::~AtmiBrokerOTS() {
@@ -235,9 +236,6 @@ int AtmiBrokerOTS::tx_close(void) {
 	return TX_OK;
 }
 
-void AtmiBrokerOTS::getTransactionCurrent() {
-}
-
 void AtmiBrokerOTS::createTransactionPolicy() {
 	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "createTransactionPolicy");
 
@@ -353,9 +351,23 @@ AtmiBrokerOTS::getXaConnector() {
 	return xa_connector;
 }
 
-CORBA::Policy_var&
+CORBA::Policy_ptr
 AtmiBrokerOTS::getTransactionPolicy() {
-	return transactionPolicy;
+#ifdef TAO_COMP
+	return NULL;
+#else
+	//#elif ORBIX_COMP
+	if (CORBA::is_nil(transactionPolicy)) {
+		CORBA::Any policyValue;
+
+		policyValue <<= CosTransactions::ADAPTS;
+
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "creating transaction ADAPTS policy ");
+		CORBA::Policy_var tempPolicy = ots_orb->create_policy(CosTransactions::OTS_POLICY_TYPE, policyValue);
+		return CORBA::Policy::_duplicate(tempPolicy);
+//		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) " created transaction ADAPTS policy %p", (void*) transactionPolicy);
+	}
+#endif
 }
 
 //struct xa_switch_t&

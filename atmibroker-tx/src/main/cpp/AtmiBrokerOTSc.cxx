@@ -20,11 +20,6 @@
  */
 // copyright 2006, 2008 BreakThruIT
 
-#ifdef TAO_COMP
-#include <tao/ORB.h>
-#include "ConnectorImpl.h"
-#endif
-
 #include "AtmiBrokerOTS.h"
 #include "tx.h"
 

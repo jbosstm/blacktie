@@ -144,7 +144,7 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createServicePoa(const char* poa_name,
 
 	// Create Transactional ADAPTS policy
 	//
-	policies[i++] = AtmiBrokerOTS::get_instance()->getTransactionPolicy();
+	policies[i++] = AtmiBrokerOTS::getTransactionPolicy();
 
 	//    assert(i==2);
 

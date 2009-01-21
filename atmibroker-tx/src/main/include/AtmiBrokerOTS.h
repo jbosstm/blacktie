@@ -78,15 +78,13 @@ public:
 
 	int tx_close(void);
 
-	void getTransactionCurrent();
-	void createTransactionPolicy();
 	void createXAConnectorAndResourceManager();
 	CurrentImpl * getCurrentImpl();
 	CosTransactions::Current_var& getCurrent();
 	XA::CurrentConnection_var& getXaCurrentConnection();
 	XA::ResourceManager_var& getXaResourceManager();
 	XA::Connector_var& getXaConnector();
-	CORBA::Policy_var& getTransactionPolicy();
+	static CORBA::Policy_ptr getTransactionPolicy();
 	//struct xa_switch_t&								getXaosw();
 	XA::XASwitch_ptr getXaosw();
 
@@ -99,8 +97,9 @@ public:
 	CosNaming::NamingContext_ptr& getNamingContext();
 
 private:
+	void createTransactionPolicy();
 
-	CORBA::Policy_var transactionPolicy;
+//	CORBA::Policy_var transactionPolicy;
 
 	Worker* ots_worker;
 	CORBA::ORB_var ots_orb;

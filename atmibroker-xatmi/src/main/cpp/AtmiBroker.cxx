@@ -139,8 +139,6 @@ int clientinit() {
 			getRootPOAAndManager(client_orb, client_root_poa, client_root_poa_manager);
 			createClientCallbackPOA();
 			createClientBindingPolicies();
-			//AtmiBrokerOTS::get_instance()->setCorbaObjects(client_orb, client_default_context, client_name_context);
-			//AtmiBrokerOTS::get_instance()->getTransactionCurrent();
 			AtmiBrokerMem::get_instance();
 
 			userlog(Level::getDebug(), loggerAtmiBroker, (char*) " about to create service factory manager ");

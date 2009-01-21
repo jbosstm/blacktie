@@ -28,7 +28,6 @@
 #include "OrbManagement.h"
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerEnvXml.h"
-#include "tx.h"
 
 #include "AtmiBroker.h"
 #include "AtmiBrokerServiceFacMgr.h"
@@ -116,9 +115,6 @@ int serverinit(int argc, char ** argv) {
 			getRootPOAAndManager(server_orb, server_root_poa, server_root_poa_manager);
 			createServerPOA();
 
-			AtmiBrokerOTS::get_instance()->getTransactionCurrent();
-			AtmiBrokerOTS::get_instance()->createTransactionPolicy();
-
 			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverinit about to create service factory manager ");
 			AtmiBrokerServiceFacMgr::get_instance(MAX_SERVICES);
 			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverinit created service factory manager ");
@@ -161,9 +157,9 @@ int serverdone() {
 			userlog(Level::getInfo(), loggerAtmiBrokerServer, (char*) "serverdone called ");
 
 			// Ensure that the ORB is properly shutdown and cleaned up.
-			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone calling serverdone");
-			tx_close();
-			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone called serverdone");
+//			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone calling serverdone");
+//			tx_close();
+//			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone called serverdone");
 
 			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone shutting down services ");
 			if (ptrServer) {
