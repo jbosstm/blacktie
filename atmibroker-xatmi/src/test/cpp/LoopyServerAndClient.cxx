@@ -33,6 +33,9 @@ void LoopyServerAndClient::tearDown() {
 	TestFixture::tearDown();
 }
 
+void loopy(TPSVCINFO* tpsvcinfo) {
+}
+
 void LoopyServerAndClient::testLoopy() {
 	int result = 0;
 	int argc = 0;
@@ -42,6 +45,8 @@ void LoopyServerAndClient::testLoopy() {
 		result = serverinit(argc, argv);
 		CPPUNIT_ASSERT(result != -1);
 		CPPUNIT_ASSERT(tperrno == 0);
+
+		tpadvertise("LOOPY", loopy);
 
 		result = clientinit();
 		CPPUNIT_ASSERT(result != -1);

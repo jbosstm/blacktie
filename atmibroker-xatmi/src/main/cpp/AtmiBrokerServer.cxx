@@ -87,7 +87,7 @@ int serverrun() {
 		userlog(Level::getInfo(), loggerAtmiBrokerServer, "serverrun Waiting for requests...");
 		server_orb->run();
 	} catch (CORBA::Exception& e) {
-		userlog(Level::getInfo(), loggerAtmiBrokerServer, "serverrun Unexpected CORBA exception: %s", e._name());
+		userlog(Level::getError(), loggerAtmiBrokerServer, "serverrun Unexpected CORBA exception: %s", e._name());
 		toReturn = -1;
 	}
 	return toReturn;
@@ -95,7 +95,7 @@ int serverrun() {
 
 int serverinit(int argc, char ** argv) {
 	if (!serverInitialized) {
-		userlog(Level::getInfo(), loggerAtmiBrokerServer, (char*) "serverinit called");
+		userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverinit called");
 		_tperrno = 0;
 		signal(SIGINT, server_sigint_handler_callback);
 		//		signal(SIGSEGV, server_sigsegv_handler_callback);
@@ -122,7 +122,7 @@ int serverinit(int argc, char ** argv) {
 			//TODO READD AtmiBrokerNotify::get_instance()->setPOAAndContext(server_root_poa, server_default_context);
 
 			server_root_poa_manager->activate();
-			userlog(Level::getInfo(), loggerAtmiBrokerServer, (char*) "activated poa - started processing requests ");
+			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "activated poa - started processing requests ");
 
 			ptrServerFactory = new AtmiBrokerServerFac();
 			ptrServerFactory->createServer(argc, argv);
@@ -144,7 +144,7 @@ int serverinit(int argc, char ** argv) {
 			shutdownBindings(server_orb, server_root_poa, server_root_poa_manager, server_default_context, server_name_context, server_poa, server_worker);
 			return -1;
 		}
-		userlog(Level::getInfo(), loggerAtmiBrokerServer, (char*) "serverinit done");
+		userlog(Level::getInfo(), loggerAtmiBrokerServer, (char*) "serverinit returning");
 		return 1;
 	}
 	return 0;
@@ -154,7 +154,7 @@ int serverdone() {
 	try {
 		_tperrno = 0;
 		if (serverInitialized) {
-			userlog(Level::getInfo(), loggerAtmiBrokerServer, (char*) "serverdone called ");
+			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone called ");
 
 			// Ensure that the ORB is properly shutdown and cleaned up.
 //			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone calling serverdone");

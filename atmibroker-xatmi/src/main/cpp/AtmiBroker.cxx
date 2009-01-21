@@ -175,7 +175,7 @@ int clientinit() {
 			shutdownBindings(client_orb, client_root_poa, client_root_poa_manager, client_default_context, client_name_context, client_poa, client_worker);
 			return -1;
 		}
-		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientinit finished");
+		userlog(Level::getInfo(), loggerAtmiBroker, (char*) "clientinit returning");
 		return 1;
 	}
 	return 0;
@@ -184,7 +184,7 @@ int clientinit() {
 int clientdone() {
 	_tperrno = 0;
 	if (clientInitialized) {
-		userlog(Level::getInfo(), loggerAtmiBroker, (char*) "clientdone called");
+		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientdone called");
 
 		AtmiBrokerConversation::discard_instance();
 		if (ptrAtmiBrokerClient) {

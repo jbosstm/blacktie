@@ -98,7 +98,7 @@ void initOrb(char* name, Worker*& worker, CORBA::ORB_ptr& orbRef, CosNaming::Nam
 }
 
 void shutdownBindings(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, PortableServer::POAManager_var& poa_manager, CosNaming::NamingContextExt_var& ctx, CosNaming::NamingContext_var& nameCtx, PortableServer::POA_var& innerPoa, Worker* worker) {
-	LOG4CXX_INFO(loggerOrbManagement, "Closing Bindings");
+	LOG4CXX_DEBUG(loggerOrbManagement, "Closing Bindings");
 
 	if (!CORBA::is_nil(orbRef)) {
 		LOG4CXX_DEBUG(loggerOrbManagement, "shutdownBindings shutting down ORB ");
@@ -150,7 +150,7 @@ void shutdownBindings(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, Port
 		//		delete orbRef;
 		orbRef = NULL;
 	}
-	LOG4CXX_INFO(loggerOrbManagement, (char*) "Closed Bindings");
+	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "Closed Bindings");
 }
 
 void getRootPOAAndManager(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, PortableServer::POAManager_var& poa_manager) {

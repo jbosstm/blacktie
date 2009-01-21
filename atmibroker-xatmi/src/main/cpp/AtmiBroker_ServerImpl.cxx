@@ -162,12 +162,8 @@ void AtmiBroker_ServerImpl::unadvertise() {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "unadvertised %s", serverName);
 }
 
-void AtmiBroker_ServerImpl::advertisedService(char * serviceName) {
-	advertisedServices.push_back(serviceName);
-}
-
 bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPSVCINFO *)) {
-	if (!serviceName || strcmp(serviceName, "") == 0) {
+	if (!serviceName || strlen(serviceName) == 0) {
 		tperrno = TPEINVAL;
 		return false;
 	}
@@ -176,6 +172,7 @@ bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPS
 	for (unsigned int i = 0; i < serverInfo.serviceNames.size(); i++) {
 		if (strncmp(serverInfo.serviceNames[i].c_str(), serviceName, XATMI_SERVICE_NAME_LENGTH) == 0) {
 			found = true;
+			break;
 		}
 	}
 	if (!found) {
@@ -230,7 +227,8 @@ bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPS
 		create_service_factory(tmp_factory_servant, aFactoryPoaPtr, serviceName, func);
 		// create reference for Service Manager
 		create_service_manager(tmp_manager_servant, aManagerPoaPtr, serviceName);
-		advertisedService(serviceName);
+		advertisedServices.push_back(serviceName);
+		userlog(Level::getInfo(), loggerAtmiBroker_ServerImpl, (char*) "advertised service %s", serviceName);
 		toReturn = true;
 	}
 	return toReturn;
@@ -240,11 +238,10 @@ bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPS
 void AtmiBroker_ServerImpl::unadvertiseService(char * serviceName) {
 	for (std::vector<char*>::iterator i = advertisedServices.begin(); i != advertisedServices.end(); i++) {
 		if (strcmp(serviceName, (*i)) == 0) {
-			userlog(Level::getInfo(), loggerAtmiBroker_ServerImpl, (char*) "unadvertiseService(): %s", serviceName);
-
 			remove_service_factory(serviceName);
 			remove_service_manager(serviceName);
 			advertisedServices.erase(i);
+			userlog(Level::getInfo(), loggerAtmiBroker_ServerImpl, (char*) "unadvertised service %s", serviceName);
 			break;
 		}
 	}

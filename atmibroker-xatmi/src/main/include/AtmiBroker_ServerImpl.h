@@ -130,9 +130,6 @@ public:
 	bool isAdvertised(char * serviceName);
 
 protected:
-
-	void advertisedService(char * serviceName);
-
 	char * serverName;
 	int logLevel;
 	std::vector<AtmiBroker::ClientInfo_var> clientInfoVector;

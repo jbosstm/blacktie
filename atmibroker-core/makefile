@@ -1,5 +1,5 @@
 all:
-	echo mvn install
+	ant test-compile
 	
 clean:
 	echo mvn process-test-resources
