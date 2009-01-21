@@ -28,8 +28,7 @@
 #include <tao/PortableServer/PortableServerC.h>
 #endif
 
-extern ATMIBROKER_CORE_DLL void initOrb(char* name, Worker*& worker, CORBA::ORB_ptr& orbRef);
-extern ATMIBROKER_CORE_DLL void getNamingServiceAndContext(CORBA::ORB_ptr& orbRef, CosNaming::NamingContextExt_var& default_ctx, CosNaming::NamingContext_var& name_ctx);
+extern ATMIBROKER_CORE_DLL void initOrb(char* name, Worker*& worker, CORBA::ORB_ptr& orbRef, CosNaming::NamingContextExt_var& default_ctx, CosNaming::NamingContext_var& name_ctx);
 extern ATMIBROKER_CORE_DLL void getRootPOAAndManager(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, PortableServer::POAManager_var& poa_manager);
 extern ATMIBROKER_CORE_DLL void shutdownBindings(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, PortableServer::POAManager_var& poa_manager, CosNaming::NamingContextExt_var& ctx, CosNaming::NamingContext_var& nameCtx, PortableServer::POA_var& innerPoa, Worker* worker);
 

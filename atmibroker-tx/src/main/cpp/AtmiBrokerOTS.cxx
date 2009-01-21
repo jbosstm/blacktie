@@ -64,8 +64,7 @@ AtmiBrokerOTS::AtmiBrokerOTS() {
 	nextControlId = 1;
 	currentImpl = NULL;
 	tx_current = NULL;
-	initOrb((char*) "ots", ots_worker, ots_orb);
-	getNamingServiceAndContext(ots_orb, ots_namingContextExt, ots_namingContext);
+	initOrb((char*) "ots", ots_worker, ots_orb, ots_namingContextExt, ots_namingContext);
 }
 
 AtmiBrokerOTS::~AtmiBrokerOTS() {

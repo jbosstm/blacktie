@@ -111,10 +111,9 @@ int serverinit(int argc, char ** argv) {
 		}
 
 		try {
-			initOrb((char*) "server", server_worker, server_orb);
+			initOrb((char*) "server", server_worker, server_orb, server_default_context, server_name_context);
 			AtmiBrokerMem::get_instance();
 			getRootPOAAndManager(server_orb, server_root_poa, server_root_poa_manager);
-			getNamingServiceAndContext(server_orb, server_default_context, server_name_context);
 			createServerPOA();
 
 			AtmiBrokerOTS::get_instance()->getTransactionCurrent();
@@ -142,7 +141,7 @@ int serverinit(int argc, char ** argv) {
 			AtmiBrokerMem::get_instance()->freeAllMemory();
 			AtmiBrokerServiceFacMgr::discard_instance();
 			//TODO READD AtmiBrokerNotify::discard_instance();
-			//			AtmiBrokerOTS::discard_instance();
+			AtmiBrokerOTS::discard_instance();
 			AtmiBrokerEnv::discard_instance();
 			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverinit deleted services");
 
@@ -182,7 +181,7 @@ int serverdone() {
 			AtmiBrokerMem::get_instance()->freeAllMemory();
 			AtmiBrokerServiceFacMgr::discard_instance();
 			//TODO READD AtmiBrokerNotify::discard_instance();
-			//			AtmiBrokerOTS::discard_instance();
+			AtmiBrokerOTS::discard_instance();
 			AtmiBrokerEnv::discard_instance();
 			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone deleted services");
 

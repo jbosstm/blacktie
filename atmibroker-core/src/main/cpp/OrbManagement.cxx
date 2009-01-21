@@ -25,7 +25,7 @@ using namespace log4cxx;
 using namespace log4cxx::helpers;
 LoggerPtr loggerOrbManagement(Logger::getLogger("OrbManagment"));
 
-void initOrb(char* name, Worker*& worker, CORBA::ORB_ptr& orbRef) {
+void initOrb(char* name, Worker*& worker, CORBA::ORB_ptr& orbRef, CosNaming::NamingContextExt_var& default_ctx, CosNaming::NamingContext_var& name_ctx) {
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "initOrb");
 
 	if (CORBA::is_nil(orbRef)) {
@@ -45,6 +45,44 @@ void initOrb(char* name, Worker*& worker, CORBA::ORB_ptr& orbRef) {
 		}
 
 		orbRef = CORBA::ORB_init(i, vals, name);
+
+		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext");
+		if (CORBA::is_nil(default_ctx)) {
+			LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext getting Naming Service Ext ");
+			CORBA::Object_var tmp_ref = orbRef->resolve_initial_references("NameService");
+			LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext got orbRef->resolve_initial_references, tmp_ref = %p" << (void*) tmp_ref);
+			default_ctx = CosNaming::NamingContextExt::_narrow(tmp_ref);
+			LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext narrowed tmp_ref, default_context =  %p" << (void*) default_ctx);
+			LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext got Naming Service Ext ");
+		} else {
+			LOG4CXX_ERROR(loggerOrbManagement, (char*) "getNamingServiceAndContext already got Naming Service Ext  ");
+		}
+
+		if (CORBA::is_nil(name_ctx)) {
+			LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext getting Naming Service Instance  ");
+
+			LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext company is  %s" << company);
+
+			CosNaming::Name_var name;
+			try {
+				CORBA::Object_var tmp_ref = default_ctx->resolve_str(company);
+				name_ctx = CosNaming::NamingContext::_narrow(tmp_ref);
+				LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext found company naming context");
+			} catch (const CosNaming::NamingContext::NotFound&) {
+				try {
+					name = default_ctx->to_name(company);
+					name_ctx = default_ctx->bind_new_context(name);
+					LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext created company naming context");
+				} catch (const CosNaming::NamingContext::AlreadyBound&) {
+					name_ctx = default_ctx->new_context();
+					default_ctx->rebind_context(name, name_ctx.in());
+					LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext re-created company naming context");
+				}
+			}
+			LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext got Naming Service Instance  ");
+		} else {
+			LOG4CXX_ERROR(loggerOrbManagement, (char*) "getNamingServiceAndContext already got Naming Service Instance  ");
+		}
 
 		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "initOrb inited ORB %p ");
 		worker = new Worker(orbRef);
@@ -89,73 +127,30 @@ void shutdownBindings(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, Port
 	}
 
 	if (innerPoa) {
-//		delete innerPoa;
+		//		delete innerPoa;
 		innerPoa = NULL;
 	}
 	if (ctx) {
-//		delete ctx;
+		//		delete ctx;
 		ctx = NULL;
 	}
 	if (nameCtx) {
-//		delete nameCtx;
+		//		delete nameCtx;
 		nameCtx = NULL;
 	}
 	if (poa_manager) {
-//		delete poa_manager;
+		//		delete poa_manager;
 		poa_manager = NULL;
 	}
 	if (poa) {
-//		delete poa;
+		//		delete poa;
 		poa = NULL;
 	}
 	if (orbRef) {
-//		delete orbRef;
+		//		delete orbRef;
 		orbRef = NULL;
 	}
 	LOG4CXX_INFO(loggerOrbManagement, (char*) "Closed Bindings");
-}
-
-void getNamingServiceAndContext(CORBA::ORB_ptr& orbRef, CosNaming::NamingContextExt_var& default_ctx, CosNaming::NamingContext_var& name_ctx) {
-	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext");
-
-	CORBA::Object_var tmp_ref;
-
-	if (CORBA::is_nil(default_ctx)) {
-		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext getting Naming Service Ext ");
-		tmp_ref = orbRef->resolve_initial_references("NameService");
-		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext got orbRef->resolve_initial_references, tmp_ref = %p" << (void*) tmp_ref);
-		default_ctx = CosNaming::NamingContextExt::_narrow(tmp_ref);
-		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext narrowed tmp_ref, default_context =  %p" << (void*) default_ctx);
-		//assert(!CORBA::is_nil(default_ctx));
-		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext got Naming Service Ext ");
-	} else
-	LOG4CXX_ERROR(loggerOrbManagement, (char*) "getNamingServiceAndContext already got Naming Service Ext  ");
-
-	if (CORBA::is_nil(name_ctx)) {
-		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext getting Naming Service Instance  ");
-
-		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext company is  %s" << company);
-
-		CosNaming::Name_var name;
-		try {
-			tmp_ref = default_ctx->resolve_str(company);
-			name_ctx = CosNaming::NamingContext::_narrow(tmp_ref);
-			LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext found company naming context");
-		} catch (const CosNaming::NamingContext::NotFound&) {
-			try {
-				name = default_ctx->to_name(company);
-				name_ctx = default_ctx->bind_new_context(name);
-				LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext created company naming context");
-			} catch (const CosNaming::NamingContext::AlreadyBound&) {
-				name_ctx = default_ctx->new_context();
-				default_ctx->rebind_context(name, name_ctx.in());
-				LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext re-created company naming context");
-			}
-		}
-		//assert(!CORBA::is_nil(name_ctx));
-		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext got Naming Service Instance  ");
-	} else
-	LOG4CXX_ERROR(loggerOrbManagement, (char*) "getNamingServiceAndContext already got Naming Service Instance  ");
 }
 
 void getRootPOAAndManager(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, PortableServer::POAManager_var& poa_manager) {
@@ -175,7 +170,6 @@ void getRootPOAAndManager(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, 
 	if (CORBA::is_nil(poa_manager)) {
 		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getRootPOAAndManager getting the root POA manager");
 		poa_manager = poa->the_POAManager();
-		//assert(!CORBA::is_nil(poa_manager));
 		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getRootPOAAndManager got the root POA manager: " << (void*) poa_manager);
 	} else {
 		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getRootPOAAndManager already resolved the root POA manager: " << (void*) poa_manager);

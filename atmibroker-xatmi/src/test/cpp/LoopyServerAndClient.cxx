@@ -38,7 +38,7 @@ void LoopyServerAndClient::testLoopy() {
 	int argc = 0;
 	char** argv = NULL;
 
-	for (int i = 0; i < 50; i++) {
+	for (int i = 0; i < 3; i++) {
 		result = serverinit(argc, argv);
 		CPPUNIT_ASSERT(result != -1);
 		CPPUNIT_ASSERT(tperrno == 0);
