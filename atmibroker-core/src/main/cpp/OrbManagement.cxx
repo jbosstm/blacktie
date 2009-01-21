@@ -35,16 +35,17 @@ void initOrb(char* name, Worker*& worker, CORBA::ORB_ptr& orbRef, CosNaming::Nam
 		char * cstr, *p;
 		cstr = new char[values.size() + 1];
 		strcpy(cstr, values.c_str());
-		char** vals = new char*[values.size()];
+		char** vals = (char**) malloc(sizeof(char) * values.size() * 2);
 		p = strtok(cstr, " ");
-		int i = 1;
+		int i = 0;
 		while (p != NULL) {
-			vals[i] = p;
+			vals[i] = strdup(p);
 			p = strtok(NULL, " ");
 			i++;
 		}
 
 		orbRef = CORBA::ORB_init(i, vals, name);
+		free(vals);
 
 		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext");
 		if (CORBA::is_nil(default_ctx)) {

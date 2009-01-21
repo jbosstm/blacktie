@@ -24,6 +24,7 @@
 class LoopyServerAndClient: public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE( LoopyServerAndClient);
 	CPPUNIT_TEST( testLoopyAll);
+	CPPUNIT_TEST( testLoopyAll2);
 	CPPUNIT_TEST( testLoopyAdvertise);
 CPPUNIT_TEST_SUITE_END();
 
@@ -31,6 +32,7 @@ public:
 void setUp();
 void tearDown();
 void testLoopyAll();
+void testLoopyAll2();
 void testLoopyAdvertise();
 };
 
