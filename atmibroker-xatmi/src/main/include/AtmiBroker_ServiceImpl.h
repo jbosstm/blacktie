@@ -71,7 +71,7 @@ public:
 
 	// IDL operations
 	//
-	virtual void send_data(CORBA::Boolean inConversation, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent, CosTransactions::Control_ptr control) throw (CORBA::SystemException );
+	virtual void send_data(CORBA::Boolean inConversation, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent) throw (CORBA::SystemException );
 
 	// IDL attributes
 	//
@@ -102,7 +102,7 @@ protected:
 	CosTransactions::PropagationContext_var tx_propagation_context;
 	CosTransactions::otid_t otid;
 
-	void createConnectionTransactionAssociation(CosTransactions::Control_ptr control);
+	void createConnectionTransactionAssociation();
 	void endConnectionTransactionAssociation();
 
 	CORBA::String_var m_serviceName;

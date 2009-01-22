@@ -7,6 +7,7 @@ configuration.type=shared
 toolchain.compiler=
 JAVA_HOME=
 PLATFORM=
+EXPAT_LIB_DIR=
 #only required if toolchain.compiler=msvc
 #EXPAT_ROOT=
 #CPPUNIT_ROOT=

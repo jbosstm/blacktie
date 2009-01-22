@@ -87,7 +87,7 @@ AtmiBroker_ServiceImpl::~AtmiBroker_ServiceImpl() {
 
 // service_request_async() -- Implements IDL operation "AtmiBroker::Service::send_data".
 //
-void AtmiBroker_ServiceImpl::send_data(CORBA::Boolean inConversation, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent, CosTransactions::Control_ptr control) throw (CORBA::SystemException ) {
+void AtmiBroker_ServiceImpl::send_data(CORBA::Boolean inConversation, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent) throw (CORBA::SystemException ) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_async()");
 
 	AtmiBroker::ClientInfo client_info;
@@ -116,9 +116,7 @@ void AtmiBroker_ServiceImpl::send_data(CORBA::Boolean inConversation, const Atmi
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_explicit()    ilen = %d", ilen);
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_explicit()    flags = %d", flags);
 
-	if (!CORBA::is_nil(control)) {
-		createConnectionTransactionAssociation(control);
-	}
+	createConnectionTransactionAssociation();
 
 	memset(&tpsvcinfo, '\0', sizeof(tpsvcinfo));
 	strcpy(tpsvcinfo.name, m_serviceName);
@@ -128,11 +126,10 @@ void AtmiBroker_ServiceImpl::send_data(CORBA::Boolean inConversation, const Atmi
 	tpsvcinfo.len = ilen;
 
 	if (!inConversation) {
-		setSpecific(1, this);
+		setSpecific(SVC_KEY, this);
 		m_func(&tpsvcinfo);
-		destroySpecific(1);
+		destroySpecific(SVC_KEY);
 	}
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_async(): returning.");
 }
 
 // serviceName() -- Accessor for IDL attribute "AtmiBroker::Service::serviceName".
@@ -227,8 +224,30 @@ void AtmiBroker_ServiceImpl::setClientId(long aClientId) {
 	clientId = aClientId;
 }
 
-void AtmiBroker_ServiceImpl::createConnectionTransactionAssociation(CosTransactions::Control_ptr control) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "createConnectionTransactionAssociation %p", control);
+void AtmiBroker_ServiceImpl::createConnectionTransactionAssociation() {
+	try {
+		CosTransactions::Control_ptr control = (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
+
+		if (CORBA::is_nil(control)) {
+			userlog(Level::getError(), loggerAtmiBroker_ServiceImpl, (char*) "NO  TRANSACTION associated with this call");
+			return;
+		}
+
+		tx_control = CosTransactions::Control::_duplicate(control);
+		tx_coordinator = tx_control->get_coordinator();
+		tx_propagation_context = tx_coordinator->get_txcontext();
+		otid = tx_propagation_context->current.otid;
+		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "Transaction Id: %p", (void*) &otid);
+
+		//		if (!CORBA::is_nil(AtmiBrokerOTS::get_instance()->getXaCurrentConnection()))
+		{
+			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "associating current connection with this transaction ");
+			//TODO xa_current_connection->start(tx_coordinator, otid);
+			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "NOT associating current connection with this transaction until hooked in with Oracle ");
+		}
+	} catch (CORBA::SystemException &e) {
+		userlog(Level::getError(), loggerAtmiBroker_ServiceImpl, (char*) "could not connect transaction %s", (void*) e._name());
+	}
 
 	//	// TODO
 	//	try {

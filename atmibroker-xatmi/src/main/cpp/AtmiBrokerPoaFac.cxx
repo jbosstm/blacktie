@@ -29,6 +29,7 @@
 #include <string.h>
 #include <iostream>
 
+#include "TxPolicyS.h"
 #include "AtmiBrokerOTS.h"
 #include "AtmiBrokerPoaFac.h"
 
@@ -37,6 +38,21 @@
 using namespace log4cxx;
 using namespace log4cxx::helpers;
 LoggerPtr loggerAtmiBrokerPoaFac(Logger::getLogger("AtmiBrokerPoaFac"));
+
+// install transaction policy on this POA
+int add_transaction_policy(CORBA::ORB_var& orb, CORBA::PolicyList& policies, PortableServer::POA_ptr poa, int index, int maxindex)
+{
+	if (maxindex - index < 1)
+		return 0;
+
+	//policies[index++] = poa->create_request_processing_policy(PortableServer::USE_SERVANT_MANAGER);
+	CORBA::Any any;
+	any <<= AtmiTx::ADAPTS;
+
+	policies[index++] = orb->create_policy(AtmiTx::OTS_POLICY_TYPE, any);
+
+	return 2;
+}
 
 AtmiBrokerPoaFac::AtmiBrokerPoaFac() {
 	// Intentionally empty.
@@ -49,17 +65,20 @@ AtmiBrokerPoaFac::~AtmiBrokerPoaFac() {
 
 // createCallbackPoa() -- Create a POA using a ServantActivator.
 //
-PortableServer::POA_ptr AtmiBrokerPoaFac::createCallbackPoa(const char* poa_name, PortableServer::POA_ptr parent_poa, PortableServer::POAManager_ptr poa_manager) {
+PortableServer::POA_ptr AtmiBrokerPoaFac::createCallbackPoa(CORBA::ORB_var orb, const char* poa_name, PortableServer::POA_ptr parent_poa, PortableServer::POAManager_ptr poa_manager) {
 	// Create a policy list. Policies not set in the list get default values.
 	//
 	CORBA::PolicyList policies;
-	policies.length(0);
+	policies.length(1);
 //	int i = 0;
 
 	// Make the POA single threaded.
 	//
 //	policies[i++] = parent_poa->create_thread_policy(PortableServer::ORB_CTRL_MODEL);
 //	policies[i++] = parent_poa->create_thread_policy(PortableServer::SINGLE_THREAD_MODEL);
+//
+	// install transaction policy
+	add_transaction_policy(orb, policies, parent_poa, 0, 1);
 
 	//assert(i==1);
 
@@ -131,11 +150,11 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createServiceManagerPoa(const char* po
 
 // createServicePoa()
 //
-PortableServer::POA_ptr AtmiBrokerPoaFac::createServicePoa(const char* poa_name, PortableServer::POA_ptr parent_poa, PortableServer::POAManager_ptr poa_manager) {
+PortableServer::POA_ptr AtmiBrokerPoaFac::createServicePoa(CORBA::ORB_var orb, const char* poa_name, PortableServer::POA_ptr parent_poa, PortableServer::POAManager_ptr poa_manager) {
 	// Create a policy list. Policies not set in the list get default values.
 	//
 	CORBA::PolicyList policies;
-	policies.length(2);
+	policies.length(3);
 	int i = 0;
 
 	// Make the POA single threaded.
@@ -146,6 +165,8 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createServicePoa(const char* poa_name,
 	//
 	policies[i++] = AtmiBrokerOTS::getTransactionPolicy();
 
+	// install transaction policy
+	add_transaction_policy(orb, policies, parent_poa, i, 3);
 	//    assert(i==2);
 
 	try {
@@ -159,7 +180,7 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createServicePoa(const char* poa_name,
 
 // createServerPoa()
 //
-PortableServer::POA_ptr AtmiBrokerPoaFac::createServerPoa(const char* poa_name, PortableServer::POA_ptr parent_poa, PortableServer::POAManager_ptr poa_manager) {
+PortableServer::POA_ptr AtmiBrokerPoaFac::createServerPoa(CORBA::ORB_var orb, const char* poa_name, PortableServer::POA_ptr parent_poa, PortableServer::POAManager_ptr poa_manager) {
 	// Create a policy list. Policies not set in the list get default values.
 	//
 	CORBA::PolicyList policies;
@@ -173,6 +194,9 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createServerPoa(const char* poa_name, 
 	// Create User Id
 	//
 	policies[i++] = parent_poa->create_id_assignment_policy(PortableServer::USER_ID);
+
+	// install transaction policy
+	//add_transaction_policy(orb, policies, parent_poa, i, 3);
 
 	//try {
 	return parent_poa->create_POA(poa_name, poa_manager, policies);

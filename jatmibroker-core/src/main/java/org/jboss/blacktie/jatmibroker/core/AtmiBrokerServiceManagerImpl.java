@@ -71,10 +71,10 @@ public class AtmiBrokerServiceManagerImpl implements BTServiceManagerAdministrat
 		return serviceManager.serviceName();
 	}
 
-	public void send_data(String ior, boolean inConversation, byte[] idata, int ilen, int flags, int revent, Control control) throws JAtmiBrokerException {
+	public void send_data(String ior, boolean inConversation, byte[] idata, int ilen, int flags, int revent) throws JAtmiBrokerException {
 		log.debug("ServiceManagerProxy's service_request_async ior: " + ior + " idata: " + idata + " ilen: " + ilen + " inConversation: " + inConversation + " flags: " + flags);
 
-		serviceManager.send_data(ior, inConversation, idata, ilen, flags, revent, control);
+		serviceManager.send_data(ior, inConversation, idata, ilen, flags, revent);
 	}
 
 	public void close() {

@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2008, Red Hat Middleware LLC, and others contributors as indicated
+ * Copyright 2009, Red Hat Middleware LLC, and others contributors as indicated
  * by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -15,18 +15,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-/*
- * BREAKTHRUIT PROPRIETARY - NOT TO BE DISCLOSED OUTSIDE BREAKTHRUIT, LLC.
- */
-// copyright 2006, 2008 BreakThruIT
-package org.jboss.blacktie.jatmibroker.core.proxy;
+#ifndef TX_INITIALIZER_H
+#define TX_INITIALIZER_H
 
-import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
-import org.omg.CosTransactions.Control;
+#include "atmiBrokerTxMacro.h"
 
-public interface AtmiBrokerServiceManager {
+#include "tao/PortableInterceptorC.h"
+#include "tao/PI/PI.h"
 
-	void send_data(String ior, boolean inConversation, byte[] idata, int ilen, int flags, int revent) throws JAtmiBrokerException;
-
-	public void close();
+extern "C" {
+#include "xatmi.h"
 }
+
+extern ATMIBROKER_DLL void register_tx_interceptors(CORBA::ORB_ptr& orbPtr);
+
+class ATMIBROKER_TX_DLL TxInitializer : public virtual PortableInterceptor::ORBInitializer
+{
+public:
+    TxInitializer();
+    virtual void pre_init (PortableInterceptor::ORBInitInfo_ptr info);
+    virtual void post_init (PortableInterceptor::ORBInitInfo_ptr info);
+};
+#endif

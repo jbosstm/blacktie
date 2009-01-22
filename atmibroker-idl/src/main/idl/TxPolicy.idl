@@ -15,18 +15,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-/*
- * BREAKTHRUIT PROPRIETARY - NOT TO BE DISCLOSED OUTSIDE BREAKTHRUIT, LLC.
- */
-// copyright 2006, 2008 BreakThruIT
-package org.jboss.blacktie.jatmibroker.core.proxy;
+#ifndef TXPOLICY_IDL
+#define TXPOLICY_IDL
 
-import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
-import org.omg.CosTransactions.Control;
+#include "tao/Policy.pidl"
+#include "tao/IOP.pidl"
 
-public interface AtmiBrokerServiceManager {
+module AtmiTx
+{
+        const CORBA::PolicyType OTS_POLICY_TYPE = 9056;
+        const IOP::ComponentId TAG_OTS_POLICY= 9031;
 
-	void send_data(String ior, boolean inConversation, byte[] idata, int ilen, int flags, int revent) throws JAtmiBrokerException;
+        typedef unsigned short OTSPolicyValue;
 
-	public void close();
-}
+        const OTSPolicyValue REQUIRES = 1;
+        const OTSPolicyValue FORBIDS = 2;
+        const OTSPolicyValue ADAPTS = 3;
+
+        local interface OTSPolicy : CORBA::Policy {
+                readonly attribute OTSPolicyValue tpv;
+        };
+};
+#endif //TXPOLICY_IDL

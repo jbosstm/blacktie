@@ -27,6 +27,9 @@
 #include "LocalResourceManagerCache.h"
 #endif
 
+#include "ThreadLocalStorage.h"
+
+#include "TxInitializer.h"
 #include "OrbManagement.h"
 #include "AtmiBrokerOTS.h"
 #include "AtmiBrokerEnvXml.h"
@@ -64,7 +67,9 @@ AtmiBrokerOTS::AtmiBrokerOTS() {
 	nextControlId = 1;
 	currentImpl = NULL;
 	tx_current = NULL;
-	initOrb((char*) "ots", ots_worker, ots_orb, ots_namingContextExt, ots_namingContext);
+	// if we use the name ots then we end up with two different orbs in the client and this breaks things
+	//XXXAtmiBrokerOTS::init_orb((char*) "ots", ots_worker, ots_orb, ots_namingContextExt, ots_namingContext);
+	AtmiBrokerOTS::init_orb((char*) "client", ots_worker, ots_orb, ots_namingContextExt, ots_namingContext);
 	//	createTransactionPolicy();
 }
 
@@ -87,6 +92,13 @@ AtmiBrokerOTS::~AtmiBrokerOTS() {
 	 if (xaCloseString)
 	 //free (xaCloseString);
 	 */
+}
+
+void  AtmiBrokerOTS::init_orb(
+        char* name, Worker*& worker, CORBA::ORB_ptr& orbRef,
+        CosNaming::NamingContextExt_var& default_ctx, CosNaming::NamingContext_var& name_ctx) {
+       	register_tx_interceptors(orbRef);
+       	initOrb(name, worker, orbRef, default_ctx, name_ctx);
 }
 
 int AtmiBrokerOTS::tx_open(void) {
@@ -117,58 +129,80 @@ int AtmiBrokerOTS::tx_open(void) {
 }
 
 int AtmiBrokerOTS::tx_begin(void) {
-	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "tx_begin ");
 
-	if (!CORBA::is_nil(tx_current)) {
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "calling begin ");
+	if (CORBA::is_nil(tx_current) || getSpecific(TSS_KEY)) {
+		// either tx_open hasn't been called or already in a transaction
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "tx_begin: protocol violation");
+		return TX_PROTOCOL_ERROR;
+	}
+
+	try {
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "tx_begin");
 		tx_current->begin();
+		setSpecific(TSS_KEY, tx_current->get_control());
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "called begin ");
 		return TX_OK;
-	} else {
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getError(), (char*) "NOT calling begin, tx_current is NULL  ");
-		return -1;
+	} catch (...) {
+		// TODO placeholder return the correct error code
+		return TX_ERROR;
 	}
+
 }
 
 int AtmiBrokerOTS::tx_commit(void) {
-	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "tx_commit ");
+	if (CORBA::is_nil(tx_current) || getSpecific(TSS_KEY) == NULL) {
+		// either tx_open hasn't been called or not in a transaction
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "tx_commit: protocol violation");
+		return TX_PROTOCOL_ERROR;
+	}
 
-	if (!CORBA::is_nil(tx_current)) {
-		try {
-			LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "calling commit");
-			tx_current->commit(false);
-			LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "called commit");
-			return TX_OK;
-		} catch (CORBA::TRANSACTION_ROLLEDBACK & aRef) {
-			LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getError(), (char*) "transaction has been rolled back " << (void*) &aRef);
-			return -1;
-		}
-	} else {
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getError(), (char*) "NOT calling commit, tx_current is NULL  ");
-		return -1;
+	try {
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "calling commit");
+		tx_current->commit(false);
+		// if we get an exception leave the tx associated - // TODO is the correct semantics
+		destroySpecific(TSS_KEY);
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "called commit");
+		return TX_OK;
+	} catch (CORBA::TRANSACTION_ROLLEDBACK & aRef) {
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getError(), (char*) "transaction has been rolled back " << (void*) &aRef);
+		return -1;	// should be TX_ROLLBACK ... and all the other outcomes
+	} catch (...) {
+		// TODO placeholder return the correct error code
+		return TX_ERROR;
 	}
 }
 
 int AtmiBrokerOTS::tx_rollback(void) {
-	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "tx_rollback ");
+	if (CORBA::is_nil(tx_current) || getSpecific(TSS_KEY) == NULL) {
+		// either tx_open hasn't been called or not in a transaction
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "tx_rollback: protocol violation");
+		return TX_PROTOCOL_ERROR;
+	}
 
-	if (!CORBA::is_nil(tx_current)) {
+	try {
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "calling rollback ");
 		tx_current->rollback();
+		destroySpecific(TSS_KEY);
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "called rollback ");
+
 		return TX_OK;
-	} else {
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getError(), (char*) "NOT calling rollback, tx_current is NULL  ");
-		return -1;
+	} catch (...) {
+		// TODO placeholder return the correct error code
+		return TX_ERROR;
 	}
 }
 
-int AtmiBrokerOTS::suspend(long tranid) {
+int AtmiBrokerOTS::suspend(long& tranid) {
 	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "suspend ");
 
-	if (!CORBA::is_nil(tx_current)) {
+	if (CORBA::is_nil(tx_current) || getSpecific(TSS_KEY) == NULL) {
+		// either tx_open hasn't been called or not in a transaction
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "suspend: not in a transaction");
+		return -1;
+	} else {
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "calling suspend ");
 		CosTransactions::Control_var aControl = tx_current->suspend();
+		destroySpecific(TSS_KEY);
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "called suspend and got Control " << (void*) aControl);
 		ControlInfo* aControlInfo = (ControlInfo*) malloc(sizeof(ControlInfo) * 1);
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "created aControlInfo " << (void*) aControlInfo);
@@ -182,9 +216,6 @@ int AtmiBrokerOTS::suspend(long tranid) {
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "added aControlInfo " << (void*) aControlInfo << " with id " << aControlInfo->id << " to vector");
 		tranid = aControlInfo->id;
 		return TX_OK;
-	} else {
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getError(), (char*) "NOT calling suspend, tx_current is NULL  ");
-		return -1;
 	}
 }
 
@@ -194,12 +225,18 @@ int AtmiBrokerOTS::resume(long tranid) {
 	if (!CORBA::is_nil(tx_current)) {
 
 		for (std::vector<ControlInfo*>::iterator it = controlInfoVector.begin(); it != controlInfoVector.end(); it++) {
-			LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "next control id is: " << (char*) (*it)->id);
+			//LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "next control id is: " << (char*) (*it)->id);
 			if ((*it)->id == tranid) {
 				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "found matching id " << (*it)->id);
 
 				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "calling resume with Control " << (void*) (*it)->control);
 				tx_current->resume((*it)->control);
+				if (getSpecific(TSS_KEY)) {
+					LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getWarn(),
+						(char*) "resume: current transaction has not been suspended");
+				}
+
+				setSpecific(TSS_KEY, tx_current->get_control());
 				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "called resume with Control " << (void*) (*it)->control);
 
 				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "removing %p from vector" << (*it));
@@ -215,7 +252,22 @@ int AtmiBrokerOTS::resume(long tranid) {
 	return -1;
 }
 
+CosTransactions::Control_ptr AtmiBrokerOTS::getSuspended(long tranid) {
+	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "tx_get ");
+
+	for (std::vector<ControlInfo*>::iterator it = controlInfoVector.begin(); it != controlInfoVector.end(); it++) 
+		if ((*it)->id == tranid) 
+			return (*it)->control;
+
+	return NULL;
+}
+
 int AtmiBrokerOTS::tx_close(void) {
+	if (getSpecific(TSS_KEY)) {
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getWarn(),
+			(char*) "tx_close: transaction still active");
+	}
+
 	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "tx_close ");
 
 	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "releasing tx_current");

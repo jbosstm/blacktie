@@ -72,7 +72,7 @@ public:
 
 	int tx_rollback(void);
 
-	int suspend(long tranid);
+	int suspend(long& tranid);
 
 	int resume(long tranid);
 
@@ -81,6 +81,7 @@ public:
 	void createXAConnectorAndResourceManager();
 	CurrentImpl * getCurrentImpl();
 	CosTransactions::Current_var& getCurrent();
+	CosTransactions::Control_ptr getSuspended(long tranid);
 	XA::CurrentConnection_var& getXaCurrentConnection();
 	XA::ResourceManager_var& getXaResourceManager();
 	XA::Connector_var& getXaConnector();
@@ -91,6 +92,7 @@ public:
 	static AtmiBrokerOTS* get_instance();
 	static void discard_instance();
 
+	static void  init_orb(char*, Worker*&, CORBA::ORB_ptr&, CosNaming::NamingContextExt_var&, CosNaming::NamingContext_var&);
 	void setCorbaObjects(CORBA::ORB_var orb, CosNaming::NamingContextExt_var namingContextExt, CosNaming::NamingContext_var namingContext);
 	CORBA::ORB_ptr& getOrb();
 	CosNaming::NamingContextExt_ptr& getNamingContextExt();

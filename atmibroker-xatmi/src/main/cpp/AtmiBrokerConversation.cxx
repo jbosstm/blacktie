@@ -41,6 +41,7 @@
 #include <stdarg.h>
 #include <iostream>
 
+#include "ThreadLocalStorage.h"
 #include "AtmiBrokerBuffers.h"
 #include "AtmiBrokerServiceRetrieve.h"
 #include "AtmiBrokerOTS.h"
@@ -178,19 +179,16 @@ int AtmiBrokerConversation::send(AtmiBroker::Service_var aCorbaService, char* id
 	} else {
 		userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "type of memory: '%s'  subtype: '%s'", type, subtype);
 		try {
-			CosTransactions::Control_ptr aControlPtr = CosTransactions::Control::_nil();
-			if (TPNOTRAN & flags) {
-				CurrentImpl* currentImpl = AtmiBrokerOTS::get_instance()->getCurrentImpl();
-				if (currentImpl != NULL) {
-					aControlPtr = currentImpl->get_control();
-				}
+			if (~TPNOTRAN & flags) {
+				// don't run the call in a transaction
+				destroySpecific(TSS_KEY);
 			}
 
 			CORBA::Long a_ilen = ilen;
 			// TODO TYPED BUFFER (AtmiBroker::TypedBuffer&) *idata for a_idata
 			AtmiBroker::octetSeq * a_idata = new AtmiBroker::octetSeq(a_ilen, a_ilen, (unsigned char *) idata, true);
 			// TODO NOTIFY SERVER OF POSSIBLE CONDITIONS
-			aCorbaService->send_data(conversation, *a_idata, a_ilen, flags, 0, aControlPtr);
+			aCorbaService->send_data(conversation, *a_idata, a_ilen, flags, 0);
 		} catch (const CORBA::SystemException &ex) {
 			userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "aCorbaService->send_data(): call failed. %s", ex._name());
 			tperrno = TPESYSTEM;

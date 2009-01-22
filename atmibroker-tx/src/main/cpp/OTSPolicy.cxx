@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2008, Red Hat Middleware LLC, and others contributors as indicated
+ * Copyright 2009, Red Hat Middleware LLC, and others contributors as indicated
  * by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -15,18 +15,37 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-/*
- * BREAKTHRUIT PROPRIETARY - NOT TO BE DISCLOSED OUTSIDE BREAKTHRUIT, LLC.
- */
-// copyright 2006, 2008 BreakThruIT
-package org.jboss.blacktie.jatmibroker.core.proxy;
+#include "OTSPolicy.h"
 
-import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
-import org.omg.CosTransactions.Control;
+#include "tao/SystemException.h"
+//#include "ace/Log_Msg.h"
 
-public interface AtmiBrokerServiceManager {
+OTSPolicy::OTSPolicy(CORBA::UShort val) : tpv_(val)
+{
+}
 
-	void send_data(String ior, boolean inConversation, byte[] idata, int ilen, int flags, int revent) throws JAtmiBrokerException;
+OTSPolicy::~OTSPolicy(void)
+{
+}
 
-	public void close();
+AtmiTx::OTSPolicyValue OTSPolicy::tpv(void)
+{
+        return this->tpv_;
+}
+
+CORBA::PolicyType OTSPolicy::policy_type(void)
+{
+        return AtmiTx::OTS_POLICY_TYPE;
+}
+
+CORBA::Policy_ptr OTSPolicy::copy(void)
+{
+        CORBA::Policy_ptr p;
+        ACE_NEW_THROW_EX(p, OTSPolicy(this->tpv_), CORBA::NO_MEMORY());
+
+        return p;
+}
+
+void OTSPolicy::destroy(void)
+{
 }

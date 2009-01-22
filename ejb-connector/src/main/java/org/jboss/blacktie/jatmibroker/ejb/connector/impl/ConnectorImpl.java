@@ -70,7 +70,7 @@ public class ConnectorImpl implements Connector {
 		org.omg.CORBA.IntHolder olen = new org.omg.CORBA.IntHolder();
 		try {
 			// TODO HANDLE TRANSACTION
-			getProxy().getServiceManagerProxy(svc).send_data(null, false, idata.getData(), idata.getSize(), flags, 0, null);
+			getProxy().getServiceManagerProxy(svc).send_data(null, false, idata.getData(), idata.getSize(), flags, 0);
 			IntHolder event = new IntHolder();
 			getProxy().dequeue_data(odata, olen, flags, event);
 		} catch (JAtmiBrokerException e) {

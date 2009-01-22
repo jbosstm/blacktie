@@ -26,6 +26,7 @@
 #include <stdarg.h>
 #include <iostream>
 
+#include "ThreadLocalStorage.h"
 #include "xatmi.h"
 #include "AtmiBroker.h"
 #include "AtmiBrokerConversation.h"
@@ -40,8 +41,6 @@ extern "C" {
 using namespace log4cxx;
 using namespace log4cxx::helpers;
 LoggerPtr loggerAtmiBrokerConversationc(Logger::getLogger("AtmiBrokerConversationc"));
-
-extern void* getSpecific(int key);
 
 int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen, long flags) {
 	if (clientinit() != -1)
@@ -65,7 +64,7 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 }
 
 int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
-	AtmiBroker_ServiceImpl* thread = (AtmiBroker_ServiceImpl*) getSpecific(1);
+	AtmiBroker_ServiceImpl* thread = (AtmiBroker_ServiceImpl*) getSpecific(SVC_KEY);
 	if (thread == NULL)
 		if (clientinit() != -1)
 			return AtmiBrokerConversation::get_instance()->tpsend(id, idata, ilen, flags, revent);
@@ -76,7 +75,7 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 }
 
 int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
-	AtmiBroker_ServiceImpl* thread = (AtmiBroker_ServiceImpl*) getSpecific(1);
+	AtmiBroker_ServiceImpl* thread = (AtmiBroker_ServiceImpl*) getSpecific(SVC_KEY);
 	if (thread == NULL)
 		if (clientinit() != -1)
 			return AtmiBrokerConversation::get_instance()->tprecv(id, odata, olen, flags, event);
@@ -109,6 +108,6 @@ int tpgetrply(int *id, char ** odata, long *olen, long flags) {
 
 void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 	// TJJ
-	AtmiBroker_ServiceImpl* thread = (AtmiBroker_ServiceImpl*) getSpecific(1);
+	AtmiBroker_ServiceImpl* thread = (AtmiBroker_ServiceImpl*) getSpecific(SVC_KEY);
 	thread->tpreturn(rval, rcode, data, len, flags);
 }

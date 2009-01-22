@@ -37,7 +37,9 @@ void initOrb(char* name, Worker*& worker, CORBA::ORB_ptr& orbRef, CosNaming::Nam
 		strcpy(cstr, values.c_str());
 		char** vals = (char**) malloc(sizeof(char) * values.size() * 2);
 		p = strtok(cstr, " ");
+		vals[0] = strdup(name);	//TODO check for resource leakage
 		int i = 0;
+
 		while (p != NULL) {
 			vals[i] = strdup(p);
 			p = strtok(NULL, " ");

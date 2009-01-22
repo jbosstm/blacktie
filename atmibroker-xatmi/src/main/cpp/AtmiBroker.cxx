@@ -133,7 +133,8 @@ int clientinit() {
 		}
 
 		try {
-			initOrb((char*) "client", client_worker, client_orb, client_default_context, client_name_context);
+			AtmiBrokerOTS::init_orb(
+				(char*) "client", client_worker, client_orb, client_default_context, client_name_context);
 
 			getRootPOAAndManager(client_orb, client_root_poa, client_root_poa_manager);
 			createClientCallbackPOA();
@@ -144,6 +145,7 @@ int clientinit() {
 
 			clientInitialized = true;
 		} catch (CORBA::Exception &ex) {
+			ex._tao_print_exception("clientinit Unexpected CORBA exception:");
 			userlog(Level::getError(), loggerAtmiBroker, (char*) "clientinit Unexpected CORBA exception: %s", ex._name());
 			tperrno = TPESYSTEM;
 
@@ -220,7 +222,7 @@ void createClientCallbackPOA() {
 		clientPoaFactory = new AtmiBrokerPoaFac();
 		std::string name = ".client";
 		name.insert(0, server);
-		client_poa = clientPoaFactory->createCallbackPoa(name.c_str(), client_root_poa, client_root_poa_manager);
+		client_poa = clientPoaFactory->createCallbackPoa(client_orb, name.c_str(), client_root_poa, client_root_poa_manager);
 		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "createClientCallbackPOA created POA: %p", (void*) client_poa);
 	} else
 		userlog(Level::getError(), loggerAtmiBroker, (char*) "createClientCallbackPOA already created POA: %p", (void*) client_poa);

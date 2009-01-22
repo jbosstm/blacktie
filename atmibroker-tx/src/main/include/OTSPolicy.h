@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2008, Red Hat Middleware LLC, and others contributors as indicated
+ * Copyright 2009, Red Hat Middleware LLC, and others contributors as indicated
  * by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -15,18 +15,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-/*
- * BREAKTHRUIT PROPRIETARY - NOT TO BE DISCLOSED OUTSIDE BREAKTHRUIT, LLC.
+#ifndef OTS_POLICY_H
+#define OTS_POLICY_H
+
+#include "TxPolicyC.h"
+#include "tao/LocalObject.h"
+
+/**
+ * simulate CosTransactions OTSPolicy
  */
-// copyright 2006, 2008 BreakThruIT
-package org.jboss.blacktie.jatmibroker.core.proxy;
+class OTSPolicy :
+        public virtual AtmiTx::OTSPolicy,
+        public virtual ::CORBA::LocalObject
+{
+public:
+        OTSPolicy(CORBA::UShort val);
 
-import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
-import org.omg.CosTransactions.Control;
+        virtual CORBA::UShort tpv(void);
+        virtual CORBA::PolicyType policy_type(void);
+        virtual CORBA::Policy_ptr copy(void);
+        virtual void destroy(void);
 
-public interface AtmiBrokerServiceManager {
+protected:
+~OTSPolicy(void);
 
-	void send_data(String ior, boolean inConversation, byte[] idata, int ilen, int flags, int revent) throws JAtmiBrokerException;
+private:
+        const CORBA::UShort tpv_;
+};
 
-	public void close();
-}
+#endif // OTS_POLICY_H

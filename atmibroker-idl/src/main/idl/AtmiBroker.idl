@@ -166,8 +166,7 @@ module AtmiBroker {
 				  in octetSeq idata,
 				  in long ilen, 
 				  in long flags,
-				  in long revent,
-				  in CosTransactions::Control control_ior);
+				  in long revent);
 
 	};
 
@@ -181,8 +180,7 @@ module AtmiBroker {
 				  in octetSeq idata,
 				  in long ilen,
 				  in long flags,
-				  in long revent,
-				  in CosTransactions::Control control_ior);
+				  in long revent);
 
 	};
 

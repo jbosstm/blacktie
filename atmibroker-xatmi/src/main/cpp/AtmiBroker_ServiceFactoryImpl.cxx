@@ -281,7 +281,7 @@ void AtmiBroker_ServiceFactoryImpl::createPoa() {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "createPoa() ");
 
 	if (CORBA::is_nil(servicePoaPtr))
-		servicePoaPtr = serverPoaFactory->createServicePoa(servicePoaName, factoryPoaPtr, server_root_poa_manager);
+		servicePoaPtr = serverPoaFactory->createServicePoa(server_orb, servicePoaName, factoryPoaPtr, server_root_poa_manager);
 }
 
 void createPoa() {

@@ -172,7 +172,7 @@ AtmiBrokerMem::tprealloc(char * addr, long size) {
 }
 
 void AtmiBrokerMem::tpfree(char* ptr) {
-	AtmiBroker_ServiceImpl *service = (AtmiBroker_ServiceImpl*) getSpecific(1);
+	AtmiBroker_ServiceImpl *service = (AtmiBroker_ServiceImpl*) getSpecific(SVC_KEY);
 	if (service != NULL && service->sameBuffer(ptr)) {
 		return;
 	}
