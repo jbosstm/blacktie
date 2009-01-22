@@ -21,19 +21,18 @@
 // copyright 2006, 2008 BreakThruIT
 package org.jboss.blacktie.jatmibroker.jab;
 
-import java.lang.reflect.Array;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServiceManager;
+import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServiceFactory;
 import org.omg.CORBA.Any;
 import org.omg.CORBA.IntHolder;
+import org.omg.CORBA.StringHolder;
 import org.omg.CosTransactions.Control;
 
 public class JABRemoteService implements Message {
 	private static final Logger log = LogManager.getLogger(JABRemoteService.class);
 	private JABSession jabSession;
-	private AtmiBrokerServiceManager serviceManagerControl;
+	private AtmiBrokerServiceFactory serviceFactory;
 	private String serviceName;
 	private byte[] data;
 	private JABMessage result;
@@ -47,7 +46,7 @@ public class JABRemoteService implements Message {
 		serviceName = aServiceName;
 
 		try {
-			serviceManagerControl = aJABSession.getServerProxy().getServiceManagerProxy(serviceName);
+			serviceFactory = aJABSession.getServerProxy().getServiceFactoryProxy(serviceName);
 		} catch (Exception e) {
 			throw new JABException(e);
 		}
@@ -63,20 +62,15 @@ public class JABRemoteService implements Message {
 			if (aJABTransaction != null) {
 				control = aJABTransaction.getControl();
 			}
-
-			// if (!useData) {
-			// AtmiBroker.TypedBufferHolder odata = new
-			// AtmiBroker.TypedBufferHolder();
-			// retVal =
-			// serviceManagerControl.service_typed_buffer_request_explicit(typedBuffer.getTypedBuffer(),
-			// typedBuffer.size(), odata, olen, flags, control);
-			// result = new JABMessage(odata.value, olen.value);
-			// log.debug("service_request response is " + odata.value);
-			// } else {
-			AtmiBroker.octetSeqHolder odata = new AtmiBroker.octetSeqHolder();
-			serviceManagerControl.send_data(null, false, data, data.length, flags, 0);
+			StringHolder id = new StringHolder();
 			IntHolder event = new IntHolder();
+			AtmiBroker.octetSeqHolder odata = new AtmiBroker.octetSeqHolder();
+
+			jabSession.getServerProxy().getServiceFactoryProxy(serviceName).start_conversation(id);
+			jabSession.getServerProxy().getServiceFactoryProxy(serviceName).send_data(id.value, data, flags);
 			short retVal = jabSession.getServerProxy().dequeue_data(odata, olen, flags, event);
+			jabSession.getServerProxy().getServiceFactoryProxy(serviceName).end_conversation(id.value);
+			
 			data = new byte[olen.value];
 			System.arraycopy(odata.value, 0, data, 0, olen.value);
 			log.debug("service_request response is " + odata.value);

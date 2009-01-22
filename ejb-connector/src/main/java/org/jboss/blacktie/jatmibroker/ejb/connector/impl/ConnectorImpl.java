@@ -13,6 +13,7 @@ import org.jboss.blacktie.jatmibroker.ejb.connector.ConnectorException;
 import org.jboss.blacktie.jatmibroker.ejb.connector.Response;
 import org.jboss.blacktie.jatmibroker.ejb.connector.buffers.Buffer;
 import org.omg.CORBA.IntHolder;
+import org.omg.CORBA.StringHolder;
 
 /**
  * Handles the connector to the server
@@ -66,13 +67,16 @@ public class ConnectorImpl implements Connector {
 
 	public Response tpcall(String svc, Buffer idata, int flags) throws ConnectorException {
 
+		StringHolder id = new StringHolder();
+		IntHolder event = new IntHolder();
 		AtmiBroker.octetSeqHolder odata = new AtmiBroker.octetSeqHolder();
 		org.omg.CORBA.IntHolder olen = new org.omg.CORBA.IntHolder();
 		try {
 			// TODO HANDLE TRANSACTION
-			getProxy().getServiceManagerProxy(svc).send_data(null, false, idata.getData(), idata.getSize(), flags, 0);
-			IntHolder event = new IntHolder();
-			getProxy().dequeue_data(odata, olen, flags, event);
+			getProxy().getServiceFactoryProxy(svc).start_conversation(id);
+			getProxy().getServiceFactoryProxy(svc).send_data(id.value, idata.getData(), flags);
+			short retVal = getProxy().dequeue_data(odata, olen, flags, event);
+			getProxy().getServiceFactoryProxy(svc).end_conversation(id.value);
 		} catch (JAtmiBrokerException e) {
 			throw new ConnectorException(-1, e);
 		}
@@ -106,7 +110,6 @@ public class ConnectorImpl implements Connector {
 		try {
 			AtmiBroker_ServerImpl server = getServer();
 			log.info("Advertising: " + serviceName);
-			server.createAtmiBroker_ServiceManagerImpl(serviceName);
 			server.createAtmiBroker_ServiceFactoryImpl(serviceName, servantCacheSize, service, new AtmiBrokerCallbackConverterImpl());
 			log.info("Advertised: " + serviceName);
 		} catch (Throwable t) {
