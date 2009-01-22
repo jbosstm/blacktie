@@ -227,7 +227,7 @@
 				&compiler-args-msvc;
 			</compiler>
 
-			<fileset dir="${src.main}" includes="**/*.c*" excludes="${src.excludes}" />
+			<fileset dir="${src.main}" includes="**/*.cxx **/*.c **/*.cpp" excludes="${src.excludes}" />
 
 			<defineset define="TAO_COMP" />
 			<defineset define="${export.dll}" if="export.dll" />
@@ -252,7 +252,7 @@
 				&compiler-args-msvc;
 			</compiler>
 
-			<fileset dir="src/test/cpp" includes="**/*.c*" excludes="${test.excludes}" />
+			<fileset dir="src/test/cpp" includes="**/*.cxx **/*.c **/*.cpp" excludes="${test.excludes}" />
 
 
 			<defineset define="TAO_COMP" />
