@@ -110,7 +110,9 @@ int serverinit(int argc, char ** argv) {
 		}
 
 		try {
-			initOrb((char*) "server", server_worker, server_orb, server_default_context, server_name_context);
+			AtmiBrokerOTS::init_orb(
+			    (char*) "server", server_worker, server_orb, server_default_context, server_name_context);
+
 			AtmiBrokerMem::get_instance();
 			getRootPOAAndManager(server_orb, server_root_poa, server_root_poa_manager);
 			createServerPOA();
@@ -232,7 +234,7 @@ void createServerPOA() {
 	if (CORBA::is_nil(server_poa)) {
 		userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "createServerPOA creating POA %s", server);
 		serverPoaFactory = new AtmiBrokerPoaFac();
-		server_poa = serverPoaFactory->createServerPoa(server, server_root_poa, server_root_poa_manager);
+		server_poa = serverPoaFactory->createServerPoa(server_orb, server, server_root_poa, server_root_poa_manager);
 		userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "createServerPOA created Persistent POA: %p", (void*) server_poa);
 	} else
 		userlog(Level::getError(), loggerAtmiBrokerServer, (char*) "createServerPOA already created POA: %p", (void*) server_poa);
