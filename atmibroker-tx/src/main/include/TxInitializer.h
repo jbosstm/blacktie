@@ -23,11 +23,7 @@
 #include "tao/PortableInterceptorC.h"
 #include "tao/PI/PI.h"
 
-extern "C" {
-#include "xatmi.h"
-}
-
-extern ATMIBROKER_DLL void register_tx_interceptors(CORBA::ORB_ptr& orbPtr);
+extern ATMIBROKER_TX_DLL void register_tx_interceptors(CORBA::ORB_ptr& orbPtr);
 
 class ATMIBROKER_TX_DLL TxInitializer : public virtual PortableInterceptor::ORBInitializer
 {
