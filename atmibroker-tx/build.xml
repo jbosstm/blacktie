@@ -123,7 +123,7 @@
 '>
 
 <!ENTITY libsets-main-dependencies '
-	<libset dir="target/dependencies" libs="${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} log4cxx atmibroker-idl atmibroker-core TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix}" />
+	<libset dir="target/dependencies" libs="${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix} log4cxx atmibroker-idl atmibroker-core" />
 '>
 
 <!ENTITY includepath-test-dependencies '
@@ -131,7 +131,7 @@
 	&includepath-tao;
 '>
 <!ENTITY libsets-test-dependencies '
-	<libset dir="target/dependencies" libs="cppunit${lib.suffix} ${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} log4cxx atmibroker-idl atmibroker-core TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix}" />
+	<libset dir="target/dependencies" libs="cppunit${lib.suffix} ${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix} log4cxx atmibroker-idl atmibroker-core" />
 '>
 <!ENTITY libsets-runtime-dependencies '
 	&libsets-cppunit;
