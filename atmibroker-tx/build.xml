@@ -49,15 +49,12 @@
 <fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO${lib.suffix}.*" />
 <fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO_PortableServer${lib.suffix}.*" />
 <fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}ACE${lib.suffix}.*"/>
-
-<fileset dir="${ACE_ROOT}/lib/">
-	<include name="${lib.prefix}TAO_PI${lib.suffix}.*" />
-	<include name="${lib.prefix}TAO_CodecFactory${lib.suffix}.*" />
-	<include name="${lib.prefix}TAO_IORInterceptor${lib.suffix}.*" />
-	<include name="${lib.prefix}TAO_ObjRefTemplate${lib.suffix}.*" />
-	<include name="${lib.prefix}TAO_Valuetype${lib.suffix}.*" />
-	<include name="${lib.prefix}TAO_PI_Server${lib.suffix}.*" />
-</fileset>
+<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO_PI${lib.suffix}.*" />
+<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO_CodecFactory${lib.suffix}.*" />
+<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO_IORInterceptor${lib.suffix}.*" />
+<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO_ObjRefTemplate${lib.suffix}.*" />
+<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO_Valuetype${lib.suffix}.*" />
+<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO_PI_Server${lib.suffix}.*" />
 '>
 <!ENTITY libsets-sys '
 <syslibset libs="advapi32 mswsock ws2_32 shell32" if="is-msvc" />
@@ -126,9 +123,7 @@
 '>
 
 <!ENTITY libsets-main-dependencies '
-	<libset dir="target/dependencies" libs="${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} log4cxx atmibroker-idl atmibroker-core" />
-
-	<libset dir="${ACE_ROOT}/lib/" libs="TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix}" />
+	<libset dir="target/dependencies" libs="${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} log4cxx atmibroker-idl atmibroker-core TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix}" />
 '>
 
 <!ENTITY includepath-test-dependencies '
@@ -136,7 +131,7 @@
 	&includepath-tao;
 '>
 <!ENTITY libsets-test-dependencies '
-	<libset dir="target/dependencies" libs="cppunit${lib.suffix} ${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} log4cxx atmibroker-idl atmibroker-core" />
+	<libset dir="target/dependencies" libs="cppunit${lib.suffix} ${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} log4cxx atmibroker-idl atmibroker-core TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix}" />
 '>
 <!ENTITY libsets-runtime-dependencies '
 	&libsets-cppunit;
