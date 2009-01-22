@@ -35,6 +35,7 @@
 #ifndef NT_SYNCHRONIZABLEOBJECT_H
 #define NT_SYNCHRONIZABLEOBJECT_H
 
+#include "atmiBrokerCoreMacro.h"
 #include <windows.h>
 
 #include "SynchronizableObject.h"
@@ -62,7 +63,7 @@ typedef struct {
 	// allows us to optimize the code if we're just signaling.
 } pthread_cond_t;
 
-class SynchronizableObject_NT: public SynchronizableObject {
+class ATMIBROKER_CORE_DLL SynchronizableObject_NT: public SynchronizableObject {
 	friend class SynchronizableObject;
 public:
 	virtual ~SynchronizableObject_NT();

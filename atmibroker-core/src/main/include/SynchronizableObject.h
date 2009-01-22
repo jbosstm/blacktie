@@ -26,7 +26,9 @@
 #ifndef SYNCHRONIZABLEOBJECT_H
 #define SYNCHRONIZABLEOBJECT_H
 
-class SynchronizableObject {
+#include "atmiBrokerCoreMacro.h"
+
+class ATMIBROKER_CORE_DLL SynchronizableObject {
 
 public:
 	/**
