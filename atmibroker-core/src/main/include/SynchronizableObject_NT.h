@@ -41,8 +41,7 @@
 
 typedef HANDLE pthread_mutex_t;
 
-typedef struct
-{
+typedef struct {
 	int waiters_count_;
 	// Number of waiting threads.
 
@@ -61,12 +60,12 @@ typedef struct
 	size_t was_broadcast_;
 	// Keeps track of whether we were broadcasting or signaling.  This
 	// allows us to optimize the code if we're just signaling.
-}pthread_cond_t;
+} pthread_cond_t;
 
 class SynchronizableObject_NT: public SynchronizableObject {
 	friend class SynchronizableObject;
 public:
-	virtual ~SynchronizableObject_NT ();
+	virtual ~SynchronizableObject_NT();
 
 	/*
 	 * This method acquires a lock on the object in order to allow users to perform
@@ -100,16 +99,16 @@ public:
 	 */
 	virtual bool tryLock();
 private:
-	SynchronizableObject_NT (bool);
+	SynchronizableObject_NT(bool);
 
 	HANDLE mutex; // Windows mutexes are re-entrant.
 	bool valid;
 
 	pthread_cond_t cond;
-	int pthread_cond_init (pthread_cond_t *cv, const pthread_condattr_t *);
-	int pthread_cond_wait (pthread_cond_t *cv, pthread_mutex_t *external_mutex);
-	int pthread_cond_signal (pthread_cond_t *cv);
-	int pthread_cond_broadcast (pthread_cond_t *cv)
+	int pthread_cond_init(pthread_cond_t *cv);
+	int pthread_cond_timedwait(pthread_cond_t *cv, pthread_mutex_t *external_mutex, long timeout);
+	int pthread_cond_signal(pthread_cond_t *cv);
+	int pthread_cond_broadcast(pthread_cond_t *cv);
 
 };
 
