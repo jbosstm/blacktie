@@ -36,9 +36,7 @@ using namespace log4cxx;
 using namespace log4cxx::helpers;
 LoggerPtr loggerTxInitializer(Logger::getLogger("TxInitializer"));
 
-static CORBA::ORB_ptr* orb;
-
-TxInitializer::TxInitializer ()
+TxInitializer::TxInitializer (CORBA::ORB_ptr* orbPtr) : orb(orbPtr)
 {
 }
 
@@ -86,8 +84,6 @@ TxInitializer::post_init (PortableInterceptor::ORBInitInfo_ptr info)
 
 void register_tx_interceptors(CORBA::ORB_ptr& orbPtr)
 {
-	::orb = &orbPtr;
-
-	PortableInterceptor::ORBInitializer_var orb_initializer = new TxInitializer;
+	PortableInterceptor::ORBInitializer_var orb_initializer = new TxInitializer(&orbPtr);
 	PortableInterceptor::register_orb_initializer (orb_initializer.in ());
 }
