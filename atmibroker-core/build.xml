@@ -115,6 +115,7 @@
 '>
 <!ENTITY includepath-test-dependencies '
 	&includepath-cppunit;
+	&includepath-log4cxx;
 	&includepath-tao;
 '>
 <!ENTITY libsets-test-dependencies '

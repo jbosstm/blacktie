@@ -15,13 +15,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "SimpleOrbTest.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( SimpleOrbTest);
-#include "ExceptionCase.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( ExceptionCase);
-#include "ODBCTest.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( ODBCTest);
-#include "TestUserlog.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestUserlog);
-#include "TestMultiOrb.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestMultiOrb);
+#ifndef TestMultiOrb_H
+#define TestMultiOrb_H
+
+#include <cppunit/extensions/HelperMacros.h>
+#include "cppunit/TestFixture.h"
+
+class TestMultiOrb: public CppUnit::TestFixture {
+CPPUNIT_TEST_SUITE( TestMultiOrb )
+	;
+		CPPUNIT_TEST( test );
+	CPPUNIT_TEST_SUITE_END()
+	;
+
+public:
+	void test();
+	virtual void setUp();
+	virtual void tearDown();
+};
+
+#endif // TestMultiOrb_H
