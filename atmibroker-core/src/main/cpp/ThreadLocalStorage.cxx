@@ -17,6 +17,41 @@
  */
 #include "ThreadLocalStorage.h"
 
+#include "OrbManagement.h"
+#include <map>
+#include <iostream>
+
+class TSSData {
+public:
+	~TSSData() { std::cout<<"~TSSData()"<<std::endl;}
+	bool set(int k, void* v) {tssmap[k] = v; return true;}
+	void* get(int k) {return tssmap[k];}
+	bool destroy(int k) {tssmap[k] = 0; return true;}
+
+	typedef std::map<int, void*> TSSMap;
+	TSSMap tssmap;
+};
+
+static ACE_TSS<TSSData> tss;
+
+extern int getKey() {
+	return -1;
+}
+extern bool setSpecific(int key, void* threadData) {
+//	if (key == TSS_KEY) std::cout<<"SET TSS: "<< threadData <<std::endl;
+	return tss->set(key, threadData);
+}
+extern void* getSpecific(int key) {
+//	if (key == TSS_KEY) std::cout<<"GET TSS: "<< tss->get(key) <<std::endl;
+	return tss->get(key);
+}
+
+extern bool destroySpecific(int key) {
+//	if (key == TSS_KEY) std::cout<<"DESTROY TSS: "<< tss->get(key) <<std::endl;
+	return	tss->destroy(key);
+}
+
+#if 0
 #ifndef WIN32
 __thread void * specific = 0;
 
@@ -66,3 +101,4 @@ extern bool destroySpecific (int key)
 	return FALSE;
 }
 #endif
+#endif // if 0
