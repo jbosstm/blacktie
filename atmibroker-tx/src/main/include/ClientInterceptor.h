@@ -49,7 +49,7 @@ public:
 
 private:
         bool isTransactional(PortableInterceptor::ClientRequestInfo_ptr);
-        bool resume_tx(PortableInterceptor::ClientRequestInfo_ptr);
+        void resume_tx(PortableInterceptor::ClientRequestInfo_ptr);
 	long find_control(CORBA::ULong requestId, bool);
 	void debug(PortableInterceptor::ClientRequestInfo_ptr ri, const char* msg);
 

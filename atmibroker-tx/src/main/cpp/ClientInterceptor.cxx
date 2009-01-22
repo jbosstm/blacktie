@@ -196,7 +196,7 @@ long ClientInterceptor::find_control(CORBA::ULong requestId, bool erase)
 /**
  * resume a previously suspended transaction
  */
-bool ClientInterceptor::resume_tx(PortableInterceptor::ClientRequestInfo_ptr ri)
+void ClientInterceptor::resume_tx(PortableInterceptor::ClientRequestInfo_ptr ri)
 {
 	long txid = find_control(ri->request_id(), true);
 
