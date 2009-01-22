@@ -115,7 +115,7 @@ int AtmiBrokerConversation::tpconnect(char * svc, char* idata, long ilen, long f
 
 	char *id = (char*) malloc(sizeof(char*) * XATMI_SERVICE_NAME_LENGTH);
 	AtmiBroker::Service_var aCorbaService;
-	mAtmiBrokerClient->getService(svc, &id, &aCorbaService);
+	mAtmiBrokerClient->start_conversation(svc, &id, &aCorbaService);
 	if (CORBA::is_nil(aCorbaService)) {
 		tperrno = TPENOENT;
 		cd = -1;

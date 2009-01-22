@@ -54,23 +54,6 @@ void remove_service_factory(char* serviceName) {
 	userlog(Level::getInfo(), loggerAtmiBrokerServiceFac, (char*) " service factory %s removed", serviceName);
 }
 
-void remove_service_manager(char* serviceName) {
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "remove_service_manager: %s", serviceName);
-	AtmiBrokerServiceFacMgr::get_instance()->removeServiceManager(serviceName);
-
-	int size = strlen(serviceName) + strlen("Manager") + 1;
-	char *serviceManagerName = (char*) malloc(sizeof(char) * size);
-	strcpy(serviceManagerName, serviceName);
-	strcat(serviceManagerName, "Manager");
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "manager name: %s", serviceManagerName);
-
-	CosNaming::Name * name = server_default_context->to_name(serviceManagerName);
-	server_name_context->unbind(*name);
-
-	free(serviceManagerName);
-	userlog(Level::getInfo(), loggerAtmiBrokerServiceFac, (char*) " service manager %s removed", serviceName);
-}
-
 PortableServer::POA_ptr create_service_factory_poa(char *serviceName) {
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "create_service_factory_poa: %s", serviceName);
 
@@ -80,23 +63,6 @@ PortableServer::POA_ptr create_service_factory_poa(char *serviceName) {
 
 	userlog(Level::getInfo(), loggerAtmiBrokerServiceFac, (char*) "created create_service_factory_poa: %s", serviceName);
 	return aPoaVar._retn();
-}
-
-PortableServer::POA_ptr create_service_manager_poa(char *serviceName) {
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "create_service_manager_poa: %s", serviceName);
-
-	PortableServer::POA_var aPoaPtr;
-
-	int size = strlen(serviceName) + strlen("Manager") + 1;
-	char *serviceManagerName = (char*) malloc(sizeof(char) * size);
-	strcpy(serviceManagerName, serviceName);
-	strcat(serviceManagerName, "Manager");
-
-	aPoaPtr = serverPoaFactory->createServiceManagerPoa(serviceManagerName, server_poa, server_root_poa_manager);
-
-	userlog(Level::getInfo(), loggerAtmiBrokerServiceFac, (char*) "created service_manager_poa name: %s", serviceManagerName);
-	free(serviceManagerName);
-	return aPoaPtr._retn();
 }
 
 void create_service_factory(AtmiBroker_ServiceFactoryImpl *tmp_servant, PortableServer::POA_var aPoaPtr, char *serviceName, void(*func)(TPSVCINFO *)) {
@@ -124,33 +90,4 @@ void create_service_factory(AtmiBroker_ServiceFactoryImpl *tmp_servant, Portable
 
 	AtmiBrokerServiceFacMgr::get_instance()->addServiceFactory(serviceName, factoryPtr, func);
 	userlog(Level::getInfo(), loggerAtmiBrokerServiceFac, (char*) "created ServiceFactory %s", serviceName);
-}
-
-void create_service_manager(AtmiBroker_ServiceManagerImpl *tmp_servant, PortableServer::POA_var aPoaPtr, char *serviceName) {
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "create_service_manager: %s", serviceName);
-
-	AtmiBroker::ServiceManager_ptr managerPtr = AtmiBrokerServiceFacMgr::get_instance()->getServiceManager(serviceName);
-
-	if (!CORBA::is_nil(managerPtr))
-		return;
-
-	CORBA::Object_var tmp_ref;
-	CosNaming::Name * name;
-
-	aPoaPtr->activate_object(tmp_servant);
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "activated tmp_servant %p", (void*) tmp_servant);
-	tmp_ref = aPoaPtr->servant_to_reference(tmp_servant);
-
-	int size = strlen(serviceName) + strlen("Manager") + 1;
-	char *serviceManagerName = (char*) malloc(sizeof(char) * size);
-	strcpy(serviceManagerName, serviceName);
-	strcat(serviceManagerName, "Manager");
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "manager name: %s", serviceManagerName);
-
-	name = server_default_context->to_name(serviceManagerName);
-	server_name_context->rebind(*name, tmp_ref);
-	managerPtr = AtmiBroker::ServiceManager::_narrow(tmp_ref);
-
-	AtmiBrokerServiceFacMgr::get_instance()->addServiceManager(serviceName, managerPtr);
-	userlog(Level::getInfo(), loggerAtmiBrokerServiceFac, (char*) "created ServiceManager %s", serviceName);
 }

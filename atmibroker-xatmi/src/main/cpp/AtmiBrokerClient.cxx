@@ -145,12 +145,12 @@ AtmiBroker_ClientCallbackImpl * AtmiBrokerClient::getClientCallback() {
 	return clientCallbackImpl;
 }
 
-void AtmiBrokerClient::getService(char * serviceName, char ** idPtr, AtmiBroker::Service_var * refPtr) {
+void AtmiBrokerClient::start_conversation(char * serviceName, char ** idPtr, AtmiBroker::Service_var * refPtr) {
 	long clientId = getClientId(serviceName);
 	if (clientId != -1) {
 		AtmiBroker::ServiceFactory_ptr ptr = get_service_factory(serviceName);
 		if (!CORBA::is_nil(ptr)) {
-			get_service(clientId, ptr, idPtr, refPtr);
+			::start_conversation(clientId, ptr, idPtr, refPtr);
 		}
 	}
 }
@@ -178,7 +178,7 @@ void AtmiBrokerClient::findService(char * serviceAndIndex, AtmiBroker::Service_v
 	index[j] = '\0';
 	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "index is %s", index);
 
-	find_service(getClientId(serviceName), get_service_factory(serviceName), index, refPtr);
+//	find_service(getClientId(serviceName), get_service_factory(serviceName), index, refPtr);
 	free(serviceName);
 }
 

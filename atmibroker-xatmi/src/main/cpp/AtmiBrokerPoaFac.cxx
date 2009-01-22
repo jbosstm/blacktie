@@ -120,34 +120,6 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createServiceFactoryPoa(const char* po
 	return PortableServer::POA::_nil();
 }
 
-// createServiceManagerPoa()
-//
-PortableServer::POA_ptr AtmiBrokerPoaFac::createServiceManagerPoa(const char* poa_name, PortableServer::POA_ptr parent_poa, PortableServer::POAManager_ptr poa_manager) {
-	// Create a policy list. Policies not set in the list get default values.
-	//
-	CORBA::PolicyList policies;
-	policies.length(1);
-	int i = 0;
-
-	// Create Persistant Lifespan
-	//
-	policies[i++] = parent_poa->create_lifespan_policy(PortableServer::PERSISTENT);
-
-	// Make the POA single threaded.
-	//
-//	policies[i++] = parent_poa->create_thread_policy(PortableServer::SINGLE_THREAD_MODEL);
-
-	//    assert(i==2);
-
-	try {
-		return parent_poa->create_POA(poa_name, poa_manager, policies);
-	} catch (PortableServer::POA::AdapterAlreadyExists) {
-		userlog(Level::getError(), loggerAtmiBrokerPoaFac, (char*) "createServiceManagerPoa already existed: %s", poa_name);
-		return parent_poa->find_POA(poa_name, true);
-	}
-	return PortableServer::POA::_nil();
-}
-
 // createServicePoa()
 //
 PortableServer::POA_ptr AtmiBrokerPoaFac::createServicePoa(CORBA::ORB_var orb, const char* poa_name, PortableServer::POA_ptr parent_poa, PortableServer::POAManager_ptr poa_manager) {

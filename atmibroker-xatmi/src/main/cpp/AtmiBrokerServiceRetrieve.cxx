@@ -103,17 +103,14 @@ AtmiBroker::ServiceFactory_ptr get_service_factory(const char * serviceName) {
 	return AtmiBroker::ServiceFactory::_duplicate(factoryPtr);
 }
 
-void get_service(long clientId, AtmiBroker::ServiceFactory_ptr aFactoryPtr, char **idPtr, AtmiBroker::Service_var* refPtr) {
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "get_service");
+void start_conversation(long clientId, AtmiBroker::ServiceFactory_ptr aFactoryPtr, char **idPtr, AtmiBroker::Service_var* refPtr) {
+	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "start_conversation");
 
 	CORBA::String_var aId = "";
 	CORBA::String_var aIor = "";
 
-	// get service reference from factory
-	//*refPtr 	= aFactoryPtr->get_service(aConversation, aId);
-
 	// get service ior from factory
-	aIor = aFactoryPtr->get_service_id(clientId, aId);
+	aIor = aFactoryPtr->start_conversation(clientId, aId);
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "got back ior %s", (char*) aIor);
 
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "string_to_object ");
@@ -128,27 +125,5 @@ void get_service(long clientId, AtmiBroker::ServiceFactory_ptr aFactoryPtr, char
 	} else {
 		userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "got service %p with id %s", (void*) *refPtr, (char*) aId);
 		strcpy(*idPtr, (char*) aId);
-	}
-}
-
-void find_service(long clientId, AtmiBroker::ServiceFactory_ptr aFactoryPtr, char *id, AtmiBroker::Service_var* refPtr) {
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "find_service - id: %s", id);
-
-	CORBA::String_var aIor = "";
-
-	// find service reference in factory
-	//*refPtr 	= aFactoryPtr->find_service(id);
-
-	// find service ior in factory
-	aIor = aFactoryPtr->find_service_id(clientId, id);
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "got back ior %s", (char*) aIor);
-
-	CORBA::Object_var tmp_ref = client_orb->string_to_object(aIor);
-	*refPtr = AtmiBroker::Service::_narrow(tmp_ref);
-
-	if (CORBA::is_nil(*refPtr)) {
-		userlog(Level::getError(), loggerAtmiBrokerServiceRetrieve, (char*) "Could not get service ");
-	} else {
-		userlog(Level::getInfo(), loggerAtmiBrokerServiceRetrieve, (char*) "got service %p with id %s", (void*) *refPtr, id);
 	}
 }

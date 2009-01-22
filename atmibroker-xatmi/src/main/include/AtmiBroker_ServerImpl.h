@@ -115,10 +115,6 @@ public:
 
 	virtual void start_service(const char* service_name) throw (CORBA::SystemException );
 
-	virtual int serverinit(int argc, char ** argv);
-
-	virtual void serverdone();
-
 	virtual char * getServerName();
 
 	virtual void unadvertise();

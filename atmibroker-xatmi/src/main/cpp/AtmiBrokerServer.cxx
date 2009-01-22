@@ -31,7 +31,6 @@
 
 #include "AtmiBroker.h"
 #include "AtmiBrokerServiceFacMgr.h"
-#include "AtmiBrokerServerFac.h"
 #include "AtmiBrokerMem.h"
 #include "AtmiBrokerServer.h"
 extern "C" {
@@ -53,7 +52,6 @@ LoggerPtr loggerAtmiBrokerServer(Logger::getLogger("AtmiBrokerServer"));
 bool serverInitialized;
 
 AtmiBroker_ServerImpl * ptrServer;
-AtmiBrokerServerFac * ptrServerFactory;
 
 Worker* server_worker;
 CORBA::ORB_var server_orb;
@@ -67,18 +65,9 @@ AtmiBrokerPoaFac * serverPoaFactory;
 void createServerPOA();
 
 void server_sigint_handler_callback(int sig_type) {
-	userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "server_termination_handler_callback Received shutdown signal: %d", sig_type);
-
-	if (!CORBA::is_nil(server_orb)) {
-		serverdone();
-	} else {
-		userlog(Level::getWarn(), loggerAtmiBrokerServer, (char*) "server_termination_handler_callback ORB not initialised, aborting.");
-		abort(); // TODO REMOVE ABORT
-	}
-}
-
-void server_sigsegv_handler_callback(int sig_type) {
-	LOG4CXX_ERROR(loggerAtmiBrokerServer, (char*) "TODO I AM A HACK");
+	userlog(Level::getInfo(), loggerAtmiBrokerServer, (char*) "server_sigint_handler_callback Received shutdown signal: %d", sig_type);
+	serverdone();
+	abort();
 }
 
 int serverrun() {
@@ -98,7 +87,6 @@ int serverinit(int argc, char ** argv) {
 		userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverinit called");
 		_tperrno = 0;
 		signal(SIGINT, server_sigint_handler_callback);
-		//		signal(SIGSEGV, server_sigsegv_handler_callback);
 
 		if (!loggerInitialized) {
 			if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG") != NULL) {
@@ -117,18 +105,24 @@ int serverinit(int argc, char ** argv) {
 			getRootPOAAndManager(server_orb, server_root_poa, server_root_poa_manager);
 			createServerPOA();
 
-			//TODO READD AtmiBrokerNotify::get_instance()->setPOAAndContext(server_root_poa, server_default_context);
-
 			server_root_poa_manager->activate();
 			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "activated poa - started processing requests ");
 
-			ptrServerFactory = new AtmiBrokerServerFac();
-			ptrServerFactory->createServer(argc, argv);
+			// Create a reference for interface AtmiBroker::Server.
+			ptrServer = new AtmiBroker_ServerImpl(server_poa);
+			ptrServer->server_init();
 
 			serverInitialized = true;
 		} catch (CORBA::Exception& e) {
 			userlog(Level::getError(), loggerAtmiBrokerServer, (char*) "serverinit - Unexpected CORBA exception: %s", e._name());
 			tperrno = TPESYSTEM;
+
+			// CLEAN UP INITIALISED ITEMS
+			if (ptrServer) {
+				ptrServer->server_done();
+				delete ptrServer;
+				ptrServer = NULL;
+			}
 
 			// TODO CLEAN UP TRANSACTION CURRENT
 			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverinit deleting services");
@@ -154,21 +148,12 @@ int serverdone() {
 		if (serverInitialized) {
 			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone called ");
 
-			// Ensure that the ORB is properly shutdown and cleaned up.
-//			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone calling serverdone");
-//			tx_close();
-//			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone called serverdone");
-
 			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone shutting down services ");
 			if (ptrServer) {
-				ptrServer->serverdone();
+				ptrServer->server_done();
+				delete ptrServer;
+				ptrServer = NULL;
 			}
-
-			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone deleting Server Factory ");
-			if (ptrServerFactory) {
-				delete ptrServerFactory;
-			}
-			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone deleted Server Factory ");
 
 			// TODO CLEAN UP TRANSACTION CURRENT
 			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone deleting services");
@@ -190,45 +175,6 @@ int serverdone() {
 		return -1;
 	}
 }
-
-// create_name_context -- create or find demo naming context.
-// Raises a CORBA exception on error.
-//
-/*
- CosNaming::NamingContext_ptr
- create_name_context(
- CosNaming::NamingContextExt_ptr default_context,
- const char* name_string
- ) throw (
- CORBA::Exception
- )
- {
- CORBA::Object_var context_as_obj;
-
- // First see if the name is already bound.
- //
- try
- {
- context_as_obj = default_context->resolve_str(name_string);
- }
- catch (const CosNaming::NamingContext::NotFound&)
- {
- // Name is not yet bound, create a new context.
- //
- CosNaming::Name_var tmp_name =  default_context->to_name(name_string);
- context_as_obj = default_context->bind_new_context(tmp_name);
- }
-
- // Narrow the reference to a naming context.
- //
- CosNaming::NamingContext_ptr name_context = CosNaming::NamingContext::_narrow(context_as_obj);
- if (CORBA::is_nil(name_context)) {
- userlog(Level::getError(), loggerAtmiBrokerServer, (char*)  "create_name_context: Cannot narrow naming context called `%s'", name_string);
- throw CORBA::BAD_PARAM();
- }
- return name_context;
- }
- */
 
 void createServerPOA() {
 	if (CORBA::is_nil(server_poa)) {

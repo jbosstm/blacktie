@@ -127,46 +127,11 @@ AtmiBroker_ServiceFactoryImpl::~AtmiBroker_ServiceFactoryImpl() {
 	}
 }
 
-// get_service() -- Implements IDL operation "AtmiBroker::ServiceFactory::get_service".
-//
-AtmiBroker::Service_ptr AtmiBroker_ServiceFactoryImpl::get_service(CORBA::Long client_id, CORBA::String_out id) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "get_service()");
-
-	int index = 0;
-	CORBA::Boolean found = false;
-	for (index = 0; index < serviceInfo.maxSize; index++) {
-		if (servantVector[index] != NULL && !servantVector[index]->isInUse()) {
-			servantVector[index]->setInUse(true);
-			servantVector[index]->setClientId(client_id);
-			found = true;
-			break;
-		}
-	}
-
-	char *idStr = (char*) malloc(sizeof(char) * XATMI_SERVICE_NAME_LENGTH);
-
-	strcpy(idStr, serviceName);
-	strcat(idStr, ":");
-	// ltoa
-	std::ostringstream oss;
-	oss << index << std::dec;
-	const char* indexStr = oss.str().c_str();
-	strcat(idStr, indexStr);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "idStr %s", idStr);
-
-	id = CORBA::string_dup(idStr);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "id %s", (char*) id);
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "returning  %p", (void*) corbaObjectVector[index]);
-	free(idStr);
-	return corbaObjectVector[index];
-}
-
-// get_service_id() -- Implements IDL operation "AtmiBroker::ServiceFactory::get_service_id".
+// start_conversation() -- Implements IDL operation "AtmiBroker::ServiceFactory::start_conversation".
 //
 char *
-AtmiBroker_ServiceFactoryImpl::get_service_id(CORBA::Long client_id, CORBA::String_out id) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "get_service_id()");
+AtmiBroker_ServiceFactoryImpl::start_conversation(CORBA::Long client_id, CORBA::String_out id) throw (CORBA::SystemException ) {
+	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "start_conversation()");
 
 	int index = 0;
 	CORBA::Boolean found = false;
@@ -211,41 +176,6 @@ void AtmiBroker_ServiceFactoryImpl::end_conversation(CORBA::Long client_id, cons
 		userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "conversation ALREADY ended for %s", id);
 
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "end_conversation(): returning.");
-}
-
-// find_service() -- Implements IDL operation "AtmiBroker::ServiceFactory::find_service".
-//
-AtmiBroker::Service_ptr AtmiBroker_ServiceFactoryImpl::find_service(CORBA::Long client_id, const char* id) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "find_service()");
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "   id = %s", id);
-
-	int index = atol(id);
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "   index = %d", index);
-
-	servantVector[index]->setInUse(true);
-	servantVector[index]->setClientId(client_id);
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "returning  %p", (void*) corbaObjectVector[index]);
-	return corbaObjectVector[index];
-}
-
-// find_service_id() -- Implements IDL operation "AtmiBroker::ServiceFactory::find_service_id".
-//
-char *
-AtmiBroker_ServiceFactoryImpl::find_service_id(CORBA::Long client_id, const char* id) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "find_service_id()");
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "   id = %s", id);
-
-	int index = atol(id);
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "   index = %d", index);
-
-	servantVector[index]->setInUse(true);
-	servantVector[index]->setClientId(client_id);
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "returning  %p", (void*) corbaObjectVector[index]);
-	return server_orb->object_to_string(corbaObjectVector[index]);
 }
 
 // get_service_info() -- Implements IDL operation "AtmiBroker::ServiceFactory::get_service_info".

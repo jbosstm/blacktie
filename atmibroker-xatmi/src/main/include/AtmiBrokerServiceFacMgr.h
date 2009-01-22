@@ -45,13 +45,6 @@ struct _service_factory_data {
 };
 typedef _service_factory_data ServiceFactoryData;
 
-struct _service_manager_data {
-	CORBA::String_var serviceName;
-	AtmiBroker::ServiceManager_var managerPtr;
-
-};
-typedef _service_manager_data ServiceManagerData;
-
 class ATMIBROKER_DLL AtmiBrokerServiceFacMgr {
 
 public:
@@ -60,14 +53,10 @@ public:
 
 	~AtmiBrokerServiceFacMgr();
 	void (*getServiceMethod(const char * aServiceName))(TPSVCINFO *);
+
 	AtmiBroker::ServiceFactory_ptr getServiceFactory(const char * aServiceName);
-	AtmiBroker::ServiceManager_ptr getServiceManager(const char * aServiceName);
-
 	void addServiceFactory(const char * aServiceName, const AtmiBroker::ServiceFactory_var& refPtr, void(*func)(TPSVCINFO *));
-	void addServiceManager(const char * aServiceName, const AtmiBroker::ServiceManager_var& refPtr);
-
 	void removeServiceFactory(const char * aServiceName);
-	void removeServiceManager(const char * aServiceName);
 
 	static AtmiBrokerServiceFacMgr* get_instance();
 	static void discard_instance();
@@ -75,7 +64,6 @@ public:
 private:
 
 	std::vector<ServiceFactoryData> serviceFactoryData;
-	std::vector<ServiceManagerData> serviceManagerData;
 
 	static AtmiBrokerServiceFacMgr* ptrAtmiBrokerServiceFacMgr;
 };

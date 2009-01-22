@@ -66,17 +66,10 @@ public:
 
 	// IDL operations
 	//
-	virtual AtmiBroker::Service_ptr get_service(CORBA::Long client_id, CORBA::String_out id) throw (CORBA::SystemException );
-
 	virtual char*
-	get_service_id(CORBA::Long client_id, CORBA::String_out id) throw (CORBA::SystemException );
+	start_conversation(CORBA::Long client_id, CORBA::String_out id) throw (CORBA::SystemException );
 
 	virtual void end_conversation(CORBA::Long client_id, const char* id) throw (CORBA::SystemException );
-
-	virtual AtmiBroker::Service_ptr find_service(CORBA::Long client_id, const char* id) throw (CORBA::SystemException );
-
-	virtual char *
-	find_service_id(CORBA::Long client_id, const char* id) throw (CORBA::SystemException );
 
 	virtual AtmiBroker::ServiceInfo*
 	get_service_info() throw (CORBA::SystemException );

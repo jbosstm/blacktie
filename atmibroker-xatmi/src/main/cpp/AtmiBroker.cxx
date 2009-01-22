@@ -98,21 +98,11 @@ int MAX_COMPANY_SIZE = 20;
 // runtime arguments
 void createClientCallbackPOA();
 void createClientBindingPolicies();
-void destroyAllLogs();
 
 void client_sigint_handler_callback(int sig_type) {
-	userlog(Level::getDebug(), loggerAtmiBroker, (char*) "client_termination_handler_callback Received shutdown signal: %d", sig_type);
-
-	if (!CORBA::is_nil(client_orb)) {
-		clientdone();
-	} else {
-		userlog(Level::getWarn(), loggerAtmiBroker, (char*) "client_termination_handler_callback ORB not initialised, aborting.");
-		abort(); // TODO REMOVE ABORT
-	}
-}
-
-void client_sigsegv_handler_callback(int sig_type) {
-	LOG4CXX_ERROR(loggerAtmiBroker, (char*) "TODO I AM A HACK");
+	userlog(Level::getInfo(), loggerAtmiBroker, (char*) "client_sigint_handler_callback Received shutdown signal: %d", sig_type);
+	clientdone();
+	abort();
 }
 
 int clientinit() {
@@ -121,7 +111,6 @@ int clientinit() {
 		_tperrno = 0;
 
 		signal(SIGINT, client_sigint_handler_callback);
-		//		signal(SIGSEGV, client_sigsegv_handler_callback);
 
 		if (!loggerInitialized) {
 			if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG") != NULL) {
@@ -139,13 +128,14 @@ int clientinit() {
 			getRootPOAAndManager(client_orb, client_root_poa, client_root_poa_manager);
 			createClientCallbackPOA();
 			createClientBindingPolicies();
-			AtmiBrokerMem::get_instance();
+
+			client_root_poa_manager->activate();
+			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "activated poa - started processing requests ");
 
 			ptrAtmiBrokerClient = new AtmiBrokerClient(true, false, true, false);
 
 			clientInitialized = true;
 		} catch (CORBA::Exception &ex) {
-			ex._tao_print_exception("clientinit Unexpected CORBA exception:");
 			userlog(Level::getError(), loggerAtmiBroker, (char*) "clientinit Unexpected CORBA exception: %s", ex._name());
 			tperrno = TPESYSTEM;
 

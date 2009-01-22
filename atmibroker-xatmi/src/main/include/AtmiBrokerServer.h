@@ -50,7 +50,6 @@
 #endif
 
 #include "AtmiBrokerPoaFac.h"
-#include "AtmiBrokerServerFac.h"
 #include "AtmiBroker_ServerImpl.h"
 #include "Worker.h"
 
@@ -63,7 +62,6 @@ extern CosNaming::NamingContext_var server_name_context;
 extern PortableServer::POA_var server_poa;
 extern AtmiBrokerPoaFac * serverPoaFactory;
 
-extern AtmiBrokerServerFac * ptrServerFactory;
 extern AtmiBroker_ServerImpl * ptrServer;
 
 extern void server_termination_handler_callback(int);

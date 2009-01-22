@@ -50,8 +50,6 @@ public:
 
 	PortableServer::POA_ptr createServiceFactoryPoa(const char* poa_name, PortableServer::POA_ptr parent_poa, PortableServer::POAManager_ptr poa_manager);
 
-	PortableServer::POA_ptr createServiceManagerPoa(const char* poa_name, PortableServer::POA_ptr parent_poa, PortableServer::POAManager_ptr poa_manager);
-
 	PortableServer::POA_ptr createServerPoa(CORBA::ORB_var, const char* poa_name, PortableServer::POA_ptr parent_poa, PortableServer::POAManager_ptr poa_manager);
 
 	PortableServer::POA_ptr createServicePoa(CORBA::ORB_var, const char* poa_name, PortableServer::POA_ptr parent_poa, PortableServer::POAManager_ptr poa_manager);

@@ -171,32 +171,12 @@ module AtmiBroker {
 	};
 
 
-	interface ServiceManager
-	{
-		readonly attribute string serviceName;
-
-		oneway void send_data(in string ior,
-				  in boolean conversation,
-				  in octetSeq idata,
-				  in long ilen,
-				  in long flags,
-				  in long revent);
-
-	};
-
-
 	interface ServiceFactory
 	{
-		Service get_service(in long client_id, out string id);
-	
-		string get_service_id(in long client_id, out string id);
+		string start_conversation(in long client_id, out string id);
 	
 		void end_conversation(in long client_id, in string id);
 	
-		Service find_service(in long client_id, in string id);
-	
-		string find_service_id(in long client_id, in string id);
-
 		ServiceInfo  get_service_info();		
 	};
 

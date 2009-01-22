@@ -37,15 +37,11 @@
 #endif
 
 #include "AtmiBroker_ServiceFactoryImpl.h"
-#include "AtmiBroker_ServiceManagerImpl.h"
 
 extern ATMIBROKER_DLL void remove_service_factory(char * serviceName);
-extern ATMIBROKER_DLL void remove_service_manager(char * serviceName);
 
 extern ATMIBROKER_DLL PortableServer::POA_ptr create_service_factory_poa(char *serviceName);
-extern ATMIBROKER_DLL PortableServer::POA_ptr create_service_manager_poa(char *serviceName);
 
 extern ATMIBROKER_DLL void create_service_factory(AtmiBroker_ServiceFactoryImpl *tmp_servant, PortableServer::POA_var aPoaPtr, char *serviceName, void(*func)(TPSVCINFO *));
-extern ATMIBROKER_DLL void create_service_manager(AtmiBroker_ServiceManagerImpl *tmp_servant, PortableServer::POA_var aPoaPtr, char *serviceName);
 
 #endif //AtmiBroker_SERVICE_FAC_H

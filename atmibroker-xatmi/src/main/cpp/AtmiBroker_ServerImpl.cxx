@@ -94,22 +94,19 @@ AtmiBroker_ServerImpl::~AtmiBroker_ServerImpl() {
 	//
 }
 
-int AtmiBroker_ServerImpl::serverinit(int argc, char *argv[]) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "serverinit");
-	server_init();
-	return (0);
-}
-
-void AtmiBroker_ServerImpl::serverdone() {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "serverdone");
-	server_done();
-}
-
 // server_init() -- Implements IDL operation "AtmiBroker::Server::server_init".
 //
 CORBA::Short AtmiBroker_ServerImpl::server_init() throw (CORBA::SystemException ) {
 	int toReturn = 1;
 	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "server_init(): called.");
+
+	PortableServer::ObjectId_var oid = PortableServer::string_to_ObjectId(server);
+	server_poa->activate_object_with_id(oid, this);
+	CORBA::Object_var tmp_ref = server_poa->create_reference_with_id(oid, "IDL:AtmiBroker/Server:1.0");
+
+	CosNaming::Name * name = server_default_context->to_name(serverName);
+	server_name_context->rebind(*name, tmp_ref);
+	AtmiBroker::Server_var pServer = AtmiBroker::Server::_narrow(tmp_ref);
 
 	/* TODO FUNCTION NEEDS extern "C" __declspec(dllexport)
 	 for (unsigned int i = 0; i < serverInfo.serviceNames.size(); i++) {
@@ -125,7 +122,6 @@ CORBA::Short AtmiBroker_ServerImpl::server_init() throw (CORBA::SystemException 
 	 */
 
 	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "server_init(): finished.");
-
 	return toReturn;
 }
 
@@ -194,16 +190,12 @@ bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPS
 	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "advertiseService(): '%s'", serviceName);
 
 	AtmiBroker_ServiceFactoryImpl *tmp_factory_servant = NULL;
-	AtmiBroker_ServiceManagerImpl *tmp_manager_servant = NULL;
 
 	// create Poa for Service Factory
 	PortableServer::POA_var aFactoryPoaPtr = create_service_factory_poa(serviceName);
 	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "advertiseService():  created service factory poa");
 	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "advertiseService():  aFactoryPoaPtr %p", (void*) aFactoryPoaPtr);
 
-	// create Poa for Service Manager
-	PortableServer::POA_var aManagerPoaPtr = create_service_manager_poa(serviceName);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "advertiseService():  aManagerPoaPtr %p", (void*) aManagerPoaPtr);
 
 	// TODO MAYBE CAN ONLY ADVERTISE PRE-KNOWN?
 	if (true) {
@@ -220,13 +212,9 @@ bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPS
 
 		tmp_factory_servant = new AtmiBroker_ServiceFactoryImpl(aFactoryPoaPtr, serviceName, servicePoaName, serviceConfigFilename);
 		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) " tmp_factory_servant %p", (void*) tmp_factory_servant);
-		tmp_manager_servant = new AtmiBroker_ServiceManagerImpl(aManagerPoaPtr, serviceName);
-		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) " tmp_manager_servant %p", (void*) tmp_manager_servant);
 
 		// create reference for Service Factory and cache
 		create_service_factory(tmp_factory_servant, aFactoryPoaPtr, serviceName, func);
-		// create reference for Service Manager
-		create_service_manager(tmp_manager_servant, aManagerPoaPtr, serviceName);
 		advertisedServices.push_back(serviceName);
 		userlog(Level::getInfo(), loggerAtmiBroker_ServerImpl, (char*) "advertised service %s", serviceName);
 		toReturn = true;
@@ -239,7 +227,6 @@ void AtmiBroker_ServerImpl::unadvertiseService(char * serviceName) {
 	for (std::vector<char*>::iterator i = advertisedServices.begin(); i != advertisedServices.end(); i++) {
 		if (strcmp(serviceName, (*i)) == 0) {
 			remove_service_factory(serviceName);
-			remove_service_manager(serviceName);
 			advertisedServices.erase(i);
 			userlog(Level::getInfo(), loggerAtmiBroker_ServerImpl, (char*) "unadvertised service %s", serviceName);
 			break;

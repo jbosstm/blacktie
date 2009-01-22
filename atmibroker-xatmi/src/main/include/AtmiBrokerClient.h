@@ -74,7 +74,7 @@ public:
 
 	void getServer(ClientServerInfo * aClientServerInfo, char * serverName);
 
-	void getService(char * serviceName, char ** id, AtmiBroker::Service_var* refPtr);
+	void start_conversation(char * serviceName, char ** id, AtmiBroker::Service_var* refPtr);
 
 	void findService(char * serviceAndIndex, AtmiBroker::Service_var* refPtr);
 
