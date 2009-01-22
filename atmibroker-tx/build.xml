@@ -119,7 +119,6 @@
 	&includepath-tao;
 	&includepath-main-atmibroker-idl;
 	&includepath-main-atmibroker-core;
-	&includepath-export-atmibroker-xatmi;
 '>
 
 <!ENTITY libsets-main-dependencies '
@@ -128,7 +127,10 @@
 
 <!ENTITY includepath-test-dependencies '
 	&includepath-cppunit;
+	&includepath-log4cxx;
 	&includepath-tao;
+	&includepath-main-atmibroker-idl;
+	&includepath-main-atmibroker-core;
 '>
 <!ENTITY libsets-test-dependencies '
 	<libset dir="target/dependencies" libs="cppunit${lib.suffix} ${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix} log4cxx atmibroker-idl atmibroker-core" />

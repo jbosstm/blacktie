@@ -15,7 +15,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "TestTransactions.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestTransactions);
-#include "TestOrbAdditions.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestOrbAdditions);
+#ifndef TestOrbAdditions_H
+#define TestOrbAdditions_H
+
+#include <cppunit/extensions/HelperMacros.h>
+#include "cppunit/TestFixture.h"
+#include <string.h>
+
+class TestOrbAdditions: public CppUnit::TestFixture {
+	CPPUNIT_TEST_SUITE( TestOrbAdditions);
+	CPPUNIT_TEST( test_initorb);
+CPPUNIT_TEST_SUITE_END()
+;
+
+public:
+void test_initorb();
+};
+
+#endif

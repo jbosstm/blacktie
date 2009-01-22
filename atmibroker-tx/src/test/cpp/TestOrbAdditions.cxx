@@ -15,7 +15,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "TestTransactions.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestTransactions);
+#include <cppunit/extensions/HelperMacros.h>
 #include "TestOrbAdditions.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestOrbAdditions);
+#include "Worker.h"
+#include "tx.h"
+#include "AtmiBrokerOTS.h"
+
+void TestOrbAdditions::test_initorb() {
+	Worker* client_worker;
+	CORBA::ORB_var client_orb;
+	CosNaming::NamingContextExt_var client_default_context;
+	CosNaming::NamingContext_var client_name_context;
+	AtmiBrokerOTS::init_orb((char*) "client", client_worker, client_orb, client_default_context, client_name_context);
+
+	Worker* server_worker;
+	CORBA::ORB_var server_orb;
+	CosNaming::NamingContextExt_var server_default_context;
+	CosNaming::NamingContext_var server_name_context;
+	AtmiBrokerOTS::init_orb((char*) "server", server_worker, server_orb, server_default_context, server_name_context);
+
+}
