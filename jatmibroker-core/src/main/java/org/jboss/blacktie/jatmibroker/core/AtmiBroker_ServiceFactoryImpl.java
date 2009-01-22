@@ -116,25 +116,7 @@ public class AtmiBroker_ServiceFactoryImpl extends ServiceFactoryPOA {
 
 	}
 
-	public Service find_service(int client_id, String id) {
-		log.error("NO-OP find_service");
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String find_service_id(int client_id, String id) {
-		log.error("NO-OP find_service_id");
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Service get_service(int client_id, StringHolder id) {
-		log.error("NO-OP get_service");
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String get_service_id(int client_id, StringHolder id) {
+	public String start_conversation(int client_id, StringHolder id) {
 		log.error("NO-OP get_service_id");
 		// TODO Auto-generated method stub
 		id.value = serviceName;

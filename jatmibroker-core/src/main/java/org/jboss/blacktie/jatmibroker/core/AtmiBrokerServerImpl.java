@@ -32,7 +32,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.administration.BTServerAdministration;
 import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServer;
-import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServiceManager;
+import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServiceFactory;
 import org.omg.CORBA.IntHolder;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.Object;
@@ -80,7 +80,7 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 	private Thread callbackThread;
 	private ClientInfo clientInfo;
 
-	private Map<String, AtmiBrokerServiceManager> serviceManagerProxies = new HashMap<String, AtmiBrokerServiceManager>();
+	private Map<String, AtmiBrokerServiceFactory> proxies = new HashMap<String, AtmiBrokerServiceFactory>();
 	private String serverName;
 	private String companyName;
 	private String[] args;
@@ -289,7 +289,7 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 	}
 
 	public void close() {
-		Iterator<AtmiBrokerServiceManager> iterator = serviceManagerProxies.values().iterator();
+		Iterator<AtmiBrokerServiceFactory> iterator = proxies.values().iterator();
 		while (iterator.hasNext()) {
 			iterator.next().close();
 		}
@@ -301,17 +301,17 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 		return clientInfo.client_id;
 	}
 
-	public AtmiBrokerServiceManager getServiceManagerProxy(String serviceName) throws JAtmiBrokerException {
-		AtmiBrokerServiceManager serviceManagerProxy = serviceManagerProxies.get(serviceName);
-		if (serviceManagerProxy == null) {
+	public AtmiBrokerServiceFactory getServiceFactoryProxy(String serviceName) throws JAtmiBrokerException {
+		AtmiBrokerServiceFactory proxy = proxies.get(serviceName);
+		if (proxy == null) {
 			try {
-				serviceManagerProxy = AtmiBrokerServiceManagerImpl.getProxy(this, serviceName);
-				serviceManagerProxies.put(serviceName, serviceManagerProxy);
+				proxy = AtmiBrokerServiceFactoryImpl.getProxy(this, serviceName);
+				proxies.put(serviceName, proxy);
 			} catch (Throwable t) {
 				throw new JAtmiBrokerException("Could not load service manager proxy for: " + serviceName, t);
 			}
 		}
-		return serviceManagerProxy;
+		return proxy;
 	}
 
 	public short dequeue_data(octetSeqHolder odata, IntHolder olen, int flags, IntHolder event) {

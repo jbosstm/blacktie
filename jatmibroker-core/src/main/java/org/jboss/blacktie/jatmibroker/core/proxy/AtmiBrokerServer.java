@@ -47,5 +47,5 @@ public interface AtmiBrokerServer {
 
 	public void close();
 
-	public AtmiBrokerServiceManager getServiceManagerProxy(String serviceName) throws JAtmiBrokerException;
+	public AtmiBrokerServiceFactory getServiceFactoryProxy(String serviceName) throws JAtmiBrokerException;
 }

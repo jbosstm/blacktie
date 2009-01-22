@@ -19,9 +19,18 @@
  * BREAKTHRUIT PROPRIETARY - NOT TO BE DISCLOSED OUTSIDE BREAKTHRUIT, LLC.
  */
 // copyright 2006, 2008 BreakThruIT
-package org.jboss.blacktie.jatmibroker.core.administration;
+package org.jboss.blacktie.jatmibroker.core.proxy;
 
-public interface BTServiceManagerAdministration {
+import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
+import org.omg.CosTransactions.Control;
 
-	java.lang.String serviceName() throws Exception;
+public interface AtmiBrokerServiceFactory {
+
+	String start_conversation(org.omg.CORBA.StringHolder id) throws JAtmiBrokerException;
+
+	void send_data(String clientId, byte[] data, int flags);
+
+	void end_conversation(java.lang.String id) throws JAtmiBrokerException;
+
+	void close();
 }

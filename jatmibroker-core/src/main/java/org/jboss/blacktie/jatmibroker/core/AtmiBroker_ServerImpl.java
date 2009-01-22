@@ -46,7 +46,6 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 	private String serverName;
 	private byte[] activate_object;
 	private Map<String, AtmiBroker_ServiceFactoryImpl> serviceFactoryList = new HashMap<String, AtmiBroker_ServiceFactoryImpl>();
-	private Map<String, AtmiBroker_ServiceManagerImpl> serviceManagerList = new HashMap<String, AtmiBroker_ServiceManagerImpl>();
 	private boolean bound;
 
 	public AtmiBroker_ServerImpl(Properties properties) throws JAtmiBrokerException {
@@ -79,20 +78,6 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 		}
 	}
 
-	public void createAtmiBroker_ServiceManagerImpl(String serviceName) throws JAtmiBrokerException {
-		if (!serviceManagerList.containsKey(serviceName)) {
-			try {
-				AtmiBroker_ServiceManagerImpl atmiBroker_ServiceManagerImpl = new AtmiBroker_ServiceManagerImpl(serviceName);
-				serviceManagerList.put(serviceName, atmiBroker_ServiceManagerImpl);
-				if (bound) {
-					atmiBroker_ServiceManagerImpl.bind();
-				}
-			} catch (Throwable t) {
-				throw new JAtmiBrokerException("Could not create service manager for: " + serviceName, t);
-			}
-		}
-	}
-
 	public void createAtmiBroker_ServiceFactoryImpl(String serviceName, int servantCacheSize, Class callback, AtmiBroker_CallbackConverter atmiBroker_Callback) throws JAtmiBrokerException {
 		if (!serviceFactoryList.containsKey(serviceName)) {
 			try {
@@ -121,10 +106,6 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 		while (iterator.hasNext()) {
 			iterator.next().bind();
 		}
-		Iterator<AtmiBroker_ServiceManagerImpl> iterator2 = serviceManagerList.values().iterator();
-		while (iterator2.hasNext()) {
-			iterator2.next().bind();
-		}
 		bound = true;
 	}
 
@@ -132,10 +113,6 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 		Iterator<AtmiBroker_ServiceFactoryImpl> iterator = serviceFactoryList.values().iterator();
 		while (iterator.hasNext()) {
 			iterator.next().unbind();
-		}
-		Iterator<AtmiBroker_ServiceManagerImpl> iterator2 = serviceManagerList.values().iterator();
-		while (iterator2.hasNext()) {
-			iterator2.next().unbind();
 		}
 		try {
 			poa.deactivate_object(activate_object);
@@ -146,11 +123,6 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 	}
 
 	public void unbind(String serviceName) throws JAtmiBrokerException {
-		AtmiBroker_ServiceManagerImpl atmiBroker_ServiceManagerImpl = serviceManagerList.get(serviceName);
-		if (atmiBroker_ServiceManagerImpl != null) {
-			atmiBroker_ServiceManagerImpl.unbind();
-		}
-
 		AtmiBroker_ServiceFactoryImpl atmiBroker_ServiceFactoryImpl = serviceFactoryList.get(serviceName);
 		if (atmiBroker_ServiceFactoryImpl != null) {
 			atmiBroker_ServiceFactoryImpl.unbind();
