@@ -69,7 +69,7 @@ AtmiBrokerOTS::AtmiBrokerOTS() {
 	tx_current = NULL;
 	// if we use the name ots then we end up with two different orbs in the client and this breaks things
 	//XXXAtmiBrokerOTS::init_orb((char*) "ots", ots_worker, ots_orb, ots_namingContextExt, ots_namingContext);
-	AtmiBrokerOTS::init_orb((char*) "client", ots_worker, ots_orb, ots_namingContextExt, ots_namingContext);
+	AtmiBrokerOTS::init_orb((char*) "ots", ots_worker, ots_orb, ots_namingContextExt, ots_namingContext);
 	//	createTransactionPolicy();
 }
 
