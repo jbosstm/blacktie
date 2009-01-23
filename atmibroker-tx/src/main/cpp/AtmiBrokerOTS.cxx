@@ -255,8 +255,8 @@ int AtmiBrokerOTS::resume(long tranid) {
 CosTransactions::Control_ptr AtmiBrokerOTS::getSuspended(long tranid) {
 	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "tx_get ");
 
-	for (std::vector<ControlInfo*>::iterator it = controlInfoVector.begin(); it != controlInfoVector.end(); it++) 
-		if ((*it)->id == tranid) 
+	for (std::vector<ControlInfo*>::iterator it = controlInfoVector.begin(); it != controlInfoVector.end(); it++)
+		if ((*it)->id == tranid)
 			return (*it)->control;
 
 	return NULL;
@@ -286,26 +286,6 @@ int AtmiBrokerOTS::tx_close(void) {
 	LocalResourceManagerCache::discardLocalResourceManagerCache();
 #endif
 	return TX_OK;
-}
-
-void AtmiBrokerOTS::createTransactionPolicy() {
-	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "createTransactionPolicy");
-
-#ifdef TAO_COMP
-	return;
-#else
-	//#elif ORBIX_COMP
-	if (CORBA::is_nil(transactionPolicy)) {
-		CORBA::Any policyValue;
-
-		policyValue <<= CosTransactions::ADAPTS;
-
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "creating transaction ADAPTS policy ");
-		CORBA::Policy_var tempPolicy = ots_orb->create_policy(CosTransactions::OTS_POLICY_TYPE, policyValue);
-		transactionPolicy = CORBA::Policy::_duplicate(tempPolicy);
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) " created transaction ADAPTS policy %p", (void*) transactionPolicy);
-	}
-#endif
 }
 
 void AtmiBrokerOTS::createXAConnectorAndResourceManager() {
@@ -401,25 +381,6 @@ AtmiBrokerOTS::getXaResourceManager() {
 XA::Connector_var&
 AtmiBrokerOTS::getXaConnector() {
 	return xa_connector;
-}
-
-CORBA::Policy_ptr
-AtmiBrokerOTS::getTransactionPolicy() {
-#ifdef TAO_COMP
-	return NULL;
-#else
-	//#elif ORBIX_COMP
-	if (CORBA::is_nil(transactionPolicy)) {
-		CORBA::Any policyValue;
-
-		policyValue <<= CosTransactions::ADAPTS;
-
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "creating transaction ADAPTS policy ");
-		CORBA::Policy_var tempPolicy = ots_orb->create_policy(CosTransactions::OTS_POLICY_TYPE, policyValue);
-		return CORBA::Policy::_duplicate(tempPolicy);
-//		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) " created transaction ADAPTS policy %p", (void*) transactionPolicy);
-	}
-#endif
 }
 
 //struct xa_switch_t&

@@ -32,58 +32,64 @@
 
 #include "log4cxx/logger.h"
 
+TxInitializer* TxInitializer::instance = NULL;
+
 using namespace log4cxx;
 using namespace log4cxx::helpers;
 LoggerPtr loggerTxInitializer(Logger::getLogger("TxInitializer"));
-
-TxInitializer::TxInitializer (CORBA::ORB_ptr* orbPtr) : orb(orbPtr)
-{
+TxInitializer* TxInitializer::get_instance() {
+	if (instance == NULL) {
+		instance = new TxInitializer();
+		PortableInterceptor::register_orb_initializer(instance);
+	}
+	return instance;
 }
 
-void
-TxInitializer::pre_init (PortableInterceptor::ORBInitInfo_ptr info)
-{
+TxInitializer::TxInitializer() {
 }
 
-void
-TxInitializer::post_init (PortableInterceptor::ORBInitInfo_ptr info)
-{
-        LOG4CXX_LOGLS(loggerTxInitializer, Level::getDebug(), (char*) "");
+void TxInitializer::set_orb(CORBA::ORB_ptr* orbPtr) {
+	orb = orbPtr;
+}
 
-        // register policy factories
-        PortableInterceptor::PolicyFactory_ptr p;
+void TxInitializer::pre_init(PortableInterceptor::ORBInitInfo_ptr info) {
+}
 
-        ACE_NEW_THROW_EX(p, OTSPolicyFactory,
-                CORBA::NO_MEMORY(CORBA::SystemException::_tao_minor_code(TAO::VMCID, ENOMEM), CORBA::COMPLETED_NO));
+void TxInitializer::post_init(PortableInterceptor::ORBInitInfo_ptr info) {
+	LOG4CXX_LOGLS(loggerTxInitializer, Level::getDebug(), (char*) "");
 
-        PortableInterceptor::PolicyFactory_var pf(p);
-        info->register_policy_factory(AtmiTx::OTS_POLICY_TYPE, pf.in());
+	// register policy factories
+	PortableInterceptor::PolicyFactory_ptr p;
+
+	ACE_NEW_THROW_EX(p, OTSPolicyFactory,
+			CORBA::NO_MEMORY(CORBA::SystemException::_tao_minor_code(TAO::VMCID, ENOMEM), CORBA::COMPLETED_NO));
+
+	PortableInterceptor::PolicyFactory_var pf(p);
+	info->register_policy_factory(AtmiTx::OTS_POLICY_TYPE, pf.in());
 
 	IOP::CodecFactory_var cf = info->codec_factory();
 
 	// register IOR interceptors
 	PortableInterceptor::IORInterceptor_ptr iori;
-        iori = new (ACE_nothrow) TxIORInterceptor(orb, cf);
-        if (iori == 0)
-                throw CORBA::NO_MEMORY(CORBA::SystemException::_tao_minor_code(TAO::VMCID, ENOMEM), CORBA::COMPLETED_NO);
+	iori = new (ACE_nothrow) TxIORInterceptor(orb, cf);
+	if (iori == 0)
+		throw CORBA::NO_MEMORY(CORBA::SystemException::_tao_minor_code(TAO::VMCID, ENOMEM), CORBA::COMPLETED_NO);
 
-        PortableInterceptor::IORInterceptor_var ior_interceptor(iori);
-        info->add_ior_interceptor(ior_interceptor.in());
+	PortableInterceptor::IORInterceptor_var ior_interceptor(iori);
+	info->add_ior_interceptor(ior_interceptor.in());
 
-        // register server side interceptors.
-        PortableInterceptor::ServerRequestInterceptor_var si = new ServerInterceptor(orb, cf);
-        info->add_server_request_interceptor(si.in());
+	// register server side interceptors.
+	PortableInterceptor::ServerRequestInterceptor_var si = new ServerInterceptor(orb, cf);
+	info->add_server_request_interceptor(si.in());
 
-        // register client side interceptors.
-        PortableInterceptor::ClientRequestInterceptor_ptr ci = new ClientInterceptor(orb, cf);
-        PortableInterceptor::ClientRequestInterceptor_var civ = ci;
-        info->add_client_request_interceptor(civ.in ());
+	// register client side interceptors.
+	PortableInterceptor::ClientRequestInterceptor_ptr ci = new ClientInterceptor(orb, cf);
+	PortableInterceptor::ClientRequestInterceptor_var civ = ci;
+	info->add_client_request_interceptor(civ.in());
 
-        LOG4CXX_LOGLS(loggerTxInitializer, Level::getDebug(), (char*) "out");
+	LOG4CXX_LOGLS(loggerTxInitializer, Level::getDebug(), (char*) "out");
 }
 
-void register_tx_interceptors(CORBA::ORB_ptr& orbPtr)
-{
-	PortableInterceptor::ORBInitializer_var orb_initializer = new TxInitializer(&orbPtr);
-	PortableInterceptor::register_orb_initializer (orb_initializer.in ());
+void register_tx_interceptors(CORBA::ORB_ptr& orbPtr) {
+	TxInitializer::get_instance()->set_orb(&orbPtr);
 }

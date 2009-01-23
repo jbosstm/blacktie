@@ -28,13 +28,16 @@ extern ATMIBROKER_TX_DLL void register_tx_interceptors(CORBA::ORB_ptr& orbPtr);
 class ATMIBROKER_TX_DLL TxInitializer : public virtual PortableInterceptor::ORBInitializer
 {
 public:
-    TxInitializer(CORBA::ORB**);
+	static TxInitializer* get_instance();
+    void set_orb(CORBA::ORB_ptr*);
     virtual void pre_init (PortableInterceptor::ORBInitInfo_ptr info);
     virtual void post_init (PortableInterceptor::ORBInitInfo_ptr info);
 
 protected:
-	CORBA::ORB_ptr get_orb() { return *orb; }
+    TxInitializer();
+	CORBA::ORB_ptr* get_orb() { return orb; }
 
 	CORBA::ORB_ptr* orb;
+	static TxInitializer* instance;
 };
 #endif

@@ -85,7 +85,6 @@ public:
 	XA::CurrentConnection_var& getXaCurrentConnection();
 	XA::ResourceManager_var& getXaResourceManager();
 	XA::Connector_var& getXaConnector();
-	static CORBA::Policy_ptr getTransactionPolicy();
 	//struct xa_switch_t&								getXaosw();
 	XA::XASwitch_ptr getXaosw();
 

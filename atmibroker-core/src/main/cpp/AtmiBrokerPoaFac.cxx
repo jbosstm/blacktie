@@ -23,6 +23,7 @@
 #ifdef TAO_COMP
 #include <tao/ORB.h>
 #include "tao/ORB_Core.h"
+#include "tao/AnyTypeCode/Any.h"
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,7 +31,6 @@
 #include <iostream>
 
 #include "TxPolicyS.h"
-#include "AtmiBrokerOTS.h"
 #include "AtmiBrokerPoaFac.h"
 
 #include "userlog.h"
@@ -132,10 +132,6 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createServicePoa(CORBA::ORB_var orb, c
 	// Make the POA single threaded.
 	//
 	policies[i++] = parent_poa->create_thread_policy(PortableServer::ORB_CTRL_MODEL);
-
-	// Create Transactional ADAPTS policy
-	//
-	policies[i++] = AtmiBrokerOTS::getTransactionPolicy();
 
 	// install transaction policy
 	add_transaction_policy(orb, policies, parent_poa, i, 3);

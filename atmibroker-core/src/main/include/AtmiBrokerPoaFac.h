@@ -28,7 +28,7 @@
 #ifndef AtmiBroker_POA_FAC_H_
 #define AtmiBroker_POA_FAC_H_
 
-#include "atmiBrokerMacro.h"
+#include "atmiBrokerCoreMacro.h"
 
 #ifdef TAO_COMP
 #include <tao/PortableServer/PortableServer.h>
@@ -39,7 +39,7 @@
 #include <PortableServerExt_c.hh>
 #endif
 
-class ATMIBROKER_DLL AtmiBrokerPoaFac {
+class ATMIBROKER_CORE_DLL AtmiBrokerPoaFac {
 public:
 
 	AtmiBrokerPoaFac();
