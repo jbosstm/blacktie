@@ -16,8 +16,8 @@
  * MA  02110-1301, USA.
  */
 /* Export/Include macros for Win32 compilation */
-#ifndef ATMIBROKER_MACRO
-#define ATMIBROKER_MACRO
+#ifndef ATMIBROKER_CORE_MACRO
+#define ATMIBROKER_CORE_MACRO
 
 /* Only do defines if we're compiling on Win32 */
 #ifdef WIN32
