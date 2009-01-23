@@ -32,6 +32,7 @@ void TestTPAlloc::setUp() {
 void TestTPAlloc::tearDown() {
 	if (m_allocated) {
 		::tpfree(m_allocated);
+		m_allocated = NULL;
 	}
 	// Do local work
 	BaseTest::tearDown();
