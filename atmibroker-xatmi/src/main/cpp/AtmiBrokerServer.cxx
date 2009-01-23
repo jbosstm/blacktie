@@ -98,8 +98,7 @@ int serverinit(int argc, char ** argv) {
 		}
 
 		try {
-			AtmiBrokerOTS::init_orb(
-			    (char*) "server", server_worker, server_orb, server_default_context, server_name_context);
+			AtmiBrokerOTS::init_orb((char*) "server", server_worker, server_orb, server_default_context, server_name_context);
 
 			AtmiBrokerMem::get_instance();
 			getRootPOAAndManager(server_orb, server_root_poa, server_root_poa_manager);
@@ -110,11 +109,16 @@ int serverinit(int argc, char ** argv) {
 
 			// Create a reference for interface AtmiBroker::Server.
 			ptrServer = new AtmiBroker_ServerImpl(server_poa);
-			ptrServer->server_init();
-
-			serverInitialized = true;
+			if (ptrServer->server_init() != -1) {
+				serverInitialized = true;
+			}
 		} catch (CORBA::Exception& e) {
 			userlog(Level::getError(), loggerAtmiBrokerServer, (char*) "serverinit - Unexpected CORBA exception: %s", e._name());
+		} catch (...) {
+			userlog(Level::getError(), loggerAtmiBrokerServer, (char*) "serverinit - Unexpected exception");
+		}
+
+		if (!serverInitialized) {
 			tperrno = TPESYSTEM;
 
 			// CLEAN UP INITIALISED ITEMS

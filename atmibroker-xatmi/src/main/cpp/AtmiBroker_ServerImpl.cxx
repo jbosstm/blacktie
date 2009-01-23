@@ -97,7 +97,7 @@ AtmiBroker_ServerImpl::~AtmiBroker_ServerImpl() {
 // server_init() -- Implements IDL operation "AtmiBroker::Server::server_init".
 //
 CORBA::Short AtmiBroker_ServerImpl::server_init() throw (CORBA::SystemException ) {
-	int toReturn = 1;
+	int toReturn = 0;
 	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "server_init(): called.");
 
 	PortableServer::ObjectId_var oid = PortableServer::string_to_ObjectId(server);
@@ -105,23 +105,14 @@ CORBA::Short AtmiBroker_ServerImpl::server_init() throw (CORBA::SystemException 
 	CORBA::Object_var tmp_ref = server_poa->create_reference_with_id(oid, "IDL:AtmiBroker/Server:1.0");
 
 	CosNaming::Name * name = server_default_context->to_name(serverName);
-	server_name_context->rebind(*name, tmp_ref);
-	AtmiBroker::Server_var pServer = AtmiBroker::Server::_narrow(tmp_ref);
-
-	/* TODO FUNCTION NEEDS extern "C" __declspec(dllexport)
-	 for (unsigned int i = 0; i < serverInfo.serviceNames.size(); i++) {
-	 char * serviceName = (char*)serverInfo.serviceNames[i].c_str();
-	 void (*function)(TPSVCINFO*) = getFunction("C:/Projects/blacktie/product/atmibroker/target/atmibroker-tests_vc9/atmibroker-tests_vc9.exe", serviceName);
-	 if (function != NULL) {
-	 int advertised = tpadvertise(serviceName, function);
-	 if (advertised < 0) {
-	 toReturn = -1;
-	 }
-	 }
-	 }
-	 */
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "server_init(): finished.");
+	try {
+		server_name_context->bind(*name, tmp_ref);
+		AtmiBroker::Server_var pServer = AtmiBroker::Server::_narrow(tmp_ref);
+		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "server_init(): finished.");
+	} catch (CosNaming::NamingContext::AlreadyBound& e) {
+		userlog(Level::getError(), loggerAtmiBroker_ServerImpl, (char*) "server_init - Unexpected Already Bound exception: %s", server);
+		toReturn = -1;
+	}
 	return toReturn;
 }
 
@@ -196,7 +187,6 @@ bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPS
 	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "advertiseService():  created service factory poa");
 	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "advertiseService():  aFactoryPoaPtr %p", (void*) aFactoryPoaPtr);
 
-
 	// TODO MAYBE CAN ONLY ADVERTISE PRE-KNOWN?
 	if (true) {
 		// TODO TEST_SERVICE
@@ -214,7 +204,14 @@ bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPS
 		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) " tmp_factory_servant %p", (void*) tmp_factory_servant);
 
 		// create reference for Service Factory and cache
-		create_service_factory(tmp_factory_servant, aFactoryPoaPtr, serviceName, func);
+		try {
+			create_service_factory(tmp_factory_servant, aFactoryPoaPtr, serviceName, func);
+		} catch (...) {
+			userlog(Level::getError(), loggerAtmiBroker_ServerImpl, (char*) "service has already been advertised, however it appears to be by a different server (possibly with the same name), which is strange... %s", serviceName);
+			tperrno = TPEMATCH;
+			return false;
+		}
+
 		advertisedServices.push_back(serviceName);
 		userlog(Level::getInfo(), loggerAtmiBroker_ServerImpl, (char*) "advertised service %s", serviceName);
 		toReturn = true;

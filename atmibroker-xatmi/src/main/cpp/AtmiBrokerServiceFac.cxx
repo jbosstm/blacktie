@@ -85,7 +85,7 @@ void create_service_factory(AtmiBroker_ServiceFactoryImpl *tmp_servant, Portable
 	tmp_ref = aPoaPtr->servant_to_reference(tmp_servant);
 
 	name = server_default_context->to_name(serviceName);
-	server_name_context->rebind(*name, tmp_ref);
+	server_name_context->bind(*name, tmp_ref);
 	factoryPtr = AtmiBroker::ServiceFactory::_narrow(tmp_ref);
 
 	AtmiBrokerServiceFacMgr::get_instance()->addServiceFactory(serviceName, factoryPtr, func);
