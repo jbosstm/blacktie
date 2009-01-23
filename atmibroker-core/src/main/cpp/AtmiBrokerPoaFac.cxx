@@ -40,8 +40,7 @@ using namespace log4cxx::helpers;
 LoggerPtr loggerAtmiBrokerPoaFac(Logger::getLogger("AtmiBrokerPoaFac"));
 
 // install transaction policy on this POA
-int add_transaction_policy(CORBA::ORB_var& orb, CORBA::PolicyList& policies, PortableServer::POA_ptr poa, int index, int maxindex)
-{
+int add_transaction_policy(CORBA::ORB_var& orb, CORBA::PolicyList& policies, PortableServer::POA_ptr poa, int index, int maxindex) {
 	if (maxindex - index < 1)
 		return 0;
 
@@ -70,26 +69,19 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createCallbackPoa(CORBA::ORB_var orb, 
 	//
 	CORBA::PolicyList policies;
 	policies.length(1);
-//	int i = 0;
+	//	int i = 0;
 
 	// Make the POA single threaded.
 	//
-//	policies[i++] = parent_poa->create_thread_policy(PortableServer::ORB_CTRL_MODEL);
-//	policies[i++] = parent_poa->create_thread_policy(PortableServer::SINGLE_THREAD_MODEL);
-//
+	//	policies[i++] = parent_poa->create_thread_policy(PortableServer::ORB_CTRL_MODEL);
+	//	policies[i++] = parent_poa->create_thread_policy(PortableServer::SINGLE_THREAD_MODEL);
+	//
 	// install transaction policy
 	add_transaction_policy(orb, policies, parent_poa, 0, 1);
 
 	//assert(i==1);
 
-	//	try {
 	return parent_poa->create_POA(poa_name, poa_manager, policies);
-	/*	}
-	 catch (PortableServer::POA::AdapterAlreadyExists)
-	 {
-	 return parent_poa->find_POA(poa_name, true);
-	 }
-	 */return PortableServer::POA::_nil();
 }
 
 // createServiceFactoryPoa()
@@ -107,17 +99,11 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createServiceFactoryPoa(const char* po
 
 	// Make the POA single threaded.
 	//
-//	policies[i++] = parent_poa->create_thread_policy(PortableServer::SINGLE_THREAD_MODEL);
+	//	policies[i++] = parent_poa->create_thread_policy(PortableServer::SINGLE_THREAD_MODEL);
 
 	//    assert(i==2);
 
-	try {
-		return parent_poa->create_POA(poa_name, poa_manager, policies);
-	} catch (PortableServer::POA::AdapterAlreadyExists) {
-		userlog(Level::getError(), loggerAtmiBrokerPoaFac, (char*) "createServiceFactoryPoa already existed: %s", poa_name);
-		return parent_poa->find_POA(poa_name, true);
-	}
-	return PortableServer::POA::_nil();
+	return parent_poa->create_POA(poa_name, poa_manager, policies);
 }
 
 // createServicePoa()
@@ -137,13 +123,7 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createServicePoa(CORBA::ORB_var orb, c
 	add_transaction_policy(orb, policies, parent_poa, i, 3);
 	//    assert(i==2);
 
-	try {
-		return parent_poa->create_POA(poa_name, poa_manager, policies);
-	} catch (PortableServer::POA::AdapterAlreadyExists) {
-		userlog(Level::getError(), loggerAtmiBrokerPoaFac, (char*) "createServicePoa already existed: %s", poa_name);
-		return parent_poa->find_POA(poa_name, true);
-	}
-	return PortableServer::POA::_nil();
+	return parent_poa->create_POA(poa_name, poa_manager, policies);
 }
 
 // createServerPoa()
@@ -166,13 +146,6 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createServerPoa(CORBA::ORB_var orb, co
 	// install transaction policy
 	//add_transaction_policy(orb, policies, parent_poa, i, 3);
 
-	//try {
 	return parent_poa->create_POA(poa_name, poa_manager, policies);
-	/*	}
-	 catch (PortableServer::POA::AdapterAlreadyExists)
-	 {
-	 return parent_poa->find_POA(poa_name, true);
-	 }
-	 */return PortableServer::POA::_nil();
 }
 
