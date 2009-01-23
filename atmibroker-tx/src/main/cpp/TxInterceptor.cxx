@@ -71,9 +71,9 @@ CosTransactions::Control_ptr TxInterceptor::string_to_control(const char* ior)
  */
 char* TxInterceptor::get_control_ior()
 {
-	CosTransactions::Control_ptr curr = AtmiBrokerOTS::get_instance()->getCurrent()->get_control();
+	CosTransactions::Control_ptr ctrl = this->current_control();
 
-        return curr ? this->get_orb()->object_to_string(curr) : NULL;
+        return CORBA::is_nil(ctrl) ? NULL : this->get_orb()->object_to_string(ctrl);
 }
 
 /**
@@ -81,26 +81,15 @@ char* TxInterceptor::get_control_ior()
  */
 CosTransactions::Control_ptr TxInterceptor::current_control()
 {
-	return AtmiBrokerOTS::get_instance()->getCurrent()->get_control();
+	CosTransactions::Current_var& cur = AtmiBrokerOTS::get_instance()->getCurrent();
+
+	if (CORBA::is_nil(cur))
+		return NULL;
+
+	return cur->get_control();
 }
 
-//getXaCurrentConnection
 bool TxInterceptor::isTransactional(const char* op)
 {
-#if 0
-static const char *ignore_ops[] = {
-        "resolve_str",
-        "to_name",
-        "_is_a",
-        "create",
-        "register_client",
-        NULL
-};
-
-	for (const char** p = ignore_ops; *p; *p++)
-		if (strcmp(*p, op) == 0)
-			return false;
-#endif
-
         return true;
 }
