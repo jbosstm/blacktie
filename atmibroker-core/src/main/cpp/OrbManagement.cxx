@@ -47,6 +47,8 @@ void initOrb(char* name, Worker*& worker, CORBA::ORB_ptr& orbRef, CosNaming::Nam
 		}
 
 		orbRef = CORBA::ORB_init(i, vals, name);
+
+		free(vals[0]);
 		free(vals);
 
 		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext");
