@@ -27,20 +27,12 @@
 
 #include <vector>
 
-#ifdef TAO_COMP
-#include "AtmiBrokerS.h"
-#elif ORBIX_COMP
-#include "AtmiBroker.hh"
-#endif
-#ifdef VBC_COMP
-#include "AtmiBroker_s.hh"
-#endif
-
 #include "xatmi.h"
+#include "AtmiBroker_ServiceFactoryImpl.h"
 
 struct _service_factory_data {
-	CORBA::String_var serviceName;
-	AtmiBroker::ServiceFactory_var factoryPtr;
+	char* serviceName;
+	AtmiBroker_ServiceFactoryImpl* factoryPtr;
 	void (*func)(TPSVCINFO *);
 };
 typedef _service_factory_data ServiceFactoryData;
@@ -49,19 +41,18 @@ class ATMIBROKER_DLL AtmiBrokerServiceFacMgr {
 
 public:
 
-	AtmiBrokerServiceFacMgr();
-
 	~AtmiBrokerServiceFacMgr();
 	void (*getServiceMethod(const char * aServiceName))(TPSVCINFO *);
 
-	AtmiBroker::ServiceFactory_ptr getServiceFactory(const char * aServiceName);
-	void addServiceFactory(const char * aServiceName, const AtmiBroker::ServiceFactory_var& refPtr, void(*func)(TPSVCINFO *));
-	void removeServiceFactory(const char * aServiceName);
+	void addServiceFactory(char*& aServiceName, AtmiBroker_ServiceFactoryImpl*& refPtr, void(*func)(TPSVCINFO *));
+	AtmiBroker_ServiceFactoryImpl* getServiceFactory(const char * aServiceName);
+	AtmiBroker_ServiceFactoryImpl* removeServiceFactory(const char * aServiceName);
 
 	static AtmiBrokerServiceFacMgr* get_instance();
 	static void discard_instance();
 
 private:
+	AtmiBrokerServiceFacMgr();
 
 	std::vector<ServiceFactoryData> serviceFactoryData;
 

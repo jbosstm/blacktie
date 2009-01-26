@@ -49,9 +49,11 @@ LoggerPtr loggerAtmiBrokerServiceFac(Logger::getLogger("AtmiBrokerServiceFac"));
 
 void remove_service_factory(char* serviceName) {
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "remove_service_factory: %s", serviceName);
-	AtmiBrokerServiceFacMgr::get_instance()->removeServiceFactory(serviceName);
 	CosNaming::Name * name = server_default_context->to_name(serviceName);
 	server_name_context->unbind(*name);
+
+	AtmiBroker_ServiceFactoryImpl* toDelete = AtmiBrokerServiceFacMgr::get_instance()->removeServiceFactory(serviceName);
+	delete toDelete;
 	userlog(Level::getInfo(), loggerAtmiBrokerServiceFac, (char*) " service factory %s removed", serviceName);
 }
 
@@ -77,11 +79,6 @@ void create_service_factory(char *serviceName, void(*func)(TPSVCINFO *)) {
 	AtmiBroker_ServiceFactoryImpl *tmp_factory_servant = new AtmiBroker_ServiceFactoryImpl(aFactoryPoaPtr, serviceName, servicePoaName, serviceConfigFilename);
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) " tmp_factory_servant %p", (void*) tmp_factory_servant);
 
-	AtmiBroker::ServiceFactory_ptr factoryPtr = AtmiBrokerServiceFacMgr::get_instance()->getServiceFactory(serviceName);
-
-	if (!CORBA::is_nil(factoryPtr))
-		return;
-
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "creating servant cache  ");
 	tmp_factory_servant->createServantCache(func);
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "created servant cache  %p", (void*) tmp_factory_servant);
@@ -92,8 +89,7 @@ void create_service_factory(char *serviceName, void(*func)(TPSVCINFO *)) {
 
 	CosNaming::Name * name = server_default_context->to_name(serviceName);
 	server_name_context->bind(*name, tmp_ref);
-	factoryPtr = AtmiBroker::ServiceFactory::_narrow(tmp_ref);
 
-	AtmiBrokerServiceFacMgr::get_instance()->addServiceFactory(serviceName, factoryPtr, func);
+	AtmiBrokerServiceFacMgr::get_instance()->addServiceFactory(serviceName, tmp_factory_servant, func);
 	userlog(Level::getInfo(), loggerAtmiBrokerServiceFac, (char*) "created ServiceFactory %s", serviceName);
 }

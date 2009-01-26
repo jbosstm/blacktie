@@ -121,10 +121,13 @@ void AtmiBroker_ServiceFactoryImpl::createCacheInstance(int i, void(*func)(TPSVC
 // ~AtmiBroker_ServiceFactoryImpl destructor.
 //
 AtmiBroker_ServiceFactoryImpl::~AtmiBroker_ServiceFactoryImpl() {
-	for (int i = 0; i < serviceInfo.maxSize; i++) {
-		CORBA::release(corbaObjectVector[i]);
-		delete servantVector[i];
-	}
+	//	std::vector<AtmiBroker::Service_var>::iterator i = corbaObjectVector.begin();
+	//	while (i != corbaObjectVector.end()) {
+	//		CORBA::release((*i));
+	//		i = corbaObjectVector.erase(i);
+	//		//		delete servantVector[i];
+	//	}
+	//	factoryPoaPtr->destroy(false, true);
 }
 
 // start_conversation() -- Implements IDL operation "AtmiBroker::ServiceFactory::start_conversation".

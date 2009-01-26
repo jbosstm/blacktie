@@ -57,7 +57,7 @@ AtmiBrokerServiceFacMgr::~AtmiBrokerServiceFacMgr() {
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "deleted service factory array ");
 }
 
-AtmiBroker::ServiceFactory_ptr AtmiBrokerServiceFacMgr::getServiceFactory(const char * aServiceName) {
+AtmiBroker_ServiceFactoryImpl* AtmiBrokerServiceFacMgr::getServiceFactory(const char * aServiceName) {
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "getServiceFactory: %s", aServiceName);
 
 	for (std::vector<ServiceFactoryData>::iterator i = serviceFactoryData.begin(); i != serviceFactoryData.end(); i++) {
@@ -70,7 +70,7 @@ AtmiBroker::ServiceFactory_ptr AtmiBrokerServiceFacMgr::getServiceFactory(const 
 	return NULL;
 }
 
-void AtmiBrokerServiceFacMgr::addServiceFactory(const char * aServiceName, const AtmiBroker::ServiceFactory_var& aFactoryPtr, void(*func)(TPSVCINFO *)) {
+void AtmiBrokerServiceFacMgr::addServiceFactory(char*& aServiceName, AtmiBroker_ServiceFactoryImpl*& aFactoryPtr, void(*func)(TPSVCINFO *)) {
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "addServiceFactory: %s", aServiceName);
 
 	ServiceFactoryData entry;
@@ -81,17 +81,19 @@ void AtmiBrokerServiceFacMgr::addServiceFactory(const char * aServiceName, const
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "added: %s", (char*) aServiceName);
 }
 
-void AtmiBrokerServiceFacMgr::removeServiceFactory(const char * aServiceName) {
+AtmiBroker_ServiceFactoryImpl* AtmiBrokerServiceFacMgr::removeServiceFactory(const char * aServiceName) {
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "removeServiceFactory: %s", aServiceName);
-
+	AtmiBroker_ServiceFactoryImpl* toReturn = NULL;
 	for (std::vector<ServiceFactoryData>::iterator i = serviceFactoryData.begin(); i != serviceFactoryData.end(); i++) {
 		if (strncmp((*i).serviceName, aServiceName, XATMI_SERVICE_NAME_LENGTH) == 0) {
+			toReturn = (*i).factoryPtr;
 			userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "removing service %s", (char*) (*i).serviceName);
 			serviceFactoryData.erase(i);
 			userlog(Level::getDebug(), loggerAtmiBrokerServiceFacMgr, (char*) "removed: %s", aServiceName);
 			break;
 		}
 	}
+	return toReturn;
 }
 
 void (*AtmiBrokerServiceFacMgr::getServiceMethod(const char * aServiceName))(TPSVCINFO *) {
