@@ -40,8 +40,7 @@ using namespace log4cxx::helpers;
 LoggerPtr loggerAtmiBrokerPoaFac(Logger::getLogger("AtmiBrokerPoaFac"));
 
 // install transaction policy on this POA
-void add_transaction_policy(CORBA::ORB_var& orb, CORBA::PolicyList& policies, PortableServer::POA_ptr poa, int& index, int maxindex)
-{
+void add_transaction_policy(CORBA::ORB_var& orb, CORBA::PolicyList& policies, PortableServer::POA_ptr poa, int& index, int maxindex) {
 	if (maxindex - index < 1)
 		return;
 
@@ -52,12 +51,10 @@ void add_transaction_policy(CORBA::ORB_var& orb, CORBA::PolicyList& policies, Po
 	try {
 		policies[index++] = orb->create_policy(AtmiTx::OTS_POLICY_TYPE, any);
 	} catch (const ::CORBA::PolicyError& ex) {
-		userlog(Level::getInfo(), loggerAtmiBrokerPoaFac,
-			(char*) "no policy factory for AtmiTx::OTS_POLICY_TYPE has been registered");
+		userlog(Level::getInfo(), loggerAtmiBrokerPoaFac, (char*) "no policy factory for AtmiTx::OTS_POLICY_TYPE has been registered");
 	} catch (...) {
-		userlog(Level::getInfo(), loggerAtmiBrokerPoaFac,
-			(char*) "unexpected error whilst createing policy: AtmiTx::OTS_POLICY_TYPE" );
-		throw;	// don't know what to do about that
+		userlog(Level::getInfo(), loggerAtmiBrokerPoaFac, (char*) "unexpected error whilst createing policy: AtmiTx::OTS_POLICY_TYPE");
+		throw ; // don't know what to do about that
 	}
 }
 
@@ -107,9 +104,6 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createServiceFactoryPoa(CORBA::ORB_var
 	//
 	//	policies[i++] = parent_poa->create_thread_policy(PortableServer::SINGLE_THREAD_MODEL);
 
-	// install transaction policy
-//	add_transaction_policy(orb, policies, parent_poa, i, policies.length());
-	//    assert(i==2);
 
 	return parent_poa->create_POA(poa_name, poa_manager, policies);
 }
@@ -128,8 +122,7 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createServicePoa(CORBA::ORB_var orb, c
 	policies[i++] = parent_poa->create_thread_policy(PortableServer::ORB_CTRL_MODEL);
 
 	// install transaction policy
-	add_transaction_policy(orb, policies, parent_poa, i, policies.length());
-	//    assert(i==2);
+	//	add_transaction_policy(orb, policies, parent_poa, i, policies.length());
 
 	return parent_poa->create_POA(poa_name, poa_manager, policies);
 }
@@ -150,9 +143,6 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createServerPoa(CORBA::ORB_var orb, co
 	// Create User Id
 	//
 	policies[i++] = parent_poa->create_id_assignment_policy(PortableServer::USER_ID);
-
-	// install transaction policy
-	//add_transaction_policy(orb, policies, parent_poa, i, policies.length());
 
 	return parent_poa->create_POA(poa_name, poa_manager, policies);
 }

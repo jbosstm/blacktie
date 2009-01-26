@@ -31,6 +31,8 @@ extern "C" {
 }
 
 #include "AtmiBrokerMem.h"
+#include "AtmiBroker_ServiceImpl.h"
+#include "ThreadLocalStorage.h"
 #include "userlog.h"
 #include "log4cxx/logger.h"
 using namespace log4cxx;
@@ -52,6 +54,10 @@ char* tprealloc(char * addr, long size) {
 void tpfree(char* ptr) {
 	tperrno = 0;
 	if (ptr) {
+		AtmiBroker_ServiceImpl *service = (AtmiBroker_ServiceImpl*) getSpecific(SVC_KEY);
+		if (service != NULL && service->sameBuffer(ptr)) {
+			return;
+		}
 		userlog(Level::getDebug(), loggerAtmiBrokerMemc, (char*) "tpfree - ptr: %p", ptr);
 		AtmiBrokerMem::get_instance()->tpfree(ptr);
 	} else {

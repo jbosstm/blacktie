@@ -51,10 +51,11 @@ public:
 	void freeAllMemory();
 
 	static AtmiBrokerMem* get_instance();
+	static void discard_instance();
 
 private:
 
-	std::vector<MemoryInfo*> memoryInfoVector;
+	std::vector<MemoryInfo> memoryInfoVector;
 
 	static AtmiBrokerMem * ptrAtmiBrokerMem;
 

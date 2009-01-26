@@ -130,7 +130,7 @@ int serverinit(int argc, char ** argv) {
 
 			// TODO CLEAN UP TRANSACTION CURRENT
 			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverinit deleting services");
-			AtmiBrokerMem::get_instance()->freeAllMemory();
+			AtmiBrokerMem::discard_instance();
 			AtmiBrokerServiceFacMgr::discard_instance();
 			//TODO READD AtmiBrokerNotify::discard_instance();
 			AtmiBrokerOTS::discard_instance();
@@ -161,7 +161,7 @@ int serverdone() {
 
 			// TODO CLEAN UP TRANSACTION CURRENT
 			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone deleting services");
-			AtmiBrokerMem::get_instance()->freeAllMemory();
+			AtmiBrokerMem::discard_instance();
 			AtmiBrokerServiceFacMgr::discard_instance();
 			//TODO READD AtmiBrokerNotify::discard_instance();
 			AtmiBrokerOTS::discard_instance();

@@ -26,10 +26,7 @@
 #include <stdarg.h>
 #include <iostream>
 
-#include "ThreadLocalStorage.h"
 #include "xatmi.h"
-//TODO READD #include "extensions.h"
-#include "AtmiBroker_ServiceImpl.h"
 #include "AtmiBrokerMem.h"
 #include "AtmiBrokerBuffers.h"
 #include "AtmiBrokerMemc.h"
@@ -46,6 +43,13 @@ AtmiBrokerMem::get_instance() {
 	if (ptrAtmiBrokerMem == NULL)
 		ptrAtmiBrokerMem = new AtmiBrokerMem();
 	return ptrAtmiBrokerMem;
+}
+
+void AtmiBrokerMem::discard_instance() {
+	if (ptrAtmiBrokerMem != NULL) {
+		delete ptrAtmiBrokerMem;
+		ptrAtmiBrokerMem = NULL;
+	}
 }
 
 AtmiBrokerMem::AtmiBrokerMem() {
@@ -105,15 +109,15 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size) {
 	}
 
 	userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "type: %s subtype: %s", type, subtype);
-	MemoryInfo* aMemoryInfo = (MemoryInfo*) malloc(sizeof(MemoryInfo) * 1);
-	aMemoryInfo->memoryPtr = memPtr;
-	aMemoryInfo->size = size;
-	aMemoryInfo->type = strndup(type, MAX_TYPE_SIZE);
-	aMemoryInfo->subtype = strndup(subtype, MAX_SUBTYPE_SIZE);
+	MemoryInfo memoryInfo;
+	memoryInfo.memoryPtr = memPtr;
+	memoryInfo.size = size;
+	memoryInfo.type = strndup(type, MAX_TYPE_SIZE);
+	memoryInfo.subtype = strndup(subtype, MAX_SUBTYPE_SIZE);
 
-	userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "adding aMemoryInfo %p with type: %s with subtype: %s to vector", (void*) aMemoryInfo, (char*) aMemoryInfo->type, (char*) aMemoryInfo->subtype);
-	memoryInfoVector.push_back(aMemoryInfo);
-	userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "added aMemoryInfo to vector");
+	userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "adding MemoryInfo with type: %s with subtype: %s to vector", (char*) memoryInfo.type, (char*) memoryInfo.subtype);
+	memoryInfoVector.push_back(memoryInfo);
+	userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "added MemoryInfo to vector");
 
 	return memPtr;
 }
@@ -133,18 +137,18 @@ AtmiBrokerMem::tprealloc(char * addr, long size) {
 
 	userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "tprealloc - addr: %p size: %d", addr, size);
 
-	for (std::vector<MemoryInfo*>::iterator it = memoryInfoVector.begin(); it != memoryInfoVector.end(); it++) {
-		userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "next memoryInfo id is: %p", (char*) (*it)->memoryPtr);
-		if ((*it)->memoryPtr == addr) {
-			userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "found matching memory %p", (*it)->memoryPtr);
-			userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "updating memory ptr %p", (*it)->memoryPtr);
+	for (std::vector<MemoryInfo>::iterator it = memoryInfoVector.begin(); it != memoryInfoVector.end(); it++) {
+		userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "next memoryInfo id is: %p", (char*) (*it).memoryPtr);
+		if ((*it).memoryPtr == addr) {
+			userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "found matching memory %p", (*it).memoryPtr);
+			userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "updating memory ptr %p", (*it).memoryPtr);
 
 			bool trailingNull = false;
 			long reallocSize = size;
-			if (strcmp((*it)->type, "X_OCTET") == 0) {
+			if (strcmp((*it).type, "X_OCTET") == 0) {
 				reallocSize = (size + 1) * sizeof(char);
 				trailingNull = true;
-			} else if (strcmp((*it)->type, TYPE1) == 0 || strncmp((*it)->type, "X_COMMON", 8) == 0 || strncmp((*it)->type, "X_C_TYPE", 8) == 0) {
+			} else if (strcmp((*it).type, TYPE1) == 0 || strncmp((*it).type, "X_COMMON", 8) == 0 || strncmp((*it).type, "X_C_TYPE", 8) == 0) {
 				if (size < 1024)
 					size = 1024;
 				reallocSize = size * sizeof(char);
@@ -156,13 +160,13 @@ AtmiBrokerMem::tprealloc(char * addr, long size) {
 			} else {
 				memset(memPtr, '\0', size);
 			}
-			if ((*it)->memoryPtr != memPtr) {
+			if ((*it).memoryPtr != memPtr) {
 				// TODO this does not delete the original memory if it is moved?
-				userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "deleting old memory ptr %p", (*it)->memoryPtr);
+				userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "deleting old memory ptr %p", (*it).memoryPtr);
 			}
-			(*it)->memoryPtr = memPtr;
-			(*it)->size = size;
-			userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "updated memory ptr %p", (*it)->memoryPtr);
+			(*it).memoryPtr = memPtr;
+			(*it).size = size;
+			userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "updated memory ptr %p", (*it).memoryPtr);
 			return memPtr;
 		}
 	}
@@ -172,33 +176,26 @@ AtmiBrokerMem::tprealloc(char * addr, long size) {
 }
 
 void AtmiBrokerMem::tpfree(char* ptr) {
-	AtmiBroker_ServiceImpl *service = (AtmiBroker_ServiceImpl*) getSpecific(SVC_KEY);
-	if (service != NULL && service->sameBuffer(ptr)) {
-		return;
-	}
 
 	userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "tpfree - ptr: %p", ptr);
 
-	for (std::vector<MemoryInfo*>::iterator it = memoryInfoVector.begin(); it != memoryInfoVector.end(); it++) {
-		userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "next memoryInfo id is: %p", (char*) (*it)->memoryPtr);
-		if ((*it)->memoryPtr == ptr) {
-			userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "found matching memory %p", (*it)->memoryPtr);
+	for (std::vector<MemoryInfo>::iterator it = memoryInfoVector.begin(); it != memoryInfoVector.end(); it++) {
+		userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "next memoryInfo id is: %p", (char*) (*it).memoryPtr);
+		if ((*it).memoryPtr == ptr) {
+			MemoryInfo memoryInfo = (*it);
+			userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "found matching memory %p", memoryInfo.memoryPtr);
 
 			userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "freeing memory");
-			free((*it)->memoryPtr);
-			free((*it)->type);
-			free((*it)->subtype);
+			free(memoryInfo.memoryPtr);
+			free(memoryInfo.type);
+			free(memoryInfo.subtype);
 			userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "freed memory");
 
-			userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "freeing memory info");
-			free((*it));
-			userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "freed memory info");
-
-			userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "removing %p from vector", (*it));
+			userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "removing %p from vector", memoryInfo);
 			memoryInfoVector.erase(it);
 			userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "removed from vector ");
 
-			return;
+			break;
 		}
 	}
 	return;
@@ -212,20 +209,20 @@ long AtmiBrokerMem::tptypes(char* ptr, char* type, char* subtype) {
 
 	userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "tptypes - ptr: %p", ptr);
 
-	for (std::vector<MemoryInfo*>::iterator it = memoryInfoVector.begin(); it != memoryInfoVector.end(); it++) {
-		userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "next memoryInfo id is: %p", (char*) (*it)->memoryPtr);
-		if ((*it)->memoryPtr == ptr) {
-			userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "found matching memory %p", (*it)->memoryPtr);
-			userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "type is %s", (char*) (*it)->type);
-			userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "subtype is %s", (char*) (*it)->subtype);
+	for (std::vector<MemoryInfo>::iterator it = memoryInfoVector.begin(); it != memoryInfoVector.end(); it++) {
+		userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "next memoryInfo id is: %p", (char*) (*it).memoryPtr);
+		if ((*it).memoryPtr == ptr) {
+			userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "found matching memory %p", (*it).memoryPtr);
+			userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "type is %s", (char*) (*it).type);
+			userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "subtype is %s", (char*) (*it).subtype);
 
 			if (type) {
-				strncpy(type, (*it)->type, MAX_TYPE_SIZE);
+				strncpy(type, (*it).type, MAX_TYPE_SIZE);
 			}
 			if (subtype) {
-				strncpy(subtype, (*it)->subtype, MAX_SUBTYPE_SIZE);
+				strncpy(subtype, (*it).subtype, MAX_SUBTYPE_SIZE);
 			}
-			return (*it)->size;
+			return (*it).size;
 		}
 	}
 	// WAS NOT FOUND
@@ -236,15 +233,20 @@ long AtmiBrokerMem::tptypes(char* ptr, char* type, char* subtype) {
 void AtmiBrokerMem::freeAllMemory() {
 	userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "freeAllMemory");
 	userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "memoryInfoVector.size %d", memoryInfoVector.size());
+	std::vector<MemoryInfo>::iterator it = memoryInfoVector.begin();
+	while (it != memoryInfoVector.end()) {
+		MemoryInfo memoryInfo = (*it);
+		userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "next memoryInfo id is: %p", (char*) memoryInfo.memoryPtr);
 
-	for (std::vector<MemoryInfo*>::iterator it = memoryInfoVector.begin(); it != memoryInfoVector.end(); it++) {
-		userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "next memoryInfo id is: %p", (char*) (*it)->memoryPtr);
-		tpfree((char*) (*it)->memoryPtr);
+		userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "freeing memory");
+		free(memoryInfo.memoryPtr);
+		free(memoryInfo.type);
+		free(memoryInfo.subtype);
+		userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "freed memory");
 
-		if (memoryInfoVector.size() == 0)
-			return;
-		else
-			it = memoryInfoVector.begin();
+		userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "removing %p from vector", (*it));
+		it = memoryInfoVector.erase(it);
+		userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "removed from vector ");
 	}
 	memoryInfoVector.clear();
 }

@@ -172,8 +172,8 @@ int AtmiBrokerConversation::tpsend(int id, char* idata, long ilen, long flags, l
 	return toReturn;
 }
 
-int AtmiBrokerConversation::send(AtmiBroker::Service_var aCorbaService, char* idata, long ilen, bool conversation, long flags, long *revent) {
-	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "send - idata: %s ilen: %d flags: %d revent: %d", idata, ilen, flags, revent);
+int AtmiBrokerConversation::send(AtmiBroker::Service_var aCorbaService, char* data, long ilen, bool conversation, long flags, long *revent) {
+	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "send - data: %s ilen: %d flags: %d revent: %d", data, ilen, flags, revent);
 
 	tperrno = 0;
 	int toReturn = 0;
@@ -182,7 +182,7 @@ int AtmiBrokerConversation::send(AtmiBroker::Service_var aCorbaService, char* id
 	strcpy(type, "");
 	char subtype[25];
 	strcpy(subtype, "");
-	long atype = AtmiBrokerMem::get_instance()->tptypes(idata, type, subtype);
+	long atype = AtmiBrokerMem::get_instance()->tptypes(data, type, subtype);
 	if (atype == -1L) {
 		userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "MEMORY NOT ALLOCATED THRU TPALLOC!!!");
 		tperrno = TPEITYPE; // TODO THE SPEC DOES NOT SAY THIS IS NECCESARY FOR TPSEND...
@@ -196,8 +196,12 @@ int AtmiBrokerConversation::send(AtmiBroker::Service_var aCorbaService, char* id
 			}
 
 			CORBA::Long a_ilen = ilen;
-			// TODO TYPED BUFFER (AtmiBroker::TypedBuffer&) *idata for a_idata
-			AtmiBroker::octetSeq * a_idata = new AtmiBroker::octetSeq(a_ilen, a_ilen, (unsigned char *) idata, true);
+			char * type;
+			char * subtype;
+			int data_size = ::tptypes(data, type, subtype);
+			unsigned char * data_togo = (unsigned char *) malloc(data_size);
+			memcpy(data_togo, data, data_size);
+			AtmiBroker::octetSeq * a_idata = new AtmiBroker::octetSeq(a_ilen, a_ilen, data_togo, true);
 			// TODO NOTIFY SERVER OF POSSIBLE CONDITIONS
 			aCorbaService->send_data(conversation, *a_idata, a_ilen, flags, 0);
 		} catch (...) {
