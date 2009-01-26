@@ -96,7 +96,7 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createServiceFactoryPoa(CORBA::ORB_var
 	// Create a policy list. Policies not set in the list get default values.
 	//
 	CORBA::PolicyList policies;
-	policies.length(2);
+	policies.length(1);
 	int i = 0;
 
 	// Create Persistant Lifespan
@@ -108,7 +108,7 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createServiceFactoryPoa(CORBA::ORB_var
 	//	policies[i++] = parent_poa->create_thread_policy(PortableServer::SINGLE_THREAD_MODEL);
 
 	// install transaction policy
-	add_transaction_policy(orb, policies, parent_poa, i, policies.length());
+//	add_transaction_policy(orb, policies, parent_poa, i, policies.length());
 	//    assert(i==2);
 
 	return parent_poa->create_POA(poa_name, poa_manager, policies);
