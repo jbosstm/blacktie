@@ -49,10 +49,10 @@ bool ServerInterceptor::policyCheck(PortableInterceptor::ServerRequestInfo_ptr r
         try {
                 CORBA::Policy_var pv =  ri->get_server_policy(AtmiTx::OTS_POLICY_TYPE);
                 AtmiTx::OTSPolicy_var otsp = AtmiTx::OTSPolicy::_narrow(pv.in());
-                LOG4CXX_LOGLS(atmiServerInterceptorLogger, Level::getDebug(), (char*) "policy var " << otsp);
+                LOG4CXX_LOGLS(atmiServerInterceptorLogger, Level::getTrace(), (char*) "policy var " << otsp);
 
                 if (CORBA::is_nil(otsp.in())) {
-                        LOG4CXX_LOGLS(atmiServerInterceptorLogger, Level::getDebug(), (char*) "\tpolicy is nil");
+                        LOG4CXX_LOGLS(atmiServerInterceptorLogger, Level::getTrace(), (char*) "\tpolicy is nil");
                 } else {
                         tpv_ = otsp->tpv();
                         LOG4CXX_LOGLS(atmiServerInterceptorLogger, Level::getDebug(),

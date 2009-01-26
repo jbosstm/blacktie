@@ -43,7 +43,7 @@ void TxIORInterceptor::establish_components(PortableInterceptor::IORInfo_ptr inf
                 // if an->length is 1 then this is the root POA:
                 // do not apply the tag to the root POA
                                 if (an->length () > 1) {
-                        LOG4CXX_LOGLS(loggerTxIORInterceptor, Level::getDebug(), (char*) "establish_components: ");
+                        LOG4CXX_LOGLS(loggerTxIORInterceptor, Level::getTrace(), (char*) "establish_components: ");
 
                         CORBA::Policy_var policy(info->get_effective_policy(AtmiTx::OTS_POLICY_TYPE));
                         AtmiTx::OTSPolicy_var txpolicy(AtmiTx::OTSPolicy::_narrow(policy.in()));
@@ -63,7 +63,7 @@ void TxIORInterceptor::establish_components(PortableInterceptor::IORInfo_ptr inf
  * tag the input IORInfo as transactional 
  */
 void TxIORInterceptor::addOTSTag(PortableInterceptor::IORInfo_ptr info) {
-        LOG4CXX_LOGLS(loggerTxIORInterceptor, Level::getDebug(), (char*) "addOTSTag: ");
+        LOG4CXX_LOGLS(loggerTxIORInterceptor, Level::getTrace(), (char*) "addOTSTag: ");
 
         IOP::TaggedComponent comp;      // create an IOR tag
         comp.tag = AtmiTx::TAG_OTS_POLICY;
