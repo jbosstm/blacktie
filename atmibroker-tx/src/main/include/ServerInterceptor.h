@@ -31,7 +31,7 @@ class ATMIBROKER_TX_DLL ServerInterceptor:
         public PortableInterceptor::ServerRequestInterceptor
 {
 public:
-        ServerInterceptor(CORBA::ORB_ptr*, IOP::CodecFactory_var);
+        ServerInterceptor(const char *, IOP::CodecFactory_var);
         virtual ~ServerInterceptor() {}
 
         virtual char* name() { return TxInterceptor::name();}
@@ -44,8 +44,6 @@ public:
         virtual void send_other(PortableInterceptor::ServerRequestInfo_ptr);
 
 private:
-        bool isTransactional(PortableInterceptor::ServerRequestInfo_ptr);
-	CosTransactions::Control_ptr get_tx(PortableInterceptor::ServerRequestInfo_ptr, const char *);
         bool policyCheck(PortableInterceptor::ServerRequestInfo_ptr);
 };
 

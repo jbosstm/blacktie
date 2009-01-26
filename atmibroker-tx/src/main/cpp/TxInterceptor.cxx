@@ -18,78 +18,228 @@
 #include "TxInterceptor.h"
 
 #include "ThreadLocalStorage.h"
+#include "OrbManagement.h"
+
+// includes for looking up orbs
+#include "tao/ORB_Core.h"
+#include "tao/ORB_Table.h"
+#include "tao/ORB_Core_Auto_Ptr.h"
+	
 
 LoggerPtr atmiTxInterceptorLogger(Logger::getLogger("TxInterceptor"));
 
-TxInterceptor::TxInterceptor(CORBA::ORB_ptr* orbPtr, IOP::CodecFactory_var cf, const char* name) : name_(name), orb(orbPtr)
-{
-        // create a GIOP 1.2 CDR encapsulation Codec (to match whatever is in jacorb.properties)
-        IOP::Encoding encoding;
-
-        encoding.format = IOP::ENCODING_CDR_ENCAPS;
-        encoding.major_version = 1;
-        encoding.minor_version = 2;
-
-        this->codec_ = cf->create_codec (encoding);
+TxInterceptor::TxInterceptor(const char *orbname, IOP::CodecFactory_var cf, const char* name) :
+	name_(name), orbname_(strdup(orbname)) {
+	// create a GIOP 1.2 CDR encapsulation Codec (to match whatever is in jacorb.properties)
+	IOP::Encoding encoding;
+	
+	encoding.format = IOP::ENCODING_CDR_ENCAPS;
+	encoding.major_version = 1;
+	encoding.minor_version = 2;
+	
+	this->codec_ = cf->create_codec (encoding);
+	
 }
+TxInterceptor::~TxInterceptor() {if (orbname_ != 0) free(orbname_);}
 
-char* TxInterceptor::name()
-{
-        return CORBA::string_dup(this->name_);
-}
+char* TxInterceptor::name() {return CORBA::string_dup(this->name_);}
 
-/**
- * convert an object ref to an object
- * caller is responsible for releasing the returned pointer
- */
-CosTransactions::Control_ptr TxInterceptor::string_to_control(const char* ior)
-{
-	if (ior != NULL) {
-        	try {
-			CORBA::Object_ptr obj = get_orb()->string_to_object(ior);
-
-                	if (!CORBA::is_nil(obj)) {
-                		CosTransactions::Control_ptr cptr = CosTransactions::Control::_narrow(obj);
-				CORBA::release(obj);	// dispose of it now that we have narrowed the object reference
-
-				LOG4CXX_LOGLS(atmiTxInterceptorLogger, Level::getDebug(), (char *) "narrowed to " << cptr);
-
-				return cptr;
-			}
-        	} catch (const CORBA::SystemException& ex) {
-                	// the ior doesn't correspond to a transaction
-                	ex._tao_print_exception("ior does not represent an OTS transaction");
-        	}
-	}
-
-	return CosTransactions::Control::_nil();
-}
-
-/**
- * test whether the current thread contains a transaction and if so
- * returns its IOR
- */
-char* TxInterceptor::get_control_ior()
-{
+char* TxInterceptor::get_control_ior() {
 	CosTransactions::Control_ptr ctrl = this->current_control();
 
-        return CORBA::is_nil(ctrl) ? NULL : this->get_orb()->object_to_string(ctrl);
+	if (!CORBA::is_nil(ctrl)) {
+		LOG4CXX_LOGLS(atmiTxInterceptorLogger, Level::getDebug(), (char *) "current is not NULL");
+		TAO::ORB_Table * const orb_table = TAO::ORB_Table::instance ();
+		::TAO_ORB_Core* oc = orb_table->find(orbname_);
+		char * p = (oc == 0 ? NULL : oc->orb()->object_to_string(ctrl));
+		if (p != NULL)
+			return strdup(p);
+	} else {
+		LOG4CXX_LOGLS(atmiTxInterceptorLogger, Level::getDebug(), (char *) "current is NULL");
+	}
+
+	return NULL;
 }
 
-/**
- * return the current transaction associated with this thread
- */
-CosTransactions::Control_ptr TxInterceptor::current_control()
-{
-	CosTransactions::Current_var& cur = AtmiBrokerOTS::get_instance()->getCurrent();
+CosTransactions::Control_ptr TxInterceptor::current_control() {
+	return (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
+}
 
-	if (CORBA::is_nil(cur))
+CosTransactions::Control_ptr TxInterceptor::ior_to_control(char * ior)
+{
+	LOG4CXX_LOGLS(atmiTxInterceptorLogger, Level::getDebug(), (char *) "\treceived ior: " << (ior ? ior : "NULL"));
+
+	if (ior != NULL) {
+		TAO::ORB_Table * const orb_table = TAO::ORB_Table::instance ();
+		::TAO_ORB_Core* oc = orb_table->find(orbname_);
+		CORBA::Object_ptr p = (oc == 0 ? NULL : oc->orb()->string_to_object(ior));
+
+		free(ior);
+
+		if (!CORBA::is_nil(p)) {
+			CosTransactions::Control_ptr cptr = CosTransactions::Control::_narrow(p);
+			CORBA::release(p);    // dispose of it now that we have narrowed the object reference
+
+			LOG4CXX_LOGLS(atmiTxInterceptorLogger, Level::getDebug(), (char *) "narrowed to " << cptr);
+
+			return cptr;
+		}
+	}
+
+	return NULL;
+}
+
+CosTransactions::Control_ptr TxInterceptor::extract_tx_from_context(PortableInterceptor::ServerRequestInfo_ptr ri) {
+	if (isTransactional(ri)) {
+		return this->ior_to_control(extract_ior_from_context(ri));
+	} else {
 		return NULL;
-
-	return cur->get_control();
+	}
 }
 
-bool TxInterceptor::isTransactional(const char* op)
+CosTransactions::Control_ptr TxInterceptor::extract_tx_from_context(PortableInterceptor::ClientRequestInfo_ptr ri) {
+	if (isTransactional(ri)) {
+		return this->ior_to_control(extract_ior_from_context(ri));
+	} else {
+		return NULL;
+	}
+}
+
+char * TxInterceptor::extract_ior_from_context(PortableInterceptor::ServerRequestInfo_ptr ri)
 {
-        return true;
+	try {
+		IOP::ServiceContext_var sc = ri->get_request_service_context(tx_context_id);
+		CORBA::OctetSeq ocSeq = sc->context_data;
+		const char * ior = reinterpret_cast<const char *> (ocSeq.get_buffer ());
+		LOG4CXX_LOGLS(atmiTxInterceptorLogger, Level::getDebug(), (char *) "\tserver received ior: " << ior);
+
+		if (ior != NULL)
+			return strdup(ior);
+	} catch (const CORBA::BAD_PARAM &) {
+		// this means that there is no service context for tx_context_id which means that eiter:
+		// - the caller is non-transactional, or
+		// - the caller is not running in transaction context
+	} catch (CORBA::SystemException& ex) {
+		LOG4CXX_LOGLS(atmiTxInterceptorLogger, Level::getWarn(), (char *) "\tserver service context error");
+		throw;
+	}
+
+	return NULL;
+}
+char * TxInterceptor::extract_ior_from_context(PortableInterceptor::ClientRequestInfo_ptr ri)
+{
+	try {
+		IOP::ServiceContext_var sc = ri->get_request_service_context(tx_context_id);
+		CORBA::OctetSeq ocSeq = sc->context_data;
+		const char * ior = reinterpret_cast<const char *> (ocSeq.get_buffer ());
+		LOG4CXX_LOGLS(atmiTxInterceptorLogger, Level::getDebug(), (char *) "\tclient received ior: " << ior);
+		if (ior != NULL)
+			return strdup(ior);
+	} catch (const CORBA::BAD_PARAM &) {
+		// this means that there is no service context for tx_context_id which means that eiter:
+		// - the caller is non-transactional, or
+		// - the caller is not running in transaction context
+	} catch (CORBA::SystemException& ex) {
+		LOG4CXX_LOGLS(atmiTxInterceptorLogger, Level::getWarn(), (char *) "\tclient service context error");
+		throw;
+	}
+
+	return NULL;
+}
+
+bool TxInterceptor::add_ior_to_context(PortableInterceptor::ClientRequestInfo_ptr ri)
+{
+	if (this->isTransactional(ri)) {
+		// add the ior for the transaction to the service contexts
+		char *ior = this->get_control_ior();
+
+		//getInfo()
+		LOG4CXX_LOGLS(atmiTxInterceptorLogger, Level::getDebug(), (char*) "\t" << ri->operation() << ": ior is "
+			<< (ior==NULL ? "NULL" : "not NULL"));
+
+		if (ior != NULL) {
+			IOP::ServiceContext sc;
+			int slen = ACE_OS::strlen(ior) + 1;
+		
+			sc.context_id = tx_context_id;
+			sc.context_data.length(slen);
+			CORBA::Octet *sc_buf = sc.context_data.get_buffer();
+			ACE_OS::memcpy(sc_buf, ior, slen);
+			ri->add_request_service_context(sc, 1);
+
+			CORBA::string_free(ior);
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool TxInterceptor::isTransactional(PortableInterceptor::ClientRequestInfo_ptr ri) {
+	try {
+		IOP::TaggedComponent_var comp = ri->get_effective_component(AtmiTx::TAG_OTS_POLICY);
+		LOG4CXX_LOGLS(atmiTxInterceptorLogger, Level::getDebug(), (char *) "\tTRANSACTIONAL - " <<  ri->operation ());
+		return true;
+	} catch (const CORBA::SystemException& ex) {
+		// should be BAD_PARAM, minor code 25 
+	} catch (...) {
+		LOG4CXX_LOGLS(atmiTxInterceptorLogger, Level::getWarn(), (char*) "isTransactional unexpected ex");
+	}
+
+	return false;
+}
+
+bool TxInterceptor::isTransactional(PortableInterceptor::ServerRequestInfo_ptr ri)
+{
+	try {
+		CORBA::Policy_var pv =  ri->get_server_policy(AtmiTx::OTS_POLICY_TYPE);
+		LOG4CXX_LOGLS(atmiTxInterceptorLogger, Level::getDebug(), (char *) "\tTRANSACTIONAL - " <<  ri->operation ());
+		return true;
+	} catch (const CORBA::SystemException& ex) {
+		// should be INV_POLICY, minor code 2
+	} catch (...) {
+		LOG4CXX_LOGLS(atmiTxInterceptorLogger, Level::getWarn(),
+			(char*) "isTransactional unexpected ex, op: " << ri->operation ());
+	}
+
+	return false;
+}
+
+void TxInterceptor::update_tx_context(PortableInterceptor::ServerRequestInfo_ptr ri) {
+	CosTransactions::Control_ptr ctrl = this->extract_tx_from_context(ri);
+
+	if (!CORBA::is_nil(ctrl)) {
+		CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
+
+		if (!CORBA::is_nil(curr)) {
+			if (!curr->_is_equivalent(ctrl)) {
+				// TODO suspend curr and resume it in send_reply/send_exception
+				// but if its a one way call then why is curr set
+				LOG4CXX_LOGLS(atmiTxInterceptorLogger, Level::getError(),
+					(char*) "\tTODO Error current and context are different");
+
+				//TODO CORBA::release(curr);
+			}
+		}
+
+		setSpecific(TSS_KEY, ctrl);
+
+		//getInfo()
+		LOG4CXX_LOGLS(atmiTxInterceptorLogger, Level::getDebug(),
+			ri->operation () << (char*) ": associated client tx with thread");
+	}
+}
+
+void TxInterceptor::debug(bool isTx, const char * msg, const char* op) {
+	LevelPtr lvl = (isTx ? Level::getInfo() : Level::getDebug());
+	LOG4CXX_LOGLS(atmiTxInterceptorLogger, lvl,
+		this->name_ << msg << (char*) " " <<  op << (char*) " transactional="
+		<< isTx << " TSS: " << getSpecific(TSS_KEY));
+}
+void TxInterceptor::debug(PortableInterceptor::ClientRequestInfo_ptr ri, const char* msg) {
+	debug(this->isTransactional(ri), msg, ri->operation ());
+}
+
+void TxInterceptor::debug(PortableInterceptor::ServerRequestInfo_ptr ri, const char* msg) {
+	debug(this->isTransactional(ri), msg, ri->operation ());
 }

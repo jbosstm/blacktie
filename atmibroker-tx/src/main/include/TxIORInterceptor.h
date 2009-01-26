@@ -33,7 +33,7 @@ class TxIORInterceptor:
         public TxInterceptor
 {
 public:
-        TxIORInterceptor(CORBA::ORB_ptr*, IOP::CodecFactory_var);
+        TxIORInterceptor(const char *, IOP::CodecFactory_var);
         virtual ~TxIORInterceptor() {}
 
         char* name() { return TxInterceptor::name();}

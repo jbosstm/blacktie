@@ -35,7 +35,7 @@ class ATMIBROKER_TX_DLL ClientInterceptor:
         public virtual TxInterceptor
 {
 public:
-        ClientInterceptor(CORBA::ORB_ptr*, IOP::CodecFactory_var);
+        ClientInterceptor(const char *, IOP::CodecFactory_var);
         virtual ~ClientInterceptor() {}
 
         virtual char* name() { return TxInterceptor::name();}
@@ -48,10 +48,8 @@ public:
         virtual void receive_exception(PortableInterceptor::ClientRequestInfo_ptr ri);
 
 private:
-        bool isTransactional(PortableInterceptor::ClientRequestInfo_ptr);
         void resume_tx(PortableInterceptor::ClientRequestInfo_ptr);
 	long find_control(CORBA::ULong requestId, bool);
-	void debug(PortableInterceptor::ClientRequestInfo_ptr ri, const char* msg);
 
         // outstanding requests to transaction map
         typedef std::map<CORBA::ULong, long> ActiveTxMap;

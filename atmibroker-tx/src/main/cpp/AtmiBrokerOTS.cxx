@@ -97,7 +97,7 @@ AtmiBrokerOTS::~AtmiBrokerOTS() {
 void  AtmiBrokerOTS::init_orb(
         char* name, Worker*& worker, CORBA::ORB_ptr& orbRef,
         CosNaming::NamingContextExt_var& default_ctx, CosNaming::NamingContext_var& name_ctx) {
-       	register_tx_interceptors(orbRef);
+       	register_tx_interceptors(name);
        	initOrb(name, worker, orbRef, default_ctx, name_ctx);
 }
 

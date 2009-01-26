@@ -59,7 +59,7 @@ PortableServer::POA_ptr create_service_factory_poa(char *serviceName) {
 
 	PortableServer::POA_var aPoaVar;
 
-	aPoaVar = serverPoaFactory->createServiceFactoryPoa(serviceName, server_poa, server_root_poa_manager);
+	aPoaVar = serverPoaFactory->createServiceFactoryPoa(server_orb, serviceName, server_poa, server_root_poa_manager);
 
 	userlog(Level::getInfo(), loggerAtmiBrokerServiceFac, (char*) "created create_service_factory_poa: %s", serviceName);
 	return aPoaVar._retn();
