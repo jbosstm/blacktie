@@ -42,7 +42,6 @@ void TestTPAlloc::test_tpalloc_zero() {
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, 0);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(m_allocated[0] == '\0');
 
 	char type[8];
 	char subtype[16];
@@ -67,17 +66,18 @@ void TestTPAlloc::test_tpalloc_x_octet_subtype_ignored() {
 
 // 9.1.1
 void TestTPAlloc::test_tpalloc_x_octet() {
-	char *ptr1, *ptr2;
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, 25);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(m_allocated[24] != '\0');
-	CPPUNIT_ASSERT(m_allocated[25] == '\0');
 
-	ptr1 = m_allocated;
-	ptr2 = m_allocated + 10;
-	strcpy(ptr1, "hello");
-	strcpy(ptr2, "goodbye");
+	char type[8];
+	char subtype[16];
+	int toTest = ::tptypes(m_allocated, type, subtype);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toTest == 25);
+	CPPUNIT_ASSERT(strncmp(type, "X_OCTET", 8) == 0);
+	CPPUNIT_ASSERT(strcmp(subtype, "") == 0);
+
 }
 
 // 9.1.2

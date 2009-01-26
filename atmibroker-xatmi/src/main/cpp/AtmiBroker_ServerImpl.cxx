@@ -121,7 +121,14 @@ CORBA::Short AtmiBroker_ServerImpl::server_init() throw (CORBA::SystemException 
 void AtmiBroker_ServerImpl::server_done() throw (CORBA::SystemException ) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "server_done()");
 
-	// unadvertise(); // DO NOT DO THIS SINCE THE NamingService needs the Persistant IOR for re-launching!!!
+	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "unadvertise %s", serverName);
+
+	CosNaming::Name * name;
+
+	name = server_default_context->to_name(serverName);
+	server_name_context->unbind(*name);
+
+	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "unadvertised %s", serverName);
 
 	for (unsigned int i = 0; i < serverInfo.serviceNames.size(); i++) {
 		char* svcname = (char*) serverInfo.serviceNames[i].c_str();
@@ -136,17 +143,6 @@ char *
 AtmiBroker_ServerImpl::getServerName() {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "getServerName ");
 	return serverName;
-}
-
-void AtmiBroker_ServerImpl::unadvertise() {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "unadvertise %s", serverName);
-
-	CosNaming::Name * name;
-
-	name = server_default_context->to_name(serverName);
-	server_name_context->unbind(*name);
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "unadvertised %s", serverName);
 }
 
 bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPSVCINFO *)) {

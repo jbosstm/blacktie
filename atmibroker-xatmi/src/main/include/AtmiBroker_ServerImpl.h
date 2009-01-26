@@ -117,8 +117,6 @@ public:
 
 	virtual char * getServerName();
 
-	virtual void unadvertise();
-
 	virtual bool advertiseService(char * serviceName, void(*func)(TPSVCINFO *));
 
 	virtual void unadvertiseService(char * serviceName);

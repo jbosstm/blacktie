@@ -131,14 +131,14 @@ void TestTPAdvertise::test_tpadvertise_readvertise() {
 }
 
 void testtpadvertise_service(TPSVCINFO *svcinfo) {
-	char * toReturn = new char[23];
+	char * toReturn = ::tpalloc("X_OCTET", NULL, 25);
 	strcpy(toReturn, "testtpadvertise_service");
 	// Changed length from 0L to svcinfo->len
 	tpreturn(TPSUCCESS, 0, toReturn, 25, 0);
 }
 
 void testtpadvertise_service_2(TPSVCINFO *svcinfo) {
-	char * toReturn = new char[25];
+	char * toReturn = ::tpalloc("X_OCTET", NULL, 25);
 	strcpy(toReturn, "testtpadvertise_service_2");
 	// Changed length from 0L to svcinfo->len
 	tpreturn(TPSUCCESS, 0, toReturn, 25, 0);

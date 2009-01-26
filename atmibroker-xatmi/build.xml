@@ -308,16 +308,16 @@
 		<antcall target="_test-gcc" />
 	</target>
 	<target name="_test-gcc" depends="init" unless="is-msvc">
-		<exec dir="target/cpp-test-classes" newenvironment="true" resolveexecutable="true" executable="../testsuite" failonerror="${failOnErrorTests}" output="target/cppunit/run.txt" outputproperty="cppunit-run" logError="true">
+		<exec dir="target/cpp-test-classes" newenvironment="true" resolveexecutable="true" executable="../testsuite" failonerror="${failOnErrorTests}">
+			<redirector output="target/cppunit/run.txt" logError="true" alwayslog="true"/>
 			<env key="LD_LIBRARY_PATH" value="../dependencies:../../target/${configuration.type}/${lib.type}" />
 		</exec>
-		<echo message="${cppunit-run}" />
 	</target>
 	<target name="_test-msvc" depends="init" if="is-msvc">
-		<exec dir="target/cpp-test-classes" newenvironment="false" executable="${ATMIBROKER_SRC_DIR}/${ant.project.name}/target/testsuite" failonerror="${failOnErrorTests}" output="target/cppunit/run.txt" outputproperty="cppunit-run" logError="true">
+		<exec dir="target/cpp-test-classes" newenvironment="false" executable="${ATMIBROKER_SRC_DIR}/${ant.project.name}/target/testsuite" failonerror="${failOnErrorTests}">
+			<redirector output="target/cppunit/run.txt" logError="true" alwayslog="true"/>
 			<env key="Path" value="${env.Path};..\dependencies;..\..\target\${configuration.type}\${lib.type}" />
 		</exec>
-		<echo message="${cppunit-run}" />
 	</target>
 
 	<target name="package" depends="init">

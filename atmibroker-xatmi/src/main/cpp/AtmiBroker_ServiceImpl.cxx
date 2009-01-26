@@ -160,21 +160,22 @@ void AtmiBroker_ServiceImpl::tpreturn(int rval, long rcode, char* data, long len
 	endConnectionTransactionAssociation();
 
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "Calling back ");
-	char * type;
-	char * subtype;
+	char * type = NULL;
+	char * subtype = NULL;
 	int data_size = ::tptypes(data, type, subtype);
-	unsigned char * data_togo = (unsigned char *) malloc(data_size);
-	memcpy(data_togo, data, data_size);
-	AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(len, len, data_togo, true);
-	callbackRef->enqueue_data(rval, rcode, aOctetSeq, len, flags, 0, id);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "Called back ");
-	aOctetSeq = NULL;
+	if (data_size > -1) {
+		unsigned char * data_togo = (unsigned char *) malloc(data_size);
+		memcpy(data_togo, data, data_size);
+		AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(len, len, data_togo, true);
+		callbackRef->enqueue_data(rval, rcode, aOctetSeq, len, flags, 0, id);
+		aOctetSeq = NULL;
+		::tpfree(data);
+		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "Called back ");
+	}
 
 	inUse = false;
 	clientId = 0;
 	callbackRef = NULL;
-
-	::tpfree(data);
 	free(idStr);
 }
 

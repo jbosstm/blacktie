@@ -54,7 +54,7 @@ void TestTPFreeService::test_tpfree_x_octet() {
 	int toCheck = ::tpcall((char*) "TestTPFree", (char*) m_allocated, 0, (char**) &m_rcvbuf, &m_rcvlen, 0);
 	CPPUNIT_ASSERT(toCheck != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(m_rcvbuf[0] == '1');
+	CPPUNIT_ASSERT(m_rcvbuf[0] == '0');
 }
 
 void TestTPFreeService::test_tpfree_x_common() {
@@ -67,7 +67,7 @@ void TestTPFreeService::test_tpfree_x_common() {
 	int toCheck = ::tpcall((char*) "TestTPFree", (char*) m_allocated, 0, (char**) &m_rcvbuf, &m_rcvlen, 0);
 	CPPUNIT_ASSERT(toCheck != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(m_rcvbuf[0] == '1');
+	CPPUNIT_ASSERT(m_rcvbuf[0] == '0');
 }
 
 void TestTPFreeService::test_tpfree_x_c_type() {
@@ -80,7 +80,7 @@ void TestTPFreeService::test_tpfree_x_c_type() {
 	int toCheck = ::tpcall((char*) "TestTPFree", (char*) m_allocated, 0, (char**) &m_rcvbuf, &m_rcvlen, 0);
 	CPPUNIT_ASSERT(toCheck != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(m_rcvbuf[0] == '1');
+	CPPUNIT_ASSERT(m_rcvbuf[0] == '0');
 }
 
 void testtpfreeservice_service(TPSVCINFO *svcinfo) {
