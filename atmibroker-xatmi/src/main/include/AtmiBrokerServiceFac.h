@@ -27,21 +27,8 @@
 
 #include "atmiBrokerMacro.h"
 
-#ifdef TAO_COMP
-#include "AtmiBrokerS.h"
-#elif ORBIX_COMP
-#include "AtmiBroker.hh"
-#endif
-#ifdef VBC_COMP
-#include "AtmiBroker_s.hh"
-#endif
-
-#include "AtmiBroker_ServiceFactoryImpl.h"
-
 extern ATMIBROKER_DLL void remove_service_factory(char * serviceName);
 
-extern ATMIBROKER_DLL PortableServer::POA_ptr create_service_factory_poa(char *serviceName);
-
-extern ATMIBROKER_DLL void create_service_factory(AtmiBroker_ServiceFactoryImpl *tmp_servant, PortableServer::POA_var aPoaPtr, char *serviceName, void(*func)(TPSVCINFO *));
+extern ATMIBROKER_DLL void create_service_factory(char *serviceName, void(*func)(TPSVCINFO *));
 
 #endif //AtmiBroker_SERVICE_FAC_H

@@ -50,7 +50,9 @@ void LoopyServerAndClient::testLoopyAll() {
 		CPPUNIT_ASSERT(result != -1);
 		CPPUNIT_ASSERT(tperrno == 0);
 
-		tpadvertise((char*) "LOOPY", loopy);
+		result = tpadvertise((char*) "LOOPY", loopy);
+		CPPUNIT_ASSERT(result != -1);
+		CPPUNIT_ASSERT(tperrno == 0);
 
 		result = clientdone();
 		CPPUNIT_ASSERT(result != -1);
@@ -72,7 +74,9 @@ void LoopyServerAndClient::testLoopyAll2() {
 		CPPUNIT_ASSERT(result != -1);
 		CPPUNIT_ASSERT(tperrno == 0);
 
-		tpadvertise((char*) "LOOPY", loopy);
+		result = tpadvertise((char*) "LOOPY", loopy);
+		CPPUNIT_ASSERT(result != -1);
+		CPPUNIT_ASSERT(tperrno == 0);
 
 		result = clientinit();
 		CPPUNIT_ASSERT(result != -1);
@@ -101,8 +105,13 @@ void LoopyServerAndClient::testLoopyAdvertise() {
 	CPPUNIT_ASSERT(tperrno == 0);
 
 	for (int i = 0; i < 3; i++) {
-		tpadvertise((char*) "LOOPY", loopy);
-		tpunadvertise((char*) "LOOPY");
+		result = tpadvertise((char*) "LOOPY", loopy);
+		CPPUNIT_ASSERT(result != -1);
+		CPPUNIT_ASSERT(tperrno == 0);
+
+		result = tpunadvertise((char*) "LOOPY");
+		CPPUNIT_ASSERT(result != -1);
+		CPPUNIT_ASSERT(tperrno == 0);
 	}
 
 	result = clientdone();

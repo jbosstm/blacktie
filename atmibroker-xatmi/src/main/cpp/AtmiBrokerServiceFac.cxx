@@ -37,6 +37,7 @@
 #include <string.h>
 #include <iostream>
 
+#include "AtmiBroker_ServiceFactoryImpl.h"
 #include "AtmiBrokerServer.h"
 #include "AtmiBrokerServiceFacMgr.h"
 #include "AtmiBrokerServiceFac.h"
@@ -54,37 +55,42 @@ void remove_service_factory(char* serviceName) {
 	userlog(Level::getInfo(), loggerAtmiBrokerServiceFac, (char*) " service factory %s removed", serviceName);
 }
 
-PortableServer::POA_ptr create_service_factory_poa(char *serviceName) {
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "create_service_factory_poa: %s", serviceName);
-
-	PortableServer::POA_var aPoaVar;
-
-	aPoaVar = serverPoaFactory->createServiceFactoryPoa(server_orb, serviceName, server_poa, server_root_poa_manager);
-
-	userlog(Level::getInfo(), loggerAtmiBrokerServiceFac, (char*) "created create_service_factory_poa: %s", serviceName);
-	return aPoaVar._retn();
-}
-
-void create_service_factory(AtmiBroker_ServiceFactoryImpl *tmp_servant, PortableServer::POA_var aPoaPtr, char *serviceName, void(*func)(TPSVCINFO *)) {
+void create_service_factory(char *serviceName, void(*func)(TPSVCINFO *)) {
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "create_service_factory: %s", serviceName);
+
+	// create Poa for Service Factory
+	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "create_service_factory_poa: %s", serviceName);
+	PortableServer::POA_var aFactoryPoaPtr = serverPoaFactory->createServiceFactoryPoa(server_orb, serviceName, server_poa, server_root_poa_manager);
+	userlog(Level::getInfo(), loggerAtmiBrokerServiceFac, (char*) "created create_service_factory_poa: %s", serviceName);
+
+	// TODO TEST_SERVICE
+	// TOLOWER?
+	char servicePoaName[80];
+	strcpy(servicePoaName, serviceName);
+	strcat(servicePoaName, "_service_poa");
+
+	// TOLOWER?
+	char serviceConfigFilename[80];
+	strcpy(serviceConfigFilename, serviceName);
+	strcat(serviceConfigFilename, ".xml");
+
+	AtmiBroker_ServiceFactoryImpl *tmp_factory_servant = new AtmiBroker_ServiceFactoryImpl(aFactoryPoaPtr, serviceName, servicePoaName, serviceConfigFilename);
+	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) " tmp_factory_servant %p", (void*) tmp_factory_servant);
 
 	AtmiBroker::ServiceFactory_ptr factoryPtr = AtmiBrokerServiceFacMgr::get_instance()->getServiceFactory(serviceName);
 
 	if (!CORBA::is_nil(factoryPtr))
 		return;
 
-	CORBA::Object_var tmp_ref;
-	CosNaming::Name * name;
-
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "creating servant cache  ");
-	tmp_servant->createServantCache(func);
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "created servant cache  %p", (void*) tmp_servant);
+	tmp_factory_servant->createServantCache(func);
+	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "created servant cache  %p", (void*) tmp_factory_servant);
 
-	aPoaPtr->activate_object(tmp_servant);
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "activated tmp_servant %p", (void*) tmp_servant);
-	tmp_ref = aPoaPtr->servant_to_reference(tmp_servant);
+	aFactoryPoaPtr->activate_object(tmp_factory_servant);
+	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "activated tmp_servant %p", (void*) tmp_factory_servant);
+	CORBA::Object_var tmp_ref = aFactoryPoaPtr->servant_to_reference(tmp_factory_servant);
 
-	name = server_default_context->to_name(serviceName);
+	CosNaming::Name * name = server_default_context->to_name(serviceName);
 	server_name_context->bind(*name, tmp_ref);
 	factoryPtr = AtmiBroker::ServiceFactory::_narrow(tmp_ref);
 

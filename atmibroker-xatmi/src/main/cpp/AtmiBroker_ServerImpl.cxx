@@ -41,6 +41,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
+#include <queue>
 #include "AtmiBroker_ServerImpl.h"
 #include "AtmiBroker.h"
 
@@ -176,42 +177,18 @@ bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPS
 
 	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "advertiseService(): '%s'", serviceName);
 
-	AtmiBroker_ServiceFactoryImpl *tmp_factory_servant = NULL;
-
-	// create Poa for Service Factory
-	PortableServer::POA_var aFactoryPoaPtr = create_service_factory_poa(serviceName);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "advertiseService():  created service factory poa");
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "advertiseService():  aFactoryPoaPtr %p", (void*) aFactoryPoaPtr);
-
-	// TODO MAYBE CAN ONLY ADVERTISE PRE-KNOWN?
-	if (true) {
-		// TODO TEST_SERVICE
-		// TOLOWER?
-		char servicePoaName[80];
-		strcpy(servicePoaName, serviceName);
-		strcat(servicePoaName, "_service_poa");
-
-		// TOLOWER?
-		char serviceConfigFilename[80];
-		strcpy(serviceConfigFilename, serviceName);
-		strcat(serviceConfigFilename, ".xml");
-
-		tmp_factory_servant = new AtmiBroker_ServiceFactoryImpl(aFactoryPoaPtr, serviceName, servicePoaName, serviceConfigFilename);
-		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) " tmp_factory_servant %p", (void*) tmp_factory_servant);
-
-		// create reference for Service Factory and cache
-		try {
-			create_service_factory(tmp_factory_servant, aFactoryPoaPtr, serviceName, func);
-		} catch (...) {
-			userlog(Level::getError(), loggerAtmiBroker_ServerImpl, (char*) "service has already been advertised, however it appears to be by a different server (possibly with the same name), which is strange... %s", serviceName);
-			tperrno = TPEMATCH;
-			return false;
-		}
-
-		advertisedServices.push_back(serviceName);
-		userlog(Level::getInfo(), loggerAtmiBroker_ServerImpl, (char*) "advertised service %s", serviceName);
-		toReturn = true;
+	// create reference for Service Factory and cache
+	try {
+		create_service_factory(serviceName, func);
+	} catch (...) {
+		userlog(Level::getError(), loggerAtmiBroker_ServerImpl, (char*) "service has already been advertised, however it appears to be by a different server (possibly with the same name), which is strange... %s", serviceName);
+		tperrno = TPEMATCH;
+		return false;
 	}
+
+	advertisedServices.push_back(serviceName);
+	userlog(Level::getInfo(), loggerAtmiBroker_ServerImpl, (char*) "advertised service %s", serviceName);
+	toReturn = true;
 	return toReturn;
 }
 
