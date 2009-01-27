@@ -70,21 +70,18 @@ LoggerPtr loggerAtmiBroker_ServiceFactoryImpl(Logger::getLogger("AtmiBroker_Serv
 // initialiser for all the virtual base class constructors that
 // require arguments, even those that we inherit indirectly.
 //
-AtmiBroker_ServiceFactoryImpl::AtmiBroker_ServiceFactoryImpl(PortableServer::POA_ptr the_poa, char *svcName, char *svcPoaName, char *svcDescriptror
-
-) :
-	IT_ServantBaseOverrides(the_poa), serviceName(svcName), servicePoaName(svcPoaName), descriptorFileName(svcDescriptror), factoryPoaPtr(the_poa) {
+AtmiBroker_ServiceFactoryImpl::AtmiBroker_ServiceFactoryImpl(PortableServer::POA_ptr the_poa, char *svcName, char *svcPoaName, char *svcDescriptror) :
+	serviceName(svcName), servicePoaName(svcPoaName), descriptorFileName(svcDescriptror), factoryPoaPtr(the_poa) {
 	// Intentionally empty.
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "constructor() ");
-
 	serviceInfo.maxSize = MAX_SERVICE_CACHE_SIZE;
 	serviceInfo.securityType = CORBA::string_dup("");
 	getDescriptorData();
+	servicePoaPtr = serverPoaFactory->createServicePoa(server_orb, servicePoaName, factoryPoaPtr, server_root_poa_manager);
 }
 
 void AtmiBroker_ServiceFactoryImpl::createServantCache(void(*func)(TPSVCINFO *)) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "createServantCache() ");
-
 	for (int i = 0; i < serviceInfo.minSize; i++) {
 		createCacheInstance(i, func);
 	}
@@ -99,10 +96,6 @@ void AtmiBroker_ServiceFactoryImpl::createCacheInstance(int i, void(*func)(TPSVC
 	PortableServer::ObjectId * objectId;
 
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "createServant ");
-
-	createPoa();
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "constucting servant");
 	tmp_servant = createServant(i, func);
 
 	servicePoaPtr->activate_object(tmp_servant);
@@ -127,7 +120,9 @@ AtmiBroker_ServiceFactoryImpl::~AtmiBroker_ServiceFactoryImpl() {
 	//		i = corbaObjectVector.erase(i);
 	//		//		delete servantVector[i];
 	//	}
-	//	factoryPoaPtr->destroy(false, true);
+	//	factoryPoaPtr->destroy(true, true);
+	//	factoryPoaPtr = NULL;
+	servicePoaPtr->destroy(true, true);
 }
 
 // start_conversation() -- Implements IDL operation "AtmiBroker::ServiceFactory::start_conversation".
@@ -210,17 +205,6 @@ AtmiBroker_ServiceFactoryImpl::get_service_info() throw (CORBA::SystemException 
 	return aServiceInfo._retn();
 }
 
-void AtmiBroker_ServiceFactoryImpl::createPoa() {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "createPoa() ");
-
-	if (CORBA::is_nil(servicePoaPtr))
-		servicePoaPtr = serverPoaFactory->createServicePoa(server_orb, servicePoaName, factoryPoaPtr, server_root_poa_manager);
-}
-
-void createPoa() {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "createPoa() ");
-}
-
 void AtmiBroker_ServiceFactoryImpl::createReference(PortableServer::ObjectId& anId, AtmiBroker::Service_var* refPtr) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "createReference() ");
 
@@ -243,6 +227,10 @@ AtmiBroker_ServiceFactoryImpl::createServant(int aIndex, void(*func)(TPSVCINFO *
 
 int AtmiBroker_ServiceFactoryImpl::getMaxObjects() {
 	return serviceInfo.maxSize;
+}
+
+PortableServer::POA_ptr AtmiBroker_ServiceFactoryImpl::getPoa() {
+	return factoryPoaPtr;
 }
 
 void AtmiBroker_ServiceFactoryImpl::getDescriptorData() {

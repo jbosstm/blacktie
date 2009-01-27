@@ -44,7 +44,6 @@
 #include <orb.h>
 #include "AtmiBroker_s.hh"
 #endif
-#include "it_servant_base_overrides.h"
 #include <queue>
 #include "SynchronizableObject.h"
 
@@ -59,7 +58,7 @@ struct message_t {
 };
 typedef struct message_t MESSAGE;
 
-class ATMIBROKER_DLL AtmiBroker_ClientCallbackImpl: public virtual IT_ServantBaseOverrides, public virtual POA_AtmiBroker::ClientCallback {
+class ATMIBROKER_DLL AtmiBroker_ClientCallbackImpl: public virtual POA_AtmiBroker::ClientCallback {
 public:
 	AtmiBroker_ClientCallbackImpl(PortableServer::POA_ptr);
 

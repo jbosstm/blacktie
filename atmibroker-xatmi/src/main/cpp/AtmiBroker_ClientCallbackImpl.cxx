@@ -63,7 +63,7 @@ AtmiBroker_ClientCallbackImpl::_create(PortableServer::POA_ptr the_poa) {
 // require arguments, even those that we inherit indirectly.
 //
 AtmiBroker_ClientCallbackImpl::AtmiBroker_ClientCallbackImpl(PortableServer::POA_ptr the_poa) :
-	IT_ServantBaseOverrides(the_poa), synchronizableObject(SynchronizableObject::create(true)) {
+	synchronizableObject(SynchronizableObject::create(true)) {
 }
 
 // ~AtmiBroker_ClientCallbackImpl destructor.

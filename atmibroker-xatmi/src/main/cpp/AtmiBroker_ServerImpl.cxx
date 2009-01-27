@@ -77,8 +77,7 @@ AtmiBroker_ServerImpl::_create(PortableServer::POA_ptr the_poa) {
 // initialiser for all the virtual base class constructors that
 // require arguments, even those that we inherit indirectly.
 //
-AtmiBroker_ServerImpl::AtmiBroker_ServerImpl(PortableServer::POA_ptr the_poa) :
-	IT_ServantBaseOverrides(the_poa) {
+AtmiBroker_ServerImpl::AtmiBroker_ServerImpl(PortableServer::POA_ptr the_poa) {
 	// Intentionally empty.
 	nextClientId = 0L;
 

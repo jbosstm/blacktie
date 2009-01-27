@@ -53,7 +53,10 @@ void remove_service_factory(char* serviceName) {
 	server_name_context->unbind(*name);
 
 	AtmiBroker_ServiceFactoryImpl* toDelete = AtmiBrokerServiceFacMgr::get_instance()->removeServiceFactory(serviceName);
+	PortableServer::POA_ptr poa = toDelete->getPoa();
 	delete toDelete;
+	poa->destroy(true, true);
+	poa = NULL;
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) " service factory %s removed", serviceName);
 }
 
@@ -62,7 +65,7 @@ void create_service_factory(char *serviceName, void(*func)(TPSVCINFO *)) {
 
 	// create Poa for Service Factory
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "create_service_factory_poa: %s", serviceName);
-	PortableServer::POA_var aFactoryPoaPtr = serverPoaFactory->createServiceFactoryPoa(server_orb, serviceName, server_poa, server_root_poa_manager);
+	PortableServer::POA_ptr aFactoryPoaPtr = serverPoaFactory->createServiceFactoryPoa(server_orb, serviceName, server_poa, server_root_poa_manager);
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "created create_service_factory_poa: %s", serviceName);
 
 	// TODO TEST_SERVICE

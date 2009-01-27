@@ -49,7 +49,6 @@
 #include <iostream>
 #include <vector>
 #include "xatmi.h"
-#include "it_servant_base_overrides.h"
 
 struct ServerMetadata {
 	short maxChannels;
@@ -63,7 +62,7 @@ struct ServerMetadata {
 	std::vector<std::string> serviceNames;
 };
 
-class ATMIBROKER_DLL AtmiBroker_ServerImpl: public virtual IT_ServantBaseOverrides, public virtual POA_AtmiBroker::Server {
+class ATMIBROKER_DLL AtmiBroker_ServerImpl: public virtual POA_AtmiBroker::Server {
 public:
 	AtmiBroker_ServerImpl(PortableServer::POA_ptr);
 

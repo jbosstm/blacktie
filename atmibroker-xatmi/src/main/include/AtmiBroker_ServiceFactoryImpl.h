@@ -49,10 +49,9 @@
 #endif
 
 #include <vector>
-#include "it_servant_base_overrides.h"
 #include "AtmiBroker_ServiceImpl.h"
 
-class ATMIBROKER_DLL AtmiBroker_ServiceFactoryImpl: public virtual IT_ServantBaseOverrides, public virtual POA_AtmiBroker::ServiceFactory {
+class ATMIBROKER_DLL AtmiBroker_ServiceFactoryImpl: public virtual POA_AtmiBroker::ServiceFactory {
 public:
 	AtmiBroker_ServiceFactoryImpl(PortableServer::POA_ptr, char * serviceName, char *servicePoaName, char *descriptorFileName);
 
@@ -70,6 +69,8 @@ public:
 	start_conversation(CORBA::Long client_id, CORBA::String_out id) throw (CORBA::SystemException );
 
 	virtual void end_conversation(CORBA::Long client_id, const char* id) throw (CORBA::SystemException );
+
+	PortableServer::POA_ptr getPoa();
 
 	virtual AtmiBroker::ServiceInfo*
 	get_service_info() throw (CORBA::SystemException );
@@ -91,11 +92,10 @@ protected:
 	char* serviceName;
 	char* servicePoaName;
 	char* descriptorFileName;
-	PortableServer::POA_var factoryPoaPtr;
-	PortableServer::POA_var servicePoaPtr;
+	PortableServer::POA_ptr factoryPoaPtr;
+	PortableServer::POA_ptr servicePoaPtr;
 
 	void createCacheInstance(int i, void(*func)(TPSVCINFO *));
-	virtual void createPoa();
 	virtual void createReference(PortableServer::ObjectId& anId, AtmiBroker::Service_var* refPtr);
 	virtual AtmiBroker_ServiceImpl * createServant(int aIndex, void(*func)(TPSVCINFO *));
 	virtual void getDescriptorData();

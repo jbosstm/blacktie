@@ -104,7 +104,6 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createServiceFactoryPoa(CORBA::ORB_var
 	//
 	//	policies[i++] = parent_poa->create_thread_policy(PortableServer::SINGLE_THREAD_MODEL);
 
-
 	return parent_poa->create_POA(poa_name, poa_manager, policies);
 }
 
@@ -122,7 +121,7 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createServicePoa(CORBA::ORB_var orb, c
 	policies[i++] = parent_poa->create_thread_policy(PortableServer::ORB_CTRL_MODEL);
 
 	// install transaction policy
-	//	add_transaction_policy(orb, policies, parent_poa, i, policies.length());
+	add_transaction_policy(orb, policies, parent_poa, i, policies.length());
 
 	return parent_poa->create_POA(poa_name, poa_manager, policies);
 }

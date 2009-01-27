@@ -52,12 +52,11 @@
 #endif
 
 #include "xatmi.h"
-#include "it_servant_base_overrides.h"
 #include <queue>
 
 class AtmiBroker_ServiceFactoryImpl;
 
-class ATMIBROKER_DLL AtmiBroker_ServiceImpl: public virtual IT_ServantBaseOverrides, public virtual POA_AtmiBroker::Service {
+class ATMIBROKER_DLL AtmiBroker_ServiceImpl: public virtual POA_AtmiBroker::Service {
 public:
 	AtmiBroker_ServiceImpl(AtmiBroker_ServiceFactoryImpl* aParent, PortableServer::POA_ptr, int aIndex, char *serviceName, void(*func)(TPSVCINFO *));
 

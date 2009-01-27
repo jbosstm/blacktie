@@ -72,7 +72,7 @@ AtmiBroker_ServiceImpl::_create(AtmiBroker_ServiceFactoryImpl* aParent, Portable
 // require arguments, even those that we inherit indirectly.
 //
 AtmiBroker_ServiceImpl::AtmiBroker_ServiceImpl(AtmiBroker_ServiceFactoryImpl* aParent, PortableServer::POA_ptr the_poa, int aIndex, char *serviceName, void(*func)(TPSVCINFO *)) :
-	IT_ServantBaseOverrides(the_poa), parent(aParent), returnStatus(-1), inUse(false), callbackRef(NULL), index(aIndex), m_serviceName(serviceName), m_func(func) {
+	parent(aParent), returnStatus(-1), inUse(false), callbackRef(NULL), index(aIndex), m_serviceName(serviceName), m_func(func) {
 	// Initialise instance variables used for attributes
 	//
 	//TJJ key = getKey();
