@@ -25,11 +25,12 @@
 class TestTransactions: public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE( TestTransactions);
 	CPPUNIT_TEST( test_transactions);
-CPPUNIT_TEST_SUITE_END()
-;
+	CPPUNIT_TEST( test_protocol);
+	CPPUNIT_TEST_SUITE_END();
 
 public:
-void test_transactions();
+	void test_transactions();
+	void test_protocol();
 };
 
 #endif
