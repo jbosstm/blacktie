@@ -227,7 +227,7 @@ void AtmiBroker_ServiceFactoryImpl::createReference(PortableServer::ObjectId& an
 	//TODO SHOULD GET FROM SERVICE_FACTORY
 	CORBA::Object_ptr tmp_ref = servicePoaPtr->create_reference_with_id(anId, "IDL:AtmiBroker/ServiceFactory:1.0");
 	*refPtr = AtmiBroker::Service::_narrow(tmp_ref);
-	userlog(Level::getInfo(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "createReference() created  AtmiBroker::Service %p", (void*) *refPtr);
+	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "createReference() created  AtmiBroker::Service %p", (void*) *refPtr);
 }
 
 AtmiBroker_ServiceImpl *

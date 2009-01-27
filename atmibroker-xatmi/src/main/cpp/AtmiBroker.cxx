@@ -134,6 +134,9 @@ int clientinit() {
 			ptrAtmiBrokerClient = new AtmiBrokerClient(true, false, true, false);
 
 			clientInitialized = true;
+
+			userlog(Level::getInfo(), loggerAtmiBroker, (char*) "Client Initialized");
+			return 1;
 		} catch (CORBA::Exception &ex) {
 			userlog(Level::getError(), loggerAtmiBroker, (char*) "clientinit Unexpected CORBA exception: %s", ex._name());
 			tperrno = TPESYSTEM;
@@ -159,8 +162,6 @@ int clientinit() {
 			shutdownBindings(client_orb, client_root_poa, client_root_poa_manager, client_default_context, client_name_context, client_poa, client_worker);
 			return -1;
 		}
-		userlog(Level::getInfo(), loggerAtmiBroker, (char*) "clientinit returning");
-		return 1;
 	}
 	return 0;
 }
@@ -188,7 +189,7 @@ int clientdone() {
 		shutdownBindings(client_orb, client_root_poa, client_root_poa_manager, client_default_context, client_name_context, client_poa, client_worker);
 
 		clientInitialized = false;
-		userlog(Level::getInfo(), loggerAtmiBroker, (char*) "clientdone returning");
+		userlog(Level::getInfo(), loggerAtmiBroker, (char*) "Client Shutdown");
 	}
 	return 0;
 }

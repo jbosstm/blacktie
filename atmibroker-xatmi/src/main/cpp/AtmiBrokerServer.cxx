@@ -73,10 +73,10 @@ void server_sigint_handler_callback(int sig_type) {
 int serverrun() {
 	int toReturn = 0;
 	try {
-		userlog(Level::getInfo(), loggerAtmiBrokerServer, "serverrun Waiting for requests...");
+		userlog(Level::getInfo(), loggerAtmiBrokerServer, "Server waiting for requests...");
 		server_orb->run();
 	} catch (CORBA::Exception& e) {
-		userlog(Level::getError(), loggerAtmiBrokerServer, "serverrun Unexpected CORBA exception: %s", e._name());
+		userlog(Level::getError(), loggerAtmiBrokerServer, "Unexpected CORBA exception: %s", e._name());
 		toReturn = -1;
 	}
 	return toReturn;
@@ -140,7 +140,7 @@ int serverinit(int argc, char ** argv) {
 			shutdownBindings(server_orb, server_root_poa, server_root_poa_manager, server_default_context, server_name_context, server_poa, server_worker);
 			return -1;
 		}
-		userlog(Level::getInfo(), loggerAtmiBrokerServer, (char*) "serverinit returning");
+		userlog(Level::getInfo(), loggerAtmiBrokerServer, (char*) "Server Running");
 		return 1;
 	}
 	return 0;
@@ -170,7 +170,7 @@ int serverdone() {
 
 			shutdownBindings(server_orb, server_root_poa, server_root_poa_manager, server_default_context, server_name_context, server_poa, server_worker);
 
-			userlog(Level::getInfo(), loggerAtmiBrokerServer, (char*) "serverdone returning");
+			userlog(Level::getInfo(), loggerAtmiBrokerServer, (char*) "Server shutdown");
 			serverInitialized = false;
 		}
 		return 0;
