@@ -236,7 +236,7 @@ void AtmiBroker_ServiceImpl::createConnectionTransactionAssociation() {
 		CosTransactions::Control_ptr control = (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
 
 		if (CORBA::is_nil(control)) {
-			userlog(Level::getError(), loggerAtmiBroker_ServiceImpl, (char*) "NO  TRANSACTION associated with this call");
+			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "NO TRANSACTION associated with this call");
 			return;
 		}
 

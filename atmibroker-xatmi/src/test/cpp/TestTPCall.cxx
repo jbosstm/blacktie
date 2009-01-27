@@ -101,7 +101,7 @@ void TestTPCall::test_tpcall_x_octet() {
 	CPPUNIT_ASSERT(tperrno!= TPEOS);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(id != -1);
-	CPPUNIT_ASSERT(strcmp(rcvbuf, "tpcall_x_octet") == 0);
+	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_octet") == 0);
 }
 
 // 9.1.2
@@ -139,16 +139,16 @@ void TestTPCall::test_tpcall_x_c_type() {
 
 void test_tpcall_x_octet_service(TPSVCINFO *svcinfo) {
 	bool ok = false;
-	if (strcmp(svcinfo->data, "hello") == 0) {
+	if (strncmp(svcinfo->data, "hello", svcinfo->len) == 0) {
 		ok = true;
 	}
 
 	int len = 60;
-	char *toReturn = new char[len];
+	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	if (ok) {
 		strcpy(toReturn, "tpcall_x_octet");
 	} else {
-		strcpy(toReturn, "fail");
+		strcpy(toReturn, svcinfo->data);
 	}
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }
@@ -161,11 +161,11 @@ void test_tpcall_x_common_service(TPSVCINFO *svcinfo) {
 	}
 
 	int len = 60;
-	char *toReturn = new char[len];
+	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	if (ok) {
 		strcpy(toReturn, "tpcall_x_common");
 	} else {
-		strcpy(toReturn, "fail");
+		strcpy(toReturn, svcinfo->data);
 	}
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }
@@ -177,11 +177,11 @@ void test_tpcall_x_c_type_service(TPSVCINFO *svcinfo) {
 		ok = true;
 	}
 	int len = 60;
-	char *toReturn = new char[len];
+	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	if (ok) {
 		strcpy(toReturn, "tpcall_x_c_type");
 	} else {
-		strcpy(toReturn, "fail");
+		strcpy(toReturn, svcinfo->data);
 	}
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }
