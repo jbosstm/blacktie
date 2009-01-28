@@ -69,7 +69,7 @@ AtmiBrokerOTS::AtmiBrokerOTS() {
 	tx_current = NULL;
 	// if we use the name ots then we end up with two different orbs in the client and this breaks things
 	//XXXAtmiBrokerOTS::init_orb((char*) "ots", ots_worker, ots_orb, ots_namingContextExt, ots_namingContext);
-	AtmiBrokerOTS::init_orb((char*) "ots", ots_worker, ots_orb, ots_namingContextExt, ots_namingContext);
+	AtmiBrokerOTS::init_orb((char*) BT_OTS_ORB, ots_worker, ots_orb, ots_namingContextExt, ots_namingContext);
 	//	createTransactionPolicy();
 }
 
@@ -266,12 +266,17 @@ int AtmiBrokerOTS::tx_close(void) {
 	if (getSpecific(TSS_KEY)) {
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getWarn(),
 			(char*) "tx_close: transaction still active");
+		return TX_PROTOCOL_ERROR;
 	}
 
 	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "tx_close ");
 
-	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "releasing tx_current");
-	CORBA::release(tx_current);
+//	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "releasing tx_current");
+//	CORBA::release(tx_current);
+//	if (!CORBA::is_nil(tx_current))	// TODO find out who forgot to release it
+//		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getWarn(), (char *) "tx_close: current not nil after release");
+
+	tx_current = NULL;
 	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "released tx_current");
 
 	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "releasing xa_connector");

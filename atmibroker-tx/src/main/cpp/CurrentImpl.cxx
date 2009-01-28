@@ -52,8 +52,8 @@ void CurrentImpl::begin() throw(CORBA::SystemException, CosTransactions::Subtran
 		LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "control " << AtmiBrokerOTS::get_instance()->getOrb()->object_to_string(aControlThreadStruct->control));
 		aControlThreadStruct->thread = ACE_Thread::self();
 		ACE_Thread::self(aControlThreadStruct->threadHandle);
-		LOG4CXX_LOGLS(loggerCurrentImpl, Level::getInfo(), (char*) "thread " << aControlThreadStruct->thread);
-		LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "threadHandle " << aControlThreadStruct->threadHandle);
+		LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "thread " << aControlThreadStruct->thread <<
+			" threadHandle " << aControlThreadStruct->threadHandle);
 		controlThreadDeque.push_back(aControlThreadStruct);
 	} else {
 		CosTransactions::Coordinator* aCoordinator = ctrl.in()->get_coordinator();

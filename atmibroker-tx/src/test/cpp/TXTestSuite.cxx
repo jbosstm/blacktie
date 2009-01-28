@@ -18,4 +18,6 @@
 //#include "TestTransactions.h"
 //CPPUNIT_TEST_SUITE_REGISTRATION( TestTransactions);
 #include "TestOrbAdditions.h"
+#include "TestTransactions.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestOrbAdditions);
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTransactions);
