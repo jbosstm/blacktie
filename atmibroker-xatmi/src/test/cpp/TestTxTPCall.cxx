@@ -63,7 +63,7 @@ void TestTxTPCall::test_tpcall_with_tx() {
 	// start a transaction
 	CPPUNIT_ASSERT(tx_open() == TX_OK);
 	CPPUNIT_ASSERT(tx_begin() == TX_OK);
-	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
+	(void) ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
 	// make sure there is still an active transaction - ie starting a new one should fail
 	CPPUNIT_ASSERT(tx_begin() != TX_OK);
 	CPPUNIT_ASSERT(tx_commit() == TX_OK);
