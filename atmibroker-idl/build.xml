@@ -243,6 +243,9 @@
 
 	<target name="test-compile" depends="package">
 		<mkdir dir="target/cpp-test-classes" />
+		<copy todir="target/cpp-test-classes" failonerror="false">
+			<fileset dir="src/test/resources" />
+		</copy>
 		<available file="target/${configuration.type}/${lib.type}" type="dir" property="main.built" />
 		<cc name="${toolchain.compiler}" exceptions="true" outfile="target/testsuite" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="${test.output.type}" objdir="target/cpp-test-classes" debug="${debug}">
 			<compiler name="${toolchain.compiler}" unless="is-msvc">
@@ -266,7 +269,7 @@
 			&libsets-test-dependencies;
 			<libset dir="target/${configuration.type}/${lib.type}" libs="${ant.project.name}" if="main.built" />
 		</cc>
-		<available file="target/testsuite.dll.manifest" property="manifest.towrap"/>
+		<available file="target/testsuite.dll.manifest" property="manifest.towrap" />
 		<antcall target="_test-compile-msvc" />
 	</target>
 	<target name="_test-compile-msvc" if="manifest.towrap">
@@ -280,9 +283,6 @@
 
 	<target name="test" depends="init">
 		<mkdir dir="target/cppunit" />
-		<copy todir="target/cpp-test-classes" failonerror="false">
-			<fileset dir="src/test/resources" />
-		</copy>
 		<antcall target="_test-msvc" />
 		<antcall target="_test-gcc" />
 	</target>
