@@ -256,22 +256,6 @@ AtmiBroker_ServerImpl::get_all_service_info() throw (CORBA::SystemException ) {
 	return aServiceInfoSeq._retn();
 }
 
-// get_service_info() -- Implements IDL operation "AtmiBroker::Server::get_service_info".
-//
-AtmiBroker::ServiceInfo*
-AtmiBroker_ServerImpl::get_service_info(const char* service_name) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_service_info() %s", service_name);
-
-	for (unsigned int i = 0; i < serverInfo.serviceNames.size(); i++) {
-		if (strcmp(service_name, (char*) serverInfo.serviceNames[i].c_str()) == 0) {
-			return AtmiBrokerServiceFacMgr::get_instance()->getServiceFactory(service_name)->get_service_info();
-		}
-	}
-	userlog(Level::getError(), loggerAtmiBroker_ServerImpl, (char*) "get_service_info() Service %s NOT FOUND", service_name);
-	return (AtmiBroker::ServiceInfo*) NULL;
-
-}
-
 // get_environment_variable_info() -- Implements IDL operation "AtmiBroker::Server::get_environment_variable_info".
 //
 AtmiBroker::EnvVariableInfoSeq*

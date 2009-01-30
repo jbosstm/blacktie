@@ -27,24 +27,16 @@
 
 #include "atmiBrokerMacro.h"
 
-extern bool initialized;
-extern bool checkForInitialized();
-
 extern ATMIBROKER_DLL int _tperrno;
 extern ATMIBROKER_DLL long _tpurcode;
 
 // Constants
-extern int MAX_SERVERS;
-extern int MAX_SERVICES;
 extern int MAX_SERVICE_CACHE_SIZE;
 extern int MIN_SERVICE_CACHE_SIZE;
 extern int MIN_AVAILABLE_SERVICE_CACHE_SIZE;
-extern int MAX_COMPANY_SIZE;
-extern const char * SERVER_LIT;
 extern const char * MAX_REPLICAS;
 extern const char * MIN;
 extern const char * MAX;
-extern const char * AVAILABLE;
 
 extern bool loggerInitialized;
 

@@ -46,39 +46,6 @@ using namespace log4cxx;
 using namespace log4cxx::helpers;
 LoggerPtr loggerAtmiBrokerServiceRetrieve(Logger::getLogger("AtmiBrokerServiceRetrieve"));
 
-void get_server(const char * serverName, AtmiBroker::Server_ptr * aServicePtrAddr) {
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "get_server: %s", serverName);
-
-	CosNaming::Name * name = client_default_context->to_name(serverName);
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "Server name %p", (void*) name);
-	CORBA::Object_var tmp_ref = client_name_context->resolve(*name);
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "Server ref %p", (void*) tmp_ref);
-
-	CORBA::String_var ior = client_orb->object_to_string(tmp_ref);
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "Server ior %s", (char*) ior);
-
-	//	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "validating connection ");
-	//#ifdef TAO_COMP
-	//	CORBA::Boolean aBoolean = tmp_ref->_validate_connection(policyList);
-	//#else
-	//#elif ORBIX_COMP
-	//	CORBA::Boolean aBoolean = tmp_ref->_validate_connection(*policyList);
-	//#endif
-	//	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "validated connection %d", aBoolean);
-
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "narrowing %p", (void*) tmp_ref);
-#ifndef VBC_COMP
-	*aServicePtrAddr = AtmiBroker::Server::_unchecked_narrow(tmp_ref);
-#else
-	*aServicePtrAddr = AtmiBroker::Server::_narrow(tmp_ref);
-#endif
-
-	if (CORBA::is_nil(*aServicePtrAddr)) {
-		userlog(Level::getError(), loggerAtmiBrokerServiceRetrieve, (char*) "Could not retrieve Server %s", serverName);
-	} else
-		userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "retrieved  %s Server %p", serverName, (void*) *aServicePtrAddr);
-}
-
 AtmiBroker::ServiceFactory_ptr get_service_factory(const char * serviceName) {
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "get_service_factory: %s", serviceName);
 

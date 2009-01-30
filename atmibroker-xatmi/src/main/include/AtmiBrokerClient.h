@@ -57,7 +57,6 @@
 struct _client_server_info {
 
 	char * serverName;
-	AtmiBroker::Server_ptr serverPtr;
 	std::vector<char*>* serviceVectorPtr;
 };
 

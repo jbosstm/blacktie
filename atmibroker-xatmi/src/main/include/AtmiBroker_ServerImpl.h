@@ -86,9 +86,6 @@ public:
 	virtual AtmiBroker::ServiceInfoSeq*
 	get_all_service_info() throw (CORBA::SystemException );
 
-	virtual AtmiBroker::ServiceInfo*
-	get_service_info(const char* service_name) throw (CORBA::SystemException );
-
 	virtual AtmiBroker::EnvVariableInfoSeq*
 	get_environment_variable_info() throw (CORBA::SystemException );
 

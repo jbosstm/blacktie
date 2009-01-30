@@ -26,7 +26,6 @@
 #include "AtmiBroker.h"
 #include "AtmiBrokerServiceRetrieve.h"
 #include "xatmi.h"
-//TODO READD #include "AtmiBrokerNotify.h"
 #include "AtmiBrokerClient.h"
 #include "AtmiBroker_ClientCallbackImpl.h"
 #include "AtmiBrokerClientXml.h"
@@ -38,7 +37,6 @@ using namespace log4cxx::helpers;
 LoggerPtr loggerAtmiBrokerClient(Logger::getLogger("AtmiBrokerClient"));
 
 AtmiBrokerClient::AtmiBrokerClient() {
-
 	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "constructor ");
 
 	AtmiBrokerClientXml aAtmiBrokerClientXml;
@@ -55,16 +53,12 @@ AtmiBrokerClient::AtmiBrokerClient() {
 	clientCallbackIOR = client_orb->object_to_string(clientCallback);
 	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "created AtmiBroker::ClientCallback %s", (char*) clientCallbackIOR);
 
-	int i = 0;
 	for (std::vector<ClientServerInfo*>::iterator itServer = clientServerVector.begin(); itServer != clientServerVector.end(); itServer++) {
 		userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "next serverName is: %s", (char*) (*itServer)->serverName);
-		getServer((ClientServerInfo*) *itServer, (char*) (*itServer)->serverName);
 
 		for (std::vector<char*>::iterator itService = (*itServer)->serviceVectorPtr->begin(); itService != (*itServer)->serviceVectorPtr->end(); itService++) {
 			userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "next serviceName is: %s", (char*) (*itService));
 			serviceNameArray.push_back((char*) (*itService));
-			userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) " serviceNameArray[%d] '%s'", i, serviceNameArray[i]);
-			i++;
 		}
 	}
 }
@@ -74,10 +68,8 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 
 	for (std::vector<ClientServerInfo*>::iterator itServer = clientServerVector.begin(); itServer != clientServerVector.end(); itServer++) {
 		userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "next serverName is: %s", (char*) (*itServer)->serverName);
-		userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "releasing server: %p", (*itServer)->serverPtr);
-		CORBA::release((*itServer)->serverPtr);
-		userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "released server ");
 	}
+	clientServerVector.clear();
 
 	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "freeing serviceNames from array ");
 	for (unsigned int i = 0; i < serviceNameArray.size(); i++) {
@@ -88,10 +80,6 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "freeing serviceNameArray ");
 	serviceNameArray.clear();
 	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "freed serviceNameArray ");
-}
-
-void AtmiBrokerClient::getServer(ClientServerInfo* aClientServerInfo, char* aServerName) {
-	get_server(aServerName, &aClientServerInfo->serverPtr);
 }
 
 AtmiBroker_ClientCallbackImpl * AtmiBrokerClient::getClientCallback() {
@@ -221,22 +209,3 @@ AtmiBrokerClient::convertIdToString(int id) {
 	free(anIdStr);
 	return toReturn;
 }
-
-//long AtmiBrokerClient::getClientId(char* aServiceName) {
-//	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "getClientId %s", aServiceName);
-//
-//	for (std::vector<ClientServerInfo*>::iterator itServer = clientServerVector.begin(); itServer != clientServerVector.end(); itServer++) {
-//		userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "next serverName is: %s", (char*) (*itServer)->serverName);
-//		{
-//			for (std::vector<char*>::iterator itService = (*itServer)->serviceVectorPtr->begin(); itService != (*itServer)->serviceVectorPtr->end(); itService++) {
-//				userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "next serviceName is: %s", (char*) (*itService));
-//				if (strcmp(aServiceName, (char*) (*itService)) == 0) {
-//					userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "found matching service in server %s", (char*) (*itServer)->serverName);
-//					userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "returning client id %d", (*itServer)->cInfo->client_id);
-//					return (*itServer)->cInfo->client_id;
-//				}
-//			}
-//		}
-//	}
-//	return -1;
-//}

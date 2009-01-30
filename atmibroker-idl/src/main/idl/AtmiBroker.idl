@@ -32,7 +32,6 @@
 module AtmiBroker {
 
 	typedef sequence<octet> octetSeq;
-	typedef sequence<octetSeq> octetSeqSeq;
 
 	struct TypedBufferMember
 	{
@@ -46,7 +45,6 @@ module AtmiBroker {
 			string 		initialValue;
 	};
 	typedef sequence<TypedBufferMember> TypedBufferMemberSeq;
-	
 
 	struct TypedBuffer
 	{
@@ -56,8 +54,6 @@ module AtmiBroker {
 			TypedBufferMemberSeq 	members;
 	};
 	typedef sequence<TypedBuffer> TypedBufferSeq;
-	typedef sequence<TypedBufferSeq> TypedBufferSeqSeq;
-
 	
 	interface ClientCallback
 	{
@@ -69,14 +65,13 @@ module AtmiBroker {
 				  in long flags,
 				  in long revent,
 				  in string id);	  
-
 	};
 
-        struct EnvVariableInfo 
+    struct EnvVariableInfo 
 	{
 		       string   	name;
 		       string   	value;
-        };
+    };
 	typedef sequence<EnvVariableInfo> EnvVariableInfoSeq;
 	
 	struct ServiceInfo 
@@ -89,10 +84,11 @@ module AtmiBroker {
 		       short   		available;
 		       short   		logLevel;
 		       string  		securityType;
-        };
+    };
 	typedef sequence<ServiceInfo> ServiceInfoSeq;
 
 	typedef sequence<octetSeq> ServiceNameSeq;
+	
 	struct ServerInfo 
 	{
 		       short   		maxChannels;
@@ -104,9 +100,8 @@ module AtmiBroker {
 		       string  		orbType;
 		       string  		queueSpaceName;
 		       ServiceNameSeq	serviceNames;
-        };
+    };
 	typedef sequence<ServerInfo> ServerInfoSeq;
-
 
 	interface Server
 	{
@@ -117,8 +112,6 @@ module AtmiBroker {
 		ServerInfo  get_server_info();
 		
 		ServiceInfoSeq  get_all_service_info();
-		
-		ServiceInfo  get_service_info(in string service_name);
 		
 		EnvVariableInfoSeq  get_environment_variable_info();
 		
@@ -133,7 +126,6 @@ module AtmiBroker {
 		void  start_service(in string service_name);
 	};
 
-
 	interface Service
 	{
 		oneway void send_data(in boolean conversation,
@@ -145,16 +137,12 @@ module AtmiBroker {
 
 	};
 
-
 	interface ServiceFactory
 	{	
 		string start_conversation(out string id);
 	
 		void end_conversation(in string id);
-	
-		ServiceInfo  get_service_info();		
 	};
-
 };
 
 #endif  // _ATMI_BROKER_IDL
