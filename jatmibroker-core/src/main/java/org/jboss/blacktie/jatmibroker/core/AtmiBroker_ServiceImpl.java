@@ -22,10 +22,8 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.omg.CORBA.IntHolder;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
-import org.omg.CosTransactions.Control;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.ThreadPolicyValue;
 import org.omg.PortableServer.POAPackage.AdapterNonExistent;
@@ -35,9 +33,6 @@ import org.omg.PortableServer.POAPackage.WrongPolicy;
 
 import AtmiBroker.Service;
 import AtmiBroker.ServicePOA;
-import AtmiBroker.TypedBuffer;
-import AtmiBroker.TypedBufferHolder;
-import AtmiBroker.octetSeqHolder;
 
 public class AtmiBroker_ServiceImpl extends ServicePOA {
 	private static final Logger log = LogManager.getLogger(AtmiBroker_ServiceImpl.class);
@@ -91,12 +86,12 @@ public class AtmiBroker_ServiceImpl extends ServicePOA {
 		return ior;
 	}
 
-	public void send_data(boolean inConversation, byte[] idata, int ilen, int flags, int revent) {
+	public void send_data(boolean inConversation, String callbackIOR, byte[] idata, int ilen, int flags, int revent) {
 		// TODO HANDLE CONTROL
 		try {
 			// THIS IS THE FIRST CALL
 			if (!inConversation) {
-				AtmiBroker_Response serviceRequest = atmiBroker_CallbackConverter.serviceRequest(callback, serviceName, idata, ilen, flags);
+				AtmiBroker_Response serviceResponse = atmiBroker_CallbackConverter.serviceRequest(callback, serviceName, idata, ilen, flags);
 			}
 			// TODO THIS SHOULD INVOKE THE CLIENT HANDLER
 			// odata.value = serviceRequest.getBytes();

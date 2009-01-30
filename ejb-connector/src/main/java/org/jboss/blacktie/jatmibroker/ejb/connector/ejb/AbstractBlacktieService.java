@@ -1,8 +1,5 @@
 package org.jboss.blacktie.jatmibroker.ejb.connector.ejb;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.AtmiBroker_ServerImpl;
 import org.jboss.blacktie.jatmibroker.ejb.connector.BlacktieService;
 
 /**

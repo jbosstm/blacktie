@@ -70,7 +70,7 @@ public class JABRemoteService implements Message {
 			jabSession.getServerProxy().getServiceFactoryProxy(serviceName).send_data(id.value, data, flags);
 			short retVal = jabSession.getServerProxy().dequeue_data(odata, olen, flags, event);
 			jabSession.getServerProxy().getServiceFactoryProxy(serviceName).end_conversation(id.value);
-			
+
 			data = new byte[olen.value];
 			System.arraycopy(odata.value, 0, data, 0, olen.value);
 			log.debug("service_request response is " + odata.value);

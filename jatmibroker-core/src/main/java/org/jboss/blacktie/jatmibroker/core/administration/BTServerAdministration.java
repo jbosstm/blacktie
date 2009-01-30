@@ -25,21 +25,13 @@ public interface BTServerAdministration {
 
 	public short server_init();
 
-	public int get_queue_log(String queue_name);
-
-	public String get_client_callback(AtmiBroker.ClientInfo client_info);
-
 	public void server_done();
 
 	public AtmiBroker.ServerInfo get_server_info();
 
 	public AtmiBroker.ServiceInfo[] get_all_service_info();
 
-	public AtmiBroker.ServiceInfo get_service_info(String service_name);
-
 	public AtmiBroker.EnvVariableInfo[] get_environment_variable_info();
-
-	public AtmiBroker.ClientInfo[] get_client_info();
 
 	public void set_server_descriptor(String xml_descriptor);
 

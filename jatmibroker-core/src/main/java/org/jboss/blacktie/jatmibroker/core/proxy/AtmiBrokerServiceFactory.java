@@ -22,7 +22,6 @@
 package org.jboss.blacktie.jatmibroker.core.proxy;
 
 import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
-import org.omg.CosTransactions.Control;
 
 public interface AtmiBrokerServiceFactory {
 

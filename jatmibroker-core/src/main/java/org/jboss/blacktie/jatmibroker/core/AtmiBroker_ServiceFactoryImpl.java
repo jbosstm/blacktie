@@ -31,7 +31,6 @@ import org.omg.PortableServer.LifespanPolicyValue;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAPackage.AdapterNonExistent;
 
-import AtmiBroker.Service;
 import AtmiBroker.ServiceFactory;
 import AtmiBroker.ServiceFactoryPOA;
 import AtmiBroker.ServiceInfo;
@@ -110,16 +109,16 @@ public class AtmiBroker_ServiceFactoryImpl extends ServiceFactoryPOA {
 		}
 	}
 
-	public void end_conversation(int client_id, String id) {
+	public void end_conversation(String id) {
 		log.error("NO-OP end_conversation");
 		// TODO Auto-generated method stub
 
 	}
 
-	public String start_conversation(int client_id, StringHolder id) {
+	public String start_conversation(StringHolder id) {
 		log.error("NO-OP get_service_id");
 		// TODO Auto-generated method stub
-		id.value = serviceName;
+		id.value = serviceName + ":" + 0;
 		String ior = servantCache.get(0).getIor();
 		log.debug("Returning servant IOR: " + ior);
 		return ior;

@@ -138,8 +138,6 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 		clientInfo.user_password = password;
 		clientCallbackImpl = new ClientCallbackImpl(root_poa, serverName);
 		clientInfo.callback_ior = clientCallbackImpl.getCallbackIOR();
-		AtmiBroker.ClientInfo aCorbaClientInfo = clientInfo.createCorbaClientInfo();
-		clientInfo.client_id = server.register_client(aCorbaClientInfo);
 		callbackThread = new Thread(this);
 		callbackThread.setDaemon(true);
 		callbackThread.start();
@@ -213,14 +211,6 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 		return server.server_init();
 	}
 
-	public int get_queue_log(String queue_name) {
-		return server.get_queue_log(queue_name);
-	}
-
-	public String get_client_callback(AtmiBroker.ClientInfo client_info) {
-		return server.get_client_callback(client_info);
-	}
-
 	public void server_done() {
 		server.server_done();
 	}
@@ -233,16 +223,8 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 		return server.get_all_service_info();
 	}
 
-	public AtmiBroker.ServiceInfo get_service_info(String service_name) {
-		return server.get_service_info(service_name);
-	}
-
 	public AtmiBroker.EnvVariableInfo[] get_environment_variable_info() {
 		return server.get_environment_variable_info();
-	}
-
-	public AtmiBroker.ClientInfo[] get_client_info() {
-		return server.get_client_info();
 	}
 
 	public void set_server_descriptor(String xml_descriptor) {
@@ -293,12 +275,10 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 		while (iterator.hasNext()) {
 			iterator.next().close();
 		}
-		AtmiBroker.ClientInfo aCorbaClientInfo = clientInfo.createCorbaClientInfo();
-		server.deregister_client(aCorbaClientInfo);
 	}
 
-	int getClientId() {
-		return clientInfo.client_id;
+	String getClientCallbackIOR() {
+		return clientInfo.callback_ior;
 	}
 
 	public AtmiBrokerServiceFactory getServiceFactoryProxy(String serviceName) throws JAtmiBrokerException {
