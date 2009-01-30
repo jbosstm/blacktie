@@ -28,8 +28,6 @@
 
 #include "xatmi.h"
 #include "AtmiBrokerMem.h"
-#include "AtmiBrokerBuffers.h"
-#include "AtmiBrokerMemc.h"
 #include "userlog.h"
 #include "log4cxx/logger.h"
 using namespace log4cxx;
@@ -132,7 +130,7 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size) {
 			if (strcmp((*it).type, "X_OCTET") == 0) {
 				reallocSize = (size + 1) * sizeof(char);
 				trailingNull = true;
-			} else if (strcmp((*it).type, TYPE1) == 0 || strncmp((*it).type, "X_COMMON", 8) == 0 || strncmp((*it).type, "X_C_TYPE", 8) == 0) {
+			} else if (strncmp((*it).type, "X_COMMON", 8) == 0 || strncmp((*it).type, "X_C_TYPE", 8) == 0) {
 				if (size < 1024)
 					size = 1024;
 				reallocSize = size * sizeof(char);

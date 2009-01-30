@@ -28,7 +28,14 @@
 #include <iostream>
 #include <vector>
 
-struct ATMIBROKER_DLL _memory_info;
+#define MAX_TYPE_SIZE 8
+#define MAX_SUBTYPE_SIZE 16
+struct ATMIBROKER_DLL _memory_info {
+	void* memoryPtr;
+	char* type;
+	char* subtype;
+	int size;
+};
 typedef ATMIBROKER_DLL _memory_info MemoryInfo;
 
 class ATMIBROKER_DLL AtmiBrokerMem

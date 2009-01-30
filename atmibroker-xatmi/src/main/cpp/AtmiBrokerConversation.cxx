@@ -42,7 +42,6 @@
 #include <iostream>
 
 #include "ThreadLocalStorage.h"
-#include "AtmiBrokerBuffers.h"
 #include "AtmiBrokerOTS.h"
 #include "AtmiBrokerClient.h"
 #include "AtmiBrokerMem.h"

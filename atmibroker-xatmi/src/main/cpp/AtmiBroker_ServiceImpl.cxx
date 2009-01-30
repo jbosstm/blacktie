@@ -44,7 +44,6 @@
 #include "AtmiBroker.h"
 
 #include "AtmiBrokerOTS.h"
-#include "AtmiBrokerBuffers.h"
 #include "xatmi.h"
 #include "userlog.h"
 #include "atmiBrokerMacro.h"
