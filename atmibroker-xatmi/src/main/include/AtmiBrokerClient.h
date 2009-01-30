@@ -34,33 +34,23 @@
 #include <tao/ORB.h>
 #include <orbsvcs/CosNamingS.h>
 #include <tao/PortableServer/PortableServerC.h>
-#include "AtmiBrokerC.h"
 #elif ORBIX_COMP
 #include <omg/orb.hh>
 #include <omg/CosNaming.hh>
 #include <omg/PortableServer.hh>
-#include "AtmiBroker.hh"
 #endif
 #ifdef VBC_COMP
 #include <orb.h>
 #include <CosNaming_c.hh>
 #include <PortableServerExt_c.hh>
-#include "AtmiBroker_c.hh"
 #endif
 
+#include "AtmiBrokerClientXml.h"
 #include "AtmiBrokerPoaFac.h"
 #include "AtmiBroker_ClientCallbackImpl.h"
 
 #include <iostream>
 #include <vector>
-
-struct _client_server_info {
-
-	char * serverName;
-	std::vector<char*>* serviceVectorPtr;
-};
-
-typedef _client_server_info ClientServerInfo;
 
 class ATMIBROKER_DLL AtmiBrokerClient {
 public:
@@ -71,11 +61,7 @@ public:
 
 	void getServer(ClientServerInfo * aClientServerInfo, char * serverName);
 
-	void start_conversation(char * serviceName, char ** id, AtmiBroker::Service_var* refPtr);
-
 	void findService(char * serviceAndIndex, AtmiBroker::Service_var* refPtr);
-
-	void createAndRegisterCallback(ClientServerInfo * aClientServerInfo);
 
 	int convertIdToInt(char * id);
 
@@ -84,7 +70,7 @@ public:
 	void extractServiceAndIndex(char * serviceAndIndex, char * serviceName, char * index);
 
 	AtmiBroker_ClientCallbackImpl * getClientCallback();
-	CORBA::String_var getClientCallbackIOR();
+	char* getClientCallbackIOR();
 
 protected:
 
@@ -92,7 +78,7 @@ protected:
 	std::vector<ClientServerInfo*> clientServerVector;
 	AtmiBroker::ClientCallback_var clientCallback;
 	AtmiBroker_ClientCallbackImpl * clientCallbackImpl;
-	CORBA::String_var clientCallbackIOR;
+	char* clientCallbackIOR;
 };
 
 extern ATMIBROKER_DLL CORBA::ORB_var client_orb;

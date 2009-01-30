@@ -26,6 +26,7 @@
 #define AtmiBroker_H
 
 #include "atmiBrokerMacro.h"
+#include <vector>
 
 extern ATMIBROKER_DLL int _tperrno;
 extern ATMIBROKER_DLL long _tpurcode;

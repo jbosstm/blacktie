@@ -26,7 +26,6 @@
 #include <iostream>
 #include "expat.h"
 
-#include "AtmiBrokerEnv.h"
 #include "AtmiBrokerEnvXml.h"
 
 #include "log4cxx/logger.h"

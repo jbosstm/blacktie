@@ -30,10 +30,7 @@
 #include <iostream>
 #include <vector>
 
-typedef struct {
-	char * name;
-	char * value;
-} envVar_t;
+#include "AtmiBrokerEnvXml.h"
 
 class ATMIBROKER_CORE_DLL AtmiBrokerEnv {
 

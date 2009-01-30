@@ -25,54 +25,18 @@
 
 #include "atmiBrokerMacro.h"
 
-#ifdef TAO_COMP
-#include "tao/ORB.h"
-#elif ORBIX_COMP
-#include <omg/orb.hh>
-#endif
-#ifdef VBC_COMP
-#include <orb.h>
-#endif
-
-#include <iostream>
-#include <string.h>
-
-#include "AtmiBrokerClient.h"
 #include <vector>
+
+struct _client_server_info {
+
+	char * serverName;
+	std::vector<char*>* serviceVectorPtr;
+};
+typedef _client_server_info ClientServerInfo;
+
 
 class ATMIBROKER_DLL AtmiBrokerClientXml {
 public:
-
-	static const char* Client_Begin_Tag;
-	static const char* Client_End_Tag;
-
-	static const char* Client_Desc_Begin_Tag;
-	static const char* Client_Desc_End_Tag;
-
-	static const char* Max_Replicas_Begin_Tag;
-	static const char* Max_Replicas_End_Tag;
-
-	static const char* Max_Channels_Begin_Tag;
-	static const char* Max_Channels_End_Tag;
-
-	static const char* Max_Suppliers_Begin_Tag;
-	static const char* Max_Suppliers_End_Tag;
-
-	static const char* Max_Consumers_Begin_Tag;
-	static const char* Max_Consumers_End_Tag;
-
-	static const char* Server_Names_Begin_Tag;
-	static const char* Server_Names_End_Tag;
-
-	static const char* Server_Name_Begin_Tag;
-	static const char* Server_Name_End_Tag;
-
-	static const char* Service_Names_Begin_Tag;
-	static const char* Service_Names_End_Tag;
-
-	static const char* Service_Name_Begin_Tag;
-	static const char* Service_Name_End_Tag;
-
 	AtmiBrokerClientXml();
 
 	~AtmiBrokerClientXml();

@@ -24,8 +24,8 @@
 #include <string.h>
 #include <iostream>
 #include "expat.h"
+#include <sys/stat.h>
 
-#include "AtmiBrokerClient.h"
 #include "AtmiBrokerClientXml.h"
 #include "userlog.h"
 #include "log4cxx/logger.h"
@@ -36,37 +36,6 @@ LoggerPtr loggerAtmiBrokerClientXml(Logger::getLogger("AtmiBrokerClientXml"));
 int clientMaxChannels = 0;
 int clientMaxSuppliers = 0;
 int clientMaxConsumers = 0;
-
-const char* AtmiBrokerClientXml::Client_Begin_Tag = (char*) "<?xml version=\"1.0\"?>\n<CLIENT xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n";
-
-const char* AtmiBrokerClientXml::Client_End_Tag = (char*) "</CLIENT>\n";
-
-const char* AtmiBrokerClientXml::Client_Desc_Begin_Tag = (char*) "  <CLIENT_DESCRIPTION>\n";
-const char* AtmiBrokerClientXml::Client_Desc_End_Tag = (char*) "  </CLIENT_DESCRIPTION>\n";
-
-const char* AtmiBrokerClientXml::Max_Replicas_Begin_Tag = (char*) "    <MAX_REPLICAS>";
-const char* AtmiBrokerClientXml::Max_Replicas_End_Tag = (char*) "</MAX_REPLICAS>\n";
-
-const char* AtmiBrokerClientXml::Max_Channels_Begin_Tag = (char*) "    <MAX_CHANNELS>";
-const char* AtmiBrokerClientXml::Max_Channels_End_Tag = (char*) "</MAX_CHANNELS\n>";
-
-const char* AtmiBrokerClientXml::Max_Suppliers_Begin_Tag = (char*) "    <MAX_SUPPLIERS>";
-const char* AtmiBrokerClientXml::Max_Suppliers_End_Tag = (char*) "</MAX_SUPPLIERS>\n";
-
-const char* AtmiBrokerClientXml::Max_Consumers_Begin_Tag = (char*) "    <MAX_CONSUMERS>";
-const char* AtmiBrokerClientXml::Max_Consumers_End_Tag = (char*) "</MAX_CONSUMERS>\n";
-
-const char* AtmiBrokerClientXml::Server_Names_Begin_Tag = (char*) "    <SERVER_NAMES>\n";
-const char* AtmiBrokerClientXml::Server_Names_End_Tag = (char*) "    </SERVER_NAMES>\n";
-
-const char* AtmiBrokerClientXml::Server_Name_Begin_Tag = (char*) "      <SERVER_NAME>";
-const char* AtmiBrokerClientXml::Server_Name_End_Tag = (char*) "</SERVER_NAME>\n";
-
-const char* AtmiBrokerClientXml::Service_Names_Begin_Tag = (char*) "      <SERVICE_NAMES>\n";
-const char* AtmiBrokerClientXml::Service_Names_End_Tag = (char*) "      </SERVICE_NAMES>\n";
-
-const char* AtmiBrokerClientXml::Service_Name_Begin_Tag = (char*) "        <SERVICE_NAME>";
-const char* AtmiBrokerClientXml::Service_Name_End_Tag = (char*) "</SERVICE_NAME>\n";
 
 static char last_element[50];
 static char last_value[50];
@@ -96,11 +65,8 @@ AtmiBrokerClientXml::AtmiBrokerClientXml() {
 AtmiBrokerClientXml::~AtmiBrokerClientXml() {
 }
 
-static void XMLCALL startElement
-(void *userData, const char *name, const char **atts)
-{
-	if (strcmp(name, "SERVER xmnls") == 0)
-	{
+static void XMLCALL startElement(void *userData, const char *name, const char **atts) {
+	if (strcmp(name, "SERVER xmnls") == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "new server ");
 		processingServer = true;
 
@@ -110,28 +76,19 @@ static void XMLCALL startElement
 	//	  userlog(Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "processing Max Replicas for server ");
 	//  	  processingMaxReplicas = true;
 	//  }
-	else if (strcmp(name, "MAX_CHANNELS") == 0)
-	{
+	else if (strcmp(name, "MAX_CHANNELS") == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "processing Max Channels for server ");
 		processingMaxChannels = true;
-	}
-	else if (strcmp(name, "MAX_SUPPLIERS") == 0)
-	{
+	} else if (strcmp(name, "MAX_SUPPLIERS") == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "processing Max Suppliers for server ");
 		processingMaxSuppliers = true;
-	}
-	else if (strcmp(name, "MAX_CONSUMERS") == 0)
-	{
+	} else if (strcmp(name, "MAX_CONSUMERS") == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "processing Max Consumers for server ");
 		processingMaxConsumers = true;
-	}
-	else if (strcmp(name, "SERVICE_NAMES") == 0)
-	{
+	} else if (strcmp(name, "SERVICE_NAMES") == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "processing Service Names for server ");
 		processingServiceNames = true;
-	}
-	else if (strcmp(name, "SERVICE_NAME") == 0)
-	{
+	} else if (strcmp(name, "SERVICE_NAME") == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "processing Service Name for server ");
 		processingServiceName = true;
 	}
@@ -141,10 +98,8 @@ static void XMLCALL startElement
 	depth += 1;
 }
 
-static void XMLCALL endElement
-(void *userData, const char *name)
-{
-	std::vector<ClientServerInfo*>* aClientServerVectorPtr = (std::vector<ClientServerInfo*>*)userData;
+static void XMLCALL endElement(void *userData, const char *name) {
+	std::vector<ClientServerInfo*>* aClientServerVectorPtr = (std::vector<ClientServerInfo*>*) userData;
 
 	strcpy(last_element, name);
 	strcpy(last_value, value);
@@ -156,38 +111,29 @@ static void XMLCALL endElement
 	//	aClientServerInfoPtr->cInfo->maxReplicas = (short)atol(last_value);
 	//	maxReplicas = atol(last_value);
 	//  }
-	if (strcmp(last_element, "MAX_CHANNELS") == 0)
-	{
+	if (strcmp(last_element, "MAX_CHANNELS") == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "storing MaxChannels %s", last_value);
 		processingMaxChannels = false;
 		//aClientServerInfoPtr->cInfo->maxChannels = atol(last_value);
 		clientMaxChannels = atol(last_value);
-	}
-	else if (strcmp(last_element, "MAX_SUPPLIERS") == 0)
-	{
+	} else if (strcmp(last_element, "MAX_SUPPLIERS") == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "storing MaxSuppliers %s", last_value);
 		processingMaxSuppliers = false;
 		//aClientServerInfoPtr->cInfo->maxSuppliers = atol(last_value);
 		clientMaxSuppliers = atol(last_value);
-	}
-	else if (strcmp(last_element, "MAX_CONSUMERS") == 0)
-	{
+	} else if (strcmp(last_element, "MAX_CONSUMERS") == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "storing MaxConsumers %s", last_value);
 		processingMaxConsumers = false;
 		//aClientServerInfoPtr->cInfo->maxConsumers = atol(last_value);
 		clientMaxConsumers = atol(last_value);
-	}
-	else if (strcmp(last_element, "SERVER_NAMES") == 0)
-	{
+	} else if (strcmp(last_element, "SERVER_NAMES") == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "storing ServerNames ");
 		processingServerNames = false;
-	}
-	else if (strcmp(last_element, "SERVER_NAME") == 0)
-	{
+	} else if (strcmp(last_element, "SERVER_NAME") == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "storing ServerName '%s'", last_value);
 		processingServerName = false;
 
-		aClientServerInfoPtr = (ClientServerInfo*)malloc(sizeof(ClientServerInfo)*1);
+		aClientServerInfoPtr = (ClientServerInfo*) malloc(sizeof(ClientServerInfo) * 1);
 		memset(aClientServerInfoPtr, '\0', sizeof(ClientServerInfo));
 		aClientServerInfoPtr->serverName = strdup(last_value);
 		aClientServerInfoPtr->serviceVectorPtr = new std::vector<char*>;
@@ -196,14 +142,10 @@ static void XMLCALL endElement
 		aClientServerVectorPtr->push_back(aClientServerInfoPtr);
 		userlog(Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "added aClientServerInfo %p to vector", aClientServerInfoPtr);
 
-	}
-	else if (strcmp(last_element, "SERVICE_NAMES") == 0)
-	{
+	} else if (strcmp(last_element, "SERVICE_NAMES") == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "storing ServiceNames ");
 		processingServiceNames = false;
-	}
-	else if (strcmp(last_element, "SERVICE_NAME") == 0)
-	{
+	} else if (strcmp(last_element, "SERVICE_NAME") == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "storing ServiceName '%s'", last_value);
 		processingServiceName = false;
 		serviceNameCount++;
@@ -212,16 +154,13 @@ static void XMLCALL endElement
 	depth -= 1;
 }
 
-static void XMLCALL characterData
-(void *userData, const char *cdata, int len)
-{
+static void XMLCALL characterData(void *userData, const char *cdata, int len) {
 	int i = 0;
 	int j = 0;
 	int priorLength = strlen(value);
 
 	i = priorLength;
-	for (; i < len+priorLength; i++, j++)
-	{
+	for (; i < len + priorLength; i++, j++) {
 		value[i] = cdata[j];
 	}
 	value[i] = '\0';

@@ -23,8 +23,6 @@
 #include <iostream>
 #include <stdio.h>
 
-#include "AtmiBroker.h"
-#include "AtmiBrokerServiceRetrieve.h"
 #include "xatmi.h"
 #include "AtmiBrokerClient.h"
 #include "AtmiBroker_ClientCallbackImpl.h"
@@ -86,7 +84,7 @@ AtmiBroker_ClientCallbackImpl * AtmiBrokerClient::getClientCallback() {
 	return clientCallbackImpl;
 }
 
-CORBA::String_var AtmiBrokerClient::getClientCallbackIOR() {
+char* AtmiBrokerClient::getClientCallbackIOR() {
 	return clientCallbackIOR;
 }
 
