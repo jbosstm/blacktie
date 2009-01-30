@@ -24,47 +24,23 @@
 #define AtmiBroker_SERVER_XML_H_
 
 #include "atmiBrokerMacro.h"
-
-#ifdef TAO_COMP
-#include "tao/ORB.h"
-#elif ORBIX_COMP
-#include <omg/orb.hh>
-#endif
-#ifdef VBC_COMP
-#include <orb.h>
-#endif
-
 #include <string.h>
+#include <vector>
+
+struct ServerMetadata {
+	short maxChannels;
+	short maxSuppliers;
+	short maxConsumers;
+	short maxReplicas;
+	short logLevel;
+	std::string securityType;
+	std::string orbType;
+	std::string queueSpaceName;
+	std::vector<std::string> serviceNames;
+};
 
 class ATMIBROKER_DLL AtmiBrokerServerXml {
 public:
-
-	static const char* Server_Begin_Tag;
-	static const char* Server_End_Tag;
-
-	static const char* Server_Desc_Begin_Tag;
-	static const char* Server_Desc_End_Tag;
-
-	static const char* Max_Replicas_Begin_Tag;
-	static const char* Max_Replicas_End_Tag;
-
-	static const char* Max_Channels_Begin_Tag;
-	static const char* Max_Channels_End_Tag;
-
-	static const char* Max_Suppliers_Begin_Tag;
-	static const char* Max_Suppliers_End_Tag;
-
-	static const char* Max_Consumers_Begin_Tag;
-	static const char* Max_Consumers_End_Tag;
-
-	static const char* Orb_Type_Begin_Tag;
-	static const char* Orb_Type_End_Tag;
-
-	static const char* Service_Names_Begin_Tag;
-	static const char* Service_Names_End_Tag;
-
-	static const char* Service_Name_Begin_Tag;
-	static const char* Service_Name_End_Tag;
 
 	AtmiBrokerServerXml();
 
@@ -73,6 +49,7 @@ public:
 	void parseXmlDescriptor(ServerMetadata*, const char * aDescriptorFileName);
 };
 
+extern ATMIBROKER_DLL char server[30];
 extern ATMIBROKER_DLL int serverMaxChannels;
 extern ATMIBROKER_DLL int serverMaxSuppliers;
 extern ATMIBROKER_DLL int serverMaxConsumers;

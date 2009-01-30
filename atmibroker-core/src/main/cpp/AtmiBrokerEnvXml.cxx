@@ -37,7 +37,6 @@ char* notifyServiceId;
 char* namingServiceId;
 char* loggingServiceId;
 char domain[30];
-char server[30];
 char* company;
 char* queue_name;
 char* xaResourceMgrId;

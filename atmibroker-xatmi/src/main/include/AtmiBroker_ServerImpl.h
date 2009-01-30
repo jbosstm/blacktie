@@ -49,18 +49,7 @@
 #include <iostream>
 #include <vector>
 #include "xatmi.h"
-
-struct ServerMetadata {
-	short maxChannels;
-	short maxSuppliers;
-	short maxConsumers;
-	short maxReplicas;
-	short logLevel;
-	std::string securityType;
-	std::string orbType;
-	std::string queueSpaceName;
-	std::vector<std::string> serviceNames;
-};
+#include "AtmiBrokerServerXml.h"
 
 class ATMIBROKER_DLL AtmiBroker_ServerImpl: public virtual POA_AtmiBroker::Server {
 public:
