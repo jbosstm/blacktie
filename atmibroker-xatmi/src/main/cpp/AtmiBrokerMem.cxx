@@ -158,6 +158,9 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size) {
 }
 
 void AtmiBrokerMem::tpfree(char* ptr) {
+	if (!ptr || ptr == NULL) {
+		return;
+	}
 
 	userlog(Level::getDebug(), loggerAtmiBrokerMem, (char*) "tpfree - ptr: %p", ptr);
 

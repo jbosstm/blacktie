@@ -274,6 +274,11 @@ void AtmiBroker_ServiceImpl::endConnectionTransactionAssociation() {
 }
 
 bool AtmiBroker_ServiceImpl::sameBuffer(char* toCheck) {
+	if (!toCheck || toCheck == NULL) {
+		tperrno = TPEINVAL;
+		return -1;
+	}
+
 	bool toReturn = false;
 	if (m_octetSeq && toCheck == (char*) m_octetSeq->get_buffer()) {
 		toReturn = true;

@@ -27,20 +27,81 @@
 #include <iostream>
 
 #include "ThreadLocalStorage.h"
+#include "AtmiBrokerServer.h"
+#include "AtmiBrokerClientControl.h"
+#include "AtmiBrokerServerControl.h"
 #include "xatmi.h"
 #include "AtmiBroker.h"
 #include "AtmiBrokerConversation.h"
 #include "AtmiBroker_ServiceImpl.h"
 #include "userlog.h"
-
-extern "C" {
-#include "AtmiBrokerClientControl.h"
-}
-
+#include "AtmiBrokerMem.h"
 #include "log4cxx/logger.h"
+
 using namespace log4cxx;
 using namespace log4cxx::helpers;
-LoggerPtr loggerAtmiBrokerConversationc(Logger::getLogger("AtmiBrokerConversationc"));
+LoggerPtr loggerXATMI(Logger::getLogger("loggerXATMI"));
+
+int tpadvertise(char * svcname, void(*func)(TPSVCINFO *)) {
+	tperrno = 0;
+	int toReturn = -1;
+	if (ptrServer) {
+		if (ptrServer->advertiseService(svcname, func)) {
+			toReturn = 0;
+		}
+	} else {
+		tperrno = TPEPROTO;
+	}
+	return toReturn;
+}
+
+int tpunadvertise(char * svcname) {
+	tperrno = 0;
+	int toReturn = -1;
+	if (ptrServer) {
+		if (svcname && strcmp(svcname, "") != 0) {
+			if (ptrServer->isAdvertised(svcname)) {
+				ptrServer->unadvertiseService(svcname);
+				toReturn = 0;
+			} else {
+				tperrno = TPENOENT;
+			}
+		} else {
+			tperrno = TPEINVAL;
+		}
+	} else {
+		tperrno = TPEPROTO;
+	}
+	return toReturn;
+}
+
+char* tpalloc(char* type, char* subtype, long size) {
+	tperrno = 0;
+	userlog(Level::getDebug(), loggerXATMI, (char*) "tpalloc - type: '%s' size: %d", type, size);
+	return AtmiBrokerMem::get_instance()->tpalloc(type, subtype, size);
+}
+
+char* tprealloc(char * addr, long size) {
+	tperrno = 0;
+	userlog(Level::getDebug(), loggerXATMI, (char*) "tprealloc - addr: %p size: %d", addr, size);
+	return AtmiBrokerMem::get_instance()->tprealloc(addr, size);
+}
+
+void tpfree(char* ptr) {
+	tperrno = 0;
+	AtmiBroker_ServiceImpl *service = (AtmiBroker_ServiceImpl*) getSpecific(SVC_KEY);
+	if (service != NULL && service->sameBuffer(ptr)) {
+		return;
+	}
+	userlog(Level::getDebug(), loggerXATMI, (char*) "tpfree - ptr: %p", ptr);
+	AtmiBrokerMem::get_instance()->tpfree(ptr);
+}
+
+long tptypes(char* ptr, char* type, char* subtype) {
+	tperrno = 0;
+	userlog(Level::getDebug(), loggerXATMI, (char*) "tptypes - ptr: %p %s", ptr, type);
+	return AtmiBrokerMem::get_instance()->tptypes(ptr, type, subtype);
+}
 
 int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen, long flags) {
 	if (clientinit() != -1)
@@ -107,7 +168,6 @@ int tpgetrply(int *id, char ** odata, long *olen, long flags) {
 }
 
 void tpreturn(int rval, long rcode, char* data, long len, long flags) {
-	// TJJ
 	AtmiBroker_ServiceImpl* thread = (AtmiBroker_ServiceImpl*) getSpecific(SVC_KEY);
 	thread->tpreturn(rval, rcode, data, len, flags);
 }
