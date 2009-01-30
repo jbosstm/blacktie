@@ -59,8 +59,6 @@ struct _client_server_info {
 	char * serverName;
 	AtmiBroker::Server_ptr serverPtr;
 	std::vector<char*>* serviceVectorPtr;
-	AtmiBroker::ClientInfo_var cInfo;
-
 };
 
 typedef _client_server_info ClientServerInfo;
@@ -68,7 +66,7 @@ typedef _client_server_info ClientServerInfo;
 class ATMIBROKER_DLL AtmiBrokerClient {
 public:
 
-	AtmiBrokerClient(CORBA::Boolean createCallback, CORBA::Boolean createChannels, CORBA::Boolean createSuppliers, CORBA::Boolean createConsumers);
+	AtmiBrokerClient();
 
 	virtual ~AtmiBrokerClient();
 
@@ -86,11 +84,8 @@ public:
 
 	void extractServiceAndIndex(char * serviceAndIndex, char * serviceName, char * index);
 
-	long getClientId(char* serviceName);
-
-	long getQueueId(char* aQueueName);
-
 	AtmiBroker_ClientCallbackImpl * getClientCallback();
+	CORBA::String_var getClientCallbackIOR();
 
 protected:
 
@@ -111,7 +106,4 @@ extern ATMIBROKER_DLL AtmiBrokerPoaFac * clientPoaFactory;
 
 extern ATMIBROKER_DLL AtmiBrokerClient * ptrAtmiBrokerClient;
 extern ATMIBROKER_DLL CORBA::PolicyList *policyList;
-
-extern ATMIBROKER_DLL AtmiBroker::ClientInfo clientInfo;
-
 #endif

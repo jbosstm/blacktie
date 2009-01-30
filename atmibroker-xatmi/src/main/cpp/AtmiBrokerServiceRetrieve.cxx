@@ -102,28 +102,3 @@ AtmiBroker::ServiceFactory_ptr get_service_factory(const char * serviceName) {
 
 	return AtmiBroker::ServiceFactory::_duplicate(factoryPtr);
 }
-
-void start_conversation(long clientId, AtmiBroker::ServiceFactory_ptr aFactoryPtr, char **idPtr, AtmiBroker::Service_var* refPtr) {
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "start_conversation");
-
-	CORBA::String_var aId = "";
-	CORBA::String_var aIor = "";
-
-	// get service ior from factory
-	aIor = aFactoryPtr->start_conversation(clientId, aId);
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "got back ior %s", (char*) aIor);
-
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "string_to_object ");
-	CORBA::Object_var tmp_ref = client_orb->string_to_object(aIor);
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "tmp_ref %p", (void*) tmp_ref);
-
-	*refPtr = AtmiBroker::Service::_narrow(tmp_ref);
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "refPtr %p", (void*) *refPtr);
-
-	if (CORBA::is_nil(*refPtr)) {
-		userlog(Level::getError(), loggerAtmiBrokerServiceRetrieve, (char*) "Could not get service ");
-	} else {
-		userlog(Level::getDebug(), loggerAtmiBrokerServiceRetrieve, (char*) "got service %p with id %s", (void*) *refPtr, (char*) aId);
-		strcpy(*idPtr, (char*) aId);
-	}
-}

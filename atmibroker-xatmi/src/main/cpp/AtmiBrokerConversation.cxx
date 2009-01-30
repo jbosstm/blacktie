@@ -107,32 +107,35 @@ int AtmiBrokerConversation::tpacall(char * svc, char* idata, long ilen, long fla
 	}
 }
 
-int AtmiBrokerConversation::tpconnect(char * svc, char* idata, long ilen, long flags) {
-	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "tpconnect - svc: %s idata: %s ilen: %d flags: %d", svc, idata, ilen, flags);
+int AtmiBrokerConversation::tpconnect(char * serviceName, char* idata, long ilen, long flags) {
+	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "tpconnect - svc: %s idata: %s ilen: %d flags: %d", serviceName, idata, ilen, flags);
 
 	tperrno = 0;
 	int cd = -1;
 
-	char *id = (char*) malloc(sizeof(char*) * XATMI_SERVICE_NAME_LENGTH);
-	AtmiBroker::Service_var aCorbaService;
 	try {
-		mAtmiBrokerClient->start_conversation(svc, &id, &aCorbaService);
-		if (CORBA::is_nil(aCorbaService)) {
-			tperrno = TPENOENT;
-			cd = -1;
-		} else {
-			userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "object id is %s", id);
+		AtmiBroker::ServiceFactory_ptr ptr = get_service_factory(serviceName);
+		if (ptr) {
+			userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "start_conversation");
+			char* aId = (char*) malloc(sizeof(char*) * XATMI_SERVICE_NAME_LENGTH);
+			CORBA::String_var aIor = ptr->start_conversation(aId);
+			userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "got back ior %s", (char*) aIor);
+			CORBA::Object_var tmp_ref = client_orb->string_to_object(aIor);
+			AtmiBroker::Service_var aCorbaService = AtmiBroker::Service::_narrow(tmp_ref);
+			userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "got service %p with id %s", (void*) aCorbaService, (char*) aId);
+
 			long revent = 0;
-			cd = send(aCorbaService, idata, ilen, false, flags, &revent);
-			if (cd != -1) {
-				cd = mAtmiBrokerClient->convertIdToInt(id);
+			int response = send(aCorbaService, idata, ilen, false, flags, &revent);
+			if (response != -1) {
+				cd = mAtmiBrokerClient->convertIdToInt(aId);
 			}
+		} else {
+			tperrno = TPENOENT;
 		}
 	} catch (...) {
 		userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "aCorbaService->start_conversation(): call failed");
 		tperrno = TPESYSTEM;
 	}
-	free(id);
 	return cd;
 }
 
@@ -198,7 +201,7 @@ int AtmiBrokerConversation::send(AtmiBroker::Service_var aCorbaService, char* da
 			memcpy(data_togo, data, atype);
 			AtmiBroker::octetSeq * a_idata = new AtmiBroker::octetSeq(a_ilen, a_ilen, data_togo, true);
 			// TODO NOTIFY SERVER OF POSSIBLE CONDITIONS
-			aCorbaService->send_data(conversation, *a_idata, a_ilen, flags, 0);
+			aCorbaService->send_data(conversation, mAtmiBrokerClient->getClientCallbackIOR(), *a_idata, a_ilen, flags, 0);
 		} catch (...) {
 			userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "aCorbaService->send_data(): call failed");
 			tperrno = TPESYSTEM;
@@ -298,7 +301,7 @@ int AtmiBrokerConversation::end(int id) {
 			toReturn = -1;
 		} else {
 			try {
-				aCorbaServiceFactory->end_conversation(mAtmiBrokerClient->getClientId(serviceName), index);
+				aCorbaServiceFactory->end_conversation(index);
 			} catch (const CORBA::SystemException &ex) {
 				userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "aCorbaService->end_conversation(): call failed. %s", ex._name());
 				tperrno = TPESYSTEM;

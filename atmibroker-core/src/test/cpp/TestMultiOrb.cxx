@@ -43,15 +43,19 @@ void TestMultiOrb::tearDown() {
 }
 
 void TestMultiOrb::test() {
-	Worker* client_worker;
-	CORBA::ORB_var client_orb;
-	CosNaming::NamingContextExt_var client_default_context;
-	CosNaming::NamingContext_var client_name_context;
-	initOrb((char*) "client", client_worker, client_orb, client_default_context, client_name_context);
+	try {
+		Worker* client_worker;
+		CORBA::ORB_var client_orb;
+		CosNaming::NamingContextExt_var client_default_context;
+		CosNaming::NamingContext_var client_name_context;
+		initOrb((char*) "client", client_worker, client_orb, client_default_context, client_name_context);
 
-	Worker* server_worker;
-	CORBA::ORB_var server_orb;
-	CosNaming::NamingContextExt_var server_default_context;
-	CosNaming::NamingContext_var server_name_context;
-	initOrb((char*) "server", server_worker, server_orb, server_default_context, server_name_context);
+		Worker* server_worker;
+		CORBA::ORB_var server_orb;
+		CosNaming::NamingContextExt_var server_default_context;
+		CosNaming::NamingContext_var server_name_context;
+		initOrb((char*) "server", server_worker, server_orb, server_default_context, server_name_context);
+	} catch (CORBA::Exception &e) {
+		CPPUNIT_FAIL("COULDN'T CONNECT TO NAME SERVICE");
+	}
 }

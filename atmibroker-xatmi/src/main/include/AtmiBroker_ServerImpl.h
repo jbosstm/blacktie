@@ -78,15 +78,6 @@ public:
 	//
 	virtual CORBA::Short server_init() throw (CORBA::SystemException );
 
-	virtual CORBA::Long register_client(const AtmiBroker::ClientInfo& client_info) throw (CORBA::SystemException );
-
-	virtual CORBA::Long get_queue_log(const char* queue_name) throw (CORBA::SystemException );
-
-	virtual CORBA::Boolean deregister_client(const AtmiBroker::ClientInfo& client_info) throw (CORBA::SystemException );
-
-	virtual char*
-	get_client_callback(const AtmiBroker::ClientInfo& client_info) throw (CORBA::SystemException );
-
 	virtual void server_done() throw (CORBA::SystemException );
 
 	virtual AtmiBroker::ServerInfo*
@@ -100,9 +91,6 @@ public:
 
 	virtual AtmiBroker::EnvVariableInfoSeq*
 	get_environment_variable_info() throw (CORBA::SystemException );
-
-	virtual AtmiBroker::ClientInfoSeq*
-	get_client_info() throw (CORBA::SystemException );
 
 	virtual void set_server_descriptor(const char* xml_descriptor) throw (CORBA::SystemException );
 
@@ -125,8 +113,6 @@ public:
 protected:
 	char * serverName;
 	int logLevel;
-	std::vector<AtmiBroker::ClientInfo_var> clientInfoVector;
-	long nextClientId;
 	ServerMetadata serverInfo;
 	std::vector<char*> advertisedServices;
 

@@ -72,20 +72,6 @@ module AtmiBroker {
 
 	};
 
-        struct ClientInfo 
-	{
-		       string   	callback_ior;
-		       string   	user_id;
-		       string   	user_password;
-		       long   		client_id;
-		       short   		maxChannels;
-		       short   		maxSuppliers;
-		       short   		maxConsumers;
-		       short   		maxReplicas;
-		       short   		logLevel;
-        };
-	typedef sequence<ClientInfo> ClientInfoSeq;
-
         struct EnvVariableInfo 
 	{
 		       string   	name;
@@ -125,14 +111,6 @@ module AtmiBroker {
 	interface Server
 	{
 		short server_init();
-
-		long register_client(in ClientInfo client_info);
-
-		long get_queue_log(in string queue_name);
-
-		boolean deregister_client(in ClientInfo client_info);
-		
-		string get_client_callback(in ClientInfo client_info);
 		
 		void  server_done();
 		
@@ -143,8 +121,6 @@ module AtmiBroker {
 		ServiceInfo  get_service_info(in string service_name);
 		
 		EnvVariableInfoSeq  get_environment_variable_info();
-		
-		ClientInfoSeq  get_client_info();
 		
 		void  set_server_descriptor(in string xml_descriptor);
 		
@@ -160,9 +136,8 @@ module AtmiBroker {
 
 	interface Service
 	{
-		readonly attribute string serviceName;
-
 		oneway void send_data(in boolean conversation,
+				  in string callback_ior,
 				  in octetSeq idata,
 				  in long ilen, 
 				  in long flags,
@@ -172,10 +147,10 @@ module AtmiBroker {
 
 
 	interface ServiceFactory
-	{
-		string start_conversation(in long client_id, out string id);
+	{	
+		string start_conversation(out string id);
 	
-		void end_conversation(in long client_id, in string id);
+		void end_conversation(in string id);
 	
 		ServiceInfo  get_service_info();		
 	};

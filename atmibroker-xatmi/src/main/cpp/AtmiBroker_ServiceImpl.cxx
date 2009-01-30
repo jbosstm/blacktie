@@ -87,14 +87,8 @@ AtmiBroker_ServiceImpl::~AtmiBroker_ServiceImpl() {
 
 // service_request_async() -- Implements IDL operation "AtmiBroker::Service::send_data".
 //
-void AtmiBroker_ServiceImpl::send_data(CORBA::Boolean inConversation, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent) throw (CORBA::SystemException ) {
+void AtmiBroker_ServiceImpl::send_data(CORBA::Boolean inConversation, const char* callback_ior, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent) throw (CORBA::SystemException ) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_async()");
-
-	AtmiBroker::ClientInfo client_info;
-	client_info.client_id = clientId;
-
-	char * callback_ior = ptrServer->get_client_callback(client_info);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "client callback_ior for id %d is %s", clientId, callback_ior);
 
 	CORBA::Object_var tmp_ref = server_orb->string_to_object(callback_ior);
 	callbackRef = AtmiBroker::ClientCallback::_narrow(tmp_ref);
@@ -132,13 +126,6 @@ void AtmiBroker_ServiceImpl::send_data(CORBA::Boolean inConversation, const Atmi
 	}
 }
 
-// serviceName() -- Accessor for IDL attribute "AtmiBroker::Service::serviceName".
-//
-char*
-AtmiBroker_ServiceImpl::serviceName() throw (CORBA::SystemException) {
-	return m_serviceName;
-}
-
 // tpreturn()
 //
 void AtmiBroker_ServiceImpl::tpreturn(int rval, long rcode, char* data, long len, long flags) {
@@ -174,7 +161,6 @@ void AtmiBroker_ServiceImpl::tpreturn(int rval, long rcode, char* data, long len
 	}
 
 	inUse = false;
-	clientId = 0;
 	callbackRef = NULL;
 	free(idStr);
 }
@@ -219,16 +205,6 @@ CORBA::Boolean AtmiBroker_ServiceImpl::isInUse() {
 void AtmiBroker_ServiceImpl::setInUse(CORBA::Boolean aInd) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "setInUse() %d", aInd);
 	inUse = aInd;
-}
-
-long AtmiBroker_ServiceImpl::getClientId() {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "getClientId() %d", clientId);
-	return clientId;
-}
-
-void AtmiBroker_ServiceImpl::setClientId(long aClientId) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "setClientId() %d", aClientId);
-	clientId = aClientId;
 }
 
 void AtmiBroker_ServiceImpl::createConnectionTransactionAssociation() {
@@ -301,8 +277,6 @@ void AtmiBroker_ServiceImpl::endConnectionTransactionAssociation() {
 bool AtmiBroker_ServiceImpl::sameBuffer(char* toCheck) {
 	bool toReturn = false;
 	if (m_octetSeq && toCheck == (char*) m_octetSeq->get_buffer()) {
-		toReturn = true;
-	} else if (m_typedBuffer && toCheck == (char*) &m_typedBuffer) {
 		toReturn = true;
 	}
 	return toReturn;

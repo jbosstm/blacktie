@@ -131,7 +131,7 @@ int clientinit() {
 			client_root_poa_manager->activate();
 			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "activated poa - started processing requests ");
 
-			ptrAtmiBrokerClient = new AtmiBrokerClient(true, false, true, false);
+			ptrAtmiBrokerClient = new AtmiBrokerClient();
 
 			clientInitialized = true;
 

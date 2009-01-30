@@ -57,18 +57,11 @@ public:
 
 	virtual ~AtmiBroker_ServiceFactoryImpl();
 
-	// _create() -- create a new servant.
-	// Hides the difference between direct inheritance and tie servants.
-	//
-	//static POA_AtmiBroker::ServiceFactory* _create(PortableServer::POA_ptr);
-
-
 	// IDL operations
 	//
-	virtual char*
-	start_conversation(CORBA::Long client_id, CORBA::String_out id) throw (CORBA::SystemException );
+	virtual char* start_conversation(CORBA::String_out id) throw (CORBA::SystemException );
 
-	virtual void end_conversation(CORBA::Long client_id, const char* id) throw (CORBA::SystemException );
+	virtual void end_conversation(const char* id) throw (CORBA::SystemException );
 
 	PortableServer::POA_ptr getPoa();
 
@@ -83,12 +76,7 @@ protected:
 	std::vector<AtmiBroker::Service_var> corbaObjectVector;
 	std::vector<AtmiBroker_ServiceImpl *> servantVector;
 	AtmiBroker::ServiceInfo serviceInfo;
-	/*****
-	 int 				maxObjects;
-	 int 				minObjects;
-	 int 				minAvailableObjects;
-	 int 				logLevel;
-	 *****/
+	long nextClientId;
 	char* serviceName;
 	char* servicePoaName;
 	char* descriptorFileName;

@@ -79,8 +79,6 @@ AtmiBroker_ServerImpl::_create(PortableServer::POA_ptr the_poa) {
 //
 AtmiBroker_ServerImpl::AtmiBroker_ServerImpl(PortableServer::POA_ptr the_poa) {
 	// Intentionally empty.
-	nextClientId = 0L;
-
 	std::string serverFileName = "SERVER.xml";
 	AtmiBrokerServerXml aAtmiBrokerServerXml;
 	aAtmiBrokerServerXml.parseXmlDescriptor(&serverInfo, serverFileName.c_str());
@@ -213,74 +211,6 @@ bool AtmiBroker_ServerImpl::isAdvertised(char * serviceName) {
 	return toReturn;
 }
 
-CORBA::Long AtmiBroker_ServerImpl::register_client(const AtmiBroker::ClientInfo& client_info) throw (CORBA::SystemException) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "register_client(): %s", (const char*) ((AtmiBroker::ClientInfo&) client_info).callback_ior);
-
-	nextClientId++;
-
-	AtmiBroker::ClientInfo_var clientInfo = new AtmiBroker::ClientInfo(client_info);
-	clientInfo->callback_ior = CORBA::string_dup(client_info.callback_ior);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "register_client(): after creating copy : %s", (const char*) clientInfo->callback_ior);
-	clientInfo->client_id = nextClientId;
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "register_client(): adding clientInfo: %p to vector", (void*) clientInfo);
-	clientInfoVector.push_back(clientInfo);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "register_client(): added clientInfo: %p to vector", (void*) clientInfo);
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "returning nextClientId: %d", nextClientId);
-
-	return nextClientId;
-}
-
-CORBA::Boolean AtmiBroker_ServerImpl::deregister_client(const AtmiBroker::ClientInfo& client_info) throw (CORBA::SystemException) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "deregister_client(): %p", (void*) &client_info);
-
-	CORBA::Boolean _result = false;
-
-	for (std::vector<AtmiBroker::ClientInfo_var>::iterator it = clientInfoVector.begin(); it != clientInfoVector.end(); it++) {
-		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "deregister_client: next ior is: %s", (const char*) (*it)->callback_ior);
-		if (strcmp((*it)->callback_ior, client_info.callback_ior) == 0) {
-			userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "deregister_client: found matching ior ");
-			clientInfoVector.erase(it);
-			userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "deregister_client: removed match ");
-			return true;
-		}
-	}
-
-	return _result;
-}
-
-char*
-AtmiBroker_ServerImpl::get_client_callback(const AtmiBroker::ClientInfo& client_info) throw (CORBA::SystemException) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_client_callback() for client_id: %d", client_info.client_id);
-
-	char* _result = (char*) "";
-
-	for (std::vector<AtmiBroker::ClientInfo_var>::iterator it = clientInfoVector.begin(); it != clientInfoVector.end(); it++) {
-		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_client_callback() next id is: %d", (char*) (*it)->client_id);
-		if ((*it)->client_id == client_info.client_id) {
-			const char * aResult = (const char *) (*it)->callback_ior;
-			userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_client_callback() found match client id return ior %s", aResult);
-			return (char*) aResult;
-		}
-	}
-
-	return _result;
-}
-
-// get_queue_log() -- Implements IDL operation "AtmiBroker::Server::get_queue_log".
-//
-CORBA::Long AtmiBroker_ServerImpl::get_queue_log(const char* queue_name) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_queue_log() for queue: %s", queue_name);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_queue_log() server queue_name is %s", AtmiBrokerEnv::get_instance()->getenv((char*) "QSPACE_NAME"));
-	if ((strcmp(AtmiBrokerEnv::get_instance()->getenv((char*) "QSPACE_NAME"), queue_name) == 0) || (strcmp((char*) "", queue_name) == 0)) {
-		//TODO READD userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_queue_log() return get_queue_log %d", AtmiBrokerLog::get_instance()->getQueueLogId());
-		//TODO READD return AtmiBrokerLog::get_instance()->getQueueLogId();
-		return -1;
-	} else
-		return -1;
-}
-
 // get_server_info() -- Implements IDL operation "AtmiBroker::Server::get_server_info".
 //
 AtmiBroker::ServerInfo*
@@ -364,31 +294,6 @@ AtmiBroker_ServerImpl::get_environment_variable_info() throw (CORBA::SystemExcep
 	}
 	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_environment_variable_info() returning ");
 	return aEnvVariableInfoSeqPtr;
-}
-
-// get_client_info() -- Implements IDL operation "AtmiBroker::Server::get_client_info".
-//
-AtmiBroker::ClientInfoSeq*
-AtmiBroker_ServerImpl::get_client_info() throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_client_info()");
-
-	AtmiBroker::ClientInfoSeq* aClientInfoSeqPtr = new AtmiBroker::ClientInfoSeq();
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_client_info() setting length to %d", clientInfoVector.size());
-	aClientInfoSeqPtr->length(clientInfoVector.size());
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_client_info() set length to %d", aClientInfoSeqPtr->length());
-
-	int i = 0;
-	for (std::vector<AtmiBroker::ClientInfo_var>::iterator it = clientInfoVector.begin(); it != clientInfoVector.end(); it++) {
-		i++;
-		(*aClientInfoSeqPtr)[i].maxChannels = (*it)->maxChannels;
-		(*aClientInfoSeqPtr)[i].maxSuppliers = (*it)->maxSuppliers;
-		(*aClientInfoSeqPtr)[i].maxConsumers = (*it)->maxConsumers;
-		(*aClientInfoSeqPtr)[i].logLevel = (*it)->logLevel;
-	}
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_client_info() returning ");
-
-	return aClientInfoSeqPtr;
 }
 
 // set_server_descriptor() -- Implements IDL operation "AtmiBroker::Server::set_server_descriptor".

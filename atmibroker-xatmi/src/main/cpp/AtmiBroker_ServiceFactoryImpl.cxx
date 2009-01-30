@@ -51,19 +51,6 @@ using namespace log4cxx;
 using namespace log4cxx::helpers;
 LoggerPtr loggerAtmiBroker_ServiceFactoryImpl(Logger::getLogger("AtmiBroker_ServiceFactoryImpl"));
 
-// _create() -- create a new servant.
-// Hides the difference between direct inheritance and tie servants
-// For direct inheritance, simple create and return an instance of the servant.
-// For tie, creates an instance of the tied class and the tie, return the tie.
-//
-/*
- POA_AtmiBroker::ServiceFactory*
- AtmiBroker_ServiceFactoryImpl::_create(PortableServer::POA_ptr the_poa)
- {
- return new AtmiBroker_ServiceFactoryImpl(the_poa);
- }
- */
-
 // AtmiBroker_ServiceFactoryImpl constructor
 //
 // Note: since we use virtual inheritance, we must include an
@@ -128,16 +115,16 @@ AtmiBroker_ServiceFactoryImpl::~AtmiBroker_ServiceFactoryImpl() {
 // start_conversation() -- Implements IDL operation "AtmiBroker::ServiceFactory::start_conversation".
 //
 char *
-AtmiBroker_ServiceFactoryImpl::start_conversation(CORBA::Long client_id, CORBA::String_out id) throw (CORBA::SystemException ) {
+AtmiBroker_ServiceFactoryImpl::start_conversation(CORBA::String_out id) throw (CORBA::SystemException ) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "start_conversation()");
-
-	int index = 0;
 	CORBA::Boolean found = false;
+	char * toReturn;
+	int index;
 	for (index = 0; index < serviceInfo.maxSize; index++) {
 		if (servantVector[index] != NULL && !servantVector[index]->isInUse()) {
 			servantVector[index]->setInUse(true);
-			servantVector[index]->setClientId(client_id);
 			found = true;
+			toReturn = server_orb->object_to_string(corbaObjectVector[index]);
 			break;
 		}
 	}
@@ -148,21 +135,16 @@ AtmiBroker_ServiceFactoryImpl::start_conversation(CORBA::Long client_id, CORBA::
 	// ltoa
 	std::ostringstream oss;
 	oss << index << std::dec;
-	const char* indexStr = oss.str().c_str();
-
-	strcat(idStr, indexStr);
+	strcat(idStr, oss.str().c_str());
 	id = CORBA::string_dup(idStr);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "id %s", (char*) id);
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "returning  %s", idStr);
-	//return CORBA::string_dup(idStr);
 	free(idStr);
-	return server_orb->object_to_string(corbaObjectVector[index]);
+	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "conversation started %li, %s", index, toReturn);
+	return toReturn;
 }
 
 // end_conversation() -- Implements IDL operation "AtmiBroker::ServiceFactory::end_conversation".
 //
-void AtmiBroker_ServiceFactoryImpl::end_conversation(CORBA::Long client_id, const char* id) throw (CORBA::SystemException ) {
+void AtmiBroker_ServiceFactoryImpl::end_conversation(const char* id) throw (CORBA::SystemException ) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "end_conversation(): %s", id);
 
 	int index = atol(id);
@@ -170,8 +152,7 @@ void AtmiBroker_ServiceFactoryImpl::end_conversation(CORBA::Long client_id, cons
 	if (servantVector[index]->isInUse()) {
 		userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "conversation ended for %s", id);
 		servantVector[index]->setInUse(false);
-	} else
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "conversation ALREADY ended for %s", id);
+	}
 
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceFactoryImpl, (char*) "end_conversation(): returning.");
 }

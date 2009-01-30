@@ -65,16 +65,11 @@ public:
 	// _create() -- create a new servant.
 	// Hides the difference between direct inheritance and tie servants.
 	//
-	static POA_AtmiBroker::Service*
-	_create(AtmiBroker_ServiceFactoryImpl* aParent, PortableServer::POA_ptr, int aIndex, char *serviceName, void(*func)(TPSVCINFO *));
+	static POA_AtmiBroker::Service*	_create(AtmiBroker_ServiceFactoryImpl* aParent, PortableServer::POA_ptr, int aIndex, char *serviceName, void(*func)(TPSVCINFO *));
 
 	// IDL operations
 	//
-	virtual void send_data(CORBA::Boolean inConversation, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent) throw (CORBA::SystemException );
-
-	// IDL attributes
-	//
-	char* serviceName() throw (CORBA::SystemException);
+	virtual void send_data(CORBA::Boolean inConversation, const char* callback_ior, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent) throw (CORBA::SystemException );
 
 	void tpreturn(int rval, long rcode, char* data, long len, long flags);
 	int tpsend(int id, char* idata, long ilen, long flags, long *revent);
@@ -83,9 +78,6 @@ public:
 	CORBA::Boolean isInUse();
 	void setInUse(CORBA::Boolean anInd);
 
-	long getClientId();
-	void setClientId(long aClientId);
-
 	bool sameBuffer(char *toCheck);
 protected:
 	AtmiBroker_ServiceFactoryImpl* parent;
@@ -93,7 +85,6 @@ protected:
 	CORBA::Boolean inUse;
 	AtmiBroker::ClientCallback_ptr callbackRef;
 	int index;
-	long clientId;
 	char* dataType;
 
 	CosTransactions::Control_var tx_control;
@@ -109,7 +100,6 @@ protected:
 private:
 
 	const AtmiBroker::octetSeq* m_octetSeq;
-	const AtmiBroker::TypedBuffer* m_typedBuffer;
 
 	// Instance variables for attributes.
 	//
