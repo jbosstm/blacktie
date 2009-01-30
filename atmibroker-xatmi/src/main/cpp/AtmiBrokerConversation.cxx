@@ -43,7 +43,6 @@
 
 #include "ThreadLocalStorage.h"
 #include "AtmiBrokerBuffers.h"
-#include "AtmiBrokerServiceRetrieve.h"
 #include "AtmiBrokerOTS.h"
 #include "AtmiBrokerClient.h"
 #include "AtmiBrokerMem.h"
@@ -114,7 +113,7 @@ int AtmiBrokerConversation::tpconnect(char * serviceName, char* idata, long ilen
 	int cd = -1;
 
 	try {
-		AtmiBroker::ServiceFactory_ptr ptr = get_service_factory(serviceName);
+		AtmiBroker::ServiceFactory_ptr ptr = mAtmiBrokerClient->get_service_factory(serviceName);
 		if (ptr) {
 			userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "start_conversation");
 			char* aId = (char*) malloc(sizeof(char*) * XATMI_SERVICE_NAME_LENGTH);
@@ -295,7 +294,7 @@ int AtmiBrokerConversation::end(int id) {
 		char index[5];
 		mAtmiBrokerClient->extractServiceAndIndex(idStr, serviceName, index);
 
-		AtmiBroker::ServiceFactory_var aCorbaServiceFactory = get_service_factory(serviceName);
+		AtmiBroker::ServiceFactory_var aCorbaServiceFactory = mAtmiBrokerClient->get_service_factory(serviceName);
 		if (CORBA::is_nil(aCorbaServiceFactory)) {
 			tperrno = TPEBADDESC;
 			toReturn = -1;

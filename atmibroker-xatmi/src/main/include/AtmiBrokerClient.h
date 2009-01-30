@@ -70,7 +70,10 @@ public:
 	void extractServiceAndIndex(char * serviceAndIndex, char * serviceName, char * index);
 
 	AtmiBroker_ClientCallbackImpl * getClientCallback();
+
 	char* getClientCallbackIOR();
+
+	AtmiBroker::ServiceFactory_ptr get_service_factory(const char * serviceName);
 
 protected:
 

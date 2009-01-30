@@ -207,3 +207,27 @@ AtmiBrokerClient::convertIdToString(int id) {
 	free(anIdStr);
 	return toReturn;
 }
+
+AtmiBroker::ServiceFactory_ptr AtmiBrokerClient::get_service_factory(const char * serviceName) {
+	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "get_service_factory: %s", serviceName);
+
+	CosNaming::Name * name = client_default_context->to_name(serviceName);
+	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "Service name %p", (void*) name);
+
+	AtmiBroker::ServiceFactory_ptr factoryPtr = NULL;
+
+	try {
+		CORBA::Object_var tmp_ref = client_name_context->resolve(*name);
+		userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "Service ref %p", (void*) tmp_ref);
+		factoryPtr = AtmiBroker::ServiceFactory::_narrow(tmp_ref);
+	} catch (...) {
+		userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "Could not access the service factory %p", (void*) name);
+	}
+
+	if (CORBA::is_nil(factoryPtr)) {
+		userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "Could not retrieve Factory for %s", serviceName);
+	} else
+		userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "retrieved  %s Factory %p", serviceName, (void*) factoryPtr);
+
+	return AtmiBroker::ServiceFactory::_duplicate(factoryPtr);
+}
