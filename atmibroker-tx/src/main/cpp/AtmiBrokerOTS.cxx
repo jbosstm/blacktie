@@ -114,7 +114,7 @@ int AtmiBrokerOTS::tx_open(void) {
 				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "resolved TransactionService: " << (void*) obj);
 				tx_factory = CosTransactions::TransactionFactory::_narrow(obj);
 				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "narrowed TransactionFactory: " << (void*) tx_factory);
-				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getInfo(), (char*) "Obtained TransactionService: " << transFactoryId);
+				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "Obtained TransactionService: " << transFactoryId);
 			} else {
 				return -1;
 			}

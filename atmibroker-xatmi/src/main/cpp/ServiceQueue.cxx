@@ -129,6 +129,7 @@ void ServiceQueue::send(const char* replyto_ior, const AtmiBroker::octetSeq& ida
 
 MESSAGE ServiceQueue::receive(long flags) {
 	MESSAGE message;
+	message.idata = NULL;
 	lock->lock();
 	if (!m_shutdown) {
 		if (messageQueue.size() == 0) {

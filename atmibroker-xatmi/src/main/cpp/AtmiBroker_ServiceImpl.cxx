@@ -46,7 +46,7 @@ AtmiBroker_ServiceImpl::~AtmiBroker_ServiceImpl() {
 }
 
 void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
-	userlog(Level::getError(), loggerAtmiBroker_ServiceImpl, (char*) "svc()");
+	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "svc()");
 	m_buffer = message.idata;
 	const char * callback_ior = message.replyto_ior;
 	char* idata = message.idata;

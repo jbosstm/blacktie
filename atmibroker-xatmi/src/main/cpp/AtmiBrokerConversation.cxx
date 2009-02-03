@@ -201,8 +201,10 @@ int AtmiBrokerConversation::tprecv(int id, char ** odata, long *olen, long flags
 			*odata = message.idata;
 			*olen = message.ilen;
 			*event = message.event;
+			userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "returning - %s", *odata);
 		} else {
 			tperrno = TPETIME;
+			toReturn = -1;
 		}
 	}
 	return toReturn;

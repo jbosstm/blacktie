@@ -94,7 +94,7 @@ void createClientCallbackPOA();
 void createClientBindingPolicies();
 
 void client_sigint_handler_callback(int sig_type) {
-	userlog(Level::getInfo(), loggerAtmiBroker, (char*) "client_sigint_handler_callback Received shutdown signal: %d", sig_type);
+	userlog(Level::getWarn(), loggerAtmiBroker, (char*) "client_sigint_handler_callback Received shutdown signal: %d", sig_type);
 	clientdone();
 	abort();
 }
@@ -129,7 +129,7 @@ int clientinit() {
 
 			clientInitialized = true;
 
-			userlog(Level::getInfo(), loggerAtmiBroker, (char*) "Client Initialized");
+			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "Client Initialized");
 			return 1;
 		} catch (CORBA::Exception &ex) {
 			userlog(Level::getError(), loggerAtmiBroker, (char*) "clientinit Unexpected CORBA exception: %s", ex._name());
@@ -183,7 +183,7 @@ int clientdone() {
 		shutdownBindings(client_orb, client_root_poa, client_root_poa_manager, client_default_context, client_name_context, client_poa, client_worker);
 
 		clientInitialized = false;
-		userlog(Level::getInfo(), loggerAtmiBroker, (char*) "Client Shutdown");
+		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "Client Shutdown");
 	}
 	return 0;
 }
