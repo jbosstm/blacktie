@@ -21,7 +21,6 @@
 // copyright 2006, 2008 BreakThruIT
 package org.jboss.blacktie.jatmibroker.jab;
 
-import org.omg.CORBA.Any;
 
 public interface Message {
 //	public void addByte(String name, byte val);
