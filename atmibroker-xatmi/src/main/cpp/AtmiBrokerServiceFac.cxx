@@ -37,7 +37,7 @@
 #include <string.h>
 #include <iostream>
 
-#include "AtmiBroker_ServiceFactoryImpl.h"
+#include "ServiceQueue.h"
 #include "AtmiBrokerServer.h"
 #include "AtmiBrokerServiceFacMgr.h"
 #include "AtmiBrokerServiceFac.h"
@@ -52,7 +52,7 @@ void remove_service_factory(char* serviceName) {
 	CosNaming::Name * name = server_default_context->to_name(serviceName);
 	server_name_context->unbind(*name);
 
-	AtmiBroker_ServiceFactoryImpl* toDelete = AtmiBrokerServiceFacMgr::get_instance()->removeServiceFactory(serviceName);
+	ServiceQueue* toDelete = AtmiBrokerServiceFacMgr::get_instance()->removeServiceFactory(serviceName);
 	PortableServer::POA_ptr poa = toDelete->getPoa();
 	delete toDelete;
 	poa->destroy(true, true);
@@ -68,23 +68,8 @@ void create_service_factory(char *serviceName, void(*func)(TPSVCINFO *)) {
 	PortableServer::POA_ptr aFactoryPoaPtr = serverPoaFactory->createServiceFactoryPoa(server_orb, serviceName, server_poa, server_root_poa_manager);
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "created create_service_factory_poa: %s", serviceName);
 
-	// TODO TEST_SERVICE
-	// TOLOWER?
-	char servicePoaName[80];
-	strcpy(servicePoaName, serviceName);
-	strcat(servicePoaName, "_service_poa");
-
-	// TOLOWER?
-	char serviceConfigFilename[80];
-	strcpy(serviceConfigFilename, serviceName);
-	strcat(serviceConfigFilename, ".xml");
-
-	AtmiBroker_ServiceFactoryImpl *tmp_factory_servant = new AtmiBroker_ServiceFactoryImpl(aFactoryPoaPtr, serviceName, servicePoaName, serviceConfigFilename);
+	ServiceQueue *tmp_factory_servant = new ServiceQueue(aFactoryPoaPtr, serviceName, func);
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) " tmp_factory_servant %p", (void*) tmp_factory_servant);
-
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "creating servant cache  ");
-	tmp_factory_servant->createServantCache(func);
-	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "created servant cache  %p", (void*) tmp_factory_servant);
 
 	aFactoryPoaPtr->activate_object(tmp_factory_servant);
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceFac, (char*) "activated tmp_servant %p", (void*) tmp_factory_servant);

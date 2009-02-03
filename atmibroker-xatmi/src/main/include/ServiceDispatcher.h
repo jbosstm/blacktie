@@ -15,26 +15,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-/*
- * BREAKTHRUIT PROPRIETARY - NOT TO BE DISCLOSED OUTSIDE BREAKTHRUIT, LLC.
- */
-// copyright 2006, 2008 BreakThruIT
 
-#ifndef AtmiBroker_SERVICE_XML_H_
-#define AtmiBroker_SERVICE_XML_H_
+#ifndef SERVICEDISPATCHER_H_
+#define SERVICEDISPATCHER_H_
 
-#include "atmiBrokerMacro.h"
+#include <ace/Task.h>
 
-#include <string.h>
+#include "Queue.h"
+#include "AtmiBroker_ServiceImpl.h"
 
-class ATMIBROKER_DLL AtmiBrokerServiceXml {
+#include "log4cxx/logger.h"
+using namespace log4cxx;
+
+class ServiceDispatcher: public ACE_Task_Base {
 public:
-
-	AtmiBrokerServiceXml();
-
-	~AtmiBrokerServiceXml();
-
-	void parseXmlDescriptor(AtmiBroker::ServiceInfo* serviceData, const char * aDescriptorFileName);
+	ServiceDispatcher(Queue* serviceQueue, AtmiBroker_ServiceImpl * service);
+	int svc();
+	void shutdown();
+private:
+	Queue* m_serviceQueue;
+	AtmiBroker_ServiceImpl* m_service;
+	bool m_shutdown;
+	static LoggerPtr logger;
 };
 
 #endif

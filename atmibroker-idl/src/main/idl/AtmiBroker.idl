@@ -33,40 +33,6 @@ module AtmiBroker {
 
 	typedef sequence<octet> octetSeq;
 
-	struct TypedBufferMember
-	{
-			string 		name;
-			string 		value;
-			string 		type;
-			short 		number;
-			string 		fieldName;
-			short 		seqSize;
-			string 		flag;
-			string 		initialValue;
-	};
-	typedef sequence<TypedBufferMember> TypedBufferMemberSeq;
-
-	struct TypedBuffer
-	{
-			string 			name;
-			string 			type;
-			string 			schemaName;
-			TypedBufferMemberSeq 	members;
-	};
-	typedef sequence<TypedBuffer> TypedBufferSeq;
-	
-	interface ClientCallback
-	{
-		oneway void enqueue_data(
-				  in short rval,
-				  in long rcode, 
-				  in octetSeq idata,
-				  in long ilen, 
-				  in long flags,
-				  in long revent,
-				  in string id);	  
-	};
-
     struct EnvVariableInfo 
 	{
 		       string   	name;
@@ -77,12 +43,7 @@ module AtmiBroker {
 	struct ServiceInfo 
 	{
 		       string		serviceName;
-		       short   		maxSize;
-		       short   		minSize;
-		       short   		minAvailableSize;
-		       short   		inUse;
-		       short   		available;
-		       short   		logLevel;
+		       short   		poolSize;
 		       string  		securityType;
     };
 	typedef sequence<ServiceInfo> ServiceInfoSeq;
@@ -126,22 +87,26 @@ module AtmiBroker {
 		void  start_service(in string service_name);
 	};
 
-	interface Service
+	interface ServiceQueue
+	{	
+		oneway void send(in string replyto_ior,
+				  in octetSeq idata,
+				  in long ilen, 
+				  in long flags);
+	};
+	
+	interface EndpointQueue
 	{
-		oneway void send_data(in boolean conversation,
-				  in string callback_ior,
+		oneway void send(
+				  in string replyto_ior,
+				  in short rval,
+				  in long rcode, 
 				  in octetSeq idata,
 				  in long ilen, 
 				  in long flags,
-				  in long revent);
-
-	};
-
-	interface ServiceFactory
-	{	
-		string start_conversation(out string id);
+				  in long revent);	  
 	
-		void end_conversation(in string id);
+		void disconnect();
 	};
 };
 

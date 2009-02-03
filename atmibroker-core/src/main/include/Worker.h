@@ -29,7 +29,6 @@ public:
 	int svc();
 private:
 	CORBA::ORB_var m_orb;
-private:
 	static LoggerPtr logger;
 };
 #endif

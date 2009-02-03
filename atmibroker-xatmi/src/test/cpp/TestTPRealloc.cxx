@@ -132,7 +132,7 @@ void TestTPRealloc::test_tprealloc_multi_x_octet() {
 
 // 8.2
 void TestTPRealloc::test_tprealloc_nonbuffer() {
-	m_nonallocated = "hello";
+	m_nonallocated = (char*) "hello";
 	m_nonallocated = ::tprealloc(m_nonallocated, 10);
 	CPPUNIT_ASSERT(tperrno== TPEINVAL);
 }

@@ -34,20 +34,12 @@
 #include <tao/ORB.h>
 #include <orbsvcs/CosNamingS.h>
 #include <tao/PortableServer/PortableServerC.h>
-#elif ORBIX_COMP
-#include <omg/orb.hh>
-#include <omg/CosNaming.hh>
-#include <omg/PortableServer.hh>
-#endif
-#ifdef VBC_COMP
-#include <orb.h>
-#include <CosNaming_c.hh>
-#include <PortableServerExt_c.hh>
+#include "AtmiBrokerC.h"
 #endif
 
 #include "AtmiBrokerClientXml.h"
 #include "AtmiBrokerPoaFac.h"
-#include "AtmiBroker_ClientCallbackImpl.h"
+#include "EndpointQueue.h"
 
 #include <iostream>
 #include <vector>
@@ -56,31 +48,16 @@ class ATMIBROKER_DLL AtmiBrokerClient {
 public:
 
 	AtmiBrokerClient();
-
 	virtual ~AtmiBrokerClient();
-
-	void getServer(ClientServerInfo * aClientServerInfo, char * serverName);
-
-	void findService(char * serviceAndIndex, AtmiBroker::Service_var* refPtr);
-
-	int convertIdToInt(char * id);
-
-	char * convertIdToString(int id);
-
-	void extractServiceAndIndex(char * serviceAndIndex, char * serviceName, char * index);
-
-	AtmiBroker_ClientCallbackImpl * getClientCallback();
-
-	char* getClientCallbackIOR();
-
-	AtmiBroker::ServiceFactory_ptr get_service_factory(const char * serviceName);
-
+	AtmiBroker::ServiceQueue_ptr get_service_queue(const char * serviceName);
+	EndpointQueue * getLocalCallback(int id);
+	EndpointQueue * getRemoteCallback(int id);
 protected:
 
 	std::vector<char *> serviceNameArray;
 	std::vector<ClientServerInfo*> clientServerVector;
-	AtmiBroker::ClientCallback_var clientCallback;
-	AtmiBroker_ClientCallbackImpl * clientCallbackImpl;
+	AtmiBroker::EndpointQueue_var clientCallback;
+	EndpointQueue * clientCallbackImpl;
 	char* clientCallbackIOR;
 };
 

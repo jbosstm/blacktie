@@ -15,26 +15,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-/*
- * BREAKTHRUIT PROPRIETARY - NOT TO BE DISCLOSED OUTSIDE BREAKTHRUIT, LLC.
- */
-// copyright 2006, 2008 BreakThruIT
+#include "ServiceDispatcher.h"
+#include "Message.h"
 
-#ifndef AtmiBroker_SERVICE_XML_H_
-#define AtmiBroker_SERVICE_XML_H_
+LoggerPtr ServiceDispatcher::logger(Logger::getLogger("ServiceDispatcher"));
 
-#include "atmiBrokerMacro.h"
+ServiceDispatcher::ServiceDispatcher(Queue* serviceQueue, AtmiBroker_ServiceImpl* service) :
+	m_serviceQueue(serviceQueue), m_service(service), m_shutdown(false) {
+}
 
-#include <string.h>
+int ServiceDispatcher::svc(void) {
+	while (!m_shutdown) {
+		MESSAGE message = m_serviceQueue->receive(0);
+		if (message.idata) {
+			try {
+				m_service->onMessage(message);
+			} catch (...) {
+				LOG4CXX_ERROR(logger, (char*) "Service Dispatcher caught error running during onMessage");
+			}
+		}
+	}
+	return 0;
+}
 
-class ATMIBROKER_DLL AtmiBrokerServiceXml {
-public:
-
-	AtmiBrokerServiceXml();
-
-	~AtmiBrokerServiceXml();
-
-	void parseXmlDescriptor(AtmiBroker::ServiceInfo* serviceData, const char * aDescriptorFileName);
-};
-
-#endif
+void ServiceDispatcher::shutdown() {
+	m_shutdown = true;
+}

@@ -62,11 +62,6 @@ public:
 	 * This method will release the lock held by the thread on this object
 	 */
 	virtual bool unlock() = 0;
-
-	/**
-	 * This method will check to see if another thread holds the lock on this object.
-	 */
-	virtual bool tryLock() = 0;
 };
 
 #endif

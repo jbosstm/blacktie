@@ -20,21 +20,23 @@
  */
 // copyright 2006, 2008 BreakThruIT
 
-#ifndef AtmiBroker_SERVICE_XML_H_
-#define AtmiBroker_SERVICE_XML_H_
+//-----------------------------------------------------------------------------
+// Edit the idlgen.cfg to have your own copyright notice placed here.
+//-----------------------------------------------------------------------------
 
-#include "atmiBrokerMacro.h"
+// Class: EndpointQueue
+// A POA servant which implements of the AtmiBroker::ClientCallback interface
+//
 
-#include <string.h>
+#ifndef Queue_H_
+#define Queue_H_
 
-class ATMIBROKER_DLL AtmiBrokerServiceXml {
+#include "Message.h"
+
+class Queue {
 public:
-
-	AtmiBrokerServiceXml();
-
-	~AtmiBrokerServiceXml();
-
-	void parseXmlDescriptor(AtmiBroker::ServiceInfo* serviceData, const char * aDescriptorFileName);
+	virtual MESSAGE receive(long flags) = 0;
+	virtual const char* getReplyTo() = 0;
 };
 
 #endif

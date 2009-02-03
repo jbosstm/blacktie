@@ -20,33 +20,11 @@
  */
 // copyright 2006, 2008 BreakThruIT
 
-//
-// Servant which implements the AtmiBroker::Service interface.
-//
-#ifdef TAO_COMP
-#include <tao/ORB.h>
-#include "tao/ORB_Core.h"
-#include "AtmiBrokerC.h"
-#elif ORBIX_COMP
-#include <omg/orb.hh>
-#include "AtmiBroker.hh"
-#endif
-#ifdef VBC_COMP
-#include <orb.h>
-#include "AtmiBroker_c.hh"
-#endif
-
-#include <stdlib.h>
-#include <iostream>
 #include "AtmiBroker_ServiceImpl.h"
-#include "AtmiBrokerServer.h"
-#include "AtmiBrokerClient.h"
-#include "AtmiBroker.h"
 
-#include "AtmiBrokerOTS.h"
+#include "AtmiBrokerServer.h"
 #include "xatmi.h"
 #include "userlog.h"
-#include "atmiBrokerMacro.h"
 #include "ThreadLocalStorage.h"
 
 #include "log4cxx/logger.h"
@@ -54,27 +32,10 @@ using namespace log4cxx;
 using namespace log4cxx::helpers;
 LoggerPtr loggerAtmiBroker_ServiceImpl(Logger::getLogger("AtmiBroker_ServiceImpl"));
 
-// _create() -- create a new servant.
-// Hides the difference between direct inheritance and tie servants
-// For direct inheritance, simple create and return an instance of the servant.
-// For tie, creates an instance of the tied class and the tie, return the tie.
-//
-POA_AtmiBroker::Service*
-AtmiBroker_ServiceImpl::_create(AtmiBroker_ServiceFactoryImpl* aParent, PortableServer::POA_ptr the_poa, int aIndex, char *serviceName, void(*func)(TPSVCINFO *)) {
-	return new AtmiBroker_ServiceImpl(aParent, the_poa, aIndex, serviceName, func);
-}
-
 // AtmiBroker_ServiceImpl constructor
 //
-// Note: since we use virtual inheritance, we must include an
-// initialiser for all the virtual base class constructors that
-// require arguments, even those that we inherit indirectly.
-//
-AtmiBroker_ServiceImpl::AtmiBroker_ServiceImpl(AtmiBroker_ServiceFactoryImpl* aParent, PortableServer::POA_ptr the_poa, int aIndex, char *serviceName, void(*func)(TPSVCINFO *)) :
-	parent(aParent), returnStatus(-1), inUse(false), callbackRef(NULL), index(aIndex), m_serviceName(serviceName), m_func(func) {
-	// Initialise instance variables used for attributes
-	//
-	//TJJ key = getKey();
+AtmiBroker_ServiceImpl::AtmiBroker_ServiceImpl(char *serviceName, void(*func)(TPSVCINFO *)) :
+	m_serviceName(serviceName), m_func(func), m_buffer(NULL) {
 }
 
 // ~AtmiBroker_ServiceImpl destructor.
@@ -84,132 +45,83 @@ AtmiBroker_ServiceImpl::~AtmiBroker_ServiceImpl() {
 	//
 }
 
-// service_request_async() -- Implements IDL operation "AtmiBroker::Service::send_data".
-//
-void AtmiBroker_ServiceImpl::send_data(CORBA::Boolean inConversation, const char* callback_ior, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent) throw (CORBA::SystemException ) {
+void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
+	userlog(Level::getError(), loggerAtmiBroker_ServiceImpl, (char*) "svc()");
+	m_buffer = message.idata;
+	const char * callback_ior = message.replyto_ior;
+	const char* idata = message.idata;
+	long ilen = message.ilen;
+	long flags = message.flags;
+
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_async()");
-
 	CORBA::Object_var tmp_ref = server_orb->string_to_object(callback_ior);
-	callbackRef = AtmiBroker::ClientCallback::_narrow(tmp_ref);
+	callbackRef = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   callback 	= %p", (void*) callbackRef);
-
-	// TODO TYPED BUFFER userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   idata = %s", (const char*) idata.name);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   idata = %s", idata.get_buffer());
+	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   idata = %p", idata);
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   ilen = %d", ilen);
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   flags = %d", flags);
 
-	// TODO TYPED BUFFER dataType = (char*) TYPE1;
-	// TODO TYPED BUFFER m_typedBuffer = &idata;
-	dataType = (char*) X_OCTET;
-	m_octetSeq = &idata;
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_explicit() dataType: %s", dataType);
+	createConnectionTransactionAssociation(message.control);
+
 	TPSVCINFO tpsvcinfo;
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_explicit()    idata = %s", idata.get_buffer());
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_explicit()    ilen = %d", ilen);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_explicit()    flags = %d", flags);
-
-	createConnectionTransactionAssociation();
-
 	memset(&tpsvcinfo, '\0', sizeof(tpsvcinfo));
 	strcpy(tpsvcinfo.name, m_serviceName);
 	tpsvcinfo.flags = flags;
-	// TODO TYPED BUFFER tpsvcinfo.data = (char*) &idata;
-	tpsvcinfo.data = (char*) idata.get_buffer();
+	tpsvcinfo.data = (char*) idata;
 	tpsvcinfo.len = ilen;
 
-	if (!inConversation) {
-		setSpecific(SVC_KEY, this);
-		m_func(&tpsvcinfo);
-		destroySpecific(SVC_KEY);
-	}
+	setSpecific(SVC_KEY, this);
+	m_func(&tpsvcinfo);
+	destroySpecific(SVC_KEY);
 }
 
 // tpreturn()
 //
 void AtmiBroker_ServiceImpl::tpreturn(int rval, long rcode, char* data, long len, long flags) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "tpreturn()");
-
-	returnStatus = rval;
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "dataType: %s", dataType);
-	char *idStr = (char*) malloc(sizeof(char) * (XATMI_SERVICE_NAME_LENGTH *2));
-	strcpy(idStr, m_serviceName);
-	strcat(idStr, ":");
-	// ltoa
-	std::ostringstream oss;
-	oss << index << std::dec;
-	const char* indexStr = oss.str().c_str();
-
-	strcat(idStr, indexStr);
-	CORBA::String_var id = CORBA::string_dup(idStr);
-
 	endConnectionTransactionAssociation();
 
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "Calling back ");
-	char * type = NULL;
-	char * subtype = NULL;
-	int data_size = ::tptypes(data, type, subtype);
+	int data_size = ::tptypes(data, NULL, NULL);
 	if (data_size > -1) {
 		unsigned char * data_togo = (unsigned char *) malloc(data_size);
 		memcpy(data_togo, data, data_size);
 		AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(len, len, data_togo, true);
-		callbackRef->enqueue_data(rval, rcode, aOctetSeq, len, flags, 0, id);
+		callbackRef->send("", rval, rcode, aOctetSeq, len, flags, 0);
+		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "Called back ");
 		aOctetSeq = NULL;
 		::tpfree(data);
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "Called back ");
 	}
 
-	inUse = false;
 	callbackRef = NULL;
-	free(idStr);
 }
 
-// tpsend()
-//
+bool AtmiBroker_ServiceImpl::sameBuffer(char* toCheck) {
+	bool toReturn = false;
+	if (!toCheck || toCheck == NULL) {
+		tperrno = TPEINVAL; // TO MESSAGE TO CHECK
+	} else if (m_buffer == NULL) {
+		tperrno = TPESVCERR; // NO INBOUND MESSAGE
+	} else if (toCheck == m_buffer) {
+		toReturn = true;
+	}
+	return toReturn;
+}
+
 int AtmiBroker_ServiceImpl::tpsend(int id, char* idata, long ilen, long flags, long *revent) {
-	// Assemble the ID out
-	char *idStr = (char*) malloc(sizeof(char) * (XATMI_SERVICE_NAME_LENGTH *2));
-	strcpy(idStr, m_serviceName);
-	strcat(idStr, ":");
-	// ltoa
-	std::ostringstream oss;
-	oss << id << std::dec;
-	const char* indexStr = oss.str().c_str();
-
-	strcat(idStr, indexStr);
-	CORBA::String_var idout = CORBA::string_dup(idStr);
-
-	// Assemble the buffer out
-	AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(ilen, ilen, (unsigned char *) idata, true);
-
-	// Send the buffer
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "tpsend octet data %s", (char*) aOctetSeq->get_buffer());
-	callbackRef->enqueue_data(0, 0, aOctetSeq, ilen, flags, 0, idout);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "tpsent octet data %s", (char*) aOctetSeq->get_buffer());
-
-	free(idStr);
-	return 0;
-}
-
-int AtmiBroker_ServiceImpl::tprecv(int id, char ** odata, long *olen, long flags, long* event) {
-	// TODO IMPLEMENT THIS TO READ OFF UNREAD SEND_DATA
+	// TODO USE ATMIBROKERCONVERSATION
+	tperrno = TPESYSTEM;
 	return -1;
 }
 
-CORBA::Boolean AtmiBroker_ServiceImpl::isInUse() {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "isInUse() %d", inUse);
-	return inUse;
+int AtmiBroker_ServiceImpl::tprecv(int id, char ** odata, long *olen, long flags, long* event) {
+	// TODO USE ATMIBROKERCONVERSATION
+	tperrno = TPESYSTEM;
+	return -1;
 }
 
-void AtmiBroker_ServiceImpl::setInUse(CORBA::Boolean aInd) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "setInUse() %d", aInd);
-	inUse = aInd;
-}
-
-void AtmiBroker_ServiceImpl::createConnectionTransactionAssociation() {
+void AtmiBroker_ServiceImpl::createConnectionTransactionAssociation(CosTransactions::Control_ptr control) {
 	try {
-		CosTransactions::Control_ptr control = (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
-
 		if (CORBA::is_nil(control)) {
 			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "NO TRANSACTION associated with this call");
 			return;
@@ -271,18 +183,5 @@ void AtmiBroker_ServiceImpl::endConnectionTransactionAssociation() {
 	//	} catch (CORBA::TRANSACTION_ROLLEDBACK & aRef) {
 	//		userlog(Level::getError(), loggerAtmiBroker_ServiceImpl, (char*) "transaction has been rolled back %p", (void*) &aRef);
 	//	}
-}
-
-bool AtmiBroker_ServiceImpl::sameBuffer(char* toCheck) {
-	if (!toCheck || toCheck == NULL) {
-		tperrno = TPEINVAL;
-		return -1;
-	}
-
-	bool toReturn = false;
-	if (m_octetSeq && toCheck == (char*) m_octetSeq->get_buffer()) {
-		toReturn = true;
-	}
-	return toReturn;
 }
 

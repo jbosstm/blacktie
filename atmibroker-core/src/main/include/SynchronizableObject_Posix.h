@@ -71,11 +71,6 @@ public:
 	 */
 	virtual bool unlock();
 
-	/**
-	 * This method will check to see if another thread holds the lock on this object.
-	 */
-	virtual bool tryLock();
-
 private:
 	SynchronizableObject_Posix(bool);
 	pthread_cond_t cond;

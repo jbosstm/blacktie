@@ -28,11 +28,11 @@
 #include <vector>
 
 #include "xatmi.h"
-#include "AtmiBroker_ServiceFactoryImpl.h"
+#include "ServiceQueue.h"
 
 struct _service_factory_data {
 	char* serviceName;
-	AtmiBroker_ServiceFactoryImpl* factoryPtr;
+	ServiceQueue* factoryPtr;
 	void (*func)(TPSVCINFO *);
 };
 typedef _service_factory_data ServiceFactoryData;
@@ -44,9 +44,9 @@ public:
 	~AtmiBrokerServiceFacMgr();
 	void (*getServiceMethod(const char * aServiceName))(TPSVCINFO *);
 
-	void addServiceFactory(char*& aServiceName, AtmiBroker_ServiceFactoryImpl*& refPtr, void(*func)(TPSVCINFO *));
-	AtmiBroker_ServiceFactoryImpl* getServiceFactory(const char * aServiceName);
-	AtmiBroker_ServiceFactoryImpl* removeServiceFactory(const char * aServiceName);
+	void addServiceFactory(char*& aServiceName, ServiceQueue*& refPtr, void(*func)(TPSVCINFO *));
+	ServiceQueue* getServiceFactory(const char * aServiceName);
+	ServiceQueue* removeServiceFactory(const char * aServiceName);
 
 	static AtmiBrokerServiceFacMgr* get_instance();
 	static void discard_instance();

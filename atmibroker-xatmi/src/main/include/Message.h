@@ -15,26 +15,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-/*
- * BREAKTHRUIT PROPRIETARY - NOT TO BE DISCLOSED OUTSIDE BREAKTHRUIT, LLC.
- */
-// copyright 2006, 2008 BreakThruIT
 
-#ifndef AtmiBroker_SERVICE_XML_H_
-#define AtmiBroker_SERVICE_XML_H_
+#ifndef MESSAGE_H_
+#define MESSAGE_H_
 
-#include "atmiBrokerMacro.h"
+#include "CosTransactionsC.h"
 
-#include <string.h>
-
-class ATMIBROKER_DLL AtmiBrokerServiceXml {
-public:
-
-	AtmiBrokerServiceXml();
-
-	~AtmiBrokerServiceXml();
-
-	void parseXmlDescriptor(AtmiBroker::ServiceInfo* serviceData, const char * aDescriptorFileName);
+struct message_t {
+	const char* replyto_ior;
+	char* idata;
+	long ilen;
+	long flags;
+	CosTransactions::Control_ptr control;
+	int rval;
+	long rcode;
+	long event;
 };
+typedef struct message_t MESSAGE;
 
-#endif
+#endif /* MESSAGE_H_ */

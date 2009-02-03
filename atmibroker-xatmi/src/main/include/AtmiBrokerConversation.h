@@ -62,8 +62,8 @@ public:
 	static void discard_instance();
 
 private:
-	int send(AtmiBroker::Service_var, char* idata, long ilen, bool inConversation, long flags, long *revent);
-	int end(int id);
+	int send(char* replyTo, char* idata, long ilen, long flags, long *revent);
+	int disconnect(int id);
 
 	AtmiBrokerClient* mAtmiBrokerClient;
 

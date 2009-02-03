@@ -126,13 +126,17 @@ bool SynchronizableObject_Posix::lock() {
 
 bool SynchronizableObject_Posix::wait(long timeout) {
 	if (valid) {
-		struct timeval tv;
-		gettimeofday(&tv, NULL);
-		struct timespec ts;
-		ts.tv_sec = tv.tv_sec;
-		ts.tv_nsec = tv.tv_usec * 1000;
-		ts.tv_sec += timeout;
-		pthread_cond_timedwait(&cond, &mutex, &ts);
+		if (timeout > 0) {
+			struct timeval tv;
+			gettimeofday(&tv, NULL);
+			struct timespec ts;
+			ts.tv_sec = tv.tv_sec;
+			ts.tv_nsec = tv.tv_usec * 1000;
+			ts.tv_sec += timeout;
+			pthread_cond_timedwait(&cond, &mutex, &ts);
+		} else {
+			pthread_cond_wait(&cond, &mutex);
+		}
 		return true;
 	} else {
 		return false;
@@ -190,42 +194,4 @@ bool SynchronizableObject_Posix::unlock() {
 	return result;
 }
 
-bool SynchronizableObject_Posix::tryLock() {
-	bool result = false;
-
-	if (valid) {
-#ifndef HAVE_RECURSIVE_MUTEX
-		pthread_t me = pthread_self();
-		int status = 0;
-
-		if ((recursive) && (pthread_equal(owner, me))) {
-			count++;
-			result = true;
-		} else {
-#ifndef HAVE_HPUX_PTHREADS
-			if ((status = pthread_mutex_trylock(&mutex)) == 0)
-#else
-			if ((status = pthread_mutex_trylock(&mutex)) == 1)
-#endif
-			{
-				owner = me;
-				count = 1;
-				result = true;
-			} else if (status != EBUSY)
-				valid = false;
-		}
-#else
-#ifndef HAVE_HPUX_PTHREADS
-		if (pthread_mutex_trylock(&mutex) == 0)
-#else
-		if (pthread_mutex_trylock(&mutex) == 1)
-#endif
-		{
-			result = true;
-		}
-#endif
-	}
-
-	return result;
-}
 #endif

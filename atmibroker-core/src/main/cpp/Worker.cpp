@@ -20,7 +20,7 @@
 #include "log4cxx/logger.h"
 using namespace log4cxx;
 using namespace log4cxx::helpers;
-LoggerPtr Worker::logger(Logger::getLogger("OrbManagment"));
+LoggerPtr Worker::logger(Logger::getLogger("Worker"));
 
 Worker::Worker(CORBA::ORB_ptr orb) {
 	m_orb = CORBA::ORB::_duplicate(orb);

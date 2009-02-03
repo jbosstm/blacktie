@@ -92,16 +92,6 @@ bool SynchronizableObject_NT::unlock() {
 	return false;
 }
 
-bool SynchronizableObject_NT::tryLock() {
-	if (valid) {
-		if (WaitForSingleObject(mutex, 0) == WAIT_TIMEOUT)
-			return false;
-		else
-			return true;
-	} else
-		return false;
-}
-
 int SynchronizableObject_NT::pthread_cond_init(pthread_cond_t *cv) {
 	cv->waiters_count_ = 0;
 	cv->was_broadcast_ = 0;

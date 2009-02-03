@@ -25,28 +25,13 @@
 #include <iostream>
 #include "expat.h"
 
+#include "AtmiBrokerC.h"
 #include "AtmiBrokerServiceXml.h"
 #include "userlog.h"
 #include "log4cxx/logger.h"
 using namespace log4cxx;
 using namespace log4cxx::helpers;
 LoggerPtr loggerAtmiBrokerServiceXml(Logger::getLogger("AtmiBrokerServiceXml"));
-
-const char* AtmiBrokerServiceXml::Service_Begin_Tag = (char*) "<?xml version=\"1.0\"?>\n<SERVICE xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n";
-
-const char* AtmiBrokerServiceXml::Service_End_Tag = (char*) "</SERVICE>\n";
-
-const char* AtmiBrokerServiceXml::Service_Desc_Begin_Tag = (char*) "  <SERVICE_DESCRIPTION>";
-const char* AtmiBrokerServiceXml::Service_Desc_End_Tag = (char*) "  </SERVICE_DESCRIPTION>\n";
-
-const char* AtmiBrokerServiceXml::Max_Cache_Begin_Tag = (char*) "    <MAX>";
-const char* AtmiBrokerServiceXml::Max_Cache_End_Tag = (char*) "</MAX>\n";
-
-const char* AtmiBrokerServiceXml::Min_Cache_Begin_Tag = (char*) "    <MIN>";
-const char* AtmiBrokerServiceXml::Min_Cache_End_Tag = (char*) "</MIN>\n";
-
-const char* AtmiBrokerServiceXml::Min_Available_Cache_Begin_Tag = (char*) "    <AVAILABLE>";
-const char* AtmiBrokerServiceXml::Min_Available_Cache_End_Tag = (char*) "</AVAILABLE>\n";
 
 static char last_element[50];
 static char last_value[50];
@@ -57,9 +42,7 @@ static char value[50];
 static int depth = 0;
 
 static bool processingService = false;
-static bool processingMaxCache = false;
-static bool processingMinCache = false;
-static bool processingMinAvailableCache = false;
+static bool processingPoolSize = false;
 
 AtmiBrokerServiceXml::AtmiBrokerServiceXml() {
 }
@@ -75,20 +58,10 @@ static void XMLCALL startElement
 		userlog(Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "new service ");
 		processingService = true;
 	}
-	else if (strcmp(name, "MAX") == 0)
+	else if (strcmp(name, "SIZE") == 0)
 	{
 		userlog(Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "processing MAX Cache for service ");
-		processingMaxCache = true;
-	}
-	else if (strcmp(name, "MIN") == 0)
-	{
-		userlog(Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "processing MIN Cache for service ");
-		processingMinCache = true;
-	}
-	else if (strcmp(name, "AVAILABLE") == 0)
-	{
-		userlog(Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "processing Min AVAILABLE for service ");
-		processingMinAvailableCache = true;
+		processingPoolSize = true;
 	}
 	strcpy(element, name);
 	strcpy(value, "");
@@ -104,23 +77,11 @@ static void XMLCALL endElement
 	strcpy(last_element, name);
 	strcpy(last_value, value);
 
-	if (strcmp(last_element, "MAX") == 0)
+	if (strcmp(last_element, "SIZE") == 0)
 	{
 		userlog(Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "storing MaxCache %s", last_value);
-		processingMaxCache = false;
-		aServiceStructPtr->maxSize = (short)atol(last_value);
-	}
-	else if (strcmp(last_element, "MIN") == 0)
-	{
-		userlog(Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "storing MinCache %s", last_value);
-		processingMinCache = false;
-		aServiceStructPtr->minSize = (short)atol(last_value);
-	}
-	else if (strcmp(last_element, "AVAILABLE") == 0)
-	{
-		userlog(Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) " storing MinAvailable %s", last_value);
-		processingMinAvailableCache = false;
-		aServiceStructPtr->minAvailableSize = (short)atol(last_value);
+		processingPoolSize = false;
+		aServiceStructPtr->poolSize = (short)atol(last_value);
 	}
 	depth -= 1;
 }

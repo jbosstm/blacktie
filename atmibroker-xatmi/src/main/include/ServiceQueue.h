@@ -24,44 +24,58 @@
 // Edit the idlgen.cfg to have your own copyright notice placed here.
 //-----------------------------------------------------------------------------
 
-// Class: AtmiBroker_ServiceImpl
-// A POA servant which implements of the AtmiBroker::Service interface
+// Class: ServiceQueue
+// A POA servant which implements of the AtmiBroker::ServiceFactory interface
 //
 
-#ifndef ATMIBROKER_SERVICEIMPL_H_
-#define ATMIBROKER_SERVICEIMPL_H_
+#ifndef ServiceQueue_H_
+#define ServiceQueue_H_
 
 #include "atmiBrokerMacro.h"
 
-#include "CosTransactionsC.h"
-#include "AtmiBrokerC.h"
+#ifdef TAO_COMP
+#include "AtmiBrokerS.h"
+#endif
 
-#include "xatmi.h"
+#include <vector>
+#include <queue>
+#include "SynchronizableObject.h"
+#include "ServiceDispatcher.h"
 #include "Message.h"
+#include "xatmi.h"
+#include "Queue.h"
+class ServiceDispatcher;
 
-class ATMIBROKER_DLL AtmiBroker_ServiceImpl {
+class ATMIBROKER_DLL ServiceQueue: public virtual Queue, public virtual POA_AtmiBroker::ServiceQueue {
 public:
-	AtmiBroker_ServiceImpl(char *serviceName, void(*func)(TPSVCINFO *));
-	virtual ~AtmiBroker_ServiceImpl();
+	ServiceQueue(PortableServer::POA_ptr the_poa, char *serviceName, void(*func)(TPSVCINFO *));
+	virtual ~ServiceQueue();
 
-	void onMessage(MESSAGE message);
-	void tpreturn(int rval, long rcode, char* data, long len, long flags);
-	int tpsend(int id, char* idata, long ilen, long flags, long *revent);
-	int tprecv(int id, char ** odata, long *olen, long flags, long* event);
-	bool sameBuffer(char *toCheck);
-	int svc();
+	virtual void send(const char* replyto_ior, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags) throw (CORBA::SystemException );
+
+	PortableServer::POA_ptr getPoa();
+
+	virtual AtmiBroker::ServiceInfo* get_service_info() throw (CORBA::SystemException );
+
+	virtual MESSAGE receive(long flags);
+
+	virtual const char* getReplyTo();
 protected:
-	AtmiBroker::EndpointQueue_ptr callbackRef;
-	CosTransactions::Control_var tx_control;
-	CosTransactions::Coordinator_var tx_coordinator;
-	CosTransactions::PropagationContext_var tx_propagation_context;
-	CosTransactions::otid_t otid;
+	PortableServer::POA_ptr factoryPoaPtr;
+	char* serviceName;
+	bool m_shutdown;
+	SynchronizableObject* lock;
+	std::queue<MESSAGE> messageQueue;
+	std::vector<ServiceDispatcher *> servantVector;
+	AtmiBroker::ServiceInfo serviceInfo;
+
+	virtual void getDescriptorData();
+
 private:
-	void createConnectionTransactionAssociation(CosTransactions::Control_ptr control);
-	void endConnectionTransactionAssociation();
-	char* m_serviceName;
-	void (*m_func)(TPSVCINFO *);
-	const char* m_buffer;
+	// The following are not implemented
+	//
+	ServiceQueue(const ServiceQueue &);
+	ServiceQueue& operator=(const ServiceQueue &);
 };
 
 #endif

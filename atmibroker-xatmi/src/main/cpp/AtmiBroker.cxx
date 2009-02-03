@@ -85,9 +85,7 @@ CORBA::PolicyList *policyList;
 // Constants
 //int                                             SERVICE_ID_SIZE         	= 40;
 const char* MAX_REPLICAS = "MAX_REPLICAS:";
-int MAX_SERVICE_CACHE_SIZE = 10;
-int MIN_SERVICE_CACHE_SIZE = 5;
-int MIN_AVAILABLE_SERVICE_CACHE_SIZE = 2;
+int MAX_SERVICE_CACHE_SIZE = 1;
 
 //TODO -NOT IMPLEMENTED int                                             maxReplicas			= 1;
 

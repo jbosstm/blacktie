@@ -24,12 +24,12 @@
 // Edit the idlgen.cfg to have your own copyright notice placed here.
 //-----------------------------------------------------------------------------
 
-// Class: AtmiBroker_ClientCallbackImpl
+// Class: EndpointQueue
 // A POA servant which implements of the AtmiBroker::ClientCallback interface
 //
 
-#ifndef ATMIBROKER_CLIENTCALLBACKIMPL_H_
-#define ATMIBROKER_CLIENTCALLBACKIMPL_H_
+#ifndef EndpointQueue_H_
+#define EndpointQueue_H_
 
 #include "atmiBrokerMacro.h"
 
@@ -44,46 +44,42 @@
 #include <orb.h>
 #include "AtmiBroker_s.hh"
 #endif
+
 #include <queue>
+
+#include "Queue.h"
 #include "SynchronizableObject.h"
+#include "Message.h"
 
-struct message_t {
-	int rval;
-	long rcode;
-	AtmiBroker::octetSeq * octetSeq;
-	long len;
-	long flags;
-	long event;
-	const char * id;
-};
-typedef struct message_t MESSAGE;
-
-class ATMIBROKER_DLL AtmiBroker_ClientCallbackImpl: public virtual POA_AtmiBroker::ClientCallback {
+class ATMIBROKER_DLL EndpointQueue: public virtual Queue, public virtual POA_AtmiBroker::EndpointQueue {
 public:
-	AtmiBroker_ClientCallbackImpl(PortableServer::POA_ptr);
+	EndpointQueue(PortableServer::POA_ptr);
 
-	virtual ~AtmiBroker_ClientCallbackImpl();
+	virtual ~EndpointQueue();
 
 	// _create() -- create a new servant.
 	// Hides the difference between direct inheritance and tie servants.
 	//
-	static POA_AtmiBroker::ClientCallback*
-	_create(PortableServer::POA_ptr);
+	static POA_AtmiBroker::EndpointQueue* _create(PortableServer::POA_ptr);
 
-	// IDL operations
-	//
-	virtual void enqueue_data(CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent, const char * id) throw (CORBA::SystemException );
+	virtual void send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent) throw (CORBA::SystemException );
 
-	virtual CORBA::Short dequeue_data(CORBA::Short_out rval, CORBA::Long_out rcode, AtmiBroker::octetSeq_out odata, CORBA::Long_out olen, CORBA::Long_out flags, CORBA::Long_out event);
+	virtual void disconnect() throw (CORBA::SystemException );
+
+	void setReplyTo(const char * replyTo);
+
+	virtual MESSAGE receive(long flags);
+
+	virtual const char* getReplyTo();
 
 private:
 	// The following are not implemented
 	//
-	AtmiBroker_ClientCallbackImpl(const AtmiBroker_ClientCallbackImpl &);
-	AtmiBroker_ClientCallbackImpl& operator=(const AtmiBroker_ClientCallbackImpl &);
+	EndpointQueue(const EndpointQueue &);
+	EndpointQueue& operator=(const EndpointQueue &);
 	std::queue<MESSAGE> returnData;
-	SynchronizableObject* synchronizableObject;
-
+	SynchronizableObject* lock;
+	const char * m_replyTo;
 };
 
 #endif
