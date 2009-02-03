@@ -92,8 +92,6 @@ void EndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long
 	message.flags = flags;
 	message.event = revent;
 
-	userlog(Level::getError(), loggerEndpointQueue, (char*) "ep %s:%p", message.idata, message);
-
 	lock->lock();
 	returnData.push(message);
 	userlog(Level::getDebug(), loggerEndpointQueue, (char*) "notifying");
@@ -112,9 +110,9 @@ MESSAGE EndpointQueue::receive(long flags) {
 	message.idata = NULL;
 	lock->lock();
 	while (returnData.size() == 0) {
-		userlog(Level::getError(), loggerEndpointQueue, (char*) "waiting for %d", time);
+		userlog(Level::getDebug(), loggerEndpointQueue, (char*) "waiting for %d", time);
 		lock->wait(time);
-		userlog(Level::getError(), loggerEndpointQueue, (char*) "out of wait");
+		userlog(Level::getDebug(), loggerEndpointQueue, (char*) "out of wait");
 		if (!(TPNOTIME & flags)) {
 			break;
 		}
@@ -122,7 +120,7 @@ MESSAGE EndpointQueue::receive(long flags) {
 	if (returnData.size() != 0) {
 		message = returnData.front();
 		returnData.pop();
-		userlog(Level::getError(), loggerEndpointQueue, (char*) "ra %s:%p", message.idata, message);
+		userlog(Level::getDebug(), loggerEndpointQueue, (char*) "returning %p", message);
 	}
 	lock->unlock();
 	return message;
