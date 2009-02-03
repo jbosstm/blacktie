@@ -114,13 +114,21 @@ int AtmiBrokerConversation::tpconnect(char * serviceName, char* idata, long ilen
 				destroySpecific(TSS_KEY);
 			}
 
-			int id = 1;
-			unsigned char * data_togo = (unsigned char *) malloc(sizeof(char*) * ilen);
-			memcpy(data_togo, idata, ilen);
-			AtmiBroker::octetSeq * a_idata = new AtmiBroker::octetSeq(ilen, ilen, data_togo, true);
-			// TODO NOTIFY SERVER OF POSSIBLE CONDITIONS
-			ptr->send(mAtmiBrokerClient->getLocalCallback(id)->getReplyTo(), *a_idata, ilen, flags);
-			cd = id;
+			long dataLength = ::tptypes(idata, NULL, NULL);
+			if (dataLength >= 0) {
+				if (ilen > 0 && ilen < dataLength) {
+					dataLength = ilen;
+				}
+				int id = 1;
+				unsigned char * data_togo = (unsigned char *) malloc(sizeof(char*) * dataLength);
+				memcpy(data_togo, idata, dataLength);
+				AtmiBroker::octetSeq * a_idata = new AtmiBroker::octetSeq(dataLength, dataLength, data_togo, true);
+				// TODO NOTIFY SERVER OF POSSIBLE CONDITIONS
+				ptr->send(mAtmiBrokerClient->getLocalCallback(id)->getReplyTo(), *a_idata, dataLength, flags);
+				cd = id;
+			} else {
+				tperrno = TPEINVAL;
+			}
 		} else {
 			tperrno = TPENOENT;
 		}

@@ -113,7 +113,8 @@ ServiceQueue::~ServiceQueue() {
 void ServiceQueue::send(const char* replyto_ior, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags) throw (CORBA::SystemException ) {
 	MESSAGE message;
 	message.replyto_ior = replyto_ior;
-	message.idata = (char*) idata.get_buffer();
+	message.idata = (char*) malloc(sizeof(char*) * ilen);
+	memcpy(message.idata, (char*) idata.get_buffer(), ilen);
 	message.ilen = ilen;
 	message.flags = flags;
 	message.control = (CosTransactions::Control_ptr) getSpecific(TSS_KEY);

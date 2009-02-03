@@ -117,7 +117,7 @@ void TestTPCall::test_tpcall_x_common() {
 	int id = ::tpcall((char*) "tpcall_x_common", (char*) dptr, 0, (char**) &rcvbuf, &rcvlen, 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(id != -1);
-	CPPUNIT_ASSERT(strcmp(rcvbuf, "tpcall_x_common") == 0);
+	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_common") == 0);
 }
 // 9.1.3
 void TestTPCall::test_tpcall_x_c_type() {
@@ -134,7 +134,7 @@ void TestTPCall::test_tpcall_x_c_type() {
 	int id = ::tpcall((char*) "tpcall_x_c_type", (char*) aptr, 0, (char**) &rcvbuf, &rcvlen, TPNOCHANGE);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(id != -1);
-	CPPUNIT_ASSERT(strcmp(rcvbuf, "tpcall_x_c_type") == 0);
+	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_c_type") == 0);
 }
 
 void test_tpcall_x_octet_service(TPSVCINFO *svcinfo) {
@@ -148,6 +148,7 @@ void test_tpcall_x_octet_service(TPSVCINFO *svcinfo) {
 	if (ok) {
 		strcpy(toReturn, "tpcall_x_octet");
 	} else {
+		strcpy(toReturn, "fail");
 		strcpy(toReturn, svcinfo->data);
 	}
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
@@ -165,7 +166,7 @@ void test_tpcall_x_common_service(TPSVCINFO *svcinfo) {
 	if (ok) {
 		strcpy(toReturn, "tpcall_x_common");
 	} else {
-		strcpy(toReturn, svcinfo->data);
+		strcpy(toReturn, "fail");
 	}
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }
@@ -181,7 +182,7 @@ void test_tpcall_x_c_type_service(TPSVCINFO *svcinfo) {
 	if (ok) {
 		strcpy(toReturn, "tpcall_x_c_type");
 	} else {
-		strcpy(toReturn, svcinfo->data);
+		strcpy(toReturn, "fail");
 	}
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }

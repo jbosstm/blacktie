@@ -49,7 +49,7 @@ void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
 	userlog(Level::getError(), loggerAtmiBroker_ServiceImpl, (char*) "svc()");
 	m_buffer = message.idata;
 	const char * callback_ior = message.replyto_ior;
-	const char* idata = message.idata;
+	char* idata = message.idata;
 	long ilen = message.ilen;
 	long flags = message.flags;
 
@@ -67,7 +67,7 @@ void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
 	memset(&tpsvcinfo, '\0', sizeof(tpsvcinfo));
 	strcpy(tpsvcinfo.name, m_serviceName);
 	tpsvcinfo.flags = flags;
-	tpsvcinfo.data = (char*) idata;
+	tpsvcinfo.data = idata;
 	tpsvcinfo.len = ilen;
 
 	setSpecific(SVC_KEY, this);

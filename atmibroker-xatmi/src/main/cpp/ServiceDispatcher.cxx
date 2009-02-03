@@ -27,7 +27,7 @@ ServiceDispatcher::ServiceDispatcher(Queue* serviceQueue, AtmiBroker_ServiceImpl
 int ServiceDispatcher::svc(void) {
 	while (!m_shutdown) {
 		MESSAGE message = m_serviceQueue->receive(0);
-		if (message.idata) {
+		if (!m_shutdown) {
 			try {
 				m_service->onMessage(message);
 			} catch (...) {

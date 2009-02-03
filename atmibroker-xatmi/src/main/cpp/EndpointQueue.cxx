@@ -87,7 +87,7 @@ void EndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long
 	message.rval = rval;
 	message.rcode = rcode;
 	message.idata = (char*) malloc(sizeof(char*) * ilen);
-	memcpy(message.idata, (const char*) idata.get_buffer(), ilen);
+	memcpy(message.idata, (char*) idata.get_buffer(), ilen);
 	message.ilen = ilen;
 	message.flags = flags;
 	message.event = revent;
