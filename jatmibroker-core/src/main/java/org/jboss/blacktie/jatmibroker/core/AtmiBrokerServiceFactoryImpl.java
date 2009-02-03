@@ -23,24 +23,21 @@ package org.jboss.blacktie.jatmibroker.core;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServiceFactory;
-import org.omg.CORBA.Object;
+import org.jboss.blacktie.jatmibroker.core.proxy.ServiceQueue;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
 import org.omg.PortableServer.POA;
 
-import AtmiBroker.Service;
-import AtmiBroker.ServiceFactory;
-import AtmiBroker.ServiceFactoryHelper;
+import AtmiBroker.ServiceQueueHelper;
 
-public class AtmiBrokerServiceFactoryImpl implements AtmiBrokerServiceFactory {
+public class AtmiBrokerServiceFactoryImpl implements ServiceQueue {
 	private static final Logger log = LogManager.getLogger(AtmiBrokerServiceFactoryImpl.class);
-	private ServiceFactory serviceFactory;
+	private AtmiBroker.ServiceQueue serviceFactory;
 	private AtmiBrokerServerImpl server;
 	private String serviceFactoryName;
 	private POA poa;
 
-	public synchronized static AtmiBrokerServiceFactory getProxy(AtmiBrokerServerImpl server, String serviceName) throws NotFound, CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName {
+	public synchronized static ServiceQueue getProxy(AtmiBrokerServerImpl server, String serviceName) throws NotFound, CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName {
 		AtmiBrokerServiceFactoryImpl instance = new AtmiBrokerServiceFactoryImpl(server, serviceName);
 		return instance;
 	}
@@ -52,20 +49,8 @@ public class AtmiBrokerServiceFactoryImpl implements AtmiBrokerServiceFactory {
 		org.omg.CORBA.Object serviceFactoryObject = AtmiBrokerServerImpl.nc.resolve(AtmiBrokerServerImpl.nce.to_name(serviceFactoryName));
 		log.debug("ServiceFactory Object is " + serviceFactoryObject);
 		log.debug("ServiceFactory class is " + serviceFactoryObject.getClass().getName());
-		serviceFactory = ServiceFactoryHelper.narrow(serviceFactoryObject);
+		serviceFactory = ServiceQueueHelper.narrow(serviceFactoryObject);
 		log.debug("ServiceFactory is " + serviceFactory);
-	}
-
-	public String start_conversation(org.omg.CORBA.StringHolder id) throws JAtmiBrokerException {
-		log.debug("ServiceFactoryProxy's get_service_id");
-
-		return serviceFactory.start_conversation(id);
-	}
-
-	public void end_conversation(String id) throws JAtmiBrokerException {
-		log.debug("ServiceFactoryProxy's end_conversation id: " + id);
-
-		serviceFactory.end_conversation(id);
 	}
 
 	public void close() {
@@ -73,10 +58,7 @@ public class AtmiBrokerServiceFactoryImpl implements AtmiBrokerServiceFactory {
 
 	}
 
-	public void send_data(String ior, byte[] data, int flags) {
-		Object tmp_ref = AtmiBrokerServerImpl.orb.string_to_object(ior);
-		Service service = AtmiBroker.ServiceHelper.narrow(tmp_ref);
-		service.send_data(false, server.getClientCallbackIOR(), data, data.length, flags, 0);
+	public void send(String replyTo, byte[] data, int len, int flags) {
+		serviceFactory.send(replyTo, data, data.length, flags);
 	}
-
 }

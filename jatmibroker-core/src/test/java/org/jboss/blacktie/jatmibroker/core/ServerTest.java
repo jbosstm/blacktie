@@ -67,12 +67,7 @@ public class ServerTest extends TestCase {
 			for (int i = 0; i < aServiceInfo.length; i++) {
 				log.debug("aServiceInfo[" + i + "] " + aServiceInfo[i]);
 				log.debug("aServiceInfo[" + i + "] serviceName " + aServiceInfo[i].serviceName);
-				log.debug("aServiceInfo[" + i + "] maxSize " + aServiceInfo[i].maxSize);
-				log.debug("aServiceInfo[" + i + "] minSize " + aServiceInfo[i].minSize);
-				log.debug("aServiceInfo[" + i + "] minAvailableSize " + aServiceInfo[i].minAvailableSize);
-				log.debug("aServiceInfo[" + i + "] inUse " + aServiceInfo[i].inUse);
-				log.debug("aServiceInfo[" + i + "] available " + aServiceInfo[i].available);
-				log.debug("aServiceInfo[" + i + "] logLevel " + aServiceInfo[i].logLevel);
+				log.debug("aServiceInfo[" + i + "] poolSize " + aServiceInfo[i].poolSize);
 				log.debug("aServiceInfo[" + i + "] securityType " + aServiceInfo[i].securityType);
 			}
 		} else if (args[2].equals("get_environment_variable_info")) {

@@ -23,7 +23,6 @@ package org.jboss.blacktie.jatmibroker.core;
 
 public final class Response implements java.io.Serializable {
 	public byte[] value;
-	public TypedBufferInfo typedBufferValue;
 	public int length;
 	public int event;
 
@@ -40,10 +39,6 @@ public final class Response implements java.io.Serializable {
 		length = value.length;
 	}
 
-	public void setTypedBufferValue(TypedBufferInfo aValue) {
-		typedBufferValue = aValue;
-	}
-
 	public void setLength(int aLength) {
 		length = aLength;
 	}
@@ -56,13 +51,8 @@ public final class Response implements java.io.Serializable {
 		return value;
 	}
 
-	public TypedBufferInfo getTypedBufferAndMembersValue() {
-		return typedBufferValue;
-	}
-
 	public int getLength() {
 		return length;
-
 	}
 
 	public int getEvent() {

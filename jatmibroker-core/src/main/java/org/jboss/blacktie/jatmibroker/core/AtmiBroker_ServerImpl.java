@@ -32,7 +32,6 @@ import org.omg.CosNaming.NameComponent;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.ThreadPolicyValue;
 
-import AtmiBroker.ClientInfo;
 import AtmiBroker.EnvVariableInfo;
 import AtmiBroker.Server;
 import AtmiBroker.ServerInfo;
@@ -42,10 +41,9 @@ import AtmiBroker.ServiceInfo;
 public class AtmiBroker_ServerImpl extends ServerPOA {
 	private static final Logger log = LogManager.getLogger(AtmiBroker_ServerImpl.class);
 	private POA poa;
-	private Server me;
 	private String serverName;
 	private byte[] activate_object;
-	private Map<String, AtmiBroker_ServiceFactoryImpl> serviceFactoryList = new HashMap<String, AtmiBroker_ServiceFactoryImpl>();
+	private Map<String, ServiceQueue> serviceFactoryList = new HashMap<String, ServiceQueue>();
 	private boolean bound;
 
 	public AtmiBroker_ServerImpl(Properties properties) throws JAtmiBrokerException {
@@ -81,7 +79,7 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 	public void createAtmiBroker_ServiceFactoryImpl(String serviceName, int servantCacheSize, Class callback, AtmiBroker_CallbackConverter atmiBroker_Callback) throws JAtmiBrokerException {
 		if (!serviceFactoryList.containsKey(serviceName)) {
 			try {
-				AtmiBroker_ServiceFactoryImpl atmiBroker_ServiceFactoryImpl = new AtmiBroker_ServiceFactoryImpl(serviceName, servantCacheSize, callback, atmiBroker_Callback);
+				ServiceQueue atmiBroker_ServiceFactoryImpl = new ServiceQueue(serviceName, servantCacheSize, callback, atmiBroker_Callback);
 				serviceFactoryList.put(serviceName, atmiBroker_ServiceFactoryImpl);
 				if (bound) {
 					atmiBroker_ServiceFactoryImpl.bind();
@@ -98,11 +96,10 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 			NameComponent[] name = AtmiBrokerServerImpl.nce.to_name(serverName);
 			Object servant_to_reference = poa.servant_to_reference(this);
 			AtmiBrokerServerImpl.nc.rebind(name, servant_to_reference);
-			me = AtmiBroker.ServerHelper.narrow(servant_to_reference);
 		} catch (Throwable t) {
 			throw new JAtmiBrokerException("Could not bind server", t);
 		}
-		Iterator<AtmiBroker_ServiceFactoryImpl> iterator = serviceFactoryList.values().iterator();
+		Iterator<ServiceQueue> iterator = serviceFactoryList.values().iterator();
 		while (iterator.hasNext()) {
 			iterator.next().bind();
 		}
@@ -110,7 +107,7 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 	}
 
 	public void unbind() throws JAtmiBrokerException {
-		Iterator<AtmiBroker_ServiceFactoryImpl> iterator = serviceFactoryList.values().iterator();
+		Iterator<ServiceQueue> iterator = serviceFactoryList.values().iterator();
 		while (iterator.hasNext()) {
 			iterator.next().unbind();
 		}
@@ -123,32 +120,14 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 	}
 
 	public void unbind(String serviceName) throws JAtmiBrokerException {
-		AtmiBroker_ServiceFactoryImpl atmiBroker_ServiceFactoryImpl = serviceFactoryList.get(serviceName);
+		ServiceQueue atmiBroker_ServiceFactoryImpl = serviceFactoryList.get(serviceName);
 		if (atmiBroker_ServiceFactoryImpl != null) {
 			atmiBroker_ServiceFactoryImpl.unbind();
 		}
 	}
 
-	public boolean deregister_client(ClientInfo client_info) {
-		log.error("NO-OP deregister_client");
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	public ServiceInfo[] get_all_service_info() {
 		log.error("NO-OP get_all_service_info");
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String get_client_callback(ClientInfo client_info) {
-		log.error("NO-OP get_client_callback");
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public ClientInfo[] get_client_info() {
-		log.error("NO-OP get_client_info");
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -175,12 +154,6 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 		log.error("NO-OP get_service_info");
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	public int register_client(ClientInfo client_info) {
-		log.error("NO-OP register_client");
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 	public void server_done() {

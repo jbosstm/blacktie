@@ -7,13 +7,13 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.AtmiBrokerServerImpl;
 import org.jboss.blacktie.jatmibroker.core.AtmiBroker_ServerImpl;
 import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.core.Message;
 import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServer;
+import org.jboss.blacktie.jatmibroker.core.proxy.Queue;
 import org.jboss.blacktie.jatmibroker.ejb.connector.Connector;
 import org.jboss.blacktie.jatmibroker.ejb.connector.ConnectorException;
 import org.jboss.blacktie.jatmibroker.ejb.connector.Response;
 import org.jboss.blacktie.jatmibroker.ejb.connector.buffers.Buffer;
-import org.omg.CORBA.IntHolder;
-import org.omg.CORBA.StringHolder;
 
 /**
  * Handles the connector to the server
@@ -67,24 +67,18 @@ public class ConnectorImpl implements Connector {
 
 	public Response tpcall(String svc, Buffer idata, int flags) throws ConnectorException {
 
-		StringHolder id = new StringHolder();
-		IntHolder event = new IntHolder();
-		AtmiBroker.octetSeqHolder odata = new AtmiBroker.octetSeqHolder();
-		org.omg.CORBA.IntHolder olen = new org.omg.CORBA.IntHolder();
 		try {
 			// TODO HANDLE TRANSACTION
-			getProxy().getServiceFactoryProxy(svc).start_conversation(id);
-			getProxy().getServiceFactoryProxy(svc).send_data(id.value, idata.getData(), flags);
-			short retVal = getProxy().dequeue_data(odata, olen, flags, event);
-			getProxy().getServiceFactoryProxy(svc).end_conversation(id.value);
+			Queue endpoint = getProxy().getEndpointQueue(0);
+			getProxy().getServiceQueue(svc).send(endpoint.getReplyTo(), idata.getData(), idata.getSize(), flags);
+			Message receive = endpoint.receive(flags);
+			// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
+			Buffer buffer = new Buffer("unknown", "unknown", receive.len);
+			buffer.setData(receive.data);
+			return new Response(buffer);
 		} catch (JAtmiBrokerException e) {
 			throw new ConnectorException(-1, e);
 		}
-
-		// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
-		Buffer buffer = new Buffer("unknown", "unknown", odata.value.length);
-		buffer.setData(odata.value);
-		return new Response(buffer);
 	}
 
 	private synchronized AtmiBrokerServer getProxy() throws ConnectorException {

@@ -28,9 +28,8 @@ import junit.framework.TestCase;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServer;
-import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServiceFactory;
-import org.omg.CORBA.IntHolder;
-import org.omg.CORBA.StringHolder;
+import org.jboss.blacktie.jatmibroker.core.proxy.Queue;
+import org.jboss.blacktie.jatmibroker.core.proxy.ServiceQueue;
 
 public class ServiceManagerProxyTest extends TestCase {
 	private static final Logger log = LogManager.getLogger(ServiceManagerProxyTest.class);
@@ -52,24 +51,18 @@ public class ServiceManagerProxyTest extends TestCase {
 		properties.put("blacktie.orb.arg.2", "NameService=corbaloc::localhost:3528/NameService");
 
 		AtmiBrokerServer proxy = AtmiBrokerServerImpl.getProxy(properties, "", "");
-		AtmiBrokerServiceFactory serviceFactory = proxy.getServiceFactoryProxy("BAR");
+		ServiceQueue serviceFactory = proxy.getServiceQueue("BAR");
 
 		String aString = "Hello from Java Land";
-		int flags = 0;
-		AtmiBroker.octetSeqHolder odata = new AtmiBroker.octetSeqHolder();
-		org.omg.CORBA.IntHolder olen = new org.omg.CORBA.IntHolder();
-		StringHolder id = new StringHolder();
-		IntHolder event = new IntHolder();
+		Queue endpoint = proxy.getEndpointQueue(0);
+		serviceFactory.send(endpoint.getReplyTo(), aString.getBytes(), aString.getBytes().length, 0);
+		Message receive = endpoint.receive(0);
 
-		serviceFactory.start_conversation(id);
-		serviceFactory.send_data(id.value, aString.getBytes(), flags);
-		short retVal = proxy.dequeue_data(odata, olen, flags, event);
-		serviceFactory.end_conversation(id.value);
-
-		log.debug("Bar ServiceManager service_request response is " + new String(odata.value));
-		log.debug("Bar ServiceManager service_request size of response is " + olen.value);
-		assertEquals(odata.value, "BAR");
-		assertEquals(0, retVal);
+		assertNotNull(receive);
+		String string = new String(receive.data);
+		log.debug("Bar ServiceManager service_request response is " + string);
+		log.debug("Bar ServiceManager service_request size of response is " + receive.len);
+		assertEquals(string, "BAR");
 		AtmiBrokerServerImpl.discardOrb();
 	}
 }

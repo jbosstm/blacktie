@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.omg.CORBA.IntHolder;
+import org.jboss.blacktie.jatmibroker.core.proxy.Queue;
 import org.omg.CORBA.Policy;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAPackage.AdapterAlreadyExists;
@@ -36,17 +36,15 @@ import org.omg.PortableServer.POAPackage.ServantAlreadyActive;
 import org.omg.PortableServer.POAPackage.ServantNotActive;
 import org.omg.PortableServer.POAPackage.WrongPolicy;
 
-import AtmiBroker.ClientCallbackPOA;
-import AtmiBroker.TypedBuffer;
-import AtmiBroker.octetSeqHolder;
+import AtmiBroker.EndpointQueuePOA;
 
-public class ClientCallbackImpl extends ClientCallbackPOA {
-	private static final Logger log = LogManager.getLogger(ClientCallbackImpl.class);
+public class EndpointQueue extends EndpointQueuePOA implements Queue {
+	private static final Logger log = LogManager.getLogger(EndpointQueue.class);
 	private POA m_default_poa;
 	private String callbackIOR;
 	private List<Message> returnData = new ArrayList<Message>();
 
-	public ClientCallbackImpl(POA poa, String aServerName) throws AdapterNonExistent, InvalidPolicy, ServantAlreadyActive, WrongPolicy, ServantNotActive {
+	public EndpointQueue(POA poa, String aServerName) throws AdapterNonExistent, InvalidPolicy, ServantAlreadyActive, WrongPolicy, ServantNotActive {
 		super();
 		log.debug("ClientCallbackImpl constructor ");
 		int numberOfPolicies = 0;
@@ -66,7 +64,7 @@ public class ClientCallbackImpl extends ClientCallbackPOA {
 
 		org.omg.CORBA.Object tmp_ref = m_default_poa.servant_to_reference(this);
 		log.debug("created reference " + tmp_ref);
-		AtmiBroker.ClientCallback clientCallback = AtmiBroker.ClientCallbackHelper.narrow(tmp_ref);
+		AtmiBroker.EndpointQueue clientCallback = AtmiBroker.EndpointQueueHelper.narrow(tmp_ref);
 		log.debug("narrowed reference " + clientCallback);
 		callbackIOR = AtmiBrokerServerImpl.orb.object_to_string(clientCallback);
 		log.debug(" created ClientCallback ior " + callbackIOR);
@@ -80,60 +78,42 @@ public class ClientCallbackImpl extends ClientCallbackPOA {
 	// client_callback() -- Implements IDL operation
 	// "AtmiBroker.ClientCallback.client_callback".
 	//
-	public void enqueue_data(short rval, int rcode, byte[] idata, int ilen, int flags, int revent, String id) throws org.omg.CORBA.SystemException {
+	public void send(String replyto_ior, short rval, int rcode, byte[] idata, int ilen, int flags, int revent) {
 		log.error("Default client_callback called");
 		log.debug("client_callback(): called.");
-
 		log.debug("    idata = " + new String(idata));
 		log.debug("    ilen = " + ilen);
 		log.debug("    flags = " + flags);
-		log.debug("    id = " + id);
 		log.debug("client_callback(): returning.");
 		Message message = new Message();
-		message.rval = rval;
-		message.rcode = rcode;
-		message.octetSeq = idata;
+		message.replyTo = replyto_ior;
+		message.data = idata;
 		message.len = ilen;
 		message.flags = flags;
+		message.control = null;// TODO
+		message.rval = rval;
+		message.rcode = rcode;
 		message.event = revent;
-		message.id = id;
 		returnData.add(message);
 	}
 
-	// client_callback() -- Implements IDL operation
-	// "AtmiBroker.ClientCallback.client_callback".
-	//
-	public void client_typed_buffer_callback(TypedBuffer idata, int ilen, int flags, String id) throws org.omg.CORBA.SystemException {
-		log.error("default client_typed_buffer_callback called.");
-		log.debug("client_typed_buffer_callback called.");
-
-		log.debug("    idata = " + idata.name);
-		log.debug("    ilen = " + ilen);
-		log.debug("    flags = " + flags);
-		log.debug("    id = " + id);
-		log.debug("client_callback(): returning.");
-	}
-
-	public String getCallbackIOR() {
+	public String getReplyTo() {
 		return callbackIOR;
 	}
 
-	public short dequeue_data(octetSeqHolder odata, IntHolder olen, int flags, IntHolder event) {
+	public Message receive(long flags) {
 		// TODO
-		Message message = returnData.remove(0);
-		odata.value = message.octetSeq;
-		olen.value = message.len;
-		event.value = message.event;
-		return 0;
+		Message toReturn = returnData.remove(0);
+		return toReturn;
 	}
 
-	private class Message {
-		short rval;
-		int rcode;
-		byte[] octetSeq;
-		int len;
-		int flags;
-		int event;
-		String id;
+	public void disconnect() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void close() {
+		// TODO Auto-generated method stub
+
 	}
 }

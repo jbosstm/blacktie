@@ -25,25 +25,24 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
-import org.omg.CORBA.StringHolder;
 import org.omg.CosNaming.NameComponent;
 import org.omg.PortableServer.LifespanPolicyValue;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAPackage.AdapterNonExistent;
 
-import AtmiBroker.ServiceFactory;
-import AtmiBroker.ServiceFactoryPOA;
 import AtmiBroker.ServiceInfo;
+import AtmiBroker.ServiceQueuePOA;
 
-public class AtmiBroker_ServiceFactoryImpl extends ServiceFactoryPOA {
-	private static final Logger log = LogManager.getLogger(AtmiBroker_ServiceFactoryImpl.class);
+public class ServiceQueue extends ServiceQueuePOA {
+	private static final Logger log = LogManager.getLogger(ServiceQueue.class);
 	private String serviceName;
 	private POA poa;
-	private ServiceFactory me;
+	private AtmiBroker.ServiceQueue me;
 	private byte[] activate_object;
 	private List<AtmiBroker_ServiceImpl> servantCache = new ArrayList<AtmiBroker_ServiceImpl>();
+	private List<Message> messageQueue = new ArrayList<Message>();
 
-	AtmiBroker_ServiceFactoryImpl(String serviceName, int servantCacheSize, Class atmiBrokerCallback, AtmiBroker_CallbackConverter atmiBroker_Callback) throws JAtmiBrokerException {
+	ServiceQueue(String serviceName, int servantCacheSize, Class atmiBrokerCallback, AtmiBroker_CallbackConverter atmiBroker_CallbackConverter) throws JAtmiBrokerException, InstantiationException, IllegalAccessException {
 		this.serviceName = serviceName;
 		int numberOfPolicies = 1;
 		Policy[] policiesArray = new Policy[numberOfPolicies];
@@ -62,14 +61,8 @@ public class AtmiBroker_ServiceFactoryImpl extends ServiceFactoryPOA {
 			}
 		}
 
-		createCache(servantCacheSize, atmiBrokerCallback, atmiBroker_Callback);
-	}
-
-	public AtmiBroker_ServiceImpl createAtmiBroker_ServiceImpl(String serviceName, Class callback, AtmiBroker_CallbackConverter atmiBroker_CallbackConverter) throws JAtmiBrokerException {
-		try {
-			return new AtmiBroker_ServiceImpl(serviceName, callback, atmiBroker_CallbackConverter);
-		} catch (Throwable t) {
-			throw new JAtmiBrokerException("Could not create AtmiBroker_ServiceImpl: " + serviceName, t);
+		for (int i = 0; i < servantCacheSize; i++) {
+			servantCache.add(new AtmiBroker_ServiceImpl(serviceName, atmiBrokerCallback, atmiBroker_CallbackConverter, this));
 		}
 	}
 
@@ -78,13 +71,8 @@ public class AtmiBroker_ServiceFactoryImpl extends ServiceFactoryPOA {
 			activate_object = poa.activate_object(this);
 			Object servant_to_reference = poa.servant_to_reference(this);
 			NameComponent[] name = AtmiBrokerServerImpl.nce.to_name(serviceName);
-			AtmiBrokerServerImpl.nc.rebind(name, servant_to_reference);
-			me = AtmiBroker.ServiceFactoryHelper.narrow(servant_to_reference);
-
-			Iterator<AtmiBroker_ServiceImpl> iterator = servantCache.iterator();
-			while (iterator.hasNext()) {
-				iterator.next().bind();
-			}
+			AtmiBrokerServerImpl.nc.bind(name, servant_to_reference);
+			me = AtmiBroker.ServiceQueueHelper.narrow(servant_to_reference);
 		} catch (Throwable t) {
 			throw new JAtmiBrokerException("Could not bind service factory" + serviceName, t);
 		}
@@ -92,36 +80,21 @@ public class AtmiBroker_ServiceFactoryImpl extends ServiceFactoryPOA {
 
 	public void unbind() throws JAtmiBrokerException {
 		try {
-			Iterator<AtmiBroker_ServiceImpl> iterator = servantCache.iterator();
-			while (iterator.hasNext()) {
-				iterator.next().unbind();
-			}
-
+			NameComponent[] name = AtmiBrokerServerImpl.nce.to_name(serviceName);
+			AtmiBrokerServerImpl.nc.unbind(name);
 			poa.deactivate_object(activate_object);
 		} catch (Throwable t) {
 			throw new JAtmiBrokerException("Could not unbind service factory" + serviceName, t);
 		}
 	}
 
-	public void createCache(int servantCacheSize, Class atmiBroker_Callback, AtmiBroker_CallbackConverter atmiBroker_CallbackConverter) throws JAtmiBrokerException {
-		for (int i = 0; i < servantCacheSize; i++) {
-			servantCache.add(createAtmiBroker_ServiceImpl(serviceName, atmiBroker_Callback, atmiBroker_CallbackConverter));
-		}
-	}
-
-	public void end_conversation(String id) {
-		log.error("NO-OP end_conversation");
-		// TODO Auto-generated method stub
-
-	}
-
-	public String start_conversation(StringHolder id) {
-		log.error("NO-OP get_service_id");
-		// TODO Auto-generated method stub
-		id.value = serviceName + ":" + 0;
-		String ior = servantCache.get(0).getIor();
-		log.debug("Returning servant IOR: " + ior);
-		return ior;
+	public void send(String replyto_ior, byte[] idata, int ilen, int flags) {
+		Message message = new Message();
+		message.replyTo = replyto_ior;
+		message.data = idata;
+		message.len = ilen;
+		message.flags = flags;
+		messageQueue.add(message);
 	}
 
 	public ServiceInfo get_service_info() {
@@ -130,4 +103,20 @@ public class AtmiBroker_ServiceFactoryImpl extends ServiceFactoryPOA {
 		return null;
 	}
 
+	public Message receive(long flags) {
+		synchronized (this) {
+			while (messageQueue.isEmpty()) {
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					log.error("Caught exception", e);
+				}
+			}
+			if (messageQueue.isEmpty()) {
+				return null;
+			} else {
+				return messageQueue.remove(0);
+			}
+		}
+	}
 }

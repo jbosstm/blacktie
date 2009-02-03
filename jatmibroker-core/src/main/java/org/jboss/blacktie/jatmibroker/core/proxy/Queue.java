@@ -21,21 +21,22 @@
 // copyright 2006, 2008 BreakThruIT
 package org.jboss.blacktie.jatmibroker.core.proxy;
 
-import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
-import org.omg.CORBA.ORBPackage.InvalidName;
-import org.omg.CosNaming.NamingContextPackage.CannotProceed;
-import org.omg.CosNaming.NamingContextPackage.NotFound;
-import org.omg.CosNotifyChannelAdmin.EventChannelFactory;
-import org.omg.CosTransactions.TransactionFactory;
+import org.jboss.blacktie.jatmibroker.core.Message;
 
-public interface AtmiBrokerServer {
-	public TransactionFactory getTransactionFactory(String transactionManagerServiceName) throws NotFound, CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName;
+public interface Queue {
+	/**
+	 * This method will retrieve any information from the callback that has been
+	 * sent.
+	 * 
+	 * @param odata
+	 * @param olen
+	 * @param flags
+	 * @param event
+	 * @return
+	 */
+	public Message receive(long id);
 
-	public EventChannelFactory getEventChannelFactory() throws InvalidName;
+	public String getReplyTo();
 
 	public void close();
-
-	public ServiceQueue getServiceQueue(String serviceName) throws JAtmiBrokerException;
-
-	public Queue getEndpointQueue(int id);
 }

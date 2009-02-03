@@ -32,8 +32,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.administration.BTServerAdministration;
 import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServer;
-import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServiceFactory;
-import org.omg.CORBA.IntHolder;
+import org.jboss.blacktie.jatmibroker.core.proxy.ServiceQueue;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.ORBPackage.InvalidName;
@@ -59,7 +58,6 @@ import org.omg.PortableServer.POAPackage.WrongPolicy;
 
 import AtmiBroker.Server;
 import AtmiBroker.ServerHelper;
-import AtmiBroker.octetSeqHolder;
 
 public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerServer, Runnable {
 
@@ -75,12 +73,11 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 	static ORB orb = null;
 	static NamingContextExt nce = null;
 	static NamingContext nc = null;
-	private ClientCallbackImpl clientCallbackImpl;
+	private EndpointQueue clientCallbackImpl;
 
 	private Thread callbackThread;
-	private ClientInfo clientInfo;
 
-	private Map<String, AtmiBrokerServiceFactory> proxies = new HashMap<String, AtmiBrokerServiceFactory>();
+	private Map<String, ServiceQueue> proxies = new HashMap<String, ServiceQueue>();
 	private String serverName;
 	private String companyName;
 	private String[] args;
@@ -133,11 +130,7 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 
 	private void createClientCallback(String username, String password) throws AdapterNonExistent, InvalidPolicy, ServantAlreadyActive, WrongPolicy, ServantNotActive {
 		log.debug("createClientCallback create client callback ");
-		clientInfo = new ClientInfo();
-		clientInfo.user_id = username;
-		clientInfo.user_password = password;
-		clientCallbackImpl = new ClientCallbackImpl(root_poa, serverName);
-		clientInfo.callback_ior = clientCallbackImpl.getCallbackIOR();
+		clientCallbackImpl = new EndpointQueue(root_poa, serverName);
 		callbackThread = new Thread(this);
 		callbackThread.setDaemon(true);
 		callbackThread.start();
@@ -271,18 +264,14 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 	}
 
 	public void close() {
-		Iterator<AtmiBrokerServiceFactory> iterator = proxies.values().iterator();
+		Iterator<ServiceQueue> iterator = proxies.values().iterator();
 		while (iterator.hasNext()) {
 			iterator.next().close();
 		}
 	}
 
-	String getClientCallbackIOR() {
-		return clientInfo.callback_ior;
-	}
-
-	public AtmiBrokerServiceFactory getServiceFactoryProxy(String serviceName) throws JAtmiBrokerException {
-		AtmiBrokerServiceFactory proxy = proxies.get(serviceName);
+	public ServiceQueue getServiceQueue(String serviceName) throws JAtmiBrokerException {
+		ServiceQueue proxy = proxies.get(serviceName);
 		if (proxy == null) {
 			try {
 				proxy = AtmiBrokerServiceFactoryImpl.getProxy(this, serviceName);
@@ -294,7 +283,7 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 		return proxy;
 	}
 
-	public short dequeue_data(octetSeqHolder odata, IntHolder olen, int flags, IntHolder event) {
-		return clientCallbackImpl.dequeue_data(odata, olen, flags, event);
+	public org.jboss.blacktie.jatmibroker.core.proxy.Queue getEndpointQueue(int id) {
+		return clientCallbackImpl;
 	}
 }

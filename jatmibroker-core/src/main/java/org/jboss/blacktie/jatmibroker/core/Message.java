@@ -15,21 +15,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-/*
- * BREAKTHRUIT PROPRIETARY - NOT TO BE DISCLOSED OUTSIDE BREAKTHRUIT, LLC.
- */
-// copyright 2006, 2008 BreakThruIT
-package org.jboss.blacktie.jatmibroker.core.proxy;
+package org.jboss.blacktie.jatmibroker.core;
 
-import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
+import org.omg.CosTransactions.Control;
 
-public interface AtmiBrokerServiceFactory {
-
-	String start_conversation(org.omg.CORBA.StringHolder id) throws JAtmiBrokerException;
-
-	void send_data(String clientId, byte[] data, int flags);
-
-	void end_conversation(java.lang.String id) throws JAtmiBrokerException;
-
-	void close();
+public class Message {
+	public String replyTo;
+	public byte[] data;
+	public int len;
+	public int flags;
+	public Control control;
+	public short rval;
+	public int rcode;
+	public int event;
 }
