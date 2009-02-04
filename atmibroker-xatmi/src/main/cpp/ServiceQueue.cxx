@@ -119,7 +119,7 @@ void ServiceQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long 
 	memcpy(message.data, (char*) idata.get_buffer(), ilen);
 	message.len = ilen;
 	message.flags = flags;
-	message.control = (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
+	message.control = getSpecific(TSS_KEY);
 
 	userlog(Level::getDebug(), loggerServiceQueue, (char*) "start_conversation()");
 

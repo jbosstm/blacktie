@@ -19,14 +19,12 @@
 #ifndef MESSAGE_H_
 #define MESSAGE_H_
 
-#include "CosTransactionsC.h"
-
 struct message_t {
 	const char* replyto;
 	char* data;
 	long len;
 	long flags;
-	CosTransactions::Control_ptr control;
+	void* control;
 	int rval;
 	long rcode;
 	long event;
