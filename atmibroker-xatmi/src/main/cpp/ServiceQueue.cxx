@@ -140,7 +140,6 @@ MESSAGE ServiceQueue::receive(long flags) {
 		if (messageQueue.size() > 0) {
 			message = messageQueue.front();
 			messageQueue.pop();
-			setSpecific(TSS_KEY, message.control);
 		}
 	}
 	lock->unlock();

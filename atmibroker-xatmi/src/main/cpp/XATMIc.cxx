@@ -104,10 +104,6 @@ char* tprealloc(char * addr, long size) {
 
 void tpfree(char* ptr) {
 	tperrno = 0;
-	AtmiBroker_ServiceImpl *service = (AtmiBroker_ServiceImpl*) getSpecific(SVC_KEY);
-	if (service != NULL && service->sameBuffer(ptr)) {
-		return;
-	}
 	userlog(Level::getDebug(), loggerXATMI, (char*) "tpfree - ptr: %p", ptr);
 	AtmiBrokerMem::get_instance()->tpfree(ptr);
 }

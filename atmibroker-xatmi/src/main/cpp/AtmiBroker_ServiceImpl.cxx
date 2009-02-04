@@ -22,27 +22,27 @@
 
 #include "AtmiBroker_ServiceImpl.h"
 
+#include "tx.h"
 #include "SenderImpl.h"
 #include "AtmiBrokerServer.h"
 #include "EndpointQueue.h"
-#include "xatmi.h"
 #include "userlog.h"
 #include "ThreadLocalStorage.h"
 
 #include "log4cxx/logger.h"
 using namespace log4cxx;
 using namespace log4cxx::helpers;
-LoggerPtr loggerAtmiBroker_ServiceImpl(Logger::getLogger("AtmiBroker_ServiceImpl"));
+LoggerPtr AtmiBroker_ServiceImpl::logger(Logger::getLogger("AtmiBroker_ServiceImpl"));
 
 // AtmiBroker_ServiceImpl constructor
 //
 AtmiBroker_ServiceImpl::AtmiBroker_ServiceImpl(char *serviceName, void(*func)(TPSVCINFO *)) :
-	m_serviceName(serviceName), m_func(func), m_buffer(NULL) {
+	m_serviceName(serviceName), m_func(func) {
 
 	EndpointQueue* endpointQueue = new EndpointQueue(server_callback_poa);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "tmp_servant %p", (void*) endpointQueue);
+	userlog(Level::getDebug(), logger, (char*) "tmp_servant %p", (void*) endpointQueue);
 	server_callback_poa->activate_object(endpointQueue);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "activated tmp_servant %p", endpointQueue);
+	userlog(Level::getDebug(), logger, (char*) "activated tmp_servant %p", endpointQueue);
 	CORBA::Object_ptr tmp_ref = server_callback_poa->servant_to_reference(endpointQueue);
 	AtmiBroker::EndpointQueue_var queue = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 	endpointQueue->setDestinationName(server_orb->object_to_string(queue));
@@ -57,15 +57,14 @@ AtmiBroker_ServiceImpl::~AtmiBroker_ServiceImpl() {
 }
 
 void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "svc()");
-	m_buffer = message.data;
+	userlog(Level::getDebug(), logger, (char*) "svc()");
 	queueSender = new SenderImpl(server_orb, (char*) message.replyto);
 	char* idata = message.data;
 	long ilen = message.len;
 	long flags = message.flags;
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   idata = %p", idata);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   ilen = %d", ilen);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   flags = %d", flags);
+	userlog(Level::getDebug(), logger, (char*) "   idata = %p", idata);
+	userlog(Level::getDebug(), logger, (char*) "   ilen = %d", ilen);
+	userlog(Level::getDebug(), logger, (char*) "   flags = %d", flags);
 
 	TPSVCINFO tpsvcinfo;
 	memset(&tpsvcinfo, '\0', sizeof(tpsvcinfo));
@@ -74,23 +73,13 @@ void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
 	tpsvcinfo.data = idata;
 	tpsvcinfo.len = ilen;
 
+	setSpecific(TSS_KEY, message.control);
 	setSpecific(SVC_KEY, this);
 	tx_open();
 	m_func(&tpsvcinfo);
 	tx_close();
 	destroySpecific(SVC_KEY);
-}
-
-bool AtmiBroker_ServiceImpl::sameBuffer(char* toCheck) {
-	bool toReturn = false;
-	if (!toCheck || toCheck == NULL) {
-		tperrno = TPEINVAL; // TO MESSAGE TO CHECK
-	} else if (m_buffer == NULL) {
-		tperrno = TPESVCERR; // NO INBOUND MESSAGE
-	} else if (toCheck == m_buffer) {
-		toReturn = true;
-	}
-	return toReturn;
+	destroySpecific(TSS_KEY);
 }
 
 Sender* AtmiBroker_ServiceImpl::getSender() {
