@@ -20,21 +20,21 @@
 #include "SenderImpl.h"
 #include "Message.h"
 
-LoggerPtr SenderImpl::logger(Logger::getLogger("SenderImpl"));
+log4cxx::LoggerPtr SenderImpl::logger(log4cxx::Logger::getLogger("SenderImpl"));
 
 SenderImpl::SenderImpl(CORBA::ORB_ptr orb, char * callback_ior) {
-	userlog(Level::getDebug(), logger, (char*) "service_request_async()");
+	userlog(log4cxx::Level::getDebug(), logger, (char*) "service_request_async()");
 	CORBA::Object_var tmp_ref = orb->string_to_object(callback_ior);
 	m_endpointQueue = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	userlog(Level::getDebug(), logger, (char*) "connected to %s", callback_ior);
+	userlog(log4cxx::Level::getDebug(), logger, (char*) "connected to %s", callback_ior);
 }
 
 SenderImpl::SenderImpl(CosNaming::NamingContextExt_var context, CosNaming::NamingContext_var name_context, const char * serviceName) {
-	userlog(Level::getDebug(), logger, (char*) "get_service_queue: %s", serviceName);
+	userlog(log4cxx::Level::getDebug(), logger, (char*) "get_service_queue: %s", serviceName);
 	CosNaming::Name * name = context->to_name(serviceName);
 	CORBA::Object_var tmp_ref = name_context->resolve(*name);
 	m_endpointQueue = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	userlog(Level::getDebug(), logger, (char*) "connected to %s", serviceName);
+	userlog(log4cxx::Level::getDebug(), logger, (char*) "connected to %s", serviceName);
 }
 
 SenderImpl::~SenderImpl() {
@@ -52,9 +52,9 @@ void SenderImpl::send(MESSAGE message) {
 		m_endpointQueue->send(message.replyto, message.rval, message.rcode, aOctetSeq, data_size, message.flags, message.event);
 		aOctetSeq = NULL;
 		//		::tpfree(data);
-		userlog(Level::getDebug(), logger, (char*) "Called back ");
+		userlog(log4cxx::Level::getDebug(), logger, (char*) "Called back ");
 	} else {
 		tperrno = TPEINVAL;
-		userlog(Level::getError(), logger, (char*) "A NON-BUFFER WAS ATTEMPTED TO BE SENT");
+		userlog(log4cxx::Level::getError(), logger, (char*) "A NON-BUFFER WAS ATTEMPTED TO BE SENT");
 	}
 }

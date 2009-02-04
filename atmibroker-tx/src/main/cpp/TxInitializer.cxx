@@ -34,9 +34,9 @@
 
 TxInitializer* TxInitializer::instance = NULL;
 
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerTxInitializer(Logger::getLogger("TxInitializer"));
+
+
+log4cxx::LoggerPtr loggerTxInitializer(log4cxx::Logger::getLogger("TxInitializer"));
 TxInitializer* TxInitializer::get_instance() {
 	if (instance == NULL) {
 		instance = new TxInitializer();
@@ -58,7 +58,7 @@ void TxInitializer::pre_init(PortableInterceptor::ORBInitInfo_ptr info) {
 }
 
 void TxInitializer::post_init(PortableInterceptor::ORBInitInfo_ptr info) {
-	LOG4CXX_LOGLS(loggerTxInitializer, Level::getDebug(), (char*) "");
+	LOG4CXX_LOGLS(loggerTxInitializer, log4cxx::Level::getDebug(), (char*) "");
 
 	// register policy factories
 	PortableInterceptor::PolicyFactory_ptr p;
@@ -89,7 +89,7 @@ void TxInitializer::post_init(PortableInterceptor::ORBInitInfo_ptr info) {
 	PortableInterceptor::ClientRequestInterceptor_var civ = ci;
 	info->add_client_request_interceptor(civ.in());
 
-	LOG4CXX_LOGLS(loggerTxInitializer, Level::getDebug(), (char*) "out");
+	LOG4CXX_LOGLS(loggerTxInitializer, log4cxx::Level::getDebug(), (char*) "out");
 }
 
 void register_tx_interceptors(const char *name) {

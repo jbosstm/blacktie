@@ -44,9 +44,9 @@
 #include "log4cxx/propertyconfigurator.h"
 #include "log4cxx/logger.h"
 #include "log4cxx/logmanager.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerAtmiBroker(Logger::getLogger("AtmiBroker"));
+
+
+log4cxx::LoggerPtr loggerAtmiBroker(log4cxx::Logger::getLogger("AtmiBroker"));
 
 bool loggerInitialized;
 bool clientInitialized;
@@ -74,23 +74,23 @@ CORBA::PolicyTypeSeq policyTypes;
 CORBA::PolicyList *policyList;
 
 void client_sigint_handler_callback(int sig_type) {
-	userlog(Level::getWarn(), loggerAtmiBroker, (char*) "client_sigint_handler_callback Received shutdown signal: %d", sig_type);
+	userlog(log4cxx::Level::getWarn(), loggerAtmiBroker, (char*) "client_sigint_handler_callback Received shutdown signal: %d", sig_type);
 	clientdone();
 	abort();
 }
 
 int clientinit() {
 	if (!clientInitialized) {
-		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientinit called");
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientinit called");
 		_tperrno = 0;
 
 		signal(SIGINT, client_sigint_handler_callback);
 
 		if (!loggerInitialized) {
 			if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG") != NULL) {
-				PropertyConfigurator::configure(AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG"));
+				log4cxx::PropertyConfigurator::configure(AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG"));
 			} else {
-				BasicConfigurator::configure();
+				log4cxx::BasicConfigurator::configure();
 			}
 			loggerInitialized = true;
 		}
@@ -100,24 +100,24 @@ int clientinit() {
 
 			getRootPOAAndManager(client_orb, client_root_poa, client_root_poa_manager);
 
-			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "createClientCallbackPOA creating POA with name client");
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "createClientCallbackPOA creating POA with name client");
 			clientPoaFactory = new AtmiBrokerPoaFac();
 			std::string name = ".client";
 			//			name.insert(0, server);
 			client_poa = clientPoaFactory->createCallbackPoa(client_orb, name.c_str(), client_root_poa, client_root_poa_manager);
-			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "createClientCallbackPOA created POA: %p", (void*) client_poa);
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "createClientCallbackPOA created POA: %p", (void*) client_poa);
 
 			client_root_poa_manager->activate();
-			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "activated poa - started processing requests ");
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "activated poa - started processing requests ");
 
 			ptrAtmiBrokerClient = new AtmiBrokerClient();
 
 			clientInitialized = true;
 
-			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "Client Initialized");
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "Client Initialized");
 			return 1;
 		} catch (CORBA::Exception &ex) {
-			userlog(Level::getError(), loggerAtmiBroker, (char*) "clientinit Unexpected CORBA exception: %s", ex._name());
+			userlog(log4cxx::Level::getError(), loggerAtmiBroker, (char*) "clientinit Unexpected CORBA exception: %s", ex._name());
 			tperrno = TPESYSTEM;
 
 			// TODO CLEAN UP CALLBACKPOA, TRANSACTION CURRENT, LOG FACTORY
@@ -125,18 +125,18 @@ int clientinit() {
 			// CLEAN UP INITIALISED ITEMS
 			AtmiBrokerConversation::discard_instance();
 			if (ptrAtmiBrokerClient) {
-				userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleting Corba Client ");
+				userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleting Corba Client ");
 				delete ptrAtmiBrokerClient;
 				ptrAtmiBrokerClient = NULL;
-				userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleted Corba Client ");
+				userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleted Corba Client ");
 			}
 
-			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleting services");
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleting services");
 			AtmiBrokerMem::discard_instance();
 			//TODO READD AtmiBrokerNotify::discard_instance();
 			AtmiBrokerOTS::discard_instance();
 			AtmiBrokerEnv::discard_instance();
-			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleted services");
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleted services");
 
 			shutdownBindings(client_orb, client_root_poa, client_root_poa_manager, client_default_context, client_name_context, client_poa, client_worker);
 			return -1;
@@ -148,27 +148,27 @@ int clientinit() {
 int clientdone() {
 	_tperrno = 0;
 	if (clientInitialized) {
-		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientdone called");
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientdone called");
 
 		AtmiBrokerConversation::discard_instance();
 		if (ptrAtmiBrokerClient) {
-			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleting Corba Client ");
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleting Corba Client ");
 			delete ptrAtmiBrokerClient;
 			ptrAtmiBrokerClient = NULL;
-			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleted Corba Client ");
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleted Corba Client ");
 		}
 
-		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleting services");
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleting services");
 		AtmiBrokerMem::discard_instance();
 		//TODO READD AtmiBrokerNotify::discard_instance();
 		AtmiBrokerOTS::discard_instance();
 		AtmiBrokerEnv::discard_instance();
-		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleted services");
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleted services");
 
 		shutdownBindings(client_orb, client_root_poa, client_root_poa_manager, client_default_context, client_name_context, client_poa, client_worker);
 
 		clientInitialized = false;
-		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "Client Shutdown");
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "Client Shutdown");
 	}
 	return 0;
 }

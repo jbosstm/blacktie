@@ -44,9 +44,9 @@
 #include "AtmiBrokerEnv.h"
 #include "userlog.h"
 #include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerAtmiBroker_ServerImpl(Logger::getLogger("AtmiBroker_ServerImpl"));
+
+
+log4cxx::LoggerPtr loggerAtmiBroker_ServerImpl(log4cxx::Logger::getLogger("AtmiBroker_ServerImpl"));
 
 // _create() -- create a new servant.
 // Hides the difference between direct inheritance and tie servants
@@ -83,7 +83,7 @@ AtmiBroker_ServerImpl::~AtmiBroker_ServerImpl() {
 //
 CORBA::Short AtmiBroker_ServerImpl::server_init() throw (CORBA::SystemException ) {
 	int toReturn = 0;
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "server_init(): called.");
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "server_init(): called.");
 
 	PortableServer::ObjectId_var oid = PortableServer::string_to_ObjectId(server);
 	server_poa->activate_object_with_id(oid, this);
@@ -93,9 +93,9 @@ CORBA::Short AtmiBroker_ServerImpl::server_init() throw (CORBA::SystemException 
 	try {
 		server_name_context->bind(*name, tmp_ref);
 		AtmiBroker::Server_var pServer = AtmiBroker::Server::_narrow(tmp_ref);
-		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "server_init(): finished.");
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "server_init(): finished.");
 	} catch (CosNaming::NamingContext::AlreadyBound& e) {
-		userlog(Level::getError(), loggerAtmiBroker_ServerImpl, (char*) "server_init - Unexpected Already Bound exception: %s", server);
+		userlog(log4cxx::Level::getError(), loggerAtmiBroker_ServerImpl, (char*) "server_init - Unexpected Already Bound exception: %s", server);
 		toReturn = -1;
 	}
 	return toReturn;
@@ -104,16 +104,16 @@ CORBA::Short AtmiBroker_ServerImpl::server_init() throw (CORBA::SystemException 
 // server_done() -- Implements IDL operation "AtmiBroker::Server::server_done".
 //
 void AtmiBroker_ServerImpl::server_done() throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "server_done()");
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "server_done()");
 
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "unadvertise %s", serverName);
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "unadvertise %s", serverName);
 
 	CosNaming::Name * name;
 
 	name = server_default_context->to_name(serverName);
 	server_name_context->unbind(*name);
 
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "unadvertised %s", serverName);
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "unadvertised %s", serverName);
 
 	for (unsigned int i = 0; i < serverInfo.serviceNames.size(); i++) {
 		char* svcname = (char*) serverInfo.serviceNames[i].c_str();
@@ -121,12 +121,12 @@ void AtmiBroker_ServerImpl::server_done() throw (CORBA::SystemException ) {
 			unadvertiseService(svcname);
 		}
 	}
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "server_done(): returning.");
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "server_done(): returning.");
 }
 
 char *
 AtmiBroker_ServerImpl::getServerName() {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "getServerName ");
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "getServerName ");
 	return serverName;
 }
 
@@ -159,38 +159,38 @@ bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPS
 
 	bool toReturn = false;
 
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "advertiseService(): '%s'", serviceName);
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "advertiseService(): '%s'", serviceName);
 
 	// create reference for Service Factory and cache
 	try {
-		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "create_service_factory: %s", serviceName);
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "create_service_factory: %s", serviceName);
 
 		// create Poa for Service Factory
-		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "create_service_factory_poa: %s", serviceName);
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "create_service_factory_poa: %s", serviceName);
 		PortableServer::POA_ptr aFactoryPoaPtr = serverPoaFactory->createServiceFactoryPoa(server_orb, serviceName, server_poa, server_root_poa_manager);
-		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "created create_service_factory_poa: %s", serviceName);
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "created create_service_factory_poa: %s", serviceName);
 
 		ServiceQueue *tmp_factory_servant = new ServiceQueue(aFactoryPoaPtr, serviceName, func);
-		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) " tmp_factory_servant %p", (void*) tmp_factory_servant);
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) " tmp_factory_servant %p", (void*) tmp_factory_servant);
 
 		aFactoryPoaPtr->activate_object(tmp_factory_servant);
-		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "activated tmp_servant %p", (void*) tmp_factory_servant);
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "activated tmp_servant %p", (void*) tmp_factory_servant);
 		CORBA::Object_var tmp_ref = aFactoryPoaPtr->servant_to_reference(tmp_factory_servant);
 
 		CosNaming::Name * name = server_default_context->to_name(serviceName);
 		server_name_context->bind(*name, tmp_ref);
 
 		AtmiBrokerServiceFacMgr::get_instance()->addServiceFactory(serviceName, tmp_factory_servant, func);
-		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "created ServiceFactory %s", serviceName);
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "created ServiceFactory %s", serviceName);
 
 	} catch (...) {
-		userlog(Level::getError(), loggerAtmiBroker_ServerImpl, (char*) "service has already been advertised, however it appears to be by a different server (possibly with the same name), which is strange... %s", serviceName);
+		userlog(log4cxx::Level::getError(), loggerAtmiBroker_ServerImpl, (char*) "service has already been advertised, however it appears to be by a different server (possibly with the same name), which is strange... %s", serviceName);
 		tperrno = TPEMATCH;
 		return false;
 	}
 
 	advertisedServices.push_back(serviceName);
-	userlog(Level::getInfo(), loggerAtmiBroker_ServerImpl, (char*) "advertised service %s", serviceName);
+	userlog(log4cxx::Level::getInfo(), loggerAtmiBroker_ServerImpl, (char*) "advertised service %s", serviceName);
 	toReturn = true;
 	return toReturn;
 }
@@ -199,7 +199,7 @@ bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPS
 void AtmiBroker_ServerImpl::unadvertiseService(char * serviceName) {
 	for (std::vector<char*>::iterator i = advertisedServices.begin(); i != advertisedServices.end(); i++) {
 		if (strcmp(serviceName, (*i)) == 0) {
-			userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "remove_service_factory: %s", serviceName);
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "remove_service_factory: %s", serviceName);
 			CosNaming::Name * name = server_default_context->to_name(serviceName);
 			server_name_context->unbind(*name);
 
@@ -208,9 +208,9 @@ void AtmiBroker_ServerImpl::unadvertiseService(char * serviceName) {
 			delete toDelete;
 			poa->destroy(true, true);
 			poa = NULL;
-			userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) " service factory %s removed", serviceName);
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) " service factory %s removed", serviceName);
 			advertisedServices.erase(i);
-			userlog(Level::getInfo(), loggerAtmiBroker_ServerImpl, (char*) "unadvertised service %s", serviceName);
+			userlog(log4cxx::Level::getInfo(), loggerAtmiBroker_ServerImpl, (char*) "unadvertised service %s", serviceName);
 			break;
 		}
 	}
@@ -230,7 +230,7 @@ bool AtmiBroker_ServerImpl::isAdvertised(char * serviceName) {
 //
 AtmiBroker::ServerInfo*
 AtmiBroker_ServerImpl::get_server_info() throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_server_info()");
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_server_info()");
 
 	AtmiBroker::ServerInfo_var aServerInfo = new AtmiBroker::ServerInfo();
 
@@ -259,7 +259,7 @@ AtmiBroker_ServerImpl::get_server_info() throw (CORBA::SystemException ) {
 //
 AtmiBroker::ServiceInfoSeq*
 AtmiBroker_ServerImpl::get_all_service_info() throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_all_service_info()");
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_all_service_info()");
 
 	AtmiBroker::ServiceInfoSeq_var aServiceInfoSeq = new AtmiBroker::ServiceInfoSeq();
 	aServiceInfoSeq->length(serverInfo.serviceNames.size());
@@ -279,127 +279,127 @@ AtmiBroker_ServerImpl::get_all_service_info() throw (CORBA::SystemException ) {
 //
 AtmiBroker::EnvVariableInfoSeq*
 AtmiBroker_ServerImpl::get_environment_variable_info() throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_environment_variable_info()");
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_environment_variable_info()");
 
 	std::vector<envVar_t> & aEnvVarInfoSeq = AtmiBrokerEnv::get_instance()->getEnvVariableInfoSeq();
 
 	AtmiBroker::EnvVariableInfoSeq* aEnvVariableInfoSeqPtr = new AtmiBroker::EnvVariableInfoSeq();
 
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_environment_variable_info() setting length to %d", aEnvVarInfoSeq.size());
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_environment_variable_info() setting length to %d", aEnvVarInfoSeq.size());
 	aEnvVariableInfoSeqPtr->length(aEnvVarInfoSeq.size());
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_environment_variable_info() set length to %d", aEnvVariableInfoSeqPtr->length());
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_environment_variable_info() set length to %d", aEnvVariableInfoSeqPtr->length());
 	int j = 0;
 	for (std::vector<envVar_t>::iterator i = aEnvVarInfoSeq.begin(); i != aEnvVarInfoSeq.end(); i++) {
-		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_environment_variable_info() env name %s ", (*i).name);
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_environment_variable_info() env name %s ", (*i).name);
 		(*aEnvVariableInfoSeqPtr)[j].name = strdup((*i).name);
 		(*aEnvVariableInfoSeqPtr)[j].value = strdup((*i).value);
 		j++;
 	}
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_environment_variable_info() returning ");
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "get_environment_variable_info() returning ");
 	return aEnvVariableInfoSeqPtr;
 }
 
 // set_server_descriptor() -- Implements IDL operation "AtmiBroker::Server::set_server_descriptor".
 //
 void AtmiBroker_ServerImpl::set_server_descriptor(const char* xml_descriptor) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "set_server_descriptor() %s", xml_descriptor);
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "set_server_descriptor() %s", xml_descriptor);
 
 	std::string serverFileName = "server.xml";
 
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "set_server_descriptor() file name %s", serverFileName.c_str());
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "set_server_descriptor() file name %s", serverFileName.c_str());
 	FILE* aTempFile = fopen(serverFileName.c_str(), "w");
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "set_server_descriptor() file opened %p", aTempFile);
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "set_server_descriptor() file opened %p", aTempFile);
 
 	fputs(xml_descriptor, aTempFile);
 
 	fflush(aTempFile);
 	fclose(aTempFile);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "set_server_descriptor() file written and closed ");
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "set_server_descriptor() file written and closed ");
 }
 
 // set_service_descriptor() -- Implements IDL operation "AtmiBroker::Server::set_service_descriptor".
 //
 void AtmiBroker_ServerImpl::set_service_descriptor(const char* service_name, const char* xml_descriptor) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "set_service_descriptor() %s %s", service_name, xml_descriptor);
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "set_service_descriptor() %s %s", service_name, xml_descriptor);
 
 	std::string serverFileName = "server.xml";
 
 	FILE* aTempFile = fopen(serverFileName.c_str(), "w");
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "set_service_descriptor()  file %s opened %p", serverFileName.c_str(), aTempFile);
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "set_service_descriptor()  file %s opened %p", serverFileName.c_str(), aTempFile);
 
 	fputs(xml_descriptor, aTempFile);
 
 	fflush(aTempFile);
 	fclose(aTempFile);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "set_service_descriptor()  file written and closed ");
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "set_service_descriptor()  file written and closed ");
 }
 
 // set_environment_descriptor() -- Implements IDL operation "AtmiBroker::Server::set_environment_descriptor".
 //
 void AtmiBroker_ServerImpl::set_environment_descriptor(const char* xml_descriptor) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "set_environment_descriptor() %s", xml_descriptor);
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "set_environment_descriptor() %s", xml_descriptor);
 
 	FILE* aTempFile = fopen("Environment.xml", "w");
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "set_environment_descriptor() file Environment.xml opened %p", aTempFile);
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "set_environment_descriptor() file Environment.xml opened %p", aTempFile);
 
 	fputs(xml_descriptor, aTempFile);
 
 	fflush(aTempFile);
 	fclose(aTempFile);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "set_environment_descriptor() file written and closed ");
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "set_environment_descriptor() file written and closed ");
 }
 
 // stop_service() -- Implements IDL operation "AtmiBroker::Server::stop_service".
 //
 void AtmiBroker_ServerImpl::stop_service(const char* service_name) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "stop_service() %s", service_name);
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "stop_service() %s", service_name);
 
 	try {
 		for (unsigned int i = 0; i < serverInfo.serviceNames.size(); i++) {
-			userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "stop_service() next service %s", (const char*) serverInfo.serviceNames[i].c_str());
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "stop_service() next service %s", (const char*) serverInfo.serviceNames[i].c_str());
 			if (strcmp(service_name, (const char*) serverInfo.serviceNames[i].c_str()) == 0) {
-				userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "stop_service() found matching service %s...calling tpunadvertise", service_name);
+				userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "stop_service() found matching service %s...calling tpunadvertise", service_name);
 #ifndef VBC_COMP
 				tpunadvertise((char*) serverInfo.serviceNames[i].c_str());
 #else
 				tpunadvertise((char*)serverInfo.serviceNames[i]);
 #endif
-				userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "stop_service() called tpunadvertise");
+				userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "stop_service() called tpunadvertise");
 				return;
 			}
 		}
-		userlog(Level::getError(), loggerAtmiBroker_ServerImpl, (char*) "stop_service() DID NOT find matching service %s...", service_name);
+		userlog(log4cxx::Level::getError(), loggerAtmiBroker_ServerImpl, (char*) "stop_service() DID NOT find matching service %s...", service_name);
 	} catch (CORBA::Exception &e) {
-		userlog(Level::getError(), loggerAtmiBroker_ServerImpl, (char*) "stop_service() Could not stop service - exception: %s...", e._name());
+		userlog(log4cxx::Level::getError(), loggerAtmiBroker_ServerImpl, (char*) "stop_service() Could not stop service - exception: %s...", e._name());
 	}
 }
 
 // start_service() -- Implements IDL operation "AtmiBroker::Server::start_service".
 //
 void AtmiBroker_ServerImpl::start_service(const char* service_name) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "start_service() %s", service_name);
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "start_service() %s", service_name);
 
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "start_service()  stopping service first ");
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "start_service()  stopping service first ");
 	stop_service(service_name);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "start_service()  stopped service");
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "start_service()  stopped service");
 
 	try {
 		for (unsigned int i = 0; i < serverInfo.serviceNames.size(); i++) {
-			userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "start_service()  next service %s", (const char*) serverInfo.serviceNames[i].c_str());
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "start_service()  next service %s", (const char*) serverInfo.serviceNames[i].c_str());
 			if (strcmp(service_name, (const char*) serverInfo.serviceNames[i].c_str()) == 0) {
-				userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "start_service()  found matching service %s...calling tpadvertise", service_name);
+				userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "start_service()  found matching service %s...calling tpadvertise", service_name);
 #ifndef VBC_COMP
 				tpadvertise((char*) serverInfo.serviceNames[i].c_str(), NULL);
 #else
 				tpadvertise((char*)serverInfo.serviceNames[i], NULL);
 #endif
-				userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "start_service()  called tpadvertise");
+				userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "start_service()  called tpadvertise");
 				return;
 			}
 		}
-		userlog(Level::getError(), loggerAtmiBroker_ServerImpl, (char*) "start_service()  DID NOT find matching service %s...", service_name);
+		userlog(log4cxx::Level::getError(), loggerAtmiBroker_ServerImpl, (char*) "start_service()  DID NOT find matching service %s...", service_name);
 	} catch (CORBA::Exception &e) {
-		userlog(Level::getError(), loggerAtmiBroker_ServerImpl, (char*) "start_service()  Could not start service - exception: %s...", e._name());
+		userlog(log4cxx::Level::getError(), loggerAtmiBroker_ServerImpl, (char*) "start_service()  Could not start service - exception: %s...", e._name());
 	}
 }
 

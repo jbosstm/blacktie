@@ -47,9 +47,9 @@
 #include "userlog.h"
 
 #include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerServiceQueue(Logger::getLogger("ServiceQueue"));
+
+
+log4cxx::LoggerPtr loggerServiceQueue(log4cxx::Logger::getLogger("ServiceQueue"));
 
 // Constants
 int MAX_SERVICE_CACHE_SIZE = 1;
@@ -63,9 +63,9 @@ int MAX_SERVICE_CACHE_SIZE = 1;
 ServiceQueue::ServiceQueue(void* thePoa, char *serviceName, void(*func)(TPSVCINFO *)) :
 	thePoa(thePoa), serviceName(serviceName), m_shutdown(false), lock(SynchronizableObject::create(false)) {
 	// Intentionally empty.
-	userlog(Level::getDebug(), loggerServiceQueue, (char*) "constructor() ");
+	userlog(log4cxx::Level::getDebug(), loggerServiceQueue, (char*) "constructor() ");
 
-	userlog(Level::getDebug(), loggerServiceQueue, (char*) "getDescriptorData() ");
+	userlog(log4cxx::Level::getDebug(), loggerServiceQueue, (char*) "getDescriptorData() ");
 	serviceInfo.poolSize = MAX_SERVICE_CACHE_SIZE;
 	char* serviceConfigFilename = (char*) malloc(sizeof(char) * (XATMI_SERVICE_NAME_LENGTH + 5));
 	strcpy(serviceConfigFilename, serviceName);
@@ -74,7 +74,7 @@ ServiceQueue::ServiceQueue(void* thePoa, char *serviceName, void(*func)(TPSVCINF
 	aAtmiBrokerServiceXml.parseXmlDescriptor(&serviceInfo, serviceConfigFilename);
 	free(serviceConfigFilename);
 
-	userlog(Level::getDebug(), loggerServiceQueue, (char*) "createPool");
+	userlog(log4cxx::Level::getDebug(), loggerServiceQueue, (char*) "createPool");
 	for (int i = 0; i < MAX_SERVICE_CACHE_SIZE; i++) {
 		AtmiBroker_ServiceImpl * tmp_servant = new AtmiBroker_ServiceImpl(serviceName, func);
 		ServiceDispatcher* dispatcher = new ServiceDispatcher(this, tmp_servant);
@@ -85,7 +85,7 @@ ServiceQueue::ServiceQueue(void* thePoa, char *serviceName, void(*func)(TPSVCINF
 			servantVector.push_back(dispatcher);
 		}
 	}
-	userlog(Level::getDebug(), loggerServiceQueue, (char*) "createPool done ");
+	userlog(log4cxx::Level::getDebug(), loggerServiceQueue, (char*) "createPool done ");
 }
 
 // ~ServiceQueue destructor.
@@ -126,7 +126,7 @@ void ServiceQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long 
 	message.flags = flags;
 	message.control = getSpecific(TSS_KEY);
 
-	userlog(Level::getDebug(), loggerServiceQueue, (char*) "start_conversation()");
+	userlog(log4cxx::Level::getDebug(), loggerServiceQueue, (char*) "start_conversation()");
 
 	lock->lock();
 	messageQueue.push(message);
@@ -152,7 +152,7 @@ MESSAGE ServiceQueue::receive(long flags) {
 }
 
 SVCINFO ServiceQueue::get_service_info() {
-	userlog(Level::getDebug(), loggerServiceQueue, (char*) "get_service_info()");
+	userlog(log4cxx::Level::getDebug(), loggerServiceQueue, (char*) "get_service_info()");
 	SVCINFO svcinfo;
 	svcinfo.serviceName = strdup(serviceName);
 	svcinfo.poolSize = serviceInfo.poolSize;

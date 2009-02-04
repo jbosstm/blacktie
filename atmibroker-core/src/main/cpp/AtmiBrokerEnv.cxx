@@ -29,9 +29,9 @@
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerEnvXml.h"
 #include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerAtmiBrokerEnv(Logger::getLogger("AtmiBrokerEnv"));
+
+
+log4cxx::LoggerPtr loggerAtmiBrokerEnv(log4cxx::Logger::getLogger("AtmiBrokerEnv"));
 
 int AtmiBrokerEnv::ENV_VARIABLE_SIZE = 30;
 char *AtmiBrokerEnv::ENVIRONMENT_FILE = (char*) "Environment.xml";

@@ -24,16 +24,16 @@
 #include "LocalResourceManagerCache.h"
 
 #include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerConnector(Logger::getLogger("Connector"));
+
+
+log4cxx::LoggerPtr loggerConnector(log4cxx::Logger::getLogger("Connector"));
 
 ConnectorImpl::ConnectorImpl() {
-	LOG4CXX_LOGLS(loggerConnector, Level::getDebug(), (char*) "constructor");
+	LOG4CXX_LOGLS(loggerConnector, log4cxx::Level::getDebug(), (char*) "constructor");
 }
 
 ConnectorImpl::~ConnectorImpl() {
-	LOG4CXX_LOGLS(loggerConnector, Level::getDebug(), (char*) "destructor");
+	LOG4CXX_LOGLS(loggerConnector, log4cxx::Level::getDebug(), (char*) "destructor");
 }
 
 XA::ResourceManager_ptr
@@ -52,7 +52,7 @@ ConnectorImpl::create_resource_manager (const char * resource_manager_name,
 ConnectorImpl::create_resource_manager(const char * resource_manager_name, const XA::XASwitch& xa_switch, const char * open_string, const char * close_string, XA::ThreadModel thread_model, CORBA::Boolean automatic_association, CORBA::Boolean dynamic_registration_optimization, XA::CurrentConnection_out current_connection)
 #endif
 		throw(CORBA::SystemException) {
-	LOG4CXX_LOGLS(loggerConnector, Level::getInfo(), (char*) "create_resource_manager ENTERED");
+	LOG4CXX_LOGLS(loggerConnector, log4cxx::Level::getInfo(), (char*) "create_resource_manager ENTERED");
 
 	LocalResourceManager * aLocalResourceManager = LocalResourceManagerCache::getLocalResourceManagerCache()->find_local_resource_manager(resource_manager_name, open_string, close_string, thread_model, automatic_association, dynamic_registration_optimization);
 
@@ -65,7 +65,7 @@ ConnectorImpl::create_resource_manager(const char * resource_manager_name, const
 
 	connectorDataQueue.push_back(aConnectorDataStruct);
 
-	LOG4CXX_LOGLS(loggerConnector, Level::getInfo(), (char*) "create_resource_manager FINISHED ");
+	LOG4CXX_LOGLS(loggerConnector, log4cxx::Level::getInfo(), (char*) "create_resource_manager FINISHED ");
 
 	return aLocalResourceManager;
 }
@@ -85,16 +85,16 @@ ConnectorImpl::connect_to_resource_manager (XA::ResourceManager_ptr rm,
 ConnectorImpl::connect_to_resource_manager(XA::ResourceManager_ptr rm, const XA::XASwitch& xa_switch, const char * open_string, const char * close_string, XA::ThreadModel thread_model, CORBA::Boolean automatic_association, CORBA::Boolean dynamic_registration_optimization)
 #endif
 		throw(CORBA::SystemException) {
-	LOG4CXX_LOGLS(loggerConnector, Level::getInfo(), (char*) "connect_to_resource_manager ENTERED");
+	LOG4CXX_LOGLS(loggerConnector, log4cxx::Level::getInfo(), (char*) "connect_to_resource_manager ENTERED");
 
 	for (std::deque<ConnectorDataStruct*>::iterator itConnectorDataStruct = connectorDataQueue.begin(); itConnectorDataStruct != connectorDataQueue.end(); itConnectorDataStruct++) {
-		LOG4CXX_LOGLS(loggerConnector, Level::getInfo(), (char*) "next " << (*itConnectorDataStruct)->localResourceManager);
+		LOG4CXX_LOGLS(loggerConnector, log4cxx::Level::getInfo(), (char*) "next " << (*itConnectorDataStruct)->localResourceManager);
 		if (rm->_is_equivalent((*itConnectorDataStruct)->localResourceManager)) {
-			LOG4CXX_LOGLS(loggerConnector, Level::getInfo(), (char*) " found matching resource manager");
+			LOG4CXX_LOGLS(loggerConnector, log4cxx::Level::getInfo(), (char*) " found matching resource manager");
 			return (*itConnectorDataStruct)->currentConnectionImpl;
 		}
 	}
-	LOG4CXX_LOGLS(loggerConnector, Level::getInfo(), (char*) "connect_to_resource_manager FINISHED ");
+	LOG4CXX_LOGLS(loggerConnector, log4cxx::Level::getInfo(), (char*) "connect_to_resource_manager FINISHED ");
 	return XA::CurrentConnection::_nil();
 }
 

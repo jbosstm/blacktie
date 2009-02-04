@@ -24,9 +24,9 @@
 #include "CurrentImpl.h"
 
 #include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerCurrentImpl(Logger::getLogger("CurrentImpl"));
+
+
+log4cxx::LoggerPtr loggerCurrentImpl(log4cxx::Logger::getLogger("CurrentImpl"));
 
 CurrentImpl::CurrentImpl(CosTransactions::TransactionFactory* tfac) :
 	m_txfactory(tfac), m_timeout(0) {
@@ -36,11 +36,11 @@ CurrentImpl::~CurrentImpl() {
 }
 
 void CurrentImpl::begin() throw(CORBA::SystemException, CosTransactions::SubtransactionsUnavailable ) {
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "begin ENTERED");
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "begin ENTERED");
 
 	CosTransactions::Control_var ctrl = get_control();
 	if (CORBA::is_nil(ctrl.in())) {
-		LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "creating control from Factory");
+		LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "creating control from Factory");
 		ctrl = m_txfactory->create(m_timeout);
 		if (CORBA::is_nil(ctrl.in())) {
 			CORBA::INTERNAL ex;
@@ -49,10 +49,10 @@ void CurrentImpl::begin() throw(CORBA::SystemException, CosTransactions::Subtran
 		ControlThreadStruct* aControlThreadStruct = new ControlThreadStruct();
 		aControlThreadStruct->control = CosTransactions::Control::_duplicate(ctrl);
 		// TODO assuming client
-		LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "control " << AtmiBrokerOTS::get_instance()->getOrb()->object_to_string(aControlThreadStruct->control));
+		LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "control " << AtmiBrokerOTS::get_instance()->getOrb()->object_to_string(aControlThreadStruct->control));
 		aControlThreadStruct->thread = ACE_Thread::self();
 		ACE_Thread::self(aControlThreadStruct->threadHandle);
-		LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "thread " << aControlThreadStruct->thread <<
+		LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "thread " << aControlThreadStruct->thread <<
 			" threadHandle " << aControlThreadStruct->threadHandle);
 		controlThreadDeque.push_back(aControlThreadStruct);
 	} else {
@@ -62,11 +62,11 @@ void CurrentImpl::begin() throw(CORBA::SystemException, CosTransactions::Subtran
 		}
 	}
 
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "begin FINISHED Control " << (void *) ctrl.in());
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "begin FINISHED Control " << (void *) ctrl.in());
 }
 
 void CurrentImpl::commit(CORBA::Boolean report_heuristics) throw(CORBA::SystemException, CosTransactions::NoTransaction, CosTransactions::HeuristicMixed, CosTransactions::HeuristicHazard ) {
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "commit ENTERED");
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "commit ENTERED");
 
 	CosTransactions::Control_var ctrl = get_control();
 
@@ -75,17 +75,17 @@ void CurrentImpl::commit(CORBA::Boolean report_heuristics) throw(CORBA::SystemEx
 		throw ex;
 	} else {
 		CosTransactions::Terminator_var term = ctrl->get_terminator();
-		LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "got OTS Terminator");
+		LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "got OTS Terminator");
 		term->commit(report_heuristics);
-		LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "called commit on OTS Terminator");
+		LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "called commit on OTS Terminator");
 		remove_control();
 	}
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "commit FINISHED");
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "commit FINISHED");
 	return;
 }
 
 void CurrentImpl::rollback() throw (CORBA::SystemException, CosTransactions::NoTransaction) {
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "rollback ENTERED");
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "rollback ENTERED");
 
 	CosTransactions::Control_var cv = get_control();
 
@@ -98,11 +98,11 @@ void CurrentImpl::rollback() throw (CORBA::SystemException, CosTransactions::NoT
 		terminator->rollback();
 		remove_control();
 	}
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "rollback FINISHED");
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "rollback FINISHED");
 }
 
 CosTransactions::Status CurrentImpl::get_status() throw (CORBA::SystemException) {
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "get_status");
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "get_status");
 
 	CosTransactions::Control_var cv = get_control();
 
@@ -115,7 +115,7 @@ CosTransactions::Status CurrentImpl::get_status() throw (CORBA::SystemException)
 }
 
 char * CurrentImpl::get_transaction_name() throw (CORBA::SystemException ) {
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "get_transaction_name ");
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "get_transaction_name ");
 
 	CosTransactions::Control_var cv = get_control();
 	if (CORBA::is_nil(cv.in())) {
@@ -127,12 +127,12 @@ char * CurrentImpl::get_transaction_name() throw (CORBA::SystemException ) {
 }
 
 CosTransactions::Control_ptr CurrentImpl::get_control() throw (CORBA::SystemException) {
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "get_control ");
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "get_control ");
 
 	for (std::deque<ControlThreadStruct*>::iterator itControlThread = controlThreadDeque.begin(); itControlThread != controlThreadDeque.end(); itControlThread++) {
-		LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "next itControlThread is: " << (ACE_thread_t)(*itControlThread)->thread);
+		LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "next itControlThread is: " << (ACE_thread_t)(*itControlThread)->thread);
 		if ((*itControlThread)->thread == ACE_Thread::self()) {
-			LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "returning control " << (*itControlThread)->control.in());
+			LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "returning control " << (*itControlThread)->control.in());
 			return CosTransactions::Control::_duplicate((*itControlThread)->control.in());
 		}
 	}
@@ -141,73 +141,73 @@ CosTransactions::Control_ptr CurrentImpl::get_control() throw (CORBA::SystemExce
 }
 
 bool CurrentImpl::remove_control() throw (CORBA::SystemException) {
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "remove_control ");
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "remove_control ");
 
 	bool removed = false;
 
 	for (std::deque<ControlThreadStruct*>::iterator itControlThread = controlThreadDeque.begin(); itControlThread != controlThreadDeque.end(); itControlThread++) {
-		LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "next itControlThread is: " << (ACE_thread_t)(*itControlThread)->thread);
+		LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "next itControlThread is: " << (ACE_thread_t)(*itControlThread)->thread);
 		if ((*itControlThread)->thread == ACE_Thread::self())
 			controlThreadDeque.erase(itControlThread);
 		removed = true;
 		return removed;
 	}
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getError(), (char*) "no transaction context attached to thread");
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getError(), (char*) "no transaction context attached to thread");
 	return removed;
 }
 
 ControlThreadStruct* CurrentImpl::get_control_thread_struct() throw (CORBA::SystemException) {
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "get_control_thread_struct ");
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "get_control_thread_struct ");
 
 	for (std::deque<ControlThreadStruct*>::iterator itControlThread = controlThreadDeque.begin(); itControlThread != controlThreadDeque.end(); itControlThread++) {
-		LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "next itControlThread is: " << (ACE_thread_t)(*itControlThread)->thread);
+		LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "next itControlThread is: " << (ACE_thread_t)(*itControlThread)->thread);
 		if ((*itControlThread)->thread == ACE_Thread::self())
 			return *itControlThread;
 	}
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getError(), (char*) "no transaction context attached to thread");
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getError(), (char*) "no transaction context attached to thread");
 	return (ControlThreadStruct*) NULL;
 }
 
 CosTransactions::Control_ptr CurrentImpl::suspend() throw (CORBA::SystemException) {
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "suspend STARTED");
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "suspend STARTED");
 
 	ControlThreadStruct* controlThreadStruct = get_control_thread_struct();
 
 	if (controlThreadStruct == (ControlThreadStruct*) NULL) {
-		LOG4CXX_LOGLS(loggerCurrentImpl, Level::getError(), (char*) "no active transaction context for current thread");
+		LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getError(), (char*) "no active transaction context for current thread");
 		CosTransactions::InvalidControl ex;
 		throw ex;
 
 	} else {
 		ACE_Thread::suspend(controlThreadStruct->threadHandle);
 	}
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "suspend FINISHED");
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "suspend FINISHED");
 	return controlThreadStruct->control;
 }
 
 void CurrentImpl::resume(CosTransactions::Control_ptr toberesumed) throw (CORBA::SystemException, CosTransactions::InvalidControl) {
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "resume STARTED");
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "resume STARTED");
 
 	ControlThreadStruct* controlThreadStruct = get_control_thread_struct();
 
 	if (controlThreadStruct == (ControlThreadStruct*) NULL) {
-		LOG4CXX_LOGLS(loggerCurrentImpl, Level::getError(), (char*) "no active transaction context for current thread");
+		LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getError(), (char*) "no active transaction context for current thread");
 		CosTransactions::InvalidControl ex;
 		throw ex;
 
 	} else {
 		ACE_Thread::resume(controlThreadStruct->threadHandle);
 	}
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "resume FINISHED");
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "resume FINISHED");
 }
 
 CORBA::ULong CurrentImpl::get_timeout() throw (CORBA::SystemException) {
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "get_timeout");
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "get_timeout");
 
 	CosTransactions::Control_var cv = get_control();
 
 	if (CORBA::is_nil(cv.in())) {
-		LOG4CXX_LOGLS(loggerCurrentImpl, Level::getError(), (char*) "no transaction context attached to thread, returning preset");
+		LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getError(), (char*) "no transaction context attached to thread, returning preset");
 		return m_timeout;
 	} else {
 		CosTransactions::PropagationContext* aPropagationContext = cv.in()->get_coordinator()->get_txcontext();
@@ -217,14 +217,14 @@ CORBA::ULong CurrentImpl::get_timeout() throw (CORBA::SystemException) {
 }
 
 void CurrentImpl::set_timeout(CORBA::ULong seconds) throw (CORBA::SystemException) {
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "set_timeout " << seconds);
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "set_timeout " << seconds);
 
 	m_timeout = seconds;
 
 	CosTransactions::Control_var cv = get_control();
 
 	if (CORBA::is_nil(cv.in())) {
-		LOG4CXX_LOGLS(loggerCurrentImpl, Level::getError(), (char*) "no transaction context attached to thread, returning preset");
+		LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getError(), (char*) "no transaction context attached to thread, returning preset");
 	} else {
 		CosTransactions::Coordinator* aCoordinator = cv.in()->get_coordinator();
 		if (!CORBA::is_nil(aCoordinator)) {
@@ -232,17 +232,17 @@ void CurrentImpl::set_timeout(CORBA::ULong seconds) throw (CORBA::SystemExceptio
 			if (aPropagationContext != (CosTransactions::PropagationContext*) NULL) {
 				aPropagationContext->timeout = seconds;
 				cv = m_txfactory->recreate(*aPropagationContext);
-				LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "propagationContext does exist ...changed time");
+				LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "propagationContext does exist ...changed time");
 			} else
-				LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "propagationContext does not exist yet...can't change time to " << seconds);
+				LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "propagationContext does not exist yet...can't change time to " << seconds);
 		} else
-			LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "coordinator does not exist yet...can't change time to " << seconds);
+			LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "coordinator does not exist yet...can't change time to " << seconds);
 	}
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "set_timeout FINISHED");
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "set_timeout FINISHED");
 }
 
 void CurrentImpl::rollback_only() throw (CORBA::SystemException, CosTransactions::NoTransaction) {
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "rollback_only ENTERED");
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "rollback_only ENTERED");
 
 	CosTransactions::Control_var cv = get_control();
 	if (CORBA::is_nil(cv.in())) {
@@ -253,5 +253,5 @@ void CurrentImpl::rollback_only() throw (CORBA::SystemException, CosTransactions
 		CosTransactions::Coordinator_var coordinator = cv->get_coordinator();
 		coordinator->rollback_only();
 	}
-	LOG4CXX_LOGLS(loggerCurrentImpl, Level::getDebug(), (char*) "rollback_only FINISHED");
+	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "rollback_only FINISHED");
 }

@@ -38,7 +38,7 @@
 #include "Sender.h"
 #include "Receiver.h"
 #include "log4cxx/logger.h"
-using namespace log4cxx;
+
 
 class AtmiBroker_ServiceImpl: public virtual Session, public virtual MessageListener {
 public:
@@ -55,7 +55,7 @@ protected:
 	Sender* queueSender;
 	Receiver* queueReceiver;
 private:
-	static LoggerPtr logger;
+	static log4cxx::LoggerPtr logger;
 	char* m_serviceName;
 	void (*m_func)(TPSVCINFO *);
 };

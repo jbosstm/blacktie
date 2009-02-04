@@ -23,9 +23,9 @@
 #include "LocalResourceManagerCache.h"
 
 #include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerLocalResourceManagerCache(Logger::getLogger("LocalResourceManagerCache"));
+
+
+log4cxx::LoggerPtr loggerLocalResourceManagerCache(log4cxx::Logger::getLogger("LocalResourceManagerCache"));
 
 #ifdef TAO_COMP
 #include "ace/OS.h"
@@ -34,13 +34,13 @@ LoggerPtr loggerLocalResourceManagerCache(Logger::getLogger("LocalResourceManage
 static LocalResourceManagerCache * localResourceManagerCache = NULL;
 
 LocalResourceManagerCache::LocalResourceManagerCache() {
-	LOG4CXX_LOGLS(loggerLocalResourceManagerCache, Level::getDebug(), (char*) "constructor");
+	LOG4CXX_LOGLS(loggerLocalResourceManagerCache, log4cxx::Level::getDebug(), (char*) "constructor");
 }
 
 LocalResourceManagerCache::~LocalResourceManagerCache() {
-	LOG4CXX_LOGLS(loggerLocalResourceManagerCache, Level::getDebug(), (char*) "destructor");
+	LOG4CXX_LOGLS(loggerLocalResourceManagerCache, log4cxx::Level::getDebug(), (char*) "destructor");
 	for (std::deque<LocalResourceManager*>::iterator itLocalResourceManager = localResourceManagerQueue.begin(); itLocalResourceManager != localResourceManagerQueue.end(); itLocalResourceManager++) {
-		LOG4CXX_LOGLS(loggerLocalResourceManagerCache, Level::getDebug(), (char*) "deleting local resource manager " << (*itLocalResourceManager)->getResourceManagerDataStruct().resource_manager_name.c_str());
+		LOG4CXX_LOGLS(loggerLocalResourceManagerCache, log4cxx::Level::getDebug(), (char*) "deleting local resource manager " << (*itLocalResourceManager)->getResourceManagerDataStruct().resource_manager_name.c_str());
 		delete (*itLocalResourceManager);
 	}
 }
@@ -62,7 +62,7 @@ void LocalResourceManagerCache::discardLocalResourceManagerCache() {
 
 LocalResourceManager *
 LocalResourceManagerCache::create_local_resource_manager(const std::string& resource_manager_name, const std::string& open_string, const std::string& close_string, XA::ThreadModel thread_model, CORBA::Boolean automatic_association, CORBA::Boolean dynamic_registration_optimization, const std::string& library_name, const std::string& xa_symbol_name) {
-	LOG4CXX_LOGLS(loggerLocalResourceManagerCache, Level::getInfo(), (char*) "create_local_resource_manager ENTERED");
+	LOG4CXX_LOGLS(loggerLocalResourceManagerCache, log4cxx::Level::getInfo(), (char*) "create_local_resource_manager ENTERED");
 
 	LocalResourceManager* aLocalResourceManager = find_local_resource_manager(resource_manager_name, open_string, close_string, thread_model, automatic_association, dynamic_registration_optimization);
 
@@ -80,7 +80,7 @@ LocalResourceManagerCache::create_local_resource_manager(const std::string& reso
 		 xa_switch_t* xaswitch;
 		 ACE_SHLIB_HANDLE handle = ACE_OS::dlopen (library_name.c_str(), ACE_DEFAULT_SHLIB_MODE);
 		 if (!handle)
-		 LOG4CXX_LOGLS(loggerLocalResourceManagerCache, Level::getError(), (char*)"Error Opening DB Libary %s",  library_name.c_str());
+		 LOG4CXX_LOGLS(loggerLocalResourceManagerCache, log4cxx::Level::getError(), (char*)"Error Opening DB Libary %s",  library_name.c_str());
 
 		 xaswitch = (xa_switch_t*) ACE_OS::dlsym(handle, xa_symbol_name.c_str());
 
@@ -88,7 +88,7 @@ LocalResourceManagerCache::create_local_resource_manager(const std::string& reso
 		 if (error != NULL)
 		 {
 		 ACE_OS::dlclose(handle);
-		 LOG4CXX_LOGLS(loggerLocalResourceManagerCache, Level::getError(), (char*)"Error Finding XA Symbol %s",  xa_symbol_name.c_str());
+		 LOG4CXX_LOGLS(loggerLocalResourceManagerCache, log4cxx::Level::getError(), (char*)"Error Finding XA Symbol %s",  xa_symbol_name.c_str());
 		 }
 		 aResourceManagerDataStruct->xaSwitch							= *xaswitch;
 		 */
@@ -102,17 +102,17 @@ LocalResourceManagerCache::create_local_resource_manager(const std::string& reso
 
 LocalResourceManager *
 LocalResourceManagerCache::find_local_resource_manager(const std::string& resource_manager_name, const std::string& open_string, const std::string& close_string, XA::ThreadModel thread_model, CORBA::Boolean automatic_association, CORBA::Boolean dynamic_registration_optimization) {
-	LOG4CXX_LOGLS(loggerLocalResourceManagerCache, Level::getInfo(), (char*) "find_local_resource_manager ENTERED");
+	LOG4CXX_LOGLS(loggerLocalResourceManagerCache, log4cxx::Level::getInfo(), (char*) "find_local_resource_manager ENTERED");
 
 	for (std::deque<LocalResourceManager*>::iterator itLocalResourceManager = localResourceManagerQueue.begin(); itLocalResourceManager != localResourceManagerQueue.end(); itLocalResourceManager++) {
-		LOG4CXX_LOGLS(loggerLocalResourceManagerCache, Level::getInfo(), (char*) "next " << (*itLocalResourceManager)->getResourceManagerDataStruct().resource_manager_name.c_str());
+		LOG4CXX_LOGLS(loggerLocalResourceManagerCache, log4cxx::Level::getInfo(), (char*) "next " << (*itLocalResourceManager)->getResourceManagerDataStruct().resource_manager_name.c_str());
 		if ((*itLocalResourceManager)->getResourceManagerDataStruct().resource_manager_name.compare(resource_manager_name)) {
-			LOG4CXX_LOGLS(loggerLocalResourceManagerCache, Level::getInfo(), (char*) " found matching local resource manager " << resource_manager_name.c_str());
+			LOG4CXX_LOGLS(loggerLocalResourceManagerCache, log4cxx::Level::getInfo(), (char*) " found matching local resource manager " << resource_manager_name.c_str());
 			return (*itLocalResourceManager);
 		}
 	}
 	// TODO IS THIS COPIED FROM CONNECTOR
-	LOG4CXX_LOGLS(loggerLocalResourceManagerCache, Level::getInfo(), (char*) "find_local_resource_manager FINISHED ");
+	LOG4CXX_LOGLS(loggerLocalResourceManagerCache, log4cxx::Level::getInfo(), (char*) "find_local_resource_manager FINISHED ");
 
 	return NULL;
 }

@@ -26,9 +26,9 @@
 #include "AtmiBrokerConversation.h"
 
 #include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerAtmiBrokerConversation(Logger::getLogger("AtmiBrokerConversation"));
+
+
+log4cxx::LoggerPtr loggerAtmiBrokerConversation(log4cxx::Logger::getLogger("AtmiBrokerConversation"));
 
 AtmiBrokerConversation *AtmiBrokerConversation::ptrAtmiBrokerConversation = NULL;
 
@@ -47,15 +47,15 @@ void AtmiBrokerConversation::discard_instance() {
 }
 
 AtmiBrokerConversation::AtmiBrokerConversation() {
-	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "constructor");
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerConversation, (char*) "constructor");
 }
 
 AtmiBrokerConversation::~AtmiBrokerConversation() {
-	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "destructor");
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerConversation, (char*) "destructor");
 }
 
 int AtmiBrokerConversation::send(Sender* sender, const char* replyTo, char* idata, long ilen, long flags, long *revent) {
-	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "tpconnect - idata: %s ilen: %d flags: %d", idata, ilen, flags);
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerConversation, (char*) "tpconnect - idata: %s ilen: %d flags: %d", idata, ilen, flags);
 	int toReturn = 0;
 	try {
 		if (~TPNOTRAN & flags) {
@@ -69,7 +69,7 @@ int AtmiBrokerConversation::send(Sender* sender, const char* replyTo, char* idat
 		message.flags = flags;
 		sender->send(message);
 	} catch (...) {
-		userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "aCorbaService->start_conversation(): call failed");
+		userlog(log4cxx::Level::getError(), loggerAtmiBrokerConversation, (char*) "aCorbaService->start_conversation(): call failed");
 		tperrno = TPESYSTEM;
 		toReturn = -1;
 	}
@@ -77,7 +77,7 @@ int AtmiBrokerConversation::send(Sender* sender, const char* replyTo, char* idat
 }
 
 int AtmiBrokerConversation::receive(Session* session, char ** odata, long *olen, long flags, long* event) {
-	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "tprecv - odata: %s olen: %p flags: %d", *odata, olen, flags);
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerConversation, (char*) "tprecv - odata: %s olen: %p flags: %d", *odata, olen, flags);
 	int toReturn = 0;
 	MESSAGE message = session->getReceiver()->receive(flags);
 	if (message.data != NULL) {
@@ -88,7 +88,7 @@ int AtmiBrokerConversation::receive(Session* session, char ** odata, long *olen,
 		*olen = message.len;
 		*event = message.event;
 		session->setSendTo((char*) message.replyto);
-		userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "returning - %s", *odata);
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerConversation, (char*) "returning - %s", *odata);
 	} else {
 		tperrno = TPETIME;
 		toReturn = -1;
@@ -97,7 +97,7 @@ int AtmiBrokerConversation::receive(Session* session, char ** odata, long *olen,
 }
 
 int AtmiBrokerConversation::disconnect(int id) {
-	userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "end - id: %d", id);
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerConversation, (char*) "end - id: %d", id);
 
 	int toReturn = -1;
 
@@ -109,7 +109,7 @@ int AtmiBrokerConversation::disconnect(int id) {
 	//			callback->disconnect();
 	//			toReturn = 0;
 	//		} catch (...) {
-	//			userlog(Level::getError(), loggerAtmiBrokerConversation, (char*) "callback->disconnect(): call failed");
+	//			userlog(log4cxx::Level::getError(), loggerAtmiBrokerConversation, (char*) "callback->disconnect(): call failed");
 	//			tperrno = TPESYSTEM;
 	//		}
 	//	}

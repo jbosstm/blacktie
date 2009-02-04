@@ -23,7 +23,7 @@
 
 #include <iostream>
 
-LoggerPtr atmiServerInterceptorLogger(Logger::getLogger("ServerInterceptor"));
+log4cxx::LoggerPtr atmiServerInterceptorLogger(log4cxx::Logger::getLogger("ServerInterceptor"));
 
 ServerInterceptor::ServerInterceptor(const char *orbname, IOP::CodecFactory_var cf) :
 	TxInterceptor(orbname, cf, "ATMIServerTxInterceptor") { }
@@ -49,13 +49,13 @@ bool ServerInterceptor::policyCheck(PortableInterceptor::ServerRequestInfo_ptr r
         try {
                 CORBA::Policy_var pv =  ri->get_server_policy(AtmiTx::OTS_POLICY_TYPE);
                 AtmiTx::OTSPolicy_var otsp = AtmiTx::OTSPolicy::_narrow(pv.in());
-                LOG4CXX_LOGLS(atmiServerInterceptorLogger, Level::getTrace(), (char*) "policy var " << otsp);
+                LOG4CXX_LOGLS(atmiServerInterceptorLogger, log4cxx::Level::getTrace(), (char*) "policy var " << otsp);
 
                 if (CORBA::is_nil(otsp.in())) {
-                        LOG4CXX_LOGLS(atmiServerInterceptorLogger, Level::getTrace(), (char*) "\tpolicy is nil");
+                        LOG4CXX_LOGLS(atmiServerInterceptorLogger, log4cxx::Level::getTrace(), (char*) "\tpolicy is nil");
                 } else {
                         tpv_ = otsp->tpv();
-                        LOG4CXX_LOGLS(atmiServerInterceptorLogger, Level::getDebug(),
+                        LOG4CXX_LOGLS(atmiServerInterceptorLogger, log4cxx::Level::getDebug(),
                                 (char*) "\tpolicy value: " << tpv_);
 
                         /*
@@ -79,7 +79,7 @@ bool ServerInterceptor::policyCheck(PortableInterceptor::ServerRequestInfo_ptr r
         } catch (const CORBA::SystemException& ex) {
                 ex._tao_print_exception("ServerInterceptor policy error: ");
         } catch( ... ) {
-                LOG4CXX_LOGLS(atmiServerInterceptorLogger, Level::getWarn(), (char*) "GENERIC POLICY ERROR ...");
+                LOG4CXX_LOGLS(atmiServerInterceptorLogger, log4cxx::Level::getWarn(), (char*) "GENERIC POLICY ERROR ...");
 	}
 
 	return false;

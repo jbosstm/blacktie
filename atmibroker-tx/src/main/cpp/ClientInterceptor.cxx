@@ -23,7 +23,7 @@
 
 #include <iostream>
 
-LoggerPtr atmiClientInterceptorlogger(Logger::getLogger("ClientInterceptor"));
+log4cxx::LoggerPtr atmiClientInterceptorlogger(log4cxx::Logger::getLogger("ClientInterceptor"));
 
 ClientInterceptor::ClientInterceptor(const char *orbname, IOP::CodecFactory_var cf) :
 	TxInterceptor(orbname, cf, "ATMIClientTxInterceptor") {}

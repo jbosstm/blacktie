@@ -23,21 +23,21 @@
 #include "CurrentConnectionImpl.h"
 
 #include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerCurrentConnectionImpl(Logger::getLogger("CurrentConnectionImpl"));
+
+
+log4cxx::LoggerPtr loggerCurrentConnectionImpl(log4cxx::Logger::getLogger("CurrentConnectionImpl"));
 
 CurrentConnectionImpl::CurrentConnectionImpl(LocalResourceManager& localResourceManager) :
 	m_localResourceManager(localResourceManager) {
-	LOG4CXX_LOGLS(loggerCurrentConnectionImpl, Level::getDebug(), (char*) "constructor");
+	LOG4CXX_LOGLS(loggerCurrentConnectionImpl, log4cxx::Level::getDebug(), (char*) "constructor");
 }
 
 CurrentConnectionImpl::~CurrentConnectionImpl() {
-	LOG4CXX_LOGLS(loggerCurrentConnectionImpl, Level::getDebug(), (char*) "destructor");
+	LOG4CXX_LOGLS(loggerCurrentConnectionImpl, log4cxx::Level::getDebug(), (char*) "destructor");
 }
 
 void CurrentConnectionImpl::start(CosTransactions::Coordinator_ptr tx, const CosTransactions::otid_t& aOtid_t) throw(CORBA::SystemException) {
-	LOG4CXX_LOGLS(loggerCurrentConnectionImpl, Level::getInfo(), (char*) "start");
+	LOG4CXX_LOGLS(loggerCurrentConnectionImpl, log4cxx::Level::getInfo(), (char*) "start");
 	XID aXid;
 	translateOtidToXid(aOtid_t, aXid);
 	//XA::XASwitch aXaSwitch = m_localResourceManager.getResourceManagerDataStruct().xaSwitch;
@@ -47,7 +47,7 @@ void CurrentConnectionImpl::start(CosTransactions::Coordinator_ptr tx, const Cos
 }
 
 void CurrentConnectionImpl::suspend(CosTransactions::Coordinator_ptr tx, const CosTransactions::otid_t& aOtid_t) throw(CORBA::SystemException) {
-	LOG4CXX_LOGLS(loggerCurrentConnectionImpl, Level::getInfo(), (char*) "suspend");
+	LOG4CXX_LOGLS(loggerCurrentConnectionImpl, log4cxx::Level::getInfo(), (char*) "suspend");
 	XID aXid;
 	translateOtidToXid(aOtid_t, aXid);
 	//XA::XASwitch aXaSwitch = m_localResourceManager.getResourceManagerDataStruct().xaSwitch;
@@ -57,7 +57,7 @@ void CurrentConnectionImpl::suspend(CosTransactions::Coordinator_ptr tx, const C
 }
 
 void CurrentConnectionImpl::resume(CosTransactions::Coordinator_ptr tx, const CosTransactions::otid_t& aOtid_t) throw(CORBA::SystemException) {
-	LOG4CXX_LOGLS(loggerCurrentConnectionImpl, Level::getInfo(), (char*) "resume");
+	LOG4CXX_LOGLS(loggerCurrentConnectionImpl, log4cxx::Level::getInfo(), (char*) "resume");
 	XID aXid;
 	translateOtidToXid(aOtid_t, aXid);
 	//XA::XASwitch aXaSwitch = m_localResourceManager.getResourceManagerDataStruct().xaSwitch;
@@ -67,7 +67,7 @@ void CurrentConnectionImpl::resume(CosTransactions::Coordinator_ptr tx, const Co
 }
 
 void CurrentConnectionImpl::end(CosTransactions::Coordinator_ptr tx, const CosTransactions::otid_t& aOtid_t, CORBA::Boolean success) throw(CORBA::SystemException) {
-	LOG4CXX_LOGLS(loggerCurrentConnectionImpl, Level::getInfo(), (char*) "end");
+	LOG4CXX_LOGLS(loggerCurrentConnectionImpl, log4cxx::Level::getInfo(), (char*) "end");
 	XID aXid;
 	translateOtidToXid(aOtid_t, aXid);
 	//XA::XASwitch aXaSwitch = m_localResourceManager.getResourceManagerDataStruct().xaSwitch;
@@ -77,17 +77,17 @@ void CurrentConnectionImpl::end(CosTransactions::Coordinator_ptr tx, const CosTr
 }
 
 XA::ThreadModel CurrentConnectionImpl::thread_model() throw(CORBA::SystemException) {
-	LOG4CXX_LOGLS(loggerCurrentConnectionImpl, Level::getInfo(), (char*) "thread_model");
+	LOG4CXX_LOGLS(loggerCurrentConnectionImpl, log4cxx::Level::getInfo(), (char*) "thread_model");
 	return m_localResourceManager.getResourceManagerDataStruct().thread_model;
 }
 
 CORBA::Long CurrentConnectionImpl::rmid() throw(CORBA::SystemException) {
-	LOG4CXX_LOGLS(loggerCurrentConnectionImpl, Level::getInfo(), (char*) "rmid");
+	LOG4CXX_LOGLS(loggerCurrentConnectionImpl, log4cxx::Level::getInfo(), (char*) "rmid");
 	return m_localResourceManager.getResourceManagerDataStruct().rmid;
 }
 
 void CurrentConnectionImpl::translateOtidToXid(const CosTransactions::otid_t& otid, XID& aXid) {
-	LOG4CXX_LOGLS(loggerCurrentConnectionImpl, Level::getInfo(), (char*) "translateOtidToXid");
+	LOG4CXX_LOGLS(loggerCurrentConnectionImpl, log4cxx::Level::getInfo(), (char*) "translateOtidToXid");
 
 	aXid.formatID = otid.formatID;
 	aXid.bqual_length = otid.bqual_length;

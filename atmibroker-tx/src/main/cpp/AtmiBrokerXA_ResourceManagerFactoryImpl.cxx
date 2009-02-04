@@ -38,9 +38,9 @@
 #include "AtmiBrokerOTS.h"
 
 #include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerAtmiBrokerXA_ResourceManagerFactoryImpl(Logger::getLogger("AtmiBrokerXA_ResourceManagerFactoryImpl"));
+
+
+log4cxx::LoggerPtr loggerAtmiBrokerXA_ResourceManagerFactoryImpl(log4cxx::Logger::getLogger("AtmiBrokerXA_ResourceManagerFactoryImpl"));
 
 // _create() -- create a new servant.
 // Hides the difference between direct inheritance and tie servants
@@ -76,7 +76,7 @@ AtmiBrokerXA_ResourceManagerFactoryImpl::~AtmiBrokerXA_ResourceManagerFactoryImp
 // create_resource_manager() -- Implements IDL operation "AtmiBrokerXA::ResourceManagerFactory::create_resource_manager".
 //
 XA::ResourceManager_ptr AtmiBrokerXA_ResourceManagerFactoryImpl::create_resource_manager(const char * resource_manager_name, const char * open_string, const char * close_string, XA::ThreadModel thread_model, CORBA::Boolean automatic_association, CORBA::Boolean dynamic_registration_optimization) throw (CORBA::SystemException ) {
-	LOG4CXX_LOGLS(loggerAtmiBrokerXA_ResourceManagerFactoryImpl, Level::getDebug(), (char*) "create_resource_manager()");
+	LOG4CXX_LOGLS(loggerAtmiBrokerXA_ResourceManagerFactoryImpl, log4cxx::Level::getDebug(), (char*) "create_resource_manager()");
 
 	XA::ResourceManager_ptr aXAResourceManager = AtmiBrokerOTS::get_instance()->getXaConnector()->create_resource_manager(resource_manager_name, AtmiBrokerOTS::get_instance()->getXaosw(),// xa switch
 			open_string, // open string specified in config
@@ -86,8 +86,8 @@ XA::ResourceManager_ptr AtmiBrokerXA_ResourceManagerFactoryImpl::create_resource
 			dynamic_registration_optimization, // do not use dynamic registration
 			AtmiBrokerOTS::get_instance()->getXaCurrentConnection());
 
-	LOG4CXX_LOGLS(loggerAtmiBrokerXA_ResourceManagerFactoryImpl, Level::getInfo(), (char*) "created XA Resource Manager: " << (void*) aXAResourceManager);
-	LOG4CXX_LOGLS(loggerAtmiBrokerXA_ResourceManagerFactoryImpl, Level::getInfo(), (char*) "created XA Current Connection: " << (void*) AtmiBrokerOTS::get_instance()->getXaCurrentConnection());
+	LOG4CXX_LOGLS(loggerAtmiBrokerXA_ResourceManagerFactoryImpl, log4cxx::Level::getInfo(), (char*) "created XA Resource Manager: " << (void*) aXAResourceManager);
+	LOG4CXX_LOGLS(loggerAtmiBrokerXA_ResourceManagerFactoryImpl, log4cxx::Level::getInfo(), (char*) "created XA Current Connection: " << (void*) AtmiBrokerOTS::get_instance()->getXaCurrentConnection());
 	return aXAResourceManager;
 }
 
@@ -95,7 +95,7 @@ XA::ResourceManager_ptr AtmiBrokerXA_ResourceManagerFactoryImpl::create_resource
 //
 char *
 AtmiBrokerXA_ResourceManagerFactoryImpl::create_resource_manager_ior(const char * resource_manager_name, const char * open_string, const char * close_string, XA::ThreadModel thread_model, CORBA::Boolean automatic_association, CORBA::Boolean dynamic_registration_optimization) throw (CORBA::SystemException ) {
-	LOG4CXX_LOGLS(loggerAtmiBrokerXA_ResourceManagerFactoryImpl, Level::getError(), (char*) "create_resource_manager_ior() - NOT IMPLEMENTED");
+	LOG4CXX_LOGLS(loggerAtmiBrokerXA_ResourceManagerFactoryImpl, log4cxx::Level::getError(), (char*) "create_resource_manager_ior() - NOT IMPLEMENTED");
 	return NULL; // TEMP  create_resource_manager(resource_manager_name, open_string, close_string, thread_model, automatic_association, dynamic_registration_optimization);
 }
 

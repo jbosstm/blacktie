@@ -35,9 +35,9 @@
 
 #include "userlog.h"
 #include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerAtmiBrokerPoaFac(Logger::getLogger("AtmiBrokerPoaFac"));
+
+
+log4cxx::LoggerPtr loggerAtmiBrokerPoaFac(log4cxx::Logger::getLogger("AtmiBrokerPoaFac"));
 
 // install transaction policy on this POA
 void add_transaction_policy(CORBA::ORB_var& orb, CORBA::PolicyList& policies, PortableServer::POA_ptr poa, int& index, int maxindex) {
@@ -51,9 +51,9 @@ void add_transaction_policy(CORBA::ORB_var& orb, CORBA::PolicyList& policies, Po
 	try {
 		policies[index++] = orb->create_policy(AtmiTx::OTS_POLICY_TYPE, any);
 	} catch (const ::CORBA::PolicyError& ex) {
-		userlog(Level::getInfo(), loggerAtmiBrokerPoaFac, (char*) "no policy factory for AtmiTx::OTS_POLICY_TYPE has been registered");
+		userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerPoaFac, (char*) "no policy factory for AtmiTx::OTS_POLICY_TYPE has been registered");
 	} catch (...) {
-		userlog(Level::getInfo(), loggerAtmiBrokerPoaFac, (char*) "unexpected error whilst createing policy: AtmiTx::OTS_POLICY_TYPE");
+		userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerPoaFac, (char*) "unexpected error whilst createing policy: AtmiTx::OTS_POLICY_TYPE");
 		throw ; // don't know what to do about that
 	}
 }

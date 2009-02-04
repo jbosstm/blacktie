@@ -39,9 +39,9 @@
 #include "Worker.h"
 
 #include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerAtmiBrokerOTS(Logger::getLogger("AtmiBrokerOTS"));
+
+
+log4cxx::LoggerPtr loggerAtmiBrokerOTS(log4cxx::Logger::getLogger("AtmiBrokerOTS"));
 
 AtmiBrokerOTS *AtmiBrokerOTS::ptrAtmiBrokerOTS = NULL;
 CORBA::ORB_ptr ots_orb;
@@ -63,7 +63,7 @@ void AtmiBrokerOTS::discard_instance() {
 }
 
 AtmiBrokerOTS::AtmiBrokerOTS() {
-	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "constructor");
+	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "constructor");
 	nextControlId = 1;
 	currentImpl = NULL;
 	tx_current = NULL;
@@ -74,7 +74,7 @@ AtmiBrokerOTS::AtmiBrokerOTS() {
 }
 
 AtmiBrokerOTS::~AtmiBrokerOTS() {
-	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "destructor");
+	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "destructor");
 	PortableServer::POA_var ots_root_poa;
 	PortableServer::POAManager_var ots_root_poa_manager;
 	PortableServer::POA_var ots_poa;
@@ -104,23 +104,23 @@ void  AtmiBrokerOTS::init_orb(
 int AtmiBrokerOTS::tx_open(void) {
 
 	if (CORBA::is_nil(tx_current)) {
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "tx_open ");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_open ");
 		if (tx_factory == NULL) {
 			if (transFactoryId != NULL && strlen(transFactoryId) != 0) {
 				// TJJ resolving by nameservice "TransactionManagerService.OTS"
-				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "to_name/resolve TransactionService: " << transFactoryId);
+				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "to_name/resolve TransactionService: " << transFactoryId);
 				CosNaming::Name * name = ots_namingContextExt->to_name(transFactoryId);
 				CORBA::Object_var obj = ots_namingContextExt->resolve(*name);
-				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "resolved TransactionService: " << (void*) obj);
+				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "resolved TransactionService: " << (void*) obj);
 				tx_factory = CosTransactions::TransactionFactory::_narrow(obj);
-				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "narrowed TransactionFactory: " << (void*) tx_factory);
-				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "Obtained TransactionService: " << transFactoryId);
+				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "narrowed TransactionFactory: " << (void*) tx_factory);
+				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "Obtained TransactionService: " << transFactoryId);
 			} else {
 				return -1;
 			}
 		}
 
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "getTransactionCurrent");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "getTransactionCurrent");
 		currentImpl = new CurrentImpl(tx_factory);
 		tx_current = currentImpl;
 	}
@@ -132,15 +132,15 @@ int AtmiBrokerOTS::tx_begin(void) {
 
 	if (CORBA::is_nil(tx_current) || getSpecific(TSS_KEY)) {
 		// either tx_open hasn't been called or already in a transaction
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "tx_begin: protocol violation");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_begin: protocol violation");
 		return TX_PROTOCOL_ERROR;
 	}
 
 	try {
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "tx_begin");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_begin");
 		tx_current->begin();
 		setSpecific(TSS_KEY, tx_current->get_control());
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "called begin ");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "called begin ");
 		return TX_OK;
 	} catch (...) {
 		// TODO placeholder return the correct error code
@@ -152,19 +152,19 @@ int AtmiBrokerOTS::tx_begin(void) {
 int AtmiBrokerOTS::tx_commit(void) {
 	if (CORBA::is_nil(tx_current) || getSpecific(TSS_KEY) == NULL) {
 		// either tx_open hasn't been called or not in a transaction
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "tx_commit: protocol violation");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_commit: protocol violation");
 		return TX_PROTOCOL_ERROR;
 	}
 
 	try {
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "calling commit");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "calling commit");
 		tx_current->commit(false);
 		// if we get an exception leave the tx associated - // TODO is the correct semantics
 		destroySpecific(TSS_KEY);
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "called commit");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "called commit");
 		return TX_OK;
 	} catch (CORBA::TRANSACTION_ROLLEDBACK & aRef) {
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getError(), (char*) "transaction has been rolled back " << (void*) &aRef);
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(), (char*) "transaction has been rolled back " << (void*) &aRef);
 		return -1;	// should be TX_ROLLBACK ... and all the other outcomes
 	} catch (...) {
 		// TODO placeholder return the correct error code
@@ -175,15 +175,15 @@ int AtmiBrokerOTS::tx_commit(void) {
 int AtmiBrokerOTS::tx_rollback(void) {
 	if (CORBA::is_nil(tx_current) || getSpecific(TSS_KEY) == NULL) {
 		// either tx_open hasn't been called or not in a transaction
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "tx_rollback: protocol violation");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_rollback: protocol violation");
 		return TX_PROTOCOL_ERROR;
 	}
 
 	try {
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "calling rollback ");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "calling rollback ");
 		tx_current->rollback();
 		destroySpecific(TSS_KEY);
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "called rollback ");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "called rollback ");
 
 		return TX_OK;
 	} catch (...) {
@@ -193,67 +193,67 @@ int AtmiBrokerOTS::tx_rollback(void) {
 }
 
 int AtmiBrokerOTS::suspend(long& tranid) {
-	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "suspend ");
+	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "suspend ");
 
 	if (CORBA::is_nil(tx_current) || getSpecific(TSS_KEY) == NULL) {
 		// either tx_open hasn't been called or not in a transaction
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "suspend: not in a transaction");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "suspend: not in a transaction");
 		return -1;
 	} else {
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "calling suspend ");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "calling suspend ");
 		CosTransactions::Control_var aControl = tx_current->suspend();
 		destroySpecific(TSS_KEY);
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "called suspend and got Control " << (void*) aControl);
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "called suspend and got Control " << (void*) aControl);
 		ControlInfo* aControlInfo = (ControlInfo*) malloc(sizeof(ControlInfo) * 1);
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "created aControlInfo " << (void*) aControlInfo);
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "created aControlInfo " << (void*) aControlInfo);
 		aControlInfo->id = nextControlId;
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "populated aControlInfo with id " << aControlInfo->id);
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "populated aControlInfo with id " << aControlInfo->id);
 		nextControlId++;
 		aControlInfo->control = CosTransactions::Control::_duplicate(aControl);
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "populated aControlInfo with ctl " << (void*) aControlInfo->control);
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "adding aControlInfo" << (void*) aControlInfo << " with id " << aControlInfo->id << " to vector");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "populated aControlInfo with ctl " << (void*) aControlInfo->control);
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "adding aControlInfo" << (void*) aControlInfo << " with id " << aControlInfo->id << " to vector");
 		controlInfoVector.push_back(aControlInfo);
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "added aControlInfo " << (void*) aControlInfo << " with id " << aControlInfo->id << " to vector");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "added aControlInfo " << (void*) aControlInfo << " with id " << aControlInfo->id << " to vector");
 		tranid = aControlInfo->id;
 		return TX_OK;
 	}
 }
 
 int AtmiBrokerOTS::resume(long tranid) {
-	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "resume ");
+	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "resume ");
 
 	if (!CORBA::is_nil(tx_current)) {
 
 		for (std::vector<ControlInfo*>::iterator it = controlInfoVector.begin(); it != controlInfoVector.end(); it++) {
-			//LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "next control id is: " << (char*) (*it)->id);
+			//LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "next control id is: " << (char*) (*it)->id);
 			if ((*it)->id == tranid) {
-				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "found matching id " << (*it)->id);
+				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "found matching id " << (*it)->id);
 
-				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "calling resume with Control " << (void*) (*it)->control);
+				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "calling resume with Control " << (void*) (*it)->control);
 				tx_current->resume((*it)->control);
 				if (getSpecific(TSS_KEY)) {
-					LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getWarn(),
+					LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getWarn(),
 						(char*) "resume: current transaction has not been suspended");
 				}
 
 				setSpecific(TSS_KEY, tx_current->get_control());
-				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "called resume with Control " << (void*) (*it)->control);
+				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "called resume with Control " << (void*) (*it)->control);
 
-				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "removing %p from vector" << (*it));
+				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "removing %p from vector" << (*it));
 				controlInfoVector.erase(it);
-				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "removed from vector ");
+				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "removed from vector ");
 				return TX_OK;
 			}
 		}
 	} else {
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getError(), (char*) "NOT calling suspend, tx_current is NULL  ");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(), (char*) "NOT calling suspend, tx_current is NULL  ");
 		return -1;
 	}
 	return -1;
 }
 
 CosTransactions::Control_ptr AtmiBrokerOTS::getSuspended(long tranid) {
-	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "tx_get ");
+	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_get ");
 
 	for (std::vector<ControlInfo*>::iterator it = controlInfoVector.begin(); it != controlInfoVector.end(); it++)
 		if ((*it)->id == tranid)
@@ -264,28 +264,28 @@ CosTransactions::Control_ptr AtmiBrokerOTS::getSuspended(long tranid) {
 
 int AtmiBrokerOTS::tx_close(void) {
 	if (getSpecific(TSS_KEY)) {
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getWarn(),
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getWarn(),
 			(char*) "tx_close: transaction still active");
 		return TX_PROTOCOL_ERROR;
 	}
 
-	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "tx_close ");
+	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_close ");
 
-//	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "releasing tx_current");
+//	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "releasing tx_current");
 //	CORBA::release(tx_current);
 //	if (!CORBA::is_nil(tx_current))	// TODO find out who forgot to release it
-//		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getWarn(), (char *) "tx_close: current not nil after release");
+//		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getWarn(), (char *) "tx_close: current not nil after release");
 
 	tx_current = NULL;
-	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "released tx_current");
+	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "released tx_current");
 
-	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "releasing xa_connector");
+	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "releasing xa_connector");
 	CORBA::release(xa_connector);
-	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "released xa_connector");
+	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "released xa_connector");
 
-	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "releasing xa_resource_manager");
+	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "releasing xa_resource_manager");
 	CORBA::release(xa_resource_manager);
-	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "released xa_resource_manager");
+	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "released xa_resource_manager");
 
 #ifdef TAO_COMP
 	LocalResourceManagerCache::discardLocalResourceManagerCache();
@@ -294,29 +294,29 @@ int AtmiBrokerOTS::tx_close(void) {
 }
 
 void AtmiBrokerOTS::createXAConnectorAndResourceManager() {
-	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "createXAConnectorAndResourceManager");
+	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "createXAConnectorAndResourceManager");
 
 	CORBA::Object_var tmp_ref;
 
 	if (CORBA::is_nil(xa_connector)) {
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) " resolving XA Connector ");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) " resolving XA Connector ");
 #ifdef TAO_COMP
 		xa_connector = new ConnectorImpl();
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) " created local XA Connector: " << (void*)xa_connector);
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) " created local XA Connector: " << (void*)xa_connector);
 #else
 		//#elif ORBIX_COMP
 		tmp_ref = ots_orb->resolve_initial_references("XAConnector");
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) " resolved XA Connector: " << (void*) tmp_ref);
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) " resolved XA Connector: " << (void*) tmp_ref);
 
 		xa_connector = XA::Connector::_narrow(tmp_ref);
 		assert(!CORBA::is_nil(xa_connector));
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) " narrowed XA Connector: " << (void*) xa_connector);
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) " narrowed XA Connector: " << (void*) xa_connector);
 #endif
 	} else
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "already got XA Connector: " << (void*) xa_connector);
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "already got XA Connector: " << (void*) xa_connector);
 
 	if (CORBA::is_nil(xa_resource_manager)) {
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) " creating XA Resource Manager ");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) " creating XA Resource Manager ");
 
 		// READ XA DATA FROM ENVIRONMENT DESCRIPTOR  TEMP
 #ifdef TAO_COMP
@@ -357,10 +357,10 @@ void AtmiBrokerOTS::createXAConnectorAndResourceManager() {
 				false, // do not use dynamic registration
 				xa_current_connection);
 #endif
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "created XA Resource Manager: " << (void*) xa_resource_manager);
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "created XA Current Connection: " << (void*) xa_current_connection);
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "created XA Resource Manager: " << (void*) xa_resource_manager);
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "created XA Current Connection: " << (void*) xa_current_connection);
 	} else
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, Level::getDebug(), (char*) "already got XA Resource Manager : " << (void*) xa_resource_manager);
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "already got XA Resource Manager : " << (void*) xa_resource_manager);
 }
 
 CurrentImpl *

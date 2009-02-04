@@ -21,9 +21,9 @@
 
 #include <string.h>
 #include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerOrbManagement(Logger::getLogger("OrbManagment"));
+
+
+log4cxx::LoggerPtr loggerOrbManagement(log4cxx::Logger::getLogger("OrbManagment"));
 
 void initOrb(char* name, Worker*& worker, CORBA::ORB_ptr& orbRef, CosNaming::NamingContextExt_var& default_ctx, CosNaming::NamingContext_var& name_ctx) {
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "initOrb");

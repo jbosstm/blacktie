@@ -25,7 +25,7 @@
 #include "MessageListener.h"
 
 #include "log4cxx/logger.h"
-using namespace log4cxx;
+
 
 class ServiceDispatcher: public ACE_Task_Base {
 public:
@@ -33,7 +33,7 @@ public:
 	int svc();
 	void shutdown();
 private:
-	static LoggerPtr logger;
+	static log4cxx::LoggerPtr logger;
 	Receiver* m_serviceQueue;
 	MessageListener* m_service;
 	bool m_shutdown;

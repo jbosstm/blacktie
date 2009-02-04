@@ -29,8 +29,8 @@
 #include "TxPolicyC.h"
 
 #include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
+
+
 
 // ORB request service context id for tagging service contexts (as transactional)
 const CORBA::ULong tx_context_id = 0xabcd;

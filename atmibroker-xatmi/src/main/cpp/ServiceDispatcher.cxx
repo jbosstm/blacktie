@@ -18,7 +18,7 @@
 #include "ServiceDispatcher.h"
 #include "Message.h"
 
-LoggerPtr ServiceDispatcher::logger(Logger::getLogger("ServiceDispatcher"));
+log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger("ServiceDispatcher"));
 
 ServiceDispatcher::ServiceDispatcher(Receiver* serviceQueue, MessageListener* service) :
 	m_serviceQueue(serviceQueue), m_service(service), m_shutdown(false) {

@@ -20,8 +20,6 @@
 
 #include "atmiBrokerCoreMacro.h"
 #include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
 
-extern ATMIBROKER_CORE_DLL void userlog(const LevelPtr& level, LoggerPtr& logger, const char * format, ...);
+extern ATMIBROKER_CORE_DLL void userlog(const log4cxx::LevelPtr& level, log4cxx::LoggerPtr& logger, const char * format, ...);
 #endif

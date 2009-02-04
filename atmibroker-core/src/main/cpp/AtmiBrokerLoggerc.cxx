@@ -32,23 +32,22 @@ extern "C" {
 }
 
 #include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerAtmiBrokerLogc(Logger::getLogger("AtmiBrokerLogc"));
+
+log4cxx::LoggerPtr loggerAtmiBrokerLogc(log4cxx::Logger::getLogger("AtmiBrokerLogc"));
 
 extern "C"ATMIBROKER_CORE_DLL
 void userlogc(const char * format, ...) {
-	if (loggerAtmiBrokerLogc->isEnabledFor(Level::getInfo())) {
+	if (loggerAtmiBrokerLogc->isEnabledFor(log4cxx::Level::getInfo())) {
 		char str[2048];
 		va_list args;
 		va_start(args, format);
 		vsprintf(str, format, args);
 		va_end(args);
-		LOG4CXX_LOGLS(loggerAtmiBrokerLogc, Level::getInfo(), str);
+		LOG4CXX_LOGLS(loggerAtmiBrokerLogc, log4cxx::Level::getInfo(), str);
 	}
 }
 
-void userlog(const LevelPtr& level, LoggerPtr& logger, const char * format, ...) {
+void userlog(const log4cxx::LevelPtr& level, log4cxx::LoggerPtr& logger, const char * format, ...) {
 	if (logger->isEnabledFor(level)) {
 		char str[2048];
 		va_list args;

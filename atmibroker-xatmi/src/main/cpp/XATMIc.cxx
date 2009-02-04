@@ -40,20 +40,20 @@
 #include "AtmiBrokerMem.h"
 #include "log4cxx/logger.h"
 
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerXATMI(Logger::getLogger("loggerXATMI"));
+
+
+log4cxx::LoggerPtr loggerXATMI(log4cxx::Logger::getLogger("loggerXATMI"));
 
 int _tperrno = 0;
 long _tpurcode = -1;
 
 int * _get_tperrno(void) {
-	userlog(Level::getDebug(), loggerXATMI, (char*) "_get_tperrno");
+	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "_get_tperrno");
 	return &_tperrno;
 }
 
 long * _get_tpurcode(void) {
-	userlog(Level::getError(), loggerXATMI, (char*) "_get_tpurcode - Not implemented");
+	userlog(log4cxx::Level::getError(), loggerXATMI, (char*) "_get_tpurcode - Not implemented");
 	return &_tpurcode;
 }
 
@@ -92,25 +92,25 @@ int tpunadvertise(char * svcname) {
 
 char* tpalloc(char* type, char* subtype, long size) {
 	tperrno = 0;
-	userlog(Level::getDebug(), loggerXATMI, (char*) "tpalloc - type: '%s' size: %d", type, size);
+	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "tpalloc - type: '%s' size: %d", type, size);
 	return AtmiBrokerMem::get_instance()->tpalloc(type, subtype, size);
 }
 
 char* tprealloc(char * addr, long size) {
 	tperrno = 0;
-	userlog(Level::getDebug(), loggerXATMI, (char*) "tprealloc - addr: %p size: %d", addr, size);
+	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "tprealloc - addr: %p size: %d", addr, size);
 	return AtmiBrokerMem::get_instance()->tprealloc(addr, size);
 }
 
 void tpfree(char* ptr) {
 	tperrno = 0;
-	userlog(Level::getDebug(), loggerXATMI, (char*) "tpfree - ptr: %p", ptr);
+	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "tpfree - ptr: %p", ptr);
 	AtmiBrokerMem::get_instance()->tpfree(ptr);
 }
 
 long tptypes(char* ptr, char* type, char* subtype) {
 	tperrno = 0;
-	userlog(Level::getDebug(), loggerXATMI, (char*) "tptypes - ptr: %p %s", ptr, type);
+	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "tptypes - ptr: %p %s", ptr, type);
 	return AtmiBrokerMem::get_instance()->tptypes(ptr, type, subtype);
 }
 
@@ -152,7 +152,7 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 		try {
 			ptr = ::get_service_queue(svc);
 		} catch (...) {
-			userlog(Level::getError(), loggerXATMI, (char*) "tpconnect get_service_queue failed");
+			userlog(log4cxx::Level::getError(), loggerXATMI, (char*) "tpconnect get_service_queue failed");
 			tperrno = TPENOENT;
 			return -1;
 		}

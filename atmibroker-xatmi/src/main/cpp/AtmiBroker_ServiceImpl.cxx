@@ -30,9 +30,9 @@
 #include "ThreadLocalStorage.h"
 
 #include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr AtmiBroker_ServiceImpl::logger(Logger::getLogger("AtmiBroker_ServiceImpl"));
+
+
+log4cxx::LoggerPtr AtmiBroker_ServiceImpl::logger(log4cxx::Logger::getLogger("AtmiBroker_ServiceImpl"));
 
 // AtmiBroker_ServiceImpl constructor
 //
@@ -40,9 +40,9 @@ AtmiBroker_ServiceImpl::AtmiBroker_ServiceImpl(char *serviceName, void(*func)(TP
 	m_serviceName(serviceName), m_func(func) {
 
 	EndpointQueue* endpointQueue = new EndpointQueue(server_callback_poa);
-	userlog(Level::getDebug(), logger, (char*) "tmp_servant %p", (void*) endpointQueue);
+	userlog(log4cxx::Level::getDebug(), logger, (char*) "tmp_servant %p", (void*) endpointQueue);
 	server_callback_poa->activate_object(endpointQueue);
-	userlog(Level::getDebug(), logger, (char*) "activated tmp_servant %p", endpointQueue);
+	userlog(log4cxx::Level::getDebug(), logger, (char*) "activated tmp_servant %p", endpointQueue);
 	CORBA::Object_ptr tmp_ref = server_callback_poa->servant_to_reference(endpointQueue);
 	AtmiBroker::EndpointQueue_var queue = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 	endpointQueue->setDestinationName(server_orb->object_to_string(queue));
@@ -57,14 +57,14 @@ AtmiBroker_ServiceImpl::~AtmiBroker_ServiceImpl() {
 }
 
 void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
-	userlog(Level::getDebug(), logger, (char*) "svc()");
+	userlog(log4cxx::Level::getDebug(), logger, (char*) "svc()");
 	queueSender = new SenderImpl(server_orb, (char*) message.replyto);
 	char* idata = message.data;
 	long ilen = message.len;
 	long flags = message.flags;
-	userlog(Level::getDebug(), logger, (char*) "   idata = %p", idata);
-	userlog(Level::getDebug(), logger, (char*) "   ilen = %d", ilen);
-	userlog(Level::getDebug(), logger, (char*) "   flags = %d", flags);
+	userlog(log4cxx::Level::getDebug(), logger, (char*) "   idata = %p", idata);
+	userlog(log4cxx::Level::getDebug(), logger, (char*) "   ilen = %d", ilen);
+	userlog(log4cxx::Level::getDebug(), logger, (char*) "   flags = %d", flags);
 
 	TPSVCINFO tpsvcinfo;
 	memset(&tpsvcinfo, '\0', sizeof(tpsvcinfo));

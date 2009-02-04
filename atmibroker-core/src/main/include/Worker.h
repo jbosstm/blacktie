@@ -19,7 +19,7 @@
 #define WORKER_H
 
 #include "log4cxx/logger.h"
-using namespace log4cxx;
+
 
 #include <tao/ORB.h>
 #include <ace/Task.h>
@@ -28,7 +28,7 @@ public:
 	Worker(CORBA::ORB_ptr orb);
 	int svc();
 private:
-	static LoggerPtr logger;
+	static log4cxx::LoggerPtr logger;
 	CORBA::ORB_var m_orb;
 };
 #endif

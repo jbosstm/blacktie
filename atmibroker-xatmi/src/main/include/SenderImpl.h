@@ -25,7 +25,7 @@
 #endif
 
 #include "log4cxx/logger.h"
-using namespace log4cxx;
+
 
 #include "Sender.h"
 class SenderImpl: public virtual Sender {
@@ -35,7 +35,7 @@ public:
 	virtual ~SenderImpl();
 	virtual void send(MESSAGE message);
 private:
-	static LoggerPtr logger;
+	static log4cxx::LoggerPtr logger;
 	AtmiBroker::EndpointQueue_var m_endpointQueue;
 };
 

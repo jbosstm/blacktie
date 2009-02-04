@@ -34,20 +34,20 @@
 #include "userlog.h"
 
 #include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerAtmiBrokerClient(Logger::getLogger("AtmiBrokerClient"));
+
+
+log4cxx::LoggerPtr loggerAtmiBrokerClient(log4cxx::Logger::getLogger("AtmiBrokerClient"));
 
 AtmiBrokerClient::AtmiBrokerClient() {
-	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "constructor ");
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClient, (char*) "constructor ");
 
 	AtmiBrokerClientXml aAtmiBrokerClientXml;
 	aAtmiBrokerClientXml.parseXmlDescriptor(&clientServerVector, "CLIENT.xml");
 
 	EndpointQueue* endpointQueue = new EndpointQueue(client_poa);
-	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "tmp_servant %p", (void*) endpointQueue);
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClient, (char*) "tmp_servant %p", (void*) endpointQueue);
 	client_poa->activate_object(endpointQueue);
-	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "activated tmp_servant %p", (void*) endpointQueue);
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClient, (char*) "activated tmp_servant %p", (void*) endpointQueue);
 	CORBA::Object_ptr tmp_ref = client_poa->servant_to_reference(endpointQueue);
 	AtmiBroker::EndpointQueue_var queue = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 	endpointQueue->setDestinationName(client_orb->object_to_string(queue));
@@ -56,10 +56,10 @@ AtmiBrokerClient::AtmiBrokerClient() {
 }
 
 AtmiBrokerClient::~AtmiBrokerClient() {
-	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "destructor ");
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClient, (char*) "destructor ");
 
 	for (std::vector<ClientServerInfo*>::iterator itServer = clientServerVector.begin(); itServer != clientServerVector.end(); itServer++) {
-		userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "next serverName is: %s", (char*) (*itServer)->serverName);
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClient, (char*) "next serverName is: %s", (char*) (*itServer)->serverName);
 	}
 	clientServerVector.clear();
 }

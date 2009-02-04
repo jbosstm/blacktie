@@ -24,18 +24,18 @@
 #include "ResourceManagerCache.h"
 
 #include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerResourceManagerCache(Logger::getLogger("ResourceManagerCache"));
+
+
+log4cxx::LoggerPtr loggerResourceManagerCache(log4cxx::Logger::getLogger("ResourceManagerCache"));
 
 static ResourceManagerCache * localResourceManagerCache = NULL;
 
 ResourceManagerCache::ResourceManagerCache() {
-	LOG4CXX_LOGLS(loggerResourceManagerCache, Level::getInfo(), (char*) "constructor");
+	LOG4CXX_LOGLS(loggerResourceManagerCache, log4cxx::Level::getInfo(), (char*) "constructor");
 }
 
 ResourceManagerCache::~ResourceManagerCache() {
-	LOG4CXX_LOGLS(loggerResourceManagerCache, Level::getInfo(), (char*) "destructor");
+	LOG4CXX_LOGLS(loggerResourceManagerCache, log4cxx::Level::getInfo(), (char*) "destructor");
 }
 
 ResourceManagerCache *
@@ -48,7 +48,7 @@ ResourceManagerCache::getResourceManagerCache() {
 
 XA::ResourceManager_ptr ResourceManagerCache::create_resource_manager(const std::string& resource_manager_name, const std::string& open_string, const std::string& close_string, XA::ThreadModel thread_model, CORBA::Boolean automatic_association, CORBA::Boolean dynamic_registration_optimization, const std::string& library_name,
 		const std::string& xa_symbol_name) {
-	LOG4CXX_LOGLS(loggerResourceManagerCache, Level::getInfo(), (char*) "create_resource_manager ENTERED");
+	LOG4CXX_LOGLS(loggerResourceManagerCache, log4cxx::Level::getInfo(), (char*) "create_resource_manager ENTERED");
 
 	XA::ResourceManager_ptr aResourceManager = find_resource_manager(resource_manager_name, open_string, close_string, thread_model, automatic_association, dynamic_registration_optimization);
 
@@ -65,7 +65,7 @@ XA::ResourceManager_ptr ResourceManagerCache::create_resource_manager(const std:
 		 xa_switch_t* xaswitch;
 		 ACE_SHLIB_HANDLE handle = ACE_OS::dlopen (library_name.c_str(), ACE_DEFAULT_SHLIB_MODE);
 		 if (!handle)
-		 LOG4CXX_LOGLS(loggerResourceManagerCache, Level::getError(), (char*)"Error Opening DB Libary %s",  library_name.c_str());
+		 LOG4CXX_LOGLS(loggerResourceManagerCache, log4cxx::Level::getError(), (char*)"Error Opening DB Libary %s",  library_name.c_str());
 
 		 xaswitch = (xa_switch_t*) ACE_OS::dlsym(handle, xa_symbol_name.c_str());
 
@@ -73,7 +73,7 @@ XA::ResourceManager_ptr ResourceManagerCache::create_resource_manager(const std:
 		 if (error != NULL)
 		 {
 		 ACE_OS::dlclose(handle);
-		 LOG4CXX_LOGLS(loggerResourceManagerCache, Level::getError(), (char*)"Error Finding XA Symbol %s",  xa_symbol_name.c_str());
+		 LOG4CXX_LOGLS(loggerResourceManagerCache, log4cxx::Level::getError(), (char*)"Error Finding XA Symbol %s",  xa_symbol_name.c_str());
 		 }
 		 aResourceManagerDataStruct->xaSwitch						= *xaswitch;
 		 ***/
@@ -89,17 +89,17 @@ XA::ResourceManager_ptr ResourceManagerCache::create_resource_manager(const std:
 }
 
 XA::ResourceManager_ptr ResourceManagerCache::find_resource_manager(const std::string& resource_manager_name, const std::string& open_string, const std::string& close_string, XA::ThreadModel thread_model, CORBA::Boolean automatic_association, CORBA::Boolean dynamic_registration_optimization) {
-	LOG4CXX_LOGLS(loggerResourceManagerCache, Level::getInfo(), (char*) "find_resource_manager ENTERED");
+	LOG4CXX_LOGLS(loggerResourceManagerCache, log4cxx::Level::getInfo(), (char*) "find_resource_manager ENTERED");
 
 	for (std::deque<ResourceManagerDataStruct*>::iterator itResourceManagerDataStruct = resourceManagerQueue.begin(); itResourceManagerDataStruct != resourceManagerQueue.end(); itResourceManagerDataStruct++) {
-		LOG4CXX_LOGLS(loggerResourceManagerCache, Level::getInfo(), (char*) "next " << (*itResourceManagerDataStruct)->resource_manager_name.c_str());
+		LOG4CXX_LOGLS(loggerResourceManagerCache, log4cxx::Level::getInfo(), (char*) "next " << (*itResourceManagerDataStruct)->resource_manager_name.c_str());
 		if ((*itResourceManagerDataStruct)->resource_manager_name.compare(resource_manager_name)) {
-			LOG4CXX_LOGLS(loggerResourceManagerCache, Level::getInfo(), (char*) " found matching local resource manager " << resource_manager_name.c_str());
+			LOG4CXX_LOGLS(loggerResourceManagerCache, log4cxx::Level::getInfo(), (char*) " found matching local resource manager " << resource_manager_name.c_str());
 			return (*itResourceManagerDataStruct)->resourceManager;
 		}
 	}
 	// TODO IS THIS COPIED FROM CONNECTOR
-	LOG4CXX_LOGLS(loggerResourceManagerCache, Level::getInfo(), (char*) "find_resource_manager FINISHED ");
+	LOG4CXX_LOGLS(loggerResourceManagerCache, log4cxx::Level::getInfo(), (char*) "find_resource_manager FINISHED ");
 
 	return NULL;
 }

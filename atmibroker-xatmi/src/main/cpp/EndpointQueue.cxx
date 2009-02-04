@@ -33,9 +33,9 @@
 #include "xatmi.h"
 
 #include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerEndpointQueue(Logger::getLogger("EndpointQueue"));
+
+
+log4cxx::LoggerPtr loggerEndpointQueue(log4cxx::Logger::getLogger("EndpointQueue"));
 
 // _create() -- create a new servant.
 // Hides the difference between direct inheritance and tie servants
@@ -67,11 +67,11 @@ EndpointQueue::~EndpointQueue() {
 // client_callback() -- Implements IDL operation "AtmiBroker::ClientCallback::send_data".
 //
 void EndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent) throw (CORBA::SystemException ) {
-	userlog(Level::getDebug(), loggerEndpointQueue, (char*) "client_callback(): called.");
+	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "client_callback(): called.");
 
-	userlog(Level::getDebug(), loggerEndpointQueue, (char*) "client_callback():    idata = %s", idata.get_buffer());
-	userlog(Level::getDebug(), loggerEndpointQueue, (char*) "client_callback():    ilen = %d", ilen);
-	userlog(Level::getDebug(), loggerEndpointQueue, (char*) "client_callback():    flags = %d", flags);
+	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "client_callback():    idata = %s", idata.get_buffer());
+	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "client_callback():    ilen = %d", ilen);
+	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "client_callback():    flags = %d", flags);
 
 	MESSAGE message;
 	message.replyto = replyto_ior;
@@ -85,15 +85,15 @@ void EndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long
 
 	lock->lock();
 	returnData.push(message);
-	userlog(Level::getDebug(), loggerEndpointQueue, (char*) "notifying");
+	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "notifying");
 	lock->notify();
-	userlog(Level::getDebug(), loggerEndpointQueue, (char*) "notified");
+	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "notified");
 	lock->unlock();
 }
 
 MESSAGE EndpointQueue::receive(long flags) {
 	// TODO THIS SHOULD USE THE ID TO CHECK DIFFERENT QUEUES
-	userlog(Level::getDebug(), loggerEndpointQueue, (char*) "service_response()");
+	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "service_response()");
 
 	// Default wait time is 10 seconds
 	long time = 10; // TODO Make configurable
@@ -101,9 +101,9 @@ MESSAGE EndpointQueue::receive(long flags) {
 	message.data = NULL;
 	lock->lock();
 	while (returnData.size() == 0) {
-		userlog(Level::getDebug(), loggerEndpointQueue, (char*) "waiting for %d", time);
+		userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "waiting for %d", time);
 		lock->wait(time);
-		userlog(Level::getDebug(), loggerEndpointQueue, (char*) "out of wait");
+		userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "out of wait");
 		if (!(TPNOTIME & flags)) {
 			break;
 		}
@@ -111,7 +111,7 @@ MESSAGE EndpointQueue::receive(long flags) {
 	if (returnData.size() != 0) {
 		message = returnData.front();
 		returnData.pop();
-		userlog(Level::getDebug(), loggerEndpointQueue, (char*) "returning %p", message);
+		userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "returning %p", message);
 	}
 	lock->unlock();
 	return message;

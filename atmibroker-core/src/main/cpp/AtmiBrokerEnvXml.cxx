@@ -29,9 +29,9 @@
 #include "AtmiBrokerEnvXml.h"
 
 #include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerAtmiBrokerEnvXml(Logger::getLogger("AtmiBrokerEnvXml"));
+
+
+log4cxx::LoggerPtr loggerAtmiBrokerEnvXml(log4cxx::Logger::getLogger("AtmiBrokerEnvXml"));
 
 char* notifyServiceId;
 char* namingServiceId;

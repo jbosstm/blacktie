@@ -18,9 +18,9 @@
 #include "Worker.h"
 
 #include "log4cxx/logger.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr Worker::logger(Logger::getLogger("Worker"));
+
+
+log4cxx::LoggerPtr Worker::logger(log4cxx::Logger::getLogger("Worker"));
 
 Worker::Worker(CORBA::ORB_ptr orb) {
 	m_orb = CORBA::ORB::_duplicate(orb);

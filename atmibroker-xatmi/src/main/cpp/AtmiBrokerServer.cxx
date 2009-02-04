@@ -43,9 +43,8 @@
 #include "log4cxx/propertyconfigurator.h"
 #include "log4cxx/logger.h"
 #include "log4cxx/logmanager.h"
-using namespace log4cxx;
-using namespace log4cxx::helpers;
-LoggerPtr loggerAtmiBrokerServer(Logger::getLogger("AtmiBrokerServer"));
+
+log4cxx::LoggerPtr loggerAtmiBrokerServer(log4cxx::Logger::getLogger("AtmiBrokerServer"));
 
 bool serverInitialized;
 
@@ -62,7 +61,7 @@ PortableServer::POA_var server_callback_poa;
 AtmiBrokerPoaFac * serverPoaFactory;
 
 void server_sigint_handler_callback(int sig_type) {
-	userlog(Level::getInfo(), loggerAtmiBrokerServer, (char*) "server_sigint_handler_callback Received shutdown signal: %d", sig_type);
+	userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer, (char*) "server_sigint_handler_callback Received shutdown signal: %d", sig_type);
 	serverdone();
 	abort();
 }
@@ -70,10 +69,10 @@ void server_sigint_handler_callback(int sig_type) {
 int serverrun() {
 	int toReturn = 0;
 	try {
-		userlog(Level::getInfo(), loggerAtmiBrokerServer, "Server waiting for requests...");
+		userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer, "Server waiting for requests...");
 		server_orb->run();
 	} catch (CORBA::Exception& e) {
-		userlog(Level::getError(), loggerAtmiBrokerServer, "Unexpected CORBA exception: %s", e._name());
+		userlog(log4cxx::Level::getError(), loggerAtmiBrokerServer, "Unexpected CORBA exception: %s", e._name());
 		toReturn = -1;
 	}
 	return toReturn;
@@ -81,15 +80,15 @@ int serverrun() {
 
 int serverinit(int argc, char ** argv) {
 	if (!serverInitialized) {
-		userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverinit called");
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverinit called");
 		_tperrno = 0;
 		signal(SIGINT, server_sigint_handler_callback);
 
 		if (!loggerInitialized) {
 			if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG") != NULL) {
-				PropertyConfigurator::configure(AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG"));
+				log4cxx::PropertyConfigurator::configure(AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG"));
 			} else {
-				BasicConfigurator::configure();
+				log4cxx::BasicConfigurator::configure();
 			}
 			loggerInitialized = true;
 		}
@@ -100,16 +99,16 @@ int serverinit(int argc, char ** argv) {
 			AtmiBrokerMem::get_instance();
 			getRootPOAAndManager(server_orb, server_root_poa, server_root_poa_manager);
 
-			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "creating POAs for %s", server);
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "creating POAs for %s", server);
 			serverPoaFactory = new AtmiBrokerPoaFac();
 			server_poa = serverPoaFactory->createServerPoa(server_orb, server, server_root_poa, server_root_poa_manager);
-			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "created server POA: %p", (void*) server_poa);
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "created server POA: %p", (void*) server_poa);
 			std::string name = ".server";
 			server_callback_poa = serverPoaFactory->createCallbackPoa(server_orb, name.c_str(), server_root_poa, server_root_poa_manager);
-			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "created callback POA: %p", (void*) server_callback_poa);
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "created callback POA: %p", (void*) server_callback_poa);
 
 			server_root_poa_manager->activate();
-			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "activated poa - started processing requests ");
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "activated poa - started processing requests ");
 
 			// Create a reference for interface AtmiBroker::Server.
 			ptrServer = new AtmiBroker_ServerImpl(server_poa);
@@ -117,9 +116,9 @@ int serverinit(int argc, char ** argv) {
 				serverInitialized = true;
 			}
 		} catch (CORBA::Exception& e) {
-			userlog(Level::getError(), loggerAtmiBrokerServer, (char*) "serverinit - Unexpected CORBA exception: %s", e._name());
+			userlog(log4cxx::Level::getError(), loggerAtmiBrokerServer, (char*) "serverinit - Unexpected CORBA exception: %s", e._name());
 		} catch (...) {
-			userlog(Level::getError(), loggerAtmiBrokerServer, (char*) "serverinit - Unexpected exception");
+			userlog(log4cxx::Level::getError(), loggerAtmiBrokerServer, (char*) "serverinit - Unexpected exception");
 		}
 
 		if (!serverInitialized) {
@@ -133,18 +132,18 @@ int serverinit(int argc, char ** argv) {
 			}
 
 			// TODO CLEAN UP TRANSACTION CURRENT
-			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverinit deleting services");
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverinit deleting services");
 			AtmiBrokerMem::discard_instance();
 			AtmiBrokerServiceFacMgr::discard_instance();
 			//TODO READD AtmiBrokerNotify::discard_instance();
 			AtmiBrokerOTS::discard_instance();
 			AtmiBrokerEnv::discard_instance();
-			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverinit deleted services");
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverinit deleted services");
 
 			shutdownBindings(server_orb, server_root_poa, server_root_poa_manager, server_default_context, server_name_context, server_poa, server_worker);
 			return -1;
 		}
-		userlog(Level::getInfo(), loggerAtmiBrokerServer, (char*) "Server Running");
+		userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer, (char*) "Server Running");
 		return 1;
 	}
 	return 0;
@@ -154,9 +153,9 @@ int serverdone() {
 	try {
 		_tperrno = 0;
 		if (serverInitialized) {
-			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone called ");
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone called ");
 
-			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone shutting down services ");
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone shutting down services ");
 			if (ptrServer) {
 				ptrServer->server_done();
 				delete ptrServer;
@@ -164,22 +163,22 @@ int serverdone() {
 			}
 
 			// TODO CLEAN UP TRANSACTION CURRENT
-			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone deleting services");
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone deleting services");
 			AtmiBrokerMem::discard_instance();
 			AtmiBrokerServiceFacMgr::discard_instance();
 			//TODO READD AtmiBrokerNotify::discard_instance();
 			AtmiBrokerOTS::discard_instance();
 			AtmiBrokerEnv::discard_instance();
-			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone deleted services");
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone deleted services");
 
 			shutdownBindings(server_orb, server_root_poa, server_root_poa_manager, server_default_context, server_name_context, server_poa, server_worker);
 
-			userlog(Level::getInfo(), loggerAtmiBrokerServer, (char*) "Server shutdown");
+			userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer, (char*) "Server shutdown");
 			serverInitialized = false;
 		}
 		return 0;
 	} catch (...) {
-		userlog(Level::getError(), loggerAtmiBrokerServer, (char*) "main Unexpected exception in serverdone");
+		userlog(log4cxx::Level::getError(), loggerAtmiBrokerServer, (char*) "main Unexpected exception in serverdone");
 		return -1;
 	}
 }
