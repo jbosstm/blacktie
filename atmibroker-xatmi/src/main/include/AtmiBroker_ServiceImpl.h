@@ -31,8 +31,8 @@
 #ifndef ATMIBROKER_SERVICEIMPL_H_
 #define ATMIBROKER_SERVICEIMPL_H_
 
-#include "CosTransactionsC.h"
 #include "xatmi.h"
+#include "tx.h"
 #include "Session.h"
 #include "Message.h"
 #include "MessageListener.h"
@@ -54,13 +54,7 @@ public:
 protected:
 	Sender* queueSender;
 	Receiver* queueReceiver;
-	CosTransactions::Control_var tx_control;
-	CosTransactions::Coordinator_var tx_coordinator;
-	CosTransactions::PropagationContext_var tx_propagation_context;
-	CosTransactions::otid_t otid;
 private:
-	void createConnectionTransactionAssociation();
-	void endConnectionTransactionAssociation();
 	char* m_serviceName;
 	void (*m_func)(TPSVCINFO *);
 	const char* m_buffer;

@@ -67,8 +67,6 @@ void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   ilen = %d", ilen);
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   flags = %d", flags);
 
-	createConnectionTransactionAssociation();
-
 	TPSVCINFO tpsvcinfo;
 	memset(&tpsvcinfo, '\0', sizeof(tpsvcinfo));
 	strcpy(tpsvcinfo.name, m_serviceName);
@@ -77,7 +75,9 @@ void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
 	tpsvcinfo.len = ilen;
 
 	setSpecific(SVC_KEY, this);
+	tx_open();
 	m_func(&tpsvcinfo);
+	tx_close();
 	destroySpecific(SVC_KEY);
 }
 
@@ -85,8 +85,6 @@ void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
 //
 void AtmiBroker_ServiceImpl::tpreturn(int rval, long rcode, char* data, long len, long flags) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "tpreturn()");
-	endConnectionTransactionAssociation();
-
 	MESSAGE message;
 	message.rval = rval;
 	message.rcode = rcode;
@@ -124,70 +122,3 @@ void AtmiBroker_ServiceImpl::setReplyTo(char * replyTo) {
 void AtmiBroker_ServiceImpl::getId(int& id) {
 
 }
-
-void AtmiBroker_ServiceImpl::createConnectionTransactionAssociation() {
-	try {
-		CosTransactions::Control_ptr control = (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
-		if (CORBA::is_nil(control)) {
-			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "NO TRANSACTION associated with this call");
-			return;
-		}
-
-		tx_control = CosTransactions::Control::_duplicate(control);
-		tx_coordinator = tx_control->get_coordinator();
-		tx_propagation_context = tx_coordinator->get_txcontext();
-		otid = tx_propagation_context->current.otid;
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "Transaction Id: %p", (void*) &otid);
-
-		//		if (!CORBA::is_nil(AtmiBrokerOTS::get_instance()->getXaCurrentConnection()))
-		{
-			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "associating current connection with this transaction ");
-			//TODO xa_current_connection->start(tx_coordinator, otid);
-			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "NOT associating current connection with this transaction until hooked in with Oracle ");
-		}
-	} catch (CORBA::SystemException &e) {
-		userlog(Level::getError(), loggerAtmiBroker_ServiceImpl, (char*) "could not connect transaction %s", (void*) e._name());
-	}
-
-	//	// TODO
-	//	try {
-	//		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "about to duplicate control: %p", (void*) control);
-	//		tx_control = CosTransactions::Control::_duplicate(control);
-	//		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "control: %p", (void*) tx_control);
-	//
-	//		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "getting Coordinator ");
-	//		tx_coordinator = tx_control->get_coordinator();
-	//		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "got Coordinator: %p", (void*) tx_coordinator);
-	//
-	//		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "getting Propagation Context ");
-	//		tx_propagation_context = tx_coordinator->get_txcontext();
-	//		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "got Propagation Context: %p", (void*) tx_propagation_context);
-	//
-	//		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "getting Transaction Id ");
-	//		otid = tx_propagation_context->current.otid;
-	//		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "got Transaction Id: %p", (void*) &otid);
-	//
-	//		if (!CORBA::is_nil(AtmiBrokerOTS::get_instance()->getXaCurrentConnection())) {
-	//			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "associating current connection with this transaction ");
-	//			xa_current_connection->start(tx_coordinator, otid);
-	//			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "NOT associating current connection with this transaction until hooked in with Oracle ");
-	//		}
-	//	} catch (CORBA::SystemException &e) {
-	//		userlog(Level::getError(), loggerAtmiBroker_ServiceImpl, (char*) "could not connect transaction %s", (void*) e._name());
-	//	}
-}
-
-void AtmiBroker_ServiceImpl::endConnectionTransactionAssociation() {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "endConnectionTransactionAssociation()");
-	// TODO
-	//	try {
-	//		if (!CORBA::is_nil(AtmiBrokerOTS::get_instance()->getXaCurrentConnection())) {
-	//			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "disassociating current connection with this transaction ");
-	//			xa_current_connection->end(tx_coordinator, otid, true);
-	//			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "NOT disassociating current connection with this transaction until hooked in with Oracle ");
-	//		}
-	//	} catch (CORBA::TRANSACTION_ROLLEDBACK & aRef) {
-	//		userlog(Level::getError(), loggerAtmiBroker_ServiceImpl, (char*) "transaction has been rolled back %p", (void*) &aRef);
-	//	}
-}
-
