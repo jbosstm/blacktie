@@ -22,6 +22,10 @@
 package org.jboss.blacktie.jatmibroker.core;
 
 public final class Response implements java.io.Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public byte[] value;
 	public int length;
 	public int event;

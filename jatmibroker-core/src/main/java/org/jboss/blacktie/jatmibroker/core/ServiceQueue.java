@@ -36,7 +36,6 @@ public class ServiceQueue extends ServiceQueuePOA {
 	private static final Logger log = LogManager.getLogger(ServiceQueue.class);
 	private String serviceName;
 	private POA poa;
-	private AtmiBroker.ServiceQueue me;
 	private byte[] activate_object;
 	private List<AtmiBroker_ServiceImpl> servantCache = new ArrayList<AtmiBroker_ServiceImpl>();
 	private List<Message> messageQueue = new ArrayList<Message>();
@@ -71,7 +70,6 @@ public class ServiceQueue extends ServiceQueuePOA {
 			Object servant_to_reference = poa.servant_to_reference(this);
 			NameComponent[] name = AtmiBrokerServerImpl.nce.to_name(serviceName);
 			AtmiBrokerServerImpl.nc.bind(name, servant_to_reference);
-			me = AtmiBroker.ServiceQueueHelper.narrow(servant_to_reference);
 		} catch (Throwable t) {
 			throw new JAtmiBrokerException("Could not bind service factory" + serviceName, t);
 		}

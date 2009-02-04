@@ -22,6 +22,11 @@
 package org.jboss.blacktie.jatmibroker.core;
 
 public final class EnvVariableInfo implements java.io.Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public EnvVariableInfo() {
 	}
 

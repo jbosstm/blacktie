@@ -22,6 +22,10 @@
 package org.jboss.blacktie.jatmibroker.core;
 
 public final class ServiceId implements java.io.Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public String ior;
 	public String id;
 

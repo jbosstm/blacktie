@@ -28,6 +28,10 @@ import org.jboss.blacktie.jatmibroker.ejb.connector.buffers.Buffer;
 public class Response implements Serializable {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
 	 * The response from the server
 	 */
 	private Buffer response;

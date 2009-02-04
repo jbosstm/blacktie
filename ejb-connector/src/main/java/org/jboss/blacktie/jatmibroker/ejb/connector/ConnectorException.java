@@ -5,6 +5,10 @@ package org.jboss.blacktie.jatmibroker.ejb.connector;
  * suffering.
  */
 public class ConnectorException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int tperrno;
 
 	/**

@@ -22,6 +22,10 @@
 package org.jboss.blacktie.jatmibroker.core;
 
 public final class ServiceInfo implements java.io.Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public short poolSize;
 	public String securityType = "";
 	private String serviceName;

@@ -9,6 +9,11 @@ import org.jboss.blacktie.jatmibroker.ejb.connector.buffers.Buffer;
  */
 public class TPSVCINFO implements Serializable {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * The service name
 	 */
 	private String name;

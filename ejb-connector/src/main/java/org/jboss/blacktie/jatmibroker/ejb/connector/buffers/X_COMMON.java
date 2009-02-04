@@ -19,6 +19,11 @@ package org.jboss.blacktie.jatmibroker.ejb.connector.buffers;
 
 public class X_COMMON extends Buffer {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public X_COMMON(String subtype, int size) {
 		super("X_COMMON", subtype, size);
 	}

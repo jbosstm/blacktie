@@ -22,6 +22,11 @@
 package org.jboss.blacktie.jatmibroker.jab;
 
 public class JABException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public JABException(Throwable cause) {
 		super(cause);
 	}

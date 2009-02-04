@@ -24,6 +24,10 @@ package org.jboss.blacktie.jatmibroker.core;
 import java.io.Serializable;
 
 public class RealmInfo implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected String trDomainName;
 	protected String namingServiceId;
 	protected String notifyServiceId;

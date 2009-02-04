@@ -18,6 +18,11 @@
 package org.jboss.blacktie.jatmibroker.ejb.connector.buffers;
 
 public class X_OCTET extends Buffer {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public X_OCTET(int size) {
 		super("X_OCTET", null, size);
 	}

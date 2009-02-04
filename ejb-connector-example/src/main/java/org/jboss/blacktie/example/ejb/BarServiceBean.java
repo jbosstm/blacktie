@@ -22,6 +22,11 @@ import org.jboss.blacktie.jatmibroker.ejb.connector.impl.ConnectorFactoryImpl;
  */
 public class BarServiceBean extends AbstractBlacktieService implements SessionBean {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	static {
 		try {
 			ConnectorFactory cf = ConnectorFactoryImpl.getConnectorFactory();
