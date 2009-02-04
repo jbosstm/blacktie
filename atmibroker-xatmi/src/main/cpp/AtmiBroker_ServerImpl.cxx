@@ -204,7 +204,7 @@ void AtmiBroker_ServerImpl::unadvertiseService(char * serviceName) {
 			server_name_context->unbind(*name);
 
 			ServiceQueue* toDelete = AtmiBrokerServiceFacMgr::get_instance()->removeServiceFactory(serviceName);
-			PortableServer::POA_ptr poa = toDelete->getPoa();
+			PortableServer::POA_ptr poa = (PortableServer::POA_ptr) toDelete->getPoa();
 			delete toDelete;
 			poa->destroy(true, true);
 			poa = NULL;
@@ -265,8 +265,12 @@ AtmiBroker_ServerImpl::get_all_service_info() throw (CORBA::SystemException ) {
 	aServiceInfoSeq->length(serverInfo.serviceNames.size());
 
 	for (unsigned int i = 0; i < serverInfo.serviceNames.size(); i++) {
-		AtmiBroker::ServiceInfo * aServiceInfoPtr = AtmiBrokerServiceFacMgr::get_instance()->getServiceFactory((char*) serverInfo.serviceNames[i].c_str())->get_service_info();
-		(*aServiceInfoSeq)[i] = *aServiceInfoPtr;
+		SVCINFO svcInfo = AtmiBrokerServiceFacMgr::get_instance()->getServiceFactory((char*) serverInfo.serviceNames[i].c_str())->get_service_info();
+		AtmiBroker::ServiceInfo_var aServiceInfo = new AtmiBroker::ServiceInfo();
+		aServiceInfo->serviceName = svcInfo.serviceName;
+		aServiceInfo->poolSize = svcInfo.poolSize;
+		aServiceInfo->securityType = svcInfo.securityType;
+		// TODO(*aServiceInfoSeq)[i] = aServiceInfo._retn();
 	}
 	return aServiceInfoSeq._retn();
 }

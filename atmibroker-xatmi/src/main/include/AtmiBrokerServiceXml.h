@@ -23,12 +23,14 @@
 #ifndef AtmiBroker_SERVICE_XML_H_
 #define AtmiBroker_SERVICE_XML_H_
 
-#include "atmiBrokerMacro.h"
-#include "ServiceQueue.h"
+struct svcinfo_t {
+	char* serviceName;
+	int poolSize;
+	char* securityType;
+};
+typedef struct svcinfo_t SVCINFO;
 
-#include <string.h>
-
-class ATMIBROKER_DLL AtmiBrokerServiceXml {
+class AtmiBrokerServiceXml {
 public:
 
 	AtmiBrokerServiceXml();

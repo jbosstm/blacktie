@@ -23,17 +23,14 @@
 #ifndef AtmiBroker_CLIENT_XML_H_
 #define AtmiBroker_CLIENT_XML_H_
 
+#include <vector>
 #include "atmiBrokerMacro.h"
 
-#include <vector>
-
 struct _client_server_info {
-
 	char * serverName;
 	std::vector<char*>* serviceVectorPtr;
 };
 typedef _client_server_info ClientServerInfo;
-
 
 class ATMIBROKER_DLL AtmiBrokerClientXml {
 public:

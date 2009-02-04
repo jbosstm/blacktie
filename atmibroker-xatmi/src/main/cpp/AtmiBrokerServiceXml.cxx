@@ -24,12 +24,13 @@
 #include <string.h>
 #include <iostream>
 #include "expat.h"
+#include <sys/stat.h>
 
 #include "AtmiBrokerServiceXml.h"
 #include "userlog.h"
 #include "log4cxx/logger.h"
 using namespace log4cxx;
-using namespace log4cxx::helpers;
+
 LoggerPtr loggerAtmiBrokerServiceXml(Logger::getLogger("AtmiBrokerServiceXml"));
 
 static char last_element[50];

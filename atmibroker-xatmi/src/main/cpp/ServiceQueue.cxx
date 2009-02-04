@@ -60,12 +60,19 @@ int MAX_SERVICE_CACHE_SIZE = 1;
 // initialiser for all the virtual base class constructors that
 // require arguments, even those that we inherit indirectly.
 //
-ServiceQueue::ServiceQueue(PortableServer::POA_ptr the_poa, char *serviceName, void(*func)(TPSVCINFO *)) :
-	factoryPoaPtr(the_poa), serviceName(serviceName), m_shutdown(false), lock(SynchronizableObject::create(false)) {
+ServiceQueue::ServiceQueue(void* thePoa, char *serviceName, void(*func)(TPSVCINFO *)) :
+	thePoa(thePoa), serviceName(serviceName), m_shutdown(false), lock(SynchronizableObject::create(false)) {
 	// Intentionally empty.
 	userlog(Level::getDebug(), loggerServiceQueue, (char*) "constructor() ");
 
-	getDescriptorData();
+	userlog(Level::getDebug(), loggerServiceQueue, (char*) "getDescriptorData() ");
+	serviceInfo.poolSize = MAX_SERVICE_CACHE_SIZE;
+	char* serviceConfigFilename = (char*) malloc(sizeof(char) * (XATMI_SERVICE_NAME_LENGTH + 5));
+	strcpy(serviceConfigFilename, serviceName);
+	strcat(serviceConfigFilename, ".xml");
+	AtmiBrokerServiceXml aAtmiBrokerServiceXml;
+	aAtmiBrokerServiceXml.parseXmlDescriptor(&serviceInfo, serviceConfigFilename);
+	free(serviceConfigFilename);
 
 	userlog(Level::getDebug(), loggerServiceQueue, (char*) "createPool");
 	for (int i = 0; i < MAX_SERVICE_CACHE_SIZE; i++) {
@@ -110,8 +117,6 @@ ServiceQueue::~ServiceQueue() {
 	}
 }
 
-// start_conversation() -- Implements IDL operation "AtmiBroker::ServiceFactory::start_conversation".
-//
 void ServiceQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent) throw (CORBA::SystemException ) {
 	MESSAGE message;
 	message.replyto = replyto_ior;
@@ -146,37 +151,17 @@ MESSAGE ServiceQueue::receive(long flags) {
 	return message;
 }
 
-// get_service_info() -- Implements IDL operation "AtmiBroker::ServiceFactory::get_service_info".
-//
-AtmiBroker::ServiceInfo*
-ServiceQueue::get_service_info() throw (CORBA::SystemException ) {
+SVCINFO ServiceQueue::get_service_info() {
 	userlog(Level::getDebug(), loggerServiceQueue, (char*) "get_service_info()");
-
-	AtmiBroker::ServiceInfo_var aServiceInfo = new AtmiBroker::ServiceInfo();
-
-	aServiceInfo->serviceName = CORBA::string_dup(serviceName);
-	aServiceInfo->poolSize = serviceInfo.poolSize;
-	aServiceInfo->securityType = CORBA::string_dup("");
-
-	return aServiceInfo._retn();
+	SVCINFO svcinfo;
+	svcinfo.serviceName = strdup(serviceName);
+	svcinfo.poolSize = serviceInfo.poolSize;
+	svcinfo.securityType = strdup("");
+	return svcinfo;
 }
 
-PortableServer::POA_ptr ServiceQueue::getPoa() {
-	return factoryPoaPtr;
-}
-
-void ServiceQueue::getDescriptorData() {
-	userlog(Level::getDebug(), loggerServiceQueue, (char*) "getDescriptorData() ");
-
-	serviceInfo.poolSize = MAX_SERVICE_CACHE_SIZE;
-
-	char* serviceConfigFilename = (char*) malloc(sizeof(char) * (XATMI_SERVICE_NAME_LENGTH + 5));
-	strcpy(serviceConfigFilename, serviceName);
-	strcat(serviceConfigFilename, ".xml");
-
-	AtmiBrokerServiceXml aAtmiBrokerServiceXml;
-	aAtmiBrokerServiceXml.parseXmlDescriptor(&serviceInfo, serviceConfigFilename);
-	free(serviceConfigFilename);
+void* ServiceQueue::getPoa() {
+	return thePoa;
 }
 
 const char * ServiceQueue::getDestinationName() {

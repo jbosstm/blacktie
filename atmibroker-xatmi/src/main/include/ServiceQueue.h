@@ -40,26 +40,22 @@
 #include <vector>
 #include <queue>
 #include "SynchronizableObject.h"
+#include "xatmi.h"
 #include "ServiceDispatcher.h"
 #include "Message.h"
-#include "xatmi.h"
 #include "Receiver.h"
-
-struct svcinfo_t {
-	int poolSize;
-};
-typedef struct svcinfo_t SVCINFO;
+#include "AtmiBrokerServiceXml.h"
 
 class ATMIBROKER_DLL ServiceQueue: public virtual Receiver, public virtual POA_AtmiBroker::EndpointQueue {
 public:
-	ServiceQueue(PortableServer::POA_ptr the_poa, char *serviceName, void(*func)(TPSVCINFO *));
+	ServiceQueue(void* thePoa, char *serviceName, void(*func)(TPSVCINFO *));
 	virtual ~ServiceQueue();
 
 	virtual void send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent) throw (CORBA::SystemException );
 
-	PortableServer::POA_ptr getPoa();
+	void* getPoa();
 
-	virtual AtmiBroker::ServiceInfo* get_service_info() throw (CORBA::SystemException );
+	SVCINFO get_service_info();
 
 	virtual MESSAGE receive(long flags);
 
@@ -67,9 +63,7 @@ public:
 
 	virtual void disconnect();
 protected:
-	virtual void getDescriptorData();
-
-	PortableServer::POA_ptr factoryPoaPtr;
+	void* thePoa;
 	char* serviceName;
 	bool m_shutdown;
 	SynchronizableObject* lock;
