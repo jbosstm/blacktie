@@ -26,16 +26,12 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.proxy.ServiceQueue;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
-import org.omg.PortableServer.POA;
 
 import AtmiBroker.ServiceQueueHelper;
 
 public class AtmiBrokerServiceFactoryImpl implements ServiceQueue {
 	private static final Logger log = LogManager.getLogger(AtmiBrokerServiceFactoryImpl.class);
 	private AtmiBroker.ServiceQueue serviceFactory;
-	private AtmiBrokerServerImpl server;
-	private String serviceFactoryName;
-	private POA poa;
 
 	public synchronized static ServiceQueue getProxy(AtmiBrokerServerImpl server, String serviceName) throws NotFound, CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName {
 		AtmiBrokerServiceFactoryImpl instance = new AtmiBrokerServiceFactoryImpl(server, serviceName);
@@ -43,8 +39,6 @@ public class AtmiBrokerServiceFactoryImpl implements ServiceQueue {
 	}
 
 	protected AtmiBrokerServiceFactoryImpl(AtmiBrokerServerImpl server, String serviceFactoryName) throws NotFound, CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName {
-		this.server = server;
-		this.serviceFactoryName = serviceFactoryName;
 		log.debug("ServiceFactoryProxy's ServiceFactoryName: " + serviceFactoryName);
 		org.omg.CORBA.Object serviceFactoryObject = AtmiBrokerServerImpl.nc.resolve(AtmiBrokerServerImpl.nce.to_name(serviceFactoryName));
 		log.debug("ServiceFactory Object is " + serviceFactoryObject);
@@ -53,12 +47,11 @@ public class AtmiBrokerServiceFactoryImpl implements ServiceQueue {
 		log.debug("ServiceFactory is " + serviceFactory);
 	}
 
-	public void close() {
-		// TODO Auto-generated method stub
-
-	}
-
 	public void send(String replyTo, byte[] data, int len, int flags) {
 		serviceFactory.send(replyTo, data, data.length, flags);
+	}
+
+	public void close() {
+		// TODO Auto-generated method stub
 	}
 }

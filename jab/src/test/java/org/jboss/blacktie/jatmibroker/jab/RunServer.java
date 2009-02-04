@@ -30,7 +30,7 @@ public class RunServer extends Thread {
 		if (instance == null) {
 			instance = new RunServer();
 			instance.start();
-			Thread.currentThread().sleep(1000);
+			Thread.sleep(1000);
 		}
 	}
 

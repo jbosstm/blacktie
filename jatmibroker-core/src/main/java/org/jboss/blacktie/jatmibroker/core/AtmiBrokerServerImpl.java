@@ -68,7 +68,6 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 	private static final String CorbaSingletonClassValue = "org.jacorb.orb.ORBSingleton";
 	private Server server;
 	private org.omg.CORBA.Object serverObject;
-	private volatile boolean finished;
 	static POA root_poa = null;
 	static ORB orb = null;
 	static NamingContextExt nce = null;
@@ -246,11 +245,6 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 
 	public void run() {
 		AtmiBrokerServerImpl.orb.run();
-	}
-
-	public synchronized void stopThread() {
-		finished = true;
-		this.notify();
 	}
 
 	public EventChannelFactory getEventChannelFactory() throws InvalidName {

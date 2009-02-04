@@ -19,12 +19,7 @@ package org.jboss.blacktie.jatmibroker.jab;
 
 import junit.framework.TestCase;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 public class JABServiceTestCase extends TestCase {
-	private static final Logger log = LogManager.getLogger(JABServiceTestCase.class);
-
 	public void setUp() throws InterruptedException {
 		RunServer.startInstance();
 	}

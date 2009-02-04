@@ -24,31 +24,20 @@ package org.jboss.blacktie.jatmibroker.jab;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.proxy.Queue;
-import org.jboss.blacktie.jatmibroker.core.proxy.ServiceQueue;
-import org.omg.CORBA.IntHolder;
 import org.omg.CosTransactions.Control;
 
 public class JABRemoteService implements Message {
 	private static final Logger log = LogManager.getLogger(JABRemoteService.class);
 	private JABSession jabSession;
-	private ServiceQueue serviceFactory;
 	private String serviceName;
 	private byte[] data;
 	private JABMessage result;
-	private JABMessage typedBuffer = new JABMessage();
-	private boolean useData = true;
 
 	public JABRemoteService(JABSession aJABSession, String aServiceName) throws JABException {
 		log.debug("JABService constructor ");
 
 		jabSession = aJABSession;
 		serviceName = aServiceName;
-
-		try {
-			serviceFactory = aJABSession.getServerProxy().getServiceQueue(serviceName);
-		} catch (Exception e) {
-			throw new JABException(e);
-		}
 	}
 
 	public void call(JABTransaction aJABTransaction) throws JABException {
@@ -61,17 +50,14 @@ public class JABRemoteService implements Message {
 			if (aJABTransaction != null) {
 				control = aJABTransaction.getControl();
 			}
-			IntHolder event = new IntHolder();
-			AtmiBroker.octetSeqHolder odata = new AtmiBroker.octetSeqHolder();
-
 			// TODO HANDLE TRANSACTION
 			Queue endpoint = jabSession.getServerProxy().getEndpointQueue(0);
 			jabSession.getServerProxy().getServiceQueue(serviceName).send(endpoint.getReplyTo(), data, data.length, flags);
 			org.jboss.blacktie.jatmibroker.core.Message receive = endpoint.receive(flags);
 
 			data = new byte[receive.len];
-			System.arraycopy(odata.value, 0, receive.data, 0, receive.len);
-			log.debug("service_request response is " + odata.value);
+			System.arraycopy(data, 0, receive.data, 0, receive.len);
+			log.debug("service_request response is " + data);
 
 			log.debug("service_request size of response is " + olen.value);
 
