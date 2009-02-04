@@ -22,9 +22,9 @@
 #include "CosTransactionsC.h"
 
 struct message_t {
-	const char* replyto_ior;
-	char* idata;
-	long ilen;
+	const char* replyto;
+	char* data;
+	long len;
 	long flags;
 	CosTransactions::Control_ptr control;
 	int rval;

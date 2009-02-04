@@ -20,19 +20,11 @@
  */
 // copyright 2006, 2008 BreakThruIT
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
-#include <iostream>
-#include <sstream>
+#include "xatmi.h"
 
 #include "OrbManagement.h"
 
-//TODO READD #include "extensions.h"
-extern "C" {
 #include "AtmiBrokerClientControl.h"
-}
 
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerMem.h"
@@ -42,10 +34,11 @@ extern "C" {
 #include "AtmiBrokerPoaFac.h"
 #include "userlog.h"
 #include "AtmiBrokerEnv.h"
-#include "AtmiBrokerEnvXml.h"
 #include "AtmiBrokerClient.h"
-#include "AtmiBrokerServer.h"
 #include "AtmiBrokerOTS.h"
+
+#include "Sender.h"
+#include "SenderImpl.h"
 
 #include "log4cxx/basicconfigurator.h"
 #include "log4cxx/propertyconfigurator.h"
@@ -57,8 +50,6 @@ LoggerPtr loggerAtmiBroker(Logger::getLogger("AtmiBroker"));
 
 bool loggerInitialized;
 bool clientInitialized;
-int _tperrno = 0;
-long _tpurcode = -1;
 
 // ORB and Naming Service References
 Worker* client_worker;
@@ -81,17 +72,6 @@ CORBA::PolicyList clientPolicies;
 //CORBA::PolicyManager_var policyManager;
 CORBA::PolicyTypeSeq policyTypes;
 CORBA::PolicyList *policyList;
-
-// Constants
-//int                                             SERVICE_ID_SIZE         	= 40;
-const char* MAX_REPLICAS = "MAX_REPLICAS:";
-int MAX_SERVICE_CACHE_SIZE = 1;
-
-//TODO -NOT IMPLEMENTED int                                             maxReplicas			= 1;
-
-// runtime arguments
-void createClientCallbackPOA();
-void createClientBindingPolicies();
 
 void client_sigint_handler_callback(int sig_type) {
 	userlog(Level::getWarn(), loggerAtmiBroker, (char*) "client_sigint_handler_callback Received shutdown signal: %d", sig_type);
@@ -119,8 +99,13 @@ int clientinit() {
 			AtmiBrokerOTS::init_orb((char*) "client", client_worker, client_orb, client_default_context, client_name_context);
 
 			getRootPOAAndManager(client_orb, client_root_poa, client_root_poa_manager);
-			createClientCallbackPOA();
-			createClientBindingPolicies();
+
+			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "createClientCallbackPOA creating POA with name client");
+			clientPoaFactory = new AtmiBrokerPoaFac();
+			std::string name = ".client";
+			//			name.insert(0, server);
+			client_poa = clientPoaFactory->createCallbackPoa(client_orb, name.c_str(), client_root_poa, client_root_poa_manager);
+			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "createClientCallbackPOA created POA: %p", (void*) client_poa);
 
 			client_root_poa_manager->activate();
 			userlog(Level::getDebug(), loggerAtmiBroker, (char*) "activated poa - started processing requests ");
@@ -188,80 +173,6 @@ int clientdone() {
 	return 0;
 }
 
-int * _get_tperrno(void) {
-	userlog(Level::getDebug(), loggerAtmiBroker, (char*) "_get_tperrno");
-	return &_tperrno;
+Sender* get_service_queue(const char * serviceName) {
+	return new SenderImpl(client_default_context, client_name_context, serviceName);
 }
-
-long * _get_tpurcode(void) {
-	userlog(Level::getError(), loggerAtmiBroker, (char*) "_get_tpurcode - Not implemented");
-	return &_tpurcode;
-}
-
-void createClientCallbackPOA() {
-	userlog(Level::getDebug(), loggerAtmiBroker, (char*) "createClientCallbackPOA createClientCallbackPOA");
-
-	if (CORBA::is_nil(client_poa)) {
-		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "createClientCallbackPOA creating POA with name %s", server);
-		clientPoaFactory = new AtmiBrokerPoaFac();
-		std::string name = ".client";
-		name.insert(0, server);
-		client_poa = clientPoaFactory->createCallbackPoa(client_orb, name.c_str(), client_root_poa, client_root_poa_manager);
-		userlog(Level::getDebug(), loggerAtmiBroker, (char*) "createClientCallbackPOA created POA: %p", (void*) client_poa);
-	} else
-		userlog(Level::getError(), loggerAtmiBroker, (char*) "createClientCallbackPOA already created POA: %p", (void*) client_poa);
-}
-
-void createClientBindingPolicies() {
-	// TODO userlog(Level::getWarn(), loggerAtmiBroker, (char*) "createClientBindingPolicies - Not implemented");
-
-	/*********
-	 CORBA::Object_var 	tmp_ref;  // For temporary object references.
-
-	 if(CORBA::is_nil(policyManager))
-	 {
-	 userlog(Level::getDebug(), loggerAtmiBroker, (char*) "getting policy manager ");
-	 tmp_ref 		= client_orb->resolve_initial_references("ORBPolicyManager");
-	 policyManager 		= CORBA::PolicyManager::_narrow(tmp_ref);
-	 userlog(Level::getDebug(), loggerAtmiBroker, (char*) "got policy manager %p", (void*)policyManager);
-
-	 policyList = new CORBA::PolicyList();
-	 policyList->length(2);
-	 CORBA::Any policyValueB;
-	 CORBA::Any policyValueI;
-
-	 IT_CORBA::BindingEstablishmentPolicyValue valb;
-	 valb.relative_expiry		= (TimeBase::TimeT)200000000;
-	 valb.max_binding_iterations	= (CORBA::UShort)50;
-	 valb.max_forwards		= (CORBA::UShort)50;
-	 valb.initial_iteration_delay	= (TimeBase::TimeT)2000000;
-	 valb.backoff_ratio		= (CORBA::Float)2;
-	 userlog(Level::getDebug(), loggerAtmiBroker, (char*) "val is %p", (void*)&valb);
-
-	 policyValueB <<= valb;
-	 userlog(Level::getDebug(), loggerAtmiBroker, (char*) "policyValue is %p", (void*)&policyValueB);
-
-	 *policyList[0] =   client_orb->create_policy(IT_CORBA::BINDING_ESTABLISHMENT_POLICY_ID, policyValueB);
-
-	 IT_CORBA::InvocationRetryPolicyValue vali;
-	 vali.max_retries		= (CORBA::UShort)50;
-	 vali.max_rebinds		= (CORBA::UShort)50;
-	 vali.max_forwards		= (CORBA::UShort)50;
-	 vali.initial_retry_delay	= (TimeBase::TimeT)2000000;
-	 vali.backoff_ratio		= (CORBA::Float)2;
-	 userlog(Level::getDebug(), loggerAtmiBroker, (char*) "val is %p", (void*)&vali);
-
-	 policyValueI <<= vali;
-	 userlog(Level::getDebug(), loggerAtmiBroker, (char*) "policyValue is %p", (void*)&policyValueI);
-
-	 *policyList[1] =   client_orb->create_policy(IT_CORBA::INVOCATION_RETRY_POLICY_ID, policyValueI);
-
-	 userlog(Level::getDebug(), loggerAtmiBroker, (char*) "setting policy list for binding  establishment %p", (void*)*policyList[0]);
-	 userlog(Level::getDebug(), loggerAtmiBroker, (char*) "setting policy list for invocation retries %p", (void*)*policyList[1]);
-	 policyManager->set_policy_overrides(*policyList, CORBA::ADD_OVERRIDE);
-	 userlog(Level::getDebug(), loggerAtmiBroker, (char*) "set policy list for binding  establishment %p", (void*)*policyList[0]);
-	 userlog(Level::getDebug(), loggerAtmiBroker, (char*) "set policy list for invocation retries %p", (void*)*policyList[1]);
-	 }
-	 ********/
-}
-

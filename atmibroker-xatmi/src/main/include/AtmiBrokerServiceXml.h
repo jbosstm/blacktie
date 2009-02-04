@@ -24,6 +24,7 @@
 #define AtmiBroker_SERVICE_XML_H_
 
 #include "atmiBrokerMacro.h"
+#include "ServiceQueue.h"
 
 #include <string.h>
 
@@ -34,7 +35,7 @@ public:
 
 	~AtmiBrokerServiceXml();
 
-	void parseXmlDescriptor(AtmiBroker::ServiceInfo* serviceData, const char * aDescriptorFileName);
+	void parseXmlDescriptor(SVCINFO* serviceData, const char * aDescriptorFileName);
 };
 
 #endif

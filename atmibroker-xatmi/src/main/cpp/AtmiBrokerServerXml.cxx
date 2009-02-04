@@ -33,7 +33,6 @@ using namespace log4cxx;
 using namespace log4cxx::helpers;
 LoggerPtr loggerAtmiBrokerServerXml(Logger::getLogger("AtmiBrokerServerXml"));
 
-
 char server[30];
 
 int serverMaxChannels = 0;
@@ -76,13 +75,7 @@ static void XMLCALL startElement(void *userData, const char *name, const char **
 	} else if (strcmp(name, "NAME") == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "processing NAME for server ");
 		processingName = true;
-	}
-	//TODO -NOT IMPLEMENTED   else if (strcmp(name, "MAX_REPLICAS") == 0)
-	//  {
-	//	  userlog(Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "processing Max Replicas for server ");
-	//  	  processingMaxReplicas = true;
-	//  }
-	else if (strcmp(name, "MAX_CHANNELS") == 0) {
+	} else if (strcmp(name, "MAX_CHANNELS") == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "processing Max Channels for server ");
 		processingMaxChannels = true;
 	} else if (strcmp(name, "MAX_SUPPLIERS") == 0) {
@@ -117,15 +110,7 @@ static void XMLCALL endElement(void *userData, const char *name) {
 		userlog(Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "storing NAME %s", last_value);
 		processingName = false;
 		strcpy(server, last_value);
-	}
-	//TODO -NOT IMPLEMENTED   else if (strcmp(last_element, "MAX_REPLICAS") == 0)
-	//  {
-	//	userlog(Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "storing MaxReplicas %s", last_value);
-	//	processingMaxReplicas		= false;
-	//	aServerStructPtr->maxReplicas = (short)atol(last_value);
-	//	maxReplicas = atol(last_value);
-	//  }
-	else if (strcmp(last_element, "MAX_CHANNELS") == 0) {
+	} else if (strcmp(last_element, "MAX_CHANNELS") == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "storing MaxChannels %s", last_value);
 		processingMaxChannels = false;
 		aServerStructPtr->maxChannels = (short) atol(last_value);

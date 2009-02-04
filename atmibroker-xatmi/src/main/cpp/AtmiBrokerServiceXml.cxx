@@ -25,7 +25,6 @@
 #include <iostream>
 #include "expat.h"
 
-#include "AtmiBrokerC.h"
 #include "AtmiBrokerServiceXml.h"
 #include "userlog.h"
 #include "log4cxx/logger.h"
@@ -50,16 +49,11 @@ AtmiBrokerServiceXml::AtmiBrokerServiceXml() {
 AtmiBrokerServiceXml::~AtmiBrokerServiceXml() {
 }
 
-static void XMLCALL startElement
-(void *userData, const char *name, const char **atts)
-{
-	if (strcmp(name, "SERVICE ") == 0)
-	{
+static void XMLCALL startElement(void *userData, const char *name, const char **atts) {
+	if (strcmp(name, "SERVICE ") == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "new service ");
 		processingService = true;
-	}
-	else if (strcmp(name, "SIZE") == 0)
-	{
+	} else if (strcmp(name, "SIZE") == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "processing MAX Cache for service ");
 		processingPoolSize = true;
 	}
@@ -69,39 +63,33 @@ static void XMLCALL startElement
 	depth += 1;
 }
 
-static void XMLCALL endElement
-(void *userData, const char *name)
-{
-	AtmiBroker::ServiceInfo* aServiceStructPtr = (AtmiBroker::ServiceInfo*)userData;
+static void XMLCALL endElement(void *userData, const char *name) {
+	SVCINFO* aServiceStructPtr = (SVCINFO*) userData;
 
 	strcpy(last_element, name);
 	strcpy(last_value, value);
 
-	if (strcmp(last_element, "SIZE") == 0)
-	{
+	if (strcmp(last_element, "SIZE") == 0) {
 		userlog(Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "storing MaxCache %s", last_value);
 		processingPoolSize = false;
-		aServiceStructPtr->poolSize = (short)atol(last_value);
+		aServiceStructPtr->poolSize = (short) atol(last_value);
 	}
 	depth -= 1;
 }
 
-static void XMLCALL characterData
-(void *userData, const char *cdata, int len)
-{
+static void XMLCALL characterData(void *userData, const char *cdata, int len) {
 	int i = 0;
 	int j = 0;
 	int priorLength = strlen(value);
 
 	i = priorLength;
-	for (; i < len+priorLength; i++, j++)
-	{
+	for (; i < len + priorLength; i++, j++) {
 		value[i] = cdata[j];
 	}
 	value[i] = '\0';
 }
 
-void AtmiBrokerServiceXml::parseXmlDescriptor(AtmiBroker::ServiceInfo* aServiceStructPtr, const char * aDescriptorFileName) {
+void AtmiBrokerServiceXml::parseXmlDescriptor(SVCINFO* aServiceStructPtr, const char * aDescriptorFileName) {
 	userlog(Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "in parseXmlDescriptor() %s", aDescriptorFileName);
 
 	struct stat s; /* file stats */

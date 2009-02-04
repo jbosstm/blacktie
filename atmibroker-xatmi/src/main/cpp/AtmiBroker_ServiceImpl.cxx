@@ -22,7 +22,9 @@
 
 #include "AtmiBroker_ServiceImpl.h"
 
+#include "SenderImpl.h"
 #include "AtmiBrokerServer.h"
+#include "EndpointQueue.h"
 #include "xatmi.h"
 #include "userlog.h"
 #include "ThreadLocalStorage.h"
@@ -36,6 +38,15 @@ LoggerPtr loggerAtmiBroker_ServiceImpl(Logger::getLogger("AtmiBroker_ServiceImpl
 //
 AtmiBroker_ServiceImpl::AtmiBroker_ServiceImpl(char *serviceName, void(*func)(TPSVCINFO *)) :
 	m_serviceName(serviceName), m_func(func), m_buffer(NULL) {
+
+	EndpointQueue* endpointQueue = new EndpointQueue(server_callback_poa);
+	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "tmp_servant %p", (void*) endpointQueue);
+	server_callback_poa->activate_object(endpointQueue);
+	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "activated tmp_servant %p", endpointQueue);
+	CORBA::Object_ptr tmp_ref = server_callback_poa->servant_to_reference(endpointQueue);
+	AtmiBroker::EndpointQueue_var queue = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
+	endpointQueue->setReplyTo(server_orb->object_to_string(queue));
+	queueReceiver = endpointQueue;
 }
 
 // ~AtmiBroker_ServiceImpl destructor.
@@ -47,21 +58,16 @@ AtmiBroker_ServiceImpl::~AtmiBroker_ServiceImpl() {
 
 void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "svc()");
-	m_buffer = message.idata;
-	const char * callback_ior = message.replyto_ior;
-	char* idata = message.idata;
-	long ilen = message.ilen;
+	m_buffer = message.data;
+	queueSender = new SenderImpl(server_orb, (char*) message.replyto);
+	char* idata = message.data;
+	long ilen = message.len;
 	long flags = message.flags;
-
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "service_request_async()");
-	CORBA::Object_var tmp_ref = server_orb->string_to_object(callback_ior);
-	callbackRef = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   callback 	= %p", (void*) callbackRef);
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   idata = %p", idata);
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   ilen = %d", ilen);
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "   flags = %d", flags);
 
-	createConnectionTransactionAssociation(message.control);
+	createConnectionTransactionAssociation();
 
 	TPSVCINFO tpsvcinfo;
 	memset(&tpsvcinfo, '\0', sizeof(tpsvcinfo));
@@ -81,19 +87,14 @@ void AtmiBroker_ServiceImpl::tpreturn(int rval, long rcode, char* data, long len
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "tpreturn()");
 	endConnectionTransactionAssociation();
 
+	MESSAGE message;
+	message.rval = rval;
+	message.rcode = rcode;
+	message.data = data;
+	message.len = len;
+	message.flags = flags;
+	getSender()->send(message);
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "Calling back ");
-	int data_size = ::tptypes(data, NULL, NULL);
-	if (data_size > -1) {
-		unsigned char * data_togo = (unsigned char *) malloc(data_size);
-		memcpy(data_togo, data, data_size);
-		AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(len, len, data_togo, true);
-		callbackRef->send("", rval, rcode, aOctetSeq, len, flags, 0);
-		userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "Called back ");
-		aOctetSeq = NULL;
-		::tpfree(data);
-	}
-
-	callbackRef = NULL;
 }
 
 bool AtmiBroker_ServiceImpl::sameBuffer(char* toCheck) {
@@ -108,20 +109,25 @@ bool AtmiBroker_ServiceImpl::sameBuffer(char* toCheck) {
 	return toReturn;
 }
 
-int AtmiBroker_ServiceImpl::tpsend(int id, char* idata, long ilen, long flags, long *revent) {
-	// TODO USE ATMIBROKERCONVERSATION
-	tperrno = TPESYSTEM;
-	return -1;
+Sender* AtmiBroker_ServiceImpl::getSender() {
+	return queueSender;
 }
 
-int AtmiBroker_ServiceImpl::tprecv(int id, char ** odata, long *olen, long flags, long* event) {
-	// TODO USE ATMIBROKERCONVERSATION
-	tperrno = TPESYSTEM;
-	return -1;
+Receiver* AtmiBroker_ServiceImpl::getReceiver() {
+	return queueReceiver;
 }
 
-void AtmiBroker_ServiceImpl::createConnectionTransactionAssociation(CosTransactions::Control_ptr control) {
+void AtmiBroker_ServiceImpl::setReplyTo(char * replyTo) {
+
+}
+
+void AtmiBroker_ServiceImpl::getId(int& id) {
+
+}
+
+void AtmiBroker_ServiceImpl::createConnectionTransactionAssociation() {
 	try {
+		CosTransactions::Control_ptr control = (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
 		if (CORBA::is_nil(control)) {
 			userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "NO TRANSACTION associated with this call");
 			return;

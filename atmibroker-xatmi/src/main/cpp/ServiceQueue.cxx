@@ -39,7 +39,6 @@
 #include "ServiceQueue.h"
 #include "ThreadLocalStorage.h"
 
-#include "AtmiBroker.h"
 #include "AtmiBrokerServer.h"
 #include "AtmiBroker_ServiceImpl.h"
 #include "AtmiBrokerServiceXml.h"
@@ -51,6 +50,9 @@
 using namespace log4cxx;
 using namespace log4cxx::helpers;
 LoggerPtr loggerServiceQueue(Logger::getLogger("ServiceQueue"));
+
+// Constants
+int MAX_SERVICE_CACHE_SIZE = 1;
 
 // ServiceQueue constructor
 //
@@ -110,12 +112,12 @@ ServiceQueue::~ServiceQueue() {
 
 // start_conversation() -- Implements IDL operation "AtmiBroker::ServiceFactory::start_conversation".
 //
-void ServiceQueue::send(const char* replyto_ior, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags) throw (CORBA::SystemException ) {
+void ServiceQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent) throw (CORBA::SystemException ) {
 	MESSAGE message;
-	message.replyto_ior = replyto_ior;
-	message.idata = (char*) malloc(sizeof(char*) * ilen);
-	memcpy(message.idata, (char*) idata.get_buffer(), ilen);
-	message.ilen = ilen;
+	message.replyto = replyto_ior;
+	message.data = (char*) malloc(sizeof(char*) * ilen);
+	memcpy(message.data, (char*) idata.get_buffer(), ilen);
+	message.len = ilen;
 	message.flags = flags;
 	message.control = (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
 
@@ -129,7 +131,7 @@ void ServiceQueue::send(const char* replyto_ior, const AtmiBroker::octetSeq& ida
 
 MESSAGE ServiceQueue::receive(long flags) {
 	MESSAGE message;
-	message.idata = NULL;
+	message.data = NULL;
 	lock->lock();
 	if (!m_shutdown) {
 		if (messageQueue.size() == 0) {
@@ -138,6 +140,7 @@ MESSAGE ServiceQueue::receive(long flags) {
 		if (messageQueue.size() > 0) {
 			message = messageQueue.front();
 			messageQueue.pop();
+			setSpecific(TSS_KEY, message.control);
 		}
 	}
 	lock->unlock();
@@ -153,7 +156,7 @@ ServiceQueue::get_service_info() throw (CORBA::SystemException ) {
 	AtmiBroker::ServiceInfo_var aServiceInfo = new AtmiBroker::ServiceInfo();
 
 	aServiceInfo->serviceName = CORBA::string_dup(serviceName);
-	aServiceInfo->poolSize = MAX_SERVICE_CACHE_SIZE;
+	aServiceInfo->poolSize = serviceInfo.poolSize;
 	aServiceInfo->securityType = CORBA::string_dup("");
 
 	return aServiceInfo._retn();
@@ -177,6 +180,10 @@ void ServiceQueue::getDescriptorData() {
 	free(serviceConfigFilename);
 }
 
-const char * ServiceQueue::getReplyTo() {
+const char * ServiceQueue::getDestinationName() {
 	return NULL;
+}
+
+void ServiceQueue::disconnect() {
+
 }

@@ -31,33 +31,35 @@
 #ifndef ATMIBROKER_SERVICEIMPL_H_
 #define ATMIBROKER_SERVICEIMPL_H_
 
-#include "atmiBrokerMacro.h"
-
 #include "CosTransactionsC.h"
-#include "AtmiBrokerC.h"
-
 #include "xatmi.h"
+#include "Session.h"
 #include "Message.h"
+#include "MessageListener.h"
+#include "Sender.h"
+#include "Receiver.h"
 
-class ATMIBROKER_DLL AtmiBroker_ServiceImpl {
+class AtmiBroker_ServiceImpl: public virtual Session, public virtual MessageListener {
 public:
 	AtmiBroker_ServiceImpl(char *serviceName, void(*func)(TPSVCINFO *));
 	virtual ~AtmiBroker_ServiceImpl();
 
 	void onMessage(MESSAGE message);
 	void tpreturn(int rval, long rcode, char* data, long len, long flags);
-	int tpsend(int id, char* idata, long ilen, long flags, long *revent);
-	int tprecv(int id, char ** odata, long *olen, long flags, long* event);
 	bool sameBuffer(char *toCheck);
-	int svc();
+	void getId(int& id);
+	void setReplyTo(char* replyTo);
+	Receiver * getReceiver();
+	Sender * getSender();
 protected:
-	AtmiBroker::EndpointQueue_ptr callbackRef;
+	Sender* queueSender;
+	Receiver* queueReceiver;
 	CosTransactions::Control_var tx_control;
 	CosTransactions::Coordinator_var tx_coordinator;
 	CosTransactions::PropagationContext_var tx_propagation_context;
 	CosTransactions::otid_t otid;
 private:
-	void createConnectionTransactionAssociation(CosTransactions::Control_ptr control);
+	void createConnectionTransactionAssociation();
 	void endConnectionTransactionAssociation();
 	char* m_serviceName;
 	void (*m_func)(TPSVCINFO *);

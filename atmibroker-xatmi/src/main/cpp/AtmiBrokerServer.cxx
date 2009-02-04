@@ -33,9 +33,7 @@
 #include "AtmiBrokerServiceFacMgr.h"
 #include "AtmiBrokerMem.h"
 #include "AtmiBrokerServer.h"
-extern "C" {
 #include "AtmiBrokerServerControl.h"
-}
 #include "AtmiBroker_ServerImpl.h"
 //TODO READD #include "AtmiBrokerNotify.h"
 #include "AtmiBrokerOTS.h"
@@ -60,9 +58,8 @@ PortableServer::POAManager_var server_root_poa_manager;
 CosNaming::NamingContextExt_var server_default_context;
 CosNaming::NamingContext_var server_name_context;
 PortableServer::POA_var server_poa;
+PortableServer::POA_var server_callback_poa;
 AtmiBrokerPoaFac * serverPoaFactory;
-
-void createServerPOA();
 
 void server_sigint_handler_callback(int sig_type) {
 	userlog(Level::getInfo(), loggerAtmiBrokerServer, (char*) "server_sigint_handler_callback Received shutdown signal: %d", sig_type);
@@ -102,7 +99,14 @@ int serverinit(int argc, char ** argv) {
 
 			AtmiBrokerMem::get_instance();
 			getRootPOAAndManager(server_orb, server_root_poa, server_root_poa_manager);
-			createServerPOA();
+
+			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "creating POAs for %s", server);
+			serverPoaFactory = new AtmiBrokerPoaFac();
+			server_poa = serverPoaFactory->createServerPoa(server_orb, server, server_root_poa, server_root_poa_manager);
+			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "created server POA: %p", (void*) server_poa);
+			std::string name = ".server";
+			server_callback_poa = serverPoaFactory->createCallbackPoa(server_orb, name.c_str(), server_root_poa, server_root_poa_manager);
+			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "created callback POA: %p", (void*) server_callback_poa);
 
 			server_root_poa_manager->activate();
 			userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "activated poa - started processing requests ");
@@ -179,14 +183,3 @@ int serverdone() {
 		return -1;
 	}
 }
-
-void createServerPOA() {
-	if (CORBA::is_nil(server_poa)) {
-		userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "createServerPOA creating POA %s", server);
-		serverPoaFactory = new AtmiBrokerPoaFac();
-		server_poa = serverPoaFactory->createServerPoa(server_orb, server, server_root_poa, server_root_poa_manager);
-		userlog(Level::getDebug(), loggerAtmiBrokerServer, (char*) "createServerPOA created Persistent POA: %p", (void*) server_poa);
-	} else
-		userlog(Level::getError(), loggerAtmiBrokerServer, (char*) "createServerPOA already created POA: %p", (void*) server_poa);
-}
-

@@ -43,15 +43,19 @@
 #include "ServiceDispatcher.h"
 #include "Message.h"
 #include "xatmi.h"
-#include "Queue.h"
-class ServiceDispatcher;
+#include "Receiver.h"
 
-class ATMIBROKER_DLL ServiceQueue: public virtual Queue, public virtual POA_AtmiBroker::ServiceQueue {
+struct svcinfo_t {
+	int poolSize;
+};
+typedef struct svcinfo_t SVCINFO;
+
+class ATMIBROKER_DLL ServiceQueue: public virtual Receiver, public virtual POA_AtmiBroker::EndpointQueue {
 public:
 	ServiceQueue(PortableServer::POA_ptr the_poa, char *serviceName, void(*func)(TPSVCINFO *));
 	virtual ~ServiceQueue();
 
-	virtual void send(const char* replyto_ior, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags) throw (CORBA::SystemException );
+	virtual void send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent) throw (CORBA::SystemException );
 
 	PortableServer::POA_ptr getPoa();
 
@@ -59,17 +63,19 @@ public:
 
 	virtual MESSAGE receive(long flags);
 
-	virtual const char* getReplyTo();
+	virtual const char* getDestinationName();
+
+	virtual void disconnect();
 protected:
+	virtual void getDescriptorData();
+
 	PortableServer::POA_ptr factoryPoaPtr;
 	char* serviceName;
 	bool m_shutdown;
 	SynchronizableObject* lock;
 	std::queue<MESSAGE> messageQueue;
 	std::vector<ServiceDispatcher *> servantVector;
-	AtmiBroker::ServiceInfo serviceInfo;
-
-	virtual void getDescriptorData();
+	SVCINFO serviceInfo;
 
 private:
 	// The following are not implemented

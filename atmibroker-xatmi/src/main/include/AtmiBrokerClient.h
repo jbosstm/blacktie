@@ -28,45 +28,28 @@
 #ifndef AtmiBroker_CLIENT_H_
 #define AtmiBroker_CLIENT_H_
 
-#include "atmiBrokerMacro.h"
-
-#ifdef TAO_COMP
-#include <tao/ORB.h>
-#include <orbsvcs/CosNamingS.h>
-#include <tao/PortableServer/PortableServerC.h>
-#include "AtmiBrokerC.h"
-#endif
-
+#include "Session.h"
+#include "Sender.h"
+#include "Receiver.h"
 #include "AtmiBrokerClientXml.h"
-#include "AtmiBrokerPoaFac.h"
-#include "EndpointQueue.h"
 
-#include <iostream>
 #include <vector>
 
-class ATMIBROKER_DLL AtmiBrokerClient {
+class AtmiBrokerClient: public virtual Session {
 public:
-
 	AtmiBrokerClient();
 	virtual ~AtmiBrokerClient();
-	AtmiBroker::ServiceQueue_ptr get_service_queue(const char * serviceName);
-	EndpointQueue * getLocalCallback(int id);
-	EndpointQueue * getRemoteCallback(int id);
+	Session* createSession();
+	Session* getSession(int* id);
+	void getId(int& id);
+	void setReplyTo(char* replyTo);
+	Receiver* getReceiver();
+	Sender* getSender();
 protected:
-
 	std::vector<ClientServerInfo*> clientServerVector;
-	AtmiBroker::EndpointQueue_var clientCallback;
-	EndpointQueue * clientCallbackImpl;
+	int id;
+	char * replyTo;
+	Receiver* queueReceiver;
+	Sender* queueSender;
 };
-
-extern ATMIBROKER_DLL CORBA::ORB_var client_orb;
-extern ATMIBROKER_DLL PortableServer::POA_var client_root_poa;
-extern ATMIBROKER_DLL PortableServer::POAManager_var client_root_poa_manager;
-extern ATMIBROKER_DLL CosNaming::NamingContextExt_var client_default_context;
-extern ATMIBROKER_DLL CosNaming::NamingContext_var client_name_context;
-extern ATMIBROKER_DLL PortableServer::POA_var client_poa;
-extern ATMIBROKER_DLL AtmiBrokerPoaFac * clientPoaFactory;
-
-extern ATMIBROKER_DLL AtmiBrokerClient * ptrAtmiBrokerClient;
-extern ATMIBROKER_DLL CORBA::PolicyList *policyList;
 #endif

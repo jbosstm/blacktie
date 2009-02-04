@@ -15,28 +15,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-
-#ifndef SERVICEDISPATCHER_H_
-#define SERVICEDISPATCHER_H_
-
-#include <ace/Task.h>
+#ifndef Session_H_
+#define Session_H_
 
 #include "Receiver.h"
-#include "MessageListener.h"
+#include "Sender.h"
 
-#include "log4cxx/logger.h"
-using namespace log4cxx;
-
-class ServiceDispatcher: public ACE_Task_Base {
+class Session {
 public:
-	ServiceDispatcher(Receiver* serviceQueue, MessageListener* service);
-	int svc();
-	void shutdown();
-private:
-	static LoggerPtr logger;
-	Receiver* m_serviceQueue;
-	MessageListener* m_service;
-	bool m_shutdown;
+	virtual void getId(int& id) = 0;
+	virtual void setReplyTo(char* replyTo) = 0;
+	virtual Receiver* getReceiver() = 0;
+	virtual Sender * getSender() = 0;
 };
 
 #endif

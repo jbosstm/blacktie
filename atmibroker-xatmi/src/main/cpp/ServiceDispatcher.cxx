@@ -20,7 +20,7 @@
 
 LoggerPtr ServiceDispatcher::logger(Logger::getLogger("ServiceDispatcher"));
 
-ServiceDispatcher::ServiceDispatcher(Queue* serviceQueue, AtmiBroker_ServiceImpl* service) :
+ServiceDispatcher::ServiceDispatcher(Receiver* serviceQueue, MessageListener* service) :
 	m_serviceQueue(serviceQueue), m_service(service), m_shutdown(false) {
 }
 

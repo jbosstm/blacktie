@@ -15,28 +15,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-/*
- * BREAKTHRUIT PROPRIETARY - NOT TO BE DISCLOSED OUTSIDE BREAKTHRUIT, LLC.
- */
-// copyright 2006, 2008 BreakThruIT
-
-//-----------------------------------------------------------------------------
-// Edit the idlgen.cfg to have your own copyright notice placed here.
-//-----------------------------------------------------------------------------
-
-// Class: EndpointQueue
-// A POA servant which implements of the AtmiBroker::ClientCallback interface
-//
-
-#ifndef Queue_H_
-#define Queue_H_
+#ifndef Sender_H_
+#define Sender_H_
 
 #include "Message.h"
 
-class Queue {
+class Sender {
 public:
-	virtual MESSAGE receive(long flags) = 0;
-	virtual const char* getReplyTo() = 0;
+	virtual void send(MESSAGE message) = 0;
 };
 
 #endif

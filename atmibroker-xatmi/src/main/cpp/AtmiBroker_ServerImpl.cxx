@@ -28,13 +28,6 @@
 #include <tao/ORB.h>
 #include "tao/ORB_Core.h"
 #include <orbsvcs/CosNamingS.h>
-#elif ORBIX_COMP
-#include <omg/orb.hh>
-#include <omg/CosNaming.hh>
-#endif
-#ifdef VBC_COMP
-#include <orb.h>
-#include <CosNaming_c.hh>
 #endif
 
 #include <stdlib.h>
@@ -43,18 +36,12 @@
 #include <string>
 #include <queue>
 #include "AtmiBroker_ServerImpl.h"
-#include "AtmiBroker.h"
 
 #include "AtmiBrokerEnvXml.h"
 #include "AtmiBrokerServer.h"
 #include "AtmiBrokerServiceFacMgr.h"
-#include "AtmiBrokerServiceFac.h"
 #include "AtmiBrokerServerXml.h"
 #include "AtmiBrokerEnv.h"
-
-//TODO NEEDS extern "C" __declspec(dllexport) - unacceptable
-//#include "CallDynamicSymbols.h"
-
 #include "userlog.h"
 #include "log4cxx/logger.h"
 using namespace log4cxx;
@@ -176,7 +163,26 @@ bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPS
 
 	// create reference for Service Factory and cache
 	try {
-		create_service_factory(serviceName, func);
+		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "create_service_factory: %s", serviceName);
+
+		// create Poa for Service Factory
+		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "create_service_factory_poa: %s", serviceName);
+		PortableServer::POA_ptr aFactoryPoaPtr = serverPoaFactory->createServiceFactoryPoa(server_orb, serviceName, server_poa, server_root_poa_manager);
+		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "created create_service_factory_poa: %s", serviceName);
+
+		ServiceQueue *tmp_factory_servant = new ServiceQueue(aFactoryPoaPtr, serviceName, func);
+		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) " tmp_factory_servant %p", (void*) tmp_factory_servant);
+
+		aFactoryPoaPtr->activate_object(tmp_factory_servant);
+		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "activated tmp_servant %p", (void*) tmp_factory_servant);
+		CORBA::Object_var tmp_ref = aFactoryPoaPtr->servant_to_reference(tmp_factory_servant);
+
+		CosNaming::Name * name = server_default_context->to_name(serviceName);
+		server_name_context->bind(*name, tmp_ref);
+
+		AtmiBrokerServiceFacMgr::get_instance()->addServiceFactory(serviceName, tmp_factory_servant, func);
+		userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "created ServiceFactory %s", serviceName);
+
 	} catch (...) {
 		userlog(Level::getError(), loggerAtmiBroker_ServerImpl, (char*) "service has already been advertised, however it appears to be by a different server (possibly with the same name), which is strange... %s", serviceName);
 		tperrno = TPEMATCH;
@@ -193,7 +199,16 @@ bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPS
 void AtmiBroker_ServerImpl::unadvertiseService(char * serviceName) {
 	for (std::vector<char*>::iterator i = advertisedServices.begin(); i != advertisedServices.end(); i++) {
 		if (strcmp(serviceName, (*i)) == 0) {
-			remove_service_factory(serviceName);
+			userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "remove_service_factory: %s", serviceName);
+			CosNaming::Name * name = server_default_context->to_name(serviceName);
+			server_name_context->unbind(*name);
+
+			ServiceQueue* toDelete = AtmiBrokerServiceFacMgr::get_instance()->removeServiceFactory(serviceName);
+			PortableServer::POA_ptr poa = toDelete->getPoa();
+			delete toDelete;
+			poa->destroy(true, true);
+			poa = NULL;
+			userlog(Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) " service factory %s removed", serviceName);
 			advertisedServices.erase(i);
 			userlog(Level::getInfo(), loggerAtmiBroker_ServerImpl, (char*) "unadvertised service %s", serviceName);
 			break;

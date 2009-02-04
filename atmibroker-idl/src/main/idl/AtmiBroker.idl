@@ -86,14 +86,6 @@ module AtmiBroker {
 		
 		void  start_service(in string service_name);
 	};
-
-	interface ServiceQueue
-	{	
-		oneway void send(in string replyto_ior,
-				  in octetSeq idata,
-				  in long ilen, 
-				  in long flags);
-	};
 	
 	interface EndpointQueue
 	{

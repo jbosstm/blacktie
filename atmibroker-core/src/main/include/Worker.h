@@ -28,7 +28,7 @@ public:
 	Worker(CORBA::ORB_ptr orb);
 	int svc();
 private:
-	CORBA::ORB_var m_orb;
 	static LoggerPtr logger;
+	CORBA::ORB_var m_orb;
 };
 #endif

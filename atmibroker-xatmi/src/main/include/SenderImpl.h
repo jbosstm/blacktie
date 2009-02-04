@@ -15,20 +15,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-/*
- * BREAKTHRUIT PROPRIETARY - NOT TO BE DISCLOSED OUTSIDE BREAKTHRUIT, LLC.
- */
-// copyright 2006, 2008 BreakThruIT
+#ifndef SenderImpl_H_
+#define SenderImpl_H_
 
-// AtmiBrokerServiceFac.h
+#ifdef TAO_COMP
+#include <tao/ORB.h>
+#include <orbsvcs/CosNamingS.h>
+#include "AtmiBrokerC.h"
+#endif
 
-#ifndef AtmiBroker_SERVICE_FAC_H
-#define AtmiBroker_SERVICE_FAC_H
+#include "log4cxx/logger.h"
+using namespace log4cxx;
 
-#include "atmiBrokerMacro.h"
+#include "Sender.h"
+class SenderImpl: public virtual Sender {
+public:
+	SenderImpl(CORBA::ORB_ptr orb, char * callback_ior);
+	SenderImpl(CosNaming::NamingContextExt_var context, CosNaming::NamingContext_var name_context, const char * serviceName);
+	virtual ~SenderImpl();
+	virtual void send(MESSAGE message);
+private:
+	static LoggerPtr logger;
+	AtmiBroker::EndpointQueue_var m_endpointQueue;
+};
 
-extern ATMIBROKER_DLL void remove_service_factory(char * serviceName);
-
-extern ATMIBROKER_DLL void create_service_factory(char *serviceName, void(*func)(TPSVCINFO *));
-
-#endif //AtmiBroker_SERVICE_FAC_H
+#endif

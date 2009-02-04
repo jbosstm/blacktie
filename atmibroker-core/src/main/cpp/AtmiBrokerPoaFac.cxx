@@ -70,20 +70,8 @@ AtmiBrokerPoaFac::~AtmiBrokerPoaFac() {
 // createCallbackPoa() -- Create a POA using a ServantActivator.
 //
 PortableServer::POA_ptr AtmiBrokerPoaFac::createCallbackPoa(CORBA::ORB_var orb, const char* poa_name, PortableServer::POA_ptr parent_poa, PortableServer::POAManager_ptr poa_manager) {
-	// Create a policy list. Policies not set in the list get default values.
-	//
 	CORBA::PolicyList policies;
 	policies.length(0);
-	//	int i = 0;
-
-	// Make the POA single threaded.
-	//
-	//	policies[i++] = parent_poa->create_thread_policy(PortableServer::ORB_CTRL_MODEL);
-	//	policies[i++] = parent_poa->create_thread_policy(PortableServer::SINGLE_THREAD_MODEL);
-	//
-
-	//assert(i==1);
-
 	return parent_poa->create_POA(poa_name, poa_manager, policies);
 }
 
@@ -93,34 +81,10 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createServiceFactoryPoa(CORBA::ORB_var
 	// Create a policy list. Policies not set in the list get default values.
 	//
 	CORBA::PolicyList policies;
-	policies.length(1);
-	int i = 0;
-
-	// Create Persistant Lifespan
-	//
-	policies[i++] = parent_poa->create_lifespan_policy(PortableServer::PERSISTENT);
-
-	// Make the POA single threaded.
-	//
-	//	policies[i++] = parent_poa->create_thread_policy(PortableServer::SINGLE_THREAD_MODEL);
-
-	return parent_poa->create_POA(poa_name, poa_manager, policies);
-}
-
-// createServicePoa()
-//
-PortableServer::POA_ptr AtmiBrokerPoaFac::createServicePoa(CORBA::ORB_var orb, const char* poa_name, PortableServer::POA_ptr parent_poa, PortableServer::POAManager_ptr poa_manager) {
-	// Create a policy list. Policies not set in the list get default values.
-	//
-	CORBA::PolicyList policies;
 	policies.length(2);
 	int i = 0;
-
-	// Make the POA single threaded.
-	//
 	policies[i++] = parent_poa->create_thread_policy(PortableServer::ORB_CTRL_MODEL);
-
-	// install transaction policy
+	//	policies[i++] = parent_poa->create_lifespan_policy(PortableServer::PERSISTENT);
 	add_transaction_policy(orb, policies, parent_poa, i, policies.length());
 
 	return parent_poa->create_POA(poa_name, poa_manager, policies);

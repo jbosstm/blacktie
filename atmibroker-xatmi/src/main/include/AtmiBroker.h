@@ -25,20 +25,26 @@
 #ifndef AtmiBroker_H
 #define AtmiBroker_H
 
-#include "atmiBrokerMacro.h"
-#include <vector>
+#ifdef TAO_COMP
+#include <tao/ORB.h>
+#include <orbsvcs/CosNamingS.h>
+#include <tao/PortableServer/PortableServerC.h>
+#endif
 
-extern ATMIBROKER_DLL int _tperrno;
-extern ATMIBROKER_DLL long _tpurcode;
+#include "Sender.h"
+#include "AtmiBrokerClient.h"
 
-// Constants
-extern int MAX_SERVICE_CACHE_SIZE;
-extern int MIN_SERVICE_CACHE_SIZE;
-extern int MIN_AVAILABLE_SERVICE_CACHE_SIZE;
-extern const char * MAX_REPLICAS;
-extern const char * MIN;
-extern const char * MAX;
-
+extern int _tperrno;
+extern long _tpurcode;
 extern bool loggerInitialized;
+extern Sender* get_service_queue(const char * serviceName);
+extern CORBA::ORB_var client_orb;
+extern PortableServer::POA_var client_root_poa;
+extern PortableServer::POAManager_var client_root_poa_manager;
+extern CosNaming::NamingContextExt_var client_default_context;
+extern CosNaming::NamingContext_var client_name_context;
+extern PortableServer::POA_var client_poa;
+extern AtmiBrokerClient * ptrAtmiBrokerClient;
+extern CORBA::PolicyList *policyList;
 
 #endif //AtmiBroker_H

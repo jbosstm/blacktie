@@ -24,8 +24,12 @@
 #include <stdio.h>
 
 #include "xatmi.h"
+#include "AtmiBroker.h"
 #include "AtmiBrokerClient.h"
 #include "EndpointQueue.h"
+#include "Sender.h"
+#include "SenderImpl.h"
+#include "Receiver.h"
 #include "AtmiBrokerClientXml.h"
 #include "userlog.h"
 
@@ -40,15 +44,15 @@ AtmiBrokerClient::AtmiBrokerClient() {
 	AtmiBrokerClientXml aAtmiBrokerClientXml;
 	aAtmiBrokerClientXml.parseXmlDescriptor(&clientServerVector, "CLIENT.xml");
 
-	clientCallbackImpl = new EndpointQueue(client_poa);
-	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "tmp_servant %p", (void*) clientCallbackImpl);
-
-	client_poa->activate_object(clientCallbackImpl);
-	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "activated tmp_servant %p", (void*) clientCallbackImpl);
-
-	CORBA::Object_ptr tmp_ref = client_poa->servant_to_reference(clientCallbackImpl);
-	clientCallback = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	clientCallbackImpl->setReplyTo(client_orb->object_to_string(clientCallback));
+	EndpointQueue* endpointQueue = new EndpointQueue(client_poa);
+	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "tmp_servant %p", (void*) endpointQueue);
+	client_poa->activate_object(endpointQueue);
+	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "activated tmp_servant %p", (void*) endpointQueue);
+	CORBA::Object_ptr tmp_ref = client_poa->servant_to_reference(endpointQueue);
+	AtmiBroker::EndpointQueue_var queue = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
+	endpointQueue->setReplyTo(client_orb->object_to_string(queue));
+	queueReceiver = endpointQueue;
+	id = 0;
 }
 
 AtmiBrokerClient::~AtmiBrokerClient() {
@@ -60,34 +64,26 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 	clientServerVector.clear();
 }
 
-EndpointQueue * AtmiBrokerClient::getLocalCallback(int id) {
-	return clientCallbackImpl;
+Session* AtmiBrokerClient::createSession() {
+	return this;
 }
 
-EndpointQueue * AtmiBrokerClient::getRemoteCallback(int id) {
-	return NULL;
+Session* AtmiBrokerClient::getSession(int* id) {
+	return this;
 }
 
-AtmiBroker::ServiceQueue_ptr AtmiBrokerClient::get_service_queue(const char * serviceName) {
-	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "get_service_queue: %s", serviceName);
+void AtmiBrokerClient::getId(int& id) {
+	id = this->id;
+}
 
-	CosNaming::Name * name = client_default_context->to_name(serviceName);
-	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "Service name %p", (void*) name);
+void AtmiBrokerClient::setReplyTo(char * replyTo) {
+	this->replyTo = replyTo;
+}
 
-	AtmiBroker::ServiceQueue_ptr ptr = NULL;
+Receiver * AtmiBrokerClient::getReceiver() {
+	return queueReceiver;
+}
 
-	try {
-		CORBA::Object_var tmp_ref = client_name_context->resolve(*name);
-		userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "Service ref %p", (void*) tmp_ref);
-		ptr = AtmiBroker::ServiceQueue::_narrow(tmp_ref);
-	} catch (...) {
-		userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "Could not access the service queue %p", (void*) name);
-	}
-
-	if (CORBA::is_nil(ptr)) {
-		userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "Could not retrieve queue for %s", serviceName);
-	} else
-		userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "retrieved  %s queue %p", serviceName, (void*) ptr);
-
-	return AtmiBroker::ServiceQueue::_duplicate(ptr);
+Sender * AtmiBrokerClient::getSender() {
+	return new SenderImpl(client_orb, replyTo);
 }

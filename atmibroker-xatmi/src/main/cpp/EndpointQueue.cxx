@@ -23,15 +23,6 @@
 //
 // Servant which implements the AtmiBroker::ClientCallback interface.
 //
-#ifdef TAO_COMP
-#include <tao/ORB.h>
-#include "tao/ORB_Core.h"
-#elif ORBIX_COMP
-#include <omg/orb.hh>
-#endif
-#ifdef VBC_COMP
-#include <orb.h>
-#endif
 #include <stdlib.h>
 #include <iostream>
 #include "EndpointQueue.h"
@@ -83,12 +74,12 @@ void EndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long
 	userlog(Level::getDebug(), loggerEndpointQueue, (char*) "client_callback():    flags = %d", flags);
 
 	MESSAGE message;
-	message.replyto_ior = replyto_ior;
+	message.replyto = replyto_ior;
 	message.rval = rval;
 	message.rcode = rcode;
-	message.idata = (char*) malloc(sizeof(char*) * ilen);
-	memcpy(message.idata, (char*) idata.get_buffer(), ilen);
-	message.ilen = ilen;
+	message.data = (char*) malloc(sizeof(char*) * ilen);
+	memcpy(message.data, (char*) idata.get_buffer(), ilen);
+	message.len = ilen;
 	message.flags = flags;
 	message.event = revent;
 
@@ -107,7 +98,7 @@ MESSAGE EndpointQueue::receive(long flags) {
 	// Default wait time is 10 seconds
 	long time = 10; // TODO Make configurable
 	MESSAGE message;
-	message.idata = NULL;
+	message.data = NULL;
 	lock->lock();
 	while (returnData.size() == 0) {
 		userlog(Level::getDebug(), loggerEndpointQueue, (char*) "waiting for %d", time);
@@ -133,6 +124,6 @@ void EndpointQueue::setReplyTo(const char* replyTo) {
 	m_replyTo = replyTo;
 }
 
-const char * EndpointQueue::getReplyTo() {
+const char * EndpointQueue::getDestinationName() {
 	return m_replyTo;
 }

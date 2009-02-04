@@ -27,20 +27,36 @@
 #include <iostream>
 
 #include "ThreadLocalStorage.h"
+#include "userlog.h"
+#include "tx.h"
+#include "AtmiBrokerOTS.h"
+#include "xatmi.h"
+#include "Session.h"
 #include "AtmiBrokerServer.h"
 #include "AtmiBrokerClientControl.h"
 #include "AtmiBrokerServerControl.h"
-#include "xatmi.h"
 #include "AtmiBroker.h"
 #include "AtmiBrokerConversation.h"
 #include "AtmiBroker_ServiceImpl.h"
-#include "userlog.h"
 #include "AtmiBrokerMem.h"
 #include "log4cxx/logger.h"
 
 using namespace log4cxx;
 using namespace log4cxx::helpers;
 LoggerPtr loggerXATMI(Logger::getLogger("loggerXATMI"));
+
+int _tperrno = 0;
+long _tpurcode = -1;
+
+int * _get_tperrno(void) {
+	userlog(Level::getDebug(), loggerXATMI, (char*) "_get_tperrno");
+	return &_tperrno;
+}
+
+long * _get_tpurcode(void) {
+	userlog(Level::getError(), loggerXATMI, (char*) "_get_tpurcode - Not implemented");
+	return &_tpurcode;
+}
 
 int tpadvertise(char * svcname, void(*func)(TPSVCINFO *)) {
 	tperrno = 0;
@@ -104,70 +120,136 @@ long tptypes(char* ptr, char* type, char* subtype) {
 }
 
 int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen, long flags) {
-	if (clientinit() != -1)
-		return AtmiBrokerConversation::get_instance()->tpcall(svc, idata, ilen, odata, olen, flags);
-	else
+	tperrno = 0;
+	if (clientinit() != -1) {
+		int cd = tpacall(svc, idata, ilen, flags);
+		if (cd != -1) {
+			return tpgetrply(&cd, odata, olen, flags);
+		} else {
+			return -1;
+		}
+	} else {
 		return -1;
+	}
 }
 
 int tpacall(char * svc, char* idata, long ilen, long flags) {
-	if (clientinit() != -1)
-		return AtmiBrokerConversation::get_instance()->tpacall(svc, idata, ilen, flags);
-	else
+	tperrno = 0;
+	if (clientinit() != -1) {
+		int cd = tpconnect(svc, idata, ilen, flags);
+		if (cd != -1) {
+			if (TPNOREPLY & flags) {
+				return 0;
+			}
+			return cd;
+		} else {
+			return -1;
+		}
+	} else {
 		return -1;
+	}
 }
 
 int tpconnect(char * svc, char* idata, long ilen, long flags) {
-	if (clientinit() != -1)
-		return AtmiBrokerConversation::get_instance()->tpconnect(svc, idata, ilen, flags);
-	else
+	tperrno = 0;
+	if (clientinit() != -1) {
+		Sender* ptr = NULL;
+		try {
+			ptr = ::get_service_queue(svc);
+		} catch (...) {
+			userlog(Level::getError(), loggerXATMI, (char*) "tpconnect get_service_queue failed");
+			tperrno = TPENOENT;
+			return -1;
+		}
+		Session* session = ptrAtmiBrokerClient->createSession();
+		long revent = 0;
+		AtmiBrokerConversation::get_instance()->send(ptr, session->getReceiver()->getDestinationName(), idata, ilen, flags, &revent);
+		int id = -1;
+		session->getId(id);
+		return id;
+	} else {
 		return -1;
+	}
 }
 
 int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
-	AtmiBroker_ServiceImpl* thread = (AtmiBroker_ServiceImpl*) getSpecific(SVC_KEY);
-	if (thread == NULL)
-		if (clientinit() != -1)
-			return AtmiBrokerConversation::get_instance()->tpsend(id, idata, ilen, flags, revent);
-		else
-			return -1;
-	else
-		return thread->tpsend(id, idata, ilen, flags, revent);
-}
-
-int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
-	AtmiBroker_ServiceImpl* thread = (AtmiBroker_ServiceImpl*) getSpecific(SVC_KEY);
-	if (thread == NULL)
-		if (clientinit() != -1)
-			return AtmiBrokerConversation::get_instance()->tprecv(id, odata, olen, flags, event);
-		else
-			return -1;
-	else
-		return thread->tprecv(id, odata, olen, flags, event);
-}
-
-int tpdiscon(int id) {
-	if (clientinit() != -1)
-		return AtmiBrokerConversation::get_instance()->tpdiscon(id);
-	else
+	tperrno = 0;
+	Session* session = (Session*) getSpecific(SVC_KEY);
+	if (session == NULL) {
+		if (clientinit() != -1) {
+			session = ptrAtmiBrokerClient->getSession(&id);
+		} else {
+			tperrno = TPESYSTEM;
+		}
+	}
+	if (session == NULL) {
+		tperrno = TPEBADDESC;
 		return -1;
-}
-
-int tpcancel(int id) {
-	if (clientinit() != -1)
-		return AtmiBrokerConversation::get_instance()->tpcancel(id);
-	else
-		return -1;
+	}
+	return AtmiBrokerConversation::get_instance()->send(session->getSender(), session->getReceiver()->getDestinationName(), idata, ilen, flags, revent);
 }
 
 int tpgetrply(int *id, char ** odata, long *olen, long flags) {
-	if (clientinit() != -1)
-		return AtmiBrokerConversation::get_instance()->tpgetrply(id, odata, olen, flags);
-	else
+	tperrno = 0;
+	if (clientinit() != -1) {
+		Session* session = ptrAtmiBrokerClient->getSession(id);
+		long events;
+		int toReturn = AtmiBrokerConversation::get_instance()->receive(session, odata, olen, flags, &events);
+		return toReturn;
+	} else {
 		return -1;
+	}
+}
+
+int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
+	tperrno = 0;
+	Session* session = (Session*) getSpecific(SVC_KEY);
+	if (session == NULL) {
+		if (clientinit() != -1) {
+			session = ptrAtmiBrokerClient->getSession(&id);
+		} else {
+			tperrno = TPESYSTEM;
+		}
+	}
+	if (session == NULL) {
+		tperrno = TPEBADDESC;
+	}
+	return AtmiBrokerConversation::get_instance()->receive(session, odata, olen, flags, event);
 }
 
 void tpreturn(int rval, long rcode, char* data, long len, long flags) {
+	tperrno = 0;
 	AtmiBroker_ServiceImpl* thread = (AtmiBroker_ServiceImpl*) getSpecific(SVC_KEY);
-	thread->tpreturn(rval, rcode, data, len, flags);
+	if (thread) {
+		thread->tpreturn(rval, rcode, data, len, flags);
+	} else {
+		tperrno = TPEPROTO;
+	}
+}
+
+int tpdiscon(int id) {
+	tperrno = 0;
+	if (clientinit() != -1) {
+		int toReturn = AtmiBrokerConversation::get_instance()->disconnect(id);
+		if (toReturn == 0) {
+			return tx_rollback();
+		}
+		return toReturn;
+	} else {
+		return -1;
+	}
+}
+
+int tpcancel(int id) {
+	tperrno = 0;
+	if (clientinit() != -1) {
+		CurrentImpl* currentImpl = AtmiBrokerOTS::get_instance()->getCurrentImpl();
+		if (currentImpl != NULL) {
+			tperrno = TPETRAN;
+			return -1;
+		}
+		return AtmiBrokerConversation::get_instance()->disconnect(id);
+	} else {
+		return -1;
+	}
 }

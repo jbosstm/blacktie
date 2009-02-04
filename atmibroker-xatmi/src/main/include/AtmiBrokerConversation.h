@@ -25,49 +25,26 @@
 #ifndef AtmiBroker_CONVERSATION_H
 #define AtmiBroker_CONVERSATION_H
 
-#include "atmiBrokerMacro.h"
+#include "Sender.h"
+#include "Session.h"
 
-#include "AtmiBrokerClient.h"
-
-#include <iostream>
-#include <vector>
-
-class ATMIBROKER_DLL AtmiBrokerConversation {
-
+class AtmiBrokerConversation {
 public:
-
-	AtmiBrokerConversation(AtmiBrokerClient* aAtmiBrokerClient);
-
-	~AtmiBrokerConversation();
-
-	char* getenv(char* anEnvName);
-
-	int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen, long flags);
-
-	int tpacall(char * svc, char* idata, long ilen, long flags);
-
-	int tpconnect(char * svc, char* idata, long ilen, long flags);
-
-	int tpsend(int id, char* idata, long ilen, long flags, long *revent);
-
-	int tprecv(int id, char ** odata, long *olen, long flags, long* event);
-
-	int tpgetrply(int *id, char ** odata, long *olen, long flags);
-
-	int tpdiscon(int id);
-
-	int tpcancel(int id);
-
 	static AtmiBrokerConversation* get_instance();
+
 	static void discard_instance();
 
-private:
-	int send(char* replyTo, char* idata, long ilen, long flags, long *revent);
+	int send(Sender* sender, const char* replyTo, char* idata, long ilen, long flags, long *revent);
+
+	int receive(Session* session, char ** odata, long *olen, long flags, long* event);
+
 	int disconnect(int id);
 
-	AtmiBrokerClient* mAtmiBrokerClient;
+private:
+	AtmiBrokerConversation();
+	~AtmiBrokerConversation();
 
 	static AtmiBrokerConversation* ptrAtmiBrokerConversation;
 };
 
-#endif //AtmiBroker_CONVERSATION_H
+#endif

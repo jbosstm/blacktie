@@ -60,6 +60,7 @@ extern PortableServer::POAManager_var server_root_poa_manager;
 extern CosNaming::NamingContextExt_var server_default_context;
 extern CosNaming::NamingContext_var server_name_context;
 extern PortableServer::POA_var server_poa;
+extern PortableServer::POA_var server_callback_poa;
 extern AtmiBrokerPoaFac * serverPoaFactory;
 
 extern AtmiBroker_ServerImpl * ptrServer;

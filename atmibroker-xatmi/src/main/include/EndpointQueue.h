@@ -47,11 +47,11 @@
 
 #include <queue>
 
-#include "Queue.h"
+#include "Receiver.h"
 #include "SynchronizableObject.h"
 #include "Message.h"
 
-class ATMIBROKER_DLL EndpointQueue: public virtual Queue, public virtual POA_AtmiBroker::EndpointQueue {
+class ATMIBROKER_DLL EndpointQueue: public virtual Receiver, public virtual POA_AtmiBroker::EndpointQueue {
 public:
 	EndpointQueue(PortableServer::POA_ptr);
 
@@ -70,7 +70,7 @@ public:
 
 	virtual MESSAGE receive(long flags);
 
-	virtual const char* getReplyTo();
+	virtual const char* getDestinationName();
 
 private:
 	// The following are not implemented
