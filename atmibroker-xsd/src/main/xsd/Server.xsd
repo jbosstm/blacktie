@@ -13,7 +13,7 @@
     <xsd:element name="SERVER_DESCRIPTION">
         <xsd:complexType>
             <xsd:sequence>
-  		<xsd:element name="LOGLEVEL" type="xsd:string"/>
+  		<xsd:element name="NAME" type="xsd:string"/>
   		<xsd:element name="MAX_REPLICAS" type="xsd:string"/>
   		<xsd:element name="MAX_CHANNELS" type="xsd:string"/>
   		<xsd:element name="MAX_SUPPLIERS" type="xsd:string"/>

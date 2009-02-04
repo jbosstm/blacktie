@@ -13,10 +13,7 @@
     <xsd:element name="SERVICE_DESCRIPTION">
         <xsd:complexType>
   		<xsd:sequence>
-  			<xsd:element name="LOGLEVEL" type="xsd:string"/>
-  			<xsd:element name="MAX" type="xsd:string"/>
-  			<xsd:element name="MIN" type="xsd:string"/>
-  			<xsd:element name="AVAILABLE" type="xsd:string"/>
+  			<xsd:element name="SIZE" type="xsd:string"/>
   		</xsd:sequence>
 	</xsd:complexType>
     </xsd:element>

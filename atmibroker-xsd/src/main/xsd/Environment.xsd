@@ -13,8 +13,6 @@
     <xsd:element name="ENVIRONMENT_DESCRIPTION">
         <xsd:complexType>
             <xsd:sequence>
-  		<xsd:element name="SERVER" type="xsd:string"/>
-  		<xsd:element name="COMPANY" type="xsd:string"/>
   		<xsd:element name="DOMAIN" type="xsd:string"/>
   		<xsd:element name="QSPACE_NAME" type="xsd:string"/>
   		<xsd:element name="ENV_VARIABLES">
