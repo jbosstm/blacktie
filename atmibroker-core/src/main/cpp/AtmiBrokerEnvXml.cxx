@@ -37,7 +37,6 @@ char* notifyServiceId;
 char* namingServiceId;
 char* loggingServiceId;
 char domain[30];
-char* company;
 char* queue_name;
 char* xaResourceMgrId;
 char* transFactoryId;
@@ -133,13 +132,6 @@ AtmiBrokerEnvXml::~AtmiBrokerEnvXml() {
 //	fputs(Server_End_Tag, aTempFile);
 //	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Server_End_Tag);
 //
-//	// Company
-//	fputs(Company_Begin_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Company_Begin_Tag);
-//	fputs(company, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << company);
-//	fputs(Company_End_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Company_End_Tag);
 //
 //	// Domain
 //	fputs(Domain_Begin_Tag, aTempFile);
@@ -390,12 +382,7 @@ endElement(void *userData, const char *name) {
 	strcpy(last_element, name);
 	strcpy(last_value, value);
 
-	if (strcmp(last_element, "COMPANY") == 0) {
-		storedElement = true;
-		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "storing COMPANY %s" << last_value);
-		processingCompany = false;
-		company = strdup(last_value);
-	} else if (strcmp(last_element, "DOMAIN") == 0) {
+	if (strcmp(last_element, "DOMAIN") == 0) {
 		storedElement = true;
 		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "storing Domain %s" << last_value);
 		processingDomain = false;

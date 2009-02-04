@@ -66,22 +66,22 @@ void initOrb(char* name, Worker*& worker, CORBA::ORB_ptr& orbRef, CosNaming::Nam
 		if (CORBA::is_nil(name_ctx)) {
 			LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext getting Naming Service Instance  ");
 
-			LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext company is  %s" << company);
+			LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext domain is  %s" << domain);
 
 			CosNaming::Name_var name;
 			try {
-				CORBA::Object_var tmp_ref = default_ctx->resolve_str(company);
+				CORBA::Object_var tmp_ref = default_ctx->resolve_str(domain);
 				name_ctx = CosNaming::NamingContext::_narrow(tmp_ref);
-				LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext found company naming context");
+				LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext found domain naming context");
 			} catch (const CosNaming::NamingContext::NotFound&) {
 				try {
-					name = default_ctx->to_name(company);
+					name = default_ctx->to_name(domain);
 					name_ctx = default_ctx->bind_new_context(name);
-					LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext created company naming context");
+					LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext created domain naming context");
 				} catch (const CosNaming::NamingContext::AlreadyBound&) {
 					name_ctx = default_ctx->new_context();
 					default_ctx->rebind_context(name, name_ctx.in());
-					LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext re-created company naming context");
+					LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext re-created domain naming context");
 				}
 			}
 			LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext got Naming Service Instance  ");

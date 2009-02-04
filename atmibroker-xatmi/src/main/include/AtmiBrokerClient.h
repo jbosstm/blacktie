@@ -54,11 +54,9 @@ public:
 	EndpointQueue * getRemoteCallback(int id);
 protected:
 
-	std::vector<char *> serviceNameArray;
 	std::vector<ClientServerInfo*> clientServerVector;
 	AtmiBroker::EndpointQueue_var clientCallback;
 	EndpointQueue * clientCallbackImpl;
-	char* clientCallbackIOR;
 };
 
 extern ATMIBROKER_DLL CORBA::ORB_var client_orb;

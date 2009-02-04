@@ -45,7 +45,6 @@ public:
 
 };
 
-extern ATMIBROKER_CORE_DLL char* company;
 extern ATMIBROKER_CORE_DLL char domain[30];
 extern ATMIBROKER_CORE_DLL char * loggingServiceId;
 extern ATMIBROKER_CORE_DLL char * notifyServiceId;
