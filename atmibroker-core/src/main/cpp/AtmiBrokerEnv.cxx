@@ -121,9 +121,6 @@ int AtmiBrokerEnv::putenv(char* anEnvNameValue) {
 	free(name);
 	free(value);
 
-	//	AtmiBrokerEnvXml aAtmiBrokerEnvXml;
-	//	aAtmiBrokerEnvXml.writeXmlDescriptor(&envVariableInfoSeq, ENVIRONMENT_FILE);
-
 	return 1;
 }
 

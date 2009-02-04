@@ -37,7 +37,7 @@ void initOrb(char* name, Worker*& worker, CORBA::ORB_ptr& orbRef, CosNaming::Nam
 		strcpy(cstr, values.c_str());
 		char** vals = (char**) malloc(sizeof(char) * values.size() * 2);
 		p = strtok(cstr, " ");
-		vals[0] = strdup(name);	//TODO check for resource leakage
+		vals[0] = strdup(name); //TODO check for resource leakage
 		int i = 0;
 
 		while (p != NULL) {
@@ -116,6 +116,12 @@ void shutdownBindings(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, Port
 			LOG4CXX_FATAL(loggerOrbManagement, (char*) "shutdownBindings Unexpected fatal exception");
 		}
 
+		if (worker != NULL) {
+			worker->wait();
+			delete worker;
+			worker = NULL;
+		}
+
 		try {
 			// TODO DOES NOT WORK WHEN NO ORB WORK DONE
 			LOG4CXX_DEBUG(loggerOrbManagement, (char*) "shutdownBindings destroying ORB ");
@@ -123,12 +129,6 @@ void shutdownBindings(CORBA::ORB_ptr& orbRef, PortableServer::POA_var& poa, Port
 		} catch (CORBA::Exception &ex) {
 			LOG4CXX_ERROR(loggerOrbManagement, (char*) "shutdownBindings Unexpected CORBA exception destroying orb: " << ex._name());
 		}
-	}
-
-	if (worker != NULL) {
-		worker->wait();
-		delete worker;
-		worker = NULL;
 	}
 
 	if (innerPoa) {

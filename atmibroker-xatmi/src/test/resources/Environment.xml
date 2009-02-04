@@ -17,7 +17,6 @@
 	-->
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<ENVIRONMENT_DESCRIPTION>
-		<COMPANY>tomcom</COMPANY>
 		<DOMAIN>fooapp</DOMAIN>
 		<QSPACE_NAME></QSPACE_NAME>
 		<NAMING_SERVICE_ID></NAMING_SERVICE_ID>

@@ -59,7 +59,6 @@ static int envVariableCount = 0;
 
 static bool processingEnvironment = false;
 static bool processingServer = false;
-static bool processingCompany = false;
 static bool processingQSpaceName = false;
 static bool processingNamingServiceId = false;
 static bool processingNotifyServiceId = false;
@@ -84,7 +83,6 @@ AtmiBrokerEnvXml::AtmiBrokerEnvXml() {
 
 	processingEnvironment = false;
 	processingServer = false;
-	processingCompany = false;
 	processingQSpaceName = false;
 	processingNamingServiceId = false;
 	processingNotifyServiceId = false;
@@ -107,198 +105,6 @@ AtmiBrokerEnvXml::AtmiBrokerEnvXml() {
 AtmiBrokerEnvXml::~AtmiBrokerEnvXml() {
 }
 
-//void AtmiBrokerEnvXml::writeXmlDescriptor(AtmiBroker::EnvVariableInfoSeq* aEnvironmentStructPtr, const char * aDescriptorFileName) {
-//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "writeXmlDescriptor() ");
-//
-//	char fileName[50];
-//	strcpy(fileName, AtmiBrokerEnv::ENVIRONMENT_FILE);
-//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "file name %s" << aDescriptorFileName);
-//	FILE* aTempFile = fopen(fileName, "w");
-//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "file opened %p" << aTempFile);
-//
-//	// Environment
-//	fputs(Environment_Begin_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Environment_Begin_Tag);
-//
-//	// Environment Desc
-//	fputs(Environment_Desc_Begin_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Environment_Desc_Begin_Tag);
-//
-//	// Server
-//	fputs(Server_Begin_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Server_Begin_Tag);
-//	fputs(server, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << server);
-//	fputs(Server_End_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Server_End_Tag);
-//
-//
-//	// Domain
-//	fputs(Domain_Begin_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Domain_Begin_Tag);
-//	fputs(domain, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << domain);
-//	fputs(Domain_End_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Domain_End_Tag);
-//
-//	// QSpace Name
-//	fputs(QSpace_Name_Begin_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << QSpace_Name_Begin_Tag);
-//	fputs(queue_name, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << queue_name);
-//	fputs(QSpace_Name_End_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << QSpace_Name_End_Tag);
-//
-//	// Naming Service Id
-//	fputs(Naming_Service_Id_Begin_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Naming_Service_Id_Begin_Tag);
-//	fputs(namingServiceId, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << namingServiceId);
-//	fputs(Naming_Service_Id_End_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Naming_Service_Id_End_Tag);
-//
-//	// Notify Service Id
-//	fputs(Notify_Service_Id_Begin_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Notify_Service_Id_Begin_Tag);
-//	fputs(notifyServiceId, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << notifyServiceId);
-//	fputs(Notify_Service_Id_End_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Notify_Service_Id_End_Tag);
-//
-//	// Logging Service Id
-//	fputs(Logging_Service_Id_Begin_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Logging_Service_Id_Begin_Tag);
-//	fputs(loggingServiceId, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << loggingServiceId);
-//	fputs(Logging_Service_Id_End_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Logging_Service_Id_End_Tag);
-//
-//	// Transaction Factory Id
-//	fputs(Trans_Factory_Id_Begin_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Trans_Factory_Id_Begin_Tag);
-//	fputs(transFactoryId, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << transFactoryId);
-//	fputs(Trans_Factory_Id_End_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Trans_Factory_Id_End_Tag);
-//
-//	// XA Resource Id
-//	fputs(XA_Resource_Mgr_Id_Begin_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Resource_Mgr_Id_Begin_Tag);
-//	fputs(xaResourceMgrId, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << xaResourceMgrId);
-//	fputs(XA_Resource_Mgr_Id_End_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Resource_Mgr_Id_End_Tag);
-//
-//	// XA Resource Name
-//	fputs(XA_Resource_Name_Begin_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Resource_Name_Begin_Tag);
-//	fputs(xaResourceName, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << xaResourceName);
-//	fputs(XA_Resource_Name_End_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Resource_Name_End_Tag);
-//
-//	// XA Open String
-//	fputs(XA_Open_String_Begin_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Open_String_Begin_Tag);
-//	fputs(xaOpenString, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << xaOpenString);
-//	fputs(XA_Open_String_End_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Open_String_End_Tag);
-//
-//	// XA Close String
-//	fputs(XA_Close_String_Begin_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Close_String_Begin_Tag);
-//	fputs(xaCloseString, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << xaCloseString);
-//	fputs(XA_Close_String_End_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Close_String_End_Tag);
-//
-//	// XA Thread Model
-//	fputs(XA_Thread_Model_Begin_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Thread_Model_Begin_Tag);
-//	if (xaThreadModel) {
-//		fputs("TRUE", aTempFile);
-//		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote TRUE");
-//	} else {
-//		fputs("FALSE", aTempFile);
-//		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote FALSE");
-//	}
-//	fputs(XA_Thread_Model_End_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Thread_Model_End_Tag);
-//
-//	// XA Automatic Association
-//	fputs(XA_Automatic_Association_Begin_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Automatic_Association_Begin_Tag);
-//	if (xaAutomaticAssociation) {
-//		fputs("TRUE", aTempFile);
-//		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote TRUE");
-//	} else {
-//		fputs("FALSE", aTempFile);
-//		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote FALSE");
-//	}
-//	fputs(XA_Automatic_Association_End_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Automatic_Association_End_Tag);
-//
-//	// XA Dynamic Registration Optimization
-//	fputs(XA_Dynamic_Registration_Optimization_Begin_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Dynamic_Registration_Optimization_Begin_Tag);
-//	if (xaDynamicRegistrationOptimization) {
-//		fputs("TRUE", aTempFile);
-//		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote TRUE");
-//	} else {
-//		fputs("FALSE", aTempFile);
-//		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote FALSE");
-//	}
-//	fputs(XA_Dynamic_Registration_Optimization_End_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << XA_Dynamic_Registration_Optimization_End_Tag);
-//
-//	// Env Variables
-//	fputs(Env_Variables_Begin_Tag, aTempFile);
-//
-//	for (unsigned int i = 0; i < aEnvironmentStructPtr->length(); i++) {
-//		// Env Variable
-//		fputs(Env_Variable_Begin_Tag, aTempFile);
-//		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Env_Variable_Begin_Tag);
-//
-//		// Env Name
-//		fputs(Env_Name_Begin_Tag, aTempFile);
-//		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Env_Name_Begin_Tag);
-//		fputs((const char*) (*aEnvironmentStructPtr)[i].name, aTempFile);
-//		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << (const char*)(*aEnvironmentStructPtr)[i].name);
-//		fputs(Env_Name_End_Tag, aTempFile);
-//		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Env_Name_End_Tag);
-//
-//		// Env Value
-//		fputs(Env_Value_Begin_Tag, aTempFile);
-//		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Env_Value_Begin_Tag);
-//		fputs((const char*) (*aEnvironmentStructPtr)[i].value, aTempFile);
-//		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << (const char*)(*aEnvironmentStructPtr)[i].value);
-//		fputs(Env_Value_End_Tag, aTempFile);
-//		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Env_Value_End_Tag);
-//
-//		// Env Variable
-//		fputs(Env_Variable_End_Tag, aTempFile);
-//		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Env_Variable_End_Tag);
-//	}
-//
-//	// Env Variables
-//	fputs(Env_Variables_End_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Env_Variables_End_Tag);
-//
-//	// Environment Desc
-//	fputs(Environment_Desc_End_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Environment_Desc_End_Tag);
-//
-//	// Environment
-//	fputs(Environment_End_Tag, aTempFile);
-//	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "wrote '%s'" << Environment_End_Tag);
-//
-//	fflush(aTempFile);
-//	fclose(aTempFile);
-//
-//	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "leaving writeXmlDescriptor() ");
-//}
-
 static void XMLCALL
 startElement(void *userData, const char *name, const char **atts) {
 	std::vector<envVar_t>* aEnvironmentStructPtr = (std::vector<envVar_t>*) userData;
@@ -310,9 +116,6 @@ startElement(void *userData, const char *name, const char **atts) {
 	} else if (strcmp(name, "SERVER") == 0) {
 		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processing Server for environment ");
 		processingServer = true;
-	} else if (strcmp(name, "COMPANY") == 0) {
-		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processing Company for environment ");
-		processingCompany = true;
 	} else if (strcmp(name, "DOMAIN") == 0) {
 		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processing Domain for environment ");
 		processingDomain = true;
