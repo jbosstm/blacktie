@@ -45,10 +45,9 @@ public:
 	virtual ~AtmiBroker_ServiceImpl();
 
 	void onMessage(MESSAGE message);
-	void tpreturn(int rval, long rcode, char* data, long len, long flags);
 	bool sameBuffer(char *toCheck);
 	void getId(int& id);
-	void setReplyTo(char* replyTo);
+	void setSendTo(char* replyTo);
 	Receiver * getReceiver();
 	Sender * getSender();
 protected:

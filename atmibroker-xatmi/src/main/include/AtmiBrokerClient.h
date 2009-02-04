@@ -42,7 +42,7 @@ public:
 	Session* createSession();
 	Session* getSession(int* id);
 	void getId(int& id);
-	void setReplyTo(char* replyTo);
+	void setSendTo(char* replyTo);
 	Receiver* getReceiver();
 	Sender* getSender();
 protected:

@@ -45,7 +45,7 @@ AtmiBroker_ServiceImpl::AtmiBroker_ServiceImpl(char *serviceName, void(*func)(TP
 	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "activated tmp_servant %p", endpointQueue);
 	CORBA::Object_ptr tmp_ref = server_callback_poa->servant_to_reference(endpointQueue);
 	AtmiBroker::EndpointQueue_var queue = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	endpointQueue->setReplyTo(server_orb->object_to_string(queue));
+	endpointQueue->setDestinationName(server_orb->object_to_string(queue));
 	queueReceiver = endpointQueue;
 }
 
@@ -81,20 +81,6 @@ void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
 	destroySpecific(SVC_KEY);
 }
 
-// tpreturn()
-//
-void AtmiBroker_ServiceImpl::tpreturn(int rval, long rcode, char* data, long len, long flags) {
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "tpreturn()");
-	MESSAGE message;
-	message.rval = rval;
-	message.rcode = rcode;
-	message.data = data;
-	message.len = len;
-	message.flags = flags;
-	getSender()->send(message);
-	userlog(Level::getDebug(), loggerAtmiBroker_ServiceImpl, (char*) "Calling back ");
-}
-
 bool AtmiBroker_ServiceImpl::sameBuffer(char* toCheck) {
 	bool toReturn = false;
 	if (!toCheck || toCheck == NULL) {
@@ -115,7 +101,7 @@ Receiver* AtmiBroker_ServiceImpl::getReceiver() {
 	return queueReceiver;
 }
 
-void AtmiBroker_ServiceImpl::setReplyTo(char * replyTo) {
+void AtmiBroker_ServiceImpl::setSendTo(char * replyTo) {
 
 }
 

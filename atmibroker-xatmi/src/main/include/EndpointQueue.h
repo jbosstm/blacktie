@@ -66,9 +66,9 @@ public:
 
 	virtual void disconnect() throw (CORBA::SystemException );
 
-	void setReplyTo(const char * replyTo);
-
 	virtual MESSAGE receive(long flags);
+
+	void setDestinationName(const char * replyTo);
 
 	virtual const char* getDestinationName();
 
@@ -79,7 +79,7 @@ private:
 	EndpointQueue& operator=(const EndpointQueue &);
 	std::queue<MESSAGE> returnData;
 	SynchronizableObject* lock;
-	const char * m_replyTo;
+	const char * destinationName;
 };
 
 #endif

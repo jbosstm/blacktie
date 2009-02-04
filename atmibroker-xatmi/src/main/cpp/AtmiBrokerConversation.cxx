@@ -87,7 +87,7 @@ int AtmiBrokerConversation::receive(Session* session, char ** odata, long *olen,
 		*odata = message.data;
 		*olen = message.len;
 		*event = message.event;
-		session->setReplyTo((char*) message.replyto);
+		session->setSendTo((char*) message.replyto);
 		userlog(Level::getDebug(), loggerAtmiBrokerConversation, (char*) "returning - %s", *odata);
 	} else {
 		tperrno = TPETIME;

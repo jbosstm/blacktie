@@ -50,7 +50,7 @@ AtmiBrokerClient::AtmiBrokerClient() {
 	userlog(Level::getDebug(), loggerAtmiBrokerClient, (char*) "activated tmp_servant %p", (void*) endpointQueue);
 	CORBA::Object_ptr tmp_ref = client_poa->servant_to_reference(endpointQueue);
 	AtmiBroker::EndpointQueue_var queue = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	endpointQueue->setReplyTo(client_orb->object_to_string(queue));
+	endpointQueue->setDestinationName(client_orb->object_to_string(queue));
 	queueReceiver = endpointQueue;
 	id = 0;
 }
@@ -76,7 +76,7 @@ void AtmiBrokerClient::getId(int& id) {
 	id = this->id;
 }
 
-void AtmiBrokerClient::setReplyTo(char * replyTo) {
+void AtmiBrokerClient::setSendTo(char * replyTo) {
 	this->replyTo = replyTo;
 }
 

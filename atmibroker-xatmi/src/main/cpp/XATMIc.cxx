@@ -29,7 +29,6 @@
 #include "ThreadLocalStorage.h"
 #include "userlog.h"
 #include "tx.h"
-#include "AtmiBrokerOTS.h"
 #include "xatmi.h"
 #include "Session.h"
 #include "AtmiBrokerServer.h"
@@ -219,9 +218,10 @@ int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 
 void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 	tperrno = 0;
-	AtmiBroker_ServiceImpl* thread = (AtmiBroker_ServiceImpl*) getSpecific(SVC_KEY);
-	if (thread) {
-		thread->tpreturn(rval, rcode, data, len, flags);
+	Session* session = (Session*) getSpecific(SVC_KEY);
+	if (session) {
+		long event = 0;
+		AtmiBrokerConversation::get_instance()->send(session->getSender(), "", data, len, flags, &event);
 	} else {
 		tperrno = TPEPROTO;
 	}
@@ -232,7 +232,10 @@ int tpdiscon(int id) {
 	if (clientinit() != -1) {
 		int toReturn = AtmiBrokerConversation::get_instance()->disconnect(id);
 		if (toReturn == 0) {
-			return tx_rollback();
+			void* currentImpl = getSpecific(TSS_KEY);
+			if (currentImpl) {
+				return tx_rollback();
+			}
 		}
 		return toReturn;
 	} else {
@@ -243,8 +246,8 @@ int tpdiscon(int id) {
 int tpcancel(int id) {
 	tperrno = 0;
 	if (clientinit() != -1) {
-		CurrentImpl* currentImpl = AtmiBrokerOTS::get_instance()->getCurrentImpl();
-		if (currentImpl != NULL) {
+		void* currentImpl = getSpecific(TSS_KEY);
+		if (currentImpl) {
 			tperrno = TPETRAN;
 			return -1;
 		}
