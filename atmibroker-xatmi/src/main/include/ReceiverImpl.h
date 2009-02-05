@@ -15,25 +15,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#ifndef ReceiverImpl_H_
+#define ReceiverImpl_H_
 
-#ifndef SERVICEDISPATCHER_H_
-#define SERVICEDISPATCHER_H_
-
-#include <ace/Task.h>
 #include "log4cxx/logger.h"
-#include "Destination.h"
-#include "MessageListener.h"
 
-class ServiceDispatcher: public ACE_Task_Base {
+#include "Receiver.h"
+#include "Destination.h"
+
+class ReceiverImpl: public virtual Receiver {
 public:
-	ServiceDispatcher(Destination* serviceQueue, MessageListener* service);
-	int svc();
-	void shutdown();
+	ReceiverImpl(void* connection_poa, void* connection_orb);
+	virtual ~ReceiverImpl();
+	virtual MESSAGE receive(long flags);
+	virtual Destination* getDestination();
 private:
 	static log4cxx::LoggerPtr logger;
-	Destination* m_serviceQueue;
-	MessageListener* m_service;
-	bool m_shutdown;
+	Destination* destination;
 };
 
 #endif

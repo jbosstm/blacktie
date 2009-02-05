@@ -22,7 +22,8 @@
 
 log4cxx::LoggerPtr SenderImpl::logger(log4cxx::Logger::getLogger("SenderImpl"));
 
-SenderImpl::SenderImpl(CORBA::ORB_ptr orb, char * callback_ior) {
+SenderImpl::SenderImpl(void* connection_orb, char * callback_ior) {
+	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection_orb;
 	userlog(log4cxx::Level::getDebug(), logger, (char*) "service_request_async()");
 	CORBA::Object_var tmp_ref = orb->string_to_object(callback_ior);
 	m_endpointQueue = AtmiBroker::EndpointQueue::_narrow(tmp_ref);

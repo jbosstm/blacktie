@@ -37,20 +37,20 @@
 #ifdef TAO_COMP
 #include "tao/ORB.h"
 #include "AtmiBrokerS.h"
-#elif ORBIX_COMP
-#include <omg/orb.hh>
-#include "AtmiBrokerS.hh"
-#endif
-#ifdef VBC_COMP
-#include <orb.h>
-#include "AtmiBroker_s.hh"
 #endif
 
 #include <iostream>
 #include <vector>
 #include "xatmi.h"
 #include "AtmiBrokerServerXml.h"
+#include "ServiceQueue.h"
 
+struct _service_data {
+	char* serviceName;
+	ServiceQueue* serviceQueue;
+	void (*func)(TPSVCINFO *);
+};
+typedef _service_data ServiceData;
 class ATMIBROKER_DLL AtmiBroker_ServerImpl: public virtual POA_AtmiBroker::Server {
 public:
 	AtmiBroker_ServerImpl(PortableServer::POA_ptr);
@@ -96,13 +96,16 @@ public:
 
 	bool isAdvertised(char * serviceName);
 
-protected:
-	char * serverName;
-	int logLevel;
-	ServerMetadata serverInfo;
-	std::vector<char*> advertisedServices;
-
 private:
+	void (*getServiceMethod(const char * aServiceName))(TPSVCINFO *);
+	void addServiceQueue(char*& aServiceName, ServiceQueue*& refPtr, void(*func)(TPSVCINFO *));
+	ServiceQueue* getServiceQueue(const char * aServiceName);
+	ServiceQueue* removeServiceQueue(const char * aServiceName);
+
+	std::vector<ServiceData> serviceData;
+	std::vector<char*> advertisedServices;
+	char * serverName;
+	ServerMetadata serverInfo;
 
 	// The following are not implemented
 	//

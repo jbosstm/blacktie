@@ -30,7 +30,6 @@
 #include "AtmiBrokerEnvXml.h"
 
 #include "AtmiBroker.h"
-#include "AtmiBrokerServiceFacMgr.h"
 #include "AtmiBrokerMem.h"
 #include "AtmiBrokerServer.h"
 #include "AtmiBrokerServerControl.h"
@@ -134,7 +133,6 @@ int serverinit(int argc, char ** argv) {
 			// TODO CLEAN UP TRANSACTION CURRENT
 			userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverinit deleting services");
 			AtmiBrokerMem::discard_instance();
-			AtmiBrokerServiceFacMgr::discard_instance();
 			//TODO READD AtmiBrokerNotify::discard_instance();
 			AtmiBrokerOTS::discard_instance();
 			AtmiBrokerEnv::discard_instance();
@@ -165,7 +163,6 @@ int serverdone() {
 			// TODO CLEAN UP TRANSACTION CURRENT
 			userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone deleting services");
 			AtmiBrokerMem::discard_instance();
-			AtmiBrokerServiceFacMgr::discard_instance();
 			//TODO READD AtmiBrokerNotify::discard_instance();
 			AtmiBrokerOTS::discard_instance();
 			AtmiBrokerEnv::discard_instance();

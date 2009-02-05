@@ -20,7 +20,7 @@
 
 log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger("ServiceDispatcher"));
 
-ServiceDispatcher::ServiceDispatcher(Receiver* serviceQueue, MessageListener* service) :
+ServiceDispatcher::ServiceDispatcher(Destination* serviceQueue, MessageListener* service) :
 	m_serviceQueue(serviceQueue), m_service(service), m_shutdown(false) {
 }
 

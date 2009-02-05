@@ -43,15 +43,17 @@
 #include "xatmi.h"
 #include "ServiceDispatcher.h"
 #include "Message.h"
-#include "Receiver.h"
+#include "Destination.h"
 #include "AtmiBrokerServiceXml.h"
 
-class ATMIBROKER_DLL ServiceQueue: public virtual Receiver, public virtual POA_AtmiBroker::EndpointQueue {
+class ATMIBROKER_DLL ServiceQueue: public virtual Destination, public virtual POA_AtmiBroker::EndpointQueue {
 public:
 	ServiceQueue(void* thePoa, char *serviceName, void(*func)(TPSVCINFO *));
 	virtual ~ServiceQueue();
 
 	virtual void send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent) throw (CORBA::SystemException );
+
+	virtual void disconnect();
 
 	void* getPoa();
 
@@ -59,9 +61,7 @@ public:
 
 	virtual MESSAGE receive(long flags);
 
-	virtual const char* getDestinationName();
-
-	virtual void disconnect();
+	virtual const char* getName();
 protected:
 	void* thePoa;
 	char* serviceName;

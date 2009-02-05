@@ -47,11 +47,11 @@
 
 #include <queue>
 
-#include "Receiver.h"
+#include "Destination.h"
 #include "SynchronizableObject.h"
 #include "Message.h"
 
-class ATMIBROKER_DLL EndpointQueue: public virtual Receiver, public virtual POA_AtmiBroker::EndpointQueue {
+class ATMIBROKER_DLL EndpointQueue: public virtual Destination, public virtual POA_AtmiBroker::EndpointQueue {
 public:
 	EndpointQueue(PortableServer::POA_ptr);
 
@@ -66,11 +66,11 @@ public:
 
 	virtual void disconnect() throw (CORBA::SystemException );
 
+	void setName(const char * name);
+
 	virtual MESSAGE receive(long flags);
 
-	void setDestinationName(const char * replyTo);
-
-	virtual const char* getDestinationName();
+	virtual const char* getName();
 
 private:
 	// The following are not implemented
@@ -79,7 +79,7 @@ private:
 	EndpointQueue& operator=(const EndpointQueue &);
 	std::queue<MESSAGE> returnData;
 	SynchronizableObject* lock;
-	const char * destinationName;
+	const char* name;
 };
 
 #endif

@@ -26,11 +26,10 @@
 
 #include "log4cxx/logger.h"
 
-
 #include "Sender.h"
 class SenderImpl: public virtual Sender {
 public:
-	SenderImpl(CORBA::ORB_ptr orb, char * callback_ior);
+	SenderImpl(void* orb, char * callback_ior);
 	SenderImpl(CosNaming::NamingContextExt_var context, CosNaming::NamingContext_var name_context, const char * serviceName);
 	virtual ~SenderImpl();
 	virtual void send(MESSAGE message);

@@ -15,25 +15,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#ifndef Destination_H_
+#define Destination_H_
 
-#ifndef SERVICEDISPATCHER_H_
-#define SERVICEDISPATCHER_H_
+#include "Message.h"
 
-#include <ace/Task.h>
-#include "log4cxx/logger.h"
-#include "Destination.h"
-#include "MessageListener.h"
-
-class ServiceDispatcher: public ACE_Task_Base {
+class Destination {
 public:
-	ServiceDispatcher(Destination* serviceQueue, MessageListener* service);
-	int svc();
-	void shutdown();
-private:
-	static log4cxx::LoggerPtr logger;
-	Destination* m_serviceQueue;
-	MessageListener* m_service;
-	bool m_shutdown;
+	virtual MESSAGE receive(long flags) = 0;
+	virtual const char* getName() = 0;
 };
 
 #endif

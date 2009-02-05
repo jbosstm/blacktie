@@ -29,27 +29,18 @@
 #define AtmiBroker_CLIENT_H_
 
 #include "Session.h"
-#include "Sender.h"
-#include "Receiver.h"
 #include "AtmiBrokerClientXml.h"
 
 #include <vector>
 
-class AtmiBrokerClient: public virtual Session {
+class AtmiBrokerClient {
 public:
 	AtmiBrokerClient();
 	virtual ~AtmiBrokerClient();
-	Session* createSession();
+	Session* createSession(int& id);
 	Session* getSession(int* id);
-	void getId(int& id);
-	void setSendTo(char* replyTo);
-	Receiver* getReceiver();
-	Sender* getSender();
 protected:
 	std::vector<ClientServerInfo*> clientServerVector;
-	int id;
-	char * replyTo;
-	Receiver* queueReceiver;
-	Sender* queueSender;
+	Session* session;
 };
 #endif

@@ -19,11 +19,12 @@
 #define Receiver_H_
 
 #include "Message.h"
+#include "Destination.h"
 
 class Receiver {
 public:
 	virtual MESSAGE receive(long flags) = 0;
-	virtual const char* getDestinationName() = 0;
+	virtual Destination* getDestination() = 0;
 };
 
 #endif

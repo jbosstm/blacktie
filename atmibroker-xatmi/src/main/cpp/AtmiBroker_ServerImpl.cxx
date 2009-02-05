@@ -39,12 +39,10 @@
 
 #include "AtmiBrokerEnvXml.h"
 #include "AtmiBrokerServer.h"
-#include "AtmiBrokerServiceFacMgr.h"
 #include "AtmiBrokerServerXml.h"
 #include "AtmiBrokerEnv.h"
 #include "userlog.h"
 #include "log4cxx/logger.h"
-
 
 log4cxx::LoggerPtr loggerAtmiBroker_ServerImpl(log4cxx::Logger::getLogger("AtmiBroker_ServerImpl"));
 
@@ -75,8 +73,9 @@ AtmiBroker_ServerImpl::AtmiBroker_ServerImpl(PortableServer::POA_ptr the_poa) {
 // ~AtmiBroker_ServerImpl destructor.
 //
 AtmiBroker_ServerImpl::~AtmiBroker_ServerImpl() {
-	// Intentionally empty.
-	//
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "destructor ");
+	serviceData.clear();
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "deleted service array ");
 }
 
 // server_init() -- Implements IDL operation "AtmiBroker::Server::server_init".
@@ -147,7 +146,7 @@ bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPS
 		tperrno = TPELIMIT;
 		return false;
 	}
-	void (*serviceFunction)(TPSVCINFO*) = AtmiBrokerServiceFacMgr::get_instance()->getServiceMethod(serviceName);
+	void (*serviceFunction)(TPSVCINFO*) = getServiceMethod(serviceName);
 	if (serviceFunction != NULL) {
 		if (serviceFunction == func) {
 			return true;
@@ -161,12 +160,12 @@ bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPS
 
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "advertiseService(): '%s'", serviceName);
 
-	// create reference for Service Factory and cache
+	// create reference for Service Queue and cache
 	try {
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "create_service_factory: %s", serviceName);
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "create_service_queue: %s", serviceName);
 
-		// create Poa for Service Factory
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "create_service_factory_poa: %s", serviceName);
+		// create Poa for Service Queue
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "create_service_queue_poa: %s", serviceName);
 		PortableServer::POA_ptr aFactoryPoaPtr = serverPoaFactory->createServiceFactoryPoa(server_orb, serviceName, server_poa, server_root_poa_manager);
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "created create_service_factory_poa: %s", serviceName);
 
@@ -180,8 +179,8 @@ bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPS
 		CosNaming::Name * name = server_default_context->to_name(serviceName);
 		server_name_context->bind(*name, tmp_ref);
 
-		AtmiBrokerServiceFacMgr::get_instance()->addServiceFactory(serviceName, tmp_factory_servant, func);
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "created ServiceFactory %s", serviceName);
+		addServiceQueue(serviceName, tmp_factory_servant, func);
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "created ServiceQueue %s", serviceName);
 
 	} catch (...) {
 		userlog(log4cxx::Level::getError(), loggerAtmiBroker_ServerImpl, (char*) "service has already been advertised, however it appears to be by a different server (possibly with the same name), which is strange... %s", serviceName);
@@ -199,16 +198,16 @@ bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPS
 void AtmiBroker_ServerImpl::unadvertiseService(char * serviceName) {
 	for (std::vector<char*>::iterator i = advertisedServices.begin(); i != advertisedServices.end(); i++) {
 		if (strcmp(serviceName, (*i)) == 0) {
-			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "remove_service_factory: %s", serviceName);
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "remove_service_queue: %s", serviceName);
 			CosNaming::Name * name = server_default_context->to_name(serviceName);
 			server_name_context->unbind(*name);
 
-			ServiceQueue* toDelete = AtmiBrokerServiceFacMgr::get_instance()->removeServiceFactory(serviceName);
+			ServiceQueue* toDelete = removeServiceQueue(serviceName);
 			PortableServer::POA_ptr poa = (PortableServer::POA_ptr) toDelete->getPoa();
 			delete toDelete;
 			poa->destroy(true, true);
 			poa = NULL;
-			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) " service factory %s removed", serviceName);
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) " service Queue %s removed", serviceName);
 			advertisedServices.erase(i);
 			userlog(log4cxx::Level::getInfo(), loggerAtmiBroker_ServerImpl, (char*) "unadvertised service %s", serviceName);
 			break;
@@ -265,7 +264,7 @@ AtmiBroker_ServerImpl::get_all_service_info() throw (CORBA::SystemException ) {
 	aServiceInfoSeq->length(serverInfo.serviceNames.size());
 
 	for (unsigned int i = 0; i < serverInfo.serviceNames.size(); i++) {
-		SVCINFO svcInfo = AtmiBrokerServiceFacMgr::get_instance()->getServiceFactory((char*) serverInfo.serviceNames[i].c_str())->get_service_info();
+		SVCINFO svcInfo = getServiceQueue((char*) serverInfo.serviceNames[i].c_str())->get_service_info();
 		AtmiBroker::ServiceInfo_var aServiceInfo = new AtmiBroker::ServiceInfo();
 		aServiceInfo->serviceName = svcInfo.serviceName;
 		aServiceInfo->poolSize = svcInfo.poolSize;
@@ -403,3 +402,54 @@ void AtmiBroker_ServerImpl::start_service(const char* service_name) throw (CORBA
 	}
 }
 
+ServiceQueue* AtmiBroker_ServerImpl::getServiceQueue(const char * aServiceName) {
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "getServiceQueue: %s", aServiceName);
+
+	for (std::vector<ServiceData>::iterator i = serviceData.begin(); i != serviceData.end(); i++) {
+		if (strncmp((*i).serviceName, aServiceName, XATMI_SERVICE_NAME_LENGTH) == 0) {
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "found: %s", (char*) (*i).serviceName);
+			return (*i).serviceQueue;
+		}
+	}
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "getServiceQueue out: %s", aServiceName);
+	return NULL;
+}
+
+void AtmiBroker_ServerImpl::addServiceQueue(char*& aServiceName, ServiceQueue*& aFactoryPtr, void(*func)(TPSVCINFO *)) {
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "addServiceQueue: %s", aServiceName);
+
+	ServiceData entry;
+	entry.serviceName = aServiceName;
+	entry.serviceQueue = aFactoryPtr;
+	entry.func = func;
+	serviceData.push_back(entry);
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "added: %s", (char*) aServiceName);
+}
+
+ServiceQueue* AtmiBroker_ServerImpl::removeServiceQueue(const char * aServiceName) {
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "removeServiceQueue: %s", aServiceName);
+	ServiceQueue* toReturn = NULL;
+	for (std::vector<ServiceData>::iterator i = serviceData.begin(); i != serviceData.end(); i++) {
+		if (strncmp((*i).serviceName, aServiceName, XATMI_SERVICE_NAME_LENGTH) == 0) {
+			toReturn = (*i).serviceQueue;
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "removing service %s", (char*) (*i).serviceName);
+			serviceData.erase(i);
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "removed: %s", aServiceName);
+			break;
+		}
+	}
+	return toReturn;
+}
+
+void (*AtmiBroker_ServerImpl::getServiceMethod(const char * aServiceName))(TPSVCINFO *) {
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "getServiceQueue: %s", aServiceName);
+
+			for (std::vector<ServiceData>::iterator i = serviceData.begin(); i != serviceData.end(); i++) {
+				if (strncmp((*i).serviceName, aServiceName, XATMI_SERVICE_NAME_LENGTH) == 0) {
+					userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "found: %s", (char*) (*i).serviceName);
+					return (*i).func;
+				}
+			}
+			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "getServiceMethod out: %s", aServiceName);
+			return NULL;
+		}

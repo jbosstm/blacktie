@@ -120,10 +120,10 @@ MESSAGE EndpointQueue::receive(long flags) {
 void EndpointQueue::disconnect() throw (CORBA::SystemException ) {
 }
 
-void EndpointQueue::setDestinationName(const char* destinationName) {
-	this->destinationName = destinationName;
+void EndpointQueue::setName(const char* name) {
+	this->name = name;
 }
 
-const char * EndpointQueue::getDestinationName() {
-	return destinationName;
+const char * EndpointQueue::getName() {
+	return name;
 }

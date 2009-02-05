@@ -15,25 +15,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#ifndef SessionImpl_H_
+#define SessionImpl_H_
 
-#ifndef SERVICEDISPATCHER_H_
-#define SERVICEDISPATCHER_H_
-
-#include <ace/Task.h>
 #include "log4cxx/logger.h"
-#include "Destination.h"
-#include "MessageListener.h"
 
-class ServiceDispatcher: public ACE_Task_Base {
+#include "Session.h"
+#include "Sender.h"
+#include "Receiver.h"
+
+class SessionImpl: public virtual Session {
 public:
-	ServiceDispatcher(Destination* serviceQueue, MessageListener* service);
-	int svc();
-	void shutdown();
+	SessionImpl(void* connection_poa, void* connection_orb, int id);
+
+	virtual ~SessionImpl();
+
+	void setSendTo(char* replyTo);
+
+	Receiver* getReceiver();
+
+	Sender* getSender();
 private:
 	static log4cxx::LoggerPtr logger;
-	Destination* m_serviceQueue;
-	MessageListener* m_service;
-	bool m_shutdown;
+	int id;
+	void* connection_orb;
+	Receiver* queueReceiver;
+	Sender* queueSender;
 };
 
 #endif

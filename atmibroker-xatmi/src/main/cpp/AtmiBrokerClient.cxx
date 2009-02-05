@@ -20,21 +20,12 @@
  */
 // copyright 2006, 2008 BreakThruIT
 
-#include <iostream>
-#include <stdio.h>
-
-#include "xatmi.h"
-#include "AtmiBroker.h"
-#include "AtmiBrokerClient.h"
-#include "EndpointQueue.h"
-#include "Sender.h"
-#include "SenderImpl.h"
-#include "Receiver.h"
-#include "AtmiBrokerClientXml.h"
-#include "userlog.h"
-
 #include "log4cxx/logger.h"
 
+#include "userlog.h"
+#include "AtmiBroker.h"
+#include "AtmiBrokerClient.h"
+#include "SessionImpl.h"
 
 log4cxx::LoggerPtr loggerAtmiBrokerClient(log4cxx::Logger::getLogger("AtmiBrokerClient"));
 
@@ -44,15 +35,7 @@ AtmiBrokerClient::AtmiBrokerClient() {
 	AtmiBrokerClientXml aAtmiBrokerClientXml;
 	aAtmiBrokerClientXml.parseXmlDescriptor(&clientServerVector, "CLIENT.xml");
 
-	EndpointQueue* endpointQueue = new EndpointQueue(client_poa);
-	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClient, (char*) "tmp_servant %p", (void*) endpointQueue);
-	client_poa->activate_object(endpointQueue);
-	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClient, (char*) "activated tmp_servant %p", (void*) endpointQueue);
-	CORBA::Object_ptr tmp_ref = client_poa->servant_to_reference(endpointQueue);
-	AtmiBroker::EndpointQueue_var queue = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	endpointQueue->setDestinationName(client_orb->object_to_string(queue));
-	queueReceiver = endpointQueue;
-	id = 0;
+	session = NULL;
 }
 
 AtmiBrokerClient::~AtmiBrokerClient() {
@@ -64,26 +47,16 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 	clientServerVector.clear();
 }
 
-Session* AtmiBrokerClient::createSession() {
-	return this;
+Session* AtmiBrokerClient::createSession(int& id) {
+	if (session) {
+		delete session;
+		session = NULL;
+	}
+	id = 0;
+	session = new SessionImpl(client_poa, client_orb, 0);
+	return session;
 }
 
 Session* AtmiBrokerClient::getSession(int* id) {
-	return this;
-}
-
-void AtmiBrokerClient::getId(int& id) {
-	id = this->id;
-}
-
-void AtmiBrokerClient::setSendTo(char * replyTo) {
-	this->replyTo = replyTo;
-}
-
-Receiver * AtmiBrokerClient::getReceiver() {
-	return queueReceiver;
-}
-
-Sender * AtmiBrokerClient::getSender() {
-	return new SenderImpl(client_orb, replyTo);
+	return session;
 }

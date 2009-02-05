@@ -40,8 +40,6 @@
 #include "AtmiBrokerMem.h"
 #include "log4cxx/logger.h"
 
-
-
 log4cxx::LoggerPtr loggerXATMI(log4cxx::Logger::getLogger("loggerXATMI"));
 
 int _tperrno = 0;
@@ -156,11 +154,12 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 			tperrno = TPENOENT;
 			return -1;
 		}
-		Session* session = ptrAtmiBrokerClient->createSession();
-		long revent = 0;
-		AtmiBrokerConversation::get_instance()->send(ptr, session->getReceiver()->getDestinationName(), idata, ilen, flags, &revent);
 		int id = -1;
-		session->getId(id);
+		Session* session = ptrAtmiBrokerClient->createSession(id);
+		if (id >= 0) {
+			long revent = 0;
+			AtmiBrokerConversation::get_instance()->send(ptr, session->getReceiver()->getDestination()->getName(), idata, ilen, flags, &revent);
+		}
 		return id;
 	} else {
 		return -1;
@@ -175,13 +174,19 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 			session = ptrAtmiBrokerClient->getSession(&id);
 		} else {
 			tperrno = TPESYSTEM;
+			return -1;
 		}
 	}
 	if (session == NULL) {
 		tperrno = TPEBADDESC;
 		return -1;
 	}
-	return AtmiBrokerConversation::get_instance()->send(session->getSender(), session->getReceiver()->getDestinationName(), idata, ilen, flags, revent);
+	if (session->getSender() == NULL) {
+		tperrno = TPEPROTO;
+		return -1;
+	} else {
+		return AtmiBrokerConversation::get_instance()->send(session->getSender(), session->getReceiver()->getDestination()->getName(), idata, ilen, flags, revent);
+	}
 }
 
 int tpgetrply(int *id, char ** odata, long *olen, long flags) {
@@ -217,6 +222,9 @@ void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 	Session* session = (Session*) getSpecific(SVC_KEY);
 	if (session) {
 		long event = 0;
+		if (session->getSender() == NULL) {
+			tperrno = TPEPROTO;
+		}
 		AtmiBrokerConversation::get_instance()->send(session->getSender(), "", data, len, flags, &event);
 	} else {
 		tperrno = TPEPROTO;

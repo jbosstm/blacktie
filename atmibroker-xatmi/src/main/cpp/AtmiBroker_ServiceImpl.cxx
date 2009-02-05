@@ -19,34 +19,24 @@
  * BREAKTHRUIT PROPRIETARY - NOT TO BE DISCLOSED OUTSIDE BREAKTHRUIT, LLC.
  */
 // copyright 2006, 2008 BreakThruIT
-
-#include "AtmiBroker_ServiceImpl.h"
-
+#include "log4cxx/logger.h"
 #include "tx.h"
-#include "SenderImpl.h"
+#include "AtmiBroker_ServiceImpl.h"
 #include "AtmiBrokerServer.h"
-#include "EndpointQueue.h"
+#include "SenderImpl.h"
+#include "ReceiverImpl.h"
 #include "userlog.h"
 #include "ThreadLocalStorage.h"
-
-#include "log4cxx/logger.h"
-
 
 log4cxx::LoggerPtr AtmiBroker_ServiceImpl::logger(log4cxx::Logger::getLogger("AtmiBroker_ServiceImpl"));
 
 // AtmiBroker_ServiceImpl constructor
 //
-AtmiBroker_ServiceImpl::AtmiBroker_ServiceImpl(char *serviceName, void(*func)(TPSVCINFO *)) :
-	m_serviceName(serviceName), m_func(func) {
-
-	EndpointQueue* endpointQueue = new EndpointQueue(server_callback_poa);
-	userlog(log4cxx::Level::getDebug(), logger, (char*) "tmp_servant %p", (void*) endpointQueue);
-	server_callback_poa->activate_object(endpointQueue);
-	userlog(log4cxx::Level::getDebug(), logger, (char*) "activated tmp_servant %p", endpointQueue);
-	CORBA::Object_ptr tmp_ref = server_callback_poa->servant_to_reference(endpointQueue);
-	AtmiBroker::EndpointQueue_var queue = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	endpointQueue->setDestinationName(server_orb->object_to_string(queue));
-	queueReceiver = endpointQueue;
+AtmiBroker_ServiceImpl::AtmiBroker_ServiceImpl(char *serviceName, void(*func)(TPSVCINFO *)) {
+	m_serviceName = serviceName;
+	m_func = func;
+	queueReceiver = NULL;
+	queueSender = NULL;
 }
 
 // ~AtmiBroker_ServiceImpl destructor.
@@ -58,14 +48,21 @@ AtmiBroker_ServiceImpl::~AtmiBroker_ServiceImpl() {
 
 void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
 	userlog(log4cxx::Level::getDebug(), logger, (char*) "svc()");
+
+	// INITIALISE THE SENDER AND RECEIVER FOR THIS CONVERSATION
+	queueReceiver = new ReceiverImpl(server_callback_poa, server_orb);
 	queueSender = new SenderImpl(server_orb, (char*) message.replyto);
+
+	// EXTRACT THE DATA FROM THE INBOUND MESSAGE
 	char* idata = message.data;
 	long ilen = message.len;
 	long flags = message.flags;
+	void* control = message.control;
 	userlog(log4cxx::Level::getDebug(), logger, (char*) "   idata = %p", idata);
 	userlog(log4cxx::Level::getDebug(), logger, (char*) "   ilen = %d", ilen);
 	userlog(log4cxx::Level::getDebug(), logger, (char*) "   flags = %d", flags);
 
+	// PREPARE THE STRUCT FOR SENDING TO THE CLIENT
 	TPSVCINFO tpsvcinfo;
 	memset(&tpsvcinfo, '\0', sizeof(tpsvcinfo));
 	strcpy(tpsvcinfo.name, m_serviceName);
@@ -73,13 +70,34 @@ void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
 	tpsvcinfo.data = idata;
 	tpsvcinfo.len = ilen;
 
-	setSpecific(TSS_KEY, message.control);
+	// HANDLE THE CLIENT INVOCATION
+	setSpecific(TSS_KEY, control);
 	setSpecific(SVC_KEY, this);
 	tx_open();
 	m_func(&tpsvcinfo);
 	tx_close();
 	destroySpecific(SVC_KEY);
 	destroySpecific(TSS_KEY);
+
+	// CLEAN UP THE SENDER AND RECEIVER FOR THIS CLIENT
+	if (queueSender) {
+		delete queueSender;
+		queueSender = NULL;
+	}
+	if (queueReceiver) {
+		delete queueReceiver;
+		queueReceiver = NULL;
+	}
+}
+
+void AtmiBroker_ServiceImpl::setSendTo(char * replyTo) {
+	if (queueSender) {
+		delete queueSender;
+		queueSender = NULL;
+	}
+	if (strcmp(replyTo, "") != 0) {
+		queueSender = new SenderImpl(server_orb, replyTo);
+	}
 }
 
 Sender* AtmiBroker_ServiceImpl::getSender() {
@@ -88,12 +106,4 @@ Sender* AtmiBroker_ServiceImpl::getSender() {
 
 Receiver* AtmiBroker_ServiceImpl::getReceiver() {
 	return queueReceiver;
-}
-
-void AtmiBroker_ServiceImpl::setSendTo(char * replyTo) {
-
-}
-
-void AtmiBroker_ServiceImpl::getId(int& id) {
-
 }

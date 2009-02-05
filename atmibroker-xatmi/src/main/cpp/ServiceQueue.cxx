@@ -48,7 +48,6 @@
 
 #include "log4cxx/logger.h"
 
-
 log4cxx::LoggerPtr loggerServiceQueue(log4cxx::Logger::getLogger("ServiceQueue"));
 
 // Constants
@@ -134,6 +133,10 @@ void ServiceQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long 
 	lock->unlock();
 }
 
+void ServiceQueue::disconnect() {
+
+}
+
 MESSAGE ServiceQueue::receive(long flags) {
 	MESSAGE message;
 	message.data = NULL;
@@ -151,6 +154,10 @@ MESSAGE ServiceQueue::receive(long flags) {
 	return message;
 }
 
+const char * ServiceQueue::getName() {
+	return NULL;
+}
+
 SVCINFO ServiceQueue::get_service_info() {
 	userlog(log4cxx::Level::getDebug(), loggerServiceQueue, (char*) "get_service_info()");
 	SVCINFO svcinfo;
@@ -164,10 +171,3 @@ void* ServiceQueue::getPoa() {
 	return thePoa;
 }
 
-const char * ServiceQueue::getDestinationName() {
-	return NULL;
-}
-
-void ServiceQueue::disconnect() {
-
-}

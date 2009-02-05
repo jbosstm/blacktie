@@ -39,7 +39,6 @@
 #include "Receiver.h"
 #include "log4cxx/logger.h"
 
-
 class AtmiBroker_ServiceImpl: public virtual Session, public virtual MessageListener {
 public:
 	AtmiBroker_ServiceImpl(char *serviceName, void(*func)(TPSVCINFO *));
@@ -47,7 +46,6 @@ public:
 
 	void onMessage(MESSAGE message);
 
-	void getId(int& id);
 	void setSendTo(char* replyTo);
 	Receiver * getReceiver();
 	Sender * getSender();
