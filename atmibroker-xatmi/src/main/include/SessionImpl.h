@@ -21,8 +21,6 @@
 #include "log4cxx/logger.h"
 
 #include "Session.h"
-#include "Sender.h"
-#include "Receiver.h"
 
 class SessionImpl: public virtual Session {
 public:

@@ -38,15 +38,6 @@
 #include <tao/ORB.h>
 #include <orbsvcs/CosNamingS.h>
 #include <tao/PortableServer/PortableServerC.h>
-#elif ORBIX_COMP
-#include <omg/orb.hh>
-#include <omg/CosNaming.hh>
-#include <omg/PortableServer.hh>
-#endif
-#ifdef VBC_COMP
-#include <orb.h>
-#include <CosNaming_c.hh>
-#include <PortableServerExt_c.hh>
 #endif
 
 #include "AtmiBrokerPoaFac.h"

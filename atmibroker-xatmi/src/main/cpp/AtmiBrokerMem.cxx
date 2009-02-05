@@ -31,7 +31,6 @@
 #include "userlog.h"
 #include "log4cxx/logger.h"
 
-
 log4cxx::LoggerPtr loggerAtmiBrokerMem(log4cxx::Logger::getLogger("AtmiBrokerMem"));
 
 AtmiBrokerMem * AtmiBrokerMem::ptrAtmiBrokerMem = NULL;

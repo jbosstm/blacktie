@@ -30,7 +30,6 @@
 #include "userlog.h"
 #include "log4cxx/logger.h"
 
-
 log4cxx::LoggerPtr loggerAtmiBrokerClientXml(log4cxx::Logger::getLogger("AtmiBrokerClientXml"));
 
 int clientMaxChannels = 0;

@@ -23,15 +23,11 @@
 //
 // Servant which implements the AtmiBroker::ClientCallback interface.
 //
-#include <stdlib.h>
-#include <iostream>
+#include <orbsvcs/CosNamingS.h>
 #include "EndpointQueue.h"
-
 #include "AtmiBrokerClient.h"
 #include "userlog.h"
-
 #include "xatmi.h"
-
 #include "log4cxx/logger.h"
 
 log4cxx::LoggerPtr loggerEndpointQueue(log4cxx::Logger::getLogger("EndpointQueue"));
@@ -56,6 +52,24 @@ EndpointQueue::EndpointQueue(PortableServer::POA_ptr the_poa) :
 	lock(SynchronizableObject::create(false)) {
 }
 
+EndpointQueue::EndpointQueue(void* connection_orb, char * callback_ior) {
+	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection_orb;
+	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "service_request_async()");
+	CORBA::Object_var tmp_ref = orb->string_to_object(callback_ior);
+	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
+	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "connected to %s", callback_ior);
+}
+
+EndpointQueue::EndpointQueue(void* connection_context, void* connection_name_context, const char * serviceName) {
+	CosNaming::NamingContextExt_ptr context = (CosNaming::NamingContextExt_ptr) connection_context;
+	CosNaming::NamingContext_ptr name_context = (CosNaming::NamingContext_ptr) connection_name_context;
+	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "get_service_queue: %s", serviceName);
+	CosNaming::Name * name = context->to_name(serviceName);
+	CORBA::Object_var tmp_ref = name_context->resolve(*name);
+	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
+	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "connected to %s", serviceName);
+}
+
 // ~EndpointQueue destructor.
 //
 EndpointQueue::~EndpointQueue() {
@@ -63,11 +77,16 @@ EndpointQueue::~EndpointQueue() {
 	//
 }
 
-// client_callback() -- Implements IDL operation "AtmiBroker::ClientCallback::send_data".
-//
+void EndpointQueue::send(MESSAGE message) {
+	unsigned char * data_togo = (unsigned char *) malloc(message.len);
+	memcpy(data_togo, message.data, message.len);
+	AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(message.len, message.len, data_togo, true);
+	remoteEndpoint->send(message.replyto, message.rval, message.rcode, aOctetSeq, message.len, message.correlationId, message.flags);
+	aOctetSeq = NULL;
+}
+
 void EndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags) throw (CORBA::SystemException ) {
 	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "client_callback(): called.");
-
 	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "client_callback():    idata = %s", idata.get_buffer());
 	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "client_callback():    ilen = %d", ilen);
 	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "client_callback():    flags = %d", flags);
@@ -118,6 +137,9 @@ MESSAGE EndpointQueue::receive(long flags) {
 
 void EndpointQueue::disconnect() throw (CORBA::SystemException ) {
 	userlog(log4cxx::Level::getError(), loggerEndpointQueue, (char*) "disconnect unimplemented");
+	if (remoteEndpoint) {
+		remoteEndpoint->disconnect();
+	}
 }
 
 void EndpointQueue::setName(const char* name) {

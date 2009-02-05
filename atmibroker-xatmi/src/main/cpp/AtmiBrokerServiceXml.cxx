@@ -30,7 +30,6 @@
 #include "userlog.h"
 #include "log4cxx/logger.h"
 
-
 log4cxx::LoggerPtr loggerAtmiBrokerServiceXml(log4cxx::Logger::getLogger("AtmiBrokerServiceXml"));
 
 static char last_element[50];

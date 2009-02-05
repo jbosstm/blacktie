@@ -19,23 +19,16 @@
 #include "xatmi.h"
 #include "SenderImpl.h"
 #include "Message.h"
+#include "EndpointQueue.h"
 
 log4cxx::LoggerPtr SenderImpl::logger(log4cxx::Logger::getLogger("SenderImpl"));
 
 SenderImpl::SenderImpl(void* connection_orb, char * callback_ior) {
-	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection_orb;
-	userlog(log4cxx::Level::getDebug(), logger, (char*) "service_request_async()");
-	CORBA::Object_var tmp_ref = orb->string_to_object(callback_ior);
-	m_endpointQueue = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	userlog(log4cxx::Level::getDebug(), logger, (char*) "connected to %s", callback_ior);
+	destination = new EndpointQueue(connection_orb, callback_ior);
 }
 
-SenderImpl::SenderImpl(CosNaming::NamingContextExt_var context, CosNaming::NamingContext_var name_context, const char * serviceName) {
-	userlog(log4cxx::Level::getDebug(), logger, (char*) "get_service_queue: %s", serviceName);
-	CosNaming::Name * name = context->to_name(serviceName);
-	CORBA::Object_var tmp_ref = name_context->resolve(*name);
-	m_endpointQueue = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	userlog(log4cxx::Level::getDebug(), logger, (char*) "connected to %s", serviceName);
+SenderImpl::SenderImpl(void* connection_context, void* connection_name_context, const char * serviceName) {
+	destination = new EndpointQueue(connection_context, connection_name_context, serviceName);
 }
 
 SenderImpl::~SenderImpl() {
@@ -44,14 +37,10 @@ SenderImpl::~SenderImpl() {
 void SenderImpl::send(MESSAGE message) {
 	int data_size = ::tptypes(message.data, NULL, NULL);
 	if (data_size >= 0) {
-		if (message.len > 0 && message.len < data_size) {
-			data_size = message.len;
+		if (message.len <= 0 || message.len > data_size) {
+			message.len = data_size;
 		}
-		unsigned char * data_togo = (unsigned char *) malloc(data_size);
-		memcpy(data_togo, message.data, data_size);
-		AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(data_size, data_size, data_togo, true);
-		m_endpointQueue->send(message.replyto, message.rval, message.rcode, aOctetSeq, data_size, message.correlationId, message.flags);
-		aOctetSeq = NULL;
+		destination->send(message);
 		userlog(log4cxx::Level::getDebug(), logger, (char*) "Called back ");
 	} else {
 		tperrno = TPEINVAL;
@@ -60,5 +49,5 @@ void SenderImpl::send(MESSAGE message) {
 }
 
 void SenderImpl::disconnect() {
-	m_endpointQueue->disconnect();
+	destination->disconnect();
 }

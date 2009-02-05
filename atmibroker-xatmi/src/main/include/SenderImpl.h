@@ -18,25 +18,20 @@
 #ifndef SenderImpl_H_
 #define SenderImpl_H_
 
-#ifdef TAO_COMP
-#include <tao/ORB.h>
-#include <orbsvcs/CosNamingS.h>
-#include "AtmiBrokerC.h"
-#endif
-
 #include "log4cxx/logger.h"
-
 #include "Sender.h"
+#include "Destination.h"
+
 class SenderImpl: public virtual Sender {
 public:
 	SenderImpl(void* orb, char * callback_ior);
-	SenderImpl(CosNaming::NamingContextExt_var context, CosNaming::NamingContext_var name_context, const char * serviceName);
+	SenderImpl(void* connection_context, void* connection_name_context, const char * serviceName);
 	virtual ~SenderImpl();
 	virtual void send(MESSAGE message);
 	virtual void disconnect();
 private:
 	static log4cxx::LoggerPtr logger;
-	AtmiBroker::EndpointQueue_var m_endpointQueue;
+	Destination* destination;
 };
 
 #endif

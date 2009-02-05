@@ -23,16 +23,6 @@
 //
 // Servant which implements the AtmiBroker::ServiceFactory interface.
 //
-#ifdef TAO_COMP
-#include <tao/ORB.h>
-#include "tao/ORB_Core.h"
-#include "AtmiBrokerC.h"
-#elif ORBIX_COMP
-#include <omg/orb.hh>
-#endif
-#ifdef VBC_COMP
-#include <orb.h>
-#endif
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
@@ -172,3 +162,5 @@ void* ServiceQueue::getPoa() {
 	return thePoa;
 }
 
+void ServiceQueue::send(MESSAGE message) {
+}

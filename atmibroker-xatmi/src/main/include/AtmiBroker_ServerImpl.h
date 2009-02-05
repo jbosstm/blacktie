@@ -35,7 +35,6 @@
 #include "atmiBrokerMacro.h"
 
 #ifdef TAO_COMP
-#include "tao/ORB.h"
 #include "AtmiBrokerS.h"
 #endif
 

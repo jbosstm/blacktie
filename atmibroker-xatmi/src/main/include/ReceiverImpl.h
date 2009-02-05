@@ -19,7 +19,6 @@
 #define ReceiverImpl_H_
 
 #include "log4cxx/logger.h"
-
 #include "Receiver.h"
 #include "Destination.h"
 

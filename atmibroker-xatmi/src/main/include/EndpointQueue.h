@@ -34,15 +34,7 @@
 #include "atmiBrokerMacro.h"
 
 #ifdef TAO_COMP
-#include "tao/ORB.h"
 #include "AtmiBrokerS.h"
-#elif ORBIX_COMP
-#include <omg/orb.hh>
-#include "AtmiBrokerS.hh"
-#endif
-#ifdef VBC_COMP
-#include <orb.h>
-#include "AtmiBroker_s.hh"
 #endif
 
 #include <queue>
@@ -54,7 +46,8 @@
 class ATMIBROKER_DLL EndpointQueue: public virtual Destination, public virtual POA_AtmiBroker::EndpointQueue {
 public:
 	EndpointQueue(PortableServer::POA_ptr);
-
+	EndpointQueue(void* orb, char * callback_ior);
+	EndpointQueue(void* connection_context, void* connection_name_context, const char * serviceName);
 	virtual ~EndpointQueue();
 
 	// _create() -- create a new servant.
@@ -68,6 +61,8 @@ public:
 
 	void setName(const char * name);
 
+	virtual void send(MESSAGE message);
+
 	virtual MESSAGE receive(long flags);
 
 	virtual const char* getName();
@@ -80,6 +75,7 @@ private:
 	std::queue<MESSAGE> returnData;
 	SynchronizableObject* lock;
 	const char* name;
+	AtmiBroker::EndpointQueue_var remoteEndpoint;
 };
 
 #endif

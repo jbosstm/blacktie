@@ -59,6 +59,8 @@ public:
 
 	SVCINFO get_service_info();
 
+	virtual void send(MESSAGE message);
+
 	virtual MESSAGE receive(long flags);
 
 	virtual const char* getName();

@@ -30,7 +30,6 @@
 #include "userlog.h"
 #include "log4cxx/logger.h"
 
-
 log4cxx::LoggerPtr loggerAtmiBrokerServerXml(log4cxx::Logger::getLogger("AtmiBrokerServerXml"));
 
 char server[30];
