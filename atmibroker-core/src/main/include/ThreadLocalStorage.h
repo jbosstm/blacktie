@@ -21,8 +21,9 @@
 #include "atmiBrokerCoreMacro.h"
 
 // key for storing control in thread specific storage
-const int TSS_KEY = 0xaf;	// key for accessing OTS control
-const int SVC_KEY = 0xb1;	// key for accessing atmi service
+const int TSS_KEY = 0xaf; // key for accessing OTS control
+const int SVC_KEY = 0xb1; // key for accessing atmi service
+const int SVC_SES = 0xb4; // key for accessing service session
 // define other keys here
 
 extern ATMIBROKER_CORE_DLL int getKey();

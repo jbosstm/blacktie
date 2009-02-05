@@ -32,30 +32,21 @@
 #define ATMIBROKER_SERVICEIMPL_H_
 
 #include "xatmi.h"
-#include "Session.h"
-#include "Message.h"
 #include "MessageListener.h"
-#include "Sender.h"
-#include "Receiver.h"
+#include "Session.h"
 #include "log4cxx/logger.h"
 
-class AtmiBroker_ServiceImpl: public virtual Session, public virtual MessageListener {
+class AtmiBroker_ServiceImpl: public virtual MessageListener {
 public:
 	AtmiBroker_ServiceImpl(char *serviceName, void(*func)(TPSVCINFO *));
 	virtual ~AtmiBroker_ServiceImpl();
-
 	void onMessage(MESSAGE message);
-
-	void setSendTo(char* replyTo);
-	Receiver * getReceiver();
-	Sender * getSender();
-protected:
-	Sender* queueSender;
-	Receiver* queueReceiver;
+	Session* getSession();
 private:
 	static log4cxx::LoggerPtr logger;
 	char* m_serviceName;
 	void (*m_func)(TPSVCINFO *);
+	Session* session;
 };
 
 #endif

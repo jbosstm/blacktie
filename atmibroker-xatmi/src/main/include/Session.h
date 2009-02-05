@@ -20,12 +20,14 @@
 
 #include "Receiver.h"
 #include "Sender.h"
+#include "Destination.h"
 
 class Session {
 public:
-	virtual void setSendTo(char* replyTo) = 0;
+	virtual void setReplyTo(char* replyTo) = 0;
 	virtual Receiver* getReceiver() = 0;
 	virtual Sender * getSender() = 0;
+	virtual Destination* createTemporaryQueue(char* queueName) = 0;
 };
 
 #endif

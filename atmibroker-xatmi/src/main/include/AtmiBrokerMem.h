@@ -30,16 +30,15 @@
 
 #define MAX_TYPE_SIZE 8
 #define MAX_SUBTYPE_SIZE 16
-struct ATMIBROKER_DLL _memory_info {
+struct _memory_info {
 	void* memoryPtr;
 	char* type;
 	char* subtype;
 	int size;
 };
-typedef ATMIBROKER_DLL _memory_info MemoryInfo;
+typedef _memory_info MemoryInfo;
 
-class ATMIBROKER_DLL AtmiBrokerMem
-{
+class AtmiBrokerMem {
 
 public:
 
@@ -47,13 +46,13 @@ public:
 
 	~AtmiBrokerMem();
 
-	char* tpalloc (char* type, char* subtype, long size);
+	char* tpalloc(char* type, char* subtype, long size);
 
-	char* tprealloc (char * addr, long size);
+	char* tprealloc(char * addr, long size);
 
-	void tpfree (char* ptr);
+	void tpfree(char* ptr);
 
-	long tptypes (char* ptr, char* type, char* subtype);
+	long tptypes(char* ptr, char* type, char* subtype);
 
 	void freeAllMemory();
 

@@ -32,19 +32,19 @@
 #endif
 
 #include "Sender.h"
-#include "AtmiBrokerClient.h"
 
 extern int _tperrno;
 extern long _tpurcode;
 extern bool loggerInitialized;
-extern Sender* get_service_queue(const char * serviceName);
+
+extern Sender* get_service_queue_sender(const char * serviceName);
+
 extern CORBA::ORB_var client_orb;
 extern PortableServer::POA_var client_root_poa;
 extern PortableServer::POAManager_var client_root_poa_manager;
 extern CosNaming::NamingContextExt_var client_default_context;
 extern CosNaming::NamingContext_var client_name_context;
 extern PortableServer::POA_var client_poa;
-extern AtmiBrokerClient * ptrAtmiBrokerClient;
 extern CORBA::PolicyList *policyList;
 
-#endif //AtmiBroker_H
+#endif

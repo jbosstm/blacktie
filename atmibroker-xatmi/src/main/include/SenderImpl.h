@@ -24,11 +24,10 @@
 
 class SenderImpl: public virtual Sender {
 public:
-	SenderImpl(void* orb, char * callback_ior);
-	SenderImpl(void* connection_context, void* connection_name_context, const char * serviceName);
+	SenderImpl(Destination* serviceName);
 	virtual ~SenderImpl();
 	virtual void send(MESSAGE message);
-	virtual void disconnect();
+	virtual Destination* getDestination();
 private:
 	static log4cxx::LoggerPtr logger;
 	Destination* destination;

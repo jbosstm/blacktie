@@ -32,6 +32,7 @@
 #include "xatmi.h"
 #include "Session.h"
 #include "AtmiBrokerServer.h"
+#include "AtmiBrokerClient.h"
 #include "AtmiBrokerClientControl.h"
 #include "AtmiBrokerServerControl.h"
 #include "AtmiBroker.h"
@@ -82,7 +83,7 @@ int receive(Session* session, char ** odata, long *olen, long flags, long* event
 		*odata = message.data;
 		*olen = message.len;
 		*event = message.event;
-		session->setSendTo((char*) message.replyto);
+		session->setReplyTo((char*) message.replyto);
 		userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "returning - %s", *odata);
 		toReturn = 0;
 	} else {
@@ -196,9 +197,9 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 	if (clientinit() != -1) {
 		Sender* ptr = NULL;
 		try {
-			ptr = ::get_service_queue(svc);
+			ptr = ::get_service_queue_sender(svc);
 		} catch (...) {
-			userlog(log4cxx::Level::getError(), loggerXATMI, (char*) "tpconnect get_service_queue failed");
+			userlog(log4cxx::Level::getError(), loggerXATMI, (char*) "tpconnect failed to connect to service queue");
 			tperrno = TPENOENT;
 			return -1;
 		}
@@ -245,7 +246,7 @@ int tpcancel(int id) {
 
 int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 	tperrno = 0;
-	Session* session = (Session*) getSpecific(SVC_KEY);
+	Session* session = (Session*) getSpecific(SVC_SES);
 	if (session == NULL) {
 		if (clientinit() != -1) {
 			session = ptrAtmiBrokerClient->getSession(&id);
@@ -268,7 +269,7 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 
 int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 	tperrno = 0;
-	Session* session = (Session*) getSpecific(SVC_KEY);
+	Session* session = (Session*) getSpecific(SVC_SES);
 	if (session == NULL) {
 		if (clientinit() != -1) {
 			session = ptrAtmiBrokerClient->getSession(&id);
@@ -284,12 +285,13 @@ int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 
 void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 	tperrno = 0;
-	Session* session = (Session*) getSpecific(SVC_KEY);
+	Session* session = (Session*) getSpecific(SVC_SES);
 	if (session) {
 		if (session->getSender() == NULL) {
 			tperrno = TPEPROTO;
+		} else {
+			::send(session->getSender(), "", data, len, 0, flags, rval, rcode);
 		}
-		::send(session->getSender(), "", data, len, 0, flags, rval, rcode);
 	} else {
 		tperrno = TPEPROTO;
 	}
@@ -305,7 +307,7 @@ int tpdiscon(int id) {
 			tperrno = TPEBADDESC;
 		} else {
 			try {
-				session->getSender()->disconnect();
+				session->getSender()->getDestination()->disconnect();
 				void* currentImpl = getSpecific(TSS_KEY);
 				if (currentImpl) {
 					toReturn = tx_rollback();

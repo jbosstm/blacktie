@@ -54,7 +54,7 @@ EndpointQueue::EndpointQueue(PortableServer::POA_ptr the_poa) :
 
 EndpointQueue::EndpointQueue(void* connection_orb, char * callback_ior) {
 	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection_orb;
-	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "service_request_async()");
+	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "EndpointQueue: %s", callback_ior);
 	CORBA::Object_var tmp_ref = orb->string_to_object(callback_ior);
 	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "connected to %s", callback_ior);
@@ -63,7 +63,7 @@ EndpointQueue::EndpointQueue(void* connection_orb, char * callback_ior) {
 EndpointQueue::EndpointQueue(void* connection_context, void* connection_name_context, const char * serviceName) {
 	CosNaming::NamingContextExt_ptr context = (CosNaming::NamingContextExt_ptr) connection_context;
 	CosNaming::NamingContext_ptr name_context = (CosNaming::NamingContext_ptr) connection_name_context;
-	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "get_service_queue: %s", serviceName);
+	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "EndpointQueue: %s", serviceName);
 	CosNaming::Name * name = context->to_name(serviceName);
 	CORBA::Object_var tmp_ref = name_context->resolve(*name);
 	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);

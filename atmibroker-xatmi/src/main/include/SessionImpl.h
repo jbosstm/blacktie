@@ -28,11 +28,13 @@ public:
 
 	virtual ~SessionImpl();
 
-	void setSendTo(char* replyTo);
+	void setReplyTo(char* replyTo);
 
 	Receiver* getReceiver();
 
 	Sender* getSender();
+
+	Destination* createTemporaryQueue(char* queueName);
 private:
 	static log4cxx::LoggerPtr logger;
 	int id;

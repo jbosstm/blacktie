@@ -19,12 +19,10 @@
  * BREAKTHRUIT PROPRIETARY - NOT TO BE DISCLOSED OUTSIDE BREAKTHRUIT, LLC.
  */
 // copyright 2006, 2008 BreakThruIT
-#include "log4cxx/logger.h"
 #include "tx.h"
 #include "AtmiBroker_ServiceImpl.h"
 #include "AtmiBrokerServer.h"
-#include "SenderImpl.h"
-#include "ReceiverImpl.h"
+#include "SessionImpl.h"
 #include "userlog.h"
 #include "ThreadLocalStorage.h"
 
@@ -35,8 +33,7 @@ log4cxx::LoggerPtr AtmiBroker_ServiceImpl::logger(log4cxx::Logger::getLogger("At
 AtmiBroker_ServiceImpl::AtmiBroker_ServiceImpl(char *serviceName, void(*func)(TPSVCINFO *)) {
 	m_serviceName = serviceName;
 	m_func = func;
-	queueReceiver = NULL;
-	queueSender = NULL;
+	session = NULL;
 }
 
 // ~AtmiBroker_ServiceImpl destructor.
@@ -50,8 +47,8 @@ void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
 	userlog(log4cxx::Level::getDebug(), logger, (char*) "svc()");
 
 	// INITIALISE THE SENDER AND RECEIVER FOR THIS CONVERSATION
-	queueReceiver = new ReceiverImpl(server_callback_poa, server_orb);
-	queueSender = new SenderImpl(server_orb, (char*) message.replyto);
+	session = new SessionImpl(server_callback_poa, server_orb, -1);
+	session->setReplyTo((char*) message.replyto);
 
 	// EXTRACT THE DATA FROM THE INBOUND MESSAGE
 	int correlationId = message.correlationId;
@@ -80,37 +77,21 @@ void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
 	// HANDLE THE CLIENT INVOCATION
 	setSpecific(TSS_KEY, control);
 	setSpecific(SVC_KEY, this);
+	setSpecific(SVC_SES, session);
 	tx_open();
 	m_func(&tpsvcinfo);
 	tx_close();
+	destroySpecific(SVC_SES);
 	destroySpecific(SVC_KEY);
 	destroySpecific(TSS_KEY);
 
 	// CLEAN UP THE SENDER AND RECEIVER FOR THIS CLIENT
-	if (queueSender) {
-		delete queueSender;
-		queueSender = NULL;
-	}
-	if (queueReceiver) {
-		delete queueReceiver;
-		queueReceiver = NULL;
+	if (session) {
+		delete session;
+		session = NULL;
 	}
 }
 
-void AtmiBroker_ServiceImpl::setSendTo(char * replyTo) {
-	if (queueSender) {
-		delete queueSender;
-		queueSender = NULL;
-	}
-	if (strcmp(replyTo, "") != 0) {
-		queueSender = new SenderImpl(server_orb, replyTo);
-	}
-}
-
-Sender* AtmiBroker_ServiceImpl::getSender() {
-	return queueSender;
-}
-
-Receiver* AtmiBroker_ServiceImpl::getReceiver() {
-	return queueReceiver;
+Session* AtmiBroker_ServiceImpl::getSession() {
+	return session;
 }

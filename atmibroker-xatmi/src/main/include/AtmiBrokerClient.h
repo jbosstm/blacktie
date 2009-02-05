@@ -44,4 +44,8 @@ protected:
 	std::vector<ClientServerInfo*> clientServerVector;
 	Session* session;
 };
+
+// instance_hack
+extern AtmiBrokerClient * ptrAtmiBrokerClient;
+
 #endif

@@ -15,20 +15,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "userlog.h"
 #include "xatmi.h"
 #include "SenderImpl.h"
-#include "Message.h"
-#include "EndpointQueue.h"
 
 log4cxx::LoggerPtr SenderImpl::logger(log4cxx::Logger::getLogger("SenderImpl"));
 
-SenderImpl::SenderImpl(void* connection_orb, char * callback_ior) {
-	destination = new EndpointQueue(connection_orb, callback_ior);
-}
-
-SenderImpl::SenderImpl(void* connection_context, void* connection_name_context, const char * serviceName) {
-	destination = new EndpointQueue(connection_context, connection_name_context, serviceName);
+SenderImpl::SenderImpl(Destination* destination) {
+	this->destination = destination;
 }
 
 SenderImpl::~SenderImpl() {
@@ -41,13 +34,13 @@ void SenderImpl::send(MESSAGE message) {
 			message.len = data_size;
 		}
 		destination->send(message);
-		userlog(log4cxx::Level::getDebug(), logger, (char*) "Called back ");
+		LOG4CXX_LOGLS(logger, log4cxx::Level::getDebug(), (char*) "Called back ");
 	} else {
 		tperrno = TPEINVAL;
-		userlog(log4cxx::Level::getError(), logger, (char*) "A NON-BUFFER WAS ATTEMPTED TO BE SENT");
+		LOG4CXX_LOGLS(logger, log4cxx::Level::getDebug(), (char*) "A NON-BUFFER WAS ATTEMPTED TO BE SENT");
 	}
 }
 
-void SenderImpl::disconnect() {
-	destination->disconnect();
+Destination* SenderImpl::getDestination() {
+	return destination;
 }

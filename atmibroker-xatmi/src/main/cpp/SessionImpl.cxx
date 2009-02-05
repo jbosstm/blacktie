@@ -19,6 +19,7 @@
 #include "SessionImpl.h"
 #include "SenderImpl.h"
 #include "ReceiverImpl.h"
+#include "EndpointQueue.h"
 
 log4cxx::LoggerPtr SessionImpl::logger(log4cxx::Logger::getLogger("SessionImpl"));
 
@@ -42,13 +43,13 @@ SessionImpl::~SessionImpl() {
 	}
 }
 
-void SessionImpl::setSendTo(char * replyTo) {
+void SessionImpl::setReplyTo(char * replyTo) {
 	if (queueSender) {
 		delete queueSender;
 		queueSender = NULL;
 	}
 	if (strcmp(replyTo, "") != 0) {
-		queueSender = new SenderImpl(connection_orb, replyTo);
+		queueSender = new SenderImpl(createTemporaryQueue(replyTo));
 	}
 }
 
@@ -58,4 +59,8 @@ Receiver * SessionImpl::getReceiver() {
 
 Sender * SessionImpl::getSender() {
 	return queueSender;
+}
+
+Destination* SessionImpl::createTemporaryQueue(char* queueName) {
+	return new EndpointQueue(connection_orb, queueName);
 }

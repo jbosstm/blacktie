@@ -21,24 +21,20 @@
 // copyright 2006, 2008 BreakThruIT
 
 #include "xatmi.h"
-
 #include "OrbManagement.h"
-
+#include "AtmiBrokerClient.h"
 #include "AtmiBrokerClientControl.h"
-
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerMem.h"
 #include "AtmiBroker.h"
-//TODO READD #include "AtmiBrokerNotify.h"
 #include "AtmiBrokerPoaFac.h"
 #include "userlog.h"
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerClient.h"
 #include "AtmiBrokerOTS.h"
-
-#include "Sender.h"
+#include "Destination.h"
+#include "EndpointQueue.h"
 #include "SenderImpl.h"
-
 #include "log4cxx/basicconfigurator.h"
 #include "log4cxx/propertyconfigurator.h"
 #include "log4cxx/logger.h"
@@ -169,6 +165,6 @@ int clientdone() {
 	return 0;
 }
 
-Sender* get_service_queue(const char * serviceName) {
-	return new SenderImpl(client_default_context, client_name_context, serviceName);
+Sender* get_service_queue_sender(const char * serviceName) {
+	return new SenderImpl(new EndpointQueue(client_default_context, client_name_context, serviceName));
 }

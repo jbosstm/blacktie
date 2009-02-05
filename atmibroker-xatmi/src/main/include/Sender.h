@@ -19,11 +19,12 @@
 #define Sender_H_
 
 #include "Message.h"
+#include "Destination.h"
 
 class Sender {
 public:
 	virtual void send(MESSAGE message) = 0;
-	virtual void disconnect() = 0;
+	virtual Destination* getDestination() = 0;
 };
 
 #endif
