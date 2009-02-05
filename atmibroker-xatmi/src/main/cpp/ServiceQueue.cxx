@@ -116,12 +116,13 @@ ServiceQueue::~ServiceQueue() {
 	}
 }
 
-void ServiceQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent) throw (CORBA::SystemException ) {
+void ServiceQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags) throw (CORBA::SystemException ) {
 	MESSAGE message;
 	message.replyto = replyto_ior;
 	message.data = (char*) malloc(sizeof(char*) * ilen);
 	memcpy(message.data, (char*) idata.get_buffer(), ilen);
 	message.len = ilen;
+	message.correlationId = correlationId;
 	message.flags = flags;
 	message.control = getSpecific(TSS_KEY);
 

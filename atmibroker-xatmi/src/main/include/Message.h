@@ -21,6 +21,7 @@
 
 struct message_t {
 	const char* replyto;
+	int correlationId;
 	char* data;
 	long len;
 	long flags;

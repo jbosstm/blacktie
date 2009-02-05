@@ -54,6 +54,7 @@ void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
 	queueSender = new SenderImpl(server_orb, (char*) message.replyto);
 
 	// EXTRACT THE DATA FROM THE INBOUND MESSAGE
+	int correlationId = message.correlationId;
 	char* idata = message.data;
 	long ilen = message.len;
 	long flags = message.flags;
@@ -69,6 +70,12 @@ void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
 	tpsvcinfo.flags = flags;
 	tpsvcinfo.data = idata;
 	tpsvcinfo.len = ilen;
+	if (tpsvcinfo.flags & TPCONV) {
+		tpsvcinfo.cd = correlationId;
+	}
+	if (control) {
+		tpsvcinfo.flags = (tpsvcinfo.flags | TPTRAN);
+	}
 
 	// HANDLE THE CLIENT INVOCATION
 	setSpecific(TSS_KEY, control);

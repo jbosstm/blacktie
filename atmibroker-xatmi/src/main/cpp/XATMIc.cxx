@@ -44,7 +44,7 @@ log4cxx::LoggerPtr loggerXATMI(log4cxx::Logger::getLogger("loggerXATMI"));
 int _tperrno = 0;
 long _tpurcode = -1;
 
-int send(Sender* sender, const char* replyTo, char* idata, long ilen, long flags, long *revent) {
+int send(Sender* sender, const char* replyTo, char* idata, long ilen, int correlationId, long flags, long rcode, long rval) {
 	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "tpconnect - idata: %s ilen: %d flags: %d", idata, ilen, flags);
 	int toReturn = -1;
 	try {
@@ -57,7 +57,10 @@ int send(Sender* sender, const char* replyTo, char* idata, long ilen, long flags
 		message.replyto = replyTo;
 		message.data = idata;
 		message.len = ilen;
+		message.correlationId = correlationId;
 		message.flags = flags;
+		message.rcode = rcode;
+		message.rval = rval;
 		sender->send(message);
 		setSpecific(TSS_KEY, control);
 		toReturn = 0;
@@ -202,8 +205,7 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 		int id = -1;
 		Session* session = ptrAtmiBrokerClient->createSession(id);
 		if (id >= 0) {
-			long revent = 0;
-			::send(ptr, session->getReceiver()->getDestination()->getName(), idata, ilen, flags, &revent);
+			::send(ptr, session->getReceiver()->getDestination()->getName(), idata, ilen, id, flags, 0, 0);
 		}
 		return id;
 	} else {
@@ -260,7 +262,7 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 		tperrno = TPEPROTO;
 		return -1;
 	} else {
-		return ::send(session->getSender(), session->getReceiver()->getDestination()->getName(), idata, ilen, flags, revent);
+		return ::send(session->getSender(), session->getReceiver()->getDestination()->getName(), idata, ilen, id, flags, 0, 0);
 	}
 }
 
@@ -284,11 +286,10 @@ void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 	tperrno = 0;
 	Session* session = (Session*) getSpecific(SVC_KEY);
 	if (session) {
-		long event = 0;
 		if (session->getSender() == NULL) {
 			tperrno = TPEPROTO;
 		}
-		::send(session->getSender(), "", data, len, flags, &event);
+		::send(session->getSender(), "", data, len, 0, flags, rval, rcode);
 	} else {
 		tperrno = TPEPROTO;
 	}

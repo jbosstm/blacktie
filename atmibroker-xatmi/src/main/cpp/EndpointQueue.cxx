@@ -65,7 +65,7 @@ EndpointQueue::~EndpointQueue() {
 
 // client_callback() -- Implements IDL operation "AtmiBroker::ClientCallback::send_data".
 //
-void EndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent) throw (CORBA::SystemException ) {
+void EndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags) throw (CORBA::SystemException ) {
 	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "client_callback(): called.");
 
 	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "client_callback():    idata = %s", idata.get_buffer());
@@ -73,14 +73,14 @@ void EndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long
 	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "client_callback():    flags = %d", flags);
 
 	MESSAGE message;
-	message.replyto = replyto_ior;
-	message.rval = rval;
-	message.rcode = rcode;
+	message.correlationId = correlationId;
 	message.data = (char*) malloc(sizeof(char*) * ilen);
 	memcpy(message.data, (char*) idata.get_buffer(), ilen);
-	message.len = ilen;
 	message.flags = flags;
-	message.event = revent;
+	message.len = ilen;
+	message.rcode = rcode;
+	message.replyto = replyto_ior;
+	message.rval = rval;
 
 	lock->lock();
 	returnData.push(message);

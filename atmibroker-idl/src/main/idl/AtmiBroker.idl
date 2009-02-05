@@ -94,9 +94,9 @@ module AtmiBroker {
 				  in short rval,
 				  in long rcode, 
 				  in octetSeq idata,
-				  in long ilen, 
-				  in long flags,
-				  in long revent);	  
+				  in long ilen,
+				  in long correlationId, 
+				  in long flags);	  
 	
 		void disconnect();
 	};

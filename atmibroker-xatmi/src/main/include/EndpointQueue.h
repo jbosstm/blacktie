@@ -62,7 +62,7 @@ public:
 	//
 	static POA_AtmiBroker::EndpointQueue* _create(PortableServer::POA_ptr);
 
-	virtual void send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long flags, CORBA::Long revent) throw (CORBA::SystemException );
+	virtual void send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags) throw (CORBA::SystemException );
 
 	virtual void disconnect() throw (CORBA::SystemException );
 

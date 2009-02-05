@@ -50,7 +50,7 @@ void SenderImpl::send(MESSAGE message) {
 		unsigned char * data_togo = (unsigned char *) malloc(data_size);
 		memcpy(data_togo, message.data, data_size);
 		AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(data_size, data_size, data_togo, true);
-		m_endpointQueue->send(message.replyto, message.rval, message.rcode, aOctetSeq, data_size, message.flags, message.event);
+		m_endpointQueue->send(message.replyto, message.rval, message.rcode, aOctetSeq, data_size, message.correlationId, message.flags);
 		aOctetSeq = NULL;
 		userlog(log4cxx::Level::getDebug(), logger, (char*) "Called back ");
 	} else {
