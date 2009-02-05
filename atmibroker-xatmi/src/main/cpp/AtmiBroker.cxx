@@ -29,7 +29,6 @@
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerMem.h"
 #include "AtmiBroker.h"
-#include "AtmiBrokerConversation.h"
 //TODO READD #include "AtmiBrokerNotify.h"
 #include "AtmiBrokerPoaFac.h"
 #include "userlog.h"
@@ -44,7 +43,6 @@
 #include "log4cxx/propertyconfigurator.h"
 #include "log4cxx/logger.h"
 #include "log4cxx/logmanager.h"
-
 
 log4cxx::LoggerPtr loggerAtmiBroker(log4cxx::Logger::getLogger("AtmiBroker"));
 
@@ -123,7 +121,6 @@ int clientinit() {
 			// TODO CLEAN UP CALLBACKPOA, TRANSACTION CURRENT, LOG FACTORY
 
 			// CLEAN UP INITIALISED ITEMS
-			AtmiBrokerConversation::discard_instance();
 			if (ptrAtmiBrokerClient) {
 				userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleting Corba Client ");
 				delete ptrAtmiBrokerClient;
@@ -150,7 +147,6 @@ int clientdone() {
 	if (clientInitialized) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientdone called");
 
-		AtmiBrokerConversation::discard_instance();
 		if (ptrAtmiBrokerClient) {
 			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleting Corba Client ");
 			delete ptrAtmiBrokerClient;

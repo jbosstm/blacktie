@@ -35,7 +35,6 @@
 #include "AtmiBrokerClientControl.h"
 #include "AtmiBrokerServerControl.h"
 #include "AtmiBroker.h"
-#include "AtmiBrokerConversation.h"
 #include "AtmiBroker_ServiceImpl.h"
 #include "AtmiBrokerMem.h"
 #include "log4cxx/logger.h"
@@ -44,6 +43,54 @@ log4cxx::LoggerPtr loggerXATMI(log4cxx::Logger::getLogger("loggerXATMI"));
 
 int _tperrno = 0;
 long _tpurcode = -1;
+
+int send(Sender* sender, const char* replyTo, char* idata, long ilen, long flags, long *revent) {
+	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "tpconnect - idata: %s ilen: %d flags: %d", idata, ilen, flags);
+	int toReturn = 0;
+	try {
+		if (~TPNOTRAN & flags) {
+			// don't run the call in a transaction
+			destroySpecific(TSS_KEY);
+		}
+		MESSAGE message;
+		message.replyto = replyTo;
+		message.data = idata;
+		message.len = ilen;
+		message.flags = flags;
+		sender->send(message);
+	} catch (...) {
+		userlog(log4cxx::Level::getError(), loggerXATMI, (char*) "aCorbaService->start_conversation(): call failed");
+		tperrno = TPESYSTEM;
+		toReturn = -1;
+	}
+	return toReturn;
+}
+
+int receive(Session* session, char ** odata, long *olen, long flags, long* event) {
+	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "tprecv - odata: %s olen: %p flags: %d", *odata, olen, flags);
+	int toReturn = 0;
+	MESSAGE message = session->getReceiver()->receive(flags);
+	if (message.data != NULL) {
+		// TODO Handle TPNOCHANGE
+		// TODO Handle buffer
+		// TODO USE RVAL AND RCODE
+		*odata = message.data;
+		*olen = message.len;
+		*event = message.event;
+		session->setSendTo((char*) message.replyto);
+		userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "returning - %s", *odata);
+	} else {
+		tperrno = TPETIME;
+		toReturn = -1;
+	}
+	return toReturn;
+}
+
+int disconnect(int id) {
+	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "end - id: %d", id);
+	int toReturn = -1;
+	return toReturn;
+}
 
 int * _get_tperrno(void) {
 	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "_get_tperrno");
@@ -158,7 +205,7 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 		Session* session = ptrAtmiBrokerClient->createSession(id);
 		if (id >= 0) {
 			long revent = 0;
-			AtmiBrokerConversation::get_instance()->send(ptr, session->getReceiver()->getDestination()->getName(), idata, ilen, flags, &revent);
+			::send(ptr, session->getReceiver()->getDestination()->getName(), idata, ilen, flags, &revent);
 		}
 		return id;
 	} else {
@@ -185,7 +232,7 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 		tperrno = TPEPROTO;
 		return -1;
 	} else {
-		return AtmiBrokerConversation::get_instance()->send(session->getSender(), session->getReceiver()->getDestination()->getName(), idata, ilen, flags, revent);
+		return ::send(session->getSender(), session->getReceiver()->getDestination()->getName(), idata, ilen, flags, revent);
 	}
 }
 
@@ -194,7 +241,7 @@ int tpgetrply(int *id, char ** odata, long *olen, long flags) {
 	if (clientinit() != -1) {
 		Session* session = ptrAtmiBrokerClient->getSession(id);
 		long events;
-		int toReturn = AtmiBrokerConversation::get_instance()->receive(session, odata, olen, flags, &events);
+		int toReturn = ::receive(session, odata, olen, flags, &events);
 		return toReturn;
 	} else {
 		return -1;
@@ -214,7 +261,7 @@ int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 	if (session == NULL) {
 		tperrno = TPEBADDESC;
 	}
-	return AtmiBrokerConversation::get_instance()->receive(session, odata, olen, flags, event);
+	return ::receive(session, odata, olen, flags, event);
 }
 
 void tpreturn(int rval, long rcode, char* data, long len, long flags) {
@@ -225,7 +272,7 @@ void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 		if (session->getSender() == NULL) {
 			tperrno = TPEPROTO;
 		}
-		AtmiBrokerConversation::get_instance()->send(session->getSender(), "", data, len, flags, &event);
+		::send(session->getSender(), "", data, len, flags, &event);
 	} else {
 		tperrno = TPEPROTO;
 	}
@@ -234,7 +281,7 @@ void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 int tpdiscon(int id) {
 	tperrno = 0;
 	if (clientinit() != -1) {
-		int toReturn = AtmiBrokerConversation::get_instance()->disconnect(id);
+		int toReturn = ::disconnect(id);
 		if (toReturn == 0) {
 			void* currentImpl = getSpecific(TSS_KEY);
 			if (currentImpl) {
@@ -255,7 +302,7 @@ int tpcancel(int id) {
 			tperrno = TPETRAN;
 			return -1;
 		}
-		return AtmiBrokerConversation::get_instance()->disconnect(id);
+		return ::disconnect(id);
 	} else {
 		return -1;
 	}
