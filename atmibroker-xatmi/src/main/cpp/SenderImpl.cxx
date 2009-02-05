@@ -52,10 +52,13 @@ void SenderImpl::send(MESSAGE message) {
 		AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(data_size, data_size, data_togo, true);
 		m_endpointQueue->send(message.replyto, message.rval, message.rcode, aOctetSeq, data_size, message.flags, message.event);
 		aOctetSeq = NULL;
-		//		::tpfree(data);
 		userlog(log4cxx::Level::getDebug(), logger, (char*) "Called back ");
 	} else {
 		tperrno = TPEINVAL;
 		userlog(log4cxx::Level::getError(), logger, (char*) "A NON-BUFFER WAS ATTEMPTED TO BE SENT");
 	}
+}
+
+void SenderImpl::disconnect() {
+	m_endpointQueue->disconnect();
 }

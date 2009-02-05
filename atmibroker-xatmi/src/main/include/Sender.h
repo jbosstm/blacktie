@@ -23,6 +23,7 @@
 class Sender {
 public:
 	virtual void send(MESSAGE message) = 0;
+	virtual void disconnect() = 0;
 };
 
 #endif

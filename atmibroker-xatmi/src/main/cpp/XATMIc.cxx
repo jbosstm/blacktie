@@ -46,8 +46,9 @@ long _tpurcode = -1;
 
 int send(Sender* sender, const char* replyTo, char* idata, long ilen, long flags, long *revent) {
 	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "tpconnect - idata: %s ilen: %d flags: %d", idata, ilen, flags);
-	int toReturn = 0;
+	int toReturn = -1;
 	try {
+		void* control = getSpecific(TSS_KEY);
 		if (~TPNOTRAN & flags) {
 			// don't run the call in a transaction
 			destroySpecific(TSS_KEY);
@@ -58,17 +59,18 @@ int send(Sender* sender, const char* replyTo, char* idata, long ilen, long flags
 		message.len = ilen;
 		message.flags = flags;
 		sender->send(message);
+		setSpecific(TSS_KEY, control);
+		toReturn = 0;
 	} catch (...) {
 		userlog(log4cxx::Level::getError(), loggerXATMI, (char*) "aCorbaService->start_conversation(): call failed");
 		tperrno = TPESYSTEM;
-		toReturn = -1;
 	}
 	return toReturn;
 }
 
 int receive(Session* session, char ** odata, long *olen, long flags, long* event) {
 	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "tprecv - odata: %s olen: %p flags: %d", *odata, olen, flags);
-	int toReturn = 0;
+	int toReturn = -1;
 	MESSAGE message = session->getReceiver()->receive(flags);
 	if (message.data != NULL) {
 		// TODO Handle TPNOCHANGE
@@ -79,16 +81,10 @@ int receive(Session* session, char ** odata, long *olen, long flags, long* event
 		*event = message.event;
 		session->setSendTo((char*) message.replyto);
 		userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "returning - %s", *odata);
+		toReturn = 0;
 	} else {
 		tperrno = TPETIME;
-		toReturn = -1;
 	}
-	return toReturn;
-}
-
-int disconnect(int id) {
-	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "end - id: %d", id);
-	int toReturn = -1;
 	return toReturn;
 }
 
@@ -169,6 +165,7 @@ int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen, long f
 			return -1;
 		}
 	} else {
+		tperrno = TPESYSTEM;
 		return -1;
 	}
 }
@@ -186,6 +183,7 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 			return -1;
 		}
 	} else {
+		tperrno = TPESYSTEM;
 		return -1;
 	}
 }
@@ -209,8 +207,38 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 		}
 		return id;
 	} else {
+		tperrno = TPESYSTEM;
 		return -1;
 	}
+}
+
+int tpgetrply(int *id, char ** odata, long *olen, long flags) {
+	tperrno = 0;
+	if (clientinit() != -1) {
+		Session* session = ptrAtmiBrokerClient->getSession(id);
+		long events;
+		int toReturn = ::receive(session, odata, olen, flags, &events);
+		return toReturn;
+	} else {
+		tperrno = TPESYSTEM;
+		return -1;
+	}
+}
+
+int tpcancel(int id) {
+	tperrno = 0;
+	int toReturn = -1;
+	if (clientinit() != -1) {
+		void* currentImpl = getSpecific(TSS_KEY);
+		if (currentImpl) {
+			tperrno = TPETRAN;
+		}
+		ptrAtmiBrokerClient->closeSession(id);
+		toReturn = 0;
+	} else {
+		tperrno = TPESYSTEM;
+	}
+	return toReturn;
 }
 
 int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
@@ -233,18 +261,6 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 		return -1;
 	} else {
 		return ::send(session->getSender(), session->getReceiver()->getDestination()->getName(), idata, ilen, flags, revent);
-	}
-}
-
-int tpgetrply(int *id, char ** odata, long *olen, long flags) {
-	tperrno = 0;
-	if (clientinit() != -1) {
-		Session* session = ptrAtmiBrokerClient->getSession(id);
-		long events;
-		int toReturn = ::receive(session, odata, olen, flags, &events);
-		return toReturn;
-	} else {
-		return -1;
 	}
 }
 
@@ -280,30 +296,28 @@ void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 
 int tpdiscon(int id) {
 	tperrno = 0;
+	int toReturn = -1;
 	if (clientinit() != -1) {
-		int toReturn = ::disconnect(id);
-		if (toReturn == 0) {
-			void* currentImpl = getSpecific(TSS_KEY);
-			if (currentImpl) {
-				return tx_rollback();
+		userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "end - id: %d", id);
+		Session* session = ptrAtmiBrokerClient->getSession(&id);
+		if (session == NULL) {
+			tperrno = TPEBADDESC;
+		} else {
+			try {
+				session->getSender()->disconnect();
+				void* currentImpl = getSpecific(TSS_KEY);
+				if (currentImpl) {
+					toReturn = tx_rollback();
+				}
+				ptrAtmiBrokerClient->closeSession(id);
+			} catch (...) {
+				userlog(log4cxx::Level::getError(), loggerXATMI, (char*) "aCorbaService->start_conversation(): call failed");
+				tperrno = TPESYSTEM;
 			}
 		}
-		return toReturn;
 	} else {
-		return -1;
+		tperrno = TPESYSTEM;
 	}
+	return toReturn;
 }
 
-int tpcancel(int id) {
-	tperrno = 0;
-	if (clientinit() != -1) {
-		void* currentImpl = getSpecific(TSS_KEY);
-		if (currentImpl) {
-			tperrno = TPETRAN;
-			return -1;
-		}
-		return ::disconnect(id);
-	} else {
-		return -1;
-	}
-}

@@ -60,3 +60,10 @@ Session* AtmiBrokerClient::createSession(int& id) {
 Session* AtmiBrokerClient::getSession(int* id) {
 	return session;
 }
+
+void AtmiBrokerClient::closeSession(int id) {
+	if (session) {
+		delete session;
+		session = NULL;
+	}
+}

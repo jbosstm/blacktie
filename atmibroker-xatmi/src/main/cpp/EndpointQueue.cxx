@@ -34,7 +34,6 @@
 
 #include "log4cxx/logger.h"
 
-
 log4cxx::LoggerPtr loggerEndpointQueue(log4cxx::Logger::getLogger("EndpointQueue"));
 
 // _create() -- create a new servant.
@@ -118,6 +117,7 @@ MESSAGE EndpointQueue::receive(long flags) {
 }
 
 void EndpointQueue::disconnect() throw (CORBA::SystemException ) {
+	userlog(log4cxx::Level::getError(), loggerEndpointQueue, (char*) "disconnect unimplemented");
 }
 
 void EndpointQueue::setName(const char* name) {

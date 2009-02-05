@@ -39,6 +39,7 @@ public:
 	virtual ~AtmiBrokerClient();
 	Session* createSession(int& id);
 	Session* getSession(int* id);
+	void closeSession(int id);
 protected:
 	std::vector<ClientServerInfo*> clientServerVector;
 	Session* session;
