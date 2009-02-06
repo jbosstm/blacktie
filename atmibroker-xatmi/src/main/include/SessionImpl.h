@@ -28,11 +28,13 @@ public:
 
 	virtual ~SessionImpl();
 
-	void setReplyTo(Destination* replyTo);
+	void setSendTo(Destination* replyTo);
 
 	Receiver* getReceiver();
 
 	Sender* getSender();
+
+	int getId();
 private:
 	static log4cxx::LoggerPtr logger;
 	int id;

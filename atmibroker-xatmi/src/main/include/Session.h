@@ -24,9 +24,10 @@
 
 class Session {
 public:
-	virtual void setReplyTo(Destination* replyTo) = 0;
+	virtual void setSendTo(Destination* replyTo) = 0;
 	virtual Receiver* getReceiver() = 0;
 	virtual Sender * getSender() = 0;
+	virtual int getId() = 0;
 };
 
 #endif

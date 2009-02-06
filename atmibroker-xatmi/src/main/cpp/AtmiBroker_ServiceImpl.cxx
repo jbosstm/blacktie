@@ -52,7 +52,7 @@ void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
 
 	// INITIALISE THE SENDER AND RECEIVER FOR THIS CONVERSATION
 	session = new SessionImpl(m_connection, ::create_temporary_queue(m_connection), -1);
-	session->setReplyTo(::lookup_temporary_queue(m_connection, (char*) message.replyto));
+	session->setSendTo(::lookup_temporary_queue(m_connection, (char*) message.replyto));
 
 	// EXTRACT THE DATA FROM THE INBOUND MESSAGE
 	int correlationId = message.correlationId;

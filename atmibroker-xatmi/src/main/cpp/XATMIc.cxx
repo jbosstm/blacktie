@@ -84,7 +84,7 @@ int receive(Session* session, char ** odata, long *olen, long flags, long* event
 		*odata = message.data;
 		*olen = message.len;
 		*event = message.event;
-		session->setReplyTo(::lookup_temporary_queue(clientConnection, (char*) message.replyto));
+		session->setSendTo(::lookup_temporary_queue(clientConnection, (char*) message.replyto));
 		userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "returning - %s", *odata);
 		toReturn = 0;
 	} else {
@@ -178,8 +178,19 @@ int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen, long f
 int tpacall(char * svc, char* idata, long ilen, long flags) {
 	tperrno = 0;
 	if (clientinit() != -1) {
-		int cd = tpconnect(svc, idata, ilen, flags);
+		Destination* ptr = NULL;
+		try {
+			ptr = ::lookup_service_queue(clientConnection, svc);
+		} catch (...) {
+			userlog(log4cxx::Level::getError(), loggerXATMI, (char*) "tpconnect failed to connect to service queue");
+			tperrno = TPENOENT;
+			return -1;
+		}
+		int cd = -1;
+		Session* session = ptrAtmiBrokerClient->createSession(cd);
+		session->setSendTo(ptr);
 		if (cd != -1) {
+			::send(session->getSender(), session->getReceiver()->getDestination()->getName(), idata, ilen, cd, flags, 0, 0);
 			if (TPNOREPLY & flags) {
 				return 0;
 			}
@@ -206,7 +217,7 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 		}
 		int id = -1;
 		Session* session = ptrAtmiBrokerClient->createSession(id);
-		session->setReplyTo(ptr);
+		session->setSendTo(ptr);
 		if (id >= 0) {
 			::send(session->getSender(), session->getReceiver()->getDestination()->getName(), idata, ilen, id, flags, 0, 0);
 		}
@@ -219,15 +230,20 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 
 int tpgetrply(int *id, char ** odata, long *olen, long flags) {
 	tperrno = 0;
+	int toReturn = -1;
 	if (clientinit() != -1) {
-		Session* session = ptrAtmiBrokerClient->getSession(id);
-		long events;
-		int toReturn = ::receive(session, odata, olen, flags, &events);
-		return toReturn;
+		Session* session = ptrAtmiBrokerClient->getSession(*id);
+		if (session == NULL) {
+			tperrno = TPEBADDESC;
+		} else {
+			long events;
+			toReturn = ::receive(session, odata, olen, flags, &events);
+			ptrAtmiBrokerClient->closeSession(*id);
+		}
 	} else {
 		tperrno = TPESYSTEM;
-		return -1;
 	}
+	return toReturn;
 }
 
 int tpcancel(int id) {
@@ -248,41 +264,50 @@ int tpcancel(int id) {
 
 int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 	tperrno = 0;
+	int toReturn = -1;
 	Session* session = (Session*) getSpecific(SVC_SES);
+	if (session != NULL && session->getId() != id) {
+		session = NULL;
+	}
 	if (session == NULL) {
 		if (clientinit() != -1) {
-			session = ptrAtmiBrokerClient->getSession(&id);
+			session = ptrAtmiBrokerClient->getSession(id);
 		} else {
 			tperrno = TPESYSTEM;
-			return -1;
 		}
 	}
 	if (session == NULL) {
 		tperrno = TPEBADDESC;
-		return -1;
-	}
-	if (session->getSender() == NULL) {
-		tperrno = TPEPROTO;
-		return -1;
 	} else {
-		return ::send(session->getSender(), session->getReceiver()->getDestination()->getName(), idata, ilen, id, flags, 0, 0);
+		if (session->getSender() == NULL) {
+			tperrno = TPEPROTO;
+		} else {
+			toReturn = ::send(session->getSender(), session->getReceiver()->getDestination()->getName(), idata, ilen, id, flags, 0, 0);
+		}
 	}
+	return toReturn;
 }
 
 int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 	tperrno = 0;
+	int toReturn = -1;
 	Session* session = (Session*) getSpecific(SVC_SES);
+	if (session != NULL && session->getId() != id) {
+		session = NULL;
+	}
 	if (session == NULL) {
 		if (clientinit() != -1) {
-			session = ptrAtmiBrokerClient->getSession(&id);
+			session = ptrAtmiBrokerClient->getSession(id);
 		} else {
 			tperrno = TPESYSTEM;
 		}
 	}
 	if (session == NULL) {
 		tperrno = TPEBADDESC;
+	} else {
+		toReturn = ::receive(session, odata, olen, flags, event);
 	}
-	return ::receive(session, odata, olen, flags, event);
+	return toReturn;
 }
 
 void tpreturn(int rval, long rcode, char* data, long len, long flags) {
@@ -293,6 +318,7 @@ void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 			tperrno = TPEPROTO;
 		} else {
 			::send(session->getSender(), "", data, len, 0, flags, rval, rcode);
+			session->setSendTo(NULL);
 		}
 	} else {
 		tperrno = TPEPROTO;
@@ -304,7 +330,7 @@ int tpdiscon(int id) {
 	int toReturn = -1;
 	if (clientinit() != -1) {
 		userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "end - id: %d", id);
-		Session* session = ptrAtmiBrokerClient->getSession(&id);
+		Session* session = ptrAtmiBrokerClient->getSession(id);
 		if (session == NULL) {
 			tperrno = TPEBADDESC;
 		} else {

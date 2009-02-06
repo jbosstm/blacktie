@@ -42,7 +42,7 @@ SessionImpl::~SessionImpl() {
 	}
 }
 
-void SessionImpl::setReplyTo(Destination* destination) {
+void SessionImpl::setSendTo(Destination* destination) {
 	if (queueSender) {
 		delete queueSender;
 		queueSender = NULL;
@@ -58,4 +58,8 @@ Receiver * SessionImpl::getReceiver() {
 
 Sender * SessionImpl::getSender() {
 	return queueSender;
+}
+
+int SessionImpl::getId() {
+	return id;
 }

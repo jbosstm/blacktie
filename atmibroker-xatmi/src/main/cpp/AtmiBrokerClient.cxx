@@ -37,8 +37,7 @@ AtmiBrokerClient::AtmiBrokerClient() {
 
 	AtmiBrokerClientXml aAtmiBrokerClientXml;
 	aAtmiBrokerClientXml.parseXmlDescriptor(&clientServerVector, "CLIENT.xml");
-
-	session = NULL;
+	nextSessionId = 0;
 }
 
 AtmiBrokerClient::~AtmiBrokerClient() {
@@ -51,22 +50,19 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 }
 
 Session* AtmiBrokerClient::createSession(int& id) {
-	if (session) {
-		delete session;
-		session = NULL;
-	}
-	id = 0;
-	session = new SessionImpl(clientConnection, ::create_temporary_queue(clientConnection), 0);
+	id = nextSessionId++;
+	SessionImpl* session = new SessionImpl(clientConnection, ::create_temporary_queue(clientConnection), id);
+	sessionMap[id] = session;
 	return session;
 }
 
-Session* AtmiBrokerClient::getSession(int* id) {
-	return session;
+Session* AtmiBrokerClient::getSession(int id) {
+	return sessionMap[id];
 }
 
 void AtmiBrokerClient::closeSession(int id) {
-	if (session) {
-		delete session;
-		session = NULL;
+	if (sessionMap[id]) {
+		delete sessionMap[id];
+		sessionMap[id] = NULL;
 	}
 }

@@ -28,21 +28,23 @@
 #ifndef AtmiBroker_CLIENT_H_
 #define AtmiBroker_CLIENT_H_
 
+#include <vector>
+#include <map>
+
 #include "Session.h"
 #include "AtmiBrokerClientXml.h"
-
-#include <vector>
 
 class AtmiBrokerClient {
 public:
 	AtmiBrokerClient();
 	virtual ~AtmiBrokerClient();
 	Session* createSession(int& id);
-	Session* getSession(int* id);
+	Session* getSession(int id);
 	void closeSession(int id);
 protected:
 	std::vector<ClientServerInfo*> clientServerVector;
-	Session* session;
+	std::map<int, Session*> sessionMap;
+	int nextSessionId;
 };
 
 // CLIENT
