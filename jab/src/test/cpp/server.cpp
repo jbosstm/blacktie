@@ -26,8 +26,7 @@
 #include "AtmiBrokerServerControl.h"
 #include "xatmi.h"
 
-extern "C"
-void BAR(TPSVCINFO * svcinfo) {
+extern "C"void BAR(TPSVCINFO * svcinfo) {
 	char* buffer;
 	int sendlen;
 
@@ -42,14 +41,9 @@ void BAR(TPSVCINFO * svcinfo) {
 extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_jab_RunServer_runServer
 (JNIEnv *, jobject) {
-	int argc;
-	char **argv;
 	int exit_status = -1;
 
-	argc = 0;
-	argv = 0;
-
-	exit_status = serverinit(argc, argv);
+	exit_status = serverinit();
 	tpadvertise("BAR", BAR);
 
 	if (exit_status != -1) {

@@ -23,7 +23,7 @@ package org.jboss.blacktie.jatmibroker.core.proxy;
 
 public interface ServiceQueue {
 
-	void send(String replyTo, byte[] data, int len, int flags);
+	void send(String replyTo, short rval, int rcode, byte[] data, int len, int correlationId, int flags);
 
 	public void close();
 }

@@ -27,11 +27,12 @@ import org.jboss.blacktie.jatmibroker.core.proxy.ServiceQueue;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
 
-import AtmiBroker.ServiceQueueHelper;
+import AtmiBroker.EndpointQueue;
+import AtmiBroker.EndpointQueueHelper;
 
 public class AtmiBrokerServiceFactoryImpl implements ServiceQueue {
 	private static final Logger log = LogManager.getLogger(AtmiBrokerServiceFactoryImpl.class);
-	private AtmiBroker.ServiceQueue serviceFactory;
+	private EndpointQueue serviceFactory;
 
 	public synchronized static ServiceQueue getProxy(AtmiBrokerServerImpl server, String serviceName) throws NotFound, CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName {
 		AtmiBrokerServiceFactoryImpl instance = new AtmiBrokerServiceFactoryImpl(server, serviceName);
@@ -43,12 +44,12 @@ public class AtmiBrokerServiceFactoryImpl implements ServiceQueue {
 		org.omg.CORBA.Object serviceFactoryObject = AtmiBrokerServerImpl.nc.resolve(AtmiBrokerServerImpl.nce.to_name(serviceFactoryName));
 		log.debug("ServiceFactory Object is " + serviceFactoryObject);
 		log.debug("ServiceFactory class is " + serviceFactoryObject.getClass().getName());
-		serviceFactory = ServiceQueueHelper.narrow(serviceFactoryObject);
+		serviceFactory = EndpointQueueHelper.narrow(serviceFactoryObject);
 		log.debug("ServiceFactory is " + serviceFactory);
 	}
 
-	public void send(String replyTo, byte[] data, int len, int flags) {
-		serviceFactory.send(replyTo, data, data.length, flags);
+	public void send(String replyTo, short rval, int rcode, byte[] data, int len, int correlationId, int flags) {
+		serviceFactory.send(replyTo, rval, rcode, data, len, correlationId, flags);
 	}
 
 	public void close() {

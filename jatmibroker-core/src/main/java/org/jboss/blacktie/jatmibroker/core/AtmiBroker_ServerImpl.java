@@ -75,14 +75,11 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 		}
 	}
 
-	public void createAtmiBroker_ServiceFactoryImpl(String serviceName, int servantCacheSize, Class callback, AtmiBroker_CallbackConverter atmiBroker_Callback) throws JAtmiBrokerException {
+	public void createService(String serviceName, int servantCacheSize, Class callback, AtmiBroker_CallbackConverter atmiBroker_Callback) throws JAtmiBrokerException {
 		if (!serviceFactoryList.containsKey(serviceName)) {
 			try {
 				ServiceQueue atmiBroker_ServiceFactoryImpl = new ServiceQueue(serviceName, servantCacheSize, callback, atmiBroker_Callback);
 				serviceFactoryList.put(serviceName, atmiBroker_ServiceFactoryImpl);
-				if (bound) {
-					atmiBroker_ServiceFactoryImpl.bind();
-				}
 			} catch (Throwable t) {
 				throw new JAtmiBrokerException("Could not create service factory for: " + serviceName, t);
 			}
@@ -100,16 +97,13 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 		}
 		Iterator<ServiceQueue> iterator = serviceFactoryList.values().iterator();
 		while (iterator.hasNext()) {
-			iterator.next().bind();
+			iterator.next().close();
+			iterator.remove();
 		}
 		bound = true;
 	}
 
 	public void unbind() throws JAtmiBrokerException {
-		Iterator<ServiceQueue> iterator = serviceFactoryList.values().iterator();
-		while (iterator.hasNext()) {
-			iterator.next().unbind();
-		}
 		try {
 			poa.deactivate_object(activate_object);
 		} catch (Throwable t) {
@@ -119,9 +113,9 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 	}
 
 	public void unbind(String serviceName) throws JAtmiBrokerException {
-		ServiceQueue atmiBroker_ServiceFactoryImpl = serviceFactoryList.get(serviceName);
+		ServiceQueue atmiBroker_ServiceFactoryImpl = serviceFactoryList.remove(serviceName);
 		if (atmiBroker_ServiceFactoryImpl != null) {
-			atmiBroker_ServiceFactoryImpl.unbind();
+			atmiBroker_ServiceFactoryImpl.close();
 		}
 	}
 

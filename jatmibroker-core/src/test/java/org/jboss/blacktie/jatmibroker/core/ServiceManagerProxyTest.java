@@ -55,7 +55,7 @@ public class ServiceManagerProxyTest extends TestCase {
 
 		String aString = "Hello from Java Land";
 		Queue endpoint = proxy.getEndpointQueue(0);
-		serviceFactory.send(endpoint.getReplyTo(), aString.getBytes(), aString.getBytes().length, 0);
+		serviceFactory.send(endpoint.getReplyTo(), (short) 0, 0, aString.getBytes(), aString.getBytes().length, 0, 0);
 		Message receive = endpoint.receive(0);
 
 		assertNotNull(receive);

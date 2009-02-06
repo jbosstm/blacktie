@@ -52,7 +52,7 @@ public class JABRemoteService implements Message {
 			}
 			// TODO HANDLE TRANSACTION
 			Queue endpoint = jabSession.getServerProxy().getEndpointQueue(0);
-			jabSession.getServerProxy().getServiceQueue(serviceName).send(endpoint.getReplyTo(), data, data.length, flags);
+			jabSession.getServerProxy().getServiceQueue(serviceName).send(endpoint.getReplyTo(), (short) 0, 0, data, data.length, 0, flags);
 			org.jboss.blacktie.jatmibroker.core.Message receive = endpoint.receive(flags);
 
 			data = new byte[receive.len];

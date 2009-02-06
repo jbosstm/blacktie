@@ -70,7 +70,7 @@ public class ConnectorImpl implements Connector {
 		try {
 			// TODO HANDLE TRANSACTION
 			Queue endpoint = getProxy().getEndpointQueue(0);
-			getProxy().getServiceQueue(svc).send(endpoint.getReplyTo(), idata.getData(), idata.getSize(), flags);
+			getProxy().getServiceQueue(svc).send(endpoint.getReplyTo(), (short) 0, 0, idata.getData(), idata.getSize(), 0, flags);
 			Message receive = endpoint.receive(flags);
 			// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
 			Buffer buffer = new Buffer("unknown", "unknown", receive.len);
@@ -104,7 +104,7 @@ public class ConnectorImpl implements Connector {
 		try {
 			AtmiBroker_ServerImpl server = getServer();
 			log.info("Advertising: " + serviceName);
-			server.createAtmiBroker_ServiceFactoryImpl(serviceName, servantCacheSize, service, new AtmiBrokerCallbackConverterImpl());
+			server.createService(serviceName, servantCacheSize, service, new AtmiBrokerCallbackConverterImpl());
 			log.info("Advertised: " + serviceName);
 		} catch (Throwable t) {
 			String message = "Could not advertise: " + serviceName;

@@ -26,13 +26,13 @@ public class AtmiBroker_ServiceImpl extends Thread {
 	private String serviceName;
 
 	private AtmiBroker_CallbackConverter atmiBroker_CallbackConverter;
-	private ServiceQueue serviceQueue;
+	private EndpointQueue serviceQueue;
 
-	AtmiBroker_ServiceImpl(String serviceName, Class callback, AtmiBroker_CallbackConverter atmiBroker_CallbackConverter, ServiceQueue serviceQueue) throws InstantiationException, IllegalAccessException {
+	AtmiBroker_ServiceImpl(String serviceName, Class callback, AtmiBroker_CallbackConverter atmiBroker_CallbackConverter, EndpointQueue endpointQueue) throws InstantiationException, IllegalAccessException {
 		this.serviceName = serviceName;
 		this.callback = callback.newInstance();
 		this.atmiBroker_CallbackConverter = atmiBroker_CallbackConverter;
-		this.serviceQueue = serviceQueue;
+		this.serviceQueue = endpointQueue;
 	}
 
 	public void run() {

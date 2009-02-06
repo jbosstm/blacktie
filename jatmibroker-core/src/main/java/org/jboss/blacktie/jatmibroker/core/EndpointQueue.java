@@ -27,7 +27,10 @@ import java.util.List;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.proxy.Queue;
+import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
+import org.omg.CosNaming.NameComponent;
+import org.omg.PortableServer.LifespanPolicyValue;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAPackage.AdapterAlreadyExists;
 import org.omg.PortableServer.POAPackage.AdapterNonExistent;
@@ -43,6 +46,36 @@ public class EndpointQueue extends EndpointQueuePOA implements Queue {
 	private POA m_default_poa;
 	private String callbackIOR;
 	private List<Message> returnData = new ArrayList<Message>();
+	private byte[] activate_object;
+	private String queueName;
+
+	public EndpointQueue(String queueName) throws JAtmiBrokerException {
+		this.queueName = queueName;
+		int numberOfPolicies = 1;
+		Policy[] policiesArray = new Policy[numberOfPolicies];
+		List<Policy> policies = new ArrayList<Policy>();
+		policies.add(AtmiBrokerServerImpl.root_poa.create_lifespan_policy(LifespanPolicyValue.PERSISTENT));
+		// policies.add(AtmiBrokerServerImpl.root_poa.create_thread_policy(ThreadPolicyValue.SINGLE_THREAD_MODEL));
+		policies.toArray(policiesArray);
+
+		try {
+			this.m_default_poa = AtmiBrokerServerImpl.root_poa.create_POA(queueName, AtmiBrokerServerImpl.root_poa.the_POAManager(), policiesArray);
+		} catch (Throwable t) {
+			try {
+				this.m_default_poa = AtmiBrokerServerImpl.root_poa.find_POA(queueName, true);
+			} catch (AdapterNonExistent e) {
+				throw new JAtmiBrokerException("Could not find POA:" + queueName, e);
+			}
+		}
+		try {
+			activate_object = m_default_poa.activate_object(this);
+			Object servant_to_reference = m_default_poa.servant_to_reference(this);
+			NameComponent[] name = AtmiBrokerServerImpl.nce.to_name(queueName);
+			AtmiBrokerServerImpl.nc.bind(name, servant_to_reference);
+		} catch (Throwable t) {
+			throw new JAtmiBrokerException("Could not bind service factory" + queueName, t);
+		}
+	}
 
 	public EndpointQueue(POA poa, String aServerName) throws AdapterNonExistent, InvalidPolicy, ServantAlreadyActive, WrongPolicy, ServantNotActive {
 		super();
@@ -102,14 +135,32 @@ public class EndpointQueue extends EndpointQueuePOA implements Queue {
 	}
 
 	public Message receive(long flags) {
-		// TODO
-		Message toReturn = returnData.remove(0);
-		return toReturn;
+		synchronized (this) {
+			while (returnData.isEmpty()) {
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					log.error("Caught exception", e);
+				}
+			}
+			if (returnData.isEmpty()) {
+				return null;
+			} else {
+				return returnData.remove(0);
+			}
+		}
 	}
 
 	public void disconnect() {
-		// TODO Auto-generated method stub
-
+		if (queueName != null) {
+			try {
+				NameComponent[] name = AtmiBrokerServerImpl.nce.to_name(queueName);
+				AtmiBrokerServerImpl.nc.unbind(name);
+				m_default_poa.deactivate_object(activate_object);
+			} catch (Throwable t) {
+				log.error("Could not unbind service factory" + queueName, t);
+			}
+		}
 	}
 
 	public void close() {
