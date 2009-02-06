@@ -19,13 +19,12 @@
 #define ReceiverImpl_H_
 
 #include "log4cxx/logger.h"
-#include "Connection.h"
 #include "Receiver.h"
 #include "Destination.h"
 
 class ReceiverImpl: public virtual Receiver {
 public:
-	ReceiverImpl(CONNECTION* connection);
+	ReceiverImpl(Destination* destination);
 	virtual ~ReceiverImpl();
 	virtual MESSAGE receive(long flags);
 	virtual Destination* getDestination();

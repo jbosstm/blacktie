@@ -61,7 +61,7 @@ public:
 
 	virtual void send(MESSAGE message);
 
-	virtual MESSAGE receive(long flags);
+	virtual MESSAGE receive(bool noWait);
 
 	virtual const char* getName();
 protected:

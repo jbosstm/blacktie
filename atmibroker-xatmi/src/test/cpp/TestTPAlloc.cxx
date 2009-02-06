@@ -93,14 +93,14 @@ void TestTPAlloc::test_tpalloc_x_common() {
 	dptr->acct_no = 12345678;
 	dptr->amount = 50;
 	dptr->balance = 0;
-	dptr->status[128] = NULL;
+	dptr->status[100] = 'c';
 	dptr->status_len = 0;
 
 	// CHECK THE ASSIGNATIONS
 	CPPUNIT_ASSERT(dptr->acct_no == 12345678);
 	CPPUNIT_ASSERT(dptr->amount == 50);
 	CPPUNIT_ASSERT(dptr->balance == 0);
-	CPPUNIT_ASSERT(dptr->status[128] == NULL);
+	CPPUNIT_ASSERT(dptr->status[100] == 'c');
 	CPPUNIT_ASSERT(dptr->status_len == 0);
 }
 

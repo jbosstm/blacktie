@@ -31,6 +31,7 @@
 #include "tx.h"
 #include "xatmi.h"
 #include "Session.h"
+#include "SenderImpl.h"
 #include "AtmiBrokerServer.h"
 #include "AtmiBrokerClient.h"
 #include "AtmiBrokerClientControl.h"
@@ -195,9 +196,9 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 int tpconnect(char * svc, char* idata, long ilen, long flags) {
 	tperrno = 0;
 	if (clientinit() != -1) {
-		Sender* ptr = NULL;
+		Destination* ptr = NULL;
 		try {
-			ptr = ::get_service_queue_sender(svc);
+			ptr = ::get_service_queue(svc);
 		} catch (...) {
 			userlog(log4cxx::Level::getError(), loggerXATMI, (char*) "tpconnect failed to connect to service queue");
 			tperrno = TPENOENT;
@@ -206,7 +207,7 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 		int id = -1;
 		Session* session = ptrAtmiBrokerClient->createSession(id);
 		if (id >= 0) {
-			::send(ptr, session->getReceiver()->getDestination()->getName(), idata, ilen, id, flags, 0, 0);
+			::send(new SenderImpl(ptr), session->getReceiver()->getDestination()->getName(), idata, ilen, id, flags, 0, 0);
 		}
 		return id;
 	} else {

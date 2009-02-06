@@ -50,7 +50,7 @@ void TestTPCall::test_tpcall_systemerr() {
 	(void) strcpy(sendbuf, "hello");
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	stopNamingService();
+	// TODO stopNamingService();
 
 	int id = ::tpcall((char*) "TestTPCall", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, (long) 0);
 	CPPUNIT_ASSERT(tperrno== TPESYSTEM);

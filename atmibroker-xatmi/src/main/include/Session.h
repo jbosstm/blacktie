@@ -27,7 +27,6 @@ public:
 	virtual void setReplyTo(char* replyTo) = 0;
 	virtual Receiver* getReceiver() = 0;
 	virtual Sender * getSender() = 0;
-	virtual Destination* createTemporaryQueue(char* queueName) = 0;
 };
 
 #endif

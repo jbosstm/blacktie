@@ -15,31 +15,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <tao/ORB.h>
-#include "AtmiBrokerC.h"
+#include "xatmi.h"
 #include "ReceiverImpl.h"
-#include "EndpointQueue.h"
 
 log4cxx::LoggerPtr ReceiverImpl::logger(log4cxx::Logger::getLogger("ReceiverImpl"));
 
-ReceiverImpl::ReceiverImpl(CONNECTION* connection) {
-	PortableServer::POA_ptr poa = (PortableServer::POA_ptr) connection->callback_poa;
-	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection->orbRef;
-	EndpointQueue* endpointQueue = new EndpointQueue(poa);
-	LOG4CXX_LOGLS(logger, log4cxx::Level::getDebug(), (char*) "tmp_servant " << endpointQueue);
-	poa->activate_object(endpointQueue);
-	LOG4CXX_LOGLS(logger, log4cxx::Level::getDebug(), (char*) "activated tmp_servant " << endpointQueue);
-	CORBA::Object_ptr tmp_ref = poa->servant_to_reference(endpointQueue);
-	AtmiBroker::EndpointQueue_var queue = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	endpointQueue->setName(orb->object_to_string(queue));
-	this->destination = endpointQueue;
+ReceiverImpl::ReceiverImpl(Destination* destination) {
+	this->destination = destination;
 }
 
 ReceiverImpl::~ReceiverImpl() {
 }
 
 MESSAGE ReceiverImpl::receive(long flags) {
-	return destination->receive(flags);
+	return destination->receive((TPNOTIME & flags));
 }
 
 Destination* ReceiverImpl::getDestination() {

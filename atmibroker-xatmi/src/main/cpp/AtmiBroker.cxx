@@ -30,7 +30,6 @@
 #include "AtmiBrokerClient.h"
 #include "AtmiBrokerOTS.h"
 #include "EndpointQueue.h"
-#include "SenderImpl.h"
 #include "log4cxx/basicconfigurator.h"
 #include "log4cxx/propertyconfigurator.h"
 #include "log4cxx/logger.h"
@@ -106,6 +105,14 @@ int clientdone() {
 	return 0;
 }
 
-Sender* get_service_queue_sender(const char * serviceName) {
-	return new SenderImpl(new EndpointQueue(clientConnection, serviceName));
+Destination* get_service_queue(const char * serviceName) {
+	return new EndpointQueue(clientConnection, serviceName);
+}
+
+Destination* create_temporary_queue(CONNECTION* connection) {
+	return new EndpointQueue(connection);
+}
+
+Destination* lookup_temporary_queue(CONNECTION* connection, char * replyTo) {
+	return new EndpointQueue(connection, replyTo);
 }

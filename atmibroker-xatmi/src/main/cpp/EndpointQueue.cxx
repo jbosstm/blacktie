@@ -23,24 +23,14 @@
 //
 // Servant which implements the AtmiBroker::ClientCallback interface.
 //
+
+#ifdef TAO_COMP
 #include <orbsvcs/CosNamingS.h>
+#endif
+
 #include "EndpointQueue.h"
-#include "AtmiBrokerClient.h"
-#include "userlog.h"
-#include "xatmi.h"
-#include "log4cxx/logger.h"
 
-log4cxx::LoggerPtr loggerEndpointQueue(log4cxx::Logger::getLogger("EndpointQueue"));
-
-// _create() -- create a new servant.
-// Hides the difference between direct inheritance and tie servants
-// For direct inheritance, simple create and return an instance of the servant.
-// For tie, creates an instance of the tied class and the tie, return the tie.
-//
-POA_AtmiBroker::EndpointQueue*
-EndpointQueue::_create(PortableServer::POA_ptr the_poa) {
-	return new EndpointQueue(the_poa);
-}
+log4cxx::LoggerPtr EndpointQueue::logger(log4cxx::Logger::getLogger("EndpointQueue"));
 
 // EndpointQueue constructor
 //
@@ -48,26 +38,35 @@ EndpointQueue::_create(PortableServer::POA_ptr the_poa) {
 // initialiser for all the virtual base class constructors that
 // require arguments, even those that we inherit indirectly.
 //
-EndpointQueue::EndpointQueue(PortableServer::POA_ptr the_poa) :
-	lock(SynchronizableObject::create(false)) {
+EndpointQueue::EndpointQueue(CONNECTION* connection) {
+	lock = SynchronizableObject::create(false);
+
+	PortableServer::POA_ptr poa = (PortableServer::POA_ptr) connection->callback_poa;
+	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection->orbRef;
+	LOG4CXX_LOGLS(logger, log4cxx::Level::getDebug(), (char*) "tmp_servant " << this);
+	poa->activate_object(this);
+	LOG4CXX_LOGLS(logger, log4cxx::Level::getDebug(), (char*) "activated tmp_servant " << this);
+	CORBA::Object_ptr tmp_ref = poa->servant_to_reference(this);
+	AtmiBroker::EndpointQueue_var queue = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
+	setName(orb->object_to_string(queue));
 }
 
 EndpointQueue::EndpointQueue(CONNECTION* connection, char * callback_ior) {
 	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection->orbRef;
-	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "EndpointQueue: %s", callback_ior);
+	LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << callback_ior);
 	CORBA::Object_var tmp_ref = orb->string_to_object(callback_ior);
 	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "connected to %s", callback_ior);
+	LOG4CXX_DEBUG(logger, (char*) "connected to %s" << callback_ior);
 }
 
 EndpointQueue::EndpointQueue(CONNECTION* connection, const char * serviceName) {
 	CosNaming::NamingContextExt_ptr context = (CosNaming::NamingContextExt_ptr) connection->default_ctx;
 	CosNaming::NamingContext_ptr name_context = (CosNaming::NamingContext_ptr) connection->name_ctx;
-	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "EndpointQueue: %s", serviceName);
+	LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << serviceName);
 	CosNaming::Name * name = context->to_name(serviceName);
 	CORBA::Object_var tmp_ref = name_context->resolve(*name);
 	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "connected to %s", serviceName);
+	LOG4CXX_DEBUG(logger, (char*) "connected to " << serviceName);
 }
 
 // ~EndpointQueue destructor.
@@ -86,10 +85,10 @@ void EndpointQueue::send(MESSAGE message) {
 }
 
 void EndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags) throw (CORBA::SystemException ) {
-	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "client_callback(): called.");
-	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "client_callback():    idata = %s", idata.get_buffer());
-	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "client_callback():    ilen = %d", ilen);
-	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "client_callback():    flags = %d", flags);
+	LOG4CXX_DEBUG(logger, (char*) "client_callback(): called.");
+	LOG4CXX_DEBUG(logger, (char*) "client_callback():    idata = " << idata.get_buffer());
+	LOG4CXX_DEBUG(logger, (char*) "client_callback():    ilen = %d" << ilen);
+	LOG4CXX_DEBUG(logger, (char*) "client_callback():    flags = %d" << flags);
 
 	MESSAGE message;
 	message.correlationId = correlationId;
@@ -103,40 +102,40 @@ void EndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long
 
 	lock->lock();
 	returnData.push(message);
-	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "notifying");
+	LOG4CXX_DEBUG(logger, (char*) "notifying");
 	lock->notify();
-	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "notified");
+	LOG4CXX_DEBUG(logger, (char*) "notified");
 	lock->unlock();
 }
 
-MESSAGE EndpointQueue::receive(long flags) {
+MESSAGE EndpointQueue::receive(bool noWait) {
 	// TODO THIS SHOULD USE THE ID TO CHECK DIFFERENT QUEUES
-	userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "service_response()");
+	LOG4CXX_DEBUG(logger, (char*) "service_response()");
 
 	// Default wait time is 10 seconds
 	long time = 10; // TODO Make configurable
+	if (!noWait) {
+		time = 0;
+	}
 	MESSAGE message;
 	message.data = NULL;
 	lock->lock();
 	while (returnData.size() == 0) {
-		userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "waiting for %d", time);
+		LOG4CXX_DEBUG(logger, (char*) "waiting for %d" << time);
 		lock->wait(time);
-		userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "out of wait");
-		if (!(TPNOTIME & flags)) {
-			break;
-		}
+		LOG4CXX_DEBUG(logger, (char*) "out of wait");
 	}
 	if (returnData.size() != 0) {
 		message = returnData.front();
 		returnData.pop();
-		userlog(log4cxx::Level::getDebug(), loggerEndpointQueue, (char*) "returning %p", message);
+		LOG4CXX_DEBUG(logger, (char*) "returning message");
 	}
 	lock->unlock();
 	return message;
 }
 
 void EndpointQueue::disconnect() throw (CORBA::SystemException ) {
-	userlog(log4cxx::Level::getError(), loggerEndpointQueue, (char*) "disconnect unimplemented");
+	LOG4CXX_ERROR(logger, (char*) "disconnect unimplemented");
 	if (remoteEndpoint) {
 		remoteEndpoint->disconnect();
 	}

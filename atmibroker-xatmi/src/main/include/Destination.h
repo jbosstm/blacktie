@@ -23,7 +23,7 @@
 class Destination {
 public:
 	virtual void send(MESSAGE message) = 0;
-	virtual MESSAGE receive(long flags) = 0;
+	virtual MESSAGE receive(bool noWait) = 0;
 	virtual const char* getName() = 0;
 	virtual void disconnect() = 0;
 };

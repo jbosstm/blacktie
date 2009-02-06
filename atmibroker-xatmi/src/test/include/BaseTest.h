@@ -25,16 +25,6 @@ class BaseTest: public CppUnit::TestFixture {
 public:
 	virtual void setUp();
 	virtual void tearDown();
-protected:
-	void startNamingService();
-	void stopNamingService();
-private:
-	int m_pid;
 };
-
-extern "C" {
-int exec(char* commandName, char * commandLine);
-int term(int pid);
-}
 
 #endif // BaseTest_H

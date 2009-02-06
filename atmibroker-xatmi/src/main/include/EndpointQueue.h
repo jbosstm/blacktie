@@ -31,25 +31,24 @@
 #ifndef EndpointQueue_H_
 #define EndpointQueue_H_
 
-#include <queue>
-#include "AtmiBrokerS.h"
 #include "atmiBrokerMacro.h"
+
+#ifdef TAO_COMP
+#include "AtmiBrokerS.h"
+#endif
+
+#include <queue>
+#include "log4cxx/logger.h"
 #include "Connection.h"
 #include "Destination.h"
 #include "SynchronizableObject.h"
-#include "Message.h"
 
 class ATMIBROKER_DLL EndpointQueue: public virtual Destination, public virtual POA_AtmiBroker::EndpointQueue {
 public:
-	EndpointQueue(PortableServer::POA_ptr);
+	EndpointQueue(CONNECTION* connection);
 	EndpointQueue(CONNECTION* connection, char * callback_ior);
 	EndpointQueue(CONNECTION* connection, const char * serviceName);
 	virtual ~EndpointQueue();
-
-	// _create() -- create a new servant.
-	// Hides the difference between direct inheritance and tie servants.
-	//
-	static POA_AtmiBroker::EndpointQueue* _create(PortableServer::POA_ptr);
 
 	virtual void send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags) throw (CORBA::SystemException );
 
@@ -59,19 +58,20 @@ public:
 
 	virtual void send(MESSAGE message);
 
-	virtual MESSAGE receive(long flags);
+	virtual MESSAGE receive(bool noWait);
 
 	virtual const char* getName();
 
 private:
-	// The following are not implemented
-	//
-	EndpointQueue(const EndpointQueue &);
-	EndpointQueue& operator=(const EndpointQueue &);
+	static log4cxx::LoggerPtr logger;
 	std::queue<MESSAGE> returnData;
 	SynchronizableObject* lock;
 	const char* name;
 	AtmiBroker::EndpointQueue_var remoteEndpoint;
+
+	// The following are not implemented
+	EndpointQueue(const EndpointQueue &);
+	EndpointQueue& operator=(const EndpointQueue &);
 };
 
 #endif

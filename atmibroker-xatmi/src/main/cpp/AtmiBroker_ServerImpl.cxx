@@ -25,10 +25,9 @@
 //
 
 #ifdef TAO_COMP
-#include <tao/ORB.h>
-#include "tao/ORB_Core.h"
 #include <orbsvcs/CosNamingS.h>
 #endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>

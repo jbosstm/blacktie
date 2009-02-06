@@ -26,7 +26,7 @@ ServiceDispatcher::ServiceDispatcher(Destination* serviceQueue, MessageListener*
 
 int ServiceDispatcher::svc(void) {
 	while (!m_shutdown) {
-		MESSAGE message = m_serviceQueue->receive(0);
+		MESSAGE message = m_serviceQueue->receive(false);
 		if (!m_shutdown) {
 			try {
 				m_service->onMessage(message);

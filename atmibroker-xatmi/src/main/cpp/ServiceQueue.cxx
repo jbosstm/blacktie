@@ -128,7 +128,7 @@ void ServiceQueue::disconnect() {
 
 }
 
-MESSAGE ServiceQueue::receive(long flags) {
+MESSAGE ServiceQueue::receive(bool noWait) {
 	MESSAGE message;
 	message.data = NULL;
 	lock->lock();

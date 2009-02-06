@@ -33,8 +33,6 @@ public:
 	Receiver* getReceiver();
 
 	Sender* getSender();
-
-	Destination* createTemporaryQueue(char* queueName);
 private:
 	static log4cxx::LoggerPtr logger;
 	int id;

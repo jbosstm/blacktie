@@ -27,9 +27,6 @@ extern "C" {
 void BaseTest::setUp() {
 	// Perform global set up
 	TestFixture::setUp();
-
-	// Perform set up
-	startNamingService();
 }
 
 void BaseTest::tearDown() {
@@ -39,16 +36,5 @@ void BaseTest::tearDown() {
 	// Perform clean up
 	::clientdone();
 	CPPUNIT_ASSERT(tperrno == 0);
-
-	stopNamingService();
 }
 
-void BaseTest::startNamingService() {
-	// TODO THIS ASSUMES CERTAIN LOCATIONS OF FILES
-	//m_pid = exec("/home/tom/blacktie/utils/ACE+TAO-5.6.6/ACE_wrappers/TAO/orbsvcs/Naming_Service/Naming_Service", "-o namingService.ior -m 1 -u namingServiceData -ORBEndPoint iiop://localhost:3528");
-	//CPPUNIT_ASSERT(m_pid != -1);
-}
-
-void BaseTest::stopNamingService() {
-	//CPPUNIT_ASSERT(term(m_pid) != -1);
-}

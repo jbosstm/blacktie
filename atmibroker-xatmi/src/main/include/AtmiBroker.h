@@ -25,15 +25,19 @@
 #ifndef AtmiBroker_H
 #define AtmiBroker_H
 
-#include "Sender.h"
+#include "Destination.h"
 #include "Connection.h"
 #include "AtmiBrokerClient.h"
 
+// COMMON
 extern int _tperrno;
 extern long _tpurcode;
 extern bool loggerInitialized;
+Destination* create_temporary_queue(CONNECTION* connection);
+Destination* lookup_temporary_queue(CONNECTION* connection, char * replyTo);
 
-extern Sender* get_service_queue_sender(const char * serviceName);
+// CLIENT
+extern Destination* get_service_queue(const char * serviceName);
 extern CONNECTION* clientConnection;
 extern AtmiBrokerClient * ptrAtmiBrokerClient;
 
