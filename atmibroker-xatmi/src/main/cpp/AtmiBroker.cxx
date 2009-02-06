@@ -19,20 +19,16 @@
  * BREAKTHRUIT PROPRIETARY - NOT TO BE DISCLOSED OUTSIDE BREAKTHRUIT, LLC.
  */
 // copyright 2006, 2008 BreakThruIT
-
+#include "AtmiBroker.h"
 #include "xatmi.h"
 #include "OrbManagement.h"
-#include "AtmiBrokerClient.h"
-#include "AtmiBrokerClientControl.h"
-#include "AtmiBrokerEnv.h"
-#include "AtmiBrokerMem.h"
-#include "AtmiBroker.h"
-#include "AtmiBrokerPoaFac.h"
 #include "userlog.h"
+#include "Connection.h"
+#include "AtmiBrokerClientControl.h"
+#include "AtmiBrokerMem.h"
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerClient.h"
 #include "AtmiBrokerOTS.h"
-#include "Destination.h"
 #include "EndpointQueue.h"
 #include "SenderImpl.h"
 #include "log4cxx/basicconfigurator.h"
@@ -40,32 +36,12 @@
 #include "log4cxx/logger.h"
 #include "log4cxx/logmanager.h"
 
+// Global state
 log4cxx::LoggerPtr loggerAtmiBroker(log4cxx::Logger::getLogger("AtmiBroker"));
-
+AtmiBrokerClient * ptrAtmiBrokerClient;
 bool loggerInitialized;
 bool clientInitialized;
-
-// ORB and Naming Service References
-Worker* client_worker;
-CORBA::ORB_var client_orb;
-PortableServer::POA_var client_root_poa;
-PortableServer::POAManager_var client_root_poa_manager;
-CosNaming::NamingContextExt_var client_default_context;
-CosNaming::NamingContext_var client_name_context;
-PortableServer::POA_var client_poa;
-AtmiBrokerPoaFac * clientPoaFactory;
-
-// Memory management
-AtmiBrokerMem * ptrAtmiBrokerMem;
-
-// Corba Client
-AtmiBrokerClient * ptrAtmiBrokerClient;
-
-// Client Policies
-CORBA::PolicyList clientPolicies;
-//CORBA::PolicyManager_var policyManager;
-CORBA::PolicyTypeSeq policyTypes;
-CORBA::PolicyList *policyList;
+CONNECTION* clientConnection;
 
 void client_sigint_handler_callback(int sig_type) {
 	userlog(log4cxx::Level::getWarn(), loggerAtmiBroker, (char*) "client_sigint_handler_callback Received shutdown signal: %d", sig_type);
@@ -74,97 +50,62 @@ void client_sigint_handler_callback(int sig_type) {
 }
 
 int clientinit() {
+	_tperrno = 0;
+	int toReturn = 0;
+	if (!loggerInitialized) {
+		if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG") != NULL) {
+			log4cxx::PropertyConfigurator::configure(AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG"));
+		} else {
+			log4cxx::BasicConfigurator::configure();
+		}
+		loggerInitialized = true;
+	}
+
 	if (!clientInitialized) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientinit called");
-		_tperrno = 0;
-
 		signal(SIGINT, client_sigint_handler_callback);
-
-		if (!loggerInitialized) {
-			if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG") != NULL) {
-				log4cxx::PropertyConfigurator::configure(AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG"));
-			} else {
-				log4cxx::BasicConfigurator::configure();
-			}
-			loggerInitialized = true;
-		}
-
 		try {
-			AtmiBrokerOTS::init_orb((char*) "client", client_worker, client_orb, client_default_context, client_name_context);
-
-			getRootPOAAndManager(client_orb, client_root_poa, client_root_poa_manager);
-
-			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "createClientCallbackPOA creating POA with name client");
-			clientPoaFactory = new AtmiBrokerPoaFac();
-			std::string name = ".client";
-			//			name.insert(0, server);
-			client_poa = clientPoaFactory->createCallbackPoa(client_orb, name.c_str(), client_root_poa, client_root_poa_manager);
-			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "createClientCallbackPOA created POA: %p", (void*) client_poa);
-
-			client_root_poa_manager->activate();
-			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "activated poa - started processing requests ");
-
+			clientConnection = AtmiBrokerOTS::init_orb((char*) "client");
 			ptrAtmiBrokerClient = new AtmiBrokerClient();
-
 			clientInitialized = true;
-
 			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "Client Initialized");
-			return 1;
 		} catch (CORBA::Exception &ex) {
 			userlog(log4cxx::Level::getError(), loggerAtmiBroker, (char*) "clientinit Unexpected CORBA exception: %s", ex._name());
-			tperrno = TPESYSTEM;
-
-			// TODO CLEAN UP CALLBACKPOA, TRANSACTION CURRENT, LOG FACTORY
-
-			// CLEAN UP INITIALISED ITEMS
-			if (ptrAtmiBrokerClient) {
-				userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleting Corba Client ");
-				delete ptrAtmiBrokerClient;
-				ptrAtmiBrokerClient = NULL;
-				userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleted Corba Client ");
-			}
-
-			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleting services");
-			AtmiBrokerMem::discard_instance();
-			//TODO READD AtmiBrokerNotify::discard_instance();
-			AtmiBrokerOTS::discard_instance();
-			AtmiBrokerEnv::discard_instance();
-			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleted services");
-
-			shutdownBindings(client_orb, client_root_poa, client_root_poa_manager, client_default_context, client_name_context, client_poa, client_worker);
-			return -1;
+			_tperrno = TPESYSTEM;
+			::clientdone();
+			toReturn = -1;
 		}
 	}
-	return 0;
+	return toReturn;
 }
 
 int clientdone() {
 	_tperrno = 0;
-	if (clientInitialized) {
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientdone called");
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientdone called");
 
-		if (ptrAtmiBrokerClient) {
-			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleting Corba Client ");
-			delete ptrAtmiBrokerClient;
-			ptrAtmiBrokerClient = NULL;
-			userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleted Corba Client ");
-		}
-
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleting services");
-		AtmiBrokerMem::discard_instance();
-		//TODO READD AtmiBrokerNotify::discard_instance();
-		AtmiBrokerOTS::discard_instance();
-		AtmiBrokerEnv::discard_instance();
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientdone deleted services");
-
-		shutdownBindings(client_orb, client_root_poa, client_root_poa_manager, client_default_context, client_name_context, client_poa, client_worker);
-
-		clientInitialized = false;
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "Client Shutdown");
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleting services");
+	if (ptrAtmiBrokerClient) {
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleting Corba Client ");
+		delete ptrAtmiBrokerClient;
+		ptrAtmiBrokerClient = NULL;
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleted Corba Client ");
 	}
+	AtmiBrokerMem::discard_instance();
+	//TODO READD AtmiBrokerNotify::discard_instance();
+	AtmiBrokerOTS::discard_instance();
+	AtmiBrokerEnv::discard_instance();
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "clientinit deleted services");
+
+	if (clientConnection) {
+		// DISCARD THE CONNECTION
+		shutdownBindings(clientConnection);
+		clientConnection = NULL;
+	}
+	clientInitialized = false;
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker, (char*) "Client Shutdown");
 	return 0;
 }
 
 Sender* get_service_queue_sender(const char * serviceName) {
-	return new SenderImpl(new EndpointQueue(client_default_context, client_name_context, serviceName));
+	return new SenderImpl(new EndpointQueue(clientConnection, serviceName));
 }

@@ -22,9 +22,9 @@
 
 log4cxx::LoggerPtr ReceiverImpl::logger(log4cxx::Logger::getLogger("ReceiverImpl"));
 
-ReceiverImpl::ReceiverImpl(void* connection_poa, void* connection_orb) {
-	PortableServer::POA_ptr poa = (PortableServer::POA_ptr) connection_poa;
-	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection_orb;
+ReceiverImpl::ReceiverImpl(CONNECTION* connection) {
+	PortableServer::POA_ptr poa = (PortableServer::POA_ptr) connection->callback_poa;
+	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection->orbRef;
 	EndpointQueue* endpointQueue = new EndpointQueue(poa);
 	LOG4CXX_LOGLS(logger, log4cxx::Level::getDebug(), (char*) "tmp_servant " << endpointQueue);
 	poa->activate_object(endpointQueue);

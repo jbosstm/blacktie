@@ -31,14 +31,10 @@
 #ifndef EndpointQueue_H_
 #define EndpointQueue_H_
 
-#include "atmiBrokerMacro.h"
-
-#ifdef TAO_COMP
-#include "AtmiBrokerS.h"
-#endif
-
 #include <queue>
-
+#include "AtmiBrokerS.h"
+#include "atmiBrokerMacro.h"
+#include "Connection.h"
 #include "Destination.h"
 #include "SynchronizableObject.h"
 #include "Message.h"
@@ -46,8 +42,8 @@
 class ATMIBROKER_DLL EndpointQueue: public virtual Destination, public virtual POA_AtmiBroker::EndpointQueue {
 public:
 	EndpointQueue(PortableServer::POA_ptr);
-	EndpointQueue(void* orb, char * callback_ior);
-	EndpointQueue(void* connection_context, void* connection_name_context, const char * serviceName);
+	EndpointQueue(CONNECTION* connection, char * callback_ior);
+	EndpointQueue(CONNECTION* connection, const char * serviceName);
 	virtual ~EndpointQueue();
 
 	// _create() -- create a new servant.

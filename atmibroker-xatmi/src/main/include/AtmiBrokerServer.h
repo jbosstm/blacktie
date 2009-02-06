@@ -32,28 +32,10 @@
 #ifndef ATMIBROKER_SERVERSERVER_H_
 #define ATMIBROKER_SERVERSERVER_H_
 
-#include "atmiBrokerMacro.h"
-
-#ifdef TAO_COMP
-#include <tao/ORB.h>
-#include <orbsvcs/CosNamingS.h>
-#include <tao/PortableServer/PortableServerC.h>
-#endif
-
-#include "AtmiBrokerPoaFac.h"
+#include "Connection.h"
 #include "AtmiBroker_ServerImpl.h"
-#include "Worker.h"
 
-extern Worker* server_worker;
-extern CORBA::ORB_var server_orb;
-extern PortableServer::POA_var server_root_poa;
-extern PortableServer::POAManager_var server_root_poa_manager;
-extern CosNaming::NamingContextExt_var server_default_context;
-extern CosNaming::NamingContext_var server_name_context;
-extern PortableServer::POA_var server_poa;
-extern PortableServer::POA_var server_callback_poa;
-extern AtmiBrokerPoaFac * serverPoaFactory;
-
+extern CONNECTION* serverConnection;
 extern AtmiBroker_ServerImpl * ptrServer;
 
 #endif

@@ -43,6 +43,7 @@
 #include "xatmi.h"
 #include "AtmiBrokerServerXml.h"
 #include "ServiceQueue.h"
+#include "Connection.h"
 
 struct _service_data {
 	char* serviceName;
@@ -52,15 +53,9 @@ struct _service_data {
 typedef _service_data ServiceData;
 class ATMIBROKER_DLL AtmiBroker_ServerImpl: public virtual POA_AtmiBroker::Server {
 public:
-	AtmiBroker_ServerImpl(PortableServer::POA_ptr);
+	AtmiBroker_ServerImpl(CONNECTION* connection, PortableServer::POA_ptr poa);
 
 	virtual ~AtmiBroker_ServerImpl();
-
-	// _create() -- create a new servant.
-	// Hides the difference between direct inheritance and tie servants.
-	//
-	static POA_AtmiBroker::Server*
-	_create(PortableServer::POA_ptr);
 
 	// IDL operations
 	//
@@ -105,6 +100,8 @@ private:
 	std::vector<char*> advertisedServices;
 	char * serverName;
 	ServerMetadata serverInfo;
+	CONNECTION* connection;
+	PortableServer::POA_ptr poa;
 
 	// The following are not implemented
 	//

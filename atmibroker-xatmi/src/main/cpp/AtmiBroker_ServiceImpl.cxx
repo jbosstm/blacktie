@@ -47,7 +47,7 @@ void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
 	userlog(log4cxx::Level::getDebug(), logger, (char*) "svc()");
 
 	// INITIALISE THE SENDER AND RECEIVER FOR THIS CONVERSATION
-	session = new SessionImpl(server_callback_poa, server_orb, -1);
+	session = new SessionImpl(serverConnection, -1);
 	session->setReplyTo((char*) message.replyto);
 
 	// EXTRACT THE DATA FROM THE INBOUND MESSAGE

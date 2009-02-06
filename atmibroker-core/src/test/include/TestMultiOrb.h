@@ -25,11 +25,13 @@ class TestMultiOrb: public CppUnit::TestFixture {
 CPPUNIT_TEST_SUITE( TestMultiOrb )
 	;
 		CPPUNIT_TEST( test );
+		CPPUNIT_TEST( test_manyorb );
 	CPPUNIT_TEST_SUITE_END()
 	;
 
 public:
 	void test();
+	void test_manyorb();
 	virtual void setUp();
 	virtual void tearDown();
 };

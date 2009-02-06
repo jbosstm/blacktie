@@ -53,7 +53,7 @@ Session* AtmiBrokerClient::createSession(int& id) {
 		session = NULL;
 	}
 	id = 0;
-	session = new SessionImpl(client_poa, client_orb, 0);
+	session = new SessionImpl(clientConnection, 0);
 	return session;
 }
 

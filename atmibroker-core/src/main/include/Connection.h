@@ -15,23 +15,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef ReceiverImpl_H_
-#define ReceiverImpl_H_
 
-#include "log4cxx/logger.h"
-#include "Connection.h"
-#include "Receiver.h"
-#include "Destination.h"
+#ifndef CONNECTION_H
+#define CONNECTION_H
 
-class ReceiverImpl: public virtual Receiver {
-public:
-	ReceiverImpl(CONNECTION* connection);
-	virtual ~ReceiverImpl();
-	virtual MESSAGE receive(long flags);
-	virtual Destination* getDestination();
-private:
-	static log4cxx::LoggerPtr logger;
-	Destination* destination;
+#include "atmiBrokerCoreMacro.h"
+
+struct ATMIBROKER_CORE_DLL connection_t {
+	void* orbRef;
+	void* root_poa;
+	void* root_poa_manager;
+	void* default_ctx;
+	void* name_ctx;
+	void* callback_poa;
+	void* worker;
+	void* poaFactory;
 };
+typedef struct ATMIBROKER_CORE_DLL connection_t CONNECTION;
 
 #endif

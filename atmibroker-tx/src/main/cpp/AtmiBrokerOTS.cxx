@@ -40,13 +40,9 @@
 
 #include "log4cxx/logger.h"
 
-
 log4cxx::LoggerPtr loggerAtmiBrokerOTS(log4cxx::Logger::getLogger("AtmiBrokerOTS"));
 
 AtmiBrokerOTS *AtmiBrokerOTS::ptrAtmiBrokerOTS = NULL;
-CORBA::ORB_ptr ots_orb;
-CosNaming::NamingContextExt_ptr ots_namingContextExt;
-CosNaming::NamingContext_ptr ots_namingContext;
 
 AtmiBrokerOTS *
 AtmiBrokerOTS::get_instance() {
@@ -67,19 +63,13 @@ AtmiBrokerOTS::AtmiBrokerOTS() {
 	nextControlId = 1;
 	currentImpl = NULL;
 	tx_current = NULL;
-	// if we use the name ots then we end up with two different orbs in the client and this breaks things
-	//XXXAtmiBrokerOTS::init_orb((char*) "ots", ots_worker, ots_orb, ots_namingContextExt, ots_namingContext);
-	AtmiBrokerOTS::init_orb((char*) BT_OTS_ORB, ots_worker, ots_orb, ots_namingContextExt, ots_namingContext);
+	ots_connection = init_orb((char*) "ots");
 	//	createTransactionPolicy();
 }
 
 AtmiBrokerOTS::~AtmiBrokerOTS() {
 	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "destructor");
-	PortableServer::POA_var ots_root_poa;
-	PortableServer::POAManager_var ots_root_poa_manager;
-	PortableServer::POA_var ots_poa;
-
-	shutdownBindings(ots_orb, ots_root_poa, ots_root_poa_manager, ots_namingContextExt, ots_namingContext, ots_poa, ots_worker);
+	shutdownBindings(ots_connection);
 	/* TODO
 	 if (xaResourceMgrId)
 	 //free (xaResourceMgrId);
@@ -94,11 +84,9 @@ AtmiBrokerOTS::~AtmiBrokerOTS() {
 	 */
 }
 
-void  AtmiBrokerOTS::init_orb(
-        char* name, Worker*& worker, CORBA::ORB_ptr& orbRef,
-        CosNaming::NamingContextExt_var& default_ctx, CosNaming::NamingContext_var& name_ctx) {
-       	register_tx_interceptors(name);
-       	initOrb(name, worker, orbRef, default_ctx, name_ctx);
+CONNECTION* AtmiBrokerOTS::init_orb(char* name) {
+	register_tx_interceptors(name);
+	return ::initOrb(name);
 }
 
 int AtmiBrokerOTS::tx_open(void) {
@@ -109,8 +97,8 @@ int AtmiBrokerOTS::tx_open(void) {
 			if (transFactoryId != NULL && strlen(transFactoryId) != 0) {
 				// TJJ resolving by nameservice "TransactionManagerService.OTS"
 				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "to_name/resolve TransactionService: " << transFactoryId);
-				CosNaming::Name * name = ots_namingContextExt->to_name(transFactoryId);
-				CORBA::Object_var obj = ots_namingContextExt->resolve(*name);
+				CosNaming::Name * name = getNamingContextExt()->to_name(transFactoryId);
+				CORBA::Object_var obj = getNamingContextExt()->resolve(*name);
 				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "resolved TransactionService: " << (void*) obj);
 				tx_factory = CosTransactions::TransactionFactory::_narrow(obj);
 				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "narrowed TransactionFactory: " << (void*) tx_factory);
@@ -165,7 +153,7 @@ int AtmiBrokerOTS::tx_commit(void) {
 		return TX_OK;
 	} catch (CORBA::TRANSACTION_ROLLEDBACK & aRef) {
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(), (char*) "transaction has been rolled back " << (void*) &aRef);
-		return -1;	// should be TX_ROLLBACK ... and all the other outcomes
+		return -1; // should be TX_ROLLBACK ... and all the other outcomes
 	} catch (...) {
 		// TODO placeholder return the correct error code
 		return TX_ERROR;
@@ -233,7 +221,7 @@ int AtmiBrokerOTS::resume(long tranid) {
 				tx_current->resume((*it)->control);
 				if (getSpecific(TSS_KEY)) {
 					LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getWarn(),
-						(char*) "resume: current transaction has not been suspended");
+							(char*) "resume: current transaction has not been suspended");
 				}
 
 				setSpecific(TSS_KEY, tx_current->get_control());
@@ -265,16 +253,16 @@ CosTransactions::Control_ptr AtmiBrokerOTS::getSuspended(long tranid) {
 int AtmiBrokerOTS::tx_close(void) {
 	if (getSpecific(TSS_KEY)) {
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getWarn(),
-			(char*) "tx_close: transaction still active");
+				(char*) "tx_close: transaction still active");
 		return TX_PROTOCOL_ERROR;
 	}
 
 	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_close ");
 
-//	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "releasing tx_current");
-//	CORBA::release(tx_current);
-//	if (!CORBA::is_nil(tx_current))	// TODO find out who forgot to release it
-//		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getWarn(), (char *) "tx_close: current not nil after release");
+	//	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "releasing tx_current");
+	//	CORBA::release(tx_current);
+	//	if (!CORBA::is_nil(tx_current))	// TODO find out who forgot to release it
+	//		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getWarn(), (char *) "tx_close: current not nil after release");
 
 	tx_current = NULL;
 	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "released tx_current");
@@ -305,7 +293,7 @@ void AtmiBrokerOTS::createXAConnectorAndResourceManager() {
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) " created local XA Connector: " << (void*)xa_connector);
 #else
 		//#elif ORBIX_COMP
-		tmp_ref = ots_orb->resolve_initial_references("XAConnector");
+		tmp_ref = getOrb()->resolve_initial_references("XAConnector");
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) " resolved XA Connector: " << (void*) tmp_ref);
 
 		xa_connector = XA::Connector::_narrow(tmp_ref);
@@ -313,7 +301,7 @@ void AtmiBrokerOTS::createXAConnectorAndResourceManager() {
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) " narrowed XA Connector: " << (void*) xa_connector);
 #endif
 	} else
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "already got XA Connector: " << (void*) xa_connector);
+	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "already got XA Connector: " << (void*) xa_connector);
 
 	if (CORBA::is_nil(xa_resource_manager)) {
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) " creating XA Resource Manager ");
@@ -360,7 +348,7 @@ void AtmiBrokerOTS::createXAConnectorAndResourceManager() {
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "created XA Resource Manager: " << (void*) xa_resource_manager);
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "created XA Current Connection: " << (void*) xa_current_connection);
 	} else
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "already got XA Resource Manager : " << (void*) xa_resource_manager);
+	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "already got XA Resource Manager : " << (void*) xa_resource_manager);
 }
 
 CurrentImpl *
@@ -393,17 +381,14 @@ XA::XASwitch_ptr AtmiBrokerOTS::getXaosw() {
 	return xaosw;
 }
 
-CORBA::ORB_ptr&
-AtmiBrokerOTS::getOrb() {
-	return ots_orb;
+CORBA::ORB_ptr AtmiBrokerOTS::getOrb() {
+	return (CORBA::ORB_ptr) ots_connection->orbRef;
 }
 
-CosNaming::NamingContextExt_ptr&
-AtmiBrokerOTS::getNamingContextExt() {
-	return ots_namingContextExt;
+CosNaming::NamingContextExt_ptr AtmiBrokerOTS::getNamingContextExt() {
+	return (CosNaming::NamingContextExt_ptr) ots_connection->default_ctx;
 }
 
-CosNaming::NamingContext_ptr&
-AtmiBrokerOTS::getNamingContext() {
-	return ots_namingContext;
+CosNaming::NamingContext_ptr AtmiBrokerOTS::getNamingContext() {
+	return (CosNaming::NamingContext_ptr) ots_connection->name_ctx;
 }

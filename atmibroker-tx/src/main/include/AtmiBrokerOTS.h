@@ -43,7 +43,7 @@
 #include <iostream>
 #include <vector>
 
-#include "Worker.h"
+#include "Connection.h"
 
 #include "CurrentImpl.h"
 
@@ -91,21 +91,14 @@ public:
 	static AtmiBrokerOTS* get_instance();
 	static void discard_instance();
 
-	static void  init_orb(char*, Worker*&, CORBA::ORB_ptr&, CosNaming::NamingContextExt_var&, CosNaming::NamingContext_var&);
-	void setCorbaObjects(CORBA::ORB_var orb, CosNaming::NamingContextExt_var namingContextExt, CosNaming::NamingContext_var namingContext);
-	CORBA::ORB_ptr& getOrb();
-	CosNaming::NamingContextExt_ptr& getNamingContextExt();
-	CosNaming::NamingContext_ptr& getNamingContext();
+	static CONNECTION* init_orb(char* name);
+	CORBA::ORB_ptr getOrb();
+	CosNaming::NamingContextExt_ptr getNamingContextExt();
+	CosNaming::NamingContext_ptr getNamingContext();
 
 private:
 	void createTransactionPolicy();
-
-//	CORBA::Policy_var transactionPolicy;
-
-	Worker* ots_worker;
-	CORBA::ORB_var ots_orb;
-	CosNaming::NamingContextExt_var ots_namingContextExt;
-	CosNaming::NamingContext_var ots_namingContext;
+	CONNECTION* ots_connection;
 
 	// OTS References
 	long nextControlId;

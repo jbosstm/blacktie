@@ -25,26 +25,16 @@
 #ifndef AtmiBroker_H
 #define AtmiBroker_H
 
-#ifdef TAO_COMP
-#include <tao/ORB.h>
-#include <orbsvcs/CosNamingS.h>
-#include <tao/PortableServer/PortableServerC.h>
-#endif
-
 #include "Sender.h"
+#include "Connection.h"
+#include "AtmiBrokerClient.h"
 
 extern int _tperrno;
 extern long _tpurcode;
 extern bool loggerInitialized;
 
 extern Sender* get_service_queue_sender(const char * serviceName);
-
-extern CORBA::ORB_var client_orb;
-extern PortableServer::POA_var client_root_poa;
-extern PortableServer::POAManager_var client_root_poa_manager;
-extern CosNaming::NamingContextExt_var client_default_context;
-extern CosNaming::NamingContext_var client_name_context;
-extern PortableServer::POA_var client_poa;
-extern CORBA::PolicyList *policyList;
+extern CONNECTION* clientConnection;
+extern AtmiBrokerClient * ptrAtmiBrokerClient;
 
 #endif

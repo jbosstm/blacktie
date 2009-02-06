@@ -23,11 +23,11 @@
 
 log4cxx::LoggerPtr SessionImpl::logger(log4cxx::Logger::getLogger("SessionImpl"));
 
-SessionImpl::SessionImpl(void* connection_poa, void* connection_orb, int id) {
+SessionImpl::SessionImpl(CONNECTION* connection, int id) {
 	LOG4CXX_LOGLS(logger, log4cxx::Level::getDebug(), (char*) "constructor ");
 	this->id = id;
-	this->connection_orb = connection_orb;
-	queueReceiver = new ReceiverImpl(connection_poa, connection_orb);
+	this->connection = connection;
+	queueReceiver = new ReceiverImpl(connection);
 	queueSender = NULL;
 }
 
@@ -62,5 +62,5 @@ Sender * SessionImpl::getSender() {
 }
 
 Destination* SessionImpl::createTemporaryQueue(char* queueName) {
-	return new EndpointQueue(connection_orb, queueName);
+	return new EndpointQueue(connection, queueName);
 }

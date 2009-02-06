@@ -24,33 +24,15 @@
 #include "AtmiBrokerPoaFac.h"
 
 void TestOrbAdditions::test_initorb() {
-
 	for (int i = 0; i < 10; i++) {
+		CONNECTION* serverConnection = AtmiBrokerOTS::init_orb((char*) "server");
+		AtmiBrokerPoaFac* serverPoaFactory = new AtmiBrokerPoaFac();
+		PortableServer::POA_var server_poa = serverPoaFactory->createServerPoa(((CORBA::ORB_ptr) serverConnection->orbRef), "foo", ((PortableServer::POA_ptr) serverConnection->root_poa), ((PortableServer::POAManager_ptr) serverConnection->root_poa_manager));
+		CONNECTION* clientConnection = AtmiBrokerOTS::init_orb((char*) "client");
 
-		Worker* server_worker;
-		CORBA::ORB_var server_orb;
-		CosNaming::NamingContextExt_var server_default_context;
-		CosNaming::NamingContext_var server_name_context;
-		PortableServer::POA_var server_root_poa;
-		PortableServer::POAManager_var server_root_poa_manager;
-		AtmiBrokerOTS::init_orb((char*) "server", server_worker, server_orb, server_default_context, server_name_context);
-		getRootPOAAndManager(server_orb, server_root_poa, server_root_poa_manager);
-		AtmiBrokerPoaFac* server_poa_fac = new AtmiBrokerPoaFac();
-		PortableServer::POA_var server_poa = server_poa_fac->createCallbackPoa(server_orb, "foo", server_root_poa, server_root_poa_manager);
-
-		Worker* client_worker;
-		CORBA::ORB_var client_orb;
-		CosNaming::NamingContextExt_var client_default_context;
-		CosNaming::NamingContext_var client_name_context;
-		PortableServer::POA_var client_root_poa;
-		PortableServer::POAManager_var client_root_poa_manager;
-		AtmiBrokerOTS::init_orb((char*) "client", client_worker, client_orb, client_default_context, client_name_context);
-		getRootPOAAndManager(client_orb, client_root_poa, client_root_poa_manager);
-		AtmiBrokerPoaFac* client_poa_fac = new AtmiBrokerPoaFac();
-		PortableServer::POA_var client_poa = client_poa_fac->createCallbackPoa(client_orb, "foo.client", client_root_poa, client_root_poa_manager);
-
-		shutdownBindings(client_orb, client_root_poa, client_root_poa_manager, client_default_context, client_name_context, client_poa, client_worker);
-		shutdownBindings(server_orb, server_root_poa, server_root_poa_manager, server_default_context, server_name_context, server_poa, server_worker);
+		shutdownBindings(serverConnection);
+		serverConnection = NULL;
+		shutdownBindings(clientConnection);
+		clientConnection = NULL;
 	}
-
 }

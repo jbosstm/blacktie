@@ -19,12 +19,12 @@
 #define SessionImpl_H_
 
 #include "log4cxx/logger.h"
-
+#include "Connection.h"
 #include "Session.h"
 
 class SessionImpl: public virtual Session {
 public:
-	SessionImpl(void* connection_poa, void* connection_orb, int id);
+	SessionImpl(CONNECTION* connection, int id);
 
 	virtual ~SessionImpl();
 
@@ -38,7 +38,7 @@ public:
 private:
 	static log4cxx::LoggerPtr logger;
 	int id;
-	void* connection_orb;
+	CONNECTION* connection;
 	Receiver* queueReceiver;
 	Sender* queueSender;
 };

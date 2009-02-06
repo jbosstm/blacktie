@@ -28,8 +28,7 @@
 #include "OrbManagement.h"
 
 // sanity check
-void TestTransactions::test_transactions()
-{
+void TestTransactions::test_transactions() {
 	CPPUNIT_ASSERT(tx_open() == TX_OK);
 	CPPUNIT_ASSERT(tx_begin() == TX_OK);
 	CPPUNIT_ASSERT(tx_commit() == TX_OK);
@@ -37,8 +36,7 @@ void TestTransactions::test_transactions()
 }
 
 // check for protocol errors in a transactions lifecycle
-void TestTransactions::test_protocol()
-{
+void TestTransactions::test_protocol() {
 	// should not be able to begin, complete or close a transaction before calling tx_open
 	CPPUNIT_ASSERT(tx_begin() != TX_OK);
 	CPPUNIT_ASSERT(tx_commit() != TX_OK);
@@ -75,28 +73,33 @@ void TestTransactions::test_protocol()
 }
 
 static CORBA::ORB_ptr find_orb(const char * name) {
-	TAO::ORB_Table * const orb_table = TAO::ORB_Table::instance ();
+	TAO::ORB_Table * const orb_table = TAO::ORB_Table::instance();
 	::TAO_ORB_Core* oc = orb_table->find(name);
 
 	return (oc == 0 ? NULL : oc->orb());
 }
 
-static int fn1(char *a, int i, long l) {return 0;}
-static int fn2(XID *x, int i, long l) {return 0;}
-static int fn3(XID *, long l1, int i, long l2) {return 0;}
-static int fn4(int *ip1, int *ip2, int i, long l) {return 0;}
-static struct xa_switch_t real_resource = {
-	"DummyRM", 0L, 0,
-	fn1, fn1, /* open and close */
-	fn2, fn2, fn2, fn2, fn2, /*start, end, rollback, prepare, commit */
-	fn3,	/* recover */
-	fn2,	/* forget */
-	fn4	/* complete */
+static int fn1(char *a, int i, long l) {
+	return 0;
+}
+static int fn2(XID *x, int i, long l) {
+	return 0;
+}
+static int fn3(XID *, long l1, int i, long l2) {
+	return 0;
+}
+static int fn4(int *ip1, int *ip2, int i, long l) {
+	return 0;
+}
+static struct xa_switch_t real_resource = { "DummyRM", 0L, 0, fn1, fn1, /* open and close */
+fn2, fn2, fn2, fn2, fn2, /*start, end, rollback, prepare, commit */
+fn3, /* recover */
+fn2, /* forget */
+fn4 /* complete */
 };
 
 // test whether enlisting a resource with a remote transaction manager works
-void TestTransactions::test_register_resource()
-{
+void TestTransactions::test_register_resource() {
 	// start a transaction running
 	CPPUNIT_ASSERT(tx_open() == TX_OK);
 	CPPUNIT_ASSERT(tx_begin() == TX_OK);
@@ -109,7 +112,7 @@ void TestTransactions::test_register_resource()
 	CPPUNIT_ASSERT(!CORBA::is_nil(c));
 
 	// a side effect of starting a transaction is to start an orb
-	CORBA::ORB_ptr orb = find_orb(BT_OTS_ORB);
+	CORBA::ORB_ptr orb = find_orb("ots");
 	CPPUNIT_ASSERT(!CORBA::is_nil(orb));
 	// get a handle on a poa
 	CORBA::Object_var obj = orb->resolve_initial_references("RootPOA");

@@ -19,12 +19,8 @@
 #include <cppunit/TestFixture.h>
 
 #include <tao/ORB.h>
-#include <orbsvcs/CosNamingS.h>
-#include <tao/PortableServer/PortableServerC.h>
-#include <orbsvcs/CosNotificationS.h>
-
 #include "TestMultiOrb.h"
-
+#include "AtmiBrokerPoaFac.h"
 #include "OrbManagement.h"
 #include "Worker.h"
 
@@ -44,18 +40,27 @@ void TestMultiOrb::tearDown() {
 
 void TestMultiOrb::test() {
 	try {
-		Worker* client_worker;
-		CORBA::ORB_var client_orb;
-		CosNaming::NamingContextExt_var client_default_context;
-		CosNaming::NamingContext_var client_name_context;
-		initOrb((char*) "client", client_worker, client_orb, client_default_context, client_name_context);
-
-		Worker* server_worker;
-		CORBA::ORB_var server_orb;
-		CosNaming::NamingContextExt_var server_default_context;
-		CosNaming::NamingContext_var server_name_context;
-		initOrb((char*) "server", server_worker, server_orb, server_default_context, server_name_context);
+		CONNECTION* serverConnection = initOrb((char*) "client");
+		CONNECTION* clientConnection = initOrb((char*) "server");
+		shutdownBindings(serverConnection);
+		serverConnection = NULL;
+		shutdownBindings(clientConnection);
+		clientConnection = NULL;
 	} catch (CORBA::Exception &e) {
 		CPPUNIT_FAIL("COULDN'T CONNECT TO NAME SERVICE");
+	}
+}
+
+void TestMultiOrb::test_manyorb() {
+	for (int i = 0; i < 10; i++) {
+		CONNECTION* serverConnection = initOrb((char*) "server");
+		AtmiBrokerPoaFac* serverPoaFactory = new AtmiBrokerPoaFac();
+		PortableServer::POA_var server_poa = serverPoaFactory->createServerPoa(((CORBA::ORB_ptr) serverConnection->orbRef), "foo", ((PortableServer::POA_ptr) serverConnection->root_poa), ((PortableServer::POAManager_ptr) serverConnection->root_poa_manager));
+		CONNECTION* clientConnection = initOrb((char*) "client");
+
+		shutdownBindings(serverConnection);
+		serverConnection = NULL;
+		shutdownBindings(clientConnection);
+		clientConnection = NULL;
 	}
 }
