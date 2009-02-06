@@ -18,27 +18,11 @@
 package org.jboss.blacktie.jatmibroker.core;
 
 public class RunServer extends Thread {
-	private static RunServer instance;
+	native void serverinit();
 
-	native void runServer();
+	native void serverdone();
 
 	static {
 		System.loadLibrary("testsuite");
-	}
-
-	public static synchronized void startInstance() throws InterruptedException {
-		if (instance == null) {
-			instance = new RunServer();
-			instance.start();
-			Thread.sleep(1000);
-		}
-	}
-
-	public static synchronized void stopInstance() {
-		instance.stop();
-	}
-
-	public void run() {
-		runServer();
 	}
 }

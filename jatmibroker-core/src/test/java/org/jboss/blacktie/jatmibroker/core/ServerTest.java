@@ -36,10 +36,10 @@ public class ServerTest extends TestCase {
 
 	public void xtest() throws Exception {
 		String[] args = new String[3];
-		args[0] = "default";
+		args[0] = "fooapp";
 		args[1] = "foo";
 		args[2] = "BAR";
-		log.debug(" company is " + args[0]);
+		log.debug(" domain is " + args[0]);
 		log.debug(" server is " + args[1]);
 		log.debug(" method is " + args[2]);
 

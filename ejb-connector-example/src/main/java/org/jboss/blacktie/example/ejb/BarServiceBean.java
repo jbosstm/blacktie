@@ -51,7 +51,7 @@ public class BarServiceBean extends AbstractBlacktieService implements SessionBe
 			properties.put("blacktie.orb.args", "2");
 			properties.put("blacktie.orb.arg.1", "-ORBInitRef");
 			properties.put("blacktie.orb.arg.2", "NameService=corbaloc::localhost:3528/NameService");
-			properties.put("blacktie.company.name", "jboss");
+			properties.put("blacktie.domain.name", "jboss");
 			properties.put("blacktie.server.name", "example");
 			ConnectorFactory connectorFactory = ConnectorFactoryImpl.getConnectorFactory(properties);
 			Connector connector = connectorFactory.getConnector();

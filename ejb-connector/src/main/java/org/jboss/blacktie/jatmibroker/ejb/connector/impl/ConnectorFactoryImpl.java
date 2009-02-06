@@ -59,13 +59,6 @@ public class ConnectorFactoryImpl implements ConnectorFactory {
 
 	/**
 	 * Create the connector factory
-	 * 
-	 * @param args
-	 *            The orb args
-	 * @param companyName
-	 *            The company name
-	 * @param serverName
-	 *            The server name
 	 */
 	protected ConnectorFactoryImpl(Properties properties) {
 		this.properties = properties;

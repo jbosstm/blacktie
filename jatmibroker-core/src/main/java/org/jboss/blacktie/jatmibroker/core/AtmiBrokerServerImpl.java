@@ -78,7 +78,7 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 
 	private Map<String, ServiceQueue> proxies = new HashMap<String, ServiceQueue>();
 	private String serverName;
-	private String companyName;
+	private String domainName;
 	private String[] args;
 
 	public synchronized static AtmiBrokerServer getProxy(Properties properties, String userName, String userPassword) throws JAtmiBrokerException {
@@ -110,7 +110,7 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 	}
 
 	protected AtmiBrokerServerImpl(Properties properties) throws InvalidName, NotFound, CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName, AdapterInactive {
-		this.companyName = properties.getProperty("blacktie.company.name");
+		this.domainName = properties.getProperty("blacktie.domain.name");
 		this.serverName = properties.getProperty("blacktie.server.name");
 		String property = properties.getProperty("blacktie.orb.args");
 		int numberOfOrbArgs = Integer.parseInt(property);
@@ -119,7 +119,7 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 			orbArgs.add(properties.getProperty("blacktie.orb.arg." + i));
 		}
 		this.args = orbArgs.toArray(new String[] {});
-		connectToORBAndServer(args, companyName, serverName);
+		connectToORBAndServer(args, domainName, serverName);
 	}
 
 	protected AtmiBrokerServerImpl(String[] args, String namingContextExt, String serverName) throws InvalidName, NotFound, CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName, AdapterInactive {
@@ -188,15 +188,6 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 		log.debug("ServerProxy's connectToORBAndServer args: " + args + " namingContext: " + namingContextExt + " ServerName: " + serverName);
 
 		ConnectToORB(args, namingContextExt);
-
-		log.debug("about to resolve '" + serverName + "'");
-
-		serverObject = nc.resolve(nce.to_name(serverName));
-		log.debug("Server Object is " + serverObject);
-		log.debug("Server class is " + serverObject.getClass().getName());
-
-		server = ServerHelper.narrow(serverObject);
-		log.debug("Server is " + server);
 	}
 
 	public short server_init() {

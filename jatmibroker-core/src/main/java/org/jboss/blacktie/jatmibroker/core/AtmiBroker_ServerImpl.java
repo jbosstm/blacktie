@@ -46,7 +46,7 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 	private boolean bound;
 
 	public AtmiBroker_ServerImpl(Properties properties) throws JAtmiBrokerException {
-		String companyName = properties.getProperty("blacktie.company.name");
+		String domainName = properties.getProperty("blacktie.domain.name");
 		String serverName = properties.getProperty("blacktie.server.name");
 		int numberOfOrbArgs = Integer.parseInt(properties.getProperty("blacktie.orb.args"));
 		List<String> orbArgs = new ArrayList<String>(numberOfOrbArgs);
@@ -55,9 +55,9 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 		}
 		String[] args = orbArgs.toArray(new String[] {});
 		try {
-			AtmiBrokerServerImpl.ConnectToORB(args, companyName);
+			AtmiBrokerServerImpl.ConnectToORB(args, domainName);
 		} catch (Throwable t) {
-			throw new JAtmiBrokerException("Could not connect to orb for company name: " + companyName, t);
+			throw new JAtmiBrokerException("Could not connect to orb for domain name: " + domainName, t);
 		}
 		this.serverName = serverName;
 		Policy[] policiesArray = new Policy[1];

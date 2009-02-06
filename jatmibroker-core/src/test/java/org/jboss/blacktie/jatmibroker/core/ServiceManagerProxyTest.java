@@ -33,18 +33,21 @@ import org.jboss.blacktie.jatmibroker.core.proxy.ServiceQueue;
 
 public class ServiceManagerProxyTest extends TestCase {
 	private static final Logger log = LogManager.getLogger(ServiceManagerProxyTest.class);
+	private RunServer server = new RunServer();
 
 	public void setUp() throws InterruptedException {
-		RunServer.startInstance();
+		// RunServer.startInstance();
+		server.serverinit();
 	}
 
 	public void tearDown() {
-		RunServer.stopInstance();
+		// RunServer.stopInstance();
+		server.serverdone();
 	}
 
 	public void test() throws Exception {
 		Properties properties = new Properties();
-		properties.put("blacktie.company.name", "default");
+		properties.put("blacktie.domain.name", "fooapp");
 		properties.put("blacktie.server.name", "foo");
 		properties.put("blacktie.orb.args", "2");
 		properties.put("blacktie.orb.arg.1", "-ORBInitRef");

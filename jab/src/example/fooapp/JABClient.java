@@ -27,10 +27,10 @@ public class JABClient {
 
 	public static void main(String[] args) throws Exception {
 		if (args.length != 6) {
-			log.error("default foo TransactionManagerService.OTS -ORBInitRef NameService=corbaloc::localhost:3528/NameService message");
+			log.error("fooapp foo TransactionManagerService.OTS -ORBInitRef NameService=corbaloc::localhost:3528/NameService message");
 			return;
 		}
-		String companyName = args[0];
+		String domainName = args[0];
 		String serverName = args[1];
 		String transactionManagerService = args[2];
 		String[] orbArgs = new String[3];
@@ -38,7 +38,7 @@ public class JABClient {
 		orbArgs[1] = args[3];
 		orbArgs[2] = args[4];
 		String message = args[5];
-		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(companyName, serverName, transactionManagerService, orbArgs);
+		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(domainName, serverName, transactionManagerService, orbArgs);
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
 		JABRemoteService aJabService = new JABRemoteService(aJabSession, "BAR");

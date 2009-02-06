@@ -33,7 +33,7 @@ public class JABSessionAttributes {
 
 	public JABSessionAttributes(String aCompanyName, String aServerName, String transactionManagerName, String[] args) throws JABException {
 		log.debug("JABSessionAttributes constructor ");
-		properties.put("blacktie.company.name", aCompanyName);
+		properties.put("blacktie.domain.name", aCompanyName);
 		properties.put("blacktie.server.name", aServerName);
 		this.transactionManagerName = transactionManagerName;
 		properties.put("blacktie.orb.args", String.valueOf(args.length));

@@ -34,4 +34,4 @@ javac JABClient.java
 Follow the instructions in $ATMIBROKER_BIN_DIR/examples/xatmi/fooapp to start a server  
 
 4. RUN THE JAB Application
-java JABClient default foo TransactionManagerService.OTS -ORBInitRef NameService=corbaloc::localhost:3528/NameService message
+java JABClient fooapp foo TransactionManagerService.OTS -ORBInitRef NameService=corbaloc::localhost:3528/NameService message
