@@ -36,8 +36,81 @@
 #include "AtmiBrokerEnv.h"
 #include "log4cxx/logger.h"
 #include "EndpointQueue.h"
+#include "OrbManagement.h"
+#include "AtmiBroker.h"
+#include "userlog.h"
+#include "Connection.h"
+#include "AtmiBrokerServerControl.h"
+#include "AtmiBrokerMem.h"
+#include "AtmiBrokerEnv.h"
+#include "AtmiBrokerOTS.h"
+#include "AtmiBrokerPoaFac.h"
+#include "log4cxx/basicconfigurator.h"
+#include "log4cxx/propertyconfigurator.h"
+#include "log4cxx/logger.h"
+#include "log4cxx/logmanager.h"
 
 log4cxx::LoggerPtr loggerAtmiBroker_ServerImpl(log4cxx::Logger::getLogger("AtmiBroker_ServerImpl"));
+AtmiBroker_ServerImpl * ptrServer = NULL;
+CONNECTION* serverConnection;
+bool serverInitialized = false;
+PortableServer::POA_var server_poa;
+
+void server_sigint_handler_callback(int sig_type) {
+	userlog(log4cxx::Level::getInfo(), loggerAtmiBroker_ServerImpl, (char*) "server_sigint_handler_callback Received shutdown signal: %d", sig_type);
+	serverdone();
+	abort();
+}
+
+int serverrun() {
+	int toReturn = 0;
+	try {
+		userlog(log4cxx::Level::getInfo(), loggerAtmiBroker_ServerImpl, "Server waiting for requests...");
+		((CORBA::ORB_ptr) serverConnection->orbRef)->run();
+	} catch (CORBA::Exception& e) {
+		userlog(log4cxx::Level::getError(), loggerAtmiBroker_ServerImpl, "Unexpected CORBA exception: %s", e._name());
+		toReturn = -1;
+	}
+	return toReturn;
+}
+
+int serverinit() {
+	_tperrno = 0;
+	int toReturn = -1;
+	if (!loggerInitialized) {
+		if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG") != NULL) {
+			log4cxx::PropertyConfigurator::configure(AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG"));
+		} else {
+			log4cxx::BasicConfigurator::configure();
+		}
+		loggerInitialized = true;
+	}
+
+	if (ptrServer == NULL) {
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "serverinit called");
+		signal(SIGINT, server_sigint_handler_callback);
+		ptrServer = new AtmiBroker_ServerImpl();
+		if (!serverInitialized) {
+			::serverdone();
+		} else {
+			toReturn = 0;
+		}
+		userlog(log4cxx::Level::getInfo(), loggerAtmiBroker_ServerImpl, (char*) "Server Running");
+	}
+	return toReturn;
+}
+
+int serverdone() {
+	_tperrno = 0;
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "serverdone called ");
+
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "serverdone shutting down services ");
+	if (ptrServer) {
+		delete ptrServer;
+		ptrServer = NULL;
+	}
+	return 0;
+}
 
 // AtmiBroker_ServerImpl constructor
 //
@@ -45,36 +118,60 @@ log4cxx::LoggerPtr loggerAtmiBroker_ServerImpl(log4cxx::Logger::getLogger("AtmiB
 // initialiser for all the virtual base class constructors that
 // require arguments, even those that we inherit indirectly.
 //
-AtmiBroker_ServerImpl::AtmiBroker_ServerImpl(CONNECTION* connection, PortableServer::POA_ptr poa) {
-	AtmiBrokerServerXml aAtmiBrokerServerXml;
-	aAtmiBrokerServerXml.parseXmlDescriptor(&serverInfo, (char*) "SERVER.xml");
-	serverName = server;
-	this->connection = connection;
-	this->poa = poa;
+AtmiBroker_ServerImpl::AtmiBroker_ServerImpl() {
+	try {
+		serverConnection = AtmiBrokerOTS::init_orb((char*) "server");
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "creating POAs for %s", server);
+		AtmiBrokerPoaFac* serverPoaFactory = (AtmiBrokerPoaFac*) serverConnection->poaFactory;
+		this->poa = serverPoaFactory->createServerPoa(((CORBA::ORB_ptr) serverConnection->orbRef), server, ((PortableServer::POA_ptr) serverConnection->root_poa), ((PortableServer::POAManager_ptr) serverConnection->root_poa_manager));
+
+		AtmiBrokerServerXml aAtmiBrokerServerXml;
+		aAtmiBrokerServerXml.parseXmlDescriptor(&serverInfo, (char*) "SERVER.xml");
+		serverName = server;
+
+		PortableServer::ObjectId_var oid = PortableServer::string_to_ObjectId(server);
+		poa->activate_object_with_id(oid, this);
+		CORBA::Object_var tmp_ref = poa->create_reference_with_id(oid, "IDL:AtmiBroker/Server:1.0");
+
+		CosNaming::Name * name = ((CosNaming::NamingContextExt_ptr) serverConnection->default_ctx)->to_name(serverName);
+		((CosNaming::NamingContext_ptr) serverConnection->name_ctx)->bind(*name, tmp_ref);
+		LOG4CXX_DEBUG(loggerAtmiBroker_ServerImpl, (char*) "server_init(): finished.");
+
+		serverInitialized = true;
+	} catch (CORBA::Exception& e) {
+		userlog(log4cxx::Level::getError(), loggerAtmiBroker_ServerImpl, (char*) "serverinit - Unexpected CORBA exception: %s", e._name());
+		tperrno = TPESYSTEM;
+	}
 }
 
 // ~AtmiBroker_ServerImpl destructor.
 //
 AtmiBroker_ServerImpl::~AtmiBroker_ServerImpl() {
 	LOG4CXX_DEBUG(loggerAtmiBroker_ServerImpl, (char*) "destructor ");
+	server_done();
+
 	serviceData.clear();
 	LOG4CXX_DEBUG(loggerAtmiBroker_ServerImpl, (char*) "deleted service array ");
+
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "serverinit deleting services");
+	AtmiBrokerMem::discard_instance();
+	//TODO READD AtmiBrokerNotify::discard_instance();
+	AtmiBrokerOTS::discard_instance();
+	AtmiBrokerEnv::discard_instance();
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBroker_ServerImpl, (char*) "serverinit deleted services");
+
+	if (serverConnection) {
+		shutdownBindings(serverConnection);
+		serverConnection = NULL;
+	}
+	serverInitialized = false;
+
 }
 
 // server_init() -- Implements IDL operation "AtmiBroker::Server::server_init".
 //
 CORBA::Short AtmiBroker_ServerImpl::server_init() throw (CORBA::SystemException ) {
-	int toReturn = 0;
-	LOG4CXX_DEBUG(loggerAtmiBroker_ServerImpl, (char*) "server_init(): called.");
-
-	PortableServer::ObjectId_var oid = PortableServer::string_to_ObjectId(server);
-	poa->activate_object_with_id(oid, this);
-	CORBA::Object_var tmp_ref = poa->create_reference_with_id(oid, "IDL:AtmiBroker/Server:1.0");
-
-	CosNaming::Name * name = ((CosNaming::NamingContextExt_ptr) connection->default_ctx)->to_name(serverName);
-	((CosNaming::NamingContext_ptr) connection->name_ctx)->bind(*name, tmp_ref);
-	LOG4CXX_DEBUG(loggerAtmiBroker_ServerImpl, (char*) "server_init(): finished.");
-	return toReturn;
+	return 0;
 }
 
 // server_done() -- Implements IDL operation "AtmiBroker::Server::server_done".
@@ -84,8 +181,8 @@ void AtmiBroker_ServerImpl::server_done() throw (CORBA::SystemException ) {
 
 	LOG4CXX_DEBUG(loggerAtmiBroker_ServerImpl, (char*) "unadvertise " << serverName);
 
-	CosNaming::Name* name = ((CosNaming::NamingContextExt_ptr) connection->default_ctx)->to_name(serverName);
-	((CosNaming::NamingContext_ptr) connection->name_ctx)->unbind(*name);
+	CosNaming::Name* name = ((CosNaming::NamingContextExt_ptr) serverConnection->default_ctx)->to_name(serverName);
+	((CosNaming::NamingContext_ptr) serverConnection->name_ctx)->unbind(*name);
 
 	LOG4CXX_DEBUG(loggerAtmiBroker_ServerImpl, (char*) "unadvertised " << serverName);
 
@@ -141,8 +238,8 @@ bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPS
 
 		// create Poa for Service Queue
 		LOG4CXX_DEBUG(loggerAtmiBroker_ServerImpl, (char*) "create_service_queue_poa: " << serviceName);
-		AtmiBrokerPoaFac* poaFactory = ((AtmiBrokerPoaFac*) connection->poaFactory);
-		PortableServer::POA_ptr aFactoryPoaPtr = poaFactory->createServicePoa((CORBA::ORB_ptr) connection->orbRef, serviceName, poa, (PortableServer::POAManager_ptr) connection->root_poa_manager);
+		AtmiBrokerPoaFac* poaFactory = ((AtmiBrokerPoaFac*) serverConnection->poaFactory);
+		PortableServer::POA_ptr aFactoryPoaPtr = poaFactory->createServicePoa((CORBA::ORB_ptr) serverConnection->orbRef, serviceName, poa, (PortableServer::POAManager_ptr) serverConnection->root_poa_manager);
 		LOG4CXX_DEBUG(loggerAtmiBroker_ServerImpl, (char*) "created create_service_factory_poa: " << serviceName);
 
 		Destination* destination = ::create_service_queue(serverConnection, aFactoryPoaPtr, serviceName);
@@ -169,8 +266,8 @@ void AtmiBroker_ServerImpl::unadvertiseService(char * serviceName) {
 	for (std::vector<char*>::iterator i = advertisedServices.begin(); i != advertisedServices.end(); i++) {
 		if (strcmp(serviceName, (*i)) == 0) {
 			LOG4CXX_DEBUG(loggerAtmiBroker_ServerImpl, (char*) "remove_service_queue: " << serviceName);
-			CosNaming::Name * name = ((CosNaming::NamingContextExt_ptr) connection->default_ctx)->to_name(serviceName);
-			((CosNaming::NamingContext_ptr) connection->name_ctx)->unbind(*name);
+			CosNaming::Name * name = ((CosNaming::NamingContextExt_ptr) serverConnection->default_ctx)->to_name(serviceName);
+			((CosNaming::NamingContext_ptr) serverConnection->name_ctx)->unbind(*name);
 
 			ServiceQueue* toDelete = removeServiceQueue(serviceName);
 			EndpointQueue* queue = dynamic_cast<EndpointQueue*> (toDelete->getDestination());

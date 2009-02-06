@@ -53,7 +53,7 @@ struct _service_data {
 typedef _service_data ServiceData;
 class ATMIBROKER_DLL AtmiBroker_ServerImpl: public virtual POA_AtmiBroker::Server {
 public:
-	AtmiBroker_ServerImpl(CONNECTION* connection, PortableServer::POA_ptr poa);
+	AtmiBroker_ServerImpl();
 
 	virtual ~AtmiBroker_ServerImpl();
 
@@ -100,7 +100,6 @@ private:
 	std::vector<char*> advertisedServices;
 	char * serverName;
 	ServerMetadata serverInfo;
-	CONNECTION* connection;
 	PortableServer::POA_ptr poa;
 
 	// The following are not implemented

@@ -43,9 +43,6 @@
 
 log4cxx::LoggerPtr loggerXATMI(log4cxx::Logger::getLogger("loggerXATMI"));
 
-int _tperrno = 0;
-long _tpurcode = -1;
-
 int send(Sender* sender, const char* replyTo, char* idata, long ilen, int correlationId, long flags, long rcode, long rval) {
 	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "send - idata: %s ilen: %d flags: %d", idata, ilen, flags);
 	int toReturn = -1;
