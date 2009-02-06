@@ -18,20 +18,37 @@
 package org.jboss.blacktie.jatmibroker.core;
 
 public class AtmiBroker_Response {
-	private int length;
+	private short rval;
+	private int rcode;
 	private byte[] bytes;
+	private int length;
+	private int flags;
 
-	public AtmiBroker_Response(int length, byte[] bytes) {
-		this.length = length;
+	public AtmiBroker_Response(short rval, int rcode, byte[] bytes, int length, int flags) {
+		this.rval = rval;
+		this.rcode = rcode;
 		this.bytes = bytes;
+		this.length = length;
+		this.flags = flags;
 	}
 
-	public int getLength() {
-		return length;
+	public short getRval() {
+		return rval;
+	}
+
+	public int getRcode() {
+		return rcode;
 	}
 
 	public byte[] getBytes() {
 		return bytes;
 	}
 
+	public int getLength() {
+		return length;
+	}
+
+	public int getFlags() {
+		return flags;
+	}
 }

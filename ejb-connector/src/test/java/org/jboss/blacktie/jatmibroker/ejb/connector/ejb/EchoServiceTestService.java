@@ -14,7 +14,7 @@ public class EchoServiceTestService extends AbstractBlacktieService {
 		Buffer data = svcinfo.getData();
 		Buffer buffer = new X_OCTET(data.getSize());
 		buffer.setData(data.getData());
-		Response response = new Response(buffer);
+		Response response = new Response((short) 0, 0, buffer, 0);
 		return response;
 	}
 

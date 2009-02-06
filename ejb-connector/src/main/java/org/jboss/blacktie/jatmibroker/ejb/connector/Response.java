@@ -31,13 +31,50 @@ public class Response implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * The return value
+	 */
+	short rval;
+
+	/**
+	 * The return code
+	 */
+	int rcode;
+
+	/**
+	 * The flags to return
+	 */
+	int flags;
+
 	/**
 	 * The response from the server
 	 */
 	private Buffer response;
 
-	public Response(Buffer response) {
+	public Response(short rval, int rcode, Buffer response, int flags) {
+		this.rval = rval;
+		this.rcode = rcode;
 		this.response = response;
+		this.flags = flags;
+	}
+
+	/**
+	 * Get the return value
+	 * 
+	 * @return The return value
+	 */
+	public short getRval() {
+		return rval;
+	}
+
+	/**
+	 * Get the return code
+	 * 
+	 * @return The return code
+	 */
+	public int getRcode() {
+		return rcode;
 	}
 
 	/**
@@ -47,5 +84,9 @@ public class Response implements Serializable {
 	 */
 	public Buffer getResponse() {
 		return response;
+	}
+
+	public int getFlags() {
+		return flags;
 	}
 }

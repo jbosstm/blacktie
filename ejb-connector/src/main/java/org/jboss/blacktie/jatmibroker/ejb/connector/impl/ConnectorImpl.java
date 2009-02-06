@@ -75,7 +75,7 @@ public class ConnectorImpl implements Connector {
 			// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
 			Buffer buffer = new Buffer("unknown", "unknown", receive.len);
 			buffer.setData(receive.data);
-			return new Response(buffer);
+			return new Response(receive.rval, receive.rcode, buffer, receive.flags);
 		} catch (JAtmiBrokerException e) {
 			throw new ConnectorException(-1, e);
 		}
@@ -103,12 +103,12 @@ public class ConnectorImpl implements Connector {
 	public void tpadvertise(String serviceName, Class service) throws ConnectorException {
 		try {
 			AtmiBroker_ServerImpl server = getServer();
-			log.info("Advertising: " + serviceName);
+			log.debug("Advertising: " + serviceName);
 			server.createService(serviceName, servantCacheSize, service, new AtmiBrokerCallbackConverterImpl());
 			log.info("Advertised: " + serviceName);
 		} catch (Throwable t) {
 			String message = "Could not advertise: " + serviceName;
-			log.error(message);
+			log.error(message, t);
 			throw new ConnectorException(-1, message, t);
 		}
 	}

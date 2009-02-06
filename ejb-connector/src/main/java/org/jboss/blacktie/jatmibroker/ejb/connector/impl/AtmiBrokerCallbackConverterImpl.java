@@ -35,7 +35,7 @@ public class AtmiBrokerCallbackConverterImpl implements AtmiBroker_CallbackConve
 		buffer.setData(bytes);
 		TPSVCINFO tpsvcinfo = new TPSVCINFO(serviceName, buffer, flags, -1);
 		Response response = ((BlacktieService) toInvokeOn).tpservice(tpsvcinfo);
-		AtmiBroker_Response atmiBroker_Response = new AtmiBroker_Response(response.getResponse().getSize(), response.getResponse().getData());
+		AtmiBroker_Response atmiBroker_Response = new AtmiBroker_Response(response.getRval(), response.getRcode(), response.getResponse().getData(), response.getResponse().getSize(), response.getFlags());
 		return atmiBroker_Response;
 	}
 }

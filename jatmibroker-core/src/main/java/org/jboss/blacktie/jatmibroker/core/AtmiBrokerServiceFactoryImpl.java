@@ -39,6 +39,16 @@ public class AtmiBrokerServiceFactoryImpl implements ServiceQueue {
 		return instance;
 	}
 
+	public synchronized static ServiceQueue getProxy(String callback_ior) {
+		AtmiBrokerServiceFactoryImpl instance = new AtmiBrokerServiceFactoryImpl(callback_ior);
+		return instance;
+	}
+
+	protected AtmiBrokerServiceFactoryImpl(String callback_ior) {
+		org.omg.CORBA.Object serviceFactoryObject = AtmiBrokerServerImpl.orb.string_to_object(callback_ior);
+		serviceFactory = EndpointQueueHelper.narrow(serviceFactoryObject);
+	}
+
 	protected AtmiBrokerServiceFactoryImpl(AtmiBrokerServerImpl server, String serviceFactoryName) throws NotFound, CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName {
 		log.debug("ServiceFactoryProxy's ServiceFactoryName: " + serviceFactoryName);
 		org.omg.CORBA.Object serviceFactoryObject = AtmiBrokerServerImpl.nc.resolve(AtmiBrokerServerImpl.nce.to_name(serviceFactoryName));
