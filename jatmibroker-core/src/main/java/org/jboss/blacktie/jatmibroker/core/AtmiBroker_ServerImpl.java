@@ -95,15 +95,16 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 		} catch (Throwable t) {
 			throw new JAtmiBrokerException("Could not bind server", t);
 		}
+		bound = true;
+	}
+
+	public void unbind() throws JAtmiBrokerException {
 		Iterator<ServiceQueue> iterator = serviceFactoryList.values().iterator();
 		while (iterator.hasNext()) {
 			iterator.next().close();
 			iterator.remove();
 		}
-		bound = true;
-	}
 
-	public void unbind() throws JAtmiBrokerException {
 		try {
 			poa.deactivate_object(activate_object);
 		} catch (Throwable t) {

@@ -30,16 +30,18 @@ import org.jboss.blacktie.jatmibroker.ejb.connector.buffers.X_OCTET;
 import org.jboss.blacktie.jatmibroker.ejb.connector.impl.ConnectorFactoryImpl;
 
 public class AbstractBlacktieServiceTestCase extends TestCase {
+	private Connector connector;
+
+	public AbstractBlacktieServiceTestCase() throws ConnectorException {
+		ConnectorFactory connectorFactory = ConnectorFactoryImpl.getConnectorFactory();
+		connector = connectorFactory.getConnector();
+	}
 
 	public void setUp() throws ConnectorException {
-		ConnectorFactory connectorFactory = ConnectorFactoryImpl.getConnectorFactory();
-		Connector connector = connectorFactory.getConnector();
 		connector.tpadvertise("EchoService", EchoServiceTestService.class);
 	}
 
 	public void tearDown() throws ConnectorException {
-		ConnectorFactory connectorFactory = ConnectorFactoryImpl.getConnectorFactory();
-		Connector connector = connectorFactory.getConnector();
 		connector.tpunadvertise("EchoService");
 	}
 

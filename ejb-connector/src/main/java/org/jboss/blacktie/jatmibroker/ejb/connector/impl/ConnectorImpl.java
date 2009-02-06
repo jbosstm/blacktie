@@ -102,14 +102,23 @@ public class ConnectorImpl implements Connector {
 	 */
 	public void tpadvertise(String serviceName, Class service) throws ConnectorException {
 		try {
-			AtmiBroker_ServerImpl server = getServer();
 			log.debug("Advertising: " + serviceName);
-			server.createService(serviceName, servantCacheSize, service, new AtmiBrokerCallbackConverterImpl());
+			getServer().createService(serviceName, servantCacheSize, service, new AtmiBrokerCallbackConverterImpl());
 			log.info("Advertised: " + serviceName);
 		} catch (Throwable t) {
 			String message = "Could not advertise: " + serviceName;
 			log.error(message, t);
 			throw new ConnectorException(-1, message, t);
+		}
+	}
+
+	public void tpunadvertise(String serviceName) throws ConnectorException {
+		try {
+			log.debug("Unadvertising: " + serviceName);
+			getServer().unbind(serviceName);
+			log.info("Unadvertised: " + serviceName);
+		} catch (JAtmiBrokerException e) {
+			throw new ConnectorException(-1, e);
 		}
 	}
 
@@ -119,14 +128,5 @@ public class ConnectorImpl implements Connector {
 			server.bind();
 		}
 		return server;
-	}
-
-	public void tpunadvertise(String serviceName) throws ConnectorException {
-		try {
-			log.debug("ejbRemove() on obj " + this);
-			getServer().unbind(serviceName);
-		} catch (JAtmiBrokerException e) {
-			throw new ConnectorException(-1, e);
-		}
 	}
 }
