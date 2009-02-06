@@ -62,10 +62,11 @@ public class ServiceManagerProxyTest extends TestCase {
 		Message receive = endpoint.receive(0);
 
 		assertNotNull(receive);
-		String string = new String(receive.data);
+		String string = new String(receive.data).intern();
+		String expectedResponse = "BAR SAYS HELLO";
 		log.debug("Bar ServiceManager service_request response is " + string);
 		log.debug("Bar ServiceManager service_request size of response is " + receive.len);
-		assertEquals(string, "BAR");
+		assertEquals(string, expectedResponse);
 		AtmiBrokerServerImpl.discardOrb();
 	}
 }

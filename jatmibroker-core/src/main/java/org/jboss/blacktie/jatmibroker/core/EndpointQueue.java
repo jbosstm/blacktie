@@ -112,7 +112,6 @@ public class EndpointQueue extends EndpointQueuePOA implements Queue {
 	// "AtmiBroker.ClientCallback.client_callback".
 	//
 	public void send(String replyto_ior, short rval, int rcode, byte[] idata, int ilen, int flags, int revent) {
-		log.error("Default client_callback called");
 		log.debug("client_callback(): called.");
 		log.debug("    idata = " + new String(idata));
 		log.debug("    ilen = " + ilen);
@@ -127,7 +126,10 @@ public class EndpointQueue extends EndpointQueuePOA implements Queue {
 		message.rval = rval;
 		message.rcode = rcode;
 		message.event = revent;
-		returnData.add(message);
+		synchronized (this) {
+			returnData.add(message);
+			notify();
+		}
 	}
 
 	public String getReplyTo() {
