@@ -37,10 +37,8 @@
 
 // Global state
 log4cxx::LoggerPtr loggerAtmiBroker(log4cxx::Logger::getLogger("AtmiBroker"));
-AtmiBrokerClient * ptrAtmiBrokerClient;
 bool loggerInitialized;
 bool clientInitialized;
-CONNECTION* clientConnection;
 
 void client_sigint_handler_callback(int sig_type) {
 	userlog(log4cxx::Level::getWarn(), loggerAtmiBroker, (char*) "client_sigint_handler_callback Received shutdown signal: %d", sig_type);
@@ -105,8 +103,12 @@ int clientdone() {
 	return 0;
 }
 
-Destination* get_service_queue(const char * serviceName) {
-	return new EndpointQueue(clientConnection, serviceName);
+Destination* create_service_queue(CONNECTION* connection, void* poa, char * serviceName) {
+	return new EndpointQueue(connection, poa, serviceName);
+}
+
+Destination* lookup_service_queue(CONNECTION* connection, const char * serviceName) {
+	return new EndpointQueue(connection, serviceName);
 }
 
 Destination* create_temporary_queue(CONNECTION* connection) {
@@ -114,5 +116,9 @@ Destination* create_temporary_queue(CONNECTION* connection) {
 }
 
 Destination* lookup_temporary_queue(CONNECTION* connection, char * replyTo) {
-	return new EndpointQueue(connection, replyTo);
+	if (strcmp(replyTo, "") != 0) {
+		return new EndpointQueue(connection, replyTo);
+	} else {
+		return NULL;
+	}
 }

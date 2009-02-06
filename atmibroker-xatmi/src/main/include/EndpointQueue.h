@@ -46,6 +46,7 @@
 class ATMIBROKER_DLL EndpointQueue: public virtual Destination, public virtual POA_AtmiBroker::EndpointQueue {
 public:
 	EndpointQueue(CONNECTION* connection);
+	EndpointQueue(CONNECTION* connection, void* poa, char* serviceName);
 	EndpointQueue(CONNECTION* connection, char * callback_ior);
 	EndpointQueue(CONNECTION* connection, const char * serviceName);
 	virtual ~EndpointQueue();
@@ -62,11 +63,15 @@ public:
 
 	virtual const char* getName();
 
+	void* getPoa();
+
 private:
 	static log4cxx::LoggerPtr logger;
 	std::queue<MESSAGE> returnData;
 	SynchronizableObject* lock;
+	bool shutdown;
 	const char* name;
+	void* thePoa;
 	AtmiBroker::EndpointQueue_var remoteEndpoint;
 
 	// The following are not implemented

@@ -19,9 +19,12 @@
  * BREAKTHRUIT PROPRIETARY - NOT TO BE DISCLOSED OUTSIDE BREAKTHRUIT, LLC.
  */
 // copyright 2006, 2008 BreakThruIT
+
+#include <stdio.h>
+#include <string.h>
 #include "tx.h"
 #include "AtmiBroker_ServiceImpl.h"
-#include "AtmiBrokerServer.h"
+#include "AtmiBroker.h"
 #include "SessionImpl.h"
 #include "userlog.h"
 #include "ThreadLocalStorage.h"
@@ -30,7 +33,8 @@ log4cxx::LoggerPtr AtmiBroker_ServiceImpl::logger(log4cxx::Logger::getLogger("At
 
 // AtmiBroker_ServiceImpl constructor
 //
-AtmiBroker_ServiceImpl::AtmiBroker_ServiceImpl(char *serviceName, void(*func)(TPSVCINFO *)) {
+AtmiBroker_ServiceImpl::AtmiBroker_ServiceImpl(CONNECTION* connection, char *serviceName, void(*func)(TPSVCINFO *)) {
+	m_connection = connection;
 	m_serviceName = serviceName;
 	m_func = func;
 	session = NULL;
@@ -47,8 +51,8 @@ void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
 	userlog(log4cxx::Level::getDebug(), logger, (char*) "svc()");
 
 	// INITIALISE THE SENDER AND RECEIVER FOR THIS CONVERSATION
-	session = new SessionImpl(serverConnection, -1);
-	session->setReplyTo((char*) message.replyto);
+	session = new SessionImpl(m_connection, ::create_temporary_queue(m_connection), -1);
+	session->setReplyTo(::lookup_temporary_queue(m_connection, (char*) message.replyto));
 
 	// EXTRACT THE DATA FROM THE INBOUND MESSAGE
 	int correlationId = message.correlationId;

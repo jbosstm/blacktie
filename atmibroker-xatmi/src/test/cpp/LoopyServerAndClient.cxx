@@ -38,11 +38,9 @@ void loopy(TPSVCINFO* tpsvcinfo) {
 
 void LoopyServerAndClient::testLoopyAll() {
 	int result = 0;
-	int argc = 0;
-	char** argv = NULL;
 
 	for (int i = 0; i < 3; i++) {
-		result = serverinit(argc, argv);
+		result = serverinit();
 		CPPUNIT_ASSERT(result != -1);
 		CPPUNIT_ASSERT(tperrno == 0);
 
@@ -66,11 +64,9 @@ void LoopyServerAndClient::testLoopyAll() {
 
 void LoopyServerAndClient::testLoopyAll2() {
 	int result = 0;
-	int argc = 0;
-	char** argv = NULL;
 
 	for (int i = 0; i < 3; i++) {
-		result = serverinit(argc, argv);
+		result = serverinit();
 		CPPUNIT_ASSERT(result != -1);
 		CPPUNIT_ASSERT(tperrno == 0);
 
@@ -94,9 +90,7 @@ void LoopyServerAndClient::testLoopyAll2() {
 
 void LoopyServerAndClient::testLoopyAdvertise() {
 	int result = 0;
-	int argc = 0;
-	char** argv = NULL;
-	result = serverinit(argc, argv);
+	result = serverinit();
 	CPPUNIT_ASSERT(result != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
 

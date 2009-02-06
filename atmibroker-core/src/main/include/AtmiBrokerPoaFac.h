@@ -48,7 +48,7 @@ public:
 
 	PortableServer::POA_ptr createCallbackPoa(CORBA::ORB_ptr, const char* poa_name, PortableServer::POA_ptr parent_poa, PortableServer::POAManager_ptr poa_manager);
 
-	PortableServer::POA_ptr createServiceFactoryPoa(CORBA::ORB_ptr, const char* poa_name, PortableServer::POA_ptr parent_poa, PortableServer::POAManager_ptr poa_manager);
+	PortableServer::POA_ptr createServicePoa(CORBA::ORB_ptr, const char* poa_name, PortableServer::POA_ptr parent_poa, PortableServer::POAManager_ptr poa_manager);
 
 	PortableServer::POA_ptr createServerPoa(CORBA::ORB_ptr, const char* poa_name, PortableServer::POA_ptr parent_poa, PortableServer::POAManager_ptr poa_manager);
 };

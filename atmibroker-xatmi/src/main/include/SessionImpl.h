@@ -24,11 +24,11 @@
 
 class SessionImpl: public virtual Session {
 public:
-	SessionImpl(CONNECTION* connection, int id);
+	SessionImpl(CONNECTION* connection, Destination* destination, int id);
 
 	virtual ~SessionImpl();
 
-	void setReplyTo(char* replyTo);
+	void setReplyTo(Destination* replyTo);
 
 	Receiver* getReceiver();
 

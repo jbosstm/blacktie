@@ -33,47 +33,26 @@
 
 #include "atmiBrokerMacro.h"
 
-#ifdef TAO_COMP
-#include "AtmiBrokerS.h"
-#endif
-
 #include <vector>
-#include <queue>
-#include "SynchronizableObject.h"
+#include "log4cxx/logger.h"
 #include "xatmi.h"
 #include "ServiceDispatcher.h"
-#include "Message.h"
+#include "Connection.h"
 #include "Destination.h"
 #include "AtmiBrokerServiceXml.h"
 
-class ATMIBROKER_DLL ServiceQueue: public virtual Destination, public virtual POA_AtmiBroker::EndpointQueue {
+class ATMIBROKER_DLL ServiceQueue {
 public:
-	ServiceQueue(void* thePoa, char *serviceName, void(*func)(TPSVCINFO *));
+	ServiceQueue(CONNECTION* connection, Destination* destination, char *serviceName, void(*func)(TPSVCINFO *));
 	virtual ~ServiceQueue();
-
-	virtual void send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags) throw (CORBA::SystemException );
-
-	virtual void disconnect();
-
-	void* getPoa();
-
 	SVCINFO get_service_info();
-
-	virtual void send(MESSAGE message);
-
-	virtual MESSAGE receive(bool noWait);
-
-	virtual const char* getName();
-protected:
-	void* thePoa;
-	char* serviceName;
-	bool m_shutdown;
-	SynchronizableObject* lock;
-	std::queue<MESSAGE> messageQueue;
-	std::vector<ServiceDispatcher *> servantVector;
-	SVCINFO serviceInfo;
-
+	Destination* getDestination();
 private:
+	static log4cxx::LoggerPtr logger;
+	Destination* destination;
+	char* serviceName;
+	std::vector<ServiceDispatcher *> dispatchers;
+	SVCINFO serviceInfo;
 	// The following are not implemented
 	//
 	ServiceQueue(const ServiceQueue &);

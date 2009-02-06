@@ -29,12 +29,7 @@ void BaseServerTest::setUp() {
 	// Perform initial start up
 	BaseTest::setUp();
 
-	// Start the server
-	//std::vector<ServiceWrapper*> serviceWrappers;
-
-	int argc = 0;
-	char** argv = NULL;
-	int initted = serverinit(argc, argv);
+	int initted = serverinit();
 	// Check that there is no error on server setup
 	CPPUNIT_ASSERT(initted != -1);
 	CPPUNIT_ASSERT(tperrno == 0);

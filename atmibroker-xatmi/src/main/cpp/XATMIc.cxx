@@ -32,11 +32,11 @@
 #include "xatmi.h"
 #include "Session.h"
 #include "SenderImpl.h"
-#include "AtmiBrokerServer.h"
-#include "AtmiBrokerClient.h"
 #include "AtmiBrokerClientControl.h"
 #include "AtmiBrokerServerControl.h"
 #include "AtmiBroker.h"
+#include "AtmiBrokerClient.h"
+#include "AtmiBroker_ServerImpl.h"
 #include "AtmiBroker_ServiceImpl.h"
 #include "AtmiBrokerMem.h"
 #include "log4cxx/logger.h"
@@ -47,7 +47,7 @@ int _tperrno = 0;
 long _tpurcode = -1;
 
 int send(Sender* sender, const char* replyTo, char* idata, long ilen, int correlationId, long flags, long rcode, long rval) {
-	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "tpconnect - idata: %s ilen: %d flags: %d", idata, ilen, flags);
+	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "send - idata: %s ilen: %d flags: %d", idata, ilen, flags);
 	int toReturn = -1;
 	try {
 		void* control = getSpecific(TSS_KEY);
@@ -84,7 +84,7 @@ int receive(Session* session, char ** odata, long *olen, long flags, long* event
 		*odata = message.data;
 		*olen = message.len;
 		*event = message.event;
-		session->setReplyTo((char*) message.replyto);
+		session->setReplyTo(::lookup_temporary_queue(clientConnection, (char*) message.replyto));
 		userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "returning - %s", *odata);
 		toReturn = 0;
 	} else {
@@ -106,7 +106,7 @@ long * _get_tpurcode(void) {
 int tpadvertise(char * svcname, void(*func)(TPSVCINFO *)) {
 	tperrno = 0;
 	int toReturn = -1;
-	if (ptrServer) {
+	if (serverinit()) {
 		if (ptrServer->advertiseService(svcname, func)) {
 			toReturn = 0;
 		}
@@ -119,7 +119,7 @@ int tpadvertise(char * svcname, void(*func)(TPSVCINFO *)) {
 int tpunadvertise(char * svcname) {
 	tperrno = 0;
 	int toReturn = -1;
-	if (ptrServer) {
+	if (serverinit()) {
 		if (svcname && strcmp(svcname, "") != 0) {
 			if (ptrServer->isAdvertised(svcname)) {
 				ptrServer->unadvertiseService(svcname);
@@ -198,7 +198,7 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 	if (clientinit() != -1) {
 		Destination* ptr = NULL;
 		try {
-			ptr = ::get_service_queue(svc);
+			ptr = ::lookup_service_queue(clientConnection, svc);
 		} catch (...) {
 			userlog(log4cxx::Level::getError(), loggerXATMI, (char*) "tpconnect failed to connect to service queue");
 			tperrno = TPENOENT;
@@ -206,8 +206,9 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 		}
 		int id = -1;
 		Session* session = ptrAtmiBrokerClient->createSession(id);
+		session->setReplyTo(ptr);
 		if (id >= 0) {
-			::send(new SenderImpl(ptr), session->getReceiver()->getDestination()->getName(), idata, ilen, id, flags, 0, 0);
+			::send(session->getSender(), session->getReceiver()->getDestination()->getName(), idata, ilen, id, flags, 0, 0);
 		}
 		return id;
 	} else {

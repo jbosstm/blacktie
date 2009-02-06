@@ -109,4 +109,8 @@ private:
 	AtmiBroker_ServerImpl& operator=(const AtmiBroker_ServerImpl &);
 };
 
+// SERVER
+extern CONNECTION* serverConnection;
+extern AtmiBroker_ServerImpl * ptrServer;
+
 #endif

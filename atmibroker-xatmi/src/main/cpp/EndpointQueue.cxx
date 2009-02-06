@@ -29,6 +29,7 @@
 #endif
 
 #include "EndpointQueue.h"
+#include "ThreadLocalStorage.h"
 
 log4cxx::LoggerPtr EndpointQueue::logger(log4cxx::Logger::getLogger("EndpointQueue"));
 
@@ -39,6 +40,7 @@ log4cxx::LoggerPtr EndpointQueue::logger(log4cxx::Logger::getLogger("EndpointQue
 // require arguments, even those that we inherit indirectly.
 //
 EndpointQueue::EndpointQueue(CONNECTION* connection) {
+	shutdown = false;
 	lock = SynchronizableObject::create(false);
 
 	PortableServer::POA_ptr poa = (PortableServer::POA_ptr) connection->callback_poa;
@@ -49,6 +51,19 @@ EndpointQueue::EndpointQueue(CONNECTION* connection) {
 	CORBA::Object_ptr tmp_ref = poa->servant_to_reference(this);
 	AtmiBroker::EndpointQueue_var queue = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 	setName(orb->object_to_string(queue));
+}
+
+EndpointQueue::EndpointQueue(CONNECTION* connection, void* poa, char* serviceName) {
+	shutdown = false;
+	thePoa = poa;
+	PortableServer::POA_ptr aFactoryPoaPtr = (PortableServer::POA_ptr) poa;
+	lock = SynchronizableObject::create(false);
+	aFactoryPoaPtr->activate_object(this);
+	LOG4CXX_DEBUG(logger, (char*) "activated tmp_servant " << this);
+	CORBA::Object_var tmp_ref = aFactoryPoaPtr->servant_to_reference(this);
+	CosNaming::Name * name = ((CosNaming::NamingContextExt_ptr) connection->default_ctx)->to_name(serviceName);
+	((CosNaming::NamingContext_ptr) connection->name_ctx)->bind(*name, tmp_ref);
+	setName(NULL);
 }
 
 EndpointQueue::EndpointQueue(CONNECTION* connection, char * callback_ior) {
@@ -99,6 +114,7 @@ void EndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long
 	message.rcode = rcode;
 	message.replyto = replyto_ior;
 	message.rval = rval;
+	message.control = getSpecific(TSS_KEY);
 
 	lock->lock();
 	returnData.push(message);
@@ -120,15 +136,17 @@ MESSAGE EndpointQueue::receive(bool noWait) {
 	MESSAGE message;
 	message.data = NULL;
 	lock->lock();
-	while (returnData.size() == 0) {
-		LOG4CXX_DEBUG(logger, (char*) "waiting for %d" << time);
-		lock->wait(time);
-		LOG4CXX_DEBUG(logger, (char*) "out of wait");
-	}
-	if (returnData.size() != 0) {
-		message = returnData.front();
-		returnData.pop();
-		LOG4CXX_DEBUG(logger, (char*) "returning message");
+	if (!shutdown) {
+		if (returnData.size() == 0) {
+			LOG4CXX_DEBUG(logger, (char*) "waiting for %d" << time);
+			lock->wait(time);
+			LOG4CXX_DEBUG(logger, (char*) "out of wait");
+		}
+		if (returnData.size() > 0) {
+			message = returnData.front();
+			returnData.pop();
+			LOG4CXX_DEBUG(logger, (char*) "returning message");
+		}
 	}
 	lock->unlock();
 	return message;
@@ -138,6 +156,11 @@ void EndpointQueue::disconnect() throw (CORBA::SystemException ) {
 	LOG4CXX_ERROR(logger, (char*) "disconnect unimplemented");
 	if (remoteEndpoint) {
 		remoteEndpoint->disconnect();
+	} else {
+		lock->lock();
+		shutdown = true;
+		lock->notify();
+		lock->unlock();
 	}
 }
 
@@ -147,4 +170,8 @@ void EndpointQueue::setName(const char* name) {
 
 const char * EndpointQueue::getName() {
 	return name;
+}
+
+void* EndpointQueue::getPoa() {
+	return thePoa;
 }

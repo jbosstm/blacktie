@@ -33,7 +33,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern ATMIBROKER_DLL int serverinit(int argc, char ** argv);
+extern ATMIBROKER_DLL int serverinit();
 extern ATMIBROKER_DLL int serverrun();
 extern ATMIBROKER_DLL int serverdone();
 #ifdef __cplusplus

@@ -74,9 +74,9 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createCallbackPoa(CORBA::ORB_ptr orb, 
 	return parent_poa->create_POA(poa_name, poa_manager, policies);
 }
 
-// createServiceFactoryPoa()
+// createServicePoa()
 //
-PortableServer::POA_ptr AtmiBrokerPoaFac::createServiceFactoryPoa(CORBA::ORB_ptr orb, const char* poa_name, PortableServer::POA_ptr parent_poa, PortableServer::POAManager_ptr poa_manager) {
+PortableServer::POA_ptr AtmiBrokerPoaFac::createServicePoa(CORBA::ORB_ptr orb, const char* poa_name, PortableServer::POA_ptr parent_poa, PortableServer::POAManager_ptr poa_manager) {
 	// Create a policy list. Policies not set in the list get default values.
 	//
 	CORBA::PolicyList policies;
@@ -98,12 +98,7 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createServerPoa(CORBA::ORB_ptr orb, co
 	policies.length(2);
 	int i = 0;
 
-	// Create Persistant Lifespan
-	//
-	policies[i++] = parent_poa->create_lifespan_policy(PortableServer::PERSISTENT);
-
-	// Create User Id
-	//
+	//	policies[i++] = parent_poa->create_lifespan_policy(PortableServer::PERSISTENT);
 	policies[i++] = parent_poa->create_id_assignment_policy(PortableServer::USER_ID);
 
 	return parent_poa->create_POA(poa_name, poa_manager, policies);

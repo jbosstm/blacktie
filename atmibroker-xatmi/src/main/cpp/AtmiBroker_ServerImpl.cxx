@@ -28,14 +28,14 @@
 #include <orbsvcs/CosNamingS.h>
 #endif
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <string>
 #include <queue>
 #include "AtmiBroker_ServerImpl.h"
+#include "AtmiBroker.h"
 #include "AtmiBrokerPoaFac.h"
 #include "AtmiBrokerEnv.h"
 #include "log4cxx/logger.h"
+#include "EndpointQueue.h"
 
 log4cxx::LoggerPtr loggerAtmiBroker_ServerImpl(log4cxx::Logger::getLogger("AtmiBroker_ServerImpl"));
 
@@ -142,18 +142,12 @@ bool AtmiBroker_ServerImpl::advertiseService(char * serviceName, void(*func)(TPS
 		// create Poa for Service Queue
 		LOG4CXX_DEBUG(loggerAtmiBroker_ServerImpl, (char*) "create_service_queue_poa: " << serviceName);
 		AtmiBrokerPoaFac* poaFactory = ((AtmiBrokerPoaFac*) connection->poaFactory);
-		PortableServer::POA_ptr aFactoryPoaPtr = poaFactory->createServiceFactoryPoa((CORBA::ORB_ptr) connection->orbRef, serviceName, poa, (PortableServer::POAManager_ptr) connection->root_poa_manager);
+		PortableServer::POA_ptr aFactoryPoaPtr = poaFactory->createServicePoa((CORBA::ORB_ptr) connection->orbRef, serviceName, poa, (PortableServer::POAManager_ptr) connection->root_poa_manager);
 		LOG4CXX_DEBUG(loggerAtmiBroker_ServerImpl, (char*) "created create_service_factory_poa: " << serviceName);
 
-		ServiceQueue *tmp_factory_servant = new ServiceQueue(aFactoryPoaPtr, serviceName, func);
+		Destination* destination = ::create_service_queue(serverConnection, aFactoryPoaPtr, serviceName);
+		ServiceQueue *tmp_factory_servant = new ServiceQueue(serverConnection, destination, serviceName, func);
 		LOG4CXX_DEBUG(loggerAtmiBroker_ServerImpl, (char*) " tmp_factory_servant " << tmp_factory_servant);
-
-		aFactoryPoaPtr->activate_object(tmp_factory_servant);
-		LOG4CXX_DEBUG(loggerAtmiBroker_ServerImpl, (char*) "activated tmp_servant " << tmp_factory_servant);
-		CORBA::Object_var tmp_ref = aFactoryPoaPtr->servant_to_reference(tmp_factory_servant);
-
-		CosNaming::Name * name = ((CosNaming::NamingContextExt_ptr) connection->default_ctx)->to_name(serviceName);
-		((CosNaming::NamingContext_ptr) connection->name_ctx)->bind(*name, tmp_ref);
 
 		addServiceQueue(serviceName, tmp_factory_servant, func);
 		LOG4CXX_DEBUG(loggerAtmiBroker_ServerImpl, (char*) "created ServiceQueue " << serviceName);
@@ -179,7 +173,8 @@ void AtmiBroker_ServerImpl::unadvertiseService(char * serviceName) {
 			((CosNaming::NamingContext_ptr) connection->name_ctx)->unbind(*name);
 
 			ServiceQueue* toDelete = removeServiceQueue(serviceName);
-			PortableServer::POA_ptr poa = (PortableServer::POA_ptr) toDelete->getPoa();
+			EndpointQueue* queue = dynamic_cast<EndpointQueue*> (toDelete->getDestination());
+			PortableServer::POA_ptr poa = (PortableServer::POA_ptr) queue->getPoa();
 			delete toDelete;
 			poa->destroy(true, true);
 			poa = NULL;

@@ -27,18 +27,14 @@
 
 #include "Destination.h"
 #include "Connection.h"
-#include "AtmiBrokerClient.h"
 
 // COMMON
 extern int _tperrno;
 extern long _tpurcode;
 extern bool loggerInitialized;
+Destination* lookup_service_queue(CONNECTION* connection, const char * serviceName);
+Destination* create_service_queue(CONNECTION* connection, void* poa, char* serviceName);
 Destination* create_temporary_queue(CONNECTION* connection);
 Destination* lookup_temporary_queue(CONNECTION* connection, char * replyTo);
-
-// CLIENT
-extern Destination* get_service_queue(const char * serviceName);
-extern CONNECTION* clientConnection;
-extern AtmiBrokerClient * ptrAtmiBrokerClient;
 
 #endif

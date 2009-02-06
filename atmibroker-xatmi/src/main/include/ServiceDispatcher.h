@@ -21,12 +21,14 @@
 
 #include <ace/Task.h>
 #include "log4cxx/logger.h"
+#include "xatmi.h"
+#include "Connection.h"
 #include "Destination.h"
 #include "MessageListener.h"
 
 class ServiceDispatcher: public ACE_Task_Base {
 public:
-	ServiceDispatcher(Destination* serviceQueue, MessageListener* service);
+	ServiceDispatcher(CONNECTION* connection, Destination* serviceQueue, char *serviceName, void(*func)(TPSVCINFO *));
 	int svc();
 	void shutdown();
 private:

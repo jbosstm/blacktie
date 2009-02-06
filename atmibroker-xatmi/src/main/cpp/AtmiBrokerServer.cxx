@@ -20,7 +20,6 @@
  */
 // copyright 2006, 2008 BreakThruIT
 
-#include "AtmiBrokerServer.h"
 #include "OrbManagement.h"
 #include "AtmiBroker.h"
 #include "userlog.h"
@@ -60,7 +59,7 @@ int serverrun() {
 	return toReturn;
 }
 
-int serverinit(int argc, char ** argv) {
+int serverinit() {
 	_tperrno = 0;
 	int toReturn = -1;
 	if (!loggerInitialized) {

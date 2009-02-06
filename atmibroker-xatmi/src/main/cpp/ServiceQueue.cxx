@@ -23,22 +23,10 @@
 //
 // Servant which implements the AtmiBroker::ServiceFactory interface.
 //
-#include <stdlib.h>
-#include <stdio.h>
-#include <iostream>
 #include "ServiceQueue.h"
-#include "ThreadLocalStorage.h"
-
-#include "AtmiBrokerServer.h"
-#include "AtmiBroker_ServiceImpl.h"
-#include "AtmiBrokerServiceXml.h"
-
 #include "xatmi.h"
-#include "userlog.h"
 
-#include "log4cxx/logger.h"
-
-log4cxx::LoggerPtr loggerServiceQueue(log4cxx::Logger::getLogger("ServiceQueue"));
+log4cxx::LoggerPtr ServiceQueue::logger(log4cxx::Logger::getLogger("ServiceQueue"));
 
 // Constants
 int MAX_SERVICE_CACHE_SIZE = 1;
@@ -49,13 +37,11 @@ int MAX_SERVICE_CACHE_SIZE = 1;
 // initialiser for all the virtual base class constructors that
 // require arguments, even those that we inherit indirectly.
 //
-ServiceQueue::ServiceQueue(void* thePoa, char *serviceName, void(*func)(TPSVCINFO *)) :
-	thePoa(thePoa), serviceName(serviceName), m_shutdown(false), lock(SynchronizableObject::create(false)) {
-	// Intentionally empty.
-	userlog(log4cxx::Level::getDebug(), loggerServiceQueue, (char*) "constructor() ");
-
-	userlog(log4cxx::Level::getDebug(), loggerServiceQueue, (char*) "getDescriptorData() ");
+ServiceQueue::ServiceQueue(CONNECTION* connection, Destination* destination, char *serviceName, void(*func)(TPSVCINFO *)) {
+	this->serviceName = serviceName;
+	LOG4CXX_DEBUG(logger, (char*) "constructor");
 	serviceInfo.poolSize = MAX_SERVICE_CACHE_SIZE;
+
 	char* serviceConfigFilename = (char*) malloc(sizeof(char) * (XATMI_SERVICE_NAME_LENGTH + 5));
 	strcpy(serviceConfigFilename, serviceName);
 	strcat(serviceConfigFilename, ".xml");
@@ -63,94 +49,46 @@ ServiceQueue::ServiceQueue(void* thePoa, char *serviceName, void(*func)(TPSVCINF
 	aAtmiBrokerServiceXml.parseXmlDescriptor(&serviceInfo, serviceConfigFilename);
 	free(serviceConfigFilename);
 
-	userlog(log4cxx::Level::getDebug(), loggerServiceQueue, (char*) "createPool");
+	this->destination = destination;
+
+	LOG4CXX_DEBUG(logger, (char*) "createPool");
 	for (int i = 0; i < MAX_SERVICE_CACHE_SIZE; i++) {
-		AtmiBroker_ServiceImpl * tmp_servant = new AtmiBroker_ServiceImpl(serviceName, func);
-		ServiceDispatcher* dispatcher = new ServiceDispatcher(this, tmp_servant);
+		ServiceDispatcher* dispatcher = new ServiceDispatcher(connection, this->destination, serviceName, func);
 		if (dispatcher->activate(THR_NEW_LWP| THR_JOINABLE, 1, 0, ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
 			delete dispatcher;
-			LOG4CXX_ERROR(loggerServiceQueue, (char*) "Could not start thread pool");
+			LOG4CXX_ERROR(logger, (char*) "Could not start thread pool");
 		} else {
-			servantVector.push_back(dispatcher);
+			dispatchers.push_back(dispatcher);
 		}
 	}
-	userlog(log4cxx::Level::getDebug(), loggerServiceQueue, (char*) "createPool done ");
+	LOG4CXX_DEBUG(logger, (char*) "createPool done ");
 }
 
 // ~ServiceQueue destructor.
 //
 ServiceQueue::~ServiceQueue() {
 
-	lock->lock();
-	m_shutdown = true;
-	lock->unlock();
-
-	for (std::vector<ServiceDispatcher*>::iterator i = servantVector.begin(); i != servantVector.end(); i++) {
+	for (std::vector<ServiceDispatcher*>::iterator i = dispatchers.begin(); i != dispatchers.end(); i++) {
 		ServiceDispatcher* dispatcher = (*i);
 		dispatcher->shutdown();
 	}
 
 	// TODO NOTIFY ALL REQUIRED HERE
-	for (std::vector<ServiceDispatcher*>::iterator i = servantVector.begin(); i != servantVector.end(); i++) {
-		lock->lock();
-		lock->notify();
-		lock->unlock();
+	for (std::vector<ServiceDispatcher*>::iterator i = dispatchers.begin(); i != dispatchers.end(); i++) {
+		destination->disconnect();
 	}
 
-	std::vector<ServiceDispatcher*>::iterator i = servantVector.begin();
-	while (i != servantVector.end()) {
+	std::vector<ServiceDispatcher*>::iterator i = dispatchers.begin();
+	while (i != dispatchers.end()) {
 		ServiceDispatcher* dispatcher = (*i);
-		i = servantVector.erase(i);
+		i = dispatchers.erase(i);
 		dispatcher->wait();
 		delete dispatcher;
 	}
 }
 
-void ServiceQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags) throw (CORBA::SystemException ) {
-	MESSAGE message;
-	message.replyto = replyto_ior;
-	message.data = (char*) malloc(sizeof(char*) * ilen);
-	memcpy(message.data, (char*) idata.get_buffer(), ilen);
-	message.len = ilen;
-	message.correlationId = correlationId;
-	message.flags = flags;
-	message.control = getSpecific(TSS_KEY);
-
-	userlog(log4cxx::Level::getDebug(), loggerServiceQueue, (char*) "start_conversation()");
-
-	lock->lock();
-	messageQueue.push(message);
-	lock->notify();
-	lock->unlock();
-}
-
-void ServiceQueue::disconnect() {
-
-}
-
-MESSAGE ServiceQueue::receive(bool noWait) {
-	MESSAGE message;
-	message.data = NULL;
-	lock->lock();
-	if (!m_shutdown) {
-		if (messageQueue.size() == 0) {
-			lock->wait(0);
-		}
-		if (messageQueue.size() > 0) {
-			message = messageQueue.front();
-			messageQueue.pop();
-		}
-	}
-	lock->unlock();
-	return message;
-}
-
-const char * ServiceQueue::getName() {
-	return NULL;
-}
-
 SVCINFO ServiceQueue::get_service_info() {
-	userlog(log4cxx::Level::getDebug(), loggerServiceQueue, (char*) "get_service_info()");
+	LOG4CXX_DEBUG(logger, (char*) "get_service_info()");
 	SVCINFO svcinfo;
 	svcinfo.serviceName = strdup(serviceName);
 	svcinfo.poolSize = serviceInfo.poolSize;
@@ -158,9 +96,6 @@ SVCINFO ServiceQueue::get_service_info() {
 	return svcinfo;
 }
 
-void* ServiceQueue::getPoa() {
-	return thePoa;
-}
-
-void ServiceQueue::send(MESSAGE message) {
+Destination* ServiceQueue::getDestination() {
+	return destination;
 }

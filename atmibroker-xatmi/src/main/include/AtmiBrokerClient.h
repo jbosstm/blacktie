@@ -45,7 +45,8 @@ protected:
 	Session* session;
 };
 
-// instance_hack
+// CLIENT
+extern CONNECTION* clientConnection;
 extern AtmiBrokerClient * ptrAtmiBrokerClient;
 
 #endif

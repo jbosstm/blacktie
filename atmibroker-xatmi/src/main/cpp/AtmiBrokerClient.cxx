@@ -27,6 +27,9 @@
 #include "AtmiBrokerClient.h"
 #include "SessionImpl.h"
 
+CONNECTION* clientConnection;
+AtmiBrokerClient * ptrAtmiBrokerClient;
+
 log4cxx::LoggerPtr loggerAtmiBrokerClient(log4cxx::Logger::getLogger("AtmiBrokerClient"));
 
 AtmiBrokerClient::AtmiBrokerClient() {
@@ -53,7 +56,7 @@ Session* AtmiBrokerClient::createSession(int& id) {
 		session = NULL;
 	}
 	id = 0;
-	session = new SessionImpl(clientConnection, 0);
+	session = new SessionImpl(clientConnection, ::create_temporary_queue(clientConnection), 0);
 	return session;
 }
 

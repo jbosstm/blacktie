@@ -32,18 +32,20 @@
 #define ATMIBROKER_SERVICEIMPL_H_
 
 #include "xatmi.h"
+#include "Connection.h"
 #include "MessageListener.h"
 #include "Session.h"
 #include "log4cxx/logger.h"
 
 class AtmiBroker_ServiceImpl: public virtual MessageListener {
 public:
-	AtmiBroker_ServiceImpl(char *serviceName, void(*func)(TPSVCINFO *));
+	AtmiBroker_ServiceImpl(CONNECTION* connection, char *serviceName, void(*func)(TPSVCINFO *));
 	virtual ~AtmiBroker_ServiceImpl();
 	void onMessage(MESSAGE message);
 	Session* getSession();
 private:
 	static log4cxx::LoggerPtr logger;
+	CONNECTION* m_connection;
 	char* m_serviceName;
 	void (*m_func)(TPSVCINFO *);
 	Session* session;

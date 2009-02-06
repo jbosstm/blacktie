@@ -19,15 +19,14 @@
 #include "SessionImpl.h"
 #include "SenderImpl.h"
 #include "ReceiverImpl.h"
-#include "AtmiBroker.h"
 
 log4cxx::LoggerPtr SessionImpl::logger(log4cxx::Logger::getLogger("SessionImpl"));
 
-SessionImpl::SessionImpl(CONNECTION* connection, int id) {
+SessionImpl::SessionImpl(CONNECTION* connection, Destination* destination, int id) {
 	LOG4CXX_LOGLS(logger, log4cxx::Level::getDebug(), (char*) "constructor ");
 	this->id = id;
 	this->connection = connection;
-	queueReceiver = new ReceiverImpl(::create_temporary_queue(connection));
+	queueReceiver = new ReceiverImpl(destination);
 	queueSender = NULL;
 }
 
@@ -43,13 +42,13 @@ SessionImpl::~SessionImpl() {
 	}
 }
 
-void SessionImpl::setReplyTo(char * replyTo) {
+void SessionImpl::setReplyTo(Destination* destination) {
 	if (queueSender) {
 		delete queueSender;
 		queueSender = NULL;
 	}
-	if (strcmp(replyTo, "") != 0) {
-		queueSender = new SenderImpl(::lookup_temporary_queue(connection, replyTo));
+	if (destination != NULL) {
+		queueSender = new SenderImpl(destination);
 	}
 }
 
