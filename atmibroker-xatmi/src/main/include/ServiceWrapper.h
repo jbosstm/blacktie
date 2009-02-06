@@ -24,7 +24,7 @@
 // Edit the idlgen.cfg to have your own copyright notice placed here.
 //-----------------------------------------------------------------------------
 
-// Class: AtmiBroker_ServiceImpl
+// Class: ServiceWrapper
 // A POA servant which implements of the AtmiBroker::Service interface
 //
 
@@ -37,10 +37,10 @@
 #include "Session.h"
 #include "log4cxx/logger.h"
 
-class AtmiBroker_ServiceImpl: public virtual MessageListener {
+class ServiceWrapper: public virtual MessageListener {
 public:
-	AtmiBroker_ServiceImpl(CONNECTION* connection, char *serviceName, void(*func)(TPSVCINFO *));
-	virtual ~AtmiBroker_ServiceImpl();
+	ServiceWrapper(CONNECTION* connection, char *serviceName, void(*func)(TPSVCINFO *));
+	virtual ~ServiceWrapper();
 	void onMessage(MESSAGE message);
 	Session* getSession();
 private:

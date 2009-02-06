@@ -24,12 +24,12 @@
 // Edit the idlgen.cfg to have your own copyright notice placed here.
 //-----------------------------------------------------------------------------
 
-// Class: ServiceQueue
+// Class: ServiceDispatcherPool
 // A POA servant which implements of the AtmiBroker::ServiceFactory interface
 //
 
-#ifndef ServiceQueue_H_
-#define ServiceQueue_H_
+#ifndef ServiceDispatcherPool_H_
+#define ServiceDispatcherPool_H_
 
 #include "atmiBrokerMacro.h"
 
@@ -41,10 +41,10 @@
 #include "Destination.h"
 #include "AtmiBrokerServiceXml.h"
 
-class ATMIBROKER_DLL ServiceQueue {
+class ATMIBROKER_DLL ServiceDispatcherPool {
 public:
-	ServiceQueue(CONNECTION* connection, Destination* destination, char *serviceName, void(*func)(TPSVCINFO *));
-	virtual ~ServiceQueue();
+	ServiceDispatcherPool(CONNECTION* connection, Destination* destination, char *serviceName, void(*func)(TPSVCINFO *));
+	virtual ~ServiceDispatcherPool();
 	SVCINFO get_service_info();
 	Destination* getDestination();
 private:
@@ -55,8 +55,8 @@ private:
 	SVCINFO serviceInfo;
 	// The following are not implemented
 	//
-	ServiceQueue(const ServiceQueue &);
-	ServiceQueue& operator=(const ServiceQueue &);
+	ServiceDispatcherPool(const ServiceDispatcherPool &);
+	ServiceDispatcherPool& operator=(const ServiceDispatcherPool &);
 };
 
 #endif

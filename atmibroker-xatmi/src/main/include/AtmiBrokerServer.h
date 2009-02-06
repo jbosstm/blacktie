@@ -24,7 +24,7 @@
 // Edit the idlgen.cfg to have your own copyright notice placed here.
 //-----------------------------------------------------------------------------
 
-// Class: AtmiBroker_ServerImpl
+// Class: AtmiBrokerServer
 // A POA servant which implements of the AtmiBroker::Server interface
 //
 
@@ -42,20 +42,20 @@
 #include <vector>
 #include "xatmi.h"
 #include "AtmiBrokerServerXml.h"
-#include "ServiceQueue.h"
+#include "ServiceDispatcherPool.h"
 #include "Connection.h"
 
 struct _service_data {
 	char* serviceName;
-	ServiceQueue* serviceQueue;
+	ServiceDispatcherPool* serviceQueue;
 	void (*func)(TPSVCINFO *);
 };
 typedef _service_data ServiceData;
-class ATMIBROKER_DLL AtmiBroker_ServerImpl: public virtual POA_AtmiBroker::Server {
+class ATMIBROKER_DLL AtmiBrokerServer: public virtual POA_AtmiBroker::Server {
 public:
-	AtmiBroker_ServerImpl();
+	AtmiBrokerServer();
 
-	virtual ~AtmiBroker_ServerImpl();
+	virtual ~AtmiBrokerServer();
 
 	// IDL operations
 	//
@@ -92,9 +92,9 @@ public:
 
 private:
 	void (*getServiceMethod(const char * aServiceName))(TPSVCINFO *);
-	void addServiceQueue(char*& aServiceName, ServiceQueue*& refPtr, void(*func)(TPSVCINFO *));
-	ServiceQueue* getServiceQueue(const char * aServiceName);
-	ServiceQueue* removeServiceQueue(const char * aServiceName);
+	void addServiceDispatcherPool(char*& aServiceName, ServiceDispatcherPool*& refPtr, void(*func)(TPSVCINFO *));
+	ServiceDispatcherPool* getServiceDispatcherPool(const char * aServiceName);
+	ServiceDispatcherPool* removeServiceDispatcherPool(const char * aServiceName);
 
 	std::vector<ServiceData> serviceData;
 	std::vector<char*> advertisedServices;
@@ -104,12 +104,12 @@ private:
 
 	// The following are not implemented
 	//
-	AtmiBroker_ServerImpl(const AtmiBroker_ServerImpl &);
-	AtmiBroker_ServerImpl& operator=(const AtmiBroker_ServerImpl &);
+	AtmiBrokerServer(const AtmiBrokerServer &);
+	AtmiBrokerServer& operator=(const AtmiBrokerServer &);
 };
 
 // SERVER
 extern CONNECTION* serverConnection;
-extern AtmiBroker_ServerImpl * ptrServer;
+extern AtmiBrokerServer * ptrServer;
 
 #endif

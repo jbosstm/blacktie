@@ -23,31 +23,31 @@
 #include <stdio.h>
 #include <string.h>
 #include "tx.h"
-#include "AtmiBroker_ServiceImpl.h"
+#include "ServiceWrapper.h"
 #include "AtmiBroker.h"
 #include "SessionImpl.h"
 #include "userlog.h"
 #include "ThreadLocalStorage.h"
 
-log4cxx::LoggerPtr AtmiBroker_ServiceImpl::logger(log4cxx::Logger::getLogger("AtmiBroker_ServiceImpl"));
+log4cxx::LoggerPtr ServiceWrapper::logger(log4cxx::Logger::getLogger("ServiceWrapper"));
 
-// AtmiBroker_ServiceImpl constructor
+// ServiceWrapper constructor
 //
-AtmiBroker_ServiceImpl::AtmiBroker_ServiceImpl(CONNECTION* connection, char *serviceName, void(*func)(TPSVCINFO *)) {
+ServiceWrapper::ServiceWrapper(CONNECTION* connection, char *serviceName, void(*func)(TPSVCINFO *)) {
 	m_connection = connection;
 	m_serviceName = serviceName;
 	m_func = func;
 	session = NULL;
 }
 
-// ~AtmiBroker_ServiceImpl destructor.
+// ~ServiceWrapper destructor.
 //
-AtmiBroker_ServiceImpl::~AtmiBroker_ServiceImpl() {
+ServiceWrapper::~ServiceWrapper() {
 	// Intentionally empty.
 	//
 }
 
-void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
+void ServiceWrapper::onMessage(MESSAGE message) {
 	userlog(log4cxx::Level::getDebug(), logger, (char*) "svc()");
 
 	// INITIALISE THE SENDER AND RECEIVER FOR THIS CONVERSATION
@@ -96,6 +96,6 @@ void AtmiBroker_ServiceImpl::onMessage(MESSAGE message) {
 	}
 }
 
-Session* AtmiBroker_ServiceImpl::getSession() {
+Session* ServiceWrapper::getSession() {
 	return session;
 }

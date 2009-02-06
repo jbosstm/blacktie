@@ -23,21 +23,21 @@
 //
 // Servant which implements the AtmiBroker::ServiceFactory interface.
 //
-#include "ServiceQueue.h"
+#include "ServiceDispatcherPool.h"
 #include "xatmi.h"
 
-log4cxx::LoggerPtr ServiceQueue::logger(log4cxx::Logger::getLogger("ServiceQueue"));
+log4cxx::LoggerPtr ServiceDispatcherPool::logger(log4cxx::Logger::getLogger("ServiceDispatcherPool"));
 
 // Constants
 int MAX_SERVICE_CACHE_SIZE = 1;
 
-// ServiceQueue constructor
+// ServiceDispatcherPool constructor
 //
 // Note: since we use virtual inheritance, we must include an
 // initialiser for all the virtual base class constructors that
 // require arguments, even those that we inherit indirectly.
 //
-ServiceQueue::ServiceQueue(CONNECTION* connection, Destination* destination, char *serviceName, void(*func)(TPSVCINFO *)) {
+ServiceDispatcherPool::ServiceDispatcherPool(CONNECTION* connection, Destination* destination, char *serviceName, void(*func)(TPSVCINFO *)) {
 	this->serviceName = serviceName;
 	LOG4CXX_DEBUG(logger, (char*) "constructor");
 	serviceInfo.poolSize = MAX_SERVICE_CACHE_SIZE;
@@ -64,9 +64,9 @@ ServiceQueue::ServiceQueue(CONNECTION* connection, Destination* destination, cha
 	LOG4CXX_DEBUG(logger, (char*) "createPool done ");
 }
 
-// ~ServiceQueue destructor.
+// ~ServiceDispatcherPool destructor.
 //
-ServiceQueue::~ServiceQueue() {
+ServiceDispatcherPool::~ServiceDispatcherPool() {
 
 	for (std::vector<ServiceDispatcher*>::iterator i = dispatchers.begin(); i != dispatchers.end(); i++) {
 		ServiceDispatcher* dispatcher = (*i);
@@ -87,7 +87,7 @@ ServiceQueue::~ServiceQueue() {
 	}
 }
 
-SVCINFO ServiceQueue::get_service_info() {
+SVCINFO ServiceDispatcherPool::get_service_info() {
 	LOG4CXX_DEBUG(logger, (char*) "get_service_info()");
 	SVCINFO svcinfo;
 	svcinfo.serviceName = strdup(serviceName);
@@ -96,6 +96,6 @@ SVCINFO ServiceQueue::get_service_info() {
 	return svcinfo;
 }
 
-Destination* ServiceQueue::getDestination() {
+Destination* ServiceDispatcherPool::getDestination() {
 	return destination;
 }

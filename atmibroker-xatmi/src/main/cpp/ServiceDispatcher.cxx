@@ -16,14 +16,14 @@
  * MA  02110-1301, USA.
  */
 #include "ServiceDispatcher.h"
-#include "AtmiBroker_ServiceImpl.h"
+#include "ServiceWrapper.h"
 #include "Message.h"
 
 log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger("ServiceDispatcher"));
 
 ServiceDispatcher::ServiceDispatcher(CONNECTION* connection, Destination* serviceQueue, char *serviceName, void(*func)(TPSVCINFO *)) :
 	m_serviceQueue(serviceQueue), m_shutdown(false) {
-	m_service = new AtmiBroker_ServiceImpl(connection, serviceName, func);
+	m_service = new ServiceWrapper(connection, serviceName, func);
 }
 
 int ServiceDispatcher::svc(void) {

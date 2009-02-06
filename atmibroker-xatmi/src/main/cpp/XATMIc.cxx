@@ -36,8 +36,8 @@
 #include "AtmiBrokerServerControl.h"
 #include "AtmiBroker.h"
 #include "AtmiBrokerClient.h"
-#include "AtmiBroker_ServerImpl.h"
-#include "AtmiBroker_ServiceImpl.h"
+#include "AtmiBrokerServer.h"
+#include "ServiceWrapper.h"
 #include "AtmiBrokerMem.h"
 #include "log4cxx/logger.h"
 
