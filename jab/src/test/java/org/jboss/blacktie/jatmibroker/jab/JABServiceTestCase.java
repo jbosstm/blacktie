@@ -20,16 +20,18 @@ package org.jboss.blacktie.jatmibroker.jab;
 import junit.framework.TestCase;
 
 public class JABServiceTestCase extends TestCase {
+	private RunServer runServer = new RunServer();
+
 	public void setUp() throws InterruptedException {
-		RunServer.startInstance();
+		runServer.serverinit();
 	}
 
 	public void tearDown() {
-		RunServer.stopInstance();
+		runServer.serverdone();
 	}
 
 	public void testJABService() throws Exception {
-		String domainName = "default";
+		String domainName = "fooapp";
 		String serverName = "foo";
 		String serviceName = "BAR";
 		String transactionManagerService = "TransactionManagerService.OTS";

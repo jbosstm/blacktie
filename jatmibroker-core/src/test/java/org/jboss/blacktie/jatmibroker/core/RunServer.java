@@ -17,7 +17,7 @@
  */
 package org.jboss.blacktie.jatmibroker.core;
 
-public class RunServer extends Thread {
+public class RunServer {
 	native void serverinit();
 
 	native void serverdone();

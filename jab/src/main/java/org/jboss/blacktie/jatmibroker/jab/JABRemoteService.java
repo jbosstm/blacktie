@@ -56,7 +56,7 @@ public class JABRemoteService implements Message {
 			org.jboss.blacktie.jatmibroker.core.Message receive = endpoint.receive(flags);
 
 			data = new byte[receive.len];
-			System.arraycopy(data, 0, receive.data, 0, receive.len);
+			System.arraycopy(receive.data, 0, data, 0, receive.len);
 			log.debug("service_request response is " + data);
 
 			log.debug("service_request size of response is " + olen.value);
