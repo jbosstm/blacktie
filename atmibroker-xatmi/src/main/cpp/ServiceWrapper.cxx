@@ -20,6 +20,7 @@
  */
 // copyright 2006, 2008 BreakThruIT
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "tx.h"
@@ -52,6 +53,11 @@ void ServiceWrapper::onMessage(MESSAGE message) {
 
 	// INITIALISE THE SENDER AND RECEIVER FOR THIS CONVERSATION
 	session = new SessionImpl(m_connection, ::create_temporary_queue(m_connection), -1);
+	if (message.replyto) {
+		userlog(log4cxx::Level::getDebug(), logger, (char*) "   replyTo = ", message.replyto);
+	} else {
+		userlog(log4cxx::Level::getDebug(), logger, (char*) "   replyTo = NULL");
+	}
 	session->setSendTo(::lookup_temporary_queue(m_connection, (char*) message.replyto));
 
 	// EXTRACT THE DATA FROM THE INBOUND MESSAGE
@@ -83,7 +89,11 @@ void ServiceWrapper::onMessage(MESSAGE message) {
 	setSpecific(SVC_KEY, this);
 	setSpecific(SVC_SES, session);
 	tx_open();
-	m_func(&tpsvcinfo);
+	try {
+		m_func(&tpsvcinfo);
+	} catch (...) {
+		LOG4CXX_ERROR(logger, (char*) "Service Wrapper caught error running during onMessage");
+	}
 	tx_close();
 	destroySpecific(SVC_SES);
 	destroySpecific(SVC_KEY);

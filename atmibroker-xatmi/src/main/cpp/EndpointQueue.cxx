@@ -100,10 +100,11 @@ void EndpointQueue::send(MESSAGE message) {
 }
 
 void EndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags) throw (CORBA::SystemException ) {
-	LOG4CXX_DEBUG(logger, (char*) "client_callback(): called.");
-	LOG4CXX_DEBUG(logger, (char*) "client_callback():    idata = " << idata.get_buffer());
-	LOG4CXX_DEBUG(logger, (char*) "client_callback():    ilen = %d" << ilen);
-	LOG4CXX_DEBUG(logger, (char*) "client_callback():    flags = %d" << flags);
+	LOG4CXX_DEBUG(logger, (char*) "send called.");
+	LOG4CXX_DEBUG(logger, (char*) "send idata = " << replyto_ior);
+	LOG4CXX_DEBUG(logger, (char*) "send idata = " << idata.get_buffer());
+	LOG4CXX_DEBUG(logger, (char*) "send ilen = " << ilen);
+	LOG4CXX_DEBUG(logger, (char*) "send flags = " << flags);
 
 	MESSAGE message;
 	message.correlationId = correlationId;
@@ -112,7 +113,7 @@ void EndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long
 	message.flags = flags;
 	message.len = ilen;
 	message.rcode = rcode;
-	message.replyto = replyto_ior;
+	message.replyto = strdup(replyto_ior);
 	message.rval = rval;
 	message.control = getSpecific(TSS_KEY);
 
@@ -153,7 +154,7 @@ MESSAGE EndpointQueue::receive(bool noWait) {
 }
 
 void EndpointQueue::disconnect() throw (CORBA::SystemException ) {
-	LOG4CXX_ERROR(logger, (char*) "disconnect unimplemented");
+	LOG4CXX_DEBUG(logger, (char*) "disconnect");
 	if (remoteEndpoint) {
 		remoteEndpoint->disconnect();
 	} else {

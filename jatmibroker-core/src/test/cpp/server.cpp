@@ -27,11 +27,8 @@
 #include "xatmi.h"
 
 extern "C"void BAR(TPSVCINFO * svcinfo) {
-	char* buffer;
-	int sendlen;
-
-	sendlen = strlen(svcinfo->name) + 11;
-	buffer = tpalloc("X_OCTET", 0, sizeof(char) * sendlen);
+	int sendlen = 60;
+	char* buffer = tpalloc("X_OCTET", 0, sendlen);
 	strcpy(buffer, svcinfo->name);
 	strcat(buffer, " SAYS HELLO");
 
