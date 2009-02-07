@@ -141,10 +141,6 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size) {
 			} else {
 				memset(memPtr, '\0', size);
 			}
-			if ((*it).memoryPtr != memPtr) {
-				// TODO this does not delete the original memory if it is moved?
-				userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerMem, (char*) "deleting old memory ptr %p", (*it).memoryPtr);
-			}
 			(*it).memoryPtr = memPtr;
 			(*it).size = size;
 			userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerMem, (char*) "updated memory ptr %p", (*it).memoryPtr);
