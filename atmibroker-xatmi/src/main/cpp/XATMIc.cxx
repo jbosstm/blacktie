@@ -103,7 +103,7 @@ long * _get_tpurcode(void) {
 int tpadvertise(char * svcname, void(*func)(TPSVCINFO *)) {
 	tperrno = 0;
 	int toReturn = -1;
-	if (serverinit()) {
+	if (serverinit() != -1) {
 		if (ptrServer->advertiseService(svcname, func)) {
 			toReturn = 0;
 		}
@@ -116,7 +116,7 @@ int tpadvertise(char * svcname, void(*func)(TPSVCINFO *)) {
 int tpunadvertise(char * svcname) {
 	tperrno = 0;
 	int toReturn = -1;
-	if (serverinit()) {
+	if (serverinit() != -1) {
 		if (svcname && strcmp(svcname, "") != 0) {
 			if (ptrServer->isAdvertised(svcname)) {
 				ptrServer->unadvertiseService(svcname);

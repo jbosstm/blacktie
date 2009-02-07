@@ -180,16 +180,17 @@ void AtmiBrokerServer::server_done() throw (CORBA::SystemException ) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_done()");
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "unadvertise " << serverName);
+	if (serverConnection) {
+		CosNaming::Name* name = ((CosNaming::NamingContextExt_ptr) serverConnection->default_ctx)->to_name(serverName);
+		((CosNaming::NamingContext_ptr) serverConnection->name_ctx)->unbind(*name);
 
-	CosNaming::Name* name = ((CosNaming::NamingContextExt_ptr) serverConnection->default_ctx)->to_name(serverName);
-	((CosNaming::NamingContext_ptr) serverConnection->name_ctx)->unbind(*name);
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "unadvertised " << serverName);
 
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "unadvertised " << serverName);
-
-	for (unsigned int i = 0; i < serverInfo.serviceNames.size(); i++) {
-		char* svcname = (char*) serverInfo.serviceNames[i].c_str();
-		if (isAdvertised(svcname)) {
-			unadvertiseService(svcname);
+		for (unsigned int i = 0; i < serverInfo.serviceNames.size(); i++) {
+			char* svcname = (char*) serverInfo.serviceNames[i].c_str();
+			if (isAdvertised(svcname)) {
+				unadvertiseService(svcname);
+			}
 		}
 	}
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_done(): returning.");
