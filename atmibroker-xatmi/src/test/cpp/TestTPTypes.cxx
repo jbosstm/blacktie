@@ -173,6 +173,7 @@ void TestTPTypes::test_tptypes_small_type() {
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
 	CPPUNIT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
+	CPPUNIT_ASSERT(strncmp(type, "X_COMMO", 7) == 0);
 }
 
 void TestTPTypes::test_tptypes_small_subtype() {
@@ -184,6 +185,7 @@ void TestTPTypes::test_tptypes_small_subtype() {
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
 	CPPUNIT_ASSERT(strncmp(subtype, "1234567890123456", 16) == 0);
+	CPPUNIT_ASSERT(strncmp(subtype, "123456789012345", 15) == 0);
 }
 
 void TestTPTypes::test_tptypes_large_type() {
