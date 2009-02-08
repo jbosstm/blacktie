@@ -55,6 +55,8 @@ extern ATMIBROKER_CORE_DLL char* xaResourceMgrId;
 extern ATMIBROKER_CORE_DLL char* xaResourceName;
 extern ATMIBROKER_CORE_DLL char* xaOpenString;
 extern ATMIBROKER_CORE_DLL char* xaCloseString;
+extern ATMIBROKER_CORE_DLL char* xaSwitchEnv;
+extern ATMIBROKER_CORE_DLL char* xaLibNameEnv;
 extern ATMIBROKER_CORE_DLL bool xaThreadModel;
 extern ATMIBROKER_CORE_DLL bool xaAutomaticAssociation;
 extern ATMIBROKER_CORE_DLL bool xaDynamicRegistrationOptimization;
