@@ -29,6 +29,7 @@
 #include "SessionImpl.h"
 #include "userlog.h"
 #include "ThreadLocalStorage.h"
+#include "AtmiBrokerOTS.h"
 
 log4cxx::LoggerPtr ServiceWrapper::logger(log4cxx::Logger::getLogger("ServiceWrapper"));
 
@@ -85,16 +86,19 @@ void ServiceWrapper::onMessage(MESSAGE message) {
 	}
 
 	// HANDLE THE CLIENT INVOCATION
+	// TODO wrap TSS control in a Transaction object and make sure any current
+	// control associated with the thread is suspended here and resumed after
+	// the call to m_func
 	setSpecific(TSS_KEY, control);
 	setSpecific(SVC_KEY, this);
 	setSpecific(SVC_SES, session);
-	tx_open();
+	AtmiBrokerOTS::get_instance()->rm_resume();
 	try {
 		m_func(&tpsvcinfo);
 	} catch (...) {
 		LOG4CXX_ERROR(logger, (char*) "Service Wrapper caught error running during onMessage");
 	}
-	tx_close();
+	AtmiBrokerOTS::get_instance()->rm_suspend();
 	destroySpecific(SVC_SES);
 	destroySpecific(SVC_KEY);
 	destroySpecific(TSS_KEY);
