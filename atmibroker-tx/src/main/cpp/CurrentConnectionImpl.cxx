@@ -44,6 +44,7 @@ void CurrentConnectionImpl::start(CosTransactions::Coordinator_ptr tx, const Cos
 	XA::XASwitch_ptr aXaSwitch = m_localResourceManager.getResourceManagerDataStruct().xaSwitch;
 	//aXaSwitch.xa_start_entry(&aXid, m_localResourceManager.getResourceManagerDataStruct().rmid, TMNOFLAGS);
 	aXaSwitch->xa_start(aOtid_t, m_localResourceManager.getResourceManagerDataStruct().rmid, TMNOFLAGS);
+	// TODO enlist resource
 }
 
 void CurrentConnectionImpl::suspend(CosTransactions::Coordinator_ptr tx, const CosTransactions::otid_t& aOtid_t) throw(CORBA::SystemException) {
@@ -54,6 +55,7 @@ void CurrentConnectionImpl::suspend(CosTransactions::Coordinator_ptr tx, const C
 	XA::XASwitch_ptr aXaSwitch = m_localResourceManager.getResourceManagerDataStruct().xaSwitch;
 	//aXaSwitch.xa_end_entry(&aXid, m_localResourceManager.getResourceManagerDataStruct().rmid, TMSUSPEND);
 	aXaSwitch->xa_end(aOtid_t, m_localResourceManager.getResourceManagerDataStruct().rmid, TMSUSPEND);
+	// TODO delist resource
 }
 
 void CurrentConnectionImpl::resume(CosTransactions::Coordinator_ptr tx, const CosTransactions::otid_t& aOtid_t) throw(CORBA::SystemException) {
@@ -64,6 +66,7 @@ void CurrentConnectionImpl::resume(CosTransactions::Coordinator_ptr tx, const Co
 	XA::XASwitch_ptr aXaSwitch = m_localResourceManager.getResourceManagerDataStruct().xaSwitch;
 	//aXaSwitch.xa_start_entry(&aXid, m_localResourceManager.getResourceManagerDataStruct().rmid, TMRESUME);
 	aXaSwitch->xa_start(aOtid_t, m_localResourceManager.getResourceManagerDataStruct().rmid, TMRESUME);
+	// TODO enlist resource
 }
 
 void CurrentConnectionImpl::end(CosTransactions::Coordinator_ptr tx, const CosTransactions::otid_t& aOtid_t, CORBA::Boolean success) throw(CORBA::SystemException) {
@@ -74,6 +77,7 @@ void CurrentConnectionImpl::end(CosTransactions::Coordinator_ptr tx, const CosTr
 	XA::XASwitch_ptr aXaSwitch = m_localResourceManager.getResourceManagerDataStruct().xaSwitch;
 	//aXaSwitch.xa_end_entry(&aXid, m_localResourceManager.getResourceManagerDataStruct().rmid, (success ? TMSUCCESS : TMFAIL));
 	aXaSwitch->xa_end(aOtid_t, m_localResourceManager.getResourceManagerDataStruct().rmid, (success ? TMSUCCESS : TMFAIL));
+	// TODO delist resource
 }
 
 XA::ThreadModel CurrentConnectionImpl::thread_model() throw(CORBA::SystemException) {

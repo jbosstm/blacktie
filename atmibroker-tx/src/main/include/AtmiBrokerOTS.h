@@ -46,6 +46,7 @@
 #include "Connection.h"
 
 #include "CurrentImpl.h"
+#include "XAResourceManagerFactory.h"
 
 extern "C" {
 struct _control_info {
@@ -78,6 +79,9 @@ public:
 
 	int tx_close(void);
 
+	void rm_resume(void);
+	void rm_suspend(void);
+
 	void createXAConnectorAndResourceManager();
 	CurrentImpl * getCurrentImpl();
 	CosTransactions::Current_var& getCurrent();
@@ -85,6 +89,7 @@ public:
 	XA::CurrentConnection_var& getXaCurrentConnection();
 	XA::ResourceManager_var& getXaResourceManager();
 	XA::Connector_var& getXaConnector();
+
 	//struct xa_switch_t&								getXaosw();
 	XA::XASwitch_ptr getXaosw();
 
@@ -112,6 +117,8 @@ private:
 	XA::Connector_var xa_connector;
 	//struct xa_switch_t								xaosw;
 	XA::XASwitch_ptr xaosw;
+
+	XAResourceManagerFactory xaRMFac;
 
 	std::vector<ControlInfo*> controlInfoVector;
 

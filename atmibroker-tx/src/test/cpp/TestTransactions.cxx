@@ -37,17 +37,19 @@ void TestTransactions::test_transactions() {
 
 // check for protocol errors in a transactions lifecycle
 void TestTransactions::test_protocol() {
-	// should not be able to begin, complete or close a transaction before calling tx_open
+	// should not be able to begin or complete a transaction before calling tx_open
 	CPPUNIT_ASSERT(tx_begin() != TX_OK);
 	CPPUNIT_ASSERT(tx_commit() != TX_OK);
 	CPPUNIT_ASSERT(tx_rollback() != TX_OK);
+
+	// tx close succeeds if was never opened
 	CPPUNIT_ASSERT(tx_close() == TX_OK);
 
 	// open should succeed
 	CPPUNIT_ASSERT(tx_open() == TX_OK);
 	// open second should should be idempotent
 	CPPUNIT_ASSERT(tx_open() == TX_OK);
-	// should not be able to complete or close a transaction before calling tx_begin
+	// should not be able to complete a transaction before calling tx_begin
 	CPPUNIT_ASSERT(tx_commit() != TX_OK);
 	CPPUNIT_ASSERT(tx_rollback() != TX_OK);
 	// should be able to close if a transaction hasn't been started
@@ -123,7 +125,9 @@ void TestTransactions::test_register_resource() {
 
 	// now for the real test:
 	// - create a CosTransactions::Resource ...
-	XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(123L, &real_resource);
+	//XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(findConnection("ots"), "Dummy", "", "", 123L, &real_resource);
+	XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(NULL, NULL, 123L, &real_resource);
+	//XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(123L, &real_resource);
 	CORBA::Object_ptr ref = poa->servant_to_reference(ra);
 	CosTransactions::Resource_var v = CosTransactions::Resource::_narrow(ref);
 

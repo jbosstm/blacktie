@@ -28,6 +28,7 @@
 #endif
 
 #include "ThreadLocalStorage.h"
+#include "XAResourceManagerFactory.h"
 
 #include "TxInitializer.h"
 #include "OrbManagement.h"
@@ -41,6 +42,12 @@
 #include "log4cxx/logger.h"
 
 log4cxx::LoggerPtr loggerAtmiBrokerOTS(log4cxx::Logger::getLogger("AtmiBrokerOTS"));
+
+/*
+ * use different transaction branches in processes using the same resource manager within the same
+ * distributed transaction (see section B.2.6 of the OMG OTS spec)
+ */
+#define XA_LOOSE_COUPLING
 
 AtmiBrokerOTS *AtmiBrokerOTS::ptrAtmiBrokerOTS = NULL;
 
@@ -64,11 +71,19 @@ AtmiBrokerOTS::AtmiBrokerOTS() {
 	currentImpl = NULL;
 	tx_current = NULL;
 	ots_connection = init_orb((char*) "ots");
+#ifdef XA_LOOSE_COUPLING
+	try {
+		xaRMFac.createRMs(ots_connection);
+	} catch (RMException& ex) {
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "failed to load RMs");
+	}
+#endif // XA_LOOSE_COUPLING
 	//	createTransactionPolicy();
 }
 
 AtmiBrokerOTS::~AtmiBrokerOTS() {
 	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "destructor");
+	xaRMFac.destroyRMs(ots_connection);
 	shutdownBindings(ots_connection);
 	/* TODO
 	 if (xaResourceMgrId)
@@ -112,8 +127,20 @@ int AtmiBrokerOTS::tx_open(void) {
 		currentImpl = new CurrentImpl(tx_factory);
 		tx_current = currentImpl;
 	}
-	//createXAConnectorAndResourceManager();
+//	createXAConnectorAndResourceManager();
+
 	return TX_OK;
+}
+
+void AtmiBrokerOTS::rm_resume(void) {
+#ifdef XA_LOOSE_COUPLING
+	xaRMFac.resumeRMs(ots_connection);
+#endif // XA_LOOSE_COUPLING
+}
+void AtmiBrokerOTS::rm_suspend(void) {
+#ifdef XA_LOOSE_COUPLING
+	xaRMFac.suspendRMs(ots_connection);
+#endif // XA_LOOSE_COUPLING
 }
 
 int AtmiBrokerOTS::tx_begin(void) {
@@ -128,6 +155,7 @@ int AtmiBrokerOTS::tx_begin(void) {
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_begin");
 		tx_current->begin();
 		setSpecific(TSS_KEY, tx_current->get_control());
+		rm_resume();
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "called begin ");
 		return TX_OK;
 	} catch (...) {
@@ -190,6 +218,7 @@ int AtmiBrokerOTS::suspend(long& tranid) {
 	} else {
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "calling suspend ");
 		CosTransactions::Control_var aControl = tx_current->suspend();
+		rm_suspend();
 		destroySpecific(TSS_KEY);
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "called suspend and got Control " << (void*) aControl);
 		ControlInfo* aControlInfo = (ControlInfo*) malloc(sizeof(ControlInfo) * 1);
@@ -225,6 +254,7 @@ int AtmiBrokerOTS::resume(long tranid) {
 				}
 
 				setSpecific(TSS_KEY, tx_current->get_control());
+				rm_resume();
 				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "called resume with Control " << (void*) (*it)->control);
 
 				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "removing %p from vector" << (*it));
@@ -281,9 +311,9 @@ int AtmiBrokerOTS::tx_close(void) {
 	return TX_OK;
 }
 
+
 void AtmiBrokerOTS::createXAConnectorAndResourceManager() {
 	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "createXAConnectorAndResourceManager");
-
 	CORBA::Object_var tmp_ref;
 
 	if (CORBA::is_nil(xa_connector)) {

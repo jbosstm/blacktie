@@ -19,15 +19,24 @@
 #define XARESOURCEADAPTORIMPL_H
 
 #include "atmiBrokerTxMacro.h"
-//#include "TxPolicyS.h"
+#include "log4cxx/logger.h"
+#include "RMException.h"
+#include "XAResourceManager.h"
+
+#include <map>
+
 #include "CosTransactionsS.h"
 #include "xa.h"
 #include "XAS.h"
 
+extern log4cxx::LoggerPtr xaResourceLogger;
+
+class XAResourceManager;
+
 class ATMIBROKER_TX_DLL XAResourceAdaptorImpl : public virtual POA_CosTransactions::Resource
 {
 public:
-        XAResourceAdaptorImpl(CORBA::Long, struct xa_switch_t *);
+	XAResourceAdaptorImpl(XAResourceManager *, XID *, CORBA::Long, struct xa_switch_t *) throw (RMException);
 	virtual ~XAResourceAdaptorImpl();
 
 	CosTransactions::Vote prepare();
@@ -36,10 +45,10 @@ public:
 	void forget();
 	void commit_one_phase();
 
-	// return the resource id
-	virtual CORBA::Long rid(void);
 	// has this resource been completed
 	bool is_complete();
+	void setRecoveryCoordinator(CosTransactions::RecoveryCoordinator_ptr rc) {rc_ = rc;}
+	CosTransactions::RecoveryCoordinator_ptr getRecoveryCoordinator() {return rc_;}
 
 	// XA methods
         char* get_name(); /* name of resource manager */
@@ -57,9 +66,13 @@ public:
         int xa_complete (int *, int *, int, long);
 
 private:
+	XAResourceManager * rm_;
+	XID * xid_;
 	bool complete_;
-	const CORBA::Long rid_;
-	const struct xa_switch_t * xa_switch_;
-	//const XA::XASwitch_ptr xa_switch_;
+	CORBA::Long rmid_;
+	struct xa_switch_t * xa_switch_;
+	CosTransactions::RecoveryCoordinator_ptr rc_;
+
+	void setComplete();
 };
 #endif // XARESOURCEADAPTORIMPL_H
