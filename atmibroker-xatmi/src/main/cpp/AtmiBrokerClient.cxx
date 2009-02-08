@@ -67,9 +67,9 @@ int clientinit() {
 		if (!clientInitialized) {
 			::clientdone();
 		} else {
+			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "Client Initialized");
 			toReturn = 0;
 		}
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "Client Initialized");
 	}
 	return toReturn;
 }

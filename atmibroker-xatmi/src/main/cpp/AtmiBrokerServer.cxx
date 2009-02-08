@@ -93,9 +93,9 @@ int serverinit() {
 		if (!serverInitialized) {
 			::serverdone();
 		} else {
+			userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer, (char*) "Server Running");
 			toReturn = 0;
 		}
-		userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer, (char*) "Server Running");
 	}
 	return toReturn;
 }
