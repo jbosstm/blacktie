@@ -38,9 +38,9 @@ void TestTransactions::test_transactions() {
 // check for protocol errors in a transactions lifecycle
 void TestTransactions::test_protocol() {
 	// should not be able to begin or complete a transaction before calling tx_open
-	CPPUNIT_ASSERT(tx_begin() != TX_OK);
-	CPPUNIT_ASSERT(tx_commit() != TX_OK);
-	CPPUNIT_ASSERT(tx_rollback() != TX_OK);
+	CPPUNIT_ASSERT(tx_begin() == TX_PROTOCOL_ERROR);
+	CPPUNIT_ASSERT(tx_commit() == TX_PROTOCOL_ERROR);
+	CPPUNIT_ASSERT(tx_rollback() == TX_PROTOCOL_ERROR);
 
 	// tx close succeeds if was never opened
 	CPPUNIT_ASSERT(tx_close() == TX_OK);
