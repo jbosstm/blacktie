@@ -66,9 +66,9 @@ int clientinit() {
 		ptrAtmiBrokerClient = new AtmiBrokerClient();
 		if (!clientInitialized) {
 			::clientdone();
+			toReturn = -1;
 		} else {
 			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "Client Initialized");
-			toReturn = 0;
 		}
 	}
 	return toReturn;

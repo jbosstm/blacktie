@@ -76,7 +76,7 @@ int serverrun() {
 
 int serverinit() {
 	_tperrno = 0;
-	int toReturn = -1;
+	int toReturn = 0;
 	if (!loggerInitialized) {
 		if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG") != NULL) {
 			log4cxx::PropertyConfigurator::configure(AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG"));
@@ -92,9 +92,9 @@ int serverinit() {
 		ptrServer = new AtmiBrokerServer();
 		if (!serverInitialized) {
 			::serverdone();
+			toReturn = -1;
 		} else {
 			userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer, (char*) "Server Running");
-			toReturn = 0;
 		}
 	}
 	return toReturn;
