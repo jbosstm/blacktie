@@ -25,3 +25,5 @@ CPPUNIT_TEST_SUITE_REGISTRATION( ODBCTest);
 CPPUNIT_TEST_SUITE_REGISTRATION( TestUserlog);
 #include "TestMultiOrb.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestMultiOrb);
+#include "TestSynchronizableObject.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestSynchronizableObject);
