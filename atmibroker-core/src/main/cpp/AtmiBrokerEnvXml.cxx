@@ -111,9 +111,12 @@ AtmiBrokerEnvXml::AtmiBrokerEnvXml() {
 AtmiBrokerEnvXml::~AtmiBrokerEnvXml() {
 }
 
-static void fatalError(const char * reason) {
-	std::invalid_argument ex(reason);
-	throw ex;
+static int warnCnt = 0;
+static void warn(const char * reason) {
+	if (warnCnt++ == 0)
+		LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) reason);
+	//std::invalid_argument ex(reason);
+	//throw ex;
 }
 
 static void XMLCALL
@@ -145,44 +148,47 @@ startElement(void *userData, const char *name, const char **atts) {
 	} else if (strcmp(name, "XA_RESOURCE") == 0) {
 		processingXaResource = true;
 		xarm_config_t *p;
-		if ((p = (xarm_config_t *) malloc(sizeof(xarm_config_t))) == 0)
-			fatalError("out of memory");
-
-		(void *) memset(p, 0, sizeof(xarm_config_t));
-
-		if (xarmp == 0) {
-			p->head = p;
+		if ((p = (xarm_config_t *) malloc(sizeof(xarm_config_t))) == 0) {
+			warnCnt = 0;
+			warn("out of memory");
 		} else {
-			xarmp->next = p;
-			p->head = xarmp->head;
+			(void *) memset(p, 0, sizeof(xarm_config_t));
+
+			if (xarmp == 0) {
+				p->head = p;
+			} else {
+				xarmp->next = p;
+				p->head = xarmp->head;
+			}
+
+			xarmp = p;
 		}
-		xarmp = p;
 	} else if (strcmp(name, "XA_RESOURCE_MGR_ID") == 0) {
-		if (xarmp == 0) fatalError("XML document error: XA_RESOURCES element is invalid");
+		if (xarmp == 0) warn("XML document error: XA_RESOURCES element is invalid");
 		processingXaResourceMgrId = true;
 	} else if (strcmp(name, "XA_RESOURCE_NAME") == 0) {
-		if (xarmp == 0) fatalError("XML document error: XA_RESOURCES element is invalid");
+		if (xarmp == 0) warn("XML document error: XA_RESOURCES element is invalid");
 		processingXaResourceName = true;
 	} else if (strcmp(name, "XA_OPEN_STRING") == 0) {
-		if (xarmp == 0) fatalError("XML document error: XA_RESOURCES element is invalid");
+		if (xarmp == 0) warn("XML document error: XA_RESOURCES element is invalid");
 		processingXaOpenString = true;
 	} else if (strcmp(name, "XA_CLOSE_STRING") == 0) {
-		if (xarmp == 0) fatalError("XML document error: XA_RESOURCES element is invalid");
+		if (xarmp == 0) warn("XML document error: XA_RESOURCES element is invalid");
 		processingXaCloseString = true;
 	} else if (strcmp(name, "XA_SWITCH") == 0) {
-		if (xarmp == 0) fatalError("XML document error: XA_RESOURCES element is invalid");
+		if (xarmp == 0) warn("XML document error: XA_RESOURCES element is invalid");
 		processingXaSwitch = true;
 	} else if (strcmp(name, "XA_LIB_NAME") == 0) {
-		if (xarmp == 0) fatalError("XML document error: XA_RESOURCES element is invalid");
+		if (xarmp == 0) warn("XML document error: XA_RESOURCES element is invalid");
 		processingXaLibName = true;
 	} else if (strcmp(name, "XA_THREAD_MODEL") == 0) {
-		if (xarmp == 0) fatalError("XML document error: XA_RESOURCES element is invalid");
+		if (xarmp == 0) warn("XML document error: XA_RESOURCES element is invalid");
 		processingXaThreadModel = true;
 	} else if (strcmp(name, "XA_AUTOMATIC_ASSOCIATION") == 0) {
-		if (xarmp == 0) fatalError("XML document error: XA_RESOURCES element is invalid");
+		if (xarmp == 0) warn("XML document error: XA_RESOURCES element is invalid");
 		processingXaAutomaticAssociation = true;
 	} else if (strcmp(name, "XA_DYNAMIC_REGISTRATION_OPTIMIZATION") == 0) {
-		if (xarmp == 0) fatalError("XML document error: XA_RESOURCES element is invalid");
+		if (xarmp == 0) warn("XML document error: XA_RESOURCES element is invalid");
 		processingXaDynamicRegistrationOptimization = true;
 	} else if (strcmp(name, "ENV_VARIABLES") == 0) {
 		processingEnvVariables = true;
@@ -196,7 +202,7 @@ startElement(void *userData, const char *name, const char **atts) {
 	} else if (strcmp(last_element, "VALUE") == 0) {
 		processingEnvValue = true;
 	} else {
-		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "unrecognized environment var");
+		LOG4CXX_WARN(loggerAtmiBrokerEnvXml, (char*) "unrecognized environment var: " << (char*) name);
 	}
 	strcpy(element, name);
 	strcpy(value, "");
@@ -238,34 +244,33 @@ endElement(void *userData, const char *name) {
 		processingXaResources = false;
 	} else if (strcmp(last_element, "XA_RESOURCE") == 0) {
 		processingXaResource = false;
-		//xaResMgrs.push_back(*xarmp);
 	} else if (strcmp(last_element, "XA_RESOURCE_MGR_ID") == 0) {
 		processingXaResourceMgrId = false;
-		xarmp->resourceMgrId = strdup(last_value);
+		if (xarmp) xarmp->resourceMgrId = strdup(last_value);
 	} else if (strcmp(last_element, "XA_RESOURCE_NAME") == 0) {
 		processingXaResourceName = false;
-		xarmp->resourceName = strdup(last_value);
+		if (xarmp) xarmp->resourceName = strdup(last_value);
 	} else if (strcmp(last_element, "XA_OPEN_STRING") == 0) {
 		processingXaOpenString = false;
-		xarmp->openString = strdup(last_value);
+		if (xarmp) xarmp->openString = strdup(last_value);
 	} else if (strcmp(last_element, "XA_CLOSE_STRING") == 0) {
 		processingXaCloseString = false;
-		xarmp->closeString = strdup(last_value);
+		if (xarmp) xarmp->closeString = strdup(last_value);
 	} else if (strcmp(last_element, "XA_SWITCH") == 0) {
 		processingXaSwitch = false;
-		xarmp->xasw = strdup(last_value);
+		if (xarmp) xarmp->xasw = strdup(last_value);
 	} else if (strcmp(last_element, "XA_LIB_NAME") == 0) {
 		processingXaLibName = false;
-		xarmp->xalib = strdup(last_value);
+		if (xarmp) xarmp->xalib = strdup(last_value);
 	} else if (strcmp(last_element, "XA_THREAD_MODEL") == 0) {
 		processingXaThreadModel = false;
-		xarmp->threadModel = (strcmp(last_value, "TRUE") == 0);
+		if (xarmp) xarmp->threadModel = (strcmp(last_value, "TRUE") == 0);
 	} else if (strcmp(last_element, "XA_AUTOMATIC_ASSOCIATION") == 0) {
 		processingXaAutomaticAssociation = false;
-		xarmp->automaticAssociation = (strcmp(last_value, "TRUE") == 0);
+		if (xarmp) xarmp->automaticAssociation = (strcmp(last_value, "TRUE") == 0);
 	} else if (strcmp(last_element, "XA_DYNAMIC_REGISTRATION_OPTIMIZATION") == 0) {
 		processingXaDynamicRegistrationOptimization = false;
-		xarmp->dynamicRegistrationOptimization = (strcmp(last_value, "TRUE") == 0);
+		if (xarmp) xarmp->dynamicRegistrationOptimization = (strcmp(last_value, "TRUE") == 0);
 	} else if (strcmp(last_element, "ENV_VARIABLES") == 0) {
 		processingEnvVariables = false;
 	} else if (strcmp(last_element, "ENV_VARIABLE") == 0) {
@@ -279,7 +284,7 @@ endElement(void *userData, const char *name) {
 		(*aEnvironmentStructPtr)[index].name = strdup(last_value);
 	} else if (strcmp(last_element, "VALUE") == 0) {
 		int index = envVariableCount - 1;
-		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "\tstoring Env Value '%s' at index %d" << last_value << index);
+		LOG4CXX_WARN(loggerAtmiBrokerEnvXml, (char*) "\tstoring Env Value '%s' at index %d" << last_value << index);
 		processingEnvValue = false;
 		(*aEnvironmentStructPtr)[index].value = strdup(last_value);
 	}
@@ -366,6 +371,12 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(std::vector<envVar_t>* aEnvironmentStr
 	fclose(aDescriptorFile);
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "leaving parseXmlDescriptor() %s" << aDescriptorFileName);
+
+	if (warnCnt) {
+		warnCnt = 0;
+		return false;
+	}
+
 	return toReturn;
 }
 
