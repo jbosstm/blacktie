@@ -45,20 +45,26 @@ public:
 
 };
 
+typedef struct ATMIBROKER_CORE_DLL xarm_config {
+        bool threadModel;
+        bool automaticAssociation;
+        bool dynamicRegistrationOptimization;
+        char * resourceMgrId;
+        char * resourceName;
+        char * openString;
+        char * closeString;
+        char * xasw;
+        char * xalib;
+	struct xarm_config * next;
+	struct xarm_config * head;
+} xarm_config_t;
+
+extern ATMIBROKER_CORE_DLL xarm_config_t * xarmp;
 extern ATMIBROKER_CORE_DLL char domain[30];
 extern ATMIBROKER_CORE_DLL char * loggingServiceId;
 extern ATMIBROKER_CORE_DLL char * notifyServiceId;
 extern ATMIBROKER_CORE_DLL char * namingServiceId;
 extern ATMIBROKER_CORE_DLL char * queue_name;
 extern ATMIBROKER_CORE_DLL char* transFactoryId;
-extern ATMIBROKER_CORE_DLL char* xaResourceMgrId;
-extern ATMIBROKER_CORE_DLL char* xaResourceName;
-extern ATMIBROKER_CORE_DLL char* xaOpenString;
-extern ATMIBROKER_CORE_DLL char* xaCloseString;
-extern ATMIBROKER_CORE_DLL char* xaSwitchEnv;
-extern ATMIBROKER_CORE_DLL char* xaLibNameEnv;
-extern ATMIBROKER_CORE_DLL bool xaThreadModel;
-extern ATMIBROKER_CORE_DLL bool xaAutomaticAssociation;
-extern ATMIBROKER_CORE_DLL bool xaDynamicRegistrationOptimization;
 
 #endif
