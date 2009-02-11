@@ -21,6 +21,7 @@
 #include "xatmi.h"
 
 #include "TestTPRealloc.h"
+#include "malloc.h"
 
 void TestTPRealloc::setUp() {
 	m_nonallocated = NULL;
@@ -55,8 +56,8 @@ void TestTPRealloc::test_tprealloc_zero_x_octet() {
 	m_allocated = ::tprealloc(m_allocated, 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	char type[8];
-	char subtype[16];
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == 0);
@@ -71,8 +72,8 @@ void TestTPRealloc::test_tprealloc_larger_x_octet() {
 	m_allocated = ::tprealloc(m_allocated, 20);
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	char type[8];
-	char subtype[16];
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == 20);
@@ -87,8 +88,8 @@ void TestTPRealloc::test_tprealloc_smaller_x_octet() {
 	m_allocated = ::tprealloc(m_allocated, 5);
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	char type[8];
-	char subtype[16];
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == 5);
@@ -103,8 +104,8 @@ void TestTPRealloc::test_tprealloc_samesize_x_octet() {
 	m_allocated = ::tprealloc(m_allocated, 10);
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	char type[8];
-	char subtype[16];
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == 10);
@@ -120,8 +121,8 @@ void TestTPRealloc::test_tprealloc_multi_x_octet() {
 		m_allocated = ::tprealloc(m_allocated, i);
 		CPPUNIT_ASSERT(tperrno == 0);
 
-		char type[8];
-		char subtype[16];
+		char* type = (char*) malloc(8);
+		char* subtype = (char*) malloc(16);
 		int toTest = ::tptypes(m_allocated, type, subtype);
 		CPPUNIT_ASSERT(tperrno == 0);
 		CPPUNIT_ASSERT(toTest == i);
@@ -158,13 +159,15 @@ void TestTPRealloc::test_tprealloc_zero_x_common() {
 	m_allocated = ::tprealloc(m_allocated, 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	char type[8];
-	char subtype[16];
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == 1024);
 	CPPUNIT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
 	CPPUNIT_ASSERT(strcmp(subtype, "deposit") == 0);
+	delete[] type;
+	delete[] subtype;
 }
 
 void TestTPRealloc::test_tprealloc_larger_x_common() {
@@ -174,13 +177,15 @@ void TestTPRealloc::test_tprealloc_larger_x_common() {
 	m_allocated = ::tprealloc(m_allocated, 3072);
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	char type[8];
-	char subtype[16];
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == 3072);
 	CPPUNIT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
 	CPPUNIT_ASSERT(strcmp(subtype, "deposit") == 0);
+//	free(type);
+//	free(subtype);
 }
 
 void TestTPRealloc::test_tprealloc_smaller_x_common() {
@@ -190,8 +195,8 @@ void TestTPRealloc::test_tprealloc_smaller_x_common() {
 	m_allocated = ::tprealloc(m_allocated, 512);
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	char type[8];
-	char subtype[16];
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == 1024);
@@ -206,8 +211,8 @@ void TestTPRealloc::test_tprealloc_samesize_x_common() {
 	m_allocated = ::tprealloc(m_allocated, 2048);
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	char type[8];
-	char subtype[16];
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == 2048);
@@ -223,8 +228,8 @@ void TestTPRealloc::test_tprealloc_multi_x_common() {
 		m_allocated = ::tprealloc(m_allocated, i);
 		CPPUNIT_ASSERT(tperrno == 0);
 
-		char type[8];
-		char subtype[16];
+		char* type = (char*) malloc(8);
+		char* subtype = (char*) malloc(16);
 		int toTest = ::tptypes(m_allocated, type, subtype);
 		CPPUNIT_ASSERT(tperrno == 0);
 		CPPUNIT_ASSERT(toTest == i);
@@ -249,8 +254,8 @@ void TestTPRealloc::test_tprealloc_zero_x_c_type() {
 	m_allocated = ::tprealloc(m_allocated, 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	char type[8];
-	char subtype[16];
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == 1024);
@@ -265,8 +270,8 @@ void TestTPRealloc::test_tprealloc_larger_x_c_type() {
 	m_allocated = ::tprealloc(m_allocated, 3072);
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	char type[8];
-	char subtype[16];
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == 3072);
@@ -281,8 +286,8 @@ void TestTPRealloc::test_tprealloc_smaller_x_c_type() {
 	m_allocated = ::tprealloc(m_allocated, 512);
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	char type[8];
-	char subtype[16];
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == 1024);
@@ -297,8 +302,8 @@ void TestTPRealloc::test_tprealloc_samesize_x_c_type() {
 	m_allocated = ::tprealloc(m_allocated, 2048);
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	char type[8];
-	char subtype[16];
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == 2048);
@@ -314,8 +319,8 @@ void TestTPRealloc::test_tprealloc_multi_x_c_type() {
 		m_allocated = ::tprealloc(m_allocated, i);
 		CPPUNIT_ASSERT(tperrno == 0);
 
-		char type[8];
-		char subtype[16];
+		char* type = (char*) malloc(8);
+		char* subtype = (char*) malloc(16);
 		int toTest = ::tptypes(m_allocated, type, subtype);
 		CPPUNIT_ASSERT(tperrno == 0);
 		CPPUNIT_ASSERT(toTest == i);

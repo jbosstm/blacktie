@@ -200,10 +200,10 @@ long AtmiBrokerMem::tptypes(char* ptr, char* type, char* subtype) {
 			userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerMem, (char*) "subtype is %s", (char*) memoryInfo.subtype);
 
 			if (type) {
-				strcpy(type, memoryInfo.type);
+				memcpy(type, memoryInfo.type, MAX_TYPE_SIZE);
 			}
 			if (subtype) {
-				strcpy(subtype, memoryInfo.subtype);
+				memcpy(subtype, memoryInfo.subtype, MAX_SUBTYPE_SIZE);
 			}
 			return memoryInfo.size;
 		}
