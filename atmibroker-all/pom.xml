@@ -50,6 +50,7 @@
 	<modules>
 		<module>../atmibroker-idl</module>
 		<module>../atmibroker-core</module>
+		<module>../tx-test-utilities</module>
 		<module>../atmibroker-tx</module>
 		<module>../atmibroker-xatmi</module>
 		<module>../jatmibroker-core</module>
