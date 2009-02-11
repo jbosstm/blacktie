@@ -22,6 +22,10 @@
 <builder id="org.eclipse.cdt.build.core.settings.default.builder.551638993" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="org.eclipse.cdt.build.core.settings.default.builder"/>
 <tool id="org.eclipse.cdt.build.core.settings.holder.libs.2039463448" name="holder for library settings" superClass="org.eclipse.cdt.build.core.settings.holder.libs"/>
 <tool id="org.eclipse.cdt.build.core.settings.holder.410033257" name="GNU C++" superClass="org.eclipse.cdt.build.core.settings.holder">
+<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.337231758" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" valueType="includePath">
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/tx-test-utilities/src/export/include}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/tx-test-utilities/src/main/include}&quot;"/>
+</option>
 <inputType id="org.eclipse.cdt.build.core.settings.holder.inType.945078809" languageId="org.eclipse.cdt.core.g++" languageName="GNU C++" sourceContentType="org.eclipse.cdt.core.cxxSource,org.eclipse.cdt.core.cxxHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 </tool>
 <tool id="org.eclipse.cdt.build.core.settings.holder.597571721" name="GNU C" superClass="org.eclipse.cdt.build.core.settings.holder">
@@ -207,6 +211,6 @@
 </cconfiguration>
 </storageModule>
 <storageModule moduleId="cdtBuildSystem" version="4.0.0">
-<project id="test-utilities.null.492914987" name="test-utilities"/>
+<project id="tx-test-utilities.cdt.managedbuild.target.gnu.exe.2004826807" name="Executable" projectType="cdt.managedbuild.target.gnu.exe"/>
 </storageModule>
 </cproject>
