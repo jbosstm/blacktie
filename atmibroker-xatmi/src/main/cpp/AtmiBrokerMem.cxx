@@ -94,8 +94,10 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size) {
 	MemoryInfo memoryInfo;
 	memoryInfo.memoryPtr = (char*) malloc(size * sizeof(char));
 	memoryInfo.size = size;
-	memoryInfo.type = strndup(type, MAX_TYPE_SIZE);
-	memoryInfo.subtype = strndup(subtype, MAX_SUBTYPE_SIZE);
+	memoryInfo.type = (char*) malloc(MAX_TYPE_SIZE);
+	memoryInfo.subtype = (char*) malloc(MAX_SUBTYPE_SIZE);
+	memcpy(memoryInfo.type, type, MAX_TYPE_SIZE);
+	memcpy(memoryInfo.subtype, subtype, MAX_SUBTYPE_SIZE);
 
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerMem, (char*) "adding MemoryInfo with type: %s with subtype: %s to vector", (char*) memoryInfo.type, (char*) memoryInfo.subtype);
 	memoryInfoVector.push_back(memoryInfo);
