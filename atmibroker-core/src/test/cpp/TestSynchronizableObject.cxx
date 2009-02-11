@@ -39,12 +39,12 @@ void TestSynchronizableObject::tearDown() {
 	}
 }
 void TestSynchronizableObject::testWaitNotify() {
-	ACE_OS::sleep(1000);
+	sleep(1000);
 	SynchronizableObject* lock = waiter->getLock();
 	lock->lock();
 	lock->notify();
 	lock->unlock();
 	userlogc("done");
-	ACE_OS::sleep(1000);
+	sleep(1000);
 	CPPUNIT_ASSERT_MESSAGE("Was not notified", waiter->getNotified() == true);
 }
