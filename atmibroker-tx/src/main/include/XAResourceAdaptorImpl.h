@@ -67,7 +67,7 @@ public:
 
 private:
 	XAResourceManager * rm_;
-	XID * xid_;
+	XID xid_;
 	bool complete_;
 	CORBA::Long rmid_;
 	struct xa_switch_t * xa_switch_;

@@ -21,7 +21,7 @@ log4cxx::LoggerPtr xaResourceLogger(log4cxx::Logger::getLogger("XAResourceLogger
 
 XAResourceAdaptorImpl::XAResourceAdaptorImpl(
 	XAResourceManager * rm, XID * xid, CORBA::Long rmid, struct xa_switch_t * xa_switch) throw (RMException) :
-	rm_(rm), xid_(xid), complete_(false), rmid_(rmid), xa_switch_(xa_switch) {
+	rm_(rm), xid_(*xid), complete_(false), rmid_(rmid), xa_switch_(xa_switch) {
 }
 
 XAResourceAdaptorImpl::~XAResourceAdaptorImpl() {
@@ -33,13 +33,13 @@ void XAResourceAdaptorImpl::setComplete()
 	complete_ = true;
 
 	if (rm_)
-		rm_->setComplete(xid_);
+		rm_->setComplete(&xid_);
 }
 
 // TODO cross check this implementation with JBossTS XAResourceRecord
 // CosTransactions::Resource implementation
 CosTransactions::Vote XAResourceAdaptorImpl::prepare() {
-	int rv = xa_end (xid_, rmid_, TMSUCCESS);
+	int rv = xa_end (&xid_, rmid_, TMSUCCESS);
 	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "resource OTS prepare rv=" << rv);
 
 	switch (rv) {
@@ -66,24 +66,24 @@ CosTransactions::Vote XAResourceAdaptorImpl::prepare() {
 	}
 }
 void XAResourceAdaptorImpl::rollback() {
-	int rv = xa_rollback (xid_, rmid_, TMFAIL);
+	int rv = xa_rollback (&xid_, rmid_, TMFAIL);
 	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "OTS resource rollback rv=" << rv);
 	// TODO figure out whether to forget this branch
 	setComplete();
 }
 void XAResourceAdaptorImpl::commit() {
-	int rv = xa_commit (xid_, rmid_, TMNOFLAGS);
+	int rv = xa_commit (&xid_, rmid_, TMNOFLAGS);
 	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "OTS resource commit rv=" << rv);
 	// TODO figure out whether to forget this branch
 	setComplete();
 }
 void XAResourceAdaptorImpl::forget() {
-	int rv = xa_forget (xid_, rmid_, TMNOFLAGS);
+	int rv = xa_forget (&xid_, rmid_, TMNOFLAGS);
 	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "OTS resource forget rv=" << rv);
 	setComplete();
 }
 void XAResourceAdaptorImpl::commit_one_phase() {
-	int rv = xa_commit (xid_, rmid_, TMONEPHASE);
+	int rv = xa_commit (&xid_, rmid_, TMONEPHASE);
 	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "OTS resource commit_one_phase rv=" << rv);
 	setComplete();
 }

@@ -75,7 +75,7 @@ AtmiBrokerOTS::AtmiBrokerOTS() {
 	try {
 		xaRMFac.createRMs(ots_connection);
 	} catch (RMException& ex) {
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "failed to load RMs");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getWarn(), (char*) "failed to load RMs: " << ex.what());
 	}
 #endif // XA_LOOSE_COUPLING
 	//	createTransactionPolicy();

@@ -22,18 +22,6 @@
 #include "ace/OS.h"
 //#include "ace/os_include/os_dlfcn.h"
 
-static int fn1(char *a, int i, long l) { return 0; }
-static int fn2(XID *x, int i, long l) { return 0; }
-static int fn3(XID *, long l1, int i, long l2) { return 0; }
-static int fn4(int *ip1, int *ip2, int i, long l) { return 0; }
-static struct xa_switch_t defSwitch = { "DummyRM", 0L, 0, fn1, fn1, /* open and close */
-	fn2, fn2, fn2, fn2, fn2, /*start, end, rollback, prepare, commit */
-	fn3, /* recover */
-	fn2, /* forget */
-	fn4 /* complete */
-};
-
-
 // put this in a common utility
 static void * lookup_symbol(const char *lib, const char *symbol)
 	throw (RMException)
@@ -44,7 +32,6 @@ static void * lookup_symbol(const char *lib, const char *symbol)
 	if (symbol == NULL || lib == NULL)
 		return 0;
 
-	// copied from see ResourceManagerCache
 	ACE_SHLIB_HANDLE handle = ACE_OS::dlopen(lib, ACE_DEFAULT_SHLIB_MODE);
 
 	if (!handle) {
@@ -180,56 +167,83 @@ void XAResourceManagerFactory::resumeRMs(CONNECTION * connection)
 
 void XAResourceManagerFactory::createRMs(CONNECTION * connection) throw (RMException)
 {
-	// TODO for each RM ... see AtmiBrokerEnvXml
-	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "createRM:"
-		<< (char *) " xaResourceMgrId: " << xaResourceMgrId
-		<< (char *) " xaResourceName: " << xaResourceName
-		<< (char *) " xaOpenString: " << xaOpenString
-		<< (char *) " xaCloseString: " << xaCloseString
-		<< (char *) " xaSwitch: " << xaSwitchEnv
-		<< (char *) " xaLibName: " << xaLibNameEnv
-	);
-	long rmid = atol(xaResourceMgrId);
+	xarm_config_t * rmp = (xarmp == 0 ? 0 : xarmp->head);
 
-	if (rmid == 0) {
-		RMException ex = RMException(" XA_RESOURCE_MGR_ID env variable is not numeric", EINVAL);
-		throw ex;
+	while (rmp != 0) {
+		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "createRM:"
+			<< (char *) " xaResourceMgrId: " << rmp->resourceMgrId
+			<< (char *) " xaResourceName: " << rmp->resourceName
+			<< (char *) " xaOpenString: " << rmp->openString
+			<< (char *) " xaCloseString: " << rmp->closeString
+			<< (char *) " xaSwitch: " << rmp->xasw
+			<< (char *) " xaLibName: " << rmp->xalib
+		);
+		long rmid = atol(rmp->resourceMgrId);
+
+		(void) createRM(connection, rmid, rmp->resourceName, rmp->openString, rmp->closeString, rmp->xasw, rmp->xalib);
+
+		rmp = rmp->next;
 	}
-
-	(void) createRM(connection, rmid, xaResourceName, xaOpenString, xaCloseString, xaSwitchEnv, xaLibNameEnv);
 }
 
+/**
+ * Create a Resource Manager proxy for a XA compliant RM.
+ * RMs must have a unique rmid and a unique name.
+ * A separate POA is created for each RM (the POA is responsible for
+ * generating servants that will correspond to each transaction branch
+ * created by calling start on the RM). The reason for requiring unique
+ * names is because the name is used as the PAO name.
+ */
 XAResourceManager * XAResourceManagerFactory::createRM(
 	CONNECTION * connection,
 	long rmid,
 	const char * name,
 	const char * openString,
 	const char * closeString,
-	const char * xaSwitchSym,
-	const char * xaLibName)
+	const char * switchSym,
+	const char * libName)
 	throw (RMException)
 {
-	XAResourceManager * a = findRM(name);
+	// make sure the XA_RESOURCE XML config is valid
+	if (rmid == 0 || name == 0 || *name == 0 || switchSym == NULL || libName == NULL) {
+		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getDebug(),
+			(char *) "Bad XA_RESOURCE config: "
+			<< " rmid: " << rmid
+			<< " name: " << name
+			<< " xaswitch symbol: " << switchSym
+			<< " xa lib name: " << libName);
+			
+		//destroyRMs(NULL);
+		RMException ex = RMException("Invalid XA_RESOURCE XML config", EINVAL);
+		throw ex;
+	}
 
-	if (a == NULL) {
-		struct xa_switch_t * xa_switch = NULL;
+	// Check that rmid and name are unique
+	for (ResourceManagerMap::iterator iter = rms_.begin(); iter != rms_.end(); ++iter) {
+		XAResourceManager * rm = (*iter).second;
 
-		if (xaSwitchSym != NULL && strcmp(xaSwitchSym, "DefaultSwitch") == 0)
-			xa_switch = &defSwitch;
-		else
-			xa_switch = (struct xa_switch_t *) lookup_symbol(xaLibName, xaSwitchSym);
+		if (rmid == rm->rmid() || strcmp(name, rm->name()) == 0) {
+			LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getInfo(),
+				(char *) "Duplicate RM: " << name << " id: " << rmid);
 
+			//destroyRMs(NULL);
 
-		if (xa_switch == NULL) {
-			LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getWarn(),
-				(char *) " xa_switch " << xaSwitchSym << (char *) " not found in library " << xaLibName);
-			RMException ex("Could not find xa_switch in library", 0);
+			RMException ex("RMs must have unique ids and unique names", EINVAL);
 			throw ex;
 		}
-
-		a = new XAResourceManager(connection, name, openString, closeString, rmid, xa_switch);
-		rms_[name] = a;
 	}
+
+	struct xa_switch_t * xa_switch = (struct xa_switch_t *) lookup_symbol(libName, switchSym);
+
+	if (xa_switch == NULL) {
+		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getInfo(),
+			(char *) " xa_switch " << switchSym << (char *) " not found in library " << libName);
+		RMException ex("Could not find xa_switch in library", 0);
+		throw ex;
+	}
+
+	XAResourceManager * a = new XAResourceManager(connection, name, openString, closeString, rmid, xa_switch);
+	rms_[name] = a;
 
 	return a;
 }

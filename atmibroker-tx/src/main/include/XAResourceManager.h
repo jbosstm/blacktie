@@ -48,6 +48,7 @@ public:
         // return the resource id
         CORBA::Long rmid(void) {return rmid_;};
 	void setComplete(XID*);
+	const char * name() {return name_;}
 
 private:
 	typedef std::map<XID *, XAResourceAdaptorImpl *> XABranchMap;
@@ -55,6 +56,7 @@ private:
 
         PortableServer::POA_ptr poa_;
         CONNECTION* connection_;
+        const char *name_;
         const char *openString_;
         const char *closeString_;
         CORBA::Long rmid_;

@@ -81,26 +81,32 @@ static CORBA::ORB_ptr find_orb(const char * name) {
 	return (oc == 0 ? NULL : oc->orb());
 }
 
-static int fn1(char *a, int i, long l) {
-	return 0;
-}
-static int fn2(XID *x, int i, long l) {
-	return 0;
-}
-static int fn3(XID *, long l1, int i, long l2) {
-	return 0;
-}
-static int fn4(int *ip1, int *ip2, int i, long l) {
-	return 0;
-}
+static int fn1(char *a, int i, long l) { return 0; }
+static int fn2(XID *x, int i, long l) { return 0; }
+static int fn3(XID *, long l1, int i, long l2) { return 0; }
+static int fn4(int *ip1, int *ip2, int i, long l) { return 0; }
 static struct xa_switch_t real_resource = { "DummyRM", 0L, 0, fn1, fn1, /* open and close */
-fn2, fn2, fn2, fn2, fn2, /*start, end, rollback, prepare, commit */
-fn3, /* recover */
-fn2, /* forget */
-fn4 /* complete */
+	fn2, fn2, fn2, fn2, fn2, /*start, end, rollback, prepare, commit */
+	fn3, /* recover */
+	fn2, /* forget */
+	fn4 /* complete */
+};
+// manufacture a dummy RM transaction id
+static XID xid = {
+        1L, /* long formatID */
+        0L, /* long gtrid_length */
+        0L, /* long bqual_length */
+        0 /* char data[XIDDATASIZE]; */
 };
 
-// test whether enlisting a resource with a remote transaction manager works
+
+/*
+ * Test whether enlisting a resource with a remote transaction manager works
+ * This test attempts to simulate what XAResourceManager does.
+ * The real test for interacting with resource managers happens as a side effect
+ * of begining and completing a transactions provided some Resouce Managers
+ * have been configured in Environment.xml
+ */
 void TestTransactions::test_register_resource() {
 	// start a transaction running
 	CPPUNIT_ASSERT(tx_open() == TX_OK);
@@ -126,7 +132,7 @@ void TestTransactions::test_register_resource() {
 	// now for the real test:
 	// - create a CosTransactions::Resource ...
 	//XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(findConnection("ots"), "Dummy", "", "", 123L, &real_resource);
-	XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(NULL, NULL, 123L, &real_resource);
+	XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(NULL, &xid, 123L, &real_resource);
 	//XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(123L, &real_resource);
 	CORBA::Object_ptr ref = poa->servant_to_reference(ra);
 	CosTransactions::Resource_var v = CosTransactions::Resource::_narrow(ref);

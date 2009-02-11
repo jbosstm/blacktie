@@ -76,6 +76,9 @@
 <!ENTITY libsets-atmibroker-core '
 <fileset includes="${lib.prefix}atmibroker-core.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-core/target/${configuration.type}/${lib.type}" />
 '>
+<!ENTITY libsets-utilities '
+<fileset includes="${lib.prefix}utilities.*" dir="${ATMIBROKER_SRC_DIR}/utilities/target/${configuration.type}/${lib.type}" />
+'>
 <!ENTITY includepath-main-atmibroker-xatmi '
 <includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/src/main/include" />
 '>
@@ -133,7 +136,7 @@
 	&includepath-main-atmibroker-core;
 '>
 <!ENTITY libsets-test-dependencies '
-	<libset dir="target/dependencies" libs="cppunit${lib.suffix} ${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix} log4cxx atmibroker-idl atmibroker-core" />
+	<libset dir="target/dependencies" libs="cppunit${lib.suffix} ${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix} log4cxx atmibroker-idl atmibroker-core utilities" />
 '>
 <!ENTITY libsets-runtime-dependencies '
 	&libsets-cppunit;
@@ -142,6 +145,7 @@
 	&libsets-tao;
 	&libsets-atmibroker-idl;
 	&libsets-atmibroker-core;
+	&libsets-utilities;
 '>
 ]>
 <project name="atmibroker-tx">

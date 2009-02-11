@@ -45,7 +45,7 @@ XAResourceManager::XAResourceManager(
         CORBA::Long rmid,
         struct xa_switch_t * xa_switch) throw (RMException) :
 
-        poa_(NULL), connection_(connection), openString_(openString), closeString_(closeString),
+        poa_(NULL), connection_(connection), name_(name), openString_(openString), closeString_(closeString),
 		rmid_(rmid), xa_switch_(xa_switch) {
 
         if (name == NULL) {
