@@ -15,23 +15,36 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "Worker.h"
+#include <cppunit/extensions/HelperMacros.h>
 
-#include "log4cxx/logger.h"
+#include "TestSynchronizableObject.h"
 
-log4cxx::LoggerPtr Worker::logger(log4cxx::Logger::getLogger("Worker"));
-
-Worker::Worker(CORBA::ORB_ptr orb) {
-	m_orb = CORBA::ORB::_duplicate(orb);
+extern "C" {
+#include "userlogc.h"
 }
 
-int Worker::svc(void) {
-	try {
-		m_orb->run();
-	} catch (CORBA::Exception& e) {
-		LOG4CXX_ERROR(logger, (char*) "Unexpected CORBA exception: %s" << e._name());
-	} catch (...) {
-		LOG4CXX_ERROR(logger, (char*) "Worker caught unknown error running orb");
+void TestSynchronizableObject::setUp() {
+	waiter = new Waiter();
+	if (waiter->activate(THR_NEW_LWP| THR_JOINABLE, 1, 0, ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
+		delete (waiter);
+		waiter = NULL;
+		CPPUNIT_FAIL("COULD NOT CREATE WAITER");
 	}
-	return 0;
+}
+
+void TestSynchronizableObject::tearDown() {
+	if (waiter) {
+		delete waiter;
+		waiter = NULL;
+	}
+}
+void TestSynchronizableObject::testWaitNotify() {
+	ACE_OS::sleep(1000);
+	SynchronizableObject* lock = waiter->getLock();
+	lock->lock();
+	lock->notify();
+	lock->unlock();
+	userlogc("done");
+	ACE_OS::sleep(1000);
+	CPPUNIT_ASSERT_MESSAGE("Was not notified", waiter->getNotified() == true);
 }

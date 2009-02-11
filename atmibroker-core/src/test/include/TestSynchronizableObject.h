@@ -15,23 +15,54 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "Worker.h"
+#ifndef TestSynchronizableObject_H
+#define TestSynchronizableObject_H
 
-#include "log4cxx/logger.h"
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFixture.h>
+#include <ace/Task.h>
+#include "SynchronizableObject.h"
+#include "userlogc.h"
 
-log4cxx::LoggerPtr Worker::logger(log4cxx::Logger::getLogger("Worker"));
-
-Worker::Worker(CORBA::ORB_ptr orb) {
-	m_orb = CORBA::ORB::_duplicate(orb);
-}
-
-int Worker::svc(void) {
-	try {
-		m_orb->run();
-	} catch (CORBA::Exception& e) {
-		LOG4CXX_ERROR(logger, (char*) "Unexpected CORBA exception: %s" << e._name());
-	} catch (...) {
-		LOG4CXX_ERROR(logger, (char*) "Worker caught unknown error running orb");
+class Waiter: public ACE_Task_Base {
+public:
+	Waiter() {
+		object = SynchronizableObject::create(false);
+		notified = false;
 	}
-	return 0;
-}
+	int svc() {
+		object->lock();
+		userlogc("waiting");
+		object->wait(0);
+		userlogc("waited");
+		object->unlock();
+		notified = true;
+		return 0;
+	}
+	SynchronizableObject* getLock() {
+		return object;
+	}
+	bool getNotified() {
+		return notified;
+	}
+private:
+	SynchronizableObject* object;
+	bool notified;
+};
+
+class TestSynchronizableObject: public CppUnit::TestFixture {
+CPPUNIT_TEST_SUITE( TestSynchronizableObject)
+	;
+		CPPUNIT_TEST( testWaitNotify);
+	CPPUNIT_TEST_SUITE_END()
+	;
+
+public:
+	void setUp();
+	void tearDown();
+	void testWaitNotify();
+private:
+	Waiter* waiter;
+};
+
+#endif
