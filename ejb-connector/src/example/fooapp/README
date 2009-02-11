@@ -29,7 +29,7 @@ Then, execute the script setenv
 2. COMPILE THE EXAMPLE EJB CONNECTOR APPLICATION
 In a well configured environment, type the following:
 cd ejb-connector-example
-mvn install
+mvn install -DskipTests
 cd ..
 cd ejb-connector-example-ear
 mvn install
@@ -51,5 +51,5 @@ cd into the <JBOSS_HOME>/bin folder
 run -c <configuration>
 
 6. RUN THE EJB CONNECTOR TEST CASES
-The simplest way to do this is to run the BarServiceTestCase under ejb-connector-example/src/test/java
-The testConnectorCall should work when the application server is running
+cd ejb-connector-example
+mvn test
