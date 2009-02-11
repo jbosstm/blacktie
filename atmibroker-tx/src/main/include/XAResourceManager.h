@@ -63,7 +63,7 @@ private:
         struct xa_switch_t * xa_switch_;
 
 	void createPOA(const char *);
-        int createServant(XID *) throw (RMException);
+        int createServant(XID *);
 	XAResourceAdaptorImpl * locateBranch(XID *);
 };
 #endif // XARESOURCEMANAGERFACTORY_H

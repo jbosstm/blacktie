@@ -83,7 +83,6 @@ AtmiBrokerOTS::AtmiBrokerOTS() {
 
 AtmiBrokerOTS::~AtmiBrokerOTS() {
 	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "destructor");
-	xaRMFac.destroyRMs(ots_connection);
 	shutdownBindings(ots_connection);
 	/* TODO
 	 if (xaResourceMgrId)

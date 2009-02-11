@@ -90,8 +90,9 @@ void XAResourceManager::createPOA(const char *name) {
 	mgr->activate();
 }
 
-int XAResourceManager::createServant(XID * xid) throw (RMException)
+int XAResourceManager::createServant(XID * xid)
 {
+	XAResourceAdaptorImpl * ra;
 	CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
 	if (CORBA::is_nil(curr))
 		return XAER_NOTA;
@@ -99,7 +100,14 @@ int XAResourceManager::createServant(XID * xid) throw (RMException)
 	CosTransactions::Coordinator_ptr c = curr->get_coordinator();
 
 	// create a servant to represent the new branch identified by xid
-	XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(this, xid, rmid_, xa_switch_);
+	try {
+		ra = new XAResourceAdaptorImpl(this, xid, rmid_, xa_switch_);
+	} catch (RMException ex) {
+		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getWarn(),
+			(char*) "unable to create resource adaptor for transaction branch: " << ex.what());
+
+		return XAER_RMFAIL;
+	}
 	// and activate it
 	PortableServer::ObjectId_var objId = poa_->activate_object(ra);
 
