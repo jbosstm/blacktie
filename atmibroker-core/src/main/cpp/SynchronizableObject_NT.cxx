@@ -64,7 +64,7 @@ bool SynchronizableObject_NT::notify() {
 
 bool SynchronizableObject_NT::unlock() {
 	bool toReturn = mutex.release();
-	Sleep(1);
+	Sleep(0);
 	return toReturn;
 }
 
