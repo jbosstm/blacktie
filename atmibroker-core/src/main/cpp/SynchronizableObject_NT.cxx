@@ -32,11 +32,6 @@
 #include "SynchronizableObject_NT.h"
 
 SynchronizableObject* SynchronizableObject::create(bool recurs) {
-	if (!recurs) {
-		std::cerr << "Windows non-reentrant mutexes not yet supported"
-				<< std::endl;
-		return NULL;
-	}
 	return new SynchronizableObject_NT(recurs);
 }
 

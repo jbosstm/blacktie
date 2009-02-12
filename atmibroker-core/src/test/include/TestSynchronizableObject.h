@@ -26,25 +26,10 @@
 
 class Waiter: public ACE_Task_Base {
 public:
-	Waiter() {
-		object = SynchronizableObject::create(false);
-		notified = false;
-	}
-	int svc() {
-		object->lock();
-		userlogc("waiting");
-		object->wait(0);
-		userlogc("waited");
-		object->unlock();
-		notified = true;
-		return 0;
-	}
-	SynchronizableObject* getLock() {
-		return object;
-	}
-	bool getNotified() {
-		return notified;
-	}
+	Waiter();
+	int svc() ;
+	SynchronizableObject* getLock();
+	bool getNotified();
 private:
 	SynchronizableObject* object;
 	bool notified;

@@ -24,6 +24,7 @@
 #include <orbsvcs/CosNotificationS.h>
 
 #include "SimpleOrbTest.h"
+#include "Worker.h"
 
 void SimpleOrbTest::setUp() {
 	// Perform global set up
@@ -50,19 +51,31 @@ void SimpleOrbTest::test() {
 	PortableServer::POAManager_var poa_manager = poa->the_POAManager();
 	//assert(!CORBA::is_nil(poa_manager));
 	tmp_ref = orbRef->resolve_initial_references("NameService");
+	Worker *worker = new Worker(orbRef);
+	if (worker->activate(THR_NEW_LWP| THR_JOINABLE, 1, 0, ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
+		delete (worker);
+		worker = NULL;
+	}
 	try {
 		CosNaming::NamingContextExt_var default_ctx = CosNaming::NamingContextExt::_narrow(tmp_ref);
 	} catch (CORBA::Exception &e) {
 		CPPUNIT_FAIL("COULDN'T Narrow the default context");
+	}
 		if (!CORBA::is_nil(orbRef))
 			orbRef->shutdown(1);
 		if (!CORBA::is_nil(orbRef))
 			orbRef->destroy();
+
+		if (worker != NULL) {
+			worker->wait();
+			delete (worker);
+			worker = NULL;
+		}
 		orbRef = NULL;
 		poa_manager = NULL;
 		poa = NULL;
 		CPPUNIT_ASSERT(CORBA::is_nil(orbRef));
 		CPPUNIT_ASSERT(CORBA::is_nil(poa_manager));
 		CPPUNIT_ASSERT(CORBA::is_nil(poa));
-	}
+	
 }

@@ -19,11 +19,35 @@
 
 #include "TestSynchronizableObject.h"
 
-extern "C" {
+#include <tao/ORB.h>
 #include "userlogc.h"
+
+Waiter::Waiter() {
+	object = SynchronizableObject::create(false);
+	notified = false;
+}
+
+SynchronizableObject* Waiter::getLock() {
+	return object;
+}
+
+bool Waiter::getNotified() {
+	return notified;
+}
+
+int Waiter::svc(void){
+	object->lock();
+	userlogc("waiting");
+	object->wait(0);
+	userlogc("waited");
+	object->unlock();
+	notified = true;
+	return 0;
 }
 
 void TestSynchronizableObject::setUp() {
+	int argc = 0;
+	CORBA::ORB_ptr orb_ref = CORBA::ORB_init(argc, NULL, "server");
 	waiter = new Waiter();
 	if (waiter->activate(THR_NEW_LWP| THR_JOINABLE, 1, 0, ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
 		delete (waiter);
@@ -31,20 +55,22 @@ void TestSynchronizableObject::setUp() {
 		CPPUNIT_FAIL("COULD NOT CREATE WAITER");
 	}
 }
-
 void TestSynchronizableObject::tearDown() {
 	if (waiter) {
+		waiter->wait();
 		delete waiter;
 		waiter = NULL;
 	}
 }
+
 void TestSynchronizableObject::testWaitNotify() {
-	sleep(1);
+
+	Sleep(2000);
 	SynchronizableObject* lock = waiter->getLock();
 	lock->lock();
 	lock->notify();
 	lock->unlock();
 	userlogc("done");
-	sleep(1);
-	CPPUNIT_ASSERT_MESSAGE("Was not notified", waiter->getNotified() == true);
+	bool notified = waiter->getNotified();
+	CPPUNIT_ASSERT_MESSAGE("Was not notified", notified == true);
 }
