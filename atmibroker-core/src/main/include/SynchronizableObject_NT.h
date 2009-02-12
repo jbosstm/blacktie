@@ -36,11 +36,10 @@
 #define NT_SYNCHRONIZABLEOBJECT_H
 
 #include "atmiBrokerCoreMacro.h"
-#include <windows.h>
 
 #include "SynchronizableObject.h"
-
-typedef HANDLE pthread_mutex_t;
+#include <ace/Thread.h>
+#include <ace/Synch.h> 
 
 typedef struct {
 	int waiters_count_;
@@ -96,16 +95,10 @@ public:
 	virtual bool unlock();
 
 private:
-	SynchronizableObject_NT(bool);
+	SynchronizableObject_NT();
 
-	HANDLE mutex; // Windows mutexes are re-entrant.
-	bool valid;
-
-	pthread_cond_t cond;
-	int pthread_cond_init(pthread_cond_t *cv);
-	int pthread_cond_timedwait(pthread_cond_t *cv, pthread_mutex_t *external_mutex, long timeout);
-	int pthread_cond_signal(pthread_cond_t *cv);
-	int pthread_cond_broadcast(pthread_cond_t *cv);
+	ACE_Thread_Mutex mutex;
+	ACE_Condition<ACE_Thread_Mutex> cond; 
 
 };
 

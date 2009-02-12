@@ -18,12 +18,13 @@
 #ifndef WORKER_H
 #define WORKER_H
 
+#include "atmiBrokerCoreMacro.h"
 #include "log4cxx/logger.h"
 
 
 #include <tao/ORB.h>
 #include <ace/Task.h>
-class Worker: public ACE_Task_Base {
+class ATMIBROKER_CORE_DLL Worker: public ACE_Task_Base {
 public:
 	Worker(CORBA::ORB_ptr orb);
 	int svc();
