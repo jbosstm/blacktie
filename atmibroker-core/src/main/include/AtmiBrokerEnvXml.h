@@ -49,7 +49,7 @@ typedef struct ATMIBROKER_CORE_DLL xarm_config {
         bool threadModel;
         bool automaticAssociation;
         bool dynamicRegistrationOptimization;
-        char * resourceMgrId;
+        long resourceMgrId;
         char * resourceName;
         char * openString;
         char * closeString;

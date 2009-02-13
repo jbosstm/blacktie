@@ -56,6 +56,7 @@ static int depth = 0;
 static int envVariableCount = 0;
 
 static bool processingEnvironment = false;
+static bool processingEnvironmentDescription = false;
 static bool processingServer = false;
 static bool processingQSpaceName = false;
 static bool processingNamingServiceId = false;
@@ -84,6 +85,7 @@ AtmiBrokerEnvXml::AtmiBrokerEnvXml() {
 	envVariableCount = 0;
 
 	processingEnvironment = false;
+	processingEnvironmentDescription = false;
 	processingServer = false;
 	processingQSpaceName = false;
 	processingNamingServiceId = false;
@@ -125,10 +127,11 @@ startElement(void *userData, const char *name, const char **atts) {
 
 	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processing element " << name);
 
-	if (strcmp(name, "ENVIRONMENT xmnls") == 0) {
+	if (strcmp(name, "ENVIRONMENT xmnls") == 0 || strcmp(name, "ENVIRONMENT") == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "new server ");
 		processingEnvironment = true;
-
+	} else if (strcmp(name, "ENVIRONMENT_DESCRIPTION") == 0) {
+		processingEnvironmentDescription = true;
 	} else if (strcmp(name, "SERVER") == 0) {
 		processingServer = true;
 	} else if (strcmp(name, "DOMAIN") == 0) {
@@ -197,9 +200,9 @@ startElement(void *userData, const char *name, const char **atts) {
 		envVariableCount++;
 		envVar_t envVar;
 		(*aEnvironmentStructPtr).push_back(envVar);
-	} else if (strcmp(last_element, "NAME") == 0) {
+	} else if (strcmp(name, "NAME") == 0) {
 		processingEnvName = true;
-	} else if (strcmp(last_element, "VALUE") == 0) {
+	} else if (strcmp(name, "VALUE") == 0) {
 		processingEnvValue = true;
 	} else {
 		LOG4CXX_WARN(loggerAtmiBrokerEnvXml, (char*) "unrecognized environment var: " << (char*) name);
@@ -246,7 +249,7 @@ endElement(void *userData, const char *name) {
 		processingXaResource = false;
 	} else if (strcmp(last_element, "XA_RESOURCE_MGR_ID") == 0) {
 		processingXaResourceMgrId = false;
-		if (xarmp) xarmp->resourceMgrId = strdup(last_value);
+		if (xarmp) xarmp->resourceMgrId = atol(last_value);
 	} else if (strcmp(last_element, "XA_RESOURCE_NAME") == 0) {
 		processingXaResourceName = false;
 		if (xarmp) xarmp->resourceName = strdup(last_value);
@@ -284,7 +287,7 @@ endElement(void *userData, const char *name) {
 		(*aEnvironmentStructPtr)[index].name = strdup(last_value);
 	} else if (strcmp(last_element, "VALUE") == 0) {
 		int index = envVariableCount - 1;
-		LOG4CXX_WARN(loggerAtmiBrokerEnvXml, (char*) "\tstoring Env Value '%s' at index %d" << last_value << index);
+		LOG4CXX_INFO(loggerAtmiBrokerEnvXml, (char*) "\tstoring Env Value '%s' at index %d" << last_value << index);
 		processingEnvValue = false;
 		(*aEnvironmentStructPtr)[index].value = strdup(last_value);
 	}
