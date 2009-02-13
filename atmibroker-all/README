@@ -165,7 +165,7 @@ svn co https://anonsvn.jboss.org/repos/blacktie/trunk product
 COMMITTER SVN ACCESS
 svn co https://svn.jboss.org/repos/blacktie/trunk product
 
-for i in atmibroker-idl atmibroker-xatmi atmibroker-tx atmibroker-core jatmibroker-core jab
+for i in atmibroker-idl atmibroker-core tx-test-utilities atmibroker-tx atmibroker-xatmi jatmibroker-core jab
 do
 cd <BLACKTIE_HOME>/product/atmibroker-$i/
 cp build.properties.template build.properties
@@ -208,7 +208,7 @@ Define
 Import the projects under <BLACKTIE_HOME>/product/
 RUNNING APPLICATIONS IN ECLIPSE
 For running any Blacktie C applications from Eclipse, an PATH/LD_LIBRARY_PATH similar to the following is suggested:
-/home/tom/blacktie/product/atmibroker-idl/target/debug/shared/:/home/tom/blacktie/product/atmibroker-core/target/debug/shared/:/home/tom/blacktie/product/atmibroker-xatmi/target/debug/shared/:/home/tom/blacktie/product/atmibroker-tx/target/debug/shared/:/home/tom/blacktie/utils/apache-log4cxx/target/debug/shared/:/home/tom/blacktie/utils/ACE+TAO-5.6.7/ACE_wrappers/lib/
+/home/tom/blacktie/product/atmibroker-idl/target/debug/shared/:/home/tom/blacktie/product/atmibroker-core/target/debug/shared/:/home/tom/blacktie/product/atmibroker-xatmi/target/debug/shared/:/home/tom/blacktie/product/tx-test-utilities/target/debug/shared/:/home/tom/blacktie/product/atmibroker-tx/target/debug/shared/:/home/tom/blacktie/utils/apache-log4cxx/target/debug/shared/:/home/tom/blacktie/utils/ACE+TAO-5.6.7/ACE_wrappers/lib/
 RUNNING CODE GENERATION TOOL IN ECLIPSE
 When building clients or servers using the provided ANT script you will require the following environment variables set
 ACE_ROOT
