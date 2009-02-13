@@ -25,7 +25,6 @@ XAResourceAdaptorImpl::XAResourceAdaptorImpl(
 }
 
 XAResourceAdaptorImpl::~XAResourceAdaptorImpl() {
-	//int rv = xa_close((char *) closeString_, rmid_, TMNOFLAGS);
 }
 
 void XAResourceAdaptorImpl::setComplete()
@@ -102,14 +101,6 @@ long XAResourceAdaptorImpl::get_flags() {
 }
 long XAResourceAdaptorImpl::get_version() {
 	return xa_switch_->version;
-}
-int XAResourceAdaptorImpl::xa_open (char * info, int rmid, long flags) {
-	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "xa_open " << info << (char *) " rmid " << rmid);
-	return xa_switch_->xa_open_entry(info, rmid, flags);
-}
-int XAResourceAdaptorImpl::xa_close (char * info, int rmid, long flags) {
-	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "xa_close " << rmid);
-	return xa_switch_->xa_close_entry(info, rmid, flags);
 }
 int XAResourceAdaptorImpl::xa_start (XID * txid, int rmid, long flags) {
 	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "xa_start " << rmid);

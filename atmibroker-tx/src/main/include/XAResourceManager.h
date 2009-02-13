@@ -29,7 +29,6 @@
 #include <tao/PortableServer/PortableServer.h>
 #include "CosTransactionsS.h"
 #include "xa.h"
-#include "XAS.h"
 
 class XAResourceAdaptorImpl;
 
@@ -62,7 +61,7 @@ private:
         CORBA::Long rmid_;
         struct xa_switch_t * xa_switch_;
 
-	void createPOA(const char *);
+	void createPOA();
         int createServant(XID *);
 	XAResourceAdaptorImpl * locateBranch(XID *);
 };

@@ -16,11 +16,9 @@
  * MA  02110-1301, USA.
  */
 #include "XAResourceManagerFactory.h"
-#include "AtmiBrokerEnvXml.h"
 #include "ThreadLocalStorage.h"
 
 #include "ace/OS.h"
-//#include "ace/os_include/os_dlfcn.h"
 
 // put this in a common utility
 static void * lookup_symbol(const char *lib, const char *symbol)
@@ -116,8 +114,8 @@ static void _rmiter(ResourceManagerMap& rms, int (*func)(XAResourceManager *, XI
 
 	ResourceManagerMap::iterator iter;
 
-	for (iter = rms.begin(); iter != rms.end(); ++iter) {
-		XAResourceManager * rm = (*iter).second;
+	for (ResourceManagerMap::iterator i = rms.begin(); i != rms.end(); ++i) {
+		XAResourceManager * rm = i->second;
 		func(rm, xid, flags);
 	}
 }
@@ -131,18 +129,17 @@ XAResourceManagerFactory::~XAResourceManagerFactory()
 	destroyRMs(NULL);
 }
 
-XAResourceManager * XAResourceManagerFactory::findRM(const char *name)
+XAResourceManager * XAResourceManagerFactory::findRM(long id)
 {
-	/*assert(name != NULL);*/
-	return rms_[name];
+	return rms_[id];
 }
 
 void XAResourceManagerFactory::destroyRMs(CONNECTION * connection)
 {
 	ResourceManagerMap::iterator iter;
 
-	for (iter = rms_.begin(); iter != rms_.end(); ++iter)
-		delete (*iter).second;
+	for (ResourceManagerMap::iterator i = rms_.begin(); i != rms_.end(); ++i)
+		delete i->second;
 
 	rms_.clear();
 }
@@ -178,9 +175,8 @@ void XAResourceManagerFactory::createRMs(CONNECTION * connection) throw (RMExcep
 			<< (char *) " xaSwitch: " << rmp->xasw
 			<< (char *) " xaLibName: " << rmp->xalib
 		);
-		long rmid = atol(rmp->resourceMgrId);
 
-		(void) createRM(connection, rmid, rmp->resourceName, rmp->openString, rmp->closeString, rmp->xasw, rmp->xalib);
+		(void) createRM(connection, rmp);
 
 		rmp = rmp->next;
 	}
@@ -188,62 +184,53 @@ void XAResourceManagerFactory::createRMs(CONNECTION * connection) throw (RMExcep
 
 /**
  * Create a Resource Manager proxy for a XA compliant RM.
- * RMs must have a unique rmid and a unique name.
- * A separate POA is created for each RM (the POA is responsible for
- * generating servants that will correspond to each transaction branch
- * created by calling start on the RM). The reason for requiring unique
- * names is because the name is used as the PAO name.
+ * RMs must have a unique rmid.
+ * A separate POA is created for each RM whose name is
+ * derived from the unique rmid. The POA is responsible for
+ * generating servants that correspond to each transaction branch
+ * (a branch is created when start on the RM is called).
  */
 XAResourceManager * XAResourceManagerFactory::createRM(
 	CONNECTION * connection,
-	long rmid,
-	const char * name,
-	const char * openString,
-	const char * closeString,
-	const char * switchSym,
-	const char * libName)
+	xarm_config_t *rmp)
 	throw (RMException)
 {
 	// make sure the XA_RESOURCE XML config is valid
-	if (rmid == 0 || name == 0 || *name == 0 || switchSym == NULL || libName == NULL) {
+	if (rmp->resourceMgrId == 0 || rmp->xasw == NULL || rmp->xalib == NULL) {
 		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getDebug(),
 			(char *) "Bad XA_RESOURCE config: "
-			<< " rmid: " << rmid
-			<< " name: " << name
-			<< " xaswitch symbol: " << switchSym
-			<< " xa lib name: " << libName);
+			<< " rmid: " << rmp->resourceMgrId
+			<< " xaswitch symbol: " << rmp->xasw
+			<< " xa lib name: " << rmp->xalib);
 			
 		//destroyRMs(NULL);
 		RMException ex = RMException("Invalid XA_RESOURCE XML config", EINVAL);
 		throw ex;
 	}
 
-	// Check that rmid and name are unique
-	for (ResourceManagerMap::iterator iter = rms_.begin(); iter != rms_.end(); ++iter) {
-		XAResourceManager * rm = (*iter).second;
+	// Check that rmid is unique
+	XAResourceManager * id = rms_[rmp->resourceMgrId];
 
-		if (rmid == rm->rmid() || strcmp(name, rm->name()) == 0) {
-			LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getInfo(),
-				(char *) "Duplicate RM: " << name << " id: " << rmid);
+	if (id != 0) {
+		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getInfo(),
+			(char *) "Duplicate RM with id " << rmp->resourceMgrId);
 
-			//destroyRMs(NULL);
-
-			RMException ex("RMs must have unique ids and unique names", EINVAL);
-			throw ex;
-		}
+		RMException ex("RMs must have unique ids", EINVAL);
+		throw ex;
 	}
 
-	struct xa_switch_t * xa_switch = (struct xa_switch_t *) lookup_symbol(libName, switchSym);
+	struct xa_switch_t * xa_switch = (struct xa_switch_t *) lookup_symbol(rmp->xalib, rmp->xasw);
 
 	if (xa_switch == NULL) {
 		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getInfo(),
-			(char *) " xa_switch " << switchSym << (char *) " not found in library " << libName);
+			(char *) " xa_switch " << rmp->xasw << (char *) " not found in library " << rmp->xalib);
 		RMException ex("Could not find xa_switch in library", 0);
 		throw ex;
 	}
 
-	XAResourceManager * a = new XAResourceManager(connection, name, openString, closeString, rmid, xa_switch);
-	rms_[name] = a;
+	XAResourceManager * a = new XAResourceManager(
+		connection, rmp->resourceName, rmp->openString, rmp->closeString, rmp->resourceMgrId, xa_switch);
+	rms_[rmp->resourceMgrId] = a;
 
 	return a;
 }

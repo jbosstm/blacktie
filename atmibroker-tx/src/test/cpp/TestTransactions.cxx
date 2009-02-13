@@ -96,7 +96,7 @@ static XID xid = {
         1L, /* long formatID */
         0L, /* long gtrid_length */
         0L, /* long bqual_length */
-        0 /* char data[XIDDATASIZE]; */
+        {0} /* char data[XIDDATASIZE]; */
 };
 
 

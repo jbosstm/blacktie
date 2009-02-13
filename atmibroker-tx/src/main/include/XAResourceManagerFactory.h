@@ -20,9 +20,11 @@
 
 #include "XAResourceManager.h"
 
+#include "AtmiBrokerEnvXml.h"
+
 #include <map>
 
-typedef std::map<const char *, XAResourceManager *> ResourceManagerMap;
+typedef std::map<long, XAResourceManager *> ResourceManagerMap;
 
 /*
  * XAResourceManagerFactory
@@ -37,7 +39,7 @@ public:
 	XAResourceManagerFactory();
 	~XAResourceManagerFactory();
 
-	XAResourceManager * findRM(const char *);
+	XAResourceManager * findRM(long);
 	void createRMs(CONNECTION *) throw (RMException);
 	void destroyRMs(CONNECTION *);
 	void startRMs(CONNECTION *);
@@ -48,7 +50,6 @@ public:
 private:
         ResourceManagerMap rms_;
 
-	XAResourceManager * createRM(
-		CONNECTION *, long, const char *, const char *, const char *, const char *, const char *) throw (RMException);
+	XAResourceManager * createRM(CONNECTION *, xarm_config_t *) throw (RMException);
 };
 #endif	// XARESOURCEADAPTORFACTORY_H

@@ -60,30 +60,54 @@ XAResourceManager::XAResourceManager(
                 throw ex;
         }
 
-	// Initialise POA. Each RM has its own POA
-        createPOA(name);
+	// each RM has its own POA
+        createPOA();
 }
 
 XAResourceManager::~XAResourceManager() {
-	//int rv = xa_switch_->xa_close_entry((char *) closeString_, rmid_, TMNOFLAGS);
+	int rv = xa_switch_->xa_close_entry((char *) closeString_, rmid_, TMNOFLAGS);
+
+	if (rv != XA_OK)
+		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getWarn(),
+			(char *) " close RM " << name_ << " failed: " << rv);
+
         if (!CORBA::is_nil(poa_))
                 poa_ = NULL;
 }
 
-void XAResourceManager::createPOA(const char *name) {
+void XAResourceManager::createPOA() {
         //CORBA::Object_var obj = orb->resolve_initial_references("RootPOA");
         //PortableServer::POA_var rpoa = PortableServer::POA::_narrow(obj);
 
         PortableServer::POAManager_ptr poa_manager = (PortableServer::POAManager_ptr) connection_->root_poa_manager;
         PortableServer::POA_ptr parent_poa = (PortableServer::POA_ptr) connection_->root_poa;
+	PortableServer::LifespanPolicy_var p1 = parent_poa->create_lifespan_policy(PortableServer::PERSISTENT);
 
         CORBA::PolicyList policies;
         policies.length(1);
 
-        policies[0] = parent_poa->create_lifespan_policy(PortableServer::PERSISTENT);
+	// the servant object references must survive failure of the ORB in order to support recover of 
+	// transaction branches (the default orb policy for servants is transient)
+        policies[0] = PortableServer::LifespanPolicy::_duplicate(p1);
 
 	// create a new POA for this RM
-        this->poa_ = parent_poa->create_POA(name, poa_manager, policies);
+	try {
+		ACE_TCHAR name[32];
+		ACE_OS::sprintf(name, ACE_TEXT("%s%02d"), "ATMI_RM_" + rmid_);
+
+        	this->poa_ = parent_poa->create_POA(name, poa_manager, policies);
+	} catch (PortableServer::POA::AdapterAlreadyExists &) {
+		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getWarn(), (char *) "Duplicate RM POA");
+                RMException ex("Duplicate RM POA", EINVAL);
+                throw ex;
+
+	} catch (PortableServer::POA::InvalidPolicy &) {
+		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getWarn(), (char *) "Invalid RM POA policy");
+                RMException ex("Invalid RM POA policy", EINVAL);
+                throw ex;
+	}
+
+	policies[0]->destroy();
 
 	// take the POA out of its holding state
 	PortableServer::POAManager_var mgr = this->poa_->the_POAManager();
@@ -102,7 +126,7 @@ int XAResourceManager::createServant(XID * xid)
 	// create a servant to represent the new branch identified by xid
 	try {
 		ra = new XAResourceAdaptorImpl(this, xid, rmid_, xa_switch_);
-	} catch (RMException ex) {
+	} catch (RMException& ex) {
 		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getWarn(),
 			(char*) "unable to create resource adaptor for transaction branch: " << ex.what());
 
@@ -119,7 +143,6 @@ int XAResourceManager::createServant(XID * xid)
 		// enlist it with the transaction
 		CosTransactions::RecoveryCoordinator_ptr rc = c->register_resource(v);
 		if (CORBA::is_nil(rc)) {
-			delete ra;
 			LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(),
 				(char*) "createServant: nill RecoveryCoordinator ");
 		} else {
@@ -129,19 +152,18 @@ int XAResourceManager::createServant(XID * xid)
 			return XA_OK;
 		}
 	} catch (PortableServer::POA::ServantNotActive&) {
-		delete ra;
 		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getError(),
 			(char*) "createServant: poa inactive");
 	} catch (CosTransactions::Inactive&) {
-		delete ra;
 		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(),
 			(char*) "createServant: tx inactive (too late for registration)");
 	} catch (const CORBA::SystemException& ex) {
 		ex._tao_print_exception("Resource registration error: ");
 		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(),
 			(char*) "createServant: unexpected error");
-		delete ra;
 	}
+
+	delete ra;
 
 	return XAER_NOTA;
 }
@@ -150,12 +172,15 @@ void XAResourceManager::setComplete(XID * xid)
 {
 	XABranchMap::iterator iter;
 
-	for (iter = branches_.begin(); iter != branches_.end(); ++iter)
+	for (XABranchMap::iterator i = branches_.begin(); i != branches_.end(); ++i)
 	{
-		if (compareXids((*iter).first, xid) == 0) {
+		if (compareXids(i->first, xid) == 0) {
+			XAResourceAdaptorImpl * r = i->second;
+
 			LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(),
 				(char*) "RM removing branch");
-			branches_.erase(iter);
+			branches_.erase(i);
+			delete r;
 
 			return;
 		}

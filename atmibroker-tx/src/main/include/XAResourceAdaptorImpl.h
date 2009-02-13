@@ -27,7 +27,6 @@
 
 #include "CosTransactionsS.h"
 #include "xa.h"
-#include "XAS.h"
 
 extern log4cxx::LoggerPtr xaResourceLogger;
 
@@ -54,8 +53,6 @@ public:
         char* get_name(); /* name of resource manager */
         long get_flags(); /* resource manager specific options */
         long get_version(); /* must be 0 */
-        int xa_open(char *, int, long);
-        int xa_close (char *, int, long);
         int xa_start (XID *, int, long);
         int xa_end (XID *, int, long);
         int xa_rollback (XID *, int, long);
