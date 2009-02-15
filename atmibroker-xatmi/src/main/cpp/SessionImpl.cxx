@@ -37,7 +37,7 @@ SessionImpl::SessionImpl(CONNECTION* connection, int id, const char* serviceName
 	LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << serviceName);
 	CosNaming::Name * name = context->to_name(serviceName);
 	CORBA::Object_var tmp_ref = name_context->resolve(*name);
-	AtmiBroker::EndpointQueue_var remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
+	AtmiBroker::EndpointQueue_ptr remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 	LOG4CXX_DEBUG(logger, (char*) "connected to " << serviceName);
 	queueSender = new SenderImpl(remoteEndpoint);
 
@@ -85,7 +85,7 @@ void SessionImpl::setSendTo(char* destinationName) {
 		CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection->orbRef;
 		LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << destinationName);
 		CORBA::Object_var tmp_ref = orb->string_to_object(destinationName);
-		AtmiBroker::EndpointQueue_var remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
+		AtmiBroker::EndpointQueue_ptr remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 		LOG4CXX_DEBUG(logger, (char*) "connected to %s" << destinationName);
 
 		queueSender = new SenderImpl(remoteEndpoint);

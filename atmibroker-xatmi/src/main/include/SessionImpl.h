@@ -23,6 +23,7 @@
 #include "Session.h"
 #include "SenderImpl.h"
 #include "ReceiverImpl.h"
+#include "EndpointQueue.h"
 
 class SessionImpl: public virtual Session {
 public:
@@ -47,7 +48,7 @@ private:
 	CONNECTION* connection;
 	ReceiverImpl* queueReceiver;
 	SenderImpl* queueSender;
-	Destination* temporaryQueue;
+	EndpointQueue* temporaryQueue;
 	const char* replyTo;
 };
 

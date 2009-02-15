@@ -142,8 +142,8 @@ Session* AtmiBrokerClient::getSession(int id) {
 
 void AtmiBrokerClient::closeSession(int id) {
 	if (sessionMap[id]) {
-		//SessionImpl* session = dynamic_cast<SessionImpl*> (sessionMap[id]);
-		delete sessionMap[id];
+		SessionImpl* session = dynamic_cast<SessionImpl*> (sessionMap[id]);
+		delete session;
 		sessionMap[id] = NULL;
 		
 	}

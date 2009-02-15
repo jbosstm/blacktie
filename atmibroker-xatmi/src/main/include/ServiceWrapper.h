@@ -35,6 +35,7 @@
 #include "Connection.h"
 #include "MessageListener.h"
 #include "Session.h"
+#include "SessionImpl.h"
 #include "log4cxx/logger.h"
 
 class ServiceWrapper: public virtual MessageListener {

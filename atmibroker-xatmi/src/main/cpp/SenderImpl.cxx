@@ -20,12 +20,14 @@
 
 log4cxx::LoggerPtr SenderImpl::logger(log4cxx::Logger::getLogger("SenderImpl"));
 
-SenderImpl::SenderImpl(AtmiBroker::EndpointQueue_var destination) {
+SenderImpl::SenderImpl(AtmiBroker::EndpointQueue_ptr destination) {
 	this->destination = destination;
 }
 
 SenderImpl::~SenderImpl() {
 	LOG4CXX_DEBUG(logger, (char*) "Deleting");
+	//CORBA::release(destination);
+	destination = NULL;
 }
 
 void SenderImpl::send(MESSAGE message) {

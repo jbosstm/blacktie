@@ -92,21 +92,22 @@ void ServiceWrapper::onMessage(MESSAGE message) {
 	setSpecific(TSS_KEY, control);
 	setSpecific(SVC_KEY, this);
 	setSpecific(SVC_SES, session);
-	AtmiBrokerOTS::get_instance()->rm_resume();
+//	AtmiBrokerOTS::get_instance()->rm_resume();
 	try {
 		m_func(&tpsvcinfo);
 	} catch (...) {
 		LOG4CXX_ERROR(logger, (char*) "Service Wrapper caught error running during onMessage");
 	}
-	AtmiBrokerOTS::get_instance()->rm_suspend();
+	//AtmiBrokerOTS::get_instance()->rm_suspend();
 	destroySpecific(SVC_SES);
 	destroySpecific(SVC_KEY);
 	destroySpecific(TSS_KEY);
 
 	// CLEAN UP THE SENDER AND RECEIVER FOR THIS CLIENT
 	if (session) {
+		SessionImpl* session = dynamic_cast<SessionImpl*> (this->session);
 		delete session;
-		session = NULL;
+		this->session = NULL;
 	}
 }
 

@@ -30,6 +30,6 @@ public:
 	int svc();
 private:
 	static log4cxx::LoggerPtr logger;
-	CORBA::ORB_var m_orb;
+	CORBA::ORB_ptr m_orb;
 };
 #endif
