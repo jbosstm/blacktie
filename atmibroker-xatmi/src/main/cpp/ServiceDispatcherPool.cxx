@@ -42,8 +42,8 @@ ServiceDispatcherPool::ServiceDispatcherPool(CONNECTION* connection, Destination
 	LOG4CXX_DEBUG(logger, (char*) "constructor");
 	serviceInfo.poolSize = MAX_SERVICE_CACHE_SIZE;
 
-	char* serviceConfigFilename = (char*) malloc(sizeof(char) * (XATMI_SERVICE_NAME_LENGTH + 5));
-	strcpy(serviceConfigFilename, serviceName);
+	char* serviceConfigFilename = (char*) malloc(XATMI_SERVICE_NAME_LENGTH + 5);
+	memcpy(serviceConfigFilename, serviceName, XATMI_SERVICE_NAME_LENGTH);
 	strcat(serviceConfigFilename, ".xml");
 	AtmiBrokerServiceXml aAtmiBrokerServiceXml;
 	aAtmiBrokerServiceXml.parseXmlDescriptor(&serviceInfo, serviceConfigFilename);
