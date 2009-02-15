@@ -287,7 +287,7 @@ endElement(void *userData, const char *name) {
 		(*aEnvironmentStructPtr)[index].name = strdup(last_value);
 	} else if (strcmp(last_element, "VALUE") == 0) {
 		int index = envVariableCount - 1;
-		LOG4CXX_INFO(loggerAtmiBrokerEnvXml, (char*) "\tstoring Env Value '%s' at index %d" << last_value << index);
+		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "\tstoring Env Value '%s' at index %d" << last_value << index);
 		processingEnvValue = false;
 		(*aEnvironmentStructPtr)[index].value = strdup(last_value);
 	}

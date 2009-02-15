@@ -20,7 +20,7 @@
 #include "XATMITestSuite.h"
 
 #include "xatmi.h"
-
+#include "malloc.h"
 #include "TestTPTypes.h"
 
 void TestTPTypes::setUp() {
@@ -42,8 +42,8 @@ void TestTPTypes::test_tptypes_x_octet() {
 	m_allocated = ::tpalloc((char*) "X_OCTET", NULL, 10);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
-	char type[8];
-	char subtype[16];
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == 10);
@@ -55,8 +55,8 @@ void TestTPTypes::test_tptypes_x_common() {
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", sizeof(DEPOSIT));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
-	char type[8];
-	char subtype[16];
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == 1024);
@@ -68,8 +68,8 @@ void TestTPTypes::test_tptypes_x_common_bigdata() {
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
-	char type[8];
-	char subtype[16];
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
@@ -81,8 +81,8 @@ void TestTPTypes::test_tptypes_x_c_type() {
 	m_allocated = ::tpalloc((char*) "X_C_TYPE", (char*) "acct_info", sizeof(ACCT_INFO));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
-	char type[8];
-	char subtype[16];
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == 1024);
@@ -94,8 +94,8 @@ void TestTPTypes::test_tptypes_x_c_type_bigdata() {
 	m_allocated = ::tpalloc((char*) "X_C_TYPE", (char*) "acct_info", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
-	char type[8];
-	char subtype[16];
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
@@ -105,16 +105,16 @@ void TestTPTypes::test_tptypes_x_c_type_bigdata() {
 
 // 8.2
 void TestTPTypes::test_tptypes_unallocated() {
-	char type[8];
-	char subtype[16];
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes((char*) "test", type, subtype);
 	CPPUNIT_ASSERT(tperrno== TPEINVAL);
 	CPPUNIT_ASSERT(toTest == -1);
 }
 
 void TestTPTypes::test_tptypes_null_ptr() {
-	char type[8];
-	char subtype[16];
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(NULL, type, subtype);
 	CPPUNIT_ASSERT(tperrno== TPEINVAL);
 	CPPUNIT_ASSERT(toTest == -1);
@@ -124,7 +124,7 @@ void TestTPTypes::test_tptypes_null_type() {
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
-	char subtype[16];
+	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, NULL, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
@@ -135,7 +135,7 @@ void TestTPTypes::test_tptypes_null_subtype() {
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
-	char type[8];
+	char* type = (char*) malloc(8);
 	int toTest = ::tptypes(m_allocated, type, NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
@@ -146,7 +146,7 @@ void TestTPTypes::test_tptypes_max_type() {
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
-	char type[8];
+	char* type = (char*) malloc(8);
 	int toTest = ::tptypes(m_allocated, type, NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
@@ -157,7 +157,7 @@ void TestTPTypes::test_tptypes_max_subtype() {
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "1234567890123456", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
-	char subtype[16];
+	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, NULL, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
@@ -168,7 +168,7 @@ void TestTPTypes::test_tptypes_small_type() {
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
-	char type[7];
+	char* type = (char*) malloc(7);
 	int toTest = ::tptypes(m_allocated, type, NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
@@ -180,7 +180,7 @@ void TestTPTypes::test_tptypes_small_subtype() {
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "1234567890123456", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
-	char subtype[15];
+	char* subtype = (char*) malloc(15);
 	int toTest = ::tptypes(m_allocated, NULL, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
@@ -193,7 +193,7 @@ void TestTPTypes::test_tptypes_large_type() {
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
-	char type[9];
+	char* type = (char*) malloc(9);
 	int toTest = ::tptypes(m_allocated, type, NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
@@ -204,7 +204,7 @@ void TestTPTypes::test_tptypes_large_subtype() {
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "1234567890123456", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
-	char subtype[17];
+	char* subtype = (char*) malloc(17);
 	int toTest = ::tptypes(m_allocated, NULL, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
