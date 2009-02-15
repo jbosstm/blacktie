@@ -25,7 +25,7 @@
 
 class ReceiverImpl: public virtual Receiver {
 public:
-	ReceiverImpl(Destination* destination);
+	ReceiverImpl(EndpointQueue* destination);
 	virtual ~ReceiverImpl();
 	virtual MESSAGE receive(long flags);
 	virtual Destination* getDestination();
