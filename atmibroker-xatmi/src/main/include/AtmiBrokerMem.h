@@ -31,7 +31,7 @@
 #define MAX_TYPE_SIZE 8
 #define MAX_SUBTYPE_SIZE 16
 struct _memory_info {
-	void* memoryPtr;
+	char* memoryPtr;
 	char* type;
 	char* subtype;
 	int size;

@@ -31,7 +31,7 @@ void TestTxTPCall::setUp() {
 	BaseServerTest::setUp();
 
 	// Do local work
-	sendlen = strlen("hello");
+	sendlen = strlen("hello") + 1;
 	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	(void) strcpy(sendbuf, "hello");
