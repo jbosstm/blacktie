@@ -21,14 +21,20 @@
 #include "log4cxx/logger.h"
 #include "Connection.h"
 #include "Session.h"
+#include "SenderImpl.h"
+#include "ReceiverImpl.h"
 
 class SessionImpl: public virtual Session {
 public:
-	SessionImpl(CONNECTION* connection, Destination* destination, int id);
+	SessionImpl(CONNECTION* connection, int id);
+
+	SessionImpl(CONNECTION* connection, int id, const char* service);
 
 	virtual ~SessionImpl();
 
-	void setSendTo(Destination* replyTo);
+	void setSendTo(char* replyTo);
+
+	const char* getReplyTo();
 
 	Receiver* getReceiver();
 
@@ -39,8 +45,10 @@ private:
 	static log4cxx::LoggerPtr logger;
 	int id;
 	CONNECTION* connection;
-	Receiver* queueReceiver;
-	Sender* queueSender;
+	ReceiverImpl* queueReceiver;
+	SenderImpl* queueSender;
+	Destination* temporaryQueue;
+	const char* replyTo;
 };
 
 #endif

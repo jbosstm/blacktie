@@ -32,9 +32,5 @@
 extern int _tperrno;
 extern long _tpurcode;
 extern bool loggerInitialized;
-Destination* lookup_service_queue(CONNECTION* connection, const char * serviceName);
-Destination* create_service_queue(CONNECTION* connection, void* poa, char* serviceName);
-Destination* create_temporary_queue(CONNECTION* connection);
-Destination* lookup_temporary_queue(CONNECTION* connection, char * replyTo);
 
 #endif

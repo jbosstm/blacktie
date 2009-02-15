@@ -47,8 +47,6 @@ class ATMIBROKER_DLL EndpointQueue: public virtual Destination, public virtual P
 public:
 	EndpointQueue(CONNECTION* connection);
 	EndpointQueue(CONNECTION* connection, void* poa, char* serviceName);
-	EndpointQueue(CONNECTION* connection, char * callback_ior);
-	EndpointQueue(CONNECTION* connection, const char * serviceName);
 	virtual ~EndpointQueue();
 
 	virtual void send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags) throw (CORBA::SystemException );
@@ -56,8 +54,6 @@ public:
 	virtual void disconnect() throw (CORBA::SystemException );
 
 	void setName(const char * name);
-
-	virtual void send(MESSAGE message);
 
 	virtual MESSAGE receive(bool noWait);
 
@@ -72,7 +68,6 @@ private:
 	bool shutdown;
 	const char* name;
 	void* thePoa;
-	AtmiBroker::EndpointQueue_var remoteEndpoint;
 
 	// The following are not implemented
 	EndpointQueue(const EndpointQueue &);

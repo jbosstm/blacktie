@@ -129,9 +129,9 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 
 }
 
-Session* AtmiBrokerClient::createSession(int& id) {
+Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
 	id = nextSessionId++;
-	SessionImpl* session = new SessionImpl(clientConnection, ::create_temporary_queue(clientConnection), id);
+	SessionImpl* session = new SessionImpl(clientConnection, id, serviceName);
 	sessionMap[id] = session;
 	return session;
 }
@@ -142,7 +142,9 @@ Session* AtmiBrokerClient::getSession(int id) {
 
 void AtmiBrokerClient::closeSession(int id) {
 	if (sessionMap[id]) {
+		//SessionImpl* session = dynamic_cast<SessionImpl*> (sessionMap[id]);
 		delete sessionMap[id];
 		sessionMap[id] = NULL;
+		
 	}
 }

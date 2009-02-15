@@ -20,11 +20,12 @@
 
 log4cxx::LoggerPtr SenderImpl::logger(log4cxx::Logger::getLogger("SenderImpl"));
 
-SenderImpl::SenderImpl(Destination* destination) {
+SenderImpl::SenderImpl(AtmiBroker::EndpointQueue_var destination) {
 	this->destination = destination;
 }
 
 SenderImpl::~SenderImpl() {
+	LOG4CXX_DEBUG(logger, (char*) "Deleting");
 }
 
 void SenderImpl::send(MESSAGE message) {
@@ -33,14 +34,20 @@ void SenderImpl::send(MESSAGE message) {
 		if (message.len <= 0 || message.len > data_size) {
 			message.len = data_size;
 		}
-		destination->send(message);
-		LOG4CXX_LOGLS(logger, log4cxx::Level::getDebug(), (char*) "Called back ");
+
+		unsigned char * data_togo = (unsigned char *) malloc(message.len);
+		memcpy(data_togo, message.data, message.len);
+		AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(message.len, message.len, data_togo, true);
+		destination->send(message.replyto, message.rval, message.rcode, aOctetSeq, message.len, message.correlationId, message.flags);
+		aOctetSeq = NULL;
+
+		LOG4CXX_DEBUG(logger, (char*) "Called back ");
 	} else {
 		tperrno = TPEINVAL;
-		LOG4CXX_LOGLS(logger, log4cxx::Level::getDebug(), (char*) "A NON-BUFFER WAS ATTEMPTED TO BE SENT");
+		LOG4CXX_DEBUG(logger, (char*) "A NON-BUFFER WAS ATTEMPTED TO BE SENT");
 	}
 }
 
-Destination* SenderImpl::getDestination() {
-	return destination;
+void SenderImpl::close() {
+	destination->disconnect();
 }

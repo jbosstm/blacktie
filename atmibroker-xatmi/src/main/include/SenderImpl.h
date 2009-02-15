@@ -21,16 +21,17 @@
 #include "log4cxx/logger.h"
 #include "Sender.h"
 #include "Destination.h"
+#include "EndpointQueue.h"
 
 class SenderImpl: public virtual Sender {
 public:
-	SenderImpl(Destination* serviceName);
+	SenderImpl(AtmiBroker::EndpointQueue_var destination);
 	virtual ~SenderImpl();
 	virtual void send(MESSAGE message);
-	virtual Destination* getDestination();
+	virtual void close();
 private:
 	static log4cxx::LoggerPtr logger;
-	Destination* destination;
+	AtmiBroker::EndpointQueue_var destination;
 };
 
 #endif

@@ -243,7 +243,7 @@ bool AtmiBrokerServer::advertiseService(char * serviceName, void(*func)(TPSVCINF
 		PortableServer::POA_ptr aFactoryPoaPtr = poaFactory->createServicePoa((CORBA::ORB_ptr) serverConnection->orbRef, serviceName, poa, (PortableServer::POAManager_ptr) serverConnection->root_poa_manager);
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "created create_service_factory_poa: " << serviceName);
 
-		Destination* destination = ::create_service_queue(serverConnection, aFactoryPoaPtr, serviceName);
+		Destination* destination = new EndpointQueue(serverConnection, aFactoryPoaPtr, serviceName);
 		ServiceDispatcherPool *tmp_factory_servant = new ServiceDispatcherPool(serverConnection, destination, serviceName, func);
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) " tmp_factory_servant " << tmp_factory_servant);
 

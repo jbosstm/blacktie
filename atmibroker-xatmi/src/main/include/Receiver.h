@@ -24,7 +24,6 @@
 class Receiver {
 public:
 	virtual MESSAGE receive(long flags) = 0;
-	virtual Destination* getDestination() = 0;
 };
 
 #endif

@@ -53,13 +53,13 @@ void ServiceWrapper::onMessage(MESSAGE message) {
 	userlog(log4cxx::Level::getDebug(), logger, (char*) "svc()");
 
 	// INITIALISE THE SENDER AND RECEIVER FOR THIS CONVERSATION
-	session = new SessionImpl(m_connection, ::create_temporary_queue(m_connection), -1);
+	session = new SessionImpl(m_connection, -1);
 	if (message.replyto) {
 		userlog(log4cxx::Level::getDebug(), logger, (char*) "   replyTo = ", message.replyto);
 	} else {
 		userlog(log4cxx::Level::getDebug(), logger, (char*) "   replyTo = NULL");
 	}
-	session->setSendTo(::lookup_temporary_queue(m_connection, (char*) message.replyto));
+	session->setSendTo((char*) message.replyto);
 
 	// EXTRACT THE DATA FROM THE INBOUND MESSAGE
 	int correlationId = message.correlationId;

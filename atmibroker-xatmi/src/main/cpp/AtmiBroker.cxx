@@ -20,30 +20,8 @@
  */
 // copyright 2006, 2008 BreakThruIT
 #include "AtmiBroker.h"
-#include "Connection.h"
-#include "EndpointQueue.h"
 
 // Global state
 int _tperrno = 0;
 long _tpurcode = -1;
 bool loggerInitialized = false;
-
-Destination* create_service_queue(CONNECTION* connection, void* poa, char * serviceName) {
-	return new EndpointQueue(connection, poa, serviceName);
-}
-
-Destination* lookup_service_queue(CONNECTION* connection, const char * serviceName) {
-	return new EndpointQueue(connection, serviceName);
-}
-
-Destination* create_temporary_queue(CONNECTION* connection) {
-	return new EndpointQueue(connection);
-}
-
-Destination* lookup_temporary_queue(CONNECTION* connection, char * replyTo) {
-	if (strcmp(replyTo, "") != 0) {
-		return new EndpointQueue(connection, replyTo);
-	} else {
-		return NULL;
-	}
-}

@@ -24,7 +24,7 @@
 class Sender {
 public:
 	virtual void send(MESSAGE message) = 0;
-	virtual Destination* getDestination() = 0;
+	virtual void close() = 0;
 };
 
 #endif

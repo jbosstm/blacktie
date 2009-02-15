@@ -24,7 +24,8 @@
 
 class Session {
 public:
-	virtual void setSendTo(Destination* replyTo) = 0;
+	virtual void setSendTo(char* replyTo) = 0;
+	virtual const char* getReplyTo() = 0;
 	virtual Receiver* getReceiver() = 0;
 	virtual Sender * getSender() = 0;
 	virtual int getId() = 0;

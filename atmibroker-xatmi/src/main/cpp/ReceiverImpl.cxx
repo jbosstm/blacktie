@@ -21,10 +21,13 @@
 log4cxx::LoggerPtr ReceiverImpl::logger(log4cxx::Logger::getLogger("ReceiverImpl"));
 
 ReceiverImpl::ReceiverImpl(Destination* destination) {
-	this->destination = destination;
+	this->destination = dynamic_cast<EndpointQueue*> (destination);
 }
 
 ReceiverImpl::~ReceiverImpl() {
+	LOG4CXX_DEBUG(logger, (char*) "Deleting");
+	delete this->destination;
+	this->destination = NULL;
 }
 
 MESSAGE ReceiverImpl::receive(long flags) {

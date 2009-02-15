@@ -45,9 +45,9 @@ EndpointQueue::EndpointQueue(CONNECTION* connection) {
 
 	PortableServer::POA_ptr poa = (PortableServer::POA_ptr) connection->callback_poa;
 	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection->orbRef;
-	LOG4CXX_LOGLS(logger, log4cxx::Level::getDebug(), (char*) "tmp_servant " << this);
+	LOG4CXX_DEBUG(logger, (char*) "tmp_servant " << this);
 	poa->activate_object(this);
-	LOG4CXX_LOGLS(logger, log4cxx::Level::getDebug(), (char*) "activated tmp_servant " << this);
+	LOG4CXX_DEBUG(logger, (char*) "activated tmp_servant " << this);
 	CORBA::Object_ptr tmp_ref = poa->servant_to_reference(this);
 	AtmiBroker::EndpointQueue_var queue = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 	setName(orb->object_to_string(queue));
@@ -66,37 +66,19 @@ EndpointQueue::EndpointQueue(CONNECTION* connection, void* poa, char* serviceNam
 	setName(NULL);
 }
 
-EndpointQueue::EndpointQueue(CONNECTION* connection, char * callback_ior) {
-	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection->orbRef;
-	LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << callback_ior);
-	CORBA::Object_var tmp_ref = orb->string_to_object(callback_ior);
-	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	LOG4CXX_DEBUG(logger, (char*) "connected to %s" << callback_ior);
-}
-
-EndpointQueue::EndpointQueue(CONNECTION* connection, const char * serviceName) {
-	CosNaming::NamingContextExt_ptr context = (CosNaming::NamingContextExt_ptr) connection->default_ctx;
-	CosNaming::NamingContext_ptr name_context = (CosNaming::NamingContext_ptr) connection->name_ctx;
-	LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << serviceName);
-	CosNaming::Name * name = context->to_name(serviceName);
-	CORBA::Object_var tmp_ref = name_context->resolve(*name);
-	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	LOG4CXX_DEBUG(logger, (char*) "connected to " << serviceName);
-}
 
 // ~EndpointQueue destructor.
 //
 EndpointQueue::~EndpointQueue() {
-	// Intentionally empty.
-	//
-}
-
-void EndpointQueue::send(MESSAGE message) {
-	unsigned char * data_togo = (unsigned char *) malloc(message.len);
-	memcpy(data_togo, message.data, message.len);
-	AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(message.len, message.len, data_togo, true);
-	remoteEndpoint->send(message.replyto, message.rval, message.rcode, aOctetSeq, message.len, message.correlationId, message.flags);
-	aOctetSeq = NULL;
+	LOG4CXX_DEBUG(logger, (char*) "destroy called");
+	lock->lock();
+	if (!shutdown) {
+		shutdown = true;
+		lock->notify();
+	}
+	lock->unlock();
+	delete lock;
+	lock = NULL;
 }
 
 void EndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags) throw (CORBA::SystemException ) {
@@ -155,14 +137,12 @@ MESSAGE EndpointQueue::receive(bool noWait) {
 
 void EndpointQueue::disconnect() throw (CORBA::SystemException ) {
 	LOG4CXX_DEBUG(logger, (char*) "disconnect");
-	if (remoteEndpoint) {
-		remoteEndpoint->disconnect();
-	} else {
-		lock->lock();
+	lock->lock();
+	if (!shutdown) {
 		shutdown = true;
 		lock->notify();
-		lock->unlock();
 	}
+	lock->unlock();
 }
 
 void EndpointQueue::setName(const char* name) {

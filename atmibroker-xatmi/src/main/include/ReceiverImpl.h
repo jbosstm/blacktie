@@ -21,6 +21,7 @@
 #include "log4cxx/logger.h"
 #include "Receiver.h"
 #include "Destination.h"
+#include "EndpointQueue.h"
 
 class ReceiverImpl: public virtual Receiver {
 public:
@@ -30,7 +31,7 @@ public:
 	virtual Destination* getDestination();
 private:
 	static log4cxx::LoggerPtr logger;
-	Destination* destination;
+	EndpointQueue* destination;
 };
 
 #endif
