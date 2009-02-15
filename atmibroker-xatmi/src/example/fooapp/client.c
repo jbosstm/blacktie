@@ -38,11 +38,11 @@ int main(int argc, char **argv) {
 
 	txstatus = tx_open();
 	if (txstatus != TX_OK) {
-		userlogc((char*) "ERROR - Could not open transaction: ", rbuf);
+		userlogc((char*) "ERROR - Could not open transaction: ");
 	}
 	txstatus = tx_begin();
 	if (txstatus != TX_OK) {
-		userlogc((char*) "ERROR - Could not begin transaction: ", rbuf);
+		userlogc((char*) "ERROR - Could not begin transaction: ");
 	}
 	callflags = 0;
 	sbufsize = 71 + XATMI_SERVICE_NAME_LENGTH + 1;
