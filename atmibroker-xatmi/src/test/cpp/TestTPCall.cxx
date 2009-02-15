@@ -44,9 +44,9 @@ void TestTPCall::tearDown() {
 }
 
 void TestTPCall::test_tpcall_systemerr() {
-	sendlen = strlen("hello");
-	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1)) != NULL);
+	sendlen = strlen("hello") + 1;
+	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	(void) strcpy(sendbuf, "hello");
 	CPPUNIT_ASSERT(tperrno == 0);
 
@@ -59,9 +59,9 @@ void TestTPCall::test_tpcall_systemerr() {
 }
 
 void TestTPCall::test_tpcall_unknown_service() {
-	sendlen = strlen("hello");
-	sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1);
-	rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1);
+	sendlen = strlen("hello") + 1;
+	sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen);
+	rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen);
 	strcpy(sendbuf, "hello");
 
 	// TODO Changed length from 0 to strlen(sendbuf)+1
@@ -78,7 +78,7 @@ void TestTPCall::test_tpcall_x_octet_lessdata() {
 void TestTPCall::test_tpcall_x_octet() {
 	tpadvertise((char*) "tpcall_x_octet", test_tpcall_x_octet_service);
 
-	sendlen = strlen("hello");
+	sendlen = strlen("hello") + 1;
 	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	(void) strcpy(sendbuf, "hello");

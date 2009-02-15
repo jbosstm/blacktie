@@ -70,10 +70,10 @@ SessionImpl::~SessionImpl() {
 		delete queueSender;
 		queueSender = NULL;
 	}
-	if (temporaryQueue) {
-		delete temporaryQueue;
-		temporaryQueue = NULL;
-	}
+//	if (temporaryQueue) {
+//		delete temporaryQueue;
+//		temporaryQueue = NULL;
+//	}
 }
 
 void SessionImpl::setSendTo(char* destinationName) {
