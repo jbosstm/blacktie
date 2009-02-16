@@ -43,9 +43,9 @@
 		<module>../tx-test-utilities</module>
 		<module>../atmibroker-tx</module>
 		<module>../atmibroker-xatmi</module>
+		<module>../codeGeneration</module>
 		<module>../jatmibroker-core</module>
 		<module>../jab</module>
 		<module>../ejb-connector</module>
-		<module>../codeGeneration</module>
 	</modules>
 </project>
