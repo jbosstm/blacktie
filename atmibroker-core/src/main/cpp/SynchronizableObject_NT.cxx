@@ -30,16 +30,11 @@
 
 #include "SynchronizableObject_NT.h"
 
-log4cxx::LoggerPtr SynchronizableObject_NT::logger(log4cxx::Logger::getLogger("SynchronizableObject"));
+log4cxx::LoggerPtr SynchronizableObject_NT::logger(log4cxx::Logger::getLogger("SynchronizableObject_NT"));
 
 SynchronizableObject* SynchronizableObject::create(bool recurs) {
 	return new SynchronizableObject_NT();
 }
-
-/*
- * Windows mutexes are reentrant. Therefore, we only provide reentrant
- * mutexes currently.
- */
 
 SynchronizableObject_NT::SynchronizableObject_NT() :mutex(), cond(mutex) {
 }

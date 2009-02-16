@@ -28,7 +28,7 @@
 #include <iostream>
 #include <vector>
 #include "log4cxx/logger.h"
-
+#include "SynchronizableObject.h"
 #define MAX_TYPE_SIZE 8
 #define MAX_SUBTYPE_SIZE 16
 struct _memory_info {
@@ -55,13 +55,12 @@ public:
 
 	long tptypes(char* ptr, char* type, char* subtype);
 
-	void freeAllMemory();
-
 	static AtmiBrokerMem* get_instance();
 	static void discard_instance();
 
 private:
 
+	static SynchronizableObject* lock;
 	static log4cxx::LoggerPtr logger;
 	std::vector<MemoryInfo> memoryInfoVector;
 

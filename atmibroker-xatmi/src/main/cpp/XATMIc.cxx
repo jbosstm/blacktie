@@ -141,25 +141,21 @@ int tpunadvertise(char * svcname) {
 
 char* tpalloc(char* type, char* subtype, long size) {
 	tperrno = 0;
-	LOG4CXX_DEBUG(loggerXATMI, (char*) "tpalloc - type: '%s' size: %d" << type << " " << size);
 	return AtmiBrokerMem::get_instance()->tpalloc(type, subtype, size);
 }
 
 char* tprealloc(char * addr, long size) {
 	tperrno = 0;
-	LOG4CXX_DEBUG(loggerXATMI, (char*) "tprealloc - addr: %p size: %d" << addr << " " << size);
 	return AtmiBrokerMem::get_instance()->tprealloc(addr, size);
 }
 
 void tpfree(char* ptr) {
 	tperrno = 0;
-	LOG4CXX_DEBUG(loggerXATMI, (char*) "tpfree - ptr: %p" << ptr);
 	AtmiBrokerMem::get_instance()->tpfree(ptr);
 }
 
 long tptypes(char* ptr, char* type, char* subtype) {
 	tperrno = 0;
-	LOG4CXX_DEBUG(loggerXATMI, (char*) "tptypes - ptr: %p %s" << ptr << " " << type);
 	return AtmiBrokerMem::get_instance()->tptypes(ptr, type, subtype);
 }
 

@@ -29,9 +29,12 @@
 #ifndef POSIX_SYNCHRONIZABLEOBJECT_H
 #define POSIX_SYNCHRONIZABLEOBJECT_H
 
-#include <pthread.h>
+#include "atmiBrokerCoreMacro.h"
 
 #include "SynchronizableObject.h"
+#include "log4cxx/logger.h"
+#include <ace/Thread.h>
+#include <ace/Synch.h>
 
 /*
  *
@@ -72,15 +75,11 @@ public:
 	virtual bool unlock();
 
 private:
-	SynchronizableObject_Posix(bool);
-	pthread_cond_t cond;
-	pthread_mutex_t mutex;
-#ifndef HAVE_RECURSIVE_MUTEX
-	pthread_t owner;
-	int count;
-#endif
-	bool recursive;
-	bool valid;
+	SynchronizableObject_Posix();
+	static log4cxx::LoggerPtr logger;
+
+	ACE_Thread_Mutex mutex;
+	ACE_Condition<ACE_Thread_Mutex> cond;
 };
 
 #endif

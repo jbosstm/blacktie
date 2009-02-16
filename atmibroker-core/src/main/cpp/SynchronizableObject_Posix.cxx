@@ -31,167 +31,53 @@
  */
 #ifndef WIN32
 
-#include <pthread.h>
-#include <errno.h>
-#include <sys/time.h>
-
 #include "SynchronizableObject_Posix.h"
 
-SynchronizableObject *SynchronizableObject::create(bool recurs) {
-	return new SynchronizableObject_Posix(recurs);
+log4cxx::LoggerPtr SynchronizableObject_Posix::logger(log4cxx::Logger::getLogger("SynchronizableObject_Posix"));
+
+SynchronizableObject* SynchronizableObject::create(bool recurs) {
+	return new SynchronizableObject_Posix();
 }
 
-#ifndef HAVE_RECURSIVE_MUTEX
-SynchronizableObject_Posix::SynchronizableObject_Posix(bool recurs) :
-	owner(0), count(0), recursive(recurs), valid(false)
-#else
-SynchronizableObject_Posix::SynchronizableObject_Posix ( bool recurs )
-: recursive(recurs),
-valid(false)
-#endif
-{
-#if !defined(HAVE_HPUX_PTHREADS) && !defined(HAVE_LYNXOS_PTHREADS) && !defined(HAVE_LINUX_THREADS)
-	if (pthread_mutex_init(&mutex, 0) == 0)
-		valid = true;
-#else
-#ifdef HAVE_LINUX_THREADS
-	int kind = PTHREAD_MUTEX_RECURSIVE_NP;
-#else
-	int kind = MUTEX_RECURSIVE_NP;
-#endif
-
-	/*
-	 * Have recursive mutexes! (Non-portable implementations though!)
-	 */
-
-	if (recurs)
-	{
-		pthread_mutexattr_t attr;
-
-#ifdef HAVE_LINUX_THREADS
-		pthread_mutexattr_init(&attr);
-#else
-		pthread_mutexattr_create(&attr);
-#endif
-		pthread_mutexattr_setkind_np(&attr, kind);
-
-#ifdef HAVE_LINUX_THREADS
-		if (pthread_mutex_init(&mutex, &attr) == 0)
-		valid = true;
-#else
-		if (pthread_mutex_init(&mutex, attr) == 0)
-		valid = true;
-#endif
-	}
-	else
-	if (pthread_mutex_init(&mutex, pthread_mutexattr_default) == 0)
-	valid = true;
-#endif
-	pthread_cond_init(&cond, NULL);
+SynchronizableObject_Posix::SynchronizableObject_Posix() :mutex(), cond(mutex) {
 }
 
 SynchronizableObject_Posix::~SynchronizableObject_Posix() {
-	if (valid) {
-		pthread_mutex_destroy(&mutex);
-	}
+	LOG4CXX_DEBUG(logger, (char*) "SynchronizableObject_Posix released: " << this);
 }
 
 bool SynchronizableObject_Posix::lock() {
-	bool result = false;
-
-	if (valid) {
-#ifndef HAVE_RECURSIVE_MUTEX
-		pthread_t me = pthread_self();
-
-		if ((recursive) && (pthread_equal(owner, me))) {
-			count++;
-			result = true;
-		} else {
-			if (pthread_mutex_lock(&mutex) == 0) {
-				count = 1;
-				owner = me;
-				result = true;
-			}
-		}
-#else
-		if (pthread_mutex_lock(&mutex) == 0)
-		{
-			result = true;
-		}
-#endif
-	}
-
-	return result;
+	LOG4CXX_TRACE(logger, (char*) "Acquiring mutex: " << this);
+	bool toReturn = mutex.acquire();
+	LOG4CXX_TRACE(logger, (char*) "acquired: " << this);
+	return toReturn;
 }
 
 bool SynchronizableObject_Posix::wait(long timeout) {
-	if (valid) {
-		if (timeout > 0) {
-			struct timeval tv;
-			gettimeofday(&tv, NULL);
-			struct timespec ts;
-			ts.tv_sec = tv.tv_sec;
-			ts.tv_nsec = tv.tv_usec * 1000;
-			ts.tv_sec += timeout;
-			pthread_cond_timedwait(&cond, &mutex, &ts);
-		} else {
-			pthread_cond_wait(&cond, &mutex);
-		}
-		return true;
+	LOG4CXX_TRACE(logger, (char*) "Waiting for cond: " << this);
+	bool toReturn = false;
+	if (timeout > 0) {
+		ACE_Time_Value timeoutval(0, (timeout * 1000));
+		toReturn = cond.wait(&timeoutval);
 	} else {
-		return false;
+		toReturn = cond.wait();
 	}
-
+	LOG4CXX_TRACE(logger, (char*) "waited: " << this);
+	return toReturn;
 }
 
 bool SynchronizableObject_Posix::notify() {
-	if (valid) {
-		pthread_cond_signal(&cond);
-		return true;
-	} else {
-		return false;
-	}
-
+	LOG4CXX_TRACE(logger, (char*) "Notifying cond: " << this);
+	bool toReturn = cond.signal();
+	LOG4CXX_TRACE(logger, (char*) "notified: " << this);
+	return toReturn;
 }
 
 bool SynchronizableObject_Posix::unlock() {
-	bool result = false;
-
-	if (valid) {
-#ifndef HAVE_RECURSIVE_MUTEX
-		pthread_t me = pthread_self();
-
-		if (recursive) {
-			if (pthread_equal(owner, me)) {
-				result = true;
-
-				if (--count == 0) {
-					owner = 0;
-					count = 0;
-
-					if (pthread_mutex_unlock(&mutex) != 0)
-						result = false;
-				}
-			} else {
-				/*
-				 * Not the owner, so shouldn't be calling unlock.
-				 */
-			}
-		} else {
-			if (pthread_mutex_unlock(&mutex) != 0)
-				result = false;
-			else
-				result = true;
-		}
-#else
-		if (pthread_mutex_unlock(&mutex) != 0)
-		result = false;
-		else
-		result = true;
-#endif
-	}
-
-	return result;
+	LOG4CXX_TRACE(logger, (char*) "Releasing mutex: " << this);
+	bool toReturn = mutex.release();
+	LOG4CXX_TRACE(logger, (char*) "Could not release mutex: " << this);
+	return toReturn;
 }
 
 #endif
