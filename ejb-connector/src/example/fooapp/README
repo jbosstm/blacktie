@@ -27,13 +27,11 @@ On Windows:
 Then, execute the script setenv
 
 2. MVN INSTALL THE DEPENDENCIES
-Currently we are not version controlling our pom files so well, if you are building 
-from source and are therefore quite sure of what is in your .m2, you can ignore this
-step:
+NOTE: If you are building from source and therefore have the following dependencies 
+in your .m2 cache, you can ignore this step:
 cd $ATMIBROKER_BIN_DIR/connectors/ejb
 mvn install:install-file -Dfile=ejb-connector-1.0-SNAPSHOT.jar -Dpackaging=jar 
    -DgroupId=org.jboss.blacktie -Dversion=1.0-SNAPSHOT -DartifactId=ejb-connector
-
 cd $ATMIBROKER_BIN_DIR/connectors/jab
 mvn install:install-file -Dfile=atmibroker-idl-1.0-SNAPSHOT.jar -Dpackaging=jar 
    -DgroupId=org.jboss.blacktie -Dversion=1.0-SNAPSHOT -DartifactId=atmibroker-idl

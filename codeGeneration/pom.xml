@@ -20,7 +20,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>codeGeneration</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0-M3</version>
 	<name>Blacktie Server Code Generation</name>
 	<packaging>jar</packaging>
 
@@ -68,7 +68,7 @@
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>jatmibroker-core</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.0-M3</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
