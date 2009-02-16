@@ -39,12 +39,15 @@ int MAX_SERVICE_CACHE_SIZE = 1;
 //
 ServiceDispatcherPool::ServiceDispatcherPool(CONNECTION* connection, Destination* destination, char *serviceName, void(*func)(TPSVCINFO *)) {
 	this->serviceName = serviceName;
-	LOG4CXX_DEBUG(logger, (char*) "constructor");
+	LOG4CXX_DEBUG(logger, (char*) "constructor: " << serviceName);
 	serviceInfo.poolSize = MAX_SERVICE_CACHE_SIZE;
 
-	char* serviceConfigFilename = (char*) malloc(XATMI_SERVICE_NAME_LENGTH + 5);
-	memcpy(serviceConfigFilename, serviceName, XATMI_SERVICE_NAME_LENGTH);
+	char* serviceConfigFilename = (char*) malloc(XATMI_SERVICE_NAME_LENGTH + 10);
+	memset(serviceConfigFilename, '\0', XATMI_SERVICE_NAME_LENGTH + 10);
+	strncpy(serviceConfigFilename, serviceName, XATMI_SERVICE_NAME_LENGTH);
 	strcat(serviceConfigFilename, ".xml");
+	LOG4CXX_DEBUG(logger, (char*) "loading: " << serviceConfigFilename);
+	
 	AtmiBrokerServiceXml aAtmiBrokerServiceXml;
 	aAtmiBrokerServiceXml.parseXmlDescriptor(&serviceInfo, serviceConfigFilename);
 	free(serviceConfigFilename);
