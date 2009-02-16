@@ -319,6 +319,7 @@ void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 			tperrno = TPEPROTO;
 		} else {
 			::send(session->getSender(), "", data, len, 0, flags, rval, rcode);
+			::tpfree(data);
 			session->setSendTo(NULL);
 		}
 	} else {
