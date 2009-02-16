@@ -99,7 +99,7 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size) {
 	memcpy(memoryInfo.type, type, MAX_TYPE_SIZE);
 	memcpy(memoryInfo.subtype, subtype, MAX_SUBTYPE_SIZE);
 
-	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerMem, (char*) "adding MemoryInfo with type: %s with subtype: %s to vector", (char*) memoryInfo.type, (char*) memoryInfo.subtype);
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerMem, (char*) "adding MemoryInfo: %p with type: %s with subtype: %s to vector", (char*) memoryInfo.memoryPtr, (char*) memoryInfo.type, (char*) memoryInfo.subtype);
 	memoryInfoVector.push_back(memoryInfo);
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerMem, (char*) "added MemoryInfo to vector");
 
@@ -221,9 +221,7 @@ void AtmiBrokerMem::freeAllMemory() {
 	std::vector<MemoryInfo>::iterator it = memoryInfoVector.begin();
 	while (it != memoryInfoVector.end()) {
 		MemoryInfo memoryInfo = (*it);
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerMem, (char*) "next memoryInfo id is: %p", (char*) memoryInfo.memoryPtr);
-
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerMem, (char*) "freeing memory");
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerMem, (char*) "freeing memoryInfo: %p", (char*) memoryInfo.memoryPtr);
 		free(memoryInfo.memoryPtr);
 		free(memoryInfo.type);
 		free(memoryInfo.subtype);
