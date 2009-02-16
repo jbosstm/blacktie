@@ -168,8 +168,6 @@ void AtmiBrokerMem::tpfree(char* ptr) {
 		if ((*it).memoryPtr == ptr) {
 			MemoryInfo memoryInfo = (*it);
 			userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerMem, (char*) "found matching memory %p", memoryInfo.memoryPtr);
-
-			userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerMem, (char*) "freeing memory");
 			free(memoryInfo.memoryPtr);
 			free(memoryInfo.type);
 			free(memoryInfo.subtype);
@@ -221,9 +219,11 @@ void AtmiBrokerMem::freeAllMemory() {
 	std::vector<MemoryInfo>::iterator it = memoryInfoVector.begin();
 	while (it != memoryInfoVector.end()) {
 		MemoryInfo memoryInfo = (*it);
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerMem, (char*) "freeing memoryInfo: %p", (char*) memoryInfo.memoryPtr);
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerMem, (char*) "freeing memoryPtr: %p", (char*) memoryInfo.memoryPtr);
 		free(memoryInfo.memoryPtr);
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerMem, (char*) "freeing type: %p", (char*) memoryInfo.type);
 		free(memoryInfo.type);
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerMem, (char*) "freeing subtype: %p", (char*) memoryInfo.subtype);
 		free(memoryInfo.subtype);
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerMem, (char*) "freed memory");
 
