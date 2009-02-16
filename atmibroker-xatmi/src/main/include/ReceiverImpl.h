@@ -25,12 +25,13 @@
 
 class ReceiverImpl: public virtual Receiver {
 public:
-	ReceiverImpl(EndpointQueue* destination);
+	ReceiverImpl(const char* name, EndpointQueue* destination);
 	virtual ~ReceiverImpl();
 	virtual MESSAGE receive(long flags);
 	virtual Destination* getDestination();
 private:
 	static log4cxx::LoggerPtr logger;
+	const char* name;
 	EndpointQueue* destination;
 };
 

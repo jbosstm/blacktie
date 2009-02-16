@@ -150,7 +150,9 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size) {
 		}
 	}
 
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerMem, (char*) "tprealloc - not found addr: %p size: %d", addr, size);
 	tperrno = TPEINVAL;
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerMem, (char*) "tprealloc - not found addr: %p  failure advised", addr);
 	return NULL;
 }
 

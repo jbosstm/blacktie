@@ -20,7 +20,8 @@
 
 log4cxx::LoggerPtr SenderImpl::logger(log4cxx::Logger::getLogger("SenderImpl"));
 
-SenderImpl::SenderImpl(AtmiBroker::EndpointQueue_ptr destination) {
+SenderImpl::SenderImpl(char* name, AtmiBroker::EndpointQueue_ptr destination) {
+	this->name = name;
 	this->destination = destination;
 }
 
@@ -28,6 +29,7 @@ SenderImpl::~SenderImpl() {
 	LOG4CXX_DEBUG(logger, (char*) "Deleting");
 	//CORBA::release(destination);
 	destination = NULL;
+	LOG4CXX_DEBUG(logger, (char*) "Deleted");
 }
 
 void SenderImpl::send(MESSAGE message) {
@@ -51,5 +53,7 @@ void SenderImpl::send(MESSAGE message) {
 }
 
 void SenderImpl::close() {
+	LOG4CXX_DEBUG(logger, (char*) "disconnecting from: " << name);
 	destination->disconnect();
+	LOG4CXX_DEBUG(logger, (char*) "disconnected from: " << name);
 }

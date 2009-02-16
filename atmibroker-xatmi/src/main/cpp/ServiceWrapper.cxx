@@ -108,6 +108,7 @@ void ServiceWrapper::onMessage(MESSAGE message) {
 		SessionImpl* session = dynamic_cast<SessionImpl*> (this->session);
 		delete session;
 		this->session = NULL;
+		LOG4CXX_DEBUG(logger, (char*) "ServiceWrapper session closed");
 	}
 }
 

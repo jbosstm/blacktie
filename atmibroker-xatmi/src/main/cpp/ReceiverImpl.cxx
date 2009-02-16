@@ -20,15 +20,17 @@
 
 log4cxx::LoggerPtr ReceiverImpl::logger(log4cxx::Logger::getLogger("ReceiverImpl"));
 
-ReceiverImpl::ReceiverImpl(EndpointQueue* destination) {
+ReceiverImpl::ReceiverImpl(const char* name, EndpointQueue* destination) {
+	this->name = name;
 	this->destination = destination;
 }
 
 ReceiverImpl::~ReceiverImpl() {
-	LOG4CXX_DEBUG(logger, (char*) "Deleting");
+	LOG4CXX_DEBUG(logger, (char*) "Deleting: " << name);
 }
 
 MESSAGE ReceiverImpl::receive(long flags) {
+	LOG4CXX_DEBUG(logger, (char*) "Receiving from: " << name);
 	return destination->receive((TPNOTIME & flags));
 }
 

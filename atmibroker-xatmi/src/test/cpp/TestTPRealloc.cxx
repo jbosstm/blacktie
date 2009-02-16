@@ -31,8 +31,11 @@ void TestTPRealloc::setUp() {
 }
 
 void TestTPRealloc::tearDown() {
-	// Do local work
-	::tpfree(m_allocated);
+	if (m_allocated) {
+		// Do local work
+		::tpfree(m_allocated);
+		m_allocated = NULL;
+	}
 	if (m_nonallocated != NULL) {
 		delete m_nonallocated;
 		m_nonallocated = NULL;

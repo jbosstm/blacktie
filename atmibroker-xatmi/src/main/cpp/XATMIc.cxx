@@ -27,7 +27,6 @@
 #include <iostream>
 
 #include "ThreadLocalStorage.h"
-#include "userlog.h"
 #include "tx.h"
 #include "xatmi.h"
 #include "Session.h"
@@ -43,7 +42,7 @@
 log4cxx::LoggerPtr loggerXATMI(log4cxx::Logger::getLogger("loggerXATMI"));
 
 int send(Sender* sender, const char* replyTo, char* idata, long ilen, int correlationId, long flags, long rcode, long rval) {
-	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "send - idata: %s ilen: %d flags: %d", idata, ilen, flags);
+	LOG4CXX_DEBUG(loggerXATMI, (char*) "send - idata: %s ilen: %d flags: %d" << idata << " " << ilen << " " << flags);
 	int toReturn = -1;
 	try {
 		void* control = getSpecific(TSS_KEY);
@@ -63,14 +62,14 @@ int send(Sender* sender, const char* replyTo, char* idata, long ilen, int correl
 		setSpecific(TSS_KEY, control);
 		toReturn = 0;
 	} catch (...) {
-		userlog(log4cxx::Level::getError(), loggerXATMI, (char*) "aCorbaService->start_conversation(): call failed");
+		LOG4CXX_ERROR(loggerXATMI, (char*) "aCorbaService->start_conversation(): call failed");
 		tperrno = TPESYSTEM;
 	}
 	return toReturn;
 }
 
 int receive(Session* session, char ** odata, long *olen, long flags, long* event) {
-	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "tprecv - odata: %s olen: %p flags: %d", *odata, olen, flags);
+	LOG4CXX_DEBUG(loggerXATMI, (char*) "tprecv - odata: %s olen: %p flags: %d" << *odata << " " << olen << " " << flags);
 	int toReturn = -1;
 	MESSAGE message = session->getReceiver()->receive(flags);
 	if (message.data != NULL) {
@@ -89,7 +88,7 @@ int receive(Session* session, char ** odata, long *olen, long flags, long* event
 		} catch (...) {
 			LOG4CXX_ERROR(loggerXATMI, (char*) "Could not set the send to destination to: " << message.replyto);
 		}
-		userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "returning - %s", *odata);
+		LOG4CXX_DEBUG(loggerXATMI, (char*) "returning - %s" << *odata);
 		toReturn = 0;
 	} else {
 		tperrno = TPETIME;
@@ -98,12 +97,12 @@ int receive(Session* session, char ** odata, long *olen, long flags, long* event
 }
 
 int * _get_tperrno(void) {
-	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "_get_tperrno");
+	LOG4CXX_DEBUG(loggerXATMI, (char*) "_get_tperrno");
 	return &_tperrno;
 }
 
 long * _get_tpurcode(void) {
-	userlog(log4cxx::Level::getError(), loggerXATMI, (char*) "_get_tpurcode - Not implemented");
+	LOG4CXX_ERROR(loggerXATMI, (char*) "_get_tpurcode - Not implemented");
 	return &_tpurcode;
 }
 
@@ -142,25 +141,25 @@ int tpunadvertise(char * svcname) {
 
 char* tpalloc(char* type, char* subtype, long size) {
 	tperrno = 0;
-	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "tpalloc - type: '%s' size: %d", type, size);
+	LOG4CXX_DEBUG(loggerXATMI, (char*) "tpalloc - type: '%s' size: %d" << type << " " << size);
 	return AtmiBrokerMem::get_instance()->tpalloc(type, subtype, size);
 }
 
 char* tprealloc(char * addr, long size) {
 	tperrno = 0;
-	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "tprealloc - addr: %p size: %d", addr, size);
+	LOG4CXX_DEBUG(loggerXATMI, (char*) "tprealloc - addr: %p size: %d" << addr << " " << size);
 	return AtmiBrokerMem::get_instance()->tprealloc(addr, size);
 }
 
 void tpfree(char* ptr) {
 	tperrno = 0;
-	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "tpfree - ptr: %p", ptr);
+	LOG4CXX_DEBUG(loggerXATMI, (char*) "tpfree - ptr: %p" << ptr);
 	AtmiBrokerMem::get_instance()->tpfree(ptr);
 }
 
 long tptypes(char* ptr, char* type, char* subtype) {
 	tperrno = 0;
-	userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "tptypes - ptr: %p %s", ptr, type);
+	LOG4CXX_DEBUG(loggerXATMI, (char*) "tptypes - ptr: %p %s" << ptr << " " << type);
 	return AtmiBrokerMem::get_instance()->tptypes(ptr, type, subtype);
 }
 
@@ -187,7 +186,7 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 		try {
 			session = ptrAtmiBrokerClient->createSession(cd, svc);
 		} catch (...) {
-			userlog(log4cxx::Level::getError(), loggerXATMI, (char*) "tpconnect failed to connect to service queue");
+			LOG4CXX_ERROR(loggerXATMI, (char*) "tpconnect failed to connect to service queue");
 			tperrno = TPENOENT;
 			return -1;
 		}
@@ -214,7 +213,7 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 		try {
 			session = ptrAtmiBrokerClient->createSession(cd, svc);
 		} catch (...) {
-			userlog(log4cxx::Level::getError(), loggerXATMI, (char*) "tpconnect failed to connect to service queue");
+			LOG4CXX_ERROR(loggerXATMI, (char*) "tpconnect failed to connect to service queue");
 			tperrno = TPENOENT;
 			return -1;
 		}
@@ -239,6 +238,7 @@ int tpgetrply(int *id, char ** odata, long *olen, long flags) {
 			long events;
 			toReturn = ::receive(session, odata, olen, flags, &events);
 			ptrAtmiBrokerClient->closeSession(*id);
+			LOG4CXX_DEBUG(loggerXATMI, (char*) "tpgetrply session closed");
 		}
 	} else {
 		tperrno = TPESYSTEM;
@@ -255,6 +255,7 @@ int tpcancel(int id) {
 			tperrno = TPETRAN;
 		}
 		ptrAtmiBrokerClient->closeSession(id);
+		LOG4CXX_DEBUG(loggerXATMI, (char*) "tpcancel session closed");
 		toReturn = 0;
 	} else {
 		tperrno = TPESYSTEM;
@@ -329,7 +330,7 @@ int tpdiscon(int id) {
 	tperrno = 0;
 	int toReturn = -1;
 	if (clientinit() != -1) {
-		userlog(log4cxx::Level::getDebug(), loggerXATMI, (char*) "end - id: %d", id);
+		LOG4CXX_DEBUG(loggerXATMI, (char*) "end - id: %d" << id);
 		Session* session = ptrAtmiBrokerClient->getSession(id);
 		if (session == NULL) {
 			tperrno = TPEBADDESC;
@@ -340,8 +341,9 @@ int tpdiscon(int id) {
 					toReturn = tx_rollback();
 				}
 				ptrAtmiBrokerClient->closeSession(id);
+				LOG4CXX_DEBUG(loggerXATMI, (char*) "tpdiscon session closed");
 			} catch (...) {
-				userlog(log4cxx::Level::getError(), loggerXATMI, (char*) "aCorbaService->start_conversation(): call failed");
+				LOG4CXX_ERROR(loggerXATMI, (char*) "aCorbaService->start_conversation(): call failed");
 				tperrno = TPESYSTEM;
 			}
 		}

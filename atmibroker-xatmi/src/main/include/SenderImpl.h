@@ -25,12 +25,13 @@
 
 class SenderImpl: public virtual Sender {
 public:
-	SenderImpl(AtmiBroker::EndpointQueue_ptr destination);
+	SenderImpl(char* name, AtmiBroker::EndpointQueue_ptr destination);
 	virtual ~SenderImpl();
 	virtual void send(MESSAGE message);
 	virtual void close();
 private:
 	static log4cxx::LoggerPtr logger;
+	char* name;
 	AtmiBroker::EndpointQueue_ptr destination;
 };
 

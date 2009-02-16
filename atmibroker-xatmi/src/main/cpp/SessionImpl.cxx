@@ -39,11 +39,11 @@ SessionImpl::SessionImpl(CONNECTION* connection, int id, const char* serviceName
 	CORBA::Object_var tmp_ref = name_context->resolve(*name);
 	AtmiBroker::EndpointQueue_ptr remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 	LOG4CXX_DEBUG(logger, (char*) "connected to " << serviceName);
-	queueSender = new SenderImpl(remoteEndpoint);
+	queueSender = new SenderImpl((char*)serviceName, remoteEndpoint);
 
 
 	this->temporaryQueue = new EndpointQueue(connection);
-	this->queueReceiver = new ReceiverImpl(temporaryQueue);
+	this->queueReceiver = new ReceiverImpl(serviceName, temporaryQueue);
 	this->replyTo = temporaryQueue->getName();
 }
 
@@ -55,21 +55,27 @@ SessionImpl::SessionImpl(CONNECTION* connection, int id) {
 	queueSender = NULL;
 
 	this->temporaryQueue = new EndpointQueue(connection);
-	this->queueReceiver = new ReceiverImpl(temporaryQueue);
+	this->queueReceiver = new ReceiverImpl(temporaryQueue->getName(), temporaryQueue);
 	this->replyTo = temporaryQueue->getName();
 }
 
 SessionImpl::~SessionImpl() {
 	LOG4CXX_DEBUG(logger, (char*) "destructor");
 	if (queueReceiver) {
+		LOG4CXX_DEBUG(logger, (char*) "destroying receiver");
 		delete queueReceiver;
 		queueReceiver = NULL;
+		LOG4CXX_DEBUG(logger, (char*) "receiver destroyed");
 	}
 	if (queueSender) {
+		LOG4CXX_DEBUG(logger, (char*) "closing sender");
 		queueSender->close();
+		LOG4CXX_DEBUG(logger, (char*) "destroying sender");
 		delete queueSender;
 		queueSender = NULL;
+		LOG4CXX_DEBUG(logger, (char*) "sender destroyed");
 	}
+	LOG4CXX_DEBUG(logger, (char*) "destructed");
 //	if (temporaryQueue) {
 //		delete temporaryQueue;
 //		temporaryQueue = NULL;
@@ -88,7 +94,7 @@ void SessionImpl::setSendTo(char* destinationName) {
 		AtmiBroker::EndpointQueue_ptr remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 		LOG4CXX_DEBUG(logger, (char*) "connected to %s" << destinationName);
 
-		queueSender = new SenderImpl(remoteEndpoint);
+		queueSender = new SenderImpl(destinationName, remoteEndpoint);
 	}
 }
 
