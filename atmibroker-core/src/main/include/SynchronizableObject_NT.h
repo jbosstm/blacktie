@@ -38,6 +38,7 @@
 #include "atmiBrokerCoreMacro.h"
 
 #include "SynchronizableObject.h"
+#include "log4cxx/logger.h"
 #include <ace/Thread.h>
 #include <ace/Synch.h> 
 
@@ -96,6 +97,7 @@ public:
 
 private:
 	SynchronizableObject_NT();
+	static log4cxx::LoggerPtr logger;
 
 	ACE_Thread_Mutex mutex;
 	ACE_Condition<ACE_Thread_Mutex> cond; 

@@ -29,9 +29,11 @@ public:
 	Waiter();
 	int svc() ;
 	SynchronizableObject* getLock();
+	SynchronizableObject* getLock2();
 	bool getNotified();
 private:
 	SynchronizableObject* object;
+	SynchronizableObject* object2;
 	bool notified;
 };
 

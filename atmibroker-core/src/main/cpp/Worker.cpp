@@ -17,8 +17,6 @@
  */
 #include "Worker.h"
 
-#include "log4cxx/logger.h"
-
 log4cxx::LoggerPtr Worker::logger(log4cxx::Logger::getLogger("Worker"));
 
 Worker::Worker(CORBA::ORB_ptr orb) {

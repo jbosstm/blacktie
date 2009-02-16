@@ -24,6 +24,7 @@
 
 Waiter::Waiter() {
 	object = SynchronizableObject::create(false);
+	object2 = SynchronizableObject::create(false);
 	notified = false;
 }
 
@@ -31,17 +32,24 @@ SynchronizableObject* Waiter::getLock() {
 	return object;
 }
 
+SynchronizableObject* Waiter::getLock2() {
+	return object2;
+}
+
 bool Waiter::getNotified() {
 	return notified;
 }
 
 int Waiter::svc(void){
+	object2->lock();
 	object->lock();
 	userlogc("waiting");
 	object->wait(0);
 	userlogc("waited");
-	object->unlock();
 	notified = true;
+	object->unlock();
+	userlogc("svc done");
+	object2->unlock();
 	return 0;
 }
 
@@ -71,12 +79,15 @@ void TestSynchronizableObject::testWaitNotify() {
 	sleep(1);
 #endif
 	SynchronizableObject* lock = waiter->getLock();
+	SynchronizableObject* lock2 = waiter->getLock2();
 	lock->lock();
 	lock->notify();
 	lock->unlock();
 	userlogc("done");
-	lock->lock();
+	lock2->lock();
 	bool notified = waiter->getNotified();
-	lock->unlock();
+	userlogc("got notified");
+	lock2->unlock();
+	userlogc("main done");
 	CPPUNIT_ASSERT_MESSAGE("Was not notified", notified == true);
 }

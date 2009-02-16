@@ -30,6 +30,8 @@
 
 #include "SynchronizableObject_NT.h"
 
+log4cxx::LoggerPtr SynchronizableObject_NT::logger(log4cxx::Logger::getLogger("SynchronizableObject"));
+
 SynchronizableObject* SynchronizableObject::create(bool recurs) {
 	return new SynchronizableObject_NT();
 }
@@ -43,30 +45,40 @@ SynchronizableObject_NT::SynchronizableObject_NT() :mutex(), cond(mutex) {
 }
 
 SynchronizableObject_NT::~SynchronizableObject_NT() {
+	LOG4CXX_DEBUG(logger, (char*) "SynchronizableObject_NT released: " << this);
 }
 
 bool SynchronizableObject_NT::lock() {
-	return mutex.acquire();
-}
-
-bool SynchronizableObject_NT::wait(long timeout) {
-	if (timeout > 0) {
-		ACE_Time_Value timeoutval(0, (timeout * 1000));
-		return cond.wait(&timeoutval);
-	} else {
-		return cond.wait();
-	}
-}
-
-bool SynchronizableObject_NT::notify() {
-	return cond.signal();
-}
-
-bool SynchronizableObject_NT::unlock() {
-	bool toReturn = mutex.release();
-	Sleep(0);
+	LOG4CXX_TRACE(logger, (char*) "Acquiring mutex: " << this);
+	bool toReturn = mutex.acquire();
+	LOG4CXX_TRACE(logger, (char*) "acquired: " << this);
 	return toReturn;
 }
 
+bool SynchronizableObject_NT::wait(long timeout) {
+	LOG4CXX_TRACE(logger, (char*) "Waiting for cond: " << this);
+	bool toReturn = false;
+	if (timeout > 0) {
+		ACE_Time_Value timeoutval(0, (timeout * 1000));
+		toReturn = cond.wait(&timeoutval);
+	} else {
+		toReturn = cond.wait();
+	}
+	LOG4CXX_TRACE(logger, (char*) "waited: " << this);
+	return toReturn;
+}
 
+bool SynchronizableObject_NT::notify() {
+	LOG4CXX_TRACE(logger, (char*) "Notifying cond: " << this);
+	bool toReturn = cond.signal();
+	LOG4CXX_TRACE(logger, (char*) "notified: " << this);
+	return toReturn;
+}
+
+bool SynchronizableObject_NT::unlock() {
+	LOG4CXX_TRACE(logger, (char*) "Releasing mutex: " << this);
+	bool toReturn = mutex.release();
+	LOG4CXX_TRACE(logger, (char*) "Could not release mutex: " << this);
+	return toReturn;
+}
 #endif
