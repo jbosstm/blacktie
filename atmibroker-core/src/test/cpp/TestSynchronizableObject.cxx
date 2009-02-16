@@ -23,8 +23,8 @@
 #include "userlogc.h"
 
 Waiter::Waiter() {
-	object = SynchronizableObject::create(false);
-	object2 = SynchronizableObject::create(false);
+	object = new SynchronizableObject();
+	object2 = new SynchronizableObject();
 	notified = false;
 }
 

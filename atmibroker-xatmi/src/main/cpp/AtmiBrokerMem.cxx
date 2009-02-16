@@ -31,7 +31,7 @@
 #include "log4cxx/logger.h"
 
 log4cxx::LoggerPtr AtmiBrokerMem::logger(log4cxx::Logger::getLogger("AtmiBrokerMem"));
-SynchronizableObject* AtmiBrokerMem::lock = SynchronizableObject::create(false);
+SynchronizableObject* AtmiBrokerMem::lock = new SynchronizableObject();
 
 AtmiBrokerMem * AtmiBrokerMem::ptrAtmiBrokerMem = NULL;
 

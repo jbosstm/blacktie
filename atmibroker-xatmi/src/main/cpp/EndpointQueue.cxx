@@ -41,7 +41,7 @@ log4cxx::LoggerPtr EndpointQueue::logger(log4cxx::Logger::getLogger("EndpointQue
 //
 EndpointQueue::EndpointQueue(CONNECTION* connection) {
 	shutdown = false;
-	lock = SynchronizableObject::create(false);
+	lock = new SynchronizableObject();
 
 	PortableServer::POA_ptr poa = (PortableServer::POA_ptr) connection->callback_poa;
 	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection->orbRef;
@@ -57,7 +57,7 @@ EndpointQueue::EndpointQueue(CONNECTION* connection, void* poa, char* serviceNam
 	shutdown = false;
 	thePoa = poa;
 	PortableServer::POA_ptr aFactoryPoaPtr = (PortableServer::POA_ptr) poa;
-	lock = SynchronizableObject::create(false);
+	lock = new SynchronizableObject();
 	aFactoryPoaPtr->activate_object(this);
 	LOG4CXX_DEBUG(logger, (char*) "activated tmp_servant " << this);
 	CORBA::Object_var tmp_ref = aFactoryPoaPtr->servant_to_reference(this);

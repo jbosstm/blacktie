@@ -15,32 +15,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-/*
- * Copyright (C) 1995
- *
- * Arjuna Solutions Limited,
- * Newcastle upon Tyne,
- * Tyne and Wear,
- * UK.
- */
 #ifndef SYNCHRONIZABLEOBJECT_H
 #define SYNCHRONIZABLEOBJECT_H
 
 #include "atmiBrokerCoreMacro.h"
+#include "SynchronizableObject.h"
+#include "log4cxx/logger.h"
+#include <ace/Thread.h>
+#include <ace/Synch.h>
 
 class ATMIBROKER_CORE_DLL SynchronizableObject {
 
 public:
-	/**
-	 * Implementations of this class should implement this method in a platform specific manner.
-	 */
-	static SynchronizableObject* create(bool recurs);
+	SynchronizableObject();
+	~SynchronizableObject();
 
 	/*
 	 * This method acquires a lock on the object in order to allow users to perform
 	 * execution of code in a thread safe manner.
 	 */
-	virtual bool lock() = 0;
+	bool lock();
 
 	/**
 	 * This code will wait to be notified or for the specified timeout interval.
@@ -48,7 +42,7 @@ public:
 	 * lock MUST be called before executing this method
 	 * unlock MUST be called after executing this method
 	 */
-	virtual bool wait(long timeout) = 0;
+	bool wait(long timeout);
 
 	/**
 	 * This code will wake up a single thread that is currently in the wait method.
@@ -56,12 +50,16 @@ public:
 	 * lock MUST be called before executing this method
 	 * unlock MUST be called after executing this method
 	 */
-	virtual bool notify() = 0;
+	bool notify();
 
 	/**
 	 * This method will release the lock held by the thread on this object
 	 */
-	virtual bool unlock() = 0;
+	bool unlock();
+private:
+	static log4cxx::LoggerPtr logger;
+	ACE_Thread_Mutex mutex;
+	ACE_Condition<ACE_Thread_Mutex> cond;
 };
 
 #endif
