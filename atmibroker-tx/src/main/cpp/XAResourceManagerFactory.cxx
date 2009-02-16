@@ -131,7 +131,9 @@ XAResourceManagerFactory::~XAResourceManagerFactory()
 
 XAResourceManager * XAResourceManagerFactory::findRM(long id)
 {
-	return rms_[id];
+	ResourceManagerMap::iterator i = rms_.find(id);
+
+	return (i == rms_.end() ? NULL : i->second);
 }
 
 void XAResourceManagerFactory::destroyRMs(CONNECTION * connection)
@@ -209,7 +211,7 @@ XAResourceManager * XAResourceManagerFactory::createRM(
 	}
 
 	// Check that rmid is unique
-	XAResourceManager * id = rms_[rmp->resourceMgrId];
+	XAResourceManager * id = findRM(rmp->resourceMgrId);
 
 	if (id != 0) {
 		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getInfo(),
@@ -230,7 +232,9 @@ XAResourceManager * XAResourceManagerFactory::createRM(
 
 	XAResourceManager * a = new XAResourceManager(
 		connection, rmp->resourceName, rmp->openString, rmp->closeString, rmp->resourceMgrId, xa_switch);
-	rms_[rmp->resourceMgrId] = a;
+
+	if (a != NULL)
+		rms_[rmp->resourceMgrId] = a;
 
 	return a;
 }
