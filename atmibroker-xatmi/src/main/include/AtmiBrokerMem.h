@@ -27,6 +27,7 @@
 
 #include <iostream>
 #include <vector>
+#include "log4cxx/logger.h"
 
 #define MAX_TYPE_SIZE 8
 #define MAX_SUBTYPE_SIZE 16
@@ -61,6 +62,7 @@ public:
 
 private:
 
+	static log4cxx::LoggerPtr logger;
 	std::vector<MemoryInfo> memoryInfoVector;
 
 	static AtmiBrokerMem * ptrAtmiBrokerMem;
