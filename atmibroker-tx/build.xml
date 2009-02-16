@@ -121,6 +121,7 @@
 	&includepath-log4cxx;
 	&includepath-tao;
 	&includepath-main-atmibroker-idl;
+	&includepath-export-atmibroker-core;
 	&includepath-main-atmibroker-core;
 '>
 
@@ -133,6 +134,7 @@
 	&includepath-log4cxx;
 	&includepath-tao;
 	&includepath-main-atmibroker-idl;
+	&includepath-export-atmibroker-core;
 	&includepath-main-atmibroker-core;
 '>
 <!ENTITY libsets-test-dependencies '
