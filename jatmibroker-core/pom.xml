@@ -23,16 +23,22 @@
 	<version>1.0-M4</version>
 	<name>Blacktie XATMI Implementation</name>
 	<packaging>jar</packaging>
+	<url>http://www.jboss.org/blacktie</url>
+	<scm>
+		<connection>scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/jatmibroker-core</connection>
+		<developerConnection>scm:svn:https://svn.jboss.org/repos/blacktie/trunk/jatmibroker-core</developerConnection>
+		<url>http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/jatmibroker-core</url>
+	</scm>
 	<build>
 		<plugins>
-		   <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <forkMode>once</forkMode>
-                    <workingDirectory>target/test-classes</workingDirectory>
-                </configuration>
-            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<forkMode>once</forkMode>
+					<workingDirectory>target/test-classes</workingDirectory>
+				</configuration>
+			</plugin>
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>

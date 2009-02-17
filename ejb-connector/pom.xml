@@ -24,6 +24,12 @@
 	<version>1.0-M4</version>
 	<name>Blacktie EJB Connector</name>
 	<packaging>jar</packaging>
+	<url>http://www.jboss.org/blacktie</url>
+	<scm>
+		<connection>scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/ejb-connector</connection>
+		<developerConnection>scm:svn:https://svn.jboss.org/repos/blacktie/trunk/ejb-connector</developerConnection>
+		<url>http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/ejb-connector</url>
+	</scm>
 
 	<build>
 		<plugins>

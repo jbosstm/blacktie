@@ -23,6 +23,12 @@
 	<version>1.0-M4</version>
 	<name>Blacktie JAB</name>
 	<packaging>jar</packaging>
+	<url>http://www.jboss.org/blacktie</url>
+	<scm>
+		<connection>scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/jab</connection>
+		<developerConnection>scm:svn:https://svn.jboss.org/repos/blacktie/trunk/jab</developerConnection>
+		<url>http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/jab</url>
+	</scm>
 	<build>
 		<plugins>
 			<plugin>

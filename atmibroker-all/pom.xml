@@ -23,6 +23,12 @@
 	<packaging>pom</packaging>
 	<version>1.0-M4</version>
 	<name>Blacktie Distribution</name>
+	<url>http://www.jboss.org/blacktie</url>
+	<scm>
+		<connection>scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/atmibroker-all</connection>
+		<developerConnection>scm:svn:https://svn.jboss.org/repos/blacktie/trunk/atmibroker-all</developerConnection>
+		<url>http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/atmibroker-all</url>
+	</scm>
 
 	<build>
 		<plugins>
