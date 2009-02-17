@@ -22,7 +22,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>atmibroker-tx</artifactId>
-	<version>1.0-M3</version>
+	<version>1.0-M4</version>
 	<name>Blacktie C++ TX Client Library</name>
 	<packaging>jar</packaging>
 	<build>
@@ -88,4 +88,17 @@
 			</plugin>
 		</plugins>
 	</build>
+	<dependencies>
+		<dependency>
+			<groupId>org.jboss.blacktie</groupId>
+			<artifactId>atmibroker-core</artifactId>
+			<version>1.0-M4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.blacktie</groupId>
+			<artifactId>dummy-rm</artifactId>
+			<version>1.0-M4</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>
