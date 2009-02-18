@@ -23,6 +23,7 @@ import java.util.Properties;
 import javax.ejb.CreateException;
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.rmi.PortableRemoteObject;
 
@@ -44,7 +45,8 @@ public class BarServiceTestCase extends TestCase {
 	public void testConnectorCall() throws ConnectorException, NamingException, RemoteException, CreateException {
 		// Bootstrap the EJB
 		Context ic = new InitialContext();
-		Object o = ic.lookup("BarService");
+		Name realName = ic.getNameParser("BarService").parse("BarService");
+		Object o = ic.lookup(realName);
 		BarServiceHome home = (BarServiceHome) PortableRemoteObject.narrow(o, BarServiceHome.class);
 		BarService service = home.create();
 

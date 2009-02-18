@@ -38,10 +38,4 @@
 
 	<resource-managers>
 	</resource-managers>
-	<container-cache-conf>
-		<cache-policy-conf>
-			<min-capacity>1</min-capacity>
-		</cache-policy-conf>
-	</container-cache-conf>
-
 </jboss>

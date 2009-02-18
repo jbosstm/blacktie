@@ -65,7 +65,7 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 	private static final String CorbaOrbClassProp = "org.omg.CORBA.ORBClass";
 	private static final String CorbaOrbClassValue = "org.jacorb.orb.ORB";
 	private static final String CorbaSingletonClassProp = "org.omg.CORBA.ORBSingletonClass";
-	private static final String CorbaSingletonClassValue = "org.jacorb.orb.ORBSingleton";
+	private static final String CorbaSingletonClassValue = "org.jboss.system.ORBSingleton";
 	private Server server;
 	private org.omg.CORBA.Object serverObject;
 	static POA root_poa = null;
