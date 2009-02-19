@@ -41,9 +41,11 @@ public class JABServiceTestCase extends TestCase {
 
 		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(domainName, serverName, transactionManagerService, args);
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
+		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
 		JABRemoteService aJabService = new JABRemoteService(aJabSession, serviceName);
 		aJabService.setString("STRING", "HOWS IT GOING DUDE????!!!!");
-		aJabService.call(null);
+		aJabService.call(transaction);
+		transaction.commit();
 		aJabSession.endSession();
 		String expectedString = "BAR SAYS HELLO";
 		String responseString = aJabService.getResponseString();
