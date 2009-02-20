@@ -60,42 +60,8 @@
 <syslibset libs="advapi32 mswsock ws2_32 shell32" if="is-msvc" />
 <syslibset libs="stdc++" if="is-gcc"/>
 '>
-<!ENTITY includepath-main-atmibroker-idl '
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-idl/src/main/include" />
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-idl/target/generated/tao_idl" />
-'>
-<!ENTITY libsets-atmibroker-idl '
-<fileset includes="${lib.prefix}atmibroker-idl.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-idl/target/${configuration.type}/${lib.type}" />
-'>
-<!ENTITY includepath-main-atmibroker-core '
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-core/src/main/include" />
-'>
-<!ENTITY includepath-export-atmibroker-core '
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-core/src/export/include" />
-'>
-<!ENTITY libsets-atmibroker-core '
-<fileset includes="${lib.prefix}atmibroker-core.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-core/target/${configuration.type}/${lib.type}" />
-'>
 <!ENTITY libsets-utilities '
 <fileset includes="${lib.prefix}utilities.*" dir="${ATMIBROKER_SRC_DIR}/tx-test-utilities/target/${configuration.type}/${lib.type}" />
-'>
-<!ENTITY includepath-main-atmibroker-xatmi '
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/src/main/include" />
-'>
-<!ENTITY includepath-export-atmibroker-xatmi '
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/src/export/include" />
-'>
-<!ENTITY libsets-atmibroker-xatmi '
-<fileset includes="${lib.prefix}atmibroker-xatmi.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/target/${configuration.type}/${lib.type}" />
-'>
-<!ENTITY includepath-main-atmibroker-tx '
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-tx/src/main/include" />
-'>
-<!ENTITY includepath-export-atmibroker-tx '
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-tx/src/export/include" />
-'>
-<!ENTITY libsets-atmibroker-tx '
-<fileset includes="${lib.prefix}atmibroker-tx.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-tx/target/${configuration.type}/${lib.type}" />
 '>
 <!ENTITY compiler-args-gcc '
 <compilerarg value="-O0" if="debug" />
@@ -120,33 +86,25 @@
 <!ENTITY includepath-main-dependencies '
 	&includepath-log4cxx;
 	&includepath-tao;
-	&includepath-main-atmibroker-idl;
-	&includepath-export-atmibroker-core;
-	&includepath-main-atmibroker-core;
 '>
 
 <!ENTITY libsets-main-dependencies '
-	<libset dir="target/dependencies" libs="${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix} log4cxx atmibroker-idl atmibroker-core" />
+	<libset dir="target/dependencies" libs="${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix} log4cxx" />
 '>
 
 <!ENTITY includepath-test-dependencies '
 	&includepath-cppunit;
 	&includepath-log4cxx;
 	&includepath-tao;
-	&includepath-main-atmibroker-idl;
-	&includepath-export-atmibroker-core;
-	&includepath-main-atmibroker-core;
 '>
 <!ENTITY libsets-test-dependencies '
-	<libset dir="target/dependencies" libs="cppunit${lib.suffix} ${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix} log4cxx atmibroker-idl atmibroker-core utilities" />
+	<libset dir="target/dependencies" libs="cppunit${lib.suffix} ${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix} log4cxx utilities" />
 '>
 <!ENTITY libsets-runtime-dependencies '
 	&libsets-cppunit;
 	&libsets-expat;
 	&libsets-log4cxx;
 	&libsets-tao;
-	&libsets-atmibroker-idl;
-	&libsets-atmibroker-core;
 	&libsets-utilities;
 '>
 ]>
@@ -262,6 +220,8 @@
 
 			<includepath path="src/export/include" if="export.dir" />
 			<includepath path="src/main/include" />
+			<includepath path="target/cxx/include" />
+			<libset dir="target/cxx/lib" libs="atmibroker-idl atmibroker-core" />
 
 			&includepath-main-dependencies;
 			&libsets-main-dependencies;
@@ -291,6 +251,8 @@
 			<includepath path="src/test/include" />
 			<includepath path="src/export/include" if="export.dir" />
 			<includepath path="src/main/include" />
+			<includepath path="target/cxx/include" />
+			<libset dir="target/cxx/lib" libs="atmibroker-idl atmibroker-core" />
 			
 			&includepath-test-dependencies;
 			&libsets-test-dependencies;
@@ -316,7 +278,7 @@
 	<target name="_test-gcc" depends="init" unless="is-msvc">
 		<exec dir="target/cpp-test-classes" newenvironment="true" resolveexecutable="true" executable="../testsuite" failonerror="${failOnErrorTests}">
 			<redirector output="target/cppunit/run.txt" logError="true" alwayslog="true"/>
-			<env key="LD_LIBRARY_PATH" value="../dependencies:../../target/${configuration.type}/${lib.type}" />
+			<env key="LD_LIBRARY_PATH" value="../cxx/lib:../dependencies:../../target/${configuration.type}/${lib.type}" />
 		</exec>
 	</target>
 	<target name="_test-msvc" depends="init" if="is-msvc">
@@ -326,7 +288,30 @@
 		</exec>
 	</target>
 
+        <available property="have-idl" file="${idl.output.dir}" />
+        <available property="have-exports" file="src/export/include" />
+        <target name="copy-idl" if="have-idl">
+                <copy todir="target/classes/include" overwrite="true" failonerror="true">
+                        <fileset dir="${idl.output.dir}"/>
+                </copy>
+        </target>
+        <target name="copy-exports" if="have-exports">
+                <copy todir="target/classes/include" overwrite="true" failonerror="true">
+                        <fileset dir="src/export/include"/>
+                </copy>
+        </target>
+        <target name="copy-libs">
+                <copy todir="target/classes/lib" overwrite="true" failonerror="true">
+                        <fileset dir="target/${configuration.type}/${lib.type}/" />
+                </copy>
+        </target>
+
+        <target name="process-classes" depends="package,copy-idl,copy-exports,copy-libs">
+        </target>
+
 	<target name="package" depends="init">
+		<mkdir dir="target/classes/lib" />
+		<mkdir dir="target/classes/include" />
 		<mkdir dir="target/dependencies" />
 		<copy todir="target/dependencies">
 			&libsets-runtime-dependencies;

@@ -60,45 +60,11 @@
 <syslibset libs="advapi32 mswsock ws2_32 shell32" if="is-msvc" />
 <syslibset libs="stdc++" if="is-gcc"/>
 '>
-<!ENTITY includepath-main-atmibroker-idl '
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-idl/src/main/include" />
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-idl/target/generated/tao_idl" />
-'>
-<!ENTITY libsets-atmibroker-idl '
-<fileset includes="${lib.prefix}atmibroker-idl.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-idl/target/${configuration.type}/${lib.type}" />
-'>
-<!ENTITY includepath-main-atmibroker-core '
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-core/src/main/include" />
-'>
-<!ENTITY includepath-export-atmibroker-core '
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-core/src/export/include" />
-'>
-<!ENTITY libsets-atmibroker-core '
-<fileset includes="${lib.prefix}atmibroker-core.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-core/target/${configuration.type}/${lib.type}" />
-'>
-<!ENTITY includepath-main-atmibroker-xatmi '
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/src/main/include" />
-'>
-<!ENTITY includepath-export-atmibroker-xatmi '
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/src/export/include" />
-'>
-<!ENTITY libsets-atmibroker-xatmi '
-<fileset includes="${lib.prefix}atmibroker-xatmi.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/target/${configuration.type}/${lib.type}" />
-'>
-<!ENTITY includepath-main-atmibroker-tx '
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-tx/src/main/include" />
-'>
-<!ENTITY includepath-export-atmibroker-tx '
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-tx/src/export/include" />
-'>
 <!ENTITY includepath-main-utilities '
 <includepath path="${ATMIBROKER_SRC_DIR}/utilities/src/main/include" />
 '>
 <!ENTITY includepath-export-utilities '
 <includepath path="${ATMIBROKER_SRC_DIR}/utilities/src/export/include" />
-'>
-<!ENTITY libsets-atmibroker-tx '
-<fileset includes="${lib.prefix}atmibroker-tx.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-tx/target/${configuration.type}/${lib.type}" />
 '>
 <!ENTITY compiler-args-gcc '
 <compilerarg value="-O0" if="debug" />
@@ -192,7 +158,15 @@
 		<delete dir="target/dependencies" />
 	</target>
 
-	<target name="compile" depends="package">
+	<fileset id="fileset.test" dir="src/test/cpp" includes="**/*.cxx **/*.c **/*.cpp" excludes="${test.excludes}" />
+	<fileset id="fileset.main" dir="${src.main}" includes="**/*.cxx **/*.c **/*.cpp" excludes="${src.excludes}" />
+
+	<target name="fileset.check">
+		<pathconvert refid="fileset.test" property="have-tests" setonempty="false"/>
+		<pathconvert refid="fileset.main" property="have-srcs" setonempty="false"/>
+	</target>
+
+	<target name="compile" depends="fileset.check, package" if="have-srcs">
 		<mkdir dir="target/cpp-classes" />
 		<mkdir dir="target/${configuration.type}/${lib.type}" />
 		<cc name="${toolchain.compiler}" exceptions="true" outfile="target/${configuration.type}/${lib.type}/${ant.project.name}" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="${lib.type}" objdir="target/cpp-classes" debug="${debug}">
@@ -203,7 +177,10 @@
 				&compiler-args-msvc;
 			</compiler>
 
+<!--
 			<fileset dir="${src.main}" includes="**/*.cxx **/*.c **/*.cpp" excludes="${src.excludes}" />
+			-->
+			<fileset refid="fileset.main"/>
 
 			<defineset define="${export.dll}" if="export.dll" />
 			<defineset define="WIN32" if="is-msvc" />
@@ -214,12 +191,6 @@
 			&includepath-main-dependencies;
 			&libsets-main-dependencies;
 		</cc>
-	</target>
-
-	<fileset dir="src/test/cpp" includes="**/*.cxx **/*.c **/*.cpp" excludes="${test.excludes}" id="fileset.tests"/>
-
-	<target name="fileset.check">
-		<pathconvert refid="fileset.tests" property="have-tests" setonempty="false"/>
 	</target>
 
 	<target name="test-compile" depends="fileset.check, package" if="have-tests">
@@ -236,7 +207,10 @@
 				&compiler-args-msvc;
 			</compiler>
 
+<!--
 			<fileset dir="src/test/cpp" includes="**/*.cxx **/*.c **/*.cpp" excludes="${test.excludes}" />
+			-->
+			<fileset refid="fileset.test"/>
 
 			<defineset define="WIN32" if="is-msvc" />
 
@@ -265,6 +239,7 @@
 		<antcall target="_test-msvc" />
 		<antcall target="_test-gcc" />
 	</target>
+
 	<target name="_test-gcc" depends="init" unless="is-msvc">
 		<exec dir="target/cpp-test-classes" newenvironment="true" resolveexecutable="true" executable="../testsuite" failonerror="${failOnErrorTests}">
 			<redirector output="target/cppunit/run.txt" logError="true" alwayslog="true"/>
@@ -278,9 +253,32 @@
 		</exec>
 	</target>
 
+        <available property="have-idl" file="${idl.output.dir}" />
+        <available property="have-exports" file="src/export/include" />
+        <target name="copy-idl" if="have-idl">
+                <copy todir="target/classes/include" overwrite="true" failonerror="true">
+                        <fileset dir="${idl.output.dir}"/>
+                </copy>
+        </target>
+        <target name="copy-exports" if="have-exports">
+                <copy todir="target/classes/include" overwrite="true" failonerror="true">
+                        <fileset dir="src/export/include"/>
+                </copy>
+        </target>
+        <target name="copy-libs">
+                <copy todir="target/classes/lib" overwrite="true" failonerror="true">
+                        <fileset dir="target/${configuration.type}/${lib.type}/" />
+                </copy>
+        </target>
+
+        <target name="process-classes" depends="package,copy-idl,copy-exports,copy-libs">
+        </target>
+
 	<target name="package" depends="init">
-	<!--
+                <mkdir dir="target/classes/lib" />
+                <mkdir dir="target/classes/include" />
 		<mkdir dir="target/dependencies" />
+		<!-- TODO
 		<copy todir="target/dependencies">
 			&libsets-runtime-dependencies;
 		</copy>

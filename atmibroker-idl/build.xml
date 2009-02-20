@@ -54,15 +54,8 @@
 <syslibset libs="advapi32 mswsock ws2_32 shell32" if="is-msvc" />
 <syslibset libs="stdc++" if="is-gcc"/>
 '>
-<!ENTITY includepath-main-atmibroker-idl '
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-idl/src/main/include" />
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-idl/target/generated/tao_idl" />
-'>
 <!ENTITY libsets-atmibroker-idl '
 <fileset includes="${lib.prefix}atmibroker-idl.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-idl/target/${configuration.type}/${lib.type}" />
-'>
-<!ENTITY includepath-main-atmibroker-core '
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-core/src/main/include" />
 '>
 <!ENTITY includepath-export-atmibroker-core '
 <includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-core/src/export/include" />
@@ -70,17 +63,11 @@
 <!ENTITY libsets-atmibroker-core '
 <fileset includes="${lib.prefix}atmibroker-core.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-core/target/${configuration.type}/${lib.type}" />
 '>
-<!ENTITY includepath-main-atmibroker-xatmi '
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/src/main/include" />
-'>
 <!ENTITY includepath-export-atmibroker-xatmi '
 <includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/src/export/include" />
 '>
 <!ENTITY libsets-atmibroker-xatmi '
 <fileset includes="${lib.prefix}atmibroker-xatmi.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/target/${configuration.type}/${lib.type}" />
-'>
-<!ENTITY includepath-main-atmibroker-tx '
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-tx/src/main/include" />
 '>
 <!ENTITY includepath-export-atmibroker-tx '
 <includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-tx/src/export/include" />
@@ -133,6 +120,11 @@
 	<property name="test.excludes" value="" />
 	<property name="lib.type" value="shared" />
 	<property name="runtime" value="dynamic" />
+	<property name="idl.output.dir" value="target/generated/tao_idl" />
+	<!--
+	<property name="idl.output.dir" value="target/classes/include" />
+	-->
+	<property name="src.idl.main" value="${idl.output.dir}" />
 
 	<target name="init">
 		<fail unless="ATMIBROKER_SRC_DIR" />
@@ -189,12 +181,12 @@
 		</condition>
 		<fail unless="tao_idl.exe.exists" />
 
-		<mkdir dir="target/generated/tao_idl" />
+		<mkdir dir="${idl.output.dir}" />
 		<apply executable="${TAO_IDL}" parallel="false" failonerror="true">
 			<env key="ACE_ROOT" path="${ACE_ROOT}" />
 			<env key="LD_LIBRARY_PATH" path="${ACE_ROOT}/lib:${ACE_ROOT}/TAO/TAO_IDL" />
 			<env key="Path" path="${env.Path}:${ACE_ROOT}/lib:${ACE_ROOT}/TAO/TAO_IDL" />
-			<arg line="-o target/generated/tao_idl/ -Wb,pre_include=ace/pre.h -Wb,post_include=ace/post.h -I${ace.root}/TAO -I${ace.root}/TAO/tao -I${ace.root}/TAO/tao/orbsvcs -Isrc/main/idl -Wb,export_macro=ATMIBROKER_IDL_DLL -Wb,export_include=atmiBrokerIdlMacro.h" />
+			<arg line="-o ${idl.output.dir} -Wb,pre_include=ace/pre.h -Wb,post_include=ace/post.h -I${ace.root}/TAO -I${ace.root}/TAO/tao -I${ace.root}/TAO/tao/orbsvcs -Isrc/main/idl -Wb,export_macro=ATMIBROKER_IDL_DLL -Wb,export_include=atmiBrokerIdlMacro.h" />
 			<fileset dir="src" casesensitive="yes">
 				<patternset id="idl.sources">
 					<include name="**/*.idl" />
@@ -203,7 +195,7 @@
 			<mapper>
 				<chainedmapper>
 					<flattenmapper />
-					<globmapper from="*" to="target/generated/tao_idl/*" />
+					<globmapper from="*" to="${idl.output.dir}/*" />
 					<mapper>
 						<globmapper from="*.idl" to="*C.cpp" />
 						<globmapper from="*.idl" to="*C.h" />
@@ -235,6 +227,7 @@
 
 			<includepath path="src/export/include" if="export.dir" />
 			<includepath path="src/main/include" />
+			<includepath path="${src.idl.main}/include" />
 
 			&includepath-main-dependencies;
 			&libsets-main-dependencies;
@@ -264,6 +257,7 @@
 			<includepath path="src/test/include" />
 			<includepath path="src/export/include" if="export.dir" />
 			<includepath path="src/main/include" />
+			<includepath path="${src.idl.main}/include" />
 			
 			&includepath-test-dependencies;
 			&libsets-test-dependencies;
@@ -299,7 +293,30 @@
 		<echo message="${cppunit-run}" />
 	</target>
 
+        <available property="have-idl" file="${idl.output.dir}" />
+        <available property="have-exports" file="src/export/include" />
+        <target name="copy-idl" if="have-idl">
+                <copy todir="target/classes/include" overwrite="true" failonerror="true">
+                        <fileset dir="${idl.output.dir}"/>
+                </copy>
+        </target>
+        <target name="copy-exports" if="have-exports">
+                <copy todir="target/classes/include" overwrite="true" failonerror="true">
+                        <fileset dir="src/export/include"/>
+                </copy>
+        </target>
+        <target name="copy-libs">
+                <copy todir="target/classes/lib" overwrite="true" failonerror="true">
+                        <fileset dir="target/${configuration.type}/${lib.type}/" />
+                </copy>
+        </target>
+
+        <target name="process-classes" depends="package,copy-idl,copy-exports,copy-libs">
+        </target>
+
 	<target name="package" depends="init">
+		<mkdir dir="target/classes/lib" />
+		<mkdir dir="target/classes/include" />
 		<mkdir dir="target/dependencies" />
 		<copy todir="target/dependencies">
 			&libsets-runtime-dependencies;

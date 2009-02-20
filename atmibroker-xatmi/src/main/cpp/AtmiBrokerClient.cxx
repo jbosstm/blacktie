@@ -24,7 +24,7 @@
 #include "log4cxx/propertyconfigurator.h"
 #include "log4cxx/logger.h"
 #include "log4cxx/logmanager.h"
-#include "userlog.h"
+#include "userlogc.h"
 #include "AtmiBroker.h"
 #include "AtmiBrokerClient.h"
 #include "SessionImpl.h"
