@@ -1,0 +1,431 @@
+<pluginMetadata>
+  <mojos>
+    <mojo>
+      <goal>clean</goal>
+      <call>clean</call>
+      <phase>clean</phase>
+      <requiresProject>true</requiresProject>
+      <description>clean mojo outputs</description>
+      <parameters>
+        <parameter>
+          <name>projectName</name>
+          <property>project.name</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.name}</defaultValue>
+          <type>java.lang.String</type>
+          <description>Project name.</description>
+        </parameter>
+        <parameter>
+          <name>version</name>
+          <property>project.version</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.version}</defaultValue>
+          <type>java.lang.String</type>
+          <description>The artifact version.</description>
+        </parameter>
+        <parameter>
+          <name>artifactId</name>
+          <property>project.artifactId</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.artifactId}</defaultValue>
+          <type>java.lang.String</type>
+          <description>The artifact name.</description>
+        </parameter>
+        <parameter>
+          <name>buildDir</name>
+          <property>project.build.directory</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.build.directory}</defaultValue>
+          <type>java.lang.String</type>
+          <description>Build directory.</description>
+        </parameter>
+      </parameters>
+    </mojo>
+
+    <mojo>
+      <goal>compile</goal>
+      <call>compile</call>
+      <phase>compile</phase>
+      <requiresProject>true</requiresProject>
+      <description>compile main sources</description>
+      <parameters>
+        <parameter>
+          <name>blacktie.main.libs</name>
+          <property>blacktie.main.libs</property>
+          <required>false</required>
+          <readonly>false</readonly>
+          <defaultValue></defaultValue>
+          <type>java.lang.String</type>
+          <description>list of blacktie libs required for main compilation</description>
+        </parameter>
+        <parameter>
+          <name>src.main</name>
+          <property>src.main</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>src/main/cpp</defaultValue>
+          <type>java.lang.String</type>
+          <description>location of main sources</description>
+        </parameter>
+        <parameter>
+          <name>toolchain.compiler</name>
+          <property>toolchain.compiler</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>gcc</defaultValue>
+          <type>java.lang.String</type>
+          <description>Build type. Tested values are gcc|msvc</description>
+        </parameter>
+        <parameter>
+          <name>configuration.type</name>
+          <property>configuration.type</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>debug</defaultValue>
+          <type>java.lang.String</type>
+          <description>Build type. Permissable values are debug|release</description>
+        </parameter>
+        <parameter>
+          <name>projectName</name>
+          <property>project.name</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.name}</defaultValue>
+          <type>java.lang.String</type>
+          <description>Project name.</description>
+        </parameter>
+        <parameter>
+          <name>version</name>
+          <property>project.version</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.version}</defaultValue>
+          <type>java.lang.String</type>
+          <description>The artifact version.</description>
+        </parameter>
+        <parameter>
+          <name>artifactId</name>
+          <property>project.artifactId</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.artifactId}</defaultValue>
+          <type>java.lang.String</type>
+          <description>The artifact name.</description>
+        </parameter>
+        <parameter>
+          <name>buildDir</name>
+          <property>project.build.directory</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.build.directory}</defaultValue>
+          <type>java.lang.String</type>
+          <description>Build directory.</description>
+        </parameter>
+      </parameters>
+    </mojo>
+
+    <mojo>
+      <goal>test-compile</goal>
+      <call>test-compile</call>
+      <phase>test-compile</phase>
+
+      <requiresProject>true</requiresProject>
+      <description>compile test sources</description>
+      <parameters>
+        <parameter>
+          <name>blacktie.test.libs</name>
+          <property>blacktie.test.libs</property>
+          <required>false</required>
+          <readonly>false</readonly>
+          <defaultValue></defaultValue>
+          <type>java.lang.String</type>
+          <description>list of blacktie libs required for test compilation</description>
+        </parameter>
+        <parameter>
+          <name>src.main</name>
+          <property>src.main</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>src/main/cpp</defaultValue>
+          <type>java.lang.String</type>
+          <description>location of main sources</description>
+        </parameter>
+        <parameter>
+          <name>test.output.type</name>
+          <property>test.output.type</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>executable</defaultValue>
+          <type>java.lang.String</type>
+          <description>Control whether an executable or shared object is generated</description>
+        </parameter>
+        <parameter>
+          <name>toolchain.compiler</name>
+          <property>toolchain.compiler</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>gcc</defaultValue>
+          <type>java.lang.String</type>
+          <description>Build type. Tested values are gcc|msvc</description>
+        </parameter>
+        <parameter>
+          <name>configuration.type</name>
+          <property>configuration.type</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>debug</defaultValue>
+          <type>java.lang.String</type>
+          <description>Build type. Permissable values are debug|release</description>
+        </parameter>
+        <parameter>
+          <name>projectName</name>
+          <property>project.name</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.name}</defaultValue>
+          <type>java.lang.String</type>
+          <description>Project name.</description>
+        </parameter>
+        <parameter>
+          <name>version</name>
+          <property>project.version</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.version}</defaultValue>
+          <type>java.lang.String</type>
+          <description>The artifact version.</description>
+        </parameter>
+        <parameter>
+          <name>artifactId</name>
+          <property>project.artifactId</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.artifactId}</defaultValue>
+          <type>java.lang.String</type>
+          <description>The artifact name.</description>
+        </parameter>
+        <parameter>
+          <name>buildDir</name>
+          <property>project.build.directory</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.build.directory}</defaultValue>
+          <type>java.lang.String</type>
+          <description>Build directory.</description>
+        </parameter>
+      </parameters>
+    </mojo>
+    <mojo>
+      <goal>test</goal>
+      <call>test</call>
+      <phase>test</phase>
+
+      <requiresProject>true</requiresProject>
+      <description>run the cpp unit tests</description>
+      <parameters>
+        <parameter>
+          <name>failOnErrorTests</name>
+          <property>failOnErrorTests</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>false</defaultValue>
+          <type>java.lang.String</type>
+          <description>Whether to stop the build after test failure. Valid values are false|true</description>
+        </parameter>
+        <parameter>
+          <name>toolchain.compiler</name>
+          <property>toolchain.compiler</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>gcc</defaultValue>
+          <type>java.lang.String</type>
+          <description>Build type. Tested values are gcc|msvc</description>
+        </parameter>
+        <parameter>
+          <name>configuration.type</name>
+          <property>configuration.type</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>debug</defaultValue>
+          <type>java.lang.String</type>
+          <description>Build type. Permissable values are debug|release</description>
+        </parameter>
+        <parameter>
+          <name>skipTests</name>
+          <property>maven.test.skip</property>
+          <required>false</required>
+          <readonly>false</readonly>
+          <defaultValue>false</defaultValue>
+          <type>java.lang.String</type>
+          <description>Skip tests</description>
+        </parameter>
+        <parameter>
+          <name>projectName</name>
+          <property>project.name</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.name}</defaultValue>
+          <type>java.lang.String</type>
+          <description>Project name.</description>
+        </parameter>
+        <parameter>
+          <name>version</name>
+          <property>project.version</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.version}</defaultValue>
+          <type>java.lang.String</type>
+          <description>The artifact version.</description>
+        </parameter>
+        <parameter>
+          <name>artifactId</name>
+          <property>project.artifactId</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.artifactId}</defaultValue>
+          <type>java.lang.String</type>
+          <description>The artifact name.</description>
+        </parameter>
+        <parameter>
+          <name>buildDir</name>
+          <property>project.build.directory</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.build.directory}</defaultValue>
+          <type>java.lang.String</type>
+          <description>Build directory.</description>
+        </parameter>
+      </parameters>
+    </mojo>
+    <mojo>
+      <goal>process-classes</goal>
+      <call>process-classes</call>
+      <phase>process-classes</phase>
+      <requiresProject>true</requiresProject>
+      <description>process compiled sources</description>
+      <parameters>
+        <parameter>
+          <name>toolchain.compiler</name>
+          <property>toolchain.compiler</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>gcc</defaultValue>
+          <type>java.lang.String</type>
+          <description>Build type. Tested values are gcc|msvc</description>
+        </parameter>
+        <parameter>
+          <name>configuration.type</name>
+          <property>configuration.type</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>debug</defaultValue>
+          <type>java.lang.String</type>
+          <description>Build type. Permissable values are debug|release</description>
+        </parameter>
+        <parameter>
+          <name>projectName</name>
+          <property>project.name</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.name}</defaultValue>
+          <type>java.lang.String</type>
+          <description>Project name.</description>
+        </parameter>
+        <parameter>
+          <name>version</name>
+          <property>project.version</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.version}</defaultValue>
+          <type>java.lang.String</type>
+          <description>The artifact version.</description>
+        </parameter>
+        <parameter>
+          <name>artifactId</name>
+          <property>project.artifactId</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.artifactId}</defaultValue>
+          <type>java.lang.String</type>
+          <description>The artifact name.</description>
+        </parameter>
+        <parameter>
+          <name>buildDir</name>
+          <property>project.build.directory</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.build.directory}</defaultValue>
+          <type>java.lang.String</type>
+          <description>Build directory.</description>
+        </parameter>
+      </parameters>
+    </mojo>
+    <mojo>
+      <goal>generate-sources</goal>
+      <call>generate-sources</call>
+      <phase>generate-sources</phase>
+      <requiresProject>true</requiresProject>
+      <description>generate sources prior to compilation</description>
+      <parameters>
+        <parameter>
+          <name>toolchain.compiler</name>
+          <property>toolchain.compiler</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>gcc</defaultValue>
+          <type>java.lang.String</type>
+          <description>Build type. Tested values are gcc|msvc</description>
+        </parameter>
+        <parameter>
+          <name>configuration.type</name>
+          <property>configuration.type</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>debug</defaultValue>
+          <type>java.lang.String</type>
+          <description>Build type. Permissable values are debug|release</description>
+        </parameter>
+        <parameter>
+          <name>projectName</name>
+          <property>project.name</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.name}</defaultValue>
+          <type>java.lang.String</type>
+          <description>Project name.</description>
+        </parameter>
+        <parameter>
+          <name>version</name>
+          <property>project.version</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.version}</defaultValue>
+          <type>java.lang.String</type>
+          <description>The artifact version.</description>
+        </parameter>
+        <parameter>
+          <name>artifactId</name>
+          <property>project.artifactId</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.artifactId}</defaultValue>
+          <type>java.lang.String</type>
+          <description>The artifact name.</description>
+        </parameter>
+        <parameter>
+          <name>buildDir</name>
+          <property>project.build.directory</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.build.directory}</defaultValue>
+          <type>java.lang.String</type>
+          <description>Build directory.</description>
+        </parameter>
+      </parameters>
+    </mojo>
+  </mojos>
+</pluginMetadata>
