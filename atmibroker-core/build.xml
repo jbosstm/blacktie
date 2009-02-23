@@ -233,6 +233,7 @@
 	</target>
 
 	<target name="test-compile" depends="package">
+<echo message="TEST-COMPILE: debug=${debug} compiler=${toolchain.compiler}  outtype=${test.output.type} configuration.type=${configuration.type} lib.type=${lib.type} project.artifactId=${project.artifactId}"/>
 		<mkdir dir="target/cpp-test-classes" />
 		<copy todir="target/cpp-test-classes" failonerror="false">
 			<fileset dir="src/test/resources" />

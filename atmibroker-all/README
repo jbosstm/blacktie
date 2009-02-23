@@ -175,7 +175,7 @@ done
 
 cd <BLACKTIE_HOME>/product/atmibroker-all
 TO BUILD WITHOUT RUNNING TESTS
-mvn clean install package assembly:assembly -DskipTests
+mvn clean install package assembly:assembly -DskipTests -Dmaven.test.skip=true
 TO BUILD WITH RUNNING TESTS
 Run the required services for the tests (TAO Name Service/JBoss Transaction Service):
 	<BLACKTIE_HOME>/product/scripts/services/runNamingService.sh|bat

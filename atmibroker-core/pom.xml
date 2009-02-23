@@ -32,6 +32,52 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.jboss.blacktie.plugins</groupId>
+				<artifactId>cpp-plugin</artifactId>
+				<version>1.0-M4</version>
+				<configuration>
+					<configuration.type>${configuration.type}</configuration.type>
+					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
+					<blacktie.main.libs>${blacktie.main.libs}</blacktie.main.libs>
+					<blacktie.test.libs>${blacktie.test.libs}</blacktie.test.libs>
+					<maven.test.skip>${maven.test.skip}</maven.test.skip>
+					<src.main>${src.main}</src.main>
+					<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
+				</configuration>
+
+				<executions>
+					<execution>
+						<id>compile</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>test-compile</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>test-compile</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>process-classes</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>process-classes</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+<!--
+			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<version>1.3</version>
 				<executions>
@@ -102,6 +148,7 @@
 					</dependency>
 				</dependencies>
 			</plugin>
+			-->
                         <plugin>
                                 <groupId>org.apache.maven.plugins</groupId>
                                 <artifactId>maven-dependency-plugin</artifactId>
@@ -113,6 +160,14 @@
                                                         <goal>unpack-dependencies</goal>
                                                 </goals>
                                                 <configuration>
+<artifactItems>
+<artifactItem>
+<groupId>org.jboss.blacktie</groupId>
+<artifactId>atmibroker-idl</artifactId>
+<version>1.0-M4</version>
+</artifactItem>
+</artifactItems>
+
                                                         <includes>**/*.h,**/*.inl,**/*.cpp,**/*.so*,*.dll</includes>
                                                         <excludes>**/*.class</excludes>
                                                         <outputDirectory>${project.build.directory}/cxx</outputDirectory>
@@ -124,6 +179,16 @@
 
 		</plugins>
 	</build>
+
+	<properties>
+		<configuration.type>debug</configuration.type>
+		<toolchain.compiler>gcc</toolchain.compiler>
+		<src.main>src/main/cpp</src.main>
+		<blacktie.main.libs>atmibroker-idl</blacktie.main.libs>
+		<blacktie.test.libs>atmibroker-idl</blacktie.test.libs>
+		<failOnErrorTests>true</failOnErrorTests>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>

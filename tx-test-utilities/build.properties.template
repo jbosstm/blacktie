@@ -1,4 +1,0 @@
-configuration.type=debug|release
-toolchain.compiler=gcc|msvc
-test.output.type=executable
-failOnErrorTests=false|true
