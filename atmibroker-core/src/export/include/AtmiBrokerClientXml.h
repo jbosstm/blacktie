@@ -24,7 +24,7 @@
 #define AtmiBroker_CLIENT_XML_H_
 
 #include <vector>
-#include "atmiBrokerMacro.h"
+#include "atmiBrokerCoreMacro.h"
 
 struct _client_server_info {
 	char * serverName;
@@ -32,7 +32,7 @@ struct _client_server_info {
 };
 typedef _client_server_info ClientServerInfo;
 
-class ATMIBROKER_DLL AtmiBrokerClientXml {
+class ATMIBROKER_CORE_DLL AtmiBrokerClientXml {
 public:
 	AtmiBrokerClientXml();
 
@@ -41,8 +41,8 @@ public:
 	void parseXmlDescriptor(std::vector<ClientServerInfo*>*, const char * aDescriptorFileName);
 };
 
-extern ATMIBROKER_DLL int clientMaxChannels;
-extern ATMIBROKER_DLL int clientMaxSuppliers;
-extern ATMIBROKER_DLL int clientMaxConsumers;
+extern ATMIBROKER_CORE_DLL int clientMaxChannels;
+extern ATMIBROKER_CORE_DLL int clientMaxSuppliers;
+extern ATMIBROKER_CORE_DLL int clientMaxConsumers;
 
 #endif

@@ -23,7 +23,7 @@
 #ifndef AtmiBroker_SERVER_XML_H_
 #define AtmiBroker_SERVER_XML_H_
 
-#include "atmiBrokerMacro.h"
+#include "atmiBrokerCoreMacro.h"
 #include <string.h>
 #include <vector>
 
@@ -39,7 +39,7 @@ struct ServerMetadata {
 	std::vector<std::string> serviceNames;
 };
 
-class ATMIBROKER_DLL AtmiBrokerServerXml {
+class ATMIBROKER_CORE_DLL AtmiBrokerServerXml {
 public:
 
 	AtmiBrokerServerXml();
@@ -49,9 +49,9 @@ public:
 	void parseXmlDescriptor(ServerMetadata*, const char * aDescriptorFileName);
 };
 
-extern ATMIBROKER_DLL char server[30];
-extern ATMIBROKER_DLL int serverMaxChannels;
-extern ATMIBROKER_DLL int serverMaxSuppliers;
-extern ATMIBROKER_DLL int serverMaxConsumers;
+extern ATMIBROKER_CORE_DLL char server[30];
+extern ATMIBROKER_CORE_DLL int serverMaxChannels;
+extern ATMIBROKER_CORE_DLL int serverMaxSuppliers;
+extern ATMIBROKER_CORE_DLL int serverMaxConsumers;
 
 #endif
