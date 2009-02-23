@@ -26,6 +26,8 @@
 #include <stdarg.h>
 #include <iostream>
 
+#include "log4cxx/logger.h"
+
 #include "ThreadLocalStorage.h"
 #include "tx.h"
 #include "xatmi.h"
@@ -34,10 +36,7 @@
 #include "AtmiBrokerServerControl.h"
 #include "AtmiBrokerClient.h"
 #include "AtmiBrokerServer.h"
-#include "ServiceWrapper.h"
 #include "AtmiBrokerMem.h"
-#include "log4cxx/logger.h"
-
 
 // Global state
 int _tperrno = 0;

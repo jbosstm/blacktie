@@ -34,16 +34,17 @@
 
 #include "atmiBrokerMacro.h"
 
+#include <iostream>
+#include <vector>
+
 #ifdef TAO_COMP
 #include "AtmiBrokerS.h"
 #endif
 
-#include <iostream>
-#include <vector>
 #include "xatmi.h"
 #include "AtmiBrokerServerXml.h"
 #include "ServiceDispatcherPool.h"
-#include "CorbaConnection.h"
+#include "ConnectionImpl.h"
 
 struct _service_data {
 	char* serviceName;
@@ -89,8 +90,10 @@ public:
 	virtual void unadvertiseService(char * serviceName);
 
 	bool isAdvertised(char * serviceName);
+	int block();
 
 private:
+	ConnectionImpl* serverConnection;
 	void (*getServiceMethod(const char * aServiceName))(TPSVCINFO *);
 	void addServiceDispatcherPool(char*& aServiceName, ServiceDispatcherPool*& refPtr, void(*func)(TPSVCINFO *));
 	ServiceDispatcherPool* getServiceDispatcherPool(const char * aServiceName);
@@ -109,7 +112,6 @@ private:
 };
 
 // SERVER
-extern CORBA_CONNECTION* serverConnection;
 extern AtmiBrokerServer * ptrServer;
 
 #endif

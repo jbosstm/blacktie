@@ -24,17 +24,16 @@
 #include "log4cxx/propertyconfigurator.h"
 #include "log4cxx/logger.h"
 #include "log4cxx/logmanager.h"
-#include "userlogc.h"
+
 #include "AtmiBrokerClient.h"
-#include "SessionImpl.h"
+#include "ConnectionImpl.h"
 #include "xatmi.h"
-#include "OrbManagement.h"
+#include "userlog.h"
 #include "AtmiBrokerClientControl.h"
 #include "AtmiBrokerMem.h"
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerOTS.h"
 
-CORBA_CONNECTION* clientConnection;
 AtmiBrokerClient * ptrAtmiBrokerClient;
 
 log4cxx::LoggerPtr loggerAtmiBrokerClient(log4cxx::Logger::getLogger("AtmiBrokerClient"));
@@ -49,14 +48,8 @@ void client_sigint_handler_callback(int sig_type) {
 
 int clientinit() {
 	int toReturn = 0;
-	if (!loggerInitialized) {
-		if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG") != NULL) {
-			log4cxx::PropertyConfigurator::configure(AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG"));
-		} else {
-			log4cxx::BasicConfigurator::configure();
-		}
-		loggerInitialized = true;
-	}
+
+	initializeLogger();
 
 	if (ptrAtmiBrokerClient == NULL) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit called");
@@ -88,7 +81,7 @@ int clientdone() {
 AtmiBrokerClient::AtmiBrokerClient() {
 	try {
 
-		clientConnection = AtmiBrokerOTS::init_orb((char*) "client");
+		clientConnection = new ConnectionImpl((char*) "client");
 
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "constructor ");
 
@@ -117,8 +110,7 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleted services");
 
 	if (clientConnection) {
-		// DISCARD THE CORBA_CONNECTION
-		shutdownBindings(clientConnection);
+		delete clientConnection;
 		clientConnection = NULL;
 	}
 	clientInitialized = false;
@@ -128,7 +120,7 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 
 Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
 	id = nextSessionId++;
-	SessionImpl* session = new SessionImpl(clientConnection, id, serviceName);
+	Session* session = clientConnection->createSession(id, serviceName);
 	sessionMap[id] = session;
 	return session;
 }
@@ -139,9 +131,7 @@ Session* AtmiBrokerClient::getSession(int id) {
 
 void AtmiBrokerClient::closeSession(int id) {
 	if (sessionMap[id]) {
-		SessionImpl* session = dynamic_cast<SessionImpl*> (sessionMap[id]);
-		delete session;
+		delete sessionMap[id];
 		sessionMap[id] = NULL;
-
 	}
 }

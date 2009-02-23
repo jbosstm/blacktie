@@ -15,30 +15,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "ServiceDispatcher.h"
-#include "ServiceWrapper.h"
+#ifndef ConnectionImpl_H_
+#define ConnectionImpl_H_
 
-log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger("ServiceDispatcher"));
+#include "log4cxx/logger.h"
+#include "CorbaConnection.h"
+#include "Connection.h"
 
-ServiceDispatcher::ServiceDispatcher(Connection* connection, Destination* serviceQueue, char *serviceName, void(*func)(TPSVCINFO *)) :
-	m_serviceQueue(serviceQueue), m_shutdown(false) {
-	m_service = new ServiceWrapper(connection, serviceName, func);
-}
+class ConnectionImpl: public virtual Connection {
+public:
+	ConnectionImpl(char* id);
+	virtual ~ConnectionImpl();
 
-int ServiceDispatcher::svc(void) {
-	while (!m_shutdown) {
-		MESSAGE message = m_serviceQueue->receive(false);
-		if (!m_shutdown) {
-			try {
-				m_service->onMessage(message);
-			} catch (...) {
-				LOG4CXX_ERROR(logger, (char*) "Service Dispatcher caught error running during onMessage");
-			}
-		}
-	}
-	return 0;
-}
+	Session* createSession(int id, char* serviceName);
 
-void ServiceDispatcher::shutdown() {
-	m_shutdown = true;
-}
+	Session* createSession();
+
+	int block();
+
+	CORBA_CONNECTION* getRealConnection();
+private:
+	static log4cxx::LoggerPtr logger;
+	CORBA_CONNECTION* connection;
+};
+
+#endif

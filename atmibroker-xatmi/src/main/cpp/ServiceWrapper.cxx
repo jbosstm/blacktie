@@ -23,10 +23,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "tx.h"
 #include "ServiceWrapper.h"
-#include "SessionImpl.h"
-#include "userlog.h"
 #include "ThreadLocalStorage.h"
 #include "AtmiBrokerOTS.h"
 
@@ -34,10 +31,10 @@ log4cxx::LoggerPtr ServiceWrapper::logger(log4cxx::Logger::getLogger("ServiceWra
 
 // ServiceWrapper constructor
 //
-ServiceWrapper::ServiceWrapper(CORBA_CONNECTION* connection, char *serviceName, void(*func)(TPSVCINFO *)) {
-	m_connection = connection;
-	m_serviceName = serviceName;
-	m_func = func;
+ServiceWrapper::ServiceWrapper(Connection* connection, char *serviceName, void(*func)(TPSVCINFO *)) {
+	this->connection = connection;
+	this->serviceName = serviceName;
+	this->func = func;
 	session = NULL;
 }
 
@@ -49,14 +46,14 @@ ServiceWrapper::~ServiceWrapper() {
 }
 
 void ServiceWrapper::onMessage(MESSAGE message) {
-	userlog(log4cxx::Level::getDebug(), logger, (char*) "svc()");
+	LOG4CXX_DEBUG(logger, (char*) "svc()");
 
 	// INITIALISE THE SENDER AND RECEIVER FOR THIS CONVERSATION
-	session = new SessionImpl(m_connection, -1);
+	session = connection->createSession();
 	if (message.replyto) {
-		userlog(log4cxx::Level::getDebug(), logger, (char*) "   replyTo = ", message.replyto);
+		LOG4CXX_DEBUG(logger, (char*) "   replyTo = " << message.replyto);
 	} else {
-		userlog(log4cxx::Level::getDebug(), logger, (char*) "   replyTo = NULL");
+		LOG4CXX_DEBUG(logger, (char*) "   replyTo = NULL");
 	}
 	session->setSendTo((char*) message.replyto);
 
@@ -66,14 +63,14 @@ void ServiceWrapper::onMessage(MESSAGE message) {
 	long ilen = message.len;
 	long flags = message.flags;
 	void* control = message.control;
-	userlog(log4cxx::Level::getDebug(), logger, (char*) "   idata = %p", idata);
-	userlog(log4cxx::Level::getDebug(), logger, (char*) "   ilen = %d", ilen);
-	userlog(log4cxx::Level::getDebug(), logger, (char*) "   flags = %d", flags);
+	LOG4CXX_DEBUG(logger, (char*) "   idata = %p" << idata);
+	LOG4CXX_DEBUG(logger, (char*) "   ilen = %d" << ilen);
+	LOG4CXX_DEBUG(logger, (char*) "   flags = %d" << flags);
 
 	// PREPARE THE STRUCT FOR SENDING TO THE CLIENT
 	TPSVCINFO tpsvcinfo;
 	memset(&tpsvcinfo, '\0', sizeof(tpsvcinfo));
-	strcpy(tpsvcinfo.name, m_serviceName);
+	strcpy(tpsvcinfo.name, this->serviceName);
 	tpsvcinfo.flags = flags;
 	tpsvcinfo.data = idata;
 	tpsvcinfo.len = ilen;
@@ -93,7 +90,7 @@ void ServiceWrapper::onMessage(MESSAGE message) {
 	setSpecific(SVC_SES, session);
 	AtmiBrokerOTS::get_instance()->rm_resume();
 	try {
-		m_func(&tpsvcinfo);
+		this->func(&tpsvcinfo);
 	} catch (...) {
 		LOG4CXX_ERROR(logger, (char*) "Service Wrapper caught error running during onMessage");
 	}
@@ -104,8 +101,7 @@ void ServiceWrapper::onMessage(MESSAGE message) {
 
 	// CLEAN UP THE SENDER AND RECEIVER FOR THIS CLIENT
 	if (session) {
-		SessionImpl* session = dynamic_cast<SessionImpl*> (this->session);
-		delete session;
+		delete this->session;
 		this->session = NULL;
 		LOG4CXX_DEBUG(logger, (char*) "ServiceWrapper session closed");
 	}

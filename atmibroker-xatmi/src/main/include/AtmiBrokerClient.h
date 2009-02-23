@@ -31,6 +31,7 @@
 #include <vector>
 #include <map>
 
+#include "Connection.h"
 #include "Session.h"
 #include "AtmiBrokerClientXml.h"
 
@@ -42,13 +43,13 @@ public:
 	Session* getSession(int id);
 	void closeSession(int id);
 protected:
+	Connection* clientConnection;
 	std::vector<ClientServerInfo*> clientServerVector;
 	std::map<int, Session*> sessionMap;
 	int nextSessionId;
 };
 
 // CLIENT
-extern CORBA_CONNECTION* clientConnection;
-extern AtmiBrokerClient * ptrAtmiBrokerClient;
+extern AtmiBrokerClient* ptrAtmiBrokerClient;
 
 #endif

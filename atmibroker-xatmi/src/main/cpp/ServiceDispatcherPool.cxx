@@ -37,7 +37,7 @@ int MAX_SERVICE_CACHE_SIZE = 1;
 // initialiser for all the virtual base class constructors that
 // require arguments, even those that we inherit indirectly.
 //
-ServiceDispatcherPool::ServiceDispatcherPool(CORBA_CONNECTION* connection, Destination* destination, char *serviceName, void(*func)(TPSVCINFO *)) {
+ServiceDispatcherPool::ServiceDispatcherPool(Connection* connection, Destination* destination, char *serviceName, void(*func)(TPSVCINFO *)) {
 	this->serviceName = serviceName;
 	LOG4CXX_DEBUG(logger, (char*) "constructor: " << serviceName);
 	serviceInfo.poolSize = MAX_SERVICE_CACHE_SIZE;
@@ -47,7 +47,7 @@ ServiceDispatcherPool::ServiceDispatcherPool(CORBA_CONNECTION* connection, Desti
 	strncpy(serviceConfigFilename, serviceName, XATMI_SERVICE_NAME_LENGTH);
 	strcat(serviceConfigFilename, ".xml");
 	LOG4CXX_DEBUG(logger, (char*) "loading: " << serviceConfigFilename);
-	
+
 	AtmiBrokerServiceXml aAtmiBrokerServiceXml;
 	aAtmiBrokerServiceXml.parseXmlDescriptor(&serviceInfo, serviceConfigFilename);
 	free(serviceConfigFilename);

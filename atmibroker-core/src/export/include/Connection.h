@@ -15,30 +15,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "ServiceDispatcher.h"
-#include "ServiceWrapper.h"
 
-log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger("ServiceDispatcher"));
+#ifndef CONNECTION_H
+#define CONNECTION_H
 
-ServiceDispatcher::ServiceDispatcher(Connection* connection, Destination* serviceQueue, char *serviceName, void(*func)(TPSVCINFO *)) :
-	m_serviceQueue(serviceQueue), m_shutdown(false) {
-	m_service = new ServiceWrapper(connection, serviceName, func);
-}
+#include "atmiBrokerCoreMacro.h"
 
-int ServiceDispatcher::svc(void) {
-	while (!m_shutdown) {
-		MESSAGE message = m_serviceQueue->receive(false);
-		if (!m_shutdown) {
-			try {
-				m_service->onMessage(message);
-			} catch (...) {
-				LOG4CXX_ERROR(logger, (char*) "Service Dispatcher caught error running during onMessage");
-			}
-		}
-	}
-	return 0;
-}
+#include "Session.h"
 
-void ServiceDispatcher::shutdown() {
-	m_shutdown = true;
-}
+class Connection {
+public:
+	virtual Session* createSession(int id, char* serviceName) = 0;
+	virtual Session* createSession() = 0;
+	virtual int block() = 0;
+};
+
+#endif

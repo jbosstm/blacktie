@@ -26,17 +26,19 @@
 #include <stdarg.h>
 #include <iostream>
 
+#include "log4cxx/logger.h"
+#include "log4cxx/basicconfigurator.h"
+#include "log4cxx/propertyconfigurator.h"
+#include "log4cxx/logmanager.h"
+
 #include "userlog.h"
 extern "C" {
 #include "userlogc.h"
 }
-
-#include "log4cxx/logger.h"
+#include "AtmiBrokerEnv.h"
 
 log4cxx::LoggerPtr loggerAtmiBrokerLogc(log4cxx::Logger::getLogger("AtmiBrokerLogc"));
 
-// COMMON
-extern "C"ATMIBROKER_CORE_DLL
 bool loggerInitialized;
 
 extern "C"ATMIBROKER_CORE_DLL
@@ -48,6 +50,17 @@ void userlogc(const char * format, ...) {
 		vsprintf(str, format, args);
 		va_end(args);
 		LOG4CXX_LOGLS(loggerAtmiBrokerLogc, log4cxx::Level::getInfo(), str);
+	}
+}
+
+extern void initializeLogger() {
+	if (!loggerInitialized) {
+		if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG") != NULL) {
+			log4cxx::PropertyConfigurator::configure(AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG"));
+		} else {
+			log4cxx::BasicConfigurator::configure();
+		}
+		loggerInitialized = true;
 	}
 }
 
