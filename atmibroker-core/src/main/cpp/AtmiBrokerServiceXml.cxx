@@ -92,29 +92,35 @@ static void XMLCALL characterData(void *userData, const char *cdata, int len) {
 void AtmiBrokerServiceXml::parseXmlDescriptor(SVCINFO* aServiceStructPtr, const char * aDescriptorFileName) {
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "in parseXmlDescriptor() %s", aDescriptorFileName);
 
+	char* serviceConfigFilename = (char*) malloc(25); // TODO this is the length of the service + 10
+	memset(serviceConfigFilename, '\0', 25);
+	strncpy(serviceConfigFilename, aDescriptorFileName, 15); // TODO this is the length of the service
+	strcat(serviceConfigFilename, ".xml");
+	LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "loading: " << serviceConfigFilename);
+
 	struct stat s; /* file stats */
-	FILE *aDescriptorFile = fopen(aDescriptorFileName, "r");
+	FILE *aDescriptorFile = fopen(serviceConfigFilename, "r");
 
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "read file %p", aDescriptorFile);
 
 	if (!aDescriptorFile) {
-		userlog(log4cxx::Level::getWarn(), loggerAtmiBrokerServiceXml, (char*) "parseXmlDescriptor could not load service config %s", aDescriptorFileName);
+		userlog(log4cxx::Level::getWarn(), loggerAtmiBrokerServiceXml, (char*) "parseXmlDescriptor could not load service config %s", serviceConfigFilename);
 		return;
 	}
 	/* Use fstat to obtain the file size */
 	if (fstat(fileno(aDescriptorFile), &s) != 0) {
 		/* fstat failed */
-		userlog(log4cxx::Level::getError(), loggerAtmiBrokerServiceXml, (char*) "loadfile: fstat failed on %s", aDescriptorFileName);
+		userlog(log4cxx::Level::getError(), loggerAtmiBrokerServiceXml, (char*) "loadfile: fstat failed on %s", serviceConfigFilename);
 	}
 	if (s.st_size == 0) {
-		userlog(log4cxx::Level::getError(), loggerAtmiBrokerServiceXml, (char*) "loadfile: file %s is empty", aDescriptorFileName);
+		userlog(log4cxx::Level::getError(), loggerAtmiBrokerServiceXml, (char*) "loadfile: file %s is empty", serviceConfigFilename);
 	}
-	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "loadfile: file %s is %d long", aDescriptorFileName, s.st_size);
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "loadfile: file %s is %d long", serviceConfigFilename, s.st_size);
 
 	char *buf = (char *) malloc(sizeof(char) * s.st_size);
 	if (!buf) {
 		/* malloc failed */
-		userlog(log4cxx::Level::getError(), loggerAtmiBrokerServiceXml, (char*) "loadfile: Could not allocate enough memory to load file %s", aDescriptorFileName);
+		userlog(log4cxx::Level::getError(), loggerAtmiBrokerServiceXml, (char*) "loadfile: Could not allocate enough memory to load file %s", serviceConfigFilename);
 	}
 	for (unsigned int i = 0; i < sizeof(buf); i++)
 		*(buf + i) = '\0';
@@ -144,6 +150,7 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(SVCINFO* aServiceStructPtr, const 
 	fflush(aDescriptorFile);
 	fclose(aDescriptorFile);
 
-	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "leaving parseXmlDescriptor() %s", aDescriptorFileName);
+	free(serviceConfigFilename);
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "leaving parseXmlDescriptor() %s", serviceConfigFilename);
 }
 
