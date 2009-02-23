@@ -35,7 +35,6 @@
 #include "AtmiBrokerServer.h"
 #include "AtmiBrokerPoaFac.h"
 #include "AtmiBrokerEnv.h"
-#include "OrbManagement.h"
 #include "userlog.h"
 #include "AtmiBrokerServerControl.h"
 #include "AtmiBrokerMem.h"

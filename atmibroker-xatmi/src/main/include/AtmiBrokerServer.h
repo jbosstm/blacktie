@@ -39,12 +39,12 @@
 #include "AtmiBrokerS.h"
 #endif
 #include "CorbaConnection.h"
+#include "ConnectionImpl.h"
 
 #include "xatmi.h"
 #include "AtmiBrokerServerXml.h"
 #include "AtmiBrokerServiceXml.h"
 #include "Destination.h"
-#include "ConnectionImpl.h"
 #include "ServiceDispatcher.h"
 
 struct _service_data {
