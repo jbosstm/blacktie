@@ -21,7 +21,7 @@
 
 log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger("ServiceDispatcher"));
 
-ServiceDispatcher::ServiceDispatcher(CONNECTION* connection, Destination* serviceQueue, char *serviceName, void(*func)(TPSVCINFO *)) :
+ServiceDispatcher::ServiceDispatcher(CORBA_CONNECTION* connection, Destination* serviceQueue, char *serviceName, void(*func)(TPSVCINFO *)) :
 	m_serviceQueue(serviceQueue), m_shutdown(false) {
 	m_service = new ServiceWrapper(connection, serviceName, func);
 }

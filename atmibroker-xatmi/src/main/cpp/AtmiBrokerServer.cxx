@@ -31,15 +31,12 @@
 #include <string>
 #include <queue>
 #include "AtmiBrokerServer.h"
-#include "AtmiBroker.h"
 #include "AtmiBrokerPoaFac.h"
 #include "AtmiBrokerEnv.h"
 #include "log4cxx/logger.h"
 #include "EndpointQueue.h"
 #include "OrbManagement.h"
-#include "AtmiBroker.h"
 #include "userlog.h"
-#include "Connection.h"
 #include "AtmiBrokerServerControl.h"
 #include "AtmiBrokerMem.h"
 #include "AtmiBrokerEnv.h"
@@ -52,7 +49,7 @@
 
 log4cxx::LoggerPtr loggerAtmiBrokerServer(log4cxx::Logger::getLogger("AtmiBrokerServer"));
 AtmiBrokerServer * ptrServer = NULL;
-CONNECTION* serverConnection;
+CORBA_CONNECTION* serverConnection;
 bool serverInitialized = false;
 PortableServer::POA_var server_poa;
 

@@ -37,7 +37,7 @@ int MAX_SERVICE_CACHE_SIZE = 1;
 // initialiser for all the virtual base class constructors that
 // require arguments, even those that we inherit indirectly.
 //
-ServiceDispatcherPool::ServiceDispatcherPool(CONNECTION* connection, Destination* destination, char *serviceName, void(*func)(TPSVCINFO *)) {
+ServiceDispatcherPool::ServiceDispatcherPool(CORBA_CONNECTION* connection, Destination* destination, char *serviceName, void(*func)(TPSVCINFO *)) {
 	this->serviceName = serviceName;
 	LOG4CXX_DEBUG(logger, (char*) "constructor: " << serviceName);
 	serviceInfo.poolSize = MAX_SERVICE_CACHE_SIZE;

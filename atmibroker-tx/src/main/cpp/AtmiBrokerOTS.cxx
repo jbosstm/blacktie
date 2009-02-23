@@ -98,7 +98,7 @@ AtmiBrokerOTS::~AtmiBrokerOTS() {
 	 */
 }
 
-CONNECTION* AtmiBrokerOTS::init_orb(char* name) {
+CORBA_CONNECTION* AtmiBrokerOTS::init_orb(char* name) {
 	register_tx_interceptors(name);
 	return ::initOrb(name);
 }

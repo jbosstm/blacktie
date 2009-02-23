@@ -32,7 +32,7 @@
 #define ATMIBROKER_SERVICEIMPL_H_
 
 #include "xatmi.h"
-#include "Connection.h"
+#include "CorbaConnection.h"
 #include "MessageListener.h"
 #include "Session.h"
 #include "SessionImpl.h"
@@ -40,13 +40,13 @@
 
 class ServiceWrapper: public virtual MessageListener {
 public:
-	ServiceWrapper(CONNECTION* connection, char *serviceName, void(*func)(TPSVCINFO *));
+	ServiceWrapper(CORBA_CONNECTION* connection, char *serviceName, void(*func)(TPSVCINFO *));
 	virtual ~ServiceWrapper();
 	void onMessage(MESSAGE message);
 	Session* getSession();
 private:
 	static log4cxx::LoggerPtr logger;
-	CONNECTION* m_connection;
+	CORBA_CONNECTION* m_connection;
 	char* m_serviceName;
 	void (*m_func)(TPSVCINFO *);
 	Session* session;

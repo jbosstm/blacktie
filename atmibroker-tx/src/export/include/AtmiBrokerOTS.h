@@ -43,7 +43,7 @@
 #include <iostream>
 #include <vector>
 
-#include "Connection.h"
+#include "CorbaConnection.h"
 
 #include "CurrentImpl.h"
 #include "XAResourceManagerFactory.h"
@@ -96,14 +96,14 @@ public:
 	static AtmiBrokerOTS* get_instance();
 	static void discard_instance();
 
-	static CONNECTION* init_orb(char* name);
+	static CORBA_CONNECTION* init_orb(char* name);
 	CORBA::ORB_ptr getOrb();
 	CosNaming::NamingContextExt_ptr getNamingContextExt();
 	CosNaming::NamingContext_ptr getNamingContext();
 
 private:
 	void createTransactionPolicy();
-	CONNECTION* ots_connection;
+	CORBA_CONNECTION* ots_connection;
 
 	// OTS References
 	long nextControlId;

@@ -16,12 +16,12 @@
  * MA  02110-1301, USA.
  */
 
-#ifndef CONNECTION_H
-#define CONNECTION_H
+#ifndef CORBA_CONNECTION_H
+#define CORBA_CONNECTION_H
 
 #include "atmiBrokerCoreMacro.h"
 
-struct ATMIBROKER_CORE_DLL connection_t {
+struct ATMIBROKER_CORE_DLL corba_connection_t {
 	void* orbRef;
 	void* root_poa;
 	void* root_poa_manager;
@@ -31,6 +31,6 @@ struct ATMIBROKER_CORE_DLL connection_t {
 	void* worker;
 	void* poaFactory;
 };
-typedef struct ATMIBROKER_CORE_DLL connection_t CONNECTION;
+typedef struct ATMIBROKER_CORE_DLL corba_connection_t CORBA_CONNECTION;
 
 #endif

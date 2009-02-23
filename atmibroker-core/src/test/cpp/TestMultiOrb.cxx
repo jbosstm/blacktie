@@ -40,8 +40,8 @@ void TestMultiOrb::tearDown() {
 
 void TestMultiOrb::test() {
 	try {
-		CONNECTION* serverConnection = initOrb((char*) "client");
-		CONNECTION* clientConnection = initOrb((char*) "server");
+		CORBA_CONNECTION* serverConnection = initOrb((char*) "client");
+		CORBA_CONNECTION* clientConnection = initOrb((char*) "server");
 		shutdownBindings(serverConnection);
 		serverConnection = NULL;
 		shutdownBindings(clientConnection);
@@ -53,10 +53,10 @@ void TestMultiOrb::test() {
 
 void TestMultiOrb::test_manyorb() {
 	for (int i = 0; i < 10; i++) {
-		CONNECTION* serverConnection = initOrb((char*) "server");
+		CORBA_CONNECTION* serverConnection = initOrb((char*) "server");
 		AtmiBrokerPoaFac* serverPoaFactory = new AtmiBrokerPoaFac();
 		PortableServer::POA_var server_poa = serverPoaFactory->createServerPoa(((CORBA::ORB_ptr) serverConnection->orbRef), "foo", ((PortableServer::POA_ptr) serverConnection->root_poa), ((PortableServer::POAManager_ptr) serverConnection->root_poa_manager));
-		CONNECTION* clientConnection = initOrb((char*) "client");
+		CORBA_CONNECTION* clientConnection = initOrb((char*) "client");
 
 		shutdownBindings(serverConnection);
 		serverConnection = NULL;

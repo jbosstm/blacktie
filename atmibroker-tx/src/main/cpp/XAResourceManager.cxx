@@ -38,7 +38,7 @@ static int compareXids(XID * xid1, XID * xid2)
 }
 
 XAResourceManager::XAResourceManager(
-        CONNECTION* connection,
+        CORBA_CONNECTION* connection,
         const char * name,
         const char * openString,
         const char * closeString,

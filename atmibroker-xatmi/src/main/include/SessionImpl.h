@@ -19,7 +19,7 @@
 #define SessionImpl_H_
 
 #include "log4cxx/logger.h"
-#include "Connection.h"
+#include "CorbaConnection.h"
 #include "Session.h"
 #include "SenderImpl.h"
 #include "ReceiverImpl.h"
@@ -27,9 +27,9 @@
 
 class SessionImpl: public virtual Session {
 public:
-	SessionImpl(CONNECTION* connection, int id);
+	SessionImpl(CORBA_CONNECTION* connection, int id);
 
-	SessionImpl(CONNECTION* connection, int id, const char* service);
+	SessionImpl(CORBA_CONNECTION* connection, int id, const char* service);
 
 	virtual ~SessionImpl();
 
@@ -45,7 +45,7 @@ public:
 private:
 	static log4cxx::LoggerPtr logger;
 	int id;
-	CONNECTION* connection;
+	CORBA_CONNECTION* connection;
 	ReceiverImpl* queueReceiver;
 	SenderImpl* queueSender;
 	EndpointQueue* temporaryQueue;

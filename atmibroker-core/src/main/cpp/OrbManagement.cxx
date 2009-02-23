@@ -28,10 +28,10 @@
 
 log4cxx::LoggerPtr loggerOrbManagement(log4cxx::Logger::getLogger("OrbManagment"));
 
-CONNECTION* initOrb(char* connectionName) {
+CORBA_CONNECTION* initOrb(char* connectionName) {
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "initOrb");
 
-	CONNECTION* connection = new CONNECTION;
+	CORBA_CONNECTION* connection = new CORBA_CONNECTION;
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "initOrb initing ORB ");
 
 	std::string values = AtmiBrokerEnv::get_instance()->getenv((char*) "ORBOPT");
@@ -97,7 +97,7 @@ CONNECTION* initOrb(char* connectionName) {
 	return connection;
 }
 
-void shutdownBindings(CONNECTION* connection) {
+void shutdownBindings(CORBA_CONNECTION* connection) {
 	LOG4CXX_DEBUG(loggerOrbManagement, "Closing Bindings");
 
 	if (connection) {

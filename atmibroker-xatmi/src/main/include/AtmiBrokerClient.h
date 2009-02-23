@@ -48,7 +48,7 @@ protected:
 };
 
 // CLIENT
-extern CONNECTION* clientConnection;
+extern CORBA_CONNECTION* clientConnection;
 extern AtmiBrokerClient * ptrAtmiBrokerClient;
 
 #endif

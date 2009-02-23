@@ -40,16 +40,16 @@ public:
 	~XAResourceManagerFactory();
 
 	XAResourceManager * findRM(long);
-	void createRMs(CONNECTION *) throw (RMException);
-	void destroyRMs(CONNECTION *);
-	void startRMs(CONNECTION *);
-	void endRMs(CONNECTION *);
-	void suspendRMs(CONNECTION *);
-	void resumeRMs(CONNECTION *);
+	void createRMs(CORBA_CONNECTION *) throw (RMException);
+	void destroyRMs(CORBA_CONNECTION *);
+	void startRMs(CORBA_CONNECTION *);
+	void endRMs(CORBA_CONNECTION *);
+	void suspendRMs(CORBA_CONNECTION *);
+	void resumeRMs(CORBA_CONNECTION *);
 
 private:
         ResourceManagerMap rms_;
 
-	XAResourceManager * createRM(CONNECTION *, xarm_config_t *) throw (RMException);
+	XAResourceManager * createRM(CORBA_CONNECTION *, xarm_config_t *) throw (RMException);
 };
 #endif	// XARESOURCEADAPTORFACTORY_H

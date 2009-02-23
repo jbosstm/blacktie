@@ -43,7 +43,7 @@
 #include "xatmi.h"
 #include "AtmiBrokerServerXml.h"
 #include "ServiceDispatcherPool.h"
-#include "Connection.h"
+#include "CorbaConnection.h"
 
 struct _service_data {
 	char* serviceName;
@@ -109,7 +109,7 @@ private:
 };
 
 // SERVER
-extern CONNECTION* serverConnection;
+extern CORBA_CONNECTION* serverConnection;
 extern AtmiBrokerServer * ptrServer;
 
 #endif

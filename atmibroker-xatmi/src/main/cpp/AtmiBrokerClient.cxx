@@ -25,7 +25,6 @@
 #include "log4cxx/logger.h"
 #include "log4cxx/logmanager.h"
 #include "userlogc.h"
-#include "AtmiBroker.h"
 #include "AtmiBrokerClient.h"
 #include "SessionImpl.h"
 #include "xatmi.h"
@@ -35,7 +34,7 @@
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerOTS.h"
 
-CONNECTION* clientConnection;
+CORBA_CONNECTION* clientConnection;
 AtmiBrokerClient * ptrAtmiBrokerClient;
 
 log4cxx::LoggerPtr loggerAtmiBrokerClient(log4cxx::Logger::getLogger("AtmiBrokerClient"));
@@ -118,7 +117,7 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleted services");
 
 	if (clientConnection) {
-		// DISCARD THE CONNECTION
+		// DISCARD THE CORBA_CONNECTION
 		shutdownBindings(clientConnection);
 		clientConnection = NULL;
 	}

@@ -39,14 +39,14 @@
 
 #include <queue>
 #include "log4cxx/logger.h"
-#include "Connection.h"
+#include "CorbaConnection.h"
 #include "Destination.h"
 #include "SynchronizableObject.h"
 
 class ATMIBROKER_DLL EndpointQueue: public virtual Destination, public virtual POA_AtmiBroker::EndpointQueue {
 public:
-	EndpointQueue(CONNECTION* connection);
-	EndpointQueue(CONNECTION* connection, void* poa, char* serviceName);
+	EndpointQueue(CORBA_CONNECTION* connection);
+	EndpointQueue(CORBA_CONNECTION* connection, void* poa, char* serviceName);
 	virtual ~EndpointQueue();
 
 	virtual void send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags) throw (CORBA::SystemException );

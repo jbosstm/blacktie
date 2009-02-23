@@ -32,7 +32,6 @@
 #include "Session.h"
 #include "AtmiBrokerClientControl.h"
 #include "AtmiBrokerServerControl.h"
-#include "AtmiBroker.h"
 #include "AtmiBrokerClient.h"
 #include "AtmiBrokerServer.h"
 #include "ServiceWrapper.h"

@@ -25,7 +25,6 @@
 #include <string.h>
 #include "tx.h"
 #include "ServiceWrapper.h"
-#include "AtmiBroker.h"
 #include "SessionImpl.h"
 #include "userlog.h"
 #include "ThreadLocalStorage.h"
@@ -35,7 +34,7 @@ log4cxx::LoggerPtr ServiceWrapper::logger(log4cxx::Logger::getLogger("ServiceWra
 
 // ServiceWrapper constructor
 //
-ServiceWrapper::ServiceWrapper(CONNECTION* connection, char *serviceName, void(*func)(TPSVCINFO *)) {
+ServiceWrapper::ServiceWrapper(CORBA_CONNECTION* connection, char *serviceName, void(*func)(TPSVCINFO *)) {
 	m_connection = connection;
 	m_serviceName = serviceName;
 	m_func = func;

@@ -20,7 +20,7 @@
 
 #include "atmiBrokerTxMacro.h"
 #include "log4cxx/logger.h"
-#include "Connection.h"
+#include "CorbaConnection.h"
 #include "RMException.h"
 #include "XAResourceAdaptorImpl.h"
 
@@ -37,7 +37,7 @@ extern log4cxx::LoggerPtr xaResourceLogger;
 class ATMIBROKER_TX_DLL XAResourceManager
 {
 public:
-        XAResourceManager(CONNECTION *, const char *, const char *, const char *, CORBA::Long, struct xa_switch_t *)
+        XAResourceManager(CORBA_CONNECTION *, const char *, const char *, const char *, CORBA::Long, struct xa_switch_t *)
                 throw (RMException);
         virtual ~XAResourceManager();
 
@@ -54,7 +54,7 @@ private:
 	XABranchMap branches_;
 
         PortableServer::POA_ptr poa_;
-        CONNECTION* connection_;
+        CORBA_CONNECTION* connection_;
         const char *name_;
         const char *openString_;
         const char *closeString_;

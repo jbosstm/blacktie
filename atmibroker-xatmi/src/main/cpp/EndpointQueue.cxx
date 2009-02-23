@@ -39,7 +39,7 @@ log4cxx::LoggerPtr EndpointQueue::logger(log4cxx::Logger::getLogger("EndpointQue
 // initialiser for all the virtual base class constructors that
 // require arguments, even those that we inherit indirectly.
 //
-EndpointQueue::EndpointQueue(CONNECTION* connection) {
+EndpointQueue::EndpointQueue(CORBA_CONNECTION* connection) {
 	shutdown = false;
 	lock = new SynchronizableObject();
 
@@ -53,7 +53,7 @@ EndpointQueue::EndpointQueue(CONNECTION* connection) {
 	setName(orb->object_to_string(queue));
 }
 
-EndpointQueue::EndpointQueue(CONNECTION* connection, void* poa, char* serviceName) {
+EndpointQueue::EndpointQueue(CORBA_CONNECTION* connection, void* poa, char* serviceName) {
 	shutdown = false;
 	thePoa = poa;
 	PortableServer::POA_ptr aFactoryPoaPtr = (PortableServer::POA_ptr) poa;

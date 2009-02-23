@@ -27,7 +27,7 @@
 
 log4cxx::LoggerPtr SessionImpl::logger(log4cxx::Logger::getLogger("SessionImpl"));
 
-SessionImpl::SessionImpl(CONNECTION* connection, int id, const char* serviceName) {
+SessionImpl::SessionImpl(CORBA_CONNECTION* connection, int id, const char* serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor ");
 	this->id = id;
 	this->connection = connection;
@@ -47,7 +47,7 @@ SessionImpl::SessionImpl(CONNECTION* connection, int id, const char* serviceName
 	this->replyTo = temporaryQueue->getName();
 }
 
-SessionImpl::SessionImpl(CONNECTION* connection, int id) {
+SessionImpl::SessionImpl(CORBA_CONNECTION* connection, int id) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor ");
 	this->id = id;
 	this->connection = connection;

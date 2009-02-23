@@ -136,7 +136,7 @@ XAResourceManager * XAResourceManagerFactory::findRM(long id)
 	return (i == rms_.end() ? NULL : i->second);
 }
 
-void XAResourceManagerFactory::destroyRMs(CONNECTION * connection)
+void XAResourceManagerFactory::destroyRMs(CORBA_CONNECTION * connection)
 {
 	ResourceManagerMap::iterator iter;
 
@@ -146,25 +146,25 @@ void XAResourceManagerFactory::destroyRMs(CONNECTION * connection)
 	rms_.clear();
 }
 
-void XAResourceManagerFactory::startRMs(CONNECTION * connection)
+void XAResourceManagerFactory::startRMs(CORBA_CONNECTION * connection)
 {
 	// there is a current transaction (otherwise the call doesn't need to start the RMs
 	_rmiter(rms_, _rm_start, TMNOFLAGS);
 }
-void XAResourceManagerFactory::endRMs(CONNECTION * connection)
+void XAResourceManagerFactory::endRMs(CORBA_CONNECTION * connection)
 {
 	_rmiter(rms_, _rm_end, TMSUCCESS);
 }
-void XAResourceManagerFactory::suspendRMs(CONNECTION * connection)
+void XAResourceManagerFactory::suspendRMs(CORBA_CONNECTION * connection)
 {
 	_rmiter(rms_, _rm_end, TMSUSPEND);
 }
-void XAResourceManagerFactory::resumeRMs(CONNECTION * connection)
+void XAResourceManagerFactory::resumeRMs(CORBA_CONNECTION * connection)
 {
 	_rmiter(rms_, _rm_start, TMRESUME);
 }
 
-void XAResourceManagerFactory::createRMs(CONNECTION * connection) throw (RMException)
+void XAResourceManagerFactory::createRMs(CORBA_CONNECTION * connection) throw (RMException)
 {
 	xarm_config_t * rmp = (xarmp == 0 ? 0 : xarmp->head);
 
@@ -193,7 +193,7 @@ void XAResourceManagerFactory::createRMs(CONNECTION * connection) throw (RMExcep
  * (a branch is created when start on the RM is called).
  */
 XAResourceManager * XAResourceManagerFactory::createRM(
-	CONNECTION * connection,
+	CORBA_CONNECTION * connection,
 	xarm_config_t *rmp)
 	throw (RMException)
 {

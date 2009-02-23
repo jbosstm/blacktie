@@ -20,9 +20,9 @@
 
 #include "atmiBrokerCoreMacro.h"
 
-#include "Connection.h"
+#include "CorbaConnection.h"
 
-extern ATMIBROKER_CORE_DLL CONNECTION* initOrb(char* name);
-extern ATMIBROKER_CORE_DLL void shutdownBindings(CONNECTION* connection);
+extern ATMIBROKER_CORE_DLL CORBA_CONNECTION* initOrb(char* name);
+extern ATMIBROKER_CORE_DLL void shutdownBindings(CORBA_CONNECTION* connection);
 
 #endif

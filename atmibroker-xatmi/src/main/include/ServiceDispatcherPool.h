@@ -37,13 +37,13 @@
 #include "log4cxx/logger.h"
 #include "xatmi.h"
 #include "ServiceDispatcher.h"
-#include "Connection.h"
+#include "CorbaConnection.h"
 #include "Destination.h"
 #include "AtmiBrokerServiceXml.h"
 
 class ATMIBROKER_DLL ServiceDispatcherPool {
 public:
-	ServiceDispatcherPool(CONNECTION* connection, Destination* destination, char *serviceName, void(*func)(TPSVCINFO *));
+	ServiceDispatcherPool(CORBA_CONNECTION* connection, Destination* destination, char *serviceName, void(*func)(TPSVCINFO *));
 	virtual ~ServiceDispatcherPool();
 	SVCINFO get_service_info();
 	Destination* getDestination();
