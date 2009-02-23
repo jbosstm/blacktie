@@ -21,15 +21,22 @@
 
 #include "atmiBrokerCoreMacro.h"
 
+#include <tao/ORB.h>
+#include <tao/Object.h>
+#include <orbsvcs/CosNamingS.h>
+
+#include "Worker.h"
+#include "AtmiBrokerPoaFac.h"
+
 struct ATMIBROKER_CORE_DLL corba_connection_t {
-	void* orbRef;
-	void* root_poa;
-	void* root_poa_manager;
-	void* default_ctx;
-	void* name_ctx;
-	void* callback_poa;
-	void* worker;
-	void* poaFactory;
+	CORBA::ORB_ptr orbRef;
+	PortableServer::POA_ptr root_poa;
+	PortableServer::POAManager_ptr root_poa_manager;
+	CosNaming::NamingContextExt_ptr default_ctx;
+	CosNaming::NamingContext_ptr name_ctx;
+	PortableServer::POA_ptr callback_poa;
+	Worker* worker;
+	AtmiBrokerPoaFac* poaFactory;
 };
 typedef struct ATMIBROKER_CORE_DLL corba_connection_t CORBA_CONNECTION;
 
