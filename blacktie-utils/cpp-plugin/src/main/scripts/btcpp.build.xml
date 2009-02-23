@@ -336,26 +336,8 @@
 		</exec>
 	</target>
 
-
-<!--
-	<target name="_test-gcc" depends="init" unless="is-msvc">
-		<exec dir="target/cpp-test-classes" newenvironment="true" resolveexecutable="true" executable="../testsuite" failonerror="${failOnErrorTests}" output="target/cppunit/run.txt" outputproperty="cppunit-run" logError="true">
-		     atmibroker-idl had this line
-			<redirector output="target/cppunit/run.txt" logError="true" alwayslog="true"/>
-			<env key="LD_LIBRARY_PATH" value="../cxx/lib:../dependencies:../../target/${configuration.type}/${lib.type}" />
-		</exec>
-	</target>
-	<target name="_test-msvc" depends="init" if="is-msvc">
-		<exec dir="target/cpp-test-classes" newenvironment="false" executable="${ATMIBROKER_SRC_DIR}/${project.artifactId}/target/testsuite" failonerror="${failOnErrorTests}" output="target/cppunit/run.txt" outputproperty="cppunit-run" logError="true">
-			<redirector output="target/cppunit/run.txt" logError="true" alwayslog="true"/>
-			<env key="Path" value="${env.Path};..\cxx\lib;..\dependencies;..\..\target\${configuration.type}\${lib.type}" />
-		</exec>
-	</target>
-	-->
-
 	<available property="have-idl" file="${idl.output.dir}" />
 	<available property="have-exports" file="src/export/include" />
-	<available property="have-target-lib-dir" file="target/${configuration.type}/${lib.type}" />
         <target name="copy-idl" if="have-idl">
                 <copy todir="target/classes/include" overwrite="true" failonerror="true">
                         <fileset dir="${idl.output.dir}"/>
@@ -366,8 +348,9 @@
                         <fileset dir="src/export/include"/>
                 </copy>
 	</target>
-        <target name="copy-libs" if="have-target-lib-dir">
-                <copy todir="target/classes/lib" overwrite="true" failonerror="true">
+        <target name="copy-libs">
+		<available property="have-target-lib-dir" file="target/${configuration.type}/${lib.type}" />
+                <copy todir="target/classes/lib" overwrite="true" failonerror="false">
                         <fileset dir="target/${configuration.type}/${lib.type}/" />
                 </copy>
         </target>
