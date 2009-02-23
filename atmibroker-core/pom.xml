@@ -160,14 +160,6 @@
                                                         <goal>unpack-dependencies</goal>
                                                 </goals>
                                                 <configuration>
-<artifactItems>
-<artifactItem>
-<groupId>org.jboss.blacktie</groupId>
-<artifactId>atmibroker-idl</artifactId>
-<version>1.0-M4</version>
-</artifactItem>
-</artifactItems>
-
                                                         <includes>**/*.h,**/*.inl,**/*.cpp,**/*.so*,*.dll</includes>
                                                         <excludes>**/*.class</excludes>
                                                         <outputDirectory>${project.build.directory}/cxx</outputDirectory>
