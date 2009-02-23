@@ -39,14 +39,14 @@
 
 class ServiceWrapper: public virtual MessageListener {
 public:
-	ServiceWrapper(Connection* connection, char *serviceName, void(*func)(TPSVCINFO *));
+	ServiceWrapper(Connection* connection, const char *serviceName, void(*func)(TPSVCINFO *));
 	virtual ~ServiceWrapper();
 	void onMessage(MESSAGE message);
 	Session* getSession();
 private:
 	static log4cxx::LoggerPtr logger;
 	Connection* connection;
-	char* serviceName;
+	const char* serviceName;
 	void (*func)(TPSVCINFO *);
 	Session* session;
 };

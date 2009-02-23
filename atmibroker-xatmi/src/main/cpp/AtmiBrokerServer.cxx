@@ -24,14 +24,15 @@
 // Servant which implements the AtmiBroker::Server interface.
 //
 
+#include <string>
+#include <queue>
+
 #ifdef TAO_COMP
 #include <orbsvcs/CosNamingS.h>
 #endif
 
-#include <string>
-#include <queue>
+#include "log4cxx/logger.h"
 #include "AtmiBrokerServer.h"
-#include "ConnectionImpl.h"
 #include "AtmiBrokerPoaFac.h"
 #include "AtmiBrokerEnv.h"
 #include "EndpointQueue.h"
@@ -42,7 +43,7 @@
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerOTS.h"
 #include "AtmiBrokerPoaFac.h"
-#include "log4cxx/logger.h"
+#include "ServiceWrapper.h"
 
 log4cxx::LoggerPtr loggerAtmiBrokerServer(log4cxx::Logger::getLogger("AtmiBrokerServer"));
 AtmiBrokerServer * ptrServer = NULL;
@@ -97,9 +98,10 @@ int serverdone() {
 AtmiBrokerServer::AtmiBrokerServer() {
 	try {
 		serverConnection = new ConnectionImpl((char*) "server");
+		realConnection = serverConnection->getRealConnection();
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "creating POAs for %s", server);
-		AtmiBrokerPoaFac* serverPoaFactory = (AtmiBrokerPoaFac*) serverConnection->getRealConnection()->poaFactory;
-		this->poa = serverPoaFactory->createServerPoa(((CORBA::ORB_ptr) serverConnection->getRealConnection()->orbRef), server, ((PortableServer::POA_ptr) serverConnection->getRealConnection()->root_poa), ((PortableServer::POAManager_ptr) serverConnection->getRealConnection()->root_poa_manager));
+		AtmiBrokerPoaFac* serverPoaFactory = realConnection->poaFactory;
+		this->poa = serverPoaFactory->createServerPoa(realConnection->orbRef, server, realConnection->root_poa, realConnection->root_poa_manager);
 
 		AtmiBrokerServerXml aAtmiBrokerServerXml;
 		aAtmiBrokerServerXml.parseXmlDescriptor(&serverInfo, (char*) "SERVER.xml");
@@ -109,8 +111,8 @@ AtmiBrokerServer::AtmiBrokerServer() {
 		poa->activate_object_with_id(oid, this);
 		CORBA::Object_var tmp_ref = poa->create_reference_with_id(oid, "IDL:AtmiBroker/Server:1.0");
 
-		CosNaming::Name * name = ((CosNaming::NamingContextExt_ptr) serverConnection->getRealConnection()->default_ctx)->to_name(serverName);
-		((CosNaming::NamingContext_ptr) serverConnection->getRealConnection()->name_ctx)->bind(*name, tmp_ref);
+		CosNaming::Name * name = realConnection->default_ctx->to_name(serverName);
+		realConnection->name_ctx->bind(*name, tmp_ref);
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_init(): finished.");
 
 		serverInitialized = true;
@@ -159,8 +161,8 @@ void AtmiBrokerServer::server_done() throw (CORBA::SystemException ) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_done()");
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "unadvertise " << serverName);
-	CosNaming::Name* name = ((CosNaming::NamingContextExt_ptr) serverConnection->getRealConnection()->default_ctx)->to_name(serverName);
-	((CosNaming::NamingContext_ptr) serverConnection->getRealConnection()->name_ctx)->unbind(*name);
+	CosNaming::Name* name = realConnection->default_ctx->to_name(serverName);
+	realConnection->name_ctx->unbind(*name);
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "unadvertised " << serverName);
 
@@ -216,16 +218,14 @@ bool AtmiBrokerServer::advertiseService(char * serviceName, void(*func)(TPSVCINF
 
 		// create Poa for Service Queue
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "create_service_queue_poa: " << serviceName);
-		AtmiBrokerPoaFac* poaFactory = ((AtmiBrokerPoaFac*) serverConnection->getRealConnection()->poaFactory);
-		PortableServer::POA_ptr aFactoryPoaPtr = poaFactory->createServicePoa((CORBA::ORB_ptr) serverConnection->getRealConnection()->orbRef, serviceName, poa, (PortableServer::POAManager_ptr) serverConnection->getRealConnection()->root_poa_manager);
+		AtmiBrokerPoaFac* poaFactory = realConnection->poaFactory;
+		PortableServer::POA_ptr aFactoryPoaPtr = poaFactory->createServicePoa(realConnection->orbRef, serviceName, poa, realConnection->root_poa_manager);
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "created create_service_factory_poa: " << serviceName);
 
-		Destination* destination = new EndpointQueue(serverConnection->getRealConnection(), aFactoryPoaPtr, serviceName);
-		ServiceDispatcherPool *tmp_factory_servant = new ServiceDispatcherPool(serverConnection, destination, serviceName, func);
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) " tmp_factory_servant " << tmp_factory_servant);
+		Destination* destination = new EndpointQueue(realConnection, aFactoryPoaPtr, serviceName);
 
-		addServiceDispatcherPool(serviceName, tmp_factory_servant, func);
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "created ServiceDispatcherPool " << serviceName);
+		addDestination(destination, func);
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "created destination: " << serviceName);
 
 	} catch (...) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer, (char*) "service has already been advertised, however it appears to be by a different server (possibly with the same name), which is strange... " << serviceName);
@@ -244,13 +244,13 @@ void AtmiBrokerServer::unadvertiseService(char * serviceName) {
 	for (std::vector<char*>::iterator i = advertisedServices.begin(); i != advertisedServices.end(); i++) {
 		if (strcmp(serviceName, (*i)) == 0) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "remove_service_queue: " << serviceName);
-			CosNaming::Name * name = ((CosNaming::NamingContextExt_ptr) serverConnection->getRealConnection()->default_ctx)->to_name(serviceName);
-			((CosNaming::NamingContext_ptr) serverConnection->getRealConnection()->name_ctx)->unbind(*name);
+			CosNaming::Name * name = realConnection->default_ctx->to_name(serviceName);
+			realConnection->name_ctx->unbind(*name);
 
-			ServiceDispatcherPool* toDelete = removeServiceDispatcherPool(serviceName);
-			EndpointQueue* queue = dynamic_cast<EndpointQueue*> (toDelete->getDestination());
+			Destination * destination = removeDestination(serviceName);
+			EndpointQueue* queue = dynamic_cast<EndpointQueue*> (destination);
 			PortableServer::POA_ptr poa = (PortableServer::POA_ptr) queue->getPoa();
-			delete toDelete;
+			delete destination;
 			poa->destroy(true, true);
 			poa = NULL;
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "service Queue removed" << serviceName);
@@ -309,13 +309,14 @@ AtmiBrokerServer::get_all_service_info() throw (CORBA::SystemException ) {
 	AtmiBroker::ServiceInfoSeq_var aServiceInfoSeq = new AtmiBroker::ServiceInfoSeq();
 	aServiceInfoSeq->length(serverInfo.serviceNames.size());
 
-	for (unsigned int i = 0; i < serverInfo.serviceNames.size(); i++) {
-		SVCINFO svcInfo = getServiceDispatcherPool((char*) serverInfo.serviceNames[i].c_str())->get_service_info();
+	int j = 0;
+	for (std::vector<ServiceData>::iterator i = serviceData.begin(); i != serviceData.end(); i++) {
 		AtmiBroker::ServiceInfo_var aServiceInfo = new AtmiBroker::ServiceInfo();
-		aServiceInfo->serviceName = svcInfo.serviceName;
-		aServiceInfo->poolSize = svcInfo.poolSize;
-		aServiceInfo->securityType = svcInfo.securityType;
-		// TODO(*aServiceInfoSeq)[i] = aServiceInfo._retn();
+		aServiceInfo->serviceName = strdup((*i).serviceInfo.serviceName);
+		aServiceInfo->poolSize = (*i).serviceInfo.poolSize;
+		aServiceInfo->securityType = strdup((*i).serviceInfo.securityType);
+		aServiceInfoSeq[j] = aServiceInfo;
+		j++;
 	}
 	return aServiceInfoSeq._retn();
 }
@@ -448,37 +449,61 @@ void AtmiBrokerServer::start_service(const char* service_name) throw (CORBA::Sys
 	}
 }
 
-ServiceDispatcherPool* AtmiBrokerServer::getServiceDispatcherPool(const char * aServiceName) {
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "getServiceDispatcherPool: " << aServiceName);
-
-	for (std::vector<ServiceData>::iterator i = serviceData.begin(); i != serviceData.end(); i++) {
-		if (strncmp((*i).serviceName, aServiceName, XATMI_SERVICE_NAME_LENGTH) == 0) {
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "found: " << (char*) (*i).serviceName);
-			return (*i).serviceQueue;
-		}
-	}
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "getServiceDispatcherPool out: " << aServiceName);
-	return NULL;
-}
-
-void AtmiBrokerServer::addServiceDispatcherPool(char*& aServiceName, ServiceDispatcherPool*& aFactoryPtr, void(*func)(TPSVCINFO *)) {
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "addServiceDispatcherPool: " << aServiceName);
+void AtmiBrokerServer::addDestination(Destination* destination, void(*func)(TPSVCINFO *)) {
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "addDestination: " << destination->getName());
 
 	ServiceData entry;
-	entry.serviceName = aServiceName;
-	entry.serviceQueue = aFactoryPtr;
+	entry.destination = destination;
 	entry.func = func;
+
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "constructor: " << destination->getName());
+	entry.serviceInfo.poolSize = 10; // TODO MAKE A CONSTANT
+
+	AtmiBrokerServiceXml aAtmiBrokerServiceXml;
+	aAtmiBrokerServiceXml.parseXmlDescriptor(&entry.serviceInfo, destination->getName());
+
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "createPool");
+	ServiceWrapper* serviceWrapper = new ServiceWrapper(serverConnection, destination->getName(), func);
+	for (int i = 0; i < entry.serviceInfo.poolSize; i++) {
+		ServiceDispatcher* dispatcher = new ServiceDispatcher(destination);
+		if (dispatcher->activate(THR_NEW_LWP| THR_JOINABLE, 1, 0, ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
+			delete dispatcher;
+			LOG4CXX_ERROR(loggerAtmiBrokerServer, (char*) "Could not start thread pool");
+		} else {
+			dispatcher->setMessageListener(serviceWrapper);
+			entry.dispatchers.push_back(dispatcher);
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) " destination " << destination);
+		}
+	}
+
 	serviceData.push_back(entry);
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "added: " << (char*) aServiceName);
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "added: " << destination->getName());
 }
 
-ServiceDispatcherPool* AtmiBrokerServer::removeServiceDispatcherPool(const char * aServiceName) {
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "removeServiceDispatcherPool: " << aServiceName);
-	ServiceDispatcherPool* toReturn = NULL;
+Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "removeDestination: " << aServiceName);
+	Destination* toReturn = NULL;
 	for (std::vector<ServiceData>::iterator i = serviceData.begin(); i != serviceData.end(); i++) {
-		if (strncmp((*i).serviceName, aServiceName, XATMI_SERVICE_NAME_LENGTH) == 0) {
-			toReturn = (*i).serviceQueue;
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "removing service " << (char*) (*i).serviceName);
+		if (strncmp((*i).destination->getName(), aServiceName, XATMI_SERVICE_NAME_LENGTH) == 0) {
+			toReturn = (*i).destination;
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "removing service " << aServiceName);
+			for (std::vector<ServiceDispatcher*>::iterator j = (*i).dispatchers.begin(); j != (*i).dispatchers.end(); j++) {
+				ServiceDispatcher* dispatcher = (*j);
+				dispatcher->shutdown();
+			}
+
+			// TODO NOTIFY ALL REQUIRED HERE
+			for (std::vector<ServiceDispatcher*>::iterator j = (*i).dispatchers.begin(); j != (*i).dispatchers.end(); j++) {
+				toReturn->disconnect();
+			}
+
+			for (std::vector<ServiceDispatcher*>::iterator j = (*i).dispatchers.begin(); j != (*i).dispatchers.end();) {
+				ServiceDispatcher* dispatcher = (*j);
+				j = (*i).dispatchers.erase(j);
+				dispatcher->wait();
+				delete dispatcher;
+			}
+
 			serviceData.erase(i);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "removed: " << aServiceName);
 			break;
@@ -488,11 +513,11 @@ ServiceDispatcherPool* AtmiBrokerServer::removeServiceDispatcherPool(const char 
 }
 
 void (*AtmiBrokerServer::getServiceMethod(const char * aServiceName))(TPSVCINFO *) {
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "getServiceDispatcherPool: " << aServiceName);
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "getServiceMethod: " << aServiceName);
 
 			for (std::vector<ServiceData>::iterator i = serviceData.begin(); i != serviceData.end(); i++) {
-				if (strncmp((*i).serviceName, aServiceName, XATMI_SERVICE_NAME_LENGTH) == 0) {
-					LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "found: " << (char*) (*i).serviceName);
+				if (strncmp((*i).destination->getName(), aServiceName, XATMI_SERVICE_NAME_LENGTH) == 0) {
+					LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "found: " << aServiceName);
 					return (*i).func;
 				}
 			}

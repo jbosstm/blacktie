@@ -40,16 +40,20 @@
 #ifdef TAO_COMP
 #include "AtmiBrokerS.h"
 #endif
+#include "CorbaConnection.h"
 
 #include "xatmi.h"
 #include "AtmiBrokerServerXml.h"
-#include "ServiceDispatcherPool.h"
+#include "AtmiBrokerServiceXml.h"
+#include "Destination.h"
 #include "ConnectionImpl.h"
+#include "ServiceDispatcher.h"
 
 struct _service_data {
-	char* serviceName;
-	ServiceDispatcherPool* serviceQueue;
+	Destination* destination;
 	void (*func)(TPSVCINFO *);
+	std::vector<ServiceDispatcher*> dispatchers;
+	SVCINFO serviceInfo;
 };
 typedef _service_data ServiceData;
 class ATMIBROKER_DLL AtmiBrokerServer: public virtual POA_AtmiBroker::Server {
@@ -94,10 +98,10 @@ public:
 
 private:
 	ConnectionImpl* serverConnection;
+	CORBA_CONNECTION* realConnection;
 	void (*getServiceMethod(const char * aServiceName))(TPSVCINFO *);
-	void addServiceDispatcherPool(char*& aServiceName, ServiceDispatcherPool*& refPtr, void(*func)(TPSVCINFO *));
-	ServiceDispatcherPool* getServiceDispatcherPool(const char * aServiceName);
-	ServiceDispatcherPool* removeServiceDispatcherPool(const char * aServiceName);
+	void addDestination(Destination* destination, void(*func)(TPSVCINFO *));
+	Destination* removeDestination(const char * aServiceName);
 
 	std::vector<ServiceData> serviceData;
 	std::vector<char*> advertisedServices;

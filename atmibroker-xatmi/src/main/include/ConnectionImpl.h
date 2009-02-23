@@ -24,7 +24,7 @@
 
 class ConnectionImpl: public virtual Connection {
 public:
-	ConnectionImpl(char* id);
+	ConnectionImpl(char* connectionName);
 	virtual ~ConnectionImpl();
 
 	Session* createSession(int id, char* serviceName);

@@ -16,21 +16,24 @@
  * MA  02110-1301, USA.
  */
 #include "ServiceDispatcher.h"
-#include "ServiceWrapper.h"
 
 log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger("ServiceDispatcher"));
 
-ServiceDispatcher::ServiceDispatcher(Connection* connection, Destination* serviceQueue, char *serviceName, void(*func)(TPSVCINFO *)) :
-	m_serviceQueue(serviceQueue), m_shutdown(false) {
-	m_service = new ServiceWrapper(connection, serviceName, func);
+ServiceDispatcher::ServiceDispatcher(Destination* destination) {
+	this->destination = destination;
+	stop = false;
+}
+
+void ServiceDispatcher::setMessageListener(MessageListener* messageListener) {
+	this->service = messageListener;
 }
 
 int ServiceDispatcher::svc(void) {
-	while (!m_shutdown) {
-		MESSAGE message = m_serviceQueue->receive(false);
-		if (!m_shutdown) {
+	while (!stop) {
+		MESSAGE message = destination->receive(false);
+		if (!stop) {
 			try {
-				m_service->onMessage(message);
+				service->onMessage(message);
 			} catch (...) {
 				LOG4CXX_ERROR(logger, (char*) "Service Dispatcher caught error running during onMessage");
 			}
@@ -40,5 +43,5 @@ int ServiceDispatcher::svc(void) {
 }
 
 void ServiceDispatcher::shutdown() {
-	m_shutdown = true;
+	stop = true;
 }

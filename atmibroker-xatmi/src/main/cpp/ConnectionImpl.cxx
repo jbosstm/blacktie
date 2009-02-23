@@ -27,9 +27,9 @@
 
 log4cxx::LoggerPtr ConnectionImpl::logger(log4cxx::Logger::getLogger("ConnectionImpl"));
 
-ConnectionImpl::ConnectionImpl(char* id) {
+ConnectionImpl::ConnectionImpl(char* connectionName) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor");
-	this->connection = AtmiBrokerOTS::init_orb(id);
+	this->connection = AtmiBrokerOTS::init_orb(connectionName);
 }
 
 ConnectionImpl::~ConnectionImpl() {

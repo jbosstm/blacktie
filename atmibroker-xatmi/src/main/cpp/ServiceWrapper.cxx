@@ -31,7 +31,7 @@ log4cxx::LoggerPtr ServiceWrapper::logger(log4cxx::Logger::getLogger("ServiceWra
 
 // ServiceWrapper constructor
 //
-ServiceWrapper::ServiceWrapper(Connection* connection, char *serviceName, void(*func)(TPSVCINFO *)) {
+ServiceWrapper::ServiceWrapper(Connection* connection, const char *serviceName, void(*func)(TPSVCINFO *)) {
 	this->connection = connection;
 	this->serviceName = serviceName;
 	this->func = func;

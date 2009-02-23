@@ -66,11 +66,11 @@ EndpointQueue::EndpointQueue(CORBA_CONNECTION* connection, void* poa, char* serv
 	setName("servicequeue");
 }
 
-
 // ~EndpointQueue destructor.
 //
 EndpointQueue::~EndpointQueue() {
 	LOG4CXX_DEBUG(logger, (char*) "destroy called");
+
 	lock->lock();
 	if (!shutdown) {
 		shutdown = true;
