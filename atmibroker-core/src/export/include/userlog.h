@@ -21,6 +21,6 @@
 #include "atmiBrokerCoreMacro.h"
 #include "log4cxx/logger.h"
 
-extern ATMIBROKER_CORE_DLL bool loggerInitialized;
+extern "C" ATMIBROKER_CORE_DLL bool loggerInitialized;
 extern ATMIBROKER_CORE_DLL void userlog(const log4cxx::LevelPtr& level, log4cxx::LoggerPtr& logger, const char * format, ...);
 #endif
