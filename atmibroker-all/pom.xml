@@ -48,6 +48,8 @@
 		<module>../atmibroker-core</module>
 		<module>../tx-test-utilities</module>
 		<module>../atmibroker-tx</module>
+		<module>../atmibroker-corba</module>
+		<module>../atmibroker-stomp</module>
 		<module>../atmibroker-xatmi</module>
 		<module>../codeGeneration</module>
 		<module>../jatmibroker-core</module>
