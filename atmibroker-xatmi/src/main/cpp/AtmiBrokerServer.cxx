@@ -35,14 +35,11 @@
 #include "AtmiBrokerServer.h"
 #include "AtmiBrokerPoaFac.h"
 #include "AtmiBrokerEnv.h"
-#include "EndpointQueue.h"
 #include "OrbManagement.h"
 #include "userlog.h"
 #include "AtmiBrokerServerControl.h"
 #include "AtmiBrokerMem.h"
-#include "AtmiBrokerEnv.h"
 #include "AtmiBrokerOTS.h"
-#include "AtmiBrokerPoaFac.h"
 
 log4cxx::LoggerPtr loggerAtmiBrokerServer(log4cxx::Logger::getLogger("AtmiBrokerServer"));
 AtmiBrokerServer * ptrServer = NULL;
@@ -214,17 +211,9 @@ bool AtmiBrokerServer::advertiseService(char * serviceName, void(*func)(TPSVCINF
 	// create reference for Service Queue and cache
 	try {
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "create_service_queue: " << serviceName);
-
-		// create Poa for Service Queue
-		AtmiBrokerPoaFac* poaFactory = realConnection->poaFactory;
-		PortableServer::POA_ptr aFactoryPoaPtr = poaFactory->createServicePoa(realConnection->orbRef, serviceName, poa, realConnection->root_poa_manager);
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "created create_service_factory_poa: " << serviceName);
-
-		Destination* destination = new EndpointQueue(realConnection, aFactoryPoaPtr, serviceName);
-
+		Destination* destination = serverConnection->createDestination(poa, serviceName);
 		addDestination(destination, func);
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "created destination: " << serviceName);
-
 	} catch (...) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer, (char*) "service has already been advertised, however it appears to be by a different server (possibly with the same name), which is strange... " << serviceName);
 		tperrno = TPEMATCH;
@@ -246,11 +235,7 @@ void AtmiBrokerServer::unadvertiseService(char * serviceName) {
 			realConnection->name_ctx->unbind(*name);
 
 			Destination * destination = removeDestination(serviceName);
-			EndpointQueue* queue = dynamic_cast<EndpointQueue*> (destination);
-			PortableServer::POA_ptr poa = (PortableServer::POA_ptr) queue->getPoa();
-			delete destination;
-			poa->destroy(true, true);
-			poa = NULL;
+			serverConnection->destroyDestination(destination);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "service Queue removed" << serviceName);
 			advertisedServices.erase(i);
 			LOG4CXX_INFO(loggerAtmiBrokerServer, (char*) "unadvertised service " << serviceName);

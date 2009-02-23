@@ -28,6 +28,10 @@ public:
 	ConnectionImpl(char* connectionName);
 	virtual ~ConnectionImpl();
 
+	Destination* createDestination(PortableServer::POA_ptr poa, char* serviceName);
+
+	void destroyDestination(Destination* destination);
+
 	Session* createSession(int id, char* serviceName);
 
 	Session* createSession();
