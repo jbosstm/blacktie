@@ -28,14 +28,14 @@
 #ifndef ATMIBROKER_SERVERCONTROL_H_
 #define ATMIBROKER_SERVERCONTROL_H_
 
-#include "atmiBrokerMacro.h"
+#include "atmiBrokerXatmiMacro.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern ATMIBROKER_DLL int serverinit();
-extern ATMIBROKER_DLL int serverrun();
-extern ATMIBROKER_DLL int serverdone();
+extern ATMIBROKER_XATMI_DLL int serverinit();
+extern ATMIBROKER_XATMI_DLL int serverrun();
+extern ATMIBROKER_XATMI_DLL int serverdone();
 #ifdef __cplusplus
 }
 #endif

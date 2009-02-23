@@ -15,24 +15,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef ReceiverImpl_H_
-#define ReceiverImpl_H_
+/* Export/Include macros for Win32 compilation */
+#ifndef ATMIBROKER_XATMI_MACRO
+#define ATMIBROKER_XATMI_MACRO
 
-#include "log4cxx/logger.h"
-#include "Receiver.h"
-#include "Destination.h"
-#include "EndpointQueue.h"
+/* Only do defines if we're compiling on Win32 */
+#ifdef WIN32
 
-class ReceiverImpl: public virtual Receiver {
-public:
-	ReceiverImpl(const char* name, EndpointQueue* destination);
-	virtual ~ReceiverImpl();
-	virtual MESSAGE receive(long flags);
-	virtual Destination* getDestination();
-private:
-	static log4cxx::LoggerPtr logger;
-	const char* name;
-	EndpointQueue* destination;
-};
+#ifdef _ATMIBROKER_XATMI_DLL
+#define ATMIBROKER_XATMI_DLL __declspec(dllexport)
+#else
+#define ATMIBROKER_XATMI_DLL __declspec(dllimport)
+#endif
+
+#else /* Non-win32 platform. Macros need to pre-process away */
+
+/* examples */
+
+#define ATMIBROKER_XATMI_DLL
+
+#endif
 
 #endif

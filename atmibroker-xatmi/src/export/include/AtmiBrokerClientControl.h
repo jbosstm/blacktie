@@ -28,13 +28,13 @@
 #ifndef ATMIBROKER_CLIENTCONTROL_H_
 #define ATMIBROKER_CLIENTCONTROL_H_
 
-#include "atmiBrokerMacro.h"
+#include "atmiBrokerXatmiMacro.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern ATMIBROKER_DLL int clientinit();
-extern ATMIBROKER_DLL int clientdone();
+extern ATMIBROKER_XATMI_DLL int clientinit();
+extern ATMIBROKER_XATMI_DLL int clientdone();
 #ifdef __cplusplus
 }
 #endif

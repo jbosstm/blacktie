@@ -15,7 +15,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "xatmi.h"
 #include "ReceiverImpl.h"
 
 log4cxx::LoggerPtr ReceiverImpl::logger(log4cxx::Logger::getLogger("ReceiverImpl"));
@@ -29,9 +28,9 @@ ReceiverImpl::~ReceiverImpl() {
 	LOG4CXX_DEBUG(logger, (char*) "Deleting: " << name);
 }
 
-MESSAGE ReceiverImpl::receive(long flags) {
+MESSAGE ReceiverImpl::receive(bool noWait) {
 	LOG4CXX_DEBUG(logger, (char*) "Receiving from: " << name);
-	return destination->receive((TPNOTIME & flags));
+	return destination->receive(noWait);
 }
 
 Destination* ReceiverImpl::getDestination() {

@@ -23,7 +23,7 @@
 #ifndef XATMI_H
 #define XATMI_H
 
-#include "atmiBrokerMacro.h"
+#include "atmiBrokerXatmiMacro.h"
 
 #define TPNOBLOCK 0x00000001
 #define TPSIGRSTRT 0x00000002
@@ -40,7 +40,7 @@
 #define TPFAIL		0x00000001
 #define TPSUCCESS	0x00000002
 
-struct ATMIBROKER_DLL tpsvcinfo {
+struct ATMIBROKER_XATMI_DLL tpsvcinfo {
 #define XATMI_SERVICE_NAME_LENGTH  15
 	char name[XATMI_SERVICE_NAME_LENGTH];
 	char *data;
@@ -48,7 +48,7 @@ struct ATMIBROKER_DLL tpsvcinfo {
 	long flags;
 	int cd;
 };
-typedef struct ATMIBROKER_DLL tpsvcinfo TPSVCINFO;
+typedef struct ATMIBROKER_XATMI_DLL tpsvcinfo TPSVCINFO;
 
 #define X_OCTET		"X_OCTET"
 #define X_C_TYPE	"X_C_TYPE"
@@ -86,25 +86,25 @@ extern "C" {
 #endif
 typedef float(*tpservice)(TPSVCINFO *);
 
-extern ATMIBROKER_DLL char* tpalloc(char* type, char* subtype, long size); // MEMORY
-extern ATMIBROKER_DLL char* tprealloc(char * addr, long size); // MEMORY
-extern ATMIBROKER_DLL int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen, long flags); // COMMUNICATION
-extern ATMIBROKER_DLL int tpacall(char * svc, char* idata, long ilen, long flags); // COMMUNICATION
-extern ATMIBROKER_DLL int tpgetrply(int *idPtr, char ** odata, long *olen, long flags); // COMMUNICATION
-extern ATMIBROKER_DLL int tpcancel(int id); // COMMUNICATION
-extern ATMIBROKER_DLL long tptypes(char* ptr, char* type, char* subtype); // MEMORY
-extern ATMIBROKER_DLL void tpfree(char* ptr); // MEMORY
-extern ATMIBROKER_DLL void tpreturn(int rval, long rcode, char* data, long len, long flags); // TJJ ADDED
-extern ATMIBROKER_DLL int tpadvertise(char * svcname, void(*func)(TPSVCINFO *)); // SERVER
-extern ATMIBROKER_DLL int tpunadvertise(char * svcname); // SERVER
+extern ATMIBROKER_XATMI_DLL char* tpalloc(char* type, char* subtype, long size); // MEMORY
+extern ATMIBROKER_XATMI_DLL char* tprealloc(char * addr, long size); // MEMORY
+extern ATMIBROKER_XATMI_DLL int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen, long flags); // COMMUNICATION
+extern ATMIBROKER_XATMI_DLL int tpacall(char * svc, char* idata, long ilen, long flags); // COMMUNICATION
+extern ATMIBROKER_XATMI_DLL int tpgetrply(int *idPtr, char ** odata, long *olen, long flags); // COMMUNICATION
+extern ATMIBROKER_XATMI_DLL int tpcancel(int id); // COMMUNICATION
+extern ATMIBROKER_XATMI_DLL long tptypes(char* ptr, char* type, char* subtype); // MEMORY
+extern ATMIBROKER_XATMI_DLL void tpfree(char* ptr); // MEMORY
+extern ATMIBROKER_XATMI_DLL void tpreturn(int rval, long rcode, char* data, long len, long flags); // TJJ ADDED
+extern ATMIBROKER_XATMI_DLL int tpadvertise(char * svcname, void(*func)(TPSVCINFO *)); // SERVER
+extern ATMIBROKER_XATMI_DLL int tpunadvertise(char * svcname); // SERVER
 
-extern ATMIBROKER_DLL int tpsend(int id, char* idata, long ilen, long flags, long *revent); // COMMUNICATION
-extern ATMIBROKER_DLL int tprecv(int id, char ** odata, long *olen, long flags, long* event); // COMMUNICATION
-extern ATMIBROKER_DLL int tpconnect(char * svc, char* idata, long ilen, long flags); // COMMUNICATION
-extern ATMIBROKER_DLL int tpdiscon(int id); // COMMUNICATION
+extern ATMIBROKER_XATMI_DLL int tpsend(int id, char* idata, long ilen, long flags, long *revent); // COMMUNICATION
+extern ATMIBROKER_XATMI_DLL int tprecv(int id, char ** odata, long *olen, long flags, long* event); // COMMUNICATION
+extern ATMIBROKER_XATMI_DLL int tpconnect(char * svc, char* idata, long ilen, long flags); // COMMUNICATION
+extern ATMIBROKER_XATMI_DLL int tpdiscon(int id); // COMMUNICATION
 
-extern ATMIBROKER_DLL int* _get_tperrno(void); // CLIENT
-extern ATMIBROKER_DLL long* _get_tpurcode(void); // CLIENT
+extern ATMIBROKER_XATMI_DLL int* _get_tperrno(void); // CLIENT
+extern ATMIBROKER_XATMI_DLL long* _get_tpurcode(void); // CLIENT
 #ifdef __cplusplus
 }
 #endif

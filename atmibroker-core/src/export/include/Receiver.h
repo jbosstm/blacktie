@@ -23,7 +23,7 @@
 
 class Receiver {
 public:
-	virtual MESSAGE receive(long flags) = 0;
+	virtual MESSAGE receive(bool noWait) = 0;
 };
 
 #endif

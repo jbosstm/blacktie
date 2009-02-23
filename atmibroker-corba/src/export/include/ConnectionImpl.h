@@ -18,11 +18,12 @@
 #ifndef ConnectionImpl_H_
 #define ConnectionImpl_H_
 
+#include "atmiBrokerCorbaMacro.h"
 #include "log4cxx/logger.h"
 #include "CorbaConnection.h"
 #include "Connection.h"
 
-class ConnectionImpl: public virtual Connection {
+class ATMIBROKER_CORBA_DLL ConnectionImpl: public virtual Connection {
 public:
 	ConnectionImpl(char* connectionName);
 	virtual ~ConnectionImpl();

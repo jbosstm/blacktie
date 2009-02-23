@@ -15,41 +15,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef SessionImpl_H_
-#define SessionImpl_H_
+#ifndef ReceiverImpl_H_
+#define ReceiverImpl_H_
+
+#include "atmiBrokerCorbaMacro.h"
 
 #include "log4cxx/logger.h"
-#include "Session.h"
-#include "ConnectionImpl.h"
-#include "SenderImpl.h"
-#include "ReceiverImpl.h"
+#include "Receiver.h"
+#include "Destination.h"
 #include "EndpointQueue.h"
 
-class SessionImpl: public virtual Session {
+class ATMIBROKER_CORBA_DLL ReceiverImpl: public virtual Receiver {
 public:
-	SessionImpl(ConnectionImpl* connection, int id);
-
-	SessionImpl(ConnectionImpl* connection, int id, const char* service);
-
-	virtual ~SessionImpl();
-
-	void setSendTo(char* replyTo);
-
-	const char* getReplyTo();
-
-	Receiver* getReceiver();
-
-	Sender* getSender();
-
-	int getId();
+	ReceiverImpl(const char* name, EndpointQueue* destination);
+	virtual ~ReceiverImpl();
+	virtual MESSAGE receive(bool noWait);
+	virtual Destination* getDestination();
 private:
 	static log4cxx::LoggerPtr logger;
-	int id;
-	ConnectionImpl* connection;
-	ReceiverImpl* queueReceiver;
-	SenderImpl* queueSender;
-	EndpointQueue* temporaryQueue;
-	const char* replyTo;
+	const char* name;
+	EndpointQueue* destination;
 };
 
 #endif

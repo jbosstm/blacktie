@@ -32,8 +32,6 @@
 #ifndef ATMIBROKER_SERVERSERVERIMPL_H_
 #define ATMIBROKER_SERVERSERVERIMPL_H_
 
-#include "atmiBrokerMacro.h"
-
 #include <iostream>
 #include <vector>
 
@@ -56,7 +54,7 @@ struct _service_data {
 	SVCINFO serviceInfo;
 };
 typedef _service_data ServiceData;
-class ATMIBROKER_DLL AtmiBrokerServer: public virtual POA_AtmiBroker::Server {
+class AtmiBrokerServer: public virtual POA_AtmiBroker::Server {
 public:
 	AtmiBrokerServer();
 

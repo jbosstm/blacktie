@@ -215,7 +215,7 @@
 			<includepath path="src/export/include" if="export.dir" />
 			<includepath path="src/main/include" />
 			<includepath path="target/cxx/include" />
-			<libset dir="target/cxx/lib" libs="atmibroker-idl atmibroker-core atmibroker-tx" />
+			<libset dir="target/cxx/lib" libs="atmibroker-idl atmibroker-core atmibroker-tx atmibroker-corba atmibroker-stomp" />
 
 			&includepath-main-dependencies;
 			&libsets-main-dependencies;
@@ -246,7 +246,7 @@
 			<includepath path="src/export/include" if="export.dir" />
 			<includepath path="src/main/include" />
 			<includepath path="target/cxx/include" />
-			<libset dir="target/cxx/lib" libs="atmibroker-idl atmibroker-core atmibroker-tx" />
+			<libset dir="target/cxx/lib" libs="atmibroker-idl atmibroker-core atmibroker-tx atmibroker-corba atmibroker-stomp" />
 			
 			&includepath-test-dependencies;
 			&libsets-test-dependencies;

@@ -15,25 +15,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-/* Export/Include macros for Win32 compilation */
-#ifndef ATMIBROKER_MACRO
-#define ATMIBROKER_MACRO
+#ifndef SenderImpl_H_
+#define SenderImpl_H_
 
-/* Only do defines if we're compiling on Win32 */
-#ifdef WIN32
+#include "atmiBrokerCorbaMacro.h"
 
-#ifdef _ATMIBROKER_XATMI_DLL
-#define ATMIBROKER_DLL __declspec(dllexport)
-#else
-#define ATMIBROKER_DLL __declspec(dllimport)
-#endif
+#include "log4cxx/logger.h"
+#include "Sender.h"
+#include "Destination.h"
+#include "EndpointQueue.h"
 
-#else /* Non-win32 platform. Macros need to pre-process away */
-
-/* examples */
-
-#define ATMIBROKER_DLL
-
-#endif
+class ATMIBROKER_CORBA_DLL SenderImpl: public virtual Sender {
+public:
+	SenderImpl(char* name, AtmiBroker::EndpointQueue_ptr destination);
+	virtual ~SenderImpl();
+	virtual void send(MESSAGE message);
+	virtual void close();
+private:
+	static log4cxx::LoggerPtr logger;
+	char* name;
+	AtmiBroker::EndpointQueue_ptr destination;
+};
 
 #endif

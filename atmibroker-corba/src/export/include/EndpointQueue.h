@@ -31,7 +31,7 @@
 #ifndef EndpointQueue_H_
 #define EndpointQueue_H_
 
-#include "atmiBrokerMacro.h"
+#include "atmiBrokerCorbaMacro.h"
 
 #ifdef TAO_COMP
 #include "AtmiBrokerS.h"
@@ -43,7 +43,7 @@
 #include "Destination.h"
 #include "SynchronizableObject.h"
 
-class ATMIBROKER_DLL EndpointQueue: public virtual Destination, public virtual POA_AtmiBroker::EndpointQueue {
+class ATMIBROKER_CORBA_DLL EndpointQueue: public virtual Destination, public virtual POA_AtmiBroker::EndpointQueue {
 public:
 	EndpointQueue(CORBA_CONNECTION* connection);
 	EndpointQueue(CORBA_CONNECTION* connection, void* poa, char* serviceName);

@@ -62,9 +62,20 @@ int send(Sender* sender, const char* replyTo, char* idata, long ilen, int correl
 		message.flags = flags;
 		message.rcode = rcode;
 		message.rval = rval;
-		sender->send(message);
+		int data_size = ::tptypes(message.data, NULL, NULL);
+		if (data_size >= 0) {
+			if (message.len <= 0 || message.len > data_size) {
+				message.len = data_size;
+			}
+			sender->send(message);
+			toReturn = 0;
+		} else {
+			tperrno = TPEINVAL;
+			LOG4CXX_DEBUG(loggerXATMI, (char*) "A NON-BUFFER WAS ATTEMPTED TO BE SENT");
+			toReturn = -1;
+		}
+
 		setSpecific(TSS_KEY, control);
-		toReturn = 0;
 	} catch (...) {
 		LOG4CXX_ERROR(loggerXATMI, (char*) "aCorbaService->start_conversation(): call failed");
 		tperrno = TPESYSTEM;
@@ -75,7 +86,7 @@ int send(Sender* sender, const char* replyTo, char* idata, long ilen, int correl
 int receive(Session* session, char ** odata, long *olen, long flags, long* event) {
 	LOG4CXX_DEBUG(loggerXATMI, (char*) "tprecv - odata: %s olen: %p flags: %d" << *odata << " " << olen << " " << flags);
 	int toReturn = -1;
-	MESSAGE message = session->getReceiver()->receive(flags);
+	MESSAGE message = session->getReceiver()->receive((TPNOTIME & flags));
 	if (message.data != NULL) {
 		// TODO Handle TPNOCHANGE
 		// TODO Handle buffer
