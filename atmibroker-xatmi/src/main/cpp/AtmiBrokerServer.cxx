@@ -43,7 +43,6 @@
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerOTS.h"
 #include "AtmiBrokerPoaFac.h"
-#include "ServiceWrapper.h"
 
 log4cxx::LoggerPtr loggerAtmiBrokerServer(log4cxx::Logger::getLogger("AtmiBrokerServer"));
 AtmiBrokerServer * ptrServer = NULL;
@@ -217,7 +216,6 @@ bool AtmiBrokerServer::advertiseService(char * serviceName, void(*func)(TPSVCINF
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "create_service_queue: " << serviceName);
 
 		// create Poa for Service Queue
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "create_service_queue_poa: " << serviceName);
 		AtmiBrokerPoaFac* poaFactory = realConnection->poaFactory;
 		PortableServer::POA_ptr aFactoryPoaPtr = poaFactory->createServicePoa(realConnection->orbRef, serviceName, poa, realConnection->root_poa_manager);
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "created create_service_factory_poa: " << serviceName);
@@ -463,14 +461,12 @@ void AtmiBrokerServer::addDestination(Destination* destination, void(*func)(TPSV
 	aAtmiBrokerServiceXml.parseXmlDescriptor(&entry.serviceInfo, destination->getName());
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "createPool");
-	ServiceWrapper* serviceWrapper = new ServiceWrapper(serverConnection, destination->getName(), func);
 	for (int i = 0; i < entry.serviceInfo.poolSize; i++) {
-		ServiceDispatcher* dispatcher = new ServiceDispatcher(destination);
+		ServiceDispatcher* dispatcher = new ServiceDispatcher(destination, serverConnection, destination->getName(), func);
 		if (dispatcher->activate(THR_NEW_LWP| THR_JOINABLE, 1, 0, ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
 			delete dispatcher;
 			LOG4CXX_ERROR(loggerAtmiBrokerServer, (char*) "Could not start thread pool");
 		} else {
-			dispatcher->setMessageListener(serviceWrapper);
 			entry.dispatchers.push_back(dispatcher);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) " destination " << destination);
 		}

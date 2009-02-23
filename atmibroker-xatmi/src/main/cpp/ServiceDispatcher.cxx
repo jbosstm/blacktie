@@ -16,16 +16,18 @@
  * MA  02110-1301, USA.
  */
 #include "ServiceDispatcher.h"
+#include "AtmiBrokerOTS.h"
+#include "ThreadLocalStorage.h"
 
 log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger("ServiceDispatcher"));
 
-ServiceDispatcher::ServiceDispatcher(Destination* destination) {
+ServiceDispatcher::ServiceDispatcher(Destination* destination, Connection* connection, const char *serviceName, void(*func)(TPSVCINFO *)) {
 	this->destination = destination;
+	this->connection = connection;
+	this->serviceName = serviceName;
+	this->func = func;
+	session = NULL;
 	stop = false;
-}
-
-void ServiceDispatcher::setMessageListener(MessageListener* messageListener) {
-	this->service = messageListener;
 }
 
 int ServiceDispatcher::svc(void) {
@@ -33,13 +35,75 @@ int ServiceDispatcher::svc(void) {
 		MESSAGE message = destination->receive(false);
 		if (!stop) {
 			try {
-				service->onMessage(message);
+				onMessage(message);
 			} catch (...) {
 				LOG4CXX_ERROR(logger, (char*) "Service Dispatcher caught error running during onMessage");
 			}
 		}
 	}
 	return 0;
+}
+
+void ServiceDispatcher::onMessage(MESSAGE message) {
+	LOG4CXX_DEBUG(logger, (char*) "svc()");
+
+	// INITIALISE THE SENDER AND RECEIVER FOR THIS CONVERSATION
+	session = connection->createSession();
+	if (message.replyto) {
+		LOG4CXX_DEBUG(logger, (char*) "   replyTo = " << message.replyto);
+	} else {
+		LOG4CXX_DEBUG(logger, (char*) "   replyTo = NULL");
+	}
+	session->setSendTo((char*) message.replyto);
+
+	// EXTRACT THE DATA FROM THE INBOUND MESSAGE
+	int correlationId = message.correlationId;
+	char* idata = message.data;
+	long ilen = message.len;
+	long flags = message.flags;
+	void* control = message.control;
+	LOG4CXX_DEBUG(logger, (char*) "   idata = %p" << idata);
+	LOG4CXX_DEBUG(logger, (char*) "   ilen = %d" << ilen);
+	LOG4CXX_DEBUG(logger, (char*) "   flags = %d" << flags);
+
+	// PREPARE THE STRUCT FOR SENDING TO THE CLIENT
+	TPSVCINFO tpsvcinfo;
+	memset(&tpsvcinfo, '\0', sizeof(tpsvcinfo));
+	strcpy(tpsvcinfo.name, this->serviceName);
+	tpsvcinfo.flags = flags;
+	tpsvcinfo.data = idata;
+	tpsvcinfo.len = ilen;
+	if (tpsvcinfo.flags & TPCONV) {
+		tpsvcinfo.cd = correlationId;
+	}
+	if (control) {
+		tpsvcinfo.flags = (tpsvcinfo.flags | TPTRAN);
+	}
+
+	// HANDLE THE CLIENT INVOCATION
+	// TODO wrap TSS control in a Transaction object and make sure any current
+	// control associated with the thread is suspended here and resumed after
+	// the call to m_func
+	setSpecific(TSS_KEY, control);
+	setSpecific(SVC_KEY, this);
+	setSpecific(SVC_SES, session);
+	AtmiBrokerOTS::get_instance()->rm_resume();
+	try {
+		this->func(&tpsvcinfo);
+	} catch (...) {
+		LOG4CXX_ERROR(logger, (char*) "ServiceDispatcher caught error running during onMessage");
+	}
+	AtmiBrokerOTS::get_instance()->rm_suspend();
+	destroySpecific(SVC_SES);
+	destroySpecific(SVC_KEY);
+	destroySpecific(TSS_KEY);
+
+	// CLEAN UP THE SENDER AND RECEIVER FOR THIS CLIENT
+	if (session) {
+		delete this->session;
+		this->session = NULL;
+		LOG4CXX_DEBUG(logger, (char*) "ServiceDispatcher session closed");
+	}
 }
 
 void ServiceDispatcher::shutdown() {
