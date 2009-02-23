@@ -39,6 +39,12 @@
 #include "AtmiBrokerMem.h"
 #include "log4cxx/logger.h"
 
+
+// Global state
+int _tperrno = 0;
+long _tpurcode = -1;
+
+// Logger for XATMIc
 log4cxx::LoggerPtr loggerXATMI(log4cxx::Logger::getLogger("loggerXATMI"));
 
 int send(Sender* sender, const char* replyTo, char* idata, long ilen, int correlationId, long flags, long rcode, long rval) {

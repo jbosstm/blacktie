@@ -9,6 +9,6 @@ toolchain.compiler=gcc|msvc
 test.output.type=executable
 failOnErrorTests=false|true
 #only required if toolchain.compiler=msvc
-#export.dll=_ATMIBROKER_XATMI_DLL
+#export.dll=_ATMIBROKER_STOMP_DLL
 #EXPAT_ROOT=
 #CPPUNIT_ROOT=

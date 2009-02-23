@@ -15,13 +15,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-/*
- * BREAKTHRUIT PROPRIETARY - NOT TO BE DISCLOSED OUTSIDE BREAKTHRUIT, LLC.
- */
-// copyright 2006, 2008 BreakThruIT
-#include "AtmiBroker.h"
+/* Export/Include macros for Win32 compilation */
+#ifndef ATMIBROKER_STOMP_MACRO
+#define ATMIBROKER_STOMP_MACRO
 
-// Global state
-int _tperrno = 0;
-long _tpurcode = -1;
-bool loggerInitialized = false;
+/* Only do defines if we're compiling on Win32 */
+#ifdef WIN32
+
+#ifdef _ATMIBROKER_STOMP_DLL
+#define ATMIBROKER_STOMP_DLL __declspec(dllexport)
+#else
+#define ATMIBROKER_STOMP_DLL __declspec(dllimport)
+#endif
+
+#else /* Non-win32 platform. Macros need to pre-process away */
+
+/* examples */
+
+#define ATMIBROKER_STOMP_DLL
+
+#endif
+
+#endif

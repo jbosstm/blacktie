@@ -49,7 +49,6 @@ void client_sigint_handler_callback(int sig_type) {
 }
 
 int clientinit() {
-	_tperrno = 0;
 	int toReturn = 0;
 	if (!loggerInitialized) {
 		if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG") != NULL) {
@@ -75,7 +74,6 @@ int clientinit() {
 }
 
 int clientdone() {
-	_tperrno = 0;
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientdone called");
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleting services");
@@ -101,7 +99,7 @@ AtmiBrokerClient::AtmiBrokerClient() {
 		clientInitialized = true;
 	} catch (...) {
 		LOG4CXX_ERROR(loggerAtmiBrokerClient, (char*) "clientinit Unexpected exception");
-		_tperrno = TPESYSTEM;
+		tperrno = TPESYSTEM;
 	}
 }
 
@@ -145,6 +143,6 @@ void AtmiBrokerClient::closeSession(int id) {
 		SessionImpl* session = dynamic_cast<SessionImpl*> (sessionMap[id]);
 		delete session;
 		sessionMap[id] = NULL;
-		
+
 	}
 }

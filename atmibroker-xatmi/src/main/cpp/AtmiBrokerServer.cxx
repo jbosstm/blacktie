@@ -75,7 +75,6 @@ int serverrun() {
 }
 
 int serverinit() {
-	_tperrno = 0;
 	int toReturn = 0;
 	if (!loggerInitialized) {
 		if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG") != NULL) {
@@ -101,7 +100,6 @@ int serverinit() {
 }
 
 int serverdone() {
-	_tperrno = 0;
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone called ");
 
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone shutting down services ");

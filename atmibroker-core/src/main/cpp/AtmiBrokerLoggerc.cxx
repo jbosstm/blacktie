@@ -35,6 +35,10 @@ extern "C" {
 
 log4cxx::LoggerPtr loggerAtmiBrokerLogc(log4cxx::Logger::getLogger("AtmiBrokerLogc"));
 
+// COMMON
+extern "C"ATMIBROKER_CORE_DLL
+bool loggerInitialized;
+
 extern "C"ATMIBROKER_CORE_DLL
 void userlogc(const char * format, ...) {
 	if (loggerAtmiBrokerLogc->isEnabledFor(log4cxx::Level::getInfo())) {
