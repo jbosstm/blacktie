@@ -47,6 +47,7 @@ void client_sigint_handler_callback(int sig_type) {
 }
 
 int clientinit() {
+	tperrno = 0;
 	int toReturn = 0;
 
 	initializeLogger();
@@ -66,14 +67,13 @@ int clientinit() {
 }
 
 int clientdone() {
+	tperrno = 0;
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientdone called");
-
-	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleting services");
 	if (ptrAtmiBrokerClient) {
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleting Corba Client ");
+		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleting Corba Client");
 		delete ptrAtmiBrokerClient;
 		ptrAtmiBrokerClient = NULL;
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleted Corba Client ");
+		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleted Corba Client");
 	}
 	return 0;
 }
@@ -83,7 +83,7 @@ AtmiBrokerClient::AtmiBrokerClient() {
 
 		clientConnection = new ConnectionImpl((char*) "client");
 
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "constructor ");
+		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "constructor");
 
 		AtmiBrokerClientXml aAtmiBrokerClientXml;
 		aAtmiBrokerClientXml.parseXmlDescriptor(&clientServerVector, "CLIENT.xml");
@@ -96,7 +96,7 @@ AtmiBrokerClient::AtmiBrokerClient() {
 }
 
 AtmiBrokerClient::~AtmiBrokerClient() {
-	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "destructor ");
+	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "destructor");
 
 	for (std::vector<ClientServerInfo*>::iterator itServer = clientServerVector.begin(); itServer != clientServerVector.end(); itServer++) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "next serverName is: " << (char*) (*itServer)->serverName);

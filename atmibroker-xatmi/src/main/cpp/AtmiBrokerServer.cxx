@@ -52,11 +52,14 @@ void server_sigint_handler_callback(int sig_type) {
 }
 
 int serverrun() {
+	tperrno = 0;
 	return ptrServer->block();
 }
 
 int serverinit() {
+	tperrno = 0;
 	int toReturn = 0;
+
 	initializeLogger();
 
 	if (ptrServer == NULL) {
@@ -74,12 +77,13 @@ int serverinit() {
 }
 
 int serverdone() {
-	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone called ");
-
-	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone shutting down services ");
+	tperrno = 0;
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "serverdone called");
 	if (ptrServer) {
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverdone deleting Corba server");
 		delete ptrServer;
 		ptrServer = NULL;
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverdone deleted Corba server");
 	}
 	return 0;
 }
@@ -120,7 +124,7 @@ AtmiBrokerServer::AtmiBrokerServer() {
 // ~AtmiBrokerServer destructor.
 //
 AtmiBrokerServer::~AtmiBrokerServer() {
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "destructor ");
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "destructor");
 	if (serverConnection) {
 		server_done();
 		delete serverConnection;
@@ -128,7 +132,7 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	}
 
 	serviceData.clear();
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted service array ");
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted service array");
 
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "deleting services");
 	AtmiBrokerMem::discard_instance();
@@ -172,7 +176,7 @@ void AtmiBrokerServer::server_done() throw (CORBA::SystemException ) {
 
 char *
 AtmiBrokerServer::getServerName() {
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "getServerName ");
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "getServerName");
 	return serverName;
 }
 
@@ -323,7 +327,7 @@ AtmiBrokerServer::get_environment_variable_info() throw (CORBA::SystemException 
 		(*aEnvVariableInfoSeqPtr)[j].value = strdup((*i).value);
 		j++;
 	}
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "get_environment_variable_info() returning ");
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "get_environment_variable_info() returning");
 	return aEnvVariableInfoSeqPtr;
 }
 
@@ -342,7 +346,7 @@ void AtmiBrokerServer::set_server_descriptor(const char* xml_descriptor) throw (
 
 	fflush(aTempFile);
 	fclose(aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "set_server_descriptor() file written and closed ");
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "set_server_descriptor() file written and closed");
 }
 
 // set_service_descriptor() -- Implements IDL operation "AtmiBroker::Server::set_service_descriptor".
@@ -359,7 +363,7 @@ void AtmiBrokerServer::set_service_descriptor(const char* service_name, const ch
 
 	fflush(aTempFile);
 	fclose(aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "set_service_descriptor()  file written and closed ");
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "set_service_descriptor()  file written and closed");
 }
 
 // set_environment_descriptor() -- Implements IDL operation "AtmiBroker::Server::set_environment_descriptor".
@@ -374,7 +378,7 @@ void AtmiBrokerServer::set_environment_descriptor(const char* xml_descriptor) th
 
 	fflush(aTempFile);
 	fclose(aTempFile);
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "set_environment_descriptor() file written and closed ");
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "set_environment_descriptor() file written and closed");
 }
 
 // stop_service() -- Implements IDL operation "AtmiBroker::Server::stop_service".
@@ -407,7 +411,7 @@ void AtmiBrokerServer::stop_service(const char* service_name) throw (CORBA::Syst
 void AtmiBrokerServer::start_service(const char* service_name) throw (CORBA::SystemException ) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "start_service() " << service_name);
 
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "start_service()  stopping service first ");
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "start_service()  stopping service first");
 	stop_service(service_name);
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "start_service()  stopped service");
 
