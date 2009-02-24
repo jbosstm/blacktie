@@ -1,5 +1,5 @@
 all:
-	echo ant test-compile
+	echo mvn cpp:test-compile
 	
 clean:
 	echo mvn process-test-resources
