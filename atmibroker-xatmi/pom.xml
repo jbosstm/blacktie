@@ -114,7 +114,7 @@
 		<configuration.type>debug</configuration.type>
 		<toolchain.compiler>gcc</toolchain.compiler>
 		<blacktie.main.libs>atmibroker-idl,atmibroker-core</blacktie.main.libs>
-		<blacktie.test.libs>atmibroker-idl,atmibroker-core,atmibroker-tx</blacktie.test.libs>
+		<blacktie.test.libs>atmibroker-idl,atmibroker-core,atmibroker-tx,atmibroker-corba</blacktie.test.libs>
 		<failOnErrorTests>true</failOnErrorTests>
 	</properties>
 
