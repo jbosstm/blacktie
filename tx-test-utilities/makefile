@@ -1,5 +1,5 @@
 all:
-	mvn install
+	echo mvn install
 	
 clean:
 	echo mvn process-test-resources

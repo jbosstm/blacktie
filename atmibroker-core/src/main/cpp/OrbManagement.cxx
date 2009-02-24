@@ -52,24 +52,24 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 	free(vals);
 
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext getting Naming Service Ext ");
-	CORBA::Object_var tmp_ref = ((CORBA::ORB_ptr) connection->orbRef)->resolve_initial_references("NameService");
+	CORBA::Object_var tmp_ref = connection->orbRef->resolve_initial_references("NameService");
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext got orbRef->resolve_initial_references, tmp_ref = %p" << (void*) tmp_ref);
 	connection->default_ctx = CosNaming::NamingContextExt::_narrow(tmp_ref);
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext narrowed tmp_ref, default_context = " << connection->default_ctx);
 
 	try {
 		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext domain is  %s" << domain);
-		CORBA::Object_var tmp_ref = ((CosNaming::NamingContextExt_ptr) connection->default_ctx)->resolve_str(domain);
+		CORBA::Object_var tmp_ref = connection->default_ctx->resolve_str(domain);
 		connection->name_ctx = CosNaming::NamingContext::_narrow(tmp_ref);
 		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext found domain naming context");
 	} catch (const CosNaming::NamingContext::NotFound&) {
-		CosNaming::Name_var name = ((CosNaming::NamingContextExt_ptr) connection->default_ctx)->to_name(domain);
-		connection->name_ctx = ((CosNaming::NamingContextExt_ptr) connection->default_ctx)->bind_new_context(name);
+		CosNaming::Name_var name = connection->default_ctx->to_name(domain);
+		connection->name_ctx = connection->default_ctx->bind_new_context(name);
 		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext created domain naming context");
 	}
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getNamingServiceAndContext got Naming Service Instance  ");
 
-	connection->worker = new Worker((CORBA::ORB_ptr) connection->orbRef);
+	connection->worker = new Worker(connection->orbRef);
 	if (((Worker*) connection->worker)->activate(THR_NEW_LWP| THR_JOINABLE, 1, 0, ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
 		delete ((Worker*) connection->worker);
 		connection->worker = NULL;
@@ -77,22 +77,22 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 	}
 
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getRootPOAAndManager resolving the root POA ");
-	tmp_ref = ((CORBA::ORB_ptr) connection->orbRef)->resolve_initial_references("RootPOA");
+	tmp_ref = connection->orbRef->resolve_initial_references("RootPOA");
 	connection->root_poa = PortableServer::POA::_narrow(tmp_ref);
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getRootPOAAndManager resolved the root POA: " << connection->root_poa);
 
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getRootPOAAndManager getting the root POA manager");
-	connection->root_poa_manager = ((PortableServer::POA_ptr) connection->root_poa)->the_POAManager();
+	connection->root_poa_manager = connection->root_poa->the_POAManager();
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getRootPOAAndManager got the root POA manager: " << connection->root_poa_manager);
 
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "createClientCallbackPOA creating POA with name client");
 
 	AtmiBrokerPoaFac* poaFac = new AtmiBrokerPoaFac();
-	connection->callback_poa = poaFac->createCallbackPoa(((CORBA::ORB_ptr) connection->orbRef), connectionName, ((PortableServer::POA_ptr) connection->root_poa), ((PortableServer::POAManager_ptr) connection->root_poa_manager));
+	connection->callback_poa = poaFac->createCallbackPoa(connection->orbRef, connectionName, connection->root_poa, connection->root_poa_manager);
 	connection->poaFactory = poaFac;
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "createClientCallbackPOA created POA: " << connection->callback_poa);
 
-	((PortableServer::POAManager_ptr) connection->root_poa_manager)->activate();
+	connection->root_poa_manager->activate();
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "activated poa - started processing requests ");
 	return connection;
 }
@@ -102,10 +102,10 @@ void shutdownBindings(CORBA_CONNECTION* connection) {
 
 	if (connection) {
 		if (connection->orbRef) {
-			if (!CORBA::is_nil((CORBA::ORB_ptr) connection->orbRef)) {
+			if (!CORBA::is_nil(connection->orbRef)) {
 				LOG4CXX_DEBUG(loggerOrbManagement, "shutdownBindings shutting down ORB ");
 				try {
-					((CORBA::ORB_ptr) connection->orbRef)->shutdown(1);
+					connection->orbRef->shutdown(1);
 					LOG4CXX_DEBUG(loggerOrbManagement, "shutdownBindings shut down ORB ");
 				} catch (CORBA::Exception &ex) {
 					LOG4CXX_ERROR(loggerOrbManagement, (char*) "shutdownBindings Unexpected CORBA exception shutting down orb: " << ex._name());
@@ -121,7 +121,7 @@ void shutdownBindings(CORBA_CONNECTION* connection) {
 
 				try {
 					LOG4CXX_DEBUG(loggerOrbManagement, (char*) "shutdownBindings destroying ORB ");
-					((CORBA::ORB_ptr) connection->orbRef)->destroy();
+					connection->orbRef->destroy();
 					connection->orbRef = NULL;
 				} catch (CORBA::Exception &ex) {
 					LOG4CXX_ERROR(loggerOrbManagement, (char*) "shutdownBindings Unexpected CORBA exception destroying orb: " << ex._name());

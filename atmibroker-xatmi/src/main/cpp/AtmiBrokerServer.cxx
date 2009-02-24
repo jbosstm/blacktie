@@ -439,7 +439,7 @@ void AtmiBrokerServer::addDestination(Destination* destination, void(*func)(TPSV
 	entry.func = func;
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "constructor: " << destination->getName());
-	entry.serviceInfo.poolSize = 10; // TODO MAKE A CONSTANT
+	entry.serviceInfo.poolSize = 1; // TODO MAKE A CONSTANT
 
 	AtmiBrokerServiceXml aAtmiBrokerServiceXml;
 	aAtmiBrokerServiceXml.parseXmlDescriptor(&entry.serviceInfo, destination->getName());

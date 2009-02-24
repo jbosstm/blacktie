@@ -63,7 +63,7 @@ EndpointQueue::EndpointQueue(CORBA_CONNECTION* connection, void* poa, char* serv
 	CORBA::Object_var tmp_ref = aFactoryPoaPtr->servant_to_reference(this);
 	CosNaming::Name * name = ((CosNaming::NamingContextExt_ptr) connection->default_ctx)->to_name(serviceName);
 	((CosNaming::NamingContext_ptr) connection->name_ctx)->bind(*name, tmp_ref);
-	setName("servicequeue");
+	setName((const char*) serviceName);
 }
 
 // ~EndpointQueue destructor.
