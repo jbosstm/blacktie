@@ -23,6 +23,8 @@
 
 class Receiver {
 public:
+	virtual ~Receiver() {
+	}
 	virtual MESSAGE receive(bool noWait) = 0;
 };
 

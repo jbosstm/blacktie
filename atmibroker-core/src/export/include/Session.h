@@ -24,6 +24,8 @@
 
 class Session {
 public:
+	virtual ~Session() {
+	}
 	virtual void setSendTo(char* replyTo) = 0;
 	virtual const char* getReplyTo() = 0;
 	virtual Receiver* getReceiver() = 0;

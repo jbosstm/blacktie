@@ -110,8 +110,7 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleted services");
 
 	if (clientConnection) {
-		ConnectionImpl* conn = dynamic_cast<ConnectionImpl*> (clientConnection);
-		delete conn;
+		delete clientConnection;
 		clientConnection = NULL;
 	}
 	clientInitialized = false;

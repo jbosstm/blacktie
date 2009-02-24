@@ -23,6 +23,8 @@
 
 class Sender {
 public:
+	virtual ~Sender() {
+	}
 	virtual void send(MESSAGE message) = 0;
 	virtual void close() = 0;
 };
