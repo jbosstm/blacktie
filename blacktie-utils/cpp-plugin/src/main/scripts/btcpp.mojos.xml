@@ -232,7 +232,7 @@
           <property>failOnErrorTests</property>
           <required>true</required>
           <readonly>false</readonly>
-          <defaultValue>false</defaultValue>
+          <defaultValue>true</defaultValue>
           <type>java.lang.String</type>
           <description>Whether to stop the build after test failure. Valid values are false|true</description>
         </parameter>

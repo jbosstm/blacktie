@@ -41,6 +41,7 @@
 					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
 					<maven.test.skip>${maven.test.skip}</maven.test.skip>
 					<src.main>${src.main}</src.main>
+					<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
 				</configuration>
 
 				<executions>

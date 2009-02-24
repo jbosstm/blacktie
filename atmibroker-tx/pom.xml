@@ -41,6 +41,7 @@
 					<blacktie.main.libs>${blacktie.main.libs}</blacktie.main.libs>
 					<blacktie.test.libs>${blacktie.test.libs}</blacktie.test.libs>
 					<maven.test.skip>${maven.test.skip}</maven.test.skip>
+					<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
 					<src.main>${src.main}</src.main>
 				</configuration>
 
