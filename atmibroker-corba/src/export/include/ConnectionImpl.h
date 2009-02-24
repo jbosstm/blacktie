@@ -18,30 +18,34 @@
 #ifndef ConnectionImpl_H_
 #define ConnectionImpl_H_
 
+#include <map>
+
 #include "atmiBrokerCorbaMacro.h"
 #include "log4cxx/logger.h"
 #include "CorbaConnection.h"
 #include "Connection.h"
+#include "SessionImpl.h"
+
+class SessionImpl;
 
 class ATMIBROKER_CORBA_DLL ConnectionImpl: public virtual Connection {
 public:
 	ConnectionImpl(char* connectionName);
 	virtual ~ConnectionImpl();
 
-	Destination* createDestination(PortableServer::POA_ptr poa, char* serviceName);
-
-	void destroyDestination(Destination* destination);
-
 	Session* createSession(int id, char* serviceName);
-
 	Session* createSession();
-
+	Session* getSession(int id);
+	void closeSession(int id);
 	int block();
 
+	Destination* createDestination(PortableServer::POA_ptr poa, char* serviceName);
+	void destroyDestination(Destination* destination);
 	CORBA_CONNECTION* getRealConnection();
 private:
 	static log4cxx::LoggerPtr logger;
 	CORBA_CONNECTION* connection;
+	std::map<int, SessionImpl*> sessionMap;
 };
 
 #endif

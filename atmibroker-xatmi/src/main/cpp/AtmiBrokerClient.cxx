@@ -110,7 +110,8 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleted services");
 
 	if (clientConnection) {
-		delete clientConnection;
+		ConnectionImpl* conn = dynamic_cast<ConnectionImpl*> (clientConnection);
+		delete conn;
 		clientConnection = NULL;
 	}
 	clientInitialized = false;
@@ -121,17 +122,13 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
 	id = nextSessionId++;
 	Session* session = clientConnection->createSession(id, serviceName);
-	sessionMap[id] = session;
 	return session;
 }
 
 Session* AtmiBrokerClient::getSession(int id) {
-	return sessionMap[id];
+	return clientConnection->getSession(id);
 }
 
 void AtmiBrokerClient::closeSession(int id) {
-	if (sessionMap[id]) {
-		delete sessionMap[id];
-		sessionMap[id] = NULL;
-	}
+	clientConnection->closeSession(id);
 }

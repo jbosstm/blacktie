@@ -29,7 +29,6 @@
 #define AtmiBroker_CLIENT_H_
 
 #include <vector>
-#include <map>
 
 #include "Connection.h"
 #include "Session.h"
@@ -45,7 +44,6 @@ public:
 protected:
 	Connection* clientConnection;
 	std::vector<ClientServerInfo*> clientServerVector;
-	std::map<int, Session*> sessionMap;
 	int nextSessionId;
 };
 

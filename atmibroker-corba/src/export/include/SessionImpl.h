@@ -27,6 +27,8 @@
 #include "ReceiverImpl.h"
 #include "EndpointQueue.h"
 
+class ConnectionImpl;
+
 class ATMIBROKER_CORBA_DLL SessionImpl: public virtual Session {
 public:
 	SessionImpl(ConnectionImpl* connection, int id);

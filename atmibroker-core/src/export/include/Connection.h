@@ -27,6 +27,8 @@ class Connection {
 public:
 	virtual Session* createSession(int id, char* serviceName) = 0;
 	virtual Session* createSession() = 0;
+	virtual Session* getSession(int id) = 0;
+	virtual void closeSession(int id) = 0;
 	virtual int block() = 0;
 };
 

@@ -39,30 +39,26 @@ ConnectionImpl::~ConnectionImpl() {
 	shutdownBindings(this->connection);
 }
 
-Destination* ConnectionImpl::createDestination(PortableServer::POA_ptr poa, char* serviceName) {
-	// create Poa for Service Queue
-	AtmiBrokerPoaFac* poaFactory = this->connection->poaFactory;
-	PortableServer::POA_ptr aFactoryPoaPtr = poaFactory->createServicePoa(this->connection->orbRef, serviceName, poa, this->connection->root_poa_manager);
-	LOG4CXX_DEBUG(logger, (char*) "created create_service_factory_poa: " << serviceName);
-	return new EndpointQueue(this->connection, aFactoryPoaPtr, serviceName);
-}
-
-void ConnectionImpl::destroyDestination(Destination* destination) {
-	EndpointQueue* queue = dynamic_cast<EndpointQueue*> (destination);
-	PortableServer::POA_ptr poa = (PortableServer::POA_ptr) queue->getPoa();
-	delete destination;
-	poa->destroy(true, true);
-	poa = NULL;
-}
-
 Session* ConnectionImpl::createSession(int id, char * serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession");
-	return new SessionImpl(this, id, serviceName);
+	sessionMap[id] = new SessionImpl(this, id, serviceName);
+	return sessionMap[id];
 }
 
 Session* ConnectionImpl::createSession() {
 	LOG4CXX_DEBUG(logger, (char*) "createSession");
 	return new SessionImpl(this, -1);
+}
+
+Session* ConnectionImpl::getSession(int id) {
+	return sessionMap[id];
+}
+
+void ConnectionImpl::closeSession(int id) {
+	if (sessionMap[id]) {
+		delete sessionMap[id];
+		sessionMap[id] = NULL;
+	}
 }
 
 int ConnectionImpl::block() {
@@ -78,6 +74,22 @@ int ConnectionImpl::block() {
 		toReturn = -1;
 	}
 	return toReturn;
+}
+
+Destination* ConnectionImpl::createDestination(PortableServer::POA_ptr poa, char* serviceName) {
+	// create Poa for Service Queue
+	AtmiBrokerPoaFac* poaFactory = this->connection->poaFactory;
+	PortableServer::POA_ptr aFactoryPoaPtr = poaFactory->createServicePoa(this->connection->orbRef, serviceName, poa, this->connection->root_poa_manager);
+	LOG4CXX_DEBUG(logger, (char*) "created create_service_factory_poa: " << serviceName);
+	return new EndpointQueue(this->connection, aFactoryPoaPtr, serviceName);
+}
+
+void ConnectionImpl::destroyDestination(Destination* destination) {
+	EndpointQueue* queue = dynamic_cast<EndpointQueue*> (destination);
+	PortableServer::POA_ptr poa = (PortableServer::POA_ptr) queue->getPoa();
+	delete queue;
+	poa->destroy(true, true);
+	poa = NULL;
 }
 
 CORBA_CONNECTION* ConnectionImpl::getRealConnection() {
