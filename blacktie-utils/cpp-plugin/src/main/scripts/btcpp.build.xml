@@ -56,24 +56,6 @@
 <fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO_Valuetype${lib.suffix}.*" />
 <fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO_PI_Server${lib.suffix}.*" />
 '>
-<!ENTITY includepath-export-atmibroker-core '
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-core/src/export/include" />
-'>
-<!ENTITY libsets-atmibroker-core '
-<fileset includes="${lib.prefix}atmibroker-core.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-core/target/${configuration.type}/${lib.type}" />
-'>
-<!ENTITY includepath-export-atmibroker-xatmi '
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/src/export/include" />
-'>
-<!ENTITY libsets-atmibroker-xatmi '
-<fileset includes="${lib.prefix}atmibroker-xatmi.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-xatmi/target/${configuration.type}/${lib.type}" />
-'>
-<!ENTITY includepath-export-atmibroker-tx '
-<includepath path="${ATMIBROKER_SRC_DIR}/atmibroker-tx/src/export/include" />
-'>
-<!ENTITY libsets-atmibroker-tx '
-<fileset includes="${lib.prefix}atmibroker-tx.*" dir="${ATMIBROKER_SRC_DIR}/atmibroker-tx/target/${configuration.type}/${lib.type}" />
-'>
 <!ENTITY compiler-args-gcc '
 <compilerarg value="-O0" if="debug" />
 <compilerarg value="-g3" if="debug" />
@@ -140,7 +122,6 @@
           TODO fix it so that every goal doesn't need to define toolchain.compiler and configuration.type
                -->
 	<target name="init">
-		<fail unless="ATMIBROKER_SRC_DIR" />
 		<fail unless="configuration.type" />
 		<fail unless="toolchain.compiler" />
 		<condition property="is-msvc">
