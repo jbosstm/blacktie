@@ -59,6 +59,9 @@
 						<goals>
 							<goal>test-compile</goal>
 						</goals>
+						<configuration>
+							<generate.testrunner>true</generate.testrunner>
+						</configuration>
 					</execution>
 					<execution>
 						<id>test</id>

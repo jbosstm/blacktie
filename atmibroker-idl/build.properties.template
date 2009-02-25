@@ -1,8 +1,6 @@
-ATMIBROKER_SRC_DIR=/home/tom/blacktie/product/
 ACE_ROOT=/home/tom/blacktie/utils/ACE+TAO-5.6.7/ACE_wrappers
 TAO_ROOT=${ACE_ROOT}/TAO
 TAO_IDL=${TAO_ROOT}/TAO_IDL/tao_idl
 LOG4CXX_ROOT=/home/tom/blacktie/utils/apache-log4cxx
 #only required if toolchain.compiler=msvc
 #export.dll=_ATMIBROKER_IDL_DLL
-#EXPAT_ROOT=

@@ -137,6 +137,25 @@
       <description>compile test sources</description>
       <parameters>
         <parameter>
+          <name>generate.testrunner</name>
+          <property>generate.testrunner</property>
+          <required>true</required>
+          <defaultValue>false</defaultValue>
+          <type>java.lang.String</type>
+          <description>Generate a test runner</description>
+        </parameter>
+        <parameter>
+          <name>gen-common-sources</name>
+          <required>true</required>
+          <defaultValue>${project}</defaultValue>
+          <type>org.apache.maven.project.MavenProject</type>
+          <description>Generate common resources</description>
+        </parameter>
+        <parameter>
+          <name>projectHelper</name>
+          <expression>${org.jboss.blacktie.plugins.AddCommonSources}</expression>
+        </parameter>
+        <parameter>
           <name>blacktie.test.libs</name>
           <property>blacktie.test.libs</property>
           <required>false</required>
@@ -212,7 +231,7 @@
           <name>buildDir</name>
           <property>project.build.directory</property>
           <required>true</required>
-          <readonly>true</readonly>
+          <readonly>false</readonly>
           <defaultValue>${project.build.directory}</defaultValue>
           <type>java.lang.String</type>
           <description>Build directory.</description>

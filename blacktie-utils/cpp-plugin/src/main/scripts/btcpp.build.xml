@@ -208,6 +208,13 @@
 		<pathconvert refid="fileset.main" property="have-srcs" setonempty="false"/>
 	</target>
 	<target name="fileset.test.check">
+		<condition property="need-testrunner">
+			<and>
+				<isset property="generate.testrunner" />
+				<equals arg1="${generate.testrunner}" arg2="true"/>
+			</and>
+		</condition>
+
 		<fileset id="fileset.test" dir="${src.test}" includes="**/*.cxx **/*.c **/*.cpp" excludes="${test.excludes}" />
 		<pathconvert refid="fileset.test" property="xhave-tests" setonempty="false"/>
 		<condition property="have-tests">
@@ -252,7 +259,17 @@
 		</cc>
 	</target>
 
-	<target name="test-compile" depends="fileset.test.check,package" if="have-tests">
+	<target name="gen-test-runner1" if="need-testrunner">
+		<fileset id="fileset.gen.test" dir="${project.build.directory}/generated-sources" includes="**/*.cxx"/>
+		<taskdef name="mojotask" classname="org.jboss.blacktie.plugins.AddCommonSources"/>
+		<mojotask mavenProject="gen-common-sources" outputDir="${project.build.directory}/generated-sources"/>
+	</target>
+	<target name="gen-test-runner2" unless="need-testrunner">
+		<fileset id="fileset.gen.test" dir="." includes="xyzkdjfkejl" excludes="*"/>
+	</target>
+	<target name="gen-test-runner" depends="gen-test-runner1,gen-test-runner2" />
+
+	<target name="test-compile" depends="fileset.test.check,gen-test-runner,package" if="have-tests">
 		<mkdir dir="target/cpp-test-classes" />
 		<fail unless="test.output.type" />
 		<copy todir="target/cpp-test-classes" failonerror="false">
@@ -271,6 +288,7 @@
 			</compiler>
 
 			<fileset refid="fileset.test"/>
+			<fileset refid="fileset.gen.test"/>
 
 			<defineset define="TAO_COMP" />
 			<defineset define="WIN32" if="is-msvc" />
@@ -339,7 +357,20 @@
         <target name="process-classes" depends="package,copy-idl,copy-exports,copy-libs">
         </target>
 
-	<target name="package" depends="init">
+        <target name="cppunit-lib-check" unless="CPPUNIT_LIB_DIR">
+        	<property name="CPPUNIT_LIB_DIR" value="" />
+        </target>
+        <target name="cppunit-root-check" unless="CPPUNIT_ROOT">
+        	<property name="CPPUNIT_ROOT" value="" />
+        </target>
+        <target name="expat-lib-check" unless="EXPAT_LIB_DIR">
+        	<property name="EXPAT_LIB_DIR" value="" />
+        </target>
+        <target name="expat-root-check" unless="EXPAT_ROOT">
+        	<property name="EXPAT_ROOT" value="" />
+        </target>
+
+	<target name="package" depends="init,expat-lib-check,expat-root-check,cppunit-lib-check,cppunit-root-check">
         	<mkdir dir="target/classes/lib" />
         	<mkdir dir="target/classes/include" />
 		<mkdir dir="target/dependencies" />

@@ -3,5 +3,3 @@ TAO_ROOT=
 LOG4CXX_ROOT=
 #only required if toolchain.compiler=msvc
 #export.dll=_ATMIBROKER_CORE_DLL
-#EXPAT_ROOT=
-#CPPUNIT_ROOT=
