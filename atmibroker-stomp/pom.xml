@@ -67,6 +67,9 @@
                                                 <goals>
                                                         <goal>test</goal>
                                                 </goals>
+                                                <configuration>
+                                                        <skipTests>${skipTests}</skipTests>
+                                                </configuration>
                                         </execution>
                                         <execution>
                                                 <id>process-classes</id>

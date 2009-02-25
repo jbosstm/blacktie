@@ -163,11 +163,11 @@
 	</target>
 
 	<target name="clean" >
-		<delete dir="target/classes/lib" />
-		<delete dir="target/classes/include" />
-		<delete dir="target/cpp-classes" />
-		<delete dir="target/cpp-test-classes" />
-		<delete dir="target/dependencies" />
+		<delete dir="target/classes/lib" failonerror="false"/>
+		<delete dir="target/classes/include" failonerror="false"/>
+		<delete dir="target/cpp-classes" failonerror="false"/>
+		<delete dir="target/cpp-test-classes" failonerror="false"/>
+		<delete dir="target/dependencies" failonerror="false"/>
 	</target>
 
 	<target name="generate-sources">
@@ -221,10 +221,16 @@
 			<and>
 				<isset property="xhave-tests" />
 				<not>
-					<equals arg1="${maven.test.skip}" arg2="true"/>
+					<or>
+						<equals arg1="${maven.test.skip}" arg2="true"/>
+						<equals arg1="${skipTests}" arg2="true"/>
+					</or>
 				</not>
 			</and>
-		</condition> 
+		</condition>
+		<!--
+		<echo message="have-tests=${have-tests} maven.test.skip=${maven.test.skip} skipTests=${skipTests} xhave-tests=${xhave-tests}" />
+		-->
 	</target>
 
 	<target name="compile" depends="fileset.main.check,package" if="have-srcs">
@@ -261,8 +267,9 @@
 
 	<target name="gen-test-runner1" if="need-testrunner">
 		<fileset id="fileset.gen.test" dir="${project.build.directory}/generated-sources" includes="**/*.cxx"/>
-		<taskdef name="mojotask" classname="org.jboss.blacktie.plugins.AddCommonSources"/>
-		<mojotask mavenProject="gen-common-sources" outputDir="${project.build.directory}/generated-sources"/>
+		<taskdef name="add.common.src" classname="org.jboss.blacktie.plugins.AddCommonSources"/>
+		<!-- For includes see java.util.regex.Pattern for valid pattern syntax -->
+		<add.common.src mavenProject="gen-common-sources" includes=".*.cxx" outputDir="${project.build.directory}/generated-sources"/>
 	</target>
 	<target name="gen-test-runner2" unless="need-testrunner">
 		<fileset id="fileset.gen.test" dir="." includes="xyzkdjfkejl" excludes="*"/>

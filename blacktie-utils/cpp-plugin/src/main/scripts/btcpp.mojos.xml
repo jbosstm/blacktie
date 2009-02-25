@@ -274,8 +274,17 @@
           <description>Build type. Permissable values are debug|release</description>
         </parameter>
         <parameter>
-          <name>skipTests</name>
+          <name>maven.test.skip</name>
           <property>maven.test.skip</property>
+          <required>false</required>
+          <readonly>false</readonly>
+          <defaultValue>false</defaultValue>
+          <type>java.lang.String</type>
+          <description>Skip tests</description>
+        </parameter>
+        <parameter>
+          <name>skipTests</name>
+          <property>skipTests</property>
           <required>false</required>
           <readonly>false</readonly>
           <defaultValue>false</defaultValue>
