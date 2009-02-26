@@ -64,3 +64,6 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestTPCall);
 /* SERVER MANAGEMENT FUNCTIONS */
 #include "LoopyServerAndClient.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( LoopyServerAndClient);
+
+#include "TestTPConversation.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPConversation);
