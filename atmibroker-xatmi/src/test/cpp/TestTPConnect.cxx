@@ -62,13 +62,13 @@ void TestTPConnect::tearDown() {
 }
 
 void TestTPConnect::test_tpconnect() {
-	cd = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, 0);
+	cd = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, TPSENDONLY);
 	CPPUNIT_ASSERT(cd != -1);
 }
 
 void TestTPConnect::test_tpconnect_double_connect() {
-	cd = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, 0);
-	cd2 = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, 0);
+	cd = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, TPSENDONLY);
+	cd2 = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, TPSENDONLY);
 	CPPUNIT_ASSERT(cd != -1);
 	CPPUNIT_ASSERT(cd2 != -1);
 	CPPUNIT_ASSERT(cd != cd2);
@@ -87,7 +87,7 @@ void TestTPConnect::test_tpconnect_double_connect() {
 }
 
 void TestTPConnect::test_tpconnect_nodata() {
-	cd = ::tpconnect((char*) "TestTPConnect", NULL, 0, 0);
+	cd = ::tpconnect((char*) "TestTPConnect", NULL, 0, TPSENDONLY);
 	CPPUNIT_ASSERT(cd != -1);
 }
 

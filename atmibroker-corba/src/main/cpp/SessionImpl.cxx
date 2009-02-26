@@ -45,6 +45,9 @@ SessionImpl::SessionImpl(ConnectionImpl* connection, int id, const char* service
 	this->temporaryQueue = new EndpointQueue(connection->getRealConnection());
 	this->queueReceiver = new ReceiverImpl(serviceName, temporaryQueue);
 	this->replyTo = temporaryQueue->getName();
+
+	this->canSend = true;
+	this->canRecv = true;
 }
 
 SessionImpl::SessionImpl(ConnectionImpl* connection, int id) {
@@ -57,6 +60,9 @@ SessionImpl::SessionImpl(ConnectionImpl* connection, int id) {
 	this->temporaryQueue = new EndpointQueue(connection->getRealConnection());
 	this->queueReceiver = new ReceiverImpl(temporaryQueue->getName(), temporaryQueue);
 	this->replyTo = temporaryQueue->getName();
+
+	this->canSend = true;
+	this->canRecv = true;
 }
 
 SessionImpl::~SessionImpl() {
@@ -112,4 +118,21 @@ int SessionImpl::getId() {
 
 const char* SessionImpl::getReplyTo() {
 	return replyTo;
+}
+
+
+void SessionImpl::setCanSend(bool canSend) {
+	this->canSend = canSend;
+}
+
+void SessionImpl::setCanRecv(bool canRecv) {
+	this->canRecv = canRecv;
+}
+
+bool SessionImpl::getCanSend() {
+	return canSend;
+}
+
+bool SessionImpl::getCanRecv() {
+	return canRecv;
 }

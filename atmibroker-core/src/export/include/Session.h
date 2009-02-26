@@ -31,6 +31,10 @@ public:
 	virtual Receiver* getReceiver() = 0;
 	virtual Sender * getSender() = 0;
 	virtual int getId() = 0;
+	virtual void setCanSend(bool canSend) = 0;
+	virtual void setCanRecv(bool canRecv) = 0;
+	virtual bool getCanSend() = 0;
+	virtual bool getCanRecv() = 0;
 };
 
 #endif

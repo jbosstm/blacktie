@@ -59,6 +59,7 @@ int clientinit() {
 		if (!clientInitialized) {
 			::clientdone();
 			toReturn = -1;
+			tperrno = TPESYSTEM;
 		} else {
 			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "Client Initialized");
 		}

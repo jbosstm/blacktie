@@ -80,6 +80,12 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 		tpsvcinfo.flags = (tpsvcinfo.flags | TPTRAN);
 	}
 
+	if (tpsvcinfo.flags & TPRECVONLY) {
+		session->setCanRecv(false);
+	} else if (tpsvcinfo.flags & TPSENDONLY) {
+		session->setCanSend(false);
+	}
+
 	// HANDLE THE CLIENT INVOCATION
 	// TODO wrap TSS control in a Transaction object and make sure any current
 	// control associated with the thread is suspended here and resumed after

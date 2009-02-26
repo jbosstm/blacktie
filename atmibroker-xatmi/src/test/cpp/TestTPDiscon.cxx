@@ -34,12 +34,14 @@ void TestTPDiscon::setUp() {
 	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	strcpy(sendbuf, "hello");
 	CPPUNIT_ASSERT(tperrno == 0);
-	cd = ::tpconnect((char*) "TestTPDiscon", sendbuf, sendlen, 0);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(cd != -1);
+
 	int toCheck = tpadvertise((char*) "TestTPDiscon", testtpdiscon_service);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toCheck != -1);
+
+	cd = ::tpconnect((char*) "TestTPDiscon", sendbuf, sendlen, TPSENDONLY);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(cd != -1);
 }
 
 void TestTPDiscon::tearDown() {

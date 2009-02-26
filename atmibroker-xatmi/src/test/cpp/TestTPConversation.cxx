@@ -55,24 +55,26 @@ void TestTPConversation::tearDown() {
 }
 
 void TestTPConversation::test_conversation() {
-	cd = ::tpconnect((char*) "TestTPConversation", sendbuf, sendlen, 0);
+	cd = ::tpconnect((char*) "TestTPConversation", sendbuf, sendlen, TPRECVONLY);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(cd != -1);
 	for (int i = 0; i < 10; i++) {
 		int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, 0);
 		CPPUNIT_ASSERT(tperrno == 0);
 		CPPUNIT_ASSERT(result != -1);
-		result = ::tpsend(cd, sendbuf, sendlen, 0, 0);
+		result = ::tpsend(cd, sendbuf, sendlen, TPRECVONLY, 0);
 		CPPUNIT_ASSERT(tperrno == 0);
 		CPPUNIT_ASSERT(result != -1);
 	}
-	int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, 0);
-	CPPUNIT_ASSERT(tperrno== TPEPROTO);
-	CPPUNIT_ASSERT(result == -1);
+	int result = ::tpgetrply(&cd, &rcvbuf, &rcvlen, 0);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(result != -1);
 }
 
 void testTPConversation_service(TPSVCINFO *svcinfo) {
 	char *rcvbuf = ::tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
 	for (int i = 0; i < 10; i++) {
-		int result = ::tpsend(svcinfo->cd, svcinfo->data, svcinfo->len, 0, 0);
+		int result = ::tpsend(svcinfo->cd, svcinfo->data, svcinfo->len, TPRECVONLY, 0);
 		result = ::tprecv(svcinfo->cd, &rcvbuf, &svcinfo->len, 0, 0);
 	}
 	::tpfree(rcvbuf);

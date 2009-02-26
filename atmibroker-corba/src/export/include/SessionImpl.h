@@ -45,6 +45,14 @@ public:
 
 	Sender* getSender();
 
+	void setCanSend(bool canSend);
+
+	void setCanRecv(bool canRecv);
+
+	bool getCanSend();
+
+	bool getCanRecv();
+
 	int getId();
 private:
 	static log4cxx::LoggerPtr logger;
@@ -54,6 +62,8 @@ private:
 	SenderImpl* queueSender;
 	EndpointQueue* temporaryQueue;
 	const char* replyTo;
+	bool canSend;
+	bool canRecv;
 };
 
 #endif

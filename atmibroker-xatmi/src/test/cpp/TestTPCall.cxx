@@ -139,8 +139,10 @@ void TestTPCall::test_tpcall_x_c_type() {
 
 void test_tpcall_x_octet_service(TPSVCINFO *svcinfo) {
 	bool ok = false;
-	if (strncmp(svcinfo->data, "hello", svcinfo->len) == 0) {
-		ok = true;
+	if (svcinfo->data) {
+		if (strncmp(svcinfo->data, "hello", svcinfo->len) == 0) {
+			ok = true;
+		}
 	}
 
 	int len = 60;
@@ -149,7 +151,11 @@ void test_tpcall_x_octet_service(TPSVCINFO *svcinfo) {
 		strcpy(toReturn, "tpcall_x_octet");
 	} else {
 		strcpy(toReturn, "fail");
-		strcpy(toReturn, svcinfo->data);
+		if (svcinfo->data) {
+			strcpy(toReturn, svcinfo->data);
+		} else {
+			strcpy(toReturn, "dud");
+		}
 	}
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }

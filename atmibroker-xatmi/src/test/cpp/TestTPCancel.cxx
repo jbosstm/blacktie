@@ -56,7 +56,6 @@ void TestTPCancel::test_tpcancel() {
 	// TODO Changed length from 0 to strlen(sendbuf)+1
 	int cd = ::tpacall((char*) "TestTPCancel", (char *) sendbuf, strlen(sendbuf) + 1, 0);
 	CPPUNIT_ASSERT(cd != -1);
-	CPPUNIT_ASSERT(cd != 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 
 	// CANCEL THE REQUEST
@@ -71,9 +70,8 @@ void TestTPCancel::test_tpcancel() {
 
 	// FAIL TO RETRIEVE THE RESPONSE
 	int valToTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
+	CPPUNIT_ASSERT(tperrno == TPEBADDESC);
 	CPPUNIT_ASSERT(valToTest == -1);
-	CPPUNIT_ASSERT(strcmp(rcvbuf, "testtpcancel_service") == -1);
-	CPPUNIT_ASSERT(tperrno == 0);
 }
 
 // 8.5
@@ -86,7 +84,7 @@ void TestTPCancel::test_tpcancel_baddesc() {
 
 void testtpcancel_service(TPSVCINFO *svcinfo) {
 	int len = 21;
-	char *toReturn = new char[len];
+	char *toReturn = ::tpalloc("X_OCTET", NULL, len);
 	strcpy(toReturn, "testtpcancel_service");
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }

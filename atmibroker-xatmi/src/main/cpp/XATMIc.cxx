@@ -45,68 +45,96 @@ long _tpurcode = -1;
 // Logger for XATMIc
 log4cxx::LoggerPtr loggerXATMI(log4cxx::Logger::getLogger("loggerXATMI"));
 
-int send(Sender* sender, const char* replyTo, char* idata, long ilen, int correlationId, long flags, long rcode, long rval) {
-	LOG4CXX_DEBUG(loggerXATMI, (char*) "send - idata: %s ilen: %d flags: %d" << idata << " " << ilen << " " << flags);
-	int toReturn = -1;
-	try {
-		void* control = getSpecific(TSS_KEY);
-		if (~TPNOTRAN & flags) {
-			// don't run the call in a transaction
-			destroySpecific(TSS_KEY);
-		}
-		MESSAGE message;
-		message.replyto = replyTo;
-		message.data = idata;
-		message.len = ilen;
-		message.correlationId = correlationId;
-		message.flags = flags;
-		message.rcode = rcode;
-		message.rval = rval;
-		int data_size = ::tptypes(message.data, NULL, NULL);
-		if (data_size >= 0) {
-			if (message.len <= 0 || message.len > data_size) {
-				message.len = data_size;
-			}
-			sender->send(message);
-			toReturn = 0;
+int bufferSize(char* data, int suggestedSize) {
+	int data_size = ::tptypes(data, NULL, NULL);
+	if (data_size >= 0) {
+		if (suggestedSize <= 0 || suggestedSize > data_size) {
+			return data_size;
 		} else {
-			tperrno = TPEINVAL;
-			LOG4CXX_DEBUG(loggerXATMI, (char*) "A NON-BUFFER WAS ATTEMPTED TO BE SENT");
-			toReturn = -1;
+			return suggestedSize;
 		}
-
-		setSpecific(TSS_KEY, control);
-	} catch (...) {
-		LOG4CXX_ERROR(loggerXATMI, (char*) "aCorbaService->start_conversation(): call failed");
-		tperrno = TPESYSTEM;
+	} else {
+		LOG4CXX_DEBUG(loggerXATMI, (char*) "A NON-BUFFER WAS ATTEMPTED TO BE SENT");
+		tperrno = TPEINVAL;
+		return -1;
 	}
+
+}
+int send(Session* session, const char* replyTo, char* idata, long ilen, int correlationId, long flags, long rcode, long rval) {
+	LOG4CXX_DEBUG(loggerXATMI, (char*) "send - idata: %s ilen: %d flags: %d" << idata << " " << ilen << " " << flags);
+	if (flags & TPSIGRSTRT) {
+		LOG4CXX_ERROR(loggerXATMI, (char*) "TPSIGRSTRT NOT SUPPORTED");
+	}
+	int toReturn = -1;
+	if (session->getCanSend()) {
+		try {
+			bool transactionSuspended = false;
+			void* control = getSpecific(TSS_KEY);
+			if (control && (~TPNOTRAN & flags)) {
+				// don't run the call in a transaction
+				destroySpecific(TSS_KEY);
+				transactionSuspended = true;
+			}
+
+			MESSAGE message;
+			message.replyto = replyTo;
+			message.data = idata;
+			message.len = ilen;
+			message.correlationId = correlationId;
+			message.flags = flags;
+			message.rcode = rcode;
+			message.rval = rval;
+			session->getSender()->send(message);
+			toReturn = 0;
+
+			if (transactionSuspended) {
+				setSpecific(TSS_KEY, control);
+			}
+		} catch (...) {
+			LOG4CXX_ERROR(loggerXATMI, (char*) "aCorbaService->start_conversation(): call failed");
+			tperrno = TPESYSTEM;
+		}
+	} else {
+		tperrno = TPEPROTO;
+	}
+
 	return toReturn;
 }
 
 int receive(Session* session, char ** odata, long *olen, long flags, long* event) {
 	LOG4CXX_DEBUG(loggerXATMI, (char*) "tprecv - odata: %s olen: %p flags: %d" << *odata << " " << olen << " " << flags);
+	if (flags & TPSIGRSTRT) {
+		LOG4CXX_ERROR(loggerXATMI, (char*) "TPSIGRSTRT NOT SUPPORTED");
+	}
 	int toReturn = -1;
-	MESSAGE message = session->getReceiver()->receive((TPNOTIME & flags));
-	if (message.data != NULL) {
-		// TODO Handle TPNOCHANGE
-		// TODO Handle buffer
-		// TODO USE RVAL AND RCODE
-		*odata = message.data;
-		*olen = message.len;
-		*event = message.event;
-		try {
-			if (message.replyto != NULL && strcmp(message.replyto, "") != 0) {
-				session->setSendTo((char*) message.replyto);
-			} else {
-				session->setSendTo(NULL);
+	if (session->getCanRecv()) {
+		MESSAGE message = session->getReceiver()->receive((TPNOTIME & flags));
+		if (message.data != NULL) {
+			// TODO Handle TPNOCHANGE
+			// TODO Handle buffer
+			// TODO USE RVAL AND RCODE AND EVENT
+			*odata = message.data;
+			*olen = message.len;
+			try {
+				if (message.replyto != NULL && strcmp(message.replyto, "") != 0) {
+					session->setSendTo((char*) message.replyto);
+				} else {
+					session->setSendTo(NULL);
+				}
+				if (message.flags & TPRECVONLY) {
+					session->setCanSend(true);
+					session->setCanRecv(false);
+				}
+			} catch (...) {
+				LOG4CXX_ERROR(loggerXATMI, (char*) "Could not set the send to destination to: " << message.replyto);
 			}
-		} catch (...) {
-			LOG4CXX_ERROR(loggerXATMI, (char*) "Could not set the send to destination to: " << message.replyto);
+			LOG4CXX_DEBUG(loggerXATMI, (char*) "returning - %s" << *odata);
+			toReturn = 0;
+		} else {
+			tperrno = TPETIME;
 		}
-		LOG4CXX_DEBUG(loggerXATMI, (char*) "returning - %s" << *odata);
-		toReturn = 0;
 	} else {
-		tperrno = TPETIME;
+		tperrno = TPEPROTO;
 	}
 	return toReturn;
 }
@@ -128,8 +156,6 @@ int tpadvertise(char * svcname, void(*func)(TPSVCINFO *)) {
 		if (ptrServer->advertiseService(svcname, func)) {
 			toReturn = 0;
 		}
-	} else {
-		tperrno = TPEPROTO;
 	}
 	return toReturn;
 }
@@ -148,8 +174,6 @@ int tpunadvertise(char * svcname) {
 		} else {
 			tperrno = TPEINVAL;
 		}
-	} else {
-		tperrno = TPEPROTO;
 	}
 	return toReturn;
 }
@@ -184,75 +208,90 @@ int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen, long f
 			return -1;
 		}
 	} else {
-		tperrno = TPESYSTEM;
 		return -1;
 	}
 }
 
 int tpacall(char * svc, char* idata, long ilen, long flags) {
 	tperrno = 0;
-	if (clientinit() != -1) {
-		int cd = -1;
-		Session* session = NULL;
-		try {
-			session = ptrAtmiBrokerClient->createSession(cd, svc);
-		} catch (...) {
-			LOG4CXX_ERROR(loggerXATMI, (char*) "tpconnect failed to connect to service queue");
-			tperrno = TPENOENT;
-			return -1;
-		}
-		if (cd != -1) {
-			::send(session->getSender(), session->getReplyTo(), idata, ilen, cd, flags, 0, 0);
-			if (TPNOREPLY & flags) {
-				return 0;
+	int len = ::bufferSize(idata, ilen);
+	if (len != -1) {
+		if (clientinit() != -1) {
+			Session* session = NULL;
+			try {
+				int cd = -1;
+				session = ptrAtmiBrokerClient->createSession(cd, svc);
+				if (cd != -1) {
+					::send(session, session->getReplyTo(), idata, len, cd, flags, 0, 0);
+					if (TPNOREPLY & flags) {
+						return 0;
+					}
+					return cd;
+				} else {
+					tperrno = TPELIMIT;
+				}
+			} catch (...) {
+				LOG4CXX_ERROR(loggerXATMI, (char*) "tpconnect failed to connect to service queue");
+				tperrno = TPENOENT;
 			}
-			return cd;
-		} else {
-			return -1;
 		}
-	} else {
-		tperrno = TPESYSTEM;
-		return -1;
 	}
+	return -1;
 }
 
 int tpconnect(char * svc, char* idata, long ilen, long flags) {
 	tperrno = 0;
-	if (clientinit() != -1) {
-		int cd = -1;
-		Session* session = NULL;
-		try {
-			session = ptrAtmiBrokerClient->createSession(cd, svc);
-		} catch (...) {
-			LOG4CXX_ERROR(loggerXATMI, (char*) "tpconnect failed to connect to service queue");
-			tperrno = TPENOENT;
-			return -1;
+	if (flags & TPSENDONLY || flags & TPRECVONLY) {
+		int len = 0;
+		if (idata != NULL) {
+			len = ::bufferSize(idata, ilen);
 		}
-		if (cd != -1) {
-			::send(session->getSender(), session->getReplyTo(), idata, ilen, cd, flags, 0, 0);
+		if (len != -1) {
+			if (clientinit() != -1) {
+				int cd = -1;
+				Session* session = NULL;
+				try {
+					session = ptrAtmiBrokerClient->createSession(cd, svc);
+					if (cd != -1) {
+						::send(session, session->getReplyTo(), idata, len, cd, flags, 0, 0);
+						if (flags & TPRECVONLY) {
+							session->setCanSend(false);
+						} else {
+							session->setCanRecv(false);
+						}
+						return cd;
+					} else {
+						tperrno = TPELIMIT;
+					}
+				} catch (...) {
+					LOG4CXX_ERROR(loggerXATMI, (char*) "tpconnect failed to connect to service queue");
+					tperrno = TPENOENT;
+				}
+			}
 		}
-		return cd;
 	} else {
-		tperrno = TPESYSTEM;
-		return -1;
+		tperrno = TPEINVAL;
 	}
+	return -1;
 }
 
 int tpgetrply(int *id, char ** odata, long *olen, long flags) {
 	tperrno = 0;
 	int toReturn = -1;
 	if (clientinit() != -1) {
-		Session* session = ptrAtmiBrokerClient->getSession(*id);
-		if (session == NULL) {
-			tperrno = TPEBADDESC;
+		if (id && olen) {
+			Session* session = ptrAtmiBrokerClient->getSession(*id);
+			if (session == NULL) {
+				tperrno = TPEBADDESC;
+			} else {
+				long events;
+				toReturn = ::receive(session, odata, olen, flags, &events);
+				ptrAtmiBrokerClient->closeSession(*id);
+				LOG4CXX_DEBUG(loggerXATMI, (char*) "tpgetrply session closed");
+			}
 		} else {
-			long events;
-			toReturn = ::receive(session, odata, olen, flags, &events);
-			ptrAtmiBrokerClient->closeSession(*id);
-			LOG4CXX_DEBUG(loggerXATMI, (char*) "tpgetrply session closed");
+			tperrno = TPEINVAL;
 		}
-	} else {
-		tperrno = TPESYSTEM;
 	}
 	return toReturn;
 }
@@ -265,11 +304,13 @@ int tpcancel(int id) {
 		if (currentImpl) {
 			tperrno = TPETRAN;
 		}
-		ptrAtmiBrokerClient->closeSession(id);
-		LOG4CXX_DEBUG(loggerXATMI, (char*) "tpcancel session closed");
-		toReturn = 0;
-	} else {
-		tperrno = TPESYSTEM;
+		if (ptrAtmiBrokerClient->getSession(id) != NULL) {
+			ptrAtmiBrokerClient->closeSession(id);
+			LOG4CXX_DEBUG(loggerXATMI, (char*) "tpcancel session closed");
+			toReturn = 0;
+		} else {
+			tperrno = TPEBADDESC;
+		}
 	}
 	return toReturn;
 }
@@ -278,23 +319,33 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 	tperrno = 0;
 	int toReturn = -1;
 	Session* session = (Session*) getSpecific(SVC_SES);
-	if (session != NULL && session->getId() != id) {
-		session = NULL;
+	int len = -1;
+	if (session != NULL) {
+		if (session->getId() != id) {
+			session = NULL;
+		} else {
+			len = ilen;
+		}
 	}
 	if (session == NULL) {
 		if (clientinit() != -1) {
 			session = ptrAtmiBrokerClient->getSession(id);
-		} else {
-			tperrno = TPESYSTEM;
+			if (session == NULL) {
+				tperrno = TPEBADDESC;
+			} else {
+				if (session->getSender() == NULL) {
+					tperrno = TPEPROTO;
+				} else {
+					len = ::bufferSize(idata, ilen);
+				}
+			}
 		}
 	}
-	if (session == NULL) {
-		tperrno = TPEBADDESC;
-	} else {
-		if (session->getSender() == NULL) {
-			tperrno = TPEPROTO;
-		} else {
-			toReturn = ::send(session->getSender(), session->getReplyTo(), idata, ilen, id, flags, 0, 0);
+	if (len != -1) {
+		toReturn = ::send(session, session->getReplyTo(), idata, len, id, flags, 0, 0);
+		if (flags & TPRECVONLY) {
+			session->setCanSend(false);
+			session->setCanRecv(true);
 		}
 	}
 	return toReturn;
@@ -310,8 +361,6 @@ int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 	if (session == NULL) {
 		if (clientinit() != -1) {
 			session = ptrAtmiBrokerClient->getSession(id);
-		} else {
-			tperrno = TPESYSTEM;
 		}
 	}
 	if (session == NULL) {
@@ -329,7 +378,7 @@ void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 		if (session->getSender() == NULL) {
 			tperrno = TPEPROTO;
 		} else {
-			::send(session->getSender(), "", data, len, 0, flags, rval, rcode);
+			::send(session, "", data, len, 0, flags, rval, rcode);
 			::tpfree(data);
 			session->setSendTo(NULL);
 		}
@@ -359,8 +408,6 @@ int tpdiscon(int id) {
 				tperrno = TPESYSTEM;
 			}
 		}
-	} else {
-		tperrno = TPESYSTEM;
 	}
 	return toReturn;
 }

@@ -69,6 +69,7 @@ int serverinit() {
 		if (!serverInitialized) {
 			::serverdone();
 			toReturn = -1;
+			tperrno = TPESYSTEM;
 		} else {
 			userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer, (char*) "Server Running");
 		}
