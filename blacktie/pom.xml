@@ -19,15 +19,15 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.blacktie</groupId>
-	<artifactId>atmibroker-all</artifactId>
+	<artifactId>blacktie</artifactId>
 	<packaging>pom</packaging>
 	<version>1.0-M4</version>
 	<name>Blacktie Distribution</name>
 	<url>http://www.jboss.org/blacktie</url>
 	<scm>
-		<connection>scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/atmibroker-all</connection>
-		<developerConnection>scm:svn:https://svn.jboss.org/repos/blacktie/trunk/atmibroker-all</developerConnection>
-		<url>http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/atmibroker-all</url>
+		<connection>scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/blacktie</connection>
+		<developerConnection>scm:svn:https://svn.jboss.org/repos/blacktie/trunk/blacktie</developerConnection>
+		<url>http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/blacktie</url>
 	</scm>
 
 	<build>

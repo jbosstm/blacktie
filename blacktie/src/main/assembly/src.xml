@@ -24,8 +24,8 @@
 	</formats>
 	<fileSets>
 		<fileSet>
-			<directory>../atmibroker-all</directory>
-			<outputDirectory>atmibroker-all</outputDirectory>
+			<directory>../blacktie</directory>
+			<outputDirectory>blacktie</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<excludes>
 				<exclude>target/**</exclude>
