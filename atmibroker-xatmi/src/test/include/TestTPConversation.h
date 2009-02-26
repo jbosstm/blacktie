@@ -15,37 +15,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef ConnectionImpl_H_
-#define ConnectionImpl_H_
+#ifndef TestTPConversation_H
+#define TestTPConversation_H
 
-#include <map>
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFixture.h>
 
-#include "atmiBrokerCorbaMacro.h"
-#include "log4cxx/logger.h"
-#include "CorbaConnection.h"
-#include "Connection.h"
-#include "SessionImpl.h"
+#include "BaseServerTest.h"
 
-class SessionImpl;
-
-class ATMIBROKER_CORBA_DLL ConnectionImpl: public virtual Connection {
+class TestTPConversation: public BaseServerTest {
+CPPUNIT_TEST_SUITE( TestTPConversation)
+	;
+		CPPUNIT_TEST( test_conversation);
+	CPPUNIT_TEST_SUITE_END()
+	;
 public:
-	ConnectionImpl(char* connectionName);
-	virtual ~ConnectionImpl();
-
-	Session* createSession(int id, char* serviceName);
-	Session* createSession(int id);
-	Session* getSession(int id);
-	void closeSession(int id);
-	int block();
-
-	Destination* createDestination(PortableServer::POA_ptr poa, char* serviceName);
-	void destroyDestination(Destination* destination);
-	CORBA_CONNECTION* getRealConnection();
+	void test_conversation();
+	virtual void setUp();
+	virtual void tearDown();
 private:
-	static log4cxx::LoggerPtr logger;
-	CORBA_CONNECTION* connection;
-	std::map<int, SessionImpl*> sessionMap;
+	int cd;
+	char *sendbuf, *rcvbuf;
+	long sendlen, rcvlen;
 };
 
 #endif

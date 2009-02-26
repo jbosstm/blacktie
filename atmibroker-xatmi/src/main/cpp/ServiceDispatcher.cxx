@@ -48,7 +48,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	LOG4CXX_DEBUG(logger, (char*) "svc()");
 
 	// INITIALISE THE SENDER AND RECEIVER FOR THIS CONVERSATION
-	session = connection->createSession();
+	session = connection->createSession(message.correlationId);
 	if (message.replyto) {
 		LOG4CXX_DEBUG(logger, (char*) "   replyTo = " << message.replyto);
 	} else {

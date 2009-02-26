@@ -21,34 +21,32 @@
 
 #include "xatmi.h"
 
-#include "TestTPDiscon.h"
+#include "TestTPConversation.h"
 
-extern void testtpdiscon_service(TPSVCINFO *svcinfo);
+extern void testTPConversation_service(TPSVCINFO *svcinfo);
 
-void TestTPDiscon::setUp() {
+void TestTPConversation::setUp() {
 	// Setup server
 	BaseServerTest::setUp();
 
 	// Do local work
-	sendlen = strlen("hello") + 1;
-	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	strcpy(sendbuf, "hello");
-	CPPUNIT_ASSERT(tperrno == 0);
-	cd = ::tpconnect((char*) "TestTPDiscon", sendbuf, sendlen, 0);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(cd != -1);
-	int toCheck = tpadvertise((char*) "TestTPDiscon", testtpdiscon_service);
+	cd = -1;
+	int toCheck = tpadvertise((char*) "TestTPConversation", testTPConversation_service);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toCheck != -1);
+
+	sendlen = strlen("hello") + 1;
+	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	strcpy(sendbuf, "hello");
+	CPPUNIT_ASSERT(tperrno == 0);
 }
 
-void TestTPDiscon::tearDown() {
+void TestTPConversation::tearDown() {
 	// Do local work
 	::tpfree(sendbuf);
-	if (cd != -1) {
-		::tpdiscon(cd);
-	}
-	int toCheck = tpunadvertise((char*) "TestTPDiscon");
+	::tpfree(rcvbuf);
+	int toCheck = tpunadvertise((char*) "TestTPConversation");
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toCheck != -1);
 
@@ -56,19 +54,27 @@ void TestTPDiscon::tearDown() {
 	BaseServerTest::tearDown();
 }
 
-void TestTPDiscon::test_tpdiscon() {
-	::tpdiscon(cd);
-	CPPUNIT_ASSERT(tperrno == 0);
-	cd = -1;
+void TestTPConversation::test_conversation() {
+	cd = ::tpconnect((char*) "TestTPConversation", sendbuf, sendlen, 0);
+	for (int i = 0; i < 10; i++) {
+		int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, 0);
+		CPPUNIT_ASSERT(tperrno == 0);
+		CPPUNIT_ASSERT(result != -1);
+		result = ::tpsend(cd, sendbuf, sendlen, 0, 0);
+		CPPUNIT_ASSERT(tperrno == 0);
+		CPPUNIT_ASSERT(result != -1);
+	}
+	int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, 0);
+	CPPUNIT_ASSERT(tperrno== TPEPROTO);
+	CPPUNIT_ASSERT(result == -1);
 }
 
-void TestTPDiscon::test_tpdiscon_baddescr() {
-	::tpdiscon(2);
-}
-
-void TestTPDiscon::test_tpdiscon_negdescr() {
-	::tpdiscon(-1);
-}
-
-void testtpdiscon_service(TPSVCINFO *svcinfo) {
+void testTPConversation_service(TPSVCINFO *svcinfo) {
+	char *rcvbuf = ::tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
+	for (int i = 0; i < 10; i++) {
+		int result = ::tpsend(svcinfo->cd, svcinfo->data, svcinfo->len, 0, 0);
+		result = ::tprecv(svcinfo->cd, &rcvbuf, &svcinfo->len, 0, 0);
+	}
+	::tpfree(rcvbuf);
+	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
 }
