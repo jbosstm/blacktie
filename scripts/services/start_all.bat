@@ -16,7 +16,12 @@ rem v.2.1 along with this distribution; if not, write to the Free Software
 rem Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 rem MA  02110-1301, USA.
 rem
-call ..\..\setenv.bat
+
+rem THIS IS NO LONGER REQUIRED IF YOU ARE USING THE JBOSS AS CONTAINER 
+
+set JACORB_HOME=REPLACE_WITH_PATH_TO_JACORB_HOME
+set JBOSSTS_HOME=REPLACE_WITH_PATH_TO_JBOSSTS_HOME
+set PATH=%PATH%;%JACORB_HOME%\bin
 
 start %JACORB_HOME%\bin\ns.bat -DOAPort=3528
 PING 1.1.1.1 -n 1 -w 1000 >NUL
