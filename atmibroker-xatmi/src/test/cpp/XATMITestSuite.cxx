@@ -40,11 +40,11 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestTPACall );
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPCancel );
 #include "TestTPGetRply.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPGetRply );
-///* Service Routing*/
-////#include "TestTPService.h"
-////CPPUNIT_TEST_SUITE_REGISTRATION( TestTPService );
-////#include "TestTPReturn.h"
-////CPPUNIT_TEST_SUITE_REGISTRATION( TestTPReturn );
+/* Service Routing*/
+#include "TestTPService.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPService );
+#include "TestTPReturn.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPReturn );
 /* Conversation */
 #include "TestTPConnect.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPConnect );

@@ -100,16 +100,19 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 		LOG4CXX_ERROR(logger, (char*) "ServiceDispatcher caught error running during onMessage");
 	}
 	AtmiBrokerOTS::get_instance()->rm_suspend();
+
+
+	// CLEAN UP THE SENDER AND RECEIVER FOR THIS CLIENT
+	if (session->getSender() != NULL) {
+		::tpreturn(TPFAIL, TPESVCERR, (char*) "", 0, 0);
+	}
+	delete this->session;
+	this->session = NULL;
+
 	destroySpecific(SVC_SES);
 	destroySpecific(SVC_KEY);
 	destroySpecific(TSS_KEY);
-
-	// CLEAN UP THE SENDER AND RECEIVER FOR THIS CLIENT
-	if (session) {
-		delete this->session;
-		this->session = NULL;
-		LOG4CXX_DEBUG(logger, (char*) "ServiceDispatcher session closed");
-	}
+	LOG4CXX_DEBUG(logger, (char*) "ServiceDispatcher session closed");
 }
 
 void ServiceDispatcher::shutdown() {

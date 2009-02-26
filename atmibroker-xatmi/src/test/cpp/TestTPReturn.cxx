@@ -63,9 +63,9 @@ void TestTPReturn::test_tpreturn_nonbuffer() {
 	(void) strcpy(sendbuf, "hello");
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	int id = ::tpcall((char*) "TestTPReturn", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, (long) 0);
-	CPPUNIT_ASSERT(tperrno== TPESVCERR);
+	int id = ::tpcall((char*) "TestTPReturn", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, 0);
 	CPPUNIT_ASSERT(id == -1);
+	CPPUNIT_ASSERT(tperrno== TPESVCERR);
 	CPPUNIT_ASSERT(strcmp(rcvbuf, "testtpreturn_service") == -1);
 }
 

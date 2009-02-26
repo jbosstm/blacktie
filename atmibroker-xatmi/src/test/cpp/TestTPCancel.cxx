@@ -84,7 +84,7 @@ void TestTPCancel::test_tpcancel_baddesc() {
 
 void testtpcancel_service(TPSVCINFO *svcinfo) {
 	int len = 21;
-	char *toReturn = ::tpalloc("X_OCTET", NULL, len);
+	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	strcpy(toReturn, "testtpcancel_service");
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }

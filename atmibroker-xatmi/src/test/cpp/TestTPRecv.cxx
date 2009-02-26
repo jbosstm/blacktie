@@ -58,7 +58,8 @@ void TestTPRecv::tearDown() {
 
 void TestTPRecv::test_tprecv_sendonly() {
 	cd = ::tpconnect((char*) "TestTPRecv", sendbuf, sendlen, TPSENDONLY);
-	int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, 0);
+	long revent = 0;
+	int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
 	CPPUNIT_ASSERT(tperrno== TPEPROTO);
 	CPPUNIT_ASSERT(result == -1);
 }

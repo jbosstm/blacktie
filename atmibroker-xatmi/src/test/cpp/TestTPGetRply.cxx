@@ -129,7 +129,7 @@ void TestTPGetRply::test_tpgetrply_nullrcvlen() {
 }
 
 void testtpgetrply_service(TPSVCINFO *svcinfo) {
-	char * toReturn = new char[22];
+	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, 22);
 	strcpy(toReturn, "testtpgetrply_service");
 	tpreturn(TPSUCCESS, 0, toReturn, 22, 0);
 }

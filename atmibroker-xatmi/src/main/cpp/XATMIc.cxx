@@ -60,7 +60,7 @@ int bufferSize(char* data, int suggestedSize) {
 	}
 
 }
-int send(Session* session, const char* replyTo, char* idata, long ilen, int correlationId, long flags, long rcode, long rval) {
+int send(Session* session, const char* replyTo, char* idata, long ilen, int correlationId, long flags, long rval, long rcode) {
 	LOG4CXX_DEBUG(loggerXATMI, (char*) "send - idata: %s ilen: %d flags: %d" << idata << " " << ilen << " " << flags);
 	if (flags & TPSIGRSTRT) {
 		LOG4CXX_ERROR(loggerXATMI, (char*) "TPSIGRSTRT NOT SUPPORTED");
@@ -115,6 +115,11 @@ int receive(Session* session, char ** odata, long *olen, long flags, long* event
 			// TODO USE RVAL AND RCODE AND EVENT
 			*odata = message.data;
 			*olen = message.len;
+			if (message.rcode == TPESVCFAIL) {
+				*event = TPESVCFAIL;
+			} else if (message.rcode == TPESVCERR) {
+				*event = TPESVCERR;
+			}
 			try {
 				if (message.replyto != NULL && strcmp(message.replyto, "") != 0) {
 					session->setSendTo((char*) message.replyto);
@@ -284,9 +289,16 @@ int tpgetrply(int *id, char ** odata, long *olen, long flags) {
 			if (session == NULL) {
 				tperrno = TPEBADDESC;
 			} else {
-				long events;
-				toReturn = ::receive(session, odata, olen, flags, &events);
+				long event;
+				toReturn = ::receive(session, odata, olen, flags, &event);
 				ptrAtmiBrokerClient->closeSession(*id);
+				if (event == TPESVCERR) {
+					tperrno = TPESVCERR;
+					toReturn = -1;
+				} else if (event == TPESVCFAIL) {
+					tperrno = TPESVCFAIL;
+					toReturn = -1;
+				}
 				LOG4CXX_DEBUG(loggerXATMI, (char*) "tpgetrply session closed");
 			}
 		} else {
@@ -367,6 +379,13 @@ int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 		tperrno = TPEBADDESC;
 	} else {
 		toReturn = ::receive(session, odata, olen, flags, event);
+		if (*event == TPESVCERR) {
+			tperrno = TPEEVENT;
+			toReturn = -1;
+		} else if (*event == TPESVCFAIL) {
+			tperrno = TPEEVENT;
+			toReturn = -1;
+		}
 	}
 	return toReturn;
 }
@@ -378,7 +397,11 @@ void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 		if (session->getSender() == NULL) {
 			tperrno = TPEPROTO;
 		} else {
-			::send(session, "", data, len, 0, flags, rval, rcode);
+			if (bufferSize(data, len) == -1) {
+				::send(session, "", data, 0, 0, flags, TPFAIL, TPESVCERR);
+			} else {
+				::send(session, "", data, len, 0, flags, rval, rcode);
+			}
 			::tpfree(data);
 			session->setSendTo(NULL);
 		}
