@@ -16,7 +16,7 @@
 		02110-1301, USA.
 	-->
 <assembly>
-	<id>project</id>
+	<id>src</id>
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<formats>
 		<format>tar.gz</format>

@@ -82,27 +82,29 @@ EndpointQueue::~EndpointQueue() {
 }
 
 void EndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags) throw (CORBA::SystemException ) {
-	LOG4CXX_DEBUG(logger, (char*) "send called.");
-	LOG4CXX_DEBUG(logger, (char*) "send idata = " << replyto_ior);
-	LOG4CXX_DEBUG(logger, (char*) "send idata = " << idata.get_buffer());
-	LOG4CXX_DEBUG(logger, (char*) "send ilen = " << ilen);
-	LOG4CXX_DEBUG(logger, (char*) "send flags = " << flags);
-
-	MESSAGE message;
-	message.correlationId = correlationId;
-	message.data = (char*) malloc(sizeof(char*) * ilen);
-	memcpy(message.data, (char*) idata.get_buffer(), ilen);
-	message.flags = flags;
-	message.len = ilen;
-	message.rcode = rcode;
-	message.replyto = strdup(replyto_ior);
-	message.rval = rval;
-	message.control = getSpecific(TSS_KEY);
-
 	lock->lock();
-	returnData.push(message);
-	LOG4CXX_DEBUG(logger, (char*) "notifying");
-	lock->notify();
+	if (!shutdown) {
+		LOG4CXX_DEBUG(logger, (char*) "send called.");
+		LOG4CXX_DEBUG(logger, (char*) "send idata = " << replyto_ior);
+		LOG4CXX_DEBUG(logger, (char*) "send idata = " << idata.get_buffer());
+		LOG4CXX_DEBUG(logger, (char*) "send ilen = " << ilen);
+		LOG4CXX_DEBUG(logger, (char*) "send flags = " << flags);
+
+		MESSAGE message;
+		message.correlationId = correlationId;
+		message.data = (char*) malloc(sizeof(char*) * ilen);
+		memcpy(message.data, (char*) idata.get_buffer(), ilen);
+		message.flags = flags;
+		message.len = ilen;
+		message.rcode = rcode;
+		message.replyto = strdup(replyto_ior);
+		message.rval = rval;
+		message.control = getSpecific(TSS_KEY);
+
+		returnData.push(message);
+		LOG4CXX_DEBUG(logger, (char*) "notifying");
+		lock->notify();
+	}
 	LOG4CXX_DEBUG(logger, (char*) "notified");
 	lock->unlock();
 }
@@ -116,8 +118,18 @@ MESSAGE EndpointQueue::receive(bool noWait) {
 	if (!noWait) {
 		time = 0;
 	}
+
 	MESSAGE message;
+	message.replyto = NULL;
+	message.correlationId = -1;
 	message.data = NULL;
+	message.len = -1;
+	message.flags = -1;
+	message.control = NULL;
+	message.rval = -1;
+	message.rcode = -1;
+	message.event = -1;
+
 	lock->lock();
 	if (!shutdown) {
 		if (returnData.size() == 0) {
