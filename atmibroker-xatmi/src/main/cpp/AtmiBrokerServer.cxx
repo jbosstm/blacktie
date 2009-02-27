@@ -97,6 +97,8 @@ int serverdone() {
 //
 AtmiBrokerServer::AtmiBrokerServer() {
 	try {
+		serverConnection = NULL;
+		realConnection = NULL;
 		serverConnection = new ConnectionImpl((char*) "server");
 		realConnection = serverConnection->getRealConnection();
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "creating POAs for %s", server);
@@ -160,17 +162,16 @@ CORBA::Short AtmiBrokerServer::server_init() throw (CORBA::SystemException ) {
 void AtmiBrokerServer::server_done() throw (CORBA::SystemException ) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_done()");
 
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "unadvertise " << serverName);
-	CosNaming::Name* name = realConnection->default_ctx->to_name(serverName);
-	realConnection->name_ctx->unbind(*name);
+	if (realConnection->name_ctx) {
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "unadvertise " << serverName);
+		CosNaming::Name* name = realConnection->default_ctx->to_name(serverName);
+		realConnection->name_ctx->unbind(*name);
+	}
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "unadvertised " << serverName);
 
-	for (unsigned int i = 0; i < serverInfo.serviceNames.size(); i++) {
-		char* svcname = (char*) serverInfo.serviceNames[i].c_str();
-		if (isAdvertised(svcname)) {
-			unadvertiseService(svcname);
-		}
+	for (std::vector<char*>::iterator i = advertisedServices.begin(); i != advertisedServices.end(); i++) {
+		unadvertiseService((*i));
 	}
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_done(): returning.");
 }

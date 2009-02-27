@@ -81,7 +81,7 @@ int clientdone() {
 
 AtmiBrokerClient::AtmiBrokerClient() {
 	try {
-
+		clientConnection = NULL;
 		clientConnection = new ConnectionImpl((char*) "client");
 
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "constructor");
