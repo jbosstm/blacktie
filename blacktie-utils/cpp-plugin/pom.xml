@@ -25,6 +25,11 @@
 	<name>Blacktie C++ Plugin</name>
 	<packaging>maven-plugin</packaging>
 	<url>http://www.jboss.org/blacktie/</url>
+	<scm>
+		<connection>scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/blacktie</connection>
+		<developerConnection>scm:svn:https://svn.jboss.org/repos/blacktie/trunk/blacktie</developerConnection>
+		<url>http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/blacktie</url>
+	</scm>
 
 	<dependencies>
 		<dependency>

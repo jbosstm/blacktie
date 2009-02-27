@@ -1,11 +1,7 @@
-ATMIBROKER_SRC_DIR=
 ACE_ROOT=
 TAO_ROOT=
 LOG4CXX_ROOT=
 EXPAT_LIB_DIR=
-test.output.type=shared
-configuration.type=
-toolchain.compiler=
 JAVA_HOME=
 PLATFORM=
 #only required if toolchain.compiler=msvc

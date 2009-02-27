@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<groupId>org.jboss.blacktie.utils</groupId>
+		<artifactId>blacktie-utils</artifactId>
+		<version>1.0-M4</version>
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.jboss.blacktie.thirdparty</groupId>
+	<artifactId>log4cxx</artifactId>
+	<packaging>pom</packaging>
+	<version>1.0-M4</version>
+	<name>log4cxx</name>
+	<description>Re-packaging of log4cxx, a logging framework for C++ patterned after Apache log4j</description>
+
+	<modules>
+		<module>log4cxx-common</module>
+		<module>log4cxx-fc10-32</module>
+		<module>log4cxx-fc10-64</module>
+	</modules>
+</project>

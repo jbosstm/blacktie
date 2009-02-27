@@ -17,6 +17,12 @@
 	-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+        <parent>
+                <groupId>org.jboss.blacktie</groupId>
+                <artifactId>blacktie-common</artifactId>
+                <version>1.0-M4</version>
+        </parent>
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>jatmibroker-core</artifactId>
@@ -24,11 +30,7 @@
 	<name>Blacktie XATMI Implementation</name>
 	<packaging>jar</packaging>
 	<url>http://www.jboss.org/blacktie</url>
-	<scm>
-		<connection>scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/jatmibroker-core</connection>
-		<developerConnection>scm:svn:https://svn.jboss.org/repos/blacktie/trunk/jatmibroker-core</developerConnection>
-		<url>http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/jatmibroker-core</url>
-	</scm>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -37,42 +39,42 @@
 				<configuration>
 					<forkMode>once</forkMode>
 					<workingDirectory>target/test-classes</workingDirectory>
+                                        <environmentVariables>
+                                                <Path>${ld_library_path}</Path>
+                                                <LD_LIBRARY_PATH>${ld_library_path}</LD_LIBRARY_PATH>
+                                        </environmentVariables>
 				</configuration>
 			</plugin>
-			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>test-compile</id>
-						<phase>test-compile</phase>
+                        <plugin>
+                                <groupId>org.jboss.blacktie.plugins</groupId>
+                                <artifactId>cpp-plugin</artifactId>
+                                <version>1.0-M4</version>
+                                <configuration>
+                                        <configuration.type>${configuration.type}</configuration.type>
+                                        <toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
+                                        <blacktie.main.libs>${blacktie.main.libs}</blacktie.main.libs>
+                                        <blacktie.test.libs>${blacktie.test.libs}</blacktie.test.libs>
+                                </configuration>
+                                <executions>
+                                        <execution>
+                                                <id>test-compile</id>
+                                                <phase>test-compile</phase>
+                                                <goals>
+                                                        <goal>test-compile</goal>
+                                                </goals>
 						<configuration>
-							<tasks>
-								<ant target="test-compile" />
-							</tasks>
+                                        		<test.output.type>shared</test.output.type>
 						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>ant</groupId>
-						<artifactId>ant-nodeps</artifactId>
-						<version>1.6.5</version>
-					</dependency>
-					<dependency>
-						<groupId>ant-contrib</groupId>
-						<artifactId>ant-contrib</artifactId>
-						<version>1.0b2</version>
-					</dependency>
-					<dependency>
-						<groupId>ant-contrib</groupId>
-						<artifactId>cpptasks</artifactId>
-						<version>1.0b5</version>
-					</dependency>
-				</dependencies>
-			</plugin>
+                                        </execution>
+                                        <execution>
+                                                <id>process-classes</id>
+                                                <phase>process-classes</phase>
+                                                <goals>
+                                                        <goal>process-classes</goal>
+                                                </goals>
+                                        </execution>
+                                </executions>
+                        </plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
@@ -80,25 +82,6 @@
 					<target>1.5</target>
 				</configuration>
 			</plugin>
-                        <plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-dependency-plugin</artifactId>
-                                <executions>
-                                        <execution>
-                                                <id>unpack-dependencies</id>
-                                                <phase>process-resources</phase>
-                                                <goals>
-                                                        <goal>unpack-dependencies</goal>
-                                                </goals>
-                                                <configuration>
-                                                        <includes>**/*.h,**/*.inl,**/*.cpp,**/*.so*,*.dll</includes>
-                                                        <excludes>**/*.class</excludes>
-                                                        <outputDirectory>${project.build.directory}/cxx</outputDirectory>
-                                                        <silent>true</silent>
-                                                </configuration>
-                                        </execution>
-                                </executions>
-                        </plugin>
 		</plugins>
 	</build>
 	<dependencies>
@@ -160,4 +143,9 @@
 		</dependency>
 		<!-- END JACORB -->
 	</dependencies>
+
+	<properties>
+                <blacktie.main.libs>atmibroker-idl,atmibroker-core,atmibroker-tx</blacktie.main.libs>
+                <blacktie.test.libs>atmibroker-idl,atmibroker-core,atmibroker-tx,atmibroker-corba,atmibroker-xatmi</blacktie.test.libs>
+	</properties>
 </project>

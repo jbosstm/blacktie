@@ -18,6 +18,12 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+        <parent>
+                <groupId>org.jboss.blacktie</groupId>
+                <artifactId>blacktie-common</artifactId>
+                <version>1.0-M4</version>
+        </parent>
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>atmibroker-idl</artifactId>
@@ -25,11 +31,7 @@
 	<name>Blacktie CORBA Transport</name>
 	<packaging>jar</packaging>
 	<url>http://www.jboss.org/blacktie</url>
-	<scm>
-		<connection>scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/atmibroker-idl</connection>
-		<developerConnection>scm:svn:https://svn.jboss.org/repos/blacktie/trunk/atmibroker-idl</developerConnection>
-		<url>http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/atmibroker-idl</url>
-	</scm>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -39,9 +41,7 @@
 				<configuration>
 					<configuration.type>${configuration.type}</configuration.type>
 					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
-					<maven.test.skip>${maven.test.skip}</maven.test.skip>
 					<src.main>${src.main}</src.main>
-					<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
 				</configuration>
 
 				<executions>
@@ -108,35 +108,15 @@
 		</dependency>
 	</dependencies>
 
+        <profiles>
+                <profile>
+                        <id>windows</id>
+                        <activation> <os> <family>windows</family> </os> </activation>
+                        <properties><export.dll>_ATMIBROKER_IDL_DLL</export.dll></properties>
+                </profile>              
+        </profiles>
+
 	<properties>
-		<configuration.type>debug</configuration.type>
-		<toolchain.compiler>gcc</toolchain.compiler>
 		<src.main>target/generated/tao_idl</src.main>
 	</properties>
-
-	<profiles>
-		<profile>
-			<id>windows</id>
-			<activation>
-				<os>
-					<family>windows</family>
-				</os>
-			</activation>
-			<properties>
-				<platform>win-32</platform>
-			</properties>
-		</profile>
-		<profile>
-			<id>linux</id>
-			<activation>
-				<os>
-					<family>unix</family>
-				</os>
-			</activation>
-			<properties>
-				<platform>fc10-32</platform>
-			</properties>
-		</profile>
-	</profiles>
-
 </project>

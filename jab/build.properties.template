@@ -1,10 +1,7 @@
-ATMIBROKER_SRC_DIR=
 ACE_ROOT=
 TAO_ROOT=
 LOG4CXX_ROOT=
 CPPUNIT_LIB_DIR=
-configuration.type=shared
-toolchain.compiler=
 JAVA_HOME=
 PLATFORM=
 EXPAT_LIB_DIR=

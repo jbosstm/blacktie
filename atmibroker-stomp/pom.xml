@@ -18,6 +18,12 @@
 	-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+        <parent>
+                <groupId>org.jboss.blacktie</groupId>
+                <artifactId>blacktie-common</artifactId>
+                <version>1.0-M4</version>
+        </parent>
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>atmibroker-stomp</artifactId>
@@ -25,93 +31,59 @@
 	<name>Blacktie C++ Stomp Transport</name>
 	<packaging>jar</packaging>
 	<url>http://www.jboss.org/blacktie</url>
-	<scm>
-		<connection>scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/atmibroker-stomp</connection>
-		<developerConnection>scm:svn:https://svn.jboss.org/repos/blacktie/trunk/atmibroker-stomp</developerConnection>
-		<url>http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/atmibroker-stomp</url>
-	</scm>
+
 	<build>
 		<plugins>
-                        <plugin>
-                                <groupId>org.jboss.blacktie.plugins</groupId>
-                                <artifactId>cpp-plugin</artifactId>
-                                <version>1.0-M4</version>
-                                <configuration>
-                                        <configuration.type>${configuration.type}</configuration.type>
-                                        <toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
-                                        <blacktie.main.libs>${blacktie.main.libs}</blacktie.main.libs>
-                                        <blacktie.test.libs>${blacktie.test.libs}</blacktie.test.libs>
-                                        <maven.test.skip>${maven.test.skip}</maven.test.skip>
-                                        <src.main>${src.main}</src.main>
-                                        <failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
-                                </configuration>
-
-                                <executions>
-                                        <execution>
-                                                <id>compile</id>
-                                                <phase>compile</phase>
-                                                <goals>
-                                                        <goal>compile</goal>
-                                                </goals>
-                                        </execution>
-                                        <execution>
-                                                <id>test-compile</id>
-                                                <phase>test-compile</phase>
-                                                <goals>
-                                                        <goal>test-compile</goal>
-                                                </goals>
-                                        </execution>
-                                        <execution>
-                                                <id>test</id>
-                                                <phase>test</phase>
-                                                <goals>
-                                                        <goal>test</goal>
-                                                </goals>
-                                                <configuration>
-                                                        <skipTests>${skipTests}</skipTests>
-                                                </configuration>
-                                        </execution>
-                                        <execution>
-                                                <id>process-classes</id>
-                                                <phase>process-classes</phase>
-                                                <goals>
-                                                        <goal>process-classes</goal>
-                                                </goals>
-                                        </execution>
-                                </executions>
-                        </plugin>
-
-                        <plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-dependency-plugin</artifactId>
-                                <executions>
-                                        <execution>
-                                                <id>unpack-dependencies</id>
-                                                <phase>process-resources</phase>
-                                                <goals>
-                                                        <goal>unpack-dependencies</goal>
-                                                </goals>
-                                                <configuration>
-                                                        <includes>**/*.h,**/*.inl,**/*.cpp,**/*.so*,*.dll</includes>
-                                                        <excludes>**/*.class</excludes>
-                                                        <outputDirectory>${project.build.directory}/cxx</outputDirectory>
-                                                        <silent>true</silent>
-                                                </configuration>
-                                        </execution>
-                                </executions>
-                        </plugin>
-
+			<plugin>
+				<groupId>org.jboss.blacktie.plugins</groupId>
+				<artifactId>cpp-plugin</artifactId>
+				<version>1.0-M4</version>
+				<configuration>
+					<configuration.type>${configuration.type}</configuration.type>
+					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
+					<blacktie.main.libs>${blacktie.main.libs}</blacktie.main.libs>
+					<blacktie.test.libs>${blacktie.test.libs}</blacktie.test.libs>
+					<src.main>${src.main}</src.main>
+					<generate.testrunner>true</generate.testrunner>
+				</configuration>
+				<executions>
+					<execution>
+						<id>compile</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>test-compile</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>test-compile</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<skipTests>${skipTests}</skipTests>
+							<maven.test.skip>${maven.test.skip}</maven.test.skip>
+							<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
+						</configuration>
+					</execution>
+					<execution>
+						<id>process-classes</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>process-classes</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
-
-        <properties>
-                <configuration.type>debug</configuration.type>
-                <toolchain.compiler>gcc</toolchain.compiler>
-                <src.main>src/main/cpp</src.main>
-                <blacktie.main.libs>atmibroker-idl,atmibroker-core,atmibroker-tx</blacktie.main.libs>
-                <blacktie.test.libs>atmibroker-idl,atmibroker-core,atmibroker-tx</blacktie.test.libs>
-                <failOnErrorTests>true</failOnErrorTests>
-        </properties>
 
 	<dependencies>
 		<dependency>
@@ -120,4 +92,17 @@
 			<version>1.0-M4</version>
 		</dependency>
 	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>windows</id>
+			<activation> <os> <family>windows</family> </os> </activation>
+			<properties><export.dll>_ATMIBROKER_STOMP_DLL</export.dll></properties>
+		</profile>              
+	</profiles>
+
+	<properties>
+		<blacktie.main.libs>atmibroker-idl,atmibroker-core,atmibroker-tx</blacktie.main.libs>
+		<blacktie.test.libs>atmibroker-idl,atmibroker-core,atmibroker-tx</blacktie.test.libs>
+	</properties>
 </project>

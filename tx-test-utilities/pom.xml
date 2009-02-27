@@ -18,6 +18,12 @@
 	-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+        <parent>
+                <groupId>org.jboss.blacktie</groupId>
+                <artifactId>blacktie-common</artifactId>
+                <version>1.0-M4</version>
+        </parent>
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>dummy-rm</artifactId>
@@ -25,11 +31,7 @@
 	<name>Blacktie Utilities</name>
 	<packaging>jar</packaging>
 	<url>http://www.jboss.org/blacktie</url>
-	<scm>
-		<connection>scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/tx-test-utilities</connection>
-		<developerConnection>scm:svn:https://svn.jboss.org/repos/blacktie/trunk/tx-test-utilities</developerConnection>
-		<url>http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/tx-test-utilities</url>
-	</scm>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -39,8 +41,6 @@
 				<configuration>
 					<configuration.type>${configuration.type}</configuration.type>
 					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
-					<maven.test.skip>${maven.test.skip}</maven.test.skip>
-					<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
 				</configuration>
 
 				<executions>
@@ -66,6 +66,8 @@
 						</goals>
                                                 <configuration>
                                                         <skipTests>${skipTests}</skipTests>
+							<maven.test.skip>${maven.test.skip}</maven.test.skip>
+							<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
                                                 </configuration>
 					</execution>
 					<execution>
@@ -79,10 +81,7 @@
 			</plugin>
 		</plugins>
 	</build>
-	<properties>
-		<configuration.type>debug</configuration.type>
-		<toolchain.compiler>gcc</toolchain.compiler>
-		<failOnErrorTests>true</failOnErrorTests>
-	</properties>
 
+	<properties>
+	</properties>
 </project>
