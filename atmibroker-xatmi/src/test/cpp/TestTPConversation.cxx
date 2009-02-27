@@ -23,6 +23,10 @@
 
 #include "TestTPConversation.h"
 
+#include "userlogc.h"
+
+int interationCount = 10000;
+
 extern void testTPConversation_service(TPSVCINFO *svcinfo);
 
 void TestTPConversation::setUp() {
@@ -59,7 +63,8 @@ void TestTPConversation::test_conversation() {
 	long revent = 0;
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(cd != -1);
-	for (int i = 0; i < 10; i++) {
+	userlogc("Started conversation");
+	for (int i = 0; i < interationCount; i++) {
 		int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
 		CPPUNIT_ASSERT(tperrno == 0);
 		CPPUNIT_ASSERT(result != -1);
@@ -67,6 +72,7 @@ void TestTPConversation::test_conversation() {
 		CPPUNIT_ASSERT(tperrno == 0);
 		CPPUNIT_ASSERT(result != -1);
 	}
+	userlogc("Conversed");
 	int result = ::tpgetrply(&cd, &rcvbuf, &rcvlen, 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(result != -1);
@@ -77,10 +83,12 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 	char *sendbuf = ::tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
 	strcpy(sendbuf, "hello");
 	char *rcvbuf = ::tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
-	for (int i = 0; i < 10; i++) {
+	userlogc("Chatting");
+	for (int i = 0; i < interationCount; i++) {
 		int result = ::tpsend(svcinfo->cd, sendbuf, svcinfo->len, TPRECVONLY, &revent);
 		result = ::tprecv(svcinfo->cd, &rcvbuf, &svcinfo->len, 0, &revent);
 	}
+	userlogc("Chatted");
 	::tpfree(rcvbuf);
 	tpreturn(TPSUCCESS, 0, sendbuf, svcinfo->len, 0);
 }

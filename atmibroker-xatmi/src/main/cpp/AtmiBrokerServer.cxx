@@ -170,8 +170,11 @@ void AtmiBrokerServer::server_done() throw (CORBA::SystemException ) {
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "unadvertised " << serverName);
 
-	for (std::vector<char*>::iterator i = advertisedServices.begin(); i != advertisedServices.end(); i++) {
-		unadvertiseService((*i));
+	for (unsigned int i = 0; i < serverInfo.serviceNames.size(); i++) {
+		char* svcname = (char*) serverInfo.serviceNames[i].c_str();
+		if (isAdvertised(svcname)) {
+			unadvertiseService(svcname);
+		}
 	}
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_done(): returning.");
 }
