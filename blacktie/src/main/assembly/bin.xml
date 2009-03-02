@@ -17,7 +17,7 @@
 	-->
 <assembly>
 	<id>bin</id>
-	<includeBaseDirectory>false</includeBaseDirectory>
+	<includeBaseDirectory>true</includeBaseDirectory>
 	<formats>
 		<format>tar.gz</format>
 		<format>zip</format>
