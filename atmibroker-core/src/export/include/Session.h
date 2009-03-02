@@ -18,8 +18,6 @@
 #ifndef Session_H_
 #define Session_H_
 
-#include "Receiver.h"
-#include "Sender.h"
 #include "Destination.h"
 
 class Session {
@@ -27,9 +25,10 @@ public:
 	virtual ~Session() {
 	}
 	virtual void setSendTo(char* replyTo) = 0;
+	virtual char* getSendTo() = 0;
 	virtual const char* getReplyTo() = 0;
-	virtual Receiver* getReceiver() = 0;
-	virtual Sender * getSender() = 0;
+	virtual MESSAGE receive(long time) = 0;
+	virtual void send(MESSAGE message) = 0;
 	virtual int getId() = 0;
 	virtual void setCanSend(bool canSend) = 0;
 	virtual void setCanRecv(bool canRecv) = 0;

@@ -38,7 +38,7 @@ bool SynchronizableObject::wait(long timeout) {
 	LOG4CXX_TRACE(logger, (char*) "Waiting for cond: " << this);
 	bool toReturn = false;
 	if (timeout > 0) {
-		ACE_Time_Value timeoutval(0, (timeout * 1000));
+		ACE_Time_Value timeoutval((timeout * 1000), 0);
 		toReturn = cond.wait(&timeoutval);
 	} else {
 		toReturn = cond.wait();

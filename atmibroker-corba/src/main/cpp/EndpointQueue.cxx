@@ -109,15 +109,9 @@ void EndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long
 	lock->unlock();
 }
 
-MESSAGE EndpointQueue::receive(bool noWait) {
+MESSAGE EndpointQueue::receive(long time) {
 	// TODO THIS SHOULD USE THE ID TO CHECK DIFFERENT QUEUES
 	LOG4CXX_DEBUG(logger, (char*) "service_response()");
-
-	// Default wait time is 10 seconds
-	long time = 10; // TODO Make configurable
-	if (!noWait) {
-		time = 0;
-	}
 
 	MESSAGE message;
 	message.replyto = NULL;

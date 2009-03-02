@@ -21,8 +21,6 @@
 
 #include <string.h>
 #include "SessionImpl.h"
-#include "SenderImpl.h"
-#include "ReceiverImpl.h"
 #include "EndpointQueue.h"
 
 log4cxx::LoggerPtr SessionImpl::logger(log4cxx::Logger::getLogger("SessionImpl"));
@@ -32,18 +30,16 @@ SessionImpl::SessionImpl(ConnectionImpl* connection, int id, const char* service
 	this->id = id;
 	this->connection = connection;
 
-	CosNaming::NamingContextExt_ptr context = (CosNaming::NamingContextExt_ptr) connection->getRealConnection()->default_ctx;
-	CosNaming::NamingContext_ptr name_context = (CosNaming::NamingContext_ptr) connection->getRealConnection()->name_ctx;
 	LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << serviceName);
+	CosNaming::NamingContextExt_ptr context = connection->getRealConnection()->default_ctx;
+	CosNaming::NamingContext_ptr name_context = connection->getRealConnection()->name_ctx;
 	CosNaming::Name * name = context->to_name(serviceName);
 	CORBA::Object_var tmp_ref = name_context->resolve(*name);
-	AtmiBroker::EndpointQueue_ptr remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
+	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
+	this->sendTo = (char*) serviceName;
 	LOG4CXX_DEBUG(logger, (char*) "connected to " << serviceName);
-	queueSender = new SenderImpl((char*)serviceName, remoteEndpoint);
-
 
 	this->temporaryQueue = new EndpointQueue(connection->getRealConnection());
-	this->queueReceiver = new ReceiverImpl(serviceName, temporaryQueue);
 	this->replyTo = temporaryQueue->getName();
 
 	this->canSend = true;
@@ -55,10 +51,9 @@ SessionImpl::SessionImpl(ConnectionImpl* connection, int id) {
 	this->id = id;
 	this->connection = connection;
 
-	queueSender = NULL;
+	remoteEndpoint = NULL;
 
 	this->temporaryQueue = new EndpointQueue(connection->getRealConnection());
-	this->queueReceiver = new ReceiverImpl(temporaryQueue->getName(), temporaryQueue);
 	this->replyTo = temporaryQueue->getName();
 
 	this->canSend = true;
@@ -67,49 +62,49 @@ SessionImpl::SessionImpl(ConnectionImpl* connection, int id) {
 
 SessionImpl::~SessionImpl() {
 	LOG4CXX_DEBUG(logger, (char*) "destructor");
-	if (queueReceiver) {
-		LOG4CXX_DEBUG(logger, (char*) "destroying receiver");
-		delete queueReceiver;
-		queueReceiver = NULL;
-		LOG4CXX_DEBUG(logger, (char*) "receiver destroyed");
-	}
-	if (queueSender) {
-		LOG4CXX_DEBUG(logger, (char*) "closing sender");
-		queueSender->close();
-		LOG4CXX_DEBUG(logger, (char*) "destroying sender");
-		delete queueSender;
-		queueSender = NULL;
-		LOG4CXX_DEBUG(logger, (char*) "sender destroyed");
+	if (remoteEndpoint) {
+		LOG4CXX_DEBUG(logger, (char*) "disconnecting from: " << sendTo);
+		remoteEndpoint->disconnect();
+		LOG4CXX_DEBUG(logger, (char*) "disconnected from: " << sendTo);
+		remoteEndpoint = NULL;
 	}
 	LOG4CXX_DEBUG(logger, (char*) "destructed");
-//	if (temporaryQueue) {
-//		delete temporaryQueue;
-//		temporaryQueue = NULL;
-//	}
+	//	if (temporaryQueue) {
+	//		delete temporaryQueue;
+	//		temporaryQueue = NULL;
+	//	}
 }
 
 void SessionImpl::setSendTo(char* destinationName) {
-	if (queueSender) {
-		delete queueSender;
-		queueSender = NULL;
+	if (remoteEndpoint) {
+		remoteEndpoint = NULL;
 	}
 	if (destinationName != NULL && strcmp(destinationName, "") != 0) {
 		CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection->getRealConnection()->orbRef;
 		LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << destinationName);
 		CORBA::Object_var tmp_ref = orb->string_to_object(destinationName);
-		AtmiBroker::EndpointQueue_ptr remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
+		remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 		LOG4CXX_DEBUG(logger, (char*) "connected to %s" << destinationName);
-
-		queueSender = new SenderImpl(destinationName, remoteEndpoint);
 	}
+	this->sendTo = destinationName;
 }
 
-Receiver * SessionImpl::getReceiver() {
-	return queueReceiver;
+char* SessionImpl::getSendTo() {
+	return this->sendTo;
 }
 
-Sender * SessionImpl::getSender() {
-	return queueSender;
+MESSAGE SessionImpl::receive(long time) {
+	LOG4CXX_DEBUG(logger, (char*) "Receiving from: " << replyTo);
+	return temporaryQueue->receive(time);
+}
+
+void SessionImpl::send(MESSAGE message) {
+	unsigned char * data_togo = (unsigned char *) malloc(message.len);
+	memcpy(data_togo, message.data, message.len);
+	AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(message.len, message.len, data_togo, true);
+	remoteEndpoint->send(message.replyto, message.rval, message.rcode, aOctetSeq, message.len, message.correlationId, message.flags);
+	aOctetSeq = NULL;
+	LOG4CXX_DEBUG(logger, (char*) "Called back ");
 }
 
 int SessionImpl::getId() {
@@ -119,7 +114,6 @@ int SessionImpl::getId() {
 const char* SessionImpl::getReplyTo() {
 	return replyTo;
 }
-
 
 void SessionImpl::setCanSend(bool canSend) {
 	this->canSend = canSend;
@@ -135,4 +129,8 @@ bool SessionImpl::getCanSend() {
 
 bool SessionImpl::getCanRecv() {
 	return canRecv;
+}
+
+Destination* SessionImpl::getDestination() {
+	return temporaryQueue;
 }

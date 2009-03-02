@@ -84,7 +84,7 @@ int send(Session* session, const char* replyTo, char* idata, long ilen, int corr
 			message.flags = flags;
 			message.rcode = rcode;
 			message.rval = rval;
-			session->getSender()->send(message);
+			session->send(message);
 			toReturn = 0;
 
 			if (transactionSuspended) {
@@ -108,7 +108,14 @@ int receive(Session* session, char ** odata, long *olen, long flags, long* event
 	}
 	int toReturn = -1;
 	if (session->getCanRecv()) {
-		MESSAGE message = session->getReceiver()->receive((TPNOTIME & flags));
+		// TODO Make configurable Default wait time is blocking (x1000 in SynchronizableObject)
+		long time = 0;
+		if (TPNOBLOCK & flags) {
+			time = 1;
+		} else if (TPNOTIME & flags) {
+			time = 0;
+		}
+		MESSAGE message = session->receive(time);
 		if (message.data != NULL) {
 			// TODO Handle TPNOCHANGE
 			// TODO Handle buffer
@@ -345,7 +352,7 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 			if (session == NULL) {
 				tperrno = TPEBADDESC;
 			} else {
-				if (session->getSender() == NULL) {
+				if (session->getSendTo() == NULL) {
 					tperrno = TPEPROTO;
 				} else {
 					len = ::bufferSize(idata, ilen);
@@ -394,7 +401,7 @@ void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 	tperrno = 0;
 	Session* session = (Session*) getSpecific(SVC_SES);
 	if (session) {
-		if (session->getSender() == NULL) {
+		if (session->getSendTo() == NULL) {
 			tperrno = TPEPROTO;
 		} else {
 			if (bufferSize(data, len) == -1) {

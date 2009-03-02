@@ -55,7 +55,7 @@ public:
 
 	void setName(const char * name);
 
-	virtual MESSAGE receive(bool noWait);
+	virtual MESSAGE receive(long time);
 
 	virtual const char* getName();
 

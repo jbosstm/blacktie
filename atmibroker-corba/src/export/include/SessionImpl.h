@@ -23,8 +23,6 @@
 #include "log4cxx/logger.h"
 #include "Session.h"
 #include "ConnectionImpl.h"
-#include "SenderImpl.h"
-#include "ReceiverImpl.h"
 #include "EndpointQueue.h"
 
 class ConnectionImpl;
@@ -39,11 +37,15 @@ public:
 
 	void setSendTo(char* replyTo);
 
+	char* getSendTo();
+
 	const char* getReplyTo();
 
-	Receiver* getReceiver();
+	MESSAGE receive(long time);
 
-	Sender* getSender();
+	void send(MESSAGE message);
+
+	virtual Destination* getDestination();
 
 	void setCanSend(bool canSend);
 
@@ -58,10 +60,11 @@ private:
 	static log4cxx::LoggerPtr logger;
 	int id;
 	ConnectionImpl* connection;
-	ReceiverImpl* queueReceiver;
-	SenderImpl* queueSender;
 	EndpointQueue* temporaryQueue;
+	AtmiBroker::EndpointQueue_ptr remoteEndpoint;
+
 	const char* replyTo;
+	char* sendTo;
 	bool canSend;
 	bool canRecv;
 };

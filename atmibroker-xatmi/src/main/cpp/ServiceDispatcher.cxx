@@ -32,8 +32,8 @@ ServiceDispatcher::ServiceDispatcher(Destination* destination, Connection* conne
 
 int ServiceDispatcher::svc(void) {
 	while (!stop) {
-		MESSAGE message = destination->receive(false);
-		if (!stop) {
+		MESSAGE message = destination->receive(0);
+		if (!stop && message.len > -1) {
 			try {
 				onMessage(message);
 			} catch (...) {
@@ -103,7 +103,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 
 	// CLEAN UP THE SENDER AND RECEIVER FOR THIS CLIENT
-	if (session->getSender() != NULL) {
+	if (session->getSendTo() != NULL) {
 		::tpreturn(TPFAIL, TPESVCERR, (char*) "", 0, 0);
 	}
 	delete this->session;
