@@ -24,12 +24,9 @@
         </parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>atmibroker-tx</artifactId>
-	<version>1.0-M4</version>
 	<name>Blacktie C++ TX Client Library</name>
 	<packaging>jar</packaging>
-	<url>http://www.jboss.org/blacktie</url>
 
 	<build>
 		<plugins>
@@ -40,8 +37,6 @@
 				<configuration>
 					<configuration.type>${configuration.type}</configuration.type>
 					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
-					<blacktie.main.libs>${blacktie.main.libs}</blacktie.main.libs>
-					<blacktie.test.libs>${blacktie.test.libs}</blacktie.test.libs>
 					<src.main>${src.main}</src.main>
 					<generate.testrunner>true</generate.testrunner>
 				</configuration>
@@ -108,8 +103,6 @@
         </profiles>
 
 	<properties>
-		<blacktie.main.libs>atmibroker-idl,atmibroker-core</blacktie.main.libs>
-		<blacktie.test.libs>atmibroker-idl,atmibroker-core,dummy-rm</blacktie.test.libs>
 	</properties>
 
 </project>

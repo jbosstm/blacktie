@@ -37,16 +37,27 @@
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>unpack-dependencies</id>
+						<id>list-main-dependencies</id>
 						<phase>process-resources</phase>
 						<goals>
-							<goal>unpack-dependencies</goal>
+							<goal>build-classpath</goal>
 						</goals>
 						<configuration>
-							<includes>**/*.h,**/*.inl,**/*.cpp,**/*.so*,*.dll,**/*.cxx</includes>
-							<excludes>**/*.class</excludes>
-							<outputDirectory>${project.build.directory}/cxx</outputDirectory>
-							<silent>true</silent>
+							<includeScope>compile</includeScope>
+							<pathSeparator>:</pathSeparator>
+							<outputFile>${project.build.directory}/compile.classpath</outputFile>
+						</configuration>
+					</execution>
+					<execution>
+						<id>list-test-dependencies</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>build-classpath</goal>
+						</goals>
+						<configuration>
+							<includeScope>test</includeScope>
+							<pathSeparator>:</pathSeparator>
+							<outputFile>${project.build.directory}/test.classpath</outputFile>
 						</configuration>
 					</execution>
 				</executions>
@@ -57,8 +68,8 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.jboss.blacktie.thirdparty</groupId>
-			<artifactId>thirdparty-${platform}</artifactId>
-			<version>1.0-M4</version>
+			<artifactId>log4cxx</artifactId>
+			<version>1.0</version>
 		</dependency>
 	</dependencies>
 
@@ -96,7 +107,7 @@
 			<!--
 			     TODO figure out how to trigger on other platforms
 			     -->
-				<platform>fc10-64</platform>
+				<platform>fc10-32</platform>
 				<PLATFORM>linux</PLATFORM>
 				<toolchain.compiler>gcc</toolchain.compiler>
 				<!--
@@ -112,6 +123,7 @@
 		<failOnErrorTests>true</failOnErrorTests>
 		<configuration.type>debug</configuration.type>
 		<toolchain.compiler>gcc</toolchain.compiler>
+		<platform>fc10-32</platform>
 	</properties>
 
 </project>

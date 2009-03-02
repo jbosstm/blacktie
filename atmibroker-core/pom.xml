@@ -24,12 +24,9 @@
         </parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>atmibroker-core</artifactId>
-	<version>1.0-M4</version>
 	<name>Blacktie Core C++ Implementation</name>
 	<packaging>jar</packaging>
-	<url>http://www.jboss.org/blacktie</url>
 	
 	<build>
 		<plugins>
@@ -40,8 +37,6 @@
 				<configuration>
 					<configuration.type>${configuration.type}</configuration.type>
 					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
-					<blacktie.main.libs>${blacktie.main.libs}</blacktie.main.libs>
-					<blacktie.test.libs>${blacktie.test.libs}</blacktie.test.libs>
 					<maven.test.skip>${maven.test.skip}</maven.test.skip>
 					<src.main>${src.main}</src.main>
 					<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
@@ -116,8 +111,6 @@
         </profiles>
 
 	<properties>
-		<blacktie.main.libs>atmibroker-idl</blacktie.main.libs>
-		<blacktie.test.libs>atmibroker-idl</blacktie.test.libs>
 	</properties>
 
 	<dependencies>

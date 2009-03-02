@@ -41,7 +41,7 @@
 		<module>ACE-TAO</module>
 		<module>expat</module>
 		<module>cppunit</module>
-		-->
 		<module>thirdparty-all</module>
+		-->
 	</modules>
 </project>

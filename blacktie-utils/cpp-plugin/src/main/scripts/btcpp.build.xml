@@ -106,8 +106,6 @@
 	<taskdef resource="cpptasks.tasks" />
 	<property environment="env" />
 	<property file="build.properties" />
-	<property name="blacktie.main.libs" value="" />
-	<property name="blacktie.test.libs" value="" />
 	<property name="src.main" value="src/main/cpp" />
 	<property name="src.test" value="src/test/cpp" />
 	<property name="src.excludes" value="" />
@@ -125,6 +123,9 @@
 		<fail unless="toolchain.compiler" />
 		<condition property="is-msvc">
 			<equals arg1="${toolchain.compiler}" arg2="msvc" />
+		</condition>
+		<condition property="lib.convert.pattern" value="*.dll" else="lib*.so">
+			<isset property="is-msvc"/>
 		</condition>
 		<condition property="export.dir">
 			<available file="src/export/include" />
@@ -239,8 +240,8 @@
 	</target>
 
 	<target name="compile" depends="fileset.main.check,package" if="have-srcs">
-<!--
-<echo message="COMPILE: debug=${debug} compiler=${toolchain.compiler}  outtype=${test.output.type} configuration.type=${configuration.type} lib.type=${lib.type} project.artifactId=${project.artifactId} blacktie.main.libs=${blacktie.main.libs}"/>
+	<!--
+<echo message="COMPILE: debug=${debug} compiler=${toolchain.compiler}  outtype=${test.output.type} configuration.type=${configuration.type} lib.type=${lib.type} project.artifactId=${project.artifactId} libsetdir=target/cxx/compile/lib compile.libs=${compile.libs}"/>
 -->
 		<mkdir dir="target/cpp-classes" />
 		<mkdir dir="target/${configuration.type}/${lib.type}" />
@@ -261,10 +262,9 @@
 			<includepath path="src/export/include" if="export.dir" />
 			<includepath path="src/main/include" />
 			<includepath path="${src.idl.main}/include" />
-			<includepath path="target/cxx/include" />
+			<includepath path="target/cxx/compile/include" />
 
-			<libset dir="target/cxx/lib" libs="${blacktie.main.libs}" if="${blacktie.main.libs}"/>
-			<libset dir="target/cxx/lib" libs="log4cxx" />
+			<libset dir="${project.build.directory}/cxx/compile/lib" libs="${compile.libs}" if="compile.libs"/>
 
 			&includepath-main-dependencies;
 			&libsets-main-dependencies;
@@ -278,7 +278,7 @@
 		<add.common.src mavenProject="gen-common-sources" includes=".*.cxx" outputDir="${project.build.directory}/generated-sources"/>
 	</target>
 	<target name="gen-test-runner2" unless="need-testrunner">
-		<fileset id="fileset.gen.test" dir="." includes="xyzkdjfkejl" excludes="*"/>
+		<fileset id="fileset.gen.test" dir="." excludes="**/*"/>
 	</target>
 	<target name="gen-test-runner" depends="gen-test-runner1,gen-test-runner2" />
 
@@ -290,7 +290,7 @@
 		</copy>
 		<available file="target/${configuration.type}/${lib.type}" type="dir" property="main.built" />
 		<!--
-<echo message="TEST-COMPILE: debug=${debug} compiler=${toolchain.compiler}  outtype=${test.output.type} configuration.type=${configuration.type} lib.type=${lib.type} project.artifactId=${project.artifactId} blacktie.test.libs=${blacktie.test.libs} main.built=${main.built} fileset.gen.test=${fileset.gen.test}"/>
+<echo message="TEST-COMPILE: debug=${debug} compiler=${toolchain.compiler}  outtype=${test.output.type} configuration.type=${configuration.type} lib.type=${lib.type} project.artifactId=${project.artifactId} test.libs=${test.libs} main.built=${main.built} fileset.gen.test=${fileset.gen.test}"/>
 -->
 		<cc name="${toolchain.compiler}" exceptions="true" outfile="target/testsuite" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="${test.output.type}" objdir="target/cpp-test-classes" debug="${debug}">
 			<compiler name="${toolchain.compiler}" unless="is-msvc">
@@ -310,10 +310,9 @@
 			<includepath path="src/export/include" if="export.dir" />
 			<includepath path="src/main/include" />
 			<includepath path="${src.idl.main}/include" />
-			<includepath path="target/cxx/include" />
+			<includepath path="target/cxx/test/include" />
 
-			<libset dir="target/cxx/lib" libs="${blacktie.test.libs}" />
-			<libset dir="target/cxx/lib" libs="log4cxx" />
+			<libset dir="${project.build.directory}/cxx/test/lib" libs="${test.libs}" if="test.libs"/>
 
 			&includepath-test-dependencies;
 			&libsets-test-dependencies;
@@ -339,13 +338,13 @@
 	<target name="_test-gcc" depends="init" unless="is-msvc">
 		<exec dir="target/cpp-test-classes" newenvironment="true" resolveexecutable="true" executable="../testsuite" failonerror="${failOnErrorTests}">
 			<redirector output="target/cppunit/run.txt" logError="true" alwayslog="true"/>
-			<env key="LD_LIBRARY_PATH" value="../cxx/lib:../dependencies:../${configuration.type}/${lib.type}" />
+			<env key="LD_LIBRARY_PATH" value="../cxx/test/lib:../dependencies:../${configuration.type}/${lib.type}" />
 		</exec>
 	</target>
 	<target name="_test-msvc" depends="init" if="is-msvc">
 		<exec dir="target/cpp-test-classes" newenvironment="false" executable="../testsuite" failonerror="${failOnErrorTests}">
 			<redirector output="target/cppunit/run.txt" logError="true" alwayslog="true"/>
-			<env key="Path" value="${env.Path};..\dependencies;..\${configuration.type}\${lib.type}" />
+			<env key="Path" value="${env.Path};..\cxx\test\lib;..\dependencies;..\${configuration.type}\${lib.type}" />
 		</exec>
 	</target>
 
@@ -384,7 +383,7 @@
         	<property name="EXPAT_ROOT" value="" />
         </target>
 
-	<target name="package" depends="init,expat-lib-check,expat-root-check,cppunit-lib-check,cppunit-root-check">
+	<target name="package" depends="init,unpack-dependencies,expat-lib-check,expat-root-check,cppunit-lib-check,cppunit-root-check">
         	<mkdir dir="target/classes/lib" />
         	<mkdir dir="target/classes/include" />
 		<mkdir dir="target/dependencies" />
@@ -392,4 +391,72 @@
 			&libsets-runtime-dependencies;
 		</copy>
 	</target>
+
+        <target name="unpack-dependencies" >
+                <unpack id="p1" jarFile="target/compile.classpath" dest="target/cxx/compile"/>
+                <unpack id="p2" jarFile="target/test.classpath" dest="target/cxx/test"/>
+
+		<!--
+		     put the libraries into a comma separated list for use by cpptasks
+		     -->
+                <fileset id="fileset.compile.libs" dir="target/cxx/compile/lib" includes="*.so"/>
+                <property name="xcompile.libs" value="${toString:fileset.compile.libs}"/>
+                <convert-libset libdir="${xcompile.libs}" propname="compile.libs"/>
+ 
+                <fileset id="fileset.test.libs" dir="target/cxx/test/lib" includes="*.so"/>
+                <property name="xtest.libs" value="${toString:fileset.test.libs}"/>
+                <convert-libset libdir="${xtest.libs}" propname="test.libs"/>
+
+        </target>
+
+	<!--
+	     Unzip libraries and includes from the specified list of jar files into the
+	     directory specified by the dest attribute. The jarFile attribute is a file
+	     containing a colon separated list of paths to the jar file that are to be
+	     unzipped.
+	     The id attribute just needs to be an arbitary but unique property name
+	     (it's only used for iterating through the list of jars).
+	     -->
+	<macrodef name="unpack">
+        	<attribute name="id" />
+        	<attribute name="jarFile" />
+        	<attribute name="dest" />
+        	<element name="some-tasks" optional="no"/>
+        	<sequential>
+                	<loadfile property="@{id}" srcFile="@{jarFile}"/>
+                	<for list="${@{id}}" delimiter=":" param="artifact" trim="yes">
+                        	<sequential>
+                                	<unzip src="@{artifact}" dest="@{dest}">
+                                        	<patternset>
+                                                	<include name="**/lib/**"/>
+                                                	<include name="**/include/**"/>
+                                        	</patternset>
+                                	</unzip>
+                        	</sequential>
+                	</for>
+        	</sequential>
+	</macrodef>
+
+	<macrodef name="convert-libset">
+		<attribute name="propname" />
+		<attribute name="libdir" />
+		<element name="dotasks" optional="yes"/>
+		<sequential>
+                	<pathconvert property="@{propname}" pathsep=",">
+                        	<path path="@{libdir}"/>
+                        	<!--
+                        	     flatten and strip off prefix and suffix from the libraries under libdir
+                        	     for use as a libset attribute of the cc cpptasks task
+                        	     -->
+                        	<mapper>
+                                	<chainedmapper>
+                                        	<flattenmapper/>
+                                        	<globmapper from="${lib.convert.pattern}" to="*" casesensitive="no"/>
+                                	</chainedmapper>
+                        	</mapper>
+                	</pathconvert>
+                	<dotasks/>
+                </sequential>
+        </macrodef>
+
 </project>

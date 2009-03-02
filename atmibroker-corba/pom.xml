@@ -25,12 +25,9 @@
         </parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>atmibroker-corba</artifactId>
-	<version>1.0-M4</version>
 	<name>Blacktie C++ CORBA Transport</name>
 	<packaging>jar</packaging>
-	<url>http://www.jboss.org/blacktie</url>
 
 	<build>
 		<plugins>
@@ -41,8 +38,6 @@
 				<configuration>
 					<configuration.type>${configuration.type}</configuration.type>
 					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
-					<blacktie.main.libs>${blacktie.main.libs}</blacktie.main.libs>
-					<blacktie.test.libs>${blacktie.test.libs}</blacktie.test.libs>
 					<maven.test.skip>${maven.test.skip}</maven.test.skip>
 					<src.main>${src.main}</src.main>
 					<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
@@ -87,8 +82,6 @@
 	</build>
 
 	<properties>
-		<blacktie.main.libs>atmibroker-idl,atmibroker-core,atmibroker-tx</blacktie.main.libs>
-		<blacktie.test.libs>atmibroker-idl,atmibroker-core,atmibroker-tx</blacktie.test.libs>
 	</properties>
 
 	<dependencies>

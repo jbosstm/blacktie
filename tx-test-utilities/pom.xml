@@ -25,12 +25,9 @@
         </parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>dummy-rm</artifactId>
-	<version>1.0-M4</version>
 	<name>Blacktie Utilities</name>
 	<packaging>jar</packaging>
-	<url>http://www.jboss.org/blacktie</url>
 
 	<build>
 		<plugins>

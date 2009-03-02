@@ -79,6 +79,30 @@
 					<goalPrefix>cpp</goalPrefix>
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>jar-resources</id>
+							<phase>package</phase>
+							<goals>
+								<goal>run</goal>
+							</goals>
+							<configuration>
+								<tasks>
+								       <!--
+								            TODO figure out why this doesn't work
+								       basedir="${project.build.resources.resource.directory}"
+								            -->
+								<jar destfile="${project.build.sourceDirectory}/../resources/cxx.jar"
+								       basedir="${project.build.sourceDirectory}/../resources"
+								       excludes="**/*.jar"
+								                />
+								</tasks>
+							</configuration>
+						</execution>
+					</executions>
+			</plugin>
 		</plugins>
 	</build>
 </project>
