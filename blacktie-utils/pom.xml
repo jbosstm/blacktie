@@ -32,16 +32,5 @@
 	<modules>
 		<module>common</module>
 		<module>cpp-plugin</module>
-
-		<!--
-		     Thirdparty Dependencies
-		     -->
-		<module>log4cxx</module>
-		<!--
-		<module>ACE-TAO</module>
-		<module>expat</module>
-		<module>cppunit</module>
-		<module>thirdparty-all</module>
-		-->
 	</modules>
 </project>
