@@ -1,4 +1,2 @@
-ACE_ROOT=/home/tom/blacktie/utils/ACE+TAO-5.6.7/ACE_wrappers
 TAO_ROOT=${ACE_ROOT}/TAO
 TAO_IDL=${TAO_ROOT}/TAO_IDL/tao_idl
-LOG4CXX_ROOT=/home/tom/blacktie/utils/apache-log4cxx

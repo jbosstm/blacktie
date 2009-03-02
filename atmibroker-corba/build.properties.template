@@ -1,5 +1,4 @@
 TAO_ROOT=
-LOG4CXX_ROOT=
 CPPUNIT_LIB_DIR=
 EXPAT_LIB_DIR=
 #only required if toolchain.compiler=msvc
