@@ -25,7 +25,7 @@
 
 log4cxx::LoggerPtr SessionImpl::logger(log4cxx::Logger::getLogger("SessionImpl"));
 
-SessionImpl::SessionImpl(ConnectionImpl* connection, int id, const char* serviceName) {
+SessionImpl::SessionImpl(ConnectionImpl* connection, int id, char* serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor ");
 	this->id = id;
 	this->connection = connection;
@@ -36,7 +36,7 @@ SessionImpl::SessionImpl(ConnectionImpl* connection, int id, const char* service
 	CosNaming::Name * name = context->to_name(serviceName);
 	CORBA::Object_var tmp_ref = name_context->resolve(*name);
 	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	this->sendTo = (char*) serviceName;
+	this->sendTo = serviceName;
 	LOG4CXX_DEBUG(logger, (char*) "connected to " << serviceName);
 
 	this->temporaryQueue = new EndpointQueue(connection->getRealConnection());
@@ -46,12 +46,16 @@ SessionImpl::SessionImpl(ConnectionImpl* connection, int id, const char* service
 	this->canRecv = true;
 }
 
-SessionImpl::SessionImpl(ConnectionImpl* connection, int id) {
+SessionImpl::SessionImpl(ConnectionImpl* connection, int id, const char* temporaryQueueName) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor ");
 	this->id = id;
 	this->connection = connection;
 
-	remoteEndpoint = NULL;
+	LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << temporaryQueueName);
+	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection->getRealConnection()->orbRef;
+	CORBA::Object_var tmp_ref = orb->string_to_object(temporaryQueueName);
+	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
+	LOG4CXX_DEBUG(logger, (char*) "connected to %s" << temporaryQueueName);
 
 	this->temporaryQueue = new EndpointQueue(connection->getRealConnection());
 	this->replyTo = temporaryQueue->getName();
@@ -75,7 +79,7 @@ SessionImpl::~SessionImpl() {
 	//	}
 }
 
-void SessionImpl::setSendTo(char* destinationName) {
+void SessionImpl::setSendTo(const char* destinationName) {
 	if (remoteEndpoint) {
 		remoteEndpoint = NULL;
 	}
@@ -86,11 +90,7 @@ void SessionImpl::setSendTo(char* destinationName) {
 		remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 		LOG4CXX_DEBUG(logger, (char*) "connected to %s" << destinationName);
 	}
-	this->sendTo = destinationName;
-}
-
-char* SessionImpl::getSendTo() {
-	return this->sendTo;
+	this->sendTo = (char*) destinationName;
 }
 
 MESSAGE SessionImpl::receive(long time) {
@@ -113,24 +113,4 @@ int SessionImpl::getId() {
 
 const char* SessionImpl::getReplyTo() {
 	return replyTo;
-}
-
-void SessionImpl::setCanSend(bool canSend) {
-	this->canSend = canSend;
-}
-
-void SessionImpl::setCanRecv(bool canRecv) {
-	this->canRecv = canRecv;
-}
-
-bool SessionImpl::getCanSend() {
-	return canSend;
-}
-
-bool SessionImpl::getCanRecv() {
-	return canRecv;
-}
-
-Destination* SessionImpl::getDestination() {
-	return temporaryQueue;
 }

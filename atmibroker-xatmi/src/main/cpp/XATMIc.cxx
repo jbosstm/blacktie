@@ -129,7 +129,7 @@ int receive(Session* session, char ** odata, long *olen, long flags, long* event
 			}
 			try {
 				if (message.replyto != NULL && strcmp(message.replyto, "") != 0) {
-					session->setSendTo((char*) message.replyto);
+					session->setSendTo(message.replyto);
 				} else {
 					session->setSendTo(NULL);
 				}
@@ -352,7 +352,7 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 			if (session == NULL) {
 				tperrno = TPEBADDESC;
 			} else {
-				if (session->getSendTo() == NULL) {
+				if (!session->getCanSend()) {
 					tperrno = TPEPROTO;
 				} else {
 					len = ::bufferSize(idata, ilen);
@@ -400,10 +400,11 @@ int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 	tperrno = 0;
 	Session* session = (Session*) getSpecific(SVC_SES);
-	if (session) {
-		if (session->getSendTo() == NULL) {
+	if (session != NULL) {
+		if (!session->getCanSend()) {
 			tperrno = TPEPROTO;
 		} else {
+			session->setCanRecv(false);
 			if (bufferSize(data, len) == -1) {
 				::send(session, "", data, 0, 0, flags, TPFAIL, TPESVCERR);
 			} else {
@@ -411,6 +412,7 @@ void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 			}
 			::tpfree(data);
 			session->setSendTo(NULL);
+			session->setCanSend(false);
 		}
 	} else {
 		tperrno = TPEPROTO;

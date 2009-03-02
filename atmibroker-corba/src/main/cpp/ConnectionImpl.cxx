@@ -45,9 +45,9 @@ Session* ConnectionImpl::createSession(int id, char * serviceName) {
 	return sessionMap[id];
 }
 
-Session* ConnectionImpl::createSession(int id) {
+Session* ConnectionImpl::createSession(int id, const char* temporaryQueueName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession");
-	return new SessionImpl(this, id);
+	return new SessionImpl(this, id, temporaryQueueName);
 }
 
 Session* ConnectionImpl::getSession(int id) {

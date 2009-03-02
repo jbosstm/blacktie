@@ -48,13 +48,12 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	LOG4CXX_DEBUG(logger, (char*) "svc()");
 
 	// INITIALISE THE SENDER AND RECEIVER FOR THIS CONVERSATION
-	session = connection->createSession(message.correlationId);
 	if (message.replyto) {
 		LOG4CXX_DEBUG(logger, (char*) "   replyTo = " << message.replyto);
 	} else {
 		LOG4CXX_DEBUG(logger, (char*) "   replyTo = NULL");
 	}
-	session->setSendTo((char*) message.replyto);
+	session = connection->createSession(message.correlationId, message.replyto);
 
 	// EXTRACT THE DATA FROM THE INBOUND MESSAGE
 	int correlationId = message.correlationId;
@@ -101,9 +100,8 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	}
 	AtmiBrokerOTS::get_instance()->rm_suspend();
 
-
 	// CLEAN UP THE SENDER AND RECEIVER FOR THIS CLIENT
-	if (session->getSendTo() != NULL) {
+	if (session->getCanSend()) {
 		::tpreturn(TPFAIL, TPESVCERR, (char*) "", 0, 0);
 	}
 	delete this->session;

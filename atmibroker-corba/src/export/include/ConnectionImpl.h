@@ -24,6 +24,7 @@
 #include "log4cxx/logger.h"
 #include "CorbaConnection.h"
 #include "Connection.h"
+#include "Destination.h"
 #include "SessionImpl.h"
 
 class SessionImpl;
@@ -34,7 +35,7 @@ public:
 	virtual ~ConnectionImpl();
 
 	Session* createSession(int id, char* serviceName);
-	Session* createSession(int id);
+	Session* createSession(int id, const char* temporaryQueueName);
 	Session* getSession(int id);
 	void closeSession(int id);
 	int block();

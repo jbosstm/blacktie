@@ -18,22 +18,50 @@
 #ifndef Session_H_
 #define Session_H_
 
-#include "Destination.h"
+#include "Message.h"
 
 class Session {
 public:
 	virtual ~Session() {
 	}
-	virtual void setSendTo(char* replyTo) = 0;
-	virtual char* getSendTo() = 0;
+	virtual void setSendTo(const char* replyTo) = 0;
 	virtual const char* getReplyTo() = 0;
+
 	virtual MESSAGE receive(long time) = 0;
 	virtual void send(MESSAGE message) = 0;
+
 	virtual int getId() = 0;
-	virtual void setCanSend(bool canSend) = 0;
-	virtual void setCanRecv(bool canRecv) = 0;
-	virtual bool getCanSend() = 0;
-	virtual bool getCanRecv() = 0;
+
+	/**
+	 * Can this session send
+	 */
+	void setCanSend(bool canSend) {
+		this->canSend = canSend;
+	}
+
+	/**
+	 * Can this session receive
+	 */
+	void setCanRecv(bool canRecv) {
+		this->canRecv = canRecv;
+	}
+
+	/**
+	 * Can this session send
+	 */
+	bool getCanSend() {
+		return canSend;
+	}
+
+	/**
+	 * Can this session receive
+	 */
+	bool getCanRecv() {
+		return canRecv;
+	}
+protected:
+	bool canSend;
+	bool canRecv;
 };
 
 #endif

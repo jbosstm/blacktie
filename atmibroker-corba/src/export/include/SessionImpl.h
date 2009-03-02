@@ -29,31 +29,19 @@ class ConnectionImpl;
 
 class ATMIBROKER_CORBA_DLL SessionImpl: public virtual Session {
 public:
-	SessionImpl(ConnectionImpl* connection, int id);
+	SessionImpl(ConnectionImpl* connection, int id, const char* temporaryQueueName);
 
-	SessionImpl(ConnectionImpl* connection, int id, const char* service);
+	SessionImpl(ConnectionImpl* connection, int id, char* service);
 
 	virtual ~SessionImpl();
 
-	void setSendTo(char* replyTo);
-
-	char* getSendTo();
+	void setSendTo(const char* replyTo);
 
 	const char* getReplyTo();
 
 	MESSAGE receive(long time);
 
 	void send(MESSAGE message);
-
-	virtual Destination* getDestination();
-
-	void setCanSend(bool canSend);
-
-	void setCanRecv(bool canRecv);
-
-	bool getCanSend();
-
-	bool getCanRecv();
 
 	int getId();
 private:
@@ -65,8 +53,6 @@ private:
 
 	const char* replyTo;
 	char* sendTo;
-	bool canSend;
-	bool canRecv;
 };
 
 #endif
