@@ -61,7 +61,7 @@ private:
 	int id;
 	ConnectionImpl* connection;
 	EndpointQueue* temporaryQueue;
-	AtmiBroker::EndpointQueue_ptr remoteEndpoint;
+	AtmiBroker::EndpointQueue_var remoteEndpoint;
 
 	const char* replyTo;
 	char* sendTo;

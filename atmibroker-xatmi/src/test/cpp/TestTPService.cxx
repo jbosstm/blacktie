@@ -53,9 +53,15 @@ void TestTPService::tearDown() {
 	BaseServerTest::tearDown();
 }
 
+#include "malloc.h"
 void TestTPService::test_tpservice_notpreturn() {
+
 	int id = ::tpcall((char*) "TestTPService", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, (long) 0);
-	CPPUNIT_ASSERT(tperrno== TPESVCERR);
+
+	int tperrnoToCheck = tperrno;
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	CPPUNIT_ASSERT_MESSAGE(tperrnoS, tperrnoToCheck== TPESVCERR);
 	CPPUNIT_ASSERT(id == -1);
 }
 
