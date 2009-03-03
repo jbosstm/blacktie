@@ -61,21 +61,6 @@ void ConnectionImpl::closeSession(int id) {
 	}
 }
 
-int ConnectionImpl::block() {
-	int toReturn = 0;
-	LOG4CXX_INFO(logger, "Server waiting for requests...");
-	try {
-		((CORBA::ORB_ptr) this->connection->orbRef)->run();
-	} catch (CORBA::Exception& e) {
-		LOG4CXX_ERROR(logger, "Unexpected CORBA exception: %s" << e._name());
-		toReturn = -1;
-	} catch (...) {
-		LOG4CXX_ERROR(logger, "Unexpected exception");
-		toReturn = -1;
-	}
-	return toReturn;
-}
-
 Destination* ConnectionImpl::createDestination(PortableServer::POA_ptr poa, char* serviceName) {
 	// create Poa for Service Queue
 	AtmiBrokerPoaFac* poaFactory = this->connection->poaFactory;

@@ -31,7 +31,6 @@ public:
 	virtual Session* createSession(int id, const char* temporaryQueueName) = 0;
 	virtual Session* getSession(int id) = 0;
 	virtual void closeSession(int id) = 0;
-	virtual int block() = 0;
 };
 
 #endif

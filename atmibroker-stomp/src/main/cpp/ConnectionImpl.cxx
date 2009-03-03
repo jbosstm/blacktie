@@ -27,7 +27,7 @@
 
 log4cxx::LoggerPtr ConnectionImpl::logger(log4cxx::Logger::getLogger("ConnectionImpl"));
 
-ConnectionImpl::ConnectionImpl(char* connectionName) {
+ConnectionImpl::ConnectionImpl() {
 	apr_status_t rc = apr_initialize();
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, (char*) "Could not initialize");

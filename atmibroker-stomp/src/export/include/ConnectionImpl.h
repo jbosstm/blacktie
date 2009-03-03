@@ -33,14 +33,13 @@ class SessionImpl;
 
 class ATMIBROKER_STOMP_DLL ConnectionImpl: public virtual Connection {
 public:
-	ConnectionImpl(char* connectionName);
+	ConnectionImpl();
 	virtual ~ConnectionImpl();
 
 	Session* createSession(int id, char* serviceName);
 	Session* createSession(int id, const char* temporaryQueueName);
 	Session* getSession(int id);
 	void closeSession(int id);
-	int block();
 
 	Destination* createDestination(char* serviceName);
 	void destroyDestination(Destination* destination);

@@ -38,7 +38,6 @@ public:
 	Session* createSession(int id, const char* temporaryQueueName);
 	Session* getSession(int id);
 	void closeSession(int id);
-	int block();
 
 	Destination* createDestination(PortableServer::POA_ptr poa, char* serviceName);
 	void destroyDestination(Destination* destination);

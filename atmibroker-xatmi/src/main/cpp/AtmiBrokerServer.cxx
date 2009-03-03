@@ -148,7 +148,18 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 }
 
 int AtmiBrokerServer::block() {
-	return serverConnection->block();
+
+	int toReturn = 0;
+	LOG4CXX_INFO(logger, "Server waiting for requests...");
+	try {
+		((CORBA::ORB_ptr) this->realConnection->orbRef)->run();
+	} catch (CORBA::Exception& e) {
+		LOG4CXX_ERROR(logger, "Unexpected CORBA exception: %s" << e._name());
+		toReturn = -1;
+	} catch (...) {
+		LOG4CXX_ERROR(logger, "Unexpected exception");
+		toReturn = -1;
+	}
 }
 
 // server_init() -- Implements IDL operation "AtmiBroker::Server::server_init".
