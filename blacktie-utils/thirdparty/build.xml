@@ -131,10 +131,10 @@
 		<fail unless="stomp.include.dir.exists" />
 		<fail unless="stomp.lib.dir.exists" />
 
-		<mkdir dir="${build.dist}/include/stomp" />
+		<mkdir dir="${build.dist}/include" />
 
 		<copy file="${stomp.lib.dir}/libstomp.so" todir="${build.dist}/lib" />
-		<copy todir="${build.dist}/include/stomp">
+		<copy todir="${build.dist}/include">
 			<fileset dir="${stomp.include.dir}" />
 		</copy>
 
