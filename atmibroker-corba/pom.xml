@@ -18,11 +18,11 @@
 	-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-        <parent>
-                <groupId>org.jboss.blacktie</groupId>
-                <artifactId>blacktie-common</artifactId>
-                <version>1.0-M4</version>
-        </parent>
+	<parent>
+		<groupId>org.jboss.blacktie</groupId>
+		<artifactId>blacktie-common</artifactId>
+		<version>1.0-M4</version>
+	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>atmibroker-corba</artifactId>
@@ -58,16 +58,16 @@
 						<goals>
 							<goal>test-compile</goal>
 						</goals>
-						</execution>
+					</execution>
 					<execution>
 						<id>test</id>
 						<phase>test</phase>
 						<goals>
 							<goal>test</goal>
 						</goals>
-                                                <configuration>
-                                                        <skipTests>${skipTests}</skipTests>
-                                                </configuration>
+						<configuration>
+							<skipTests>${skipTests}</skipTests>
+						</configuration>
 					</execution>
 					<execution>
 						<id>process-classes</id>
@@ -85,6 +85,16 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.jboss.blacktie</groupId>
+			<artifactId>atmibroker-idl</artifactId>
+			<version>1.0-M4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.blacktie</groupId>
+			<artifactId>atmibroker-core</artifactId>
+			<version>1.0-M4</version>
+		</dependency>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>atmibroker-tx</artifactId>
