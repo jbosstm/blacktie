@@ -42,11 +42,6 @@
 		<mkdir dir="${build.dist}" />
 		<mkdir dir="${build.dist}/include" />
 		<mkdir dir="${build.dist}/lib" />
-		<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
-			<classpath>
-				<pathelement location="${lib.dir}/${maven.ant.file}" />
-			</classpath>
-		</typedef>
 	</target>
 
 	<target name="clean">
@@ -55,6 +50,16 @@
 	</target>
 
 	<target name="install-artifact">
+		<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
+			<classpath>
+				<pathelement location="${lib.dir}/${maven.ant.file}" />
+			</classpath>
+		</typedef>
+
+		<artifact:pom id="pom" file="${build.dir}/${artifactId}.pom" />
+		<artifact:install file="${build.lib}/${artifactId}.jar">
+			<pom refid="pom" />
+		</artifact:install>
 	</target>
 
 	<macrodef name="create-pom">
@@ -109,12 +114,6 @@
 			</manifest>
 			<fileset dir="${build.dist}" />
 		</jar>
-
-
-		<artifact:pom id="pom" file="${build.dir}/${artifactId}.pom" />
-		<artifact:install file="${build.lib}/${artifactId}.jar">
-			<pom refid="pom" />
-		</artifact:install>
 	</target>
 
 	<target name="stomp">
@@ -146,11 +145,6 @@
 			</manifest>
 			<fileset dir="${build.dist}" />
 		</jar>
-
-		<artifact:pom id="pom" file="${build.dir}/${artifactId}.pom" />
-		<artifact:install file="${build.lib}/${artifactId}.jar">
-			<pom refid="pom" />
-		</artifact:install>
 	</target>
 
 
