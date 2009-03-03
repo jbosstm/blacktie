@@ -69,13 +69,13 @@ void SessionImpl::send(MESSAGE message) {
 
 	frame.body_length = message.len;
 	frame.body = message.data;
-//	apr_hash_set(frame.headers, "replyto", APR_HASH_KEY_STRING, message.replyto);
-//	apr_hash_set(frame.headers, "correlationId", APR_HASH_KEY_STRING, message.correlationId);
-//	apr_hash_set(frame.headers, "message.flags", APR_HASH_KEY_STRING, message.flags);
-//	apr_hash_set(frame.headers, "message.control", APR_HASH_KEY_STRING, message.control);
-//	apr_hash_set(frame.headers, "message.rval", APR_HASH_KEY_STRING, message.rval);
-//	apr_hash_set(frame.headers, "message.rcode", APR_HASH_KEY_STRING, message.rcode);
-//	apr_hash_set(frame.headers, "message.event", APR_HASH_KEY_STRING, message.event);
+	apr_hash_set(frame.headers, "message.replyto", APR_HASH_KEY_STRING, message.replyto);
+	//	apr_hash_set(frame.headers, "message.correlationId", APR_HASH_KEY_STRING, message.correlationId);
+	//	apr_hash_set(frame.headers, "message.flags", APR_HASH_KEY_STRING, message.flags);
+	//	apr_hash_set(frame.headers, "message.control", APR_HASH_KEY_STRING, message.control);
+	//	apr_hash_set(frame.headers, "message.rval", APR_HASH_KEY_STRING, message.rval);
+	//	apr_hash_set(frame.headers, "message.rcode", APR_HASH_KEY_STRING, message.rcode);
+	//	apr_hash_set(frame.headers, "message.event", APR_HASH_KEY_STRING, message.event);
 
 	LOG4CXX_DEBUG(logger, "Sending SEND");
 	apr_status_t rc = stomp_write(connection, &frame, pool);

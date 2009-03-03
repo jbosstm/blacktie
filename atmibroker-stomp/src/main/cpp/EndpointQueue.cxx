@@ -90,13 +90,13 @@ MESSAGE EndpointQueue::receive(long time) {
 	MESSAGE message;
 	message.len = frame->body_length;
 	message.data = frame->body;
-	//	apr_hash_get(frame->headers, "replyto", APR_HASH_KEY_STRING, message.replyto);
-	//	apr_hash_get(frame->headers, "correlationId", APR_HASH_KEY_STRING, message.correlationId);
-	//	apr_hash_get(frame->headers, "message.flags", APR_HASH_KEY_STRING, message.flags);
-	//	apr_hash_get(frame->headers, "message.control", APR_HASH_KEY_STRING, message.control);
-	//	apr_hash_get(frame->headers, "message.rval", APR_HASH_KEY_STRING, message.rval);
-	//	apr_hash_get(frame->headers, "message.rcode", APR_HASH_KEY_STRING, message.rcode);
-	//	apr_hash_get(frame->headers, "message.event", APR_HASH_KEY_STRING, message.event);
+	message.replyto = (const char*) apr_hash_get(frame->headers, "message.replyto", APR_HASH_KEY_STRING);
+	//	message.correlationId = (int) apr_hash_get(frame->headers, "message.correlationId", APR_HASH_KEY_STRING);
+	//	message.flags = (long) apr_hash_get(frame->headers, "message.flags", APR_HASH_KEY_STRING);
+	//	message.control = apr_hash_get(frame->headers, "message.control", APR_HASH_KEY_STRING);
+	//	message.rval = (int) apr_hash_get(frame->headers, "message.rval", APR_HASH_KEY_STRING);
+	//	message.rcode = (long) apr_hash_get(frame->headers, "message.rcode", APR_HASH_KEY_STRING);
+	//	message.event = (long) apr_hash_get(frame->headers, "message.event", APR_HASH_KEY_STRING);
 	return message;
 }
 
