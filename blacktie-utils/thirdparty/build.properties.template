@@ -1,2 +1,3 @@
 log4cxx.root=/home/mmusgrov/blacktie/util/apache-log4cxx
 log4cxx.version=0.11.0
+stomp.root=/home/tom/blacktie/util/libstomp
