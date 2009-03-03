@@ -18,11 +18,11 @@
 	-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-        <parent>
-                <groupId>org.jboss.blacktie</groupId>
-                <artifactId>blacktie-common</artifactId>
-                <version>1.0-M4</version>
-        </parent>
+	<parent>
+		<groupId>org.jboss.blacktie</groupId>
+		<artifactId>blacktie-common</artifactId>
+		<version>1.0-M4</version>
+	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>atmibroker-stomp</artifactId>
@@ -82,8 +82,13 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>org.jboss.blacktie.thirdparty</groupId>
+			<artifactId>stomp</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>atmibroker-tx</artifactId>
+			<artifactId>atmibroker-core</artifactId>
 			<version>1.0-M4</version>
 		</dependency>
 	</dependencies>
@@ -91,9 +96,15 @@
 	<profiles>
 		<profile>
 			<id>windows</id>
-			<activation> <os> <family>windows</family> </os> </activation>
-			<properties><export.dll>_ATMIBROKER_STOMP_DLL</export.dll></properties>
-		</profile>              
+			<activation>
+				<os>
+					<family>windows</family>
+				</os>
+			</activation>
+			<properties>
+				<export.dll>_ATMIBROKER_STOMP_DLL</export.dll>
+			</properties>
+		</profile>
 	</profiles>
 
 	<properties>
