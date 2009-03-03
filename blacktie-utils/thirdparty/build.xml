@@ -145,8 +145,59 @@
 			</manifest>
 			<fileset dir="${build.dist}" />
 		</jar>
+		
+		<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
+			<classpath>
+				<pathelement location="${lib.dir}/${maven.ant.file}" />
+			</classpath>
+		</typedef>
+
+		<artifact:pom id="pom" file="${build.dir}/${artifactId}.pom" />
+		<artifact:install file="${build.lib}/${artifactId}.jar">
+			<pom refid="pom" />
+		</artifact:install>
 	</target>
 
+	<target name="apr-1">
+		<property name="groupId" value="org.jboss.blacktie.thirdparty" />
+		<property name="artifactId" value="apr-1" />
+		<property name="name" value="apr-1" />
+		<property name="version" value="1.0" />
+		<property name="description" value="apr-1" />
+		<create-pom groupId="${groupId}" artifactId="${artifactId}" name="${name}" version="${version}" description="${description}" />
+		<available file="${apr-1.include.dir}" type="dir" property="apr-1.include.dir.exists" />
+		<available file="${apr-1.lib.dir}" type="dir" property="apr-1.lib.dir.exists" />
+
+		<fail unless="apr-1.include.dir.exists" />
+		<fail unless="apr-1.lib.dir.exists" />
+
+		<mkdir dir="${build.dist}/include" />
+
+		<copy file="${apr-1.lib.dir}/libapr-1.so" todir="${build.dist}/lib" />
+		<copy todir="${build.dist}/include">
+			<fileset dir="${apr-1.include.dir}" />
+		</copy>
+
+		<jar destfile="${build.lib}/${artifactId}.jar">
+			<manifest>
+				<attribute name="Implementation-Vendor" value="Apache" />
+				<attribute name="Implementation-Title" value="apr-1" />
+			</manifest>
+			<fileset dir="${build.dist}" />
+		</jar>
+		
+		<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
+			<classpath>
+				<pathelement location="${lib.dir}/${maven.ant.file}" />
+			</classpath>
+		</typedef>
+
+		<artifact:pom id="pom" file="${build.dir}/${artifactId}.pom" />
+		<artifact:install file="${build.lib}/${artifactId}.jar">
+			<pom refid="pom" />
+		</artifact:install>
+		
+	</target>
 
 	<target name="thirdparty" depends="init,log4cxx,stomp" />
 
