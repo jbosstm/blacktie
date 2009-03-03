@@ -23,10 +23,10 @@
 <tool id="cdt.managedbuild.tool.gnu.archiver.base.1764754431" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 <tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.782554231" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
 <option id="gnu.cpp.compiler.option.include.paths.1852457222" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/atmibroker-stomp/target/cxx/compile/include}&quot;"/>
 <listOptionValue builtIn="false" value="&quot;${ACE_ROOT}&quot;"/>
 <listOptionValue builtIn="false" value="&quot;${TAO_ROOT}&quot;"/>
 <listOptionValue builtIn="false" value="&quot;${TAO_ROOT}/orbsvcs&quot;"/>
-<listOptionValue builtIn="false" value="&quot;${LOG4CXX_ROOT}/src/main/include&quot;"/>
 <listOptionValue builtIn="false" value="&quot;${workspace_loc:/atmibroker-idl/target/generated/tao_idl}&quot;"/>
 <listOptionValue builtIn="false" value="&quot;${workspace_loc:/atmibroker-core/src/export/include}&quot;"/>
 <listOptionValue builtIn="false" value="&quot;${workspace_loc:/atmibroker-core/src/main/include}&quot;"/>

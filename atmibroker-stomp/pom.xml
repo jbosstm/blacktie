@@ -87,6 +87,11 @@
 			<version>1.0</version>
 		</dependency>
 		<dependency>
+			<groupId>org.jboss.blacktie.thirdparty</groupId>
+			<artifactId>apr-1</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>atmibroker-core</artifactId>
 			<version>1.0-M4</version>
