@@ -19,9 +19,11 @@
 
 #include "TestConnection.h"
 
+#include "userlog.h"
 #include "ConnectionImpl.h"
 
 void TestConnection::test() {
+	initializeLogger();
 	ConnectionImpl* serverConnection = new ConnectionImpl("server");
 	ConnectionImpl* clientConnection = new ConnectionImpl("client");
 	Destination* destination = serverConnection->createDestination((char*) "LOOPY");
