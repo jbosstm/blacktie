@@ -1,7 +1,7 @@
 @echo off
 rem
 rem JBoss, Home of Professional Open Source
-rem Copyright 2008, Red Hat Middleware LLC, and others contributors as indicated
+rem Copyright 2008, Red Hat, Inc., and others contributors as indicated
 rem by the @authors tag. All rights reserved.
 rem See the copyright.txt in the distribution for a
 rem full listing of individual contributors.

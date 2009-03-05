@@ -90,7 +90,7 @@
 				<PLATFORM>win32</PLATFORM>
 				-->
 				<toolchain.compiler>msvc</toolchain.compiler>
-				<ld_library_path>${project.build.directory}/cxx/lib;${project.build.directory}</ld_library_path>
+				<ld_library_path>${project.build.directory}/cxx/test/lib;${project.build.directory}</ld_library_path>
 			</properties>
 		</profile>
 		<profile>
@@ -113,7 +113,7 @@
 				<!--
 				<ld_library_path>${LOG4CXX_ROOT}/target/debug/shared:${project.build.directory}/cxx/lib:${project.build.directory}</ld_library_path>
 				-->
-				<ld_library_path>${project.build.directory}/cxx/lib:${project.build.directory}</ld_library_path>
+				<ld_library_path>${project.build.directory}/dependencies:${project.build.directory}/cxx/test/lib:${project.build.directory}</ld_library_path>
 			</properties>
 		</profile>
 	</profiles>

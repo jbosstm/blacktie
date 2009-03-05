@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2008, Red Hat Middleware LLC, and others contributors as indicated
+ * Copyright 2008, Red Hat, Inc., and others contributors as indicated
  * by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -29,7 +29,8 @@ EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool, cha
 	this->pool = pool;
 
 	char* queueName = (char*) ::malloc(8 + 16);
-	strcat(queueName, "/queue/");
+	memset(queueName, '\0', 25);
+	strcpy(queueName, "/queue/");
 	strncat(queueName, serviceName, 15);
 
 	stomp_frame frame;
@@ -48,12 +49,13 @@ EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool, cha
 	LOG4CXX_DEBUG(logger, "OK");
 }
 
-EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool, int id) {
+EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool, char* connectionName, int id) {
 	this->connection = connection;
 	this->pool = pool;
 
-	char* queueName = (char*) ::malloc(13 + 5);
-	sprintf(queueName, "/temp-queue/%d", id);
+	char* queueName = (char*) ::malloc(12 + 15 + 1 + 5); // /temp-queue/ + serviceName + / + id
+	memset(queueName, '\0', 33);
+	sprintf(queueName, "/temp-queue/%s-%d", connectionName, id);
 
 	stomp_frame frame;
 	frame.command = (char*) "SUB";
@@ -90,7 +92,7 @@ MESSAGE EndpointQueue::receive(long time) {
 	MESSAGE message;
 	message.len = frame->body_length;
 	message.data = frame->body;
-	message.replyto = (const char*) apr_hash_get(frame->headers, "message.replyto", APR_HASH_KEY_STRING);
+	message.replyto = (const char*) apr_hash_get(frame->headers, "reply-to", APR_HASH_KEY_STRING);
 	//	message.correlationId = (int) apr_hash_get(frame->headers, "message.correlationId", APR_HASH_KEY_STRING);
 	//	message.flags = (long) apr_hash_get(frame->headers, "message.flags", APR_HASH_KEY_STRING);
 	//	message.control = apr_hash_get(frame->headers, "message.control", APR_HASH_KEY_STRING);

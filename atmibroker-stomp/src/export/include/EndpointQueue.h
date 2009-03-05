@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2008, Red Hat Middleware LLC, and others contributors as indicated
+ * Copyright 2008, Red Hat, Inc., and others contributors as indicated
  * by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -31,7 +31,7 @@
 class ATMIBROKER_STOMP_DLL EndpointQueue: public virtual Destination {
 public:
 	EndpointQueue(stomp_connection* connection, apr_pool_t* pool, char* serviceName);
-	EndpointQueue(stomp_connection* connection, apr_pool_t* pool, int id);
+	EndpointQueue(stomp_connection* connection, apr_pool_t* pool, char* serviceName, int id);
 	virtual ~EndpointQueue();
 
 	virtual void disconnect();

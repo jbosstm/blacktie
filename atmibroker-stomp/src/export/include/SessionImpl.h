@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2008, Red Hat Middleware LLC, and others contributors as indicated
+ * Copyright 2008, Red Hat, Inc., and others contributors as indicated
  * by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -29,9 +29,9 @@ class ConnectionImpl;
 
 class ATMIBROKER_STOMP_DLL SessionImpl: public virtual Session {
 public:
-	SessionImpl(stomp_connection* connection, apr_pool_t* pool, int id, const char* temporaryQueueName);
+	SessionImpl(char* connectionName, stomp_connection* connection, apr_pool_t* pool, int id, const char* temporaryQueueName);
 
-	SessionImpl(stomp_connection* connection, apr_pool_t* pool, int id, char* service);
+	SessionImpl(char* connectionName, stomp_connection* connection, apr_pool_t* pool, int id, char* service);
 
 	virtual ~SessionImpl();
 

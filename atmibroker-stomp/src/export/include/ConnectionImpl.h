@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2008, Red Hat Middleware LLC, and others contributors as indicated
+ * Copyright 2008, Red Hat, Inc., and others contributors as indicated
  * by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -33,7 +33,7 @@ class SessionImpl;
 
 class ATMIBROKER_STOMP_DLL ConnectionImpl: public virtual Connection {
 public:
-	ConnectionImpl();
+	ConnectionImpl(char* connectionName);
 	virtual ~ConnectionImpl();
 
 	Session* createSession(int id, char* serviceName);
@@ -45,6 +45,7 @@ public:
 	void destroyDestination(Destination* destination);
 private:
 	static log4cxx::LoggerPtr logger;
+	char* connectionName;
 	std::map<int, SessionImpl*> sessionMap;
 	apr_pool_t* pool;
 	stomp_connection* connection;

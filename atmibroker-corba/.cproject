@@ -53,22 +53,6 @@
 </tool>
 </toolChain>
 </folderInfo>
-<folderInfo id="cdt.managedbuild.toolchain.gnu.base.474242531.1567033014" name="/" resourcePath="target">
-<toolChain id="cdt.managedbuild.toolchain.gnu.base.685216949" name="cdt.managedbuild.toolchain.gnu.base" superClass="cdt.managedbuild.toolchain.gnu.base" unusedChildren="">
-<tool id="cdt.managedbuild.tool.gnu.archiver.base.1548060110" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.1764754431"/>
-<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.203984627" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base.782554231">
-<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1042992583" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
-</tool>
-<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.201940669" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base.1399088468">
-<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.483022403" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
-</tool>
-<tool id="cdt.managedbuild.tool.gnu.c.linker.base.754044952" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base.1555042047"/>
-<tool id="cdt.managedbuild.tool.gnu.cpp.linker.base.1801010431" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base.991799350"/>
-<tool id="cdt.managedbuild.tool.gnu.assembler.base.738103636" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base.457257561">
-<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1356357247" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
-</tool>
-</toolChain>
-</folderInfo>
 </configuration>
 </storageModule>
 <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>

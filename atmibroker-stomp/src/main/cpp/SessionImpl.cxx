@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2008, Red Hat Middleware LLC, and others contributors as indicated
+ * Copyright 2008, Red Hat, Inc., and others contributors as indicated
  * by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -25,31 +25,34 @@
 
 log4cxx::LoggerPtr SessionImpl::logger(log4cxx::Logger::getLogger("SessionImpl"));
 
-SessionImpl::SessionImpl(stomp_connection* connection, apr_pool_t* pool, int id, char* serviceName) {
+SessionImpl::SessionImpl(char* connectionName, stomp_connection* connection, apr_pool_t* pool, int id, char* serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor ");
 	this->id = id;
 	this->connection = connection;
 	this->pool = pool;
 	this->canSend = true;
 	this->canRecv = true;
-	this->sendTo = (char*) ::malloc(8 + 16);
-	strcat(this->sendTo, "/queue/");
-	strncat(this->sendTo, serviceName, 16);
 
-	this->toRead = new EndpointQueue(this->connection, this->pool, id);
+	this->sendTo = (char*) ::malloc(7 + 16);
+	memset(this->sendTo, '\0', 23);
+	strcpy(this->sendTo, "/queue/");
+	strncat(this->sendTo, serviceName, 15);
+
+	this->toRead = new EndpointQueue(this->connection, this->pool, connectionName, id);
 	LOG4CXX_DEBUG(logger, "OK");
 }
 
-SessionImpl::SessionImpl(stomp_connection* connection, apr_pool_t* pool, int id, const char* temporaryQueueName) {
+SessionImpl::SessionImpl(char* connectionName, stomp_connection* connection, apr_pool_t* pool, int id, const char* temporaryQueueName) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor ");
 	this->id = id;
 	this->connection = connection;
 	this->pool = pool;
 	this->canSend = true;
 	this->canRecv = true;
+
 	this->sendTo = ::strdup(temporaryQueueName);
 
-	this->toRead = new EndpointQueue(this->connection, this->pool, id);
+	this->toRead = new EndpointQueue(this->connection, this->pool, connectionName, id);
 	LOG4CXX_DEBUG(logger, "OK");
 }
 
@@ -69,7 +72,9 @@ void SessionImpl::send(MESSAGE message) {
 
 	frame.body_length = message.len;
 	frame.body = message.data;
-	apr_hash_set(frame.headers, "message.replyto", APR_HASH_KEY_STRING, message.replyto);
+	if (message.replyto && strcmp(message.replyto, "") != 0) {
+		apr_hash_set(frame.headers, "reply-to", APR_HASH_KEY_STRING, message.replyto);
+	}
 	//	apr_hash_set(frame.headers, "message.correlationId", APR_HASH_KEY_STRING, message.correlationId);
 	//	apr_hash_set(frame.headers, "message.flags", APR_HASH_KEY_STRING, message.flags);
 	//	apr_hash_set(frame.headers, "message.control", APR_HASH_KEY_STRING, message.control);

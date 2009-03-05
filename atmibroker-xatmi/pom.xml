@@ -18,11 +18,11 @@
 	-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-        <parent>
-                <groupId>org.jboss.blacktie</groupId>
-                <artifactId>blacktie-common</artifactId>
-                <version>1.0-M4</version>
-        </parent>
+	<parent>
+		<groupId>org.jboss.blacktie</groupId>
+		<artifactId>blacktie-common</artifactId>
+		<version>1.0-M4</version>
+	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>atmibroker-xatmi</artifactId>
@@ -62,11 +62,11 @@
 						<goals>
 							<goal>test</goal>
 						</goals>
-                                                <configuration>
-                                                        <skipTests>${skipTests}</skipTests>
+						<configuration>
+							<skipTests>${skipTests}</skipTests>
 							<maven.test.skip>${maven.test.skip}</maven.test.skip>
 							<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
-                                                </configuration>
+						</configuration>
 					</execution>
 					<execution>
 						<id>process-classes</id>
@@ -107,13 +107,19 @@
 		</dependency>
 	</dependencies>
 
-        <profiles>
-                <profile>
-                        <id>windows</id>
-                        <activation> <os> <family>windows</family> </os> </activation>
-                        <properties><export.dll>_ATMIBROKER_XATMI_DLL</export.dll></properties>
-                </profile>              
-        </profiles>
+	<profiles>
+		<profile>
+			<id>windows</id>
+			<activation>
+				<os>
+					<family>windows</family>
+				</os>
+			</activation>
+			<properties>
+				<export.dll>_ATMIBROKER_XATMI_DLL</export.dll>
+			</properties>
+		</profile>
+	</profiles>
 
 	<properties>
 	</properties>

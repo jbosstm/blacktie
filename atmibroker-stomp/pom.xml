@@ -38,7 +38,6 @@
 				<configuration>
 					<configuration.type>${configuration.type}</configuration.type>
 					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
-					<src.main>${src.main}</src.main>
 					<generate.testrunner>true</generate.testrunner>
 				</configuration>
 				<executions>

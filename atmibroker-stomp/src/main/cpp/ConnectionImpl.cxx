@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2008, Red Hat Middleware LLC, and others contributors as indicated
+ * Copyright 2008, Red Hat, Inc., and others contributors as indicated
  * by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -27,16 +27,17 @@
 
 log4cxx::LoggerPtr ConnectionImpl::logger(log4cxx::Logger::getLogger("ConnectionImpl"));
 
-ConnectionImpl::ConnectionImpl() {
+ConnectionImpl::ConnectionImpl(char* connectionName) {
+	this->connectionName = connectionName;
 	apr_status_t rc = apr_initialize();
 	if (rc != APR_SUCCESS) {
-		LOG4CXX_ERROR(logger, (char*) "Could not initialize");
+		LOG4CXX_ERROR(logger, (char*) "Could not initialize: " << rc);
 		throw new std::exception();
 	}
 
 	rc = apr_pool_create(&pool, NULL);
 	if (rc != APR_SUCCESS) {
-		LOG4CXX_ERROR(logger, (char*) "Could not allocate pool");
+		LOG4CXX_ERROR(logger, (char*) "Could not allocate pool: " << rc);
 		throw new std::exception();
 	}
 
@@ -46,7 +47,7 @@ ConnectionImpl::ConnectionImpl() {
 	int portNum = atoi(port.c_str());
 	rc = stomp_connect(&connection, host.c_str(), portNum, pool);
 	if (rc != APR_SUCCESS) {
-		LOG4CXX_ERROR(logger, (char*) "Could not connect");
+		LOG4CXX_ERROR(logger, (char*) "Could not connect: " << host << ", " << port << ": " << rc);
 		throw new std::exception();
 	}
 
@@ -103,13 +104,13 @@ ConnectionImpl::~ConnectionImpl() {
 
 Session* ConnectionImpl::createSession(int id, char * serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession");
-	sessionMap[id] = new SessionImpl(connection, pool, id, serviceName);
+	sessionMap[id] = new SessionImpl(connectionName, connection, pool, id, serviceName);
 	return sessionMap[id];
 }
 
 Session* ConnectionImpl::createSession(int id, const char* temporaryQueueName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession");
-	return new SessionImpl(connection, pool, id, temporaryQueueName);
+	return new SessionImpl(connectionName, connection, pool, id, temporaryQueueName);
 }
 
 Destination* ConnectionImpl::createDestination(char* serviceName) {
