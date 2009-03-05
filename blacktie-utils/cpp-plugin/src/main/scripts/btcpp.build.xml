@@ -20,42 +20,6 @@
 <includepath path="${JAVA_HOME}/include" />
 <includepath path="${JAVA_HOME}/include/${PLATFORM}" />
 '>
-<!ENTITY includepath-log4cxx '
-<includepath path="${LOG4CXX_ROOT}/src/main/include" />
-'>
-<!ENTITY libsets-log4cxx '
-<fileset dir="${LOG4CXX_ROOT}/target/debug/shared/" includes="${lib.prefix}log4cxx.*"/>
-'>
-<!ENTITY includepath-expat '
-<includepath path="${EXPAT_ROOT}/Source/lib"  if="is-msvc"/>
-'>
-<!ENTITY libsets-expat '
-<fileset dir="${EXPAT_LIB_DIR}" includes="${expat.prefix}expat.*"/>
-'>
-<!ENTITY includepath-cppunit '
-<includepath path="${CPPUNIT_ROOT}/include"  if="is-msvc"/>
-'>
-<!ENTITY libsets-cppunit '
-<fileset dir="${CPPUNIT_LIB_DIR}" includes="${lib.prefix}cppunit${lib.suffix}.*"/>
-'>
-<!ENTITY includepath-tao '
-<includepath path="${ACE_ROOT}" />
-<includepath path="${TAO_ROOT}" />
-<includepath path="${TAO_ROOT}/orbsvcs" />
-'>
-<!ENTITY libsets-tao '
-<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO_CosNaming${lib.suffix}.*" />
-<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO_AnyTypeCode${lib.suffix}.*" />
-<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO${lib.suffix}.*" />
-<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO_PortableServer${lib.suffix}.*" />
-<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}ACE${lib.suffix}.*"/>
-<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO_PI${lib.suffix}.*" />
-<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO_CodecFactory${lib.suffix}.*" />
-<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO_IORInterceptor${lib.suffix}.*" />
-<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO_ObjRefTemplate${lib.suffix}.*" />
-<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO_Valuetype${lib.suffix}.*" />
-<fileset dir="${ACE_ROOT}/lib/" includes="${lib.prefix}TAO_PI_Server${lib.suffix}.*" />
-'>
 <!ENTITY compiler-args-gcc '
 <compilerarg value="-O0" if="debug" />
 <compilerarg value="-g3" if="debug" />
@@ -76,29 +40,8 @@
 <compilerarg value="/wd4505" />
 <compilerarg value="/wd4640"/>
 '>
-<!ENTITY includepath-main-dependencies '
-	&includepath-expat;
-	&includepath-tao;
-'>
-<!ENTITY xlibsets-main-dependencies '
-	<libset dir="target/dependencies" libs="${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix} log4cxx" />
-'>
-<!ENTITY libsets-main-dependencies '
-	<libset dir="target/dependencies" libs="log4cxx ${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix}" />
-'>
 <!ENTITY includepath-test-dependencies '
-	&includepath-cppunit;
-	&includepath-tao;
-
 	&includepath-java;
-'>
-<!ENTITY libsets-test-dependencies '
-	<libset dir="target/dependencies" libs="cppunit${lib.suffix} ${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix}" />
-'>
-<!ENTITY libsets-runtime-dependencies '
-	&libsets-cppunit;
-	&libsets-expat;
-	&libsets-tao;
 '>
 ]>
 <project name="cpp-plugin">
@@ -158,14 +101,6 @@
 		<condition property="lib.prefix" value="">
 			<isset property="is-msvc" />
 		</condition>
-		<condition property="expat.prefix" value="">
-			<not>
-				<isset property="is-msvc" />
-			</not>
-		</condition>
-		<condition property="expat.prefix" value="lib">
-			<isset property="is-msvc" />
-		</condition>
 	</target>
 
 	<target name="clean" >
@@ -173,7 +108,6 @@
 		<delete dir="target/classes/include" failonerror="false"/>
 		<delete dir="target/cpp-classes" failonerror="false"/>
 		<delete dir="target/cpp-test-classes" failonerror="false"/>
-		<delete dir="target/dependencies" failonerror="false"/>
 	</target>
 
 	<target name="generate-sources">
@@ -263,11 +197,14 @@
 			<includepath path="src/main/include" />
 			<includepath path="${src.idl.main}/include" />
 			<includepath path="target/cxx/compile/include" />
+			<includepath path="target/cxx/compile/include/apr-1" />
+			<includepath path="target/cxx/compile/include/stomp" />
 
 			<libset dir="${project.build.directory}/cxx/compile/lib" libs="${compile.libs}" if="compile.libs"/>
 
-			&includepath-main-dependencies;
-			&libsets-main-dependencies;
+			<includepath path="target/cxx/compile/include/ace" />
+			<includepath path="target/cxx/compile/include/ace/TAO" />
+			<includepath path="target/cxx/compile/include/ace/TAO/orbsvcs" />
 		</cc>
 	</target>
 
@@ -311,11 +248,15 @@
 			<includepath path="src/main/include" />
 			<includepath path="${src.idl.main}/include" />
 			<includepath path="target/cxx/test/include" />
+			<includepath path="target/cxx/test/include/ace" />
+			<includepath path="target/cxx/test/include/ace/TAO" />
+			<includepath path="target/cxx/test/include/ace/TAO/orbsvcs" />
+			<includepath path="target/cxx/compile/include/apr-1" />
+			<includepath path="target/cxx/compile/include/stomp" />
 
 			<libset dir="${project.build.directory}/cxx/test/lib" libs="${test.libs}" if="test.libs"/>
 
 			&includepath-test-dependencies;
-			&libsets-test-dependencies;
 			<libset dir="target/${configuration.type}/${lib.type}" libs="${project.artifactId}" if="main.built" />
 		</cc>
 		<available file="target/testsuite.dll.manifest" property="manifest.towrap" />
@@ -370,26 +311,10 @@
         <target name="process-classes" depends="package,copy-idl,copy-exports,copy-libs">
         </target>
 
-        <target name="cppunit-lib-check" unless="CPPUNIT_LIB_DIR">
-        	<property name="CPPUNIT_LIB_DIR" value="" />
-        </target>
-        <target name="cppunit-root-check" unless="CPPUNIT_ROOT">
-        	<property name="CPPUNIT_ROOT" value="" />
-        </target>
-        <target name="expat-lib-check" unless="EXPAT_LIB_DIR">
-        	<property name="EXPAT_LIB_DIR" value="" />
-        </target>
-        <target name="expat-root-check" unless="EXPAT_ROOT">
-        	<property name="EXPAT_ROOT" value="" />
-        </target>
-
-	<target name="package" depends="init,unpack-dependencies,expat-lib-check,expat-root-check,cppunit-lib-check,cppunit-root-check">
+	<target name="package" depends="init,unpack-dependencies">
         	<mkdir dir="target/classes/lib" />
         	<mkdir dir="target/classes/include" />
 		<mkdir dir="target/dependencies" />
-		<copy todir="target/dependencies">
-			&libsets-runtime-dependencies;
-		</copy>
 	</target>
 
         <target name="unpack-dependencies" >
@@ -412,7 +337,7 @@
 	<!--
 	     Unzip libraries and includes from the specified list of jar files into the
 	     directory specified by the dest attribute. The jarFile attribute is a file
-	     containing a colon separated list of paths to the jar file that are to be
+	     containing a colon separated list of paths to the jar files that are to be
 	     unzipped.
 	     The id attribute just needs to be an arbitary but unique property name
 	     (it's only used for iterating through the list of jars).
@@ -426,7 +351,7 @@
                 	<loadfile property="@{id}" srcFile="@{jarFile}"/>
                 	<for list="${@{id}}" delimiter=":" param="artifact" trim="yes">
                         	<sequential>
-                                	<unzip src="@{artifact}" dest="@{dest}">
+                                	<unzip src="@{artifact}" dest="@{dest}" overwrite="false">
                                         	<patternset>
                                                 	<include name="**/lib/**"/>
                                                 	<include name="**/include/**"/>

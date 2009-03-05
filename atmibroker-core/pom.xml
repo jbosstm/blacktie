@@ -119,5 +119,11 @@
 			<artifactId>atmibroker-idl</artifactId>
 			<version>1.0-M4</version>
 		</dependency>
+		<dependency>
+		        <groupId>expat.contrib</groupId>
+		        <artifactId>expat</artifactId>
+		        <version>2.0.1</version>
+		</dependency>
+
 	</dependencies>
 </project>

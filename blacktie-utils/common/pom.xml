@@ -67,9 +67,20 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.jboss.blacktie.thirdparty</groupId>
+			<groupId>apache-log4cxx.contrib</groupId>
 			<artifactId>log4cxx</artifactId>
-			<version>1.0</version>
+			<version>0.11.0</version>
+		</dependency>
+		<dependency>
+			<groupId>ace.contrib</groupId>
+			<artifactId>ace</artifactId>
+			<version>1.6.7</version>
+		</dependency>
+		<dependency>
+			<groupId>cppunit.contrib</groupId>
+			<artifactId>cppunit</artifactId>
+			<version>1.12</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -110,10 +121,7 @@
 				<platform>fc10-32</platform>
 				<PLATFORM>linux</PLATFORM>
 				<toolchain.compiler>gcc</toolchain.compiler>
-				<!--
-				<ld_library_path>${LOG4CXX_ROOT}/target/debug/shared:${project.build.directory}/cxx/lib:${project.build.directory}</ld_library_path>
-				-->
-				<ld_library_path>${project.build.directory}/dependencies:${project.build.directory}/cxx/test/lib:${project.build.directory}</ld_library_path>
+				<ld_library_path>${project.build.directory}/cxx/test/lib:${project.build.directory}</ld_library_path>
 			</properties>
 		</profile>
 	</profiles>
