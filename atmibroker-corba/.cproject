@@ -56,11 +56,17 @@
 <folderInfo id="cdt.managedbuild.toolchain.gnu.base.474242531.713392590" name="/" resourcePath="target">
 <toolChain id="cdt.managedbuild.toolchain.gnu.base.843028563" name="cdt.managedbuild.toolchain.gnu.base" superClass="cdt.managedbuild.toolchain.gnu.base" unusedChildren="">
 <tool id="cdt.managedbuild.tool.gnu.archiver.base.1339922534" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.1764754431"/>
-<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.1172675099" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base.782554231"/>
-<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.1123909037" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base.1399088468"/>
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.1172675099" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base.782554231">
+<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.560969845" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+</tool>
+<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.1123909037" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base.1399088468">
+<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.451569565" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+</tool>
 <tool id="cdt.managedbuild.tool.gnu.c.linker.base.746723695" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base.1555042047"/>
 <tool id="cdt.managedbuild.tool.gnu.cpp.linker.base.1172106945" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base.991799350"/>
-<tool id="cdt.managedbuild.tool.gnu.assembler.base.1551684258" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base.457257561"/>
+<tool id="cdt.managedbuild.tool.gnu.assembler.base.1551684258" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base.457257561">
+<inputType id="cdt.managedbuild.tool.gnu.assembler.input.156706065" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+</tool>
 </toolChain>
 </folderInfo>
 <sourceEntries>
