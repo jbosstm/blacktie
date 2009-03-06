@@ -30,7 +30,6 @@
 	</scm>
 
 	<modules>
-		<module>common</module>
 		<module>cpp-plugin</module>
 	</modules>
 </project>
