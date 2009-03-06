@@ -111,6 +111,8 @@
                 		<include name="**/*.h"/>
                 		<include name="**/*.cpp"/>
                 		<include name="**/*.inl"/>
+                		<include name="**/*.idl"/>
+                		<include name="**/*.pidl"/>
                 	</fileset>
         	</copy>
         	<copy todir="${build.dist}/include/orbsvcs">
@@ -123,6 +125,11 @@
                 		<include name="**/*.inl"/>
                 	</fileset>
         	</copy>
+
+		<fail message="cannot find idl compiler: ${tao.idl.compiler}">
+			<condition> <not> <available file="${tao.idl.compiler}" type="file"/> </not> </condition>
+		</fail>
+		<copy todir="${build.dist}/bin" file="${tao.idl.compiler}"/>
 
 		<install-artifact
 			groupId="ace.contrib"
@@ -270,7 +277,7 @@
 		<attribute name="artifactId" />
 
 		<sequential>
-			<fail>
+			<fail message="missing directories ${inc.dir} or ${lib.dir}">
 				<condition>
 					<and>
 						<available file="${inc.dir}" type="dir"/>

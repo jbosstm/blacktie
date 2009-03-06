@@ -1,8 +1,2 @@
-ACE_ROOT=
-TAO_ROOT=
-EXPAT_LIB_DIR=
 JAVA_HOME=
 PLATFORM=
-#only required if toolchain.compiler=msvc
-#EXPAT_ROOT=
-#CPPUNIT_ROOT=

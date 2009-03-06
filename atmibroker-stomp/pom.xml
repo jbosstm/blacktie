@@ -47,8 +47,18 @@
 					<configuration.type>${configuration.type}</configuration.type>
 					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
 					<generate.testrunner>true</generate.testrunner>
+					<skipTests>true</skipTests>
+					<maven.test.skip>${maven.test.skip}</maven.test.skip>
+					<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
 				</configuration>
 				<executions>
+                                        <execution>
+                                                <id>generate-sources</id>
+                                                <phase>generate-sources</phase>
+                                                <goals>
+                                                        <goal>generate-sources</goal>
+                                                </goals>
+                                        </execution>
 					<execution>
 						<id>compile</id>
 						<phase>compile</phase>
@@ -69,11 +79,6 @@
 						<goals>
 							<goal>test</goal>
 						</goals>
-						<configuration>
-							<skipTests>${skipTests}</skipTests>
-							<maven.test.skip>${maven.test.skip}</maven.test.skip>
-							<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
-						</configuration>
 					</execution>
 					<execution>
 						<id>process-classes</id>

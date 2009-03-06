@@ -1,5 +1,0 @@
-ACE_ROOT=
-TAO_ROOT=
-#only required if toolchain.compiler=msvc
-#EXPAT_ROOT=
-#CPPUNIT_ROOT=

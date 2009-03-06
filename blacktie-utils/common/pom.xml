@@ -38,7 +38,7 @@
 				<executions>
 					<execution>
 						<id>list-main-dependencies</id>
-						<phase>process-resources</phase>
+						<phase>initialize</phase>
 						<goals>
 							<goal>build-classpath</goal>
 						</goals>
@@ -50,7 +50,7 @@
 					</execution>
 					<execution>
 						<id>list-test-dependencies</id>
-						<phase>process-resources</phase>
+						<phase>initialize</phase>
 						<goals>
 							<goal>build-classpath</goal>
 						</goals>

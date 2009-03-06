@@ -42,6 +42,13 @@
 				</configuration>
 
 				<executions>
+                                        <execution>
+                                                <id>generate-sources</id>
+                                                <phase>generate-sources</phase>
+                                                <goals>
+                                                        <goal>generate-sources</goal>
+                                                </goals>
+                                        </execution>
 					<execution>
 						<id>compile</id>
 						<phase>compile</phase>

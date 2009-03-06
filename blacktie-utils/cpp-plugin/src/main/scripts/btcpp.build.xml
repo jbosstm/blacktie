@@ -110,18 +110,29 @@
 		<delete dir="target/cpp-test-classes" failonerror="false"/>
 	</target>
 
-	<target name="generate-sources">
-		<condition property="tao_idl.exe.exists">
-			<available file="${TAO_IDL}" />
-		</condition>
-		<fail unless="tao_idl.exe.exists" />
+	<target name="generate-sources" depends="unpack-dependencies">
+		<property name="idl.compiler" value="${project.build.directory}/cxx/compile/bin/tao_idl" />
+		<property name="ace.lroot" value="${project.build.directory}/cxx/compile" />
+		<property name="ace.iroot" value="${project.build.directory}/cxx/compile/include" />
+
+		<available file="${idl.compiler}" property="tao_idl.exe.exists"/>
+		<fail message="missing idl compiler: ${idl.compiler}" unless="tao_idl.exe.exists" />
+		<chmod file="${idl.compiler}" perm="755"/>
 
 		<mkdir dir="${idl.output.dir}" />
-		<apply executable="${TAO_IDL}" parallel="false" failonerror="true">
+		<apply executable="${idl.compiler}" parallel="false" failonerror="true">
+			<env key="LD_LIBRARY_PATH" path="${ace.lroot}/lib:${ace.lroot}/bin" />
+			<env key="TAO_ROOT" path="${ace.iroot}" />
+
+			<!--
+			<env key="PATH" path="${env.PATH}:/home/mmusgrov/blacktie/util/ACE+TAO-5.6.7/ACE_wrappers/bin" />
+			<env key="Path" path="${env.Path}:${ace.lroot}/lib:${ace.lroot}/bin" />
 			<env key="ACE_ROOT" path="${ACE_ROOT}" />
 			<env key="LD_LIBRARY_PATH" path="${ACE_ROOT}/lib:${ACE_ROOT}/TAO/TAO_IDL" />
 			<env key="Path" path="${env.Path}:${ACE_ROOT}/lib:${ACE_ROOT}/TAO/TAO_IDL" />
 			<arg line="-o ${idl.output.dir} -Wb,pre_include=ace/pre.h -Wb,post_include=ace/post.h -I${ace.root}/TAO -I${ace.root}/TAO/tao -I${ace.root}/TAO/tao/orbsvcs -Isrc/main/idl -Wb,export_macro=ATMIBROKER_IDL_DLL -Wb,export_include=atmiBrokerIdlMacro.h" />
+			-->
+			<arg line="-o ${idl.output.dir} -Wb,pre_include=${ace.iroot}/ace/pre.h -Wb,post_include=${ace.iroot}/ace/post.h -I${ace.iroot}/tao -I${ace.iroot}/orbsvcs -Isrc/main/idl -Wb,export_macro=ATMIBROKER_IDL_DLL -Wb,export_include=atmiBrokerIdlMacro.h" />
 			<fileset dir="src" casesensitive="yes">
 				<patternset id="idl.sources">
 					<include name="**/*.idl" />
@@ -174,11 +185,19 @@
 	</target>
 
 	<target name="compile" depends="fileset.main.check,package" if="have-srcs">
+		<mkdir dir="target/cpp-classes" />
+		<mkdir dir="target/${configuration.type}/${lib.type}" />
+
+		<!--
+		     create a comma separated list of libraries from all the libraries in target/cxx/compile/lib
+		     -->
+                <fileset id="fileset.compile.libs" dir="target/cxx/compile/lib" includes="*.so"/>
+                <property name="xcompile.libs" value="${toString:fileset.compile.libs}"/>
+                <convert-libset libdir="${xcompile.libs}" propname="compile.libs"/>
+
 	<!--
 <echo message="COMPILE: debug=${debug} compiler=${toolchain.compiler}  outtype=${test.output.type} configuration.type=${configuration.type} lib.type=${lib.type} project.artifactId=${project.artifactId} libsetdir=target/cxx/compile/lib compile.libs=${compile.libs}"/>
 -->
-		<mkdir dir="target/cpp-classes" />
-		<mkdir dir="target/${configuration.type}/${lib.type}" />
 		<cc name="${toolchain.compiler}" exceptions="true" outfile="target/${configuration.type}/${lib.type}/${project.artifactId}" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="${lib.type}" objdir="target/cpp-classes" debug="${debug}">
 			<compiler name="${toolchain.compiler}" unless="is-msvc">
 				&compiler-args-gcc;
@@ -209,6 +228,7 @@
 	</target>
 
 	<target name="gen-test-runner1" if="need-testrunner">
+		<mkdir dir="${project.build.directory}/generated-sources" />
 		<fileset id="fileset.gen.test" dir="${project.build.directory}/generated-sources" includes="**/*.cxx"/>
 		<taskdef name="add.common.src" classname="org.jboss.blacktie.plugins.AddCommonSources"/>
 		<!-- For includes see java.util.regex.Pattern for valid pattern syntax -->
@@ -226,6 +246,14 @@
 			<fileset dir="src/test/resources" />
 		</copy>
 		<available file="target/${configuration.type}/${lib.type}" type="dir" property="main.built" />
+
+		<!--
+		     create a comma separated list of libraries from all the libraries in target/cxx/test/lib
+		     -->
+                <fileset id="fileset.test.libs" dir="target/cxx/test/lib" includes="*.so"/>
+                <property name="xtest.libs" value="${toString:fileset.test.libs}"/>
+                <convert-libset libdir="${xtest.libs}" propname="test.libs"/>
+
 		<!--
 <echo message="TEST-COMPILE: debug=${debug} compiler=${toolchain.compiler}  outtype=${test.output.type} configuration.type=${configuration.type} lib.type=${lib.type} project.artifactId=${project.artifactId} test.libs=${test.libs} main.built=${main.built} fileset.gen.test=${fileset.gen.test}"/>
 -->
@@ -311,7 +339,7 @@
         <target name="process-classes" depends="package,copy-idl,copy-exports,copy-libs">
         </target>
 
-	<target name="package" depends="init,unpack-dependencies">
+	<target name="package" depends="init">
         	<mkdir dir="target/classes/lib" />
         	<mkdir dir="target/classes/include" />
 		<mkdir dir="target/dependencies" />
@@ -320,18 +348,6 @@
         <target name="unpack-dependencies" >
                 <unpack id="p1" jarFile="target/compile.classpath" dest="target/cxx/compile"/>
                 <unpack id="p2" jarFile="target/test.classpath" dest="target/cxx/test"/>
-
-		<!--
-		     put the libraries into a comma separated list for use by cpptasks
-		     -->
-                <fileset id="fileset.compile.libs" dir="target/cxx/compile/lib" includes="*.so"/>
-                <property name="xcompile.libs" value="${toString:fileset.compile.libs}"/>
-                <convert-libset libdir="${xcompile.libs}" propname="compile.libs"/>
- 
-                <fileset id="fileset.test.libs" dir="target/cxx/test/lib" includes="*.so"/>
-                <property name="xtest.libs" value="${toString:fileset.test.libs}"/>
-                <convert-libset libdir="${xtest.libs}" propname="test.libs"/>
-
         </target>
 
 	<!--
@@ -355,6 +371,7 @@
                                         	<patternset>
                                                 	<include name="**/lib/**"/>
                                                 	<include name="**/include/**"/>
+                                                	<include name="**/bin/**"/>
                                         	</patternset>
                                 	</unzip>
                         	</sequential>
