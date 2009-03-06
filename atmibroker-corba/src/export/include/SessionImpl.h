@@ -29,9 +29,9 @@ class ConnectionImpl;
 
 class ATMIBROKER_CORBA_DLL SessionImpl: public virtual Session {
 public:
-	SessionImpl(ConnectionImpl* connection, int id, const char* temporaryQueueName);
+	SessionImpl(CORBA_CONNECTION* connection, int id, const char* temporaryQueueName);
 
-	SessionImpl(ConnectionImpl* connection, int id, char* service);
+	SessionImpl(CORBA_CONNECTION* connection, int id, char* service);
 
 	virtual ~SessionImpl();
 
@@ -47,7 +47,7 @@ public:
 private:
 	static log4cxx::LoggerPtr logger;
 	int id;
-	ConnectionImpl* connection;
+	CORBA_CONNECTION* connection;
 	EndpointQueue* temporaryQueue;
 	AtmiBroker::EndpointQueue_var remoteEndpoint;
 

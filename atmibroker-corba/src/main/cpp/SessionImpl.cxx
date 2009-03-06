@@ -25,39 +25,39 @@
 
 log4cxx::LoggerPtr SessionImpl::logger(log4cxx::Logger::getLogger("SessionImpl"));
 
-SessionImpl::SessionImpl(ConnectionImpl* connection, int id, char* serviceName) {
+SessionImpl::SessionImpl(CORBA_CONNECTION* connection, int id, char* serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor ");
 	this->id = id;
 	this->connection = connection;
 
 	LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << serviceName);
-	CosNaming::NamingContextExt_ptr context = connection->getRealConnection()->default_ctx;
-	CosNaming::NamingContext_ptr name_context = connection->getRealConnection()->name_ctx;
+	CosNaming::NamingContextExt_ptr context = connection->default_ctx;
+	CosNaming::NamingContext_ptr name_context = connection->name_ctx;
 	CosNaming::Name * name = context->to_name(serviceName);
 	CORBA::Object_var tmp_ref = name_context->resolve(*name);
 	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 	this->sendTo = serviceName;
 	LOG4CXX_DEBUG(logger, (char*) "connected to " << serviceName);
 
-	this->temporaryQueue = new EndpointQueue(connection->getRealConnection());
+	this->temporaryQueue = new EndpointQueue(connection);
 	this->replyTo = temporaryQueue->getName();
 
 	this->canSend = true;
 	this->canRecv = true;
 }
 
-SessionImpl::SessionImpl(ConnectionImpl* connection, int id, const char* temporaryQueueName) {
+SessionImpl::SessionImpl(CORBA_CONNECTION* connection, int id, const char* temporaryQueueName) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor ");
 	this->id = id;
 	this->connection = connection;
 
 	LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << temporaryQueueName);
-	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection->getRealConnection()->orbRef;
+	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection->orbRef;
 	CORBA::Object_var tmp_ref = orb->string_to_object(temporaryQueueName);
 	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 	LOG4CXX_DEBUG(logger, (char*) "connected to %s" << temporaryQueueName);
 
-	this->temporaryQueue = new EndpointQueue(connection->getRealConnection());
+	this->temporaryQueue = new EndpointQueue(connection);
 	this->replyTo = temporaryQueue->getName();
 
 	this->canSend = true;
@@ -84,7 +84,7 @@ void SessionImpl::setSendTo(const char* destinationName) {
 		remoteEndpoint = NULL;
 	}
 	if (destinationName != NULL && strcmp(destinationName, "") != 0) {
-		CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection->getRealConnection()->orbRef;
+		CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection->orbRef;
 		LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << destinationName);
 		CORBA::Object_var tmp_ref = orb->string_to_object(destinationName);
 		remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);

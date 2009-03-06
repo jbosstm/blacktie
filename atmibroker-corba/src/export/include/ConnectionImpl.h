@@ -39,9 +39,8 @@ public:
 	Session* getSession(int id);
 	void closeSession(int id);
 
-	Destination* createDestination(PortableServer::POA_ptr poa, char* serviceName);
+	Destination* createDestination(char* serviceName);
 	void destroyDestination(Destination* destination);
-	CORBA_CONNECTION* getRealConnection();
 private:
 	static log4cxx::LoggerPtr logger;
 	CORBA_CONNECTION* connection;

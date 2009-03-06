@@ -35,6 +35,8 @@
 #include "AtmiBrokerServerControl.h"
 #include "AtmiBrokerMem.h"
 #include "AtmiBrokerOTS.h"
+#include "ConnectionImpl.h"
+#include "OrbManagement.h"
 
 log4cxx::LoggerPtr loggerAtmiBrokerServer(log4cxx::Logger::getLogger("AtmiBrokerServer"));
 AtmiBrokerServer * ptrServer = NULL;
@@ -96,7 +98,7 @@ AtmiBrokerServer::AtmiBrokerServer() {
 		serverConnection = NULL;
 		realConnection = NULL;
 		serverConnection = new ConnectionImpl((char*) "server");
-		realConnection = serverConnection->getRealConnection();
+		realConnection = AtmiBrokerOTS::init_orb((char*) "serverAdministration");
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "creating POAs for %s", server);
 		AtmiBrokerPoaFac* serverPoaFactory = realConnection->poaFactory;
 		this->poa = serverPoaFactory->createServerPoa(realConnection->orbRef, server, realConnection->root_poa, realConnection->root_poa_manager);
@@ -128,6 +130,9 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 		server_done();
 		delete serverConnection;
 		serverConnection = NULL;
+		shutdownBindings(realConnection);
+		delete realConnection;
+		realConnection = NULL;
 	}
 
 	serviceData.clear();
@@ -143,28 +148,12 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	serverInitialized = false;
 }
 
-#if 0
-int AtmiBrokerServer::block() {
-
-	int toReturn = 0;
-	LOG4CXX_INFO(logger, "Server waiting for requests...");
-	try {
-		((CORBA::ORB_ptr) this->realConnection->orbRef)->run();
-	} catch (CORBA::Exception& e) {
-		LOG4CXX_ERROR(logger, "Unexpected CORBA exception: %s" << e._name());
-		toReturn = -1;
-	} catch (...) {
-		LOG4CXX_ERROR(logger, "Unexpected exception");
-		toReturn = -1;
-	}
-}
-#else if
 int AtmiBrokerServer::block() {
 
 	int toReturn = 0;
 	LOG4CXX_INFO(loggerAtmiBrokerServer, "Server waiting for requests...");
 	try {
-		((CORBA::ORB_ptr) this->realConnection->orbRef)->run();
+		this->realConnection->orbRef->run();
 	} catch (CORBA::Exception& e) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer, "Unexpected CORBA exception: %s" << e._name());
 		toReturn = -1;
@@ -172,8 +161,9 @@ int AtmiBrokerServer::block() {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer, "Unexpected exception");
 		toReturn = -1;
 	}
+	return toReturn;
 }
-#endif
+
 // server_init() -- Implements IDL operation "AtmiBroker::Server::server_init".
 //
 CORBA::Short AtmiBrokerServer::server_init() throw (CORBA::SystemException ) {
@@ -242,7 +232,7 @@ bool AtmiBrokerServer::advertiseService(char * serviceName, void(*func)(TPSVCINF
 	// create reference for Service Queue and cache
 	try {
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "create_service_queue: " << serviceName);
-		Destination* destination = serverConnection->createDestination(poa, serviceName);
+		Destination* destination = serverConnection->createDestination(serviceName);
 		addDestination(destination, func);
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "created destination: " << serviceName);
 	} catch (...) {
@@ -257,14 +247,10 @@ bool AtmiBrokerServer::advertiseService(char * serviceName, void(*func)(TPSVCINF
 	return toReturn;
 }
 
-// TODO CLEANUP SERVICE POA AND SERVANT CACHE
 void AtmiBrokerServer::unadvertiseService(char * serviceName) {
 	for (std::vector<char*>::iterator i = advertisedServices.begin(); i != advertisedServices.end(); i++) {
 		if (strcmp(serviceName, (*i)) == 0) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "remove_service_queue: " << serviceName);
-			CosNaming::Name * name = realConnection->default_ctx->to_name(serviceName);
-			realConnection->name_ctx->unbind(*name);
-
 			Destination * destination = removeDestination(serviceName);
 			serverConnection->destroyDestination(destination);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "service Queue removed" << serviceName);

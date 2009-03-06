@@ -31,7 +31,7 @@
 #include "AtmiBrokerS.h"
 #endif
 #include "CorbaConnection.h"
-#include "ConnectionImpl.h"
+#include "Connection.h"
 
 #include "xatmi.h"
 #include "AtmiBrokerServerXml.h"
@@ -87,7 +87,7 @@ public:
 	int block();
 
 private:
-	ConnectionImpl* serverConnection;
+	Connection* serverConnection;
 	CORBA_CONNECTION* realConnection;
 	void (*getServiceMethod(const char * aServiceName))(TPSVCINFO *);
 	void addDestination(Destination* destination, void(*func)(TPSVCINFO *));
