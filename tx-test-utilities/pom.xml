@@ -18,11 +18,11 @@
 	-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-        <parent>
-                <groupId>org.jboss.blacktie</groupId>
-                <artifactId>blacktie-common</artifactId>
-                <version>1.0-M4</version>
-        </parent>
+	<parent>
+		<groupId>org.jboss.blacktie</groupId>
+		<artifactId>blacktie-common</artifactId>
+		<version>1.0-M4</version>
+	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>dummy-rm</artifactId>
@@ -38,16 +38,19 @@
 				<configuration>
 					<configuration.type>${configuration.type}</configuration.type>
 					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
+					<skipTests>${skipTests}</skipTests>
+					<maven.test.skip>${maven.test.skip}</maven.test.skip>
+					<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
 				</configuration>
 
 				<executions>
-                                        <execution>
-                                                <id>generate-sources</id>
-                                                <phase>generate-sources</phase>
-                                                <goals>
-                                                        <goal>generate-sources</goal>
-                                                </goals>
-                                        </execution>
+					<execution>
+						<id>generate-sources</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate-sources</goal>
+						</goals>
+					</execution>
 					<execution>
 						<id>compile</id>
 						<phase>compile</phase>
@@ -68,11 +71,6 @@
 						<goals>
 							<goal>test</goal>
 						</goals>
-                                                <configuration>
-                                                        <skipTests>${skipTests}</skipTests>
-							<maven.test.skip>${maven.test.skip}</maven.test.skip>
-							<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
-                                                </configuration>
 					</execution>
 					<execution>
 						<id>process-classes</id>

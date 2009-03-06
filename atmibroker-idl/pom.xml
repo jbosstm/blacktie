@@ -18,11 +18,11 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-        <parent>
-                <groupId>org.jboss.blacktie</groupId>
-                <artifactId>blacktie-common</artifactId>
-                <version>1.0-M4</version>
-        </parent>
+	<parent>
+		<groupId>org.jboss.blacktie</groupId>
+		<artifactId>blacktie-common</artifactId>
+		<version>1.0-M4</version>
+	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>atmibroker-idl</artifactId>
@@ -65,34 +65,34 @@
 					</execution>
 				</executions>
 			</plugin>
-                        <plugin>
-                                <groupId>org.codehaus.mojo</groupId>
-                                <artifactId>idlj-maven-plugin</artifactId>
-                                <dependencies>
-                                        <dependency>
-                                                <groupId>org.jacorb</groupId>
-                                                <artifactId>jacorb-idl-compiler</artifactId>
-                                                <version>2.2.3</version>
-                                        </dependency>
-                                </dependencies>
-                                <executions>
-                                        <execution>
-                                                <goals>
-                                                        <goal>generate</goal>
-                                                </goals>
-                                        </execution>
-                                </executions>
-                                <configuration>
-                                        <compiler>jacorb</compiler>
-                                        <sources>
-                                                <source>
-                                                        <includes>
-                                                                <include>AtmiBroker.idl</include>
-                                                        </includes>
-                                                </source>
-                                        </sources>
-                                </configuration>
-                        </plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>idlj-maven-plugin</artifactId>
+				<dependencies>
+					<dependency>
+						<groupId>org.jacorb</groupId>
+						<artifactId>jacorb-idl-compiler</artifactId>
+						<version>2.2.3</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<compiler>jacorb</compiler>
+					<sources>
+						<source>
+							<includes>
+								<include>AtmiBroker.idl</include>
+							</includes>
+						</source>
+					</sources>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -105,13 +105,13 @@
 		</dependency>
 	</dependencies>
 
-        <profiles>
-                <profile>
-                        <id>windows</id>
-                        <activation> <os> <family>windows</family> </os> </activation>
-                        <properties><export.dll>_ATMIBROKER_IDL_DLL</export.dll></properties>
-                </profile>              
-        </profiles>
+	<profiles>
+		<profile>
+			<id>windows</id>
+			<activation> <os> <family>windows</family> </os> </activation>
+			<properties><export.dll>_ATMIBROKER_IDL_DLL</export.dll></properties>
+		</profile>	      
+	</profiles>
 
 	<properties>
 		<src.main>target/generated/tao_idl</src.main>

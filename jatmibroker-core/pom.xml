@@ -17,11 +17,11 @@
 	-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-        <parent>
-                <groupId>org.jboss.blacktie</groupId>
-                <artifactId>blacktie-common</artifactId>
-                <version>1.0-M4</version>
-        </parent>
+	<parent>
+		<groupId>org.jboss.blacktie</groupId>
+		<artifactId>blacktie-common</artifactId>
+		<version>1.0-M4</version>
+	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>jatmibroker-core</artifactId>
@@ -36,47 +36,47 @@
 				<configuration>
 					<forkMode>once</forkMode>
 					<workingDirectory>target/test-classes</workingDirectory>
-                                        <environmentVariables>
-                                                <Path>${ld_library_path}</Path>
-                                                <LD_LIBRARY_PATH>${ld_library_path}</LD_LIBRARY_PATH>
-                                        </environmentVariables>
+					<environmentVariables>
+						<Path>${ld_library_path}</Path>
+						<LD_LIBRARY_PATH>${ld_library_path}</LD_LIBRARY_PATH>
+					</environmentVariables>
 				</configuration>
 			</plugin>
-                        <plugin>
-                                <groupId>org.jboss.blacktie.plugins</groupId>
-                                <artifactId>cpp-plugin</artifactId>
-                                <version>1.0-M4</version>
-                                <configuration>
-                                        <configuration.type>${configuration.type}</configuration.type>
-                                        <toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
-                                </configuration>
-                                <executions>
-                                        <execution>
-                                                <id>generate-sources</id>
-                                                <phase>generate-sources</phase>
-                                                <goals>
-                                                        <goal>generate-sources</goal>
-                                                </goals>
-                                        </execution>
-                                        <execution>
-                                                <id>test-compile</id>
-                                                <phase>test-compile</phase>
-                                                <goals>
-                                                        <goal>test-compile</goal>
-                                                </goals>
+			<plugin>
+				<groupId>org.jboss.blacktie.plugins</groupId>
+				<artifactId>cpp-plugin</artifactId>
+				<version>1.0-M4</version>
+				<configuration>
+					<configuration.type>${configuration.type}</configuration.type>
+					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
+				</configuration>
+				<executions>
+					<execution>
+						<id>generate-sources</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate-sources</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>test-compile</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>test-compile</goal>
+						</goals>
 						<configuration>
-                                        		<test.output.type>shared</test.output.type>
+							<test.output.type>shared</test.output.type>
 						</configuration>
-                                        </execution>
-                                        <execution>
-                                                <id>process-classes</id>
-                                                <phase>process-classes</phase>
-                                                <goals>
-                                                        <goal>process-classes</goal>
-                                                </goals>
-                                        </execution>
-                                </executions>
-                        </plugin>
+					</execution>
+					<execution>
+						<id>process-classes</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>process-classes</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>

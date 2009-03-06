@@ -17,11 +17,11 @@
 	-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-        <parent>
-                <groupId>org.jboss.blacktie</groupId>
-                <artifactId>blacktie-common</artifactId>
-                <version>1.0-M4</version>
-        </parent>
+	<parent>
+		<groupId>org.jboss.blacktie</groupId>
+		<artifactId>blacktie-common</artifactId>
+		<version>1.0-M4</version>
+	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>atmibroker-core</artifactId>
@@ -38,19 +38,20 @@
 					<configuration.type>${configuration.type}</configuration.type>
 					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
 					<maven.test.skip>${maven.test.skip}</maven.test.skip>
+					<skipTests>${skipTests}</skipTests>
 					<src.main>${src.main}</src.main>
 					<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
 					<generate.testrunner>true</generate.testrunner>
 				</configuration>
 
 				<executions>
-                                        <execution>
-                                                <id>generate-sources</id>
-                                                <phase>generate-sources</phase>
-                                                <goals>
-                                                        <goal>generate-sources</goal>
-                                                </goals>
-                                        </execution>
+					<execution>
+						<id>generate-sources</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate-sources</goal>
+						</goals>
+					</execution>
 					<execution>
 						<id>compile</id>
 						<phase>compile</phase>
@@ -71,9 +72,6 @@
 						<goals>
 							<goal>test</goal>
 						</goals>
-						<configuration>
-							<skipTests>${skipTests}</skipTests>
-						</configuration>
 					</execution>
 					<execution>
 						<id>process-classes</id>
@@ -85,37 +83,37 @@
 				</executions>
 			</plugin>
 			<!--
-                        <plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-dependency-plugin</artifactId>
-                                <executions>
-                                        <execution>
-                                                <id>unpack-dependencies</id>
-                                                <phase>process-resources</phase>
-                                                <goals>
-                                                        <goal>unpack-dependencies</goal>
-                                                </goals>
-                                                <configuration>
-                                                        <includes>**/*.h,**/*.inl,**/*.cpp,**/*.so*,*.dll,**/*.cxx</includes>
-                                                        <excludes>**/*.class</excludes>
-                                                        <outputDirectory>${project.build.directory}/cxx</outputDirectory>
-                                                        <silent>true</silent>
-                                                </configuration>
-                                        </execution>
-                                </executions>
-                        </plugin>
-                        -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unpack-dependencies</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<includes>**/*.h,**/*.inl,**/*.cpp,**/*.so*,*.dll,**/*.cxx</includes>
+							<excludes>**/*.class</excludes>
+							<outputDirectory>${project.build.directory}/cxx</outputDirectory>
+							<silent>true</silent>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			-->
 
 		</plugins>
 	</build>
 
-        <profiles>
-                <profile>
-                        <id>windows</id>
-                        <activation> <os> <family>windows</family> </os> </activation>
-                        <properties><export.dll>_ATMIBROKER_CORE_DLL</export.dll></properties>
-                </profile>              
-        </profiles>
+	<profiles>
+		<profile>
+			<id>windows</id>
+			<activation> <os> <family>windows</family> </os> </activation>
+			<properties><export.dll>_ATMIBROKER_CORE_DLL</export.dll></properties>
+		</profile>	      
+	</profiles>
 
 	<properties>
 	</properties>
@@ -127,9 +125,9 @@
 			<version>1.0-M4</version>
 		</dependency>
 		<dependency>
-		        <groupId>expat.contrib</groupId>
-		        <artifactId>expat</artifactId>
-		        <version>2.0.1</version>
+			<groupId>expat.contrib</groupId>
+			<artifactId>expat</artifactId>
+			<version>2.0.1</version>
 		</dependency>
 
 	</dependencies>
