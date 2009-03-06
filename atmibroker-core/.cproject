@@ -48,6 +48,19 @@
 </tool>
 </toolChain>
 </folderInfo>
+<folderInfo id="cdt.managedbuild.toolchain.gnu.base.709029786.1937492749" name="/" resourcePath="target">
+<toolChain id="cdt.managedbuild.toolchain.gnu.base.280401165" name="cdt.managedbuild.toolchain.gnu.base" superClass="cdt.managedbuild.toolchain.gnu.base" unusedChildren="">
+<tool id="cdt.managedbuild.tool.gnu.archiver.base.1041079148" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.251382469"/>
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.1129248625" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base.1735602914"/>
+<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.338208583" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base.602389692"/>
+<tool id="cdt.managedbuild.tool.gnu.c.linker.base.763562561" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base.2014659540"/>
+<tool id="cdt.managedbuild.tool.gnu.cpp.linker.base.1944554436" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base.1749288198"/>
+<tool id="cdt.managedbuild.tool.gnu.assembler.base.1661257163" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base.586353351"/>
+</toolChain>
+</folderInfo>
+<sourceEntries>
+<entry excluding="target" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+</sourceEntries>
 </configuration>
 </storageModule>
 
