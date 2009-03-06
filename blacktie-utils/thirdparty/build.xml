@@ -1,19 +1,19 @@
 <!--
-        JBoss, Home of Professional Open Source
-        Copyright 2009, Red Hat Middleware LLC, and others contributors as indicated
-        by the @authors tag. All rights reserved.
-        See the copyright.txt in the distribution for a
-        full listing of individual contributors.
-        This copyrighted material is made available to anyone wishing to use,
-        modify, copy, or redistribute it subject to the terms and conditions
-        of the GNU Lesser General Public License, v. 2.1.
-        This program is distributed in the hope that it will be useful, but WITHOUT A
-        WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-        PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
-        You should have received a copy of the GNU Lesser General Public License,
-        v.2.1 along with this distribution; if not, write to the Free Software
-        Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-        MA 02110-1301, USA.
+	JBoss, Home of Professional Open Source
+	Copyright 2009, Red Hat Middleware LLC, and others contributors as indicated
+	by the @authors tag. All rights reserved.
+	See the copyright.txt in the distribution for a
+	full listing of individual contributors.
+	This copyrighted material is made available to anyone wishing to use,
+	modify, copy, or redistribute it subject to the terms and conditions
+	of the GNU Lesser General Public License, v. 2.1.
+	This program is distributed in the hope that it will be useful, but WITHOUT A
+	WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+	PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+	You should have received a copy of the GNU Lesser General Public License,
+	v.2.1 along with this distribution; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 -->
 <project name="thirdparty" default="install" xmlns:artifact="urn:maven-artifact-ant">
 
@@ -40,23 +40,23 @@
 			usetimestamp="true"/>
 	</target>
 
-        <target name="init" depends="bootstrap" >
-                <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
-                        <classpath>
-                                <pathelement location="${lib.dir}/${maven.ant.file}" />
-                        </classpath>
-                </typedef>
-                <mkdir dir="${build.lib}"/>
-                <mkdir dir="${build.dir}"/>
-                <mkdir dir="${build.dist}"/>
-                <mkdir dir="${build.dist}/include"/>
-                <mkdir dir="${build.dist}/lib"/>
-        </target>
+	<target name="init" depends="bootstrap" >
+		<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
+			<classpath>
+				<pathelement location="${lib.dir}/${maven.ant.file}" />
+			</classpath>
+		</typedef>
+		<mkdir dir="${build.lib}"/>
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${build.dist}"/>
+		<mkdir dir="${build.dist}/include"/>
+		<mkdir dir="${build.dist}/lib"/>
+	</target>
 
-        <target name="clean">
-                <delete dir="${build.dir}"/>
-                <delete dir="${build.dist}"/>
-        </target>
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+		<delete dir="${build.dist}"/>
+	</target>
 
 	<target name="thirdparty" depends="log4cxx,cppunit,ace,expat,stomp,apr-1"/>
 	<target name="install" depends="thirdparty"/>
@@ -64,67 +64,56 @@
 	<target name="ace" depends="clean,init">
 		<validate-files inc.dir="${ace.include.dir}" lib.dir="${ace.lib.dir}" artifactId="ace"/>
 
-        	<copy todir="${build.dist}/lib">
-        		<fileset dir="${ace.lib.dir}">
-				<include name="libTAO_PortableServer.so.1.6.7"/>
+		<copy todir="${build.dist}/lib">
+			<fileset dir="${ace.lib.dir}">
 				<include name="libTAO_PI.so"/>
-				<include name="libTAO_CodecFactory.so.1.6.7"/>
-				<include name="libTAO_Valuetype.so.1.6.7"/>
 				<include name="libTAO_Valuetype.so"/>
 				<include name="libTAO_PortableServer.so"/>
 				<include name="libTAO_IORInterceptor.so"/>
-				<include name="libTAO_PI_Server.so.1.6.7"/>
 				<include name="libTAO_CodecFactory.so"/>
-				<include name="libTAO_PI.so.1.6.7"/>
 				<include name="libACE.so"/>
-				<include name="libACE.so.5.6.7"/>
 				<include name="libTAO_PI_Server.so"/>
 				<include name="libTAO_ObjRefTemplate.so"/>
-				<include name="libTAO.so.1.6.7"/>
-				<include name="libTAO_ObjRefTemplate.so.1.6.7"/>
 				<include name="libTAO_CosNaming.so"/>
-				<include name="libTAO_IORInterceptor.so.1.6.7"/>
 				<include name="libTAO_AnyTypeCode.so"/>
-				<include name="libTAO_CosNaming.so.1.6.7"/>
 				<include name="libTAO.so"/>
-				<include name="libTAO_AnyTypeCode.so.1.6.7"/>
-        		</fileset>
-        	</copy>
+			</fileset>
+		</copy>
 
-        	<copy todir="${build.dist}/include/ace">
-                	<fileset dir="${ace.include.dir}/ace">
-                		<exclude name="**/*examples*/**"/>
-                		<exclude name="**/*tests*/**"/>
-                		<exclude name="**/DevGuideExamples/**"/>
+		<copy todir="${build.dist}/include/ace">
+			<fileset dir="${ace.include.dir}/ace">
+				<exclude name="**/*examples*/**"/>
+				<exclude name="**/*tests*/**"/>
+				<exclude name="**/DevGuideExamples/**"/>
 
-                		<include name="**/*.h"/>
-                		<include name="**/*.cpp"/>
-                		<include name="**/*.inl"/>
-                	</fileset>
-        	</copy>
-        	<copy todir="${build.dist}/include/tao">
-                	<fileset dir="${ace.include.dir}/TAO/tao">
-                		<exclude name="**/*examples*/**"/>
-                		<exclude name="**/*tests*/**"/>
-                		<exclude name="**/DevGuideExamples/**"/>
+				<include name="**/*.h"/>
+				<include name="**/*.cpp"/>
+				<include name="**/*.inl"/>
+			</fileset>
+		</copy>
+		<copy todir="${build.dist}/include/tao">
+			<fileset dir="${ace.include.dir}/TAO/tao">
+				<exclude name="**/*examples*/**"/>
+				<exclude name="**/*tests*/**"/>
+				<exclude name="**/DevGuideExamples/**"/>
 
-                		<include name="**/*.h"/>
-                		<include name="**/*.cpp"/>
-                		<include name="**/*.inl"/>
-                		<include name="**/*.idl"/>
-                		<include name="**/*.pidl"/>
-                	</fileset>
-        	</copy>
-        	<copy todir="${build.dist}/include/orbsvcs">
-                	<fileset dir="${ace.include.dir}/TAO/orbsvcs/orbsvcs">
-                		<exclude name="**/*examples*/**"/>
-                		<exclude name="**/*tests*/**"/>
-                		<exclude name="**/DevGuideExamples/**"/>
+				<include name="**/*.h"/>
+				<include name="**/*.cpp"/>
+				<include name="**/*.inl"/>
+				<include name="**/*.idl"/>
+				<include name="**/*.pidl"/>
+			</fileset>
+		</copy>
+		<copy todir="${build.dist}/include/orbsvcs">
+			<fileset dir="${ace.include.dir}/TAO/orbsvcs/orbsvcs">
+				<exclude name="**/*examples*/**"/>
+				<exclude name="**/*tests*/**"/>
+				<exclude name="**/DevGuideExamples/**"/>
 
-                		<include name="**/*.h"/>
-                		<include name="**/*.inl"/>
-                	</fileset>
-        	</copy>
+				<include name="**/*.h"/>
+				<include name="**/*.inl"/>
+			</fileset>
+		</copy>
 
 		<fail message="cannot find idl compiler: ${tao.idl.compiler}">
 			<condition> <not> <available file="${tao.idl.compiler}" type="file"/> </not> </condition>
@@ -142,13 +131,13 @@
 	<target name="expat" depends="clean,init">
 		<validate-files inc.dir="${expat.include.dir}" lib.dir="${expat.lib.dir}" artifactId="expat"/>
 
-        	<copy file="${expat.lib.dir}/libexpat.so" todir="${build.dist}/lib"/>
-        	<copy todir="${build.dist}/include/expat">
-                	<fileset dir="${expat.include.dir}">
-                		<include name="expat.h"/>
-                		<include name="expat_external.h"/>
-                	</fileset>
-        	</copy>
+		<copy file="${expat.lib.dir}/libexpat.so" todir="${build.dist}/lib"/>
+		<copy todir="${build.dist}/include/expat">
+			<fileset dir="${expat.include.dir}">
+				<include name="expat.h"/>
+				<include name="expat_external.h"/>
+			</fileset>
+		</copy>
 
 		<install-artifact
 			groupId="expat.contrib"
@@ -161,10 +150,10 @@
 	<target name="cppunit" depends="clean,init">
 		<validate-files inc.dir="${cppunit.include.dir}" lib.dir="${cppunit.lib.dir}" artifactId="cppunit"/>
 
-        	<copy file="${cppunit.lib.dir}/libcppunit.so" todir="${build.dist}/lib"/>
-        	<copy todir="${build.dist}/include/cppunit">
-                	<fileset dir="${cppunit.include.dir}"/>
-        	</copy>
+		<copy file="${cppunit.lib.dir}/libcppunit.so" todir="${build.dist}/lib"/>
+		<copy todir="${build.dist}/include/cppunit">
+			<fileset dir="${cppunit.include.dir}"/>
+		</copy>
 
 		<install-artifact
 			groupId="cppunit.contrib"
@@ -177,10 +166,10 @@
 	<target name="apr-1" depends="clean,init">
 		<validate-files inc.dir="${apr-1.include.dir}" lib.dir="${apr-1.lib.dir}" artifactId="apr-1"/>
 
-        	<copy file="${apr-1.lib.dir}/libapr-1.so" todir="${build.dist}/lib"/>
-        	<copy todir="${build.dist}/include/apr-1">
-                	<fileset dir="${apr-1.include.dir}" includes="*.h"/>
-        	</copy>
+		<copy file="${apr-1.lib.dir}/libapr-1.so" todir="${build.dist}/lib"/>
+		<copy todir="${build.dist}/include/apr-1">
+			<fileset dir="${apr-1.include.dir}" includes="*.h"/>
+		</copy>
 
 		<install-artifact
 			groupId="apr-1.contrib"
@@ -193,10 +182,10 @@
 	<target name="stomp" depends="clean,init">
 		<validate-files inc.dir="${stomp.include.dir}" lib.dir="${stomp.lib.dir}" artifactId="stomp"/>
 
-        	<copy file="${stomp.lib.dir}/libstomp.so" todir="${build.dist}/lib"/>
-        	<copy todir="${build.dist}/include/stomp">
-                	<fileset dir="${stomp.include.dir}" includes="*.h"/>
-        	</copy>
+		<copy file="${stomp.lib.dir}/libstomp.so" todir="${build.dist}/lib"/>
+		<copy todir="${build.dist}/include/stomp">
+			<fileset dir="${stomp.include.dir}" includes="*.h"/>
+		</copy>
 
 		<install-artifact
 			groupId="stomp.contrib"
@@ -209,10 +198,10 @@
 	<target name="log4cxx" depends="clean,init">
 		<validate-files inc.dir="${log4cxx.include.dir}" lib.dir="${log4cxx.lib.dir}" artifactId="log4cxx"/>
 
-        	<copy file="${log4cxx.lib.dir}/liblog4cxx.so" todir="${build.dist}/lib"/>
-        	<copy todir="${build.dist}/include/log4cxx">
-                	<fileset dir="${log4cxx.include.dir}"/>
-        	</copy>
+		<copy file="${log4cxx.lib.dir}/liblog4cxx.so" todir="${build.dist}/lib"/>
+		<copy todir="${build.dist}/include/log4cxx">
+			<fileset dir="${log4cxx.include.dir}"/>
+		</copy>
 
 		<install-artifact
 			groupId="apache-log4cxx.contrib"
@@ -237,7 +226,7 @@
 				version="@{version}"
 				description="@{description}"/>
 
-        		<jar destfile="${build.lib}/@{artifactId}-@{version}.jar">
+			<jar destfile="${build.lib}/@{artifactId}-@{version}.jar">
 				<manifest>
 					<attribute name="Implementation-Title" value="@{artifactId}"/>
 					<attribute name="Implementation-Version" value="@{version}"/>
@@ -245,12 +234,12 @@
 				<fileset dir="${build.dist}"/>
 			</jar>
 
-                	<artifact:pom id="pom" file="${build.dir}/@{artifactId}.pom"/>
-                	<artifact:install file="${build.lib}/@{artifactId}-@{version}.jar">
-                        	<pom refid="pom"/>
-                	</artifact:install>
+			<artifact:pom id="pom" file="${build.dir}/@{artifactId}.pom"/>
+			<artifact:install file="${build.lib}/@{artifactId}-@{version}.jar">
+				<pom refid="pom"/>
+			</artifact:install>
 		</sequential>
-        </macrodef>
+	</macrodef>
 
 	<macrodef name="create-pom">
 		<attribute name="groupId" />
@@ -260,12 +249,12 @@
 		<attribute name="description" />
 		<sequential>
 				<echo file="${build.dir}/@{artifactId}.pom" append="false">&lt;project&gt;
-        &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
-        &lt;groupId&gt;@{groupId}&lt;/groupId&gt;
-        &lt;artifactId&gt;@{artifactId}&lt;/artifactId&gt;
-        &lt;name&gt;@{name}&lt;/name&gt;
-        &lt;version&gt;@{version}&lt;/version&gt;
-        &lt;description&gt;@{description}&lt;/description&gt;
+	&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+	&lt;groupId&gt;@{groupId}&lt;/groupId&gt;
+	&lt;artifactId&gt;@{artifactId}&lt;/artifactId&gt;
+	&lt;name&gt;@{name}&lt;/name&gt;
+	&lt;version&gt;@{version}&lt;/version&gt;
+	&lt;description&gt;@{description}&lt;/description&gt;
 &lt;/project&gt;
 </echo>
 		</sequential>
@@ -285,7 +274,7 @@
 					</and>
 				</condition>
 			</fail>
-        		<mkdir dir="${build.dist}/include/@{artifactId}"/>
+			<mkdir dir="${build.dist}/include/@{artifactId}"/>
 		</sequential>
 	</macrodef>
 
