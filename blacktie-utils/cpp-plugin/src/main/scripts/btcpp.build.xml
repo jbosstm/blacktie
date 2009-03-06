@@ -16,10 +16,6 @@
 	MA 02110-1301, USA.
 -->
 <!DOCTYPE project [
-<!ENTITY includepath-java '
-<includepath path="${JAVA_HOME}/include" />
-<includepath path="${JAVA_HOME}/include/${PLATFORM}" />
-'>
 <!ENTITY compiler-args-gcc '
 <compilerarg value="-O0" if="debug" />
 <compilerarg value="-g3" if="debug" />
@@ -39,9 +35,6 @@
 <compilerarg value="/wd4619" />
 <compilerarg value="/wd4505" />
 <compilerarg value="/wd4640"/>
-'>
-<!ENTITY includepath-test-dependencies '
-	&includepath-java;
 '>
 ]>
 <project name="cpp-plugin">
@@ -285,7 +278,6 @@
 
 			<libset dir="${project.build.directory}/cxx/test/lib" libs="${test.libs}" if="test.libs"/>
 
-			&includepath-test-dependencies;
 			<libset dir="target/${configuration.type}/${lib.type}" libs="${project.artifactId}" if="main.built" />
 		</cc>
 		<available file="target/testsuite.dll.manifest" property="manifest.towrap" />
