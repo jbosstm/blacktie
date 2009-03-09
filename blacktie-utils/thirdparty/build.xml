@@ -77,9 +77,25 @@
 				<include name="libTAO_CosNaming.so*"/>
 				<include name="libTAO_AnyTypeCode.so*"/>
 				<include name="libTAO.so*"/>
+
+				<include name="libTAO_IDL_BE.so"/>
+				<include name="libTAO_IDL_FE.so"/>
+
 				<include name="libTAO_IDL_BE.so.5.6.7"/>
 				<include name="libTAO_IDL_FE.so.5.6.7"/>
-				<include name="libACE.so.5.6.7"/>
+
+                                <include name="libTAO_PortableServer.so.1.6.7"/>
+                                <include name="libTAO_CodecFactory.so.1.6.7"/>
+                                <include name="libTAO_Valuetype.so.1.6.7"/>
+                                <include name="libTAO_PI_Server.so.1.6.7"/>
+                                <include name="libTAO_PI.so.1.6.7"/>
+                                <include name="libACE.so.5.6.7"/>
+                                <include name="libTAO.so.1.6.7"/>
+                                <include name="libTAO_ObjRefTemplate.so.1.6.7"/>
+                                <include name="libTAO_IORInterceptor.so.1.6.7"/>
+                                <include name="libTAO_AnyTypeCode.so"/>
+                                <include name="libTAO_CosNaming.so.1.6.7"/>
+
 			</fileset>
 		</copy>
 
@@ -118,10 +134,14 @@
 			</fileset>
 		</copy>
 
-		<fail message="cannot find idl compiler: ${tao.idl.compiler}">
-			<condition> <not> <available file="${tao.idl.compiler}" type="file"/> </not> </condition>
+		<fail message="cannot find idl compiler or gperf: ${tao.idl.compiler}">
+			<condition> <not> <or>
+				<available file="${tao.idl.compiler}" type="file"/>
+				<available file="${gperf}" type="file"/>
+			</or> </not> </condition>
 		</fail>
 		<copy todir="${build.dist}/bin" file="${tao.idl.compiler}"/>
+		<copy todir="${build.dist}/bin" file="${ace.gperf}"/>
 
 		<install-artifact
 			groupId="ace.contrib"

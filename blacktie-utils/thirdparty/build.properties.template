@@ -16,6 +16,7 @@ ace.lib.dir=/home/mmusgrov/blacktie/util/ACE+TAO-5.6.7/ACE_wrappers/lib
 ace.include.dir=/home/mmusgrov/blacktie/util/ACE+TAO-5.6.7/ACE_wrappers/
 ace.version=5.6.7
 tao.idl.compiler=/home/mmusgrov/blacktie/util/ACE+TAO-5.6.7/ACE_wrappers/TAO/TAO_IDL/tao_idl
+ace.gperf=/home/mmusgrov/blacktie/util/ACE+TAO-5.6.7/ACE_wrappers/bin/ace_gperf
 
 expat.lib.dir=/usr/lib64
 expat.include.dir=/usr/include
