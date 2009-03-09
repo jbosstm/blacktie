@@ -3,6 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>stompconnectservice</artifactId>
+	<name>Stomp Connect Service</name>
 	<version>1.0-M4</version>
 	<description>An MBean to deploy the stompconnectservice</description>
 	<packaging>jboss-sar</packaging>
