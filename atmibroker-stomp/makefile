@@ -1,5 +1,5 @@
 all:
-	mvn process-resources cpp:test-compile
+	mvn cpp:test-compile
 	
 clean:
 	echo mvn process-test-resources
