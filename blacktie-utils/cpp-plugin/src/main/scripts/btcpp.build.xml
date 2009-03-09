@@ -44,7 +44,7 @@
 	<property file="build.properties" />
 	<property name="src.main" value="src/main/cpp" />
 	<property name="src.test" value="src/test/cpp" />
-	<property name="src.export" value="src/main/export/include" />
+	<property name="src.export" value="src/main/export" />
 	<property name="src.excludes" value="" />
 	<property name="test.excludes" value="" />
 	<property name="lib.type" value="shared" />
