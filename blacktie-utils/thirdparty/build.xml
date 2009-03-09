@@ -66,17 +66,17 @@
 
 		<copy todir="${build.dist}/lib">
 			<fileset dir="${ace.lib.dir}">
-				<include name="libTAO_PI.so"/>
-				<include name="libTAO_Valuetype.so"/>
-				<include name="libTAO_PortableServer.so"/>
-				<include name="libTAO_IORInterceptor.so"/>
-				<include name="libTAO_CodecFactory.so"/>
-				<include name="libACE.so"/>
-				<include name="libTAO_PI_Server.so"/>
-				<include name="libTAO_ObjRefTemplate.so"/>
-				<include name="libTAO_CosNaming.so"/>
-				<include name="libTAO_AnyTypeCode.so"/>
-				<include name="libTAO.so"/>
+				<include name="libTAO_PI.so*"/>
+				<include name="libTAO_Valuetype.so*"/>
+				<include name="libTAO_PortableServer.so*"/>
+				<include name="libTAO_IORInterceptor.so*"/>
+				<include name="libTAO_CodecFactory.so*"/>
+				<include name="libACE.so*"/>
+				<include name="libTAO_PI_Server.so*"/>
+				<include name="libTAO_ObjRefTemplate.so*"/>
+				<include name="libTAO_CosNaming.so*"/>
+				<include name="libTAO_AnyTypeCode.so*"/>
+				<include name="libTAO.so*"/>
 				<include name="libTAO_IDL_BE.so.5.6.7"/>
 				<include name="libTAO_IDL_FE.so.5.6.7"/>
 				<include name="libACE.so.5.6.7"/>
@@ -134,7 +134,7 @@
 	<target name="expat" depends="clean,init">
 		<validate-files inc.dir="${expat.include.dir}" lib.dir="${expat.lib.dir}" artifactId="expat"/>
 
-		<copy file="${expat.lib.dir}/libexpat.so" todir="${build.dist}/lib"/>
+		<copy file="${expat.lib.dir}/libexpat.so*" todir="${build.dist}/lib"/>
 		<copy todir="${build.dist}/include/expat">
 			<fileset dir="${expat.include.dir}">
 				<include name="expat.h"/>
@@ -153,7 +153,7 @@
 	<target name="cppunit" depends="clean,init">
 		<validate-files inc.dir="${cppunit.include.dir}" lib.dir="${cppunit.lib.dir}" artifactId="cppunit"/>
 
-		<copy file="${cppunit.lib.dir}/libcppunit.so" todir="${build.dist}/lib"/>
+		<copy file="${cppunit.lib.dir}/libcppunit.so*" todir="${build.dist}/lib"/>
 		<copy todir="${build.dist}/include/cppunit">
 			<fileset dir="${cppunit.include.dir}"/>
 		</copy>
@@ -169,7 +169,7 @@
 	<target name="apr-1" depends="clean,init">
 		<validate-files inc.dir="${apr-1.include.dir}" lib.dir="${apr-1.lib.dir}" artifactId="apr-1"/>
 
-		<copy file="${apr-1.lib.dir}/libapr-1.so" todir="${build.dist}/lib"/>
+		<copy file="${apr-1.lib.dir}/libapr-1.so*" todir="${build.dist}/lib"/>
 		<copy todir="${build.dist}/include/apr-1">
 			<fileset dir="${apr-1.include.dir}" includes="*.h"/>
 		</copy>
@@ -185,7 +185,7 @@
 	<target name="stomp" depends="clean,init">
 		<validate-files inc.dir="${stomp.include.dir}" lib.dir="${stomp.lib.dir}" artifactId="stomp"/>
 
-		<copy file="${stomp.lib.dir}/libstomp.so" todir="${build.dist}/lib"/>
+		<copy file="${stomp.lib.dir}/libstomp.so*" todir="${build.dist}/lib"/>
 		<copy todir="${build.dist}/include/stomp">
 			<fileset dir="${stomp.include.dir}" includes="*.h"/>
 		</copy>
@@ -201,7 +201,7 @@
 	<target name="log4cxx" depends="clean,init">
 		<validate-files inc.dir="${log4cxx.include.dir}" lib.dir="${log4cxx.lib.dir}" artifactId="log4cxx"/>
 
-		<copy file="${log4cxx.lib.dir}/liblog4cxx.so" todir="${build.dist}/lib"/>
+		<copy file="${log4cxx.lib.dir}/liblog4cxx.so*" todir="${build.dist}/lib"/>
 		<copy todir="${build.dist}/include/log4cxx">
 			<fileset dir="${log4cxx.include.dir}"/>
 		</copy>
