@@ -77,6 +77,9 @@
 				<include name="libTAO_CosNaming.so"/>
 				<include name="libTAO_AnyTypeCode.so"/>
 				<include name="libTAO.so"/>
+				<include name="libTAO_IDL_BE.so.5.6.7"/>
+				<include name="libTAO_IDL_FE.so.5.6.7"/>
+				<include name="libACE.so.5.6.7"/>
 			</fileset>
 		</copy>
 
