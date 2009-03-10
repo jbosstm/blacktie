@@ -109,30 +109,6 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../ejb-connector-example
-			</directory>
-			<outputDirectory>
-				examples/ejb-connector/fooapp/ejb-connector-example
-			</outputDirectory>
-			<useDefaultExcludes>true</useDefaultExcludes>
-			<excludes>
-				<exclude>target/**</exclude>
-				<exclude>build.properties</exclude>
-			</excludes>
-		</fileSet>
-		<fileSet>
-			<directory>../ejb-connector-example-ear
-			</directory>
-			<outputDirectory>
-				examples/ejb-connector/fooapp/ejb-connector-example-ear
-			</outputDirectory>
-			<useDefaultExcludes>true</useDefaultExcludes>
-			<excludes>
-				<exclude>target/**</exclude>
-				<exclude>build.properties</exclude>
-			</excludes>
-		</fileSet>
-		<fileSet>
 			<directory>../atmibroker-xatmi/src/export/include/
 			</directory>
 			<outputDirectory>include</outputDirectory>

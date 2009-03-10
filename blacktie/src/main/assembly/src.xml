@@ -88,26 +88,6 @@
 			</excludes>
 		</fileSet>
 		<fileSet>
-			<directory>../ejb-connector-example
-			</directory>
-			<outputDirectory>ejb-connector-example
-			</outputDirectory>
-			<useDefaultExcludes>true</useDefaultExcludes>
-			<excludes>
-				<exclude>target/**</exclude>
-			</excludes>
-		</fileSet>
-		<fileSet>
-			<directory>../ejb-connector-example-ear
-			</directory>
-			<outputDirectory>ejb-connector-example-ear
-			</outputDirectory>
-			<useDefaultExcludes>true</useDefaultExcludes>
-			<excludes>
-				<exclude>target/**</exclude>
-			</excludes>
-		</fileSet>
-		<fileSet>
 			<directory>../jab</directory>
 			<outputDirectory>jab</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>

@@ -24,11 +24,6 @@
 	<name>Blacktie EJB Proxy Packaging</name>
 	<packaging>ear</packaging>
 	<url>http://www.jboss.org/blacktie</url>
-	<scm>
-		<connection>scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/ejb-connector-example</connection>
-		<developerConnection>scm:svn:https://svn.jboss.org/repos/blacktie/trunk/ejb-connector-example</developerConnection>
-		<url>http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/ejb-connector-example</url>
-	</scm>
 	<build>
 		<plugins>
 			<plugin>
