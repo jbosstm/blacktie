@@ -64,8 +64,8 @@
 			</excludes>
 		</fileSet>
 		<fileSet>
-			<directory>../atmibroker-xsd</directory>
-			<outputDirectory>atmibroker-xsd</outputDirectory>
+			<directory>../blacktie-xsd</directory>
+			<outputDirectory>blacktie-xsd</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<excludes>
 				<exclude>target/**</exclude>

@@ -157,7 +157,7 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../atmibroker-xsd/src/main/xsd/
+			<directory>../blacktie-xsd/src/main/xsd/
 			</directory>
 			<outputDirectory>schemas/xsd</outputDirectory>
 			<includes>
