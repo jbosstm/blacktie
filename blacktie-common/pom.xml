@@ -96,10 +96,8 @@
 				</os>
 			</activation>
 			<properties>
-				<platform>win-32</platform>
-				<!--
-				<PLATFORM>win32</PLATFORM>
-				-->
+				<JNI_PLATFORM_DIR>win32</JNI_PLATFORM_DIR>
+				<JNI_INCLUDE_DIR>${env.JAVA_ HOME}/include</JNI_INCLUDE_DIR>
 				<toolchain.compiler>msvc</toolchain.compiler>
 				<ld_library_path>${project.build.directory}/cxx/test/lib;${project.build.directory}</ld_library_path>
 			</properties>
@@ -109,17 +107,11 @@
 			<activation>
 				<os>
 					<family>unix</family>
-					<!--
-					<arch>amd64</arch>
-					-->
 				</os>
 			</activation>
 			<properties>
-			<!--
-			     TODO figure out how to trigger on other platforms
-			     -->
-				<platform>fc10-32</platform>
-				<PLATFORM>linux</PLATFORM>
+				<JNI_PLATFORM_DIR>linux</JNI_PLATFORM_DIR>
+				<JNI_INCLUDE_DIR>${env.JAVA_ HOME}/include</JNI_INCLUDE_DIR>
 				<toolchain.compiler>gcc</toolchain.compiler>
 				<ld_library_path>${project.build.directory}/cxx/test/lib:${project.build.directory}</ld_library_path>
 			</properties>

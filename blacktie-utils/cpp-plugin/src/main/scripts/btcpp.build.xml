@@ -17,8 +17,8 @@
 -->
 <!DOCTYPE project [
 <!ENTITY includepath-java '
-<includepath path="${JAVA_HOME}/include" />
-<includepath path="${JAVA_HOME}/include/${PLATFORM}" />
+<includepath path="${JNI_INCLUDE_DIR}" />
+<includepath path="${JNI_INCLUDE_DIR}/${JNI_PLATFORM_DIR}" />
 '>
 
 <!ENTITY compiler-args-gcc '
