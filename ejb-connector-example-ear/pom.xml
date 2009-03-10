@@ -125,10 +125,12 @@
 			<version>1.0-M4</version>
 			<type>ejb</type>
 		</dependency>
+		<!--  Test -->
+		<!--  JBOSS FIVE -->
 		<dependency>
 			<groupId>jboss</groupId>
-			<artifactId>jboss-j2ee</artifactId>
-			<version>4.0.2</version>
+			<artifactId>jboss-javaee</artifactId>
+			<version>5.0.0.GA</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
