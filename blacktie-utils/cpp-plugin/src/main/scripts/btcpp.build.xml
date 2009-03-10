@@ -16,6 +16,11 @@
 	MA 02110-1301, USA.
 -->
 <!DOCTYPE project [
+<!ENTITY includepath-java '
+<includepath path="${JAVA_HOME}/include" />
+<includepath path="${JAVA_HOME}/include/${PLATFORM}" />
+'>
+
 <!ENTITY compiler-args-gcc '
 <compilerarg value="-O0" if="debug" />
 <compilerarg value="-g3" if="debug" />
@@ -281,6 +286,7 @@
 			<includepath path="target/cxx/test/include/ace/TAO/orbsvcs" />
 			<includepath path="target/cxx/compile/include/apr-1" />
 			<includepath path="target/cxx/compile/include/stomp" />
+			&includepath-java;
 
 			<libset dir="${project.build.directory}/cxx/test/lib" libs="${test.libs}" if="test.libs"/>
 
