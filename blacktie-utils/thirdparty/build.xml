@@ -97,6 +97,9 @@
 		<install-file-artifact filename="${jbossas.lib.dir}/concurrent.jar"
 		                  groupId="jboss" artifactId="concurrent"
 		                  name="concurrent" version="${jbossas.version}" description="concurrent"/>
+		<install-file-artifact filename="${jbossas.lib.dir}/jnp-client.jar"
+		                  groupId="jboss" artifactId="jnp-client"
+		                  name="jnp-client" version="${jbossas.version}" description="jnp-client"/>
 	</target>
 
 	<target name="ace" depends="clean,init">
