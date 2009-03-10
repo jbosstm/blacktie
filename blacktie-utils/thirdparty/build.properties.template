@@ -1,4 +1,6 @@
 # Copy this file to build.properties and specify where the various 3rd party dependencies are located:
+jbossas.lib.dir=/home/mmusgrov/blacktie/util/jboss-5.0.0.GA/client
+jbossas.version=5.0.0.GA
 
 log4cxx.lib.dir=/home/mmusgrov/blacktie/util/apache-log4cxx/target/debug/shared
 log4cxx.include.dir=/home/mmusgrov/blacktie/util/apache-log4cxx/src/main/include/log4cxx

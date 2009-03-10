@@ -58,8 +58,46 @@
 		<delete dir="${build.dist}"/>
 	</target>
 
-	<target name="thirdparty" depends="log4cxx,cppunit,ace,expat,stomp,apr-1"/>
+	<target name="thirdparty" depends="log4cxx,cppunit,ace,expat,apr-1,stomp"/>
 	<target name="install" depends="thirdparty"/>
+
+	<target name="jbas" depends="clean,init">
+		<validate-files inc.dir="${jbossas.lib.dir}" lib.dir="${jbossas.lib.dir}" artifactId="jbossas"/>
+
+		<install-file-artifact filename="${jbossas.lib.dir}/jboss-javaee.jar"
+		                  groupId="jboss" artifactId="jboss-javaee"
+		                  name="jboss-javaee" version="${jbossas.version}" description="jboss-javaee"/>
+		<install-file-artifact filename="${jbossas.lib.dir}/jboss-client.jar"
+		                  groupId="jboss" artifactId="jboss-client"
+		                  name="jboss-client" version="${jbossas.version}" description="jboss-client"/>
+		<install-file-artifact filename="${jbossas.lib.dir}/jboss-logging-spi.jar"
+		                  groupId="jboss" artifactId="jboss-logging-spi"
+		                  name="jboss-logging-spi" version="${jbossas.version}" description="jboss-logging-spi"/>
+		<install-file-artifact filename="${jbossas.lib.dir}/jboss-security-spi.jar"
+		                  groupId="jboss" artifactId="jboss-security-spi"
+		                  name="jboss-security-spi" version="${jbossas.version}" description="jboss-security-spi"/>
+		<install-file-artifact filename="${jbossas.lib.dir}/jboss-serialization.jar"
+		                  groupId="jboss" artifactId="jboss-serialization"
+		                  name="jboss-serialization" version="${jbossas.version}" description="jboss-serialization"/>
+		<install-file-artifact filename="${jbossas.lib.dir}/jboss-common-core.jar"
+		                  groupId="jboss" artifactId="jboss-common-core"
+		                  name="jboss-common-core" version="${jbossas.version}" description="jboss-common-core"/>
+		<install-file-artifact filename="${jbossas.lib.dir}/jboss-remoting.jar"
+		                  groupId="jboss" artifactId="jboss-remoting"
+		                  name="jboss-remoting" version="${jbossas.version}" description="jboss-remoting"/>
+		<install-file-artifact filename="${jbossas.lib.dir}/jbosssx-client.jar"
+		                  groupId="jboss" artifactId="jbosssx-client"
+		                  name="jbosssx-client" version="${jbossas.version}" description="jbosssx-client"/>
+		<install-file-artifact filename="${jbossas.lib.dir}/jboss-messaging-client.jar"
+		                  groupId="jboss" artifactId="jboss-messaging-client"
+		                  name="jboss-messaging-client" version="${jbossas.version}" description="jboss-messaging-client"/>
+		<install-file-artifact filename="${jbossas.lib.dir}/jboss-integration.jar"
+		                  groupId="jboss" artifactId="jboss-integration"
+		                  name="jboss-integration" version="${jbossas.version}" description="jboss-integration"/>
+		<install-file-artifact filename="${jbossas.lib.dir}/concurrent.jar"
+		                  groupId="jboss" artifactId="concurrent"
+		                  name="concurrent" version="${jbossas.version}" description="concurrent"/>
+	</target>
 
 	<target name="ace" depends="clean,init">
 		<validate-files inc.dir="${ace.include.dir}" lib.dir="${ace.lib.dir}" artifactId="ace"/>
@@ -259,6 +297,29 @@
 
 			<artifact:pom id="pom" file="${build.dir}/@{artifactId}.pom"/>
 			<artifact:install file="${build.lib}/@{artifactId}-@{version}.jar">
+				<pom refid="pom"/>
+			</artifact:install>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="install-file-artifact">
+		<attribute name="filename" />
+		<attribute name="groupId" />
+		<attribute name="artifactId" />
+		<attribute name="name" />
+		<attribute name="version" />
+		<attribute name="description" />
+
+		<sequential>
+			<create-pom
+				groupId="@{groupId}"
+				artifactId="@{artifactId}"
+				name="@{name}"
+				version="@{version}"
+				description="@{description}"/>
+
+			<artifact:pom id="pom" file="${build.dir}/@{artifactId}.pom"/>
+			<artifact:install file="@{filename}">
 				<pom refid="pom"/>
 			</artifact:install>
 		</sequential>

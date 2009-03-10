@@ -315,7 +315,8 @@ AtmiBrokerServer::get_all_service_info() throw (CORBA::SystemException ) {
 		aServiceInfo->serviceName = strdup((*i).serviceInfo.serviceName);
 		aServiceInfo->poolSize = (*i).serviceInfo.poolSize;
 		aServiceInfo->securityType = strdup((*i).serviceInfo.securityType);
-		aServiceInfoSeq[j] = aServiceInfo;
+// ambiguous assignment on 32 bit machines - commenting out since this is the admin interface which is going to change
+//		aServiceInfoSeq[j] = aServiceInfo;
 		j++;
 	}
 	return aServiceInfoSeq._retn();
