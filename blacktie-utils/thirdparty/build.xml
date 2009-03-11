@@ -22,15 +22,15 @@
 
 	<property name="build.dir" value="build"/>
 	<property name="build.dist" value="${build.dir}/dist"/>
-	<property name="build.lib" value="${build.dir}/lib"/>
+	<property name="buildd.lib" value="${build.dir}/lib"/>
 	<property name="lib.dir" value="lib"/>
 
 	<property name="maven.ant.file" value="maven-ant-tasks-2.0.9.jar"/>
 	<property name="maven.ant.dir" value="http://apache.inetbridge.net/maven/binaries"/>
 
-       	<available file="${lib.dir}/${maven.ant.file}" type="file" property="maven.lib.exists" />
+       	<available file="${lib.dir}/${maven.ant.file}" type="file" property="mavend.lib.exists" />
 
-	<target name="bootstrap" unless="maven.lib.exists">
+	<target name="bootstrap" unless="mavend.lib.exists">
 		<mkdir dir="${lib.dir}" />
 
 		<get
@@ -46,11 +46,24 @@
 				<pathelement location="${lib.dir}/${maven.ant.file}" />
 			</classpath>
 		</typedef>
-		<mkdir dir="${build.lib}"/>
+		<mkdir dir="${buildd.lib}"/>
 		<mkdir dir="${build.dir}"/>
 		<mkdir dir="${build.dist}"/>
 		<mkdir dir="${build.dist}/include"/>
 		<mkdir dir="${build.dist}/lib"/>
+		<fail>
+			<condition>
+				<and>
+					<not>
+						<isset property="linux"/>
+					</not>
+					<not>
+						<isset property="windows"/>
+					</not>
+				</and>
+			</condition>
+		</fail>
+
 	</target>
 
 	<target name="clean">
@@ -58,7 +71,7 @@
 		<delete dir="${build.dist}"/>
 	</target>
 
-	<target name="thirdparty" depends="log4cxx,cppunit,ace,expat,apr-1,stomp"/>
+	<target name="thirdparty" depends="log4cxx,cppunit,ace,expat,apr-1,stomp,jbas"/>
 	<target name="install" depends="thirdparty"/>
 
 	<target name="jbas" depends="clean,init">
@@ -102,44 +115,77 @@
 		                  name="jnp-client" version="${jbossas.version}" description="jnp-client"/>
 	</target>
 
-	<target name="ace" depends="clean,init">
-		<validate-files inc.dir="${ace.include.dir}" lib.dir="${ace.lib.dir}" artifactId="ace"/>
-
-		<copy todir="${build.dist}/lib">
+	<target name="ace-lib-linux" if="linux">
+		<sync todir="${build.dist}/lib">
 			<fileset dir="${ace.lib.dir}">
-				<include name="libTAO_PI.so*"/>
-				<include name="libTAO_Valuetype.so*"/>
-				<include name="libTAO_PortableServer.so*"/>
-				<include name="libTAO_IORInterceptor.so*"/>
-				<include name="libTAO_CodecFactory.so*"/>
-				<include name="libACE.so*"/>
-				<include name="libTAO_PI_Server.so*"/>
-				<include name="libTAO_ObjRefTemplate.so*"/>
-				<include name="libTAO_CosNaming.so*"/>
-				<include name="libTAO_AnyTypeCode.so*"/>
-				<include name="libTAO.so*"/>
-
+				<include name="libTAO_PI.so"/>
+				<include name="libTAO_Valuetype.so"/>
+				<include name="libTAO_PortableServer.so"/>
+				<include name="libTAO_IORInterceptor.so"/>
+				<include name="libTAO_CodecFactory.so"/>
+				<include name="libACE.so"/>
+				<include name="libTAO_PI_Server.so"/>
+				<include name="libTAO_ObjRefTemplate.so"/>
+				<include name="libTAO_CosNaming.so"/>
+				<include name="libTAO_AnyTypeCode.so"/>
+				<include name="libTAO.so"/>
 				<include name="libTAO_IDL_BE.so"/>
 				<include name="libTAO_IDL_FE.so"/>
 
+				<include name="libTAO_PI.so.5.6.7"/>
+				<include name="libTAO_Valuetype.so.5.6.7"/>
+				<include name="libTAO_PortableServer.so.5.6.7"/>
+				<include name="libTAO_IORInterceptor.so.5.6.7"/>
+				<include name="libTAO_CodecFactory.so.5.6.7"/>
+				<include name="libACE.so.5.6.7"/>
+				<include name="libTAO_PI_Server.so.5.6.7"/>
+				<include name="libTAO_ObjRefTemplate.so.5.6.7"/>
+				<include name="libTAO_CosNaming.so.5.6.7"/>
+				<include name="libTAO_AnyTypeCode.so.5.6.7"/>
+				<include name="libTAO.so.5.6.7"/>
 				<include name="libTAO_IDL_BE.so.5.6.7"/>
 				<include name="libTAO_IDL_FE.so.5.6.7"/>
-
-                                <include name="libTAO_PortableServer.so.1.6.7"/>
-                                <include name="libTAO_CodecFactory.so.1.6.7"/>
-                                <include name="libTAO_Valuetype.so.1.6.7"/>
-                                <include name="libTAO_PI_Server.so.1.6.7"/>
-                                <include name="libTAO_PI.so.1.6.7"/>
-                                <include name="libACE.so.5.6.7"/>
-                                <include name="libTAO.so.1.6.7"/>
-                                <include name="libTAO_ObjRefTemplate.so.1.6.7"/>
-                                <include name="libTAO_IORInterceptor.so.1.6.7"/>
-                                <include name="libTAO_AnyTypeCode.so"/>
-                                <include name="libTAO_CosNaming.so.1.6.7"/>
-
 			</fileset>
-		</copy>
+		</sync>
+	</target>
+	<target name="ace-lib-windows" if="windows">
+		<sync todir="${build.dist}/lib">
+			<fileset dir="${ace.lib.dir}">
+				<include name="TAO_PId.dll"/>
+				<include name="TAO_Valuetyped.dll"/>
+				<include name="TAO_PortableServerd.dll"/>
+				<include name="TAO_IORInterceptord.dll"/>
+				<include name="TAO_CodecFactoryd.dll"/>
+				<include name="ACEd.dll"/>
+				<include name="TAO_PI_Serverd.dll"/>
+				<include name="TAO_ObjRefTemplated.dll"/>
+				<include name="TAO_CosNamingd.dll"/>
+				<include name="TAO_AnyTypeCoded.dll"/>
+				<include name="TAOd.dll"/>
+				<include name="TAO_IDL_BEd.dll"/>
+				<include name="TAO_IDL_FEd.dll"/>
 
+				<include name="TAO_PId.lib"/>
+				<include name="TAO_Valuetyped.lib"/>
+				<include name="TAO_PortableServerd.lib"/>
+				<include name="TAO_IORInterceptord.lib"/>
+				<include name="TAO_CodecFactoryd.lib"/>
+				<include name="ACEd.lib"/>
+				<include name="TAO_PI_Serverd.lib"/>
+				<include name="TAO_ObjRefTemplated.lib"/>
+				<include name="TAO_CosNamingd.lib"/>
+				<include name="TAO_AnyTypeCoded.lib"/>
+				<include name="TAOd.lib"/>
+				<include name="TAO_IDL_BEd.lib"/>
+				<include name="TAO_IDL_FEd.lib"/>
+			</fileset>
+		</sync>
+	</target>
+	<target name="ace" depends="init">
+		<validate-files inc.dir="${ace.include.dir}" lib.dir="${ace.lib.dir}" artifactId="ace"/>
+
+		<antcall target="ace-lib-linux"/>
+		<antcall target="ace-lib-windows"/>
 		<copy todir="${build.dist}/include/ace">
 			<fileset dir="${ace.include.dir}/ace">
 				<exclude name="**/*examples*/**"/>
@@ -192,10 +238,18 @@
 			description="repackage of ACE+TAO, Douglas C. Schmidt's C++ networking toolkit"/>
 	</target>
 
+	<target name="expat-lib-linux" if="linux">
+		<copy file="${expat.lib.dir}/libexpat.so" todir="${build.dist}/lib"/>
+	</target>
+	<target name="expat-lib-windows" if="windows">
+		<copy file="${expat.lib.dir}/libexpat.dll" todir="${build.dist}/lib"/>
+		<copy file="${expat.lib.dir}/libexpat.lib" todir="${build.dist}/lib"/>
+	</target>
 	<target name="expat" depends="clean,init">
 		<validate-files inc.dir="${expat.include.dir}" lib.dir="${expat.lib.dir}" artifactId="expat"/>
 
-		<copy file="${expat.lib.dir}/libexpat.so" todir="${build.dist}/lib"/>
+		<antcall target="expat-lib-linux"/>
+		<antcall target="expat-lib-windows"/>
 		<copy todir="${build.dist}/include/expat">
 			<fileset dir="${expat.include.dir}">
 				<include name="expat.h"/>
@@ -211,10 +265,18 @@
 			description="repackage of expat, the C library for parsing XML, written by James Clark."/>
 	</target>
 
+	<target name="cppunit-lib-linux" if="linux">
+		<copy file="${cppunit.lib.dir}/libcppunit.so" todir="${build.dist}/lib"/>
+	</target>
+	<target name="cppunit-lib-windows" if="windows">
+		<copy file="${cppunit.lib.dir}/cppunitd_dll.dll" todir="${build.dist}/lib"/>
+		<copy file="${cppunit.lib.dir}/cppunitd_dll.lib" todir="${build.dist}/lib"/>
+	</target>
 	<target name="cppunit" depends="clean,init">
 		<validate-files inc.dir="${cppunit.include.dir}" lib.dir="${cppunit.lib.dir}" artifactId="cppunit"/>
 
-		<copy file="${cppunit.lib.dir}/libcppunit.so" todir="${build.dist}/lib"/>
+		<antcall target="cppunit-lib-linux"/>
+		<antcall target="cppunit-lib-windows"/>
 		<copy todir="${build.dist}/include/cppunit">
 			<fileset dir="${cppunit.include.dir}"/>
 		</copy>
@@ -227,10 +289,18 @@
 			description="repackage of CppUnit, the C++ port of the famous JUnit framework for unit testing"/>
 	</target>
 
+	<target name="apr-1-lib-linux" if="linux">
+		<copy file="${apr-1.lib.dir}/libapr-1.so" todir="${build.dist}/lib"/>
+	</target>
+	<target name="apr-1-lib-windows" if="windows">
+		<copy file="${apr-1.lib.dir}/libapr-1.dll" todir="${build.dist}/lib"/>
+		<copy file="${apr-1.lib.dir}/libapr-1.lib" todir="${build.dist}/lib"/>
+	</target>
 	<target name="apr-1" depends="clean,init">
 		<validate-files inc.dir="${apr-1.include.dir}" lib.dir="${apr-1.lib.dir}" artifactId="apr-1"/>
 
-		<copy file="${apr-1.lib.dir}/libapr-1.so" todir="${build.dist}/lib"/>
+		<antcall target="apr-1-lib-linux"/>
+		<antcall target="apr-1-lib-windows"/>
 		<copy todir="${build.dist}/include/apr-1">
 			<fileset dir="${apr-1.include.dir}" includes="*.h"/>
 		</copy>
@@ -243,10 +313,17 @@
 			description="Apache Portable Runtime (APR)"/>
 	</target>
 
+	<target name="stomp-lib-linux" if="linux">
+		<copy file="${stomp.lib.dir}/libstomp.so" todir="${build.dist}/lib"/>
+	</target>
+	<target name="stomp-lib-windows" if="windows">
+		<copy file="${stomp.lib.dir}/libstomp.lib" todir="${build.dist}/lib"/>
+	</target>
 	<target name="stomp" depends="clean,init">
 		<validate-files inc.dir="${stomp.include.dir}" lib.dir="${stomp.lib.dir}" artifactId="stomp"/>
 
-		<copy file="${stomp.lib.dir}/libstomp.so" todir="${build.dist}/lib"/>
+		<antcall target="stomp-lib-linux"/>
+		<antcall target="stomp-lib-windows"/>
 		<copy todir="${build.dist}/include/stomp">
 			<fileset dir="${stomp.include.dir}" includes="*.h"/>
 		</copy>
@@ -259,10 +336,19 @@
 			description="Streaming Text Orientated Messaging Protocol message broker wrapper"/>
 	</target>
 
+	<target name="log4cxx-lib-linux" if="linux">
+		<copy file="${log4cxx.lib.dir}/liblog4cxx.so" todir="${build.dist}/lib"/>
+	</target>
+	<target name="log4cxx-lib-windows" if="windows">
+		<copy file="${log4cxx.lib.dir}/log4cxx.dll" todir="${build.dist}/lib"/>
+		<copy file="${log4cxx.lib.dir}/log4cxx.lib" todir="${build.dist}/lib"/>
+	</target>
+
 	<target name="log4cxx" depends="clean,init">
 		<validate-files inc.dir="${log4cxx.include.dir}" lib.dir="${log4cxx.lib.dir}" artifactId="log4cxx"/>
 
-		<copy file="${log4cxx.lib.dir}/liblog4cxx.so" todir="${build.dist}/lib"/>
+		<antcall target="log4cxx-lib-linux"/>
+		<antcall target="log4cxx-lib-windows"/>
 		<copy todir="${build.dist}/include/log4cxx">
 			<fileset dir="${log4cxx.include.dir}"/>
 		</copy>
@@ -290,7 +376,7 @@
 				version="@{version}"
 				description="@{description}"/>
 
-			<jar destfile="${build.lib}/@{artifactId}-@{version}.jar">
+			<jar destfile="${buildd.lib}/@{artifactId}-@{version}.jar">
 				<manifest>
 					<attribute name="Implementation-Title" value="@{artifactId}"/>
 					<attribute name="Implementation-Version" value="@{version}"/>
@@ -299,7 +385,7 @@
 			</jar>
 
 			<artifact:pom id="pom" file="${build.dir}/@{artifactId}.pom"/>
-			<artifact:install file="${build.lib}/@{artifactId}-@{version}.jar">
+			<artifact:install file="${buildd.lib}/@{artifactId}-@{version}.jar">
 				<pom refid="pom"/>
 			</artifact:install>
 		</sequential>
