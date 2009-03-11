@@ -17,49 +17,7 @@
  */
 #include "XAResourceManagerFactory.h"
 #include "ThreadLocalStorage.h"
-
-#include "ace/OS.h"
-
-// put this in a common utility
-static void * lookup_symbol(const char *lib, const char *symbol)
-	throw (RMException)
-{
-	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(),
-		(char *) "lookup_symbol " << symbol << (char *) " in library " << lib);
-
-	if (symbol == NULL || lib == NULL)
-		return 0;
-
-	ACE_SHLIB_HANDLE handle = ACE_OS::dlopen(lib, ACE_DEFAULT_SHLIB_MODE);
-
-	if (!handle) {
-		RMException ex(ACE_OS::dlerror(), 0);
-		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(),
-			(char*) "lookup_symbol: " << symbol << (char *) " dlopen error: " << ACE_OS::dlerror());
-		throw ex;
-	}
-
-	try {
-		void * sym = ACE_OS::dlsym(handle, symbol);
-
-		if (ACE_OS::dlerror()) {
-			LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(),
-				(char*) "lookup_symbol: " << symbol << (char *) " dlsym error: " << ACE_OS::dlerror());
-			RMException ex(ACE_OS::dlerror(), 0);
-			ACE_OS::dlclose(handle);
-			throw ex;
-		}
-
-		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char *) "symbol addr=" << sym);
-
-		return sym;
-	} catch (std::exception& e) {
-		RMException ex(e.what(), 0);
-		throw ex;
-	}
-
-	return NULL;
-}
+#include "SymbolLoader.h"
 
 static bool getXID(XID& xid)
 {
@@ -204,7 +162,7 @@ XAResourceManager * XAResourceManagerFactory::createRM(
 			<< " rmid: " << rmp->resourceMgrId
 			<< " xaswitch symbol: " << rmp->xasw
 			<< " xa lib name: " << rmp->xalib);
-			
+
 		//destroyRMs(NULL);
 		RMException ex = RMException("Invalid XA_RESOURCE XML config", EINVAL);
 		throw ex;
