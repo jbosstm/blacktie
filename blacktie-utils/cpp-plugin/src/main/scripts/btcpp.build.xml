@@ -312,13 +312,13 @@
 	<target name="_test-gcc" depends="init" unless="is-msvc">
 		<exec dir="target/cpp-test-classes" newenvironment="true" resolveexecutable="true" executable="../testsuite" failonerror="${failOnErrorTests}">
 			<redirector output="target/cppunit/run.txt" logError="true" alwayslog="true"/>
-			<env key="LD_LIBRARY_PATH" value="../cxx/test/lib:../dependencies:../${configuration.type}/${lib.type}" />
+			<env key="LD_LIBRARY_PATH" value="../cxx/test/lib:../${configuration.type}/${lib.type}" />
 		</exec>
 	</target>
 	<target name="_test-msvc" depends="init" if="is-msvc">
 		<exec dir="target/cpp-test-classes" newenvironment="false" executable="../testsuite" failonerror="${failOnErrorTests}">
 			<redirector output="target/cppunit/run.txt" logError="true" alwayslog="true"/>
-			<env key="Path" value="${env.Path};..\cxx\test\lib;..\dependencies;..\${configuration.type}\${lib.type}" />
+			<env key="Path" value="${env.Path};..\cxx\test\lib;..\${configuration.type}\${lib.type}" />
 		</exec>
 	</target>
 
@@ -347,7 +347,6 @@
 	<target name="package" depends="init">
         	<mkdir dir="target/classes/lib" />
         	<mkdir dir="target/classes/include" />
-		<mkdir dir="target/dependencies" />
 	</target>
 
         <target name="unpack-compile-dependencies" if="new.compile.classpath">
@@ -359,6 +358,8 @@
 	</target>
 
 	<target name="dependency-check">
+	<!--
+	     TODO just do this for non-snapshot dependencies
 		<checksum file="target/compile.classpath" verifyProperty="compile.classpath.chksum"/>
 		<checksum file="target/test.classpath" verifyProperty="test.classpath.chksum"/>
 		<condition property="new.compile.classpath">
@@ -367,6 +368,9 @@
 		<condition property="new.test.classpath">
 			<equals arg1="${test.classpath.chksum}" arg2="false" />
 		</condition>
+		-->
+		<property name="new.compile.classpath" value="true" />
+		<property name="new.test.classpath" value="true" />
 	</target>
 
         <target name="unpack-dependencies" depends="dependency-check,unpack-compile-dependencies,unpack-test-dependencies"/>
