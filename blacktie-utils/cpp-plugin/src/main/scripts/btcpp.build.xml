@@ -350,10 +350,26 @@
 		<mkdir dir="target/dependencies" />
 	</target>
 
-        <target name="unpack-dependencies" >
-                <unpack id="p1" jarFile="target/compile.classpath" dest="target/cxx/compile"/>
-                <unpack id="p2" jarFile="target/test.classpath" dest="target/cxx/test"/>
-        </target>
+        <target name="unpack-compile-dependencies" if="new.compile.classpath">
+                <unpack id="unpack-compile-dependencies" jarFile="target/compile.classpath" dest="target/cxx/compile"/>
+	</target>
+
+        <target name="unpack-test-dependencies" if="new.test.classpath">
+                <unpack id="unpack-test-dependencies" jarFile="target/test.classpath" dest="target/cxx/test"/>
+	</target>
+
+	<target name="dependency-check">
+		<checksum file="target/compile.classpath" verifyProperty="compile.classpath.chksum"/>
+		<checksum file="target/test.classpath" verifyProperty="test.classpath.chksum"/>
+		<condition property="new.compile.classpath">
+			<equals arg1="${compile.classpath.chksum}" arg2="false" />
+		</condition>
+		<condition property="new.test.classpath">
+			<equals arg1="${test.classpath.chksum}" arg2="false" />
+		</condition>
+	</target>
+
+        <target name="unpack-dependencies" depends="dependency-check,unpack-compile-dependencies,unpack-test-dependencies"/>
 
 	<!--
 	     Unzip libraries and includes from the specified list of jar files into the
@@ -369,6 +385,7 @@
         	<attribute name="dest" />
         	<element name="some-tasks" optional="no"/>
         	<sequential>
+        		<checksum file="@{jarFile}" />
                 	<loadfile property="@{id}" srcFile="@{jarFile}"/>
                 	<for list="${@{id}}" delimiter=":" param="artifact" trim="yes">
                         	<sequential>
