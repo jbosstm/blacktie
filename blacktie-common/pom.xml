@@ -21,7 +21,7 @@
 	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>blacktie-common</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0-M4</version>
+	<version>1.0-M4-SNAPSHOT</version>
 	<name>Blacktie Defaults and Dependencies</name>
 	<url>http://www.jboss.org/blacktie</url>
 	<scm>
@@ -115,12 +115,61 @@
 		</profile>
 	</profiles>
 
+	<dependencyManagement>
+        	<dependencies>
+                	<dependency>
+                        	<groupId>org.jboss.blacktie</groupId>
+                        	<artifactId>atmibroker-idl</artifactId>
+                        	<version>${project.version}</version>
+                	</dependency>
+                	<dependency>
+                        	<groupId>org.jboss.blacktie</groupId>
+                        	<artifactId>atmibroker-core</artifactId>
+                        	<version>${project.version}</version>
+                	</dependency>
+                	<dependency>
+                        	<groupId>org.jboss.blacktie</groupId>
+                        	<artifactId>atmibroker-tx</artifactId>
+                        	<version>${project.version}</version>
+                	</dependency>
+                	<dependency>
+                        	<groupId>org.jboss.blacktie</groupId>
+                        	<artifactId>dummy-rm</artifactId>
+                        	<version>${project.version}</version>
+                	</dependency>
+                	<dependency>
+                        	<groupId>org.jboss.blacktie</groupId>
+                        	<artifactId>atmibroker-corba</artifactId>
+                        	<version>${project.version}</version>
+                	</dependency>
+                	<dependency>
+                        	<groupId>org.jboss.blacktie</groupId>
+                        	<artifactId>atmibroker-stomp</artifactId>
+                        	<version>${project.version}</version>
+                	</dependency>
+                	<dependency>
+                        	<groupId>org.jboss.blacktie</groupId>
+                        	<artifactId>jatmibroker-core</artifactId>
+                        	<version>${project.version}</version>
+                	</dependency>
+                	<dependency>
+                        	<groupId>org.jboss.blacktie</groupId>
+                        	<artifactId>atmibroker-xatmi</artifactId>
+                        	<version>${project.version}</version>
+                	</dependency>
+			<dependency>
+				<groupId>org.jboss.blacktie</groupId>
+				<artifactId>ejb-connector</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+        	</dependencies>
+	</dependencyManagement>
+
 	<properties>
 		<src.main>src/main/cpp</src.main>
 		<failOnErrorTests>true</failOnErrorTests>
 		<configuration.type>debug</configuration.type>
 		<toolchain.compiler>gcc</toolchain.compiler>
-		<platform>fc10-32</platform>
 	</properties>
 
 </project>

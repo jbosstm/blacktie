@@ -18,18 +18,16 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<groupId>org.jboss.blacktie</groupId>
+		<artifactId>blacktie-common</artifactId>
+		<version>1.0-M4-SNAPSHOT</version>
+	</parent>
+
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>ejb-connector</artifactId>
-	<version>1.0-M4</version>
 	<name>Blacktie EJB Connector</name>
 	<packaging>jar</packaging>
-	<url>http://www.jboss.org/blacktie</url>
-	<scm>
-		<connection>scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/ejb-connector</connection>
-		<developerConnection>scm:svn:https://svn.jboss.org/repos/blacktie/trunk/ejb-connector</developerConnection>
-		<url>http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/ejb-connector</url>
-	</scm>
 
 	<build>
 		<plugins>
@@ -54,7 +52,6 @@
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>jatmibroker-core</artifactId>
-			<version>1.0-M4</version>
 		</dependency>
 
 		<dependency>

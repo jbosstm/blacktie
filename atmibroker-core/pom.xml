@@ -20,7 +20,7 @@
 	<parent>
 		<groupId>org.jboss.blacktie</groupId>
 		<artifactId>blacktie-common</artifactId>
-		<version>1.0-M4</version>
+		<version>1.0-M4-SNAPSHOT</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -33,7 +33,7 @@
 			<plugin>
 				<groupId>org.jboss.blacktie.plugins</groupId>
 				<artifactId>cpp-plugin</artifactId>
-				<version>1.0-M4</version>
+				<version>${project.version}</version>
 				<configuration>
 					<configuration.type>${configuration.type}</configuration.type>
 					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
@@ -122,7 +122,6 @@
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>atmibroker-idl</artifactId>
-			<version>1.0-M4</version>
 		</dependency>
 		<dependency>
 			<groupId>expat.contrib</groupId>

@@ -21,7 +21,7 @@
 
 	<groupId>org.jboss.blacktie.plugins</groupId>
 	<artifactId>cpp-plugin</artifactId>
-	<version>1.0-M4</version>
+	<version>1.0-M4-SNAPSHOT</version>
 	<name>Blacktie C++ Plugin</name>
 	<packaging>maven-plugin</packaging>
 	<url>http://www.jboss.org/blacktie/</url>
@@ -94,9 +94,6 @@
 				<executions>
 					<execution>
 						<id>jar-resources</id>
-						<!--
-						<phase>package</phase>
-						-->
 						<phase>initialize</phase>
 						<goals>
 							<goal>run</goal>
