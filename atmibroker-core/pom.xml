@@ -82,28 +82,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!--
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>unpack-dependencies</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>unpack-dependencies</goal>
-						</goals>
-						<configuration>
-							<includes>**/*.h,**/*.inl,**/*.cpp,**/*.so*,*.dll,**/*.cxx</includes>
-							<excludes>**/*.class</excludes>
-							<outputDirectory>${project.build.directory}/cxx</outputDirectory>
-							<silent>true</silent>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			-->
-
 		</plugins>
 	</build>
 
