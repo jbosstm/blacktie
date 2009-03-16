@@ -113,6 +113,9 @@
 		<install-file-artifact filename="${jbossas.lib.dir}/jnp-client.jar"
 		                  groupId="jboss" artifactId="jnp-client"
 		                  name="jnp-client" version="${jbossas.version}" description="jnp-client"/>
+		<install-file-artifact filename="${jbossas.lib.dir}/jacorb.jar"
+		                  groupId="jboss" artifactId="jacorb"
+		                  name="jacorb" version="${jbossas.version}" description="jacorb"/>
 	</target>
 
 	<target name="ace-lib-linux" if="linux">
