@@ -140,9 +140,3 @@ void ConnectionImpl::closeSession(int id) {
 		sessionMap[id] = NULL;
 	}
 }
-
-static Connection* createConnection(char* connectionName) {
-	return new ConnectionImpl(connectionName);
-}
-
-struct connection_factory_t connectionFactory = { createConnection };

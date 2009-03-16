@@ -35,7 +35,6 @@
 #include "AtmiBrokerServerControl.h"
 #include "AtmiBrokerMem.h"
 #include "AtmiBrokerOTS.h"
-#include "ConnectionImpl.h"
 #include "OrbManagement.h"
 #include "SymbolLoader.h"
 
