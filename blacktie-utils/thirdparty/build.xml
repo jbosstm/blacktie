@@ -134,20 +134,20 @@
 				<include name="libTAO.so"/>
 				<include name="libTAO_IDL_BE.so"/>
 				<include name="libTAO_IDL_FE.so"/>
-
-				<include name="libTAO_PI.so.5.6.7"/>
-				<include name="libTAO_Valuetype.so.5.6.7"/>
-				<include name="libTAO_PortableServer.so.5.6.7"/>
-				<include name="libTAO_IORInterceptor.so.5.6.7"/>
-				<include name="libTAO_CodecFactory.so.5.6.7"/>
-				<include name="libACE.so.5.6.7"/>
-				<include name="libTAO_PI_Server.so.5.6.7"/>
-				<include name="libTAO_ObjRefTemplate.so.5.6.7"/>
-				<include name="libTAO_CosNaming.so.5.6.7"/>
-				<include name="libTAO_AnyTypeCode.so.5.6.7"/>
-				<include name="libTAO.so.5.6.7"/>
-				<include name="libTAO_IDL_BE.so.5.6.7"/>
-				<include name="libTAO_IDL_FE.so.5.6.7"/>
+				
+				<include name="libTAO_PI.so*"/>
+				<include name="libTAO_Valuetype.so*"/>
+				<include name="libTAO_PortableServer.so*"/>
+				<include name="libTAO_IORInterceptor.so*"/>
+				<include name="libTAO_CodecFactory.so*"/>
+				<include name="libACE.so*"/>
+				<include name="libTAO_PI_Server.so*"/>
+				<include name="libTAO_ObjRefTemplate.so*"/>
+				<include name="libTAO_CosNaming.so*"/>
+				<include name="libTAO_AnyTypeCode.so*"/>
+				<include name="libTAO.so*"/>
+				<include name="libTAO_IDL_BE.so*"/>
+				<include name="libTAO_IDL_FE.so*"/>
 			</fileset>
 		</sync>
 	</target>
