@@ -203,7 +203,7 @@
 	<!--
 <echo message="COMPILE: debug=${debug} compiler=${toolchain.compiler}  outtype=${test.output.type} configuration.type=${configuration.type} lib.type=${lib.type} project.artifactId=${project.artifactId} libsetdir=target/cxx/compile/lib compile.libs=${compile.libs}"/>
 -->
-		<cc name="${toolchain.compiler}" exceptions="true" outfile="target/${configuration.type}/${lib.type}/${project.artifactId}" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="${lib.type}" objdir="target/cpp-classes" debug="${debug}">
+		<cc name="${toolchain.compiler}" rebuild="true" exceptions="true" outfile="target/${configuration.type}/${lib.type}/${project.artifactId}" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="${lib.type}" objdir="target/cpp-classes" debug="${debug}">
 			<compiler name="${toolchain.compiler}" unless="is-msvc">
 				&compiler-args-gcc;
 			</compiler>
@@ -262,7 +262,7 @@
 		<!--
 <echo message="TEST-COMPILE: debug=${debug} compiler=${toolchain.compiler}  outtype=${test.output.type} configuration.type=${configuration.type} lib.type=${lib.type} project.artifactId=${project.artifactId} test.libs=${test.libs} main.built=${main.built} fileset.gen.test=${fileset.gen.test}"/>
 -->
-		<cc name="${toolchain.compiler}" exceptions="true" outfile="target/testsuite" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="${test.output.type}" objdir="target/cpp-test-classes" debug="${debug}">
+		<cc name="${toolchain.compiler}" rebuild="true" exceptions="true" outfile="target/testsuite" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="${test.output.type}" objdir="target/cpp-test-classes" debug="${debug}">
 			<compiler name="${toolchain.compiler}" unless="is-msvc">
 				&compiler-args-gcc;
 			</compiler>

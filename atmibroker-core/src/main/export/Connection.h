@@ -37,4 +37,8 @@ public:
 	virtual void destroyDestination(Destination* destination) = 0;
 };
 
+struct connection_factory_t {
+	Connection* (*create_connection)(char * connectionName);
+};
+
 #endif

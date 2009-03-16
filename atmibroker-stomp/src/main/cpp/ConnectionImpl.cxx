@@ -25,7 +25,8 @@
 #include "SessionImpl.h"
 #include "AtmiBrokerEnv.h"
 
-log4cxx::LoggerPtr ConnectionImpl::logger(log4cxx::Logger::getLogger("ConnectionImpl"));
+log4cxx::LoggerPtr ConnectionImpl::logger(log4cxx::Logger::getLogger(
+		"ConnectionImpl"));
 
 ConnectionImpl::ConnectionImpl(char* connectionName) {
 	this->connectionName = connectionName;
@@ -41,18 +42,23 @@ ConnectionImpl::ConnectionImpl(char* connectionName) {
 		throw new std::exception();
 	}
 
-	std::string host = AtmiBrokerEnv::get_instance()->getenv((char*) "StompConnectHost");
-	std::string port = AtmiBrokerEnv::get_instance()->getenv((char*) "StompConnectPort");
+	std::string host = AtmiBrokerEnv::get_instance()->getenv(
+			(char*) "StompConnectHost");
+	std::string port = AtmiBrokerEnv::get_instance()->getenv(
+			(char*) "StompConnectPort");
 	LOG4CXX_DEBUG(logger, "Connecting to: " << host << ":" << port);
 	int portNum = atoi(port.c_str());
 	rc = stomp_connect(&connection, host.c_str(), portNum, pool);
 	if (rc != APR_SUCCESS) {
-		LOG4CXX_ERROR(logger, (char*) "Could not connect: " << host << ", " << port << ": " << rc);
+		LOG4CXX_ERROR(logger, (char*) "Could not connect: " << host << ", "
+				<< port << ": " << rc);
 		throw new std::exception();
 	}
 
-	std::string usr = AtmiBrokerEnv::get_instance()->getenv((char*) "StompConnectUsr");
-	std::string pwd = AtmiBrokerEnv::get_instance()->getenv((char*) "StompConnectPwd");
+	std::string usr = AtmiBrokerEnv::get_instance()->getenv(
+			(char*) "StompConnectUsr");
+	std::string pwd = AtmiBrokerEnv::get_instance()->getenv(
+			(char*) "StompConnectPwd");
 	LOG4CXX_DEBUG(logger, "Sending CONNECT");
 	stomp_frame frame;
 	frame.command = (char*) "CONNECT";
@@ -74,7 +80,8 @@ ConnectionImpl::ConnectionImpl(char* connectionName) {
 		LOG4CXX_ERROR(logger, (char*) "Could not read frame");
 		throw new std::exception();
 	}
-	LOG4CXX_DEBUG(logger, "Response: " << frameRead->command << ", " << frameRead->body);
+	LOG4CXX_DEBUG(logger, "Response: " << frameRead->command << ", "
+			<< frameRead->body);
 }
 
 ConnectionImpl::~ConnectionImpl() {
@@ -104,13 +111,15 @@ ConnectionImpl::~ConnectionImpl() {
 
 Session* ConnectionImpl::createSession(int id, char * serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession");
-	sessionMap[id] = new SessionImpl(connectionName, connection, pool, id, serviceName);
+	sessionMap[id] = new SessionImpl(connectionName, connection, pool, id,
+			serviceName);
 	return sessionMap[id];
 }
 
 Session* ConnectionImpl::createSession(int id, const char* temporaryQueueName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession");
-	return new SessionImpl(connectionName, connection, pool, id, temporaryQueueName);
+	return new SessionImpl(connectionName, connection, pool, id,
+			temporaryQueueName);
 }
 
 Destination* ConnectionImpl::createDestination(char* serviceName) {
@@ -131,3 +140,9 @@ void ConnectionImpl::closeSession(int id) {
 		sessionMap[id] = NULL;
 	}
 }
+
+static Connection* createConnection(char* connectionName) {
+	return new ConnectionImpl(connectionName);
+}
+
+struct connection_factory_t connectionFactory = { createConnection };

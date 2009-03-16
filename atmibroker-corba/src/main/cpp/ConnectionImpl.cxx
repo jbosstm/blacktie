@@ -27,7 +27,8 @@
 #include "AtmiBrokerPoaFac.h"
 #include "EndpointQueue.h"
 
-log4cxx::LoggerPtr ConnectionImpl::logger(log4cxx::Logger::getLogger("ConnectionImpl"));
+log4cxx::LoggerPtr ConnectionImpl::logger(log4cxx::Logger::getLogger(
+		"ConnectionImpl"));
 
 ConnectionImpl::ConnectionImpl(char* connectionName) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor");
@@ -64,13 +65,17 @@ void ConnectionImpl::closeSession(int id) {
 Destination* ConnectionImpl::createDestination(char* serviceName) {
 	// create Poa for Service Queue
 	AtmiBrokerPoaFac* poaFactory = this->connection->poaFactory;
-	PortableServer::POA_ptr aFactoryPoaPtr = poaFactory->createServicePoa(this->connection->orbRef, serviceName, this->connection->root_poa, this->connection->root_poa_manager);
-	LOG4CXX_DEBUG(logger, (char*) "created create_service_factory_poa: " << serviceName);
+	PortableServer::POA_ptr aFactoryPoaPtr = poaFactory->createServicePoa(
+			this->connection->orbRef, serviceName, this->connection->root_poa,
+			this->connection->root_poa_manager);
+	LOG4CXX_DEBUG(logger, (char*) "created create_service_factory_poa: "
+			<< serviceName);
 	return new EndpointQueue(this->connection, aFactoryPoaPtr, serviceName);
 }
 
 void ConnectionImpl::destroyDestination(Destination* destination) {
-	CosNaming::Name * name = this->connection->default_ctx->to_name(destination->getName());
+	CosNaming::Name * name = this->connection->default_ctx->to_name(
+			destination->getName());
 	this->connection->name_ctx->unbind(*name);
 
 	EndpointQueue* queue = dynamic_cast<EndpointQueue*> (destination);
@@ -79,3 +84,9 @@ void ConnectionImpl::destroyDestination(Destination* destination) {
 	poa->destroy(true, true);
 	poa = NULL;
 }
+
+static Connection* createConnection(char* connectionName) {
+	return new ConnectionImpl(connectionName);
+}
+
+struct connection_factory_t connectionFactory = { createConnection };

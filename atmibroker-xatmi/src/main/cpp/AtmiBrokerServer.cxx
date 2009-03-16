@@ -37,6 +37,7 @@
 #include "AtmiBrokerOTS.h"
 #include "ConnectionImpl.h"
 #include "OrbManagement.h"
+#include "SymbolLoader.h"
 
 log4cxx::LoggerPtr loggerAtmiBrokerServer(log4cxx::Logger::getLogger("AtmiBrokerServer"));
 AtmiBrokerServer * ptrServer = NULL;
@@ -97,7 +98,8 @@ AtmiBrokerServer::AtmiBrokerServer() {
 	try {
 		serverConnection = NULL;
 		realConnection = NULL;
-		serverConnection = new ConnectionImpl((char*) "server");
+		connection_factory_t* connectionFactory = (connection_factory_t*)::lookup_symbol("libatmibroker-corba.so", "connectionFactory");
+		serverConnection = connectionFactory->create_connection((char*) "server");
 		realConnection = AtmiBrokerOTS::init_orb((char*) "serverAdministration");
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer, (char*) "creating POAs for %s", server);
 		AtmiBrokerPoaFac* serverPoaFactory = realConnection->poaFactory;

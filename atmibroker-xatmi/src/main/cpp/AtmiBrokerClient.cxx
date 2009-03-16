@@ -22,13 +22,13 @@
 #include "log4cxx/logmanager.h"
 
 #include "AtmiBrokerClient.h"
-#include "ConnectionImpl.h"
 #include "xatmi.h"
 #include "userlog.h"
 #include "AtmiBrokerClientControl.h"
 #include "AtmiBrokerMem.h"
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerOTS.h"
+#include "SymbolLoader.h"
 
 AtmiBrokerClient * ptrAtmiBrokerClient;
 
@@ -78,7 +78,8 @@ int clientdone() {
 AtmiBrokerClient::AtmiBrokerClient() {
 	try {
 		clientConnection = NULL;
-		clientConnection = new ConnectionImpl((char*) "client");
+		connection_factory_t* connectionFactory = (connection_factory_t*)::lookup_symbol("libatmibroker-corba.so", "connectionFactory");
+		clientConnection = connectionFactory->create_connection((char*)"client");
 
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "constructor");
 
