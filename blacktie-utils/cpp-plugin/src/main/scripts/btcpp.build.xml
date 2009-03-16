@@ -109,10 +109,10 @@
 		<delete dir="target/cpp-test-classes" failonerror="false"/>
 	</target>
 
-	<target name="generate-sources" depends="unpack-dependencies">
-		<property name="ace.lroot" value="${project.build.directory}/cxx/compile" />
-		<property name="ace.iroot" value="${project.build.directory}/cxx/compile/include" />
-		<property name="ace.broot" value="${project.build.directory}/cxx/compile/bin" />
+	<target name="generate-sources" >
+		<property name="ace.lroot" value="${project.build.directory}/cxx" />
+		<property name="ace.iroot" value="${project.build.directory}/cxx/include" />
+		<property name="ace.broot" value="${project.build.directory}/cxx/bin" />
 		<property name="idl.compiler" value="${ace.broot}/tao_idl" />
 
 		<available file="${idl.compiler}" property="tao_idl.exe.exists"/>
@@ -194,14 +194,14 @@
 		<mkdir dir="target/${configuration.type}/${lib.type}" />
 
 		<!--
-		     create a comma separated list of libraries from all the libraries in target/cxx/compile/lib
+		     create a comma separated list of libraries from all the libraries in target/cxx/lib
 		     -->
-                <fileset id="fileset.compile.libs" dir="target/cxx/compile/lib" includes="*.so"/>
+                <fileset id="fileset.compile.libs" dir="target/cxx/lib" includes="*.so"/>
                 <property name="xcompile.libs" value="${toString:fileset.compile.libs}"/>
                 <convert-libset libdir="${xcompile.libs}" propname="compile.libs"/>
 
 	<!--
-<echo message="COMPILE: debug=${debug} compiler=${toolchain.compiler}  outtype=${test.output.type} configuration.type=${configuration.type} lib.type=${lib.type} project.artifactId=${project.artifactId} libsetdir=target/cxx/compile/lib compile.libs=${compile.libs}"/>
+<echo message="COMPILE: debug=${debug} compiler=${toolchain.compiler}  outtype=${test.output.type} configuration.type=${configuration.type} lib.type=${lib.type} project.artifactId=${project.artifactId} libsetdir=target/cxx/lib compile.libs=${compile.libs}"/>
 -->
 		<cc name="${toolchain.compiler}" rebuild="true" exceptions="true" outfile="target/${configuration.type}/${lib.type}/${project.artifactId}" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="${lib.type}" objdir="target/cpp-classes" debug="${debug}">
 			<compiler name="${toolchain.compiler}" unless="is-msvc">
@@ -220,15 +220,15 @@
 			<includepath path="${src.export}" if="export.dir" />
 			<includepath path="src/main/include" />
 			<includepath path="${src.idl.main}/include" />
-			<includepath path="target/cxx/compile/include" />
-			<includepath path="target/cxx/compile/include/apr-1" />
-			<includepath path="target/cxx/compile/include/stomp" />
+			<includepath path="target/cxx/include" />
+			<includepath path="target/cxx/include/apr-1" />
+			<includepath path="target/cxx/include/stomp" />
 
-			<libset dir="${project.build.directory}/cxx/compile/lib" libs="${compile.libs}" if="compile.libs"/>
+			<libset dir="${project.build.directory}/cxx/lib" libs="${compile.libs}" if="compile.libs"/>
 
-			<includepath path="target/cxx/compile/include/ace" />
-			<includepath path="target/cxx/compile/include/ace/TAO" />
-			<includepath path="target/cxx/compile/include/ace/TAO/orbsvcs" />
+			<includepath path="target/cxx/include/ace" />
+			<includepath path="target/cxx/include/ace/TAO" />
+			<includepath path="target/cxx/include/ace/TAO/orbsvcs" />
 		</cc>
 	</target>
 
@@ -253,9 +253,9 @@
 		<available file="target/${configuration.type}/${lib.type}" type="dir" property="main.built" />
 
 		<!--
-		     create a comma separated list of libraries from all the libraries in target/cxx/test/lib
+		     create a comma separated list of libraries from all the libraries in target/cxx/lib
 		     -->
-                <fileset id="fileset.test.libs" dir="target/cxx/test/lib" includes="*.so"/>
+                <fileset id="fileset.test.libs" dir="target/cxx/lib" includes="*.so"/>
                 <property name="xtest.libs" value="${toString:fileset.test.libs}"/>
                 <convert-libset libdir="${xtest.libs}" propname="test.libs"/>
 
@@ -280,15 +280,15 @@
 			<includepath path="${src.export}" if="export.dir" />
 			<includepath path="src/main/include" />
 			<includepath path="${src.idl.main}/include" />
-			<includepath path="target/cxx/test/include" />
-			<includepath path="target/cxx/test/include/ace" />
-			<includepath path="target/cxx/test/include/ace/TAO" />
-			<includepath path="target/cxx/test/include/ace/TAO/orbsvcs" />
-			<includepath path="target/cxx/compile/include/apr-1" />
-			<includepath path="target/cxx/compile/include/stomp" />
+			<includepath path="target/cxx/include" />
+			<includepath path="target/cxx/include/ace" />
+			<includepath path="target/cxx/include/ace/TAO" />
+			<includepath path="target/cxx/include/ace/TAO/orbsvcs" />
+			<includepath path="target/cxx/include/apr-1" />
+			<includepath path="target/cxx/include/stomp" />
 			&includepath-java;
 
-			<libset dir="${project.build.directory}/cxx/test/lib" libs="${test.libs}" if="test.libs"/>
+			<libset dir="${project.build.directory}/cxx/lib" libs="${test.libs}" if="test.libs"/>
 
 			<libset dir="target/${configuration.type}/${lib.type}" libs="${project.artifactId}" if="main.built" />
 		</cc>
@@ -312,7 +312,7 @@
 	<target name="_test-gcc" depends="init" unless="is-msvc">
 		<exec dir="target/cpp-test-classes" newenvironment="true" resolveexecutable="true" executable="../testsuite" failonerror="${failOnErrorTests}">
 			<redirector output="target/cppunit/run.txt" logError="true" alwayslog="true"/>
-			<env key="LD_LIBRARY_PATH" value="../cxx/test/lib:../${configuration.type}/${lib.type}" />
+			<env key="LD_LIBRARY_PATH" value="../cxx/lib:../${configuration.type}/${lib.type}" />
 		</exec>
 	</target>
 	<target name="_test-msvc" depends="init" if="is-msvc">
@@ -349,14 +349,6 @@
         	<mkdir dir="target/classes/include" />
 	</target>
 
-        <target name="unpack-compile-dependencies" if="new.compile.classpath">
-                <unpack id="unpack-compile-dependencies" jarFile="target/compile.classpath" dest="target/cxx/compile"/>
-	</target>
-
-        <target name="unpack-test-dependencies" if="new.test.classpath">
-                <unpack id="unpack-test-dependencies" jarFile="target/test.classpath" dest="target/cxx/test"/>
-	</target>
-
 	<target name="dependency-check">
 	<!--
 	     TODO just do this for non-snapshot dependencies
@@ -372,38 +364,6 @@
 		<property name="new.compile.classpath" value="true" />
 		<property name="new.test.classpath" value="true" />
 	</target>
-
-        <target name="unpack-dependencies" depends="dependency-check,unpack-compile-dependencies,unpack-test-dependencies"/>
-
-	<!--
-	     Unzip libraries and includes from the specified list of jar files into the
-	     directory specified by the dest attribute. The jarFile attribute is a file
-	     containing a colon separated list of paths to the jar files that are to be
-	     unzipped.
-	     The id attribute just needs to be an arbitary but unique property name
-	     (it's only used for iterating through the list of jars).
-	     -->
-	<macrodef name="unpack">
-        	<attribute name="id" />
-        	<attribute name="jarFile" />
-        	<attribute name="dest" />
-        	<element name="some-tasks" optional="no"/>
-        	<sequential>
-        		<checksum file="@{jarFile}" />
-                	<loadfile property="@{id}" srcFile="@{jarFile}"/>
-                	<for list="${@{id}}" delimiter=":" param="artifact" trim="yes">
-                        	<sequential>
-                                	<unzip src="@{artifact}" dest="@{dest}" overwrite="false">
-                                        	<patternset>
-                                                	<include name="**/lib/**"/>
-                                                	<include name="**/include/**"/>
-                                                	<include name="**/bin/**"/>
-                                        	</patternset>
-                                	</unzip>
-                        	</sequential>
-                	</for>
-        	</sequential>
-	</macrodef>
 
 	<macrodef name="convert-libset">
 		<attribute name="propname" />

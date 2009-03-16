@@ -60,6 +60,19 @@
 							<outputFile>${project.build.directory}/test.classpath</outputFile>
 						</configuration>
 					</execution>
+					<execution>
+						<id>unpack-dependencies</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<includes>**/*</includes>
+							<outputDirectory>${project.build.directory}/cxx</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>true</overWriteSnapshots>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>
@@ -116,53 +129,53 @@
 	</profiles>
 
 	<dependencyManagement>
-        	<dependencies>
-                	<dependency>
-                        	<groupId>org.jboss.blacktie</groupId>
-                        	<artifactId>atmibroker-idl</artifactId>
-                        	<version>${project.version}</version>
-                	</dependency>
-                	<dependency>
-                        	<groupId>org.jboss.blacktie</groupId>
-                        	<artifactId>atmibroker-core</artifactId>
-                        	<version>${project.version}</version>
-                	</dependency>
-                	<dependency>
-                        	<groupId>org.jboss.blacktie</groupId>
-                        	<artifactId>atmibroker-tx</artifactId>
-                        	<version>${project.version}</version>
-                	</dependency>
-                	<dependency>
-                        	<groupId>org.jboss.blacktie</groupId>
-                        	<artifactId>dummy-rm</artifactId>
-                        	<version>${project.version}</version>
-                	</dependency>
-                	<dependency>
-                        	<groupId>org.jboss.blacktie</groupId>
-                        	<artifactId>atmibroker-corba</artifactId>
-                        	<version>${project.version}</version>
-                	</dependency>
-                	<dependency>
-                        	<groupId>org.jboss.blacktie</groupId>
-                        	<artifactId>atmibroker-stomp</artifactId>
-                        	<version>${project.version}</version>
-                	</dependency>
-                	<dependency>
-                        	<groupId>org.jboss.blacktie</groupId>
-                        	<artifactId>jatmibroker-core</artifactId>
-                        	<version>${project.version}</version>
-                	</dependency>
-                	<dependency>
-                        	<groupId>org.jboss.blacktie</groupId>
-                        	<artifactId>atmibroker-xatmi</artifactId>
-                        	<version>${project.version}</version>
-                	</dependency>
+		<dependencies>
+			<dependency>
+				<groupId>org.jboss.blacktie</groupId>
+				<artifactId>atmibroker-idl</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.blacktie</groupId>
+				<artifactId>atmibroker-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.blacktie</groupId>
+				<artifactId>atmibroker-tx</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.blacktie</groupId>
+				<artifactId>dummy-rm</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.blacktie</groupId>
+				<artifactId>atmibroker-corba</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.blacktie</groupId>
+				<artifactId>atmibroker-stomp</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.blacktie</groupId>
+				<artifactId>jatmibroker-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.blacktie</groupId>
+				<artifactId>atmibroker-xatmi</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.jboss.blacktie</groupId>
 				<artifactId>ejb-connector</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-        	</dependencies>
+		</dependencies>
 	</dependencyManagement>
 
 	<properties>
