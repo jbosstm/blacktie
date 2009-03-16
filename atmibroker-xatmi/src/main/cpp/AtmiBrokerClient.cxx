@@ -83,10 +83,13 @@ int clientdone() {
 AtmiBrokerClient::AtmiBrokerClient() {
 	try {
 		clientConnection = NULL;
+
+		char* transportLibrary = AtmiBrokerEnv::get_instance()->getenv(
+				(char*) "TransportLibrary");
+		LOG4CXX_INFO(loggerAtmiBrokerClient, (char*) "Loading client transport: "
+				<< transportLibrary);
 		connection_factory_t* connectionFactory =
-				(connection_factory_t*) ::lookup_symbol(
-						AtmiBrokerEnv::get_instance()->getenv(
-								(char*) "TransportLibrary"),
+				(connection_factory_t*) ::lookup_symbol(transportLibrary,
 						"connectionFactory");
 		clientConnection = connectionFactory->create_connection(
 				(char*) "client");

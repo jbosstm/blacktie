@@ -66,8 +66,7 @@ int serverinit() {
 	initializeLogger();
 
 	if (ptrServer == NULL) {
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer,
-				(char*) "serverinit called");
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverinit called");
 		signal(SIGINT, server_sigint_handler_callback);
 		ptrServer = new AtmiBrokerServer();
 		if (!serverInitialized) {
@@ -84,8 +83,7 @@ int serverinit() {
 
 int serverdone() {
 	tperrno = 0;
-	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer,
-			(char*) "serverdone called");
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverdone called");
 	if (ptrServer) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 				(char*) "serverdone deleting Corba server");
@@ -107,17 +105,19 @@ AtmiBrokerServer::AtmiBrokerServer() {
 	try {
 		serverConnection = NULL;
 		realConnection = NULL;
+		char* transportLibrary = AtmiBrokerEnv::get_instance()->getenv(
+				(char*) "TransportLibrary");
+		LOG4CXX_INFO(loggerAtmiBrokerServer, (char*) "Loading server transport: "
+				<< transportLibrary);
 		connection_factory_t* connectionFactory =
-				(connection_factory_t*) ::lookup_symbol(
-						AtmiBrokerEnv::get_instance()->getenv(
-								(char*) "TransportLibrary"),
+				(connection_factory_t*) ::lookup_symbol(transportLibrary,
 						"connectionFactory");
 		serverConnection = connectionFactory->create_connection(
 				(char*) "server");
 		realConnection
 				= AtmiBrokerOTS::init_orb((char*) "serverAdministration");
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer,
-				(char*) "creating POAs for %s", server);
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "creating POAs for %s" <<
+				server);
 		AtmiBrokerPoaFac* serverPoaFactory = realConnection->poaFactory;
 		this->poa = serverPoaFactory->createServerPoa(realConnection->orbRef,
 				server, realConnection->root_poa,
@@ -165,14 +165,12 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	serviceData.clear();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted service array");
 
-	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer,
-			(char*) "deleting services");
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleting services");
 	AtmiBrokerMem::discard_instance();
 	//TODO READD AtmiBrokerNotify::discard_instance();
 	AtmiBrokerOTS::discard_instance();
 	AtmiBrokerEnv::discard_instance();
-	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer,
-			(char*) "deleted services");
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted services");
 
 	serverInitialized = false;
 }
