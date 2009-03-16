@@ -32,12 +32,15 @@
 
 AtmiBrokerClient * ptrAtmiBrokerClient;
 
-log4cxx::LoggerPtr loggerAtmiBrokerClient(log4cxx::Logger::getLogger("AtmiBrokerClient"));
+log4cxx::LoggerPtr loggerAtmiBrokerClient(log4cxx::Logger::getLogger(
+		"AtmiBrokerClient"));
 
 bool clientInitialized;
 
 void client_sigint_handler_callback(int sig_type) {
-	LOG4CXX_WARN(loggerAtmiBrokerClient, (char*) "client_sigint_handler_callback Received shutdown signal: " << sig_type);
+	LOG4CXX_WARN(loggerAtmiBrokerClient,
+			(char*) "client_sigint_handler_callback Received shutdown signal: "
+					<< sig_type);
 	clientdone();
 	abort();
 }
@@ -67,10 +70,12 @@ int clientdone() {
 	tperrno = 0;
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientdone called");
 	if (ptrAtmiBrokerClient) {
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleting Corba Client");
+		LOG4CXX_DEBUG(loggerAtmiBrokerClient,
+				(char*) "clientinit deleting Corba Client");
 		delete ptrAtmiBrokerClient;
 		ptrAtmiBrokerClient = NULL;
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleted Corba Client");
+		LOG4CXX_DEBUG(loggerAtmiBrokerClient,
+				(char*) "clientinit deleted Corba Client");
 	}
 	return 0;
 }
@@ -78,17 +83,24 @@ int clientdone() {
 AtmiBrokerClient::AtmiBrokerClient() {
 	try {
 		clientConnection = NULL;
-		connection_factory_t* connectionFactory = (connection_factory_t*)::lookup_symbol("libatmibroker-corba.so", "connectionFactory");
-		clientConnection = connectionFactory->create_connection((char*)"client");
+		connection_factory_t* connectionFactory =
+				(connection_factory_t*) ::lookup_symbol(
+						AtmiBrokerEnv::get_instance()->getenv(
+								(char*) "TransportLibrary"),
+						"connectionFactory");
+		clientConnection = connectionFactory->create_connection(
+				(char*) "client");
 
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "constructor");
 
 		AtmiBrokerClientXml aAtmiBrokerClientXml;
-		aAtmiBrokerClientXml.parseXmlDescriptor(&clientServerVector, "CLIENT.xml");
+		aAtmiBrokerClientXml.parseXmlDescriptor(&clientServerVector,
+				"CLIENT.xml");
 		nextSessionId = 0;
 		clientInitialized = true;
 	} catch (...) {
-		LOG4CXX_ERROR(loggerAtmiBrokerClient, (char*) "clientinit Unexpected exception");
+		LOG4CXX_ERROR(loggerAtmiBrokerClient,
+				(char*) "clientinit Unexpected exception");
 		tperrno = TPESYSTEM;
 	}
 }
@@ -96,8 +108,10 @@ AtmiBrokerClient::AtmiBrokerClient() {
 AtmiBrokerClient::~AtmiBrokerClient() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "destructor");
 
-	for (std::vector<ClientServerInfo*>::iterator itServer = clientServerVector.begin(); itServer != clientServerVector.end(); itServer++) {
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "next serverName is: " << (char*) (*itServer)->serverName);
+	for (std::vector<ClientServerInfo*>::iterator itServer =
+			clientServerVector.begin(); itServer != clientServerVector.end(); itServer++) {
+		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "next serverName is: "
+				<< (char*) (*itServer)->serverName);
 	}
 	clientServerVector.clear();
 
