@@ -26,8 +26,8 @@ import org.jboss.blacktie.jatmibroker.core.proxy.Queue;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
 import org.omg.CosNaming.NameComponent;
-import org.omg.PortableServer.LifespanPolicyValue;
 import org.omg.PortableServer.POA;
+import org.omg.PortableServer.ThreadPolicyValue;
 import org.omg.PortableServer.POAPackage.AdapterAlreadyExists;
 import org.omg.PortableServer.POAPackage.AdapterNonExistent;
 import org.omg.PortableServer.POAPackage.InvalidPolicy;
@@ -50,8 +50,8 @@ public class EndpointQueue extends EndpointQueuePOA implements Queue {
 		int numberOfPolicies = 1;
 		Policy[] policiesArray = new Policy[numberOfPolicies];
 		List<Policy> policies = new ArrayList<Policy>();
-		policies.add(AtmiBrokerServerImpl.root_poa.create_lifespan_policy(LifespanPolicyValue.PERSISTENT));
-		// policies.add(AtmiBrokerServerImpl.root_poa.create_thread_policy(ThreadPolicyValue.SINGLE_THREAD_MODEL));
+//		policies.add(AtmiBrokerServerImpl.root_poa.create_lifespan_policy(LifespanPolicyValue.PERSISTENT));
+		 policies.add(AtmiBrokerServerImpl.root_poa.create_thread_policy(ThreadPolicyValue.SINGLE_THREAD_MODEL));
 		policies.toArray(policiesArray);
 
 		try {
