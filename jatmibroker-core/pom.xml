@@ -88,6 +88,12 @@
 	</build>
 	<dependencies>
 		<dependency>
+			<groupId>sun</groupId>
+			<artifactId>java-devel</artifactId>
+			<version>1.5.0_15</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>atmibroker-idl</artifactId>
 		</dependency>

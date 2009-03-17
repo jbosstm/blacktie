@@ -25,6 +25,10 @@
 		<TRANS_FACTORY_ID>TransactionManagerService.OTS</TRANS_FACTORY_ID>
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
+				<NAME>TransportLibrary</NAME>
+				<VALUE>libatmibroker-corba.so</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
 				<NAME>LOG4CXXCONFIG</NAME>
 				<VALUE>log4cxx.properties</VALUE>
 			</ENV_VARIABLE>

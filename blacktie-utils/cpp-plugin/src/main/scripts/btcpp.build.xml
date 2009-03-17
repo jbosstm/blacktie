@@ -16,11 +16,6 @@
 	MA 02110-1301, USA.
 -->
 <!DOCTYPE project [
-<!ENTITY includepath-java '
-<includepath path="${JNI_INCLUDE_DIR}" />
-<includepath path="${JNI_INCLUDE_DIR}/${JNI_PLATFORM_DIR}" />
-'>
-
 <!ENTITY compiler-args-gcc '
 <compilerarg value="-O0" if="debug" />
 <compilerarg value="-g3" if="debug" />
@@ -262,9 +257,6 @@
 		<!--
 <echo message="TEST-COMPILE: debug=${debug} compiler=${toolchain.compiler}  outtype=${test.output.type} configuration.type=${configuration.type} lib.type=${lib.type} project.artifactId=${project.artifactId} test.libs=${test.libs} main.built=${main.built} fileset.gen.test=${fileset.gen.test}"/>
 -->
-	<echo message="${JNI_INCLUDE_DIR}" />
-	<echo message="${JNI_INCLUDE_DIR}/${JNI_PLATFORM_DIR}" />
-
 		<cc name="${toolchain.compiler}" rebuild="true" exceptions="true" outfile="target/testsuite" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="${test.output.type}" objdir="target/cpp-test-classes" debug="${debug}">
 			<compiler name="${toolchain.compiler}" unless="is-msvc">
 				&compiler-args-gcc;
@@ -289,7 +281,6 @@
 			<includepath path="target/cxx/test/include/ace/TAO/orbsvcs" />
 			<includepath path="target/cxx/compile/include/apr-1" />
 			<includepath path="target/cxx/compile/include/stomp" />
-			&includepath-java;
 
 			<libset dir="${project.build.directory}/cxx/test/lib" libs="${test.libs}" if="test.libs"/>
 

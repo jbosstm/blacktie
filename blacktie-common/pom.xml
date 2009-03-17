@@ -123,8 +123,6 @@
 				</os>
 			</activation>
 			<properties>
-				<JNI_PLATFORM_DIR>win32</JNI_PLATFORM_DIR>
-				<JNI_INCLUDE_DIR>${env.JAVA_ HOME}/include</JNI_INCLUDE_DIR>
 				<toolchain.compiler>msvc</toolchain.compiler>
 				<ld_library_path>${project.build.directory}/cxx/test/lib;${project.build.directory}</ld_library_path>
 			</properties>
@@ -137,8 +135,6 @@
 				</os>
 			</activation>
 			<properties>
-				<JNI_PLATFORM_DIR>linux</JNI_PLATFORM_DIR>
-				<JNI_INCLUDE_DIR>${env.JAVA_ HOME}/include</JNI_INCLUDE_DIR>
 				<toolchain.compiler>gcc</toolchain.compiler>
 				<ld_library_path>${project.build.directory}/cxx/test/lib:${project.build.directory}</ld_library_path>
 			</properties>
