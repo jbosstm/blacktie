@@ -32,17 +32,18 @@ extern log4cxx::LoggerPtr xaResourceLogger;
 
 class XAResourceManager;
 
-class ATMIBROKER_TX_DLL XAResourceAdaptorImpl : public virtual POA_CosTransactions::Resource
+class ATMIBROKER_TX_DLL XAResourceAdaptorImpl :
+	public virtual POA_CosTransactions::Resource
 {
 public:
 	XAResourceAdaptorImpl(XAResourceManager *, XID *, CORBA::Long, struct xa_switch_t *) throw (RMException);
 	virtual ~XAResourceAdaptorImpl();
 
-	CosTransactions::Vote prepare();
-	void rollback();
-	void commit();
+	CosTransactions::Vote prepare() throw (CosTransactions::HeuristicMixed,CosTransactions::HeuristicHazard);
+	void rollback() throw(CosTransactions::HeuristicCommit,CosTransactions::HeuristicMixed,CosTransactions::HeuristicHazard);
+	void commit() throw(CosTransactions::NotPrepared,CosTransactions::HeuristicRollback,CosTransactions::HeuristicMixed,CosTransactions::HeuristicHazard);
+	void commit_one_phase() throw(CosTransactions::HeuristicHazard);
 	void forget();
-	void commit_one_phase();
 
 	// has this resource been completed
 	bool is_complete();
@@ -70,6 +71,12 @@ private:
 	struct xa_switch_t * xa_switch_;
 	CosTransactions::RecoveryCoordinator_ptr rc_;
 
+	void terminate(int) throw(
+                CosTransactions::HeuristicRollback,
+                CosTransactions::HeuristicMixed,
+                CosTransactions::HeuristicHazard);
+
 	void setComplete();
+	void notifyError(int, bool);
 };
 #endif // XARESOURCEADAPTORIMPL_H

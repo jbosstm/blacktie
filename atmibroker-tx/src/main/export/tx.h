@@ -20,6 +20,7 @@
 #define TX_H
 
 #include "atmiBrokerTxMacro.h"
+#include "xa.h"
 
 #define TX_NOT_SUPPORTED   1   /* normal execution */
 #define TX_OK              0   /* normal execution */
@@ -52,18 +53,51 @@
 /* heuristically committed plus
  transaction could not be started */
 
+/*
+ * Definitions for tx_*() routines
+ */
+
+/* commit return values */
+typedef long COMMIT_RETURN;
+#define TX_COMMIT_COMPLETED 0
+#define TX_COMMIT_DECISION_LOGGED 1
+
+/* transaction control values */
+typedef long TRANSACTION_CONTROL;
+#define TX_UNCHAINED 0
+#define TX_CHAINED 1
+
+/* type of transaction timeouts */
+typedef long TRANSACTION_TIMEOUT;
+
+/* transaction state values */
+typedef long TRANSACTION_STATE;
+#define TX_ACTIVE 0
+#define TX_TIMEOUT_ROLLBACK_ONLY 1
+#define TX_ROLLBACK_ONLY 2
+
+/* structure populated by tx_info() */
+struct tx_info_t {
+ XID                 xid;
+ COMMIT_RETURN       when_return;
+ TRANSACTION_CONTROL transaction_control;
+ TRANSACTION_TIMEOUT transaction_timeout;
+ TRANSACTION_STATE   transaction_state;
+};
+typedef struct tx_info_t TXINFO;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern ATMIBROKER_TX_DLL int tx_begin(void); // TRANSACTION
-extern ATMIBROKER_TX_DLL int tx_close(void); // TRANSACTION
-extern ATMIBROKER_TX_DLL int tx_commit(void); // TRANSACTION
-extern ATMIBROKER_TX_DLL int tx_open(void); // TRANSACTION
-extern ATMIBROKER_TX_DLL int tx_rollback(void); // TRANSACTION
-// tx_info
-// tx_set_commit_return
-// tx_set_transaction_control
-// tx_set_transaction_timeout
+extern ATMIBROKER_TX_DLL int tx_begin(void);
+extern ATMIBROKER_TX_DLL int tx_close(void);
+extern ATMIBROKER_TX_DLL int tx_commit(void);
+extern ATMIBROKER_TX_DLL int tx_open(void);
+extern ATMIBROKER_TX_DLL int tx_rollback(void);
+extern ATMIBROKER_TX_DLL int tx_set_commit_return(COMMIT_RETURN);
+extern ATMIBROKER_TX_DLL int tx_set_transaction_control(TRANSACTION_CONTROL control);
+extern ATMIBROKER_TX_DLL int tx_set_transaction_timeout(TRANSACTION_TIMEOUT timeout);
+extern ATMIBROKER_TX_DLL int tx_info(TXINFO *);
 #ifdef __cplusplus
 }
 #endif

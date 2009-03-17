@@ -54,15 +54,6 @@
       <description>compile main sources</description>
       <parameters>
         <parameter>
-          <name>blacktie.main.libs</name>
-          <property>blacktie.main.libs</property>
-          <required>false</required>
-          <readonly>false</readonly>
-          <defaultValue></defaultValue>
-          <type>java.lang.String</type>
-          <description>list of blacktie libs required for main compilation</description>
-        </parameter>
-        <parameter>
           <name>src.main</name>
           <property>src.main</property>
           <required>true</required>
@@ -154,15 +145,6 @@
         <parameter>
           <name>projectHelper</name>
           <expression>${org.jboss.blacktie.plugins.AddCommonSources}</expression>
-        </parameter>
-        <parameter>
-          <name>blacktie.test.libs</name>
-          <property>blacktie.test.libs</property>
-          <required>false</required>
-          <readonly>false</readonly>
-          <defaultValue></defaultValue>
-          <type>java.lang.String</type>
-          <description>list of blacktie libs required for test compilation</description>
         </parameter>
         <parameter>
           <name>src.main</name>

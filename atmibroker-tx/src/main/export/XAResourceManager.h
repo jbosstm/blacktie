@@ -46,6 +46,7 @@ public:
 
         // return the resource id
         CORBA::Long rmid(void) {return rmid_;};
+	void notifyError(XID *, int, bool);
 	void setComplete(XID*);
 	const char * name() {return name_;}
 
@@ -64,5 +65,7 @@ private:
 	void createPOA();
         int createServant(XID *);
 	XAResourceAdaptorImpl * locateBranch(XID *);
+
+	void show_branches(const char *, XID *);
 };
 #endif // XARESOURCEMANAGERFACTORY_H

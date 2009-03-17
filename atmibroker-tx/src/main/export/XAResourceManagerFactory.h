@@ -42,11 +42,12 @@ public:
 	XAResourceManager * findRM(long);
 	void createRMs(CORBA_CONNECTION *) throw (RMException);
 	void destroyRMs(CORBA_CONNECTION *);
-	void startRMs(CORBA_CONNECTION *);
-	void endRMs(CORBA_CONNECTION *);
-	void suspendRMs(CORBA_CONNECTION *);
-	void resumeRMs(CORBA_CONNECTION *);
+	int startRMs(CORBA_CONNECTION *);
+	int endRMs(CORBA_CONNECTION *);
+	int suspendRMs(CORBA_CONNECTION *);
+	int resumeRMs(CORBA_CONNECTION *);
 
+	static bool getXID(XID &);
 private:
         ResourceManagerMap rms_;
 

@@ -24,14 +24,20 @@
 
 class TestTransactions: public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE( TestTransactions);
+/*
 	CPPUNIT_TEST( test_transactions);
 	CPPUNIT_TEST( test_protocol);
+	CPPUNIT_TEST( test_info);
+*/
+	CPPUNIT_TEST( test_RM);
 	// TODO CPPUNIT_TEST( test_register_resource);
 	CPPUNIT_TEST_SUITE_END();
 
 public:
 	void test_transactions();
 	void test_protocol();
+	void test_info();
+	void test_RM();
 	void test_register_resource();
 };
 

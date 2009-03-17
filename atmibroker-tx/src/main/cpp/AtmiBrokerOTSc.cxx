@@ -38,3 +38,16 @@ int tx_rollback(void) {
 int tx_close(void) {
 	return AtmiBrokerOTS::get_instance()->tx_close();
 }
+
+int tx_set_commit_return(COMMIT_RETURN when_return) {
+	return AtmiBrokerOTS::get_instance()->set_commit_return(when_return);
+}
+int tx_set_transaction_control(TRANSACTION_CONTROL control) {
+	return AtmiBrokerOTS::get_instance()->set_transaction_control(control);
+}
+int tx_set_transaction_timeout(TRANSACTION_TIMEOUT timeout) {
+	return AtmiBrokerOTS::get_instance()->set_transaction_timeout(timeout);
+}
+int tx_info(TXINFO *info) {
+	return AtmiBrokerOTS::get_instance()->info(info);
+}

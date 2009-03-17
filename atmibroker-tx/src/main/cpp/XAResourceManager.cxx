@@ -18,6 +18,21 @@
 #include "XAResourceManager.h"
 #include "ThreadLocalStorage.h"
 
+void XAResourceManager::show_branches(const char *msg, XID * xid)
+{
+	if (xid)
+		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(),
+			(char *) "XID: XID: formatID: " << xid->formatID << " gtrid_length: "
+			<< xid->gtrid_length << " bqual_length: " << xid->bqual_length);
+
+	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char *) "==================================");
+
+	for (XABranchMap::iterator i = branches_.begin(); i != branches_.end(); ++i)
+		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(),
+			(char *) msg << ": XID: formatID: " << i->first->formatID << " gtrid_length: "
+			<< i->first->gtrid_length << " bqual_length: " << i->first->bqual_length);
+}
+
 static int compareXids(XID * xid1, XID * xid2)
 {
 	if (xid1 == xid2)
@@ -91,13 +106,13 @@ void XAResourceManager::createPOA() {
         policies[0] = PortableServer::LifespanPolicy::_duplicate(p1);
 
 	// create a new POA for this RM
-	try {
-		ACE_TCHAR name[32];
-		ACE_OS::sprintf(name, ACE_TEXT("%s%02d"), "ATMI_RM_" + rmid_);
+	ACE_TCHAR name[32];
+	ACE_OS::sprintf(name, ACE_TEXT("%s%02d"), "ATMI_RM_" + rmid_);
 
+	try {
         	this->poa_ = parent_poa->create_POA(name, poa_manager, policies);
 	} catch (PortableServer::POA::AdapterAlreadyExists &) {
-		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getWarn(), (char *) "Duplicate RM POA");
+		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getWarn(), (char *) "Duplicate RM POA - name = " << name);
                 RMException ex("Duplicate RM POA", EINVAL);
                 throw ex;
 
@@ -142,12 +157,23 @@ int XAResourceManager::createServant(XID * xid)
 
 		// enlist it with the transaction
 		CosTransactions::RecoveryCoordinator_ptr rc = c->register_resource(v);
+		//c->register_synchronization(new XAResourceSynchronization(xid, rmid_, xa_switch_));
+
 		if (CORBA::is_nil(rc)) {
 			LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(),
 				(char*) "createServant: nill RecoveryCoordinator ");
 		} else {
+			XID * cp = (XID *) malloc(sizeof(XID));
+
+			if (cp == 0) {
+				LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getError(), (char *) "out of memory");
+				return XAER_RMFAIL;
+			}
+
+			*cp = *xid;
+
 			ra->setRecoveryCoordinator(rc);
-        		branches_[xid] = ra;
+        		branches_[cp] = ra;
 
 			return XA_OK;
 		}
@@ -157,6 +183,11 @@ int XAResourceManager::createServant(XID * xid)
 	} catch (CosTransactions::Inactive&) {
 		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(),
 			(char*) "createServant: tx inactive (too late for registration)");
+/*
+	} catch (CosTransactions::SynchronizationUnavailable &) {
+		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(),
+			(char*) "createServant: tx inactive (too late for synchronization registration)");
+*/
 	} catch (const CORBA::SystemException& ex) {
 		ex._tao_print_exception("Resource registration error: ");
 		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(),
@@ -168,6 +199,14 @@ int XAResourceManager::createServant(XID * xid)
 	return XAER_NOTA;
 }
 
+void XAResourceManager::notifyError(XID * xid, int xa_error, bool forget)
+{
+	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "notifyError reason:" << xa_error);
+
+	if (forget)
+		setComplete(xid);
+}
+
 void XAResourceManager::setComplete(XID * xid)
 {
 	XABranchMap::iterator iter;
@@ -176,11 +215,13 @@ void XAResourceManager::setComplete(XID * xid)
 	{
 		if (compareXids(i->first, xid) == 0) {
 			XAResourceAdaptorImpl * r = i->second;
+			XID * key = i->first;
 
 			LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(),
 				(char*) "RM removing branch");
-			branches_.erase(i);
+			branches_.erase(i->first);
 			delete r;
+			free(key);
 
 			return;
 		}

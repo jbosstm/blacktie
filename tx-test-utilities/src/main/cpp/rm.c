@@ -16,16 +16,129 @@
  * MA  02110-1301, USA.
  */
 #include "xa.h"
+#include "testrm.h"
 
-static int fn1(char *a, int i, long l) { return 0; }
-static int fn2(XID *x, int i, long l) { return 0; }
-static int fn3(XID *xid, long l1, int i, long l2) { return 0; }
-static int fn4(int *ip1, int *ip2, int i, long l) { return 0; }
+#include <stdlib.h>
+/*#include "ace/OS_NS_unistd.h"*/
 
-struct xa_switch_t testxasw = { "DummyRM", 0L, 0, fn1, fn1, /* open and close */
-        fn2, fn2, fn2, fn2, fn2, /*start, end, rollback, prepare, commit */
-        fn3, /* recover */
-        fn2, /* forget */
-        fn4 /* complete */
+static fault_t *faults = 0;
+
+static fault_t *last_fault() {
+	fault_t *last;
+
+	for (last = faults; last; last = last->next) {
+		if (!last->next)
+			return last;
+	}
+
+	return 0;
+}
+
+int dummy_rm_del_fault(int id)
+{
+	fault_t *curr, *prev = 0;
+
+	for (curr = faults; curr; prev = curr, curr = curr->next) {
+		if (curr->id == id) {
+			if (prev == NULL)
+				faults = curr->next;
+			else
+				prev->next = curr->next;
+
+			free(curr);
+
+			return 0;
+		}
+	}
+
+	return -1;
+}
+
+int dummy_rm_add_fault(fault_t *fault)
+{
+	if (fault == 0)
+		return 1;
+
+	fault_t *last = last_fault();
+
+	fault->next = 0;
+
+	if (last == 0) {
+		faults = (fault_t *) malloc(sizeof(fault_t));
+		fault->id = 0;
+		*faults = *fault;
+	} else {
+		last->next = (fault_t *) malloc(sizeof(fault_t));
+		fault->id = last->id + 1;
+		*(last->next) = *fault;
+	}
+
+	return 0;
+}
+static int apply_faults(enum XA_OP op, int rmid)
+{
+	fault_t *f;
+
+	for (f = faults; f; f = f->next) {
+		if (f->rmid == rmid && f->op == op) {
+			/*printf("applying fault to op %d rc %d\n", op, f->rc);*/
+			switch (f->xf) {
+			default:
+				break;
+			case F_HALT:
+				break;
+			case F_DELAY:
+				/*(void) ACE_OS::sleep((unsigned int) f->arg);*/
+				break;
+			}
+
+			return f->rc;
+		}
+	}
+
+	return XA_OK;
+}
+
+static int open(char *a, int i, long l) {
+	return apply_faults(O_XA_OPEN, i);
+}
+static int close(char *a, int i, long l) {
+	return apply_faults(O_XA_CLOSE, i);
+}
+
+static int start(XID *x, int i, long l) {
+	return apply_faults(O_XA_START, i);
+}
+static int end(XID *x, int i, long l) {
+	return apply_faults(O_XA_END, i);
+}
+static int prepare(XID *x, int i, long l) {
+	return apply_faults(O_XA_PREPARE, i);
+}
+static int commit(XID *x, int i, long l) {
+	return apply_faults(O_XA_COMMIT, i);
+}
+static int rollback(XID *x, int i, long l) {
+	return apply_faults(O_XA_ROLLBACK, i);
+}
+static int recover(XID *xid, long l1, int i, long l2) {
+	return apply_faults(O_XA_RECOVER, i);
+}
+
+static int forget(XID *x, int i, long l) {
+	return apply_faults(O_XA_FORGET, i);
+}
+
+static int complete(int *ip1, int *ip2, int i, long l) {
+	return apply_faults(O_XA_COMPLETE, i);
+}
+
+struct xa_switch_t testxasw = {
+	"DummyRM", 0L, 0,
+	open, close,
+        start, end, rollback, prepare, commit,
+        recover,
+        forget,
+        complete
 };
 

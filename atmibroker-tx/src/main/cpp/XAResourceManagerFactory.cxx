@@ -19,26 +19,30 @@
 #include "ThreadLocalStorage.h"
 #include "SymbolLoader.h"
 
-static bool getXID(XID& xid)
+bool XAResourceManagerFactory::getXID(XID& xid)
 {
 	CosTransactions::Control_ptr cp = (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
 
 	if (CORBA::is_nil(cp))
 		return false;
 
-	CosTransactions::Coordinator_var cv = cp->get_coordinator();
-	CosTransactions::PropagationContext_var pcv = cv->get_txcontext();
-	CosTransactions::otid_t otid = pcv->current.otid;
-	int len = otid.tid.length();
+	try {
+		CosTransactions::Coordinator_var cv = cp->get_coordinator();
+		CosTransactions::PropagationContext_var pcv = cv->get_txcontext();
+		CosTransactions::otid_t otid = pcv->current.otid;
+		int len = otid.tid.length();
 
-	xid.formatID = otid.formatID;
-	xid.bqual_length = otid.bqual_length;
-	xid.gtrid_length = otid.tid.length() - otid.bqual_length;
+		xid.formatID = otid.formatID;
+		xid.bqual_length = otid.bqual_length;
+		xid.gtrid_length = otid.tid.length() - otid.bqual_length;
 
-	for (int i = 0; i < len; i++)
-		 xid.data[i] = otid.tid[i];
+		for (int i = 0; i < len; i++)
+		 	xid.data[i] = otid.tid[i];
 
-	return true;
+		return true;
+	} catch (CosTransactions::Unavailable & e) {
+		return false;
+	}
 }
 
 static int _rm_start(XAResourceManager* rm, XID& xid, long flags)
@@ -64,18 +68,24 @@ static int _rm_end(XAResourceManager* rm, XID& xid, long flags)
 	return rm->xa_end(&xid, rm->rmid(), flags);
 }
 
-static void _rmiter(ResourceManagerMap& rms, int (*func)(XAResourceManager *, XID&, long), int flags)
+static int _rmiter(ResourceManagerMap& rms, int (*func)(XAResourceManager *, XID&, long), int flags)
 {
 	XID xid;
-	if (!getXID(xid))
-		return;
 
-	ResourceManagerMap::iterator iter;
+	if (!XAResourceManagerFactory::getXID(xid))
+		return XAER_NOTA;
 
 	for (ResourceManagerMap::iterator i = rms.begin(); i != rms.end(); ++i) {
 		XAResourceManager * rm = i->second;
-		func(rm, xid, flags);
+		int rc = func(rm, xid, flags);
+
+		if (rc != XA_OK) {
+			LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getDebug(), (char *) "rm operation failed " << rc);
+			return rc;
+		}
 	}
+
+	return XA_OK;
 }
 
 XAResourceManagerFactory::XAResourceManagerFactory()
@@ -104,22 +114,22 @@ void XAResourceManagerFactory::destroyRMs(CORBA_CONNECTION * connection)
 	rms_.clear();
 }
 
-void XAResourceManagerFactory::startRMs(CORBA_CONNECTION * connection)
+int XAResourceManagerFactory::startRMs(CORBA_CONNECTION * connection)
 {
 	// there is a current transaction (otherwise the call doesn't need to start the RMs
-	_rmiter(rms_, _rm_start, TMNOFLAGS);
+	return _rmiter(rms_, _rm_start, TMNOFLAGS);
 }
-void XAResourceManagerFactory::endRMs(CORBA_CONNECTION * connection)
+int XAResourceManagerFactory::endRMs(CORBA_CONNECTION * connection)
 {
-	_rmiter(rms_, _rm_end, TMSUCCESS);
+	return _rmiter(rms_, _rm_end, TMSUCCESS);
 }
-void XAResourceManagerFactory::suspendRMs(CORBA_CONNECTION * connection)
+int XAResourceManagerFactory::suspendRMs(CORBA_CONNECTION * connection)
 {
-	_rmiter(rms_, _rm_end, TMSUSPEND);
+	return _rmiter(rms_, _rm_end, TMSUSPEND);
 }
-void XAResourceManagerFactory::resumeRMs(CORBA_CONNECTION * connection)
+int XAResourceManagerFactory::resumeRMs(CORBA_CONNECTION * connection)
 {
-	_rmiter(rms_, _rm_start, TMRESUME);
+	return _rmiter(rms_, _rm_start, TMRESUME);
 }
 
 void XAResourceManagerFactory::createRMs(CORBA_CONNECTION * connection) throw (RMException)

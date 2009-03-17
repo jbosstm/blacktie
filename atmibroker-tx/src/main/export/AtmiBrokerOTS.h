@@ -43,6 +43,7 @@
 
 #include "CurrentImpl.h"
 #include "XAResourceManagerFactory.h"
+#include "tx.h"
 
 extern "C" {
 struct _control_info {
@@ -69,14 +70,24 @@ public:
 
 	int tx_rollback(void);
 
-	int suspend(long& tranid);
-
-	int resume(long tranid);
-
 	int tx_close(void);
 
-	void rm_resume(void);
-	void rm_suspend(void);
+	int set_commit_return(COMMIT_RETURN);
+	COMMIT_RETURN get_commit_return() {return whenReturn;}
+	int set_transaction_control(TRANSACTION_CONTROL);
+	TRANSACTION_CONTROL get_transaction_control() {return txControlMode;}
+	int set_transaction_timeout(TRANSACTION_TIMEOUT);
+	TRANSACTION_TIMEOUT get_transaction_timeout() {return txTimeout;}
+	int info(TXINFO *);
+	bool isChained() {return txControlMode == TX_CHAINED;}
+	bool reportHeuristics() {return whenReturn == TX_COMMIT_COMPLETED;}
+
+	int suspend(long& tranid);
+	int resume(long tranid);
+
+	int rm_end(void);
+	int rm_resume(void);
+	int rm_suspend(void);
 
 	void createXAConnectorAndResourceManager();
 	CurrentImpl * getCurrentImpl();
@@ -99,6 +110,9 @@ public:
 
 private:
 	void createTransactionPolicy();
+	int tx_complete(bool);
+	int chainTransaction(int);
+
 	CORBA_CONNECTION* ots_connection;
 
 	// OTS References
@@ -117,6 +131,10 @@ private:
 	XAResourceManagerFactory xaRMFac;
 
 	std::vector<ControlInfo*> controlInfoVector;
+
+	COMMIT_RETURN whenReturn;
+	TRANSACTION_CONTROL txControlMode;
+	TRANSACTION_TIMEOUT txTimeout;
 
 	static AtmiBrokerOTS* ptrAtmiBrokerOTS;
 

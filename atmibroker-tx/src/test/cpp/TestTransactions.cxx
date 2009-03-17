@@ -18,6 +18,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include "TestTransactions.h"
 #include "tx.h"
+#include "testrm.h"
 #include "ThreadLocalStorage.h"
 #include "XAResourceAdaptorImpl.h"
 
@@ -28,7 +29,8 @@
 #include "OrbManagement.h"
 
 // sanity check
-void TestTransactions::test_transactions() {
+void TestTransactions::test_transactions()
+{
 	CPPUNIT_ASSERT(tx_open() == TX_OK);
 	CPPUNIT_ASSERT(tx_begin() == TX_OK);
 	CPPUNIT_ASSERT(tx_commit() == TX_OK);
@@ -36,7 +38,8 @@ void TestTransactions::test_transactions() {
 }
 
 // check for protocol errors in a transactions lifecycle
-void TestTransactions::test_protocol() {
+void TestTransactions::test_protocol()
+{
 	// should not be able to begin or complete a transaction before calling tx_open
 	CPPUNIT_ASSERT(tx_begin() == TX_PROTOCOL_ERROR);
 	CPPUNIT_ASSERT(tx_commit() == TX_PROTOCOL_ERROR);
@@ -74,7 +77,102 @@ void TestTransactions::test_protocol() {
 	CPPUNIT_ASSERT(tx_close() == TX_OK);
 }
 
-static CORBA::ORB_ptr find_orb(const char * name) {
+static void check_info(const char *msg, int rv,
+	COMMIT_RETURN cr, TRANSACTION_CONTROL tc, TRANSACTION_TIMEOUT tt, TRANSACTION_STATE ts)
+{
+	TXINFO txinfo;
+
+	CPPUNIT_ASSERT(tx_info(&txinfo) == rv);
+
+	if (cr >= 0) CPPUNIT_ASSERT_MESSAGE(msg, txinfo.when_return == cr);
+	if (tc >= 0) CPPUNIT_ASSERT_MESSAGE(msg, txinfo.transaction_control == tc);
+	if (tt >= 0) CPPUNIT_ASSERT_MESSAGE(msg, txinfo.transaction_timeout == tt);
+	if (ts >= 0) CPPUNIT_ASSERT_MESSAGE(msg, txinfo.transaction_state == ts);
+}
+
+void TestTransactions::test_info()
+{
+	CPPUNIT_ASSERT(tx_open() == TX_OK);
+	CPPUNIT_ASSERT(tx_begin() == TX_OK);
+
+	// verify that the initial values are correct
+	// do not test for the initial value of info.when_return since it is implementation dependent
+	// if the second parameter is 1 then test that we are in transaction mode
+	check_info("initial values", 1, -1L, TX_UNCHAINED, 0L, TX_ACTIVE);
+	CPPUNIT_ASSERT(tx_commit() == TX_OK);
+	// if the second parameter is 0 then test that we are not in transaction mode
+	check_info("not in tx context", 0, -1L, TX_UNCHAINED, 0L, -1);
+
+	(void) tx_set_commit_return(TX_COMMIT_COMPLETED);
+	(void) tx_set_transaction_control(TX_CHAINED);
+	(void) tx_set_transaction_timeout(10);
+
+	// begin another transaction
+	CPPUNIT_ASSERT(tx_begin() == TX_OK);
+
+	// verify that the new values are correct and that there is a running transaction
+	check_info("modified values", 1, TX_COMMIT_COMPLETED, TX_CHAINED, 10L, TX_ACTIVE);
+	// commit the transaction
+	CPPUNIT_ASSERT(tx_commit() == TX_OK);
+	// transaction control mode is TX_CHAINED so there should be an active transaction after a commit
+	check_info("TX_CHAINED after commit", 1, TX_COMMIT_COMPLETED, TX_CHAINED, 10L, TX_ACTIVE);
+
+	// rollback the chained transaction
+	CPPUNIT_ASSERT(tx_rollback() == TX_OK);
+	// transaction control mode is TX_CHAINED so there should be an active transaction after a rollback
+	check_info("XX", 1, TX_COMMIT_COMPLETED, TX_CHAINED, 10L, TX_ACTIVE);
+
+	// stop chaining transactions
+	(void) tx_set_transaction_control(TX_UNCHAINED);
+	CPPUNIT_ASSERT(tx_rollback() == TX_OK);
+	// transaction control mode should now be TX_UNCHAINED so there should not be an active transaction after a rollback
+	check_info("TX_UNCHAINED after rollback", 0, TX_COMMIT_COMPLETED, TX_UNCHAINED, 10L, -1);
+
+	CPPUNIT_ASSERT(tx_close() == TX_OK);
+}
+
+void TestTransactions::test_RM()
+{
+	/* cause RM 102 to generate a mixed heuristic */
+	fault_t fault1 = {0, 102, O_XA_COMMIT, XA_HEURMIX};
+	/* cause RM 102 start to fail */
+	fault_t fault2 = {0, 102, O_XA_START, XAER_RMERR};
+
+	/* inject a commit fault in Resource Manager with rmid 102 */
+	(void) dummy_rm_add_fault(&fault1);
+
+	CPPUNIT_ASSERT(tx_open() == TX_OK);
+	/* turn on heuristic reporting (ie the commit does not return until 2PC is complete) */
+	CPPUNIT_ASSERT(tx_set_commit_return(TX_COMMIT_COMPLETED) == TX_OK);
+	CPPUNIT_ASSERT(tx_begin() == TX_OK);
+	/* since we have added a XA_HEURMIX fault tx_commit should return an mixed error */
+	CPPUNIT_ASSERT(tx_commit() == TX_MIXED);
+
+	/*
+	 * repeat the test but with chained transactions and heuristic reporting enabled
+	 */
+	CPPUNIT_ASSERT(tx_set_transaction_control(TX_CHAINED) == TX_OK);
+	CPPUNIT_ASSERT(tx_set_commit_return(TX_COMMIT_COMPLETED) == TX_OK);
+	CPPUNIT_ASSERT(tx_begin() == TX_OK);
+
+	/* inject a fault that will cause the chained tx_begin to fail */
+	(void) dummy_rm_add_fault(&fault2);
+	/*
+	 * commit should fail with a heuristic and the attempt to start a chained transaction should fail
+	 * since we have just injected a start fault
+	 */
+	CPPUNIT_ASSERT(tx_commit() == TX_MIXED_NO_BEGIN);
+
+	/* clean up */
+	(void) dummy_rm_del_fault(fault1.id);
+	(void) dummy_rm_del_fault(fault2.id);
+
+	/* should still be able to clean up after failing to commit a chained transaction */
+	CPPUNIT_ASSERT(tx_close() == TX_OK);
+}
+
+static CORBA::ORB_ptr find_orb(const char * name)
+{
 	TAO::ORB_Table * const orb_table = TAO::ORB_Table::instance();
 	::TAO_ORB_Core* oc = orb_table->find(name);
 
@@ -107,7 +205,8 @@ static XID xid = {
  * of begining and completing a transactions provided some Resouce Managers
  * have been configured in Environment.xml
  */
-void TestTransactions::test_register_resource() {
+void TestTransactions::test_register_resource()
+{
 	// start a transaction running
 	CPPUNIT_ASSERT(tx_open() == TX_OK);
 	CPPUNIT_ASSERT(tx_begin() == TX_OK);

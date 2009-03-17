@@ -73,6 +73,7 @@
 							<outputDirectory>${project.build.directory}/cxx/compile</outputDirectory>
 							<overWriteReleases>false</overWriteReleases>
 							<overWriteSnapshots>true</overWriteSnapshots>
+							<silent>true</silent>
 						</configuration>
 					</execution>
 					<execution>
@@ -88,6 +89,7 @@
 							<outputDirectory>${project.build.directory}/cxx/test</outputDirectory>
 							<overWriteReleases>false</overWriteReleases>
 							<overWriteSnapshots>true</overWriteSnapshots>
+							<silent>true</silent>
 						</configuration>
 					</execution>
 					<execution>

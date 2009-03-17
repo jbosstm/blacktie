@@ -61,7 +61,9 @@ void AtmiBrokerOTS::discard_instance() {
 	}
 }
 
-AtmiBrokerOTS::AtmiBrokerOTS() {
+AtmiBrokerOTS::AtmiBrokerOTS() :
+	whenReturn(TX_COMMIT_DECISION_LOGGED), txControlMode(TX_UNCHAINED), txTimeout (0L)
+{
 	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "constructor");
 	nextControlId = 1;
 	currentImpl = NULL;
@@ -121,20 +123,28 @@ int AtmiBrokerOTS::tx_open(void) {
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "getTransactionCurrent");
 		currentImpl = new CurrentImpl(tx_factory);
 		tx_current = currentImpl;
+		// initialize values
+        	txControlMode = TX_UNCHAINED;
+        	txTimeout = 0L;
 	}
 //	createXAConnectorAndResourceManager();
 
 	return TX_OK;
 }
 
-void AtmiBrokerOTS::rm_resume(void) {
+int AtmiBrokerOTS::rm_end(void) {
 #ifdef XA_LOOSE_COUPLING
-	xaRMFac.resumeRMs(ots_connection);
+	return xaRMFac.endRMs(ots_connection);
 #endif // XA_LOOSE_COUPLING
 }
-void AtmiBrokerOTS::rm_suspend(void) {
+int AtmiBrokerOTS::rm_resume(void) {
 #ifdef XA_LOOSE_COUPLING
-	xaRMFac.suspendRMs(ots_connection);
+	return xaRMFac.resumeRMs(ots_connection);
+#endif // XA_LOOSE_COUPLING
+}
+int AtmiBrokerOTS::rm_suspend(void) {
+#ifdef XA_LOOSE_COUPLING
+	return xaRMFac.suspendRMs(ots_connection);
 #endif // XA_LOOSE_COUPLING
 }
 
@@ -146,61 +156,212 @@ int AtmiBrokerOTS::tx_begin(void) {
 		return TX_PROTOCOL_ERROR;
 	}
 
+	// TODO figure out how to determine return value TX_OUTSIDE (ie the calling thread is participating
+	// in work outside any global transaction with resource managers).
 	try {
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_begin");
 		tx_current->begin();
 		setSpecific(TSS_KEY, tx_current->get_control());
-		rm_resume();
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "called begin ");
+		int rv = rm_resume();
+
+		if (rv != XA_OK) {
+			destroySpecific(TSS_KEY);
+			tx_current->rollback();
+			LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getWarn(),
+				(char*) "unable to start one or more RMs: XA error code: " << rv);
+			return TX_ERROR;
+		}
+
 		return TX_OK;
+	} catch (CORBA::SystemException & e) {
+		//e._tao_print_exception("tx_begin error: ");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getWarn(),
+			(char*) "unable to start transaction: CORBA SystemException name: "
+			<< e._name() << " minor code: " << e.minor());
+		return TX_ERROR;
 	} catch (...) {
 		// TODO placeholder return the correct error code
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(), (char*) "tx_begin: unknown error");
 		return TX_ERROR;
 	}
 
 }
 
-int AtmiBrokerOTS::tx_commit(void) {
-	if (CORBA::is_nil(tx_current) || getSpecific(TSS_KEY) == NULL) {
+int AtmiBrokerOTS::tx_commit(void)
+{
+	return tx_complete(true);
+}
+
+int AtmiBrokerOTS::tx_rollback(void)
+{
+	return tx_complete(false);
+}
+
+int AtmiBrokerOTS::tx_complete(bool commit) {
+	int outcome;
+	CosTransactions::Control_ptr cp = (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
+
+	if (CORBA::is_nil(tx_current) || CORBA::is_nil(cp)) {
 		// either tx_open hasn't been called or not in a transaction
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_commit: protocol violation");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_complete: protocol violation");
 		return TX_PROTOCOL_ERROR;
 	}
 
+	// rm_end(); // no its done via a synchronisation
+
 	try {
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "calling commit");
-		tx_current->commit(false);
-		// if we get an exception leave the tx associated - // TODO is the correct semantics
-		destroySpecific(TSS_KEY);
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "called commit");
-		return TX_OK;
-	} catch (CORBA::TRANSACTION_ROLLEDBACK & aRef) {
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(), (char*) "transaction has been rolled back " << (void*) &aRef);
-		return -1; // should be TX_ROLLBACK ... and all the other outcomes
+		CosTransactions::Terminator_var term = cp->get_terminator();
+
+		(commit ? term->commit(reportHeuristics()) : term->rollback());
+		outcome = TX_OK;
+	} catch (CORBA::TRANSACTION_ROLLEDBACK &e) {
+		outcome = TX_ROLLBACK;
+	} catch (CosTransactions::Unavailable & e) {
+		outcome = TX_ERROR; // TM failed temporarily
+	} catch (CosTransactions::HeuristicMixed &e) {
+		// can be thrown if commit_return characteristic is TX_COMMIT_COMPLETED
+		outcome = TX_MIXED;
+	} catch (CosTransactions::HeuristicHazard &e) {
+		// can be thrown if commit_return characteristic is TX_COMMIT_COMPLETED
+		outcome = TX_HAZARD;
+	} catch (CORBA::SystemException & e) {
+		e._tao_print_exception("tx_complete: unknown error: ");
+		outcome = TX_ERROR;
 	} catch (...) {
-		// TODO placeholder return the correct error code
-		return TX_ERROR;
+		outcome = TX_FAIL; // TM failed temporarily
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(), (char*) "tx_complete: unknown error");
+	}
+
+	destroySpecific(TSS_KEY);	// TODO free Control
+	currentImpl->remove_control();
+
+	return (isChained() ? chainTransaction(outcome) : outcome);
+}
+
+int AtmiBrokerOTS::chainTransaction(int outcome) {
+	/*
+	 * NOTE: outcome will only truly represent the outcome of commit if the commit_return
+	 * characteristic is TX_COMMIT_COMPLETED (see method reportHeuristics()).
+	 * Using get Coordinator::get_status is ambiguous since NoTransaction can mean the
+	 * transaction committed or rolled back and has been forgotten.
+	 * TODO in tx_begin register a participant in the transaction so we can definitively know
+	 * the transaction outcome.
+	 */
+	switch(tx_begin()) {
+	case TX_OK:
+		return TX_OK;
+	default:
+		switch (outcome) {
+		case TX_OK:
+			return TX_NO_BEGIN;
+		case TX_ROLLBACK:
+			return TX_ROLLBACK_NO_BEGIN;
+		case TX_MIXED:
+			return TX_MIXED_NO_BEGIN;
+		case TX_HAZARD:
+			return TX_HAZARD_NO_BEGIN;
+		default:
+			return outcome;
+		}
 	}
 }
 
-int AtmiBrokerOTS::tx_rollback(void) {
-	if (CORBA::is_nil(tx_current) || getSpecific(TSS_KEY) == NULL) {
-		// either tx_open hasn't been called or not in a transaction
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_rollback: protocol violation");
+int AtmiBrokerOTS::set_commit_return(COMMIT_RETURN when_return) {
+	if (CORBA::is_nil(tx_current))
 		return TX_PROTOCOL_ERROR;
+	else if (when_return != TX_COMMIT_DECISION_LOGGED && when_return != TX_COMMIT_COMPLETED)
+		return TX_EINVAL;
+
+	whenReturn = when_return;
+
+	return TX_OK;
+}
+int AtmiBrokerOTS::set_transaction_control(TRANSACTION_CONTROL mode) {
+
+	if (CORBA::is_nil(tx_current))
+		return TX_PROTOCOL_ERROR;
+	else if (mode != TX_UNCHAINED && mode != TX_CHAINED)
+		return TX_EINVAL;
+
+	txControlMode = mode;
+
+	return TX_OK;
+}
+
+int AtmiBrokerOTS::set_transaction_timeout(TRANSACTION_TIMEOUT timeout) {
+
+	if (CORBA::is_nil(tx_current))
+		return TX_PROTOCOL_ERROR;
+	else if (timeout < 0)
+		return TX_EINVAL;
+
+	txTimeout = timeout;
+	tx_current->set_timeout(timeout);
+
+	return TX_OK;
+}
+
+int AtmiBrokerOTS::info(TXINFO *info) {
+	if (CORBA::is_nil(tx_current))
+		return TX_PROTOCOL_ERROR;
+
+	CosTransactions::Control_ptr cp = (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
+	int inTxMode = (CORBA::is_nil(cp) ? 0 : 1);
+
+	if (info != 0) {
+		info->when_return = whenReturn;
+		info->transaction_control = txControlMode;
+		// the timeout that will be used when this process begins the next transaction
+		// (it is not neccessarily the timeout for the current transaction since
+		// this may have been set in another process or it may have been changed by
+		// this process after the current transaction was started).
+		info->transaction_timeout = txTimeout;
+
+		if (inTxMode == 0) {
+			(info->xid).formatID = -1;	// means the XID is null
+			return inTxMode;
+		}
+
+		CosTransactions::Coordinator* c = cp->get_coordinator();
+
+		if (XAResourceManagerFactory::getXID(info->xid)) {
+			(info->xid).formatID = -1;
+		}
+
+		if (!CORBA::is_nil(c)) {
+			switch (c->get_status()) {
+			case CosTransactions::StatusActive:
+			case CosTransactions::StatusPreparing:
+			case CosTransactions::StatusPrepared:
+			case CosTransactions::StatusCommitting:
+			case CosTransactions::StatusCommitted:
+				info->transaction_state = TX_ACTIVE;
+				break;
+
+			case CosTransactions::StatusRollingBack:
+			case CosTransactions::StatusRolledBack:
+				info->transaction_state = TX_ACTIVE;
+				break;
+
+			case CosTransactions::StatusMarkedRollback:
+				info->transaction_state = TX_ROLLBACK_ONLY;
+				// there is no way to detect TX_TIMEOUT_ROLLBACK_ONLY
+				break;
+
+			case CosTransactions::StatusUnknown:
+				// only option is to assume its active
+				info->transaction_state = TX_ACTIVE;
+				break;
+
+			case CosTransactions::StatusNoTransaction:
+			default:
+				(info->xid).formatID = -1;	// means the XID is null
+				break;
+			}
+		}
 	}
 
-	try {
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "calling rollback ");
-		tx_current->rollback();
-		destroySpecific(TSS_KEY);
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "called rollback ");
-
-		return TX_OK;
-	} catch (...) {
-		// TODO placeholder return the correct error code
-		return TX_ERROR;
-	}
+	return inTxMode;
 }
 
 int AtmiBrokerOTS::suspend(long& tranid) {
@@ -249,8 +410,8 @@ int AtmiBrokerOTS::resume(long tranid) {
 				}
 
 				setSpecific(TSS_KEY, tx_current->get_control());
-				rm_resume();
-				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "called resume with Control " << (void*) (*it)->control);
+				int rv = rm_resume();
+				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "called resume with Control " << (void*) (*it)->control << " rv=" << rv);
 
 				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "removing %p from vector" << (*it));
 				controlInfoVector.erase(it);
@@ -290,6 +451,7 @@ int AtmiBrokerOTS::tx_close(void) {
 	//		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getWarn(), (char *) "tx_close: current not nil after release");
 
 	tx_current = NULL;
+
 	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "released tx_current");
 
 	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "releasing xa_connector");

@@ -18,6 +18,7 @@
 
 #include "AtmiBrokerOTS.h"
 #include "CurrentImpl.h"
+#include "tx.h"
 
 #include "log4cxx/logger.h"
 
@@ -251,3 +252,4 @@ void CurrentImpl::rollback_only() throw (CORBA::SystemException, CosTransactions
 	}
 	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "rollback_only FINISHED");
 }
+
