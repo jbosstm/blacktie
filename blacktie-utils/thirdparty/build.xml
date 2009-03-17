@@ -67,7 +67,7 @@
 		<delete dir="${build.dist}" />
 	</target>
 
-	<target name="thirdparty" depends="log4cxx,cppunit,ace,expat,apr-1,stomp,jbas" />
+	<target name="thirdparty" depends="log4cxx,cppunit,ace,expat,apr-1,stomp,jbas,java-devel" />
 	<target name="install" depends="thirdparty" />
 
 	<target name="jbas" depends="clean,init">
