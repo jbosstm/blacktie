@@ -110,9 +110,9 @@
 	</target>
 
 	<target name="generate-sources" >
-		<property name="ace.lroot" value="${project.build.directory}/cxx" />
-		<property name="ace.iroot" value="${project.build.directory}/cxx/include" />
-		<property name="ace.broot" value="${project.build.directory}/cxx/bin" />
+		<property name="ace.lroot" value="${project.build.directory}/cxx/compile" />
+		<property name="ace.iroot" value="${project.build.directory}/cxx/compile/include" />
+		<property name="ace.broot" value="${project.build.directory}/cxx/compile/bin" />
 		<property name="idl.compiler" value="${ace.broot}/tao_idl" />
 
 		<available file="${idl.compiler}" property="tao_idl.exe.exists"/>
@@ -194,14 +194,14 @@
 		<mkdir dir="target/${configuration.type}/${lib.type}" />
 
 		<!--
-		     create a comma separated list of libraries from all the libraries in target/cxx/lib
+		     create a comma separated list of libraries from all the libraries in target/cxx/compile/lib
 		     -->
-                <fileset id="fileset.compile.libs" dir="target/cxx/lib" includes="*.so"/>
+                <fileset id="fileset.compile.libs" dir="target/cxx/compile/lib" includes="*.so"/>
                 <property name="xcompile.libs" value="${toString:fileset.compile.libs}"/>
                 <convert-libset libdir="${xcompile.libs}" propname="compile.libs"/>
 
 	<!--
-<echo message="COMPILE: debug=${debug} compiler=${toolchain.compiler}  outtype=${test.output.type} configuration.type=${configuration.type} lib.type=${lib.type} project.artifactId=${project.artifactId} libsetdir=target/cxx/lib compile.libs=${compile.libs}"/>
+<echo message="COMPILE: debug=${debug} compiler=${toolchain.compiler}  outtype=${test.output.type} configuration.type=${configuration.type} lib.type=${lib.type} project.artifactId=${project.artifactId} libsetdir=target/cxx/compile/lib compile.libs=${compile.libs}"/>
 -->
 		<cc name="${toolchain.compiler}" rebuild="true" exceptions="true" outfile="target/${configuration.type}/${lib.type}/${project.artifactId}" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="${lib.type}" objdir="target/cpp-classes" debug="${debug}">
 			<compiler name="${toolchain.compiler}" unless="is-msvc">
@@ -220,15 +220,15 @@
 			<includepath path="${src.export}" if="export.dir" />
 			<includepath path="src/main/include" />
 			<includepath path="${src.idl.main}/include" />
-			<includepath path="target/cxx/include" />
-			<includepath path="target/cxx/include/apr-1" />
-			<includepath path="target/cxx/include/stomp" />
+			<includepath path="target/cxx/compile/include" />
+			<includepath path="target/cxx/compile/include/apr-1" />
+			<includepath path="target/cxx/compile/include/stomp" />
 
-			<libset dir="${project.build.directory}/cxx/lib" libs="${compile.libs}" if="compile.libs"/>
+			<libset dir="${project.build.directory}/cxx/compile/lib" libs="${compile.libs}" if="compile.libs"/>
 
-			<includepath path="target/cxx/include/ace" />
-			<includepath path="target/cxx/include/ace/TAO" />
-			<includepath path="target/cxx/include/ace/TAO/orbsvcs" />
+			<includepath path="target/cxx/compile/include/ace" />
+			<includepath path="target/cxx/compile/include/ace/TAO" />
+			<includepath path="target/cxx/compile/include/ace/TAO/orbsvcs" />
 		</cc>
 	</target>
 
@@ -253,15 +253,18 @@
 		<available file="target/${configuration.type}/${lib.type}" type="dir" property="main.built" />
 
 		<!--
-		     create a comma separated list of libraries from all the libraries in target/cxx/lib
+		     create a comma separated list of libraries from all the libraries in target/cxx/test/lib
 		     -->
-                <fileset id="fileset.test.libs" dir="target/cxx/lib" includes="*.so"/>
+                <fileset id="fileset.test.libs" dir="target/cxx/test/lib" includes="*.so"/>
                 <property name="xtest.libs" value="${toString:fileset.test.libs}"/>
                 <convert-libset libdir="${xtest.libs}" propname="test.libs"/>
 
 		<!--
 <echo message="TEST-COMPILE: debug=${debug} compiler=${toolchain.compiler}  outtype=${test.output.type} configuration.type=${configuration.type} lib.type=${lib.type} project.artifactId=${project.artifactId} test.libs=${test.libs} main.built=${main.built} fileset.gen.test=${fileset.gen.test}"/>
 -->
+	<echo message="${JNI_INCLUDE_DIR}" />
+	<echo message="${JNI_INCLUDE_DIR}/${JNI_PLATFORM_DIR}" />
+
 		<cc name="${toolchain.compiler}" rebuild="true" exceptions="true" outfile="target/testsuite" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="${test.output.type}" objdir="target/cpp-test-classes" debug="${debug}">
 			<compiler name="${toolchain.compiler}" unless="is-msvc">
 				&compiler-args-gcc;
@@ -280,15 +283,15 @@
 			<includepath path="${src.export}" if="export.dir" />
 			<includepath path="src/main/include" />
 			<includepath path="${src.idl.main}/include" />
-			<includepath path="target/cxx/include" />
-			<includepath path="target/cxx/include/ace" />
-			<includepath path="target/cxx/include/ace/TAO" />
-			<includepath path="target/cxx/include/ace/TAO/orbsvcs" />
-			<includepath path="target/cxx/include/apr-1" />
-			<includepath path="target/cxx/include/stomp" />
+			<includepath path="target/cxx/test/include" />
+			<includepath path="target/cxx/test/include/ace" />
+			<includepath path="target/cxx/test/include/ace/TAO" />
+			<includepath path="target/cxx/test/include/ace/TAO/orbsvcs" />
+			<includepath path="target/cxx/compile/include/apr-1" />
+			<includepath path="target/cxx/compile/include/stomp" />
 			&includepath-java;
 
-			<libset dir="${project.build.directory}/cxx/lib" libs="${test.libs}" if="test.libs"/>
+			<libset dir="${project.build.directory}/cxx/test/lib" libs="${test.libs}" if="test.libs"/>
 
 			<libset dir="target/${configuration.type}/${lib.type}" libs="${project.artifactId}" if="main.built" />
 		</cc>
@@ -312,7 +315,7 @@
 	<target name="_test-gcc" depends="init" unless="is-msvc">
 		<exec dir="target/cpp-test-classes" newenvironment="true" resolveexecutable="true" executable="../testsuite" failonerror="${failOnErrorTests}">
 			<redirector output="target/cppunit/run.txt" logError="true" alwayslog="true"/>
-			<env key="LD_LIBRARY_PATH" value="../cxx/lib:../${configuration.type}/${lib.type}" />
+			<env key="LD_LIBRARY_PATH" value="../cxx/test/lib:../${configuration.type}/${lib.type}" />
 		</exec>
 	</target>
 	<target name="_test-msvc" depends="init" if="is-msvc">
