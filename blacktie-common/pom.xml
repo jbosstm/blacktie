@@ -82,10 +82,25 @@
 							<goal>unpack-dependencies</goal>
 						</goals>
 						<configuration>
-							<includeScope>test</includeScope>
+							<excludeScope>runtime</excludeScope>
 							<includes>**/*</includes>
 							<markersDirectory>${project.build.directory}/cxx/test-markers</markersDirectory>
 							<outputDirectory>${project.build.directory}/cxx/test</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>true</overWriteSnapshots>
+						</configuration>
+					</execution>
+					<execution>
+						<id>unpack-runtime-dependencies</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<includeScope>runtime</includeScope>
+							<includes>**/*</includes>
+							<markersDirectory>${project.build.directory}/cxx/runtime-markers</markersDirectory>
+							<outputDirectory>${project.build.directory}/cxx/runtime</outputDirectory>
 							<overWriteReleases>false</overWriteReleases>
 							<overWriteSnapshots>true</overWriteSnapshots>
 						</configuration>
@@ -124,7 +139,7 @@
 			</activation>
 			<properties>
 				<toolchain.compiler>msvc</toolchain.compiler>
-				<ld_library_path>${project.build.directory}/cxx/test/lib;${project.build.directory}</ld_library_path>
+				<ld_library_path>${project.build.directory}/cxx/runtime/lib;${project.build.directory}/cxx/test/lib;${project.build.directory}</ld_library_path>
 			</properties>
 		</profile>
 		<profile>
@@ -136,7 +151,7 @@
 			</activation>
 			<properties>
 				<toolchain.compiler>gcc</toolchain.compiler>
-				<ld_library_path>${project.build.directory}/cxx/test/lib:${project.build.directory}</ld_library_path>
+				<ld_library_path>${project.build.directory}/cxx/runtime/lib:${project.build.directory}/cxx/test/lib:${project.build.directory}</ld_library_path>
 			</properties>
 		</profile>
 	</profiles>
