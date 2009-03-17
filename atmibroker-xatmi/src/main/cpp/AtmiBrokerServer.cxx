@@ -107,40 +107,47 @@ AtmiBrokerServer::AtmiBrokerServer() {
 		realConnection = NULL;
 		char* transportLibrary = AtmiBrokerEnv::get_instance()->getenv(
 				(char*) "TransportLibrary");
-		LOG4CXX_INFO(loggerAtmiBrokerServer, (char*) "Loading server transport: "
-				<< transportLibrary);
+		LOG4CXX_INFO(loggerAtmiBrokerServer,
+				(char*) "Loading server transport: " << transportLibrary);
 		connection_factory_t* connectionFactory =
 				(connection_factory_t*) ::lookup_symbol(transportLibrary,
 						"connectionFactory");
-		serverConnection = connectionFactory->create_connection(
-				(char*) "server");
-		realConnection
-				= AtmiBrokerOTS::init_orb((char*) "serverAdministration");
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "creating POAs for %s" <<
-				server);
-		AtmiBrokerPoaFac* serverPoaFactory = realConnection->poaFactory;
-		this->poa = serverPoaFactory->createServerPoa(realConnection->orbRef,
-				server, realConnection->root_poa,
-				realConnection->root_poa_manager);
+		if (connectionFactory != NULL) {
+			serverConnection = connectionFactory->create_connection(
+					(char*) "server");
+			realConnection = AtmiBrokerOTS::init_orb(
+					(char*) "serverAdministration");
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+					(char*) "creating POAs for %s" << server);
+			AtmiBrokerPoaFac* serverPoaFactory = realConnection->poaFactory;
+			this->poa = serverPoaFactory->createServerPoa(
+					realConnection->orbRef, server, realConnection->root_poa,
+					realConnection->root_poa_manager);
 
-		AtmiBrokerServerXml aAtmiBrokerServerXml;
-		aAtmiBrokerServerXml.parseXmlDescriptor(&serverInfo,
-				(char*) "SERVER.xml");
-		serverName = server;
+			AtmiBrokerServerXml aAtmiBrokerServerXml;
+			aAtmiBrokerServerXml.parseXmlDescriptor(&serverInfo,
+					(char*) "SERVER.xml");
+			serverName = server;
 
-		PortableServer::ObjectId_var oid = PortableServer::string_to_ObjectId(
-				server);
-		poa->activate_object_with_id(oid, this);
-		CORBA::Object_var tmp_ref = poa->create_reference_with_id(oid,
-				"IDL:AtmiBroker/Server:1.0");
+			PortableServer::ObjectId_var oid =
+					PortableServer::string_to_ObjectId(server);
+			poa->activate_object_with_id(oid, this);
+			CORBA::Object_var tmp_ref = poa->create_reference_with_id(oid,
+					"IDL:AtmiBroker/Server:1.0");
 
-		CosNaming::Name * name = realConnection->default_ctx->to_name(
-				serverName);
-		realConnection->name_ctx->bind(*name, tmp_ref);
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-				(char*) "server_init(): finished.");
+			CosNaming::Name * name = realConnection->default_ctx->to_name(
+					serverName);
+			realConnection->name_ctx->bind(*name, tmp_ref);
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+					(char*) "server_init(): finished.");
 
-		serverInitialized = true;
+			serverInitialized = true;
+		} else {
+			LOG4CXX_ERROR(loggerAtmiBrokerServer,
+					(char*) "Could not load the transport: "
+							<< transportLibrary);
+			tperrno = TPESYSTEM;
+		}
 	} catch (CORBA::Exception& e) {
 		userlog(log4cxx::Level::getError(), loggerAtmiBrokerServer,
 				(char*) "serverinit - Unexpected CORBA exception: %s",

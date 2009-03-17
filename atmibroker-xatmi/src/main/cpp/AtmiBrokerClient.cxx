@@ -83,24 +83,30 @@ int clientdone() {
 AtmiBrokerClient::AtmiBrokerClient() {
 	try {
 		clientConnection = NULL;
-
 		char* transportLibrary = AtmiBrokerEnv::get_instance()->getenv(
 				(char*) "TransportLibrary");
-		LOG4CXX_INFO(loggerAtmiBrokerClient, (char*) "Loading client transport: "
-				<< transportLibrary);
+		LOG4CXX_INFO(loggerAtmiBrokerClient,
+				(char*) "Loading client transport: " << transportLibrary);
 		connection_factory_t* connectionFactory =
 				(connection_factory_t*) ::lookup_symbol(transportLibrary,
 						"connectionFactory");
-		clientConnection = connectionFactory->create_connection(
-				(char*) "client");
+		if (connectionFactory != NULL) {
+			clientConnection = connectionFactory->create_connection(
+					(char*) "client");
 
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "constructor");
+			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "constructor");
 
-		AtmiBrokerClientXml aAtmiBrokerClientXml;
-		aAtmiBrokerClientXml.parseXmlDescriptor(&clientServerVector,
-				"CLIENT.xml");
-		nextSessionId = 0;
-		clientInitialized = true;
+			AtmiBrokerClientXml aAtmiBrokerClientXml;
+			aAtmiBrokerClientXml.parseXmlDescriptor(&clientServerVector,
+					"CLIENT.xml");
+			nextSessionId = 0;
+			clientInitialized = true;
+		} else {
+			LOG4CXX_ERROR(loggerAtmiBrokerClient,
+					(char*) "Could not load the transport: "
+							<< transportLibrary);
+			tperrno = TPESYSTEM;
+		}
 	} catch (...) {
 		LOG4CXX_ERROR(loggerAtmiBrokerClient,
 				(char*) "clientinit Unexpected exception");
