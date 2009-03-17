@@ -67,10 +67,18 @@
 		<delete dir="${build.dist}" />
 	</target>
 
-	<target name="thirdparty" depends="log4cxx,cppunit,ace,expat,apr-1,stomp,jbas,java-devel" />
+	<target name="purge">
+		<delete dir="${build.dist}/include" />
+		<delete dir="${build.dist}/lib" />
+		<mkdir dir="${build.dist}/include" />
+		<mkdir dir="${build.dist}/lib" />
+	</target>
+
+	<target name="thirdparty" depends="log4cxx,cppunit,expat,apr-1,stomp,jbas,java-devel,ace" />
 	<target name="install" depends="thirdparty" />
 
 	<target name="jbas" depends="clean,init">
+		<antcall target="purge"/>
 		<validate-files inc.dir="${jbossas.lib.dir}" lib.dir="${jbossas.lib.dir}" artifactId="jbossas" />
 
 		<install-file-artifact filename="${jbossas.lib.dir}/jboss-javaee.jar" groupId="jboss" artifactId="jboss-javaee" name="jboss-javaee" version="${jbossas.version}" description="jboss-javaee" />
@@ -154,7 +162,8 @@
 			</fileset>
 		</sync>
 	</target>
-	<target name="ace" depends="init">
+	<target name="ace" depends="clean,init">
+		<antcall target="purge"/>
 		<validate-files inc.dir="${ace.include.dir}" lib.dir="${ace.lib.dir}" artifactId="ace" />
 
 		<antcall target="ace-lib-linux" />
@@ -218,6 +227,7 @@
 		<copy file="${expat.lib.dir}/libexpat.lib" todir="${build.dist}/lib" />
 	</target>
 	<target name="expat" depends="clean,init">
+		<antcall target="purge"/>
 		<validate-files inc.dir="${expat.include.dir}" lib.dir="${expat.lib.dir}" artifactId="expat" />
 
 		<antcall target="expat-lib-linux" />
@@ -240,6 +250,7 @@
 		<copy file="${cppunit.lib.dir}/cppunitd_dll.lib" todir="${build.dist}/lib" />
 	</target>
 	<target name="cppunit" depends="clean,init">
+		<antcall target="purge"/>
 		<validate-files inc.dir="${cppunit.include.dir}" lib.dir="${cppunit.lib.dir}" artifactId="cppunit" />
 
 		<antcall target="cppunit-lib-linux" />
@@ -259,6 +270,7 @@
 		<copy file="${apr-1.lib.dir}/libapr-1.lib" todir="${build.dist}/lib" />
 	</target>
 	<target name="apr-1" depends="clean,init">
+		<antcall target="purge"/>
 		<validate-files inc.dir="${apr-1.include.dir}" lib.dir="${apr-1.lib.dir}" artifactId="apr-1" />
 
 		<antcall target="apr-1-lib-linux" />
@@ -277,6 +289,7 @@
 		<copy file="${stomp.lib.dir}/libstomp.lib" todir="${build.dist}/lib" />
 	</target>
 	<target name="stomp" depends="clean,init">
+		<antcall target="purge"/>
 		<validate-files inc.dir="${stomp.include.dir}" lib.dir="${stomp.lib.dir}" artifactId="stomp" />
 
 		<antcall target="stomp-lib-linux" />
@@ -289,6 +302,7 @@
 	</target>
 
 	<target name="java-devel" depends="clean,init">
+		<antcall target="purge"/>
 		<fail message="missing directories ${java-devel.include.dir} or ${java-devel.platform.include.dir}">
 			<condition>
 				<and>
@@ -320,6 +334,7 @@
 	</target>
 
 	<target name="log4cxx" depends="clean,init">
+		<antcall target="purge"/>
 		<validate-files inc.dir="${log4cxx.include.dir}" lib.dir="${log4cxx.lib.dir}" artifactId="log4cxx" />
 
 		<antcall target="log4cxx-lib-linux" />
