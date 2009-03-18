@@ -41,6 +41,7 @@ extern "C" {
 #endif
 extern UTILITIES_DLL int dummy_rm_add_fault(fault_t *);
 extern UTILITIES_DLL int dummy_rm_del_fault(int);
+extern UTILITIES_DLL struct xa_switch_t testxasw;
 #ifdef __cplusplus
 }
 #endif
