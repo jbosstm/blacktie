@@ -41,6 +41,7 @@
 					<skipTests>${skipTests}</skipTests>
 					<maven.test.skip>${maven.test.skip}</maven.test.skip>
 					<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
+					<export.dll>${export.dll}</export.dll>
 				</configuration>
 
 				<executions>
@@ -91,6 +92,13 @@
 </dependency>
 </dependencies>
 
+	<profiles>
+		<profile>
+			<id>windows</id>
+			<activation> <os> <family>windows</family> </os> </activation>
+			<properties><export.dll></export.dll></properties>
+		</profile>	      
+	</profiles>
 	<properties>
 	</properties>
 </project>
