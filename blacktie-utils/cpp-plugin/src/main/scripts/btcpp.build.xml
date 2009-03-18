@@ -126,6 +126,7 @@
 		<mkdir dir="${idl.output.dir}" />
 		<apply executable="${idl.compiler}" parallel="false" failonerror="true">
 			<env key="LD_LIBRARY_PATH" path="${ace.lroot}/lib:${ace.lroot}/bin" />
+			<env key="Path" path="${env.Path};${ace.lroot}/lib;${ace.lroot}/bin" />
 
 			<env key="TAO_ROOT" path="${ace.iroot}" />
 			<env key="ACE_ROOT" path="${ace.lroot}" />
