@@ -74,7 +74,6 @@
         <parameter>
           <name>export.dll</name>
           <property>export.dll</property>
-          <required>true</required>
           <readonly>false</readonly>
           <defaultValue></defaultValue>
           <type>java.lang.String</type>
@@ -185,7 +184,6 @@
         <parameter>
           <name>export.dll</name>
           <property>export.dll</property>
-          <required>true</required>
           <readonly>false</readonly>
           <defaultValue></defaultValue>
           <type>java.lang.String</type>
@@ -267,7 +265,6 @@
         <parameter>
           <name>export.dll</name>
           <property>export.dll</property>
-          <required>true</required>
           <readonly>false</readonly>
           <defaultValue></defaultValue>
           <type>java.lang.String</type>
@@ -357,7 +354,6 @@
         <parameter>
           <name>export.dll</name>
           <property>export.dll</property>
-          <required>true</required>
           <readonly>false</readonly>
           <defaultValue></defaultValue>
           <type>java.lang.String</type>
@@ -429,7 +425,6 @@
         <parameter>
           <name>export.dll</name>
           <property>export.dll</property>
-          <required>true</required>
           <readonly>false</readonly>
           <defaultValue></defaultValue>
           <type>java.lang.String</type>
