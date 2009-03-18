@@ -61,7 +61,7 @@
 		<condition property="is-msvc">
 			<equals arg1="${toolchain.compiler}" arg2="msvc" />
 		</condition>
-		<condition property="lib.convert.pattern" value="*.dll" else="lib*.so">
+		<condition property="lib.convert.pattern" value="*.lib" else="lib*.so">
 			<isset property="is-msvc"/>
 		</condition>
 		<condition property="export.dir">
@@ -192,7 +192,7 @@
 		<!--
 		     create a comma separated list of libraries from all the libraries in target/cxx/compile/lib
 		     -->
-                <fileset id="fileset.compile.libs" dir="target/cxx/compile/lib" includes="*.so"/>
+                <fileset id="fileset.compile.libs" dir="target/cxx/compile/lib" includes="*.lib"/>
                 <property name="xcompile.libs" value="${toString:fileset.compile.libs}"/>
                 <convert-libset libdir="${xcompile.libs}" propname="compile.libs"/>
 
