@@ -37,30 +37,6 @@
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>list-main-dependencies</id>
-						<phase>initialize</phase>
-						<goals>
-							<goal>build-classpath</goal>
-						</goals>
-						<configuration>
-							<includeScope>compile</includeScope>
-							<pathSeparator>:</pathSeparator>
-							<outputFile>${project.build.directory}/compile.classpath</outputFile>
-						</configuration>
-					</execution>
-					<execution>
-						<id>list-test-dependencies</id>
-						<phase>initialize</phase>
-						<goals>
-							<goal>build-classpath</goal>
-						</goals>
-						<configuration>
-							<includeScope>test</includeScope>
-							<pathSeparator>:</pathSeparator>
-							<outputFile>${project.build.directory}/test.classpath</outputFile>
-						</configuration>
-					</execution>
-					<execution>
 						<id>unpack-compile-dependencies</id>
 						<phase>initialize</phase>
 						<goals>
@@ -73,7 +49,6 @@
 							<outputDirectory>${project.build.directory}/cxx/compile</outputDirectory>
 							<overWriteReleases>false</overWriteReleases>
 							<overWriteSnapshots>true</overWriteSnapshots>
-							<silent>true</silent>
 						</configuration>
 					</execution>
 					<execution>
@@ -89,7 +64,6 @@
 							<outputDirectory>${project.build.directory}/cxx/test</outputDirectory>
 							<overWriteReleases>false</overWriteReleases>
 							<overWriteSnapshots>true</overWriteSnapshots>
-							<silent>true</silent>
 						</configuration>
 					</execution>
 					<execution>

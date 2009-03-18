@@ -105,10 +105,19 @@
 	</target>
 
 	<target name="generate-sources" >
+		<condition property="exe" value=".exe">
+			<equals arg1="${toolchain.compiler}" arg2="msvc" />
+		</condition>
+		<condition property="exe" value="">
+			<not>
+				<equals arg1="${toolchain.compiler}" arg2="msvc" />
+			</not>
+		</condition>
+
 		<property name="ace.lroot" value="${project.build.directory}/cxx/compile" />
 		<property name="ace.iroot" value="${project.build.directory}/cxx/compile/include" />
 		<property name="ace.broot" value="${project.build.directory}/cxx/compile/bin" />
-		<property name="idl.compiler" value="${ace.broot}/tao_idl" />
+		<property name="idl.compiler" value="${ace.broot}/tao_idl${exe}" />
 
 		<available file="${idl.compiler}" property="tao_idl.exe.exists"/>
 		<fail message="missing idl compiler: ${idl.compiler}" unless="tao_idl.exe.exists" />
@@ -121,17 +130,6 @@
 			<env key="TAO_ROOT" path="${ace.iroot}" />
 			<env key="ACE_ROOT" path="${ace.lroot}" />
 
-			<!--
-			<env key="TAO_ROOT" path="${ace.iroot}" />
-			<env key="PATH" path="${ace.broot}" />
-			<env key="PATH" path="${env.PATH}:${ace.broot}" />
-			<env key="PATH" path="${env.PATH}:/home/mmusgrov/blacktie/util/ACE+TAO-5.6.7/ACE_wrappers/bin" />
-			<env key="Path" path="${env.Path}:${ace.lroot}/lib:${ace.lroot}/bin" />
-			<env key="ACE_ROOT" path="${ACE_ROOT}" />
-			<env key="LD_LIBRARY_PATH" path="${ACE_ROOT}/lib:${ACE_ROOT}/TAO/TAO_IDL" />
-			<env key="Path" path="${env.Path}:${ACE_ROOT}/lib:${ACE_ROOT}/TAO/TAO_IDL" />
-			<arg line="-o ${idl.output.dir} -Wb,pre_include=ace/pre.h -Wb,post_include=ace/post.h -I${ace.root}/TAO -I${ace.root}/TAO/tao -I${ace.root}/TAO/tao/orbsvcs -Isrc/main/idl -Wb,export_macro=ATMIBROKER_IDL_DLL -Wb,export_include=atmiBrokerIdlMacro.h" />
-			-->
 			<arg line="-o ${idl.output.dir} -H perfect_hash -g ${ace.broot} -Wb,pre_include=ace/pre.h -Wb,post_include=ace/post.h -I${ace.iroot}/tao -I${ace.iroot}/orbsvcs -Isrc/main/idl -Wb,export_macro=ATMIBROKER_IDL_DLL -Wb,export_include=atmiBrokerIdlMacro.h" />
 			<fileset dir="src" casesensitive="yes">
 				<patternset id="idl.sources">
@@ -342,22 +340,6 @@
 	<target name="package" depends="init">
         	<mkdir dir="target/classes/lib" />
         	<mkdir dir="target/classes/include" />
-	</target>
-
-	<target name="dependency-check">
-	<!--
-	     TODO just do this for non-snapshot dependencies
-		<checksum file="target/compile.classpath" verifyProperty="compile.classpath.chksum"/>
-		<checksum file="target/test.classpath" verifyProperty="test.classpath.chksum"/>
-		<condition property="new.compile.classpath">
-			<equals arg1="${compile.classpath.chksum}" arg2="false" />
-		</condition>
-		<condition property="new.test.classpath">
-			<equals arg1="${test.classpath.chksum}" arg2="false" />
-		</condition>
-		-->
-		<property name="new.compile.classpath" value="true" />
-		<property name="new.test.classpath" value="true" />
 	</target>
 
 	<macrodef name="convert-libset">
