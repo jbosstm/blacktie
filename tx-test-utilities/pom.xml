@@ -96,7 +96,7 @@
 		<profile>
 			<id>windows</id>
 			<activation> <os> <family>windows</family> </os> </activation>
-			<properties><export.dll></export.dll></properties>
+			<properties><export.dll>_UTILITIES_DLL</export.dll></properties>
 		</profile>	      
 	</profiles>
 	<properties>
