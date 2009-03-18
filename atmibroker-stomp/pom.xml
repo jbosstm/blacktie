@@ -50,6 +50,7 @@
 					<skipTests>true</skipTests>
 					<maven.test.skip>${maven.test.skip}</maven.test.skip>
 					<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
+					<export.dll>${export.dll}</export.dll>
 				</configuration>
 				<executions>
 					<execution>

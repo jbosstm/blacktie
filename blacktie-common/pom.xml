@@ -128,6 +128,7 @@
 			<properties>
 				<toolchain.compiler>gcc</toolchain.compiler>
 				<ld_library_path>${project.build.directory}/cxx/runtime/lib:${project.build.directory}/cxx/test/lib:${project.build.directory}</ld_library_path>
+				<export.dll></export.dll>
 			</properties>
 		</profile>
 	</profiles>

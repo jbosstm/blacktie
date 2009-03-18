@@ -42,6 +42,7 @@
 					<src.main>${src.main}</src.main>
 					<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
 					<generate.testrunner>true</generate.testrunner>
+					<export.dll>${export.dll}</export.dll>
 				</configuration>
 
 				<executions>

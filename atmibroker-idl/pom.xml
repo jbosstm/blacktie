@@ -39,6 +39,7 @@
 					<configuration.type>${configuration.type}</configuration.type>
 					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
 					<src.main>${src.main}</src.main>
+					<export.dll>${export.dll}</export.dll>
 				</configuration>
 
 				<executions>

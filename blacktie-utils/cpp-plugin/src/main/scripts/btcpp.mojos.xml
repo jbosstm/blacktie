@@ -72,6 +72,15 @@
           <description>Build type. Tested values are gcc|msvc</description>
         </parameter>
         <parameter>
+          <name>export.dll</name>
+          <property>export.dll</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue></defaultValue>
+          <type>java.lang.String</type>
+          <description>export.dll</description>
+        </parameter>
+        <parameter>
           <name>configuration.type</name>
           <property>configuration.type</property>
           <required>true</required>
@@ -174,6 +183,15 @@
           <description>Build type. Tested values are gcc|msvc</description>
         </parameter>
         <parameter>
+          <name>export.dll</name>
+          <property>export.dll</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue></defaultValue>
+          <type>java.lang.String</type>
+          <description>export.dll</description>
+        </parameter>
+        <parameter>
           <name>configuration.type</name>
           <property>configuration.type</property>
           <required>true</required>
@@ -245,6 +263,15 @@
           <defaultValue>gcc</defaultValue>
           <type>java.lang.String</type>
           <description>Build type. Tested values are gcc|msvc</description>
+        </parameter>
+        <parameter>
+          <name>export.dll</name>
+          <property>export.dll</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue></defaultValue>
+          <type>java.lang.String</type>
+          <description>export.dll</description>
         </parameter>
         <parameter>
           <name>configuration.type</name>
@@ -328,6 +355,15 @@
           <description>Build type. Tested values are gcc|msvc</description>
         </parameter>
         <parameter>
+          <name>export.dll</name>
+          <property>export.dll</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue></defaultValue>
+          <type>java.lang.String</type>
+          <description>export.dll</description>
+        </parameter>
+        <parameter>
           <name>configuration.type</name>
           <property>configuration.type</property>
           <required>true</required>
@@ -389,6 +425,15 @@
           <defaultValue>gcc</defaultValue>
           <type>java.lang.String</type>
           <description>Build type. Tested values are gcc|msvc</description>
+        </parameter>
+        <parameter>
+          <name>export.dll</name>
+          <property>export.dll</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue></defaultValue>
+          <type>java.lang.String</type>
+          <description>export.dll</description>
         </parameter>
         <parameter>
           <name>configuration.type</name>
