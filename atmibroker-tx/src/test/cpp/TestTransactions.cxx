@@ -78,7 +78,7 @@ void TestTransactions::test_protocol()
 }
 
 static void check_info(const char *msg, int rv,
-	COMMIT_RETURN cr, TRANSACTION_CONTROL tc, TRANSACTION_TIMEOUT tt, TRANSACTION_STATE ts)
+	COMMIT_RETURN cr, TRANSACTION_CONTROL tc, TRANSACTION_TIMEOUT tt, TX_TRANSACTION_STATE ts)
 {
 	TXINFO txinfo;
 
