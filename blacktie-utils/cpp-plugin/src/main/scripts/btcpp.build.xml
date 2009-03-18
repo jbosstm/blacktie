@@ -192,7 +192,7 @@
 		<!--
 		     create a comma separated list of libraries from all the libraries in target/cxx/compile/lib
 		     -->
-                <fileset id="fileset.compile.libs" dir="target/cxx/compile/lib" includes="*.lib"/>
+                <fileset id="fileset.compile.libs" dir="target/cxx/compile/lib" includes="${lib.convert.pattern}"/>
                 <property name="xcompile.libs" value="${toString:fileset.compile.libs}"/>
                 <convert-libset libdir="${xcompile.libs}" propname="compile.libs"/>
 
@@ -245,14 +245,14 @@
 		<!--
 		     create a comma separated list of libraries from all the libraries in target/cxx/compile/lib
 		     -->
-                <fileset id="fileset.compile.libs" dir="target/cxx/compile/lib" includes="*.so"/>
+                <fileset id="fileset.compile.libs" dir="target/cxx/compile/lib" includes="${lib.convert.pattern}"/>
                 <property name="xcompile.libs" value="${toString:fileset.compile.libs}"/>
                 <convert-libset libdir="${xcompile.libs}" propname="compile.libs"/>
 
 		<!--
 		     create a comma separated list of libraries from all the libraries in target/cxx/test/lib
 		     -->
-                <fileset id="fileset.test.libs" dir="target/cxx/test/lib" includes="*.so"/>
+                <fileset id="fileset.test.libs" dir="target/cxx/test/lib" includes="${lib.convert.pattern}"/>
                 <property name="xtest.libs" value="${toString:fileset.test.libs}"/>
                 <convert-libset libdir="${xtest.libs}" propname="test.libs"/>
 
@@ -308,7 +308,7 @@
 		</exec>
 	</target>
 	<target name="_test-msvc" depends="init" if="is-msvc">
-		<exec dir="target/cpp-test-classes" newenvironment="false" executable="../testsuite" failonerror="${failOnErrorTests}">
+		<exec dir="target/cpp-test-classes" newenvironment="false" resolveexecutable="true" executable="../testsuite.exe" failonerror="${failOnErrorTests}">
 			<redirector output="target/cppunit/run.txt" logError="true" alwayslog="true"/>
 			<env key="Path" value="${env.Path};..\cxx\runtime\lib;..\cxx\test\lib;..\${configuration.type}\${lib.type}" />
 		</exec>
