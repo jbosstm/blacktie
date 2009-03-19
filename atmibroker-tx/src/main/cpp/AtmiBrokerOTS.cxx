@@ -125,7 +125,7 @@ int AtmiBrokerOTS::tx_open(void) {
 					return TX_ERROR;
 				} catch (...) {
 					// TODO placeholder return the correct error code
-					LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(), (char*) "tx_open unknown error connecting to /" << transactionFactoryId << "/");
+					LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(), (char*) "tx_open unknown error connecting to /" << transFactoryId << "/");
 					return TX_ERROR;
 				}
 			} else {
