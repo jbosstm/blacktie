@@ -15,6 +15,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#include "TestSymbolLoader.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestSymbolLoader);
 #include "SimpleOrbTest.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( SimpleOrbTest);
 #include "ExceptionCase.h"
