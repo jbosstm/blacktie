@@ -7,7 +7,7 @@
 
 #include "SymbolLoader.h"
 
-#include "ace/OS.h"
+#include "ace/DLL.h"
 
 #include "log4cxx/logger.h"
 
@@ -22,23 +22,24 @@ void* lookup_symbol(const char *lib, const char *symbol) {
 	if (symbol == NULL || lib == NULL)
 		return 0;
 
-	ACE_SHLIB_HANDLE handle = ACE_OS::dlopen(lib, ACE_DEFAULT_SHLIB_MODE);
+	ACE_DLL dll;
+	int retval = dll.open(lib, ACE_DEFAULT_SHLIB_MODE, 0);
 
-	if (!handle) {
+	if (retval != 0) {
 		LOG4CXX_ERROR(symbolLoaderLogger, (char*) "lookup_symbol: " << symbol
-				<< (char *) " dlopen error: " << ACE_OS::dlerror());
+				<< (char *) " dll.open error: " << dll.error());
 		return NULL;
 	}
 
 	void * sym = NULL;
 
 	try {
-		void * sym = ACE_OS::dlsym(handle, symbol);
+		sym = dll.symbol(symbol);
 
-		if (ACE_OS::dlerror()) {
+		if (sym == NULL) {
 			LOG4CXX_ERROR(symbolLoaderLogger, (char*) "lookup_symbol: "
-					<< symbol << (char *) " dlsym error: " << ACE_OS::dlerror());
-			ACE_OS::dlclose(handle);
+					<< symbol << (char *) " dlsym error: " << dll.error());
+			dll.close();
 			return NULL;
 		}
 
