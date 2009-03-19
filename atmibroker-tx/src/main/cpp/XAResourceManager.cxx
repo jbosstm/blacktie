@@ -63,12 +63,14 @@ XAResourceManager::XAResourceManager(
         poa_(NULL), connection_(connection), name_(name), openString_(openString), closeString_(closeString),
 		rmid_(rmid), xa_switch_(xa_switch) {
 
+		LOG4CXX_TRACE(xaResourceLogger,  (char *) "creating");
         if (name == NULL) {
                 RMException ex("Invalid RM name", EINVAL);
                 throw ex;
         }
 
         int rv = xa_switch_->xa_open_entry((char *) openString, rmid, TMNOFLAGS);
+		LOG4CXX_TRACE(xaResourceLogger,  (char *) "performed xa_open");
 
         if (rv != XA_OK) {
                 RMException ex("xa_open", rv);
@@ -76,7 +78,9 @@ XAResourceManager::XAResourceManager(
         }
 
 	// each RM has its own POA
+		LOG4CXX_TRACE(xaResourceLogger,  (char *) "creating poa");
         createPOA();
+		LOG4CXX_TRACE(xaResourceLogger,  (char *) "created poa");
 }
 
 XAResourceManager::~XAResourceManager() {
