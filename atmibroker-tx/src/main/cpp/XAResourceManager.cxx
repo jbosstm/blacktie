@@ -125,7 +125,7 @@ void XAResourceManager::createPOA() {
 	ACE_TCHAR name[32];
 	memset(name, '\0', 32);
 	LOG4CXX_TRACE(xaResourceLogger,  (char *) "initialized the name");
-	ACE_OS::sprintf(name, ACE_TEXT("%s%lld"), "ATMI_RM_", rmid_);
+	ACE_OS::sprintf(name, ACE_TEXT("%s%d"), "ATMI_RM_", rmid_);
 	LOG4CXX_TRACE(xaResourceLogger,  (char *) "printed the name in");
 	LOG4CXX_TRACE(xaResourceLogger,  (char *) "rmid was " << rmid_);
 	LOG4CXX_TRACE(xaResourceLogger,  (char *) "name was " << name);
