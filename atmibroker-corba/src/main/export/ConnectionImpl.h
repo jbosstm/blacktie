@@ -47,4 +47,12 @@ private:
 	std::map<int, SessionImpl*> sessionMap;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern ATMIBROKER_CORBA_DLL struct connection_factory_t connectionFactory;
+#ifdef __cplusplus
+}
+#endif
+
 #endif
