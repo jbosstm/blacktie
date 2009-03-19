@@ -117,7 +117,7 @@ static void warn(const char * reason) {
 	//throw ex;
 }
 
-static void XMLCALLstartElement
+static void XMLCALL startElement
 (void *userData, const char *name, const char **atts) {
 	std::vector<envVar_t>* aEnvironmentStructPtr = (std::vector<envVar_t>*) userData;
 
@@ -209,7 +209,7 @@ static void XMLCALLstartElement
 	depth += 1;
 }
 
-static void XMLCALLendElement
+static void XMLCALL endElement
 (void *userData, const char *name) {
 	std::vector<envVar_t>* aEnvironmentStructPtr = (std::vector<envVar_t>*) userData;
 
@@ -290,7 +290,7 @@ static void XMLCALLendElement
 	depth -= 1;
 }
 
-static void XMLCALLcharacterData
+static void XMLCALL characterData
 (void *userData, const char *cdata, int len) {
 	//AtmiBroker::EnvVariableInfoSeq* aEnvironmentStructPtr = (AtmiBroker::EnvVariableInfoSeq*)userData;
 
