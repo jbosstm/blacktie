@@ -27,25 +27,18 @@ void TestSymbolLoader::test() {
 	char* lib = AtmiBrokerEnv::get_instance()->getenv("test-lib");
 	char* symbol = AtmiBrokerEnv::get_instance()->getenv("test-symbol");
 	ACE_DLL dll;
-	    int retval = dll.open (lib, ACE_DEFAULT_SHLIB_MODE, 0);
+	int retval = dll.open(lib, ACE_DEFAULT_SHLIB_MODE, 0);
 
-    if (retval != 0)
-       {
-       ACE_TCHAR *dll_error = dll.error ();
-       /*ACE_ERROR_RETURN ((LM_ERROR,
-                           ACE_TEXT ("Error in DLL Open: %s\n"),
-                           dll_error ? dll_error : ACE_TEXT ("unknown error")),
-                           -1);
-						   */
-		userlogc((char*) "lookup_dll- %s:%s", lib,  dll.error());
+	if (retval != 0) {
+		userlogc((char*) "lookup_dll- %s:%s", lib, dll.error());
 		CPPUNIT_FAIL("lookup_dll");
-       }
-	void* sym =  NULL;
+	}
+	void* sym = NULL;
 	try {
-		sym = dll.symbol (symbol);
+		sym = dll.symbol(symbol);
 
 		if (sym == NULL) {
-			userlogc((char*) "lookup_symbol- %s:%s", symbol,  dll.error());
+			userlogc((char*) "lookup_symbol- %s:%s", symbol, dll.error());
 			dll.close();
 			CPPUNIT_FAIL("lookup_symbol");
 		}
