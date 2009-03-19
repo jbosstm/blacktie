@@ -217,6 +217,7 @@ XAResourceManager * XAResourceManagerFactory::createRM(
 	}
 
 	LOG4CXX_TRACE(xaResourceLogger,  (char *) "creating xarm");
+	LOG4CXX_TRACE(xaResourceLogger,  (char *) "using" << xa_switch->name);
 	XAResourceManager * a = new XAResourceManager(
 		connection, rmp->resourceName, rmp->openString, rmp->closeString, rmp->resourceMgrId, xa_switch);
 	LOG4CXX_TRACE(xaResourceLogger,  (char *) "created xarm");

@@ -99,22 +99,32 @@ void XAResourceManager::createPOA() {
         //PortableServer::POA_var rpoa = PortableServer::POA::_narrow(obj);
 
         PortableServer::POAManager_ptr poa_manager = (PortableServer::POAManager_ptr) connection_->root_poa_manager;
+		LOG4CXX_TRACE(xaResourceLogger,  (char *) "got poa_manager");
         PortableServer::POA_ptr parent_poa = (PortableServer::POA_ptr) connection_->root_poa;
+		LOG4CXX_TRACE(xaResourceLogger,  (char *) "got parent_poa");
 	PortableServer::LifespanPolicy_var p1 = parent_poa->create_lifespan_policy(PortableServer::PERSISTENT);
+	LOG4CXX_TRACE(xaResourceLogger,  (char *) "got p1");
 
         CORBA::PolicyList policies;
         policies.length(1);
+		LOG4CXX_TRACE(xaResourceLogger,  (char *) "initialized policies");
 
 	// the servant object references must survive failure of the ORB in order to support recover of 
 	// transaction branches (the default orb policy for servants is transient)
         policies[0] = PortableServer::LifespanPolicy::_duplicate(p1);
+		LOG4CXX_TRACE(xaResourceLogger,  (char *) "duplicated policy 1");
 
 	// create a new POA for this RM
 	ACE_TCHAR name[32];
+	LOG4CXX_TRACE(xaResourceLogger,  (char *) "initialized the name");
 	ACE_OS::sprintf(name, ACE_TEXT("%s%02d"), "ATMI_RM_" + rmid_);
-
+	LOG4CXX_TRACE(xaResourceLogger,  (char *) "printed the name in");
+	LOG4CXX_TRACE(xaResourceLogger,  (char *) "rmid was " << rmid_);
+	LOG4CXX_TRACE(xaResourceLogger,  (char *) "name was " << name);
+	LOG4CXX_TRACE(xaResourceLogger,  (char *) "name was " << this->name_);
 	try {
         	this->poa_ = parent_poa->create_POA(name, poa_manager, policies);
+			LOG4CXX_TRACE(xaResourceLogger,  (char *) "created poa");
 	} catch (PortableServer::POA::AdapterAlreadyExists &) {
 		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getWarn(), (char *) "Duplicate RM POA - name = " << name);
                 RMException ex("Duplicate RM POA", EINVAL);
@@ -127,10 +137,13 @@ void XAResourceManager::createPOA() {
 	}
 
 	policies[0]->destroy();
+	LOG4CXX_TRACE(xaResourceLogger,  (char *) "destroyed policies");
 
 	// take the POA out of its holding state
 	PortableServer::POAManager_var mgr = this->poa_->the_POAManager();
+	LOG4CXX_TRACE(xaResourceLogger,  (char *) "activating mgr");
 	mgr->activate();
+	LOG4CXX_TRACE(xaResourceLogger,  (char *) "activated mgr");
 }
 
 int XAResourceManager::createServant(XID * xid)
