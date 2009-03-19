@@ -296,20 +296,17 @@
 	</target>
 
 	<target name="test" depends="fileset.test.check" if="have-tests">
-		<mkdir dir="target/cppunit" />
 		<antcall target="_test-msvc" />
 		<antcall target="_test-gcc" />
 	</target>
 
 	<target name="_test-gcc" depends="init" unless="is-msvc">
 		<exec dir="target/cpp-test-classes" newenvironment="true" resolveexecutable="true" executable="../testsuite" failonerror="${failOnErrorTests}">
-			<redirector output="target/cppunit/run.txt" logError="true" alwayslog="true"/>
 			<env key="LD_LIBRARY_PATH" value="../cxx/runtime/lib:../cxx/test/lib:../${configuration.type}/${lib.type}" />
 		</exec>
 	</target>
 	<target name="_test-msvc" depends="init" if="is-msvc">
 		<exec dir="target/cpp-test-classes" newenvironment="false" resolveexecutable="true" executable="../testsuite.exe" failonerror="${failOnErrorTests}">
-			<redirector output="target/cppunit/run.txt" logError="true" alwayslog="true"/>
 			<env key="Path" value="${env.Path};..\cxx\runtime\lib;..\cxx\test\lib;..\${configuration.type}\${lib.type}" />
 		</exec>
 	</target>
