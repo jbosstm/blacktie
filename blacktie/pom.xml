@@ -48,8 +48,8 @@
 		<module>../blacktie-utils</module>
 		<module>../blacktie-xsd</module>
 		<module>../atmibroker-idl</module>
-		<module>../atmibroker-core</module>
 		<module>../tx-test-utilities</module>
+		<module>../atmibroker-core</module>
 		<module>../atmibroker-tx</module>
 		<module>../atmibroker-corba</module>
 		<module>../atmibroker-stomp</module>
