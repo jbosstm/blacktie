@@ -27,7 +27,8 @@ int Worker::svc(void) {
 	try {
 		m_orb->run();
 	} catch (CORBA::Exception& e) {
-		LOG4CXX_ERROR(logger, (char*) "Unexpected CORBA exception: %s" << e._name());
+		LOG4CXX_ERROR(logger, (char*) "Unexpected CORBA exception: %s"
+				<< e._name());
 	} catch (...) {
 		LOG4CXX_ERROR(logger, (char*) "Worker caught unknown error running orb");
 	}

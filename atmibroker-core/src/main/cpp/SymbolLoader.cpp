@@ -11,7 +11,8 @@
 
 #include "log4cxx/logger.h"
 
-log4cxx::LoggerPtr symbolLoaderLogger(log4cxx::Logger::getLogger("symbolLoaderLogger"));
+log4cxx::LoggerPtr symbolLoaderLogger(log4cxx::Logger::getLogger(
+		"symbolLoaderLogger"));
 
 void* lookup_symbol(const char *lib, const char *symbol) {
 	LOG4CXX_LOGLS(symbolLoaderLogger, log4cxx::Level::getTrace(),
@@ -35,8 +36,8 @@ void* lookup_symbol(const char *lib, const char *symbol) {
 		void * sym = ACE_OS::dlsym(handle, symbol);
 
 		if (ACE_OS::dlerror()) {
-			LOG4CXX_ERROR(symbolLoaderLogger, (char*) "lookup_symbol: " << symbol
-					<< (char *) " dlsym error: " << ACE_OS::dlerror());
+			LOG4CXX_ERROR(symbolLoaderLogger, (char*) "lookup_symbol: "
+					<< symbol << (char *) " dlsym error: " << ACE_OS::dlerror());
 			ACE_OS::dlclose(handle);
 			return NULL;
 		}

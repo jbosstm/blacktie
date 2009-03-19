@@ -21,7 +21,6 @@
 #include "atmiBrokerCoreMacro.h"
 #include "log4cxx/logger.h"
 
-
 #include <tao/ORB.h>
 #include <ace/Task.h>
 class ATMIBROKER_CORE_DLL Worker: public ACE_Task_Base {

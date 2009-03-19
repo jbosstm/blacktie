@@ -42,18 +42,18 @@ public:
 };
 
 typedef struct ATMIBROKER_CORE_DLL xarm_config {
-        bool threadModel;
-        bool automaticAssociation;
-        bool dynamicRegistrationOptimization;
-        long resourceMgrId;
-        char * resourceName;
-        char * openString;
-        char * closeString;
-        char * xasw;
-        char * xalib;
+	bool threadModel;
+	bool automaticAssociation;
+	bool dynamicRegistrationOptimization;
+	long resourceMgrId;
+	char * resourceName;
+	char * openString;
+	char * closeString;
+	char * xasw;
+	char * xalib;
 	struct xarm_config * next;
 	struct xarm_config * head;
-} xarm_config_t;
+}xarm_config_t;
 
 extern ATMIBROKER_CORE_DLL xarm_config_t * xarmp;
 extern ATMIBROKER_CORE_DLL char domain[30];

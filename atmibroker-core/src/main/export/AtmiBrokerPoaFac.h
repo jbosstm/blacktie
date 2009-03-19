@@ -16,7 +16,6 @@
  * MA  02110-1301, USA.
  */
 
-
 #ifndef AtmiBroker_POA_FAC_H_
 #define AtmiBroker_POA_FAC_H_
 

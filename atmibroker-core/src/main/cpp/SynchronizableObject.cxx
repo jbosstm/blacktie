@@ -18,9 +18,11 @@
 
 #include "SynchronizableObject.h"
 
-log4cxx::LoggerPtr SynchronizableObject::logger(log4cxx::Logger::getLogger("SynchronizableObject"));
+log4cxx::LoggerPtr SynchronizableObject::logger(log4cxx::Logger::getLogger(
+		"SynchronizableObject"));
 
-SynchronizableObject::SynchronizableObject() :mutex(), cond(mutex) {
+SynchronizableObject::SynchronizableObject() :
+	mutex(), cond(mutex) {
 }
 
 SynchronizableObject::~SynchronizableObject() {

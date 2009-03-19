@@ -33,7 +33,8 @@ extern "C" {
 }
 #include "AtmiBrokerEnv.h"
 
-log4cxx::LoggerPtr loggerAtmiBrokerLogc(log4cxx::Logger::getLogger("AtmiBrokerLogc"));
+log4cxx::LoggerPtr loggerAtmiBrokerLogc(log4cxx::Logger::getLogger(
+		"AtmiBrokerLogc"));
 
 bool loggerInitialized;
 
@@ -51,8 +52,11 @@ void userlogc(const char * format, ...) {
 
 extern void initializeLogger() {
 	if (!loggerInitialized) {
-		if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG") != NULL) {
-			log4cxx::PropertyConfigurator::configure(AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG"));
+		if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG")
+				!= NULL) {
+			log4cxx::PropertyConfigurator::configure(
+					AtmiBrokerEnv::get_instance()->getenv(
+							(char*) "LOG4CXXCONFIG"));
 		} else {
 			log4cxx::BasicConfigurator::configure();
 		}
@@ -60,7 +64,8 @@ extern void initializeLogger() {
 	}
 }
 
-void userlog(const log4cxx::LevelPtr& level, log4cxx::LoggerPtr& logger, const char * format, ...) {
+void userlog(const log4cxx::LevelPtr& level, log4cxx::LoggerPtr& logger,
+		const char * format, ...) {
 	if (logger->isEnabledFor(level)) {
 		char str[2048];
 		va_list args;

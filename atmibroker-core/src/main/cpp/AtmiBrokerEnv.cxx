@@ -26,8 +26,8 @@
 #include "AtmiBrokerEnvXml.h"
 #include "log4cxx/logger.h"
 
-
-log4cxx::LoggerPtr loggerAtmiBrokerEnv(log4cxx::Logger::getLogger("AtmiBrokerEnv"));
+log4cxx::LoggerPtr loggerAtmiBrokerEnv(log4cxx::Logger::getLogger(
+		"AtmiBrokerEnv"));
 
 int AtmiBrokerEnv::ENV_VARIABLE_SIZE = 30;
 char *AtmiBrokerEnv::ENVIRONMENT_FILE = (char*) "Environment.xml";
@@ -55,7 +55,8 @@ AtmiBrokerEnv::AtmiBrokerEnv() {
 
 AtmiBrokerEnv::~AtmiBrokerEnv() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "destructor");
-	for (std::vector<envVar_t>::iterator i = envVariableInfoSeq.begin(); i != envVariableInfoSeq.end(); i++) {
+	for (std::vector<envVar_t>::iterator i = envVariableInfoSeq.begin(); i
+			!= envVariableInfoSeq.end(); i++) {
 		free((*i).name);
 		free((*i).value);
 	}
@@ -69,13 +70,16 @@ AtmiBrokerEnv::getenv(char* anEnvName) {
 
 	char *envValue = ::getenv(anEnvName);
 	if (envValue != NULL) {
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "getenv env is %s"<< envValue);
+		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "getenv env is %s"
+				<< envValue);
 		return envValue;
 	}
 
-	for (std::vector<envVar_t>::iterator i = envVariableInfoSeq.begin(); i != envVariableInfoSeq.end(); i++) {
+	for (std::vector<envVar_t>::iterator i = envVariableInfoSeq.begin(); i
+			!= envVariableInfoSeq.end(); i++) {
 		if (strcmp(anEnvName, (*i).name) == 0) {
-			LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "getenv found env name '%s'" << (*i).value);
+			LOG4CXX_DEBUG(loggerAtmiBrokerEnv,
+					(char*) "getenv found env name '%s'" << (*i).value);
 			return (*i).value;
 		}
 	}
@@ -107,7 +111,8 @@ int AtmiBrokerEnv::putenv(char* anEnvNameValue) {
 		value[j] = anEnvNameValue[i];
 	}
 
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "putenv name '%s' value '%s'" << name << value);
+	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "putenv name '%s' value '%s'"
+			<< name << value);
 
 	envVar_t envVar;
 	envVar.name = strdup(name);
@@ -122,16 +127,20 @@ int AtmiBrokerEnv::putenv(char* anEnvNameValue) {
 
 int AtmiBrokerEnv::readenv(char* aEnvFileName, char* label) {
 	if (!readEnvironment) {
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "readenv ignores label variable");
+		LOG4CXX_DEBUG(loggerAtmiBrokerEnv,
+				(char*) "readenv ignores label variable");
 		AtmiBrokerEnvXml aAtmiBrokerEnvXml;
 
 		if (aEnvFileName != NULL) {
-			LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "readenv	file now: %s " << aEnvFileName);
+			LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "readenv	file now: %s "
+					<< aEnvFileName);
 			ENVIRONMENT_FILE = aEnvFileName;
 		}
 
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "readenv file: %s " << ENVIRONMENT_FILE);
-		if (aAtmiBrokerEnvXml.parseXmlDescriptor(&envVariableInfoSeq, ENVIRONMENT_FILE)) {
+		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "readenv file: %s "
+				<< ENVIRONMENT_FILE);
+		if (aAtmiBrokerEnvXml.parseXmlDescriptor(&envVariableInfoSeq,
+				ENVIRONMENT_FILE)) {
 			readEnvironment = true;
 		} else {
 			return -1;
