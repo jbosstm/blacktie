@@ -132,8 +132,10 @@ static int forget(XID *x, int i, long l) {
 static int complete(int *ip1, int *ip2, int i, long l) {
 	return apply_faults(O_XA_COMPLETE, i);
 }
-
-struct xa_switch_t testxasw = {
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern UTILITIES_DLL struct xa_switch_t __cdecl testxasw = {
 	"DummyRM", 0L, 0,
 	open, close,
         start, end, rollback, prepare, commit,
@@ -141,4 +143,7 @@ struct xa_switch_t testxasw = {
         forget,
         complete
 };
+#ifdef __cplusplus
+}
+#endif
 
