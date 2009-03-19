@@ -107,14 +107,27 @@ int AtmiBrokerOTS::tx_open(void) {
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_open ");
 		if (tx_factory == NULL) {
 			if (transFactoryId != NULL && strlen(transFactoryId) != 0) {
-				// TJJ resolving by nameservice "TransactionManagerService.OTS"
-				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "to_name/resolve TransactionService: " << transFactoryId);
-				CosNaming::Name * name = getNamingContextExt()->to_name(transFactoryId);
-				CORBA::Object_var obj = getNamingContextExt()->resolve(*name);
-				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "resolved TransactionService: " << (void*) obj);
-				tx_factory = CosTransactions::TransactionFactory::_narrow(obj);
-				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "narrowed TransactionFactory: " << (void*) tx_factory);
-				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "Obtained TransactionService: " << transFactoryId);
+				try {
+					// TJJ resolving by nameservice "TransactionManagerService.OTS"
+					LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "to_name TransactionService: " << transFactoryId);
+					CosNaming::Name * name = getNamingContextExt()->to_name(transFactoryId);
+					LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "resolve TransactionService: " << transFactoryId);
+					CORBA::Object_var obj = getNamingContextExt()->resolve(*name);
+					LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "resolved TransactionService: " << (void*) obj);
+					tx_factory = CosTransactions::TransactionFactory::_narrow(obj);
+					LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "narrowed TransactionFactory: " << (void*) tx_factory);
+					LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "Obtained TransactionService: " << transFactoryId);
+				} catch (CORBA::SystemException & e) {
+					//e._tao_print_exception("tx_begin error: ");
+					LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getWarn(),
+						(char*) "unable to resolve transaction service: CORBA SystemException name: "
+						<< e._name() << " minor code: " << e.minor());
+					return TX_ERROR;
+				} catch (...) {
+					// TODO placeholder return the correct error code
+					LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(), (char*) "tx_open unknown error connecting to /" << transactionFactoryId << "/");
+					return TX_ERROR;
+				}
 			} else {
 				return -1;
 			}

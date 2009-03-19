@@ -115,9 +115,17 @@ void XAResourceManager::createPOA() {
 		LOG4CXX_TRACE(xaResourceLogger,  (char *) "duplicated policy 1");
 
 	// create a new POA for this RM
+/*
+	char* name = (char*) malloc(RMNAMESZ + 8); // TODO this is the length of the service + 10
+	memset(name, '\0', RMNAMESZ + 8);
+	strcat(name, "ATMI_RM_");
+	strncpy(name, rmid_); // TODO this is the length of the service
+*/
+
 	ACE_TCHAR name[32];
+	memset(name, '\0', 32);
 	LOG4CXX_TRACE(xaResourceLogger,  (char *) "initialized the name");
-	ACE_OS::sprintf(name, ACE_TEXT("%s%02d"), "ATMI_RM_" + rmid_);
+	ACE_OS::sprintf(name, ACE_TEXT("%s%lld"), "ATMI_RM_", rmid_);
 	LOG4CXX_TRACE(xaResourceLogger,  (char *) "printed the name in");
 	LOG4CXX_TRACE(xaResourceLogger,  (char *) "rmid was " << rmid_);
 	LOG4CXX_TRACE(xaResourceLogger,  (char *) "name was " << name);
