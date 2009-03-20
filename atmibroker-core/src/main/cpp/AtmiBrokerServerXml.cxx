@@ -184,8 +184,7 @@ void AtmiBrokerServerXml::parseXmlDescriptor(ServerMetadata* aServerStructPtr,
 				(char*) "loadfile: Could not allocate enough memory to load file %s",
 				aDescriptorFileName);
 	}
-	for (unsigned int i = 0; i < sizeof(buf); i++)
-		*(buf + i) = '\0';
+	memset(buf, '\0', s.st_size);
 	//memcpy(buf,'\0',s.st_size);
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml,
 			(char*) "loadfile: Allocated enough memory to load file %d",
@@ -193,16 +192,29 @@ void AtmiBrokerServerXml::parseXmlDescriptor(ServerMetadata* aServerStructPtr,
 
 	//char buf[1024];
 	XML_Parser parser = XML_ParserCreate(NULL);
+	LOG4CXX_TRACE(loggerAtmiBrokerServerXml, "created parser");
+	
 	int done;
 	strcpy(element, "");
+	LOG4CXX_TRACE(loggerAtmiBrokerServerXml, "strcpy /" << element << "/");
+	
 	strcpy(value, "");
+	LOG4CXX_TRACE(loggerAtmiBrokerServerXml, "strcpy /" << value << "/");
+	
 	XML_SetUserData(parser, aServerStructPtr);
+	LOG4CXX_TRACE(loggerAtmiBrokerServerXml, "set user data" << aServerStructPtr);
+
 	XML_SetElementHandler(parser, startElement, endElement);
+	LOG4CXX_TRACE(loggerAtmiBrokerServerXml, "set element data");
+
 	XML_SetCharacterDataHandler(parser, characterData);
+	LOG4CXX_TRACE(loggerAtmiBrokerServerXml, "set character data");
+
+	try {
 	do {
+		LOG4CXX_TRACE(loggerAtmiBrokerServerXml, (char*) "reading data" << buf);
 		size_t len = fread(buf, 1, s.st_size, aDescriptorFile);
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml,
-				(char*) "buf is %s", buf);
+		LOG4CXX_TRACE(loggerAtmiBrokerServerXml, (char*) "read data" << buf);
 		done = len < sizeof(buf);
 		if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR) {
 			userlog(log4cxx::Level::getError(), loggerAtmiBrokerServerXml,
@@ -211,6 +223,10 @@ void AtmiBrokerServerXml::parseXmlDescriptor(ServerMetadata* aServerStructPtr,
 			break;
 		}
 	} while (!done);
+	} catch (...) {
+		LOG4CXX_ERROR(loggerAtmiBrokerServerXml, "count not load " << aDescriptorFileName);
+	}
+	LOG4CXX_TRACE(loggerAtmiBrokerServerXml, "freeing buf");
 	free(buf);
 	XML_ParserFree(parser);
 

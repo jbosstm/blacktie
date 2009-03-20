@@ -117,18 +117,21 @@ AtmiBrokerServer::AtmiBrokerServer() {
 					(char*) "server");
 			realConnection = AtmiBrokerOTS::init_orb(
 					(char*) "serverAdministration");
+			
+			AtmiBrokerServerXml aAtmiBrokerServerXml;
+			aAtmiBrokerServerXml.parseXmlDescriptor(&serverInfo,
+					(char*) "SERVER.xml");
+			serverName = server;
+
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "creating POAs for %s" << server);
 			AtmiBrokerPoaFac* serverPoaFactory = realConnection->poaFactory;
 			this->poa = serverPoaFactory->createServerPoa(
 					realConnection->orbRef, server, realConnection->root_poa,
 					realConnection->root_poa_manager);
-
-			AtmiBrokerServerXml aAtmiBrokerServerXml;
-			aAtmiBrokerServerXml.parseXmlDescriptor(&serverInfo,
-					(char*) "SERVER.xml");
-			serverName = server;
-
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+					(char*) "created POAs for %s" << server);
+			
 			PortableServer::ObjectId_var oid =
 					PortableServer::string_to_ObjectId(server);
 			poa->activate_object_with_id(oid, this);
