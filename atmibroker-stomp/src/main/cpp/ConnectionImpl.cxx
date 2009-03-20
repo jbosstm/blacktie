@@ -19,8 +19,6 @@
 #include <string.h>
 #include <exception>
 
-#include "stomp.h"
-
 #include "ConnectionImpl.h"
 #include "SessionImpl.h"
 #include "AtmiBrokerEnv.h"

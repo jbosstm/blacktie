@@ -287,6 +287,7 @@
 	</target>
 	<target name="stomp-lib-windows" if="windows">
 		<copy file="${stomp.lib.dir}/libstomp.lib" todir="${build.dist}/lib" />
+		<copy file="${stomp.lib.dir}/libstomp.dll" todir="${build.dist}/lib" />
 	</target>
 	<target name="stomp" depends="clean,init">
 		<antcall target="purge"/>

@@ -23,7 +23,14 @@
 
 #include <queue>
 
+#ifdef __cplusplus
+extern "C" 
+{
+#endif
 #include "stomp.h"
+#ifdef __cplusplus
+}
+#endif
 
 #include "log4cxx/logger.h"
 #include "Destination.h"

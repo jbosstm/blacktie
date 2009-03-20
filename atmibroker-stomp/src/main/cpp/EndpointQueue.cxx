@@ -18,7 +18,6 @@
 #include <exception>
 
 #include "malloc.h"
-#include "stomp.h"
 #include "EndpointQueue.h"
 #include "ThreadLocalStorage.h"
 
