@@ -115,7 +115,7 @@
 			</activation>
 			<properties>
 				<toolchain.compiler>msvc</toolchain.compiler>
-				<ld_library_path>${project.build.directory}/cxx/runtime/lib;${project.build.directory}/cxx/test/lib;${project.build.directory}</ld_library_path>
+				<ld_library_path>${env.Path};${project.build.directory}/cxx/runtime/lib;${project.build.directory}/cxx/test/lib;${project.build.directory}</ld_library_path>
 			</properties>
 		</profile>
 		<profile>
