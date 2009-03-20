@@ -26,7 +26,7 @@ SynchronizableObject::SynchronizableObject() :
 }
 
 SynchronizableObject::~SynchronizableObject() {
-	LOG4CXX_DEBUG(logger, (char*) "SynchronizableObject released: " << this);
+	LOG4CXX_DEBUG(logger, (char*) "SynchronizableObject destroyed: " << this);
 }
 
 bool SynchronizableObject::lock() {
@@ -59,6 +59,6 @@ bool SynchronizableObject::notify() {
 bool SynchronizableObject::unlock() {
 	LOG4CXX_TRACE(logger, (char*) "Releasing mutex: " << this);
 	bool toReturn = mutex.release();
-	LOG4CXX_TRACE(logger, (char*) "Could not release mutex: " << this);
+	LOG4CXX_TRACE(logger, (char*) "released mutex: " << this);
 	return toReturn;
 }

@@ -38,7 +38,7 @@
 class ATMIBROKER_CORBA_DLL EndpointQueue: public virtual Destination, public virtual POA_AtmiBroker::EndpointQueue {
 public:
 	EndpointQueue(CORBA_CONNECTION* connection);
-	EndpointQueue(CORBA_CONNECTION* connection, void* poa, char* serviceName);
+	EndpointQueue(CORBA_CONNECTION* connection, PortableServer::POA_ptr poa, char* serviceName);
 	virtual ~EndpointQueue();
 
 	virtual void send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags) throw (CORBA::SystemException );
@@ -51,7 +51,7 @@ public:
 
 	virtual const char* getName();
 
-	void* getPoa();
+	PortableServer::POA_ptr getPoa();
 
 private:
 	static log4cxx::LoggerPtr logger;
@@ -59,7 +59,7 @@ private:
 	SynchronizableObject* lock;
 	bool shutdown;
 	const char* name;
-	void* thePoa;
+	PortableServer::POA_ptr thePoa;
 
 	// The following are not implemented
 	EndpointQueue(const EndpointQueue &);

@@ -48,14 +48,13 @@ EndpointQueue::EndpointQueue(CORBA_CONNECTION* connection) {
 	setName(orb->object_to_string(queue));
 }
 
-EndpointQueue::EndpointQueue(CORBA_CONNECTION* connection, void* poa, char* serviceName) {
+EndpointQueue::EndpointQueue(CORBA_CONNECTION* connection, PortableServer::POA_ptr poa, char* serviceName) {
 	shutdown = false;
 	thePoa = poa;
-	PortableServer::POA_ptr aFactoryPoaPtr = (PortableServer::POA_ptr) poa;
 	lock = new SynchronizableObject();
-	aFactoryPoaPtr->activate_object(this);
+	thePoa->activate_object(this);
 	LOG4CXX_DEBUG(logger, (char*) "activated tmp_servant " << this);
-	CORBA::Object_var tmp_ref = aFactoryPoaPtr->servant_to_reference(this);
+	CORBA::Object_var tmp_ref = thePoa->servant_to_reference(this);
 	CosNaming::Name * name = ((CosNaming::NamingContextExt_ptr) connection->default_ctx)->to_name(serviceName);
 	((CosNaming::NamingContext_ptr) connection->name_ctx)->bind(*name, tmp_ref);
 	setName((const char*) serviceName);
@@ -74,6 +73,14 @@ EndpointQueue::~EndpointQueue() {
 	lock->unlock();
 	delete lock;
 	lock = NULL;
+
+	
+	LOG4CXX_DEBUG(logger, (char*) "destroying poa: " << thePoa);
+	thePoa->destroy(true, true);
+	thePoa = NULL;
+	LOG4CXX_DEBUG(logger, (char*) "destroyed poa: " << thePoa);
+
+	LOG4CXX_DEBUG(logger, (char*) "destroyed");
 }
 
 void EndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags) throw (CORBA::SystemException ) {
@@ -154,6 +161,6 @@ const char * EndpointQueue::getName() {
 	return name;
 }
 
-void* EndpointQueue::getPoa() {
+PortableServer::POA_ptr EndpointQueue::getPoa() {
 	return thePoa;
 }

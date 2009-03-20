@@ -304,9 +304,11 @@ void AtmiBrokerServer::unadvertiseService(char * serviceName) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "remove_service_queue: " << serviceName);
 			Destination * destination = removeDestination(serviceName);
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+					(char*) "preparing to destroy" << serviceName);
 			serverConnection->destroyDestination(destination);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-					(char*) "service Queue removed" << serviceName);
+					(char*) "destroyed" << serviceName);
 			advertisedServices.erase(i);
 			LOG4CXX_INFO(loggerAtmiBrokerServer,
 					(char*) "unadvertised service " << serviceName);

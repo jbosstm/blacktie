@@ -69,19 +69,35 @@ Destination* ConnectionImpl::createDestination(char* serviceName) {
 			this->connection->orbRef, serviceName, this->connection->root_poa,
 			this->connection->root_poa_manager);
 	LOG4CXX_DEBUG(logger, (char*) "created create_service_factory_poa: "
-			<< serviceName);
+			<< aFactoryPoaPtr);
+
 	return new EndpointQueue(this->connection, aFactoryPoaPtr, serviceName);
 }
 
 void ConnectionImpl::destroyDestination(Destination* destination) {
+	char* serviceName = strdup(destination->getName());
 	CosNaming::Name * name = this->connection->default_ctx->to_name(
 			destination->getName());
+	LOG4CXX_DEBUG(logger, (char*) "unbinding: " << serviceName);
 	this->connection->name_ctx->unbind(*name);
+	LOG4CXX_DEBUG(logger, (char*) "unbound: " << serviceName);
 
 	EndpointQueue* queue = dynamic_cast<EndpointQueue*> (destination);
-	PortableServer::POA_ptr poa = (PortableServer::POA_ptr) queue->getPoa();
+	/*
+	PortableServer::POA_ptr poa = queue->getPoa();
+	*/
+	LOG4CXX_DEBUG(logger, (char*) "deleting queue: " << queue);
 	delete queue;
-	poa->destroy(true, true);
+	/*
+	LOG4CXX_DEBUG(logger, (char*) "destroying poa: " << poa);
+	try {
+		poa->destroy(true, true);
+	} catch (...) {
+		LOG4CXX_DEBUG(logger, (char*) "could not destroy poa: " << poa);
+	}
+	LOG4CXX_DEBUG(logger, (char*) "destroyed poa: " << poa);
 	poa = NULL;
+	*/
+	LOG4CXX_DEBUG(logger, (char*) "destination destroyed: " << serviceName);
 }
 
