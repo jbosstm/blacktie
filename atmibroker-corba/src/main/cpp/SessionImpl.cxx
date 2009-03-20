@@ -67,9 +67,9 @@ SessionImpl::SessionImpl(CORBA_CONNECTION* connection, int id, const char* tempo
 SessionImpl::~SessionImpl() {
 	LOG4CXX_DEBUG(logger, (char*) "destructor");
 	if (remoteEndpoint) {
-		LOG4CXX_DEBUG(logger, (char*) "disconnecting from: " << sendTo);
+		LOG4CXX_DEBUG(logger, (char*) "disconnecting from: remote endpoint");
 		remoteEndpoint->disconnect();
-		LOG4CXX_DEBUG(logger, (char*) "disconnected from: " << sendTo);
+		LOG4CXX_DEBUG(logger, (char*) "disconnected from: remote endpoint");
 		remoteEndpoint = NULL;
 	}
 	LOG4CXX_DEBUG(logger, (char*) "destructed");
