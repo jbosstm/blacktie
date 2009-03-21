@@ -115,8 +115,10 @@ AtmiBrokerServer::AtmiBrokerServer() {
 		if (connectionFactory != NULL) {
 			serverConnection = connectionFactory->create_connection(
 					(char*) "server");
-			realConnection = AtmiBrokerOTS::init_orb(
+			realConnection = ::initOrb(
 					(char*) "serverAdministration");
+			//realConnection = AtmiBrokerOTS::init_orb(
+			//		(char*) "serverAdministration");
 			
 			AtmiBrokerServerXml aAtmiBrokerServerXml;
 			aAtmiBrokerServerXml.parseXmlDescriptor(&serverInfo,
