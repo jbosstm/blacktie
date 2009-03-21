@@ -30,7 +30,7 @@ extern void test_tpcall_x_c_type_service(TPSVCINFO *svcinfo);
 
 void TestTPCall::setUp() {
 	BaseServerTest::setUp();
-
+	rcvbuf = NULL;
 	// Do local work
 }
 
