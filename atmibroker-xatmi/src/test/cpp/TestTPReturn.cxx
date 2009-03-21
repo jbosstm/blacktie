@@ -28,6 +28,8 @@ extern void testtpreturn_service(TPSVCINFO *svcinfo);
 void TestTPReturn::setUp() {
 	// Setup server
 	BaseServerTest::setUp();
+	sendbuf = NULL;
+	rcvbuf = NULL;
 
 	// Do local work
 	int toCheck = tpadvertise((char*) "TestTPReturn", testtpreturn_service);

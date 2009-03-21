@@ -25,6 +25,7 @@
 void TestTPFree::setUp() {
 	// Start server
 	BaseTest::setUp();
+	m_allocated = NULL;
 
 	// Do local work
 }

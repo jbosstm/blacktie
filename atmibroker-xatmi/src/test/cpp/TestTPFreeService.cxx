@@ -33,6 +33,8 @@ void TestTPFreeService::setUp() {
 	int toCheck = tpadvertise((char*) "TestTPFree", testtpfreeservice_service);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toCheck != -1);
+	m_allocated = NULL;
+	m_rcvbuf = NULL;
 }
 
 void TestTPFreeService::tearDown() {
