@@ -108,6 +108,11 @@
 			<version>2.0.1</version>
 		</dependency>
 		<dependency>
+			<groupId>apache-xercesc.contrib</groupId>
+			<artifactId>xercesc</artifactId>
+			<version>3.0.1</version>
+		</dependency>
+		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>dummy-rm</artifactId>
 			<scope>test</scope>

@@ -15,19 +15,36 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#include <cppunit/extensions/HelperMacros.h>
+
 #include "TestXsdValidator.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestXsdValidator );
-#include "TestSymbolLoader.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestSymbolLoader);
-#include "SimpleOrbTest.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( SimpleOrbTest);
-#include "ExceptionCase.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( ExceptionCase);
-#include "ODBCTest.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( ODBCTest);
-#include "TestUserlog.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestUserlog);
-#include "TestMultiOrb.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestMultiOrb);
-#include "TestSynchronizableObject.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestSynchronizableObject);
+#include "XsdValidator.h"
+
+void TestXsdValidator::test() {
+	XsdValidator va;
+	bool result;
+
+	result = va.validate(NULL, NULL);
+	CPPUNIT_ASSERT(result == false);
+	
+	result = va.validate("Server.xsd", "nosuffix");
+	CPPUNIT_ASSERT(result == false);
+
+	result = va.validate("nosuffix", "SERVER.xml");
+	CPPUNIT_ASSERT(result == false);
+	
+	result = va.validate("Server.xsd", "NoSuchFile.xml");
+	CPPUNIT_ASSERT(result == false);
+	
+	result = va.validate("NoSuchSchema.xsd", "SERVER.xml");
+	CPPUNIT_ASSERT(result == false);
+	
+	result = va.validate("Server.xsd", "SERVER_NONAME.xml");
+	CPPUNIT_ASSERT(result == false);
+
+	result = va.validate("Server.xsd", "SERVER_WRONG.xml");
+	CPPUNIT_ASSERT(result == false);
+
+	result = va.validate("Server.xsd", "SERVER.xml");
+	CPPUNIT_ASSERT(result == true);
+}

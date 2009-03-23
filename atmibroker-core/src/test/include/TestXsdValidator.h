@@ -15,19 +15,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "TestXsdValidator.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestXsdValidator );
-#include "TestSymbolLoader.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestSymbolLoader);
-#include "SimpleOrbTest.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( SimpleOrbTest);
-#include "ExceptionCase.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( ExceptionCase);
-#include "ODBCTest.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( ODBCTest);
-#include "TestUserlog.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestUserlog);
-#include "TestMultiOrb.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestMultiOrb);
-#include "TestSynchronizableObject.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestSynchronizableObject);
+#ifndef TEST_XSDVALIDATOR_H
+#define TEST_XSDVALIDATOR_H
+
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFixture.h>
+
+class TestXsdValidator: public CppUnit::TestFixture {
+	CPPUNIT_TEST_SUITE( TestXsdValidator );
+	CPPUNIT_TEST(test);
+	CPPUNIT_TEST_SUITE_END();
+
+public:
+	void test();
+};
+
+#endif
