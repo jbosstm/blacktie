@@ -131,6 +131,28 @@ void TestTransactions::test_info()
 	CPPUNIT_ASSERT(tx_close() == TX_OK);
 }
 
+// test for transaction timeout behaviour
+void TestTransactions::test_timeout()
+{
+	long tmout = 30;
+	/* cause RM 100 to generate a timeout */
+	fault_t fault = {0, 100, O_XA_COMMIT, XA_OK, F_DELAY, (void*)&tmout};
+
+	/* fault will sleep 30 seconds */
+	(void) dummy_rm_add_fault(&fault);
+
+	CPPUNIT_ASSERT(tx_open() == TX_OK);
+	/* tx_set_transaction_timeout for 5 second */
+	CPPUNIT_ASSERT(tx_set_transaction_timeout(5) == TX_OK);
+	CPPUNIT_ASSERT(tx_begin() == TX_OK);
+
+	CPPUNIT_ASSERT(tx_commit() == TX_OK);
+
+	/* cleanup */
+	(void) dummy_rm_del_fault(fault.id);
+	CPPUNIT_ASSERT(tx_close() == TX_OK);
+}
+
 void TestTransactions::test_RM()
 {
 	/* cause RM 102 to generate a mixed heuristic */

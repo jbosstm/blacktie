@@ -19,7 +19,7 @@
 #include "testrm.h"
 
 #include <stdlib.h>
-/*#include "ace/OS_NS_unistd.h"*/
+#include "ace/OS_NS_unistd.h"
 
 static fault_t *faults = 0;
 
@@ -88,7 +88,7 @@ static int apply_faults(enum XA_OP op, int rmid)
 			case F_HALT:
 				break;
 			case F_DELAY:
-				/*(void) ACE_OS::sleep((unsigned int) f->arg);*/
+				(void) ACE_OS::sleep((unsigned int) f->arg);
 				break;
 			}
 
