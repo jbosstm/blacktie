@@ -74,7 +74,7 @@
 		<mkdir dir="${build.dist}/lib" />
 	</target>
 
-	<target name="thirdparty" depends="log4cxx,cppunit,expat,apr-1,stomp,jbas,java-devel,ace" />
+	<target name="thirdparty" depends="log4cxx,cppunit,expat,apr-1,stomp,jbas,java-devel,ace,xercesc" />
 	<target name="install" depends="thirdparty" />
 
 	<target name="jbas" depends="clean,init">
@@ -345,6 +345,34 @@
 		</copy>
 
 		<install-artifact groupId="apache-log4cxx.contrib" artifactId="log4cxx" name="log4cxx" version="${log4cxx.version}" description="Re-packaging of log4cxx, a logging framework for C++ patterned after Apache log4j" />
+	</target>
+
+	<target name="xercesc-lib-linux" if="linux">
+		<sync todir="${build.dist}/lib">
+			<fileset dir="${xercesc.lib.dir}">
+				<include name="libxerces-c.so" />
+				<include name="libxerces-c*.so" />
+			</fileset>
+		</sync>
+	</target>
+	<target name="xercesc-lib-windows" if="windows">
+		<copy file="${xercesc.lib.dir}/xerces-c.dll" todir="${build.dist}/lib" />
+		<copy file="${xercesc.lib.dir}/xerces-c.lib" todir="${build.dist}/lib" />
+	</target>
+
+	<target name="xercesc" depends="clean,init">
+		<antcall target="purge"/>
+		<validate-files inc.dir="${xercesc.include.dir}/xercesc" lib.dir="${xercesc.lib.dir}" artifactId="xercesc" />
+		<antcall target="xercesc-lib-linux" />
+		<antcall target="xercesc-lib-windows" />
+		<copy todir="${build.dist}/include/xercesc">
+			<fileset dir="${xercesc.include.dir}/xercesc">
+				<include name="**/*.hpp" />
+				<include name="**/*.c" />
+			</fileset>
+		</copy>
+
+		<install-artifact groupId="apache-xercesc.contrib" artifactId="xercesc" name="xercesc" version="${xercesc.version}" description="a validating XML parser written in a portable subset of C++ "/>
 	</target>
 
 	<macrodef name="install-artifact">

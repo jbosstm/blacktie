@@ -28,6 +28,10 @@ cppunit.lib.dir=/usr/lib64
 cppunit.include.dir=/usr/include/cppunit
 cppunit.version=1.12
 
+xercesc.lib.dir=/home/zhfeng/blacktie/util/xerces-c-3.0.1/src/.libs
+xercesc.include.dir=/home/zhfeng/blacktie/util/xerces-c-3.0.1/src
+xercesc.version=3.0.1
+
 jbossas.lib.dir=/home/mmusgrov/blacktie/util/jboss-5.0.0.GA/client
 jbossas.version=5.0.0.GA
 
