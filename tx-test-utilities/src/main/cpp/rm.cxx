@@ -88,7 +88,8 @@ static int apply_faults(enum XA_OP op, int rmid)
 			case F_HALT:
 				break;
 			case F_DELAY:
-				(void) ACE_OS::sleep((unsigned int) f->arg);
+				long* timeout = (long*)f->arg;
+				(void) ACE_OS::sleep(*timeout);
 				break;
 			}
 
