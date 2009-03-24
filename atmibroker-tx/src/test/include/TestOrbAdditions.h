@@ -25,8 +25,7 @@
 class TestOrbAdditions: public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE( TestOrbAdditions);
 	CPPUNIT_TEST( test_initorb);
-CPPUNIT_TEST_SUITE_END()
-;
+	CPPUNIT_TEST_SUITE_END();
 
 public:
 void test_initorb();
