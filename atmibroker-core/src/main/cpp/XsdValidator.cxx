@@ -58,7 +58,7 @@ XsdValidator::XsdValidator()
 	try {
 		XMLPlatformUtils::Initialize();
 		isInitial = true;
-    	} catch (const XMLException& toCatch){
+  	} catch (const XMLException& toCatch){
 		LOG4CXX_ERROR(logger, "Error during initialization! Message:"
 					<< StrX(toCatch.getMessage()));	
 		isInitial = false;
@@ -109,7 +109,7 @@ bool XsdValidator::buildXSDParser(const char* aXSDFileName)
 	try {
 		// Create a SAX2 parser object.
 		parser = XMLReaderFactory::createXMLReader();
-		LOG4CXX_INFO(logger, "create schema parser");
+		LOG4CXX_DEBUG(logger, "create schema parser");
 
 		// Set the appropriate features on the parser.
 		// Enable namespaces, schema validation, and the checking 
@@ -137,7 +137,7 @@ bool XsdValidator::buildXSDParser(const char* aXSDFileName)
 	} 
 
 	delete parser;
-	LOG4CXX_INFO(logger, "destory schema parser");
+	LOG4CXX_DEBUG(logger, "destory schema parser");
 	return false;
 }
 
@@ -145,6 +145,11 @@ bool XsdValidator::validate(const char* aXSDFileName, const char* aXMLFileName)
 {
 	int  errorCount = 0;
 	bool result     = false;
+
+	if(isInitial == false) {
+		LOG4CXX_ERROR(logger, "XERCES Initailization failed!");
+		return false;
+	}
 
 	LOG4CXX_DEBUG(logger, "checkFile " << aXMLFileName << ": start");
 	if(checkFile(aXMLFileName, "xml") == false) {
@@ -170,7 +175,7 @@ bool XsdValidator::validate(const char* aXSDFileName, const char* aXMLFileName)
 							<< aXSDFileName);
 				result = false;
 			} else {
-				LOG4CXX_INFO(logger, aXMLFileName << " is validate with "
+				LOG4CXX_DEBUG(logger, aXMLFileName << " is validate with "
 							<< aXSDFileName);
 				result = true;
 			}
@@ -184,7 +189,7 @@ bool XsdValidator::validate(const char* aXSDFileName, const char* aXMLFileName)
 		} 
 
 		delete parser;
-		LOG4CXX_INFO(logger, "destory schema parser");
+		LOG4CXX_DEBUG(logger, "destory schema parser");
 	}
 
 	return result;
