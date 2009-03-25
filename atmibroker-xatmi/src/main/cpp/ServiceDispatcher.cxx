@@ -75,30 +75,31 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	if (tpsvcinfo.flags & TPCONV) {
 		tpsvcinfo.cd = correlationId;
 	}
-	if (control) {
-		tpsvcinfo.flags = (tpsvcinfo.flags | TPTRAN);
-	}
 
 	if (tpsvcinfo.flags & TPRECVONLY) {
 		session->setCanRecv(false);
 	} else if (tpsvcinfo.flags & TPSENDONLY) {
 		session->setCanSend(false);
 	}
-
 	// HANDLE THE CLIENT INVOCATION
-	// TODO wrap TSS control in a Transaction object and make sure any current
-	// control associated with the thread is suspended here and resumed after
-	// the call to m_func
-	setSpecific(TSS_KEY, control);
+	if (control) {
+		tpsvcinfo.flags = (tpsvcinfo.flags | TPTRAN);
+		// TODO wrap TSS control in a Transaction object and make sure any current
+		// control associated with the thread is suspended here and resumed after
+		// the call to m_func
+		setSpecific(TSS_KEY, control);
+		AtmiBrokerOTS::get_instance()->rm_resume();
+	}
 	setSpecific(SVC_KEY, this);
 	setSpecific(SVC_SES, session);
-	AtmiBrokerOTS::get_instance()->rm_resume();
 	try {
 		this->func(&tpsvcinfo);
 	} catch (...) {
 		LOG4CXX_ERROR(logger, (char*) "ServiceDispatcher caught error running during onMessage");
 	}
-	AtmiBrokerOTS::get_instance()->rm_suspend();
+	if (control) {
+		AtmiBrokerOTS::get_instance()->rm_suspend();
+	}
 
 	// CLEAN UP THE SENDER AND RECEIVER FOR THIS CLIENT
 	if (session->getCanSend()) {
