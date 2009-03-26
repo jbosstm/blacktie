@@ -69,7 +69,6 @@ void TestTPReturn::test_tpreturn_nonbuffer() {
 	long tperrnoS = tperrno;
 	CPPUNIT_ASSERT(id == -1);
 	CPPUNIT_ASSERT(tperrnoS == TPESVCERR);
-	CPPUNIT_ASSERT(strcmp(rcvbuf, "testtpreturn_service") == -1);
 }
 
 void testtpreturn_service(TPSVCINFO *svcinfo) {

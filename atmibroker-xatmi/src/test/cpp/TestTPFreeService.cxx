@@ -34,7 +34,8 @@ void TestTPFreeService::setUp() {
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toCheck != -1);
 	m_allocated = NULL;
-	m_rcvbuf = NULL;
+
+	CPPUNIT_ASSERT((m_rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, 1)) != NULL);
 }
 
 void TestTPFreeService::tearDown() {

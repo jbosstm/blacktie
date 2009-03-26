@@ -98,11 +98,13 @@ int send(Session* session, const char* replyTo, char* idata, long ilen, int corr
 }
 
 int receive(Session* session, char ** odata, long *olen, long flags, long* event) {
+	int toReturn = -1;
+	int len = ::bufferSize(*odata, *olen);
+	if (len != -1) {
 	LOG4CXX_DEBUG(loggerXATMI, (char*) "tprecv - odata: %s olen: %p flags: %d" << *odata << " " << olen << " " << flags);
 	if (flags & TPSIGRSTRT) {
 		LOG4CXX_ERROR(loggerXATMI, (char*) "TPSIGRSTRT NOT SUPPORTED");
 	}
-	int toReturn = -1;
 	if (session->getCanRecv()) {
 		// TODO Make configurable Default wait time is blocking (x1000 in SynchronizableObject)
 		long time = 0;
@@ -116,8 +118,11 @@ int receive(Session* session, char ** odata, long *olen, long flags, long* event
 			// TODO Handle TPNOCHANGE
 			// TODO Handle buffer
 			// TODO USE RVAL AND RCODE AND EVENT
-			*odata = message.data;
+			if (len < message.len) {
+				*odata = ::tprealloc(*odata, message.len);
+			}
 			*olen = message.len;
+			memcpy(*odata, (char*) message.data, *olen);
 			if (message.rcode == TPESVCFAIL) {
 				*event = TPESVCFAIL;
 			} else if (message.rcode == TPESVCERR) {
@@ -143,6 +148,9 @@ int receive(Session* session, char ** odata, long *olen, long flags, long* event
 		}
 	} else {
 		tperrno = TPEPROTO;
+	}
+	} else {
+		tperrno = TPEOTYPE;
 	}
 	return toReturn;
 }

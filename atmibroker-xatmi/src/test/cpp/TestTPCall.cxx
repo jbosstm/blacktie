@@ -110,6 +110,7 @@ void TestTPCall::test_tpcall_x_common() {
 
 	DEPOSIT *dptr;
 	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, 60)) != NULL);
 	sendbuf = (char*) dptr;
 	dptr->acct_no = 12345678;
 	dptr->amount = 50;
@@ -125,6 +126,7 @@ void TestTPCall::test_tpcall_x_c_type() {
 
 	ACCT_INFO *aptr;
 	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, 60)) != NULL);
 	sendbuf = (char*) aptr;
 	aptr->acct_no = 12345678;
 	strcpy(aptr->name, "TOM");
