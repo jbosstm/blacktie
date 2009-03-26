@@ -45,6 +45,7 @@ void CurrentImpl::begin() throw(CORBA::SystemException, CosTransactions::Subtran
 		}
 		ControlThreadStruct* aControlThreadStruct = new ControlThreadStruct();
 		aControlThreadStruct->control = CosTransactions::Control::_duplicate(ctrl);
+		aControlThreadStruct->timeout = m_timeout;
 		// TODO assuming client
 		LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "control " << AtmiBrokerOTS::get_instance()->getOrb()->object_to_string(aControlThreadStruct->control));
 		aControlThreadStruct->thread = ACE_Thread::self();
@@ -218,6 +219,8 @@ void CurrentImpl::set_timeout(CORBA::ULong seconds) throw (CORBA::SystemExceptio
 
 	m_timeout = seconds;
 
+	// do not update the the PropagationContext since set_timeout should only apply to the next transaction
+#if 0
 	CosTransactions::Control_var cv = get_control();
 
 	if (CORBA::is_nil(cv.in())) {
@@ -236,6 +239,7 @@ void CurrentImpl::set_timeout(CORBA::ULong seconds) throw (CORBA::SystemExceptio
 			LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "coordinator does not exist yet...can't change time to " << seconds);
 	}
 	LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "set_timeout FINISHED");
+#endif
 }
 
 void CurrentImpl::rollback_only() throw (CORBA::SystemException, CosTransactions::NoTransaction) {

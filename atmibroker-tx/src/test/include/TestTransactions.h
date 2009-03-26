@@ -23,13 +23,12 @@
 #include <string.h>
 
 class TestTransactions: public CppUnit::TestFixture {
-	CPPUNIT_TEST_SUITE( TestTransactions);
-	CPPUNIT_TEST( test_transactions);
-	CPPUNIT_TEST( test_protocol);
-	CPPUNIT_TEST( test_info);
-	CPPUNIT_TEST( test_RM);
-	CPPUNIT_TEST( test_timeout);
-	// TODO CPPUNIT_TEST( test_register_resource);
+	CPPUNIT_TEST_SUITE(TestTransactions);
+	CPPUNIT_TEST(test_transactions);
+	CPPUNIT_TEST(test_protocol);
+	CPPUNIT_TEST(test_info);
+	CPPUNIT_TEST(test_RM);
+	CPPUNIT_TEST(test_timeout);
 	CPPUNIT_TEST_SUITE_END();
 
 public:

@@ -223,27 +223,56 @@ int AtmiBrokerOTS::tx_complete(bool commit) {
 	// rm_end(); // no its done via a synchronisation
 
 	try {
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_complete: get terminator");
 		CosTransactions::Terminator_var term = cp->get_terminator();
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_complete: completing via terminator");
 
-		(commit ? term->commit(reportHeuristics()) : term->rollback());
-		outcome = TX_OK;
-	} catch (CORBA::TRANSACTION_ROLLEDBACK &e) {
+		try {
+			(commit ? term->commit(reportHeuristics()) : term->rollback());
+			LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_complete: terminated ok");
+			outcome = TX_OK;
+		} catch (CORBA::TRANSACTION_ROLLEDBACK &e) {
+			outcome = TX_ROLLBACK;
+		} catch (CosTransactions::Unavailable & e) {
+			outcome = TX_FAIL; // TM failed temporarily
+		} catch (CosTransactions::HeuristicMixed &e) {
+			// can be thrown if commit_return characteristic is TX_COMMIT_COMPLETED
+			outcome = TX_MIXED;
+		} catch (CosTransactions::HeuristicHazard &e) {
+			// can be thrown if commit_return characteristic is TX_COMMIT_COMPLETED
+			outcome = TX_HAZARD;
+		} catch (CORBA::SystemException & e) {
+			e._tao_print_exception("tx_complete: unknown error: ");
+			outcome = TX_FAIL;
+		} catch (...) {
+			outcome = TX_FAIL; // TM failed temporarily
+			LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(), (char*) "tx_complete: unknown error");
+		}
+	} catch (CORBA::OBJECT_NOT_EXIST & e) {
+		// transaction no longer exists (presumed abort)
+		ControlThreadStruct* ts = currentImpl->get_control_thread_struct();
+		if (!ts || ts->timeout == 0L) {
+			LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getWarn(),
+				(char*) "tx_complete: OBJECT_NOT_EXIST assuming presumed abort");
+		}
+
 		outcome = TX_ROLLBACK;
 	} catch (CosTransactions::Unavailable & e) {
-		outcome = TX_ERROR; // TM failed temporarily
-	} catch (CosTransactions::HeuristicMixed &e) {
-		// can be thrown if commit_return characteristic is TX_COMMIT_COMPLETED
-		outcome = TX_MIXED;
-	} catch (CosTransactions::HeuristicHazard &e) {
-		// can be thrown if commit_return characteristic is TX_COMMIT_COMPLETED
-		outcome = TX_HAZARD;
+		outcome = TX_FAIL;
 	} catch (CORBA::SystemException & e) {
 		e._tao_print_exception("tx_complete: unknown error: ");
-		outcome = TX_ERROR;
-	} catch (...) {
-		outcome = TX_FAIL; // TM failed temporarily
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(), (char*) "tx_complete: unknown error");
-	}
+		outcome = TX_FAIL;
+	} 
+
+LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_complete: after outcome: " << outcome);
+#if 0
+try {
+	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_complete: after status: " <<
+		cp->get_coordinator()->get_status());
+} catch (...) {
+	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_complete: ERROR getting status");
+}
+#endif
 
 	destroySpecific(TSS_KEY);	// TODO free Control
 	currentImpl->remove_control();

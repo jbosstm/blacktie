@@ -45,6 +45,7 @@ struct ATMIBROKER_TX_DLL _controlThreadStruct {
 	ACE_hthread_t threadHandle;
 #endif
 	CosTransactions::Control_var control;
+	CORBA::ULong timeout;
 };
 typedef _controlThreadStruct ControlThreadStruct;
 

@@ -134,24 +134,37 @@ void TestTransactions::test_info()
 // test for transaction timeout behaviour
 void TestTransactions::test_timeout()
 {
-	long timeout = 10;
-	/* cause RM 100 to generate a timeout */
-	fault_t fault = {0, 100, O_XA_COMMIT, XA_OK, F_DELAY, (void*)&timeout};
-
-	/* fault will sleep 10 seconds */
-	(void) dummy_rm_add_fault(&fault);
+	long timeout = 1;
+	long delay = 2;
+	// cause RMs to sleep during 2PC
+	fault_t fault1 = {0, 102, O_XA_COMMIT, XA_OK, F_DELAY, (void*)&delay};
+	fault_t fault2 = {0, 100, O_XA_PREPARE, XA_OK, F_DELAY, (void*)&delay};
 
 	CPPUNIT_ASSERT(tx_open() == TX_OK);
 
-	CPPUNIT_ASSERT(tx_set_commit_return(TX_COMMIT_COMPLETED) == TX_OK);
 	CPPUNIT_ASSERT(tx_begin() == TX_OK);
 
-	/* tx_set_transaction_timeout for 5 second */
-	CPPUNIT_ASSERT(tx_set_transaction_timeout(5) == TX_OK);
+	// set timeout - the value should not have any effect until the next call to tx_begin
+	CPPUNIT_ASSERT(tx_set_transaction_timeout(timeout) == TX_OK);
+	(void) ACE_OS::sleep(delay);
+	CPPUNIT_ASSERT(tx_commit() == TX_OK);
+
+	// start another transaction
+	CPPUNIT_ASSERT(tx_begin() == TX_OK);
+	// sleep for longer than the timeout
+	(void) ACE_OS::sleep(delay);
+	CPPUNIT_ASSERT(tx_commit() == TX_ROLLBACK);
+
+	// cause the RM to delay for delay seconds during commit processing
+	(void) dummy_rm_add_fault(&fault1);
+	(void) dummy_rm_add_fault(&fault2);
+	CPPUNIT_ASSERT(tx_begin() == TX_OK);
+	// once the transaction has started 2PC any further delays (beyond the timeout period) should have no effect
 	CPPUNIT_ASSERT(tx_commit() == TX_OK);
 
 	/* cleanup */
-	(void) dummy_rm_del_fault(fault.id);
+	(void) dummy_rm_del_fault(fault1.id);
+	(void) dummy_rm_del_fault(fault2.id);
 	CPPUNIT_ASSERT(tx_close() == TX_OK);
 }
 
