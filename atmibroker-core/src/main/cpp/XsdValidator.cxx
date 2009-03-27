@@ -151,6 +151,11 @@ bool XsdValidator::validate(const char* aXSDFileName, const char* aXMLFileName)
 		return false;
 	}
 
+	if(aXSDFileName == NULL || aXMLFileName == NULL) {
+		LOG4CXX_ERROR(logger, "parameters violation");
+		return false;
+	}
+
 	LOG4CXX_DEBUG(logger, "checkFile " << aXMLFileName << ": start");
 	if(checkFile(aXMLFileName, "xml") == false) {
 		LOG4CXX_ERROR(logger, "checkFile " << aXMLFileName << ": fail");

@@ -23,8 +23,13 @@
 #include "expat.h"
 
 #include "AtmiBrokerServerXml.h"
+#include "XsdValidator.h"
 #include "userlog.h"
 #include "log4cxx/logger.h"
+#include "ace/OS_NS_stdlib.h"
+#include "ace/OS_NS_stdio.h"
+#include "ace/OS_NS_string.h"
+#include "ace/Default_Constants.h"
 
 log4cxx::LoggerPtr loggerAtmiBrokerServerXml(log4cxx::Logger::getLogger(
 		"AtmiBrokerServerXml"));
@@ -154,6 +159,22 @@ void AtmiBrokerServerXml::parseXmlDescriptor(ServerMetadata* aServerStructPtr,
 		const char * aDescriptorFileName) {
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml,
 			(char*) "in parseXmlDescriptor() %s", aDescriptorFileName);
+
+	char  schemaPath[256];
+	char* schemaDir;
+
+	schemaDir = ACE_OS::getenv("ATMIBROKER_SCHEMA_DIR");
+	if(schemaDir) {
+		ACE_OS::snprintf(schemaPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"Server.xsd", schemaDir);
+	} else {
+		ACE_OS::strcpy(schemaPath, "Server.xsd");
+	}
+
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml,
+			(char*) "schemaPath %s", schemaPath);
+
+	XsdValidator validator;
+	if(validator.validate(schemaPath, aDescriptorFileName) == false) return;
 
 	struct stat s; /* file stats */
 	FILE *aDescriptorFile = fopen(aDescriptorFileName, "r");

@@ -27,24 +27,24 @@ void TestXsdValidator::test() {
 	result = va.validate(NULL, NULL);
 	CPPUNIT_ASSERT(result == false);
 	
-	result = va.validate("Server.xsd", "nosuffix");
+	result = va.validate("xsd/Server.xsd", "nosuffix");
 	CPPUNIT_ASSERT(result == false);
 
 	result = va.validate("nosuffix", "SERVER.xml");
 	CPPUNIT_ASSERT(result == false);
 	
-	result = va.validate("Server.xsd", "NoSuchFile.xml");
+	result = va.validate("xsd/Server.xsd", "NoSuchFile.xml");
 	CPPUNIT_ASSERT(result == false);
 	
 	result = va.validate("NoSuchSchema.xsd", "SERVER.xml");
 	CPPUNIT_ASSERT(result == false);
 	
-	result = va.validate("Server.xsd", "SERVER_NONAME.xml");
+	result = va.validate("xsd/Server.xsd", "SERVER_NONAME.xml");
 	CPPUNIT_ASSERT(result == false);
 
-	result = va.validate("Server.xsd", "SERVER_WRONG.xml");
+	result = va.validate("xsd/Server.xsd", "SERVER_WRONG.xml");
 	CPPUNIT_ASSERT(result == false);
 
-	result = va.validate("Server.xsd", "SERVER.xml");
+	result = va.validate("xsd/Server.xsd", "SERVER.xml");
 	CPPUNIT_ASSERT(result == true);
 }
