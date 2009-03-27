@@ -85,6 +85,13 @@
 		</plugins>
 	</build>
 
+	<dependencies>
+		<dependency>
+			<groupId>ace.contrib</groupId>
+			<artifactId>ace</artifactId>
+			<version>5.6.7</version>
+		</dependency>
+	</dependencies>
 
 	<profiles>
 		<profile>
