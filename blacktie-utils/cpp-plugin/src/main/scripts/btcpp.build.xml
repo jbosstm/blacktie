@@ -96,6 +96,7 @@
 			<isset property="is-msvc" />
 		</condition>
 		<available file="${src.main}" property="src.main.exists"/>
+		<available file="${src.test}" property="src.test.exists"/>
 	</target>
 
 	<target name="clean" >
@@ -154,11 +155,11 @@
 		</apply>
 	</target>
 
-	<target name="fileset.main.check" if="src.main.exists">
+	<target name="fileset.main.check" depends="init" if="src.main.exists">
 		<fileset id="fileset.main" dir="${src.main}" includes="**/*.cxx **/*.c **/*.cpp" excludes="${src.excludes}" />
 		<pathconvert refid="fileset.main" property="have-srcs" setonempty="false"/>
 	</target>
-	<target name="fileset.test.check" depends="init">
+	<target name="fileset.test.check" depends="init" if="src.test.exists">
 		<condition property="need-testrunner">
 			<and>
 				<isset property="generate.testrunner" />
