@@ -95,6 +95,7 @@
 		<condition property="lib.prefix" value="">
 			<isset property="is-msvc" />
 		</condition>
+		<available file="${src.main}" property="src.main.exists"/>
 	</target>
 
 	<target name="clean" >
@@ -104,7 +105,7 @@
 		<delete dir="target/cpp-test-classes" failonerror="false"/>
 	</target>
 
-	<target name="generate-sources" >
+	<target name="generate-sources" depends="fileset.main.check" if="have-srcs">
 		<condition property="exe" value=".exe">
 			<equals arg1="${toolchain.compiler}" arg2="msvc" />
 		</condition>
@@ -153,7 +154,7 @@
 		</apply>
 	</target>
 
-	<target name="fileset.main.check">
+	<target name="fileset.main.check" if="src.main.exists">
 		<fileset id="fileset.main" dir="${src.main}" includes="**/*.cxx **/*.c **/*.cpp" excludes="${src.excludes}" />
 		<pathconvert refid="fileset.main" property="have-srcs" setonempty="false"/>
 	</target>
@@ -332,7 +333,7 @@
                         <fileset dir="${src.export}"/>
                 </copy>
 	</target>
-        <target name="copy-libs">
+        <target name="copy-libs" if="have-srcs">
 		<available property="have-target-lib-dir" file="target/${configuration.type}/${lib.type}" />
                 <copy todir="target/classes/lib" overwrite="true" failonerror="false">
                         <fileset dir="target/${configuration.type}/${lib.type}/" includes="*.so,*.so.*,*.dll,*.lib"/>
