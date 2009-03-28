@@ -20,7 +20,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<groupId>org.jboss.blacktie</groupId>
-		<artifactId>blacktie-common</artifactId>
+		<artifactId>blacktie-C</artifactId>
 		<version>1.0-M4-SNAPSHOT</version>
 	</parent>
 
@@ -86,22 +86,22 @@
 		</plugins>
 	</build>
 	<dependencies>
-		<dependency>
-			<groupId>apache-log4cxx.contrib</groupId>
-			<artifactId>log4cxx</artifactId>
-			<version>trunk-696744</version>
-		</dependency>
-		<dependency>
-			<groupId>ace.contrib</groupId>
-			<artifactId>ace</artifactId>
-			<version>5.6.7</version>
-		</dependency>
-		<dependency>
-			<groupId>cppunit.contrib</groupId>
-			<artifactId>cppunit</artifactId>
-			<version>1.12</version>
-			<scope>test</scope>
-		</dependency>
+                <dependency>
+                        <groupId>apache-log4cxx.contrib</groupId>
+                        <artifactId>log4cxx</artifactId>
+                        <version>trunk-696744</version>
+                </dependency>
+                <dependency>
+                        <groupId>ace.contrib</groupId>
+                        <artifactId>ace</artifactId>
+                        <version>5.6.7</version>
+                </dependency>
+                <dependency>
+                        <groupId>cppunit.contrib</groupId>
+                        <artifactId>cppunit</artifactId>
+                        <version>1.12</version>
+                        <scope>test</scope>
+                </dependency>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>atmibroker-tx</artifactId>

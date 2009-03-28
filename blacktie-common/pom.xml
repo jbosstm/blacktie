@@ -30,6 +30,11 @@
 		<url>http://viewvc.jboss.org/cgi-bin/viewvc.cgi/blacktie/trunk/blacktie</url>
 	</scm>
 
+	<modules>
+		<module>blacktie-C</module>
+		<module>blacktie-java</module>
+	</modules>
+
 	<build>
 		<plugins>
 			<plugin>

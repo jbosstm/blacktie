@@ -20,7 +20,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<groupId>org.jboss.blacktie</groupId>
-		<artifactId>blacktie-common</artifactId>
+		<artifactId>blacktie-java</artifactId>
 		<version>1.0-M4-SNAPSHOT</version>
 	</parent>
 
