@@ -28,32 +28,6 @@
 	<name>Blacktie C++ TX Client Library</name>
 	<packaging>jar</packaging>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.jboss.blacktie.plugins</groupId>
-				<artifactId>cpp-plugin</artifactId>
-
-				<executions>
-					<execution>
-						<id>test-compile</id>
-						<phase>test-compile</phase>
-						<goals>
-							<goal>test-compile</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>test</id>
-						<phase>test</phase>
-						<goals>
-							<goal>test</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>

@@ -62,6 +62,20 @@
                                                         <goal>compile</goal>
                                                 </goals>
                                         </execution>
+                                        <execution>
+                                                <id>test-compile</id>
+                                                <phase>test-compile</phase>
+                                                <goals>
+                                                        <goal>test-compile</goal>
+                                                </goals>
+                                        </execution>
+                                        <execution>
+                                                <id>test</id>
+                                                <phase>test</phase>
+                                                <goals>
+                                                        <goal>test</goal>
+                                                </goals>
+                                        </execution>
 					<execution>
 						<id>process-classes</id>
 						<phase>process-classes</phase>
@@ -78,11 +92,11 @@
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>cpp-tools</artifactId>
-			<version>1.0-M4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>cppunit.contrib</groupId>
 			<artifactId>cppunit</artifactId>
+			<version>1.12</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
