@@ -244,6 +244,15 @@
       <requiresProject>true</requiresProject>
       <description>run the cpp unit tests</description>
       <parameters>
+		<parameter>
+	 	  <name>atmibroker.schema.dir</name>
+		  <property>atmibroker.schema.dir</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>xsd</defaultValue>
+          <type>java.lang.String</type>
+          <description>Schema directory</description>
+		</parameter>
         <parameter>
           <name>failOnErrorTests</name>
           <property>failOnErrorTests</property>
