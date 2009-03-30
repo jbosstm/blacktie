@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                      targetNamespace="http://www.jboss.org"
-                      xmlns="http://www.jboss.org"
-                      elementFormDefault="qualified">
+			targetNamespace="http://www.jboss.org/blacktie"
+			xmlns="http://www.jboss.org/blacktie"
+			elementFormDefault="qualified">
     <xsd:element name="CLIENT">
         <xsd:complexType>
             <xsd:sequence>

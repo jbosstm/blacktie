@@ -30,7 +30,6 @@ class TestAtmiBrokerXml: public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE_END();
 
 public:
-	void setUp();
 	void test_server();
 	void test_client();
 	void test_service();

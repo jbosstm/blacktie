@@ -24,11 +24,6 @@
 #include "AtmiBrokerEnvXml.h"
 #include "ace/OS_NS_stdlib.h"
 
-void TestAtmiBrokerXml::setUp()
-{
-	ACE_OS::putenv("ATMIBROKER_SCHEMA_DIR=./xsd");
-}
-
 void TestAtmiBrokerXml::test_server() {
 	AtmiBrokerServerXml xml;
 	ServerMetadata      data;
@@ -43,9 +38,25 @@ void TestAtmiBrokerXml::test_server() {
 }
 
 void TestAtmiBrokerXml::test_client() {
+	AtmiBrokerClientXml xml;
+	std::vector<ClientServerInfo*> aClientServerVectorPtr;
+
+	xml.parseXmlDescriptor(&aClientServerVectorPtr, "CLIENT.xml");
+	CPPUNIT_ASSERT(clientMaxChannels == 1 );
+	CPPUNIT_ASSERT(clientMaxSuppliers == 1 );
+	CPPUNIT_ASSERT(clientMaxConsumers == 1 );
+
+	ClientServerInfo* server = aClientServerVectorPtr[0];
+	CPPUNIT_ASSERT(strcmp(server->serverName, "foo") == 0);
+	std::vector<char*>* services = server->serviceVectorPtr;
+	CPPUNIT_ASSERT(strcmp((*services)[0], "BAR") == 0);
 }
 
 void TestAtmiBrokerXml::test_service() {
+	AtmiBrokerServiceXml xml;
+	SVCINFO service;
+
+	xml.parseXmlDescriptor(&service, "BAR");
 }
 
 void TestAtmiBrokerXml::test_env() {
