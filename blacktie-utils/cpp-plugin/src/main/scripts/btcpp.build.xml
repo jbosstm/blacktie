@@ -325,8 +325,11 @@
 		</exec>
 	</target>
 
-	<available property="have-idl" file="${idl.output.dir}" />
-	<available property="have-exports" file="${src.export}" />
+        <target name="copy-check">
+		<available property="have-idl" file="${idl.output.dir}" />
+		<available property="have-exports" file="${src.export}" />
+		<available file="target/${configuration.type}/${lib.type}" property="have-target-lib-dir" />
+	</target>
         <target name="copy-idl" if="have-idl">
                 <copy todir="target/classes/include" overwrite="true" failonerror="true">
                         <fileset dir="${idl.output.dir}"/>
@@ -337,14 +340,13 @@
                         <fileset dir="${src.export}"/>
                 </copy>
 	</target>
-        <target name="copy-libs" if="have-srcs">
-		<available property="have-target-lib-dir" file="target/${configuration.type}/${lib.type}" />
+        <target name="copy-libs" if="have-target-lib-dir">
                 <copy todir="target/classes/lib" overwrite="true" failonerror="false">
                         <fileset dir="target/${configuration.type}/${lib.type}/" includes="*.so,*.so.*,*.dll,*.lib"/>
                 </copy>
         </target>
 
-        <target name="process-classes" depends="package,copy-idl,copy-exports,copy-libs">
+        <target name="process-classes" depends="copy-check,package,copy-idl,copy-exports,copy-libs">
         </target>
 
 	<target name="package" depends="init">
