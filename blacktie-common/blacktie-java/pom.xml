@@ -28,6 +28,64 @@
 	<packaging>pom</packaging>
 	<name>Blacktie Java Defaults and Dependencies</name>
 
+	<build>
+		<plugins>
+			<plugin>
+				<inherited>true</inherited>
+				<groupId>org.jboss.blacktie.plugins</groupId>
+				<artifactId>cpp-plugin</artifactId>
+
+				<configuration>
+					<configuration.type>${configuration.type}</configuration.type>
+					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
+					<test.output.type>${test.output.type}</test.output.type>
+				</configuration>
+
+				<executions>
+					<execution>
+						<id>generate-sources</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate-sources</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>compile</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>test-compile</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>test-compile</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>process-classes</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>process-classes</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
 	<dependencies>
+		<dependency>
+			<groupId>org.jboss.blacktie</groupId>
+			<artifactId>cpp-tools</artifactId>
+		</dependency>
 	</dependencies>
 </project>

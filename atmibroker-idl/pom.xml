@@ -32,41 +32,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.jboss.blacktie.plugins</groupId>
-				<artifactId>cpp-plugin</artifactId>
-				<version>${project.version}</version>
-				<configuration>
-					<configuration.type>${configuration.type}</configuration.type>
-					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
-					<src.main>${src.main}</src.main>
-					<export.dll>${export.dll}</export.dll>
-				</configuration>
-
-				<executions>
-					<execution>
-						<id>generate-sources</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>generate-sources</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>compile</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>process-classes</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>process-classes</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>idlj-maven-plugin</artifactId>
 				<dependencies>

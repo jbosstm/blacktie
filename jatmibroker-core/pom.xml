@@ -43,41 +43,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.jboss.blacktie.plugins</groupId>
-				<artifactId>cpp-plugin</artifactId>
-				<version>${project.version}</version>
-				<configuration>
-					<configuration.type>${configuration.type}</configuration.type>
-					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
-				</configuration>
-				<executions>
-					<execution>
-						<id>generate-sources</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>generate-sources</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>test-compile</id>
-						<phase>test-compile</phase>
-						<goals>
-							<goal>test-compile</goal>
-						</goals>
-						<configuration>
-							<test.output.type>shared</test.output.type>
-						</configuration>
-					</execution>
-					<execution>
-						<id>process-classes</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>process-classes</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<source>1.5</source>
@@ -151,5 +116,6 @@
 	</dependencies>
 
 	<properties>
+		<test.output.type>shared</test.output.type>
 	</properties>
 </project>

@@ -41,7 +41,6 @@
 					<skipTests>${skipTests}</skipTests>
 					<src.main>${src.main}</src.main>
 					<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
-					<generate.testrunner>true</generate.testrunner>
 					<export.dll>${export.dll}</export.dll>
 				</configuration>
 
@@ -95,19 +94,10 @@
 	</profiles>
 
 	<properties>
+		<generate.testrunner>true</generate.testrunner>
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>apache-log4cxx.contrib</groupId>
-			<artifactId>log4cxx</artifactId>
-			<version>trunk-696744</version>
-		</dependency>
-		<dependency>
-			<groupId>ace.contrib</groupId>
-			<artifactId>ace</artifactId>
-			<version>5.6.7</version>
-		</dependency>
 		<dependency>
 			<groupId>cppunit.contrib</groupId>
 			<artifactId>cppunit</artifactId>

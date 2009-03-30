@@ -124,6 +124,26 @@
 		<dependencies>
 			<dependency>
 				<groupId>org.jboss.blacktie</groupId>
+				<artifactId>cpp-tools</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>cppunit.contrib</groupId>
+				<artifactId>cppunit</artifactId>
+				<version>1.12</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.blacktie.plugins</groupId>
+				<artifactId>cpp-plugin</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.blacktie</groupId>
+				<artifactId>cpp-tools</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.blacktie</groupId>
 				<artifactId>atmibroker-idl</artifactId>
 				<version>${project.version}</version>
 			</dependency>
