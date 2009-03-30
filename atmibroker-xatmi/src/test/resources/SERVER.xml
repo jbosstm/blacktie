@@ -15,7 +15,8 @@
 		Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 		02110-1301, USA.
 	-->
-<SERVER xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<SERVER xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.jboss.org/blacktie">
 	<SERVER_DESCRIPTION>
 		<NAME>TESTSERVERSERVER</NAME>
 		<MAX_REPLICAS>1</MAX_REPLICAS>
