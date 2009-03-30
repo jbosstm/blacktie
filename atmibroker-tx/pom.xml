@@ -28,11 +28,82 @@
 	<name>Blacktie C++ TX Client Library</name>
 	<packaging>jar</packaging>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.jboss.blacktie.plugins</groupId>
+				<artifactId>cpp-plugin</artifactId>
+				<version>${project.version}</version>
+				<configuration>
+					<configuration.type>${configuration.type}</configuration.type>
+					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
+					<src.main>${src.main}</src.main>
+					<skipTests>${skipTests}</skipTests>
+					<maven.test.skip>${maven.test.skip}</maven.test.skip>
+					<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
+					<generate.testrunner>true</generate.testrunner>
+					<export.dll>${export.dll}</export.dll>
+				</configuration>
+
+				<executions>
+					<execution>
+						<id>generate-sources</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>generate-sources</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>compile</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>test-compile</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>test-compile</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>process-classes</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>process-classes</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
 	<dependencies>
-		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>cpp-tools</artifactId>
-		</dependency>
+                <dependency>
+                        <groupId>apache-log4cxx.contrib</groupId>
+                        <artifactId>log4cxx</artifactId>
+                        <version>trunk-696744</version>
+                </dependency>
+                <dependency>
+                        <groupId>ace.contrib</groupId>
+                        <artifactId>ace</artifactId>
+                        <version>5.6.7</version>
+                </dependency>
+                <dependency>
+                        <groupId>cppunit.contrib</groupId>
+                        <artifactId>cppunit</artifactId>
+                        <version>1.12</version>
+                        <scope>test</scope>
+                </dependency>
+
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>atmibroker-core</artifactId>
@@ -53,7 +124,6 @@
 	</profiles>
 
 	<properties>
-		<generate.testrunner>true</generate.testrunner>
 	</properties>
 
 </project>
