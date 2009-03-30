@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                      targetNamespace="http://www.jboss.org"
+                      xmlns="http://www.jboss.org"
+                      elementFormDefault="qualified">
+    <xsd:element name="ENVIRONMENT">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="ENVIRONMENT_DESCRIPTION" minOccurs="1" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="ENVIRONMENT_DESCRIPTION">
+        <xsd:complexType>
+            <xsd:sequence>
+  		<xsd:element name="DOMAIN" type="xsd:string"/>
+  		<xsd:element name="QSPACE_NAME" type="xsd:string"/>
+  		<xsd:element name="ENV_VARIABLES">
+		        <xsd:complexType>
+				<xsd:sequence>
+			  		<xsd:element name="ENV_VARIABLE" minOccurs="1" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+						  		<xsd:element name="NAME" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
+						  		<xsd:element name="VALUE" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
+							</xsd:sequence>
+		        			</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+		        </xsd:complexType>
+		</xsd:element>
+	    </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
