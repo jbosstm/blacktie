@@ -182,16 +182,20 @@
 				</not>
 			</and>
 		</condition>
-		<!--
-		<echo message="have-tests=${have-tests} maven.test.skip=${maven.test.skip} skipTests=${skipTests} xhave-tests=${xhave-tests}" />
-		-->
+		<available file="target/cpp-test-classes" property="have-test-classes" />
+		<condition property="not-have-test-classes" >
+			<not>
+				<available file="target/cpp-test-classes"/>
+			</not>
+		</condition>
 	</target>
 
 	<target name="compile" depends="fileset.main.check,package" if="have-srcs">
 		<mkdir dir="target/cpp-classes" />
 		<mkdir dir="target/${configuration.type}/${lib.type}" />
+		<!--
 		<echo message="${export.dll} ${define.dll}" />
-
+		-->
 
 		<!--
 		     create a comma separated list of libraries from all the libraries in target/cxx/compile/lib
@@ -308,18 +312,18 @@
 		</exec>
 	</target>
 
-	<target name="test" depends="fileset.test.check" if="have-tests">
-		<antcall target="_test-msvc" />
+	<target name="test" depends="fileset.test.check,init" if="have-tests">
+		<antcall target="_test-msvc"/>
 		<antcall target="_test-gcc" />
 	</target>
 
-	<target name="_test-gcc" depends="init" unless="is-msvc">
+	<target name="_test-gcc" depends="init" unless="is-msvc" if="have-test-classes">
 		<exec dir="target/cpp-test-classes" newenvironment="true" resolveexecutable="true" executable="../testsuite" failonerror="${failOnErrorTests}">
 			<env key="LD_LIBRARY_PATH" value="../cxx/runtime/lib:../cxx/test/lib:../${configuration.type}/${lib.type}" />
 			<env key="ATMIBROKER_SCHEMA_DIR" value="${atmibroker.schema.dir}" />
 		</exec>
 	</target>
-	<target name="_test-msvc" depends="init" if="is-msvc">
+	<target name="_test-msvc" depends="init" if="is-msvc" unless="not-have-test-classes">
 		<exec dir="target/cpp-test-classes" newenvironment="false" resolveexecutable="true" executable="../testsuite.exe" failonerror="${failOnErrorTests}">
 			<env key="Path" value="${env.Path};..\cxx\runtime\lib;..\cxx\test\lib;..\${configuration.type}\${lib.type}" />
 		</exec>
