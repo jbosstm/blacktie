@@ -16,7 +16,7 @@
  * MA  02110-1301, USA.
  */
 #include "ServiceDispatcher.h"
-#include "AtmiBrokerOTS.h"
+#include "txClient.h"
 #include "ThreadLocalStorage.h"
 
 log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger("ServiceDispatcher"));
@@ -87,8 +87,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 		// TODO wrap TSS control in a Transaction object and make sure any current
 		// control associated with the thread is suspended here and resumed after
 		// the call to m_func
-		setSpecific(TSS_KEY, control);
-		AtmiBrokerOTS::get_instance()->rm_resume();
+		associateTx(control);
 	}
 	setSpecific(SVC_KEY, this);
 	setSpecific(SVC_SES, session);
@@ -98,7 +97,8 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 		LOG4CXX_ERROR(logger, (char*) "ServiceDispatcher caught error running during onMessage");
 	}
 	if (control) {
-		AtmiBrokerOTS::get_instance()->rm_suspend();
+		disassociateTx(); // TODO figure out why tpreturn need to stop Resource Manager
+		setSpecific(TSS_KEY, control);
 	}
 
 	// CLEAN UP THE SENDER AND RECEIVER FOR THIS CLIENT
@@ -111,6 +111,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	destroySpecific(SVC_SES);
 	destroySpecific(SVC_KEY);
 	destroySpecific(TSS_KEY);
+	//disassociateTx(); TODO
 	LOG4CXX_DEBUG(logger, (char*) "ServiceDispatcher session closed");
 }
 

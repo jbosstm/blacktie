@@ -31,7 +31,7 @@
 #include "AtmiBrokerOTS.h"
 #include "AtmiBrokerEnvXml.h"
 
-#include "tx.h"
+#include "txClient.h"
 
 #include "Worker.h"
 
@@ -174,11 +174,10 @@ int AtmiBrokerOTS::tx_begin(void) {
 	try {
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_begin");
 		tx_current->begin();
-		setSpecific(TSS_KEY, tx_current->get_control());
-		int rv = rm_resume();
+		int rv = associateTx(tx_current->get_control());
 
 		if (rv != XA_OK) {
-			destroySpecific(TSS_KEY);
+			disassociateTx();
 			tx_current->rollback();
 			LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getWarn(),
 				(char*) "unable to start one or more RMs: XA error code: " << rv);
@@ -275,6 +274,7 @@ try {
 #endif
 
 	destroySpecific(TSS_KEY);	// TODO free Control
+	//TODO disassociateTx(); // check whether to suspend RMs
 	currentImpl->remove_control();
 
 	return (isChained() ? chainTransaction(outcome) : outcome);
@@ -416,8 +416,7 @@ int AtmiBrokerOTS::suspend(long& tranid) {
 	} else {
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "calling suspend ");
 		CosTransactions::Control_var aControl = tx_current->suspend();
-		rm_suspend();
-		destroySpecific(TSS_KEY);
+		disassociateTx();
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "called suspend and got Control " << (void*) aControl);
 		ControlInfo* aControlInfo = (ControlInfo*) malloc(sizeof(ControlInfo) * 1);
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "created aControlInfo " << (void*) aControlInfo);
@@ -451,8 +450,7 @@ int AtmiBrokerOTS::resume(long tranid) {
 							(char*) "resume: current transaction has not been suspended");
 				}
 
-				setSpecific(TSS_KEY, tx_current->get_control());
-				int rv = rm_resume();
+				int rv = associateTx(tx_current->get_control());
 				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "called resume with Control " << (void*) (*it)->control << " rv=" << rv);
 
 				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "removing %p from vector" << (*it));

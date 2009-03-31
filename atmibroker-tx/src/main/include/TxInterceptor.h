@@ -50,8 +50,6 @@ public:
 	const char * get_orb() { return orbname_; }
 protected:
         char* get_control_ior();
-	CosTransactions::Control_ptr current_control();
-
 	bool isTransactional(PortableInterceptor::ServerRequestInfo_ptr);
 	bool isTransactional(PortableInterceptor::ClientRequestInfo_ptr);
 	char * extract_ior_from_context(PortableInterceptor::ClientRequestInfo_ptr);

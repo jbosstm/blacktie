@@ -27,7 +27,7 @@
 #include "AtmiBrokerClientControl.h"
 #include "AtmiBrokerMem.h"
 #include "AtmiBrokerEnv.h"
-#include "AtmiBrokerOTS.h"
+#include "txClient.h"
 #include "SymbolLoader.h"
 
 AtmiBrokerClient * ptrAtmiBrokerClient;
@@ -138,7 +138,7 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 
 	AtmiBrokerMem::discard_instance();
 	//TODO READD AtmiBrokerNotify::discard_instance();
-	AtmiBrokerOTS::discard_instance();
+	shutdownTxBroker();
 	AtmiBrokerEnv::discard_instance();
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleted services");
 

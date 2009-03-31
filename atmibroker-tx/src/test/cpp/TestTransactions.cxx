@@ -17,16 +17,10 @@
  */
 #include <cppunit/extensions/HelperMacros.h>
 #include "TestTransactions.h"
-#include "tx.h"
+#include "txClient.h"
 #include "testrm.h"
 #include "ThreadLocalStorage.h"
 #include "XAResourceAdaptorImpl.h"
-
-// includes for looking up orbs
-#include "tao/ORB_Core.h"
-#include "tao/ORB_Table.h"
-#include "tao/ORB_Core_Auto_Ptr.h"
-#include "OrbManagement.h"
 
 // sanity check
 void TestTransactions::test_transactions()
@@ -206,14 +200,6 @@ void TestTransactions::test_RM()
 
 	/* should still be able to clean up after failing to commit a chained transaction */
 	CPPUNIT_ASSERT(tx_close() == TX_OK);
-}
-
-static CORBA::ORB_ptr find_orb(const char * name)
-{
-	TAO::ORB_Table * const orb_table = TAO::ORB_Table::instance();
-	::TAO_ORB_Core* oc = orb_table->find(name);
-
-	return (oc == 0 ? NULL : oc->orb());
 }
 
 static int fn1(char *a, int i, long l) { return 0; }

@@ -25,7 +25,7 @@
 #include "log4cxx/logger.h"
 
 #include "ThreadLocalStorage.h"
-#include "tx.h"
+#include "txClient.h"
 #include "xatmi.h"
 #include "Session.h"
 #include "AtmiBrokerClientControl.h"
@@ -64,12 +64,11 @@ int send(Session* session, const char* replyTo, char* idata, long ilen, int corr
 	int toReturn = -1;
 	if (session->getCanSend()) {
 		try {
-			bool transactionSuspended = false;
-			void* control = getSpecific(TSS_KEY);
-			if (control && (~TPNOTRAN & flags)) {
+			void* control = 0;
+
+			if (~TPNOTRAN & flags) {
 				// don't run the call in a transaction
-				destroySpecific(TSS_KEY);
-				transactionSuspended = true;
+				control = disassociateTx();
 			}
 
 			MESSAGE message;
@@ -83,8 +82,8 @@ int send(Session* session, const char* replyTo, char* idata, long ilen, int corr
 			session->send(message);
 			toReturn = 0;
 
-			if (transactionSuspended) {
-				setSpecific(TSS_KEY, control);
+			if (control) {
+				associateTx(control);
 			}
 		} catch (...) {
 			LOG4CXX_ERROR(loggerXATMI, (char*) "aCorbaService->start_conversation(): call failed");

@@ -34,7 +34,7 @@
 #include "userlog.h"
 #include "AtmiBrokerServerControl.h"
 #include "AtmiBrokerMem.h"
-#include "AtmiBrokerOTS.h"
+#include "txClient.h"
 #include "OrbManagement.h"
 #include "SymbolLoader.h"
 #include "ace/Get_Opt.h"
@@ -168,7 +168,7 @@ AtmiBrokerServer::AtmiBrokerServer() {
 					(char*) "server");
 			realConnection = ::initOrb(
 					(char*) "serverAdministration");
-			//realConnection = AtmiBrokerOTS::init_orb(
+			//realConnection = init_orb(
 			//		(char*) "serverAdministration");
 
 
@@ -228,7 +228,7 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleting services");
 	AtmiBrokerMem::discard_instance();
 	//TODO READD AtmiBrokerNotify::discard_instance();
-	AtmiBrokerOTS::discard_instance();
+	shutdownTxBroker();
 	AtmiBrokerEnv::discard_instance();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted services");
 

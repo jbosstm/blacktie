@@ -20,10 +20,7 @@
 #include "ThreadLocalStorage.h"
 #include "OrbManagement.h"
 
-// includes for looking up orbs
-#include "tao/ORB_Core.h"
-#include "tao/ORB_Table.h"
-#include "tao/ORB_Core_Auto_Ptr.h"
+#include "txClient.h"
 
 log4cxx::LoggerPtr atmiTxInterceptorLogger(log4cxx::Logger::getLogger("TxInterceptor"));
 
@@ -48,45 +45,24 @@ char* TxInterceptor::name() {
 	return CORBA::string_dup(this->name_);
 }
 
-char* TxInterceptor::get_control_ior() {
-	CosTransactions::Control_ptr ctrl = this->current_control();
-
-	if (!CORBA::is_nil(ctrl)) {
-		LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getTrace(), (char *) "current is not NULL");
-		TAO::ORB_Table * const orb_table = TAO::ORB_Table::instance();
-		::TAO_ORB_Core* oc = orb_table->find(orbname_);
-		char * p = (oc == 0 ? NULL : oc->orb()->object_to_string(ctrl));
-		if (p != NULL)
-			return strdup(p);
-	} else {
-		LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getTrace(), (char *) "current is NULL");
-	}
-
-	return NULL;
+char* TxInterceptor::get_control_ior()
+{
+	return txObjectToString(current_control(), orbname_);
 }
 
-CosTransactions::Control_ptr TxInterceptor::current_control() {
-	return (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
-}
+CosTransactions::Control_ptr TxInterceptor::ior_to_control(char * ior)
+{
+	CORBA::Object_ptr p = txStringToObject(ior, orbname_);
 
-CosTransactions::Control_ptr TxInterceptor::ior_to_control(char * ior) {
-	LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getTrace(), (char *) "\treceived ior: " << (ior ? ior : "NULL"));
-
-	if (ior != NULL) {
-		TAO::ORB_Table * const orb_table = TAO::ORB_Table::instance();
-		::TAO_ORB_Core* oc = orb_table->find(orbname_);
-		CORBA::Object_ptr p = (oc == 0 ? NULL : oc->orb()->string_to_object(ior));
-
+	if (ior != NULL)
 		free(ior);
 
-		if (!CORBA::is_nil(p)) {
-			CosTransactions::Control_ptr cptr = CosTransactions::Control::_narrow(p);
-			CORBA::release(p); // dispose of it now that we have narrowed the object reference
+	if (!CORBA::is_nil(p)) {
+		CosTransactions::Control_ptr cptr = CosTransactions::Control::_narrow(p);
+		CORBA::release(p); // dispose of it now that we have narrowed the object reference
+		LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getTrace(), (char *) "narrowed to " << cptr);
 
-			LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getTrace(), (char *) "narrowed to " << cptr);
-
-			return cptr;
-		}
+		return cptr;
 	}
 
 	return NULL;
@@ -220,7 +196,7 @@ void TxInterceptor::update_tx_context(PortableInterceptor::ServerRequestInfo_ptr
 			}
 		}
 
-		setSpecific(TSS_KEY, ctrl);
+		associateTx(ctrl);
 
 		LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getDebug(),
 				ri->operation () << (char*) ": associated client tx with thread");

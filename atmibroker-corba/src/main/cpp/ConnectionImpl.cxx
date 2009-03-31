@@ -22,7 +22,7 @@
 #include <string.h>
 #include "ConnectionImpl.h"
 #include "SessionImpl.h"
-#include "AtmiBrokerOTS.h"
+#include "txClient.h"
 #include "OrbManagement.h"
 #include "AtmiBrokerPoaFac.h"
 #include "EndpointQueue.h"
@@ -32,7 +32,7 @@ log4cxx::LoggerPtr ConnectionImpl::logger(log4cxx::Logger::getLogger(
 
 ConnectionImpl::ConnectionImpl(char* connectionName) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor");
-	this->connection = AtmiBrokerOTS::init_orb(connectionName);
+	this->connection = startTxOrb(connectionName);
 }
 
 ConnectionImpl::~ConnectionImpl() {
