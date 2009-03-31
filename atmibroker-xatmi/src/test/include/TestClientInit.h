@@ -26,10 +26,12 @@
 class TestClientInit: public BaseTest {
 	CPPUNIT_TEST_SUITE( TestClientInit);
 	CPPUNIT_TEST( test_clientinit);
-CPPUNIT_TEST_SUITE_END();
+	CPPUNIT_TEST( test_config_env);
+	CPPUNIT_TEST_SUITE_END();
 
 public:
 void test_clientinit();
+void test_config_env();
 };
 
 #endif

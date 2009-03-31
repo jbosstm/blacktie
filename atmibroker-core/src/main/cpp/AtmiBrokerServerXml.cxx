@@ -155,13 +155,14 @@ static void XMLCALL characterData(void *userData, const char *cdata, int len) {
 	value[i] = '\0';
 }
 
-void AtmiBrokerServerXml::parseXmlDescriptor(ServerMetadata* aServerStructPtr,
+bool AtmiBrokerServerXml::parseXmlDescriptor(ServerMetadata* aServerStructPtr,
 		const char * aDescriptorFileName) {
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml,
 			(char*) "in parseXmlDescriptor() %s", aDescriptorFileName);
 
 	char  schemaPath[256];
 	char* schemaDir;
+	bool  result = false;
 
 	schemaDir = ACE_OS::getenv("ATMIBROKER_SCHEMA_DIR");
 	if(schemaDir) {
@@ -174,7 +175,9 @@ void AtmiBrokerServerXml::parseXmlDescriptor(ServerMetadata* aServerStructPtr,
 			(char*) "schemaPath %s", schemaPath);
 
 	XsdValidator validator;
-	if(validator.validate(schemaPath, aDescriptorFileName) == false) return;
+	if(validator.validate(schemaPath, aDescriptorFileName) == false) {
+		return false;
+	}
 
 	struct stat s; /* file stats */
 	FILE *aDescriptorFile = fopen(aDescriptorFileName, "r");
@@ -187,10 +190,12 @@ void AtmiBrokerServerXml::parseXmlDescriptor(ServerMetadata* aServerStructPtr,
 		/* fstat failed */
 		userlog(log4cxx::Level::getError(), loggerAtmiBrokerServerXml,
 				(char*) "loadfile: fstat failed on %s", aDescriptorFileName);
+		return false;
 	}
 	if (s.st_size == 0) {
 		userlog(log4cxx::Level::getError(), loggerAtmiBrokerServerXml,
 				(char*) "loadfile: file %s is empty", aDescriptorFileName);
+		return false;
 	}
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml,
 			(char*) "loadfile: file %s is %d long", aDescriptorFileName,
@@ -204,6 +209,7 @@ void AtmiBrokerServerXml::parseXmlDescriptor(ServerMetadata* aServerStructPtr,
 				loggerAtmiBrokerServerXml,
 				(char*) "loadfile: Could not allocate enough memory to load file %s",
 				aDescriptorFileName);
+		return false;
 	}
 	memset(buf, '\0', s.st_size);
 	//memcpy(buf,'\0',s.st_size);
@@ -232,18 +238,19 @@ void AtmiBrokerServerXml::parseXmlDescriptor(ServerMetadata* aServerStructPtr,
 	LOG4CXX_TRACE(loggerAtmiBrokerServerXml, "set character data");
 
 	try {
-	do {
-		LOG4CXX_TRACE(loggerAtmiBrokerServerXml, (char*) "reading data" << buf);
-		size_t len = fread(buf, 1, s.st_size, aDescriptorFile);
-		LOG4CXX_TRACE(loggerAtmiBrokerServerXml, (char*) "read data" << buf);
-		done = len < sizeof(buf);
-		if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR) {
-			userlog(log4cxx::Level::getError(), loggerAtmiBrokerServerXml,
-					(char*) "%d at line %d", XML_ErrorString(XML_GetErrorCode(
-							parser)), XML_GetCurrentLineNumber(parser));
-			break;
-		}
-	} while (!done);
+		do {
+			LOG4CXX_TRACE(loggerAtmiBrokerServerXml, (char*) "reading data" << buf);
+			size_t len = fread(buf, 1, s.st_size, aDescriptorFile);
+			LOG4CXX_TRACE(loggerAtmiBrokerServerXml, (char*) "read data" << buf);
+			done = len < sizeof(buf);
+			if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR) {
+				userlog(log4cxx::Level::getError(), loggerAtmiBrokerServerXml,
+						(char*) "%d at line %d", XML_ErrorString(XML_GetErrorCode(
+								parser)), XML_GetCurrentLineNumber(parser));
+				break;
+			}
+		} while (!done);
+		result = true;
 	} catch (...) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServerXml, "count not load " << aDescriptorFileName);
 	}
@@ -255,5 +262,6 @@ void AtmiBrokerServerXml::parseXmlDescriptor(ServerMetadata* aServerStructPtr,
 	fclose(aDescriptorFile);
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml,
 			(char*) "leaving parseXmlDescriptor() %s", aDescriptorFileName);
+	return result;
 }
 

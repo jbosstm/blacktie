@@ -34,7 +34,7 @@ public:
 
 	~AtmiBrokerClientXml();
 
-	void parseXmlDescriptor(std::vector<ClientServerInfo*>*, const char * aDescriptorFileName);
+	bool parseXmlDescriptor(std::vector<ClientServerInfo*>*, const char * aDescriptorFileName);
 };
 
 extern ATMIBROKER_CORE_DLL int clientMaxChannels;

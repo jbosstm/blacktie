@@ -18,6 +18,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "TestClientInit.h"
+#include "ace/OS_NS_stdlib.h"
 
 #include "xatmi.h"
 extern "C" {
@@ -29,5 +30,27 @@ void TestClientInit::test_clientinit() {
 	int valToTest = ::clientinit();
 	CPPUNIT_ASSERT(valToTest != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
-	return;
+
+	valToTest = ::clientdone();
+	CPPUNIT_ASSERT(valToTest != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+}
+
+void TestClientInit::test_config_env() {
+	ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=conf");
+
+	CPPUNIT_ASSERT(tperrno == 0);
+	int valToTest = ::clientinit();
+	CPPUNIT_ASSERT(valToTest != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	valToTest = ::clientdone();
+	CPPUNIT_ASSERT(valToTest != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	/* wrong envionment */
+	ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=nosuch_conf");
+	valToTest = ::clientinit();
+	CPPUNIT_ASSERT(valToTest == -1);
+	ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR");
 }

@@ -42,7 +42,7 @@ public:
 
 	~AtmiBrokerServerXml();
 
-	void parseXmlDescriptor(ServerMetadata*, const char * aDescriptorFileName);
+	bool parseXmlDescriptor(ServerMetadata*, const char * aDescriptorFileName);
 };
 
 extern ATMIBROKER_CORE_DLL char server[30];

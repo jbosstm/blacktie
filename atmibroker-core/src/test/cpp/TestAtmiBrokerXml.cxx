@@ -28,7 +28,7 @@ void TestAtmiBrokerXml::test_server() {
 	AtmiBrokerServerXml xml;
 	ServerMetadata      data;
 
-	xml.parseXmlDescriptor(&data, "SERVER.xml");
+	CPPUNIT_ASSERT(xml.parseXmlDescriptor(&data, "SERVER.xml"));
 	CPPUNIT_ASSERT(data.maxChannels == 1);
 	CPPUNIT_ASSERT(data.maxSuppliers == 1);
 	CPPUNIT_ASSERT(data.maxConsumers == 1);
@@ -41,7 +41,7 @@ void TestAtmiBrokerXml::test_client() {
 	AtmiBrokerClientXml xml;
 	std::vector<ClientServerInfo*> aClientServerVectorPtr;
 
-	xml.parseXmlDescriptor(&aClientServerVectorPtr, "CLIENT.xml");
+	CPPUNIT_ASSERT(xml.parseXmlDescriptor(&aClientServerVectorPtr, "CLIENT.xml"));
 	CPPUNIT_ASSERT(clientMaxChannels == 1 );
 	CPPUNIT_ASSERT(clientMaxSuppliers == 1 );
 	CPPUNIT_ASSERT(clientMaxConsumers == 1 );

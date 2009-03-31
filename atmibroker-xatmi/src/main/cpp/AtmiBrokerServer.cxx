@@ -37,12 +37,15 @@
 #include "AtmiBrokerOTS.h"
 #include "OrbManagement.h"
 #include "SymbolLoader.h"
+#include "ace/Get_Opt.h"
 
 log4cxx::LoggerPtr loggerAtmiBrokerServer(log4cxx::Logger::getLogger(
 		"AtmiBrokerServer"));
 AtmiBrokerServer * ptrServer = NULL;
 bool serverInitialized = false;
 PortableServer::POA_var server_poa;
+bool configFromCmdline = false;
+char configDir[256];
 
 void server_sigint_handler_callback(int sig_type) {
 	userlog(
@@ -59,13 +62,40 @@ int serverrun() {
 	return ptrServer->block();
 }
 
-int serverinit() {
+int parsecmdline(int argc, char** argv) {
+	ACE_Get_Opt getopt (argc, argv, ACE_TEXT("c:"));
+	int c;
+	int r = 0;
+
+	configFromCmdline = false;
+	while ((c = getopt ()) != -1){
+		switch((char)c){
+			case 'c':
+				configFromCmdline = true;
+				ACE_OS::strncpy(configDir, getopt.opt_arg (), 256);
+				break;
+			default:
+				r = -1;
+		}
+	}
+
+	return r;
+}
+
+int serverinit(int argc, char** argv) {
 	tperrno = 0;
 	int toReturn = 0;
 
 	initializeLogger();
 
-	if (ptrServer == NULL) {
+	if(argc > 0 && parsecmdline(argc, argv) != 0) {
+		userlog(log4cxx::Level::getError(), loggerAtmiBrokerServer,
+				(char*) "Parse Commandline fail");
+		toReturn = -1;
+		tperrno = TPESYSTEM;
+	}
+
+	if (toReturn != -1 && ptrServer == NULL) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverinit called");
 		signal(SIGINT, server_sigint_handler_callback);
 		ptrServer = new AtmiBrokerServer();
@@ -105,13 +135,34 @@ AtmiBrokerServer::AtmiBrokerServer() {
 	try {
 		serverConnection = NULL;
 		realConnection = NULL;
+		char descPath[256];
+
+		if(configFromCmdline) {
+			ACE_OS::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"SERVER.xml", configDir);
+		} else {
+			char* envDir;
+			envDir = ACE_OS::getenv("ATMIBROKER_CONFIGURATION_DIR");
+
+			if(envDir) {
+				LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "envDir is " << envDir);
+				ACE_OS::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"SERVER.xml", envDir);
+			} else {
+				ACE_OS::strncpy(descPath, "SERVER.xml", 256);
+			}
+		}
+		AtmiBrokerServerXml aAtmiBrokerServerXml;
+		if(aAtmiBrokerServerXml.parseXmlDescriptor(&serverInfo, descPath) == false) return;
+		serverName = server;
+
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "descPath is " << descPath);
+
 		char* transportLibrary = AtmiBrokerEnv::get_instance()->getenv(
 				(char*) "TransportLibrary");
 		LOG4CXX_INFO(loggerAtmiBrokerServer,
 				(char*) "Loading server transport: " << transportLibrary);
 		connection_factory_t* connectionFactory =
-				(connection_factory_t*) ::lookup_symbol(transportLibrary,
-						"connectionFactory");
+			(connection_factory_t*) ::lookup_symbol(transportLibrary,
+					"connectionFactory");
 		if (connectionFactory != NULL) {
 			serverConnection = connectionFactory->create_connection(
 					(char*) "server");
@@ -119,11 +170,8 @@ AtmiBrokerServer::AtmiBrokerServer() {
 					(char*) "serverAdministration");
 			//realConnection = AtmiBrokerOTS::init_orb(
 			//		(char*) "serverAdministration");
-			
-			AtmiBrokerServerXml aAtmiBrokerServerXml;
-			aAtmiBrokerServerXml.parseXmlDescriptor(&serverInfo,
-					(char*) "SERVER.xml");
-			serverName = server;
+
+
 
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "creating POAs for %s" << server);
@@ -133,9 +181,9 @@ AtmiBrokerServer::AtmiBrokerServer() {
 					realConnection->root_poa_manager);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "created POAs for %s" << server);
-			
+
 			PortableServer::ObjectId_var oid =
-					PortableServer::string_to_ObjectId(server);
+				PortableServer::string_to_ObjectId(server);
 			poa->activate_object_with_id(oid, this);
 			CORBA::Object_var tmp_ref = poa->create_reference_with_id(oid,
 					"IDL:AtmiBroker/Server:1.0");
@@ -150,7 +198,7 @@ AtmiBrokerServer::AtmiBrokerServer() {
 		} else {
 			LOG4CXX_ERROR(loggerAtmiBrokerServer,
 					(char*) "Could not load the transport: "
-							<< transportLibrary);
+					<< transportLibrary);
 			tperrno = TPESYSTEM;
 		}
 	} catch (CORBA::Exception& e) {

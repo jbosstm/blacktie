@@ -83,6 +83,21 @@ int clientdone() {
 AtmiBrokerClient::AtmiBrokerClient() {
 	try {
 		clientConnection = NULL;
+		char* envDir = NULL;
+		char  descPath[256];
+
+		envDir = ACE_OS::getenv("ATMIBROKER_CONFIGURATION_DIR");
+		if(envDir) {
+			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "envDir is " << envDir);
+			ACE_OS::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"CLIENT.xml", envDir);
+		} else {
+			ACE_OS::strncpy(descPath, "CLIENT.xml", 256);
+		}
+
+		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "descPath is " << descPath);
+		AtmiBrokerClientXml aAtmiBrokerClientXml;
+		if(aAtmiBrokerClientXml.parseXmlDescriptor(&clientServerVector, descPath) == false) return;
+
 		char* transportLibrary = AtmiBrokerEnv::get_instance()->getenv(
 				(char*) "TransportLibrary");
 		LOG4CXX_INFO(loggerAtmiBrokerClient,
@@ -96,9 +111,6 @@ AtmiBrokerClient::AtmiBrokerClient() {
 
 			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "constructor");
 
-			AtmiBrokerClientXml aAtmiBrokerClientXml;
-			aAtmiBrokerClientXml.parseXmlDescriptor(&clientServerVector,
-					"CLIENT.xml");
 			nextSessionId = 0;
 			clientInitialized = true;
 		} else {

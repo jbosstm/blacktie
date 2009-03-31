@@ -17,8 +17,58 @@
  */
 #include <cppunit/extensions/HelperMacros.h>
 #include "TestServerinit.h"
+#include "ace/OS_NS_stdlib.h"
 
-bool called = false;
+//bool called = false;
 void TestServerinit::test_serverinit() {
-	CPPUNIT_ASSERT(false);
+	int result;
+
+	result = serverinit();
+	CPPUNIT_ASSERT(result != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	result = serverdone();
+	CPPUNIT_ASSERT(result != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+}
+
+void TestServerinit::test_config_env() {
+	int result;
+	char* argv[] = {(char*)"server"};
+	int argc = sizeof(argv)/sizeof(char*);
+
+	ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=conf");
+	result = serverinit(argc, argv);
+	CPPUNIT_ASSERT(result != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	result = serverdone();
+	CPPUNIT_ASSERT(result != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=nosuch_conf");
+	result = serverinit(argc, argv);
+	CPPUNIT_ASSERT(result == -1);
+	ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR");
+}
+
+void TestServerinit::test_config_cmdline() {
+	int result;
+	char* argv1[] = {(char*)"server", (char*)"-c", (char*)"conf"};
+	int argc1 = sizeof(argv1)/sizeof(char*);
+
+	result = serverinit(argc1, argv1);
+	CPPUNIT_ASSERT(result != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	result = serverdone();
+	CPPUNIT_ASSERT(result != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	/* invalid command line arguments */
+	char* argv2[] = {(char*)"server", (char*)"-i", (char*)"conf"};
+	int argc2 = sizeof(argv2)/sizeof(char*);
+
+	result = serverinit(argc2, argv2);
+	CPPUNIT_ASSERT(result == -1);
 }

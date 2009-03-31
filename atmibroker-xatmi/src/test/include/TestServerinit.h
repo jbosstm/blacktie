@@ -20,16 +20,21 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
+#include "xatmi.h"
+#include "AtmiBrokerServerControl.h"
+#include "BaseTest.h"
 
-#include "BaseServerTest.h"
-
-class TestServerinit: public BaseServerTest {
+class TestServerinit: public BaseTest {
 	CPPUNIT_TEST_SUITE( TestServerinit);
 	CPPUNIT_TEST( test_serverinit);
-CPPUNIT_TEST_SUITE_END();
+	CPPUNIT_TEST( test_config_cmdline);
+	CPPUNIT_TEST( test_config_env);
+	CPPUNIT_TEST_SUITE_END();
 
 public:
-void test_serverinit();
+	void test_serverinit();
+	void test_config_cmdline();
+	void test_config_env();
 };
 
 #endif
