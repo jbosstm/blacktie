@@ -636,9 +636,15 @@ void AtmiBrokerServer::addDestination(Destination* destination, void(*func)(
 			<< destination->getName());
 	entry.serviceInfo.poolSize = 1; // TODO MAKE A CONSTANT
 
+	const char* dir = NULL;
+	if(configFromCmdline) {
+		dir = configDir;
+	} else {
+		dir = ACE_OS::getenv("ATMIBROKER_CONFIGURATION_DIR");
+	}
+
 	AtmiBrokerServiceXml aAtmiBrokerServiceXml;
-	aAtmiBrokerServiceXml.parseXmlDescriptor(&entry.serviceInfo,
-			destination->getName());
+	aAtmiBrokerServiceXml.parseXmlDescriptor(&entry.serviceInfo, destination->getName(), dir);
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "createPool");
 	for (int i = 0; i < entry.serviceInfo.poolSize; i++) {

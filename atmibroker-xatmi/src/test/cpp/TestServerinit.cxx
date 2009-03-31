@@ -19,7 +19,8 @@
 #include "TestServerinit.h"
 #include "ace/OS_NS_stdlib.h"
 
-//bool called = false;
+extern void test_service(TPSVCINFO *svcinfo);
+
 void TestServerinit::test_serverinit() {
 	int result;
 
@@ -61,6 +62,10 @@ void TestServerinit::test_config_cmdline() {
 	CPPUNIT_ASSERT(result != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
 
+	int id = ::tpadvertise((char*) "TestTPAdvertise", test_service);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(id == 0);
+
 	result = serverdone();
 	CPPUNIT_ASSERT(result != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -71,4 +76,6 @@ void TestServerinit::test_config_cmdline() {
 
 	result = serverinit(argc2, argv2);
 	CPPUNIT_ASSERT(result == -1);
+}
+void test_service(TPSVCINFO *svcinfo) {
 }

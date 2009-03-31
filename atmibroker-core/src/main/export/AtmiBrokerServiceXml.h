@@ -35,7 +35,9 @@ public:
 
 	~AtmiBrokerServiceXml();
 
-	void parseXmlDescriptor(SVCINFO* serviceData, const char * aDescriptorFileName);
+	void parseXmlDescriptor(SVCINFO* serviceData, 
+							const char * aDescriptorFileName,
+							const char * ConfigurationDir = NULL);
 };
 
 #endif

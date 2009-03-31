@@ -25,6 +25,7 @@
 #include "AtmiBrokerServiceXml.h"
 #include "userlog.h"
 #include "log4cxx/logger.h"
+#include "ace/OS_NS_stdio.h"
 
 log4cxx::LoggerPtr loggerAtmiBrokerServiceXml(log4cxx::Logger::getLogger(
 		"AtmiBrokerServiceXml"));
@@ -87,7 +88,7 @@ static void XMLCALL characterData(void *userData, const char *cdata, int len) {
 }
 
 void AtmiBrokerServiceXml::parseXmlDescriptor(SVCINFO* aServiceStructPtr,
-		const char * aDescriptorFileName) {
+		const char * aDescriptorFileName, const char * ConfigurationDir) {
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml,
 			(char*) "in parseXmlDescriptor() %s", aDescriptorFileName);
 
@@ -97,9 +98,16 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(SVCINFO* aServiceStructPtr,
 	strcat(serviceConfigFilename, ".xml");
 	LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "loading: "
 			<< serviceConfigFilename);
+	char configPath[256];
+	if(ConfigurationDir != NULL){
+		ACE_OS::snprintf(configPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"%s",
+										ConfigurationDir, serviceConfigFilename);
+	} else {
+		ACE_OS::strncpy(configPath, serviceConfigFilename, 256);
+	}
 
 	struct stat s; /* file stats */
-	FILE *aDescriptorFile = fopen(serviceConfigFilename, "r");
+	FILE *aDescriptorFile = fopen(configPath, "r");
 
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml,
 			(char*) "read file %p", aDescriptorFile);
@@ -108,6 +116,7 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(SVCINFO* aServiceStructPtr,
 		userlog(log4cxx::Level::getWarn(), loggerAtmiBrokerServiceXml,
 				(char*) "parseXmlDescriptor could not load service config %s",
 				serviceConfigFilename);
+		free(serviceConfigFilename);
 		return;
 	}
 	/* Use fstat to obtain the file size */
