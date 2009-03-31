@@ -49,6 +49,7 @@
 							<goal>generate-sources</goal>
 						</goals>
 					</execution>
+					<!--
 					<execution>
 						<id>compile</id>
 						<phase>compile</phase>
@@ -56,18 +57,12 @@
 							<goal>compile</goal>
 						</goals>
 					</execution>
+					-->
 					<execution>
 						<id>test-compile</id>
 						<phase>test-compile</phase>
 						<goals>
 							<goal>test-compile</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>test</id>
-						<phase>test</phase>
-						<goals>
-							<goal>test</goal>
 						</goals>
 					</execution>
 					<execution>
