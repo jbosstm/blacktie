@@ -72,7 +72,7 @@ int parsecmdline(int argc, char** argv) {
 		switch((char)c){
 			case 'c':
 				configFromCmdline = true;
-				ACE_OS::strncpy(configDir, getopt.opt_arg (), 256);
+				strncpy(configDir, getopt.opt_arg (), 256);
 				break;
 			default:
 				r = -1;
@@ -154,7 +154,7 @@ AtmiBrokerServer::AtmiBrokerServer() {
 		if(ptrDir != NULL) {
 			ACE_OS::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"SERVER.xml", ptrDir);
 		} else {
-			ACE_OS::strncpy(descPath, "SERVER.xml", 256);
+			strncpy(descPath, "SERVER.xml", 256);
 		}
 
 		AtmiBrokerServerXml aAtmiBrokerServerXml;

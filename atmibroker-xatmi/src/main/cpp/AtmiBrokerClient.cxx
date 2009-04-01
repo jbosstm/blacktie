@@ -91,7 +91,7 @@ AtmiBrokerClient::AtmiBrokerClient() {
 			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "envDir is " << envDir);
 			ACE_OS::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"CLIENT.xml", envDir);
 		} else {
-			ACE_OS::strncpy(descPath, "CLIENT.xml", 256);
+			strncpy(descPath, "CLIENT.xml", 256);
 		}
 
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "descPath is " << descPath);

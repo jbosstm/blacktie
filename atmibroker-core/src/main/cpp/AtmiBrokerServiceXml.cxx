@@ -103,7 +103,8 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(SVCINFO* aServiceStructPtr,
 		ACE_OS::snprintf(configPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"%s",
 										ConfigurationDir, serviceConfigFilename);
 	} else {
-		ACE_OS::strncpy(configPath, serviceConfigFilename, 256);
+		memset(configPath, '\0', 256);
+		strncpy(configPath, serviceConfigFilename, 256);
 	}
 
 	struct stat s; /* file stats */
