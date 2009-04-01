@@ -82,6 +82,18 @@ int parsecmdline(int argc, char** argv) {
 	return r;
 }
 
+const char* getConfigurationDir() {
+	const char* dir = NULL;
+
+	if(configFromCmdline) {
+		dir = configDir;
+	} else {
+		dir = ACE_OS::getenv("ATMIBROKER_CONFIGURATION_DIR");
+	}
+
+	return dir;
+}
+
 int serverinit(int argc, char** argv) {
 	tperrno = 0;
 	int toReturn = 0;
@@ -136,26 +148,22 @@ AtmiBrokerServer::AtmiBrokerServer() {
 		serverConnection = NULL;
 		realConnection = NULL;
 		char descPath[256];
+		const char* ptrDir;
 
-		if(configFromCmdline) {
-			ACE_OS::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"SERVER.xml", configDir);
+		ptrDir = getConfigurationDir();
+		if(ptrDir != NULL) {
+			ACE_OS::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"SERVER.xml", ptrDir);
 		} else {
-			char* envDir;
-			envDir = ACE_OS::getenv("ATMIBROKER_CONFIGURATION_DIR");
-
-			if(envDir) {
-				LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "envDir is " << envDir);
-				ACE_OS::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"SERVER.xml", envDir);
-			} else {
-				ACE_OS::strncpy(descPath, "SERVER.xml", 256);
-			}
+			ACE_OS::strncpy(descPath, "SERVER.xml", 256);
 		}
+
 		AtmiBrokerServerXml aAtmiBrokerServerXml;
 		if(aAtmiBrokerServerXml.parseXmlDescriptor(&serverInfo, descPath) == false) return;
 		serverName = server;
 
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "descPath is " << descPath);
 
+		AtmiBrokerEnv::set_environment_dir(ptrDir);
 		char* transportLibrary = AtmiBrokerEnv::get_instance()->getenv(
 				(char*) "TransportLibrary");
 		LOG4CXX_INFO(loggerAtmiBrokerServer,
@@ -636,15 +644,10 @@ void AtmiBrokerServer::addDestination(Destination* destination, void(*func)(
 			<< destination->getName());
 	entry.serviceInfo.poolSize = 1; // TODO MAKE A CONSTANT
 
-	const char* dir = NULL;
-	if(configFromCmdline) {
-		dir = configDir;
-	} else {
-		dir = ACE_OS::getenv("ATMIBROKER_CONFIGURATION_DIR");
-	}
-
 	AtmiBrokerServiceXml aAtmiBrokerServiceXml;
-	aAtmiBrokerServiceXml.parseXmlDescriptor(&entry.serviceInfo, destination->getName(), dir);
+	aAtmiBrokerServiceXml.parseXmlDescriptor(&entry.serviceInfo, 
+											 destination->getName(),
+											 getConfigurationDir());
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "createPool");
 	for (int i = 0; i < entry.serviceInfo.poolSize; i++) {

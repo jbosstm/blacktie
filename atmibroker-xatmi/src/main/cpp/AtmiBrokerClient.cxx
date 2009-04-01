@@ -98,6 +98,7 @@ AtmiBrokerClient::AtmiBrokerClient() {
 		AtmiBrokerClientXml aAtmiBrokerClientXml;
 		if(aAtmiBrokerClientXml.parseXmlDescriptor(&clientServerVector, descPath) == false) return;
 
+		AtmiBrokerEnv::set_environment_dir(envDir);
 		char* transportLibrary = AtmiBrokerEnv::get_instance()->getenv(
 				(char*) "TransportLibrary");
 		LOG4CXX_INFO(loggerAtmiBrokerClient,

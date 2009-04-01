@@ -60,4 +60,7 @@ void TestAtmiBrokerXml::test_service() {
 }
 
 void TestAtmiBrokerXml::test_env() {
+	AtmiBrokerEnvXml xml;
+	std::vector<envVar_t> aEnvironmentStructPtr;
+	CPPUNIT_ASSERT(xml.parseXmlDescriptor(&aEnvironmentStructPtr, "Environment.xml"));
 }

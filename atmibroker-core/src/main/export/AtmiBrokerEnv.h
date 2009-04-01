@@ -42,9 +42,11 @@ public:
 
 	static AtmiBrokerEnv* get_instance();
 	static void discard_instance();
+	static void set_environment_dir(const char* dir);
 
 	static int ENV_VARIABLE_SIZE;
 	static char* ENVIRONMENT_FILE;
+	static char* ENVIRONMENT_DIR;
 
 private:
 

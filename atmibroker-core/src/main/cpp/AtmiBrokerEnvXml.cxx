@@ -25,8 +25,13 @@
 #include "expat.h"
 
 #include "AtmiBrokerEnvXml.h"
+#include "XsdValidator.h"
 
 #include "log4cxx/logger.h"
+#include "ace/OS_NS_stdlib.h"
+#include "ace/OS_NS_stdio.h"
+#include "ace/OS_NS_string.h"
+#include "ace/Default_Constants.h"
 
 log4cxx::LoggerPtr loggerAtmiBrokerEnvXml(log4cxx::Logger::getLogger(
 		"AtmiBrokerEnvXml"));
@@ -278,12 +283,12 @@ static void XMLCALL endElement
 		processingEnvVariable = false;
 	} else if (strcmp(last_element, "NAME") == 0) {
 		int index = envVariableCount - 1;
-		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "\tstoring EnvName '%s' at index %d" << last_value << index);
+		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "\tstoring EnvName %s at index %d" << last_value << index);
 		processingEnvName = false;
 		(*aEnvironmentStructPtr)[index].name = strdup(last_value);
 	} else if (strcmp(last_element, "VALUE") == 0) {
 		int index = envVariableCount - 1;
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "\tstoring Env Value '%s' at index %d" << last_value << index);
+		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "\tstoring Env Value %s at index %d" << last_value << index);
 		processingEnvValue = false;
 		(*aEnvironmentStructPtr)[index].value = strdup(last_value);
 	}
@@ -309,11 +314,25 @@ static void XMLCALL characterData
 bool AtmiBrokerEnvXml::parseXmlDescriptor(
 		std::vector<envVar_t>* aEnvironmentStructPtr,
 		const char * aDescriptorFileName) {
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "in parseXmlDescriptor() %s"
-			<< aDescriptorFileName);
+	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "in parseXmlDescriptor() " << aDescriptorFileName);
 
 	bool toReturn = true;
+	char  schemaPath[256];
+	char* schemaDir;
 
+	schemaDir = ACE_OS::getenv("ATMIBROKER_SCHEMA_DIR");
+	if(schemaDir) {
+		ACE_OS::snprintf(schemaPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"Environment.xsd", schemaDir);
+	} else {
+		ACE_OS::strcpy(schemaPath, "Environment.xsd");
+	}
+
+	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "schemaPath is " << schemaPath);
+
+	XsdValidator validator;
+	if(validator.validate(schemaPath, aDescriptorFileName) == false) {
+		return false;
+	}
 	struct stat s; /* file stats */
 	FILE *aDescriptorFile = fopen(aDescriptorFileName, "r");
 

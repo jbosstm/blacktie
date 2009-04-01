@@ -25,12 +25,17 @@
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerEnvXml.h"
 #include "log4cxx/logger.h"
+#include "ace/OS_NS_stdlib.h"
+#include "ace/OS_NS_stdio.h"
+#include "ace/OS_NS_string.h"
+#include "ace/Default_Constants.h"
 
 log4cxx::LoggerPtr loggerAtmiBrokerEnv(log4cxx::Logger::getLogger(
 		"AtmiBrokerEnv"));
 
 int AtmiBrokerEnv::ENV_VARIABLE_SIZE = 30;
 char *AtmiBrokerEnv::ENVIRONMENT_FILE = (char*) "Environment.xml";
+char *AtmiBrokerEnv::ENVIRONMENT_DIR = NULL;
 AtmiBrokerEnv *AtmiBrokerEnv::ptrAtmiBrokerEnv = NULL;
 
 AtmiBrokerEnv *
@@ -47,10 +52,28 @@ void AtmiBrokerEnv::discard_instance() {
 	}
 }
 
+void AtmiBrokerEnv::set_environment_dir(const char* dir) {
+	if(dir == NULL) {
+		ENVIRONMENT_DIR = NULL;
+	} else {
+		ENVIRONMENT_DIR = strdup(dir);
+	}
+}
+
 AtmiBrokerEnv::AtmiBrokerEnv() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "constructor");
 	readEnvironment = false;
-	readenv(NULL, NULL);
+	if(ENVIRONMENT_DIR) {
+		char aEnvFileName[256];
+
+		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "read env from dir: " << ENVIRONMENT_DIR);
+		ACE_OS::snprintf(aEnvFileName, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"%s",
+						 ENVIRONMENT_DIR,
+						 ENVIRONMENT_FILE);
+		readenv(aEnvFileName, NULL);
+	} else {
+		readenv(NULL, NULL);
+	}
 }
 
 AtmiBrokerEnv::~AtmiBrokerEnv() {
@@ -59,6 +82,10 @@ AtmiBrokerEnv::~AtmiBrokerEnv() {
 			!= envVariableInfoSeq.end(); i++) {
 		free((*i).name);
 		free((*i).value);
+	}
+
+	if(ENVIRONMENT_DIR) {
+		free(ENVIRONMENT_DIR);
 	}
 	envVariableInfoSeq.clear();
 	readEnvironment = false;
@@ -129,18 +156,18 @@ int AtmiBrokerEnv::readenv(char* aEnvFileName, char* label) {
 	if (!readEnvironment) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerEnv,
 				(char*) "readenv ignores label variable");
-		AtmiBrokerEnvXml aAtmiBrokerEnvXml;
+		char* descPath;
 
 		if (aEnvFileName != NULL) {
-			LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "readenv	file now: %s "
-					<< aEnvFileName);
-			ENVIRONMENT_FILE = aEnvFileName;
+			descPath = aEnvFileName;
+		} else {
+			descPath = ENVIRONMENT_FILE; 
 		}
 
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "readenv file: %s "
-				<< ENVIRONMENT_FILE);
-		if (aAtmiBrokerEnvXml.parseXmlDescriptor(&envVariableInfoSeq,
-				ENVIRONMENT_FILE)) {
+		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "readenv file: " << descPath);
+
+		AtmiBrokerEnvXml aAtmiBrokerEnvXml;
+		if (aAtmiBrokerEnvXml.parseXmlDescriptor(&envVariableInfoSeq, descPath)) {
 			readEnvironment = true;
 		} else {
 			return -1;
