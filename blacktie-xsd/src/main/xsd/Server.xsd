@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                      targetNamespace="http://www.jboss.org"
-                      xmlns="http://www.jboss.org"
+					  targetNamespace="http://www.jboss.org/blacktie"
+					  xmlns="http://www.jboss.org/blacktie"
                       elementFormDefault="qualified">
     <xsd:element name="SERVER">
         <xsd:complexType>
@@ -18,6 +18,7 @@
   		<xsd:element name="MAX_CHANNELS" type="xsd:string"/>
   		<xsd:element name="MAX_SUPPLIERS" type="xsd:string"/>
   		<xsd:element name="MAX_CONSUMERS" type="xsd:string"/>
+  		<xsd:element name="ORB_TYPE" type="xsd:string"/>
   		<xsd:element name="SERVICE_NAMES">
 		        <xsd:complexType>
 				<xsd:sequence>
