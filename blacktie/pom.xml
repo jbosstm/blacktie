@@ -44,8 +44,8 @@
 		</plugins>
 	</build>
 	<modules>
-		<module>../blacktie-common</module>
 		<module>../blacktie-utils</module>
+		<module>../blacktie-common</module>
 		<module>../blacktie-xsd</module>
 		<module>../atmibroker-idl</module>
 		<module>../tx-test-utilities</module>

@@ -76,11 +76,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>cpp-tools</artifactId>
-		</dependency>
-	</dependencies>
 </project>

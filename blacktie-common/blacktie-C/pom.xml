@@ -88,9 +88,15 @@
 	</build>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>cpp-tools</artifactId>
-		</dependency>
+                <dependency>
+                        <groupId>apache-log4cxx.contrib</groupId>
+                        <artifactId>log4cxx</artifactId>
+                        <version>trunk-696744</version>
+                </dependency>
+                <dependency>
+                        <groupId>ace.contrib</groupId>
+                        <artifactId>ace</artifactId>
+                        <version>5.6.7</version>
+                </dependency>
 	</dependencies>
 </project>

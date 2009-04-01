@@ -30,16 +30,6 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>cpp-tools</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>apache-log4cxx.contrib</groupId>
-					<artifactId>log4cxx</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 	</dependencies>
 
 	<profiles>
