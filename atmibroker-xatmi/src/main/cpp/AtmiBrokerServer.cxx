@@ -240,7 +240,7 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleting services");
 	AtmiBrokerMem::discard_instance();
 	//TODO READD AtmiBrokerNotify::discard_instance();
-	shutdownTxBroker();
+	shutdown_tx_broker();
 	AtmiBrokerEnv::discard_instance();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted services");
 

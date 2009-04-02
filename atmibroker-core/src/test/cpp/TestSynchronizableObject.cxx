@@ -55,7 +55,7 @@ int Waiter::svc(void){
 
 void TestSynchronizableObject::setUp() {
 	int argc = 0;
-	CORBA::ORB_ptr orb_ref = CORBA::ORB_init(argc, NULL, "null");
+	(void) CORBA::ORB_init(argc, NULL, "null");
 	waiter = new Waiter();
 	if (waiter->activate(THR_NEW_LWP| THR_JOINABLE, 1, 0, ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
 		delete (waiter);

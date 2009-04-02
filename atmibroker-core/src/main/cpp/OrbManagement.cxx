@@ -18,6 +18,11 @@
 #include <string.h>
 #include <tao/ORB.h>
 #include <tao/Object.h>
+//includes for looking up orbs
+#include "tao/ORB_Core.h"
+#include "tao/ORB_Table.h"
+#include "tao/ORB_Core_Auto_Ptr.h"
+
 #include <orbsvcs/CosNamingS.h>
 #include "OrbManagement.h"
 #include "AtmiBrokerEnv.h"
@@ -28,6 +33,9 @@
 
 log4cxx::LoggerPtr loggerOrbManagement(log4cxx::Logger::getLogger(
 		"OrbManagment"));
+
+extern ATMIBROKER_CORE_DLL CORBA::ORB_ptr find_other_orb(const char *);
+extern ATMIBROKER_CORE_DLL void print_orb_ids();
 
 CORBA_CONNECTION* initOrb(char* connectionName) {
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "initOrb");
@@ -203,3 +211,67 @@ void shutdownBindings(CORBA_CONNECTION* connection) {
 	}
 }
 
+CORBA::ORB_ptr find_orb(const char * orbid)
+{
+       	TAO::ORB_Table * const orb_table = TAO::ORB_Table::instance();
+        ::TAO_ORB_Core* oc = (orbid == NULL ? orb_table->first_orb() : orb_table->find(orbid));
+
+	LOG4CXX_DEBUG(loggerOrbManagement,
+		(char *) "XXX find_orb " << (orbid ? orbid : "NULL") <<
+		(char *) " - using " << (oc ? oc->orbid() : "NULL"));
+
+        return (oc == 0 ? NULL : oc->orb());
+}
+
+CORBA::ORB_ptr find_other_orb(const char * orbid)
+{
+	TAO::ORB_Table * const table = TAO::ORB_Table::instance ();
+	TAO::ORB_Table::iterator const end = table->end ();
+
+	for (TAO::ORB_Table::iterator i = table->begin (); i != end; ++i)
+	{
+		::TAO_ORB_Core* oc = (*i).second.core();
+		if (ACE_OS::strcmp(oc->orbid(), orbid) != 0)
+			return oc->orb();
+	}
+
+	return NULL;
+}
+
+void print_orb_ids()
+{
+	TAO::ORB_Table * const table = TAO::ORB_Table::instance ();
+	TAO::ORB_Table::iterator const end = table->end ();
+
+	for (TAO::ORB_Table::iterator i = table->begin (); i != end; ++i)
+        	LOG4CXX_LOGLS(loggerOrbManagement, log4cxx::Level::getInfo(),
+			(char *) "\torbid: " << ((*i).second.core())->orbid());
+}
+
+char* atmi_object_to_string(CORBA::Object_ptr ctrl, char * orbid)
+{
+        if (!CORBA::is_nil(ctrl)) {
+                CORBA::ORB_ptr orb = find_orb(orbid);
+
+                if (orb)
+                        return ACE_OS::strdup(orb->object_to_string(ctrl));
+        }
+
+        LOG4CXX_LOGLS(loggerOrbManagement, log4cxx::Level::getTrace(), (char *) "current is NULL");
+
+        return NULL;
+}
+
+CORBA::Object_ptr atmi_string_to_object(char * ior, char * orbid)
+{
+        LOG4CXX_LOGLS(loggerOrbManagement, log4cxx::Level::getTrace(), (char *) "\tconverting ior: " << (ior ? ior : "NULL"));
+
+        if (ior != NULL) {
+                CORBA::ORB_ptr orb = find_orb(orbid);
+
+                if (orb)
+                        orb->string_to_object(ior);
+        }
+
+        return NULL;
+}

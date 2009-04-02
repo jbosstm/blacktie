@@ -174,10 +174,10 @@ int AtmiBrokerOTS::tx_begin(void) {
 	try {
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_begin");
 		tx_current->begin();
-		int rv = associateTx(tx_current->get_control());
+		int rv = associate_tx(tx_current->get_control());
 
 		if (rv != XA_OK) {
-			disassociateTx();
+			disassociate_tx();
 			tx_current->rollback();
 			LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getWarn(),
 				(char*) "unable to start one or more RMs: XA error code: " << rv);
@@ -416,7 +416,7 @@ int AtmiBrokerOTS::suspend(long& tranid) {
 	} else {
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "calling suspend ");
 		CosTransactions::Control_var aControl = tx_current->suspend();
-		disassociateTx();
+		disassociate_tx();
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "called suspend and got Control " << (void*) aControl);
 		ControlInfo* aControlInfo = (ControlInfo*) malloc(sizeof(ControlInfo) * 1);
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "created aControlInfo " << (void*) aControlInfo);
@@ -450,7 +450,7 @@ int AtmiBrokerOTS::resume(long tranid) {
 							(char*) "resume: current transaction has not been suspended");
 				}
 
-				int rv = associateTx(tx_current->get_control());
+				int rv = associate_tx(tx_current->get_control());
 				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "called resume with Control " << (void*) (*it)->control << " rv=" << rv);
 
 				LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "removing %p from vector" << (*it));

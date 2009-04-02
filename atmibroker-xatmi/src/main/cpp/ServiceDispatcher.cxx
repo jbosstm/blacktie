@@ -87,7 +87,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 		// TODO wrap TSS control in a Transaction object and make sure any current
 		// control associated with the thread is suspended here and resumed after
 		// the call to m_func
-		associateTx(control);
+		associate_tx(control);
 	}
 	setSpecific(SVC_KEY, this);
 	setSpecific(SVC_SES, session);
@@ -97,7 +97,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 		LOG4CXX_ERROR(logger, (char*) "ServiceDispatcher caught error running during onMessage");
 	}
 	if (control) {
-		disassociateTx(); // TODO figure out why tpreturn need to stop Resource Manager
+		disassociate_tx(); // TODO figure out why tpreturn needs to stop Resource Managers
 		setSpecific(TSS_KEY, control);
 	}
 

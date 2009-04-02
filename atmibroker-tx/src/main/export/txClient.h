@@ -19,64 +19,52 @@
 #define _TXCLIENT_H
 
 #include "tx.h"
-#include "CorbaConnection.h"
+#include "xa.h"
 
 /**
  * start an orb for making transactional service calls
  * (see orbInit in OrbManagement.h for implementation)
  */
-extern ATMIBROKER_TX_DLL CORBA_CONNECTION* startTxOrb(char *);
+extern ATMIBROKER_TX_DLL void * start_tx_orb(char *);
 
 /**
  * stop the transaction manager proxy
  */
-extern ATMIBROKER_TX_DLL void shutdownTxBroker(void);
+extern ATMIBROKER_TX_DLL void shutdown_tx_broker(void);
 
 /**
  * disassociate a transaction from the current thread
  * (also suspends all Resource Managers linked into the running applications)
  * returns the transaction that was previously associated
  */
-extern ATMIBROKER_TX_DLL void * disassociateTx(void);
+extern ATMIBROKER_TX_DLL void * disassociate_tx(void);
+
 /**
  * associate a transaction with the current thread
  * (also resumes all Resource Managers linked into the running applications)
  */
-extern ATMIBROKER_TX_DLL int associateTx(void *);
+extern ATMIBROKER_TX_DLL int associate_tx(void *);
 
 /**
- * locate an orb by name
- */
-extern ATMIBROKER_TX_DLL CORBA::ORB_ptr find_orb(const char *);
-
-/**
- * return the CosTransactions::Control_ptr currently associated wit
- * the calling thread
- */
-extern ATMIBROKER_TX_DLL CORBA::Object_ptr current_control();
-
-/**
- * convert a object into an IOR:
- * the first parameter is ptr to a Corba object
- * the second parameter is the name of the orb that owns the object
- */
-extern ATMIBROKER_TX_DLL char* txObjectToString(CORBA::Object_ptr, char *);
-
-/**
- * convert an IOR into a Corba object:
- * the input parameter is the name of the orb that owns the IOR
- */
-extern ATMIBROKER_TX_DLL CORBA::Object_ptr txStringToObject(char *, char *);
-
-/*
- * using these three methods the caller can convert the current tx control into an IOR:
- * 	txObjectToString(current_control(), "the tx orb")
+ * Associate a transaction with the current thread:
+ * - input parameter 1 is the name of the orb that serialized the IOR passed in the second parameter.
+ *   If it is NULL then any orb will be used (and if no orb exists or the orb id is invalid
+ *   then a negative return code will be returned)
+ * - input parameter 2 is a serialized transaction (ie an IOR)
  *
- * and an ior into a tx control:
- * 	 CORBA::Object_ptr p = txStringToObject("ior", "the tx orb");
- * 	 CosTransactions::Control_ptr cptr = CosTransactions::Control::_narrow(p);
- *
- * (see TxInterceptor for examples)
+ * Return a non-negative value on success
  */
+extern ATMIBROKER_TX_DLL int associate_serialized_tx(char *, char *);
+
+/**
+ * Convert the transaction associated with the calling thread into a string.
+ * - input parameter 1 is the name of the orb that will perform the serialization.
+ *   If it is NULL then any orb will be used (and if no orb exists or the orb id is invalid
+ *   then a negative return code will be returned)
+ *
+ * Return a non-negative value on success
+ */
+extern ATMIBROKER_TX_DLL char* serialize_tx(char *);
+
 
 #endif //_TXCLIENT_H

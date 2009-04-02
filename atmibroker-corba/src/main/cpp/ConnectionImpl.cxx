@@ -22,8 +22,8 @@
 #include <string.h>
 #include "ConnectionImpl.h"
 #include "SessionImpl.h"
-#include "txClient.h"
 #include "OrbManagement.h"
+#include "txClient.h"
 #include "AtmiBrokerPoaFac.h"
 #include "EndpointQueue.h"
 
@@ -32,7 +32,7 @@ log4cxx::LoggerPtr ConnectionImpl::logger(log4cxx::Logger::getLogger(
 
 ConnectionImpl::ConnectionImpl(char* connectionName) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor");
-	this->connection = startTxOrb(connectionName);
+	this->connection = (CORBA_CONNECTION *) start_tx_orb(connectionName);
 }
 
 ConnectionImpl::~ConnectionImpl() {

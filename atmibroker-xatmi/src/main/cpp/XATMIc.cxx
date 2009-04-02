@@ -68,7 +68,7 @@ int send(Session* session, const char* replyTo, char* idata, long ilen, int corr
 
 			if (~TPNOTRAN & flags) {
 				// don't run the call in a transaction
-				control = disassociateTx();
+				control = disassociate_tx();
 			}
 
 			MESSAGE message;
@@ -83,7 +83,7 @@ int send(Session* session, const char* replyTo, char* idata, long ilen, int corr
 			toReturn = 0;
 
 			if (control) {
-				associateTx(control);
+				associate_tx(control);
 			}
 		} catch (...) {
 			LOG4CXX_ERROR(loggerXATMI, (char*) "aCorbaService->start_conversation(): call failed");

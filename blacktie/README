@@ -165,14 +165,6 @@ svn co https://anonsvn.jboss.org/repos/blacktie/trunk product
 COMMITTER SVN ACCESS
 svn co https://svn.jboss.org/repos/blacktie/trunk product
 
-for i in atmibroker-idl atmibroker-core tx-test-utilities atmibroker-tx atmibroker-xatmi jatmibroker-core jab
-do
-cd <BLACKTIE_HOME>/product/atmibroker-$i/
-cp build.properties.template build.properties
-Edit build.properties
-done
-	set the properties as appropriate
-
 cd <BLACKTIE_HOME>/product/atmibroker-all
 TO BUILD WITHOUT RUNNING TESTS
 mvn clean install package assembly:assembly -DskipTests -Dmaven.test.skip=true

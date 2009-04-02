@@ -17,36 +17,47 @@
  */
 #include "txClient.h"
 #include "AtmiBrokerOTS.h"
-
-// includes for looking up orbs
-#include "tao/ORB_Core.h"
-#include "tao/ORB_Table.h"
-#include "tao/ORB_Core_Auto_Ptr.h"
 #include "OrbManagement.h"
+
+#include "ace/OS_NS_string.h"
 
 #include "ThreadLocalStorage.h"
 #include "log4cxx/logger.h"
 
 log4cxx::LoggerPtr txClientLogger(log4cxx::Logger::getLogger("TxClient"));
 
-CORBA_CONNECTION* startTxOrb(char* connectionName)
+void * start_tx_orb(char* connectionName)
 {
 	return AtmiBrokerOTS::init_orb(connectionName);
 }
 
-void shutdownTxBroker(void)
+void shutdown_tx_broker(void)
 {
 	AtmiBrokerOTS::discard_instance();
 }
 
-int associateTx(void *control)
+int associate_tx(void *control)
 {
 	setSpecific(TSS_KEY, control);
 
 	return AtmiBrokerOTS::get_instance()->rm_resume();
 }
 
-void * disassociateTx(void)
+int associate_serialized_tx(char *orbname, char* control)
+{
+	CORBA::Object_ptr p = atmi_string_to_object(control, orbname);
+
+	if (!CORBA::is_nil(p)) {
+		CosTransactions::Control_ptr cptr = CosTransactions::Control::_narrow(p);
+		CORBA::release(p); // dispose of it now that we have narrowed the object reference
+
+		return associate_tx(cptr);
+	}
+
+	return TMER_INVAL;
+}
+
+void * disassociate_tx(void)
 {
 	void *control = getSpecific(TSS_KEY);
 
@@ -58,44 +69,13 @@ void * disassociateTx(void)
 	return control;
 }
 
-CORBA::ORB_ptr find_orb(const char * name)
+char* serialize_tx(char *orbname)
 {
-	TAO::ORB_Table * const orb_table = TAO::ORB_Table::instance();
-	::TAO_ORB_Core* oc = orb_table->find(name);
+	CORBA::ORB_ptr orb = find_orb(orbname);
+	CosTransactions::Control_ptr ctrl = (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
 
-	return (oc == 0 ? NULL : oc->orb());
-}
-
-CORBA::Object_ptr current_control()
-{
-	return (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
-}
-
-char* txObjectToString(CORBA::Object_ptr ctrl, char * orbname)
-{
-	if (!CORBA::is_nil(ctrl)) {
-		LOG4CXX_LOGLS(txClientLogger, log4cxx::Level::getTrace(), (char *) "current is not NULL");
-		TAO::ORB_Table * const orb_table = TAO::ORB_Table::instance();
-		::TAO_ORB_Core* oc = orb_table->find(orbname);
-		char * p = (oc == 0 ? NULL : oc->orb()->object_to_string(ctrl));
-		if (p != NULL)
-			return strdup(p);
-	} else {
-		LOG4CXX_LOGLS(txClientLogger, log4cxx::Level::getTrace(), (char *) "current is NULL");
-	}
-
-	return NULL;
-}
-
-CORBA::Object_ptr txStringToObject(char * ior, char * orbname)
-{
-	LOG4CXX_LOGLS(txClientLogger, log4cxx::Level::getTrace(), (char *) "\tconverting ior: " << (ior ? ior : "NULL"));
-
-	if (ior != NULL) {
-		TAO::ORB_Table * const orb_table = TAO::ORB_Table::instance();
-		::TAO_ORB_Core* oc = orb_table->find(orbname);
-		return (oc == 0 ? NULL : oc->orb()->string_to_object(ior));
-	}
+	if (!CORBA::is_nil(orb) && !CORBA::is_nil(ctrl))
+		return ACE_OS::strdup(orb->object_to_string(ctrl));
 
 	return NULL;
 }

@@ -47,12 +47,12 @@ char* TxInterceptor::name() {
 
 char* TxInterceptor::get_control_ior()
 {
-	return txObjectToString(current_control(), orbname_);
+	return serialize_tx(orbname_);
 }
 
 CosTransactions::Control_ptr TxInterceptor::ior_to_control(char * ior)
 {
-	CORBA::Object_ptr p = txStringToObject(ior, orbname_);
+	CORBA::Object_ptr p = atmi_string_to_object(ior, orbname_);
 
 	if (ior != NULL)
 		free(ior);
@@ -196,7 +196,7 @@ void TxInterceptor::update_tx_context(PortableInterceptor::ServerRequestInfo_ptr
 			}
 		}
 
-		associateTx(ctrl);
+		associate_tx(ctrl);
 
 		LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getDebug(),
 				ri->operation () << (char*) ": associated client tx with thread");

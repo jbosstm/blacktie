@@ -17,6 +17,7 @@
  */
 #include <cppunit/extensions/HelperMacros.h>
 #include "TestTransactions.h"
+#include "OrbManagement.h"
 #include "txClient.h"
 #include "testrm.h"
 #include "ThreadLocalStorage.h"
