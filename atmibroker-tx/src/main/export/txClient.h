@@ -25,48 +25,48 @@
  * start an orb for making transactional service calls
  * (see orbInit in OrbManagement.h for implementation)
  */
-extern CORBA_CONNECTION* startTxOrb(char *);
+extern ATMIBROKER_TX_DLL CORBA_CONNECTION* startTxOrb(char *);
 
 /**
  * stop the transaction manager proxy
  */
-extern void shutdownTxBroker(void);
+extern ATMIBROKER_TX_DLL void shutdownTxBroker(void);
 
 /**
  * disassociate a transaction from the current thread
  * (also suspends all Resource Managers linked into the running applications)
  * returns the transaction that was previously associated
  */
-extern void * disassociateTx(void);
+extern ATMIBROKER_TX_DLL void * disassociateTx(void);
 /**
  * associate a transaction with the current thread
  * (also resumes all Resource Managers linked into the running applications)
  */
-extern int associateTx(void *);
+extern ATMIBROKER_TX_DLL int associateTx(void *);
 
 /**
  * locate an orb by name
  */
-extern CORBA::ORB_ptr find_orb(const char *);
+extern ATMIBROKER_TX_DLL CORBA::ORB_ptr find_orb(const char *);
 
 /**
  * return the CosTransactions::Control_ptr currently associated wit
  * the calling thread
  */
-extern CORBA::Object_ptr current_control();
+extern ATMIBROKER_TX_DLL CORBA::Object_ptr current_control();
 
 /**
  * convert a object into an IOR:
  * the first parameter is ptr to a Corba object
  * the second parameter is the name of the orb that owns the object
  */
-extern char* txObjectToString(CORBA::Object_ptr, char *);
+extern ATMIBROKER_TX_DLL char* txObjectToString(CORBA::Object_ptr, char *);
 
 /**
  * convert an IOR into a Corba object:
  * the input parameter is the name of the orb that owns the IOR
  */
-extern CORBA::Object_ptr txStringToObject(char *, char *);
+extern ATMIBROKER_TX_DLL CORBA::Object_ptr txStringToObject(char *, char *);
 
 /*
  * using these three methods the caller can convert the current tx control into an IOR:
