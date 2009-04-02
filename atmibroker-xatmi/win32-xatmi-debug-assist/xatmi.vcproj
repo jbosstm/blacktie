@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ACEd.lib TAO_AnyTypeCoded.lib TAO_CodecFactoryd.lib TAO_CosNamingd.lib TAO_IDL_BEd.lib TAO_IDL_FEd.lib TAO_IORInterceptord.lib TAO_ObjRefTemplated.lib TAO_PI_Serverd.lib TAO_PId.lib TAO_PortableServerd.lib TAO_Valuetyped.lib TAOd.lib atmibroker-corba.lib atmibroker-idl.lib atmibroker-stomp.lib atmibroker-tx.lib libapr-1.lib libexpat.lib libstomp.lib log4cxx.lib cppunitd_dll.lib"
+				AdditionalDependencies="ACEd.lib TAO_AnyTypeCoded.lib TAO_CodecFactoryd.lib TAO_CosNamingd.lib TAO_IDL_BEd.lib TAO_IDL_FEd.lib TAO_IORInterceptord.lib TAO_ObjRefTemplated.lib TAO_PI_Serverd.lib TAO_PId.lib TAO_PortableServerd.lib TAO_Valuetyped.lib TAOd.lib atmibroker-corba.lib atmibroker-idl.lib atmibroker-stomp.lib atmibroker-tx.lib libapr-1.lib libexpat.lib libstomp.lib log4cxx.lib cppunitd_dll.lib xerces-c_3D.lib"
 				AdditionalLibraryDirectories="C:\blacktie\util\ACE+TAO-5.6.7\ACE_wrappers\lib;..\..\atmibroker-xatmi\target\cxx\test\lib;..\..\atmibroker-xatmi\target\cxx\runtime\lib"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
