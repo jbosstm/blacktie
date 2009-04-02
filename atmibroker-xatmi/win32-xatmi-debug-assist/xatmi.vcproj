@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\blacktie\product\atmibroker-core\target\cxx\compile\include\expat&quot;;&quot;C:\blacktie\product\atmibroker-core\src\test\include&quot;;&quot;C:\blacktie\product\atmibroker-core\src\main\include&quot;;&quot;C:\blacktie\product\atmibroker-core\src\main\export&quot;;&quot;C:\blacktie\product\atmibroker-xatmi\src\test\include&quot;;&quot;C:\blacktie\product\atmibroker-xatmi\src\main\include&quot;;&quot;C:\blacktie\product\atmibroker-xatmi\src\main\export&quot;;&quot;C:\blacktie\product\atmibroker-xatmi\target\cxx\runtime\include&quot;;&quot;C:\blacktie\product\atmibroker-xatmi\target\cxx\test\include&quot;"
+				AdditionalIncludeDirectories="&quot;..\..\atmibroker-core\target\cxx\compile\include\expat&quot;;&quot;..\..\atmibroker-core\src\test\include&quot;;&quot;..\..\atmibroker-core\src\main\include&quot;;&quot;..\..\atmibroker-core\src\main\export&quot;;&quot;..\..\atmibroker-xatmi\src\test\include&quot;;&quot;..\..\atmibroker-xatmi\src\main\include&quot;;&quot;..\..\atmibroker-xatmi\src\main\export&quot;;&quot;..\..\atmibroker-xatmi\target\cxx\runtime\include&quot;;&quot;..\..\atmibroker-xatmi\target\cxx\test\include&quot;"
 				PreprocessorDefinitions="WIN32;TAO_COMP;_CRT_SECURE_NO_WARNINGS;ATMIBROKER_CORE_MACRO=;ATMIBROKER_CORE_DLL=;ATMIBROKER_XATMI_MACRO=;ATMIBROKER_XATMI_DLL="
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,7 +61,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ACEd.lib TAO_AnyTypeCoded.lib TAO_CodecFactoryd.lib TAO_CosNamingd.lib TAO_IDL_BEd.lib TAO_IDL_FEd.lib TAO_IORInterceptord.lib TAO_ObjRefTemplated.lib TAO_PI_Serverd.lib TAO_PId.lib TAO_PortableServerd.lib TAO_Valuetyped.lib TAOd.lib atmibroker-corba.lib atmibroker-idl.lib atmibroker-stomp.lib atmibroker-tx.lib libapr-1.lib libexpat.lib libstomp.lib log4cxx.lib cppunitd_dll.lib"
-				AdditionalLibraryDirectories="C:\blacktie\util\ACE+TAO-5.6.7\ACE_wrappers\lib;C:\blacktie\product\atmibroker-xatmi\target\cxx\test\lib;C:\blacktie\product\atmibroker-xatmi\target\cxx\runtime\lib"
+				AdditionalLibraryDirectories="C:\blacktie\util\ACE+TAO-5.6.7\ACE_wrappers\lib;..\..\atmibroker-xatmi\target\cxx\test\lib;..\..\atmibroker-xatmi\target\cxx\runtime\lib"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
