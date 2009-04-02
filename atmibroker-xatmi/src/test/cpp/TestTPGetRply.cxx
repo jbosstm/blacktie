@@ -53,7 +53,6 @@ void TestTPGetRply::tearDown() {
 }
 
 void TestTPGetRply::test_tpgetrply() {
-	// TODO Changed length from 0 to strlen(sendbuf)+1
 	int cd = ::tpacall((char*) "TestTPGetrply", (char *) sendbuf, strlen(sendbuf) + 1, 0);
 	CPPUNIT_ASSERT(cd != -1);
 	CPPUNIT_ASSERT(tperrno == 0);

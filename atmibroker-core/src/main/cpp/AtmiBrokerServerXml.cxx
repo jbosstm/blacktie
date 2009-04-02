@@ -52,7 +52,6 @@ static int serviceNameCount = 0;
 
 static bool processingServer = false;
 static bool processingName = false;
-//TODO -NOT IMPLEMENTED static bool processingMaxReplicas		= false;
 static bool processingMaxSuppliers = false;
 static bool processingMaxConsumers = false;
 static bool processingOrbType = false;
@@ -220,14 +219,14 @@ bool AtmiBrokerServerXml::parseXmlDescriptor(ServerMetadata* aServerStructPtr,
 	//char buf[1024];
 	XML_Parser parser = XML_ParserCreate(NULL);
 	LOG4CXX_TRACE(loggerAtmiBrokerServerXml, "created parser");
-	
+
 	int done;
 	strcpy(element, "");
 	LOG4CXX_TRACE(loggerAtmiBrokerServerXml, "strcpy /" << element << "/");
-	
+
 	strcpy(value, "");
 	LOG4CXX_TRACE(loggerAtmiBrokerServerXml, "strcpy /" << value << "/");
-	
+
 	XML_SetUserData(parser, aServerStructPtr);
 	LOG4CXX_TRACE(loggerAtmiBrokerServerXml, "set user data" << aServerStructPtr);
 

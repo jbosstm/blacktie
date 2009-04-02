@@ -49,7 +49,6 @@ static int depth = 0;
 static int serviceNameCount = 0;
 
 static bool processingServer = false;
-//TODO -NOT IMPLEMENTED static bool processingMaxReplicas		= false;
 static bool processingMaxSuppliers = false;
 static bool processingMaxConsumers = false;
 static bool processingMaxChannels = false;

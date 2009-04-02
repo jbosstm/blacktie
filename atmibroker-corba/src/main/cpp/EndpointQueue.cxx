@@ -74,7 +74,7 @@ EndpointQueue::~EndpointQueue() {
 	delete lock;
 	lock = NULL;
 
-	
+
 	LOG4CXX_DEBUG(logger, (char*) "destroying poa: " << thePoa);
 	thePoa->destroy(true, true);
 	thePoa = NULL;
@@ -112,7 +112,6 @@ void EndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long
 }
 
 MESSAGE EndpointQueue::receive(long time) {
-	// TODO THIS SHOULD USE THE ID TO CHECK DIFFERENT QUEUES
 	LOG4CXX_DEBUG(logger, (char*) "service_response()");
 
 	MESSAGE message;

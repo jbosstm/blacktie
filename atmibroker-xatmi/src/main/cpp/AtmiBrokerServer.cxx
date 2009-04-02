@@ -239,7 +239,6 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleting services");
 	AtmiBrokerMem::discard_instance();
-	//TODO READD AtmiBrokerNotify::discard_instance();
 	shutdown_tx_broker();
 	AtmiBrokerEnv::discard_instance();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted services");
@@ -649,7 +648,7 @@ void AtmiBrokerServer::addDestination(Destination* destination, void(*func)(
 	entry.serviceInfo.poolSize = 1; // TODO MAKE A CONSTANT
 
 	AtmiBrokerServiceXml aAtmiBrokerServiceXml;
-	aAtmiBrokerServiceXml.parseXmlDescriptor(&entry.serviceInfo, 
+	aAtmiBrokerServiceXml.parseXmlDescriptor(&entry.serviceInfo,
 											 destination->getName(),
 											 getConfigurationDir());
 
@@ -691,7 +690,6 @@ Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
 				dispatcher->shutdown();
 			}
 
-			// TODO NOTIFY ALL REQUIRED HERE
 			for (std::vector<ServiceDispatcher*>::iterator j =
 					(*i).dispatchers.begin(); j != (*i).dispatchers.end(); j++) {
 				toReturn->disconnect();

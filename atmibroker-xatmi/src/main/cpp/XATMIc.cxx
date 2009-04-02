@@ -115,8 +115,6 @@ int receive(Session* session, char ** odata, long *olen, long flags, long* event
 		MESSAGE message = session->receive(time);
 		if (message.data != NULL) {
 			// TODO Handle TPNOCHANGE
-			// TODO Handle buffer
-			// TODO USE RVAL AND RCODE AND EVENT
 			if (len < message.len) {
 				*odata = ::tprealloc(*odata, message.len);
 			}

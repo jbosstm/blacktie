@@ -50,7 +50,6 @@ void TestTPUnadvertise::tearDown() {
 	BaseServerTest::tearDown();
 }
 
-// TODO THIS SHOULD BE ILLEGAL FOR THE CLIENT
 void TestTPUnadvertise::test_tpunadvertise() {
 	int id = ::tpunadvertise((char*) "TestTPUnadvertise");
 	CPPUNIT_ASSERT(tperrno == 0);

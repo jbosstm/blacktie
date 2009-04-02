@@ -57,7 +57,6 @@ void TestTPACall::test_tpacall() {
 	sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen + 1);
 	strcpy(sendbuf, "hello");
 
-	// TODO Changed length from 0 to strlen(sendbuf)+1
 	int cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, strlen(sendbuf) + 1, TPNOREPLY);
 	CPPUNIT_ASSERT(cd == 0);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -79,7 +78,6 @@ void TestTPACall::test_tpacall_systemerr() {
 	sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen + 1);
 	strcpy(sendbuf, "hello");
 
-	// TODO Changed length from 0 to strlen(sendbuf)+1
 	int cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, strlen(sendbuf) + 1, TPNOREPLY);
 	CPPUNIT_ASSERT(tperrno== TPESYSTEM);
 	CPPUNIT_ASSERT(cd == -1);

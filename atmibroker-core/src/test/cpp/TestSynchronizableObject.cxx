@@ -21,6 +21,7 @@
 
 #include <tao/ORB.h>
 #include "userlogc.h"
+#include "ace/OS_NS_unistd.h"
 
 Waiter::Waiter() {
 	object = new SynchronizableObject();
@@ -73,11 +74,7 @@ void TestSynchronizableObject::tearDown() {
 
 void TestSynchronizableObject::testWaitNotify() {
 
-#ifdef WIN32
-	Sleep(1000);
-#else
-	sleep(1);
-#endif
+	ACE_OS::sleep(1);
 	SynchronizableObject* lock = waiter->getLock();
 	SynchronizableObject* lock2 = waiter->getLock2();
 	lock->lock();

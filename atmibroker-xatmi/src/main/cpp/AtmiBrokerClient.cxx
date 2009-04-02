@@ -142,7 +142,6 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 	clientServerVector.clear();
 
 	AtmiBrokerMem::discard_instance();
-	//TODO READD AtmiBrokerNotify::discard_instance();
 	shutdown_tx_broker();
 	AtmiBrokerEnv::discard_instance();
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleted services");

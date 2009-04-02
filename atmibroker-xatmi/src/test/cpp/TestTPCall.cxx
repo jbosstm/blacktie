@@ -64,7 +64,6 @@ void TestTPCall::test_tpcall_unknown_service() {
 	rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen);
 	strcpy(sendbuf, "hello");
 
-	// TODO Changed length from 0 to strlen(sendbuf)+1
 	int id = ::tpcall((char*) "UNKNOWN_SERVICE", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, (long) 0);
 	CPPUNIT_ASSERT(tperrno== TPENOENT);
 	CPPUNIT_ASSERT(id == -1);
@@ -84,7 +83,6 @@ void TestTPCall::test_tpcall_x_octet() {
 	(void) strcpy(sendbuf, "hello");
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	// TODO Changed length from 0 to sendlen
 	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
 	CPPUNIT_ASSERT(tperrno!= TPEINVAL);
 	CPPUNIT_ASSERT(tperrno!= TPENOENT);
