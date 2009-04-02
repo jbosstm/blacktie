@@ -26,8 +26,8 @@
 class TestTPDiscon: public BaseServerTest {
 	CPPUNIT_TEST_SUITE( TestTPDiscon);
 	CPPUNIT_TEST( test_tpdiscon);
-	//CPPUNIT_TEST( test_tpdiscon_baddescr);
-	//CPPUNIT_TEST( test_tpdiscon_negdescr);
+	CPPUNIT_TEST( test_tpdiscon_baddescr);
+	CPPUNIT_TEST( test_tpdiscon_negdescr);
 	CPPUNIT_TEST_SUITE_END();
 public:
 void test_tpdiscon();

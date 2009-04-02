@@ -25,7 +25,10 @@
 #include "AtmiBrokerServiceXml.h"
 #include "userlog.h"
 #include "log4cxx/logger.h"
+#include "ace/OS_NS_stdlib.h"
 #include "ace/OS_NS_stdio.h"
+#include "ace/OS_NS_string.h"
+#include "ace/Default_Constants.h"
 
 log4cxx::LoggerPtr loggerAtmiBrokerServiceXml(log4cxx::Logger::getLogger(
 		"AtmiBrokerServiceXml"));
@@ -103,8 +106,7 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(SVCINFO* aServiceStructPtr,
 		ACE_OS::snprintf(configPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"%s",
 										ConfigurationDir, serviceConfigFilename);
 	} else {
-		memset(configPath, '\0', 256);
-		strncpy(configPath, serviceConfigFilename, 256);
+		ACE_OS::strncpy(configPath, serviceConfigFilename, 256);
 	}
 
 	struct stat s; /* file stats */

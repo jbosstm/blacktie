@@ -38,6 +38,10 @@
 #include "OrbManagement.h"
 #include "SymbolLoader.h"
 #include "ace/Get_Opt.h"
+#include "ace/OS_NS_stdio.h"
+#include "ace/OS_NS_stdlib.h"
+#include "ace/OS_NS_string.h"
+#include "ace/Default_Constants.h"
 
 log4cxx::LoggerPtr loggerAtmiBrokerServer(log4cxx::Logger::getLogger(
 		"AtmiBrokerServer"));
@@ -72,7 +76,7 @@ int parsecmdline(int argc, char** argv) {
 		switch((char)c){
 			case 'c':
 				configFromCmdline = true;
-				strncpy(configDir, getopt.opt_arg (), 256);
+				ACE_OS::strncpy(configDir, getopt.opt_arg (), 256);
 				break;
 			default:
 				r = -1;
@@ -154,7 +158,7 @@ AtmiBrokerServer::AtmiBrokerServer() {
 		if(ptrDir != NULL) {
 			ACE_OS::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"SERVER.xml", ptrDir);
 		} else {
-			strncpy(descPath, "SERVER.xml", 256);
+			ACE_OS::strncpy(descPath, "SERVER.xml", 256);
 		}
 
 		AtmiBrokerServerXml aAtmiBrokerServerXml;

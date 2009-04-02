@@ -15,7 +15,8 @@
 		Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 		02110-1301, USA.
 	-->
-<ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xmlns="http://www.jboss.org/blacktie">
 	<ENVIRONMENT_DESCRIPTION>
 		<DOMAIN>fooapp</DOMAIN>
 		<QSPACE_NAME>fooQueue</QSPACE_NAME>

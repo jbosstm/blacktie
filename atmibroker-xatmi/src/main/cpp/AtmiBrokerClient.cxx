@@ -29,6 +29,10 @@
 #include "AtmiBrokerEnv.h"
 #include "txClient.h"
 #include "SymbolLoader.h"
+#include "ace/OS_NS_stdio.h"
+#include "ace/OS_NS_stdlib.h"
+#include "ace/OS_NS_string.h"
+#include "ace/Default_Constants.h"
 
 AtmiBrokerClient * ptrAtmiBrokerClient;
 
@@ -91,7 +95,7 @@ AtmiBrokerClient::AtmiBrokerClient() {
 			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "envDir is " << envDir);
 			ACE_OS::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"CLIENT.xml", envDir);
 		} else {
-			strncpy(descPath, "CLIENT.xml", 256);
+			ACE_OS::strncpy(descPath, "CLIENT.xml", 256);
 		}
 
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "descPath is " << descPath);
