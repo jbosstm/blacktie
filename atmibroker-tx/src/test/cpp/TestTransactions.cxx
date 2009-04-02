@@ -1,4 +1,4 @@
-/*
+ /*
  * JBoss, Home of Professional Open Source
  * Copyright 2008, Red Hat, Inc., and others contributors as indicated
  * by the @authors tag. All rights reserved.
@@ -22,6 +22,7 @@
 #include "testrm.h"
 #include "ThreadLocalStorage.h"
 #include "XAResourceAdaptorImpl.h"
+#include "ace/OS_NS_unistd.h"
 
 // sanity check
 void TestTransactions::test_transactions()
