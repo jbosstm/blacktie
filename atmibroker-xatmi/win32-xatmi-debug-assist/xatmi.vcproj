@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\blacktie\product\atmibroker-core\target\cxx\compile\include\expat&quot;;&quot;C:\blacktie\product\atmibroker-core\src\main\export&quot;;&quot;C:\blacktie\product\atmibroker-xatmi\src\test\include&quot;;&quot;C:\blacktie\product\atmibroker-xatmi\src\main\include&quot;;&quot;C:\blacktie\product\atmibroker-xatmi\src\main\export&quot;;&quot;C:\blacktie\product\atmibroker-xatmi\target\cxx\runtime\include&quot;;&quot;C:\blacktie\product\atmibroker-xatmi\target\cxx\test\include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\blacktie\product\atmibroker-core\target\cxx\compile\include\expat&quot;;&quot;C:\blacktie\product\atmibroker-core\src\test\include&quot;;&quot;C:\blacktie\product\atmibroker-core\src\main\include&quot;;&quot;C:\blacktie\product\atmibroker-core\src\main\export&quot;;&quot;C:\blacktie\product\atmibroker-xatmi\src\test\include&quot;;&quot;C:\blacktie\product\atmibroker-xatmi\src\main\include&quot;;&quot;C:\blacktie\product\atmibroker-xatmi\src\main\export&quot;;&quot;C:\blacktie\product\atmibroker-xatmi\target\cxx\runtime\include&quot;;&quot;C:\blacktie\product\atmibroker-xatmi\target\cxx\test\include&quot;"
 				PreprocessorDefinitions="WIN32;TAO_COMP;_CRT_SECURE_NO_WARNINGS;ATMIBROKER_CORE_MACRO=;ATMIBROKER_CORE_DLL=;ATMIBROKER_XATMI_MACRO=;ATMIBROKER_XATMI_DLL="
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -167,75 +167,99 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\main\cpp\AtmiBrokerClient.cxx"
+				RelativePath="..\src\main\cpp\AtmiBrokerClient.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\cpp\AtmiBrokerClientXml.cxx"
+				RelativePath="..\..\atmibroker-core\src\main\cpp\AtmiBrokerClientXml.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\cpp\AtmiBrokerEnv.cxx"
+				RelativePath="..\..\atmibroker-core\src\main\cpp\AtmiBrokerEnv.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\cpp\AtmiBrokerEnvXml.cxx"
+				RelativePath="..\..\atmibroker-core\src\main\cpp\AtmiBrokerEnvXml.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\cpp\AtmiBrokerLoggerc.cxx"
+				RelativePath="..\..\atmibroker-core\src\main\cpp\AtmiBrokerLoggerc.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\main\cpp\AtmiBrokerMem.cxx"
+				RelativePath="..\src\main\cpp\AtmiBrokerMem.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\cpp\AtmiBrokerPoaFac.cxx"
+				RelativePath="..\..\atmibroker-core\src\main\cpp\AtmiBrokerPoaFac.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\main\cpp\AtmiBrokerServer.cxx"
+				RelativePath="..\src\main\cpp\AtmiBrokerServer.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\cpp\AtmiBrokerServerXml.cxx"
+				RelativePath="..\..\atmibroker-core\src\main\cpp\AtmiBrokerServerXml.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\cpp\AtmiBrokerServiceXml.cxx"
+				RelativePath="..\..\atmibroker-core\src\main\cpp\AtmiBrokerServiceXml.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\BaseServerTest.cxx"
+				RelativePath="..\src\test\cpp\BaseServerTest.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\BaseTest.cxx"
+				RelativePath="..\src\test\cpp\BaseTest.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\LoopyServerAndClient.cxx"
+				RelativePath="..\..\atmibroker-core\src\test\cpp\CoreTestSuite.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\cpp\OrbManagement.cxx"
+				RelativePath="..\..\atmibroker-core\src\test\cpp\ExceptionCase.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\main\cpp\ServiceDispatcher.cxx"
+				RelativePath="..\src\test\cpp\LoopyServerAndClient.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\cpp\SymbolLoader.cpp"
+				RelativePath="..\..\atmibroker-core\src\test\cpp\ODBCTest.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\cpp\SynchronizableObject.cxx"
+				RelativePath="..\..\atmibroker-core\src\main\cpp\OrbManagement.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestClientInit.cxx"
+				RelativePath="..\src\main\cpp\ServiceDispatcher.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-core\src\test\cpp\SimpleOrbTest.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-core\src\main\cpp\SymbolLoader.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-core\src\main\cpp\SynchronizableObject.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\src\test\cpp\TestClientInit.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-core\src\test\cpp\TestConnection.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-core\src\test\cpp\TestMultiOrb.cxx"
 				>
 			</File>
 			<File
@@ -243,107 +267,127 @@
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestServerinit.cxx"
+				RelativePath="..\src\test\cpp\TestServerinit.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestSpecExampleOne.cxx"
+				RelativePath="..\src\test\cpp\TestSpecExampleOne.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestSpecExampleTwo.cxx"
+				RelativePath="..\src\test\cpp\TestSpecExampleTwo.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestTPACall.cxx"
+				RelativePath="..\..\atmibroker-core\src\test\cpp\TestSymbolLoader.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestTPAdvertise.cxx"
+				RelativePath="..\..\atmibroker-core\src\test\cpp\TestSynchronizableObject.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestTPAlloc.cxx"
+				RelativePath="..\src\test\cpp\TestTPACall.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestTPCall.cxx"
+				RelativePath="..\src\test\cpp\TestTPAdvertise.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestTPCancel.cxx"
+				RelativePath="..\src\test\cpp\TestTPAlloc.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestTPConnect.cxx"
+				RelativePath="..\src\test\cpp\TestTPCall.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestTPConversation.cxx"
+				RelativePath="..\src\test\cpp\TestTPCancel.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestTPDiscon.cxx"
+				RelativePath="..\src\test\cpp\TestTPConnect.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestTPFree.cxx"
+				RelativePath="..\src\test\cpp\TestTPConversation.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestTPFreeService.cxx"
+				RelativePath="..\src\test\cpp\TestTPDiscon.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestTPGetRply.cxx"
+				RelativePath="..\src\test\cpp\TestTPFree.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestTPRealloc.cxx"
+				RelativePath="..\src\test\cpp\TestTPFreeService.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestTPRecv.cxx"
+				RelativePath="..\src\test\cpp\TestTPGetRply.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestTPReturn.cxx"
+				RelativePath="..\src\test\cpp\TestTPRealloc.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestTPSend.cxx"
+				RelativePath="..\src\test\cpp\TestTPRecv.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestTPService.cxx"
+				RelativePath="..\src\test\cpp\TestTPReturn.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestTPTypes.cxx"
+				RelativePath="..\src\test\cpp\TestTPSend.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestTPUnadvertise.cxx"
+				RelativePath="..\src\test\cpp\TestTPService.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\TestTxTPCall.cxx"
+				RelativePath="..\src\test\cpp\TestTPTypes.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\cpp\ThreadLocalStorage.cxx"
+				RelativePath="..\src\test\cpp\TestTPUnadvertise.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\cpp\Worker.cpp"
+				RelativePath="..\src\test\cpp\TestTxTPCall.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\main\cpp\XATMIc.cxx"
+				RelativePath="..\..\atmibroker-core\src\test\cpp\TestUserlog.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\cpp\XATMITestSuite.cxx"
+				RelativePath="..\..\atmibroker-core\src\test\cpp\TestXsdValidator.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-core\src\main\cpp\ThreadLocalStorage.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-core\src\main\cpp\Worker.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\main\cpp\XATMIc.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\src\test\cpp\XATMITestSuite.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-core\src\main\cpp\XsdValidator.cxx"
 				>
 			</File>
 		</Filter>
@@ -353,227 +397,267 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\main\include\AtmiBrokerClient.h"
+				RelativePath="..\src\main\include\AtmiBrokerClient.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\main\export\AtmiBrokerClientControl.h"
+				RelativePath="..\src\main\export\AtmiBrokerClientControl.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\export\AtmiBrokerClientXml.h"
+				RelativePath="..\..\atmibroker-core\src\main\export\AtmiBrokerClientXml.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\export\atmiBrokerCoreMacro.h"
+				RelativePath="..\..\atmibroker-core\src\main\export\atmiBrokerCoreMacro.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\export\AtmiBrokerEnv.h"
+				RelativePath="..\..\atmibroker-core\src\main\export\AtmiBrokerEnv.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\export\AtmiBrokerEnvXml.h"
+				RelativePath="..\..\atmibroker-core\src\main\export\AtmiBrokerEnvXml.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\main\include\AtmiBrokerMem.h"
+				RelativePath="..\src\main\include\AtmiBrokerMem.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\export\AtmiBrokerPoaFac.h"
+				RelativePath="..\..\atmibroker-core\src\main\export\AtmiBrokerPoaFac.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\main\include\AtmiBrokerServer.h"
+				RelativePath="..\src\main\include\AtmiBrokerServer.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\main\export\AtmiBrokerServerControl.h"
+				RelativePath="..\src\main\export\AtmiBrokerServerControl.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\export\AtmiBrokerServerXml.h"
+				RelativePath="..\..\atmibroker-core\src\main\export\AtmiBrokerServerXml.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\export\AtmiBrokerServiceXml.h"
+				RelativePath="..\..\atmibroker-core\src\main\export\AtmiBrokerServiceXml.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\main\export\atmiBrokerXatmiMacro.h"
+				RelativePath="..\src\main\export\atmiBrokerXatmiMacro.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\BaseServerTest.h"
+				RelativePath="..\src\test\include\BaseServerTest.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\BaseTest.h"
+				RelativePath="..\src\test\include\BaseTest.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\export\Connection.h"
+				RelativePath="..\..\atmibroker-core\src\main\export\Connection.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\export\CorbaConnection.h"
+				RelativePath="..\..\atmibroker-core\src\main\export\CorbaConnection.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\export\Destination.h"
+				RelativePath="..\..\atmibroker-core\src\main\export\Destination.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\LoopyServerAndClient.h"
+				RelativePath="..\..\atmibroker-core\src\test\include\ExceptionCase.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\export\Message.h"
+				RelativePath="..\src\test\include\LoopyServerAndClient.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\export\MessageListener.h"
+				RelativePath="..\..\atmibroker-core\src\main\export\Message.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\export\OrbManagement.h"
+				RelativePath="..\..\atmibroker-core\src\main\export\MessageListener.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\main\include\ServiceDispatcher.h"
+				RelativePath="..\..\atmibroker-core\src\test\include\ODBCTest.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\export\Session.h"
+				RelativePath="..\..\atmibroker-core\src\main\export\OrbManagement.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\export\SymbolLoader.h"
+				RelativePath="..\src\main\include\ServiceDispatcher.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\export\SynchronizableObject.h"
+				RelativePath="..\..\atmibroker-core\src\main\export\Session.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestBufferAllocation.h"
+				RelativePath="..\..\atmibroker-core\src\test\include\SimpleOrbTest.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestClientInit.h"
+				RelativePath="..\..\atmibroker-core\src\main\export\SymbolLoader.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestServerinit.h"
+				RelativePath="..\..\atmibroker-core\src\main\export\SynchronizableObject.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestSpecExampleOne.h"
+				RelativePath="..\src\test\include\TestBufferAllocation.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestSpecExampleTwo.h"
+				RelativePath="..\src\test\include\TestClientInit.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestTPACall.h"
+				RelativePath="..\..\atmibroker-core\src\test\include\TestConnection.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestTPAdvertise.h"
+				RelativePath="..\..\atmibroker-core\src\test\include\TestMultiOrb.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestTPAlloc.h"
+				RelativePath="..\src\test\include\TestServerinit.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestTPCall.h"
+				RelativePath="..\src\test\include\TestSpecExampleOne.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestTPCancel.h"
+				RelativePath="..\src\test\include\TestSpecExampleTwo.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestTPConnect.h"
+				RelativePath="..\..\atmibroker-core\src\test\include\TestSymbolLoader.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestTPConversation.h"
+				RelativePath="..\..\atmibroker-core\src\test\include\TestSynchronizableObject.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestTPDiscon.h"
+				RelativePath="..\src\test\include\TestTPACall.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestTPFree.h"
+				RelativePath="..\src\test\include\TestTPAdvertise.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestTPFreeService.h"
+				RelativePath="..\src\test\include\TestTPAlloc.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestTPGetRply.h"
+				RelativePath="..\src\test\include\TestTPCall.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestTPRealloc.h"
+				RelativePath="..\src\test\include\TestTPCancel.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestTPRecv.h"
+				RelativePath="..\src\test\include\TestTPConnect.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestTPReturn.h"
+				RelativePath="..\src\test\include\TestTPConversation.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestTPSend.h"
+				RelativePath="..\src\test\include\TestTPDiscon.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestTPService.h"
+				RelativePath="..\src\test\include\TestTPFree.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestTPTypes.h"
+				RelativePath="..\src\test\include\TestTPFreeService.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestTPUnadvertise.h"
+				RelativePath="..\src\test\include\TestTPGetRply.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\TestTxTPCall.h"
+				RelativePath="..\src\test\include\TestTPRealloc.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\export\ThreadLocalStorage.h"
+				RelativePath="..\src\test\include\TestTPRecv.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\export\userlog.h"
+				RelativePath="..\src\test\include\TestTPReturn.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\export\userlogc.h"
+				RelativePath="..\src\test\include\TestTPSend.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-core\src\main\export\Worker.h"
+				RelativePath="..\src\test\include\TestTPService.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\main\export\xatmi.h"
+				RelativePath="..\src\test\include\TestTPTypes.h"
 				>
 			</File>
 			<File
-				RelativePath="..\product\atmibroker-xatmi\src\test\include\XATMITestSuite.h"
+				RelativePath="..\src\test\include\TestTPUnadvertise.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\test\include\TestTxTPCall.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-core\src\test\include\TestUserlog.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-core\src\test\include\TestXsdValidator.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-core\src\main\export\ThreadLocalStorage.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-core\src\main\export\userlog.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-core\src\main\export\userlogc.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-core\src\main\export\Worker.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\main\export\xatmi.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\test\include\XATMITestSuite.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-core\src\main\export\XsdValidator.h"
 				>
 			</File>
 		</Filter>
