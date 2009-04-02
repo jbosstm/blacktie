@@ -251,6 +251,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\atmibroker-core\src\test\cpp\TestAtmiBrokerXml.cxx"
+				>
+			</File>
+			<File
 				RelativePath="..\src\test\cpp\TestClientInit.cxx"
 				>
 			</File>
