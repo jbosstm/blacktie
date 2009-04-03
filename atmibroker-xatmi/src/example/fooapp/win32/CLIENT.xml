@@ -15,21 +15,18 @@
 		Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 		02110-1301, USA.
 	-->
-<ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			 xmlns="http://www.jboss.org/blacktie">
-	<ENVIRONMENT_DESCRIPTION>
-		<DOMAIN>fooapp</DOMAIN>
-		<NAMING_SERVICE_ID></NAMING_SERVICE_ID>
-		<TRANS_FACTORY_ID>TransactionManagerService.OTS</TRANS_FACTORY_ID>
-		<ENV_VARIABLES>
-			<ENV_VARIABLE>
-				<NAME>LOG4CXXCONFIG</NAME>
-				<VALUE>log4cxx.properties</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>ORBOPT</NAME>
-				<VALUE>-ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
-			</ENV_VARIABLE>
-		</ENV_VARIABLES>
-	</ENVIRONMENT_DESCRIPTION>
-</ENVIRONMENT>
+<CLIENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 	xmlns="http://www.jboss.org/blacktie">
+	<CLIENT_DESCRIPTION>
+		<MAX_REPLICAS>1</MAX_REPLICAS>
+		<MAX_CHANNELS>1</MAX_CHANNELS>
+		<MAX_SUPPLIERS>1</MAX_SUPPLIERS>
+		<MAX_CONSUMERS>1</MAX_CONSUMERS>
+		<SERVER_NAMES>
+			<SERVER_NAME>foo</SERVER_NAME>
+			<SERVICE_NAMES>
+				<SERVICE_NAME>BAR</SERVICE_NAME>
+			</SERVICE_NAMES>
+		</SERVER_NAMES>
+	</CLIENT_DESCRIPTION>
+</CLIENT>
