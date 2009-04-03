@@ -39,7 +39,7 @@ Linux:
 	$ATMIBROKER_BIN_DIR/bin/services-scripts/start_all.sh
 Windows: 
 	%ATMIBROKER_BIN_DIR%\bin\services-scripts\start_all.bat
-./server
+./server -c <win32|linux>
 ./client
 
 
