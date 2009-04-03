@@ -34,14 +34,12 @@ ant -f $ATMIBROKER_BIN_DIR/bin/generate-executables.xml server -Dservice.names=B
 ant -f $ATMIBROKER_BIN_DIR/bin/generate-executables.xml client -Dclient.includes=client.c -Dconfiguration.type=debug -Dbasedir=. -Dtoolchain.compiler=<msvc|gcc>
 
 4. RUN THE APPLICATIONS
-Make sure that the naming and transaction services are running, if not, run the script under
-Linux:
-	$ATMIBROKER_BIN_DIR/bin/services-scripts/start_all.sh
-Windows: 
-	%ATMIBROKER_BIN_DIR%\bin\services-scripts\start_all.bat
+Make sure that the naming and transaction services are running, if not, run the JBoss server:
+<JBOSS_HOME>/bin/run.sh|bat -c blacktie
+4.1 RUN THE SERVER
 ./server -c <win32|linux>
+4.2 RUN THE CLIENT
 ./client
-
 
 NOTE: If you would like to use a JAB Client to talk to the server, please see 
 $ATMIBROKER_BIN_DIR/examples/jab/fooapp
