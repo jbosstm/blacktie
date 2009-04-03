@@ -39,7 +39,7 @@ Make sure that the naming and transaction services are running, if not, run the 
 4.1 RUN THE SERVER
 ./server -c <win32|linux>
 4.2 RUN THE CLIENT
-You will need to set the environment variable ATMIBROKER_CONFIGURATION_DIRECTORY to either win32 or linux prior to running the client
+You will need to set the environment variable ATMIBROKER_CONFIGURATION_DIR to either win32 or linux prior to running the client
 ./client
 
 NOTE: If you would like to use a JAB Client to talk to the server, please see 
