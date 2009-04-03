@@ -55,11 +55,7 @@
 	<profiles>
 		<profile>
 			<id>windows</id>
-			<activation>
-				<os>
-					<family>windows</family>
-				</os>
-			</activation>
+			<activation> <os> <family>windows</family> </os> </activation>
 			<properties>
 				<export.dll>_ATMIBROKER_XATMI_DLL</export.dll>
 				<atmibroker.configuration.dir>win32</atmibroker.configuration.dir>
