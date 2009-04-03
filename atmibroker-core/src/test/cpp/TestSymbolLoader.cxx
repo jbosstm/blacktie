@@ -20,10 +20,27 @@
 #include "TestSymbolLoader.h"
 
 #include "ace/DLL.h"
+#include "ace/OS_NS_stdlib.h"
+#include "ace/OS_NS_stdio.h"
+#include "ace/OS_NS_string.h"
 #include "AtmiBrokerEnv.h"
 #include "userlogc.h"
 
 void TestSymbolLoader::test() {
+	char orig_env[256];
+	char* env = ACE_OS::getenv("ATMIBROKER_CONFIGURATION_DIR");
+	if(env != NULL){
+		ACE_OS::snprintf(orig_env, 256, "ATMIBROKER_CONFIGURATION_DIR=%s", env);
+	}
+
+	#ifdef WIN32
+		userlogc((char*) "WIN32");
+		ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=win32");
+	#else	
+		userlogc((char*) "linux");
+		ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=linux");
+	#endif
+	AtmiBrokerEnv::discard_instance();
 	char* lib = AtmiBrokerEnv::get_instance()->getenv("test-lib");
 	char* symbol = AtmiBrokerEnv::get_instance()->getenv("test-symbol");
 	ACE_DLL dll;
@@ -47,5 +64,9 @@ void TestSymbolLoader::test() {
 	} catch (std::exception& e) {
 		userlogc((char *) "symbol addr%s=%s", sym, e.what());
 		CPPUNIT_FAIL("exception");
+	}
+	
+	if(env != NULL) {
+		ACE_OS::putenv(orig_env);
 	}
 }

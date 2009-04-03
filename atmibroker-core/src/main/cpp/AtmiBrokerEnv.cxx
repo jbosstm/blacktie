@@ -49,6 +49,7 @@ void AtmiBrokerEnv::discard_instance() {
 	if (ptrAtmiBrokerEnv != NULL) {
 		delete ptrAtmiBrokerEnv;
 		ptrAtmiBrokerEnv = NULL;
+		ENVIRONMENT_DIR = NULL;
 	}
 }
 
