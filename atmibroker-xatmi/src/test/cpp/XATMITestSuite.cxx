@@ -16,7 +16,6 @@
  * MA  02110-1301, USA.
  */
 /* Typed Buffer Functions */
-#if 0
 #include "TestTPAlloc.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPAlloc);
 #include "TestTPTypes.h"
@@ -67,7 +66,6 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestTPConversation);
 /* SERVER MANAGEMENT FUNCTIONS */
 #include "LoopyServerAndClient.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( LoopyServerAndClient);
-#endif
 /* Transactional Request Response */
 #include "TestTxTPCall.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTxTPCall);
