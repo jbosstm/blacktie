@@ -18,8 +18,11 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include "TestServerinit.h"
 #include "ace/OS_NS_stdlib.h"
+#include "ace/OS_NS_stdio.h"
+#include "ace/OS_NS_string.h"
 
 extern void test_service(TPSVCINFO *svcinfo);
+static char  orig_env[256];
 
 void TestServerinit::test_serverinit() {
 	int result;
@@ -37,8 +40,18 @@ void TestServerinit::test_config_env() {
 	int result;
 	char* argv[] = {(char*)"server"};
 	int argc = sizeof(argv)/sizeof(char*);
+	char* env;
 
-	ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=conf");
+	env = ACE_OS::getenv("ATMIBROKER_CONFIGURATION_DIR");
+	if(env != NULL){
+		ACE_OS::snprintf(orig_env, 256, "ATMIBROKER_CONFIGURATION_DIR=%s", env);
+	}
+
+#ifdef WIN32
+		ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=winconf");
+#else
+		ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=conf");
+#endif
 	result = serverinit(argc, argv);
 	CPPUNIT_ASSERT(result != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -50,12 +63,20 @@ void TestServerinit::test_config_env() {
 	ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=nosuch_conf");
 	result = serverinit(argc, argv);
 	CPPUNIT_ASSERT(result == -1);
-	ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR");
+
+	if(env != NULL) {
+		ACE_OS::putenv(orig_env);
+	}
 }
 
 void TestServerinit::test_config_cmdline() {
 	int result;
-	char* argv1[] = {(char*)"server", (char*)"-c", (char*)"conf"};
+
+#ifdef WIN32
+		char* argv1[] = {(char*)"server", (char*)"-c", (char*)"winconf"};
+#else
+		char* argv1[] = {(char*)"server", (char*)"-c", (char*)"conf"};
+#endif
 	int argc1 = sizeof(argv1)/sizeof(char*);
 
 	result = serverinit(argc1, argv1);

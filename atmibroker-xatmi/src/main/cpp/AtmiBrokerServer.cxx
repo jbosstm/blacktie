@@ -101,17 +101,23 @@ const char* getConfigurationDir() {
 int serverinit(int argc, char** argv) {
 	tperrno = 0;
 	int toReturn = 0;
-
-	initializeLogger();
+	const char* ptrDir = NULL;
 
 	if(argc > 0 && parsecmdline(argc, argv) != 0) {
-		userlog(log4cxx::Level::getError(), loggerAtmiBrokerServer,
+		/*userlog(log4cxx::Level::getError(), loggerAtmiBrokerServer,
 				(char*) "Parse Commandline fail");
+		*/
 		toReturn = -1;
 		tperrno = TPESYSTEM;
 	}
 
+
 	if (toReturn != -1 && ptrServer == NULL) {
+		ptrDir = getConfigurationDir();
+		if(ptrDir != NULL)AtmiBrokerEnv::set_environment_dir(ptrDir);
+
+		initializeLogger();
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "set AtmiBrokerEnv dir " << ptrDir);
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverinit called");
 		signal(SIGINT, server_sigint_handler_callback);
 		ptrServer = new AtmiBrokerServer();
@@ -167,7 +173,6 @@ AtmiBrokerServer::AtmiBrokerServer() {
 
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "descPath is " << descPath);
 
-		AtmiBrokerEnv::set_environment_dir(ptrDir);
 		char* transportLibrary = AtmiBrokerEnv::get_instance()->getenv(
 				(char*) "TransportLibrary");
 		LOG4CXX_INFO(loggerAtmiBrokerServer,

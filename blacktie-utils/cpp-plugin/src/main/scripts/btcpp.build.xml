@@ -320,12 +320,14 @@
 		<exec dir="target/cpp-test-classes" newenvironment="true" resolveexecutable="true" executable="../testsuite" failonerror="${failOnErrorTests}">
 			<env key="LD_LIBRARY_PATH" value="../cxx/runtime/lib:../cxx/test/lib:../${configuration.type}/${lib.type}" />
 			<env key="ATMIBROKER_SCHEMA_DIR" value="${atmibroker.schema.dir}" />
+			<env key="ATMIBROKER_CONFIGURATION_DIR" value="${atmibroker.configuration.dir}" />
 		</exec>
 	</target>
 	<target name="_test-msvc" depends="init" if="is-msvc">
 		<exec dir="target/cpp-test-classes" newenvironment="false" resolveexecutable="true" executable="../testsuite.exe" failonerror="${failOnErrorTests}">
 			<env key="Path" value="${env.Path};..\cxx\runtime\lib;..\cxx\test\lib;..\${configuration.type}\${lib.type}" />
 			<env key="ATMIBROKER_SCHEMA_DIR" value="${atmibroker.schema.dir}" />
+			<env key="ATMIBROKER_CONFIGURATION_DIR" value="${atmibroker.configuration.dir}" />
 		</exec>
 	</target>
 

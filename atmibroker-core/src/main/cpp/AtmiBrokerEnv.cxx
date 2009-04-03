@@ -63,6 +63,14 @@ void AtmiBrokerEnv::set_environment_dir(const char* dir) {
 AtmiBrokerEnv::AtmiBrokerEnv() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "constructor");
 	readEnvironment = false;
+
+	char* ptrDir = NULL;
+	ptrDir = ACE_OS::getenv("ATMIBROKER_CONFIGURATION_DIR");
+
+	if(ptrDir != NULL && ENVIRONMENT_DIR == NULL){
+		AtmiBrokerEnv::set_environment_dir(ptrDir);
+	}
+
 	if(ENVIRONMENT_DIR) {
 		char aEnvFileName[256];
 

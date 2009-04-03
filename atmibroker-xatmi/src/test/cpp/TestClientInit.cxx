@@ -19,11 +19,14 @@
 
 #include "TestClientInit.h"
 #include "ace/OS_NS_stdlib.h"
+#include "ace/OS_NS_stdio.h"
+#include "ace/OS_NS_string.h"
 
 #include "xatmi.h"
 extern "C" {
 #include "AtmiBrokerClientControl.h"
 }
+static char  orig_env[256];
 
 void TestClientInit::test_clientinit() {
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -37,7 +40,18 @@ void TestClientInit::test_clientinit() {
 }
 
 void TestClientInit::test_config_env() {
+	char* env;
+
+	env = ACE_OS::getenv("ATMIBROKER_CONFIGURATION_DIR");
+	if(env != NULL){
+		ACE_OS::snprintf(orig_env, 256, "ATMIBROKER_CONFIGURATION_DIR=%s", env);
+	}
+
+#ifdef WIN32
+	ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=winconf");
+#else
 	ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=conf");
+#endif
 
 	CPPUNIT_ASSERT(tperrno == 0);
 	int valToTest = ::clientinit();
@@ -52,5 +66,8 @@ void TestClientInit::test_config_env() {
 	ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=nosuch_conf");
 	valToTest = ::clientinit();
 	CPPUNIT_ASSERT(valToTest == -1);
-	ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR");
+	
+	if(env != NULL) {
+		ACE_OS::putenv(orig_env);
+	}
 }

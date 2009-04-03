@@ -253,6 +253,16 @@
           <type>java.lang.String</type>
           <description>Schema directory</description>
 		</parameter>
+		<parameter>
+	 	  <name>atmibroker.configuration.dir</name>
+		  <property>atmibroker.configuration.dir</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>conf</defaultValue>
+          <type>java.lang.String</type>
+          <description>Configuration directory</description>
+		</parameter>
+
         <parameter>
           <name>failOnErrorTests</name>
           <property>failOnErrorTests</property>
