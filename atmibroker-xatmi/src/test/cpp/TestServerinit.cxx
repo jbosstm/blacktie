@@ -48,9 +48,9 @@ void TestServerinit::test_config_env() {
 	}
 
 #ifdef WIN32
-		ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=winconf");
+		ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=win32");
 #else
-		ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=conf");
+		ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=linux");
 #endif
 	result = serverinit(argc, argv);
 	CPPUNIT_ASSERT(result != -1);
@@ -73,9 +73,9 @@ void TestServerinit::test_config_cmdline() {
 	int result;
 
 #ifdef WIN32
-		char* argv1[] = {(char*)"server", (char*)"-c", (char*)"winconf"};
+		char* argv1[] = {(char*)"server", (char*)"-c", (char*)"win32"};
 #else
-		char* argv1[] = {(char*)"server", (char*)"-c", (char*)"conf"};
+		char* argv1[] = {(char*)"server", (char*)"-c", (char*)"linux"};
 #endif
 	int argc1 = sizeof(argv1)/sizeof(char*);
 

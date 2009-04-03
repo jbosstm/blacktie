@@ -48,9 +48,9 @@ void TestClientInit::test_config_env() {
 	}
 
 #ifdef WIN32
-	ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=winconf");
+	ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=win32");
 #else
-	ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=conf");
+	ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=linux");
 #endif
 
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -66,7 +66,7 @@ void TestClientInit::test_config_env() {
 	ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=nosuch_conf");
 	valToTest = ::clientinit();
 	CPPUNIT_ASSERT(valToTest == -1);
-	
+
 	if(env != NULL) {
 		ACE_OS::putenv(orig_env);
 	}
