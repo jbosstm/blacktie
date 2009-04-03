@@ -66,6 +66,8 @@ void TestServerinit::test_config_env() {
 
 	if(env != NULL) {
 		ACE_OS::putenv(orig_env);
+	} else {
+		ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=");
 	}
 }
 
