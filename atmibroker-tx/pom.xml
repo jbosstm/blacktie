@@ -53,7 +53,7 @@
 			<activation> <os> <family>windows</family> </os> </activation>
 			<properties>
 				<export.dll>_ATMIBROKER_TX_DLL</export.dll>
-				<atmibroker.configuration.dir>winconf</atmibroker.configuration.dir>
+				<atmibroker.configuration.dir>win32</atmibroker.configuration.dir>
 			</properties>
 		</profile>	      
 	</profiles>
