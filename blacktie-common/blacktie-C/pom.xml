@@ -44,6 +44,7 @@
 					<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
 					<generate.testrunner>${generate.testrunner}</generate.testrunner>
 					<export.dll>${export.dll}</export.dll>
+					<atmibroker.configuration.dir>${atmibroker.configuration.dir}</atmibroker.configuration.dir>
 				</configuration>
 
 				<executions>
