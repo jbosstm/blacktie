@@ -27,21 +27,23 @@ On Windows:
 Then, execute the script setenv
 
 2. CREATE THE SERVER
-NOTE: msvc is for WIN32 and gcc/g++ is for other environments
-java org.apache.tools.ant.launch.Launcher -f $ATMIBROKER_BIN_DIR/bin/generate-executables.xml server -Dservice.names=BAR -Dserver.includes=BarService.c -Dconfiguration.type=debug -Dbasedir=. -Dtoolchain.compiler=<msvc|gcc>
-
-NOTE If you get the following error you have not installed ant-contrib into your ANT distribution:
-BUILD FAILED
-/home/tom/blacktie/dist/blacktie-1.0-M4-SNAPSHOT/bin/generate-executables.xml:160: Problem: failed to create task or type propertycopy
-
-NOTE If you get the following error you have not installed cpp-tasks into your ANT distribution:
-BUILD FAILED
-/home/tom/blacktie/dist/blacktie-1.0-M4-SNAPSHOT/bin/generate-executables.xml:113: The following error occurred while executing this line:
-/home/tom/blacktie/dist/blacktie-1.0-M4-SNAPSHOT/bin/generate-executables.xml:140: Problem: failed to create task or type cc
-
+On Linux:
+	java org.apache.tools.ant.launch.Launcher -f $ATMIBROKER_BIN_DIR/bin/generate-executables.xml server -Dservice.names=BAR -Dserver.includes=BarService.c -Dconfiguration.type=debug -Dbasedir=. -Dtoolchain.compiler=gcc
+On Windows:
+	java org.apache.tools.ant.launch.Launcher -f %ATMIBROKER_BIN_DIR%/bin/generate-executables.xml server -Dservice.names=BAR -Dserver.includes=BarService.c -Dconfiguration.type=debug -Dbasedir=. -Dtoolchain.compiler=msvc
+NOTE: If you get the following error you have not installed ant-contrib into your ANT distribution:
+	BUILD FAILED
+	/home/tom/blacktie/dist/blacktie-1.0-M4-SNAPSHOT/bin/generate-executables.xml:160: Problem: failed to create task or type propertycopy
+NOTE: If you get the following error you have not installed cpp-tasks into your ANT distribution:
+	BUILD FAILED
+	/home/tom/blacktie/dist/blacktie-1.0-M4-SNAPSHOT/bin/generate-executables.xml:113: The following error occurred while executing this line:
+	/home/tom/blacktie/dist/blacktie-1.0-M4-SNAPSHOT/bin/generate-executables.xml:140: Problem: failed to create task or type cc
 
 3. CREATE THE CLIENT
-java org.apache.tools.ant.launch.Launcher -f $ATMIBROKER_BIN_DIR/bin/generate-executables.xml client -Dclient.includes=client.c -Dconfiguration.type=debug -Dbasedir=. -Dtoolchain.compiler=<msvc|gcc>
+On Linux:
+	java org.apache.tools.ant.launch.Launcher -f $ATMIBROKER_BIN_DIR/bin/generate-executables.xml client -Dclient.includes=client.c -Dconfiguration.type=debug -Dbasedir=. -Dtoolchain.compiler=gcc
+On Windows:
+	java org.apache.tools.ant.launch.Launcher -f %ATMIBROKER_BIN_DIR%/bin/generate-executables.xml client -Dclient.includes=client.c -Dconfiguration.type=debug -Dbasedir=. -Dtoolchain.compiler=msvc
 
 4. RUN THE APPLICATIONS
 Make sure that the naming and transaction services are running, if not, run the JBoss server:
@@ -61,6 +63,6 @@ terminate called after throwing an instance of 'std::logic_error'
   what():  basic_string::_S_construct NULL not valid
 Aborted
 
-
-NOTE: If you would like to use a JAB Client to talk to the server, please see 
-$ATMIBROKER_BIN_DIR/examples/jab/fooapp
+6. JAB CLIENTS
+If you would like to use a JAB Client to talk to the server, please see 
+<ATMIBROKER_BIN_DIR>/examples/jab/fooapp
