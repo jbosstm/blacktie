@@ -29,7 +29,7 @@ void BaseServerTest::setUp() {
 	// Perform initial start up
 	BaseTest::setUp();
 
-	int initted = serverinit();
+	int initted = serverinit(0, NULL);
 	// Check that there is no error on server setup
 	CPPUNIT_ASSERT(initted != -1);
 	CPPUNIT_ASSERT(tperrno == 0);

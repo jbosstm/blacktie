@@ -26,11 +26,9 @@
 int main(int argc, char **argv) {
 	int txstatus;
 	int tpstatus;
-	char *rbuf;
 	char *retbuf;
 	char type[20];
 	char subtype[20];
-	long rbufsize;
 	long retbufsize;
 	char *sbuf;
 	long sbufsize;
@@ -45,39 +43,32 @@ int main(int argc, char **argv) {
 		userlogc((char*) "ERROR - Could not begin transaction: ");
 	}
 	callflags = 0;
-	sbufsize = 71 + XATMI_SERVICE_NAME_LENGTH + 1;
+	sbufsize = 29;
 	sbuf = tpalloc("X_OCTET", 0, sbufsize);
-	strcpy(sbuf, "SERVICE - THIS IS YOUR CLIENT SPEAKING");
-	rbufsize = 0;
-	retbufsize = 0;
+	strcpy(sbuf, "THIS IS YOUR CLIENT SPEAKING");
+	retbufsize = 26;
+	retbuf = tpalloc("X_OCTET", 0, retbufsize);
 
-	if ((rbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sbufsize)) != NULL) {
+	// tptypes
+	tptypes(sbuf, type, subtype);
 
-		// tptypes
-		tptypes(rbuf, type, subtype);
+	// tpcall
+	userlogc((char*) "Calling tpcall with input: %s", sbuf);
+	tpstatus = tpcall("BAR", sbuf, sbufsize, (char **) &retbuf,
+			&retbufsize, callflags);
+	userlogc((char*) "Called tpcall with output: %s and status: %d",
+			retbuf, tpstatus);
 
-		// tpcall
-		strcpy(rbuf, "BAR");
-		strcat(rbuf, sbuf);
-		rbufsize = strlen(rbuf);
+	tpfree(sbuf);
+	tpfree(retbuf);
 
-		userlogc((char*) "Calling tpcall with input: %s", rbuf);
-		tpstatus = tpcall("BAR", rbuf, rbufsize, (char **) &retbuf,
-				&retbufsize, callflags);
-		userlogc((char*) "Called tpcall with output: %s and status: %d",
-				retbuf, tpstatus);
-
-		tpfree(rbuf);
-	} else {
-		userlogc((char*) "ERROR - Could not allocate a buffer");
-	}
 	txstatus = tx_commit();
 	if (txstatus != TX_OK) {
-		userlogc((char*) "ERROR - Could not commit transaction: ", rbuf);
+		userlogc((char*) "ERROR - Could not commit transaction: ", sbuf);
 	}
 	txstatus = tx_close();
 	if (txstatus != TX_OK) {
-		userlogc((char*) "ERROR - Could not close transaction: ", rbuf);
+		userlogc((char*) "ERROR - Could not close transaction: ", sbuf);
 	}
 
 	return 0;

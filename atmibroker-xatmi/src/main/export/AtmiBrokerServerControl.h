@@ -25,7 +25,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern ATMIBROKER_XATMI_DLL int serverinit(int argc=0, char** argv=NULL);
+extern ATMIBROKER_XATMI_DLL int serverinit(int argc, char** argv);
 extern ATMIBROKER_XATMI_DLL int serverrun();
 extern ATMIBROKER_XATMI_DLL int serverdone();
 #ifdef __cplusplus

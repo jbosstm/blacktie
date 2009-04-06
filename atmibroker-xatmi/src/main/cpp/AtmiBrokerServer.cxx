@@ -119,7 +119,7 @@ int serverinit(int argc, char** argv) {
 		initializeLogger();
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "set AtmiBrokerEnv dir " << ptrDir);
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverinit called");
-		signal(SIGINT, server_sigint_handler_callback);
+		//signal(SIGINT, server_sigint_handler_callback);
 		ptrServer = new AtmiBrokerServer();
 		if (!serverInitialized) {
 			::serverdone();

@@ -50,14 +50,17 @@ int bufferSize(char* data, int suggestedSize) {
 			return suggestedSize;
 		}
 	} else {
-		LOG4CXX_DEBUG(loggerXATMI, (char*) "A NON-BUFFER WAS ATTEMPTED TO BE SENT");
+		LOG4CXX_DEBUG(loggerXATMI,
+				(char*) "A NON-BUFFER WAS ATTEMPTED TO BE SENT");
 		tperrno = TPEINVAL;
 		return -1;
 	}
 
 }
-int send(Session* session, const char* replyTo, char* idata, long ilen, int correlationId, long flags, long rval, long rcode) {
-	LOG4CXX_DEBUG(loggerXATMI, (char*) "send - idata: %s ilen: %d flags: %d" << idata << " " << ilen << " " << flags);
+int send(Session* session, const char* replyTo, char* idata, long ilen,
+		int correlationId, long flags, long rval, long rcode) {
+	LOG4CXX_DEBUG(loggerXATMI, (char*) "send - idata: %s ilen: %d flags: %d"
+			<< idata << " " << ilen << " " << flags);
 	if (flags & TPSIGRSTRT) {
 		LOG4CXX_ERROR(loggerXATMI, (char*) "TPSIGRSTRT NOT SUPPORTED");
 	}
@@ -86,7 +89,8 @@ int send(Session* session, const char* replyTo, char* idata, long ilen, int corr
 				associate_tx(control);
 			}
 		} catch (...) {
-			LOG4CXX_ERROR(loggerXATMI, (char*) "aCorbaService->start_conversation(): call failed");
+			LOG4CXX_ERROR(loggerXATMI,
+					(char*) "aCorbaService->start_conversation(): call failed");
 			tperrno = TPESYSTEM;
 		}
 	} else {
@@ -96,56 +100,63 @@ int send(Session* session, const char* replyTo, char* idata, long ilen, int corr
 	return toReturn;
 }
 
-int receive(Session* session, char ** odata, long *olen, long flags, long* event) {
+int receive(Session* session, char ** odata, long *olen, long flags,
+		long* event) {
 	int toReturn = -1;
 	int len = ::bufferSize(*odata, *olen);
 	if (len != -1) {
-	LOG4CXX_DEBUG(loggerXATMI, (char*) "tprecv - odata: %s olen: %p flags: %d" << *odata << " " << olen << " " << flags);
-	if (flags & TPSIGRSTRT) {
-		LOG4CXX_ERROR(loggerXATMI, (char*) "TPSIGRSTRT NOT SUPPORTED");
-	}
-	if (session->getCanRecv()) {
-		// TODO Make configurable Default wait time is blocking (x1000 in SynchronizableObject)
-		long time = 0;
-		if (TPNOBLOCK & flags) {
-			time = 1;
-		} else if (TPNOTIME & flags) {
-			time = 0;
+		LOG4CXX_DEBUG(loggerXATMI,
+				(char*) "tprecv - odata: %s olen: %p flags: %d" << *odata
+						<< " " << olen << " " << flags);
+		if (flags & TPSIGRSTRT) {
+			LOG4CXX_ERROR(loggerXATMI, (char*) "TPSIGRSTRT NOT SUPPORTED");
 		}
-		MESSAGE message = session->receive(time);
-		if (message.data != NULL) {
-			// TODO Handle TPNOCHANGE
-			if (len < message.len) {
-				*odata = ::tprealloc(*odata, message.len);
+		if (session->getCanRecv()) {
+			// TODO Make configurable Default wait time is blocking (x1000 in SynchronizableObject)
+			long time = 0;
+			if (TPNOBLOCK & flags) {
+				time = 1;
+			} else if (TPNOTIME & flags) {
+				time = 0;
 			}
-			*olen = message.len;
-			memcpy(*odata, (char*) message.data, *olen);
-			if (message.rcode == TPESVCFAIL) {
-				*event = TPESVCFAIL;
-			} else if (message.rcode == TPESVCERR) {
-				*event = TPESVCERR;
-			}
-			try {
-				if (message.replyto != NULL && strcmp(message.replyto, "") != 0) {
-					session->setSendTo(message.replyto);
-				} else {
-					session->setSendTo(NULL);
+			MESSAGE message = session->receive(time);
+			if (message.data != NULL) {
+				// TODO Handle TPNOCHANGE
+				if (len < message.len) {
+					*odata = ::tprealloc(*odata, message.len);
 				}
-				if (message.flags & TPRECVONLY) {
-					session->setCanSend(true);
-					session->setCanRecv(false);
+				*olen = message.len;
+				memcpy(*odata, (char*) message.data, *olen);
+				if (message.rcode == TPESVCFAIL) {
+					*event = TPESVCFAIL;
+				} else if (message.rcode == TPESVCERR) {
+					*event = TPESVCERR;
 				}
-			} catch (...) {
-				LOG4CXX_ERROR(loggerXATMI, (char*) "Could not set the send to destination to: " << message.replyto);
+				try {
+					if (message.replyto != NULL && strcmp(message.replyto, "")
+							!= 0) {
+						session->setSendTo(message.replyto);
+					} else {
+						session->setSendTo(NULL);
+					}
+					if (message.flags & TPRECVONLY) {
+						session->setCanSend(true);
+						session->setCanRecv(false);
+					}
+				} catch (...) {
+					LOG4CXX_ERROR(
+							loggerXATMI,
+							(char*) "Could not set the send to destination to: "
+									<< message.replyto);
+				}
+				LOG4CXX_DEBUG(loggerXATMI, (char*) "returning - %s" << *odata);
+				toReturn = 0;
+			} else {
+				tperrno = TPETIME;
 			}
-			LOG4CXX_DEBUG(loggerXATMI, (char*) "returning - %s" << *odata);
-			toReturn = 0;
 		} else {
-			tperrno = TPETIME;
+			tperrno = TPEPROTO;
 		}
-	} else {
-		tperrno = TPEPROTO;
-	}
 	} else {
 		tperrno = TPEOTYPE;
 	}
@@ -165,10 +176,13 @@ long * _get_tpurcode(void) {
 int tpadvertise(char * svcname, void(*func)(TPSVCINFO *)) {
 	tperrno = 0;
 	int toReturn = -1;
-	if (serverinit() != -1) {
+	if (ptrServer != NULL) {
 		if (ptrServer->advertiseService(svcname, func)) {
 			toReturn = 0;
 		}
+	} else {
+		LOG4CXX_ERROR(loggerXATMI, (char*) "server not initialized");
+		tperrno = TPESYSTEM;
 	}
 	return toReturn;
 }
@@ -176,7 +190,7 @@ int tpadvertise(char * svcname, void(*func)(TPSVCINFO *)) {
 int tpunadvertise(char * svcname) {
 	tperrno = 0;
 	int toReturn = -1;
-	if (serverinit() != -1) {
+	if (ptrServer != NULL) {
 		if (svcname && strcmp(svcname, "") != 0) {
 			if (ptrServer->isAdvertised(svcname)) {
 				ptrServer->unadvertiseService(svcname);
@@ -187,6 +201,9 @@ int tpunadvertise(char * svcname) {
 		} else {
 			tperrno = TPEINVAL;
 		}
+	} else {
+		LOG4CXX_ERROR(loggerXATMI, (char*) "server not initialized");
+		tperrno = TPESYSTEM;
 	}
 	return toReturn;
 }
@@ -211,7 +228,8 @@ long tptypes(char* ptr, char* type, char* subtype) {
 	return AtmiBrokerMem::get_instance()->tptypes(ptr, type, subtype);
 }
 
-int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen, long flags) {
+int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen,
+		long flags) {
 	tperrno = 0;
 	if (clientinit() != -1) {
 		int cd = tpacall(svc, idata, ilen, flags);
@@ -235,7 +253,8 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 				int cd = -1;
 				session = ptrAtmiBrokerClient->createSession(cd, svc);
 				if (cd != -1) {
-					::send(session, session->getReplyTo(), idata, len, cd, flags, 0, 0);
+					::send(session, session->getReplyTo(), idata, len, cd,
+							flags, 0, 0);
 					if (TPNOREPLY & flags) {
 						return 0;
 					}
@@ -244,7 +263,8 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 					tperrno = TPELIMIT;
 				}
 			} catch (...) {
-				LOG4CXX_ERROR(loggerXATMI, (char*) "tpconnect failed to connect to service queue");
+				LOG4CXX_ERROR(loggerXATMI,
+						(char*) "tpconnect failed to connect to service queue");
 				tperrno = TPENOENT;
 			}
 		}
@@ -266,7 +286,8 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 				try {
 					session = ptrAtmiBrokerClient->createSession(cd, svc);
 					if (cd != -1) {
-						::send(session, session->getReplyTo(), idata, len, cd, flags, 0, 0);
+						::send(session, session->getReplyTo(), idata, len, cd,
+								flags, 0, 0);
 						if (flags & TPRECVONLY) {
 							session->setCanSend(false);
 						} else {
@@ -277,7 +298,9 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 						tperrno = TPELIMIT;
 					}
 				} catch (...) {
-					LOG4CXX_ERROR(loggerXATMI, (char*) "tpconnect failed to connect to service queue");
+					LOG4CXX_ERROR(
+							loggerXATMI,
+							(char*) "tpconnect failed to connect to service queue");
 					tperrno = TPENOENT;
 				}
 			}
@@ -362,7 +385,8 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 		}
 	}
 	if (len != -1) {
-		toReturn = ::send(session, session->getReplyTo(), idata, len, id, flags, 0, 0);
+		toReturn = ::send(session, session->getReplyTo(), idata, len, id,
+				flags, 0, 0);
 		if (flags & TPRECVONLY) {
 			session->setCanSend(false);
 			session->setCanRecv(true);
@@ -437,7 +461,9 @@ int tpdiscon(int id) {
 				ptrAtmiBrokerClient->closeSession(id);
 				LOG4CXX_DEBUG(loggerXATMI, (char*) "tpdiscon session closed");
 			} catch (...) {
-				LOG4CXX_ERROR(loggerXATMI, (char*) "aCorbaService->start_conversation(): call failed");
+				LOG4CXX_ERROR(
+						loggerXATMI,
+						(char*) "aCorbaService->start_conversation(): call failed");
 				tperrno = TPESYSTEM;
 			}
 		}

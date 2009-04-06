@@ -24,7 +24,7 @@
 //SERVICE_DEFINITIONS
 
 int main(int argc, char **argv) {
-	int exit_status = serverinit();
+	int exit_status = serverinit(argc, argv);
 
 	//SERVICE_ADVERTISEMENTS
 

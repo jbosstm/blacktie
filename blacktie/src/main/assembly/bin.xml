@@ -86,7 +86,7 @@
 			<outputDirectory>examples/xatmi/fooapp
 			</outputDirectory>
 			<includes>
-				<include>*</include>
+				<include>**/*</include>
 			</includes>
 		</fileSet>
 		<fileSet>
@@ -104,7 +104,7 @@
 			<outputDirectory>examples/ejb-connector/fooapp
 			</outputDirectory>
 			<includes>
-				<include>*</include>
+				<include>**/*</include>
 			</includes>
 		</fileSet>
 		<fileSet>

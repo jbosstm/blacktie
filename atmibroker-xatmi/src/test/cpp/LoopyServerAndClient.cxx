@@ -40,7 +40,7 @@ void LoopyServerAndClient::testLoopyAll() {
 	int result = 0;
 
 	for (int i = 0; i < 3; i++) {
-		result = serverinit();
+		result = serverinit(0, NULL);
 		CPPUNIT_ASSERT(result != -1);
 		CPPUNIT_ASSERT(tperrno == 0);
 
@@ -66,7 +66,7 @@ void LoopyServerAndClient::testLoopyAll2() {
 	int result = 0;
 
 	for (int i = 0; i < 3; i++) {
-		result = serverinit();
+		result = serverinit(0, NULL);
 		CPPUNIT_ASSERT(result != -1);
 		CPPUNIT_ASSERT(tperrno == 0);
 
@@ -90,7 +90,7 @@ void LoopyServerAndClient::testLoopyAll2() {
 
 void LoopyServerAndClient::testLoopyAdvertise() {
 	int result = 0;
-	result = serverinit();
+	result = serverinit(0, NULL);
 	CPPUNIT_ASSERT(result != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
 

@@ -57,7 +57,7 @@ int clientinit() {
 
 	if (ptrAtmiBrokerClient == NULL) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit called");
-		signal(SIGINT, client_sigint_handler_callback);
+		//signal(SIGINT, client_sigint_handler_callback);
 		ptrAtmiBrokerClient = new AtmiBrokerClient();
 		if (!clientInitialized) {
 			::clientdone();
