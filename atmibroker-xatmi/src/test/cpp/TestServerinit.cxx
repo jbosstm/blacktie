@@ -27,7 +27,7 @@ static char  orig_env[256];
 void TestServerinit::test_serverinit() {
 	int result;
 
-	result = serverinit();
+	result = serverinit(0, NULL);
 	CPPUNIT_ASSERT(result != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
 
