@@ -16,6 +16,10 @@ MA  02110-1301, USA.
 
 NOTE: You may like to create a backup of this folder before starting!
 
+NOTE: You should be using the -c all configuration of JBoss for this example to work
+      Edit <JBOSS_HOME>/server/all/conf/jbossjts-properties.xml 
+	to change the word CONFIGURATION_FILE to NAME_SERVICE
+
 1. SET ENVIRONMENT VARIABLES
 In order to run the example you need to make sure that you have set the environment
 appropriately. You will need to make sure that you edit the variables with values 
@@ -38,7 +42,11 @@ mvn install:install-file -Dfile=atmibroker-idl-1.0-SNAPSHOT.jar -Dpackaging=jar
 mvn install:install-file -Dfile=jatmibroker-core-1.0-SNAPSHOT.jar -Dpackaging=jar 
    -DgroupId=org.jboss.blacktie -Dversion=1.0-SNAPSHOT -DartifactId=jatmibroker-core 
 
-3. COMPILE THE EXAMPLE EJB CONNECTOR APPLICATION
+4. RUN THE JBOSS SERVER
+cd into the <JBOSS_HOME>/bin folder
+run -c all
+
+4. COMPILE, DEPLOY AND TEST THE EXAMPLE EJB CONNECTOR APPLICATION
 In a well configured environment, type the following:
 cd ejb-connector-example
 mvn install -DskipTests
@@ -46,22 +54,5 @@ cd ..
 cd ejb-connector-example-ear
 mvn install
 
-4. DEPLOY THE EXAMPLE EJB CONNECTOR EAR
-While the application server is stopped:
-cd ejb-connector-example-ear
-cp target/ejb-connector-example-ear-1.0-SNAPSHOT.ear <JBOSS_HOME>/server/<configuration>/deploy/
-
-5. RUN THE REQUIRED SERVICES
-Make sure that the naming and transaction services are running, if not, run the script under
-Linux:
-	$ATMIBROKER_BIN_DIR/bin/services-scripts/start_all.sh
-Windows: 
-	%ATMIBROKER_BIN_DIR%\bin\services-scripts\start_all.bat
-
-6. RUN THE JBOSS SERVER
-cd into the <JBOSS_HOME>/bin folder
-run -c <configuration>
-
-7. RUN THE EJB CONNECTOR TEST CASES
-cd ejb-connector-example
-mvn test
+NOTE: You will need temporarily need to restart the JBoss Application Server before you
+can run the mvn install again on ejb-connector-example-ear

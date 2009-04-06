@@ -52,5 +52,9 @@ Make sure that the naming and transaction services are running, if not, run the 
 You will need to set the environment variable ATMIBROKER_CONFIGURATION_DIR to either win32 or linux prior to running the client
 ./client
 
+NOTE if you get the following error you have not sourced setenv.sh|bat
+./client: error while loading shared libraries: libTAO_CosNaming.so.1.6.7: cannot open shared object file: No such file or directory
+
+
 NOTE: If you would like to use a JAB Client to talk to the server, please see 
 $ATMIBROKER_BIN_DIR/examples/jab/fooapp
