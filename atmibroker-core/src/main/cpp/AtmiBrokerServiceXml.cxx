@@ -178,8 +178,9 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(SVCINFO* aServiceStructPtr,
 	fflush(aDescriptorFile);
 	fclose(aDescriptorFile);
 
-	free(serviceConfigFilename);
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml,
 			(char*) "leaving parseXmlDescriptor() %s", serviceConfigFilename);
+
+	free(serviceConfigFilename);
 }
 

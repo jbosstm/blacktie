@@ -25,7 +25,7 @@
 
 #include "userlogc.h"
 
-int interationCount = 10000;
+int interationCount = 100;
 
 extern void testTPConversation_service(TPSVCINFO *svcinfo);
 
