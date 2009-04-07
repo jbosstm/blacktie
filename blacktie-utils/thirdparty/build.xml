@@ -74,10 +74,10 @@
 		<mkdir dir="${build.dist}/lib" />
 	</target>
 
-	<target name="thirdparty" depends="log4cxx,cppunit,expat,apr-1,stomp,jbas,java-devel,ace,xercesc" />
+	<target name="thirdparty" depends="log4cxx,cppunit,expat,apr-1,stomp,jbossas,java-devel,ace,xercesc" />
 	<target name="install" depends="thirdparty" />
 
-	<target name="jbas" depends="clean,init">
+	<target name="jbossas" depends="clean,init">
 		<antcall target="purge"/>
 		<validate-files inc.dir="${jbossas.lib.dir}" lib.dir="${jbossas.lib.dir}" artifactId="jbossas" />
 
