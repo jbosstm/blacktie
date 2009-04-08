@@ -21,7 +21,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>ejb-connector-example</artifactId>
-	<version>1.0-M4</version>
+	<version>1.0-MR4</version>
 	<name>Blacktie EJB Proxy</name>
 	<packaging>ejb</packaging>
 	<url>http://www.jboss.org/blacktie</url>
@@ -45,12 +45,12 @@
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>atmibroker-idl</artifactId>
-			<version>1.0-M4</version>
+			<version>1.0-MR4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>ejb-connector</artifactId>
-			<version>1.0-M4</version>
+			<version>1.0-MR4</version>
 		</dependency>
 		<dependency>
 			<groupId>jboss</groupId>
