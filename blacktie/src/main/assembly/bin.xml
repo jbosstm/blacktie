@@ -79,6 +79,7 @@
 			<includes>
 				<include>*.*</include>
 			</includes>
+			<fileMode>0775</fileMode>
 		</fileSet>
 		<fileSet>
 			<directory>../atmibroker-xatmi/src/example/fooapp/
@@ -146,6 +147,7 @@
 			<includes>
 				<include>*</include>
 			</includes>
+			<fileMode>0775</fileMode>
 		</fileSet>
 		<fileSet>
 			<directory>../scripts/setup/</directory>
