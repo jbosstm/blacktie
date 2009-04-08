@@ -20,7 +20,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>codeGeneration</artifactId>
-	<version>1.0-M4-SNAPSHOT</version>
+	<version>1.0-MR4</version>
 	<name>Blacktie Server Code Generation</name>
 	<packaging>jar</packaging>
 	<url>http://www.jboss.org/blacktie</url>
