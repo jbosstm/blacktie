@@ -1,1 +1,1 @@
-java org.apache.tools.ant.launch.Launcher -f %ATMIBROKER_BIN_DIR%/bin/generate-executables.xml -Dconfiguration.type=debug -Dbasedir=. -Dtoolchain.compiler=msvc server %1 %2
+java org.apache.tools.ant.launch.Launcher -f %ATMIBROKER_BIN_DIR%/bin/generate-executables.xml -Dconfiguration.type=debug -Dbasedir=. -Dtoolchain.compiler=msvc server %1=%2 %3=%4
