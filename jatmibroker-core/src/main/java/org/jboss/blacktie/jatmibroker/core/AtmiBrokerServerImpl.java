@@ -184,6 +184,15 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 		log.debug("ServerProxy's connectToORBAndServer args: " + args + " namingContext: " + namingContextExt + " ServerName: " + serverName);
 
 		ConnectToORB(args, namingContextExt);
+		
+		log.debug("about to resolve '" + serverName + "'");
+
+		serverObject = nc.resolve(nce.to_name(serverName));
+		log.debug("Server Object is " + serverObject);
+		log.debug("Server class is " + serverObject.getClass().getName());
+
+		server = ServerHelper.narrow(serverObject);
+		log.debug("Server is " + server);
 	}
 
 	public short server_init() {
