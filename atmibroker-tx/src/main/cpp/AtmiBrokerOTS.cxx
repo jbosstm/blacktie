@@ -43,7 +43,6 @@ log4cxx::LoggerPtr loggerAtmiBrokerOTS(log4cxx::Logger::getLogger("AtmiBrokerOTS
  * use different transaction branches in processes using the same resource manager within the same
  * distributed transaction (see section B.2.6 of the OMG OTS spec)
  */
-#define XA_LOOSE_COUPLING
 
 AtmiBrokerOTS *AtmiBrokerOTS::ptrAtmiBrokerOTS = NULL;
 
@@ -69,13 +68,7 @@ AtmiBrokerOTS::AtmiBrokerOTS() :
 	currentImpl = NULL;
 	tx_current = NULL;
 	ots_connection = init_orb((char*) "ots");
-#ifdef XA_LOOSE_COUPLING
-	try {
-		xaRMFac.createRMs(ots_connection);
-	} catch (RMException& ex) {
-		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getWarn(), (char*) "failed to load RMs: " << ex.what());
-	}
-#endif // XA_LOOSE_COUPLING
+	(void) rm_open();
 	//	createTransactionPolicy();
 }
 
@@ -133,6 +126,7 @@ int AtmiBrokerOTS::tx_open(void) {
 			}
 		}
 
+		(void) rm_open();
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "getTransactionCurrent");
 		currentImpl = new CurrentImpl(tx_factory);
 		tx_current = currentImpl;
@@ -145,20 +139,31 @@ int AtmiBrokerOTS::tx_open(void) {
 	return TX_OK;
 }
 
-int AtmiBrokerOTS::rm_end(void) {
-#ifdef XA_LOOSE_COUPLING
+int AtmiBrokerOTS::rm_open(void)
+{
+	try {
+		xaRMFac.createRMs(ots_connection);
+	} catch (RMException& ex) {
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getWarn(), (char*) "failed to load RMs: " << ex.what());
+		return -1;
+	}
+	return 0;
+}
+void AtmiBrokerOTS::rm_close(void)
+{
+	xaRMFac.destroyRMs(ots_connection);
+}
+int AtmiBrokerOTS::rm_end(void)
+{
 	return xaRMFac.endRMs(ots_connection);
-#endif // XA_LOOSE_COUPLING
 }
-int AtmiBrokerOTS::rm_resume(void) {
-#ifdef XA_LOOSE_COUPLING
+int AtmiBrokerOTS::rm_resume(void)
+{
 	return xaRMFac.resumeRMs(ots_connection);
-#endif // XA_LOOSE_COUPLING
 }
-int AtmiBrokerOTS::rm_suspend(void) {
-#ifdef XA_LOOSE_COUPLING
+int AtmiBrokerOTS::rm_suspend(void)
+{
 	return xaRMFac.suspendRMs(ots_connection);
-#endif // XA_LOOSE_COUPLING
 }
 
 int AtmiBrokerOTS::tx_begin(void) {
@@ -502,6 +507,7 @@ int AtmiBrokerOTS::tx_close(void) {
 	CORBA::release(xa_resource_manager);
 	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "released xa_resource_manager");
 
+	rm_close();
 #ifdef TAO_COMP
 	LocalResourceManagerCache::discardLocalResourceManagerCache();
 #endif

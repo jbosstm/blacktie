@@ -119,8 +119,6 @@ XAResourceManager * XAResourceManagerFactory::findRM(long id)
 
 void XAResourceManagerFactory::destroyRMs(CORBA_CONNECTION * connection)
 {
-	ResourceManagerMap::iterator iter;
-
 	for (ResourceManagerMap::iterator i = rms_.begin(); i != rms_.end(); ++i)
 		delete i->second;
 
@@ -147,21 +145,23 @@ int XAResourceManagerFactory::resumeRMs(CORBA_CONNECTION * connection)
 
 void XAResourceManagerFactory::createRMs(CORBA_CONNECTION * connection) throw (RMException)
 {
-	xarm_config_t * rmp = (xarmp == 0 ? 0 : xarmp->head);
+	if (rms_.size() == 0) {
+		xarm_config_t * rmp = (xarmp == 0 ? 0 : xarmp->head);
 
-	while (rmp != 0) {
-		LOG4CXX_TRACE(xaResourceLogger,  (char*) "createRM:"
-			<< (char *) " xaResourceMgrId: " << rmp->resourceMgrId
-			<< (char *) " xaResourceName: " << rmp->resourceName
-			<< (char *) " xaOpenString: " << rmp->openString
-			<< (char *) " xaCloseString: " << rmp->closeString
-			<< (char *) " xaSwitch: " << rmp->xasw
-			<< (char *) " xaLibName: " << rmp->xalib
-		);
+		while (rmp != 0) {
+			LOG4CXX_TRACE(xaResourceLogger,  (char*) "createRM:"
+				<< (char *) " xaResourceMgrId: " << rmp->resourceMgrId
+				<< (char *) " xaResourceName: " << rmp->resourceName
+				<< (char *) " xaOpenString: " << rmp->openString
+				<< (char *) " xaCloseString: " << rmp->closeString
+				<< (char *) " xaSwitch: " << rmp->xasw
+				<< (char *) " xaLibName: " << rmp->xalib
+			);
 
-		(void) createRM(connection, rmp);
+			(void) createRM(connection, rmp);
 
-		rmp = rmp->next;
+			rmp = rmp->next;
+		}
 	}
 }
 
@@ -204,7 +204,7 @@ XAResourceManager * XAResourceManagerFactory::createRM(
 
 	void * symbol = lookup_symbol(rmp->xalib, rmp->xasw);
 	LOG4CXX_TRACE(xaResourceLogger,  (char *) "got symbol");
-    ptrdiff_t tmp = reinterpret_cast<ptrdiff_t> (symbol);
+	ptrdiff_t tmp = reinterpret_cast<ptrdiff_t> (symbol);
 	LOG4CXX_TRACE(xaResourceLogger,  (char *) "cast to ptr");
 	struct xa_switch_t * xa_switch = reinterpret_cast<struct xa_switch_t *>(tmp);
 	LOG4CXX_TRACE(xaResourceLogger,  (char *) "cast to struct");

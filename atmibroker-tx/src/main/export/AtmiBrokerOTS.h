@@ -109,6 +109,9 @@ public:
 	CosNaming::NamingContext_ptr getNamingContext();
 
 private:
+	void rm_close(void);
+	int rm_open(void);
+
 	void createTransactionPolicy();
 	int tx_complete(bool);
 	int chainTransaction(int);

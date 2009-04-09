@@ -63,14 +63,17 @@ XAResourceManager::XAResourceManager(
         poa_(NULL), connection_(connection), name_(name), openString_(openString), closeString_(closeString),
 		rmid_(rmid), xa_switch_(xa_switch) {
 
-		LOG4CXX_TRACE(xaResourceLogger,  (char *) "creating");
+	LOG4CXX_TRACE(xaResourceLogger,  (char *) "new RM name: " << name << (char *) " openinfo: " <<
+		openString << (char *) " rmid: " << rmid);
+
         if (name == NULL) {
                 RMException ex("Invalid RM name", EINVAL);
                 throw ex;
         }
 
         int rv = xa_switch_->xa_open_entry((char *) openString, rmid, TMNOFLAGS);
-		LOG4CXX_TRACE(xaResourceLogger,  (char *) "performed xa_open");
+
+	LOG4CXX_TRACE(xaResourceLogger,  (char *) "xa_open: " << rv);
 
         if (rv != XA_OK) {
                 RMException ex("xa_open", rv);
@@ -78,13 +81,13 @@ XAResourceManager::XAResourceManager(
         }
 
 	// each RM has its own POA
-		LOG4CXX_TRACE(xaResourceLogger,  (char *) "creating poa");
         createPOA();
-		LOG4CXX_TRACE(xaResourceLogger,  (char *) "created poa");
 }
 
 XAResourceManager::~XAResourceManager() {
 	int rv = xa_switch_->xa_close_entry((char *) closeString_, rmid_, TMNOFLAGS);
+
+	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char *) "xa_close: " << rv);
 
 	if (rv != XA_OK)
 		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getWarn(),
@@ -99,20 +102,20 @@ void XAResourceManager::createPOA() {
         //PortableServer::POA_var rpoa = PortableServer::POA::_narrow(obj);
 
         PortableServer::POAManager_ptr poa_manager = (PortableServer::POAManager_ptr) connection_->root_poa_manager;
-		LOG4CXX_TRACE(xaResourceLogger,  (char *) "got poa_manager");
+//	LOG4CXX_TRACE(xaResourceLogger,  (char *) "got poa_manager");
         PortableServer::POA_ptr parent_poa = (PortableServer::POA_ptr) connection_->root_poa;
-		LOG4CXX_TRACE(xaResourceLogger,  (char *) "got parent_poa");
+//	LOG4CXX_TRACE(xaResourceLogger,  (char *) "got parent_poa");
 	PortableServer::LifespanPolicy_var p1 = parent_poa->create_lifespan_policy(PortableServer::PERSISTENT);
-	LOG4CXX_TRACE(xaResourceLogger,  (char *) "got p1");
+//	LOG4CXX_TRACE(xaResourceLogger,  (char *) "got p1");
 
         CORBA::PolicyList policies;
         policies.length(1);
-		LOG4CXX_TRACE(xaResourceLogger,  (char *) "initialized policies");
+//	LOG4CXX_TRACE(xaResourceLogger,  (char *) "initialized policies");
 
 	// the servant object references must survive failure of the ORB in order to support recover of 
 	// transaction branches (the default orb policy for servants is transient)
         policies[0] = PortableServer::LifespanPolicy::_duplicate(p1);
-		LOG4CXX_TRACE(xaResourceLogger,  (char *) "duplicated policy 1");
+//	LOG4CXX_TRACE(xaResourceLogger,  (char *) "duplicated policy 1");
 
 	// create a new POA for this RM
 /*
@@ -124,19 +127,23 @@ void XAResourceManager::createPOA() {
 
 	ACE_TCHAR name[32];
 	memset(name, '\0', 32);
-	LOG4CXX_TRACE(xaResourceLogger,  (char *) "initialized the name");
+//	LOG4CXX_TRACE(xaResourceLogger,  (char *) "initialized the name");
 	ACE_OS::sprintf(name, ACE_TEXT("%s%d"), "ATMI_RM_", rmid_);
-	LOG4CXX_TRACE(xaResourceLogger,  (char *) "printed the name in");
-	LOG4CXX_TRACE(xaResourceLogger,  (char *) "rmid was " << rmid_);
-	LOG4CXX_TRACE(xaResourceLogger,  (char *) "name was " << name);
-	LOG4CXX_TRACE(xaResourceLogger,  (char *) "name was " << this->name_);
+//	LOG4CXX_TRACE(xaResourceLogger,  (char *) "printed the name in");
+//	LOG4CXX_TRACE(xaResourceLogger,  (char *) "rmid was " << rmid_);
+//	LOG4CXX_TRACE(xaResourceLogger,  (char *) "name was " << name);
+//	LOG4CXX_TRACE(xaResourceLogger,  (char *) "name was " << this->name_);
 	try {
         	this->poa_ = parent_poa->create_POA(name, poa_manager, policies);
-			LOG4CXX_TRACE(xaResourceLogger,  (char *) "created poa");
+//			LOG4CXX_TRACE(xaResourceLogger,  (char *) "created poa");
 	} catch (PortableServer::POA::AdapterAlreadyExists &) {
-		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getWarn(), (char *) "Duplicate RM POA - name = " << name);
-                RMException ex("Duplicate RM POA", EINVAL);
-                throw ex;
+		try {
+			this->poa_ = parent_poa->find_POA(name, false);
+		} catch (const PortableServer::POA::AdapterNonExistent &) {
+			LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getWarn(), (char *) "Duplicate RM POA - name = " << name);
+                	RMException ex("Duplicate RM POA", EINVAL);
+                	throw ex;
+		}
 
 	} catch (PortableServer::POA::InvalidPolicy &) {
 		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getWarn(), (char *) "Invalid RM POA policy");
@@ -145,13 +152,13 @@ void XAResourceManager::createPOA() {
 	}
 
 	policies[0]->destroy();
-	LOG4CXX_TRACE(xaResourceLogger,  (char *) "destroyed policies");
+//	LOG4CXX_TRACE(xaResourceLogger,  (char *) "destroyed policies");
 
 	// take the POA out of its holding state
 	PortableServer::POAManager_var mgr = this->poa_->the_POAManager();
-	LOG4CXX_TRACE(xaResourceLogger,  (char *) "activating mgr");
+//	LOG4CXX_TRACE(xaResourceLogger,  (char *) "activating mgr");
 	mgr->activate();
-	LOG4CXX_TRACE(xaResourceLogger,  (char *) "activated mgr");
+//	LOG4CXX_TRACE(xaResourceLogger,  (char *) "activated mgr");
 }
 
 int XAResourceManager::createServant(XID * xid)
@@ -236,14 +243,20 @@ void XAResourceManager::setComplete(XID * xid)
 {
 	XABranchMap::iterator iter;
 
+	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(),
+		(char*) "RM removing branch: "
+		<< xid->formatID << ':'
+		<< xid->gtrid_length << ':'
+		<< xid->bqual_length << ':'
+		<< xid->data);
+
+
 	for (XABranchMap::iterator i = branches_.begin(); i != branches_.end(); ++i)
 	{
 		if (compareXids(i->first, xid) == 0) {
 			XAResourceAdaptorImpl * r = i->second;
 			XID * key = i->first;
 
-			LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(),
-				(char*) "RM removing branch");
 			branches_.erase(i->first);
 			delete r;
 			free(key);
@@ -252,7 +265,7 @@ void XAResourceManager::setComplete(XID * xid)
 		}
 	}
 
-	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "RM cannot remove unknown branch");
+	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "... unknown branch");
 }
 
 int XAResourceManager::xa_start (XID * xid, int rmid, long flags)
