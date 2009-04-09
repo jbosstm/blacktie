@@ -107,7 +107,7 @@
 		<profile>
 			<id>windows</id>
 			<activation> <os> <family>windows</family> </os> </activation>
-			<properties><export.dll>_ATMIBROKER_CORBA_DLL</export.dll></properties>
+			<properties><export.dll>_BLACKTIE_CORBA_DLL</export.dll></properties>
 		</profile>	      
 	</profiles>
 

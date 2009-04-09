@@ -42,15 +42,15 @@ void TestClientInit::test_clientinit() {
 void TestClientInit::test_config_env() {
 	char* env;
 
-	env = ACE_OS::getenv("ATMIBROKER_CONFIGURATION_DIR");
+	env = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
 	if(env != NULL){
-		ACE_OS::snprintf(orig_env, 256, "ATMIBROKER_CONFIGURATION_DIR=%s", env);
+		ACE_OS::snprintf(orig_env, 256, "BLACKTIE_CONFIGURATION_DIR=%s", env);
 	}
 
 #ifdef WIN32
-	ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=win32");
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=win32");
 #else
-	ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=linux");
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=linux");
 #endif
 
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -63,13 +63,13 @@ void TestClientInit::test_config_env() {
 	CPPUNIT_ASSERT(tperrno == 0);
 
 	/* wrong envionment */
-	ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=nosuch_conf");
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=nosuch_conf");
 	valToTest = ::clientinit();
 	CPPUNIT_ASSERT(valToTest == -1);
 
 	if(env != NULL) {
 		ACE_OS::putenv(orig_env);
 	} else {
-		ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=");
+		ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=");
 	}
 }

@@ -28,17 +28,17 @@
 
 void TestSymbolLoader::test() {
 	char orig_env[256];
-	char* env = ACE_OS::getenv("ATMIBROKER_CONFIGURATION_DIR");
+	char* env = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
 	if(env != NULL){
-		ACE_OS::snprintf(orig_env, 256, "ATMIBROKER_CONFIGURATION_DIR=%s", env);
+		ACE_OS::snprintf(orig_env, 256, "BLACKTIE_CONFIGURATION_DIR=%s", env);
 	}
 
 	#ifdef WIN32
 		userlogc((char*) "WIN32");
-		ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=win32");
+		ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=win32");
 	#else	
 		userlogc((char*) "linux");
-		ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=linux");
+		ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=linux");
 	#endif
 	AtmiBrokerEnv::discard_instance();
 	char* lib = AtmiBrokerEnv::get_instance()->getenv("test-lib");
@@ -69,6 +69,6 @@ void TestSymbolLoader::test() {
 	if(env != NULL) {
 		ACE_OS::putenv(orig_env);
 	} else {
-		ACE_OS::putenv("ATMIBROKER_CONFIGURATION_DIR=");
+		ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=");
 	}
 }

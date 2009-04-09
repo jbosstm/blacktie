@@ -92,7 +92,7 @@ const char* getConfigurationDir() {
 	if(configFromCmdline) {
 		dir = configDir;
 	} else {
-		dir = ACE_OS::getenv("ATMIBROKER_CONFIGURATION_DIR");
+		dir = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
 	}
 
 	return dir;

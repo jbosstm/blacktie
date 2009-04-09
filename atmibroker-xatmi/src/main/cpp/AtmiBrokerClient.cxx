@@ -90,7 +90,7 @@ AtmiBrokerClient::AtmiBrokerClient() {
 		char* envDir = NULL;
 		char  descPath[256];
 
-		envDir = ACE_OS::getenv("ATMIBROKER_CONFIGURATION_DIR");
+		envDir = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
 		if(envDir) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "envDir is " << envDir);
 			ACE_OS::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"CLIENT.xml", envDir);

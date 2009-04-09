@@ -163,7 +163,7 @@ bool AtmiBrokerServerXml::parseXmlDescriptor(ServerMetadata* aServerStructPtr,
 	char* schemaDir;
 	bool  result = false;
 
-	schemaDir = ACE_OS::getenv("ATMIBROKER_SCHEMA_DIR");
+	schemaDir = ACE_OS::getenv("BLACKTIE_SCHEMA_DIR");
 	if(schemaDir) {
 		ACE_OS::snprintf(schemaPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"Server.xsd", schemaDir);
 	} else {

@@ -80,7 +80,7 @@
 		<profile>
 			<id>windows</id>
 			<activation> <os> <family>windows</family> </os> </activation>
-			<properties><export.dll>_ATMIBROKER_IDL_DLL</export.dll></properties>
+			<properties><export.dll>_BLACKTIE_IDL_DLL</export.dll></properties>
 		</profile>	      
 	</profiles>
 

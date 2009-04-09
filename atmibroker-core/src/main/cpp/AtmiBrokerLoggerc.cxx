@@ -38,7 +38,7 @@ log4cxx::LoggerPtr loggerAtmiBrokerLogc(log4cxx::Logger::getLogger(
 
 bool loggerInitialized;
 
-extern "C"ATMIBROKER_CORE_DLL
+extern "C"BLACKTIE_CORE_DLL
 void userlogc(const char * format, ...) {
 	if (loggerAtmiBrokerLogc->isEnabledFor(log4cxx::Level::getInfo())) {
 		char str[2048];

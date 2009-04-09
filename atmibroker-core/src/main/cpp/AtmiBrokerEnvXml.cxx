@@ -320,7 +320,7 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(
 	char  schemaPath[256];
 	char* schemaDir;
 
-	schemaDir = ACE_OS::getenv("ATMIBROKER_SCHEMA_DIR");
+	schemaDir = ACE_OS::getenv("BLACKTIE_SCHEMA_DIR");
 	if(schemaDir) {
 		ACE_OS::snprintf(schemaPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"Environment.xsd", schemaDir);
 	} else {

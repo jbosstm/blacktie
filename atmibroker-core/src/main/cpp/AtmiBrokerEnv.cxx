@@ -66,7 +66,7 @@ AtmiBrokerEnv::AtmiBrokerEnv() {
 	readEnvironment = false;
 
 	char* ptrDir = NULL;
-	ptrDir = ACE_OS::getenv("ATMIBROKER_CONFIGURATION_DIR");
+	ptrDir = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
 
 	if(ptrDir != NULL && ENVIRONMENT_DIR == NULL){
 		AtmiBrokerEnv::set_environment_dir(ptrDir);

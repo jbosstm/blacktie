@@ -39,7 +39,7 @@
 					<environmentVariables>
 						<Path>${ld_library_path}</Path>
 						<LD_LIBRARY_PATH>${ld_library_path}</LD_LIBRARY_PATH>
-						<ATMIBROKER_SCHEMA_DIR>xsd</ATMIBROKER_SCHEMA_DIR>
+						<BLACKTIE_SCHEMA_DIR>xsd</BLACKTIE_SCHEMA_DIR>
 					</environmentVariables>
 				</configuration>
 			</plugin>

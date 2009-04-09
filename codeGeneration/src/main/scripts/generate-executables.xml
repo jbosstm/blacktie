@@ -37,10 +37,10 @@
 <compilerarg value="/wd4640"/>
 '>
 <!ENTITY includepath-main-dependencies '
-	<includepath path="${env.ATMIBROKER_BIN_DIR}/include"/>
+	<includepath path="${env.BLACKTIE_BIN_DIR}/include"/>
 '>
 <!ENTITY libsets-main-dependencies '
-	<libset dir="${env.ATMIBROKER_BIN_DIR}/libTao" libs="${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix} log4cxx atmibroker-idl atmibroker-core atmibroker-tx atmibroker-xatmi" />
+	<libset dir="${env.BLACKTIE_BIN_DIR}/libTao" libs="${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix} log4cxx atmibroker-idl atmibroker-core atmibroker-tx atmibroker-xatmi" />
 '>
 ]>
 <project name="generate-executables">
@@ -53,7 +53,7 @@
 	<property name="runtime" value="dynamic" />
 
 	<target name="init">
-		<fail unless="env.ATMIBROKER_BIN_DIR" />
+		<fail unless="env.BLACKTIE_BIN_DIR" />
 		<fail unless="configuration.type" />
 		<fail unless="toolchain.compiler" />
 		<condition property="is-msvc">
@@ -97,7 +97,7 @@
 		<fail unless="server.includes" />
 		<delete file="server.c" />
 		<delete file="log4cxx.properties" />
-		<unzip src="${env.ATMIBROKER_BIN_DIR}/codeGeneration/codeGeneration.jar" dest=".">
+		<unzip src="${env.BLACKTIE_BIN_DIR}/codeGeneration/codeGeneration.jar" dest=".">
 			<patternset>
 				<include name="server.c" />
 				<include name="log4cxx.properties" />
