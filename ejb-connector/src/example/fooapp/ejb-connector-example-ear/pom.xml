@@ -20,7 +20,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>ejb-connector-example-ear</artifactId>
-	<version>1.0-MR4</version>
+	<version>1.0-MR5-SNAPSHOT</version>
 	<name>Blacktie EJB Proxy Packaging</name>
 	<packaging>ear</packaging>
 	<url>http://www.jboss.org/blacktie</url>
@@ -117,7 +117,7 @@
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>ejb-connector-example</artifactId>
-			<version>1.0-MR4</version>
+			<version>1.0-MR5-SNAPSHOT</version>
 			<type>ejb</type>
 		</dependency>
 		<!--  Test -->
