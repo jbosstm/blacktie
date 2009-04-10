@@ -35,7 +35,7 @@
 #include "Destination.h"
 #include "SynchronizableObject.h"
 
-class ATMIBROKER_CORBA_DLL EndpointQueue: public virtual Destination, public virtual POA_AtmiBroker::EndpointQueue {
+class BLACKTIE_CORBA_DLL EndpointQueue: public virtual Destination, public virtual POA_AtmiBroker::EndpointQueue {
 public:
 	EndpointQueue(CORBA_CONNECTION* connection);
 	EndpointQueue(CORBA_CONNECTION* connection, PortableServer::POA_ptr poa, char* serviceName);

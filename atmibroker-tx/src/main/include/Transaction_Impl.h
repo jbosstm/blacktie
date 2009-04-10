@@ -40,7 +40,7 @@ namespace xots {
 
 namespace tx {
 
-class ATMIBROKER_TX_DLL Transaction_Impl {
+class BLACKTIE_TX_DLL Transaction_Impl {
 	friend class txFactory; // for constructor
 	friend class Current_Impl; // need access to control()
 

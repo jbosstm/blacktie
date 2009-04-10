@@ -25,25 +25,25 @@
  * start an orb for making transactional service calls
  * (see orbInit in OrbManagement.h for implementation)
  */
-extern ATMIBROKER_TX_DLL void * start_tx_orb(char *);
+extern BLACKTIE_TX_DLL void * start_tx_orb(char *);
 
 /**
  * stop the transaction manager proxy
  */
-extern ATMIBROKER_TX_DLL void shutdown_tx_broker(void);
+extern BLACKTIE_TX_DLL void shutdown_tx_broker(void);
 
 /**
  * disassociate a transaction from the current thread
  * (also suspends all Resource Managers linked into the running applications)
  * returns the transaction that was previously associated
  */
-extern ATMIBROKER_TX_DLL void * disassociate_tx(void);
+extern BLACKTIE_TX_DLL void * disassociate_tx(void);
 
 /**
  * associate a transaction with the current thread
  * (also resumes all Resource Managers linked into the running applications)
  */
-extern ATMIBROKER_TX_DLL int associate_tx(void *);
+extern BLACKTIE_TX_DLL int associate_tx(void *);
 
 /**
  * Associate a transaction with the current thread:
@@ -54,7 +54,7 @@ extern ATMIBROKER_TX_DLL int associate_tx(void *);
  *
  * Return a non-negative value on success
  */
-extern ATMIBROKER_TX_DLL int associate_serialized_tx(char *, char *);
+extern BLACKTIE_TX_DLL int associate_serialized_tx(char *, char *);
 
 /**
  * Convert the transaction associated with the calling thread into a string.
@@ -64,7 +64,7 @@ extern ATMIBROKER_TX_DLL int associate_serialized_tx(char *, char *);
  *
  * Return a non-negative value on success
  */
-extern ATMIBROKER_TX_DLL char* serialize_tx(char *);
+extern BLACKTIE_TX_DLL char* serialize_tx(char *);
 
 
 #endif //_TXCLIENT_H

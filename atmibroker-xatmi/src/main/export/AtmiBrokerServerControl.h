@@ -17,17 +17,17 @@
  */
 
 
-#ifndef ATMIBROKER_SERVERCONTROL_H_
-#define ATMIBROKER_SERVERCONTROL_H_
+#ifndef BLACKTIE_SERVERCONTROL_H_
+#define BLACKTIE_SERVERCONTROL_H_
 
 #include "atmiBrokerXatmiMacro.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern ATMIBROKER_XATMI_DLL int serverinit(int argc, char** argv);
-extern ATMIBROKER_XATMI_DLL int serverrun();
-extern ATMIBROKER_XATMI_DLL int serverdone();
+extern BLACKTIE_XATMI_DLL int serverinit(int argc, char** argv);
+extern BLACKTIE_XATMI_DLL int serverrun();
+extern BLACKTIE_XATMI_DLL int serverdone();
 #ifdef __cplusplus
 }
 #endif

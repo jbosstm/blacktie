@@ -38,7 +38,7 @@ extern "C"
 
 class SessionImpl;
 
-class ATMIBROKER_STOMP_DLL ConnectionImpl: public virtual Connection {
+class BLACKTIE_STOMP_DLL ConnectionImpl: public virtual Connection {
 public:
 	ConnectionImpl(char* connectionName);
 	virtual ~ConnectionImpl();

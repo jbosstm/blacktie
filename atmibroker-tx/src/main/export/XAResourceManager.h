@@ -34,7 +34,7 @@ class XAResourceAdaptorImpl;
 
 extern log4cxx::LoggerPtr xaResourceLogger;
 
-class ATMIBROKER_TX_DLL XAResourceManager
+class BLACKTIE_TX_DLL XAResourceManager
 {
 public:
         XAResourceManager(CORBA_CONNECTION *, const char *, const char *, const char *, CORBA::Long, struct xa_switch_t *)

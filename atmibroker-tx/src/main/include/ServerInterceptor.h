@@ -26,7 +26,7 @@
 /**
  * Server side orb request intercpetor for implicit transaction propagation
  */
-class ATMIBROKER_TX_DLL ServerInterceptor:
+class BLACKTIE_TX_DLL ServerInterceptor:
         public virtual TxInterceptor,
         public PortableInterceptor::ServerRequestInterceptor
 {

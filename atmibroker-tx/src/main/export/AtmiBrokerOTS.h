@@ -54,7 +54,7 @@ typedef _control_info ControlInfo;
 }
 ;
 
-class ATMIBROKER_TX_DLL AtmiBrokerOTS {
+class BLACKTIE_TX_DLL AtmiBrokerOTS {
 
 public:
 

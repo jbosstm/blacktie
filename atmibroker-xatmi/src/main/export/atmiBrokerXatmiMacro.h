@@ -16,23 +16,23 @@
  * MA  02110-1301, USA.
  */
 /* Export/Include macros for Win32 compilation */
-#ifndef ATMIBROKER_XATMI_MACRO
-#define ATMIBROKER_XATMI_MACRO
+#ifndef BLACKTIE_XATMI_MACRO
+#define BLACKTIE_XATMI_MACRO
 
 /* Only do defines if we're compiling on Win32 */
 #ifdef WIN32
 
-#ifdef _ATMIBROKER_XATMI_DLL
-#define ATMIBROKER_XATMI_DLL __declspec(dllexport)
+#ifdef _BLACKTIE_XATMI_DLL
+#define BLACKTIE_XATMI_DLL __declspec(dllexport)
 #else
-#define ATMIBROKER_XATMI_DLL __declspec(dllimport)
+#define BLACKTIE_XATMI_DLL __declspec(dllimport)
 #endif
 
 #else /* Non-win32 platform. Macros need to pre-process away */
 
 /* examples */
 
-#define ATMIBROKER_XATMI_DLL
+#define BLACKTIE_XATMI_DLL
 
 #endif
 

@@ -26,9 +26,9 @@ const int SVC_KEY = 0xb1; // key for accessing atmi service
 const int SVC_SES = 0xb4; // key for accessing service session
 // define other keys here
 
-extern ATMIBROKER_CORE_DLL int getKey();
-extern ATMIBROKER_CORE_DLL bool setSpecific(int key, void* threadData);
-extern ATMIBROKER_CORE_DLL void* getSpecific(int key);
-extern ATMIBROKER_CORE_DLL bool destroySpecific(int key);
+extern BLACKTIE_CORE_DLL int getKey();
+extern BLACKTIE_CORE_DLL bool setSpecific(int key, void* threadData);
+extern BLACKTIE_CORE_DLL void* getSpecific(int key);
+extern BLACKTIE_CORE_DLL bool destroySpecific(int key);
 
 #endif //ThreadLocalStorage_H

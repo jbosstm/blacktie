@@ -94,7 +94,7 @@ private:
 	bool fSawErrors;
 };
 
-class ATMIBROKER_CORE_DLL XsdValidator {
+class BLACKTIE_CORE_DLL XsdValidator {
 public:
 	XsdValidator();
 	~XsdValidator();

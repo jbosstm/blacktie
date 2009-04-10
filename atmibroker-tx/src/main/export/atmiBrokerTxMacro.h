@@ -16,23 +16,23 @@
  * MA  02110-1301, USA.
  */
 /* Export/Include macros for Win32 compilation */
-#ifndef ATMIBROKER_TX_MACRO
-#define ATMIBROKER_TX_MACRO
+#ifndef BLACKTIE_TX_MACRO
+#define BLACKTIE_TX_MACRO
 
 /* Only do defines if we're compiling on Win32 */
 #ifdef WIN32
 
-#ifdef _ATMIBROKER_TX_DLL
-#define ATMIBROKER_TX_DLL __declspec(dllexport)
+#ifdef _BLACKTIE_TX_DLL
+#define BLACKTIE_TX_DLL __declspec(dllexport)
 #else
-#define ATMIBROKER_TX_DLL __declspec(dllimport)
+#define BLACKTIE_TX_DLL __declspec(dllimport)
 #endif
 
 #else /* Non-win32 platform. Macros need to pre-process away */
 
 /* examples */
 
-#define ATMIBROKER_TX_DLL
+#define BLACKTIE_TX_DLL
 
 #endif
 

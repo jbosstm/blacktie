@@ -16,8 +16,8 @@
  * MA  02110-1301, USA.
  */
 
-#ifndef ATMIBROKERMEM_H
-#define ATMIBROKERMEM_H
+#ifndef BLACKTIEMEM_H
+#define BLACKTIEMEM_H
 
 #include <iostream>
 #include <vector>

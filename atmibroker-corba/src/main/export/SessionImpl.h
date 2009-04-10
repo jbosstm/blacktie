@@ -27,7 +27,7 @@
 
 class ConnectionImpl;
 
-class ATMIBROKER_CORBA_DLL SessionImpl: public virtual Session {
+class BLACKTIE_CORBA_DLL SessionImpl: public virtual Session {
 public:
 	SessionImpl(CORBA_CONNECTION* connection, int id, const char* temporaryQueueName);
 

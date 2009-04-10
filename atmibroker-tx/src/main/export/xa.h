@@ -22,13 +22,13 @@
 
 #define XIDDATASIZE     128             /* size in bytes */
 
-struct ATMIBROKER_TX_DLL xid_t {
+struct BLACKTIE_TX_DLL xid_t {
 	long formatID; /* format identifier */
 	long gtrid_length; /* value from 1 through 64 */
 	long bqual_length; /* value from 1 through 64 */
 	char data[XIDDATASIZE];
 };
-typedef struct ATMIBROKER_TX_DLL xid_t XID;
+typedef struct BLACKTIE_TX_DLL xid_t XID;
 
 /*
  * XA Switch Data Structure
@@ -37,7 +37,7 @@ typedef struct ATMIBROKER_TX_DLL xid_t XID;
 #define RMNAMESZ 32		/* length of resource manager name, */
 /* including the null terminator */
 
-struct ATMIBROKER_TX_DLL xa_switch_t {
+struct BLACKTIE_TX_DLL xa_switch_t {
 	char name[RMNAMESZ]; /* name of resource manager */
 	long flags; /* resource manager specific options */
 	long version; /* must be 0 */

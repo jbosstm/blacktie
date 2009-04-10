@@ -17,16 +17,16 @@
  */
 
 
-#ifndef ATMIBROKER_CLIENTCONTROL_H_
-#define ATMIBROKER_CLIENTCONTROL_H_
+#ifndef BLACKTIE_CLIENTCONTROL_H_
+#define BLACKTIE_CLIENTCONTROL_H_
 
 #include "atmiBrokerXatmiMacro.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern ATMIBROKER_XATMI_DLL int clientinit();
-extern ATMIBROKER_XATMI_DLL int clientdone();
+extern BLACKTIE_XATMI_DLL int clientinit();
+extern BLACKTIE_XATMI_DLL int clientdone();
 #ifdef __cplusplus
 }
 #endif

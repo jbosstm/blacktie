@@ -39,7 +39,7 @@
 
 #include <deque>
 
-struct ATMIBROKER_TX_DLL _controlThreadStruct {
+struct BLACKTIE_TX_DLL _controlThreadStruct {
 #ifdef TAO_COMP
 	ACE_thread_t thread;
 	ACE_hthread_t threadHandle;
@@ -54,7 +54,7 @@ typedef _controlThreadStruct ControlThreadStruct;
  this class inherits from the stubs, not the skeletons
  because the CosTransactions::Current interface is a "locality contrained" interface
  */
-class ATMIBROKER_TX_DLL CurrentImpl: public virtual CosTransactions::Current {
+class BLACKTIE_TX_DLL CurrentImpl: public virtual CosTransactions::Current {
 public:
 	CurrentImpl(CosTransactions::TransactionFactory* tfac);
 

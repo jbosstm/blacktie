@@ -29,7 +29,7 @@
 
 class SessionImpl;
 
-class ATMIBROKER_CORBA_DLL ConnectionImpl: public virtual Connection {
+class BLACKTIE_CORBA_DLL ConnectionImpl: public virtual Connection {
 public:
 	ConnectionImpl(char* connectionName);
 	virtual ~ConnectionImpl();
@@ -50,7 +50,7 @@ private:
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern ATMIBROKER_CORBA_DLL struct connection_factory_t connectionFactory;
+extern BLACKTIE_CORBA_DLL struct connection_factory_t connectionFactory;
 #ifdef __cplusplus
 }
 #endif

@@ -16,23 +16,23 @@
  * MA  02110-1301, USA.
  */
 /* Export/Include macros for Win32 compilation */
-#ifndef ATMIBROKER_IDL_MACRO
-#define ATMIBROKER_IDL_MACRO
+#ifndef BLACKTIE_IDL_MACRO
+#define BLACKTIE_IDL_MACRO
 
 /* Only do defines if we're compiling on Win32 */
 #ifdef WIN32
 
-#ifdef _ATMIBROKER_IDL_DLL
-#define ATMIBROKER_IDL_DLL __declspec(dllexport)
+#ifdef _BLACKTIE_IDL_DLL
+#define BLACKTIE_IDL_DLL __declspec(dllexport)
 #else
-#define ATMIBROKER_IDL_DLL __declspec(dllimport)
+#define BLACKTIE_IDL_DLL __declspec(dllimport)
 #endif
 
 #else /* Non-win32 platform. Macros need to pre-process away */
 
 /* examples */
 
-#define ATMIBROKER_IDL_DLL
+#define BLACKTIE_IDL_DLL
 
 #endif
 

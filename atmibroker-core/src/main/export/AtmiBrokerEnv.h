@@ -26,7 +26,7 @@
 
 #include "AtmiBrokerEnvXml.h"
 
-class ATMIBROKER_CORE_DLL AtmiBrokerEnv {
+class BLACKTIE_CORE_DLL AtmiBrokerEnv {
 
 public:
 

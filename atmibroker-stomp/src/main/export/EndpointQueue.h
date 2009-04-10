@@ -35,7 +35,7 @@ extern "C"
 #include "log4cxx/logger.h"
 #include "Destination.h"
 
-class ATMIBROKER_STOMP_DLL EndpointQueue: public virtual Destination {
+class BLACKTIE_STOMP_DLL EndpointQueue: public virtual Destination {
 public:
 	EndpointQueue(stomp_connection* connection, apr_pool_t* pool, char* serviceName);
 	EndpointQueue(stomp_connection* connection, apr_pool_t* pool, char* serviceName, int id);

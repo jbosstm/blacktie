@@ -21,8 +21,8 @@
 //
 
 
-#ifndef ATMIBROKER_SERVERSERVERIMPL_H_
-#define ATMIBROKER_SERVERSERVERIMPL_H_
+#ifndef BLACKTIE_SERVERSERVERIMPL_H_
+#define BLACKTIE_SERVERSERVERIMPL_H_
 
 #include <iostream>
 #include <vector>

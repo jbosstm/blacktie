@@ -45,7 +45,7 @@
 
 class AtmiBrokerXA_ResourceManagerFactoryFactoryImpl;
 
-class ATMIBROKER_TX_DLL AtmiBrokerXA_ResourceManagerFactoryImpl: public virtual PortableServer::ServantBase, public virtual POA_AtmiBrokerXA::ResourceManagerFactory {
+class BLACKTIE_TX_DLL AtmiBrokerXA_ResourceManagerFactoryImpl: public virtual PortableServer::ServantBase, public virtual POA_AtmiBrokerXA::ResourceManagerFactory {
 public:
 	AtmiBrokerXA_ResourceManagerFactoryImpl(PortableServer::POA_ptr);
 

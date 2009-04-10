@@ -10,6 +10,6 @@
 
 #include "atmiBrokerCoreMacro.h"
 
-extern ATMIBROKER_CORE_DLL void* lookup_symbol(const char *lib, const char *symbol);
+extern BLACKTIE_CORE_DLL void* lookup_symbol(const char *lib, const char *symbol);
 
 #endif /* SYMBOLLOADER_H_ */

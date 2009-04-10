@@ -30,7 +30,7 @@
 #include <PortableServerExt_c.hh>
 #endif
 
-class ATMIBROKER_CORE_DLL AtmiBrokerPoaFac {
+class BLACKTIE_CORE_DLL AtmiBrokerPoaFac {
 public:
 
 	AtmiBrokerPoaFac();

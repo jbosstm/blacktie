@@ -30,7 +30,7 @@ typedef struct {
 	char * value;
 } envVar_t;
 
-class ATMIBROKER_CORE_DLL AtmiBrokerEnvXml {
+class BLACKTIE_CORE_DLL AtmiBrokerEnvXml {
 public:
 
 	AtmiBrokerEnvXml();
@@ -41,7 +41,7 @@ public:
 
 };
 
-typedef struct ATMIBROKER_CORE_DLL xarm_config {
+typedef struct BLACKTIE_CORE_DLL xarm_config {
 	bool threadModel;
 	bool automaticAssociation;
 	bool dynamicRegistrationOptimization;
@@ -55,12 +55,12 @@ typedef struct ATMIBROKER_CORE_DLL xarm_config {
 	struct xarm_config * head;
 }xarm_config_t;
 
-extern ATMIBROKER_CORE_DLL xarm_config_t * xarmp;
-extern ATMIBROKER_CORE_DLL char domain[30];
-extern ATMIBROKER_CORE_DLL char * loggingServiceId;
-extern ATMIBROKER_CORE_DLL char * notifyServiceId;
-extern ATMIBROKER_CORE_DLL char * namingServiceId;
-extern ATMIBROKER_CORE_DLL char * queue_name;
-extern ATMIBROKER_CORE_DLL char* transFactoryId;
+extern BLACKTIE_CORE_DLL xarm_config_t * xarmp;
+extern BLACKTIE_CORE_DLL char domain[30];
+extern BLACKTIE_CORE_DLL char * loggingServiceId;
+extern BLACKTIE_CORE_DLL char * notifyServiceId;
+extern BLACKTIE_CORE_DLL char * namingServiceId;
+extern BLACKTIE_CORE_DLL char * queue_name;
+extern BLACKTIE_CORE_DLL char* transFactoryId;
 
 #endif

@@ -32,7 +32,7 @@ extern log4cxx::LoggerPtr xaResourceLogger;
 
 class XAResourceManager;
 
-class ATMIBROKER_TX_DLL XAResourceAdaptorImpl :
+class BLACKTIE_TX_DLL XAResourceAdaptorImpl :
 	public virtual POA_CosTransactions::Resource
 {
 public:

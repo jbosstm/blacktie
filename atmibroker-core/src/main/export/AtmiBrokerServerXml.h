@@ -35,7 +35,7 @@ struct ServerMetadata {
 	std::vector<std::string> serviceNames;
 };
 
-class ATMIBROKER_CORE_DLL AtmiBrokerServerXml {
+class BLACKTIE_CORE_DLL AtmiBrokerServerXml {
 public:
 
 	AtmiBrokerServerXml();
@@ -45,9 +45,9 @@ public:
 	bool parseXmlDescriptor(ServerMetadata*, const char * aDescriptorFileName);
 };
 
-extern ATMIBROKER_CORE_DLL char server[30];
-extern ATMIBROKER_CORE_DLL int serverMaxChannels;
-extern ATMIBROKER_CORE_DLL int serverMaxSuppliers;
-extern ATMIBROKER_CORE_DLL int serverMaxConsumers;
+extern BLACKTIE_CORE_DLL char server[30];
+extern BLACKTIE_CORE_DLL int serverMaxChannels;
+extern BLACKTIE_CORE_DLL int serverMaxSuppliers;
+extern BLACKTIE_CORE_DLL int serverMaxConsumers;
 
 #endif

@@ -23,7 +23,7 @@
 
 #include <tao/ORB.h>
 #include <ace/Task.h>
-class ATMIBROKER_CORE_DLL Worker: public ACE_Task_Base {
+class BLACKTIE_CORE_DLL Worker: public ACE_Task_Base {
 public:
 	Worker(CORBA::ORB_ptr orb);
 	int svc();

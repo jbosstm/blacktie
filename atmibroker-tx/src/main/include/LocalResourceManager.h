@@ -41,7 +41,7 @@ namespace XA
 
 #include <string>
 
-struct ATMIBROKER_TX_DLL _resourceManagerDataStruct {
+struct BLACKTIE_TX_DLL _resourceManagerDataStruct {
 	std::string resource_manager_name;
 	std::string open_string;
 	std::string close_string;
@@ -60,7 +60,7 @@ typedef _resourceManagerDataStruct ResourceManagerDataStruct;
  this class inherits from the stubs, not the skeletons
  because the XA::ResourceManager interface is a "locality contrained" interface
  */
-class ATMIBROKER_TX_DLL LocalResourceManager: public virtual XA::ResourceManager {
+class BLACKTIE_TX_DLL LocalResourceManager: public virtual XA::ResourceManager {
 public:
 	LocalResourceManager(ResourceManagerDataStruct& aResourceManagerDataStruct);
 

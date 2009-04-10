@@ -38,7 +38,7 @@ const CORBA::ULong tx_context_id = 0xabcd;
 /**
  * Base class for orb request intercpetors for implicit transaction propagation
  */
-class ATMIBROKER_TX_DLL TxInterceptor
+class BLACKTIE_TX_DLL TxInterceptor
 {
 public:
         TxInterceptor(const char *, IOP::CodecFactory_var, const char*);

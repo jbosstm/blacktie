@@ -47,7 +47,7 @@ typedef _connectorDataStruct ConnectorDataStruct;
  this class inherits from the stubs, not the skeletons
  because the XA::Connector interface is a "locality contrained" interface
  */
-class ATMIBROKER_TX_DLL ConnectorImpl: public virtual XA::Connector {
+class BLACKTIE_TX_DLL ConnectorImpl: public virtual XA::Connector {
 public:
 	ConnectorImpl();
 

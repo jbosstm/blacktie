@@ -33,7 +33,7 @@ typedef std::map<long, XAResourceManager *> ResourceManagerMap;
  *
  * XAResourceAdaptorImpl
  */
-class ATMIBROKER_TX_DLL XAResourceManagerFactory
+class BLACKTIE_TX_DLL XAResourceManagerFactory
 {
 public:
 	XAResourceManagerFactory();

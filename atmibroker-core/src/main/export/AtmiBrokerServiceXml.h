@@ -28,7 +28,7 @@ struct svcinfo_t {
 };
 typedef struct svcinfo_t SVCINFO;
 
-class ATMIBROKER_CORE_DLL AtmiBrokerServiceXml {
+class BLACKTIE_CORE_DLL AtmiBrokerServiceXml {
 public:
 
 	AtmiBrokerServiceXml();

@@ -27,7 +27,7 @@
 
 class ConnectionImpl;
 
-class ATMIBROKER_STOMP_DLL SessionImpl: public virtual Session {
+class BLACKTIE_STOMP_DLL SessionImpl: public virtual Session {
 public:
 	SessionImpl(char* connectionName, stomp_connection* connection, apr_pool_t* pool, int id, const char* temporaryQueueName);
 

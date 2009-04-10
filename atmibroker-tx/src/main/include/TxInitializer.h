@@ -23,9 +23,9 @@
 #include "tao/PortableInterceptorC.h"
 #include "tao/PI/PI.h"
 
-extern ATMIBROKER_TX_DLL void register_tx_interceptors(const char *);
+extern BLACKTIE_TX_DLL void register_tx_interceptors(const char *);
 
-class ATMIBROKER_TX_DLL TxInitializer : public virtual PortableInterceptor::ORBInitializer
+class BLACKTIE_TX_DLL TxInitializer : public virtual PortableInterceptor::ORBInitializer
 {
 public:
 	static TxInitializer* get_instance();

@@ -89,15 +89,15 @@ typedef struct tx_info_t TXINFO;
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern ATMIBROKER_TX_DLL int tx_begin(void);
-extern ATMIBROKER_TX_DLL int tx_close(void);
-extern ATMIBROKER_TX_DLL int tx_commit(void);
-extern ATMIBROKER_TX_DLL int tx_open(void);
-extern ATMIBROKER_TX_DLL int tx_rollback(void);
-extern ATMIBROKER_TX_DLL int tx_set_commit_return(COMMIT_RETURN);
-extern ATMIBROKER_TX_DLL int tx_set_transaction_control(TRANSACTION_CONTROL control);
-extern ATMIBROKER_TX_DLL int tx_set_transaction_timeout(TRANSACTION_TIMEOUT timeout);
-extern ATMIBROKER_TX_DLL int tx_info(TXINFO *);
+extern BLACKTIE_TX_DLL int tx_begin(void);
+extern BLACKTIE_TX_DLL int tx_close(void);
+extern BLACKTIE_TX_DLL int tx_commit(void);
+extern BLACKTIE_TX_DLL int tx_open(void);
+extern BLACKTIE_TX_DLL int tx_rollback(void);
+extern BLACKTIE_TX_DLL int tx_set_commit_return(COMMIT_RETURN);
+extern BLACKTIE_TX_DLL int tx_set_transaction_control(TRANSACTION_CONTROL control);
+extern BLACKTIE_TX_DLL int tx_set_transaction_timeout(TRANSACTION_TIMEOUT timeout);
+extern BLACKTIE_TX_DLL int tx_info(TXINFO *);
 #ifdef __cplusplus
 }
 #endif

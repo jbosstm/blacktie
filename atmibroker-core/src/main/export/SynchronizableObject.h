@@ -24,7 +24,7 @@
 #include <ace/Thread.h>
 #include <ace/Synch.h>
 
-class ATMIBROKER_CORE_DLL SynchronizableObject {
+class BLACKTIE_CORE_DLL SynchronizableObject {
 
 public:
 	SynchronizableObject();

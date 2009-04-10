@@ -28,7 +28,7 @@ struct _client_server_info {
 };
 typedef _client_server_info ClientServerInfo;
 
-class ATMIBROKER_CORE_DLL AtmiBrokerClientXml {
+class BLACKTIE_CORE_DLL AtmiBrokerClientXml {
 public:
 	AtmiBrokerClientXml();
 
@@ -37,8 +37,8 @@ public:
 	bool parseXmlDescriptor(std::vector<ClientServerInfo*>*, const char * aDescriptorFileName);
 };
 
-extern ATMIBROKER_CORE_DLL int clientMaxChannels;
-extern ATMIBROKER_CORE_DLL int clientMaxSuppliers;
-extern ATMIBROKER_CORE_DLL int clientMaxConsumers;
+extern BLACKTIE_CORE_DLL int clientMaxChannels;
+extern BLACKTIE_CORE_DLL int clientMaxSuppliers;
+extern BLACKTIE_CORE_DLL int clientMaxConsumers;
 
 #endif

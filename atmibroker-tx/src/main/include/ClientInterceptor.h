@@ -29,7 +29,7 @@
 /**
  * Client side orb request intercpetor for implicit transaction propagation
  */
-class ATMIBROKER_TX_DLL ClientInterceptor:
+class BLACKTIE_TX_DLL ClientInterceptor:
         public virtual PortableInterceptor::ClientRequestInterceptor,
         public virtual ::CORBA::LocalObject,
         public virtual TxInterceptor

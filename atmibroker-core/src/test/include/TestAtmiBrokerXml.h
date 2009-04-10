@@ -15,8 +15,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef TEST_ATMIBROKER_XML_H
-#define TEST_ATMIBROKER_XML_H
+#ifndef TEST_BLACKTIE_XML_H
+#define TEST_BLACKTIE_XML_H
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>

@@ -39,7 +39,7 @@
  this class inherits from the stubs, not the skeletons
  because the XA::CurrentConnection interface is a "locality contrained" interface
  */
-class ATMIBROKER_TX_DLL CurrentConnectionImpl: public virtual XA::CurrentConnection {
+class BLACKTIE_TX_DLL CurrentConnectionImpl: public virtual XA::CurrentConnection {
 public:
 	CurrentConnectionImpl(LocalResourceManager& localResourceManager);
 

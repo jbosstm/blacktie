@@ -34,7 +34,7 @@
 
 #include <deque>
 
-class ATMIBROKER_TX_DLL ResourceManagerCache {
+class BLACKTIE_TX_DLL ResourceManagerCache {
 public:
 	ResourceManagerCache();
 

@@ -28,7 +28,7 @@
 #include "Worker.h"
 #include "AtmiBrokerPoaFac.h"
 
-struct ATMIBROKER_CORE_DLL corba_connection_t {
+struct BLACKTIE_CORE_DLL corba_connection_t {
 	CORBA::ORB_ptr orbRef;
 	PortableServer::POA_var root_poa;
 	PortableServer::POAManager_var root_poa_manager;
@@ -38,6 +38,6 @@ struct ATMIBROKER_CORE_DLL corba_connection_t {
 	Worker* worker;
 	AtmiBrokerPoaFac* poaFactory;
 };
-typedef struct ATMIBROKER_CORE_DLL corba_connection_t CORBA_CONNECTION;
+typedef struct BLACKTIE_CORE_DLL corba_connection_t CORBA_CONNECTION;
 
 #endif
