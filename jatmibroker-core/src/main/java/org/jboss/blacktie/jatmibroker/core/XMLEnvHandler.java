@@ -19,6 +19,8 @@ package org.jboss.blacktie.jatmibroker.core;
 
 import java.text.NumberFormat;
 import java.util.Properties;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.Attributes;
@@ -28,13 +30,23 @@ import org.xml.sax.SAXException;
  * XMLEnvHandler extends DefaultHandler to Environment Info
  */
 public class XMLEnvHandler extends DefaultHandler {
+	private static final Logger log = LogManager.getLogger(XMLEnvHandler.class);
+
 	private final String DOMAIN = "DOMAIN";
+	private final String TRANS_FACTORY_ID = "TRANS_FACTORY_ID";
 	private final String ENV_VARIABLES = "ENV_VARIABLES";
 	private final String ENV_VARIABLE  = "ENV_VARIABLE";
 	private final String NAME = "NAME";
 	private final String VALUE = "VALUE";
 
 	private String domainElement;
+	private String transIDElement;
+	private String varsElement;
+	private String varElement;
+	private String nameElement;
+	private String valueElement;
+	private int    orbargs;
+	private Boolean isORBOPT;
 	private Properties prop;
 
 	public XMLEnvHandler() {
@@ -54,18 +66,55 @@ public class XMLEnvHandler extends DefaultHandler {
 
 		if(DOMAIN.equals(domainElement)) {
 			prop.setProperty("blacktie.domain.name", strValue);
+			log.debug("blacktie.domain.name = " + strValue);
+		} else if (TRANS_FACTORY_ID.equals(transIDElement)) {
+			prop.setProperty("blacktie.trans.factoryid", strValue);
+			log.debug("blacktie.trans.factoryid = " + strValue);
+		} else if (NAME.equals(nameElement) && strValue.equals("ORBOPT")) {
+			isORBOPT = true;
+		} else if(VALUE.equals(valueElement) && isORBOPT) {
+			String[] argv;
+			argv = strValue.split(" ");
+			orbargs = argv.length;
+
+			for(int i = 1; i <= orbargs; i++) {
+				String arg = "blacktie.orb.arg." + i;
+				prop.setProperty(arg, argv[i-1]);
+				log.debug(arg + " is " + argv[i-1]);
+			}
+			isORBOPT = false;
 		}
 	}
 
 	public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
 		if(DOMAIN.equals(localName)) {
 			domainElement = DOMAIN;
+		} else if (TRANS_FACTORY_ID.equals(localName)) {
+			transIDElement = TRANS_FACTORY_ID;
+		} else if (ENV_VARIABLES.equals(localName)) {
+			varsElement = ENV_VARIABLES;
+			orbargs = 0;
+		} else if(NAME.equals(localName)){
+			nameElement = NAME;
+			isORBOPT = false;
+		} else if(VALUE.equals(localName)) {
+			valueElement = VALUE;
 		}
 	}
 
   	public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
 		if(DOMAIN.equals(localName)) {
 			domainElement = "";
+		} else if (TRANS_FACTORY_ID.equals(localName)) {
+			transIDElement = "";
+		} else if (ENV_VARIABLES.equals(localName)) {
+			varsElement = "";
+			log.debug("blacktie.orb.args is " + orbargs);
+			prop.setProperty("blacktie.orb.args", Integer.toString(orbargs));
+		} else if(NAME.equals(localName)){
+			nameElement = "";
+		} else if(VALUE.equals(localName)) {
+			valueElement = "";
 		}
 	}
 }

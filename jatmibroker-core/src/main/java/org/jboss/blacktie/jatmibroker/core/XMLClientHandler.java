@@ -27,50 +27,47 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
- * XMLServerHandler extends DefaultHandler to Server Info
+ * XMLClientHandler extends DefaultHandler to Client Info
  */
-public class XMLServerHandler extends DefaultHandler {
-	private static final Logger log = LogManager.getLogger(XMLServerHandler.class);
+public class XMLClientHandler extends DefaultHandler {
+	private static final Logger log = LogManager.getLogger(XMLClientHandler.class);
 
-	private final String SERVER = "SERVER";
-	private final String SERVER_DESCRIPTION = "SERVER_DESCRIPTION";
-	private final String NAME = "NAME";
+	private final String SERVER_NAME = "SERVER_NAME";
 	private final String MAX_REPLICAS = "MAX_REPLICAS";
 	private final String MAX_CHANNELS = "MAX_CHANNELS";
 	private final String MAX_SUPPLIERS = "MAX_SUPPLIERS";
 	private final String MAX_CONSUMERS= "MAX_CONSUMERS";
-	private final String ORB_TYPE = "ORB_TYPE";
 	private final String SERVICE_NAME = "SERVICE_NAME";
 
-	private String nameElement;
+	private String serverElement;
 	private Properties prop;
 
-	XMLServerHandler () {
+	XMLClientHandler () {
 		prop = new Properties();
 	}
 
-	XMLServerHandler (Properties prop) {
+	XMLClientHandler (Properties prop) {
 		this.prop = prop;
 	}
 
   	public void characters(char[] ch, int start, int length) throws SAXException {
 		String strValue = new String(ch, start, length);
 
-		if(NAME.equals(nameElement)) {
+		if(SERVER_NAME.equals(serverElement)) {
 			prop.setProperty("blacktie.server.name", strValue);
 			log.debug("blacktie.server.name = " + strValue);
 		}
 	}
 
 	public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-		if(NAME.equals(localName)) {
-			nameElement = NAME;
+		if(SERVER_NAME.equals(localName)) {
+			serverElement = SERVER_NAME;
 		}
 	}
 
   	public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-		if(NAME.equals(localName)) {
-			nameElement = "";
+		if(SERVER_NAME.equals(localName)) {
+			serverElement = "";
 		}
 	}
 }
