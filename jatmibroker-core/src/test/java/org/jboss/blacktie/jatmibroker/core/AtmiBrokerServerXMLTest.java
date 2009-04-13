@@ -52,4 +52,23 @@ public class AtmiBrokerServerXMLTest extends TestCase {
 		assertTrue(arg1.equals(prop.getProperty("blacktie.orb.arg.1")));
 		assertTrue(arg2.equals(prop.getProperty("blacktie.orb.arg.2")));
 	}
+
+	public void testEnv() throws Exception {
+		AtmiBrokerServerXML serverDesc = new AtmiBrokerServerXML();
+		Properties prop = serverDesc.getProperties();
+
+		String domain = "fooapp";
+		String server = "foo";
+		String transid = "TransactionManagerService.OTS";
+		String args   = "2";
+		String arg1   = "-ORBInitRef";
+		String arg2   = "NameService=corbaloc::localhost:3528/NameService";
+
+		assertTrue(domain.equals(prop.getProperty("blacktie.domain.name")));
+		assertTrue(server.equals(prop.getProperty("blacktie.server.name")));
+		assertTrue(transid.equals(prop.getProperty("blacktie.trans.factoryid")));
+		assertTrue(args.equals(prop.getProperty("blacktie.orb.args")));
+		assertTrue(arg1.equals(prop.getProperty("blacktie.orb.arg.1")));
+		assertTrue(arg2.equals(prop.getProperty("blacktie.orb.arg.2")));
+	}
 }
