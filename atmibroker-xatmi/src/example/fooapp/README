@@ -21,16 +21,16 @@ In order to run the example you need to make sure that you have set the environm
 appropriately. You will need to make sure that you edit the variables with values 
 starting with REPLACE_WITH_: 
 On Linux you need to edit:
-	$ATMIBROKER_BIN_DIR/setenv.sh
+	$BLACKTIE_BIN_DIR/setenv.sh
 On Windows:
-	%ATMIBROKER_BIN_DIR%\setenv.bat
+	%BLACKTIE_BIN_DIR%\setenv.bat
 Then, execute the script setenv
 
 2. CREATE THE SERVER
 On Linux:
-	$ATMIBROKER_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes=BarService.c
+	$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes=BarService.c
 On Windows:
-	%ATMIBROKER_BIN_DIR%\bin\generate_server.bat -Dservice.names=BAR -Dserver.includes=BarService.c
+	%BLACKTIE_BIN_DIR%\bin\generate_server.bat -Dservice.names=BAR -Dserver.includes=BarService.c
 NOTE: If you get the following error you have not installed ant-contrib into your ANT distribution:
 	BUILD FAILED
 	/home/tom/blacktie/dist/blacktie-1.0-M4-SNAPSHOT/bin/generate-executables.xml:160: Problem: failed to create task or type propertycopy
@@ -41,9 +41,9 @@ NOTE: If you get the following error you have not installed cpp-tasks into your 
 
 3. CREATE THE CLIENT
 On Linux:
-	$ATMIBROKER_BIN_DIR/bin/generate_client.sh -Dclient.includes=client.c
+	$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes=client.c
 On Windows:
-	%ATMIBROKER_BIN_DIR%\bin\generate_client.bat -Dclient.includes=client.c
+	%BLACKTIE_BIN_DIR%\bin\generate_client.bat -Dclient.includes=client.c
 
 4. RUN THE APPLICATIONS
 Make sure that the naming and transaction services are running, if not, run the JBoss server:
@@ -51,11 +51,11 @@ Make sure that the naming and transaction services are running, if not, run the 
 4.1 RUN THE SERVER
 ./server -c <win32|linux>
 4.2 RUN THE CLIENT
-You will need to set the environment variable ATMIBROKER_CONFIGURATION_DIR to either win32 or linux prior to running the client
+You will need to set the environment variable BLACKTIE_CONFIGURATION_DIR to either win32 or linux prior to running the client
 ./client
 NOTE: If you get the following error you have not sourced setenv.sh|bat
 ./client: error while loading shared libraries: libTAO_CosNaming.so.1.6.7: cannot open shared object file: No such file or directoryI
-NOTE: If you get the following error it means you did not set ATMIBROKER_CONFIGURATION_DIR to the correct folder:
+NOTE: If you get the following error it means you did not set BLACKTIE_CONFIGURATION_DIR to the correct folder:
 [tom@localhost fooapp]$ ./client 
 2009-04-06 16:54:20,732 [0x7fe828927750] ERROR XsdValidator              - Environment.xml does not exist
 2009-04-06 16:54:20,733 [0x7fe828927750] ERROR XsdValidator              - checkFile Environment.xml: fail
@@ -65,4 +65,4 @@ Aborted
 
 6. JAB CLIENTS
 If you would like to use a JAB Client to talk to the server, please see 
-<ATMIBROKER_BIN_DIR>/examples/jab/fooapp
+<BLACKTIE_BIN_DIR>/examples/jab/fooapp

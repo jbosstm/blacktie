@@ -17,6 +17,7 @@
  */
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
 import org.jboss.blacktie.jatmibroker.jab.JABRemoteService;
 import org.jboss.blacktie.jatmibroker.jab.JABSession;
 import org.jboss.blacktie.jatmibroker.jab.JABSessionAttributes;
@@ -26,19 +27,12 @@ public class JABClient {
 	private static final Logger log = LogManager.getLogger(JABClient.class);
 
 	public static void main(String[] args) throws Exception {
-		if (args.length != 6) {
-			log.error("fooapp foo TransactionManagerService.OTS -ORBInitRef NameService=corbaloc::localhost:3528/NameService message");
+		if (args.length != 1) {
+			log.error("java -Dblacktie.config.dir=[linux|win32] JABClient message");
 			return;
 		}
-		String domainName = args[0];
-		String serverName = args[1];
-		String transactionManagerService = args[2];
-		String[] orbArgs = new String[3];
-		orbArgs[0] = serverName;
-		orbArgs[1] = args[3];
-		orbArgs[2] = args[4];
-		String message = args[5];
-		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(domainName, serverName, transactionManagerService, orbArgs);
+		String message = args[0];
+		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes();
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
 		JABRemoteService aJabService = new JABRemoteService(aJabSession, "BAR");

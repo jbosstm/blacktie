@@ -26,19 +26,19 @@ public class AtmiBrokerServerXML {
 	private static final Logger log = LogManager.getLogger(AtmiBrokerServerXML.class);
 	private Properties prop;
 
-	AtmiBrokerServerXML () {
+	public AtmiBrokerServerXML () {
 		prop = new Properties();
 	}
 
-	AtmiBrokerServerXML (Properties prop) {
+	public AtmiBrokerServerXML (Properties prop) {
 		this.prop = prop;
 	}
 
-	Properties getProperties() throws Exception {
+	public Properties getProperties() throws Exception {
 		return getProperties(null);
 	}
 
-	Properties getProperties(String configDir) throws Exception {
+	public Properties getProperties(String configDir) throws Exception {
 		String serverXML;
 		String envXML;
 

@@ -26,29 +26,35 @@ public class AtmiBrokerClientXML {
 	private static final Logger log = LogManager.getLogger(AtmiBrokerClientXML.class);
 	private Properties prop;
 
-	AtmiBrokerClientXML () {
+	public AtmiBrokerClientXML () {
 		prop = new Properties();
 	}
 
-	AtmiBrokerClientXML (Properties prop) {
+	public AtmiBrokerClientXML (Properties prop) {
 		this.prop = prop;
 	}
 
-	Properties getProperties() throws Exception {
-		return getProperties("");
+	public Properties getProperties() throws Exception {
+		return getProperties(null);
 	}
 
-	Properties getProperties(String configDir) throws Exception {
+	public Properties getProperties(String configDir) throws Exception {
 		String clientXML;
 		String envXML;
 
-		if(!configDir.equals("")) {
+		if(configDir == null) {
+			configDir = System.getenv("BLACKTIE_CONFIGURATION_DIR");
+		}
+
+		if(configDir != null && !configDir.equals("")) {
 			clientXML = configDir + "/" + "CLIENT.xml";
 			envXML    = configDir + "/" + "Environment.xml";
 		} else {
 			clientXML = "CLIENT.xml";
 			envXML    = "Environment.xml";
 		}
+
+		log.debug("read configuration from " + configDir + " directory");
 
 		XMLClientHandler handler = new XMLClientHandler(prop);
 		XMLParser xmlclient = new XMLParser(handler, "Client.xsd");

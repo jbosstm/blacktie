@@ -22,6 +22,8 @@ import java.util.Properties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import org.jboss.blacktie.jatmibroker.core.AtmiBrokerClientXML;
+
 public class JABSessionAttributes {
 	private static final Logger log = LogManager.getLogger(JABSessionAttributes.class);
 	private String transactionManagerName;
@@ -35,6 +37,17 @@ public class JABSessionAttributes {
 		properties.put("blacktie.orb.args", String.valueOf(args.length));
 		for (int i = 1; i <= args.length; i++) {
 			properties.put("blacktie.orb.arg." + i, args[i - 1]);
+		}
+	}
+
+	public JABSessionAttributes() throws JABException {
+		AtmiBrokerClientXML client = new AtmiBrokerClientXML(properties);
+		try {
+			String configDir = System.getProperty("blacktie.config.dir");
+			client.getProperties(configDir);
+			this.transactionManagerName = (String)properties.get("blacktie.trans.factoryid");
+		} catch (Exception e) {
+			throw new JABException(e);
 		}
 	}
 

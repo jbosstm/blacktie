@@ -39,6 +39,7 @@
 					<environmentVariables>
 						<Path>${ld_library_path}</Path>
 						<LD_LIBRARY_PATH>${ld_library_path}</LD_LIBRARY_PATH>
+						<BLACKTIE_CONFIGURATION_DIR>${atmibroker.configuration.dir}</BLACKTIE_CONFIGURATION_DIR>
 						<BLACKTIE_SCHEMA_DIR>xsd</BLACKTIE_SCHEMA_DIR>
 					</environmentVariables>
 				</configuration>
@@ -102,6 +103,16 @@
 		</dependency>
 		<!-- END JACORB -->
 	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>windows</id>
+			<activation> <os> <family>windows</family> </os> </activation>
+			<properties>
+				<atmibroker.configuration.dir>win32</atmibroker.configuration.dir>
+			</properties>
+		</profile>	      
+	</profiles>
 
 	<properties>
 		<test.output.type>shared</test.output.type>
