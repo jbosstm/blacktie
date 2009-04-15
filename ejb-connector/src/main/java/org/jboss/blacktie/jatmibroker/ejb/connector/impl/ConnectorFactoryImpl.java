@@ -8,7 +8,6 @@ import java.util.Properties;
 import org.jboss.blacktie.jatmibroker.ejb.connector.Connector;
 import org.jboss.blacktie.jatmibroker.ejb.connector.ConnectorException;
 import org.jboss.blacktie.jatmibroker.ejb.connector.ConnectorFactory;
-
 import org.jboss.blacktie.jatmibroker.core.AtmiBrokerServerXML;
 
 /**
@@ -33,6 +32,7 @@ public class ConnectorFactoryImpl implements ConnectorFactory {
 		ConnectorFactoryImpl connectorFactoryImpl = connectorFactories.get(properties);
 		if (connectorFactoryImpl == null) {
 			connectorFactoryImpl = new ConnectorFactoryImpl(properties);
+			connectorFactories.put(properties, connectorFactoryImpl);
 		}
 		return connectorFactoryImpl;
 	}
@@ -62,11 +62,15 @@ public class ConnectorFactoryImpl implements ConnectorFactory {
 			throw new ConnectorException(-1, "Could not load properties", e);
 		}
 
+		/*
 		ConnectorFactoryImpl connectorFactoryImpl = connectorFactories.get(properties);
 		if (connectorFactoryImpl == null) {
 			connectorFactoryImpl = new ConnectorFactoryImpl(properties);
 		}
+
 		return connectorFactoryImpl;
+		*/
+		return getConnectorFactory(properties);
 	}
 
 	/**
