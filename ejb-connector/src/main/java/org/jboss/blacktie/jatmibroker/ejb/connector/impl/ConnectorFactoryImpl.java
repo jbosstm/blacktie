@@ -9,6 +9,8 @@ import org.jboss.blacktie.jatmibroker.ejb.connector.Connector;
 import org.jboss.blacktie.jatmibroker.ejb.connector.ConnectorException;
 import org.jboss.blacktie.jatmibroker.ejb.connector.ConnectorFactory;
 
+import org.jboss.blacktie.jatmibroker.core.AtmiBrokerServerXML;
+
 /**
  * The connector factory allows us to create connections to the remote servers.
  */
@@ -43,11 +45,21 @@ public class ConnectorFactoryImpl implements ConnectorFactory {
 	 */
 	public static synchronized ConnectorFactory getConnectorFactory() throws ConnectorException {
 		Properties properties = new Properties();
+		/*
 		try {
 			InputStream resourceAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("blacktie.properties");
 			properties.load(resourceAsStream);
 		} catch (Throwable t) {
 			throw new ConnectorException(-1, "Could not load properties", t);
+		}
+		*/
+
+		try {
+			AtmiBrokerServerXML server = new AtmiBrokerServerXML(properties);
+			String configDir = System.getProperty("blacktie.config.dir");
+			server.getProperties(configDir);
+		} catch (Exception e) {
+			throw new ConnectorException(-1, "Could not load properties", e);
 		}
 
 		ConnectorFactoryImpl connectorFactoryImpl = connectorFactories.get(properties);
