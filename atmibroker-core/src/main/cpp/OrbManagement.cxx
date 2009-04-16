@@ -66,9 +66,16 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 		i++;
 	}
 
+	int n = i;
+	//when ORB_init return, i is 0
 	connection->orbRef = CORBA::ORB_init(i, vals, connectionName);
 
+	int j;
+	for(j = 0; j < n; j++) {
+		free(vals[j]);
+	}
 	free(vals);
+	delete[] cstr;
 
 	LOG4CXX_DEBUG(loggerOrbManagement,
 			(char*) "getNamingServiceAndContext getting Naming Service Ext ");
@@ -205,6 +212,7 @@ void shutdownBindings(CORBA_CONNECTION* connection) {
 					//		delete poa;
 					connection->root_poa = NULL;
 				}
+				delete connection;
 				LOG4CXX_DEBUG(loggerOrbManagement, (char*) "Closed Bindings");
 			}
 		}

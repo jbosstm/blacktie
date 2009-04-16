@@ -94,7 +94,7 @@ static void XMLCALL startElement(void *userData, const char *name, const char **
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "processing Service Name for server ");
 		processingServiceName = true;
 	}
-	strcpy(element, name);
+	ACE_OS::strncpy(element, name, 50);
 	strcpy(value, "");
 
 	depth += 1;
@@ -103,13 +103,13 @@ static void XMLCALL startElement(void *userData, const char *name, const char **
 static void XMLCALL endElement(void *userData, const char *name) {
 	ServerMetadata* aServerStructPtr = (ServerMetadata*) userData;
 
-	strcpy(last_element, name);
-	strcpy(last_value, value);
+	ACE_OS::strncpy(last_element, name, 50);
+	ACE_OS::strncpy(last_value, value, 50);
 
 	if (strcmp(last_element, "NAME") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "storing NAME %s", last_value);
 		processingName = false;
-		strcpy(server, last_value);
+		ACE_OS::strncpy(server, last_value, 30);
 	} else if (strcmp(last_element, "MAX_CHANNELS") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "storing MaxChannels %s", last_value);
 		processingMaxChannels = false;
@@ -128,7 +128,7 @@ static void XMLCALL endElement(void *userData, const char *name) {
 	} else if (strcmp(last_element, "ORB_TYPE") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "storing OrbType %s", last_value);
 		processingOrbType = false;
-		aServerStructPtr->orbType = strdup(last_value);
+		aServerStructPtr->orbType = last_value;
 	} else if (strcmp(last_element, "SERVICE_NAMES") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "storing ServiceNames ");
 		processingServiceNames = false;
@@ -137,7 +137,7 @@ static void XMLCALL endElement(void *userData, const char *name) {
 		processingServiceNames = false;
 		serviceNameCount++;
 		//	aServerStructPtr->serviceNames.length(serviceNameCount);
-		aServerStructPtr->serviceNames.push_back(strdup(last_value));
+		aServerStructPtr->serviceNames.push_back(last_value);
 	}
 	depth -= 1;
 }
