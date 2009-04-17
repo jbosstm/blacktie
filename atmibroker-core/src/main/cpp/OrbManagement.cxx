@@ -212,7 +212,6 @@ void shutdownBindings(CORBA_CONNECTION* connection) {
 					//		delete poa;
 					connection->root_poa = NULL;
 				}
-				delete connection;
 				LOG4CXX_DEBUG(loggerOrbManagement, (char*) "Closed Bindings");
 			}
 		}
