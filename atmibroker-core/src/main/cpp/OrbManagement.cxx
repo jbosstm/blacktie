@@ -180,6 +180,11 @@ void shutdownBindings(CORBA_CONNECTION* connection) {
 					connection->worker = NULL;
 				}
 
+				if (connection->poaFactory != NULL) {
+					delete connection->poaFactory;
+					connection->poaFactory = NULL;
+				}
+
 				try {
 					LOG4CXX_DEBUG(loggerOrbManagement,
 							(char*) "shutdownBindings destroying ORB ");

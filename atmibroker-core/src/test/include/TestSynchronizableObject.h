@@ -27,6 +27,7 @@
 class Waiter: public ACE_Task_Base {
 public:
 	Waiter();
+	~Waiter();
 	int svc() ;
 	SynchronizableObject* getLock();
 	SynchronizableObject* getLock2();

@@ -66,5 +66,7 @@ void TestMultiOrb::test_manyorb() {
 		shutdownBindings(clientConnection);
 		delete clientConnection;
 		clientConnection = NULL;
+
+		delete serverPoaFactory;
 	}
 }

@@ -29,6 +29,11 @@ Waiter::Waiter() {
 	notified = false;
 }
 
+Waiter::~Waiter() {
+	delete object;
+	delete object2;
+}
+
 SynchronizableObject* Waiter::getLock() {
 	return object;
 }
