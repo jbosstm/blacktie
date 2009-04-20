@@ -22,6 +22,7 @@
 #include "AtmiBrokerClientXml.h"
 #include "AtmiBrokerServiceXml.h"
 #include "AtmiBrokerEnvXml.h"
+#include "AtmiBrokerEnv.h"
 #include "ace/OS_NS_stdlib.h"
 
 void TestAtmiBrokerXml::test_server() {
@@ -60,7 +61,11 @@ void TestAtmiBrokerXml::test_service() {
 }
 
 void TestAtmiBrokerXml::test_env() {
-	AtmiBrokerEnvXml xml;
-	std::vector<envVar_t> aEnvironmentStructPtr;
-	CPPUNIT_ASSERT(xml.parseXmlDescriptor(&aEnvironmentStructPtr, "Environment.xml"));
+	char* value;
+
+	value = AtmiBrokerEnv::get_instance()->getenv("ORBOPT");
+	CPPUNIT_ASSERT(strcmp(value, "-ORBInitRef NameService=corbaloc::localhost:3528/NameService") == 0);
+	CPPUNIT_ASSERT(strcmp(domain, "fooapp") == 0);
+	CPPUNIT_ASSERT(xarmp != 0);
+	AtmiBrokerEnv::discard_instance();
 }

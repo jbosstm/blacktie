@@ -33,6 +33,8 @@ extern "C" {
 }
 #include "AtmiBrokerEnv.h"
 
+#define MAXLOGSIZE 2048
+
 log4cxx::LoggerPtr loggerAtmiBrokerLogc(log4cxx::Logger::getLogger(
 		"AtmiBrokerLogc"));
 
@@ -41,10 +43,10 @@ bool loggerInitialized;
 extern "C"BLACKTIE_CORE_DLL
 void userlogc(const char * format, ...) {
 	if (loggerAtmiBrokerLogc->isEnabledFor(log4cxx::Level::getInfo())) {
-		char str[2048];
+		char str[MAXLOGSIZE];
 		va_list args;
 		va_start(args, format);
-		vsprintf(str, format, args);
+		vsnprintf(str, MAXLOGSIZE, format, args);
 		va_end(args);
 		LOG4CXX_LOGLS(loggerAtmiBrokerLogc, log4cxx::Level::getInfo(), str);
 	}
@@ -67,10 +69,10 @@ extern void initializeLogger() {
 void userlog(const log4cxx::LevelPtr& level, log4cxx::LoggerPtr& logger,
 		const char * format, ...) {
 	if (logger->isEnabledFor(level)) {
-		char str[2048];
+		char str[MAXLOGSIZE];
 		va_list args;
 		va_start(args, format);
-		vsprintf(str, format, args);
+		vsnprintf(str, MAXLOGSIZE, format, args);
 		va_end(args);
 		LOG4CXX_LOGLS(logger, level, str);
 	}

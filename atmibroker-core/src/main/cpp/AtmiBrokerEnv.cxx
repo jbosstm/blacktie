@@ -97,6 +97,10 @@ AtmiBrokerEnv::~AtmiBrokerEnv() {
 		free(ENVIRONMENT_DIR);
 	}
 	envVariableInfoSeq.clear();
+
+	free(namingServiceId);
+	free(transFactoryId);
+
 	readEnvironment = false;
 }
 

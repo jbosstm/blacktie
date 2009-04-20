@@ -200,7 +200,7 @@ bool AtmiBrokerServerXml::parseXmlDescriptor(ServerMetadata* aServerStructPtr,
 			(char*) "loadfile: file %s is %d long", aDescriptorFileName,
 			s.st_size);
 
-	char *buf = (char *) malloc(sizeof(char) * s.st_size);
+	char *buf = (char *) malloc(sizeof(char) * s.st_size + 1);
 	if (!buf) {
 		/* malloc failed */
 		userlog(
@@ -210,13 +210,11 @@ bool AtmiBrokerServerXml::parseXmlDescriptor(ServerMetadata* aServerStructPtr,
 				aDescriptorFileName);
 		return false;
 	}
-	memset(buf, '\0', s.st_size);
-	//memcpy(buf,'\0',s.st_size);
+	memset(buf, '\0', s.st_size + 1);
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml,
 			(char*) "loadfile: Allocated enough memory to load file %d",
 			s.st_size);
 
-	//char buf[1024];
 	XML_Parser parser = XML_ParserCreate(NULL);
 	LOG4CXX_TRACE(loggerAtmiBrokerServerXml, "created parser");
 

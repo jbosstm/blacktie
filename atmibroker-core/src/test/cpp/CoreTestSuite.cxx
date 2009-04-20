@@ -17,6 +17,7 @@
  */
 #include "TestAtmiBrokerXml.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestAtmiBrokerXml );
+/*
 #include "TestXsdValidator.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestXsdValidator );
 #include "TestSymbolLoader.h"
@@ -33,3 +34,4 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestUserlog);
 CPPUNIT_TEST_SUITE_REGISTRATION( TestMultiOrb);
 #include "TestSynchronizableObject.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestSynchronizableObject);
+*/

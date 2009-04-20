@@ -136,7 +136,7 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(SVCINFO* aServiceStructPtr,
 			(char*) "loadfile: file %s is %d long", serviceConfigFilename,
 			s.st_size);
 
-	char *buf = (char *) malloc(sizeof(char) * s.st_size);
+	char *buf = (char *) malloc(sizeof(char) * s.st_size + 1);
 	if (!buf) {
 		/* malloc failed */
 		userlog(
@@ -145,14 +145,12 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(SVCINFO* aServiceStructPtr,
 				(char*) "loadfile: Could not allocate enough memory to load file %s",
 				serviceConfigFilename);
 	}
-	for (unsigned int i = 0; i < sizeof(buf); i++)
-		*(buf + i) = '\0';
-	//memcpy(buf,'\0',s.st_size);
+
+	memset(buf, '\0', s.st_size + 1);
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml,
 			(char*) "loadfile: Allocated enough memory to load file %d",
 			s.st_size);
 
-	//char buf[1024];
 	XML_Parser parser = XML_ParserCreate(NULL);
 	int done;
 	strcpy(element, "");

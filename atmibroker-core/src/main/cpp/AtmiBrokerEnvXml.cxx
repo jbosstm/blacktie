@@ -374,9 +374,11 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(
 			(char*) "loadfile: Allocated enough memory to load file %d"
 					<< s.st_size);
 
+	/*
 	namingServiceId = strdup("");
 	notifyServiceId = strdup("");;
 	loggingServiceId = strdup("");
+	*/
 
 	XML_Parser parser = XML_ParserCreate(NULL);
 	int done;
