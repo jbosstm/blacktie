@@ -101,6 +101,32 @@ AtmiBrokerEnv::~AtmiBrokerEnv() {
 	free(namingServiceId);
 	free(transFactoryId);
 
+	if(xarmp != 0) {
+		xarm_config_t* p = xarmp;
+
+		while(p != p->head){
+			xarm_config_t* tmp;
+			tmp = p;
+			p = p->head;
+
+			free(tmp->resourceName);
+			free(tmp->openString);
+			free(tmp->closeString);
+			free(tmp->xasw);
+			free(tmp->xalib);
+			free(tmp);
+		}
+
+		free(p->resourceName);
+		free(p->openString);
+		free(p->closeString);
+		free(p->xasw);
+		free(p->xalib);
+		free(p);
+
+		xarmp = 0;
+	}
+
 	readEnvironment = false;
 }
 

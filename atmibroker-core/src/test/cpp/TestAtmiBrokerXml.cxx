@@ -51,6 +51,18 @@ void TestAtmiBrokerXml::test_client() {
 	CPPUNIT_ASSERT(strcmp(server->serverName, "foo") == 0);
 	std::vector<char*>* services = server->serviceVectorPtr;
 	CPPUNIT_ASSERT(strcmp((*services)[0], "BAR") == 0);
+
+	for (std::vector<ClientServerInfo*>::iterator itServer = aClientServerVectorPtr.begin(); itServer != aClientServerVectorPtr.end(); itServer++) {
+		free((*itServer)->serverName);
+
+		std::vector<char*>* services = (*itServer)->serviceVectorPtr;
+		for(std::vector<char*>::iterator i = services->begin(); i != services->end(); i++) {
+			free(*i);
+		}
+		delete services;
+
+		free(*itServer);
+	}
 }
 
 void TestAtmiBrokerXml::test_service() {
@@ -63,7 +75,7 @@ void TestAtmiBrokerXml::test_service() {
 void TestAtmiBrokerXml::test_env() {
 	char* value;
 
-	value = AtmiBrokerEnv::get_instance()->getenv("ORBOPT");
+	value = AtmiBrokerEnv::get_instance()->getenv((char*)"ORBOPT");
 	CPPUNIT_ASSERT(strcmp(value, "-ORBInitRef NameService=corbaloc::localhost:3528/NameService") == 0);
 	CPPUNIT_ASSERT(strcmp(domain, "fooapp") == 0);
 	CPPUNIT_ASSERT(xarmp != 0);

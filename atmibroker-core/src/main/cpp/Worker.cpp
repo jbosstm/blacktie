@@ -19,7 +19,7 @@
 
 log4cxx::LoggerPtr Worker::logger(log4cxx::Logger::getLogger("Worker"));
 
-Worker::Worker(CORBA::ORB_ptr orb) {
+Worker::Worker(CORBA::ORB_var orb) {
 	m_orb = CORBA::ORB::_duplicate(orb);
 }
 

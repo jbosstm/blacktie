@@ -45,7 +45,8 @@ void SimpleOrbTest::test() {
 	char *argv[2];
 	argv[0] = (char*) "-ORBInitRef";
 	argv[1] = (char*) "NameService=corbaloc::localhost:3528/NameService";
-	CORBA::ORB_ptr orbRef = CORBA::ORB_init(argc, argv, "server");
+	//CORBA::ORB_ptr orbRef = CORBA::ORB_init(argc, argv, "server");
+	CORBA::ORB_var orbRef = CORBA::ORB_init(argc, argv, "server");
 	CORBA::Object_var tmp_ref = orbRef->resolve_initial_references("RootPOA");
 	PortableServer::POA_var poa = PortableServer::POA::_narrow(tmp_ref);
 	PortableServer::POAManager_var poa_manager = poa->the_POAManager();
@@ -71,11 +72,11 @@ void SimpleOrbTest::test() {
 			delete (worker);
 			worker = NULL;
 		}
+
 		orbRef = NULL;
 		poa_manager = NULL;
 		poa = NULL;
 		CPPUNIT_ASSERT(CORBA::is_nil(orbRef));
 		CPPUNIT_ASSERT(CORBA::is_nil(poa_manager));
 		CPPUNIT_ASSERT(CORBA::is_nil(poa));
-	
 }

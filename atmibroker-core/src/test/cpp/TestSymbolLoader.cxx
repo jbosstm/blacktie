@@ -71,4 +71,6 @@ void TestSymbolLoader::test() {
 	} else {
 		ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=");
 	}
+
+	AtmiBrokerEnv::discard_instance();
 }
