@@ -29,7 +29,7 @@
 #include "AtmiBrokerPoaFac.h"
 
 struct BLACKTIE_CORE_DLL corba_connection_t {
-	CORBA::ORB_ptr orbRef;
+	CORBA::ORB_var orbRef;
 	PortableServer::POA_var root_poa;
 	PortableServer::POAManager_var root_poa_manager;
 	CosNaming::NamingContextExt_var default_ctx;
