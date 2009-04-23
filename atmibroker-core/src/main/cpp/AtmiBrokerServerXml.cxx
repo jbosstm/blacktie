@@ -97,6 +97,7 @@ static void XMLCALL startElement(void *userData, const char *name, const char **
 			for(int i = 0; atts[i]; i += 2) {
 				if(strcmp(atts[i], "name") == 0) {
 					service.name = atts[i+1];
+					service.function_name = atts[i+1];
 				} else if(strcmp(atts[i], "function_name") == 0) {
 					service.function_name = atts[i+1];
 				} else if(strcmp(atts[i], "advertised") == 0) {
