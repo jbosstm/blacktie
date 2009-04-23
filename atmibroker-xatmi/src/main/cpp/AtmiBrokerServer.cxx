@@ -85,7 +85,8 @@ int parsecmdline(int argc, char** argv) {
 
 	int last = getopt.opt_ind();
 	if(r == 0 && last < argc) {
-		printf("opt_ind is %d, server is %s\n", last, argv[last]);
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer,(char*)"opt_ind is %d, server is %s", last, argv[last]);
+		ACE_OS::strncpy(server, argv[last], 30);
 	}
 
 	return r;
