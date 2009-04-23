@@ -51,7 +51,6 @@ static int depth = 0;
 static int serviceNameCount = 0;
 
 static bool processingServer = false;
-static bool processingName = false;
 static bool processingMaxSuppliers = false;
 static bool processingMaxConsumers = false;
 static bool processingOrbType = false;
@@ -68,13 +67,11 @@ AtmiBrokerServerXml::~AtmiBrokerServerXml() {
 }
 
 static void XMLCALL startElement(void *userData, const char *name, const char **atts) {
+	ServerMetadata* aServerStructPtr = (ServerMetadata*) userData;
+
 	if (strcmp(name, "SERVER xmnls") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "new server ");
 		processingServer = true;
-
-	} else if (strcmp(name, "NAME") == 0) {
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "processing NAME for server ");
-		processingName = true;
 	} else if (strcmp(name, "MAX_CHANNELS") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "processing Max Channels for server ");
 		processingMaxChannels = true;
@@ -93,6 +90,25 @@ static void XMLCALL startElement(void *userData, const char *name, const char **
 	} else if (strcmp(name, "SERVICE_NAME") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "processing Service Name for server ");
 		processingServiceName = true;
+
+		if(atts != 0) {
+			struct ServiceMetadata service;
+
+			for(int i = 0; atts[i]; i += 2) {
+				if(strcmp(atts[i], "name") == 0) {
+					service.name = atts[i+1];
+				} else if(strcmp(atts[i], "function_name") == 0) {
+					service.function_name = atts[i+1];
+				} else if(strcmp(atts[i], "advertised") == 0) {
+					if(strcmp(atts[i+1], "true") == 0) {
+						service.advertised = true;
+					} else {
+						service.advertised = false;
+					}
+				}
+			}
+			aServerStructPtr->serviceDatas.push_back(service);
+		}
 	}
 	ACE_OS::strncpy(element, name, 50);
 	strcpy(value, "");
@@ -106,11 +122,7 @@ static void XMLCALL endElement(void *userData, const char *name) {
 	ACE_OS::strncpy(last_element, name, 50);
 	ACE_OS::strncpy(last_value, value, 50);
 
-	if (strcmp(last_element, "NAME") == 0) {
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "storing NAME %s", last_value);
-		processingName = false;
-		ACE_OS::strncpy(server, last_value, 30);
-	} else if (strcmp(last_element, "MAX_CHANNELS") == 0) {
+	if (strcmp(last_element, "MAX_CHANNELS") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "storing MaxChannels %s", last_value);
 		processingMaxChannels = false;
 		aServerStructPtr->maxChannels = (short) atol(last_value);
@@ -136,8 +148,6 @@ static void XMLCALL endElement(void *userData, const char *name) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "storing ServiceName '%s' at index %d", last_value, serviceNameCount);
 		processingServiceNames = false;
 		serviceNameCount++;
-		//	aServerStructPtr->serviceNames.length(serviceNameCount);
-		aServerStructPtr->serviceNames.push_back(last_value);
 	}
 	depth -= 1;
 }

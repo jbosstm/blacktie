@@ -35,7 +35,11 @@ void TestAtmiBrokerXml::test_server() {
 	CPPUNIT_ASSERT(data.maxConsumers == 1);
 	//CPPUNIT_ASSERT(data.maxReplicas == 1);
 	CPPUNIT_ASSERT(data.orbType == "TAO");
-	CPPUNIT_ASSERT(data.serviceNames[0] == "BAR");
+	struct ServiceMetadata* service = &data.serviceDatas[0];
+	CPPUNIT_ASSERT(service);
+	CPPUNIT_ASSERT(service->name == "BAR");
+	CPPUNIT_ASSERT(service->function_name == "bar");
+	CPPUNIT_ASSERT(service->advertised);
 }
 
 void TestAtmiBrokerXml::test_client() {

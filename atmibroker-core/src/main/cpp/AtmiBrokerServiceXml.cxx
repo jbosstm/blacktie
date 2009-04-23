@@ -109,6 +109,7 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(SVCINFO* aServiceStructPtr,
 		ACE_OS::strncpy(configPath, serviceConfigFilename, 256);
 	}
 
+	LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "configPath is : " << configPath);
 	struct stat s; /* file stats */
 	FILE *aDescriptorFile = fopen(configPath, "r");
 

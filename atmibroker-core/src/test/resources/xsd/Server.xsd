@@ -13,7 +13,6 @@
     <xsd:element name="SERVER_DESCRIPTION">
         <xsd:complexType>
             <xsd:sequence>
-  		<xsd:element name="NAME" type="xsd:string"/>
   		<xsd:element name="MAX_REPLICAS" type="xsd:string"/>
   		<xsd:element name="MAX_CHANNELS" type="xsd:string"/>
   		<xsd:element name="MAX_SUPPLIERS" type="xsd:string"/>
@@ -22,7 +21,13 @@
   		<xsd:element name="SERVICE_NAMES">
 		        <xsd:complexType>
 				<xsd:sequence>
-			  		<xsd:element name="SERVICE_NAME" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
+			  		<xsd:element name="SERVICE_NAME" minOccurs="1" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:attribute name="name" type="xsd:string" use="required"/>
+							<xsd:attribute name="function_name" type="xsd:string"/>
+							<xsd:attribute name="advertised" type="xsd:boolean" default="true"/>
+						</xsd:complexType>
+					</xsd:element>
 				</xsd:sequence>
 		        </xsd:complexType>
 		</xsd:element>

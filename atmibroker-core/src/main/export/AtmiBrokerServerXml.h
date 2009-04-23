@@ -23,6 +23,12 @@
 #include <string.h>
 #include <vector>
 
+struct ServiceMetadata {
+	std::string name;
+	std::string function_name;
+	bool advertised;
+};
+
 struct ServerMetadata {
 	short maxChannels;
 	short maxSuppliers;
@@ -32,7 +38,7 @@ struct ServerMetadata {
 	std::string securityType;
 	std::string orbType;
 	std::string queueSpaceName;
-	std::vector<std::string> serviceNames;
+	std::vector<struct ServiceMetadata> serviceDatas;
 };
 
 class BLACKTIE_CORE_DLL AtmiBrokerServerXml {

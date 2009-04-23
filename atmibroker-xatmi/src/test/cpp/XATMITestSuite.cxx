@@ -15,6 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#if 0
 /* Typed Buffer Functions */
 #include "TestTPAlloc.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPAlloc);
@@ -69,6 +70,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( LoopyServerAndClient);
 /* Transactional Request Response */
 #include "TestTxTPCall.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTxTPCall);
+#endif
 /* Server Init */
 #include "TestServerinit.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestServerinit);
