@@ -331,7 +331,7 @@ bool AtmiBrokerServer::advertiseService(char * serviceName, void(*func)(
 		tperrno = TPELIMIT;
 		return false;
 	}
-	void (*serviceFunction)(TPSVCINFO*) = getServiceMethod(serverInfo.serviceDatas[i].function_name.c_str());
+	void (*serviceFunction)(TPSVCINFO*) = getServiceMethod(serverInfo.serviceDatas[i].name.c_str());
 	if (serviceFunction != NULL) {
 		if (serviceFunction == func) {
 			return true;

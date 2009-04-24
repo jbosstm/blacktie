@@ -33,6 +33,7 @@ public class AbstractBlacktieServiceTestCase extends TestCase {
 	private Connector connector;
 
 	public AbstractBlacktieServiceTestCase() throws ConnectorException {
+		System.setProperty("blacktie.server.name", "ejb-connector-tests");
 		ConnectorFactory connectorFactory = ConnectorFactoryImpl.getConnectorFactory();
 		connector = connectorFactory.getConnector();
 	}
