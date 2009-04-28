@@ -84,6 +84,7 @@ public:
 	virtual void unadvertiseService(char * serviceName);
 
 	bool isAdvertised(char * serviceName);
+	void advertiseAtBootime();
 	int block();
 
 private:
@@ -106,6 +107,6 @@ private:
 };
 
 // SERVER
-extern AtmiBrokerServer * ptrServer;
+extern BLACKTIE_XATMI_DLL AtmiBrokerServer * ptrServer;
 
 #endif

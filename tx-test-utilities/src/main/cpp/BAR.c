@@ -16,6 +16,7 @@
  * MA  02110-1301, USA.
  */
 #include "xatmi.h"
+#include "testsvc.h"
 
 void BAR(TPSVCINFO * svcinfo) {
 	// Test for advertise in serverinit

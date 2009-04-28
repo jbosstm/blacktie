@@ -134,6 +134,7 @@ int serverinit(int argc, char** argv) {
 			toReturn = -1;
 			tperrno = TPESYSTEM;
 		} else {
+			ptrServer->advertiseAtBootime();
 			userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
 					(char*) "Server Running");
 		}
@@ -218,24 +219,7 @@ AtmiBrokerServer::AtmiBrokerServer() {
 					serverName);
 			realConnection->name_ctx->bind(*name, tmp_ref);
 
-			for(unsigned int i = 0; i < serverInfo.serviceDatas.size(); i++){
-				ServiceMetadata* service = &serverInfo.serviceDatas[i];
-				if(service->advertised) {
-					LOG4CXX_DEBUG(loggerAtmiBrokerServer, "begin advertise " << service->name);
-					if(service->library_name != "") {
-						SVCFUNC func = (SVCFUNC)::lookup_symbol(service->library_name.c_str(), service->function_name.c_str());
-						if(func == NULL) {
-							LOG4CXX_WARN(loggerAtmiBrokerServer, "can not find " << service->function_name << " in " << service->library_name);
-						} else {
-							advertiseService((char*)service->name.c_str(), func);
-						}
-					} else {
-						LOG4CXX_WARN(loggerAtmiBrokerServer, service->name << " has no library name");
-					}
-					LOG4CXX_DEBUG(loggerAtmiBrokerServer, "end advertise " << service->name);
-				}
-			}
-
+			
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "server_init(): finished.");
 
@@ -277,6 +261,26 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted services");
 
 	serverInitialized = false;
+}
+
+void AtmiBrokerServer::advertiseAtBootime() {
+	for(unsigned int i = 0; i < serverInfo.serviceDatas.size(); i++){
+		ServiceMetadata* service = &serverInfo.serviceDatas[i];
+		if(service->advertised) {
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, "begin advertise " << service->name);
+			if(service->library_name != "") {
+				SVCFUNC func = (SVCFUNC)::lookup_symbol(service->library_name.c_str(), service->function_name.c_str());
+				if(func == NULL) {
+					LOG4CXX_WARN(loggerAtmiBrokerServer, "can not find " << service->function_name << " in " << service->library_name);
+				} else {
+					advertiseService((char*)service->name.c_str(), func);
+				}
+			} else {
+				LOG4CXX_WARN(loggerAtmiBrokerServer, service->name << " has no library name");
+			}
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, "end advertise " << service->name);
+		}
+	}
 }
 
 int AtmiBrokerServer::block() {
