@@ -25,6 +25,7 @@
 						<xsd:complexType>
 							<xsd:attribute name="name" type="xsd:string" use="required"/>
 							<xsd:attribute name="function_name" type="xsd:string"/>
+							<xsd:attribute name="library_name" type="xsd:string"/>
 							<xsd:attribute name="advertised" type="xsd:boolean" default="true"/>
 						</xsd:complexType>
 					</xsd:element>

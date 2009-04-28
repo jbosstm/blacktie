@@ -51,6 +51,8 @@ PortableServer::POA_var server_poa;
 bool configFromCmdline = false;
 char configDir[256];
 
+typedef void (*SVCFUNC)(TPSVCINFO *);
+
 void server_sigint_handler_callback(int sig_type) {
 	userlog(
 			log4cxx::Level::getInfo(),
@@ -215,6 +217,25 @@ AtmiBrokerServer::AtmiBrokerServer() {
 			CosNaming::Name * name = realConnection->default_ctx->to_name(
 					serverName);
 			realConnection->name_ctx->bind(*name, tmp_ref);
+
+			for(unsigned int i = 0; i < serverInfo.serviceDatas.size(); i++){
+				ServiceMetadata* service = &serverInfo.serviceDatas[i];
+				if(service->advertised) {
+					LOG4CXX_DEBUG(loggerAtmiBrokerServer, "begin advertise " << service->name);
+					if(service->library_name != "") {
+						SVCFUNC func = (SVCFUNC)::lookup_symbol(service->library_name.c_str(), service->function_name.c_str());
+						if(func == NULL) {
+							LOG4CXX_WARN(loggerAtmiBrokerServer, "can not find " << service->function_name << " in " << service->library_name);
+						} else {
+							advertiseService((char*)service->name.c_str(), func);
+						}
+					} else {
+						LOG4CXX_WARN(loggerAtmiBrokerServer, service->name << " has no library name");
+					}
+					LOG4CXX_DEBUG(loggerAtmiBrokerServer, "end advertise " << service->name);
+				}
+			}
+
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "server_init(): finished.");
 

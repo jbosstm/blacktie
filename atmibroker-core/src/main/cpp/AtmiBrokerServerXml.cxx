@@ -94,12 +94,15 @@ static void XMLCALL startElement(void *userData, const char *name, const char **
 		if(atts != 0) {
 			struct ServiceMetadata service;
 
+			service.library_name = "";
 			for(int i = 0; atts[i]; i += 2) {
 				if(strcmp(atts[i], "name") == 0) {
 					service.name = atts[i+1];
 					service.function_name = atts[i+1];
 				} else if(strcmp(atts[i], "function_name") == 0) {
 					service.function_name = atts[i+1];
+				} else if(strcmp(atts[i], "library_name") == 0) {
+					service.library_name = atts[i+1];
 				} else if(strcmp(atts[i], "advertised") == 0) {
 					if(strcmp(atts[i+1], "true") == 0) {
 						service.advertised = true;

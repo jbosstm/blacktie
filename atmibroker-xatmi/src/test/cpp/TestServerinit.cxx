@@ -20,8 +20,10 @@
 #include "ace/OS_NS_stdlib.h"
 #include "ace/OS_NS_stdio.h"
 #include "ace/OS_NS_string.h"
+#include "AtmiBrokerServer.h"
 
 extern void test_service(TPSVCINFO *svcinfo);
+extern AtmiBrokerServer * ptrServer;
 static char  orig_env[256];
 
 void TestServerinit::test_serverinit() {
@@ -31,6 +33,7 @@ void TestServerinit::test_serverinit() {
 	CPPUNIT_ASSERT(result != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
 
+	CPPUNIT_ASSERT(ptrServer->isAdvertised((char*)"BAR"));
 	result = serverdone();
 	CPPUNIT_ASSERT(result != -1);
 	CPPUNIT_ASSERT(tperrno == 0);

@@ -15,16 +15,33 @@
 		Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 		02110-1301, USA.
 	-->
-<SERVER xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-        xmlns="http://www.jboss.org/blacktie">
-	<SERVER_DESCRIPTION>
-		<MAX_REPLICAS>1</MAX_REPLICAS>
-		<MAX_CHANNELS>1</MAX_CHANNELS>
-		<MAX_SUPPLIERS>1</MAX_SUPPLIERS>
-		<MAX_CONSUMERS>1</MAX_CONSUMERS>
-		<ORB_TYPE>TAO</ORB_TYPE>
-		<SERVICE_NAMES>
-			<SERVICE_NAME name='BAR' advertised='false'/>
-		</SERVICE_NAMES>
-	</SERVER_DESCRIPTION>
-</SERVER>
+<ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xmlns="http://www.jboss.org/blacktie">
+	<ENVIRONMENT_DESCRIPTION>
+		<DOMAIN>stomp-tests</DOMAIN>
+		<NAMING_SERVICE_ID></NAMING_SERVICE_ID>
+		<TRANS_FACTORY_ID></TRANS_FACTORY_ID>
+		<ENV_VARIABLES>
+			<ENV_VARIABLE>
+				<NAME>LOG4CXXCONFIG</NAME>
+				<VALUE>log4cxx.properties</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectHost</NAME>
+				<VALUE>127.0.0.1</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectPort</NAME>
+				<VALUE>61613</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectUsr</NAME>
+				<VALUE>JBM.SUCKER</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectPwd</NAME>
+				<VALUE>CHANGE ME!!</VALUE>
+			</ENV_VARIABLE>
+		</ENV_VARIABLES>
+	</ENVIRONMENT_DESCRIPTION>
+</ENVIRONMENT>

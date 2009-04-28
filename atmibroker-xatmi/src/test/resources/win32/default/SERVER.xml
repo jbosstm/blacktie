@@ -24,24 +24,25 @@
 		<MAX_CONSUMERS>1</MAX_CONSUMERS>
 		<ORB_TYPE>TAO</ORB_TYPE>
 		<SERVICE_NAMES>
-			<SERVICE_NAME name='TestTPFree' />
-			<SERVICE_NAME name='TestTPAdvertise' />
-			<SERVICE_NAME name='123456789012345'/>
-			<SERVICE_NAME name='TestTPUnadvertise'/>
-			<SERVICE_NAME name='tpcall_x_octet' />
-			<SERVICE_NAME name='tpcall_x_common' />
-			<SERVICE_NAME name='tpcall_x_c_type' />
-			<SERVICE_NAME name='LOOPY' />
-			<SERVICE_NAME name='TestTPConversation' />
-			<SERVICE_NAME name='TestTPACall' />
-			<SERVICE_NAME name='TestTPCancel' />
-			<SERVICE_NAME name='TestTPConnect' />
-			<SERVICE_NAME name='TestTPDiscon' />
-			<SERVICE_NAME name='TestTPGetrply' />
-			<SERVICE_NAME name='TestTPSend' />
-			<SERVICE_NAME name='TestTPRecv' />
-			<SERVICE_NAME name='TestTPService' />
-			<SERVICE_NAME name='TestTPReturn' />
+			<SERVICE_NAME name='TestTPFree' advertised='false'/>
+			<SERVICE_NAME name='TestTPAdvertise' advertised='false'/>
+			<SERVICE_NAME name='123456789012345' advertised='false'/>
+			<SERVICE_NAME name='TestTPUnadvertise' advertised='false'/>
+			<SERVICE_NAME name='tpcall_x_octet' advertised='false'/>
+			<SERVICE_NAME name='tpcall_x_common' advertised='false'/>
+			<SERVICE_NAME name='tpcall_x_c_type' advertised='false'/>
+			<SERVICE_NAME name='LOOPY' advertised='false'/>
+			<SERVICE_NAME name='TestTPConversation' advertised='false'/>
+			<SERVICE_NAME name='TestTPACall' advertised='false'/>
+			<SERVICE_NAME name='TestTPCancel' advertised='false'/>
+			<SERVICE_NAME name='TestTPConnect' advertised='false'/>
+			<SERVICE_NAME name='TestTPDiscon' advertised='false'/>
+			<SERVICE_NAME name='TestTPGetrply' advertised='false'/>
+			<SERVICE_NAME name='TestTPSend' advertised='false'/>
+			<SERVICE_NAME name='TestTPRecv' advertised='false'/>
+			<SERVICE_NAME name='TestTPService' advertised='false'/>
+			<SERVICE_NAME name='TestTPReturn' advertised='false'/>
+			<SERVICE_NAME name='BAR' library_name='dummy-rm.dll' advertised='true' />
 		</SERVICE_NAMES>
 	</SERVER_DESCRIPTION>
 </SERVER>

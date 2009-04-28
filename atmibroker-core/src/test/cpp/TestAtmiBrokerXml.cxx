@@ -39,7 +39,15 @@ void TestAtmiBrokerXml::test_server() {
 	CPPUNIT_ASSERT(service);
 	CPPUNIT_ASSERT(service->name == "BAR");
 	CPPUNIT_ASSERT(service->function_name == "bar");
+	CPPUNIT_ASSERT(service->library_name == "libBar.so");
 	CPPUNIT_ASSERT(service->advertised);
+
+	service = &data.serviceDatas[1];
+	CPPUNIT_ASSERT(service);
+	CPPUNIT_ASSERT(service->name == "FOO");
+	CPPUNIT_ASSERT(service->function_name == "foo");
+	CPPUNIT_ASSERT(service->library_name == "");
+	CPPUNIT_ASSERT(service->advertised == false);
 }
 
 void TestAtmiBrokerXml::test_client() {

@@ -26,6 +26,7 @@
 struct ServiceMetadata {
 	std::string name;
 	std::string function_name;
+	std::string library_name;
 	bool advertised;
 };
 
