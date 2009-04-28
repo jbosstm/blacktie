@@ -83,7 +83,7 @@ public:
 
 	virtual void unadvertiseService(char * serviceName);
 
-	bool isAdvertised(char * serviceName);
+	BLACKTIE_XATMI_DLL bool isAdvertised(char * serviceName);
 	void advertiseAtBootime();
 	int block();
 
