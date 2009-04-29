@@ -63,10 +63,7 @@ public class XMLParserTest extends TestCase {
 
 		XMLServerHandler handler = new XMLServerHandler(prop);
 		XMLParser xmlserver = new XMLParser(handler, "Server.xsd");
-		xmlserver.parse(new File("linux/SERVER.xml"));
-
-		String server = "foo";
-		assertTrue(server.equals(prop.getProperty("blacktie.server.name")));
+		xmlserver.parse(new File("linux/foo/SERVER.xml"));
 	}
 
 	public void testClientXML() throws Exception {
