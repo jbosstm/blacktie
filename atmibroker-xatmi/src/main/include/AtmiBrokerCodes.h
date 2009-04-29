@@ -15,21 +15,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef ThreadLocalStorage_H
-#define ThreadLocalStorage_H
 
-#include "atmiBrokerCoreMacro.h"
 
-// key for storing control in thread specific storage
-const int TSS_KEY = 0xaf; // key for accessing OTS control
-const int SVC_KEY = 0xb1; // key for accessing atmi service
-const int SVC_SES = 0xb4; // key for accessing service session
-const int TPE_KEY = 0xa5; // key for accessing tperrno
-// define other keys here
+#ifndef AtmiBrokerCodes_H_
+#define AtmiBrokerCodes_H_
 
-extern BLACKTIE_CORE_DLL int getKey();
-extern BLACKTIE_CORE_DLL bool setSpecific(int key, void* threadData);
-extern BLACKTIE_CORE_DLL void* getSpecific(int key);
-extern BLACKTIE_CORE_DLL bool destroySpecific(int key);
+extern char* aTPERESET;
+extern char* aTPEBADDESC;
+extern char* aTPEBLOCK;
+extern char* aTPEINVAL;
+extern char* aTPELIMIT;
+extern char* aTPENOENT;
+extern char* aTPEOS;
+extern char* aTPEPROTO;
+extern char* aTPESVCERR;
+extern char* aTPESVCFAIL;
+extern char* aTPESYSTEM;
+extern char* aTPETIME;
+extern char* aTPETRAN;
+extern char* aTPGOTSIG;
+extern char* aTPEITYPE;
+extern char* aTPEOTYPE;
+extern char* aTPEEVENT;
+extern char* aTPEMATCH;
 
-#endif //ThreadLocalStorage_H
+
+#endif

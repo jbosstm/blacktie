@@ -27,11 +27,13 @@ class TestTPCancel: public BaseServerTest {
 	CPPUNIT_TEST_SUITE( TestTPCancel);
 	CPPUNIT_TEST( test_tpcancel);
 	CPPUNIT_TEST( test_tpcancel_baddesc);
+	CPPUNIT_TEST( test_tpcancel_noreply);
 CPPUNIT_TEST_SUITE_END();
 
 public:
 void test_tpcancel();
 void test_tpcancel_baddesc();
+void test_tpcancel_noreply();
 virtual void setUp();
 virtual void tearDown();
 

@@ -42,6 +42,26 @@
 #include "ace/OS_NS_stdlib.h"
 #include "ace/OS_NS_string.h"
 #include "ace/Default_Constants.h"
+#include "ThreadLocalStorage.h"
+//#include "AtmiBrokerCodes.h"
+char* cTPERESET = (char*) "0";
+char* cTPEBADDESC = (char*) "2";
+char* cTPEBLOCK = (char*) "3";
+char* cTPEINVAL = (char*) "4";
+char* cTPELIMIT = (char*) "5";
+char* cTPENOENT = (char*) "6";
+char* cTPEOS = (char*) "7";
+char* cTPEPROTO = (char*) "9";
+char* cTPESVCERR = (char*) "10";
+char* cTPESVCFAIL = (char*) "11";
+char* cTPESYSTEM = (char*) "12";
+char* cTPETIME = (char*) "13";
+char* cTPETRAN = (char*) "14";
+char* cTPGOTSIG = (char*) "15";
+char* cTPEITYPE = (char*) "17";
+char* cTPEOTYPE = (char*) "18";
+char* cTPEEVENT = (char*) "22";
+char* cTPEMATCH = (char*) "23";
 
 log4cxx::LoggerPtr loggerAtmiBrokerServer(log4cxx::Logger::getLogger(
 		"AtmiBrokerServer"));
@@ -64,7 +84,7 @@ void server_sigint_handler_callback(int sig_type) {
 }
 
 int serverrun() {
-	tperrno = 0;
+	setSpecific(TPE_KEY, cTPERESET);
 	return ptrServer->block();
 }
 
@@ -107,7 +127,7 @@ const char* getConfigurationDir() {
 }
 
 int serverinit(int argc, char** argv) {
-	tperrno = 0;
+	setSpecific(TPE_KEY, cTPERESET);
 	int toReturn = 0;
 	const char* ptrDir = NULL;
 
@@ -116,7 +136,7 @@ int serverinit(int argc, char** argv) {
 	if(argc > 0 && parsecmdline(argc, argv) != 0) {
 		fprintf(stderr, "usage:%s [-c config] [server]\n", argv[0]);
 		toReturn = -1;
-		tperrno = TPESYSTEM;
+		setSpecific(TPE_KEY, cTPESYSTEM);
 	}
 
 
@@ -132,7 +152,7 @@ int serverinit(int argc, char** argv) {
 		if (!serverInitialized) {
 			::serverdone();
 			toReturn = -1;
-			tperrno = TPESYSTEM;
+			setSpecific(TPE_KEY, cTPESYSTEM);
 		} else {
 			ptrServer->advertiseAtBootime();
 			userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
@@ -143,7 +163,7 @@ int serverinit(int argc, char** argv) {
 }
 
 int serverdone() {
-	tperrno = 0;
+	setSpecific(TPE_KEY, cTPERESET);
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverdone called");
 	if (ptrServer) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
@@ -219,7 +239,7 @@ AtmiBrokerServer::AtmiBrokerServer() {
 					serverName);
 			realConnection->name_ctx->bind(*name, tmp_ref);
 
-			
+
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "server_init(): finished.");
 
@@ -228,13 +248,13 @@ AtmiBrokerServer::AtmiBrokerServer() {
 			LOG4CXX_ERROR(loggerAtmiBrokerServer,
 					(char*) "Could not load the transport: "
 					<< transportLibrary);
-			tperrno = TPESYSTEM;
+			setSpecific(TPE_KEY, cTPESYSTEM);
 		}
 	} catch (CORBA::Exception& e) {
 		userlog(log4cxx::Level::getError(), loggerAtmiBrokerServer,
 				(char*) "serverinit - Unexpected CORBA exception: %s",
 				e._name());
-		tperrno = TPESYSTEM;
+		setSpecific(TPE_KEY, cTPESYSTEM);
 	}
 }
 
@@ -339,7 +359,7 @@ AtmiBrokerServer::getServerName() {
 bool AtmiBrokerServer::advertiseService(char * serviceName, void(*func)(
 		TPSVCINFO *)) {
 	if (!serviceName || strlen(serviceName) == 0) {
-		tperrno = TPEINVAL;
+		setSpecific(TPE_KEY, cTPEINVAL);
 		return false;
 	}
 
@@ -353,7 +373,7 @@ bool AtmiBrokerServer::advertiseService(char * serviceName, void(*func)(
 		}
 	}
 	if (!found) {
-		tperrno = TPELIMIT;
+		setSpecific(TPE_KEY, cTPELIMIT);
 		return false;
 	}
 	void (*serviceFunction)(TPSVCINFO*) = getServiceMethod(serverInfo.serviceDatas[i].name.c_str());
@@ -361,7 +381,7 @@ bool AtmiBrokerServer::advertiseService(char * serviceName, void(*func)(
 		if (serviceFunction == func) {
 			return true;
 		} else {
-			tperrno = TPEMATCH;
+			setSpecific(TPE_KEY, cTPEMATCH);
 			return false;
 		}
 	}
@@ -385,7 +405,7 @@ bool AtmiBrokerServer::advertiseService(char * serviceName, void(*func)(
 				loggerAtmiBrokerServer,
 				(char*) "service has already been advertised, however it appears to be by a different server (possibly with the same name), which is strange... "
 						<< serviceName);
-		tperrno = TPEMATCH;
+		setSpecific(TPE_KEY, cTPEMATCH);
 		return false;
 	}
 

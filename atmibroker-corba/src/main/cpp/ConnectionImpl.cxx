@@ -41,7 +41,7 @@ ConnectionImpl::~ConnectionImpl() {
 }
 
 Session* ConnectionImpl::createSession(int id, char * serviceName) {
-	LOG4CXX_DEBUG(logger, (char*) "createSession");
+	LOG4CXX_DEBUG(logger, (char*) "createSession: " + id);
 	sessionMap[id] = new SessionImpl(this->connection, id, serviceName);
 	return sessionMap[id];
 }
