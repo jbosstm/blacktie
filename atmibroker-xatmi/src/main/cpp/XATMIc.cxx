@@ -251,7 +251,7 @@ int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen,
 	if (clientinit() != -1) {
 		int cd = tpacall(svc, idata, ilen, flags);
 		if (cd != -1) {
-			tpReturn = tpgetrply(&cd, odata, olen, flags);
+			toReturn = tpgetrply(&cd, odata, olen, flags);
 		}
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpcall return: " << toReturn);
