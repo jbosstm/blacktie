@@ -159,6 +159,14 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 			clientServerVector.begin(); itServer != clientServerVector.end(); itServer++) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "next serverName is: "
 				<< (char*) (*itServer)->serverName);
+		free((*itServer)->serverName);
+
+		std::vector<char*>* services = (*itServer)->serviceVectorPtr;
+		for(std::vector<char*>::iterator i = services->begin(); i != services->end(); i++) {
+			free(*i);
+		}
+		delete services;
+		free(*itServer);
 	}
 	clientServerVector.clear();
 

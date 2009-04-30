@@ -98,7 +98,7 @@ private:
 	std::vector<char*> advertisedServices;
 	char * serverName;
 	ServerMetadata serverInfo;
-	PortableServer::POA_ptr poa;
+	PortableServer::POA_var poa;
 
 	// The following are not implemented
 	//

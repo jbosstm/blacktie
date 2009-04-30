@@ -99,5 +99,6 @@ void ConnectionImpl::destroyDestination(Destination* destination) {
 	poa = NULL;
 	*/
 	LOG4CXX_DEBUG(logger, (char*) "destination destroyed: " << serviceName);
+	free(serviceName);
 }
 
