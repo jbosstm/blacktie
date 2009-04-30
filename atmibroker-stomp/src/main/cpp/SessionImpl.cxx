@@ -39,6 +39,7 @@ SessionImpl::SessionImpl(char* connectionName, stomp_connection* connection, apr
 	strncat(this->sendTo, serviceName, 15);
 
 	this->toRead = new EndpointQueue(this->connection, this->pool, connectionName, id);
+	this->replyTo = toRead->getFullName();
 	LOG4CXX_DEBUG(logger, "OK");
 }
 
@@ -53,6 +54,7 @@ SessionImpl::SessionImpl(char* connectionName, stomp_connection* connection, apr
 	this->sendTo = ::strdup(temporaryQueueName);
 
 	this->toRead = new EndpointQueue(this->connection, this->pool, connectionName, id);
+	this->replyTo = toRead->getFullName();
 	LOG4CXX_DEBUG(logger, "OK");
 }
 
@@ -96,7 +98,7 @@ void SessionImpl::setSendTo(const char* destinationName) {
 }
 
 const char* SessionImpl::getReplyTo() {
-	return this->toRead->getName();
+	return replyTo;
 }
 
 int SessionImpl::getId() {

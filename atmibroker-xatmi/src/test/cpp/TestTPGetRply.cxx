@@ -26,6 +26,9 @@
 extern void testtpgetrply_service(TPSVCINFO *svcinfo);
 
 void TestTPGetRply::setUp() {
+	sendbuf = NULL;
+	rcvbuf = NULL;
+
 	// Setup server
 	BaseServerTest::setUp();
 

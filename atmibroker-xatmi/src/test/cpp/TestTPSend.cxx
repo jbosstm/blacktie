@@ -26,6 +26,9 @@
 extern void testtpsend_service(TPSVCINFO *svcinfo);
 
 void TestTPSend::setUp() {
+	sendbuf = NULL;
+	rcvbuf = NULL;
+
 	// Setup server
 	BaseServerTest::setUp();
 

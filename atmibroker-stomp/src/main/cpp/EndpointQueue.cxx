@@ -44,7 +44,8 @@ EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool, cha
 		LOG4CXX_ERROR(logger, (char*) "Could not send frame");
 		throw std::exception();
 	}
-	setName((const char*) queueName);
+	setName((const char*) serviceName);
+	this->fullName = (const char*) queueName;
 	LOG4CXX_DEBUG(logger, "OK");
 }
 
@@ -69,6 +70,7 @@ EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool, cha
 		throw std::exception();
 	}
 	setName((const char*) queueName);
+	this->fullName = (const char*) queueName;
 	LOG4CXX_DEBUG(logger, "OK");
 }
 
@@ -84,7 +86,7 @@ MESSAGE EndpointQueue::receive(long time) {
 	LOG4CXX_DEBUG(logger, (char*) "Reading from: " << name);
 	apr_status_t rc = stomp_read(connection, &frame, pool);
 	if (rc != APR_SUCCESS) {
-		LOG4CXX_ERROR(logger, "Could not read frame");
+		LOG4CXX_ERROR(logger, "Could not read frame: " << rc);
 		throw std::exception();
 	}
 	LOG4CXX_INFO(logger, "Read: " << frame->command << ", " << frame->body);
@@ -111,4 +113,8 @@ void EndpointQueue::setName(const char* name) {
 
 const char * EndpointQueue::getName() {
 	return name;
+}
+
+const char * EndpointQueue::getFullName() {
+	return this->fullName;
 }

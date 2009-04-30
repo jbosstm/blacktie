@@ -24,6 +24,9 @@
 extern void testtpacall_service(TPSVCINFO *svcinfo);
 
 void TestTPACall::setUp() {
+	sendbuf = NULL;
+	rcvbuf = NULL;
+
 	// Set up server
 	BaseServerTest::setUp();
 
@@ -31,9 +34,6 @@ void TestTPACall::setUp() {
 	int toCheck = tpadvertise((char*) "TestTPACall", testtpacall_service);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toCheck != -1);
-
-	sendbuf = NULL;
-	rcvbuf = NULL;
 }
 
 void TestTPACall::tearDown() {

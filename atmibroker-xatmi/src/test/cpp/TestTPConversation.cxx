@@ -30,6 +30,9 @@ int interationCount = 100;
 extern void testTPConversation_service(TPSVCINFO *svcinfo);
 
 void TestTPConversation::setUp() {
+	sendbuf = NULL;
+	rcvbuf = NULL;
+
 	// Setup server
 	BaseServerTest::setUp();
 

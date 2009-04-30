@@ -26,6 +26,9 @@
 extern void testtpcancel_service(TPSVCINFO *svcinfo);
 
 void TestTPCancel::setUp() {
+	sendbuf = NULL;
+	rcvbuf = NULL;
+
 	// Setup server
 	BaseServerTest::setUp();
 

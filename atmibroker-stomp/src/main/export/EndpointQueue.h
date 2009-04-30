@@ -24,7 +24,7 @@
 #include <queue>
 
 #ifdef __cplusplus
-extern "C" 
+extern "C"
 {
 #endif
 #include "stomp.h"
@@ -48,11 +48,13 @@ public:
 	virtual MESSAGE receive(long time);
 
 	virtual const char* getName();
+	const char* getFullName();
 private:
 	static log4cxx::LoggerPtr logger;
 	stomp_connection* connection;
 	apr_pool_t* pool;
 	const char* name;
+	const char* fullName;
 };
 
 #endif

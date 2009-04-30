@@ -103,6 +103,7 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(SVCINFO* aServiceStructPtr,
 	LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "loading: "
 			<< serviceConfigFilename);
 	char configPath[256];
+	memset(configPath, '\0', 256);
 	if(ConfigurationDir != NULL){
 		ACE_OS::snprintf(configPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"%s",
 										ConfigurationDir, serviceConfigFilename);

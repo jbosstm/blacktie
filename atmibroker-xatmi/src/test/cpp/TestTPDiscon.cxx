@@ -26,6 +26,8 @@
 extern void testtpdiscon_service(TPSVCINFO *svcinfo);
 
 void TestTPDiscon::setUp() {
+	sendbuf = NULL;
+
 	// Setup server
 	BaseServerTest::setUp();
 
