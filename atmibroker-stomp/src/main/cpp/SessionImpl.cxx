@@ -60,6 +60,7 @@ SessionImpl::SessionImpl(char* connectionName, stomp_connection* connection, apr
 
 SessionImpl::~SessionImpl() {
 	LOG4CXX_DEBUG(logger, (char*) "destroyed");
+	::free(this->sendTo);
 }
 
 MESSAGE SessionImpl::receive(long time) {

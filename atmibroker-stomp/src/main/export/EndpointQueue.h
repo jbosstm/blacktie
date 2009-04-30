@@ -53,7 +53,7 @@ private:
 	static log4cxx::LoggerPtr logger;
 	stomp_connection* connection;
 	apr_pool_t* pool;
-	const char* name;
+	char* name;
 	const char* fullName;
 };
 

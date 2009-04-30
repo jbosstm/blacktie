@@ -38,7 +38,7 @@ EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool, cha
 	apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, queueName);
 	frame.body_length = -1;
 	frame.body = NULL;
-	LOG4CXX_DEBUG(logger, "Sending SUB");
+	LOG4CXX_DEBUG(logger, (char*) "Sending SUB");
 	apr_status_t rc = stomp_write(connection, &frame, pool);
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, (char*) "Could not send frame");
@@ -78,6 +78,7 @@ EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool, cha
 //
 EndpointQueue::~EndpointQueue() {
 	LOG4CXX_DEBUG(logger, (char*) "destroyed");
+	::free(name);
 }
 
 MESSAGE EndpointQueue::receive(long time) {
@@ -94,6 +95,7 @@ MESSAGE EndpointQueue::receive(long time) {
 	message.len = frame->body_length;
 	message.data = frame->body;
 	message.replyto = (const char*) apr_hash_get(frame->headers, "reply-to", APR_HASH_KEY_STRING);
+	message.control = NULL;
 	//	message.correlationId = (int) apr_hash_get(frame->headers, "message.correlationId", APR_HASH_KEY_STRING);
 	//	message.flags = (long) apr_hash_get(frame->headers, "message.flags", APR_HASH_KEY_STRING);
 	//	message.control = apr_hash_get(frame->headers, "message.control", APR_HASH_KEY_STRING);
@@ -108,11 +110,11 @@ void EndpointQueue::disconnect() {
 }
 
 void EndpointQueue::setName(const char* name) {
-	this->name = name;
+	this->name = (char*) name;
 }
 
 const char * EndpointQueue::getName() {
-	return name;
+	return (const char *)name;
 }
 
 const char * EndpointQueue::getFullName() {
