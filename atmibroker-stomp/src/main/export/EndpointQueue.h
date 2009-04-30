@@ -43,8 +43,6 @@ public:
 
 	virtual void disconnect();
 
-	void setName(const char * name);
-
 	virtual MESSAGE receive(long time);
 
 	virtual const char* getName();

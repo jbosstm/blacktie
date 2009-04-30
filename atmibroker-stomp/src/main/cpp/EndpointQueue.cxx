@@ -38,13 +38,13 @@ EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool, cha
 	apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, queueName);
 	frame.body_length = -1;
 	frame.body = NULL;
-	LOG4CXX_DEBUG(logger, (char*) "Sending SUB");
+	//LOG4CXX_DEBUG(logger, (char*) "Sending SUB");
 	apr_status_t rc = stomp_write(connection, &frame, pool);
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, (char*) "Could not send frame");
 		throw std::exception();
 	}
-	setName((const char*) serviceName);
+	this->name = serviceName;
 	this->fullName = (const char*) queueName;
 	LOG4CXX_DEBUG(logger, "OK");
 }
@@ -69,7 +69,7 @@ EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool, cha
 		LOG4CXX_ERROR(logger, (char*) "Could not send frame");
 		throw std::exception();
 	}
-	setName((const char*) queueName);
+	this->name = queueName;
 	this->fullName = (const char*) queueName;
 	LOG4CXX_DEBUG(logger, "OK");
 }
@@ -107,10 +107,6 @@ MESSAGE EndpointQueue::receive(long time) {
 
 void EndpointQueue::disconnect() {
 	LOG4CXX_DEBUG(logger, (char*) "NOOP");
-}
-
-void EndpointQueue::setName(const char* name) {
-	this->name = (char*) name;
 }
 
 const char * EndpointQueue::getName() {

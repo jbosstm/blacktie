@@ -45,7 +45,7 @@ EndpointQueue::EndpointQueue(CORBA_CONNECTION* connection) {
 	LOG4CXX_DEBUG(logger, (char*) "activated tmp_servant " << this);
 	CORBA::Object_ptr tmp_ref = poa->servant_to_reference(this);
 	AtmiBroker::EndpointQueue_var queue = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	setName(orb->object_to_string(queue));
+	this->name = orb->object_to_string(queue);
 }
 
 EndpointQueue::EndpointQueue(CORBA_CONNECTION* connection, PortableServer::POA_ptr poa, char* serviceName) {
@@ -57,7 +57,7 @@ EndpointQueue::EndpointQueue(CORBA_CONNECTION* connection, PortableServer::POA_p
 	CORBA::Object_var tmp_ref = thePoa->servant_to_reference(this);
 	CosNaming::Name * name = ((CosNaming::NamingContextExt_ptr) connection->default_ctx)->to_name(serviceName);
 	((CosNaming::NamingContext_ptr) connection->name_ctx)->bind(*name, tmp_ref);
-	setName((const char*) serviceName);
+	this->name = serviceName;
 }
 
 // ~EndpointQueue destructor.
@@ -150,10 +150,6 @@ void EndpointQueue::disconnect() throw (CORBA::SystemException ) {
 		lock->notify();
 	}
 	lock->unlock();
-}
-
-void EndpointQueue::setName(const char* name) {
-	this->name = name;
 }
 
 const char * EndpointQueue::getName() {
