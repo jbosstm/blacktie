@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
-<SERVICE xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-<SERVICE_DESCRIPTION>
-    <MAX>10</MAX>
-    <MIN>5</MIN>
-    <AVAILABLE>5</AVAILABLE>
-</SERVICE_DESCRIPTION>
+<SERVICE xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xmlns="http://www.jboss.org/blacktie">
+	<SERVICE_DESCRIPTION>
+    	<SIZE>5</SIZE>
+	</SERVICE_DESCRIPTION>
 </SERVICE>

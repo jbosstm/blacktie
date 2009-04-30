@@ -82,6 +82,7 @@ void TestAtmiBrokerXml::test_service() {
 	SVCINFO service;
 
 	xml.parseXmlDescriptor(&service, "BAR");
+	CPPUNIT_ASSERT(service.poolSize == 5);
 }
 
 void TestAtmiBrokerXml::test_env() {

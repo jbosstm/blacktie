@@ -23,6 +23,7 @@
 #include <sys/stat.h>
 
 #include "AtmiBrokerServiceXml.h"
+#include "XsdValidator.h"
 #include "userlog.h"
 #include "log4cxx/logger.h"
 #include "ace/OS_NS_stdlib.h"
@@ -110,6 +111,25 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(SVCINFO* aServiceStructPtr,
 	}
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "configPath is : " << configPath);
+
+	char  schemaPath[256];
+	char* schemaDir;
+
+	schemaDir = ACE_OS::getenv("BLACKTIE_SCHEMA_DIR");
+	if(schemaDir) {
+		ACE_OS::snprintf(schemaPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"Service.xsd", schemaDir);
+	} else {
+		ACE_OS::strcpy(schemaPath, "Service.xsd");
+	}
+
+	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml,
+			(char*) "schemaPath %s", schemaPath);
+
+	XsdValidator validator;
+	if(validator.validate(schemaPath, configPath) == false) {
+		return ;
+	}
+
 	struct stat s; /* file stats */
 	FILE *aDescriptorFile = fopen(configPath, "r");
 
