@@ -24,7 +24,7 @@
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
 				<NAME>TransportLibrary</NAME>
-				<VALUE>atmibroker-corba.dll</VALUE>
+				<VALUE>atmibroker-stomp.dll</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>ORBOPT</NAME>
