@@ -56,6 +56,13 @@ bool SynchronizableObject::notify() {
 	return toReturn;
 }
 
+bool SynchronizableObject::notifyAll() {
+	LOG4CXX_TRACE(logger, (char*) "Notifying All cond: " << this);
+	bool toReturn = cond.broadcast();
+	LOG4CXX_TRACE(logger, (char*) "All notified: " << this);
+	return toReturn;
+}
+
 bool SynchronizableObject::unlock() {
 	LOG4CXX_TRACE(logger, (char*) "Releasing mutex: " << this);
 	bool toReturn = mutex.release();

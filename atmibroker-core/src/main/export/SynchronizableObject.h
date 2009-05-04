@@ -53,6 +53,14 @@ public:
 	bool notify();
 
 	/**
+	 * This code will wake up all threads that are in the wait method.
+	 *
+	 * lock MUST be called before executing this method
+	 * unlock MUST be called after executing this method
+	 */
+	bool notifyAll();
+
+	/**
 	 * This method will release the lock held by the thread on this object
 	 */
 	bool unlock();

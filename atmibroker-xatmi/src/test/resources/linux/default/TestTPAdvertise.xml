@@ -2,6 +2,6 @@
 <SERVICE xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xmlns="http://www.jboss.org/blacktie">
 <SERVICE_DESCRIPTION>
-    <SIZE>1</SIZE>
+    <SIZE>2</SIZE>
 </SERVICE_DESCRIPTION>
 </SERVICE>

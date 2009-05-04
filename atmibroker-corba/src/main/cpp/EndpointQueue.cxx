@@ -68,7 +68,7 @@ EndpointQueue::~EndpointQueue() {
 	lock->lock();
 	if (!shutdown) {
 		shutdown = true;
-		lock->notify();
+		lock->notifyAll();
 	}
 	lock->unlock();
 	delete lock;
@@ -147,7 +147,7 @@ void EndpointQueue::disconnect() throw (CORBA::SystemException ) {
 	lock->lock();
 	if (!shutdown) {
 		shutdown = true;
-		lock->notify();
+		lock->notifyAll();
 	}
 	lock->unlock();
 }
