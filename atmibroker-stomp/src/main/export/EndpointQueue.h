@@ -34,6 +34,7 @@ extern "C"
 
 #include "log4cxx/logger.h"
 #include "Destination.h"
+#include "SynchronizableObject.h"
 
 class BLACKTIE_STOMP_DLL EndpointQueue: public virtual Destination {
 public:
@@ -51,6 +52,8 @@ private:
 	static log4cxx::LoggerPtr logger;
 	stomp_connection* connection;
 	apr_pool_t* pool;
+	SynchronizableObject* lock;
+	bool shutdown;
 	char* name;
 	const char* fullName;
 };

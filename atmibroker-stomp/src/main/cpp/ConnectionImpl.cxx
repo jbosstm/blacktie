@@ -53,6 +53,9 @@ ConnectionImpl::ConnectionImpl(char* connectionName) {
 		throw new std::exception();
 	}
 
+	apr_socket_opt_set(connection->socket, APR_SO_NONBLOCK, 1);
+	apr_socket_timeout_set(connection->socket, 50000);
+
 	std::string usr = AtmiBrokerEnv::get_instance()->getenv(
 			(char*) "StompConnectUsr");
 	std::string pwd = AtmiBrokerEnv::get_instance()->getenv(
@@ -75,7 +78,8 @@ ConnectionImpl::ConnectionImpl(char* connectionName) {
 	stomp_frame * frameRead;
 	rc = stomp_read(connection, &frameRead, pool);
 	if (rc != APR_SUCCESS) {
-		LOG4CXX_ERROR(logger, (char*) "Could not read frame");
+		LOG4CXX_ERROR(logger, (char*) "Could not read frame: " << rc
+				<< " from connection");
 		throw new std::exception();
 	}
 	LOG4CXX_DEBUG(logger, "Response: " << frameRead->command << ", "

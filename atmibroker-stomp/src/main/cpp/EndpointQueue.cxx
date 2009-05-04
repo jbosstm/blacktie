@@ -21,9 +21,14 @@
 #include "EndpointQueue.h"
 #include "ThreadLocalStorage.h"
 
-log4cxx::LoggerPtr EndpointQueue::logger(log4cxx::Logger::getLogger("EndpointQueue"));
+log4cxx::LoggerPtr EndpointQueue::logger(log4cxx::Logger::getLogger(
+		"EndpointQueue"));
 
-EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool, char* serviceName) {
+EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool,
+		char* serviceName) {
+	shutdown = false;
+	lock = new SynchronizableObject();
+
 	this->connection = connection;
 	this->pool = pool;
 
@@ -49,7 +54,11 @@ EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool, cha
 	LOG4CXX_DEBUG(logger, "OK");
 }
 
-EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool, char* connectionName, int id) {
+EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool,
+		char* connectionName, int id) {
+	shutdown = false;
+	lock = new SynchronizableObject();
+
 	this->connection = connection;
 	this->pool = pool;
 
@@ -78,39 +87,70 @@ EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool, cha
 //
 EndpointQueue::~EndpointQueue() {
 	LOG4CXX_DEBUG(logger, (char*) "destroyed");
-	::free(name);
+
+	lock->lock();
+	if (!shutdown) {
+		shutdown = true;
+		lock->notify();
+	}
+	lock->unlock();
+	delete lock;
+	lock = NULL;
 }
 
 MESSAGE EndpointQueue::receive(long time) {
 	// TODO TIME NOT RESPECTED
-	stomp_frame *frame;
-	LOG4CXX_DEBUG(logger, (char*) "Reading from: " << name);
-	apr_status_t rc = stomp_read(connection, &frame, pool);
-	if (rc != APR_SUCCESS) {
-		LOG4CXX_ERROR(logger, "Could not read frame: " << rc);
-		throw std::exception();
-	}
-	LOG4CXX_INFO(logger, "Read: " << frame->command << ", " << frame->body);
 	MESSAGE message;
-	message.len = frame->body_length;
-	message.data = frame->body;
-	message.replyto = (const char*) apr_hash_get(frame->headers, "reply-to", APR_HASH_KEY_STRING);
+	message.replyto = NULL;
+	message.correlationId = -1;
+	message.data = NULL;
+	message.len = -1;
+	message.flags = -1;
 	message.control = NULL;
-	//	message.correlationId = (int) apr_hash_get(frame->headers, "message.correlationId", APR_HASH_KEY_STRING);
-	//	message.flags = (long) apr_hash_get(frame->headers, "message.flags", APR_HASH_KEY_STRING);
-	//	message.control = apr_hash_get(frame->headers, "message.control", APR_HASH_KEY_STRING);
-	//	message.rval = (int) apr_hash_get(frame->headers, "message.rval", APR_HASH_KEY_STRING);
-	//	message.rcode = (long) apr_hash_get(frame->headers, "message.rcode", APR_HASH_KEY_STRING);
-	//	message.event = (long) apr_hash_get(frame->headers, "message.event", APR_HASH_KEY_STRING);
+	message.rval = -1;
+	message.rcode = -1;
+	message.event = -1;
+
+	lock->lock();
+	if (!shutdown) {
+		stomp_frame *frame;
+		LOG4CXX_DEBUG(logger, (char*) "Reading from: " << name);
+		apr_status_t rc = stomp_read(connection, &frame, pool);
+		if (rc != APR_SUCCESS) {
+			LOG4CXX_ERROR(logger, "Could not read frame for " << name << ": "
+					<< rc << " was the result");
+		} else {
+			LOG4CXX_INFO(logger, "Read: " << frame->command << ", "
+					<< frame->body);
+			message.len = frame->body_length;
+			message.data = frame->body;
+			message.replyto = (const char*) apr_hash_get(frame->headers,
+					"reply-to", APR_HASH_KEY_STRING);
+			message.control = NULL;
+			//	message.correlationId = (int) apr_hash_get(frame->headers, "message.correlationId", APR_HASH_KEY_STRING);
+			//	message.flags = (long) apr_hash_get(frame->headers, "message.flags", APR_HASH_KEY_STRING);
+			//	message.control = apr_hash_get(frame->headers, "message.control", APR_HASH_KEY_STRING);
+			//	message.rval = (int) apr_hash_get(frame->headers, "message.rval", APR_HASH_KEY_STRING);
+			//	message.rcode = (long) apr_hash_get(frame->headers, "message.rcode", APR_HASH_KEY_STRING);
+			//	message.event = (long) apr_hash_get(frame->headers, "message.event", APR_HASH_KEY_STRING);
+		}
+	}
+	lock->unlock();
 	return message;
 }
 
 void EndpointQueue::disconnect() {
-	LOG4CXX_DEBUG(logger, (char*) "NOOP");
+	LOG4CXX_DEBUG(logger, (char*) "disconnecting");
+	lock->lock();
+	if (!shutdown) {
+		shutdown = true;
+		lock->notify();
+	}
+	lock->unlock();
 }
 
 const char * EndpointQueue::getName() {
-	return (const char *)name;
+	return (const char *) name;
 }
 
 const char * EndpointQueue::getFullName() {
