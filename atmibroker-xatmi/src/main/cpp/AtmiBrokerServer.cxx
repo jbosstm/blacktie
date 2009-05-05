@@ -43,7 +43,6 @@
 #include "ace/OS_NS_string.h"
 #include "ace/Default_Constants.h"
 #include "ThreadLocalStorage.h"
-//#include "AtmiBrokerCodes.h"
 char* cTPERESET = (char*) "0";
 char* cTPEBADDESC = (char*) "2";
 char* cTPEBLOCK = (char*) "3";
@@ -356,12 +355,17 @@ AtmiBrokerServer::getServerName() {
 	return serverName;
 }
 
-bool AtmiBrokerServer::advertiseService(char * serviceName, void(*func)(
+bool AtmiBrokerServer::advertiseService(char * svcname, void(*func)(
 		TPSVCINFO *)) {
-	if (!serviceName || strlen(serviceName) == 0) {
+    
+	if (!svcname || strlen(svcname) == 0) {
 		setSpecific(TPE_KEY, cTPEINVAL);
 		return false;
 	}
+
+	char* serviceName = (char*) ::malloc(XATMI_SERVICE_NAME_LENGTH);
+	memset(serviceName, '\0', XATMI_SERVICE_NAME_LENGTH);
+	strncat(serviceName, svcname, XATMI_SERVICE_NAME_LENGTH);
 
 	bool found = false;
 	unsigned int i;
@@ -416,7 +420,11 @@ bool AtmiBrokerServer::advertiseService(char * serviceName, void(*func)(
 	return toReturn;
 }
 
-void AtmiBrokerServer::unadvertiseService(char * serviceName) {
+void AtmiBrokerServer::unadvertiseService(char * svcname) {
+	char* serviceName = (char*) ::malloc(XATMI_SERVICE_NAME_LENGTH);
+	memset(serviceName, '\0', XATMI_SERVICE_NAME_LENGTH);
+	strncat(serviceName, svcname, XATMI_SERVICE_NAME_LENGTH);
+
 	for (std::vector<char*>::iterator i = advertisedServices.begin(); i
 			!= advertisedServices.end(); i++) {
 		if (strcmp(serviceName, (*i)) == 0) {
@@ -440,7 +448,7 @@ bool AtmiBrokerServer::isAdvertised(char * serviceName) {
 	bool toReturn = false;
 	for (std::vector<char*>::iterator i = advertisedServices.begin(); i
 			!= advertisedServices.end(); i++) {
-		if (strcmp(serviceName, (*i)) == 0) {
+		if (strncmp(serviceName, (*i), XATMI_SERVICE_NAME_LENGTH) == 0) {
 			toReturn = true;
 		}
 	}
