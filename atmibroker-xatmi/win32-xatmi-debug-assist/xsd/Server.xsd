@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+					  targetNamespace="http://www.jboss.org/blacktie"
+					  xmlns="http://www.jboss.org/blacktie"
+                      elementFormDefault="qualified">
+    <xsd:element name="SERVER">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="SERVER_DESCRIPTION" minOccurs="1" maxOccurs="1"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="SERVER_DESCRIPTION">
+        <xsd:complexType>
+            <xsd:sequence>
+  		<xsd:element name="MAX_REPLICAS" type="xsd:string"/>
+  		<xsd:element name="MAX_CHANNELS" type="xsd:string"/>
+  		<xsd:element name="MAX_SUPPLIERS" type="xsd:string"/>
+  		<xsd:element name="MAX_CONSUMERS" type="xsd:string"/>
+  		<xsd:element name="ORB_TYPE" type="xsd:string"/>
+  		<xsd:element name="SERVICE_NAMES">
+		        <xsd:complexType>
+				<xsd:sequence>
+			  		<xsd:element name="SERVICE_NAME" minOccurs="1" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:attribute name="name" type="xsd:string" use="required"/>
+							<xsd:attribute name="function_name" type="xsd:string"/>
+							<xsd:attribute name="library_name" type="xsd:string"/>
+							<xsd:attribute name="advertised" type="xsd:boolean" default="true"/>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+		        </xsd:complexType>
+		</xsd:element>
+	    </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
