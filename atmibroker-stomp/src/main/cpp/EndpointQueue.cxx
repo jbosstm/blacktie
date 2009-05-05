@@ -52,10 +52,10 @@ EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool,
 	this->connection = connection;
 	this->pool = pool;
 
-	char* queueName = (char*) ::malloc(8 + 16);
-	memset(queueName, '\0', 25);
+	char* queueName = (char*) ::malloc(8 + XATMI_SERVICE_NAME_LENGTH + 1);
+	memset(queueName, '\0', 8 + XATMI_SERVICE_NAME_LENGTH + 1);
 	strcpy(queueName, "/queue/");
-	strncat(queueName, serviceName, 15);
+	strncat(queueName, serviceName, XATMI_SERVICE_NAME_LENGTH);
 
 	stomp_frame frame;
 	frame.command = (char*) "SUB";
@@ -82,8 +82,8 @@ EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool,
 	this->connection = connection;
 	this->pool = pool;
 
-	char* queueName = (char*) ::malloc(12 + 15 + 1 + 5); // /temp-queue/ + serviceName + / + id
-	memset(queueName, '\0', 33);
+	char* queueName = (char*) ::malloc(12 + XATMI_SERVICE_NAME_LENGTH + 1 + 5); // /temp-queue/ + serviceName + / + id
+	memset(queueName, '\0', 12 + XATMI_SERVICE_NAME_LENGTH + 1 + 5);
 	sprintf(queueName, "/temp-queue/%s-%d", connectionName, id);
 
 	stomp_frame frame;

@@ -53,10 +53,10 @@ SessionImpl::SessionImpl(char* connectionName, stomp_connection* connection, apr
 	this->canSend = true;
 	this->canRecv = true;
 
-	this->sendTo = (char*) ::malloc(7 + 16);
-	memset(this->sendTo, '\0', 23);
+	this->sendTo = (char*) ::malloc(7 + XATMI_SERVICE_NAME_LENGTH + 1);
+	memset(this->sendTo, '\0', 7 + XATMI_SERVICE_NAME_LENGTH + 1);
 	strcpy(this->sendTo, "/queue/");
-	strncat(this->sendTo, serviceName, 15);
+	strncat(this->sendTo, serviceName, XATMI_SERVICE_NAME_LENGTH);
 
 	this->toRead = new EndpointQueue(this->connection, this->pool, connectionName, id);
 	this->replyTo = toRead->getFullName();

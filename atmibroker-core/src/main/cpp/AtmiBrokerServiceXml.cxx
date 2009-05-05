@@ -96,9 +96,9 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(SVCINFO* aServiceStructPtr,
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml,
 			(char*) "in parseXmlDescriptor() %s", aDescriptorFileName);
 
-	char* serviceConfigFilename = (char*) malloc(25); // TODO this is the length of the service + 10
-	memset(serviceConfigFilename, '\0', 25);
-	strncpy(serviceConfigFilename, aDescriptorFileName, 15); // TODO this is the length of the service
+	char* serviceConfigFilename = (char*) malloc(XATMI_SERVICE_NAME_LENGTH + 10); // TODO this is the length of the service + 10
+	memset(serviceConfigFilename, '\0', XATMI_SERVICE_NAME_LENGTH + 10);
+	strncpy(serviceConfigFilename, aDescriptorFileName, XATMI_SERVICE_NAME_LENGTH); // TODO this is the length of the service
 	strcat(serviceConfigFilename, ".xml");
 	LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "loading: "
 			<< serviceConfigFilename);
