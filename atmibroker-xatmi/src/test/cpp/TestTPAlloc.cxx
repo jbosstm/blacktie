@@ -24,6 +24,8 @@
 #include "TestTPAlloc.h"
 
 void TestTPAlloc::setUp() {
+	m_allocated = NULL;
+
 	BaseTest::setUp();
 	// Do local work
 	CPPUNIT_ASSERT(tperrno == 0);

@@ -26,6 +26,9 @@
 extern void testtpfreeservice_service(TPSVCINFO *svcinfo);
 
 void TestTPFreeService::setUp() {
+	m_allocated = NULL;
+	m_rcvbuf = NULL;
+
 	// Start server
 	BaseServerTest::setUp();
 

@@ -29,8 +29,9 @@ extern void test_tpcall_x_common_service(TPSVCINFO *svcinfo);
 extern void test_tpcall_x_c_type_service(TPSVCINFO *svcinfo);
 
 void TestTPCall::setUp() {
-	BaseServerTest::setUp();
+	sendbuf = NULL;
 	rcvbuf = NULL;
+	BaseServerTest::setUp();
 	// Do local work
 }
 

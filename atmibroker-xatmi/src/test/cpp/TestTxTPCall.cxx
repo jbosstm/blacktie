@@ -28,6 +28,8 @@
 extern void test_tx_tpcall_x_octet_service(TPSVCINFO *svcinfo);
 
 void TestTxTPCall::setUp() {
+	sendbuf = NULL;
+	rcvbuf = NULL;
 	BaseServerTest::setUp();
 
 	// Do local work

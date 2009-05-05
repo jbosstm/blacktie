@@ -26,6 +26,9 @@
 extern void testtpunadvertise_service(TPSVCINFO *svcinfo);
 
 void TestTPUnadvertise::setUp() {
+	sendbuf = NULL;
+	rcvbuf = NULL;
+
 	// Setup server
 	BaseServerTest::setUp();
 	int toCheck = tpadvertise((char*) "TestTPUnadvertise", testtpunadvertise_service);
