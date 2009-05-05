@@ -106,7 +106,7 @@ EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool,
 // ~EndpointQueue destructor.
 //
 EndpointQueue::~EndpointQueue() {
-	LOG4CXX_DEBUG(logger, (char*) "destroyed");
+	LOG4CXX_DEBUG(logger, (char*) "destroying" << name);
 
 	lock->lock();
 	if (!shutdown) {
@@ -116,6 +116,7 @@ EndpointQueue::~EndpointQueue() {
 	lock->unlock();
 	delete lock;
 	lock = NULL;
+	LOG4CXX_DEBUG(logger, (char*) "destroyed" << name);
 }
 
 MESSAGE EndpointQueue::receive(long time) {
