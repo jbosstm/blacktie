@@ -97,14 +97,12 @@ ConnectionImpl::~ConnectionImpl() {
 	apr_status_t rc = stomp_write(connection, &frame, pool);
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, "Could not send frame");
-		throw new std::exception();
 	}
 
 	LOG4CXX_DEBUG(logger, "Disconnecting...");
 	rc = stomp_disconnect(&connection);
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, "Could not disconnect");
-		throw new std::exception();
 	}
 
 	apr_pool_destroy(pool);

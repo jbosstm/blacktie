@@ -21,6 +21,26 @@
 #include "EndpointQueue.h"
 #include "ThreadLocalStorage.h"
 
+char* fTPERESET = (char*) "0";
+char* fTPEBADDESC = (char*) "2";
+char* fTPEBLOCK = (char*) "3";
+char* fTPEINVAL = (char*) "4";
+char* fTPELIMIT = (char*) "5";
+char* fTPENOENT = (char*) "6";
+char* fTPEOS = (char*) "7";
+char* fTPEPROTO = (char*) "9";
+char* fTPESVCERR = (char*) "10";
+char* fTPESVCFAIL = (char*) "11";
+char* fTPESYSTEM = (char*) "12";
+char* fTPETIME = (char*) "13";
+char* fTPETRAN = (char*) "14";
+char* fTPGOTSIG = (char*) "15";
+char* fTPEITYPE = (char*) "17";
+char* fTPEOTYPE = (char*) "18";
+char* fTPEEVENT = (char*) "22";
+char* fTPEMATCH = (char*) "23";
+
+
 log4cxx::LoggerPtr EndpointQueue::logger(log4cxx::Logger::getLogger(
 		"EndpointQueue"));
 
@@ -119,6 +139,10 @@ MESSAGE EndpointQueue::receive(long time) {
 		if (rc != APR_SUCCESS) {
 			LOG4CXX_ERROR(logger, "Could not read frame for " << name << ": "
 					<< rc << " was the result");
+			setSpecific(TPE_KEY, fTPESYSTEM);
+		} else if (strcmp(frame->command, (const char*)"ERROR") == 0) {
+			LOG4CXX_DEBUG(logger, (char*) "Got an error: " << frame->body);
+			setSpecific(TPE_KEY, fTPENOENT);
 		} else {
 			LOG4CXX_INFO(logger, "Read: " << frame->command << ", "
 					<< frame->body);

@@ -23,6 +23,26 @@
 #include "SessionImpl.h"
 #include "EndpointQueue.h"
 
+#include "ThreadLocalStorage.h"
+char* eTPERESET = (char*) "0";
+char* eTPEBADDESC = (char*) "2";
+char* eTPEBLOCK = (char*) "3";
+char* eTPEINVAL = (char*) "4";
+char* eTPELIMIT = (char*) "5";
+char* eTPENOENT = (char*) "6";
+char* eTPEOS = (char*) "7";
+char* eTPEPROTO = (char*) "9";
+char* eTPESVCERR = (char*) "10";
+char* eTPESVCFAIL = (char*) "11";
+char* eTPESYSTEM = (char*) "12";
+char* eTPETIME = (char*) "13";
+char* eTPETRAN = (char*) "14";
+char* eTPGOTSIG = (char*) "15";
+char* eTPEITYPE = (char*) "17";
+char* eTPEOTYPE = (char*) "18";
+char* eTPEEVENT = (char*) "22";
+char* eTPEMATCH = (char*) "23";
+
 log4cxx::LoggerPtr SessionImpl::logger(log4cxx::Logger::getLogger("SessionImpl"));
 
 SessionImpl::SessionImpl(char* connectionName, stomp_connection* connection, apr_pool_t* pool, int id, char* serviceName) {
@@ -72,6 +92,7 @@ void SessionImpl::send(MESSAGE message) {
 	frame.command = (char*) "SEND";
 	frame.headers = apr_hash_make(pool);
 	apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, sendTo);
+	apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING, "receipt");
 
 	frame.body_length = message.len;
 	frame.body = message.data;
@@ -89,9 +110,20 @@ void SessionImpl::send(MESSAGE message) {
 	apr_status_t rc = stomp_write(connection, &frame, pool);
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, "Could not send frame");
-		throw std::exception();
+		setSpecific(TPE_KEY, eTPESYSTEM);
+	} 
+
+	stomp_frame *framed;
+	rc = stomp_read(connection, &framed, pool);
+	if (rc != APR_SUCCESS) {
+		LOG4CXX_ERROR(logger, "Could not send frame");
+		setSpecific(TPE_KEY, eTPESYSTEM);
+	} else if (strcmp(framed->command, (const char*)"ERROR") == 0) {
+		LOG4CXX_DEBUG(logger, (char*) "Got an error: " << framed->body);
+		setSpecific(TPE_KEY, eTPENOENT);
+	} else {
+		LOG4CXX_DEBUG(logger, (char*) "Called back ");
 	}
-	LOG4CXX_DEBUG(logger, (char*) "Called back ");
 }
 
 void SessionImpl::setSendTo(const char* destinationName) {

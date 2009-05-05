@@ -307,11 +307,13 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 				if (cd != -1) {
 					::send(session, session->getReplyTo(), idata, len, cd,
 							flags, 0, 0);
-					if (TPNOREPLY & flags) {
-						toReturn = 0;
-						ptrAtmiBrokerClient->closeSession(cd);
-					} else {
-						toReturn = cd;
+					if (strcmp((const char*) getSpecific(TPE_KEY), dTPERESET) == 0) {
+						if (TPNOREPLY & flags) {
+							toReturn = 0;
+							ptrAtmiBrokerClient->closeSession(cd);
+						} else {
+							toReturn = cd;
+						}
 					}
 				} else {
 					setSpecific(TPE_KEY, dTPELIMIT);

@@ -36,7 +36,7 @@
       <depends>jboss.messaging:service=PostOffice</depends>
    </mbean>   
    <mbean code="org.jboss.jms.server.destination.QueueService"
-      name="jboss.messaging.destination:service=Queue,name=TestTPUnadvertise"
+      name="jboss.messaging.destination:service=Queue,name=TestTPUnadverti"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
@@ -66,7 +66,7 @@
       <depends>jboss.messaging:service=PostOffice</depends>
    </mbean>   
    <mbean code="org.jboss.jms.server.destination.QueueService"
-      name="jboss.messaging.destination:service=Queue,name=TestTPConversation"
+      name="jboss.messaging.destination:service=Queue,name=TestTPConversat"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
@@ -138,12 +138,12 @@
 		<depends>jboss.messaging.destination:service=Queue,name=TestTPFree</depends>
 		<depends>jboss.messaging.destination:service=Queue,name=TestTPAdvertise</depends>
 		<depends>jboss.messaging.destination:service=Queue,name=123456789012345</depends>
-		<depends>jboss.messaging.destination:service=Queue,name=TestTPUnadvertise</depends>
+		<depends>jboss.messaging.destination:service=Queue,name=TestTPUnadverti</depends>
 		<depends>jboss.messaging.destination:service=Queue,name=tpcall_x_octet</depends>
 		<depends>jboss.messaging.destination:service=Queue,name=tpcall_x_common</depends>
 		<depends>jboss.messaging.destination:service=Queue,name=tpcall_x_c_type</depends>
 		<depends>jboss.messaging.destination:service=Queue,name=LOOPY</depends>
-		<depends>jboss.messaging.destination:service=Queue,name=TestTPConversation</depends>
+		<depends>jboss.messaging.destination:service=Queue,name=TestTPConversat</depends>
 		<depends>jboss.messaging.destination:service=Queue,name=TestTPACall</depends>
 		<depends>jboss.messaging.destination:service=Queue,name=TestTPCancel</depends>
 		<depends>jboss.messaging.destination:service=Queue,name=TestTPConnect</depends>
