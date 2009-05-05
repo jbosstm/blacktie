@@ -52,6 +52,8 @@ EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool,
 	this->connection = connection;
 	this->pool = pool;
 
+	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
+	int XATMI_SERVICE_NAME_LENGTH = 15;
 	char* queueName = (char*) ::malloc(8 + XATMI_SERVICE_NAME_LENGTH + 1);
 	memset(queueName, '\0', 8 + XATMI_SERVICE_NAME_LENGTH + 1);
 	strcpy(queueName, "/queue/");
@@ -82,6 +84,8 @@ EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool,
 	this->connection = connection;
 	this->pool = pool;
 
+	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
+	int XATMI_SERVICE_NAME_LENGTH = 15;
 	char* queueName = (char*) ::malloc(12 + XATMI_SERVICE_NAME_LENGTH + 1 + 5); // /temp-queue/ + serviceName + / + id
 	memset(queueName, '\0', 12 + XATMI_SERVICE_NAME_LENGTH + 1 + 5);
 	sprintf(queueName, "/temp-queue/%s-%d", connectionName, id);

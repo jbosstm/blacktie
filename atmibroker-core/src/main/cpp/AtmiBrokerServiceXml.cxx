@@ -96,6 +96,8 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(SVCINFO* aServiceStructPtr,
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml,
 			(char*) "in parseXmlDescriptor() %s", aDescriptorFileName);
 
+	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
+	int XATMI_SERVICE_NAME_LENGTH = 15;
 	char* serviceConfigFilename = (char*) malloc(XATMI_SERVICE_NAME_LENGTH + 10); // TODO this is the length of the service + 10
 	memset(serviceConfigFilename, '\0', XATMI_SERVICE_NAME_LENGTH + 10);
 	strncpy(serviceConfigFilename, aDescriptorFileName, XATMI_SERVICE_NAME_LENGTH); // TODO this is the length of the service

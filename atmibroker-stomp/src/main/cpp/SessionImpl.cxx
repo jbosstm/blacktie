@@ -53,6 +53,8 @@ SessionImpl::SessionImpl(char* connectionName, stomp_connection* connection, apr
 	this->canSend = true;
 	this->canRecv = true;
 
+	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
+	int XATMI_SERVICE_NAME_LENGTH = 15;
 	this->sendTo = (char*) ::malloc(7 + XATMI_SERVICE_NAME_LENGTH + 1);
 	memset(this->sendTo, '\0', 7 + XATMI_SERVICE_NAME_LENGTH + 1);
 	strcpy(this->sendTo, "/queue/");
