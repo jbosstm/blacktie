@@ -42,7 +42,7 @@
 			<SERVICE_NAME name='TestTPRecv' advertised='false'/>
 			<SERVICE_NAME name='TestTPService' advertised='false'/>
 			<SERVICE_NAME name='TestTPReturn' advertised='false'/>
-			<SERVICE_NAME name='BAR' library_name='dummy-rm.dll' advertised='false' />
+			<SERVICE_NAME name='BAR' library_name='dummy-rm.dll' advertised='true' />
 		</SERVICE_NAMES>
 	</SERVER_DESCRIPTION>
 </SERVER>

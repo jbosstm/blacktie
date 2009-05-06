@@ -57,7 +57,10 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 	// EXTRACT THE DATA FROM THE INBOUND MESSAGE
 	int correlationId = message.correlationId;
-	char* idata = message.data;
+	
+	char* idata = (char *) malloc(message.len);
+	memcpy(idata, message.data, message.len);
+
 	long ilen = message.len;
 	long flags = message.flags;
 	void* control = message.control;

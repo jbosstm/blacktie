@@ -48,6 +48,9 @@ public:
 	Session* getSession(int id);
 	void closeSession(int id);
 
+	static stomp_connection* connect(apr_pool_t* pool);
+	static void disconnect(stomp_connection* connection, apr_pool_t* pool);
+
 	Destination* createDestination(char* serviceName);
 	void destroyDestination(Destination* destination);
 private:

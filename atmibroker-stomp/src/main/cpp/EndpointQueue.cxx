@@ -20,6 +20,7 @@
 #include "malloc.h"
 #include "EndpointQueue.h"
 #include "ThreadLocalStorage.h"
+#include "ConnectionImpl.h"
 
 char* fTPERESET = (char*) "0";
 char* fTPEBADDESC = (char*) "2";
@@ -44,12 +45,12 @@ char* fTPEMATCH = (char*) "23";
 log4cxx::LoggerPtr EndpointQueue::logger(log4cxx::Logger::getLogger(
 		"EndpointQueue"));
 
-EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool,
+EndpointQueue::EndpointQueue(apr_pool_t* pool,
 		char* serviceName) {
 	shutdown = false;
 	lock = new SynchronizableObject();
-
-	this->connection = connection;
+	
+	connection = ConnectionImpl::connect(pool);
 	this->pool = pool;
 
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
@@ -65,7 +66,7 @@ EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool,
 	apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, queueName);
 	frame.body_length = -1;
 	frame.body = NULL;
-	//LOG4CXX_DEBUG(logger, (char*) "Sending SUB");
+	LOG4CXX_DEBUG(logger, "Send SUB: " << queueName);
 	apr_status_t rc = stomp_write(connection, &frame, pool);
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, (char*) "Could not send frame");
@@ -73,15 +74,15 @@ EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool,
 	}
 	this->name = serviceName;
 	this->fullName = (const char*) queueName;
-	LOG4CXX_DEBUG(logger, "OK");
+	LOG4CXX_DEBUG(logger, "Sent SUB: " << queueName);
 }
 
-EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool,
+EndpointQueue::EndpointQueue(apr_pool_t* pool,
 		char* connectionName, int id) {
 	shutdown = false;
 	lock = new SynchronizableObject();
-
-	this->connection = connection;
+	
+	connection = ConnectionImpl::connect(pool);
 	this->pool = pool;
 
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
@@ -96,7 +97,7 @@ EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool,
 	apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, queueName);
 	frame.body_length = -1;
 	frame.body = NULL;
-	LOG4CXX_DEBUG(logger, "Sending SUB");
+	LOG4CXX_DEBUG(logger, "Send SUB: " << queueName);
 	apr_status_t rc = stomp_write(connection, &frame, pool);
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, (char*) "Could not send frame");
@@ -104,13 +105,13 @@ EndpointQueue::EndpointQueue(stomp_connection* connection, apr_pool_t* pool,
 	}
 	this->name = queueName;
 	this->fullName = (const char*) queueName;
-	LOG4CXX_DEBUG(logger, "OK");
+	LOG4CXX_DEBUG(logger, "Sent SUB: " << queueName);
 }
 
 // ~EndpointQueue destructor.
 //
 EndpointQueue::~EndpointQueue() {
-	LOG4CXX_DEBUG(logger, (char*) "destroying" << name);
+	LOG4CXX_TRACE(logger, (char*) "destroying" << name);
 
 	lock->lock();
 	if (!shutdown) {
@@ -120,7 +121,7 @@ EndpointQueue::~EndpointQueue() {
 	lock->unlock();
 	delete lock;
 	lock = NULL;
-	LOG4CXX_DEBUG(logger, (char*) "destroyed" << name);
+	LOG4CXX_TRACE(logger, (char*) "destroyed" << name);
 }
 
 MESSAGE EndpointQueue::receive(long time) {
@@ -139,18 +140,17 @@ MESSAGE EndpointQueue::receive(long time) {
 	lock->lock();
 	if (!shutdown) {
 		stomp_frame *frame;
-		LOG4CXX_DEBUG(logger, (char*) "Reading from: " << name);
+		LOG4CXX_DEBUG(logger, (char*) "Receivin from: " << name);
 		apr_status_t rc = stomp_read(connection, &frame, pool);
 		if (rc != APR_SUCCESS) {
-			LOG4CXX_ERROR(logger, "Could not read frame for " << name << ": "
+			LOG4CXX_DEBUG(logger, "Could not read frame for " << name << ": "
 					<< rc << " was the result");
 			setSpecific(TPE_KEY, fTPESYSTEM);
 		} else if (strcmp(frame->command, (const char*)"ERROR") == 0) {
-			LOG4CXX_DEBUG(logger, (char*) "Got an error: " << frame->body);
+			LOG4CXX_ERROR(logger, (char*) "Got an error: " << frame->body);
 			setSpecific(TPE_KEY, fTPENOENT);
 		} else {
-			LOG4CXX_INFO(logger, "Read: " << frame->command << ", "
-					<< frame->body);
+			LOG4CXX_DEBUG(logger, "Received from: " << name  << " Command: " << frame->command << " Body: " << frame->body);
 			message.len = frame->body_length;
 			message.data = frame->body;
 			message.replyto = (const char*) apr_hash_get(frame->headers,
@@ -169,7 +169,7 @@ MESSAGE EndpointQueue::receive(long time) {
 }
 
 void EndpointQueue::disconnect() {
-	LOG4CXX_DEBUG(logger, (char*) "disconnecting");
+	LOG4CXX_TRACE(logger, (char*) "disconnecting");
 	lock->lock();
 	if (!shutdown) {
 		shutdown = true;

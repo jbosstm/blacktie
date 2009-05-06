@@ -38,8 +38,8 @@ extern "C"
 
 class BLACKTIE_STOMP_DLL EndpointQueue: public virtual Destination {
 public:
-	EndpointQueue(stomp_connection* connection, apr_pool_t* pool, char* serviceName);
-	EndpointQueue(stomp_connection* connection, apr_pool_t* pool, char* serviceName, int id);
+	EndpointQueue(apr_pool_t* pool, char* serviceName);
+	EndpointQueue(apr_pool_t* pool, char* serviceName, int id);
 	virtual ~EndpointQueue();
 
 	virtual void disconnect();

@@ -94,9 +94,12 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 				control = disassociate_tx();
 			}
 
+			char* data_togo = (char *) malloc(ilen);
+			memcpy(data_togo, idata, ilen);
+
 			MESSAGE message;
 			message.replyto = replyTo;
-			message.data = idata;
+			message.data = data_togo;
 			message.len = ilen;
 			message.correlationId = correlationId;
 			message.flags = flags;

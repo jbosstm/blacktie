@@ -39,14 +39,23 @@ ConnectionImpl::ConnectionImpl(char* connectionName) {
 		LOG4CXX_ERROR(logger, (char*) "Could not allocate pool: " << rc);
 		throw new std::exception();
 	}
+}
 
+ConnectionImpl::~ConnectionImpl() {
+	apr_pool_destroy(pool);
+	apr_terminate();
+	LOG4CXX_TRACE(logger, "Destroyed");
+}
+
+stomp_connection* ConnectionImpl::connect(apr_pool_t* pool) {
+	stomp_connection* connection = NULL;
 	std::string host = AtmiBrokerEnv::get_instance()->getenv(
 			(char*) "StompConnectHost");
 	std::string port = AtmiBrokerEnv::get_instance()->getenv(
 			(char*) "StompConnectPort");
 	LOG4CXX_DEBUG(logger, "Connecting to: " << host << ":" << port);
 	int portNum = atoi(port.c_str());
-	rc = stomp_connect(&connection, host.c_str(), portNum, pool);
+	apr_status_t  rc = stomp_connect(&connection, host.c_str(), portNum, pool);
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, (char*) "Could not connect: " << host << ", "
 				<< port << ": " << rc);
@@ -54,7 +63,7 @@ ConnectionImpl::ConnectionImpl(char* connectionName) {
 	}
 
 	apr_socket_opt_set(connection->socket, APR_SO_NONBLOCK, 0);
-	apr_socket_timeout_set(connection->socket, 50000);
+	apr_socket_timeout_set(connection->socket, 1000000 * 2);
 	LOG4CXX_DEBUG(logger, (char*) "Set socket options");
 
 	std::string usr = AtmiBrokerEnv::get_instance()->getenv(
@@ -69,6 +78,7 @@ ConnectionImpl::ConnectionImpl(char* connectionName) {
 	apr_hash_set(frame.headers, "passcode", APR_HASH_KEY_STRING, pwd.c_str());
 	frame.body = NULL;
 	frame.body_length = -1;
+	LOG4CXX_DEBUG(logger, "Connecting...");
 	rc = stomp_write(connection, &frame, pool);
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, (char*) "Could not send frame");
@@ -82,12 +92,15 @@ ConnectionImpl::ConnectionImpl(char* connectionName) {
 		LOG4CXX_ERROR(logger, (char*) "Could not read frame: " << rc
 				<< " from connection");
 		throw new std::exception();
-	}
+	} else {
 	LOG4CXX_DEBUG(logger, "Response: " << frameRead->command << ", "
 			<< frameRead->body);
+		LOG4CXX_DEBUG(logger, "Connected");
+	}
+	return connection;
 }
 
-ConnectionImpl::~ConnectionImpl() {
+void ConnectionImpl::disconnect(stomp_connection* connection, apr_pool_t* pool) {
 	LOG4CXX_DEBUG(logger, (char*) "Sending DISCONNECT");
 	stomp_frame frame;
 	frame.command = (char*) "DISCONNECT";
@@ -103,28 +116,26 @@ ConnectionImpl::~ConnectionImpl() {
 	rc = stomp_disconnect(&connection);
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, "Could not disconnect");
+	} else {
+		LOG4CXX_DEBUG(logger, "Disconnected");
 	}
-
-	apr_pool_destroy(pool);
-	apr_terminate();
-	LOG4CXX_DEBUG(logger, "Destroyed");
 }
 
 Session* ConnectionImpl::createSession(int id, char * serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession");
-	sessionMap[id] = new SessionImpl(connectionName, connection, pool, id,
+	sessionMap[id] = new SessionImpl(connectionName, pool, id,
 			serviceName);
 	return sessionMap[id];
 }
 
 Session* ConnectionImpl::createSession(int id, const char* temporaryQueueName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession");
-	return new SessionImpl(connectionName, connection, pool, id,
+	return new SessionImpl(connectionName, pool, id,
 			temporaryQueueName);
 }
 
 Destination* ConnectionImpl::createDestination(char* serviceName) {
-	return new EndpointQueue(this->connection, this->pool, serviceName);
+	return new EndpointQueue(this->pool, serviceName);
 }
 
 void ConnectionImpl::destroyDestination(Destination* destination) {

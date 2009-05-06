@@ -29,9 +29,9 @@ class ConnectionImpl;
 
 class BLACKTIE_STOMP_DLL SessionImpl: public virtual Session {
 public:
-	SessionImpl(char* connectionName, stomp_connection* connection, apr_pool_t* pool, int id, const char* temporaryQueueName);
+	SessionImpl(char* connectionName, apr_pool_t* pool, int id, const char* temporaryQueueName);
 
-	SessionImpl(char* connectionName, stomp_connection* connection, apr_pool_t* pool, int id, char* service);
+	SessionImpl(char* connectionName, apr_pool_t* pool, int id, char* service);
 
 	virtual ~SessionImpl();
 

@@ -45,10 +45,10 @@ char* eTPEMATCH = (char*) "23";
 
 log4cxx::LoggerPtr SessionImpl::logger(log4cxx::Logger::getLogger("SessionImpl"));
 
-SessionImpl::SessionImpl(char* connectionName, stomp_connection* connection, apr_pool_t* pool, int id, char* serviceName) {
-	LOG4CXX_DEBUG(logger, (char*) "constructor ");
+SessionImpl::SessionImpl(char* connectionName, apr_pool_t* pool, int id, char* serviceName) {
+	LOG4CXX_TRACE(logger, (char*) "constructor ");
 	this->id = id;
-	this->connection = connection;
+	connection = ConnectionImpl::connect(pool);
 	this->pool = pool;
 	this->canSend = true;
 	this->canRecv = true;
@@ -60,28 +60,28 @@ SessionImpl::SessionImpl(char* connectionName, stomp_connection* connection, apr
 	strcpy(this->sendTo, "/queue/");
 	strncat(this->sendTo, serviceName, XATMI_SERVICE_NAME_LENGTH);
 
-	this->toRead = new EndpointQueue(this->connection, this->pool, connectionName, id);
+	this->toRead = new EndpointQueue(this->pool, connectionName, id);
 	this->replyTo = toRead->getFullName();
-	LOG4CXX_DEBUG(logger, "OK");
+	LOG4CXX_TRACE(logger, "OK");
 }
 
-SessionImpl::SessionImpl(char* connectionName, stomp_connection* connection, apr_pool_t* pool, int id, const char* temporaryQueueName) {
-	LOG4CXX_DEBUG(logger, (char*) "constructor ");
+SessionImpl::SessionImpl(char* connectionName, apr_pool_t* pool, int id, const char* temporaryQueueName) {
+	LOG4CXX_TRACE(logger, (char*) "constructor ");
 	this->id = id;
-	this->connection = connection;
+	connection = ConnectionImpl::connect(pool);
 	this->pool = pool;
 	this->canSend = true;
 	this->canRecv = true;
 
 	this->sendTo = ::strdup(temporaryQueueName);
 
-	this->toRead = new EndpointQueue(this->connection, this->pool, connectionName, id);
+	this->toRead = new EndpointQueue(this->pool, connectionName, id);
 	this->replyTo = toRead->getFullName();
-	LOG4CXX_DEBUG(logger, "OK");
+	LOG4CXX_TRACE(logger, "OK");
 }
 
 SessionImpl::~SessionImpl() {
-	LOG4CXX_DEBUG(logger, (char*) "destroyed");
+	LOG4CXX_TRACE(logger, (char*) "destroyed");
 	::free(this->sendTo);
 }
 
@@ -108,12 +108,12 @@ void SessionImpl::send(MESSAGE message) {
 	//	apr_hash_set(frame.headers, "message.rcode", APR_HASH_KEY_STRING, message.rcode);
 	//	apr_hash_set(frame.headers, "message.event", APR_HASH_KEY_STRING, message.event);
 
-	LOG4CXX_DEBUG(logger, "Sending SEND");
+	LOG4CXX_DEBUG(logger, "Send to: " << sendTo << " Command: " << frame.command << " Body: " << frame.body);
 	apr_status_t rc = stomp_write(connection, &frame, pool);
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, "Could not send frame");
 		setSpecific(TPE_KEY, eTPESYSTEM);
-	} 
+	} else {
 
 	stomp_frame *framed;
 	rc = stomp_read(connection, &framed, pool);
@@ -125,6 +125,9 @@ void SessionImpl::send(MESSAGE message) {
 		setSpecific(TPE_KEY, eTPENOENT);
 	} else {
 		LOG4CXX_DEBUG(logger, (char*) "Called back ");
+	}
+	LOG4CXX_DEBUG(logger, "Sent to: " << sendTo << " Command: " << frame.command << " Body: " << frame.body);
+
 	}
 }
 

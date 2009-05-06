@@ -99,9 +99,7 @@ MESSAGE SessionImpl::receive(long time) {
 }
 
 void SessionImpl::send(MESSAGE message) {
-	unsigned char * data_togo = (unsigned char *) malloc(message.len);
-	memcpy(data_togo, message.data, message.len);
-	AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(message.len, message.len, data_togo, true);
+	AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(message.len, message.len, message.data, true);
 	remoteEndpoint->send(message.replyto, message.rval, message.rcode, aOctetSeq, message.len, message.correlationId, message.flags);
 	aOctetSeq = NULL;
 	LOG4CXX_DEBUG(logger, (char*) "Called back ");
