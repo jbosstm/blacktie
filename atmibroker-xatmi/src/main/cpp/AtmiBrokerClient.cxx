@@ -34,7 +34,6 @@
 #include "ace/OS_NS_string.h"
 #include "ace/Default_Constants.h"
 #include "ThreadLocalStorage.h"
-#include "ConnectionImpl.h"
 
 
 AtmiBrokerClient * ptrAtmiBrokerClient;
