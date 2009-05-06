@@ -223,10 +223,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\atmibroker-core\src\test\cpp\CoreTestSuite.cxx"
-				>
-			</File>
-			<File
 				RelativePath="..\..\atmibroker-stomp\src\main\cpp\EndpointQueue.cxx"
 				>
 			</File>
