@@ -43,24 +43,7 @@
 #include "ace/OS_NS_string.h"
 #include "ace/Default_Constants.h"
 #include "ThreadLocalStorage.h"
-char* cTPERESET = (char*) "0";
-char* cTPEBADDESC = (char*) "2";
-char* cTPEBLOCK = (char*) "3";
-char* cTPEINVAL = (char*) "4";
-char* cTPELIMIT = (char*) "5";
-char* cTPENOENT = (char*) "6";
-char* cTPEOS = (char*) "7";
-char* cTPEPROTO = (char*) "9";
-char* cTPESVCERR = (char*) "10";
-char* cTPESVCFAIL = (char*) "11";
-char* cTPESYSTEM = (char*) "12";
-char* cTPETIME = (char*) "13";
-char* cTPETRAN = (char*) "14";
-char* cTPGOTSIG = (char*) "15";
-char* cTPEITYPE = (char*) "17";
-char* cTPEOTYPE = (char*) "18";
-char* cTPEEVENT = (char*) "22";
-char* cTPEMATCH = (char*) "23";
+#include "ConnectionImpl.h"
 
 log4cxx::LoggerPtr loggerAtmiBrokerServer(log4cxx::Logger::getLogger(
 		"AtmiBrokerServer"));
@@ -83,7 +66,7 @@ void server_sigint_handler_callback(int sig_type) {
 }
 
 int serverrun() {
-	setSpecific(TPE_KEY, cTPERESET);
+	setSpecific(TPE_KEY, TSS_TPERESET);
 	return ptrServer->block();
 }
 
@@ -126,7 +109,7 @@ const char* getConfigurationDir() {
 }
 
 int serverinit(int argc, char** argv) {
-	setSpecific(TPE_KEY, cTPERESET);
+	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = 0;
 	const char* ptrDir = NULL;
 
@@ -135,7 +118,7 @@ int serverinit(int argc, char** argv) {
 	if(argc > 0 && parsecmdline(argc, argv) != 0) {
 		fprintf(stderr, "usage:%s [-c config] [server]\n", argv[0]);
 		toReturn = -1;
-		setSpecific(TPE_KEY, cTPESYSTEM);
+		setSpecific(TPE_KEY, TSS_TPESYSTEM);
 	}
 
 
@@ -151,7 +134,7 @@ int serverinit(int argc, char** argv) {
 		if (!serverInitialized) {
 			::serverdone();
 			toReturn = -1;
-			setSpecific(TPE_KEY, cTPESYSTEM);
+			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		} else {
 			ptrServer->advertiseAtBootime();
 			userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
@@ -162,7 +145,7 @@ int serverinit(int argc, char** argv) {
 }
 
 int serverdone() {
-	setSpecific(TPE_KEY, cTPERESET);
+	setSpecific(TPE_KEY, TSS_TPERESET);
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverdone called");
 	if (ptrServer) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
@@ -247,13 +230,13 @@ AtmiBrokerServer::AtmiBrokerServer() {
 			LOG4CXX_ERROR(loggerAtmiBrokerServer,
 					(char*) "Could not load the transport: "
 					<< transportLibrary);
-			setSpecific(TPE_KEY, cTPESYSTEM);
+			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		}
 	} catch (CORBA::Exception& e) {
 		userlog(log4cxx::Level::getError(), loggerAtmiBrokerServer,
 				(char*) "serverinit - Unexpected CORBA exception: %s",
 				e._name());
-		setSpecific(TPE_KEY, cTPESYSTEM);
+		setSpecific(TPE_KEY, TSS_TPESYSTEM);
 	}
 }
 
@@ -330,12 +313,14 @@ CORBA::Short AtmiBrokerServer::server_init() throw (CORBA::SystemException ) {
 void AtmiBrokerServer::server_done() throw (CORBA::SystemException ) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_done()");
 
+	if (realConnection) {
 	if (realConnection->name_ctx) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "unadvertise "
 				<< serverName);
 		CosNaming::Name* name =
 				realConnection->default_ctx->to_name(serverName);
 		realConnection->name_ctx->unbind(*name);
+	}
 	}
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "unadvertised " << serverName);
@@ -359,7 +344,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname, void(*func)(
 		TPSVCINFO *)) {
     
 	if (!svcname || strlen(svcname) == 0) {
-		setSpecific(TPE_KEY, cTPEINVAL);
+		setSpecific(TPE_KEY, TSS_TPEINVAL);
 		return false;
 	}
 
@@ -377,7 +362,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname, void(*func)(
 		}
 	}
 	if (!found) {
-		setSpecific(TPE_KEY, cTPELIMIT);
+		setSpecific(TPE_KEY, TSS_TPELIMIT);
 		return false;
 	}
 	void (*serviceFunction)(TPSVCINFO*) = getServiceMethod(serverInfo.serviceDatas[i].name.c_str());
@@ -385,7 +370,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname, void(*func)(
 		if (serviceFunction == func) {
 			return true;
 		} else {
-			setSpecific(TPE_KEY, cTPEMATCH);
+			setSpecific(TPE_KEY, TSS_TPEMATCH);
 			return false;
 		}
 	}
@@ -409,7 +394,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname, void(*func)(
 				loggerAtmiBrokerServer,
 				(char*) "service has already been advertised, however it appears to be by a different server (possibly with the same name), which is strange... "
 						<< serviceName);
-		setSpecific(TPE_KEY, cTPEMATCH);
+		setSpecific(TPE_KEY, TSS_TPEMATCH);
 		return false;
 	}
 

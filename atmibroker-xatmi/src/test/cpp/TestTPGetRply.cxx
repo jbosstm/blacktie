@@ -62,9 +62,6 @@ void TestTPGetRply::test_tpgetrply() {
 
 	// RETRIEVE THE RESPONSE
 	int valToTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
-	CPPUNIT_ASSERT(valToTest == 0);
-	CPPUNIT_ASSERT(strcmp(rcvbuf, "testtpgetrply_service") == 0);
-	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(tperrno!= TPEINVAL);
 	CPPUNIT_ASSERT(tperrno!= TPEBADDESC);
 	CPPUNIT_ASSERT(tperrno!= TPEOTYPE);
@@ -72,6 +69,9 @@ void TestTPGetRply::test_tpgetrply() {
 	CPPUNIT_ASSERT(tperrno!= TPESVCFAIL);
 	CPPUNIT_ASSERT(tperrno!= TPESVCERR);
 	CPPUNIT_ASSERT(tperrno!= TPEBLOCK);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(valToTest == 0);
+	CPPUNIT_ASSERT(strcmp(rcvbuf, "testtpgetrply_service") == 0);
 }
 
 // 8.5

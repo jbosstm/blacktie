@@ -34,25 +34,7 @@
 #include "ace/OS_NS_string.h"
 #include "ace/Default_Constants.h"
 #include "ThreadLocalStorage.h"
-//#include "AtmiBrokerCodes.h"
-char* aTPERESET = (char*) "0";
-char* aTPEBADDESC = (char*) "2";
-char* aTPEBLOCK = (char*) "3";
-char* aTPEINVAL = (char*) "4";
-char* aTPELIMIT = (char*) "5";
-char* aTPENOENT = (char*) "6";
-char* aTPEOS = (char*) "7";
-char* aTPEPROTO = (char*) "9";
-char* aTPESVCERR = (char*) "10";
-char* aTPESVCFAIL = (char*) "11";
-char* aTPESYSTEM = (char*) "12";
-char* aTPETIME = (char*) "13";
-char* aTPETRAN = (char*) "14";
-char* aTPGOTSIG = (char*) "15";
-char* aTPEITYPE = (char*) "17";
-char* aTPEOTYPE = (char*) "18";
-char* aTPEEVENT = (char*) "22";
-char* aTPEMATCH = (char*) "23";
+#include "ConnectionImpl.h"
 
 
 AtmiBrokerClient * ptrAtmiBrokerClient;
@@ -71,7 +53,7 @@ void client_sigint_handler_callback(int sig_type) {
 }
 
 int clientinit() {
-	setSpecific(TPE_KEY, aTPERESET);
+	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = 0;
 
 	initializeLogger();
@@ -83,7 +65,7 @@ int clientinit() {
 		if (!clientInitialized) {
 			::clientdone();
 			toReturn = -1;
-			setSpecific(TPE_KEY, aTPESYSTEM);
+			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		} else {
 			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "Client Initialized");
 		}
@@ -92,7 +74,7 @@ int clientinit() {
 }
 
 int clientdone() {
-	setSpecific(TPE_KEY, aTPERESET);
+	setSpecific(TPE_KEY, TSS_TPERESET);
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientdone called");
 	if (ptrAtmiBrokerClient) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient,
@@ -143,12 +125,12 @@ AtmiBrokerClient::AtmiBrokerClient() {
 			LOG4CXX_ERROR(loggerAtmiBrokerClient,
 					(char*) "Could not load the transport: "
 							<< transportLibrary);
-			setSpecific(TPE_KEY, aTPESYSTEM);
+			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		}
 	} catch (...) {
 		LOG4CXX_ERROR(loggerAtmiBrokerClient,
 				(char*) "clientinit Unexpected exception");
-		setSpecific(TPE_KEY, aTPESYSTEM);
+		setSpecific(TPE_KEY, TSS_TPESYSTEM);
 	}
 }
 

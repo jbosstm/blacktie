@@ -22,26 +22,6 @@
 #include "ThreadLocalStorage.h"
 #include "ConnectionImpl.h"
 
-char* fTPERESET = (char*) "0";
-char* fTPEBADDESC = (char*) "2";
-char* fTPEBLOCK = (char*) "3";
-char* fTPEINVAL = (char*) "4";
-char* fTPELIMIT = (char*) "5";
-char* fTPENOENT = (char*) "6";
-char* fTPEOS = (char*) "7";
-char* fTPEPROTO = (char*) "9";
-char* fTPESVCERR = (char*) "10";
-char* fTPESVCFAIL = (char*) "11";
-char* fTPESYSTEM = (char*) "12";
-char* fTPETIME = (char*) "13";
-char* fTPETRAN = (char*) "14";
-char* fTPGOTSIG = (char*) "15";
-char* fTPEITYPE = (char*) "17";
-char* fTPEOTYPE = (char*) "18";
-char* fTPEEVENT = (char*) "22";
-char* fTPEMATCH = (char*) "23";
-
-
 log4cxx::LoggerPtr EndpointQueue::logger(log4cxx::Logger::getLogger(
 		"EndpointQueue"));
 
@@ -95,6 +75,7 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 	frame.command = (char*) "SUB";
 	frame.headers = apr_hash_make(pool);
 	apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, queueName);
+	apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING, "receipt");
 	frame.body_length = -1;
 	frame.body = NULL;
 	LOG4CXX_DEBUG(logger, "Send SUB: " << queueName);
@@ -102,6 +83,18 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, (char*) "Could not send frame");
 		throw std::exception();
+	} else {
+	stomp_frame *framed;
+	rc = stomp_read(connection, &framed, pool);
+	if (rc != APR_SUCCESS) {
+		LOG4CXX_ERROR(logger, "Could not read frame");
+		throw new std::exception();
+	} else if (strcmp(framed->command, (const char*)"ERROR") == 0) {
+		LOG4CXX_DEBUG(logger, (char*) "Got an error: " << framed->body);
+		throw new std::exception();
+	} else {
+		LOG4CXX_DEBUG(logger, (char*) "Subscribed");
+	}
 	}
 	this->name = queueName;
 	this->fullName = (const char*) queueName;
@@ -145,10 +138,10 @@ MESSAGE EndpointQueue::receive(long time) {
 		if (rc != APR_SUCCESS) {
 			LOG4CXX_DEBUG(logger, "Could not read frame for " << name << ": "
 					<< rc << " was the result");
-			setSpecific(TPE_KEY, fTPESYSTEM);
+			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		} else if (strcmp(frame->command, (const char*)"ERROR") == 0) {
 			LOG4CXX_ERROR(logger, (char*) "Got an error: " << frame->body);
-			setSpecific(TPE_KEY, fTPENOENT);
+			setSpecific(TPE_KEY, TSS_TPENOENT);
 		} else {
 			LOG4CXX_DEBUG(logger, "Received from: " << name  << " Command: " << frame->command << " Body: " << frame->body);
 			message.len = frame->body_length;

@@ -57,3 +57,22 @@ extern void* getSpecific(int key) {
 extern bool destroySpecific(int key) {
 	return tss->destroy(key);
 }
+
+char* TSS_TPERESET = (char*) "0";
+char* TSS_TPEBADDESC = (char*) "2";
+char* TSS_TPEBLOCK = (char*) "3";
+char* TSS_TPEINVAL = (char*) "4";
+char* TSS_TPELIMIT = (char*) "5";
+char* TSS_TPENOENT = (char*) "6";
+char* TSS_TPEOS = (char*) "7";
+char* TSS_TPEPROTO = (char*) "9";
+char* TSS_TPESVCERR = (char*) "10";
+char* TSS_TPESVCFAIL = (char*) "11";
+char* TSS_TPESYSTEM = (char*) "12";
+char* TSS_TPETIME = (char*) "13";
+char* TSS_TPETRAN = (char*) "14";
+char* TSS_TPGOTSIG = (char*) "15";
+char* TSS_TPEITYPE = (char*) "17";
+char* TSS_TPEOTYPE = (char*) "18";
+char* TSS_TPEEVENT = (char*) "22";
+char* TSS_TPEMATCH = (char*) "23";
