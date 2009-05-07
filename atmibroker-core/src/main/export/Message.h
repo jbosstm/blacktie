@@ -28,7 +28,6 @@ struct message_t {
 	void* control;
 	int rval;
 	long rcode;
-	long event;
 };
 typedef struct message_t MESSAGE;
 

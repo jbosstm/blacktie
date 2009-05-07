@@ -489,7 +489,8 @@ void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 		} else {
 			session->setCanRecv(false);
 			if (bufferSize(data, len) == -1) {
-				::send(session, "", data, 0, 0, flags, TPFAIL, TPESVCERR);
+				data = ::tpalloc((char*) "X_OCTET", NULL, 1);
+				::send(session, "", data, 1, 0, flags, TPFAIL, TPESVCERR);
 			} else {
 				::send(session, "", data, len, 0, flags, rval, rcode);
 			}

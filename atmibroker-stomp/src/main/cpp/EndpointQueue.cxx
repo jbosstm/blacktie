@@ -17,6 +17,7 @@
  */
 #include <exception>
 
+#include "apr_strings.h"
 #include "malloc.h"
 #include "EndpointQueue.h"
 #include "ThreadLocalStorage.h"
@@ -128,7 +129,6 @@ MESSAGE EndpointQueue::receive(long time) {
 	message.control = NULL;
 	message.rval = -1;
 	message.rcode = -1;
-	message.event = -1;
 
 	lock->lock();
 	if (!shutdown) {
@@ -149,12 +149,17 @@ MESSAGE EndpointQueue::receive(long time) {
 			message.replyto = (const char*) apr_hash_get(frame->headers,
 					"reply-to", APR_HASH_KEY_STRING);
 			message.control = NULL;
-			//	message.correlationId = (int) apr_hash_get(frame->headers, "message.correlationId", APR_HASH_KEY_STRING);
-			//	message.flags = (long) apr_hash_get(frame->headers, "message.flags", APR_HASH_KEY_STRING);
-			//	message.control = apr_hash_get(frame->headers, "message.control", APR_HASH_KEY_STRING);
-			//	message.rval = (int) apr_hash_get(frame->headers, "message.rval", APR_HASH_KEY_STRING);
-			//	message.rcode = (long) apr_hash_get(frame->headers, "message.rcode", APR_HASH_KEY_STRING);
-			//	message.event = (long) apr_hash_get(frame->headers, "message.event", APR_HASH_KEY_STRING);
+			
+			char * correlationId = (char*)apr_hash_get(frame->headers, "messagecorrelationId", APR_HASH_KEY_STRING);
+			char * flags = (char*)apr_hash_get(frame->headers, "messageflags", APR_HASH_KEY_STRING);
+			char * rval = (char*)apr_hash_get(frame->headers, "messagerval", APR_HASH_KEY_STRING);
+			char * rcode = (char*)apr_hash_get(frame->headers, "messagercode", APR_HASH_KEY_STRING);
+
+			message.correlationId = apr_atoi64(correlationId);
+			message.flags = apr_atoi64(flags);
+			message.rval = apr_atoi64(rval);
+			message.rcode = apr_atoi64(rcode);
+			//message.control = apr_hash_get(frame->headers, "message.control", APR_HASH_KEY_STRING);
 		}
 	}
 	lock->unlock();
