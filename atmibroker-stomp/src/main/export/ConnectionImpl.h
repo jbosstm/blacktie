@@ -61,4 +61,12 @@ private:
 	stomp_connection* connection;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern BLACKTIE_STOMP_DLL struct connection_factory_t connectionFactory;
+#ifdef __cplusplus
+}
+#endif
+
 #endif
