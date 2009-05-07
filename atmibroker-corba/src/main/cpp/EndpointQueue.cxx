@@ -123,7 +123,6 @@ MESSAGE EndpointQueue::receive(long time) {
 	message.control = NULL;
 	message.rval = -1;
 	message.rcode = -1;
-	message.event = -1;
 
 	lock->lock();
 	if (!shutdown) {
