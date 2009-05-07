@@ -47,7 +47,7 @@ ConnectionImpl::~ConnectionImpl() {
 	LOG4CXX_TRACE(logger, "Destroyed");
 }
 
-stomp_connection* ConnectionImpl::connect(apr_pool_t* pool) {
+stomp_connection* ConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 	stomp_connection* connection = NULL;
 	std::string host = AtmiBrokerEnv::get_instance()->getenv(
 			(char*) "StompConnectHost");
@@ -63,7 +63,7 @@ stomp_connection* ConnectionImpl::connect(apr_pool_t* pool) {
 	}
 
 	apr_socket_opt_set(connection->socket, APR_SO_NONBLOCK, 0);
-	apr_socket_timeout_set(connection->socket, 1000000 * 2);
+	apr_socket_timeout_set(connection->socket, 1000000 * timeout);
 	LOG4CXX_DEBUG(logger, (char*) "Set socket options");
 
 	std::string usr = AtmiBrokerEnv::get_instance()->getenv(

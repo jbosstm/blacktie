@@ -31,7 +31,7 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 	shutdown = false;
 	lock = new SynchronizableObject();
 	
-	connection = ConnectionImpl::connect(pool);
+	connection = ConnectionImpl::connect(pool, 2); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
 
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
@@ -63,7 +63,7 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 	shutdown = false;
 	lock = new SynchronizableObject();
 	
-	connection = ConnectionImpl::connect(pool);
+	connection = ConnectionImpl::connect(pool, 10); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
 
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
