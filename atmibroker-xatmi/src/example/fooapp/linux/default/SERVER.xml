@@ -25,7 +25,7 @@
 		<MAX_CONSUMERS>1</MAX_CONSUMERS>
 		<ORB_TYPE>TAO</ORB_TYPE>
 		<SERVICE_NAMES>
-			<SERVICE_NAME>BAR</SERVICE_NAME>
+			<SERVICE_NAME name='BAR' function_name="BAR" library_name="server.so" advertised='false'/>
 		</SERVICE_NAMES>
 	</SERVER_DESCRIPTION>
 </SERVER>
