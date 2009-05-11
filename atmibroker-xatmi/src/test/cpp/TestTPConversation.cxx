@@ -43,7 +43,7 @@ void TestTPConversation::setUp() {
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toCheck != -1);
 
-	sendlen = strlen("hello") + 1;
+	sendlen = strlen("hello") + 5 + 1;
 	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	strcpy(sendbuf, "hello");
@@ -67,31 +67,40 @@ void TestTPConversation::test_conversation() {
 	userlogc((char*) "test_conversation");
 	cd = ::tpconnect((char*) "TestTPConversation", sendbuf, sendlen, TPRECVONLY);
 	long revent = 0;
-	CPPUNIT_ASSERT(tperrno == 0);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	CPPUNIT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 	CPPUNIT_ASSERT(cd != -1);
 	userlogc("Started conversation");
 	for (int i = 0; i < interationCount; i++) {
 		int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
-		CPPUNIT_ASSERT(tperrno == 0);
+		sprintf(tperrnoS, "%d", tperrno);
+		CPPUNIT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 		CPPUNIT_ASSERT(result != -1);
+
+		sprintf(sendbuf, "yo%d", i);
+		userlogc((char*) "test_conversation:%s:", sendbuf);
 		result = ::tpsend(cd, sendbuf, sendlen, TPRECVONLY, &revent);
-		CPPUNIT_ASSERT(tperrno == 0);
+		sprintf(tperrnoS, "%d", tperrno);
+		CPPUNIT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 		CPPUNIT_ASSERT(result != -1);
 	}
 	userlogc("Conversed");
 	int result = ::tpgetrply(&cd, &rcvbuf, &rcvlen, 0);
-	CPPUNIT_ASSERT(tperrno == 0);
+	sprintf(tperrnoS, "%d", tperrno);
+	CPPUNIT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 	CPPUNIT_ASSERT(result != -1);
 }
 
 void testTPConversation_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "testTPConversation_service");
-	long revent = 0;
+	long revent = 0;	
 	char *sendbuf = ::tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
-	strcpy(sendbuf, "hello");
 	char *rcvbuf = ::tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
 	userlogc("Chatting");
 	for (int i = 0; i < interationCount; i++) {
+		sprintf(sendbuf, "hi%d", i);
+		userlogc((char*) "testTPConversation_service:%s:", sendbuf);
 		int result = ::tpsend(svcinfo->cd, sendbuf, svcinfo->len, TPRECVONLY, &revent);
 		result = ::tprecv(svcinfo->cd, &rcvbuf, &svcinfo->len, 0, &revent);
 	}
