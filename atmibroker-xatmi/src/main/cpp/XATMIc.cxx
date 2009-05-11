@@ -172,8 +172,10 @@ int _get_tperrno(void) {
 	char* err = (char*) getSpecific(TPE_KEY);
 	int toReturn = 0;
 	if (err != NULL) {
+		LOG4CXX_TRACE(loggerXATMI, (char*) "found _get_tperrno" << err);
 		toReturn = atoi(err);
 	}
+	LOG4CXX_DEBUG(loggerXATMI, (char*) "returning _get_tperrno" << toReturn);
 	return toReturn;
 }
 

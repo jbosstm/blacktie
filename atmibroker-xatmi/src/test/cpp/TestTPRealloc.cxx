@@ -19,6 +19,7 @@
 #include "BaseTest.h"
 
 #include "xatmi.h"
+#include "userlogc.h"
 
 #include "TestTPRealloc.h"
 #include "malloc.h"
@@ -32,6 +33,7 @@ void TestTPRealloc::setUp() {
 }
 
 void TestTPRealloc::tearDown() {
+	userlogc("TestTPRealloc tear down");
 	if (m_allocated) {
 		// Do local work
 		::tpfree(m_allocated);
@@ -43,6 +45,7 @@ void TestTPRealloc::tearDown() {
 		m_nonallocated = NULL;
 	}
 	BaseTest::tearDown();
+	userlogc("TestTPRealloc torn down");
 }
 
 // X_OCTET

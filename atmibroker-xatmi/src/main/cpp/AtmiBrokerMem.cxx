@@ -121,15 +121,25 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size) {
 		LOG4CXX_DEBUG(logger, (char*) "tpalloc - type: subtype: size:" << type
 				<< ":" << subtype << ":" << size);
 		MemoryInfo memoryInfo;
+		LOG4CXX_TRACE(logger, (char*) "tpalloc - created memoryInfo");
 		memoryInfo.memoryPtr = (char*) malloc(size + 1);
+		LOG4CXX_TRACE(logger, (char*) "tpalloc - malloc memoryPtr");
 		memoryInfo.memoryPtr[size] = NULL;
+		LOG4CXX_TRACE(logger, (char*) "tpalloc - NULL");
 		memoryInfo.size = size;
+		LOG4CXX_TRACE(logger, (char*) "tpalloc - sized");
 		memoryInfo.type = (char*) malloc(MAX_TYPE_SIZE);
+		LOG4CXX_TRACE(logger, (char*) "tpalloc - malloc type");
 		memset(memoryInfo.type, '\0', MAX_TYPE_SIZE);
+		LOG4CXX_TRACE(logger, (char*) "tpalloc - set type");
 		strncpy(memoryInfo.type, type, MAX_TYPE_SIZE);
+		LOG4CXX_TRACE(logger, (char*) "tpalloc - copied type");
 		memoryInfo.subtype = (char*) malloc(MAX_SUBTYPE_SIZE);
+		LOG4CXX_TRACE(logger, (char*) "tpalloc - malloc subtype");
 		memset(memoryInfo.subtype, '\0', MAX_SUBTYPE_SIZE);
+		LOG4CXX_TRACE(logger, (char*) "tpalloc - set subtype")
 		strncpy(memoryInfo.subtype, subtype, MAX_SUBTYPE_SIZE);
+		LOG4CXX_TRACE(logger, (char*) "tpalloc - copied subtype");
 
 		LOG4CXX_DEBUG(
 				logger,

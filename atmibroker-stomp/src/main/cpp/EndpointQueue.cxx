@@ -167,13 +167,14 @@ MESSAGE EndpointQueue::receive(long time) {
 }
 
 void EndpointQueue::disconnect() {
-	LOG4CXX_TRACE(logger, (char*) "disconnecting");
+	LOG4CXX_DEBUG(logger, (char*) "disconnecting: " << name);
 	lock->lock();
 	if (!shutdown) {
 		shutdown = true;
 		lock->notify();
 	}
 	lock->unlock();
+	LOG4CXX_DEBUG(logger, (char*) "disconnected: " << name);
 }
 
 const char * EndpointQueue::getName() {

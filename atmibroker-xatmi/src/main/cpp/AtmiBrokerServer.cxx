@@ -748,11 +748,15 @@ Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
 				ServiceDispatcher* dispatcher = (*j);
 				dispatcher->shutdown();
 			}
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "shutdown notified "
+					<< aServiceName);
 
 			for (std::vector<ServiceDispatcher*>::iterator j =
 					(*i).dispatchers.begin(); j != (*i).dispatchers.end(); j++) {
 				toReturn->disconnect();
 			}
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "disconnect notified "
+					<< aServiceName);
 
 			for (std::vector<ServiceDispatcher*>::iterator j =
 					(*i).dispatchers.begin(); j != (*i).dispatchers.end();) {
@@ -761,6 +765,8 @@ Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
 				dispatcher->wait();
 				delete dispatcher;
 			}
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "waited for dispatcher: "
+					<< aServiceName);
 
 			serviceData.erase(i);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "removed: "
