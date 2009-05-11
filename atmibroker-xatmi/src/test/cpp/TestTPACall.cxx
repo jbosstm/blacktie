@@ -53,6 +53,7 @@ void TestTPACall::tearDown() {
 }
 
 void TestTPACall::test_tpacall() {
+	userlogc((char*) "test_tpacall");
 	sendlen = strlen("hello");
 	sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen + 1);
 	strcpy(sendbuf, "hello");
@@ -74,6 +75,7 @@ void TestTPACall::test_tpacall() {
 }
 
 void TestTPACall::test_tpacall_systemerr() {
+	userlogc((char*) "test_tpacall_systemerr");
 	sendlen = strlen("hello");
 	sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen + 1);
 	strcpy(sendbuf, "hello");
@@ -85,6 +87,7 @@ void TestTPACall::test_tpacall_systemerr() {
 
 // 9.1.1
 void TestTPACall::test_tpacall_x_octet() {
+	userlogc((char*) "test_tpacall_x_octet");
 	char *ptr1, *ptr2;
 	sendbuf = tpalloc((char*) "X_OCTET", NULL, 25);
 	ptr1 = sendbuf;
@@ -96,6 +99,7 @@ void TestTPACall::test_tpacall_x_octet() {
 }
 
 void testtpacall_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "testtpacall_service");
 	int len = 20;
 	char *toReturn = new char[len];
 	strcpy(toReturn, "testtpacall_service");

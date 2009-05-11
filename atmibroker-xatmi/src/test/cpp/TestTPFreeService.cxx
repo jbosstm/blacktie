@@ -55,6 +55,7 @@ void TestTPFreeService::tearDown() {
 }
 
 void TestTPFreeService::test_tpfree_x_octet() {
+	userlogc((char*) "test_tpfree_x_octet");
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
@@ -65,6 +66,7 @@ void TestTPFreeService::test_tpfree_x_octet() {
 }
 
 void TestTPFreeService::test_tpfree_x_common() {
+	userlogc((char*) "test_tpfree_x_common");
 	DEPOSIT *dptr;
 	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	m_allocated = (char*) dptr;
@@ -78,6 +80,7 @@ void TestTPFreeService::test_tpfree_x_common() {
 }
 
 void TestTPFreeService::test_tpfree_x_c_type() {
+	userlogc((char*) "test_tpfree_x_c_type");
 	ACCT_INFO *aptr;
 	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	m_allocated = (char*) aptr;
@@ -91,6 +94,7 @@ void TestTPFreeService::test_tpfree_x_c_type() {
 }
 
 void testtpfreeservice_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "testtpfreeservice_service");
 	// Allocate a buffer to return
 	char *toReturn = tpalloc((char*) "X_OCTET", (char*) "acct_info", 1);
 

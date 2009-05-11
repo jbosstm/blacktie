@@ -62,6 +62,7 @@ void TestTPSend::tearDown() {
 }
 
 void TestTPSend::test_tpsend_recvonly() {
+	userlogc((char*) "test_tpsend_recvonly");
 	cd = ::tpconnect((char*) "TestTPSend", sendbuf, sendlen, TPRECVONLY);
 	int result = ::tpsend(cd, sendbuf, sendlen, 0, 0);
 	CPPUNIT_ASSERT(tperrno== TPEPROTO);
@@ -69,4 +70,5 @@ void TestTPSend::test_tpsend_recvonly() {
 }
 
 void testtpsend_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "testtpsend_service");
 }

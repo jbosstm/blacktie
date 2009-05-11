@@ -58,6 +58,7 @@ void TestTPService::tearDown() {
 
 #include "malloc.h"
 void TestTPService::test_tpservice_notpreturn() {
+	userlogc((char*) "test_tpservice_notpreturn");
 
 	int id = ::tpcall((char*) "TestTPService", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, (long) 0);
 
@@ -69,4 +70,5 @@ void TestTPService::test_tpservice_notpreturn() {
 }
 
 void testtpservice_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "testtpservice_service");
 }

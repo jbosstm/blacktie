@@ -54,6 +54,7 @@ void TestTPAdvertise::tearDown() {
 }
 
 void TestTPAdvertise::test_tpadvertise_new_service() {
+	userlogc((char*) "test_tpadvertise_new_service");
 	int id = ::tpadvertise((char*) "TestTPAdvertise", testtpadvertise_service);
 	CPPUNIT_ASSERT(tperrno!= TPEINVAL);
 	CPPUNIT_ASSERT(tperrno!= TPELIMIT);
@@ -71,12 +72,14 @@ void TestTPAdvertise::test_tpadvertise_new_service() {
 }
 
 void TestTPAdvertise::test_tpadvertise_null_name_null() {
+	userlogc((char*) "test_tpadvertise_null_name_null");
 	int id = ::tpadvertise(NULL, testtpadvertise_service);
 	CPPUNIT_ASSERT(tperrno== TPEINVAL);
 	CPPUNIT_ASSERT(id == -1);
 }
 
 void TestTPAdvertise::test_tpadvertise_idempotent() {
+	userlogc((char*) "test_tpadvertise_idempotent");
 	int id = ::tpadvertise((char*) "TestTPAdvertise", testtpadvertise_service);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(id == 0);
@@ -86,12 +89,14 @@ void TestTPAdvertise::test_tpadvertise_idempotent() {
 }
 
 void TestTPAdvertise::test_tpadvertise_null_name_empty() {
+	userlogc((char*) "test_tpadvertise_null_name_empty");
 	int id = ::tpadvertise((char*) "", testtpadvertise_service);
 	CPPUNIT_ASSERT(tperrno== TPEINVAL);
 	CPPUNIT_ASSERT(id == -1);
 }
 
 void TestTPAdvertise::test_tpadvertise_different_method() {
+	userlogc((char*) "test_tpadvertise_different_method");
 	int id = ::tpadvertise((char*) "TestTPAdvertise", testtpadvertise_service);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(id == 0);
@@ -101,6 +106,7 @@ void TestTPAdvertise::test_tpadvertise_different_method() {
 }
 
 void TestTPAdvertise::test_tpadvertise_length_15() {
+	userlogc((char*) "test_tpadvertise_length_15");
 	int id = ::tpadvertise((char*) "12345678901234567", testtpadvertise_service);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(id != -1);
@@ -110,6 +116,7 @@ void TestTPAdvertise::test_tpadvertise_length_15() {
 }
 
 void TestTPAdvertise::test_tpadvertise_readvertise() {
+	userlogc((char*) "test_tpadvertise_readvertise");
 	int id = ::tpadvertise((char*) "TestTPAdvertise", testtpadvertise_service);
 	CPPUNIT_ASSERT(id != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -133,6 +140,7 @@ void TestTPAdvertise::test_tpadvertise_readvertise() {
 }
 
 void testtpadvertise_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "testtpadvertise_service");
 	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, 25);
 	strcpy(toReturn, "testtpadvertise_service");
 	// Changed length from 0L to svcinfo->len
@@ -140,6 +148,7 @@ void testtpadvertise_service(TPSVCINFO *svcinfo) {
 }
 
 void testtpadvertise_service_2(TPSVCINFO *svcinfo) {
+	userlogc((char*) "testtpadvertise_service_2");
 	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, 25);
 	strcpy(toReturn, "testtpadvertise_service_2");
 	// Changed length from 0L to svcinfo->len

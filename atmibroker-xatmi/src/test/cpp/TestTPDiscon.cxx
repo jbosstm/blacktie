@@ -61,18 +61,22 @@ void TestTPDiscon::tearDown() {
 }
 
 void TestTPDiscon::test_tpdiscon() {
+	userlogc((char*) "test_tpdiscon");
 	::tpdiscon(cd);
 	CPPUNIT_ASSERT(tperrno == 0);
 	cd = -1;
 }
 
 void TestTPDiscon::test_tpdiscon_baddescr() {
+	userlogc((char*) "test_tpdiscon_baddescr");
 	::tpdiscon(2);
 }
 
 void TestTPDiscon::test_tpdiscon_negdescr() {
+	userlogc((char*) "test_tpdiscon_negdescr");
 	::tpdiscon(-1);
 }
 
 void testtpdiscon_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "testtpdiscon_service");
 }

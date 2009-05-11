@@ -41,6 +41,7 @@ void TestTPAlloc::tearDown() {
 }
 
 void TestTPAlloc::test_tpalloc_zero() {
+	userlogc((char*) "test_tpalloc_zero");
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, 0);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -55,12 +56,14 @@ void TestTPAlloc::test_tpalloc_zero() {
 }
 
 void TestTPAlloc::test_tpalloc_negative() {
+	userlogc((char*) "test_tpalloc_negative");
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, -1);
 	CPPUNIT_ASSERT(m_allocated == NULL);
 	CPPUNIT_ASSERT(tperrno== TPEINVAL);
 }
 
 void TestTPAlloc::test_tpalloc_x_octet_subtype_ignored() {
+	userlogc((char*) "test_tpalloc_x_octet_subtype_ignored");
 	m_allocated = tpalloc((char*) "X_OCTET", (char*) "fail", 25);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -68,6 +71,7 @@ void TestTPAlloc::test_tpalloc_x_octet_subtype_ignored() {
 
 // 9.1.1
 void TestTPAlloc::test_tpalloc_x_octet() {
+	userlogc((char*) "test_tpalloc_x_octet");
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, 25);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -84,6 +88,7 @@ void TestTPAlloc::test_tpalloc_x_octet() {
 
 // 9.1.2
 void TestTPAlloc::test_tpalloc_x_common() {
+	userlogc((char*) "test_tpalloc_x_common");
 	DEPOSIT *dptr;
 	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	m_allocated = (char*) dptr;
@@ -107,6 +112,7 @@ void TestTPAlloc::test_tpalloc_x_common() {
 }
 
 void TestTPAlloc::test_tpalloc_x_common_bigsubtype() {
+	userlogc((char*) "test_tpalloc_x_common_bigsubtype");
 	DEPOSIT *dptr;
 	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "12345678901234567", 0);
 	m_allocated = (char*) dptr;
@@ -123,6 +129,7 @@ void TestTPAlloc::test_tpalloc_x_common_bigsubtype() {
 
 // 9.1.3
 void TestTPAlloc::test_tpalloc_x_c_type() {
+	userlogc((char*) "test_tpalloc_x_c_type");
 	ACCT_INFO *aptr;
 	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	m_allocated = (char*) aptr;
@@ -145,18 +152,21 @@ void TestTPAlloc::test_tpalloc_x_c_type() {
 }
 
 void TestTPAlloc::test_tpalloc_unknowntype() {
+	userlogc((char*) "test_tpalloc_unknowntype");
 	m_allocated = tpalloc((char*) "TOM", NULL, 10);
 	CPPUNIT_ASSERT(tperrno== TPENOENT);
 	CPPUNIT_ASSERT(m_allocated == NULL);
 }
 
 void TestTPAlloc::test_tpalloc_x_common_subtype_required() {
+	userlogc((char*) "test_tpalloc_x_common_subtype_required");
 	m_allocated = tpalloc((char*) "X_COMMON", NULL, 25);
 	CPPUNIT_ASSERT(tperrno== TPEINVAL);
 	CPPUNIT_ASSERT(m_allocated == NULL);
 }
 
 void TestTPAlloc::test_tpalloc_x_c_type_subtype_required() {
+	userlogc((char*) "test_tpalloc_x_c_type_subtype_required");
 	m_allocated = tpalloc((char*) "X_C_TYPE", NULL, 25);
 	CPPUNIT_ASSERT(tperrno== TPEINVAL);
 	CPPUNIT_ASSERT(m_allocated == NULL);

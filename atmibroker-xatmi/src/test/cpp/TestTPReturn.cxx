@@ -52,6 +52,7 @@ void TestTPReturn::tearDown() {
 
 // 8.1 8.3
 void TestTPReturn::test_tpreturn_nonservice() {
+	userlogc((char*) "test_tpreturn_nonservice");
 	// THIS IS ILLEGAL STATE TABLE
 	int len = 25;
 	char *toReturn = new char[len];
@@ -60,6 +61,7 @@ void TestTPReturn::test_tpreturn_nonservice() {
 }
 
 void TestTPReturn::test_tpreturn_nonbuffer() {
+	userlogc((char*) "test_tpreturn_nonbuffer");
 	sendlen = strlen("hello");
 	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1)) != NULL);
 	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1)) != NULL);
@@ -73,6 +75,7 @@ void TestTPReturn::test_tpreturn_nonbuffer() {
 }
 
 void testtpreturn_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "testtpreturn_service");
 	char *toReturn = new char[21];
 	strcpy(toReturn, "testtpreturn_service");
 	tpreturn(TPSUCCESS, 0, toReturn, 21, 0);

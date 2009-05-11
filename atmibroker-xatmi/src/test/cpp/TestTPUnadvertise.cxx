@@ -54,6 +54,7 @@ void TestTPUnadvertise::tearDown() {
 }
 
 void TestTPUnadvertise::test_tpunadvertise() {
+	userlogc((char*) "test_tpunadvertise");
 	int id = ::tpunadvertise((char*) "TestTPUnadvertise");
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(tperrno!= TPEINVAL);
@@ -70,6 +71,7 @@ void TestTPUnadvertise::test_tpunadvertise() {
 }
 
 void TestTPUnadvertise::test_tpunadvertise_twice() {
+	userlogc((char*) "test_tpunadvertise_twice");
 	int id = ::tpunadvertise((char*) "TestTPUnadvertise");
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(tperrno!= TPEINVAL);
@@ -85,12 +87,14 @@ void TestTPUnadvertise::test_tpunadvertise_twice() {
 }
 
 void TestTPUnadvertise::test_tpunadvertise_null() {
+	userlogc((char*) "test_tpunadvertise_null");
 	int id = ::tpunadvertise(NULL);
 	CPPUNIT_ASSERT(tperrno== TPEINVAL);
 	CPPUNIT_ASSERT(id == -1);
 }
 
 void TestTPUnadvertise::test_tpunadvertise_empty() {
+	userlogc((char*) "test_tpunadvertise_empty");
 	int id = ::tpunadvertise((char*) "");
 	CPPUNIT_ASSERT(tperrno== TPEINVAL);
 	CPPUNIT_ASSERT(id == -1);
@@ -98,12 +102,14 @@ void TestTPUnadvertise::test_tpunadvertise_empty() {
 
 // 8.4
 void TestTPUnadvertise::test_tpunadvertise_not_advertised() {
+	userlogc((char*) "test_tpunadvertise_not_advertised");
 	int id = ::tpunadvertise((char*) "NONE");
 	CPPUNIT_ASSERT(tperrno== TPENOENT);
 	CPPUNIT_ASSERT(id == -1);
 }
 
 void testtpunadvertise_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "testtpunadvertise_service");
 	char * toReturn = new char[25];
 	strcpy(toReturn, "testtpunadvertise_service");
 	// Changed length from 0L to svcinfo->len

@@ -62,6 +62,7 @@ void TestTPConversation::tearDown() {
 }
 
 void TestTPConversation::test_conversation() {
+	userlogc((char*) "test_conversation");
 	cd = ::tpconnect((char*) "TestTPConversation", sendbuf, sendlen, TPRECVONLY);
 	long revent = 0;
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -82,6 +83,7 @@ void TestTPConversation::test_conversation() {
 }
 
 void testTPConversation_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "testTPConversation_service");
 	long revent = 0;
 	char *sendbuf = ::tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
 	strcpy(sendbuf, "hello");

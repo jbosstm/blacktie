@@ -58,6 +58,7 @@ void TestTPCancel::tearDown() {
 }
 
 void TestTPCancel::test_tpcancel() {
+	userlogc((char*) "test_tpcancel");
 	int cd = ::tpacall((char*) "TestTPCancel", (char *) sendbuf,
 			strlen(sendbuf) + 1, 0);
 	CPPUNIT_ASSERT(cd != -1);
@@ -80,6 +81,7 @@ void TestTPCancel::test_tpcancel() {
 }
 
 void TestTPCancel::test_tpcancel_noreply() {
+	userlogc((char*) "test_tpcancel_noreply");
 	int cd = ::tpacall((char*) "TestTPCancel", (char *) sendbuf,
 			strlen(sendbuf) + 1, TPNOREPLY);
 	CPPUNIT_ASSERT(cd != -1);
@@ -94,6 +96,7 @@ void TestTPCancel::test_tpcancel_noreply() {
 
 // 8.5
 void TestTPCancel::test_tpcancel_baddesc() {
+	userlogc((char*) "test_tpcancel_baddesc");
 	// CANCEL THE REQUEST
 	int cancelled = ::tpcancel(2);
 	CPPUNIT_ASSERT(cancelled == -1);
@@ -101,6 +104,7 @@ void TestTPCancel::test_tpcancel_baddesc() {
 }
 
 void testtpcancel_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "testtpcancel_service");
 	if (!(svcinfo->flags && TPNOREPLY)) {
 		int len = 21;
 		char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);

@@ -56,6 +56,7 @@ void TestTPGetRply::tearDown() {
 }
 
 void TestTPGetRply::test_tpgetrply() {
+	userlogc((char*) "test_tpgetrply");
 	int cd = ::tpacall((char*) "TestTPGetrply", (char *) sendbuf, strlen(sendbuf) + 1, 0);
 	CPPUNIT_ASSERT(cd != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -76,6 +77,7 @@ void TestTPGetRply::test_tpgetrply() {
 
 // 8.5
 void TestTPGetRply::test_tpgetrply_baddesc() {
+	userlogc((char*) "test_tpgetrply_baddesc");
 	int cd = 2;
 	int valToTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
 	CPPUNIT_ASSERT(valToTest == -1);
@@ -90,6 +92,7 @@ void TestTPGetRply::test_tpgetrply_baddesc() {
 }
 
 void TestTPGetRply::test_tpgetrply_nullcd() {
+	userlogc((char*) "test_tpgetrply_nullcd");
 	int valToTest = ::tpgetrply(NULL, (char **) &rcvbuf, &rcvlen, 0);
 	CPPUNIT_ASSERT(valToTest == -1);
 	CPPUNIT_ASSERT(tperrno != 0);
@@ -103,6 +106,7 @@ void TestTPGetRply::test_tpgetrply_nullcd() {
 }
 
 void TestTPGetRply::test_tpgetrply_nullrcvbuf() {
+	userlogc((char*) "test_tpgetrply_nullrcvbuf");
 	int cd = 2;
 	int valToTest = ::tpgetrply(&cd, NULL, &rcvlen, 0);
 	CPPUNIT_ASSERT(valToTest == -1);
@@ -117,6 +121,7 @@ void TestTPGetRply::test_tpgetrply_nullrcvbuf() {
 }
 
 void TestTPGetRply::test_tpgetrply_nullrcvlen() {
+	userlogc((char*) "test_tpgetrply_nullrcvlen");
 	int cd = 2;
 	int valToTest = ::tpgetrply(&cd, (char **) &rcvbuf, NULL, 0);
 	CPPUNIT_ASSERT(valToTest == -1);
@@ -131,6 +136,7 @@ void TestTPGetRply::test_tpgetrply_nullrcvlen() {
 }
 
 void testtpgetrply_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "testtpgetrply_service");
 	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, 22);
 	strcpy(toReturn, "testtpgetrply_service");
 	tpreturn(TPSUCCESS, 0, toReturn, 22, 0);

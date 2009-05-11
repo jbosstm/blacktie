@@ -45,6 +45,7 @@ void TestTPCall::tearDown() {
 }
 
 void TestTPCall::test_tpcall_systemerr() {
+	userlogc((char*) "test_tpcall_systemerr");
 	sendlen = strlen("hello") + 1;
 	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
@@ -60,6 +61,7 @@ void TestTPCall::test_tpcall_systemerr() {
 }
 
 void TestTPCall::test_tpcall_unknown_service() {
+	userlogc((char*) "test_tpcall_unknown_service");
 	sendlen = strlen("hello") + 1;
 	sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen);
 	rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen);
@@ -72,10 +74,12 @@ void TestTPCall::test_tpcall_unknown_service() {
 }
 
 void TestTPCall::test_tpcall_x_octet_lessdata() {
+	userlogc((char*) "test_tpcall_x_octet_lessdata");
 	CPPUNIT_FAIL("UNIMPLEMENTED");
 }
 
 void TestTPCall::test_tpcall_x_octet() {
+	userlogc((char*) "test_tpcall_x_octet");
 	tpadvertise((char*) "tpcall_x_octet", test_tpcall_x_octet_service);
 
 	sendlen = strlen("hello") + 1;
@@ -105,6 +109,7 @@ void TestTPCall::test_tpcall_x_octet() {
 
 // 9.1.2
 void TestTPCall::test_tpcall_x_common() {
+	userlogc((char*) "test_tpcall_x_common");
 	tpadvertise((char*) "tpcall_x_common", test_tpcall_x_common_service);
 
 	DEPOSIT *dptr;
@@ -121,6 +126,7 @@ void TestTPCall::test_tpcall_x_common() {
 }
 // 9.1.3
 void TestTPCall::test_tpcall_x_c_type() {
+	userlogc((char*) "test_tpcall_x_c_type");
 	tpadvertise((char*) "tpcall_x_c_type", test_tpcall_x_c_type_service);
 
 	ACCT_INFO *aptr;
@@ -139,6 +145,7 @@ void TestTPCall::test_tpcall_x_c_type() {
 }
 
 void test_tpcall_x_octet_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "test_tpcall_x_octet_service");
 	bool ok = false;
 	if (svcinfo->data) {
 		if (strncmp(svcinfo->data, "hello", svcinfo->len) == 0) {
@@ -162,6 +169,7 @@ void test_tpcall_x_octet_service(TPSVCINFO *svcinfo) {
 }
 
 void test_tpcall_x_common_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "test_tpcall_x_common_service");
 	bool ok = false;
 	DEPOSIT *dptr = (DEPOSIT*) svcinfo->data;
 	if (dptr->acct_no == 12345678 && dptr->amount == 50) {
@@ -179,6 +187,7 @@ void test_tpcall_x_common_service(TPSVCINFO *svcinfo) {
 }
 
 void test_tpcall_x_c_type_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "test_tpcall_x_c_type_service");
 	bool ok = false;
 	ACCT_INFO *aptr = (ACCT_INFO*) svcinfo->data;
 	if (aptr->acct_no == 12345678 && strcmp(aptr->name, "TOM") == 0 && aptr->balances[0] == 1.1F && aptr->balances[1] == 2.2F) {

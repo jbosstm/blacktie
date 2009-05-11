@@ -49,6 +49,7 @@ void TestTxTPCall::tearDown() {
 }
 
 void TestTxTPCall::test_tpcall_without_tx() {
+	userlogc((char*) "test_tpcall_without_tx");
 	tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service);
 
 	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
@@ -59,6 +60,7 @@ void TestTxTPCall::test_tpcall_without_tx() {
 }
 
 void TestTxTPCall::test_tpcall_with_tx() {
+	userlogc((char*) "test_tpcall_with_tx");
 
 	tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service);
 
@@ -73,6 +75,7 @@ void TestTxTPCall::test_tpcall_with_tx() {
 }
 
 void test_tx_tpcall_x_octet_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "test_tx_tpcall_x_octet_service");
 	bool ok = false;
 	if (strncmp(svcinfo->data, "hello", svcinfo->len) == 0) {
 		ok = true;
