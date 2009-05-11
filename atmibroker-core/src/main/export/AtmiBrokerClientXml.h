@@ -22,9 +22,14 @@
 #include <vector>
 #include "atmiBrokerCoreMacro.h"
 
+typedef struct _client_service_info {
+	char* serviceName;
+	char* transportLib;
+} ClientServiceInfo;
+
 struct _client_server_info {
 	char * serverName;
-	std::vector<char*>* serviceVectorPtr;
+	std::vector<ClientServiceInfo> serviceVector;
 };
 typedef _client_server_info ClientServerInfo;
 

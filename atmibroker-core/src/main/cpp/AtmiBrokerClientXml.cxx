@@ -66,6 +66,8 @@ AtmiBrokerClientXml::~AtmiBrokerClientXml() {
 }
 
 static void XMLCALL startElement(void *userData, const char *name, const char **atts) {
+	std::vector<ClientServerInfo*>* aClientServerVectorPtr = (std::vector<ClientServerInfo*>*) userData;
+
 	if (strcmp(name, "SERVER xmnls") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "new server ");
 		processingServer = true;
@@ -79,12 +81,30 @@ static void XMLCALL startElement(void *userData, const char *name, const char **
 	} else if (strcmp(name, "MAX_CONSUMERS") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "processing Max Consumers for server ");
 		processingMaxConsumers = true;
+	} else if(strcmp(name, "SERVER_NAME") == 0) {
+		processingServerName = true;
+		aClientServerInfoPtr = (ClientServerInfo*) malloc(sizeof(ClientServerInfo) * 1);
+		memset(aClientServerInfoPtr, '\0', sizeof(ClientServerInfo));
+		aClientServerVectorPtr->push_back(aClientServerInfoPtr);
 	} else if (strcmp(name, "SERVICE_NAMES") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "processing Service Names for server ");
 		processingServiceNames = true;
-	} else if (strcmp(name, "SERVICE_NAME") == 0) {
+	} else if (strcmp(name, "SERVICE") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "processing Service Name for server ");
 		processingServiceName = true;
+
+		if(atts != 0) {
+			ClientServiceInfo service;
+
+			for(int i = 0; atts[i]; i += 2) {
+				if(strcmp(atts[i], "name") == 0) {
+					service.serviceName = strdup(atts[i+1]);
+				} else if(strcmp(atts[i], "transportLibrary") == 0) {
+					service.transportLib = strdup(atts[i+1]);
+				}
+			}
+			aClientServerVectorPtr->back()->serviceVector.push_back(service);
+		}
 	}
 	strcpy(element, name);
 	strcpy(value, "");
@@ -119,24 +139,26 @@ static void XMLCALL endElement(void *userData, const char *name) {
 	} else if (strcmp(last_element, "SERVER_NAME") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "storing ServerName '%s'", last_value);
 		processingServerName = false;
-
+		ClientServerInfo* current = aClientServerVectorPtr->back();
+		current->serverName = strdup(last_value);
+		/*
 		aClientServerInfoPtr = (ClientServerInfo*) malloc(sizeof(ClientServerInfo) * 1);
 		memset(aClientServerInfoPtr, '\0', sizeof(ClientServerInfo));
 		aClientServerInfoPtr->serverName = strdup(last_value);
-		aClientServerInfoPtr->serviceVectorPtr = new std::vector<char*>;
+		aClientServerInfoPtr->serviceVectorPtr = new std::vector<ClientServiceInfo>;
 
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "adding aClientServerInfo %p to vector", aClientServerInfoPtr);
 		aClientServerVectorPtr->push_back(aClientServerInfoPtr);
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "added aClientServerInfo %p to vector", aClientServerInfoPtr);
-
+		*/
 	} else if (strcmp(last_element, "SERVICE_NAMES") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "storing ServiceNames ");
 		processingServiceNames = false;
-	} else if (strcmp(last_element, "SERVICE_NAME") == 0) {
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "storing ServiceName '%s'", last_value);
+	} else if (strcmp(last_element, "SERVICE") == 0) {
+		//userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "storing ServiceName '%s'", last_value);
 		processingServiceName = false;
 		serviceNameCount++;
-		aClientServerInfoPtr->serviceVectorPtr->push_back(strdup(last_value));
+		//aClientServerInfoPtr->serviceVectorPtr->push_back(strdup(last_value));
 	}
 	depth -= 1;
 }

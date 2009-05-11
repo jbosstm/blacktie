@@ -61,17 +61,17 @@ void TestAtmiBrokerXml::test_client() {
 
 	ClientServerInfo* server = aClientServerVectorPtr[0];
 	CPPUNIT_ASSERT(strcmp(server->serverName, "foo") == 0);
-	std::vector<char*>* services = server->serviceVectorPtr;
-	CPPUNIT_ASSERT(strcmp((*services)[0], "BAR") == 0);
+	std::vector<ClientServiceInfo>* services = &server->serviceVector;
+	CPPUNIT_ASSERT(strcmp((*services)[0].serviceName, "BAR") == 0);
 
 	for (std::vector<ClientServerInfo*>::iterator itServer = aClientServerVectorPtr.begin(); itServer != aClientServerVectorPtr.end(); itServer++) {
 		free((*itServer)->serverName);
 
-		std::vector<char*>* services = (*itServer)->serviceVectorPtr;
-		for(std::vector<char*>::iterator i = services->begin(); i != services->end(); i++) {
-			free(*i);
+		std::vector<ClientServiceInfo>* services = &(*itServer)->serviceVector;
+		for(std::vector<ClientServiceInfo>::iterator i = services->begin(); i != services->end(); i++) {
+			free((*i).serviceName);
+			free((*i).transportLib);
 		}
-		delete services;
 
 		free(*itServer);
 	}

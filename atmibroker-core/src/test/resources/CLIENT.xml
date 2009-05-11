@@ -25,7 +25,7 @@
 		<SERVER_NAMES>
 			<SERVER_NAME>foo</SERVER_NAME>
 			<SERVICE_NAMES>
-				<SERVICE_NAME>BAR</SERVICE_NAME>
+				<SERVICE name='BAR' transportLibrary='libatmicorba.so'/>
 			</SERVICE_NAMES>
 		</SERVER_NAMES>
 	</CLIENT_DESCRIPTION>
