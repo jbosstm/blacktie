@@ -29,6 +29,7 @@ extern "C" {
 static char  orig_env[256];
 
 void TestClientInit::test_clientinit() {
+	userlogc((char*) "test_clientinit");
 	CPPUNIT_ASSERT(tperrno == 0);
 	int valToTest = ::clientinit();
 	CPPUNIT_ASSERT(valToTest != -1);
@@ -40,6 +41,7 @@ void TestClientInit::test_clientinit() {
 }
 
 void TestClientInit::test_config_env() {
+	userlogc((char*) "test_config_env");
 	char* env;
 
 	env = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");

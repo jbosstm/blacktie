@@ -20,23 +20,28 @@
 #include "LoopyServerAndClient.h"
 
 #include "xatmi.h"
+#include "userlogc.h"
 #include "AtmiBrokerServerControl.h"
 #include "AtmiBrokerClientControl.h"
 
 void LoopyServerAndClient::setUp() {
+	userlogc((char*) "LoopyServerAndClient::setUp");
 	// Perform global set up
 	TestFixture::setUp();
 }
 
 void LoopyServerAndClient::tearDown() {
+	userlogc((char*) "LoopyServerAndClient::tearDown");
 	// Perform global clean up
 	TestFixture::tearDown();
 }
 
 void loopy(TPSVCINFO* tpsvcinfo) {
+	userlogc((char*) "loopy");
 }
 
 void LoopyServerAndClient::testLoopyAll() {
+	userlogc((char*) "testLoopyAll");
 	int result = 0;
 
 	for (int i = 0; i < 3; i++) {
@@ -63,6 +68,7 @@ void LoopyServerAndClient::testLoopyAll() {
 }
 
 void LoopyServerAndClient::testLoopyAll2() {
+	userlogc((char*) "testLoopyAll2");
 	int result = 0;
 
 	for (int i = 0; i < 3; i++) {
@@ -89,6 +95,7 @@ void LoopyServerAndClient::testLoopyAll2() {
 }
 
 void LoopyServerAndClient::testLoopyAdvertise() {
+	userlogc((char*) "testLoopyAdvertise");
 	int result = 0;
 	result = serverinit(0, NULL);
 	CPPUNIT_ASSERT(result != -1);

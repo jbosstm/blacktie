@@ -24,6 +24,7 @@
 #include "malloc.h"
 
 void TestTPRealloc::setUp() {
+	userlogc((char*) "TestTPRealloc::setUp");
 	m_allocated = NULL;
 	m_nonallocated = NULL;
 	BaseTest::setUp();
@@ -32,6 +33,7 @@ void TestTPRealloc::setUp() {
 }
 
 void TestTPRealloc::tearDown() {
+	userlogc((char*) "TestTPRealloc::tearDown");
 	if (m_allocated) {
 		// Do local work
 		::tpfree(m_allocated);

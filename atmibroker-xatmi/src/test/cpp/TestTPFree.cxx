@@ -23,6 +23,7 @@
 #include "TestTPFree.h"
 
 void TestTPFree::setUp() {
+	userlogc((char*) "TestTPFree::setUp");
 	// Start server
 	BaseTest::setUp();
 	m_allocated = NULL;
@@ -31,6 +32,7 @@ void TestTPFree::setUp() {
 }
 
 void TestTPFree::tearDown() {
+	userlogc((char*) "TestTPFree::tearDown");
 	// Do local work
 	::tpfree(m_allocated);
 

@@ -24,12 +24,14 @@
 #include "TestTPTypes.h"
 
 void TestTPTypes::setUp() {
+	userlogc((char*) "TestTPTypes::setUp");
 	BaseTest::setUp();
 	// Do local work
 	m_allocated = NULL;
 }
 
 void TestTPTypes::tearDown() {
+	userlogc((char*) "TestTPTypes::setUp");
 	// Do local work
 	if (m_allocated != NULL) {
 		::tpfree(m_allocated);

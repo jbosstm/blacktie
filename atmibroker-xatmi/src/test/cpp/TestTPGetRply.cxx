@@ -26,6 +26,7 @@
 extern void testtpgetrply_service(TPSVCINFO *svcinfo);
 
 void TestTPGetRply::setUp() {
+	userlogc((char*) "TestTPGetRply::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 
@@ -44,6 +45,7 @@ void TestTPGetRply::setUp() {
 }
 
 void TestTPGetRply::tearDown() {
+	userlogc((char*) "TestTPGetRply::tearDown");
 	// Do local work
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);

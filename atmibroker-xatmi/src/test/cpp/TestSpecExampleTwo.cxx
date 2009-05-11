@@ -27,6 +27,7 @@
 extern void inquiry_svc(TPSVCINFO *svcinfo);
 
 void TestSpecExampleTwo::setUp() {
+	userlogc((char*) "TestSpecExampleTwo::setUp");
 	// Setup server
 	BaseServerTest::setUp();
 
@@ -37,6 +38,7 @@ void TestSpecExampleTwo::setUp() {
 }
 
 void TestSpecExampleTwo::tearDown() {
+	userlogc((char*) "TestSpecExampleTwo::tearDown");
 	// Do local work
 	int toCheck = tpunadvertise((char*) "TestSpecExampleTwo");
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -47,6 +49,7 @@ void TestSpecExampleTwo::tearDown() {
 }
 
 void TestSpecExampleTwo::test_specexampletwo() {
+	userlogc((char*) "TestSpecExampleTwo::test_specexampletwo");
 	DATA_BUFFER *ptr; /* DATA_BUFFER is a typed buffer of type */
 	long len, event; /* X_C_TYPE and subtype inq_buf. The structure */
 	int cd; /* contains a character array named input and an */
@@ -73,6 +76,7 @@ void TestSpecExampleTwo::test_specexampletwo() {
 
 /* this routine is used for INQUIRY */
 void inquiry_svc(TPSVCINFO *svcinfo) {
+	userlogc((char*) "inquiry_svc");
 	DATA_BUFFER *ptr;
 	long event;
 	int rval;

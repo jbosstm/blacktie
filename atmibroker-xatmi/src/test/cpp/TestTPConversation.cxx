@@ -30,6 +30,7 @@ int interationCount = 100;
 extern void testTPConversation_service(TPSVCINFO *svcinfo);
 
 void TestTPConversation::setUp() {
+	userlogc((char*) "TestTPConversation::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 
@@ -50,6 +51,7 @@ void TestTPConversation::setUp() {
 }
 
 void TestTPConversation::tearDown() {
+	userlogc((char*) "TestTPConversation::tearDown");
 	// Do local work
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);

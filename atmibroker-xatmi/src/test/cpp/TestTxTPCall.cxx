@@ -28,6 +28,7 @@
 extern void test_tx_tpcall_x_octet_service(TPSVCINFO *svcinfo);
 
 void TestTxTPCall::setUp() {
+	userlogc((char*) "TestTxTPCall::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 	BaseServerTest::setUp();
@@ -41,6 +42,7 @@ void TestTxTPCall::setUp() {
 }
 
 void TestTxTPCall::tearDown() {
+	userlogc((char*) "TestTxTPCall::setUp");
 	// Do local work
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);

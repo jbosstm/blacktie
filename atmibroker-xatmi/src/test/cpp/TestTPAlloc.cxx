@@ -24,6 +24,7 @@
 #include "TestTPAlloc.h"
 
 void TestTPAlloc::setUp() {
+	userlogc((char*) "TestTPAlloc::setUp");
 	m_allocated = NULL;
 
 	BaseTest::setUp();
@@ -32,6 +33,7 @@ void TestTPAlloc::setUp() {
 }
 
 void TestTPAlloc::tearDown() {
+	userlogc((char*) "TestTPAlloc::tearDown");
 	if (m_allocated) {
 		::tpfree(m_allocated);
 		m_allocated = NULL;

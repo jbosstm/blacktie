@@ -24,6 +24,7 @@
 extern void testtpacall_service(TPSVCINFO *svcinfo);
 
 void TestTPACall::setUp() {
+	userlogc((char*) "TestTPACall::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 
@@ -37,6 +38,7 @@ void TestTPACall::setUp() {
 }
 
 void TestTPACall::tearDown() {
+	userlogc((char*) "TestTPACall::tearDown");
 	// Clean up local
 	if (sendbuf) {
 		::tpfree(sendbuf);

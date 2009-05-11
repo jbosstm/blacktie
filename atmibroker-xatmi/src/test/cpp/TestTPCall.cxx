@@ -29,6 +29,7 @@ extern void test_tpcall_x_common_service(TPSVCINFO *svcinfo);
 extern void test_tpcall_x_c_type_service(TPSVCINFO *svcinfo);
 
 void TestTPCall::setUp() {
+	userlogc((char*) "TestTPCall::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 	BaseServerTest::setUp();
@@ -36,6 +37,7 @@ void TestTPCall::setUp() {
 }
 
 void TestTPCall::tearDown() {
+	userlogc((char*) "TestTPCall::tearDown");
 	// Do local work
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);

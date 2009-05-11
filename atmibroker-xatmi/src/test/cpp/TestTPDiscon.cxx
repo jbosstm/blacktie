@@ -26,6 +26,7 @@
 extern void testtpdiscon_service(TPSVCINFO *svcinfo);
 
 void TestTPDiscon::setUp() {
+	userlogc((char*) "TestTPDiscon::setUp");
 	sendbuf = NULL;
 
 	// Setup server
@@ -47,6 +48,7 @@ void TestTPDiscon::setUp() {
 }
 
 void TestTPDiscon::tearDown() {
+	userlogc((char*) "TestTPDiscon::tearDown");
 	// Do local work
 	::tpfree(sendbuf);
 	if (cd != -1) {

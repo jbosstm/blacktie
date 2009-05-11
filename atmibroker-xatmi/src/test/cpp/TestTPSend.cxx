@@ -26,6 +26,7 @@
 extern void testtpsend_service(TPSVCINFO *svcinfo);
 
 void TestTPSend::setUp() {
+	userlogc((char*) "TestTPSend::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 
@@ -47,6 +48,7 @@ void TestTPSend::setUp() {
 }
 
 void TestTPSend::tearDown() {
+	userlogc((char*) "TestTPSend::tearDown");
 	// Do local work
 	if (cd != -1) {
 		::tpdiscon(cd);

@@ -26,6 +26,7 @@
 extern void testtpcancel_service(TPSVCINFO *svcinfo);
 
 void TestTPCancel::setUp() {
+	userlogc((char*) "TestTPCancel::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 
@@ -46,6 +47,7 @@ void TestTPCancel::setUp() {
 }
 
 void TestTPCancel::tearDown() {
+	userlogc((char*) "TestTPCancel::tearDown");
 	// Do local work
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);

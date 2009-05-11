@@ -26,6 +26,7 @@
 extern void testtprecv_service(TPSVCINFO *svcinfo);
 
 void TestTPRecv::setUp() {
+	userlogc((char*) "TestTPRecv::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 
@@ -45,6 +46,7 @@ void TestTPRecv::setUp() {
 }
 
 void TestTPRecv::tearDown() {
+	userlogc((char*) "TestTPRecv::tearDown");
 	// Do local work
 	if (cd != -1) {
 		::tpdiscon(cd);

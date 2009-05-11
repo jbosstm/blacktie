@@ -26,6 +26,7 @@
 extern void testtpconnect_service(TPSVCINFO *svcinfo);
 
 void TestTPConnect::setUp() {
+	userlogc((char*) "TestTPConnect::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 
@@ -47,6 +48,7 @@ void TestTPConnect::setUp() {
 }
 
 void TestTPConnect::tearDown() {
+	userlogc((char*) "TestTPConnect::tearDown");
 	// Do local work
 	if (cd != -1) {
 		::tpdiscon(cd);

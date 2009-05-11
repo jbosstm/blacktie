@@ -27,6 +27,7 @@
 extern void debit_credit_svc(TPSVCINFO *svcinfo);
 
 void TestSpecExampleOne::setUp() {
+	userlogc((char*) "TestSpecExampleOne::setUp");
 	// Setup server
 	BaseServerTest::setUp();
 
@@ -38,6 +39,7 @@ void TestSpecExampleOne::setUp() {
 }
 
 void TestSpecExampleOne::tearDown() {
+	userlogc((char*) "TestSpecExampleOne::tearDown");
 	// Do local work
 	int toCheck = tpunadvertise((char*) "TestSpecExampleOne");
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -50,6 +52,7 @@ void TestSpecExampleOne::tearDown() {
 /* this test is taken from the XATMI specification */
 
 void TestSpecExampleOne::test_specexampleone() {
+	userlogc((char*) "TestSpecExampleOne::test_specexampleone");
 	DATA_BUFFER *dptr; /* DATA_BUFFER is a typed buffer of type */
 	DATA_BUFFER *cptr; /* X_C_TYPE and subtype dc_buf. The structure */
 	long dlen, clen; /* contains a character array named input and an */
@@ -75,6 +78,7 @@ void TestSpecExampleOne::test_specexampleone() {
 
 /* this routine is used for DEBIT and CREDIT */
 void debit_credit_svc(TPSVCINFO *svcinfo) {
+	userlogc((char*) "debit_credit_svc");
 	DATA_BUFFER *dc_ptr;
 	int rval;
 	/* extract request typed buffer */

@@ -27,6 +27,7 @@ extern void testtpadvertise_service(TPSVCINFO *svcinfo);
 extern void testtpadvertise_service_2(TPSVCINFO *svcinfo);
 
 void TestTPAdvertise::setUp() {
+	userlogc((char*) "TestTPAdvertise::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 
@@ -41,6 +42,7 @@ void TestTPAdvertise::setUp() {
 }
 
 void TestTPAdvertise::tearDown() {
+	userlogc((char*) "TestTPAdvertise::tearDown");
 	// Do local work
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);

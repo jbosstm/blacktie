@@ -26,6 +26,7 @@
 extern void testtpservice_service(TPSVCINFO *svcinfo);
 
 void TestTPService::setUp() {
+	userlogc((char*) "TestTPService::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 
@@ -44,6 +45,7 @@ void TestTPService::setUp() {
 }
 
 void TestTPService::tearDown() {
+	userlogc((char*) "TestTPService::tearDown");
 	// Do local work
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
