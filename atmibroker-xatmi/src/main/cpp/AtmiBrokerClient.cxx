@@ -142,9 +142,10 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 				<< (char*) (*itServer)->serverName);
 		free((*itServer)->serverName);
 
-		std::vector<char*>* services = (*itServer)->serviceVectorPtr;
-		for(std::vector<char*>::iterator i = services->begin(); i != services->end(); i++) {
-			free(*i);
+		std::vector<ClientServiceInfo>* services = &((*itServer)->serviceVector);
+		for(std::vector<ClientServiceInfo>::iterator i = services->begin(); i != services->end(); i++) {
+			free((*i).serviceName);
+			free((*i).transportLib);
 		}
 		delete services;
 		free(*itServer);
