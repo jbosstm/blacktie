@@ -45,7 +45,7 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 	frame.command = (char*) "SUB";
 	frame.headers = apr_hash_make(pool);
 	apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, queueName);
-	apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING, "svcQ");
+	apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING, queueName);
 	frame.body_length = -1;
 	frame.body = NULL;
 	LOG4CXX_DEBUG(logger, "Send SUB: " << queueName);
@@ -93,7 +93,7 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 	frame.command = (char*) "SUB";
 	frame.headers = apr_hash_make(pool);
 	apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, queueName);
-	apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING, "tmpQ");
+	apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING, queueName);
 	frame.body_length = -1;
 	frame.body = NULL;
 	LOG4CXX_DEBUG(logger, "Send SUB: " << queueName);
