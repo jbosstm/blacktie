@@ -195,7 +195,7 @@ void TestTPTypes::test_tptypes_max_subtype() {
 	free(subtype);
 }
 
-void TestTPTypes::test_tptypes_small_type() {
+void TestTPTypes::test_tptypes_small_type() { // cannot be tested as we can't find how big the memory is
 	userlogc((char*) "test_tptypes_small_type");
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
@@ -209,7 +209,7 @@ void TestTPTypes::test_tptypes_small_type() {
 	free(type);
 }
 
-void TestTPTypes::test_tptypes_small_subtype() {
+void TestTPTypes::test_tptypes_small_subtype() { // cannot be tested as we can't find how big the memory is
 	userlogc((char*) "test_tptypes_small_subtype");
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "1234567890123456", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);

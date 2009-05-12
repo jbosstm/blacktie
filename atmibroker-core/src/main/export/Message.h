@@ -23,11 +23,11 @@ struct message_t {
 	const char* replyto;
 	int correlationId;
 	char* data;
-	long len;
-	long flags;
 	void* control;
 	int rval;
 	long rcode;
+	long len;
+	long flags;
 };
 typedef struct message_t MESSAGE;
 

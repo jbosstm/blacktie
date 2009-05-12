@@ -272,10 +272,18 @@ long AtmiBrokerMem::tptypes(char* ptr, char* type, char* subtype) {
 						<< (char*) memoryInfo.subtype);
 
 				if (type) {
-					strncpy(type, memoryInfo.type, MAX_TYPE_SIZE);
+					int length = sizeof(type);
+					if (length < MAX_TYPE_SIZE) {
+						length = MAX_TYPE_SIZE;
+					}
+					strncpy(type, memoryInfo.type, length);
 				}
 				if (subtype) {
-					strncpy(subtype, memoryInfo.subtype, MAX_SUBTYPE_SIZE);
+					int length = sizeof(subtype);
+					if (length < MAX_SUBTYPE_SIZE) {
+						length = MAX_SUBTYPE_SIZE;
+					}
+					strncpy(subtype, memoryInfo.subtype, length);
 				}
 				toReturn = memoryInfo.size;
 				break;
