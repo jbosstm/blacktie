@@ -85,8 +85,11 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			message.flags = flags;
 			message.rcode = rcode;
 			message.rval = rval;
-			session->send(message);
-			toReturn = 0;
+			if (session->send(message))  {
+				toReturn = 0;
+			} else {
+				setSpecific(TPE_KEY, TSS_TPENOENT);
+			}
 
 			if (control) {
 				associate_tx(control);
@@ -290,9 +293,9 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 				int cd = -1;
 				session = ptrAtmiBrokerClient->createSession(cd, svc);
 				if (cd != -1) {
-					::send(session, session->getReplyTo(), idata, len, cd,
+					toReturn = ::send(session, session->getReplyTo(), idata, len, cd,
 							flags, 0, 0);
-					if (strcmp((const char*) getSpecific(TPE_KEY), TSS_TPERESET) == 0) {
+					if (toReturn != -1) {
 						if (TPNOREPLY & flags) {
 							toReturn = 0;
 							ptrAtmiBrokerClient->closeSession(cd);

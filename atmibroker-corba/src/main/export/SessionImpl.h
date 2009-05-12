@@ -41,7 +41,7 @@ public:
 
 	MESSAGE receive(long time);
 
-	void send(MESSAGE message);
+	bool send(MESSAGE message);
 
 	int getId();
 private:

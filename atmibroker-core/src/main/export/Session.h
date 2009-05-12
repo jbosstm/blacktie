@@ -28,7 +28,7 @@ public:
 	virtual const char* getReplyTo() = 0;
 
 	virtual MESSAGE receive(long time) = 0;
-	virtual void send(MESSAGE message) = 0;
+	virtual bool send(MESSAGE message) = 0;
 
 	virtual int getId() = 0;
 

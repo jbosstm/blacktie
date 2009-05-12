@@ -98,11 +98,12 @@ MESSAGE SessionImpl::receive(long time) {
 	return temporaryQueue->receive(time);
 }
 
-void SessionImpl::send(MESSAGE message) {
+bool SessionImpl::send(MESSAGE message) {
 	AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(message.len, message.len, (unsigned char*) message.data, true);
 	remoteEndpoint->send(message.replyto, message.rval, message.rcode, aOctetSeq, message.len, message.correlationId, message.flags);
 	aOctetSeq = NULL;
 	LOG4CXX_DEBUG(logger, (char*) "Called back ");
+	return true;
 }
 
 int SessionImpl::getId() {

@@ -73,7 +73,8 @@ MESSAGE SessionImpl::receive(long time) {
 	return toRead->receive(time);
 }
 
-void SessionImpl::send(MESSAGE message) {
+bool SessionImpl::send(MESSAGE message) {
+	bool toReturn = false;
 	stomp_frame frame;
 	frame.command = (char*) "SEND";
 	frame.headers = apr_hash_make(pool);
@@ -99,23 +100,25 @@ void SessionImpl::send(MESSAGE message) {
 	apr_status_t rc = stomp_write(connection, &frame, pool);
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, "Could not send frame");
-		setSpecific(TPE_KEY, TSS_TPESYSTEM);
+		//setSpecific(TPE_KEY, TSS_TPESYSTEM);
 	} else {
 
 	stomp_frame *framed;
 	rc = stomp_read(connection, &framed, pool);
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, "Could not send frame");
-		setSpecific(TPE_KEY, TSS_TPESYSTEM);
+		//setSpecific(TPE_KEY, TSS_TPESYSTEM);
 	} else if (strcmp(framed->command, (const char*)"ERROR") == 0) {
 		LOG4CXX_DEBUG(logger, (char*) "Got an error: " << framed->body);
-		setSpecific(TPE_KEY, TSS_TPENOENT);
+		//setSpecific(TPE_KEY, TSS_TPENOENT);
 	} else {
 		LOG4CXX_DEBUG(logger, (char*) "Called back ");
+		toReturn = true;
 	}
 	LOG4CXX_DEBUG(logger, "Sent to: " << sendTo << " Command: " << frame.command << " Body: " << frame.body);
 
 	}
+	return toReturn;
 }
 
 void SessionImpl::setSendTo(const char* destinationName) {
