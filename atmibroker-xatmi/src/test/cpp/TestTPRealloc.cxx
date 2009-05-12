@@ -151,7 +151,6 @@ void TestTPRealloc::test_tprealloc_multi_x_octet() {
 		free(subtype);
 		CPPUNIT_ASSERT(tperrno == 0);
 		CPPUNIT_ASSERT(toTest == i);
-		userlogc("realloc:%d", i);
 	}
 }
 
@@ -274,7 +273,6 @@ void TestTPRealloc::test_tprealloc_multi_x_common() {
 		free(subtype);
 		CPPUNIT_ASSERT(tperrno == 0);
 		CPPUNIT_ASSERT(toTest == i);
-		userlogc("realloc:%d", i);
 	}
 }
 
@@ -382,6 +380,5 @@ void TestTPRealloc::test_tprealloc_multi_x_c_type() {
 		free(subtype);
 		CPPUNIT_ASSERT(tperrno == 0);
 		CPPUNIT_ASSERT(toTest == i);
-		userlogc("realloc:%d", i);
 	}
 }
