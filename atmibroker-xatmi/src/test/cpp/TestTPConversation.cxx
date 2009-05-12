@@ -90,6 +90,7 @@ void TestTPConversation::test_conversation() {
 	sprintf(tperrnoS, "%d", tperrno);
 	CPPUNIT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 	CPPUNIT_ASSERT(result != -1);
+	free(tperrnoS);
 }
 
 void testTPConversation_service(TPSVCINFO *svcinfo) {

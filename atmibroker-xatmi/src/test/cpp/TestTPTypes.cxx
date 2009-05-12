@@ -48,10 +48,12 @@ void TestTPTypes::test_tptypes_x_octet() {
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toTest == 10);
 	CPPUNIT_ASSERT(strcmp(type, "X_OCTET") == 0);
 	CPPUNIT_ASSERT(strcmp(subtype, "") == 0);
+	free(type);
+	free(subtype);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toTest == 10);
 }
 
 void TestTPTypes::test_tptypes_x_common() {
@@ -66,6 +68,8 @@ void TestTPTypes::test_tptypes_x_common() {
 	CPPUNIT_ASSERT(toTest == 1024);
 	CPPUNIT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
 	CPPUNIT_ASSERT(strcmp(subtype, "deposit") == 0);
+	free(type);
+	free(subtype);
 }
 
 void TestTPTypes::test_tptypes_x_common_bigdata() {
@@ -80,6 +84,8 @@ void TestTPTypes::test_tptypes_x_common_bigdata() {
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
 	CPPUNIT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
 	CPPUNIT_ASSERT(strcmp(subtype, "deposit") == 0);
+	free(type);
+	free(subtype);
 }
 
 void TestTPTypes::test_tptypes_x_c_type() {
@@ -94,6 +100,8 @@ void TestTPTypes::test_tptypes_x_c_type() {
 	CPPUNIT_ASSERT(toTest == 1024);
 	CPPUNIT_ASSERT(strncmp(type, "X_C_TYPE", 8) == 0);
 	CPPUNIT_ASSERT(strcmp(subtype, "acct_info") == 0);
+	free(type);
+	free(subtype);
 }
 
 void TestTPTypes::test_tptypes_x_c_type_bigdata() {
@@ -108,6 +116,8 @@ void TestTPTypes::test_tptypes_x_c_type_bigdata() {
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
 	CPPUNIT_ASSERT(strncmp(type, "X_C_TYPE", 8) == 0);
 	CPPUNIT_ASSERT(strcmp(subtype, "acct_info") == 0);
+	free(type);
+	free(subtype);
 }
 
 // 8.2
@@ -118,6 +128,8 @@ void TestTPTypes::test_tptypes_unallocated() {
 	int toTest = ::tptypes((char*) "test", type, subtype);
 	CPPUNIT_ASSERT(tperrno== TPEINVAL);
 	CPPUNIT_ASSERT(toTest == -1);
+	free(type);
+	free(subtype);
 }
 
 void TestTPTypes::test_tptypes_null_ptr() {
@@ -127,6 +139,8 @@ void TestTPTypes::test_tptypes_null_ptr() {
 	int toTest = ::tptypes(NULL, type, subtype);
 	CPPUNIT_ASSERT(tperrno== TPEINVAL);
 	CPPUNIT_ASSERT(toTest == -1);
+	free(type);
+	free(subtype);
 }
 
 void TestTPTypes::test_tptypes_null_type() {
@@ -139,6 +153,7 @@ void TestTPTypes::test_tptypes_null_type() {
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
 	CPPUNIT_ASSERT(strcmp(subtype, "deposit") == 0);
+	free(subtype);
 }
 
 void TestTPTypes::test_tptypes_null_subtype() {
@@ -151,6 +166,7 @@ void TestTPTypes::test_tptypes_null_subtype() {
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
 	CPPUNIT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
+	free(type);
 }
 
 void TestTPTypes::test_tptypes_max_type() {
@@ -163,6 +179,7 @@ void TestTPTypes::test_tptypes_max_type() {
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
 	CPPUNIT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
+	free(type);
 }
 
 void TestTPTypes::test_tptypes_max_subtype() {
@@ -175,6 +192,7 @@ void TestTPTypes::test_tptypes_max_subtype() {
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
 	CPPUNIT_ASSERT(strncmp(subtype, "1234567890123456", 16) == 0);
+	free(subtype);
 }
 
 void TestTPTypes::test_tptypes_small_type() {
@@ -188,6 +206,7 @@ void TestTPTypes::test_tptypes_small_type() {
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
 	CPPUNIT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
 	CPPUNIT_ASSERT(strncmp(type, "X_COMMO", 7) == 0);
+	free(type);
 }
 
 void TestTPTypes::test_tptypes_small_subtype() {
@@ -201,6 +220,7 @@ void TestTPTypes::test_tptypes_small_subtype() {
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
 	CPPUNIT_ASSERT(strncmp(subtype, "1234567890123456", 16) == 0);
 	CPPUNIT_ASSERT(strncmp(subtype, "123456789012345", 15) == 0);
+	free(subtype);
 }
 
 void TestTPTypes::test_tptypes_large_type() {
@@ -214,6 +234,7 @@ void TestTPTypes::test_tptypes_large_type() {
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
 	CPPUNIT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
+	free(type);
 }
 
 void TestTPTypes::test_tptypes_large_subtype() {
@@ -226,4 +247,5 @@ void TestTPTypes::test_tptypes_large_subtype() {
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == sizeof(BIGDATA));
 	CPPUNIT_ASSERT(strncmp(subtype, "1234567890123456", 16) == 0);
+	free(subtype);
 }

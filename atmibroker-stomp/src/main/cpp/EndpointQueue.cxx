@@ -54,7 +54,7 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 		throw std::exception();
 	}
 	this->name = serviceName;
-	this->fullName = (const char*) queueName;
+	this->fullName = queueName;
 	LOG4CXX_DEBUG(logger, "Sent SUB: " << queueName);
 }
 
@@ -98,7 +98,7 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 	}
 	}
 	this->name = queueName;
-	this->fullName = (const char*) queueName;
+	this->fullName = queueName;
 	LOG4CXX_DEBUG(logger, "Sent SUB: " << queueName);
 }
 
@@ -115,6 +115,7 @@ EndpointQueue::~EndpointQueue() {
 	lock->unlock();
 	delete lock;
 	lock = NULL;
+	free(fullName);
 	LOG4CXX_TRACE(logger, (char*) "destroyed" << name);
 }
 
@@ -182,5 +183,5 @@ const char * EndpointQueue::getName() {
 }
 
 const char * EndpointQueue::getFullName() {
-	return this->fullName;
+	return (const char *)this->fullName;
 }

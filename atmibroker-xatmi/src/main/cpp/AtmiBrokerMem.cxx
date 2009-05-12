@@ -177,8 +177,6 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size) {
 			if ((*it).memoryPtr == addr) {
 				LOG4CXX_DEBUG(logger, (char*) "found matching memory %p"
 						<< (*it).memoryPtr);
-				LOG4CXX_DEBUG(logger, (char*) "updating memory ptr %p"
-						<< (*it).memoryPtr);
 
 				if (strncmp((*it).type, "X_COMMON", 8) == 0 || strncmp(
 						(*it).type, "X_C_TYPE", 8) == 0) {

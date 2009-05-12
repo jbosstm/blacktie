@@ -55,7 +55,7 @@ private:
 	SynchronizableObject* lock;
 	bool shutdown;
 	char* name;
-	const char* fullName;
+	char* fullName;
 };
 
 #endif

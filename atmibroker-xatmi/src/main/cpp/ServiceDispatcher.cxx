@@ -99,6 +99,9 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	} catch (...) {
 		LOG4CXX_ERROR(logger, (char*) "ServiceDispatcher caught error running during onMessage");
 	}
+
+	LOG4CXX_TRACE(logger, (char*) "Freeing the data that was passed to the service");
+	free(idata);
 	if (control) {
 		disassociate_tx(); // TODO figure out why tpreturn needs to stop Resource Managers
 		setSpecific(TSS_KEY, control);
