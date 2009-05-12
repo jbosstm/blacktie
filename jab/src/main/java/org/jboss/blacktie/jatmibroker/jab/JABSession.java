@@ -35,7 +35,10 @@ public class JABSession {
 
 			serverProxy = AtmiBrokerServerImpl.getProxy(jabSessionAttributes.getProperties(), "", "");
 		} catch (Exception e) {
-			throw new JABException(e);
+			String domain = jabSessionAttributes.getDomainName();
+			String server = jabSessionAttributes.getServerName();
+
+			throw new JABException("Error connect to domain " + domain + " server " + server, e);
 		}
 	}
 

@@ -62,4 +62,8 @@ public class JABSessionAttributes {
 	public String getDomainName() {
 		return (String) properties.get("blacktie.domain.name");
 	}
+
+	public String getServerName() {
+		return (String) properties.get("blacktie.server.name");
+	}
 }

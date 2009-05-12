@@ -22,25 +22,31 @@ import org.jboss.blacktie.jatmibroker.jab.JABRemoteService;
 import org.jboss.blacktie.jatmibroker.jab.JABSession;
 import org.jboss.blacktie.jatmibroker.jab.JABSessionAttributes;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
+import org.jboss.blacktie.jatmibroker.jab.JABException;
 
 public class JABClient {
 	private static final Logger log = LogManager.getLogger(JABClient.class);
 
 	public static void main(String[] args) throws Exception {
+		log.info("JABClient ");
 		if (args.length != 1) {
 			log.error("java -Dblacktie.config.dir=[linux|win32] JABClient message");
 			return;
 		}
 		String message = args[0];
-		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes();
-		JABSession aJabSession = new JABSession(aJabSessionAttributes);
-		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
-		JABRemoteService aJabService = new JABRemoteService(aJabSession, "BAR");
-		aJabService.setString("STRING", message);
-		log.info("Calling call with input: " + message);
-		aJabService.call(transaction);
-		log.info("Called call with output: " + aJabService.getResponseString());
-		transaction.commit();
-		aJabSession.endSession();
+		try {
+			JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes();
+			JABSession aJabSession = new JABSession(aJabSessionAttributes);
+			JABTransaction transaction = new JABTransaction(aJabSession, 5000);
+			JABRemoteService aJabService = new JABRemoteService(aJabSession, "BAR");
+			aJabService.setString("STRING", message);
+			log.info("Calling call with input: " + message);
+			aJabService.call(transaction);
+			log.info("Called call with output: " + aJabService.getResponseString());
+			transaction.commit();
+			aJabSession.endSession();
+		} catch (JABException e) {
+			log.error("JAB error: " + e.getMessage(), e);
+		}
 	}
 }
