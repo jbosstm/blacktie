@@ -31,7 +31,7 @@ void TestTPTypes::setUp() {
 }
 
 void TestTPTypes::tearDown() {
-	userlogc((char*) "TestTPTypes::setUp");
+	userlogc((char*) "TestTPTypes::tearDown");
 	// Do local work
 	if (m_allocated != NULL) {
 		::tpfree(m_allocated);

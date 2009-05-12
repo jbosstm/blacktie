@@ -42,7 +42,7 @@ void TestTxTPCall::setUp() {
 }
 
 void TestTxTPCall::tearDown() {
-	userlogc((char*) "TestTxTPCall::setUp");
+	userlogc((char*) "TestTxTPCall::tearDown");
 	// Do local work
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);

@@ -79,7 +79,7 @@ bool SessionImpl::send(MESSAGE message) {
 	frame.command = (char*) "SEND";
 	frame.headers = apr_hash_make(pool);
 	apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, sendTo);
-	apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING, "receipt");
+	apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING, "send");
 
 	frame.body_length = message.len;
 	frame.body = message.data;
@@ -111,9 +111,12 @@ bool SessionImpl::send(MESSAGE message) {
 	} else if (strcmp(framed->command, (const char*)"ERROR") == 0) {
 		LOG4CXX_DEBUG(logger, (char*) "Got an error: " << framed->body);
 		//setSpecific(TPE_KEY, TSS_TPENOENT);
-	} else {
-		LOG4CXX_DEBUG(logger, (char*) "Called back ");
+	} else if (strcmp(framed->command, (const char*)"RECEIPT") == 0){
+		LOG4CXX_DEBUG(logger, (char*) "SEND RECEIPT: " << (char*) apr_hash_get(framed->headers, "receipt-id", APR_HASH_KEY_STRING));
 		toReturn = true;
+	} else {
+		LOG4CXX_ERROR(logger, "Didn't get a receipt: " << framed->command << ", "
+			<< framed->body);
 	}
 	LOG4CXX_DEBUG(logger, "Sent to: " << sendTo << " Command: " << frame.command << " Body: " << frame.body);
 

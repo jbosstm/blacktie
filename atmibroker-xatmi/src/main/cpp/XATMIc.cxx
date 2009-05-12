@@ -499,8 +499,8 @@ void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 			setSpecific(TPE_KEY, TSS_TPEPROTO);
 		} else {
 			session->setCanRecv(false);
-			if (bufferSize(data, len) == -1) {
-				data = ::tpalloc((char*) "X_OCTET", NULL, 1);
+			if (rcode == TPESVCERR || bufferSize(data, len) == -1) {
+				data = ::tpalloc((char*) "X_OCTET", NULL, 0);
 				::send(session, "", data, 1, 0, flags, TPFAIL, TPESVCERR);
 			} else {
 				::send(session, "", data, len, 0, flags, rval, rcode);

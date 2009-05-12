@@ -44,7 +44,7 @@ void TestTPUnadvertise::setUp() {
 }
 
 void TestTPUnadvertise::tearDown() {
-	userlogc((char*) "TestTPUnadvertise::setUp");
+	userlogc((char*) "TestTPUnadvertise::tearDown");
 	// Do local work
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);

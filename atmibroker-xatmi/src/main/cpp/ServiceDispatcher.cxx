@@ -109,7 +109,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 	// CLEAN UP THE SENDER AND RECEIVER FOR THIS CLIENT
 	if (session->getCanSend()) {
-		::tpreturn(TPFAIL, TPESVCERR, (char*) "", 0, 0);
+		::tpreturn(TPFAIL, TPESVCERR, NULL, 0, 0);
 	}
 	delete this->session;
 	this->session = NULL;
