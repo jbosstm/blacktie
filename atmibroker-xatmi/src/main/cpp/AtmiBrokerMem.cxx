@@ -123,23 +123,17 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size) {
 		MemoryInfo memoryInfo;
 		LOG4CXX_TRACE(logger, (char*) "tpalloc - created memoryInfo");
 		memoryInfo.memoryPtr = (char*) malloc(size + 1);
-		LOG4CXX_TRACE(logger, (char*) "tpalloc - malloc memoryPtr");
 		memoryInfo.memoryPtr[size] = NULL;
-		LOG4CXX_TRACE(logger, (char*) "tpalloc - NULL");
 		memoryInfo.size = size;
 		LOG4CXX_TRACE(logger, (char*) "tpalloc - sized");
-		memoryInfo.type = (char*) malloc(MAX_TYPE_SIZE);
-		LOG4CXX_TRACE(logger, (char*) "tpalloc - malloc type");
-		memset(memoryInfo.type, '\0', MAX_TYPE_SIZE);
-		LOG4CXX_TRACE(logger, (char*) "tpalloc - set type");
+		memoryInfo.type = (char*) malloc(MAX_TYPE_SIZE + 1);
+		memset(memoryInfo.type, '\0', MAX_TYPE_SIZE + 1);
 		strncpy(memoryInfo.type, type, MAX_TYPE_SIZE);
-		LOG4CXX_TRACE(logger, (char*) "tpalloc - copied type");
-		memoryInfo.subtype = (char*) malloc(MAX_SUBTYPE_SIZE);
-		LOG4CXX_TRACE(logger, (char*) "tpalloc - malloc subtype");
-		memset(memoryInfo.subtype, '\0', MAX_SUBTYPE_SIZE);
-		LOG4CXX_TRACE(logger, (char*) "tpalloc - set subtype")
+		LOG4CXX_TRACE(logger, (char*) "tpalloc - copied type" << memoryInfo.type);
+		memoryInfo.subtype = (char*) malloc(MAX_SUBTYPE_SIZE + 1);
+		memset(memoryInfo.subtype, '\0', MAX_SUBTYPE_SIZE + 1);
 		strncpy(memoryInfo.subtype, subtype, MAX_SUBTYPE_SIZE);
-		LOG4CXX_TRACE(logger, (char*) "tpalloc - copied subtype");
+		LOG4CXX_TRACE(logger, (char*) "tpalloc - copied subtype: " << memoryInfo.subtype);
 
 		LOG4CXX_DEBUG(
 				logger,
@@ -272,18 +266,10 @@ long AtmiBrokerMem::tptypes(char* ptr, char* type, char* subtype) {
 						<< (char*) memoryInfo.subtype);
 
 				if (type) {
-					int length = sizeof(type);
-					if (length < MAX_TYPE_SIZE) {
-						length = MAX_TYPE_SIZE;
-					}
-					strncpy(type, memoryInfo.type, length);
+					strncpy(type, memoryInfo.type, MAX_TYPE_SIZE);
 				}
 				if (subtype) {
-					int length = sizeof(subtype);
-					if (length < MAX_SUBTYPE_SIZE) {
-						length = MAX_SUBTYPE_SIZE;
-					}
-					strncpy(subtype, memoryInfo.subtype, length);
+					strncpy(subtype, memoryInfo.subtype, MAX_SUBTYPE_SIZE);
 				}
 				toReturn = memoryInfo.size;
 				break;

@@ -347,8 +347,8 @@ bool AtmiBrokerServer::advertiseService(char * svcname, void(*func)(
 		return false;
 	}
 
-	char* serviceName = (char*) ::malloc(XATMI_SERVICE_NAME_LENGTH);
-	memset(serviceName, '\0', XATMI_SERVICE_NAME_LENGTH);
+	char* serviceName = (char*) ::malloc(XATMI_SERVICE_NAME_LENGTH + 1);
+	memset(serviceName, '\0', XATMI_SERVICE_NAME_LENGTH + 1);
 	strncat(serviceName, svcname, XATMI_SERVICE_NAME_LENGTH);
 
 	bool found = false;
@@ -405,8 +405,8 @@ bool AtmiBrokerServer::advertiseService(char * svcname, void(*func)(
 }
 
 void AtmiBrokerServer::unadvertiseService(char * svcname) {
-	char* serviceName = (char*) ::malloc(XATMI_SERVICE_NAME_LENGTH);
-	memset(serviceName, '\0', XATMI_SERVICE_NAME_LENGTH);
+	char* serviceName = (char*) ::malloc(XATMI_SERVICE_NAME_LENGTH + 1);
+	memset(serviceName, '\0', XATMI_SERVICE_NAME_LENGTH + 1);
 	strncat(serviceName, svcname, XATMI_SERVICE_NAME_LENGTH);
 
 	for (std::vector<char*>::iterator i = advertisedServices.begin(); i
@@ -426,6 +426,7 @@ void AtmiBrokerServer::unadvertiseService(char * svcname) {
 			break;
 		}
 	}
+	free(serviceName);
 }
 
 bool AtmiBrokerServer::isAdvertised(char * serviceName) {
