@@ -18,7 +18,6 @@
 <SERVER xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xmlns="http://www.jboss.org/blacktie">	
 	<SERVER_DESCRIPTION>
-		<NAME>foo</NAME>
 		<MAX_REPLICAS>1</MAX_REPLICAS>
 		<MAX_CHANNELS>1</MAX_CHANNELS>
 		<MAX_SUPPLIERS>1</MAX_SUPPLIERS>
