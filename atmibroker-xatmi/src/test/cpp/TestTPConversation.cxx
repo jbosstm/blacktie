@@ -120,8 +120,8 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 	char* expectedResult = (char*) malloc(svcinfo->len);
 	strcpy(expectedResult, "hello");
 	char* errorMessage =  (char*) malloc(svcinfo->len * 2 + 1);
-	sprintf(errorMessage, "%s/%s", expectedResult, rcvbuf);
-	if (strcmp(expectedResult, rcvbuf) != 0) {
+	sprintf(errorMessage, "%s/%s", expectedResult, svcinfo->data);
+	if (strcmp(expectedResult, svcinfo->data) != 0) {
 		fail = true;
 	} else {
 		long revent = 0;	
