@@ -25,6 +25,7 @@
 #include "TestTPCall.h"
 
 extern void test_tpcall_x_octet_service(TPSVCINFO *svcinfo);
+extern void test_tpcall_x_octet_service_zero(TPSVCINFO *svcinfo);
 extern void test_tpcall_x_common_service(TPSVCINFO *svcinfo);
 extern void test_tpcall_x_c_type_service(TPSVCINFO *svcinfo);
 
@@ -109,6 +110,33 @@ void TestTPCall::test_tpcall_x_octet() {
 	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_octet") == 0);
 }
 
+void TestTPCall::test_tpcall_x_octet_zero() {
+	userlogc((char*) "test_tpcall_x_octet_zero");
+	tpadvertise((char*) "tpcall_x_octet", test_tpcall_x_octet_service_zero);
+
+	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, 0)) != NULL);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, 0)) != NULL);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, 0, (char **) &rcvbuf, &rcvlen, (long) 0);
+	CPPUNIT_ASSERT(tperrno!= TPEINVAL);
+	CPPUNIT_ASSERT(tperrno!= TPENOENT);
+	CPPUNIT_ASSERT(tperrno!= TPEITYPE);
+	CPPUNIT_ASSERT(tperrno!= TPEOTYPE);
+	CPPUNIT_ASSERT(tperrno!= TPETRAN);
+	CPPUNIT_ASSERT(tperrno!= TPETIME);
+	CPPUNIT_ASSERT(tperrno!= TPESVCFAIL);
+	CPPUNIT_ASSERT(tperrno!= TPESVCERR);
+	CPPUNIT_ASSERT(tperrno!= TPEBLOCK);
+	CPPUNIT_ASSERT(tperrno!= TPGOTSIG);
+	CPPUNIT_ASSERT(tperrno!= TPEPROTO);
+	CPPUNIT_ASSERT(tperrno!= TPESYSTEM);
+	CPPUNIT_ASSERT(tperrno!= TPEOS);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(id != -1);
+	CPPUNIT_ASSERT(rcvlen == 0);
+}
+
 // 9.1.2
 void TestTPCall::test_tpcall_x_common() {
 	userlogc((char*) "test_tpcall_x_common");
@@ -167,6 +195,14 @@ void test_tpcall_x_octet_service(TPSVCINFO *svcinfo) {
 			strcpy(toReturn, "dud");
 		}
 	}
+	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
+}
+
+void test_tpcall_x_octet_service_zero(TPSVCINFO *svcinfo) {
+	userlogc((char*) "test_tpcall_x_octet_service_zero");
+	bool ok = false;
+	int len = 0;
+	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }
 

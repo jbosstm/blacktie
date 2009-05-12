@@ -45,7 +45,7 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 	frame.command = (char*) "SUB";
 	frame.headers = apr_hash_make(pool);
 	apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, queueName);
-	apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING, "tempQ");
+	apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING, "svcQ");
 	frame.body_length = -1;
 	frame.body = NULL;
 	LOG4CXX_DEBUG(logger, "Send SUB: " << queueName);
@@ -63,7 +63,7 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 		LOG4CXX_DEBUG(logger, (char*) "Got an error: " << framed->body);
 		throw new std::exception();
 	} else if (strcmp(framed->command, (const char*)"RECEIPT") == 0){
-		LOG4CXX_DEBUG(logger, (char*) "TEMPQ RECEIPT: " << (char*) apr_hash_get(framed->headers, "receipt-id", APR_HASH_KEY_STRING));
+		LOG4CXX_DEBUG(logger, (char*) "svcQ RECEIPT: " << (char*) apr_hash_get(framed->headers, "receipt-id", APR_HASH_KEY_STRING));
 	} else {
 		LOG4CXX_ERROR(logger, "Didn't get a receipt: " << framed->command << ", "
 			<< framed->body);
@@ -93,7 +93,7 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 	frame.command = (char*) "SUB";
 	frame.headers = apr_hash_make(pool);
 	apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, queueName);
-	apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING, "svcQ");
+	apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING, "tmpQ");
 	frame.body_length = -1;
 	frame.body = NULL;
 	LOG4CXX_DEBUG(logger, "Send SUB: " << queueName);
@@ -111,7 +111,7 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 		LOG4CXX_DEBUG(logger, (char*) "Got an error: " << framed->body);
 		throw new std::exception();
 	} else if (strcmp(framed->command, (const char*)"RECEIPT") == 0){
-		LOG4CXX_DEBUG(logger, (char*) "SVCQ RECEIPT: " << (char*) apr_hash_get(framed->headers, "receipt-id", APR_HASH_KEY_STRING));
+		LOG4CXX_DEBUG(logger, (char*) "tmpQ RECEIPT: " << (char*) apr_hash_get(framed->headers, "receipt-id", APR_HASH_KEY_STRING));
 	} else {
 		LOG4CXX_ERROR(logger, "Didn't get a receipt: " << framed->command << ", "
 			<< framed->body);
@@ -165,7 +165,7 @@ MESSAGE EndpointQueue::receive(long time) {
 			LOG4CXX_ERROR(logger, (char*) "Got an error: " << frame->body);
 			setSpecific(TPE_KEY, TSS_TPENOENT);
 		} else if (strcmp(frame->command, (const char*)"RECEIPT") == 0) {
-			LOG4CXX_ERROR(logger, (char*) "receive RECEIPT: " << (char*) apr_hash_get(frame->headers, "receipt-id", APR_HASH_KEY_STRING));
+			LOG4CXX_ERROR(logger, (char*) "read a RECEIPT for: " << name << ": " << (char*) apr_hash_get(frame->headers, "receipt-id", APR_HASH_KEY_STRING));
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		} else {
 			LOG4CXX_DEBUG(logger, "Received from: " << name  << " Command: " << frame->command << " Body: " << frame->body);
