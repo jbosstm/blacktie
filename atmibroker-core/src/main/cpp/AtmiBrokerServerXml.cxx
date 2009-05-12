@@ -109,6 +109,8 @@ static void XMLCALL startElement(void *userData, const char *name, const char **
 					} else {
 						service.advertised = false;
 					}
+				} else if(strcmp(atts[i], "transportLibrary") == 0) {
+					service.transport = atts[i+1];
 				}
 			}
 			aServerStructPtr->serviceDatas.push_back(service);

@@ -24,8 +24,8 @@
 		<MAX_CONSUMERS>1</MAX_CONSUMERS>
 		<ORB_TYPE>TAO</ORB_TYPE>
 		<SERVICE_NAMES>
-			<SERVICE_NAME name="BAR" function_name="bar" library_name="libBar.so" advertised="true" transportLibrary='libatmicorba.so'/>
-			<SERVICE_NAME name="FOO" function_name="foo" advertised="false" transportLibrary='libatmicorba.so'/>
+			<SERVICE_NAME name="BAR" function_name="bar" library_name="libBar.so" advertised="true" transportLibrary='libatmibroker-corba.so'/>
+			<SERVICE_NAME name="FOO" function_name="foo" advertised="false" transportLibrary='libatmibroker-stomp.so'/>
 		</SERVICE_NAMES>
 	</SERVER_DESCRIPTION>
 </SERVER>

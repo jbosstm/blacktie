@@ -41,6 +41,7 @@ void TestAtmiBrokerXml::test_server() {
 	CPPUNIT_ASSERT(service->function_name == "bar");
 	CPPUNIT_ASSERT(service->library_name == "libBar.so");
 	CPPUNIT_ASSERT(service->advertised);
+	CPPUNIT_ASSERT(service->transport == "libatmibroker-corba.so");
 
 	service = &data.serviceDatas[1];
 	CPPUNIT_ASSERT(service);
@@ -48,6 +49,7 @@ void TestAtmiBrokerXml::test_server() {
 	CPPUNIT_ASSERT(service->function_name == "foo");
 	CPPUNIT_ASSERT(service->library_name == "");
 	CPPUNIT_ASSERT(service->advertised == false);
+	CPPUNIT_ASSERT(service->transport == "libatmibroker-stomp.so");
 }
 
 void TestAtmiBrokerXml::test_client() {
