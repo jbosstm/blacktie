@@ -30,6 +30,7 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 		char* serviceName) {
 	shutdown = false;
 	lock = new SynchronizableObject();
+	LOG4CXX_DEBUG(logger, "Created lock: " << lock);
 	
 	connection = ConnectionImpl::connect(pool, 2); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
@@ -79,6 +80,7 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 		char* connectionName, int id) {
 	shutdown = false;
 	lock = new SynchronizableObject();
+	LOG4CXX_DEBUG(logger, "Created lock: " << lock);
 	
 	connection = ConnectionImpl::connect(pool, 10); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
