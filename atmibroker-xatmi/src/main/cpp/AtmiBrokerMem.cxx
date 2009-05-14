@@ -140,10 +140,11 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size) {
 
 		LOG4CXX_DEBUG(
 				logger,
-				(char*) "adding MemoryInfo: %p with type: %s with subtype: %s to vector"
+				(char*) "adding MemoryInfo: with type: with subtype: with size: to vector"
 						<< (char*) memoryInfo.memoryPtr << ":"
 						<< (char*) memoryInfo.type << ":"
-						<< (char*) memoryInfo.subtype);
+						<< (char*) memoryInfo.subtype << ":"
+						<< (char*) memoryInfo.size);
 		memoryInfoVector.push_back(memoryInfo);
 		LOG4CXX_DEBUG(logger, (char*) "added MemoryInfo to vector");
 		toReturn = (char*) memoryInfo.memoryPtr;
