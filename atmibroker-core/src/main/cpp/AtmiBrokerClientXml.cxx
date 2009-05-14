@@ -69,9 +69,8 @@ static void XMLCALL startElement(void *userData, const char *name, const char **
 	std::vector<ClientServerInfo*>* aClientServerVectorPtr = (std::vector<ClientServerInfo*>*) userData;
 
 	if (strcmp(name, "SERVER xmnls") == 0) {
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "new server ");
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "starting to read");
 		processingServer = true;
-
 	} else if (strcmp(name, "MAX_CHANNELS") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "processing Max Channels for server ");
 		processingMaxChannels = true;
@@ -224,7 +223,6 @@ bool AtmiBrokerClientXml::parseXmlDescriptor(
 
 	char *buf = (char *) malloc(sizeof(char) * s.st_size + 1);
 	if (!buf) {
-		/* malloc failed */
 		userlog(
 				log4cxx::Level::getError(),
 				loggerAtmiBrokerClientXml,

@@ -238,8 +238,11 @@ char* tpalloc(char* type, char* subtype, long size) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpalloc: " << type << " " << subtype
 			<< " " << size);
 	setSpecific(TPE_KEY, TSS_TPERESET);
-	char* toReturn =
-			AtmiBrokerMem::get_instance()->tpalloc(type, subtype, size);
+	char* toReturn = NULL;
+	if (clientinit() != -1) {
+		toReturn =
+				AtmiBrokerMem::get_instance()->tpalloc(type, subtype, size);
+	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpalloc returning" << " tperrno: "
 			<< tperrno);
 	return toReturn;
@@ -248,7 +251,10 @@ char* tpalloc(char* type, char* subtype, long size) {
 char* tprealloc(char * addr, long size) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tprealloc: " << size);
 	setSpecific(TPE_KEY, TSS_TPERESET);
-	char* toReturn = AtmiBrokerMem::get_instance()->tprealloc(addr, size);
+	char* toReturn = NULL;
+	if (clientinit() != -1) {
+		toReturn = AtmiBrokerMem::get_instance()->tprealloc(addr, size);
+	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tprealloc returning" << " tperrno: "
 			<< tperrno);
 	return toReturn;
@@ -257,7 +263,9 @@ char* tprealloc(char * addr, long size) {
 void tpfree(char* ptr) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpfree");
 	setSpecific(TPE_KEY, TSS_TPERESET);
-	AtmiBrokerMem::get_instance()->tpfree(ptr);
+	if (clientinit() != -1) {
+		AtmiBrokerMem::get_instance()->tpfree(ptr);
+	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpfree returning" << " tperrno: "
 			<< tperrno);
 }
@@ -265,7 +273,10 @@ void tpfree(char* ptr) {
 long tptypes(char* ptr, char* type, char* subtype) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tptypes: " << type << " " << subtype);
 	setSpecific(TPE_KEY, TSS_TPERESET);
-	long toReturn = AtmiBrokerMem::get_instance()->tptypes(ptr, type, subtype);
+	long toReturn = -1;
+	if (clientinit() != -1) {
+		toReturn = AtmiBrokerMem::get_instance()->tptypes(ptr, type, subtype);
+	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tptypes return: " << toReturn
 			<< " tperrno: " << tperrno);
 	return toReturn;
@@ -424,6 +435,7 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpsend " << id);
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = -1;
+	if (clientinit() != -1) {
 	Session* session = (Session*) getSpecific(SVC_SES);
 	int len = -1;
 	if (session != NULL) {
@@ -455,6 +467,7 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 			session->setCanRecv(true);
 		}
 	}
+	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpsend return: " << toReturn
 			<< " tperrno: " << tperrno);
 	return toReturn;
@@ -464,6 +477,7 @@ int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tprecv " << id);
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = -1;
+	if (clientinit() != -1) {
 	Session* session = (Session*) getSpecific(SVC_SES);
 	if (session != NULL && session->getId() != id) {
 		session = NULL;
@@ -485,6 +499,7 @@ int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 			toReturn = -1;
 		}
 	}
+	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tprecv return: " << toReturn
 			<< " tperrno: " << tperrno);
 	return toReturn;
@@ -493,6 +508,7 @@ int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpreturn " << rval);
 	setSpecific(TPE_KEY, TSS_TPERESET);
+	if (clientinit() != -1) {
 	Session* session = (Session*) getSpecific(SVC_SES);
 	if (session != NULL) {
 		if (!session->getCanSend()) {
@@ -511,6 +527,7 @@ void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 		}
 	} else {
 		setSpecific(TPE_KEY, TSS_TPEPROTO);
+	}
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpreturn returning" << " tperrno: "
 			<< tperrno);

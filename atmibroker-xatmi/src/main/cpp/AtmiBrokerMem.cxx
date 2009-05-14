@@ -115,8 +115,10 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size) {
 			subtype = (char*) "";
 		} else {
 			LOG4CXX_DEBUG(logger, (char*) "tpalloc X_COMMON/X_C_TYPE");
-			if (size < 1024)
+			if (size < 1024) { 
+				LOG4CXX_DEBUG(logger, (char*) "tpalloc resizing");
 				size = 1024;
+			}
 		}
 		LOG4CXX_DEBUG(logger, (char*) "tpalloc - type: subtype: size:" << type
 				<< ":" << subtype << ":" << size);
@@ -128,7 +130,8 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size) {
 		LOG4CXX_TRACE(logger, (char*) "tpalloc - sized");
 		memoryInfo.type = (char*) malloc(MAX_TYPE_SIZE + 1);
 		memset(memoryInfo.type, '\0', MAX_TYPE_SIZE + 1);
-		strncpy(memoryInfo.type, type, MAX_TYPE_SIZE);
+		LOG4CXX_TRACE(logger, (char*) "type prep");
+		strncpy	(memoryInfo.type, type, MAX_TYPE_SIZE);
 		LOG4CXX_TRACE(logger, (char*) "tpalloc - copied type" << memoryInfo.type);
 		memoryInfo.subtype = (char*) malloc(MAX_SUBTYPE_SIZE + 1);
 		memset(memoryInfo.subtype, '\0', MAX_SUBTYPE_SIZE + 1);
@@ -182,9 +185,9 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size) {
 				(*it).memoryPtr = memPtr;
 				(*it).memoryPtr[size] = NULL;
 				(*it).size = size;
-				LOG4CXX_DEBUG(logger, (char*) "updated memory ptr %p"
-						<< (*it).memoryPtr);
 				toReturn = memPtr;
+				LOG4CXX_DEBUG(logger, (char*) "updated - addr: %p size: %d" << (*it).memoryPtr
+				<< ":" << size);
 				break;
 			}
 		}
@@ -251,7 +254,7 @@ long AtmiBrokerMem::tptypes(char* ptr, char* type, char* subtype) {
 	LOG4CXX_TRACE(logger, (char*) "tptypes locked");
 	long toReturn = -1;
 	if (ptr && ptr != NULL) {
-		LOG4CXX_DEBUG(logger, (char*) "tptypes - ptr: %p" << ptr);
+		LOG4CXX_DEBUG(logger, (char*) "checking tptypes - ptr: %p" << ptr);
 		for (std::vector<MemoryInfo>::iterator it = memoryInfoVector.begin(); it
 				!= memoryInfoVector.end(); it++) {
 			LOG4CXX_TRACE(logger, (char*) "next memoryInfo id is: %p"
@@ -278,8 +281,10 @@ long AtmiBrokerMem::tptypes(char* ptr, char* type, char* subtype) {
 	}
 	if (toReturn == -1) {
 		// WAS NOT FOUND
+		LOG4CXX_TRACE(logger, (char*) "notifying could not found");
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	}
+	LOG4CXX_TRACE(logger, (char*) "tptypes unlocking");
 	lock->unlock();
 	LOG4CXX_TRACE(logger, (char*) "tptypes unlocked");
 	return toReturn;

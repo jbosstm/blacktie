@@ -147,6 +147,7 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 			free((*i).serviceName);
 			free((*i).transportLib);
 		}
+		services->clear();
 		delete services;
 		free(*itServer);
 	}

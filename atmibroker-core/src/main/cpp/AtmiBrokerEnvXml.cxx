@@ -129,7 +129,7 @@ static void XMLCALL startElement
 	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processing element " << name);
 
 	if (strcmp(name, "ENVIRONMENT xmnls") == 0 || strcmp(name, "ENVIRONMENT") == 0) {
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "new server ");
+		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "starting to read");
 		processingEnvironment = true;
 	} else if (strcmp(name, "ENVIRONMENT_DESCRIPTION") == 0) {
 		processingEnvironmentDescription = true;

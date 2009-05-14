@@ -67,6 +67,7 @@ SessionImpl::SessionImpl(char* connectionName, apr_pool_t* pool, int id, const c
 SessionImpl::~SessionImpl() {
 	LOG4CXX_TRACE(logger, (char*) "destroyed");
 	::free(this->sendTo);
+	delete toRead;
 }
 
 MESSAGE SessionImpl::receive(long time) {

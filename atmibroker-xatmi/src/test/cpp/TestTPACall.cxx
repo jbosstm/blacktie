@@ -106,4 +106,5 @@ void testtpacall_service(TPSVCINFO *svcinfo) {
 	char *toReturn = new char[len];
 	strcpy(toReturn, "testtpacall_service");
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
+	delete toReturn;
 }

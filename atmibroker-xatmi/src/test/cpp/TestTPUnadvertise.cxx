@@ -116,4 +116,5 @@ void testtpunadvertise_service(TPSVCINFO *svcinfo) {
 	strcpy(toReturn, "testtpunadvertise_service");
 	// Changed length from 0L to svcinfo->len
 	tpreturn(TPSUCCESS, 0, toReturn, 25, 0);
+	delete toReturn;
 }

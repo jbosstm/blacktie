@@ -69,6 +69,7 @@ void TestTPService::test_tpservice_notpreturn() {
 	sprintf(tperrnoS, "%d", tperrno);
 	CPPUNIT_ASSERT_MESSAGE(tperrnoS, tperrnoToCheck== TPESVCERR);
 	CPPUNIT_ASSERT(id == -1);
+	free(tperrnoS);
 }
 
 void testtpservice_service(TPSVCINFO *svcinfo) {

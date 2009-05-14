@@ -53,7 +53,7 @@ AtmiBrokerServiceXml::~AtmiBrokerServiceXml() {
 
 static void XMLCALL startElement(void *userData, const char *name, const char **atts) {
 	if (strcmp(name, "SERVICE ") == 0) {
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "new service ");
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "start element SERVICE");
 		processingService = true;
 	} else if (strcmp(name, "SIZE") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "processing MAX Cache for service ");
@@ -162,7 +162,6 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(SVCINFO* aServiceStructPtr,
 
 	char *buf = (char *) malloc(sizeof(char) * s.st_size + 1);
 	if (!buf) {
-		/* malloc failed */
 		userlog(
 				log4cxx::Level::getError(),
 				loggerAtmiBrokerServiceXml,

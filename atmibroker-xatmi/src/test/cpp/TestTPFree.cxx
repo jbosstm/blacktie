@@ -33,8 +33,10 @@ void TestTPFree::setUp() {
 
 void TestTPFree::tearDown() {
 	userlogc((char*) "TestTPFree::tearDown");
-	// Do local work
-	::tpfree(m_allocated);
+	if (m_allocated) {
+		// Do local work
+		::tpfree(m_allocated);
+	}
 
 	// Clean up server
 	BaseTest::tearDown();
@@ -47,6 +49,7 @@ void TestTPFree::test_tpfree_alloc_x_octet() {
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	::tpfree(m_allocated);
+	m_allocated = NULL;
 	CPPUNIT_ASSERT(tperrno == 0);
 
 	// Once tpfree returns, ptr should not be passed as an argument to any XATMI routine
@@ -66,6 +69,7 @@ void TestTPFree::test_tpfree_realloc_x_octet() {
 
 	::tprealloc(m_allocated, 20);
 	::tpfree(m_allocated);
+	m_allocated = NULL;
 	CPPUNIT_ASSERT(tperrno == 0);
 
 	// Once tpfree returns, ptr should not be passed as an argument to any XATMI routine
@@ -84,6 +88,7 @@ void TestTPFree::test_tpfree_free_free_x_octet() {
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	::tpfree(m_allocated);
+	m_allocated = NULL;
 	CPPUNIT_ASSERT(tperrno == 0);
 
 	// Once tpfree returns, ptr should not be passed as an argument to any XATMI routine
@@ -118,6 +123,7 @@ void TestTPFree::test_tpfree_alloc_x_common() {
 	CPPUNIT_ASSERT(tperrno == 0);
 
 	::tpfree(m_allocated);
+	m_allocated = NULL;
 	CPPUNIT_ASSERT(tperrno == 0);
 
 	// Once tpfree returns, ptr should not be passed as an argument to any XATMI routine
@@ -142,6 +148,7 @@ void TestTPFree::test_tpfree_realloc_x_common() {
 
 	::tprealloc(m_allocated, 2048);
 	::tpfree(m_allocated);
+	m_allocated = NULL;
 	CPPUNIT_ASSERT(tperrno == 0);
 
 	// Once tpfree returns, ptr should not be passed as an argument to any XATMI routine
@@ -165,6 +172,7 @@ void TestTPFree::test_tpfree_free_free_x_common() {
 	CPPUNIT_ASSERT(tperrno == 0);
 
 	::tpfree(m_allocated);
+	m_allocated = NULL;
 	CPPUNIT_ASSERT(tperrno == 0);
 
 	// Once tpfree returns, ptr should not be passed as an argument to any XATMI routine
@@ -192,6 +200,7 @@ void TestTPFree::test_tpfree_alloc_x_c_type() {
 	CPPUNIT_ASSERT(tperrno == 0);
 
 	::tpfree(m_allocated);
+	m_allocated = NULL;
 	CPPUNIT_ASSERT(tperrno == 0);
 
 		// Once tpfree returns, ptr should not be passed as an argument to any XATMI routine
@@ -217,6 +226,7 @@ void TestTPFree::test_tpfree_realloc_x_c_type() {
 
 	::tprealloc(m_allocated, 20);
 	::tpfree(m_allocated);
+	m_allocated = NULL;
 	CPPUNIT_ASSERT(tperrno == 0);
 
 		// Once tpfree returns, ptr should not be passed as an argument to any XATMI routine
@@ -241,6 +251,7 @@ void TestTPFree::test_tpfree_free_free_x_c_type() {
 	CPPUNIT_ASSERT(tperrno == 0);
 
 	::tpfree(m_allocated);
+	m_allocated = NULL;
 	CPPUNIT_ASSERT(tperrno == 0);
 
 		// Once tpfree returns, ptr should not be passed as an argument to any XATMI routine

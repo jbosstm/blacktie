@@ -60,6 +60,7 @@ void TestTPReturn::test_tpreturn_nonservice() {
 	char *toReturn = new char[len];
 	strcpy(toReturn, "test_tpreturn_nonservice");
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
+	delete toReturn;
 }
 
 void TestTPReturn::test_tpreturn_nonbuffer() {
@@ -81,4 +82,5 @@ void testtpreturn_service(TPSVCINFO *svcinfo) {
 	char *toReturn = new char[21];
 	strcpy(toReturn, "testtpreturn_service");
 	tpreturn(TPSUCCESS, 0, toReturn, 21, 0);
+	delete toReturn;
 }

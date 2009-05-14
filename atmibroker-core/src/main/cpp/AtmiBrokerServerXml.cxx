@@ -70,7 +70,7 @@ static void XMLCALL startElement(void *userData, const char *name, const char **
 	ServerMetadata* aServerStructPtr = (ServerMetadata*) userData;
 
 	if (strcmp(name, "SERVER xmnls") == 0) {
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "new server ");
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "start element SERVER");
 		processingServer = true;
 	} else if (strcmp(name, "MAX_CHANNELS") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServerXml, (char*) "processing Max Channels for server ");
@@ -218,7 +218,6 @@ bool AtmiBrokerServerXml::parseXmlDescriptor(ServerMetadata* aServerStructPtr,
 
 	char *buf = (char *) malloc(sizeof(char) * s.st_size + 1);
 	if (!buf) {
-		/* malloc failed */
 		userlog(
 				log4cxx::Level::getError(),
 				loggerAtmiBrokerServerXml,
