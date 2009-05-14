@@ -136,10 +136,15 @@ EndpointQueue::~EndpointQueue() {
 		lock->notify();
 	}
 	lock->unlock();
+	// Reacquire the lock so we know its safe to delete it
+	lock->lock();
+	lock->unlock();
+	LOG4CXX_TRACE(logger, (char*) "deleting lock");
 	delete lock;
 	lock = NULL;
+	LOG4CXX_TRACE(logger, (char*) "freeing name" << name);
 	free(fullName);
-	LOG4CXX_TRACE(logger, (char*) "destroyed" << name);
+	LOG4CXX_TRACE(logger, (char*) "destroyed");
 }
 
 MESSAGE EndpointQueue::receive(long time) {

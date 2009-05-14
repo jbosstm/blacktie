@@ -271,7 +271,8 @@ void tpfree(char* ptr) {
 }
 
 long tptypes(char* ptr, char* type, char* subtype) {
-	LOG4CXX_TRACE(loggerXATMI, (char*) "tptypes: " << type << " " << subtype);
+	LOG4CXX_TRACE(loggerXATMI, (char*) "tptypes");
+	LOG4CXX_TRACE(loggerXATMI, (char*) "parameters: " << type << " " << subtype);
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	long toReturn = -1;
 	if (clientinit() != -1) {

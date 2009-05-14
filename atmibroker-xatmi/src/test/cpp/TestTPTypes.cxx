@@ -147,6 +147,7 @@ void TestTPTypes::test_tptypes_null_type() {
 	userlogc((char*) "test_tptypes_null_type");
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", sizeof(BIGDATA));
 	CPPUNIT_ASSERT(m_allocated != NULL);
+	CPPUNIT_ASSERT(tperrno == 0);
 
 	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, NULL, subtype);
