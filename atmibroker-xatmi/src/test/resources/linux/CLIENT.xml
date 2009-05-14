@@ -25,13 +25,13 @@
 		<SERVER_NAMES>
 			<SERVER_NAME>TESTSERVERSERVER</SERVER_NAME>
 			<SERVICE_NAMES>
-				<SERVICE_NAME>TestTPFree</SERVICE_NAME>
-				<SERVICE_NAME>TestTPAdvertise</SERVICE_NAME>
-				<SERVICE_NAME>123456789012345</SERVICE_NAME>
-				<SERVICE_NAME>TestTPUnadvertise</SERVICE_NAME>
-				<SERVICE_NAME>tpcall_x_octet</SERVICE_NAME>
-				<SERVICE_NAME>tpcall_x_common</SERVICE_NAME>
-				<SERVICE_NAME>tpcall_x_c_type</SERVICE_NAME>
+				<SERVICE name='TestTPFree' transportLibrary='atmibroker-stomp.so'/>
+				<SERVICE name='TestTPAdvertise' transportLibrary='atmibroker-stomp.so'/>
+				<SERVICE name='123456789012345' transportLibrary='atmibroker-stomp.so'/>
+				<SERVICE name='TestTPUnadvertise' transportLibrary='atmibroker-stomp.so'/>
+				<SERVICE name='tpcall_x_octet' transportLibrary='atmibroker-stomp.so'/>
+				<SERVICE name='tpcall_x_common' transportLibrary='atmibroker-stomp.so'/>
+				<SERVICE name='tpcall_x_c_type' transportLibrary='atmibroker-stomp.so'/>
 			</SERVICE_NAMES>
 		</SERVER_NAMES>
 	</CLIENT_DESCRIPTION>

@@ -148,7 +148,6 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 			free((*i).transportLib);
 		}
 		services->clear();
-		delete services;
 		free(*itServer);
 	}
 	clientServerVector.clear();

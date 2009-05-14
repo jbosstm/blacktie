@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://www.jboss.org/blacktie"
-	xmlns="http://www.jboss.org/blacktie"
+		targetNamespace="http://www.jboss.org/blacktie"
+		xmlns="http://www.jboss.org/blacktie"
 		elementFormDefault="qualified">
     <xsd:element name="SERVICE">
         <xsd:complexType>

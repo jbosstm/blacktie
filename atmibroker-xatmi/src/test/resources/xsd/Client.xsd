@@ -24,7 +24,12 @@
 			  		<xsd:element name="SERVICE_NAMES">
 						<xsd:complexType>
 							<xsd:sequence>
-			  					<xsd:element name="SERVICE_NAME" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
+			  					<xsd:element name="SERVICE" minOccurs="1" maxOccurs="unbounded">
+								<xsd:complexType>
+									<xsd:attribute name="name" type="xsd:string" use="required"/>
+									<xsd:attribute name="transportLibrary" type="xsd:string" use="required"/>
+								</xsd:complexType>
+								</xsd:element>
 							</xsd:sequence>
 						</xsd:complexType>
 					</xsd:element>
