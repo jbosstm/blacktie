@@ -49,11 +49,14 @@ void TestTPFree::test_tpfree_alloc_x_octet() {
 	::tpfree(m_allocated);
 	CPPUNIT_ASSERT(tperrno == 0);
 
+	// Once tpfree returns, ptr should not be passed as an argument to any XATMI routine
+	/*
 	char type[8];
 	int toTest = ::tptypes(m_allocated, type, NULL);
 	CPPUNIT_ASSERT(tperrno== TPEINVAL);
 	CPPUNIT_ASSERT(toTest == -1);
 	CPPUNIT_ASSERT(strncmp(type, "X_OCTET", 8) != 0);
+	*/
 }
 
 void TestTPFree::test_tpfree_realloc_x_octet() {
@@ -65,11 +68,14 @@ void TestTPFree::test_tpfree_realloc_x_octet() {
 	::tpfree(m_allocated);
 	CPPUNIT_ASSERT(tperrno == 0);
 
+	// Once tpfree returns, ptr should not be passed as an argument to any XATMI routine
+	/*
 	char type[8];
 	int toTest = ::tptypes(m_allocated, type, NULL);
 	CPPUNIT_ASSERT(tperrno== TPEINVAL);
 	CPPUNIT_ASSERT(toTest == -1);
 	CPPUNIT_ASSERT(strncmp(type, "X_OCTET", 8) != 0);
+	*/
 }
 
 void TestTPFree::test_tpfree_free_free_x_octet() {
@@ -80,6 +86,8 @@ void TestTPFree::test_tpfree_free_free_x_octet() {
 	::tpfree(m_allocated);
 	CPPUNIT_ASSERT(tperrno == 0);
 
+	// Once tpfree returns, ptr should not be passed as an argument to any XATMI routine
+	/*
 	char type[8];
 	int toTest = ::tptypes(m_allocated, type, NULL);
 	CPPUNIT_ASSERT(tperrno== TPEINVAL);
@@ -88,6 +96,7 @@ void TestTPFree::test_tpfree_free_free_x_octet() {
 
 	::tpfree(m_allocated);
 	CPPUNIT_ASSERT(tperrno == 0);
+	*/
 }
 
 // 8.2
@@ -111,6 +120,8 @@ void TestTPFree::test_tpfree_alloc_x_common() {
 	::tpfree(m_allocated);
 	CPPUNIT_ASSERT(tperrno == 0);
 
+	// Once tpfree returns, ptr should not be passed as an argument to any XATMI routine
+	/*
 	char type[8];
 	char subtype[16];
 	int toTest = ::tptypes(m_allocated, type, subtype);
@@ -118,6 +129,7 @@ void TestTPFree::test_tpfree_alloc_x_common() {
 	CPPUNIT_ASSERT(toTest == -1);
 	CPPUNIT_ASSERT(strncmp(type, "X_COMMON", 8) != 0);
 	CPPUNIT_ASSERT(strcmp(subtype, "deposit") != 0);
+	*/
 }
 
 void TestTPFree::test_tpfree_realloc_x_common() {
@@ -132,6 +144,8 @@ void TestTPFree::test_tpfree_realloc_x_common() {
 	::tpfree(m_allocated);
 	CPPUNIT_ASSERT(tperrno == 0);
 
+	// Once tpfree returns, ptr should not be passed as an argument to any XATMI routine
+	/*
 	char type[8];
 	char subtype[16];
 	int toTest = ::tptypes(m_allocated, type, subtype);
@@ -139,6 +153,7 @@ void TestTPFree::test_tpfree_realloc_x_common() {
 	CPPUNIT_ASSERT(toTest == -1);
 	CPPUNIT_ASSERT(strncmp(type, "X_COMMON", 8) != 0);
 	CPPUNIT_ASSERT(strcmp(subtype, "deposit") != 0);
+	*/
 }
 
 void TestTPFree::test_tpfree_free_free_x_common() {
@@ -152,6 +167,8 @@ void TestTPFree::test_tpfree_free_free_x_common() {
 	::tpfree(m_allocated);
 	CPPUNIT_ASSERT(tperrno == 0);
 
+	// Once tpfree returns, ptr should not be passed as an argument to any XATMI routine
+	/*
 	char type[8];
 	char subtype[16];
 	int toTest = ::tptypes(m_allocated, type, subtype);
@@ -162,6 +179,7 @@ void TestTPFree::test_tpfree_free_free_x_common() {
 
 	::tpfree(m_allocated);
 	CPPUNIT_ASSERT(tperrno == 0);
+	*/
 }
 
 // X_C_TYPE
@@ -176,6 +194,9 @@ void TestTPFree::test_tpfree_alloc_x_c_type() {
 	::tpfree(m_allocated);
 	CPPUNIT_ASSERT(tperrno == 0);
 
+		// Once tpfree returns, ptr should not be passed as an argument to any XATMI routine
+	/*
+
 	char type[8];
 	char subtype[16];
 	int toTest = ::tptypes(m_allocated, type, subtype);
@@ -183,6 +204,7 @@ void TestTPFree::test_tpfree_alloc_x_c_type() {
 	CPPUNIT_ASSERT(toTest == -1);
 	CPPUNIT_ASSERT(strncmp(type, "X_C_TYPE", 8) != 0);
 	CPPUNIT_ASSERT(strcmp(subtype, "acct_info") != 0);
+	*/
 }
 
 void TestTPFree::test_tpfree_realloc_x_c_type() {
@@ -197,6 +219,9 @@ void TestTPFree::test_tpfree_realloc_x_c_type() {
 	::tpfree(m_allocated);
 	CPPUNIT_ASSERT(tperrno == 0);
 
+		// Once tpfree returns, ptr should not be passed as an argument to any XATMI routine
+	/*
+
 	char type[8];
 	char subtype[16];
 	int toTest = ::tptypes(m_allocated, type, subtype);
@@ -204,6 +229,7 @@ void TestTPFree::test_tpfree_realloc_x_c_type() {
 	CPPUNIT_ASSERT(toTest == -1);
 	CPPUNIT_ASSERT(strncmp(type, "X_C_TYPE", 8) != 0);
 	CPPUNIT_ASSERT(strcmp(subtype, "acct_info") != 0);
+	*/
 }
 
 void TestTPFree::test_tpfree_free_free_x_c_type() {
@@ -217,6 +243,9 @@ void TestTPFree::test_tpfree_free_free_x_c_type() {
 	::tpfree(m_allocated);
 	CPPUNIT_ASSERT(tperrno == 0);
 
+		// Once tpfree returns, ptr should not be passed as an argument to any XATMI routine
+	/*
+
 	char type[8];
 	char subtype[16];
 	int toTest = ::tptypes(m_allocated, type, subtype);
@@ -227,4 +256,5 @@ void TestTPFree::test_tpfree_free_free_x_c_type() {
 
 	::tpfree(m_allocated);
 	CPPUNIT_ASSERT(tperrno == 0);
+	*/
 }

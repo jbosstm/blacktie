@@ -26,15 +26,18 @@
 class TestTPFree: public BaseTest {
 	CPPUNIT_TEST_SUITE( TestTPFree);
 	CPPUNIT_TEST( test_tpfree_alloc_x_octet);
-	CPPUNIT_TEST( test_tpfree_realloc_x_octet);
-	CPPUNIT_TEST( test_tpfree_free_free_x_octet);
+	CPPUNIT_TEST( test_tpfree_realloc_x_octet);	
 	CPPUNIT_TEST( test_tpfree_alloc_x_common);
 	CPPUNIT_TEST( test_tpfree_realloc_x_common);
-	CPPUNIT_TEST( test_tpfree_free_free_x_common);
 	CPPUNIT_TEST( test_tpfree_alloc_x_c_type);
 	CPPUNIT_TEST( test_tpfree_realloc_x_c_type);
-	CPPUNIT_TEST( test_tpfree_free_free_x_c_type);
 	CPPUNIT_TEST( test_tpfree_nonbuffer);
+	// Once tpfree returns, ptr should not be passed as an argument to any XATMI routine
+	/*
+	CPPUNIT_TEST( test_tpfree_free_free_x_octet);
+	CPPUNIT_TEST( test_tpfree_free_free_x_common);
+	CPPUNIT_TEST( test_tpfree_free_free_x_c_type);
+	*/
 CPPUNIT_TEST_SUITE_END();
 public:
 void test_tpfree_alloc_x_octet();
