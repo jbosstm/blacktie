@@ -76,7 +76,7 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 
 			LOG4CXX_TRACE(loggerXATMI, (char*) "allocating data to go: " << ilen);
 			char* data_togo = (char *) malloc(ilen);
-			LOG4CXX_TRACE(loggerXATMI, (char*) "allocated: " << data_togo);
+			LOG4CXX_TRACE(loggerXATMI, (char*) "allocated");
 			memcpy(data_togo, idata, ilen);
 			LOG4CXX_TRACE(loggerXATMI, (char*) "copied: " << idata << " into: " << data_togo);
 
@@ -272,15 +272,15 @@ void tpfree(char* ptr) {
 }
 
 long tptypes(char* ptr, char* type, char* subtype) {
-	LOG4CXX_TRACE(loggerXATMI, (char*) "tptypes");
-	LOG4CXX_TRACE(loggerXATMI, (char*) "parameters: " << type << " " << subtype);
+	LOG4CXX_TRACE(loggerXATMI, (char*) "tptypes called");
 	setSpecific(TPE_KEY, TSS_TPERESET);
+	LOG4CXX_TRACE(loggerXATMI, (char*) "set the specific");
 	long toReturn = -1;
 	if (clientinit() != -1) {
 		toReturn = AtmiBrokerMem::get_instance()->tptypes(ptr, type, subtype);
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tptypes return: " << toReturn
-			<< " tperrno: " << tperrno);
+		<< " tperrno: " << tperrno);
 	return toReturn;
 }
 

@@ -64,23 +64,23 @@ AtmiBrokerMem::AtmiBrokerMem() {
 
 AtmiBrokerMem::~AtmiBrokerMem() {
 	LOG4CXX_DEBUG(logger, (char*) "destructor assumes you have the lock....");
-	LOG4CXX_DEBUG(logger, (char*) "memoryInfoVector.size %d"
+	LOG4CXX_DEBUG(logger, (char*) "memoryInfoVector.size "
 			<< memoryInfoVector.size());
 	std::vector<MemoryInfo>::iterator it = memoryInfoVector.begin();
 	while (it != memoryInfoVector.end()) {
 		MemoryInfo memoryInfo = (*it);
-		LOG4CXX_DEBUG(logger, (char*) "freeing memoryPtr: %p"
+		LOG4CXX_DEBUG(logger, (char*) "freeing memoryPtr: "
 				<< memoryInfo.memoryPtr);
 		free(memoryInfo.memoryPtr);
-		LOG4CXX_DEBUG(logger, (char*) "freeing type: %p"
+		LOG4CXX_DEBUG(logger, (char*) "freeing type: "
 				<< memoryInfo.type);
 		free(memoryInfo.type);
-		LOG4CXX_DEBUG(logger, (char*) "freeing subtype: %p"
+		LOG4CXX_DEBUG(logger, (char*) "freeing subtype: "
 				<< memoryInfo.subtype);
 		free(memoryInfo.subtype);
 		LOG4CXX_DEBUG(logger, (char*) "freed memory");
 
-		LOG4CXX_DEBUG(logger, (char*) "removing %p from vector");
+		LOG4CXX_DEBUG(logger, (char*) "removing  from vector");
 		it = memoryInfoVector.erase(it);
 		LOG4CXX_DEBUG(logger, (char*) "removed from vector ");
 	}
@@ -107,7 +107,7 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size) {
 	} else if (strncmp(type, "X_OCTET", MAX_TYPE_SIZE) != 0 && strncmp(type,
 			"X_COMMON", MAX_TYPE_SIZE) != 0 && strncmp(type, "X_C_TYPE",
 			MAX_TYPE_SIZE) != 0) {
-		LOG4CXX_ERROR(logger, (char*) "tpalloc DONT YET know type: %s" << type);
+		LOG4CXX_ERROR(logger, (char*) "tpalloc DONT YET know type: " << type);
 		setSpecific(TPE_KEY, TSS_TPENOENT);
 	} else {
 		if (strcmp(type, "X_OCTET") == 0) {
@@ -166,14 +166,14 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size) {
 		LOG4CXX_ERROR(logger, (char*) "tprealloc - negative size");
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	} else {
-		LOG4CXX_DEBUG(logger, (char*) "tprealloc - addr: %p size: %d" << addr
+		LOG4CXX_DEBUG(logger, (char*) "tprealloc - addr:  size: " << addr
 				<< ":" << size);
 		for (std::vector<MemoryInfo>::iterator it = memoryInfoVector.begin(); it
 				!= memoryInfoVector.end(); it++) {
-			LOG4CXX_TRACE(logger, (char*) "next memoryInfo id is: %p"
+			LOG4CXX_TRACE(logger, (char*) "next memoryInfo id is: "
 					<< (*it).memoryPtr);
 			if ((*it).memoryPtr == addr) {
-				LOG4CXX_DEBUG(logger, (char*) "found matching memory %p"
+				LOG4CXX_DEBUG(logger, (char*) "found matching memory "
 						<< (*it).memoryPtr);
 
 				if (strncmp((*it).type, "X_COMMON", 8) == 0 || strncmp(
@@ -187,7 +187,7 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size) {
 				(*it).memoryPtr[size] = NULL;
 				(*it).size = size;
 				toReturn = memPtr;
-				LOG4CXX_DEBUG(logger, (char*) "updated - addr: %p size: %d" << (*it).memoryPtr
+				LOG4CXX_DEBUG(logger, (char*) "updated - addr:  size: " << (*it).memoryPtr
 				<< ":" << size);
 				break;
 			}
@@ -195,11 +195,11 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size) {
 
 		if (toReturn == NULL) {
 			LOG4CXX_DEBUG(logger,
-					(char*) "tprealloc - not found addr: %p size: %d" << addr
+					(char*) "tprealloc - not found addr:  size: " << addr
 							<< ":" << size);
 			setSpecific(TPE_KEY, TSS_TPEINVAL);
 			LOG4CXX_DEBUG(logger,
-					(char*) "tprealloc - not found addr: %p  failure advised"
+					(char*) "tprealloc - not found addr:   failure advised"
 							<< addr);
 		}
 	}
@@ -214,28 +214,28 @@ void AtmiBrokerMem::tpfree(char* ptr) {
 	lock->lock();
 	LOG4CXX_TRACE(logger, (char*) "tpfree locked");
 	if (ptr && ptr != NULL) {
-		LOG4CXX_DEBUG(logger, (char*) "tpfree - ptr: %p" << ptr);
+		LOG4CXX_DEBUG(logger, (char*) "tpfree - ptr: " << ptr);
 		for (std::vector<MemoryInfo>::iterator it = memoryInfoVector.begin(); it
 				!= memoryInfoVector.end(); it++) {
-//			LOG4CXX_TRACE(logger, (char*) "next memoryInfo id is: %p"
+//			LOG4CXX_TRACE(logger, (char*) "next memoryInfo id is: "
 //					<< (char*) (*it).memoryPtr);
 			if ((*it).memoryPtr == NULL) {
 				LOG4CXX_ERROR(logger, (char*) "found a null in the vector");
 				break;
 			} else if ((*it).memoryPtr == ptr) {
 				MemoryInfo memoryInfo = (*it);
-				LOG4CXX_DEBUG(logger, (char*) "freeing memoryPtr: %p"
+				LOG4CXX_DEBUG(logger, (char*) "freeing memoryPtr: "
 						<< memoryInfo.memoryPtr);
 				free(memoryInfo.memoryPtr);
-				LOG4CXX_DEBUG(logger, (char*) "freeing type: %p"
+				LOG4CXX_DEBUG(logger, (char*) "freeing type: "
 						<< memoryInfo.type);
 				free(memoryInfo.type);
-				LOG4CXX_DEBUG(logger, (char*) "freeing subtype: %p"
+				LOG4CXX_DEBUG(logger, (char*) "freeing subtype: "
 						<< memoryInfo.subtype);
 				free(memoryInfo.subtype);
 				LOG4CXX_DEBUG(logger, (char*) "freed memory");
 
-				LOG4CXX_DEBUG(logger, (char*) "removing %p from vector");
+				LOG4CXX_DEBUG(logger, (char*) "removing  from vector");
 				memoryInfoVector.erase(it);
 				LOG4CXX_DEBUG(logger, (char*) "removed from vector ");
 
@@ -244,6 +244,7 @@ void AtmiBrokerMem::tpfree(char* ptr) {
 			}
 		}
 	}
+	LOG4CXX_TRACE(logger, (char*) "tpfree unlocking");
 	lock->unlock();
 	LOG4CXX_TRACE(logger, (char*) "tpfree unlocked");
 	return;
@@ -255,14 +256,14 @@ long AtmiBrokerMem::tptypes(char* ptr, char* type, char* subtype) {
 	LOG4CXX_TRACE(logger, (char*) "tptypes locked");
 	long toReturn = -1;
 	if (ptr && ptr != NULL) {
-		LOG4CXX_DEBUG(logger, (char*) "checking tptypes - ptr: %p" << ptr);
+		LOG4CXX_DEBUG(logger, (char*) "checking tptypes - ptr: " << ptr);
 		for (std::vector<MemoryInfo>::iterator it = memoryInfoVector.begin(); it
 				!= memoryInfoVector.end(); it++) {
-			LOG4CXX_TRACE(logger, (char*) "next memoryInfo id is: %p"
+			LOG4CXX_TRACE(logger, (char*) "next memoryInfo id is: "
 					<< (*it).memoryPtr);
 			if ((*it).memoryPtr == ptr) {
 				MemoryInfo memoryInfo = (*it);
-				LOG4CXX_DEBUG(logger, (char*) "found matching memory %p"
+				LOG4CXX_DEBUG(logger, (char*) "found matching memory "
 						<< memoryInfo.memoryPtr);
 				LOG4CXX_DEBUG(logger, (char*) "type is");
 				LOG4CXX_DEBUG(logger, (char*) ": "
@@ -271,10 +272,10 @@ long AtmiBrokerMem::tptypes(char* ptr, char* type, char* subtype) {
 				LOG4CXX_DEBUG(logger, (char*) ":"
 						<< memoryInfo.subtype);
 
-				if (type) {
+				if (type && type != NULL) {
 					strncpy(type, memoryInfo.type, MAX_TYPE_SIZE);
 				}
-				if (subtype) {
+				if (subtype && subtype != NULL) {
 					strncpy(subtype, memoryInfo.subtype, MAX_SUBTYPE_SIZE);
 				}
 				toReturn = memoryInfo.size;
