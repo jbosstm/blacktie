@@ -30,11 +30,11 @@ void BaseTest::setUp() {
 }
 
 void BaseTest::tearDown() {
-	// Perform global clean up
-	TestFixture::tearDown();
-
 	// Perform clean up
 	::clientdone();
 	CPPUNIT_ASSERT(tperrno == 0);
+
+	// Perform global clean up
+	TestFixture::tearDown();
 }
 

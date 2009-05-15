@@ -312,6 +312,14 @@ CORBA::Short AtmiBrokerServer::server_init() throw (CORBA::SystemException ) {
 void AtmiBrokerServer::server_done() throw (CORBA::SystemException ) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_done()");
 
+	for (unsigned int i = 0; i < serverInfo.serviceDatas.size(); i++) {
+		char* svcname = (char*) serverInfo.serviceDatas[i].name.c_str();
+		if (isAdvertised(svcname)) {
+			unadvertiseService(svcname);
+		}
+	}
+
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "all services unadvertised for " << serverName);
 	if (realConnection) {
 	if (realConnection->name_ctx) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "unadvertise "
@@ -323,13 +331,6 @@ void AtmiBrokerServer::server_done() throw (CORBA::SystemException ) {
 	}
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "unadvertised " << serverName);
-
-	for (unsigned int i = 0; i < serverInfo.serviceDatas.size(); i++) {
-		char* svcname = (char*) serverInfo.serviceDatas[i].name.c_str();
-		if (isAdvertised(svcname)) {
-			unadvertiseService(svcname);
-		}
-	}
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_done(): returning.");
 }
 

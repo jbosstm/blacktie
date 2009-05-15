@@ -74,10 +74,11 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 				control = disassociate_tx();
 			}
 
-			LOG4CXX_TRACE(loggerXATMI, (char*) "allocating data to go");
+			LOG4CXX_TRACE(loggerXATMI, (char*) "allocating data to go: " << ilen);
 			char* data_togo = (char *) malloc(ilen);
-			memcpy(data_togo, idata, ilen);
 			LOG4CXX_TRACE(loggerXATMI, (char*) "allocated: " << data_togo);
+			memcpy(data_togo, idata, ilen);
+			LOG4CXX_TRACE(loggerXATMI, (char*) "copied: " << idata << " into: " << data_togo);
 
 			MESSAGE message;
 			message.replyto = replyTo;
