@@ -127,16 +127,16 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size) {
 		memoryInfo.memoryPtr = (char*) malloc(size + 1);
 		memoryInfo.memoryPtr[size] = NULL;
 		memoryInfo.size = size;
-		LOG4CXX_TRACE(logger, (char*) "tpalloc - sized");
+		LOG4CXX_TRACE(logger, (char*) "tpalloc - sized: " << size);
 		memoryInfo.type = (char*) malloc(MAX_TYPE_SIZE + 1);
 		memset(memoryInfo.type, '\0', MAX_TYPE_SIZE + 1);
 		LOG4CXX_TRACE(logger, (char*) "type prep");
 		strncpy	(memoryInfo.type, type, MAX_TYPE_SIZE);
-		LOG4CXX_TRACE(logger, (char*) "tpalloc - copied type" << memoryInfo.type);
+		LOG4CXX_TRACE(logger, (char*) "tpalloc - copied type/" << memoryInfo.type << "/");
 		memoryInfo.subtype = (char*) malloc(MAX_SUBTYPE_SIZE + 1);
 		memset(memoryInfo.subtype, '\0', MAX_SUBTYPE_SIZE + 1);
 		strncpy(memoryInfo.subtype, subtype, MAX_SUBTYPE_SIZE);
-		LOG4CXX_TRACE(logger, (char*) "tpalloc - copied subtype: " << memoryInfo.subtype);
+		LOG4CXX_TRACE(logger, (char*) "tpalloc - copied subtype/" << memoryInfo.subtype << "/");
 
 		LOG4CXX_DEBUG(
 				logger,
@@ -144,7 +144,7 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size) {
 						<< (char*) memoryInfo.memoryPtr << ":"
 						<< (char*) memoryInfo.type << ":"
 						<< (char*) memoryInfo.subtype << ":"
-						<< (char*) memoryInfo.size);
+						<< memoryInfo.size);
 		memoryInfoVector.push_back(memoryInfo);
 		LOG4CXX_DEBUG(logger, (char*) "added MemoryInfo to vector");
 		toReturn = (char*) memoryInfo.memoryPtr;
