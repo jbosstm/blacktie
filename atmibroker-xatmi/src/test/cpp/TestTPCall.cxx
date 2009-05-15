@@ -200,7 +200,6 @@ void test_tpcall_x_octet_service(TPSVCINFO *svcinfo) {
 
 void test_tpcall_x_octet_service_zero(TPSVCINFO *svcinfo) {
 	userlogc((char*) "test_tpcall_x_octet_service_zero");
-	bool ok = false;
 	int len = 0;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
