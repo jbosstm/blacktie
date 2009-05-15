@@ -89,7 +89,7 @@ void TestTPConversation::test_conversation() {
 		
 
 		sprintf(sendbuf, "yo%d", i);
-		userlogc((char*) "test_conversation:%s:", sendbuf);
+		//userlogc((char*) "test_conversation:%s:", sendbuf);
 		result = ::tpsend(cd, sendbuf, sendlen, TPRECVONLY, &revent);
 		sprintf(tperrnoS, "%d", tperrno);
 		CPPUNIT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
@@ -128,7 +128,7 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 		userlogc("Chatting");
 		for (int i = 0; i < interationCount; i++) {
 			sprintf(sendbuf, "hi%d", i);
-			userlogc((char*) "testTPConversation_service:%s:", sendbuf);
+			//userlogc((char*) "testTPConversation_service:%s:", sendbuf);
 			int result = ::tpsend(svcinfo->cd, sendbuf, svcinfo->len, TPRECVONLY, &revent);
 			result = ::tprecv(svcinfo->cd, &rcvbuf, &svcinfo->len, 0, &revent);
 
