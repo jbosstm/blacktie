@@ -122,6 +122,10 @@ bool SessionImpl::send(MESSAGE message) {
 	LOG4CXX_DEBUG(logger, "Sent to: " << sendTo << " Command: " << frame.command << " Body: " << frame.body);
 
 	}
+	
+	LOG4CXX_TRACE(logger, (char*) "freeing data to go: data_togo");
+	free(message.data);
+	LOG4CXX_TRACE(logger, (char*) "freed");
 	return toReturn;
 }
 

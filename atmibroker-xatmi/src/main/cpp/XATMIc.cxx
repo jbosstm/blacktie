@@ -78,7 +78,7 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			char* data_togo = (char *) malloc(ilen);
 			LOG4CXX_TRACE(loggerXATMI, (char*) "allocated");
 			memcpy(data_togo, idata, ilen);
-			LOG4CXX_TRACE(loggerXATMI, (char*) "copied: " << idata << " into: " << data_togo);
+			LOG4CXX_TRACE(loggerXATMI, (char*) "copied: idata into: data_togo");
 
 			MESSAGE message;
 			message.replyto = replyTo;
@@ -93,10 +93,6 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			} else {
 				setSpecific(TPE_KEY, TSS_TPENOENT);
 			}
-
-			LOG4CXX_TRACE(loggerXATMI, (char*) "freeing data to go: " << data_togo);
-			free(data_togo);
-			LOG4CXX_TRACE(loggerXATMI, (char*) "freed");
 
 			if (control) {
 				associate_tx(control);
@@ -327,7 +323,7 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 				}
 			} catch (...) {
 				LOG4CXX_ERROR(loggerXATMI,
-						(char*) "tpconnect failed to connect to service queue");
+						(char*) "tpacall failed to connect to service queue");
 				setSpecific(TPE_KEY, TSS_TPENOENT);
 			}
 		}

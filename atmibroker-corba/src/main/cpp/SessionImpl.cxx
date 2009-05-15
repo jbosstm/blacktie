@@ -30,14 +30,19 @@ SessionImpl::SessionImpl(CORBA_CONNECTION* connection, int id, char* serviceName
 	this->id = id;
 	this->connection = connection;
 
-	LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << serviceName);
+	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
+	int XATMI_SERVICE_NAME_LENGTH = 15;
+	this->sendTo = (char*) ::malloc(XATMI_SERVICE_NAME_LENGTH + 1);
+	memset(this->sendTo, '\0', XATMI_SERVICE_NAME_LENGTH + 1);
+	strncat(this->sendTo, serviceName, XATMI_SERVICE_NAME_LENGTH);
+
+	LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << sendTo);
 	CosNaming::NamingContextExt_ptr context = connection->default_ctx;
 	CosNaming::NamingContext_ptr name_context = connection->name_ctx;
-	CosNaming::Name * name = context->to_name(serviceName);
+	CosNaming::Name * name = context->to_name(this->sendTo);
 	CORBA::Object_var tmp_ref = name_context->resolve(*name);
 	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	this->sendTo = serviceName;
-	LOG4CXX_DEBUG(logger, (char*) "connected to " << serviceName);
+	LOG4CXX_DEBUG(logger, (char*) "connected to " << sendTo);
 
 	this->temporaryQueue = new EndpointQueue(connection);
 	this->replyTo = temporaryQueue->getName();
