@@ -205,6 +205,8 @@ static void XMLCALL startElement
 		processingEnvName = true;
 	} else if (strcmp(name, "VALUE") == 0) {
 		processingEnvValue = true;
+	} else if (strcmp(name, "SERVER_NAMES") ==0 || strcmp(name, "SERVICE_NAMES") == 0 || strcmp(name, "SERVICE") == 0) {
+		// These element will be processed by AtmiBrokerClientXml
 	} else {
 		LOG4CXX_WARN(loggerAtmiBrokerEnvXml, (char*) "unrecognized environment var: " << (char*) name);
 	}

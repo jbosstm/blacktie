@@ -39,10 +39,10 @@ int clientMaxSuppliers = 0;
 int clientMaxConsumers = 0;
 
 static char last_element[50];
-static char last_value[50];
+static char last_value[1024];
 
 static char element[50];
-static char value[50];
+static char value[1024];
 
 static int depth = 0;
 
@@ -113,7 +113,7 @@ static void XMLCALL startElement(void *userData, const char *name, const char **
 			aClientServerVectorPtr->back()->serviceVector.push_back(service);
 		}
 	}
-	strcpy(element, name);
+	ACE_OS::strncpy(element, name, 50);
 	strcpy(value, "");
 
 	depth += 1;
@@ -122,8 +122,8 @@ static void XMLCALL startElement(void *userData, const char *name, const char **
 static void XMLCALL endElement(void *userData, const char *name) {
 	//std::vector<ClientServerInfo*>* aClientServerVectorPtr = (std::vector<ClientServerInfo*>*) userData;
 
-	strcpy(last_element, name);
-	strcpy(last_value, value);
+	ACE_OS::strncpy(last_element, name, 50);
+	ACE_OS::strncpy(last_value, value, 1024);
 
 	if (strcmp(last_element, "MAX_CHANNELS") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "storing MaxChannels %s", last_value);
