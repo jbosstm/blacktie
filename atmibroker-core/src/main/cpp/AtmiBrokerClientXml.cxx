@@ -80,10 +80,18 @@ static void XMLCALL startElement(void *userData, const char *name, const char **
 	} else if (strcmp(name, "MAX_CONSUMERS") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "processing Max Consumers for server ");
 		processingMaxConsumers = true;
-	} else if(strcmp(name, "SERVER_NAME") == 0) {
+	} else if(strcmp(name, "SERVER") == 0) {
 		processingServerName = true;
 		aClientServerInfoPtr = (ClientServerInfo*) malloc(sizeof(ClientServerInfo) * 1);
-		memset(aClientServerInfoPtr, '\0', sizeof(ClientServerInfo));
+		memset(aClientServerInfoPtr, 0, sizeof(ClientServerInfo));
+		if(atts != 0) {
+			if(atts[0] && strcmp(atts[0], "name") == 0) {
+				aClientServerInfoPtr->serverName = strdup(atts[1]);
+			} else {
+				aClientServerInfoPtr->serverName = strdup("default");
+			}
+		}
+
 		aClientServerVectorPtr->push_back(aClientServerInfoPtr);
 	} else if (strcmp(name, "SERVICE_NAMES") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "processing Service Names for server ");
@@ -112,7 +120,7 @@ static void XMLCALL startElement(void *userData, const char *name, const char **
 }
 
 static void XMLCALL endElement(void *userData, const char *name) {
-	std::vector<ClientServerInfo*>* aClientServerVectorPtr = (std::vector<ClientServerInfo*>*) userData;
+	//std::vector<ClientServerInfo*>* aClientServerVectorPtr = (std::vector<ClientServerInfo*>*) userData;
 
 	strcpy(last_element, name);
 	strcpy(last_value, value);
@@ -138,9 +146,9 @@ static void XMLCALL endElement(void *userData, const char *name) {
 	} else if (strcmp(last_element, "SERVER_NAME") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClientXml, (char*) "storing ServerName '%s'", last_value);
 		processingServerName = false;
+		/*
 		ClientServerInfo* current = aClientServerVectorPtr->back();
 		current->serverName = strdup(last_value);
-		/*
 		aClientServerInfoPtr = (ClientServerInfo*) malloc(sizeof(ClientServerInfo) * 1);
 		memset(aClientServerInfoPtr, '\0', sizeof(ClientServerInfo));
 		aClientServerInfoPtr->serverName = strdup(last_value);
@@ -186,9 +194,9 @@ bool AtmiBrokerClientXml::parseXmlDescriptor(
 
 	schemaDir = ACE_OS::getenv("BLACKTIE_SCHEMA_DIR");
 	if(schemaDir) {
-		ACE_OS::snprintf(schemaPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"Client.xsd", schemaDir);
+		ACE_OS::snprintf(schemaPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"Environment.xsd", schemaDir);
 	} else {
-		ACE_OS::strcpy(schemaPath, "Client.xsd");
+		ACE_OS::strcpy(schemaPath, "Environment.xsd");
 	}
 
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerClientXml,

@@ -56,15 +56,22 @@ void TestAtmiBrokerXml::test_client() {
 	AtmiBrokerClientXml xml;
 	std::vector<ClientServerInfo*> aClientServerVectorPtr;
 
-	CPPUNIT_ASSERT(xml.parseXmlDescriptor(&aClientServerVectorPtr, "CLIENT.xml"));
-	CPPUNIT_ASSERT(clientMaxChannels == 1 );
-	CPPUNIT_ASSERT(clientMaxSuppliers == 1 );
-	CPPUNIT_ASSERT(clientMaxConsumers == 1 );
+	CPPUNIT_ASSERT(xml.parseXmlDescriptor(&aClientServerVectorPtr, "Environment.xml"));
+	//CPPUNIT_ASSERT(clientMaxChannels == 1 );
+	//CPPUNIT_ASSERT(clientMaxSuppliers == 1 );
+	//CPPUNIT_ASSERT(clientMaxConsumers == 1 );
 
-	ClientServerInfo* server = aClientServerVectorPtr[0];
+	ClientServerInfo* server = aClientServerVectorPtr[1];
+	CPPUNIT_ASSERT(server != NULL);
 	CPPUNIT_ASSERT(strcmp(server->serverName, "foo") == 0);
 	std::vector<ClientServiceInfo>* services = &server->serviceVector;
 	CPPUNIT_ASSERT(strcmp((*services)[0].serviceName, "BAR") == 0);
+	CPPUNIT_ASSERT(strcmp((*services)[0].transportLib, "atmibroker-corba.so") == 0);
+	CPPUNIT_ASSERT(strcmp((*services)[1].serviceName, "ECHO") == 0);
+	CPPUNIT_ASSERT(strcmp((*services)[1].transportLib, "atmibroker-stomp.so") == 0);
+
+	server = aClientServerVectorPtr[0];
+	CPPUNIT_ASSERT(strcmp(server->serverName, "default") == 0);
 
 	for (std::vector<ClientServerInfo*>::iterator itServer = aClientServerVectorPtr.begin(); itServer != aClientServerVectorPtr.end(); itServer++) {
 		free((*itServer)->serverName);
