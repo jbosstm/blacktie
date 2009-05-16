@@ -166,8 +166,7 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size) {
 		LOG4CXX_ERROR(logger, (char*) "tprealloc - negative size");
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	} else {
-		LOG4CXX_DEBUG(logger, (char*) "tprealloc - addr:  size: " << addr
-				<< ":" << size);
+		LOG4CXX_DEBUG(logger, (char*) "tprealloc hunting " << size);
 		for (std::vector<MemoryInfo>::iterator it = memoryInfoVector.begin(); it
 				!= memoryInfoVector.end(); it++) {
 			LOG4CXX_TRACE(logger, (char*) "next memoryInfo id is: "
@@ -194,13 +193,11 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size) {
 		}
 
 		if (toReturn == NULL) {
-			LOG4CXX_DEBUG(logger,
-					(char*) "tprealloc - not found addr:  size: " << addr
-							<< ":" << size);
+			LOG4CXX_TRACE(logger,
+					(char*) "tprealloc - not found addr");
 			setSpecific(TPE_KEY, TSS_TPEINVAL);
-			LOG4CXX_DEBUG(logger,
-					(char*) "tprealloc - not found addr:   failure advised"
-							<< addr);
+			LOG4CXX_TRACE(logger,
+					(char*) "tprealloc - failure advised");
 		}
 	}
 	lock->unlock();
