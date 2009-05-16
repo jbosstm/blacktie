@@ -112,7 +112,7 @@ void TestTPUnadvertise::test_tpunadvertise_not_advertised() {
 
 void testtpunadvertise_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "testtpunadvertise_service");
-	char * toReturn = new char[25];
+	char * toReturn = new char[26];
 	strcpy(toReturn, "testtpunadvertise_service");
 	// Changed length from 0L to svcinfo->len
 	tpreturn(TPSUCCESS, 0, toReturn, 25, 0);
