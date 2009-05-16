@@ -32,8 +32,11 @@ log4cxx::LoggerPtr SessionImpl::logger(log4cxx::Logger::getLogger("SessionImpl")
 SessionImpl::SessionImpl(char* connectionName, apr_pool_t* pool, int id, char* serviceName) {
 	LOG4CXX_TRACE(logger, (char*) "constructor ");
 	this->id = id;
+	
+	connection = NULL;
 	connection = ConnectionImpl::connect(pool, 2); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
+
 	this->canSend = true;
 	this->canRecv = true;
 
@@ -52,8 +55,11 @@ SessionImpl::SessionImpl(char* connectionName, apr_pool_t* pool, int id, char* s
 SessionImpl::SessionImpl(char* connectionName, apr_pool_t* pool, int id, const char* temporaryQueueName) {
 	LOG4CXX_TRACE(logger, (char*) "constructor ");
 	this->id = id;
+
+	connection = NULL;
 	connection = ConnectionImpl::connect(pool, 2); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
+
 	this->canSend = true;
 	this->canRecv = true;
 
@@ -65,9 +71,15 @@ SessionImpl::SessionImpl(char* connectionName, apr_pool_t* pool, int id, const c
 }
 
 SessionImpl::~SessionImpl() {
-	LOG4CXX_TRACE(logger, (char*) "destroyed");
 	::free(this->sendTo);
 	delete toRead;
+
+	if (connection) {	
+		LOG4CXX_TRACE(logger, (char*) "destroying");
+		ConnectionImpl::disconnect(connection, pool);
+		LOG4CXX_TRACE(logger, (char*) "destroyed");
+		connection = NULL;
+	}
 }
 
 MESSAGE SessionImpl::receive(long time) {

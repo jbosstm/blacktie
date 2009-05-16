@@ -32,6 +32,7 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 	lock = new SynchronizableObject();
 	LOG4CXX_DEBUG(logger, "Created lock: " << lock);
 	
+	connection = NULL;
 	connection = ConnectionImpl::connect(pool, 2); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
 
@@ -82,6 +83,7 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 	lock = new SynchronizableObject();
 	LOG4CXX_DEBUG(logger, "Created lock: " << lock);
 	
+	connection = NULL;
 	connection = ConnectionImpl::connect(pool, 10); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
 
@@ -144,7 +146,14 @@ EndpointQueue::~EndpointQueue() {
 	lock = NULL;
 	LOG4CXX_TRACE(logger, (char*) "freeing name" << name);
 	free(fullName);
-	LOG4CXX_TRACE(logger, (char*) "destroyed");
+	LOG4CXX_TRACE(logger, (char*) "freed name");
+
+	if (connection) {	
+		LOG4CXX_TRACE(logger, (char*) "destroying");
+		ConnectionImpl::disconnect(connection, pool);
+		LOG4CXX_TRACE(logger, (char*) "destroyed");
+		connection = NULL;
+	}
 }
 
 MESSAGE EndpointQueue::receive(long time) {
@@ -207,6 +216,13 @@ void EndpointQueue::disconnect() {
 	}
 	lock->unlock();
 	LOG4CXX_DEBUG(logger, (char*) "disconnected: " << name);
+
+	if (connection) {	
+		LOG4CXX_TRACE(logger, (char*) "destroying");
+		ConnectionImpl::disconnect(connection, pool);
+		LOG4CXX_TRACE(logger, (char*) "destroyed");
+		connection = NULL;
+	}
 }
 
 const char * EndpointQueue::getName() {
