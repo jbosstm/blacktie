@@ -33,6 +33,7 @@ ServiceDispatcher::ServiceDispatcher(Destination* destination, Connection* conne
 int ServiceDispatcher::svc(void) {
 	while (!stop) {
 		MESSAGE message = destination->receive(0);
+		message.len = message.len -1;
 		if (!stop && message.len > -1) {
 			try {
 				onMessage(message);
