@@ -33,9 +33,9 @@ void TestTPDiscon::setUp() {
 	BaseServerTest::setUp();
 
 	// Do local work
-	sendlen = strlen("hello") + 1;
+	sendlen = strlen("discon") + 1;
 	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	strcpy(sendbuf, "hello");
+	strcpy(sendbuf, "discon");
 	CPPUNIT_ASSERT(tperrno == 0);
 
 	int toCheck = tpadvertise((char*) "TestTPDiscon", testtpdiscon_service);

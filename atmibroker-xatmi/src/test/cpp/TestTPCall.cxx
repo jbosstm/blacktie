@@ -49,15 +49,15 @@ void TestTPCall::tearDown() {
 
 void TestTPCall::test_tpcall_systemerr() {
 	userlogc((char*) "test_tpcall_systemerr");
-	sendlen = strlen("hello") + 1;
+	sendlen = strlen("test_tpcall_systemerr") + 1;
 	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	(void) strcpy(sendbuf, "hello");
+	(void) strcpy(sendbuf, "test_tpcall_systemerr");
 	CPPUNIT_ASSERT(tperrno == 0);
 
 	// TODO stopNamingService();
 
-	int id = ::tpcall((char*) "TestTPCall", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, (long) 0);
+	int id = ::tpcall((char*) "TestTPCall", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
 	CPPUNIT_ASSERT(tperrno== TPESYSTEM);
 	CPPUNIT_ASSERT(id == -1);
 	CPPUNIT_ASSERT(strcmp(rcvbuf, "testtpcall") == -1);
@@ -65,12 +65,12 @@ void TestTPCall::test_tpcall_systemerr() {
 
 void TestTPCall::test_tpcall_unknown_service() {
 	userlogc((char*) "test_tpcall_unknown_service");
-	sendlen = strlen("hello") + 1;
+	sendlen = strlen("test_tpcall_unknown_service") + 1;
 	sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen);
 	rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen);
-	strcpy(sendbuf, "hello");
+	strcpy(sendbuf, "test_tpcall_unknown_service");
 
-	int id = ::tpcall((char*) "UNKNOWN_SERVICE", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, (long) 0);
+	int id = ::tpcall((char*) "UNKNOWN_SERVICE", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
 	CPPUNIT_ASSERT(tperrno== TPENOENT);
 	CPPUNIT_ASSERT(id == -1);
 	CPPUNIT_ASSERT(tperrno != 0);
@@ -85,10 +85,10 @@ void TestTPCall::test_tpcall_x_octet() {
 	userlogc((char*) "test_tpcall_x_octet");
 	tpadvertise((char*) "tpcall_x_octet", test_tpcall_x_octet_service);
 
-	sendlen = strlen("hello") + 1;
+	sendlen = strlen("test_tpcall_x_octet") + 1;
 	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	(void) strcpy(sendbuf, "hello");
+	(void) strcpy(sendbuf, "test_tpcall_x_octet");
 	CPPUNIT_ASSERT(tperrno == 0);
 
 	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
@@ -178,7 +178,7 @@ void test_tpcall_x_octet_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "test_tpcall_x_octet_service");
 	bool ok = false;
 	if (svcinfo->data) {
-		if (strncmp(svcinfo->data, "hello", svcinfo->len) == 0) {
+		if (strncmp(svcinfo->data, "test_tpcall_x_octet", svcinfo->len) == 0) {
 			ok = true;
 		}
 	}

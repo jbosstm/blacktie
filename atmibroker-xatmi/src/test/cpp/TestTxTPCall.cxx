@@ -35,9 +35,9 @@ void TestTxTPCall::setUp() {
 	BaseServerTest::setUp();
 
 	// Do local work
-	sendlen = strlen("hello") + 1;
+	sendlen = strlen("TestTxTPCall") + 1;
 	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	(void) strcpy(sendbuf, "hello");
+	(void) strcpy(sendbuf, "TestTxTPCall");
 	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, 60)) != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
 }
@@ -80,11 +80,6 @@ void TestTxTPCall::test_tpcall_with_tx() {
 
 void test_tx_tpcall_x_octet_service_without_tx(TPSVCINFO *svcinfo) {
 	userlogc((char*) "test_tx_tpcall_x_octet_service_without_tx");
-	bool ok = false;
-	if (strncmp(svcinfo->data, "hello", svcinfo->len) == 0) {
-		ok = true;
-	}
-
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	TXINFO txinfo;
@@ -99,11 +94,6 @@ void test_tx_tpcall_x_octet_service_without_tx(TPSVCINFO *svcinfo) {
 
 void test_tx_tpcall_x_octet_service_with_tx(TPSVCINFO *svcinfo) {
 	userlogc((char*) "test_tx_tpcall_x_octet_service_with_tx");
-	bool ok = false;
-	if (strncmp(svcinfo->data, "hello", svcinfo->len) == 0) {
-		ok = true;
-	}
-
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	TXINFO txinfo;

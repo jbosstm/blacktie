@@ -56,11 +56,11 @@ void TestTPACall::tearDown() {
 
 void TestTPACall::test_tpacall() {
 	userlogc((char*) "test_tpacall");
-	sendlen = strlen("hello");
-	sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen + 1);
-	strcpy(sendbuf, "hello");
+	sendlen = strlen("test_tpacall") + 1;
+	sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
+	strcpy(sendbuf, "test_tpacall");
 
-	int cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, strlen(sendbuf) + 1, TPNOREPLY);
+	int cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, sendlen, TPNOREPLY);
 	CPPUNIT_ASSERT(cd == 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(tperrno!= TPEINVAL);
@@ -78,11 +78,11 @@ void TestTPACall::test_tpacall() {
 
 void TestTPACall::test_tpacall_systemerr() {
 	userlogc((char*) "test_tpacall_systemerr");
-	sendlen = strlen("hello");
-	sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen + 1);
-	strcpy(sendbuf, "hello");
+	sendlen = strlen("test_tpacall_systemerr") + 1;
+	sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
+	strcpy(sendbuf, "test_tpacall_systemerr");
 
-	int cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, strlen(sendbuf) + 1, TPNOREPLY);
+	int cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, sendlen, TPNOREPLY);
 	CPPUNIT_ASSERT(tperrno== TPESYSTEM);
 	CPPUNIT_ASSERT(cd == -1);
 }

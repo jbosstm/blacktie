@@ -37,10 +37,10 @@ void TestTPService::setUp() {
 	CPPUNIT_ASSERT(toCheck != -1);
 
 	// Do local work
-	sendlen = strlen("hello");
-	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1)) != NULL);
-	(void) strcpy(sendbuf, "hello");
+	sendlen = strlen("TestTPService") + 1;
+	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	(void) strcpy(sendbuf, "TestTPService");
 	CPPUNIT_ASSERT(tperrno == 0);
 }
 
@@ -62,7 +62,7 @@ void TestTPService::tearDown() {
 void TestTPService::test_tpservice_notpreturn() {
 	userlogc((char*) "test_tpservice_notpreturn");
 
-	int id = ::tpcall((char*) "TestTPService", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, (long) 0);
+	int id = ::tpcall((char*) "TestTPService", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
 
 	int tperrnoToCheck = tperrno;
 	char* tperrnoS = (char*) malloc(110);

@@ -107,10 +107,10 @@ void TestTPFree::test_tpfree_free_free_x_octet() {
 // 8.2
 void TestTPFree::test_tpfree_nonbuffer() {
 	userlogc((char*) "test_tpfree_nonbuffer");
-	char* unallocated = (char*) "hello";
+	char* unallocated = (char*) "nonbuffer";
 	::tpfree(unallocated);
 	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(strcmp(unallocated, "hello") == 0);
+	CPPUNIT_ASSERT(strcmp(unallocated, "nonbuffer") == 0);
 }
 
 // X_COMMON

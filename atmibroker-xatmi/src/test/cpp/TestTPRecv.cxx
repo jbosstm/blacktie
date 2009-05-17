@@ -35,10 +35,10 @@ void TestTPRecv::setUp() {
 
 	// Do local work
 	cd = -1;
-	sendlen = strlen("hello") + 1;
+	sendlen = strlen("recv") + 1;
 	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	strcpy(sendbuf, "hello");
+	strcpy(sendbuf, "recv");
 	CPPUNIT_ASSERT(tperrno == 0);
 	int toCheck = tpadvertise((char*) "TestTPRecv", testtprecv_service);
 	CPPUNIT_ASSERT(tperrno == 0);

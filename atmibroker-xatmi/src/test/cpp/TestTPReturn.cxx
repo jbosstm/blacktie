@@ -65,13 +65,13 @@ void TestTPReturn::test_tpreturn_nonservice() {
 
 void TestTPReturn::test_tpreturn_nonbuffer() {
 	userlogc((char*) "test_tpreturn_nonbuffer");
-	sendlen = strlen("hello");
-	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1)) != NULL);
-	(void) strcpy(sendbuf, "hello");
+	sendlen = strlen("tprnb") + 1;
+	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	(void) strcpy(sendbuf, "tprnb");
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	int id = ::tpcall((char*) "TestTPReturn", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, 0);
+	int id = ::tpcall((char*) "TestTPReturn", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, 0);
 	long tperrnoS = tperrno;
 	CPPUNIT_ASSERT(id == -1);
 	CPPUNIT_ASSERT(tperrnoS == TPESVCERR);

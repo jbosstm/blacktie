@@ -40,10 +40,10 @@ void TestTPConnect::setUp() {
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toCheck != -1);
 
-	sendlen = strlen("hello") + 1;
+	sendlen = strlen("connect") + 1;
 	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	strcpy(sendbuf, "hello");
+	strcpy(sendbuf, "connect");
 	CPPUNIT_ASSERT(tperrno == 0);
 }
 

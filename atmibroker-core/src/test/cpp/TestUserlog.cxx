@@ -24,7 +24,7 @@ extern "C" {
 }
 
 void TestUserlog::testLogString() {
-	userlogc("string: %s", "hello");
+	userlogc("string: %s", "TestUserlog::testLogString");
 }
 
 void TestUserlog::testLogDecimal() {

@@ -34,12 +34,10 @@ void TestTPCancel::setUp() {
 	BaseServerTest::setUp();
 
 	// Do local work
-	sendlen = strlen("hello");
-	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen
-			+ 1)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen
-			+ 1)) != NULL);
-	strcpy(sendbuf, "hello");
+	sendlen = strlen("cancel") + 1;
+	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	strcpy(sendbuf, "cancel");
 	CPPUNIT_ASSERT(tperrno == 0);
 	int toCheck = tpadvertise((char*) "TestTPCancel", testtpcancel_service);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -61,8 +59,7 @@ void TestTPCancel::tearDown() {
 
 void TestTPCancel::test_tpcancel() {
 	userlogc((char*) "test_tpcancel");
-	int cd = ::tpacall((char*) "TestTPCancel", (char *) sendbuf,
-			strlen(sendbuf) + 1, 0);
+	int cd = ::tpacall((char*) "TestTPCancel", (char *) sendbuf, sendlen, 0);
 	CPPUNIT_ASSERT(cd != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
 
@@ -84,8 +81,7 @@ void TestTPCancel::test_tpcancel() {
 
 void TestTPCancel::test_tpcancel_noreply() {
 	userlogc((char*) "test_tpcancel_noreply");
-	int cd = ::tpacall((char*) "TestTPCancel", (char *) sendbuf,
-			strlen(sendbuf) + 1, TPNOREPLY);
+	int cd = ::tpacall((char*) "TestTPCancel", (char *) sendbuf, sendlen, TPNOREPLY);
 	CPPUNIT_ASSERT(cd != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
 

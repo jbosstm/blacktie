@@ -37,10 +37,10 @@ void TestTPUnadvertise::setUp() {
 	CPPUNIT_ASSERT(toCheck != -1);
 
 	// Do local work
-	sendlen = strlen("hello");
-	sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1);
-	rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1);
-	(void) strcpy(sendbuf, "hello");
+	sendlen = strlen("TestTPUnadvertise") + 1;
+	sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen);
+	rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen);
+	(void) strcpy(sendbuf, "TestTPUnadvertise");
 }
 
 void TestTPUnadvertise::tearDown() {
@@ -66,7 +66,7 @@ void TestTPUnadvertise::test_tpunadvertise() {
 	CPPUNIT_ASSERT(tperrno!= TPEOS);
 	CPPUNIT_ASSERT(id != -1);
 
-	id = ::tpcall((char*) "TestTPUnadvertise", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, (long) 0);
+	id = ::tpcall((char*) "TestTPUnadvertise", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
 	CPPUNIT_ASSERT(tperrno== TPENOENT);
 	CPPUNIT_ASSERT(id == -1);
 	CPPUNIT_ASSERT(strcmp(rcvbuf, "testtpunadvertise_service") != 0);
