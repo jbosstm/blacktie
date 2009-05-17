@@ -35,10 +35,9 @@ void TestTPAdvertise::setUp() {
 	BaseServerTest::setUp();
 
 	// Do local work
-	sendlen = strlen("hello");
-	sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1);
-	rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen + 1);
-	(void) strcpy(sendbuf, "hello");
+	sendlen = 40;
+	sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen);
+	rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen);
 }
 
 void TestTPAdvertise::tearDown() {
@@ -67,10 +66,11 @@ void TestTPAdvertise::test_tpadvertise_new_service() {
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(id != -1);
 
-	id = ::tpcall((char*) "TestTPAdvertise", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, (long) 0);
+	(void) strcpy(sendbuf, "test0");
+	id = ::tpcall((char*) "TestTPAdvertise", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(id != -1);
-	CPPUNIT_ASSERT(strcmp(rcvbuf, "testtpadvertise_service") == 0);
+	CPPUNIT_ASSERT(strcmp(rcvbuf, "testtpadvertise_servicetest0") == 0);
 }
 
 void TestTPAdvertise::test_tpadvertise_null_name_null() {
@@ -126,27 +126,29 @@ void TestTPAdvertise::test_tpadvertise_readvertise() {
 	CPPUNIT_ASSERT(id != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	id = ::tpcall((char*) "TestTPAdvertise", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, (long) 0);
+	(void) strcpy(sendbuf, "test1");
+	id = ::tpcall((char*) "TestTPAdvertise", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
 	CPPUNIT_ASSERT(tperrno== TPENOENT);
 	CPPUNIT_ASSERT(id == -1);
-	CPPUNIT_ASSERT(strcmp(rcvbuf, "testtpadvertise_service") != 0);
+	CPPUNIT_ASSERT(strcmp(rcvbuf, "testtpadvertise_servicetest1") != 0);
 
 	id = ::tpadvertise((char*) "TestTPAdvertise", testtpadvertise_service);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(id != -1);
 
-	id = ::tpcall((char*) "TestTPAdvertise", (char *) sendbuf, strlen(sendbuf) + 1, (char **) &rcvbuf, &rcvlen, (long) 0);
+	(void) strcpy(sendbuf, "test2");
+	id = ::tpcall((char*) "TestTPAdvertise", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(id != -1);
-	CPPUNIT_ASSERT(strcmp(rcvbuf, "testtpadvertise_service") == 0);
+	CPPUNIT_ASSERT(strcmp(rcvbuf, "testtpadvertise_servicetest2") == 0);
 }
 
 void testtpadvertise_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "testtpadvertise_service");
-	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, 25);
-	strcpy(toReturn, "testtpadvertise_service");
+	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, 35);
+	sprintf(toReturn, "testtpadvertise_service%s", svcinfo->data);
 	// Changed length from 0L to svcinfo->len
-	tpreturn(TPSUCCESS, 0, toReturn, 25, 0);
+	tpreturn(TPSUCCESS, 0, toReturn, 35, 0);
 }
 
 void testtpadvertise_service_2(TPSVCINFO *svcinfo) {
