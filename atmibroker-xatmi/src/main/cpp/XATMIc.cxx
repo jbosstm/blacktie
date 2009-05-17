@@ -59,8 +59,7 @@ int bufferSize(char* data, int suggestedSize) {
 }
 int send(Session* session, const char* replyTo, char* idata, long ilen,
 		int correlationId, long flags, long rval, long rcode) {
-	LOG4CXX_DEBUG(loggerXATMI, (char*) "send - idata: %s ilen: %d flags: %d"
-			<< idata << " " << ilen << " " << flags);
+	LOG4CXX_DEBUG(loggerXATMI, (char*) "send - ilen: flags: " << ilen << ": " << flags);
 	if (flags & TPSIGRSTRT) {
 		LOG4CXX_ERROR(loggerXATMI, (char*) "TPSIGRSTRT NOT SUPPORTED");
 	}

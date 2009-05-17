@@ -69,8 +69,7 @@ AtmiBrokerMem::~AtmiBrokerMem() {
 	std::vector<MemoryInfo>::iterator it = memoryInfoVector.begin();
 	while (it != memoryInfoVector.end()) {
 		MemoryInfo memoryInfo = (*it);
-		LOG4CXX_DEBUG(logger, (char*) "freeing memoryPtr: "
-				<< memoryInfo.memoryPtr);
+		LOG4CXX_DEBUG(logger, (char*) "freeing memoryPtr");
 		free(memoryInfo.memoryPtr);
 		LOG4CXX_DEBUG(logger, (char*) "freeing type: "
 				<< memoryInfo.type);
@@ -141,7 +140,6 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size) {
 		LOG4CXX_DEBUG(
 				logger,
 				(char*) "adding MemoryInfo: with type: with subtype: with size: to vector"
-						<< memoryInfo.memoryPtr << ":"
 						<< memoryInfo.type << ":"
 						<< memoryInfo.subtype << ":"
 						<< memoryInfo.size);
@@ -169,11 +167,11 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size) {
 		LOG4CXX_DEBUG(logger, (char*) "tprealloc hunting " << size);
 		for (std::vector<MemoryInfo>::iterator it = memoryInfoVector.begin(); it
 				!= memoryInfoVector.end(); it++) {
-			LOG4CXX_TRACE(logger, (char*) "next memoryInfo id is: "
-					<< (*it).memoryPtr);
+			LOG4CXX_TRACE(logger, (char*) "next memoryInfo id is with size: "
+					<< (*it).size);
 			if ((*it).memoryPtr == addr) {
-				LOG4CXX_DEBUG(logger, (char*) "found matching memory "
-						<< (*it).memoryPtr);
+				LOG4CXX_DEBUG(logger, (char*) "found matching memory with size"
+						<< (*it).size);
 
 				if (strncmp((*it).type, "X_COMMON", 8) == 0 || strncmp(
 						(*it).type, "X_C_TYPE", 8) == 0) {
@@ -186,8 +184,7 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size) {
 				(*it).memoryPtr[size] = NULL;
 				(*it).size = size;
 				toReturn = memPtr;
-				LOG4CXX_DEBUG(logger, (char*) "updated - addr:  size: " << (*it).memoryPtr
-				<< ":" << size);
+				LOG4CXX_DEBUG(logger, (char*) "updated - size: " << size);
 				break;
 			}
 		}
@@ -221,8 +218,7 @@ void AtmiBrokerMem::tpfree(char* ptr) {
 				break;
 			} else if ((*it).memoryPtr == ptr) {
 				MemoryInfo memoryInfo = (*it);
-				LOG4CXX_DEBUG(logger, (char*) "freeing memoryPtr: "
-						<< memoryInfo.memoryPtr);
+				LOG4CXX_DEBUG(logger, (char*) "freeing memoryPtr");
 				free(memoryInfo.memoryPtr);
 				LOG4CXX_DEBUG(logger, (char*) "freeing type: "
 						<< memoryInfo.type);
@@ -256,12 +252,11 @@ long AtmiBrokerMem::tptypes(char* ptr, char* type, char* subtype) {
 		LOG4CXX_DEBUG(logger, (char*) "checking tptypes - ptr: " << ptr);
 		for (std::vector<MemoryInfo>::iterator it = memoryInfoVector.begin(); it
 				!= memoryInfoVector.end(); it++) {
-			LOG4CXX_TRACE(logger, (char*) "next memoryInfo id is: "
-					<< (*it).memoryPtr);
+			LOG4CXX_TRACE(logger, (char*) "next memoryInfo is with size: "
+					<< (*it).size);
 			if ((*it).memoryPtr == ptr) {
 				MemoryInfo memoryInfo = (*it);
-				LOG4CXX_DEBUG(logger, (char*) "found matching memory "
-						<< memoryInfo.memoryPtr);
+				LOG4CXX_DEBUG(logger, (char*) "found matching memory");
 				LOG4CXX_DEBUG(logger, (char*) "type is");
 				LOG4CXX_DEBUG(logger, (char*) ": "
 						<< memoryInfo.type);
