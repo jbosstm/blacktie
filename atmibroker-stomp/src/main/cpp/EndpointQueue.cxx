@@ -28,6 +28,7 @@ log4cxx::LoggerPtr EndpointQueue::logger(log4cxx::Logger::getLogger(
 
 EndpointQueue::EndpointQueue(apr_pool_t* pool,
 		char* serviceName) {
+	m_message = NULL;
 	shutdown = false;
 	lock = new SynchronizableObject();
 	LOG4CXX_DEBUG(logger, "Created lock: " << lock);
@@ -66,6 +67,9 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 		throw new std::exception();
 	} else if (strcmp(framed->command, (const char*)"RECEIPT") == 0){
 		LOG4CXX_DEBUG(logger, (char*) "svcQ RECEIPT: " << (char*) apr_hash_get(framed->headers, "receipt-id", APR_HASH_KEY_STRING));
+	} else if (strcmp(framed->command, (const char*)"MESSAGE") == 0){
+		LOG4CXX_DEBUG(logger, (char*) "Got message before receipt, allow a single receipt later");
+		m_message = framed;
 	} else {
 		LOG4CXX_ERROR(logger, "Didn't get a receipt: " << framed->command << ", "
 			<< framed->body);
@@ -79,6 +83,7 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 
 EndpointQueue::EndpointQueue(apr_pool_t* pool,
 		char* connectionName, int id) {
+	m_message = NULL;
 	shutdown = false;
 	lock = new SynchronizableObject();
 	LOG4CXX_DEBUG(logger, "Created lock: " << lock);
@@ -116,6 +121,9 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 		throw new std::exception();
 	} else if (strcmp(framed->command, (const char*)"RECEIPT") == 0){
 		LOG4CXX_DEBUG(logger, (char*) "tmpQ RECEIPT: " << (char*) apr_hash_get(framed->headers, "receipt-id", APR_HASH_KEY_STRING));
+	} else if (strcmp(framed->command, (const char*)"MESSAGE") == 0){
+		LOG4CXX_DEBUG(logger, (char*) "Got message before receipt, allow a single receipt later");
+		m_message = framed;
 	} else {
 		LOG4CXX_ERROR(logger, "Didn't get a receipt: " << framed->command << ", "
 			<< framed->body);
@@ -170,20 +178,43 @@ MESSAGE EndpointQueue::receive(long time) {
 
 	lock->lock();
 	if (!shutdown) {
-		stomp_frame *frame;
-		LOG4CXX_DEBUG(logger, (char*) "Receivin from: " << name);
-		apr_status_t rc = stomp_read(connection, &frame, pool);
-		if (rc != APR_SUCCESS) {
-			LOG4CXX_DEBUG(logger, "Could not read frame for " << name << ": "
-					<< rc << " was the result");
-			setSpecific(TPE_KEY, TSS_TPESYSTEM);
-		} else if (strcmp(frame->command, (const char*)"ERROR") == 0) {
-			LOG4CXX_ERROR(logger, (char*) "Got an error: " << frame->body);
-			setSpecific(TPE_KEY, TSS_TPENOENT);
-		} else if (strcmp(frame->command, (const char*)"RECEIPT") == 0) {
-			LOG4CXX_ERROR(logger, (char*) "read a RECEIPT for: " << name << ": " << (char*) apr_hash_get(frame->headers, "receipt-id", APR_HASH_KEY_STRING));
-			setSpecific(TPE_KEY, TSS_TPESYSTEM);
-		} else {
+		stomp_frame *frame = NULL;
+		
+		if (m_message) {
+			frame = m_message;
+			m_message = NULL;
+		}
+		else {
+			LOG4CXX_DEBUG(logger, (char*) "Receivin from: " << name);
+			apr_status_t rc = stomp_read(connection, &frame, pool);
+			if (rc != APR_SUCCESS) {
+				LOG4CXX_DEBUG(logger, "Could not read frame for " << name << ": "
+						<< rc << " was the result");
+				setSpecific(TPE_KEY, TSS_TPESYSTEM);
+			} else if (strcmp(frame->command, (const char*)"ERROR") == 0) {
+				LOG4CXX_ERROR(logger, (char*) "Got an error: " << frame->body);
+				setSpecific(TPE_KEY, TSS_TPENOENT);
+			} else if (strcmp(frame->command, (const char*)"RECEIPT") == 0) {
+				if (m_message == NULL) {
+					LOG4CXX_ERROR(logger, (char*) "read a RECEIPT for: " << name << ": " << (char*) apr_hash_get(frame->headers, "receipt-id", APR_HASH_KEY_STRING));
+					setSpecific(TPE_KEY, TSS_TPESYSTEM);
+				} else {
+					rc = stomp_read(connection, &frame, pool);
+					if (rc != APR_SUCCESS) {
+						LOG4CXX_DEBUG(logger, "Could not read frame for " << name << ": "
+							<< rc << " was the result");
+						setSpecific(TPE_KEY, TSS_TPESYSTEM);
+					} else if (strcmp(frame->command, (const char*)"ERROR") == 0) {
+						LOG4CXX_ERROR(logger, (char*) "Got an error: " << frame->body);
+						setSpecific(TPE_KEY, TSS_TPENOENT);
+					} else if (strcmp(frame->command, (const char*)"RECEIPT") == 0) {
+						LOG4CXX_ERROR(logger, (char*) "read a RECEIPT for: " << name << ": " << (char*) apr_hash_get(frame->headers, "receipt-id", APR_HASH_KEY_STRING));
+						setSpecific(TPE_KEY, TSS_TPESYSTEM);
+					}
+				}
+			}
+		}
+		if (frame != NULL) {
 			LOG4CXX_DEBUG(logger, "Received from: " << name  << " Command: " << frame->command << " Body: " << frame->body);
 			message.len = frame->body_length;
 			message.data = frame->body;
