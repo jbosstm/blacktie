@@ -52,7 +52,8 @@ private:
 	static log4cxx::LoggerPtr logger;
 	stomp_connection* connection;
 	apr_pool_t* pool;
-	stomp_frame* m_message;
+	stomp_frame* message;
+	char* receipt;
 	SynchronizableObject* lock;
 	bool shutdown;
 	char* name;

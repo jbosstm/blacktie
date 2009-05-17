@@ -28,7 +28,7 @@ log4cxx::LoggerPtr EndpointQueue::logger(log4cxx::Logger::getLogger(
 
 EndpointQueue::EndpointQueue(apr_pool_t* pool,
 		char* serviceName) {
-	m_message = NULL;
+	this->message = NULL;
 	shutdown = false;
 	lock = new SynchronizableObject();
 	LOG4CXX_DEBUG(logger, "Created lock: " << lock);
@@ -69,7 +69,8 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 		LOG4CXX_DEBUG(logger, (char*) "svcQ RECEIPT: " << (char*) apr_hash_get(framed->headers, "receipt-id", APR_HASH_KEY_STRING));
 	} else if (strcmp(framed->command, (const char*)"MESSAGE") == 0){
 		LOG4CXX_DEBUG(logger, (char*) "Got message before receipt, allow a single receipt later");
-		m_message = framed;
+		this->message = framed;
+		this->receipt = queueName;
 	} else {
 		LOG4CXX_ERROR(logger, "Didn't get a receipt: " << framed->command << ", "
 			<< framed->body);
@@ -83,7 +84,7 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 
 EndpointQueue::EndpointQueue(apr_pool_t* pool,
 		char* connectionName, int id) {
-	m_message = NULL;
+	this->message = NULL;
 	shutdown = false;
 	lock = new SynchronizableObject();
 	LOG4CXX_DEBUG(logger, "Created lock: " << lock);
@@ -123,7 +124,8 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool,
 		LOG4CXX_DEBUG(logger, (char*) "tmpQ RECEIPT: " << (char*) apr_hash_get(framed->headers, "receipt-id", APR_HASH_KEY_STRING));
 	} else if (strcmp(framed->command, (const char*)"MESSAGE") == 0){
 		LOG4CXX_DEBUG(logger, (char*) "Got message before receipt, allow a single receipt later");
-		m_message = framed;
+		this->message = framed;
+		this->receipt = queueName;
 	} else {
 		LOG4CXX_ERROR(logger, "Didn't get a receipt: " << framed->command << ", "
 			<< framed->body);
@@ -180,9 +182,9 @@ MESSAGE EndpointQueue::receive(long time) {
 	if (!shutdown) {
 		stomp_frame *frame = NULL;
 		
-		if (m_message) {
-			frame = m_message;
-			m_message = NULL;
+		if (this->message) {
+			frame = this->message;
+			this->message = NULL;
 		}
 		else {
 			LOG4CXX_DEBUG(logger, (char*) "Receivin from: " << name);
@@ -195,10 +197,12 @@ MESSAGE EndpointQueue::receive(long time) {
 				LOG4CXX_ERROR(logger, (char*) "Got an error: " << frame->body);
 				setSpecific(TPE_KEY, TSS_TPENOENT);
 			} else if (strcmp(frame->command, (const char*)"RECEIPT") == 0) {
-				if (m_message == NULL) {
-					LOG4CXX_ERROR(logger, (char*) "read a RECEIPT for: " << name << ": " << (char*) apr_hash_get(frame->headers, "receipt-id", APR_HASH_KEY_STRING));
+				char * receipt = (char*) apr_hash_get(frame->headers, "receipt-id", APR_HASH_KEY_STRING);
+				if (this->receipt == NULL || strcmp(this->receipt, receipt) == 0) {
+					LOG4CXX_ERROR(logger, (char*) "read an unexpected receipt for: " << name << ": " << receipt);
 					setSpecific(TPE_KEY, TSS_TPESYSTEM);
 				} else {
+					this->receipt = NULL;
 					rc = stomp_read(connection, &frame, pool);
 					if (rc != APR_SUCCESS) {
 						LOG4CXX_DEBUG(logger, "Could not read frame for " << name << ": "
