@@ -107,7 +107,7 @@ AtmiBrokerClient::AtmiBrokerClient() {
 		AtmiBrokerEnv::set_environment_dir(envDir);
 		char* transportLibrary = AtmiBrokerEnv::get_instance()->getenv(
 				(char*) "TransportLibrary");
-		LOG4CXX_INFO(loggerAtmiBrokerClient,
+		LOG4CXX_DEBUG(loggerAtmiBrokerClient,
 				(char*) "Loading client transport: " << transportLibrary);
 		connection_factory_t* connectionFactory =
 				(connection_factory_t*) ::lookup_symbol(transportLibrary,

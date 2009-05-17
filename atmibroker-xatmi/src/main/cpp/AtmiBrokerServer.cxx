@@ -186,7 +186,7 @@ AtmiBrokerServer::AtmiBrokerServer() {
 
 		char* transportLibrary = AtmiBrokerEnv::get_instance()->getenv(
 				(char*) "TransportLibrary");
-		LOG4CXX_INFO(loggerAtmiBrokerServer,
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 				(char*) "Loading server transport: " << transportLibrary);
 		connection_factory_t* connectionFactory =
 			(connection_factory_t*) ::lookup_symbol(transportLibrary,
