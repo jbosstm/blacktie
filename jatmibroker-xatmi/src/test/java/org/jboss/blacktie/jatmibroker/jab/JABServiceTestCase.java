@@ -19,6 +19,7 @@ package org.jboss.blacktie.jatmibroker.jab;
 
 import junit.framework.TestCase;
 
+import org.jboss.blacktie.jatmibroker.core.RunServer;
 import org.jboss.blacktie.jatmibroker.core.jab.JABRemoteService;
 import org.jboss.blacktie.jatmibroker.core.jab.JABSessionAttributes;
 import org.jboss.blacktie.jatmibroker.core.jab.JABSession;
@@ -44,11 +45,14 @@ public class JABServiceTestCase extends TestCase {
 		args[0] = "-ORBInitRef";
 		args[1] = "NameService=corbaloc::localhost:3528/NameService";
 
-		//JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(domainName, serverName, transactionManagerService, args);
+		// JABSessionAttributes aJabSessionAttributes = new
+		// JABSessionAttributes(domainName, serverName,
+		// transactionManagerService, args);
 		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes();
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
-		JABRemoteService aJabService = new JABRemoteService(aJabSession, serviceName);
+		JABRemoteService aJabService = new JABRemoteService(aJabSession,
+				serviceName);
 		aJabService.setString("STRING", "HOWS IT GOING DUDE????!!!!");
 		aJabService.call(transaction);
 		transaction.commit();

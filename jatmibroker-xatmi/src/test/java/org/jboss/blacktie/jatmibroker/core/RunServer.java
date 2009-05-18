@@ -18,9 +18,9 @@
 package org.jboss.blacktie.jatmibroker.core;
 
 public class RunServer {
-	native void serverinit();
+	public native void serverinit();
 
-	native void serverdone();
+	public native void serverdone();
 
 	static {
 		System.loadLibrary("testsuite");
