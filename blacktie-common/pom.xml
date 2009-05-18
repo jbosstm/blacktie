@@ -175,7 +175,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.blacktie</groupId>
-				<artifactId>jatmibroker-core</artifactId>
+				<artifactId>jatmibroker-xatmi</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
