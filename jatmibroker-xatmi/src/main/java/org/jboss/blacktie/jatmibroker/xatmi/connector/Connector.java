@@ -15,9 +15,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.ejb.connector;
+package org.jboss.blacktie.jatmibroker.xatmi.connector;
 
-import org.jboss.blacktie.jatmibroker.ejb.connector.buffers.Buffer;
+import org.jboss.blacktie.jatmibroker.xatmi.connector.buffers.Buffer;
 
 /**
  * This is the connector to remote Blacktie services.

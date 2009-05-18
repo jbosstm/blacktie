@@ -1,9 +1,10 @@
 package org.jboss.blacktie.jatmibroker.ejb.connector.ejb;
 
-import org.jboss.blacktie.jatmibroker.ejb.connector.Response;
-import org.jboss.blacktie.jatmibroker.ejb.connector.TPSVCINFO;
-import org.jboss.blacktie.jatmibroker.ejb.connector.buffers.Buffer;
-import org.jboss.blacktie.jatmibroker.ejb.connector.buffers.X_OCTET;
+import org.jboss.blacktie.jatmibroker.xatmi.connector.Response;
+import org.jboss.blacktie.jatmibroker.xatmi.connector.TPSVCINFO;
+import org.jboss.blacktie.jatmibroker.xatmi.connector.buffers.Buffer;
+import org.jboss.blacktie.jatmibroker.xatmi.connector.buffers.X_OCTET;
+import org.jboss.blacktie.jatmibroker.xatmi.ejb.AbstractBlacktieService;
 
 public class EchoServiceTestService extends AbstractBlacktieService {
 

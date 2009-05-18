@@ -1,11 +1,10 @@
-package org.jboss.blacktie.jatmibroker.ejb.connector.ejb;
+package org.jboss.blacktie.jatmibroker.xatmi.ejb;
 
 import java.rmi.RemoteException;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBHome;
 
-import org.jboss.blacktie.jatmibroker.ejb.connector.BlacktieService;
 
 /**
  * Required for EJB

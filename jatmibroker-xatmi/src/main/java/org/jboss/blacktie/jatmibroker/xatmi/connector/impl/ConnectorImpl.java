@@ -1,19 +1,19 @@
-package org.jboss.blacktie.jatmibroker.ejb.connector.impl;
+package org.jboss.blacktie.jatmibroker.xatmi.connector.impl;
 
 import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.AtmiBrokerServerImpl;
+import org.jboss.blacktie.jatmibroker.core.AtmiBrokerServerProxy;
 import org.jboss.blacktie.jatmibroker.core.AtmiBroker_ServerImpl;
 import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.core.Message;
 import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServer;
 import org.jboss.blacktie.jatmibroker.core.proxy.Queue;
-import org.jboss.blacktie.jatmibroker.ejb.connector.Connector;
-import org.jboss.blacktie.jatmibroker.ejb.connector.ConnectorException;
-import org.jboss.blacktie.jatmibroker.ejb.connector.Response;
-import org.jboss.blacktie.jatmibroker.ejb.connector.buffers.Buffer;
+import org.jboss.blacktie.jatmibroker.xatmi.connector.Connector;
+import org.jboss.blacktie.jatmibroker.xatmi.connector.ConnectorException;
+import org.jboss.blacktie.jatmibroker.xatmi.connector.Response;
+import org.jboss.blacktie.jatmibroker.xatmi.connector.buffers.Buffer;
 
 /**
  * Handles the connector to the server
@@ -59,23 +59,27 @@ public class ConnectorImpl implements Connector {
 	 * @param password
 	 * @throws ConnectorException
 	 */
-	public ConnectorImpl(Properties properties, String username, String password) throws ConnectorException {
+	public ConnectorImpl(Properties properties, String username, String password)
+			throws ConnectorException {
 		this.properties = properties;
 		this.username = username;
 		this.password = password;
 	}
 
-	public Response tpcall(String svc, Buffer idata, int flags) throws ConnectorException {
+	public Response tpcall(String svc, Buffer idata, int flags)
+			throws ConnectorException {
 
 		try {
 			// TODO HANDLE TRANSACTION
 			Queue endpoint = getProxy().getEndpointQueue(0);
-			getProxy().getServiceQueue(svc).send(endpoint.getReplyTo(), (short) 0, 0, idata.getData(), idata.getSize(), 0, flags);
+			getProxy().getServiceQueue(svc).send(endpoint.getReplyTo(),
+					(short) 0, 0, idata.getData(), idata.getSize(), 0, flags);
 			Message receive = endpoint.receive(flags);
 			// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
 			Buffer buffer = new Buffer("unknown", "unknown", receive.len);
 			buffer.setData(receive.data);
-			return new Response(receive.rval, receive.rcode, buffer, receive.flags);
+			return new Response(receive.rval, receive.rcode, buffer,
+					receive.flags);
 		} catch (JAtmiBrokerException e) {
 			throw new ConnectorException(-1, e);
 		}
@@ -84,7 +88,8 @@ public class ConnectorImpl implements Connector {
 	private synchronized AtmiBrokerServer getProxy() throws ConnectorException {
 		if (proxy == null) {
 			try {
-				proxy = AtmiBrokerServerImpl.getProxy(properties, username, password);
+				proxy = AtmiBrokerServerProxy.getProxy(properties, username,
+						password);
 			} catch (JAtmiBrokerException e) {
 				throw new ConnectorException(-1, e);
 			}
@@ -100,11 +105,14 @@ public class ConnectorImpl implements Connector {
 	 * @throws ConnectorException
 	 *             If the service cannot be advertised
 	 */
-	public void tpadvertise(String serviceName, Class service) throws ConnectorException {
+	public void tpadvertise(String serviceName, Class service)
+			throws ConnectorException {
 		try {
 			log.debug("Advertising: " + serviceName);
-			getServer().createService(serviceName, servantCacheSize, service, new AtmiBrokerCallbackConverterImpl());
-			log.info("Advertised: " + serviceName);
+			throw new Throwable("CANT DO THIS ATM");
+			// getServer().createService(serviceName, servantCacheSize, service,
+			// new AtmiBrokerCallbackConverterImpl());
+			// log.info("Advertised: " + serviceName);
 		} catch (Throwable t) {
 			String message = "Could not advertise: " + serviceName;
 			log.error(message, t);
@@ -122,7 +130,8 @@ public class ConnectorImpl implements Connector {
 		}
 	}
 
-	private synchronized AtmiBroker_ServerImpl getServer() throws JAtmiBrokerException {
+	private synchronized AtmiBroker_ServerImpl getServer()
+			throws JAtmiBrokerException {
 		if (server == null) {
 			server = new AtmiBroker_ServerImpl(properties);
 			server.bind();

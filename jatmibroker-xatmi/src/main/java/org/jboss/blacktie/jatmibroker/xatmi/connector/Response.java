@@ -15,11 +15,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.ejb.connector;
+package org.jboss.blacktie.jatmibroker.xatmi.connector;
 
 import java.io.Serializable;
 
-import org.jboss.blacktie.jatmibroker.ejb.connector.buffers.Buffer;
+import org.jboss.blacktie.jatmibroker.xatmi.connector.buffers.Buffer;
 
 /**
  * This class encapsulates the response from the remote service and the return
