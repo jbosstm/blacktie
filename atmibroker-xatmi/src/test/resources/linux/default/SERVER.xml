@@ -24,25 +24,25 @@
 		<MAX_CONSUMERS>1</MAX_CONSUMERS>
 		<ORB_TYPE>TAO</ORB_TYPE>
 		<SERVICE_NAMES>
-			<SERVICE_NAME name='TestTPFree' advertised='false' transportLibrary='atmibroker-stomp.so'/>
-			<SERVICE_NAME name='TestTPAdvertise' advertised='false' transportLibrary='atmibroker-stomp.so'/>
-			<SERVICE_NAME name='123456789012345' advertised='false' transportLibrary='atmibroker-stomp.so'/>
-			<SERVICE_NAME name='TestTPUnadvertise' advertised='false' transportLibrary='atmibroker-stomp.so'/>
-			<SERVICE_NAME name='tpcall_x_octet' advertised='false' transportLibrary='atmibroker-stomp.so'/>
-			<SERVICE_NAME name='tpcall_x_common' advertised='false' transportLibrary='atmibroker-stomp.so'/>
-			<SERVICE_NAME name='tpcall_x_c_type' advertised='false' transportLibrary='atmibroker-stomp.so'/>
-			<SERVICE_NAME name='LOOPY' advertised='false' transportLibrary='atmibroker-stomp.so'/>
-			<SERVICE_NAME name='TestTPConversation' advertised='false' transportLibrary='atmibroker-stomp.so'/>
-			<SERVICE_NAME name='TestTPACall' advertised='false' transportLibrary='atmibroker-stomp.so'/>
-			<SERVICE_NAME name='TestTPCancel' advertised='false' transportLibrary='atmibroker-stomp.so'/>
-			<SERVICE_NAME name='TestTPConnect' advertised='false' transportLibrary='atmibroker-stomp.so'/>
-			<SERVICE_NAME name='TestTPDiscon' advertised='false' transportLibrary='atmibroker-stomp.so'/>
-			<SERVICE_NAME name='TestTPGetrply' advertised='false' transportLibrary='atmibroker-stomp.so'/>
-			<SERVICE_NAME name='TestTPSend' advertised='false' transportLibrary='atmibroker-stomp.so'/>
-			<SERVICE_NAME name='TestTPRecv' advertised='false' transportLibrary='atmibroker-stomp.so'/>
-			<SERVICE_NAME name='TestTPService' advertised='false' transportLibrary='atmibroker-stomp.so'/>
-			<SERVICE_NAME name='TestTPReturn' advertised='false' transportLibrary='atmibroker-stomp.so'/>
-			<SERVICE_NAME name='BAR' library_name='dummy-rm.so' advertised='true' transportLibrary='atmibroker-stomp.so'/>
+			<SERVICE_NAME name='TestTPFree' advertised='false' transportLibrary='libatmibroker-stomp.so'/>
+			<SERVICE_NAME name='TestTPAdvertise' advertised='false' transportLibrary='libatmibroker-stomp.so'/>
+			<SERVICE_NAME name='123456789012345' advertised='false' transportLibrary='libatmibroker-stomp.so'/>
+			<SERVICE_NAME name='TestTPUnadvertise' advertised='false' transportLibrary='libatmibroker-stomp.so'/>
+			<SERVICE_NAME name='tpcall_x_octet' advertised='false' transportLibrary='libatmibroker-stomp.so'/>
+			<SERVICE_NAME name='tpcall_x_common' advertised='false' transportLibrary='libatmibroker-stomp.so'/>
+			<SERVICE_NAME name='tpcall_x_c_type' advertised='false' transportLibrary='libatmibroker-stomp.so'/>
+			<SERVICE_NAME name='LOOPY' advertised='false' transportLibrary='libatmibroker-stomp.so'/>
+			<SERVICE_NAME name='TestTPConversation' advertised='false' transportLibrary='libatmibroker-stomp.so'/>
+			<SERVICE_NAME name='TestTPACall' advertised='false' transportLibrary='libatmibroker-stomp.so'/>
+			<SERVICE_NAME name='TestTPCancel' advertised='false' transportLibrary='libatmibroker-stomp.so'/>
+			<SERVICE_NAME name='TestTPConnect' advertised='false' transportLibrary='libatmibroker-stomp.so'/>
+			<SERVICE_NAME name='TestTPDiscon' advertised='false' transportLibrary='libatmibroker-stomp.so'/>
+			<SERVICE_NAME name='TestTPGetrply' advertised='false' transportLibrary='libatmibroker-stomp.so'/>
+			<SERVICE_NAME name='TestTPSend' advertised='false' transportLibrary='libatmibroker-stomp.so'/>
+			<SERVICE_NAME name='TestTPRecv' advertised='false' transportLibrary='libatmibroker-stomp.so'/>
+			<SERVICE_NAME name='TestTPService' advertised='false' transportLibrary='libatmibroker-stomp.so'/>
+			<SERVICE_NAME name='TestTPReturn' advertised='false' transportLibrary='libatmibroker-stomp.so'/>
+			<SERVICE_NAME name='BAR' library_name='libdummy-rm.so' advertised='true' transportLibrary='libatmibroker-stomp.so'/>
 		</SERVICE_NAMES>
 	</SERVER_DESCRIPTION>
 </SERVER>
