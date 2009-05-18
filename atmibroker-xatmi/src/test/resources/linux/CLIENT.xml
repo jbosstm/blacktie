@@ -22,17 +22,5 @@
 		<MAX_CHANNELS>1</MAX_CHANNELS>
 		<MAX_SUPPLIERS>1</MAX_SUPPLIERS>
 		<MAX_CONSUMERS>1</MAX_CONSUMERS>
-		<SERVER_NAMES>
-			<SERVER_NAME>TESTSERVERSERVER</SERVER_NAME>
-			<SERVICE_NAMES>
-				<SERVICE name='TestTPFree' transportLibrary='libatmibroker-stomp.so'/>
-				<SERVICE name='TestTPAdvertise' transportLibrary='libatmibroker-stomp.so'/>
-				<SERVICE name='123456789012345' transportLibrary='libatmibroker-stomp.so'/>
-				<SERVICE name='TestTPUnadvertise' transportLibrary='libatmibroker-stomp.so'/>
-				<SERVICE name='tpcall_x_octet' transportLibrary='libatmibroker-stomp.so'/>
-				<SERVICE name='tpcall_x_common' transportLibrary='libatmibroker-stomp.so'/>
-				<SERVICE name='tpcall_x_c_type' transportLibrary='libatmibroker-stomp.so'/>
-			</SERVICE_NAMES>
-		</SERVER_NAMES>
 	</CLIENT_DESCRIPTION>
 </CLIENT>

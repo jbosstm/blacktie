@@ -21,6 +21,31 @@
 		<DOMAIN>fooapp</DOMAIN>
 		<NAMING_SERVICE_ID></NAMING_SERVICE_ID>
 		<TRANS_FACTORY_ID>TransactionManagerService.OTS</TRANS_FACTORY_ID>
+		<SERVER_NAMES>
+			<SERVER>
+				<SERVICE_NAMES>
+					<SERVICE name='TestTPFree' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPACall' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPAdvertise' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='LOOPY' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPConversation'  transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPACall'  transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPCancel'  transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPConnect'  transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPDiscon'  transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPGetrply'  transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPSend'  transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPRecv'  transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPService'  transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPReturn'  transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='123456789012345' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPUnadvertise' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='tpcall_x_octet' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='tpcall_x_common' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='tpcall_x_c_type' transportLibrary='atmibroker-stomp.dll'/>
+				</SERVICE_NAMES>
+			</SERVER>
+		</SERVER_NAMES>
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
 				<NAME>TransportLibrary</NAME>

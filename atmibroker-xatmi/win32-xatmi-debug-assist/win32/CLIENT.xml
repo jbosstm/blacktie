@@ -22,17 +22,5 @@
 		<MAX_CHANNELS>1</MAX_CHANNELS>
 		<MAX_SUPPLIERS>1</MAX_SUPPLIERS>
 		<MAX_CONSUMERS>1</MAX_CONSUMERS>
-		<SERVER_NAMES>
-			<SERVER_NAME>TESTSERVERSERVER</SERVER_NAME>
-			<SERVICE_NAMES>
-				<SERVICE name='TestTPFree' transportLibrary='atmibroker-stomp.dll'/>
-				<SERVICE name='TestTPAdvertise' transportLibrary='atmibroker-stomp.dll'/>
-				<SERVICE name='123456789012345' transportLibrary='atmibroker-stomp.dll'/>
-				<SERVICE name='TestTPUnadvertise' transportLibrary='atmibroker-stomp.dll'/>
-				<SERVICE name='tpcall_x_octet' transportLibrary='atmibroker-stomp.dll'/>
-				<SERVICE name='tpcall_x_common' transportLibrary='atmibroker-stomp.dll'/>
-				<SERVICE name='tpcall_x_c_type' transportLibrary='atmibroker-stomp.dll'/>
-			</SERVICE_NAMES>
-		</SERVER_NAMES>
 	</CLIENT_DESCRIPTION>
 </CLIENT>
