@@ -31,7 +31,8 @@ import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 import java.util.Hashtable;
 
 public class JABTransaction {
-	private static final Logger log = LogManager.getLogger(JABTransaction.class);
+	private static final Logger log = LogManager
+			.getLogger(JABTransaction.class);
 	static TransactionFactory transactionFactory;
 	private JABSession jabSession;
 	private int timeout;
@@ -41,13 +42,16 @@ public class JABTransaction {
 	private Hashtable _childThreads;
 	private boolean active = true;
 
-	public void finalize () throws Throwable {
-		//TODO use ThreadActionData.purgeAction(this); not popAction
-//TODO		ThreadActionData.popAction();
+	public void finalize() throws Throwable {
+		// TODO use ThreadActionData.purgeAction(this); not popAction
+		ThreadActionData.popAction();
 		super.finalize();
 	}
 
-	public JABTransaction(JABSession aJABSession, int aTimeout) throws JABException, NotFound, CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName, InvalidName, AdapterInactive {
+	public JABTransaction(JABSession aJABSession, int aTimeout)
+			throws JABException, NotFound, CannotProceed,
+			org.omg.CosNaming.NamingContextPackage.InvalidName, InvalidName,
+			AdapterInactive {
 		log.debug("JABTransaction constructor ");
 
 		jabSession = aJABSession;
@@ -56,10 +60,12 @@ public class JABTransaction {
 		control = null;
 		terminator = null;
 
-		transactionFactory = jabSession.getServerProxy().getTransactionFactory(jabSession.getJABSessionAttributes().getTransactionManagerName());
+		transactionFactory = jabSession.getServerProxy().getTransactionFactory(
+				jabSession.getJABSessionAttributes()
+						.getTransactionManagerName());
 		log.debug(" creating Control");
 		control = transactionFactory.create(timeout);
-	//TODO	ThreadActionData.pushAction(this);
+ThreadActionData.pushAction(this);
 		log.debug(" created Control " + control);
 
 		try {
@@ -87,7 +93,7 @@ public class JABTransaction {
 			log.debug("calling commit");
 			terminator.commit(true);
 			active = false;
-//		TODO	ThreadActionData.popAction();
+ThreadActionData.popAction();
 			log.debug("called commit on terminator ");
 		} catch (Exception e) {
 			throw new JABException(e);
@@ -101,7 +107,7 @@ public class JABTransaction {
 			log.debug("calling rollback");
 			terminator.rollback();
 			active = false;
-//			TODOThreadActionData.popAction();
+ThreadActionData.popAction();
 			log.debug("called rollback on terminator ");
 		} catch (Exception e) {
 			throw new JABException(e);
@@ -112,23 +118,20 @@ public class JABTransaction {
 	 * Add the specified thread to the list of threads associated with this
 	 * transaction.
 	 * 
-	 * @return <code>true</code> if successful, <code>false</code>
-	 *         otherwise.
+	 * @return <code>true</code> if successful, <code>false</code> otherwise.
 	 */
-	public final boolean addChildThread (Thread t)
-	{
+	public final boolean addChildThread(Thread t) {
 		if (t == null)
 			return false;
 
-		synchronized (this)
-		{
-			//if (actionStatus <= ActionStatus.ABORTING)
-			if (active)
-			{
+		synchronized (this) {
+			// if (actionStatus <= ActionStatus.ABORTING)
+			if (active) {
 				if (_childThreads == null)
 					_childThreads = new Hashtable();
 
-//			TODO	_childThreads.put(ThreadUtil.getThreadId(t), t); // makes sure so we don't get duplicates
+				// TODO _childThreads.put(ThreadUtil.getThreadId(t), t); //
+				// makes sure so we don't get duplicates
 
 				return true;
 			}
@@ -140,30 +143,24 @@ public class JABTransaction {
 	/**
 	 * Remove a child thread. The current thread is removed.
 	 * 
-	 * @return <code>true</code> if successful, <code>false</code>
-	 *         otherwise.
+	 * @return <code>true</code> if successful, <code>false</code> otherwise.
 	 */
-	public final boolean removeChildThread () // current thread
+	public final boolean removeChildThread() // current thread
 	{
-//		TODOreturn removeChildThread(ThreadUtil.getThreadId());
-		return true;
+return removeChildThread(ThreadUtil.getThreadId());
 	}
 
 	/**
 	 * Remove the specified thread from the transaction.
 	 * 
-	 * @return <code>true</code> if successful, <code>false</code>
-	 *         otherwise.
+	 * @return <code>true</code> if successful, <code>false</code> otherwise.
 	 */
-	public final boolean removeChildThread (String threadId)
-	{
+	public final boolean removeChildThread(String threadId) {
 		if (threadId == null)
 			return false;
 
-		synchronized (this)
-		{
-			if (_childThreads != null)
-			{
+		synchronized (this) {
+			if (_childThreads != null) {
 				_childThreads.remove(threadId);
 				return true;
 			}
@@ -172,8 +169,7 @@ public class JABTransaction {
 		return false;
 	}
 
-	public final JABTransaction parent ()
-	{
+	public final JABTransaction parent() {
 		return null;
 	}
 
@@ -181,41 +177,35 @@ public class JABTransaction {
 	 * Suspend all transaction association from the invoking thread. When this
 	 * operation returns, the thread will be associated with no transactions.
 	 * 
-	 * @return a handle on the current JABTransaction (if any) so that the thread
-	 *	 can later resume association if required.
+	 * @return a handle on the current JABTransaction (if any) so that the
+	 *         thread can later resume association if required.
 	 */
-/*TODO
-	public static final JABTransaction suspend() {
-		JABTransaction curr = ThreadActionData.currentAction();
-
-		if (curr != null)
-			ThreadActionData.purgeActions();
-
-		return curr;
-	}
-*/
+	/*
+	 * TODO public static final JABTransaction suspend() { JABTransaction curr =
+	 * ThreadActionData.currentAction();
+	 * 
+	 * if (curr != null) ThreadActionData.purgeActions();
+	 * 
+	 * return curr; }
+	 */
 	/**
 	 * Resume transaction association on the current thread. If the specified
 	 * transaction is null, then this is the same as doing a suspend. If the
 	 * current thread is associated with transactions then those associations
 	 * will be lost.
 	 * 
-	 * @param JABTransaction act
-	 *	    the transaction to associate. If this is a nested
-	 *	    transaction, then the thread will be associated with all of
-	 *	    the transactions in the hierarchy.
+	 * @param JABTransaction
+	 *            act the transaction to associate. If this is a nested
+	 *            transaction, then the thread will be associated with all of
+	 *            the transactions in the hierarchy.
 	 * 
 	 * @return <code>true</code> if association is successful,
-	 *	 <code>false</code> otherwise.
+	 *         <code>false</code> otherwise.
 	 */
-/*TODO
-	public static final boolean resume(JABTransaction act) {
-		if (act == null)
-			suspend();
-		else
-			ThreadActionData.restoreActions(act);
-
-		return true;
-	}
-*/
+	/*
+	 * TODO public static final boolean resume(JABTransaction act) { if (act ==
+	 * null) suspend(); else ThreadActionData.restoreActions(act);
+	 * 
+	 * return true; }
+	 */
 }

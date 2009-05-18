@@ -49,10 +49,10 @@ public class EndpointQueue extends EndpointQueuePOA implements Queue {
 	private String queueName;
 
 	private void xxxinitPolicies(ORB orb, POA poa, Policy[] policies) throws JAtmiBrokerException {
-/*TODO		try {
+	try {
 			policies[0] = poa.create_thread_policy(ThreadPolicyValue.SINGLE_THREAD_MODEL);
 
-			xAny otsPolicy = orb.create_any();
+			Any otsPolicy = orb.create_any();
 			otsPolicy.insert_short(TxIORInterceptor.ADAPTS);
 			Any invPolicy = orb.create_any();
 //XXX		policies[1] = poa.create_implicit_activation_policy(ImplicitActivationPolicyValue.IMPLICIT_ACTIVATION);
@@ -63,13 +63,12 @@ public class EndpointQueue extends EndpointQueuePOA implements Queue {
 		} catch (PolicyError e) {
 			throw new JAtmiBrokerException("POA policy creation error: ", e);
 		}
-			*/
 	}
 	private void initPolicies(ORB orb, POA poa, Policy[] policies) throws JAtmiBrokerException {
 			policies[0] = poa.create_thread_policy(ThreadPolicyValue.SINGLE_THREAD_MODEL);
 
 			Any otsPolicy = orb.create_any();
-//TODO			otsPolicy.insert_short(TxIORInterceptor.ADAPTS);
+			otsPolicy.insert_short(TxIORInterceptor.ADAPTS);
 			Any invPolicy = orb.create_any();
 		/*
 			policies[1] = orb.create_policy(TxIORInterceptor.TAG_OTS_POLICY, otsPolicy);
