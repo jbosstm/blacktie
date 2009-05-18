@@ -59,7 +59,8 @@ int bufferSize(char* data, int suggestedSize) {
 }
 int send(Session* session, const char* replyTo, char* idata, long ilen,
 		int correlationId, long flags, long rval, long rcode) {
-	LOG4CXX_DEBUG(loggerXATMI, (char*) "send - ilen: flags: " << ilen << ": " << flags);
+	LOG4CXX_DEBUG(loggerXATMI, (char*) "send - ilen: flags: " << ilen << ": "
+			<< flags);
 	if (flags & TPSIGRSTRT) {
 		LOG4CXX_ERROR(loggerXATMI, (char*) "TPSIGRSTRT NOT SUPPORTED");
 	}
@@ -73,7 +74,8 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 				control = disassociate_tx();
 			}
 
-			LOG4CXX_TRACE(loggerXATMI, (char*) "allocating data to go: " << ilen);
+			LOG4CXX_TRACE(loggerXATMI, (char*) "allocating data to go: "
+					<< ilen);
 			char* data_togo = (char *) malloc(ilen + 1);
 			data_togo[ilen] = NULL;
 			LOG4CXX_TRACE(loggerXATMI, (char*) "allocated");
@@ -88,7 +90,7 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			message.flags = flags;
 			message.rcode = rcode;
 			message.rval = rval;
-			if (session->send(message))  {
+			if (session->send(message)) {
 				toReturn = 0;
 			} else {
 				setSpecific(TPE_KEY, TSS_TPENOENT);
@@ -238,8 +240,7 @@ char* tpalloc(char* type, char* subtype, long size) {
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	char* toReturn = NULL;
 	if (clientinit() != -1) {
-		toReturn =
-				AtmiBrokerMem::get_instance()->tpalloc(type, subtype, size);
+		toReturn = AtmiBrokerMem::get_instance()->tpalloc(type, subtype, size);
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpalloc returning" << " tperrno: "
 			<< tperrno);
@@ -277,7 +278,7 @@ long tptypes(char* ptr, char* type, char* subtype) {
 		toReturn = AtmiBrokerMem::get_instance()->tptypes(ptr, type, subtype);
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tptypes return: " << toReturn
-		<< " tperrno: " << tperrno);
+			<< " tperrno: " << tperrno);
 	return toReturn;
 }
 
@@ -309,8 +310,8 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 				int cd = -1;
 				session = ptrAtmiBrokerClient->createSession(cd, svc);
 				if (cd != -1) {
-					toReturn = ::send(session, session->getReplyTo(), idata, len, cd,
-							flags, 0, 0);
+					toReturn = ::send(session, session->getReplyTo(), idata,
+							len, cd, flags, 0, 0);
 					if (toReturn != -1) {
 						if (TPNOREPLY & flags) {
 							toReturn = 0;
@@ -435,37 +436,37 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = -1;
 	if (clientinit() != -1) {
-	Session* session = (Session*) getSpecific(SVC_SES);
-	int len = -1;
-	if (session != NULL) {
-		if (session->getId() != id) {
-			session = NULL;
-		} else {
-			len = ilen;
-		}
-	}
-	if (session == NULL) {
-		if (clientinit() != -1) {
-			session = ptrAtmiBrokerClient->getSession(id);
-			if (session == NULL) {
-				setSpecific(TPE_KEY, TSS_TPEBADDESC);
+		Session* session = (Session*) getSpecific(SVC_SES);
+		int len = -1;
+		if (session != NULL) {
+			if (session->getId() != id) {
+				session = NULL;
 			} else {
-				if (!session->getCanSend()) {
-					setSpecific(TPE_KEY, TSS_TPEPROTO);
+				len = ilen;
+			}
+		}
+		if (session == NULL) {
+			if (clientinit() != -1) {
+				session = ptrAtmiBrokerClient->getSession(id);
+				if (session == NULL) {
+					setSpecific(TPE_KEY, TSS_TPEBADDESC);
 				} else {
-					len = ::bufferSize(idata, ilen);
+					if (!session->getCanSend()) {
+						setSpecific(TPE_KEY, TSS_TPEPROTO);
+					} else {
+						len = ::bufferSize(idata, ilen);
+					}
 				}
 			}
 		}
-	}
-	if (len != -1) {
-		toReturn = ::send(session, session->getReplyTo(), idata, len, id,
-				flags, 0, 0);
-		if (flags & TPRECVONLY) {
-			session->setCanSend(false);
-			session->setCanRecv(true);
+		if (len != -1) {
+			toReturn = ::send(session, session->getReplyTo(), idata, len, id,
+					flags, 0, 0);
+			if (flags & TPRECVONLY) {
+				session->setCanSend(false);
+				session->setCanRecv(true);
+			}
 		}
-	}
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpsend return: " << toReturn
 			<< " tperrno: " << tperrno);
@@ -477,27 +478,27 @@ int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = -1;
 	if (clientinit() != -1) {
-	Session* session = (Session*) getSpecific(SVC_SES);
-	if (session != NULL && session->getId() != id) {
-		session = NULL;
-	}
-	if (session == NULL) {
-		if (clientinit() != -1) {
-			session = ptrAtmiBrokerClient->getSession(id);
+		Session* session = (Session*) getSpecific(SVC_SES);
+		if (session != NULL && session->getId() != id) {
+			session = NULL;
 		}
-	}
-	if (session == NULL) {
-		setSpecific(TPE_KEY, TSS_TPEBADDESC);
-	} else {
-		toReturn = ::receive(session, odata, olen, flags, event);
-		if (*event == TPESVCERR) {
-			setSpecific(TPE_KEY, TSS_TPEEVENT);
-			toReturn = -1;
-		} else if (*event == TPESVCFAIL) {
-			setSpecific(TPE_KEY, TSS_TPEEVENT);
-			toReturn = -1;
+		if (session == NULL) {
+			if (clientinit() != -1) {
+				session = ptrAtmiBrokerClient->getSession(id);
+			}
 		}
-	}
+		if (session == NULL) {
+			setSpecific(TPE_KEY, TSS_TPEBADDESC);
+		} else {
+			toReturn = ::receive(session, odata, olen, flags, event);
+			if (*event == TPESVCERR) {
+				setSpecific(TPE_KEY, TSS_TPEEVENT);
+				toReturn = -1;
+			} else if (*event == TPESVCFAIL) {
+				setSpecific(TPE_KEY, TSS_TPEEVENT);
+				toReturn = -1;
+			}
+		}
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tprecv return: " << toReturn
 			<< " tperrno: " << tperrno);
@@ -508,25 +509,25 @@ void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpreturn " << rval);
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	if (clientinit() != -1) {
-	Session* session = (Session*) getSpecific(SVC_SES);
-	if (session != NULL) {
-		if (!session->getCanSend()) {
-			setSpecific(TPE_KEY, TSS_TPEPROTO);
-		} else {
-			session->setCanRecv(false);
-			if (rcode == TPESVCERR || bufferSize(data, len) == -1) {
-				data = ::tpalloc((char*) "X_OCTET", NULL, 0);
-				::send(session, "", data, 1, 0, flags, TPFAIL, TPESVCERR);
+		Session* session = (Session*) getSpecific(SVC_SES);
+		if (session != NULL) {
+			if (!session->getCanSend()) {
+				setSpecific(TPE_KEY, TSS_TPEPROTO);
 			} else {
-				::send(session, "", data, len, 0, flags, rval, rcode);
+				session->setCanRecv(false);
+				if (rcode == TPESVCERR || bufferSize(data, len) == -1) {
+					data = ::tpalloc((char*) "X_OCTET", NULL, 0);
+					::send(session, "", data, 1, 0, flags, TPFAIL, TPESVCERR);
+				} else {
+					::send(session, "", data, len, 0, flags, rval, rcode);
+				}
+				::tpfree(data);
+				session->setSendTo(NULL);
+				session->setCanSend(false);
 			}
-			::tpfree(data);
-			session->setSendTo(NULL);
-			session->setCanSend(false);
+		} else {
+			setSpecific(TPE_KEY, TSS_TPEPROTO);
 		}
-	} else {
-		setSpecific(TPE_KEY, TSS_TPEPROTO);
-	}
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpreturn returning" << " tperrno: "
 			<< tperrno);

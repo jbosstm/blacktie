@@ -35,7 +35,6 @@
 #include "ace/Default_Constants.h"
 #include "ThreadLocalStorage.h"
 
-
 AtmiBrokerClient * ptrAtmiBrokerClient;
 
 log4cxx::LoggerPtr loggerAtmiBrokerClient(log4cxx::Logger::getLogger(
@@ -90,47 +89,48 @@ AtmiBrokerClient::AtmiBrokerClient() {
 	try {
 		clientConnection = NULL;
 		char* envDir = NULL;
-		char  descPath[256];
+		char descPath[256];
 
 		envDir = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
-		if(envDir) {
-			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "envDir is " << envDir);
-			ACE_OS::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"CLIENT.xml", envDir);
-		} else {
-			ACE_OS::strncpy(descPath, "CLIENT.xml", 256);
-		}
+		if (envDir) {
+			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "envDir is "
+					<< envDir);
+ACE_OS		::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"CLIENT.xml", envDir);
+	} else {
+		ACE_OS::strncpy(descPath, "CLIENT.xml", 256);
+	}
 
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "descPath is " << descPath);
-		AtmiBrokerClientXml aAtmiBrokerClientXml;
-		if(aAtmiBrokerClientXml.parseXmlDescriptor(&clientServerVector, descPath) == false) return;
+	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "descPath is " << descPath);
+	AtmiBrokerClientXml aAtmiBrokerClientXml;
+	if(aAtmiBrokerClientXml.parseXmlDescriptor(&clientServerVector, descPath) == false) return;
 
-		AtmiBrokerEnv::set_environment_dir(envDir);
-		char* transportLibrary = AtmiBrokerEnv::get_instance()->getenv(
-				(char*) "TransportLibrary");
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient,
-				(char*) "Loading client transport: " << transportLibrary);
-		connection_factory_t* connectionFactory =
-				(connection_factory_t*) ::lookup_symbol(transportLibrary,
-						"connectionFactory");
-		if (connectionFactory != NULL) {
-			clientConnection = connectionFactory->create_connection(
-					(char*) "client");
+	AtmiBrokerEnv::set_environment_dir(envDir);
+	char* transportLibrary = AtmiBrokerEnv::get_instance()->getenv(
+			(char*) "TransportLibrary");
+	LOG4CXX_DEBUG(loggerAtmiBrokerClient,
+			(char*) "Loading client transport: " << transportLibrary);
+	connection_factory_t* connectionFactory =
+	(connection_factory_t*) ::lookup_symbol(transportLibrary,
+			"connectionFactory");
+	if (connectionFactory != NULL) {
+		clientConnection = connectionFactory->create_connection(
+				(char*) "client");
 
-			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "constructor");
+		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "constructor");
 
-			nextSessionId = 0;
-			clientInitialized = true;
-		} else {
-			LOG4CXX_ERROR(loggerAtmiBrokerClient,
-					(char*) "Could not load the transport: "
-							<< transportLibrary);
-			setSpecific(TPE_KEY, TSS_TPESYSTEM);
-		}
-	} catch (...) {
+		nextSessionId = 0;
+		clientInitialized = true;
+	} else {
 		LOG4CXX_ERROR(loggerAtmiBrokerClient,
-				(char*) "clientinit Unexpected exception");
+				(char*) "Could not load the transport: "
+				<< transportLibrary);
 		setSpecific(TPE_KEY, TSS_TPESYSTEM);
 	}
+} catch (...) {
+	LOG4CXX_ERROR(loggerAtmiBrokerClient,
+			(char*) "clientinit Unexpected exception");
+	setSpecific(TPE_KEY, TSS_TPESYSTEM);
+}
 }
 
 AtmiBrokerClient::~AtmiBrokerClient() {
@@ -142,8 +142,10 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 				<< (char*) (*itServer)->serverName);
 		free((*itServer)->serverName);
 
-		std::vector<ClientServiceInfo>* services = &((*itServer)->serviceVector);
-		for(std::vector<ClientServiceInfo>::iterator i = services->begin(); i != services->end(); i++) {
+		std::vector<ClientServiceInfo>* services =
+				&((*itServer)->serviceVector);
+		for (std::vector<ClientServiceInfo>::iterator i = services->begin(); i
+				!= services->end(); i++) {
 			free((*i).serviceName);
 			free((*i).transportLib);
 		}

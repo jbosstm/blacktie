@@ -19,9 +19,12 @@
 #include "txClient.h"
 #include "ThreadLocalStorage.h"
 
-log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger("ServiceDispatcher"));
+log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger(
+		"ServiceDispatcher"));
 
-ServiceDispatcher::ServiceDispatcher(Destination* destination, Connection* connection, const char *serviceName, void(*func)(TPSVCINFO *)) {
+ServiceDispatcher::ServiceDispatcher(Destination* destination,
+		Connection* connection, const char *serviceName, void(*func)(
+				TPSVCINFO *)) {
 	this->destination = destination;
 	this->connection = connection;
 	this->serviceName = serviceName;
@@ -33,12 +36,14 @@ ServiceDispatcher::ServiceDispatcher(Destination* destination, Connection* conne
 int ServiceDispatcher::svc(void) {
 	while (!stop) {
 		MESSAGE message = destination->receive(0);
-		message.len = message.len -1;
+		message.len = message.len - 1;
 		if (!stop && message.len > -1) {
 			try {
 				onMessage(message);
 			} catch (...) {
-				LOG4CXX_ERROR(logger, (char*) "Service Dispatcher caught error running during onMessage");
+				LOG4CXX_ERROR(
+						logger,
+						(char*) "Service Dispatcher caught error running during onMessage");
 			}
 		}
 	}
@@ -58,7 +63,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 	// EXTRACT THE DATA FROM THE INBOUND MESSAGE
 	int correlationId = message.correlationId;
-	
+
 	char* idata = (char *) malloc(message.len);
 	memcpy(idata, message.data, message.len);
 
@@ -98,10 +103,13 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	try {
 		this->func(&tpsvcinfo);
 	} catch (...) {
-		LOG4CXX_ERROR(logger, (char*) "ServiceDispatcher caught error running during onMessage");
+		LOG4CXX_ERROR(
+				logger,
+				(char*) "ServiceDispatcher caught error running during onMessage");
 	}
 
-	LOG4CXX_TRACE(logger, (char*) "Freeing the data that was passed to the service");
+	LOG4CXX_TRACE(logger,
+			(char*) "Freeing the data that was passed to the service");
 	free(idata);
 	if (control) {
 		disassociate_tx(); // TODO figure out why tpreturn needs to stop Resource Managers
