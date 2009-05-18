@@ -55,7 +55,7 @@ stomp_connection* ConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 			(char*) "StompConnectPort");
 	LOG4CXX_DEBUG(logger, "Connecting to: " << host << ":" << port);
 	int portNum = atoi(port.c_str());
-	apr_status_t  rc = stomp_connect(&connection, host.c_str(), portNum, pool);
+	apr_status_t rc = stomp_connect(&connection, host.c_str(), portNum, pool);
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, (char*) "Could not connect: " << host << ", "
 				<< port << ": " << rc);
@@ -93,8 +93,8 @@ stomp_connection* ConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 				<< " from connection");
 		throw new std::exception();
 	} else {
-	LOG4CXX_DEBUG(logger, "Response: " << frameRead->command << ", "
-			<< frameRead->body);
+		LOG4CXX_DEBUG(logger, "Response: " << frameRead->command << ", "
+				<< frameRead->body);
 		LOG4CXX_DEBUG(logger, "Connected");
 	}
 	return connection;
@@ -123,15 +123,13 @@ void ConnectionImpl::disconnect(stomp_connection* connection, apr_pool_t* pool) 
 
 Session* ConnectionImpl::createSession(int id, char * serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession");
-	sessionMap[id] = new SessionImpl(connectionName, pool, id,
-			serviceName);
+	sessionMap[id] = new SessionImpl(connectionName, pool, id, serviceName);
 	return sessionMap[id];
 }
 
 Session* ConnectionImpl::createSession(int id, const char* temporaryQueueName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession");
-	return new SessionImpl(connectionName, pool, id,
-			temporaryQueueName);
+	return new SessionImpl(connectionName, pool, id, temporaryQueueName);
 }
 
 Destination* ConnectionImpl::createDestination(char* serviceName) {

@@ -27,12 +27,14 @@
 
 #include "ThreadLocalStorage.h"
 
-log4cxx::LoggerPtr SessionImpl::logger(log4cxx::Logger::getLogger("SessionImpl"));
+log4cxx::LoggerPtr SessionImpl::logger(
+		log4cxx::Logger::getLogger("SessionImpl"));
 
-SessionImpl::SessionImpl(char* connectionName, apr_pool_t* pool, int id, char* serviceName) {
+SessionImpl::SessionImpl(char* connectionName, apr_pool_t* pool, int id,
+		char* serviceName) {
 	LOG4CXX_TRACE(logger, (char*) "constructor ");
 	this->id = id;
-	
+
 	connection = NULL;
 	connection = ConnectionImpl::connect(pool, 2); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
@@ -52,7 +54,8 @@ SessionImpl::SessionImpl(char* connectionName, apr_pool_t* pool, int id, char* s
 	LOG4CXX_TRACE(logger, "OK");
 }
 
-SessionImpl::SessionImpl(char* connectionName, apr_pool_t* pool, int id, const char* temporaryQueueName) {
+SessionImpl::SessionImpl(char* connectionName, apr_pool_t* pool, int id,
+		const char* temporaryQueueName) {
 	LOG4CXX_TRACE(logger, (char*) "constructor ");
 	this->id = id;
 
@@ -74,7 +77,7 @@ SessionImpl::~SessionImpl() {
 	::free(this->sendTo);
 	delete toRead;
 
-	if (connection) {	
+	if (connection) {
 		LOG4CXX_TRACE(logger, (char*) "destroying");
 		ConnectionImpl::disconnect(connection, pool);
 		LOG4CXX_TRACE(logger, (char*) "destroyed");
@@ -97,44 +100,50 @@ bool SessionImpl::send(MESSAGE message) {
 	frame.body_length = message.len;
 	frame.body = message.data;
 	if (message.replyto && strcmp(message.replyto, "") != 0) {
-		apr_hash_set(frame.headers, "reply-to", APR_HASH_KEY_STRING, message.replyto);
+		apr_hash_set(frame.headers, "reply-to", APR_HASH_KEY_STRING,
+				message.replyto);
 	}
 	char * correlationId = apr_itoa(pool, message.correlationId);
 	char * flags = apr_itoa(pool, message.flags);
 	char * rval = apr_itoa(pool, message.rval);
 	char * rcode = apr_itoa(pool, message.rcode);
-	apr_hash_set(frame.headers, "messagecorrelationId", APR_HASH_KEY_STRING, correlationId);
+	apr_hash_set(frame.headers, "messagecorrelationId", APR_HASH_KEY_STRING,
+			correlationId);
 	apr_hash_set(frame.headers, "messageflags", APR_HASH_KEY_STRING, flags);
 	apr_hash_set(frame.headers, "messagerval", APR_HASH_KEY_STRING, rval);
 	apr_hash_set(frame.headers, "messagercode", APR_HASH_KEY_STRING, rcode);
 	//apr_hash_set(frame.headers, "message.control", APR_HASH_KEY_STRING, message.control);
-	
-	LOG4CXX_DEBUG(logger, "Send to: " << sendTo << " Command: " << frame.command << " Body: " << frame.body);
+
+	LOG4CXX_DEBUG(logger, "Send to: " << sendTo << " Command: "
+			<< frame.command << " Body: " << frame.body);
 	apr_status_t rc = stomp_write(connection, &frame, pool);
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, "Could not send frame");
 		//setSpecific(TPE_KEY, TSS_TPESYSTEM);
 	} else {
 
-	stomp_frame *framed;
-	rc = stomp_read(connection, &framed, pool);
-	if (rc != APR_SUCCESS) {
-		LOG4CXX_ERROR(logger, "Could not send frame");
-		//setSpecific(TPE_KEY, TSS_TPESYSTEM);
-	} else if (strcmp(framed->command, (const char*)"ERROR") == 0) {
-		LOG4CXX_DEBUG(logger, (char*) "Got an error: " << framed->body);
-		//setSpecific(TPE_KEY, TSS_TPENOENT);
-	} else if (strcmp(framed->command, (const char*)"RECEIPT") == 0){
-		LOG4CXX_DEBUG(logger, (char*) "SEND RECEIPT: " << (char*) apr_hash_get(framed->headers, "receipt-id", APR_HASH_KEY_STRING));
-		toReturn = true;
-	} else {
-		LOG4CXX_ERROR(logger, "Didn't get a receipt: " << framed->command << ", "
-			<< framed->body);
-	}
-	LOG4CXX_DEBUG(logger, "Sent to: " << sendTo << " Command: " << frame.command << " Body: " << frame.body);
+		stomp_frame *framed;
+		rc = stomp_read(connection, &framed, pool);
+		if (rc != APR_SUCCESS) {
+			LOG4CXX_ERROR(logger, "Could not send frame");
+			//setSpecific(TPE_KEY, TSS_TPESYSTEM);
+		} else if (strcmp(framed->command, (const char*) "ERROR") == 0) {
+			LOG4CXX_DEBUG(logger, (char*) "Got an error: " << framed->body);
+			//setSpecific(TPE_KEY, TSS_TPENOENT);
+		} else if (strcmp(framed->command, (const char*) "RECEIPT") == 0) {
+			LOG4CXX_DEBUG(logger, (char*) "SEND RECEIPT: "
+					<< (char*) apr_hash_get(framed->headers, "receipt-id",
+							APR_HASH_KEY_STRING));
+			toReturn = true;
+		} else {
+			LOG4CXX_ERROR(logger, "Didn't get a receipt: " << framed->command
+					<< ", " << framed->body);
+		}
+		LOG4CXX_DEBUG(logger, "Sent to: " << sendTo << " Command: "
+				<< frame.command << " Body: " << frame.body);
 
 	}
-	
+
 	LOG4CXX_TRACE(logger, (char*) "freeing data to go: data_togo");
 	free(message.data);
 	LOG4CXX_TRACE(logger, (char*) "freed");
