@@ -54,6 +54,7 @@
 						<source>
 							<includes>
 								<include>AtmiBroker.idl</include>
+								<include>JTxPolicy.idl</include>
 							</includes>
 						</source>
 					</sources>

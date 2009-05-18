@@ -23,8 +23,11 @@ import java.util.List;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.proxy.Queue;
+import org.omg.CORBA.ORB;
+import org.omg.CORBA.Any;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
+import org.omg.CORBA.PolicyError;
 import org.omg.CosNaming.NameComponent;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.ThreadPolicyValue;
@@ -45,14 +48,40 @@ public class EndpointQueue extends EndpointQueuePOA implements Queue {
 	private byte[] activate_object;
 	private String queueName;
 
+	private void xxxinitPolicies(ORB orb, POA poa, Policy[] policies) throws JAtmiBrokerException {
+		try {
+			policies[0] = poa.create_thread_policy(ThreadPolicyValue.SINGLE_THREAD_MODEL);
+
+			Any otsPolicy = orb.create_any();
+			otsPolicy.insert_short(TxIORInterceptor.ADAPTS);
+			Any invPolicy = orb.create_any();
+//XXX		policies[1] = poa.create_implicit_activation_policy(ImplicitActivationPolicyValue.IMPLICIT_ACTIVATION);
+		//policies[2] = orb.create_policy(OTS_POLICY_TYPE.value, otsPolicy);
+		//policies[3] = orb.create_policy(INVOCATION_POLICY_TYPE.value, invPolicy);
+			policies[1] = orb.create_policy(TxIORInterceptor.TAG_OTS_POLICY, otsPolicy);
+			policies[2] = orb.create_policy(TxIORInterceptor.TAG_INV_POLICY, invPolicy);
+		} catch (PolicyError e) {
+			throw new JAtmiBrokerException("POA policy creation error: ", e);
+		}
+	}
+	private void initPolicies(ORB orb, POA poa, Policy[] policies) throws JAtmiBrokerException {
+			policies[0] = poa.create_thread_policy(ThreadPolicyValue.SINGLE_THREAD_MODEL);
+
+			Any otsPolicy = orb.create_any();
+			otsPolicy.insert_short(TxIORInterceptor.ADAPTS);
+			Any invPolicy = orb.create_any();
+		/*
+			policies[1] = orb.create_policy(TxIORInterceptor.TAG_OTS_POLICY, otsPolicy);
+			policies[2] = orb.create_policy(TxIORInterceptor.TAG_INV_POLICY, invPolicy);
+*/
+	}
+
 	public EndpointQueue(String queueName) throws JAtmiBrokerException {
 		this.queueName = queueName;
 		int numberOfPolicies = 1;
 		Policy[] policiesArray = new Policy[numberOfPolicies];
-		List<Policy> policies = new ArrayList<Policy>();
-//		policies.add(AtmiBrokerServerImpl.root_poa.create_lifespan_policy(LifespanPolicyValue.PERSISTENT));
-		 policies.add(AtmiBrokerServerImpl.root_poa.create_thread_policy(ThreadPolicyValue.SINGLE_THREAD_MODEL));
-		policies.toArray(policiesArray);
+
+		initPolicies(AtmiBrokerServerImpl.orb, AtmiBrokerServerImpl.root_poa, policiesArray);
 
 		try {
 			this.m_default_poa = AtmiBrokerServerImpl.root_poa.create_POA(queueName, AtmiBrokerServerImpl.root_poa.the_POAManager(), policiesArray);

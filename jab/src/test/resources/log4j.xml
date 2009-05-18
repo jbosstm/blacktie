@@ -24,15 +24,32 @@
 
 	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
 		<param name="target" value="System.out" />
+		<param name="Threshold" value="TRACE" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%d %-5p %t (%-20.20c{2}:%-4L) %3x - %m%n" />
+		</layout>
+	</appender>
+	<appender name="file" class="org.apache.log4j.FileAppender">
+		<param name="File" value="target/test.log" />
+		<param name="Append" value="false" />
+		<param name="Threshold" value="TRACE" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern"
 				value="%d %-5p %t (%-20.20c{2}:%-4L) %3x - %m%n" />
 		</layout>
 	</appender>
 
+	<category name="org.jboss.blacktie">
+		<level value="TRACE"/>
+		<appender-ref ref="CONSOLE"/>
+		<appender-ref ref="file"/>
+	</category>
+
 	<root>
 		<priority value="info" />
 		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="file" />
 	</root>
 
 </log4j:configuration>

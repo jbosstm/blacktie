@@ -20,16 +20,22 @@ package org.jboss.blacktie.jatmibroker.jab;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.proxy.Queue;
+import org.jboss.blacktie.jatmibroker.core.jab.JABSession;
+import org.jboss.blacktie.jatmibroker.core.jab.JABTransaction;
+import org.jboss.blacktie.jatmibroker.core.jab.JABException;
+import org.jboss.blacktie.jatmibroker.core.jab.Message;
 import org.omg.CosTransactions.Control;
 
-public class JABRemoteService implements Message {
+public class JABRemoteService implements Message
+{
 	private static final Logger log = LogManager.getLogger(JABRemoteService.class);
 	private JABSession jabSession;
 	private String serviceName;
 	private byte[] data;
 	private JABMessage result;
 
-	public JABRemoteService(JABSession aJABSession, String aServiceName) throws JABException {
+	public JABRemoteService(JABSession aJABSession, String aServiceName) throws JABException
+    {
 		log.debug("JABService constructor ");
 
 		jabSession = aJABSession;

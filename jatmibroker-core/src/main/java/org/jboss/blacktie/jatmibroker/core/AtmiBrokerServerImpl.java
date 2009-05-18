@@ -139,6 +139,13 @@ public class AtmiBrokerServerImpl implements BTServerAdministration, AtmiBrokerS
 			log.debug("setting properities");
 			p.setProperty(CorbaOrbClassProp, CorbaOrbClassValue);
 			p.setProperty(CorbaSingletonClassProp, CorbaSingletonClassValue);
+			p.setProperty("org.omg.PortableInterceptor.ORBInitializerClass."
+			  + "org.jboss.blacktie.jatmibroker.core.TxIORInterceptorInitializer",
+			  "");
+			p.setProperty("org.omg.PortableInterceptor.ORBInitializerClass."
+			  + "org.jboss.blacktie.jatmibroker.core.TxRequestInterceptorInitializer",
+			  "");
+
 			log.debug("set properities");
 			log.debug(" initing orb");
 			orb = org.omg.CORBA.ORB.init(args, p);

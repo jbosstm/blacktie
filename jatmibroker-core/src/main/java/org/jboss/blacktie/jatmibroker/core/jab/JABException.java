@@ -15,16 +15,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.jab;
+package org.jboss.blacktie.jatmibroker.core.jab;
 
-public class JABReply {
-	Message jabMessage;
+public class JABException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-	public JABReply(Message aJabMessage) {
-		jabMessage = aJabMessage;
+	public JABException(Throwable cause) {
+		super(cause);
 	}
 
-	public Message getMessage() {
-		return jabMessage;
+	public JABException(String msg, Throwable cause) {
+		super(msg, cause);
 	}
 }
