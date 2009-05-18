@@ -21,13 +21,13 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 
-import org.jboss.blacktie.jatmibroker.ejb.connector.Connector;
-import org.jboss.blacktie.jatmibroker.ejb.connector.ConnectorException;
-import org.jboss.blacktie.jatmibroker.ejb.connector.ConnectorFactory;
-import org.jboss.blacktie.jatmibroker.ejb.connector.Response;
-import org.jboss.blacktie.jatmibroker.ejb.connector.buffers.Buffer;
-import org.jboss.blacktie.jatmibroker.ejb.connector.buffers.X_OCTET;
-import org.jboss.blacktie.jatmibroker.ejb.connector.impl.ConnectorFactoryImpl;
+import org.jboss.blacktie.jatmibroker.xatmi.connector.Connector;
+import org.jboss.blacktie.jatmibroker.xatmi.connector.ConnectorException;
+import org.jboss.blacktie.jatmibroker.xatmi.connector.ConnectorFactory;
+import org.jboss.blacktie.jatmibroker.xatmi.connector.Response;
+import org.jboss.blacktie.jatmibroker.xatmi.connector.buffers.Buffer;
+import org.jboss.blacktie.jatmibroker.xatmi.connector.buffers.X_OCTET;
+import org.jboss.blacktie.jatmibroker.xatmi.connector.impl.ConnectorFactoryImpl;
 
 public class AbstractBlacktieServiceTestCase extends TestCase {
 	private Connector connector;
