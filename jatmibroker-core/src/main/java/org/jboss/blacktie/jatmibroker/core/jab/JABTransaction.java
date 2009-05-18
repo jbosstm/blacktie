@@ -43,7 +43,7 @@ public class JABTransaction {
 
 	public void finalize () throws Throwable {
 		//TODO use ThreadActionData.purgeAction(this); not popAction
-		ThreadActionData.popAction();
+//TODO		ThreadActionData.popAction();
 		super.finalize();
 	}
 
@@ -59,7 +59,7 @@ public class JABTransaction {
 		transactionFactory = jabSession.getServerProxy().getTransactionFactory(jabSession.getJABSessionAttributes().getTransactionManagerName());
 		log.debug(" creating Control");
 		control = transactionFactory.create(timeout);
-		ThreadActionData.pushAction(this);
+	//TODO	ThreadActionData.pushAction(this);
 		log.debug(" created Control " + control);
 
 		try {
@@ -87,7 +87,7 @@ public class JABTransaction {
 			log.debug("calling commit");
 			terminator.commit(true);
 			active = false;
-			ThreadActionData.popAction();
+//		TODO	ThreadActionData.popAction();
 			log.debug("called commit on terminator ");
 		} catch (Exception e) {
 			throw new JABException(e);
@@ -101,7 +101,7 @@ public class JABTransaction {
 			log.debug("calling rollback");
 			terminator.rollback();
 			active = false;
-			ThreadActionData.popAction();
+//			TODOThreadActionData.popAction();
 			log.debug("called rollback on terminator ");
 		} catch (Exception e) {
 			throw new JABException(e);
@@ -128,7 +128,7 @@ public class JABTransaction {
 				if (_childThreads == null)
 					_childThreads = new Hashtable();
 
-				_childThreads.put(ThreadUtil.getThreadId(t), t); // makes sure so we don't get duplicates
+//			TODO	_childThreads.put(ThreadUtil.getThreadId(t), t); // makes sure so we don't get duplicates
 
 				return true;
 			}
@@ -145,7 +145,8 @@ public class JABTransaction {
 	 */
 	public final boolean removeChildThread () // current thread
 	{
-		return removeChildThread(ThreadUtil.getThreadId());
+//		TODOreturn removeChildThread(ThreadUtil.getThreadId());
+		return true;
 	}
 
 	/**
