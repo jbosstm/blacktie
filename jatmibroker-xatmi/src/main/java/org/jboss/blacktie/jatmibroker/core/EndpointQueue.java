@@ -145,7 +145,7 @@ public class EndpointQueue extends EndpointQueuePOA implements Queue {
 		Message message = new Message();
 		message.replyTo = replyto_ior;
 		message.data = idata;
-		message.len = ilen;
+		message.len = ilen -1;
 		message.flags = flags;
 		message.control = null;// TODO
 		message.rval = rval;
