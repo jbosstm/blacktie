@@ -282,7 +282,7 @@ CORBA::Object_ptr atmi_string_to_object(char * ior, char * orbid)
                 CORBA::ORB_ptr orb = find_orb(orbid);
 
                 if (orb)
-                        orb->string_to_object(ior);
+                        return orb->string_to_object(ior);
         }
 
         return NULL;
