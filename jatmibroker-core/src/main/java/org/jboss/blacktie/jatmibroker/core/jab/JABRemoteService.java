@@ -15,15 +15,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.jab;
+package org.jboss.blacktie.jatmibroker.core.jab;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.proxy.Queue;
-import org.jboss.blacktie.jatmibroker.core.jab.JABSession;
-import org.jboss.blacktie.jatmibroker.core.jab.JABTransaction;
-import org.jboss.blacktie.jatmibroker.core.jab.JABException;
-import org.jboss.blacktie.jatmibroker.core.jab.Message;
 import org.omg.CosTransactions.Control;
 
 public class JABRemoteService implements Message

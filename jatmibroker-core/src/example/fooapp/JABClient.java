@@ -18,7 +18,7 @@
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import org.jboss.blacktie.jatmibroker.jab.JABRemoteService;
+import org.jboss.blacktie.jatmibroker.core.jab.JABRemoteService;
 import org.jboss.blacktie.jatmibroker.jab.JABSession;
 import org.jboss.blacktie.jatmibroker.jab.JABSessionAttributes;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;

@@ -18,6 +18,8 @@
 package org.jboss.blacktie.jatmibroker.jab;
 
 import junit.framework.TestCase;
+
+import org.jboss.blacktie.jatmibroker.core.jab.JABRemoteService;
 import org.jboss.blacktie.jatmibroker.core.jab.JABSessionAttributes;
 import org.jboss.blacktie.jatmibroker.core.jab.JABSession;
 import org.jboss.blacktie.jatmibroker.core.jab.JABTransaction;
