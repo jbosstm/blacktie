@@ -22,6 +22,7 @@
 #include "EndpointQueue.h"
 #include "ThreadLocalStorage.h"
 #include "ConnectionImpl.h"
+#include "txClient.h"
 
 log4cxx::LoggerPtr EndpointQueue::logger(log4cxx::Logger::getLogger(
 		"EndpointQueue"));
@@ -248,26 +249,38 @@ MESSAGE EndpointQueue::receive(long time) {
 		if (frame != NULL) {
 			LOG4CXX_DEBUG(logger, "Received from: " << name << " Command: "
 					<< frame->command << " Body: " << frame->body);
-			message.len = frame->body_length;
-			message.data = frame->body;
-			message.replyto = (const char*) apr_hash_get(frame->headers,
-					"reply-to", APR_HASH_KEY_STRING);
-			message.control = NULL;
+			char* control = (char*) apr_hash_get(frame->headers,
+					"messagecontrol", APR_HASH_KEY_STRING);
+			bool unableToAssociateTx = false;
+			if (control) {
+				LOG4CXX_TRACE(logger, "Read a control: " << control);
+				if (associate_serialized_tx((char*) "serverAdministration", (char*) control)
+						!= XA_OK) {
+					LOG4CXX_ERROR(logger, "Unable to handle control");
+					setSpecific(TPE_KEY, TSS_TPESYSTEM);
+					unableToAssociateTx = true;
+				}
+			}
+			if (!unableToAssociateTx) {
+				char * correlationId = (char*) apr_hash_get(frame->headers,
+						"messagecorrelationId", APR_HASH_KEY_STRING);
+				char * flags = (char*) apr_hash_get(frame->headers,
+						"messageflags", APR_HASH_KEY_STRING);
+				char * rval = (char*) apr_hash_get(frame->headers,
+						"messagerval", APR_HASH_KEY_STRING);
+				char * rcode = (char*) apr_hash_get(frame->headers,
+						"messagercode", APR_HASH_KEY_STRING);
 
-			char * correlationId = (char*) apr_hash_get(frame->headers,
-					"messagecorrelationId", APR_HASH_KEY_STRING);
-			char * flags = (char*) apr_hash_get(frame->headers, "messageflags",
-					APR_HASH_KEY_STRING);
-			char * rval = (char*) apr_hash_get(frame->headers, "messagerval",
-					APR_HASH_KEY_STRING);
-			char * rcode = (char*) apr_hash_get(frame->headers, "messagercode",
-					APR_HASH_KEY_STRING);
-
-			message.correlationId = apr_atoi64(correlationId);
-			message.flags = apr_atoi64(flags);
-			message.rval = apr_atoi64(rval);
-			message.rcode = apr_atoi64(rcode);
-			//message.control = apr_hash_get(frame->headers, "message.control", APR_HASH_KEY_STRING);
+				message.len = frame->body_length;
+				message.data = frame->body;
+				message.replyto = (const char*) apr_hash_get(frame->headers,
+						"reply-to", APR_HASH_KEY_STRING);
+				message.correlationId = apr_atoi64(correlationId);
+				message.flags = apr_atoi64(flags);
+				message.rval = apr_atoi64(rval);
+				message.rcode = apr_atoi64(rcode);
+				message.control = getSpecific(TSS_KEY);
+			}
 		}
 	}
 	lock->unlock();
