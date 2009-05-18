@@ -16,6 +16,31 @@
   		<xsd:element name="DOMAIN" type="xsd:string"/>
   		<xsd:element name="NAMING_SERVICE_ID" type="xsd:string"/>
   		<xsd:element name="TRANS_FACTORY_ID" type="xsd:string"/>
+		<xsd:element name="SERVER_NAMES" minOccurs="0">
+			<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="SERVER" minOccurs="1" maxOccurs="unbounded">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="SERVICE_NAMES">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="SERVICE" minOccurs="1" maxOccurs="unbounded">
+											<xsd:complexType>
+												<xsd:attribute name="name" type="xsd:string" use="required" />
+												<xsd:attribute name="transportLibrary" type="xsd:string" use="required"/>
+											</xsd:complexType>
+										</xsd:element>
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:sequence>
+						<xsd:attribute name="name" type="xsd:string" default="default" />
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+			</xsd:complexType>
+		</xsd:element>
 		<xsd:element name="XA_RESOURCES" minOccurs="0">
 			<xsd:complexType>
 			<xsd:sequence>

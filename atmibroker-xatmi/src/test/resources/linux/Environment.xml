@@ -21,10 +21,35 @@
 		<DOMAIN>fooapp</DOMAIN>
 		<NAMING_SERVICE_ID></NAMING_SERVICE_ID>
 		<TRANS_FACTORY_ID>TransactionManagerService.OTS</TRANS_FACTORY_ID>
+		<SERVER_NAMES>
+			<SERVER>
+				<SERVICE_NAMES>
+					<SERVICE name='TestTPFree' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='TestTPACall' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='TestTPAdvertise' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='LOOPY' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='TestTPConversation'  transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='TestTPACall'  transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='TestTPCancel'  transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='TestTPConnect'  transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='TestTPDiscon'  transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='TestTPGetrply'  transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='TestTPSend'  transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='TestTPRecv'  transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='TestTPService'  transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='TestTPReturn'  transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='123456789012345' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='TestTPUnadvertise' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='tpcall_x_octet' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='tpcall_x_common' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='tpcall_x_c_type' transportLibrary='libatmibroker-corba.so'/>
+				</SERVICE_NAMES>
+			</SERVER>
+		</SERVER_NAMES>
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
 				<NAME>TransportLibrary</NAME>
-				<VALUE>libatmibroker-stomp.so</VALUE>
+				<VALUE>libatmibroker-corba.so</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>ORBOPT</NAME>

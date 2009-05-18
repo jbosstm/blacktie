@@ -30,12 +30,13 @@ class AtmiBrokerClient {
 public:
 	AtmiBrokerClient();
 	virtual ~AtmiBrokerClient();
+	Connection* getConnection(char* serviceName);
 	Session* createSession(int& id, char* serviceName);
 	Session* getSession(int id);
 	void closeSession(int id);
 protected:
-	Connection* clientConnection;
-	std::vector<ClientServerInfo*> clientServerVector;
+	Connection* currentConnection;
+	std::map<std::string, Connection*> clientConnectionMap;
 	int nextSessionId;
 };
 

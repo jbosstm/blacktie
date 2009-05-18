@@ -101,5 +101,19 @@ void TestAtmiBrokerXml::test_env() {
 	CPPUNIT_ASSERT(strcmp(value, "-ORBInitRef NameService=corbaloc::localhost:3528/NameService") == 0);
 	CPPUNIT_ASSERT(strcmp(domain, "fooapp") == 0);
 	CPPUNIT_ASSERT(xarmp != 0);
+
+	CPPUNIT_ASSERT(servers.size() == 2);
+	ServerInfo* server = servers[1];
+	CPPUNIT_ASSERT(server != NULL);
+	CPPUNIT_ASSERT(strcmp(server->serverName, "foo") == 0);
+	std::vector<ServiceInfo>* services = &server->serviceVector;
+	CPPUNIT_ASSERT(strcmp((*services)[0].serviceName, "BAR") == 0);
+	CPPUNIT_ASSERT(strcmp((*services)[0].transportLib, "atmibroker-corba.so") == 0);
+	CPPUNIT_ASSERT(strcmp((*services)[1].serviceName, "ECHO") == 0);
+	CPPUNIT_ASSERT(strcmp((*services)[1].transportLib, "atmibroker-stomp.so") == 0);
+
+	char* service = AtmiBrokerEnv::get_instance()->getTransportLibrary((char*)"BAR");
+	CPPUNIT_ASSERT(strcmp(service, "atmibroker-corba.so") == 0);
+
 	AtmiBrokerEnv::discard_instance();
 }

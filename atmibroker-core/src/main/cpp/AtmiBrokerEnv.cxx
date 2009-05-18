@@ -119,7 +119,39 @@ AtmiBrokerEnv::~AtmiBrokerEnv() {
 	} 
 	xarmp = 0;
 
+	if (servers.size() != 0) {
+		for (ServersInfo::iterator server = servers.begin(); server != servers.end(); server++) {
+			free((*server)->serverName);
+
+			std::vector<ServiceInfo>* services = &(*server)->serviceVector;
+			for(std::vector<ServiceInfo>::iterator i = services->begin(); i != services->end(); i++) {
+				free((*i).serviceName);
+				free((*i).transportLib);
+			}
+			services->clear();
+
+			free(*server);
+		}
+		servers.clear();
+	}
+
 	readEnvironment = false;
+}
+
+char*
+AtmiBrokerEnv::getTransportLibrary(char* serviceName) {
+	if (servers.size() != 0) {
+		for (ServersInfo::iterator server = servers.begin(); server != servers.end(); server++) {
+			std::vector<ServiceInfo>* services = &(*server)->serviceVector;
+			for(std::vector<ServiceInfo>::iterator i = services->begin(); i != services->end(); i++) {
+				if(strcmp((*i).serviceName, serviceName) == 0){
+					return (*i).transportLib;
+				}
+			}
+		}
+	}
+
+	return NULL;
 }
 
 char*

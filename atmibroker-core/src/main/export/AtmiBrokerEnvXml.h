@@ -55,7 +55,20 @@ typedef struct BLACKTIE_CORE_DLL xarm_config {
 	struct xarm_config * head;
 }xarm_config_t;
 
+typedef struct _service_info {
+	char* serviceName;
+	char* transportLib;
+} ServiceInfo;
+
+typedef struct _server_info {
+	char * serverName;
+	std::vector<ServiceInfo> serviceVector;
+} ServerInfo;
+
+typedef std::vector<ServerInfo*> ServersInfo;
+
 extern BLACKTIE_CORE_DLL xarm_config_t * xarmp;
+extern BLACKTIE_CORE_DLL ServersInfo servers;
 extern BLACKTIE_CORE_DLL char domain[30];
 extern BLACKTIE_CORE_DLL char * loggingServiceId;
 extern BLACKTIE_CORE_DLL char * notifyServiceId;

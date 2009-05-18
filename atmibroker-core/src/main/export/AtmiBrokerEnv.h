@@ -38,6 +38,8 @@ public:
 
 	int putenv(char* anEnvNameValue);
 
+	char* getTransportLibrary(char* serviceName);
+
 	std::vector<envVar_t>& getEnvVariableInfoSeq();
 
 	static AtmiBrokerEnv* get_instance();

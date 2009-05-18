@@ -36,8 +36,9 @@
 log4cxx::LoggerPtr loggerAtmiBrokerEnvXml(log4cxx::Logger::getLogger(
 		"AtmiBrokerEnvXml"));
 
-// who frees the environment
-xarm_config_t *xarmp = 0;
+// environment will be free in ~AtmiBrokerEnv
+xarm_config_t * xarmp = 0;
+ServersInfo servers;
 
 char* notifyServiceId;
 char* namingServiceId;
@@ -64,6 +65,9 @@ static bool processingNamingServiceId = false;
 static bool processingNotifyServiceId = false;
 static bool processingLoggingServiceId = false;
 static bool processingTransFactoryId = false;
+static bool processingServerNames = false;
+static bool processingServiceNames = false;
+static bool processingService = false;
 static bool processingXaResources = false;
 static bool processingXaResource = false;
 static bool processingXaResourceMgrId = false;
@@ -135,6 +139,18 @@ static void XMLCALL startElement
 		processingEnvironmentDescription = true;
 	} else if (strcmp(name, "SERVER") == 0) {
 		processingServer = true;
+
+		ServerInfo* server = (ServerInfo*) malloc (sizeof(ServerInfo));
+		memset(server, 0, sizeof(ServerInfo));
+		if(atts != 0) {
+			if(atts[0] && strcmp(atts[0], "name") == 0) {
+				server->serverName = strdup(atts[1]);
+			} else {
+				server->serverName = strdup("default");
+			}
+		}
+
+		servers.push_back(server);
 	} else if (strcmp(name, "DOMAIN") == 0) {
 		processingDomain = true;
 	} else if (strcmp(name, "QSPACE_NAME") == 0) {
@@ -205,8 +221,25 @@ static void XMLCALL startElement
 		processingEnvName = true;
 	} else if (strcmp(name, "VALUE") == 0) {
 		processingEnvValue = true;
-	} else if (strcmp(name, "SERVER_NAMES") ==0 || strcmp(name, "SERVICE_NAMES") == 0 || strcmp(name, "SERVICE") == 0) {
-		// These element will be processed by AtmiBrokerClientXml
+	} else if (strcmp(name, "SERVER_NAMES") == 0) {
+		processingServerNames = true;
+	} else if(strcmp(name, "SERVICE_NAMES") == 0) {
+		processingServiceNames = true;
+	} else if(strcmp(name, "SERVICE") == 0) {
+		processingService = true;
+
+		if(atts != 0) {
+			ServiceInfo service;
+
+			for(int i = 0; atts[i]; i += 2) {
+				if(strcmp(atts[i], "name") == 0) {
+					service.serviceName = strdup(atts[i+1]);
+				} else if(strcmp(atts[i], "transportLibrary") == 0) {
+					service.transportLib = strdup(atts[i+1]);
+				}
+			}
+			servers.back()->serviceVector.push_back(service);
+		}
 	} else {
 		LOG4CXX_WARN(loggerAtmiBrokerEnvXml, (char*) "unrecognized environment var: " << (char*) name);
 	}
@@ -293,6 +326,14 @@ static void XMLCALL endElement
 		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "\tstoring Env Value %s at index %d" << last_value << index);
 		processingEnvValue = false;
 		(*aEnvironmentStructPtr)[index].value = strdup(last_value);
+	} else if(strcmp(last_element, "SERVER_NAMES") == 0) {
+		processingServerNames = false;
+	} else if(strcmp(last_element, "SERVER") == 0) {
+		processingServer = false;
+	} else if(strcmp(last_element, "SERVICE_NAMES") == 0) {
+		processingServiceNames = false;
+	} else if(strcmp(last_element, "SERVICE") == 0) {
+		processingService = false;
 	}
 	depth -= 1;
 }
