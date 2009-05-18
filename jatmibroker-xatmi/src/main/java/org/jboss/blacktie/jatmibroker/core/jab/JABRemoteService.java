@@ -22,16 +22,16 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.proxy.Queue;
 import org.omg.CosTransactions.Control;
 
-public class JABRemoteService implements Message
-{
-	private static final Logger log = LogManager.getLogger(JABRemoteService.class);
+public class JABRemoteService implements Message {
+	private static final Logger log = LogManager
+			.getLogger(JABRemoteService.class);
 	private JABSession jabSession;
 	private String serviceName;
 	private byte[] data;
 	private JABMessage result;
 
-	public JABRemoteService(JABSession aJABSession, String aServiceName) throws JABException
-    {
+	public JABRemoteService(JABSession aJABSession, String aServiceName)
+			throws JABException {
 		log.debug("JABService constructor ");
 
 		jabSession = aJABSession;
@@ -50,8 +50,11 @@ public class JABRemoteService implements Message
 			}
 			// TODO HANDLE TRANSACTION
 			Queue endpoint = jabSession.getServerProxy().getEndpointQueue(0);
-			jabSession.getServerProxy().getServiceQueue(serviceName).send(endpoint.getReplyTo(), (short) 0, 0, data, data.length, 0, flags);
-			org.jboss.blacktie.jatmibroker.core.Message receive = endpoint.receive(flags);
+			jabSession.getServerProxy().getServiceQueue(serviceName).send(
+					endpoint.getReplyTo(), (short) 0, 0, data, data.length, 0,
+					flags);
+			org.jboss.blacktie.jatmibroker.core.Message receive = endpoint
+					.receive(flags);
 
 			data = new byte[receive.len];
 			System.arraycopy(receive.data, 0, data, 0, receive.len);

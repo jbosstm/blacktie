@@ -19,7 +19,7 @@ package org.jboss.blacktie.jatmibroker.core.jab;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.AtmiBrokerServerImpl;
+import org.jboss.blacktie.jatmibroker.core.AtmiBrokerServerProxy;
 import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServer;
 
 public class JABSession {
@@ -33,7 +33,7 @@ public class JABSession {
 		try {
 			jabSessionAttributes = aJABSessionAttributes;
 
-			serverProxy = AtmiBrokerServerImpl.getProxy(jabSessionAttributes.getProperties(), "", "");
+			serverProxy = AtmiBrokerServerProxy.getProxy(jabSessionAttributes.getProperties(), "", "");
 		} catch (Exception e) {
 			String domain = jabSessionAttributes.getDomainName();
 			String server = jabSessionAttributes.getServerName();

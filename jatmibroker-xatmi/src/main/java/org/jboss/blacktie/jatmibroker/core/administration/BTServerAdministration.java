@@ -18,6 +18,7 @@
 package org.jboss.blacktie.jatmibroker.core.administration;
 
 public interface BTServerAdministration {
+	public void close();
 
 	public short server_init();
 
@@ -31,7 +32,8 @@ public interface BTServerAdministration {
 
 	public void set_server_descriptor(String xml_descriptor);
 
-	public void set_service_descriptor(String service_name, String xml_descriptor);
+	public void set_service_descriptor(String service_name,
+			String xml_descriptor);
 
 	public void set_environment_descriptor(String xml_descriptor);
 

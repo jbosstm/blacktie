@@ -39,7 +39,8 @@ public class ServerTest extends TestCase {
 		log.debug(" server is " + args[1]);
 		log.debug(" method is " + args[2]);
 
-		BTServerAdministration serverAdministration = AtmiBrokerServerImpl.getAdministration(args, args[0], args[1]);
+		BTServerAdministration serverAdministration = AtmiBrokerServerProxy
+				.getAdministration(args, args[0], args[1]);
 
 		if (args[2].equals("server_init")) {
 			short aStatus = serverAdministration.server_init();
@@ -47,7 +48,8 @@ public class ServerTest extends TestCase {
 		} else if (args[2].equals("server_done")) {
 			serverAdministration.server_done();
 		} else if (args[2].equals("get_server_info")) {
-			AtmiBroker.ServerInfo aServerInfo = serverAdministration.get_server_info();
+			AtmiBroker.ServerInfo aServerInfo = serverAdministration
+					.get_server_info();
 			log.debug("aServerInfo maxChannels " + aServerInfo.maxChannels);
 			log.debug("aServerInfo maxSuppliers " + aServerInfo.maxSuppliers);
 			log.debug("aServerInfo maxConsumers " + aServerInfo.maxConsumers);
@@ -55,28 +57,37 @@ public class ServerTest extends TestCase {
 			log.debug("aServerInfo logLevel " + aServerInfo.logLevel);
 			log.debug("aServerInfo securityType " + aServerInfo.securityType);
 			log.debug("aServerInfo orbType " + aServerInfo.orbType);
-			log.debug("aServerInfo queueSpaceName " + aServerInfo.queueSpaceName);
+			log.debug("aServerInfo queueSpaceName "
+					+ aServerInfo.queueSpaceName);
 			for (int i = 0; i < aServerInfo.serviceNames.length; i++)
-				log.debug("aServerInfo serviceNames[" + i + "]" + aServerInfo.serviceNames[i]);
+				log.debug("aServerInfo serviceNames[" + i + "]"
+						+ aServerInfo.serviceNames[i]);
 		} else if (args[2].equals("get_all_service_info")) {
-			AtmiBroker.ServiceInfo[] aServiceInfo = serverAdministration.get_all_service_info();
+			AtmiBroker.ServiceInfo[] aServiceInfo = serverAdministration
+					.get_all_service_info();
 			for (int i = 0; i < aServiceInfo.length; i++) {
 				log.debug("aServiceInfo[" + i + "] " + aServiceInfo[i]);
-				log.debug("aServiceInfo[" + i + "] serviceName " + aServiceInfo[i].serviceName);
-				log.debug("aServiceInfo[" + i + "] poolSize " + aServiceInfo[i].poolSize);
-				log.debug("aServiceInfo[" + i + "] securityType " + aServiceInfo[i].securityType);
+				log.debug("aServiceInfo[" + i + "] serviceName "
+						+ aServiceInfo[i].serviceName);
+				log.debug("aServiceInfo[" + i + "] poolSize "
+						+ aServiceInfo[i].poolSize);
+				log.debug("aServiceInfo[" + i + "] securityType "
+						+ aServiceInfo[i].securityType);
 			}
 		} else if (args[2].equals("get_environment_variable_info")) {
-			AtmiBroker.EnvVariableInfo[] aEnvVarInfo = serverAdministration.get_environment_variable_info();
+			AtmiBroker.EnvVariableInfo[] aEnvVarInfo = serverAdministration
+					.get_environment_variable_info();
 			for (int i = 0; i < aEnvVarInfo.length; i++)
-				log.debug("aEnvVarInfo[" + i + "] name " + aEnvVarInfo[i].name + " value " + aEnvVarInfo[i].value);
+				log.debug("aEnvVarInfo[" + i + "] name " + aEnvVarInfo[i].name
+						+ " value " + aEnvVarInfo[i].value);
 		} else if (args[2].equals("set_server_descriptor")) {
 			String xml_descriptor = "<SERVER_INFO></SERVER_INFO>";
 			serverAdministration.set_server_descriptor(xml_descriptor);
 		} else if (args[2].equals("set_service_descriptor")) {
 			String aServiceName = "Bar";
 			String xml_descriptor = "<SERVICE_INFO></SERVICE_INFO>";
-			serverAdministration.set_service_descriptor(aServiceName, xml_descriptor);
+			serverAdministration.set_service_descriptor(aServiceName,
+					xml_descriptor);
 		} else if (args[2].equals("set_environment_descriptor")) {
 			String xml_descriptor = "<ENVIRONMENT_INFO></ENVIRONMENT_INFO>";
 			serverAdministration.set_environment_descriptor(xml_descriptor);
@@ -88,6 +99,6 @@ public class ServerTest extends TestCase {
 			serverAdministration.start_service(aServiceName);
 		}
 
-		AtmiBrokerServerImpl.discardOrb();
+		serverAdministration.close();
 	}
 }

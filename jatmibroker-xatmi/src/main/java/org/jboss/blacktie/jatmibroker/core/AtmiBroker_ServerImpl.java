@@ -26,9 +26,12 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.omg.CORBA.ORB;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
 import org.omg.CosNaming.NameComponent;
+import org.omg.CosNaming.NamingContext;
+import org.omg.CosNaming.NamingContextExt;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.ThreadPolicyValue;
 
@@ -38,50 +41,65 @@ import AtmiBroker.ServerPOA;
 import AtmiBroker.ServiceInfo;
 
 public class AtmiBroker_ServerImpl extends ServerPOA {
-	private static final Logger log = LogManager.getLogger(AtmiBroker_ServerImpl.class);
+	private static final Logger log = LogManager
+			.getLogger(AtmiBroker_ServerImpl.class);
 	private POA poa;
 	private String serverName;
 	private byte[] activate_object;
 	private Map<String, ServiceQueue> serviceFactoryList = new HashMap<String, ServiceQueue>();
 	private boolean bound;
+	private OrbManagement orbManagement;
 
-	public AtmiBroker_ServerImpl(Properties properties) throws JAtmiBrokerException {
+	public AtmiBroker_ServerImpl(Properties properties)
+			throws JAtmiBrokerException {
 		String domainName = properties.getProperty("blacktie.domain.name");
 		String serverName = properties.getProperty("blacktie.server.name");
-		int numberOfOrbArgs = Integer.parseInt(properties.getProperty("blacktie.orb.args"));
+		int numberOfOrbArgs = Integer.parseInt(properties
+				.getProperty("blacktie.orb.args"));
 		List<String> orbArgs = new ArrayList<String>(numberOfOrbArgs);
 		for (int i = 1; i <= numberOfOrbArgs; i++) {
 			orbArgs.add(properties.getProperty("blacktie.orb.arg." + i));
 		}
 		String[] args = orbArgs.toArray(new String[] {});
 		try {
-			AtmiBrokerServerImpl.ConnectToORB(args, domainName);
+			orbManagement = new OrbManagement(args, domainName, true);
 		} catch (Throwable t) {
-			throw new JAtmiBrokerException("Could not connect to orb for domain name: " + domainName, t);
+			throw new JAtmiBrokerException("Could not connect to orb", t);
 		}
 		this.serverName = serverName;
 		Policy[] policiesArray = new Policy[1];
 		List<Policy> policies = new ArrayList<Policy>(1);
-		policies.add(AtmiBrokerServerImpl.root_poa.create_thread_policy(ThreadPolicyValue.ORB_CTRL_MODEL));
+		policies.add(orbManagement.getRootPoa().create_thread_policy(
+				ThreadPolicyValue.ORB_CTRL_MODEL));
 		policies.toArray(policiesArray);
 		try {
-			this.poa = AtmiBrokerServerImpl.root_poa.create_POA(serverName, AtmiBrokerServerImpl.root_poa.the_POAManager(), policiesArray);
+			this.poa = orbManagement.getRootPoa().create_POA(serverName,
+					orbManagement.getRootPoa().the_POAManager(), policiesArray);
 		} catch (Throwable t) {
-			try {
-				this.poa = AtmiBrokerServerImpl.root_poa.find_POA(serverName, true);
-			} catch (Throwable t2) {
-				throw new JAtmiBrokerException("Could not find poa", t2);
-			}
+			throw new JAtmiBrokerException(
+					"Server appears to be already running", t);
+			// try {
+			// this.poa = root_poa.find_POA(serverName, true);
+			// } catch (Throwable t2) {
+			// throw new JAtmiBrokerException("Could not find poa", t2);
+			// }
 		}
 	}
 
-	public void createService(String serviceName, int servantCacheSize, Class callback, AtmiBroker_CallbackConverter atmiBroker_Callback) throws JAtmiBrokerException {
+	public void createService(String serviceName, int servantCacheSize,
+			Class callback, AtmiBroker_CallbackConverter atmiBroker_Callback)
+			throws JAtmiBrokerException {
 		if (!serviceFactoryList.containsKey(serviceName)) {
 			try {
-				ServiceQueue atmiBroker_ServiceFactoryImpl = new ServiceQueue(serviceName, servantCacheSize, callback, atmiBroker_Callback);
-				serviceFactoryList.put(serviceName, atmiBroker_ServiceFactoryImpl);
+				ServiceQueue atmiBroker_ServiceFactoryImpl = new ServiceQueue(
+						orbManagement, serviceName, servantCacheSize, callback,
+						atmiBroker_Callback);
+				serviceFactoryList.put(serviceName,
+						atmiBroker_ServiceFactoryImpl);
 			} catch (Throwable t) {
-				throw new JAtmiBrokerException("Could not create service factory for: " + serviceName, t);
+				throw new JAtmiBrokerException(
+						"Could not create service factory for: " + serviceName,
+						t);
 			}
 		}
 	}
@@ -89,9 +107,10 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 	public void bind() throws JAtmiBrokerException {
 		try {
 			activate_object = poa.activate_object(this);
-			NameComponent[] name = AtmiBrokerServerImpl.nce.to_name(serverName);
+			NameComponent[] name = orbManagement.getNamingContextExt().to_name(
+					serverName);
 			Object servant_to_reference = poa.servant_to_reference(this);
-			AtmiBrokerServerImpl.nc.rebind(name, servant_to_reference);
+			orbManagement.getNamingContext().bind(name, servant_to_reference);
 		} catch (Throwable t) {
 			throw new JAtmiBrokerException("Could not bind server", t);
 		}
@@ -99,13 +118,17 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 	}
 
 	public void unbind() throws JAtmiBrokerException {
-		Iterator<ServiceQueue> iterator = serviceFactoryList.values().iterator();
+		Iterator<ServiceQueue> iterator = serviceFactoryList.values()
+				.iterator();
 		while (iterator.hasNext()) {
 			iterator.next().close();
 			iterator.remove();
 		}
 
 		try {
+			NameComponent[] name = orbManagement.getNamingContextExt().to_name(
+					serverName);
+			orbManagement.getNamingContext().unbind(name);
 			poa.deactivate_object(activate_object);
 		} catch (Throwable t) {
 			throw new JAtmiBrokerException("Could not unbind server", t);
@@ -114,7 +137,8 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 	}
 
 	public void unbind(String serviceName) throws JAtmiBrokerException {
-		ServiceQueue atmiBroker_ServiceFactoryImpl = serviceFactoryList.remove(serviceName);
+		ServiceQueue atmiBroker_ServiceFactoryImpl = serviceFactoryList
+				.remove(serviceName);
 		if (atmiBroker_ServiceFactoryImpl != null) {
 			atmiBroker_ServiceFactoryImpl.close();
 		}

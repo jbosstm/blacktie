@@ -31,12 +31,18 @@ public class ServiceQueue {
 	private List<Runnable> servantCache = new ArrayList<Runnable>();
 	private EndpointQueue endpointQueue;
 
-	ServiceQueue(String serviceName, int servantCacheSize, Class atmiBrokerCallback, AtmiBroker_CallbackConverter atmiBroker_CallbackConverter) throws JAtmiBrokerException, InstantiationException, IllegalAccessException {
+	ServiceQueue(OrbManagement orbManagement, String serviceName,
+			int servantCacheSize, Class atmiBrokerCallback,
+			AtmiBroker_CallbackConverter atmiBroker_CallbackConverter)
+			throws JAtmiBrokerException, InstantiationException,
+			IllegalAccessException {
 		this.serviceName = serviceName;
-		this.endpointQueue = new EndpointQueue(serviceName);
+		this.endpointQueue = new EndpointQueue(orbManagement, serviceName);
 
 		for (int i = 0; i < servantCacheSize; i++) {
-			servantCache.add(new AtmiBroker_ServiceImpl(serviceName, atmiBrokerCallback, atmiBroker_CallbackConverter, endpointQueue));
+			servantCache.add(new AtmiBroker_ServiceImpl(orbManagement, serviceName,
+					atmiBrokerCallback, atmiBroker_CallbackConverter,
+					endpointQueue));
 		}
 	}
 

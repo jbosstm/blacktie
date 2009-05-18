@@ -28,7 +28,8 @@ import org.jboss.blacktie.jatmibroker.core.proxy.Queue;
 import org.jboss.blacktie.jatmibroker.core.proxy.ServiceQueue;
 
 public class ServiceManagerProxyTest extends TestCase {
-	private static final Logger log = LogManager.getLogger(ServiceManagerProxyTest.class);
+	private static final Logger log = LogManager
+			.getLogger(ServiceManagerProxyTest.class);
 	private RunServer server = new RunServer();
 
 	public void setUp() throws InterruptedException {
@@ -47,22 +48,26 @@ public class ServiceManagerProxyTest extends TestCase {
 		properties.put("blacktie.server.name", "foo");
 		properties.put("blacktie.orb.args", "2");
 		properties.put("blacktie.orb.arg.1", "-ORBInitRef");
-		properties.put("blacktie.orb.arg.2", "NameService=corbaloc::localhost:3528/NameService");
+		properties.put("blacktie.orb.arg.2",
+				"NameService=corbaloc::localhost:3528/NameService");
 
-		AtmiBrokerServer proxy = AtmiBrokerServerImpl.getProxy(properties, "", "");
+		AtmiBrokerServer proxy = AtmiBrokerServerProxy.getProxy(properties, "",
+				"");
 		ServiceQueue serviceFactory = proxy.getServiceQueue("BAR");
 
 		String aString = "Hello from Java Land";
 		Queue endpoint = proxy.getEndpointQueue(0);
-		serviceFactory.send(endpoint.getReplyTo(), (short) 0, 0, aString.getBytes(), aString.getBytes().length, 0, 0);
+		serviceFactory.send(endpoint.getReplyTo(), (short) 0, 0, aString
+				.getBytes(), aString.getBytes().length, 0, 0);
 		Message receive = endpoint.receive(0);
 
 		assertNotNull(receive);
 		String string = new String(receive.data).intern();
 		String expectedResponse = "BAR SAYS HELLO";
 		log.debug("Bar ServiceManager service_request response is " + string);
-		log.debug("Bar ServiceManager service_request size of response is " + receive.len);
+		log.debug("Bar ServiceManager service_request size of response is "
+				+ receive.len);
 		assertEquals(string, expectedResponse);
-		AtmiBrokerServerImpl.discardOrb();
+		proxy.close();
 	}
 }
