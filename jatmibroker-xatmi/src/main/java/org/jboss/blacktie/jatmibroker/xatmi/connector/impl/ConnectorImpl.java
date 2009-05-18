@@ -5,7 +5,6 @@ import java.util.Properties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.AtmiBrokerServerProxy;
-import org.jboss.blacktie.jatmibroker.core.AtmiBroker_ServerImpl;
 import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.core.Message;
 import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServer;
@@ -22,34 +21,9 @@ public class ConnectorImpl implements Connector {
 	private static final Logger log = LogManager.getLogger(ConnectorImpl.class);
 
 	/**
-	 * The default number of servants
-	 */
-	private static final int servantCacheSize = 5;
-
-	/**
-	 * A reference to the server if we advertise items
-	 */
-	private AtmiBroker_ServerImpl server;
-
-	/**
 	 * A reference to the proxy to issue calls on
 	 */
 	private AtmiBrokerServer proxy;
-
-	/**
-	 * The properties to connect with
-	 */
-	private Properties properties;
-
-	/**
-	 * The username to connect with
-	 */
-	private String username;
-
-	/**
-	 * The password to connect with
-	 */
-	private String password;
 
 	/**
 	 * The connector itself
@@ -61,9 +35,13 @@ public class ConnectorImpl implements Connector {
 	 */
 	public ConnectorImpl(Properties properties, String username, String password)
 			throws ConnectorException {
-		this.properties = properties;
-		this.username = username;
-		this.password = password;
+
+		try {
+			proxy = AtmiBrokerServerProxy.getProxy(properties, username,
+					password);
+		} catch (JAtmiBrokerException e) {
+			throw new ConnectorException(-1, e);
+		}
 	}
 
 	public Response tpcall(String svc, Buffer idata, int flags)
@@ -71,9 +49,9 @@ public class ConnectorImpl implements Connector {
 
 		try {
 			// TODO HANDLE TRANSACTION
-			Queue endpoint = getProxy().getEndpointQueue(0);
-			getProxy().getServiceQueue(svc).send(endpoint.getReplyTo(),
-					(short) 0, 0, idata.getData(), idata.getSize(), 0, flags);
+			Queue endpoint = proxy.getEndpointQueue(0);
+			proxy.getServiceQueue(svc).send(endpoint.getReplyTo(), (short) 0,
+					0, idata.getData(), idata.getSize(), 0, flags);
 			Message receive = endpoint.receive(flags);
 			// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
 			Buffer buffer = new Buffer("unknown", "unknown", receive.len);
@@ -85,57 +63,7 @@ public class ConnectorImpl implements Connector {
 		}
 	}
 
-	private synchronized AtmiBrokerServer getProxy() throws ConnectorException {
-		if (proxy == null) {
-			try {
-				proxy = AtmiBrokerServerProxy.getProxy(properties, username,
-						password);
-			} catch (JAtmiBrokerException e) {
-				throw new ConnectorException(-1, e);
-			}
-		}
-		return proxy;
-	}
-
-	/**
-	 * Create a blacktie service with the specified name
-	 * 
-	 * @param serviceName
-	 *            The name of the service
-	 * @throws ConnectorException
-	 *             If the service cannot be advertised
-	 */
-	public void tpadvertise(String serviceName, Class service)
-			throws ConnectorException {
-		try {
-			log.debug("Advertising: " + serviceName);
-			throw new Throwable("CANT DO THIS ATM");
-			// getServer().createService(serviceName, servantCacheSize, service,
-			// new AtmiBrokerCallbackConverterImpl());
-			// log.info("Advertised: " + serviceName);
-		} catch (Throwable t) {
-			String message = "Could not advertise: " + serviceName;
-			log.error(message, t);
-			throw new ConnectorException(-1, message, t);
-		}
-	}
-
-	public void tpunadvertise(String serviceName) throws ConnectorException {
-		try {
-			log.debug("Unadvertising: " + serviceName);
-			getServer().unbind(serviceName);
-			log.info("Unadvertised: " + serviceName);
-		} catch (JAtmiBrokerException e) {
-			throw new ConnectorException(-1, e);
-		}
-	}
-
-	private synchronized AtmiBroker_ServerImpl getServer()
-			throws JAtmiBrokerException {
-		if (server == null) {
-			server = new AtmiBroker_ServerImpl(properties);
-			server.bind();
-		}
-		return server;
+	public void close() {
+		proxy.close();
 	}
 }

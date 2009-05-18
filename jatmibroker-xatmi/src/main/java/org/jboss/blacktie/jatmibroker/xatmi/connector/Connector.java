@@ -66,7 +66,8 @@ public interface Connector {
 	 *            The flags to use
 	 * @return The returned buffer
 	 */
-	Response tpcall(String svc, Buffer idata, int flags) throws ConnectorException;
+	Response tpcall(String svc, Buffer idata, int flags)
+			throws ConnectorException;
 
 	/**
 	 * Asynchronous call
@@ -143,24 +144,7 @@ public interface Connector {
 	 */
 	// void tpdiscon(int cd) throws ConnectorException;
 	/**
-	 * Advertise a service dynamically at runtime
-	 * 
-	 * @param svc
-	 *            The name of the service
-	 * @param tocall
-	 *            The service to call
-	 * @throws ConnectorException
-	 *             If the method could not be advertised
+	 * Close any resources associated with this connection
 	 */
-	void tpadvertise(String svc, Class tocall) throws ConnectorException;
-
-	/**
-	 * Unadvertise the service
-	 * 
-	 * @param svc
-	 *            The name of the service to unadvertise
-	 * @throws ConnectorException
-	 *             If the method could not be deregistered
-	 */
-	void tpunadvertise(String svc) throws ConnectorException;
+	void close();
 }

@@ -31,30 +31,35 @@ import org.jboss.blacktie.jatmibroker.xatmi.connector.impl.ConnectorFactoryImpl;
 
 public class AbstractBlacktieServiceTestCase extends TestCase {
 	private Connector connector;
+	private EchoServiceTestService echoServiceTestService;
 
 	public AbstractBlacktieServiceTestCase() throws ConnectorException {
 		System.setProperty("blacktie.server.name", "ejb-connector-tests");
-		ConnectorFactory connectorFactory = ConnectorFactoryImpl.getConnectorFactory();
-		connector = connectorFactory.getConnector();
 	}
 
 	public void setUp() throws ConnectorException {
-		connector.tpadvertise("EchoService", EchoServiceTestService.class);
+		echoServiceTestService = new EchoServiceTestService();
+		ConnectorFactory connectorFactory = ConnectorFactoryImpl
+				.getConnectorFactory();
+		connector = connectorFactory.getConnector();
 	}
 
 	public void tearDown() throws ConnectorException {
-		connector.tpunadvertise("EchoService");
+		echoServiceTestService.tpunadvertise();
+		connector.close();
 	}
 
 	public void testWithProperties() throws ConnectorException {
 		Properties properties = new Properties();
 		properties.put("blacktie.orb.args", "2");
 		properties.put("blacktie.orb.arg.1", "-ORBInitRef");
-		properties.put("blacktie.orb.arg.2", "NameService=corbaloc::localhost:3528/NameService");
+		properties.put("blacktie.orb.arg.2",
+				"NameService=corbaloc::localhost:3528/NameService");
 		properties.put("blacktie.domain.name", "jboss");
 		properties.put("blacktie.server.name", "ejb-connector-tests");
 		String serviceName = "EchoService";
-		ConnectorFactory connectorFactory = ConnectorFactoryImpl.getConnectorFactory(properties);
+		ConnectorFactory connectorFactory = ConnectorFactoryImpl
+				.getConnectorFactory(properties);
 		Connector connector = connectorFactory.getConnector();
 		byte[] echo = "echo".getBytes();
 		Buffer buffer = new X_OCTET(echo.length);
@@ -67,7 +72,8 @@ public class AbstractBlacktieServiceTestCase extends TestCase {
 
 	public void testWithDefaultProperties() throws ConnectorException {
 		String serviceName = "EchoService";
-		ConnectorFactory connectorFactory = ConnectorFactoryImpl.getConnectorFactory();
+		ConnectorFactory connectorFactory = ConnectorFactoryImpl
+				.getConnectorFactory();
 		Connector connector = connectorFactory.getConnector();
 		byte[] echo = "echo".getBytes();
 		Buffer buffer = new X_OCTET(echo.length);

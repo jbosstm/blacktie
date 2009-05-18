@@ -26,12 +26,9 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.omg.CORBA.ORB;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
 import org.omg.CosNaming.NameComponent;
-import org.omg.CosNaming.NamingContext;
-import org.omg.CosNaming.NamingContextExt;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.ThreadPolicyValue;
 
@@ -84,6 +81,7 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 			// throw new JAtmiBrokerException("Could not find poa", t2);
 			// }
 		}
+		bind();
 	}
 
 	public void createService(String serviceName, int servantCacheSize,
