@@ -96,8 +96,8 @@
 			</excludes>
 		</fileSet>
 		<fileSet>
-			<directory>../jatmibroker-core</directory>
-			<outputDirectory>jatmibroker-core</outputDirectory>
+			<directory>../jatmibroker-xatmi</directory>
+			<outputDirectory>jatmibroker-xatmi</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<excludes>
 				<exclude>target/**</exclude>
