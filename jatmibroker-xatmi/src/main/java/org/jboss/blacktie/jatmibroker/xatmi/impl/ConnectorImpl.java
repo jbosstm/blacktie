@@ -50,7 +50,7 @@ public class ConnectorImpl implements Connector {
 			// TODO HANDLE TRANSACTION
 			Receiver endpoint = connection.getReceiver(0);
 			connection.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
-					idata, length + 1, 0, flags);
+					idata, length, 0, flags);
 			Message receive = endpoint.receive(flags);
 			// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
 			return new Response(receive.rval, receive.rcode, receive.data,
