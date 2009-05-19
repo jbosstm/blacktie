@@ -55,8 +55,8 @@
 		<module>../atmibroker-stomp</module>
 		<module>../stompconnectservice</module>
 		<module>../atmibroker-xatmi</module>
-		<module>../jatmibroker-xatmi</module>
 		<module>../codeGeneration</module>
-		<module>../ejb-connector</module>
+		<module>../jatmibroker-xatmi</module>
+		<module>../jatmibroker-xatmi-jee-service</module>
 	</modules>
 </project>
