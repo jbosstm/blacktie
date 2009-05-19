@@ -12,7 +12,6 @@ import org.jboss.blacktie.jatmibroker.core.corba.ConnectionFactoryImpl;
 import org.jboss.blacktie.jatmibroker.xatmi.Connector;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
-import org.jboss.blacktie.jatmibroker.xatmi.buffers.Buffer;
 
 /**
  * Handles the connector to the server
@@ -43,20 +42,18 @@ public class ConnectorImpl implements Connector {
 		}
 	}
 
-	public Response tpcall(String svc, Buffer idata, int flags)
+	public Response tpcall(String svc, byte[] idata, int length, int flags)
 			throws ConnectorException {
 
 		try {
 			// TODO HANDLE TRANSACTION
 			Receiver endpoint = connection.getReceiver(0);
 			connection.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
-					idata.getData(), idata.getSize(), 0, flags);
+					idata, length + 1, 0, flags);
 			Message receive = endpoint.receive(flags);
 			// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
-			Buffer buffer = new Buffer("unknown", "unknown", receive.len);
-			buffer.setData(receive.data);
-			return new Response(receive.rval, receive.rcode, buffer,
-					receive.flags);
+			return new Response(receive.rval, receive.rcode, receive.data,
+					receive.len, receive.flags);
 		} catch (JAtmiBrokerException e) {
 			throw new ConnectorException(-1, e);
 		}

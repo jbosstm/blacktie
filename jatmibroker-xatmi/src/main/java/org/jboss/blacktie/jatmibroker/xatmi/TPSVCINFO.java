@@ -2,8 +2,6 @@ package org.jboss.blacktie.jatmibroker.xatmi;
 
 import java.io.Serializable;
 
-import org.jboss.blacktie.jatmibroker.xatmi.buffers.Buffer;
-
 /**
  * This is the inbound service data struct
  */
@@ -21,12 +19,12 @@ public class TPSVCINFO implements Serializable {
 	/**
 	 * The service data
 	 */
-	private Buffer data;
+	private byte[] data;
 
 	/**
 	 * The length of the data
 	 */
-	private long len;
+	private int len;
 
 	/**
 	 * The flags the service was called with
@@ -52,10 +50,10 @@ public class TPSVCINFO implements Serializable {
 	 * @param cd
 	 *            The connection descriptor used
 	 */
-	public TPSVCINFO(String name, Buffer data, long flags, int cd) {
+	public TPSVCINFO(String name, byte[] data, int length, long flags, int cd) {
 		this.name = name;
 		this.data = data;
-		this.len = data.getSize();
+		this.len = length;
 		this.flags = flags;
 		this.cd = cd;
 	}
@@ -74,7 +72,7 @@ public class TPSVCINFO implements Serializable {
 	 * 
 	 * @return The data
 	 */
-	public Buffer getData() {
+	public byte[] getData() {
 		return data;
 	}
 
@@ -83,7 +81,7 @@ public class TPSVCINFO implements Serializable {
 	 * 
 	 * @return The length of the request
 	 */
-	public long getLen() {
+	public int getLen() {
 		return len;
 	}
 

@@ -17,8 +17,6 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
-import org.jboss.blacktie.jatmibroker.xatmi.buffers.Buffer;
-
 /**
  * This is the connector to remote Blacktie services.
  */
@@ -66,7 +64,7 @@ public interface Connector {
 	 *            The flags to use
 	 * @return The returned buffer
 	 */
-	Response tpcall(String svc, Buffer idata, int flags)
+	Response tpcall(String svc, byte[] idata, int ilen, int flags)
 			throws ConnectorException;
 
 	/**

@@ -19,8 +19,6 @@ package org.jboss.blacktie.jatmibroker.xatmi;
 
 import java.io.Serializable;
 
-import org.jboss.blacktie.jatmibroker.xatmi.buffers.Buffer;
-
 /**
  * This class encapsulates the response from the remote service and the return
  * code
@@ -50,12 +48,15 @@ public class Response implements Serializable {
 	/**
 	 * The response from the server
 	 */
-	private Buffer response;
+	private byte[] data;
 
-	public Response(short rval, int rcode, Buffer response, int flags) {
+	private int length;
+
+	public Response(short rval, int rcode, byte[] data, int length, int flags) {
 		this.rval = rval;
 		this.rcode = rcode;
-		this.response = response;
+		this.data = data;
+		this.length = length;
 		this.flags = flags;
 	}
 
@@ -77,16 +78,15 @@ public class Response implements Serializable {
 		return rcode;
 	}
 
-	/**
-	 * Get the response out of the wrapper
-	 * 
-	 * @return The response
-	 */
-	public Buffer getResponse() {
-		return response;
-	}
-
 	public int getFlags() {
 		return flags;
+	}
+
+	public byte[] getData() {
+		return data;
+	}
+
+	public int getLength() {
+		return length;
 	}
 }

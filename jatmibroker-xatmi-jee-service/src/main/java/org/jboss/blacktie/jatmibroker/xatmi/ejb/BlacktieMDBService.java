@@ -17,7 +17,6 @@ import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
-import org.jboss.blacktie.jatmibroker.xatmi.buffers.Buffer;
 
 /**
  * All blacktie services should extend this class so that they can be advertised
@@ -55,7 +54,7 @@ public abstract class BlacktieMDBService implements BlacktieService,
 		try {
 			BytesMessage bytesMessage = ((BytesMessage) message);
 			String replyTo = message.getStringProperty("reply-to");
-			long messagelength = bytesMessage.getBodyLength();
+			int messagelength = (int) bytesMessage.getBodyLength();
 			String serviceName = message.getStringProperty("serviceName");
 			long messageflags = new Long(message
 					.getStringProperty("messageflags"));
@@ -70,19 +69,15 @@ public abstract class BlacktieMDBService implements BlacktieService,
 
 			// TODO HANDLE CONTROL
 			// THIS IS THE FIRST CALL
-			Buffer buffer = new Buffer("unknown", "unknown",
-					(int) messagelength);
-			buffer.setData(bytes);
-			TPSVCINFO tpsvcinfo = new TPSVCINFO(serviceName, buffer,
-					messageflags, -1);
+			TPSVCINFO tpsvcinfo = new TPSVCINFO(serviceName, bytes,
+					messagelength, messageflags, -1);
 			Response response = tpservice(tpsvcinfo);
 			// TODO THIS SHOULD INVOKE THE CLIENT HANDLER
 			// odata.value = serviceRequest.getBytes();
 			// olen.value = serviceRequest.getLength();
 			Sender sender = connection.createSender(replyTo);
 			sender.send("", response.getRval(), response.getRcode(), response
-					.getResponse().getData(), response.getResponse().getSize(),
-					response.getFlags(), 0);
+					.getData(), response.getLength(), response.getFlags(), 0);
 		} catch (Throwable t) {
 			log.error("Could not service the request");
 		}

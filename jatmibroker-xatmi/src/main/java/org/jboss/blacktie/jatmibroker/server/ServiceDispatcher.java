@@ -26,7 +26,6 @@ import org.jboss.blacktie.jatmibroker.core.Sender;
 import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
-import org.jboss.blacktie.jatmibroker.xatmi.buffers.Buffer;
 
 public class ServiceDispatcher extends Thread {
 	private static final Logger log = LogManager
@@ -56,19 +55,16 @@ public class ServiceDispatcher extends Thread {
 
 				// TODO HANDLE CONTROL
 				// THIS IS THE FIRST CALL
-				Buffer buffer = new Buffer("unknown", "unknown", message.len);
-				buffer.setData(message.data);
-				TPSVCINFO tpsvcinfo = new TPSVCINFO(serviceName, buffer,
-						message.flags, -1);
+				TPSVCINFO tpsvcinfo = new TPSVCINFO(serviceName, message.data,
+						message.len, message.flags, -1);
 
 				Response response = callback.tpservice(tpsvcinfo);
 				// TODO THIS SHOULD INVOKE THE CLIENT HANDLER
 				// odata.value = serviceRequest.getBytes();
 				// olen.value = serviceRequest.getLength();
 				endpointQueue.send("", response.getRval(), response.getRcode(),
-						response.getResponse().getData(), response
-								.getResponse().getSize(), response.getFlags(),
-						0);
+						response.getData(), response.getLength(), response
+								.getFlags(), 0);
 			} catch (Throwable t) {
 				log.error("Could not service the request");
 			}
