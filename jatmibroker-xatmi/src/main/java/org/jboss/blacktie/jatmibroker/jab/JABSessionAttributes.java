@@ -15,14 +15,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core.jab;
+package org.jboss.blacktie.jatmibroker.jab;
 
 import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import org.jboss.blacktie.jatmibroker.core.AtmiBrokerClientXML;
+import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerClientXML;
 
 public class JABSessionAttributes {
 	private static final Logger log = LogManager.getLogger(JABSessionAttributes.class);

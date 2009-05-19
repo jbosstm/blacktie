@@ -26,6 +26,7 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerServerXML;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;

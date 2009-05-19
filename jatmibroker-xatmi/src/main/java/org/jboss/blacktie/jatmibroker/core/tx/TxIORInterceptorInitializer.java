@@ -15,10 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+package org.jboss.blacktie.jatmibroker.core.tx;
 
 import org.omg.CORBA.LocalObject;
 import org.omg.IOP.Codec;
@@ -29,8 +26,6 @@ import org.omg.PortableInterceptor.ORBInitializer;
 
 public class TxIORInterceptorInitializer extends LocalObject implements ORBInitializer
 {
-	private static final Logger log = LogManager.getLogger(TxIORInterceptorInitializer.class);
-
 	public TxIORInterceptorInitializer() {
 	}
 
@@ -46,7 +41,6 @@ public class TxIORInterceptorInitializer extends LocalObject implements ORBIniti
 			Codec codec = info.codec_factory().create_codec(encoding);
 			info.add_ior_interceptor(new TxIORInterceptor(codec));
 		} catch (Exception e) {
-			log.error("IOR initializer error", e);
 			throw new RuntimeException("IOR initializer error", e);
 		}
 	}

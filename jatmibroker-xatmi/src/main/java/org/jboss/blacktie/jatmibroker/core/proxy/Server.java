@@ -15,16 +15,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core.jab;
+package org.jboss.blacktie.jatmibroker.core.proxy;
 
-public class JABReply {
-	Message jabMessage;
+import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
+import org.omg.CosNaming.NamingContextPackage.CannotProceed;
+import org.omg.CosNaming.NamingContextPackage.NotFound;
+import org.omg.CosTransactions.TransactionFactory;
 
-	public JABReply(Message aJabMessage) {
-		jabMessage = aJabMessage;
-	}
+public interface Server {
+	public TransactionFactory getTransactionFactory(
+			String transactionManagerServiceName) throws NotFound,
+			CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName;
 
-	public Message getMessage() {
-		return jabMessage;
-	}
+	public Sender getSender(String serviceName) throws JAtmiBrokerException;
+
+	public Receiver getReceiver(int id) throws JAtmiBrokerException;
+
+	public void close();
 }

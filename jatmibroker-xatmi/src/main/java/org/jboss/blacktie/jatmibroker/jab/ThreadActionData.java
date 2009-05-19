@@ -29,7 +29,7 @@
  * $Id: ThreadActionData.java 2342 2006-03-30 13:06:17Z  $
  */
 
-package org.jboss.blacktie.jatmibroker.core.jab;
+package org.jboss.blacktie.jatmibroker.jab;
 
 import org.jboss.blacktie.jatmibroker.core.jab.JABTransaction;
 import org.jboss.blacktie.jatmibroker.core.jab.ThreadUtil;

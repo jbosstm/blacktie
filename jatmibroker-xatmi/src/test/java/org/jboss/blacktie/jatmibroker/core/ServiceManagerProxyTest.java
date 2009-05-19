@@ -23,9 +23,9 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServer;
-import org.jboss.blacktie.jatmibroker.core.proxy.Queue;
-import org.jboss.blacktie.jatmibroker.core.proxy.ServiceQueue;
+import org.jboss.blacktie.jatmibroker.core.proxy.Server;
+import org.jboss.blacktie.jatmibroker.core.proxy.Receiver;
+import org.jboss.blacktie.jatmibroker.core.proxy.Sender;
 
 public class ServiceManagerProxyTest extends TestCase {
 	private static final Logger log = LogManager
@@ -51,12 +51,12 @@ public class ServiceManagerProxyTest extends TestCase {
 		properties.put("blacktie.orb.arg.2",
 				"NameService=corbaloc::localhost:3528/NameService");
 
-		AtmiBrokerServer proxy = AtmiBrokerServerProxy.getProxy(properties, "",
+		Server proxy = AtmiBrokerServerProxy.getProxy(properties, "",
 				"");
-		ServiceQueue serviceFactory = proxy.getServiceQueue("BAR");
+		Sender serviceFactory = proxy.getSender("BAR");
 
 		String aString = "Hello from Java Land";
-		Queue endpoint = proxy.getEndpointQueue(0);
+		Receiver endpoint = proxy.getReceiver(0);
 		serviceFactory.send(endpoint.getReplyTo(), (short) 0, 0, aString
 				.getBytes(), aString.getBytes().length, 0, 0);
 		Message receive = endpoint.receive(0);

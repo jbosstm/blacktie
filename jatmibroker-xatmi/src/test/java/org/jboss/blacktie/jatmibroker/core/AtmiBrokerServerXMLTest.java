@@ -23,7 +23,7 @@ import java.util.Properties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import org.jboss.blacktie.jatmibroker.core.AtmiBrokerServerXML;
+import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerServerXML;
 
 public class AtmiBrokerServerXMLTest extends TestCase {
 	private static final Logger log = LogManager.getLogger(AtmiBrokerServerXMLTest.class);

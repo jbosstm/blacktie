@@ -15,40 +15,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core;
+package org.jboss.blacktie.jatmibroker.jab;
 
-import java.io.Serializable;
+public class JABReply {
+	Message jabMessage;
 
-public class ClientServerAssociationInfo implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	protected String clientName;
-	protected String serverName;
-
-	public ClientServerAssociationInfo(String clientName, String serverName) {
-		this.clientName = clientName;
-		this.serverName = serverName;
+	public JABReply(Message aJabMessage) {
+		jabMessage = aJabMessage;
 	}
 
-	public String getClientName() {
-		return clientName;
-	}
-
-	public String getServerName() {
-		return serverName;
-	}
-
-	public String getParentName() {
-		return serverName;
-	}
-
-	public void setClientName(String aClientName) {
-		clientName = aClientName;
-	}
-
-	public void setServerName(String aServerName) {
-		serverName = aServerName;
+	public Message getMessage() {
+		return jabMessage;
 	}
 }

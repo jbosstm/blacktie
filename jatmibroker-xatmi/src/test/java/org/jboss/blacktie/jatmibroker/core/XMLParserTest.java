@@ -24,10 +24,10 @@ import java.util.Properties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import org.jboss.blacktie.jatmibroker.core.XMLParser;
-import org.jboss.blacktie.jatmibroker.core.XMLEnvHandler;
-import org.jboss.blacktie.jatmibroker.core.XMLServerHandler;
-import org.jboss.blacktie.jatmibroker.core.XMLClientHandler;
+import org.jboss.blacktie.jatmibroker.core.conf.XMLClientHandler;
+import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
+import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
+import org.jboss.blacktie.jatmibroker.core.conf.XMLServerHandler;
 
 public class XMLParserTest extends TestCase {
 	private static final Logger log = LogManager.getLogger(XMLParserTest.class);

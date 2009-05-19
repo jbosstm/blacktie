@@ -15,22 +15,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core;
+package org.jboss.blacktie.jatmibroker.core.conf;
 
 import java.util.Properties;
 import java.io.File;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-public class AtmiBrokerClientXML {
-	private static final Logger log = LogManager.getLogger(AtmiBrokerClientXML.class);
+public class AtmiBrokerServerXML {
+	private static final Logger log = LogManager.getLogger(AtmiBrokerServerXML.class);
 	private Properties prop;
 
-	public AtmiBrokerClientXML () {
+	public AtmiBrokerServerXML () {
 		prop = new Properties();
 	}
 
-	public AtmiBrokerClientXML (Properties prop) {
+	public AtmiBrokerServerXML (Properties prop) {
 		this.prop = prop;
 	}
 
@@ -39,26 +39,32 @@ public class AtmiBrokerClientXML {
 	}
 
 	public Properties getProperties(String configDir) throws Exception {
-		String clientXML;
+		String serverXML;
 		String envXML;
+		String serverName;
+
+		serverName = System.getProperty("blacktie.server.name");
+		if(serverName == null){
+			serverName = "default";
+		}
+
+		prop.setProperty("blacktie.server.name", serverName);
 
 		if(configDir == null) {
 			configDir = System.getenv("BLACKTIE_CONFIGURATION_DIR");
 		}
 
 		if(configDir != null && !configDir.equals("")) {
-			clientXML = configDir + "/" + "CLIENT.xml";
+			serverXML = configDir + "/" + serverName + "/" + "SERVER.xml";
 			envXML    = configDir + "/" + "Environment.xml";
 		} else {
-			clientXML = "CLIENT.xml";
+			serverXML = serverName + "/" + "SERVER.xml";
 			envXML    = "Environment.xml";
 		}
 
-		log.debug("read configuration from " + configDir + " directory");
-
-		XMLClientHandler handler = new XMLClientHandler(prop);
-		XMLParser xmlclient = new XMLParser(handler, "Client.xsd");
-		xmlclient.parse(new File(clientXML));
+		XMLServerHandler handler = new XMLServerHandler(prop);
+		XMLParser xmlserver = new XMLParser(handler, "Server.xsd");
+		xmlserver.parse(new File(serverXML));
 
 		XMLEnvHandler env = new XMLEnvHandler(prop);
 		XMLParser xmlenv = new XMLParser(env, "Environment.xsd");

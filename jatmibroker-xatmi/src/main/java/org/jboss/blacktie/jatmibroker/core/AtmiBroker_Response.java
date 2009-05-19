@@ -24,7 +24,8 @@ public class AtmiBroker_Response {
 	private int length;
 	private int flags;
 
-	public AtmiBroker_Response(short rval, int rcode, byte[] bytes, int length, int flags) {
+	public AtmiBroker_Response(short rval, int rcode, byte[] bytes, int length,
+			int flags) {
 		this.rval = rval;
 		this.rcode = rcode;
 		this.bytes = bytes;

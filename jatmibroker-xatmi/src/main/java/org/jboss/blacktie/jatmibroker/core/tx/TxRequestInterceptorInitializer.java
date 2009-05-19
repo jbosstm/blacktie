@@ -1,7 +1,4 @@
-package org.jboss.blacktie.jatmibroker.core;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+package org.jboss.blacktie.jatmibroker.core.tx;
 
 import org.omg.CORBA.LocalObject;
 import org.omg.IOP.Codec;
@@ -17,8 +14,6 @@ import org.omg.PortableInterceptor.ORBInitializer;
 
 public class TxRequestInterceptorInitializer extends LocalObject implements ORBInitializer
 {
-	private static final Logger log = LogManager.getLogger(TxRequestInterceptorInitializer.class);
-
 	public TxRequestInterceptorInitializer()
 	{
         }
@@ -38,10 +33,8 @@ public class TxRequestInterceptorInitializer extends LocalObject implements ORBI
 			info.add_client_request_interceptor(new TxRequestInterceptor("TxClientRequestInterceptor", codec));
 			info.add_server_request_interceptor(new TxRequestInterceptor("TxServerRequestInterceptor", codec));
 		} catch (org.omg.IOP.CodecFactoryPackage.UnknownEncoding e) {
-			log.error("Request initializer error - unknown encoding: ", e);
 			throw new RuntimeException("Request initializer error - unknown encoding: ", e);
 		} catch (org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName e) {
-			log.error("Request initializer error - duplicate interceptor: ", e);
 			throw new RuntimeException("Request initializer error - duplicate interceptor: ", e);
 		}
 	}

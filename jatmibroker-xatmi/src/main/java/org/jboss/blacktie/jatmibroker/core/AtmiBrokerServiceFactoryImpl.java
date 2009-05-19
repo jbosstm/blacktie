@@ -19,19 +19,19 @@ package org.jboss.blacktie.jatmibroker.core;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.proxy.ServiceQueue;
+import org.jboss.blacktie.jatmibroker.core.proxy.Sender;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
 
 import AtmiBroker.EndpointQueue;
 import AtmiBroker.EndpointQueueHelper;
 
-public class AtmiBrokerServiceFactoryImpl implements ServiceQueue {
+public class AtmiBrokerServiceFactoryImpl implements Sender {
 	private static final Logger log = LogManager
 			.getLogger(AtmiBrokerServiceFactoryImpl.class);
 	private EndpointQueue serviceFactory;
 
-	public synchronized static ServiceQueue createProxy(
+	public synchronized static Sender createProxy(
 			AtmiBrokerServerProxy server, String serviceName) throws NotFound,
 			CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName {
 		AtmiBrokerServiceFactoryImpl instance = new AtmiBrokerServiceFactoryImpl(
@@ -39,7 +39,7 @@ public class AtmiBrokerServiceFactoryImpl implements ServiceQueue {
 		return instance;
 	}
 
-	public synchronized static ServiceQueue createSender(
+	public synchronized static Sender createSender(
 			OrbManagement orbManagement, String callback_ior) {
 		AtmiBrokerServiceFactoryImpl instance = new AtmiBrokerServiceFactoryImpl(
 				orbManagement, callback_ior);

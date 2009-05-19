@@ -15,11 +15,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core.jab;
+package org.jboss.blacktie.jatmibroker.jab;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.proxy.Queue;
+import org.jboss.blacktie.jatmibroker.core.proxy.Receiver;
+import org.omg.CosTransactions.Control;
 
 public class JABRemoteService implements Message {
 	private static final Logger log = LogManager
@@ -37,17 +38,19 @@ public class JABRemoteService implements Message {
 		serviceName = aServiceName;
 	}
 
-	// NB TRANSACTIONS are handled by Orb request interceptors, hence no need to pass in
-	// a JABTransaction
-	public void call() throws JABException {
+	public void call(JABTransaction aJABTransaction) throws JABException {
 		log.debug("JABService call ");
 
 		try {
 			org.omg.CORBA.IntHolder olen = new org.omg.CORBA.IntHolder();
 			int flags = 0;
-
-			Queue endpoint = jabSession.getServerProxy().getEndpointQueue(0);
-			jabSession.getServerProxy().getServiceQueue(serviceName).send(
+			Control control = null;
+			if (aJABTransaction != null) {
+				control = aJABTransaction.getControl();
+			}
+			// TODO HANDLE TRANSACTION
+			Receiver endpoint = jabSession.getServerProxy().getReceiver(0);
+			jabSession.getServerProxy().getSender(serviceName).send(
 					endpoint.getReplyTo(), (short) 0, 0, data, data.length, 0,
 					flags);
 			org.jboss.blacktie.jatmibroker.core.Message receive = endpoint

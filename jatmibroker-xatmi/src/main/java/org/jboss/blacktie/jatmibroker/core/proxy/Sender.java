@@ -17,20 +17,9 @@
  */
 package org.jboss.blacktie.jatmibroker.core.proxy;
 
-import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
-import org.omg.CosNaming.NamingContextPackage.CannotProceed;
-import org.omg.CosNaming.NamingContextPackage.NotFound;
-import org.omg.CosTransactions.TransactionFactory;
+public interface Sender {
 
-public interface AtmiBrokerServer {
-	public TransactionFactory getTransactionFactory(
-			String transactionManagerServiceName) throws NotFound,
-			CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName;
+	void send(String replyTo, short rval, int rcode, byte[] data, int len, int correlationId, int flags);
 
 	public void close();
-
-	public ServiceQueue getServiceQueue(String serviceName)
-			throws JAtmiBrokerException;
-
-	public Queue getEndpointQueue(int id) throws JAtmiBrokerException;
 }

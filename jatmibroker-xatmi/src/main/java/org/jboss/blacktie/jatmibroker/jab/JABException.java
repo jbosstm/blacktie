@@ -15,51 +15,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core;
+package org.jboss.blacktie.jatmibroker.jab;
 
-public final class EnvVariableInfo implements java.io.Serializable {
+public class JABException extends Exception {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public EnvVariableInfo() {
+	public JABException(Throwable cause) {
+		super(cause);
 	}
 
-	public java.lang.String name = "";
-	public java.lang.String value = "";
-
-	public EnvVariableInfo(AtmiBroker.EnvVariableInfo aEnvVariableInfo) {
-		this.name = aEnvVariableInfo.name;
-		this.value = aEnvVariableInfo.value;
-	}
-
-	public EnvVariableInfo(String name2, String value2) {
-		this.name = name2;
-		this.value = value2;
-	}
-
-	public AtmiBroker.EnvVariableInfo createCorbaEnvVariableInfo() {
-		AtmiBroker.EnvVariableInfo aEnvVariableInfo = new AtmiBroker.EnvVariableInfo();
-		aEnvVariableInfo.name = this.name;
-		aEnvVariableInfo.value = this.value;
-
-		return aEnvVariableInfo;
-	}
-
-	public java.lang.String getValue() {
-		return value;
-	}
-
-	public void setValue(java.lang.String value) {
-		this.value = value;
-	}
-
-	public java.lang.String getName() {
-		return name;
-	}
-
-	public void setName(java.lang.String name) {
-		this.name = name;
+	public JABException(String msg, Throwable cause) {
+		super(msg, cause);
 	}
 }

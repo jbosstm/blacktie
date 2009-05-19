@@ -19,7 +19,7 @@ package org.jboss.blacktie.jatmibroker.core.proxy;
 
 import org.jboss.blacktie.jatmibroker.core.Message;
 
-public interface Queue {
+public interface Receiver {
 	/**
 	 * This method will retrieve any information from the callback that has been
 	 * sent.

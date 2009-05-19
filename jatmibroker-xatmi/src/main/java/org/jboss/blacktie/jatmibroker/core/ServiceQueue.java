@@ -41,7 +41,7 @@ public class ServiceQueue {
 	}
 
 	public void close() {
-		endpointQueue.disconnect();
+		endpointQueue.close();
 		servantCache.clear();
 	}
 }

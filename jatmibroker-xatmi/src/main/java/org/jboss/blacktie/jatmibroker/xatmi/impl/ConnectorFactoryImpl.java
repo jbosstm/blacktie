@@ -8,7 +8,7 @@ import java.util.Properties;
 import org.jboss.blacktie.jatmibroker.xatmi.Connector;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorFactory;
-import org.jboss.blacktie.jatmibroker.core.AtmiBrokerServerXML;
+import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerServerXML;
 
 /**
  * The connector factory allows us to create connections to the remote servers.

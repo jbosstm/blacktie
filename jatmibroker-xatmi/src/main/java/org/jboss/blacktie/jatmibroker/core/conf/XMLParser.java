@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core;
+package org.jboss.blacktie.jatmibroker.core.conf;
 
 import java.io.File;
 
@@ -28,6 +28,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.XMLReader;
 

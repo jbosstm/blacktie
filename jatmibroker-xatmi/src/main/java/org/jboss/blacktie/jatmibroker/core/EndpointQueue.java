@@ -22,9 +22,10 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.proxy.Queue;
-import org.omg.CORBA.ORB;
+import org.jboss.blacktie.jatmibroker.core.proxy.Receiver;
+import org.jboss.blacktie.jatmibroker.core.tx.TxIORInterceptor;
 import org.omg.CORBA.Any;
+import org.omg.CORBA.ORB;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
 import org.omg.CORBA.PolicyError;
@@ -40,7 +41,7 @@ import org.omg.PortableServer.POAPackage.WrongPolicy;
 
 import AtmiBroker.EndpointQueuePOA;
 
-public class EndpointQueue extends EndpointQueuePOA implements Queue {
+public class EndpointQueue extends EndpointQueuePOA implements Receiver {
 	private static final Logger log = LogManager.getLogger(EndpointQueue.class);
 	private POA m_default_poa;
 	private String callbackIOR;
@@ -221,7 +222,6 @@ public class EndpointQueue extends EndpointQueuePOA implements Queue {
 	}
 
 	public void close() {
-		// TODO Auto-generated method stub
-
+		disconnect();
 	}
 }

@@ -10,10 +10,10 @@ import javax.jms.MessageListener;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.AtmiBrokerServerXML;
 import org.jboss.blacktie.jatmibroker.core.AtmiBrokerServiceFactoryImpl;
 import org.jboss.blacktie.jatmibroker.core.OrbManagement;
-import org.jboss.blacktie.jatmibroker.core.proxy.ServiceQueue;
+import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerServerXML;
+import org.jboss.blacktie.jatmibroker.core.proxy.Sender;
 import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
@@ -83,7 +83,7 @@ public abstract class BlacktieMDBService implements BlacktieService,
 			byte[] bytes = new byte[(int) messagelength];
 			bytesMessage.readBytes(bytes);
 
-			ServiceQueue sender = AtmiBrokerServiceFactoryImpl.createSender(
+			Sender sender = AtmiBrokerServiceFactoryImpl.createSender(
 					orbManagement, replyTo);
 
 			// TODO HANDLE CONTROL

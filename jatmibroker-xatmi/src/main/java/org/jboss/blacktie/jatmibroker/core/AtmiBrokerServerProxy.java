@@ -26,9 +26,9 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.administration.BTServerAdministration;
-import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServer;
-import org.jboss.blacktie.jatmibroker.core.proxy.ServiceQueue;
+import org.jboss.blacktie.jatmibroker.core.proxy.Administration;
+import org.jboss.blacktie.jatmibroker.core.proxy.Server;
+import org.jboss.blacktie.jatmibroker.core.proxy.Sender;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CosNaming.NamingContextPackage.AlreadyBound;
@@ -41,8 +41,8 @@ import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 import AtmiBroker.Server;
 import AtmiBroker.ServerHelper;
 
-public class AtmiBrokerServerProxy implements BTServerAdministration,
-		AtmiBrokerServer, Runnable {
+public class AtmiBrokerServerProxy implements Administration,
+		Server, Runnable {
 
 	private static final Logger log = LogManager
 			.getLogger(AtmiBrokerServerProxy.class);
@@ -51,12 +51,12 @@ public class AtmiBrokerServerProxy implements BTServerAdministration,
 
 	private Thread callbackThread;
 
-	private Map<String, ServiceQueue> proxies = new HashMap<String, ServiceQueue>();
+	private Map<String, Sender> proxies = new HashMap<String, Sender>();
 	private String serverName;
 	private Map<java.lang.Integer, EndpointQueue> temporaryQueues = new HashMap<java.lang.Integer, EndpointQueue>();
 	static OrbManagement orbManagement;
 
-	public synchronized static AtmiBrokerServer getProxy(Properties properties,
+	public synchronized static Server getProxy(Properties properties,
 			String userName, String userPassword) throws JAtmiBrokerException {
 		AtmiBrokerServerProxy instance = null;
 		try {
@@ -77,7 +77,7 @@ public class AtmiBrokerServerProxy implements BTServerAdministration,
 		return instance;
 	}
 
-	public synchronized static BTServerAdministration getAdministration(
+	public synchronized static Administration getAdministration(
 			String[] args, String namingContextExt, String serverName)
 			throws JAtmiBrokerException {
 		try {
@@ -168,20 +168,20 @@ public class AtmiBrokerServerProxy implements BTServerAdministration,
 	}
 
 	public void close() {
-		Iterator<ServiceQueue> iterator = proxies.values().iterator();
+		Iterator<Sender> iterator = proxies.values().iterator();
 		while (iterator.hasNext()) {
 			iterator.next().close();
 		}
 		orbManagement.close();
 	}
 
-	public ServiceQueue getServiceQueue(String serviceName)
+	public Sender getSender(String serviceName)
 			throws JAtmiBrokerException {
-		ServiceQueue proxy = proxies.get(serviceName);
+		Sender proxy = proxies.get(serviceName);
 		if (proxy == null) {
 			try {
-				proxy = AtmiBrokerServiceFactoryImpl
-						.createProxy(this, serviceName);
+				proxy = AtmiBrokerServiceFactoryImpl.createProxy(this,
+						serviceName);
 				proxies.put(serviceName, proxy);
 			} catch (Throwable t) {
 				throw new JAtmiBrokerException(
@@ -192,7 +192,7 @@ public class AtmiBrokerServerProxy implements BTServerAdministration,
 		return proxy;
 	}
 
-	public org.jboss.blacktie.jatmibroker.core.proxy.Queue getEndpointQueue(
+	public org.jboss.blacktie.jatmibroker.core.proxy.Receiver getReceiver(
 			int id) throws JAtmiBrokerException {
 
 		EndpointQueue proxy = temporaryQueues.get(id);

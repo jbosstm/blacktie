@@ -15,17 +15,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core.jab;
+package org.jboss.blacktie.jatmibroker.jab;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.AtmiBrokerServerProxy;
-import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServer;
+import org.jboss.blacktie.jatmibroker.core.proxy.Server;
 
 public class JABSession {
 	private static final Logger log = LogManager.getLogger(JABSession.class);
 	private JABSessionAttributes jabSessionAttributes;
-	private AtmiBrokerServer serverProxy;
+	private Server serverProxy;
 
 	public JABSession(JABSessionAttributes aJABSessionAttributes) throws JABException {
 		super();
@@ -58,7 +58,7 @@ public class JABSession {
 		jabSessionAttributes = null;
 	}
 
-	public AtmiBrokerServer getServerProxy() {
+	public Server getServerProxy() {
 		return serverProxy;
 	}
 

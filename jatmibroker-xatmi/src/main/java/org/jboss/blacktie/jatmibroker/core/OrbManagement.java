@@ -16,10 +16,7 @@ import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
-import org.omg.PortableServer.POAOperations;
 import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
-
-import AtmiBroker.ServerHelper;
 
 public class OrbManagement {
 	private static final Logger log = LogManager.getLogger(OrbManagement.class);

@@ -21,7 +21,7 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.administration.BTServerAdministration;
+import org.jboss.blacktie.jatmibroker.core.proxy.Administration;
 
 public class ServerTest extends TestCase {
 	private static final Logger log = LogManager.getLogger(ServerTest.class);
@@ -39,7 +39,7 @@ public class ServerTest extends TestCase {
 		log.debug(" server is " + args[1]);
 		log.debug(" method is " + args[2]);
 
-		BTServerAdministration serverAdministration = AtmiBrokerServerProxy
+		Administration serverAdministration = AtmiBrokerServerProxy
 				.getAdministration(args, args[0], args[1]);
 
 		if (args[2].equals("server_init")) {
