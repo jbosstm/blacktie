@@ -15,35 +15,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#ifndef CONNECTION_MANAGER_H_
+#define CONNECTION_MANAGER_H_
 
-
-#ifndef AtmiBroker_CLIENT_H_
-#define AtmiBroker_CLIENT_H_
-
-#include <vector>
-
+#include <string>
+#include <map>
 #include "Connection.h"
-#include "Session.h"
-#include "AtmiBrokerClientXml.h"
-#include "ConnectionManager.h"
 
-class AtmiBrokerClient {
+typedef std::map<std::string, Connection*> ConnectionMap;
+
+class ConnectionManager {
 public:
-	AtmiBrokerClient();
-	virtual ~AtmiBrokerClient();
-	Connection* getConnection(char* serviceName);
-	Session* createSession(int& id, char* serviceName);
-	Session* getSession(int id);
-	void closeSession(int id);
-protected:
-	Connection* currentConnection;
-	//std::map<std::string, Connection*> clientConnectionMap;
-	ConnectionManager clientConnectionManager;
-	int nextSessionId;
+	ConnectionManager();
+	~ConnectionManager();
+
+	Connection* getClientConnection(char* serviceName);
+
+private:
+	ConnectionMap manager;
 };
-
-// CLIENT
-extern AtmiBrokerClient* ptrAtmiBrokerClient;
-
 
 #endif

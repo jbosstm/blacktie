@@ -173,18 +173,21 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 	}
 	*/
 
-
+	/*
 	std::map<std::string, Connection*>::iterator it;
 	for(it = clientConnectionMap.begin(); it != clientConnectionMap.end(); it ++) {
 		delete (*it).second;
 	}
 	clientConnectionMap.clear();
+	*/
 	clientInitialized = false;
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "Client Shutdown");
 
 }
 
 Connection* AtmiBrokerClient::getConnection(char* serviceName) {
+	return clientConnectionManager.getClientConnection(serviceName);
+	/*
 	char* transport = AtmiBrokerEnv::get_instance()->getTransportLibrary(serviceName);
 	if(transport == NULL){
 		LOG4CXX_WARN(loggerAtmiBrokerClient, (char*) "service " << serviceName << " has not transportLibrary config");
@@ -211,6 +214,7 @@ Connection* AtmiBrokerClient::getConnection(char* serviceName) {
 
 	LOG4CXX_WARN(loggerAtmiBrokerClient, (char*) "can not create connection for service " << serviceName);
 	return NULL;
+	*/
 }
 
 Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
