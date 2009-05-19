@@ -33,24 +33,12 @@ public class JABServiceTestCase extends TestCase {
 	}
 
 	public void testJABService() throws Exception {
-		String domainName = "fooapp";
-		String serverName = "foo";
-		String serviceName = "BAR";
-		String transactionManagerService = "TransactionManagerService.OTS";
-		String[] args = new String[2];
-		args[0] = "-ORBInitRef";
-		args[1] = "NameService=corbaloc::localhost:3528/NameService";
-
-		// JABSessionAttributes aJabSessionAttributes = new
-		// JABSessionAttributes(domainName, serverName,
-		// transactionManagerService, args);
 		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes();
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
-		JABRemoteService aJabService = new JABRemoteService(aJabSession,
-				serviceName);
+		JABRemoteService aJabService = new JABRemoteService(aJabSession, "BAR");
 		aJabService.setString("STRING", "HOWS IT GOING DUDE????!!!!");
-		aJabService.call();
+		aJabService.call(null);
 		transaction.commit();
 		aJabSession.endSession();
 		String expectedString = "BAR SAYS HELLO";

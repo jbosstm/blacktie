@@ -1,6 +1,6 @@
 package org.jboss.blacktie.jatmibroker.ejb.connector.ejb;
 
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
+import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.blacktie.jatmibroker.xatmi.buffers.Buffer;
@@ -9,7 +9,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.ejb.BlacktieMDBService;
 
 public class EchoServiceTestService extends BlacktieMDBService {
 
-	public EchoServiceTestService() throws ConnectorException {
+	public EchoServiceTestService() throws JAtmiBrokerException {
 	}
 
 	public Response tpservice(TPSVCINFO svcinfo) {

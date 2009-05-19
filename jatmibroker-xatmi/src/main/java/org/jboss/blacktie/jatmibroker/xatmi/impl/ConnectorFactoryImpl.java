@@ -2,7 +2,7 @@ package org.jboss.blacktie.jatmibroker.xatmi.impl;
 
 import java.util.Properties;
 
-import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerServerXML;
+import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerClientXML;
 import org.jboss.blacktie.jatmibroker.xatmi.Connector;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorFactory;
@@ -32,8 +32,8 @@ public class ConnectorFactoryImpl implements ConnectorFactory {
 	private ConnectorFactoryImpl(String configurationDirectory)
 			throws ConnectorException {
 		try {
-			AtmiBrokerServerXML server = new AtmiBrokerServerXML();
-			properties = server.getProperties(configurationDirectory);
+			AtmiBrokerClientXML xml = new AtmiBrokerClientXML();
+			properties = xml.getProperties(configurationDirectory);
 		} catch (Exception e) {
 			throw new ConnectorException(-1, "Could not load properties", e);
 		}

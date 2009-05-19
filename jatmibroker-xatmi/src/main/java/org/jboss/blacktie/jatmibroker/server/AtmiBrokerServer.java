@@ -31,7 +31,7 @@ import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerServerXML;
 import org.jboss.blacktie.jatmibroker.core.Connection;
 import org.jboss.blacktie.jatmibroker.core.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.Receiver;
-import org.jboss.blacktie.jatmibroker.core.corba.ConnectionImpl;
+import org.jboss.blacktie.jatmibroker.core.corba.ConnectionFactoryImpl;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
@@ -56,26 +56,20 @@ public class AtmiBrokerServer extends ServerPOA {
 	private Connection connection;
 	private static final int DEFAULT_POOL_SIZE = 5;
 
-	public AtmiBrokerServer() throws JAtmiBrokerException {
+	public AtmiBrokerServer(String serverName, String configurationDir)
+			throws JAtmiBrokerException {
+		System.setProperty("blacktie.server.name", serverName);
 		Properties properties = null;
 		AtmiBrokerServerXML server = new AtmiBrokerServerXML();
 		try {
-			properties = server.getProperties();
+			properties = server.getProperties(configurationDir);
 		} catch (Exception e) {
 			throw new JAtmiBrokerException("Could not load properties", e);
 		}
-
-		String domainName = properties.getProperty("blacktie.domain.name");
-		String serverName = properties.getProperty("blacktie.server.name");
-		int numberOfOrbArgs = Integer.parseInt(properties
-				.getProperty("blacktie.orb.args"));
-		List<String> orbArgs = new ArrayList<String>(numberOfOrbArgs);
-		for (int i = 1; i <= numberOfOrbArgs; i++) {
-			orbArgs.add(properties.getProperty("blacktie.orb.arg." + i));
-		}
-		String[] args = orbArgs.toArray(new String[] {});
+		connection = new ConnectionFactoryImpl(properties).createConnection("",
+				"");
 		try {
-			orbManagement = new OrbManagement(args, domainName, true);
+			orbManagement = new OrbManagement(properties, true);
 		} catch (Throwable t) {
 			throw new JAtmiBrokerException("Could not connect to orb", t);
 		}
@@ -103,7 +97,6 @@ public class AtmiBrokerServer extends ServerPOA {
 		} catch (Throwable t) {
 			throw new JAtmiBrokerException("Could not bind server", t);
 		}
-		connection = ConnectionImpl.createConnection(properties, "", "");
 	}
 
 	public void close() throws JAtmiBrokerException {

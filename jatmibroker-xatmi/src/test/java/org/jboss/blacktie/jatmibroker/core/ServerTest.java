@@ -17,10 +17,13 @@
  */
 package org.jboss.blacktie.jatmibroker.core;
 
+import java.util.Properties;
+
 import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerClientXML;
 import org.jboss.blacktie.jatmibroker.server.AdministrationProxy;
 
 public class ServerTest extends TestCase {
@@ -31,23 +34,20 @@ public class ServerTest extends TestCase {
 	}
 
 	public void xtest() throws Exception {
-		String[] args = new String[3];
-		args[0] = "fooapp";
-		args[1] = "foo";
-		args[2] = "BAR";
-		log.debug(" domain is " + args[0]);
-		log.debug(" server is " + args[1]);
-		log.debug(" method is " + args[2]);
+		AtmiBrokerClientXML xml = new AtmiBrokerClientXML();
+		Properties properties = null;
+		properties = xml.getProperties(null);
+		String method = "BAR";
 
-		Administration serverAdministration = AdministrationProxy
-				.getAdministration(args, args[0], args[1]);
+		AdministrationProxy serverAdministration = new AdministrationProxy(
+				properties, "foo");
 
-		if (args[2].equals("server_init")) {
+		if (method.equals("server_init")) {
 			short aStatus = serverAdministration.server_init();
 			log.debug("status is " + aStatus);
-		} else if (args[2].equals("server_done")) {
+		} else if (method.equals("server_done")) {
 			serverAdministration.server_done();
-		} else if (args[2].equals("get_server_info")) {
+		} else if (method.equals("get_server_info")) {
 			AtmiBroker.ServerInfo aServerInfo = serverAdministration
 					.get_server_info();
 			log.debug("aServerInfo maxChannels " + aServerInfo.maxChannels);
@@ -62,7 +62,7 @@ public class ServerTest extends TestCase {
 			for (int i = 0; i < aServerInfo.serviceNames.length; i++)
 				log.debug("aServerInfo serviceNames[" + i + "]"
 						+ aServerInfo.serviceNames[i]);
-		} else if (args[2].equals("get_all_service_info")) {
+		} else if (method.equals("get_all_service_info")) {
 			AtmiBroker.ServiceInfo[] aServiceInfo = serverAdministration
 					.get_all_service_info();
 			for (int i = 0; i < aServiceInfo.length; i++) {
@@ -74,27 +74,27 @@ public class ServerTest extends TestCase {
 				log.debug("aServiceInfo[" + i + "] securityType "
 						+ aServiceInfo[i].securityType);
 			}
-		} else if (args[2].equals("get_environment_variable_info")) {
+		} else if (method.equals("get_environment_variable_info")) {
 			AtmiBroker.EnvVariableInfo[] aEnvVarInfo = serverAdministration
 					.get_environment_variable_info();
 			for (int i = 0; i < aEnvVarInfo.length; i++)
 				log.debug("aEnvVarInfo[" + i + "] name " + aEnvVarInfo[i].name
 						+ " value " + aEnvVarInfo[i].value);
-		} else if (args[2].equals("set_server_descriptor")) {
+		} else if (method.equals("set_server_descriptor")) {
 			String xml_descriptor = "<SERVER_INFO></SERVER_INFO>";
 			serverAdministration.set_server_descriptor(xml_descriptor);
-		} else if (args[2].equals("set_service_descriptor")) {
+		} else if (method.equals("set_service_descriptor")) {
 			String aServiceName = "Bar";
 			String xml_descriptor = "<SERVICE_INFO></SERVICE_INFO>";
 			serverAdministration.set_service_descriptor(aServiceName,
 					xml_descriptor);
-		} else if (args[2].equals("set_environment_descriptor")) {
+		} else if (method.equals("set_environment_descriptor")) {
 			String xml_descriptor = "<ENVIRONMENT_INFO></ENVIRONMENT_INFO>";
 			serverAdministration.set_environment_descriptor(xml_descriptor);
-		} else if (args[2].equals("stop_service")) {
+		} else if (method.equals("stop_service")) {
 			String aServiceName = "BAR";
 			serverAdministration.stop_service(aServiceName);
-		} else if (args[2].equals("start_service")) {
+		} else if (method.equals("start_service")) {
 			String aServiceName = "BAR";
 			serverAdministration.start_service(aServiceName);
 		}

@@ -1,5 +1,9 @@
 package org.jboss.blacktie.jatmibroker.core;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.omg.CORBA.ORB;
@@ -29,9 +33,19 @@ public class OrbManagement {
 	private NamingContext nc;
 	private POA root_poa;
 
-	public OrbManagement(String[] args, String namingContextExt,
-			boolean createNC) throws InvalidName, AdapterInactive, NotFound,
-			CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName {
+	public OrbManagement(Properties properties, boolean createNC)
+			throws InvalidName, AdapterInactive, NotFound, CannotProceed,
+			org.omg.CosNaming.NamingContextPackage.InvalidName {
+
+		String namingContextExt = properties
+				.getProperty("blacktie.domain.name");
+		int numberOfOrbArgs = Integer.parseInt(properties
+				.getProperty("blacktie.orb.args"));
+		List<String> orbArgs = new ArrayList<String>(numberOfOrbArgs);
+		for (int i = 1; i <= numberOfOrbArgs; i++) {
+			orbArgs.add(properties.getProperty("blacktie.orb.arg." + i));
+		}
+		String[] args = orbArgs.toArray(new String[] {});
 
 		log.debug("ServerProxy's connectToORB args: " + args
 				+ " namingContext: " + namingContextExt);

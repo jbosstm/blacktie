@@ -17,8 +17,6 @@
  */
 package org.jboss.blacktie.jatmibroker.ejb.connector.ejb;
 
-import java.util.Properties;
-
 import junit.framework.TestCase;
 
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
@@ -36,15 +34,14 @@ public class AbstractBlacktieServiceTestCase extends TestCase {
 	private AtmiBrokerServer server;
 
 	public AbstractBlacktieServiceTestCase() throws ConnectorException {
-		System.setProperty("blacktie.server.name", "ejb-connector-tests");
 	}
 
 	public void setUp() throws ConnectorException, JAtmiBrokerException {
-		this.server = new AtmiBrokerServer();
+		this.server = new AtmiBrokerServer("ejb-connector-tests", null);
 		this.server.tpadvertise("EchoService", EchoServiceTestService.class);
 		ConnectorFactory connectorFactory = ConnectorFactoryImpl
-				.getConnectorFactory();
-		connector = connectorFactory.getConnector();
+				.getConnectorFactory(null);
+		connector = connectorFactory.getConnector("", "");
 	}
 
 	public void tearDown() throws ConnectorException {
@@ -52,39 +49,13 @@ public class AbstractBlacktieServiceTestCase extends TestCase {
 		server.tpunadvertise("EchoService");
 	}
 
-	public void testWithProperties() throws ConnectorException {
-		Properties properties = new Properties();
-		properties.put("blacktie.orb.args", "2");
-		properties.put("blacktie.orb.arg.1", "-ORBInitRef");
-		properties.put("blacktie.orb.arg.2",
-				"NameService=corbaloc::localhost:3528/NameService");
-		properties.put("blacktie.domain.name", "jboss");
-		properties.put("blacktie.server.name", "ejb-connector-tests");
-		String serviceName = "EchoService";
-		ConnectorFactory connectorFactory = ConnectorFactoryImpl
-				.getConnectorFactory(properties);
-		Connector connector = connectorFactory.getConnector();
+	public void test() throws ConnectorException {
 		byte[] echo = "echo".getBytes();
 		Buffer buffer = new X_OCTET(echo.length);
 		buffer.setData(echo);
-		Response response = connector.tpcall(serviceName, buffer, 0);
+		Response response = connector.tpcall("EchoService", buffer, 0);
 		Buffer responseBuffer = response.getResponse();
 		byte[] responseData = responseBuffer.getData();
 		assertEquals("echo", new String(responseData));
 	}
-
-	public void testWithDefaultProperties() throws ConnectorException {
-		String serviceName = "EchoService";
-		ConnectorFactory connectorFactory = ConnectorFactoryImpl
-				.getConnectorFactory();
-		Connector connector = connectorFactory.getConnector();
-		byte[] echo = "echo".getBytes();
-		Buffer buffer = new X_OCTET(echo.length);
-		buffer.setData(echo);
-		Response response = connector.tpcall(serviceName, buffer, 0);
-		Buffer responseBuffer = response.getResponse();
-		byte[] responseData = responseBuffer.getData();
-		assertEquals("echo", new String(responseData));
-	}
-
 }

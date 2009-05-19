@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core;
+package org.jboss.blacktie.jatmibroker.conf;
 
 import java.util.Properties;
 
@@ -23,21 +23,40 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerClientXML;
 
-public class AtmiBrokerClientXMLTest extends TestCase {
+public class AtmiBrokerServerXMLTest extends TestCase {
 	private static final Logger log = LogManager
-			.getLogger(AtmiBrokerClientXMLTest.class);
+			.getLogger(AtmiBrokerServerXMLTest.class);
 
 	public void setUp() throws InterruptedException {
+		System.setProperty("blacktie.server.name", "foo");
 	}
 
 	public void tearDown() {
 	}
 
 	public void test() throws Exception {
-		AtmiBrokerClientXML clientDesc = new AtmiBrokerClientXML();
-		Properties prop = clientDesc.getProperties("linux");
+		AtmiBrokerServerXML serverDesc = new AtmiBrokerServerXML();
+		Properties prop = serverDesc.getProperties("win32");
+
+		String domain = "fooapp";
+		String server = "foo";
+		String transid = "TransactionManagerService.OTS";
+		String args = "2";
+		String arg1 = "-ORBInitRef";
+		String arg2 = "NameService=corbaloc::localhost:3528/NameService";
+
+		assertTrue(domain.equals(prop.getProperty("blacktie.domain.name")));
+		assertTrue(server.equals(prop.getProperty("blacktie.server.name")));
+		assertTrue(transid.equals(prop.getProperty("blacktie.trans.factoryid")));
+		assertTrue(args.equals(prop.getProperty("blacktie.orb.args")));
+		assertTrue(arg1.equals(prop.getProperty("blacktie.orb.arg.1")));
+		assertTrue(arg2.equals(prop.getProperty("blacktie.orb.arg.2")));
+	}
+
+	public void testEnv() throws Exception {
+		AtmiBrokerServerXML serverDesc = new AtmiBrokerServerXML();
+		Properties prop = serverDesc.getProperties();
 
 		String domain = "fooapp";
 		String server = "foo";

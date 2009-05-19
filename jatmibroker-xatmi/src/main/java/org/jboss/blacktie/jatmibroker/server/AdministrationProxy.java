@@ -17,6 +17,8 @@
  */
 package org.jboss.blacktie.jatmibroker.server;
 
+import java.util.Properties;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.OrbManagement;
@@ -34,13 +36,13 @@ public class AdministrationProxy {
 	private static final Logger log = LogManager
 			.getLogger(AdministrationProxy.class);
 	private Server server;
-	static OrbManagement orbManagement;
+	private OrbManagement orbManagement;
 
-	public AdministrationProxy(String[] args, String domainName,
-			String serverName) throws InvalidName, NotFound, CannotProceed,
+	public AdministrationProxy(Properties properties, String serverName)
+			throws InvalidName, NotFound, CannotProceed,
 			org.omg.CosNaming.NamingContextPackage.InvalidName,
 			AdapterInactive, AlreadyBound {
-		orbManagement = new OrbManagement(args, domainName, false);
+		orbManagement = new OrbManagement(properties, false);
 		server = null;
 
 		log.debug("about to resolve '" + serverName + "'");

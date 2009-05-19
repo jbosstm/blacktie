@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core;
+package org.jboss.blacktie.jatmibroker.conf;
 
 import java.io.File;
 import java.util.Properties;
@@ -24,10 +24,6 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.conf.XMLClientHandler;
-import org.jboss.blacktie.jatmibroker.conf.XMLEnvHandler;
-import org.jboss.blacktie.jatmibroker.conf.XMLParser;
-import org.jboss.blacktie.jatmibroker.conf.XMLServerHandler;
 
 public class XMLParserTest extends TestCase {
 	private static final Logger log = LogManager.getLogger(XMLParserTest.class);

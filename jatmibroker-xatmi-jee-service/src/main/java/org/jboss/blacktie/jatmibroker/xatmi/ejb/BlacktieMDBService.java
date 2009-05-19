@@ -1,7 +1,5 @@
 package org.jboss.blacktie.jatmibroker.xatmi.ejb;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 import javax.jms.BytesMessage;
@@ -10,10 +8,11 @@ import javax.jms.MessageListener;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerServerXML;
-import org.jboss.blacktie.jatmibroker.core.OrbManagement;
+import org.jboss.blacktie.jatmibroker.core.Connection;
 import org.jboss.blacktie.jatmibroker.core.Sender;
-import org.jboss.blacktie.jatmibroker.core.corba.SenderImpl;
+import org.jboss.blacktie.jatmibroker.core.corba.ConnectionFactoryImpl;
 import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
@@ -31,38 +30,25 @@ public abstract class BlacktieMDBService implements BlacktieService,
 	private static final Logger log = LogManager
 			.getLogger(BlacktieMDBService.class);
 
-	/**
-	 * Create the orb management function for responding to data.
-	 */
-	private OrbManagement orbManagement;
+	private Connection connection;
 
 	/**
 	 * Must have a no-arg constructor
 	 * 
 	 * @throws ConnectorException
+	 * @throws JAtmiBrokerException
 	 */
-	public BlacktieMDBService() throws ConnectorException {
+	public BlacktieMDBService() throws JAtmiBrokerException {
 		Properties properties = null;
 		AtmiBrokerServerXML server = new AtmiBrokerServerXML();
 		try {
-			properties = server.getProperties();
+			properties = server.getProperties("");
 		} catch (Exception e) {
-			throw new ConnectorException(-1, "Could not load properties", e);
+			throw new JAtmiBrokerException("Could not load properties", e);
 		}
 
-		String domainName = properties.getProperty("blacktie.domain.name");
-		int numberOfOrbArgs = Integer.parseInt(properties
-				.getProperty("blacktie.orb.args"));
-		List<String> orbArgs = new ArrayList<String>(numberOfOrbArgs);
-		for (int i = 1; i <= numberOfOrbArgs; i++) {
-			orbArgs.add(properties.getProperty("blacktie.orb.arg." + i));
-		}
-		String[] args = orbArgs.toArray(new String[] {});
-		try {
-			orbManagement = new OrbManagement(args, domainName, true);
-		} catch (Throwable t) {
-			throw new ConnectorException(-1, "Could not connect to orb", t);
-		}
+		connection = new ConnectionFactoryImpl(properties).createConnection("",
+				"");
 	}
 
 	public void onMessage(Message message) {
@@ -82,8 +68,6 @@ public abstract class BlacktieMDBService implements BlacktieService,
 			byte[] bytes = new byte[(int) messagelength];
 			bytesMessage.readBytes(bytes);
 
-			Sender sender = SenderImpl.createSender(orbManagement, replyTo);
-
 			// TODO HANDLE CONTROL
 			// THIS IS THE FIRST CALL
 			Buffer buffer = new Buffer("unknown", "unknown",
@@ -95,6 +79,7 @@ public abstract class BlacktieMDBService implements BlacktieService,
 			// TODO THIS SHOULD INVOKE THE CLIENT HANDLER
 			// odata.value = serviceRequest.getBytes();
 			// olen.value = serviceRequest.getLength();
+			Sender sender = connection.createSender(replyTo);
 			sender.send("", response.getRval(), response.getRcode(), response
 					.getResponse().getData(), response.getResponse().getSize(),
 					response.getFlags(), 0);

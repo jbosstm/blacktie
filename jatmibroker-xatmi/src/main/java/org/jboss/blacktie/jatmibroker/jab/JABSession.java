@@ -20,12 +20,12 @@ package org.jboss.blacktie.jatmibroker.jab;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.Connection;
-import org.jboss.blacktie.jatmibroker.server.AdministrationProxy;
+import org.jboss.blacktie.jatmibroker.core.corba.ConnectionFactoryImpl;
 
 public class JABSession {
 	private static final Logger log = LogManager.getLogger(JABSession.class);
 	private JABSessionAttributes jabSessionAttributes;
-	private Connection serverProxy;
+	private Connection connection;
 
 	public JABSession(JABSessionAttributes aJABSessionAttributes)
 			throws JABException {
@@ -34,8 +34,8 @@ public class JABSession {
 		try {
 			jabSessionAttributes = aJABSessionAttributes;
 
-			serverProxy = AdministrationProxy.createConnection(
-					jabSessionAttributes.getProperties(), "", "");
+			connection = new ConnectionFactoryImpl(jabSessionAttributes
+					.getProperties()).createConnection("", "");
 		} catch (Exception e) {
 			String domain = jabSessionAttributes.getDomainName();
 			String server = jabSessionAttributes.getServerName();
@@ -55,14 +55,14 @@ public class JABSession {
 
 	public void endSession() throws JABException {
 		log.debug("JABSession endSession ");
-		serverProxy.close();
+		connection.close();
 		// TODO cleanup orb work
-		serverProxy = null;
+		connection = null;
 		jabSessionAttributes = null;
 	}
 
 	public Connection getServerProxy() {
-		return serverProxy;
+		return connection;
 	}
 
 }
