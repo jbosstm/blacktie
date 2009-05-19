@@ -39,6 +39,8 @@ void ServerInterceptor::send_reply(PortableInterceptor::ServerRequestInfo_ptr ri
 	debug(ri, ":send_reply");
 }
 void ServerInterceptor::send_exception(PortableInterceptor::ServerRequestInfo_ptr ri) {
+	CORBA::TypeCode_ptr tc = ri->sending_exception()->type();
+	LOG4CXX_LOGLS(atmiServerInterceptorLogger, log4cxx::Level::getTrace(), (char *) "exception: " << tc->name());
 	debug(ri, ":send_exception");
 }
 void ServerInterceptor::send_other(PortableInterceptor::ServerRequestInfo_ptr ri) {
