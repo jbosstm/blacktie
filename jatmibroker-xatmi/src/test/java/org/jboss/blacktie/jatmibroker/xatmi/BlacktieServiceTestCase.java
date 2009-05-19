@@ -1,0 +1,65 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2008, Red Hat, Inc., and others contributors as indicated
+ * by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU Lesser General Public License, v. 2.1.
+ * This program is distributed in the hope that it will be useful, but WITHOUT A
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+ * You should have received a copy of the GNU Lesser General Public License,
+ * v.2.1 along with this distribution; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA  02110-1301, USA.
+ */
+package org.jboss.blacktie.jatmibroker.xatmi;
+
+import junit.framework.TestCase;
+
+import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.server.AtmiBrokerServer;
+import org.jboss.blacktie.jatmibroker.xatmi.buffers.Buffer;
+import org.jboss.blacktie.jatmibroker.xatmi.buffers.X_OCTET;
+import org.jboss.blacktie.jatmibroker.xatmi.impl.ConnectorFactoryImpl;
+
+public class BlacktieServiceTestCase extends TestCase {
+	private Connector connector;
+	private AtmiBrokerServer server;
+
+	public void setUp() throws ConnectorException, JAtmiBrokerException {
+		this.server = new AtmiBrokerServer("standalone-server", null);
+		this.server.tpadvertise("EchoService", EchoServiceTestService.class);
+
+		ConnectorFactory connectorFactory = ConnectorFactoryImpl
+				.getConnectorFactory(null);
+		connector = connectorFactory.getConnector("", "");
+	}
+
+	public void tearDown() throws ConnectorException {
+		connector.close();
+		server.tpunadvertise("EchoService");
+	}
+
+	public void test() throws ConnectorException {
+		byte[] echo = "echo".getBytes();
+		Buffer buffer = new X_OCTET(echo.length);
+		buffer.setData(echo);
+		Response response = connector.tpcall("EchoService", buffer, 0);
+		Buffer responseBuffer = response.getResponse();
+		byte[] responseData = responseBuffer.getData();
+		assertEquals("echo", new String(responseData));
+	}
+
+	public class EchoServiceTestService implements BlacktieService {
+		public Response tpservice(TPSVCINFO svcinfo) {
+			Buffer data = svcinfo.getData();
+			Buffer buffer = new X_OCTET(data.getSize());
+			buffer.setData(data.getData());
+			Response response = new Response((short) 0, 0, buffer, 0);
+			return response;
+		}
+	}
+}
