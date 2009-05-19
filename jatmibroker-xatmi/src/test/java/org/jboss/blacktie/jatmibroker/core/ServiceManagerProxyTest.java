@@ -23,7 +23,7 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.corba.ConnectionFactoryImpl;
+import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 
 public class ServiceManagerProxyTest extends TestCase {
 	private static final Logger log = LogManager
@@ -40,7 +40,7 @@ public class ServiceManagerProxyTest extends TestCase {
 		server.serverdone();
 	}
 
-	public void test() throws Exception {
+	public void test() throws JAtmiBrokerException {
 		Properties properties = new Properties();
 		properties.put("blacktie.domain.name", "fooapp");
 		properties.put("blacktie.server.name", "foo");
@@ -49,7 +49,7 @@ public class ServiceManagerProxyTest extends TestCase {
 		properties.put("blacktie.orb.arg.2",
 				"NameService=corbaloc::localhost:3528/NameService");
 
-		Connection proxy = new ConnectionFactoryImpl(properties)
+		Connection proxy = ConnectionFactory.loadConnectionFactory(properties)
 				.createConnection("", "");
 		Sender serviceFactory = proxy.getSender("BAR");
 

@@ -25,23 +25,24 @@ import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.core.Connection;
 import org.jboss.blacktie.jatmibroker.core.ConnectionFactory;
 import org.jboss.blacktie.jatmibroker.core.OrbManagement;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 
-public class ConnectionFactoryImpl implements ConnectionFactory {
+public class ConnectionFactoryImpl extends ConnectionFactory {
 
 	private static final Logger log = LogManager
 			.getLogger(ConnectionFactoryImpl.class);
 	private OrbManagement orbManagement;
 
-	public ConnectionFactoryImpl(Properties properties)
-			throws JAtmiBrokerException {
-		log.debug("Creating connection factory");
+	protected void setProperties(Properties properties)
+			throws ConnectorException {
+		log.debug("Creating OrbManagement");
 		try {
 			orbManagement = new OrbManagement(properties, false);
 		} catch (Throwable t) {
-			throw new JAtmiBrokerException(
+			throw new ConnectorException(-1,
 					"Could not create the orb management function", t);
 		}
-		log.debug("Created connection factory");
+		log.debug("Created OrbManagement");
 	}
 
 	public Connection createConnection(String username, String password)
@@ -56,5 +57,4 @@ public class ConnectionFactoryImpl implements ConnectionFactory {
 		log.debug("Created connection");
 		return instance;
 	}
-
 }

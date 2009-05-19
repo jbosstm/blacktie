@@ -11,8 +11,8 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerServerXML;
 import org.jboss.blacktie.jatmibroker.core.Connection;
+import org.jboss.blacktie.jatmibroker.core.ConnectionFactory;
 import org.jboss.blacktie.jatmibroker.core.Sender;
-import org.jboss.blacktie.jatmibroker.core.corba.ConnectionFactoryImpl;
 import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
@@ -45,9 +45,8 @@ public abstract class BlacktieMDBService implements BlacktieService,
 		} catch (Exception e) {
 			throw new JAtmiBrokerException("Could not load properties", e);
 		}
-
-		connection = new ConnectionFactoryImpl(properties).createConnection("",
-				"");
+		connection = ConnectionFactory.loadConnectionFactory(properties)
+				.createConnection("", "");
 	}
 
 	public void onMessage(Message message) {
@@ -58,10 +57,6 @@ public abstract class BlacktieMDBService implements BlacktieService,
 			String serviceName = message.getStringProperty("serviceName");
 			long messageflags = new Long(message
 					.getStringProperty("messageflags"));
-			long messagerval = new Long(message
-					.getStringProperty("messagerval"));
-			long messagercode = new Long(message
-					.getStringProperty("messagercode"));
 			long messagecorrelationId = new Long(message
 					.getStringProperty("messagecorrelationId"));
 			byte[] bytes = new byte[(int) messagelength];

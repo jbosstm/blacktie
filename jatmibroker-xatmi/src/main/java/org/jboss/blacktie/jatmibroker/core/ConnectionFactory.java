@@ -17,10 +17,30 @@
  */
 package org.jboss.blacktie.jatmibroker.core;
 
+import java.util.Properties;
+
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 
-public interface ConnectionFactory {
+public abstract class ConnectionFactory {
+	public static ConnectionFactory loadConnectionFactory(Properties properties)
+			throws JAtmiBrokerException {
+		try {
+			Class clazz = Class
+					.forName("org.jboss.blacktie.jatmibroker.core.corba.ConnectionFactoryImpl");
+			ConnectionFactory newInstance = (ConnectionFactory) clazz
+					.newInstance();
+			newInstance.setProperties(properties);
+			return newInstance;
+		} catch (Throwable t) {
+			throw new JAtmiBrokerException(
+					"Could not load the connection factory", t);
+		}
+	}
 
-	public Connection createConnection(String userName, String userPassword)
-			throws JAtmiBrokerException;
+	protected abstract void setProperties(Properties properties)
+			throws ConnectorException;
+
+	public abstract Connection createConnection(String userName,
+			String userPassword) throws JAtmiBrokerException;
 }

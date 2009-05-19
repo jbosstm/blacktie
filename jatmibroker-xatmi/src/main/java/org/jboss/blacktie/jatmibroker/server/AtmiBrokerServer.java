@@ -29,9 +29,9 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerServerXML;
 import org.jboss.blacktie.jatmibroker.core.Connection;
+import org.jboss.blacktie.jatmibroker.core.ConnectionFactory;
 import org.jboss.blacktie.jatmibroker.core.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.Receiver;
-import org.jboss.blacktie.jatmibroker.core.corba.ConnectionFactoryImpl;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
@@ -99,8 +99,8 @@ public class AtmiBrokerServer extends ServerPOA {
 			throw new JAtmiBrokerException("Could not bind server", t);
 		}
 
-		connection = new ConnectionFactoryImpl(properties).createConnection("",
-				"");
+		connection = ConnectionFactory.loadConnectionFactory(properties)
+				.createConnection("", "");
 	}
 
 	public void close() throws JAtmiBrokerException {

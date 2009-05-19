@@ -20,7 +20,7 @@ package org.jboss.blacktie.jatmibroker.jab;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.Connection;
-import org.jboss.blacktie.jatmibroker.core.corba.ConnectionFactoryImpl;
+import org.jboss.blacktie.jatmibroker.core.ConnectionFactory;
 
 public class JABSession {
 	private static final Logger log = LogManager.getLogger(JABSession.class);
@@ -33,9 +33,9 @@ public class JABSession {
 		log.debug("JABSession constructor ");
 		try {
 			jabSessionAttributes = aJABSessionAttributes;
-
-			connection = new ConnectionFactoryImpl(jabSessionAttributes
-					.getProperties()).createConnection("", "");
+			connection = ConnectionFactory.loadConnectionFactory(
+					jabSessionAttributes.getProperties()).createConnection("",
+					"");
 		} catch (Exception e) {
 			String domain = jabSessionAttributes.getDomainName();
 			String server = jabSessionAttributes.getServerName();
