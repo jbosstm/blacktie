@@ -17,20 +17,22 @@
  */
 package org.jboss.blacktie.jatmibroker.core.conf;
 
-import java.util.Properties;
 import java.io.File;
+import java.util.Properties;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 public class AtmiBrokerClientXML {
-	private static final Logger log = LogManager.getLogger(AtmiBrokerClientXML.class);
+	private static final Logger log = LogManager
+			.getLogger(AtmiBrokerClientXML.class);
 	private Properties prop;
 
-	public AtmiBrokerClientXML () {
+	public AtmiBrokerClientXML() {
 		prop = new Properties();
 	}
 
-	public AtmiBrokerClientXML (Properties prop) {
+	public AtmiBrokerClientXML(Properties prop) {
 		this.prop = prop;
 	}
 
@@ -42,16 +44,16 @@ public class AtmiBrokerClientXML {
 		String clientXML;
 		String envXML;
 
-		if(configDir == null) {
+		if (configDir == null) {
 			configDir = System.getenv("BLACKTIE_CONFIGURATION_DIR");
 		}
 
-		if(configDir != null && !configDir.equals("")) {
+		if (configDir != null && !configDir.equals("")) {
 			clientXML = configDir + "/" + "CLIENT.xml";
-			envXML    = configDir + "/" + "Environment.xml";
+			envXML = configDir + "/" + "Environment.xml";
 		} else {
 			clientXML = "CLIENT.xml";
-			envXML    = "Environment.xml";
+			envXML = "Environment.xml";
 		}
 
 		log.debug("read configuration from " + configDir + " directory");

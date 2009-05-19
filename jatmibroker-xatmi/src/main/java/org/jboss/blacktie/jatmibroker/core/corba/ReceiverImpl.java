@@ -15,13 +15,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core;
+package org.jboss.blacktie.jatmibroker.core.corba;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.core.Message;
+import org.jboss.blacktie.jatmibroker.core.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.proxy.Receiver;
 import org.jboss.blacktie.jatmibroker.core.tx.TxIORInterceptor;
 import org.omg.CORBA.Any;
@@ -41,8 +44,8 @@ import org.omg.PortableServer.POAPackage.WrongPolicy;
 
 import AtmiBroker.EndpointQueuePOA;
 
-public class EndpointQueue extends EndpointQueuePOA implements Receiver {
-	private static final Logger log = LogManager.getLogger(EndpointQueue.class);
+public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
+	private static final Logger log = LogManager.getLogger(ReceiverImpl.class);
 	private POA m_default_poa;
 	private String callbackIOR;
 	private List<Message> returnData = new ArrayList<Message>();
@@ -81,14 +84,16 @@ public class EndpointQueue extends EndpointQueuePOA implements Receiver {
 			otsPolicy.insert_short(TxIORInterceptor.ADAPTS);
 			Any invPolicy = orb.create_any();
 
-			policies[0] = poa.create_thread_policy(ThreadPolicyValue.SINGLE_THREAD_MODEL);
-			policies[1] = orb.create_policy(TxIORInterceptor.TAG_OTS_POLICY, otsPolicy);
+			policies[0] = poa
+					.create_thread_policy(ThreadPolicyValue.SINGLE_THREAD_MODEL);
+			policies[1] = orb.create_policy(TxIORInterceptor.TAG_OTS_POLICY,
+					otsPolicy);
 		} catch (PolicyError e) {
 			throw new JAtmiBrokerException("POA policy creation error: ", e);
 		}
 	}
 
-	public EndpointQueue(OrbManagement orbManagement, String queueName)
+	public ReceiverImpl(OrbManagement orbManagement, String queueName)
 			throws JAtmiBrokerException {
 		this.queueName = queueName;
 		int numberOfPolicies = 2;
@@ -124,7 +129,7 @@ public class EndpointQueue extends EndpointQueuePOA implements Receiver {
 		this.orbManagement = orbManagement;
 	}
 
-	public EndpointQueue(ORB orb, POA poa, String aServerName)
+	public ReceiverImpl(ORB orb, POA poa, String aServerName)
 			throws AdapterNonExistent, InvalidPolicy, ServantAlreadyActive,
 			WrongPolicy, ServantNotActive {
 		super();

@@ -20,25 +20,28 @@ package org.jboss.blacktie.jatmibroker.jab;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.AtmiBrokerServerProxy;
-import org.jboss.blacktie.jatmibroker.core.proxy.Server;
+import org.jboss.blacktie.jatmibroker.core.proxy.Connection;
 
 public class JABSession {
 	private static final Logger log = LogManager.getLogger(JABSession.class);
 	private JABSessionAttributes jabSessionAttributes;
-	private Server serverProxy;
+	private Connection serverProxy;
 
-	public JABSession(JABSessionAttributes aJABSessionAttributes) throws JABException {
+	public JABSession(JABSessionAttributes aJABSessionAttributes)
+			throws JABException {
 		super();
 		log.debug("JABSession constructor ");
 		try {
 			jabSessionAttributes = aJABSessionAttributes;
 
-			serverProxy = AtmiBrokerServerProxy.getProxy(jabSessionAttributes.getProperties(), "", "");
+			serverProxy = AtmiBrokerServerProxy.createConnection(
+					jabSessionAttributes.getProperties(), "", "");
 		} catch (Exception e) {
 			String domain = jabSessionAttributes.getDomainName();
 			String server = jabSessionAttributes.getServerName();
 
-			throw new JABException("Error connect to domain " + domain + " server " + server, e);
+			throw new JABException("Error connect to domain " + domain
+					+ " server " + server, e);
 		}
 	}
 
@@ -58,7 +61,7 @@ public class JABSession {
 		jabSessionAttributes = null;
 	}
 
-	public Server getServerProxy() {
+	public Connection getServerProxy() {
 		return serverProxy;
 	}
 

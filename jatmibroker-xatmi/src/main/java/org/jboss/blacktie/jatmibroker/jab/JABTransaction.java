@@ -17,6 +17,8 @@
  */
 package org.jboss.blacktie.jatmibroker.jab;
 
+import java.util.Hashtable;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.omg.CORBA.ORBPackage.InvalidName;
@@ -27,8 +29,6 @@ import org.omg.CosTransactions.Terminator;
 import org.omg.CosTransactions.TransactionFactory;
 import org.omg.CosTransactions.Unavailable;
 import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
-
-import java.util.Hashtable;
 
 public class JABTransaction {
 	private static final Logger log = LogManager
@@ -65,7 +65,7 @@ public class JABTransaction {
 						.getTransactionManagerName());
 		log.debug(" creating Control");
 		control = transactionFactory.create(timeout);
-ThreadActionData.pushAction(this);
+		ThreadActionData.pushAction(this);
 		log.debug(" created Control " + control);
 
 		try {
@@ -93,7 +93,7 @@ ThreadActionData.pushAction(this);
 			log.debug("calling commit");
 			terminator.commit(true);
 			active = false;
-ThreadActionData.popAction();
+			ThreadActionData.popAction();
 			log.debug("called commit on terminator ");
 		} catch (Exception e) {
 			throw new JABException(e);
@@ -107,7 +107,7 @@ ThreadActionData.popAction();
 			log.debug("calling rollback");
 			terminator.rollback();
 			active = false;
-ThreadActionData.popAction();
+			ThreadActionData.popAction();
 			log.debug("called rollback on terminator ");
 		} catch (Exception e) {
 			throw new JABException(e);
@@ -147,7 +147,7 @@ ThreadActionData.popAction();
 	 */
 	public final boolean removeChildThread() // current thread
 	{
-return removeChildThread(ThreadUtil.getThreadId());
+		return removeChildThread(ThreadUtil.getThreadId());
 	}
 
 	/**

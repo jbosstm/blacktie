@@ -17,20 +17,22 @@
  */
 package org.jboss.blacktie.jatmibroker.core.conf;
 
-import java.util.Properties;
 import java.io.File;
+import java.util.Properties;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 public class AtmiBrokerServerXML {
-	private static final Logger log = LogManager.getLogger(AtmiBrokerServerXML.class);
+	private static final Logger log = LogManager
+			.getLogger(AtmiBrokerServerXML.class);
 	private Properties prop;
 
-	public AtmiBrokerServerXML () {
+	public AtmiBrokerServerXML() {
 		prop = new Properties();
 	}
 
-	public AtmiBrokerServerXML (Properties prop) {
+	public AtmiBrokerServerXML(Properties prop) {
 		this.prop = prop;
 	}
 
@@ -44,22 +46,22 @@ public class AtmiBrokerServerXML {
 		String serverName;
 
 		serverName = System.getProperty("blacktie.server.name");
-		if(serverName == null){
+		if (serverName == null) {
 			serverName = "default";
 		}
 
 		prop.setProperty("blacktie.server.name", serverName);
 
-		if(configDir == null) {
+		if (configDir == null) {
 			configDir = System.getenv("BLACKTIE_CONFIGURATION_DIR");
 		}
 
-		if(configDir != null && !configDir.equals("")) {
+		if (configDir != null && !configDir.equals("")) {
 			serverXML = configDir + "/" + serverName + "/" + "SERVER.xml";
-			envXML    = configDir + "/" + "Environment.xml";
+			envXML = configDir + "/" + "Environment.xml";
 		} else {
 			serverXML = serverName + "/" + "SERVER.xml";
-			envXML    = "Environment.xml";
+			envXML = "Environment.xml";
 		}
 
 		XMLServerHandler handler = new XMLServerHandler(prop);

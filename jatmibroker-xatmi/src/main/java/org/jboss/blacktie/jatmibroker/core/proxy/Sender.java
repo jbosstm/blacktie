@@ -19,7 +19,8 @@ package org.jboss.blacktie.jatmibroker.core.proxy;
 
 public interface Sender {
 
-	void send(String replyTo, short rval, int rcode, byte[] data, int len, int correlationId, int flags);
+	void send(String replyTo, short rval, int rcode, byte[] data, int len,
+			int correlationId, int flags);
 
 	public void close();
 }

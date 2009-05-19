@@ -18,52 +18,50 @@
 package org.jboss.blacktie.jatmibroker.core.tx;
 
 import org.omg.CORBA.Any;
-import org.omg.CORBA.LocalObject;
 import org.omg.CORBA.ORB;
-import org.omg.IOP.TaggedComponent;
 import org.omg.IOP.Codec;
+import org.omg.IOP.TaggedComponent;
 import org.omg.IOP.CodecPackage.InvalidTypeForEncoding;
 import org.omg.PortableInterceptor.IORInfo;
 import org.omg.PortableInterceptor.IORInterceptor;
 
-public class TxIORInterceptor extends org.omg.CORBA.LocalObject implements IORInterceptor
-{
+public class TxIORInterceptor extends org.omg.CORBA.LocalObject implements
+		IORInterceptor {
 	private Codec codec;
-	public static final int TAG_OTS_POLICY = 9056; //31;
+	public static final int TAG_OTS_POLICY = 9056; // 31;
 	public static final int TAG_INV_POLICY = 32;
 	public static final short EITHER = 0;
 	public static final short REQUIRES = 1;
 	public static final short FORBIDS = 2;
 	public static final short ADAPTS = 3;
 
-	public TxIORInterceptor(Codec codec)
-	{
+	public TxIORInterceptor(Codec codec) {
 		this.codec = codec;
 	}
 
-	public String name()
-	{
+	public String name() {
 		return TxIORInterceptor.class.getName();
 	}
 
-	public void destroy()
-	{
+	public void destroy() {
 	}
 
-	public void establish_components(IORInfo ior_info)
-	{
+	public void establish_components(IORInfo ior_info) {
 		System.out.println("TxIORInterceptor.establish_components");
 		try {
 			Any any = ORB.init().create_any();
 			any.insert_short(EITHER);
 			byte[] taggedComponentData = codec.encode_value(any);
-			ior_info.add_ior_component(new TaggedComponent(TAG_INV_POLICY, taggedComponentData));
+			ior_info.add_ior_component(new TaggedComponent(TAG_INV_POLICY,
+					taggedComponentData));
 			any = ORB.init().create_any();
 			any.insert_short(ADAPTS);
 			taggedComponentData = codec.encode_value(any);
-			ior_info.add_ior_component(new TaggedComponent(TAG_OTS_POLICY, taggedComponentData));
+			ior_info.add_ior_component(new TaggedComponent(TAG_OTS_POLICY,
+					taggedComponentData));
 		} catch (InvalidTypeForEncoding e) {
-			throw new RuntimeException("Exception during OTS policy encoding", e);
+			throw new RuntimeException("Exception during OTS policy encoding",
+					e);
 		}
 	}
 }

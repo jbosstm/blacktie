@@ -2,8 +2,6 @@ package org.jboss.blacktie.jatmibroker.xatmi;
 
 import java.rmi.RemoteException;
 
-
-
 /**
  * All extending classes must override the tpservice template method.
  */

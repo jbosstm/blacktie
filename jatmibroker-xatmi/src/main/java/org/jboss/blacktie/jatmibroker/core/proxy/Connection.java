@@ -22,7 +22,7 @@ import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
 import org.omg.CosTransactions.TransactionFactory;
 
-public interface Server {
+public interface Connection {
 	public TransactionFactory getTransactionFactory(
 			String transactionManagerServiceName) throws NotFound,
 			CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName;

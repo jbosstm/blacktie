@@ -17,20 +17,20 @@
  */
 package org.jboss.blacktie.jatmibroker.core.conf;
 
-import java.text.NumberFormat;
 import java.util.Properties;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
-import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * XMLServerHandler extends DefaultHandler to Server Info
  */
 public class XMLServerHandler extends DefaultHandler {
-	private static final Logger log = LogManager.getLogger(XMLServerHandler.class);
+	private static final Logger log = LogManager
+			.getLogger(XMLServerHandler.class);
 
 	private final String SERVER = "SERVER";
 	private final String SERVER_DESCRIPTION = "SERVER_DESCRIPTION";
@@ -38,38 +38,41 @@ public class XMLServerHandler extends DefaultHandler {
 	private final String MAX_REPLICAS = "MAX_REPLICAS";
 	private final String MAX_CHANNELS = "MAX_CHANNELS";
 	private final String MAX_SUPPLIERS = "MAX_SUPPLIERS";
-	private final String MAX_CONSUMERS= "MAX_CONSUMERS";
+	private final String MAX_CONSUMERS = "MAX_CONSUMERS";
 	private final String ORB_TYPE = "ORB_TYPE";
 	private final String SERVICE_NAME = "SERVICE_NAME";
 
 	private String nameElement;
 	private Properties prop;
 
-	XMLServerHandler () {
+	XMLServerHandler() {
 		prop = new Properties();
 	}
 
-	XMLServerHandler (Properties prop) {
+	XMLServerHandler(Properties prop) {
 		this.prop = prop;
 	}
 
-  	public void characters(char[] ch, int start, int length) throws SAXException {
+	public void characters(char[] ch, int start, int length)
+			throws SAXException {
 		String strValue = new String(ch, start, length);
 
-		if(NAME.equals(nameElement)) {
+		if (NAME.equals(nameElement)) {
 			prop.setProperty("blacktie.server.name", strValue);
 			log.debug("blacktie.server.name = " + strValue);
 		}
 	}
 
-	public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-		if(NAME.equals(localName)) {
+	public void startElement(String namespaceURI, String localName,
+			String qName, Attributes atts) throws SAXException {
+		if (NAME.equals(localName)) {
 			nameElement = NAME;
 		}
 	}
 
-  	public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-		if(NAME.equals(localName)) {
+	public void endElement(String namespaceURI, String localName, String qName)
+			throws SAXException {
+		if (NAME.equals(localName)) {
 			nameElement = "";
 		}
 	}

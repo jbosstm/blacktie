@@ -24,8 +24,8 @@ import org.omg.IOP.Encoding;
 import org.omg.PortableInterceptor.ORBInitInfo;
 import org.omg.PortableInterceptor.ORBInitializer;
 
-public class TxIORInterceptorInitializer extends LocalObject implements ORBInitializer
-{
+public class TxIORInterceptorInitializer extends LocalObject implements
+		ORBInitializer {
 	public TxIORInterceptorInitializer() {
 	}
 
@@ -36,8 +36,8 @@ public class TxIORInterceptorInitializer extends LocalObject implements ORBIniti
 		try {
 			// Use CDR encapsulation with GIOP 1.2 encoding
 			Encoding encoding = new Encoding(ENCODING_CDR_ENCAPS.value,
-						(byte) 1, /* GIOP version */
-						(byte) 2  /* GIOP revision*/);
+					(byte) 1, /* GIOP version */
+					(byte) 2 /* GIOP revision */);
 			Codec codec = info.codec_factory().create_codec(encoding);
 			info.add_ior_interceptor(new TxIORInterceptor(codec));
 		} catch (Exception e) {

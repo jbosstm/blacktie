@@ -1,14 +1,13 @@
 package org.jboss.blacktie.jatmibroker.xatmi.impl;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerServerXML;
 import org.jboss.blacktie.jatmibroker.xatmi.Connector;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorFactory;
-import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerServerXML;
 
 /**
  * The connector factory allows us to create connections to the remote servers.
@@ -28,8 +27,10 @@ public class ConnectorFactoryImpl implements ConnectorFactory {
 	 *            The properties to use
 	 * @return The connector factory
 	 */
-	public static synchronized ConnectorFactory getConnectorFactory(Properties properties) {
-		ConnectorFactoryImpl connectorFactoryImpl = connectorFactories.get(properties);
+	public static synchronized ConnectorFactory getConnectorFactory(
+			Properties properties) {
+		ConnectorFactoryImpl connectorFactoryImpl = connectorFactories
+				.get(properties);
 		if (connectorFactoryImpl == null) {
 			connectorFactoryImpl = new ConnectorFactoryImpl(properties);
 			connectorFactories.put(properties, connectorFactoryImpl);
@@ -43,16 +44,16 @@ public class ConnectorFactoryImpl implements ConnectorFactory {
 	 * @return The connector factory
 	 * @throws ConnectorException
 	 */
-	public static synchronized ConnectorFactory getConnectorFactory() throws ConnectorException {
+	public static synchronized ConnectorFactory getConnectorFactory()
+			throws ConnectorException {
 		Properties properties = new Properties();
 		/*
-		try {
-			InputStream resourceAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("blacktie.properties");
-			properties.load(resourceAsStream);
-		} catch (Throwable t) {
-			throw new ConnectorException(-1, "Could not load properties", t);
-		}
-		*/
+		 * try { InputStream resourceAsStream =
+		 * Thread.currentThread().getContextClassLoader
+		 * ().getResourceAsStream("blacktie.properties");
+		 * properties.load(resourceAsStream); } catch (Throwable t) { throw new
+		 * ConnectorException(-1, "Could not load properties", t); }
+		 */
 
 		try {
 			AtmiBrokerServerXML server = new AtmiBrokerServerXML(properties);
@@ -63,13 +64,12 @@ public class ConnectorFactoryImpl implements ConnectorFactory {
 		}
 
 		/*
-		ConnectorFactoryImpl connectorFactoryImpl = connectorFactories.get(properties);
-		if (connectorFactoryImpl == null) {
-			connectorFactoryImpl = new ConnectorFactoryImpl(properties);
-		}
-
-		return connectorFactoryImpl;
-		*/
+		 * ConnectorFactoryImpl connectorFactoryImpl =
+		 * connectorFactories.get(properties); if (connectorFactoryImpl == null)
+		 * { connectorFactoryImpl = new ConnectorFactoryImpl(properties); }
+		 * 
+		 * return connectorFactoryImpl;
+		 */
 		return getConnectorFactory(properties);
 	}
 

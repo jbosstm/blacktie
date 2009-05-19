@@ -21,15 +21,16 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
 import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerClientXML;
 
 public class JABSessionAttributes {
-	private static final Logger log = LogManager.getLogger(JABSessionAttributes.class);
+	private static final Logger log = LogManager
+			.getLogger(JABSessionAttributes.class);
 	private String transactionManagerName;
 	private Properties properties = new Properties();
 
-	public JABSessionAttributes(String aCompanyName, String aServerName, String transactionManagerName, String[] args) throws JABException {
+	public JABSessionAttributes(String aCompanyName, String aServerName,
+			String transactionManagerName, String[] args) throws JABException {
 		log.debug("JABSessionAttributes constructor ");
 		properties.put("blacktie.domain.name", aCompanyName);
 		properties.put("blacktie.server.name", aServerName);
@@ -45,7 +46,8 @@ public class JABSessionAttributes {
 		try {
 			String configDir = System.getProperty("blacktie.config.dir");
 			client.getProperties(configDir);
-			this.transactionManagerName = (String)properties.get("blacktie.trans.factoryid");
+			this.transactionManagerName = (String) properties
+					.get("blacktie.trans.factoryid");
 		} catch (Exception e) {
 			throw new JABException(e);
 		}

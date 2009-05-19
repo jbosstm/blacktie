@@ -18,25 +18,20 @@
 package org.jboss.blacktie.jatmibroker.core;
 
 public final class Response implements java.io.Serializable {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	public byte[] value;
-	public int length;
+	private short rval;
+	private int rcode;
+	private byte[] bytes;
+	private int length;
+	private int flags;
 	public int event;
 
-	public Response() {
-	}
-
-	public Response(byte[] aValue) {
-		value = aValue;
-		length = value.length;
-	}
-
-	public void setValue(byte[] aValue) {
-		value = aValue;
-		length = value.length;
+	public Response(short rval, int rcode, byte[] bytes, int length, int flags) {
+		this.rval = rval;
+		this.rcode = rcode;
+		this.bytes = bytes;
+		this.length = length;
+		this.flags = flags;
 	}
 
 	public void setLength(int aLength) {
@@ -47,19 +42,31 @@ public final class Response implements java.io.Serializable {
 		event = aEvent;
 	}
 
-	public byte[] getValue() {
-		return value;
+	public int getEvent() {
+		return event;
+	}
+
+	public String toString() {
+		return String.valueOf(bytes);
+	}
+
+	public short getRval() {
+		return rval;
+	}
+
+	public int getRcode() {
+		return rcode;
+	}
+
+	public byte[] getBytes() {
+		return bytes;
 	}
 
 	public int getLength() {
 		return length;
 	}
 
-	public int getEvent() {
-		return event;
-	}
-
-	public String toString() {
-		return String.valueOf(value);
+	public int getFlags() {
+		return flags;
 	}
 }

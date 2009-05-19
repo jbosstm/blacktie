@@ -17,7 +17,6 @@
  */
 package org.jboss.blacktie.jatmibroker.jab;
 
-
 public class JABMessage {// implements Message {
 // private static final Logger log = LogManager.getLogger(JABMessage.class);
 // private TypedBuffer typedBuffer;

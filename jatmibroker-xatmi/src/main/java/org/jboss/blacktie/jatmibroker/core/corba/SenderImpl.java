@@ -15,10 +15,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core;
+package org.jboss.blacktie.jatmibroker.core.corba;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.AtmiBrokerServerProxy;
+import org.jboss.blacktie.jatmibroker.core.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.proxy.Sender;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
@@ -26,45 +28,31 @@ import org.omg.CosNaming.NamingContextPackage.NotFound;
 import AtmiBroker.EndpointQueue;
 import AtmiBroker.EndpointQueueHelper;
 
-public class AtmiBrokerServiceFactoryImpl implements Sender {
-	private static final Logger log = LogManager
-			.getLogger(AtmiBrokerServiceFactoryImpl.class);
+public class SenderImpl implements Sender {
+	private static final Logger log = LogManager.getLogger(SenderImpl.class);
 	private EndpointQueue serviceFactory;
 
-	public synchronized static Sender createProxy(
+	public synchronized static Sender createSender(
 			AtmiBrokerServerProxy server, String serviceName) throws NotFound,
 			CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName {
-		AtmiBrokerServiceFactoryImpl instance = new AtmiBrokerServiceFactoryImpl(
-				server, serviceName);
-		return instance;
-	}
-
-	public synchronized static Sender createSender(
-			OrbManagement orbManagement, String callback_ior) {
-		AtmiBrokerServiceFactoryImpl instance = new AtmiBrokerServiceFactoryImpl(
-				orbManagement, callback_ior);
-		return instance;
-	}
-
-	protected AtmiBrokerServiceFactoryImpl(OrbManagement orbManagement,
-			String callback_ior) {
-		org.omg.CORBA.Object serviceFactoryObject = orbManagement.getOrb()
-				.string_to_object(callback_ior);
-		serviceFactory = EndpointQueueHelper.narrow(serviceFactoryObject);
-	}
-
-	protected AtmiBrokerServiceFactoryImpl(AtmiBrokerServerProxy server,
-			String serviceFactoryName) throws NotFound, CannotProceed,
-			org.omg.CosNaming.NamingContextPackage.InvalidName {
-		log.debug("ServiceFactoryProxy's ServiceFactoryName: "
-				+ serviceFactoryName);
 		org.omg.CORBA.Object serviceFactoryObject = server.getOrbManagement()
 				.getNamingContext().resolve(
 						server.getOrbManagement().getNamingContextExt()
-								.to_name(serviceFactoryName));
-		log.debug("ServiceFactory Object is " + serviceFactoryObject);
-		log.debug("ServiceFactory class is "
-				+ serviceFactoryObject.getClass().getName());
+								.to_name(serviceName));
+		SenderImpl instance = new SenderImpl(serviceFactoryObject, serviceName);
+		return instance;
+	}
+
+	public synchronized static Sender createSender(OrbManagement orbManagement,
+			String callback_ior) {
+		org.omg.CORBA.Object serviceFactoryObject = orbManagement.getOrb()
+				.string_to_object(callback_ior);
+		SenderImpl instance = new SenderImpl(serviceFactoryObject, callback_ior);
+		return instance;
+	}
+
+	protected SenderImpl(org.omg.CORBA.Object serviceFactoryObject,
+			String serviceFactoryName) {
 		serviceFactory = EndpointQueueHelper.narrow(serviceFactoryObject);
 		log.debug("ServiceFactory is " + serviceFactory);
 	}

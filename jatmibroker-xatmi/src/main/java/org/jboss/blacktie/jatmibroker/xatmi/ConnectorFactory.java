@@ -1,6 +1,5 @@
 package org.jboss.blacktie.jatmibroker.xatmi;
 
-
 /**
  * This is a factory that will create connectors to remote Blacktie services.
  */

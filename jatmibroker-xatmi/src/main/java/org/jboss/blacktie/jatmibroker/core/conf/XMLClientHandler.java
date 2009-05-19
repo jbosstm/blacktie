@@ -17,56 +17,59 @@
  */
 package org.jboss.blacktie.jatmibroker.core.conf;
 
-import java.text.NumberFormat;
 import java.util.Properties;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
-import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * XMLClientHandler extends DefaultHandler to Client Info
  */
 public class XMLClientHandler extends DefaultHandler {
-	private static final Logger log = LogManager.getLogger(XMLClientHandler.class);
+	private static final Logger log = LogManager
+			.getLogger(XMLClientHandler.class);
 
 	private final String SERVER_NAME = "SERVER_NAME";
 	private final String MAX_REPLICAS = "MAX_REPLICAS";
 	private final String MAX_CHANNELS = "MAX_CHANNELS";
 	private final String MAX_SUPPLIERS = "MAX_SUPPLIERS";
-	private final String MAX_CONSUMERS= "MAX_CONSUMERS";
+	private final String MAX_CONSUMERS = "MAX_CONSUMERS";
 	private final String SERVICE_NAME = "SERVICE_NAME";
 
 	private String serverElement;
 	private Properties prop;
 
-	XMLClientHandler () {
+	XMLClientHandler() {
 		prop = new Properties();
 	}
 
-	XMLClientHandler (Properties prop) {
+	XMLClientHandler(Properties prop) {
 		this.prop = prop;
 	}
 
-  	public void characters(char[] ch, int start, int length) throws SAXException {
+	public void characters(char[] ch, int start, int length)
+			throws SAXException {
 		String strValue = new String(ch, start, length);
 
-		if(SERVER_NAME.equals(serverElement)) {
+		if (SERVER_NAME.equals(serverElement)) {
 			prop.setProperty("blacktie.server.name", strValue);
 			log.debug("blacktie.server.name = " + strValue);
 		}
 	}
 
-	public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-		if(SERVER_NAME.equals(localName)) {
+	public void startElement(String namespaceURI, String localName,
+			String qName, Attributes atts) throws SAXException {
+		if (SERVER_NAME.equals(localName)) {
 			serverElement = SERVER_NAME;
 		}
 	}
 
-  	public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-		if(SERVER_NAME.equals(localName)) {
+	public void endElement(String namespaceURI, String localName, String qName)
+			throws SAXException {
+		if (SERVER_NAME.equals(localName)) {
 			serverElement = "";
 		}
 	}

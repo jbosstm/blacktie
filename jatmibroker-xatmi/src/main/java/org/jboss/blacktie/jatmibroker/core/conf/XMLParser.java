@@ -20,17 +20,13 @@ package org.jboss.blacktie.jatmibroker.core.conf;
 import java.io.File;
 
 import javax.xml.XMLConstants;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 
 import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.XMLReader;
 
 /**
  * Class to create a parser and parse an XML file
@@ -42,9 +38,12 @@ public class XMLParser {
 
 	/**
 	 * Constructor
-	 * @param handler - DefaultHandler for the SAX parser
+	 * 
+	 * @param handler
+	 *            - DefaultHandler for the SAX parser
 	 */
-	public XMLParser(DefaultHandler handler, String xsdFilename) throws JAtmiBrokerException {
+	public XMLParser(DefaultHandler handler, String xsdFilename)
+			throws JAtmiBrokerException {
 		this.handler = handler;
 		create(xsdFilename);
 	}
@@ -53,15 +52,17 @@ public class XMLParser {
 	 * Create the SAX parser
 	 */
 	private void create(String xsdFilename) throws JAtmiBrokerException {
-		try{
+		try {
 			// Obtain a new instance of a SAXParserFactory.
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			factory.setNamespaceAware(true);
 			factory.setValidating(true);
 
-			SchemaFactory schemaFactory  = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			Schema schema = schemaFactory.newSchema(
-					new File(System.getenv("BLACKTIE_SCHEMA_DIR") + "/" + xsdFilename));
+			SchemaFactory schemaFactory = SchemaFactory
+					.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+			Schema schema = schemaFactory.newSchema(new File(System
+					.getenv("BLACKTIE_SCHEMA_DIR")
+					+ "/" + xsdFilename));
 			factory.setSchema(schema);
 
 			saxParser = factory.newSAXParser();
@@ -72,10 +73,12 @@ public class XMLParser {
 
 	/**
 	 * Parser a File
-	 * @param file - File
+	 * 
+	 * @param file
+	 *            - File
 	 */
 	public void parse(File file) throws JAtmiBrokerException {
-		try{
+		try {
 			saxParser.parse(file, handler);
 		} catch (Throwable t) {
 			throw new JAtmiBrokerException("Errors parse : " + file, t);

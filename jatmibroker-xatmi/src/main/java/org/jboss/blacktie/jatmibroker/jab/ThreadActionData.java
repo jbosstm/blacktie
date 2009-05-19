@@ -31,48 +31,36 @@
 
 package org.jboss.blacktie.jatmibroker.jab;
 
-import org.jboss.blacktie.jatmibroker.core.jab.JABTransaction;
-import org.jboss.blacktie.jatmibroker.core.jab.ThreadUtil;
-
-import java.lang.Thread;
-import java.util.Stack;
-
-import java.util.NoSuchElementException;
 import java.util.EmptyStackException;
+import java.util.NoSuchElementException;
+import java.util.Stack;
 
 /**
  * This class maintains a mapping between a thread and its notion of the current
  * transaction. Essentially this is a stack of transactions.
  * 
  * @author Mark Little (mark@arjuna.com)
- * @version $Id: ThreadActionData.java 2342 2006-03-30 13:06:17Z  $
+ * @version $Id: ThreadActionData.java 2342 2006-03-30 13:06:17Z $
  * @since JTS 1.0.
  */
 
-public class ThreadActionData
-{
+public class ThreadActionData {
 
-	public static JABTransaction currentAction ()
-	{
-//XXX NOT USED		ThreadActionData.setup();
+	public static JABTransaction currentAction() {
+		// XXX NOT USED ThreadActionData.setup();
 		Stack txs = (Stack) _threadList.get();
 
-		if (txs != null)
-		{
-			try
-			{
+		if (txs != null) {
+			try {
 				return (JABTransaction) txs.peek();
-			}
-			catch (EmptyStackException e)
-			{
+			} catch (EmptyStackException e) {
 			}
 		}
 
 		return null;
 	}
 
-	public static void pushAction (JABTransaction a)
-	{
+	public static void pushAction(JABTransaction a) {
 		pushAction(a, true);
 	}
 
@@ -82,19 +70,16 @@ public class ThreadActionData
 	 * current changes.
 	 */
 
-	public static void pushAction (JABTransaction a, boolean register)
-	{
+	public static void pushAction(JABTransaction a, boolean register) {
 		Thread t = Thread.currentThread();
 		Stack txs = (Stack) _threadList.get();
 
-		if (txs == null)
-		{
+		if (txs == null) {
 			txs = new Stack();
 			txs.push(a);
 
 			_threadList.set(txs);
-		}
-		else
+		} else
 			txs.push(a);
 
 		if (register)
@@ -105,12 +90,10 @@ public class ThreadActionData
 	 * Put back the entire hierarchy, removing whatever is already there.
 	 */
 
-	public static void restoreActions (JABTransaction act)
-	{
+	public static void restoreActions(JABTransaction act) {
 		purgeActions();
 
-		if (act != null)
-		{
+		if (act != null) {
 			/*
 			 * First get the hierarchy from the bottom up.
 			 */
@@ -120,8 +103,7 @@ public class ThreadActionData
 
 			s.push(act);
 
-			while (nextLevel != null)
-			{
+			while (nextLevel != null) {
 				s.push(nextLevel);
 
 				nextLevel = nextLevel.parent();
@@ -131,33 +113,26 @@ public class ThreadActionData
 			 * Now push the hierarchy onto the thread stack.
 			 */
 
-			try
-			{
-				while (!s.empty())
-				{
+			try {
+				while (!s.empty()) {
 					pushAction((JABTransaction) s.pop());
 				}
-			}
-			catch (Exception ex)
-			{
+			} catch (Exception ex) {
 			}
 		}
 	}
 
-	public static JABTransaction popAction () throws EmptyStackException
-	{
+	public static JABTransaction popAction() throws EmptyStackException {
 		return popAction(ThreadUtil.getThreadId(), true);
 	}
 
-	public static JABTransaction popAction (boolean unregister)
-			throws EmptyStackException
-	{
+	public static JABTransaction popAction(boolean unregister)
+			throws EmptyStackException {
 		return popAction(ThreadUtil.getThreadId(), unregister);
 	}
 
-	public static JABTransaction popAction (String threadId)
-			throws EmptyStackException
-	{
+	public static JABTransaction popAction(String threadId)
+			throws EmptyStackException {
 		return popAction(threadId, true);
 	}
 
@@ -166,22 +141,18 @@ public class ThreadActionData
 	 * is not removed from the action.
 	 */
 
-	public static JABTransaction popAction (String threadId, boolean unregister)
-			throws EmptyStackException
-	{
+	public static JABTransaction popAction(String threadId, boolean unregister)
+			throws EmptyStackException {
 		Stack txs = (Stack) _threadList.get();
 
-		if (txs != null)
-		{
+		if (txs != null) {
 			JABTransaction a = (JABTransaction) txs.pop();
 
-			if ((a != null) && (unregister))
-			{
+			if ((a != null) && (unregister)) {
 				a.removeChildThread(threadId);
 			}
 
-			if (txs.size() == 0)
-			{
+			if (txs.size() == 0) {
 				_threadList.set(null);
 			}
 
@@ -191,117 +162,90 @@ public class ThreadActionData
 		return null;
 	}
 
-	public static void purgeAction (JABTransaction act)
-			throws NoSuchElementException
-	{
+	public static void purgeAction(JABTransaction act)
+			throws NoSuchElementException {
 		ThreadActionData.purgeAction(act, Thread.currentThread(), true);
 	}
 
-	public static void purgeAction (JABTransaction act, Thread t)
-			throws NoSuchElementException
-	{
+	public static void purgeAction(JABTransaction act, Thread t)
+			throws NoSuchElementException {
 		ThreadActionData.purgeAction(act, t, true);
 	}
 
-	public static void purgeAction (JABTransaction act, Thread t, boolean unregister)
-			throws NoSuchElementException
-	{
-		if ((act != null) && (unregister))
-        {
+	public static void purgeAction(JABTransaction act, Thread t,
+			boolean unregister) throws NoSuchElementException {
+		if ((act != null) && (unregister)) {
 			act.removeChildThread(ThreadUtil.getThreadId(t));
-        }
+		}
 
 		Stack txs = (Stack) _threadList.get();
 
-		if (txs != null)
-		{
+		if (txs != null) {
 			txs.removeElement(act);
 
-			if (txs.size() == 0)
-			{
+			if (txs.size() == 0) {
 				_threadList.set(null);
 			}
 		}
 	}
 
-	public static void purgeActions ()
-	{
+	public static void purgeActions() {
 		purgeActions(Thread.currentThread(), true);
 	}
 
-	public static void purgeActions (Thread t)
-	{
+	public static void purgeActions(Thread t) {
 		purgeActions(t, true);
 	}
 
-	public static void purgeActions (Thread t, boolean unregister)
-	{
+	public static void purgeActions(Thread t, boolean unregister) {
 		Stack txs = (Stack) _threadList.get();
 
 		_threadList.set(null);
 
-		if (txs != null)
-		{
-			if (unregister)
-			{
-				while (!txs.empty())
-				{
+		if (txs != null) {
+			if (unregister) {
+				while (!txs.empty()) {
 					JABTransaction act = (JABTransaction) txs.pop();
 
-					if (act != null)
-                    {
+					if (act != null) {
 						act.removeChildThread(ThreadUtil.getThreadId(t));
-                    }
+					}
 				}
 			}
 		}
 	}
 
 	/**
-	 * Add a per thread setup object to the global list. This should only
-	 * happen before the transaction service really begins, or you risk having
-	 * some threads see one view of the list that is different to other threads.
+	 * Add a per thread setup object to the global list. This should only happen
+	 * before the transaction service really begins, or you risk having some
+	 * threads see one view of the list that is different to other threads.
 	 * 
-	 * @param s the setup to add.
+	 * @param s
+	 *            the setup to add.
 	 */
-/*XXX NOT USED	
-	public static void addSetup (ThreadSetup s)
-	{
-		synchronized (_threadSetups)
-		{
-			_threadSetups.add(s);
-		}
-	}
-*/
+	/*
+	 * XXX NOT USED public static void addSetup (ThreadSetup s) { synchronized
+	 * (_threadSetups) { _threadSetups.add(s); } }
+	 */
 	/**
 	 * Remove a per thread setup object to the global list. This should only
-	 * happen after the transaction service really ends, or you risk having
-	 * some threads see one view of the list that is different to other threads.
+	 * happen after the transaction service really ends, or you risk having some
+	 * threads see one view of the list that is different to other threads.
 	 * 
-	 * @param s the setup to add.
+	 * @param s
+	 *            the setup to add.
 	 */
-/*XXX NOT USED	
-	public static boolean removeSetup (ThreadSetup s)
-	{
-		synchronized (_threadSetups)
-		{
-			return _threadSetups.remove(s);
-		}
-	}
-
-	private static void setup ()
-	{
-		for (int i = 0; i < _threadSetups.size(); i++)
-		{
-			ThreadSetup s = (ThreadSetup) _threadSetups.get(i);
-
-			if (s != null)
-				s.setup();
-		}
-	}
-
-	private static ArrayList _threadSetups = new ArrayList();
-*/
+	/*
+	 * XXX NOT USED public static boolean removeSetup (ThreadSetup s) {
+	 * synchronized (_threadSetups) { return _threadSetups.remove(s); } }
+	 * 
+	 * private static void setup () { for (int i = 0; i < _threadSetups.size();
+	 * i++) { ThreadSetup s = (ThreadSetup) _threadSetups.get(i);
+	 * 
+	 * if (s != null) s.setup(); } }
+	 * 
+	 * private static ArrayList _threadSetups = new ArrayList();
+	 */
 	private static ThreadLocal _threadList = new ThreadLocal();
 
 }

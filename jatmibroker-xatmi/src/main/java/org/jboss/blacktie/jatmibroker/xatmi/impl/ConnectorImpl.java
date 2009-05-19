@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.AtmiBrokerServerProxy;
 import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.core.Message;
-import org.jboss.blacktie.jatmibroker.core.proxy.Server;
+import org.jboss.blacktie.jatmibroker.core.proxy.Connection;
 import org.jboss.blacktie.jatmibroker.core.proxy.Receiver;
 import org.jboss.blacktie.jatmibroker.xatmi.Connector;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
@@ -23,7 +23,7 @@ public class ConnectorImpl implements Connector {
 	/**
 	 * A reference to the proxy to issue calls on
 	 */
-	private Server proxy;
+	private Connection proxy;
 
 	/**
 	 * The connector itself
@@ -37,8 +37,8 @@ public class ConnectorImpl implements Connector {
 			throws ConnectorException {
 
 		try {
-			proxy = AtmiBrokerServerProxy.getProxy(properties, username,
-					password);
+			proxy = AtmiBrokerServerProxy.createConnection(properties,
+					username, password);
 		} catch (JAtmiBrokerException e) {
 			throw new ConnectorException(-1, e);
 		}
@@ -50,8 +50,8 @@ public class ConnectorImpl implements Connector {
 		try {
 			// TODO HANDLE TRANSACTION
 			Receiver endpoint = proxy.getReceiver(0);
-			proxy.getSender(svc).send(endpoint.getReplyTo(), (short) 0,
-					0, idata.getData(), idata.getSize(), 0, flags);
+			proxy.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
+					idata.getData(), idata.getSize(), 0, flags);
 			Message receive = endpoint.receive(flags);
 			// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
 			Buffer buffer = new Buffer("unknown", "unknown", receive.len);

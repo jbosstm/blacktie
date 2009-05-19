@@ -19,6 +19,8 @@ package org.jboss.blacktie.jatmibroker.core;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.corba.ReceiverImpl;
+import org.jboss.blacktie.jatmibroker.core.corba.SenderImpl;
 import org.jboss.blacktie.jatmibroker.core.proxy.Sender;
 import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
@@ -31,12 +33,12 @@ public class AtmiBroker_ServiceImpl extends Thread {
 	private BlacktieService callback;
 	private String serviceName;
 
-	private EndpointQueue serviceQueue;
+	private ReceiverImpl serviceQueue;
 	private Sender endpointQueue;
 	private OrbManagement orbManagement;
 
 	AtmiBroker_ServiceImpl(OrbManagement orbManagement, String serviceName,
-			Class callback, EndpointQueue endpointQueue)
+			Class callback, ReceiverImpl endpointQueue)
 			throws InstantiationException, IllegalAccessException {
 		this.serviceName = serviceName;
 		this.callback = (BlacktieService) callback.newInstance();
@@ -49,8 +51,8 @@ public class AtmiBroker_ServiceImpl extends Thread {
 		while (true) {
 			Message message = serviceQueue.receive(0);
 			try {
-				endpointQueue = AtmiBrokerServiceFactoryImpl.createSender(
-						orbManagement, message.replyTo);
+				endpointQueue = SenderImpl.createSender(orbManagement,
+						message.replyTo);
 
 				// TODO HANDLE CONTROL
 				// THIS IS THE FIRST CALL

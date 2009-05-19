@@ -27,6 +27,7 @@ import java.util.Properties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerServerXML;
+import org.jboss.blacktie.jatmibroker.core.corba.ReceiverImpl;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
@@ -235,5 +236,27 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 		log.error("NO-OP stop_service");
 		// TODO Auto-generated method stub
 
+	}
+
+	private class ServiceQueue {
+		private ReceiverImpl endpointQueue;
+		private List<Runnable> servantCache = new ArrayList<Runnable>();
+
+		ServiceQueue(OrbManagement orbManagement, String serviceName,
+				int servantCacheSize, Class atmiBrokerCallback)
+				throws JAtmiBrokerException, InstantiationException,
+				IllegalAccessException {
+			this.endpointQueue = new ReceiverImpl(orbManagement, serviceName);
+
+			for (int i = 0; i < servantCacheSize; i++) {
+				servantCache.add(new AtmiBroker_ServiceImpl(orbManagement,
+						serviceName, atmiBrokerCallback, endpointQueue));
+			}
+		}
+
+		public void close() {
+			endpointQueue.close();
+			servantCache.clear();
+		}
 	}
 }
