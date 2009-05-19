@@ -36,7 +36,7 @@ public class SenderImpl implements Sender {
 
 	public void send(String replyTo, short rval, int rcode, byte[] data,
 			int len, int correlationId, int flags) {
-		serviceFactory.send(replyTo, rval, rcode, data, len, correlationId,
+		serviceFactory.send(replyTo, rval, rcode, data, len + 1, correlationId,
 				flags);
 	}
 
