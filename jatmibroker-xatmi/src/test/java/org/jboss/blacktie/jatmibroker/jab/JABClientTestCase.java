@@ -21,7 +21,7 @@ import junit.framework.TestCase;
 
 import org.jboss.blacktie.jatmibroker.core.RunServer;
 
-public class JABServiceTestCase extends TestCase {
+public class JABClientTestCase extends TestCase {
 	private RunServer runServer = new RunServer();
 
 	public void setUp() throws InterruptedException {
