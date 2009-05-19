@@ -59,6 +59,8 @@ public class AtmiBrokerServer extends ServerPOA {
 	public AtmiBrokerServer(String serverName, String configurationDir)
 			throws JAtmiBrokerException {
 		System.setProperty("blacktie.server.name", serverName);
+		this.serverName = serverName;
+
 		Properties properties = null;
 		AtmiBrokerServerXML server = new AtmiBrokerServerXML();
 		try {
@@ -66,14 +68,13 @@ public class AtmiBrokerServer extends ServerPOA {
 		} catch (Exception e) {
 			throw new JAtmiBrokerException("Could not load properties", e);
 		}
-		connection = new ConnectionFactoryImpl(properties).createConnection("",
-				"");
+
 		try {
 			orbManagement = new OrbManagement(properties, true);
 		} catch (Throwable t) {
 			throw new JAtmiBrokerException("Could not connect to orb", t);
 		}
-		this.serverName = serverName;
+
 		Policy[] policiesArray = new Policy[1];
 		List<Policy> policies = new ArrayList<Policy>(1);
 		policies.add(orbManagement.getRootPoa().create_thread_policy(
@@ -97,6 +98,9 @@ public class AtmiBrokerServer extends ServerPOA {
 		} catch (Throwable t) {
 			throw new JAtmiBrokerException("Could not bind server", t);
 		}
+
+		connection = new ConnectionFactoryImpl(properties).createConnection("",
+				"");
 	}
 
 	public void close() throws JAtmiBrokerException {
