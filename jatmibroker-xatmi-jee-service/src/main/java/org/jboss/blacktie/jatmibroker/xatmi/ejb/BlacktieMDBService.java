@@ -12,8 +12,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerServerXML;
 import org.jboss.blacktie.jatmibroker.core.OrbManagement;
+import org.jboss.blacktie.jatmibroker.core.Sender;
 import org.jboss.blacktie.jatmibroker.core.corba.SenderImpl;
-import org.jboss.blacktie.jatmibroker.core.proxy.Sender;
 import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
@@ -42,11 +42,10 @@ public abstract class BlacktieMDBService implements BlacktieService,
 	 * @throws ConnectorException
 	 */
 	public BlacktieMDBService() throws ConnectorException {
-		Properties properties = new Properties();
-		AtmiBrokerServerXML server = new AtmiBrokerServerXML(properties);
-		String configDir = System.getProperty("blacktie.config.dir");
+		Properties properties = null;
+		AtmiBrokerServerXML server = new AtmiBrokerServerXML();
 		try {
-			server.getProperties(configDir);
+			properties = server.getProperties();
 		} catch (Exception e) {
 			throw new ConnectorException(-1, "Could not load properties", e);
 		}

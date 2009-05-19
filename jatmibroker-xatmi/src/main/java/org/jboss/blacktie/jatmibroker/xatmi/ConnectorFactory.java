@@ -11,5 +11,6 @@ public interface ConnectorFactory {
 	 * @return The connector
 	 * @throws ConnectorException
 	 */
-	public Connector getConnector() throws ConnectorException;
+	public Connector getConnector(String username, String password)
+			throws ConnectorException;
 }

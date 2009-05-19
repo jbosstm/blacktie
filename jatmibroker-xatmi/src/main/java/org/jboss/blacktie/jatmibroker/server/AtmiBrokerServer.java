@@ -26,10 +26,12 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerServerXML;
-import org.jboss.blacktie.jatmibroker.core.CoreException;
+import org.jboss.blacktie.jatmibroker.core.Connection;
 import org.jboss.blacktie.jatmibroker.core.OrbManagement;
-import org.jboss.blacktie.jatmibroker.core.corba.ReceiverImpl;
+import org.jboss.blacktie.jatmibroker.core.Receiver;
+import org.jboss.blacktie.jatmibroker.core.corba.ConnectionImpl;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
@@ -48,19 +50,19 @@ public class AtmiBrokerServer extends ServerPOA {
 	private POA poa;
 	private String serverName;
 	private byte[] activate_object;
-	private Map<String, ServiceWrapper> serviceFactoryList = new HashMap<String, ServiceWrapper>();
+	private Map<String, ServiceData> serviceData = new HashMap<String, ServiceData>();
 	private boolean bound;
 	private OrbManagement orbManagement;
+	private Connection connection;
 	private static final int DEFAULT_POOL_SIZE = 5;
 
-	public AtmiBrokerServer() throws CoreException {
-		Properties properties = new Properties();
-		AtmiBrokerServerXML server = new AtmiBrokerServerXML(properties);
-		String configDir = System.getProperty("blacktie.config.dir");
+	public AtmiBrokerServer() throws JAtmiBrokerException {
+		Properties properties = null;
+		AtmiBrokerServerXML server = new AtmiBrokerServerXML();
 		try {
-			server.getProperties(configDir);
+			properties = server.getProperties();
 		} catch (Exception e) {
-			throw new CoreException("Could not load properties", e);
+			throw new JAtmiBrokerException("Could not load properties", e);
 		}
 
 		String domainName = properties.getProperty("blacktie.domain.name");
@@ -75,7 +77,7 @@ public class AtmiBrokerServer extends ServerPOA {
 		try {
 			orbManagement = new OrbManagement(args, domainName, true);
 		} catch (Throwable t) {
-			throw new CoreException("Could not connect to orb", t);
+			throw new JAtmiBrokerException("Could not connect to orb", t);
 		}
 		this.serverName = serverName;
 		Policy[] policiesArray = new Policy[1];
@@ -87,7 +89,8 @@ public class AtmiBrokerServer extends ServerPOA {
 			this.poa = orbManagement.getRootPoa().create_POA(serverName,
 					orbManagement.getRootPoa().the_POAManager(), policiesArray);
 		} catch (Throwable t) {
-			throw new CoreException("Server appears to be already running", t);
+			throw new JAtmiBrokerException(
+					"Server appears to be already running", t);
 		}
 
 		try {
@@ -98,13 +101,13 @@ public class AtmiBrokerServer extends ServerPOA {
 			orbManagement.getNamingContext().bind(name, servant_to_reference);
 			bound = true;
 		} catch (Throwable t) {
-			throw new CoreException("Could not bind server", t);
+			throw new JAtmiBrokerException("Could not bind server", t);
 		}
+		connection = ConnectionImpl.createConnection(properties, "", "");
 	}
 
-	public void close() throws CoreException {
-		Iterator<ServiceWrapper> iterator = serviceFactoryList.values()
-				.iterator();
+	public void close() throws JAtmiBrokerException {
+		Iterator<ServiceData> iterator = serviceData.values().iterator();
 		while (iterator.hasNext()) {
 			iterator.next().close();
 			iterator.remove();
@@ -118,7 +121,7 @@ public class AtmiBrokerServer extends ServerPOA {
 				poa.deactivate_object(activate_object);
 				bound = false;
 			} catch (Throwable t) {
-				throw new CoreException("Could not unbind server", t);
+				throw new JAtmiBrokerException("Could not unbind server", t);
 			}
 		}
 	}
@@ -136,15 +139,13 @@ public class AtmiBrokerServer extends ServerPOA {
 		try {
 			log.debug("Advertising: " + serviceName);
 
-			if (!serviceFactoryList.containsKey(serviceName)) {
+			if (!serviceData.containsKey(serviceName)) {
 				try {
-					ServiceWrapper atmiBroker_ServiceFactoryImpl = new ServiceWrapper(
-							orbManagement, serviceName, DEFAULT_POOL_SIZE,
-							service);
-					serviceFactoryList.put(serviceName,
-							atmiBroker_ServiceFactoryImpl);
+					ServiceData data = new ServiceData(connection, serviceName,
+							DEFAULT_POOL_SIZE, service);
+					serviceData.put(serviceName, data);
 				} catch (Throwable t) {
-					throw new CoreException(
+					throw new JAtmiBrokerException(
 							"Could not create service factory for: "
 									+ serviceName, t);
 				}
@@ -159,10 +160,9 @@ public class AtmiBrokerServer extends ServerPOA {
 
 	public void tpunadvertise(String serviceName) throws ConnectorException {
 		log.debug("Unadvertising: " + serviceName);
-		ServiceWrapper atmiBroker_ServiceFactoryImpl = serviceFactoryList
-				.remove(serviceName);
-		if (atmiBroker_ServiceFactoryImpl != null) {
-			atmiBroker_ServiceFactoryImpl.close();
+		ServiceData data = serviceData.remove(serviceName);
+		if (data != null) {
+			data.close();
 		}
 		log.info("Unadvertised: " + serviceName);
 	}
@@ -239,25 +239,24 @@ public class AtmiBrokerServer extends ServerPOA {
 
 	}
 
-	private class ServiceWrapper {
-		private ReceiverImpl receiver;
-		private List<Runnable> handlers = new ArrayList<Runnable>();
+	private class ServiceData {
+		private Receiver receiver;
+		private List<Runnable> dispatchers = new ArrayList<Runnable>();
 
-		ServiceWrapper(OrbManagement orbManagement, String serviceName,
-				int servantCacheSize, Class atmiBrokerCallback)
-				throws CoreException, InstantiationException,
-				IllegalAccessException {
-			this.receiver = new ReceiverImpl(orbManagement, serviceName);
+		ServiceData(Connection connection, String serviceName, int poolSize,
+				Class atmiBrokerCallback) throws JAtmiBrokerException,
+				InstantiationException, IllegalAccessException {
+			this.receiver = connection.createReceiver(serviceName);
 
-			for (int i = 0; i < servantCacheSize; i++) {
-				handlers.add(new AtmiBrokerService(orbManagement, serviceName,
+			for (int i = 0; i < poolSize; i++) {
+				dispatchers.add(new ServiceDispatcher(connection, serviceName,
 						atmiBrokerCallback, receiver));
 			}
 		}
 
 		public void close() {
 			receiver.close();
-			handlers.clear();
+			dispatchers.clear();
 		}
 	}
 }

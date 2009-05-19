@@ -4,11 +4,11 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.CoreException;
+import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.core.Connection;
 import org.jboss.blacktie.jatmibroker.core.Message;
-import org.jboss.blacktie.jatmibroker.core.proxy.Connection;
-import org.jboss.blacktie.jatmibroker.core.proxy.Receiver;
-import org.jboss.blacktie.jatmibroker.server.AdministrationProxy;
+import org.jboss.blacktie.jatmibroker.core.Receiver;
+import org.jboss.blacktie.jatmibroker.core.corba.ConnectionImpl;
 import org.jboss.blacktie.jatmibroker.xatmi.Connector;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
@@ -23,7 +23,7 @@ public class ConnectorImpl implements Connector {
 	/**
 	 * A reference to the proxy to issue calls on
 	 */
-	private Connection proxy;
+	private Connection connection;
 
 	/**
 	 * The connector itself
@@ -35,11 +35,10 @@ public class ConnectorImpl implements Connector {
 	 */
 	public ConnectorImpl(Properties properties, String username, String password)
 			throws ConnectorException {
-
 		try {
-			proxy = AdministrationProxy.createConnection(properties, username,
+			connection = ConnectionImpl.createConnection(properties, username,
 					password);
-		} catch (CoreException e) {
+		} catch (JAtmiBrokerException e) {
 			throw new ConnectorException(-1, e);
 		}
 	}
@@ -49,8 +48,8 @@ public class ConnectorImpl implements Connector {
 
 		try {
 			// TODO HANDLE TRANSACTION
-			Receiver endpoint = proxy.getReceiver(0);
-			proxy.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
+			Receiver endpoint = connection.getReceiver(0);
+			connection.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
 					idata.getData(), idata.getSize(), 0, flags);
 			Message receive = endpoint.receive(flags);
 			// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
@@ -58,12 +57,12 @@ public class ConnectorImpl implements Connector {
 			buffer.setData(receive.data);
 			return new Response(receive.rval, receive.rcode, buffer,
 					receive.flags);
-		} catch (CoreException e) {
+		} catch (JAtmiBrokerException e) {
 			throw new ConnectorException(-1, e);
 		}
 	}
 
 	public void close() {
-		proxy.close();
+		connection.close();
 	}
 }

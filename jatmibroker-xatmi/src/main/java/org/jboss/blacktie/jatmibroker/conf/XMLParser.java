@@ -25,7 +25,7 @@ import javax.xml.parsers.SAXParserFactory;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import org.jboss.blacktie.jatmibroker.core.CoreException;
+import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -43,7 +43,7 @@ public class XMLParser {
 	 *            - DefaultHandler for the SAX parser
 	 */
 	public XMLParser(DefaultHandler handler, String xsdFilename)
-			throws CoreException {
+			throws JAtmiBrokerException {
 		this.handler = handler;
 		create(xsdFilename);
 	}
@@ -51,7 +51,7 @@ public class XMLParser {
 	/**
 	 * Create the SAX parser
 	 */
-	private void create(String xsdFilename) throws CoreException {
+	private void create(String xsdFilename) throws JAtmiBrokerException {
 		try {
 			// Obtain a new instance of a SAXParserFactory.
 			SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -67,7 +67,7 @@ public class XMLParser {
 
 			saxParser = factory.newSAXParser();
 		} catch (Throwable t) {
-			throw new CoreException("Could not create a SAXParser: ", t);
+			throw new JAtmiBrokerException("Could not create a SAXParser: ", t);
 		}
 	}
 
@@ -77,11 +77,11 @@ public class XMLParser {
 	 * @param file
 	 *            - File
 	 */
-	public void parse(File file) throws CoreException {
+	public void parse(File file) throws JAtmiBrokerException {
 		try {
 			saxParser.parse(file, handler);
 		} catch (Throwable t) {
-			throw new CoreException("Errors parse : " + file, t);
+			throw new JAtmiBrokerException("Errors parse : " + file, t);
 		}
 	}
 }

@@ -19,7 +19,7 @@ package org.jboss.blacktie.jatmibroker.jab;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.proxy.Connection;
+import org.jboss.blacktie.jatmibroker.core.Connection;
 import org.jboss.blacktie.jatmibroker.server.AdministrationProxy;
 
 public class JABSession {

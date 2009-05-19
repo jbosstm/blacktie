@@ -19,33 +19,32 @@ package org.jboss.blacktie.jatmibroker.server;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.Connection;
 import org.jboss.blacktie.jatmibroker.core.Message;
-import org.jboss.blacktie.jatmibroker.core.OrbManagement;
-import org.jboss.blacktie.jatmibroker.core.corba.ReceiverImpl;
-import org.jboss.blacktie.jatmibroker.core.corba.SenderImpl;
-import org.jboss.blacktie.jatmibroker.core.proxy.Sender;
+import org.jboss.blacktie.jatmibroker.core.Receiver;
+import org.jboss.blacktie.jatmibroker.core.Sender;
 import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.blacktie.jatmibroker.xatmi.buffers.Buffer;
 
-public class AtmiBrokerService extends Thread {
+public class ServiceDispatcher extends Thread {
 	private static final Logger log = LogManager
-			.getLogger(AtmiBrokerService.class);
+			.getLogger(ServiceDispatcher.class);
 	private BlacktieService callback;
 	private String serviceName;
 
-	private ReceiverImpl serviceQueue;
+	private Receiver serviceQueue;
 	private Sender endpointQueue;
-	private OrbManagement orbManagement;
+	private Connection connection;
 
-	AtmiBrokerService(OrbManagement orbManagement, String serviceName,
-			Class callback, ReceiverImpl endpointQueue)
+	ServiceDispatcher(Connection connection, String serviceName,
+			Class callback, Receiver endpointQueue)
 			throws InstantiationException, IllegalAccessException {
 		this.serviceName = serviceName;
 		this.callback = (BlacktieService) callback.newInstance();
 		this.serviceQueue = endpointQueue;
-		this.orbManagement = orbManagement;
+		this.connection = connection;
 		start();
 	}
 
@@ -53,8 +52,7 @@ public class AtmiBrokerService extends Thread {
 		while (true) {
 			Message message = serviceQueue.receive(0);
 			try {
-				endpointQueue = SenderImpl.createSender(orbManagement,
-						message.replyTo);
+				endpointQueue = connection.createSender(message.replyTo);
 
 				// TODO HANDLE CONTROL
 				// THIS IS THE FIRST CALL

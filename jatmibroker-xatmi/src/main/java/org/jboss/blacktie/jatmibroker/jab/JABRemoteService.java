@@ -19,7 +19,7 @@ package org.jboss.blacktie.jatmibroker.jab;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.proxy.Receiver;
+import org.jboss.blacktie.jatmibroker.core.Receiver;
 import org.omg.CosTransactions.Control;
 
 public class JABRemoteService implements Message {

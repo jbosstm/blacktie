@@ -19,10 +19,7 @@ package org.jboss.blacktie.jatmibroker.core.corba;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.OrbManagement;
-import org.jboss.blacktie.jatmibroker.core.proxy.Sender;
-import org.omg.CosNaming.NamingContextPackage.CannotProceed;
-import org.omg.CosNaming.NamingContextPackage.NotFound;
+import org.jboss.blacktie.jatmibroker.core.Sender;
 
 import AtmiBroker.EndpointQueue;
 import AtmiBroker.EndpointQueueHelper;
@@ -31,26 +28,7 @@ public class SenderImpl implements Sender {
 	private static final Logger log = LogManager.getLogger(SenderImpl.class);
 	private EndpointQueue serviceFactory;
 
-	public synchronized static Sender createSender(ConnectionImpl server,
-			String serviceName) throws NotFound, CannotProceed,
-			org.omg.CosNaming.NamingContextPackage.InvalidName {
-		org.omg.CORBA.Object serviceFactoryObject = server.getOrbManagement()
-				.getNamingContext().resolve(
-						server.getOrbManagement().getNamingContextExt()
-								.to_name(serviceName));
-		SenderImpl instance = new SenderImpl(serviceFactoryObject, serviceName);
-		return instance;
-	}
-
-	public synchronized static Sender createSender(OrbManagement orbManagement,
-			String callback_ior) {
-		org.omg.CORBA.Object serviceFactoryObject = orbManagement.getOrb()
-				.string_to_object(callback_ior);
-		SenderImpl instance = new SenderImpl(serviceFactoryObject, callback_ior);
-		return instance;
-	}
-
-	protected SenderImpl(org.omg.CORBA.Object serviceFactoryObject,
+	SenderImpl(org.omg.CORBA.Object serviceFactoryObject,
 			String serviceFactoryName) {
 		serviceFactory = EndpointQueueHelper.narrow(serviceFactoryObject);
 		log.debug("ServiceFactory is " + serviceFactory);

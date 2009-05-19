@@ -26,11 +26,11 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.CoreException;
+import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.core.Connection;
 import org.jboss.blacktie.jatmibroker.core.OrbManagement;
-import org.jboss.blacktie.jatmibroker.core.proxy.Connection;
-import org.jboss.blacktie.jatmibroker.core.proxy.Receiver;
-import org.jboss.blacktie.jatmibroker.core.proxy.Sender;
+import org.jboss.blacktie.jatmibroker.core.Receiver;
+import org.jboss.blacktie.jatmibroker.core.Sender;
 import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CosNaming.NamingContextPackage.AlreadyBound;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
@@ -54,7 +54,7 @@ public class ConnectionImpl implements Runnable, Connection {
 
 	public synchronized static Connection createConnection(
 			Properties properties, String userName, String userPassword)
-			throws CoreException {
+			throws JAtmiBrokerException {
 		ConnectionImpl instance = null;
 		try {
 			String domainName = properties.getProperty("blacktie.domain.name");
@@ -69,7 +69,7 @@ public class ConnectionImpl implements Runnable, Connection {
 
 			instance = new ConnectionImpl(args, domainName, serverName);
 		} catch (Throwable t) {
-			throw new CoreException("Could not connect to server", t);
+			throw new JAtmiBrokerException("Could not connect to server", t);
 		}
 		return instance;
 	}
@@ -112,14 +112,18 @@ public class ConnectionImpl implements Runnable, Connection {
 		orbManagement.close();
 	}
 
-	public Sender getSender(String serviceName) throws CoreException {
+	public Sender getSender(String serviceName) throws JAtmiBrokerException {
 		Sender proxy = proxies.get(serviceName);
 		if (proxy == null) {
 			try {
-				proxy = SenderImpl.createSender(this, serviceName);
+				org.omg.CORBA.Object serviceFactoryObject = orbManagement
+						.getNamingContext().resolve(
+								orbManagement.getNamingContextExt().to_name(
+										serviceName));
+				proxy = new SenderImpl(serviceFactoryObject, serviceName);
 				proxies.put(serviceName, proxy);
 			} catch (Throwable t) {
-				throw new CoreException(
+				throw new JAtmiBrokerException(
 						"Could not load service manager proxy for: "
 								+ serviceName, t);
 			}
@@ -127,8 +131,21 @@ public class ConnectionImpl implements Runnable, Connection {
 		return proxy;
 	}
 
-	public Receiver getReceiver(int id) throws CoreException {
+	public Sender createSender(String callback_ior) {
+		org.omg.CORBA.Object serviceFactoryObject = orbManagement.getOrb()
+				.string_to_object(callback_ior);
+		SenderImpl instance = new SenderImpl(serviceFactoryObject, callback_ior);
+		return instance;
+	}
 
+	public Receiver createReceiver(String serviceName)
+			throws JAtmiBrokerException {
+		log.debug("createClientCallback create client callback ");
+		ReceiverImpl receiver = new ReceiverImpl(orbManagement, serviceName);
+		return receiver;
+	}
+
+	public Receiver getReceiver(int id) throws JAtmiBrokerException {
 		ReceiverImpl proxy = temporaryQueues.get(id);
 		if (proxy == null) {
 			try {
@@ -137,10 +154,10 @@ public class ConnectionImpl implements Runnable, Connection {
 						.getRootPoa(), serverName);
 				temporaryQueues.put(id, proxy);
 			} catch (Throwable t) {
-				throw new CoreException("Could not create a temporary queue", t);
+				throw new JAtmiBrokerException(
+						"Could not create a temporary queue", t);
 			}
 		}
-
 		return proxy;
 	}
 
