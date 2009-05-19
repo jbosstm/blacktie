@@ -17,6 +17,9 @@
  */
 package org.jboss.blacktie.jatmibroker.core;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import org.omg.CORBA.LocalObject;
 import org.omg.IOP.Codec;
 import org.omg.IOP.ENCODING_CDR_ENCAPS;
@@ -26,6 +29,8 @@ import org.omg.PortableInterceptor.ORBInitializer;
 
 public class TxIORInterceptorInitializer extends LocalObject implements ORBInitializer
 {
+	private static final Logger log = LogManager.getLogger(TxIORInterceptorInitializer.class);
+
 	public TxIORInterceptorInitializer() {
 	}
 
@@ -41,6 +46,7 @@ public class TxIORInterceptorInitializer extends LocalObject implements ORBIniti
 			Codec codec = info.codec_factory().create_codec(encoding);
 			info.add_ior_interceptor(new TxIORInterceptor(codec));
 		} catch (Exception e) {
+			log.error("IOR initializer error", e);
 			throw new RuntimeException("IOR initializer error", e);
 		}
 	}

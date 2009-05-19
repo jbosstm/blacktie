@@ -75,23 +75,22 @@ public class EndpointQueue extends EndpointQueuePOA implements Queue {
 
 	private void initPolicies(ORB orb, POA poa, Policy[] policies)
 			throws JAtmiBrokerException {
-		policies[0] = poa
-				.create_thread_policy(ThreadPolicyValue.SINGLE_THREAD_MODEL);
+		try {
+			Any otsPolicy = orb.create_any();
+			otsPolicy.insert_short(TxIORInterceptor.ADAPTS);
+			Any invPolicy = orb.create_any();
 
-		Any otsPolicy = orb.create_any();
-		otsPolicy.insert_short(TxIORInterceptor.ADAPTS);
-		Any invPolicy = orb.create_any();
-		/*
-		 * policies[1] = orb.create_policy(TxIORInterceptor.TAG_OTS_POLICY,
-		 * otsPolicy); policies[2] =
-		 * orb.create_policy(TxIORInterceptor.TAG_INV_POLICY, invPolicy);
-		 */
+			policies[0] = poa.create_thread_policy(ThreadPolicyValue.SINGLE_THREAD_MODEL);
+			policies[1] = orb.create_policy(TxIORInterceptor.TAG_OTS_POLICY, otsPolicy);
+		} catch (PolicyError e) {
+			throw new JAtmiBrokerException("POA policy creation error: ", e);
+		}
 	}
 
 	public EndpointQueue(OrbManagement orbManagement, String queueName)
 			throws JAtmiBrokerException {
 		this.queueName = queueName;
-		int numberOfPolicies = 1;
+		int numberOfPolicies = 2;
 		Policy[] policiesArray = new Policy[numberOfPolicies];
 
 		initPolicies(orbManagement.getOrb(), orbManagement.getRootPoa(),

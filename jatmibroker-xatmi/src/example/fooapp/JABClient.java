@@ -41,7 +41,7 @@ public class JABClient {
 			JABRemoteService aJabService = new JABRemoteService(aJabSession, "BAR");
 			aJabService.setString("STRING", message);
 			log.info("Calling call with input: " + message);
-			aJabService.call(transaction);
+			aJabService.call();
 			log.info("Called call with output: " + aJabService.getResponseString());
 			transaction.commit();
 			aJabSession.endSession();

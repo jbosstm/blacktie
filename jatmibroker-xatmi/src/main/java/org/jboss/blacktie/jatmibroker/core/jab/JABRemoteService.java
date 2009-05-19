@@ -20,7 +20,6 @@ package org.jboss.blacktie.jatmibroker.core.jab;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.proxy.Queue;
-import org.omg.CosTransactions.Control;
 
 public class JABRemoteService implements Message {
 	private static final Logger log = LogManager
@@ -38,17 +37,15 @@ public class JABRemoteService implements Message {
 		serviceName = aServiceName;
 	}
 
-	public void call(JABTransaction aJABTransaction) throws JABException {
+	// NB TRANSACTIONS are handled by Orb request interceptors, hence no need to pass in
+	// a JABTransaction
+	public void call() throws JABException {
 		log.debug("JABService call ");
 
 		try {
 			org.omg.CORBA.IntHolder olen = new org.omg.CORBA.IntHolder();
 			int flags = 0;
-			Control control = null;
-			if (aJABTransaction != null) {
-				control = aJABTransaction.getControl();
-			}
-			// TODO HANDLE TRANSACTION
+
 			Queue endpoint = jabSession.getServerProxy().getEndpointQueue(0);
 			jabSession.getServerProxy().getServiceQueue(serviceName).send(
 					endpoint.getReplyTo(), (short) 0, 0, data, data.length, 0,

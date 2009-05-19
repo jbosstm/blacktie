@@ -54,7 +54,7 @@ public class JABServiceTestCase extends TestCase {
 		JABRemoteService aJabService = new JABRemoteService(aJabSession,
 				serviceName);
 		aJabService.setString("STRING", "HOWS IT GOING DUDE????!!!!");
-		aJabService.call(transaction);
+		aJabService.call();
 		transaction.commit();
 		aJabSession.endSession();
 		String expectedString = "BAR SAYS HELLO";
