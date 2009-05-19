@@ -10,8 +10,8 @@ import javax.jms.MessageListener;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerServerXML;
 import org.jboss.blacktie.jatmibroker.core.OrbManagement;
-import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerServerXML;
 import org.jboss.blacktie.jatmibroker.core.corba.SenderImpl;
 import org.jboss.blacktie.jatmibroker.core.proxy.Sender;
 import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;

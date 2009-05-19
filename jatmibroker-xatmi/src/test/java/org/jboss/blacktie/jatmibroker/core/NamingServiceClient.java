@@ -42,7 +42,8 @@ public class NamingServiceClient extends TestCase {
 		props.put("org.omg.CORBA.ORBInitialPort", "3528");
 		props.put("org.omg.CORBA.ORBInitialHost", "localhost");
 		ORB orb = ORB.init(args, props);
-		NamingContextExt nc = NamingContextExtHelper.narrow(orb.resolve_initial_references("NameService"));
+		NamingContextExt nc = NamingContextExtHelper.narrow(orb
+				.resolve_initial_references("NameService"));
 		BindingListHolder bl = new BindingListHolder();
 		BindingIteratorHolder blIt = new BindingIteratorHolder();
 		nc.list(1000, bl, blIt);
@@ -55,9 +56,11 @@ public class NamingServiceClient extends TestCase {
 
 			// check to see if this is a naming context
 			if (bindings[i].binding_type == BindingType.ncontext) {
-				System.out.println("Context: " + bindings[i].binding_name[lastIx].id);
+				System.out.println("Context: "
+						+ bindings[i].binding_name[lastIx].id);
 			} else {
-				System.out.println("Object: " + bindings[i].binding_name[lastIx].id);
+				System.out.println("Object: "
+						+ bindings[i].binding_name[lastIx].id);
 			}
 			toResolve.remove(bindings[i].binding_name[lastIx].id);
 		}

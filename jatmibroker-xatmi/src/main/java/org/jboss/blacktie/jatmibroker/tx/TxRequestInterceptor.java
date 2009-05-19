@@ -1,10 +1,10 @@
-package org.jboss.blacktie.jatmibroker.core.tx;
+package org.jboss.blacktie.jatmibroker.tx;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.AtmiBrokerServerProxy;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 import org.jboss.blacktie.jatmibroker.jab.ThreadActionData;
+import org.jboss.blacktie.jatmibroker.server.AdministrationProxy;
 import org.omg.CORBA.BAD_PARAM;
 import org.omg.CORBA.LocalObject;
 import org.omg.CORBA.SystemException;
@@ -88,7 +88,7 @@ public class TxRequestInterceptor extends LocalObject implements
 		if (curr != null) {
 			System.out.println("adding tx");
 			Control control = curr.getControl();
-			String ior = AtmiBrokerServerProxy.orbManagement.getOrb()
+			String ior = AdministrationProxy.orbManagement.getOrb()
 					.object_to_string(control);
 			System.out.println("tx ior: " + ior);
 			ri.add_request_service_context(new ServiceContext(tx_context_id,

@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core;
+package org.jboss.blacktie.jatmibroker.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +26,9 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerServerXML;
+import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerServerXML;
+import org.jboss.blacktie.jatmibroker.core.CoreException;
+import org.jboss.blacktie.jatmibroker.core.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.corba.ReceiverImpl;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 import org.omg.CORBA.Object;
@@ -40,25 +42,25 @@ import AtmiBroker.ServerInfo;
 import AtmiBroker.ServerPOA;
 import AtmiBroker.ServiceInfo;
 
-public class AtmiBroker_ServerImpl extends ServerPOA {
+public class AtmiBrokerServer extends ServerPOA {
 	private static final Logger log = LogManager
-			.getLogger(AtmiBroker_ServerImpl.class);
+			.getLogger(AtmiBrokerServer.class);
 	private POA poa;
 	private String serverName;
 	private byte[] activate_object;
-	private Map<String, ServiceQueue> serviceFactoryList = new HashMap<String, ServiceQueue>();
+	private Map<String, ServiceWrapper> serviceFactoryList = new HashMap<String, ServiceWrapper>();
 	private boolean bound;
 	private OrbManagement orbManagement;
 	private static final int DEFAULT_POOL_SIZE = 5;
 
-	public AtmiBroker_ServerImpl() throws JAtmiBrokerException {
+	public AtmiBrokerServer() throws CoreException {
 		Properties properties = new Properties();
 		AtmiBrokerServerXML server = new AtmiBrokerServerXML(properties);
 		String configDir = System.getProperty("blacktie.config.dir");
 		try {
 			server.getProperties(configDir);
 		} catch (Exception e) {
-			throw new JAtmiBrokerException("Could not load properties", e);
+			throw new CoreException("Could not load properties", e);
 		}
 
 		String domainName = properties.getProperty("blacktie.domain.name");
@@ -73,7 +75,7 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 		try {
 			orbManagement = new OrbManagement(args, domainName, true);
 		} catch (Throwable t) {
-			throw new JAtmiBrokerException("Could not connect to orb", t);
+			throw new CoreException("Could not connect to orb", t);
 		}
 		this.serverName = serverName;
 		Policy[] policiesArray = new Policy[1];
@@ -85,8 +87,7 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 			this.poa = orbManagement.getRootPoa().create_POA(serverName,
 					orbManagement.getRootPoa().the_POAManager(), policiesArray);
 		} catch (Throwable t) {
-			throw new JAtmiBrokerException(
-					"Server appears to be already running", t);
+			throw new CoreException("Server appears to be already running", t);
 		}
 
 		try {
@@ -97,12 +98,12 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 			orbManagement.getNamingContext().bind(name, servant_to_reference);
 			bound = true;
 		} catch (Throwable t) {
-			throw new JAtmiBrokerException("Could not bind server", t);
+			throw new CoreException("Could not bind server", t);
 		}
 	}
 
-	public void close() throws JAtmiBrokerException {
-		Iterator<ServiceQueue> iterator = serviceFactoryList.values()
+	public void close() throws CoreException {
+		Iterator<ServiceWrapper> iterator = serviceFactoryList.values()
 				.iterator();
 		while (iterator.hasNext()) {
 			iterator.next().close();
@@ -117,7 +118,7 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 				poa.deactivate_object(activate_object);
 				bound = false;
 			} catch (Throwable t) {
-				throw new JAtmiBrokerException("Could not unbind server", t);
+				throw new CoreException("Could not unbind server", t);
 			}
 		}
 	}
@@ -137,13 +138,13 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 
 			if (!serviceFactoryList.containsKey(serviceName)) {
 				try {
-					ServiceQueue atmiBroker_ServiceFactoryImpl = new ServiceQueue(
+					ServiceWrapper atmiBroker_ServiceFactoryImpl = new ServiceWrapper(
 							orbManagement, serviceName, DEFAULT_POOL_SIZE,
 							service);
 					serviceFactoryList.put(serviceName,
 							atmiBroker_ServiceFactoryImpl);
 				} catch (Throwable t) {
-					throw new JAtmiBrokerException(
+					throw new CoreException(
 							"Could not create service factory for: "
 									+ serviceName, t);
 				}
@@ -158,7 +159,7 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 
 	public void tpunadvertise(String serviceName) throws ConnectorException {
 		log.debug("Unadvertising: " + serviceName);
-		ServiceQueue atmiBroker_ServiceFactoryImpl = serviceFactoryList
+		ServiceWrapper atmiBroker_ServiceFactoryImpl = serviceFactoryList
 				.remove(serviceName);
 		if (atmiBroker_ServiceFactoryImpl != null) {
 			atmiBroker_ServiceFactoryImpl.close();
@@ -238,25 +239,25 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 
 	}
 
-	private class ServiceQueue {
-		private ReceiverImpl endpointQueue;
-		private List<Runnable> servantCache = new ArrayList<Runnable>();
+	private class ServiceWrapper {
+		private ReceiverImpl receiver;
+		private List<Runnable> handlers = new ArrayList<Runnable>();
 
-		ServiceQueue(OrbManagement orbManagement, String serviceName,
+		ServiceWrapper(OrbManagement orbManagement, String serviceName,
 				int servantCacheSize, Class atmiBrokerCallback)
-				throws JAtmiBrokerException, InstantiationException,
+				throws CoreException, InstantiationException,
 				IllegalAccessException {
-			this.endpointQueue = new ReceiverImpl(orbManagement, serviceName);
+			this.receiver = new ReceiverImpl(orbManagement, serviceName);
 
 			for (int i = 0; i < servantCacheSize; i++) {
-				servantCache.add(new AtmiBroker_ServiceImpl(orbManagement,
-						serviceName, atmiBrokerCallback, endpointQueue));
+				handlers.add(new AtmiBrokerService(orbManagement, serviceName,
+						atmiBrokerCallback, receiver));
 			}
 		}
 
 		public void close() {
-			endpointQueue.close();
-			servantCache.clear();
+			receiver.close();
+			handlers.clear();
 		}
 	}
 }

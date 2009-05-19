@@ -17,16 +17,17 @@
  */
 package org.jboss.blacktie.jatmibroker.core;
 
-import junit.framework.TestCase;
 import java.util.Properties;
+
+import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
-import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerServerXML;
+import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerServerXML;
 
 public class AtmiBrokerServerXMLTest extends TestCase {
-	private static final Logger log = LogManager.getLogger(AtmiBrokerServerXMLTest.class);
+	private static final Logger log = LogManager
+			.getLogger(AtmiBrokerServerXMLTest.class);
 
 	public void setUp() throws InterruptedException {
 		System.setProperty("blacktie.server.name", "foo");
@@ -42,9 +43,9 @@ public class AtmiBrokerServerXMLTest extends TestCase {
 		String domain = "fooapp";
 		String server = "foo";
 		String transid = "TransactionManagerService.OTS";
-		String args   = "2";
-		String arg1   = "-ORBInitRef";
-		String arg2   = "NameService=corbaloc::localhost:3528/NameService";
+		String args = "2";
+		String arg1 = "-ORBInitRef";
+		String arg2 = "NameService=corbaloc::localhost:3528/NameService";
 
 		assertTrue(domain.equals(prop.getProperty("blacktie.domain.name")));
 		assertTrue(server.equals(prop.getProperty("blacktie.server.name")));
@@ -61,9 +62,9 @@ public class AtmiBrokerServerXMLTest extends TestCase {
 		String domain = "fooapp";
 		String server = "foo";
 		String transid = "TransactionManagerService.OTS";
-		String args   = "2";
-		String arg1   = "-ORBInitRef";
-		String arg2   = "NameService=corbaloc::localhost:3528/NameService";
+		String args = "2";
+		String arg1 = "-ORBInitRef";
+		String arg2 = "NameService=corbaloc::localhost:3528/NameService";
 
 		assertTrue(domain.equals(prop.getProperty("blacktie.domain.name")));
 		assertTrue(server.equals(prop.getProperty("blacktie.server.name")));

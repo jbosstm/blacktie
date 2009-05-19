@@ -20,10 +20,6 @@ package org.jboss.blacktie.jatmibroker.jab;
 import junit.framework.TestCase;
 
 import org.jboss.blacktie.jatmibroker.core.RunServer;
-import org.jboss.blacktie.jatmibroker.core.jab.JABRemoteService;
-import org.jboss.blacktie.jatmibroker.core.jab.JABSessionAttributes;
-import org.jboss.blacktie.jatmibroker.core.jab.JABSession;
-import org.jboss.blacktie.jatmibroker.core.jab.JABTransaction;
 
 public class JABServiceTestCase extends TestCase {
 	private RunServer runServer = new RunServer();

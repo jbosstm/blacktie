@@ -19,7 +19,6 @@ package org.jboss.blacktie.jatmibroker.core.corba;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.AtmiBrokerServerProxy;
 import org.jboss.blacktie.jatmibroker.core.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.proxy.Sender;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
@@ -32,9 +31,9 @@ public class SenderImpl implements Sender {
 	private static final Logger log = LogManager.getLogger(SenderImpl.class);
 	private EndpointQueue serviceFactory;
 
-	public synchronized static Sender createSender(
-			AtmiBrokerServerProxy server, String serviceName) throws NotFound,
-			CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName {
+	public synchronized static Sender createSender(ConnectionImpl server,
+			String serviceName) throws NotFound, CannotProceed,
+			org.omg.CosNaming.NamingContextPackage.InvalidName {
 		org.omg.CORBA.Object serviceFactoryObject = server.getOrbManagement()
 				.getNamingContext().resolve(
 						server.getOrbManagement().getNamingContextExt()

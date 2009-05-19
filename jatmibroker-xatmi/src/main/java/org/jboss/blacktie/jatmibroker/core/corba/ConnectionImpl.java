@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core;
+package org.jboss.blacktie.jatmibroker.core.corba;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,13 +26,11 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.corba.ReceiverImpl;
-import org.jboss.blacktie.jatmibroker.core.corba.SenderImpl;
-import org.jboss.blacktie.jatmibroker.core.proxy.Administration;
+import org.jboss.blacktie.jatmibroker.core.CoreException;
+import org.jboss.blacktie.jatmibroker.core.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.proxy.Connection;
 import org.jboss.blacktie.jatmibroker.core.proxy.Receiver;
 import org.jboss.blacktie.jatmibroker.core.proxy.Sender;
-import org.omg.CORBA.Object;
 import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CosNaming.NamingContextPackage.AlreadyBound;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
@@ -41,15 +39,10 @@ import org.omg.CosTransactions.TransactionFactory;
 import org.omg.CosTransactions.TransactionFactoryHelper;
 import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 
-import AtmiBroker.Server;
-import AtmiBroker.ServerHelper;
-
-public class AtmiBrokerServerProxy implements Runnable, Administration,
-		Connection {
+public class ConnectionImpl implements Runnable, Connection {
 
 	private static final Logger log = LogManager
-			.getLogger(AtmiBrokerServerProxy.class);
-	private Server server;
+			.getLogger(ConnectionImpl.class);
 	private org.omg.CORBA.Object serverObject;
 
 	private Thread callbackThread;
@@ -61,8 +54,8 @@ public class AtmiBrokerServerProxy implements Runnable, Administration,
 
 	public synchronized static Connection createConnection(
 			Properties properties, String userName, String userPassword)
-			throws JAtmiBrokerException {
-		AtmiBrokerServerProxy instance = null;
+			throws CoreException {
+		ConnectionImpl instance = null;
 		try {
 			String domainName = properties.getProperty("blacktie.domain.name");
 			String serverName = properties.getProperty("blacktie.server.name");
@@ -74,30 +67,19 @@ public class AtmiBrokerServerProxy implements Runnable, Administration,
 			}
 			String[] args = orbArgs.toArray(new String[] {});
 
-			instance = new AtmiBrokerServerProxy(args, domainName, serverName);
+			instance = new ConnectionImpl(args, domainName, serverName);
 		} catch (Throwable t) {
-			throw new JAtmiBrokerException("Could not connect to server", t);
+			throw new CoreException("Could not connect to server", t);
 		}
 		return instance;
 	}
 
-	public synchronized static Administration getAdministration(String[] args,
-			String namingContextExt, String serverName)
-			throws JAtmiBrokerException {
-		try {
-			return new AtmiBrokerServerProxy(args, namingContextExt, serverName);
-		} catch (Throwable t) {
-			throw new JAtmiBrokerException("Could not load administration", t);
-		}
-	}
-
-	protected AtmiBrokerServerProxy(String[] args, String domainName,
-			String serverName) throws InvalidName, NotFound, CannotProceed,
+	protected ConnectionImpl(String[] args, String domainName, String serverName)
+			throws InvalidName, NotFound, CannotProceed,
 			org.omg.CosNaming.NamingContextPackage.InvalidName,
 			AdapterInactive, AlreadyBound {
 		this.serverName = serverName;
 		orbManagement = new OrbManagement(args, domainName, false);
-		server = null;
 		log.debug("about to resolve '" + serverName + "'");
 
 		serverObject = orbManagement.getNamingContext().resolve(
@@ -105,58 +87,9 @@ public class AtmiBrokerServerProxy implements Runnable, Administration,
 		log.debug("Server Object is " + serverObject);
 		log.debug("Server class is " + serverObject.getClass().getName());
 
-		server = ServerHelper.narrow(serverObject);
-		log.debug("Server is " + server);
 		callbackThread = new Thread(this);
 		callbackThread.setDaemon(true);
 		callbackThread.start();
-	}
-
-	public short server_init() {
-		return server.server_init();
-	}
-
-	public void server_done() {
-		server.server_done();
-	}
-
-	public AtmiBroker.ServerInfo get_server_info() {
-		return server.get_server_info();
-	}
-
-	public AtmiBroker.ServiceInfo[] get_all_service_info() {
-		return server.get_all_service_info();
-	}
-
-	public AtmiBroker.EnvVariableInfo[] get_environment_variable_info() {
-		return server.get_environment_variable_info();
-	}
-
-	public void set_server_descriptor(String xml_descriptor) {
-		server.set_server_descriptor(xml_descriptor);
-	}
-
-	public void set_service_descriptor(String service_name,
-			String xml_descriptor) {
-		server.set_service_descriptor(service_name, xml_descriptor);
-	}
-
-	public void set_environment_descriptor(String xml_descriptor) {
-		server.set_environment_descriptor(xml_descriptor);
-	}
-
-	public void stop_service(String service_name) {
-		server.stop_service(service_name);
-	}
-
-	public void start_service(String service_name) {
-		server.start_service(service_name);
-	}
-
-	public Object resolve(String name) throws NotFound, CannotProceed,
-			org.omg.CosNaming.NamingContextPackage.InvalidName {
-		return orbManagement.getNamingContext().resolve(
-				orbManagement.getNamingContextExt().to_name(name));
 	}
 
 	public void run() {
@@ -179,14 +112,14 @@ public class AtmiBrokerServerProxy implements Runnable, Administration,
 		orbManagement.close();
 	}
 
-	public Sender getSender(String serviceName) throws JAtmiBrokerException {
+	public Sender getSender(String serviceName) throws CoreException {
 		Sender proxy = proxies.get(serviceName);
 		if (proxy == null) {
 			try {
 				proxy = SenderImpl.createSender(this, serviceName);
 				proxies.put(serviceName, proxy);
 			} catch (Throwable t) {
-				throw new JAtmiBrokerException(
+				throw new CoreException(
 						"Could not load service manager proxy for: "
 								+ serviceName, t);
 			}
@@ -194,7 +127,7 @@ public class AtmiBrokerServerProxy implements Runnable, Administration,
 		return proxy;
 	}
 
-	public Receiver getReceiver(int id) throws JAtmiBrokerException {
+	public Receiver getReceiver(int id) throws CoreException {
 
 		ReceiverImpl proxy = temporaryQueues.get(id);
 		if (proxy == null) {
@@ -204,8 +137,7 @@ public class AtmiBrokerServerProxy implements Runnable, Administration,
 						.getRootPoa(), serverName);
 				temporaryQueues.put(id, proxy);
 			} catch (Throwable t) {
-				throw new JAtmiBrokerException(
-						"Could not create a temporary queue", t);
+				throw new CoreException("Could not create a temporary queue", t);
 			}
 		}
 

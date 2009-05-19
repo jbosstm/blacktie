@@ -1,4 +1,4 @@
-package org.jboss.blacktie.jatmibroker.core.tx;
+package org.jboss.blacktie.jatmibroker.tx;
 
 import org.omg.CORBA.LocalObject;
 import org.omg.IOP.Codec;

@@ -4,11 +4,11 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.AtmiBrokerServerProxy;
-import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.core.CoreException;
 import org.jboss.blacktie.jatmibroker.core.Message;
 import org.jboss.blacktie.jatmibroker.core.proxy.Connection;
 import org.jboss.blacktie.jatmibroker.core.proxy.Receiver;
+import org.jboss.blacktie.jatmibroker.server.AdministrationProxy;
 import org.jboss.blacktie.jatmibroker.xatmi.Connector;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
@@ -37,9 +37,9 @@ public class ConnectorImpl implements Connector {
 			throws ConnectorException {
 
 		try {
-			proxy = AtmiBrokerServerProxy.createConnection(properties,
-					username, password);
-		} catch (JAtmiBrokerException e) {
+			proxy = AdministrationProxy.createConnection(properties, username,
+					password);
+		} catch (CoreException e) {
 			throw new ConnectorException(-1, e);
 		}
 	}
@@ -58,7 +58,7 @@ public class ConnectorImpl implements Connector {
 			buffer.setData(receive.data);
 			return new Response(receive.rval, receive.rcode, buffer,
 					receive.flags);
-		} catch (JAtmiBrokerException e) {
+		} catch (CoreException e) {
 			throw new ConnectorException(-1, e);
 		}
 	}

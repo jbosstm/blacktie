@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core.conf;
+package org.jboss.blacktie.jatmibroker.conf;
 
 import java.io.File;
 import java.util.Properties;

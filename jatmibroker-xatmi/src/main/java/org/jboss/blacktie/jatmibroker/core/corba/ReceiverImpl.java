@@ -22,11 +22,11 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.core.CoreException;
 import org.jboss.blacktie.jatmibroker.core.Message;
 import org.jboss.blacktie.jatmibroker.core.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.proxy.Receiver;
-import org.jboss.blacktie.jatmibroker.core.tx.TxIORInterceptor;
+import org.jboss.blacktie.jatmibroker.tx.TxIORInterceptor;
 import org.omg.CORBA.Any;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.Object;
@@ -54,7 +54,7 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 	private OrbManagement orbManagement;
 
 	private void xxxinitPolicies(ORB orb, POA poa, Policy[] policies)
-			throws JAtmiBrokerException {
+			throws CoreException {
 		try {
 			policies[0] = poa
 					.create_thread_policy(ThreadPolicyValue.SINGLE_THREAD_MODEL);
@@ -73,12 +73,12 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 			policies[2] = orb.create_policy(TxIORInterceptor.TAG_INV_POLICY,
 					invPolicy);
 		} catch (PolicyError e) {
-			throw new JAtmiBrokerException("POA policy creation error: ", e);
+			throw new CoreException("POA policy creation error: ", e);
 		}
 	}
 
 	private void initPolicies(ORB orb, POA poa, Policy[] policies)
-			throws JAtmiBrokerException {
+			throws CoreException {
 		try {
 			Any otsPolicy = orb.create_any();
 			otsPolicy.insert_short(TxIORInterceptor.ADAPTS);
@@ -89,12 +89,12 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 			policies[1] = orb.create_policy(TxIORInterceptor.TAG_OTS_POLICY,
 					otsPolicy);
 		} catch (PolicyError e) {
-			throw new JAtmiBrokerException("POA policy creation error: ", e);
+			throw new CoreException("POA policy creation error: ", e);
 		}
 	}
 
 	public ReceiverImpl(OrbManagement orbManagement, String queueName)
-			throws JAtmiBrokerException {
+			throws CoreException {
 		this.queueName = queueName;
 		int numberOfPolicies = 2;
 		Policy[] policiesArray = new Policy[numberOfPolicies];
@@ -111,8 +111,7 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 				this.m_default_poa = orbManagement.getRootPoa().find_POA(
 						queueName, true);
 			} catch (AdapterNonExistent e) {
-				throw new JAtmiBrokerException("Could not find POA:"
-						+ queueName, e);
+				throw new CoreException("Could not find POA:" + queueName, e);
 			}
 		}
 		try {
@@ -123,7 +122,7 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 					queueName);
 			orbManagement.getNamingContext().bind(name, servant_to_reference);
 		} catch (Throwable t) {
-			throw new JAtmiBrokerException("Could not bind service factory"
+			throw new CoreException("Could not bind service factory"
 					+ queueName, t);
 		}
 		this.orbManagement = orbManagement;

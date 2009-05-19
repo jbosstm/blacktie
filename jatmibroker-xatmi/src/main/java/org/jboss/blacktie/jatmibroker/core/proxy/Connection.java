@@ -17,7 +17,7 @@
  */
 package org.jboss.blacktie.jatmibroker.core.proxy;
 
-import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.core.CoreException;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
 import org.omg.CosTransactions.TransactionFactory;
@@ -27,9 +27,9 @@ public interface Connection {
 			String transactionManagerServiceName) throws NotFound,
 			CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName;
 
-	public Sender getSender(String serviceName) throws JAtmiBrokerException;
+	public Sender getSender(String serviceName) throws CoreException;
 
-	public Receiver getReceiver(int id) throws JAtmiBrokerException;
+	public Receiver getReceiver(int id) throws CoreException;
 
 	public void close();
 }

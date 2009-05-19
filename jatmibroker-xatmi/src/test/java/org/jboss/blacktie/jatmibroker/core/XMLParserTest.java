@@ -17,17 +17,17 @@
  */
 package org.jboss.blacktie.jatmibroker.core;
 
-import junit.framework.TestCase;
 import java.io.File;
 import java.util.Properties;
 
+import junit.framework.TestCase;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
-import org.jboss.blacktie.jatmibroker.core.conf.XMLClientHandler;
-import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
-import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
-import org.jboss.blacktie.jatmibroker.core.conf.XMLServerHandler;
+import org.jboss.blacktie.jatmibroker.conf.XMLClientHandler;
+import org.jboss.blacktie.jatmibroker.conf.XMLEnvHandler;
+import org.jboss.blacktie.jatmibroker.conf.XMLParser;
+import org.jboss.blacktie.jatmibroker.conf.XMLServerHandler;
 
 public class XMLParserTest extends TestCase {
 	private static final Logger log = LogManager.getLogger(XMLParserTest.class);
@@ -47,9 +47,9 @@ public class XMLParserTest extends TestCase {
 
 		String domain = "fooapp";
 		String transid = "TransactionManagerService.OTS";
-		String args   = "2";
-		String arg1   = "-ORBInitRef";
-		String arg2   = "NameService=corbaloc::localhost:3528/NameService";
+		String args = "2";
+		String arg1 = "-ORBInitRef";
+		String arg2 = "NameService=corbaloc::localhost:3528/NameService";
 
 		assertTrue(domain.equals(prop.getProperty("blacktie.domain.name")));
 		assertTrue(transid.equals(prop.getProperty("blacktie.trans.factoryid")));

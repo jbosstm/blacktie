@@ -20,16 +20,6 @@ package org.jboss.blacktie.jatmibroker.core.proxy;
 import org.jboss.blacktie.jatmibroker.core.Message;
 
 public interface Receiver {
-	/**
-	 * This method will retrieve any information from the callback that has been
-	 * sent.
-	 * 
-	 * @param odata
-	 * @param olen
-	 * @param flags
-	 * @param event
-	 * @return
-	 */
 	public Message receive(long id);
 
 	public String getReplyTo();

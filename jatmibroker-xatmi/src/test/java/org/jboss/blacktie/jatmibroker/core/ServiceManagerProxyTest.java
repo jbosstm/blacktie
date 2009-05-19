@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.proxy.Connection;
 import org.jboss.blacktie.jatmibroker.core.proxy.Receiver;
 import org.jboss.blacktie.jatmibroker.core.proxy.Sender;
+import org.jboss.blacktie.jatmibroker.server.AdministrationProxy;
 
 public class ServiceManagerProxyTest extends TestCase {
 	private static final Logger log = LogManager
@@ -51,7 +52,7 @@ public class ServiceManagerProxyTest extends TestCase {
 		properties.put("blacktie.orb.arg.2",
 				"NameService=corbaloc::localhost:3528/NameService");
 
-		Connection proxy = AtmiBrokerServerProxy.createConnection(properties, "",
+		Connection proxy = AdministrationProxy.createConnection(properties, "",
 				"");
 		Sender serviceFactory = proxy.getSender("BAR");
 

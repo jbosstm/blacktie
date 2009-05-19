@@ -15,10 +15,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core;
+package org.jboss.blacktie.jatmibroker.server;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.Message;
+import org.jboss.blacktie.jatmibroker.core.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.corba.ReceiverImpl;
 import org.jboss.blacktie.jatmibroker.core.corba.SenderImpl;
 import org.jboss.blacktie.jatmibroker.core.proxy.Sender;
@@ -27,9 +29,9 @@ import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.blacktie.jatmibroker.xatmi.buffers.Buffer;
 
-public class AtmiBroker_ServiceImpl extends Thread {
+public class AtmiBrokerService extends Thread {
 	private static final Logger log = LogManager
-			.getLogger(AtmiBroker_ServiceImpl.class);
+			.getLogger(AtmiBrokerService.class);
 	private BlacktieService callback;
 	private String serviceName;
 
@@ -37,7 +39,7 @@ public class AtmiBroker_ServiceImpl extends Thread {
 	private Sender endpointQueue;
 	private OrbManagement orbManagement;
 
-	AtmiBroker_ServiceImpl(OrbManagement orbManagement, String serviceName,
+	AtmiBrokerService(OrbManagement orbManagement, String serviceName,
 			Class callback, ReceiverImpl endpointQueue)
 			throws InstantiationException, IllegalAccessException {
 		this.serviceName = serviceName;

@@ -19,8 +19,8 @@ package org.jboss.blacktie.jatmibroker.jab;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.AtmiBrokerServerProxy;
 import org.jboss.blacktie.jatmibroker.core.proxy.Connection;
+import org.jboss.blacktie.jatmibroker.server.AdministrationProxy;
 
 public class JABSession {
 	private static final Logger log = LogManager.getLogger(JABSession.class);
@@ -34,7 +34,7 @@ public class JABSession {
 		try {
 			jabSessionAttributes = aJABSessionAttributes;
 
-			serverProxy = AtmiBrokerServerProxy.createConnection(
+			serverProxy = AdministrationProxy.createConnection(
 					jabSessionAttributes.getProperties(), "", "");
 		} catch (Exception e) {
 			String domain = jabSessionAttributes.getDomainName();
