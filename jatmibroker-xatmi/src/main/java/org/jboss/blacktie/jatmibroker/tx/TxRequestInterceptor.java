@@ -1,16 +1,20 @@
-package org.jboss.blacktie.jatmibroker.core;
+package org.jboss.blacktie.jatmibroker.tx;
+
+import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.jab.JABTransaction;
-import org.jboss.blacktie.jatmibroker.core.jab.ThreadActionData;
+import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerClientXML;
+import org.jboss.blacktie.jatmibroker.core.OrbManagement;
+import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
+import org.jboss.blacktie.jatmibroker.jab.ThreadActionData;
 import org.omg.CORBA.BAD_PARAM;
 import org.omg.CORBA.LocalObject;
 import org.omg.CORBA.SystemException;
 import org.omg.CosTransactions.Control;
 import org.omg.IOP.Codec;
-import org.omg.IOP.TaggedComponent;
 import org.omg.IOP.ServiceContext;
+import org.omg.IOP.TaggedComponent;
 import org.omg.PortableInterceptor.ClientRequestInfo;
 import org.omg.PortableInterceptor.ClientRequestInterceptor;
 import org.omg.PortableInterceptor.ServerRequestInfo;
@@ -18,7 +22,8 @@ import org.omg.PortableInterceptor.ServerRequestInterceptor;
 
 public class TxRequestInterceptor extends LocalObject implements
 		ClientRequestInterceptor, ServerRequestInterceptor {
-	private static final Logger log = LogManager.getLogger(TxRequestInterceptor.class);
+	private static final Logger log = LogManager
+			.getLogger(TxRequestInterceptor.class);
 
 	// ORB request service context id for tagging service contexts (as
 	// transactional)
@@ -28,9 +33,20 @@ public class TxRequestInterceptor extends LocalObject implements
 	private Codec codec;
 	private String name;
 
+	private OrbManagement orbManagement;
+
 	public TxRequestInterceptor(String name, Codec codec) {
 		this.codec = codec;
 		this.name = name;
+		try {
+			AtmiBrokerClientXML xml = new AtmiBrokerClientXML();
+			Properties properties = null;
+			properties = xml.getProperties(null);
+
+			orbManagement = new OrbManagement(properties, false);
+		} catch (Exception e) {
+			throw new RuntimeException("Could not load properties", e);
+		}
 	}
 
 	//
@@ -60,11 +76,10 @@ public class TxRequestInterceptor extends LocalObject implements
 			if (curr != null) {
 				log.trace("adding tx");
 				Control control = curr.getControl();
-				String ior = AtmiBrokerServerProxy.orbManagement.getOrb()
-						.object_to_string(control);
+				String ior = orbManagement.getOrb().object_to_string(control);
 				log.trace("tx ior: " + ior);
-				ri.add_request_service_context(new ServiceContext(tx_context_id,
-						ior.getBytes()), false);
+				ri.add_request_service_context(new ServiceContext(
+						tx_context_id, ior.getBytes()), false);
 			}
 		}
 	}
@@ -90,16 +105,19 @@ public class TxRequestInterceptor extends LocalObject implements
 	//
 
 	public void receive_request_service_contexts(ServerRequestInfo ri) {
-		log.trace("TxRequestInterceptor.receive_request_service_contexts: " + ri.operation());
+		log.trace("TxRequestInterceptor.receive_request_service_contexts: "
+				+ ri.operation());
 
 		try {
 			ServiceContext serviceContext = ri
 					.get_request_service_context(tx_context_id);
 			byte[] data = serviceContext.context_data;
-			log.trace("TxRequestInterceptor.receive_request_service_contexts: data: "
+			log
+					.trace("TxRequestInterceptor.receive_request_service_contexts: data: "
 							+ data);
 		} catch (BAD_PARAM e) {
-			log.debug("TxRequestInterceptor.receive_request_service_contexts: not transactional");
+			log
+					.debug("TxRequestInterceptor.receive_request_service_contexts: not transactional");
 			// not a transactional request - ignore
 		} catch (SystemException e) {
 			log.error("receive_request_service_contexts error: ", e);
@@ -115,7 +133,8 @@ public class TxRequestInterceptor extends LocalObject implements
 	}
 
 	public void send_exception(ServerRequestInfo ri) {
-		log.trace("TxRequestInterceptor.send_exception " + ri.operation() + " exception: " + ri.sending_exception());
+		log.trace("TxRequestInterceptor.send_exception " + ri.operation()
+				+ " exception: " + ri.sending_exception());
 	}
 
 	public void send_other(ServerRequestInfo ri) {
@@ -124,8 +143,9 @@ public class TxRequestInterceptor extends LocalObject implements
 
 	private boolean isTransactional(ClientRequestInfo ri) {
 		try {
-			TaggedComponent comp = ri.get_effective_component(TxIORInterceptor.TAG_OTS_POLICY);
-			log.debug("isTransactional: " + ri.operation ());
+			TaggedComponent comp = ri
+					.get_effective_component(TxIORInterceptor.TAG_OTS_POLICY);
+			log.debug("isTransactional: " + ri.operation());
 
 			return true;
 		} catch (SystemException e) {

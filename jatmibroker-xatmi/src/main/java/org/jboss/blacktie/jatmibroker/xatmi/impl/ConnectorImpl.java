@@ -8,7 +8,7 @@ import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.core.Connection;
 import org.jboss.blacktie.jatmibroker.core.Message;
 import org.jboss.blacktie.jatmibroker.core.Receiver;
-import org.jboss.blacktie.jatmibroker.core.corba.ConnectionImpl;
+import org.jboss.blacktie.jatmibroker.core.corba.ConnectionFactoryImpl;
 import org.jboss.blacktie.jatmibroker.xatmi.Connector;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
@@ -36,8 +36,8 @@ public class ConnectorImpl implements Connector {
 	public ConnectorImpl(Properties properties, String username, String password)
 			throws ConnectorException {
 		try {
-			connection = ConnectionImpl.createConnection(properties, username,
-					password);
+			connection = new ConnectionFactoryImpl(properties)
+					.createConnection(username, password);
 		} catch (JAtmiBrokerException e) {
 			throw new ConnectorException(-1, e);
 		}
