@@ -25,7 +25,7 @@
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>ejb-connector</artifactId>
+	<artifactId>jatmibroker-xatmi-jee-service</artifactId>
 	<name>Blacktie EJB Connector</name>
 	<packaging>jar</packaging>
 
