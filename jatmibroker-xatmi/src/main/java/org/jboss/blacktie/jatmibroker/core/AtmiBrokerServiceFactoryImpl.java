@@ -31,7 +31,7 @@ public class AtmiBrokerServiceFactoryImpl implements ServiceQueue {
 			.getLogger(AtmiBrokerServiceFactoryImpl.class);
 	private EndpointQueue serviceFactory;
 
-	public synchronized static ServiceQueue getProxy(
+	public synchronized static ServiceQueue createProxy(
 			AtmiBrokerServerProxy server, String serviceName) throws NotFound,
 			CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName {
 		AtmiBrokerServiceFactoryImpl instance = new AtmiBrokerServiceFactoryImpl(
@@ -39,7 +39,7 @@ public class AtmiBrokerServiceFactoryImpl implements ServiceQueue {
 		return instance;
 	}
 
-	public synchronized static ServiceQueue getProxy(
+	public synchronized static ServiceQueue createSender(
 			OrbManagement orbManagement, String callback_ior) {
 		AtmiBrokerServiceFactoryImpl instance = new AtmiBrokerServiceFactoryImpl(
 				orbManagement, callback_ior);

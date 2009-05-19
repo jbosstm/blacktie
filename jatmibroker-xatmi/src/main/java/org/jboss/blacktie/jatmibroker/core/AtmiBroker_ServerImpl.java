@@ -26,6 +26,7 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
 import org.omg.CosNaming.NameComponent;
@@ -46,9 +47,18 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 	private Map<String, ServiceQueue> serviceFactoryList = new HashMap<String, ServiceQueue>();
 	private boolean bound;
 	private OrbManagement orbManagement;
+	private static final int DEFAULT_POOL_SIZE = 5;
 
-	public AtmiBroker_ServerImpl(Properties properties)
-			throws JAtmiBrokerException {
+	public AtmiBroker_ServerImpl() throws JAtmiBrokerException {
+		Properties properties = new Properties();
+		AtmiBrokerServerXML server = new AtmiBrokerServerXML(properties);
+		String configDir = System.getProperty("blacktie.config.dir");
+		try {
+			server.getProperties(configDir);
+		} catch (Exception e) {
+			throw new JAtmiBrokerException("Could not load properties", e);
+		}
+
 		String domainName = properties.getProperty("blacktie.domain.name");
 		String serverName = properties.getProperty("blacktie.server.name");
 		int numberOfOrbArgs = Integer.parseInt(properties
@@ -75,47 +85,21 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 		} catch (Throwable t) {
 			throw new JAtmiBrokerException(
 					"Server appears to be already running", t);
-			// try {
-			// this.poa = root_poa.find_POA(serverName, true);
-			// } catch (Throwable t2) {
-			// throw new JAtmiBrokerException("Could not find poa", t2);
-			// }
 		}
-		bind();
-	}
 
-	public void createService(String serviceName, int servantCacheSize,
-			Class callback, AtmiBroker_CallbackConverter atmiBroker_Callback)
-			throws JAtmiBrokerException {
-		if (!serviceFactoryList.containsKey(serviceName)) {
-			try {
-				ServiceQueue atmiBroker_ServiceFactoryImpl = new ServiceQueue(
-						orbManagement, serviceName, servantCacheSize, callback,
-						atmiBroker_Callback);
-				serviceFactoryList.put(serviceName,
-						atmiBroker_ServiceFactoryImpl);
-			} catch (Throwable t) {
-				throw new JAtmiBrokerException(
-						"Could not create service factory for: " + serviceName,
-						t);
-			}
-		}
-	}
-
-	public void bind() throws JAtmiBrokerException {
 		try {
 			activate_object = poa.activate_object(this);
 			NameComponent[] name = orbManagement.getNamingContextExt().to_name(
 					serverName);
 			Object servant_to_reference = poa.servant_to_reference(this);
 			orbManagement.getNamingContext().bind(name, servant_to_reference);
+			bound = true;
 		} catch (Throwable t) {
 			throw new JAtmiBrokerException("Could not bind server", t);
 		}
-		bound = true;
 	}
 
-	public void unbind() throws JAtmiBrokerException {
+	public void close() throws JAtmiBrokerException {
 		Iterator<ServiceQueue> iterator = serviceFactoryList.values()
 				.iterator();
 		while (iterator.hasNext()) {
@@ -123,23 +107,61 @@ public class AtmiBroker_ServerImpl extends ServerPOA {
 			iterator.remove();
 		}
 
-		try {
-			NameComponent[] name = orbManagement.getNamingContextExt().to_name(
-					serverName);
-			orbManagement.getNamingContext().unbind(name);
-			poa.deactivate_object(activate_object);
-		} catch (Throwable t) {
-			throw new JAtmiBrokerException("Could not unbind server", t);
+		if (bound) {
+			try {
+				NameComponent[] name = orbManagement.getNamingContextExt()
+						.to_name(serverName);
+				orbManagement.getNamingContext().unbind(name);
+				poa.deactivate_object(activate_object);
+				bound = false;
+			} catch (Throwable t) {
+				throw new JAtmiBrokerException("Could not unbind server", t);
+			}
 		}
-		bound = false;
 	}
 
-	public void unbind(String serviceName) throws JAtmiBrokerException {
+	/**
+	 * Create a blacktie service with the specified name
+	 * 
+	 * @param serviceName
+	 *            The name of the service
+	 * @throws ConnectorException
+	 *             If the service cannot be advertised
+	 */
+	public void tpadvertise(String serviceName, Class service)
+			throws ConnectorException {
+		try {
+			log.debug("Advertising: " + serviceName);
+
+			if (!serviceFactoryList.containsKey(serviceName)) {
+				try {
+					ServiceQueue atmiBroker_ServiceFactoryImpl = new ServiceQueue(
+							orbManagement, serviceName, DEFAULT_POOL_SIZE,
+							service);
+					serviceFactoryList.put(serviceName,
+							atmiBroker_ServiceFactoryImpl);
+				} catch (Throwable t) {
+					throw new JAtmiBrokerException(
+							"Could not create service factory for: "
+									+ serviceName, t);
+				}
+			}
+			log.info("Advertised: " + serviceName);
+		} catch (Throwable t) {
+			String message = "Could not advertise: " + serviceName;
+			log.error(message, t);
+			throw new ConnectorException(-1, message, t);
+		}
+	}
+
+	public void tpunadvertise(String serviceName) throws ConnectorException {
+		log.debug("Unadvertising: " + serviceName);
 		ServiceQueue atmiBroker_ServiceFactoryImpl = serviceFactoryList
 				.remove(serviceName);
 		if (atmiBroker_ServiceFactoryImpl != null) {
 			atmiBroker_ServiceFactoryImpl.close();
 		}
+		log.info("Unadvertised: " + serviceName);
 	}
 
 	public ServiceInfo[] get_all_service_info() {

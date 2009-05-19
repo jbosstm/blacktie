@@ -15,16 +15,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.xatmi.connector.buffers;
+package org.jboss.blacktie.jatmibroker.xatmi.buffers;
 
-public class X_COMMON extends Buffer {
-
+public class X_OCTET extends Buffer {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public X_COMMON(String subtype, int size) {
-		super("X_COMMON", subtype, size);
+	public X_OCTET(int size) {
+		super("X_OCTET", null, size);
 	}
 }

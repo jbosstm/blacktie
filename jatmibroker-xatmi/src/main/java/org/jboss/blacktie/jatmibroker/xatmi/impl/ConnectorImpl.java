@@ -1,4 +1,4 @@
-package org.jboss.blacktie.jatmibroker.xatmi.connector.impl;
+package org.jboss.blacktie.jatmibroker.xatmi.impl;
 
 import java.util.Properties;
 
@@ -9,10 +9,10 @@ import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.core.Message;
 import org.jboss.blacktie.jatmibroker.core.proxy.AtmiBrokerServer;
 import org.jboss.blacktie.jatmibroker.core.proxy.Queue;
-import org.jboss.blacktie.jatmibroker.xatmi.connector.Connector;
-import org.jboss.blacktie.jatmibroker.xatmi.connector.ConnectorException;
-import org.jboss.blacktie.jatmibroker.xatmi.connector.Response;
-import org.jboss.blacktie.jatmibroker.xatmi.connector.buffers.Buffer;
+import org.jboss.blacktie.jatmibroker.xatmi.Connector;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
+import org.jboss.blacktie.jatmibroker.xatmi.Response;
+import org.jboss.blacktie.jatmibroker.xatmi.buffers.Buffer;
 
 /**
  * Handles the connector to the server

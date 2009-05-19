@@ -33,13 +33,12 @@ public class AtmiBroker_ServiceImpl extends Thread {
 	private OrbManagement orbManagement;
 
 	AtmiBroker_ServiceImpl(OrbManagement orbManagement, String serviceName,
-			Class callback,
-			AtmiBroker_CallbackConverter atmiBroker_CallbackConverter,
-			EndpointQueue endpointQueue) throws InstantiationException,
-			IllegalAccessException {
+			Class callback, EndpointQueue endpointQueue)
+			throws InstantiationException, IllegalAccessException {
 		this.serviceName = serviceName;
 		this.callback = callback.newInstance();
-		this.atmiBroker_CallbackConverter = atmiBroker_CallbackConverter;
+		this.atmiBroker_CallbackConverter = this.callback
+				.getCallbackConverter();
 		this.serviceQueue = endpointQueue;
 		this.orbManagement = orbManagement;
 		start();

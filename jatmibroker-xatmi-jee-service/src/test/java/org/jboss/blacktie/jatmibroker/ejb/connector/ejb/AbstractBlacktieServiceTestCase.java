@@ -21,32 +21,35 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 
-import org.jboss.blacktie.jatmibroker.xatmi.connector.Connector;
-import org.jboss.blacktie.jatmibroker.xatmi.connector.ConnectorException;
-import org.jboss.blacktie.jatmibroker.xatmi.connector.ConnectorFactory;
-import org.jboss.blacktie.jatmibroker.xatmi.connector.Response;
-import org.jboss.blacktie.jatmibroker.xatmi.connector.buffers.Buffer;
-import org.jboss.blacktie.jatmibroker.xatmi.connector.buffers.X_OCTET;
-import org.jboss.blacktie.jatmibroker.xatmi.connector.impl.ConnectorFactoryImpl;
+import org.jboss.blacktie.jatmibroker.core.AtmiBroker_ServerImpl;
+import org.jboss.blacktie.jatmibroker.core.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.xatmi.Connector;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectorFactory;
+import org.jboss.blacktie.jatmibroker.xatmi.Response;
+import org.jboss.blacktie.jatmibroker.xatmi.buffers.Buffer;
+import org.jboss.blacktie.jatmibroker.xatmi.buffers.X_OCTET;
+import org.jboss.blacktie.jatmibroker.xatmi.impl.ConnectorFactoryImpl;
 
 public class AbstractBlacktieServiceTestCase extends TestCase {
 	private Connector connector;
-	private EchoServiceTestService echoServiceTestService;
+	private AtmiBroker_ServerImpl server;
 
 	public AbstractBlacktieServiceTestCase() throws ConnectorException {
 		System.setProperty("blacktie.server.name", "ejb-connector-tests");
 	}
 
-	public void setUp() throws ConnectorException {
-		echoServiceTestService = new EchoServiceTestService();
+	public void setUp() throws ConnectorException, JAtmiBrokerException {
+		this.server = new AtmiBroker_ServerImpl();
+		this.server.tpadvertise("EchoService", EchoServiceTestService.class);
 		ConnectorFactory connectorFactory = ConnectorFactoryImpl
 				.getConnectorFactory();
 		connector = connectorFactory.getConnector();
 	}
 
 	public void tearDown() throws ConnectorException {
-		echoServiceTestService.tpunadvertise();
 		connector.close();
+		server.tpunadvertise("EchoService");
 	}
 
 	public void testWithProperties() throws ConnectorException {

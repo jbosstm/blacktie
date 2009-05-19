@@ -1,16 +1,15 @@
 package org.jboss.blacktie.jatmibroker.ejb.connector.ejb;
 
-import org.jboss.blacktie.jatmibroker.xatmi.connector.ConnectorException;
-import org.jboss.blacktie.jatmibroker.xatmi.connector.Response;
-import org.jboss.blacktie.jatmibroker.xatmi.connector.TPSVCINFO;
-import org.jboss.blacktie.jatmibroker.xatmi.connector.buffers.Buffer;
-import org.jboss.blacktie.jatmibroker.xatmi.connector.buffers.X_OCTET;
-import org.jboss.blacktie.jatmibroker.xatmi.ejb.AbstractBlacktieService;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
+import org.jboss.blacktie.jatmibroker.xatmi.Response;
+import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
+import org.jboss.blacktie.jatmibroker.xatmi.buffers.Buffer;
+import org.jboss.blacktie.jatmibroker.xatmi.buffers.X_OCTET;
+import org.jboss.blacktie.jatmibroker.xatmi.ejb.BlacktieMDBService;
 
-public class EchoServiceTestService extends AbstractBlacktieService {
+public class EchoServiceTestService extends BlacktieMDBService {
 
 	public EchoServiceTestService() throws ConnectorException {
-		tpadvertise("EchoService", EchoServiceTestService.class);
 	}
 
 	public Response tpservice(TPSVCINFO svcinfo) {

@@ -23,39 +23,25 @@ import java.util.List;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import AtmiBroker.ServiceInfo;
-
 public class ServiceQueue {
 	private static final Logger log = LogManager.getLogger(ServiceQueue.class);
-	private String serviceName;
-	private List<Runnable> servantCache = new ArrayList<Runnable>();
 	private EndpointQueue endpointQueue;
+	private List<Runnable> servantCache = new ArrayList<Runnable>();
 
 	ServiceQueue(OrbManagement orbManagement, String serviceName,
-			int servantCacheSize, Class atmiBrokerCallback,
-			AtmiBroker_CallbackConverter atmiBroker_CallbackConverter)
+			int servantCacheSize, Class atmiBrokerCallback)
 			throws JAtmiBrokerException, InstantiationException,
 			IllegalAccessException {
-		this.serviceName = serviceName;
 		this.endpointQueue = new EndpointQueue(orbManagement, serviceName);
 
 		for (int i = 0; i < servantCacheSize; i++) {
-			servantCache.add(new AtmiBroker_ServiceImpl(orbManagement, serviceName,
-					atmiBrokerCallback, atmiBroker_CallbackConverter,
-					endpointQueue));
+			servantCache.add(new AtmiBroker_ServiceImpl(orbManagement,
+					serviceName, atmiBrokerCallback, endpointQueue));
 		}
-	}
-
-	public ServiceInfo get_service_info() {
-		log.error("NO-OP get_service_info");
-		ServiceInfo serviceInfo = new ServiceInfo();
-		serviceInfo.poolSize = (short) servantCache.size();
-		serviceInfo.securityType = "";
-		serviceInfo.serviceName = serviceName;
-		return serviceInfo;
 	}
 
 	public void close() {
 		endpointQueue.disconnect();
+		servantCache.clear();
 	}
 }

@@ -1,4 +1,4 @@
-package org.jboss.blacktie.jatmibroker.xatmi.connector;
+package org.jboss.blacktie.jatmibroker.xatmi;
 
 /**
  * This is the exception that is raised when the connection to Blacktie is

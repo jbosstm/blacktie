@@ -1,9 +1,8 @@
-package org.jboss.blacktie.jatmibroker.xatmi.ejb;
+package org.jboss.blacktie.jatmibroker.xatmi;
 
 import java.rmi.RemoteException;
 
-import org.jboss.blacktie.jatmibroker.xatmi.connector.Response;
-import org.jboss.blacktie.jatmibroker.xatmi.connector.TPSVCINFO;
+
 
 /**
  * All extending classes must override the tpservice template method.

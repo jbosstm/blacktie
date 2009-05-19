@@ -181,7 +181,7 @@ public class AtmiBrokerServerProxy implements BTServerAdministration,
 		if (proxy == null) {
 			try {
 				proxy = AtmiBrokerServiceFactoryImpl
-						.getProxy(this, serviceName);
+						.createProxy(this, serviceName);
 				proxies.put(serviceName, proxy);
 			} catch (Throwable t) {
 				throw new JAtmiBrokerException(

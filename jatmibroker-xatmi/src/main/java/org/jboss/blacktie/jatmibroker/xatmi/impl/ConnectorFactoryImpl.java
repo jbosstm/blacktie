@@ -1,13 +1,13 @@
-package org.jboss.blacktie.jatmibroker.xatmi.connector.impl;
+package org.jboss.blacktie.jatmibroker.xatmi.impl;
 
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.jboss.blacktie.jatmibroker.xatmi.connector.Connector;
-import org.jboss.blacktie.jatmibroker.xatmi.connector.ConnectorException;
-import org.jboss.blacktie.jatmibroker.xatmi.connector.ConnectorFactory;
+import org.jboss.blacktie.jatmibroker.xatmi.Connector;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectorFactory;
 import org.jboss.blacktie.jatmibroker.core.AtmiBrokerServerXML;
 
 /**

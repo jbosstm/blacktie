@@ -1,8 +1,8 @@
-package org.jboss.blacktie.jatmibroker.xatmi.connector;
+package org.jboss.blacktie.jatmibroker.xatmi;
 
 import java.io.Serializable;
 
-import org.jboss.blacktie.jatmibroker.xatmi.connector.buffers.Buffer;
+import org.jboss.blacktie.jatmibroker.xatmi.buffers.Buffer;
 
 /**
  * This is the inbound service data struct

@@ -15,103 +15,78 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.xatmi.connector.buffers;
+package org.jboss.blacktie.jatmibroker.xatmi;
 
 import java.io.Serializable;
 
+import org.jboss.blacktie.jatmibroker.xatmi.buffers.Buffer;
+
 /**
- * The typed buffer is the base class for all buffers.
+ * This class encapsulates the response from the remote service and the return
+ * code
  */
-public class Buffer implements Serializable {
+public class Response implements Serializable {
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * The data
+	 * The return value
 	 */
-	private byte[] data;
+	short rval;
 
 	/**
-	 * The size of the buffer.
+	 * The return code
 	 */
-	private int size;
+	int rcode;
 
 	/**
-	 * The subtype.
+	 * The flags to return
 	 */
-	private String subtype;
+	int flags;
 
 	/**
-	 * The type
+	 * The response from the server
 	 */
-	private String type;
+	private Buffer response;
 
-	/**
-	 * Create a new typed buffer with a size
-	 * 
-	 * @param size
-	 *            The size to reserve
-	 */
-	public Buffer(String type, String subtype, int size) {
-		setSize(size);
-		data = new byte[size];
+	public Response(short rval, int rcode, Buffer response, int flags) {
+		this.rval = rval;
+		this.rcode = rcode;
+		this.response = response;
+		this.flags = flags;
 	}
 
 	/**
-	 * Get the size
+	 * Get the return value
 	 * 
-	 * @return The size
+	 * @return The return value
 	 */
-	public int getSize() {
-		return size;
+	public short getRval() {
+		return rval;
 	}
 
 	/**
-	 * Set the size
+	 * Get the return code
 	 * 
-	 * @param size
-	 *            The size
+	 * @return The return code
 	 */
-	public void setSize(int size) {
-		this.size = size;
+	public int getRcode() {
+		return rcode;
 	}
 
 	/**
-	 * Get the subtype
+	 * Get the response out of the wrapper
 	 * 
-	 * @return The subtype
+	 * @return The response
 	 */
-	public String getSubtype() {
-		return subtype;
+	public Buffer getResponse() {
+		return response;
 	}
 
-	/**
-	 * Get the type
-	 * 
-	 * @return The type
-	 */
-	public String getType() {
-		return type;
-	}
-
-	/**
-	 * Get the data to be sent.
-	 * 
-	 * @return The data
-	 */
-	public byte[] getData() {
-		return data;
-	}
-
-	/**
-	 * Set the data
-	 * 
-	 * @param data
-	 *            The data
-	 */
-	public void setData(byte[] data) {
-		this.data = data;
+	public int getFlags() {
+		return flags;
 	}
 }

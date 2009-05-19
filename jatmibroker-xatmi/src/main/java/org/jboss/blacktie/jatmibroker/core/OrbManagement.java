@@ -33,9 +33,8 @@ public class OrbManagement {
 	private POA root_poa;
 
 	public OrbManagement(String[] args, String namingContextExt,
-			boolean createNC) throws InvalidName, NotFound, CannotProceed,
-			org.omg.CosNaming.NamingContextPackage.InvalidName,
-			AdapterInactive, AlreadyBound {
+			boolean createNC) throws InvalidName, AdapterInactive, NotFound,
+			CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName {
 
 		log.debug("ServerProxy's connectToORB args: " + args
 				+ " namingContext: " + namingContextExt);
@@ -71,15 +70,18 @@ public class OrbManagement {
 		log.debug("roo_poa is activated ");
 		log.debug(" finished & returning from ConnectToORBWithNameServiceProp");
 
-		// try {
 		if (createNC) {
-			log.debug(" creating NamingContext");
-			NameComponent[] aNameComponentArray = new NameComponent[1];
-			aNameComponentArray[0] = new NameComponent(namingContextExt, "");
-			nc = nce.bind_new_context(aNameComponentArray);
-			log.debug(" created NamingContext");
-		} else {
-			// } catch (Exception e) {
+			try {
+				log.debug(" creating NamingContext");
+				NameComponent[] aNameComponentArray = new NameComponent[1];
+				aNameComponentArray[0] = new NameComponent(namingContextExt, "");
+				nc = nce.bind_new_context(aNameComponentArray);
+				log.debug(" created NamingContext");
+			} catch (AlreadyBound e) {
+				log.debug("Could not create the context");
+			}
+		}
+		if (nc == null) {
 			log.debug(" resolving NamingContext");
 			org.omg.CORBA.Object aObject = nce.resolve_str(namingContextExt);
 			log.debug("NamingContext Object is " + aObject);
@@ -87,7 +89,6 @@ public class OrbManagement {
 			nc = NamingContextHelper.narrow(aObject);
 		}
 		log.debug("NamingContext is " + nc);
-
 	}
 
 	public void close() {
