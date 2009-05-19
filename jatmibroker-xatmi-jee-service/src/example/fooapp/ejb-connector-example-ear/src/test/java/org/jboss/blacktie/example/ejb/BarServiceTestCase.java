@@ -29,36 +29,37 @@ import javax.rmi.PortableRemoteObject;
 
 import junit.framework.TestCase;
 
-import org.jboss.blacktie.jatmibroker.ejb.connector.Connector;
-import org.jboss.blacktie.jatmibroker.ejb.connector.ConnectorException;
-import org.jboss.blacktie.jatmibroker.ejb.connector.ConnectorFactory;
-import org.jboss.blacktie.jatmibroker.ejb.connector.Response;
-import org.jboss.blacktie.jatmibroker.ejb.connector.buffers.Buffer;
-import org.jboss.blacktie.jatmibroker.ejb.connector.buffers.X_OCTET;
-import org.jboss.blacktie.jatmibroker.ejb.connector.impl.ConnectorFactoryImpl;
+import org.jboss.blacktie.jatmibroker.xatmi.Connector;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectorFactory;
+import org.jboss.blacktie.jatmibroker.xatmi.Response;
 
 /**
  * This example shows how a Java client can connect to the remote server and
  * invoke a tpcall on it.
  */
 public class BarServiceTestCase extends TestCase {
-	public void testConnectorCall() throws ConnectorException, NamingException, RemoteException, CreateException {
+	public void testConnectorCall() throws ConnectorException, NamingException,
+			RemoteException, CreateException {
 		// Bootstrap the EJB
 		Context ic = new InitialContext();
 		Name realName = ic.getNameParser("BarService").parse("BarService");
 		Object o = ic.lookup(realName);
-		BarServiceHome home = (BarServiceHome) PortableRemoteObject.narrow(o, BarServiceHome.class);
+		BarServiceHome home = (BarServiceHome) PortableRemoteObject.narrow(o,
+				BarServiceHome.class);
 		BarService service = home.create();
 
 		// Initialise the connection
 		Properties properties = new Properties();
 		properties.put("blacktie.orb.args", "2");
 		properties.put("blacktie.orb.arg.1", "-ORBInitRef");
-		properties.put("blacktie.orb.arg.2", "NameService=corbaloc::localhost:3528/NameService");
+		properties.put("blacktie.orb.arg.2",
+				"NameService=corbaloc::localhost:3528/NameService");
 		properties.put("blacktie.domain.name", "jboss");
 		properties.put("blacktie.server.name", "example");
-		ConnectorFactory connectorFactory = ConnectorFactoryImpl.getConnectorFactory(properties);
-		Connector connector = connectorFactory.getConnector();
+		ConnectorFactory connectorFactory = ConnectorFactory
+				.getConnectorFactory(properties);
+		Connector connector = connectorFactory.getConnector("", "");
 
 		// Make the call
 		byte[] echo = "echo".getBytes();

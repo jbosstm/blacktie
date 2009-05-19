@@ -21,7 +21,6 @@ import junit.framework.TestCase;
 
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.server.AtmiBrokerServer;
-import org.jboss.blacktie.jatmibroker.xatmi.impl.ConnectorFactoryImpl;
 
 public class BlacktieServiceTestCase extends TestCase {
 	private Connector connector;
@@ -31,7 +30,7 @@ public class BlacktieServiceTestCase extends TestCase {
 		this.server = new AtmiBrokerServer("standalone-server", null);
 		this.server.tpadvertise("EchoService", EchoServiceTestService.class);
 
-		ConnectorFactory connectorFactory = ConnectorFactoryImpl
+		ConnectorFactory connectorFactory = ConnectorFactory
 				.getConnectorFactory(null);
 		connector = connectorFactory.getConnector("", "");
 	}

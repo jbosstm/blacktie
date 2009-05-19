@@ -14,13 +14,13 @@ import org.jboss.blacktie.jatmibroker.ejb.connector.TPSVCINFO;
 import org.jboss.blacktie.jatmibroker.ejb.connector.buffers.Buffer;
 import org.jboss.blacktie.jatmibroker.ejb.connector.buffers.X_OCTET;
 import org.jboss.blacktie.jatmibroker.ejb.connector.ejb.AbstractBlacktieService;
-import org.jboss.blacktie.jatmibroker.ejb.connector.impl.ConnectorFactoryImpl;
 
 /**
  * This is an example EJB that can advertise itself using configuration and can
  * respond to requests by returning the same value back.
  */
-public class BarServiceBean extends AbstractBlacktieService implements SessionBean {
+public class BarServiceBean extends AbstractBlacktieService implements
+		SessionBean {
 
 	/**
 	 * 
@@ -29,8 +29,8 @@ public class BarServiceBean extends AbstractBlacktieService implements SessionBe
 
 	static {
 		try {
-			ConnectorFactory cf = ConnectorFactoryImpl.getConnectorFactory();
-			Connector connector = cf.getConnector();
+			ConnectorFactory cf = ConnectorFactory.getConnectorFactory(null);
+			Connector connector = cf.getConnector("", "");
 			connector.tpadvertise("BAR", BarServiceBean.class);
 		} catch (ConnectorException e) {
 			throw new Error(e);
@@ -50,10 +50,12 @@ public class BarServiceBean extends AbstractBlacktieService implements SessionBe
 			Properties properties = new Properties();
 			properties.put("blacktie.orb.args", "2");
 			properties.put("blacktie.orb.arg.1", "-ORBInitRef");
-			properties.put("blacktie.orb.arg.2", "NameService=corbaloc::localhost:3528/NameService");
+			properties.put("blacktie.orb.arg.2",
+					"NameService=corbaloc::localhost:3528/NameService");
 			properties.put("blacktie.domain.name", "jboss");
 			properties.put("blacktie.server.name", "example");
-			ConnectorFactory connectorFactory = ConnectorFactoryImpl.getConnectorFactory(properties);
+			ConnectorFactory connectorFactory = ConnectorFactory
+					.getConnectorFactory(properties);
 			Connector connector = connectorFactory.getConnector();
 			byte[] echo = "echo".getBytes();
 			Buffer buffer = new X_OCTET(echo.length);
@@ -79,8 +81,8 @@ public class BarServiceBean extends AbstractBlacktieService implements SessionBe
 	 */
 	public void ejbRemove() throws EJBException {
 		try {
-			ConnectorFactory cf = ConnectorFactoryImpl.getConnectorFactory();
-			Connector connector = cf.getConnector();
+			ConnectorFactory cf = ConnectorFactory.getConnectorFactory(null);
+			Connector connector = cf.getConnector("", "");
 			connector.tpunadvertise("BAR");
 		} catch (ConnectorException e) {
 			throw new EJBException(e);

@@ -17,22 +17,8 @@ public class ConnectorException extends Exception {
 	 * @param tperrno
 	 *            The error code
 	 */
-	public ConnectorException(int tperrno, Throwable t) {
-		this(tperrno, t.getMessage(), t);
-	}
-
 	public ConnectorException(int tperrno, String string, Throwable t) {
 		super(string, t);
-		setTperrno(tperrno);
-	}
-
-	/**
-	 * Set the error code
-	 * 
-	 * @param tperrno
-	 *            The error number
-	 */
-	private void setTperrno(int tperrno) {
 		this.tperrno = tperrno;
 	}
 

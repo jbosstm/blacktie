@@ -17,10 +17,28 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
+import java.util.Properties;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.core.Connection;
+import org.jboss.blacktie.jatmibroker.core.ConnectionFactory;
+import org.jboss.blacktie.jatmibroker.core.Message;
+import org.jboss.blacktie.jatmibroker.core.Receiver;
+
 /**
  * This is the connector to remote Blacktie services.
  */
-public interface Connector {
+public class Connector {
+
+	private static final Logger log = LogManager.getLogger(Connector.class);
+
+	/**
+	 * A reference to the proxy to issue calls on
+	 */
+	private Connection connection;
+
 	// AVAILABLE FLAGS
 	int TPNOBLOCK = 0x00000001;
 	int TPSIGRSTRT = 0x00000002;
@@ -54,6 +72,25 @@ public interface Connector {
 	public int TPEMATCH = 23;
 
 	/**
+	 * The connector itself
+	 * 
+	 * @param properties
+	 * @param username
+	 * @param password
+	 * @throws ConnectorException
+	 */
+	Connector(Properties properties, String username, String password)
+			throws ConnectorException {
+		try {
+
+			connection = ConnectionFactory.loadConnectionFactory(properties)
+					.createConnection(username, password);
+		} catch (JAtmiBrokerException e) {
+			throw new ConnectorException(-1, "Could not load properties", e);
+		}
+	}
+
+	/**
 	 * Synchronous call
 	 * 
 	 * @param svc
@@ -64,8 +101,22 @@ public interface Connector {
 	 *            The flags to use
 	 * @return The returned buffer
 	 */
-	Response tpcall(String svc, byte[] idata, int ilen, int flags)
-			throws ConnectorException;
+	public Response tpcall(String svc, byte[] idata, int length, int flags)
+			throws ConnectorException {
+
+		try {
+			// TODO HANDLE TRANSACTION
+			Receiver endpoint = connection.getReceiver(0);
+			connection.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
+					idata, length, 0, flags);
+			Message receive = endpoint.receive(flags);
+			// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
+			return new Response(receive.rval, receive.rcode, receive.data,
+					receive.len, receive.flags);
+		} catch (JAtmiBrokerException e) {
+			throw new ConnectorException(-1, "could not send tpcall", e);
+		}
+	}
 
 	/**
 	 * Asynchronous call
@@ -144,5 +195,7 @@ public interface Connector {
 	/**
 	 * Close any resources associated with this connection
 	 */
-	void close();
+	public void close() {
+		connection.close();
+	}
 }
