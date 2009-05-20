@@ -28,8 +28,9 @@ import org.omg.PortableInterceptor.IORInterceptor;
 public class TxIORInterceptor extends org.omg.CORBA.LocalObject implements
 		IORInterceptor {
 	private Codec codec;
-	public static final int TAG_OTS_POLICY = 9056; // 31;
-	public static final int TAG_INV_POLICY = 32;
+	public static final int OTS_POLICY_TYPE = 9056;
+	public static final int TAG_OTS_POLICY = 9031;	// 31;
+	public static final int TAG_INV_POLICY = 9032;	//32;
 	public static final short EITHER = 0;
 	public static final short REQUIRES = 1;
 	public static final short FORBIDS = 2;

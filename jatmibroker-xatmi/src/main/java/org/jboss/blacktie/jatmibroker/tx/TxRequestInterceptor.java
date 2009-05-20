@@ -35,7 +35,8 @@ public class TxRequestInterceptor extends LocalObject implements
 
 	private OrbManagement orbManagement;
 
-	public TxRequestInterceptor(String name, Codec codec) {
+	public TxRequestInterceptor(OrbManagement orbManagement, String name, Codec codec) {
+		this.orbManagement = orbManagement;
 		this.codec = codec;
 		this.name = name;
 		try {
@@ -43,7 +44,7 @@ public class TxRequestInterceptor extends LocalObject implements
 			Properties properties = null;
 			properties = xml.getProperties(null);
 
-			orbManagement = new OrbManagement(properties, false);
+//			orbManagement = new OrbManagement(properties, false);
 		} catch (Exception e) {
 			throw new RuntimeException("Could not load properties", e);
 		}
@@ -70,7 +71,7 @@ public class TxRequestInterceptor extends LocalObject implements
 
 	public void send_request(ClientRequestInfo ri) {
 		if (isTransactional(ri)) {
-			log.trace("TxRequestInterceptor.send_request: " + ri.operation());
+			log.trace("send_request: " + ri.operation());
 			JABTransaction curr = ThreadActionData.currentAction();
 
 			if (curr != null) {
@@ -85,19 +86,19 @@ public class TxRequestInterceptor extends LocalObject implements
 	}
 
 	public void send_poll(ClientRequestInfo ri) {
-		log.trace("TxRequestInterceptor.send_poll: " + ri.operation());
+		log.trace("send_poll: " + ri.operation());
 	}
 
 	public void receive_reply(ClientRequestInfo ri) {
-		log.trace("TxRequestInterceptor.receive_reply: " + ri.operation());
+		log.trace("receive_reply: " + ri.operation());
 	}
 
 	public void receive_exception(ClientRequestInfo ri) {
-		log.trace("TxRequestInterceptor.receive_exception: " + ri.operation());
+		log.trace("receive_exception: " + ri.operation());
 	}
 
 	public void receive_other(ClientRequestInfo ri) {
-		log.trace("TxRequestInterceptor.receive_other: " + ri.operation());
+		log.trace("receive_other: " + ri.operation());
 	}
 
 	//
@@ -105,7 +106,7 @@ public class TxRequestInterceptor extends LocalObject implements
 	//
 
 	public void receive_request_service_contexts(ServerRequestInfo ri) {
-		log.trace("TxRequestInterceptor.receive_request_service_contexts: "
+		log.trace("receive_request_service_contexts: "
 				+ ri.operation());
 
 		try {
@@ -113,11 +114,11 @@ public class TxRequestInterceptor extends LocalObject implements
 					.get_request_service_context(tx_context_id);
 			byte[] data = serviceContext.context_data;
 			log
-					.trace("TxRequestInterceptor.receive_request_service_contexts: data: "
+					.trace("receive_request_service_contexts: data: "
 							+ data);
 		} catch (BAD_PARAM e) {
 			log
-					.debug("TxRequestInterceptor.receive_request_service_contexts: not transactional");
+					.debug("receive_request_service_contexts: not transactional");
 			// not a transactional request - ignore
 		} catch (SystemException e) {
 			log.error("receive_request_service_contexts error: ", e);
@@ -125,20 +126,20 @@ public class TxRequestInterceptor extends LocalObject implements
 	}
 
 	public void receive_request(ServerRequestInfo ri) {
-		log.trace("TxRequestInterceptor.receive_request: " + ri.operation());
+		log.trace("receive_request: " + ri.operation());
 	}
 
 	public void send_reply(ServerRequestInfo ri) {
-		log.trace("TxRequestInterceptor.send_reply: " + ri.operation());
+		log.trace("send_reply: " + ri.operation());
 	}
 
 	public void send_exception(ServerRequestInfo ri) {
-		log.trace("TxRequestInterceptor.send_exception " + ri.operation()
+		log.trace("send_exception " + ri.operation()
 				+ " exception: " + ri.sending_exception());
 	}
 
 	public void send_other(ServerRequestInfo ri) {
-		log.trace("TxRequestInterceptor.send_other: " + ri.operation());
+		log.trace("send_other: " + ri.operation());
 	}
 
 	private boolean isTransactional(ClientRequestInfo ri) {
