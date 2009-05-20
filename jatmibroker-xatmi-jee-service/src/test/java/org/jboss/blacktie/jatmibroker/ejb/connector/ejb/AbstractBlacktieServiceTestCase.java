@@ -21,6 +21,7 @@ import junit.framework.TestCase;
 
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.server.AtmiBrokerServer;
+import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
@@ -49,8 +50,11 @@ public class AbstractBlacktieServiceTestCase extends TestCase {
 
 	public void test() throws ConnectionException {
 		byte[] echo = "echo".getBytes();
-		Response response = connection.tpcall("EchoService", echo, 4, 0);
-		byte[] responseData = response.getData();
+		Buffer buffer = connection.tpalloc(null, null, echo.length);
+		buffer.setData(echo);
+
+		Response response = connection.tpcall("EchoService", buffer, 0);
+		byte[] responseData = response.getBuffer().getData();
 		String receivedMessage = new String(responseData);
 		assertEquals("echo", receivedMessage);
 	}

@@ -14,7 +14,8 @@ public class TestTPConversationService implements BlacktieService {
 					buffer.setLen(toSend.length);
 					session.tpsend(buffer, 0);
 					Buffer tprecv = session.tprecv(0);
-					if (!new String(tprecv.getData()).equals("yo" + i)) {
+					String returnedData = new String(tprecv.getData());
+					if (!returnedData.equals("yo" + i)) {
 						buffer.setData(tprecv.getData());
 						buffer.setLen(tprecv.getLen());
 						return new Response((short) 0, 0, buffer, 0);

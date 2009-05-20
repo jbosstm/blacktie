@@ -55,7 +55,7 @@ public class TestTPConversation extends TestCase {
 			Buffer tprecv = session.tprecv(0);
 			assertEquals("hi" + i, new String(tprecv.getData()));
 			byte[] toSend = ("yo" + i).getBytes();
-			buffer.setData(toStart);
+			buffer.setData(toSend);
 			buffer.setLen(toSend.length);
 			session.tpsend(buffer, 0);
 		}
