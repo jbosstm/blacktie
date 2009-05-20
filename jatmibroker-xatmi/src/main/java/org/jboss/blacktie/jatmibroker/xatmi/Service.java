@@ -52,7 +52,7 @@ public abstract class Service implements BlacktieService {
 
 			// TODO HANDLE CONTROL
 			// THIS IS THE FIRST CALL
-			Buffer buffer = new Buffer(null, null, message.len);
+			Buffer buffer = new Buffer(null, null);
 			buffer.setData(message.data);
 			// TODO NO SESSIONS
 			// NOT PASSING OVER THE SERVICE NAME
@@ -64,7 +64,7 @@ public abstract class Service implements BlacktieService {
 			// odata.value = serviceRequest.getBytes();
 			// olen.value = serviceRequest.getLength();
 			sender.send("", response.getRval(), response.getRcode(), response
-					.getBuffer().getData(), response.getBuffer().getLen(),
+					.getBuffer().getData(), response.getLen(),
 					response.getFlags(), 0);
 		} catch (Throwable t) {
 			log.error("Could not service the request", t);

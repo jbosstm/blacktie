@@ -35,8 +35,6 @@ public class Buffer implements Serializable {
 	 */
 	private byte[] data;
 
-	private int len;
-
 	private String type;
 
 	private String subtype;
@@ -49,8 +47,7 @@ public class Buffer implements Serializable {
 	 * @param type
 	 * @param subtype
 	 */
-	public Buffer(String type, String subtype, int len) {
-		this.len = len;
+	public Buffer(String type, String subtype) {
 		this.type = type;
 		this.subtype = subtype;
 	}
@@ -90,23 +87,5 @@ public class Buffer implements Serializable {
 	 */
 	public void setData(byte[] data) {
 		this.data = data;
-	}
-
-	/**
-	 * Get the length
-	 * 
-	 * @return the length
-	 */
-	public int getLen() {
-		return len;
-	}
-
-	/**
-	 * Set the length to send
-	 * 
-	 * @param length
-	 */
-	public void setLen(int len) {
-		this.len = len;
 	}
 }

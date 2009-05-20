@@ -101,21 +101,6 @@ public class Connection {
 	}
 
 	/**
-	 * Allocate a new typed buffer
-	 * 
-	 * @param type
-	 *            The type of the buffer
-	 * @param subtype
-	 *            The subtype of the buffer
-	 * @param length
-	 *            The length of the buffer
-	 * @return The new buffer
-	 */
-	public Buffer tpalloc(String type, String subtype, int length) {
-		return new Buffer(type, subtype, length);
-	}
-
-	/**
 	 * Synchronous call
 	 * 
 	 * @param svc
@@ -126,9 +111,9 @@ public class Connection {
 	 *            The flags to use
 	 * @return The returned buffer
 	 */
-	public Response tpcall(String svc, Buffer buffer, int flags)
+	public Response tpcall(String svc, Buffer buffer, int len, int flags)
 			throws ConnectionException {
-		int cd = tpacall(svc, buffer, flags);
+		int cd = tpacall(svc, buffer, len, flags);
 		return tpgetrply(cd, flags);
 	}
 
@@ -143,14 +128,14 @@ public class Connection {
 	 *            The flags to use
 	 * @return The connection descriptor
 	 */
-	int tpacall(String svc, Buffer buffer, int flags)
+	public int tpacall(String svc, Buffer buffer, int len, int flags)
 			throws ConnectionException {
 		try {
 			int correlationId = nextId++;
 			Receiver endpoint = getReceiver(correlationId);
 			// TODO HANDLE TRANSACTION
 			transport.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
-					buffer.getData(), buffer.getLen(), correlationId, flags);
+					buffer.getData(), len, correlationId, flags);
 			return correlationId;
 		} catch (JAtmiBrokerException e) {
 			throw new ConnectionException(-1, "Could not send the request", e);
@@ -165,7 +150,7 @@ public class Connection {
 	 * @param flags
 	 *            The flags to use
 	 */
-	void tpcancel(int cd, int flags) throws ConnectionException {
+	public void tpcancel(int cd, int flags) throws ConnectionException {
 		Receiver endpoint = getReceiver(cd);
 		endpoint.close();
 	}
@@ -183,9 +168,9 @@ public class Connection {
 		Receiver endpoint = getReceiver(cd);
 		Message m = endpoint.receive(flags);
 		// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
-		Buffer received = new Buffer("TODO", null, m.len);
+		Buffer received = new Buffer(null, null);
 		received.setData(m.data);
-		return new Response(m.rval, m.rcode, received, m.flags);
+		return new Response(m.rval, m.rcode, received, m.len, m.flags);
 	}
 
 	/**
@@ -199,10 +184,10 @@ public class Connection {
 	 *            The flags to use
 	 * @return The connection descriptor
 	 */
-	public Session tpconnect(String svc, Buffer buffer, int flags)
+	public Session tpconnect(String svc, Buffer buffer, int len, int flags)
 			throws ConnectionException {
 		// Initialate the session
-		int cd = tpacall(svc, buffer, flags);
+		int cd = tpacall(svc, buffer, len, flags);
 		// Return a handle to allow the connection to send/receive data on
 		return new Session(transport, cd, null, getReceiver(cd));
 	}

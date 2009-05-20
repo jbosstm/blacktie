@@ -82,11 +82,12 @@ public class Session {
 	 * @param flags
 	 *            The flags to use
 	 */
-	public void tpsend(Buffer buffer, int flags) throws ConnectionException {
+	public void tpsend(Buffer buffer, int len, int flags)
+			throws ConnectionException {
 		// Can only send in certain circumstances
 		if (sender != null) {
-			sender.send(getReceiver().getReplyTo(), (short) 0, 0, buffer.getData(),
-					buffer.getLen(), cd, flags);
+			sender.send(getReceiver().getReplyTo(), (short) 0, 0, buffer
+					.getData(), len, cd, flags);
 		} else {
 			throw new ConnectionException(-1, "Session in receive mode", null);
 		}
@@ -118,7 +119,7 @@ public class Session {
 		}
 
 		// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
-		Buffer received = new Buffer(null, null, m.len);
+		Buffer received = new Buffer(null, null);
 		received.setData(m.data);
 		return received;
 	}

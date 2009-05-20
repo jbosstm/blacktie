@@ -50,10 +50,11 @@ public class AbstractBlacktieServiceTestCase extends TestCase {
 
 	public void test() throws ConnectionException {
 		byte[] echo = "echo".getBytes();
-		Buffer buffer = connection.tpalloc(null, null, echo.length);
+		Buffer buffer = new Buffer(null, null);
 		buffer.setData(echo);
 
-		Response response = connection.tpcall("EchoService", buffer, 0);
+		Response response = connection.tpcall("EchoService", buffer,
+				echo.length, 0);
 		byte[] responseData = response.getBuffer().getData();
 		String receivedMessage = new String(responseData);
 		assertEquals("echo", receivedMessage);

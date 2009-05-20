@@ -47,17 +47,17 @@ public class TestTPConversation extends TestCase {
 	public void test() throws ConnectionException {
 		int iterationCount = 100;
 		byte[] toStart = "conversate".getBytes();
-		Buffer buffer = connection.tpalloc(null, null, toStart.length);
+		Buffer buffer = new Buffer(null, null);
 		buffer.setData(toStart);
 
-		Session session = connection.tpconnect("TestTPConversation", buffer, 0);
+		Session session = connection.tpconnect("TestTPConversation", buffer,
+				toStart.length, 0);
 		for (int i = 0; i < iterationCount; i++) {
 			Buffer tprecv = session.tprecv(0);
 			assertEquals("hi" + i, new String(tprecv.getData()));
 			byte[] toSend = ("yo" + i).getBytes();
 			buffer.setData(toSend);
-			buffer.setLen(toSend.length);
-			session.tpsend(buffer, 0);
+			session.tpsend(buffer, toSend.length, 0);
 		}
 		Response tpgetrply = connection.tpgetrply(session.getCd(), 0);
 		assertEquals("hi" + iterationCount, new String(tpgetrply.getBuffer()

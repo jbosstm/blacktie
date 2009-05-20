@@ -12,9 +12,9 @@ public class EchoServiceTestService extends MDBBlacktieService {
 	}
 
 	public Response tpservice(TPSVCINFO svcinfo) {
-		Buffer buffer = new Buffer(null, null, 0);
-		buffer.setData(svcinfo.getBuffer().getData());
-		buffer.setLen(svcinfo.getBuffer().getLen());
-		return new Response((short) 0, 0, buffer, 0);
+		byte[] rcvd = svcinfo.getBuffer().getData();
+		Buffer buffer = new Buffer(null, null);
+		buffer.setData(rcvd);
+		return new Response((short) 0, 0, buffer, rcvd.length, 0);
 	}
 }

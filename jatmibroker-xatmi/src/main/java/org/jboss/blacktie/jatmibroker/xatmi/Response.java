@@ -50,10 +50,13 @@ public class Response implements Serializable {
 	 */
 	private Buffer buffer;
 
-	public Response(short rval, int rcode, Buffer buffer, int flags) {
+	private int len;
+
+	public Response(short rval, int rcode, Buffer buffer, int len, int flags) {
 		this.rval = rval;
 		this.rcode = rcode;
 		this.buffer = buffer;
+		this.len = len;
 		this.flags = flags;
 	}
 
@@ -81,5 +84,9 @@ public class Response implements Serializable {
 
 	public Buffer getBuffer() {
 		return buffer;
+	}
+
+	public int getLen() {
+		return len;
 	}
 }
