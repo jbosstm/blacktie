@@ -9,7 +9,7 @@ import javax.jms.MessageListener;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
-import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerServerXML;
+import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerClientXML;
 import org.jboss.blacktie.jatmibroker.core.Connection;
 import org.jboss.blacktie.jatmibroker.core.ConnectionFactory;
 import org.jboss.blacktie.jatmibroker.core.Sender;
@@ -21,13 +21,13 @@ import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 /**
  * All blacktie services should extend this class so that they can be advertised
  */
-public abstract class BlacktieMDBService implements BlacktieService,
+public abstract class MDBBlacktieService implements BlacktieService,
 		MessageListener {
 	/**
 	 * A logger to log the output to.
 	 */
 	private static final Logger log = LogManager
-			.getLogger(BlacktieMDBService.class);
+			.getLogger(MDBBlacktieService.class);
 
 	private Connection connection;
 
@@ -37,11 +37,11 @@ public abstract class BlacktieMDBService implements BlacktieService,
 	 * @throws ConnectorException
 	 * @throws JAtmiBrokerException
 	 */
-	public BlacktieMDBService() throws JAtmiBrokerException {
+	public MDBBlacktieService() throws JAtmiBrokerException {
 		Properties properties = null;
-		AtmiBrokerServerXML server = new AtmiBrokerServerXML("ejb-connector-tests");
+		AtmiBrokerClientXML xml = new AtmiBrokerClientXML();
 		try {
-			properties = server.getProperties();
+			properties = xml.getProperties();
 		} catch (Exception e) {
 			throw new JAtmiBrokerException("Could not load properties", e);
 		}
