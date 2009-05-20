@@ -15,31 +15,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core;
+package org.jboss.blacktie.jatmibroker.transport.corba;
 
-import java.util.Properties;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.transport.Sender;
 
-import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
+import AtmiBroker.EndpointQueue;
+import AtmiBroker.EndpointQueueHelper;
 
-public abstract class TransportFactory {
-	public static TransportFactory loadTransportFactory(Properties properties)
-			throws JAtmiBrokerException {
-		try {
-			Class clazz = Class
-					.forName("org.jboss.blacktie.jatmibroker.core.corba.ConnectionFactoryImpl");
-			TransportFactory newInstance = (TransportFactory) clazz
-					.newInstance();
-			newInstance.setProperties(properties);
-			return newInstance;
-		} catch (Throwable t) {
-			throw new JAtmiBrokerException(
-					"Could not load the connection factory", t);
-		}
+public class SenderImpl implements Sender {
+	private static final Logger log = LogManager.getLogger(SenderImpl.class);
+	private EndpointQueue serviceFactory;
+
+	SenderImpl(org.omg.CORBA.Object serviceFactoryObject,
+			String serviceFactoryName) {
+		serviceFactory = EndpointQueueHelper.narrow(serviceFactoryObject);
+		log.debug("ServiceFactory is " + serviceFactory);
 	}
 
-	protected abstract void setProperties(Properties properties)
-			throws JAtmiBrokerException;
+	public void send(String replyTo, short rval, int rcode, byte[] data,
+			int len, int correlationId, int flags) {
+		serviceFactory.send(replyTo, rval, rcode, data, len + 1, correlationId,
+				flags);
+	}
 
-	public abstract Transport createTransport(String userName,
-			String userPassword) throws JAtmiBrokerException;
+	public void close() {
+		// TODO Auto-generated method stub
+	}
 }

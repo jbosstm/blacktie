@@ -15,32 +15,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core.corba;
+package org.jboss.blacktie.jatmibroker.transport;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.Sender;
+public interface Sender {
 
-import AtmiBroker.EndpointQueue;
-import AtmiBroker.EndpointQueueHelper;
+	void send(String replyTo, short rval, int rcode, byte[] data, int len,
+			int correlationId, int flags);
 
-public class SenderImpl implements Sender {
-	private static final Logger log = LogManager.getLogger(SenderImpl.class);
-	private EndpointQueue serviceFactory;
-
-	SenderImpl(org.omg.CORBA.Object serviceFactoryObject,
-			String serviceFactoryName) {
-		serviceFactory = EndpointQueueHelper.narrow(serviceFactoryObject);
-		log.debug("ServiceFactory is " + serviceFactory);
-	}
-
-	public void send(String replyTo, short rval, int rcode, byte[] data,
-			int len, int correlationId, int flags) {
-		serviceFactory.send(replyTo, rval, rcode, data, len + 1, correlationId,
-				flags);
-	}
-
-	public void close() {
-		// TODO Auto-generated method stub
-	}
+	public void close();
 }

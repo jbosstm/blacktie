@@ -15,25 +15,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core;
+package org.jboss.blacktie.jatmibroker.transport;
 
-import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
-import org.omg.CosNaming.NamingContextPackage.CannotProceed;
-import org.omg.CosNaming.NamingContextPackage.NotFound;
-import org.omg.CosTransactions.TransactionFactory;
+import org.omg.CosTransactions.Control;
 
-public interface Transport {
-	public TransactionFactory getTransactionFactory(
-			String transactionManagerServiceName) throws NotFound,
-			CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName;
-
-	public Sender getSender(String serviceName) throws JAtmiBrokerException;
-
-	public Sender createSender(String replyTo) throws JAtmiBrokerException;
-
-	public Receiver createReceiver(String replyTo) throws JAtmiBrokerException;
-
-	public Receiver getReceiver(int id) throws JAtmiBrokerException;
-
-	public void close();
+public class Message {
+	public String replyTo;
+	public byte[] data;
+	public int len;
+	public int flags;
+	public Control control;
+	public short rval;
+	public int rcode;
+	public int event;
 }

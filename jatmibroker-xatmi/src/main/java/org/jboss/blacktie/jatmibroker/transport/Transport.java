@@ -15,58 +15,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core;
+package org.jboss.blacktie.jatmibroker.transport;
 
-public final class Response implements java.io.Serializable {
-	private static final long serialVersionUID = 1L;
-	private short rval;
-	private int rcode;
-	private byte[] bytes;
-	private int length;
-	private int flags;
-	public int event;
+import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
+import org.omg.CosNaming.NamingContextPackage.CannotProceed;
+import org.omg.CosNaming.NamingContextPackage.NotFound;
+import org.omg.CosTransactions.TransactionFactory;
 
-	public Response(short rval, int rcode, byte[] bytes, int length, int flags) {
-		this.rval = rval;
-		this.rcode = rcode;
-		this.bytes = bytes;
-		this.length = length;
-		this.flags = flags;
-	}
+public interface Transport {
+	public TransactionFactory getTransactionFactory(
+			String transactionManagerServiceName) throws NotFound,
+			CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName;
 
-	public void setLength(int aLength) {
-		length = aLength;
-	}
+	public Sender getSender(String serviceName) throws JAtmiBrokerException;
 
-	public void setEvent(int aEvent) {
-		event = aEvent;
-	}
+	public Sender createSender(String replyTo) throws JAtmiBrokerException;
 
-	public int getEvent() {
-		return event;
-	}
+	public Receiver createReceiver(String replyTo) throws JAtmiBrokerException;
 
-	public String toString() {
-		return String.valueOf(bytes);
-	}
+	public Receiver getReceiver(int id) throws JAtmiBrokerException;
 
-	public short getRval() {
-		return rval;
-	}
-
-	public int getRcode() {
-		return rcode;
-	}
-
-	public byte[] getBytes() {
-		return bytes;
-	}
-
-	public int getLength() {
-		return length;
-	}
-
-	public int getFlags() {
-		return flags;
-	}
+	public void close();
 }

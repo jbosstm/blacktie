@@ -19,8 +19,8 @@ package org.jboss.blacktie.jatmibroker.jab;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.Transport;
-import org.jboss.blacktie.jatmibroker.core.TransportFactory;
+import org.jboss.blacktie.jatmibroker.transport.Transport;
+import org.jboss.blacktie.jatmibroker.transport.TransportFactory;
 
 public class JABSession {
 	private static final Logger log = LogManager.getLogger(JABSession.class);

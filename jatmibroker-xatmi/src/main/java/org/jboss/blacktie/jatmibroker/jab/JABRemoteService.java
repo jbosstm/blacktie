@@ -19,7 +19,7 @@ package org.jboss.blacktie.jatmibroker.jab;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.Receiver;
+import org.jboss.blacktie.jatmibroker.transport.Receiver;
 import org.omg.CosTransactions.Control;
 
 public class JABRemoteService implements Message {
@@ -53,7 +53,7 @@ public class JABRemoteService implements Message {
 			jabSession.getServerProxy().getSender(serviceName).send(
 					endpoint.getReplyTo(), (short) 0, 0, data, data.length, 0,
 					flags);
-			org.jboss.blacktie.jatmibroker.core.Message receive = endpoint
+			org.jboss.blacktie.jatmibroker.transport.Message receive = endpoint
 					.receive(flags);
 
 			data = new byte[receive.len];

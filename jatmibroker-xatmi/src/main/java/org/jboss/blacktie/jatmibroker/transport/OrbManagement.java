@@ -1,4 +1,4 @@
-package org.jboss.blacktie.jatmibroker.core;
+package org.jboss.blacktie.jatmibroker.transport;
 
 import java.util.ArrayList;
 import java.util.List;

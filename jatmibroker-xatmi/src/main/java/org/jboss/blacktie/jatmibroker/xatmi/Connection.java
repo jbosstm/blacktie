@@ -22,10 +22,10 @@ import java.util.Properties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
-import org.jboss.blacktie.jatmibroker.core.Message;
-import org.jboss.blacktie.jatmibroker.core.Receiver;
-import org.jboss.blacktie.jatmibroker.core.Transport;
-import org.jboss.blacktie.jatmibroker.core.TransportFactory;
+import org.jboss.blacktie.jatmibroker.transport.Message;
+import org.jboss.blacktie.jatmibroker.transport.Receiver;
+import org.jboss.blacktie.jatmibroker.transport.Transport;
+import org.jboss.blacktie.jatmibroker.transport.TransportFactory;
 
 /**
  * This is the connection to remote Blacktie services.

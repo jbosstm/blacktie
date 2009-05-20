@@ -15,12 +15,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core;
+package org.jboss.blacktie.jatmibroker.transport;
 
-public interface Receiver {
-	public Message receive(long flags);
+import java.util.Properties;
 
-	public String getReplyTo();
+import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 
-	public void close();
+public abstract class TransportFactory {
+	public static TransportFactory loadTransportFactory(Properties properties)
+			throws JAtmiBrokerException {
+		try {
+			Class clazz = Class
+					.forName("org.jboss.blacktie.jatmibroker.core.corba.ConnectionFactoryImpl");
+			TransportFactory newInstance = (TransportFactory) clazz
+					.newInstance();
+			newInstance.setProperties(properties);
+			return newInstance;
+		} catch (Throwable t) {
+			throw new JAtmiBrokerException(
+					"Could not load the connection factory", t);
+		}
+	}
+
+	protected abstract void setProperties(Properties properties)
+			throws JAtmiBrokerException;
+
+	public abstract Transport createTransport(String userName,
+			String userPassword) throws JAtmiBrokerException;
 }

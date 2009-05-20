@@ -15,17 +15,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core;
+package org.jboss.blacktie.jatmibroker.transport;
 
-import org.omg.CosTransactions.Control;
+public interface Receiver {
+	public Message receive(long flags);
 
-public class Message {
-	public String replyTo;
-	public byte[] data;
-	public int len;
-	public int flags;
-	public Control control;
-	public short rval;
-	public int rcode;
-	public int event;
+	public String getReplyTo();
+
+	public void close();
 }

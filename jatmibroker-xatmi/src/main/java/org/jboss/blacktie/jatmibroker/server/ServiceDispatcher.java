@@ -19,10 +19,10 @@ package org.jboss.blacktie.jatmibroker.server;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.Transport;
-import org.jboss.blacktie.jatmibroker.core.Message;
-import org.jboss.blacktie.jatmibroker.core.Receiver;
-import org.jboss.blacktie.jatmibroker.core.Sender;
+import org.jboss.blacktie.jatmibroker.transport.Message;
+import org.jboss.blacktie.jatmibroker.transport.Receiver;
+import org.jboss.blacktie.jatmibroker.transport.Sender;
+import org.jboss.blacktie.jatmibroker.transport.Transport;
 import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;

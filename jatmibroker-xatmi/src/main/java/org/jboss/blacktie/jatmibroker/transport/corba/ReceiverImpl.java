@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core.corba;
+package org.jboss.blacktie.jatmibroker.transport.corba;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +23,9 @@ import java.util.List;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
-import org.jboss.blacktie.jatmibroker.core.Message;
-import org.jboss.blacktie.jatmibroker.core.OrbManagement;
-import org.jboss.blacktie.jatmibroker.core.Receiver;
+import org.jboss.blacktie.jatmibroker.transport.Message;
+import org.jboss.blacktie.jatmibroker.transport.OrbManagement;
+import org.jboss.blacktie.jatmibroker.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.tx.TxIORInterceptor;
 import org.omg.CORBA.Any;
 import org.omg.CORBA.ORB;
