@@ -20,11 +20,16 @@
 #define AtmiBroker_SERVICE_XML_H_
 
 #include "atmiBrokerCoreMacro.h"
+#include "AtmiBrokerEnvXml.h"
 
 struct svcinfo_t {
 	char* serviceName;
-	int poolSize;
 	char* securityType;
+	char* transportLib;
+	char* function_name;
+	char* library_name;
+	int   poolSize;
+	bool  advertised;
 };
 typedef struct svcinfo_t SVCINFO;
 
@@ -35,7 +40,7 @@ public:
 
 	~AtmiBrokerServiceXml();
 
-	void parseXmlDescriptor(SVCINFO* serviceData, 
+	void parseXmlDescriptor(ServiceInfo* serviceData, 
 							const char * aDescriptorFileName,
 							const char * ConfigurationDir = NULL);
 };

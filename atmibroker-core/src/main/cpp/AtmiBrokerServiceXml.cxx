@@ -23,6 +23,7 @@
 #include <sys/stat.h>
 
 #include "AtmiBrokerServiceXml.h"
+#include "AtmiBrokerEnv.h"
 #include "XsdValidator.h"
 #include "userlog.h"
 #include "log4cxx/logger.h"
@@ -52,21 +53,40 @@ AtmiBrokerServiceXml::~AtmiBrokerServiceXml() {
 }
 
 static void XMLCALL startElement(void *userData, const char *name, const char **atts) {
+	ServiceInfo* aServiceStructPtr = (ServiceInfo*) userData;
+
 	if (strcmp(name, "SERVICE ") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "start element SERVICE");
 		processingService = true;
 	} else if (strcmp(name, "SIZE") == 0) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "processing MAX Cache for service ");
 		processingPoolSize = true;
+	} else if(strcmp(name, "SERVICE_DESCRIPTION") == 0) {
+		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "processing SERVICE DESCRIPTION");
+		if(atts != 0) {
+			for(int i = 0; atts[i]; i += 2) {
+				if(strcmp(atts[i], "function_name") == 0) {
+					aServiceStructPtr->function_name = strdup(atts[i+1]);
+				} else if(strcmp(atts[i], "library_name") == 0) {
+					aServiceStructPtr->library_name = strdup(atts[i+1]);
+				} else if(strcmp(atts[i], "advertised") == 0) {
+					if(strcmp(atts[i+1], "true") == 0) {
+						aServiceStructPtr->advertised = true;
+					} else {
+						aServiceStructPtr->advertised = false;
+					}
+				}
+			}
+		}
 	}
-	strcpy(element, name);
+	ACE_OS::strncpy(element, name, 50);
 	strcpy(value, "");
 
 	depth += 1;
 }
 
 static void XMLCALL endElement(void *userData, const char *name) {
-	SVCINFO* aServiceStructPtr = (SVCINFO*) userData;
+	ServiceInfo* aServiceStructPtr = (ServiceInfo*) userData;
 
 	strcpy(last_element, name);
 	strcpy(last_value, value);
@@ -91,7 +111,7 @@ static void XMLCALL characterData(void *userData, const char *cdata, int len) {
 	value[i] = '\0';
 }
 
-void AtmiBrokerServiceXml::parseXmlDescriptor(SVCINFO* aServiceStructPtr,
+void AtmiBrokerServiceXml::parseXmlDescriptor(ServiceInfo* aServiceStructPtr,
 		const char * aDescriptorFileName, const char * ConfigurationDir) {
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml,
 			(char*) "in parseXmlDescriptor() %s", aDescriptorFileName);
@@ -102,6 +122,7 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(SVCINFO* aServiceStructPtr,
 	memset(serviceConfigFilename, '\0', XATMI_SERVICE_NAME_LENGTH + 10);
 	strncpy(serviceConfigFilename, aDescriptorFileName, XATMI_SERVICE_NAME_LENGTH); // TODO this is the length of the service
 	strcat(serviceConfigFilename, ".xml");
+
 	LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "loading: "
 			<< serviceConfigFilename);
 	char configPath[256];
@@ -199,9 +220,12 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(SVCINFO* aServiceStructPtr,
 	fflush(aDescriptorFile);
 	fclose(aDescriptorFile);
 
+	free(serviceConfigFilename);
+
+	if(aServiceStructPtr->function_name == NULL) {
+		aServiceStructPtr->function_name = strdup(aServiceStructPtr->serviceName);
+	}
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml,
 			(char*) "leaving parseXmlDescriptor() %s", serviceConfigFilename);
 
-	free(serviceConfigFilename);
 }
-

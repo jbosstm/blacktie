@@ -25,6 +25,7 @@
 #include "expat.h"
 
 #include "AtmiBrokerEnvXml.h"
+#include "AtmiBrokerServiceXml.h"
 #include "XsdValidator.h"
 
 #include "log4cxx/logger.h"
@@ -230,13 +231,33 @@ static void XMLCALL startElement
 
 		if(atts != 0) {
 			ServiceInfo service;
+			char*       server;
 
+			memset(&service, 0, sizeof(ServiceInfo));
 			for(int i = 0; atts[i]; i += 2) {
 				if(strcmp(atts[i], "name") == 0) {
 					service.serviceName = strdup(atts[i+1]);
 				} else if(strcmp(atts[i], "transportLibrary") == 0) {
 					service.transportLib = strdup(atts[i+1]);
 				}
+			}
+			server = servers.back()->serverName;
+			char* dir = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
+			char configDir[256];
+
+			if(dir != NULL) {
+				ACE_OS::snprintf(configDir, 255, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"%s", dir, server);
+			} else {
+				ACE_OS::strncpy(configDir, server, 255);
+			}
+
+			service.advertised = false;
+			service.poolSize = 1;
+			AtmiBrokerServiceXml xml;
+			xml.parseXmlDescriptor(&service, service.serviceName, configDir);
+
+			if(service.function_name == NULL) {
+				service.function_name = strdup(service.serviceName);
 			}
 			servers.back()->serviceVector.push_back(service);
 		}

@@ -24,13 +24,13 @@
 		<SERVER_NAMES>
 			<SERVER>
 				<SERVICE_NAMES>
-					<SERVICE name='TEST' transportLibrary='atmibroker-corba.so' />
+					<SERVICE name='TEST' transportLibrary='libatmibroker-corba.so' />
 				</SERVICE_NAMES>
 			</SERVER>
 			<SERVER name='foo'>
 				<SERVICE_NAMES>
-					<SERVICE name='BAR' transportLibrary='atmibroker-corba.so' />
-					<SERVICE name='ECHO' transportLibrary='atmibroker-stomp.so' />
+					<SERVICE name='BAR' transportLibrary='libatmibroker-corba.so' />
+					<SERVICE name='ECHO' transportLibrary='libatmibroker-stomp.so' />
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES> 
