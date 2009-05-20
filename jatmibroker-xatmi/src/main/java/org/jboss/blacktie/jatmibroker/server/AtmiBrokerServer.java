@@ -32,6 +32,7 @@ import org.jboss.blacktie.jatmibroker.core.Connection;
 import org.jboss.blacktie.jatmibroker.core.ConnectionFactory;
 import org.jboss.blacktie.jatmibroker.core.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.Receiver;
+import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
@@ -240,13 +241,13 @@ public class AtmiBrokerServer extends ServerPOA {
 		private List<Runnable> dispatchers = new ArrayList<Runnable>();
 
 		ServiceData(Connection connection, String serviceName, int poolSize,
-				Class atmiBrokerCallback) throws JAtmiBrokerException,
+				Class callback) throws JAtmiBrokerException,
 				InstantiationException, IllegalAccessException {
 			this.receiver = connection.createReceiver(serviceName);
 
 			for (int i = 0; i < poolSize; i++) {
 				dispatchers.add(new ServiceDispatcher(connection, serviceName,
-						atmiBrokerCallback, receiver));
+						(BlacktieService) callback.newInstance(), receiver));
 			}
 		}
 

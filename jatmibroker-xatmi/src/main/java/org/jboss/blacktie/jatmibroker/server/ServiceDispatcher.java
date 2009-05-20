@@ -33,23 +33,23 @@ public class ServiceDispatcher extends Thread {
 	private BlacktieService callback;
 	private String serviceName;
 
-	private Receiver serviceQueue;
+	private Receiver receiver;
 	private Sender endpointQueue;
 	private Connection connection;
 
 	ServiceDispatcher(Connection connection, String serviceName,
-			Class callback, Receiver endpointQueue)
+			BlacktieService callback, Receiver receiver)
 			throws InstantiationException, IllegalAccessException {
 		this.serviceName = serviceName;
-		this.callback = (BlacktieService) callback.newInstance();
-		this.serviceQueue = endpointQueue;
+		this.callback = callback;
+		this.receiver = receiver;
 		this.connection = connection;
 		start();
 	}
 
 	public void run() {
 		while (true) {
-			Message message = serviceQueue.receive(0);
+			Message message = receiver.receive(0);
 			try {
 				endpointQueue = connection.createSender(message.replyTo);
 
@@ -69,9 +69,5 @@ public class ServiceDispatcher extends Thread {
 				log.error("Could not service the request");
 			}
 		}
-	}
-
-	public String serviceName() {
-		return serviceName;
 	}
 }
