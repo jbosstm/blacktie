@@ -22,6 +22,8 @@ import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
 import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 
+import org.jboss.blacktie.jatmibroker.tx.TxInitializer;
+
 public class OrbManagement {
 	private static final Logger log = LogManager.getLogger(OrbManagement.class);
 	private static final String CorbaOrbClassProp = "org.omg.CORBA.ORBClass";
@@ -54,19 +56,12 @@ public class OrbManagement {
 		log.debug("setting properities");
 		p.setProperty(CorbaOrbClassProp, CorbaOrbClassValue);
 		p.setProperty(CorbaSingletonClassProp, CorbaSingletonClassValue);
-		p
-				.setProperty(
-						"org.omg.PortableInterceptor.ORBInitializerClass."
-								+ "org.jboss.blacktie.jatmibroker.core.TxIORInterceptorInitializer",
-						"");
-		p
-				.setProperty(
-						"org.omg.PortableInterceptor.ORBInitializerClass."
-								+ "org.jboss.blacktie.jatmibroker.core.TxRequestInterceptorInitializer",
-						"");
+		p.setProperty("org.omg.PortableInterceptor.ORBInitializerClass."
+					  + "org.jboss.blacktie.jatmibroker.tx.TxInitializer", "");
 
 		log.debug("set properities");
 		log.debug(" initing orb");
+		TxInitializer.setOrbManagement(this);
 		orb = org.omg.CORBA.ORB.init(args, p);
 		log.debug(" inited orb");
 		log.debug(" resolving NameService");

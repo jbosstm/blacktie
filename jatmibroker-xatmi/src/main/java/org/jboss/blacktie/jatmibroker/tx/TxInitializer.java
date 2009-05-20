@@ -24,7 +24,7 @@ import org.omg.IOP.Encoding;
 import org.omg.PortableInterceptor.ORBInitInfo;
 import org.omg.PortableInterceptor.ORBInitializer;
 
-import org.jboss.blacktie.jatmibroker.core.OrbManagement;
+import org.jboss.blacktie.jatmibroker.transport.OrbManagement;
 
 public class TxInitializer extends LocalObject implements
 		ORBInitializer {
