@@ -28,6 +28,7 @@ public abstract class MDBBlacktieService extends Service implements
 	 * @throws JAtmiBrokerException
 	 */
 	public MDBBlacktieService() throws JAtmiBrokerException {
+		super();
 	}
 
 	public void onMessage(Message message) {
