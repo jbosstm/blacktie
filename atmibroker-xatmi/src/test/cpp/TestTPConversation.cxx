@@ -41,14 +41,17 @@ void TestTPConversation::setUp() {
 
 	// Do local work
 	cd = -1;
-	int toCheck = tpadvertise((char*) "TestTPConversation", testTPConversation_service);
+	int toCheck = tpadvertise((char*) "TestTPConversation",
+			testTPConversation_service);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toCheck != -1);
 
 	sendlen = 11;
-	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	strcpy(sendbuf, "conversate");
+	CPPUNIT_ASSERT((sendbuf
+			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT(
+			(rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen))
+					!= NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
 }
 
@@ -67,7 +70,10 @@ void TestTPConversation::tearDown() {
 
 void TestTPConversation::test_conversation() {
 	userlogc((char*) "test_conversation");
-	cd = ::tpconnect((char*) "TestTPConversation", sendbuf, sendlen, TPRECVONLY);
+	strcpy(sendbuf, "conversate");
+	cd
+			= ::tpconnect((char*) "TestTPConversation", sendbuf, sendlen,
+					TPRECVONLY);
 	long revent = 0;
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
@@ -81,12 +87,12 @@ void TestTPConversation::test_conversation() {
 		CPPUNIT_ASSERT(result != -1);
 		char* expectedResult = (char*) malloc(sendlen);
 		sprintf(expectedResult, "hi%d", i);
-		char* errorMessage =  (char*) malloc(sendlen * 2 + 1);
+		char* errorMessage = (char*) malloc(sendlen * 2 + 1);
 		sprintf(errorMessage, "%s/%s", expectedResult, rcvbuf);
-		CPPUNIT_ASSERT_MESSAGE(errorMessage, strcmp(expectedResult, rcvbuf) == 0);
-		free (expectedResult);
+		CPPUNIT_ASSERT_MESSAGE(errorMessage, strcmp(expectedResult, rcvbuf)
+				== 0);
+		free(expectedResult);
 		free(errorMessage);
-		
 
 		sprintf(sendbuf, "yo%d", i);
 		//userlogc((char*) "test_conversation:%s:", sendbuf);
@@ -104,10 +110,10 @@ void TestTPConversation::test_conversation() {
 
 	char* expectedResult = (char*) malloc(sendlen);
 	sprintf(expectedResult, "hi%d", interationCount);
-	char* errorMessage =  (char*) malloc(sendlen * 2 + 1);
+	char* errorMessage = (char*) malloc(sendlen * 2 + 1);
 	sprintf(errorMessage, "%s/%s", expectedResult, rcvbuf);
 	CPPUNIT_ASSERT_MESSAGE(errorMessage, strcmp(expectedResult, rcvbuf) == 0);
-	free (expectedResult);
+	free(expectedResult);
 	free(errorMessage);
 }
 
@@ -119,22 +125,23 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 
 	char* expectedResult = (char*) malloc(svcinfo->len);
 	strcpy(expectedResult, "conversate");
-	char* errorMessage =  (char*) malloc(svcinfo->len * 2 + 1);
+	char* errorMessage = (char*) malloc(svcinfo->len * 2 + 1);
 	sprintf(errorMessage, "%s/%s", expectedResult, svcinfo->data);
 	if (strcmp(expectedResult, svcinfo->data) != 0) {
 		fail = true;
 	} else {
-		long revent = 0;	
+		long revent = 0;
 		userlogc("Chatting");
 		for (int i = 0; i < interationCount; i++) {
 			sprintf(sendbuf, "hi%d", i);
 			//userlogc((char*) "testTPConversation_service:%s:", sendbuf);
-			int result = ::tpsend(svcinfo->cd, sendbuf, svcinfo->len, TPRECVONLY, &revent);
+			int result = ::tpsend(svcinfo->cd, sendbuf, svcinfo->len,
+					TPRECVONLY, &revent);
 			result = ::tprecv(svcinfo->cd, &rcvbuf, &svcinfo->len, 0, &revent);
 
 			char* expectedResult = (char*) malloc(svcinfo->len);
 			sprintf(expectedResult, "yo%d", i);
-			char* errorMessage =  (char*) malloc(svcinfo->len * 2 + 1);
+			char* errorMessage = (char*) malloc(svcinfo->len * 2 + 1);
 			sprintf(errorMessage, "%s/%s", expectedResult, rcvbuf);
 			if (strcmp(expectedResult, rcvbuf) != 0) {
 				fail = true;
@@ -143,11 +150,11 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 		}
 		userlogc("Chatted");
 	}
-	
-	if (fail) { 
+
+	if (fail) {
 		tpreturn(TPESVCFAIL, 0, sendbuf, 0, 0);
 	} else {
-		sprintf(sendbuf, "hi%d", interationCount);		
+		sprintf(sendbuf, "hi%d", interationCount);
 		tpreturn(TPSUCCESS, 0, sendbuf, svcinfo->len, 0);
 	}
 
