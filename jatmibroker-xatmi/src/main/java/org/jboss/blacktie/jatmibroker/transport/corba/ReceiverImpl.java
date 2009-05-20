@@ -112,7 +112,7 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 		try {
 			List<Policy> policies =  getPolicies(orb, poa);
 			m_default_poa = poa.create_POA(aServerName, poa.the_POAManager(),
-					policiesArray);
+					policies.toArray(new Policy[0]));
 		} catch (JAtmiBrokerException e) {
 			throw new WrongPolicy(e.getMessage());
 		} catch (AdapterAlreadyExists e) {
