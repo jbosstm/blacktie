@@ -139,7 +139,7 @@
 			<env key="LD_LIBRARY_PATH" path="${ace.lroot}/lib:${ace.broot}" />
 			<env key="Path" path="${env.Path};${ace.lroot}/lib;${ace.broot}" />
 
-			<arg line="-o ${idl.output.dir} -Wb,pre_include=ace/pre.h -Wb,post_include=ace/post.h -I${ace.iroot}/tao -I${ace.iroot}/orbsvcs -Isrc/main/idl -Wb,export_macro=BLACKTIE_IDL_DLL -Wb,export_include=atmiBrokerIdlMacro.h" />
+			<arg line="-o ${idl.output.dir} -Wb,pre_include=ace/pre.h -Wb,post_include=ace/post.h -I${ace.iroot}/tao -I${ace.iroot}/orbsvcs -Isrc/main/idl -Wb,export_macro=BLACKTIE_IDL_DLL -Wb,export_include=atmiBrokerIdlMacro.h -DTAO=1" />
 
 			<fileset dir="src" casesensitive="yes">
 				<patternset id="idl.sources">

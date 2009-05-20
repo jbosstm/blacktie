@@ -18,8 +18,13 @@
 #ifndef TXPOLICY_IDL
 #define TXPOLICY_IDL
 
+#ifdef TAO
 #include "tao/Policy.pidl"
 #include "tao/IOP.pidl"
+#else
+#include "IOP.idl"
+//#include "omg/IOP.idl"
+#endif
 
 module AtmiTx
 {
