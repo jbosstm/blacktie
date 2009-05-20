@@ -85,7 +85,7 @@ public class Session {
 	public void tpsend(Buffer buffer, int flags) throws ConnectionException {
 		// Can only send in certain circumstances
 		if (sender != null) {
-			sender.send(receiver.getReplyTo(), (short) 0, 0, buffer.getData(),
+			sender.send(getReceiver().getReplyTo(), (short) 0, 0, buffer.getData(),
 					buffer.getLen(), cd, flags);
 		} else {
 			throw new ConnectionException(-1, "Session in receive mode", null);
@@ -102,7 +102,7 @@ public class Session {
 	 * @return The next response
 	 */
 	public Buffer tprecv(int flags) throws ConnectionException {
-		Message m = receiver.receive(flags);
+		Message m = getReceiver().receive(flags);
 
 		// Prepare the outbound channel
 		try {
@@ -140,5 +140,17 @@ public class Session {
 	 */
 	public int getCd() {
 		return cd;
+	}
+
+	private Receiver getReceiver() throws ConnectionException {
+		if (receiver == null) {
+			try {
+				receiver = transport.createReceiver();
+			} catch (JAtmiBrokerException e) {
+				throw new ConnectionException(-1,
+						"Could not create an on demand receiver", e);
+			}
+		}
+		return receiver;
 	}
 }

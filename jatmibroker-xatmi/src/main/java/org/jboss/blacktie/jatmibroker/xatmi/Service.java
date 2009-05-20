@@ -48,9 +48,7 @@ public abstract class Service implements BlacktieService {
 	protected void processMessage(Message message) {
 		try {
 			Sender sender = transport.createSender(message.replyTo);
-			Receiver receiver = transport.createReceiver();
-			Session session = new Session(transport, message.cd, sender,
-					receiver);
+			Session session = new Session(transport, message.cd, sender, null);
 
 			// TODO HANDLE CONTROL
 			// THIS IS THE FIRST CALL
