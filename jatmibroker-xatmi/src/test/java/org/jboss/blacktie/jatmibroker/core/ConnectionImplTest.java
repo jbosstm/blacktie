@@ -25,9 +25,9 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 
-public class ServiceManagerProxyTest extends TestCase {
+public class ConnectionImplTest extends TestCase {
 	private static final Logger log = LogManager
-			.getLogger(ServiceManagerProxyTest.class);
+			.getLogger(ConnectionImplTest.class);
 	private RunServer server = new RunServer();
 
 	public void setUp() throws InterruptedException {
