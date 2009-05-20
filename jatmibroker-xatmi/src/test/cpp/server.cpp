@@ -39,7 +39,7 @@ extern "C"void BAR(TPSVCINFO * svcinfo) {
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_core_RunServer_serverinit(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_serverinit(JNIEnv *, jobject) {
 	int exit_status = -1;
 #ifdef WIN32
 	char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"foo"};
@@ -54,7 +54,7 @@ JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_core_RunServer_server
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_core_RunServer_serverdone(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_serverdone(JNIEnv *, jobject) {
 	int exit_status = -1;
 	exit_status = serverdone();
 	return;

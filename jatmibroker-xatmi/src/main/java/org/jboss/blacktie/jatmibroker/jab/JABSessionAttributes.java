@@ -32,7 +32,7 @@ public class JABSessionAttributes {
 	public JABSessionAttributes() throws JABException {
 		AtmiBrokerClientXML client = new AtmiBrokerClientXML(properties);
 		try {
-			client.getProperties(null);
+			client.getProperties();
 			this.transactionManagerName = (String) properties
 					.get("blacktie.trans.factoryid");
 		} catch (Exception e) {

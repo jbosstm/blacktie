@@ -23,15 +23,15 @@ import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.server.AtmiBrokerServer;
 
 public class BlacktieServiceTestCase extends TestCase {
-	private Connection connection;
 	private AtmiBrokerServer server;
+	private Connection connection;
 
 	public void setUp() throws ConnectionException, JAtmiBrokerException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
 		this.server.tpadvertise("EchoService", EchoServiceTestService.class);
 
 		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory(null);
+				.getConnectionFactory();
 		connection = connectionFactory.getConnection("", "");
 	}
 

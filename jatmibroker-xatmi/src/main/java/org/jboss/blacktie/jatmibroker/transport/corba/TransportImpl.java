@@ -38,8 +38,7 @@ import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 
 public class TransportImpl implements Runnable, Transport {
 
-	private static final Logger log = LogManager
-			.getLogger(TransportImpl.class);
+	private static final Logger log = LogManager.getLogger(TransportImpl.class);
 	private org.omg.CORBA.Object serverObject;
 
 	private Thread callbackThread;

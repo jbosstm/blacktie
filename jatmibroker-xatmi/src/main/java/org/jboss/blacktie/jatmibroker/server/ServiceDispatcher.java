@@ -63,7 +63,7 @@ public class ServiceDispatcher extends Thread {
 				// odata.value = serviceRequest.getBytes();
 				// olen.value = serviceRequest.getLength();
 				endpointQueue.send("", response.getRval(), response.getRcode(),
-						response.getData(), response.getLength(), response
+						response.getData(), response.getLen(), response
 								.getFlags(), 0);
 			} catch (Throwable t) {
 				log.error("Could not service the request");

@@ -26,7 +26,7 @@ public abstract class TransportFactory {
 			throws JAtmiBrokerException {
 		try {
 			Class clazz = Class
-					.forName("org.jboss.blacktie.jatmibroker.core.corba.ConnectionFactoryImpl");
+					.forName("org.jboss.blacktie.jatmibroker.transport.corba.TransportFactoryImpl");
 			TransportFactory newInstance = (TransportFactory) clazz
 					.newInstance();
 			newInstance.setProperties(properties);

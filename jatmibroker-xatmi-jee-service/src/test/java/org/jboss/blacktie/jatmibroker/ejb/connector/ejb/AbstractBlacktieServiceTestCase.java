@@ -37,7 +37,7 @@ public class AbstractBlacktieServiceTestCase extends TestCase {
 		this.server = new AtmiBrokerServer("ejb-connector-tests", null);
 		this.server.tpadvertise("EchoService", EchoServiceTestService.class);
 		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory(null);
+				.getConnectionFactory();
 		connection = connectionFactory.getConnection("", "");
 	}
 

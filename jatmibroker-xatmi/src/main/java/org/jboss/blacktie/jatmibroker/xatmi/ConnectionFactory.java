@@ -16,6 +16,17 @@ public class ConnectionFactory {
 	 * @return The connection factory
 	 * @throws ConnectionException
 	 */
+	public static synchronized ConnectionFactory getConnectionFactory()
+			throws ConnectionException {
+		return new ConnectionFactory(null);
+	}
+
+	/**
+	 * Get the default connection factory
+	 * 
+	 * @return The connection factory
+	 * @throws ConnectionException
+	 */
 	public static synchronized ConnectionFactory getConnectionFactory(
 			String configurationDirectory) throws ConnectionException {
 		return new ConnectionFactory(configurationDirectory);

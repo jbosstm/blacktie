@@ -132,16 +132,6 @@ public class Connection {
 	// int tpacall(String svc, TypedBuffer idata, int flags) throws
 	// ConnectionException;
 	/**
-	 * Get the reply from the server
-	 * 
-	 * @param cd
-	 *            The connection descriptor to use
-	 * @param flags
-	 *            The flags to use
-	 * @return The response from the server
-	 */
-	// Response tpgetrply(int cd, int flags) throws ConnectionException;
-	/**
 	 * Cancel the outstanding asynchronous call.
 	 * 
 	 * @param cd
@@ -150,6 +140,19 @@ public class Connection {
 	 *            The flags to use
 	 */
 	// void tpcancel(int cd, int flags) throws ConnectionException;
+	/**
+	 * Get the reply from the server
+	 * 
+	 * @param cd
+	 *            The connection descriptor to use
+	 * @param flags
+	 *            The flags to use
+	 * @return The response from the server
+	 */
+	public Response tpgetrply(int cd, int flags) throws ConnectionException {
+		throw new ConnectionException(-1, "Waiting for implementation", null);
+	}
+
 	/**
 	 * Handle the initiation of a conversation with the server
 	 * 
@@ -161,8 +164,11 @@ public class Connection {
 	 *            The flags to use
 	 * @return The connection descriptor
 	 */
-	// int tpconnect(String svc, TypedBuffer idata, int flags) throws
-	// ConnectionException;
+	public int tpconnect(String svc, byte[] idata, int length, int flags)
+			throws ConnectionException {
+		throw new ConnectionException(-1, "Waiting for implementation", null);
+	}
+
 	/**
 	 * Send a buffer to a remote server in a conversation
 	 * 
@@ -173,8 +179,11 @@ public class Connection {
 	 * @param flags
 	 *            The flags to use
 	 */
-	// void tpsend(int cd, TypedBuffer idata, int flags) throws
-	// ConnectionException;
+	public void tpsend(int cd, byte[] idata, int length, int flags)
+			throws ConnectionException {
+		throw new ConnectionException(-1, "Waiting for implementation", null);
+	}
+
 	/**
 	 * Received the next response in a conversation
 	 * 
@@ -184,7 +193,10 @@ public class Connection {
 	 *            The flags to use
 	 * @return The next response
 	 */
-	// Response tprecv(int cd, int flags) throws ConnectionException;
+	public Response tprecv(int cd, int flags) throws ConnectionException {
+		throw new ConnectionException(-1, "Waiting for implementation", null);
+	}
+
 	/**
 	 * Close the conversation with the remote service.
 	 * 

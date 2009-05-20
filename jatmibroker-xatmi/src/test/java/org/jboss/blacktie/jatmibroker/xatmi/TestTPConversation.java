@@ -20,25 +20,40 @@ package org.jboss.blacktie.jatmibroker.xatmi;
 import junit.framework.TestCase;
 
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.server.AtmiBrokerServer;
 
 public class TestTPConversation extends TestCase {
+	private AtmiBrokerServer server;
+
+	private Connection connection;
 
 	public void setUp() throws ConnectionException, JAtmiBrokerException {
+		this.server = new AtmiBrokerServer("standalone-server", null);
+		this.server.tpadvertise("TestTPConversation", TestTPConversation.class);
+
+		ConnectionFactory connectionFactory = ConnectionFactory
+				.getConnectionFactory();
+		connection = connectionFactory.getConnection("", "");
 	}
 
 	public void tearDown() throws ConnectionException {
+		connection.close();
+
+		server.tpunadvertise("TestTPConversation");
 	}
 
 	public void test() throws ConnectionException {
-
-		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory(null);
-		Connection connection = connectionFactory.getConnection("", "");
-		byte[] echo = "echo".getBytes();
-		Response response = connection.tpcall("EchoService", echo, 4, 0);
-		byte[] responseData = response.getData();
-		String receivedMessage = new String(responseData);
-		assertEquals("echo", receivedMessage);
-		connection.close();
+		int iterationCount = 100;
+		byte[] toStart = "conversate".getBytes();
+		int cd = connection.tpconnect("TestTPConversation", toStart,
+				toStart.length, 0);
+		for (int i = 0; i < iterationCount; i++) {
+			Response tprecv = connection.tprecv(cd, 0);
+			assertEquals("hi" + i, new String(tprecv.getData()));
+			byte[] toSend = ("yo" + i).getBytes();
+			connection.tpsend(cd, toSend, toSend.length, 0);
+		}
+		Response tpgetrply = connection.tpgetrply(cd, 0);
+		assertEquals("hi" + iterationCount, new String(tpgetrply.getData()));
 	}
 }

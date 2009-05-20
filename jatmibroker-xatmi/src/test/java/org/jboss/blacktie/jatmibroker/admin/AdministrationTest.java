@@ -36,7 +36,7 @@ public class AdministrationTest extends TestCase {
 	public void xtest() throws Exception {
 		AtmiBrokerClientXML xml = new AtmiBrokerClientXML();
 		Properties properties = null;
-		properties = xml.getProperties(null);
+		properties = xml.getProperties();
 		String method = "BAR";
 
 		AdministrationProxy serverAdministration = new AdministrationProxy(

@@ -72,7 +72,7 @@ public abstract class MDBBlacktieService implements BlacktieService,
 			// olen.value = serviceRequest.getLength();
 			Sender sender = transport.createSender(replyTo);
 			sender.send("", response.getRval(), response.getRcode(), response
-					.getData(), response.getLength(), response.getFlags(), 0);
+					.getData(), response.getLen(), response.getFlags(), 0);
 		} catch (Throwable t) {
 			log.error("Could not service the request");
 		}
