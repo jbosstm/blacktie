@@ -17,64 +17,48 @@
  */
 package org.jboss.blacktie.jatmibroker.server;
 
+import java.rmi.RemoteException;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.transport.Message;
 import org.jboss.blacktie.jatmibroker.transport.Receiver;
-import org.jboss.blacktie.jatmibroker.transport.Sender;
 import org.jboss.blacktie.jatmibroker.transport.Transport;
 import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
-import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
-import org.jboss.blacktie.jatmibroker.xatmi.Session;
+import org.jboss.blacktie.jatmibroker.xatmi.Service;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 
-public class ServiceDispatcher extends Thread {
+public class ServiceDispatcher extends Service implements Runnable {
 	private static final Logger log = LogManager
 			.getLogger(ServiceDispatcher.class);
 	private BlacktieService callback;
-	private String serviceName;
-
 	private Receiver receiver;
-	private Transport transport;
+	private Thread thread;
 
 	ServiceDispatcher(Transport transport, String serviceName,
 			BlacktieService callback, Receiver receiver)
-			throws InstantiationException, IllegalAccessException {
-		this.serviceName = serviceName;
+			throws JAtmiBrokerException {
+		super();
 		this.callback = callback;
 		this.receiver = receiver;
-		this.transport = transport;
-		start();
+		thread = new Thread(this);
+		thread.start();
+		log.debug("Created");
 	}
 
 	public void run() {
+		log.debug("Running");
 		while (true) {
 			Message message = receiver.receive(0);
-			try {
-				Sender sender = transport.createSender(message.replyTo);
-				Receiver receiver = transport.createReceiver();
-				Session session = new Session(transport, message.cd, sender,
-						receiver);
-
-				// TODO HANDLE CONTROL
-				// THIS IS THE FIRST CALL
-				Buffer buffer = new Buffer(null, null, message.len);
-				buffer.setData(message.data);
-				// TODO NO SESSIONS
-				TPSVCINFO tpsvcinfo = new TPSVCINFO(serviceName, buffer,
-						message.flags, session);
-
-				Response response = callback.tpservice(tpsvcinfo);
-				// TODO THIS SHOULD INVOKE THE CLIENT HANDLER
-				// odata.value = serviceRequest.getBytes();
-				// olen.value = serviceRequest.getLength();
-				sender.send("", response.getRval(), response.getRcode(),
-						response.getBuffer().getData(), response.getBuffer()
-								.getLen(), response.getFlags(), 0);
-			} catch (Throwable t) {
-				log.error("Could not service the request", t);
-			}
+			log.trace("Recieved");
+			this.processMessage(message);
 		}
+	}
+
+	public Response tpservice(TPSVCINFO svcinfo) throws RemoteException {
+		log.trace("Invoking callback");
+		return callback.tpservice(svcinfo);
 	}
 }

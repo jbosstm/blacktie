@@ -28,4 +28,5 @@ public class Message {
 	public short rval;
 	public int rcode;
 	public int cd;
+	public String serviceName;
 }

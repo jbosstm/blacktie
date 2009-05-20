@@ -54,7 +54,7 @@ public class Session {
 	 * @param receiver2
 	 * @throws JAtmiBrokerException
 	 */
-	public Session(Transport transport, int cd, Sender sender, Receiver receiver)
+	Session(Transport transport, int cd, Sender sender, Receiver receiver)
 			throws ConnectionException {
 		this.transport = transport;
 		this.cd = cd;
