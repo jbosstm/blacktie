@@ -38,10 +38,8 @@ public class JABSession {
 					"");
 		} catch (Exception e) {
 			String domain = jabSessionAttributes.getDomainName();
-			String server = jabSessionAttributes.getServerName();
 
-			throw new JABException("Error connect to domain " + domain
-					+ " server " + server, e);
+			throw new JABException("Error connect to domain " + domain, e);
 		}
 	}
 

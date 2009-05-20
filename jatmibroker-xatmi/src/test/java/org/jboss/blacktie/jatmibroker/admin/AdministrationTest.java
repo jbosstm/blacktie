@@ -23,11 +23,11 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.admin.AdministrationProxy;
 import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerClientXML;
 
 public class AdministrationTest extends TestCase {
-	private static final Logger log = LogManager.getLogger(AdministrationTest.class);
+	private static final Logger log = LogManager
+			.getLogger(AdministrationTest.class);
 
 	public void testTODO() {
 

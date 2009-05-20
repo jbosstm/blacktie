@@ -36,40 +36,28 @@ public class AtmiBrokerServerXMLTest extends TestCase {
 	}
 
 	public void test() throws Exception {
-		AtmiBrokerServerXML serverDesc = new AtmiBrokerServerXML();
+		AtmiBrokerServerXML serverDesc = new AtmiBrokerServerXML("foo");
 		Properties prop = serverDesc.getProperties("win32");
 
-		String domain = "fooapp";
-		String server = "foo";
-		String transid = "TransactionManagerService.OTS";
-		String args = "2";
-		String arg1 = "-ORBInitRef";
-		String arg2 = "NameService=corbaloc::localhost:3528/NameService";
-
-		assertTrue(domain.equals(prop.getProperty("blacktie.domain.name")));
-		assertTrue(server.equals(prop.getProperty("blacktie.server.name")));
-		assertTrue(transid.equals(prop.getProperty("blacktie.trans.factoryid")));
-		assertTrue(args.equals(prop.getProperty("blacktie.orb.args")));
-		assertTrue(arg1.equals(prop.getProperty("blacktie.orb.arg.1")));
-		assertTrue(arg2.equals(prop.getProperty("blacktie.orb.arg.2")));
+		assertTrue("fooapp".equals(prop.getProperty("blacktie.domain.name")));
+		assertTrue("TransactionManagerService.OTS".equals(prop
+				.getProperty("blacktie.trans.factoryid")));
+		assertTrue("2".equals(prop.getProperty("blacktie.orb.args")));
+		assertTrue("-ORBInitRef".equals(prop.getProperty("blacktie.orb.arg.1")));
+		assertTrue("NameService=corbaloc::localhost:3528/NameService"
+				.equals(prop.getProperty("blacktie.orb.arg.2")));
 	}
 
 	public void testEnv() throws Exception {
-		AtmiBrokerServerXML serverDesc = new AtmiBrokerServerXML();
+		AtmiBrokerServerXML serverDesc = new AtmiBrokerServerXML("foo");
 		Properties prop = serverDesc.getProperties();
 
-		String domain = "fooapp";
-		String server = "foo";
-		String transid = "TransactionManagerService.OTS";
-		String args = "2";
-		String arg1 = "-ORBInitRef";
-		String arg2 = "NameService=corbaloc::localhost:3528/NameService";
-
-		assertTrue(domain.equals(prop.getProperty("blacktie.domain.name")));
-		assertTrue(server.equals(prop.getProperty("blacktie.server.name")));
-		assertTrue(transid.equals(prop.getProperty("blacktie.trans.factoryid")));
-		assertTrue(args.equals(prop.getProperty("blacktie.orb.args")));
-		assertTrue(arg1.equals(prop.getProperty("blacktie.orb.arg.1")));
-		assertTrue(arg2.equals(prop.getProperty("blacktie.orb.arg.2")));
+		assertTrue("fooapp".equals(prop.getProperty("blacktie.domain.name")));
+		assertTrue("TransactionManagerService.OTS".equals(prop
+				.getProperty("blacktie.trans.factoryid")));
+		assertTrue("2".equals(prop.getProperty("blacktie.orb.args")));
+		assertTrue("-ORBInitRef".equals(prop.getProperty("blacktie.orb.arg.1")));
+		assertTrue("NameService=corbaloc::localhost:3528/NameService"
+				.equals(prop.getProperty("blacktie.orb.arg.2")));
 	}
 }

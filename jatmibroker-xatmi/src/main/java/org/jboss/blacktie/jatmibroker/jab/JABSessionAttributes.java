@@ -29,23 +29,10 @@ public class JABSessionAttributes {
 	private String transactionManagerName;
 	private Properties properties = new Properties();
 
-	public JABSessionAttributes(String aCompanyName, String aServerName,
-			String transactionManagerName, String[] args) throws JABException {
-		log.debug("JABSessionAttributes constructor ");
-		properties.put("blacktie.domain.name", aCompanyName);
-		properties.put("blacktie.server.name", aServerName);
-		this.transactionManagerName = transactionManagerName;
-		properties.put("blacktie.orb.args", String.valueOf(args.length));
-		for (int i = 1; i <= args.length; i++) {
-			properties.put("blacktie.orb.arg." + i, args[i - 1]);
-		}
-	}
-
 	public JABSessionAttributes() throws JABException {
 		AtmiBrokerClientXML client = new AtmiBrokerClientXML(properties);
 		try {
-			String configDir = System.getProperty("blacktie.config.dir");
-			client.getProperties(configDir);
+			client.getProperties(null);
 			this.transactionManagerName = (String) properties
 					.get("blacktie.trans.factoryid");
 		} catch (Exception e) {
@@ -63,9 +50,5 @@ public class JABSessionAttributes {
 
 	public String getDomainName() {
 		return (String) properties.get("blacktie.domain.name");
-	}
-
-	public String getServerName() {
-		return (String) properties.get("blacktie.server.name");
 	}
 }

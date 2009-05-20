@@ -58,11 +58,10 @@ public class AtmiBrokerServer extends ServerPOA {
 
 	public AtmiBrokerServer(String serverName, String configurationDir)
 			throws JAtmiBrokerException {
-		System.setProperty("blacktie.server.name", serverName);
 		this.serverName = serverName;
 
 		Properties properties = null;
-		AtmiBrokerServerXML server = new AtmiBrokerServerXML();
+		AtmiBrokerServerXML server = new AtmiBrokerServerXML(serverName);
 		try {
 			properties = server.getProperties(configurationDir);
 		} catch (Exception e) {

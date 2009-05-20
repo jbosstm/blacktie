@@ -6,6 +6,7 @@ import java.util.Properties;
 import javax.ejb.EJBException;
 import javax.ejb.SessionBean;
 
+import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerClientXML;
 import org.jboss.blacktie.jatmibroker.ejb.connector.Connector;
 import org.jboss.blacktie.jatmibroker.ejb.connector.ConnectorException;
 import org.jboss.blacktie.jatmibroker.ejb.connector.ConnectorFactory;
@@ -47,13 +48,8 @@ public class BarServiceBean extends AbstractBlacktieService implements
 
 	public String testEJBCall() throws RemoteException {
 		try {
-			Properties properties = new Properties();
-			properties.put("blacktie.orb.args", "2");
-			properties.put("blacktie.orb.arg.1", "-ORBInitRef");
-			properties.put("blacktie.orb.arg.2",
-					"NameService=corbaloc::localhost:3528/NameService");
-			properties.put("blacktie.domain.name", "jboss");
-			properties.put("blacktie.server.name", "example");
+			AtmiBrokerClientXML xml = new AtmiBrokerClientXML();
+			Properties properties = xml.getProperties();
 			ConnectorFactory connectorFactory = ConnectorFactory
 					.getConnectorFactory(properties);
 			Connector connector = connectorFactory.getConnector();

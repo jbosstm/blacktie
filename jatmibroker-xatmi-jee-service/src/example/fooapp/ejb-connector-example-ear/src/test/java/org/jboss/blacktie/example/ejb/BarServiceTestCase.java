@@ -29,6 +29,7 @@ import javax.rmi.PortableRemoteObject;
 
 import junit.framework.TestCase;
 
+import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerClientXML;
 import org.jboss.blacktie.jatmibroker.xatmi.Connector;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectorFactory;
@@ -50,13 +51,8 @@ public class BarServiceTestCase extends TestCase {
 		BarService service = home.create();
 
 		// Initialise the connection
-		Properties properties = new Properties();
-		properties.put("blacktie.orb.args", "2");
-		properties.put("blacktie.orb.arg.1", "-ORBInitRef");
-		properties.put("blacktie.orb.arg.2",
-				"NameService=corbaloc::localhost:3528/NameService");
-		properties.put("blacktie.domain.name", "jboss");
-		properties.put("blacktie.server.name", "example");
+		AtmiBrokerClientXML xml = new AtmiBrokerClientXml();
+		Properties properties = xml.getProperties();
 		ConnectorFactory connectorFactory = ConnectorFactory
 				.getConnectorFactory(properties);
 		Connector connector = connectorFactory.getConnector("", "");

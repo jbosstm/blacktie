@@ -27,12 +27,21 @@ public class AtmiBrokerServerXML {
 	private static final Logger log = LogManager
 			.getLogger(AtmiBrokerServerXML.class);
 	private Properties prop;
+	String serverName;
 
-	public AtmiBrokerServerXML() {
+	public AtmiBrokerServerXML(String serverName) {
+		if (serverName == null) {
+			serverName = "default";
+		}
+		this.serverName = serverName;
 		prop = new Properties();
 	}
 
-	public AtmiBrokerServerXML(Properties prop) {
+	public AtmiBrokerServerXML(String serverName, Properties prop) {
+		if (serverName == null) {
+			serverName = "default";
+		}
+		this.serverName = serverName;
 		this.prop = prop;
 	}
 
@@ -43,14 +52,6 @@ public class AtmiBrokerServerXML {
 	public Properties getProperties(String configDir) throws Exception {
 		String serverXML;
 		String envXML;
-		String serverName;
-
-		serverName = System.getProperty("blacktie.server.name");
-		if (serverName == null) {
-			serverName = "default";
-		}
-
-		prop.setProperty("blacktie.server.name", serverName);
 
 		if (configDir == null) {
 			configDir = System.getenv("BLACKTIE_CONFIGURATION_DIR");

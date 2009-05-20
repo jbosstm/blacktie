@@ -23,7 +23,7 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerClientXML;
 
 public class ConnectionImplTest extends TestCase {
 	private static final Logger log = LogManager
@@ -40,14 +40,10 @@ public class ConnectionImplTest extends TestCase {
 		server.serverdone();
 	}
 
-	public void test() throws JAtmiBrokerException {
-		Properties properties = new Properties();
-		properties.put("blacktie.domain.name", "fooapp");
-		properties.put("blacktie.server.name", "foo");
-		properties.put("blacktie.orb.args", "2");
-		properties.put("blacktie.orb.arg.1", "-ORBInitRef");
-		properties.put("blacktie.orb.arg.2",
-				"NameService=corbaloc::localhost:3528/NameService");
+	public void test() throws Exception {
+		AtmiBrokerClientXML xml = new AtmiBrokerClientXML();
+		Properties properties = null;
+		properties = xml.getProperties(null);
 
 		Connection proxy = ConnectionFactory.loadConnectionFactory(properties)
 				.createConnection("", "");
