@@ -19,7 +19,7 @@ package org.jboss.blacktie.jatmibroker.jab;
 
 import junit.framework.TestCase;
 
-import org.jboss.blacktie.jatmibroker.core.RunServer;
+import org.jboss.blacktie.jatmibroker.transport.RunServer;
 
 public class JABClientTestCase extends TestCase {
 	private RunServer runServer = new RunServer();
