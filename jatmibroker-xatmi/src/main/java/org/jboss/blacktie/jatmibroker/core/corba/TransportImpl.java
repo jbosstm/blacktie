@@ -36,10 +36,10 @@ import org.omg.CosTransactions.TransactionFactory;
 import org.omg.CosTransactions.TransactionFactoryHelper;
 import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 
-public class ConnectionImpl implements Runnable, Transport {
+public class TransportImpl implements Runnable, Transport {
 
 	private static final Logger log = LogManager
-			.getLogger(ConnectionImpl.class);
+			.getLogger(TransportImpl.class);
 	private org.omg.CORBA.Object serverObject;
 
 	private Thread callbackThread;
@@ -48,7 +48,7 @@ public class ConnectionImpl implements Runnable, Transport {
 	private Map<java.lang.Integer, ReceiverImpl> temporaryQueues = new HashMap<java.lang.Integer, ReceiverImpl>();
 	private OrbManagement orbManagement;
 
-	ConnectionImpl(OrbManagement orbManagement, String serverName,
+	TransportImpl(OrbManagement orbManagement, String serverName,
 			String password) throws InvalidName, NotFound, CannotProceed,
 			org.omg.CosNaming.NamingContextPackage.InvalidName,
 			AdapterInactive, AlreadyBound {

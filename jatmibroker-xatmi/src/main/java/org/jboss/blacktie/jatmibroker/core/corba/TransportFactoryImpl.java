@@ -22,39 +22,38 @@ import java.util.Properties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.core.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.Transport;
 import org.jboss.blacktie.jatmibroker.core.TransportFactory;
-import org.jboss.blacktie.jatmibroker.core.OrbManagement;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
-public class ConnectionFactoryImpl extends TransportFactory {
+public class TransportFactoryImpl extends TransportFactory {
 
 	private static final Logger log = LogManager
-			.getLogger(ConnectionFactoryImpl.class);
+			.getLogger(TransportFactoryImpl.class);
 	private OrbManagement orbManagement;
 
 	protected void setProperties(Properties properties)
-			throws ConnectionException {
+			throws JAtmiBrokerException {
 		log.debug("Creating OrbManagement");
 		try {
 			orbManagement = new OrbManagement(properties, false);
 		} catch (Throwable t) {
-			throw new ConnectionException(-1,
+			throw new JAtmiBrokerException(
 					"Could not create the orb management function", t);
 		}
 		log.debug("Created OrbManagement");
 	}
 
-	public Transport createConnection(String username, String password)
+	public Transport createTransport(String username, String password)
 			throws JAtmiBrokerException {
-		log.debug("Creating connection");
-		ConnectionImpl instance = null;
+		log.debug("Creating");
+		TransportImpl instance = null;
 		try {
-			instance = new ConnectionImpl(orbManagement, username, password);
+			instance = new TransportImpl(orbManagement, username, password);
 		} catch (Throwable t) {
 			throw new JAtmiBrokerException("Could not connect to server", t);
 		}
-		log.debug("Created connection");
+		log.debug("Created");
 		return instance;
 	}
 }

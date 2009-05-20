@@ -33,8 +33,8 @@ public class JABSession {
 		log.debug("JABSession constructor ");
 		try {
 			jabSessionAttributes = aJABSessionAttributes;
-			connection = TransportFactory.loadConnectionFactory(
-					jabSessionAttributes.getProperties()).createConnection("",
+			connection = TransportFactory.loadTransportFactory(
+					jabSessionAttributes.getProperties()).createTransport("",
 					"");
 		} catch (Exception e) {
 			String domain = jabSessionAttributes.getDomainName();

@@ -29,7 +29,7 @@ public abstract class MDBBlacktieService implements BlacktieService,
 	private static final Logger log = LogManager
 			.getLogger(MDBBlacktieService.class);
 
-	private Transport connection;
+	private Transport transport;
 
 	/**
 	 * Must have a no-arg constructor
@@ -45,8 +45,8 @@ public abstract class MDBBlacktieService implements BlacktieService,
 		} catch (Exception e) {
 			throw new JAtmiBrokerException("Could not load properties", e);
 		}
-		connection = TransportFactory.loadConnectionFactory(properties)
-				.createConnection("", "");
+		transport = TransportFactory.loadTransportFactory(properties)
+				.createTransport("", "");
 	}
 
 	public void onMessage(Message message) {
@@ -70,7 +70,7 @@ public abstract class MDBBlacktieService implements BlacktieService,
 			// TODO THIS SHOULD INVOKE THE CLIENT HANDLER
 			// odata.value = serviceRequest.getBytes();
 			// olen.value = serviceRequest.getLength();
-			Sender sender = connection.createSender(replyTo);
+			Sender sender = transport.createSender(replyTo);
 			sender.send("", response.getRval(), response.getRcode(), response
 					.getData(), response.getLength(), response.getFlags(), 0);
 		} catch (Throwable t) {

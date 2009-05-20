@@ -20,10 +20,9 @@ package org.jboss.blacktie.jatmibroker.core;
 import java.util.Properties;
 
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public abstract class TransportFactory {
-	public static TransportFactory loadConnectionFactory(Properties properties)
+	public static TransportFactory loadTransportFactory(Properties properties)
 			throws JAtmiBrokerException {
 		try {
 			Class clazz = Class
@@ -39,8 +38,8 @@ public abstract class TransportFactory {
 	}
 
 	protected abstract void setProperties(Properties properties)
-			throws ConnectionException;
+			throws JAtmiBrokerException;
 
-	public abstract Transport createConnection(String userName,
+	public abstract Transport createTransport(String userName,
 			String userPassword) throws JAtmiBrokerException;
 }

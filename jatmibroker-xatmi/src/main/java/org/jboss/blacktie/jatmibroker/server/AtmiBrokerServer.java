@@ -99,8 +99,8 @@ public class AtmiBrokerServer extends ServerPOA {
 			throw new JAtmiBrokerException("Could not bind server", t);
 		}
 
-		connection = TransportFactory.loadConnectionFactory(properties)
-				.createConnection("", "");
+		connection = TransportFactory.loadTransportFactory(properties)
+				.createTransport("", "");
 	}
 
 	public void close() throws JAtmiBrokerException {

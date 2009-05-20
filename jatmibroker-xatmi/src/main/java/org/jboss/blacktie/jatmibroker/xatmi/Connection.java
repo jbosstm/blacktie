@@ -83,8 +83,8 @@ public class Connection {
 			throws ConnectionException {
 		try {
 
-			connection = TransportFactory.loadConnectionFactory(properties)
-					.createConnection(username, password);
+			connection = TransportFactory.loadTransportFactory(properties)
+					.createTransport(username, password);
 		} catch (JAtmiBrokerException e) {
 			throw new ConnectionException(-1, "Could not load properties", e);
 		}
