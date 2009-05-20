@@ -26,19 +26,18 @@ import AtmiBroker.EndpointQueueHelper;
 
 public class SenderImpl implements Sender {
 	private static final Logger log = LogManager.getLogger(SenderImpl.class);
-	private EndpointQueue serviceFactory;
+	private EndpointQueue queue;
 	private String name;
 
-	SenderImpl(org.omg.CORBA.Object serviceFactoryObject,
-			String serviceFactoryName) {
-		serviceFactory = EndpointQueueHelper.narrow(serviceFactoryObject);
-		log.debug("ServiceFactory is " + serviceFactory);
+	SenderImpl(org.omg.CORBA.Object serviceFactoryObject, String name) {
+		this.queue = EndpointQueueHelper.narrow(serviceFactoryObject);
+		this.name = name;
+		log.debug("ServiceFactory is " + queue);
 	}
 
 	public void send(String replyTo, short rval, int rcode, byte[] data,
 			int len, int correlationId, int flags) {
-		serviceFactory.send(replyTo, rval, rcode, data, len + 1, correlationId,
-				flags);
+		queue.send(replyTo, rval, rcode, data, len + 1, correlationId, flags);
 	}
 
 	public void close() {

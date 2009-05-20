@@ -26,6 +26,7 @@ import org.jboss.blacktie.jatmibroker.transport.Transport;
 import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
 import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
+import org.jboss.blacktie.jatmibroker.xatmi.Session;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 
 public class ServiceDispatcher extends Thread {
@@ -35,8 +36,7 @@ public class ServiceDispatcher extends Thread {
 	private String serviceName;
 
 	private Receiver receiver;
-	private Sender endpointQueue;
-	private Transport connection;
+	private Transport transport;
 
 	ServiceDispatcher(Transport transport, String serviceName,
 			BlacktieService callback, Receiver receiver)
@@ -44,7 +44,7 @@ public class ServiceDispatcher extends Thread {
 		this.serviceName = serviceName;
 		this.callback = callback;
 		this.receiver = receiver;
-		this.connection = transport;
+		this.transport = transport;
 		start();
 	}
 
@@ -52,7 +52,10 @@ public class ServiceDispatcher extends Thread {
 		while (true) {
 			Message message = receiver.receive(0);
 			try {
-				endpointQueue = connection.createSender(message.replyTo);
+				Sender sender = transport.createSender(message.replyTo);
+				Receiver receiver = transport.createReceiver();
+				Session session = new Session(transport, message.cd, sender,
+						receiver);
 
 				// TODO HANDLE CONTROL
 				// THIS IS THE FIRST CALL
@@ -60,17 +63,17 @@ public class ServiceDispatcher extends Thread {
 				buffer.setData(message.data);
 				// TODO NO SESSIONS
 				TPSVCINFO tpsvcinfo = new TPSVCINFO(serviceName, buffer,
-						message.flags, null);
+						message.flags, session);
 
 				Response response = callback.tpservice(tpsvcinfo);
 				// TODO THIS SHOULD INVOKE THE CLIENT HANDLER
 				// odata.value = serviceRequest.getBytes();
 				// olen.value = serviceRequest.getLength();
-				endpointQueue.send("", response.getRval(), response.getRcode(),
+				sender.send("", response.getRval(), response.getRcode(),
 						response.getBuffer().getData(), response.getBuffer()
 								.getLen(), response.getFlags(), 0);
 			} catch (Throwable t) {
-				log.error("Could not service the request");
+				log.error("Could not service the request", t);
 			}
 		}
 	}

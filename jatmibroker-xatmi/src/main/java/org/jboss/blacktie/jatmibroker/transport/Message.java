@@ -27,5 +27,5 @@ public class Message {
 	public Control control;
 	public short rval;
 	public int rcode;
-	public int event;
+	public int cd;
 }

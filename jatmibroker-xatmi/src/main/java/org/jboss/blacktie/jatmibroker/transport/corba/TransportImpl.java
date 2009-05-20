@@ -109,7 +109,7 @@ public class TransportImpl implements Runnable, Transport {
 		return new ReceiverImpl(orbManagement, serviceName);
 	}
 
-	public Receiver createReceiver(int id) throws JAtmiBrokerException {
+	public Receiver createReceiver() throws JAtmiBrokerException {
 		log.debug("createClientCallback create client callback ");
 		return new ReceiverImpl(orbManagement);
 	}

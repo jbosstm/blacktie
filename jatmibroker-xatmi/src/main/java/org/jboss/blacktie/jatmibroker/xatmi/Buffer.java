@@ -106,7 +106,7 @@ public class Buffer implements Serializable {
 	 * 
 	 * @param length
 	 */
-	public void setLen(int length) {
+	public void setLen(int len) {
 		this.len = len;
 	}
 }

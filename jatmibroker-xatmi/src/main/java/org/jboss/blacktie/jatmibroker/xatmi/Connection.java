@@ -204,7 +204,7 @@ public class Connection {
 		// Initialate the session
 		int cd = tpacall(svc, buffer, flags);
 		// Return a handle to allow the connection to send/receive data on
-		return new Session(transport, cd, getReceiver(cd));
+		return new Session(transport, cd, null, getReceiver(cd));
 	}
 
 	/**
@@ -223,7 +223,7 @@ public class Connection {
 		Receiver receiver = temporaryQueues.get(id);
 		if (receiver == null) {
 			try {
-				receiver = transport.createReceiver(id);
+				receiver = transport.createReceiver();
 				temporaryQueues.put(id, receiver);
 			} catch (Throwable t) {
 				throw new ConnectionException(-1,

@@ -58,11 +58,10 @@ public interface Transport {
 	/**
 	 * Create a receiver on a temporary queue.
 	 * 
-	 * @param id
 	 * @return
 	 * @throws JAtmiBrokerException
 	 */
-	public Receiver createReceiver(int id) throws JAtmiBrokerException;
+	public Receiver createReceiver() throws JAtmiBrokerException;
 
 	public void close();
 }

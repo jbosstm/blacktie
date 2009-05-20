@@ -6,6 +6,7 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.tx.TxInitializer;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CosNaming.NameComponent;
@@ -21,8 +22,6 @@ import org.omg.CosNaming.NamingContextPackage.NotFound;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
 import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
-
-import org.jboss.blacktie.jatmibroker.tx.TxInitializer;
 
 public class OrbManagement {
 	private static final Logger log = LogManager.getLogger(OrbManagement.class);
@@ -57,7 +56,7 @@ public class OrbManagement {
 		p.setProperty(CorbaOrbClassProp, CorbaOrbClassValue);
 		p.setProperty(CorbaSingletonClassProp, CorbaSingletonClassValue);
 		p.setProperty("org.omg.PortableInterceptor.ORBInitializerClass."
-					  + "org.jboss.blacktie.jatmibroker.tx.TxInitializer", "");
+				+ "org.jboss.blacktie.jatmibroker.tx.TxInitializer", "");
 
 		log.debug("set properities");
 		log.debug(" initing orb");

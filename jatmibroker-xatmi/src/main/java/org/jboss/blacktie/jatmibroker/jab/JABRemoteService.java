@@ -49,7 +49,7 @@ public class JABRemoteService implements Message {
 				control = aJABTransaction.getControl();
 			}
 			// TODO HANDLE TRANSACTION
-			Receiver endpoint = jabSession.getServerProxy().createReceiver(0);
+			Receiver endpoint = jabSession.getServerProxy().createReceiver();
 			jabSession.getServerProxy().getSender(serviceName).send(
 					endpoint.getReplyTo(), (short) 0, 0, data, data.length, 0,
 					flags);

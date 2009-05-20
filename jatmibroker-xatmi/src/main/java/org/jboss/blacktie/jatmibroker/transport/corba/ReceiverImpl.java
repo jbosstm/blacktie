@@ -37,10 +37,6 @@ import org.omg.PortableServer.POA;
 import org.omg.PortableServer.ThreadPolicyValue;
 import org.omg.PortableServer.POAPackage.AdapterAlreadyExists;
 import org.omg.PortableServer.POAPackage.AdapterNonExistent;
-import org.omg.PortableServer.POAPackage.InvalidPolicy;
-import org.omg.PortableServer.POAPackage.ServantAlreadyActive;
-import org.omg.PortableServer.POAPackage.ServantNotActive;
-import org.omg.PortableServer.POAPackage.WrongPolicy;
 
 import AtmiBroker.EndpointQueuePOA;
 
@@ -146,7 +142,7 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 	// "AtmiBroker.ClientCallback.client_callback".
 	//
 	public void send(String replyto_ior, short rval, int rcode, byte[] idata,
-			int ilen, int flags, int revent) {
+			int ilen, int cd, int flags) {
 		log.debug("client_callback(): called.");
 		log.debug("    idata = " + new String(idata));
 		log.debug("    ilen = " + ilen);
@@ -158,12 +154,12 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 		message.data = new byte[message.len];
 		System.arraycopy(idata, 0, message.data, 0, message.len);
 
+		message.cd = cd;
 		message.replyTo = replyto_ior;
 		message.flags = flags;
 		message.control = null;// TODO
 		message.rval = rval;
 		message.rcode = rcode;
-		message.event = revent;
 		synchronized (this) {
 			returnData.add(message);
 			notify();

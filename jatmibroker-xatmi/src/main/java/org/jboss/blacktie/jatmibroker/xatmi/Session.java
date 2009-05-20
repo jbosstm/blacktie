@@ -35,7 +35,15 @@ public class Session {
 	 * The descriptor
 	 */
 	private int cd;
+
+	/**
+	 * The sessions sender
+	 */
 	private Sender sender;
+
+	/**
+	 * The sessions receiver
+	 */
 	private Receiver receiver;
 
 	/**
@@ -46,10 +54,11 @@ public class Session {
 	 * @param receiver2
 	 * @throws JAtmiBrokerException
 	 */
-	Session(Transport transport, int cd, Receiver receiver)
+	public Session(Transport transport, int cd, Sender sender, Receiver receiver)
 			throws ConnectionException {
 		this.transport = transport;
 		this.cd = cd;
+		this.sender = sender;
 		this.receiver = receiver;
 	}
 
