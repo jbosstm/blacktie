@@ -29,7 +29,6 @@ public class AtmiBrokerServerXMLTest extends TestCase {
 			.getLogger(AtmiBrokerServerXMLTest.class);
 
 	public void setUp() throws InterruptedException {
-		System.setProperty("blacktie.server.name", "foo");
 	}
 
 	public void tearDown() {
