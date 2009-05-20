@@ -23,26 +23,26 @@ import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.server.AtmiBrokerServer;
 
 public class BlacktieServiceTestCase extends TestCase {
-	private Connector connector;
+	private Connection connection;
 	private AtmiBrokerServer server;
 
-	public void setUp() throws ConnectorException, JAtmiBrokerException {
+	public void setUp() throws ConnectionException, JAtmiBrokerException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
 		this.server.tpadvertise("EchoService", EchoServiceTestService.class);
 
-		ConnectorFactory connectorFactory = ConnectorFactory
-				.getConnectorFactory(null);
-		connector = connectorFactory.getConnector("", "");
+		ConnectionFactory connectionFactory = ConnectionFactory
+				.getConnectionFactory(null);
+		connection = connectionFactory.getConnection("", "");
 	}
 
-	public void tearDown() throws ConnectorException {
-		connector.close();
+	public void tearDown() throws ConnectionException {
+		connection.close();
 		server.tpunadvertise("EchoService");
 	}
 
-	public void test() throws ConnectorException {
+	public void test() throws ConnectionException {
 		byte[] echo = "echo".getBytes();
-		Response response = connector.tpcall("EchoService", echo, 4, 0);
+		Response response = connection.tpcall("EchoService", echo, 4, 0);
 		byte[] responseData = response.getData();
 		String receivedMessage = new String(responseData);
 		assertEquals("echo", receivedMessage);

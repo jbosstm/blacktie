@@ -10,11 +10,11 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerClientXML;
-import org.jboss.blacktie.jatmibroker.core.Connection;
-import org.jboss.blacktie.jatmibroker.core.ConnectionFactory;
+import org.jboss.blacktie.jatmibroker.core.Transport;
+import org.jboss.blacktie.jatmibroker.core.TransportFactory;
 import org.jboss.blacktie.jatmibroker.core.Sender;
 import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 
@@ -29,12 +29,12 @@ public abstract class MDBBlacktieService implements BlacktieService,
 	private static final Logger log = LogManager
 			.getLogger(MDBBlacktieService.class);
 
-	private Connection connection;
+	private Transport connection;
 
 	/**
 	 * Must have a no-arg constructor
 	 * 
-	 * @throws ConnectorException
+	 * @throws ConnectionException
 	 * @throws JAtmiBrokerException
 	 */
 	public MDBBlacktieService() throws JAtmiBrokerException {
@@ -45,7 +45,7 @@ public abstract class MDBBlacktieService implements BlacktieService,
 		} catch (Exception e) {
 			throw new JAtmiBrokerException("Could not load properties", e);
 		}
-		connection = ConnectionFactory.loadConnectionFactory(properties)
+		connection = TransportFactory.loadConnectionFactory(properties)
 				.createConnection("", "");
 	}
 

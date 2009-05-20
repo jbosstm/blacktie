@@ -19,7 +19,7 @@ package org.jboss.blacktie.jatmibroker.server;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.Connection;
+import org.jboss.blacktie.jatmibroker.core.Transport;
 import org.jboss.blacktie.jatmibroker.core.Message;
 import org.jboss.blacktie.jatmibroker.core.Receiver;
 import org.jboss.blacktie.jatmibroker.core.Sender;
@@ -35,9 +35,9 @@ public class ServiceDispatcher extends Thread {
 
 	private Receiver receiver;
 	private Sender endpointQueue;
-	private Connection connection;
+	private Transport connection;
 
-	ServiceDispatcher(Connection connection, String serviceName,
+	ServiceDispatcher(Transport connection, String serviceName,
 			BlacktieService callback, Receiver receiver)
 			throws InstantiationException, IllegalAccessException {
 		this.serviceName = serviceName;

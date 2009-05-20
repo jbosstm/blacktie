@@ -19,13 +19,13 @@ package org.jboss.blacktie.jatmibroker.jab;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.Connection;
-import org.jboss.blacktie.jatmibroker.core.ConnectionFactory;
+import org.jboss.blacktie.jatmibroker.core.Transport;
+import org.jboss.blacktie.jatmibroker.core.TransportFactory;
 
 public class JABSession {
 	private static final Logger log = LogManager.getLogger(JABSession.class);
 	private JABSessionAttributes jabSessionAttributes;
-	private Connection connection;
+	private Transport connection;
 
 	public JABSession(JABSessionAttributes aJABSessionAttributes)
 			throws JABException {
@@ -33,7 +33,7 @@ public class JABSession {
 		log.debug("JABSession constructor ");
 		try {
 			jabSessionAttributes = aJABSessionAttributes;
-			connection = ConnectionFactory.loadConnectionFactory(
+			connection = TransportFactory.loadConnectionFactory(
 					jabSessionAttributes.getProperties()).createConnection("",
 					"");
 		} catch (Exception e) {
@@ -59,7 +59,7 @@ public class JABSession {
 		jabSessionAttributes = null;
 	}
 
-	public Connection getServerProxy() {
+	public Transport getServerProxy() {
 		return connection;
 	}
 

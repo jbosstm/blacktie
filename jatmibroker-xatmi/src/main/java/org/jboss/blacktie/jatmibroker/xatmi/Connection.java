@@ -22,22 +22,22 @@ import java.util.Properties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
-import org.jboss.blacktie.jatmibroker.core.Connection;
-import org.jboss.blacktie.jatmibroker.core.ConnectionFactory;
 import org.jboss.blacktie.jatmibroker.core.Message;
 import org.jboss.blacktie.jatmibroker.core.Receiver;
+import org.jboss.blacktie.jatmibroker.core.Transport;
+import org.jboss.blacktie.jatmibroker.core.TransportFactory;
 
 /**
- * This is the connector to remote Blacktie services.
+ * This is the connection to remote Blacktie services.
  */
-public class Connector {
+public class Connection {
 
-	private static final Logger log = LogManager.getLogger(Connector.class);
+	private static final Logger log = LogManager.getLogger(Connection.class);
 
 	/**
 	 * A reference to the proxy to issue calls on
 	 */
-	private Connection connection;
+	private Transport connection;
 
 	// AVAILABLE FLAGS
 	int TPNOBLOCK = 0x00000001;
@@ -72,21 +72,21 @@ public class Connector {
 	public int TPEMATCH = 23;
 
 	/**
-	 * The connector itself
+	 * The connection
 	 * 
 	 * @param properties
 	 * @param username
 	 * @param password
-	 * @throws ConnectorException
+	 * @throws ConnectionException
 	 */
-	Connector(Properties properties, String username, String password)
-			throws ConnectorException {
+	Connection(Properties properties, String username, String password)
+			throws ConnectionException {
 		try {
 
-			connection = ConnectionFactory.loadConnectionFactory(properties)
+			connection = TransportFactory.loadConnectionFactory(properties)
 					.createConnection(username, password);
 		} catch (JAtmiBrokerException e) {
-			throw new ConnectorException(-1, "Could not load properties", e);
+			throw new ConnectionException(-1, "Could not load properties", e);
 		}
 	}
 
@@ -102,7 +102,7 @@ public class Connector {
 	 * @return The returned buffer
 	 */
 	public Response tpcall(String svc, byte[] idata, int length, int flags)
-			throws ConnectorException {
+			throws ConnectionException {
 
 		try {
 			// TODO HANDLE TRANSACTION
@@ -114,7 +114,7 @@ public class Connector {
 			return new Response(receive.rval, receive.rcode, receive.data,
 					receive.len, receive.flags);
 		} catch (JAtmiBrokerException e) {
-			throw new ConnectorException(-1, "could not send tpcall", e);
+			throw new ConnectionException(-1, "could not send tpcall", e);
 		}
 	}
 
@@ -130,7 +130,7 @@ public class Connector {
 	 * @return The connection descriptor
 	 */
 	// int tpacall(String svc, TypedBuffer idata, int flags) throws
-	// ConnectorException;
+	// ConnectionException;
 	/**
 	 * Get the reply from the server
 	 * 
@@ -140,7 +140,7 @@ public class Connector {
 	 *            The flags to use
 	 * @return The response from the server
 	 */
-	// Response tpgetrply(int cd, int flags) throws ConnectorException;
+	// Response tpgetrply(int cd, int flags) throws ConnectionException;
 	/**
 	 * Cancel the outstanding asynchronous call.
 	 * 
@@ -149,7 +149,7 @@ public class Connector {
 	 * @param flags
 	 *            The flags to use
 	 */
-	// void tpcancel(int cd, int flags) throws ConnectorException;
+	// void tpcancel(int cd, int flags) throws ConnectionException;
 	/**
 	 * Handle the initiation of a conversation with the server
 	 * 
@@ -162,7 +162,7 @@ public class Connector {
 	 * @return The connection descriptor
 	 */
 	// int tpconnect(String svc, TypedBuffer idata, int flags) throws
-	// ConnectorException;
+	// ConnectionException;
 	/**
 	 * Send a buffer to a remote server in a conversation
 	 * 
@@ -174,7 +174,7 @@ public class Connector {
 	 *            The flags to use
 	 */
 	// void tpsend(int cd, TypedBuffer idata, int flags) throws
-	// ConnectorException;
+	// ConnectionException;
 	/**
 	 * Received the next response in a conversation
 	 * 
@@ -184,14 +184,14 @@ public class Connector {
 	 *            The flags to use
 	 * @return The next response
 	 */
-	// Response tprecv(int cd, int flags) throws ConnectorException;
+	// Response tprecv(int cd, int flags) throws ConnectionException;
 	/**
 	 * Close the conversation with the remote service.
 	 * 
 	 * @param cd
 	 *            The connection descriptor to use
 	 */
-	// void tpdiscon(int cd) throws ConnectorException;
+	// void tpdiscon(int cd) throws ConnectionException;
 	/**
 	 * Close any resources associated with this connection
 	 */

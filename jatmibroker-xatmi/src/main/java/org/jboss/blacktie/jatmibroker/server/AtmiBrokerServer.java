@@ -28,12 +28,12 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerServerXML;
-import org.jboss.blacktie.jatmibroker.core.Connection;
-import org.jboss.blacktie.jatmibroker.core.ConnectionFactory;
+import org.jboss.blacktie.jatmibroker.core.Transport;
+import org.jboss.blacktie.jatmibroker.core.TransportFactory;
 import org.jboss.blacktie.jatmibroker.core.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.Receiver;
 import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
 import org.omg.CosNaming.NameComponent;
@@ -54,7 +54,7 @@ public class AtmiBrokerServer extends ServerPOA {
 	private Map<String, ServiceData> serviceData = new HashMap<String, ServiceData>();
 	private boolean bound;
 	private OrbManagement orbManagement;
-	private Connection connection;
+	private Transport connection;
 	private static final int DEFAULT_POOL_SIZE = 5;
 
 	public AtmiBrokerServer(String serverName, String configurationDir)
@@ -99,7 +99,7 @@ public class AtmiBrokerServer extends ServerPOA {
 			throw new JAtmiBrokerException("Could not bind server", t);
 		}
 
-		connection = ConnectionFactory.loadConnectionFactory(properties)
+		connection = TransportFactory.loadConnectionFactory(properties)
 				.createConnection("", "");
 	}
 
@@ -128,11 +128,11 @@ public class AtmiBrokerServer extends ServerPOA {
 	 * 
 	 * @param serviceName
 	 *            The name of the service
-	 * @throws ConnectorException
+	 * @throws ConnectionException
 	 *             If the service cannot be advertised
 	 */
 	public void tpadvertise(String serviceName, Class service)
-			throws ConnectorException {
+			throws ConnectionException {
 		try {
 			log.debug("Advertising: " + serviceName);
 
@@ -151,11 +151,11 @@ public class AtmiBrokerServer extends ServerPOA {
 		} catch (Throwable t) {
 			String message = "Could not advertise: " + serviceName;
 			log.error(message, t);
-			throw new ConnectorException(-1, message, t);
+			throw new ConnectionException(-1, message, t);
 		}
 	}
 
-	public void tpunadvertise(String serviceName) throws ConnectorException {
+	public void tpunadvertise(String serviceName) throws ConnectionException {
 		log.debug("Unadvertising: " + serviceName);
 		ServiceData data = serviceData.remove(serviceName);
 		if (data != null) {
@@ -240,7 +240,7 @@ public class AtmiBrokerServer extends ServerPOA {
 		private Receiver receiver;
 		private List<Runnable> dispatchers = new ArrayList<Runnable>();
 
-		ServiceData(Connection connection, String serviceName, int poolSize,
+		ServiceData(Transport connection, String serviceName, int poolSize,
 				Class callback) throws JAtmiBrokerException,
 				InstantiationException, IllegalAccessException {
 			this.receiver = connection.createReceiver(serviceName);

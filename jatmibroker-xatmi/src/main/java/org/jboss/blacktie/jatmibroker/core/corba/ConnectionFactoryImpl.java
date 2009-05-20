@@ -22,30 +22,30 @@ import java.util.Properties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
-import org.jboss.blacktie.jatmibroker.core.Connection;
-import org.jboss.blacktie.jatmibroker.core.ConnectionFactory;
+import org.jboss.blacktie.jatmibroker.core.Transport;
+import org.jboss.blacktie.jatmibroker.core.TransportFactory;
 import org.jboss.blacktie.jatmibroker.core.OrbManagement;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
-public class ConnectionFactoryImpl extends ConnectionFactory {
+public class ConnectionFactoryImpl extends TransportFactory {
 
 	private static final Logger log = LogManager
 			.getLogger(ConnectionFactoryImpl.class);
 	private OrbManagement orbManagement;
 
 	protected void setProperties(Properties properties)
-			throws ConnectorException {
+			throws ConnectionException {
 		log.debug("Creating OrbManagement");
 		try {
 			orbManagement = new OrbManagement(properties, false);
 		} catch (Throwable t) {
-			throw new ConnectorException(-1,
+			throw new ConnectionException(-1,
 					"Could not create the orb management function", t);
 		}
 		log.debug("Created OrbManagement");
 	}
 
-	public Connection createConnection(String username, String password)
+	public Transport createConnection(String username, String password)
 			throws JAtmiBrokerException {
 		log.debug("Creating connection");
 		ConnectionImpl instance = null;

@@ -24,7 +24,7 @@ import java.util.Map;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
-import org.jboss.blacktie.jatmibroker.core.Connection;
+import org.jboss.blacktie.jatmibroker.core.Transport;
 import org.jboss.blacktie.jatmibroker.core.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.Receiver;
 import org.jboss.blacktie.jatmibroker.core.Sender;
@@ -36,7 +36,7 @@ import org.omg.CosTransactions.TransactionFactory;
 import org.omg.CosTransactions.TransactionFactoryHelper;
 import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 
-public class ConnectionImpl implements Runnable, Connection {
+public class ConnectionImpl implements Runnable, Transport {
 
 	private static final Logger log = LogManager
 			.getLogger(ConnectionImpl.class);

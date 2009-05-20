@@ -20,15 +20,15 @@ package org.jboss.blacktie.jatmibroker.core;
 import java.util.Properties;
 
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectorException;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
-public abstract class ConnectionFactory {
-	public static ConnectionFactory loadConnectionFactory(Properties properties)
+public abstract class TransportFactory {
+	public static TransportFactory loadConnectionFactory(Properties properties)
 			throws JAtmiBrokerException {
 		try {
 			Class clazz = Class
 					.forName("org.jboss.blacktie.jatmibroker.core.corba.ConnectionFactoryImpl");
-			ConnectionFactory newInstance = (ConnectionFactory) clazz
+			TransportFactory newInstance = (TransportFactory) clazz
 					.newInstance();
 			newInstance.setProperties(properties);
 			return newInstance;
@@ -39,8 +39,8 @@ public abstract class ConnectionFactory {
 	}
 
 	protected abstract void setProperties(Properties properties)
-			throws ConnectorException;
+			throws ConnectionException;
 
-	public abstract Connection createConnection(String userName,
+	public abstract Transport createConnection(String userName,
 			String userPassword) throws JAtmiBrokerException;
 }

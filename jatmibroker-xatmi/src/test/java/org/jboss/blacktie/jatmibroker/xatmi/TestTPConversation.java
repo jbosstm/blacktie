@@ -15,25 +15,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core;
+package org.jboss.blacktie.jatmibroker.xatmi;
+
+import junit.framework.TestCase;
 
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
-import org.omg.CosNaming.NamingContextPackage.CannotProceed;
-import org.omg.CosNaming.NamingContextPackage.NotFound;
-import org.omg.CosTransactions.TransactionFactory;
 
-public interface Connection {
-	public TransactionFactory getTransactionFactory(
-			String transactionManagerServiceName) throws NotFound,
-			CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName;
+public class TestTPConversation extends TestCase {
 
-	public Sender getSender(String serviceName) throws JAtmiBrokerException;
+	public void setUp() throws ConnectionException, JAtmiBrokerException {
+	}
 
-	public Sender createSender(String replyTo) throws JAtmiBrokerException;
+	public void tearDown() throws ConnectionException {
+	}
 
-	public Receiver createReceiver(String replyTo) throws JAtmiBrokerException;
+	public void test() throws ConnectionException {
 
-	public Receiver getReceiver(int id) throws JAtmiBrokerException;
-
-	public void close();
+		ConnectionFactory connectionFactory = ConnectionFactory
+				.getConnectionFactory(null);
+		Connection connection = connectionFactory.getConnection("", "");
+		byte[] echo = "echo".getBytes();
+		Response response = connection.tpcall("EchoService", echo, 4, 0);
+		byte[] responseData = response.getData();
+		String receivedMessage = new String(responseData);
+		assertEquals("echo", receivedMessage);
+		connection.close();
+	}
 }

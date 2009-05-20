@@ -4,7 +4,7 @@ package org.jboss.blacktie.jatmibroker.xatmi;
  * This is the exception that is raised when the connection to Blacktie is
  * suffering.
  */
-public class ConnectorException extends Exception {
+public class ConnectionException extends Exception {
 	/**
 	 * 
 	 */
@@ -17,7 +17,7 @@ public class ConnectorException extends Exception {
 	 * @param tperrno
 	 *            The error code
 	 */
-	public ConnectorException(int tperrno, String string, Throwable t) {
+	public ConnectionException(int tperrno, String string, Throwable t) {
 		super(string, t);
 		this.tperrno = tperrno;
 	}
