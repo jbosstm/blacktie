@@ -53,59 +53,33 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 	private String queueName;
 	private OrbManagement orbManagement;
 
-	private void xxxinitPolicies(ORB orb, POA poa, Policy[] policies)
-			throws JAtmiBrokerException {
-		try {
-			policies[0] = poa
-					.create_thread_policy(ThreadPolicyValue.SINGLE_THREAD_MODEL);
+    private List<Policy> getPolicies(ORB orb, POA poa)
+            throws JAtmiBrokerException {
+        List<Policy> policies = new ArrayList<Policy> ();
+        Any otsPolicy = orb.create_any();
 
-			Any otsPolicy = orb.create_any();
-			otsPolicy.insert_short(TxIORInterceptor.ADAPTS);
-			Any invPolicy = orb.create_any();
-			// XXX policies[1] =
-			// poa.create_implicit_activation_policy(ImplicitActivationPolicyValue.IMPLICIT_ACTIVATION);
-			// policies[2] = orb.create_policy(OTS_POLICY_TYPE.value,
-			// otsPolicy);
-			// policies[3] = orb.create_policy(INVOCATION_POLICY_TYPE.value,
-			// invPolicy);
-			policies[1] = orb.create_policy(TxIORInterceptor.TAG_OTS_POLICY,
-					otsPolicy);
-			policies[2] = orb.create_policy(TxIORInterceptor.TAG_INV_POLICY,
-					invPolicy);
-		} catch (PolicyError e) {
-			throw new JAtmiBrokerException("POA policy creation error: ", e);
-		}
-	}
+        otsPolicy.insert_short(TxIORInterceptor.ADAPTS);
 
-	private void initPolicies(ORB orb, POA poa, Policy[] policies)
-			throws JAtmiBrokerException {
-		// try {
-		Any otsPolicy = orb.create_any();
-		otsPolicy.insert_short(TxIORInterceptor.ADAPTS);
-		Any invPolicy = orb.create_any();
+        policies.add(poa.create_thread_policy(ThreadPolicyValue.SINGLE_THREAD_MODEL));
 
-		policies[0] = poa
-				.create_thread_policy(ThreadPolicyValue.SINGLE_THREAD_MODEL);
-		// policies[1] = orb.create_policy(TxIORInterceptor.TAG_OTS_POLICY,
-		// otsPolicy);
-		// } catch (PolicyError e) {
-		// throw new JAtmiBrokerException("POA policy creation error: ", e);
-		// }
-	}
+        try {
+            policies.add(orb.create_policy(TxIORInterceptor.OTS_POLICY_TYPE, otsPolicy));
+        } catch (PolicyError e) {
+            throw new JAtmiBrokerException("POA TAG_OTS_POLICY policy creation error: " + e.reason, e);
+        }
+
+        return policies;
+    }
 
 	ReceiverImpl(OrbManagement orbManagement, String queueName)
 			throws JAtmiBrokerException {
 		this.queueName = queueName;
-		int numberOfPolicies = 1;
-		Policy[] policiesArray = new Policy[numberOfPolicies];
-
-		initPolicies(orbManagement.getOrb(), orbManagement.getRootPoa(),
-				policiesArray);
 
 		try {
+			List<Policy> policies =  getPolicies(orbManagement.getOrb(), orbManagement.getRootPoa());
 			this.m_default_poa = orbManagement.getRootPoa().create_POA(
 					queueName, orbManagement.getRootPoa().the_POAManager(),
-					policiesArray);
+					policies.toArray(new Policy[0]));
 		} catch (Throwable t) {
 			try {
 				this.m_default_poa = orbManagement.getRootPoa().find_POA(
@@ -134,15 +108,13 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 			WrongPolicy, ServantNotActive {
 		super();
 		log.debug("ClientCallbackImpl constructor ");
-		int numberOfPolicies = 0;
-		Policy[] policiesArray = new Policy[numberOfPolicies];
-		List<Policy> policies = new ArrayList<Policy>();
-		// policies.add(AtmiBrokerServerImpl.root_poa.create_thread_policy(ThreadPolicyValue.SINGLE_THREAD_MODEL));
-		policies.toArray(policiesArray);
 
 		try {
+			List<Policy> policies =  getPolicies(orb, poa);
 			m_default_poa = poa.create_POA(aServerName, poa.the_POAManager(),
 					policiesArray);
+		} catch (JAtmiBrokerException e) {
+			throw new WrongPolicy(e.getMessage());
 		} catch (AdapterAlreadyExists e) {
 			m_default_poa = poa.find_POA(aServerName, true);
 		}
