@@ -29,17 +29,18 @@ public class TestTPConversation extends TestCase {
 
 	public void setUp() throws ConnectionException, JAtmiBrokerException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
-		this.server.tpadvertise("TestTPConversation", TestTPConversation.class);
+		this.server.tpadvertise("TestTPConversation", TestTPConversationService.class);
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
 		connection = connectionFactory.getConnection("", "");
 	}
 
-	public void tearDown() throws ConnectionException {
+	public void tearDown() throws ConnectionException, JAtmiBrokerException {
 		connection.close();
 
 		server.tpunadvertise("TestTPConversation");
+		server.close();
 	}
 
 	public void test() throws ConnectionException {

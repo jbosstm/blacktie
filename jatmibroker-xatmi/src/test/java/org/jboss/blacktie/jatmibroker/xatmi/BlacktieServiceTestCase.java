@@ -35,9 +35,10 @@ public class BlacktieServiceTestCase extends TestCase {
 		connection = connectionFactory.getConnection("", "");
 	}
 
-	public void tearDown() throws ConnectionException {
+	public void tearDown() throws ConnectionException, JAtmiBrokerException {
 		connection.close();
 		server.tpunadvertise("EchoService");
+		server.close();
 	}
 
 	public void test() throws ConnectionException {
