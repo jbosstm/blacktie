@@ -1,4 +1,4 @@
-package org.jboss.blacktie.jatmibroker.xatmi.ejb;
+package org.jboss.blacktie.jatmibroker.mdb;
 
 import java.util.Properties;
 
@@ -39,9 +39,9 @@ public abstract class BlacktieMDBService implements BlacktieService,
 	 */
 	public BlacktieMDBService() throws JAtmiBrokerException {
 		Properties properties = null;
-		AtmiBrokerServerXML server = new AtmiBrokerServerXML();
+		AtmiBrokerServerXML server = new AtmiBrokerServerXML("ejb-connector-tests");
 		try {
-			properties = server.getProperties("");
+			properties = server.getProperties();
 		} catch (Exception e) {
 			throw new JAtmiBrokerException("Could not load properties", e);
 		}
