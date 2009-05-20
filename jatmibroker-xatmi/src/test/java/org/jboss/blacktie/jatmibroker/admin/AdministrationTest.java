@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core;
+package org.jboss.blacktie.jatmibroker.admin;
 
 import java.util.Properties;
 
@@ -23,11 +23,11 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.admin.AdministrationProxy;
 import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerClientXML;
-import org.jboss.blacktie.jatmibroker.server.AdministrationProxy;
 
-public class ServerTest extends TestCase {
-	private static final Logger log = LogManager.getLogger(ServerTest.class);
+public class AdministrationTest extends TestCase {
+	private static final Logger log = LogManager.getLogger(AdministrationTest.class);
 
 	public void testTODO() {
 
