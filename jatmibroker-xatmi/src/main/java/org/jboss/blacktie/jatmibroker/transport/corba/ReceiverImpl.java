@@ -53,30 +53,34 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 	private String queueName;
 	private OrbManagement orbManagement;
 
-    private List<Policy> getPolicies(ORB orb, POA poa)
-            throws JAtmiBrokerException {
-        List<Policy> policies = new ArrayList<Policy> ();
-        Any otsPolicy = orb.create_any();
+	private List<Policy> getPolicies(ORB orb, POA poa)
+			throws JAtmiBrokerException {
+		List<Policy> policies = new ArrayList<Policy>();
+		Any otsPolicy = orb.create_any();
 
-        otsPolicy.insert_short(TxIORInterceptor.ADAPTS);
+		otsPolicy.insert_short(TxIORInterceptor.ADAPTS);
 
-        policies.add(poa.create_thread_policy(ThreadPolicyValue.SINGLE_THREAD_MODEL));
+		policies.add(poa
+				.create_thread_policy(ThreadPolicyValue.SINGLE_THREAD_MODEL));
 
-        try {
-            policies.add(orb.create_policy(TxIORInterceptor.OTS_POLICY_TYPE, otsPolicy));
-        } catch (PolicyError e) {
-            throw new JAtmiBrokerException("POA TAG_OTS_POLICY policy creation error: " + e.reason, e);
-        }
+		try {
+			policies.add(orb.create_policy(TxIORInterceptor.OTS_POLICY_TYPE,
+					otsPolicy));
+		} catch (PolicyError e) {
+			throw new JAtmiBrokerException(
+					"POA TAG_OTS_POLICY policy creation error: " + e.reason, e);
+		}
 
-        return policies;
-    }
+		return policies;
+	}
 
 	ReceiverImpl(OrbManagement orbManagement, String queueName)
 			throws JAtmiBrokerException {
 		this.queueName = queueName;
 
 		try {
-			List<Policy> policies =  getPolicies(orbManagement.getOrb(), orbManagement.getRootPoa());
+			List<Policy> policies = getPolicies(orbManagement.getOrb(),
+					orbManagement.getRootPoa());
 			this.m_default_poa = orbManagement.getRootPoa().create_POA(
 					queueName, orbManagement.getRootPoa().the_POAManager(),
 					policies.toArray(new Policy[0]));
@@ -103,32 +107,34 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 		this.orbManagement = orbManagement;
 	}
 
-	ReceiverImpl(ORB orb, POA poa, String aServerName)
-			throws AdapterNonExistent, InvalidPolicy, ServantAlreadyActive,
-			WrongPolicy, ServantNotActive {
-		super();
+	ReceiverImpl(OrbManagement orbManagement) throws JAtmiBrokerException {
+		ORB orb = orbManagement.getOrb();
+		POA poa = orbManagement.getRootPoa();
 		log.debug("ClientCallbackImpl constructor ");
 
 		try {
-			List<Policy> policies =  getPolicies(orb, poa);
-			m_default_poa = poa.create_POA(aServerName, poa.the_POAManager(),
-					policies.toArray(new Policy[0]));
-		} catch (JAtmiBrokerException e) {
-			throw new WrongPolicy(e.getMessage());
-		} catch (AdapterAlreadyExists e) {
-			m_default_poa = poa.find_POA(aServerName, true);
-		}
-		log.debug("JABSession createCallbackObject ");
-		activate_object = m_default_poa.activate_object(this);
-		log.debug("activated this " + this);
+			try {
+				List<Policy> policies = getPolicies(orb, poa);
+				m_default_poa = poa.create_POA("TODO", poa.the_POAManager(),
+						policies.toArray(new Policy[0]));
+			} catch (AdapterAlreadyExists e) {
+				m_default_poa = poa.find_POA("TODO", true);
+			}
+			log.debug("JABSession createCallbackObject ");
+			activate_object = m_default_poa.activate_object(this);
+			log.debug("activated this " + this);
 
-		org.omg.CORBA.Object tmp_ref = m_default_poa.servant_to_reference(this);
-		log.debug("created reference " + tmp_ref);
-		AtmiBroker.EndpointQueue clientCallback = AtmiBroker.EndpointQueueHelper
-				.narrow(tmp_ref);
-		log.debug("narrowed reference " + clientCallback);
-		callbackIOR = orb.object_to_string(clientCallback);
-		log.debug(" created ClientCallback ior " + callbackIOR);
+			org.omg.CORBA.Object tmp_ref = m_default_poa
+					.servant_to_reference(this);
+			log.debug("created reference " + tmp_ref);
+			AtmiBroker.EndpointQueue clientCallback = AtmiBroker.EndpointQueueHelper
+					.narrow(tmp_ref);
+			log.debug("narrowed reference " + clientCallback);
+			callbackIOR = orb.object_to_string(clientCallback);
+			log.debug(" created ClientCallback ior " + callbackIOR);
+		} catch (Throwable t) {
+			throw new JAtmiBrokerException("Cannot create the receiver", t);
+		}
 	}
 
 	public POA _default_POA() {

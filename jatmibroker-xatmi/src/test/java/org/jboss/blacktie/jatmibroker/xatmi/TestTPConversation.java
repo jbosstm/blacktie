@@ -29,7 +29,8 @@ public class TestTPConversation extends TestCase {
 
 	public void setUp() throws ConnectionException, JAtmiBrokerException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
-		this.server.tpadvertise("TestTPConversation", TestTPConversationService.class);
+		this.server.tpadvertise("TestTPConversation",
+				TestTPConversationService.class);
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -46,15 +47,20 @@ public class TestTPConversation extends TestCase {
 	public void test() throws ConnectionException {
 		int iterationCount = 100;
 		byte[] toStart = "conversate".getBytes();
-		int cd = connection.tpconnect("TestTPConversation", toStart,
-				toStart.length, 0);
+		Buffer buffer = connection.tpalloc(null, null, toStart.length);
+		buffer.setData(toStart);
+
+		Session session = connection.tpconnect("TestTPConversation", buffer, 0);
 		for (int i = 0; i < iterationCount; i++) {
-			Response tprecv = connection.tprecv(cd, 0);
+			Buffer tprecv = session.tprecv(0);
 			assertEquals("hi" + i, new String(tprecv.getData()));
 			byte[] toSend = ("yo" + i).getBytes();
-			connection.tpsend(cd, toSend, toSend.length, 0);
+			buffer.setData(toStart);
+			buffer.setLen(toSend.length);
+			session.tpsend(buffer, 0);
 		}
-		Response tpgetrply = connection.tpgetrply(cd, 0);
-		assertEquals("hi" + iterationCount, new String(tpgetrply.getData()));
+		Response tpgetrply = connection.tpgetrply(session.getCd(), 0);
+		assertEquals("hi" + iterationCount, new String(tpgetrply.getBuffer()
+				.getData()));
 	}
 }

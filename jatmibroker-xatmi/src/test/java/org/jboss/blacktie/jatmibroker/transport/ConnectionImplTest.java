@@ -51,7 +51,7 @@ public class ConnectionImplTest extends TestCase {
 		Sender serviceFactory = proxy.getSender("BAR");
 
 		String aString = "Hello from Java Land";
-		Receiver endpoint = proxy.getReceiver(0);
+		Receiver endpoint = proxy.createReceiver(0);
 		serviceFactory.send(endpoint.getReplyTo(), (short) 0, 0, aString
 				.getBytes(), aString.getBytes().length, 0, 0);
 		Message receive = endpoint.receive(0);

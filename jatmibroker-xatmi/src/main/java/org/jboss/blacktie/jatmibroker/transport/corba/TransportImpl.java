@@ -44,7 +44,6 @@ public class TransportImpl implements Runnable, Transport {
 	private Thread callbackThread;
 
 	private Map<String, SenderImpl> senders = new HashMap<String, SenderImpl>();
-	private Map<java.lang.Integer, ReceiverImpl> temporaryQueues = new HashMap<java.lang.Integer, ReceiverImpl>();
 	private OrbManagement orbManagement;
 
 	TransportImpl(OrbManagement orbManagement, String serverName,
@@ -62,10 +61,6 @@ public class TransportImpl implements Runnable, Transport {
 		Iterator<SenderImpl> iterator = senders.values().iterator();
 		while (iterator.hasNext()) {
 			iterator.next().close();
-		}
-		Iterator<ReceiverImpl> receivers = temporaryQueues.values().iterator();
-		while (iterator.hasNext()) {
-			receivers.next().close();
 		}
 		orbManagement.close();
 	}
@@ -111,24 +106,12 @@ public class TransportImpl implements Runnable, Transport {
 	public Receiver createReceiver(String serviceName)
 			throws JAtmiBrokerException {
 		log.debug("createClientCallback create client callback ");
-		ReceiverImpl receiver = new ReceiverImpl(orbManagement, serviceName);
-		return receiver;
+		return new ReceiverImpl(orbManagement, serviceName);
 	}
 
-	public Receiver getReceiver(int id) throws JAtmiBrokerException {
-		ReceiverImpl receiver = temporaryQueues.get(id);
-		if (receiver == null) {
-			try {
-				log.debug("createClientCallback create client callback ");
-				receiver = new ReceiverImpl(orbManagement.getOrb(),
-						orbManagement.getRootPoa(), "TODO");
-				temporaryQueues.put(id, receiver);
-			} catch (Throwable t) {
-				throw new JAtmiBrokerException(
-						"Could not create a temporary queue", t);
-			}
-		}
-		return receiver;
+	public Receiver createReceiver(int id) throws JAtmiBrokerException {
+		log.debug("createClientCallback create client callback ");
+		return new ReceiverImpl(orbManagement);
 	}
 
 	public OrbManagement getOrbManagement() {

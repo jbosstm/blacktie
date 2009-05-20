@@ -24,6 +24,7 @@ import org.jboss.blacktie.jatmibroker.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.transport.Sender;
 import org.jboss.blacktie.jatmibroker.transport.Transport;
 import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
+import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 
@@ -37,13 +38,13 @@ public class ServiceDispatcher extends Thread {
 	private Sender endpointQueue;
 	private Transport connection;
 
-	ServiceDispatcher(Transport connection, String serviceName,
+	ServiceDispatcher(Transport transport, String serviceName,
 			BlacktieService callback, Receiver receiver)
 			throws InstantiationException, IllegalAccessException {
 		this.serviceName = serviceName;
 		this.callback = callback;
 		this.receiver = receiver;
-		this.connection = connection;
+		this.connection = transport;
 		start();
 	}
 
@@ -55,16 +56,19 @@ public class ServiceDispatcher extends Thread {
 
 				// TODO HANDLE CONTROL
 				// THIS IS THE FIRST CALL
-				TPSVCINFO tpsvcinfo = new TPSVCINFO(serviceName, message.data,
-						message.len, message.flags, -1);
+				Buffer buffer = new Buffer(null, null, message.len);
+				buffer.setData(message.data);
+				// TODO NO SESSIONS
+				TPSVCINFO tpsvcinfo = new TPSVCINFO(serviceName, buffer,
+						message.flags, null);
 
 				Response response = callback.tpservice(tpsvcinfo);
 				// TODO THIS SHOULD INVOKE THE CLIENT HANDLER
 				// odata.value = serviceRequest.getBytes();
 				// olen.value = serviceRequest.getLength();
 				endpointQueue.send("", response.getRval(), response.getRcode(),
-						response.getData(), response.getLen(), response
-								.getFlags(), 0);
+						response.getBuffer().getData(), response.getBuffer()
+								.getLen(), response.getFlags(), 0);
 			} catch (Throwable t) {
 				log.error("Could not service the request");
 			}

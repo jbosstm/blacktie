@@ -19,12 +19,7 @@ public class TPSVCINFO implements Serializable {
 	/**
 	 * The service data
 	 */
-	private byte[] data;
-
-	/**
-	 * The length of the data
-	 */
-	private int len;
+	private Buffer buffer;
 
 	/**
 	 * The flags the service was called with
@@ -34,7 +29,7 @@ public class TPSVCINFO implements Serializable {
 	/**
 	 * The connection descriptor
 	 */
-	private int cd;
+	private Session session;
 
 	/**
 	 * Create a new tpsvcinfo wrapper class
@@ -50,12 +45,11 @@ public class TPSVCINFO implements Serializable {
 	 * @param cd
 	 *            The connection descriptor used
 	 */
-	public TPSVCINFO(String name, byte[] data, int length, long flags, int cd) {
+	public TPSVCINFO(String name, Buffer buffer, long flags, Session session) {
 		this.name = name;
-		this.data = data;
-		this.len = length;
+		this.buffer = buffer;
 		this.flags = flags;
-		this.cd = cd;
+		this.session = session;
 	}
 
 	/**
@@ -72,17 +66,8 @@ public class TPSVCINFO implements Serializable {
 	 * 
 	 * @return The data
 	 */
-	public byte[] getData() {
-		return data;
-	}
-
-	/**
-	 * Get the length of the request
-	 * 
-	 * @return The length of the request
-	 */
-	public int getLen() {
-		return len;
+	public Buffer getBuffer() {
+		return buffer;
 	}
 
 	/**
@@ -99,7 +84,7 @@ public class TPSVCINFO implements Serializable {
 	 * 
 	 * @return The connection descriptor
 	 */
-	public int getCd() {
-		return cd;
+	public Session getSession() {
+		return session;
 	}
 }

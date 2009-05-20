@@ -23,7 +23,7 @@ import java.io.Serializable;
  * This class encapsulates the response from the remote service and the return
  * code
  */
-public class Response implements Serializable {
+public class Buffer implements Serializable {
 
 	/**
 	 * 
@@ -31,30 +31,28 @@ public class Response implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * The return value
-	 */
-	short rval;
-
-	/**
-	 * The return code
-	 */
-	int rcode;
-
-	/**
-	 * The flags to return
-	 */
-	int flags;
-
-	/**
 	 * The response from the server
 	 */
-	private Buffer buffer;
+	private byte[] data;
 
-	public Response(short rval, int rcode, Buffer buffer, int flags) {
-		this.rval = rval;
-		this.rcode = rcode;
-		this.buffer = buffer;
-		this.flags = flags;
+	private int len;
+
+	private String type;
+
+	private String subtype;
+
+	/**
+	 * Create a new buffer
+	 * 
+	 * @param data
+	 * @param len
+	 * @param type
+	 * @param subtype
+	 */
+	public Buffer(String type, String subtype, int len) {
+		this.len = len;
+		this.type = type;
+		this.subtype = subtype;
 	}
 
 	/**
@@ -62,8 +60,8 @@ public class Response implements Serializable {
 	 * 
 	 * @return The return value
 	 */
-	public short getRval() {
-		return rval;
+	public String getType() {
+		return type;
 	}
 
 	/**
@@ -71,15 +69,44 @@ public class Response implements Serializable {
 	 * 
 	 * @return The return code
 	 */
-	public int getRcode() {
-		return rcode;
+	public String getSubtype() {
+		return subtype;
 	}
 
-	public int getFlags() {
-		return flags;
+	/**
+	 * Get the data
+	 * 
+	 * @return The data
+	 */
+	public byte[] getData() {
+		return data;
 	}
 
-	public Buffer getBuffer() {
-		return buffer;
+	/**
+	 * Set the data to send.
+	 * 
+	 * @param data
+	 *            The data
+	 */
+	public void setData(byte[] data) {
+		this.data = data;
+	}
+
+	/**
+	 * Get the length
+	 * 
+	 * @return the length
+	 */
+	public int getLen() {
+		return len;
+	}
+
+	/**
+	 * Set the length to send
+	 * 
+	 * @param length
+	 */
+	public void setLen(int length) {
+		this.len = len;
 	}
 }

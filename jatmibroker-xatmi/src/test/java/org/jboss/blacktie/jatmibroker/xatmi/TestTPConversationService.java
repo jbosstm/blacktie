@@ -3,28 +3,32 @@ package org.jboss.blacktie.jatmibroker.xatmi;
 public class TestTPConversationService implements BlacktieService {
 	public Response tpservice(TPSVCINFO svcinfo) {
 		try {
-			ConnectionFactory connectionFactory = ConnectionFactory
-					.getConnectionFactory();
-			Connection con = connectionFactory.getConnection("", "");
-
+			Session session = svcinfo.getSession();
+			Buffer buffer = new Buffer(null, null, 0);
 			int iterationCount = 100;
-			String received = new String(svcinfo.getData());
+			String received = new String(svcinfo.getBuffer().getData());
 			if (received.equals("conversate")) {
 				for (int i = 0; i < iterationCount; i++) {
 					byte[] toSend = ("hi" + i).getBytes();
-					con.tpsend(svcinfo.getCd(), toSend, toSend.length, 0);
-					Response tprecv = con.tprecv(svcinfo.getCd(), 0);
+					buffer.setData(toSend);
+					buffer.setLen(toSend.length);
+					session.tpsend(buffer, 0);
+					Buffer tprecv = session.tprecv(0);
 					if (!new String(tprecv.getData()).equals("yo" + i)) {
-						return new Response((short) 0, 0, tprecv.getData(),
-								tprecv.getLen(), 0);
+						buffer.setData(tprecv.getData());
+						buffer.setLen(tprecv.getLen());
+						return new Response((short) 0, 0, buffer, 0);
 					}
 				}
 			} else {
-				return new Response((short) 0, 0, svcinfo.getData(), svcinfo
-						.getLen(), 0);
+				buffer.setData(svcinfo.getBuffer().getData());
+				buffer.setLen(svcinfo.getBuffer().getLen());
+				return new Response((short) 0, 0, buffer, 0);
 			}
-			return new Response((short) 0, 0, svcinfo.getData(), svcinfo
-					.getLen(), 0);
+			byte[] toSend = ("hi" + iterationCount).getBytes();
+			buffer.setData(toSend);
+			buffer.setLen(toSend.length);
+			return new Response((short) 0, 0, buffer, 0);
 		} catch (ConnectionException t) {
 			t.printStackTrace();
 			return null;

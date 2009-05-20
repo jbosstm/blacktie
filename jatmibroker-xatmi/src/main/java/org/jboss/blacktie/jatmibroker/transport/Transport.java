@@ -27,13 +27,42 @@ public interface Transport {
 			String transactionManagerServiceName) throws NotFound,
 			CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName;
 
+	/**
+	 * Get the receiver
+	 * 
+	 * @param serviceName
+	 * @return
+	 * @throws JAtmiBrokerException
+	 */
 	public Sender getSender(String serviceName) throws JAtmiBrokerException;
 
+	/**
+	 * Create a sender to a service queue
+	 * 
+	 * @param replyTo
+	 * @return
+	 * @throws JAtmiBrokerException
+	 */
 	public Sender createSender(String replyTo) throws JAtmiBrokerException;
 
-	public Receiver createReceiver(String replyTo) throws JAtmiBrokerException;
+	/**
+	 * Create a receiver on a service queue
+	 * 
+	 * @param serviceName
+	 * @return
+	 * @throws JAtmiBrokerException
+	 */
+	public Receiver createReceiver(String serviceName)
+			throws JAtmiBrokerException;
 
-	public Receiver getReceiver(int id) throws JAtmiBrokerException;
+	/**
+	 * Create a receiver on a temporary queue.
+	 * 
+	 * @param id
+	 * @return
+	 * @throws JAtmiBrokerException
+	 */
+	public Receiver createReceiver(int id) throws JAtmiBrokerException;
 
 	public void close();
 }

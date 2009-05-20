@@ -18,9 +18,10 @@
 package org.jboss.blacktie.jatmibroker.transport;
 
 public interface Sender {
+	String getName();
 
 	void send(String replyTo, short rval, int rcode, byte[] data, int len,
 			int correlationId, int flags);
 
-	public void close();
+	void close();
 }

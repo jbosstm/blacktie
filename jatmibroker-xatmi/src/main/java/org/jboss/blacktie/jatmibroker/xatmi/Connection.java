@@ -17,6 +17,9 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.LogManager;
@@ -37,7 +40,7 @@ public class Connection {
 	/**
 	 * A reference to the proxy to issue calls on
 	 */
-	private Transport connection;
+	private Transport transport;
 
 	// AVAILABLE FLAGS
 	int TPNOBLOCK = 0x00000001;
@@ -71,6 +74,13 @@ public class Connection {
 	public int TPEEVENT = 22;
 	public int TPEMATCH = 23;
 
+	private static int nextId;
+
+	/**
+	 * Any local temporary queues created in this connection
+	 */
+	private Map<java.lang.Integer, Receiver> temporaryQueues = new HashMap<java.lang.Integer, Receiver>();
+
 	/**
 	 * The connection
 	 * 
@@ -83,11 +93,26 @@ public class Connection {
 			throws ConnectionException {
 		try {
 
-			connection = TransportFactory.loadTransportFactory(properties)
+			transport = TransportFactory.loadTransportFactory(properties)
 					.createTransport(username, password);
 		} catch (JAtmiBrokerException e) {
 			throw new ConnectionException(-1, "Could not load properties", e);
 		}
+	}
+
+	/**
+	 * Allocate a new typed buffer
+	 * 
+	 * @param type
+	 *            The type of the buffer
+	 * @param subtype
+	 *            The subtype of the buffer
+	 * @param length
+	 *            The length of the buffer
+	 * @return The new buffer
+	 */
+	public Buffer tpalloc(String type, String subtype, int length) {
+		return new Buffer(type, subtype, length);
 	}
 
 	/**
@@ -101,21 +126,10 @@ public class Connection {
 	 *            The flags to use
 	 * @return The returned buffer
 	 */
-	public Response tpcall(String svc, byte[] idata, int length, int flags)
+	public Response tpcall(String svc, Buffer buffer, int flags)
 			throws ConnectionException {
-
-		try {
-			// TODO HANDLE TRANSACTION
-			Receiver endpoint = connection.getReceiver(0);
-			connection.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
-					idata, length, 0, flags);
-			Message receive = endpoint.receive(flags);
-			// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
-			return new Response(receive.rval, receive.rcode, receive.data,
-					receive.len, receive.flags);
-		} catch (JAtmiBrokerException e) {
-			throw new ConnectionException(-1, "could not send tpcall", e);
-		}
+		int cd = tpacall(svc, buffer, flags);
+		return tpgetrply(cd, flags);
 	}
 
 	/**
@@ -129,8 +143,20 @@ public class Connection {
 	 *            The flags to use
 	 * @return The connection descriptor
 	 */
-	// int tpacall(String svc, TypedBuffer idata, int flags) throws
-	// ConnectionException;
+	int tpacall(String svc, Buffer buffer, int flags)
+			throws ConnectionException {
+		try {
+			int correlationId = nextId++;
+			Receiver endpoint = getReceiver(correlationId);
+			// TODO HANDLE TRANSACTION
+			transport.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
+					buffer.getData(), buffer.getLen(), correlationId, flags);
+			return correlationId;
+		} catch (JAtmiBrokerException e) {
+			throw new ConnectionException(-1, "Could not send the request", e);
+		}
+	}
+
 	/**
 	 * Cancel the outstanding asynchronous call.
 	 * 
@@ -139,7 +165,11 @@ public class Connection {
 	 * @param flags
 	 *            The flags to use
 	 */
-	// void tpcancel(int cd, int flags) throws ConnectionException;
+	void tpcancel(int cd, int flags) throws ConnectionException {
+		Receiver endpoint = getReceiver(cd);
+		endpoint.close();
+	}
+
 	/**
 	 * Get the reply from the server
 	 * 
@@ -150,7 +180,12 @@ public class Connection {
 	 * @return The response from the server
 	 */
 	public Response tpgetrply(int cd, int flags) throws ConnectionException {
-		throw new ConnectionException(-1, "Waiting for implementation", null);
+		Receiver endpoint = getReceiver(cd);
+		Message m = endpoint.receive(flags);
+		// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
+		Buffer received = new Buffer("TODO", null, m.len);
+		received.setData(m.data);
+		return new Response(m.rval, m.rcode, received, m.flags);
 	}
 
 	/**
@@ -164,50 +199,38 @@ public class Connection {
 	 *            The flags to use
 	 * @return The connection descriptor
 	 */
-	public int tpconnect(String svc, byte[] idata, int length, int flags)
+	public Session tpconnect(String svc, Buffer buffer, int flags)
 			throws ConnectionException {
-		throw new ConnectionException(-1, "Waiting for implementation", null);
+		// Initialate the session
+		int cd = tpacall(svc, buffer, flags);
+		// Return a handle to allow the connection to send/receive data on
+		return new Session(transport, cd, getReceiver(cd));
 	}
 
-	/**
-	 * Send a buffer to a remote server in a conversation
-	 * 
-	 * @param cd
-	 *            The connection descriptor
-	 * @param idata
-	 *            The outbound data
-	 * @param flags
-	 *            The flags to use
-	 */
-	public void tpsend(int cd, byte[] idata, int length, int flags)
-			throws ConnectionException {
-		throw new ConnectionException(-1, "Waiting for implementation", null);
-	}
-
-	/**
-	 * Received the next response in a conversation
-	 * 
-	 * @param cd
-	 *            The connection descriptor to use
-	 * @param flags
-	 *            The flags to use
-	 * @return The next response
-	 */
-	public Response tprecv(int cd, int flags) throws ConnectionException {
-		throw new ConnectionException(-1, "Waiting for implementation", null);
-	}
-
-	/**
-	 * Close the conversation with the remote service.
-	 * 
-	 * @param cd
-	 *            The connection descriptor to use
-	 */
-	// void tpdiscon(int cd) throws ConnectionException;
 	/**
 	 * Close any resources associated with this connection
 	 */
 	public void close() {
-		connection.close();
+		Iterator<Receiver> receivers = temporaryQueues.values().iterator();
+		while (receivers.hasNext()) {
+			Receiver receiver = receivers.next();
+			receiver.close();
+		}
+		transport.close();
+	}
+
+	private Receiver getReceiver(int id) throws ConnectionException {
+		Receiver receiver = temporaryQueues.get(id);
+		if (receiver == null) {
+			try {
+				receiver = transport.createReceiver(id);
+				temporaryQueues.put(id, receiver);
+			} catch (Throwable t) {
+				throw new ConnectionException(-1,
+						"Could not create a temporary queue", t);
+			}
+		}
+		return receiver;
+
 	}
 }

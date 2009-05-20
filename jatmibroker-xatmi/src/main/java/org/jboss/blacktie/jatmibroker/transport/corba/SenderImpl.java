@@ -27,6 +27,7 @@ import AtmiBroker.EndpointQueueHelper;
 public class SenderImpl implements Sender {
 	private static final Logger log = LogManager.getLogger(SenderImpl.class);
 	private EndpointQueue serviceFactory;
+	private String name;
 
 	SenderImpl(org.omg.CORBA.Object serviceFactoryObject,
 			String serviceFactoryName) {
@@ -42,5 +43,9 @@ public class SenderImpl implements Sender {
 
 	public void close() {
 		// TODO Auto-generated method stub
+	}
+
+	public String getName() {
+		return name;
 	}
 }
