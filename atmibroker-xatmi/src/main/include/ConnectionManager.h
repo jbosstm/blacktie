@@ -30,9 +30,11 @@ public:
 	~ConnectionManager();
 
 	Connection* getClientConnection(char* serviceName);
+	Connection* getServerConnection(char* serviceName);
 
 private:
 	ConnectionMap manager;
+	Connection* getConnection(char* serviceName, char* side);
 };
 
 #endif

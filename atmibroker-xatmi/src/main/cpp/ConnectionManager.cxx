@@ -45,7 +45,7 @@ ConnectionManager::~ConnectionManager()
 }
 
 Connection*
-ConnectionManager::getClientConnection(char* serviceName)
+ConnectionManager::getConnection(char* serviceName, char* side)
 {
 	char* transportLibrary = AtmiBrokerEnv::get_instance()->getTransportLibrary(serviceName);
 	if(transportLibrary == NULL){
@@ -54,9 +54,12 @@ ConnectionManager::getClientConnection(char* serviceName)
 	}
 
 	LOG4CXX_DEBUG(loggerConnectionManager, (char*) "service " << serviceName << " transport is " << transportLibrary);
+	std::string key = side;
+	key.append("/");
+	key.append(transportLibrary);
 
 	ConnectionMap::iterator it;
-	it = manager.find(transportLibrary);
+	it = manager.find(key);
 	
 	if(it != manager.end()) {
 		LOG4CXX_DEBUG(loggerConnectionManager, (char*) "find " << serviceName << " Connection in map " << (*it).second);
@@ -64,13 +67,25 @@ ConnectionManager::getClientConnection(char* serviceName)
 	} else {
 		connection_factory_t* connectionFactory = (connection_factory_t*) ::lookup_symbol(transportLibrary, "connectionFactory");
 		if (connectionFactory != NULL) {
-			Connection* clientConnection = connectionFactory->create_connection((char*) "client");
-			manager.insert(ConnectionMap::value_type(transportLibrary, clientConnection));
-			LOG4CXX_DEBUG(loggerConnectionManager, (char*) "insert service " << serviceName << " connection " << clientConnection);
-			return clientConnection;
+			Connection* connection = connectionFactory->create_connection(side);
+			manager.insert(ConnectionMap::value_type(key, connection));
+			LOG4CXX_DEBUG(loggerConnectionManager, (char*) "insert service " << key << " connection " << connection);
+			return connection;
 		}
 	}
 
 	LOG4CXX_WARN(loggerConnectionManager, (char*) "can not create connection for service " << serviceName);
 	return NULL;
+}
+
+Connection*
+ConnectionManager::getClientConnection(char* serviceName)
+{
+	return getConnection(serviceName, (char*)"client");
+}
+
+Connection*
+ConnectionManager::getServerConnection(char* serviceName)
+{
+	return getConnection(serviceName, (char*)"server");
 }

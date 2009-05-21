@@ -34,8 +34,10 @@
 #include "Connection.h"
 
 #include "xatmi.h"
-#include "AtmiBrokerServerXml.h"
-#include "AtmiBrokerServiceXml.h"
+//#include "AtmiBrokerServerXml.h"
+//#include "AtmiBrokerServiceXml.h"
+#include "AtmiBrokerEnvXml.h"
+#include "ConnectionManager.h"
 #include "Destination.h"
 #include "ServiceDispatcher.h"
 
@@ -43,7 +45,8 @@ struct _service_data {
 	Destination* destination;
 	void (*func)(TPSVCINFO *);
 	std::vector<ServiceDispatcher*> dispatchers;
-	SVCINFO serviceInfo;
+	//SVCINFO serviceInfo;
+	ServiceInfo* serviceInfo;
 };
 typedef _service_data ServiceData;
 class AtmiBrokerServer: public virtual POA_AtmiBroker::Server {
@@ -91,13 +94,15 @@ private:
 	Connection* serverConnection;
 	CORBA_CONNECTION* realConnection;
 	void (*getServiceMethod(const char * aServiceName))(TPSVCINFO *);
-	void addDestination(Destination* destination, void(*func)(TPSVCINFO *));
+	void addDestination(Destination* destination, void(*func)(TPSVCINFO *), ServiceInfo* service);
 	Destination* removeDestination(const char * aServiceName);
 
+	ConnectionManager connections;
 	std::vector<ServiceData> serviceData;
 	std::vector<char*> advertisedServices;
-	char * serverName;
-	ServerMetadata serverInfo;
+	char* serverName;
+	//ServerMetadata serverInfo;
+	ServerInfo serverInfo;
 	PortableServer::POA_var poa;
 
 	// The following are not implemented

@@ -51,6 +51,7 @@ bool serverInitialized = false;
 PortableServer::POA_var server_poa;
 bool configFromCmdline = false;
 char configDir[256];
+char server[30];
 
 typedef void (*SVCFUNC)(TPSVCINFO *);
 
@@ -127,6 +128,7 @@ int serverinit(int argc, char** argv) {
 			AtmiBrokerEnv::set_environment_dir(ptrDir);
 
 		initializeLogger();
+		AtmiBrokerEnv::get_instance();
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "set AtmiBrokerEnv dir "
 				<< ptrDir);
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverinit called");
@@ -169,12 +171,27 @@ AtmiBrokerServer::AtmiBrokerServer() {
 	try {
 		serverConnection = NULL;
 		realConnection = NULL;
-		char descPath[256];
+		//char descPath[256];
 		const char* ptrDir;
 
 		ptrDir = getConfigurationDir();
 		serverName = server;
+		unsigned int i;
 
+		for (i = 0; i < servers.size(); i++) {
+			if(strcmp(servers[i]->serverName, serverName) == 0) {
+				serverInfo.serverName = strdup(servers[i]->serverName);
+				serverInfo.serviceVector = servers[i]->serviceVector;
+				break;
+			}
+		}
+
+		if(i == servers.size()) {
+			LOG4CXX_WARN(loggerAtmiBrokerServer, serverName << " has no configuration");
+			setSpecific(TPE_KEY, TSS_TPESYSTEM);
+			return;
+		}
+		/*
 		if (ptrDir != NULL) {
 ACE_OS		::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"%s"ACE_DIRECTORY_SEPARATOR_STR_A"SERVER.xml", ptrDir, serverName);
 	} else {
@@ -185,7 +202,9 @@ ACE_OS		::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"%s"ACE_DIREC
 	if(aAtmiBrokerServerXml.parseXmlDescriptor(&serverInfo, descPath) == false) return;
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "descPath is " << descPath);
+	*/
 
+	/*
 	char* transportLibrary = AtmiBrokerEnv::get_instance()->getenv(
 			(char*) "TransportLibrary");
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer,
@@ -196,6 +215,7 @@ ACE_OS		::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"%s"ACE_DIREC
 	if (connectionFactory != NULL) {
 		serverConnection = connectionFactory->create_connection(
 				(char*) "server");
+	*/
 		realConnection = ::initOrb(
 				(char*) "serverAdministration");
 		//realConnection = init_orb(
@@ -225,12 +245,14 @@ ACE_OS		::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"%s"ACE_DIREC
 				(char*) "server_init(): finished.");
 
 		serverInitialized = true;
+	/*
 	} else {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer,
 				(char*) "Could not load the transport: "
 				<< transportLibrary);
 		setSpecific(TPE_KEY, TSS_TPESYSTEM);
 	}
+	*/
 } catch (CORBA::Exception& e) {
 	userlog(log4cxx::Level::getError(), loggerAtmiBrokerServer,
 			(char*) "serverinit - Unexpected CORBA exception: %s",
@@ -243,10 +265,10 @@ ACE_OS		::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"%s"ACE_DIREC
 //
 AtmiBrokerServer::~AtmiBrokerServer() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "destructor");
-	if (serverConnection) {
+	if (realConnection) {
 		server_done();
-		delete serverConnection;
-		serverConnection = NULL;
+		//delete serverConnection;
+		//serverConnection = NULL;
 		shutdownBindings(realConnection);
 		delete realConnection;
 		realConnection = NULL;
@@ -265,28 +287,28 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 }
 
 void AtmiBrokerServer::advertiseAtBootime() {
-	for (unsigned int i = 0; i < serverInfo.serviceDatas.size(); i++) {
-		ServiceMetadata* service = &serverInfo.serviceDatas[i];
+	for (unsigned int i = 0; i < serverInfo.serviceVector.size(); i++) {
+		ServiceInfo* service = &serverInfo.serviceVector[i];
 		if (service->advertised) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, "begin advertise "
-					<< service->name);
-			if (service->library_name != "") {
+					<< service->serviceName);
+			if (service->library_name != NULL) {
 				SVCFUNC func = (SVCFUNC) ::lookup_symbol(
-						service->library_name.c_str(),
-						service->function_name.c_str());
+						service->library_name,
+						service->function_name);
 				if (func == NULL) {
 					LOG4CXX_WARN(loggerAtmiBrokerServer, "can not find "
 							<< service->function_name << " in "
 							<< service->library_name);
 				} else {
-					advertiseService((char*) service->name.c_str(), func);
+					advertiseService((char*) service->serviceName, func);
 				}
 			} else {
-				LOG4CXX_WARN(loggerAtmiBrokerServer, service->name
+				LOG4CXX_WARN(loggerAtmiBrokerServer, service->serviceName
 						<< " has no library name");
 			}
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, "end advertise "
-					<< service->name);
+					<< service->serviceName);
 		}
 	}
 }
@@ -319,8 +341,8 @@ CORBA::Short AtmiBrokerServer::server_init() throw (CORBA::SystemException ) {
 void AtmiBrokerServer::server_done() throw (CORBA::SystemException ) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_done()");
 
-	for (unsigned int i = 0; i < serverInfo.serviceDatas.size(); i++) {
-		char* svcname = (char*) serverInfo.serviceDatas[i].name.c_str();
+	for (unsigned int i = 0; i < serverInfo.serviceVector.size(); i++) {
+		char* svcname = (char*) serverInfo.serviceVector[i].serviceName;
 		if (isAdvertised(svcname)) {
 			unadvertiseService(svcname);
 		}
@@ -362,10 +384,12 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 
 	bool found = false;
 	unsigned int i;
-	for (i = 0; i < serverInfo.serviceDatas.size(); i++) {
-		if (strncmp(serverInfo.serviceDatas[i].name.c_str(), serviceName,
+	ServiceInfo* service;
+	for (i = 0; i < serverInfo.serviceVector.size(); i++) {
+		if (strncmp(serverInfo.serviceVector[i].serviceName, serviceName,
 				XATMI_SERVICE_NAME_LENGTH) == 0) {
 			found = true;
+			service = &serverInfo.serviceVector[i];
 			break;
 		}
 	}
@@ -373,7 +397,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 		setSpecific(TPE_KEY, TSS_TPELIMIT);
 		return false;
 	}
-	void (*serviceFunction)(TPSVCINFO*) = getServiceMethod(serverInfo.serviceDatas[i].name.c_str());
+	void (*serviceFunction)(TPSVCINFO*) = getServiceMethod(serviceName);
 	if (serviceFunction != NULL) {
 		if (serviceFunction == func) {
 			return true;
@@ -381,6 +405,12 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 			setSpecific(TPE_KEY, TSS_TPEMATCH);
 			return false;
 		}
+	}
+
+	serverConnection = connections.getServerConnection(serviceName);
+	if(serverConnection == NULL) {
+		setSpecific(TPE_KEY, TSS_TPESYSTEM);
+		return false;
 	}
 
 	bool toReturn = false;
@@ -394,7 +424,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 				<< serviceName);
 		Destination* destination = serverConnection->createDestination(
 				serviceName);
-		addDestination(destination, func);
+		addDestination(destination, func, service);
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "created destination: "
 				<< serviceName);
 	} catch (...) {
@@ -417,6 +447,11 @@ void AtmiBrokerServer::unadvertiseService(char * svcname) {
 	char* serviceName = (char*) ::malloc(XATMI_SERVICE_NAME_LENGTH + 1);
 	memset(serviceName, '\0', XATMI_SERVICE_NAME_LENGTH + 1);
 	strncat(serviceName, svcname, XATMI_SERVICE_NAME_LENGTH);
+
+	serverConnection = connections.getServerConnection(serviceName);
+	if(serverConnection == NULL) {
+		return ;
+	}
 
 	for (std::vector<char*>::iterator i = advertisedServices.begin(); i
 			!= advertisedServices.end(); i++) {
@@ -468,15 +503,15 @@ AtmiBrokerServer::get_server_info() throw (CORBA::SystemException ) {
 
 	//aServerInfo->serviceNames.length(serverInfo.serviceNames.size());
 	std::queue<AtmiBroker::octetSeq *> returnData;
-	for (unsigned int i = 0; i < serverInfo.serviceDatas.size(); i++) {
-		std::string serviceName = serverInfo.serviceDatas[i].name;
+	for (unsigned int i = 0; i < serverInfo.serviceVector.size(); i++) {
+		std::string serviceName = serverInfo.serviceVector[i].serviceName;
 		//AtmiBroker::octetSeq * aOctetSeq =
 		returnData.push(new AtmiBroker::octetSeq(serviceName.length(),
 				serviceName.length(), (unsigned char *) serviceName.c_str(),
 				true));//*aOctetSeq));
 	}
 	AtmiBroker::ServiceNameSeq_var aOctetSeq = new AtmiBroker::ServiceNameSeq(
-			serverInfo.serviceDatas.size(), serverInfo.serviceDatas.size(),
+			serverInfo.serviceVector.size(), serverInfo.serviceVector.size(),
 			returnData.front(), true);
 	aServerInfo->serviceNames = aOctetSeq;
 
@@ -491,23 +526,22 @@ AtmiBrokerServer::get_all_service_info() throw (CORBA::SystemException ) {
 
 	AtmiBroker::ServiceInfoSeq_var aServiceInfoSeq =
 			new AtmiBroker::ServiceInfoSeq();
-	aServiceInfoSeq->length(serverInfo.serviceDatas.size());
+	aServiceInfoSeq->length(serverInfo.serviceVector.size());
 
 	int j = 0;
 	for (std::vector<ServiceData>::iterator i = serviceData.begin(); i
 			!= serviceData.end(); i++) {
 		AtmiBroker::ServiceInfo_var aServiceInfo =
 				new AtmiBroker::ServiceInfo();
-		aServiceInfo->serviceName = strdup((*i).serviceInfo.serviceName);
-		aServiceInfo->poolSize = (*i).serviceInfo.poolSize;
-		aServiceInfo->securityType = strdup((*i).serviceInfo.securityType);
+		aServiceInfo->serviceName = strdup((*i).serviceInfo->serviceName);
+		aServiceInfo->poolSize = (*i).serviceInfo->poolSize;
+		aServiceInfo->securityType = strdup((*i).serviceInfo->securityType);
 		// ambiguous assignment on 32 bit machines - commenting out since this is the admin interface which is going to change
 		//		aServiceInfoSeq[j] = aServiceInfo;
 		j++;
 	}
 	return aServiceInfoSeq._retn();
 }
-
 // get_environment_variable_info() -- Implements IDL operation "AtmiBroker::Server::get_environment_variable_info".
 //
 AtmiBroker::EnvVariableInfoSeq*
@@ -619,21 +653,21 @@ void AtmiBrokerServer::stop_service(const char* service_name)
 			<< service_name);
 
 	try {
-		for (unsigned int i = 0; i < serverInfo.serviceDatas.size(); i++) {
+		for (unsigned int i = 0; i < serverInfo.serviceVector.size(); i++) {
 			LOG4CXX_DEBUG(
 					loggerAtmiBrokerServer,
 					(char*) "stop_service() next service "
-							<< (const char*) serverInfo.serviceDatas[i].name.c_str());
+							<< (const char*) serverInfo.serviceVector[i].serviceName);
 			if (strcmp(service_name,
-					(const char*) serverInfo.serviceDatas[i].name.c_str()) == 0) {
+					(const char*) serverInfo.serviceVector[i].serviceName) == 0) {
 				LOG4CXX_DEBUG(
 						loggerAtmiBrokerServer,
 						(char*) "stop_service() found matching service calling tpunadvertise"
 								<< service_name);
 #ifndef VBC_COMP
-				tpunadvertise((char*) serverInfo.serviceDatas[i].name.c_str());
+				tpunadvertise((char*) serverInfo.serviceVector[i].serviceName);
 #else
-				tpunadvertise((char*)serverInfo.serviceDatas[i]);
+				tpunadvertise((char*)serverInfo.serviceVector[i]);
 #endif
 				LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 						(char*) "stop_service() called tpunadvertise");
@@ -664,22 +698,22 @@ void AtmiBrokerServer::start_service(const char* service_name)
 			(char*) "start_service()  stopped service");
 
 	try {
-		for (unsigned int i = 0; i < serverInfo.serviceDatas.size(); i++) {
+		for (unsigned int i = 0; i < serverInfo.serviceVector.size(); i++) {
 			LOG4CXX_DEBUG(
 					loggerAtmiBrokerServer,
 					(char*) "start_service()  next service "
-							<< (const char*) serverInfo.serviceDatas[i].name.c_str());
+							<< (const char*) serverInfo.serviceVector[i].serviceName);
 			if (strcmp(service_name,
-					(const char*) serverInfo.serviceDatas[i].name.c_str()) == 0) {
+					(const char*) serverInfo.serviceVector[i].serviceName) == 0) {
 				LOG4CXX_DEBUG(
 						loggerAtmiBrokerServer,
 						(char*) "start_service()  found matching service calling tpadvertise"
 								<< service_name);
 #ifndef VBC_COMP
-				tpadvertise((char*) serverInfo.serviceDatas[i].name.c_str(),
+				tpadvertise((char*) serverInfo.serviceVector[i].serviceName,
 						NULL);
 #else
-				tpadvertise((char*)serverInfo.serviceDatas[i], NULL);
+				tpadvertise((char*)serverInfo.serviceVector[i], NULL);
 #endif
 				LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 						(char*) "start_service()  called tpadvertise");
@@ -698,18 +732,20 @@ void AtmiBrokerServer::start_service(const char* service_name)
 }
 
 void AtmiBrokerServer::addDestination(Destination* destination, void(*func)(
-		TPSVCINFO *)) {
+		TPSVCINFO *), ServiceInfo* service) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "addDestination: "
 			<< destination->getName());
 
 	ServiceData entry;
 	entry.destination = destination;
 	entry.func = func;
+	entry.serviceInfo = service;
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "constructor: "
 			<< destination->getName());
-	entry.serviceInfo.poolSize = 1; // TODO MAKE A CONSTANT
+	//entry.serviceInfo.poolSize = 1; // TODO MAKE A CONSTANT
 
+	/*
 	char serviceDir[256];
 	const char* configDir = getConfigurationDir();
 
@@ -723,9 +759,14 @@ AtmiBrokerServiceXml aAtmiBrokerServiceXml;
 aAtmiBrokerServiceXml.parseXmlDescriptor(&entry.serviceInfo,
 		destination->getName(),
 		serviceDir);
+	*/
+	serverConnection = connections.getServerConnection((char*)destination->getName());
+	if(serverConnection == NULL) {
+		return;
+	}
 
 LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "createPool");
-for (int i = 0; i < entry.serviceInfo.poolSize; i++) {
+for (int i = 0; i < entry.serviceInfo->poolSize; i++) {
 	ServiceDispatcher* dispatcher = new ServiceDispatcher(destination,
 			serverConnection, destination->getName(), func);
 	if (dispatcher->activate(THR_NEW_LWP | THR_JOINABLE, 1, 0,

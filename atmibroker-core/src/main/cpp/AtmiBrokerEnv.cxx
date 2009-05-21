@@ -98,8 +98,8 @@ AtmiBrokerEnv::~AtmiBrokerEnv() {
 	}
 	envVariableInfoSeq.clear();
 
-	free(namingServiceId);
-	free(transFactoryId);
+	//free(namingServiceId);
+	//free(transFactoryId);
 
 	if (xarmp)
 		xarmp = xarmp->head;
@@ -127,6 +127,8 @@ AtmiBrokerEnv::~AtmiBrokerEnv() {
 			for(std::vector<ServiceInfo>::iterator i = services->begin(); i != services->end(); i++) {
 				free((*i).serviceName);
 				free((*i).transportLib);
+				free((*i).function_name);
+				free((*i).library_name);
 			}
 			services->clear();
 
@@ -144,7 +146,7 @@ AtmiBrokerEnv::getTransportLibrary(char* serviceName) {
 		for (ServersInfo::iterator server = servers.begin(); server != servers.end(); server++) {
 			std::vector<ServiceInfo>* services = &(*server)->serviceVector;
 			for(std::vector<ServiceInfo>::iterator i = services->begin(); i != services->end(); i++) {
-				if(strcmp((*i).serviceName, serviceName) == 0){
+				if(ACE_OS::strncmp((*i).serviceName, serviceName, 15) == 0){
 					return (*i).transportLib;
 				}
 			}
