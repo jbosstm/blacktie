@@ -46,9 +46,8 @@ public class TransportImpl implements Runnable, Transport {
 	private Map<String, SenderImpl> senders = new HashMap<String, SenderImpl>();
 	private OrbManagement orbManagement;
 
-	TransportImpl(OrbManagement orbManagement, String serverName,
-			String password) throws InvalidName, NotFound, CannotProceed,
-			org.omg.CosNaming.NamingContextPackage.InvalidName,
+	TransportImpl(OrbManagement orbManagement) throws InvalidName, NotFound,
+			CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName,
 			AdapterInactive, AlreadyBound {
 		this.orbManagement = orbManagement;
 
@@ -67,14 +66,6 @@ public class TransportImpl implements Runnable, Transport {
 
 	public void run() {
 		orbManagement.getOrb().run();
-	}
-
-	public TransactionFactory getTransactionFactory(
-			String transactionManagerServiceName) throws NotFound,
-			CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName {
-		org.omg.CORBA.Object aObject = orbManagement.getNamingContextExt()
-				.resolve_str(transactionManagerServiceName);
-		return TransactionFactoryHelper.narrow(aObject);
 	}
 
 	public Sender getSender(String serviceName) throws JAtmiBrokerException {
@@ -105,12 +96,12 @@ public class TransportImpl implements Runnable, Transport {
 
 	public Receiver createReceiver(String serviceName)
 			throws JAtmiBrokerException {
-		log.debug("createClientCallback create client callback ");
+		log.debug("createClientCallback create client callback");
 		return new ReceiverImpl(orbManagement, serviceName);
 	}
 
 	public Receiver createReceiver() throws JAtmiBrokerException {
-		log.debug("createClientCallback create client callback ");
+		log.debug("createClientCallback create client callback");
 		return new ReceiverImpl(orbManagement);
 	}
 

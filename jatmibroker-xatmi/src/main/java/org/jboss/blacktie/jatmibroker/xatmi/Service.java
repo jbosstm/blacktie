@@ -24,7 +24,6 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerClientXML;
 import org.jboss.blacktie.jatmibroker.transport.Message;
-import org.jboss.blacktie.jatmibroker.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.transport.Sender;
 import org.jboss.blacktie.jatmibroker.transport.Transport;
 import org.jboss.blacktie.jatmibroker.transport.TransportFactory;
@@ -42,7 +41,7 @@ public abstract class Service implements BlacktieService {
 			throw new JAtmiBrokerException("Could not load properties", e);
 		}
 		transport = TransportFactory.loadTransportFactory(properties)
-				.createTransport("", "");
+				.createTransport();
 	}
 
 	protected void processMessage(Message message) {
@@ -64,8 +63,8 @@ public abstract class Service implements BlacktieService {
 			// odata.value = serviceRequest.getBytes();
 			// olen.value = serviceRequest.getLength();
 			sender.send("", response.getRval(), response.getRcode(), response
-					.getBuffer().getData(), response.getLen(),
-					response.getFlags(), 0);
+					.getBuffer().getData(), response.getLen(), response
+					.getFlags(), 0);
 		} catch (Throwable t) {
 			log.error("Could not service the request", t);
 		}

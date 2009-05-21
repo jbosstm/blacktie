@@ -35,8 +35,7 @@ public class TransportFactoryImpl extends TransportFactory {
 
 	}
 
-	public Transport createTransport(String username, String password)
-			throws JAtmiBrokerException {
+	public Transport createTransport() throws JAtmiBrokerException {
 		return null;
 	}
 }

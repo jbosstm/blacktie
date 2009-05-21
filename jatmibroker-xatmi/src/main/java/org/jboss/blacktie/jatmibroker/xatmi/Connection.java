@@ -94,7 +94,7 @@ public class Connection {
 		try {
 
 			transport = TransportFactory.loadTransportFactory(properties)
-					.createTransport(username, password);
+					.createTransport();
 		} catch (JAtmiBrokerException e) {
 			throw new ConnectionException(-1, "Could not load properties", e);
 		}

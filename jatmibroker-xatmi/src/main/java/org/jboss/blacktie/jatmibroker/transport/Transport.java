@@ -18,14 +18,8 @@
 package org.jboss.blacktie.jatmibroker.transport;
 
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
-import org.omg.CosNaming.NamingContextPackage.CannotProceed;
-import org.omg.CosNaming.NamingContextPackage.NotFound;
-import org.omg.CosTransactions.TransactionFactory;
 
 public interface Transport {
-	public TransactionFactory getTransactionFactory(
-			String transactionManagerServiceName) throws NotFound,
-			CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName;
 
 	/**
 	 * Get the receiver

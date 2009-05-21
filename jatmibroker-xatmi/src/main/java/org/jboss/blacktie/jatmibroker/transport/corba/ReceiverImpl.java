@@ -106,7 +106,7 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 	ReceiverImpl(OrbManagement orbManagement) throws JAtmiBrokerException {
 		ORB orb = orbManagement.getOrb();
 		POA poa = orbManagement.getRootPoa();
-		log.debug("ClientCallbackImpl constructor ");
+		log.debug("ClientCallbackImpl constructor");
 
 		try {
 			try {
@@ -116,7 +116,7 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 			} catch (AdapterAlreadyExists e) {
 				m_default_poa = poa.find_POA("TODO", true);
 			}
-			log.debug("JABSession createCallbackObject ");
+			log.debug("JABSession createCallbackObject");
 			activate_object = m_default_poa.activate_object(this);
 			log.debug("activated this " + this);
 

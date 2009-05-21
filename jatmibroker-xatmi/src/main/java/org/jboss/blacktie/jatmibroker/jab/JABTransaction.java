@@ -18,15 +18,18 @@
 package org.jboss.blacktie.jatmibroker.jab;
 
 import java.util.Hashtable;
+import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.transport.OrbManagement;
 import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
 import org.omg.CosTransactions.Control;
 import org.omg.CosTransactions.Terminator;
 import org.omg.CosTransactions.TransactionFactory;
+import org.omg.CosTransactions.TransactionFactoryHelper;
 import org.omg.CosTransactions.Unavailable;
 import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 
@@ -41,6 +44,7 @@ public class JABTransaction {
 
 	private Hashtable _childThreads;
 	private boolean active = true;
+	private OrbManagement orbManagement;
 
 	public void finalize() throws Throwable {
 		// TODO use ThreadActionData.purgeAction(this); not popAction
@@ -52,7 +56,7 @@ public class JABTransaction {
 			throws JABException, NotFound, CannotProceed,
 			org.omg.CosNaming.NamingContextPackage.InvalidName, InvalidName,
 			AdapterInactive {
-		log.debug("JABTransaction constructor ");
+		log.debug("JABTransaction constructor");
 
 		jabSession = aJABSession;
 		timeout = aTimeout;
@@ -60,9 +64,14 @@ public class JABTransaction {
 		control = null;
 		terminator = null;
 
-		transactionFactory = jabSession.getServerProxy().getTransactionFactory(
-				jabSession.getJABSessionAttributes()
-						.getTransactionManagerName());
+		Properties properties = jabSession.getJABSessionAttributes()
+				.getProperties();
+		orbManagement = new OrbManagement(properties, false);
+		String toLookup = (String) properties.get("blacktie.trans.factoryid");
+		org.omg.CORBA.Object aObject = orbManagement.getNamingContextExt()
+				.resolve_str(toLookup);
+		transactionFactory = TransactionFactoryHelper.narrow(aObject);
+
 		log.debug(" creating Control");
 		control = transactionFactory.create(timeout);
 		ThreadActionData.pushAction(this);
@@ -77,38 +86,38 @@ public class JABTransaction {
 	}
 
 	public Control getControl() {
-		log.debug("JABTransaction getControl ");
+		log.debug("JABTransaction getControl");
 		return control;
 	}
 
 	public JABSession getSession() {
-		log.debug("JABTransaction getSession ");
+		log.debug("JABTransaction getSession");
 		return jabSession;
 	}
 
 	public void commit() throws JABException {
-		log.debug("JABTransaction commit ");
+		log.debug("JABTransaction commit");
 
 		try {
 			log.debug("calling commit");
 			terminator.commit(true);
 			active = false;
 			ThreadActionData.popAction();
-			log.debug("called commit on terminator ");
+			log.debug("called commit on terminator");
 		} catch (Exception e) {
 			throw new JABException(e);
 		}
 	}
 
 	public void rollback() throws JABException {
-		log.debug("JABTransaction rollback ");
+		log.debug("JABTransaction rollback");
 
 		try {
 			log.debug("calling rollback");
 			terminator.rollback();
 			active = false;
 			ThreadActionData.popAction();
-			log.debug("called rollback on terminator ");
+			log.debug("called rollback on terminator");
 		} catch (Exception e) {
 			throw new JABException(e);
 		}

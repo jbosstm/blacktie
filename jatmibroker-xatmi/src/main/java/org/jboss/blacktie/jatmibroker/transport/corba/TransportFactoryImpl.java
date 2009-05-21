@@ -44,12 +44,11 @@ public class TransportFactoryImpl extends TransportFactory {
 		log.debug("Created OrbManagement");
 	}
 
-	public Transport createTransport(String username, String password)
-			throws JAtmiBrokerException {
+	public Transport createTransport() throws JAtmiBrokerException {
 		log.debug("Creating");
 		TransportImpl instance = null;
 		try {
-			instance = new TransportImpl(orbManagement, username, password);
+			instance = new TransportImpl(orbManagement);
 		} catch (Throwable t) {
 			throw new JAtmiBrokerException("Could not connect to server", t);
 		}

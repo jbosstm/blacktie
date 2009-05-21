@@ -19,48 +19,56 @@ package org.jboss.blacktie.jatmibroker.jab;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.transport.Transport;
-import org.jboss.blacktie.jatmibroker.transport.TransportFactory;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
 
+/**
+ * The JABSession holds a connection to the XATMI server
+ */
 public class JABSession {
 	private static final Logger log = LogManager.getLogger(JABSession.class);
 	private JABSessionAttributes jabSessionAttributes;
-	private Transport connection;
+	private Connection connection;
 
-	public JABSession(JABSessionAttributes aJABSessionAttributes)
-			throws JABException {
+	/**
+	 * Create a new connection to the configured XATMI server
+	 * 
+	 * @param aJABSessionAttributes
+	 * @throws JABException
+	 */
+	public JABSession(JABSessionAttributes aJABSessionAttributes,
+			String username, String password) throws JABException {
 		super();
-		log.debug("JABSession constructor ");
+		log.debug("JABSession constructor");
 		try {
 			jabSessionAttributes = aJABSessionAttributes;
-			connection = TransportFactory.loadTransportFactory(
-					jabSessionAttributes.getProperties()).createTransport("",
-					"");
+			ConnectionFactory connectionFactory = ConnectionFactory
+					.getConnectionFactory();
+			connection = connectionFactory.getConnection(username, password);
 		} catch (Exception e) {
-			String domain = jabSessionAttributes.getDomainName();
-
-			throw new JABException("Error connect to domain " + domain, e);
+			throw new JABException("Error connect to domain: "
+					+ jabSessionAttributes.getProperties().get(
+							"blacktie.domain.name"), e);
 		}
 	}
 
-	public JABSessionAttributes getJABSessionAttributes() {
-		return jabSessionAttributes;
-	}
-
-	public void onReply(JABReply aJabReply) throws JABException {
-		log.error("JABSession Default Handler Fired for onReply: " + aJabReply);
-	}
-
+	/**
+	 * Close the connection with the server
+	 * 
+	 * @throws JABException
+	 */
 	public void endSession() throws JABException {
-		log.debug("JABSession endSession ");
+		log.debug("JABSession endSession");
 		connection.close();
-		// TODO cleanup orb work
 		connection = null;
 		jabSessionAttributes = null;
 	}
 
-	public Transport getServerProxy() {
-		return connection;
+	JABSessionAttributes getJABSessionAttributes() {
+		return jabSessionAttributes;
 	}
 
+	Connection getConnection() {
+		return connection;
+	}
 }

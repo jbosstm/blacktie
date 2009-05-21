@@ -19,57 +19,49 @@ package org.jboss.blacktie.jatmibroker.jab;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.transport.Receiver;
-import org.omg.CosTransactions.Control;
+import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
+import org.jboss.blacktie.jatmibroker.xatmi.Response;
 
 /**
  * Create an invoker for a remote service.
  */
-public class JABRemoteService implements Message {
+public class JABRemoteService {
 	private static final Logger log = LogManager
 			.getLogger(JABRemoteService.class);
-	private JABSession jabSession;
+	private Connection connection;
 	private String serviceName;
-	private byte[] data;
 	private String bufferType;
+	private byte[] data;
 	private int length;
+	private Response response;
 
 	public JABRemoteService(JABSession aJABSession, String aServiceName)
 			throws JABException {
-		log.debug("JABService constructor ");
+		log.debug("JABService constructor");
 
-		jabSession = aJABSession;
+		connection = aJABSession.getConnection();
 		serviceName = aServiceName;
 	}
 
 	public void call(JABTransaction aJABTransaction) throws JABException {
-		log.debug("JABService call ");
+		log.debug("JABService call");
 
 		try {
-			int flags = 0;
-			Control control = null;
-			if (aJABTransaction != null) {
-				control = aJABTransaction.getControl();
-			}
 			// TODO HANDLE TRANSACTION
-			Receiver endpoint = jabSession.getServerProxy().createReceiver();
-			jabSession.getServerProxy().getSender(serviceName)
-					.send(endpoint.getReplyTo(), (short) 0, 0, data, length, 0,
-							flags);
-			org.jboss.blacktie.jatmibroker.transport.Message receive = endpoint
-					.receive(flags);
-
-			data = new byte[receive.len];
-			System.arraycopy(receive.data, 0, data, 0, receive.len);
-			log.debug("service_request response is " + data);
+			Buffer buffer = new Buffer(bufferType, null);
+			buffer.setData(data);
+			response = connection.tpcall(serviceName, buffer, length, 0);
+			log.debug("service_request responsed");
 		} catch (Exception e) {
 			throw new JABException(e);
 		}
 	}
 
 	public void clear() {
-		log.debug("JABService clear ");
+		log.debug("JABService clear");
 		data = null;
+		response = null;
 	}
 
 	public void setBuffer(String name, byte[] data, int length) {
@@ -80,6 +72,6 @@ public class JABRemoteService implements Message {
 	}
 
 	public byte[] getResponseData() {
-		return data;
+		return response.getBuffer().getData();
 	}
 }

@@ -100,7 +100,7 @@ public class AtmiBrokerServer extends ServerPOA {
 		}
 
 		connection = TransportFactory.loadTransportFactory(properties)
-				.createTransport("", "");
+				.createTransport();
 	}
 
 	public void close() throws JAtmiBrokerException {

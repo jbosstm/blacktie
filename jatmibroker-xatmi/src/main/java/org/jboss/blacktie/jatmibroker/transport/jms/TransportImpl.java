@@ -21,9 +21,6 @@ import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.transport.Sender;
 import org.jboss.blacktie.jatmibroker.transport.Transport;
-import org.omg.CosNaming.NamingContextPackage.CannotProceed;
-import org.omg.CosNaming.NamingContextPackage.NotFound;
-import org.omg.CosTransactions.TransactionFactory;
 
 public class TransportImpl implements Transport {
 
@@ -31,12 +28,6 @@ public class TransportImpl implements Transport {
 	}
 
 	public void close() {
-	}
-
-	public TransactionFactory getTransactionFactory(
-			String transactionManagerServiceName) throws NotFound,
-			CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName {
-		return null;
 	}
 
 	public Sender getSender(String serviceName) throws JAtmiBrokerException {

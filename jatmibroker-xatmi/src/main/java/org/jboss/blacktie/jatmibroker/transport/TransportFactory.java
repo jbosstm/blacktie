@@ -40,6 +40,5 @@ public abstract class TransportFactory {
 	protected abstract void setProperties(Properties properties)
 			throws JAtmiBrokerException;
 
-	public abstract Transport createTransport(String userName,
-			String userPassword) throws JAtmiBrokerException;
+	public abstract Transport createTransport() throws JAtmiBrokerException;
 }

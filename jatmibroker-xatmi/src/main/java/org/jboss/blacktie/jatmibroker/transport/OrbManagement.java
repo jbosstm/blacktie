@@ -72,7 +72,7 @@ public class OrbManagement {
 		root_poa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
 		log.debug("roo_poa is " + root_poa);
 		root_poa.the_POAManager().activate();
-		log.debug("roo_poa is activated ");
+		log.debug("roo_poa is activated");
 		log.debug(" finished & returning from ConnectToORBWithNameServiceProp");
 
 		if (createNC) {

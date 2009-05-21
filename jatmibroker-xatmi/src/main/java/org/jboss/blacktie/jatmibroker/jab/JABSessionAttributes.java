@@ -22,33 +22,34 @@ import java.util.Properties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerClientXML;
+import org.jboss.blacktie.jatmibroker.transport.OrbManagement;
 
+/**
+ * Create the session attributes
+ */
 public class JABSessionAttributes {
 	private static final Logger log = LogManager
 			.getLogger(JABSessionAttributes.class);
-	private String transactionManagerName;
-	private Properties properties = new Properties();
+	private Properties properties;
+	private OrbManagement orbManagement;
 
-	public JABSessionAttributes() throws JABException {
-		AtmiBrokerClientXML client = new AtmiBrokerClientXML(properties);
+	/**
+	 * Create session attributes using the default configuration from
+	 * blacktie.config.dir
+	 * 
+	 * @throws JABException
+	 */
+	public JABSessionAttributes(String configurationDirectory)
+			throws JABException {
 		try {
-			client.getProperties();
-			this.transactionManagerName = (String) properties
-					.get("blacktie.trans.factoryid");
+			AtmiBrokerClientXML client = new AtmiBrokerClientXML();
+			this.properties = client.getProperties(configurationDirectory);
 		} catch (Exception e) {
 			throw new JABException(e);
 		}
 	}
 
-	public String getTransactionManagerName() {
-		return transactionManagerName;
-	}
-
-	public Properties getProperties() {
+	Properties getProperties() {
 		return properties;
-	}
-
-	public String getDomainName() {
-		return (String) properties.get("blacktie.domain.name");
 	}
 }

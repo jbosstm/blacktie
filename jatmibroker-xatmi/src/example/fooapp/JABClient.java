@@ -28,9 +28,10 @@ public class JABClient {
 	private static final Logger log = LogManager.getLogger(JABClient.class);
 
 	public static void main(String[] args) throws Exception {
-		log.info("JABClient ");
+		log.info("JABClient");
 		if (args.length != 1) {
-			log.error("java -Dblacktie.config.dir=[linux|win32] JABClient message");
+			log
+					.error("java -Dblacktie.config.dir=[linux|win32] JABClient message");
 			return;
 		}
 		String message = args[0];
@@ -38,11 +39,13 @@ public class JABClient {
 			JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes();
 			JABSession aJabSession = new JABSession(aJabSessionAttributes);
 			JABTransaction transaction = new JABTransaction(aJabSession, 5000);
-			JABRemoteService aJabService = new JABRemoteService(aJabSession, "BAR");
+			JABRemoteService aJabService = new JABRemoteService(aJabSession,
+					"BAR");
 			aJabService.setString("STRING", message);
 			log.info("Calling call with input: " + message);
 			aJabService.call();
-			log.info("Called call with output: " + aJabService.getResponseString());
+			log.info("Called call with output: "
+					+ aJabService.getResponseString());
 			transaction.commit();
 			aJabSession.endSession();
 		} catch (JABException e) {

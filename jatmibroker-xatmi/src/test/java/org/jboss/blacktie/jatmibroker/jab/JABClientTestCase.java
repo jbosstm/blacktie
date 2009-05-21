@@ -38,8 +38,9 @@ public class JABClientTestCase extends TestCase {
 	}
 
 	public void test_X_OCTET() throws Exception {
-		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes();
-		JABSession aJabSession = new JABSession(aJabSessionAttributes);
+		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
+				null);
+		JABSession aJabSession = new JABSession(aJabSessionAttributes, "", "");
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
 		JABRemoteService aJabService = new JABRemoteService(aJabSession,
 				"test_X_OCTET");
@@ -54,8 +55,9 @@ public class JABClientTestCase extends TestCase {
 	}
 
 	public void test_X_C_TYPE() throws Exception {
-		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes();
-		JABSession aJabSession = new JABSession(aJabSessionAttributes);
+		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
+				null);
+		JABSession aJabSession = new JABSession(aJabSessionAttributes, "", "");
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
 		JABRemoteService aJabService = new JABRemoteService(aJabSession,
 				"test_X_C_TYPE");
