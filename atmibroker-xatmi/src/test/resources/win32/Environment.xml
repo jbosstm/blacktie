@@ -24,6 +24,7 @@
 		<SERVER_NAMES>
 			<SERVER>
 				<SERVICE_NAMES>
+					<SERVICE name='BAR' transportLibrary='atmibroker-stomp.dll'/>
 					<SERVICE name='TestTPFree' transportLibrary='atmibroker-stomp.dll'/>
 					<SERVICE name='TestTPACall' transportLibrary='atmibroker-stomp.dll'/>
 					<SERVICE name='TestTPAdvertise' transportLibrary='atmibroker-stomp.dll'/>
@@ -47,10 +48,6 @@
 			</SERVER>
 		</SERVER_NAMES>
 		<ENV_VARIABLES>
-			<ENV_VARIABLE>
-				<NAME>TransportLibrary</NAME>
-				<VALUE>atmibroker-stomp.dll</VALUE>
-			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>ORBOPT</NAME>
 				<VALUE>-ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>

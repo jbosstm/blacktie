@@ -122,7 +122,7 @@ void TestAtmiBrokerXml::test_env() {
 	CPPUNIT_ASSERT(strcmp((*services)[0].transportLib, "atmibroker-corba.dll") == 0);
 	CPPUNIT_ASSERT(strcmp((*services)[0].library_name, "BAR.dll") == 0);
 	CPPUNIT_ASSERT(strcmp((*services)[1].serviceName, "ECHO") == 0);
-	CPPUNIT_ASSERT(strcmp((*services)[1].transportLib, "libatmibroker-stomp.so") == 0);
+	CPPUNIT_ASSERT(strcmp((*services)[1].transportLib, "atmibroker-stomp.dll") == 0);
 #else
 	CPPUNIT_ASSERT(strcmp((*services)[0].transportLib, "libatmibroker-corba.so") == 0);
 	CPPUNIT_ASSERT(strcmp((*services)[0].library_name, "libBAR.so") == 0);
@@ -133,7 +133,11 @@ void TestAtmiBrokerXml::test_env() {
 
 
 	char* transport = AtmiBrokerEnv::get_instance()->getTransportLibrary((char*)"BAR");
+#ifdef WIN32
+	CPPUNIT_ASSERT(strcmp(transport, "atmibroker-corba.dll") == 0);
+#else
 	CPPUNIT_ASSERT(strcmp(transport, "libatmibroker-corba.so") == 0);
+#endif
 
 	AtmiBrokerEnv::discard_instance();
 }

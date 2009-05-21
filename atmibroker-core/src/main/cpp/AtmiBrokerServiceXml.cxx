@@ -220,12 +220,10 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(ServiceInfo* aServiceStructPtr,
 	fflush(aDescriptorFile);
 	fclose(aDescriptorFile);
 
-	free(serviceConfigFilename);
-
 	if(aServiceStructPtr->function_name == NULL) {
 		aServiceStructPtr->function_name = strdup(aServiceStructPtr->serviceName);
 	}
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml,
 			(char*) "leaving parseXmlDescriptor() %s", serviceConfigFilename);
-
+	free(serviceConfigFilename);
 }
