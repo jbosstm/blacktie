@@ -25,9 +25,21 @@ import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 public abstract class TransportFactory {
 	public static TransportFactory loadTransportFactory(Properties properties)
 			throws ConfigurationException, ConnectionException {
+		String transportLibrary = (String) properties.get("TransportLibrary");
+
+		// Determine the transport class to load
+		String className = null;
+		if (transportLibrary.contains("corba")) {
+			className = "org.jboss.blacktie.jatmibroker.transport.corba.TransportFactoryImpl";
+		} else if (transportLibrary.contains("stomp")) {
+			className = "org.jboss.blacktie.jatmibroker.transport.jms.TransportFactoryImpl";
+		}
+		if (className == null) {
+			throw new ConfigurationException("TransportLibrary was not defined");
+		}
+
 		try {
-			Class clazz = Class
-					.forName("org.jboss.blacktie.jatmibroker.transport.corba.TransportFactoryImpl");
+			Class clazz = Class.forName(className);
 			TransportFactory newInstance = (TransportFactory) clazz
 					.newInstance();
 			newInstance.setProperties(properties);

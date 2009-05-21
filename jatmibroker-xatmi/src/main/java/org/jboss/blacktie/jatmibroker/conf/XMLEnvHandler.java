@@ -48,6 +48,9 @@ public class XMLEnvHandler extends DefaultHandler {
 	private Boolean isORBOPT;
 	private Properties prop;
 
+	private String lastName;
+	private String lastValue;
+
 	public XMLEnvHandler() {
 		prop = new Properties();
 	}
@@ -83,6 +86,16 @@ public class XMLEnvHandler extends DefaultHandler {
 				log.debug(arg + " is " + argv[i - 1]);
 			}
 			isORBOPT = false;
+		} else if (NAME.equals(nameElement)) {
+			this.lastName = strValue;
+		} else if (VALUE.equals(valueElement)) {
+			this.lastValue = strValue;
+		}
+
+		if (lastName != null && lastValue != null) {
+			prop.put(lastName, lastValue);
+			lastName = null;
+			lastValue = null;
 		}
 	}
 
