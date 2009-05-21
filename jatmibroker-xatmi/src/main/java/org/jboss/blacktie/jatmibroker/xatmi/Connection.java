@@ -24,7 +24,7 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.transport.Message;
 import org.jboss.blacktie.jatmibroker.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.transport.Transport;
@@ -95,7 +95,7 @@ public class Connection {
 
 			transport = TransportFactory.loadTransportFactory(properties)
 					.createTransport();
-		} catch (JAtmiBrokerException e) {
+		} catch (ConfigurationException e) {
 			throw new ConnectionException(-1, "Could not load properties", e);
 		}
 	}
@@ -130,16 +130,12 @@ public class Connection {
 	 */
 	public int tpacall(String svc, Buffer buffer, int len, int flags)
 			throws ConnectionException {
-		try {
-			int correlationId = nextId++;
-			Receiver endpoint = getReceiver(correlationId);
-			// TODO HANDLE TRANSACTION
-			transport.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
-					buffer.getData(), len, correlationId, flags);
-			return correlationId;
-		} catch (JAtmiBrokerException e) {
-			throw new ConnectionException(-1, "Could not send the request", e);
-		}
+		int correlationId = nextId++;
+		Receiver endpoint = getReceiver(correlationId);
+		// TODO HANDLE TRANSACTION
+		transport.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
+				buffer.getData(), len, correlationId, flags);
+		return correlationId;
 	}
 
 	/**
@@ -194,8 +190,10 @@ public class Connection {
 
 	/**
 	 * Close any resources associated with this connection
+	 * 
+	 * @throws ConnectionException
 	 */
-	public void close() {
+	public void close() throws ConnectionException {
 		Iterator<Receiver> receivers = temporaryQueues.values().iterator();
 		while (receivers.hasNext()) {
 			Receiver receiver = receivers.next();

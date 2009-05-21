@@ -49,7 +49,8 @@ public class AtmiBrokerServerXML {
 		return getProperties(null);
 	}
 
-	public Properties getProperties(String configDir) throws Exception {
+	public Properties getProperties(String configDir)
+			throws ConfigurationException {
 		String serverXML;
 		String envXML;
 

@@ -19,7 +19,7 @@ package org.jboss.blacktie.jatmibroker.xatmi;
 
 import junit.framework.TestCase;
 
-import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.server.AtmiBrokerServer;
 
 public class TestTPConversation extends TestCase {
@@ -27,7 +27,7 @@ public class TestTPConversation extends TestCase {
 
 	private Connection connection;
 
-	public void setUp() throws ConnectionException, JAtmiBrokerException {
+	public void setUp() throws ConnectionException, ConfigurationException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
 		this.server.tpadvertise("TestTPConversation",
 				TestTPConversationService.class);
@@ -37,7 +37,7 @@ public class TestTPConversation extends TestCase {
 		connection = connectionFactory.getConnection("", "");
 	}
 
-	public void tearDown() throws ConnectionException, JAtmiBrokerException {
+	public void tearDown() throws ConnectionException, ConfigurationException {
 		connection.close();
 
 		server.tpunadvertise("TestTPConversation");

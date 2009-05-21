@@ -17,10 +17,12 @@
  */
 package org.jboss.blacktie.jatmibroker.transport;
 
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
+
 public interface Receiver {
-	public Message receive(long flags);
+	public Message receive(long flags) throws ConnectionException;
 
-	public String getReplyTo();
+	public String getReplyTo() throws ConnectionException;
 
-	public void close();
+	public void close() throws ConnectionException;
 }

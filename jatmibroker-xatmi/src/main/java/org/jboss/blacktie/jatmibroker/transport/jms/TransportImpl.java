@@ -17,33 +17,70 @@
  */
 package org.jboss.blacktie.jatmibroker.transport.jms;
 
-import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
+import javax.jms.Connection;
+import javax.jms.JMSException;
+import javax.jms.Session;
+import javax.naming.Context;
+
 import org.jboss.blacktie.jatmibroker.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.transport.Sender;
 import org.jboss.blacktie.jatmibroker.transport.Transport;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public class TransportImpl implements Transport {
 
-	TransportImpl() {
+	private Context context;
+	private Session session;
+
+	TransportImpl(Context context, Connection connection) throws JMSException {
+		this.context = context;
+		this.session = connection
+				.createSession(false, Session.AUTO_ACKNOWLEDGE);
 	}
 
-	public void close() {
+	public void close() throws ConnectionException {
+		try {
+			session.close();
+		} catch (Throwable t) {
+			throw new ConnectionException(-1, "Could not close the connection",
+					t);
+		}
 	}
 
-	public Sender getSender(String serviceName) throws JAtmiBrokerException {
-		return new SenderImpl();
+	public Sender getSender(String serviceName) throws ConnectionException {
+		try {
+			return new SenderImpl(session, context, serviceName);
+		} catch (Throwable t) {
+			throw new ConnectionException(-1,
+					"Could not create a service sender", t);
+		}
 	}
 
-	public Sender createSender(String callback_ior) {
-		return new SenderImpl();
+	public Sender createSender(Object callback_ior) throws ConnectionException {
+		try {
+			return new SenderImpl(session, callback_ior);
+		} catch (Throwable t) {
+			throw new ConnectionException(-1,
+					"Could not create a temporary sender", t);
+		}
 	}
 
 	public Receiver createReceiver(String serviceName)
-			throws JAtmiBrokerException {
-		return new ReceiverImpl();
+			throws ConnectionException {
+		try {
+			return new ReceiverImpl(session, context, serviceName);
+		} catch (Throwable t) {
+			throw new ConnectionException(-1,
+					"Could not create the receiver on: " + serviceName, t);
+		}
 	}
 
-	public Receiver createReceiver() throws JAtmiBrokerException {
-		return new ReceiverImpl();
+	public Receiver createReceiver() throws ConnectionException {
+		try {
+			return new ReceiverImpl(session);
+		} catch (Throwable t) {
+			throw new ConnectionException(-1,
+					"Could not create the temporary receiver", t);
+		}
 	}
 }

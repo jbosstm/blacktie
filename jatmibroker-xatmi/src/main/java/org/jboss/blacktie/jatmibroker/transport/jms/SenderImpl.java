@@ -17,24 +17,70 @@
  */
 package org.jboss.blacktie.jatmibroker.transport.jms;
 
+import javax.jms.BytesMessage;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.MessageProducer;
+import javax.jms.Session;
+import javax.jms.TemporaryQueue;
+import javax.naming.Context;
+import javax.naming.NamingException;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.transport.Sender;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public class SenderImpl implements Sender {
 	private static final Logger log = LogManager.getLogger(SenderImpl.class);
+	private MessageProducer sender;
+	private Session session;
+	private String name;
+	boolean service;
 
-	SenderImpl() {
+	SenderImpl(Session session, Context context, String serviceName)
+			throws NamingException, JMSException {
+		this.session = session;
+		Destination destination = (Destination) context.lookup(serviceName);
+		sender = session.createProducer(destination);
+		this.name = serviceName;
+		service = true;
+	}
+
+	SenderImpl(Session session, Object sendTo) throws JMSException {
+		this.session = session;
+		TemporaryQueue destination = (TemporaryQueue) sendTo;
+		sender = session.createProducer(destination);
+		this.name = destination.getQueueName();
 	}
 
 	public void send(String replyTo, short rval, int rcode, byte[] data,
-			int len, int correlationId, int flags) {
+			int len, int correlationId, int flags) throws ConnectionException {
+		try {
+			BytesMessage message = session.createBytesMessage();
+			message.setStringProperty("reply-to", replyTo);
+			if (service) {
+				message.setStringProperty("serviceName", name);
+			}
+			message.setStringProperty("messageflags", String.valueOf(flags));
+			message.setStringProperty("messagecorrelationId", String
+					.valueOf(correlationId));
+			message.writeBytes(data, 0, len);
+			sender.send(message);
+		} catch (Throwable t) {
+			throw new ConnectionException(-1, "Could not send the message", t);
+		}
 	}
 
-	public void close() {
+	public void close() throws ConnectionException {
+		try {
+			sender.close();
+		} catch (Throwable t) {
+			throw new ConnectionException(-1, "Could not send the message", t);
+		}
 	}
 
 	public String getName() {
-		return null;
+		return name;
 	}
 }

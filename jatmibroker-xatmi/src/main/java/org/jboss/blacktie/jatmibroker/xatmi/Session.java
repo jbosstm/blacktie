@@ -17,7 +17,7 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
-import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.transport.Message;
 import org.jboss.blacktie.jatmibroker.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.transport.Sender;
@@ -52,7 +52,7 @@ public class Session {
 	 * @param transport
 	 * @param cd
 	 * @param receiver2
-	 * @throws JAtmiBrokerException
+	 * @throws ConfigurationException
 	 */
 	Session(Transport transport, int cd, Sender sender, Receiver receiver)
 			throws ConnectionException {
@@ -64,8 +64,10 @@ public class Session {
 
 	/**
 	 * Close the session
+	 * 
+	 * @throws ConnectionException
 	 */
-	void close() {
+	void close() throws ConnectionException {
 		if (sender != null) {
 			sender.close();
 		}
@@ -106,16 +108,12 @@ public class Session {
 		Message m = getReceiver().receive(flags);
 
 		// Prepare the outbound channel
-		try {
-			if (m.replyTo == null
-					|| (sender != null && !sender.getName().equals(m.replyTo))) {
-				sender.close();
-			}
-			if (m.replyTo != null) {
-				sender = transport.createSender(m.replyTo);
-			}
-		} catch (JAtmiBrokerException e) {
-			throw new ConnectionException(-1, "Could not create the sender", e);
+		if (m.replyTo == null
+				|| (sender != null && !sender.getName().equals(m.replyTo))) {
+			sender.close();
+		}
+		if (m.replyTo != null) {
+			sender = transport.createSender(m.replyTo);
 		}
 
 		// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
@@ -145,12 +143,7 @@ public class Session {
 
 	private Receiver getReceiver() throws ConnectionException {
 		if (receiver == null) {
-			try {
-				receiver = transport.createReceiver();
-			} catch (JAtmiBrokerException e) {
-				throw new ConnectionException(-1,
-						"Could not create an on demand receiver", e);
-			}
+			receiver = transport.createReceiver();
 		}
 		return receiver;
 	}

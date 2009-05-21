@@ -81,7 +81,7 @@ public class JABTransaction {
 			terminator = control.get_terminator();
 			log.debug("Terminator is " + terminator);
 		} catch (Unavailable e) {
-			throw new JABException(e);
+			throw new JABException("Could not get the terminator", e);
 		}
 	}
 
@@ -105,7 +105,7 @@ public class JABTransaction {
 			ThreadActionData.popAction();
 			log.debug("called commit on terminator");
 		} catch (Exception e) {
-			throw new JABException(e);
+			throw new JABException("Could not commit the transaction", e);
 		}
 	}
 
@@ -119,7 +119,7 @@ public class JABTransaction {
 			ThreadActionData.popAction();
 			log.debug("called rollback on terminator");
 		} catch (Exception e) {
-			throw new JABException(e);
+			throw new JABException("Could not rollback the transaction", e);
 		}
 	}
 

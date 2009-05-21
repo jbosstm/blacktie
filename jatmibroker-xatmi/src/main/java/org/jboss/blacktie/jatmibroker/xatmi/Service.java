@@ -21,8 +21,8 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerClientXML;
+import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.transport.Message;
 import org.jboss.blacktie.jatmibroker.transport.Sender;
 import org.jboss.blacktie.jatmibroker.transport.Transport;
@@ -32,23 +32,20 @@ public abstract class Service implements BlacktieService {
 	private static final Logger log = LogManager.getLogger(Service.class);
 	private Transport transport;
 
-	private synchronized Transport getTransport() throws JAtmiBrokerException {
+	private synchronized Transport getTransport()
+			throws ConfigurationException, ConnectionException {
 		if (transport == null) {
 			Properties properties = null;
 			AtmiBrokerClientXML xml = new AtmiBrokerClientXML();
-			try {
-				properties = xml.getProperties();
-			} catch (Exception e) {
-				throw new JAtmiBrokerException("Could not load properties", e);
-			}
+			properties = xml.getProperties();
 			transport = TransportFactory.loadTransportFactory(properties)
 					.createTransport();
 		}
 		return transport;
 	}
 
-	protected void processMessage(Message message) throws JAtmiBrokerException,
-			ConnectionException {
+	protected void processMessage(Message message) throws ConnectionException,
+			ConfigurationException {
 		Transport transport = getTransport();
 		Sender sender = transport.createSender(message.replyTo);
 		Session session = new Session(transport, message.cd, sender, null);

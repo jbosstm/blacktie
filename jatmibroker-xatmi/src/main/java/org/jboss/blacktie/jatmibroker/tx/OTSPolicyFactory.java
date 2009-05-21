@@ -1,11 +1,11 @@
 package org.jboss.blacktie.jatmibroker.tx;
 
-import org.omg.PortableInterceptor.PolicyFactory;
-import org.omg.CORBA.Policy;
-import org.omg.CORBA.PolicyError;
 import org.omg.CORBA.Any;
 import org.omg.CORBA.BAD_POLICY_TYPE;
 import org.omg.CORBA.LocalObject;
+import org.omg.CORBA.Policy;
+import org.omg.CORBA.PolicyError;
+import org.omg.PortableInterceptor.PolicyFactory;
 
 public class OTSPolicyFactory extends LocalObject implements PolicyFactory
 {

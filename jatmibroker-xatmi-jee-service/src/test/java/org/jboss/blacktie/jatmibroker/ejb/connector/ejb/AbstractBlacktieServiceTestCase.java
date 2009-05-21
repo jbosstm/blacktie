@@ -19,7 +19,7 @@ package org.jboss.blacktie.jatmibroker.ejb.connector.ejb;
 
 import junit.framework.TestCase;
 
-import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.server.AtmiBrokerServer;
 import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
@@ -34,7 +34,7 @@ public class AbstractBlacktieServiceTestCase extends TestCase {
 	public AbstractBlacktieServiceTestCase() throws ConnectionException {
 	}
 
-	public void setUp() throws ConnectionException, JAtmiBrokerException {
+	public void setUp() throws ConnectionException, ConfigurationException {
 		this.server = new AtmiBrokerServer("ejb-connector-tests", null);
 		this.server.tpadvertise("EchoService", EchoServiceTestService.class);
 		ConnectionFactory connectionFactory = ConnectionFactory
@@ -42,7 +42,7 @@ public class AbstractBlacktieServiceTestCase extends TestCase {
 		connection = connectionFactory.getConnection("", "");
 	}
 
-	public void tearDown() throws ConnectionException, JAtmiBrokerException {
+	public void tearDown() throws ConnectionException, ConfigurationException {
 		connection.close();
 		server.tpunadvertise("EchoService");
 		server.close();

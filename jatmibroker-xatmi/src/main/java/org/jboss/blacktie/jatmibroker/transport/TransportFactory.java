@@ -19,11 +19,12 @@ package org.jboss.blacktie.jatmibroker.transport;
 
 import java.util.Properties;
 
-import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public abstract class TransportFactory {
 	public static TransportFactory loadTransportFactory(Properties properties)
-			throws JAtmiBrokerException {
+			throws ConfigurationException, ConnectionException {
 		try {
 			Class clazz = Class
 					.forName("org.jboss.blacktie.jatmibroker.transport.corba.TransportFactoryImpl");
@@ -32,13 +33,13 @@ public abstract class TransportFactory {
 			newInstance.setProperties(properties);
 			return newInstance;
 		} catch (Throwable t) {
-			throw new JAtmiBrokerException(
+			throw new ConnectionException(-1,
 					"Could not load the connection factory", t);
 		}
 	}
 
 	protected abstract void setProperties(Properties properties)
-			throws JAtmiBrokerException;
+			throws ConfigurationException;
 
-	public abstract Transport createTransport() throws JAtmiBrokerException;
+	public abstract Transport createTransport() throws ConnectionException;
 }

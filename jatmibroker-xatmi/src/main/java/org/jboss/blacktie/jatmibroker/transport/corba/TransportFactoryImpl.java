@@ -21,10 +21,11 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.transport.OrbManagement;
 import org.jboss.blacktie.jatmibroker.transport.Transport;
 import org.jboss.blacktie.jatmibroker.transport.TransportFactory;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public class TransportFactoryImpl extends TransportFactory {
 
@@ -33,24 +34,24 @@ public class TransportFactoryImpl extends TransportFactory {
 	private OrbManagement orbManagement;
 
 	protected void setProperties(Properties properties)
-			throws JAtmiBrokerException {
+			throws ConfigurationException {
 		log.debug("Creating OrbManagement");
 		try {
 			orbManagement = new OrbManagement(properties, false);
 		} catch (Throwable t) {
-			throw new JAtmiBrokerException(
+			throw new ConfigurationException(
 					"Could not create the orb management function", t);
 		}
 		log.debug("Created OrbManagement");
 	}
 
-	public Transport createTransport() throws JAtmiBrokerException {
+	public Transport createTransport() throws ConnectionException {
 		log.debug("Creating");
 		TransportImpl instance = null;
 		try {
 			instance = new TransportImpl(orbManagement);
 		} catch (Throwable t) {
-			throw new JAtmiBrokerException("Could not connect to server", t);
+			throw new ConnectionException(-1, "Could not connect to server", t);
 		}
 		log.debug("Created");
 		return instance;

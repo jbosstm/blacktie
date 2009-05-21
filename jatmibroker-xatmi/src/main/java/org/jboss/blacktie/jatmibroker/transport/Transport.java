@@ -17,7 +17,8 @@
  */
 package org.jboss.blacktie.jatmibroker.transport;
 
-import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public interface Transport {
 
@@ -26,36 +27,36 @@ public interface Transport {
 	 * 
 	 * @param serviceName
 	 * @return
-	 * @throws JAtmiBrokerException
+	 * @throws ConfigurationException
 	 */
-	public Sender getSender(String serviceName) throws JAtmiBrokerException;
+	public Sender getSender(String serviceName) throws ConnectionException;
 
 	/**
 	 * Create a sender to a service queue
 	 * 
 	 * @param replyTo
 	 * @return
-	 * @throws JAtmiBrokerException
+	 * @throws ConfigurationException
 	 */
-	public Sender createSender(String replyTo) throws JAtmiBrokerException;
+	public Sender createSender(Object replyTo) throws ConnectionException;
 
 	/**
 	 * Create a receiver on a service queue
 	 * 
 	 * @param serviceName
 	 * @return
-	 * @throws JAtmiBrokerException
+	 * @throws ConfigurationException
 	 */
 	public Receiver createReceiver(String serviceName)
-			throws JAtmiBrokerException;
+			throws ConnectionException;
 
 	/**
 	 * Create a receiver on a temporary queue.
 	 * 
 	 * @return
-	 * @throws JAtmiBrokerException
+	 * @throws ConfigurationException
 	 */
-	public Receiver createReceiver() throws JAtmiBrokerException;
+	public Receiver createReceiver() throws ConnectionException;
 
-	public void close();
+	public void close() throws ConnectionException;
 }

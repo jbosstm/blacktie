@@ -20,6 +20,7 @@ package org.jboss.blacktie.jatmibroker.jab;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
 
 /**
@@ -59,9 +60,14 @@ public class JABSession {
 	 */
 	public void endSession() throws JABException {
 		log.debug("JABSession endSession");
-		connection.close();
-		connection = null;
-		jabSessionAttributes = null;
+		try {
+			connection.close();
+		} catch (ConnectionException e) {
+			throw new JABException("Could not close the connection", e);
+		} finally {
+			connection = null;
+			jabSessionAttributes = null;
+		}
 	}
 
 	JABSessionAttributes getJABSessionAttributes() {

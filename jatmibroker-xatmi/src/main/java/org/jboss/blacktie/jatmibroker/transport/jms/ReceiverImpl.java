@@ -17,33 +17,83 @@
  */
 package org.jboss.blacktie.jatmibroker.transport.jms;
 
+import javax.jms.BytesMessage;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.MessageConsumer;
+import javax.jms.Session;
+import javax.jms.TemporaryQueue;
+import javax.naming.Context;
+import javax.naming.NamingException;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.transport.Message;
 import org.jboss.blacktie.jatmibroker.transport.Receiver;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public class ReceiverImpl implements Receiver {
 	private static final Logger log = LogManager.getLogger(ReceiverImpl.class);
+	private TemporaryQueue destination;
+	private MessageConsumer receiver;
 
-	ReceiverImpl(String queueName) throws JAtmiBrokerException {
+	ReceiverImpl(Session session) throws JMSException {
+		destination = session.createTemporaryQueue();
+		receiver = session.createConsumer(destination);
 	}
 
-	ReceiverImpl() throws JAtmiBrokerException {
+	ReceiverImpl(Session session, Context context, String serviceName)
+			throws JMSException, NamingException {
+		Destination destination = (Destination) context.lookup(serviceName);
+		receiver = session.createConsumer(destination);
 	}
 
-	public String getReplyTo() {
-		return null;
+	public String getReplyTo() throws ConnectionException {
+		if (destination != null) {
+			try {
+				return destination.getQueueName();
+			} catch (Throwable t) {
+				throw new ConnectionException(-1,
+						"Could not get the name of the queue", t);
+			}
+		} else {
+			return null;
+		}
 	}
 
-	public Message receive(long flags) {
-		return null;
+	public Message receive(long flagsIn) throws ConnectionException {
+		try {
+			javax.jms.Message message = receiver.receive();
+			BytesMessage bytesMessage = ((BytesMessage) message);
+			String replyTo = message.getStringProperty("reply-to");
+			int len = (int) bytesMessage.getBodyLength();
+			String serviceName = message.getStringProperty("serviceName");
+			int flags = new Integer(message.getStringProperty("messageflags"));
+			int cd = new Integer(message
+					.getStringProperty("messagecorrelationId"));
+			byte[] bytes = new byte[len];
+			bytesMessage.readBytes(bytes);
+
+			org.jboss.blacktie.jatmibroker.transport.Message toProcess = new org.jboss.blacktie.jatmibroker.transport.Message();
+			toProcess.replyTo = replyTo;
+			toProcess.len = len;
+			toProcess.serviceName = serviceName;
+			toProcess.flags = flags;
+			toProcess.cd = cd;
+			toProcess.data = bytes;
+
+			return toProcess;
+		} catch (Throwable t) {
+			throw new ConnectionException(-1, "Could not receive the message",
+					t);
+		}
 	}
 
-	public void disconnect() {
-	}
-
-	public void close() {
-		disconnect();
+	public void close() throws ConnectionException {
+		try {
+			destination.delete();
+		} catch (Throwable t) {
+			throw new ConnectionException(-1, "Could not delete the queue", t);
+		}
 	}
 }

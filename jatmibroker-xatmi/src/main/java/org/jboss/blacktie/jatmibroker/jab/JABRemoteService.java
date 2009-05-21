@@ -54,7 +54,7 @@ public class JABRemoteService {
 			response = connection.tpcall(serviceName, buffer, length, 0);
 			log.debug("service_request responsed");
 		} catch (Exception e) {
-			throw new JABException(e);
+			throw new JABException("Could not send tpcall", e);
 		}
 	}
 

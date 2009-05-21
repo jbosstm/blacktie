@@ -26,8 +26,8 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerServerXML;
+import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.transport.OrbManagement;
 import org.jboss.blacktie.jatmibroker.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.transport.Transport;
@@ -58,21 +58,17 @@ public class AtmiBrokerServer extends ServerPOA {
 	private static final int DEFAULT_POOL_SIZE = 5;
 
 	public AtmiBrokerServer(String serverName, String configurationDir)
-			throws JAtmiBrokerException {
+			throws ConfigurationException, ConnectionException {
 		this.serverName = serverName;
 
 		Properties properties = null;
 		AtmiBrokerServerXML server = new AtmiBrokerServerXML(serverName);
-		try {
-			properties = server.getProperties(configurationDir);
-		} catch (Exception e) {
-			throw new JAtmiBrokerException("Could not load properties", e);
-		}
+		properties = server.getProperties(configurationDir);
 
 		try {
 			orbManagement = new OrbManagement(properties, true);
 		} catch (Throwable t) {
-			throw new JAtmiBrokerException("Could not connect to orb", t);
+			throw new ConnectionException(-1, "Could not connect to orb", t);
 		}
 
 		Policy[] policiesArray = new Policy[1];
@@ -84,7 +80,7 @@ public class AtmiBrokerServer extends ServerPOA {
 			this.poa = orbManagement.getRootPoa().create_POA(serverName,
 					orbManagement.getRootPoa().the_POAManager(), policiesArray);
 		} catch (Throwable t) {
-			throw new JAtmiBrokerException(
+			throw new ConnectionException(-1,
 					"Server appears to be already running", t);
 		}
 
@@ -96,14 +92,14 @@ public class AtmiBrokerServer extends ServerPOA {
 			orbManagement.getNamingContext().bind(name, servant_to_reference);
 			bound = true;
 		} catch (Throwable t) {
-			throw new JAtmiBrokerException("Could not bind server", t);
+			throw new ConnectionException(-1, "Could not bind server", t);
 		}
 
 		connection = TransportFactory.loadTransportFactory(properties)
 				.createTransport();
 	}
 
-	public void close() throws JAtmiBrokerException {
+	public void close() throws ConnectionException {
 		Iterator<ServiceData> iterator = serviceData.values().iterator();
 		while (iterator.hasNext()) {
 			iterator.next().close();
@@ -118,7 +114,7 @@ public class AtmiBrokerServer extends ServerPOA {
 				poa.deactivate_object(activate_object);
 				bound = false;
 			} catch (Throwable t) {
-				throw new JAtmiBrokerException("Could not unbind server", t);
+				throw new ConnectionException(-1, "Could not unbind server", t);
 			}
 		}
 	}
@@ -142,7 +138,7 @@ public class AtmiBrokerServer extends ServerPOA {
 							DEFAULT_POOL_SIZE, service);
 					serviceData.put(serviceName, data);
 				} catch (Throwable t) {
-					throw new JAtmiBrokerException(
+					throw new ConnectionException(-1,
 							"Could not create service factory for: "
 									+ serviceName, t);
 				}
@@ -159,9 +155,13 @@ public class AtmiBrokerServer extends ServerPOA {
 		log.debug("Unadvertising: " + serviceName);
 		ServiceData data = serviceData.remove(serviceName);
 		if (data != null) {
-			data.close();
+			try {
+				data.close();
+				log.info("Unadvertised: " + serviceName);
+			} catch (Throwable t) {
+				log.error("Could not unadvertise: " + serviceName, t);
+			}
 		}
-		log.info("Unadvertised: " + serviceName);
 	}
 
 	public ServiceInfo[] get_all_service_info() {
@@ -241,7 +241,7 @@ public class AtmiBrokerServer extends ServerPOA {
 		private List<Runnable> dispatchers = new ArrayList<Runnable>();
 
 		ServiceData(Transport connection, String serviceName, int poolSize,
-				Class callback) throws JAtmiBrokerException,
+				Class callback) throws ConnectionException,
 				InstantiationException, IllegalAccessException {
 			this.receiver = connection.createReceiver(serviceName);
 
@@ -251,7 +251,7 @@ public class AtmiBrokerServer extends ServerPOA {
 			}
 		}
 
-		public void close() {
+		public void close() throws ConnectionException {
 			receiver.close();
 			dispatchers.clear();
 		}

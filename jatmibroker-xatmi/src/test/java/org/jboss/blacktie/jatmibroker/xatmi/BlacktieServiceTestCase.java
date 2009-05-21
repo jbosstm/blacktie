@@ -19,14 +19,14 @@ package org.jboss.blacktie.jatmibroker.xatmi;
 
 import junit.framework.TestCase;
 
-import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.server.AtmiBrokerServer;
 
 public class BlacktieServiceTestCase extends TestCase {
 	private AtmiBrokerServer server;
 	private Connection connection;
 
-	public void setUp() throws ConnectionException, JAtmiBrokerException {
+	public void setUp() throws ConnectionException, ConfigurationException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
 		this.server.tpadvertise("EchoService", EchoServiceTestService.class);
 
@@ -35,7 +35,7 @@ public class BlacktieServiceTestCase extends TestCase {
 		connection = connectionFactory.getConnection("", "");
 	}
 
-	public void tearDown() throws ConnectionException, JAtmiBrokerException {
+	public void tearDown() throws ConnectionException, ConfigurationException {
 		connection.close();
 		server.tpunadvertise("EchoService");
 		server.close();

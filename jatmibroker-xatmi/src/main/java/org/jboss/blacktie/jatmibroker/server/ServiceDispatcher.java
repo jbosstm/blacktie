@@ -19,7 +19,6 @@ package org.jboss.blacktie.jatmibroker.server;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.transport.Message;
 import org.jboss.blacktie.jatmibroker.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.transport.Transport;
@@ -48,9 +47,9 @@ public class ServiceDispatcher extends Service implements Runnable {
 	public void run() {
 		log.debug("Running");
 		while (true) {
-			Message message = receiver.receive(0);
-			log.trace("Recieved");
 			try {
+				Message message = receiver.receive(0);
+				log.trace("Recieved");
 				this.processMessage(message);
 			} catch (Throwable t) {
 				log.error("Could not service the request", t);

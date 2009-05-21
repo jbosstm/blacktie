@@ -45,7 +45,7 @@ public class JABSessionAttributes {
 			AtmiBrokerClientXML client = new AtmiBrokerClientXML();
 			this.properties = client.getProperties(configurationDirectory);
 		} catch (Exception e) {
-			throw new JABException(e);
+			throw new JABException("Could not load the configuration", e);
 		}
 	}
 

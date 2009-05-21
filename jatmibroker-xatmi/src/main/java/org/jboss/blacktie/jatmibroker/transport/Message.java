@@ -20,7 +20,7 @@ package org.jboss.blacktie.jatmibroker.transport;
 import org.omg.CosTransactions.Control;
 
 public class Message {
-	public String replyTo;
+	public Object replyTo;
 	public byte[] data;
 	public int len;
 	public int flags;

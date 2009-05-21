@@ -36,11 +36,12 @@ public class AtmiBrokerClientXML {
 		this.prop = prop;
 	}
 
-	public Properties getProperties() throws Exception {
+	public Properties getProperties() throws ConfigurationException {
 		return getProperties(null);
 	}
 
-	public Properties getProperties(String configDir) throws Exception {
+	public Properties getProperties(String configDir)
+			throws ConfigurationException {
 		String clientXML;
 		String envXML;
 

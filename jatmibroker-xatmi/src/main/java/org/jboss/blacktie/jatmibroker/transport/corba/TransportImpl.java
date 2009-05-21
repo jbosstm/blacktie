@@ -23,17 +23,15 @@ import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
 import org.jboss.blacktie.jatmibroker.transport.OrbManagement;
 import org.jboss.blacktie.jatmibroker.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.transport.Sender;
 import org.jboss.blacktie.jatmibroker.transport.Transport;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CosNaming.NamingContextPackage.AlreadyBound;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
-import org.omg.CosTransactions.TransactionFactory;
-import org.omg.CosTransactions.TransactionFactoryHelper;
 import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 
 public class TransportImpl implements Runnable, Transport {
@@ -68,7 +66,7 @@ public class TransportImpl implements Runnable, Transport {
 		orbManagement.getOrb().run();
 	}
 
-	public Sender getSender(String serviceName) throws JAtmiBrokerException {
+	public Sender getSender(String serviceName) throws ConnectionException {
 		SenderImpl sender = senders.get(serviceName);
 		if (sender == null) {
 			try {
@@ -79,7 +77,7 @@ public class TransportImpl implements Runnable, Transport {
 				sender = new SenderImpl(serviceFactoryObject, serviceName);
 				senders.put(serviceName, sender);
 			} catch (Throwable t) {
-				throw new JAtmiBrokerException(
+				throw new ConnectionException(-1,
 						"Could not load service manager proxy for: "
 								+ serviceName, t);
 			}
@@ -87,7 +85,8 @@ public class TransportImpl implements Runnable, Transport {
 		return sender;
 	}
 
-	public Sender createSender(String callback_ior) {
+	public Sender createSender(Object destination) {
+		String callback_ior = (String) destination;
 		org.omg.CORBA.Object serviceFactoryObject = orbManagement.getOrb()
 				.string_to_object(callback_ior);
 		SenderImpl sender = new SenderImpl(serviceFactoryObject, callback_ior);
@@ -95,12 +94,12 @@ public class TransportImpl implements Runnable, Transport {
 	}
 
 	public Receiver createReceiver(String serviceName)
-			throws JAtmiBrokerException {
+			throws ConnectionException {
 		log.debug("createClientCallback create client callback");
 		return new ReceiverImpl(orbManagement, serviceName);
 	}
 
-	public Receiver createReceiver() throws JAtmiBrokerException {
+	public Receiver createReceiver() throws ConnectionException {
 		log.debug("createClientCallback create client callback");
 		return new ReceiverImpl(orbManagement);
 	}

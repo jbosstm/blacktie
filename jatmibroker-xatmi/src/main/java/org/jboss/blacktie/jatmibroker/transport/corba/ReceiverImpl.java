@@ -22,11 +22,12 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
+import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.transport.Message;
 import org.jboss.blacktie.jatmibroker.transport.OrbManagement;
 import org.jboss.blacktie.jatmibroker.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.tx.TxIORInterceptor;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.omg.CORBA.Any;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.Object;
@@ -50,7 +51,7 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 	private OrbManagement orbManagement;
 
 	private List<Policy> getPolicies(ORB orb, POA poa)
-			throws JAtmiBrokerException {
+			throws ConfigurationException, ConnectionException {
 		List<Policy> policies = new ArrayList<Policy>();
 		Any otsPolicy = orb.create_any();
 
@@ -63,7 +64,7 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 			policies.add(orb.create_policy(TxIORInterceptor.OTS_POLICY_TYPE,
 					otsPolicy));
 		} catch (PolicyError e) {
-			throw new JAtmiBrokerException(
+			throw new ConnectionException(-1,
 					"POA TAG_OTS_POLICY policy creation error: " + e.reason, e);
 		}
 
@@ -71,7 +72,7 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 	}
 
 	ReceiverImpl(OrbManagement orbManagement, String queueName)
-			throws JAtmiBrokerException {
+			throws ConnectionException {
 		this.queueName = queueName;
 
 		try {
@@ -85,7 +86,7 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 				this.m_default_poa = orbManagement.getRootPoa().find_POA(
 						queueName, true);
 			} catch (AdapterNonExistent e) {
-				throw new JAtmiBrokerException("Could not find POA:"
+				throw new ConnectionException(-1, "Could not find POA:"
 						+ queueName, e);
 			}
 		}
@@ -97,13 +98,13 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 					queueName);
 			orbManagement.getNamingContext().bind(name, servant_to_reference);
 		} catch (Throwable t) {
-			throw new JAtmiBrokerException("Could not bind service factory"
+			throw new ConnectionException(-1, "Could not bind service factory"
 					+ queueName, t);
 		}
 		this.orbManagement = orbManagement;
 	}
 
-	ReceiverImpl(OrbManagement orbManagement) throws JAtmiBrokerException {
+	ReceiverImpl(OrbManagement orbManagement) throws ConnectionException {
 		ORB orb = orbManagement.getOrb();
 		POA poa = orbManagement.getRootPoa();
 		log.debug("ClientCallbackImpl constructor");
@@ -129,7 +130,7 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 			callbackIOR = orb.object_to_string(clientCallback);
 			log.debug(" created ClientCallback ior " + callbackIOR);
 		} catch (Throwable t) {
-			throw new JAtmiBrokerException("Cannot create the receiver", t);
+			throw new ConnectionException(-1, "Cannot create the receiver", t);
 		}
 	}
 
@@ -193,6 +194,7 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 				NameComponent[] name = orbManagement.getNamingContextExt()
 						.to_name(queueName);
 				orbManagement.getNamingContext().unbind(name);
+				queueName = null;
 			} catch (Throwable t) {
 				log.error("Could not unbind service factory" + queueName, t);
 			}
