@@ -17,6 +17,11 @@
  */
 package org.jboss.blacktie.jatmibroker.jab;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+
 import junit.framework.TestCase;
 
 import org.jboss.blacktie.jatmibroker.RunServer;
@@ -32,18 +37,55 @@ public class JABClientTestCase extends TestCase {
 		runServer.serverdone();
 	}
 
-	public void testJABService() throws Exception {
+	public void test_X_OCTET() throws Exception {
 		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes();
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
-		JABRemoteService aJabService = new JABRemoteService(aJabSession, "BAR");
-		aJabService.setString("STRING", "HOWS IT GOING DUDE????!!!!");
-		aJabService.call(null);
+		JABRemoteService aJabService = new JABRemoteService(aJabSession,
+				"test_X_OCTET");
+		byte[] toSend = "HOWS IT GOING DUDE????!!!!".getBytes();
+		aJabService.setBuffer("X_OCTET", toSend, toSend.length);
+		aJabService.call(transaction);
 		transaction.commit();
 		aJabSession.endSession();
 		String expectedString = "BAR SAYS HELLO";
-		String responseString = aJabService.getResponseString();
+		String responseString = new String(aJabService.getResponseData());
 		assertEquals(expectedString, responseString);
 	}
 
+	public void test_X_C_TYPE() throws Exception {
+		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes();
+		JABSession aJabSession = new JABSession(aJabSessionAttributes);
+		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
+		JABRemoteService aJabService = new JABRemoteService(aJabSession,
+				"test_X_C_TYPE");
+
+		// Assemble the message
+		ByteArrayOutputStream baos = new ByteArrayOutputStream(512);
+		DataOutputStream dos = new DataOutputStream(baos);
+		dos.writeInt(222);
+		dos.writeShort((short) 33);
+		dos.writeLong(11l);
+		dos.writeChar('c');
+		dos.writeFloat(444.97f);
+		dos.writeDouble(7.7d);
+		dos.writeUTF("test_X_C_TYPE");
+		byte[] data = baos.toByteArray();
+
+		aJabService.setBuffer("X_C_TYPE", data, data.length);
+		aJabService.call(transaction);
+		transaction.commit();
+		aJabSession.endSession();
+
+		byte[] response = aJabService.getResponseData();
+		ByteArrayInputStream bais = new ByteArrayInputStream(response);
+		DataInputStream dis = new DataInputStream(bais);
+		assertEquals(222, dis.readInt());
+		assertEquals(33, dis.readShort());
+		assertEquals(11, dis.readLong());
+		assertEquals('c', dis.readChar());
+		assertEquals(444.97, dis.readFloat());
+		assertEquals(7.7, dis.readDouble());
+		assertEquals("test_X_C_TYPE", dis.readUTF());
+	}
 }

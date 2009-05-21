@@ -25,6 +25,8 @@
 		<ORB_TYPE>TAO</ORB_TYPE>
 		<SERVICE_NAMES>
 			<SERVICE_NAME name='BAR' advertised='false'/>
+			<SERVICE_NAME name='test_X_OCTET' advertised='false'/>
+			<SERVICE_NAME name='test_X_C_TYPE' advertised='false'/>
 		</SERVICE_NAMES>
 	</SERVER_DESCRIPTION>
 </SERVER>
