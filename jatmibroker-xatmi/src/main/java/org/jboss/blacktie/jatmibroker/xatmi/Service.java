@@ -32,41 +32,42 @@ public abstract class Service implements BlacktieService {
 	private static final Logger log = LogManager.getLogger(Service.class);
 	private Transport transport;
 
-	protected Service() throws JAtmiBrokerException {
-		Properties properties = null;
-		AtmiBrokerClientXML xml = new AtmiBrokerClientXML();
-		try {
-			properties = xml.getProperties();
-		} catch (Exception e) {
-			throw new JAtmiBrokerException("Could not load properties", e);
+	private synchronized Transport getTransport() throws JAtmiBrokerException {
+		if (transport == null) {
+			Properties properties = null;
+			AtmiBrokerClientXML xml = new AtmiBrokerClientXML();
+			try {
+				properties = xml.getProperties();
+			} catch (Exception e) {
+				throw new JAtmiBrokerException("Could not load properties", e);
+			}
+			transport = TransportFactory.loadTransportFactory(properties)
+					.createTransport();
 		}
-		transport = TransportFactory.loadTransportFactory(properties)
-				.createTransport();
+		return transport;
 	}
 
-	protected void processMessage(Message message) {
-		try {
-			Sender sender = transport.createSender(message.replyTo);
-			Session session = new Session(transport, message.cd, sender, null);
+	protected void processMessage(Message message) throws JAtmiBrokerException,
+			ConnectionException {
+		Transport transport = getTransport();
+		Sender sender = transport.createSender(message.replyTo);
+		Session session = new Session(transport, message.cd, sender, null);
 
-			// TODO HANDLE CONTROL
-			// THIS IS THE FIRST CALL
-			Buffer buffer = new Buffer(null, null);
-			buffer.setData(message.data);
-			// TODO NO SESSIONS
-			// NOT PASSING OVER THE SERVICE NAME
-			TPSVCINFO tpsvcinfo = new TPSVCINFO(null, buffer, message.flags,
-					session);
+		// TODO HANDLE CONTROL
+		// THIS IS THE FIRST CALL
+		Buffer buffer = new Buffer(null, null);
+		buffer.setData(message.data);
+		// TODO NO SESSIONS
+		// NOT PASSING OVER THE SERVICE NAME
+		TPSVCINFO tpsvcinfo = new TPSVCINFO(null, buffer, message.flags,
+				session);
 
-			Response response = tpservice(tpsvcinfo);
-			// TODO THIS SHOULD INVOKE THE CLIENT HANDLER
-			// odata.value = serviceRequest.getBytes();
-			// olen.value = serviceRequest.getLength();
-			sender.send("", response.getRval(), response.getRcode(), response
-					.getBuffer().getData(), response.getLen(), response
-					.getFlags(), 0);
-		} catch (Throwable t) {
-			log.error("Could not service the request", t);
-		}
+		Response response = tpservice(tpsvcinfo);
+		// TODO THIS SHOULD INVOKE THE CLIENT HANDLER
+		// odata.value = serviceRequest.getBytes();
+		// olen.value = serviceRequest.getLength();
+		sender.send("", response.getRval(), response.getRcode(), response
+				.getBuffer().getData(), response.getLen(), response.getFlags(),
+				0);
 	}
 }

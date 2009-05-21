@@ -6,8 +6,6 @@ import javax.jms.MessageListener;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Service;
 
 /**
@@ -20,16 +18,6 @@ public abstract class MDBBlacktieService extends Service implements
 	 */
 	private static final Logger log = LogManager
 			.getLogger(MDBBlacktieService.class);
-
-	/**
-	 * Must have a no-arg constructor
-	 * 
-	 * @throws ConnectionException
-	 * @throws JAtmiBrokerException
-	 */
-	public MDBBlacktieService() throws JAtmiBrokerException {
-		super();
-	}
 
 	public void onMessage(Message message) {
 		try {

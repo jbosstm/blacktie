@@ -1,7 +1,5 @@
 package org.jboss.blacktie.jatmibroker.xatmi;
 
-import java.rmi.RemoteException;
-
 /**
  * All extending classes must override the tpservice template method.
  */
@@ -14,5 +12,5 @@ public interface BlacktieService {
 	 *            The inbound parameters
 	 * @return A response to the client
 	 */
-	public Response tpservice(TPSVCINFO svcinfo) throws RemoteException;
+	public Response tpservice(TPSVCINFO svcinfo);
 }

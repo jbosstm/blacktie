@@ -17,8 +17,6 @@
  */
 package org.jboss.blacktie.jatmibroker.server;
 
-import java.rmi.RemoteException;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.JAtmiBrokerException;
@@ -53,11 +51,15 @@ public class ServiceDispatcher extends Service implements Runnable {
 		while (true) {
 			Message message = receiver.receive(0);
 			log.trace("Recieved");
-			this.processMessage(message);
+			try {
+				this.processMessage(message);
+			} catch (Throwable t) {
+				log.error("Could not service the request", t);
+			}
 		}
 	}
 
-	public Response tpservice(TPSVCINFO svcinfo) throws RemoteException {
+	public Response tpservice(TPSVCINFO svcinfo) {
 		log.trace("Invoking callback");
 		return callback.tpservice(svcinfo);
 	}
