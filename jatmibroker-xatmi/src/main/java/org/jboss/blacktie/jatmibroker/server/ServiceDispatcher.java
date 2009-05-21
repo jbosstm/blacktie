@@ -36,8 +36,7 @@ public class ServiceDispatcher extends Service implements Runnable {
 	private Thread thread;
 
 	ServiceDispatcher(Transport transport, String serviceName,
-			BlacktieService callback, Receiver receiver)
-			throws JAtmiBrokerException {
+			BlacktieService callback, Receiver receiver) {
 		super();
 		this.callback = callback;
 		this.receiver = receiver;
