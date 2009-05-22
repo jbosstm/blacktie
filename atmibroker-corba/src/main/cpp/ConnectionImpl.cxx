@@ -27,42 +27,42 @@
 #include "AtmiBrokerPoaFac.h"
 #include "EndpointQueue.h"
 
-log4cxx::LoggerPtr ConnectionImpl::logger(log4cxx::Logger::getLogger(
-		"ConnectionImpl"));
+log4cxx::LoggerPtr CorbaConnectionImpl::logger(log4cxx::Logger::getLogger(
+		"CorbaConnectionImpl"));
 
-ConnectionImpl::ConnectionImpl(char* connectionName) {
+CorbaConnectionImpl::CorbaConnectionImpl(char* connectionName) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor");
 	this->connection = (CORBA_CONNECTION *) start_tx_orb(connectionName);
 }
 
-ConnectionImpl::~ConnectionImpl() {
+CorbaConnectionImpl::~CorbaConnectionImpl() {
 	LOG4CXX_DEBUG(logger, (char*) "destructor");
 	shutdownBindings(this->connection);
 }
 
-Session* ConnectionImpl::createSession(int id, char * serviceName) {
+Session* CorbaConnectionImpl::createSession(int id, char * serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession: " + id);
-	sessionMap[id] = new SessionImpl(this->connection, id, serviceName);
+	sessionMap[id] = new CorbaSessionImpl(this->connection, id, serviceName);
 	return sessionMap[id];
 }
 
-Session* ConnectionImpl::createSession(int id, const char* temporaryQueueName) {
+Session* CorbaConnectionImpl::createSession(int id, const char* temporaryQueueName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession");
-	return new SessionImpl(this->connection, id, temporaryQueueName);
+	return new CorbaSessionImpl(this->connection, id, temporaryQueueName);
 }
 
-Session* ConnectionImpl::getSession(int id) {
+Session* CorbaConnectionImpl::getSession(int id) {
 	return sessionMap[id];
 }
 
-void ConnectionImpl::closeSession(int id) {
+void CorbaConnectionImpl::closeSession(int id) {
 	if (sessionMap[id]) {
 		delete sessionMap[id];
 		sessionMap[id] = NULL;
 	}
 }
 
-Destination* ConnectionImpl::createDestination(char* serviceName) {
+Destination* CorbaConnectionImpl::createDestination(char* serviceName) {
 	// create Poa for Service Queue
 	AtmiBrokerPoaFac* poaFactory = this->connection->poaFactory;
 	PortableServer::POA_ptr aFactoryPoaPtr = poaFactory->createServicePoa(
@@ -71,10 +71,10 @@ Destination* ConnectionImpl::createDestination(char* serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "created create_service_factory_poa: "
 			<< aFactoryPoaPtr);
 
-	return new EndpointQueue(this->connection, aFactoryPoaPtr, serviceName);
+	return new CorbaEndpointQueue(this->connection, aFactoryPoaPtr, serviceName);
 }
 
-void ConnectionImpl::destroyDestination(Destination* destination) {
+void CorbaConnectionImpl::destroyDestination(Destination* destination) {
 	char* serviceName = strdup(destination->getName());
 	CosNaming::Name * name = this->connection->default_ctx->to_name(
 			destination->getName());
@@ -82,7 +82,7 @@ void ConnectionImpl::destroyDestination(Destination* destination) {
 	this->connection->name_ctx->unbind(*name);
 	LOG4CXX_DEBUG(logger, (char*) "unbound: " << serviceName);
 
-	EndpointQueue* queue = dynamic_cast<EndpointQueue*> (destination);
+	CorbaEndpointQueue* queue = dynamic_cast<CorbaEndpointQueue*> (destination);
 	/*
 	PortableServer::POA_ptr poa = queue->getPoa();
 	*/

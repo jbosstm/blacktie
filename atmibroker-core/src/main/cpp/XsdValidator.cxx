@@ -86,7 +86,7 @@ bool XsdValidator::checkFile(const char* fname, const char* suffix)
 	if(len > 0 && slen > 0 && fname[len-1] == '.' && strncmp(fname+len, suffix, len) == 0) {
 		fp = fopen(fname, "r");
 		if(fp == NULL) {
-			LOG4CXX_ERROR(logger, fname << " does not exist");
+			LOG4CXX_DEBUG(logger, fname << " does not exist");
 			return false;
 		}	
 		fclose(fp);
@@ -101,7 +101,7 @@ bool XsdValidator::buildXSDParser(const char* aXSDFileName)
 {
 	LOG4CXX_DEBUG(logger, "checkFile " << aXSDFileName << ": start");
 	if(checkFile(aXSDFileName, "xsd") == false) {
-		LOG4CXX_ERROR(logger, "checkFile " << aXSDFileName << ": fail");
+		LOG4CXX_DEBUG(logger, "checkFile " << aXSDFileName << ": fail");
 		return false;
 	}
 	LOG4CXX_DEBUG(logger, "checkFile " << aXSDFileName << ": ok");
@@ -158,7 +158,7 @@ bool XsdValidator::validate(const char* aXSDFileName, const char* aXMLFileName)
 
 	LOG4CXX_DEBUG(logger, "checkFile " << aXMLFileName << ": start");
 	if(checkFile(aXMLFileName, "xml") == false) {
-		LOG4CXX_ERROR(logger, "checkFile " << aXMLFileName << ": fail");
+		LOG4CXX_DEBUG(logger, "checkFile " << aXMLFileName << ": fail");
 		return false;
 	}
 	LOG4CXX_DEBUG(logger, "checkFile " << aXMLFileName << ": ok");

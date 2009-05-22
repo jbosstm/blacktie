@@ -28,16 +28,16 @@
 
 #include "ThreadLocalStorage.h"
 
-log4cxx::LoggerPtr SessionImpl::logger(
-		log4cxx::Logger::getLogger("SessionImpl"));
+log4cxx::LoggerPtr StompSessionImpl::logger(
+		log4cxx::Logger::getLogger("StompSessionImpl"));
 
-SessionImpl::SessionImpl(char* connectionName, apr_pool_t* pool, int id,
+StompSessionImpl::StompSessionImpl(char* connectionName, apr_pool_t* pool, int id,
 		char* serviceName) {
 	LOG4CXX_TRACE(logger, (char*) "constructor ");
 	this->id = id;
 
 	connection = NULL;
-	connection = ConnectionImpl::connect(pool, 2); // TODO allow the timeout to be specified in configuration
+	connection = StompConnectionImpl::connect(pool, 2); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
 
 	this->canSend = true;
@@ -50,18 +50,18 @@ SessionImpl::SessionImpl(char* connectionName, apr_pool_t* pool, int id,
 	strcpy(this->sendTo, "/queue/");
 	strncat(this->sendTo, serviceName, XATMI_SERVICE_NAME_LENGTH);
 
-	this->toRead = new EndpointQueue(this->pool, connectionName, id);
+	this->toRead = new StompEndpointQueue(this->pool, connectionName, id);
 	this->replyTo = toRead->getFullName();
 	LOG4CXX_TRACE(logger, "OK");
 }
 
-SessionImpl::SessionImpl(char* connectionName, apr_pool_t* pool, int id,
+StompSessionImpl::StompSessionImpl(char* connectionName, apr_pool_t* pool, int id,
 		const char* temporaryQueueName) {
 	LOG4CXX_TRACE(logger, (char*) "constructor ");
 	this->id = id;
 
 	connection = NULL;
-	connection = ConnectionImpl::connect(pool, 2); // TODO allow the timeout to be specified in configuration
+	connection = StompConnectionImpl::connect(pool, 2); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
 
 	this->canSend = true;
@@ -69,28 +69,28 @@ SessionImpl::SessionImpl(char* connectionName, apr_pool_t* pool, int id,
 
 	this->sendTo = ::strdup(temporaryQueueName);
 
-	this->toRead = new EndpointQueue(this->pool, connectionName, id);
+	this->toRead = new StompEndpointQueue(this->pool, connectionName, id);
 	this->replyTo = toRead->getFullName();
 	LOG4CXX_TRACE(logger, "OK");
 }
 
-SessionImpl::~SessionImpl() {
+StompSessionImpl::~StompSessionImpl() {
 	::free(this->sendTo);
 	delete toRead;
 
 	if (connection) {
 		LOG4CXX_TRACE(logger, (char*) "destroying");
-		ConnectionImpl::disconnect(connection, pool);
+		StompConnectionImpl::disconnect(connection, pool);
 		LOG4CXX_TRACE(logger, (char*) "destroyed");
 		connection = NULL;
 	}
 }
 
-MESSAGE SessionImpl::receive(long time) {
+MESSAGE StompSessionImpl::receive(long time) {
 	return toRead->receive(time);
 }
 
-bool SessionImpl::send(MESSAGE message) {
+bool StompSessionImpl::send(MESSAGE message) {
 	bool toReturn = false;
 	stomp_frame frame;
 	frame.command = (char*) "SEND";
@@ -155,14 +155,14 @@ bool SessionImpl::send(MESSAGE message) {
 	return toReturn;
 }
 
-void SessionImpl::setSendTo(const char* destinationName) {
+void StompSessionImpl::setSendTo(const char* destinationName) {
 	this->sendTo = (char*) destinationName;
 }
 
-const char* SessionImpl::getReplyTo() {
+const char* StompSessionImpl::getReplyTo() {
 	return replyTo;
 }
 
-int SessionImpl::getId() {
+int StompSessionImpl::getId() {
 	return id;
 }

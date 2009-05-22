@@ -36,12 +36,12 @@ extern "C"
 #include "Destination.h"
 #include "SessionImpl.h"
 
-class SessionImpl;
+class StompSessionImpl;
 
-class BLACKTIE_STOMP_DLL ConnectionImpl: public virtual Connection {
+class BLACKTIE_STOMP_DLL StompConnectionImpl: public virtual Connection {
 public:
-	ConnectionImpl(char* connectionName);
-	virtual ~ConnectionImpl();
+	StompConnectionImpl(char* connectionName);
+	virtual ~StompConnectionImpl();
 
 	Session* createSession(int id, char* serviceName);
 	Session* createSession(int id, const char* temporaryQueueName);
@@ -56,7 +56,7 @@ public:
 private:
 	static log4cxx::LoggerPtr logger;
 	char* connectionName;
-	std::map<int, SessionImpl*> sessionMap;
+	std::map<int, StompSessionImpl*> sessionMap;
 	apr_pool_t* pool;
 	stomp_connection* connection;
 };

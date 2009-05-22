@@ -25,15 +25,15 @@
 #include "ConnectionImpl.h"
 #include "EndpointQueue.h"
 
-class ConnectionImpl;
+class CorbaConnectionImpl;
 
-class BLACKTIE_CORBA_DLL SessionImpl: public virtual Session {
+class BLACKTIE_CORBA_DLL CorbaSessionImpl: public virtual Session {
 public:
-	SessionImpl(CORBA_CONNECTION* connection, int id, const char* temporaryQueueName);
+	CorbaSessionImpl(CORBA_CONNECTION* connection, int id, const char* temporaryQueueName);
 
-	SessionImpl(CORBA_CONNECTION* connection, int id, char* service);
+	CorbaSessionImpl(CORBA_CONNECTION* connection, int id, char* service);
 
-	virtual ~SessionImpl();
+	virtual ~CorbaSessionImpl();
 
 	void setSendTo(const char* replyTo);
 
@@ -48,7 +48,7 @@ private:
 	static log4cxx::LoggerPtr logger;
 	int id;
 	CORBA_CONNECTION* connection;
-	EndpointQueue* temporaryQueue;
+	CorbaEndpointQueue* temporaryQueue;
 	AtmiBroker::EndpointQueue_var remoteEndpoint;
 
 	const char* replyTo;

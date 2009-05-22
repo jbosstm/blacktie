@@ -24,17 +24,17 @@
 #include "ConnectionImpl.h"
 #include "txClient.h"
 
-log4cxx::LoggerPtr EndpointQueue::logger(log4cxx::Logger::getLogger(
-		"EndpointQueue"));
+log4cxx::LoggerPtr StompEndpointQueue::logger(log4cxx::Logger::getLogger(
+		"StompEndpointQueue"));
 
-EndpointQueue::EndpointQueue(apr_pool_t* pool, char* serviceName) {
+StompEndpointQueue::StompEndpointQueue(apr_pool_t* pool, char* serviceName) {
 	this->message = NULL;
 	shutdown = false;
 	lock = new SynchronizableObject();
 	LOG4CXX_DEBUG(logger, "Created lock: " << lock);
 
 	connection = NULL;
-	connection = ConnectionImpl::connect(pool, 2); // TODO allow the timeout to be specified in configuration
+	connection = StompConnectionImpl::connect(pool, 2); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
 
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
@@ -86,14 +86,14 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool, char* serviceName) {
 	LOG4CXX_DEBUG(logger, "Sent SUB: " << queueName);
 }
 
-EndpointQueue::EndpointQueue(apr_pool_t* pool, char* connectionName, int id) {
+StompEndpointQueue::StompEndpointQueue(apr_pool_t* pool, char* connectionName, int id) {
 	this->message = NULL;
 	shutdown = false;
 	lock = new SynchronizableObject();
 	LOG4CXX_DEBUG(logger, "Created lock: " << lock);
 
 	connection = NULL;
-	connection = ConnectionImpl::connect(pool, 10); // TODO allow the timeout to be specified in configuration
+	connection = StompConnectionImpl::connect(pool, 10); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
 
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
@@ -146,7 +146,7 @@ EndpointQueue::EndpointQueue(apr_pool_t* pool, char* connectionName, int id) {
 
 // ~EndpointQueue destructor.
 //
-EndpointQueue::~EndpointQueue() {
+StompEndpointQueue::~StompEndpointQueue() {
 	LOG4CXX_TRACE(logger, (char*) "destroying" << name);
 
 	lock->lock();
@@ -167,13 +167,13 @@ EndpointQueue::~EndpointQueue() {
 
 	if (connection) {
 		LOG4CXX_TRACE(logger, (char*) "destroying");
-		ConnectionImpl::disconnect(connection, pool);
+		StompConnectionImpl::disconnect(connection, pool);
 		LOG4CXX_TRACE(logger, (char*) "destroyed");
 		connection = NULL;
 	}
 }
 
-MESSAGE EndpointQueue::receive(long time) {
+MESSAGE StompEndpointQueue::receive(long time) {
 	// TODO TIME NOT RESPECTED
 	MESSAGE message;
 	message.replyto = NULL;
@@ -287,7 +287,7 @@ MESSAGE EndpointQueue::receive(long time) {
 	return message;
 }
 
-void EndpointQueue::disconnect() {
+void StompEndpointQueue::disconnect() {
 	LOG4CXX_DEBUG(logger, (char*) "disconnecting: " << name);
 	lock->lock();
 	if (!shutdown) {
@@ -299,16 +299,16 @@ void EndpointQueue::disconnect() {
 
 	if (connection) {
 		LOG4CXX_TRACE(logger, (char*) "destroying");
-		ConnectionImpl::disconnect(connection, pool);
+		StompConnectionImpl::disconnect(connection, pool);
 		LOG4CXX_TRACE(logger, (char*) "destroyed");
 		connection = NULL;
 	}
 }
 
-const char * EndpointQueue::getName() {
+const char * StompEndpointQueue::getName() {
 	return (const char *) name;
 }
 
-const char * EndpointQueue::getFullName() {
+const char * StompEndpointQueue::getFullName() {
 	return (const char *) this->fullName;
 }

@@ -23,10 +23,10 @@
 #include "SessionImpl.h"
 #include "AtmiBrokerEnv.h"
 
-log4cxx::LoggerPtr ConnectionImpl::logger(log4cxx::Logger::getLogger(
-		"ConnectionImpl"));
+log4cxx::LoggerPtr StompConnectionImpl::logger(log4cxx::Logger::getLogger(
+		"StompConnectionImpl"));
 
-ConnectionImpl::ConnectionImpl(char* connectionName) {
+StompConnectionImpl::StompConnectionImpl(char* connectionName) {
 	this->connectionName = connectionName;
 	apr_status_t rc = apr_initialize();
 	if (rc != APR_SUCCESS) {
@@ -41,13 +41,13 @@ ConnectionImpl::ConnectionImpl(char* connectionName) {
 	}
 }
 
-ConnectionImpl::~ConnectionImpl() {
+StompConnectionImpl::~StompConnectionImpl() {
 	apr_pool_destroy(pool);
 	apr_terminate();
 	LOG4CXX_TRACE(logger, "Destroyed");
 }
 
-stomp_connection* ConnectionImpl::connect(apr_pool_t* pool, int timeout) {
+stomp_connection* StompConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 	stomp_connection* connection = NULL;
 	std::string host = AtmiBrokerEnv::get_instance()->getenv(
 			(char*) "StompConnectHost");
@@ -100,7 +100,7 @@ stomp_connection* ConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 	return connection;
 }
 
-void ConnectionImpl::disconnect(stomp_connection* connection, apr_pool_t* pool) {
+void StompConnectionImpl::disconnect(stomp_connection* connection, apr_pool_t* pool) {
 	LOG4CXX_DEBUG(logger, (char*) "Sending DISCONNECT");
 	stomp_frame frame;
 	frame.command = (char*) "DISCONNECT";
@@ -121,30 +121,30 @@ void ConnectionImpl::disconnect(stomp_connection* connection, apr_pool_t* pool) 
 	}
 }
 
-Session* ConnectionImpl::createSession(int id, char * serviceName) {
+Session* StompConnectionImpl::createSession(int id, char * serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession");
-	sessionMap[id] = new SessionImpl(connectionName, pool, id, serviceName);
+	sessionMap[id] = new StompSessionImpl(connectionName, pool, id, serviceName);
 	return sessionMap[id];
 }
 
-Session* ConnectionImpl::createSession(int id, const char* temporaryQueueName) {
+Session* StompConnectionImpl::createSession(int id, const char* temporaryQueueName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession");
-	return new SessionImpl(connectionName, pool, id, temporaryQueueName);
+	return new StompSessionImpl(connectionName, pool, id, temporaryQueueName);
 }
 
-Destination* ConnectionImpl::createDestination(char* serviceName) {
-	return new EndpointQueue(this->pool, serviceName);
+Destination* StompConnectionImpl::createDestination(char* serviceName) {
+	return new StompEndpointQueue(this->pool, serviceName);
 }
 
-void ConnectionImpl::destroyDestination(Destination* destination) {
+void StompConnectionImpl::destroyDestination(Destination* destination) {
 	delete destination;
 }
 
-Session* ConnectionImpl::getSession(int id) {
+Session* StompConnectionImpl::getSession(int id) {
 	return sessionMap[id];
 }
 
-void ConnectionImpl::closeSession(int id) {
+void StompConnectionImpl::closeSession(int id) {
 	if (sessionMap[id]) {
 		delete sessionMap[id];
 		sessionMap[id] = NULL;

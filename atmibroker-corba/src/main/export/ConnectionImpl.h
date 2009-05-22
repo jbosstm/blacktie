@@ -27,12 +27,12 @@
 #include "Destination.h"
 #include "SessionImpl.h"
 
-class SessionImpl;
+class CorbaSessionImpl;
 
-class BLACKTIE_CORBA_DLL ConnectionImpl: public virtual Connection {
+class BLACKTIE_CORBA_DLL CorbaConnectionImpl: public virtual Connection {
 public:
-	ConnectionImpl(char* connectionName);
-	virtual ~ConnectionImpl();
+	CorbaConnectionImpl(char* connectionName);
+	virtual ~CorbaConnectionImpl();
 
 	Session* createSession(int id, char* serviceName);
 	Session* createSession(int id, const char* temporaryQueueName);
@@ -44,7 +44,7 @@ public:
 private:
 	static log4cxx::LoggerPtr logger;
 	CORBA_CONNECTION* connection;
-	std::map<int, SessionImpl*> sessionMap;
+	std::map<int, CorbaSessionImpl*> sessionMap;
 };
 
 #ifdef __cplusplus

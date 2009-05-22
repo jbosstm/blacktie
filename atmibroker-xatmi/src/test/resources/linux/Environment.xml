@@ -24,11 +24,11 @@
 		<SERVER_NAMES>
 			<SERVER>
 				<SERVICE_NAMES>
-					<SERVICE name='BAR' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='BAR' transportLibrary='libatmibroker-corba.so'/>
 					<SERVICE name='TestTPFree' transportLibrary='libatmibroker-corba.so'/>
-					<SERVICE name='TestTPACall' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='TestTPCall' transportLibrary='libatmibroker-corba.so'/>
 					<SERVICE name='TestTPAdvertise' transportLibrary='libatmibroker-corba.so'/>
-					<SERVICE name='LOOPY' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='LOOPY' transportLibrary='libatmibroker-stomp.so'/>
 					<SERVICE name='TestTPConversation'  transportLibrary='libatmibroker-corba.so'/>
 					<SERVICE name='TestTPACall'  transportLibrary='libatmibroker-corba.so'/>
 					<SERVICE name='TestTPCancel'  transportLibrary='libatmibroker-corba.so'/>

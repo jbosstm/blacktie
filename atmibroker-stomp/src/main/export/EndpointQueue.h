@@ -36,11 +36,11 @@ extern "C"
 #include "Destination.h"
 #include "SynchronizableObject.h"
 
-class BLACKTIE_STOMP_DLL EndpointQueue: public virtual Destination {
+class BLACKTIE_STOMP_DLL StompEndpointQueue: public virtual Destination {
 public:
-	EndpointQueue(apr_pool_t* pool, char* serviceName);
-	EndpointQueue(apr_pool_t* pool, char* serviceName, int id);
-	virtual ~EndpointQueue();
+	StompEndpointQueue(apr_pool_t* pool, char* serviceName);
+	StompEndpointQueue(apr_pool_t* pool, char* serviceName, int id);
+	virtual ~StompEndpointQueue();
 
 	virtual void disconnect();
 

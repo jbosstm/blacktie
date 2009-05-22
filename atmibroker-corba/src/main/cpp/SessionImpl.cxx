@@ -23,9 +23,9 @@
 #include "SessionImpl.h"
 #include "EndpointQueue.h"
 
-log4cxx::LoggerPtr SessionImpl::logger(log4cxx::Logger::getLogger("SessionImpl"));
+log4cxx::LoggerPtr CorbaSessionImpl::logger(log4cxx::Logger::getLogger("SessionImpl"));
 
-SessionImpl::SessionImpl(CORBA_CONNECTION* connection, int id, char* serviceName) {
+CorbaSessionImpl::CorbaSessionImpl(CORBA_CONNECTION* connection, int id, char* serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor ");
 	this->id = id;
 	this->connection = connection;
@@ -44,14 +44,14 @@ SessionImpl::SessionImpl(CORBA_CONNECTION* connection, int id, char* serviceName
 	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 	LOG4CXX_DEBUG(logger, (char*) "connected to " << sendTo);
 
-	this->temporaryQueue = new EndpointQueue(connection);
+	this->temporaryQueue = new CorbaEndpointQueue(connection);
 	this->replyTo = temporaryQueue->getName();
 
 	this->canSend = true;
 	this->canRecv = true;
 }
 
-SessionImpl::SessionImpl(CORBA_CONNECTION* connection, int id, const char* temporaryQueueName) {
+CorbaSessionImpl::CorbaSessionImpl(CORBA_CONNECTION* connection, int id, const char* temporaryQueueName) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor ");
 	this->id = id;
 	this->connection = connection;
@@ -62,14 +62,14 @@ SessionImpl::SessionImpl(CORBA_CONNECTION* connection, int id, const char* tempo
 	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 	LOG4CXX_DEBUG(logger, (char*) "connected to %s" << temporaryQueueName);
 
-	this->temporaryQueue = new EndpointQueue(connection);
+	this->temporaryQueue = new CorbaEndpointQueue(connection);
 	this->replyTo = temporaryQueue->getName();
 
 	this->canSend = true;
 	this->canRecv = true;
 }
 
-SessionImpl::~SessionImpl() {
+CorbaSessionImpl::~CorbaSessionImpl() {
 	LOG4CXX_DEBUG(logger, (char*) "destructor");
 	if (remoteEndpoint) {
 		LOG4CXX_DEBUG(logger, (char*) "disconnecting from: remote endpoint");
@@ -84,7 +84,7 @@ SessionImpl::~SessionImpl() {
 	//	}
 }
 
-void SessionImpl::setSendTo(const char* destinationName) {
+void CorbaSessionImpl::setSendTo(const char* destinationName) {
 	if (remoteEndpoint) {
 		remoteEndpoint = NULL;
 	}
@@ -98,12 +98,12 @@ void SessionImpl::setSendTo(const char* destinationName) {
 	this->sendTo = (char*) destinationName;
 }
 
-MESSAGE SessionImpl::receive(long time) {
+MESSAGE CorbaSessionImpl::receive(long time) {
 	LOG4CXX_DEBUG(logger, (char*) "Receiving from: " << replyTo);
 	return temporaryQueue->receive(time);
 }
 
-bool SessionImpl::send(MESSAGE message) {
+bool CorbaSessionImpl::send(MESSAGE message) {
 	AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(message.len, message.len, (unsigned char*) message.data, true);
 	remoteEndpoint->send(message.replyto, message.rval, message.rcode, aOctetSeq, message.len, message.correlationId, message.flags);
 	aOctetSeq = NULL;
@@ -111,10 +111,10 @@ bool SessionImpl::send(MESSAGE message) {
 	return true;
 }
 
-int SessionImpl::getId() {
+int CorbaSessionImpl::getId() {
 	return id;
 }
 
-const char* SessionImpl::getReplyTo() {
+const char* CorbaSessionImpl::getReplyTo() {
 	return replyTo;
 }

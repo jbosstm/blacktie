@@ -19,7 +19,7 @@
 #include "ConnectionImpl.h"
 
 static Connection* createConnection(char* connectionName) {
-	return new ConnectionImpl(connectionName);
+	return new StompConnectionImpl(connectionName);
 }
 
 struct connection_factory_t connectionFactory = { createConnection };

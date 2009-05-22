@@ -178,10 +178,30 @@ AtmiBrokerServer::AtmiBrokerServer() {
 		serverName = server;
 		unsigned int i;
 
+		serverInfo.serverName = NULL;
+
 		for (i = 0; i < servers.size(); i++) {
 			if(strcmp(servers[i]->serverName, serverName) == 0) {
 				serverInfo.serverName = strdup(servers[i]->serverName);
-				serverInfo.serviceVector = servers[i]->serviceVector;
+				for (unsigned int j = 0; j < servers[i]->serviceVector.size(); j++) {
+					ServiceInfo service;
+					memset(&service, 0, sizeof(ServiceInfo));
+					service.serviceName = strdup(servers[i]->serviceVector[j].serviceName);
+					service.transportLib = strdup(servers[i]->serviceVector[j].transportLib);
+
+					if(servers[i]->serviceVector[j].securityType) {
+						service.securityType = strdup(servers[i]->serviceVector[j].securityType);
+					}
+					if(servers[i]->serviceVector[j].function_name) {
+						service.function_name = strdup(servers[i]->serviceVector[j].function_name);
+					}
+					if(servers[i]->serviceVector[j].library_name) {
+						service.library_name = strdup(servers[i]->serviceVector[j].library_name);
+					}
+					service.poolSize = servers[i]->serviceVector[j].poolSize;
+					service.advertised = servers[i]->serviceVector[j].advertised;
+					serverInfo.serviceVector.push_back(service);
+				}
 				break;
 			}
 		}
@@ -276,6 +296,18 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 
 	serviceData.clear();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted service array");
+
+	if(serverInfo.serverName) {
+		for (unsigned int i = 0; i < serverInfo.serviceVector.size(); i++) {
+			ServiceInfo* service = &serverInfo.serviceVector[i];
+			free(service->serviceName);
+			free(service->transportLib);
+			free(service->securityType);
+			free(service->function_name);
+			free(service->library_name);
+		}
+		free(serverInfo.serverName);
+	}
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleting services");
 	AtmiBrokerMem::discard_instance();

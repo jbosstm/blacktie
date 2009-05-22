@@ -25,15 +25,15 @@
 #include "ConnectionImpl.h"
 #include "EndpointQueue.h"
 
-class ConnectionImpl;
+class StompConnectionImpl;
 
-class BLACKTIE_STOMP_DLL SessionImpl: public virtual Session {
+class BLACKTIE_STOMP_DLL StompSessionImpl: public virtual Session {
 public:
-	SessionImpl(char* connectionName, apr_pool_t* pool, int id, const char* temporaryQueueName);
+	StompSessionImpl(char* connectionName, apr_pool_t* pool, int id, const char* temporaryQueueName);
 
-	SessionImpl(char* connectionName, apr_pool_t* pool, int id, char* service);
+	StompSessionImpl(char* connectionName, apr_pool_t* pool, int id, char* service);
 
-	virtual ~SessionImpl();
+	virtual ~StompSessionImpl();
 
 	void setSendTo(const char* replyTo);
 
@@ -51,7 +51,7 @@ private:
 	apr_pool_t* pool;
 	const char* replyTo;
 	char* sendTo;
-	EndpointQueue* toRead;
+	StompEndpointQueue* toRead;
 };
 
 #endif

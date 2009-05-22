@@ -24,8 +24,8 @@
 
 void TestConnection::test() {
 	initializeLogger();
-	ConnectionImpl* serverConnection = new ConnectionImpl("server");
-	ConnectionImpl* clientConnection = new ConnectionImpl("client");
+	StompConnectionImpl* serverConnection = new StompConnectionImpl("server");
+	StompConnectionImpl* clientConnection = new StompConnectionImpl("client");
 	Destination* destination = serverConnection->createDestination((char*) "LOOPY");
 	Session* client = clientConnection->createSession(1, (char*) "LOOPY");
 	MESSAGE clientSend;

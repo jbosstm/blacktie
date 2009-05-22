@@ -35,11 +35,11 @@
 #include "Destination.h"
 #include "SynchronizableObject.h"
 
-class BLACKTIE_CORBA_DLL EndpointQueue: public virtual Destination, public virtual POA_AtmiBroker::EndpointQueue {
+class BLACKTIE_CORBA_DLL CorbaEndpointQueue: public virtual Destination, public virtual POA_AtmiBroker::EndpointQueue {
 public:
-	EndpointQueue(CORBA_CONNECTION* connection);
-	EndpointQueue(CORBA_CONNECTION* connection, PortableServer::POA_ptr poa, char* serviceName);
-	virtual ~EndpointQueue();
+	CorbaEndpointQueue(CORBA_CONNECTION* connection);
+	CorbaEndpointQueue(CORBA_CONNECTION* connection, PortableServer::POA_ptr poa, char* serviceName);
+	virtual ~CorbaEndpointQueue();
 
 	virtual void send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags) throw (CORBA::SystemException );
 
@@ -60,8 +60,8 @@ private:
 	PortableServer::POA_ptr thePoa;
 
 	// The following are not implemented
-	EndpointQueue(const EndpointQueue &);
-	EndpointQueue& operator=(const EndpointQueue &);
+	CorbaEndpointQueue(const CorbaEndpointQueue &);
+	CorbaEndpointQueue& operator=(const CorbaEndpointQueue &);
 };
 
 #endif
