@@ -54,6 +54,7 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 
 	std::string values =
 			AtmiBrokerEnv::get_instance()->getenv((char*) "ORBOPT");
+	LOG4CXX_TRACE(loggerOrbManagement, (char*) "initOrb ORBOPT: " << values);
 	char * cstr, *p;
 	cstr = new char[values.size() + 1];
 	strcpy(cstr, values.c_str());
@@ -119,35 +120,40 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 				(char*) "Could not start thread pool");
 	}
 
-	LOG4CXX_DEBUG(loggerOrbManagement,
-			(char*) "getRootPOAAndManager resolving the root POA ");
-	tmp_ref = connection->orbRef->resolve_initial_references("RootPOA");
-	connection->root_poa = PortableServer::POA::_narrow(tmp_ref);
-	LOG4CXX_DEBUG(loggerOrbManagement,
-			(char*) "getRootPOAAndManager resolved the root POA: "
+	//try {
+		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "resolving the root POA ");
+		tmp_ref = connection->orbRef->resolve_initial_references("RootPOA");
+		connection->root_poa = PortableServer::POA::_narrow(tmp_ref);
+		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "resolved the root POA: "
 					<< connection->root_poa);
 
-	LOG4CXX_DEBUG(loggerOrbManagement,
-			(char*) "getRootPOAAndManager getting the root POA manager");
-	connection->root_poa_manager = connection->root_poa->the_POAManager();
-	LOG4CXX_DEBUG(loggerOrbManagement,
+		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "getting the root POA manager");
+		connection->root_poa_manager = connection->root_poa->the_POAManager();
+		LOG4CXX_DEBUG(loggerOrbManagement,
 			(char*) "getRootPOAAndManager got the root POA manager: "
 					<< connection->root_poa_manager);
 
-	LOG4CXX_DEBUG(loggerOrbManagement,
-			(char*) "createClientCallbackPOA creating POA with name client");
+		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "creating POA with name client");
 
-	AtmiBrokerPoaFac* poaFac = new AtmiBrokerPoaFac();
-	connection->callback_poa = poaFac->createCallbackPoa(connection->orbRef,
+		AtmiBrokerPoaFac* poaFac = new AtmiBrokerPoaFac();
+		connection->callback_poa = poaFac->createCallbackPoa(connection->orbRef,
 			connectionName, connection->root_poa, connection->root_poa_manager);
-	connection->poaFactory = poaFac;
-	LOG4CXX_DEBUG(loggerOrbManagement,
+		connection->poaFactory = poaFac;
+		LOG4CXX_DEBUG(loggerOrbManagement,
 			(char*) "createClientCallbackPOA created POA: "
 					<< connection->callback_poa);
 
-	connection->root_poa_manager->activate();
-	LOG4CXX_DEBUG(loggerOrbManagement,
+		connection->root_poa_manager->activate();
+		LOG4CXX_DEBUG(loggerOrbManagement,
 			(char*) "activated poa - started processing requests ");
+
+	//} catch (CORBA::SystemException & e) {
+	//	LOG4CXX_LOGLS(loggerOrbManagement, log4cxx::Level::getWarn(),
+        //                (char*) "initOrb error: CORBA SystemException name: "
+        //                         << e._name() << (char *)" minor code: " << e.minor());
+	//	e._tao_print_exception("initOrb error: ");
+	//}
+
 	return connection;
 }
 

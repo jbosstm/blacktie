@@ -53,6 +53,9 @@
 			<ENV_VARIABLE>
 				<NAME>ORBOPT</NAME>
 				<VALUE>-ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
+				<!--
+				<VALUE>-ORBInitRef NameService=corbaloc::<name service host>:3528/NameService -ORBEndpoint iiop://<hostname>:2809</VALUE>
+				-->
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>LOG4CXXCONFIG</NAME>

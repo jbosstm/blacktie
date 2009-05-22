@@ -111,7 +111,7 @@ int AtmiBrokerOTS::tx_open(void) {
 					LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "narrowed TransactionFactory: " << (void*) tx_factory);
 					LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "Obtained TransactionService: " << transFactoryId);
 				} catch (CORBA::SystemException & e) {
-					//e._tao_print_exception("tx_begin error: ");
+					e._tao_print_exception("tx_begin error: ");
 					LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getWarn(),
 						(char*) "unable to resolve transaction service: CORBA SystemException name: "
 						<< e._name() << " minor code: " << e.minor());
