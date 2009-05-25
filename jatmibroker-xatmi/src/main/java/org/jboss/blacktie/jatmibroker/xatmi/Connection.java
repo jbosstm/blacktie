@@ -181,18 +181,11 @@ public class Connection {
 	 */
 	public Session tpconnect(String svc, Buffer buffer, int len, int flags)
 			throws ConnectionException {
-		// Initialate the session
+		// Initiate the session
 		int cd = tpacall(svc, buffer, len, flags);
-		Receiver endpoint = null;
-		try {
-			endpoint = getTransport(svc).createReceiver();
-			temporaryQueues.put(cd, endpoint);
-		} catch (Throwable t) {
-			throw new ConnectionException(-1,
-					"Could not create a temporary queue", t);
-		}
+		Receiver endpoint = temporaryQueues.get(cd);
 		// Return a handle to allow the connection to send/receive data on
-		return new Session(getTransport(svc), cd, null, endpoint);
+		return new Session(getTransport(svc), cd, endpoint);
 	}
 
 	/**

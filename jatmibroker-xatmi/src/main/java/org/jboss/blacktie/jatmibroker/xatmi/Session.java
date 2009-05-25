@@ -54,12 +54,26 @@ public class Session {
 	 * @param receiver2
 	 * @throws ConfigurationException
 	 */
-	Session(Transport transport, int cd, Sender sender, Receiver receiver)
+	Session(Transport transport, int cd, Receiver receiver)
+			throws ConnectionException {
+		this.transport = transport;
+		this.cd = cd;
+		this.receiver = receiver;
+	}
+
+	/**
+	 * Create a new session
+	 * 
+	 * @param transport
+	 * @param cd
+	 * @param receiver2
+	 * @throws ConfigurationException
+	 */
+	Session(Transport transport, int cd, Sender sender)
 			throws ConnectionException {
 		this.transport = transport;
 		this.cd = cd;
 		this.sender = sender;
-		this.receiver = receiver;
 	}
 
 	/**

@@ -128,7 +128,7 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 					.narrow(tmp_ref);
 			log.debug("narrowed reference " + clientCallback);
 			callbackIOR = orb.object_to_string(clientCallback);
-			log.debug(" created ClientCallback ior " + callbackIOR);
+			log.debug("Created:" + callbackIOR);
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Cannot create the receiver", t);
 		}
@@ -144,11 +144,9 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 	//
 	public void send(String replyto_ior, short rval, int rcode, byte[] idata,
 			int ilen, int cd, int flags) {
-		log.debug("client_callback(): called.");
-		log.debug("    idata = " + new String(idata));
-		log.debug("    ilen = " + ilen);
-		log.debug("    flags = " + flags);
-		log.debug("client_callback(): returning.");
+		if (callbackIOR != null) {
+			log.debug("Received: " + callbackIOR);
+		}
 		Message message = new Message();
 
 		message.len = ilen - 1;
@@ -175,6 +173,9 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 		synchronized (this) {
 			while (returnData.isEmpty()) {
 				try {
+					if (callbackIOR != null) {
+						log.debug("Waiting" + callbackIOR);
+					}
 					wait();
 				} catch (InterruptedException e) {
 					log.error("Caught exception", e);
