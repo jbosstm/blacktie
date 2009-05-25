@@ -148,13 +148,13 @@ public class AtmiBrokerServer extends ServerPOA {
 					ServiceData data = new ServiceData(serviceName,
 							serviceClassName);
 					serviceData.put(serviceName, data);
+					log.info("Advertised: " + serviceName);
 				} catch (Throwable t) {
 					throw new ConnectionException(-1,
 							"Could not create service factory for: "
 									+ serviceName, t);
 				}
 			}
-			log.info("Advertised: " + serviceName);
 		} catch (Throwable t) {
 			String message = "Could not advertise: " + serviceName;
 			log.error(message, t);
