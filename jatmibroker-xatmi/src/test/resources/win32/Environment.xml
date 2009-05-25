@@ -21,11 +21,22 @@
 		<DOMAIN>fooapp</DOMAIN>
 		<NAMING_SERVICE_ID></NAMING_SERVICE_ID>
 		<TRANS_FACTORY_ID>TransactionManagerService.OTS</TRANS_FACTORY_ID>
+		<SERVER_NAMES>
+			<SERVER name='standalone-server'>
+				<SERVICE_NAMES>
+					<SERVICE name='EchoService' transportLibrary='atmibroker-corba.dll'/>
+					<SERVICE name='TestTPConversation' transportLibrary='atmibroker-corba.dll'/>
+				</SERVICE_NAMES>
+			</SERVER>
+			<SERVER name='foo'>
+				<SERVICE_NAMES>
+					<SERVICE name='BAR' transportLibrary='atmibroker-corba.dll'/>
+					<SERVICE name='test_X_OCTET' transportLibrary='atmibroker-corba.dll'/>
+					<SERVICE name='test_X_C_TYPE' transportLibrary='atmibroker-corba.dll'/>
+				</SERVICE_NAMES>
+			</SERVER>
+		</SERVER_NAMES>
 		<ENV_VARIABLES>
-			<ENV_VARIABLE>
-				<NAME>TransportLibrary</NAME>
-				<VALUE>atmibroker-corba.dll</VALUE>
-			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>LOG4CXXCONFIG</NAME>
 				<VALUE>log4cxx.properties</VALUE>
