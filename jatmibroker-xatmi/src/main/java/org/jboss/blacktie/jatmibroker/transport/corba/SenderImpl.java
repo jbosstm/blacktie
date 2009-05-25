@@ -35,9 +35,9 @@ public class SenderImpl implements Sender {
 		log.debug("ServiceFactory is " + queue);
 	}
 
-	public void send(String replyTo, short rval, int rcode, byte[] data,
+	public void send(Object replyTo, short rval, int rcode, byte[] data,
 			int len, int correlationId, int flags) {
-		queue.send(replyTo, rval, rcode, data, len + 1, correlationId, flags);
+		queue.send((String) replyTo, rval, rcode, data, len + 1, correlationId, flags);
 	}
 
 	public void close() {

@@ -47,7 +47,7 @@ public interface Transport {
 	 * @return
 	 * @throws ConfigurationException
 	 */
-	public Receiver createReceiver(String serviceName)
+	public Receiver getReceiver(String serviceName)
 			throws ConnectionException;
 
 	/**

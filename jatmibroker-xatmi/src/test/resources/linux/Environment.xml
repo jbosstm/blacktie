@@ -24,22 +24,26 @@
 		<SERVER_NAMES>
 			<SERVER name='standalone-server'>
 				<SERVICE_NAMES>
-					<SERVICE name='EchoService' transportLibrary='libatmibroker-corba.so'/>
-					<SERVICE name='TestTPConversation' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='TestTPCall' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='JAVA_Converse' transportLibrary='libatmibroker-stomp.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 			<SERVER name='foo'>
 				<SERVICE_NAMES>
 					<SERVICE name='BAR' transportLibrary='libatmibroker-corba.so'/>
-					<SERVICE name='test_X_OCTET' transportLibrary='libatmibroker-corba.so'/>
-					<SERVICE name='test_X_C_TYPE' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='tpcall_x_octet' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='tpcall_x_c_type' transportLibrary='libatmibroker-corba.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
-				<NAME>LOG4CXXCONFIG</NAME>
-				<VALUE>log4cxx.properties</VALUE>
+				<NAME>StompConnectUsr</NAME>
+				<VALUE>JBM.SUCKER</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectPwd</NAME>
+				<VALUE>CHANGE ME!!</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>ORBOPT</NAME>

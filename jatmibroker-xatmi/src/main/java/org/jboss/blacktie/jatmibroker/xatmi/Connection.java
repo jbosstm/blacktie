@@ -38,36 +38,38 @@ public class Connection {
 	private static final Logger log = LogManager.getLogger(Connection.class);
 
 	// AVAILABLE FLAGS
-	int TPNOBLOCK = 0x00000001;
-	int TPSIGRSTRT = 0x00000002;
-	int TPNOREPLY = 0x00000004;
-	int TPNOTRAN = 0x00000008;
-	int TPTRAN = 0x00000010;
-	int TPNOTIME = 0x00000020;
-	int TPGETANY = 0x00000080;
-	int TPNOCHANGE = 0x00000100;
-	int TPCONV = 0x00000400;
-	int TPSENDONLY = 0x00000800;
-	int TPRECVONLY = 0x00001000;
+	public static int TPNOBLOCK = 0x00000001;
+	public static int TPSIGRSTRT = 0x00000002;
+	public static int TPNOREPLY = 0x00000004;
+	public static int TPNOTRAN = 0x00000008;
+	public static int TPTRAN = 0x00000010;
+	public static int TPNOTIME = 0x00000020;
+	public static int TPGETANY = 0x00000080;
+	public static int TPNOCHANGE = 0x00000100;
+	public static int TPCONV = 0x00000400;
+	public static int TPSENDONLY = 0x00000800;
+	public static int TPRECVONLY = 0x00001000;
 
 	// ERROR CONDITIONS
-	public int TPEBADDESC = 2;
-	public int TPEBLOCK = 3;
-	public int TPEINVAL = 4;
-	public int TPELIMIT = 5;
-	public int TPENOENT = 6;
-	public int TPEOS = 7;
-	public int TPEPROTO = 9;
-	public int TPESVCERR = 10;
-	public int TPESVCFAIL = 11;
-	public int TPESYSTEM = 12;
-	public int TPETIME = 13;
-	public int TPETRAN = 14;
-	public int TPGOTSIG = 15;
-	public int TPEITYPE = 17;
-	public int TPEOTYPE = 18;
-	public int TPEEVENT = 22;
-	public int TPEMATCH = 23;
+	public static int TPEBADDESC = 2;
+	public static int TPEBLOCK = 3;
+	public static int TPEINVAL = 4;
+	public static int TPELIMIT = 5;
+	public static int TPENOENT = 6;
+	public static int TPEOS = 7;
+	public static int TPEPROTO = 9;
+	public static int TPESVCERR = 10;
+	public static int TPESVCFAIL = 11;
+	public static int TPESYSTEM = 12;
+	public static int TPETIME = 13;
+	public static int TPETRAN = 14;
+	public static int TPGOTSIG = 15;
+	public static int TPEITYPE = 17;
+	public static int TPEOTYPE = 18;
+	public static int TPEEVENT = 22;
+	public static int TPEMATCH = 23;
+
+	public static int XATMI_SERVICE_NAME_LENGTH = 15;
 
 	private static int nextId;
 
@@ -122,6 +124,7 @@ public class Connection {
 	 */
 	public int tpacall(String svc, Buffer buffer, int len, int flags)
 			throws ConnectionException {
+		svc = svc.substring(0, Math.min(Connection.XATMI_SERVICE_NAME_LENGTH, svc.length()));
 		int correlationId = nextId++;
 		Receiver endpoint = null;
 		try {
@@ -181,6 +184,7 @@ public class Connection {
 	 */
 	public Session tpconnect(String svc, Buffer buffer, int len, int flags)
 			throws ConnectionException {
+		svc = svc.substring(0, Math.min(Connection.XATMI_SERVICE_NAME_LENGTH, svc.length()));
 		// Initiate the session
 		int cd = tpacall(svc, buffer, len, flags);
 		Receiver endpoint = temporaryQueues.get(cd);
@@ -209,7 +213,7 @@ public class Connection {
 	}
 
 	private Transport getTransport(String serviceName)
-			throws ConnectionException {
+			throws ConnectionException {		
 		Transport toReturn = transports.get(serviceName);
 		if (toReturn == null) {
 			try {

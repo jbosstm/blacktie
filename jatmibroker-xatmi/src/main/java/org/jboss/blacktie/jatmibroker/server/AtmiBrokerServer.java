@@ -35,6 +35,7 @@ import org.jboss.blacktie.jatmibroker.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.transport.Transport;
 import org.jboss.blacktie.jatmibroker.transport.TransportFactory;
 import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
@@ -57,7 +58,7 @@ public class AtmiBrokerServer extends ServerPOA {
 	private boolean bound;
 	private OrbManagement orbManagement;
 	private Properties properties;
-	private static final String DEFAULT_POOL_SIZE = "5";
+	private static final String DEFAULT_POOL_SIZE = "1";
 
 	public AtmiBrokerServer(String serverName, String configurationDir)
 			throws ConfigurationException, ConnectionException {
@@ -140,6 +141,8 @@ public class AtmiBrokerServer extends ServerPOA {
 	 */
 	public void tpadvertise(String serviceName, String serviceClassName)
 			throws ConnectionException {
+		int min = Math.min(Connection.XATMI_SERVICE_NAME_LENGTH, serviceName.length());
+		serviceName = serviceName.substring(0, min);
 		try {
 			log.debug("Advertising: " + serviceName);
 
@@ -163,6 +166,7 @@ public class AtmiBrokerServer extends ServerPOA {
 	}
 
 	public void tpunadvertise(String serviceName) throws ConnectionException {
+		serviceName = serviceName.substring(0, Math.min(Connection.XATMI_SERVICE_NAME_LENGTH, serviceName.length()));
 		log.debug("Unadvertising: " + serviceName);
 		ServiceData data = serviceData.remove(serviceName);
 		if (data != null) {
@@ -263,7 +267,7 @@ public class AtmiBrokerServer extends ServerPOA {
 
 			connection = TransportFactory.loadTransportFactory(serviceName,
 					properties).createTransport();
-			this.receiver = connection.createReceiver(serviceName);
+			this.receiver = connection.getReceiver(serviceName);
 
 			Class callback = Class.forName(serviceClassName);
 			for (int i = 0; i < size; i++) {

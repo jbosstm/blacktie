@@ -165,7 +165,7 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 		}
 	}
 
-	public String getReplyTo() {
+	public java.lang.Object getReplyTo() {
 		return callbackIOR;
 	}
 

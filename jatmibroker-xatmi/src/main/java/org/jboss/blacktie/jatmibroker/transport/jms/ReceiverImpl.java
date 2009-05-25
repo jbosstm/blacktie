@@ -23,7 +23,6 @@ import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.Session;
 import javax.jms.TemporaryQueue;
-import javax.naming.Context;
 import javax.naming.NamingException;
 
 import org.apache.log4j.LogManager;
@@ -42,16 +41,15 @@ public class ReceiverImpl implements Receiver {
 		receiver = session.createConsumer(destination);
 	}
 
-	ReceiverImpl(Session session, Context context, String serviceName)
-			throws JMSException, NamingException {
-		Destination destination = (Destination) context.lookup(serviceName);
+	ReceiverImpl(Session session, Destination destination) throws JMSException,
+			NamingException {
 		receiver = session.createConsumer(destination);
 	}
 
-	public String getReplyTo() throws ConnectionException {
+	public Object getReplyTo() throws ConnectionException {
 		if (destination != null) {
 			try {
-				return destination.getQueueName();
+				return destination;
 			} catch (Throwable t) {
 				throw new ConnectionException(-1,
 						"Could not get the name of the queue", t);
@@ -91,7 +89,10 @@ public class ReceiverImpl implements Receiver {
 
 	public void close() throws ConnectionException {
 		try {
-			destination.delete();
+			receiver.close();
+			if (destination != null) {
+				destination.delete();
+			}
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Could not delete the queue", t);
 		}

@@ -123,7 +123,7 @@ public class Session {
 
 		// Prepare the outbound channel
 		if (m.replyTo == null
-				|| (sender != null && !sender.getName().equals(m.replyTo))) {
+				|| (sender != null && !m.replyTo.equals(sender.getName()))) {
 			sender.close();
 		}
 		if (m.replyTo != null) {

@@ -18,8 +18,10 @@
 package org.jboss.blacktie.jatmibroker.transport.jms;
 
 import javax.jms.Connection;
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
+import javax.jms.TemporaryQueue;
 import javax.naming.Context;
 
 import org.jboss.blacktie.jatmibroker.transport.Receiver;
@@ -49,7 +51,9 @@ public class TransportImpl implements Transport {
 
 	public Sender getSender(String serviceName) throws ConnectionException {
 		try {
-			return new SenderImpl(session, context, serviceName);
+			Destination destination = (Destination) context.lookup("/queue/"
+					+ serviceName);
+			return new SenderImpl(session, destination);
 		} catch (Throwable t) {
 			throw new ConnectionException(-1,
 					"Could not create a service sender", t);
@@ -58,17 +62,20 @@ public class TransportImpl implements Transport {
 
 	public Sender createSender(Object callback_ior) throws ConnectionException {
 		try {
-			return new SenderImpl(session, callback_ior);
+			TemporaryQueue destination = (TemporaryQueue) callback_ior;
+			return new SenderImpl(session, destination);
 		} catch (Throwable t) {
 			throw new ConnectionException(-1,
 					"Could not create a temporary sender", t);
 		}
 	}
 
-	public Receiver createReceiver(String serviceName)
+	public Receiver getReceiver(String serviceName)
 			throws ConnectionException {
 		try {
-			return new ReceiverImpl(session, context, serviceName);
+			Destination destination = (Destination) context.lookup("/queue/"
+					+ serviceName);
+			return new ReceiverImpl(session, destination);
 		} catch (Throwable t) {
 			throw new ConnectionException(-1,
 					"Could not create the receiver on: " + serviceName, t);

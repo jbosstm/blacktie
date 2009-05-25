@@ -19,13 +19,19 @@ package org.jboss.blacktie.jatmibroker.transport;
 
 import java.util.Properties;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public abstract class TransportFactory {
+
+	private static final Logger log = LogManager.getLogger(TransportFactory.class);
 	public static TransportFactory loadTransportFactory(String serviceName,
 			Properties properties) throws ConfigurationException,
 			ConnectionException {
+		log.debug("Loading transport for: " + serviceName);
 		String transportLibrary = (String) properties.get("blacktie."
 				+ serviceName + ".transportLib");
 

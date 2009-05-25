@@ -41,12 +41,25 @@ public class TransportFactoryImpl extends TransportFactory {
 	protected void setProperties(Properties properties)
 			throws ConfigurationException {
 		try {
-			context = new InitialContext(properties);
+			Properties props = new Properties();
+			props.setProperty("java.naming.factory.initial",
+					"org.jnp.interfaces.NamingContextFactory");
+			props.setProperty("java.naming.factory.url.pkgs",
+					"org.jboss.naming:org.jnp.interfaces");
+			props.setProperty("java.naming.provider.url",
+					"jnp://localhost:1099");
+			props.putAll(props);
+			context = new InitialContext(props);
 			ConnectionFactory factory = (ConnectionFactory) context
 					.lookup("ConnectionFactory");
 			String username = (String) properties.get("StompConnectUsr");
 			String password = (String) properties.get("StompConnectPwd");
-			connection = factory.createConnection(username, password);
+			if (username != null) {
+				connection = factory.createConnection(username, password);
+			} else {
+				connection = factory.createConnection();
+			}
+			connection.start();
 		} catch (Throwable t) {
 			throw new ConfigurationException(
 					"Could not create the required connection", t);

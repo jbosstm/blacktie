@@ -38,27 +38,27 @@ public class SenderImpl implements Sender {
 	private String name;
 	boolean service;
 
-	SenderImpl(Session session, Context context, String serviceName)
+	SenderImpl(Session session, Destination destination)
 			throws NamingException, JMSException {
 		this.session = session;
-		Destination destination = (Destination) context.lookup(serviceName);
 		sender = session.createProducer(destination);
-		this.name = serviceName;
 		service = true;
 	}
 
-	SenderImpl(Session session, Object sendTo) throws JMSException {
+	SenderImpl(Session session, TemporaryQueue destination) throws JMSException {
 		this.session = session;
-		TemporaryQueue destination = (TemporaryQueue) sendTo;
 		sender = session.createProducer(destination);
 		this.name = destination.getQueueName();
 	}
 
-	public void send(String replyTo, short rval, int rcode, byte[] data,
+	public void send(Object replyTo, short rval, int rcode, byte[] data,
 			int len, int correlationId, int flags) throws ConnectionException {
 		try {
 			BytesMessage message = session.createBytesMessage();
-			message.setStringProperty("reply-to", replyTo);
+			if (replyTo != null) {
+				message.setJMSReplyTo((Destination) replyTo);
+				// TODOmessage.setStringProperty("reply-to", replyTo);
+			}
 			if (service) {
 				message.setStringProperty("serviceName", name);
 			}

@@ -22,7 +22,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 public interface Receiver {
 	public Message receive(long flags) throws ConnectionException;
 
-	public String getReplyTo() throws ConnectionException;
+	public Object getReplyTo() throws ConnectionException;
 
 	public void close() throws ConnectionException;
 }
