@@ -1,6 +1,6 @@
 package org.jboss.blacktie.jatmibroker.xatmi;
 
-public class EchoServiceTestService implements BlacktieService {
+public class TestTPCallService implements BlacktieService {
 	public Response tpservice(TPSVCINFO svcinfo) {
 		byte[] toSend = svcinfo.getBuffer().getData();
 		Buffer toReturn = new Buffer(null, null);

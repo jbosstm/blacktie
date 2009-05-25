@@ -22,13 +22,13 @@ import junit.framework.TestCase;
 import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.server.AtmiBrokerServer;
 
-public class BlacktieServiceTestCase extends TestCase {
+public class TestTPCall extends TestCase {
 	private AtmiBrokerServer server;
 	private Connection connection;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
-		this.server.tpadvertise("EchoService", EchoServiceTestService.class.getName());
+		this.server.tpadvertise("TestTPCall", TestTPCallService.class.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -44,7 +44,7 @@ public class BlacktieServiceTestCase extends TestCase {
 		byte[] echo = "echo".getBytes();
 		Buffer buffer = new Buffer(null, null);
 		buffer.setData(echo);
-		Response response = connection.tpcall("EchoService", buffer, echo.length, 0);
+		Response response = connection.tpcall("TestTPCall", buffer, echo.length, 0);
 		byte[] responseData = response.getBuffer().getData();
 		String receivedMessage = new String(responseData);
 		assertEquals("echo", receivedMessage);

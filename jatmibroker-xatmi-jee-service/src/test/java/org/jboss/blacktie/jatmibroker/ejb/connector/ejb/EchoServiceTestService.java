@@ -8,7 +8,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 public class EchoServiceTestService extends MDBBlacktieService {
 
 	public EchoServiceTestService() {
-		super("EchoService");
+		super("TestTPCall");
 	}
 
 	public Response tpservice(TPSVCINFO svcinfo) {

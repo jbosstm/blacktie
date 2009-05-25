@@ -38,7 +38,7 @@ extern "C"void BAR(TPSVCINFO * svcinfo) {
 	tpreturn(1, 1, buffer, sendlen, 0);
 }
 
-extern "C"void test_X_OCTET(TPSVCINFO * svcinfo) {
+extern "C"void tpcall_x_octet(TPSVCINFO * svcinfo) {
 	int sendlen = strlen((char*) "BAR SAYS HELLO");
 	char* buffer = tpalloc((char*) "X_OCTET", 0, sendlen);
 	strcpy(buffer, "BAR SAYS HELLO");
@@ -56,7 +56,7 @@ struct test_t {
 };
 typedef struct test_t TEST;
 
-extern "C"void test_X_C_TYPE(TPSVCINFO * svcinfo) {
+extern "C"void tpcall_x_c_type(TPSVCINFO * svcinfo) {
 	TEST* buffer = (TEST*) tpalloc((char*) "X_C_TYPE", (char*) "deposit", NULL);
 	buffer->foo = 222;
 	buffer->bar = 33;
@@ -64,7 +64,7 @@ extern "C"void test_X_C_TYPE(TPSVCINFO * svcinfo) {
 	buffer->z = 'c';
 	buffer->floater = 444.97;
 	buffer->doubley = 7.7;
-	strcpy(buffer->status, "test_X_C_TYPE");
+	strcpy(buffer->status, "tpcall_x_c_type");
 	tpreturn(1, 1, (char*) buffer, 0, 0);
 }
 
@@ -80,8 +80,8 @@ JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_serverinit(
 
 	exit_status = serverinit(argc, argv);
 	exit_status = tpadvertise((char*) "BAR", BAR);
-	exit_status = tpadvertise((char*) "test_X_OCTET", test_X_OCTET);
-	exit_status = tpadvertise((char*) "test_X_C_TYPE", test_X_C_TYPE);
+	exit_status = tpadvertise((char*) "tpcall_x_octet", tpcall_x_octet);
+	exit_status = tpadvertise((char*) "tpcall_x_c_type", tpcall_x_c_type);
 	return;
 }
 

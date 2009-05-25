@@ -36,7 +36,7 @@ public class AbstractBlacktieServiceTestCase extends TestCase {
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		this.server = new AtmiBrokerServer("ejb-connector-tests", null);
-		this.server.tpadvertise("EchoService", EchoServiceTestService.class.getName());
+		this.server.tpadvertise("TestTPCall", EchoServiceTestService.class.getName());
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
@@ -44,7 +44,7 @@ public class AbstractBlacktieServiceTestCase extends TestCase {
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
 		connection.close();
-		server.tpunadvertise("EchoService");
+		server.tpunadvertise("TestTPCall");
 		server.close();
 	}
 
@@ -53,7 +53,7 @@ public class AbstractBlacktieServiceTestCase extends TestCase {
 		Buffer buffer = new Buffer(null, null);
 		buffer.setData(echo);
 
-		Response response = connection.tpcall("EchoService", buffer,
+		Response response = connection.tpcall("TestTPCall", buffer,
 				echo.length, 0);
 		byte[] responseData = response.getBuffer().getData();
 		String receivedMessage = new String(responseData);

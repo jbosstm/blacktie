@@ -37,13 +37,13 @@ public class JABClientTestCase extends TestCase {
 		runServer.serverdone();
 	}
 
-	public void test_X_OCTET() throws Exception {
+	public void test_tpcall_x_octet() throws Exception {
 		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
 				null);
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
 		JABRemoteService aJabService = new JABRemoteService(aJabSession,
-				"test_X_OCTET");
+				"tpcall_x_octet");
 		byte[] toSend = "HOWS IT GOING DUDE????!!!!".getBytes();
 		aJabService.setBuffer("X_OCTET", toSend, toSend.length);
 		aJabService.call(transaction);
@@ -54,13 +54,13 @@ public class JABClientTestCase extends TestCase {
 		assertEquals(expectedString, responseString);
 	}
 
-	public void test_X_C_TYPE() throws Exception {
+	public void test_tpcall_x_c_type() throws Exception {
 		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
 				null);
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
 		JABRemoteService aJabService = new JABRemoteService(aJabSession,
-				"test_X_C_TYPE");
+				"tpcall_x_c_type");
 
 		// Assemble the message
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(512);
@@ -71,7 +71,7 @@ public class JABClientTestCase extends TestCase {
 		dos.writeChar('c');
 		dos.writeFloat(444.97f);
 		dos.writeDouble(7.7d);
-		dos.writeUTF("test_X_C_TYPE");
+		dos.writeUTF("tpcall_x_c_type");
 		byte[] data = baos.toByteArray();
 
 		aJabService.setBuffer("X_C_TYPE", data, data.length);
@@ -88,6 +88,6 @@ public class JABClientTestCase extends TestCase {
 		assertEquals('c', dis.readChar());
 		assertEquals(444.97, dis.readFloat());
 		assertEquals(7.7, dis.readDouble());
-		assertEquals("test_X_C_TYPE", dis.readUTF());
+		assertEquals("tpcall_x_c_type", dis.readUTF());
 	}
 }
