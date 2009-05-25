@@ -21,6 +21,11 @@
 		<DOMAIN>jboss</DOMAIN>
 		<NAMING_SERVICE_ID></NAMING_SERVICE_ID>
 		<TRANS_FACTORY_ID>TransactionManagerService.OTS</TRANS_FACTORY_ID>
+			<SERVER name='standalone-server'>
+				<SERVICE_NAMES>
+					<SERVICE name='EchoService' transportLibrary='libatmibroker-corba.so'/>
+				</SERVICE_NAMES>
+			</SERVER>
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
 				<NAME>ORBOPT</NAME>

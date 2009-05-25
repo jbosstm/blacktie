@@ -78,10 +78,12 @@ public class XMLParser {
 	 *            - File
 	 */
 	public void parse(File file) throws ConfigurationException {
-		try {
-			saxParser.parse(file, handler);
-		} catch (Throwable t) {
-			throw new ConfigurationException("Errors parse : " + file, t);
+		if (file.exists()) {
+			try {
+				saxParser.parse(file, handler);
+			} catch (Throwable t) {
+				throw new ConfigurationException("Errors parse : " + file, t);
+			}
 		}
 	}
 }

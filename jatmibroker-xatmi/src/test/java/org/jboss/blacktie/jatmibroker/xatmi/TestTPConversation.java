@@ -39,8 +39,6 @@ public class TestTPConversation extends TestCase {
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
 		connection.close();
-
-		server.tpunadvertise("TestTPConversation");
 		server.close();
 	}
 

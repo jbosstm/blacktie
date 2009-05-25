@@ -122,36 +122,39 @@ public class XMLEnvHandler extends DefaultHandler {
 			isORBOPT = false;
 		} else if (VALUE.equals(localName)) {
 			valueElement = VALUE;
-		} else if(SERVER_NAME.equals(localName)) {
+		} else if (SERVER_NAME.equals(localName)) {
 			serverElement = SERVER_NAME;
-			if(atts != null){
-				for(int i = 0; i < atts.getLength(); i++){
-					if(atts.getLocalName(i).equals("name")){
+			if (atts != null) {
+				for (int i = 0; i < atts.getLength(); i++) {
+					if (atts.getLocalName(i).equals("name")) {
 						serverName = atts.getValue(i);
 					}
 				}
 			}
-		} else if(SERVICE_NAME.equals(localName)) {
+		} else if (SERVICE_NAME.equals(localName)) {
 			serviceElement = SERVICE_NAME;
 			String serviceName = null;
 
-			if(atts != null){
-				for(int i = 0; i < atts.getLength(); i++){
-					if(atts.getLocalName(i).equals("name")){
+			if (atts != null) {
+				for (int i = 0; i < atts.getLength(); i++) {
+					if (atts.getLocalName(i).equals("name")) {
 						serviceName = atts.getValue(i);
 						String skey = "blacktie." + serviceName + ".server";
 						prop.put(skey, serverName);
-					} else if(atts.getLocalName(i).equals("transportLibrary")) {
+					} else if (atts.getLocalName(i).equals("transportLibrary")) {
 						String transport = atts.getValue(i);
-						String key = "blacktie." + serviceName + ".transportLib";
+						String key = "blacktie." + serviceName
+								+ ".transportLib";
 						prop.put(key, transport);
 					}
 				}
 			}
+			AtmiBrokerServiceXML xml = new AtmiBrokerServiceXML(serverName,
+					serviceName, prop);
 			try {
-				AtmiBrokerServiceXML xml = new AtmiBrokerServiceXML(serverName, serviceName, prop);
 				xml.getProperties(configDir);
 			} catch (ConfigurationException e) {
+				throw new SAXException(e);
 			}
 		}
 	}
@@ -170,9 +173,9 @@ public class XMLEnvHandler extends DefaultHandler {
 			nameElement = "";
 		} else if (VALUE.equals(localName)) {
 			valueElement = "";
-		} else if(SERVER_NAME.equals(localName)) {
+		} else if (SERVER_NAME.equals(localName)) {
 			serverElement = "";
-		} else if(SERVICE_NAME.equals(localName)) {
+		} else if (SERVICE_NAME.equals(localName)) {
 			serviceElement = "";
 		}
 	}

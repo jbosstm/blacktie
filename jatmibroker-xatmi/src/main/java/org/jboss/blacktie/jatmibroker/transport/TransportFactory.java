@@ -29,6 +29,10 @@ public abstract class TransportFactory {
 		String transportLibrary = (String) properties.get("blacktie."
 				+ serviceName + ".transportLib");
 
+		if (transportLibrary == null) {
+			throw new ConfigurationException("Transport library for "
+					+ serviceName + " was not defined");
+		}
 		// Determine the transport class to load
 		String className = null;
 		if (transportLibrary.contains("corba")) {

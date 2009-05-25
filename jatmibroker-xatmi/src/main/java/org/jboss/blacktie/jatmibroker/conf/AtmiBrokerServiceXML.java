@@ -62,7 +62,7 @@ public class AtmiBrokerServiceXML {
 
 		log.debug("read configuration from " + configDir + " directory");
 
-		XMLServiceHandler handler = new XMLServiceHandler(serviceName, prop);
+		XMLServiceHandler handler = new XMLServiceHandler(serverName, serviceName, prop);
 		XMLParser xmlservice = new XMLParser(handler, "Service.xsd");
 		xmlservice.parse(new File(serviceXML));
 

@@ -58,7 +58,6 @@ public class XMLParserTest extends TestCase {
 
 		assertTrue(server.equals(prop.getProperty("blacktie.BAR.server")));
 		assertTrue(transport.equals(prop.getProperty("blacktie.BAR.transportLib")));
-		assertTrue(size.equals(prop.getProperty("blacktie.BAR.size")));
 		assertTrue(function.equals(prop.getProperty("blacktie.BAR.function_name")));
 		assertTrue(library.equals(prop.getProperty("blacktie.BAR.library_name")));
 		assertTrue(advertised.equals(prop.getProperty("blacktie.BAR.advertised")));
@@ -67,6 +66,8 @@ public class XMLParserTest extends TestCase {
 		assertTrue(args.equals(prop.getProperty("blacktie.orb.args")));
 		assertTrue(arg1.equals(prop.getProperty("blacktie.orb.arg.1")));
 		assertTrue(arg2.equals(prop.getProperty("blacktie.orb.arg.2")));
+		String property = prop.getProperty("blacktie.BAR.size");
+		assertTrue(size.equals(property));
 	}
 
 	public void testServerXML() throws Exception {

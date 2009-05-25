@@ -37,7 +37,6 @@ public class BlacktieServiceTestCase extends TestCase {
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
 		connection.close();
-		server.tpunadvertise("EchoService");
 		server.close();
 	}
 

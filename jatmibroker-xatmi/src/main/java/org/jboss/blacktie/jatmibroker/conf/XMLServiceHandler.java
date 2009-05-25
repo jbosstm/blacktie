@@ -40,13 +40,11 @@ public class XMLServiceHandler extends DefaultHandler {
 	private String serviceName;
 	private Properties prop;
 
-	XMLServiceHandler(String serviceName) {
-		prop = new Properties();
-		this.serviceName = serviceName;
-	}
+	private String serverName;
 
-	XMLServiceHandler(String serviceName, Properties prop) {
+	XMLServiceHandler(String serverName, String serviceName, Properties prop) {
 		this.prop = prop;
+		this.serverName = serverName;
 		this.serviceName = serviceName;
 	}
 
@@ -69,25 +67,34 @@ public class XMLServiceHandler extends DefaultHandler {
 			String lib_key = key + ".library_name";
 			String ad_key = key + ".advertised";
 
-			if(atts != null){
-				for(int i = 0; i < atts.getLength(); i++){
-					if(atts.getLocalName(i).equals("function_name")){
+			if (atts != null) {
+				for (int i = 0; i < atts.getLength(); i++) {
+					String attsLocalName = atts.getLocalName(i);
+					if (attsLocalName.equals("function_name")) {
 						String function_name = atts.getValue(i);
 						prop.put(func_key, function_name);
-					} else if(atts.getLocalName(i).equals("library_name")){
+					} else if (atts.getLocalName(i).equals("library_name")) {
 						String library_name = atts.getValue(i);
 						prop.put(lib_key, library_name);
-					} else if(atts.getLocalName(i).equals("advertised")) {
+					} else if (atts.getLocalName(i).equals("advertised")) {
 						String advertised = atts.getValue(i);
 						prop.put(ad_key, advertised);
+						String skey = "blacktie." + serverName + ".services";
+						String object = (String) prop.get(skey);
+						if (object == null) {
+							object = serviceName;
+						} else {
+							object = new String(object + "," + serviceName);
+						}
+						prop.put(skey, object);
 					}
 				}
 			}
 
-			if(prop.get(func_key) == null) {
+			if (prop.get(func_key) == null) {
 				prop.put(func_key, serviceName);
 			}
-		} else if(SIZE.equals(localName)) {
+		} else if (SIZE.equals(localName)) {
 			sizeElement = SIZE;
 		}
 	}
@@ -96,7 +103,7 @@ public class XMLServiceHandler extends DefaultHandler {
 			throws SAXException {
 		if (SERVICE_NAME.equals(localName)) {
 			serviceElement = "";
-		} else if(SIZE.equals(localName)) {
+		} else if (SIZE.equals(localName)) {
 			sizeElement = "";
 		}
 	}

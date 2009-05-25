@@ -18,11 +18,13 @@
 package org.jboss.blacktie.jatmibroker.server;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.StringTokenizer;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -93,6 +95,19 @@ public class AtmiBrokerServer extends ServerPOA {
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Could not bind server", t);
 		}
+
+		String services = (String) properties.get("blacktie." + serverName
+				+ ".services");
+		if (services != null) {
+			StringTokenizer st = new StringTokenizer(services, ",", false);
+			while (st.hasMoreElements()) {
+				String serviceName = st.nextToken();
+				String functionName = (String) properties.get("blacktie."
+						+ serviceName + ".function_name");
+				tpadvertise(serviceName, functionName);
+			}
+		}
+
 	}
 
 	public void close() throws ConnectionException {
