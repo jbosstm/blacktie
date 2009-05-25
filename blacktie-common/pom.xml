@@ -185,7 +185,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.blacktie</groupId>
-				<artifactId>ejb-connector</artifactId>
+				<artifactId>blacktie-xsd</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 		</dependencies>

@@ -18,6 +18,7 @@
 package org.jboss.blacktie.jatmibroker.conf;
 
 import java.io.File;
+import java.net.URL;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.SAXParser;
@@ -59,9 +60,8 @@ public class XMLParser {
 
 			SchemaFactory schemaFactory = SchemaFactory
 					.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			Schema schema = schemaFactory.newSchema(new File(System
-					.getenv("BLACKTIE_SCHEMA_DIR")
-					+ "/" + xsdFilename));
+			URL resource = Thread.currentThread().getContextClassLoader().getResource(xsdFilename);
+			Schema schema = schemaFactory.newSchema(resource);
 			factory.setSchema(schema);
 
 			saxParser = factory.newSAXParser();
