@@ -127,7 +127,7 @@ public class AtmiBrokerServer extends ServerPOA {
 	 * @throws ConnectionException
 	 *             If the service cannot be advertised
 	 */
-	public void tpadvertise(String serviceName, Class service)
+	public void tpadvertise(String serviceName, String serviceClassName)
 			throws ConnectionException {
 		try {
 			log.debug("Advertising: " + serviceName);
@@ -135,7 +135,7 @@ public class AtmiBrokerServer extends ServerPOA {
 			if (!serviceData.containsKey(serviceName)) {
 				try {
 					ServiceData data = new ServiceData(connection, serviceName,
-							DEFAULT_POOL_SIZE, service);
+							DEFAULT_POOL_SIZE, serviceClassName);
 					serviceData.put(serviceName, data);
 				} catch (Throwable t) {
 					throw new ConnectionException(-1,
@@ -241,10 +241,12 @@ public class AtmiBrokerServer extends ServerPOA {
 		private List<Runnable> dispatchers = new ArrayList<Runnable>();
 
 		ServiceData(Transport connection, String serviceName, int poolSize,
-				Class callback) throws ConnectionException,
-				InstantiationException, IllegalAccessException {
+				String serviceClassName) throws ConnectionException,
+				InstantiationException, IllegalAccessException,
+				ClassNotFoundException {
 			this.receiver = connection.createReceiver(serviceName);
 
+			Class callback = Class.forName(serviceClassName);
 			for (int i = 0; i < poolSize; i++) {
 				dispatchers.add(new ServiceDispatcher(connection, serviceName,
 						(BlacktieService) callback.newInstance(), receiver));

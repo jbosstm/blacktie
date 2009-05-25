@@ -30,7 +30,7 @@ public class TestTPConversation extends TestCase {
 	public void setUp() throws ConnectionException, ConfigurationException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
 		this.server.tpadvertise("TestTPConversation",
-				TestTPConversationService.class);
+				TestTPConversationService.class.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();

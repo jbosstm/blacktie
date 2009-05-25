@@ -28,7 +28,7 @@ public class BlacktieServiceTestCase extends TestCase {
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
-		this.server.tpadvertise("EchoService", EchoServiceTestService.class);
+		this.server.tpadvertise("EchoService", EchoServiceTestService.class.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
