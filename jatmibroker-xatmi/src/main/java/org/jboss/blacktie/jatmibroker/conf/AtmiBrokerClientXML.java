@@ -42,7 +42,6 @@ public class AtmiBrokerClientXML {
 
 	public Properties getProperties(String configDir)
 			throws ConfigurationException {
-		String clientXML;
 		String envXML;
 
 		if (configDir == null) {
@@ -50,20 +49,14 @@ public class AtmiBrokerClientXML {
 		}
 
 		if (configDir != null && !configDir.equals("")) {
-			clientXML = configDir + "/" + "CLIENT.xml";
 			envXML = configDir + "/" + "Environment.xml";
 		} else {
-			clientXML = "CLIENT.xml";
 			envXML = "Environment.xml";
 		}
 
 		log.debug("read configuration from " + configDir + " directory");
 
-		XMLClientHandler handler = new XMLClientHandler(prop);
-		XMLParser xmlclient = new XMLParser(handler, "Client.xsd");
-		xmlclient.parse(new File(clientXML));
-
-		XMLEnvHandler env = new XMLEnvHandler(prop);
+		XMLEnvHandler env = new XMLEnvHandler(configDir, prop);
 		XMLParser xmlenv = new XMLParser(env, "Environment.xsd");
 		xmlenv.parse(new File(envXML));
 

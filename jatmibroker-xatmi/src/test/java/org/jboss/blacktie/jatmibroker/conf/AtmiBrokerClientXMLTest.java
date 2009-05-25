@@ -46,7 +46,7 @@ public class AtmiBrokerClientXMLTest extends TestCase {
 		String arg2 = "NameService=corbaloc::localhost:3528/NameService";
 
 		assertTrue(domain.equals(prop.getProperty("blacktie.domain.name")));
-		assertTrue(server.equals(prop.getProperty("blacktie.server.name")));
+		//assertTrue(server.equals(prop.getProperty("blacktie.server.name")));
 		assertTrue(transid.equals(prop.getProperty("blacktie.trans.factoryid")));
 		assertTrue(args.equals(prop.getProperty("blacktie.orb.args")));
 		assertTrue(arg1.equals(prop.getProperty("blacktie.orb.arg.1")));

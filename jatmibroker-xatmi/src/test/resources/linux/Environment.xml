@@ -21,6 +21,17 @@
 		<DOMAIN>fooapp</DOMAIN>
 		<NAMING_SERVICE_ID></NAMING_SERVICE_ID>
 		<TRANS_FACTORY_ID>TransactionManagerService.OTS</TRANS_FACTORY_ID>
+		<SERVER_NAMES>
+			<SERVER name='foo'>
+				<SERVICE_NAMES>
+					<SERVICE name='BAR' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='test_X_OCTET' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='test_X_C_TYPE' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='EchoService' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='TestTPConversation' transportLibrary='libatmibroker-corba.so'/>
+				</SERVICE_NAMES>
+			</SERVER>
+		</SERVER_NAMES>
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
 				<NAME>TransportLibrary</NAME>

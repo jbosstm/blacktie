@@ -35,11 +35,15 @@ public class XMLEnvHandler extends DefaultHandler {
 	private final String TRANS_FACTORY_ID = "TRANS_FACTORY_ID";
 	private final String ENV_VARIABLES = "ENV_VARIABLES";
 	private final String ENV_VARIABLE = "ENV_VARIABLE";
+	private final String SERVER_NAME = "SERVER";
+	private final String SERVICE_NAME = "SERVICE";
 	private final String NAME = "NAME";
 	private final String VALUE = "VALUE";
 
 	private String domainElement;
 	private String transIDElement;
+	private String serverElement;
+	private String serviceElement;
 	private String varsElement;
 	private String varElement;
 	private String nameElement;
@@ -51,12 +55,17 @@ public class XMLEnvHandler extends DefaultHandler {
 	private String lastName;
 	private String lastValue;
 
-	public XMLEnvHandler() {
+	private String serverName;
+	private String configDir;
+
+	public XMLEnvHandler(String configDir) {
 		prop = new Properties();
+		this.configDir = configDir;
 	}
 
-	public XMLEnvHandler(Properties prop) {
+	public XMLEnvHandler(String configDir, Properties prop) {
 		this.prop = prop;
+		this.configDir = configDir;
 	}
 
 	public Properties getProperty() {
@@ -113,6 +122,37 @@ public class XMLEnvHandler extends DefaultHandler {
 			isORBOPT = false;
 		} else if (VALUE.equals(localName)) {
 			valueElement = VALUE;
+		} else if(SERVER_NAME.equals(localName)) {
+			serverElement = SERVER_NAME;
+			if(atts != null){
+				for(int i = 0; i < atts.getLength(); i++){
+					if(atts.getLocalName(i).equals("name")){
+						serverName = atts.getValue(i);
+					}
+				}
+			}
+		} else if(SERVICE_NAME.equals(localName)) {
+			serviceElement = SERVICE_NAME;
+			String serviceName = null;
+
+			if(atts != null){
+				for(int i = 0; i < atts.getLength(); i++){
+					if(atts.getLocalName(i).equals("name")){
+						serviceName = atts.getValue(i);
+						String skey = "blacktie." + serviceName + ".server";
+						prop.put(skey, serverName);
+					} else if(atts.getLocalName(i).equals("transportLibrary")) {
+						String transport = atts.getValue(i);
+						String key = "blacktie." + serviceName + ".transportLib";
+						prop.put(key, transport);
+					}
+				}
+			}
+			try {
+				AtmiBrokerServiceXML xml = new AtmiBrokerServiceXML(serverName, serviceName, prop);
+				xml.getProperties(configDir);
+			} catch (ConfigurationException e) {
+			}
 		}
 	}
 
@@ -130,6 +170,10 @@ public class XMLEnvHandler extends DefaultHandler {
 			nameElement = "";
 		} else if (VALUE.equals(localName)) {
 			valueElement = "";
+		} else if(SERVER_NAME.equals(localName)) {
+			serverElement = "";
+		} else if(SERVICE_NAME.equals(localName)) {
+			serviceElement = "";
 		}
 	}
 }

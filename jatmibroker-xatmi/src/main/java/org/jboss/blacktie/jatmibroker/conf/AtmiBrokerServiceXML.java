@@ -23,56 +23,48 @@ import java.util.Properties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-public class AtmiBrokerServerXML {
+public class AtmiBrokerServiceXML {
 	private static final Logger log = LogManager
-			.getLogger(AtmiBrokerServerXML.class);
+			.getLogger(AtmiBrokerServiceXML.class);
 	private Properties prop;
-	String serverName;
+	private String serverName;
+	private String serviceName;
 
-	public AtmiBrokerServerXML(String serverName) {
-		if (serverName == null) {
-			serverName = "default";
-		}
-		this.serverName = serverName;
+	public AtmiBrokerServiceXML(String serverName, String serviceName) {
 		prop = new Properties();
-	}
-
-	public AtmiBrokerServerXML(String serverName, Properties prop) {
-		if (serverName == null) {
-			serverName = "default";
-		}
 		this.serverName = serverName;
-		this.prop = prop;
+		this.serviceName = serviceName;
 	}
 
-	public Properties getProperties() throws Exception {
+	public AtmiBrokerServiceXML(String serverName, String serviceName, Properties prop) {
+		this.prop = prop;
+		this.serverName = serverName;
+		this.serviceName = serviceName;
+	}
+
+	public Properties getProperties() throws ConfigurationException {
 		return getProperties(null);
 	}
 
 	public Properties getProperties(String configDir)
 			throws ConfigurationException {
-		String serverXML;
-		String envXML;
+		String serviceXML;
 
 		if (configDir == null) {
 			configDir = System.getenv("BLACKTIE_CONFIGURATION_DIR");
 		}
 
 		if (configDir != null && !configDir.equals("")) {
-			serverXML = configDir + "/" + serverName + "/" + "SERVER.xml";
-			envXML = configDir + "/" + "Environment.xml";
+			serviceXML = configDir + "/" + serverName + "/" + serviceName +".xml";
 		} else {
-			serverXML = serverName + "/" + "SERVER.xml";
-			envXML = "Environment.xml";
+			serviceXML = serverName + "/" + serviceName +".xml";
 		}
 
-		XMLServerHandler handler = new XMLServerHandler(prop);
-		XMLParser xmlserver = new XMLParser(handler, "Server.xsd");
-		xmlserver.parse(new File(serverXML));
+		log.debug("read configuration from " + configDir + " directory");
 
-		XMLEnvHandler env = new XMLEnvHandler(configDir, prop);
-		XMLParser xmlenv = new XMLParser(env, "Environment.xsd");
-		xmlenv.parse(new File(envXML));
+		XMLServiceHandler handler = new XMLServiceHandler(serviceName, prop);
+		XMLParser xmlservice = new XMLParser(handler, "Service.xsd");
+		xmlservice.parse(new File(serviceXML));
 
 		return prop;
 	}

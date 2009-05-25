@@ -19,6 +19,8 @@ package org.jboss.blacktie.jatmibroker.conf;
 
 import java.io.File;
 import java.util.Properties;
+import java.util.Collections;
+import java.util.HashMap;
 
 import junit.framework.TestCase;
 
@@ -37,7 +39,7 @@ public class XMLParserTest extends TestCase {
 	public void testEnvironmentXML() throws Exception {
 		Properties prop = new Properties();
 
-		XMLEnvHandler handler = new XMLEnvHandler(prop);
+		XMLEnvHandler handler = new XMLEnvHandler("linux", prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 		xmlenv.parse(new File("linux/Environment.xml"));
 
@@ -46,7 +48,20 @@ public class XMLParserTest extends TestCase {
 		String args = "2";
 		String arg1 = "-ORBInitRef";
 		String arg2 = "NameService=corbaloc::localhost:3528/NameService";
+		String server = "foo";
+		String serviceName = "BAR";
+		String transport = "libatmibroker-corba.so";
+		String library = "libBAR.so";
+		String function = "BAR";
+		String advertised = "false";
+		String size = "1";
 
+		assertTrue(server.equals(prop.getProperty("blacktie.BAR.server")));
+		assertTrue(transport.equals(prop.getProperty("blacktie.BAR.transportLib")));
+		assertTrue(size.equals(prop.getProperty("blacktie.BAR.size")));
+		assertTrue(function.equals(prop.getProperty("blacktie.BAR.function_name")));
+		assertTrue(library.equals(prop.getProperty("blacktie.BAR.library_name")));
+		assertTrue(advertised.equals(prop.getProperty("blacktie.BAR.advertised")));
 		assertTrue(domain.equals(prop.getProperty("blacktie.domain.name")));
 		assertTrue(transid.equals(prop.getProperty("blacktie.trans.factoryid")));
 		assertTrue(args.equals(prop.getProperty("blacktie.orb.args")));
