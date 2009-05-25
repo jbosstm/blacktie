@@ -23,9 +23,11 @@ import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public abstract class TransportFactory {
-	public static TransportFactory loadTransportFactory(Properties properties)
-			throws ConfigurationException, ConnectionException {
-		String transportLibrary = (String) properties.get("TransportLibrary");
+	public static TransportFactory loadTransportFactory(String serviceName,
+			Properties properties) throws ConfigurationException,
+			ConnectionException {
+		String transportLibrary = (String) properties.get("blacktie."
+				+ serviceName + ".transportLib");
 
 		// Determine the transport class to load
 		String className = null;

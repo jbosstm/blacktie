@@ -54,14 +54,13 @@ public class AtmiBrokerServer extends ServerPOA {
 	private Map<String, ServiceData> serviceData = new HashMap<String, ServiceData>();
 	private boolean bound;
 	private OrbManagement orbManagement;
-	private Transport connection;
-	private static final int DEFAULT_POOL_SIZE = 5;
+	private Properties properties;
+	private static final String DEFAULT_POOL_SIZE = "5";
 
 	public AtmiBrokerServer(String serverName, String configurationDir)
 			throws ConfigurationException, ConnectionException {
 		this.serverName = serverName;
 
-		Properties properties = null;
 		AtmiBrokerServerXML server = new AtmiBrokerServerXML(serverName);
 		properties = server.getProperties(configurationDir);
 
@@ -94,9 +93,6 @@ public class AtmiBrokerServer extends ServerPOA {
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Could not bind server", t);
 		}
-
-		connection = TransportFactory.loadTransportFactory(properties)
-				.createTransport();
 	}
 
 	public void close() throws ConnectionException {
@@ -134,8 +130,8 @@ public class AtmiBrokerServer extends ServerPOA {
 
 			if (!serviceData.containsKey(serviceName)) {
 				try {
-					ServiceData data = new ServiceData(connection, serviceName,
-							DEFAULT_POOL_SIZE, serviceClassName);
+					ServiceData data = new ServiceData(serviceName,
+							serviceClassName);
 					serviceData.put(serviceName, data);
 				} catch (Throwable t) {
 					throw new ConnectionException(-1,
@@ -239,15 +235,23 @@ public class AtmiBrokerServer extends ServerPOA {
 	private class ServiceData {
 		private Receiver receiver;
 		private List<Runnable> dispatchers = new ArrayList<Runnable>();
+		private Transport connection;
 
-		ServiceData(Transport connection, String serviceName, int poolSize,
-				String serviceClassName) throws ConnectionException,
-				InstantiationException, IllegalAccessException,
-				ClassNotFoundException {
+		ServiceData(String serviceName, String serviceClassName)
+				throws ConnectionException, InstantiationException,
+				IllegalAccessException, ClassNotFoundException,
+				ConfigurationException {
+
+			String sizeS = properties.getProperty("blacktie." + serviceName
+					+ ".size", DEFAULT_POOL_SIZE);
+			int size = Integer.parseInt(sizeS);
+
+			connection = TransportFactory.loadTransportFactory(serviceName,
+					properties).createTransport();
 			this.receiver = connection.createReceiver(serviceName);
 
 			Class callback = Class.forName(serviceClassName);
-			for (int i = 0; i < poolSize; i++) {
+			for (int i = 0; i < size; i++) {
 				dispatchers.add(new ServiceDispatcher(connection, serviceName,
 						(BlacktieService) callback.newInstance(), receiver));
 			}

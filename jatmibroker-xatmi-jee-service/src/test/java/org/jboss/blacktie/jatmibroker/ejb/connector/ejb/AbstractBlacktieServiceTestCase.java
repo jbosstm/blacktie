@@ -39,7 +39,7 @@ public class AbstractBlacktieServiceTestCase extends TestCase {
 		this.server.tpadvertise("EchoService", EchoServiceTestService.class.getName());
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
-		connection = connectionFactory.getConnection("", "");
+		connection = connectionFactory.getConnection();
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {

@@ -36,7 +36,7 @@ public class ServiceDispatcher extends Service implements Runnable {
 
 	ServiceDispatcher(Transport transport, String serviceName,
 			BlacktieService callback, Receiver receiver) {
-		super();
+		super(serviceName);
 		this.callback = callback;
 		this.receiver = receiver;
 		thread = new Thread(this);

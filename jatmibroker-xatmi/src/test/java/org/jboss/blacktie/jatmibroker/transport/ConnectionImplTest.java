@@ -46,7 +46,7 @@ public class ConnectionImplTest extends TestCase {
 		Properties properties = null;
 		properties = xml.getProperties();
 
-		Transport proxy = TransportFactory.loadTransportFactory(properties)
+		Transport proxy = TransportFactory.loadTransportFactory("BAR", properties)
 				.createTransport();
 		Sender serviceFactory = proxy.getSender("BAR");
 

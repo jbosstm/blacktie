@@ -19,6 +19,10 @@ public abstract class MDBBlacktieService extends Service implements
 	private static final Logger log = LogManager
 			.getLogger(MDBBlacktieService.class);
 
+	public MDBBlacktieService(String name) {
+		super(name);
+	}
+
 	public void onMessage(Message message) {
 		try {
 			BytesMessage bytesMessage = ((BytesMessage) message);

@@ -31,6 +31,11 @@ import org.jboss.blacktie.jatmibroker.transport.TransportFactory;
 public abstract class Service implements BlacktieService {
 	private static final Logger log = LogManager.getLogger(Service.class);
 	private Transport transport;
+	private String name;
+	
+	public Service(String name) {
+		this.name = name;
+	}
 
 	private synchronized Transport getTransport()
 			throws ConfigurationException, ConnectionException {
@@ -38,7 +43,7 @@ public abstract class Service implements BlacktieService {
 			Properties properties = null;
 			AtmiBrokerClientXML xml = new AtmiBrokerClientXML();
 			properties = xml.getProperties();
-			transport = TransportFactory.loadTransportFactory(properties)
+			transport = TransportFactory.loadTransportFactory(name, properties)
 					.createTransport();
 		}
 		return transport;

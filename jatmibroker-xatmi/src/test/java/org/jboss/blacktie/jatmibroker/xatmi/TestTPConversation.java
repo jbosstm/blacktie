@@ -34,7 +34,7 @@ public class TestTPConversation extends TestCase {
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
-		connection = connectionFactory.getConnection("", "");
+		connection = connectionFactory.getConnection();
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {

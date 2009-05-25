@@ -54,8 +54,8 @@ public class ConnectionFactory {
 	 * @return The connection
 	 * @throws ConnectionException
 	 */
-	public Connection getConnection(String username, String password)
+	public Connection getConnection()
 			throws ConnectionException {
-		return new Connection(properties, username, password);
+		return new Connection(properties);
 	}
 }

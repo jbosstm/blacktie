@@ -34,10 +34,6 @@
 		</SERVER_NAMES>
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
-				<NAME>TransportLibrary</NAME>
-				<VALUE>libatmibroker-stomp.so</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
 				<NAME>LOG4CXXCONFIG</NAME>
 				<VALUE>log4cxx.properties</VALUE>
 			</ENV_VARIABLE>

@@ -37,11 +37,6 @@ public class Connection {
 
 	private static final Logger log = LogManager.getLogger(Connection.class);
 
-	/**
-	 * A reference to the proxy to issue calls on
-	 */
-	private Transport transport;
-
 	// AVAILABLE FLAGS
 	int TPNOBLOCK = 0x00000001;
 	int TPSIGRSTRT = 0x00000002;
@@ -76,10 +71,14 @@ public class Connection {
 
 	private static int nextId;
 
+	private Map<String, Transport> transports = new HashMap<String, Transport>();
+
 	/**
 	 * Any local temporary queues created in this connection
 	 */
 	private Map<java.lang.Integer, Receiver> temporaryQueues = new HashMap<java.lang.Integer, Receiver>();
+
+	private Properties properties;
 
 	/**
 	 * The connection
@@ -89,15 +88,8 @@ public class Connection {
 	 * @param password
 	 * @throws ConnectionException
 	 */
-	Connection(Properties properties, String username, String password)
-			throws ConnectionException {
-		try {
-
-			transport = TransportFactory.loadTransportFactory(properties)
-					.createTransport();
-		} catch (ConfigurationException e) {
-			throw new ConnectionException(-1, "Could not load properties", e);
-		}
+	Connection(Properties properties) {
+		this.properties = properties;
 	}
 
 	/**
@@ -131,10 +123,17 @@ public class Connection {
 	public int tpacall(String svc, Buffer buffer, int len, int flags)
 			throws ConnectionException {
 		int correlationId = nextId++;
-		Receiver endpoint = getReceiver(correlationId);
+		Receiver endpoint = null;
+		try {
+			endpoint = getTransport(svc).createReceiver();
+			temporaryQueues.put(correlationId, endpoint);
+		} catch (Throwable t) {
+			throw new ConnectionException(-1,
+					"Could not create a temporary queue", t);
+		}
 		// TODO HANDLE TRANSACTION
-		transport.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
-				buffer.getData(), len, correlationId, flags);
+		getTransport(svc).getSender(svc).send(endpoint.getReplyTo(), (short) 0,
+				0, buffer.getData(), len, correlationId, flags);
 		return correlationId;
 	}
 
@@ -147,7 +146,7 @@ public class Connection {
 	 *            The flags to use
 	 */
 	public void tpcancel(int cd, int flags) throws ConnectionException {
-		Receiver endpoint = getReceiver(cd);
+		Receiver endpoint = temporaryQueues.get(cd);
 		endpoint.close();
 	}
 
@@ -161,7 +160,7 @@ public class Connection {
 	 * @return The response from the server
 	 */
 	public Response tpgetrply(int cd, int flags) throws ConnectionException {
-		Receiver endpoint = getReceiver(cd);
+		Receiver endpoint = temporaryQueues.get(cd);
 		Message m = endpoint.receive(flags);
 		// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
 		Buffer received = new Buffer(null, null);
@@ -184,8 +183,16 @@ public class Connection {
 			throws ConnectionException {
 		// Initialate the session
 		int cd = tpacall(svc, buffer, len, flags);
+		Receiver endpoint = null;
+		try {
+			endpoint = getTransport(svc).createReceiver();
+			temporaryQueues.put(cd, endpoint);
+		} catch (Throwable t) {
+			throw new ConnectionException(-1,
+					"Could not create a temporary queue", t);
+		}
 		// Return a handle to allow the connection to send/receive data on
-		return new Session(transport, cd, null, getReceiver(cd));
+		return new Session(getTransport(svc), cd, null, endpoint);
 	}
 
 	/**
@@ -199,21 +206,28 @@ public class Connection {
 			Receiver receiver = receivers.next();
 			receiver.close();
 		}
-		transport.close();
+		temporaryQueues.clear();
+		Iterator<Transport> transports = this.transports.values().iterator();
+		while (transports.hasNext()) {
+			Transport transport = transports.next();
+			transport.close();
+		}
+		this.transports.clear();
 	}
 
-	private Receiver getReceiver(int id) throws ConnectionException {
-		Receiver receiver = temporaryQueues.get(id);
-		if (receiver == null) {
+	private Transport getTransport(String serviceName)
+			throws ConnectionException {
+		Transport toReturn = transports.get(serviceName);
+		if (toReturn == null) {
 			try {
-				receiver = transport.createReceiver();
-				temporaryQueues.put(id, receiver);
-			} catch (Throwable t) {
-				throw new ConnectionException(-1,
-						"Could not create a temporary queue", t);
+				toReturn = TransportFactory.loadTransportFactory(serviceName,
+						properties).createTransport();
+			} catch (ConfigurationException e) {
+				throw new ConnectionException(-1, "Could not load properties",
+						e);
 			}
+			transports.put(serviceName, toReturn);
 		}
-		return receiver;
-
+		return toReturn;
 	}
 }

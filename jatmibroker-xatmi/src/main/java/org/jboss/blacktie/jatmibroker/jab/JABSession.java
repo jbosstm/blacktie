@@ -37,15 +37,14 @@ public class JABSession {
 	 * @param aJABSessionAttributes
 	 * @throws JABException
 	 */
-	public JABSession(JABSessionAttributes aJABSessionAttributes,
-			String username, String password) throws JABException {
+	public JABSession(JABSessionAttributes aJABSessionAttributes) throws JABException {
 		super();
 		log.debug("JABSession constructor");
 		try {
 			jabSessionAttributes = aJABSessionAttributes;
 			ConnectionFactory connectionFactory = ConnectionFactory
 					.getConnectionFactory();
-			connection = connectionFactory.getConnection(username, password);
+			connection = connectionFactory.getConnection();
 		} catch (Exception e) {
 			throw new JABException("Error connect to domain: "
 					+ jabSessionAttributes.getProperties().get(
