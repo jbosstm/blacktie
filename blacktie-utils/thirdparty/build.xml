@@ -94,6 +94,11 @@
 		<install-file-artifact filename="${jbossas.lib.dir}/concurrent.jar" groupId="jboss" artifactId="concurrent" name="concurrent" version="${jbossas.version}" description="concurrent" />
 		<install-file-artifact filename="${jbossas.lib.dir}/jnp-client.jar" groupId="jboss" artifactId="jnp-client" name="jnp-client" version="${jbossas.version}" description="jnp-client" />
 		<install-file-artifact filename="${jbossas.lib.dir}/jacorb.jar" groupId="jboss" artifactId="jacorb" name="jacorb" version="${jbossas.version}" description="jacorb" />
+		<install-file-artifact filename="${jbossas.lib.dir}/javassist.jar" groupId="jboss" artifactId="javassist" name="javassist" version="${jbossas.version}" description="javassist" />
+		<install-file-artifact filename="${jbossas.lib.dir}/trove.jar" groupId="jboss" artifactId="trove" name="trove" version="${jbossas.version}" description="trove" />
+		<install-file-artifact filename="${jbossas.lib.dir}/jbossall-client.jar" groupId="jboss" artifactId="jbossall-client" name="jbossall-client" version="${jbossas.version}" description="jbossall-client" />
+		<install-file-artifact filename="${jbossas.lib.dir}/jboss-aop-client.jar" groupId="jboss" artifactId="jboss-aop-client" name="jboss-aop-client" version="${jbossas.version}" description="jboss-aop-client" />
+		<install-file-artifact filename="${jbossas.lib.dir}/jboss-mdr.jar" groupId="jboss" artifactId="jboss-mdr" name="jboss-mdr" version="${jbossas.version}" description="jboss-mdr" />
 	</target>
 
 	<target name="ace-lib-linux" if="linux">
