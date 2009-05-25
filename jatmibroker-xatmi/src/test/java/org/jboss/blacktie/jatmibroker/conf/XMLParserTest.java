@@ -36,6 +36,22 @@ public class XMLParserTest extends TestCase {
 	public void tearDown() {
 	}
 
+	public void testWrongEnvironmentXML() throws ConfigurationException {
+		Properties prop = new Properties();
+		XMLEnvHandler handler = new XMLEnvHandler("linux", prop);
+		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
+		try {
+			if (xmlenv.parse(new File("WrongEnvironment.xml"))) {
+				fail("Should have thrown a parser exception");
+			} else {
+				fail("Should have found the file");
+			}
+		} catch (ConfigurationException e) {
+			// THIS IS OK
+		}
+
+	}
+
 	public void testEnvironmentXML() throws Exception {
 		Properties prop = new Properties();
 
@@ -57,10 +73,14 @@ public class XMLParserTest extends TestCase {
 		String size = "1";
 
 		assertTrue(server.equals(prop.getProperty("blacktie.BAR.server")));
-		assertTrue(transport.equals(prop.getProperty("blacktie.BAR.transportLib")));
-		assertTrue(function.equals(prop.getProperty("blacktie.BAR.function_name")));
-		assertTrue(library.equals(prop.getProperty("blacktie.BAR.library_name")));
-		assertTrue(advertised.equals(prop.getProperty("blacktie.BAR.advertised")));
+		assertTrue(transport.equals(prop
+				.getProperty("blacktie.BAR.transportLib")));
+		assertTrue(function.equals(prop
+				.getProperty("blacktie.BAR.function_name")));
+		assertTrue(library
+				.equals(prop.getProperty("blacktie.BAR.library_name")));
+		assertTrue(advertised.equals(prop
+				.getProperty("blacktie.BAR.advertised")));
 		assertTrue(domain.equals(prop.getProperty("blacktie.domain.name")));
 		assertTrue(transid.equals(prop.getProperty("blacktie.trans.factoryid")));
 		assertTrue(args.equals(prop.getProperty("blacktie.orb.args")));
@@ -69,23 +89,23 @@ public class XMLParserTest extends TestCase {
 		String property = prop.getProperty("blacktie.BAR.size");
 		assertTrue(size.equals(property));
 	}
-//
-//	public void testServerXML() throws Exception {
-//		Properties prop = new Properties();
-//
-//		XMLServerHandler handler = new XMLServerHandler(prop);
-//		XMLParser xmlserver = new XMLParser(handler, "Server.xsd");
-//		xmlserver.parse(new File("linux/foo/SERVER.xml"));
-//	}
-//
-//	public void testClientXML() throws Exception {
-//		Properties prop = new Properties();
-//
-//		XMLClientHandler handler = new XMLClientHandler(prop);
-//		XMLParser xmlclient = new XMLParser(handler, "Client.xsd");
-//		xmlclient.parse(new File("linux/CLIENT.xml"));
-//
-//		String server = "foo";
-//		assertTrue(server.equals(prop.getProperty("blacktie.server.name")));
-//	}
+	//
+	// public void testServerXML() throws Exception {
+	// Properties prop = new Properties();
+	//
+	// XMLServerHandler handler = new XMLServerHandler(prop);
+	// XMLParser xmlserver = new XMLParser(handler, "Server.xsd");
+	// xmlserver.parse(new File("linux/foo/SERVER.xml"));
+	// }
+	//
+	// public void testClientXML() throws Exception {
+	// Properties prop = new Properties();
+	//
+	// XMLClientHandler handler = new XMLClientHandler(prop);
+	// XMLParser xmlclient = new XMLParser(handler, "Client.xsd");
+	// xmlclient.parse(new File("linux/CLIENT.xml"));
+	//
+	// String server = "foo";
+	// assertTrue(server.equals(prop.getProperty("blacktie.server.name")));
+	// }
 }

@@ -77,13 +77,15 @@ public class XMLParser {
 	 * @param file
 	 *            - File
 	 */
-	public void parse(File file) throws ConfigurationException {
+	public boolean parse(File file) throws ConfigurationException {
 		if (file.exists()) {
 			try {
 				saxParser.parse(file, handler);
+				return true;
 			} catch (Throwable t) {
 				throw new ConfigurationException("Errors parse : " + file, t);
 			}
 		}
+		return false;
 	}
 }
