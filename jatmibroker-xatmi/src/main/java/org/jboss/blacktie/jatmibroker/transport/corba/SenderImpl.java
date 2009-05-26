@@ -37,7 +37,11 @@ public class SenderImpl implements Sender {
 
 	public void send(Object replyTo, short rval, int rcode, byte[] data,
 			int len, int correlationId, int flags) {
-		queue.send((String) replyTo, rval, rcode, data, len + 1, correlationId, flags);
+		String toReplyTo = (String) replyTo;
+		if (toReplyTo == null) {
+			toReplyTo = "";
+		}
+		queue.send(toReplyTo, rval, rcode, data, len + 1, correlationId, flags);
 	}
 
 	public void close() {

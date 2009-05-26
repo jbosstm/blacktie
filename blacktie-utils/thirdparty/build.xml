@@ -99,6 +99,7 @@
 		<install-file-artifact filename="${jbossas.lib.dir}/jbossall-client.jar" groupId="jboss" artifactId="jbossall-client" name="jbossall-client" version="${jbossas.version}" description="jbossall-client" />
 		<install-file-artifact filename="${jbossas.lib.dir}/jboss-aop-client.jar" groupId="jboss" artifactId="jboss-aop-client" name="jboss-aop-client" version="${jbossas.version}" description="jboss-aop-client" />
 		<install-file-artifact filename="${jbossas.lib.dir}/jboss-mdr.jar" groupId="jboss" artifactId="jboss-mdr" name="jboss-mdr" version="${jbossas.version}" description="jboss-mdr" />
+		<install-file-artifact filename="${jbossas.lib.dir}/jboss-logging-log4j.jar" groupId="jboss" artifactId="jboss-logging-log4j" name="jboss-logging-log4j" version="${jbossas.version}" description="jboss-logging-log4j" />
 	</target>
 
 	<target name="ace-lib-linux" if="linux">

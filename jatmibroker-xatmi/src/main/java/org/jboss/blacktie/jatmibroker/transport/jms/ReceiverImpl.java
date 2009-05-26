@@ -63,7 +63,8 @@ public class ReceiverImpl implements Receiver {
 		try {
 			javax.jms.Message message = receiver.receive();
 			BytesMessage bytesMessage = ((BytesMessage) message);
-			String replyTo = message.getStringProperty("reply-to");
+//			TODO String replyTo = message.getStringProperty("reply-to");
+			Destination replyTo = message.getJMSReplyTo();
 			int len = (int) bytesMessage.getBodyLength();
 			String serviceName = message.getStringProperty("serviceName");
 			int flags = new Integer(message.getStringProperty("messageflags"));

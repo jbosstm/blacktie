@@ -68,7 +68,7 @@ public abstract class Service implements BlacktieService {
 		// TODO THIS SHOULD INVOKE THE CLIENT HANDLER
 		// odata.value = serviceRequest.getBytes();
 		// olen.value = serviceRequest.getLength();
-		sender.send("", response.getRval(), response.getRcode(), response
+		sender.send(null, response.getRval(), response.getRcode(), response
 				.getBuffer().getData(), response.getLen(), response.getFlags(),
 				0);
 	}

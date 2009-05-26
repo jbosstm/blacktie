@@ -25,7 +25,7 @@
 			<SERVER name='standalone-server'>
 				<SERVICE_NAMES>
 					<SERVICE name='TestTPCall' transportLibrary='libatmibroker-corba.so'/>
-					<SERVICE name='JAVA_Converse' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='JAVA_Converse' transportLibrary='libatmibroker-stomp.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 			<SERVER name='foo'>
