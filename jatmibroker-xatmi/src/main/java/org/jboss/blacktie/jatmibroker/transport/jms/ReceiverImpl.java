@@ -37,12 +37,14 @@ public class ReceiverImpl implements Receiver {
 	private Queue destination;
 	private MessageConsumer receiver;
 	private boolean isTemporary;
+	private int timeout = 0;
 
 	ReceiverImpl(Session session) throws JMSException {
 		destination = session.createTemporaryQueue();
 		receiver = session.createConsumer(destination);
 		isTemporary = true;
 		log.debug("Creating a consumer on: " + destination.getQueueName());
+		timeout = 2000; // TODO Make configurable
 	}
 
 	ReceiverImpl(Session session, Destination destination) throws JMSException,
@@ -63,7 +65,7 @@ public class ReceiverImpl implements Receiver {
 	public Message receive(long flagsIn) throws ConnectionException {
 		try {
 			log.debug("Receiving from: " + destination.getQueueName());
-			javax.jms.Message message = receiver.receive();
+			javax.jms.Message message = receiver.receive(timeout);
 			if (message != null) {
 				log.debug("Received from: " + destination.getQueueName());
 				BytesMessage bytesMessage = ((BytesMessage) message);

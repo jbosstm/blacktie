@@ -49,6 +49,7 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 	private byte[] activate_object;
 	private String queueName;
 	private OrbManagement orbManagement;
+	private int timeout = 0;
 
 	private List<Policy> getPolicies(ORB orb, POA poa)
 			throws ConfigurationException, ConnectionException {
@@ -132,6 +133,7 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Cannot create the receiver", t);
 		}
+		timeout = 2000; // TODO Make configurable
 	}
 
 	public POA _default_POA() {
@@ -169,20 +171,20 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 		return callbackIOR;
 	}
 
-	public Message receive(long flags) {
+	public Message receive(long flags) throws ConnectionException {
 		synchronized (this) {
-			while (returnData.isEmpty()) {
+			if (returnData.isEmpty()) {
 				try {
 					if (callbackIOR != null) {
 						log.debug("Waiting" + callbackIOR);
 					}
-					wait();
+					wait(timeout);
 				} catch (InterruptedException e) {
 					log.error("Caught exception", e);
 				}
 			}
 			if (returnData.isEmpty()) {
-				return null;
+				throw new ConnectionException(-1, "Did not receive a message");
 			} else {
 				return returnData.remove(0);
 			}
@@ -204,6 +206,9 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 			m_default_poa.deactivate_object(activate_object);
 		} catch (Throwable t) {
 			log.error("Could not unbind service factory" + queueName, t);
+		}
+		synchronized (this) {
+			notify();
 		}
 	}
 
