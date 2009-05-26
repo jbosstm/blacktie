@@ -25,15 +25,13 @@ import org.omg.IOP.Encoding;
 import org.omg.PortableInterceptor.ORBInitInfo;
 import org.omg.PortableInterceptor.ORBInitializer;
 
-public class TxInitializer extends LocalObject implements
-		ORBInitializer {
+public class TxInitializer extends LocalObject implements ORBInitializer {
 
 	static TxInitializer instance;
 
 	private OrbManagement orbManagement;
 
-	private static TxInitializer get_instance()
-	{
+	private static TxInitializer get_instance() {
 		if (instance == null)
 			instance = new TxInitializer();
 
@@ -41,13 +39,12 @@ public class TxInitializer extends LocalObject implements
 	}
 
 	/**
-	 * Call this method just before initializing an orb.
-	 * Each interceptor created when the initializer runs will then have the orb
-	 * injected. In this way each intereceptor will have a reference to the orb
-	 * it is intercepting requests on behalf of.
+	 * Call this method just before initializing an orb. Each interceptor
+	 * created when the initializer runs will then have the orb injected. In
+	 * this way each intereceptor will have a reference to the orb it is
+	 * intercepting requests on behalf of.
 	 */
-	public static void setOrbManagement(OrbManagement orbManagement)
-	{
+	public static void setOrbManagement(OrbManagement orbManagement) {
 		get_instance().orbManagement = orbManagement;
 	}
 
@@ -65,11 +62,12 @@ public class TxInitializer extends LocalObject implements
 					(byte) 2 /* GIOP revision */);
 			Codec codec = info.codec_factory().create_codec(encoding);
 			info.add_client_request_interceptor(new TxRequestInterceptor(
-				orbManagement, "TxClientRequestInterceptor", codec));
+					orbManagement, "TxClientRequestInterceptor", codec));
 			info.add_server_request_interceptor(new TxRequestInterceptor(
-				orbManagement, "TxServerRequestInterceptor", codec));
+					orbManagement, "TxServerRequestInterceptor", codec));
 			info.add_ior_interceptor(new TxIORInterceptor(codec));
-			info.register_policy_factory(TxIORInterceptor.OTS_POLICY_TYPE, new OTSPolicyFactory());
+			info.register_policy_factory(TxIORInterceptor.OTS_POLICY_TYPE,
+					new OTSPolicyFactory());
 		} catch (org.omg.IOP.CodecFactoryPackage.UnknownEncoding e) {
 			throw new RuntimeException(
 					"Request initializer error - unknown encoding: ", e);
@@ -79,4 +77,3 @@ public class TxInitializer extends LocalObject implements
 		}
 	}
 }
-

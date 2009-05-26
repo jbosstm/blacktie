@@ -36,7 +36,8 @@ public class AtmiBrokerServiceXML {
 		this.serviceName = serviceName;
 	}
 
-	public AtmiBrokerServiceXML(String serverName, String serviceName, Properties prop) {
+	public AtmiBrokerServiceXML(String serverName, String serviceName,
+			Properties prop) {
 		this.prop = prop;
 		this.serverName = serverName;
 		this.serviceName = serviceName;
@@ -51,7 +52,7 @@ public class AtmiBrokerServiceXML {
 		String schemaDir;
 		schemaDir = System.getenv("BLACKTIE_SCHEMA_DIR");
 
-		if(schemaDir == null) {
+		if (schemaDir == null) {
 			throw new ConfigurationException("no BLACKTIE_SCHEMA_DIR");
 		}
 
@@ -62,15 +63,17 @@ public class AtmiBrokerServiceXML {
 		}
 
 		if (configDir != null && !configDir.equals("")) {
-			serviceXML = configDir + "/" + serverName + "/" + serviceName +".xml";
+			serviceXML = configDir + "/" + serverName + "/" + serviceName
+					+ ".xml";
 		} else {
-			serviceXML = serverName + "/" + serviceName +".xml";
+			serviceXML = serverName + "/" + serviceName + ".xml";
 		}
 
 		log.debug("read configuration from " + configDir + " directory");
 
 		String xsdFile = schemaDir + "/Service.xsd";
-		XMLServiceHandler handler = new XMLServiceHandler(serverName, serviceName, prop);
+		XMLServiceHandler handler = new XMLServiceHandler(serverName,
+				serviceName, prop);
 		XMLParser xmlservice = new XMLParser(handler, xsdFile);
 		xmlservice.parse(new File(serviceXML));
 

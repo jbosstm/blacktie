@@ -7,10 +7,8 @@ import org.omg.CORBA.Policy;
 import org.omg.CORBA.PolicyError;
 import org.omg.PortableInterceptor.PolicyFactory;
 
-public class OTSPolicyFactory extends LocalObject implements PolicyFactory
-{
-	public Policy create_policy(int type, Any value) throws PolicyError
-	{
+public class OTSPolicyFactory extends LocalObject implements PolicyFactory {
+	public Policy create_policy(int type, Any value) throws PolicyError {
 		if (type != TxIORInterceptor.OTS_POLICY_TYPE)
 			throw new PolicyError("Wrong policy type", BAD_POLICY_TYPE.value);
 

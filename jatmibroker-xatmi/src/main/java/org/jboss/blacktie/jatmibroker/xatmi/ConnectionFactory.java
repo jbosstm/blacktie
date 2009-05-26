@@ -54,8 +54,7 @@ public class ConnectionFactory {
 	 * @return The connection
 	 * @throws ConnectionException
 	 */
-	public Connection getConnection()
-			throws ConnectionException {
+	public Connection getConnection() throws ConnectionException {
 		return new Connection(properties);
 	}
 }

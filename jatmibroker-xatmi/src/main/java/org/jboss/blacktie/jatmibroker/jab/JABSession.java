@@ -37,7 +37,8 @@ public class JABSession {
 	 * @param aJABSessionAttributes
 	 * @throws JABException
 	 */
-	public JABSession(JABSessionAttributes aJABSessionAttributes) throws JABException {
+	public JABSession(JABSessionAttributes aJABSessionAttributes)
+			throws JABException {
 		super();
 		log.debug("JABSession constructor");
 		try {

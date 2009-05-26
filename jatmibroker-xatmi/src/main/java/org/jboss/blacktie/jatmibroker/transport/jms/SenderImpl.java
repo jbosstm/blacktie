@@ -46,9 +46,9 @@ public class SenderImpl implements Sender {
 		this.session = session;
 		sender = session.createProducer(destination);
 		if (destination instanceof Queue) {
-			this.name = ((Queue)destination).getQueueName();
+			this.name = ((Queue) destination).getQueueName();
 		} else {
-			this.name = ((Topic)destination).getTopicName();
+			this.name = ((Topic) destination).getTopicName();
 		}
 		this.destination = destination;
 		service = true;

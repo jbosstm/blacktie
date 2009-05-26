@@ -23,9 +23,9 @@ import java.net.URL;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import javax.xml.transform.stream.StreamSource;
 
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -62,7 +62,8 @@ public class XMLParser {
 
 			SchemaFactory schemaFactory = SchemaFactory
 					.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			URL resource = Thread.currentThread().getContextClassLoader().getResource(xsdFilename);
+			URL resource = Thread.currentThread().getContextClassLoader()
+					.getResource(xsdFilename);
 			schema = schemaFactory.newSchema(resource);
 			factory.setSchema(schema);
 

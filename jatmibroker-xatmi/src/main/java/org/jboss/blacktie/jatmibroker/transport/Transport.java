@@ -47,8 +47,7 @@ public interface Transport {
 	 * @return
 	 * @throws ConfigurationException
 	 */
-	public Receiver getReceiver(String serviceName)
-			throws ConnectionException;
+	public Receiver getReceiver(String serviceName) throws ConnectionException;
 
 	/**
 	 * Create a receiver on a temporary queue.

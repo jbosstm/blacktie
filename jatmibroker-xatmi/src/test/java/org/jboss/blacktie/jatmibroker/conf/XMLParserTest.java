@@ -19,8 +19,6 @@ package org.jboss.blacktie.jatmibroker.conf;
 
 import java.io.File;
 import java.util.Properties;
-import java.util.Collections;
-import java.util.HashMap;
 
 import junit.framework.TestCase;
 

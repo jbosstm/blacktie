@@ -35,7 +35,8 @@ public class TxRequestInterceptor extends LocalObject implements
 
 	private OrbManagement orbManagement;
 
-	public TxRequestInterceptor(OrbManagement orbManagement, String name, Codec codec) {
+	public TxRequestInterceptor(OrbManagement orbManagement, String name,
+			Codec codec) {
 		this.orbManagement = orbManagement;
 		this.codec = codec;
 		this.name = name;
@@ -44,7 +45,7 @@ public class TxRequestInterceptor extends LocalObject implements
 			Properties properties = null;
 			properties = xml.getProperties(null);
 
-//			orbManagement = new OrbManagement(properties, false);
+			// orbManagement = new OrbManagement(properties, false);
 		} catch (Exception e) {
 			throw new RuntimeException("Could not load properties", e);
 		}
@@ -106,19 +107,15 @@ public class TxRequestInterceptor extends LocalObject implements
 	//
 
 	public void receive_request_service_contexts(ServerRequestInfo ri) {
-		log.trace("receive_request_service_contexts: "
-				+ ri.operation());
+		log.trace("receive_request_service_contexts: " + ri.operation());
 
 		try {
 			ServiceContext serviceContext = ri
 					.get_request_service_context(tx_context_id);
 			byte[] data = serviceContext.context_data;
-			log
-					.trace("receive_request_service_contexts: data: "
-							+ data);
+			log.trace("receive_request_service_contexts: data: " + data);
 		} catch (BAD_PARAM e) {
-			log
-					.debug("receive_request_service_contexts: not transactional");
+			log.debug("receive_request_service_contexts: not transactional");
 			// not a transactional request - ignore
 		} catch (SystemException e) {
 			log.error("receive_request_service_contexts error: ", e);
@@ -134,8 +131,8 @@ public class TxRequestInterceptor extends LocalObject implements
 	}
 
 	public void send_exception(ServerRequestInfo ri) {
-		log.trace("send_exception " + ri.operation()
-				+ " exception: " + ri.sending_exception());
+		log.trace("send_exception " + ri.operation() + " exception: "
+				+ ri.sending_exception());
 	}
 
 	public void send_other(ServerRequestInfo ri) {

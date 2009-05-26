@@ -93,8 +93,7 @@ public class TransportImpl implements Runnable, Transport {
 		return sender;
 	}
 
-	public Receiver getReceiver(String serviceName)
-			throws ConnectionException {
+	public Receiver getReceiver(String serviceName) throws ConnectionException {
 		log.debug("createClientCallback create client callback");
 		return new ReceiverImpl(orbManagement, serviceName);
 	}

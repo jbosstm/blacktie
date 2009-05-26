@@ -40,7 +40,8 @@ public class TxIORInterceptorInitializer extends LocalObject implements
 					(byte) 2 /* GIOP revision */);
 			Codec codec = info.codec_factory().create_codec(encoding);
 			info.add_ior_interceptor(new TxIORInterceptor(codec));
-			info.register_policy_factory(TxIORInterceptor.OTS_POLICY_TYPE, new OTSPolicyFactory());
+			info.register_policy_factory(TxIORInterceptor.OTS_POLICY_TYPE,
+					new OTSPolicyFactory());
 		} catch (Exception e) {
 			throw new RuntimeException("IOR initializer error", e);
 		}

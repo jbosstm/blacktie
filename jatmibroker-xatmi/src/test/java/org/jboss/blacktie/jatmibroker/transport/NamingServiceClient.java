@@ -23,6 +23,8 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CosNaming.Binding;
@@ -33,6 +35,8 @@ import org.omg.CosNaming.NamingContextExt;
 import org.omg.CosNaming.NamingContextExtHelper;
 
 public class NamingServiceClient extends TestCase {
+	private static final Logger log = LogManager
+			.getLogger(NamingServiceClient.class);
 
 	public void test() throws InvalidName {
 		String[] args = new String[2];
@@ -56,11 +60,9 @@ public class NamingServiceClient extends TestCase {
 
 			// check to see if this is a naming context
 			if (bindings[i].binding_type == BindingType.ncontext) {
-				System.out.println("Context: "
-						+ bindings[i].binding_name[lastIx].id);
+				log.info("Context: " + bindings[i].binding_name[lastIx].id);
 			} else {
-				System.out.println("Object: "
-						+ bindings[i].binding_name[lastIx].id);
+				log.info("Object: " + bindings[i].binding_name[lastIx].id);
 			}
 			toResolve.remove(bindings[i].binding_name[lastIx].id);
 		}

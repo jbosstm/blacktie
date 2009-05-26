@@ -70,8 +70,7 @@ public class TransportImpl implements Transport {
 		}
 	}
 
-	public Receiver getReceiver(String serviceName)
-			throws ConnectionException {
+	public Receiver getReceiver(String serviceName) throws ConnectionException {
 		try {
 			Destination destination = (Destination) context.lookup("/queue/"
 					+ serviceName);

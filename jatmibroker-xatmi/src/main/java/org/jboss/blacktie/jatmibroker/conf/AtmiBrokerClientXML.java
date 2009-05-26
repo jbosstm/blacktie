@@ -45,7 +45,7 @@ public class AtmiBrokerClientXML {
 		String schemaDir;
 		schemaDir = System.getenv("BLACKTIE_SCHEMA_DIR");
 
-		if(schemaDir == null) {
+		if (schemaDir == null) {
 			throw new ConfigurationException("no BLACKTIE_SCHEMA_DIR");
 		}
 
