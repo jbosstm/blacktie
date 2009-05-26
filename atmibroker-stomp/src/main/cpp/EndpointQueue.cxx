@@ -87,7 +87,8 @@ StompEndpointQueue::StompEndpointQueue(apr_pool_t* pool, char* serviceName) {
 	LOG4CXX_DEBUG(logger, "Sent SUB: " << queueName);
 }
 
-StompEndpointQueue::StompEndpointQueue(apr_pool_t* pool, char* connectionName, int id) {
+StompEndpointQueue::StompEndpointQueue(apr_pool_t* pool, char* connectionName,
+		int id) {
 	this->message = NULL;
 	shutdown = false;
 	lock = new SynchronizableObject();
@@ -249,38 +250,52 @@ MESSAGE StompEndpointQueue::receive(long time) {
 		}
 		if (frame != NULL) {
 			LOG4CXX_DEBUG(logger, "Received from: " << name << " Command: "
-					<< frame->command << " Body: " << frame->body);
+					<< frame->command);
 			char* control = (char*) apr_hash_get(frame->headers,
 					"messagecontrol", APR_HASH_KEY_STRING);
+			LOG4CXX_TRACE(logger, "Extracted control");
 			bool unableToAssociateTx = false;
 			if (control) {
 				LOG4CXX_TRACE(logger, "Read a control: " << control);
-				if (associate_serialized_tx((char*) "serverAdministration", (char*) control)
-						!= XA_OK) {
+				if (associate_serialized_tx((char*) "serverAdministration",
+						(char*) control) != XA_OK) {
 					LOG4CXX_ERROR(logger, "Unable to handle control");
 					setSpecific(TPE_KEY, TSS_TPESYSTEM);
 					unableToAssociateTx = true;
 				}
 			}
 			if (!unableToAssociateTx) {
+				LOG4CXX_TRACE(logger, "Ready to handle message");
 				char * correlationId = (char*) apr_hash_get(frame->headers,
 						"messagecorrelationId", APR_HASH_KEY_STRING);
+				LOG4CXX_TRACE(logger, "Extracted correlationID");
 				char * flags = (char*) apr_hash_get(frame->headers,
 						"messageflags", APR_HASH_KEY_STRING);
+				LOG4CXX_TRACE(logger, "Extracted flags");
 				char * rval = (char*) apr_hash_get(frame->headers,
 						"messagerval", APR_HASH_KEY_STRING);
+				LOG4CXX_TRACE(logger, "Extracted rval");
 				char * rcode = (char*) apr_hash_get(frame->headers,
 						"messagercode", APR_HASH_KEY_STRING);
+				LOG4CXX_TRACE(logger, "Extracted rcode");
 
 				message.len = frame->body_length;
+				LOG4CXX_TRACE(logger, "Set length");
 				message.data = frame->body;
+				LOG4CXX_TRACE(logger, "Set body");
 				message.replyto = (const char*) apr_hash_get(frame->headers,
 						"reply-to", APR_HASH_KEY_STRING);
+				LOG4CXX_TRACE(logger, "Set replyto");
 				message.correlationId = apr_atoi64(correlationId);
+				LOG4CXX_TRACE(logger, "Set corid");
 				message.flags = apr_atoi64(flags);
+				LOG4CXX_TRACE(logger, "Set flags");
 				message.rval = apr_atoi64(rval);
+				LOG4CXX_TRACE(logger, "Set rval");
 				message.rcode = apr_atoi64(rcode);
+				LOG4CXX_TRACE(logger, "Set rcode");
 				message.control = getSpecific(TSS_KEY);
+				LOG4CXX_TRACE(logger, "Set control");
 			}
 		}
 	}

@@ -72,9 +72,11 @@ public class SenderImpl implements Sender {
 			if (service) {
 				message.setStringProperty("serviceName", name);
 			}
-			message.setStringProperty("messageflags", String.valueOf(flags));
 			message.setStringProperty("messagecorrelationId", String
 					.valueOf(correlationId));
+			message.setStringProperty("messageflags", String.valueOf(flags));
+			message.setStringProperty("messagerval", String.valueOf(rval));
+			message.setStringProperty("messagercode", String.valueOf(rcode));
 			message.writeBytes(data, 0, len);
 			sender.send(message);
 		} catch (Throwable t) {
