@@ -48,7 +48,7 @@ public class SenderImpl implements Sender {
 		// TODO Auto-generated method stub
 	}
 
-	public String getName() {
+	public Object getSendTo() {
 		return name;
 	}
 }

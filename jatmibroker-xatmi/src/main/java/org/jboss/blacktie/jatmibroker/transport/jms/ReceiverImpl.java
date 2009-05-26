@@ -21,6 +21,7 @@ import javax.jms.BytesMessage;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
+import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TemporaryQueue;
 import javax.naming.NamingException;
@@ -33,27 +34,27 @@ import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public class ReceiverImpl implements Receiver {
 	private static final Logger log = LogManager.getLogger(ReceiverImpl.class);
-	private TemporaryQueue destination;
+	private Queue destination;
 	private MessageConsumer receiver;
+	private boolean isTemporary;
 
 	ReceiverImpl(Session session) throws JMSException {
 		destination = session.createTemporaryQueue();
 		receiver = session.createConsumer(destination);
+		isTemporary = true;
+		log.info("Creating a consumer on: " + destination.getQueueName());
 	}
 
 	ReceiverImpl(Session session, Destination destination) throws JMSException,
 			NamingException {
+		this.destination = (Queue) destination;
 		receiver = session.createConsumer(destination);
+		log.info("Creating a consumer on: " + this.destination.getQueueName());
 	}
 
 	public Object getReplyTo() throws ConnectionException {
-		if (destination != null) {
-			try {
-				return destination;
-			} catch (Throwable t) {
-				throw new ConnectionException(-1,
-						"Could not get the name of the queue", t);
-			}
+		if (isTemporary) {
+			return destination;
 		} else {
 			return null;
 		}
@@ -61,9 +62,11 @@ public class ReceiverImpl implements Receiver {
 
 	public Message receive(long flagsIn) throws ConnectionException {
 		try {
+			log.info("Receiving from: " + destination.getQueueName());
 			javax.jms.Message message = receiver.receive();
+			log.info("Received from: " + destination.getQueueName());
 			BytesMessage bytesMessage = ((BytesMessage) message);
-//			TODO String replyTo = message.getStringProperty("reply-to");
+			// TODO String replyTo = message.getStringProperty("reply-to");
 			Destination replyTo = message.getJMSReplyTo();
 			int len = (int) bytesMessage.getBodyLength();
 			String serviceName = message.getStringProperty("serviceName");
@@ -91,8 +94,10 @@ public class ReceiverImpl implements Receiver {
 	public void close() throws ConnectionException {
 		try {
 			receiver.close();
-			if (destination != null) {
-				destination.delete();
+			if (isTemporary) {
+				log.info("Deleting: " + destination.getQueueName());
+				((TemporaryQueue) destination).delete();
+				log.info("Deleted: " + destination.getQueueName());
 			}
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Could not delete the queue", t);

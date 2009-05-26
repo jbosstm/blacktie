@@ -71,5 +71,6 @@ public abstract class Service implements BlacktieService {
 		sender.send(null, response.getRval(), response.getRcode(), response
 				.getBuffer().getData(), response.getLen(), response.getFlags(),
 				0);
+		session.close();
 	}
 }

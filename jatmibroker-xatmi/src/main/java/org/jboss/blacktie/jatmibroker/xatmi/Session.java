@@ -17,16 +17,21 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.transport.Message;
 import org.jboss.blacktie.jatmibroker.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.transport.Sender;
 import org.jboss.blacktie.jatmibroker.transport.Transport;
+import org.jboss.blacktie.jatmibroker.transport.jms.SenderImpl;
 
 /**
  * This is the session to send data on.
  */
 public class Session {
+	private static final Logger log = LogManager.getLogger(Session.class);
+
 	/**
 	 * The transport to manage data on
 	 */
@@ -84,8 +89,10 @@ public class Session {
 	void close() throws ConnectionException {
 		if (sender != null) {
 			sender.close();
+			sender = null;
 		}
 		receiver.close();
+		receiver = null;
 	}
 
 	/**
@@ -123,11 +130,14 @@ public class Session {
 
 		// Prepare the outbound channel
 		if (m.replyTo == null
-				|| (sender != null && !m.replyTo.equals(sender.getName()))) {
+				|| (sender != null && !m.replyTo.equals(sender.getSendTo()))) {
 			sender.close();
+			sender = null;
 		}
-		if (m.replyTo != null) {
+		if (sender == null && m.replyTo != null) {
 			sender = transport.createSender(m.replyTo);
+		} else {
+			log.debug("Not setting the sender");
 		}
 
 		// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?

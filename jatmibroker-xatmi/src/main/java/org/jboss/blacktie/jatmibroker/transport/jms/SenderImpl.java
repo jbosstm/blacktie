@@ -21,14 +21,15 @@ import javax.jms.BytesMessage;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageProducer;
+import javax.jms.Queue;
 import javax.jms.Session;
-import javax.jms.TemporaryQueue;
-import javax.naming.Context;
+import javax.jms.Topic;
 import javax.naming.NamingException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.transport.Sender;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public class SenderImpl implements Sender {
@@ -37,23 +38,32 @@ public class SenderImpl implements Sender {
 	private Session session;
 	private String name;
 	boolean service;
+	private boolean closed;
+	private Destination destination;
 
 	SenderImpl(Session session, Destination destination)
 			throws NamingException, JMSException {
 		this.session = session;
 		sender = session.createProducer(destination);
+		if (destination instanceof Queue) {
+			this.name = ((Queue)destination).getQueueName();
+		} else {
+			this.name = ((Topic)destination).getTopicName();
+		}
+		this.destination = destination;
 		service = true;
-	}
-
-	SenderImpl(Session session, TemporaryQueue destination) throws JMSException {
-		this.session = session;
-		sender = session.createProducer(destination);
-		this.name = destination.getQueueName();
+		log.info("Sender Created: " + name);
 	}
 
 	public void send(Object replyTo, short rval, int rcode, byte[] data,
 			int len, int correlationId, int flags) throws ConnectionException {
+		if (closed) {
+			throw new ConnectionException(Connection.TPEPROTO, "Sender closed");
+		}
 		try {
+			if (name != null) {
+				log.info("Sender sending: " + name);
+			}
 			BytesMessage message = session.createBytesMessage();
 			if (replyTo != null) {
 				message.setJMSReplyTo((Destination) replyTo);
@@ -74,13 +84,17 @@ public class SenderImpl implements Sender {
 
 	public void close() throws ConnectionException {
 		try {
+			log.info("Sender closing: " + name);
 			sender.close();
+			sender = null;
+			closed = true;
+			log.info("Sender closed: " + name);
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Could not send the message", t);
 		}
 	}
 
-	public String getName() {
-		return name;
+	public Object getSendTo() {
+		return destination;
 	}
 }

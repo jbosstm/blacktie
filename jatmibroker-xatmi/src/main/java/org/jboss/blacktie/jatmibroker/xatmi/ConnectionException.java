@@ -22,6 +22,10 @@ public class ConnectionException extends Exception {
 		this.tperrno = tperrno;
 	}
 
+	public ConnectionException(int tpeproto, String string) {
+		super(string);
+	}
+
 	/**
 	 * Get the error code
 	 * 

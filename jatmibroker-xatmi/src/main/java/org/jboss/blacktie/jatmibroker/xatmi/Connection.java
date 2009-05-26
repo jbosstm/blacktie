@@ -108,7 +108,7 @@ public class Connection {
 	public Response tpcall(String svc, Buffer buffer, int len, int flags)
 			throws ConnectionException {
 		int cd = tpacall(svc, buffer, len, flags);
-		return tpgetrply(cd, flags);
+		return receive(cd, flags);
 	}
 
 	/**
@@ -124,19 +124,15 @@ public class Connection {
 	 */
 	public int tpacall(String svc, Buffer buffer, int len, int flags)
 			throws ConnectionException {
-		svc = svc.substring(0, Math.min(Connection.XATMI_SERVICE_NAME_LENGTH, svc.length()));
+		svc = svc.substring(0, Math.min(Connection.XATMI_SERVICE_NAME_LENGTH,
+				svc.length()));
 		int correlationId = nextId++;
-		Receiver endpoint = null;
-		try {
-			endpoint = getTransport(svc).createReceiver();
-			temporaryQueues.put(correlationId, endpoint);
-		} catch (Throwable t) {
-			throw new ConnectionException(-1,
-					"Could not create a temporary queue", t);
-		}
+		Transport transport = getTransport(svc);
+		Receiver endpoint = transport.createReceiver();
+		temporaryQueues.put(correlationId, endpoint);
 		// TODO HANDLE TRANSACTION
-		getTransport(svc).getSender(svc).send(endpoint.getReplyTo(), (short) 0,
-				0, buffer.getData(), len, correlationId, flags);
+		transport.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
+				buffer.getData(), len, correlationId, flags);
 		return correlationId;
 	}
 
@@ -162,13 +158,11 @@ public class Connection {
 	 *            The flags to use
 	 * @return The response from the server
 	 */
-	public Response tpgetrply(int cd, int flags) throws ConnectionException {
-		Receiver endpoint = temporaryQueues.get(cd);
-		Message m = endpoint.receive(flags);
-		// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
-		Buffer received = new Buffer(null, null);
-		received.setData(m.data);
-		return new Response(m.rval, m.rcode, received, m.len, m.flags);
+	public Response tpgetrply(Session session, int flags)
+			throws ConnectionException {
+		Response toReturn = receive(session.getCd(), flags);
+		session.close();
+		return toReturn;
 	}
 
 	/**
@@ -184,7 +178,8 @@ public class Connection {
 	 */
 	public Session tpconnect(String svc, Buffer buffer, int len, int flags)
 			throws ConnectionException {
-		svc = svc.substring(0, Math.min(Connection.XATMI_SERVICE_NAME_LENGTH, svc.length()));
+		svc = svc.substring(0, Math.min(Connection.XATMI_SERVICE_NAME_LENGTH,
+				svc.length()));
 		// Initiate the session
 		int cd = tpacall(svc, buffer, len, flags);
 		Receiver endpoint = temporaryQueues.get(cd);
@@ -213,7 +208,7 @@ public class Connection {
 	}
 
 	private Transport getTransport(String serviceName)
-			throws ConnectionException {		
+			throws ConnectionException {
 		Transport toReturn = transports.get(serviceName);
 		if (toReturn == null) {
 			try {
@@ -226,5 +221,14 @@ public class Connection {
 			transports.put(serviceName, toReturn);
 		}
 		return toReturn;
+	}
+
+	private Response receive(int cd, int flags) throws ConnectionException {
+		Receiver endpoint = temporaryQueues.remove(cd);
+		Message m = endpoint.receive(flags);
+		// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
+		Buffer received = new Buffer(null, null);
+		received.setData(m.data);
+		return new Response(m.rval, m.rcode, received, m.len, m.flags);
 	}
 }
