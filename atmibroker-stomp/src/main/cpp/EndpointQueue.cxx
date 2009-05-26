@@ -28,6 +28,7 @@ log4cxx::LoggerPtr StompEndpointQueue::logger(log4cxx::Logger::getLogger(
 		"StompEndpointQueue"));
 
 StompEndpointQueue::StompEndpointQueue(apr_pool_t* pool, char* serviceName) {
+	LOG4CXX_DEBUG(logger, "Creating endpoint queue: " << serviceName);
 	this->message = NULL;
 	shutdown = false;
 	lock = new SynchronizableObject();

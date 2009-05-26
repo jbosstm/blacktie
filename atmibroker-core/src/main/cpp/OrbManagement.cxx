@@ -38,7 +38,7 @@ extern BLACKTIE_CORE_DLL CORBA::ORB_ptr find_other_orb(const char *);
 extern BLACKTIE_CORE_DLL void print_orb_ids();
 
 CORBA_CONNECTION* initOrb(char* connectionName) {
-	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "initOrb");
+	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "initOrb" << connectionName);
 
 	CORBA_CONNECTION* connection = new CORBA_CONNECTION;
 	connection->orbRef = NULL;

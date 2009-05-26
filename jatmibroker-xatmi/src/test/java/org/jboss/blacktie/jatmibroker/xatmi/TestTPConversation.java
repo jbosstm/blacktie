@@ -57,7 +57,7 @@ public class TestTPConversation extends TestCase {
 			buffer.setData(toSend);
 			session.tpsend(buffer, toSend.length, 0);
 		}
-		Response tpgetrply = connection.tpgetrply(session, 0);
+		Response tpgetrply = connection.tpgetrply(session.getCd(), 0);
 		assertEquals("hi" + iterationCount, new String(tpgetrply.getBuffer()
 				.getData()));
 	}

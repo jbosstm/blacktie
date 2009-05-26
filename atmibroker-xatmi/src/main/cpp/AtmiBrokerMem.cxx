@@ -205,7 +205,7 @@ void AtmiBrokerMem::tpfree(char* ptr) {
 	lock->lock();
 	LOG4CXX_TRACE(logger, (char*) "tpfree locked");
 	if (ptr && ptr != NULL) {
-		LOG4CXX_DEBUG(logger, (char*) "tpfree - ptr: " << ptr);
+		LOG4CXX_DEBUG(logger, (char*) "tpfree - ptr non null");
 		for (std::vector<MemoryInfo>::iterator it = memoryInfoVector.begin(); it
 				!= memoryInfoVector.end(); it++) {
 			//			LOG4CXX_TRACE(logger, (char*) "next memoryInfo id is: "

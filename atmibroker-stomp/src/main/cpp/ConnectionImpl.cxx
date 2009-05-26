@@ -33,12 +33,14 @@ StompConnectionImpl::StompConnectionImpl(char* connectionName) {
 		LOG4CXX_ERROR(logger, (char*) "Could not initialize: " << rc);
 		throw new std::exception();
 	}
+	LOG4CXX_TRACE(logger, (char*) "Initialized apr");
 
 	rc = apr_pool_create(&pool, NULL);
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, (char*) "Could not allocate pool: " << rc);
 		throw new std::exception();
 	}
+	LOG4CXX_TRACE(logger, (char*) "Pool created");
 }
 
 StompConnectionImpl::~StompConnectionImpl() {
@@ -133,6 +135,7 @@ Session* StompConnectionImpl::createSession(int id, const char* temporaryQueueNa
 }
 
 Destination* StompConnectionImpl::createDestination(char* serviceName) {
+	LOG4CXX_DEBUG(logger, (char*) "createDestination" << serviceName);
 	return new StompEndpointQueue(this->pool, serviceName);
 }
 
