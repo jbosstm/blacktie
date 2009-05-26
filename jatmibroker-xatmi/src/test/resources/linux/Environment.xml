@@ -33,6 +33,7 @@
 					<SERVICE name='BAR' transportLibrary='libatmibroker-corba.so'/>
 					<SERVICE name='tpcall_x_octet' transportLibrary='libatmibroker-corba.so'/>
 					<SERVICE name='tpcall_x_c_type' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='TestTPACall' transportLibrary='libatmibroker-stomp.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>

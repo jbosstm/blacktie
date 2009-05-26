@@ -82,6 +82,8 @@ public class Connection {
 
 	private Properties properties;
 
+	private Map<Integer, Session> sessions = new HashMap<Integer, Session>();
+
 	/**
 	 * The connection
 	 * 
@@ -158,10 +160,12 @@ public class Connection {
 	 *            The flags to use
 	 * @return The response from the server
 	 */
-	public Response tpgetrply(Session session, int flags)
-			throws ConnectionException {
-		Response toReturn = receive(session.getCd(), flags);
-		session.close();
+	public Response tpgetrply(int cd, int flags) throws ConnectionException {
+		Response toReturn = receive(cd, flags);
+		Session session = sessions.remove(cd);
+		if (session != null) {
+			session.close();
+		}
 		return toReturn;
 	}
 
@@ -184,7 +188,9 @@ public class Connection {
 		int cd = tpacall(svc, buffer, len, flags);
 		Receiver endpoint = temporaryQueues.get(cd);
 		// Return a handle to allow the connection to send/receive data on
-		return new Session(getTransport(svc), cd, endpoint);
+		Session session = new Session(getTransport(svc), cd, endpoint);
+		sessions.put(cd, session);
+		return session;
 	}
 
 	/**

@@ -25,17 +25,28 @@
 
 #include "AtmiBrokerServerControl.h"
 #include "xatmi.h"
+#include "userlogc.h"
 
 extern "C"void BAR(TPSVCINFO * svcinfo) {
-	char* buffer;
-	int sendlen;
-
-	sendlen = strlen(svcinfo->name) + 11;
-	buffer = tpalloc((char*) "X_OCTET", 0, sizeof(char) * sendlen);
+	int sendlen = 14;
+	char* buffer = tpalloc((char*) "X_OCTET", NULL, sendlen);
 	strcpy(buffer, svcinfo->name);
 	strcat(buffer, " SAYS HELLO");
 
 	tpreturn(1, 1, buffer, sendlen, 0);
+}
+
+extern "C"void TestTPACall(TPSVCINFO * svcinfo) {
+	if (strncmp(svcinfo->data, "echo", svcinfo->len) == 0) {
+		userlogc((char*) "Returning goodness");
+		int sendlen = 16;
+		char* buffer = tpalloc((char*) "X_OCTET", NULL, sendlen);
+		strcpy(buffer, "helloTestTPACall");
+		tpreturn(1, 1, buffer, sendlen, 0);
+	} else {
+		userlogc((char*) "Returning badness");
+		tpreturn(1, 1, svcinfo->data, svcinfo->len, 0);
+	}
 }
 
 extern "C"void tpcall_x_octet(TPSVCINFO * svcinfo) {
@@ -82,6 +93,7 @@ JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_serverinit(
 	exit_status = tpadvertise((char*) "BAR", BAR);
 	exit_status = tpadvertise((char*) "tpcall_x_octet", tpcall_x_octet);
 	exit_status = tpadvertise((char*) "tpcall_x_c_type", tpcall_x_c_type);
+	exit_status = tpadvertise((char*) "TestTPACall", TestTPACall);
 	return;
 }
 

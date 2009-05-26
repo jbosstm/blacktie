@@ -86,6 +86,7 @@ public class Session {
 	 * @throws ConnectionException
 	 */
 	void close() throws ConnectionException {
+		log.debug("Closing session");
 		if (sender != null) {
 			log.debug("Sender closing");
 			sender.close();
@@ -96,6 +97,7 @@ public class Session {
 			receiver.close();
 			receiver = null;
 		}
+		log.debug("Closed session");
 	}
 
 	/**
