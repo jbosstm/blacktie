@@ -191,6 +191,12 @@
 			<version>5.0.0.GA</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jboss-serialization</artifactId>
+			<version>5.0.0.GA</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<profiles>
 		<profile>
