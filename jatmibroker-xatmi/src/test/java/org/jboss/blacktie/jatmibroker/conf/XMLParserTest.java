@@ -56,7 +56,7 @@ public class XMLParserTest extends TestCase {
 		Properties prop = new Properties();
 
 		XMLEnvHandler handler = new XMLEnvHandler("linux", prop);
-		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
+		XMLParser xmlenv = new XMLParser(handler, "xsd/Environment.xsd");
 		xmlenv.parse(new File("linux/Environment.xml"));
 
 		String domain = "fooapp";

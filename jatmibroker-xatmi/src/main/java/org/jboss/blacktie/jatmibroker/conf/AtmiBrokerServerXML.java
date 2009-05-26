@@ -51,27 +51,27 @@ public class AtmiBrokerServerXML {
 
 	public Properties getProperties(String configDir)
 			throws ConfigurationException {
-		String serverXML;
-		String envXML;
+		String schemaDir;
+		schemaDir = System.getenv("BLACKTIE_SCHEMA_DIR");
 
+		if(schemaDir == null) {
+			throw new ConfigurationException("no BLACKTIE_SCHEMA_DIR");
+		}
+
+		String envXML;
 		if (configDir == null) {
 			configDir = System.getenv("BLACKTIE_CONFIGURATION_DIR");
 		}
 
 		if (configDir != null && !configDir.equals("")) {
-			serverXML = configDir + "/" + serverName + "/" + "SERVER.xml";
 			envXML = configDir + "/" + "Environment.xml";
 		} else {
-			serverXML = serverName + "/" + "SERVER.xml";
 			envXML = "Environment.xml";
 		}
 
-		XMLServerHandler handler = new XMLServerHandler(prop);
-		XMLParser xmlserver = new XMLParser(handler, "Server.xsd");
-		xmlserver.parse(new File(serverXML));
-
+		String xsdFile = schemaDir + "/Environment.xsd";
 		XMLEnvHandler env = new XMLEnvHandler(configDir, prop);
-		XMLParser xmlenv = new XMLParser(env, "Environment.xsd");
+		XMLParser xmlenv = new XMLParser(env, xsdFile);
 		xmlenv.parse(new File(envXML));
 
 		return prop;

@@ -25,6 +25,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import javax.xml.transform.stream.StreamSource;
 
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -35,6 +36,7 @@ public class XMLParser {
 
 	private DefaultHandler handler;
 	private SAXParser saxParser;
+	private Schema schema;
 
 	/**
 	 * Constructor
@@ -61,7 +63,7 @@ public class XMLParser {
 			SchemaFactory schemaFactory = SchemaFactory
 					.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			URL resource = Thread.currentThread().getContextClassLoader().getResource(xsdFilename);
-			Schema schema = schemaFactory.newSchema(resource);
+			schema = schemaFactory.newSchema(resource);
 			factory.setSchema(schema);
 
 			saxParser = factory.newSAXParser();
@@ -80,6 +82,7 @@ public class XMLParser {
 	public boolean parse(File file) throws ConfigurationException {
 		if (file.exists()) {
 			try {
+				schema.newValidator().validate(new StreamSource(file));
 				saxParser.parse(file, handler);
 				return true;
 			} catch (Throwable t) {

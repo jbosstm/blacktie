@@ -25,7 +25,7 @@
 			<SERVER name='standalone-server'>
 				<SERVICE_NAMES>
 					<SERVICE name='TestTPCall' transportLibrary='libatmibroker-corba.so'/>
-					<SERVICE name='JAVA_Converse' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='JAVA_Converse' transportLibrary='libatmibroker-corba.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 			<SERVER name='foo'>
@@ -38,16 +38,20 @@
 		</SERVER_NAMES>
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
+				<NAME>ORBOPT</NAME>
+				<VALUE>-ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>LOG4CXXCONFIG</NAME>
+				<VALUE>log4cxx.properties</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
 				<NAME>StompConnectUsr</NAME>
 				<VALUE>JBM.SUCKER</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>StompConnectPwd</NAME>
 				<VALUE>CHANGE ME!!</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>ORBOPT</NAME>
-				<VALUE>-ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
 			</ENV_VARIABLE>
 		</ENV_VARIABLES>
 	</ENVIRONMENT_DESCRIPTION>
