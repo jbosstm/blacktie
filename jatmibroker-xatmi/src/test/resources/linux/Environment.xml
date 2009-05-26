@@ -30,9 +30,8 @@
 			</SERVER>
 			<SERVER name='foo'>
 				<SERVICE_NAMES>
-					<SERVICE name='BAR' transportLibrary='libatmibroker-corba.so'/>
-					<SERVICE name='tpcall_x_octet' transportLibrary='libatmibroker-corba.so'/>
-					<SERVICE name='tpcall_x_c_type' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='BAR' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='tpcall_x_octet' transportLibrary='libatmibroker-stomp.so'/>
 					<SERVICE name='TestTPACall' transportLibrary='libatmibroker-stomp.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
@@ -45,6 +44,14 @@
 			<ENV_VARIABLE>
 				<NAME>LOG4CXXCONFIG</NAME>
 				<VALUE>log4cxx.properties</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectHost</NAME>
+				<VALUE>localhost</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectPort</NAME>
+				<VALUE>61613</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>StompConnectUsr</NAME>
