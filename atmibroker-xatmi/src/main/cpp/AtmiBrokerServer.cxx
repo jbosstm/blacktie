@@ -181,78 +181,84 @@ AtmiBrokerServer::AtmiBrokerServer() {
 		serverInfo.serverName = NULL;
 
 		for (i = 0; i < servers.size(); i++) {
-			if(strcmp(servers[i]->serverName, serverName) == 0) {
+			if (strcmp(servers[i]->serverName, serverName) == 0) {
 				serverInfo.serverName = strdup(servers[i]->serverName);
 				for (unsigned int j = 0; j < servers[i]->serviceVector.size(); j++) {
 					ServiceInfo service;
 					memset(&service, 0, sizeof(ServiceInfo));
-					service.serviceName = strdup(servers[i]->serviceVector[j].serviceName);
-					service.transportLib = strdup(servers[i]->serviceVector[j].transportLib);
+					service.serviceName = strdup(
+							servers[i]->serviceVector[j].serviceName);
+					service.transportLib = strdup(
+							servers[i]->serviceVector[j].transportLib);
 
-					if(servers[i]->serviceVector[j].securityType) {
-						service.securityType = strdup(servers[i]->serviceVector[j].securityType);
+					if (servers[i]->serviceVector[j].securityType) {
+						service.securityType = strdup(
+								servers[i]->serviceVector[j].securityType);
 					}
-					if(servers[i]->serviceVector[j].function_name) {
-						service.function_name = strdup(servers[i]->serviceVector[j].function_name);
+					if (servers[i]->serviceVector[j].function_name) {
+						service.function_name = strdup(
+								servers[i]->serviceVector[j].function_name);
 					}
-					if(servers[i]->serviceVector[j].library_name) {
-						service.library_name = strdup(servers[i]->serviceVector[j].library_name);
+					if (servers[i]->serviceVector[j].library_name) {
+						service.library_name = strdup(
+								servers[i]->serviceVector[j].library_name);
 					}
 					service.poolSize = servers[i]->serviceVector[j].poolSize;
-					service.advertised = servers[i]->serviceVector[j].advertised;
+					service.advertised
+							= servers[i]->serviceVector[j].advertised;
 					serverInfo.serviceVector.push_back(service);
 				}
 				break;
 			}
 		}
 
-		if(i == servers.size()) {
-			LOG4CXX_WARN(loggerAtmiBrokerServer, serverName << " has no configuration");
+		if (i == servers.size()) {
+			LOG4CXX_WARN(loggerAtmiBrokerServer, serverName
+					<< " has no configuration");
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 			return;
 		}
 		/*
-		if (ptrDir != NULL) {
-ACE_OS		::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"%s"ACE_DIRECTORY_SEPARATOR_STR_A"SERVER.xml", ptrDir, serverName);
-	} else {
-		ACE_OS::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"SERVER.xml", serverName);
-	}
+		 if (ptrDir != NULL) {
+		 ACE_OS		::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"%s"ACE_DIRECTORY_SEPARATOR_STR_A"SERVER.xml", ptrDir, serverName);
+		 } else {
+		 ACE_OS::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"SERVER.xml", serverName);
+		 }
 
-	AtmiBrokerServerXml aAtmiBrokerServerXml;
-	if(aAtmiBrokerServerXml.parseXmlDescriptor(&serverInfo, descPath) == false) return;
+		 AtmiBrokerServerXml aAtmiBrokerServerXml;
+		 if(aAtmiBrokerServerXml.parseXmlDescriptor(&serverInfo, descPath) == false) return;
 
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "descPath is " << descPath);
-	*/
+		 LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "descPath is " << descPath);
+		 */
 
-	/*
-	char* transportLibrary = AtmiBrokerEnv::get_instance()->getenv(
-			(char*) "TransportLibrary");
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-			(char*) "Loading server transport: " << transportLibrary);
-	connection_factory_t* connectionFactory =
-	(connection_factory_t*) ::lookup_symbol(transportLibrary,
-			"connectionFactory");
-	if (connectionFactory != NULL) {
-		serverConnection = connectionFactory->create_connection(
-				(char*) "server");
-	*/
-		realConnection = ::initOrb(
-				(char*) "serverAdministration");
+		/*
+		 char* transportLibrary = AtmiBrokerEnv::get_instance()->getenv(
+		 (char*) "TransportLibrary");
+		 LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+		 (char*) "Loading server transport: " << transportLibrary);
+		 connection_factory_t* connectionFactory =
+		 (connection_factory_t*) ::lookup_symbol(transportLibrary,
+		 "connectionFactory");
+		 if (connectionFactory != NULL) {
+		 serverConnection = connectionFactory->create_connection(
+		 (char*) "server");
+		 */
+		realConnection = ::initOrb((char*) "serverAdministration");
 		//realConnection = init_orb(
 		//		(char*) "serverAdministration");
 
 
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-				(char*) "creating POAs for %s" << server);
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "creating POAs for %s"
+				<< server);
 		AtmiBrokerPoaFac* serverPoaFactory = realConnection->poaFactory;
-		this->poa = serverPoaFactory->createServerPoa(
-				realConnection->orbRef, server, realConnection->root_poa,
+		this->poa = serverPoaFactory->createServerPoa(realConnection->orbRef,
+				server, realConnection->root_poa,
 				realConnection->root_poa_manager);
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-				(char*) "created POAs for %s" << server);
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "created POAs for %s"
+				<< server);
 
-		PortableServer::ObjectId_var oid =
-		PortableServer::string_to_ObjectId(server);
+		PortableServer::ObjectId_var oid = PortableServer::string_to_ObjectId(
+				server);
 		poa->activate_object_with_id(oid, this);
 		CORBA::Object_var tmp_ref = poa->create_reference_with_id(oid,
 				"IDL:AtmiBroker/Server:1.0");
@@ -265,20 +271,20 @@ ACE_OS		::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"%s"ACE_DIREC
 				(char*) "server_init(): finished.");
 
 		serverInitialized = true;
-	/*
-	} else {
-		LOG4CXX_ERROR(loggerAtmiBrokerServer,
-				(char*) "Could not load the transport: "
-				<< transportLibrary);
+		/*
+		 } else {
+		 LOG4CXX_ERROR(loggerAtmiBrokerServer,
+		 (char*) "Could not load the transport: "
+		 << transportLibrary);
+		 setSpecific(TPE_KEY, TSS_TPESYSTEM);
+		 }
+		 */
+	} catch (CORBA::Exception& e) {
+		userlog(log4cxx::Level::getError(), loggerAtmiBrokerServer,
+				(char*) "serverinit - Unexpected CORBA exception: %s",
+				e._name());
 		setSpecific(TPE_KEY, TSS_TPESYSTEM);
 	}
-	*/
-} catch (CORBA::Exception& e) {
-	userlog(log4cxx::Level::getError(), loggerAtmiBrokerServer,
-			(char*) "serverinit - Unexpected CORBA exception: %s",
-			e._name());
-	setSpecific(TPE_KEY, TSS_TPESYSTEM);
-}
 }
 
 // ~AtmiBrokerServer destructor.
@@ -297,7 +303,7 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	serviceData.clear();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted service array");
 
-	if(serverInfo.serverName) {
+	if (serverInfo.serverName) {
 		for (unsigned int i = 0; i < serverInfo.serviceVector.size(); i++) {
 			ServiceInfo* service = &serverInfo.serviceVector[i];
 			free(service->serviceName);
@@ -325,8 +331,7 @@ void AtmiBrokerServer::advertiseAtBootime() {
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, "begin advertise "
 					<< service->serviceName);
 			if (service->library_name != NULL) {
-				SVCFUNC func = (SVCFUNC) ::lookup_symbol(
-						service->library_name,
+				SVCFUNC func = (SVCFUNC) ::lookup_symbol(service->library_name,
 						service->function_name);
 				if (func == NULL) {
 					LOG4CXX_WARN(loggerAtmiBrokerServer, "can not find "
@@ -440,7 +445,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 	}
 
 	serverConnection = connections.getServerConnection(serviceName);
-	if(serverConnection == NULL) {
+	if (serverConnection == NULL) {
 		setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		return false;
 	}
@@ -460,10 +465,8 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "created destination: "
 				<< serviceName);
 	} catch (...) {
-		LOG4CXX_ERROR(
-				loggerAtmiBrokerServer,
-				(char*) "service has already been advertised, however it appears to be by a different server (possibly with the same name), which is strange... "
-						<< serviceName);
+		LOG4CXX_ERROR(loggerAtmiBrokerServer,
+				(char*) "Could not create the destination" << serviceName);
 		setSpecific(TPE_KEY, TSS_TPEMATCH);
 		return false;
 	}
@@ -481,8 +484,8 @@ void AtmiBrokerServer::unadvertiseService(char * svcname) {
 	strncat(serviceName, svcname, XATMI_SERVICE_NAME_LENGTH);
 
 	serverConnection = connections.getServerConnection(serviceName);
-	if(serverConnection == NULL) {
-		return ;
+	if (serverConnection == NULL) {
+		return;
 	}
 
 	for (std::vector<char*>::iterator i = advertisedServices.begin(); i
@@ -778,44 +781,45 @@ void AtmiBrokerServer::addDestination(Destination* destination, void(*func)(
 	//entry.serviceInfo.poolSize = 1; // TODO MAKE A CONSTANT
 
 	/*
-	char serviceDir[256];
-	const char* configDir = getConfigurationDir();
+	 char serviceDir[256];
+	 const char* configDir = getConfigurationDir();
 
-	if (configDir != NULL) {
-ACE_OS	::snprintf(serviceDir, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"%s", configDir, serverName);
-} else {
-	ACE_OS::snprintf(serviceDir, 256, "%s", serverName);
-}
+	 if (configDir != NULL) {
+	 ACE_OS	::snprintf(serviceDir, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"%s", configDir, serverName);
+	 } else {
+	 ACE_OS::snprintf(serviceDir, 256, "%s", serverName);
+	 }
 
-AtmiBrokerServiceXml aAtmiBrokerServiceXml;
-aAtmiBrokerServiceXml.parseXmlDescriptor(&entry.serviceInfo,
-		destination->getName(),
-		serviceDir);
-	*/
-	serverConnection = connections.getServerConnection((char*)destination->getName());
-	if(serverConnection == NULL) {
+	 AtmiBrokerServiceXml aAtmiBrokerServiceXml;
+	 aAtmiBrokerServiceXml.parseXmlDescriptor(&entry.serviceInfo,
+	 destination->getName(),
+	 serviceDir);
+	 */
+	serverConnection = connections.getServerConnection(
+			(char*) destination->getName());
+	if (serverConnection == NULL) {
 		return;
 	}
 
-LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "createPool");
-for (int i = 0; i < entry.serviceInfo->poolSize; i++) {
-	ServiceDispatcher* dispatcher = new ServiceDispatcher(destination,
-			serverConnection, destination->getName(), func);
-	if (dispatcher->activate(THR_NEW_LWP | THR_JOINABLE, 1, 0,
-					ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
-		delete dispatcher;
-		LOG4CXX_ERROR(loggerAtmiBrokerServer,
-				(char*) "Could not start thread pool");
-	} else {
-		entry.dispatchers.push_back(dispatcher);
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) " destination "
-				<< destination);
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "createPool");
+	for (int i = 0; i < entry.serviceInfo->poolSize; i++) {
+		ServiceDispatcher* dispatcher = new ServiceDispatcher(destination,
+				serverConnection, destination->getName(), func);
+		if (dispatcher->activate(THR_NEW_LWP | THR_JOINABLE, 1, 0,
+				ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
+			delete dispatcher;
+			LOG4CXX_ERROR(loggerAtmiBrokerServer,
+					(char*) "Could not start thread pool");
+		} else {
+			entry.dispatchers.push_back(dispatcher);
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) " destination "
+					<< destination);
+		}
 	}
-}
 
-serviceData.push_back(entry);
-LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "added: "
-		<< destination->getName());
+	serviceData.push_back(entry);
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "added: "
+			<< destination->getName());
 }
 
 Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
