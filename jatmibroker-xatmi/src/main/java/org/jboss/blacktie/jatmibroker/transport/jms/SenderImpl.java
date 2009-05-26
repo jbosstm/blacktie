@@ -52,7 +52,7 @@ public class SenderImpl implements Sender {
 		}
 		this.destination = destination;
 		service = true;
-		log.info("Sender Created: " + name);
+		log.debug("Sender Created: " + name);
 	}
 
 	public void send(Object replyTo, short rval, int rcode, byte[] data,
@@ -62,7 +62,7 @@ public class SenderImpl implements Sender {
 		}
 		try {
 			if (name != null) {
-				log.info("Sender sending: " + name);
+				log.debug("Sender sending: " + name);
 			}
 			BytesMessage message = session.createBytesMessage();
 			if (replyTo != null) {
@@ -84,11 +84,11 @@ public class SenderImpl implements Sender {
 
 	public void close() throws ConnectionException {
 		try {
-			log.info("Sender closing: " + name);
+			log.debug("Sender closing: " + name);
 			sender.close();
 			sender = null;
 			closed = true;
-			log.info("Sender closed: " + name);
+			log.debug("Sender closed: " + name);
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Could not send the message", t);
 		}

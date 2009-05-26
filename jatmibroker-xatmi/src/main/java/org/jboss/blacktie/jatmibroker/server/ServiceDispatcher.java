@@ -33,6 +33,9 @@ public class ServiceDispatcher extends Service implements Runnable {
 	private BlacktieService callback;
 	private Receiver receiver;
 	private Thread thread;
+	private volatile boolean closed;
+	private Object closer = new Object();
+	private Object dier = new Object();
 
 	ServiceDispatcher(Transport transport, String serviceName,
 			BlacktieService callback, Receiver receiver) {
@@ -46,13 +49,62 @@ public class ServiceDispatcher extends Service implements Runnable {
 
 	public void run() {
 		log.debug("Running");
-		while (true) {
-			try {
+		try {
+			while (!closed) {
 				Message message = receiver.receive(0);
-				log.trace("Recieved");
-				this.processMessage(message);
-			} catch (Throwable t) {
-				log.error("Could not service the request", t);
+				log.trace("Received");
+				try {
+					this.processMessage(message);
+					log.trace("Processed");
+				} catch (Throwable t) {
+					log.error("Can't process the message", t);
+				}
+			}
+		} catch (Throwable t) {
+			if (!closed) {
+				log.error("Could not receive the message", t);
+			} else {
+				log.debug("Did not receive the message during shutdown", t);
+			}
+		}
+		synchronized (dier) {
+			if (!closed) {
+				try {
+					log.trace("Waiting dier");
+					dier.wait();
+					log.trace("Waited dier");
+				} catch (InterruptedException e) {
+					log.warn("Could not wait");
+				}
+			} else {
+				log.trace("Not waiting dier");
+			}
+		}
+		synchronized (closer) {
+			log.trace("Notifying closer");
+			closer.notify();
+			log.trace("Notified closer");
+		}
+	}
+
+	public void startClose() {
+		closed = true;
+		log.trace("Closed set");
+	}
+
+	public void close() {
+		synchronized (closer) {
+			synchronized (dier) {
+				log.trace("Notifying dier");
+				dier.notify();
+				log.trace("Notified dier");
+			}
+			try {
+				log.trace("Waiting closer");
+				closer.wait();
+				log.trace("Waited closer");
+			} catch (InterruptedException e) {
+				log.error("Could not wait for the responder", e);
 			}
 		}
 	}

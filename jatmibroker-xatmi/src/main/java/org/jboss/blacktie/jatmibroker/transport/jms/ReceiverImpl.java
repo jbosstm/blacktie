@@ -42,14 +42,14 @@ public class ReceiverImpl implements Receiver {
 		destination = session.createTemporaryQueue();
 		receiver = session.createConsumer(destination);
 		isTemporary = true;
-		log.info("Creating a consumer on: " + destination.getQueueName());
+		log.debug("Creating a consumer on: " + destination.getQueueName());
 	}
 
 	ReceiverImpl(Session session, Destination destination) throws JMSException,
 			NamingException {
 		this.destination = (Queue) destination;
 		receiver = session.createConsumer(destination);
-		log.info("Creating a consumer on: " + this.destination.getQueueName());
+		log.debug("Creating a consumer on: " + this.destination.getQueueName());
 	}
 
 	public Object getReplyTo() throws ConnectionException {
@@ -62,32 +62,34 @@ public class ReceiverImpl implements Receiver {
 
 	public Message receive(long flagsIn) throws ConnectionException {
 		try {
-			log.info("Receiving from: " + destination.getQueueName());
+			log.debug("Receiving from: " + destination.getQueueName());
 			javax.jms.Message message = receiver.receive();
-			log.info("Received from: " + destination.getQueueName());
-			BytesMessage bytesMessage = ((BytesMessage) message);
-			// TODO String replyTo = message.getStringProperty("reply-to");
-			Destination replyTo = message.getJMSReplyTo();
-			int len = (int) bytesMessage.getBodyLength();
-			String serviceName = message.getStringProperty("serviceName");
-			int flags = new Integer(message.getStringProperty("messageflags"));
-			int cd = new Integer(message
-					.getStringProperty("messagecorrelationId"));
-			byte[] bytes = new byte[len];
-			bytesMessage.readBytes(bytes);
+			if (message != null) {
+				log.debug("Received from: " + destination.getQueueName());
+				BytesMessage bytesMessage = ((BytesMessage) message);
+				// TODO String replyTo = message.getStringProperty("reply-to");
+				Destination replyTo = message.getJMSReplyTo();
+				int len = (int) bytesMessage.getBodyLength();
+				String serviceName = message.getStringProperty("serviceName");
+				int flags = new Integer(message
+						.getStringProperty("messageflags"));
+				int cd = new Integer(message
+						.getStringProperty("messagecorrelationId"));
+				byte[] bytes = new byte[len];
+				bytesMessage.readBytes(bytes);
 
-			org.jboss.blacktie.jatmibroker.transport.Message toProcess = new org.jboss.blacktie.jatmibroker.transport.Message();
-			toProcess.replyTo = replyTo;
-			toProcess.len = len;
-			toProcess.serviceName = serviceName;
-			toProcess.flags = flags;
-			toProcess.cd = cd;
-			toProcess.data = bytes;
-
-			return toProcess;
-		} catch (Throwable t) {
-			throw new ConnectionException(-1, "Could not receive the message",
-					t);
+				org.jboss.blacktie.jatmibroker.transport.Message toProcess = new org.jboss.blacktie.jatmibroker.transport.Message();
+				toProcess.replyTo = replyTo;
+				toProcess.len = len;
+				toProcess.serviceName = serviceName;
+				toProcess.flags = flags;
+				toProcess.cd = cd;
+				toProcess.data = bytes;
+				return toProcess;
+			}
+			throw new ConnectionException(-1, "Did not receive a message");
+		} catch (JMSException t) {
+			throw new ConnectionException(-1, "Couldn't receive the message", t);
 		}
 	}
 
@@ -95,9 +97,9 @@ public class ReceiverImpl implements Receiver {
 		try {
 			receiver.close();
 			if (isTemporary) {
-				log.info("Deleting: " + destination.getQueueName());
+				log.debug("Deleting: " + destination.getQueueName());
 				((TemporaryQueue) destination).delete();
-				log.info("Deleted: " + destination.getQueueName());
+				log.debug("Deleted: " + destination.getQueueName());
 			}
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Could not delete the queue", t);

@@ -18,7 +18,6 @@
 package org.jboss.blacktie.jatmibroker.server;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -141,7 +140,8 @@ public class AtmiBrokerServer extends ServerPOA {
 	 */
 	public void tpadvertise(String serviceName, String serviceClassName)
 			throws ConnectionException {
-		int min = Math.min(Connection.XATMI_SERVICE_NAME_LENGTH, serviceName.length());
+		int min = Math.min(Connection.XATMI_SERVICE_NAME_LENGTH, serviceName
+				.length());
 		serviceName = serviceName.substring(0, min);
 		try {
 			log.debug("Advertising: " + serviceName);
@@ -166,7 +166,8 @@ public class AtmiBrokerServer extends ServerPOA {
 	}
 
 	public void tpunadvertise(String serviceName) throws ConnectionException {
-		serviceName = serviceName.substring(0, Math.min(Connection.XATMI_SERVICE_NAME_LENGTH, serviceName.length()));
+		serviceName = serviceName.substring(0, Math.min(
+				Connection.XATMI_SERVICE_NAME_LENGTH, serviceName.length()));
 		log.debug("Unadvertising: " + serviceName);
 		ServiceData data = serviceData.remove(serviceName);
 		if (data != null) {
@@ -253,7 +254,7 @@ public class AtmiBrokerServer extends ServerPOA {
 
 	private class ServiceData {
 		private Receiver receiver;
-		private List<Runnable> dispatchers = new ArrayList<Runnable>();
+		private List<ServiceDispatcher> dispatchers = new ArrayList<ServiceDispatcher>();
 		private Transport connection;
 
 		ServiceData(String serviceName, String serviceClassName)
@@ -277,7 +278,21 @@ public class AtmiBrokerServer extends ServerPOA {
 		}
 
 		public void close() throws ConnectionException {
+
+			// Clean up the consumers
+			Iterator<ServiceDispatcher> iterator = dispatchers.iterator();
+			while (iterator.hasNext()) {
+				iterator.next().startClose();
+			}
+
+			// Disconnect the receiver
 			receiver.close();
+
+			// Clean up the consumers
+			iterator = dispatchers.iterator();
+			while (iterator.hasNext()) {
+				iterator.next().close();
+			}
 			dispatchers.clear();
 		}
 	}

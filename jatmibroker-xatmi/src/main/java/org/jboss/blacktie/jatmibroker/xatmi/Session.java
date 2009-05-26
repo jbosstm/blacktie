@@ -24,7 +24,6 @@ import org.jboss.blacktie.jatmibroker.transport.Message;
 import org.jboss.blacktie.jatmibroker.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.transport.Sender;
 import org.jboss.blacktie.jatmibroker.transport.Transport;
-import org.jboss.blacktie.jatmibroker.transport.jms.SenderImpl;
 
 /**
  * This is the session to send data on.
@@ -88,11 +87,15 @@ public class Session {
 	 */
 	void close() throws ConnectionException {
 		if (sender != null) {
+			log.debug("Sender closing");
 			sender.close();
 			sender = null;
 		}
-		receiver.close();
-		receiver = null;
+		if (receiver != null) {
+			log.debug("Receiver closing");
+			receiver.close();
+			receiver = null;
+		}
 	}
 
 	/**

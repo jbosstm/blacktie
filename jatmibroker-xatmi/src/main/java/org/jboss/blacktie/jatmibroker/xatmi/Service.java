@@ -32,7 +32,7 @@ public abstract class Service implements BlacktieService {
 	private static final Logger log = LogManager.getLogger(Service.class);
 	private Transport transport;
 	private String name;
-	
+
 	public Service(String name) {
 		this.name = name;
 	}
@@ -65,12 +65,14 @@ public abstract class Service implements BlacktieService {
 				session);
 
 		Response response = tpservice(tpsvcinfo);
-		// TODO THIS SHOULD INVOKE THE CLIENT HANDLER
-		// odata.value = serviceRequest.getBytes();
-		// olen.value = serviceRequest.getLength();
-		sender.send(null, response.getRval(), response.getRcode(), response
-				.getBuffer().getData(), response.getLen(), response.getFlags(),
-				0);
+		if (sender != null) {
+			// TODO THIS SHOULD INVOKE THE CLIENT HANDLER
+			// odata.value = serviceRequest.getBytes();
+			// olen.value = serviceRequest.getLength();
+			sender.send(null, response.getRval(), response.getRcode(), response
+					.getBuffer().getData(), response.getLen(), response
+					.getFlags(), 0);
+		}
 		session.close();
 	}
 }
