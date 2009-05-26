@@ -168,12 +168,10 @@ public class AtmiBrokerServer extends ServerPOA {
 	public void tpunadvertise(String serviceName) throws ConnectionException {
 		serviceName = serviceName.substring(0, Math.min(
 				Connection.XATMI_SERVICE_NAME_LENGTH, serviceName.length()));
-		log.debug("Unadvertising: " + serviceName);
 		ServiceData data = serviceData.remove(serviceName);
 		if (data != null) {
 			try {
 				data.close();
-				log.info("Unadvertised: " + serviceName);
 			} catch (Throwable t) {
 				log.error("Could not unadvertise: " + serviceName, t);
 			}
@@ -256,11 +254,13 @@ public class AtmiBrokerServer extends ServerPOA {
 		private Receiver receiver;
 		private List<ServiceDispatcher> dispatchers = new ArrayList<ServiceDispatcher>();
 		private Transport connection;
+		private String serviceName;
 
 		ServiceData(String serviceName, String serviceClassName)
 				throws ConnectionException, InstantiationException,
 				IllegalAccessException, ClassNotFoundException,
 				ConfigurationException {
+			this.serviceName = serviceName;
 
 			String sizeS = properties.getProperty("blacktie." + serviceName
 					+ ".size", DEFAULT_POOL_SIZE);
@@ -278,6 +278,7 @@ public class AtmiBrokerServer extends ServerPOA {
 		}
 
 		public void close() throws ConnectionException {
+			log.debug("Unadvertising: " + serviceName);
 
 			// Clean up the consumers
 			Iterator<ServiceDispatcher> iterator = dispatchers.iterator();
@@ -294,6 +295,7 @@ public class AtmiBrokerServer extends ServerPOA {
 				iterator.next().close();
 			}
 			dispatchers.clear();
+			log.info("Unadvertised: " + serviceName);
 		}
 	}
 }

@@ -36,13 +36,14 @@ public class ServiceDispatcher extends Service implements Runnable {
 	private volatile boolean closed;
 	private Object closer = new Object();
 	private Object dier = new Object();
+	private boolean dead;
 
 	ServiceDispatcher(Transport transport, String serviceName,
 			BlacktieService callback, Receiver receiver) {
 		super(serviceName);
 		this.callback = callback;
 		this.receiver = receiver;
-		thread = new Thread(this);
+		thread = new Thread(this, "XATMIServiceDispatcher");
 		thread.start();
 		log.debug("Created");
 	}
@@ -67,23 +68,25 @@ public class ServiceDispatcher extends Service implements Runnable {
 				log.debug("Did not receive the message during shutdown", t);
 			}
 		}
-		synchronized (dier) {
-			if (!closed) {
-				try {
-					log.trace("Waiting dier");
-					dier.wait();
-					log.trace("Waited dier");
-				} catch (InterruptedException e) {
-					log.warn("Could not wait");
-				}
-			} else {
-				log.trace("Not waiting dier");
-			}
-		}
+
 		synchronized (closer) {
+			synchronized (dier) {
+				if (!closed) {
+					try {
+						log.trace("Waiting dier");
+						dier.wait();
+						log.trace("Waited dier");
+					} catch (InterruptedException e) {
+						log.warn("Could not wait");
+					}
+				} else {
+					log.trace("Not waiting dier");
+				}
+			}
 			log.trace("Notifying closer");
 			closer.notify();
 			log.trace("Notified closer");
+			dead = true;
 		}
 	}
 
@@ -93,18 +96,20 @@ public class ServiceDispatcher extends Service implements Runnable {
 	}
 
 	public void close() {
+		synchronized (dier) {
+			log.trace("Notifying dier");
+			dier.notify();
+			log.trace("Notified dier");
+		}
 		synchronized (closer) {
-			synchronized (dier) {
-				log.trace("Notifying dier");
-				dier.notify();
-				log.trace("Notified dier");
-			}
-			try {
-				log.trace("Waiting closer");
-				closer.wait();
-				log.trace("Waited closer");
-			} catch (InterruptedException e) {
-				log.error("Could not wait for the responder", e);
+			if (!dead) {
+				try {
+					log.trace("Waiting closer");
+					closer.wait();
+					log.trace("Waited closer");
+				} catch (InterruptedException e) {
+					log.error("Could not wait for the responder", e);
+				}
 			}
 		}
 	}
