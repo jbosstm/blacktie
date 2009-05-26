@@ -77,7 +77,10 @@ public class SenderImpl implements Sender {
 			message.setStringProperty("messageflags", String.valueOf(flags));
 			message.setStringProperty("messagerval", String.valueOf(rval));
 			message.setStringProperty("messagercode", String.valueOf(rcode));
-			message.writeBytes(data, 0, len);
+
+			byte[] toSend = new byte[len + 1];
+			System.arraycopy(data, 0, toSend, 0, len);
+			message.writeBytes(toSend, 0, toSend.length);
 			sender.send(message);
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Could not send the message", t);

@@ -45,7 +45,8 @@ public class TestTPACall extends TestCase {
 		int cd = connection.tpacall("TestTPACall", buffer, echo.length, 0);
 		Response response = connection.tpgetrply(cd, 0);
 		byte[] responseData = response.getBuffer().getData();
+		String expectedData = "helloTestTPACall"; 
 		String receivedMessage = new String(responseData);
-		assertEquals("helloTestTPACall", receivedMessage);
+		assertEquals(expectedData, receivedMessage);
 	}
 }
