@@ -57,19 +57,19 @@
 				<VALUE>log4cxx.properties</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
-				<NAME>corbaConnectHost</NAME>
+				<NAME>StompConnectHost</NAME>
 				<VALUE>localhost</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
-				<NAME>corbaConnectPort</NAME>
+				<NAME>StompConnectPort</NAME>
 				<VALUE>61613</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
-				<NAME>corbaConnectUsr</NAME>
+				<NAME>StompConnectUsr</NAME>
 				<VALUE>JBM.SUCKER</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
-				<NAME>corbaConnectPwd</NAME>
+				<NAME>StompConnectPwd</NAME>
 				<VALUE>CHANGE ME!!</VALUE>
 			</ENV_VARIABLE>
 		</ENV_VARIABLES>
