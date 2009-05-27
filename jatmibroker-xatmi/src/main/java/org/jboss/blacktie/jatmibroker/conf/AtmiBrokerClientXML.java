@@ -42,13 +42,6 @@ public class AtmiBrokerClientXML {
 
 	public Properties getProperties(String configDir)
 			throws ConfigurationException {
-		String schemaDir;
-		schemaDir = System.getenv("BLACKTIE_SCHEMA_DIR");
-
-		if (schemaDir == null) {
-			throw new ConfigurationException("no BLACKTIE_SCHEMA_DIR");
-		}
-
 		String envXML;
 
 		if (configDir == null) {
@@ -62,10 +55,9 @@ public class AtmiBrokerClientXML {
 		}
 
 		log.debug("read configuration from " + configDir + " directory");
-		String xsdFile = schemaDir + "/Environment.xsd";
 
 		XMLEnvHandler env = new XMLEnvHandler(configDir, prop);
-		XMLParser xmlenv = new XMLParser(env, xsdFile);
+		XMLParser xmlenv = new XMLParser(env, "Environment.xsd");
 		xmlenv.parse(new File(envXML));
 
 		return prop;
