@@ -64,7 +64,7 @@ public class XMLParserTest extends TestCase {
 		String arg2 = "NameService=corbaloc::localhost:3528/NameService";
 		String server = "foo";
 		String serviceName = "BAR";
-		String transport = "libatmibroker-corba.so";
+		String transport = "libatmibroker-stomp.so";
 		String library = "libBAR.so";
 		String function = "BAR";
 		String advertised = "false";
@@ -86,6 +86,8 @@ public class XMLParserTest extends TestCase {
 		assertTrue(arg2.equals(prop.getProperty("blacktie.orb.arg.2")));
 		String property = prop.getProperty("blacktie.BAR.size");
 		assertTrue(size.equals(property));
+
+		assertTrue("log4cxx.properties".equals(prop.getProperty("LOG4CXXCONFIG")));
 	}
 	//
 	// public void testServerXML() throws Exception {
