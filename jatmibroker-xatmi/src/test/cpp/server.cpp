@@ -82,6 +82,7 @@ extern "C"void tpcall_x_c_type(TPSVCINFO * svcinfo) {
 extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_serverinit(JNIEnv *, jobject) {
 	int exit_status = -1;
+	userlogc((char*) "serverinit called");
 #ifdef WIN32
 	char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"foo"};
 #else
@@ -94,12 +95,15 @@ JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_serverinit(
 	exit_status = tpadvertise((char*) "tpcall_x_octet", tpcall_x_octet);
 	exit_status = tpadvertise((char*) "tpcall_x_c_type", tpcall_x_c_type);
 	exit_status = tpadvertise((char*) "TestTPACall", TestTPACall);
+	userlogc((char*) "serverinit returning");
 	return;
 }
 
 extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_serverdone(JNIEnv *, jobject) {
 	int exit_status = -1;
+	userlogc((char*) "serverdone called");
 	exit_status = serverdone();
+	userlogc((char*) "serverdone returning");
 	return;
 }
