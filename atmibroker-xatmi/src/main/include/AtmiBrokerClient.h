@@ -24,7 +24,6 @@
 
 #include "Connection.h"
 #include "Session.h"
-#include "AtmiBrokerClientXml.h"
 #include "ConnectionManager.h"
 
 class AtmiBrokerClient {

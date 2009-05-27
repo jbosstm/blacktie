@@ -29,7 +29,7 @@
 					<SERVICE name='TestTPCall' transportLibrary='atmibroker-corba.dll'/>
 					<SERVICE name='TestTPAdvertise' transportLibrary='atmibroker-corba.dll'/>
 					<SERVICE name='LOOPY' transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='TestTPConversation'  transportLibrary='atmibroker-corba.dll'/>
+					<SERVICE name='TestTPConversat'  transportLibrary='atmibroker-corba.dll'/>
 					<SERVICE name='TestTPACall'  transportLibrary='atmibroker-corba.dll'/>
 					<SERVICE name='TestTPCancel'  transportLibrary='atmibroker-corba.dll'/>
 					<SERVICE name='TestTPConnect'  transportLibrary='atmibroker-corba.dll'/>
@@ -40,7 +40,7 @@
 					<SERVICE name='TestTPService'  transportLibrary='atmibroker-corba.dll'/>
 					<SERVICE name='TestTPReturn'  transportLibrary='atmibroker-corba.dll'/>
 					<SERVICE name='123456789012345' transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='TestTPUnadvertise' transportLibrary='atmibroker-corba.dll'/>
+					<SERVICE name='TestTPUnadverti' transportLibrary='atmibroker-corba.dll'/>
 					<SERVICE name='tpcall_x_octet' transportLibrary='atmibroker-corba.dll'/>
 					<SERVICE name='tpcall_x_common' transportLibrary='atmibroker-corba.dll'/>
 					<SERVICE name='tpcall_x_c_type' transportLibrary='atmibroker-corba.dll'/>

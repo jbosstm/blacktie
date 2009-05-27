@@ -34,8 +34,6 @@
 #include "Connection.h"
 
 #include "xatmi.h"
-//#include "AtmiBrokerServerXml.h"
-//#include "AtmiBrokerServiceXml.h"
 #include "AtmiBrokerEnvXml.h"
 #include "ConnectionManager.h"
 #include "Destination.h"
