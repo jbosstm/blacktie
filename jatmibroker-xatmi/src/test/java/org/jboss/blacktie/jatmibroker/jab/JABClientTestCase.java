@@ -36,7 +36,7 @@ public class JABClientTestCase extends TestCase {
 
 	public void setUp() throws InterruptedException {
 		runServer.serverinit();		
-		int delay = 2;
+		int delay = 5;
 		Thread.currentThread().sleep(delay * 1000); // TODO remove but occasional crash
 		log.error("This has just waited for " + delay + " seconds for the server to prime itself");
 	}
