@@ -17,6 +17,9 @@
  */
 package org.jboss.blacktie.jatmibroker.jab;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -27,10 +30,15 @@ import junit.framework.TestCase;
 import org.jboss.blacktie.jatmibroker.RunServer;
 
 public class JABClientTestCase extends TestCase {
+	private static final Logger log = LogManager
+			.getLogger(JABClientTestCase.class);
 	private RunServer runServer = new RunServer();
 
 	public void setUp() throws InterruptedException {
-		runServer.serverinit();
+		runServer.serverinit();		
+		int delay = 2;
+		Thread.currentThread().sleep(delay * 1000); // TODO remove but occasional crash
+		log.error("This has just waited for " + delay + " seconds for the server to prime itself");
 	}
 
 	public void tearDown() {
