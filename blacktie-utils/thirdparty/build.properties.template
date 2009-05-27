@@ -32,8 +32,8 @@ xercesc.lib.dir=/home/zhfeng/blacktie/util/xerces-c-3.0.1/src/.libs
 xercesc.include.dir=/home/zhfeng/blacktie/util/xerces-c-3.0.1/src
 xercesc.version=3.0.1
 
-jbossas.lib.dir=/home/mmusgrov/blacktie/util/jboss-5.0.0.GA/client
-jbossas.version=5.0.0.GA
+jbossas.lib.dir=/home/mmusgrov/blacktie/util/jboss-5.1.0.GA/client
+jbossas.version=5.1.0.GA
 
 java-devel.include.dir=/usr/local/jdk1.5.0_15/include/
 java-devel.platform.include.dir=/usr/local/jdk1.5.0_15/include/linux
