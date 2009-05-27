@@ -111,6 +111,11 @@ public class XMLEnvHandler extends DefaultHandler {
 				for (int i = 0; i < atts.getLength(); i++) {
 					if (atts.getLocalName(i).equals("name")) {
 						serviceName = atts.getValue(i);
+						if(serviceName.length() > 15) {
+							log.warn("service " + serviceName + " is longer than XATMI_SERVICE_NAME_LENGTH and will be ignore");
+							serviceName = null;
+							break;
+						}
 						String skey = "blacktie." + serviceName + ".server";
 						prop.put(skey, serverName);
 					} else if (atts.getLocalName(i).equals("transportLibrary")) {
@@ -121,12 +126,15 @@ public class XMLEnvHandler extends DefaultHandler {
 					}
 				}
 			}
-			AtmiBrokerServiceXML xml = new AtmiBrokerServiceXML(serverName,
-					serviceName, prop);
-			try {
-				xml.getProperties(configDir);
-			} catch (ConfigurationException e) {
-				throw new SAXException(e);
+
+			if(serviceName != null) {
+				AtmiBrokerServiceXML xml = new AtmiBrokerServiceXML(serverName,
+						serviceName, prop);
+				try {
+					xml.getProperties(configDir);
+				} catch (ConfigurationException e) {
+					throw new SAXException(e);
+				}
 			}
 		}
 	}
