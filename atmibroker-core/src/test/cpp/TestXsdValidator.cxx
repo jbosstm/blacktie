@@ -44,7 +44,4 @@ void TestXsdValidator::test() {
 
 	result = va.validate("xsd/Server.xsd", "SERVER_WRONG.xml");
 	CPPUNIT_ASSERT(result == false);
-
-	result = va.validate("xsd/Server.xsd", "SERVER.xml");
-	CPPUNIT_ASSERT(result == true);
 }

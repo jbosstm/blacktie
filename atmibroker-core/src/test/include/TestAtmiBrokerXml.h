@@ -23,15 +23,11 @@
 
 class TestAtmiBrokerXml: public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE( TestAtmiBrokerXml );
-	//CPPUNIT_TEST(test_server);
-	//CPPUNIT_TEST(test_client);
-	//CPPUNIT_TEST(test_service);
+	CPPUNIT_TEST(test_service);
 	CPPUNIT_TEST(test_env);
 	CPPUNIT_TEST_SUITE_END();
 
 public:
-	void test_server();
-	void test_client();
 	void test_service();
 	void test_env();
 };

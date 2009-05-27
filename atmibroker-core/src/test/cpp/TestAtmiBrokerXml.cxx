@@ -18,73 +18,10 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "TestAtmiBrokerXml.h"
-#include "AtmiBrokerServerXml.h"
-#include "AtmiBrokerClientXml.h"
 #include "AtmiBrokerServiceXml.h"
 #include "AtmiBrokerEnvXml.h"
 #include "AtmiBrokerEnv.h"
 #include "ace/OS_NS_stdlib.h"
-
-void TestAtmiBrokerXml::test_server() {
-	AtmiBrokerServerXml xml;
-	ServerMetadata      data;
-
-	CPPUNIT_ASSERT(xml.parseXmlDescriptor(&data, "SERVER.xml"));
-	CPPUNIT_ASSERT(data.maxChannels == 1);
-	CPPUNIT_ASSERT(data.maxSuppliers == 1);
-	CPPUNIT_ASSERT(data.maxConsumers == 1);
-	//CPPUNIT_ASSERT(data.maxReplicas == 1);
-	CPPUNIT_ASSERT(data.orbType == "TAO");
-	struct ServiceMetadata* service = &data.serviceDatas[0];
-	CPPUNIT_ASSERT(service);
-	CPPUNIT_ASSERT(service->name == "BAR");
-	CPPUNIT_ASSERT(service->function_name == "bar");
-	CPPUNIT_ASSERT(service->library_name == "libBar.so");
-	CPPUNIT_ASSERT(service->advertised);
-	CPPUNIT_ASSERT(service->transport == "libatmibroker-corba.so");
-
-	service = &data.serviceDatas[1];
-	CPPUNIT_ASSERT(service);
-	CPPUNIT_ASSERT(service->name == "FOO");
-	CPPUNIT_ASSERT(service->function_name == "foo");
-	CPPUNIT_ASSERT(service->library_name == "");
-	CPPUNIT_ASSERT(service->advertised == false);
-	CPPUNIT_ASSERT(service->transport == "libatmibroker-stomp.so");
-}
-
-void TestAtmiBrokerXml::test_client() {
-	AtmiBrokerClientXml xml;
-	std::vector<ClientServerInfo*> aClientServerVectorPtr;
-
-	CPPUNIT_ASSERT(xml.parseXmlDescriptor(&aClientServerVectorPtr, "Environment.xml"));
-	//CPPUNIT_ASSERT(clientMaxChannels == 1 );
-	//CPPUNIT_ASSERT(clientMaxSuppliers == 1 );
-	//CPPUNIT_ASSERT(clientMaxConsumers == 1 );
-
-	ClientServerInfo* server = aClientServerVectorPtr[1];
-	CPPUNIT_ASSERT(server != NULL);
-	CPPUNIT_ASSERT(strcmp(server->serverName, "foo") == 0);
-	std::vector<ClientServiceInfo>* services = &server->serviceVector;
-	CPPUNIT_ASSERT(strcmp((*services)[0].serviceName, "BAR") == 0);
-	CPPUNIT_ASSERT(strcmp((*services)[0].transportLib, "atmibroker-corba.so") == 0);
-	CPPUNIT_ASSERT(strcmp((*services)[1].serviceName, "ECHO") == 0);
-	CPPUNIT_ASSERT(strcmp((*services)[1].transportLib, "atmibroker-stomp.so") == 0);
-
-	server = aClientServerVectorPtr[0];
-	CPPUNIT_ASSERT(strcmp(server->serverName, "default") == 0);
-
-	for (std::vector<ClientServerInfo*>::iterator itServer = aClientServerVectorPtr.begin(); itServer != aClientServerVectorPtr.end(); itServer++) {
-		free((*itServer)->serverName);
-
-		std::vector<ClientServiceInfo>* services = &(*itServer)->serviceVector;
-		for(std::vector<ClientServiceInfo>::iterator i = services->begin(); i != services->end(); i++) {
-			free((*i).serviceName);
-			free((*i).transportLib);
-		}
-
-		free(*itServer);
-	}
-}
 
 void TestAtmiBrokerXml::test_service() {
 	AtmiBrokerServiceXml xml;
@@ -92,12 +29,10 @@ void TestAtmiBrokerXml::test_service() {
 
 	xml.parseXmlDescriptor(&service, "BAR");
 	CPPUNIT_ASSERT(service.poolSize == 5);
-	CPPUNIT_ASSERT(strcmp(service.serviceName, "BAR") == 0);
 	CPPUNIT_ASSERT(strcmp(service.function_name, "BAR") == 0);
 	CPPUNIT_ASSERT(strcmp(service.library_name, "libBAR.so") == 0);
 	CPPUNIT_ASSERT(service.advertised == false);
 
-	free(service.serviceName);
 	free(service.function_name);
 	free(service.library_name);
 }
