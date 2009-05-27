@@ -24,15 +24,16 @@
 		<SERVER_NAMES>
 			<SERVER name='standalone-server'>
 				<SERVICE_NAMES>
-					<SERVICE name='EchoService' transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='TestTPConversation' transportLibrary='atmibroker-corba.dll'/>
+					<SERVICE name='TestTPCall' transportLibrary='atmibroker-corba.dll'/>
+					<SERVICE name='TestTPConversat' transportLibrary='atmibroker-stomp.dll'/>
 				</SERVICE_NAMES>
 			</SERVER>
 			<SERVER name='foo'>
 				<SERVICE_NAMES>
-					<SERVICE name='BAR' transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='test_X_OCTET' transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='test_X_C_TYPE' transportLibrary='atmibroker-corba.dll'/>
+					<SERVICE name='BAR' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='tpcall_x_octet' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='tpcall_x_c_type' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPACall' transportLibrary='atmibroker-stomp.dll'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>
@@ -44,6 +45,22 @@
 			<ENV_VARIABLE>
 				<NAME>LOG4CXXCONFIG</NAME>
 				<VALUE>log4cxx.properties</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectHost</NAME>
+				<VALUE>localhost</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectPort</NAME>
+				<VALUE>61613</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectUsr</NAME>
+				<VALUE>JBM.SUCKER</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectPwd</NAME>
+				<VALUE>CHANGE ME!!</VALUE>
 			</ENV_VARIABLE>
 		</ENV_VARIABLES>
 	</ENVIRONMENT_DESCRIPTION>
