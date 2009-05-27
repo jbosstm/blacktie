@@ -25,7 +25,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>jatmibroker-xatmi</artifactId>
-	<name>Blacktie XATMI Implementation</name>
+	<name>Blacktie Java XATMI Implementation</name>
 	<packaging>jar</packaging>
 
 	<build>
