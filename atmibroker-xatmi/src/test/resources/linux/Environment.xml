@@ -26,7 +26,7 @@
 				<SERVICE_NAMES>
 					<SERVICE name='BAR' transportLibrary='libatmibroker-stomp.so'/>
 					<SERVICE name='TestTPFree' transportLibrary='libatmibroker-stomp.so'/>
-					<SERVICE name='TestTPCall' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='TestTPCall' transportLibrary='libatmibroker-stomp.so'/>
 					<SERVICE name='TestTPAdvertise' transportLibrary='libatmibroker-stomp.so'/>
 					<SERVICE name='LOOPY' transportLibrary='libatmibroker-stomp.so'/>
 					<SERVICE name='TestTPConversation'  transportLibrary='libatmibroker-stomp.so'/>
