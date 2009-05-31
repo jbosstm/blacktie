@@ -64,6 +64,7 @@ public class XMLServiceHandler extends DefaultHandler {
 			serviceElement = SERVICE_NAME;
 			String key = "blacktie." + serviceName;
 			String func_key = key + ".function_name";
+			String java_key = key + ".java_class_name";
 			String lib_key = key + ".library_name";
 			String ad_key = key + ".advertised";
 
@@ -73,6 +74,9 @@ public class XMLServiceHandler extends DefaultHandler {
 					if (attsLocalName.equals("function_name")) {
 						String function_name = atts.getValue(i);
 						prop.put(func_key, function_name);
+					} else if(atts.getLocalName(i).equals("java_class_name")) {
+						String java_class_name = atts.getValue(i);
+						prop.put(java_key, java_class_name);
 					} else if (atts.getLocalName(i).equals("library_name")) {
 						String library_name = atts.getValue(i);
 						prop.put(lib_key, library_name);

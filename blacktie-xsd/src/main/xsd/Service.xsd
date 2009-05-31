@@ -16,6 +16,7 @@
   			<xsd:element name="SIZE" type="xsd:string"/>
   		</xsd:sequence>
 		<xsd:attribute name="function_name" type="xsd:string"/>
+		<xsd:attribute name="java_class_name" type="xsd:string"/>
 		<xsd:attribute name="library_name" type="xsd:string"/>
 		<xsd:attribute name="advertised" type="xsd:boolean" default="false"/>
 	</xsd:complexType>

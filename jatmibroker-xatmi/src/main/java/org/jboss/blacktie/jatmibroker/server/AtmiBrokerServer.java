@@ -103,7 +103,7 @@ public class AtmiBrokerServer extends ServerPOA {
 			while (st.hasMoreElements()) {
 				String serviceName = st.nextToken();
 				String functionName = (String) properties.get("blacktie."
-						+ serviceName + ".function_name");
+						+ serviceName + ".java_class_name");
 				tpadvertise(serviceName, functionName);
 			}
 		}
