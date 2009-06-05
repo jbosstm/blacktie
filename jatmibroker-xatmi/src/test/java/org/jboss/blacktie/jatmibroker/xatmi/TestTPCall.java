@@ -19,6 +19,7 @@ package org.jboss.blacktie.jatmibroker.xatmi;
 
 import junit.framework.TestCase;
 
+import org.jboss.blacktie.jatmibroker.RunClient;
 import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.server.AtmiBrokerServer;
 
@@ -29,7 +30,7 @@ public class TestTPCall extends TestCase {
 	public void setUp() throws ConnectionException, ConfigurationException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
 		this.server
-				.tpadvertise("TestTPCall", TestTPCallService.class.getName());
+				.tpadvertise("LOOPY", TestTPCallService.class.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -45,10 +46,15 @@ public class TestTPCall extends TestCase {
 		byte[] echo = "echo".getBytes();
 		Buffer buffer = new Buffer(null, null);
 		buffer.setData(echo);
-		Response response = connection.tpcall("TestTPCall", buffer,
+		Response response = connection.tpcall("LOOPY", buffer,
 				echo.length, 0);
 		byte[] responseData = response.getBuffer().getData();
 		String receivedMessage = new String(responseData);
-		assertEquals("echo", receivedMessage);
+		assertEquals("ohce", receivedMessage);
+	}
+
+	public void testC() {
+		RunClient runClient = new RunClient();
+		runClient.test_x_octet();
 	}
 }

@@ -24,7 +24,7 @@
 		<SERVER_NAMES>
 			<SERVER name='standalone-server'>
 				<SERVICE_NAMES>
-					<SERVICE name='TestTPCall' transportLibrary='atmibroker-corba.dll'/>
+					<SERVICE name='LOOPY' transportLibrary='atmibroker-stomp.dll'/>
 					<SERVICE name='TestTPConversat' transportLibrary='atmibroker-stomp.dll'/>
 				</SERVICE_NAMES>
 			</SERVER>

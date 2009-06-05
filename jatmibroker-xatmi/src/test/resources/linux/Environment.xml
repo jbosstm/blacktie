@@ -24,7 +24,7 @@
 		<SERVER_NAMES>
 			<SERVER name='standalone-server'>
 				<SERVICE_NAMES>
-					<SERVICE name='TestTPCall' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='LOOPY' transportLibrary='libatmibroker-stomp.so'/>
 					<SERVICE name='TestTPConversat' transportLibrary='libatmibroker-stomp.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
