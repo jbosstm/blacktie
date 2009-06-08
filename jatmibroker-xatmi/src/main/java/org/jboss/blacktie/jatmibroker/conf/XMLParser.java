@@ -17,7 +17,7 @@
  */
 package org.jboss.blacktie.jatmibroker.conf;
 
-import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
 
 import javax.xml.XMLConstants;
@@ -77,17 +77,20 @@ public class XMLParser {
 	/**
 	 * Parser a File
 	 * 
-	 * @param file
+	 * @param envXML
 	 *            - File
 	 */
-	public boolean parse(File file) throws ConfigurationException {
-		if (file.exists()) {
+	public boolean parse(String env) throws ConfigurationException {
+		InputStream resource = Thread.currentThread().getContextClassLoader()
+				.getResourceAsStream(env);
+		if (resource != null) {
 			try {
-				schema.newValidator().validate(new StreamSource(file));
-				saxParser.parse(file, handler);
+				schema.newValidator().validate(new StreamSource(resource));
+				saxParser.parse(Thread.currentThread().getContextClassLoader()
+						.getResourceAsStream(env), handler);
 				return true;
 			} catch (Throwable t) {
-				throw new ConfigurationException("Errors parse : " + file, t);
+				throw new ConfigurationException("Errors parse : " + env, t);
 			}
 		}
 		return false;

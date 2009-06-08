@@ -39,7 +39,7 @@ public class XMLParserTest extends TestCase {
 		XMLEnvHandler handler = new XMLEnvHandler("linux", prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 		try {
-			if (xmlenv.parse(new File("WrongEnvironment.xml"))) {
+			if (xmlenv.parse("WrongEnvironment.xml")) {
 				fail("Should have thrown a parser exception");
 			} else {
 				fail("Should have found the file");
@@ -55,7 +55,7 @@ public class XMLParserTest extends TestCase {
 
 		XMLEnvHandler handler = new XMLEnvHandler("linux", prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
-		xmlenv.parse(new File("linux/Environment.xml"));
+		xmlenv.parse("linux/Environment.xml");
 
 		String domain = "fooapp";
 		String transid = "TransactionManagerService.OTS";

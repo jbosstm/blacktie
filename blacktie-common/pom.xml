@@ -43,21 +43,6 @@
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>unpack-compile-dependencies</id>
-						<phase>initialize</phase>
-						<goals>
-							<goal>unpack-dependencies</goal>
-						</goals>
-						<configuration>
-							<includeScope>compile</includeScope>
-							<includes>**/*</includes>
-							<markersDirectory>${project.build.directory}/cxx/compile-markers</markersDirectory>
-							<outputDirectory>${project.build.directory}/cxx/compile</outputDirectory>
-							<overWriteReleases>false</overWriteReleases>
-							<overWriteSnapshots>true</overWriteSnapshots>
-						</configuration>
-					</execution>
-					<execution>
 						<id>unpack-test-dependencies</id>
 						<phase>initialize</phase>
 						<goals>

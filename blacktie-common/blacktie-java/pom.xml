@@ -43,22 +43,6 @@
 
 				<executions>
 					<execution>
-						<id>generate-sources</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>generate-sources</goal>
-						</goals>
-					</execution>
-					<!--
-					<execution>
-						<id>compile</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-					</execution>
-					-->
-					<execution>
 						<id>test-compile</id>
 						<phase>test-compile</phase>
 						<goals>

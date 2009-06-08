@@ -199,7 +199,7 @@
 		<!--
 		     create a comma separated list of libraries from all the libraries in target/cxx/compile/lib
 		     -->
-                <fileset id="fileset.compile.libs" dir="target/cxx/compile/lib" includes="${lib.convert.pattern}"/>
+                <fileset id="fileset.compile.libs" dir="target/cxx/compile/lib" includes="${lib.convert.pattern}" erroronmissingdir="false"/>
                 <property name="xcompile.libs" value="${toString:fileset.compile.libs}"/>
                 <convert-libset libdir="${xcompile.libs}" propname="compile.libs"/>
 
@@ -261,7 +261,7 @@
 		<!--
 		     create a comma separated list of libraries from all the libraries in target/cxx/compile/lib
 		     -->
-                <fileset id="fileset.compile.libs" dir="target/cxx/compile/lib" includes="${lib.convert.pattern}"/>
+                <fileset id="fileset.compile.libs" dir="target/cxx/compile/lib" includes="${lib.convert.pattern}" erroronmissingdir="false"/>
                 <property name="xcompile.libs" value="${toString:fileset.compile.libs}"/>
                 <convert-libset libdir="${xcompile.libs}" propname="compile.libs"/>
 

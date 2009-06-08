@@ -32,6 +32,28 @@
 		<plugins>
 			<plugin>
 				<inherited>true</inherited>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unpack-compile-dependencies</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<includeScope>compile</includeScope>
+							<includes>**/*</includes>
+							<markersDirectory>${project.build.directory}/cxx/compile-markers</markersDirectory>
+							<outputDirectory>${project.build.directory}/cxx/compile</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>true</overWriteSnapshots>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<inherited>true</inherited>
 				<groupId>org.jboss.blacktie.plugins</groupId>
 				<artifactId>cpp-plugin</artifactId>
 
