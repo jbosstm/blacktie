@@ -57,6 +57,6 @@
 		<module>../atmibroker-xatmi</module>
 		<module>../codeGeneration</module>
 		<module>../jatmibroker-xatmi</module>
-		<module>../jatmibroker-xatmi-jee-service</module>
+		<module>../jatmibroker-xatmi-jee-example</module>
 	</modules>
 </project>
