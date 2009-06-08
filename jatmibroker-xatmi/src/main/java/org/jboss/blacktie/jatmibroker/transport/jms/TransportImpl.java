@@ -56,7 +56,7 @@ public class TransportImpl implements Transport {
 			return new SenderImpl(session, destination);
 		} catch (Throwable t) {
 			throw new ConnectionException(-1,
-					"Could not create a service sender", t);
+					"Could not create a service sender: " + t.getMessage(), t);
 		}
 	}
 
