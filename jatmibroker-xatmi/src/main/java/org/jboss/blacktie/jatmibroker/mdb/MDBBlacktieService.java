@@ -1,6 +1,7 @@
 package org.jboss.blacktie.jatmibroker.mdb;
 
 import javax.jms.BytesMessage;
+import javax.jms.Destination;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 
@@ -26,7 +27,8 @@ public abstract class MDBBlacktieService extends Service implements
 	public void onMessage(Message message) {
 		try {
 			BytesMessage bytesMessage = ((BytesMessage) message);
-			String replyTo = message.getStringProperty("reply-to");
+			// TODO String replyTo = message.getStringProperty("reply-to");
+			Destination replyTo = message.getJMSReplyTo();
 			int len = (int) bytesMessage.getBodyLength();
 			String serviceName = message.getStringProperty("serviceName");
 			int flags = new Integer(message.getStringProperty("messageflags"));

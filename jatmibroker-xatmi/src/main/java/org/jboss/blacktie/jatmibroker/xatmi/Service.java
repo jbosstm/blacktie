@@ -53,7 +53,10 @@ public abstract class Service implements BlacktieService {
 	protected void processMessage(Message message) throws ConnectionException,
 			ConfigurationException {
 		Transport transport = getTransport();
-		Sender sender = transport.createSender(message.replyTo);
+		Sender sender = null;
+		if (message.replyTo != null) {
+			sender = transport.createSender(message.replyTo);
+		}
 		Session session = new Session(transport, message.cd, sender);
 
 		// TODO HANDLE CONTROL
