@@ -22,9 +22,9 @@
 		<NAMING_SERVICE_ID></NAMING_SERVICE_ID>
 		<TRANS_FACTORY_ID>TransactionManagerService.OTS</TRANS_FACTORY_ID>
 		<SERVER_NAMES>
-			<SERVER name='ejb-connector-tests'>
+			<SERVER name='jboss'>
 				<SERVICE_NAMES>
-					<SERVICE name='EchoService' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='BlacktieAdministrationService' transportLibrary='libatmibroker-stomp.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>

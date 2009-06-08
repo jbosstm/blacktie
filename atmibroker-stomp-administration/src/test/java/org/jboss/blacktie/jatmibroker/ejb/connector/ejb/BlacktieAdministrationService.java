@@ -28,11 +28,8 @@ import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 
-public class AbstractBlacktieServiceTestCase extends TestCase {
+public class BlacktieAdministrationService extends TestCase {
 	private Connection connection;
-
-	public AbstractBlacktieServiceTestCase() throws ConnectionException {
-	}
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		ConnectionFactory connectionFactory = ConnectionFactory
@@ -49,7 +46,7 @@ public class AbstractBlacktieServiceTestCase extends TestCase {
 		Buffer buffer = new Buffer(null, null);
 		buffer.setData(echo);
 
-		Response response = connection.tpcall("EchoService", buffer,
+		Response response = connection.tpcall("BlacktieAdministrationService", buffer,
 				echo.length, 0);
 		byte[] responseData = response.getBuffer().getData();
 		String receivedMessage = new String(responseData);
