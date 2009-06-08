@@ -33,14 +33,45 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>attached</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<forkMode>once</forkMode>
-					<workingDirectory>target/test-classes</workingDirectory>
-					<environmentVariables>
-						<BLACKTIE_SCHEMA_DIR>xsd</BLACKTIE_SCHEMA_DIR>
-					</environmentVariables>
+					<skip>true</skip>
 				</configuration>
+				<executions>
+					<execution>
+						<id>surefire-it</id>
+						<phase>integration-test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<forkMode>once</forkMode>
+							<workingDirectory>target/test-classes</workingDirectory>
+							<environmentVariables>
+								<BLACKTIE_SCHEMA_DIR>xsd</BLACKTIE_SCHEMA_DIR>
+							</environmentVariables>
+							<skip>false</skip>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -48,6 +79,32 @@
 					<source>1.5</source>
 					<target>1.5</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jboss-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>jboss-deploy</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>deploy</goal>
+						</goals>
+						<configuration>
+							<fileName>${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar</fileName>
+						</configuration>
+					</execution>
+					<execution>
+						<id>jboss-undeploy</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>undeploy</goal>
+						</goals>
+						<configuration>
+							<fileName>${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar</fileName>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
@@ -63,11 +120,24 @@
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>jatmibroker-xatmi</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.jboss.blacktie</groupId>
+					<artifactId>atmibroker-idl</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
 			<groupId>jboss</groupId>
 			<artifactId>jboss-javaee</artifactId>
+			<version>5.1.0.GA</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jboss-ejb3-ext-api</artifactId>
 			<version>5.1.0.GA</version>
 			<scope>provided</scope>
 		</dependency>
@@ -79,5 +149,91 @@
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- START JBOSS -->
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jboss-javaee</artifactId>
+			<version>5.1.0.GA</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jboss-messaging-client</artifactId>
+			<version>5.1.0.GA</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jbossall-client</artifactId>
+			<version>5.1.0.GA</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jboss-aop-client</artifactId>
+			<version>5.1.0.GA</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>javassist</artifactId>
+			<version>5.1.0.GA</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>trove</artifactId>
+			<version>5.1.0.GA</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jnp-client</artifactId>
+			<version>5.1.0.GA</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jboss-logging-spi</artifactId>
+			<version>5.1.0.GA</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jboss-remoting</artifactId>
+			<version>5.1.0.GA</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jboss-common-core</artifactId>
+			<version>5.1.0.GA</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jboss-mdr</artifactId>
+			<version>5.1.0.GA</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>concurrent</artifactId>
+			<version>5.1.0.GA</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jboss-serialization</artifactId>
+			<version>5.1.0.GA</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jboss-logging-log4j</artifactId>
+			<version>5.1.0.GA</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- END JBOSS -->
 	</dependencies>
 </project>

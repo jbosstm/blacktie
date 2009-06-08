@@ -24,8 +24,7 @@
 		<SERVER_NAMES>
 			<SERVER name='ejb-connector-tests'>
 				<SERVICE_NAMES>
-					<SERVICE name='EchoService' transportLibrary='libatmibroker-corba.so'/>
-					<SERVICE name='TestTPCall' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='EchoService' transportLibrary='libatmibroker-stomp.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>

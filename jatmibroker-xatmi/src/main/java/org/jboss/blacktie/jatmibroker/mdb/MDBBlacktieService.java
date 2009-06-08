@@ -45,7 +45,7 @@ public abstract class MDBBlacktieService extends Service implements
 			processMessage(toProcess);
 			// TODO HANDLE CONTROL
 		} catch (Throwable t) {
-			log.error("Could not service the request");
+			log.error("Could not service the request", t);
 		}
 	}
 }

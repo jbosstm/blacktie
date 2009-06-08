@@ -35,6 +35,7 @@ public abstract class Service implements BlacktieService {
 
 	public Service(String name) {
 		this.name = name;
+		log.info("Service created: " + name);
 	}
 
 	private synchronized Transport getTransport()
