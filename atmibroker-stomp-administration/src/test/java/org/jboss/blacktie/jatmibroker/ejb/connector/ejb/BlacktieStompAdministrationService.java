@@ -28,7 +28,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 
-public class BlacktieAdministrationService extends TestCase {
+public class BlacktieStompAdministrationService extends TestCase {
 	private Connection connection;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
@@ -46,7 +46,7 @@ public class BlacktieAdministrationService extends TestCase {
 		Buffer buffer = new Buffer(null, null);
 		buffer.setData(echo);
 
-		Response response = connection.tpcall("BlacktieAdministrationService", buffer,
+		Response response = connection.tpcall("BlacktieStompAdministrationService", buffer,
 				echo.length, 0);
 		byte[] responseData = response.getBuffer().getData();
 		String receivedMessage = new String(responseData);

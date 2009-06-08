@@ -12,13 +12,13 @@ import org.jboss.ejb3.annotation.Depends;
 @MessageDriven(activationConfig =
 {
 @ActivationConfigProperty(propertyName="destinationType", propertyValue="javax.jms.Queue"),
-@ActivationConfigProperty(propertyName="destination", propertyValue="queue/BlacktieAdministrationService")
+@ActivationConfigProperty(propertyName="destination", propertyValue="queue/BlacktieStompAdministrationService")
 })
-@Depends ("jboss.mq.destination:service=Queue,name=BlacktieAdministrationService")
-public class BlacktieAdministrationService extends MDBBlacktieService implements javax.jms.MessageListener {
+@Depends ("jboss.mq.destination:service=Queue,name=BlacktieStompAdministrationService")
+public class BlacktieStompAdministrationService extends MDBBlacktieService implements javax.jms.MessageListener {
 
-	public BlacktieAdministrationService() {
-		super("BlacktieAdministrationService");
+	public BlacktieStompAdministrationService() {
+		super("BlacktieStompAdministrationService");
 	}
 
 	public Response tpservice(TPSVCINFO svcinfo) {

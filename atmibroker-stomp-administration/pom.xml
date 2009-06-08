@@ -26,7 +26,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>atmibroker-stomp-administration</artifactId>
-	<name>Blacktie XATMI MDB Example</name>
+	<name>Blacktie Stomp Administration</name>
 	<packaging>jar</packaging>
 
 	<build>
