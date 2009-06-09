@@ -35,48 +35,6 @@
 		<module>blacktie-java</module>
 	</modules>
 
-	<build>
-		<plugins>
-			<plugin>
-				<inherited>true</inherited>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>unpack-test-dependencies</id>
-						<phase>initialize</phase>
-						<goals>
-							<goal>unpack-dependencies</goal>
-						</goals>
-						<configuration>
-							<excludeScope>runtime</excludeScope>
-							<includes>**/*</includes>
-							<markersDirectory>${project.build.directory}/cxx/test-markers</markersDirectory>
-							<outputDirectory>${project.build.directory}/cxx/test</outputDirectory>
-							<overWriteReleases>false</overWriteReleases>
-							<overWriteSnapshots>true</overWriteSnapshots>
-						</configuration>
-					</execution>
-					<execution>
-						<id>unpack-runtime-dependencies</id>
-						<phase>initialize</phase>
-						<goals>
-							<goal>unpack-dependencies</goal>
-						</goals>
-						<configuration>
-							<includeScope>runtime</includeScope>
-							<includes>**/*</includes>
-							<markersDirectory>${project.build.directory}/cxx/runtime-markers</markersDirectory>
-							<outputDirectory>${project.build.directory}/cxx/runtime</outputDirectory>
-							<overWriteReleases>false</overWriteReleases>
-							<overWriteSnapshots>true</overWriteSnapshots>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
-
 	<profiles>
 		<profile>
 			<id>windows</id>

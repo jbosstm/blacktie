@@ -26,10 +26,33 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>blacktie-java</artifactId>
 	<packaging>pom</packaging>
-	<name>Blacktie Java Defaults and Dependencies</name>
+	<name>Blacktie Java JNI Tests</name>
 
 	<build>
 		<plugins>
+			<plugin>
+				<inherited>true</inherited>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unpack-test-dependencies</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<excludeScope>runtime</excludeScope>
+							<includes>**/*</includes>
+							<markersDirectory>${project.build.directory}/cxx/test-markers</markersDirectory>
+							<outputDirectory>${project.build.directory}/cxx/test</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>true</overWriteSnapshots>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 			<plugin>
 				<inherited>true</inherited>
 				<groupId>org.jboss.blacktie.plugins</groupId>
