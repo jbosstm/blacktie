@@ -1,4 +1,4 @@
-package org.jboss.blacktie.example.mdb;
+package org.jboss.blacktie.administration;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
