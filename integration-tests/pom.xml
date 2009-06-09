@@ -24,8 +24,8 @@
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>jatmibroker-xatmi</artifactId>
-	<name>Blacktie Java XATMI Implementation</name>
+	<artifactId>integration-test</artifactId>
+	<name>Blacktie Java/C C/Java XATMI Tests</name>
 	<packaging>jar</packaging>
 
 	<build>
@@ -56,69 +56,44 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>blacktie-xsd</artifactId>
+			<artifactId>atmibroker-xatmi</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>atmibroker-idl</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>ace.contrib</groupId>
-					<artifactId>ace</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>apache-log4cxx.contrib</groupId>
-		                        <artifactId>log4cxx</artifactId>
-				</exclusion>				
-			</exclusions>
+			<artifactId>jatmibroker-xatmi</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-javaee</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>provided</scope>
+			<groupId>sun</groupId>
+			<artifactId>java-devel</artifactId>
+			<version>1.5.0_15</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.15</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.sun.jmx</groupId>
-					<artifactId>jmxri</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.sun.jdmk</groupId>
-					<artifactId>jmxtools</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.jms</groupId>
-					<artifactId>jms</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.mail</groupId>
-					<artifactId>mail</artifactId>
-				</exclusion>
-			</exclusions>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
 		</dependency>
 		<!-- START ORB -->
 		<dependency>
 			<groupId>jboss</groupId>
 			<artifactId>jacorb</artifactId>
 			<version>5.1.0.GA</version>
-			<scope>compile</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>avalon-framework</groupId>
 			<artifactId>avalon-framework</artifactId>
 			<version>4.1.5</version>
-			<scope>compile</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>logkit</groupId>
 			<artifactId>logkit</artifactId>
 			<version>1.2</version>
-			<scope>compile</scope>
+			<scope>test</scope>
 		</dependency>
 		<!-- END ORB -->
 		<!-- START JMS -->
@@ -201,31 +176,6 @@
 			<scope>test</scope>
 		</dependency>
 		<!-- END JMS -->
-		<!-- START TEST -->
-		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>atmibroker-xatmi</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>ace.contrib</groupId>
-			<artifactId>ace</artifactId>
-			<version>5.6.7</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>sun</groupId>
-			<artifactId>java-devel</artifactId>
-			<version>1.5.0_15</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
-		</dependency>
-		<!-- END TEST -->
 	</dependencies>
 	<profiles>
 		<profile>
