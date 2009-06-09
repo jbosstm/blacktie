@@ -46,28 +46,31 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		String serviceName = st.nextToken();
 		byte[] success = new byte[1];
 		if (operation.equals("tpunadvertise")) {
+			log.debug("Unadvertising: " + serviceName);
 			try {
 				ObjectName name = new ObjectName(
 						"jboss.messaging.destination:service=Queue,name="
 								+ serviceName);
 				beanServerConnection.invoke(name, "stop", null, null);
 				success[0] = 1;
+				log.info("Unadvertised: " + serviceName);
 			} catch (Throwable t) {
 				log.error("Could not unadvertise the service");
 			}
 		} else if (operation.equals("tpadvertise")) {
+			log.info("Advertising: " + serviceName);
 			try {
 				ObjectName name = new ObjectName(
 						"jboss.messaging.destination:service=Queue,name="
 								+ serviceName);
 				beanServerConnection.invoke(name, "start", null, null);
 				success[0] = 1;
+				log.info("Advertised: " + serviceName);
 			} catch (Throwable t) {
 				log.error("Could not unadvertise the service");
 			}
 		}
 
-		byte[] rcvd = svcinfo.getBuffer().getData();
 		Buffer buffer = new Buffer(null, null);
 		buffer.setData(success);
 		return new Response((short) 0, 0, buffer, 1, 0);

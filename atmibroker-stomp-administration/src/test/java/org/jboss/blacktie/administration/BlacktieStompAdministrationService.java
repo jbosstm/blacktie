@@ -19,9 +19,7 @@ package org.jboss.blacktie.administration;
 
 import junit.framework.TestCase;
 
-import org.jboss.blacktie.example.mdb.EchoServiceTestService;
 import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.server.AtmiBrokerServer;
 import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
@@ -35,21 +33,37 @@ public class BlacktieStompAdministrationService extends TestCase {
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
+		processCommand("tpadvertise,TestTPFree");
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
+		processCommand("tpadvertise,TestTPFree");
 		connection.close();
 	}
 
-	public void test() throws ConnectionException {
-		byte[] echo = "echo".getBytes();
-		Buffer buffer = new Buffer(null, null);
-		buffer.setData(echo);
+	public void test() {
+		String[] commands = new String[] { "tpunadvertise,TestTPFree",
+				"tpadvertise,TestTPFree" };
+		for (int i = 0; i < commands.length; i++) {
+			try {
+				processCommand(commands[i]);
+			} catch (ConnectionException e) {
+				e.printStackTrace();
+				fail(e.getMessage());
+			}
+		}
+	}
 
-		Response response = connection.tpcall("BlacktieStompAdministrationService", buffer,
-				echo.length, 0);
+	private void processCommand(String command) throws ConnectionException {
+		byte[] toSend = command.getBytes();
+		Buffer buffer = new Buffer(null, null);
+		buffer.setData(toSend);
+
+		Response response = connection.tpcall(
+				"BlacktieStompAdministrationService", buffer,
+				buffer.getData().length, 0);
+
 		byte[] responseData = response.getBuffer().getData();
-		String receivedMessage = new String(responseData);
-		assertEquals("echo", receivedMessage);
+		assertEquals(1, responseData[0]);
 	}
 }

@@ -4,6 +4,7 @@
       name="jboss.mq.destination:service=Queue,name=BlacktieStompAdministrationService">
       <attribute name="JNDIName">queue/BlacktieStompAdministrationService</attribute>
       <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+      <!-- 
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
       <attribute name="SecurityConfig">
@@ -13,5 +14,6 @@
             <role name="durpublisher" read="true" write="true" create="true"/>
          </security>
       </attribute>
+       -->
    </mbean>
 </server>
