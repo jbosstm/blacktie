@@ -19,7 +19,6 @@ package org.jboss.blacktie.jatmibroker.xatmi;
 
 import junit.framework.TestCase;
 
-import org.jboss.blacktie.jatmibroker.RunClient;
 import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.server.AtmiBrokerServer;
 
@@ -51,10 +50,5 @@ public class TestTPCall extends TestCase {
 		byte[] responseData = response.getBuffer().getData();
 		String receivedMessage = new String(responseData);
 		assertEquals("ohce", receivedMessage);
-	}
-
-	public void testC() {
-		RunClient runClient = new RunClient();
-		runClient.test_x_octet();
 	}
 }
