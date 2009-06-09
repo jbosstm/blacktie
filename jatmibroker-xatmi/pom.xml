@@ -203,17 +203,6 @@
 		<!-- END JMS -->
 		<!-- START TEST -->
 		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>atmibroker-xatmi</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>ace.contrib</groupId>
-			<artifactId>ace</artifactId>
-			<version>5.6.7</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>sun</groupId>
 			<artifactId>java-devel</artifactId>
 			<version>1.5.0_15</version>
