@@ -26,7 +26,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 
-public class BlacktieStompAdministrationService extends TestCase {
+public class BlacktieStompAdministrationServiceTest extends TestCase {
 	private Connection connection;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
