@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <server>
+<!--
+   <mbean code="org.jboss.jms.server.destination.QueueService"
+      name="jboss.messaging.destination:service=Queue,name=TestTPFree"
+      xmbean-dd="xmdesc/Queue-xmbean.xml">
+      <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
+      <depends>jboss.messaging:service=PostOffice</depends>
+   </mbean>  
+-->
    <mbean code="org.jboss.mq.server.jmx.Queue"
-      name="jboss.mq.destination:service=Queue,name=BlacktieStompAdministrationService">
-      <attribute name="JNDIName">queue/BlacktieStompAdministrationService</attribute>
+      name="jboss.mq.destination:service=Queue,name=BTStompAdmin">
+      <attribute name="JNDIName">queue/BTStompAdmin</attribute>
       <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
-      <!-- 
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
       <attribute name="SecurityConfig">
@@ -14,6 +21,5 @@
             <role name="durpublisher" read="true" write="true" create="true"/>
          </security>
       </attribute>
-       -->
    </mbean>
 </server>

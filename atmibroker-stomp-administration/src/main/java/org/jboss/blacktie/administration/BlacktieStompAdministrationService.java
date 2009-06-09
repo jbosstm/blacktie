@@ -21,8 +21,8 @@ import org.jboss.ejb3.annotation.Depends;
 
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BlacktieStompAdministrationService") })
-@Depends("jboss.mq.destination:service=Queue,name=BlacktieStompAdministrationService")
+		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTStompAdmin") })
+@Depends("jboss.mq.destination:service=Queue,name=BTStompAdmin")
 public class BlacktieStompAdministrationService extends MDBBlacktieService
 		implements javax.jms.MessageListener {
 	private static final Logger log = LogManager
@@ -31,9 +31,9 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 	private MBeanServerConnection beanServerConnection;
 
 	public BlacktieStompAdministrationService() throws IOException {
-		super("BlacktieStompAdministrationService");
+		super("BTStompAdmin");
 		JMXServiceURL u = new JMXServiceURL(
-				"service:jmx:rmi:///jndi/rmi://localhost:8080/jmxrmi");
+				"service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector");
 		JMXConnector c = JMXConnectorFactory.connect(u);
 		beanServerConnection = c.getMBeanServerConnection();
 	}
@@ -58,7 +58,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 				log.error("Could not unadvertise the service");
 			}
 		} else if (operation.equals("tpadvertise")) {
-			log.info("Advertising: " + serviceName);
+			log.debug("Advertising: " + serviceName);
 			try {
 				ObjectName name = new ObjectName(
 						"jboss.messaging.destination:service=Queue,name="

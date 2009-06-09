@@ -24,7 +24,7 @@
 		<SERVER_NAMES>
 			<SERVER name='jboss'>
 				<SERVICE_NAMES>
-					<SERVICE name='BlacktieStompAdministrationService' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='BTStompAdmin' transportLibrary='libatmibroker-stomp.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>

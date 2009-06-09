@@ -41,16 +41,33 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 		connection.close();
 	}
 
-	public void test() {
-		String[] commands = new String[] { "tpunadvertise,TestTPFree",
-				"tpadvertise,TestTPFree" };
-		for (int i = 0; i < commands.length; i++) {
-			try {
-				processCommand(commands[i]);
-			} catch (ConnectionException e) {
-				e.printStackTrace();
-				fail(e.getMessage());
-			}
+	public void test() throws ConnectionException {
+		try {
+			Buffer buffer = new Buffer(null, null);
+			buffer.setData(new byte[0]);
+			connection.tpacall("TestTPFree", buffer, 0, Connection.TPNOREPLY);
+		} catch (ConnectionException e) {
+			fail("Was not able to send the request : " + e.getMessage());
+		}
+
+		processCommand("tpunadvertise,TestTPFree");
+		try {
+			Buffer buffer = new Buffer(null, null);
+			buffer.setData(new byte[0]);
+			connection.tpcall("TestTPFree", buffer, 0, Connection.TPNOREPLY);
+			fail("Was able to send the request");
+		} catch (ConnectionException e) {
+			// EXPECTED
+		}
+
+		processCommand("tpadvertise,TestTPFree");
+
+		try {
+			Buffer buffer = new Buffer(null, null);
+			buffer.setData(new byte[0]);
+			connection.tpacall("TestTPFree", buffer, 0, Connection.TPNOREPLY);
+		} catch (ConnectionException e) {
+			fail("Was not able to send the request : " + e.getMessage());
 		}
 	}
 
@@ -59,9 +76,8 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 		Buffer buffer = new Buffer(null, null);
 		buffer.setData(toSend);
 
-		Response response = connection.tpcall(
-				"BlacktieStompAdministrationService", buffer,
-				buffer.getData().length, 0);
+		Response response = connection.tpcall("BTStompAdmin", buffer, buffer
+				.getData().length, 0);
 
 		byte[] responseData = response.getBuffer().getData();
 		assertEquals(1, responseData[0]);
