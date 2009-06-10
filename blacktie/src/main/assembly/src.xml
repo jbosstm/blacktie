@@ -32,32 +32,16 @@
 			</excludes>
 		</fileSet>
 		<fileSet>
-			<directory>../atmibroker-core</directory>
-			<outputDirectory>atmibroker-core</outputDirectory>
+			<directory>../blacktie-utils</directory>
+			<outputDirectory>blacktie-utils</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<excludes>
 				<exclude>target/**</exclude>
 			</excludes>
 		</fileSet>
 		<fileSet>
-			<directory>../atmibroker-idl</directory>
-			<outputDirectory>atmibroker-idl</outputDirectory>
-			<useDefaultExcludes>true</useDefaultExcludes>
-			<excludes>
-				<exclude>target/**</exclude>
-			</excludes>
-		</fileSet>
-		<fileSet>
-			<directory>../atmibroker-tx</directory>
-			<outputDirectory>atmibroker-tx</outputDirectory>
-			<useDefaultExcludes>true</useDefaultExcludes>
-			<excludes>
-				<exclude>target/**</exclude>
-			</excludes>
-		</fileSet>
-		<fileSet>
-			<directory>../atmibroker-xatmi</directory>
-			<outputDirectory>atmibroker-xatmi</outputDirectory>
+			<directory>../blacktie-common</directory>
+			<outputDirectory>blacktie-common</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<excludes>
 				<exclude>target/**</exclude>
@@ -72,24 +56,8 @@
 			</excludes>
 		</fileSet>
 		<fileSet>
-			<directory>../codeGeneration</directory>
-			<outputDirectory>codeGeneration</outputDirectory>
-			<useDefaultExcludes>true</useDefaultExcludes>
-			<excludes>
-				<exclude>target/**</exclude>
-			</excludes>
-		</fileSet>
-		<fileSet>
-			<directory>../ejb-connector</directory>
-			<outputDirectory>ejb-connector</outputDirectory>
-			<useDefaultExcludes>true</useDefaultExcludes>
-			<excludes>
-				<exclude>target/**</exclude>
-			</excludes>
-		</fileSet>
-		<fileSet>
-			<directory>../jab</directory>
-			<outputDirectory>jab</outputDirectory>
+			<directory>../atmibroker-idl</directory>
+			<outputDirectory>atmibroker-idl</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<excludes>
 				<exclude>target/**</exclude>
@@ -98,6 +66,86 @@
 		<fileSet>
 			<directory>../jatmibroker-xatmi</directory>
 			<outputDirectory>jatmibroker-xatmi</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../atmibroker-stomp-administration</directory>
+			<outputDirectory>atmibroker-stomp-administration</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../stompconnectservice</directory>
+			<outputDirectory>stompconnectservice</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../tx-test-utilities</directory>
+			<outputDirectory>tx-test-utilities</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../atmibroker-core</directory>
+			<outputDirectory>atmibroker-core</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../atmibroker-tx</directory>
+			<outputDirectory>atmibroker-tx</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../atmibroker-corba</directory>
+			<outputDirectory>atmibroker-corba</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../atmibroker-stomp</directory>
+			<outputDirectory>atmibroker-stomp</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../atmibroker-xatmi</directory>
+			<outputDirectory>atmibroker-xatmi</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../codeGeneration</directory>
+			<outputDirectory>codeGeneration</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>../integration-tests</directory>
+			<outputDirectory>integration-tests</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<excludes>
 				<exclude>target/**</exclude>
