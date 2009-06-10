@@ -48,14 +48,15 @@
 		<module>../blacktie-common</module>
 		<module>../blacktie-xsd</module>
 		<module>../atmibroker-idl</module>
+		<module>../jatmibroker-xatmi</module>
+<!--		<module>../jatmibroker-xatmi/src/example/mdb-example</module>-->
+		<module>../atmibroker-stomp-administration</module>
+		<module>../stompconnectservice</module>
 		<module>../tx-test-utilities</module>
 		<module>../atmibroker-core</module>
 		<module>../atmibroker-tx</module>
 		<module>../atmibroker-corba</module>
-		<module>../jatmibroker-xatmi</module>
-		<module>../atmibroker-stomp-administration</module>
 		<module>../atmibroker-stomp</module>
-		<module>../stompconnectservice</module>
 		<module>../atmibroker-xatmi</module>
 		<module>../codeGeneration</module>
 		<module>../integration-tests</module>
