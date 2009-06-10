@@ -36,21 +36,10 @@
 		</moduleSet>
 		<moduleSet>
 			<includes>
-				<include>org.jboss.blacktie:jab</include>
+				<include>org.jboss.blacktie:jatmibroker-xatmi</include>
 			</includes>
 			<binaries>
-				<outputDirectory>connectors/jab</outputDirectory>
-				<unpack>false</unpack>
-			</binaries>
-		</moduleSet>
-		<moduleSet>
-			<includes>
-				<include>org.jboss.blacktie:ejb-connector
-				</include>
-			</includes>
-			<binaries>
-				<includeDependencies>false</includeDependencies>
-				<outputDirectory>connectors/ejb</outputDirectory>
+				<outputDirectory>connectors/jatmibroker-xatmi</outputDirectory>
 				<unpack>false</unpack>
 			</binaries>
 		</moduleSet>
@@ -91,18 +80,18 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../jab/src/example/fooapp/
+			<directory>../jatmibroker-xatmi/src/example/jab/
 			</directory>
-			<outputDirectory>examples/jab/fooapp
+			<outputDirectory>examples/jab
 			</outputDirectory>
 			<includes>
 				<include>*</include>
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../ejb-connector/src/example/fooapp/
+			<directory>../jatmibroker-xatmi/src/example/mdb/
 			</directory>
-			<outputDirectory>examples/ejb-connector/fooapp
+			<outputDirectory>examples/mdb
 			</outputDirectory>
 			<includes>
 				<include>**/*</include>

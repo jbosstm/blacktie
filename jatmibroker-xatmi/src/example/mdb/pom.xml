@@ -25,7 +25,7 @@
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>mdb-example</artifactId>
+	<artifactId>example-mdb</artifactId>
 	<name>Blacktie XATMI MDB Example</name>
 	<packaging>jar</packaging>
 

@@ -49,7 +49,7 @@
 		<module>../blacktie-xsd</module>
 		<module>../atmibroker-idl</module>
 		<module>../jatmibroker-xatmi</module>
-		<module>../jatmibroker-xatmi/src/example/mdb-example</module>
+		<module>../jatmibroker-xatmi/src/example/mdb</module>
 		<module>../atmibroker-stomp-administration</module>
 		<module>../stompconnectservice</module>
 		<module>../tx-test-utilities</module>
