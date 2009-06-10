@@ -25,7 +25,7 @@
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>atmibroker-stomp-administration</artifactId>
+	<artifactId>stompconnectservice</artifactId>
 	<name>Blacktie Stomp Administration</name>
 	<packaging>jar</packaging>
 
