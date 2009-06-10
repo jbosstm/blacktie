@@ -65,6 +65,12 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jboss-javaee</artifactId>
+			<version>5.1.0.GA</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>sun</groupId>
 			<artifactId>java-devel</artifactId>
 			<version>1.5.0_15</version>
