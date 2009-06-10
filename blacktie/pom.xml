@@ -50,8 +50,10 @@
 		<module>../atmibroker-idl</module>
 		<module>../jatmibroker-xatmi</module>
 		<module>../jatmibroker-xatmi/src/example/mdb</module>
+<!--
 		<module>../atmibroker-stomp-administration</module>
 		<module>../stompconnectservice</module>
+-->
 		<module>../tx-test-utilities</module>
 		<module>../atmibroker-core</module>
 		<module>../atmibroker-tx</module>
