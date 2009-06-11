@@ -136,6 +136,7 @@
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<excludes>
 				<exclude>target/**</exclude>
+				<exclude>win32-xatmi-debug-assist/**</exclude>
 			</excludes>
 		</fileSet>
 		<fileSet>
@@ -144,7 +145,6 @@
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<excludes>
 				<exclude>target/**</exclude>
-				<exclude>win32-xatmi-debug-assist/**</exclude>
 			</excludes>
 		</fileSet>
 		<fileSet>
