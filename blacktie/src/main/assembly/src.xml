@@ -69,6 +69,7 @@
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<excludes>
 				<exclude>target/**</exclude>
+				<exclude>src/example/mdb/target/**</exclude>
 			</excludes>
 		</fileSet>
 		<fileSet>
