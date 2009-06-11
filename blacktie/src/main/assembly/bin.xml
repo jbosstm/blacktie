@@ -133,29 +133,12 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../atmibroker-core/src/main/export/
-			</directory>
-			<outputDirectory>include</outputDirectory>
-			<includes>
-				<include>*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
 			<directory>../blacktie-xsd/src/main/xsd/
 			</directory>
 			<outputDirectory>schemas/xsd</outputDirectory>
 			<includes>
 				<include>*</include>
 			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../scripts/services/</directory>
-			<outputDirectory>bin/services-scripts
-			</outputDirectory>
-			<includes>
-				<include>*</include>
-			</includes>
-			<fileMode>0775</fileMode>
 		</fileSet>
 		<fileSet>
 			<directory>../scripts/setup/</directory>
