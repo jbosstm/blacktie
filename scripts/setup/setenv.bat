@@ -26,7 +26,7 @@ set PATH=%PATH%;.
 
 setlocal ENABLEDELAYEDEXPANSION
 FOR /R codeGeneration %%G IN (*.jar) DO set CLASSPATH=!CLASSPATH!;%%G
-FOR /R connectors\jab %%G IN (*.jar) DO set CLASSPATH=!CLASSPATH!;%%G
+FOR /R jatmibroker-xatmi %%G IN (*.jar) DO set CLASSPATH=!CLASSPATH!;%%G
 endlocal & set CLASSPATH=%CLASSPATH%
 set CLASSPATH=%CLASSPATH%;%BLACKTIE_BIN_DIR%\bin
 set CLASSPATH=%CLASSPATH%;.

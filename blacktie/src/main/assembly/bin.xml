@@ -39,7 +39,16 @@
 				<include>org.jboss.blacktie:jatmibroker-xatmi</include>
 			</includes>
 			<binaries>
-				<outputDirectory>connectors/jatmibroker-xatmi</outputDirectory>
+				<outputDirectory>jatmibroker-xatmi</outputDirectory>
+				<unpack>false</unpack>
+			</binaries>
+		</moduleSet>
+		<moduleSet>
+			<includes>
+				<include>org.jboss.blacktie:stompconnectservice</include>
+			</includes>
+			<binaries>
+				<outputDirectory>stompconnectservice</outputDirectory>
 				<unpack>false</unpack>
 			</binaries>
 		</moduleSet>
@@ -80,6 +89,15 @@
 			</includes>
 		</fileSet>
 		<fileSet>
+			<directory>../atmibroker-xatmi/src/example/txfooapp/
+			</directory>
+			<outputDirectory>examples/xatmi/txfooapp
+			</outputDirectory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
 			<directory>../jatmibroker-xatmi/src/example/jab/
 			</directory>
 			<outputDirectory>examples/jab
@@ -93,9 +111,10 @@
 			</directory>
 			<outputDirectory>examples/mdb
 			</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
 		</fileSet>
 		<fileSet>
 			<directory>../atmibroker-xatmi/src/main/export/
