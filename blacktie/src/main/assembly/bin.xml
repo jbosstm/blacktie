@@ -103,7 +103,7 @@
 			<outputDirectory>examples/jab
 			</outputDirectory>
 			<includes>
-				<include>*</include>
+				<include>**/*</include>
 			</includes>
 		</fileSet>
 		<fileSet>

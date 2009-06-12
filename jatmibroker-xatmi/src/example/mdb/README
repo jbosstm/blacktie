@@ -1,0 +1,43 @@
+JBoss, Home of Professional Open Source
+Copyright 2008, Red Hat, Inc., and others contributors as indicated
+by the @authors tag. All rights reserved.
+See the copyright.txt in the distribution for a
+full listing of individual contributors.
+This copyrighted material is made available to anyone wishing to use,
+modify, copy, or redistribute it subject to the terms and conditions
+of the GNU Lesser General Public License, v. 2.1.
+This program is distributed in the hope that it will be useful, but WITHOUT A
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+You should have received a copy of the GNU Lesser General Public License,
+v.2.1 along with this distribution; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+MA  02110-1301, USA.
+
+NOTE: You may like to create a backup of this folder before starting!
+
+1. SET ENVIRONMENT VARIABLES
+In order to run the example you need to make sure that you have set the environment
+appropriately. You will need to make sure that you edit the variables with values 
+starting with REPLACE_WITH_: 
+On Linux you need to edit:
+	$BLACKTIE_BIN_DIR/setenv.sh
+On Windows:
+	%BLACKTIE_BIN_DIR%\setenv.bat
+Then, execute the script setenv
+
+2. RUN THE EXAMPLE
+This example makes use of maven to build, deploy and test an XATMI service deployed 
+as an MDB.
+You must ensure that BLACKTIE_CONFIGURATION_DIR is either not set or set to the 
+empty string before running the test.
+
+If you are running the test from a binary distribution you will need to ensure that 
+the JAtmiBroker XATMI library is installed in your .m2 Maven folder:
+cd BLACKTIE_BIN_DIR/jatmibroker-xatmi
+mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=jatmibroker-xatmi -Dversion=1.0-MR5-SNAPSHOT -Dpackaging=jar -Dfile=jatmibroker-xatmi-1.0-MR5-SNAPSHOT.jar -DgeneratePom=true
+mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=atmibroker-idl -Dversion=1.0-MR5-SNAPSHOT -Dpackaging=jar -Dfile=atmibroker-idl-1.0-MR5-SNAPSHOT.jar -DgeneratePom=true
+mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=blacktie-xsd -Dversion=1.0-MR5-SNAPSHOT -Dpackaging=jar -Dfile=blacktie-xsd-1.0-MR5-SNAPSHOT.jar -DgeneratePom=true
+
+After the dependencies are installed you can then run the example using the following command:
+mvn install

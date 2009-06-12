@@ -29,7 +29,7 @@
 					<SERVICE name='TestTPCall' transportLibrary='atmibroker-corba.dll'/>
 					<SERVICE name='TestTPAdvertise' transportLibrary='atmibroker-corba.dll'/>
 					<SERVICE name='LOOPY' transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='TestTPConversat'  transportLibrary='atmibroker-corba.dll'/>
+					<SERVICE name='TestTPConversat'  transportLibrary='atmibroker-stomp.dll'/>
 					<SERVICE name='TestTPACall'  transportLibrary='atmibroker-corba.dll'/>
 					<SERVICE name='TestTPCancel'  transportLibrary='atmibroker-corba.dll'/>
 					<SERVICE name='TestTPConnect'  transportLibrary='atmibroker-corba.dll'/>
