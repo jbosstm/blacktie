@@ -18,7 +18,7 @@
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import org.jboss.blacktie.jatmibroker.core.jab.JABRemoteService;
+import org.jboss.blacktie.jatmibroker.jab.JABRemoteService;
 import org.jboss.blacktie.jatmibroker.jab.JABSession;
 import org.jboss.blacktie.jatmibroker.jab.JABSessionAttributes;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
@@ -36,16 +36,16 @@ public class JABClient {
 		}
 		String message = args[0];
 		try {
-			JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes();
+			JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(null);
 			JABSession aJabSession = new JABSession(aJabSessionAttributes);
 			JABTransaction transaction = new JABTransaction(aJabSession, 5000);
 			JABRemoteService aJabService = new JABRemoteService(aJabSession,
 					"BAR");
-			aJabService.setString("STRING", message);
+			aJabService.setBuffer("X_OCTET", message.getBytes(), message.getBytes().length);
 			log.info("Calling call with input: " + message);
-			aJabService.call();
+			aJabService.call(transaction);
 			log.info("Called call with output: "
-					+ aJabService.getResponseString());
+					+ aJabService.getResponseData());
 			transaction.commit();
 			aJabSession.endSession();
 		} catch (JABException e) {

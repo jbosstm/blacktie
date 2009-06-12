@@ -133,6 +133,15 @@
 			</includes>
 		</fileSet>
 		<fileSet>
+			<directory>../atmibroker-core/src/main/export/
+			</directory>
+			<outputDirectory>include</outputDirectory>
+			<includes>
+				<include>atmiBrokerCoreMacro.h</include>
+				<include>userlogc.h</include>
+			</includes>
+		</fileSet>
+		<fileSet>
 			<directory>../blacktie-xsd/src/main/xsd/
 			</directory>
 			<outputDirectory>schemas/xsd</outputDirectory>

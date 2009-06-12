@@ -26,9 +26,8 @@
 int main(int argc, char **argv) {
 	int exit_status = serverinit(argc, argv);
 
-	//SERVICE_ADVERTISEMENTS
-
 	if (exit_status != -1) {
+		//SERVICE_ADVERTISEMENTS
 		exit_status = serverrun();
 	} else {
 		userlogc((char*) "main Unexpected exception in serverrun()");
