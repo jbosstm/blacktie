@@ -19,6 +19,13 @@
 	xmlns="http://www.jboss.org/blacktie">
 	<ENVIRONMENT_DESCRIPTION>
 		<DOMAIN>fooapp</DOMAIN>
+		<SERVER_NAMES>
+			<SERVER>
+				<SERVICE_NAMES>
+					<SERVICE name='DBS' transportLibrary='libatmibroker-corba.so'/>
+				</SERVICE_NAMES>
+			</SERVER>
+		</SERVER_NAMES>
 		<XA_RESOURCES>
 			 <XA_RESOURCE>
 			 	<XA_RESOURCE_MGR_ID>2101</XA_RESOURCE_MGR_ID>
