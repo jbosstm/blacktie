@@ -307,7 +307,7 @@ int updateDb(const char * backingfile, const char * dbname, int argc, char * arg
 			ret1 = put_rec(dbp, argv[i], argv[i + 1]);
 	}
 
-        if ((ret2 = dbp->close(dbp, 0)) != 0)
+	if ((ret2 = dbp->close(dbp, 0)) != 0)
 		return fail("db close error", ret2);
 
 	return ret1;
