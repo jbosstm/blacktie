@@ -21,6 +21,13 @@
 		<DOMAIN>fooapp</DOMAIN>
 		<NAMING_SERVICE_ID></NAMING_SERVICE_ID>
 		<TRANS_FACTORY_ID>TransactionManagerService.OTS</TRANS_FACTORY_ID>
+		<SERVER_NAMES>
+			<SERVER>
+				<SERVICE_NAMES>
+					<SERVICE name='BAR' transportLibrary='libatmibroker-corba.so'/>
+				</SERVICE_NAMES>
+			</SERVER>
+		</SERVER_NAMES>
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
 				<NAME>ORBOPT</NAME>
