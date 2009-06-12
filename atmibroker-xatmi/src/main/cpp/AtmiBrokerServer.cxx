@@ -534,7 +534,7 @@ AtmiBrokerServer::get_server_info() throw (CORBA::SystemException ) {
 	aServerInfo->securityType = CORBA::string_dup(
 			serverInfo.securityType.c_str());
 	aServerInfo->orbType = CORBA::string_dup(serverInfo.orbType.c_str());
-	aServerInfo->queueSpaceName = CORBA::string_dup(queue_name);
+	//aServerInfo->queueSpaceName = CORBA::string_dup(queue_name);
 
 	//aServerInfo->serviceNames.length(serverInfo.serviceNames.size());
 	std::queue<AtmiBroker::octetSeq *> returnData;

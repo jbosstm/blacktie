@@ -19,8 +19,6 @@ Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 	xmlns="http://www.jboss.org/blacktie">
 	<ENVIRONMENT_DESCRIPTION>
 		<DOMAIN>fooapp</DOMAIN>
-		<NAMING_SERVICE_ID></NAMING_SERVICE_ID>
-		<TRANS_FACTORY_ID></TRANS_FACTORY_ID>
 		<SERVER_NAMES>
 			<SERVER>
 				<SERVICE_NAMES>

@@ -84,10 +84,10 @@ typedef std::vector<ServerInfo*> ServersInfo;
 extern BLACKTIE_CORE_DLL xarm_config_t * xarmp;
 extern BLACKTIE_CORE_DLL ServersInfo servers;
 extern BLACKTIE_CORE_DLL char domain[30];
-extern BLACKTIE_CORE_DLL char * loggingServiceId;
-extern BLACKTIE_CORE_DLL char * notifyServiceId;
-extern BLACKTIE_CORE_DLL char * namingServiceId;
-extern BLACKTIE_CORE_DLL char * queue_name;
-extern BLACKTIE_CORE_DLL char* transFactoryId;
+//extern BLACKTIE_CORE_DLL char * loggingServiceId;
+//extern BLACKTIE_CORE_DLL char * notifyServiceId;
+//extern BLACKTIE_CORE_DLL char * namingServiceId;
+//extern BLACKTIE_CORE_DLL char * queue_name;
+//extern BLACKTIE_CORE_DLL char* transFactoryId;
 
 #endif

@@ -41,9 +41,9 @@ log4cxx::LoggerPtr loggerAtmiBrokerEnvXml(log4cxx::Logger::getLogger(
 xarm_config_t * xarmp = 0;
 ServersInfo servers;
 
-char* notifyServiceId;
-char* namingServiceId;
-char* loggingServiceId;
+//char* notifyServiceId;
+//char* namingServiceId;
+//char* loggingServiceId;
 char domain[30];
 char* queue_name;
 char* transFactoryId;
@@ -61,11 +61,11 @@ static int envVariableCount = 0;
 static bool processingEnvironment = false;
 static bool processingEnvironmentDescription = false;
 static bool processingServer = false;
-static bool processingQSpaceName = false;
-static bool processingNamingServiceId = false;
-static bool processingNotifyServiceId = false;
-static bool processingLoggingServiceId = false;
-static bool processingTransFactoryId = false;
+//static bool processingQSpaceName = false;
+//static bool processingNamingServiceId = false;
+//static bool processingNotifyServiceId = false;
+//static bool processingLoggingServiceId = false;
+//static bool processingTransFactoryId = false;
 static bool processingServerNames = false;
 static bool processingServiceNames = false;
 static bool processingService = false;
@@ -93,11 +93,11 @@ AtmiBrokerEnvXml::AtmiBrokerEnvXml() {
 	processingEnvironment = false;
 	processingEnvironmentDescription = false;
 	processingServer = false;
-	processingQSpaceName = false;
-	processingNamingServiceId = false;
-	processingNotifyServiceId = false;
-	processingLoggingServiceId = false;
-	processingTransFactoryId = false;
+//	processingQSpaceName = false;
+//	processingNamingServiceId = false;
+//	processingNotifyServiceId = false;
+//	processingLoggingServiceId = false;
+//	processingTransFactoryId = false;
 	processingXaResources = false;
 	processingXaResource = false;
 	processingXaResourceMgrId = false;
@@ -154,6 +154,7 @@ static void XMLCALL startElement
 		servers.push_back(server);
 	} else if (strcmp(name, "DOMAIN") == 0) {
 		processingDomain = true;
+	/*
 	} else if (strcmp(name, "QSPACE_NAME") == 0) {
 		processingQSpaceName = true;
 	} else if (strcmp(name, "NAMING_SERVICE_ID") == 0) {
@@ -164,6 +165,7 @@ static void XMLCALL startElement
 		processingLoggingServiceId = true;
 	} else if (strcmp(name, "TRANS_FACTORY_ID") == 0) {
 		processingTransFactoryId = true;
+	*/
 	} else if (strcmp(name, "XA_RESOURCES") == 0) {
 		processingXaResources = true;
 	} else if (strcmp(name, "XA_RESOURCE") == 0) {
@@ -284,6 +286,7 @@ static void XMLCALL endElement
 		storedElement = true;
 		processingDomain = false;
 		strcpy(domain, last_value);
+	/*
 	} else if (strcmp(last_element, "QSPACE_NAME") == 0) {
 		storedElement = true;
 		processingQSpaceName = false;
@@ -300,6 +303,7 @@ static void XMLCALL endElement
 	} else if (strcmp(last_element, "TRANS_FACTORY_ID") == 0) {
 		processingTransFactoryId = false;
 		transFactoryId = strdup(last_value);
+	*/
 	} else if (strcmp(last_element, "XA_RESOURCES") == 0) {
 		processingXaResources = false;
 	} else if (strcmp(last_element, "XA_RESOURCE") == 0) {

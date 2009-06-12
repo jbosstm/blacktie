@@ -19,8 +19,6 @@
 	xmlns="http://www.jboss.org/blacktie">
 	<ENVIRONMENT_DESCRIPTION>
 		<DOMAIN>fooapp</DOMAIN>
-		<NAMING_SERVICE_ID></NAMING_SERVICE_ID>
-		<TRANS_FACTORY_ID>TransactionManagerService.OTS</TRANS_FACTORY_ID>
 		<XA_RESOURCES>
 			 <XA_RESOURCE>
 			 	<XA_RESOURCE_MGR_ID>2101</XA_RESOURCE_MGR_ID>
@@ -43,6 +41,10 @@
 			<ENV_VARIABLE>
 				<NAME>ORBOPT</NAME>
 				<VALUE>-ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>TRANS_FACTORY_ID</NAME>
+				<VALUE>TransactionManagerService.OTS</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>LOG4CXXCONFIG</NAME>

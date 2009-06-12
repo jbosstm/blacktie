@@ -116,6 +116,7 @@ private:
 	int tx_complete(bool);
 	int chainTransaction(int);
 
+	char* transFactoryId;
 	CORBA_CONNECTION* ots_connection;
 
 	// OTS References

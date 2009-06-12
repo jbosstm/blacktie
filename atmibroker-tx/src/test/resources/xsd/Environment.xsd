@@ -14,8 +14,6 @@
         <xsd:complexType>
             <xsd:sequence>
   		<xsd:element name="DOMAIN" type="xsd:string"/>
-  		<xsd:element name="NAMING_SERVICE_ID" type="xsd:string"/>
-  		<xsd:element name="TRANS_FACTORY_ID" type="xsd:string"/>
 		<xsd:element name="XA_RESOURCES" minOccurs="0">
 			<xsd:complexType>
 			<xsd:sequence>

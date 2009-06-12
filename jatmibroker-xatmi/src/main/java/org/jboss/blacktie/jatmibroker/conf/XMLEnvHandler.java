@@ -32,7 +32,6 @@ public class XMLEnvHandler extends DefaultHandler {
 	private static final Logger log = LogManager.getLogger(XMLEnvHandler.class);
 
 	private final String DOMAIN = "DOMAIN";
-	private final String TRANS_FACTORY_ID = "TRANS_FACTORY_ID";
 	private final String ENV_VARIABLES = "ENV_VARIABLES";
 	private final String ENV_VARIABLE = "ENV_VARIABLE";
 	private final String SERVER_NAME = "SERVER";
@@ -41,7 +40,6 @@ public class XMLEnvHandler extends DefaultHandler {
 	private final String VALUE = "VALUE";
 
 	private String domainElement;
-	private String transIDElement;
 	private String serverElement;
 	private String serviceElement;
 	private String varsElement;
@@ -50,6 +48,7 @@ public class XMLEnvHandler extends DefaultHandler {
 	private String valueElement;
 	private int orbargs;
 	private Boolean isORBOPT;
+	private Boolean isTrans;
 	private Properties prop;
 
 	private String value;
@@ -84,14 +83,13 @@ public class XMLEnvHandler extends DefaultHandler {
 
 		if (DOMAIN.equals(localName)) {
 			domainElement = DOMAIN;
-		} else if (TRANS_FACTORY_ID.equals(localName)) {
-			transIDElement = TRANS_FACTORY_ID;
 		} else if (ENV_VARIABLES.equals(localName)) {
 			varsElement = ENV_VARIABLES;
 			orbargs = 0;
 		} else if (NAME.equals(localName)) {
 			nameElement = NAME;
 			isORBOPT = false;
+			isTrans = false;
 		} else if (VALUE.equals(localName)) {
 			valueElement = VALUE;
 		} else if (SERVER_NAME.equals(localName)) {
@@ -144,15 +142,15 @@ public class XMLEnvHandler extends DefaultHandler {
 		if (DOMAIN.equals(localName)) {
 			prop.setProperty("blacktie.domain.name", value);
 			domainElement = "";
-		} else if (TRANS_FACTORY_ID.equals(localName)) {
-			prop.setProperty("blacktie.trans.factoryid", value);
-			transIDElement = "";
 		} else if (ENV_VARIABLES.equals(localName)) {
 			varsElement = "";
 			log.debug("blacktie.orb.args is " + orbargs);
 			prop.setProperty("blacktie.orb.args", Integer.toString(orbargs));
 		} else if (NAME.equals(localName) && value.equals("ORBOPT")) {
 			isORBOPT = true;
+			nameElement = "";
+		} else if(NAME.equals(localName) && value.equals("TRANS_FACTORY_ID")) {
+			isTrans = true;
 			nameElement = "";
 		} else if (NAME.equals(localName)) {
 			name = value;
@@ -168,6 +166,10 @@ public class XMLEnvHandler extends DefaultHandler {
 				log.debug(arg + " is " + argv[i - 1]);
 			}
 			isORBOPT = false;
+			valueElement = "";
+		} else if (VALUE.equals(localName) && isTrans) {
+			prop.setProperty("blacktie.trans.factoryid", value);
+			isTrans = false;
 			valueElement = "";
 		} else if (VALUE.equals(localName)) {
 			valueElement = "";

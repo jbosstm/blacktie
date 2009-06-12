@@ -29,7 +29,7 @@
 #include "TxInitializer.h"
 #include "OrbManagement.h"
 #include "AtmiBrokerOTS.h"
-#include "AtmiBrokerEnvXml.h"
+#include "AtmiBrokerEnv.h"
 
 #include "txClient.h"
 
@@ -67,6 +67,7 @@ AtmiBrokerOTS::AtmiBrokerOTS() :
 	nextControlId = 1;
 	currentImpl = NULL;
 	tx_current = NULL;
+	transFactoryId = AtmiBrokerEnv::get_instance()->getenv((char*)"TRANS_FACTORY_ID");
 	ots_connection = init_orb((char*) "ots");
 	(void) rm_open();
 	//	createTransactionPolicy();
