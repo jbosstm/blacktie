@@ -90,6 +90,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	} else if (tpsvcinfo.flags & TPSENDONLY) {
 		session->setCanSend(false);
 	}
+
 	// HANDLE THE CLIENT INVOCATION
 	if (control) {
 		tpsvcinfo.flags = (tpsvcinfo.flags | TPTRAN);
@@ -113,7 +114,6 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	free(idata);
 	if (control) {
 		disassociate_tx(); // TODO figure out why tpreturn needs to stop Resource Managers
-		setSpecific(TSS_KEY, control);
 	}
 
 	// CLEAN UP THE SENDER AND RECEIVER FOR THIS CLIENT
@@ -126,7 +126,6 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	destroySpecific(SVC_SES);
 	destroySpecific(SVC_KEY);
 	destroySpecific(TSS_KEY);
-	//disassociateTx(); TODO
 	LOG4CXX_DEBUG(logger, (char*) "ServiceDispatcher session closed");
 }
 

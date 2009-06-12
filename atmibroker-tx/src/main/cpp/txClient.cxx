@@ -40,7 +40,12 @@ int associate_tx(void *control)
 {
 	setSpecific(TSS_KEY, control);
 
-	return AtmiBrokerOTS::get_instance()->rm_resume();
+	try {
+		return AtmiBrokerOTS::get_instance()->rm_resume();
+	} catch (...) {
+		LOG4CXX_LOGLS(txClientLogger, log4cxx::Level::getDebug(), (char *) "Error resuming RMs");
+		return XAER_NOTA;
+	}
 }
 
 int associate_serialized_tx(char *orbname, char* control)
@@ -61,7 +66,11 @@ void * disassociate_tx(void)
 {
 	void *control = getSpecific(TSS_KEY);
 
-	(void) AtmiBrokerOTS::get_instance()->rm_suspend();
+	try {
+		(void) AtmiBrokerOTS::get_instance()->rm_suspend();
+	} catch (...) {
+		LOG4CXX_LOGLS(txClientLogger, log4cxx::Level::getDebug(), (char *) "Error suspending RMs");
+	}
 
 	if (control)
 		destroySpecific(TSS_KEY);
