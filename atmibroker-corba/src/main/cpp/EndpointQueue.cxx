@@ -102,6 +102,8 @@ void CorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA:
 		message.replyto = strdup(replyto_ior);
 		message.rval = rval;
 		message.control = getSpecific(TSS_KEY);
+		// the tx now belongs to the message so remove it from the thread
+		destroySpecific(TSS_KEY);
 
 		returnData.push(message);
 		LOG4CXX_DEBUG(logger, (char*) "notifying");
