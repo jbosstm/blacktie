@@ -35,8 +35,8 @@ public class AtmiBrokerServerXMLTest extends TestCase {
 	}
 
 	public void test() throws Exception {
-		AtmiBrokerServerXML serverDesc = new AtmiBrokerServerXML("foo");
-		Properties prop = serverDesc.getProperties("win32");
+		AtmiBrokerServerXML serverDesc = new AtmiBrokerServerXML("standalone-server");
+		Properties prop = serverDesc.getProperties();
 
 		assertTrue("fooapp".equals(prop.getProperty("blacktie.domain.name")));
 		assertTrue("TransactionManagerService.OTS".equals(prop
@@ -48,7 +48,7 @@ public class AtmiBrokerServerXMLTest extends TestCase {
 	}
 
 	public void testEnv() throws Exception {
-		AtmiBrokerServerXML serverDesc = new AtmiBrokerServerXML("foo");
+		AtmiBrokerServerXML serverDesc = new AtmiBrokerServerXML("standalone-server");
 		Properties prop = serverDesc.getProperties();
 
 		assertTrue("fooapp".equals(prop.getProperty("blacktie.domain.name")));

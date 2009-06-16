@@ -36,7 +36,7 @@ public class XMLParserTest extends TestCase {
 
 	public void testWrongEnvironmentXML() throws ConfigurationException {
 		Properties prop = new Properties();
-		XMLEnvHandler handler = new XMLEnvHandler("linux", prop);
+		XMLEnvHandler handler = new XMLEnvHandler("", prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 		try {
 			if (xmlenv.parse("WrongEnvironment.xml")) {
@@ -53,40 +53,38 @@ public class XMLParserTest extends TestCase {
 	public void testEnvironmentXML() throws Exception {
 		Properties prop = new Properties();
 
-		XMLEnvHandler handler = new XMLEnvHandler("linux", prop);
+		XMLEnvHandler handler = new XMLEnvHandler("", prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
-		xmlenv.parse("linux/Environment.xml");
+		xmlenv.parse("Environment.xml");
 
 		String domain = "fooapp";
 		String transid = "TransactionManagerService.OTS";
 		String args = "2";
 		String arg1 = "-ORBInitRef";
 		String arg2 = "NameService=corbaloc::localhost:3528/NameService";
-		String server = "foo";
-		String serviceName = "BAR";
+		String server = "standalone-server";
+		String serviceName = "TestOne";
 		String transport = "libatmibroker-stomp.so";
-		String library = "libBAR.so";
-		String function = "BAR";
-		String advertised = "false";
+//		String library = "libBAR.so";
+//		String function = "TestOne";
+		String advertised = "true";
 		String size = "1";
 
-		assertTrue(server.equals(prop.getProperty("blacktie.BAR.server")));
+		assertTrue(server.equals(prop.getProperty("blacktie.TestOne.server")));
 		assertTrue(transport.equals(prop
-				.getProperty("blacktie.BAR.transportLib")));
-		assertTrue(function.equals(prop
-				.getProperty("blacktie.BAR.function_name")));
-		assertTrue(library
-				.equals(prop.getProperty("blacktie.BAR.library_name")));
+				.getProperty("blacktie.TestOne.transportLib")));
+//		assertTrue(function.equals(prop
+//				.getProperty("blacktie.TestOne.function_name")));
+//		assertTrue(library
+//				.equals(prop.getProperty("blacktie.TestOne.library_name")));
 		assertTrue(advertised.equals(prop
-				.getProperty("blacktie.BAR.advertised")));
+				.getProperty("blacktie.TestOne.advertised")));
 		assertTrue(domain.equals(prop.getProperty("blacktie.domain.name")));
 		assertTrue(transid.equals(prop.getProperty("blacktie.trans.factoryid")));
 		assertTrue(args.equals(prop.getProperty("blacktie.orb.args")));
 		assertTrue(arg1.equals(prop.getProperty("blacktie.orb.arg.1")));
 		assertTrue(arg2.equals(prop.getProperty("blacktie.orb.arg.2")));
-		String property = prop.getProperty("blacktie.BAR.size");
-		assertTrue(size.equals(property));
-
+		assertTrue(size.equals(prop.getProperty("blacktie.TestOne.size")));
 		assertTrue("log4cxx.properties".equals(prop.getProperty("LOG4CXXCONFIG")));
 	}
 	//

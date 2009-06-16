@@ -29,7 +29,7 @@ public class TestTPCall extends TestCase {
 	public void setUp() throws ConnectionException, ConfigurationException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
 		this.server
-				.tpadvertise("LOOPY", TestTPCallService.class.getName());
+				.tpadvertise("TestOne", TestTPCallService.class.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -45,7 +45,7 @@ public class TestTPCall extends TestCase {
 		byte[] echo = "echo".getBytes();
 		Buffer buffer = new Buffer(null, null);
 		buffer.setData(echo);
-		Response response = connection.tpcall("LOOPY", buffer,
+		Response response = connection.tpcall("TestOne", buffer,
 				echo.length, 0);
 		byte[] responseData = response.getBuffer().getData();
 		String receivedMessage = new String(responseData);

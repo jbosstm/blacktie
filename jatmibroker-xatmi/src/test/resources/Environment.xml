@@ -22,16 +22,8 @@
 		<SERVER_NAMES>
 			<SERVER name='standalone-server'>
 				<SERVICE_NAMES>
-					<SERVICE name='LOOPY' transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='TestTPConversat' transportLibrary='atmibroker-stomp.dll'/>
-				</SERVICE_NAMES>
-			</SERVER>
-			<SERVER name='foo'>
-				<SERVICE_NAMES>
-					<SERVICE name='BAR' transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='tpcall_x_octet' transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='tpcall_x_c_type' transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='TestTPACall' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestOne' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='TestTwo' transportLibrary='libatmibroker-stomp.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>

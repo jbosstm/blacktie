@@ -31,26 +31,54 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<forkMode>once</forkMode>
-					<workingDirectory>target/test-classes</workingDirectory>
-					<environmentVariables>
-						<Path>${ld_library_path}</Path>
-						<LD_LIBRARY_PATH>${ld_library_path}</LD_LIBRARY_PATH>
-						<BLACKTIE_CONFIGURATION_DIR>${atmibroker.configuration.dir}</BLACKTIE_CONFIGURATION_DIR>
-						<BLACKTIE_SCHEMA_DIR>xsd</BLACKTIE_SCHEMA_DIR>
-					</environmentVariables>
-				</configuration>
-			</plugin>
-			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<source>1.5</source>
 					<target>1.5</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+				<executions>
+					<execution>
+						<id>surefire-it</id>
+						<phase>integration-test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<forkMode>once</forkMode>
+							<workingDirectory>target/test-classes</workingDirectory>
+							<environmentVariables>
+								<BLACKTIE_SCHEMA_DIR>xsd</BLACKTIE_SCHEMA_DIR>
+							</environmentVariables>
+							<skip>false</skip>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jboss-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>jboss-deploy</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>harddeploy</goal>
+						</goals>
+						<configuration>
+							<fileName>src/test/resources/jatmibroker-xatmi-test-service.xml</fileName>
+							<serverName>all</serverName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 	</build>
 	<dependencies>

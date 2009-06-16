@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<SERVICE xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xmlns="http://www.jboss.org/blacktie">
-<SERVICE_DESCRIPTION java_class_name="org.jboss.blacktie.jatmibroker.xatmi.TestTPConversationService" advertised="true">
-    <SIZE>1</SIZE>
-</SERVICE_DESCRIPTION>
-</SERVICE>
