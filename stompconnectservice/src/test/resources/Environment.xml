@@ -23,7 +23,7 @@
 			<SERVER name='jboss'>
 				<SERVICE_NAMES>
 					<SERVICE name='BTStompAdmin' transportLibrary='libatmibroker-stomp.so'/>
-					<SERVICE name='TestTPFree' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='BAR' transportLibrary='libatmibroker-stomp.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>

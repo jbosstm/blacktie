@@ -19,12 +19,33 @@
 			 xmlns="http://www.jboss.org/blacktie">
 	<ENVIRONMENT_DESCRIPTION>
 		<DOMAIN>jboss</DOMAIN>
-		<NAMING_SERVICE_ID></NAMING_SERVICE_ID>
-		<TRANS_FACTORY_ID>TransactionManagerService.OTS</TRANS_FACTORY_ID>
 		<SERVER_NAMES>
 			<SERVER name='jboss'>
 				<SERVICE_NAMES>
 					<SERVICE name='BTStompAdmin' transportLibrary='libatmibroker-stomp.so'/>
+				</SERVICE_NAMES>
+			</SERVER>
+			<SERVER name="foo">
+				<SERVICE_NAMES>
+					<SERVICE name='TestTPFree' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='TestTPAdvertise' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='123456789012345' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='TestTPUnadverti' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='tpcall_x_octet' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='tpcall_x_common' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='tpcall_x_c_type' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='LOOPY' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='TestTPConversat' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='TestTPACall' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='TestTPCancel' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='TestTPConnect' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='TestTPDiscon' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='TestTPGetrply' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='TestTPSend' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='TestTPRecv' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='TestTPService' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='TestTPReturn' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='BAR' transportLibrary='libatmibroker-stomp.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>

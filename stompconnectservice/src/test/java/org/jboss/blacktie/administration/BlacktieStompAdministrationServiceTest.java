@@ -33,11 +33,9 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
-		processCommand("tpadvertise,TestTPFree");
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
-		processCommand("tpadvertise,TestTPFree");
 		connection.close();
 	}
 
@@ -45,33 +43,38 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 		try {
 			Buffer buffer = new Buffer(null, null);
 			buffer.setData(new byte[0]);
-			connection.tpacall("TestTPFree", buffer, 0, Connection.TPNOREPLY);
+			connection.tpacall("BAR", buffer, 0, Connection.TPNOREPLY);
 		} catch (ConnectionException e) {
 			fail("Was not able to send the request : " + e.getMessage());
 		}
 
-		processCommand("tpunadvertise,TestTPFree");
+		processCommand("tpunadvertise,BAR", 1);
 		try {
 			Buffer buffer = new Buffer(null, null);
 			buffer.setData(new byte[0]);
-			connection.tpcall("TestTPFree", buffer, 0, Connection.TPNOREPLY);
+			connection.tpcall("BAR", buffer, 0, Connection.TPNOREPLY);
 			fail("Was able to send the request");
 		} catch (ConnectionException e) {
 			// EXPECTED
 		}
 
-		processCommand("tpadvertise,TestTPFree");
+		processCommand("tpadvertise,BAR", 1);
 
 		try {
 			Buffer buffer = new Buffer(null, null);
 			buffer.setData(new byte[0]);
-			connection.tpacall("TestTPFree", buffer, 0, Connection.TPNOREPLY);
+			connection.tpacall("BAR", buffer, 0, Connection.TPNOREPLY);
 		} catch (ConnectionException e) {
 			fail("Was not able to send the request : " + e.getMessage());
 		}
 	}
 
-	private void processCommand(String command) throws ConnectionException {
+	public void testUnknownService() throws ConnectionException {
+		processCommand("tpadvertise,UNKNOWN_SERVICE", 0);
+	}
+		
+
+	private void processCommand(String command, int expectation) throws ConnectionException {
 		byte[] toSend = command.getBytes();
 		Buffer buffer = new Buffer(null, null);
 		buffer.setData(toSend);
@@ -80,6 +83,6 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 				.getData().length, 0);
 
 		byte[] responseData = response.getBuffer().getData();
-		assertEquals(1, responseData[0]);
+		assertEquals(expectation, responseData[0]);
 	}
 }
