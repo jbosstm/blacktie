@@ -52,7 +52,6 @@ public class XMLParserTest extends TestCase {
 
 	public void testEnvironmentXML() throws Exception {
 		Properties prop = new Properties();
-
 		XMLEnvHandler handler = new XMLEnvHandler("", prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 		xmlenv.parse("Environment.xml");
