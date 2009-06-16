@@ -72,7 +72,7 @@
 							<goal>harddeploy</goal>
 						</goals>
 						<configuration>
-							<fileName>src/test/resources/jatmibroker-xatmi-test-service.xml</fileName>
+							<fileName>${project.build.directory}/test-classes/jatmibroker-xatmi-test-service.xml</fileName>
 							<serverName>all</serverName>
 						</configuration>
 					</execution>
