@@ -55,7 +55,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 				success[0] = 1;
 				log.info("Unadvertised: " + serviceName);
 			} catch (Throwable t) {
-				log.error("Could not unadvertise the service");
+				log.error("Could not advertise the service", t);
 			}
 		} else if (operation.equals("tpadvertise")) {
 			log.debug("Advertising: " + serviceName);
@@ -67,7 +67,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 				success[0] = 1;
 				log.info("Advertised: " + serviceName);
 			} catch (Throwable t) {
-				log.error("Could not unadvertise the service");
+				log.error("Could not advertise the service", t);
 			}
 		}
 
