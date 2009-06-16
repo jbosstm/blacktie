@@ -48,7 +48,7 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 			fail("Was not able to send the request : " + e.getMessage());
 		}
 
-		processCommand("tpunadvertise,BAR", 1);
+		processCommand("tpunadvertise,BAR,", 1);
 		try {
 			Buffer buffer = new Buffer(null, null);
 			buffer.setData(new byte[0]);
@@ -58,7 +58,7 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 			// EXPECTED
 		}
 
-		processCommand("tpadvertise,BAR", 1);
+		processCommand("tpadvertise,BAR,", 1);
 
 		try {
 			Buffer buffer = new Buffer(null, null);
@@ -70,7 +70,7 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 	}
 
 	public void testUnknownService() throws ConnectionException {
-		processCommand("tpadvertise,UNKNOWN_SERVICE", 0);
+		processCommand("tpadvertise,UNKNOWN_SERVICE,", 0);
 	}
 		
 
