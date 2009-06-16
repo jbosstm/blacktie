@@ -463,14 +463,14 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 				serviceName);
 
 		if (serverConnection->requiresAdminCall()) {
-			long commandLength = strlen(serviceName) + 13;
+			long commandLength = strlen(serviceName) + 14;
 			long responseLength = 0;
 			char* command = (char*) ::tpalloc((char*) "X_OCTET", NULL,
 					commandLength);
 			char* response = (char*) ::tpalloc((char*) "X_OCTET", NULL,
 					responseLength);
 			memset(command, '\0', commandLength);
-			sprintf(command, "tpadvertise,%s", serviceName);
+			sprintf(command, "tpadvertise,%s,", serviceName);
 			if (tpcall((char*) "BTStompAdmin", command, commandLength, &response,
 					&responseLength, TPNOTRAN) != 0) {
 				LOG4CXX_ERROR(loggerAtmiBrokerServer,
@@ -497,7 +497,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 				<< serviceName);
 	} catch (...) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer,
-				(char*) "Could not create the destination" << serviceName);
+				(char*) "Could not create the destination: " << serviceName);
 		setSpecific(TPE_KEY, TSS_TPEMATCH);
 		return false;
 	}
@@ -529,14 +529,14 @@ void AtmiBrokerServer::unadvertiseService(char * svcname) {
 					(char*) "preparing to destroy" << serviceName);
 
 			if (serverConnection->requiresAdminCall()) {
-				long commandLength = strlen(serviceName) + 15;
+				long commandLength = strlen(serviceName) + 16;
 				long responseLength = 1;
 				char* command = (char*) ::tpalloc((char*) "X_OCTET", NULL,
 						commandLength);
 				char* response = (char*) ::tpalloc((char*) "X_OCTET", NULL,
 						responseLength);
 				memset(command, '\0', commandLength);
-				sprintf(command, "tpunadvertise,%s", serviceName);
+				sprintf(command, "tpunadvertise,%s,", serviceName);
 				if (tpcall((char*) "BTStompAdmin", command, commandLength, &response,
 						&responseLength, TPNOTRAN) != 0) {
 					LOG4CXX_ERROR(loggerAtmiBrokerServer,
