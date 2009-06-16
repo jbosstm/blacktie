@@ -14,7 +14,7 @@ import org.jboss.ejb3.annotation.Depends;
 @ActivationConfigProperty(propertyName="destinationType", propertyValue="javax.jms.Queue"),
 @ActivationConfigProperty(propertyName="destination", propertyValue="queue/EchoService")
 })
-@Depends ("jboss.mq.destination:service=Queue,name=EchoService")
+@Depends ("jboss.messaging.destination:service=Queue,name=EchoService")
 public class EchoServiceTestService extends MDBBlacktieService implements javax.jms.MessageListener {
 
 	public EchoServiceTestService() {
