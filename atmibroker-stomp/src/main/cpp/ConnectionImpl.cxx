@@ -49,6 +49,10 @@ StompConnectionImpl::~StompConnectionImpl() {
 	LOG4CXX_TRACE(logger, "Destroyed");
 }
 
+bool StompConnectionImpl::requiresAdminCall() {
+	return true;
+}
+
 stomp_connection* StompConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 	stomp_connection* connection = NULL;
 	std::string host = AtmiBrokerEnv::get_instance()->getenv(

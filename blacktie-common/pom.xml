@@ -118,7 +118,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.blacktie</groupId>
-				<artifactId>atmibroker-stomp-administration</artifactId>
+				<artifactId>stompconnectservice</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

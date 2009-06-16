@@ -35,6 +35,7 @@ public:
 
 	virtual Destination* createDestination(char* serviceName) = 0;
 	virtual void destroyDestination(Destination* destination) = 0;
+	virtual bool requiresAdminCall() = 0;
 };
 
 struct connection_factory_t {

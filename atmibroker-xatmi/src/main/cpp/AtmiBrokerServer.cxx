@@ -461,6 +461,34 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 				<< serviceName);
 		Destination* destination = serverConnection->createDestination(
 				serviceName);
+
+		if (serverConnection->requiresAdminCall()) {
+			long commandLength = XATMI_SERVICE_NAME_LENGTH + 10;
+			long responseLength = 0;
+			char* command = (char*) ::tpalloc((char*) "X_OCTET", NULL,
+					commandLength);
+			char* response = (char*) ::tpalloc((char*) "X_OCTET", NULL,
+					responseLength);
+			memset(command, '\0', XATMI_SERVICE_NAME_LENGTH + 1);
+			sprintf(command, "tpadvertise,%s", serviceName);
+			if (tpcall((char*) "BTStompAdmin", command, commandLength, &response,
+					&responseLength, 0) != 0) {
+				LOG4CXX_ERROR(loggerAtmiBrokerServer,
+						"Could not advertise service with command: " << command);
+				throw new std::exception();
+			} else if (responseLength != 1) {
+				LOG4CXX_ERROR(loggerAtmiBrokerServer,
+						"Service returned with unexpected response: " << response
+								<< " with length " << responseLength);
+				throw new std::exception();
+			} else if (response[0] == 0) {
+				LOG4CXX_ERROR(loggerAtmiBrokerServer,
+						"Service returned with error: " << command);
+				throw new std::exception();
+			}
+			free(command);
+		}
+
 		addDestination(destination, func, service);
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "created destination: "
 				<< serviceName);
@@ -496,6 +524,35 @@ void AtmiBrokerServer::unadvertiseService(char * svcname) {
 			Destination * destination = removeDestination(serviceName);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "preparing to destroy" << serviceName);
+
+			if (serverConnection->requiresAdminCall()) {
+				long commandLength = XATMI_SERVICE_NAME_LENGTH + 11;
+				long responseLength = 1;
+				char* command = (char*) ::tpalloc((char*) "X_OCTET", NULL,
+						commandLength);
+				char* response = (char*) ::tpalloc((char*) "X_OCTET", NULL,
+						responseLength);
+				memset(command, '\0', XATMI_SERVICE_NAME_LENGTH + 1);
+				sprintf(command, "tpunadvertise,%s", serviceName);
+				if (tpcall((char*) "BTStompAdmin", command, commandLength, &response,
+						&responseLength, 0) != 0) {
+					LOG4CXX_ERROR(loggerAtmiBrokerServer,
+							"Could not advertise service with command: " << command);
+					throw new std::exception();
+				} else if (responseLength != 1) {
+					LOG4CXX_ERROR(loggerAtmiBrokerServer,
+							"Service returned with unexpected response: "
+									<< response << " with length "
+									<< responseLength);
+					throw new std::exception();
+				} else if (response[0] == 0) {
+					LOG4CXX_ERROR(loggerAtmiBrokerServer,
+							"Service returned with error: " << command);
+					throw new std::exception();
+				}
+				free(command);
+			}
+
 			serverConnection->destroyDestination(destination);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "destroyed"
 					<< serviceName);

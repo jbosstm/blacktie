@@ -41,6 +41,8 @@ public:
 
 	Destination* createDestination(char* serviceName);
 	void destroyDestination(Destination* destination);
+
+	bool requiresAdminCall();
 private:
 	static log4cxx::LoggerPtr logger;
 	CORBA_CONNECTION* connection;

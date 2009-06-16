@@ -40,6 +40,10 @@ CorbaConnectionImpl::~CorbaConnectionImpl() {
 	shutdownBindings(this->connection);
 }
 
+bool CorbaConnectionImpl::requiresAdminCall() {
+	return false;
+}
+
 Session* CorbaConnectionImpl::createSession(int id, char * serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession: " + id);
 	sessionMap[id] = new CorbaSessionImpl(this->connection, id, serviceName);
