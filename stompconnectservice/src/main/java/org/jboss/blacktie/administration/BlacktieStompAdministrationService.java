@@ -26,7 +26,7 @@ import org.jboss.ejb3.annotation.Depends;
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
 		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTStompAdmin") })
-@Depends("jboss.mq.destination:service=Queue,name=BTStompAdmin")
+@Depends("jboss.messaging.destination:service=Queue,name=BTStompAdmin")
 public class BlacktieStompAdministrationService extends MDBBlacktieService
 		implements javax.jms.MessageListener {
 	private static final Logger log = LogManager
