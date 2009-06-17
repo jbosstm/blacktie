@@ -535,7 +535,7 @@ void AtmiBrokerServer::unadvertiseService(char * svcname) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "preparing to destroy" << serviceName);
 
-			removeAdminDestination(svcname);
+			removeAdminDestination(serviceName);
 
 			serverConnection->destroyDestination(destination);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "destroyed"

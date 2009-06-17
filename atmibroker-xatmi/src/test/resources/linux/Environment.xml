@@ -71,14 +71,16 @@
 				<NAME>StompConnectPort</NAME>
 				<VALUE>61613</VALUE>
 			</ENV_VARIABLE>
+
 			<ENV_VARIABLE>
 				<NAME>StompConnectUsr</NAME>
-				<VALUE>JBM.SUCKER</VALUE>
+				<VALUE>guest</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>StompConnectPwd</NAME>
-				<VALUE>CHANGE ME!!</VALUE>
+				<VALUE>guest</VALUE>
 			</ENV_VARIABLE>
+
 		</ENV_VARIABLES>
 	</ENVIRONMENT_DESCRIPTION>
 </ENVIRONMENT>
