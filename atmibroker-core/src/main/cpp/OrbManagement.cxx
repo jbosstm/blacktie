@@ -50,7 +50,7 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 	connection->worker = NULL;
 	connection->poaFactory = NULL;
 
-	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "initOrb initing ORB ");
+	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "initOrb initing ORB");
 
 	std::string values =
 			AtmiBrokerEnv::get_instance()->getenv((char*) "ORBOPT");
@@ -79,7 +79,7 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 	delete[] cstr;
 
 	LOG4CXX_DEBUG(loggerOrbManagement,
-			(char*) "getNamingServiceAndContext getting Naming Service Ext ");
+			(char*) "getNamingServiceAndContext getting Naming Service Ext");
 	CORBA::Object_var tmp_ref = connection->orbRef->resolve_initial_references(
 			"NameService");
 	LOG4CXX_DEBUG(
@@ -109,7 +109,7 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 				(char*) "getNamingServiceAndContext created domain naming context");
 	}
 	LOG4CXX_DEBUG(loggerOrbManagement,
-			(char*) "getNamingServiceAndContext got Naming Service Instance  ");
+			(char*) "getNamingServiceAndContext got Naming Service Instance ");
 
 	connection->worker = new Worker(connection->orbRef);
 	if (((Worker*) connection->worker)->activate(THR_NEW_LWP | THR_JOINABLE, 1,
@@ -121,7 +121,7 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 	}
 
 	//try {
-		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "resolving the root POA ");
+		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "resolving the root POA");
 		tmp_ref = connection->orbRef->resolve_initial_references("RootPOA");
 		connection->root_poa = PortableServer::POA::_narrow(tmp_ref);
 		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "resolved the root POA: "
@@ -145,13 +145,13 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 
 		connection->root_poa_manager->activate();
 		LOG4CXX_DEBUG(loggerOrbManagement,
-			(char*) "activated poa - started processing requests ");
+			(char*) "activated poa - started processing requests");
 
 	//} catch (CORBA::SystemException & e) {
 	//	LOG4CXX_LOGLS(loggerOrbManagement, log4cxx::Level::getWarn(),
         //                (char*) "initOrb error: CORBA SystemException name: "
         //                         << e._name() << (char *)" minor code: " << e.minor());
-	//	e._tao_print_exception("initOrb error: ");
+	//	e._tao_print_exception("initOrb error:");
 	//}
 
 	return connection;
@@ -164,11 +164,11 @@ void shutdownBindings(CORBA_CONNECTION* connection) {
 		if (connection->orbRef) {
 			if (!CORBA::is_nil(connection->orbRef)) {
 				LOG4CXX_DEBUG(loggerOrbManagement,
-						"shutdownBindings shutting down ORB ");
+						"shutdownBindings shutting down ORB");
 				try {
 					connection->orbRef->shutdown(1);
 					LOG4CXX_DEBUG(loggerOrbManagement,
-							"shutdownBindings shut down ORB ");
+							"shutdownBindings shut down ORB");
 				} catch (CORBA::Exception &ex) {
 					LOG4CXX_ERROR(
 							loggerOrbManagement,
@@ -193,9 +193,11 @@ void shutdownBindings(CORBA_CONNECTION* connection) {
 
 				try {
 					LOG4CXX_DEBUG(loggerOrbManagement,
-							(char*) "shutdownBindings destroying ORB ");
+							(char*) "shutdownBindings destroying ORB");
 					connection->orbRef->destroy();
 					connection->orbRef = NULL;
+					LOG4CXX_DEBUG(loggerOrbManagement,
+							(char*) "shutdownBindings destroyed ORB");
 				} catch (CORBA::Exception &ex) {
 					LOG4CXX_ERROR(
 							loggerOrbManagement,
@@ -204,24 +206,44 @@ void shutdownBindings(CORBA_CONNECTION* connection) {
 				}
 
 				if (connection->callback_poa) {
+					LOG4CXX_DEBUG(loggerOrbManagement,
+							(char*) "shutdownBindings destroying callback_poa");
 					//		delete innerPoa;
 					connection->callback_poa = NULL;
+					LOG4CXX_DEBUG(loggerOrbManagement,
+							(char*) "shutdownBindings destroyed callback_poa");
 				}
 				if (connection->default_ctx) {
+					LOG4CXX_DEBUG(loggerOrbManagement,
+							(char*) "shutdownBindings destroying default_ctx");
 					//		delete ctx;
 					connection->default_ctx = NULL;
+					LOG4CXX_DEBUG(loggerOrbManagement,
+							(char*) "shutdownBindings destroyed default_ctx");
 				}
 				if (connection->name_ctx) {
+					LOG4CXX_DEBUG(loggerOrbManagement,
+							(char*) "shutdownBindings destroying name_ctx");
 					//		delete nameCtx;
 					connection->name_ctx = NULL;
+					LOG4CXX_DEBUG(loggerOrbManagement,
+							(char*) "shutdownBindings destroyed name_ctx");
 				}
 				if (connection->root_poa_manager) {
+					LOG4CXX_DEBUG(loggerOrbManagement,
+							(char*) "shutdownBindings destroying root_poa_manager");
 					//		delete poa_manager;
 					connection->root_poa_manager = NULL;
+					LOG4CXX_DEBUG(loggerOrbManagement,
+							(char*) "shutdownBindings destroyed root_poa_manager");
 				}
 				if (connection->root_poa) {
+					LOG4CXX_DEBUG(loggerOrbManagement,
+							(char*) "shutdownBindings destroying root_poa");
 					//		delete poa;
 					connection->root_poa = NULL;
+					LOG4CXX_DEBUG(loggerOrbManagement,
+							(char*) "shutdownBindings destroyed root_poa");
 				}
 				LOG4CXX_DEBUG(loggerOrbManagement, (char*) "Closed Bindings");
 			}
