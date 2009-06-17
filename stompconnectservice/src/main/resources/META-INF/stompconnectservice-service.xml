@@ -4,114 +4,247 @@
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
+      <attribute name="SecurityConfig">
+         <security>
+            <role name="guest" read="true" write="true"/>
+            <role name="publisher" read="true" write="true" create="false"/>
+            <role name="durpublisher" read="true" write="true" create="true"/>
+         </security>
+      </attribute>
    </mbean>   
    <mbean code="org.jboss.jms.server.destination.QueueService"
       name="jboss.messaging.destination:service=Queue,name=TestTPAdvertise"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
+      <attribute name="SecurityConfig">
+         <security>
+            <role name="guest" read="true" write="true"/>
+            <role name="publisher" read="true" write="true" create="false"/>
+            <role name="durpublisher" read="true" write="true" create="true"/>
+         </security>
+      </attribute>
    </mbean>   
    <mbean code="org.jboss.jms.server.destination.QueueService"
       name="jboss.messaging.destination:service=Queue,name=123456789012345"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
+      <attribute name="SecurityConfig">
+         <security>
+            <role name="guest" read="true" write="true"/>
+            <role name="publisher" read="true" write="true" create="false"/>
+            <role name="durpublisher" read="true" write="true" create="true"/>
+         </security>
+      </attribute>
    </mbean>   
    <mbean code="org.jboss.jms.server.destination.QueueService"
       name="jboss.messaging.destination:service=Queue,name=TestTPUnadverti"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
+      <attribute name="SecurityConfig">
+         <security>
+            <role name="guest" read="true" write="true"/>
+            <role name="publisher" read="true" write="true" create="false"/>
+            <role name="durpublisher" read="true" write="true" create="true"/>
+         </security>
+      </attribute>
    </mbean>   
    <mbean code="org.jboss.jms.server.destination.QueueService"
       name="jboss.messaging.destination:service=Queue,name=tpcall_x_octet"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
+      <attribute name="SecurityConfig">
+         <security>
+            <role name="guest" read="true" write="true"/>
+            <role name="publisher" read="true" write="true" create="false"/>
+            <role name="durpublisher" read="true" write="true" create="true"/>
+         </security>
+      </attribute>
    </mbean>   
    <mbean code="org.jboss.jms.server.destination.QueueService"
       name="jboss.messaging.destination:service=Queue,name=tpcall_x_common"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
+      <attribute name="SecurityConfig">
+         <security>
+            <role name="guest" read="true" write="true"/>
+            <role name="publisher" read="true" write="true" create="false"/>
+            <role name="durpublisher" read="true" write="true" create="true"/>
+         </security>
+      </attribute>
    </mbean>   
    <mbean code="org.jboss.jms.server.destination.QueueService"
       name="jboss.messaging.destination:service=Queue,name=tpcall_x_c_type"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
+      <attribute name="SecurityConfig">
+         <security>
+            <role name="guest" read="true" write="true"/>
+            <role name="publisher" read="true" write="true" create="false"/>
+            <role name="durpublisher" read="true" write="true" create="true"/>
+         </security>
+      </attribute>
    </mbean>   
    <mbean code="org.jboss.jms.server.destination.QueueService"
       name="jboss.messaging.destination:service=Queue,name=LOOPY"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
+      <attribute name="SecurityConfig">
+         <security>
+            <role name="guest" read="true" write="true"/>
+            <role name="publisher" read="true" write="true" create="false"/>
+            <role name="durpublisher" read="true" write="true" create="true"/>
+         </security>
+      </attribute>
    </mbean>   
    <mbean code="org.jboss.jms.server.destination.QueueService"
       name="jboss.messaging.destination:service=Queue,name=TestTPConversat"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
+      <attribute name="SecurityConfig">
+         <security>
+            <role name="guest" read="true" write="true"/>
+            <role name="publisher" read="true" write="true" create="false"/>
+            <role name="durpublisher" read="true" write="true" create="true"/>
+         </security>
+      </attribute>
    </mbean>   
    <mbean code="org.jboss.jms.server.destination.QueueService"
       name="jboss.messaging.destination:service=Queue,name=TestTPACall"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
+      <attribute name="SecurityConfig">
+         <security>
+            <role name="guest" read="true" write="true"/>
+            <role name="publisher" read="true" write="true" create="false"/>
+            <role name="durpublisher" read="true" write="true" create="true"/>
+         </security>
+      </attribute>
    </mbean>      
    <mbean code="org.jboss.jms.server.destination.QueueService"
       name="jboss.messaging.destination:service=Queue,name=TestTPCancel"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
+      <attribute name="SecurityConfig">
+         <security>
+            <role name="guest" read="true" write="true"/>
+            <role name="publisher" read="true" write="true" create="false"/>
+            <role name="durpublisher" read="true" write="true" create="true"/>
+         </security>
+      </attribute>
    </mbean>   
    <mbean code="org.jboss.jms.server.destination.QueueService"
       name="jboss.messaging.destination:service=Queue,name=TestTPConnect"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
+      <attribute name="SecurityConfig">
+         <security>
+            <role name="guest" read="true" write="true"/>
+            <role name="publisher" read="true" write="true" create="false"/>
+            <role name="durpublisher" read="true" write="true" create="true"/>
+         </security>
+      </attribute>
    </mbean>   
    <mbean code="org.jboss.jms.server.destination.QueueService"
       name="jboss.messaging.destination:service=Queue,name=TestTPDiscon"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
+      <attribute name="SecurityConfig">
+         <security>
+            <role name="guest" read="true" write="true"/>
+            <role name="publisher" read="true" write="true" create="false"/>
+            <role name="durpublisher" read="true" write="true" create="true"/>
+         </security>
+      </attribute>
    </mbean>   
    <mbean code="org.jboss.jms.server.destination.QueueService"
       name="jboss.messaging.destination:service=Queue,name=TestTPGetrply"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
+      <attribute name="SecurityConfig">
+         <security>
+            <role name="guest" read="true" write="true"/>
+            <role name="publisher" read="true" write="true" create="false"/>
+            <role name="durpublisher" read="true" write="true" create="true"/>
+         </security>
+      </attribute>
    </mbean>   
    <mbean code="org.jboss.jms.server.destination.QueueService"
       name="jboss.messaging.destination:service=Queue,name=TestTPSend"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
+      <attribute name="SecurityConfig">
+         <security>
+            <role name="guest" read="true" write="true"/>
+            <role name="publisher" read="true" write="true" create="false"/>
+            <role name="durpublisher" read="true" write="true" create="true"/>
+         </security>
+      </attribute>
    </mbean>   
    <mbean code="org.jboss.jms.server.destination.QueueService"
       name="jboss.messaging.destination:service=Queue,name=TestTPRecv"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
+      <attribute name="SecurityConfig">
+         <security>
+            <role name="guest" read="true" write="true"/>
+            <role name="publisher" read="true" write="true" create="false"/>
+            <role name="durpublisher" read="true" write="true" create="true"/>
+         </security>
+      </attribute>
    </mbean>   
    <mbean code="org.jboss.jms.server.destination.QueueService"
       name="jboss.messaging.destination:service=Queue,name=TestTPService"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
+      <attribute name="SecurityConfig">
+         <security>
+            <role name="guest" read="true" write="true"/>
+            <role name="publisher" read="true" write="true" create="false"/>
+            <role name="durpublisher" read="true" write="true" create="true"/>
+         </security>
+      </attribute>
    </mbean>
    <mbean code="org.jboss.jms.server.destination.QueueService"
       name="jboss.messaging.destination:service=Queue,name=TestTPReturn"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
+      <attribute name="SecurityConfig">
+         <security>
+            <role name="guest" read="true" write="true"/>
+            <role name="publisher" read="true" write="true" create="false"/>
+            <role name="durpublisher" read="true" write="true" create="true"/>
+         </security>
+      </attribute>
    </mbean>   
    <mbean code="org.jboss.jms.server.destination.QueueService"
       name="jboss.messaging.destination:service=Queue,name=BAR"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
+      <attribute name="SecurityConfig">
+         <security>
+            <role name="guest" read="true" write="true"/>
+            <role name="publisher" read="true" write="true" create="false"/>
+            <role name="durpublisher" read="true" write="true" create="true"/>
+         </security>
+      </attribute>
    </mbean>
    
    <mbean code="org.jboss.blacktie.stompconnect.StompConnectService" 
