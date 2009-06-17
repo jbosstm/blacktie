@@ -473,21 +473,21 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 					&responseLength, TPNOTRAN) != 0) {
 				LOG4CXX_ERROR(loggerAtmiBrokerServer,
 						"Could not advertise service with command: " << command);
-				free(command);
+				tpfree(command);
 				throw new std::exception();
 			} else if (responseLength != 1) {
 				LOG4CXX_ERROR(loggerAtmiBrokerServer,
 						"Service returned with unexpected response: " << response
 								<< " with length " << responseLength);
-				free(command);
+				tpfree(command);
 				throw new std::exception();
 			} else if (response[0] == 0) {
 				LOG4CXX_ERROR(loggerAtmiBrokerServer,
 						"Service returned with error: " << command);
-				free(command);
+				tpfree(command);
 				throw new std::exception();
 			}
-			free(command);
+			tpfree(command);
 		}
 
 		Destination* destination = serverConnection->createDestination(
@@ -563,22 +563,22 @@ void AtmiBrokerServer::removeAdminDestination(char* serviceName) {
 				&responseLength, TPNOTRAN) != 0) {
 			LOG4CXX_ERROR(loggerAtmiBrokerServer,
 					"Could not advertise service with command: " << command);
-			free(command);
+			tpfree(command);
 			throw new std::exception();
 		} else if (responseLength != 1) {
 			LOG4CXX_ERROR(loggerAtmiBrokerServer,
 					"Service returned with unexpected response: "
 							<< response << " with length "
 							<< responseLength);
-			free(command);
+			tpfree(command);
 			throw new std::exception();
 		} else if (response[0] == 0) {
 			LOG4CXX_ERROR(loggerAtmiBrokerServer,
 					"Service returned with error: " << command);
-			free(command);
+			tpfree(command);
 			throw new std::exception();
 		}
-		free(command);
+		tpfree(command);
 	}
 }
 

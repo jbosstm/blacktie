@@ -143,7 +143,7 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size) {
 						<< memoryInfo.type << ":" << memoryInfo.subtype << ":"
 						<< memoryInfo.size);
 		memoryInfoVector.push_back(memoryInfo);
-		LOG4CXX_DEBUG(logger, (char*) "added MemoryInfo to vector");
+		LOG4CXX_DEBUG(logger, (char*) "added MemoryInfo to vector: " << memoryInfoVector.size());
 		toReturn = (char*) memoryInfo.memoryPtr;
 	}
 	lock->unlock();
@@ -205,7 +205,7 @@ void AtmiBrokerMem::tpfree(char* ptr) {
 	lock->lock();
 	LOG4CXX_TRACE(logger, (char*) "tpfree locked");
 	if (ptr && ptr != NULL) {
-		LOG4CXX_DEBUG(logger, (char*) "tpfree - ptr non null");
+		LOG4CXX_DEBUG(logger, (char*) "tpfree: " << memoryInfoVector.size());
 		for (std::vector<MemoryInfo>::iterator it = memoryInfoVector.begin(); it
 				!= memoryInfoVector.end(); it++) {
 			//			LOG4CXX_TRACE(logger, (char*) "next memoryInfo id is: "
@@ -233,6 +233,7 @@ void AtmiBrokerMem::tpfree(char* ptr) {
 				break;
 			}
 		}
+		LOG4CXX_DEBUG(logger, (char*) "tpfreed: " << memoryInfoVector.size());
 	}
 	LOG4CXX_TRACE(logger, (char*) "tpfree unlocking");
 	lock->unlock();
