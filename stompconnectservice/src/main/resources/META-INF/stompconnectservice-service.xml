@@ -118,31 +118,11 @@
       name="jboss.blacktie:service=StompConnect">
       <attribute name="ConnectionFactoryName">ConnectionFactory</attribute>
       <attribute name="Uri">tcp://localhost:61613</attribute>
-      <depends>jboss.messaging.destination:service=Queue,name=TestTPFree</depends>
-      <depends>jboss.messaging.destination:service=Queue,name=TestTPAdvertise</depends>
-      <depends>jboss.messaging.destination:service=Queue,name=123456789012345</depends>
-      <depends>jboss.messaging.destination:service=Queue,name=TestTPUnadverti</depends>
-      <depends>jboss.messaging.destination:service=Queue,name=tpcall_x_octet</depends>
-      <depends>jboss.messaging.destination:service=Queue,name=tpcall_x_common</depends>
-      <depends>jboss.messaging.destination:service=Queue,name=tpcall_x_c_type</depends>
-      <depends>jboss.messaging.destination:service=Queue,name=LOOPY</depends>
-      <depends>jboss.messaging.destination:service=Queue,name=TestTPConversat</depends>
-      <depends>jboss.messaging.destination:service=Queue,name=TestTPACall</depends>
-      <depends>jboss.messaging.destination:service=Queue,name=TestTPCancel</depends>
-      <depends>jboss.messaging.destination:service=Queue,name=TestTPConnect</depends>
-      <depends>jboss.messaging.destination:service=Queue,name=TestTPDiscon</depends>
-      <depends>jboss.messaging.destination:service=Queue,name=TestTPGetrply</depends>
-      <depends>jboss.messaging.destination:service=Queue,name=TestTPSend</depends>
-      <depends>jboss.messaging.destination:service=Queue,name=TestTPRecv</depends>
-      <depends>jboss.messaging.destination:service=Queue,name=TestTPService</depends>
-      <depends>jboss.messaging.destination:service=Queue,name=TestTPReturn</depends>
-      <depends>jboss.messaging.destination:service=Queue,name=BAR</depends>
    </mbean>
 
-   <mbean code="org.jboss.mq.server.jmx.Queue"
-      name="jboss.mq.destination:service=Queue,name=BTStompAdmin">
-      <attribute name="JNDIName">/queue/BTStompAdmin</attribute>
-      <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+   <mbean code="org.jboss.jms.server.destination.QueueService"
+      name="jboss.messaging.destination:service=Queue,name=BTStompAdmin"
+      xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
       <attribute name="SecurityConfig">
