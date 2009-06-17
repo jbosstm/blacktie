@@ -70,11 +70,20 @@ AtmiBrokerMem::~AtmiBrokerMem() {
 	while (it != memoryInfoVector.end()) {
 		MemoryInfo memoryInfo = (*it);
 		LOG4CXX_DEBUG(logger, (char*) "freeing memoryPtr");
-		free(memoryInfo.memoryPtr);
-		LOG4CXX_DEBUG(logger, (char*) "freeing type: " << memoryInfo.type);
-		free(memoryInfo.type);
-		LOG4CXX_DEBUG(logger, (char*) "freeing subtype: " << memoryInfo.subtype);
-		free(memoryInfo.subtype);
+		if (memoryInfo.memoryPtr != NULL) {
+			LOG4CXX_DEBUG(logger, (char*) "freeing memoryPtr");
+			free(memoryInfo.memoryPtr);
+		}
+		if (memoryInfo.type != NULL) {
+			LOG4CXX_DEBUG(logger, (char*) "freeing type: "
+					<< memoryInfo.type);
+			free(memoryInfo.type);
+		}
+		if (memoryInfo.subtype != NULL) {
+			LOG4CXX_DEBUG(logger, (char*) "freeing subtype: "
+					<< memoryInfo.subtype);
+			free(memoryInfo.subtype);
+		}
 		LOG4CXX_DEBUG(logger, (char*) "freed memory");
 
 		LOG4CXX_DEBUG(logger, (char*) "removing  from vector");
@@ -213,25 +222,30 @@ void AtmiBrokerMem::tpfree(char* ptr) {
 			if ((*it).memoryPtr == NULL) {
 				LOG4CXX_ERROR(logger, (char*) "found a null in the vector");
 				break;
-			} else if ((*it).memoryPtr == ptr) {
-				MemoryInfo memoryInfo = (*it);
+			}
+			MemoryInfo memoryInfo = (*it);
+			if (memoryInfo.memoryPtr == ptr) {
 				LOG4CXX_DEBUG(logger, (char*) "freeing memoryPtr");
 				free(memoryInfo.memoryPtr);
+			}
+			if (memoryInfo.type != NULL) {
 				LOG4CXX_DEBUG(logger, (char*) "freeing type: "
 						<< memoryInfo.type);
 				free(memoryInfo.type);
+			}
+			if (memoryInfo.subtype != NULL) {
 				LOG4CXX_DEBUG(logger, (char*) "freeing subtype: "
 						<< memoryInfo.subtype);
 				free(memoryInfo.subtype);
-				LOG4CXX_DEBUG(logger, (char*) "freed memory");
-
-				LOG4CXX_DEBUG(logger, (char*) "removing  from vector");
-				memoryInfoVector.erase(it);
-				LOG4CXX_DEBUG(logger, (char*) "removed from vector ");
-
-				found = true;
-				break;
 			}
+			LOG4CXX_DEBUG(logger, (char*) "freed memory");
+
+			LOG4CXX_DEBUG(logger, (char*) "removing  from vector");
+			memoryInfoVector.erase(it);
+			LOG4CXX_DEBUG(logger, (char*) "removed from vector ");
+
+			found = true;
+			break;
 		}
 		LOG4CXX_DEBUG(logger, (char*) "tpfreed: " << memoryInfoVector.size());
 	}
