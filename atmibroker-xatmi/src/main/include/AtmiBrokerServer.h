@@ -94,6 +94,7 @@ private:
 	void (*getServiceMethod(const char * aServiceName))(TPSVCINFO *);
 	void addDestination(Destination* destination, void(*func)(TPSVCINFO *), ServiceInfo* service);
 	Destination* removeDestination(const char * aServiceName);
+	void removeAdminDestination(char* svcname);
 
 	ConnectionManager connections;
 	std::vector<ServiceData> serviceData;
