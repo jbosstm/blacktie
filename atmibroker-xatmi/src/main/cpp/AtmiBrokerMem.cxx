@@ -225,27 +225,27 @@ void AtmiBrokerMem::tpfree(char* ptr) {
 			}
 			MemoryInfo memoryInfo = (*it);
 			if (memoryInfo.memoryPtr == ptr) {
-				LOG4CXX_DEBUG(logger, (char*) "freeing memoryPtr");
+				LOG4CXX_DEBUG(logger, (char*) "freeing memoryPtr to reclaim: " << memoryInfo.size);
 				free(memoryInfo.memoryPtr);
+				if (memoryInfo.type != NULL) {
+					LOG4CXX_DEBUG(logger, (char*) "freeing type: "
+							<< memoryInfo.type);
+					free(memoryInfo.type);
+				}
+				if (memoryInfo.subtype != NULL) {
+					LOG4CXX_DEBUG(logger, (char*) "freeing subtype: "
+							<< memoryInfo.subtype);
+					free(memoryInfo.subtype);
+				}
+				LOG4CXX_DEBUG(logger, (char*) "freed memory");
+	
+				LOG4CXX_DEBUG(logger, (char*) "removing  from vector");
+				memoryInfoVector.erase(it);
+				LOG4CXX_DEBUG(logger, (char*) "removed from vector ");
+	
+				found = true;
+				break;
 			}
-			if (memoryInfo.type != NULL) {
-				LOG4CXX_DEBUG(logger, (char*) "freeing type: "
-						<< memoryInfo.type);
-				free(memoryInfo.type);
-			}
-			if (memoryInfo.subtype != NULL) {
-				LOG4CXX_DEBUG(logger, (char*) "freeing subtype: "
-						<< memoryInfo.subtype);
-				free(memoryInfo.subtype);
-			}
-			LOG4CXX_DEBUG(logger, (char*) "freed memory");
-
-			LOG4CXX_DEBUG(logger, (char*) "removing  from vector");
-			memoryInfoVector.erase(it);
-			LOG4CXX_DEBUG(logger, (char*) "removed from vector ");
-
-			found = true;
-			break;
 		}
 		LOG4CXX_DEBUG(logger, (char*) "tpfreed: " << memoryInfoVector.size());
 	}
