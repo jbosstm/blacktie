@@ -308,6 +308,7 @@ void StompEndpointQueue::disconnect() {
 	lock->lock();
 	if (!shutdown) {
 		shutdown = true;
+		LOG4CXX_DEBUG(logger, (char*) "Shutdown set: " << name);
 		lock->notify();
 	}
 	lock->unlock();
