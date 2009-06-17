@@ -61,24 +61,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jboss-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>jboss-deploy</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>harddeploy</goal>
-						</goals>
-						<configuration>
-							<fileName>${project.build.directory}/test-classes/jatmibroker-xatmi-test-service.xml</fileName>
-							<serverName>all</serverName>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
 		</plugins>
 	</build>
 	<dependencies>
