@@ -81,6 +81,10 @@
 		<antcall target="purge"/>
 		<validate-files inc.dir="${jbossas.lib.dir}" lib.dir="${jbossas.lib.dir}" artifactId="jbossas" />
 
+		<install-file-artifact filename="${jbossas.common.lib.dir}/jbossjts-jacorb.jar" groupId="jboss" artifactId="jbossjts-jacorb" name="jbossjts-jacorb" version="${jbossas.version}" description="jbossjts" />
+		<install-file-artifact filename="${jbossas.common.lib.dir}/jbossts-common.jar" groupId="jboss" artifactId="jbossts-common" name="jbossts-common" version="${jbossas.version}" description="jbossjts" />
+		<install-file-artifact filename="${jbossas.lib.dir}/jbossjts.jar" groupId="jboss" artifactId="jbossjts" name="jbossjts" version="${jbossas.version}" description="jbossjts" />
+
 		<install-file-artifact filename="${jbossas.lib.dir}/jboss-javaee.jar" groupId="jboss" artifactId="jboss-javaee" name="jboss-javaee" version="${jbossas.version}" description="jboss-javaee" />
 		<install-file-artifact filename="${jbossas.lib.dir}/jboss-client.jar" groupId="jboss" artifactId="jboss-client" name="jboss-client" version="${jbossas.version}" description="jboss-client" />
 		<install-file-artifact filename="${jbossas.lib.dir}/jboss-logging-spi.jar" groupId="jboss" artifactId="jboss-logging-spi" name="jboss-logging-spi" version="${jbossas.version}" description="jboss-logging-spi" />

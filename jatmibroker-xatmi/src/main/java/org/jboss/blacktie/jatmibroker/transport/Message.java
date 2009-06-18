@@ -24,7 +24,7 @@ public class Message {
 	public byte[] data;
 	public int len;
 	public int flags;
-	public Control control;
+	public String control;
 	public short rval;
 	public int rcode;
 	public int cd;

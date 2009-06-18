@@ -131,6 +131,19 @@
 			<scope>compile</scope>
 		</dependency>
 		<!-- END ORB -->
+        <!-- START JTS -->
+        <dependency>
+                <groupId>jboss</groupId>
+                <artifactId>jbossjts</artifactId>
+                <version>5.1.0.GA</version>
+        </dependency>
+        <dependency>
+                <groupId>jboss</groupId>
+                <artifactId>jbossjts-jacorb</artifactId>
+                <version>5.1.0.GA</version>
+        </dependency>
+        <!-- END JTS -->
+
 		<!-- START JMS -->
 		<dependency>
 			<groupId>jboss</groupId>

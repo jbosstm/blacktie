@@ -26,4 +26,8 @@ public class JABException extends Exception {
 	public JABException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
+
+	public JABException(String msg) {
+		super(msg);
+	}
 }

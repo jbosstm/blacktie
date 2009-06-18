@@ -18,6 +18,7 @@
 package org.jboss.blacktie.jatmibroker.xatmi;
 
 import java.util.Properties;
+import javax.transaction.Transaction;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -27,6 +28,7 @@ import org.jboss.blacktie.jatmibroker.transport.Message;
 import org.jboss.blacktie.jatmibroker.transport.Sender;
 import org.jboss.blacktie.jatmibroker.transport.Transport;
 import org.jboss.blacktie.jatmibroker.transport.TransportFactory;
+import org.jboss.blacktie.jatmibroker.transport.JtsTransactionImple;
 
 public abstract class Service implements BlacktieService {
 	private static final Logger log = LogManager.getLogger(Service.class);
@@ -41,7 +43,7 @@ public abstract class Service implements BlacktieService {
 	private synchronized Transport getTransport()
 			throws ConfigurationException, ConnectionException {
 		if (transport == null) {
-			Properties properties = null;
+			Properties properties;
 			AtmiBrokerClientXML xml = new AtmiBrokerClientXML();
 			properties = xml.getProperties();
 			transport = TransportFactory.loadTransportFactory(name, properties)
@@ -68,15 +70,31 @@ public abstract class Service implements BlacktieService {
 		TPSVCINFO tpsvcinfo = new TPSVCINFO(null, buffer, message.flags,
 				session);
 
-		Response response = tpservice(tpsvcinfo);
-		if (sender != null) {
-			// TODO THIS SHOULD INVOKE THE CLIENT HANDLER
-			// odata.value = serviceRequest.getBytes();
-			// olen.value = serviceRequest.getLength();
-			sender.send(null, response.getRval(), response.getRcode(), response
+		boolean hasTx = (message.control != null && message.control.length() != 0);
+		Transaction prevTx = null;
+		log.info("hasTx=" + hasTx + " ior: " + message.control);
+		try {
+			prevTx = JtsTransactionImple.suspend(); // suspend the current tx
+			if (hasTx) {
+				JtsTransactionImple.resume(message.control); // and resume the foreign one
+			}
+			Response response = tpservice(tpsvcinfo);
+			if (hasTx) {
+				log.info("suspending foreign tx");
+				JtsTransactionImple.suspend();  // suspend the foreign tx
+			}
+			if (sender != null) {
+				// TODO THIS SHOULD INVOKE THE CLIENT HANDLER
+				// odata.value = serviceRequest.getBytes();
+				// olen.value = serviceRequest.getLength();
+				sender.send(null, response.getRval(), response.getRcode(), response
 					.getBuffer().getData(), response.getLen(), response
 					.getFlags(), 0);
+			}
+		} finally {
+			if (prevTx != null)
+				JtsTransactionImple.resume(prevTx);     // and resume whatever was there before
+			session.close();
 		}
-		session.close();
 	}
 }

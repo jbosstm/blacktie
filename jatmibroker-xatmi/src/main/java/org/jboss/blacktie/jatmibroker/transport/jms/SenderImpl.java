@@ -25,6 +25,9 @@ import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.Topic;
 import javax.naming.NamingException;
+import javax.transaction.Transaction;
+
+import org.jboss.blacktie.jatmibroker.transport.JtsTransactionImple;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -65,6 +68,10 @@ public class SenderImpl implements Sender {
 				log.debug("Sender sending: " + name);
 			}
 			BytesMessage message = session.createBytesMessage();
+			String ior = JtsTransactionImple.getTransactionIOR();
+
+			message.setStringProperty("messagecontrol", ior);
+			log.debug("Sender sending IOR: " + ior);
 			if (replyTo != null) {
 				message.setJMSReplyTo((Destination) replyTo);
 				// TODOmessage.setStringProperty("reply-to", replyTo);

@@ -191,6 +191,32 @@
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
+        <!-- Transaction dependencies -->
+        <dependency>
+                <groupId>jboss</groupId>
+                <artifactId>jbossjts</artifactId>
+                <version>5.1.0.GA</version>
+        </dependency>
+        <dependency>
+                <groupId>jboss</groupId>
+                <artifactId>jbossjts-jacorb</artifactId>
+                <version>5.1.0.GA</version>
+                <scope>test</scope>
+        </dependency>
+        <dependency>
+                <groupId>jboss</groupId>
+                <artifactId>jbossts-common</artifactId>
+                <version>5.1.0.GA</version>
+                <scope>test</scope>
+        </dependency>
+        <dependency>
+                <groupId>jboss</groupId>
+                <artifactId>jacorb</artifactId>
+                <version>5.1.0.GA</version>
+                <scope>test</scope>
+        </dependency>
+        <!-- End transaction dependencies -->
+
 		<!-- START JBOSS -->
 		<dependency>
 			<groupId>jboss</groupId>

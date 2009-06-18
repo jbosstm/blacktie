@@ -6,7 +6,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerClientXML;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
-import org.jboss.blacktie.jatmibroker.jab.ThreadActionData;
 import org.jboss.blacktie.jatmibroker.transport.OrbManagement;
 import org.omg.CORBA.BAD_PARAM;
 import org.omg.CORBA.LocalObject;
@@ -73,7 +72,7 @@ public class TxRequestInterceptor extends LocalObject implements
 	public void send_request(ClientRequestInfo ri) {
 		if (isTransactional(ri)) {
 			log.trace("send_request: " + ri.operation());
-			JABTransaction curr = ThreadActionData.currentAction();
+			JABTransaction curr = JABTransaction.current();
 
 			if (curr != null) {
 				log.trace("adding tx");

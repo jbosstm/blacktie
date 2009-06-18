@@ -32,6 +32,9 @@ import org.jboss.blacktie.jatmibroker.transport.Message;
 import org.jboss.blacktie.jatmibroker.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
+import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
+import org.jboss.blacktie.jatmibroker.jab.JABException;
+
 public class ReceiverImpl implements Receiver {
 	private static final Logger log = LogManager.getLogger(ReceiverImpl.class);
 	private Queue destination;
@@ -68,6 +71,7 @@ public class ReceiverImpl implements Receiver {
 			javax.jms.Message message = receiver.receive(timeout);
 			if (message != null) {
 				log.debug("Received from: " + destination.getQueueName());
+				String controlIOR = message.getStringProperty("messagecontrol");
 				BytesMessage bytesMessage = ((BytesMessage) message);
 				// TODO String replyTo = message.getStringProperty("reply-to");
 				Destination replyTo = message.getJMSReplyTo();
@@ -87,6 +91,13 @@ public class ReceiverImpl implements Receiver {
 				toProcess.flags = flags;
 				toProcess.cd = cd;
 				toProcess.data = bytes;
+				if (controlIOR != null) {
+					try {
+						new JABTransaction(controlIOR);	// associate tx with current thread
+					} catch (JABException e) {
+						log.warn("Got an invalid tx from queue " + destination.getQueueName() + ": " + e);
+					}
+				}
 				return toProcess;
 			}
 			throw new ConnectionException(-1, "Did not receive a message");

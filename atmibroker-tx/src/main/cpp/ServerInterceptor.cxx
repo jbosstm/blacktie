@@ -37,11 +37,13 @@ void ServerInterceptor::receive_request_service_contexts(PortableInterceptor::Se
 }
 void ServerInterceptor::send_reply(PortableInterceptor::ServerRequestInfo_ptr ri) {
 	debug(ri, ":send_reply");
+	//destroySpecific(TSS_KEY);
 }
 void ServerInterceptor::send_exception(PortableInterceptor::ServerRequestInfo_ptr ri) {
 	CORBA::TypeCode_ptr tc = ri->sending_exception()->type();
 	LOG4CXX_LOGLS(atmiServerInterceptorLogger, log4cxx::Level::getTrace(), (char *) "exception: " << tc->name());
 	debug(ri, ":send_exception");
+	//destroySpecific(TSS_KEY);
 }
 void ServerInterceptor::send_other(PortableInterceptor::ServerRequestInfo_ptr ri) {
 	debug(ri, ":send_other");

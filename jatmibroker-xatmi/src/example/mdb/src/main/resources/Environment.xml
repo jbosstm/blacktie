@@ -23,6 +23,8 @@
 			<SERVER name='ejb-connector-tests'>
 				<SERVICE_NAMES>
 					<SERVICE name='EchoService' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='TxEchoService' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='TxCreateService' transportLibrary='libatmibroker-stomp.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>

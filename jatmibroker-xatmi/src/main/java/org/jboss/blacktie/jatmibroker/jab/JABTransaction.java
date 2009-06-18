@@ -58,6 +58,9 @@ public class JABTransaction {
 			AdapterInactive {
 		log.debug("JABTransaction constructor");
 
+		if (current() != null)
+			throw new JABException("Nested transactions are not supported");
+
 		jabSession = aJABSession;
 		timeout = aTimeout;
 
@@ -66,7 +69,7 @@ public class JABTransaction {
 
 		Properties properties = jabSession.getJABSessionAttributes()
 				.getProperties();
-		orbManagement = new OrbManagement(properties, false);
+		orbManagement = new OrbManagement(properties, true);
 		String toLookup = (String) properties.get("blacktie.trans.factoryid");
 		org.omg.CORBA.Object aObject = orbManagement.getNamingContextExt()
 				.resolve_str(toLookup);
@@ -83,6 +86,45 @@ public class JABTransaction {
 		} catch (Unavailable e) {
 			throw new JABException("Could not get the terminator", e);
 		}
+	}
+
+	public JABTransaction(String controlIOR) throws JABException {
+	    if (current() != null)
+	        throw new JABException("Nested transactions are not supported");
+
+	    JABSessionAttributes sessionAttrs = new JABSessionAttributes(null);
+
+	    jabSession = new JABSession(sessionAttrs);
+	    timeout = -1;
+
+	    try {
+	        orbManagement = new OrbManagement(sessionAttrs.getProperties(), true);
+	    } catch (org.omg.CORBA.UserException cue) {
+	        throw new JABException(cue.getMessage(), cue);
+	    }
+
+	    org.omg.CORBA.Object obj = orbManagement.getOrb().string_to_object(controlIOR);
+	    control = org.omg.CosTransactions.ControlHelper.narrow(obj);
+
+	    ThreadActionData.pushAction(this);
+
+	    setTerminator(control);
+	}
+
+    private void setTerminator(Control c) throws JABException {
+        try {
+            terminator = control.get_terminator();
+            log.debug("Terminator is " + terminator);
+        } catch (Unavailable e) {
+            throw new JABException("Could not get the terminator", e);
+        }
+    }
+
+	public String getControlIOR() {
+	    return orbManagement.getOrb().object_to_string(control);
+	}
+	public static JABTransaction current() {
+	    return ThreadActionData.currentAction();
 	}
 
 	public Control getControl() {

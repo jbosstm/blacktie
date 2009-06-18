@@ -49,7 +49,11 @@ public class JABSessionAttributes {
 		}
 	}
 
-	Properties getProperties() {
+	public JABSessionAttributes() throws JABException {
+		this(null);
+	}
+
+	public Properties getProperties() {
 		return properties;
 	}
 }
