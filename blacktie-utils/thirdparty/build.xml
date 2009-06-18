@@ -307,6 +307,10 @@
 		</copy>
 
 		<install-artifact groupId="stomp.contrib" artifactId="stomp" name="stomp" version="${stomp.version}" description="Streaming Text Orientated Messaging Protocol message broker wrapper" />
+		<exec executable="mvn" dir="${stomp.include.dir}/../../stompconnect-1.0" failonerror="true">
+			<arg value="install"/>
+			<arg value="-DskipTests"/>
+		</exec>
 	</target>
 
 	<target name="java-devel" depends="clean,init">
