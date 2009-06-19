@@ -54,6 +54,10 @@ public abstract class Service implements BlacktieService {
 
 	protected void processMessage(Message message) throws ConnectionException,
 			ConfigurationException {
+		if (JtsTransactionImple.hasTransaction()) {
+			log.error("Blacktie MDBs must not be called with a transactional context");
+		}
+
 		Transport transport = getTransport();
 		Sender sender = null;
 		if (message.replyTo != null) {
@@ -61,7 +65,6 @@ public abstract class Service implements BlacktieService {
 		}
 		Session session = new Session(transport, message.cd, sender);
 
-		// TODO HANDLE CONTROL
 		// THIS IS THE FIRST CALL
 		Buffer buffer = new Buffer(null, null);
 		buffer.setData(message.data);
@@ -71,18 +74,18 @@ public abstract class Service implements BlacktieService {
 				session);
 
 		boolean hasTx = (message.control != null && message.control.length() != 0);
-		Transaction prevTx = null;
-		log.info("hasTx=" + hasTx + " ior: " + message.control);
+
+		if (log.isDebugEnabled())
+			log.debug("hasTx=" + hasTx + " ior: " + message.control);
+
 		try {
-			prevTx = JtsTransactionImple.suspend(); // suspend the current tx
-			if (hasTx) {
-				JtsTransactionImple.resume(message.control); // and resume the foreign one
-			}
+			if (hasTx)	// make sure any foreign tx is resumed before calling the service routine
+				JtsTransactionImple.resume(message.control);
+
 			Response response = tpservice(tpsvcinfo);
-			if (hasTx) {
-				log.info("suspending foreign tx");
-				JtsTransactionImple.suspend();  // suspend the foreign tx
-			}
+			if (hasTx)	// and suspend it again
+				JtsTransactionImple.suspend();
+
 			if (sender != null) {
 				// TODO THIS SHOULD INVOKE THE CLIENT HANDLER
 				// odata.value = serviceRequest.getBytes();
@@ -92,8 +95,6 @@ public abstract class Service implements BlacktieService {
 					.getFlags(), 0);
 			}
 		} finally {
-			if (prevTx != null)
-				JtsTransactionImple.resume(prevTx);     // and resume whatever was there before
 			session.close();
 		}
 	}

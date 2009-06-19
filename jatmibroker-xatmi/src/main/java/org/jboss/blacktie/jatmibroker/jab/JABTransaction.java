@@ -80,12 +80,7 @@ public class JABTransaction {
 		ThreadActionData.pushAction(this);
 		log.debug(" created Control " + control);
 
-		try {
-			terminator = control.get_terminator();
-			log.debug("Terminator is " + terminator);
-		} catch (Unavailable e) {
-			throw new JABException("Could not get the terminator", e);
-		}
+		setTerminator(control);
 	}
 
 	public JABTransaction(String controlIOR) throws JABException {
@@ -98,7 +93,7 @@ public class JABTransaction {
 	    timeout = -1;
 
 	    try {
-	        orbManagement = new OrbManagement(sessionAttrs.getProperties(), true);
+        	orbManagement = new OrbManagement(sessionAttrs.getProperties(), true);
 	    } catch (org.omg.CORBA.UserException cue) {
 	        throw new JABException(cue.getMessage(), cue);
 	    }
@@ -109,6 +104,15 @@ public class JABTransaction {
 	    ThreadActionData.pushAction(this);
 
 	    setTerminator(control);
+	}
+
+	public static void associateTx(String controlIOR) throws JABException {
+		try {
+			// TODO make sure this works in the AS and standalone
+			org.jboss.blacktie.jatmibroker.transport.JtsTransactionImple.resume(controlIOR);
+		} catch (Throwable t) {
+			new JABTransaction(controlIOR);
+		}
 	}
 
     private void setTerminator(Control c) throws JABException {

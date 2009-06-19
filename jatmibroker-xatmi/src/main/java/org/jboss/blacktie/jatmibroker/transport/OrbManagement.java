@@ -46,7 +46,7 @@ public class OrbManagement {
 		for (int i = 1; i <= numberOfOrbArgs; i++) {
 			orbArgs.add(properties.getProperty("blacktie.orb.arg." + i));
 		}
-		String[] args = orbArgs.toArray(new String[] {});
+		String[] args = orbArgs.toArray(new String[orbArgs.size()]);
 
 		if (log.isDebugEnabled()) {
         	StringBuilder sb = new StringBuilder();

@@ -93,7 +93,7 @@ public class ReceiverImpl implements Receiver {
 				toProcess.data = bytes;
 				if (controlIOR != null) {
 					try {
-						new JABTransaction(controlIOR);	// associate tx with current thread
+						JABTransaction.associateTx(controlIOR);	// associate tx with current thread
 					} catch (JABException e) {
 						log.warn("Got an invalid tx from queue " + destination.getQueueName() + ": " + e);
 					}

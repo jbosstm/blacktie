@@ -9,6 +9,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.ejb3.annotation.Depends;
 
+@javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 @MessageDriven(activationConfig =
 {
 @ActivationConfigProperty(propertyName="destinationType", propertyValue="javax.jms.Queue"),

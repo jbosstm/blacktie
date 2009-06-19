@@ -15,6 +15,7 @@ import org.jboss.blacktie.jatmibroker.jab.JABException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+@javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 @MessageDriven(activationConfig =
 {
 @ActivationConfigProperty(propertyName="destinationType", propertyValue="javax.jms.Queue"),
@@ -40,7 +41,7 @@ public class TxCreateServiceTestService extends MDBBlacktieService implements ja
 			return "Service could not start a new transaction";
 
 		String ior = JtsTransactionImple.getTransactionIOR();
-		log.info("TxCreateService ior: " + ior);
+		log.debug("TxCreateService ior: " + ior);
 		return args;
 	}
 

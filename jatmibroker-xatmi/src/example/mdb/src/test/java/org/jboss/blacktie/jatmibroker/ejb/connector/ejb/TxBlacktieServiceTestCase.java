@@ -125,7 +125,7 @@ public class TxBlacktieServiceTestCase extends TestCase {
 	 * TODO Disabled until we can resolve the clash between the JMS transaction
 	 * the Blacktie clients transaction (JMS queues have local transactions)
 	 */
-	public void Xtest5() throws ConnectionException, JABException {
+	public void test5() throws ConnectionException, JABException {
 		byte[] args = "test=test5,tx=create".getBytes();
 		Buffer buffer = new Buffer(null, null);
 		buffer.setData(args);

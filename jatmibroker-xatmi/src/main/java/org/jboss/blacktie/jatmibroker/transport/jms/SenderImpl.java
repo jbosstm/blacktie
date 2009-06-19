@@ -25,7 +25,6 @@ import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.Topic;
 import javax.naming.NamingException;
-import javax.transaction.Transaction;
 
 import org.jboss.blacktie.jatmibroker.transport.JtsTransactionImple;
 

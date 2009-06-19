@@ -18,6 +18,9 @@ import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+/**
+ * Wrapper class for running JBossTS transactions in an application server
+ */
 public class JtsTransactionImple extends TransactionImple
 {
     private static final Logger log = LogManager
@@ -25,22 +28,19 @@ public class JtsTransactionImple extends TransactionImple
     private static TransactionManager tm;
     private static final String IORTag = "IOR";
 
-//	private Transaction prev;
-
+    /**
+     * Construct a transaction based on an OTS control
+     * @param wrapper the wrapped OTS control
+     */
     public JtsTransactionImple (ControlWrapper wrapper)
     {
         super(new AtomicTransaction(wrapper));
     }
-/*
-	protected void setPreviousTx(Transaction tx)
-	{
-		prev = tx;
-	}
-	protected Transaction getPreviousTx()
-	{
-		return prev;
-	}
-*/
+
+    /**
+     * associate a new transaction with the calling thread
+     * @return true if a new transaction is associated
+     */
     public static boolean begin() {
         if (getTransactionManager() != null) {
             try {
@@ -56,6 +56,10 @@ public class JtsTransactionImple extends TransactionImple
         return false;
     }
 
+    /**
+     * check whether the calling thread is associated with a transaction
+     * @return true if there is transaction on the callers thread
+     */
     public static boolean hasTransaction()
     {
         try {
@@ -65,6 +69,10 @@ public class JtsTransactionImple extends TransactionImple
         }
     }
 
+    /**
+     * Re-associate a transaction with the callers thread
+     * @param tx the transaction to associated
+     */
     public static void resume(Transaction tx)
     {
         try {
@@ -84,38 +92,21 @@ public class JtsTransactionImple extends TransactionImple
         }
     }
 
+    /**
+     * Associated a transaction with the callers thread
+     * @param ior IOR for the corresponding OTS transaction
+     */
     public static void resume(String ior)
     {
         log.info("resume control");
         Transaction tx = controlToTx(ior);
         resume(tx);
     }
-/*
-    public static void resume(String ior, Transaction prev)
-    {
-        log.info("resume control");
-        Transaction tx = controlToTx(ior);
-        resume(tx);
 
-        if (tx instanceof JtsTransactionImple) {
-            ((JtsTransactionImple) tx).prev = tx;
-        }
-    }
-
-    public static Transaction suspend(boolean resumePrev)
-    {
-        Transaction tx = suspend();
-
-        if (resumePrev && tx != null && (tx instanceof JtsTransactionImple)) {
-            JtsTransactionImple t = (JtsTransactionImple) tx;
-
-            if (t.prev != null)
-                resume(t.prev);
-        }
-
-        return tx;
-    }
-*/
+    /**
+     * Dissassociate the transaction currently associated with the callers thread
+     * @return the dissassociated transaction
+     */
     public static Transaction suspend()
     {
         log.info("suspend");
@@ -132,6 +123,11 @@ public class JtsTransactionImple extends TransactionImple
         return null;
     }
 
+    /**
+     * Convert an IOR representing an OTS transaction into a JTA transaction
+     * @param ior the CORBA reference for the OTS transaction
+     * @return a JTA transaction that wraps the OTS transaction
+     */
     private static Transaction controlToTx(String ior)
     {
         log.info("controlToTx: ior: " + ior);
@@ -151,6 +147,10 @@ public class JtsTransactionImple extends TransactionImple
         return tx;
     }
 
+    /**
+     * Lookup the JTA transaction manager
+     * @return the JTA transaction manager in the VM
+     */
     public static TransactionManager getTransactionManager()
     {
         if (tm == null) {
@@ -165,6 +165,10 @@ public class JtsTransactionImple extends TransactionImple
         return tm;
     }
 
+    /**
+     * If the current transaction represents an OTS transaction then return it IOR
+     * @return the IOR or null if the current transaction is not an OTS transaction
+     */
     public static String getTransactionIOR()
     {
         log.info("getTransactionIOR");
@@ -208,7 +212,7 @@ public class JtsTransactionImple extends TransactionImple
         return null;
     }
 
-    public static ControlWrapper createControlWrapper(String ior) {
+    private static ControlWrapper createControlWrapper(String ior) {
         if  (ior.startsWith(IORTag)) {
             org.omg.CORBA.Object obj = ORBManager.getORB().orb().string_to_object(ior);
             Control control =  org.omg.CosTransactions.ControlHelper.narrow(obj);
@@ -222,4 +226,11 @@ public class JtsTransactionImple extends TransactionImple
         }
     }
 
+	private static org.omg.CORBA.ORB getDefaultORB() {
+        try {
+            return ORBManager.getORB().orb();
+        } catch (Throwable t) {
+            return null;
+        }
+    }
 }
