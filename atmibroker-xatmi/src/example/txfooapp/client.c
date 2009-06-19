@@ -117,24 +117,24 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-#if 0
-	check_update(dbfile1, "record1", "Amos", 1);
-#else
-	(void) rw_record("", dbfile1, 'd', TX_TYPE_BEGIN_COMMIT, NULL);
-	(void) rw_record("", dbfile1, 'd', TX_TYPE_BEGIN_COMMIT, NULL);
+	if (argc <= 1) {
+		check_update(dbfile1, "record1", "Amos", 1);
+	} else {
+		(void) rw_record("", dbfile1, 'd', TX_TYPE_BEGIN_COMMIT, NULL);
+		(void) rw_record("", dbfile1, 'd', TX_TYPE_BEGIN_COMMIT, NULL);
 
-	(void) rw_record("record1=Amos", dbfile1, 'w', TX_TYPE_BEGIN_COMMIT, NULL);
-	check_update(dbfile1, "record1", "Amos", 1);
+		(void) rw_record("record1=Amos", dbfile1, 'w', TX_TYPE_BEGIN_COMMIT, NULL);
+		check_update(dbfile1, "record1", "Amos", 1);
 
-	(void) rw_record("record2=Michael", dbfile1, 'w', TX_TYPE_BEGIN_ABORT, NULL);
-	check_update(dbfile1, "record2", "Michael", 0); /* record should not be updated */
+		(void) rw_record("record2=Michael", dbfile1, 'w', TX_TYPE_BEGIN_ABORT, NULL);
+		check_update(dbfile1, "record2", "Michael", 0); /* record should not be updated */
 
-	(void) rw_record("record3=Amos", dbfile1, 'w', TX_TYPE_BEGIN, NULL);
-	(void) rw_record("record4=Michael", dbfile1, 'w', TX_TYPE_COMMIT, NULL);
+		(void) rw_record("record3=Amos", dbfile1, 'w', TX_TYPE_BEGIN, NULL);
+		(void) rw_record("record4=Michael", dbfile1, 'w', TX_TYPE_COMMIT, NULL);
 
-	check_update(dbfile1, "record3", "Amos", 1);
-	check_update(dbfile1, "record4", "Michael", 1);
-#endif
+		check_update(dbfile1, "record3", "Amos", 1);
+		check_update(dbfile1, "record4", "Michael", 1);
+	}
 
 	if (tx_close() != TX_OK) {
 		userlogc((char*) "ERROR - Could not close transaction: ");

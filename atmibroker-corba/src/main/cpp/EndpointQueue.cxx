@@ -102,8 +102,9 @@ void CorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA:
 		message.replyto = strdup(replyto_ior);
 		message.rval = rval;
 		message.control = getSpecific(TSS_KEY);
-		// the tx now belongs to the message so remove it from the thread
-		//destroySpecific(TSS_KEY);
+		// For remote comms this thread (comes from a pool) is different from the thread that will
+		// eventually consume the message. For local comms this is not the case.
+		// Thus we cannot dissassociate any transaction from the thread here (using destroySpecific)
 
 		returnData.push(message);
 		LOG4CXX_DEBUG(logger, (char*) "notifying");

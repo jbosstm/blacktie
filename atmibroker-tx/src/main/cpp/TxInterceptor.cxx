@@ -187,12 +187,10 @@ void TxInterceptor::update_tx_context(PortableInterceptor::ServerRequestInfo_ptr
 
 		if (!CORBA::is_nil(curr)) {
 			if (!curr->_is_equivalent(ctrl)) {
-				// TODO suspend curr and resume it in send_reply/send_exception
-				// but if its a one way call then why is curr set
-				LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getError(),
-						(char*) "\tTODO Error current and context are different");
-
-				//TODO CORBA::release(curr);
+				// Drop the level to info since we are using service queues
+				// See comment in CorbaEndpointQueue::send
+				LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getDebug(),
+						(char*) "\tcurrent and context are different");
 			}
 		}
 
