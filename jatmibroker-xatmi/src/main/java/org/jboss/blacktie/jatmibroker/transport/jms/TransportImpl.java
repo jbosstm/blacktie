@@ -18,6 +18,7 @@
 package org.jboss.blacktie.jatmibroker.transport.jms;
 
 import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
@@ -32,9 +33,19 @@ import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 public class TransportImpl implements Transport {
 
 	private Context context;
+	private Connection connection;
 	private Session session;
 
-	TransportImpl(Context context, Connection connection) throws JMSException {
+	TransportImpl(Context context, ConnectionFactory connectionFactory, Properties properties) throws JMSException {
+		String username = (String) properties.get("StompConnectUsr");
+		String password = (String) properties.get("StompConnectPwd");
+		if (username != null) {
+			connection = factory.createConnection(username, password);
+		} else {
+			connection = factory.createConnection();
+		}
+		connection.start();
+
 		this.context = context;
 		this.session = connection
 				.createSession(false, Session.AUTO_ACKNOWLEDGE);
@@ -44,8 +55,15 @@ public class TransportImpl implements Transport {
 		try {
 			session.close();
 		} catch (Throwable t) {
-			throw new ConnectionException(-1, "Could not close the connection",
+			throw new ConnectionException(-1, "Could not close the session",
 					t);
+		} finally {
+			try {
+				connection.close();
+			} catch (Throwable t) {
+				throw new ConnectionException(-1, "Could not close the connection",
+						t);
+			}
 		}
 	}
 

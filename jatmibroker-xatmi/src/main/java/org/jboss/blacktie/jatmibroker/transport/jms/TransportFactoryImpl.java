@@ -35,13 +35,14 @@ public class TransportFactoryImpl extends TransportFactory {
 
 	private static final Logger log = LogManager
 			.getLogger(TransportFactoryImpl.class);
+	private Properties props;
 	private Context context;
-	private Connection connection;
+	private ConnectionFactory factory;
 
 	protected void setProperties(Properties properties)
 			throws ConfigurationException {
 		try {
-			Properties props = new Properties();
+			props = new Properties();
 			props.setProperty("java.naming.factory.initial",
 					"org.jnp.interfaces.NamingContextFactory");
 			props.setProperty("java.naming.factory.url.pkgs",
@@ -50,16 +51,8 @@ public class TransportFactoryImpl extends TransportFactory {
 					"jnp://localhost:1099");
 			props.putAll(props);
 			context = new InitialContext(props);
-			ConnectionFactory factory = (ConnectionFactory) context
+			factory = (ConnectionFactory) context
 					.lookup("ConnectionFactory");
-			String username = (String) properties.get("StompConnectUsr");
-			String password = (String) properties.get("StompConnectPwd");
-			if (username != null) {
-				connection = factory.createConnection(username, password);
-			} else {
-				connection = factory.createConnection();
-			}
-			connection.start();
 		} catch (Throwable t) {
 			throw new ConfigurationException(
 					"Could not create the required connection", t);
@@ -68,7 +61,7 @@ public class TransportFactoryImpl extends TransportFactory {
 
 	public Transport createTransport() throws ConnectionException {
 		try {
-			return new TransportImpl(context, connection);
+			return new TransportImpl(context, connectionFactory, properties);
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Could not connect to server", t);
 		}
