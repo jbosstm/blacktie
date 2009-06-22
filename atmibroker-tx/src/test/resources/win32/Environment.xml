@@ -19,7 +19,6 @@
 			 xmlns="http://www.jboss.org/blacktie">
 	<ENVIRONMENT_DESCRIPTION>
 		<DOMAIN>fooapp</DOMAIN>
-		<TRANS_FACTORY_ID>TransactionManagerService.OTS</TRANS_FACTORY_ID>
 		<XA_RESOURCES>
 			 <XA_RESOURCE>
 				<XA_RESOURCE_MGR_ID>100</XA_RESOURCE_MGR_ID>
