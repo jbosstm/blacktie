@@ -61,7 +61,7 @@ public class TransportFactoryImpl extends TransportFactory {
 
 	public Transport createTransport() throws ConnectionException {
 		try {
-			return new TransportImpl(context, connectionFactory, properties);
+			return new TransportImpl(context, factory, props);
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Could not connect to server", t);
 		}
