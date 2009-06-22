@@ -45,7 +45,7 @@ public abstract class MDBBlacktieService extends Service implements
 			toProcess.control = message.getStringProperty("messagecontrol");
 			toProcess.cd = cd;
 			toProcess.data = bytes;
-			log.info("SERVER onMessage: ior: " + toProcess.control);
+			log.debug("SERVER onMessage: ior: " + toProcess.control);
 			processMessage(toProcess);
 		} catch (Throwable t) {
 			log.error("Could not service the request", t);
