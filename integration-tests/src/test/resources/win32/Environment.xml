@@ -20,6 +20,11 @@
 	<ENVIRONMENT_DESCRIPTION>
 		<DOMAIN>fooapp</DOMAIN>
 		<SERVER_NAMES>
+			<SERVER name='jboss'>
+				<SERVICE_NAMES>
+					<SERVICE name='BTStompAdmin' transportLibrary='atmibroker-stomp.dll'/>
+				</SERVICE_NAMES>
+			</SERVER>
 			<SERVER name='standalone-server'>
 				<SERVICE_NAMES>
 					<SERVICE name='LOOPY' transportLibrary='atmibroker-stomp.dll'/>
@@ -58,11 +63,11 @@
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>StompConnectUsr</NAME>
-				<VALUE>JBM.SUCKER</VALUE>
+				<VALUE>guest</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>StompConnectPwd</NAME>
-				<VALUE>CHANGE ME!!</VALUE>
+				<VALUE>guest</VALUE>
 			</ENV_VARIABLE>
 		</ENV_VARIABLES>
 	</ENVIRONMENT_DESCRIPTION>
