@@ -171,7 +171,7 @@ public class JtsTransactionImple extends TransactionImple
      */
     public static String getTransactionIOR()
     {
-        log.info("getTransactionIOR");
+        log.debug("getTransactionIOR");
 
         JABTransaction curr = JABTransaction.current();
         if (curr != null) {
