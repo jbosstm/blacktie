@@ -27,6 +27,7 @@ import org.jboss.ejb3.annotation.Depends;
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
 		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTStompAdmin") })
 @Depends("jboss.messaging.destination:service=Queue,name=BTStompAdmin")
+@javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 public class BlacktieStompAdministrationService extends MDBBlacktieService
 		implements javax.jms.MessageListener {
 	private static final Logger log = LogManager

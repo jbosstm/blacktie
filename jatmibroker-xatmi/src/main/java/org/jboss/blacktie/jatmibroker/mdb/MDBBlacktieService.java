@@ -11,9 +11,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.Service;
 
 /**
  * All blacktie services should extend this class so that they can be advertised
- * Blacktie sercice message queues must not be transactional.
  */
-@javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 public abstract class MDBBlacktieService extends Service implements
 		MessageListener {
 	/**
