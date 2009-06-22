@@ -58,28 +58,28 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		byte[] success = new byte[1];
 		String server = (String)prop.get("blacktie."+serviceName+".server");
 		if (server != null) {
-			log.debug("Service " + serviceName + " exists for server: " + server);
+			log.trace("Service " + serviceName + " exists for server: " + server);
 			if (operation.equals("tpunadvertise")) {
-				log.debug("Unadvertising: " + serviceName);
+				log.trace("Unadvertising: " + serviceName);
 				try {
 					ObjectName name = new ObjectName(
 							"jboss.messaging.destination:service=Queue,name="
 									+ serviceName);
 					beanServerConnection.invoke(name, "stop", null, null);
 					success[0] = 1;
-					log.info("Unadvertised: " + serviceName);
+					log.debug("Unadvertised: " + serviceName);
 				} catch (Throwable t) {
 					log.error("Could not advertise the service", t);
 				}
 			} else if (operation.equals("tpadvertise")) {
-				log.debug("Advertising: " + serviceName);
+				log.trace("Advertising: " + serviceName);
 				try {
 					ObjectName name = new ObjectName(
 							"jboss.messaging.destination:service=Queue,name="
 									+ serviceName);
 					beanServerConnection.invoke(name, "start", null, null);
 					success[0] = 1;
-					log.info("Advertised: " + serviceName);
+					log.debug("Advertised: " + serviceName);
 				} catch (Throwable t) {
 					log.error("Could not advertise the service", t);
 				}

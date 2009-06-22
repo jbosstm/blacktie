@@ -68,23 +68,6 @@
 					<skip>${test.skip}</skip>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jboss-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>jboss-deploy</id>
-						<phase>install</phase>
-						<goals>
-							<goal>harddeploy</goal>
-						</goals>
-						<configuration>
-							<fileName>${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar</fileName>
-							<serverName>all</serverName>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 <properties>
