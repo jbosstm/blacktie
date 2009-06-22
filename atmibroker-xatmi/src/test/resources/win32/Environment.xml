@@ -20,28 +20,33 @@
 	<ENVIRONMENT_DESCRIPTION>
 		<DOMAIN>fooapp</DOMAIN>
 		<SERVER_NAMES>
+			<SERVER name="jboss">
+				<SERVICE_NAMES>
+					<SERVICE name='BTStompAdmin' transportLibrary='atmibroker-stomp.dll'/>
+				</SERVICE_NAMES>
+			</SERVER>
 			<SERVER>
 				<SERVICE_NAMES>
-					<SERVICE name='BAR' transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='TestTPFree' transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='TestTPCall' transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='TestTPAdvertise' transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='LOOPY' transportLibrary='atmibroker-corba.dll'/>
+					<SERVICE name='BAR' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPFree' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPCall' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPAdvertise' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='LOOPY' transportLibrary='atmibroker-stomp.dll'/>
 					<SERVICE name='TestTPConversat'  transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='TestTPACall'  transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='TestTPCancel'  transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='TestTPConnect'  transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='TestTPDiscon'  transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='TestTPGetrply'  transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='TestTPSend'  transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='TestTPRecv'  transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='TestTPService'  transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='TestTPReturn'  transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='123456789012345' transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='TestTPUnadverti' transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='tpcall_x_octet' transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='tpcall_x_common' transportLibrary='atmibroker-corba.dll'/>
-					<SERVICE name='tpcall_x_c_type' transportLibrary='atmibroker-corba.dll'/>
+					<SERVICE name='TestTPACall'  transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPCancel'  transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPConnect'  transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPDiscon'  transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPGetrply'  transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPSend'  transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPRecv'  transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPService'  transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPReturn'  transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='123456789012345' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='TestTPUnadverti' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='tpcall_x_octet' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='tpcall_x_common' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='tpcall_x_c_type' transportLibrary='atmibroker-stomp.dll'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>
@@ -66,14 +71,16 @@
 				<NAME>StompConnectPort</NAME>
 				<VALUE>61613</VALUE>
 			</ENV_VARIABLE>
+
 			<ENV_VARIABLE>
 				<NAME>StompConnectUsr</NAME>
-				<VALUE>JBM.SUCKER</VALUE>
+				<VALUE>guest</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>StompConnectPwd</NAME>
-				<VALUE>CHANGE ME!!</VALUE>
+				<VALUE>guest</VALUE>
 			</ENV_VARIABLE>
+
 		</ENV_VARIABLES>
 	</ENVIRONMENT_DESCRIPTION>
 </ENVIRONMENT>
