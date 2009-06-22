@@ -128,6 +128,11 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 	char* errorMessage = (char*) malloc(svcinfo->len * 2 + 1);
 	sprintf(errorMessage, "%s/%s", expectedResult, svcinfo->data);
 	if (strcmp(expectedResult, svcinfo->data) != 0) {
+		if (svcinfo->data != NULL) {
+			userlogc("Got invalid data %s", svcinfo->data);
+		} else {
+			userlogc("GOT A NULL");
+		}
 		fail = true;
 	} else {
 		long revent = 0;
@@ -137,13 +142,22 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 			//userlogc((char*) "testTPConversation_service:%s:", sendbuf);
 			int result = ::tpsend(svcinfo->cd, sendbuf, svcinfo->len,
 					TPRECVONLY, &revent);
-			result = ::tprecv(svcinfo->cd, &rcvbuf, &svcinfo->len, 0, &revent);
-
-			char* expectedResult = (char*) malloc(svcinfo->len);
-			sprintf(expectedResult, "yo%d", i);
-			char* errorMessage = (char*) malloc(svcinfo->len * 2 + 1);
-			sprintf(errorMessage, "%s/%s", expectedResult, rcvbuf);
-			if (strcmp(expectedResult, rcvbuf) != 0) {
+			if (result != -1) {
+				result = ::tprecv(svcinfo->cd, &rcvbuf, &svcinfo->len, 0, &revent);
+				if (result != -1) {
+					char* expectedResult = (char*) malloc(svcinfo->len);
+					sprintf(expectedResult, "yo%d", i);
+					char* errorMessage = (char*) malloc(svcinfo->len * 2 + 1);
+					sprintf(errorMessage, "%s/%s", expectedResult, rcvbuf);
+					if (strcmp(expectedResult, rcvbuf) != 0) {
+						fail = true;
+						break;
+					}
+				} else {
+					fail = true;
+					break;
+				}
+			} else {
 				fail = true;
 				break;
 			}

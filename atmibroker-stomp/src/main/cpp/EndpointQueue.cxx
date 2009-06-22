@@ -255,8 +255,8 @@ MESSAGE StompEndpointQueue::receive(long time) {
 					"messagecontrol", APR_HASH_KEY_STRING);
 			LOG4CXX_TRACE(logger, "Extracted control");
 			bool unableToAssociateTx = false;
-			if (control) {
-				LOG4CXX_TRACE(logger, "Read a control: " << control);
+			if (control && control != NULL && strcmp(control, (const char*) "null") != 0) {
+				LOG4CXX_TRACE(logger, "Read a non-null control: " << control << "/");
 				if (associate_serialized_tx((char*) "serverAdministration",
 						(char*) control) != XA_OK) {
 					LOG4CXX_ERROR(logger, "Unable to handle control");
@@ -268,6 +268,7 @@ MESSAGE StompEndpointQueue::receive(long time) {
 				LOG4CXX_TRACE(logger, "Ready to handle message");
 				char * correlationId = (char*) apr_hash_get(frame->headers,
 						"messagecorrelationId", APR_HASH_KEY_STRING);
+				LOG4CXX_TRACE(logger, "Read a correlation ID" << correlationId);
 				LOG4CXX_TRACE(logger, "Extracted correlationID");
 				char * flags = (char*) apr_hash_get(frame->headers,
 						"messageflags", APR_HASH_KEY_STRING);

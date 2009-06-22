@@ -97,42 +97,6 @@ AtmiBrokerClient::AtmiBrokerClient() {
 		clientInitialized = true;
 		currentConnection = NULL;
 
-		/*
-		if(envDir) {
-			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "envDir is " << envDir);
-			ACE_OS::snprintf(descPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"CLIENT.xml", envDir);
-		} else {
-			ACE_OS::strncpy(descPath, "CLIENT.xml", 256);
-		}
-
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "descPath is " << descPath);
-		AtmiBrokerClientXml aAtmiBrokerClientXml;
-		if(aAtmiBrokerClientXml.parseXmlDescriptor(&clientServerVector, descPath) == false) return;
-		*/
-
-		/*
-		char* transportLibrary = AtmiBrokerEnv::get_instance()->getenv(
-				(char*) "TransportLibrary");
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient,
-				(char*) "Loading client transport: " << transportLibrary);
-		connection_factory_t* connectionFactory =
-				(connection_factory_t*) ::lookup_symbol(transportLibrary,
-						"connectionFactory");
-		if (connectionFactory != NULL) {
-			clientConnection = connectionFactory->create_connection(
-					(char*) "client");
-
-			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "constructor");
-
-			nextSessionId = 0;
-			clientInitialized = true;
-		} else {
-			LOG4CXX_ERROR(loggerAtmiBrokerClient,
-					(char*) "Could not load the transport: "
-							<< transportLibrary);
-			setSpecific(TPE_KEY, TSS_TPESYSTEM);
-		}
-		*/
 	} catch (...) {
 		LOG4CXX_ERROR(loggerAtmiBrokerClient,
 				(char*) "clientinit Unexpected exception");
@@ -142,44 +106,10 @@ AtmiBrokerClient::AtmiBrokerClient() {
 
 AtmiBrokerClient::~AtmiBrokerClient() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "destructor");
-
-	/*
-	for (std::vector<ClientServerInfo*>::iterator itServer =
-			clientServerVector.begin(); itServer != clientServerVector.end(); itServer++) {
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "next serverName is: "
-				<< (char*) (*itServer)->serverName);
-		free((*itServer)->serverName);
-
-		std::vector<ClientServiceInfo>* services = &((*itServer)->serviceVector);
-		for(std::vector<ClientServiceInfo>::iterator i = services->begin(); i != services->end(); i++) {
-			free((*i).serviceName);
-			free((*i).transportLib);
-		}
-		services->clear();
-		free(*itServer);
-	}
-	clientServerVector.clear();
-	*/
-
 	AtmiBrokerMem::discard_instance();
 	shutdown_tx_broker();
 	AtmiBrokerEnv::discard_instance();
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleted services");
-
-	/*
-	if (clientConnection) {
-		delete clientConnection;
-		clientConnection = NULL;
-	}
-	*/
-
-	/*
-	std::map<std::string, Connection*>::iterator it;
-	for(it = clientConnectionMap.begin(); it != clientConnectionMap.end(); it ++) {
-		delete (*it).second;
-	}
-	clientConnectionMap.clear();
-	*/
 	clientInitialized = false;
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "Client Shutdown");
 
@@ -187,43 +117,17 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 
 Connection* AtmiBrokerClient::getConnection(char* serviceName) {
 	return clientConnectionManager.getClientConnection(serviceName);
-	/*
-	char* transport = AtmiBrokerEnv::get_instance()->getTransportLibrary(serviceName);
-	if(transport == NULL){
-		LOG4CXX_WARN(loggerAtmiBrokerClient, (char*) "service " << serviceName << " has not transportLibrary config");
-		throw std::exception();
-	}
-	std::string transportLibrary = transport;
-	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "service " << serviceName << " transport is " << transportLibrary);
-
-	std::map<std::string, Connection*>::iterator it;
-	it = clientConnectionMap.find(transportLibrary);
-	
-	if(it != clientConnectionMap.end()) {
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "find " << serviceName << " Connection in map " << (*it).second);
-		return (*it).second;
-	} else {
-		connection_factory_t* connectionFactory = (connection_factory_t*) ::lookup_symbol(transportLibrary.c_str(), "connectionFactory");
-		if (connectionFactory != NULL) {
-			Connection* clientConnection = connectionFactory->create_connection((char*) "client");
-			clientConnectionMap.insert(std::map<std::string, Connection*>::value_type(transportLibrary, clientConnection));
-			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "insert service " << serviceName << " connection " << clientConnection);
-			return clientConnection;
-		}
-	}
-
-	LOG4CXX_WARN(loggerAtmiBrokerClient, (char*) "can not create connection for service " << serviceName);
-	return NULL;
-	*/
 }
 
 Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
+	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "creating session: " << serviceName);
 	Connection* clientConnection = this->getConnection(serviceName);
 
 	if(clientConnection != NULL) {
 		currentConnection = clientConnection;
 		id = nextSessionId++;
 		Session* session = clientConnection->createSession(id, serviceName);
+		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "created session: " << id << " send: " << session->getCanSend() << " recv: " << session->getCanRecv());
 		return session;
 	} 
 
@@ -231,14 +135,21 @@ Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
 }
 
 Session* AtmiBrokerClient::getSession(int id) {
+	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "get session: " << id);
+	Session* session = NULL;
 	if (currentConnection != NULL) {
-		return currentConnection->getSession(id);
+		session = currentConnection->getSession(id);
 	}
-
-	return NULL;
+	if (session != NULL) {
+		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "got session: " << id << " send: " << session->getCanSend() << " recv: " << session->getCanRecv());
+	} else {
+		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "did not get session: " << id);
+	}
+	return session;
 }
 
 void AtmiBrokerClient::closeSession(int id) {
+	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "close session: " << id);
 	if(currentConnection != NULL) {
 		currentConnection->closeSession(id);
 	}

@@ -55,24 +55,21 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 	// INITIALISE THE SENDER AND RECEIVER FOR THIS CONVERSATION
 	if (message.replyto) {
-		LOG4CXX_DEBUG(logger, (char*) "   replyTo = " << message.replyto);
+		LOG4CXX_DEBUG(logger, (char*) "replyTo: " << message.replyto );
 	} else {
-		LOG4CXX_DEBUG(logger, (char*) "   replyTo = NULL");
+		LOG4CXX_DEBUG(logger, (char*) "replyTo: NULL");
 	}
 	session = connection->createSession(message.correlationId, message.replyto);
 
 	// EXTRACT THE DATA FROM THE INBOUND MESSAGE
-	int correlationId = message.correlationId;
 
 	char* idata = (char *) malloc(message.len);
 	memcpy(idata, message.data, message.len);
-
+	int correlationId = message.correlationId;
 	long ilen = message.len;
 	long flags = message.flags;
 	void* control = message.control;
-	LOG4CXX_DEBUG(logger, (char*) "   idata = %p" << idata);
-	LOG4CXX_DEBUG(logger, (char*) "   ilen = %d" << ilen);
-	LOG4CXX_DEBUG(logger, (char*) "   flags = %d" << flags);
+	LOG4CXX_DEBUG(logger, (char*) " idata: " << idata << " ilen: " << ilen << " flags: " << flags << "cd: " << message.correlationId);
 
 	// PREPARE THE STRUCT FOR SENDING TO THE CLIENT
 	TPSVCINFO tpsvcinfo;
@@ -81,14 +78,18 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	tpsvcinfo.flags = flags;
 	tpsvcinfo.data = idata;
 	tpsvcinfo.len = ilen;
-	if (tpsvcinfo.flags & TPCONV) {
+	if (tpsvcinfo.flags && TPCONV) {
 		tpsvcinfo.cd = correlationId;
+	} else {
+		LOG4CXX_DEBUG(logger, (char*) "cd not being set");
 	}
 
 	if (tpsvcinfo.flags & TPRECVONLY) {
 		session->setCanRecv(false);
+		LOG4CXX_DEBUG(logger, (char*) "onMessage set constraints session: " << session->getId() << " send(not changed): " << session->getCanSend() << " recv: " << session->getCanRecv());
 	} else if (tpsvcinfo.flags & TPSENDONLY) {
 		session->setCanSend(false);
+		LOG4CXX_DEBUG(logger, (char*) "onMessage set constraints session: " << session->getId() << " send: " << session->getCanSend() << " recv (not changed): " << session->getCanRecv());
 	}
 
 	// HANDLE THE CLIENT INVOCATION

@@ -110,6 +110,7 @@ bool StompSessionImpl::send(MESSAGE message) {
 	char * rcode = apr_itoa(pool, message.rcode);
 	apr_hash_set(frame.headers, "messagecorrelationId", APR_HASH_KEY_STRING,
 			correlationId);
+	LOG4CXX_TRACE(logger, "Set the corrlationId: " << correlationId);
 	apr_hash_set(frame.headers, "messageflags", APR_HASH_KEY_STRING, flags);
 	apr_hash_set(frame.headers, "messagerval", APR_HASH_KEY_STRING, rval);
 	apr_hash_set(frame.headers, "messagercode", APR_HASH_KEY_STRING, rcode);

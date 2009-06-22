@@ -75,13 +75,11 @@ AtmiBrokerMem::~AtmiBrokerMem() {
 			free(memoryInfo.memoryPtr);
 		}
 		if (memoryInfo.type != NULL) {
-			LOG4CXX_DEBUG(logger, (char*) "freeing type: "
-					<< memoryInfo.type);
+			LOG4CXX_DEBUG(logger, (char*) "freeing type");
 			free(memoryInfo.type);
 		}
 		if (memoryInfo.subtype != NULL) {
-			LOG4CXX_DEBUG(logger, (char*) "freeing subtype: "
-					<< memoryInfo.subtype);
+			LOG4CXX_DEBUG(logger, (char*) "freeing subtype");
 			free(memoryInfo.subtype);
 		}
 		LOG4CXX_DEBUG(logger, (char*) "freed memory");
@@ -228,13 +226,11 @@ void AtmiBrokerMem::tpfree(char* ptr) {
 				LOG4CXX_DEBUG(logger, (char*) "freeing memoryPtr to reclaim: " << memoryInfo.size);
 				free(memoryInfo.memoryPtr);
 				if (memoryInfo.type != NULL) {
-					LOG4CXX_DEBUG(logger, (char*) "freeing type: "
-							<< memoryInfo.type);
+					LOG4CXX_DEBUG(logger, (char*) "freeing type");
 					free(memoryInfo.type);
 				}
 				if (memoryInfo.subtype != NULL) {
-					LOG4CXX_DEBUG(logger, (char*) "freeing subtype: "
-							<< memoryInfo.subtype);
+					LOG4CXX_DEBUG(logger, (char*) "freeing subtype");
 					free(memoryInfo.subtype);
 				}
 				LOG4CXX_DEBUG(logger, (char*) "freed memory");
@@ -261,7 +257,7 @@ long AtmiBrokerMem::tptypes(char* ptr, char* type, char* subtype) {
 	LOG4CXX_TRACE(logger, (char*) "tptypes locked");
 	long toReturn = -1;
 	if (ptr && ptr != NULL) {
-		LOG4CXX_DEBUG(logger, (char*) "checking tptypes - ptr: " << ptr);
+		LOG4CXX_DEBUG(logger, (char*) "ptr appeared valid");
 		for (std::vector<MemoryInfo>::iterator it = memoryInfoVector.begin(); it
 				!= memoryInfoVector.end(); it++) {
 			LOG4CXX_TRACE(logger, (char*) "next memoryInfo is with size: "
@@ -269,10 +265,6 @@ long AtmiBrokerMem::tptypes(char* ptr, char* type, char* subtype) {
 			if ((*it).memoryPtr == ptr) {
 				MemoryInfo memoryInfo = (*it);
 				LOG4CXX_DEBUG(logger, (char*) "found matching memory");
-				LOG4CXX_DEBUG(logger, (char*) "type is");
-				LOG4CXX_DEBUG(logger, (char*) ": " << memoryInfo.type);
-				LOG4CXX_DEBUG(logger, (char*) "subtype is");
-				LOG4CXX_DEBUG(logger, (char*) ":" << memoryInfo.subtype);
 
 				if (type && type != NULL) {
 					strncpy(type, memoryInfo.type, MAX_TYPE_SIZE);

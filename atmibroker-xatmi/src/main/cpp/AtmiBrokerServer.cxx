@@ -303,6 +303,7 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	serviceData.clear();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted service array");
 
+/*
 	if (serverInfo.serverName) {
 		for (unsigned int i = 0; i < serverInfo.serviceVector.size(); i++) {
 			ServiceInfo* service = &serverInfo.serviceVector[i];
@@ -314,7 +315,7 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 		}
 		free(serverInfo.serverName);
 	}
-
+*/
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleting services");
 	AtmiBrokerMem::discard_instance();
 	shutdown_tx_broker();
@@ -489,13 +490,28 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 			}
 			tpfree(command);
 		}
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "invoked create_service_queue: "
+				<< serviceName);
 
 		Destination* destination = serverConnection->createDestination(
 				serviceName);
-
-		addDestination(destination, func, service);
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "created destination: "
 				<< serviceName);
+
+		addDestination(destination, func, service);
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "added destination: "
+				<< serviceName);
+	} catch (CORBA::Exception& e) {
+		LOG4CXX_ERROR(loggerAtmiBrokerServer,
+				(char*) "CORBA::Exception creating the destination: " << serviceName << " Exception: " << e._name());
+		setSpecific(TPE_KEY, TSS_TPEMATCH);
+		try {
+			removeAdminDestination(serviceName);
+		} catch (...) {
+			LOG4CXX_ERROR(loggerAtmiBrokerServer,
+				(char*) "Could not remove the destination: " << serviceName);
+		}
+		return false;
 	} catch (...) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer,
 				(char*) "Could not create the destination: " << serviceName);

@@ -205,6 +205,7 @@ void shutdownBindings(CORBA_CONNECTION* connection) {
 									<< ex._name());
 				}
 
+				///*
 				if (connection->callback_poa) {
 					LOG4CXX_DEBUG(loggerOrbManagement,
 							(char*) "shutdownBindings destroying callback_poa");
@@ -245,6 +246,7 @@ void shutdownBindings(CORBA_CONNECTION* connection) {
 					LOG4CXX_DEBUG(loggerOrbManagement,
 							(char*) "shutdownBindings destroyed root_poa");
 				}
+				//*/
 				LOG4CXX_DEBUG(loggerOrbManagement, (char*) "Closed Bindings");
 			}
 		}
