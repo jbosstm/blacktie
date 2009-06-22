@@ -22,7 +22,7 @@
 		<SERVER_NAMES>
 			<SERVER>
 				<SERVICE_NAMES>
-					<SERVICE name='BAR' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='BAR' transportLibrary='stomp'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>

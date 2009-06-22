@@ -34,4 +34,4 @@ javac JABClient.java
 Follow the instructions in $BLACKTIE_BIN_DIR/examples/xatmi/fooapp to start a server  
 
 4. RUN THE JAB Application
-java -Dblacktie.config.dir=[linux|win32] JABClient message
+java -Dblacktie.config.dir=. JABClient message
