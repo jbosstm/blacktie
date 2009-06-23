@@ -58,6 +58,7 @@ private:
 	bool shutdown;
 	char* name;
 	char* fullName;
+	bool transactional;
 };
 
 #endif

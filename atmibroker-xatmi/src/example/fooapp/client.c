@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
 	sbufsize = 29;
 	sbuf = tpalloc("X_OCTET", 0, sbufsize);
 	strcpy(sbuf, "THIS IS YOUR CLIENT SPEAKING");
-	retbufsize = 26;
+	retbufsize = 15;
 	retbuf = tpalloc("X_OCTET", 0, retbufsize);
 
 	// tptypes
@@ -56,8 +56,8 @@ int main(int argc, char **argv) {
 	userlogc((char*) "Calling tpcall with input: %s", sbuf);
 	tpstatus = tpcall("BAR", sbuf, sbufsize, (char **) &retbuf,
 			&retbufsize, callflags);
-	userlogc((char*) "Called tpcall with output: %s and status: %d",
-			retbuf, tpstatus);
+	userlogc((char*) "Called tpcall with length: %d output: %s and status: %d",
+			retbufsize, retbuf, tpstatus);
 
 	tpfree(sbuf);
 	tpfree(retbuf);

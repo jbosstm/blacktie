@@ -84,6 +84,7 @@ StompEndpointQueue::StompEndpointQueue(apr_pool_t* pool, char* serviceName) {
 	}
 	this->name = serviceName;
 	this->fullName = queueName;
+	this->transactional = true;
 	LOG4CXX_DEBUG(logger, "Sent SUB: " << queueName);
 }
 
@@ -143,6 +144,7 @@ StompEndpointQueue::StompEndpointQueue(apr_pool_t* pool, char* connectionName,
 	}
 	this->name = queueName;
 	this->fullName = queueName;
+	this->transactional = false;
 	LOG4CXX_DEBUG(logger, "Sent SUB: " << queueName);
 }
 
@@ -255,7 +257,7 @@ MESSAGE StompEndpointQueue::receive(long time) {
 					"messagecontrol", APR_HASH_KEY_STRING);
 			LOG4CXX_TRACE(logger, "Extracted control");
 			bool unableToAssociateTx = false;
-			if (control && control != NULL && strcmp(control, (const char*) "null") != 0) {
+			if (transactional && control && control != NULL && strcmp(control, (const char*) "null") != 0) {
 				LOG4CXX_TRACE(logger, "Read a non-null control: " << control << "/");
 				if (associate_serialized_tx((char*) "serverAdministration",
 						(char*) control) != XA_OK) {

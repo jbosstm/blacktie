@@ -27,10 +27,9 @@ void BAR(TPSVCINFO * svcinfo) {
 
 	userlogc((char*) "bar called  - svc: %s data %s len: %d flags: %d", svcinfo->name, svcinfo->data, svcinfo->len, svcinfo->flags);
 
-	sendlen = XATMI_SERVICE_NAME_LENGTH + 11;
-	buffer = tpalloc("X_OCTET", 0, sizeof(char) * sendlen);
-	strcpy(buffer, svcinfo->name);
-	strcat(buffer, " SAYS HELLO");
+	sendlen = 15;
+	buffer = tpalloc("X_OCTET", 0, sendlen);
+	strcpy(buffer, "BAR SAYS HELLO");
 
-	tpreturn(1, 1, buffer, sendlen, 0);
+	tpreturn(TPSUCCESS, 0, buffer, sendlen, 0);
 }
