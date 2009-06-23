@@ -48,17 +48,22 @@ On Windows:
 	%BLACKTIE_BIN_DIR%\bin\generate_client.bat -Dclient.includes=client.c
 
 
-4. RUN THE APPLICATIONS
-Make sure that the naming and transaction services are running, if not, run the JBoss server:
-<JBOSS_HOME>/bin/run.sh|bat -c blacktie
+4. DEPLOY THE STOMPCONNECTSERVICE
+Copy the file BLACKTIE_BIN_DIR/stompconnectservice/stompconnectservice-<VERSION>-jar-with-dependencies.jar into JBOSS_HOME/server/all/deploy
 
-4.1 RUN THE SERVER
+
+5. RUN THE APPLICATION SERVER
+Make sure that the naming, messaging and transaction services are running, by running the JBoss server:
+<JBOSS_HOME>/bin/run.sh|bat -c all
+
+
+6 RUN THE APPLICATIONS
+6.1 RUN THE SERVER
 ./server -c <win32|linux>
 NOTE: If you get the following error you have not started the JBoss server:
 2009-06-23 08:51:51,270 [0x7f627be63750] ERROR AtmiBrokerServer          - serverinit - Unexpected CORBA exception: TRANSIENT
 2009-06-23 08:51:51,270 [0x7f627be63750] INFO  AtmiBrokerLogc            - main Unexpected exception in serverrun()
-
-4.2 RUN THE CLIENT
+6.2 RUN THE CLIENT
 You will need to set the environment variable BLACKTIE_CONFIGURATION_DIR to either win32 or linux prior to running the client
 ./client
 NOTE: If you get the following error you have not sourced setenv.sh|bat
@@ -70,6 +75,6 @@ terminate called after throwing an instance of 'std::logic_error'
 Aborted
 
 
-6. JAB CLIENTS
+7. JAB CLIENTS
 If you would like to use a JAB Client to talk to the server, please see 
 <BLACKTIE_BIN_DIR>/examples/jab/fooapp
