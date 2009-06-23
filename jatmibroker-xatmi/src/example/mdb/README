@@ -34,10 +34,31 @@ empty string before running the test.
 
 If you are running the test from a binary distribution you will need to ensure that 
 the JAtmiBroker XATMI library is installed in your .m2 Maven folder:
-cd BLACKTIE_BIN_DIR/jatmibroker-xatmi
-mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=jatmibroker-xatmi -Dversion=1.0-MR5-SNAPSHOT -Dpackaging=jar -Dfile=jatmibroker-xatmi-1.0-MR5-SNAPSHOT.jar -DgeneratePom=true
-mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=atmibroker-idl -Dversion=1.0-MR5-SNAPSHOT -Dpackaging=jar -Dfile=atmibroker-idl-1.0-MR5-SNAPSHOT.jar -DgeneratePom=true
-mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=blacktie-xsd -Dversion=1.0-MR5-SNAPSHOT -Dpackaging=jar -Dfile=blacktie-xsd-1.0-MR5-SNAPSHOT.jar -DgeneratePom=true
+cd BLACKTIE_HOME/jatmibroker-xatmi
+mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=jatmibroker-xatmi -Dversion=1.0-MR5-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=jatmibroker-xatmi-1.0-MR5-SNAPSHOT.jar
+mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=blacktie-xsd -Dversion=1.0-MR5-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=blacktie-xsd-1.0-MR5-SNAPSHOT.jar
+mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=atmibroker-idl -Dversion=1.0-MR5-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=atmibroker-idl-1.0-MR5-SNAPSHOT.jar
+cd JBOSS_HOME/client
+mvn install:install-file -DgroupId=jboss -DartifactId=jboss-javaee -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jboss-javaee.jar
+mvn install:install-file -DgroupId=jboss -DartifactId=jboss-ejb3-ext-api -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jboss-ejb3-ext-api.jar
+mvn install:install-file -DgroupId=jboss -DartifactId=jbossjts -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jbossjts.jar
+mvn install:install-file -DgroupId=jboss -DartifactId=jacorb -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jacorb.jar
+mvn install:install-file -DgroupId=jboss -DartifactId=jboss-messaging-client -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jboss-messaging-client.jar
+mvn install:install-file -DgroupId=jboss -DartifactId=jbossall-client -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jbossall-client.jar
+mvn install:install-file -DgroupId=jboss -DartifactId=jboss-aop-client -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jboss-aop-client.jar
+mvn install:install-file -DgroupId=jboss -DartifactId=javassist -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=javassist.jar
+mvn install:install-file -DgroupId=jboss -DartifactId=trove -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=trove.jar
+mvn install:install-file -DgroupId=jboss -DartifactId=jnp-client -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jnp-client.jar
+mvn install:install-file -DgroupId=jboss -DartifactId=jboss-logging-spi -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jboss-logging-spi.jar
+mvn install:install-file -DgroupId=jboss -DartifactId=jboss-remoting -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jboss-remoting.jar
+mvn install:install-file -DgroupId=jboss -DartifactId=jboss-common-core -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jboss-common-core.jar
+mvn install:install-file -DgroupId=jboss -DartifactId=jboss-mdr -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jboss-mdr.jar
+mvn install:install-file -DgroupId=jboss -DartifactId=concurrent -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=concurrent.jar
+mvn install:install-file -DgroupId=jboss -DartifactId=jboss-serialization -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jboss-serialization.jar
+mvn install:install-file -DgroupId=jboss -DartifactId=jboss-logging-log4j -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jboss-logging-log4j.jar
+cd JBOSS_HOME/common/lib
+mvn install:install-file -DgroupId=jboss -DartifactId=jbossjts-jacorb -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jbossjts-jacorb.jar
+mvn install:install-file -DgroupId=jboss -DartifactId=jbossts-common -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jbossts-common.jar
 
 After the dependencies are installed you can then run the example using the following command:
 mvn install

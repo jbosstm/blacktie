@@ -173,7 +173,7 @@
 			</directory>
 			<outputDirectory>stompconnectservice</outputDirectory>
 			<includes>
-				<include>stomconnectservice-*-with-dependencies.jar</include>
+				<include>stompconnectservice-*-with-dependencies.jar</include>
 			</includes>
 		</fileSet>
 	</fileSets>
