@@ -43,15 +43,6 @@
 				<unpack>false</unpack>
 			</binaries>
 		</moduleSet>
-		<moduleSet>
-			<includes>
-				<include>org.jboss.blacktie:stompconnectservice</include>
-			</includes>
-			<binaries>
-				<outputDirectory>stompconnectservice</outputDirectory>
-				<unpack>false</unpack>
-			</binaries>
-		</moduleSet>
 	</moduleSets>
 	<files>
 		<file>
@@ -175,6 +166,14 @@
 				<include>*.lib</include>
 				<include>*.so</include>
 				<include>*.so.*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../stompconnectservice/target/
+			</directory>
+			<outputDirectory>stompconnectservice</outputDirectory>
+			<includes>
+				<include>stomconnectservice-*-with-dependencies.jar</include>
 			</includes>
 		</fileSet>
 	</fileSets>

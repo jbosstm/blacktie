@@ -71,7 +71,6 @@
 				<NAME>StompConnectPort</NAME>
 				<VALUE>61613</VALUE>
 			</ENV_VARIABLE>
-
 			<ENV_VARIABLE>
 				<NAME>StompConnectUsr</NAME>
 				<VALUE>guest</VALUE>
