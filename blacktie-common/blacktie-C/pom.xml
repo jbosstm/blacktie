@@ -47,6 +47,7 @@
 							<includes>**/*</includes>
 							<markersDirectory>${project.build.directory}/cxx/test-markers</markersDirectory>
 							<outputDirectory>${project.build.directory}/cxx/test</outputDirectory>
+							<overWriteIfNewer>false</overWriteIfNewer>
 							<overWriteReleases>false</overWriteReleases>
 							<overWriteSnapshots>true</overWriteSnapshots>
 						</configuration>
@@ -62,6 +63,7 @@
 							<includes>**/*</includes>
 							<markersDirectory>${project.build.directory}/cxx/runtime-markers</markersDirectory>
 							<outputDirectory>${project.build.directory}/cxx/runtime</outputDirectory>
+							<overWriteIfNewer>false</overWriteIfNewer>
 							<overWriteReleases>false</overWriteReleases>
 							<overWriteSnapshots>true</overWriteSnapshots>
 						</configuration>
@@ -77,6 +79,7 @@
 							<includes>**/*</includes>
 							<markersDirectory>${project.build.directory}/cxx/compile-markers</markersDirectory>
 							<outputDirectory>${project.build.directory}/cxx/compile</outputDirectory>
+							<overWriteIfNewer>false</overWriteIfNewer>
 							<overWriteReleases>false</overWriteReleases>
 							<overWriteSnapshots>true</overWriteSnapshots>
 						</configuration>
