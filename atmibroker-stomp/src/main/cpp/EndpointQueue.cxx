@@ -283,22 +283,22 @@ MESSAGE StompEndpointQueue::receive(long time) {
 				LOG4CXX_TRACE(logger, "Extracted rcode");
 
 				message.len = frame->body_length;
-				LOG4CXX_TRACE(logger, "Set length");
+				LOG4CXX_TRACE(logger, "Set length: " << message.len);
 				message.data = frame->body;
 				LOG4CXX_TRACE(logger, "Set body");
 				message.replyto = (const char*) apr_hash_get(frame->headers,
 						"reply-to", APR_HASH_KEY_STRING);
-				LOG4CXX_TRACE(logger, "Set replyto");
+				LOG4CXX_TRACE(logger, "Set replyto: " << message.replyto);
 				message.correlationId = apr_atoi64(correlationId);
-				LOG4CXX_TRACE(logger, "Set corid");
+				LOG4CXX_TRACE(logger, "Set correlationId: " << message.correlationId);
 				message.flags = apr_atoi64(flags);
-				LOG4CXX_TRACE(logger, "Set flags");
+				LOG4CXX_TRACE(logger, "Set flags: " << message.flags);
 				message.rval = apr_atoi64(rval);
-				LOG4CXX_TRACE(logger, "Set rval");
+				LOG4CXX_TRACE(logger, "Set rval: " << message.rval);
 				message.rcode = apr_atoi64(rcode);
-				LOG4CXX_TRACE(logger, "Set rcode");
+				LOG4CXX_TRACE(logger, "Set rcode: " << message.rcode);
 				message.control = getSpecific(TSS_KEY);
-				LOG4CXX_TRACE(logger, "Set control");
+				LOG4CXX_TRACE(logger, "Set control: " << message.control);
 			}
 		}
 	}

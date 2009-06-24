@@ -128,13 +128,13 @@ void StompConnectionImpl::disconnect(stomp_connection* connection, apr_pool_t* p
 }
 
 Session* StompConnectionImpl::createSession(int id, char * serviceName) {
-	LOG4CXX_DEBUG(logger, (char*) "createSession");
+	LOG4CXX_DEBUG(logger, (char*) "createSession serviceName: " << serviceName);
 	sessionMap[id] = new StompSessionImpl(connectionName, pool, id, serviceName);
 	return sessionMap[id];
 }
 
 Session* StompConnectionImpl::createSession(int id, const char* temporaryQueueName) {
-	LOG4CXX_DEBUG(logger, (char*) "createSession");
+	LOG4CXX_DEBUG(logger, (char*) "createSession temporaryQueueName: " << temporaryQueueName);
 	return new StompSessionImpl(connectionName, pool, id, temporaryQueueName);
 }
 

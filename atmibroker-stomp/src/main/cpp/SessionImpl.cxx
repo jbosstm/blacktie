@@ -52,7 +52,7 @@ StompSessionImpl::StompSessionImpl(char* connectionName, apr_pool_t* pool, int i
 
 	this->toRead = new StompEndpointQueue(this->pool, connectionName, id);
 	this->replyTo = toRead->getFullName();
-	LOG4CXX_TRACE(logger, "OK");
+	LOG4CXX_TRACE(logger, "OK service");
 }
 
 StompSessionImpl::StompSessionImpl(char* connectionName, apr_pool_t* pool, int id,
@@ -71,7 +71,7 @@ StompSessionImpl::StompSessionImpl(char* connectionName, apr_pool_t* pool, int i
 
 	this->toRead = new StompEndpointQueue(this->pool, connectionName, id);
 	this->replyTo = toRead->getFullName();
-	LOG4CXX_TRACE(logger, "OK");
+	LOG4CXX_TRACE(logger, "OK temporary");
 }
 
 StompSessionImpl::~StompSessionImpl() {

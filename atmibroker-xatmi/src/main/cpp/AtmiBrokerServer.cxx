@@ -941,9 +941,17 @@ Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
 			for (std::vector<ServiceDispatcher*>::iterator j =
 					(*i).dispatchers.begin(); j != (*i).dispatchers.end();) {
 				ServiceDispatcher* dispatcher = (*j);
+				if (dispatcher != NULL) {
+					LOG4CXX_TRACE(loggerAtmiBrokerServer, (char*) "Waiting for dispatcher notified " << aServiceName);
+					dispatcher->wait();
+					LOG4CXX_TRACE(loggerAtmiBrokerServer, (char*) "Deleting dispatcher " << aServiceName);
+					delete dispatcher;
+					LOG4CXX_TRACE(loggerAtmiBrokerServer, (char*) "Dispatcher deleted " << aServiceName);
+				} else {
+					LOG4CXX_TRACE(loggerAtmiBrokerServer, (char*) "NULL Dispatcher detected for" << aServiceName);
+				}
+				LOG4CXX_TRACE(loggerAtmiBrokerServer, (char*) "Erasing dispatcher " << aServiceName);
 				j = (*i).dispatchers.erase(j);
-				dispatcher->wait();
-				delete dispatcher;
 			}
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "waited for dispatcher: " << aServiceName);

@@ -33,9 +33,6 @@ public class ConnectionImplTest extends TestCase {
 
 	public void setUp() throws InterruptedException {
 		server.serverinit();
-		int delay = 5;
-		Thread.currentThread().sleep(delay * 1000); // TODO remove but occasional crash
-		log.error("This has just waited for " + delay + " seconds for the server to prime itself");
 	}
 
 	public void tearDown() {

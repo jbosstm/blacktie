@@ -59,7 +59,9 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	} else {
 		LOG4CXX_DEBUG(logger, (char*) "replyTo: NULL");
 	}
+	LOG4CXX_TRACE(logger, (char*) "Creating session: " << message.correlationId);
 	session = connection->createSession(message.correlationId, message.replyto);
+	LOG4CXX_TRACE(logger, (char*) "Created session: " << message.correlationId);
 
 	// EXTRACT THE DATA FROM THE INBOUND MESSAGE
 
@@ -69,7 +71,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	long ilen = message.len;
 	long flags = message.flags;
 	void* control = message.control;
-	LOG4CXX_DEBUG(logger, (char*) " idata: " << idata << " ilen: " << ilen << " flags: " << flags << "cd: " << message.correlationId);
+	LOG4CXX_DEBUG(logger, (char*) "ilen: " << ilen << " flags: " << flags << "cd: " << message.correlationId);
 
 	// PREPARE THE STRUCT FOR SENDING TO THE CLIENT
 	TPSVCINFO tpsvcinfo;
@@ -103,7 +105,9 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	setSpecific(SVC_KEY, this);
 	setSpecific(SVC_SES, session);
 	try {
+		LOG4CXX_TRACE(logger, (char*) "Calling function");
 		this->func(&tpsvcinfo);
+		LOG4CXX_TRACE(logger, (char*) "Called function");
 	} catch (...) {
 		LOG4CXX_ERROR(
 				logger,
