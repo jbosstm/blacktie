@@ -38,15 +38,15 @@ public class JABClient {
 		try {
 			JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(null);
 			JABSession aJabSession = new JABSession(aJabSessionAttributes);
-//			JABTransaction transaction = new JABTransaction(aJabSession, 5000);
+			JABTransaction transaction = new JABTransaction(aJabSession, 5000);
 			JABRemoteService aJabService = new JABRemoteService(aJabSession,
 					"BAR");
 			aJabService.setBuffer("X_OCTET", message.getBytes(), message.getBytes().length);
 			log.info("Calling call with input: " + message);
 			aJabService.call(null);
 			log.info("Called call with output: "
-					+ new String(aJabService.getResponseData()))
-;//			transaction.commit();
+					+ new String(aJabService.getResponseData()));
+			transaction.commit();
 			aJabSession.endSession();
 		} catch (JABException e) {
 			log.error("JAB error: " + e.getMessage(), e);
