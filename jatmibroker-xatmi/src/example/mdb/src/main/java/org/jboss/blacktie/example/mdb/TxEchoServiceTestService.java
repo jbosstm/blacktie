@@ -38,8 +38,8 @@ import org.apache.log4j.Logger;
 public class TxEchoServiceTestService extends MDBBlacktieService implements javax.jms.MessageListener {
 	private static final Logger log = LogManager.getLogger(TxEchoServiceTestService.class);
 	private static final String[] names = {
-		"XFirstBTBean/remote",
-		"XSecondBTBean/remote"
+		"FirstBTBean/remote",
+		"SecondBTBean/remote"
 	};
 
 	public TxEchoServiceTestService() {
