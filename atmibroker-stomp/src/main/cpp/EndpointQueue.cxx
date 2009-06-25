@@ -35,7 +35,7 @@ StompEndpointQueue::StompEndpointQueue(apr_pool_t* pool, char* serviceName) {
 	LOG4CXX_DEBUG(logger, "Created lock: " << lock);
 
 	connection = NULL;
-	connection = StompConnectionImpl::connect(pool, 2); // TODO allow the timeout to be specified in configuration
+	connection = StompConnectionImpl::connect(pool, 5); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
 
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible

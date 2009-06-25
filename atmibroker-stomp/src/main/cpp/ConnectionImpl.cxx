@@ -68,9 +68,11 @@ stomp_connection* StompConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 		throw new std::exception();
 	}
 
-	apr_socket_opt_set(connection->socket, APR_SO_NONBLOCK, 0);
-	apr_socket_timeout_set(connection->socket, 1000000 * timeout);
-	LOG4CXX_DEBUG(logger, (char*) "Set socket options");
+	if (timeout > 0) {
+		apr_socket_opt_set(connection->socket, APR_SO_NONBLOCK, 0);
+		apr_socket_timeout_set(connection->socket, 1000000 * timeout);
+		LOG4CXX_DEBUG(logger, (char*) "Set socket options");
+	}
 
 	std::string usr = AtmiBrokerEnv::get_instance()->getenv(
 			(char*) "StompConnectUsr");

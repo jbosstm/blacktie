@@ -37,7 +37,7 @@ StompSessionImpl::StompSessionImpl(char* connectionName, apr_pool_t* pool, int i
 	this->id = id;
 
 	connection = NULL;
-	connection = StompConnectionImpl::connect(pool, 2); // TODO allow the timeout to be specified in configuration
+	connection = StompConnectionImpl::connect(pool, 0); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
 
 	this->canSend = true;
@@ -61,7 +61,7 @@ StompSessionImpl::StompSessionImpl(char* connectionName, apr_pool_t* pool, int i
 	this->id = id;
 
 	connection = NULL;
-	connection = StompConnectionImpl::connect(pool, 2); // TODO allow the timeout to be specified in configuration
+	connection = StompConnectionImpl::connect(pool, 0); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
 
 	this->canSend = true;
