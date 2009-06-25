@@ -47,9 +47,11 @@
 	<files>
 		<file>
 			<source>copyright.txt</source>
+			<fileMode>0644</fileMode>
 		</file>
 		<file>
 			<source>JBossORG-EULA.txt</source>
+			<fileMode>0644</fileMode>
 		</file>
 	</files>
 	<fileSets>
