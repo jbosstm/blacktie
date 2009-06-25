@@ -63,11 +63,6 @@
 	</build>
 
 	<dependencies>
-		<dependency>
-			<groupId>ace.contrib</groupId>
-			<artifactId>ace</artifactId>
-			<version>5.6.7</version>
-		</dependency>
 		<!-- START JACORB -->
 		<dependency>
 			<groupId>avalon-framework</groupId>

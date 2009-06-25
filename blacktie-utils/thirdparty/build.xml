@@ -109,36 +109,34 @@
 
 	<target name="ace-lib-linux" if="linux">
 		<sync todir="${build.dist}/lib">
-			<fileset dir="${ace.lib.dir}">
-				<include name="libTAO_PI.so" />
-				<include name="libTAO_Valuetype.so" />
-				<include name="libTAO_PortableServer.so" />
-				<include name="libTAO_IORInterceptor.so" />
-				<include name="libTAO_CodecFactory.so" />
-				<include name="libACE.so" />
-				<include name="libTAO_PI_Server.so" />
-				<include name="libTAO_ObjRefTemplate.so" />
-				<include name="libTAO_CosNaming.so" />
-				<include name="libTAO_AnyTypeCode.so" />
-				<include name="libTAO.so" />
-				<include name="libTAO_IDL_BE.so" />
-				<include name="libTAO_IDL_FE.so" />
-
-				<include name="libTAO_PI.so*" />
-				<include name="libTAO_Valuetype.so*" />
-				<include name="libTAO_PortableServer.so*" />
-				<include name="libTAO_IORInterceptor.so*" />
-				<include name="libTAO_CodecFactory.so*" />
-				<include name="libACE.so*" />
-				<include name="libTAO_PI_Server.so*" />
-				<include name="libTAO_ObjRefTemplate.so*" />
-				<include name="libTAO_CosNaming.so*" />
-				<include name="libTAO_AnyTypeCode.so*" />
-				<include name="libTAO.so*" />
-				<include name="libTAO_IDL_BE.so*" />
-				<include name="libTAO_IDL_FE.so*" />
+			<fileset dir="${ace.lib.dir}" id="acelibs">
+				<include name="libTAO_PI.so.*" />
+				<include name="libTAO_Valuetype.so.*" />
+				<include name="libTAO_PortableServer.so.*" />
+				<include name="libTAO_IORInterceptor.so.*" />
+				<include name="libTAO_CodecFactory.so.*" />
+				<include name="libACE.so.*" />
+				<include name="libTAO_PI_Server.so.*" />
+				<include name="libTAO_ObjRefTemplate.so.*" />
+				<include name="libTAO_CosNaming.so.*" />
+				<include name="libTAO_AnyTypeCode.so.*" />
+				<include name="libTAO.so.*" />
+				<include name="libTAO_IDL_BE.so.*" />
+				<include name="libTAO_IDL_FE.so.*" />
 			</fileset>
 		</sync>
+		<property name="libace" refid="acelibs"/> 
+		<echo message="${libace}" file="${build.dist}/lib/acelinks"/>
+		<replaceregexp file="${build.dist}/lib/acelinks"
+			match="(lib[^\.]+\.so)([\.0-9]+);?"
+			replace="\1 \1\2${line.separator}" 
+			flags="g"/>
+		<symlink action="record" linkfilename="${build.dist}/lib/acelinks">
+			<fileset dir="." includes="${build.dist}/lib/**"/>
+		</symlink>
+		<symlink action="recreate">
+			<fileset dir="." includes="${build.dist}/lib/acelinks"/>  
+		</symlink>
 	</target>
 	<target name="ace-lib-windows" if="windows">
 		<sync todir="${build.dist}/lib">
@@ -227,7 +225,7 @@
 		<copy todir="${build.dist}/bin" file="${tao.idl.compiler}" />
 		<copy todir="${build.dist}/bin" file="${ace.gperf}" />
 
-		<install-artifact groupId="ace.contrib" artifactId="ace" name="ace" version="${ace.version}" description="repackage of ACE+TAO, Douglas C. Schmidt's C++ networking toolkit" />
+		<install-zip-artifact groupId="ace.contrib" artifactId="ace" name="ace" version="${ace.version}" description="repackage of ACE+TAO, Douglas C. Schmidt's C++ networking toolkit" />
 	</target>
 
 	<target name="expat-lib-linux" if="linux">
@@ -364,11 +362,12 @@
 
 	<target name="xercesc-lib-linux" if="linux">
 		<sync todir="${build.dist}/lib">
-			<fileset dir="${xercesc.lib.dir}">
-				<include name="libxerces-c.so" />
-				<include name="libxerces-c*.so" />
+			<fileset dir="${xercesc.lib.dir}" id="lib">
+				<include name="libxerces-c-*.so" />
 			</fileset>
 		</sync>
+		<property name="libxerces" refid="lib"/> 
+		<symlink link="${build.dist}/lib/libxerces-c.so" resource="${libxerces}" />
 	</target>
 	<target name="xercesc-lib-windows" if="windows">
 		<copy file="${xercesc.lib.dir}/xerces-c_3_0D.dll" todir="${build.dist}/lib" />
@@ -387,7 +386,7 @@
 			</fileset>
 		</copy>
 
-		<install-artifact groupId="apache-xercesc.contrib" artifactId="xercesc" name="xercesc" version="${xercesc.version}" description="a validating XML parser written in a portable subset of C++ "/>
+		<install-zip-artifact groupId="apache-xercesc.contrib" artifactId="xercesc" name="xercesc" version="${xercesc.version}" description="a validating XML parser written in a portable subset of C++ "/>
 	</target>
 
 	<macrodef name="install-artifact">
@@ -398,7 +397,7 @@
 		<attribute name="description" />
 
 		<sequential>
-			<create-pom groupId="@{groupId}" artifactId="@{artifactId}" name="@{name}" version="@{version}" description="@{description}" />
+			<create-pom groupId="@{groupId}" artifactId="@{artifactId}" name="@{name}" version="@{version}" type="jar" description="@{description}" />
 
 			<jar destfile="${buildd.lib}/@{artifactId}-@{version}.jar">
 				<manifest>
@@ -415,6 +414,27 @@
 		</sequential>
 	</macrodef>
 
+	<macrodef name="install-zip-artifact">
+		<attribute name="groupId" />
+		<attribute name="artifactId" />
+		<attribute name="name" />
+		<attribute name="version" />
+		<attribute name="description" />
+
+		<sequential>
+			<create-pom groupId="@{groupId}" artifactId="@{artifactId}" name="@{name}" version="@{version}" type="zip" description="@{description}" />
+
+			<exec executable="/bin/sh" dir="${build.dist}">
+				<arg line="-c 'zip -y -q -r ../lib/@{artifactId}-@{version}.zip . -i \'*\''" />
+			</exec>
+
+			<artifact:pom id="pom" file="${build.dir}/@{artifactId}.pom" />
+			<artifact:install file="${buildd.lib}/@{artifactId}-@{version}.zip">
+				<pom refid="pom" />
+			</artifact:install>
+		</sequential>
+	</macrodef>
+
 	<macrodef name="install-file-artifact">
 		<attribute name="filename" />
 		<attribute name="groupId" />
@@ -424,7 +444,7 @@
 		<attribute name="description" />
 
 		<sequential>
-			<create-pom groupId="@{groupId}" artifactId="@{artifactId}" name="@{name}" version="@{version}" description="@{description}" />
+			<create-pom groupId="@{groupId}" artifactId="@{artifactId}" name="@{name}" version="@{version}" type="jar" description="@{description}" />
 
 			<artifact:pom id="pom" file="${build.dir}/@{artifactId}.pom" />
 			<artifact:install file="@{filename}">
@@ -438,6 +458,7 @@
 		<attribute name="artifactId" />
 		<attribute name="name" />
 		<attribute name="version" />
+		<attribute name="type" />
 		<attribute name="description" />
 		<sequential>
 			<echo file="${build.dir}/@{artifactId}.pom" append="false">&lt;project&gt;
@@ -446,6 +467,7 @@
 	&lt;artifactId&gt;@{artifactId}&lt;/artifactId&gt;
 	&lt;name&gt;@{name}&lt;/name&gt;
 	&lt;version&gt;@{version}&lt;/version&gt;
+	&lt;packaging&gt;@{type}&lt;/packaging&gt;
 	&lt;description&gt;@{description}&lt;/description&gt;
 &lt;/project&gt;
 </echo>

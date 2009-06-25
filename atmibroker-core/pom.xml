@@ -120,6 +120,7 @@
 			<groupId>apache-xercesc.contrib</groupId>
 			<artifactId>xercesc</artifactId>
 			<version>3.0.1</version>
+			<type>zip</type>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
