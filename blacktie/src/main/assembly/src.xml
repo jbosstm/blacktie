@@ -37,6 +37,9 @@
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<excludes>
 				<exclude>target/**</exclude>
+				<exclude>cpp-plugin/target/**</exclude>
+				<exclude>thirdparty/build/**</exclude>
+				<exclude>thirdparty/lib/**</exclude>
 			</excludes>
 		</fileSet>
 		<fileSet>
