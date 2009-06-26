@@ -389,6 +389,18 @@
 		<install-zip-artifact groupId="apache-xercesc.contrib" artifactId="xercesc" name="xercesc" version="${xercesc.version}" description="a validating XML parser written in a portable subset of C++ "/>
 	</target>
 
+	<target name="zip-linux" if="linux">
+		<exec executable="/bin/sh" dir="${build.dist}">
+			<arg line="-c 'zip -y -q -r ../lib/${artifactId}-${version}.zip . -i \'*\''" />
+		</exec>
+	</target>
+
+	<target name="zip-windows" if="windows">
+		<zip destfile="${buildd.lib}/${artifactId}-${version}.zip">
+			<fileset dir="${build.dist}" />
+		</zip>
+	</target>
+
 	<macrodef name="install-artifact">
 		<attribute name="groupId" />
 		<attribute name="artifactId" />
@@ -424,9 +436,14 @@
 		<sequential>
 			<create-pom groupId="@{groupId}" artifactId="@{artifactId}" name="@{name}" version="@{version}" type="zip" description="@{description}" />
 
-			<exec executable="/bin/sh" dir="${build.dist}">
-				<arg line="-c 'zip -y -q -r ../lib/@{artifactId}-@{version}.zip . -i \'*\''" />
-			</exec>
+			<antcall target="zip-linux">
+				<param name="artifactId" value="@{artifactId}" />
+				<param name="version" value="@{version}" />
+			</antcall>
+			<antcall target="zip-windows">
+				<param name="artifactId" value="@{artifactId}" />
+				<param name="version" value="@{version}" />
+			</antcall>
 
 			<artifact:pom id="pom" file="${build.dir}/@{artifactId}.pom" />
 			<artifact:install file="${buildd.lib}/@{artifactId}-@{version}.zip">
