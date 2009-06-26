@@ -60,6 +60,8 @@ mvn install:install-file -DgroupId=jboss -DartifactId=jboss-mdr -Dversion=5.1.0.
 mvn install:install-file -DgroupId=jboss -DartifactId=concurrent -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=concurrent.jar
 mvn install:install-file -DgroupId=jboss -DartifactId=jboss-serialization -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jboss-serialization.jar
 mvn install:install-file -DgroupId=jboss -DartifactId=jboss-logging-log4j -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jboss-logging-log4j.jar
+mvn install:install-file -DgroupId=avalon-framework -DartifactId=avalon-framework -Dversion=4.1.5 -Dpackaging=jar -DgeneratePom=true -Dfile=avalon-framework.jar
+mvn install:install-file -DgroupId=logkit -DartifactId=logkit -Dversion=1.2 -Dpackaging=jar -DgeneratePom=true -Dfile=logkit.jar
 cd JBOSS_HOME/common/lib
 mvn install:install-file -DgroupId=jboss -DartifactId=jbossjts-jacorb -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jbossjts-jacorb.jar
 mvn install:install-file -DgroupId=jboss -DartifactId=jbossts-common -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jbossts-common.jar
