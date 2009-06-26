@@ -169,6 +169,11 @@
 				<include>*.so</include>
 				<include>*.so.*</include>
 			</includes>
+			<excludes>
+				<exclude>libACE*.so</exclude>
+				<exclude>libTAO*.so</exclude>
+				<exclude>libxerces-c.so</exclude>
+			</excludes>
 		</fileSet>
 		<fileSet>
 			<directory>../stompconnectservice/target/

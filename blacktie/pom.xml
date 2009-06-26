@@ -43,6 +43,45 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>linux</id>
+			<activation>
+				<os>
+					<family>unix</family>
+				</os>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<configuration>
+							<tasks>
+								<mkdir dir="target/blacktie-1.0-MR5-SNAPSHOT/lib" />
+								<exec executable="find" dir="target">
+									<arg line="../../atmibroker-xatmi/target/cxx/runtime/lib -type l -exec cp -d {} blacktie-1.0-MR5-SNAPSHOT/lib ;" />
+								</exec>
+								<exec executable="/bin/sh" dir="target">
+									<arg line="-c 'zip -q -u -y blacktie-1.0-MR5-SNAPSHOT-bin.zip blacktie-1.0-MR5-SNAPSHOT/lib/*'"/>
+								</exec>
+								<exec executable="gunzip" dir="target">
+									<arg line="blacktie-1.0-MR5-SNAPSHOT-bin.tar.gz" />
+								</exec>
+								<exec executable="tar" dir="target">
+									<arg line="uf blacktie-1.0-MR5-SNAPSHOT-bin.tar blacktie-1.0-MR5-SNAPSHOT/lib" />
+								</exec>
+								<exec executable="gzip" dir="target">
+									<arg line="blacktie-1.0-MR5-SNAPSHOT-bin.tar" />
+								</exec>
+							</tasks>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 	<modules>
 		<module>../blacktie-utils</module>
 		<module>../blacktie-common</module>
