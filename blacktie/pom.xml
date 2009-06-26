@@ -34,6 +34,15 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
 				<configuration>
 					<descriptors>
 						<descriptor>src/main/assembly/bin.xml</descriptor>
@@ -56,15 +65,27 @@
 				<plugins>
 					<plugin>
 						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>add-symlinks</id>
+								<phase>package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
 						<configuration>
 							<tasks>
 								<mkdir dir="target/blacktie-1.0-MR5-SNAPSHOT/lib" />
+								<echo message="copying symlinks from atmibroker-xatmi runtime library" />
 								<exec executable="find" dir="target">
 									<arg line="../../atmibroker-xatmi/target/cxx/runtime/lib -type l -exec cp -d {} blacktie-1.0-MR5-SNAPSHOT/lib ;" />
 								</exec>
+								<echo message="update symlinks to zip" />
 								<exec executable="/bin/sh" dir="target">
 									<arg line="-c 'zip -q -u -y blacktie-1.0-MR5-SNAPSHOT-bin.zip blacktie-1.0-MR5-SNAPSHOT/lib/*'"/>
 								</exec>
+								<echo message="update symlinks to tar.gz" />
 								<exec executable="gunzip" dir="target">
 									<arg line="blacktie-1.0-MR5-SNAPSHOT-bin.tar.gz" />
 								</exec>

@@ -197,9 +197,11 @@ Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 								</goals>
 								<configuration>
 									<tasks>
+										<echo message="unzip dependencies to compile" />
 										<exec executable="find">
 											<arg line="${project.build.directory}/dependencies -name '*.zip' -exec unzip -q -uo '{}' -d ${project.build.directory}/cxx/compile ;" />
 										</exec>
+										<echo message="unzip dependencies to runtime" />
 										<exec executable="find">
 											<arg line="${project.build.directory}/dependencies -name '*.zip' -exec unzip -q -uo '{}' -d ${project.build.directory}/cxx/runtime ;" />
 										</exec>

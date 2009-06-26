@@ -135,6 +135,7 @@
 								</goals>
 								<configuration>
 									<tasks>
+										<echo message="unzip dependencies to test" />
 										<exec executable="find">
 											<arg line="${project.build.directory}/dependencies -name '*.zip' -exec unzip -q -uo '{}' -d ${project.build.directory}/cxx/test ;" />
 										</exec>
