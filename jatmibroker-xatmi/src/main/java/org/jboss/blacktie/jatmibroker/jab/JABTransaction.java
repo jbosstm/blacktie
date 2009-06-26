@@ -84,10 +84,8 @@ public class JABTransaction {
 	}
 
 	public JABTransaction(String controlIOR) throws JABException {
-	    if (current() != null)
-	        throw new JABException("Nested transactions are not supported");
-
 	    JABSessionAttributes sessionAttrs = new JABSessionAttributes(null);
+		JABTransaction curr = current();
 
 	    jabSession = new JABSession(sessionAttrs);
 	    timeout = -1;
@@ -99,6 +97,22 @@ public class JABTransaction {
 	    }
 
 	    org.omg.CORBA.Object obj = orbManagement.getOrb().string_to_object(controlIOR);
+
+        if (curr != null) {
+            log.debug("current() != null comparing IORs");
+            String pIOR = curr.getControlIOR();
+            org.omg.CORBA.Object pObj = orbManagement.getOrb().string_to_object(pIOR);
+
+            log.debug("pIOR=" + pIOR + " pObj=" + pObj);
+            if (pObj != null && pObj._is_equivalent(obj)) {
+                log.debug("Different IORs same object");
+                ThreadActionData.popAction();
+            } else {
+                log.info("Different IORs and different object");
+                throw new JABException("Nested transactions are not supported");
+            }
+        }
+
 	    control = org.omg.CosTransactions.ControlHelper.narrow(obj);
 
 	    ThreadActionData.pushAction(this);

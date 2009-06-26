@@ -77,11 +77,11 @@ public class JtsTransactionImple extends TransactionImple
     {
         try {
             if (tx != null && getTransactionManager() != null) {
-                log.info("resuming " + tx);
+                log.debug("resuming " + tx);
 
                 tm.resume(tx);
             } else {
-        		log.info("nothing to rusume: tm=" + tm);
+        		log.debug("nothing to rusume: tm=" + tm);
 			}
         } catch (SystemException e) {
        		log.info("resume error: " + e);
@@ -98,7 +98,7 @@ public class JtsTransactionImple extends TransactionImple
      */
     public static void resume(String ior)
     {
-        log.info("resume control");
+        log.debug("resume control");
         Transaction tx = controlToTx(ior);
         resume(tx);
     }
@@ -109,15 +109,15 @@ public class JtsTransactionImple extends TransactionImple
      */
     public static Transaction suspend()
     {
-        log.info("suspend");
+        log.debug("suspend");
 
         try {
             if (getTransactionManager() != null) {
-        		log.info("suspending current");
+        		log.debug("suspending current");
                 return tm.suspend();
 			}
         } catch (SystemException e) {
-       		log.info("suspend error: " + e);
+       		log.debug("suspend error: " + e);
         }
 
         return null;
@@ -130,7 +130,7 @@ public class JtsTransactionImple extends TransactionImple
      */
     private static Transaction controlToTx(String ior)
     {
-        log.info("controlToTx: ior: " + ior);
+        log.debug("controlToTx: ior: " + ior);
 
         if (ior == null)
             return null;
@@ -139,7 +139,7 @@ public class JtsTransactionImple extends TransactionImple
         TransactionImple tx = (TransactionImple) TransactionImple.getTransactions().get(cw.get_uid());
 
         if (tx == null) {
-        	log.info("controlToTx: creating a new tx - wrapper: " + cw);
+        	log.debug("controlToTx: creating a new tx - wrapper: " + cw);
             tx = new JtsTransactionImple(cw);
             putTransaction(tx);
         }
@@ -175,7 +175,7 @@ public class JtsTransactionImple extends TransactionImple
 
         JABTransaction curr = JABTransaction.current();
         if (curr != null) {
-        	log.info("have JABTransaction");
+        	log.debug("have JABTransaction");
             return curr.getControlIOR();
         } else if (getTransactionManager() != null) {
             try {
@@ -183,7 +183,7 @@ public class JtsTransactionImple extends TransactionImple
                 Transaction tx = tm.getTransaction();
 
                 if (tx instanceof TransactionImple) {
-        			log.info("have arjuna tx");
+        			log.debug("have arjuna tx");
                     TransactionImple atx = (TransactionImple) tx;
                     ControlWrapper cw = atx.getControlWrapper();
 
@@ -213,7 +213,7 @@ public class JtsTransactionImple extends TransactionImple
     }
 
     private static ControlWrapper createControlWrapper(String ior) {
-        if  (ior.startsWith(IORTag)) {
+        if  (ORBManager.isInitialised() && ior.startsWith(IORTag)) {
             org.omg.CORBA.Object obj = ORBManager.getORB().orb().string_to_object(ior);
             Control control =  org.omg.CosTransactions.ControlHelper.narrow(obj);
 
