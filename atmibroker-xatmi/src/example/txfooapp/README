@@ -16,11 +16,21 @@
  MA  02110-1301, USA.
 
 
- This example uses Berkeley dB (http://www.oracle.com/technology/documentation/berkeley-db/db/index.html) for the Resource Manager
- - I built and installed my copy of the library in /usr/local/BerkeleyDB.4.7/lib/libdb
- The file Environment.xml (in the linux and win32 directories) needs to reference the location of this library so if you
- install it elsewhere remember to update the <XA_LIB_NAME> tag.
- (Similarly on a win32 build the library name needs to point to the correct dll).
+PRE-REQUISITE
+Download Berkeley from:
+http://www.oracle.com/technology/software/products/berkeley-db/index.html
+ON LINUX
+Extract to <USER_HOME>/db-4.7.27, this path will be refered to as BERKELEY_SRC_HOME
+cd <BERKELEY_SRC_HOME>/build_unix
+../dist/configure
+make
+sudo make install
+NOTE: We build and instal the library into /usr/local/BerkeleyDB.4.7/lib/libdb
+The file Environment.xml (in the linux and win32 directories) needs to reference the location of this library so if you
+install it elsewhere remember to update the <XA_LIB_NAME> tag.
+(Similarly on a win32 build the library name needs to point to the correct dll).
+NOTE: You may need to update $BLACKTIE_BIN_DIR/bin/generate-executables.xml to add db-4.7 to the list of libs in 
+libsets-main-dependencies (line 43)
 
 
 1. SET ENVIRONMENT VARIABLES
@@ -56,26 +66,3 @@ You will need to set the environment variable BLACKTIE_CONFIGURATION_DIR to eith
 
 Note: The db records are stored in the directories db1 and db2. To clear out the database just delete the contents
 but not the directories themselves (on linux rm db*/*)
-
-There is also a non client/server test (source file is xatest.c). It requires the header txClient.h and the needs to
-link against the various blacktie libraries.
-
- For a development build use:
-
- -I ../../../target/cxx/runtime/include for the header, and
- -L../../../target/cxx/runtime/lib for the libraries
- export LD_LIBRARY_PATH=../../../target/cxx/runtime/lib
-
- For a binary release use:
-
- -I <Blacktie install dir>/include for the header, and
- -L<Blacktie install dir>/libTao	- this directory contains all the dependent Blacktie libraries
- export LD_LIBRARY_PATH=<Blacktie install dir>/libTao
-
- if the test is successful the last thing printed by the test is SUCCESS otherwise FAIL is printed.
-
- If you decide to get transactional support working with other resource managers we'd be deligted to add it to the examples.
-
-#gcc -DLINUX -D_GNU_SOURCE -D_REENTRANT -g -lm -o xatest xatest.c -fPIC -DPIC  -lpthread  -Wl,--rpath -Wl,/usr/local/BerkeleyDB.4.7/lib -L/usr/local/BerkeleyDB.4.7/lib/libdb -ldb -I ../../../target/cxx/runtime/include -L../../../target/cxx/runtime/lib -lACE -lstomp -lTAO_AnyTypeCode -lTAO_IORInterceptor -lTAO -lapr-1 -latmibroker-corba -lTAO_CodecFactory -lTAO_ObjRefTemplate -lTAO_Valuetype -latmibroker-core -latmibroker-idl -lTAO_CosNaming -lTAO_PI_Server -lxerces-c-3.0 -latmibroker-stomp -lxerces-c -latmibroker-tx -lTAO_IDL_BE -lTAO_PI -lexpat -llog4cxx -lTAO_IDL_FE -lTAO_PortableServer
-
-#./xatest
