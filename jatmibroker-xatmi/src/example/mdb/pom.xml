@@ -22,7 +22,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>example-mdb</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0-MR5</version>
 	<packaging>jar</packaging>
 
 	<name>Blacktie XATMI MDB Example</name>
@@ -119,7 +119,7 @@
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>jatmibroker-xatmi</artifactId>
-			<version>1.0-MR5-SNAPSHOT</version>
+			<version>1.0-MR5</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.jboss.blacktie</groupId>
@@ -153,12 +153,12 @@
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>blacktie-xsd</artifactId>
-			<version>1.0-MR5-SNAPSHOT</version>
+			<version>1.0-MR5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>atmibroker-idl</artifactId>
-			<version>1.0-MR5-SNAPSHOT</version>
+			<version>1.0-MR5</version>
 			<exclusions>
 				<exclusion>
 					<groupId>ace.contrib</groupId>
