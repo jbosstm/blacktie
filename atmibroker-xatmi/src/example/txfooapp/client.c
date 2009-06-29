@@ -101,9 +101,10 @@ static int rw_record(const char *data, const char *dbfile, char op, enum TX_TYPE
 
 static void check_update(const char *db, char *key, char *val, int exists)
 {
+	int found = -1;
 	char *rbuf = (char *) malloc(64);
 	(void) rw_record(key, db, 'r', TX_TYPE_BEGIN_COMMIT, &rbuf);
-	int found = (strcmp(rbuf, val) == 0);
+	found = (strcmp(rbuf, val) == 0);
 
 	if (found != exists)
 		userlogc((char*) "UPDATE ERROR - %s: %s %c= %s", key, rbuf, (exists == 0 ? '!' : '='), val);

@@ -20,17 +20,28 @@ PRE-REQUISITE
 Download Berkeley from:
 http://www.oracle.com/technology/software/products/berkeley-db/index.html
 ON LINUX
-Extract to <USER_HOME>/db-4.7.27, this path will be refered to as BERKELEY_SRC_HOME
-cd <BERKELEY_SRC_HOME>/build_unix
-../dist/configure
-make
-sudo make install
-NOTE: We build and instal the library into /usr/local/BerkeleyDB.4.7/lib/libdb
-The file Environment.xml (in the linux and win32 directories) needs to reference the location of this library so if you
-install it elsewhere remember to update the <XA_LIB_NAME> tag.
-(Similarly on a win32 build the library name needs to point to the correct dll).
+Extract to <USER_HOME>/db-4.7.25
+Follow the instructions on: http://www.oracle.com/technology/documentation/berkeley-db/db/ref/build_unix/intro.html
+	NOTE: We use the default install location of /usr/local/BerkeleyDB.4.7/
+
+ON WINDOWS
+Extract to c:\db-4.7.25
+Follow the instructions on: http://www.oracle.com/technology/documentation/berkeley-db/db/ref/build_win/intro.html
+NOTE I needed to alter the db_dll Linker settings to remove bufferoverflowU
+NOTE I needed to alter the build profile to be Debug x86 as the default was 64bit
+NOTE I get 3 failures during build two for tcl.h and one for jni.h but I ignore these
+
+NOTE
+The file Environment.xml (in the linux and win32 directories) needs to reference the location of the library,
+if you install it elsewhere remember to update the <XA_LIB_NAME> tag.
+
 NOTE: You may need to update $BLACKTIE_BIN_DIR/bin/generate-executables.xml to add db-4.7 to the list of libs in 
 libsets-main-dependencies (line 43)
+NOTE: On windows you need to update that file to add the following includepath:
+	<includepath path="C:/db-4.7.25/build_windows/"/>
+NOTE: On windows you need to add the following libset
+	<libset dir="C:/db-4.7.25/build_windows/Debug" libs="libdb47${lib.suffix}" />
+NOTE: You will need to set the PATH/LD_LIBRARY_PATH to include the external library folder for Berkeley
 
 
 1. SET ENVIRONMENT VARIABLES

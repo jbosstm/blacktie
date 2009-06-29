@@ -22,7 +22,7 @@
 		<SERVER_NAMES>
 			<SERVER>
 				<SERVICE_NAMES>
-					<SERVICE name='DBS' transportLibrary='libatmibroker-corba.so'/>
+					<SERVICE name='DBS' transportLibrary='atmibroker-corba.dll'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>
@@ -33,7 +33,7 @@
 			 	<XA_OPEN_STRING>db1</XA_OPEN_STRING>
 			 	<XA_CLOSE_STRING></XA_CLOSE_STRING>
 			 	<XA_SWITCH>db_xa_switch</XA_SWITCH>
-			 	<XA_LIB_NAME>/usr/local/BerkeleyDB.4.7/lib/libdb.so</XA_LIB_NAME>
+			 	<XA_LIB_NAME>C:\db-4.7.25\build_windows\Debug\libdb47d.dll</XA_LIB_NAME>
 			 </XA_RESOURCE>
 			 <XA_RESOURCE>
 			 	<XA_RESOURCE_MGR_ID>2102</XA_RESOURCE_MGR_ID>
@@ -41,7 +41,7 @@
 			 	<XA_OPEN_STRING>db2</XA_OPEN_STRING>
 			 	<XA_CLOSE_STRING></XA_CLOSE_STRING>
 			 	<XA_SWITCH>db_xa_switch</XA_SWITCH>
-			 	<XA_LIB_NAME>/usr/local/BerkeleyDB.4.7/lib/libdb.so</XA_LIB_NAME>
+			 	<XA_LIB_NAME>C:\db-4.7.25\build_windows\Debug\libdb47d.dll</XA_LIB_NAME>
 			 </XA_RESOURCE>
 		</XA_RESOURCES>
 		<ENV_VARIABLES>
