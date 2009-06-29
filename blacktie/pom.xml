@@ -76,24 +76,24 @@
 						</executions>
 						<configuration>
 							<tasks>
-								<mkdir dir="target/${project.name}-${project.version}/lib" />
+								<mkdir dir="target/${project.artifactId}-${project.version}/lib" />
 								<echo message="copying symlinks from atmibroker-xatmi runtime library" />
 								<exec executable="find" dir="target">
-									<arg line="../../atmibroker-xatmi/target/cxx/runtime/lib -type l -exec cp -d {} ${project.name}-${project.version}/lib ;" />
+									<arg line="../../atmibroker-xatmi/target/cxx/runtime/lib -type l -exec cp -d {} ${project.artifactId}-${project.version}/lib ;" />
 								</exec>
 								<echo message="update symlinks to zip" />
 								<exec executable="/bin/sh" dir="target">
-									<arg line="-c 'zip -q -u -y ${project.name}-${project.version}-bin.zip ${project.name}-${project.version}/lib/*'"/>
+									<arg line="-c 'zip -q -u -y ${project.artifactId}-${project.version}-bin.zip ${project.artifactId}-${project.version}/lib/*'"/>
 								</exec>
 								<echo message="update symlinks to tar.gz" />
 								<exec executable="gunzip" dir="target">
-									<arg line="${project.name}-${project.version}-bin.tar.gz" />
+									<arg line="${project.artifactId}-${project.version}-bin.tar.gz" />
 								</exec>
 								<exec executable="tar" dir="target">
-									<arg line="uf ${project.name}-${project.version}-bin.tar ${project.name}-${project.version}/lib" />
+									<arg line="uf ${project.artifactId}-${project.version}-bin.tar ${project.artifactId}-${project.version}/lib" />
 								</exec>
 								<exec executable="gzip" dir="target">
-									<arg line="${project.name}-${project.version}-bin.tar" />
+									<arg line="${project.artifactId}-${project.version}-bin.tar" />
 								</exec>
 							</tasks>
 						</configuration>
