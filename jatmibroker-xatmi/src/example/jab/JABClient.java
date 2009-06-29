@@ -31,7 +31,7 @@ public class JABClient {
 		log.info("JABClient");
 		if (args.length != 1) {
 			log
-					.error("java -Dblacktie.config.dir=[linux|win32] JABClient message");
+					.error("java JABClient message");
 			return;
 		}
 		String message = args[0];
