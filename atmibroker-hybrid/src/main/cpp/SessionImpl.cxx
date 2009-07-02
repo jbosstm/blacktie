@@ -122,7 +122,7 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		frame.body_length = message.len;
 		frame.body = message.data;
 		if (message.replyto && strcmp(message.replyto, "") != 0) {
-			apr_hash_set(frame.headers, "reply-to", APR_HASH_KEY_STRING,
+			apr_hash_set(frame.headers, "messagereplyto", APR_HASH_KEY_STRING,
 					message.replyto);
 		}
 		char * correlationId = apr_itoa(pool, message.correlationId);

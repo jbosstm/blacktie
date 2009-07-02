@@ -24,12 +24,18 @@
 
 void TestConnection::test() {
 	userlogc("TestConnection::test");
-	HybridConnectionImpl* serverConnection = new HybridConnectionImpl("server");
-	HybridConnectionImpl* clientConnection = new HybridConnectionImpl("client");
-	Destination* destination = serverConnection->createDestination((char*) "BAR");
+	HybridConnectionImpl* serverConnection = new HybridConnectionImpl(
+			(char*) "server");
+	HybridConnectionImpl* clientConnection = new HybridConnectionImpl(
+			(char*) "client");
+	Destination* destination = serverConnection->createDestination(
+			(char*) "BAR");
 	Session* client = clientConnection->createSession(1, (char*) "BAR");
 	MESSAGE clientSend;
-	clientSend.data = (char*) "hello";
+	char* data = (char*) malloc(6);
+	memset(data, '\0', 6);
+	strcpy(data, "hello");
+	clientSend.data = data;
 	clientSend.len = 6;
 	clientSend.replyto = client->getReplyTo();
 	client->send(clientSend);

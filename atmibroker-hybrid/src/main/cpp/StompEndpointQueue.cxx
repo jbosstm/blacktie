@@ -222,7 +222,7 @@ MESSAGE StompEndpointQueue::receive(long time) {
 				message.data = frame->body;
 				LOG4CXX_TRACE(logger, "Set body");
 				message.replyto = (const char*) apr_hash_get(frame->headers,
-						"reply-to", APR_HASH_KEY_STRING);
+						"messagereplyto", APR_HASH_KEY_STRING);
 				LOG4CXX_TRACE(logger, "Set replyto: " << message.replyto);
 				message.correlationId = apr_atoi64(correlationId);
 				LOG4CXX_TRACE(logger, "Set correlationId: "
