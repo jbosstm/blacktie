@@ -16,49 +16,52 @@
  * MA  02110-1301, USA.
  */
 
+// Class: EndpointQueue
+// A POA servant which implements of the AtmiBroker::ClientCallback interface
+//
+
 #ifndef EndpointQueue_H_
 #define EndpointQueue_H_
 
 #include "atmiBrokerHybridMacro.h"
 
+#ifdef TAO_COMP
+#include "AtmiBrokerS.h"
+#endif
+
 #include <queue>
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-#include "stomp.h"
-#ifdef __cplusplus
-}
-#endif
-
 #include "log4cxx/logger.h"
+#include "CorbaConnection.h"
 #include "Destination.h"
 #include "SynchronizableObject.h"
 
-class BLACKTIE_HYBRID_DLL HybridEndpointQueue: public virtual Destination {
+class BLACKTIE_HYBRID_DLL CorbaEndpointQueue: public virtual Destination, public virtual POA_AtmiBroker::EndpointQueue {
 public:
-	HybridEndpointQueue(apr_pool_t* pool, char* serviceName);
-	HybridEndpointQueue(apr_pool_t* pool, char* serviceName, int id);
-	virtual ~HybridEndpointQueue();
+	CorbaEndpointQueue(CORBA_CONNECTION* connection);
+	CorbaEndpointQueue(CORBA_CONNECTION* connection, PortableServer::POA_ptr poa, char* serviceName);
+	virtual ~CorbaEndpointQueue();
 
-	virtual void disconnect();
+	virtual void send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags) throw (CORBA::SystemException );
+
+	virtual void disconnect() throw (CORBA::SystemException );
 
 	virtual MESSAGE receive(long time);
 
 	virtual const char* getName();
-	const char* getFullName();
+
+	PortableServer::POA_ptr getPoa();
+
 private:
 	static log4cxx::LoggerPtr logger;
-	stomp_connection* connection;
-	apr_pool_t* pool;
-	stomp_frame* message;
-	char* receipt;
+	std::queue<MESSAGE> returnData;
 	SynchronizableObject* lock;
 	bool shutdown;
-	char* name;
-	char* fullName;
-	bool transactional;
+	const char* name;
+	PortableServer::POA_ptr thePoa;
+
+	// The following are not implemented
+	CorbaEndpointQueue(const CorbaEndpointQueue &);
+	CorbaEndpointQueue& operator=(const CorbaEndpointQueue &);
 };
 
 #endif

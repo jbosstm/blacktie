@@ -27,6 +27,7 @@ log4cxx::LoggerPtr HybridConnectionImpl::logger(log4cxx::Logger::getLogger(
 		"HybridConnectionImpl"));
 
 HybridConnectionImpl::HybridConnectionImpl(char* connectionName) {
+	LOG4CXX_DEBUG(logger, (char*) "constructor");
 	this->connectionName = connectionName;
 	apr_status_t rc = apr_initialize();
 	if (rc != APR_SUCCESS) {
@@ -41,9 +42,14 @@ HybridConnectionImpl::HybridConnectionImpl(char* connectionName) {
 		throw new std::exception();
 	}
 	LOG4CXX_TRACE(logger, (char*) "Pool created");
+
+	this->connection = (CORBA_CONNECTION *) start_tx_orb(connectionName);
 }
 
 HybridConnectionImpl::~HybridConnectionImpl() {
+	LOG4CXX_DEBUG(logger, (char*) "destructor");
+	shutdownBindings(this->connection);
+
 	apr_pool_destroy(pool);
 	apr_terminate();
 	LOG4CXX_TRACE(logger, "Destroyed");
@@ -108,7 +114,8 @@ stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 	return connection;
 }
 
-void HybridConnectionImpl::disconnect(stomp_connection* connection, apr_pool_t* pool) {
+void HybridConnectionImpl::disconnect(stomp_connection* connection,
+		apr_pool_t* pool) {
 	LOG4CXX_DEBUG(logger, (char*) "Sending DISCONNECT");
 	stomp_frame frame;
 	frame.command = (char*) "DISCONNECT";
@@ -131,18 +138,22 @@ void HybridConnectionImpl::disconnect(stomp_connection* connection, apr_pool_t* 
 
 Session* HybridConnectionImpl::createSession(int id, char * serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession serviceName: " << serviceName);
-	sessionMap[id] = new HybridSessionImpl(connectionName, pool, id, serviceName);
+	sessionMap[id] = new HybridSessionImpl(connectionName, pool, id,
+			serviceName);
 	return sessionMap[id];
 }
 
-Session* HybridConnectionImpl::createSession(int id, const char* temporaryQueueName) {
-	LOG4CXX_DEBUG(logger, (char*) "createSession temporaryQueueName: " << temporaryQueueName);
-	return new HybridSessionImpl(connectionName, pool, id, temporaryQueueName);
+Session* HybridConnectionImpl::createSession(int id,
+		const char* temporaryQueueName) {
+	LOG4CXX_DEBUG(logger, (char*) "createSession temporaryQueueName: "
+			<< temporaryQueueName);
+	sessionMap[id] = new HybridSessionImpl(this->connection, id, serviceName);
+	return sessionMap[id];
 }
 
 Destination* HybridConnectionImpl::createDestination(char* serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "createDestination" << serviceName);
-	return new HybridEndpointQueue(this->pool, serviceName);
+	return new StompEndpointQueue(this->pool, serviceName);
 }
 
 void HybridConnectionImpl::destroyDestination(Destination* destination) {

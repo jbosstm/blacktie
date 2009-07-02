@@ -24,10 +24,10 @@
 #include "ConnectionImpl.h"
 #include "txClient.h"
 
-log4cxx::LoggerPtr HybridEndpointQueue::logger(log4cxx::Logger::getLogger(
-		"HybridEndpointQueue"));
+log4cxx::LoggerPtr StompEndpointQueue::logger(log4cxx::Logger::getLogger(
+		"StompEndpointQueue"));
 
-HybridEndpointQueue::HybridEndpointQueue(apr_pool_t* pool, char* serviceName) {
+StompEndpointQueue::StompEndpointQueue(apr_pool_t* pool, char* serviceName) {
 	LOG4CXX_DEBUG(logger, "Creating endpoint queue: " << serviceName);
 	this->message = NULL;
 	shutdown = false;
@@ -88,7 +88,7 @@ HybridEndpointQueue::HybridEndpointQueue(apr_pool_t* pool, char* serviceName) {
 	LOG4CXX_DEBUG(logger, "Sent SUB: " << queueName);
 }
 
-HybridEndpointQueue::HybridEndpointQueue(apr_pool_t* pool, char* connectionName,
+StompEndpointQueue::StompEndpointQueue(apr_pool_t* pool, char* connectionName,
 		int id) {
 	this->message = NULL;
 	shutdown = false;
@@ -150,7 +150,7 @@ HybridEndpointQueue::HybridEndpointQueue(apr_pool_t* pool, char* connectionName,
 
 // ~EndpointQueue destructor.
 //
-HybridEndpointQueue::~HybridEndpointQueue() {
+StompEndpointQueue::~StompEndpointQueue() {
 	LOG4CXX_TRACE(logger, (char*) "destroying" << name);
 
 	lock->lock();
@@ -177,7 +177,7 @@ HybridEndpointQueue::~HybridEndpointQueue() {
 	}
 }
 
-MESSAGE HybridEndpointQueue::receive(long time) {
+MESSAGE StompEndpointQueue::receive(long time) {
 	// TODO TIME NOT RESPECTED
 	MESSAGE message;
 	message.replyto = NULL;
@@ -306,7 +306,7 @@ MESSAGE HybridEndpointQueue::receive(long time) {
 	return message;
 }
 
-void HybridEndpointQueue::disconnect() {
+void StompEndpointQueue::disconnect() {
 	LOG4CXX_DEBUG(logger, (char*) "disconnecting: " << name);
 	lock->lock();
 	if (!shutdown) {
@@ -325,10 +325,10 @@ void HybridEndpointQueue::disconnect() {
 	}
 }
 
-const char * HybridEndpointQueue::getName() {
+const char * StompEndpointQueue::getName() {
 	return (const char *) name;
 }
 
-const char * HybridEndpointQueue::getFullName() {
+const char * StompEndpointQueue::getFullName() {
 	return (const char *) this->fullName;
 }
