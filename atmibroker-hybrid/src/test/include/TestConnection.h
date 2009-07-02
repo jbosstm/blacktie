@@ -20,16 +20,22 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
+#include "ConnectionImpl.h"
 
 class TestConnection: public CppUnit::TestFixture {
-CPPUNIT_TEST_SUITE( TestConnection)
-	;
-		CPPUNIT_TEST( test);
-	CPPUNIT_TEST_SUITE_END()
-	;
+	CPPUNIT_TEST_SUITE( TestConnection);
+	CPPUNIT_TEST( test);
+CPPUNIT_TEST_SUITE_END()
+;
 
 public:
-	void test();
+void test();
+virtual void setUp();
+virtual void tearDown();
+
+private:
+HybridConnectionImpl* serverConnection;
+HybridConnectionImpl* clientConnection;
 };
 
 #endif

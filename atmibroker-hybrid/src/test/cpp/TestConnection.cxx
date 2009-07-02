@@ -20,14 +20,28 @@
 #include "TestConnection.h"
 
 #include "userlogc.h"
-#include "ConnectionImpl.h"
+
+void TestConnection::setUp() {
+	userlogc("TestConnection::setUp");
+	serverConnection = NULL;
+	clientConnection = NULL;
+	serverConnection = new HybridConnectionImpl((char*) "server");
+	clientConnection = new HybridConnectionImpl((char*) "client");
+}
+
+void TestConnection::tearDown() {
+	userlogc("TestConnection::tearDown");
+	if (serverConnection) {
+		delete serverConnection;
+	}
+	if (clientConnection) {
+		delete clientConnection;
+	}
+}
 
 void TestConnection::test() {
 	userlogc("TestConnection::test");
-	HybridConnectionImpl* serverConnection = new HybridConnectionImpl(
-			(char*) "server");
-	HybridConnectionImpl* clientConnection = new HybridConnectionImpl(
-			(char*) "client");
+
 	Destination* destination = serverConnection->createDestination(
 			(char*) "BAR");
 	Session* client = clientConnection->createSession(1, (char*) "BAR");
@@ -39,15 +53,20 @@ void TestConnection::test() {
 	clientSend.len = 6;
 	clientSend.replyto = client->getReplyTo();
 	client->send(clientSend);
-	MESSAGE clientSent = destination->receive(0);
-	Session* service = serverConnection->createSession(1, clientSent.replyto);
+	userlogc("sent 1st");
+	MESSAGE serviceReceived = destination->receive(0);
+	userlogc("received 1");
+	CPPUNIT_ASSERT(strcmp(clientSend.data, serviceReceived.data) == 0);
+
+	Session* service = serverConnection->createSession(1,
+			serviceReceived.replyto);
 	MESSAGE serviceSend;
 	serviceSend.data = (char*) "bye";
 	serviceSend.len = 4;
 	serviceSend.replyto = NULL;
 	service->send(serviceSend);
+	userlogc("sent 2");
 	MESSAGE clientReceived = client->receive(0);
-	delete serverConnection;
-	delete clientConnection;
+	userlogc("received 2");
 	CPPUNIT_ASSERT(strcmp(serviceSend.data, clientReceived.data) == 0);
 }

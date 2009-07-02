@@ -103,14 +103,24 @@ void CorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 
 		MESSAGE message;
 		message.correlationId = correlationId;
+		LOG4CXX_TRACE(logger, (char*) "MALLOCING DATA");
 		message.data = (char*) malloc(sizeof(char*) * ilen);
+		LOG4CXX_TRACE(logger, (char*) "malloced");
 		memcpy(message.data, (char*) idata.get_buffer(), ilen);
+		LOG4CXX_TRACE(logger, (char*) "Copied");
 		message.flags = flags;
 		message.len = ilen;
 		message.rcode = rcode;
-		message.replyto = strdup(replyto_ior);
+		message.replyto = NULL;
+		if (replyto_ior != NULL) {
+			LOG4CXX_TRACE(logger, (char*) "Duplicating the replyto");
+			message.replyto = strdup(replyto_ior);
+			LOG4CXX_TRACE(logger, (char*) "Duplicated");
+		}
 		message.rval = rval;
+		LOG4CXX_TRACE(logger, (char*) "Getting control");
 		message.control = getSpecific(TSS_KEY);
+		LOG4CXX_TRACE(logger, (char*) "Got control");
 		// For remote comms this thread (comes from a pool) is different from the thread that will
 		// eventually consume the message. For local comms this is not the case.
 		// Thus we cannot dissassociate any transaction from the thread here (using destroySpecific)
