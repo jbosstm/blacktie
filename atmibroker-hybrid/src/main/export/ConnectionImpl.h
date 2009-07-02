@@ -23,7 +23,7 @@
 #include <map>
 
 #ifdef __cplusplus
-extern "C" 
+extern "C"
 {
 #endif
 #include "stomp.h"
@@ -35,6 +35,8 @@ extern "C"
 #include "Connection.h"
 #include "Destination.h"
 #include "SessionImpl.h"
+
+#include "CorbaConnection.h"
 
 class HybridSessionImpl;
 
@@ -60,7 +62,7 @@ private:
 	char* connectionName;
 	std::map<int, HybridSessionImpl*> sessionMap;
 	apr_pool_t* pool;
-	stomp_connection* connection;
+	CORBA_CONNECTION* connection;
 };
 
 #ifdef __cplusplus

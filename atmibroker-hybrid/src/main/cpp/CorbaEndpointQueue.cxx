@@ -23,7 +23,7 @@
 #include <orbsvcs/CosNamingS.h>
 #endif
 
-#include "EndpointQueue.h"
+#include "CorbaEndpointQueue.h"
 #include "ThreadLocalStorage.h"
 
 log4cxx::LoggerPtr CorbaEndpointQueue::logger(log4cxx::Logger::getLogger("CorbaEndpointQueue"));

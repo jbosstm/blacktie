@@ -23,7 +23,8 @@
 
 #include "malloc.h"
 #include "SessionImpl.h"
-#include "EndpointQueue.h"
+#include "CorbaEndpointQueue.h"
+#include "StompEndpointQueue.h"
 #include "txClient.h"
 
 #include "ThreadLocalStorage.h"
@@ -31,14 +32,15 @@
 log4cxx::LoggerPtr HybridSessionImpl::logger(log4cxx::Logger::getLogger(
 		"HybridSessionImpl"));
 
-HybridSessionImpl::HybridSessionImpl(char* connectionName, apr_pool_t* pool,
-		int id, char* serviceName) {
+HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
+		apr_pool_t* pool, int id, char* serviceName) {
 	LOG4CXX_TRACE(logger, (char*) "constructor ");
 	this->id = id;
+	this->corbaConnection = connection;
 	serviceInvokation = true;
 
-	connection = NULL;
-	connection = HybridConnectionImpl::connect(pool, 0); // TODO allow the timeout to be specified in configuration
+	stompConnection = NULL;
+	stompConnection = HybridConnectionImpl::connect(pool, 0); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
 
 	this->canSend = true;
@@ -51,24 +53,25 @@ HybridSessionImpl::HybridSessionImpl(char* connectionName, apr_pool_t* pool,
 	strcpy(this->sendTo, "/queue/");
 	strncat(this->sendTo, serviceName, XATMI_SERVICE_NAME_LENGTH);
 
-	this->temporaryQueue = new CorbaEndpointQueue(connection);
+	this->temporaryQueue = new CorbaEndpointQueue(corbaConnection);
 	this->replyTo = temporaryQueue->getName();
 	LOG4CXX_TRACE(logger, "OK service");
 }
 
-HybridSessionImpl::HybridSessionImpl(char* connectionName, apr_pool_t* pool,
-		int id, const char* temporaryQueueName) {
+HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection, int id,
+		const char* temporaryQueueName) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor ");
 	this->id = id;
+	this->corbaConnection = connection;
 	serviceInvokation = false;
 
 	LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << temporaryQueueName);
-	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection->orbRef;
+	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) corbaConnection->orbRef;
 	CORBA::Object_var tmp_ref = orb->string_to_object(temporaryQueueName);
 	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 	LOG4CXX_DEBUG(logger, (char*) "connected to %s" << temporaryQueueName);
 
-	this->temporaryQueue = new CorbaEndpointQueue(connection);
+	this->temporaryQueue = new CorbaEndpointQueue(corbaConnection);
 	this->replyTo = temporaryQueue->getName();
 	this->canSend = true;
 	this->canRecv = true;
@@ -76,13 +79,13 @@ HybridSessionImpl::HybridSessionImpl(char* connectionName, apr_pool_t* pool,
 
 HybridSessionImpl::~HybridSessionImpl() {
 	::free(this->sendTo);
-	delete toRead;
+	delete temporaryQueue;
 
-	if (connection) {
+	if (stompConnection) {
 		LOG4CXX_TRACE(logger, (char*) "destroying");
-		HybridConnectionImpl::disconnect(connection, pool);
+		HybridConnectionImpl::disconnect(stompConnection, pool);
 		LOG4CXX_TRACE(logger, (char*) "destroyed");
-		connection = NULL;
+		stompConnection = NULL;
 	}
 }
 
@@ -94,7 +97,7 @@ void HybridSessionImpl::setSendTo(const char* destinationName) {
 		remoteEndpoint = NULL;
 	}
 	if (destinationName != NULL && strcmp(destinationName, "") != 0) {
-		CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection->orbRef;
+		CORBA::ORB_ptr orb = (CORBA::ORB_ptr) corbaConnection->orbRef;
 		LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << destinationName);
 		CORBA::Object_var tmp_ref = orb->string_to_object(destinationName);
 		remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
@@ -104,7 +107,7 @@ void HybridSessionImpl::setSendTo(const char* destinationName) {
 }
 
 MESSAGE HybridSessionImpl::receive(long time) {
-	return toRead->receive(time);
+	return temporaryQueue->receive(time);
 }
 
 bool HybridSessionImpl::send(MESSAGE message) {
@@ -141,14 +144,14 @@ bool HybridSessionImpl::send(MESSAGE message) {
 
 		LOG4CXX_DEBUG(logger, "Send to: " << sendTo << " Command: "
 				<< frame.command << " Body: " << frame.body);
-		apr_status_t rc = stomp_write(connection, &frame, pool);
+		apr_status_t rc = stomp_write(stompConnection, &frame, pool);
 		if (rc != APR_SUCCESS) {
 			LOG4CXX_ERROR(logger, "Could not send frame");
 			//setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		} else {
 
 			stomp_frame *framed;
-			rc = stomp_read(connection, &framed, pool);
+			rc = stomp_read(stompConnection, &framed, pool);
 			if (rc != APR_SUCCESS) {
 				LOG4CXX_ERROR(logger, "Could not send frame");
 				//setSpecific(TPE_KEY, TSS_TPESYSTEM);

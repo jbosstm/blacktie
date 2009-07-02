@@ -19,7 +19,7 @@
 
 #include "apr_strings.h"
 #include "malloc.h"
-#include "EndpointQueue.h"
+#include "StompEndpointQueue.h"
 #include "ThreadLocalStorage.h"
 #include "ConnectionImpl.h"
 #include "txClient.h"

@@ -22,6 +22,11 @@
 #include "ConnectionImpl.h"
 #include "SessionImpl.h"
 #include "AtmiBrokerEnv.h"
+#include "StompEndpointQueue.h"
+
+#include "OrbManagement.h"
+#include "txClient.h"
+#include "AtmiBrokerPoaFac.h"
 
 log4cxx::LoggerPtr HybridConnectionImpl::logger(log4cxx::Logger::getLogger(
 		"HybridConnectionImpl"));
@@ -138,7 +143,7 @@ void HybridConnectionImpl::disconnect(stomp_connection* connection,
 
 Session* HybridConnectionImpl::createSession(int id, char * serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession serviceName: " << serviceName);
-	sessionMap[id] = new HybridSessionImpl(connectionName, pool, id,
+	sessionMap[id] = new HybridSessionImpl(this->connection, pool, id,
 			serviceName);
 	return sessionMap[id];
 }
@@ -147,7 +152,8 @@ Session* HybridConnectionImpl::createSession(int id,
 		const char* temporaryQueueName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession temporaryQueueName: "
 			<< temporaryQueueName);
-	sessionMap[id] = new HybridSessionImpl(this->connection, id, serviceName);
+	sessionMap[id] = new HybridSessionImpl(this->connection, id,
+			temporaryQueueName);
 	return sessionMap[id];
 }
 

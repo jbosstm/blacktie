@@ -23,15 +23,17 @@
 #include "log4cxx/logger.h"
 #include "Session.h"
 #include "ConnectionImpl.h"
-#include "EndpointQueue.h"
+#include "CorbaConnection.h"
+#include "CorbaEndpointQueue.h"
+#include "StompEndpointQueue.h"
 
 class HybridConnectionImpl;
 
 class BLACKTIE_HYBRID_DLL HybridSessionImpl: public virtual Session {
 public:
-	HybridSessionImpl(char* connectionName, apr_pool_t* pool, int id, const char* temporaryQueueName);
+	HybridSessionImpl(CORBA_CONNECTION* connection, int id, const char* temporaryQueueName);
 
-	HybridSessionImpl(char* connectionName, apr_pool_t* pool, int id, char* service);
+	HybridSessionImpl(CORBA_CONNECTION* connection, apr_pool_t* pool, int id, char* service);
 
 	virtual ~HybridSessionImpl();
 
@@ -47,11 +49,14 @@ public:
 private:
 	static log4cxx::LoggerPtr logger;
 	int id;
-	stomp_connection* connection;
+	CORBA_CONNECTION* corbaConnection;
+	CorbaEndpointQueue* temporaryQueue;
+	AtmiBroker::EndpointQueue_var remoteEndpoint;
+	stomp_connection* stompConnection;
 	apr_pool_t* pool;
 	const char* replyTo;
 	char* sendTo;
-	HybridEndpointQueue* toRead;
+	bool serviceInvokation;
 };
 
 #endif
