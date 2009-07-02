@@ -26,7 +26,8 @@
 #include "CorbaEndpointQueue.h"
 #include "ThreadLocalStorage.h"
 
-log4cxx::LoggerPtr CorbaEndpointQueue::logger(log4cxx::Logger::getLogger("CorbaEndpointQueue"));
+log4cxx::LoggerPtr CorbaEndpointQueue::logger(log4cxx::Logger::getLogger(
+		"CorbaEndpointQueue"));
 
 // EndpointQueue constructor
 //
@@ -38,24 +39,30 @@ CorbaEndpointQueue::CorbaEndpointQueue(CORBA_CONNECTION* connection) {
 	shutdown = false;
 	lock = new SynchronizableObject();
 
-	PortableServer::POA_ptr poa = (PortableServer::POA_ptr) connection->callback_poa;
+	PortableServer::POA_ptr poa =
+			(PortableServer::POA_ptr) connection->callback_poa;
 	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection->orbRef;
 	LOG4CXX_DEBUG(logger, (char*) "tmp_servant " << this);
 	poa->activate_object(this);
 	LOG4CXX_DEBUG(logger, (char*) "activated tmp_servant " << this);
 	CORBA::Object_ptr tmp_ref = poa->servant_to_reference(this);
-	AtmiBroker::EndpointQueue_var queue = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
+	AtmiBroker::EndpointQueue_var queue = AtmiBroker::EndpointQueue::_narrow(
+			tmp_ref);
 	this->name = orb->object_to_string(queue);
 }
 
-CorbaEndpointQueue::CorbaEndpointQueue(CORBA_CONNECTION* connection, PortableServer::POA_ptr poa, char* serviceName) {
+CorbaEndpointQueue::CorbaEndpointQueue(CORBA_CONNECTION* connection,
+		PortableServer::POA_ptr poa, char* serviceName) {
 	shutdown = false;
 	thePoa = poa;
 	lock = new SynchronizableObject();
 	thePoa->activate_object(this);
 	LOG4CXX_DEBUG(logger, (char*) "activated tmp_servant " << this);
 	CORBA::Object_var tmp_ref = thePoa->servant_to_reference(this);
-	CosNaming::Name * name = ((CosNaming::NamingContextExt_ptr) connection->default_ctx)->to_name(serviceName);
+	CosNaming::Name
+			* name =
+					((CosNaming::NamingContextExt_ptr) connection->default_ctx)->to_name(
+							serviceName);
 	((CosNaming::NamingContext_ptr) connection->name_ctx)->bind(*name, tmp_ref);
 	this->name = serviceName;
 }
@@ -74,7 +81,6 @@ CorbaEndpointQueue::~CorbaEndpointQueue() {
 	delete lock;
 	lock = NULL;
 
-
 	LOG4CXX_DEBUG(logger, (char*) "destroying poa: " << thePoa);
 	thePoa->destroy(true, true);
 	thePoa = NULL;
@@ -83,7 +89,10 @@ CorbaEndpointQueue::~CorbaEndpointQueue() {
 	LOG4CXX_DEBUG(logger, (char*) "destroyed");
 }
 
-void CorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags) throw (CORBA::SystemException ) {
+void CorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
+		CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen,
+		CORBA::Long correlationId, CORBA::Long flags)
+		throw (CORBA::SystemException ) {
 	lock->lock();
 	if (!shutdown) {
 		LOG4CXX_DEBUG(logger, (char*) "send called.");

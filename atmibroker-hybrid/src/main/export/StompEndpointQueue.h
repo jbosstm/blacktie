@@ -16,16 +16,15 @@
  * MA  02110-1301, USA.
  */
 
-#ifndef EndpointQueue_H_
-#define EndpointQueue_H_
+#ifndef StompEndpointQueue_H_
+#define StompEndpointQueue_H_
 
 #include "atmiBrokerHybridMacro.h"
 
 #include <queue>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 #include "stomp.h"
 #ifdef __cplusplus
@@ -38,8 +37,7 @@ extern "C"
 
 class BLACKTIE_HYBRID_DLL StompEndpointQueue: public virtual Destination {
 public:
-	StompEndpointQueue(apr_pool_t* pool, char* serviceName);
-	StompEndpointQueue(apr_pool_t* pool, char* serviceName, int id);
+	StompEndpointQueue(stomp_connection* connection, apr_pool_t* pool, char* serviceName);
 	virtual ~StompEndpointQueue();
 
 	virtual void disconnect();
@@ -48,6 +46,8 @@ public:
 
 	virtual const char* getName();
 	const char* getFullName();
+
+	stomp_connection* getConnection();
 private:
 	static log4cxx::LoggerPtr logger;
 	stomp_connection* connection;

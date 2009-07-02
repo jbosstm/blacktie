@@ -20,8 +20,8 @@
 // A POA servant which implements of the AtmiBroker::ClientCallback interface
 //
 
-#ifndef EndpointQueue_H_
-#define EndpointQueue_H_
+#ifndef CorbaEndpointQueue_H_
+#define CorbaEndpointQueue_H_
 
 #include "atmiBrokerHybridMacro.h"
 

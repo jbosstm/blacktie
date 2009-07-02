@@ -23,8 +23,7 @@
 #include <map>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 #include "stomp.h"
 #ifdef __cplusplus
@@ -32,11 +31,10 @@ extern "C"
 #endif
 
 #include "log4cxx/logger.h"
+#include "CorbaConnection.h"
 #include "Connection.h"
 #include "Destination.h"
 #include "SessionImpl.h"
-
-#include "CorbaConnection.h"
 
 class HybridSessionImpl;
 

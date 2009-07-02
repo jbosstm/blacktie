@@ -21,21 +21,20 @@
 #include "malloc.h"
 #include "StompEndpointQueue.h"
 #include "ThreadLocalStorage.h"
-#include "ConnectionImpl.h"
 #include "txClient.h"
 
 log4cxx::LoggerPtr StompEndpointQueue::logger(log4cxx::Logger::getLogger(
 		"StompEndpointQueue"));
 
-StompEndpointQueue::StompEndpointQueue(apr_pool_t* pool, char* serviceName) {
+StompEndpointQueue::StompEndpointQueue(stomp_connection* connection,
+		apr_pool_t* pool, char* serviceName) {
 	LOG4CXX_DEBUG(logger, "Creating endpoint queue: " << serviceName);
 	this->message = NULL;
 	shutdown = false;
 	lock = new SynchronizableObject();
 	LOG4CXX_DEBUG(logger, "Created lock: " << lock);
 
-	connection = NULL;
-	connection = HybridConnectionImpl::connect(pool, 5); // TODO allow the timeout to be specified in configuration
+	this->connection = connection;
 	this->pool = pool;
 
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
@@ -88,66 +87,6 @@ StompEndpointQueue::StompEndpointQueue(apr_pool_t* pool, char* serviceName) {
 	LOG4CXX_DEBUG(logger, "Sent SUB: " << queueName);
 }
 
-StompEndpointQueue::StompEndpointQueue(apr_pool_t* pool, char* connectionName,
-		int id) {
-	this->message = NULL;
-	shutdown = false;
-	lock = new SynchronizableObject();
-	LOG4CXX_DEBUG(logger, "Created lock: " << lock);
-
-	connection = NULL;
-	connection = HybridConnectionImpl::connect(pool, 10); // TODO allow the timeout to be specified in configuration
-	this->pool = pool;
-
-	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
-	int XATMI_SERVICE_NAME_LENGTH = 15;
-	char* queueName = (char*) ::malloc(12 + XATMI_SERVICE_NAME_LENGTH + 1 + 5); // /temp-queue/ + serviceName + / + id
-	memset(queueName, '\0', 12 + XATMI_SERVICE_NAME_LENGTH + 1 + 5);
-	sprintf(queueName, "/temp-queue/%s-%d", connectionName, id);
-
-	stomp_frame frame;
-	frame.command = (char*) "SUB";
-	frame.headers = apr_hash_make(pool);
-	apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, queueName);
-	apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING, queueName);
-	frame.body_length = -1;
-	frame.body = NULL;
-	LOG4CXX_DEBUG(logger, "Send SUB: " << queueName);
-	apr_status_t rc = stomp_write(connection, &frame, pool);
-	if (rc != APR_SUCCESS) {
-		LOG4CXX_ERROR(logger, (char*) "Could not send frame");
-		throw std::exception();
-	} else {
-		stomp_frame *framed;
-		rc = stomp_read(connection, &framed, pool);
-		if (rc != APR_SUCCESS) {
-			LOG4CXX_ERROR(logger, "Could not read frame");
-			throw new std::exception();
-		} else if (strcmp(framed->command, (const char*) "ERROR") == 0) {
-			LOG4CXX_DEBUG(logger, (char*) "Got an error: " << framed->body);
-			throw new std::exception();
-		} else if (strcmp(framed->command, (const char*) "RECEIPT") == 0) {
-			LOG4CXX_DEBUG(logger, (char*) "tmpQ RECEIPT: "
-					<< (char*) apr_hash_get(framed->headers, "receipt-id",
-							APR_HASH_KEY_STRING));
-		} else if (strcmp(framed->command, (const char*) "MESSAGE") == 0) {
-			LOG4CXX_DEBUG(
-					logger,
-					(char*) "Got message before receipt, allow a single receipt later");
-			this->message = framed;
-			this->receipt = queueName;
-		} else {
-			LOG4CXX_ERROR(logger, "Didn't get a receipt: " << framed->command
-					<< ", " << framed->body);
-			throw new std::exception();
-		}
-	}
-	this->name = queueName;
-	this->fullName = queueName;
-	this->transactional = false;
-	LOG4CXX_DEBUG(logger, "Sent SUB: " << queueName);
-}
-
 // ~EndpointQueue destructor.
 //
 StompEndpointQueue::~StompEndpointQueue() {
@@ -168,13 +107,7 @@ StompEndpointQueue::~StompEndpointQueue() {
 	LOG4CXX_TRACE(logger, (char*) "freeing name" << name);
 	free(fullName);
 	LOG4CXX_TRACE(logger, (char*) "freed name");
-
-	if (connection) {
-		LOG4CXX_TRACE(logger, (char*) "destroying");
-		HybridConnectionImpl::disconnect(connection, pool);
-		LOG4CXX_TRACE(logger, (char*) "destroyed");
-		connection = NULL;
-	}
+	connection = NULL;
 }
 
 MESSAGE StompEndpointQueue::receive(long time) {
@@ -257,8 +190,10 @@ MESSAGE StompEndpointQueue::receive(long time) {
 					"messagecontrol", APR_HASH_KEY_STRING);
 			LOG4CXX_TRACE(logger, "Extracted control");
 			bool unableToAssociateTx = false;
-			if (transactional && control && control != NULL && strcmp(control, (const char*) "null") != 0) {
-				LOG4CXX_TRACE(logger, "Read a non-null control: " << control << "/");
+			if (transactional && control && control != NULL && strcmp(control,
+					(const char*) "null") != 0) {
+				LOG4CXX_TRACE(logger, "Read a non-null control: " << control
+						<< "/");
 				if (associate_serialized_tx((char*) "serverAdministration",
 						(char*) control) != XA_OK) {
 					LOG4CXX_ERROR(logger, "Unable to handle control");
@@ -290,7 +225,8 @@ MESSAGE StompEndpointQueue::receive(long time) {
 						"reply-to", APR_HASH_KEY_STRING);
 				LOG4CXX_TRACE(logger, "Set replyto: " << message.replyto);
 				message.correlationId = apr_atoi64(correlationId);
-				LOG4CXX_TRACE(logger, "Set correlationId: " << message.correlationId);
+				LOG4CXX_TRACE(logger, "Set correlationId: "
+						<< message.correlationId);
 				message.flags = apr_atoi64(flags);
 				LOG4CXX_TRACE(logger, "Set flags: " << message.flags);
 				message.rval = apr_atoi64(rval);
@@ -316,15 +252,12 @@ void StompEndpointQueue::disconnect() {
 	}
 	lock->unlock();
 	LOG4CXX_DEBUG(logger, (char*) "disconnected: " << name);
-
-	if (connection) {
-		LOG4CXX_TRACE(logger, (char*) "destroying");
-		HybridConnectionImpl::disconnect(connection, pool);
-		LOG4CXX_TRACE(logger, (char*) "destroyed");
-		connection = NULL;
-	}
+	connection = NULL;
 }
 
+stomp_connection* StompEndpointQueue::getConnection() {
+	return connection;
+}
 const char * StompEndpointQueue::getName() {
 	return (const char *) name;
 }

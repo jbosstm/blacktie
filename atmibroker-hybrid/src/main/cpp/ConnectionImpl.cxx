@@ -159,10 +159,18 @@ Session* HybridConnectionImpl::createSession(int id,
 
 Destination* HybridConnectionImpl::createDestination(char* serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "createDestination" << serviceName);
-	return new StompEndpointQueue(this->pool, serviceName);
+	stomp_connection* connection = HybridConnectionImpl::connect(pool, 5); // TODO allow the timeout to be specified in configuration
+	return new StompEndpointQueue(connection, this->pool, serviceName);
 }
 
 void HybridConnectionImpl::destroyDestination(Destination* destination) {
+	StompEndpointQueue* queue = dynamic_cast<StompEndpointQueue*> (destination);
+	if (queue->getConnection()) {
+		LOG4CXX_TRACE(logger, (char*) "destroying");
+		HybridConnectionImpl::disconnect(queue->getConnection(), pool);
+		LOG4CXX_TRACE(logger, (char*) "destroyed");
+	}
+
 	delete destination;
 }
 
