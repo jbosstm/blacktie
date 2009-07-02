@@ -46,27 +46,30 @@ void TestConnection::test() {
 			(char*) "BAR");
 	Session* client = clientConnection->createSession(1, (char*) "BAR");
 	MESSAGE clientSend;
-	char* data = (char*) malloc(6);
-	memset(data, '\0', 6);
-	strcpy(data, "hello");
-	clientSend.data = data;
+	char* clientData = (char*) malloc(6);
+	memset(clientData, '\0', 6);
+	strcpy(clientData, "hello");
+	clientSend.data = clientData;
 	clientSend.len = 6;
 	clientSend.replyto = client->getReplyTo();
 	client->send(clientSend);
-	userlogc("sent 1st");
+	userlogc("sent 1");
 	MESSAGE serviceReceived = destination->receive(0);
-	userlogc("received 1");
-	CPPUNIT_ASSERT(strcmp(clientSend.data, serviceReceived.data) == 0);
+	userlogc("received 1: %s", serviceReceived.data);
+	CPPUNIT_ASSERT(clientSend.len == serviceReceived.len);
 
 	Session* service = serverConnection->createSession(1,
 			serviceReceived.replyto);
 	MESSAGE serviceSend;
-	serviceSend.data = (char*) "bye";
+	char* serviceData = (char*) malloc(4);
+	memset(serviceData, '\0', 4);
+	strcpy(serviceData, "bye");
+	serviceSend.data = serviceData;
 	serviceSend.len = 4;
 	serviceSend.replyto = NULL;
 	service->send(serviceSend);
 	userlogc("sent 2");
 	MESSAGE clientReceived = client->receive(0);
-	userlogc("received 2");
-	CPPUNIT_ASSERT(strcmp(serviceSend.data, clientReceived.data) == 0);
+	userlogc("received 1: %s", clientReceived.data);
+	CPPUNIT_ASSERT(serviceSend.len == clientReceived.len);
 }
