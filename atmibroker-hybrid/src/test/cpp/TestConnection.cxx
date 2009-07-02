@@ -19,15 +19,15 @@
 
 #include "TestConnection.h"
 
-#include "userlog.h"
+#include "userlogc.h"
 #include "ConnectionImpl.h"
 
 void TestConnection::test() {
-	initializeLogger();
+	userlogc("TestConnection::test");
 	HybridConnectionImpl* serverConnection = new HybridConnectionImpl("server");
 	HybridConnectionImpl* clientConnection = new HybridConnectionImpl("client");
-	Destination* destination = serverConnection->createDestination((char*) "LOOPY");
-	Session* client = clientConnection->createSession(1, (char*) "LOOPY");
+	Destination* destination = serverConnection->createDestination((char*) "BAR");
+	Session* client = clientConnection->createSession(1, (char*) "BAR");
 	MESSAGE clientSend;
 	clientSend.data = (char*) "hello";
 	clientSend.len = 6;
@@ -41,7 +41,7 @@ void TestConnection::test() {
 	serviceSend.replyto = NULL;
 	service->send(serviceSend);
 	MESSAGE clientReceived = client->receive(0);
-//	delete serverConnection;
-//	delete clientConnection;
+	delete serverConnection;
+	delete clientConnection;
 	CPPUNIT_ASSERT(strcmp(serviceSend.data, clientReceived.data) == 0);
 }

@@ -16,17 +16,26 @@
 		02110-1301, USA.
 	-->
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			 xmlns="http://www.jboss.org/blacktie">
+	xmlns="http://www.jboss.org/blacktie">
 	<ENVIRONMENT_DESCRIPTION>
-		<DOMAIN>hybrid-tests</DOMAIN>
+		<DOMAIN>fooapp</DOMAIN>
 		<ENV_VARIABLES>
+			<ENV_VARIABLE>
+				<NAME>ORBOPT</NAME>
+				<VALUE>-ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>TRANS_FACTORY_ID</NAME>
+				<VALUE>TransactionManagerService.OTS
+				</VALUE>
+			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>LOG4CXXCONFIG</NAME>
 				<VALUE>log4cxx.properties</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>StompConnectHost</NAME>
-				<VALUE>127.0.0.1</VALUE>
+				<VALUE>localhost</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>StompConnectPort</NAME>
@@ -34,11 +43,11 @@
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>StompConnectUsr</NAME>
-				<VALUE>JBM.SUCKER</VALUE>
+				<VALUE>guest</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>StompConnectPwd</NAME>
-				<VALUE>CHANGE ME!!</VALUE>
+				<VALUE>guest</VALUE>
 			</ENV_VARIABLE>
 		</ENV_VARIABLES>
 	</ENVIRONMENT_DESCRIPTION>
