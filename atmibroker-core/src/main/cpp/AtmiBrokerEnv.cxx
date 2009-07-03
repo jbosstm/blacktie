@@ -235,7 +235,9 @@ int AtmiBrokerEnv::readenv(char* aEnvFileName, char* label) {
 		if (aAtmiBrokerEnvXml.parseXmlDescriptor(&envVariableInfoSeq, descPath)) {
 			readEnvironment = true;
 		} else {
-			return -1;
+			LOG4CXX_ERROR(loggerAtmiBrokerEnv, (char*) "can not read " << descPath);
+			abort();
+			//return -1;
 		}
 	}
 	return 1;

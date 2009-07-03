@@ -24,6 +24,7 @@
 
 #include "expat.h"
 
+#include "AtmiBrokerEnv.h"
 #include "AtmiBrokerEnvXml.h"
 #include "AtmiBrokerServiceXml.h"
 #include "XsdValidator.h"
@@ -244,7 +245,10 @@ static void XMLCALL startElement
 				}
 			}
 			server = servers.back()->serverName;
-			char* dir = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
+			char* dir = AtmiBrokerEnv::ENVIRONMENT_DIR;
+			if(dir == NULL) {
+				dir = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
+			}
 			char configDir[256];
 
 			if(dir != NULL) {
