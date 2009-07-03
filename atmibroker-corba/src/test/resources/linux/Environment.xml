@@ -33,22 +33,6 @@
 				<NAME>LOG4CXXCONFIG</NAME>
 				<VALUE>log4cxx.properties</VALUE>
 			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>StompConnectHost</NAME>
-				<VALUE>localhost</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>StompConnectPort</NAME>
-				<VALUE>61613</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>StompConnectUsr</NAME>
-				<VALUE>guest</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>StompConnectPwd</NAME>
-				<VALUE>guest</VALUE>
-			</ENV_VARIABLE>
 		</ENV_VARIABLES>
 	</ENVIRONMENT_DESCRIPTION>
 </ENVIRONMENT>

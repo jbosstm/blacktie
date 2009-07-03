@@ -25,8 +25,8 @@ void TestConnection::setUp() {
 	userlogc("TestConnection::setUp");
 	serverConnection = NULL;
 	clientConnection = NULL;
-	serverConnection = new HybridConnectionImpl((char*) "server");
-	clientConnection = new HybridConnectionImpl((char*) "client");
+	serverConnection = new CorbaConnectionImpl((char*) "server");
+	clientConnection = new CorbaConnectionImpl((char*) "client");
 }
 
 void TestConnection::tearDown() {

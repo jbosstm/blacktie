@@ -96,7 +96,9 @@ void CorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 	lock->lock();
 	if (!shutdown) {
 		LOG4CXX_DEBUG(logger, (char*) "send called.");
-		LOG4CXX_DEBUG(logger, (char*) "send idata = " << replyto_ior);
+		if (replyto_ior != NULL) {
+			LOG4CXX_DEBUG(logger, (char*) "send reply to = " << replyto_ior);
+		}
 		LOG4CXX_DEBUG(logger, (char*) "send idata = " << idata.get_buffer());
 		LOG4CXX_DEBUG(logger, (char*) "send ilen = " << ilen);
 		LOG4CXX_DEBUG(logger, (char*) "send flags = " << flags);

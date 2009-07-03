@@ -87,7 +87,9 @@ void CorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA:
 	lock->lock();
 	if (!shutdown) {
 		LOG4CXX_DEBUG(logger, (char*) "send called.");
-		LOG4CXX_DEBUG(logger, (char*) "send idata = " << replyto_ior);
+		if (replyto_ior != NULL) {
+			LOG4CXX_DEBUG(logger, (char*) "send reply to = " << replyto_ior);
+		}
 		LOG4CXX_DEBUG(logger, (char*) "send idata = " << idata.get_buffer());
 		LOG4CXX_DEBUG(logger, (char*) "send ilen = " << ilen);
 		LOG4CXX_DEBUG(logger, (char*) "send flags = " << flags);
@@ -99,7 +101,12 @@ void CorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA:
 		message.flags = flags;
 		message.len = ilen;
 		message.rcode = rcode;
-		message.replyto = strdup(replyto_ior);
+		message.replyto = NULL;
+		if (replyto_ior != NULL) {
+			LOG4CXX_TRACE(logger, (char*) "Duplicating the replyto");
+			message.replyto = strdup(replyto_ior);
+			LOG4CXX_TRACE(logger, (char*) "Duplicated");
+		}
 		message.rval = rval;
 		message.control = getSpecific(TSS_KEY);
 		// For remote comms this thread (comes from a pool) is different from the thread that will

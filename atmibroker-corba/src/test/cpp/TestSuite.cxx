@@ -15,49 +15,5 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef SessionImpl_H_
-#define SessionImpl_H_
-
-#include "atmiBrokerCorbaMacro.h"
-
-//#ifdef TAO_COMP
-#include "AtmiBrokerS.h"
-#include "AtmiBrokerC.h"
-//#endif
-
-#include "log4cxx/logger.h"
-#include "Session.h"
-#include "ConnectionImpl.h"
-#include "EndpointQueue.h"
-
-class CorbaConnectionImpl;
-
-class BLACKTIE_CORBA_DLL CorbaSessionImpl: public virtual Session {
-public:
-	CorbaSessionImpl(CORBA_CONNECTION* connection, int id, const char* temporaryQueueName);
-
-	CorbaSessionImpl(CORBA_CONNECTION* connection, int id, char* service);
-
-	virtual ~CorbaSessionImpl();
-
-	void setSendTo(const char* replyTo);
-
-	const char* getReplyTo();
-
-	MESSAGE receive(long time);
-
-	bool send(MESSAGE message);
-
-	int getId();
-private:
-	static log4cxx::LoggerPtr logger;
-	int id;
-	CORBA_CONNECTION* connection;
-	CorbaEndpointQueue* temporaryQueue;
-	AtmiBroker::EndpointQueue_var remoteEndpoint;
-
-	const char* replyTo;
-	char* sendTo;
-};
-
-#endif
+#include "TestConnection.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestConnection );

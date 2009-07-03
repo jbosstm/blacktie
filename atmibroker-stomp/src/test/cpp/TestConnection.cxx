@@ -19,29 +19,57 @@
 
 #include "TestConnection.h"
 
-#include "userlog.h"
-#include "ConnectionImpl.h"
+#include "userlogc.h"
+
+void TestConnection::setUp() {
+	userlogc("TestConnection::setUp");
+	serverConnection = NULL;
+	clientConnection = NULL;
+	serverConnection = new StompConnectionImpl((char*) "server");
+	clientConnection = new StompConnectionImpl((char*) "client");
+}
+
+void TestConnection::tearDown() {
+	userlogc("TestConnection::tearDown");
+	if (serverConnection) {
+		delete serverConnection;
+	}
+	if (clientConnection) {
+		delete clientConnection;
+	}
+}
 
 void TestConnection::test() {
-	initializeLogger();
-	StompConnectionImpl* serverConnection = new StompConnectionImpl("server");
-	StompConnectionImpl* clientConnection = new StompConnectionImpl("client");
-	Destination* destination = serverConnection->createDestination((char*) "LOOPY");
-	Session* client = clientConnection->createSession(1, (char*) "LOOPY");
+	userlogc("TestConnection::test");
+
+	Destination* destination = serverConnection->createDestination(
+			(char*) "BAR");
+	Session* client = clientConnection->createSession(1, (char*) "BAR");
 	MESSAGE clientSend;
-	clientSend.data = (char*) "hello";
+	char* clientData = (char*) malloc(6);
+	memset(clientData, '\0', 6);
+	strcpy(clientData, "hello");
+	clientSend.data = clientData;
 	clientSend.len = 6;
 	clientSend.replyto = client->getReplyTo();
 	client->send(clientSend);
-	MESSAGE clientSent = destination->receive(0);
-	Session* service = serverConnection->createSession(1, clientSent.replyto);
-	MESSAGE serviceSend;
-	serviceSend.data = (char*) "bye";
-	serviceSend.len = 4;
-	serviceSend.replyto = NULL;
-	service->send(serviceSend);
-	MESSAGE clientReceived = client->receive(0);
-//	delete serverConnection;
-//	delete clientConnection;
-	CPPUNIT_ASSERT(strcmp(serviceSend.data, clientReceived.data) == 0);
+	MESSAGE serviceReceived = destination->receive(0);
+	CPPUNIT_ASSERT(clientSend.len == serviceReceived.len);
+
+	Session* service = serverConnection->createSession(1,
+			serviceReceived.replyto);
+	userlogc("Iterating");
+	for (int i = 0; i < 100; i++) {
+		MESSAGE serviceSend;
+		char* serviceData = (char*) malloc(4);
+		memset(serviceData, '\0', 4);
+		strcpy(serviceData, "bye");
+		serviceSend.data = serviceData;
+		serviceSend.len = 4;
+		serviceSend.replyto = NULL;
+		service->send(serviceSend);
+		MESSAGE clientReceived = client->receive(0);
+		CPPUNIT_ASSERT(serviceSend.len == clientReceived.len);
+	}
+	userlogc("Iterated");
 }
