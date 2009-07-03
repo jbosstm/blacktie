@@ -15,12 +15,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-
-// Class: AtmiBrokerServer
-// A POA servant which implements of the AtmiBroker::Server interface
-//
-
-
 #ifndef BLACKTIE_SERVERSERVERIMPL_H_
 #define BLACKTIE_SERVERSERVERIMPL_H_
 
@@ -38,45 +32,20 @@
 #include "ConnectionManager.h"
 #include "Destination.h"
 #include "ServiceDispatcher.h"
+#include "SynchronizableObject.h"
 
 struct _service_data {
 	Destination* destination;
 	void (*func)(TPSVCINFO *);
 	std::vector<ServiceDispatcher*> dispatchers;
-	//SVCINFO serviceInfo;
 	ServiceInfo* serviceInfo;
 };
 typedef _service_data ServiceData;
-class AtmiBrokerServer: public virtual POA_AtmiBroker::Server {
+class AtmiBrokerServer {
 public:
 	AtmiBrokerServer();
 
 	virtual ~AtmiBrokerServer();
-
-	// IDL operations
-	//
-	virtual CORBA::Short server_init() throw (CORBA::SystemException );
-
-	virtual void server_done() throw (CORBA::SystemException );
-
-	virtual AtmiBroker::ServerInfo*
-	get_server_info() throw (CORBA::SystemException );
-
-	virtual AtmiBroker::ServiceInfoSeq*
-	get_all_service_info() throw (CORBA::SystemException );
-
-	virtual AtmiBroker::EnvVariableInfoSeq*
-	get_environment_variable_info() throw (CORBA::SystemException );
-
-	virtual void set_server_descriptor(const char* xml_descriptor) throw (CORBA::SystemException );
-
-	virtual void set_service_descriptor(const char* service_name, const char* xml_descriptor) throw (CORBA::SystemException );
-
-	virtual void set_environment_descriptor(const char* xml_descriptor) throw (CORBA::SystemException );
-
-	virtual void stop_service(const char* service_name) throw (CORBA::SystemException );
-
-	virtual void start_service(const char* service_name) throw (CORBA::SystemException );
 
 	virtual char * getServerName();
 
@@ -86,7 +55,8 @@ public:
 
 	BLACKTIE_XATMI_DLL bool isAdvertised(char * serviceName);
 	void advertiseAtBootime();
-	int block();
+	void server_done();
+	int  block();
 
 private:
 	Connection* serverConnection;
@@ -100,9 +70,8 @@ private:
 	std::vector<ServiceData> serviceData;
 	std::vector<char*> advertisedServices;
 	char* serverName;
-	//ServerMetadata serverInfo;
 	ServerInfo serverInfo;
-	PortableServer::POA_var poa;
+	SynchronizableObject* finish;
 
 	// The following are not implemented
 	//
