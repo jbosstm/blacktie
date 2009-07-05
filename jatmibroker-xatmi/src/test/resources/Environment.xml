@@ -22,8 +22,9 @@
 		<SERVER_NAMES>
 			<SERVER name='standalone-server'>
 				<SERVICE_NAMES>
-					<SERVICE name='TestOne' transportLibrary='libatmibroker-stomp.so'/>
-					<SERVICE name='TestTwo' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='TestOne' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTwo' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='XMLParserTest' transportLibrary='libatmibroker-stomp.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>

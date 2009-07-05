@@ -71,7 +71,7 @@ public class XMLParserTest extends TestCase {
 
 		assertTrue(server.equals(prop.getProperty("blacktie.TestOne.server")));
 		assertTrue(transport.equals(prop
-				.getProperty("blacktie.TestOne.transportLib")));
+				.getProperty("blacktie.XMLParserTest.transportLib")));
 //		assertTrue(function.equals(prop
 //				.getProperty("blacktie.TestOne.function_name")));
 //		assertTrue(library

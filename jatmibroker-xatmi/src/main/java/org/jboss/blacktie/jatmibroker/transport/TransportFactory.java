@@ -46,6 +46,8 @@ public abstract class TransportFactory {
 			className = "org.jboss.blacktie.jatmibroker.transport.corba.TransportFactoryImpl";
 		} else if (transportLibrary.contains("stomp")) {
 			className = "org.jboss.blacktie.jatmibroker.transport.jms.TransportFactoryImpl";
+		} else if (transportLibrary.contains("hybrid")) {
+			className = "org.jboss.blacktie.jatmibroker.transport.hybrid.TransportFactoryImpl";
 		}
 		if (className == null) {
 			throw new ConfigurationException("TransportLibrary was not defined");
