@@ -72,8 +72,7 @@ public class JMSSenderImpl implements Sender {
 			message.setStringProperty("messagecontrol", ior);
 			log.debug("Sender sending IOR: " + ior);
 			if (replyTo != null) {
-				message.setJMSReplyTo((Destination) replyTo);
-				// TODOmessage.setStringProperty("reply-to", replyTo);
+				message.setStringProperty("messagereplyto", (String) replyTo);
 			}
 			if (service) {
 				message.setStringProperty("serviceName", name);

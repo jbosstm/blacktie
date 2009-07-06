@@ -36,7 +36,8 @@ import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 import org.jboss.blacktie.jatmibroker.jab.JABException;
 
 public class JMSReceiverImpl implements Receiver {
-	private static final Logger log = LogManager.getLogger(JMSReceiverImpl.class);
+	private static final Logger log = LogManager
+			.getLogger(JMSReceiverImpl.class);
 	private Queue destination;
 	private MessageConsumer receiver;
 	private boolean isTemporary;
@@ -50,8 +51,8 @@ public class JMSReceiverImpl implements Receiver {
 		timeout = 2000; // TODO Make configurable
 	}
 
-	JMSReceiverImpl(Session session, Destination destination) throws JMSException,
-			NamingException {
+	JMSReceiverImpl(Session session, Destination destination)
+			throws JMSException, NamingException {
 		this.destination = (Queue) destination;
 		receiver = session.createConsumer(destination);
 		log.debug("Creating a consumer on: " + this.destination.getQueueName());
@@ -74,7 +75,7 @@ public class JMSReceiverImpl implements Receiver {
 				String controlIOR = message.getStringProperty("messagecontrol");
 				BytesMessage bytesMessage = ((BytesMessage) message);
 				// TODO String replyTo = message.getStringProperty("reply-to");
-				Destination replyTo = message.getJMSReplyTo();
+				String replyTo = message.getStringProperty("messagereplyto");
 				int len = (int) bytesMessage.getBodyLength() - 1;
 				String serviceName = message.getStringProperty("serviceName");
 				int flags = new Integer(message
@@ -93,9 +94,12 @@ public class JMSReceiverImpl implements Receiver {
 				toProcess.data = bytes;
 				if (controlIOR != null) {
 					try {
-						JABTransaction.associateTx(controlIOR);	// associate tx with current thread
+						JABTransaction.associateTx(controlIOR); // associate tx
+																// with current
+																// thread
 					} catch (JABException e) {
-						log.warn("Got an invalid tx from queue " + destination.getQueueName() + ": " + e);
+						log.warn("Got an invalid tx from queue "
+								+ destination.getQueueName() + ": " + e);
 					}
 				}
 				return toProcess;
