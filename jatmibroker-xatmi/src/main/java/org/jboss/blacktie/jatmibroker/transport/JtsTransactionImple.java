@@ -189,7 +189,7 @@ public class JtsTransactionImple extends TransactionImple
 
                     if (cw == null) {
                         log.warn("getTransactionIOR transaction has no control wrapper");
-					} else {
+					} else if (haveORB()) {
                         try {
                         	log.debug("lookup control");
                             Control c = cw.get_control();
@@ -213,7 +213,7 @@ public class JtsTransactionImple extends TransactionImple
     }
 
     private static ControlWrapper createControlWrapper(String ior) {
-        if  (ORBManager.isInitialised() && ior.startsWith(IORTag)) {
+        if  (haveORB() && ior.startsWith(IORTag)) {
             org.omg.CORBA.Object obj = ORBManager.getORB().orb().string_to_object(ior);
             Control control =  org.omg.CosTransactions.ControlHelper.narrow(obj);
 
@@ -226,11 +226,17 @@ public class JtsTransactionImple extends TransactionImple
         }
     }
 
-	private static org.omg.CORBA.ORB getDefaultORB() {
-        try {
-            return ORBManager.getORB().orb();
-        } catch (Throwable t) {
-            return null;
-        }
+    public static boolean haveORB() {
+        return (ORBManager.isInitialised());
+    }
+
+    public static org.omg.CORBA.ORB getDefaultORB() {
+        if (haveORB())
+            try {
+                return ORBManager.getORB().orb();
+            } catch (Throwable t) {
+            }
+
+        return null;
     }
 }
