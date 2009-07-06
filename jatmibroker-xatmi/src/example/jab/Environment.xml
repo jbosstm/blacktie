@@ -22,12 +22,12 @@
 		<SERVER_NAMES>
 			<SERVER name="jboss">
 				<SERVICE_NAMES>
-					<SERVICE name='BTStompAdmin' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='BTStompAdmin' transportLibrary='hybrid'/>
 				</SERVICE_NAMES>
 			</SERVER>
 			<SERVER>
 				<SERVICE_NAMES>
-					<SERVICE name='BAR' transportLibrary='stomp'/>
+					<SERVICE name='BAR' transportLibrary='hybrid'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>
