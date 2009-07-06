@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.transport.hybrid;
+package org.jboss.blacktie.jatmibroker.transport.corba;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,8 +41,8 @@ import org.omg.PortableServer.POAPackage.AdapterNonExistent;
 
 import AtmiBroker.EndpointQueuePOA;
 
-public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
-	private static final Logger log = LogManager.getLogger(CorbaReceiverImpl.class);
+public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
+	private static final Logger log = LogManager.getLogger(ReceiverImpl.class);
 	private POA m_default_poa;
 	private String callbackIOR;
 	private List<Message> returnData = new ArrayList<Message>();
@@ -72,7 +72,7 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 		return policies;
 	}
 
-	CorbaReceiverImpl(OrbManagement orbManagement, String queueName)
+	ReceiverImpl(OrbManagement orbManagement, String queueName)
 			throws ConnectionException {
 		this.queueName = queueName;
 
@@ -105,7 +105,7 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 		this.orbManagement = orbManagement;
 	}
 
-	CorbaReceiverImpl(OrbManagement orbManagement) throws ConnectionException {
+	ReceiverImpl(OrbManagement orbManagement) throws ConnectionException {
 		ORB orb = orbManagement.getOrb();
 		POA poa = orbManagement.getRootPoa();
 		log.debug("ClientCallbackImpl constructor");

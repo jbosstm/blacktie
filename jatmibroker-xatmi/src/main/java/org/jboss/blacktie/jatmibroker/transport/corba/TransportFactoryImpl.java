@@ -15,13 +15,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.transport.hybrid;
+package org.jboss.blacktie.jatmibroker.transport.corba;
 
 import java.util.Properties;
-
-import javax.jms.ConnectionFactory;
-import javax.naming.Context;
-import javax.naming.InitialContext;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -36,9 +32,6 @@ public class TransportFactoryImpl extends TransportFactory {
 	private static final Logger log = LogManager
 			.getLogger(TransportFactoryImpl.class);
 	private OrbManagement orbManagement;
-	private Properties props;
-	private Context context;
-	private ConnectionFactory factory;
 
 	protected void setProperties(Properties properties)
 			throws ConfigurationException {
@@ -49,21 +42,6 @@ public class TransportFactoryImpl extends TransportFactory {
 			throw new ConfigurationException(
 					"Could not create the orb management function", t);
 		}
-		try {
-			props = new Properties();
-			props.setProperty("java.naming.factory.initial",
-					"org.jnp.interfaces.NamingContextFactory");
-			props.setProperty("java.naming.factory.url.pkgs",
-					"org.jboss.naming:org.jnp.interfaces");
-			props.setProperty("java.naming.provider.url",
-					"jnp://localhost:1099");
-			props.putAll(props);
-			context = new InitialContext(props);
-			factory = (ConnectionFactory) context.lookup("ConnectionFactory");
-		} catch (Throwable t) {
-			throw new ConfigurationException(
-					"Could not create the required connection", t);
-		}
 		log.debug("Created OrbManagement");
 	}
 
@@ -71,7 +49,7 @@ public class TransportFactoryImpl extends TransportFactory {
 		log.debug("Creating");
 		TransportImpl instance = null;
 		try {
-			instance = new TransportImpl(orbManagement, context, factory, props);
+			instance = new TransportImpl(orbManagement);
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Could not connect to server", t);
 		}

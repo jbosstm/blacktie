@@ -15,16 +15,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.transport.hybrid;
+package org.jboss.blacktie.jatmibroker.transport.corba;
 
-import java.util.Properties;
-
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Session;
-import javax.naming.Context;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -42,53 +37,29 @@ import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 public class TransportImpl implements Runnable, Transport {
 
 	private static final Logger log = LogManager.getLogger(TransportImpl.class);
+	private org.omg.CORBA.Object serverObject;
+
 	private Thread callbackThread;
 
+	private Map<String, SenderImpl> senders = new HashMap<String, SenderImpl>();
 	private OrbManagement orbManagement;
-	private Context context;
-	private Connection connection;
-	private Session session;
 
-	TransportImpl(OrbManagement orbManagement, Context context,
-			ConnectionFactory factory, Properties properties)
-			throws InvalidName, NotFound, CannotProceed,
-			org.omg.CosNaming.NamingContextPackage.InvalidName,
-			AdapterInactive, AlreadyBound, JMSException {
+	TransportImpl(OrbManagement orbManagement) throws InvalidName, NotFound,
+			CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName,
+			AdapterInactive, AlreadyBound {
 		this.orbManagement = orbManagement;
 
 		callbackThread = new Thread(this);
 		callbackThread.setDaemon(true);
 		callbackThread.start();
-
-		String username = (String) properties.get("StompConnectUsr");
-		String password = (String) properties.get("StompConnectPwd");
-		if (username != null) {
-			connection = factory.createConnection(username, password);
-		} else {
-			connection = factory.createConnection();
-		}
-		connection.start();
-
-		this.context = context;
-		this.session = connection
-				.createSession(false, Session.AUTO_ACKNOWLEDGE);
 	}
 
-	public void close() throws ConnectionException {
-		orbManagement.close();
-		try {
-			session.close();
-		} catch (Throwable t) {
-			throw new ConnectionException(-1, "Could not close the session", t);
-		} finally {
-			try {
-				connection.close();
-			} catch (Throwable t) {
-				throw new ConnectionException(-1,
-						"Could not close the connection", t);
-			}
+	public void close() {
+		Iterator<SenderImpl> iterator = senders.values().iterator();
+		while (iterator.hasNext()) {
+			iterator.next().close();
 		}
-
+		orbManagement.close();
 	}
 
 	public void run() {
@@ -96,40 +67,40 @@ public class TransportImpl implements Runnable, Transport {
 	}
 
 	public Sender getSender(String serviceName) throws ConnectionException {
-		try {
-			Destination destination = (Destination) context.lookup("/queue/"
-					+ serviceName);
-			return new JMSSenderImpl(session, destination);
-		} catch (Throwable t) {
-			throw new ConnectionException(-1,
-					"Could not create a service sender: " + t.getMessage(), t);
+		SenderImpl sender = senders.get(serviceName);
+		if (sender == null) {
+			try {
+				org.omg.CORBA.Object serviceFactoryObject = orbManagement
+						.getNamingContext().resolve(
+								orbManagement.getNamingContextExt().to_name(
+										serviceName));
+				sender = new SenderImpl(serviceFactoryObject, serviceName);
+				senders.put(serviceName, sender);
+			} catch (Throwable t) {
+				throw new ConnectionException(-1,
+						"Could not load service manager proxy for: "
+								+ serviceName, t);
+			}
 		}
+		return sender;
 	}
 
 	public Sender createSender(Object destination) {
 		String callback_ior = (String) destination;
 		org.omg.CORBA.Object serviceFactoryObject = orbManagement.getOrb()
 				.string_to_object(callback_ior);
-		CorbaSenderImpl sender = new CorbaSenderImpl(serviceFactoryObject,
-				callback_ior);
+		SenderImpl sender = new SenderImpl(serviceFactoryObject, callback_ior);
 		return sender;
 	}
 
 	public Receiver getReceiver(String serviceName) throws ConnectionException {
-		try {
-			Destination destination = (Destination) context.lookup("/queue/"
-					+ serviceName);
-			return new JMSReceiverImpl(session, destination);
-		} catch (Throwable t) {
-			throw new ConnectionException(-1,
-					"Could not create the receiver on: " + serviceName, t);
-		}
-
+		log.debug("createClientCallback create client callback");
+		return new ReceiverImpl(orbManagement, serviceName);
 	}
 
 	public Receiver createReceiver() throws ConnectionException {
 		log.debug("createClientCallback create client callback");
-		return new CorbaReceiverImpl(orbManagement);
+		return new ReceiverImpl(orbManagement);
 	}
 
 	public OrbManagement getOrbManagement() {
