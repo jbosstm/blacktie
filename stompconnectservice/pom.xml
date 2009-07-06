@@ -70,9 +70,9 @@
 			</plugin>
 		</plugins>
 	</build>
-<properties>
-<test.skip>true</test.skip>
-</properties>
+	<properties>
+		<test.skip>true</test.skip>
+	</properties>
 	<reporting>
 		<plugins>
 			<plugin>
@@ -123,6 +123,30 @@
 				<exclusion>
 					<groupId>org.jboss.blacktie</groupId>
 					<artifactId>atmibroker-idl</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>jboss</groupId>
+					<artifactId>jacorb</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>avalon-framework</groupId>
+					<artifactId>avalon-framework</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>logkit</groupId>
+					<artifactId>logkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>jboss</groupId>
+					<artifactId>jbossjts</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>jboss</groupId>
+					<artifactId>jbossjts-jacorb</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>jboss</groupId>
+					<artifactId>jbossts-common</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
