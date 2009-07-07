@@ -6,7 +6,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern ATMIBROKER_ADMIN_DLL void ADMIN(TPSVCINFO * svcinfo);
+extern BLACKTIE_ADMIN_DLL void ADMIN(TPSVCINFO * svcinfo);
 #ifdef __cplusplus
 }
 #endif
