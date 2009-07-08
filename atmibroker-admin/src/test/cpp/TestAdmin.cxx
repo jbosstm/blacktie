@@ -26,7 +26,7 @@ extern "C" {
 void TestAdmin::setUp() {
 	userlogc((char*) "TestAdmin::setUp");
 
-	char* argv[] = {(char*)"./server", (char*)"foo"};
+	char* argv[] = {(char*)"./server", (char*)"-i", (char*)"1", (char*)"foo"};
 	int argc = sizeof(argv)/sizeof(char*);
 
 	int initted = serverinit(argc, argv);

@@ -38,6 +38,21 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
+			<artifactId>dummy-rm</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.blacktie</groupId>
+			<artifactId>atmibroker-corba</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.blacktie</groupId>
+			<artifactId>atmibroker-stomp</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>atmibroker-xatmi</artifactId>
 		</dependency>
 	</dependencies>
