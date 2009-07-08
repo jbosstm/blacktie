@@ -233,7 +233,7 @@ MESSAGE StompEndpointQueue::receive(long time) {
 				LOG4CXX_TRACE(logger, "Set rval: " << message.rval);
 				message.rcode = apr_atoi64(rcode);
 				LOG4CXX_TRACE(logger, "Set rcode: " << message.rcode);
-				message.control = getSpecific(TSS_KEY);
+				message.control = get_control();
 				LOG4CXX_TRACE(logger, "Set control: " << message.control);
 			}
 		}

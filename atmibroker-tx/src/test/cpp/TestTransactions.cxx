@@ -257,7 +257,7 @@ void TestTransactions::test_register_resource()
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_open());
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_begin());
 
-	CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
+	CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) get_control();
 	// there should be a transaction running
 	CPPUNIT_ASSERT_MESSAGE("curr is nil", !CORBA::is_nil(curr));
 	CosTransactions::Coordinator_ptr c = curr->get_coordinator();

@@ -31,10 +31,10 @@
 #include "ace/Null_Mutex.h"
 #include "ace/Based_Pointer_T.h"
 
-
+int DISABLE_XA = 0;
 bool XAResourceManagerFactory::getXID(XID& xid)
 {
-	CosTransactions::Control_ptr cp = (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
+	CosTransactions::Control_ptr cp = (CosTransactions::Control_ptr) get_control();
 
 	if (CORBA::is_nil(cp))
 		return false;
@@ -43,6 +43,7 @@ bool XAResourceManagerFactory::getXID(XID& xid)
 		CosTransactions::Coordinator_var cv = cp->get_coordinator();
 		CosTransactions::PropagationContext_var pcv = cv->get_txcontext();
 		CosTransactions::otid_t otid = pcv->current.otid;
+#if 0
 		int len = otid.tid.length();
 
 		xid.formatID = otid.formatID;
@@ -52,6 +53,34 @@ bool XAResourceManagerFactory::getXID(XID& xid)
 		for (int i = 0; i < len; i++)
 		 	xid.data[i] = otid.tid[i];
 
+#else
+// TODO com.arjuna.ats.jts.utils.Utility.uidToOtid is not OTS complient
+// duplicate what JBossTS does - will be fixed in JBossTS 4.8.0 (see JBTM-577)
+		char JBOSSTS_NODE_SEPARATOR = '-';
+
+		xid.formatID = otid.formatID;
+		xid.gtrid_length = 0; 
+		xid.bqual_length = otid.bqual_length; 
+
+LOG4CXX_DEBUG(xaResourceLogger,  (char *) "converting OTS tid: ");
+		for (int i = 0; i < otid.bqual_length; i++) {
+			if (otid.tid[i] == JBOSSTS_NODE_SEPARATOR) {
+				xid.gtrid_length = i; 
+				i += 1;	// skip pass separator
+				xid.bqual_length = otid.bqual_length - i;
+
+				// copy bqual into the xid
+				for (int j = i; j < otid.bqual_length; j++)
+			 		xid.data[j] = otid.tid[j];
+				break;
+			}
+
+			xid.data[i] = otid.tid[i];
+		}
+LOG4CXX_DEBUG(xaResourceLogger,  (char *) "converted OTS tid len:" <<
+	otid.tid.length() << (char *) " otid bqual len: " << otid.bqual_length << (char *) " gtrid: " << xid.gtrid_length << (char *) " bqual: " << xid.bqual_length);
+
+#endif
 		return true;
 	} catch (CosTransactions::Unavailable & e) {
 		return false;
@@ -60,6 +89,7 @@ bool XAResourceManagerFactory::getXID(XID& xid)
 
 static int _rm_start(XAResourceManager* rm, XID& xid, long flags)
 {
+if (DISABLE_XA) return XA_OK;
 	LOG4CXX_TRACE(xaResourceLogger,  (char *) "_rm_start xid="
 		<< xid.formatID << ':'
 		<< xid.gtrid_length << ':'
@@ -71,6 +101,7 @@ static int _rm_start(XAResourceManager* rm, XID& xid, long flags)
 }
 static int _rm_end(XAResourceManager* rm, XID& xid, long flags)
 {
+if (DISABLE_XA) return XA_OK;
 	LOG4CXX_TRACE(xaResourceLogger,  (char *) "_rm_end xid="
 		<< xid.formatID << ':'
 		<< xid.gtrid_length << ':'
@@ -93,9 +124,10 @@ static int _rmiter(ResourceManagerMap& rms, int (*func)(XAResourceManager *, XID
 		int rc = func(rm, xid, flags);
 
 		if (rc != XA_OK) {
-			LOG4CXX_DEBUG(xaResourceLogger,  (char *) "rm operation failed " << rc);
+			LOG4CXX_DEBUG(xaResourceLogger,  (char *) "rm operation on " << rm->name() << " failed");
 			return rc;
 		}
+		LOG4CXX_TRACE(xaResourceLogger,  (char *) "rm operation on " << rm->name() << " ok");
 	}
 
 	return XA_OK;
@@ -128,23 +160,28 @@ void XAResourceManagerFactory::destroyRMs(CORBA_CONNECTION * connection)
 int XAResourceManagerFactory::startRMs(CORBA_CONNECTION * connection)
 {
 	// there is a current transaction (otherwise the call doesn't need to start the RMs
+	LOG4CXX_DEBUG(xaResourceLogger,  (char *) "starting RMs");
 	return _rmiter(rms_, _rm_start, TMNOFLAGS);
 }
 int XAResourceManagerFactory::endRMs(CORBA_CONNECTION * connection)
 {
+	LOG4CXX_DEBUG(xaResourceLogger,  (char *) "end RMs");
 	return _rmiter(rms_, _rm_end, TMSUCCESS);
 }
 int XAResourceManagerFactory::suspendRMs(CORBA_CONNECTION * connection)
 {
+	LOG4CXX_DEBUG(xaResourceLogger,  (char *) "supsend RMs");
 	return _rmiter(rms_, _rm_end, TMSUSPEND);
 }
 int XAResourceManagerFactory::resumeRMs(CORBA_CONNECTION * connection)
 {
+	LOG4CXX_DEBUG(xaResourceLogger,  (char *) "resume RMs");
 	return _rmiter(rms_, _rm_start, TMRESUME);
 }
 
 void XAResourceManagerFactory::createRMs(CORBA_CONNECTION * connection) throw (RMException)
 {
+if (DISABLE_XA) return ;
 	if (rms_.size() == 0) {
 		xarm_config_t * rmp = (xarmp == 0 ? 0 : xarmp->head);
 
@@ -216,8 +253,7 @@ XAResourceManager * XAResourceManagerFactory::createRM(
 		throw ex;
 	}
 
-	LOG4CXX_TRACE(xaResourceLogger,  (char *) "creating xarm");
-	LOG4CXX_TRACE(xaResourceLogger,  (char *) "using" << xa_switch->name);
+	LOG4CXX_TRACE(xaResourceLogger,  (char *) "creating xa rm: " << xa_switch->name);
 	XAResourceManager * a = new XAResourceManager(
 		connection, rmp->resourceName, rmp->openString, rmp->closeString, rmp->resourceMgrId, xa_switch);
 	LOG4CXX_TRACE(xaResourceLogger,  (char *) "created xarm");

@@ -422,8 +422,7 @@ int tpcancel(int id) {
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = -1;
 	if (clientinit() != -1) {
-		void* currentImpl = getSpecific(TSS_KEY);
-		if (currentImpl) {
+		if (getSpecific(TSS_KEY)) {
 			setSpecific(TPE_KEY, TSS_TPETRAN);
 		}
 		if (ptrAtmiBrokerClient->getSession(id) != NULL) {
@@ -554,8 +553,7 @@ int tpdiscon(int id) {
 			setSpecific(TPE_KEY, TSS_TPEBADDESC);
 		} else {
 			try {
-				void* currentImpl = getSpecific(TSS_KEY);
-				if (currentImpl) {
+				if (getSpecific(TSS_KEY)) {
 					toReturn = tx_rollback();
 				}
 				ptrAtmiBrokerClient->closeSession(id);

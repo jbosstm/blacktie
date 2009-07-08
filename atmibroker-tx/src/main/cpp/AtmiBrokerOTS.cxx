@@ -217,7 +217,7 @@ int AtmiBrokerOTS::tx_rollback(void)
 
 int AtmiBrokerOTS::tx_complete(bool commit) {
 	int outcome;
-	CosTransactions::Control_ptr cp = (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
+	CosTransactions::Control_ptr cp = (CosTransactions::Control_ptr) get_control();
 
 	if (CORBA::is_nil(tx_current) || CORBA::is_nil(cp)) {
 		// either tx_open hasn't been called or not in a transaction
@@ -353,7 +353,7 @@ int AtmiBrokerOTS::info(TXINFO *info) {
 	if (CORBA::is_nil(tx_current))
 		return TX_PROTOCOL_ERROR;
 
-	CosTransactions::Control_ptr cp = (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
+	CosTransactions::Control_ptr cp = (CosTransactions::Control_ptr) get_control();
 	int inTxMode = (CORBA::is_nil(cp) ? 0 : 1);
 
 	if (info != 0) {

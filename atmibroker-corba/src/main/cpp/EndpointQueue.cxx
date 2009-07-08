@@ -25,6 +25,7 @@
 
 #include "EndpointQueue.h"
 #include "ThreadLocalStorage.h"
+#include "txClient.h"
 
 log4cxx::LoggerPtr CorbaEndpointQueue::logger(log4cxx::Logger::getLogger("CorbaEndpointQueue"));
 
@@ -108,10 +109,9 @@ void CorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA:
 			LOG4CXX_TRACE(logger, (char*) "Duplicated");
 		}
 		message.rval = rval;
-		message.control = getSpecific(TSS_KEY);
 		// For remote comms this thread (comes from a pool) is different from the thread that will
 		// eventually consume the message. For local comms this is not the case.
-		// Thus we cannot dissassociate any transaction from the thread here (using destroySpecific)
+		message.control = disassociate_tx_if_not_owner();
 
 		returnData.push(message);
 		LOG4CXX_DEBUG(logger, (char*) "notifying");

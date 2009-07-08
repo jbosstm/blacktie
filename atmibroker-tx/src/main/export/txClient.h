@@ -66,5 +66,21 @@ extern BLACKTIE_TX_DLL int associate_serialized_tx(char *, char *);
  */
 extern BLACKTIE_TX_DLL char* serialize_tx(char *);
 
+/**
+ * Disassociate any transaction associated with the current thread only
+ * if the caller did not start the thread
+ */
+extern BLACKTIE_TX_DLL void * disassociate_tx_if_not_owner(void);
+
+/**
+ * Return the OTS control associated with the current thread
+ */
+extern BLACKTIE_TX_DLL void * get_control();
+
+/**
+ * Associate an OTS control with the current thread. The second parameter should
+ * correspond to an (ACE) thread id
+ */
+extern BLACKTIE_TX_DLL int associate_tx(void *, int);
 
 #endif //_TXCLIENT_H

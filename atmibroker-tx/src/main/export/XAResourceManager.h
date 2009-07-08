@@ -23,6 +23,7 @@
 #include "CorbaConnection.h"
 #include "RMException.h"
 #include "XAResourceAdaptorImpl.h"
+#include "txClient.h"
 
 #include <map>
 

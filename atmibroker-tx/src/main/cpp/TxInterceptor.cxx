@@ -183,7 +183,7 @@ void TxInterceptor::update_tx_context(PortableInterceptor::ServerRequestInfo_ptr
 	CosTransactions::Control_ptr ctrl = this->extract_tx_from_context(ri);
 
 	if (!CORBA::is_nil(ctrl)) {
-		CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
+		CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) get_control();
 
 		if (!CORBA::is_nil(curr)) {
 			if (!curr->_is_equivalent(ctrl)) {
@@ -194,7 +194,7 @@ void TxInterceptor::update_tx_context(PortableInterceptor::ServerRequestInfo_ptr
 			}
 		}
 
-		associate_tx(ctrl);
+		associate_tx(ctrl, 0);
 
 		LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getDebug(),
 				ri->operation () << (char*) ": associated client tx with thread");

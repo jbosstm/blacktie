@@ -55,7 +55,7 @@ Then, execute the script setenv
 
 2. CREATE THE SERVER
 On Linux:
-    $BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=DBS -Dserver.includes=DbService.c
+	$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=DBS -Dserver.includes="ora.c DbService.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public/" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh"
 On Windows:
     %BLACKTIE_BIN_DIR%\bin\generate_server.bat -Dservice.names=DBS -Dserver.includes=DbService.c
 
@@ -69,6 +69,8 @@ On Windows:
 Make sure that the naming and transaction services are running, if not, run the JBoss server:
 <JBOSS_HOME>/bin/run.sh|bat -c blacktie
 4.1 RUN THE SERVER
+Make sure any required 3rd party libraries are on the library path. For example:
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/product/11.1.0/db_1/lib
 ./server -c <win32|linux>
 4.2 RUN THE CLIENT
 You will need to set the environment variable BLACKTIE_CONFIGURATION_DIR to either win32 or linux prior to running the client

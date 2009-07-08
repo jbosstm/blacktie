@@ -25,6 +25,7 @@
 
 #include "CorbaEndpointQueue.h"
 #include "ThreadLocalStorage.h"
+#include "txClient.h"
 
 log4cxx::LoggerPtr CorbaEndpointQueue::logger(log4cxx::Logger::getLogger(
 		"CorbaEndpointQueue"));
@@ -123,7 +124,7 @@ void CorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 		}
 		message.rval = rval;
 		LOG4CXX_TRACE(logger, (char*) "Getting control");
-		message.control = getSpecific(TSS_KEY);
+		message.control = disassociate_tx_if_not_owner();
 		LOG4CXX_TRACE(logger, (char*) "Got control");
 		// For remote comms this thread (comes from a pool) is different from the thread that will
 		// eventually consume the message. For local comms this is not the case.

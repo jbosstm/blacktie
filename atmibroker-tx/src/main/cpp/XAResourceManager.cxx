@@ -164,7 +164,7 @@ void XAResourceManager::createPOA() {
 int XAResourceManager::createServant(XID * xid)
 {
 	XAResourceAdaptorImpl * ra;
-	CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) getSpecific(TSS_KEY);
+	CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) get_control();
 	if (CORBA::is_nil(curr))
 		return XAER_NOTA;
 

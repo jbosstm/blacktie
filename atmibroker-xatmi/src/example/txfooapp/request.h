@@ -13,7 +13,7 @@ enum TX_TYPE {
 typedef struct test_req {
 	char db[16];
 	char data[80];
-	char op[1];
+	char op;
 	enum TX_TYPE txtype;
 } test_req_t;
 

@@ -26,6 +26,7 @@
 
 #include <db.h> /* Berkeley dB include */
 
+extern int ora_test();
 extern struct xa_switch_t db_xa_switch; /* the X/Open Resource Manager entry points */
 
 int fail(const char *reason, int ret)
@@ -262,12 +263,20 @@ void parse_request(char *data, int len, char **rdata)
 	args[2] = key;
 	args[3] = val;
 
-	if (req->op == 'd' || key == NULL)
+	if (req->op == 'd' || key == 0)
 		args[1] = "d";
 
 	(void) updateDb(req->db, 0, rdata, 4, args);
 
 	userlogc((char*) "db: %s a1=%s a2=%s a3=%s (rbuf: %s)", req->db, args[1], args[2], args[3], (rdata != 0 ? *rdata : "null"));
+}
+
+void oracle_test(char *data, int len, char **rdata, long sz)
+{
+	test_req_t *req = (test_req_t *) data;
+
+	userlogc((char*) "db=%s data: %s op=%d tx=%d", req->db, req->data, req->op, req->txtype);
+	(void) ora_test((int) req->op, req->data, rdata, sz);
 }
 
 void DBS(TPSVCINFO * svcinfo) {
@@ -280,7 +289,11 @@ void DBS(TPSVCINFO * svcinfo) {
 	sendlen = XATMI_SERVICE_NAME_LENGTH + 11;
 	buffer = tpalloc("X_OCTET", 0, sizeof(char) * sendlen);
 	*buffer = 0;
+#if 0
 	parse_request(svcinfo->data, svcinfo->len, &buffer);
+#else
+	oracle_test(svcinfo->data, svcinfo->len, &buffer, sendlen);
+#endif
 
 /*	userlogc((char*) "returning %s", buffer);*/
 	tpreturn(1, 1, buffer, sendlen, 0);

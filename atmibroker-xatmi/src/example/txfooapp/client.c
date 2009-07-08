@@ -52,7 +52,7 @@ static char * get_tbuf(const char *data, const char *dbfile, char op, enum TX_TY
 	strcpy(req->data, data);
 	strcpy(req->db, dbfile);
 	req->txtype = txtype;
-	*(req->op) = op;
+	req->op = op;
 
 	return (char *) req;
 }
@@ -111,15 +111,26 @@ static void check_update(const char *db, char *key, char *val, int exists)
 	free(rbuf);
 }
 
+extern int DISABLE_XA;
 int main(int argc, char **argv)
 {
+DISABLE_XA = 0;
 	if (tx_open() != TX_OK) {
 		userlogc((char*) "ERROR - Could not open transaction: ");
 		return -1;
 	}
 
 	if (argc <= 1) {
+#if 0
 		check_update(dbfile1, "record1", "Amos", 1);
+#else
+	char *rbuf = (char *) malloc(64);
+	(void) rw_record("insert", "ORACLE", '0', TX_TYPE_BEGIN_COMMIT, &rbuf);
+	(void) rw_record("update", "ORACLE", '2', TX_TYPE_BEGIN_COMMIT, &rbuf);
+	(void) rw_record("1", "ORACLE", '1', TX_TYPE_BEGIN_COMMIT, &rbuf);
+	(void) rw_record("delete", "ORACLE", '3', TX_TYPE_BEGIN_COMMIT, &rbuf);
+	(void) rw_record("2", "ORACLE", '1', TX_TYPE_BEGIN_COMMIT, &rbuf);
+#endif
 	} else {
 		(void) rw_record("", dbfile1, 'd', TX_TYPE_BEGIN_COMMIT, NULL);
 		(void) rw_record("", dbfile1, 'd', TX_TYPE_BEGIN_COMMIT, NULL);
