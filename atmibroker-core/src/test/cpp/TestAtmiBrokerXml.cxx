@@ -58,11 +58,15 @@ void TestAtmiBrokerXml::test_env() {
 	CPPUNIT_ASSERT(strcmp((*services)[0].library_name, "BAR.dll") == 0);
 	CPPUNIT_ASSERT(strcmp((*services)[1].serviceName, "ECHO") == 0);
 	CPPUNIT_ASSERT(strcmp((*services)[1].transportLib, "atmibroker-stomp.dll") == 0);
+	CPPUNIT_ASSERT(strcmp((*services)[2].serviceName, "foo_ADMIN") == 0);
+	CPPUNIT_ASSERT(strcmp((*services)[2].transportLib, "atmibroker-stomp.dll") == 0);
 #else
 	CPPUNIT_ASSERT(strcmp((*services)[0].transportLib, "libatmibroker-corba.so") == 0);
 	CPPUNIT_ASSERT(strcmp((*services)[0].library_name, "libBAR.so") == 0);
 	CPPUNIT_ASSERT(strcmp((*services)[1].serviceName, "ECHO") == 0);
 	CPPUNIT_ASSERT(strcmp((*services)[1].transportLib, "libatmibroker-stomp.so") == 0);
+	CPPUNIT_ASSERT(strcmp((*services)[2].serviceName, "foo_ADMIN") == 0);
+	CPPUNIT_ASSERT(strcmp((*services)[2].transportLib, "libatmibroker-stomp.so") == 0);
 #endif
 	CPPUNIT_ASSERT((*services)[0].advertised == false);
 

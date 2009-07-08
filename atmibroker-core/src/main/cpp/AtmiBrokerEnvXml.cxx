@@ -229,7 +229,8 @@ static void XMLCALL startElement
 		processingServerNames = true;
 	} else if(strcmp(name, "SERVICE_NAMES") == 0) {
 		processingServiceNames = true;
-	} else if(strcmp(name, "SERVICE") == 0) {
+	} else if(strcmp(name, "SERVICE") == 0 ||
+			  strcmp(name, "ADMIN_SERVICE") == 0) {
 		processingService = true;
 
 		if(atts != 0) {
@@ -237,6 +238,14 @@ static void XMLCALL startElement
 			char*       server;
 
 			memset(&service, 0, sizeof(ServiceInfo));
+			server = servers.back()->serverName;
+
+			if(strcmp(name, "ADMIN_SERVICE") == 0 ) {
+				char adm[16];
+				ACE_OS::snprintf(adm, 15, "%s_ADMIN", server);
+				service.serviceName = strdup(adm);
+			}
+
 			for(int i = 0; atts[i]; i += 2) {
 				if(strcmp(atts[i], "name") == 0) {
 					service.serviceName = strdup(atts[i+1]);
@@ -244,7 +253,7 @@ static void XMLCALL startElement
 					service.transportLib = strdup(atts[i+1]);
 				}
 			}
-			server = servers.back()->serverName;
+
 			char* dir = AtmiBrokerEnv::ENVIRONMENT_DIR;
 			if(dir == NULL) {
 				dir = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");

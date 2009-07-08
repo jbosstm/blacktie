@@ -28,63 +28,6 @@
 	<name>Blacktie Core C++ Implementation</name>
 	<packaging>jar</packaging>
 	
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.jboss.blacktie.plugins</groupId>
-				<artifactId>cpp-plugin</artifactId>
-				<version>${project.version}</version>
-				<configuration>
-					<configuration.type>${configuration.type}</configuration.type>
-					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
-					<maven.test.skip>${maven.test.skip}</maven.test.skip>
-					<skipTests>${skipTests}</skipTests>
-					<src.main>${src.main}</src.main>
-					<failOnErrorTests>${failOnErrorTests}</failOnErrorTests>
-					<export.dll>${export.dll}</export.dll>
-				</configuration>
-
-				<executions>
-					<execution>
-						<id>generate-sources</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>generate-sources</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>compile</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>test-compile</id>
-						<phase>test-compile</phase>
-						<goals>
-							<goal>test-compile</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>test</id>
-						<phase>test</phase>
-						<goals>
-							<goal>test</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>process-classes</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>process-classes</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
-
 	<profiles>
 		<profile>
 			<id>windows</id>

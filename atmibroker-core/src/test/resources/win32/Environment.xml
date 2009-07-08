@@ -20,16 +20,18 @@
 	<ENVIRONMENT_DESCRIPTION>
 		<DOMAIN>fooapp</DOMAIN>
 		<SERVER_NAMES>
-			<SERVER>
+			<SERVER name='default'>
 				<SERVICE_NAMES>
 					<SERVICE name='TEST' transportLibrary='atmibroker-corba.dll' />
 				</SERVICE_NAMES>
+				<ADMIN_SERVICE transportLibrary='atmibroker-stomp.dll' />
 			</SERVER>
 			<SERVER name='foo'>
 				<SERVICE_NAMES>
 					<SERVICE name='BAR' transportLibrary='atmibroker-corba.dll' />
 					<SERVICE name='ECHO' transportLibrary='atmibroker-stomp.dll' />
 				</SERVICE_NAMES>
+				<ADMIN_SERVICE transportLibrary='atmibroker-stomp.dll' />
 			</SERVER>
 		</SERVER_NAMES> 
 		<XA_RESOURCES>
