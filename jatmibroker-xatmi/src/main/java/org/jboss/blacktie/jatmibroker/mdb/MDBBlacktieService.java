@@ -28,7 +28,7 @@ public abstract class MDBBlacktieService extends Service implements
 		try {
 			BytesMessage bytesMessage = ((BytesMessage) message);
 			// TODO String replyTo = message.getStringProperty("reply-to");
-			Destination replyTo = message.getJMSReplyTo();
+			String replyTo = message.getStringProperty("messagereplyto");
 			int len = (int) bytesMessage.getBodyLength() - 1;
 			String serviceName = message.getStringProperty("serviceName");
 			int flags = new Integer(message.getStringProperty("messageflags"));
@@ -47,6 +47,7 @@ public abstract class MDBBlacktieService extends Service implements
 			toProcess.data = bytes;
 			log.debug("SERVER onMessage: ior: " + toProcess.control);
 			processMessage(toProcess);
+			log.debug("Processed message");
 		} catch (Throwable t) {
 			log.error("Could not service the request", t);
 		}

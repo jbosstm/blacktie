@@ -55,15 +55,22 @@ public abstract class Service implements BlacktieService {
 	protected void processMessage(Message message) throws ConnectionException,
 			ConfigurationException {
 		if (JtsTransactionImple.hasTransaction()) {
-			log.error("Blacktie MDBs must not be called with a transactional context");
+			log
+					.error("Blacktie MDBs must not be called with a transactional context");
+		} else {
+			log.trace("Service invoked");
 		}
 
 		Transport transport = getTransport();
+		log.trace("obtained transport");
 		Sender sender = null;
 		if (message.replyTo != null) {
 			sender = transport.createSender(message.replyTo);
+		} else {
+			log.trace("NO REPLY TO REQUIRED");
 		}
 		Session session = new Session(transport, message.cd, sender);
+		log.debug("Created the session");
 
 		// THIS IS THE FIRST CALL
 		Buffer buffer = new Buffer(null, null);
@@ -72,27 +79,36 @@ public abstract class Service implements BlacktieService {
 		// NOT PASSING OVER THE SERVICE NAME
 		TPSVCINFO tpsvcinfo = new TPSVCINFO(null, buffer, message.flags,
 				session);
+		log.debug("Prepared the data for passing to the service");
 
 		boolean hasTx = (message.control != null && message.control.length() != 0);
 
-		if (log.isDebugEnabled())
-			log.debug("hasTx=" + hasTx + " ior: " + message.control);
+		log.debug("hasTx=" + hasTx + " ior: " + message.control);
 
 		try {
-			if (hasTx)	// make sure any foreign tx is resumed before calling the service routine
+			if (hasTx) // make sure any foreign tx is resumed before calling the
+				// service routine
 				JtsTransactionImple.resume(message.control);
 
+			log.debug("Invoking the XATMI service");
 			Response response = tpservice(tpsvcinfo);
-			if (hasTx)	// and suspend it again
+			log.debug("Service invoked");
+
+			if (hasTx) // and suspend it again
 				JtsTransactionImple.suspend();
 
 			if (sender != null) {
+				log.trace("Sending response");
 				// TODO THIS SHOULD INVOKE THE CLIENT HANDLER
 				// odata.value = serviceRequest.getBytes();
 				// olen.value = serviceRequest.getLength();
-				sender.send(null, response.getRval(), response.getRcode(), response
-					.getBuffer().getData(), response.getLen(), response
-					.getFlags(), 0);
+				sender.send(null, response.getRval(), response.getRcode(),
+						response.getBuffer().getData(), response.getLen(),
+						response.getFlags(), 0);
+			} else if (response != null) {
+				log.error("No sender avaible but message to be sent");
+			} else {
+				log.debug("No need to send a response");
 			}
 		} finally {
 			session.close();

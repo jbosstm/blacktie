@@ -21,7 +21,7 @@
 	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>blacktie</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0-MR5</version>
+	<version>1.0-MR6-SNAPSHOT</version>
 	<name>Blacktie Distribution</name>
 	<url>http://www.jboss.org/blacktie</url>
 	<scm>
@@ -114,6 +114,7 @@
 		<module>../atmibroker-tx</module>
 		<module>../atmibroker-corba</module>
 		<module>../atmibroker-stomp</module>
+		<module>../atmibroker-hybrid</module>
 		<module>../stompconnectservice</module>
 		<module>../atmibroker-admin</module>
 		<module>../atmibroker-xatmi</module>

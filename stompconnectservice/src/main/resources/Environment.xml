@@ -54,7 +54,7 @@
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
 				<NAME>ORBOPT</NAME>
-				<VALUE>-ORBInitRef NameService=corbaloc::localhost:3528/JBoss/Naming/root</VALUE>
+				<VALUE>-ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
 			</ENV_VARIABLE>
 		</ENV_VARIABLES>
 	</ENVIRONMENT_DESCRIPTION>

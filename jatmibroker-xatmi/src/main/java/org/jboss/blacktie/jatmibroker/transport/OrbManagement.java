@@ -22,6 +22,7 @@ import org.omg.CosNaming.NamingContextPackage.NotFound;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
 import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
+import com.arjuna.ats.internal.jts.ORBManager;
 
 public class OrbManagement {
 	private static final Logger log = LogManager.getLogger(OrbManagement.class);
@@ -49,10 +50,10 @@ public class OrbManagement {
 		String[] args = orbArgs.toArray(new String[orbArgs.size()]);
 
 		if (log.isDebugEnabled()) {
-        	StringBuilder sb = new StringBuilder();
+			StringBuilder sb = new StringBuilder();
 
-        	for (String s : args)
-            	sb.append(s).append(", ");
+			for (String s : args)
+				sb.append(s).append(", ");
 
 			log.debug("ServerProxy's connectToORB args: " + sb.toString()
 					+ " namingContext: " + namingContextExt);
@@ -64,6 +65,8 @@ public class OrbManagement {
 		p.setProperty(CorbaSingletonClassProp, CorbaSingletonClassValue);
 		p.setProperty("org.omg.PortableInterceptor.ORBInitializerClass."
 				+ "org.jboss.blacktie.jatmibroker.tx.TxInitializer", "");
+		p.setProperty("OAPort", "0");
+
 
 		log.debug("set properities");
 		log.debug(" initing orb");
@@ -82,24 +85,22 @@ public class OrbManagement {
 		log.debug("roo_poa is activated");
 		log.debug(" finished & returning from ConnectToORBWithNameServiceProp");
 
-		if (createNC) {
-			try {
-				log.debug(" creating NamingContext");
-				NameComponent[] aNameComponentArray = new NameComponent[1];
-				aNameComponentArray[0] = new NameComponent(namingContextExt, "");
-				nc = nce.bind_new_context(aNameComponentArray);
-				log.debug(" created NamingContext");
-			} catch (AlreadyBound e) {
-				log.debug("Could not create the context");
-			}
+		try {
+			log.debug(" creating NamingContext");
+			NameComponent[] aNameComponentArray = new NameComponent[1];
+			aNameComponentArray[0] = new NameComponent(namingContextExt, "");
+			nc = nce.bind_new_context(aNameComponentArray);
+			log.debug(" created NamingContext");
+		} catch (AlreadyBound e) {
+			log.debug("Could not create the context");
 		}
-		if (nc == null) {
-			log.debug(" resolving NamingContext");
-			org.omg.CORBA.Object aObject = nce.resolve_str(namingContextExt);
-			log.debug("NamingContext Object is " + aObject);
 
-			nc = NamingContextHelper.narrow(aObject);
-		}
+		log.debug(" resolving NamingContext");
+		org.omg.CORBA.Object aObject = nce.resolve_str(namingContextExt);
+		log.debug("NamingContext Object is " + aObject);
+
+		nc = NamingContextHelper.narrow(aObject);
+
 		log.debug("NamingContext is " + nc);
 	}
 

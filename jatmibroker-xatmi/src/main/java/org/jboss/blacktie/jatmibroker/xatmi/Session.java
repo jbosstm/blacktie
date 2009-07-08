@@ -112,8 +112,10 @@ public class Session {
 	 */
 	public void tpsend(Buffer buffer, int len, int flags)
 			throws ConnectionException {
+		log.debug("tpsend invoked");
 		// Can only send in certain circumstances
 		if (sender != null) {
+			log.debug("Sender not null, sending");
 			sender.send(getReceiver().getReplyTo(), (short) 0, 0, buffer
 					.getData(), len, cd, flags);
 		} else {
@@ -132,22 +134,26 @@ public class Session {
 	 */
 	public Buffer tprecv(int flags) throws ConnectionException {
 		Message m = getReceiver().receive(flags);
-
+		log.debug("Receiving");
 		// Prepare the outbound channel
 		if (m.replyTo == null
 				|| (sender != null && !m.replyTo.equals(sender.getSendTo()))) {
+			log.trace("Send to location has altered");
 			sender.close();
 			sender = null;
 		}
 		if (sender == null && m.replyTo != null) {
+			log.trace("Will require a new sender");
 			sender = transport.createSender(m.replyTo);
 		} else {
 			log.debug("Not setting the sender");
 		}
 
+		log.debug("Initializing a new buffer");
 		// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
 		Buffer received = new Buffer(null, null);
 		received.setData(m.data);
+		log.debug("Prepared and ready to launch");
 		return received;
 	}
 
@@ -173,6 +179,7 @@ public class Session {
 	private Receiver getReceiver() throws ConnectionException {
 		if (receiver == null) {
 			receiver = transport.createReceiver();
+			log.debug("Created a new receiver");
 		}
 		return receiver;
 	}

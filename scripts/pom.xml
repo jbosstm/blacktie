@@ -20,7 +20,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>scripts</groupId>
 	<artifactId>scripts</artifactId>
-	<version>1.0-MR5</version>
+	<version>1.0-MR6-SNAPSHOT</version>
 	<url>http://www.jboss.org/blacktie</url>
 	<scm>
 		<connection>scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/scripts</connection>

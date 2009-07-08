@@ -55,7 +55,7 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
 
 	this->temporaryQueue = new CorbaEndpointQueue(corbaConnection);
 	this->replyTo = temporaryQueue->getName();
-	LOG4CXX_TRACE(logger, "OK service");
+	LOG4CXX_TRACE(logger, "OK service session created");
 }
 
 HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection, int id,
@@ -71,14 +71,20 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection, int id,
 	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 	LOG4CXX_DEBUG(logger, (char*) "connected to %s" << temporaryQueueName);
 
-	this->temporaryQueue = new CorbaEndpointQueue(corbaConnection);
-	this->replyTo = temporaryQueue->getName();
 	this->canSend = true;
 	this->canRecv = true;
+
+	this->sendTo = NULL;
+
+	this->temporaryQueue = new CorbaEndpointQueue(corbaConnection);
+	this->replyTo = temporaryQueue->getName();
 }
 
 HybridSessionImpl::~HybridSessionImpl() {
-	::free(this->sendTo);
+	if (this->sendTo != NULL) {
+		::free(this->sendTo);
+		this->sendTo = NULL;
+	}
 	delete temporaryQueue;
 
 	if (stompConnection) {
@@ -90,8 +96,9 @@ HybridSessionImpl::~HybridSessionImpl() {
 }
 
 void HybridSessionImpl::setSendTo(const char* destinationName) {
-	if (this->sendTo) {
+	if (this->sendTo != NULL) {
 		::free(this->sendTo);
+		this->sendTo = NULL;
 	}
 	if (remoteEndpoint) {
 		remoteEndpoint = NULL;
@@ -102,8 +109,8 @@ void HybridSessionImpl::setSendTo(const char* destinationName) {
 		CORBA::Object_var tmp_ref = orb->string_to_object(destinationName);
 		remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 		LOG4CXX_DEBUG(logger, (char*) "connected to %s" << destinationName);
+		this->sendTo = (char*) destinationName;
 	}
-	this->sendTo = (char*) destinationName;
 }
 
 MESSAGE HybridSessionImpl::receive(long time) {
@@ -111,6 +118,7 @@ MESSAGE HybridSessionImpl::receive(long time) {
 }
 
 bool HybridSessionImpl::send(MESSAGE message) {
+	LOG4CXX_DEBUG(logger, "HybridSessionImpl::send");
 	bool toReturn = false;
 	if (serviceInvokation) {
 		stomp_frame frame;
@@ -122,8 +130,12 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		frame.body_length = message.len;
 		frame.body = message.data;
 		if (message.replyto && strcmp(message.replyto, "") != 0) {
+			LOG4CXX_TRACE(logger, "send set messagereplyto: "
+					<< message.replyto);
 			apr_hash_set(frame.headers, "messagereplyto", APR_HASH_KEY_STRING,
 					message.replyto);
+		} else {
+			LOG4CXX_TRACE(logger, "send not set messagereplyto");
 		}
 		char * correlationId = apr_itoa(pool, message.correlationId);
 		char * flags = apr_itoa(pool, message.flags);
@@ -143,13 +155,13 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		}
 
 		LOG4CXX_DEBUG(logger, "Send to: " << sendTo << " Command: "
-				<< frame.command << " Body: " << frame.body);
+				<< frame.command << " Size: " << frame.body_length);
 		apr_status_t rc = stomp_write(stompConnection, &frame, pool);
 		if (rc != APR_SUCCESS) {
 			LOG4CXX_ERROR(logger, "Could not send frame");
 			//setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		} else {
-
+			LOG4CXX_TRACE(logger, "Sent frame");
 			stomp_frame *framed;
 			rc = stomp_read(stompConnection, &framed, pool);
 			if (rc != APR_SUCCESS) {
@@ -168,7 +180,7 @@ bool HybridSessionImpl::send(MESSAGE message) {
 						<< framed->command << ", " << framed->body);
 			}
 			LOG4CXX_DEBUG(logger, "Sent to: " << sendTo << " Command: "
-					<< frame.command << " Body: " << frame.body);
+					<< frame.command << " Size: " << frame.body_length);
 
 		}
 

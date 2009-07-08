@@ -54,6 +54,7 @@ public class TransportImpl implements Runnable, Transport {
 			throws InvalidName, NotFound, CannotProceed,
 			org.omg.CosNaming.NamingContextPackage.InvalidName,
 			AdapterInactive, AlreadyBound, JMSException {
+		log.debug("Creating transport");
 		this.orbManagement = orbManagement;
 
 		callbackThread = new Thread(this);
@@ -72,9 +73,11 @@ public class TransportImpl implements Runnable, Transport {
 		this.context = context;
 		this.session = connection
 				.createSession(false, Session.AUTO_ACKNOWLEDGE);
+		log.debug("Created transport");
 	}
 
 	public void close() throws ConnectionException {
+		log.debug("Close called");
 		orbManagement.close();
 		try {
 			session.close();
@@ -88,17 +91,20 @@ public class TransportImpl implements Runnable, Transport {
 						"Could not close the connection", t);
 			}
 		}
-
+		log.debug("Closed");
 	}
 
 	public void run() {
+		log.debug("Running the orb");
 		orbManagement.getOrb().run();
 	}
 
 	public Sender getSender(String serviceName) throws ConnectionException {
+		log.debug("Get sender: " + serviceName);
 		try {
 			Destination destination = (Destination) context.lookup("/queue/"
 					+ serviceName);
+			log.trace("Resolved destination");
 			return new JMSSenderImpl(session, destination);
 		} catch (Throwable t) {
 			throw new ConnectionException(-1,
@@ -108,17 +114,21 @@ public class TransportImpl implements Runnable, Transport {
 
 	public Sender createSender(Object destination) {
 		String callback_ior = (String) destination;
+		log.debug("Creating a sender for: " + callback_ior);
 		org.omg.CORBA.Object serviceFactoryObject = orbManagement.getOrb()
 				.string_to_object(callback_ior);
 		CorbaSenderImpl sender = new CorbaSenderImpl(serviceFactoryObject,
 				callback_ior);
+		log.debug("Created sender");
 		return sender;
 	}
 
 	public Receiver getReceiver(String serviceName) throws ConnectionException {
+		log.debug("Creating a receiver: " + serviceName);
 		try {
 			Destination destination = (Destination) context.lookup("/queue/"
 					+ serviceName);
+			log.debug("Resolved destination");
 			return new JMSReceiverImpl(session, destination);
 		} catch (Throwable t) {
 			throw new ConnectionException(-1,
@@ -128,7 +138,7 @@ public class TransportImpl implements Runnable, Transport {
 	}
 
 	public Receiver createReceiver() throws ConnectionException {
-		log.debug("createClientCallback create client callback");
+		log.debug("Creating a receiver");
 		return new CorbaReceiverImpl(orbManagement);
 	}
 

@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>org.jboss.blacktie</groupId>
 		<artifactId>blacktie-common</artifactId>
-		<version>1.0-MR5</version>
+		<version>1.0-MR6-SNAPSHOT</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -121,8 +121,12 @@
 			<artifactId>jatmibroker-xatmi</artifactId>
 			<exclusions>
 				<exclusion>
-					<groupId>org.jboss.blacktie</groupId>
-					<artifactId>atmibroker-idl</artifactId>
+					<groupId>apache-log4cxx.contrib</groupId>
+					<artifactId>log4cxx</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>ace.contrib</groupId>
+					<artifactId>ace</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>jboss</groupId>

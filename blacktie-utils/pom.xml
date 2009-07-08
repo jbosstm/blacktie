@@ -20,7 +20,7 @@
 	<groupId>org.jboss.blacktie.utils</groupId>
 	<artifactId>blacktie-utils</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0-MR5</version>
+	<version>1.0-MR6-SNAPSHOT</version>
 	<name>Blacktie Utilities</name>
 	<url>http://www.jboss.org/blacktie</url>
 	<scm>

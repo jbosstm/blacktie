@@ -32,7 +32,7 @@ log4cxx::LoggerPtr HybridConnectionImpl::logger(log4cxx::Logger::getLogger(
 		"HybridConnectionImpl"));
 
 HybridConnectionImpl::HybridConnectionImpl(char* connectionName) {
-	LOG4CXX_DEBUG(logger, (char*) "constructor");
+	LOG4CXX_DEBUG(logger, (char*) "constructor: " << connectionName);
 	this->connectionName = connectionName;
 	apr_status_t rc = apr_initialize();
 	if (rc != APR_SUCCESS) {
@@ -52,7 +52,7 @@ HybridConnectionImpl::HybridConnectionImpl(char* connectionName) {
 }
 
 HybridConnectionImpl::~HybridConnectionImpl() {
-	LOG4CXX_DEBUG(logger, (char*) "destructor");
+	LOG4CXX_DEBUG(logger, (char*) "destructor: " << connectionName);
 	shutdownBindings(this->connection);
 
 	apr_pool_destroy(pool);
@@ -121,13 +121,15 @@ stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 
 void HybridConnectionImpl::disconnect(stomp_connection* connection,
 		apr_pool_t* pool) {
-	LOG4CXX_DEBUG(logger, (char*) "Sending DISCONNECT");
+	LOG4CXX_DEBUG(logger, (char*) "HybridConnectionImpl::disconnect");
 	stomp_frame frame;
 	frame.command = (char*) "DISCONNECT";
 	frame.headers = NULL;
 	frame.body_length = -1;
 	frame.body = NULL;
+	LOG4CXX_TRACE(logger, (char*) "Sending DISCONNECT" << connection << "pool" << pool);
 	apr_status_t rc = stomp_write(connection, &frame, pool);
+	LOG4CXX_TRACE(logger, (char*) "Sent DISCONNECT");
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, "Could not send frame");
 	}

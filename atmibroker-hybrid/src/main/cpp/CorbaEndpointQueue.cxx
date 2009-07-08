@@ -37,6 +37,7 @@ log4cxx::LoggerPtr CorbaEndpointQueue::logger(log4cxx::Logger::getLogger(
 //
 CorbaEndpointQueue::CorbaEndpointQueue(CORBA_CONNECTION* connection) {
 	shutdown = false;
+	thePoa = NULL;
 	lock = new SynchronizableObject();
 
 	PortableServer::POA_ptr poa =
@@ -81,10 +82,12 @@ CorbaEndpointQueue::~CorbaEndpointQueue() {
 	delete lock;
 	lock = NULL;
 
-	LOG4CXX_DEBUG(logger, (char*) "destroying poa: " << thePoa);
-	thePoa->destroy(true, true);
-	thePoa = NULL;
-	LOG4CXX_DEBUG(logger, (char*) "destroyed poa: " << thePoa);
+	if (thePoa != NULL) {
+		LOG4CXX_DEBUG(logger, (char*) "destroying thePoa: " << thePoa);
+		thePoa->destroy(true, true);
+		thePoa = NULL;
+		LOG4CXX_DEBUG(logger, (char*) "destroyed thePoa: " << thePoa);
+	}
 
 	LOG4CXX_DEBUG(logger, (char*) "destroyed");
 }
@@ -99,7 +102,6 @@ void CorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 		if (replyto_ior != NULL) {
 			LOG4CXX_DEBUG(logger, (char*) "send reply to = " << replyto_ior);
 		}
-		LOG4CXX_DEBUG(logger, (char*) "send idata = " << idata.get_buffer());
 		LOG4CXX_DEBUG(logger, (char*) "send ilen = " << ilen);
 		LOG4CXX_DEBUG(logger, (char*) "send flags = " << flags);
 

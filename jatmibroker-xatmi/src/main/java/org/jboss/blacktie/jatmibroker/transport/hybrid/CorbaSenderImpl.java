@@ -25,27 +25,32 @@ import AtmiBroker.EndpointQueue;
 import AtmiBroker.EndpointQueueHelper;
 
 public class CorbaSenderImpl implements Sender {
-	private static final Logger log = LogManager.getLogger(CorbaSenderImpl.class);
+	private static final Logger log = LogManager
+			.getLogger(CorbaSenderImpl.class);
 	private EndpointQueue queue;
 	private String name;
 
 	CorbaSenderImpl(org.omg.CORBA.Object serviceFactoryObject, String name) {
 		this.queue = EndpointQueueHelper.narrow(serviceFactoryObject);
 		this.name = name;
-		log.debug("ServiceFactory is " + queue);
+		log.debug("Corba sender for: " + name + " created");
 	}
 
 	public void send(Object replyTo, short rval, int rcode, byte[] data,
 			int len, int correlationId, int flags) {
+		log.debug("Sending the message");
 		String toReplyTo = (String) replyTo;
 		if (toReplyTo == null) {
+			log.trace("Reply to set as null");
 			toReplyTo = "";
 		}
 		queue.send(toReplyTo, rval, rcode, data, len + 1, correlationId, flags);
+		log.debug("Sent the message");
 	}
 
 	public void close() {
-		// TODO Auto-generated method stub
+		log.debug("Close called");
+		// TODO
 	}
 
 	public Object getSendTo() {
