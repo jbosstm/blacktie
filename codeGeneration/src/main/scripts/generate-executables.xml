@@ -91,6 +91,16 @@
 		<condition property="expat.prefix" value="lib">
 			<isset property="is-msvc" />
 		</condition>
+		<condition property="x.lib.dir" value=".">
+			<not>
+				<isset property="x.lib.dir" />
+			</not>
+		</condition>
+		<condition property="x.libs" value="">
+			<not>
+				<isset property="x.libs" />
+			</not>
+		</condition>
 	</target>
 
 	<target name="server" depends="init,clean-server">
@@ -149,8 +159,10 @@
 			<defineset define="WIN32" if="is-windows" />
 
 			&includepath-main-dependencies;
+			<includepath path="${x.inc.dir}"/>
 
 			&libsets-main-dependencies;
+			<libset dir="${x.lib.dir}" libs="${x.libs}"/>
 		</cc>
 	</target>
 
