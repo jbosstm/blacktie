@@ -22,21 +22,21 @@
 		<SERVER_NAMES>
 			<SERVER name='jboss'>
 				<SERVICE_NAMES>
-					<SERVICE name='BTStompAdmin' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='BTStompAdmin' transportLibrary='libatmibroker-hybrid.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 			<SERVER name='standalone-server'>
 				<SERVICE_NAMES>
-					<SERVICE name='LOOPY' transportLibrary='libatmibroker-stomp.so'/>
-					<SERVICE name='TestTPConversat' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='LOOPY' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPConversat' transportLibrary='libatmibroker-hybrid.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 			<SERVER name='foo'>
 				<SERVICE_NAMES>
-					<SERVICE name='BAR' transportLibrary='libatmibroker-stomp.so'/>
-					<SERVICE name='tpcall_x_octet' transportLibrary='libatmibroker-stomp.so'/>
-					<SERVICE name='tpcall_x_c_type' transportLibrary='libatmibroker-stomp.so'/>
-					<SERVICE name='TestTPACall' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='BAR' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='tpcall_x_octet' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='tpcall_x_c_type' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPACall' transportLibrary='libatmibroker-hybrid.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>
