@@ -22,7 +22,7 @@
 		<SERVER_NAMES>
 			<SERVER name='jboss'>
 				<SERVICE_NAMES>
-					<SERVICE name='BTStompAdmin' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='BTStompAdmin' transportLibrary='libatmibroker-stomp.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 			<SERVER name="foo">
@@ -46,6 +46,8 @@
 					<SERVICE name='TestTPService' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='TestTPReturn' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='BAR' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='foo_ADMIN_1' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='foo_ADMIN_2' transportLibrary='libatmibroker-stomp.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>
