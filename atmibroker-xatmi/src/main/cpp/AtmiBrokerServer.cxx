@@ -47,6 +47,7 @@ PortableServer::POA_var server_poa;
 bool configFromCmdline = false;
 char configDir[256];
 char server[30];
+int  cid = 0;
 
 typedef void (*SVCFUNC)(TPSVCINFO *);
 
@@ -66,7 +67,7 @@ int serverrun() {
 }
 
 int parsecmdline(int argc, char** argv) {
-	ACE_Get_Opt getopt(argc, argv, ACE_TEXT("c:"));
+	ACE_Get_Opt getopt(argc, argv, ACE_TEXT("c:i:"));
 	int c;
 	int r = 0;
 
@@ -76,6 +77,9 @@ int parsecmdline(int argc, char** argv) {
 		case 'c':
 			configFromCmdline = true;
 			ACE_OS::strncpy(configDir, getopt.opt_arg(), 256);
+			break;
+		case 'i':
+			cid = atoi(getopt.opt_arg());
 			break;
 		default:
 			r = -1;
@@ -112,7 +116,7 @@ int serverinit(int argc, char** argv) {
 	ACE_OS::strncpy(server, "default", 30);
 
 	if (argc > 0 && parsecmdline(argc, argv) != 0) {
-		fprintf(stderr, "usage:%s [-c config] [server]\n", argv[0]);
+		fprintf(stderr, "usage:%s [-c config] [-i id] [server]\n", argv[0]);
 		toReturn = -1;
 		setSpecific(TPE_KEY, TSS_TPESYSTEM);
 	}
@@ -320,6 +324,15 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 		return false;
 	}
 
+	char adm[16];
+	bool isadm = false;
+	ACE_OS::snprintf(adm, 16, "%s_ADMIN", server);
+	if(strcmp(adm, svcname) == 0) {
+		ACE_OS::snprintf(adm, 16, "%s_ADMIN_%d", server, cid);
+		isadm = true;
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "advertise Admin svc " << adm);
+	}
+
 	char* serviceName = (char*) ::malloc(XATMI_SERVICE_NAME_LENGTH + 1);
 	memset(serviceName, '\0', XATMI_SERVICE_NAME_LENGTH + 1);
 	strncat(serviceName, svcname, XATMI_SERVICE_NAME_LENGTH);
@@ -373,7 +386,11 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 			char* response = (char*) ::tpalloc((char*) "X_OCTET", NULL,
 					responseLength);
 			memset(command, '\0', commandLength);
-			sprintf(command, "tpadvertise,%s,", serviceName);
+			if(isadm) {
+				sprintf(command, "tpadvertise,%s,", adm);
+			} else {
+				sprintf(command, "tpadvertise,%s,", serviceName);
+			}
 			if (tpcall((char*) "BTStompAdmin", command, commandLength, &response,
 					&responseLength, TPNOTRAN) != 0) {
 				LOG4CXX_ERROR(loggerAtmiBrokerServer,
@@ -397,8 +414,13 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "invoked create_service_queue: "
 				<< serviceName);
 
-		Destination* destination = serverConnection->createDestination(
-				serviceName);
+		Destination* destination;
+		if(isadm) {
+			destination = serverConnection->createDestination(adm);
+		} else {
+			destination = serverConnection->createDestination(serviceName);
+		}
+
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "created destination: "
 				<< serviceName);
 
@@ -437,6 +459,15 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 }
 
 void AtmiBrokerServer::unadvertiseService(char * svcname) {
+	char adm[16];
+	bool isadm = false;
+	ACE_OS::snprintf(adm, 16, "%s_ADMIN", server);
+	if(strcmp(adm, svcname) == 0) {
+		ACE_OS::snprintf(adm, 16, "%s_ADMIN_%d", server, cid);
+		isadm = true;
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "unadvertise Admin svc " << adm);
+	}
+
 	char* serviceName = (char*) ::malloc(XATMI_SERVICE_NAME_LENGTH + 1);
 	memset(serviceName, '\0', XATMI_SERVICE_NAME_LENGTH + 1);
 	strncat(serviceName, svcname, XATMI_SERVICE_NAME_LENGTH);
@@ -455,7 +486,11 @@ void AtmiBrokerServer::unadvertiseService(char * svcname) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "preparing to destroy" << serviceName);
 
-			removeAdminDestination(serviceName);
+			if(isadm) {
+				removeAdminDestination(adm);
+			} else {
+				removeAdminDestination(serviceName);
+			}
 
 			serverConnection->destroyDestination(destination);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "destroyed"
@@ -524,7 +559,7 @@ void AtmiBrokerServer::addDestination(Destination* destination, void(*func)(
 			<< destination->getName());
 
 	serverConnection = connections.getServerConnection(
-			(char*) destination->getName());
+			(char*) service->serviceName);
 	if (serverConnection == NULL) {
 		return;
 	}

@@ -30,12 +30,12 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
-                <dependency>
-                        <groupId>cppunit.contrib</groupId>
-                        <artifactId>cppunit</artifactId>
-                        <version>1.12</version>
-                        <scope>test</scope>
-                </dependency>
+		<dependency>
+			<groupId>cppunit.contrib</groupId>
+			<artifactId>cppunit</artifactId>
+			<version>1.12</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>atmibroker-tx</artifactId>
