@@ -91,16 +91,11 @@
 		<condition property="expat.prefix" value="lib">
 			<isset property="is-msvc" />
 		</condition>
-		<condition property="x.lib.dir" value=".">
-			<not>
-				<isset property="x.lib.dir" />
-			</not>
-		</condition>
-		<condition property="x.libs" value="">
-			<not>
-				<isset property="x.libs" />
-			</not>
-		</condition>
+		<!-- define some defaults for extra libs - use something valid to stop cpptasks complaining -->
+		<condition property="x.lib.dir" value="${env.BLACKTIE_BIN_DIR}/lib"><not><isset property="x.lib.dir" /></not></condition>
+		<condition property="x.libs" value="log4cxx"><not><isset property="x.libs" /></not></condition>
+		<condition property="x.lib.dir2" value="${env.BLACKTIE_BIN_DIR}/lib"><not><isset property="x.lib.dir2" /></not></condition>
+		<condition property="x.libs2" value="log4cxx"><not><isset property="x.libs2" /></not></condition>
 	</target>
 
 	<target name="server" depends="init,clean-server">
@@ -160,9 +155,11 @@
 
 			&includepath-main-dependencies;
 			<includepath path="${x.inc.dir}"/>
+			<includepath path="${x.inc.dir2}"/>
 
 			&libsets-main-dependencies;
 			<libset dir="${x.lib.dir}" libs="${x.libs}"/>
+			<libset dir="${x.lib.dir2}" libs="${x.libs2}"/>
 		</cc>
 	</target>
 
