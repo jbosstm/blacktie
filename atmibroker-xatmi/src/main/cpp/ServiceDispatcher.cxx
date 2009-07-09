@@ -55,7 +55,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 	// INITIALISE THE SENDER AND RECEIVER FOR THIS CONVERSATION
 	if (message.replyto) {
-		LOG4CXX_DEBUG(logger, (char*) "replyTo: " << message.replyto );
+		LOG4CXX_DEBUG(logger, (char*) "replyTo: " << message.replyto);
 	} else {
 		LOG4CXX_DEBUG(logger, (char*) "replyTo: NULL");
 	}
@@ -71,7 +71,8 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	long ilen = message.len;
 	long flags = message.flags;
 	void* control = message.control;
-	LOG4CXX_DEBUG(logger, (char*) "ilen: " << ilen << " flags: " << flags << "cd: " << message.correlationId);
+	LOG4CXX_DEBUG(logger, (char*) "ilen: " << ilen << " flags: " << flags
+			<< "cd: " << message.correlationId);
 
 	// PREPARE THE STRUCT FOR SENDING TO THE CLIENT
 	TPSVCINFO tpsvcinfo;
@@ -88,10 +89,14 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 	if (tpsvcinfo.flags & TPRECVONLY) {
 		session->setCanRecv(false);
-		LOG4CXX_DEBUG(logger, (char*) "onMessage set constraints session: " << session->getId() << " send(not changed): " << session->getCanSend() << " recv: " << session->getCanRecv());
+		LOG4CXX_DEBUG(logger, (char*) "onMessage set constraints session: "
+				<< session->getId() << " send(not changed): "
+				<< session->getCanSend() << " recv: " << session->getCanRecv());
 	} else if (tpsvcinfo.flags & TPSENDONLY) {
 		session->setCanSend(false);
-		LOG4CXX_DEBUG(logger, (char*) "onMessage set constraints session: " << session->getId() << " send: " << session->getCanSend() << " recv (not changed): " << session->getCanRecv());
+		LOG4CXX_DEBUG(logger, (char*) "onMessage set constraints session: "
+				<< session->getId() << " send: " << session->getCanSend()
+				<< " recv (not changed): " << session->getCanRecv());
 	}
 
 	// HANDLE THE CLIENT INVOCATION
@@ -114,24 +119,29 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 				(char*) "ServiceDispatcher caught error running during onMessage");
 	}
 
-	LOG4CXX_TRACE(logger,
-			(char*) "Freeing the data that was passed to the service");
-	free(idata);
 	if (control) {
 		disassociate_tx(); // TODO figure out why tpreturn needs to stop Resource Managers
 	}
 
 	// CLEAN UP THE SENDER AND RECEIVER FOR THIS CLIENT
 	if (session->getCanSend()) {
+		LOG4CXX_TRACE(logger, (char*) "Returning error");
 		::tpreturn(TPFAIL, TPESVCERR, NULL, 0, 0);
+		LOG4CXX_TRACE(logger, (char*) "Returned error");
 	}
+	LOG4CXX_TRACE(logger, (char*) "ServiceDispatcher closing session");
 	delete this->session;
 	this->session = NULL;
+	LOG4CXX_TRACE(logger, (char*) "ServiceDispatcher session closed");
 
 	destroySpecific(SVC_SES);
 	destroySpecific(SVC_KEY);
 	destroySpecific(TSS_KEY);
-	LOG4CXX_DEBUG(logger, (char*) "ServiceDispatcher session closed");
+
+	LOG4CXX_TRACE(logger,
+			(char*) "Freeing the data that was passed to the service");
+	free(idata);
+	LOG4CXX_TRACE(logger, (char*) "Freed the data");
 }
 
 void ServiceDispatcher::shutdown() {

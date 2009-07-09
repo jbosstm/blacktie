@@ -238,9 +238,11 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "destructor");
 	if (realConnection) {
 		server_done();
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "shutdownBindings realConnection");
 		shutdownBindings(realConnection);
 		delete realConnection;
 		realConnection = NULL;
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "Closed real connection");
 
 		delete finish;
 		finish = NULL;

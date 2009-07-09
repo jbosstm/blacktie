@@ -34,7 +34,7 @@ log4cxx::LoggerPtr HybridSessionImpl::logger(log4cxx::Logger::getLogger(
 
 HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
 		apr_pool_t* pool, int id, char* serviceName) {
-	LOG4CXX_TRACE(logger, (char*) "constructor ");
+	LOG4CXX_TRACE(logger, (char*) "constructor service");
 	this->id = id;
 	this->corbaConnection = connection;
 	serviceInvokation = true;
@@ -42,16 +42,15 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
 	stompConnection = NULL;
 	stompConnection = HybridConnectionImpl::connect(pool, 0); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
-
-	this->canSend = true;
-	this->canRecv = true;
-
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
 	int XATMI_SERVICE_NAME_LENGTH = 15;
 	this->sendTo = (char*) ::malloc(7 + XATMI_SERVICE_NAME_LENGTH + 1);
 	memset(this->sendTo, '\0', 7 + XATMI_SERVICE_NAME_LENGTH + 1);
 	strcpy(this->sendTo, "/queue/");
 	strncat(this->sendTo, serviceName, XATMI_SERVICE_NAME_LENGTH);
+
+	this->canSend = true;
+	this->canRecv = true;
 
 	this->temporaryQueue = new CorbaEndpointQueue(corbaConnection);
 	this->replyTo = temporaryQueue->getName();
@@ -60,10 +59,13 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
 
 HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection, int id,
 		const char* temporaryQueueName) {
-	LOG4CXX_DEBUG(logger, (char*) "constructor ");
+	LOG4CXX_DEBUG(logger, (char*) "constructor corba");
 	this->id = id;
 	this->corbaConnection = connection;
 	serviceInvokation = false;
+
+	stompConnection = NULL;
+	this->sendTo = NULL;
 
 	LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << temporaryQueueName);
 	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) corbaConnection->orbRef;
@@ -74,10 +76,9 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection, int id,
 	this->canSend = true;
 	this->canRecv = true;
 
-	this->sendTo = NULL;
-
 	this->temporaryQueue = new CorbaEndpointQueue(corbaConnection);
 	this->replyTo = temporaryQueue->getName();
+	LOG4CXX_DEBUG(logger, (char*) "constructor corba done");
 }
 
 HybridSessionImpl::~HybridSessionImpl() {
