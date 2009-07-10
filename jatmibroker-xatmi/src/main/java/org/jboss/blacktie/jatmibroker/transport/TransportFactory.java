@@ -40,6 +40,7 @@ public abstract class TransportFactory {
 			throw new ConfigurationException("Transport library for "
 					+ serviceName + " was not defined");
 		}
+		log.debug("Transport library was: " + transportLibrary );
 		// Determine the transport class to load
 		String className = null;
 		if (transportLibrary.contains("corba")) {
@@ -52,12 +53,14 @@ public abstract class TransportFactory {
 		if (className == null) {
 			throw new ConfigurationException("TransportLibrary was not defined");
 		}
+		log.debug("Transport class was: " + className);
 
 		try {
 			Class clazz = Class.forName(className);
 			TransportFactory newInstance = (TransportFactory) clazz
 					.newInstance();
 			newInstance.setProperties(properties);
+			log.debug("TransportFactory was prepared");
 			return newInstance;
 		} catch (Throwable t) {
 			throw new ConnectionException(-1,
