@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2008, Red Hat, Inc., and others contributors as indicated
+ * Copyright 2009, Red Hat, Inc., and others contributors as indicated
  * by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -25,37 +25,15 @@
 #include "userlogc.h"
 #include "request.h"
 
+extern int ora_access(test_req_t *req, test_req_t *resp);
+extern int bdb_access(test_req_t *req, test_req_t *resp);
+extern int bdb_test(const char * backingfile, const char * dbname, char ** rdata, int argc, char * argv[]);
+extern int DISABLE_XA;
+
+static enum DB_TYPE prod;
+static char *emps[] = {"8000", "8001", "8002", "8003", "8004"};
 static const char *dbfile1 = "db1"; /* backing file for database 1 */
 static const char *dbfile2 = "db2"; /* backing file for database 2 */
-
-static char * get_buf(const char *data, const char *dbfile, enum TX_TYPE txtype) {
-	char type[20];
-	char subtype[20];
-	test_req_t req;
-	char *sbuf;
-
-	strcpy(req.data, data);
-	strcpy(req.db, dbfile);
-	req.txtype = txtype;
-
-	sbuf = tpalloc("X_OCTET", 0, sizeof (test_req_t));
-	memcpy(sbuf, &req, sizeof (test_req_t));
-
-	// tptypes
-	tptypes(sbuf, type, subtype);
-
-	return sbuf;
-}
-static char * get_tbuf(const char *data, const char *dbfile, char op, enum TX_TYPE txtype) {
-	test_req_t *req = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", sizeof (test_req_t));
-
-	strcpy(req->data, data);
-	strcpy(req->db, dbfile);
-	req->txtype = txtype;
-	req->op = op;
-
-	return (char *) req;
-}
 
 static int is_begin(enum TX_TYPE txtype) {
 	return (txtype == TX_TYPE_BEGIN || txtype == TX_TYPE_BEGIN_COMMIT || txtype == TX_TYPE_BEGIN_ABORT);
@@ -66,91 +44,195 @@ static int is_commit(enum TX_TYPE txtype) {
 static int is_abort(enum TX_TYPE txtype) {
 	return (txtype == TX_TYPE_ABORT || txtype == TX_TYPE_BEGIN_ABORT);
 }
-
-static int rw_record(const char *data, const char *dbfile, char op, enum TX_TYPE txtype, char **prbuf) {
-	long rsz;
-	int tpstatus;
-	char *sbuf;
-	char *rbuf = tpalloc("X_OCTET", 0, sizeof (test_req_t));
-	long callflags = 0L;
-
-	if (is_begin(txtype) && tx_begin() != TX_OK) {
-		userlogc((char*) "ERROR - Could not begin transaction: ");
-		return -1;
+static int start_tx(enum TX_TYPE txtype) {
+	if (is_begin(txtype)) {
+		userlogc((char*) "- Starting Transaction");
+		if (tx_begin() != TX_OK) {
+			userlogc((char*) "TX ERROR - Could not begin transaction: ");
+			return -1;
+		}
 	}
 
-	sbuf = get_tbuf(data, dbfile, op, txtype);
+	return 0;
+}
+static int end_tx(enum TX_TYPE txtype) {
+	int rv = 0;
+	if (is_commit(txtype)) {
+		userlogc((char*) "- Commiting transaction");
+		if (tx_commit() != TX_OK)
+			rv = -1;
+	} else if (is_abort(txtype)) {
+		userlogc((char*) "- Rolling back transaction");
+		if (tx_rollback() != TX_OK)
+			rv = -1;
+	}
 
-	// tpcall
-	tpstatus = tpcall("DBS", sbuf, sizeof (test_req_t), (char **) &rbuf, &rsz, callflags);
-	userlogc((char*) "tpcall status %d with output: %s", tpstatus, rbuf);
+	if (rv != 0)
+		userlogc((char*) "TX ERROR - Could not terminate transaction");
 
-	if (prbuf)
-		strcpy(*prbuf, rbuf);
+	return rv;
+}
 
-	tpfree(sbuf);
-	tpfree(rbuf);
+static int local_crud(const char *msg, char op, char *empno, enum TX_TYPE txtype)
+{
+	test_req_t req = {"db1", "8000", '1', prod, TX_TYPE_BEGIN_COMMIT, 0};
+	test_req_t resp = {"db1", "", '1', prod, TX_TYPE_BEGIN_COMMIT, 0};
 
-	if (is_commit(txtype) && tx_commit() != TX_OK)
-		userlogc((char*) "ERROR - Could not commit transaction: %s", sbuf);
-	else if (is_abort(txtype) && tx_rollback() != TX_OK)
-		userlogc((char*) "ERROR - Could not rollback transaction: %s", sbuf);
+	if (msg) userlogc((char *) msg);
+
+	(void) strcpy(req.data, empno);
+	req.op = op;
+
+	if (start_tx(txtype) == 0) {
+		int rv;
+
+		if (prod == ORACLE)
+			rv = ora_access(&req, &resp);
+		else if (prod == BDB)
+			rv = bdb_access(&req, &resp);
+
+		if (end_tx(txtype) == 0)
+			return rv;
+	}
+
+	return -1;
+}
+
+static int send_req(const char * msg, const char *dbfile, const char *data, char op, enum TX_TYPE txtype, char **prbuf) {
+	long rsz = sizeof (test_req_t);
+	long callflags = 0L;
+	test_req_t *req;
+	test_req_t *resp;
+	int rv = 0;
+
+if (prod == BDB)	/* TODO remote */
+	return local_crud(msg, op, (char *) data, txtype);
+
+	if (start_tx(txtype) != 0)
+		return -1;
+
+	if (msg) userlogc((char *) msg);
+
+	resp = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", sizeof (test_req_t));
+	req = get_tbuf(data, dbfile, op, prod, txtype);
+
+	if (tpcall("DBS", (char *) req, sizeof (test_req_t), (char **) &resp, &rsz, callflags) == -1) {
+		userlogc((char*) "TP ERROR tperrno: %d", tperrno);
+		rv = -1;
+	}
+
+	if (end_tx(txtype) != 0)
+		rv = -1;
+
+	tpfree((char *) req);
+	tpfree((char *) resp);
+
+	return rv;
+}
+
+static int count_records(const char *msg, char *key, int in_tx)
+{
+	test_req_t req = {"db1", "8000", '1', prod, TX_TYPE_BEGIN_COMMIT, 0};
+	test_req_t resp = {"db1", "", '1', prod, TX_TYPE_BEGIN_COMMIT, 0};
+	int cnt = -1;
+
+	(void) strcpy(req.data, key);
+
+	if (in_tx || start_tx(TX_TYPE_BEGIN) == 0) {
+		if (msg) userlogc((char *) msg);
+		if (prod == ORACLE)
+			cnt = (ora_access(&req, &resp) == 0 ? atoi(resp.data) : -1);
+		else if (prod == BDB)
+			cnt = (bdb_access(&req, &resp) == 0 ? atoi(resp.data) : -1);
+		else
+			userlogc("product type not supported: %d", prod);
+
+		userlogc("Record count: %d", cnt);
+
+		if (in_tx || end_tx(TX_TYPE_COMMIT) == 0)
+			return cnt;
+	}
+
+	return -1;
+}
+
+static int check_count(const char *msg, char *key, int in_tx, int expect) {
+	int rcnt;
+
+	if ((rcnt = count_records(msg, key, 0)) != expect) {
+		userlogc("WRONG NUMBER OF RECORDS: rnt=%d", rcnt);
+		printf("WRONG NUMBER OF RECORDS: rnt=%d", rcnt);
+		return -1;
+	}
 
 	return 0;
 }
 
-static void check_update(const char *db, char *key, char *val, int exists)
+static int run_test()
 {
-	int found = -1;
-	char *rbuf = (char *) malloc(64);
-	(void) rw_record(key, db, 'r', TX_TYPE_BEGIN_COMMIT, &rbuf);
-	found = (strcmp(rbuf, val) == 0);
+	int rv;
 
-	if (found != exists)
-		userlogc((char*) "UPDATE ERROR - %s: %s %c= %s", key, rbuf, (exists == 0 ? '!' : '='), val);
-	free(rbuf);
+	/* start off with no records */
+	if (count_records("COUNT RECORDS", emps[0], 0) > 0 &&
+		(rv = send_req("DELETE AT SETUP", "", emps[0], '3', TX_TYPE_BEGIN_COMMIT, 0)) != 0)
+		return rv;
+
+	if ((rv = check_count("COUNT RECORDS", emps[0], 0, 0)))
+		return rv;
+
+	/* ask the remote service to insert a record */
+	if ((rv = send_req("REMOTE INSERT 1", "", emps[1], '0', TX_TYPE_BEGIN, 0)))
+		return rv;
+	/* ask the remote service to insert another record in the same transaction */
+	if ((rv = send_req("REMOTE INSERT 2", "", emps[2], '0', TX_TYPE_NONE, 0)))
+		return rv;
+
+	/* insert a record */
+	if ((rv = local_crud("LOCAL INSERT", '0', emps[3], TX_TYPE_COMMIT)))
+		return rv;
+
+	/* make sure the record count is 3 */
+	if ((rv = check_count("COUNT RECORDS", emps[0], 0, 3)))
+		return -1;
+
+	/* modify one of the records */
+	if ((rv = send_req("REMOTE UPDATE", "", emps[1], '2', TX_TYPE_BEGIN_COMMIT, 0)))
+		return rv;
+
+	/* delete records starting from emps[0], */
+	if ((rv = send_req("REMOTE DELETE", "", emps[0], '3', TX_TYPE_BEGIN_COMMIT, 0)))
+		return rv;
+
+	/* make sure the record count is back to zero again */
+	if ((rv = check_count("COUNT RECORDS", emps[0], 0, 0)))
+		return rv;
+
+	return 0;
 }
 
-extern int DISABLE_XA;
 int main(int argc, char **argv)
 {
+	int rv = -1;
+
 DISABLE_XA = 0;
-	if (tx_open() != TX_OK) {
-		userlogc((char*) "ERROR - Could not open transaction: ");
-		return -1;
-	}
+	if (argc <= 1 || strcmp("bdb", argv[1]) == 0)
+		prod = BDB;
+	else if (strcmp("ora", argv[1]) == 0)
+		prod = ORACLE;
+	else
+		fatal("Unsupported db - use ora or bdb\n");
 
-	if (argc <= 1) {
-#if 0
-		check_update(dbfile1, "record1", "Amos", 1);
-#else
-	char *rbuf = (char *) malloc(64);
-	(void) rw_record("insert", "ORACLE", '0', TX_TYPE_BEGIN_COMMIT, &rbuf);
-	(void) rw_record("update", "ORACLE", '2', TX_TYPE_BEGIN_COMMIT, &rbuf);
-	(void) rw_record("1", "ORACLE", '1', TX_TYPE_BEGIN_COMMIT, &rbuf);
-	(void) rw_record("delete", "ORACLE", '3', TX_TYPE_BEGIN_COMMIT, &rbuf);
-	(void) rw_record("2", "ORACLE", '1', TX_TYPE_BEGIN_COMMIT, &rbuf);
-#endif
-	} else {
-		(void) rw_record("", dbfile1, 'd', TX_TYPE_BEGIN_COMMIT, NULL);
-		(void) rw_record("", dbfile1, 'd', TX_TYPE_BEGIN_COMMIT, NULL);
+	if (tx_open() != TX_OK)
+		fatal("ERROR - Could not open transaction: ");
 
-		(void) rw_record("record1=Amos", dbfile1, 'w', TX_TYPE_BEGIN_COMMIT, NULL);
-		check_update(dbfile1, "record1", "Amos", 1);
-
-		(void) rw_record("record2=Michael", dbfile1, 'w', TX_TYPE_BEGIN_ABORT, NULL);
-		check_update(dbfile1, "record2", "Michael", 0); /* record should not be updated */
-
-		(void) rw_record("record3=Amos", dbfile1, 'w', TX_TYPE_BEGIN, NULL);
-		(void) rw_record("record4=Michael", dbfile1, 'w', TX_TYPE_COMMIT, NULL);
-
-		check_update(dbfile1, "record3", "Amos", 1);
-		check_update(dbfile1, "record4", "Michael", 1);
-	}
+	rv = run_test();
 
 	if (tx_close() != TX_OK) {
 		userlogc((char*) "ERROR - Could not close transaction: ");
+		rv = -1;
 	}
 
-	return 0;
+	fprintf(stdout, "Test %s (%d)\n", (rv ? "failed" : "passed"), rv);
+
+	return rv;
 }

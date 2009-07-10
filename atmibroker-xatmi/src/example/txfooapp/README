@@ -53,17 +53,17 @@ On Windows:
     %BLACKTIE_BIN_DIR%\setenv.bat
 Then, execute the script setenv
 
-2. CREATE THE SERVER
+2. CREATE THE CLIENT and SERVER
 On Linux:
-	$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=DBS -Dserver.includes="ora.c DbService.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public/" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh"
-On Windows:
-    %BLACKTIE_BIN_DIR%\bin\generate_server.bat -Dservice.names=DBS -Dserver.includes=DbService.c
+	 $BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="request.c bdb.c ora.c client.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh"
 
-3. CREATE THE CLIENT
-On Linux:
-    $BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes=client.c
+	$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=DBS -Dserver.includes="request.c bdb.c ora.c DbService.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh"
+
 On Windows:
-    %BLACKTIE_BIN_DIR%\bin\generate_client.bat -Dclient.includes=client.c
+	 $BLACKTIE_BIN_DIR/bin/generate_client.bat -Dclient.includes="request.c bdb.c ora.c client.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh"
+
+	$BLACKTIE_BIN_DIR/bin/generate_server.bat -Dservice.names=DBS -Dserver.includes="request.c bdb.c ora.c DbService.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh"
+
 
 4. RUN THE APPLICATIONS
 Make sure that the naming and transaction services are running, if not, run the JBoss server:
