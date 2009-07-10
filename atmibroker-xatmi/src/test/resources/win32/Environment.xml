@@ -22,31 +22,31 @@
 		<SERVER_NAMES>
 			<SERVER name="jboss">
 				<SERVICE_NAMES>
-					<SERVICE name='BTStompAdmin' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='BTStompAdmin' transportLibrary='atmibroker-hybrid.dll'/>
 				</SERVICE_NAMES>
 			</SERVER>
 			<SERVER>
 				<SERVICE_NAMES>
-					<SERVICE name='BAR' transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='TestTPFree' transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='TestTPCall' transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='TestTPAdvertise' transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='LOOPY' transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='TestTPConversat'  transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='TestTPACall'  transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='TestTPCancel'  transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='TestTPConnect'  transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='TestTPDiscon'  transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='TestTPGetrply'  transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='TestTPSend'  transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='TestTPRecv'  transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='TestTPService'  transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='TestTPReturn'  transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='123456789012345' transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='TestTPUnadverti' transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='tpcall_x_octet' transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='tpcall_x_common' transportLibrary='atmibroker-stomp.dll'/>
-					<SERVICE name='tpcall_x_c_type' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='BAR' transportLibrary='atmibroker-hybrid.dll'/>
+					<SERVICE name='TestTPFree' transportLibrary='atmibroker-hybrid.dll'/>
+					<SERVICE name='TestTPCall' transportLibrary='atmibroker-hybrid.dll'/>
+					<SERVICE name='TestTPAdvertise' transportLibrary='atmibroker-hybrid.dll'/>
+					<SERVICE name='LOOPY' transportLibrary='atmibroker-hybrid.dll'/>
+					<SERVICE name='TestTPConversat'  transportLibrary='atmibroker-hybrid.dll'/>
+					<SERVICE name='TestTPACall'  transportLibrary='atmibroker-hybrid.dll'/>
+					<SERVICE name='TestTPCancel'  transportLibrary='atmibroker-hybrid.dll'/>
+					<SERVICE name='TestTPConnect'  transportLibrary='atmibroker-hybrid.dll'/>
+					<SERVICE name='TestTPDiscon'  transportLibrary='atmibroker-hybrid.dll'/>
+					<SERVICE name='TestTPGetrply'  transportLibrary='atmibroker-hybrid.dll'/>
+					<SERVICE name='TestTPSend'  transportLibrary='atmibroker-hybrid.dll'/>
+					<SERVICE name='TestTPRecv'  transportLibrary='atmibroker-hybrid.dll'/>
+					<SERVICE name='TestTPService'  transportLibrary='atmibroker-hybrid.dll'/>
+					<SERVICE name='TestTPReturn'  transportLibrary='atmibroker-hybrid.dll'/>
+					<SERVICE name='123456789012345' transportLibrary='atmibroker-hybrid.dll'/>
+					<SERVICE name='TestTPUnadverti' transportLibrary='atmibroker-hybrid.dll'/>
+					<SERVICE name='tpcall_x_octet' transportLibrary='atmibroker-hybrid.dll'/>
+					<SERVICE name='tpcall_x_common' transportLibrary='atmibroker-hybrid.dll'/>
+					<SERVICE name='tpcall_x_c_type' transportLibrary='atmibroker-hybrid.dll'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>
