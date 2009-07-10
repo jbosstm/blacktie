@@ -40,8 +40,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;..\..\atmibroker-core\target\cxx\compile\include\expat&quot;;&quot;..\..\atmibroker-core\src\test\include&quot;;&quot;..\..\atmibroker-core\src\main\include&quot;;&quot;..\..\atmibroker-core\src\main\export&quot;;&quot;..\..\atmibroker-stomp\src\main\include&quot;;&quot;..\..\atmibroker-stomp\src\main\export&quot;;&quot;..\..\atmibroker-stomp\target\cxx\compile\include\apr-1&quot;;&quot;..\..\atmibroker-stomp\target\cxx\compile\include\stomp&quot;;&quot;..\..\atmibroker-tx\src\main\export&quot;;&quot;..\..\atmibroker-tx\src\main\include&quot;;&quot;..\..\atmibroker-xatmi\src\test\include&quot;;&quot;..\..\atmibroker-xatmi\src\main\include&quot;;&quot;..\..\atmibroker-xatmi\src\main\export&quot;;&quot;..\..\atmibroker-xatmi\target\cxx\runtime\include&quot;;&quot;..\..\atmibroker-xatmi\target\cxx\test\include&quot;"
-				PreprocessorDefinitions="WIN32;TAO_COMP;_CRT_SECURE_NO_WARNINGS;BLACKTIE_CORE_MACRO=;BLACKTIE_CORE_DLL=;BLACKTIE_XATMI_MACRO=;BLACKTIE_XATMI_DLL=;BLACKTIE_STOMP_MACRO=;BLACKTIE_STOMP_DLL=;BLACKTIE_TX_MACRO=;BLACKTIE_TX_DLL="
+				AdditionalIncludeDirectories="&quot;..\..\atmibroker-core\target\cxx\compile\include\expat&quot;;&quot;..\..\atmibroker-core\src\test\include&quot;;&quot;..\..\atmibroker-core\src\main\include&quot;;&quot;..\..\atmibroker-core\src\main\export&quot;;&quot;..\..\atmibroker-hybrid\src\main\include&quot;;&quot;..\..\atmibroker-hybrid\src\main\export&quot;;&quot;..\..\atmibroker-hybrid\target\cxx\compile\include\apr-1&quot;;&quot;..\..\atmibroker-hybrid\target\cxx\compile\include\stomp&quot;;&quot;..\..\atmibroker-tx\src\main\export&quot;;&quot;..\..\atmibroker-tx\src\main\include&quot;;&quot;..\..\atmibroker-xatmi\src\test\include&quot;;&quot;..\..\atmibroker-xatmi\src\main\include&quot;;&quot;..\..\atmibroker-xatmi\src\main\export&quot;;&quot;..\..\atmibroker-xatmi\target\cxx\runtime\include&quot;;&quot;..\..\atmibroker-xatmi\target\cxx\test\include&quot;"
+				PreprocessorDefinitions="WIN32;TAO_COMP;_CRT_SECURE_NO_WARNINGS;BLACKTIE_CORE_MACRO=;BLACKTIE_CORE_DLL=;BLACKTIE_XATMI_MACRO=;BLACKTIE_XATMI_DLL=;BLACKTIE_STOMP_MACRO=;BLACKTIE_STOMP_DLL=;BLACKTIE_TX_MACRO=;BLACKTIE_TX_DLL=;BLACKTIE_HYBRID_MACRO=;BLACKTIE_HYBRID_DLL="
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ACEd.lib TAO_AnyTypeCoded.lib TAO_CodecFactoryd.lib TAO_CosNamingd.lib TAO_IDL_BEd.lib TAO_IDL_FEd.lib TAO_IORInterceptord.lib TAO_ObjRefTemplated.lib TAO_PI_Serverd.lib TAO_PId.lib TAO_PortableServerd.lib TAO_Valuetyped.lib TAOd.lib atmibroker-corba.lib atmibroker-idl.lib atmibroker-stomp.lib libapr-1.lib libexpat.lib libstomp.lib log4cxx.lib cppunitd_dll.lib xerces-c_3D.lib"
+				AdditionalDependencies="ACEd.lib TAO_AnyTypeCoded.lib TAO_CodecFactoryd.lib TAO_CosNamingd.lib TAO_IDL_BEd.lib TAO_IDL_FEd.lib TAO_IORInterceptord.lib TAO_ObjRefTemplated.lib TAO_PI_Serverd.lib TAO_PId.lib TAO_PortableServerd.lib TAO_Valuetyped.lib TAOd.lib atmibroker-idl.lib libapr-1.lib libexpat.lib libstomp.lib log4cxx.lib cppunitd_dll.lib xerces-c_3D.lib"
 				AdditionalLibraryDirectories="C:\blacktie\util\ACE+TAO-5.6.7\ACE_wrappers\lib;..\..\atmibroker-xatmi\target\cxx\test\lib;..\..\atmibroker-xatmi\target\cxx\runtime\lib"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
@@ -171,10 +171,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\atmibroker-core\src\main\cpp\AtmiBrokerClientXml.cxx"
-				>
-			</File>
-			<File
 				RelativePath="..\..\atmibroker-core\src\main\cpp\AtmiBrokerEnv.cxx"
 				>
 			</File>
@@ -207,10 +203,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\atmibroker-core\src\main\cpp\AtmiBrokerServerXml.cxx"
-				>
-			</File>
-			<File
 				RelativePath="..\..\atmibroker-core\src\main\cpp\AtmiBrokerServiceXml.cxx"
 				>
 			</File>
@@ -231,15 +223,23 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\atmibroker-stomp\src\main\cpp\ConnectionFactoryImpl.cxx"
+				RelativePath="..\..\atmibroker-hybrid\src\main\cpp\ConnectionFactoryImpl.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\..\atmibroker-stomp\src\main\cpp\ConnectionImpl.cxx"
+				RelativePath="..\..\atmibroker-hybrid\src\main\cpp\ConnectionImpl.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\src\main\cpp\ConnectionManager.cxx"
 				>
 			</File>
 			<File
 				RelativePath="..\..\atmibroker-tx\src\main\cpp\ConnectorImpl.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-hybrid\src\main\cpp\CorbaEndpointQueue.cxx"
 				>
 			</File>
 			<File
@@ -248,10 +248,6 @@
 			</File>
 			<File
 				RelativePath="..\..\atmibroker-tx\src\main\cpp\CurrentImpl.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-stomp\src\main\cpp\EndpointQueue.cxx"
 				>
 			</File>
 			<File
@@ -299,11 +295,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\atmibroker-stomp\src\main\cpp\SessionImpl.cxx"
+				RelativePath="..\..\atmibroker-hybrid\src\main\cpp\SessionImpl.cxx"
 				>
 			</File>
 			<File
 				RelativePath="..\..\atmibroker-core\src\test\cpp\SimpleOrbTest.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-hybrid\src\main\cpp\StompEndpointQueue.cxx"
 				>
 			</File>
 			<File
@@ -513,6 +513,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\atmibroker-hybrid\src\main\export\atmiBrokerHybridMacro.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\main\include\AtmiBrokerMem.h"
 				>
 			</File>
@@ -573,7 +577,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\atmibroker-stomp\src\main\export\ConnectionImpl.h"
+				RelativePath="..\..\atmibroker-hybrid\src\main\export\ConnectionImpl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\main\include\ConnectionManager.h"
 				>
 			</File>
 			<File
@@ -582,6 +590,10 @@
 			</File>
 			<File
 				RelativePath="..\..\atmibroker-core\src\main\export\CorbaConnection.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-hybrid\src\main\export\CorbaEndpointQueue.h"
 				>
 			</File>
 			<File
@@ -594,10 +606,6 @@
 			</File>
 			<File
 				RelativePath="..\..\atmibroker-core\src\main\export\Destination.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-stomp\src\main\export\EndpointQueue.h"
 				>
 			</File>
 			<File
@@ -661,11 +669,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\atmibroker-stomp\src\main\export\SessionImpl.h"
+				RelativePath="..\..\atmibroker-hybrid\src\main\export\SessionImpl.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\atmibroker-core\src\test\include\SimpleOrbTest.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-hybrid\src\main\export\StompEndpointQueue.h"
 				>
 			</File>
 			<File
