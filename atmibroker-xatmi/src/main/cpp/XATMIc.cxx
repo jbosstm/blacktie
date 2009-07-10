@@ -166,7 +166,7 @@ int receive(Session* session, char ** odata, long *olen, long flags,
 							(char*) "Could not set the send to destination to: "
 									<< message.replyto);
 				}
-				LOG4CXX_DEBUG(loggerXATMI, (char*) "returning: " << *odata);
+				LOG4CXX_DEBUG(loggerXATMI, (char*) "returning odata");
 				toReturn = 0;
 			} else {
 				setSpecific(TPE_KEY, TSS_TPETIME);
@@ -469,7 +469,7 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 		if (len != -1) {
 			toReturn = ::send(session, session->getReplyTo(), idata, len, id,
 					flags && TPCONV, 0, 0);
-			if (flags & TPRECVONLY) {	
+			if (flags & TPRECVONLY) {
 				session->setCanSend(false);
 				session->setCanRecv(true);
 				LOG4CXX_DEBUG(loggerXATMI, (char*) "tpsend set constraints session: " << session->getId() << " send: " << session->getCanSend() << " recv: " << session->getCanRecv());
