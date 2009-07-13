@@ -25,10 +25,11 @@
 #include <ace/Task.h>
 class BLACKTIE_CORE_DLL Worker: public ACE_Task_Base {
 public:
-	Worker(CORBA::ORB_var orb);
+	Worker(CORBA::ORB_ptr orb, char* orbName);
 	int svc();
 private:
 	static log4cxx::LoggerPtr logger;
-	CORBA::ORB_var m_orb;
+	CORBA::ORB_ptr orb;
+	char* orbName;
 };
 #endif

@@ -59,8 +59,6 @@ public:
 	int  block();
 
 private:
-	Connection* serverConnection;
-	CORBA_CONNECTION* realConnection;
 	void (*getServiceMethod(const char * aServiceName))(TPSVCINFO *);
 	void addDestination(Destination* destination, void(*func)(TPSVCINFO *), ServiceInfo* service);
 	Destination* removeDestination(const char * aServiceName);

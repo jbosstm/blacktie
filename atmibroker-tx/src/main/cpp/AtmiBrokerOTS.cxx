@@ -237,23 +237,34 @@ int AtmiBrokerOTS::tx_complete(bool commit) {
 			LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_complete: terminated ok");
 			outcome = TX_OK;
 		} catch (CORBA::TRANSACTION_ROLLEDBACK &e) {
+			LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(),
+				(char*) "Transaction rolled back" << e._name());
 			outcome = TX_ROLLBACK;
 		} catch (CosTransactions::Unavailable & e) {
+			LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(),
+				(char*) "Unavailable" << e._name());
 			outcome = TX_FAIL; // TM failed temporarily
 		} catch (CosTransactions::HeuristicMixed &e) {
+			LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(),
+				(char*) "HeuristicMixed" << e._name());
 			// can be thrown if commit_return characteristic is TX_COMMIT_COMPLETED
 			outcome = TX_MIXED;
 		} catch (CosTransactions::HeuristicHazard &e) {
+			LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(),
+				(char*) "HeuristicHazard" << e._name());
 			// can be thrown if commit_return characteristic is TX_COMMIT_COMPLETED
 			outcome = TX_HAZARD;
 		} catch (CORBA::SystemException & e) {
-			e._tao_print_exception("tx_complete: unknown error: ");
+			LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(),
+				(char*) "SystemException" << e._name());
 			outcome = TX_FAIL;
 		} catch (...) {
 			outcome = TX_FAIL; // TM failed temporarily
 			LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(), (char*) "tx_complete: unknown error");
 		}
 	} catch (CORBA::OBJECT_NOT_EXIST & e) {
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(),
+			(char*) "OBJECT_NOT_EXIST" << e._name());
 		// transaction no longer exists (presumed abort)
 		ControlThreadStruct* ts = currentImpl->get_control_thread_struct();
 		if (!ts || ts->timeout == 0L) {
@@ -263,9 +274,12 @@ int AtmiBrokerOTS::tx_complete(bool commit) {
 
 		outcome = TX_ROLLBACK;
 	} catch (CosTransactions::Unavailable & e) {
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(),
+			(char*) "Unavailable2" << e._name());
 		outcome = TX_FAIL;
 	} catch (CORBA::SystemException & e) {
-		e._tao_print_exception("tx_complete: unknown error: ");
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(),
+			(char*) "SystemException2" << e._name());
 		outcome = TX_FAIL;
 	} 
 

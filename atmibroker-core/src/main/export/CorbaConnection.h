@@ -37,6 +37,7 @@ struct BLACKTIE_CORE_DLL corba_connection_t {
 	PortableServer::POA_ptr callback_poa;
 	Worker* worker;
 	AtmiBrokerPoaFac* poaFactory;
+	char * connectionName;
 };
 typedef struct BLACKTIE_CORE_DLL corba_connection_t CORBA_CONNECTION;
 

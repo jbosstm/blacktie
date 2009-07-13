@@ -30,7 +30,6 @@ class AtmiBrokerClient {
 public:
 	AtmiBrokerClient();
 	virtual ~AtmiBrokerClient();
-	Connection* getConnection(char* serviceName);
 	Session* createSession(int& id, char* serviceName);
 	Session* getSession(int id);
 	void closeSession(int id);

@@ -176,8 +176,6 @@ int serverdone() {
 //
 AtmiBrokerServer::AtmiBrokerServer() {
 	try {
-		serverConnection = NULL;
-		realConnection = NULL;
 		finish = new SynchronizableObject();
 		const char* ptrDir;
 
@@ -226,8 +224,6 @@ AtmiBrokerServer::AtmiBrokerServer() {
 			return;
 		}
 
-		//realConnection = ::initOrb((char*) "serverAdministration");
-
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 				(char*) "server_init(): finished.");
 
@@ -244,17 +240,12 @@ AtmiBrokerServer::AtmiBrokerServer() {
 //
 AtmiBrokerServer::~AtmiBrokerServer() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "destructor");
-	//if (realConnection) {
+	if (serverInitialized) {
 		server_done();
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "shutdownBindings realConnection");
-		//shutdownBindings(realConnection);
-		//delete realConnection;
-		//realConnection = NULL;
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "Closed real connection");
-
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "Server done");
 		delete finish;
 		finish = NULL;
-	//}
+	}
 	serviceData.clear();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted service array");
 
@@ -277,6 +268,7 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	AtmiBrokerEnv::discard_instance();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted services");
 
+	
 	serverInitialized = false;
 }
 
@@ -311,7 +303,6 @@ int AtmiBrokerServer::block() {
 	int toReturn = 0;
 	LOG4CXX_INFO(loggerAtmiBrokerServer, "Server waiting for requests...");
 	try {
-		//this->realConnection->orbRef->run();
 		this->finish->wait(0);
 	} catch (...) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer, "Unexpected exception");
@@ -372,8 +363,8 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 		}
 	}
 
-	serverConnection = connections.getServerConnection(serviceName);
-	if (serverConnection == NULL) {
+	Connection* connection = connections.getServerConnection(serviceName);
+	if (connection == NULL) {
 		setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		return false;
 	}
@@ -388,7 +379,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "create_service_queue: "
 				<< serviceName);
 
-		if (serverConnection->requiresAdminCall()) {
+		if (connection->requiresAdminCall()) {
 			long commandLength = strlen(serviceName) + 14;
 			long responseLength = 0;
 			char* command = (char*) ::tpalloc((char*) "X_OCTET", NULL,
@@ -426,9 +417,9 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 
 		Destination* destination;
 		if(isadm) {
-			destination = serverConnection->createDestination(adm);
+			destination = connection->createDestination(adm);
 		} else {
-			destination = serverConnection->createDestination(serviceName);
+			destination = connection->createDestination(serviceName);
 		}
 
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "created destination: "
@@ -482,10 +473,13 @@ void AtmiBrokerServer::unadvertiseService(char * svcname) {
 	memset(serviceName, '\0', XATMI_SERVICE_NAME_LENGTH + 1);
 	strncat(serviceName, svcname, XATMI_SERVICE_NAME_LENGTH);
 
-	serverConnection = connections.getServerConnection(serviceName);
-	if (serverConnection == NULL) {
+	Connection* connection = connections.getServerConnection(serviceName);
+	if (connection == NULL) {
 		return;
 	}
+
+//	Connection* connz = connections.getServerConnection("BAR");
+//	delete connz;
 
 	for (std::vector<char*>::iterator i = advertisedServices.begin(); i
 			!= advertisedServices.end(); i++) {
@@ -502,7 +496,7 @@ void AtmiBrokerServer::unadvertiseService(char * svcname) {
 				removeAdminDestination(serviceName);
 			}
 
-			serverConnection->destroyDestination(destination);
+			connection->destroyDestination(destination);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "destroyed"
 					<< serviceName);
 			advertisedServices.erase(i);
@@ -515,7 +509,8 @@ void AtmiBrokerServer::unadvertiseService(char * svcname) {
 }
 
 void AtmiBrokerServer::removeAdminDestination(char* serviceName) {
-	if (serverConnection->requiresAdminCall()) {
+	Connection* connection = connections.getServerConnection(serviceName);
+	if (connection->requiresAdminCall()) {
 		long commandLength = strlen(serviceName) + 16;
 		long responseLength = 1;
 		char* command = (char*) ::tpalloc((char*) "X_OCTET", NULL,
@@ -568,16 +563,16 @@ void AtmiBrokerServer::addDestination(Destination* destination, void(*func)(
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "constructor: "
 			<< destination->getName());
 
-	serverConnection = connections.getServerConnection(
+	Connection* connection = connections.getServerConnection(
 			(char*) service->serviceName);
-	if (serverConnection == NULL) {
+	if (connection == NULL) {
 		return;
 	}
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "createPool");
 	for (int i = 0; i < entry.serviceInfo->poolSize; i++) {
 		ServiceDispatcher* dispatcher = new ServiceDispatcher(destination,
-				serverConnection, destination->getName(), func);
+				connection, destination->getName(), func);
 		if (dispatcher->activate(THR_NEW_LWP | THR_JOINABLE, 1, 0,
 				ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
 			delete dispatcher;

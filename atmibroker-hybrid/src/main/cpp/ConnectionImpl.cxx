@@ -105,8 +105,13 @@ stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 	}
 
 	LOG4CXX_DEBUG(logger, "Reading Response.");
-	stomp_frame * frameRead;
-	rc = stomp_read(connection, &frameRead, pool);
+	stomp_frame * frameRead = NULL;
+	try {
+		rc = stomp_read(connection, &frameRead, pool);
+	} catch (...) {
+		LOG4CXX_ERROR(logger, (char*) "Could not read from socket");
+		throw new std::exception();
+	}
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, (char*) "Could not read frame: " << rc
 				<< " from connection");
@@ -161,7 +166,8 @@ Session* HybridConnectionImpl::createSession(int id,
 
 Destination* HybridConnectionImpl::createDestination(char* serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "createDestination" << serviceName);
-	stomp_connection* connection = HybridConnectionImpl::connect(pool, 5); // TODO allow the timeout to be specified in configuration
+	std::string timeout = AtmiBrokerEnv::get_instance()->getenv((char*) "DestinationTimeout");
+	stomp_connection* connection = HybridConnectionImpl::connect(pool, atoi(timeout.c_str())); // TODO allow the timeout to be specified in configuration
 	return new StompEndpointQueue(connection, this->pool, serviceName);
 }
 
@@ -182,7 +188,8 @@ Session* HybridConnectionImpl::getSession(int id) {
 
 void HybridConnectionImpl::closeSession(int id) {
 	if (sessionMap[id]) {
-		delete sessionMap[id];
+		HybridSessionImpl* session = sessionMap[id];
+		delete session;
 		sessionMap[id] = NULL;
 	}
 }

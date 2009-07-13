@@ -58,6 +58,8 @@ private:
 	bool shutdown;
 	const char* name;
 	PortableServer::POA_ptr thePoa;
+	CORBA_CONNECTION* connection;
+	PortableServer::ObjectId_var oid;
 
 	// The following are not implemented
 	CorbaEndpointQueue(const CorbaEndpointQueue &);

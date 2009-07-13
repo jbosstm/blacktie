@@ -41,16 +41,16 @@ CorbaEndpointQueue::CorbaEndpointQueue(CORBA_CONNECTION* connection) {
 	thePoa = NULL;
 	lock = new SynchronizableObject();
 
-	PortableServer::POA_ptr poa =
-			(PortableServer::POA_ptr) connection->callback_poa;
+	PortableServer::POA_ptr poa = connection->callback_poa;
 	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection->orbRef;
 	LOG4CXX_DEBUG(logger, (char*) "tmp_servant " << this);
-	poa->activate_object(this);
+	oid = poa->activate_object(this);
 	LOG4CXX_DEBUG(logger, (char*) "activated tmp_servant " << this);
 	CORBA::Object_ptr tmp_ref = poa->servant_to_reference(this);
 	AtmiBroker::EndpointQueue_var queue = AtmiBroker::EndpointQueue::_narrow(
 			tmp_ref);
 	this->name = orb->object_to_string(queue);
+	this->connection = connection;
 }
 
 CorbaEndpointQueue::CorbaEndpointQueue(CORBA_CONNECTION* connection,
@@ -72,7 +72,7 @@ CorbaEndpointQueue::CorbaEndpointQueue(CORBA_CONNECTION* connection,
 // ~EndpointQueue destructor.
 //
 CorbaEndpointQueue::~CorbaEndpointQueue() {
-	LOG4CXX_DEBUG(logger, (char*) "destroy called");
+	LOG4CXX_DEBUG(logger, (char*) "destroy called: " << this);
 
 	lock->lock();
 	if (!shutdown) {
@@ -88,15 +88,18 @@ CorbaEndpointQueue::~CorbaEndpointQueue() {
 		thePoa->destroy(true, true);
 		thePoa = NULL;
 		LOG4CXX_DEBUG(logger, (char*) "destroyed thePoa: " << thePoa);
+	} else {
+		//connection->callback_poa->deactivate_object(oid);
 	}
 
-	LOG4CXX_DEBUG(logger, (char*) "destroyed");
+	LOG4CXX_DEBUG(logger, (char*) "destroyed: " << this);
 }
 
 void CorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 		CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen,
 		CORBA::Long correlationId, CORBA::Long flags)
 		throw (CORBA::SystemException ) {
+	LOG4CXX_DEBUG(logger, (char*) "send called:" << this);
 	lock->lock();
 	if (!shutdown) {
 		LOG4CXX_DEBUG(logger, (char*) "send called.");

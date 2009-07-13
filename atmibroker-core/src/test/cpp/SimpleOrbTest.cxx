@@ -46,13 +46,13 @@ void SimpleOrbTest::test() {
 	argv[0] = (char*) "-ORBInitRef";
 	argv[1] = (char*) "NameService=corbaloc::localhost:3528/NameService";
 	//CORBA::ORB_ptr orbRef = CORBA::ORB_init(argc, argv, "server");
-	CORBA::ORB_var orbRef = CORBA::ORB_init(argc, argv, "server");
+	CORBA::ORB_ptr orbRef = CORBA::ORB_init(argc, argv, "server");
 	CORBA::Object_var tmp_ref = orbRef->resolve_initial_references("RootPOA");
 	PortableServer::POA_var poa = PortableServer::POA::_narrow(tmp_ref);
 	PortableServer::POAManager_var poa_manager = poa->the_POAManager();
 	//assert(!CORBA::is_nil(poa_manager));
 	tmp_ref = orbRef->resolve_initial_references("NameService");
-	Worker *worker = new Worker(orbRef);
+	Worker *worker = new Worker(orbRef, "server");
 	if (worker->activate(THR_NEW_LWP| THR_JOINABLE, 1, 0, ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
 		delete (worker);
 		worker = NULL;

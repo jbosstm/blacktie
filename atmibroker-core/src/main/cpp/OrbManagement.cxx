@@ -41,6 +41,7 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "initOrb" << connectionName);
 
 	CORBA_CONNECTION* connection = new CORBA_CONNECTION;
+	connection->connectionName = connectionName;
 	connection->orbRef = NULL;
 	connection->root_poa = NULL;
 	connection->root_poa_manager = NULL;
@@ -113,7 +114,7 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 	LOG4CXX_DEBUG(loggerOrbManagement,
 			(char*) "getNamingServiceAndContext got Naming Service Instance ");
 
-	connection->worker = new Worker(connection->orbRef);
+	connection->worker = new Worker(connection->orbRef, connectionName);
 	if (((Worker*) connection->worker)->activate(THR_NEW_LWP | THR_JOINABLE, 1,
 			0, ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
 		delete ((Worker*) connection->worker);
@@ -155,6 +156,7 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 	//                         << e._name() << (char *)" minor code: " << e.minor());
 	//	e._tao_print_exception("initOrb error:");
 	//}
+
 
 	return connection;
 }

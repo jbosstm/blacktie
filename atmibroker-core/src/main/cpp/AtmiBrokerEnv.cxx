@@ -175,7 +175,8 @@ AtmiBrokerEnv::getenv(char* anEnvName) {
 			return (*i).value;
 		}
 	}
-	return NULL;
+	LOG4CXX_ERROR(loggerAtmiBrokerEnv, (char*) "Could not locate: " << anEnvName);
+	throw new std::exception();
 }
 
 int AtmiBrokerEnv::putenv(char* anEnvNameValue) {

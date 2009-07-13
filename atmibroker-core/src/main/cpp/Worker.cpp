@@ -19,18 +19,22 @@
 
 log4cxx::LoggerPtr Worker::logger(log4cxx::Logger::getLogger("Worker"));
 
-Worker::Worker(CORBA::ORB_var orb) {
-	m_orb = CORBA::ORB::_duplicate(orb);
+Worker::Worker(CORBA::ORB_ptr orb, char* orbName) {
+	//m_orb = CORBA::ORB::_duplicate(orb);
+	this->orb = orb;
+	this->orbName = orbName;
+	LOG4CXX_TRACE(logger, "created" << orbName);
 }
 
 int Worker::svc(void) {
 	try {
-		m_orb->run();
+		this->orb->run();
+		LOG4CXX_TRACE(logger, "terminating" << orbName);
 	} catch (CORBA::Exception& e) {
-		LOG4CXX_ERROR(logger, (char*) "Unexpected CORBA exception: %s"
-				<< e._name());
+		LOG4CXX_ERROR(logger, (char*) "Unexpected CORBA exception: "
+			<< e._name() << " orb: " << orbName);
 	} catch (...) {
-		LOG4CXX_ERROR(logger, (char*) "Worker caught unknown error running orb");
+		LOG4CXX_ERROR(logger, (char*) "Worker caught unknown error running orborb: " << orbName);
 	}
 	return 0;
 }

@@ -40,7 +40,7 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
 	serviceInvokation = true;
 
 	stompConnection = NULL;
-	stompConnection = HybridConnectionImpl::connect(pool, 0); // TODO allow the timeout to be specified in configuration
+	stompConnection = HybridConnectionImpl::connect(pool, 10); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
 	int XATMI_SERVICE_NAME_LENGTH = 15;
@@ -67,6 +67,7 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection, int id,
 	stompConnection = NULL;
 	this->sendTo = NULL;
 
+	
 	LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << temporaryQueueName);
 	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) corbaConnection->orbRef;
 	CORBA::Object_var tmp_ref = orb->string_to_object(temporaryQueueName);
@@ -86,7 +87,7 @@ HybridSessionImpl::~HybridSessionImpl() {
 		::free(this->sendTo);
 		this->sendTo = NULL;
 	}
-	delete temporaryQueue;
+	//delete temporaryQueue;
 
 	if (stompConnection) {
 		LOG4CXX_TRACE(logger, (char*) "destroying");
@@ -190,6 +191,7 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		LOG4CXX_TRACE(logger, (char*) "freed");
 		serviceInvokation = false;
 	} else {
+		LOG4CXX_DEBUG(logger, (char*) "Sending to remote queue: " << remoteEndpoint);
 		AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(
 				message.len, message.len, (unsigned char*) message.data, true);
 		remoteEndpoint->send(message.replyto, message.rval, message.rcode,
