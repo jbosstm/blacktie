@@ -22,12 +22,12 @@ Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 		<SERVER_NAMES>
 			<SERVER name="jboss">
 				<SERVICE_NAMES>
-					<SERVICE name='BTStompAdmin' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='BTStompAdmin' transportLibrary='libatmibroker-hybrid.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 			<SERVER name='foo'>
 				<SERVICE_NAMES>
-					<SERVICE name='BAR' transportLibrary='libatmibroker-corba.so' />
+					<SERVICE name='BAR' transportLibrary='libatmibroker-hybrid.so' />
 				</SERVICE_NAMES>
 				<ADMIN_SERVICE transportLibrary='libatmibroker-stomp.so' />
 			</SERVER>

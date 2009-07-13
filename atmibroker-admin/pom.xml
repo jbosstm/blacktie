@@ -53,6 +53,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
+			<artifactId>atmibroker-hybrid</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>atmibroker-xatmi</artifactId>
 		</dependency>
 	</dependencies>
