@@ -28,6 +28,7 @@
 #include "txClient.h"
 
 #include "ThreadLocalStorage.h"
+#include "AtmiBrokerEnv.h"
 
 log4cxx::LoggerPtr HybridSessionImpl::logger(log4cxx::Logger::getLogger(
 		"HybridSessionImpl"));
@@ -40,7 +41,8 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
 	serviceInvokation = true;
 
 	stompConnection = NULL;
-	stompConnection = HybridConnectionImpl::connect(pool, 10); // TODO allow the timeout to be specified in configuration
+	std::string timeout = AtmiBrokerEnv::get_instance()->getenv((char*) "RequestTimeout");
+	stompConnection = HybridConnectionImpl::connect(pool, atoi(timeout.c_str())); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
 	int XATMI_SERVICE_NAME_LENGTH = 15;

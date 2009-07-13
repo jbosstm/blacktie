@@ -37,7 +37,7 @@ extern "C" {
 
 class BLACKTIE_HYBRID_DLL StompEndpointQueue: public virtual Destination {
 public:
-	StompEndpointQueue(stomp_connection* connection, apr_pool_t* pool, char* serviceName);
+	StompEndpointQueue(apr_pool_t* pool, char* serviceName);
 	virtual ~StompEndpointQueue();
 
 	virtual void disconnect();
@@ -46,8 +46,6 @@ public:
 
 	virtual const char* getName();
 	const char* getFullName();
-
-	stomp_connection* getConnection();
 private:
 	static log4cxx::LoggerPtr logger;
 	stomp_connection* connection;

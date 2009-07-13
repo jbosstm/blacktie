@@ -22,11 +22,13 @@
 #include "StompEndpointQueue.h"
 #include "ThreadLocalStorage.h"
 #include "txClient.h"
+#include "ConnectionImpl.h"
+#include "AtmiBrokerEnv.h"
 
 log4cxx::LoggerPtr StompEndpointQueue::logger(log4cxx::Logger::getLogger(
 		"StompEndpointQueue"));
 
-StompEndpointQueue::StompEndpointQueue(stomp_connection* connection,
+StompEndpointQueue::StompEndpointQueue(
 		apr_pool_t* pool, char* serviceName) {
 	LOG4CXX_DEBUG(logger, "Creating endpoint queue: " << serviceName);
 	this->message = NULL;
@@ -34,7 +36,9 @@ StompEndpointQueue::StompEndpointQueue(stomp_connection* connection,
 	lock = new SynchronizableObject();
 	LOG4CXX_DEBUG(logger, "Created lock: " << lock);
 
-	this->connection = connection;
+	
+	std::string timeout = AtmiBrokerEnv::get_instance()->getenv((char*) "DestinationTimeout");
+	this->connection =  HybridConnectionImpl::connect(pool, atoi(timeout.c_str())); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
 
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
@@ -107,6 +111,10 @@ StompEndpointQueue::~StompEndpointQueue() {
 	LOG4CXX_TRACE(logger, (char*) "freeing name" << name);
 	free(fullName);
 	LOG4CXX_TRACE(logger, (char*) "freed name");
+		
+	LOG4CXX_TRACE(logger, (char*) "destroying");
+	HybridConnectionImpl::disconnect(connection, pool);
+	LOG4CXX_TRACE(logger, (char*) "destroyed");
 	connection = NULL;
 }
 
@@ -252,12 +260,8 @@ void StompEndpointQueue::disconnect() {
 	}
 	lock->unlock();
 	LOG4CXX_DEBUG(logger, (char*) "disconnected: " << name);
-	connection = NULL;
 }
 
-stomp_connection* StompEndpointQueue::getConnection() {
-	return connection;
-}
 const char * StompEndpointQueue::getName() {
 	return (const char *) name;
 }
