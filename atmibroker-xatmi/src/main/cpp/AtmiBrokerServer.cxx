@@ -80,6 +80,7 @@ int parsecmdline(int argc, char** argv) {
 			break;
 		case 'i':
 			cid = atoi(getopt.opt_arg());
+			if(cid <= 0) r = -1;
 			break;
 		default:
 			r = -1;
@@ -126,21 +127,28 @@ int serverinit(int argc, char** argv) {
 		if (ptrDir != NULL)
 			AtmiBrokerEnv::set_environment_dir(ptrDir);
 
-		initializeLogger();
-		AtmiBrokerEnv::get_instance();
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "set AtmiBrokerEnv dir "
-				<< ptrDir);
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverinit called");
-		//signal(SIGINT, server_sigint_handler_callback);
-		ptrServer = new AtmiBrokerServer();
-		if (!serverInitialized) {
-			::serverdone();
+		try{
+			initializeLogger();
+			AtmiBrokerEnv::get_instance();
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "set AtmiBrokerEnv dir "
+					<< ptrDir);
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverinit called");
+			//signal(SIGINT, server_sigint_handler_callback);
+			ptrServer = new AtmiBrokerServer();
+
+			if (!serverInitialized) {
+				::serverdone();
+				toReturn = -1;
+				setSpecific(TPE_KEY, TSS_TPESYSTEM);
+			} else {
+				ptrServer->advertiseAtBootime();
+				userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
+						(char*) "Server Running");
+			}
+
+		} catch (...) {
 			toReturn = -1;
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
-		} else {
-			ptrServer->advertiseAtBootime();
-			userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
-					(char*) "Server Running");
 		}
 	}
 	return toReturn;
@@ -218,7 +226,7 @@ AtmiBrokerServer::AtmiBrokerServer() {
 			return;
 		}
 
-		realConnection = ::initOrb((char*) "serverAdministration");
+		//realConnection = ::initOrb((char*) "serverAdministration");
 
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 				(char*) "server_init(): finished.");
@@ -236,17 +244,17 @@ AtmiBrokerServer::AtmiBrokerServer() {
 //
 AtmiBrokerServer::~AtmiBrokerServer() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "destructor");
-	if (realConnection) {
+	//if (realConnection) {
 		server_done();
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "shutdownBindings realConnection");
-		shutdownBindings(realConnection);
-		delete realConnection;
-		realConnection = NULL;
+		//shutdownBindings(realConnection);
+		//delete realConnection;
+		//realConnection = NULL;
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "Closed real connection");
 
 		delete finish;
 		finish = NULL;
-	}
+	//}
 	serviceData.clear();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted service array");
 

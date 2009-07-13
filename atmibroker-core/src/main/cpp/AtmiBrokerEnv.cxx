@@ -236,7 +236,8 @@ int AtmiBrokerEnv::readenv(char* aEnvFileName, char* label) {
 			readEnvironment = true;
 		} else {
 			LOG4CXX_ERROR(loggerAtmiBrokerEnv, (char*) "can not read " << descPath);
-			abort();
+			throw std::exception();
+			//abort();
 			//return -1;
 		}
 	}
