@@ -194,7 +194,7 @@ MESSAGE StompEndpointQueue::receive(long time) {
 					(const char*) "null") != 0) {
 				LOG4CXX_TRACE(logger, "Read a non-null control: " << control
 						<< "/");
-				if (associate_serialized_tx((char*) "serverAdministration",
+				if (associate_serialized_tx((char*) "ots",
 						(char*) control) != XA_OK) {
 					LOG4CXX_ERROR(logger, "Unable to handle control");
 					setSpecific(TPE_KEY, TSS_TPESYSTEM);
