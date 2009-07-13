@@ -147,7 +147,7 @@ void XAResourceAdaptorImpl::commit()
 void XAResourceAdaptorImpl::rollback()
 	throw(CosTransactions::HeuristicCommit,CosTransactions::HeuristicMixed,CosTransactions::HeuristicHazard)
 {
-	int rv = xa_end (&xid_, rmid_, TMFAIL);
+	int rv = xa_end (&xid_, rmid_, TMSUCCESS);
 	if (rv != XA_OK) {
 		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getWarn(), (char *) xa_switch_->name <<
 			(char*) ": rollback OTS resource end failed: error=" << rv << " rid=" << rmid_);

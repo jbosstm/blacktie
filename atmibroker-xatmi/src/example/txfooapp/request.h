@@ -2,8 +2,8 @@
 #define __REQUEST_H
 
 enum DB_TYPE {
-    ORACLE,
-    BDB,
+    ORACLE = 1,
+    BDB = 2,
 };
 
 enum TX_TYPE {
@@ -29,5 +29,6 @@ int fail(const char *reason, int ret);
 void logit(int debug, const char * format, ...);
 char * get_buf(const char *data, const char *dbfile, enum TX_TYPE txtype);
 test_req_t * get_tbuf(const char *data, const char *dbfile, char op, enum DB_TYPE prod, enum TX_TYPE txtype);
+void init_req(test_req_t *req, int prodid, const char *dbfile, const char *data, char op, enum TX_TYPE txtype);
 
 #endif /* __REQUEST_H */

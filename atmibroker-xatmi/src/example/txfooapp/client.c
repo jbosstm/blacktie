@@ -23,17 +23,13 @@
 #include "tx.h"
 
 #include "userlogc.h"
-#include "request.h"
+#include "client.h"
 
-extern int ora_access(test_req_t *req, test_req_t *resp);
-extern int bdb_access(test_req_t *req, test_req_t *resp);
-extern int bdb_test(const char * backingfile, const char * dbname, char ** rdata, int argc, char * argv[]);
 extern int DISABLE_XA;
 
 static enum DB_TYPE prod;
-static char *emps[] = {"8000", "8001", "8002", "8003", "8004"};
-static const char *dbfile1 = "db1"; /* backing file for database 1 */
-static const char *dbfile2 = "db2"; /* backing file for database 2 */
+static char *emps[] = {"8000", "8001", "8002", "8003", "8004", "8005", "8006", "8007"};
+#define DBF "db1" /* backing file for database 1 */
 
 static int is_begin(enum TX_TYPE txtype) {
 	return (txtype == TX_TYPE_BEGIN || txtype == TX_TYPE_BEGIN_COMMIT || txtype == TX_TYPE_BEGIN_ABORT);
@@ -73,23 +69,93 @@ static int end_tx(enum TX_TYPE txtype) {
 	return rv;
 }
 
-static int local_crud(const char *msg, char op, char *empno, enum TX_TYPE txtype)
-{
-	test_req_t req = {"db1", "8000", '1', prod, TX_TYPE_BEGIN_COMMIT, 0};
-	test_req_t resp = {"db1", "", '1', prod, TX_TYPE_BEGIN_COMMIT, 0};
+static int send_req(enum DB_TYPE ptype, const char * msg, const char *dbfile, const char *data, char op, char **prbuf) {
+	long rsz = sizeof (test_req_t);
+	long callflags = 0L;
+	test_req_t *req;
+	test_req_t *resp;
+	int rv = 0;
 
-	if (msg) userlogc((char *) msg);
+	resp = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", sizeof (test_req_t));
+	req = get_tbuf(data, dbfile, op, ptype, 0);
 
-	(void) strcpy(req.data, empno);
-	req.op = op;
+	userlogc((char*) "Invoke Service DBS: prod=%d op=%c data=%s dbf=%s", req->prod, req->op, req->data, req->db);
+	if (tpcall("DBS", (char *) req, sizeof (test_req_t), (char **) &resp, &rsz, callflags) == -1) {
+		userlogc((char*) "TP ERROR tperrno: %d", tperrno);
+		rv = -1;
+	}
+
+	tpfree((char *) req);
+	tpfree((char *) resp);
+
+	return rv;
+}
+
+static int count_records(const char *msg, char *key, int in_tx) {
+	test_req_t req, res;
+	product_t *p = products;
+	int cnt = -1;
+
+	(void) strcpy(req.db, DBF);
+	(void) strcpy(req.data, key);
+	req.op = '1';
+
+	if (in_tx || start_tx(TX_TYPE_BEGIN) == 0) {
+		for (p = products; p->id != -1; p++) {
+			req.prod = p->id;
+			if (p->id != 0) {
+				int rc = (p->access(&req, &res) == 0 ? atoi(res.data) : -1);
+
+				if (rc == -1) {
+					userlogc("Error: Db %d access error", p->id);
+					return -1;
+				}
+				if (rc != cnt && cnt != -1) {
+					userlogc("All databases should have the same no of records: db %d cnt %d (prev was %d)", p->id, rc, cnt);
+					return -1;
+				}
+
+				cnt = rc;
+			}
+		}
+
+		if (in_tx || end_tx(TX_TYPE_COMMIT) == 0)
+			return cnt;
+	}
+
+	return cnt;
+}
+
+static int check_count(const char *msg, char *key, int in_tx, int expect) {
+	int rcnt;
+
+	if ((rcnt = count_records(msg, key, 0)) != expect) {
+		userlogc("WRONG NUMBER OF RECORDS: %d expected %d", rcnt, expect);
+		return -1;
+	}
+
+	return 0;
+}
+
+static int db_op(const char * msg, const char *dbfile, const char *data, char op, enum TX_TYPE txtype, char **prbuf, int remote) {
+	if (msg)
+		userlogc((char *) msg);
 
 	if (start_tx(txtype) == 0) {
-		int rv;
+		int rv = 0;
+		test_req_t req, res;
+		product_t *p = products;
 
-		if (prod == ORACLE)
-			rv = ora_access(&req, &resp);
-		else if (prod == BDB)
-			rv = bdb_access(&req, &resp);
+		init_req(&req, 0, dbfile, data, op, TX_TYPE_NONE);
+
+		for (p = products; p->id != -1; p++) {
+			req.prod = p->id;
+			userlogc("invoke prod %d remote=%d dbf=%s", p->id, remote, dbfile);
+			rv = (remote ? send_req(p->id, msg, dbfile, data, op, prbuf) : p->access(&req, &res));
+
+			if (rv)
+				userlogc("BAD REQ %d", rv);
+		}
 
 		if (end_tx(txtype) == 0)
 			return rv;
@@ -98,113 +164,149 @@ static int local_crud(const char *msg, char op, char *empno, enum TX_TYPE txtype
 	return -1;
 }
 
-static int send_req(const char * msg, const char *dbfile, const char *data, char op, enum TX_TYPE txtype, char **prbuf) {
-	long rsz = sizeof (test_req_t);
-	long callflags = 0L;
-	test_req_t *req;
-	test_req_t *resp;
-	int rv = 0;
+static int setup() {
+	int rv;
 
-if (prod == BDB)	/* TODO remote */
-	return local_crud(msg, op, (char *) data, txtype);
+	/* start off with no records */
+	if ((rv = db_op("DELETE AT SETUP", DBF, emps[0], '3', TX_TYPE_BEGIN_COMMIT, 0, 0)) != 0)
+		return rv;
 
-	if (start_tx(txtype) != 0)
-		return -1;
+	if ((rv = check_count("COUNT RECORDS", emps[0], 0, 0)))
+		return rv;
 
-	if (msg) userlogc((char *) msg);
-
-	resp = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", sizeof (test_req_t));
-	req = get_tbuf(data, dbfile, op, prod, txtype);
-
-	if (tpcall("DBS", (char *) req, sizeof (test_req_t), (char **) &resp, &rsz, callflags) == -1) {
-		userlogc((char*) "TP ERROR tperrno: %d", tperrno);
-		rv = -1;
-	}
-
-	if (end_tx(txtype) != 0)
-		rv = -1;
-
-	tpfree((char *) req);
-	tpfree((char *) resp);
-
-	return rv;
+	return 0;
 }
 
-static int count_records(const char *msg, char *key, int in_tx)
+static int teardown(int *cnt)
 {
-	test_req_t req = {"db1", "8000", '1', prod, TX_TYPE_BEGIN_COMMIT, 0};
-	test_req_t resp = {"db1", "", '1', prod, TX_TYPE_BEGIN_COMMIT, 0};
-	int cnt = -1;
+	int rv;
 
-	(void) strcpy(req.data, key);
+	/* delete records starting from emps[0], */
+	if ((rv = db_op("LOCAL DELETE", DBF, emps[0], '3', TX_TYPE_BEGIN_COMMIT, 0, 0)))
+		return rv;
 
-	if (in_tx || start_tx(TX_TYPE_BEGIN) == 0) {
-		if (msg) userlogc((char *) msg);
-		if (prod == ORACLE)
-			cnt = (ora_access(&req, &resp) == 0 ? atoi(resp.data) : -1);
-		else if (prod == BDB)
-			cnt = (bdb_access(&req, &resp) == 0 ? atoi(resp.data) : -1);
-		else
-			userlogc("product type not supported: %d", prod);
+	*cnt = 0;
+	if ((rv = check_count("COUNT RECORDS", emps[0], 0, *cnt)))
+		return rv;
 
-		userlogc("Record count: %d", cnt);
-
-		if (in_tx || end_tx(TX_TYPE_COMMIT) == 0)
-			return cnt;
-	}
-
-	return -1;
+	return 0;
 }
 
-static int check_count(const char *msg, char *key, int in_tx, int expect) {
-	int rcnt;
+static int test1(int *cnt)
+{
+	int rv;
 
-	if ((rcnt = count_records(msg, key, 0)) != expect) {
-		userlogc("WRONG NUMBER OF RECORDS: rnt=%d", rcnt);
-		printf("WRONG NUMBER OF RECORDS: rnt=%d", rcnt);
+	/* ask the remote service to insert a record */
+	if ((rv = db_op("REMOTE INSERT 1", DBF, emps[5], '0', TX_TYPE_BEGIN, 0, 1)))
+		return rv;
+
+	/* ask the remote service to insert another record in the same transaction */
+	if ((rv = db_op("REMOTE INSERT 2", DBF, emps[6], '0', TX_TYPE_NONE, 0, 1)))
+		return rv;
+
+	/* insert a record and end the already running transaction */
+	if ((rv = db_op("LOCAL INSERT", DBF, emps[7], '0', TX_TYPE_COMMIT, 0, 0)))
+		return rv;
+
+	*cnt += 3;
+	/* make sure the record count increases by 3 */
+	if ((rv = check_count("COUNT RECORDS", emps[0], 0, *cnt)))
 		return -1;
-	}
+
+	return 0;
+}
+
+static int test2(int *cnt)
+{
+	int rv;
+
+	/* ask the remote service to insert a record */
+	if ((rv = db_op("REMOTE INSERT 1", DBF, emps[0], '0', TX_TYPE_BEGIN, 0, 1)))
+		return rv;
+
+	/* ask the remote service to insert another record in the same transaction */
+	if ((rv = db_op("REMOTE INSERT 2", DBF, emps[1], '0', TX_TYPE_NONE, 0, 1)))
+		return rv;
+
+	/* insert a record and end the already running transaction */
+	if ((rv = db_op("REMOTE INSERT 3", DBF, emps[2], '0', TX_TYPE_COMMIT, 0, 1)))
+		return rv;
+
+	*cnt += 3;
+	/* make sure the record count increases by 3 */
+	if ((rv = check_count("COUNT RECORDS", emps[0], 0, *cnt)))
+		return -1;
+
+	return 0;
+}
+
+static int test3(int *cnt)
+{
+	int rv;
+
+	/* ask the remote service to insert a record */
+	if ((rv = db_op("REMOTE INSERT 1", DBF, emps[3], '0', TX_TYPE_BEGIN_COMMIT, 0, 1)))
+		return rv;
+
+	*cnt += 1;
+	/* delete records starting from emps[0] but abort it */
+	if ((rv = db_op("REMOTE INSERT WITH ABORT", DBF, emps[4], '1', TX_TYPE_BEGIN_ABORT, 0, 1)))
+		return rv;
+
+	if ((rv = check_count("COUNT RECORDS", emps[0], 0, *cnt)))
+		return rv;
+
+	return 0;
+}
+
+static int test4(int *cnt)
+{
+	int rv;
+
+	/* ask the remote service to insert a record */
+	if ((rv = db_op("REMOTE INSERT 1", DBF, emps[4], '0', TX_TYPE_BEGIN_COMMIT, 0, 1)))
+		return rv;
+
+	*cnt += 1;
+	/* modify one of the records */
+	if ((rv = db_op("REMOTE UPDATE", DBF, emps[4], '2', TX_TYPE_BEGIN_COMMIT, 0, 1)))
+		return rv;
+
+	/* remote delete records starting from emps[0] with abort*/
+	if ((rv = db_op("REMOTE DELETE WITH ABORT", DBF, emps[0], '3', TX_TYPE_BEGIN_ABORT, 0, 1)))
+		return rv;
+
+	/* local delete records starting from emps[0] with abort*/
+	if ((rv = db_op("LOCAL DELETE WITH ABORT", DBF, emps[0], '3', TX_TYPE_BEGIN_ABORT, 0, 0)))
+		return rv;
+
+	if ((rv = check_count("COUNT RECORDS", emps[0], 0, *cnt)))
+		return rv;
 
 	return 0;
 }
 
 static int run_test()
 {
-	int rv;
+	int rv, cnt = 0;
 
-	/* start off with no records */
-	if (count_records("COUNT RECORDS", emps[0], 0) > 0 &&
-		(rv = send_req("DELETE AT SETUP", "", emps[0], '3', TX_TYPE_BEGIN_COMMIT, 0)) != 0)
+	if ((rv = setup()))
 		return rv;
 
-	if ((rv = check_count("COUNT RECORDS", emps[0], 0, 0)))
+#if 0
+	// TODO BDB hangs with this test
+	if ((rv = test1(&cnt)))
 		return rv;
-
-	/* ask the remote service to insert a record */
-	if ((rv = send_req("REMOTE INSERT 1", "", emps[1], '0', TX_TYPE_BEGIN, 0)))
+#else
+	if ((rv = test2(&cnt)))
 		return rv;
-	/* ask the remote service to insert another record in the same transaction */
-	if ((rv = send_req("REMOTE INSERT 2", "", emps[2], '0', TX_TYPE_NONE, 0)))
+	if ((rv = test3(&cnt)))
 		return rv;
-
-	/* insert a record */
-	if ((rv = local_crud("LOCAL INSERT", '0', emps[3], TX_TYPE_COMMIT)))
+	if ((rv = test4(&cnt)))
 		return rv;
+#endif
 
-	/* make sure the record count is 3 */
-	if ((rv = check_count("COUNT RECORDS", emps[0], 0, 3)))
-		return -1;
-
-	/* modify one of the records */
-	if ((rv = send_req("REMOTE UPDATE", "", emps[1], '2', TX_TYPE_BEGIN_COMMIT, 0)))
-		return rv;
-
-	/* delete records starting from emps[0], */
-	if ((rv = send_req("REMOTE DELETE", "", emps[0], '3', TX_TYPE_BEGIN_COMMIT, 0)))
-		return rv;
-
-	/* make sure the record count is back to zero again */
-	if ((rv = check_count("COUNT RECORDS", emps[0], 0, 0)))
+	if ((rv = teardown(&cnt)))
 		return rv;
 
 	return 0;

@@ -55,14 +55,14 @@ Then, execute the script setenv
 
 2. CREATE THE CLIENT and SERVER
 On Linux:
-	 $BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="request.c bdb.c ora.c client.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh"
+	 $BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="request.c bdb.c ora.c client.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh" -Dx.lib.dir2="/usr/local/BerkeleyDB.4.7/lib" -Dx.libs2="db" 
 
-	$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=DBS -Dserver.includes="request.c bdb.c ora.c DbService.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh"
+	$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=DBS -Dserver.includes="request.c bdb.c ora.c DbService.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh" -Dx.lib.dir2="/usr/local/BerkeleyDB.4.7/lib" -Dx.libs2="db" 
 
 On Windows:
-	 $BLACKTIE_BIN_DIR/bin/generate_client.bat -Dclient.includes="request.c bdb.c ora.c client.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh"
+	 $BLACKTIE_BIN_DIR/bin/generate_client.bat -Dclient.includes="request.c bdb.c ora.c client.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh" -Dx.lib.dir2="/usr/local/BerkeleyDB.4.7/lib" -Dx.libs2="db" 
 
-	$BLACKTIE_BIN_DIR/bin/generate_server.bat -Dservice.names=DBS -Dserver.includes="request.c bdb.c ora.c DbService.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh"
+	$BLACKTIE_BIN_DIR/bin/generate_server.bat -Dservice.names=DBS -Dserver.includes="request.c bdb.c ora.c DbService.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh" -Dx.lib.dir2="/usr/local/BerkeleyDB.4.7/lib" -Dx.libs2="db" 
 
 
 4. RUN THE APPLICATIONS

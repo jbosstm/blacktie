@@ -27,16 +27,16 @@
 
 /* log a message */
 void logit(int debug, const char * format, ...) {
-    char str[1024];
-    va_list args;
-    va_start(args, format);
-    vsnprintf(str, sizeof (str), format, args);
-    va_end(args);
+	char str[1024];
+	va_list args;
+	va_start(args, format);
+	vsnprintf(str, sizeof (str), format, args);
+	va_end(args);
 
-    if (debug)
-        userlogc_debug(str);
-    else
-        userlogc(str);
+	if (debug)
+		userlogc_debug(str);
+	else
+		userlogc(str);
 }
 
 char * get_buf(const char *data, const char *dbfile, enum TX_TYPE txtype) {
@@ -58,6 +58,15 @@ char * get_buf(const char *data, const char *dbfile, enum TX_TYPE txtype) {
 	return sbuf;
 }
 
+void init_req(test_req_t *req, int prodid, const char *dbfile, const char *data, char op, enum TX_TYPE txtype) {
+	req->prod = prodid;
+	req->txtype = txtype;
+	req->op = op;
+	req->status = 0;
+	(void) strcpy(req->data, data);
+	(void) strcpy(req->db, dbfile);
+}
+
 test_req_t * get_tbuf(const char *data, const char *dbfile, char op, enum DB_TYPE prod, enum TX_TYPE txtype) {
 	test_req_t *req = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", sizeof (test_req_t));
 
@@ -73,12 +82,19 @@ test_req_t * get_tbuf(const char *data, const char *dbfile, char op, enum DB_TYP
 
 int fail(const char *reason, int ret)
 {
-    fprintf(stderr, "%s: %d\n", reason, ret);
-    return ret;
+	fprintf(stderr, "%s: %d\n", reason, ret);
+	return ret;
 }
 
 void fatal(const char *msg)
 {
-    logit(0, msg);
-    exit (-1);
+	logit(0, msg);
+	exit (-1);
+}
+
+int null_access(test_req_t *req, test_req_t *resp)
+{
+	resp->status = 0;
+
+	return 0;
 }
