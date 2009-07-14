@@ -66,8 +66,9 @@ On Windows:
 
 
 4. RUN THE APPLICATIONS
+Copy the file txfooapp-service.xml to <JBOSS_HOME>/server/all/deploy
 Make sure that the naming and transaction services are running, if not, run the JBoss server:
-<JBOSS_HOME>/bin/run.sh|bat -c blacktie
+<JBOSS_HOME>/bin/run.sh|bat -c all
 4.1 RUN THE SERVER
 Make sure any required 3rd party libraries are on the library path. For example:
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/product/11.1.0/db_1/lib
