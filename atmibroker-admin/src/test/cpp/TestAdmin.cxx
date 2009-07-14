@@ -18,7 +18,12 @@
 #include <cppunit/extensions/HelperMacros.h>
 extern "C" {
 #include "AtmiBrokerServerControl.h"
+#include "AtmiBrokerClientControl.h"
 }
+
+#include "ace/OS_NS_stdlib.h"
+#include "ace/OS_NS_stdio.h"
+#include "ace/OS_NS_string.h"
 #include "xatmi.h"
 #include "userlogc.h"
 #include "TestAdmin.h"
@@ -42,4 +47,14 @@ void TestAdmin::tearDown() {
 }
 
 void TestAdmin::test() {
+	long  sendlen = strlen("serverdone") + 1;
+	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
+	strcpy(sendbuf, "serverdone");
+
+	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
+	long  recvlen = 1;
+
+	int cd = ::tpcall((char*) "foo_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
+	CPPUNIT_ASSERT(cd == 0);
+	CPPUNIT_ASSERT(tperrno == 0);
 }
