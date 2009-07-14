@@ -49,6 +49,14 @@
 				<NAME>StompConnectPwd</NAME>
 				<VALUE>guest</VALUE>
 			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>DestinationTimeout</NAME>
+				<VALUE>2</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>RequestTimeout</NAME>
+				<VALUE>10</VALUE>
+			</ENV_VARIABLE>
 		</ENV_VARIABLES>
 	</ENVIRONMENT_DESCRIPTION>
 </ENVIRONMENT>
