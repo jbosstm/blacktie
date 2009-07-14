@@ -50,7 +50,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 	}
 
 	public Response tpservice(TPSVCINFO svcinfo) {
-		log.info("Message received");
+		log.debug("Message received");
 		Buffer recv = svcinfo.getBuffer();
 		String string = new String(recv.getData());
 		StringTokenizer st = new StringTokenizer(string, ",", false);
@@ -90,7 +90,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		}
 		Buffer buffer = new Buffer(null, null);
 		buffer.setData(success);
-		log.info("Responding");
+		log.debug("Responding");
 		return new Response((short) 0, 0, buffer, 1, 0);
 	}
 }
