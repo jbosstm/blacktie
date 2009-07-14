@@ -142,8 +142,13 @@ int serverinit(int argc, char** argv) {
 				setSpecific(TPE_KEY, TSS_TPESYSTEM);
 			} else {
 				ptrServer->advertiseAtBootime();
-				userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
-						(char*) "Server Running");
+				if(cid > 0) {
+					userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
+							(char*) "Server %d Running", cid);
+				} else {
+					userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
+							(char*) "Server Running");
+				}
 			}
 
 		} catch (...) {
@@ -460,15 +465,6 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 }
 
 void AtmiBrokerServer::unadvertiseService(char * svcname) {
-	char adm[16];
-	bool isadm = false;
-	ACE_OS::snprintf(adm, 16, "%s_ADMIN", server);
-	if(strcmp(adm, svcname) == 0) {
-		ACE_OS::snprintf(adm, 16, "%s_ADMIN_%d", server, cid);
-		isadm = true;
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "unadvertise Admin svc " << adm);
-	}
-
 	char* serviceName = (char*) ::malloc(XATMI_SERVICE_NAME_LENGTH + 1);
 	memset(serviceName, '\0', XATMI_SERVICE_NAME_LENGTH + 1);
 	strncat(serviceName, svcname, XATMI_SERVICE_NAME_LENGTH);
@@ -490,11 +486,7 @@ void AtmiBrokerServer::unadvertiseService(char * svcname) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "preparing to destroy" << serviceName);
 
-			if(isadm) {
-				removeAdminDestination(adm);
-			} else {
-				removeAdminDestination(serviceName);
-			}
+			removeAdminDestination(serviceName);
 
 			connection->destroyDestination(destination);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "destroyed"
@@ -509,7 +501,18 @@ void AtmiBrokerServer::unadvertiseService(char * svcname) {
 }
 
 void AtmiBrokerServer::removeAdminDestination(char* serviceName) {
-	Connection* connection = connections.getServerConnection(serviceName);
+	char adm[16];
+	bool isadm = false;
+
+	ACE_OS::snprintf(adm, 16, "%s_ADMIN", server);
+	if(strcmp(adm, serviceName) == 0) {
+		ACE_OS::snprintf(adm, 16, "%s_ADMIN_%d", server, cid);
+		isadm = true;
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "unadvertise Admin svc " << adm);
+	}
+
+	Connection*	connection = connections.getServerConnection(serviceName);
+
 	if (connection->requiresAdminCall()) {
 		long commandLength = strlen(serviceName) + 16;
 		long responseLength = 1;
@@ -518,7 +521,11 @@ void AtmiBrokerServer::removeAdminDestination(char* serviceName) {
 		char* response = (char*) ::tpalloc((char*) "X_OCTET", NULL,
 				responseLength);
 		memset(command, '\0', commandLength);
-		sprintf(command, "tpunadvertise,%s,", serviceName);
+		if(isadm) {
+			sprintf(command, "tpunadvertise,%s,", adm);
+		} else {
+			sprintf(command, "tpunadvertise,%s,", serviceName);
+		}
 		if (tpcall((char*) "BTStompAdmin", command, commandLength, &response,
 				&responseLength, TPNOTRAN) != 0) {
 			LOG4CXX_ERROR(loggerAtmiBrokerServer,
