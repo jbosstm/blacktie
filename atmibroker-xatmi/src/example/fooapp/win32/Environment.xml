@@ -22,12 +22,12 @@
 		<SERVER_NAMES>
 			<SERVER name="jboss">
 				<SERVICE_NAMES>
-					<SERVICE name='BTStompAdmin' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='BTStompAdmin' transportLibrary='atmibroker-hybrid.dll'/>
 				</SERVICE_NAMES>
 			</SERVER>
 			<SERVER>
 				<SERVICE_NAMES>
-					<SERVICE name='BAR' transportLibrary='atmibroker-stomp.dll'/>
+					<SERVICE name='BAR' transportLibrary='atmibroker-hybrid.dll'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>
