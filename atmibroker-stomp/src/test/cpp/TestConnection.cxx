@@ -43,8 +43,8 @@ void TestConnection::test() {
 	userlogc("TestConnection::test");
 
 	Destination* destination = serverConnection->createDestination(
-			(char*) "BAR");
-	Session* client = clientConnection->createSession(1, (char*) "BAR");
+			(char*) "JAVA_Converse");
+	Session* client = clientConnection->createSession(1, (char*) "JAVA_Converse");
 	MESSAGE clientSend;
 	char* clientData = (char*) malloc(6);
 	memset(clientData, '\0', 6);
