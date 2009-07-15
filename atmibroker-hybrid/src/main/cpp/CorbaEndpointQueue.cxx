@@ -27,8 +27,8 @@
 #include "ThreadLocalStorage.h"
 #include "txClient.h"
 
-log4cxx::LoggerPtr CorbaEndpointQueue::logger(log4cxx::Logger::getLogger(
-		"CorbaEndpointQueue"));
+log4cxx::LoggerPtr HybridCorbaEndpointQueue::logger(log4cxx::Logger::getLogger(
+		"HybridCorbaEndpointQueue"));
 
 // EndpointQueue constructor
 //
@@ -36,7 +36,7 @@ log4cxx::LoggerPtr CorbaEndpointQueue::logger(log4cxx::Logger::getLogger(
 // initialiser for all the virtual base class constructors that
 // require arguments, even those that we inherit indirectly.
 //
-CorbaEndpointQueue::CorbaEndpointQueue(CORBA_CONNECTION* connection) {
+HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(CORBA_CONNECTION* connection) {
 	shutdown = false;
 	thePoa = NULL;
 	lock = new SynchronizableObject();
@@ -53,7 +53,7 @@ CorbaEndpointQueue::CorbaEndpointQueue(CORBA_CONNECTION* connection) {
 	this->connection = connection;
 }
 
-CorbaEndpointQueue::CorbaEndpointQueue(CORBA_CONNECTION* connection,
+HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(CORBA_CONNECTION* connection,
 		PortableServer::POA_ptr poa, char* serviceName) {
 	shutdown = false;
 	thePoa = poa;
@@ -71,7 +71,7 @@ CorbaEndpointQueue::CorbaEndpointQueue(CORBA_CONNECTION* connection,
 
 // ~EndpointQueue destructor.
 //
-CorbaEndpointQueue::~CorbaEndpointQueue() {
+HybridCorbaEndpointQueue::~HybridCorbaEndpointQueue() {
 	LOG4CXX_DEBUG(logger, (char*) "destroy called: " << this);
 
 	lock->lock();
@@ -95,7 +95,7 @@ CorbaEndpointQueue::~CorbaEndpointQueue() {
 	LOG4CXX_DEBUG(logger, (char*) "destroyed: " << this);
 }
 
-void CorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
+void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 		CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen,
 		CORBA::Long correlationId, CORBA::Long flags)
 		throw (CORBA::SystemException ) {
@@ -141,7 +141,7 @@ void CorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 	lock->unlock();
 }
 
-MESSAGE CorbaEndpointQueue::receive(long time) {
+MESSAGE HybridCorbaEndpointQueue::receive(long time) {
 	LOG4CXX_DEBUG(logger, (char*) "service_response()");
 
 	MESSAGE message;
@@ -171,7 +171,7 @@ MESSAGE CorbaEndpointQueue::receive(long time) {
 	return message;
 }
 
-void CorbaEndpointQueue::disconnect() throw (CORBA::SystemException ) {
+void HybridCorbaEndpointQueue::disconnect() throw (CORBA::SystemException ) {
 	LOG4CXX_DEBUG(logger, (char*) "disconnect");
 	lock->lock();
 	if (!shutdown) {
@@ -181,10 +181,10 @@ void CorbaEndpointQueue::disconnect() throw (CORBA::SystemException ) {
 	lock->unlock();
 }
 
-const char * CorbaEndpointQueue::getName() {
+const char * HybridCorbaEndpointQueue::getName() {
 	return name;
 }
 
-PortableServer::POA_ptr CorbaEndpointQueue::getPoa() {
+PortableServer::POA_ptr HybridCorbaEndpointQueue::getPoa() {
 	return thePoa;
 }

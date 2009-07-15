@@ -54,7 +54,7 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
 	this->canSend = true;
 	this->canRecv = true;
 
-	this->temporaryQueue = new CorbaEndpointQueue(corbaConnection);
+	this->temporaryQueue = new HybridCorbaEndpointQueue(corbaConnection);
 	this->replyTo = temporaryQueue->getName();
 	LOG4CXX_TRACE(logger, "OK service session created");
 }
@@ -79,7 +79,7 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection, int id,
 	this->canSend = true;
 	this->canRecv = true;
 
-	this->temporaryQueue = new CorbaEndpointQueue(corbaConnection);
+	this->temporaryQueue = new HybridCorbaEndpointQueue(corbaConnection);
 	this->replyTo = temporaryQueue->getName();
 	LOG4CXX_DEBUG(logger, (char*) "constructor corba done");
 }

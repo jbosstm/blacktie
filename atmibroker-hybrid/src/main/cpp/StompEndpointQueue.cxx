@@ -25,10 +25,10 @@
 #include "ConnectionImpl.h"
 #include "AtmiBrokerEnv.h"
 
-log4cxx::LoggerPtr StompEndpointQueue::logger(log4cxx::Logger::getLogger(
-		"StompEndpointQueue"));
+log4cxx::LoggerPtr HybridStompEndpointQueue::logger(log4cxx::Logger::getLogger(
+		"HybridStompEndpointQueue"));
 
-StompEndpointQueue::StompEndpointQueue(
+HybridStompEndpointQueue::HybridStompEndpointQueue(
 		apr_pool_t* pool, char* serviceName) {
 	LOG4CXX_DEBUG(logger, "Creating endpoint queue: " << serviceName);
 	this->message = NULL;
@@ -93,7 +93,7 @@ StompEndpointQueue::StompEndpointQueue(
 
 // ~EndpointQueue destructor.
 //
-StompEndpointQueue::~StompEndpointQueue() {
+HybridStompEndpointQueue::~HybridStompEndpointQueue() {
 	LOG4CXX_TRACE(logger, (char*) "destroying" << name);
 
 	lock->lock();
@@ -118,7 +118,7 @@ StompEndpointQueue::~StompEndpointQueue() {
 	connection = NULL;
 }
 
-MESSAGE StompEndpointQueue::receive(long time) {
+MESSAGE HybridStompEndpointQueue::receive(long time) {
 	// TODO TIME NOT RESPECTED
 	MESSAGE message;
 	message.replyto = NULL;
@@ -250,7 +250,7 @@ MESSAGE StompEndpointQueue::receive(long time) {
 	return message;
 }
 
-void StompEndpointQueue::disconnect() {
+void HybridStompEndpointQueue::disconnect() {
 	LOG4CXX_DEBUG(logger, (char*) "disconnecting: " << name);
 	lock->lock();
 	if (!shutdown) {
@@ -262,10 +262,10 @@ void StompEndpointQueue::disconnect() {
 	LOG4CXX_DEBUG(logger, (char*) "disconnected: " << name);
 }
 
-const char * StompEndpointQueue::getName() {
+const char * HybridStompEndpointQueue::getName() {
 	return (const char *) name;
 }
 
-const char * StompEndpointQueue::getFullName() {
+const char * HybridStompEndpointQueue::getFullName() {
 	return (const char *) this->fullName;
 }

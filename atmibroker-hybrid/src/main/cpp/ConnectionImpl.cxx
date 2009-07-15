@@ -166,12 +166,12 @@ Session* HybridConnectionImpl::createSession(int id,
 
 Destination* HybridConnectionImpl::createDestination(char* serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "createDestination" << serviceName);
-	return new StompEndpointQueue(this->pool, serviceName);
+	return new HybridStompEndpointQueue(this->pool, serviceName);
 }
 
 void HybridConnectionImpl::destroyDestination(Destination* destination) {
-	StompEndpointQueue* queue = dynamic_cast<StompEndpointQueue*> (destination);
-	delete destination;
+	HybridStompEndpointQueue* queue = dynamic_cast<HybridStompEndpointQueue*> (destination);
+	delete queue;
 }
 
 Session* HybridConnectionImpl::getSession(int id) {

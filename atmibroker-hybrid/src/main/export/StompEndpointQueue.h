@@ -35,10 +35,10 @@ extern "C" {
 #include "Destination.h"
 #include "SynchronizableObject.h"
 
-class BLACKTIE_HYBRID_DLL StompEndpointQueue: public virtual Destination {
+class BLACKTIE_HYBRID_DLL HybridStompEndpointQueue: public virtual Destination {
 public:
-	StompEndpointQueue(apr_pool_t* pool, char* serviceName);
-	virtual ~StompEndpointQueue();
+	HybridStompEndpointQueue(apr_pool_t* pool, char* serviceName);
+	virtual ~HybridStompEndpointQueue();
 
 	virtual void disconnect();
 

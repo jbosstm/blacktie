@@ -50,7 +50,7 @@ private:
 	static log4cxx::LoggerPtr logger;
 	int id;
 	CORBA_CONNECTION* corbaConnection;
-	CorbaEndpointQueue* temporaryQueue;
+	HybridCorbaEndpointQueue* temporaryQueue;
 	AtmiBroker::EndpointQueue_var remoteEndpoint;
 	stomp_connection* stompConnection;
 	apr_pool_t* pool;
