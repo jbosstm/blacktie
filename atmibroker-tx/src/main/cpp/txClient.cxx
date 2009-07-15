@@ -58,6 +58,7 @@ int associate_tx(void *control, int creator)
 
 int associate_serialized_tx(char *orbname, char* control)
 {
+	AtmiBrokerOTS::get_instance(); // Prepare an orb
 	CORBA::Object_ptr p = atmi_string_to_object(control, orbname);
 
 	if (!CORBA::is_nil(p)) {
