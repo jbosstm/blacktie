@@ -385,18 +385,27 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 				<< serviceName);
 
 		if (connection->requiresAdminCall()) {
-			long commandLength = strlen(serviceName) + 14;
+			long commandLength;
 			long responseLength = 0;
+
+			if(isadm) {
+				commandLength = strlen(adm) + 14;
+			} else {
+				commandLength = strlen(serviceName) + 14;
+			}
+
 			char* command = (char*) ::tpalloc((char*) "X_OCTET", NULL,
 					commandLength);
 			char* response = (char*) ::tpalloc((char*) "X_OCTET", NULL,
 					responseLength);
 			memset(command, '\0', commandLength);
+
 			if(isadm) {
 				sprintf(command, "tpadvertise,%s,", adm);
 			} else {
 				sprintf(command, "tpadvertise,%s,", serviceName);
 			}
+
 			if (tpcall((char*) "BTStompAdmin", command, commandLength, &response,
 					&responseLength, TPNOTRAN) != 0) {
 				LOG4CXX_ERROR(loggerAtmiBrokerServer,
@@ -514,33 +523,39 @@ void AtmiBrokerServer::removeAdminDestination(char* serviceName) {
 	Connection*	connection = connections.getServerConnection(serviceName);
 
 	if (connection->requiresAdminCall()) {
-		long commandLength = strlen(serviceName) + 16;
+		long commandLength;
 		long responseLength = 1;
+
+		if(isadm) {
+			commandLength = strlen(adm) + 16;
+		} else {
+			commandLength = strlen(serviceName) + 16;
+		}
+
 		char* command = (char*) ::tpalloc((char*) "X_OCTET", NULL,
 				commandLength);
 		char* response = (char*) ::tpalloc((char*) "X_OCTET", NULL,
 				responseLength);
 		memset(command, '\0', commandLength);
+
 		if(isadm) {
 			sprintf(command, "tpunadvertise,%s,", adm);
 		} else {
 			sprintf(command, "tpunadvertise,%s,", serviceName);
 		}
+
 		if (tpcall((char*) "BTStompAdmin", command, commandLength, &response,
 				&responseLength, TPNOTRAN) != 0) {
 			LOG4CXX_ERROR(loggerAtmiBrokerServer,
 					"Could not advertise service with command: " << command);
-			tpfree(command);
 		} else if (responseLength != 1) {
 			LOG4CXX_ERROR(loggerAtmiBrokerServer,
 					"Service returned with unexpected response: "
 							<< response << " with length "
 							<< responseLength);
-			tpfree(command);
 		} else if (response[0] == 0) {
 			LOG4CXX_ERROR(loggerAtmiBrokerServer,
 					"Service returned with error: " << command);
-			tpfree(command);
 		}
 		tpfree(command);
 	}
