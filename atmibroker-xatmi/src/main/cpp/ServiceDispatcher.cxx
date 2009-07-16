@@ -27,10 +27,14 @@ ServiceDispatcher::ServiceDispatcher(Destination* destination,
 				TPSVCINFO *)) {
 	this->destination = destination;
 	this->connection = connection;
-	this->serviceName = serviceName;
+	this->serviceName = strdup(serviceName);
 	this->func = func;
 	session = NULL;
 	stop = false;
+}
+
+ServiceDispatcher::~ServiceDispatcher() {
+	free(this->serviceName);
 }
 
 int ServiceDispatcher::svc(void) {

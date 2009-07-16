@@ -29,6 +29,7 @@
 class ServiceDispatcher: public ACE_Task_Base {
 public:
 	ServiceDispatcher(Destination* destination, Connection* connection, const char *serviceName, void(*func)(TPSVCINFO *));
+	~ServiceDispatcher();
 	int svc();
 	void shutdown();
 private:
@@ -36,7 +37,7 @@ private:
 	static log4cxx::LoggerPtr logger;
 	Destination* destination;
 	Connection* connection;
-	const char* serviceName;
+	char* serviceName;
 	void (*func)(TPSVCINFO *);
 	Session* session;
 	bool stop;
