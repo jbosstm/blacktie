@@ -29,11 +29,13 @@
  * $Id: ThreadActionData.java 2342 2006-03-30 13:06:17Z  $
  */
 
-package org.jboss.blacktie.jatmibroker.jab;
+package org.jboss.blacktie.jatmibroker.util;
 
 import java.util.EmptyStackException;
 import java.util.NoSuchElementException;
 import java.util.Stack;
+
+import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 
 /**
  * This class maintains a mapping between a thread and its notion of the current
