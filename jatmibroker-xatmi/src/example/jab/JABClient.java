@@ -30,22 +30,21 @@ public class JABClient {
 	public static void main(String[] args) throws Exception {
 		log.info("JABClient");
 		if (args.length != 1) {
-			log
-					.error("java JABClient message");
+			log.error("java JABClient message");
 			return;
 		}
 		String message = args[0];
 		try {
-			JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(null);
+			JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
+					null);
 			JABSession aJabSession = new JABSession(aJabSessionAttributes);
 			JABTransaction transaction = new JABTransaction(aJabSession, 5000);
-			JABRemoteService aJabService = new JABRemoteService(aJabSession,
-					"BAR");
-			aJabService.setBuffer("X_OCTET", message.getBytes(), message.getBytes().length);
+			JABRemoteService aJabService = new JABRemoteService("BAR",
+					aJabSession);
+			aJabService.setString(message);
 			log.info("Calling call with input: " + message);
 			aJabService.call(null);
-			log.info("Called call with output: "
-					+ new String(aJabService.getResponseData()));
+			log.info("Called call with output: " + aJabService.getString());
 			transaction.commit();
 			aJabSession.endSession();
 		} catch (JABException e) {

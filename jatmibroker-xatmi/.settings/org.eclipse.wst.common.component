@@ -5,6 +5,7 @@
 <wb-resource deploy-path="/" source-path="/src/test/java"/>
 <wb-resource deploy-path="/" source-path="/resources"/>
 <wb-resource deploy-path="/" source-path="/src/test/resources"/>
+<wb-resource deploy-path="/" source-path="/src/example/jab"/>
 <dependent-module deploy-path="/WEB-INF/lib" handle="module:/resource/atmibroker-idl/atmibroker-idl">
 <dependency-type>uses</dependency-type>
 </dependent-module>

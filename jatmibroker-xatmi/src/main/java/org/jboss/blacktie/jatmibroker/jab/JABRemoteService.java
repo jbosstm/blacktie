@@ -26,17 +26,16 @@ import org.jboss.blacktie.jatmibroker.xatmi.Response;
 /**
  * Create an invoker for a remote service.
  */
-public class JABRemoteService {
+public class JABRemoteService implements Message {
 	private static final Logger log = LogManager
 			.getLogger(JABRemoteService.class);
 	private Connection connection;
 	private String serviceName;
-	private String bufferType;
-	private byte[] data;
-	private int length;
+	private Buffer request;
 	private Response response;
+	boolean noTimeout;
 
-	public JABRemoteService(JABSession aJABSession, String aServiceName)
+	public JABRemoteService(String aServiceName, JABSession aJABSession)
 			throws JABException {
 		log.debug("JABService constructor");
 
@@ -49,9 +48,8 @@ public class JABRemoteService {
 
 		try {
 			// TODO HANDLE TRANSACTION
-			Buffer buffer = new Buffer(bufferType, null);
-			buffer.setData(data);
-			response = connection.tpcall(serviceName, buffer, length, 0);
+			response = connection.tpcall(serviceName, request, request
+					.getData().length, noTimeout ? Connection.TPNOTIME : 0);
 			log.debug("service_request responsed");
 		} catch (Exception e) {
 			throw new JABException("Could not send tpcall", e);
@@ -60,18 +58,21 @@ public class JABRemoteService {
 
 	public void clear() {
 		log.debug("JABService clear");
-		data = null;
+		request = null;
 		response = null;
 	}
 
-	public void setBuffer(String name, byte[] data, int length) {
+	public void setString(String string) {
 		log.debug("JABService set buffer");
-		this.bufferType = name;
-		this.data = data;
-		this.length = length;
+		request = new Buffer("X_OCTET", null);
+		request.setData(string.getBytes());
 	}
 
-	public byte[] getResponseData() {
-		return response.getBuffer().getData();
+	public String getString() {
+		return new String(response.getBuffer().getData());
+	}
+
+	public void setNoTimeout(boolean noTimeout) {
+		this.noTimeout = noTimeout;
 	}
 }

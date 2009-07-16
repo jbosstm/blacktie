@@ -69,6 +69,10 @@ public class JABSession {
 			jabSessionAttributes = null;
 		}
 	}
+	
+	public boolean isConnected() {
+		return connection != null;
+	}
 
 	JABSessionAttributes getJABSessionAttributes() {
 		return jabSessionAttributes;
