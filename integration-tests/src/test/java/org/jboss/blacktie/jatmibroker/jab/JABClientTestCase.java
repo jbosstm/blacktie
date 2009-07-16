@@ -47,19 +47,18 @@ public class JABClientTestCase extends TestCase {
 				null);
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
-		JABRemoteService aJabService = new JABRemoteService(aJabSession,
-				"tpcall_x_octet");
-		byte[] toSend = "HOWS IT GOING DUDE????!!!!".getBytes();
-		aJabService.setBuffer("X_OCTET", toSend, toSend.length);
+		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet", aJabSession);
+		aJabService.setString("HOWS IT GOING DUDE????!!!!");
 		aJabService.call(transaction);
 		transaction.commit();
 		aJabSession.endSession();
 		String expectedString = "BAR SAYS HELLO";
-		String responseString = new String(aJabService.getResponseData());
+		String responseString = aJabService.getString());
 		assertEquals(expectedString, responseString);
 	}
 
 // TODO
+/*
 	public void xtest_tpcall_x_c_type() throws Exception {
 		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
 				null);
@@ -96,4 +95,5 @@ public class JABClientTestCase extends TestCase {
 		assertEquals(7.7, dis.readDouble());
 		assertEquals("tpcall_x_c_type", dis.readUTF());
 	}
+*/
 }
