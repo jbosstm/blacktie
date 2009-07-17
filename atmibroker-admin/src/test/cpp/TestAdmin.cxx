@@ -44,12 +44,41 @@ void TestAdmin::setUp() {
 void TestAdmin::tearDown() {
 	userlogc((char*) "TestAdmin::tearDown");
 	serverdone();
+
+	clientdone();
+	CPPUNIT_ASSERT(tperrno == 0);
 }
 
-void TestAdmin::test() {
+void TestAdmin::testServerdone() {
 	long  sendlen = strlen("serverdone") + 1;
 	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
 	strcpy(sendbuf, "serverdone");
+
+	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
+	long  recvlen = 1;
+
+	int cd = ::tpcall((char*) "foo_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
+	CPPUNIT_ASSERT(cd == 0);
+	CPPUNIT_ASSERT(tperrno == 0);
+}
+
+void TestAdmin::testAdvertised() {
+	long  sendlen = strlen("advertise,BAR") + 1;
+	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
+	strcpy(sendbuf, "advertise,BAR");
+
+	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
+	long  recvlen = 1;
+
+	int cd = ::tpcall((char*) "foo_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
+	CPPUNIT_ASSERT(cd == 0);
+	CPPUNIT_ASSERT(tperrno == 0);
+}
+
+void TestAdmin::testUnadvertised() {
+	long  sendlen = strlen("unadvertise,BAR") + 1;
+	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
+	strcpy(sendbuf, "unadvertise,BAR");
 
 	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
 	long  recvlen = 1;
