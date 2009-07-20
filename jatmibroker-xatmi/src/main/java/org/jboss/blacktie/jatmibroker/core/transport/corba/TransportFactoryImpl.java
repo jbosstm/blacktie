@@ -15,45 +15,45 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.jab;
+package org.jboss.blacktie.jatmibroker.core.transport.corba;
 
 import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerClientXML;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.transport.OrbManagement;
+import org.jboss.blacktie.jatmibroker.core.transport.Transport;
+import org.jboss.blacktie.jatmibroker.core.transport.TransportFactory;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
-/**
- * Create the session attributes
- */
-public class JABSessionAttributes {
+public class TransportFactoryImpl extends TransportFactory {
+
 	private static final Logger log = LogManager
-			.getLogger(JABSessionAttributes.class);
-	private Properties properties;
+			.getLogger(TransportFactoryImpl.class);
 	private OrbManagement orbManagement;
 
-	/**
-	 * Create session attributes using the default configuration from
-	 * blacktie.config.dir
-	 * 
-	 * @throws JABException
-	 */
-	public JABSessionAttributes(String configurationDirectory)
-			throws JABException {
+	protected void setProperties(Properties properties)
+			throws ConfigurationException {
+		log.debug("Creating OrbManagement");
 		try {
-			AtmiBrokerClientXML client = new AtmiBrokerClientXML();
-			this.properties = client.getProperties(configurationDirectory);
-		} catch (Exception e) {
-			throw new JABException("Could not load the configuration", e);
+			orbManagement = new OrbManagement(properties, false);
+		} catch (Throwable t) {
+			throw new ConfigurationException(
+					"Could not create the orb management function", t);
 		}
+		log.debug("Created OrbManagement");
 	}
 
-	public JABSessionAttributes() throws JABException {
-		this(null);
-	}
-
-	public Properties getProperties() {
-		return properties;
+	public Transport createTransport() throws ConnectionException {
+		log.debug("Creating");
+		TransportImpl instance = null;
+		try {
+			instance = new TransportImpl(orbManagement);
+		} catch (Throwable t) {
+			throw new ConnectionException(-1, "Could not connect to server", t);
+		}
+		log.debug("Created");
+		return instance;
 	}
 }

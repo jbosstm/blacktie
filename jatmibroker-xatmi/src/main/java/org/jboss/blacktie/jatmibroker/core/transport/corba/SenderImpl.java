@@ -15,45 +15,40 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.jab;
-
-import java.util.Properties;
+package org.jboss.blacktie.jatmibroker.core.transport.corba;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerClientXML;
-import org.jboss.blacktie.jatmibroker.core.transport.OrbManagement;
+import org.jboss.blacktie.jatmibroker.core.transport.Sender;
 
-/**
- * Create the session attributes
- */
-public class JABSessionAttributes {
-	private static final Logger log = LogManager
-			.getLogger(JABSessionAttributes.class);
-	private Properties properties;
-	private OrbManagement orbManagement;
+import AtmiBroker.EndpointQueue;
+import AtmiBroker.EndpointQueueHelper;
 
-	/**
-	 * Create session attributes using the default configuration from
-	 * blacktie.config.dir
-	 * 
-	 * @throws JABException
-	 */
-	public JABSessionAttributes(String configurationDirectory)
-			throws JABException {
-		try {
-			AtmiBrokerClientXML client = new AtmiBrokerClientXML();
-			this.properties = client.getProperties(configurationDirectory);
-		} catch (Exception e) {
-			throw new JABException("Could not load the configuration", e);
+public class SenderImpl implements Sender {
+	private static final Logger log = LogManager.getLogger(SenderImpl.class);
+	private EndpointQueue queue;
+	private String name;
+
+	SenderImpl(org.omg.CORBA.Object serviceFactoryObject, String name) {
+		this.queue = EndpointQueueHelper.narrow(serviceFactoryObject);
+		this.name = name;
+		log.debug("ServiceFactory is " + queue);
+	}
+
+	public void send(Object replyTo, short rval, int rcode, byte[] data,
+			int len, int correlationId, int flags) {
+		String toReplyTo = (String) replyTo;
+		if (toReplyTo == null) {
+			toReplyTo = "";
 		}
+		queue.send(toReplyTo, rval, rcode, data, len + 1, correlationId, flags);
 	}
 
-	public JABSessionAttributes() throws JABException {
-		this(null);
+	public void close() {
+		// TODO Auto-generated method stub
 	}
 
-	public Properties getProperties() {
-		return properties;
+	public Object getSendTo() {
+		return name;
 	}
 }

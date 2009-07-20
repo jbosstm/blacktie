@@ -36,7 +36,7 @@ public abstract class MDBBlacktieService extends Service implements
 			byte[] bytes = new byte[len];
 			bytesMessage.readBytes(bytes);
 
-			org.jboss.blacktie.jatmibroker.transport.Message toProcess = new org.jboss.blacktie.jatmibroker.transport.Message();
+			org.jboss.blacktie.jatmibroker.core.transport.Message toProcess = new org.jboss.blacktie.jatmibroker.core.transport.Message();
 			toProcess.replyTo = replyTo;
 			toProcess.len = len;
 			toProcess.serviceName = serviceName;

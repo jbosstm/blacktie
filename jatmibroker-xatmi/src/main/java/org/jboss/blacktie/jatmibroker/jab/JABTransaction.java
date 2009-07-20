@@ -22,9 +22,9 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.transport.OrbManagement;
-import org.jboss.blacktie.jatmibroker.util.ThreadActionData;
-import org.jboss.blacktie.jatmibroker.util.ThreadUtil;
+import org.jboss.blacktie.jatmibroker.core.transport.OrbManagement;
+import org.jboss.blacktie.jatmibroker.core.util.ThreadActionData;
+import org.jboss.blacktie.jatmibroker.core.util.ThreadUtil;
 import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
@@ -128,7 +128,7 @@ public class JABTransaction {
 	public static void associateTx(String controlIOR) throws JABException {
 		try {
 			// TODO make sure this works in the AS and standalone
-			org.jboss.blacktie.jatmibroker.transport.JtsTransactionImple
+			org.jboss.blacktie.jatmibroker.core.transport.JtsTransactionImple
 					.resume(controlIOR);
 		} catch (Throwable t) {
 			new JABTransaction(controlIOR);

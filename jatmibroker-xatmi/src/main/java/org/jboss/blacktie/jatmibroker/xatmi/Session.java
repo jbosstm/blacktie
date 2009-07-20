@@ -20,10 +20,10 @@ package org.jboss.blacktie.jatmibroker.xatmi;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.transport.Message;
-import org.jboss.blacktie.jatmibroker.transport.Receiver;
-import org.jboss.blacktie.jatmibroker.transport.Sender;
-import org.jboss.blacktie.jatmibroker.transport.Transport;
+import org.jboss.blacktie.jatmibroker.core.transport.Message;
+import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
+import org.jboss.blacktie.jatmibroker.core.transport.Sender;
+import org.jboss.blacktie.jatmibroker.core.transport.Transport;
 
 /**
  * This is the session to send data on.

@@ -21,7 +21,7 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.transport.OrbManagement;
+import org.jboss.blacktie.jatmibroker.core.transport.OrbManagement;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CosNaming.NamingContextPackage.AlreadyBound;

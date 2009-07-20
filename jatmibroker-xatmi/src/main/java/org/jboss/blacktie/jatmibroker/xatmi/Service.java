@@ -23,11 +23,11 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerClientXML;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.transport.JtsTransactionImple;
-import org.jboss.blacktie.jatmibroker.transport.Message;
-import org.jboss.blacktie.jatmibroker.transport.Sender;
-import org.jboss.blacktie.jatmibroker.transport.Transport;
-import org.jboss.blacktie.jatmibroker.transport.TransportFactory;
+import org.jboss.blacktie.jatmibroker.core.transport.JtsTransactionImple;
+import org.jboss.blacktie.jatmibroker.core.transport.Message;
+import org.jboss.blacktie.jatmibroker.core.transport.Sender;
+import org.jboss.blacktie.jatmibroker.core.transport.Transport;
+import org.jboss.blacktie.jatmibroker.core.transport.TransportFactory;
 
 public abstract class Service implements BlacktieService {
 	private static final Logger log = LogManager.getLogger(Service.class);
