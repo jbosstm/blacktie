@@ -18,7 +18,7 @@ public class JABBuffer {
 		this.value = buffer;
 	}
 
-	public void setValue(Object value) throws JABException {
+	public void setValue(String value) throws JABException {
 		if (!readOnly) {
 			this.value = new Buffer("X_OCTET", null);
 			try {
@@ -31,9 +31,9 @@ public class JABBuffer {
 		}
 	}
 
-	public Object getValue() throws JABException {
+	public String getValue() throws JABException {
 		if (value != null) {
-			return value.getData();
+			return (String) value.getData();
 		} else {
 			return null;
 		}
