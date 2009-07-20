@@ -19,9 +19,7 @@ package org.jboss.blacktie.jatmibroker.ejb.connector.ejb;
 
 import junit.framework.TestCase;
 
-import org.jboss.blacktie.example.mdb.EchoServiceTestService;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
 import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
@@ -45,14 +43,11 @@ public class AbstractBlacktieServiceTestCase extends TestCase {
 	}
 
 	public void test() throws ConnectionException {
-		byte[] echo = "echo".getBytes();
 		Buffer buffer = new Buffer(null, null);
-		buffer.setData(echo);
+		buffer.setData("echo");
 
-		Response response = connection.tpcall("EchoService", buffer,
-				echo.length, 0);
-		byte[] responseData = response.getBuffer().getData();
-		String receivedMessage = new String(responseData);
-		assertEquals("echo", receivedMessage);
+		Response response = connection.tpcall("EchoService", buffer, 4, 0);
+		String responseData = (String) response.getBuffer().getData();
+		assertEquals("echo", responseData);
 	}
 }

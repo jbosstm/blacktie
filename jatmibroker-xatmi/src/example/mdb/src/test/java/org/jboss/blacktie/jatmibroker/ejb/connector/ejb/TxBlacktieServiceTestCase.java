@@ -19,24 +19,22 @@ package org.jboss.blacktie.jatmibroker.ejb.connector.ejb;
 
 import junit.framework.TestCase;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.jab.JABException;
+import org.jboss.blacktie.jatmibroker.jab.JABSession;
+import org.jboss.blacktie.jatmibroker.jab.JABSessionAttributes;
+import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
-import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
-import org.jboss.blacktie.jatmibroker.jab.JABSession;
-import org.jboss.blacktie.jatmibroker.jab.JABSessionAttributes;
-import org.jboss.blacktie.jatmibroker.jab.JABException;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.Map;
 
 public class TxBlacktieServiceTestCase extends TestCase {
-	private static final Logger log = LogManager.getLogger(TxBlacktieServiceTestCase.class);
+	private static final Logger log = LogManager
+			.getLogger(TxBlacktieServiceTestCase.class);
 	private Connection connection;
 
 	public TxBlacktieServiceTestCase() throws ConnectionException {
@@ -52,13 +50,12 @@ public class TxBlacktieServiceTestCase extends TestCase {
 		connection.close();
 	}
 
-	private JABTransaction startTx() throws JABException
-	{
+	private JABTransaction startTx() throws JABException {
 		JABSessionAttributes attrs = new JABSessionAttributes(null);
 		JABSession session = new JABSession(attrs);
 
-//		for (Map.Entry e : attrs.getProperties().entrySet())
-//			log.info(e.getKey() + " = " + e.getValue());
+		// for (Map.Entry e : attrs.getProperties().entrySet())
+		// log.info(e.getKey() + " = " + e.getValue());
 
 		try {
 			return new JABTransaction(session, 5000);
@@ -75,10 +72,9 @@ public class TxBlacktieServiceTestCase extends TestCase {
 		JABTransaction transaction = startTx();
 		Response response = connection.tpcall("TxEchoService", buffer,
 				args.length, 0);
-		byte[] responseData = response.getBuffer().getData();
-		String receivedMessage = new String(responseData);
+		String responseData = (String) response.getBuffer().getData();
 		transaction.commit();
-		assertEquals("test=test1,tx=true", receivedMessage);
+		assertEquals("test=test1,tx=true", responseData);
 	}
 
 	public void test2() throws ConnectionException, JABException {
@@ -88,9 +84,8 @@ public class TxBlacktieServiceTestCase extends TestCase {
 
 		Response response = connection.tpcall("TxEchoService", buffer,
 				args.length, 0);
-		byte[] responseData = response.getBuffer().getData();
-		String receivedMessage = new String(responseData);
-		assertNotSame("test=test2,tx=true", receivedMessage);
+		String responseData = (String) response.getBuffer().getData();
+		assertNotSame("test=test2,tx=true", responseData);
 	}
 
 	public void test3() throws ConnectionException, JABException {
@@ -100,9 +95,8 @@ public class TxBlacktieServiceTestCase extends TestCase {
 
 		Response response = connection.tpcall("TxEchoService", buffer,
 				args.length, 0);
-		byte[] responseData = response.getBuffer().getData();
-		String receivedMessage = new String(responseData);
-		assertEquals("test=test3,tx=false", receivedMessage);
+		String responseData = (String) response.getBuffer().getData();
+		assertEquals("test=test3,tx=false", responseData);
 	}
 
 	public void test4() throws ConnectionException, JABException {
@@ -113,17 +107,16 @@ public class TxBlacktieServiceTestCase extends TestCase {
 		JABTransaction transaction = startTx();
 		Response response = connection.tpcall("TxEchoService", buffer,
 				args.length, 0);
-		byte[] responseData = response.getBuffer().getData();
+		String responseData = (String) response.getBuffer().getData();
 		transaction.commit();
-		String receivedMessage = new String(responseData);
-		assertNotSame("test=test4,tx=false", receivedMessage);
+		assertNotSame("test=test4,tx=false", responseData);
 	}
 
 	/*
-	 * Test that the AS can create a transaction and propagate it too
-	 * another blacktie service.
-	 * TODO Disabled until we can resolve the clash between the JMS transaction
-	 * the Blacktie clients transaction (JMS queues have local transactions)
+	 * Test that the AS can create a transaction and propagate it too another
+	 * blacktie service. TODO Disabled until we can resolve the clash between
+	 * the JMS transaction the Blacktie clients transaction (JMS queues have
+	 * local transactions)
 	 */
 	public void test5() throws ConnectionException, JABException {
 		byte[] args = "test=test5,tx=create".getBytes();
@@ -132,9 +125,7 @@ public class TxBlacktieServiceTestCase extends TestCase {
 
 		Response response = connection.tpcall("TxEchoService", buffer,
 				args.length, 0);
-		byte[] responseData = response.getBuffer().getData();
-		String receivedMessage = new String(responseData);
-
-		assertEquals("test=test5,tx=create", receivedMessage);
+		String responseData = (String) response.getBuffer().getData();
+		assertEquals("test=test5,tx=create", responseData);
 	}
 }
