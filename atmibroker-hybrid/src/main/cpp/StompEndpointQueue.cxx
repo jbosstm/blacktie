@@ -85,7 +85,7 @@ HybridStompEndpointQueue::HybridStompEndpointQueue(
 			throw new std::exception();
 		}
 	}
-	this->name = serviceName;
+	this->name = strdup(serviceName);
 	this->fullName = queueName;
 	this->transactional = true;
 	LOG4CXX_DEBUG(logger, "Sent SUB: " << queueName);
@@ -109,6 +109,7 @@ HybridStompEndpointQueue::~HybridStompEndpointQueue() {
 	delete lock;
 	lock = NULL;
 	LOG4CXX_TRACE(logger, (char*) "freeing name" << name);
+	free(name);
 	free(fullName);
 	LOG4CXX_TRACE(logger, (char*) "freed name");
 		

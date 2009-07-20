@@ -618,7 +618,7 @@ Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
 	Destination* toReturn = NULL;
 	for (std::vector<ServiceData>::iterator i = serviceData.begin(); i
 			!= serviceData.end(); i++) {
-		if (strncmp((*i).destination->getName(), aServiceName,
+		if (strncmp((*i).serviceInfo->serviceName, aServiceName,
 				XATMI_SERVICE_NAME_LENGTH) == 0) {
 			toReturn = (*i).destination;
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "removing service "

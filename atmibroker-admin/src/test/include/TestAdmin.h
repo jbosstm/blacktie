@@ -23,8 +23,8 @@
 
 class TestAdmin: public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE( TestAdmin );
-	//CPPUNIT_TEST( testServerdone );
-	//CPPUNIT_TEST( testAdvertised );
+	CPPUNIT_TEST( testServerdone );
+	CPPUNIT_TEST( testAdvertised );
 	CPPUNIT_TEST( testUnadvertised );
 	CPPUNIT_TEST_SUITE_END();
 
