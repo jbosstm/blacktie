@@ -1,4 +1,4 @@
-package org.jboss.blacktie.jatmibroker.mdb;
+package org.jboss.blacktie.jatmibroker.xatmi.mdb;
 
 import javax.jms.BytesMessage;
 import javax.jms.Message;
