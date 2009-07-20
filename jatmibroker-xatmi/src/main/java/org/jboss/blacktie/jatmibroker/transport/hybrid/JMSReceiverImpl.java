@@ -28,12 +28,11 @@ import javax.naming.NamingException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.jab.JABException;
+import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 import org.jboss.blacktie.jatmibroker.transport.Message;
 import org.jboss.blacktie.jatmibroker.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-
-import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
-import org.jboss.blacktie.jatmibroker.jab.JABException;
 
 public class JMSReceiverImpl implements Receiver {
 	private static final Logger log = LogManager
@@ -95,8 +94,8 @@ public class JMSReceiverImpl implements Receiver {
 				if (controlIOR != null) {
 					try {
 						JABTransaction.associateTx(controlIOR); // associate tx
-																// with current
-																// thread
+						// with current
+						// thread
 					} catch (JABException e) {
 						log.warn("Got an invalid tx from queue "
 								+ destination.getQueueName() + ": " + e);

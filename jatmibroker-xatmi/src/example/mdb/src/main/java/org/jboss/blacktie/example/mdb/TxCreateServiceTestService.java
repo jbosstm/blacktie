@@ -6,7 +6,7 @@ import javax.ejb.MessageDriven;
 import org.jboss.blacktie.jatmibroker.mdb.MDBBlacktieService;
 import org.jboss.blacktie.jatmibroker.xatmi.*;
 import org.jboss.blacktie.jatmibroker.transport.JtsTransactionImple;
-import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.ejb3.annotation.Depends;
 
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;

@@ -40,7 +40,7 @@ public abstract class TransportFactory {
 			throw new ConfigurationException("Transport library for "
 					+ serviceName + " was not defined");
 		}
-		log.debug("Transport library was: " + transportLibrary );
+		log.debug("Transport library was: " + transportLibrary);
 		// Determine the transport class to load
 		String className = null;
 		if (transportLibrary.contains("corba")) {

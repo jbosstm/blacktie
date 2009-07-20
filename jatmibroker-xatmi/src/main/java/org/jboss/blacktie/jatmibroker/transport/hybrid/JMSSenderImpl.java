@@ -26,10 +26,9 @@ import javax.jms.Session;
 import javax.jms.Topic;
 import javax.naming.NamingException;
 
-import org.jboss.blacktie.jatmibroker.transport.JtsTransactionImple;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.transport.JtsTransactionImple;
 import org.jboss.blacktie.jatmibroker.transport.Sender;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;

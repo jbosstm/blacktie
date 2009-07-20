@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.conf;
+package org.jboss.blacktie.jatmibroker.core.conf;
 
 import java.util.Properties;
 
@@ -36,7 +36,8 @@ public class AtmiBrokerServerXMLTest extends TestCase {
 	}
 
 	public void test() throws Exception {
-		AtmiBrokerServerXML serverDesc = new AtmiBrokerServerXML("standalone-server");
+		AtmiBrokerServerXML serverDesc = new AtmiBrokerServerXML(
+				"standalone-server");
 		Properties prop = serverDesc.getProperties();
 
 		assertTrue("fooapp".equals(prop.getProperty("blacktie.domain.name")));
@@ -49,7 +50,8 @@ public class AtmiBrokerServerXMLTest extends TestCase {
 	}
 
 	public void testEnv() throws Exception {
-		AtmiBrokerServerXML serverDesc = new AtmiBrokerServerXML("standalone-server");
+		AtmiBrokerServerXML serverDesc = new AtmiBrokerServerXML(
+				"standalone-server");
 		Properties prop = serverDesc.getProperties();
 
 		assertTrue("fooapp".equals(prop.getProperty("blacktie.domain.name")));

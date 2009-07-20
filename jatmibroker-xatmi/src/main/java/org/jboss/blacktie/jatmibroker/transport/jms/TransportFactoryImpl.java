@@ -19,7 +19,6 @@ package org.jboss.blacktie.jatmibroker.transport.jms;
 
 import java.util.Properties;
 
-import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -51,8 +50,7 @@ public class TransportFactoryImpl extends TransportFactory {
 					"jnp://localhost:1099");
 			props.putAll(props);
 			context = new InitialContext(props);
-			factory = (ConnectionFactory) context
-					.lookup("ConnectionFactory");
+			factory = (ConnectionFactory) context.lookup("ConnectionFactory");
 		} catch (Throwable t) {
 			throw new ConfigurationException(
 					"Could not create the required connection", t);

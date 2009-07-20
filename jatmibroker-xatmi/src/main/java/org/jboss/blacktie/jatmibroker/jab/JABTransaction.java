@@ -86,65 +86,70 @@ public class JABTransaction {
 	}
 
 	public JABTransaction(String controlIOR) throws JABException {
-	    JABSessionAttributes sessionAttrs = new JABSessionAttributes(null);
+		JABSessionAttributes sessionAttrs = new JABSessionAttributes(null);
 		JABTransaction curr = current();
 
-	    jabSession = new JABSession(sessionAttrs);
-	    timeout = -1;
+		jabSession = new JABSession(sessionAttrs);
+		timeout = -1;
 
-	    try {
-        	orbManagement = new OrbManagement(sessionAttrs.getProperties(), true);
-	    } catch (org.omg.CORBA.UserException cue) {
-	        throw new JABException(cue.getMessage(), cue);
-	    }
+		try {
+			orbManagement = new OrbManagement(sessionAttrs.getProperties(),
+					true);
+		} catch (org.omg.CORBA.UserException cue) {
+			throw new JABException(cue.getMessage(), cue);
+		}
 
-	    org.omg.CORBA.Object obj = orbManagement.getOrb().string_to_object(controlIOR);
+		org.omg.CORBA.Object obj = orbManagement.getOrb().string_to_object(
+				controlIOR);
 
-        if (curr != null) {
-            log.debug("current() != null comparing IORs");
-            String pIOR = curr.getControlIOR();
-            org.omg.CORBA.Object pObj = orbManagement.getOrb().string_to_object(pIOR);
+		if (curr != null) {
+			log.debug("current() != null comparing IORs");
+			String pIOR = curr.getControlIOR();
+			org.omg.CORBA.Object pObj = orbManagement.getOrb()
+					.string_to_object(pIOR);
 
-            log.debug("pIOR=" + pIOR + " pObj=" + pObj);
-            if (pObj != null && pObj._is_equivalent(obj)) {
-                log.debug("Different IORs same object");
-                ThreadActionData.popAction();
-            } else {
-                log.info("Different IORs and different object");
-                throw new JABException("Nested transactions are not supported");
-            }
-        }
+			log.debug("pIOR=" + pIOR + " pObj=" + pObj);
+			if (pObj != null && pObj._is_equivalent(obj)) {
+				log.debug("Different IORs same object");
+				ThreadActionData.popAction();
+			} else {
+				log.info("Different IORs and different object");
+				throw new JABException("Nested transactions are not supported");
+			}
+		}
 
-	    control = org.omg.CosTransactions.ControlHelper.narrow(obj);
+		control = org.omg.CosTransactions.ControlHelper.narrow(obj);
 
-	    ThreadActionData.pushAction(this);
+		ThreadActionData.pushAction(this);
 
-	    setTerminator(control);
+		setTerminator(control);
 	}
 
 	public static void associateTx(String controlIOR) throws JABException {
 		try {
 			// TODO make sure this works in the AS and standalone
-			org.jboss.blacktie.jatmibroker.transport.JtsTransactionImple.resume(controlIOR);
+			org.jboss.blacktie.jatmibroker.transport.JtsTransactionImple
+					.resume(controlIOR);
 		} catch (Throwable t) {
 			new JABTransaction(controlIOR);
 		}
 	}
 
-    private void setTerminator(Control c) throws JABException {
-        try {
-            terminator = control.get_terminator();
-            log.debug("Terminator is " + terminator);
-        } catch (Unavailable e) {
-            throw new JABException("Could not get the terminator", e);
-        }
-    }
+	private void setTerminator(Control c) throws JABException {
+		try {
+			terminator = control.get_terminator();
+			log.debug("Terminator is " + terminator);
+		} catch (Unavailable e) {
+			throw new JABException("Could not get the terminator", e);
+		}
+	}
 
 	public String getControlIOR() {
-	    return orbManagement.getOrb().object_to_string(control);
+		return orbManagement.getOrb().object_to_string(control);
 	}
+
 	public static JABTransaction current() {
-	    return ThreadActionData.currentAction();
+		return ThreadActionData.currentAction();
 	}
 
 	public Control getControl() {

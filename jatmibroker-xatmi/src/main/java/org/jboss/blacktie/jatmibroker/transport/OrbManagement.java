@@ -22,7 +22,6 @@ import org.omg.CosNaming.NamingContextPackage.NotFound;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
 import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
-import com.arjuna.ats.internal.jts.ORBManager;
 
 public class OrbManagement {
 	private static final Logger log = LogManager.getLogger(OrbManagement.class);
@@ -66,7 +65,6 @@ public class OrbManagement {
 		p.setProperty("org.omg.PortableInterceptor.ORBInitializerClass."
 				+ "org.jboss.blacktie.jatmibroker.tx.TxInitializer", "");
 		p.setProperty("OAPort", "0");
-
 
 		log.debug("set properities");
 		log.debug(" initing orb");

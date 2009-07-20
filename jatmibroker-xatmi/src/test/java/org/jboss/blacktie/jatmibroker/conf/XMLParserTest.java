@@ -15,9 +15,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.conf;
+package org.jboss.blacktie.jatmibroker.core.conf;
 
-import java.io.File;
 import java.util.Properties;
 
 import junit.framework.TestCase;
@@ -67,18 +66,18 @@ public class XMLParserTest extends TestCase {
 		String server = "standalone-server";
 		String serviceName = "TestOne";
 		String transport = "libatmibroker-stomp.so";
-//		String library = "libBAR.so";
-//		String function = "TestOne";
+		// String library = "libBAR.so";
+		// String function = "TestOne";
 		String advertised = "true";
 		String size = "1";
 
 		assertTrue(server.equals(prop.getProperty("blacktie.TestOne.server")));
 		assertTrue(transport.equals(prop
 				.getProperty("blacktie.XMLParserTest.transportLib")));
-//		assertTrue(function.equals(prop
-//				.getProperty("blacktie.TestOne.function_name")));
-//		assertTrue(library
-//				.equals(prop.getProperty("blacktie.TestOne.library_name")));
+		// assertTrue(function.equals(prop
+		// .getProperty("blacktie.TestOne.function_name")));
+		// assertTrue(library
+		// .equals(prop.getProperty("blacktie.TestOne.library_name")));
 		assertTrue(advertised.equals(prop
 				.getProperty("blacktie.TestOne.advertised")));
 		assertTrue(domain.equals(prop.getProperty("blacktie.domain.name")));
@@ -87,7 +86,8 @@ public class XMLParserTest extends TestCase {
 		assertTrue(arg1.equals(prop.getProperty("blacktie.orb.arg.1")));
 		assertTrue(arg2.equals(prop.getProperty("blacktie.orb.arg.2")));
 		assertTrue(size.equals(prop.getProperty("blacktie.TestOne.size")));
-		assertTrue("log4cxx.properties".equals(prop.getProperty("LOG4CXXCONFIG")));
+		assertTrue("log4cxx.properties".equals(prop
+				.getProperty("LOG4CXXCONFIG")));
 	}
 	//
 	// public void testServerXML() throws Exception {

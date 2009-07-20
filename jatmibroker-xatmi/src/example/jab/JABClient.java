@@ -17,12 +17,11 @@
  */
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
+import org.jboss.blacktie.jatmibroker.jab.JABException;
 import org.jboss.blacktie.jatmibroker.jab.JABRemoteService;
 import org.jboss.blacktie.jatmibroker.jab.JABSession;
 import org.jboss.blacktie.jatmibroker.jab.JABSessionAttributes;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
-import org.jboss.blacktie.jatmibroker.jab.JABException;
 
 public class JABClient {
 	private static final Logger log = LogManager.getLogger(JABClient.class);

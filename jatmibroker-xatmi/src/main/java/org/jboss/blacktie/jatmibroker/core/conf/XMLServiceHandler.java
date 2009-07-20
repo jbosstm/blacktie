@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.conf;
+package org.jboss.blacktie.jatmibroker.core.conf;
 
 import java.util.Properties;
 
@@ -74,7 +74,7 @@ public class XMLServiceHandler extends DefaultHandler {
 					if (attsLocalName.equals("function_name")) {
 						String function_name = atts.getValue(i);
 						prop.put(func_key, function_name);
-					} else if(atts.getLocalName(i).equals("java_class_name")) {
+					} else if (atts.getLocalName(i).equals("java_class_name")) {
 						String java_class_name = atts.getValue(i);
 						prop.put(java_key, java_class_name);
 					} else if (atts.getLocalName(i).equals("library_name")) {

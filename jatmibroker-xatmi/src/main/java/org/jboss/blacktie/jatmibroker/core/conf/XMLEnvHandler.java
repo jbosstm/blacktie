@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.conf;
+package org.jboss.blacktie.jatmibroker.core.conf;
 
 import java.util.Properties;
 
@@ -109,8 +109,11 @@ public class XMLEnvHandler extends DefaultHandler {
 				for (int i = 0; i < atts.getLength(); i++) {
 					if (atts.getLocalName(i).equals("name")) {
 						serviceName = atts.getValue(i);
-						if(serviceName.length() > 15) {
-							log.warn("service " + serviceName + " is longer than XATMI_SERVICE_NAME_LENGTH and will be ignore");
+						if (serviceName.length() > 15) {
+							log
+									.warn("service "
+											+ serviceName
+											+ " is longer than XATMI_SERVICE_NAME_LENGTH and will be ignore");
 							serviceName = null;
 							break;
 						}
@@ -125,7 +128,7 @@ public class XMLEnvHandler extends DefaultHandler {
 				}
 			}
 
-			if(serviceName != null) {
+			if (serviceName != null) {
 				AtmiBrokerServiceXML xml = new AtmiBrokerServiceXML(serverName,
 						serviceName, prop);
 				try {
@@ -149,7 +152,7 @@ public class XMLEnvHandler extends DefaultHandler {
 		} else if (NAME.equals(localName) && value.equals("ORBOPT")) {
 			isORBOPT = true;
 			nameElement = "";
-		} else if(NAME.equals(localName) && value.equals("TRANS_FACTORY_ID")) {
+		} else if (NAME.equals(localName) && value.equals("TRANS_FACTORY_ID")) {
 			isTrans = true;
 			nameElement = "";
 		} else if (NAME.equals(localName)) {

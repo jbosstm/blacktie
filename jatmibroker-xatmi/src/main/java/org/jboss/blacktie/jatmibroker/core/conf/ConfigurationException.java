@@ -1,4 +1,4 @@
-package org.jboss.blacktie.jatmibroker.conf;
+package org.jboss.blacktie.jatmibroker.core.conf;
 
 public class ConfigurationException extends Exception {
 	private static final long serialVersionUID = 1L;

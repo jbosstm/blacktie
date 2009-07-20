@@ -17,7 +17,6 @@
  */
 package org.jboss.blacktie.jatmibroker.transport;
 
-
 public class Message {
 	public Object replyTo;
 	public byte[] data;

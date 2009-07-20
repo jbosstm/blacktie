@@ -22,7 +22,7 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.server.AtmiBrokerServer;
+import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
 
 public class TestTPCall extends TestCase {
 	private AtmiBrokerServer server;
