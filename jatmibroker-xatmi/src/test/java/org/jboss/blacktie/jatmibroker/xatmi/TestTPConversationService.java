@@ -5,33 +5,36 @@ public class TestTPConversationService implements BlacktieService {
 		Session session = svcinfo.getSession();
 		Buffer buffer = new Buffer(null, null);
 		int iterationCount = 100;
-		byte[] got = svcinfo.getBuffer().getData();
-		String received = new String(got);
-		if (received.equals("conversate")) {
-			for (int i = 0; i < iterationCount; i++) {
-				byte[] toSend = ("hi" + i).getBytes();
-				buffer.setData(toSend);
-				try {
-					session.tpsend(buffer, toSend.length, 0);
-					Buffer tprecv = session.tprecv(0);
-					byte[] rcvd = tprecv.getData();
-					String returnedData = new String(rcvd);
-					if (!returnedData.equals("yo" + i)) {
-						buffer.setData(rcvd);
-						return new Response((short) 0, 0, buffer, rcvd.length,
-								0);
+		String received;
+		try {
+			received = (String) svcinfo.getBuffer().getData();
+			if (received.equals("conversate")) {
+				for (int i = 0; i < iterationCount; i++) {
+					buffer.setData("hi" + i);
+					try {
+						session.tpsend(buffer, ("hi" + i).length(), 0);
+						Buffer tprecv = session.tprecv(0);
+						String returnedData = (String) tprecv.getData();
+						if (!returnedData.equals("yo" + i)) {
+							buffer.setData(received);
+							return new Response((short) 0, 0, buffer, received
+									.length(), 0);
+						}
+					} catch (ConnectionException t) {
+						t.printStackTrace();
+						return null;
 					}
-				} catch (ConnectionException t) {
-					t.printStackTrace();
-					return null;
 				}
+			} else {
+				buffer.setData(received);
+				return new Response((short) 0, 0, buffer, received.length(), 0);
 			}
-		} else {
-			buffer.setData(got);
-			return new Response((short) 0, 0, buffer, got.length, 0);
+			String response = "hi" + iterationCount;
+			buffer.setData(response);
+			return new Response((short) 0, 0, buffer, response.length(), 0);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			return null;
 		}
-		byte[] toSend = ("hi" + iterationCount).getBytes();
-		buffer.setData(toSend);
-		return new Response((short) 0, 0, buffer, toSend.length, 0);
 	}
 }

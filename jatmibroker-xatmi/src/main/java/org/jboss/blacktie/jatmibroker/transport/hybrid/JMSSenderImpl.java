@@ -83,7 +83,7 @@ public class JMSSenderImpl implements Sender {
 			message.setStringProperty("messagerval", String.valueOf(rval));
 			message.setStringProperty("messagercode", String.valueOf(rcode));
 
-			byte[] toSend = new byte[len + 1];
+			byte[] toSend = new byte[len];
 			System.arraycopy(data, 0, toSend, 0, len);
 			message.writeBytes(toSend, 0, toSend.length);
 			sender.send(message);

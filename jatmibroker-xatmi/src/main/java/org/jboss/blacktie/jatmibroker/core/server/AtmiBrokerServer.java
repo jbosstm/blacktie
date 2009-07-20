@@ -27,8 +27,8 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerServerXML;
-import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerServerXML;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.transport.OrbManagement;
 import org.jboss.blacktie.jatmibroker.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.transport.Transport;

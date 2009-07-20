@@ -24,7 +24,7 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.transport.Message;
 import org.jboss.blacktie.jatmibroker.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.transport.Transport;
@@ -134,7 +134,7 @@ public class Connection {
 		temporaryQueues.put(correlationId, endpoint);
 		// TODO HANDLE TRANSACTION
 		transport.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
-				buffer.getData(), len, correlationId, flags);
+				buffer.getRawData(), len, correlationId, flags);
 		return correlationId;
 	}
 
@@ -234,7 +234,7 @@ public class Connection {
 		Message m = endpoint.receive(flags);
 		// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
 		Buffer received = new Buffer(null, null);
-		received.setData(m.data);
+		received.setRawData(m.data);
 		return new Response(m.rval, m.rcode, received, m.len, m.flags);
 	}
 }

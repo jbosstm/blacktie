@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.transport.Message;
 import org.jboss.blacktie.jatmibroker.transport.OrbManagement;
 import org.jboss.blacktie.jatmibroker.transport.Receiver;
@@ -151,7 +151,7 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 		}
 		Message message = new Message();
 
-		message.len = ilen - 1;
+		message.len = ilen;
 		message.data = new byte[message.len];
 		System.arraycopy(idata, 0, message.data, 0, message.len);
 

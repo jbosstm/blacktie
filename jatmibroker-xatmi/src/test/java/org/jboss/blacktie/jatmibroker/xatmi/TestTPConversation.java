@@ -17,9 +17,11 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
+import java.io.IOException;
+
 import junit.framework.TestCase;
 
-import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.server.AtmiBrokerServer;
 
 public class TestTPConversation extends TestCase {
@@ -29,8 +31,8 @@ public class TestTPConversation extends TestCase {
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
-		this.server.tpadvertise("TestTwo",
-				TestTPConversationService.class.getName());
+		this.server.tpadvertise("TestTwo", TestTPConversationService.class
+				.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -42,23 +44,20 @@ public class TestTPConversation extends TestCase {
 		server.close();
 	}
 
-	public void test() throws ConnectionException {
+	public void test() throws ConnectionException, IOException,
+			ClassNotFoundException {
 		int iterationCount = 100;
-		byte[] toStart = "conversate".getBytes();
 		Buffer buffer = new Buffer(null, null);
-		buffer.setData(toStart);
+		buffer.setData("conversate");
 
-		Session session = connection.tpconnect("TestTwo", buffer,
-				toStart.length, 0);
+		Session session = connection.tpconnect("TestTwo", buffer, 10, 0);
 		for (int i = 0; i < iterationCount; i++) {
 			Buffer tprecv = session.tprecv(0);
-			assertEquals("hi" + i, new String(tprecv.getData()));
-			byte[] toSend = ("yo" + i).getBytes();
-			buffer.setData(toSend);
-			session.tpsend(buffer, toSend.length, 0);
+			assertEquals("hi" + i, tprecv.getData());
+			buffer.setData("yo" + i);
+			session.tpsend(buffer, ("yo" + i).length(), 0);
 		}
 		Response tpgetrply = connection.tpgetrply(session.getCd(), 0);
-		assertEquals("hi" + iterationCount, new String(tpgetrply.getBuffer()
-				.getData()));
+		assertEquals("hi" + iterationCount, tpgetrply.getBuffer().getData());
 	}
 }

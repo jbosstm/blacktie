@@ -17,9 +17,11 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
+import java.io.IOException;
+
 import junit.framework.TestCase;
 
-import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.server.AtmiBrokerServer;
 
 public class TestTPCall extends TestCase {
@@ -28,8 +30,7 @@ public class TestTPCall extends TestCase {
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
-		this.server
-				.tpadvertise("TestOne", TestTPCallService.class.getName());
+		this.server.tpadvertise("TestOne", TestTPCallService.class.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -41,14 +42,12 @@ public class TestTPCall extends TestCase {
 		server.close();
 	}
 
-	public void test() throws ConnectionException {
-		byte[] echo = "echo".getBytes();
+	public void test() throws ConnectionException, IOException,
+			ClassNotFoundException {
 		Buffer buffer = new Buffer(null, null);
-		buffer.setData(echo);
-		Response response = connection.tpcall("TestOne", buffer,
-				echo.length, 0);
-		byte[] responseData = response.getBuffer().getData();
-		String receivedMessage = new String(responseData);
-		assertEquals("ohce", receivedMessage);
+		buffer.setData("echo");
+		Response response = connection.tpcall("TestOne", buffer, 4, 0);
+		Object responseData = response.getBuffer().getData();
+		assertEquals("ohce", responseData);
 	}
 }

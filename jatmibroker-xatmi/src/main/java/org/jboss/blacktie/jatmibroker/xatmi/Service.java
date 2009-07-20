@@ -18,17 +18,16 @@
 package org.jboss.blacktie.jatmibroker.xatmi;
 
 import java.util.Properties;
-import javax.transaction.Transaction;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerClientXML;
-import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerClientXML;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.transport.JtsTransactionImple;
 import org.jboss.blacktie.jatmibroker.transport.Message;
 import org.jboss.blacktie.jatmibroker.transport.Sender;
 import org.jboss.blacktie.jatmibroker.transport.Transport;
 import org.jboss.blacktie.jatmibroker.transport.TransportFactory;
-import org.jboss.blacktie.jatmibroker.transport.JtsTransactionImple;
 
 public abstract class Service implements BlacktieService {
 	private static final Logger log = LogManager.getLogger(Service.class);
@@ -74,7 +73,7 @@ public abstract class Service implements BlacktieService {
 
 		// THIS IS THE FIRST CALL
 		Buffer buffer = new Buffer(null, null);
-		buffer.setData(message.data);
+		buffer.setRawData(message.data);
 		// TODO NO SESSIONS
 		// NOT PASSING OVER THE SERVICE NAME
 		TPSVCINFO tpsvcinfo = new TPSVCINFO(null, buffer, message.flags,
@@ -97,16 +96,19 @@ public abstract class Service implements BlacktieService {
 			if (hasTx) // and suspend it again
 				JtsTransactionImple.suspend();
 
-			if (sender != null) {
+			if (sender != null && response != null) {
 				log.trace("Sending response");
-				// TODO THIS SHOULD INVOKE THE CLIENT HANDLER
+				// TODO
 				// odata.value = serviceRequest.getBytes();
 				// olen.value = serviceRequest.getLength();
 				sender.send(null, response.getRval(), response.getRcode(),
-						response.getBuffer().getData(), response.getLen(),
+						response.getBuffer().getRawData(), response.getLen(),
 						response.getFlags(), 0);
-			} else if (response != null) {
+
+			} else if (sender == null && response != null) {
 				log.error("No sender avaible but message to be sent");
+			} else if (sender != null && response == null) {
+				log.error("Sender waiting but no response");
 			} else {
 				log.debug("No need to send a response");
 			}

@@ -17,7 +17,7 @@
  */
 package org.jboss.blacktie.jatmibroker.transport;
 
-import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public interface Transport {

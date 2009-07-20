@@ -26,7 +26,7 @@ import javax.naming.InitialContext;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.transport.Transport;
 import org.jboss.blacktie.jatmibroker.transport.TransportFactory;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;

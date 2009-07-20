@@ -19,7 +19,7 @@ package org.jboss.blacktie.jatmibroker.xatmi;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.transport.Message;
 import org.jboss.blacktie.jatmibroker.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.transport.Sender;
@@ -117,7 +117,7 @@ public class Session {
 		if (sender != null) {
 			log.debug("Sender not null, sending");
 			sender.send(getReceiver().getReplyTo(), (short) 0, 0, buffer
-					.getData(), len, cd, flags);
+					.getRawData(), len, cd, flags);
 		} else {
 			throw new ConnectionException(-1, "Session in receive mode", null);
 		}
@@ -152,7 +152,7 @@ public class Session {
 		log.debug("Initializing a new buffer");
 		// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
 		Buffer received = new Buffer(null, null);
-		received.setData(m.data);
+		received.setRawData(m.data);
 		log.debug("Prepared and ready to launch");
 		return received;
 	}

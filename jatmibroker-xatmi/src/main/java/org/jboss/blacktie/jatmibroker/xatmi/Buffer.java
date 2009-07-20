@@ -17,6 +17,7 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -74,9 +75,11 @@ public class Buffer implements Serializable {
 	 * Get the data
 	 * 
 	 * @return The data
+	 * @throws IOException
+	 * @throws ClassNotFoundException
 	 */
-	public byte[] getData() {
-		return data;
+	public Object getData() {
+		return new String(data);
 	}
 
 	/**
@@ -84,8 +87,29 @@ public class Buffer implements Serializable {
 	 * 
 	 * @param data
 	 *            The data
+	 * @throws IOException
 	 */
-	public void setData(byte[] data) {
+	public void setData(Object data) throws ConnectionException {
+		if (data instanceof String) {
+			this.data = ((String) data).getBytes();
+		} else {
+			throw new ConnectionException(-1, "Not a supported message type");
+		}
+	}
+
+	public int getLength() {
+		if (data == null) {
+			return 0;
+		} else {
+			return data.length;
+		}
+	}
+
+	byte[] getRawData() {
+		return data;
+	}
+
+	void setRawData(byte[] data) {
 		this.data = data;
 	}
 }

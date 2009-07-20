@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.transport.Message;
 import org.jboss.blacktie.jatmibroker.transport.OrbManagement;
 import org.jboss.blacktie.jatmibroker.transport.Receiver;
@@ -42,7 +42,8 @@ import org.omg.PortableServer.POAPackage.AdapterNonExistent;
 import AtmiBroker.EndpointQueuePOA;
 
 public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
-	private static final Logger log = LogManager.getLogger(CorbaReceiverImpl.class);
+	private static final Logger log = LogManager
+			.getLogger(CorbaReceiverImpl.class);
 	private POA m_default_poa;
 	private String callbackIOR;
 	private List<Message> returnData = new ArrayList<Message>();
@@ -133,7 +134,7 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Cannot create the receiver", t);
 		}
-		timeout = 2000; // TODO Make configurable
+		timeout = 10000; // TODO Make configurable
 	}
 
 	public POA _default_POA() {

@@ -21,6 +21,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 
 /**
@@ -49,7 +50,7 @@ public class JABRemoteService implements Message {
 		try {
 			// TODO HANDLE TRANSACTION
 			response = connection.tpcall(serviceName, request, request
-					.getData().length, noTimeout ? Connection.TPNOTIME : 0);
+					.getLength(), noTimeout ? Connection.TPNOTIME : 0);
 			log.debug("service_request responsed");
 		} catch (Exception e) {
 			throw new JABException("Could not send tpcall", e);
@@ -62,14 +63,19 @@ public class JABRemoteService implements Message {
 		response = null;
 	}
 
-	public void setString(String string) {
+	public void setString(String string) throws JABException {
 		log.debug("JABService set buffer");
 		request = new Buffer("X_OCTET", null);
-		request.setData(string.getBytes());
+		try {
+			request.setData(string.getBytes());
+		} catch (ConnectionException e) {
+			throw new JABException("Could not write the data: "
+					+ e.getMessage(), e);
+		}
 	}
 
-	public String getString() {
-		return new String(response.getBuffer().getData());
+	public String getString() throws JABException {
+		return (String) response.getBuffer().getData();
 	}
 
 	public void setNoTimeout(boolean noTimeout) {

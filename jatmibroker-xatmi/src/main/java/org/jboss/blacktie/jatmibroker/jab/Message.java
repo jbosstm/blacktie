@@ -18,7 +18,7 @@
 package org.jboss.blacktie.jatmibroker.jab;
 
 public interface Message {
-	public void setString(String string);
+	public void setString(String string) throws JABException;
 
-	public String getString();
+	public String getString() throws JABException;
 }

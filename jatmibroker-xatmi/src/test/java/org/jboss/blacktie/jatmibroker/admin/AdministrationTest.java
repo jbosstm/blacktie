@@ -23,7 +23,7 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerClientXML;
+import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerClientXML;
 
 public class AdministrationTest extends TestCase {
 	private static final Logger log = LogManager

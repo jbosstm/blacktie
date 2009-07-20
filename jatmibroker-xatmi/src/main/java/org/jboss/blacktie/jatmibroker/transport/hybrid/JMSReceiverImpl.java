@@ -76,7 +76,7 @@ public class JMSReceiverImpl implements Receiver {
 				BytesMessage bytesMessage = ((BytesMessage) message);
 				// TODO String replyTo = message.getStringProperty("reply-to");
 				String replyTo = message.getStringProperty("messagereplyto");
-				int len = (int) bytesMessage.getBodyLength() - 1;
+				int len = (int) bytesMessage.getBodyLength();
 				String serviceName = message.getStringProperty("serviceName");
 				int flags = new Integer(message
 						.getStringProperty("messageflags"));

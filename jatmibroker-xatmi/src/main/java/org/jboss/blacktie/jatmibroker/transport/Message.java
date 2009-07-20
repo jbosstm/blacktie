@@ -17,7 +17,6 @@
  */
 package org.jboss.blacktie.jatmibroker.transport;
 
-import org.omg.CosTransactions.Control;
 
 public class Message {
 	public Object replyTo;

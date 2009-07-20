@@ -2,7 +2,7 @@ package org.jboss.blacktie.jatmibroker.xatmi;
 
 import java.util.Properties;
 
-import org.jboss.blacktie.jatmibroker.conf.AtmiBrokerClientXML;
+import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerClientXML;
 
 /**
  * This is a factory that will create connections to remote Blacktie services.
