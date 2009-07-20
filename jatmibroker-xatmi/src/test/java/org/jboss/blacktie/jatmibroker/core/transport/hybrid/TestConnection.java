@@ -1,4 +1,4 @@
-package org.jboss.blacktie.jatmibroker.transport.hybrid;
+package org.jboss.blacktie.jatmibroker.core.transport.hybrid;
 
 import java.util.Properties;
 
