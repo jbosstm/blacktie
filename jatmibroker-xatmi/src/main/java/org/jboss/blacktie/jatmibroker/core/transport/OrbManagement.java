@@ -63,7 +63,8 @@ public class OrbManagement {
 		p.setProperty(CorbaOrbClassProp, CorbaOrbClassValue);
 		p.setProperty(CorbaSingletonClassProp, CorbaSingletonClassValue);
 		p.setProperty("org.omg.PortableInterceptor.ORBInitializerClass."
-				+ "org.jboss.blacktie.jatmibroker.tx.TxInitializer", "");
+				+ org.jboss.blacktie.jatmibroker.core.tx.TxInitializer.class
+						.getName(), "");
 		p.setProperty("OAPort", "0");
 
 		log.debug("set properities");
