@@ -31,6 +31,13 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<excludePackageNames>org.jboss.blacktie.jatmibroker.core</excludePackageNames>
+				</configuration>
+			</plugin>
+			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<source>1.5</source>
@@ -46,7 +53,7 @@
 					<environmentVariables>
 						<BLACKTIE_SCHEMA_DIR>xsd</BLACKTIE_SCHEMA_DIR>
 					</environmentVariables>
-<!--					<skip>false</skip>-->
+					<!--					<skip>false</skip>-->
 				</configuration>
 			</plugin>
 		</plugins>
@@ -66,8 +73,8 @@
 				</exclusion>
 				<exclusion>
 					<groupId>apache-log4cxx.contrib</groupId>
-		                        <artifactId>log4cxx</artifactId>
-				</exclusion>				
+					<artifactId>log4cxx</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -119,23 +126,23 @@
 			<scope>compile</scope>
 		</dependency>
 		<!-- END ORB -->
-        <!-- START JTS -->
-        <dependency>
-                <groupId>jboss</groupId>
-                <artifactId>jbossjts</artifactId>
-                <version>5.1.0.GA</version>
-        </dependency>
-        <dependency>
-                <groupId>jboss</groupId>
-                <artifactId>jbossjts-jacorb</artifactId>
-                <version>5.1.0.GA</version>
-        </dependency>
-        <dependency>
-                <groupId>jboss</groupId>
-                <artifactId>jbossts-common</artifactId>
-                <version>5.1.0.GA</version>
-        </dependency>
-        <!-- END JTS -->
+		<!-- START JTS -->
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jbossjts</artifactId>
+			<version>5.1.0.GA</version>
+		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jbossjts-jacorb</artifactId>
+			<version>5.1.0.GA</version>
+		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jbossts-common</artifactId>
+			<version>5.1.0.GA</version>
+		</dependency>
+		<!-- END JTS -->
 
 		<!-- START JMS -->
 		<dependency>
