@@ -63,9 +63,9 @@ void TestAdmin::testServerdone() {
 }
 
 void TestAdmin::testAdvertised() {
-	long  sendlen = strlen("advertise,BAR") + 1;
+	long  sendlen = strlen("advertise,BAR,") + 1;
 	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
-	strcpy(sendbuf, "advertise,BAR");
+	strcpy(sendbuf, "advertise,BAR,");
 
 	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
 	long  recvlen = 1;
@@ -76,9 +76,9 @@ void TestAdmin::testAdvertised() {
 }
 
 void TestAdmin::testUnadvertised() {
-	long  sendlen = strlen("unadvertise,BAR") + 1;
+	long  sendlen = strlen("unadvertise,BAR,") + 1;
 	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
-	strcpy(sendbuf, "unadvertise,BAR");
+	strcpy(sendbuf, "unadvertise,BAR,");
 
 	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
 	long  recvlen = 1;
