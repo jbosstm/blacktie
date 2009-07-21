@@ -1,4 +1,7 @@
 #include "log4cxx/logger.h"
+#include "ace/OS_NS_stdlib.h"
+#include "ace/OS_NS_stdio.h"
+#include "ace/OS_NS_string.h"
 #include "AtmiBrokerAdmin.h"
 #include "AtmiBrokerServerControl.h"
 #include "xatmi.h"
@@ -15,7 +18,10 @@ extern "C" {
 void ADMIN(TPSVCINFO* svcinfo) {
 	LOG4CXX_INFO(loggerAtmiBrokerAdmin, (char*) "get request");
 
-	char* req = svcinfo->data;
+	char* req = (char*) malloc ((svcinfo->len + 1) * sizeof(char));
+	memset(req, 0, svcinfo->len + 1);
+	ACE_OS::strncpy(req, svcinfo->data, svcinfo->len);
+
 	char* toReturn = NULL;
 	int   len = 1;
 	toReturn = tpalloc((char*) "X_OCTET", NULL, len);
@@ -44,6 +50,7 @@ void ADMIN(TPSVCINFO* svcinfo) {
 
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerAdmin,
 			(char*) "service done");
+	free(req);
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }
 
