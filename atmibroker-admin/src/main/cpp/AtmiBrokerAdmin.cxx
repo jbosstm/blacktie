@@ -22,7 +22,7 @@ void ADMIN(TPSVCINFO* svcinfo) {
 	toReturn = tpalloc((char*) "X_OCTET", NULL, len);
 	toReturn[0] = '0';
 
-	if(strcmp(req, "serverdone") == 0) {
+	if(strncmp(req, "serverdone", 10) == 0) {
 		LOG4CXX_INFO(loggerAtmiBrokerAdmin, (char*) "get serverdone command");
 		toReturn[0] = '1';
 	} else if(strncmp(req, "advertise", 9) == 0) {

@@ -48,13 +48,11 @@ public class JABClientTestCase extends TestCase {
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
 		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet", aJabSession);
-		aJabService.setString("HOWS IT GOING DUDE????!!!!");
+		aJabService.setData("HOWS IT GOING DUDE????!!!!".getBytes());
 		aJabService.call(transaction);
 		transaction.commit();
-		aJabSession.endSession();
-		String expectedString = "BAR SAYS HELLO";
-		String responseString = aJabService.getString());
-		assertEquals(expectedString, responseString);
+		assertEquals("BAR SAYS HELLO", new String(aJabService.getData()));
+		aJabSession.closeSession();
 	}
 
 // TODO
