@@ -30,8 +30,7 @@
 extern "C"void BAR(TPSVCINFO * svcinfo) {
 	int sendlen = 14;
 	char* buffer = tpalloc((char*) "X_OCTET", NULL, sendlen);
-	strcpy(buffer, svcinfo->name);
-	strcat(buffer, " SAYS HELLO");
+	strncpy(buffer, "BAR SAYS HELLO", 14);
 
 	tpreturn(1, 1, buffer, sendlen, 0);
 }
@@ -41,7 +40,7 @@ extern "C"void TestTPACall(TPSVCINFO * svcinfo) {
 		userlogc((char*) "Returning goodness");
 		int sendlen = 16;
 		char* buffer = tpalloc((char*) "X_OCTET", NULL, sendlen);
-		strcpy(buffer, "helloTestTPACall");
+		strncpy(buffer, "helloTestTPACall", 16);
 		tpreturn(1, 1, buffer, sendlen, 0);
 	} else {
 		userlogc((char*) "Returning badness");
@@ -50,9 +49,9 @@ extern "C"void TestTPACall(TPSVCINFO * svcinfo) {
 }
 
 extern "C"void tpcall_x_octet(TPSVCINFO * svcinfo) {
-	int sendlen = strlen((char*) "BAR SAYS HELLO");
+	int sendlen = 14;
 	char* buffer = tpalloc((char*) "X_OCTET", 0, sendlen);
-	strcpy(buffer, "BAR SAYS HELLO");
+	strncpy(buffer, "BAR SAYS HELLO", 14);
 	tpreturn(1, 1, buffer, sendlen, 0);
 }
 
