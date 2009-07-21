@@ -13,8 +13,7 @@ extern "C" {
 #endif
 
 void ADMIN(TPSVCINFO* svcinfo) {
-	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerAdmin,
-			(char*) "get request");
+	LOG4CXX_INFO(loggerAtmiBrokerAdmin, (char*) "get request");
 
 	char* req = svcinfo->data;
 	char* toReturn = NULL;
