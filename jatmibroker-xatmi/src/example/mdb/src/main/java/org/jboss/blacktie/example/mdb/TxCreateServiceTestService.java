@@ -17,8 +17,6 @@
  */
 package org.jboss.blacktie.example.mdb;
 
-import org.jboss.ejb3.annotation.Depends;
-
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 
@@ -64,11 +62,11 @@ public class TxCreateServiceTestService extends MDBBlacktieService implements
 	}
 
 	public Response tpservice(TPSVCINFO svcinfo) {
-		String rcvd = (String) svcinfo.getBuffer().getData();
+		String rcvd = new String(svcinfo.getBuffer().getData());
 		String resp = serviceRequest(rcvd);
 		Buffer buffer = new Buffer(null, null);
 		try {
-			buffer.setData(resp);
+			buffer.setData(resp.getBytes());
 		} catch (ConnectionException e) {
 			resp = "";
 			log.error("Caught an exception", e);

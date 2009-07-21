@@ -44,7 +44,7 @@ public class CorbaSenderImpl implements Sender {
 			log.trace("Reply to set as null");
 			toReplyTo = "";
 		}
-		queue.send(toReplyTo, rval, rcode, data, len + 1, correlationId, flags);
+		queue.send(toReplyTo, rval, rcode, data, len, correlationId, flags);
 		log.debug("Sent the message");
 	}
 

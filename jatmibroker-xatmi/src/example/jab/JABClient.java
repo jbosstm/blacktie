@@ -40,12 +40,13 @@ public class JABClient {
 			JABTransaction transaction = new JABTransaction(aJabSession, 5000);
 			JABRemoteService aJabService = new JABRemoteService("BAR",
 					aJabSession);
-			aJabService.setString(message);
+			aJabService.setData(message.getBytes());
 			log.info("Calling call with input: " + message);
 			aJabService.call(null);
-			log.info("Called call with output: " + aJabService.getString());
+			log.info("Called call with output: "
+					+ new String(aJabService.getData()));
 			transaction.commit();
-			aJabSession.endSession();
+			aJabSession.closeSession();
 		} catch (JABException e) {
 			log.error("JAB error: " + e.getMessage(), e);
 		}

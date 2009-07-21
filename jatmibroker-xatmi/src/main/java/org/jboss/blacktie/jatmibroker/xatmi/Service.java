@@ -29,38 +29,56 @@ import org.jboss.blacktie.jatmibroker.core.transport.Sender;
 import org.jboss.blacktie.jatmibroker.core.transport.Transport;
 import org.jboss.blacktie.jatmibroker.core.transport.TransportFactory;
 
+/**
+ * All services should extend this class as it provides the core service
+ * template method.
+ */
 public abstract class Service implements BlacktieService {
+	/**
+	 * The logger to use.
+	 */
 	private static final Logger log = LogManager.getLogger(Service.class);
+
+	/**
+	 * The transport to use.
+	 */
 	private Transport transport;
-	private String name;
 
-	public Service(String name) {
-		this.name = name;
-		log.info("Service created: " + name);
+	/**
+	 * The service needs the name of the service so that it can be resolved in
+	 * the Environment.xml file
+	 * 
+	 * @param name
+	 *            The name of the service
+	 * @throws ConfigurationException
+	 * @throws ConnectionException
+	 */
+	public Service(String name) throws ConfigurationException,
+			ConnectionException {
+		Properties properties;
+		AtmiBrokerClientXML xml = new AtmiBrokerClientXML();
+		properties = xml.getProperties();
+		transport = TransportFactory.loadTransportFactory(name, properties)
+				.createTransport();
+		log.debug("Service created: " + name);
 	}
 
-	private synchronized Transport getTransport()
-			throws ConfigurationException, ConnectionException {
-		if (transport == null) {
-			Properties properties;
-			AtmiBrokerClientXML xml = new AtmiBrokerClientXML();
-			properties = xml.getProperties();
-			transport = TransportFactory.loadTransportFactory(name, properties)
-					.createTransport();
-		}
-		return transport;
-	}
-
-	protected void processMessage(Message message) throws ConnectionException,
-			ConfigurationException {
+	/**
+	 * Entry points should pass control to this method as soon as reasonably
+	 * possible.
+	 * 
+	 * @param message
+	 *            The message to process
+	 * @throws ConnectionException
+	 *             In case communication fails
+	 */
+	protected void processMessage(Message message) throws ConnectionException {
 		if (JtsTransactionImple.hasTransaction()) {
 			log
 					.error("Blacktie MDBs must not be called with a transactional context");
 		} else {
 			log.trace("Service invoked");
 		}
-
-		Transport transport = getTransport();
 		log.trace("obtained transport");
 		Sender sender = null;
 		if (message.replyTo != null) {
@@ -73,7 +91,7 @@ public abstract class Service implements BlacktieService {
 
 		// THIS IS THE FIRST CALL
 		Buffer buffer = new Buffer(null, null);
-		buffer.setRawData(message.data);
+		buffer.setData(message.data);
 		// TODO NO SESSIONS
 		// NOT PASSING OVER THE SERVICE NAME
 		TPSVCINFO tpsvcinfo = new TPSVCINFO(null, buffer, message.flags,
@@ -102,7 +120,7 @@ public abstract class Service implements BlacktieService {
 				// odata.value = serviceRequest.getBytes();
 				// olen.value = serviceRequest.getLength();
 				sender.send(null, response.getRval(), response.getRcode(),
-						response.getBuffer().getRawData(), response.getLen(),
+						response.getBuffer().getData(), response.getLen(),
 						response.getFlags(), 0);
 
 			} else if (sender == null && response != null) {

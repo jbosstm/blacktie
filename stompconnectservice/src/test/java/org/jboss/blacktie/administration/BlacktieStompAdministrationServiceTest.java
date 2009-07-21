@@ -19,7 +19,7 @@ package org.jboss.blacktie.administration;
 
 import junit.framework.TestCase;
 
-import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
@@ -81,9 +81,10 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 		Buffer buffer = new Buffer(null, null);
 		buffer.setData(toSend);
 
-		Response response = connection.tpcall("BTStompAdmin", buffer, ((byte[])buffer.getData()).length, 0);
+		Response response = connection.tpcall("BTStompAdmin", buffer, buffer
+				.getData().length, 0);
 
-		byte[] responseData = (byte[])(response.getBuffer()).getData();
+		byte[] responseData = response.getBuffer().getData();
 		assertEquals(expectation, responseData[0]);
 	}
 }

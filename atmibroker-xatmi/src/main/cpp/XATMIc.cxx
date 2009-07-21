@@ -76,8 +76,7 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 
 			LOG4CXX_TRACE(loggerXATMI, (char*) "allocating data to go: "
 					<< ilen);
-			char* data_togo = (char *) malloc(ilen + 1);
-			data_togo[ilen] = NULL;
+			char* data_togo = (char *) malloc(ilen);
 			LOG4CXX_TRACE(loggerXATMI, (char*) "allocated");
 			memcpy(data_togo, idata, ilen);
 			LOG4CXX_TRACE(loggerXATMI, (char*) "copied: idata into: data_togo");
@@ -85,7 +84,7 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			MESSAGE message;
 			message.replyto = replyTo;
 			message.data = data_togo;
-			message.len = ilen + 1;
+			message.len = ilen;
 			message.correlationId = correlationId;
 			message.flags = flags;
 			message.rcode = rcode;
@@ -131,7 +130,6 @@ int receive(Session* session, char ** odata, long *olen, long flags,
 				time = 0;
 			}
 			MESSAGE message = session->receive(time);
-			message.len = message.len - 1;
 			if (message.data != NULL) {
 				// TODO Handle TPNOCHANGE
 				if (len < message.len) {

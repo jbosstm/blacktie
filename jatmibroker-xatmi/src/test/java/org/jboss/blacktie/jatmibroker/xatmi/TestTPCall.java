@@ -45,9 +45,9 @@ public class TestTPCall extends TestCase {
 	public void test() throws ConnectionException, IOException,
 			ClassNotFoundException {
 		Buffer buffer = new Buffer(null, null);
-		buffer.setData("echo");
+		buffer.setData("echo".getBytes());
 		Response response = connection.tpcall("TestOne", buffer, 4, 0);
-		Object responseData = response.getBuffer().getData();
-		assertEquals("ohce", responseData);
+		byte[] responseData = response.getBuffer().getData();
+		assertEquals("ohce", new String(responseData));
 	}
 }

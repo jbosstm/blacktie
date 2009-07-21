@@ -40,7 +40,7 @@ public class JABFactoryClient {
 			JABConnection c = jcf.getConnection("connection");
 			JABTransaction t = c.beginTransaction(-1);
 			JABBuffer b = new JABBuffer();
-			b.setValue(message);
+			b.setValue(message.getBytes());
 			log.info("Calling call with input: " + message);
 			JABResponse call = c.call("BAR", b, t);
 			log.info("Called call with output: " + call.getValue());

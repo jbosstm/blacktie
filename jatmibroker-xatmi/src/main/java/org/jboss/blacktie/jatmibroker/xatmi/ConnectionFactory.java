@@ -6,8 +6,14 @@ import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerClientXML;
 
 /**
  * This is a factory that will create connections to remote Blacktie services.
+ * 
+ * @see Connection
+ * @see ConnectionException
  */
 public class ConnectionFactory {
+	/**
+	 * The properties inside the connection factory.
+	 */
 	private Properties properties = null;
 
 	/**
@@ -22,7 +28,7 @@ public class ConnectionFactory {
 	}
 
 	/**
-	 * Get the default connection factory
+	 * Get a connection factory using non-default connections.
 	 * 
 	 * @return The connection factory
 	 * @throws ConnectionException
@@ -36,6 +42,7 @@ public class ConnectionFactory {
 	 * Create the connection factory
 	 * 
 	 * @throws ConnectionException
+	 *             In case the configuration could not be loaded
 	 */
 	private ConnectionFactory(String configurationDirectory)
 			throws ConnectionException {
@@ -49,7 +56,7 @@ public class ConnectionFactory {
 	}
 
 	/**
-	 * Get the connection
+	 * Get the connection.
 	 * 
 	 * @return The connection
 	 * @throws ConnectionException

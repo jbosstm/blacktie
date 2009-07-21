@@ -22,22 +22,42 @@ import java.util.Properties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerClientXML;
-import org.jboss.blacktie.jatmibroker.core.transport.OrbManagement;
 
 /**
- * Create the session attributes
+ * Create a wrapper for the attributes to use for the sessions. The session
+ * attributes are used in the constructor to the JABSession.
+ * 
+ * @see JABSession
  */
 public class JABSessionAttributes {
+	/**
+	 * The logger to output information to
+	 */
 	private static final Logger log = LogManager
 			.getLogger(JABSessionAttributes.class);
-	private Properties properties;
-	private OrbManagement orbManagement;
 
 	/**
-	 * Create session attributes using the default configuration from
-	 * blacktie.config.dir
+	 * The set of properties to use.
+	 */
+	private Properties properties;
+
+	/**
+	 * Create the session attributes using the default configuration directory
 	 * 
 	 * @throws JABException
+	 *             In case the configuration file cannot be accessed
+	 */
+	public JABSessionAttributes() throws JABException {
+		this(null);
+	}
+
+	/**
+	 * Create the session attributes using a non-default directory
+	 * 
+	 * @param configurationDirectory
+	 *            The directory to use
+	 * @throws JABException
+	 *             In case the configuration file cannot be accessed
 	 */
 	public JABSessionAttributes(String configurationDirectory)
 			throws JABException {
@@ -45,14 +65,16 @@ public class JABSessionAttributes {
 			AtmiBrokerClientXML client = new AtmiBrokerClientXML();
 			this.properties = client.getProperties(configurationDirectory);
 		} catch (Exception e) {
+			log.error("Could not load the configuration", e);
 			throw new JABException("Could not load the configuration", e);
 		}
 	}
 
-	public JABSessionAttributes() throws JABException {
-		this(null);
-	}
-
+	/**
+	 * Get the properties defined in the configuration file
+	 * 
+	 * @return The configuration properties
+	 */
 	public Properties getProperties() {
 		return properties;
 	}

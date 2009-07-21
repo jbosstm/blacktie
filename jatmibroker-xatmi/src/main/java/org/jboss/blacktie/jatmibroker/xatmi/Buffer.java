@@ -78,8 +78,8 @@ public class Buffer implements Serializable {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public Object getData() {
-		return new String(data);
+	public byte[] getData() {
+		return data;
 	}
 
 	/**
@@ -89,12 +89,8 @@ public class Buffer implements Serializable {
 	 *            The data
 	 * @throws IOException
 	 */
-	public void setData(Object data) throws ConnectionException {
-		if (data instanceof String) {
-			this.data = ((String) data).getBytes();
-		} else {
-			throw new ConnectionException(-1, "Not a supported message type");
-		}
+	public void setData(byte[] data) {
+		this.data = data;
 	}
 
 	public int getLength() {
@@ -103,13 +99,5 @@ public class Buffer implements Serializable {
 		} else {
 			return data.length;
 		}
-	}
-
-	byte[] getRawData() {
-		return data;
-	}
-
-	void setRawData(byte[] data) {
-		this.data = data;
 	}
 }

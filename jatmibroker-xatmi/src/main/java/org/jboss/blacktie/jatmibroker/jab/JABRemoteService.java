@@ -21,64 +21,149 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 
 /**
- * Create an invoker for a remote service.
+ * Create an invoker for a remote service. It must be constructed using a
+ * JABSession and the name of the service to invoke.
+ * 
+ * @see JABSession
  */
 public class JABRemoteService implements Message {
+	/**
+	 * The logger to debug using
+	 */
 	private static final Logger log = LogManager
 			.getLogger(JABRemoteService.class);
+
+	/**
+	 * The real connection to the service
+	 */
 	private Connection connection;
+
+	/**
+	 * The name of the service to invoke
+	 */
 	private String serviceName;
-	private Buffer request;
-	private Response response;
+
+	/**
+	 * The buffer to send.
+	 */
+	private JABRequest requestMessage;
+
+	/**
+	 * The response obtained.
+	 */
+	private JABResponse responseMessage;
+
+	/**
+	 * Should the service wait forever.
+	 */
 	boolean noTimeout;
 
+	/**
+	 * The remote service constructor allows the programmer to access a remote
+	 * XATMI service.
+	 * 
+	 * @param aServiceName
+	 *            The name of the service to invoke
+	 * @param aJABSession
+	 *            The session to use
+	 * @throws JABException
+	 *             In case the remote service cannot be accessed.
+	 */
 	public JABRemoteService(String aServiceName, JABSession aJABSession)
 			throws JABException {
 		log.debug("JABService constructor");
 
 		connection = aJABSession.getConnection();
 		serviceName = aServiceName;
+		requestMessage = new JABRequest();
+		responseMessage = new JABResponse();
 	}
 
+	/**
+	 * Call the remote service within the scope of the transaction specified in
+	 * the signature of the invocation.
+	 * 
+	 * @param aJABTransaction
+	 *            The transactional scoping.
+	 * @throws JABException
+	 *             If the call cannot be issued.
+	 */
 	public void call(JABTransaction aJABTransaction) throws JABException {
 		log.debug("JABService call");
 
 		try {
 			// TODO HANDLE TRANSACTION
-			response = connection.tpcall(serviceName, request, request
+			Buffer request = requestMessage.getRequest();
+			Response response = connection.tpcall(serviceName, request, request
 					.getLength(), noTimeout ? Connection.TPNOTIME : 0);
+			responseMessage.setResponse(response);
 			log.debug("service_request responsed");
 		} catch (Exception e) {
 			throw new JABException("Could not send tpcall", e);
 		}
 	}
 
+	/**
+	 * Clear the request and response buffers prior to a re-invocation.
+	 */
 	public void clear() {
 		log.debug("JABService clear");
-		request = null;
-		response = null;
+		requestMessage.clear();
+		responseMessage.clear();
 	}
 
-	public void setString(String string) throws JABException {
+	/**
+	 * Set the data to send to a remote service.
+	 * 
+	 * @param data
+	 *            The date to send
+	 * @throws JABException
+	 *             In case the string is malformed
+	 */
+	public void setData(byte[] data) throws JABException {
 		log.debug("JABService set buffer");
-		request = new Buffer("X_OCTET", null);
-		try {
-			request.setData(string.getBytes());
-		} catch (ConnectionException e) {
-			throw new JABException("Could not write the data: "
-					+ e.getMessage(), e);
-		}
+		requestMessage.setData(data);
 	}
 
-	public String getString() throws JABException {
-		return (String) response.getBuffer().getData();
+	/**
+	 * Get the content of the remote service response.
+	 * 
+	 * @throws JABException
+	 *             If the content is not as expected.
+	 */
+	public byte[] getData() throws JABException {
+		log.debug("JABService get buffer");
+		return responseMessage.getData();
 	}
 
+	/**
+	 * Do not timeout the request.
+	 * 
+	 * @param noTimeout
+	 *            Do not stop waiting for responses.
+	 */
 	public void setNoTimeout(boolean noTimeout) {
 		this.noTimeout = noTimeout;
+	}
+
+	/**
+	 * Get the content of the outbound buffer.
+	 * 
+	 * @return The requests input
+	 */
+	public Message getRequest() {
+		return requestMessage;
+	}
+
+	/**
+	 * Get the content of the response message
+	 * 
+	 * @return The requests output
+	 */
+	public Message getResponse() {
+		return responseMessage;
 	}
 }

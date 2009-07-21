@@ -40,7 +40,7 @@ void TestTPRealloc::tearDown() {
 		m_allocated = NULL;
 	}
 	if (m_nonallocated != NULL) {
-		
+
 		free(m_nonallocated);
 		m_nonallocated = NULL;
 	}
@@ -57,6 +57,7 @@ void TestTPRealloc::test_tprealloc_negative_x_octet() {
 	CPPUNIT_ASSERT(tperrno== TPEINVAL);
 }
 
+// THIS DOES NOT WORK AS YOU CANNOT REALLOC A ZERO BUFFER AS IT CANT BE FOUND
 void TestTPRealloc::test_tprealloc_zero_x_octet() {
 	userlogc("test_tprealloc_zero_x_octet");
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
@@ -376,7 +377,7 @@ void TestTPRealloc::test_tprealloc_multi_x_c_type() {
 		int toTest = ::tptypes(m_allocated, type, subtype);
 		CPPUNIT_ASSERT(strncmp(type, "X_C_TYPE", 8) == 0);
 		CPPUNIT_ASSERT(strcmp(subtype, "test") == 0);
-		free(type);	
+		free(type);
 		free(subtype);
 		CPPUNIT_ASSERT(tperrno == 0);
 		CPPUNIT_ASSERT(toTest == i);

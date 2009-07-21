@@ -152,7 +152,7 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 		}
 		Message message = new Message();
 
-		message.len = ilen - 1;
+		message.len = ilen;
 		message.data = new byte[message.len];
 		System.arraycopy(idata, 0, message.data, 0, message.len);
 

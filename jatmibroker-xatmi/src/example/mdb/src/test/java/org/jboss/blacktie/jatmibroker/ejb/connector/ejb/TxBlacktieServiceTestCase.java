@@ -72,7 +72,7 @@ public class TxBlacktieServiceTestCase extends TestCase {
 		JABTransaction transaction = startTx();
 		Response response = connection.tpcall("TxEchoService", buffer,
 				args.length, 0);
-		String responseData = (String) response.getBuffer().getData();
+		String responseData = new String(response.getBuffer().getData());
 		transaction.commit();
 		assertEquals("test=test1,tx=true", responseData);
 	}
@@ -84,7 +84,7 @@ public class TxBlacktieServiceTestCase extends TestCase {
 
 		Response response = connection.tpcall("TxEchoService", buffer,
 				args.length, 0);
-		String responseData = (String) response.getBuffer().getData();
+		String responseData = new String(response.getBuffer().getData());
 		assertNotSame("test=test2,tx=true", responseData);
 	}
 
@@ -95,7 +95,7 @@ public class TxBlacktieServiceTestCase extends TestCase {
 
 		Response response = connection.tpcall("TxEchoService", buffer,
 				args.length, 0);
-		String responseData = (String) response.getBuffer().getData();
+		String responseData = new String(response.getBuffer().getData());
 		assertEquals("test=test3,tx=false", responseData);
 	}
 
@@ -107,7 +107,7 @@ public class TxBlacktieServiceTestCase extends TestCase {
 		JABTransaction transaction = startTx();
 		Response response = connection.tpcall("TxEchoService", buffer,
 				args.length, 0);
-		String responseData = (String) response.getBuffer().getData();
+		String responseData = new String(response.getBuffer().getData());
 		transaction.commit();
 		assertNotSame("test=test4,tx=false", responseData);
 	}
@@ -125,7 +125,7 @@ public class TxBlacktieServiceTestCase extends TestCase {
 
 		Response response = connection.tpcall("TxEchoService", buffer,
 				args.length, 0);
-		String responseData = (String) response.getBuffer().getData();
+		String responseData = new String(response.getBuffer().getData());
 		assertEquals("test=test5,tx=create", responseData);
 	}
 }

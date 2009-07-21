@@ -24,22 +24,37 @@ import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
 
 /**
- * The JABSession holds a connection to the XATMI server
+ * The JABSession holds a connection to the XATMI server.
+ * 
+ * @see JABSessionAttributes
  */
 public class JABSession {
+	/**
+	 * The logger to issue debug statements on
+	 */
 	private static final Logger log = LogManager.getLogger(JABSession.class);
+
+	/**
+	 * The attributes to use in respect of this session.
+	 */
 	private JABSessionAttributes jabSessionAttributes;
+
+	/**
+	 * The real connection to the server process.
+	 */
 	private Connection connection;
 
 	/**
-	 * Create a new connection to the configured XATMI server
+	 * Create a new connection to the server-side using the state defined in the
+	 * session attributes
 	 * 
 	 * @param aJABSessionAttributes
+	 *            The attributes to use
 	 * @throws JABException
+	 *             In case the connection cannot be established
 	 */
 	public JABSession(JABSessionAttributes aJABSessionAttributes)
 			throws JABException {
-		super();
 		log.debug("JABSession constructor");
 		try {
 			jabSessionAttributes = aJABSessionAttributes;
@@ -57,8 +72,9 @@ public class JABSession {
 	 * Close the connection with the server
 	 * 
 	 * @throws JABException
+	 *             In case the connection cannot be closed
 	 */
-	public void endSession() throws JABException {
+	public void closeSession() throws JABException {
 		log.debug("JABSession endSession");
 		try {
 			connection.close();
@@ -70,14 +86,29 @@ public class JABSession {
 		}
 	}
 
+	/**
+	 * Has the session been closed yet?
+	 * 
+	 * @return True, if the connection is closed
+	 */
 	public boolean isConnected() {
 		return connection != null;
 	}
 
+	/**
+	 * Get the attributes to use within this session.
+	 * 
+	 * @return The sessions attributes
+	 */
 	JABSessionAttributes getJABSessionAttributes() {
 		return jabSessionAttributes;
 	}
 
+	/**
+	 * Obtain a reference to the connection
+	 * 
+	 * @return The connection
+	 */
 	Connection getConnection() {
 		return connection;
 	}

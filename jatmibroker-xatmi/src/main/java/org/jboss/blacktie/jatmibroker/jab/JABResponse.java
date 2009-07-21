@@ -17,30 +17,67 @@
  */
 package org.jboss.blacktie.jatmibroker.jab;
 
+import org.jboss.blacktie.jatmibroker.xatmi.Response;
+
 /**
- * The message interface is a wrapper around input output buffers.
+ * The JABResponse is obtained from the JABRemoteService
  * 
- * @see JABRequest
- * @see JABResponse
  * @see JABRemoteService
  */
-public interface Message {
+public class JABResponse implements Message {
+
 	/**
-	 * Set the content to send
-	 * 
-	 * @param string
-	 *            The message to send
-	 * @throws JABException
-	 *             In case the string is malformed
+	 * The response obtained.
 	 */
-	public void setData(byte[] data) throws JABException;
+	private Response response;
+
+	/**
+	 * The class should be created from the JABRemoteService
+	 */
+	JABResponse() {
+	}
+
+	/**
+	 * Set the raw response object
+	 * 
+	 * @param response
+	 *            The response to set
+	 */
+	void setResponse(Response response) {
+		this.response = response;
+	}
 
 	/**
 	 * Get the content of the buffer
 	 * 
 	 * @return The content of the buffer
 	 * @throws JABException
-	 *             In case the string is malformed
+	 *             In case the content is malformed
 	 */
-	public byte[] getData() throws JABException;
+	public byte[] getData() throws JABException {
+		if (response == null) {
+			throw new JABException(
+					"Cannot read the content of the buffer, no response to read");
+		}
+		return response.getBuffer().getData();
+	}
+
+	/**
+	 * This method should not be called by programmers.
+	 * 
+	 * @param string
+	 *            No parameter is acceptable
+	 * @throws JABException
+	 *             In case the programmer calls this.
+	 */
+	public void setData(byte[] data) throws JABException {
+		throw new JABException("Cannot set data on a received buffer");
+	}
+
+	/**
+	 * Clear the content of the response
+	 */
+	void clear() {
+		response = null;
+	}
 }

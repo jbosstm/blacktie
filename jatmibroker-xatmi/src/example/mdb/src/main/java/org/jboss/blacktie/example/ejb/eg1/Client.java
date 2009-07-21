@@ -1,14 +1,11 @@
 package org.jboss.blacktie.example.ejb.eg1;
 
-import javax.naming.InitialContext;
 import javax.naming.Context;
-import javax.ejb.*;
+import javax.naming.InitialContext;
 
 public class Client {
-	private static final String[] names = {
-		"FirstBTBean/remote",
-		"SecondBTBean/remote"
-	};
+	private static final String[] names = { "FirstBTBean/remote",
+			"SecondBTBean/remote" };
 
 	public static void main(String[] args) throws Exception {
 		Context ctx = new InitialContext();
@@ -25,7 +22,8 @@ public class Client {
 
 		try {
 			String s = beans[0].txMandatory("bean=" + names[1]);
-			System.out.println("Error should have got an EJBTransactionRequiredException exception");
+			System.out
+					.println("Error should have got an EJBTransactionRequiredException exception");
 		} catch (javax.ejb.EJBTransactionRequiredException e) {
 			System.out.println("Success got EJBTransactionRequiredException");
 		}

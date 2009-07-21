@@ -17,35 +17,65 @@
  */
 package org.jboss.blacktie.jatmibroker.jab;
 
+import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
+
 /**
- * The JABException is used throughout the JAB library to report issues to the
- * client.
+ * The JABRequest class wraps the output parameter to the service.
+ * 
+ * @see JABRemoteService
  */
-public class JABException extends Exception {
-	/**
-	 * The serialization id.
-	 */
-	private static final long serialVersionUID = 1L;
+public class JABRequest implements Message {
 
 	/**
-	 * Report a root cause.
-	 * 
-	 * @param msg
-	 *            The message to include
-	 * @param cause
-	 *            The root cause of the exception
+	 * The buffer to send.
 	 */
-	public JABException(String msg, Throwable cause) {
-		super(msg, cause);
+	private Buffer request;
+
+	/**
+	 * The request should be created from the JABRemoteService getRequest
+	 * method.
+	 */
+	JABRequest() {
 	}
 
 	/**
-	 * The JABException that doesn't need the root cause.
+	 * Get the current content of the buffer.
 	 * 
-	 * @param msg
-	 *            The message to include
+	 * @return The content of the buffer
+	 * @throws JABException
+	 *             if the data is malformed
 	 */
-	public JABException(String msg) {
-		super(msg);
+	public byte[] getData() {
+		return request.getData();
 	}
+
+	/**
+	 * Set the content of the buffer
+	 * 
+	 * @param string
+	 *            The content of the buffer to set
+	 * @throws JABException
+	 *             In case the content is malformed
+	 */
+	public void setData(byte[] data) {
+		request = new Buffer("X_OCTET", null);
+		request.setData(data);
+	}
+
+	/**
+	 * An internal method to access the actual buffer.
+	 * 
+	 * @return The buffer
+	 */
+	Buffer getRequest() {
+		return request;
+	}
+
+	/**
+	 * Clear the real buffer
+	 */
+	void clear() {
+		request = null;
+	}
+
 }

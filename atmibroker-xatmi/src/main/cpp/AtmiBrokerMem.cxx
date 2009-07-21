@@ -128,8 +128,7 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size) {
 				<< ":" << subtype << ":" << size);
 		MemoryInfo memoryInfo;
 		LOG4CXX_TRACE(logger, (char*) "tpalloc - created memoryInfo");
-		memoryInfo.memoryPtr = (char*) malloc(size + 1);
-		memoryInfo.memoryPtr[size] = NULL;
+		memoryInfo.memoryPtr = (char*) malloc(size);
 		memoryInfo.size = size;
 		LOG4CXX_TRACE(logger, (char*) "tpalloc - sized: " << size);
 		memoryInfo.type = (char*) malloc(MAX_TYPE_SIZE + 1);
@@ -150,7 +149,8 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size) {
 						<< memoryInfo.type << ":" << memoryInfo.subtype << ":"
 						<< memoryInfo.size);
 		memoryInfoVector.push_back(memoryInfo);
-		LOG4CXX_DEBUG(logger, (char*) "added MemoryInfo to vector: " << memoryInfoVector.size());
+		LOG4CXX_DEBUG(logger, (char*) "added MemoryInfo to vector: "
+				<< memoryInfoVector.size());
 		toReturn = (char*) memoryInfo.memoryPtr;
 	}
 	lock->unlock();
@@ -185,9 +185,8 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size) {
 						size = 1024;
 				}
 
-				char* memPtr = (char*) realloc((void*) addr, size + 1);
+				char* memPtr = (char*) realloc((void*) addr, size);
 				(*it).memoryPtr = memPtr;
-				(*it).memoryPtr[size] = NULL;
 				(*it).size = size;
 				toReturn = memPtr;
 				LOG4CXX_DEBUG(logger, (char*) "updated - size: " << size);
@@ -223,7 +222,8 @@ void AtmiBrokerMem::tpfree(char* ptr) {
 			}
 			MemoryInfo memoryInfo = (*it);
 			if (memoryInfo.memoryPtr == ptr) {
-				LOG4CXX_DEBUG(logger, (char*) "freeing memoryPtr to reclaim: " << memoryInfo.size);
+				LOG4CXX_DEBUG(logger, (char*) "freeing memoryPtr to reclaim: "
+						<< memoryInfo.size);
 				free(memoryInfo.memoryPtr);
 				if (memoryInfo.type != NULL) {
 					LOG4CXX_DEBUG(logger, (char*) "freeing type");
@@ -234,11 +234,11 @@ void AtmiBrokerMem::tpfree(char* ptr) {
 					free(memoryInfo.subtype);
 				}
 				LOG4CXX_DEBUG(logger, (char*) "freed memory");
-	
+
 				LOG4CXX_DEBUG(logger, (char*) "removing  from vector");
 				memoryInfoVector.erase(it);
 				LOG4CXX_DEBUG(logger, (char*) "removed from vector ");
-	
+
 				found = true;
 				break;
 			}

@@ -127,7 +127,7 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 	strcpy(expectedResult, "conversate");
 	char* errorMessage = (char*) malloc(svcinfo->len * 2 + 1);
 	sprintf(errorMessage, "%s/%s", expectedResult, svcinfo->data);
-	if (strcmp(expectedResult, svcinfo->data) != 0) {
+	if (strncmp(expectedResult, svcinfo->data, 10) != 0) {
 		if (svcinfo->data != NULL) {
 			userlogc("Got invalid data %s", svcinfo->data);
 		} else {

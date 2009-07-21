@@ -31,7 +31,10 @@ import org.jboss.blacktie.jatmibroker.core.transport.Transport;
 import org.jboss.blacktie.jatmibroker.core.transport.TransportFactory;
 
 /**
- * This is the connection to remote Blacktie services.
+ * This is the connection to remote Blacktie services. It must be created using
+ * the ConnectionFactory
+ * 
+ * @see ConnectionFactory
  */
 public class Connection {
 
@@ -134,7 +137,7 @@ public class Connection {
 		temporaryQueues.put(correlationId, endpoint);
 		// TODO HANDLE TRANSACTION
 		transport.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
-				buffer.getRawData(), len, correlationId, flags);
+				buffer.getData(), len, correlationId, flags);
 		return correlationId;
 	}
 
@@ -234,7 +237,7 @@ public class Connection {
 		Message m = endpoint.receive(flags);
 		// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
 		Buffer received = new Buffer(null, null);
-		received.setRawData(m.data);
+		received.setData(m.data);
 		return new Response(m.rval, m.rcode, received, m.len, m.flags);
 	}
 }

@@ -116,8 +116,8 @@
 		<module>../atmibroker-corba</module>
 		<module>../atmibroker-stomp</module>
 		<module>../atmibroker-hybrid</module>
-		<module>../atmibroker-admin</module>
 		<module>../atmibroker-xatmi</module>
+		<module>../atmibroker-admin</module>
 		<module>../codeGeneration</module>
 		<module>../integration-tests</module>
 	</modules>

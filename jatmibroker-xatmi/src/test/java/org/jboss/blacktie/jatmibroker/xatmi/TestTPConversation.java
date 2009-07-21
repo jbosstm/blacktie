@@ -48,16 +48,17 @@ public class TestTPConversation extends TestCase {
 			ClassNotFoundException {
 		int iterationCount = 100;
 		Buffer buffer = new Buffer(null, null);
-		buffer.setData("conversate");
+		buffer.setData("conversate".getBytes());
 
 		Session session = connection.tpconnect("TestTwo", buffer, 10, 0);
 		for (int i = 0; i < iterationCount; i++) {
 			Buffer tprecv = session.tprecv(0);
-			assertEquals("hi" + i, tprecv.getData());
-			buffer.setData("yo" + i);
+			assertEquals("hi" + i, new String(tprecv.getData()));
+			buffer.setData(("yo" + i).getBytes());
 			session.tpsend(buffer, ("yo" + i).length(), 0);
 		}
 		Response tpgetrply = connection.tpgetrply(session.getCd(), 0);
-		assertEquals("hi" + iterationCount, tpgetrply.getBuffer().getData());
+		assertEquals(("hi" + iterationCount), new String(tpgetrply.getBuffer()
+				.getData()));
 	}
 }
