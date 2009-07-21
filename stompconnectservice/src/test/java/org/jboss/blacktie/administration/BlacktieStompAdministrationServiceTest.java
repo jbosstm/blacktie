@@ -81,10 +81,9 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 		Buffer buffer = new Buffer(null, null);
 		buffer.setData(toSend);
 
-		Response response = connection.tpcall("BTStompAdmin", buffer, buffer
-				.getData().length, 0);
+		Response response = connection.tpcall("BTStompAdmin", buffer, ((byte[])buffer.getData()).length, 0);
 
-		byte[] responseData = response.getBuffer().getData();
+		byte[] responseData = (byte[])(response.getBuffer()).getData();
 		assertEquals(expectation, responseData[0]);
 	}
 }

@@ -82,8 +82,19 @@ void TestAdmin::testUnadvertised() {
 
 	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
 	long  recvlen = 1;
+	int   cd;
 
-	int cd = ::tpcall((char*) "foo_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
+	userlogc((char*) "TestAdmin::testUnadvertised tpacall BAR before unadvertise");
+	cd = ::tpacall((char*) "BAR", (char *) sendbuf, sendlen, TPNOREPLY);
 	CPPUNIT_ASSERT(cd == 0);
 	CPPUNIT_ASSERT(tperrno == 0);
+	
+	cd = ::tpcall((char*) "foo_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
+	CPPUNIT_ASSERT(cd == 0);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	userlogc((char*) "TestAdmin::testUnadvertised tpacall BAR after unadvertise");
+	cd = ::tpacall((char*) "BAR", (char *) sendbuf, sendlen, TPNOREPLY);
+	CPPUNIT_ASSERT(cd != 0);
+	CPPUNIT_ASSERT(tperrno != 0);
 }

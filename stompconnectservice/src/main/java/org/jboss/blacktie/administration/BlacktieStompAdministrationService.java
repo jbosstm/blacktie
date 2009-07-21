@@ -1,11 +1,17 @@
 package org.jboss.blacktie.administration;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Properties;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.jms.Destination;
+import javax.jms.Queue;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
@@ -14,11 +20,12 @@ import javax.management.remote.JMXServiceURL;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.conf.XMLEnvHandler;
-import org.jboss.blacktie.jatmibroker.conf.XMLParser;
-import org.jboss.blacktie.jatmibroker.mdb.MDBBlacktieService;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
+import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
+import org.jboss.blacktie.jatmibroker.xatmi.mdb.MDBBlacktieService;
 import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.ejb3.annotation.Depends;
@@ -44,15 +51,42 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 				"service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector");
 		JMXConnector c = JMXConnectorFactory.connect(u);
 		beanServerConnection = c.getMBeanServerConnection();
+
 		XMLEnvHandler handler = new XMLEnvHandler("", prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 		xmlenv.parse("Environment.xml");
+	}
+	
+	boolean isDeployQueue(ObjectName objName, String serviceName) throws Exception {
+		HashSet dests = (HashSet) beanServerConnection.getAttribute(objName, "Destinations");
+		
+		Iterator<Destination> it = dests.iterator();
+	    while(it.hasNext()) {
+	    	Destination dest = it.next();
+	    	if(dest instanceof Queue) {
+				String qname = ((Queue)dest).getQueueName();
+				log.debug("destination is " + qname);
+				if(qname.equals(serviceName)){
+					log.debug("find serviceName " + serviceName);
+					return true;
+				}
+			}	   	
+	    }
+		return false;
+	}
+
+	int consumerCount(String serviceName) throws Exception {
+		ObjectName objName = new ObjectName(
+						"jboss.messaging.destination:service=Queue,name="
+						+ serviceName);
+		Integer count = (Integer)beanServerConnection.getAttribute(objName, "ConsumerCount");
+		return count.intValue();
 	}
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		log.debug("Message received");
 		Buffer recv = svcinfo.getBuffer();
-		String string = new String(recv.getData());
+		String string = new String((String)recv.getData());
 		StringTokenizer st = new StringTokenizer(string, ",", false);
 		String operation = st.nextToken();
 		String serviceName = st.nextToken();
@@ -63,10 +97,19 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			if (operation.equals("tpunadvertise")) {
 				log.trace("Unadvertising: " + serviceName);
 				try {
-					ObjectName name = new ObjectName(
-							"jboss.messaging.destination:service=Queue,name="
-									+ serviceName);
-					beanServerConnection.invoke(name, "stop", null, null);
+					//ObjectName name = new ObjectName(
+					//			"jboss.messaging.destination:service=Queue,name="
+					//					+ serviceName);
+					//beanServerConnection.invoke(name, "stop", null, null);
+					log.info(serviceName + " has " + consumerCount(serviceName) + " consumers");
+				
+					ObjectName objName = new ObjectName("jboss.messaging:service=ServerPeer");
+					if(isDeployQueue(objName, serviceName)) {
+						beanServerConnection.invoke(objName, "undeployQueue",
+								new Object[] { serviceName },
+								new String[] { "java.lang.String"} );
+					}
+
 					success[0] = 1;
 					log.debug("Unadvertised: " + serviceName);
 				} catch (Throwable t) {
@@ -74,11 +117,20 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 				}
 			} else if (operation.equals("tpadvertise")) {
 				log.trace("Advertising: " + serviceName);
-				try {
-					ObjectName name = new ObjectName(
-							"jboss.messaging.destination:service=Queue,name="
-									+ serviceName);
-					beanServerConnection.invoke(name, "start", null, null);
+				try {			
+					ObjectName objName = new ObjectName("jboss.messaging:service=ServerPeer");
+					if(isDeployQueue(objName, serviceName) == false) {
+						beanServerConnection.invoke(objName, "deployQueue",
+								new Object[] { serviceName , null },
+								new String[] { "java.lang.String", "java.lang.String"} );
+						/*
+						ObjectName name = new ObjectName(
+								"jboss.messaging.destination:service=Queue,name="
+										+ serviceName);
+						beanServerConnection.invoke(name, "start", null, null);
+						*/
+					}
+					
 					success[0] = 1;
 					log.debug("Advertised: " + serviceName);
 				} catch (Throwable t) {
@@ -89,8 +141,12 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			log.error("Service " + serviceName + " cannot be located for server");
 		}
 		Buffer buffer = new Buffer(null, null);
-		buffer.setData(success);
-		log.debug("Responding");
+		try{
+			buffer.setData(new String(success));
+			log.debug("Responding");
+		} catch (ConnectionException e) {
+			log.error("buffer setData failed with ", e);
+		}
 		return new Response((short) 0, 0, buffer, 1, 0);
 	}
 }
