@@ -1,7 +1,7 @@
 # Copy this file to build.properties and specify where the various 3rd party dependencies are located:
-jbossas.lib.dir=/home/mmusgrov/blacktie/util/jboss-5.0.0.GA/client
+jbossas.lib.dir=/home/mmusgrov/blacktie/util/jboss-5.1.0.GA/client
 jbossas.common.lib.dir=/home/tom/blacktie/utils/jboss-5.1.0.GA/common/lib
-jbossas.version=5.0.0.GA
+jbossas.version=5.1.0.GA
 
 log4cxx.lib.dir=/home/mmusgrov/blacktie/util/apache-log4cxx/target/debug/shared
 log4cxx.include.dir=/home/mmusgrov/blacktie/util/apache-log4cxx/src/main/include/log4cxx
@@ -32,9 +32,6 @@ cppunit.version=1.12
 xercesc.lib.dir=/home/zhfeng/blacktie/util/xerces-c-3.0.1/src/.libs
 xercesc.include.dir=/home/zhfeng/blacktie/util/xerces-c-3.0.1/src
 xercesc.version=3.0.1
-
-jbossas.lib.dir=/home/mmusgrov/blacktie/util/jboss-5.1.0.GA/client
-jbossas.version=5.1.0.GA
 
 java-devel.include.dir=/usr/local/jdk1.5.0_15/include/
 java-devel.platform.include.dir=/usr/local/jdk1.5.0_15/include/linux
