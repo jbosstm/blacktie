@@ -123,7 +123,7 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 	char *sendbuf = ::tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
 	char *rcvbuf = ::tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
 
-	char* expectedResult = (char*) malloc(svcinfo->len);
+	char* expectedResult = (char*) malloc(svcinfo->len + 1);
 	strcpy(expectedResult, "conversate");
 	char* errorMessage = (char*) malloc(svcinfo->len * 2 + 1);
 	sprintf(errorMessage, "%s/%s", expectedResult, svcinfo->data);
