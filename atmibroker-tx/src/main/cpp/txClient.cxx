@@ -80,8 +80,13 @@ void * disassociate_tx(void)
 
 	try {
 		(void) AtmiBrokerOTS::get_instance()->rm_suspend();
+	}
+	catch (CORBA::Exception& e) {
+		LOG4CXX_LOGLS(txClientLogger, log4cxx::Level::getError(), 
+				(char*) "disassociate_tx - Unexpected CORBA exception: " <<
+				e._name());
 	} catch (...) {
-		LOG4CXX_LOGLS(txClientLogger, log4cxx::Level::getDebug(), (char *) "Error suspending RMs");
+		LOG4CXX_LOGLS(txClientLogger, log4cxx::Level::getError(), (char *) "Error suspending RMs");
 	}
 
 	if (control)
