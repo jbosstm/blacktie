@@ -55,7 +55,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestTPRecv );
 #include "TestTPSend.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPSend );
 #include "TestTPConversation.h"
-//CPPUNIT_TEST_SUITE_REGISTRATION( TestTPConversation);
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPConversation);
 /* Examples from the specification */
 /*
  #include "TestSpecExampleOne.h"
