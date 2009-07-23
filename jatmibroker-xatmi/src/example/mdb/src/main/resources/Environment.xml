@@ -22,9 +22,9 @@
 		<SERVER_NAMES>
 			<SERVER name='ejb-connector-tests'>
 				<SERVICE_NAMES>
-					<SERVICE name='EchoService' transportLibrary='libatmibroker-stomp.so'/>
-					<SERVICE name='TxEchoService' transportLibrary='libatmibroker-stomp.so'/>
-					<SERVICE name='TxCreateService' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='EchoService' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TxEchoService' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TxCreateService' transportLibrary='libatmibroker-hybrid.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>
@@ -36,6 +36,30 @@
 			<ENV_VARIABLE>
 				<NAME>TRANS_FACTORY_ID</NAME>
 				<VALUE>TransactionManagerService.OTS</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>LOG4CXXCONFIG</NAME>
+				<VALUE>log4cxx.properties</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectHost</NAME>
+				<VALUE>localhost</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectPort</NAME>
+				<VALUE>61613</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectUsr</NAME>
+				<VALUE>guest</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectPwd</NAME>
+				<VALUE>guest</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>RequestTimeout</NAME>
+				<VALUE>10</VALUE>
 			</ENV_VARIABLE>
 		</ENV_VARIABLES>
 	</ENVIRONMENT_DESCRIPTION>

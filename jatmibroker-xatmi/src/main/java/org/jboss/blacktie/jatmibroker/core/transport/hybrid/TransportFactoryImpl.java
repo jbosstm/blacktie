@@ -57,7 +57,7 @@ public class TransportFactoryImpl extends TransportFactory {
 					"org.jboss.naming:org.jnp.interfaces");
 			props.setProperty("java.naming.provider.url",
 					"jnp://localhost:1099");
-			props.putAll(props);
+			props.putAll(properties);
 			context = new InitialContext(props);
 			factory = (ConnectionFactory) context.lookup("ConnectionFactory");
 		} catch (Throwable t) {

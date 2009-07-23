@@ -19,6 +19,7 @@ package org.jboss.blacktie.jatmibroker.core.transport.hybrid;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -106,7 +107,8 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 		this.orbManagement = orbManagement;
 	}
 
-	CorbaReceiverImpl(OrbManagement orbManagement) throws ConnectionException {
+	CorbaReceiverImpl(OrbManagement orbManagement, Properties properties)
+			throws ConnectionException {
 		ORB orb = orbManagement.getOrb();
 		POA poa = orbManagement.getRootPoa();
 		log.debug("ClientCallbackImpl constructor");
@@ -134,7 +136,7 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Cannot create the receiver", t);
 		}
-		timeout = 10000; // TODO Make configurable
+		timeout = Integer.parseInt(properties.getProperty("RequestTimeout")) * 1000;
 	}
 
 	public POA _default_POA() {

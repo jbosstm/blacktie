@@ -48,6 +48,7 @@ public class TransportImpl implements Runnable, Transport {
 	private Context context;
 	private Connection connection;
 	private Session session;
+	private Properties properties;
 
 	TransportImpl(OrbManagement orbManagement, Context context,
 			ConnectionFactory factory, Properties properties)
@@ -73,6 +74,8 @@ public class TransportImpl implements Runnable, Transport {
 		this.context = context;
 		this.session = connection
 				.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+		this.properties = properties;
 		log.debug("Created transport");
 	}
 
@@ -139,7 +142,7 @@ public class TransportImpl implements Runnable, Transport {
 
 	public Receiver createReceiver() throws ConnectionException {
 		log.debug("Creating a receiver");
-		return new CorbaReceiverImpl(orbManagement);
+		return new CorbaReceiverImpl(orbManagement, properties);
 	}
 
 	public OrbManagement getOrbManagement() {
