@@ -226,12 +226,6 @@
 		<!-- END JMS -->
 		<!-- START TEST -->
 		<dependency>
-			<groupId>sun</groupId>
-			<artifactId>java-devel</artifactId>
-			<version>1.5.0_15</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>3.8.1</version>
