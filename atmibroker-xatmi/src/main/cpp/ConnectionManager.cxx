@@ -28,6 +28,9 @@
 log4cxx::LoggerPtr loggerConnectionManager(log4cxx::Logger::getLogger(
 		"ConnectionManager"));
 
+#ifdef IDE_DEBUG
+#include "ConnectionImpl.h"
+#endif
 ConnectionManager::ConnectionManager()
 {
 	LOG4CXX_TRACE(loggerConnectionManager, (char*) "constructor");
@@ -65,6 +68,12 @@ ConnectionManager::getConnection(char* serviceName, char* side)
 		LOG4CXX_DEBUG(loggerConnectionManager, (char*) "find " << serviceName << " Connection in map " << (*it).second);
 		return (*it).second;
 	} else {
+#ifdef IDE_DEBUG
+		Connection* connection = new HybridConnectionImpl(side);
+		manager.insert(ConnectionMap::value_type(key, connection));
+		LOG4CXX_DEBUG(loggerConnectionManager, (char*) "insert service " << key << " connection " << connection);
+		return connection;
+#else
 		connection_factory_t* connectionFactory = (connection_factory_t*) ::lookup_symbol(transportLibrary, "connectionFactory");
 		if (connectionFactory != NULL) {
 			Connection* connection = connectionFactory->create_connection(side);
@@ -72,6 +81,7 @@ ConnectionManager::getConnection(char* serviceName, char* side)
 			LOG4CXX_DEBUG(loggerConnectionManager, (char*) "insert service " << key << " connection " << connection);
 			return connection;
 		}
+#endif
 	}
 
 	LOG4CXX_WARN(loggerConnectionManager, (char*) "can not create connection for service " << serviceName);

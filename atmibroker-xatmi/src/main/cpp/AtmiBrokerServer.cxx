@@ -152,6 +152,8 @@ int serverinit(int argc, char** argv) {
 			}
 
 		} catch (...) {
+			userlog(log4cxx::Level::getError(), loggerAtmiBrokerServer,
+							(char*) "Server startup failed");
 			toReturn = -1;
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		}

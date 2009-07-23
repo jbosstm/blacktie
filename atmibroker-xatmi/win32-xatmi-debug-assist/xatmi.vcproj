@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;..\..\atmibroker-core\target\cxx\compile\include\expat&quot;;&quot;..\..\atmibroker-core\src\test\include&quot;;&quot;..\..\atmibroker-core\src\main\include&quot;;&quot;..\..\atmibroker-core\src\main\export&quot;;&quot;..\..\atmibroker-hybrid\src\main\include&quot;;&quot;..\..\atmibroker-hybrid\src\main\export&quot;;&quot;..\..\atmibroker-hybrid\target\cxx\compile\include\apr-1&quot;;&quot;..\..\atmibroker-hybrid\target\cxx\compile\include\stomp&quot;;&quot;..\..\atmibroker-tx\src\main\export&quot;;&quot;..\..\atmibroker-tx\src\main\include&quot;;&quot;..\..\atmibroker-xatmi\src\test\include&quot;;&quot;..\..\atmibroker-xatmi\src\main\include&quot;;&quot;..\..\atmibroker-xatmi\src\main\export&quot;;&quot;..\..\atmibroker-xatmi\target\cxx\runtime\include&quot;;&quot;..\..\atmibroker-xatmi\target\cxx\test\include&quot;"
-				PreprocessorDefinitions="WIN32;TAO_COMP;_CRT_SECURE_NO_WARNINGS;BLACKTIE_CORE_MACRO=;BLACKTIE_CORE_DLL=;BLACKTIE_XATMI_MACRO=;BLACKTIE_XATMI_DLL=;BLACKTIE_STOMP_MACRO=;BLACKTIE_STOMP_DLL=;BLACKTIE_TX_MACRO=;BLACKTIE_TX_DLL=;BLACKTIE_HYBRID_MACRO=;BLACKTIE_HYBRID_DLL="
+				PreprocessorDefinitions="WIN32;TAO_COMP;_CRT_SECURE_NO_WARNINGS;BLACKTIE_CORE_MACRO=;BLACKTIE_CORE_DLL=;BLACKTIE_XATMI_MACRO=;BLACKTIE_XATMI_DLL=;BLACKTIE_STOMP_MACRO=;BLACKTIE_STOMP_DLL=;BLACKTIE_TX_MACRO=;BLACKTIE_TX_DLL=;BLACKTIE_HYBRID_MACRO=;BLACKTIE_HYBRID_DLL=;IDE_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
