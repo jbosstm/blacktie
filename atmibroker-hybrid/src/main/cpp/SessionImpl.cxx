@@ -41,8 +41,10 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
 	serviceInvokation = true;
 
 	stompConnection = NULL;
-	std::string timeout = AtmiBrokerEnv::get_instance()->getenv((char*) "RequestTimeout");
-	stompConnection = HybridConnectionImpl::connect(pool, atoi(timeout.c_str())); // TODO allow the timeout to be specified in configuration
+	std::string timeout = AtmiBrokerEnv::get_instance()->getenv(
+			(char*) "RequestTimeout");
+	stompConnection
+			= HybridConnectionImpl::connect(pool, atoi(timeout.c_str())); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
 	int XATMI_SERVICE_NAME_LENGTH = 15;
@@ -69,7 +71,6 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection, int id,
 	stompConnection = NULL;
 	this->sendTo = NULL;
 
-	
 	LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << temporaryQueueName);
 	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) corbaConnection->orbRef;
 	CORBA::Object_var tmp_ref = orb->string_to_object(temporaryQueueName);
@@ -85,10 +86,7 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection, int id,
 }
 
 HybridSessionImpl::~HybridSessionImpl() {
-	if (this->sendTo != NULL) {
-		::free(this->sendTo);
-		this->sendTo = NULL;
-	}
+	setSendTo(NULL);
 	//delete temporaryQueue;
 
 	if (stompConnection) {
@@ -101,28 +99,39 @@ HybridSessionImpl::~HybridSessionImpl() {
 
 void HybridSessionImpl::setSendTo(const char* destinationName) {
 	if (this->sendTo != NULL) {
-		::free(this->sendTo);
-		this->sendTo = NULL;
+		if (destinationName == NULL || strcmp(destinationName, this->sendTo)
+				!= 0) {
+			::free(this->sendTo);
+			this->sendTo = NULL;
+		}
 	}
-	if (remoteEndpoint) {
-		remoteEndpoint = NULL;
-	}
-	if (destinationName != NULL && strcmp(destinationName, "") != 0) {
+	//	if (remoteEndpoint) {
+	//		remoteEndpoint = NULL;
+	//	}
+	if (destinationName != NULL && strcmp(destinationName, "") != 0
+			&& this->sendTo == NULL) {
 		CORBA::ORB_ptr orb = (CORBA::ORB_ptr) corbaConnection->orbRef;
 		LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << destinationName);
 		CORBA::Object_var tmp_ref = orb->string_to_object(destinationName);
 		remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 		LOG4CXX_DEBUG(logger, (char*) "connected to %s" << destinationName);
-		this->sendTo = (char*) destinationName;
+		this->sendTo = strdup((char*) destinationName);
 	}
 }
 
 MESSAGE HybridSessionImpl::receive(long time) {
-	return temporaryQueue->receive(time);
+	MESSAGE message = temporaryQueue->receive(time);
+	if (message.replyto != NULL && strcmp(message.replyto, "") != 0) {
+		setSendTo(message.replyto);
+	} else {
+		setSendTo(NULL);
+	}
+	return message;
 }
 
 bool HybridSessionImpl::send(MESSAGE message) {
 	LOG4CXX_DEBUG(logger, "HybridSessionImpl::send");
+
 	bool toReturn = false;
 	if (serviceInvokation) {
 		stomp_frame frame;
@@ -187,19 +196,22 @@ bool HybridSessionImpl::send(MESSAGE message) {
 					<< frame.command << " Size: " << frame.body_length);
 
 		}
-
-		LOG4CXX_TRACE(logger, (char*) "freeing data to go: data_togo");
-		free(message.data);
-		LOG4CXX_TRACE(logger, (char*) "freed");
 		serviceInvokation = false;
 	} else {
-		LOG4CXX_DEBUG(logger, (char*) "Sending to remote queue: " << remoteEndpoint);
+		char* data_togo = (char *) malloc(message.len);
+		LOG4CXX_TRACE(logger, (char*) "allocated");
+		memcpy(data_togo, message.data, message.len);
+		LOG4CXX_TRACE(logger, (char*) "copied: idata into: data_togo");
+
+		LOG4CXX_DEBUG(logger, (char*) "Sending to remote queue: "
+				<< remoteEndpoint);
 		AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(
-				message.len, message.len, (unsigned char*) message.data, true);
+				message.len, message.len, (unsigned char*) data_togo, true);
 		remoteEndpoint->send(message.replyto, message.rval, message.rcode,
 				aOctetSeq, message.len, message.correlationId, message.flags);
 		aOctetSeq = NULL;
 		LOG4CXX_DEBUG(logger, (char*) "Called back ");
+
 		toReturn = true;
 	}
 	return toReturn;

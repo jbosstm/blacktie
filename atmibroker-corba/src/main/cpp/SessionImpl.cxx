@@ -99,12 +99,22 @@ void CorbaSessionImpl::setSendTo(const char* destinationName) {
 }
 
 MESSAGE CorbaSessionImpl::receive(long time) {
-	LOG4CXX_DEBUG(logger, (char*) "Receiving from: " << replyTo);
-	return temporaryQueue->receive(time);
+	MESSAGE message = temporaryQueue->receive(time);
+	if (message.replyto != NULL && strcmp(message.replyto, "") != 0) {
+		setSendTo(message.replyto);
+	} else {
+		setSendTo(NULL);
+	}
+	return message;
 }
 
 bool CorbaSessionImpl::send(MESSAGE message) {
-	AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(message.len, message.len, (unsigned char*) message.data, true);
+	char* data_togo = (char *) malloc(message.len);
+	LOG4CXX_TRACE(logger, (char*) "allocated");
+	memcpy(data_togo, message.data, message.len);
+	LOG4CXX_TRACE(logger, (char*) "copied: idata into: data_togo");
+
+	AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(message.len, message.len, (unsigned char*) data_togo, true);
 	remoteEndpoint->send(message.replyto, message.rval, message.rcode, aOctetSeq, message.len, message.correlationId, message.flags);
 	aOctetSeq = NULL;
 	LOG4CXX_DEBUG(logger, (char*) "Called back ");

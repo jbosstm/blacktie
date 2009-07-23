@@ -116,7 +116,7 @@ AtmiBrokerEnv::~AtmiBrokerEnv() {
 		free(xarmp);
 
 		xarmp = next;
-	} 
+	}
 	xarmp = 0;
 
 	if (servers.size() != 0) {
@@ -186,9 +186,9 @@ int AtmiBrokerEnv::putenv(char* anEnvNameValue) {
 
 	int size = strlen(anEnvNameValue);
 
-	char * name = (char*) malloc(sizeof(char) * size);
+	char * name = (char*) malloc(size);
 	memset(name, '\0', size);
-	char * value = (char*) malloc(sizeof(char) * size);
+	char * value = (char*) malloc(size);
 	memset(value, '\0', size);
 
 	int i = 0;
@@ -227,7 +227,7 @@ int AtmiBrokerEnv::readenv(char* aEnvFileName, char* label) {
 		if (aEnvFileName != NULL) {
 			descPath = aEnvFileName;
 		} else {
-			descPath = ENVIRONMENT_FILE; 
+			descPath = ENVIRONMENT_FILE;
 		}
 
 		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "readenv file: " << descPath);

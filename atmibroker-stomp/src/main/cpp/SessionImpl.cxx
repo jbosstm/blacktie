@@ -28,11 +28,11 @@
 
 #include "ThreadLocalStorage.h"
 
-log4cxx::LoggerPtr StompSessionImpl::logger(
-		log4cxx::Logger::getLogger("StompSessionImpl"));
+log4cxx::LoggerPtr StompSessionImpl::logger(log4cxx::Logger::getLogger(
+		"StompSessionImpl"));
 
-StompSessionImpl::StompSessionImpl(char* connectionName, apr_pool_t* pool, int id,
-		char* serviceName) {
+StompSessionImpl::StompSessionImpl(char* connectionName, apr_pool_t* pool,
+		int id, char* serviceName) {
 	LOG4CXX_TRACE(logger, (char*) "constructor ");
 	this->id = id;
 
@@ -55,8 +55,8 @@ StompSessionImpl::StompSessionImpl(char* connectionName, apr_pool_t* pool, int i
 	LOG4CXX_TRACE(logger, "OK service");
 }
 
-StompSessionImpl::StompSessionImpl(char* connectionName, apr_pool_t* pool, int id,
-		const char* temporaryQueueName) {
+StompSessionImpl::StompSessionImpl(char* connectionName, apr_pool_t* pool,
+		int id, const char* temporaryQueueName) {
 	LOG4CXX_TRACE(logger, (char*) "constructor ");
 	this->id = id;
 
@@ -87,7 +87,13 @@ StompSessionImpl::~StompSessionImpl() {
 }
 
 MESSAGE StompSessionImpl::receive(long time) {
-	return toRead->receive(time);
+	MESSAGE message = toRead->receive(time);
+	if (message.replyto != NULL && strcmp(message.replyto, "") != 0) {
+		setSendTo(message.replyto);
+	} else {
+		setSendTo(NULL);
+	}
+	return message;
 }
 
 bool StompSessionImpl::send(MESSAGE message) {
@@ -117,7 +123,8 @@ bool StompSessionImpl::send(MESSAGE message) {
 	char* control = serialize_tx((char*) "ots");
 	if (control) {
 		LOG4CXX_TRACE(logger, "Sending serialized control: " << control);
-		apr_hash_set(frame.headers, "messagecontrol", APR_HASH_KEY_STRING, control);
+		apr_hash_set(frame.headers, "messagecontrol", APR_HASH_KEY_STRING,
+				control);
 	}
 
 	LOG4CXX_DEBUG(logger, "Send to: " << sendTo << " Command: "
@@ -149,10 +156,6 @@ bool StompSessionImpl::send(MESSAGE message) {
 				<< frame.command << " Body: " << frame.body);
 
 	}
-
-	LOG4CXX_TRACE(logger, (char*) "freeing data to go: data_togo");
-	free(message.data);
-	LOG4CXX_TRACE(logger, (char*) "freed");
 	return toReturn;
 }
 

@@ -76,14 +76,10 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 
 			LOG4CXX_TRACE(loggerXATMI, (char*) "allocating data to go: "
 					<< ilen);
-			char* data_togo = (char *) malloc(ilen);
-			LOG4CXX_TRACE(loggerXATMI, (char*) "allocated");
-			memcpy(data_togo, idata, ilen);
-			LOG4CXX_TRACE(loggerXATMI, (char*) "copied: idata into: data_togo");
 
 			MESSAGE message;
 			message.replyto = replyTo;
-			message.data = data_togo;
+			message.data = idata;
 			message.len = ilen;
 			message.correlationId = correlationId;
 			message.flags = flags;
@@ -104,7 +100,8 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		}
 	} else {
-		LOG4CXX_ERROR(loggerXATMI, (char*) "Session " << correlationId << "can't send");
+		LOG4CXX_ERROR(loggerXATMI, (char*) "Session " << correlationId
+				<< "can't send");
 		setSpecific(TPE_KEY, TSS_TPEPROTO);
 	}
 
@@ -116,8 +113,8 @@ int receive(Session* session, char ** odata, long *olen, long flags,
 	int toReturn = -1;
 	int len = ::bufferSize(*odata, *olen);
 	if (len != -1) {
-		LOG4CXX_DEBUG(loggerXATMI,
-				(char*) "tprecv session: " << session->getId() << " olen: " << olen << " flags: " << flags);
+		LOG4CXX_DEBUG(loggerXATMI, (char*) "tprecv session: "
+				<< session->getId() << " olen: " << olen << " flags: " << flags);
 		if (flags & TPSIGRSTRT) {
 			LOG4CXX_ERROR(loggerXATMI, (char*) "TPSIGRSTRT NOT SUPPORTED");
 		}
@@ -129,45 +126,49 @@ int receive(Session* session, char ** odata, long *olen, long flags,
 			} else if (TPNOTIME & flags) {
 				time = 0;
 			}
-			MESSAGE message = session->receive(time);
-			if (message.data != NULL) {
-				// TODO Handle TPNOCHANGE
-				if (len < message.len) {
-					*odata = ::tprealloc(*odata, message.len);
-				}
-				*olen = message.len;
-				memcpy(*odata, (char*) message.data, *olen);
-				if (message.rcode == TPESVCFAIL) {
-					*event = TPESVCFAIL;
-				} else if (message.rcode == TPESVCERR) {
-					*event = TPESVCERR;
-				}
-				try {
-					if (message.replyto != NULL && strcmp(message.replyto, "")
-							!= 0) {
-						session->setSendTo(message.replyto);
-					} else {
-						session->setSendTo(NULL);
+			try {
+				MESSAGE message = session->receive(time);
+				if (message.data != NULL) {
+					// TODO Handle TPNOCHANGE
+					if (len < message.len) {
+						*odata = ::tprealloc(*odata, message.len);
+					}
+					*olen = message.len;
+					memcpy(*odata, (char*) message.data, *olen);
+					if (message.rcode == TPESVCFAIL) {
+						*event = TPESVCFAIL;
+					} else if (message.rcode == TPESVCERR) {
+						*event = TPESVCERR;
 					}
 					if (message.flags && TPRECVONLY) {
 						session->setCanSend(true);
 						session->setCanRecv(false);
-						LOG4CXX_DEBUG(loggerXATMI, (char*) "receive TPRECVONLY set constraints session: " << session->getId() << " send: " << session->getCanSend() << " recv: " << session->getCanRecv());
+						LOG4CXX_DEBUG(
+								loggerXATMI,
+								(char*) "receive TPRECVONLY set constraints session: "
+										<< session->getId() << " send: "
+										<< session->getCanSend() << " recv: "
+										<< session->getCanRecv());
 					} else if (message.flags && TPSENDONLY) {
 						session->setCanSend(true);
 						session->setCanRecv(false);
-						LOG4CXX_DEBUG(loggerXATMI, (char*) "receive TPSENDONLY set constraints session: " << session->getId() << " send: " << session->getCanSend() << " recv: " << session->getCanRecv());
+						LOG4CXX_DEBUG(
+								loggerXATMI,
+								(char*) "receive TPSENDONLY set constraints session: "
+										<< session->getId() << " send: "
+										<< session->getCanSend() << " recv: "
+										<< session->getCanRecv());
 					}
-				} catch (...) {
-					LOG4CXX_ERROR(
-							loggerXATMI,
-							(char*) "Could not set the send to destination to: "
-									<< message.replyto);
+					free((char*) message.replyto);
+					LOG4CXX_DEBUG(loggerXATMI, (char*) "returning odata");
+					toReturn = 0;
+				} else {
+					setSpecific(TPE_KEY, TSS_TPETIME);
 				}
-				LOG4CXX_DEBUG(loggerXATMI, (char*) "returning odata");
-				toReturn = 0;
-			} else {
-				setSpecific(TPE_KEY, TSS_TPETIME);
+			} catch (...) {
+				LOG4CXX_ERROR(
+						loggerXATMI,
+						(char*) "Could not set the receive from the destination");
 			}
 		} else {
 			setSpecific(TPE_KEY, TSS_TPEPROTO);
@@ -238,7 +239,8 @@ int tpunadvertise(char * svcname) {
 }
 
 char* tpalloc(char* type, char* subtype, long size) {
-	LOG4CXX_TRACE(loggerXATMI, (char*) "tpalloc type: " << type << " size: " << size);
+	LOG4CXX_TRACE(loggerXATMI, (char*) "tpalloc type: " << type << " size: "
+			<< size);
 	if (subtype) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "tpalloc subtype: " << type);
 	}
@@ -289,7 +291,8 @@ long tptypes(char* ptr, char* type, char* subtype) {
 
 int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen,
 		long flags) {
-	LOG4CXX_TRACE(loggerXATMI, (char*) "tpcall: " << svc << " ilen: " << ilen << " flags: " << flags);
+	LOG4CXX_TRACE(loggerXATMI, (char*) "tpcall: " << svc << " ilen: " << ilen
+			<< " flags: " << flags);
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = -1;
 	if (clientinit() != -1) {
@@ -304,7 +307,8 @@ int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen,
 }
 
 int tpacall(char * svc, char* idata, long ilen, long flags) {
-	LOG4CXX_TRACE(loggerXATMI, (char*) "tpacall: " << svc << " ilen: " << ilen << " flags: " << flags);
+	LOG4CXX_TRACE(loggerXATMI, (char*) "tpacall: " << svc << " ilen: " << ilen
+			<< " flags: " << flags);
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	int len = ::bufferSize(idata, ilen);
 	int toReturn = -1;
@@ -341,7 +345,8 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 }
 
 int tpconnect(char * svc, char* idata, long ilen, long flags) {
-	LOG4CXX_TRACE(loggerXATMI, (char*) "tpconnect: " << svc << " ilen: " << ilen << " flags: " << flags);
+	LOG4CXX_TRACE(loggerXATMI, (char*) "tpconnect: " << svc << " ilen: "
+			<< ilen << " flags: " << flags);
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = -1;
 	if (flags & TPSENDONLY || flags & TPRECVONLY) {
@@ -353,16 +358,30 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 			if (clientinit() != -1) {
 				int cd = -1;
 				try {
-					Session* session = ptrAtmiBrokerClient->createSession(cd, svc);
+					Session* session = ptrAtmiBrokerClient->createSession(cd,
+							svc);
 					if (cd != -1) {
 						::send(session, session->getReplyTo(), idata, len, cd,
 								flags | TPCONV, 0, 0);
 						if (flags & TPRECVONLY) {
 							session->setCanSend(false);
-							LOG4CXX_DEBUG(loggerXATMI, (char*) "tpconnect set constraints session: " << session->getId() << " send: " << session->getCanSend() << " recv (not changed): " << session->getCanRecv());
+							LOG4CXX_DEBUG(
+									loggerXATMI,
+									(char*) "tpconnect set constraints session: "
+											<< session->getId() << " send: "
+											<< session->getCanSend()
+											<< " recv (not changed): "
+											<< session->getCanRecv());
 						} else {
 							session->setCanRecv(false);
-							LOG4CXX_DEBUG(loggerXATMI, (char*) "tpconnect set constraints session: " << session->getId() << " send (not changed): " << session->getCanSend() << " recv: " << session->getCanRecv());
+							LOG4CXX_DEBUG(
+									loggerXATMI,
+									(char*) "tpconnect set constraints session: "
+											<< session->getId()
+											<< " send (not changed): "
+											<< session->getCanSend()
+											<< " recv: "
+											<< session->getCanRecv());
 						}
 						toReturn = cd;
 					} else {
@@ -470,7 +489,11 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 			if (flags & TPRECVONLY) {
 				session->setCanSend(false);
 				session->setCanRecv(true);
-				LOG4CXX_DEBUG(loggerXATMI, (char*) "tpsend set constraints session: " << session->getId() << " send: " << session->getCanSend() << " recv: " << session->getCanRecv());
+				LOG4CXX_DEBUG(loggerXATMI,
+						(char*) "tpsend set constraints session: "
+								<< session->getId() << " send: "
+								<< session->getCanSend() << " recv: "
+								<< session->getCanRecv());
 			}
 		}
 	}
@@ -530,7 +553,11 @@ void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 				::tpfree(data);
 				session->setSendTo(NULL);
 				session->setCanSend(false);
-				LOG4CXX_DEBUG(loggerXATMI, (char*) "tpreturn set constraints session: " << session->getId() << " send: " << session->getCanSend() << " recv: " << session->getCanRecv());
+				LOG4CXX_DEBUG(loggerXATMI,
+						(char*) "tpreturn set constraints session: "
+								<< session->getId() << " send: "
+								<< session->getCanSend() << " recv: "
+								<< session->getCanRecv());
 			}
 		} else {
 			setSpecific(TPE_KEY, TSS_TPEPROTO);

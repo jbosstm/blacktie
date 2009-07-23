@@ -55,8 +55,6 @@ int ServiceDispatcher::svc(void) {
 }
 
 void ServiceDispatcher::onMessage(MESSAGE message) {
-	
-
 
 	LOG4CXX_DEBUG(logger, (char*) "svc()");
 
@@ -70,11 +68,10 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	session = connection->createSession(message.correlationId, message.replyto);
 	LOG4CXX_TRACE(logger, (char*) "Created session: " << message.correlationId);
 
-
 	// EXTRACT THE DATA FROM THE INBOUND MESSAGE
 
-	char* idata = (char *) malloc(message.len);
-	memcpy(idata, message.data, message.len);
+//	char* idata = (char *) malloc(message.len);
+//	memcpy(idata, message.data, message.len);
 	int correlationId = message.correlationId;
 	long ilen = message.len;
 	long flags = message.flags;
@@ -87,7 +84,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	memset(&tpsvcinfo, '\0', sizeof(tpsvcinfo));
 	strcpy(tpsvcinfo.name, this->serviceName);
 	tpsvcinfo.flags = flags;
-	tpsvcinfo.data = idata;
+	tpsvcinfo.data = message.data;
 	tpsvcinfo.len = ilen;
 	if (tpsvcinfo.flags && TPCONV) {
 		tpsvcinfo.cd = correlationId;
@@ -138,27 +135,21 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 		LOG4CXX_TRACE(logger, (char*) "Returned error");
 	}
 
-
 	LOG4CXX_TRACE(logger, (char*) "ServiceDispatcher closing session");
 	connection->closeSession(message.correlationId);
-//	session = NULL;
+	//	session = NULL;
 	LOG4CXX_TRACE(logger, (char*) "ServiceDispatcher session closed");
-//	HybridConnectionImpl* instance = dynamic_cast<HybridConnectionImpl*> (connection);
-//shutdownBindings(instance->connection);
+	//	HybridConnectionImpl* instance = dynamic_cast<HybridConnectionImpl*> (connection);
+	//shutdownBindings(instance->connection);
 
 	destroySpecific(SVC_SES);
 	destroySpecific(SVC_KEY);
 	destroySpecific(TSS_KEY);
 
-
-
 	LOG4CXX_TRACE(logger,
 			(char*) "Freeing the data that was passed to the service");
-	free(idata);
+//	free(idata);
 	LOG4CXX_TRACE(logger, (char*) "Freed the data");
-
-
-
 }
 
 void ServiceDispatcher::shutdown() {

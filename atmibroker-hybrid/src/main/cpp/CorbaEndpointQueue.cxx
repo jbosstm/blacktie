@@ -111,19 +111,20 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 
 		MESSAGE message;
 		message.correlationId = correlationId;
-		LOG4CXX_TRACE(logger, (char*) "MALLOCING DATA");
-		message.data = (char*) malloc(sizeof(char*) * ilen);
-		LOG4CXX_TRACE(logger, (char*) "malloced");
+		LOG4CXX_TRACE(logger, (char*) "Allocating DATA");
+		message.data = (char*) malloc(ilen);
+		LOG4CXX_TRACE(logger, (char*) "Allocated");
 		memcpy(message.data, (char*) idata.get_buffer(), ilen);
 		LOG4CXX_TRACE(logger, (char*) "Copied");
 		message.flags = flags;
 		message.len = ilen;
 		message.rcode = rcode;
-		message.replyto = NULL;
 		if (replyto_ior != NULL) {
 			LOG4CXX_TRACE(logger, (char*) "Duplicating the replyto");
 			message.replyto = strdup(replyto_ior);
 			LOG4CXX_TRACE(logger, (char*) "Duplicated");
+		} else {
+			message.replyto = NULL;
 		}
 		message.rval = rval;
 		LOG4CXX_TRACE(logger, (char*) "Getting control");

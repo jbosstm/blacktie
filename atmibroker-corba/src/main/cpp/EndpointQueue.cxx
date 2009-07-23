@@ -97,7 +97,7 @@ void CorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA:
 
 		MESSAGE message;
 		message.correlationId = correlationId;
-		message.data = (char*) malloc(sizeof(char*) * ilen);
+		message.data = (char*) malloc(ilen);
 		memcpy(message.data, (char*) idata.get_buffer(), ilen);
 		message.flags = flags;
 		message.len = ilen;
