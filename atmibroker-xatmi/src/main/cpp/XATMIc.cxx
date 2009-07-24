@@ -39,8 +39,8 @@
 int _tperrno = 0;
 long _tpurcode = -1;
 
-long timeout = (long) (atoi(AtmiBrokerEnv::get_instance()->getenv(
-		(char*) "RequestTimeout")));
+long timeout = -1;
+
 // Logger for XATMIc
 log4cxx::LoggerPtr loggerXATMI(log4cxx::Logger::getLogger("loggerXATMI"));
 
@@ -124,13 +124,20 @@ int receive(Session* session, char ** odata, long *olen, long flags,
 		}
 		if (session->getCanRecv()) {
 			// TODO Make configurable Default wait time is blocking (x1000 in SynchronizableObject)
-			long time = timeout;
+			long time = -1;
 			if (TPNOBLOCK & flags) {
 				time = 1;
 				LOG4CXX_DEBUG(loggerXATMI, (char*) "Setting timeout to 1");
 			} else if (TPNOTIME & flags) {
 				time = 0;
 				LOG4CXX_DEBUG(loggerXATMI, (char*) "TPNOTIME = BLOCKING CALL");
+			} else {
+				if (timeout == -1) {
+					timeout = (long) (atoi(
+							AtmiBrokerEnv::get_instance()->getenv(
+									(char*) "RequestTimeout")));
+				}
+				time = timeout;
 			}
 			LOG4CXX_DEBUG(loggerXATMI, (char*) "Setting timeout to: " << time);
 			try {
