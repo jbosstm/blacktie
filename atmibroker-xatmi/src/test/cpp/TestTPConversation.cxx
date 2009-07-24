@@ -125,7 +125,7 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 
 	char* expectedResult = (char*) malloc(svcinfo->len + 1);
 	strcpy(expectedResult, "conversate");
-	char* errorMessage = (char*) malloc(svcinfo->len * 2 + 1);
+	char* errorMessage = (char*) malloc(svcinfo->len * 2 + 2);
 	sprintf(errorMessage, "%s/%s", expectedResult, svcinfo->data);
 	if (strncmp(expectedResult, svcinfo->data, 10) != 0) {
 		if (svcinfo->data != NULL) {

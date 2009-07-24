@@ -99,7 +99,7 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			}
 		} catch (...) {
 			LOG4CXX_ERROR(loggerXATMI,
-					(char*) "aCorbaService->start_conversation(): call failed");
+					(char*) "send: call failed");
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		}
 	} else {
@@ -600,7 +600,7 @@ int tpdiscon(int id) {
 			} catch (...) {
 				LOG4CXX_ERROR(
 						loggerXATMI,
-						(char*) "aCorbaService->start_conversation(): call failed");
+						(char*) "tpdiscon: call failed");
 				setSpecific(TPE_KEY, TSS_TPESYSTEM);
 			}
 		}
