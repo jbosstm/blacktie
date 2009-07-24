@@ -41,6 +41,7 @@ private:
 	void (*func)(TPSVCINFO *);
 	Session* session;
 	bool stop;
+	long timeout;
 };
 
 #endif

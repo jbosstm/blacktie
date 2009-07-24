@@ -56,8 +56,8 @@ int main(int argc, char **argv) {
 	userlogc((char*) "Calling tpcall with input: %s", sbuf);
 	tpstatus = tpcall("BAR", sbuf, sbufsize, (char **) &retbuf,
 			&retbufsize, callflags);
-	userlogc((char*) "Called tpcall with length: %d output: %s and status: %d",
-			retbufsize, retbuf, tpstatus);
+	userlogc((char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
+			retbufsize, retbuf, tpstatus, tperrno);
 
 	tpfree(sbuf);
 	tpfree(retbuf);

@@ -25,15 +25,6 @@
 class TestConnection: public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE( TestConnection);
 	CPPUNIT_TEST( test);
-	CPPUNIT_TEST( test);
-	CPPUNIT_TEST( test);
-	CPPUNIT_TEST( test);
-	CPPUNIT_TEST( test);
-	CPPUNIT_TEST( test);
-	CPPUNIT_TEST( test);
-	CPPUNIT_TEST( test);
-	CPPUNIT_TEST( test);
-	CPPUNIT_TEST( test);
 CPPUNIT_TEST_SUITE_END()
 ;
 

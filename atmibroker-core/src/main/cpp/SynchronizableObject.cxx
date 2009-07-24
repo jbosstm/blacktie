@@ -17,6 +17,7 @@
  */
 
 #include "SynchronizableObject.h"
+#include <time.h>
 
 log4cxx::LoggerPtr SynchronizableObject::logger(log4cxx::Logger::getLogger(
 		"SynchronizableObject"));
@@ -40,9 +41,13 @@ bool SynchronizableObject::wait(long timeout) {
 	LOG4CXX_TRACE(logger, (char*) "Waiting for cond: " << this);
 	bool toReturn = false;
 	if (timeout > 0) {
-		ACE_Time_Value timeoutval((timeout * 1000), 0);
+		ACE_Time_Value timeoutval = ACE_OS::gettimeofday();
+		timeoutval += timeout;
+
+		LOG4CXX_TRACE(logger, (char*) "Timed wait: " << timeoutval.msec());
 		toReturn = cond.wait(&timeoutval);
 	} else {
+		LOG4CXX_TRACE(logger, (char*) "Blocking wait: " << this);
 		toReturn = cond.wait();
 	}
 	LOG4CXX_TRACE(logger, (char*) "waited: " << this);

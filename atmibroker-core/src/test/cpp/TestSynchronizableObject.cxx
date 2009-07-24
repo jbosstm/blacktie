@@ -50,7 +50,7 @@ int Waiter::svc(void){
 	object2->lock();
 	object->lock();
 	userlogc("waiting");
-	object->wait(0);
+	object->wait(10);
 	userlogc("waited");
 	notified = true;
 	object->unlock();

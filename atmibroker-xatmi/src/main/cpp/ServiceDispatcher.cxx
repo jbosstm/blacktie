@@ -18,6 +18,7 @@
 #include "ServiceDispatcher.h"
 #include "txClient.h"
 #include "ThreadLocalStorage.h"
+#include "AtmiBrokerEnv.h"
 
 log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger(
 		"ServiceDispatcher"));
@@ -31,6 +32,9 @@ ServiceDispatcher::ServiceDispatcher(Destination* destination,
 	this->func = func;
 	session = NULL;
 	stop = false;
+	std::string timeout = AtmiBrokerEnv::get_instance()->getenv(
+			(char*) "DestinationTimeout");
+	this->timeout = (long) (atoi(timeout.c_str()) * 1000000);
 }
 
 ServiceDispatcher::~ServiceDispatcher() {
@@ -39,7 +43,7 @@ ServiceDispatcher::~ServiceDispatcher() {
 
 int ServiceDispatcher::svc(void) {
 	while (!stop) {
-		MESSAGE message = destination->receive(0);
+		MESSAGE message = destination->receive(this->timeout);
 		message.len = message.len - 1;
 		if (!stop && message.len > -1) {
 			try {
@@ -70,8 +74,8 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 	// EXTRACT THE DATA FROM THE INBOUND MESSAGE
 
-//	char* idata = (char *) malloc(message.len);
-//	memcpy(idata, message.data, message.len);
+	//	char* idata = (char *) malloc(message.len);
+	//	memcpy(idata, message.data, message.len);
 	int correlationId = message.correlationId;
 	long ilen = message.len;
 	long flags = message.flags;
@@ -148,7 +152,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 	LOG4CXX_TRACE(logger,
 			(char*) "Freeing the data that was passed to the service");
-//	free(idata);
+	//	free(idata);
 	LOG4CXX_TRACE(logger, (char*) "Freed the data");
 }
 

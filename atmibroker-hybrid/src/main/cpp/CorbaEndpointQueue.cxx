@@ -53,8 +53,9 @@ HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(CORBA_CONNECTION* connection)
 	this->connection = connection;
 }
 
-HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(CORBA_CONNECTION* connection,
-		PortableServer::POA_ptr poa, char* serviceName) {
+HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(
+		CORBA_CONNECTION* connection, PortableServer::POA_ptr poa,
+		char* serviceName) {
 	shutdown = false;
 	thePoa = poa;
 	lock = new SynchronizableObject();
@@ -88,8 +89,6 @@ HybridCorbaEndpointQueue::~HybridCorbaEndpointQueue() {
 		thePoa->destroy(true, true);
 		thePoa = NULL;
 		LOG4CXX_DEBUG(logger, (char*) "destroyed thePoa: " << thePoa);
-	} else {
-		//connection->callback_poa->deactivate_object(oid);
 	}
 
 	LOG4CXX_DEBUG(logger, (char*) "destroyed: " << this);
@@ -143,7 +142,7 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 }
 
 MESSAGE HybridCorbaEndpointQueue::receive(long time) {
-	LOG4CXX_DEBUG(logger, (char*) "service_response()");
+	LOG4CXX_DEBUG(logger, (char*) "service_response(): " << time);
 
 	MESSAGE message;
 	message.replyto = NULL;
@@ -157,7 +156,7 @@ MESSAGE HybridCorbaEndpointQueue::receive(long time) {
 
 	lock->lock();
 	if (!shutdown) {
-		if (returnData.size() == 0) {
+		if (returnData.size() == 0 && time != 0) {
 			LOG4CXX_DEBUG(logger, (char*) "waiting for %d" << time);
 			lock->wait(time);
 			LOG4CXX_DEBUG(logger, (char*) "out of wait");
