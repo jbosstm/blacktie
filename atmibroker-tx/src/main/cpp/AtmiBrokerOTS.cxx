@@ -281,7 +281,7 @@ int AtmiBrokerOTS::tx_complete(bool commit) {
 		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(),
 			(char*) "SystemException2" << e._name());
 		outcome = TX_FAIL;
-	} 
+	}
 
 LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_complete: after outcome: " << outcome);
 #if 0
@@ -418,6 +418,7 @@ int AtmiBrokerOTS::info(TXINFO *info) {
 			case CosTransactions::StatusNoTransaction:
 			default:
 				(info->xid).formatID = -1;	// means the XID is null
+				info->transaction_state = -1;
 				break;
 			}
 		}

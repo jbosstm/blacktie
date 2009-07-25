@@ -20,6 +20,7 @@
 #include "BaseServerTest.h"
 
 #include "xatmi.h"
+#include "malloc.h"
 
 extern void testtpacall_service(TPSVCINFO *svcinfo);
 
@@ -60,20 +61,21 @@ void TestTPACall::test_tpacall() {
 	sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
 	strcpy(sendbuf, "test_tpacall");
 
-	int cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, sendlen, TPNOREPLY);
+	int cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, sendlen,
+			TPNOREPLY);
 	CPPUNIT_ASSERT(cd == 0);
 	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(tperrno!= TPEINVAL);
-	CPPUNIT_ASSERT(tperrno!= TPENOENT);
-	CPPUNIT_ASSERT(tperrno!= TPEITYPE);
-	CPPUNIT_ASSERT(tperrno!= TPELIMIT);
-	CPPUNIT_ASSERT(tperrno!= TPETRAN);
-	CPPUNIT_ASSERT(tperrno!= TPETIME);
-	CPPUNIT_ASSERT(tperrno!= TPEBLOCK);
-	CPPUNIT_ASSERT(tperrno!= TPGOTSIG);
-	CPPUNIT_ASSERT(tperrno!= TPEPROTO);
-	CPPUNIT_ASSERT(tperrno!= TPESYSTEM);
-	CPPUNIT_ASSERT(tperrno!= TPEOS);
+	CPPUNIT_ASSERT(tperrno != TPEINVAL);
+	CPPUNIT_ASSERT(tperrno != TPENOENT);
+	CPPUNIT_ASSERT(tperrno != TPEITYPE);
+	CPPUNIT_ASSERT(tperrno != TPELIMIT);
+	CPPUNIT_ASSERT(tperrno != TPETRAN);
+	CPPUNIT_ASSERT(tperrno != TPETIME);
+	CPPUNIT_ASSERT(tperrno != TPEBLOCK);
+	CPPUNIT_ASSERT(tperrno != TPGOTSIG);
+	CPPUNIT_ASSERT(tperrno != TPEPROTO);
+	CPPUNIT_ASSERT(tperrno != TPESYSTEM);
+	CPPUNIT_ASSERT(tperrno != TPEOS);
 }
 
 void TestTPACall::test_tpacall_systemerr() {
@@ -82,8 +84,9 @@ void TestTPACall::test_tpacall_systemerr() {
 	sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
 	strcpy(sendbuf, "test_tpacall_systemerr");
 
-	int cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, sendlen, TPNOREPLY);
-	CPPUNIT_ASSERT(tperrno== TPESYSTEM);
+	int cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, sendlen,
+			TPNOREPLY);
+	CPPUNIT_ASSERT(tperrno == TPESYSTEM);
 	CPPUNIT_ASSERT(cd == -1);
 }
 
@@ -106,5 +109,5 @@ void testtpacall_service(TPSVCINFO *svcinfo) {
 	char *toReturn = new char[len];
 	strcpy(toReturn, "testtpacall_service");
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
-	delete toReturn;
+	free(toReturn);
 }

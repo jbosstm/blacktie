@@ -20,6 +20,7 @@
 #include "XATMITestSuite.h"
 
 #include "xatmi.h"
+#include "malloc.h"
 
 #include "TestTPAlloc.h"
 
@@ -61,7 +62,7 @@ void TestTPAlloc::test_tpalloc_negative() {
 	userlogc((char*) "test_tpalloc_negative");
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, -1);
 	CPPUNIT_ASSERT(m_allocated == NULL);
-	CPPUNIT_ASSERT(tperrno== TPEINVAL);
+	CPPUNIT_ASSERT(tperrno == TPEINVAL);
 }
 
 void TestTPAlloc::test_tpalloc_x_octet_subtype_ignored() {
@@ -116,13 +117,14 @@ void TestTPAlloc::test_tpalloc_x_common() {
 void TestTPAlloc::test_tpalloc_x_common_bigsubtype() {
 	userlogc((char*) "test_tpalloc_x_common_bigsubtype");
 	DEPOSIT *dptr;
-	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "12345678901234567", 0);
+	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "12345678901234567",
+			0);
 	m_allocated = (char*) dptr;
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	char type[10];
-	char subtype[20];
+	char* type = (char*) malloc(10);
+	char* subtype = (char*) malloc(20);
 	tptypes(m_allocated, type, subtype);
 	CPPUNIT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
 	CPPUNIT_ASSERT(strncmp(subtype, "12345678901234567", 17) != 0);
@@ -147,7 +149,8 @@ void TestTPAlloc::test_tpalloc_x_c_type() {
 
 	// CHECK THE ASSIGNATIONS
 	CPPUNIT_ASSERT(aptr->acct_no == 12345678);
-	CPPUNIT_ASSERT(strcmp(aptr->name, "12345678901234567890123456789012345678901234567890") == 0);
+	CPPUNIT_ASSERT(strcmp(aptr->name,
+			"12345678901234567890123456789012345678901234567890") == 0);
 	CPPUNIT_ASSERT(aptr->address == NULL || strcmp(aptr->address, "") == 0);
 	CPPUNIT_ASSERT(aptr->balances[0] == 0);
 	CPPUNIT_ASSERT(aptr->balances[1] == 0);
@@ -156,20 +159,20 @@ void TestTPAlloc::test_tpalloc_x_c_type() {
 void TestTPAlloc::test_tpalloc_unknowntype() {
 	userlogc((char*) "test_tpalloc_unknowntype");
 	m_allocated = tpalloc((char*) "TOM", NULL, 10);
-	CPPUNIT_ASSERT(tperrno== TPENOENT);
+	CPPUNIT_ASSERT(tperrno == TPENOENT);
 	CPPUNIT_ASSERT(m_allocated == NULL);
 }
 
 void TestTPAlloc::test_tpalloc_x_common_subtype_required() {
 	userlogc((char*) "test_tpalloc_x_common_subtype_required");
 	m_allocated = tpalloc((char*) "X_COMMON", NULL, 25);
-	CPPUNIT_ASSERT(tperrno== TPEINVAL);
+	CPPUNIT_ASSERT(tperrno == TPEINVAL);
 	CPPUNIT_ASSERT(m_allocated == NULL);
 }
 
 void TestTPAlloc::test_tpalloc_x_c_type_subtype_required() {
 	userlogc((char*) "test_tpalloc_x_c_type_subtype_required");
 	m_allocated = tpalloc((char*) "X_C_TYPE", NULL, 25);
-	CPPUNIT_ASSERT(tperrno== TPEINVAL);
+	CPPUNIT_ASSERT(tperrno == TPEINVAL);
 	CPPUNIT_ASSERT(m_allocated == NULL);
 }

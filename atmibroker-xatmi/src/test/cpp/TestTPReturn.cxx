@@ -20,6 +20,7 @@
 #include "BaseServerTest.h"
 
 #include "xatmi.h"
+#include "malloc.h"
 
 #include "TestTPReturn.h"
 
@@ -57,21 +58,25 @@ void TestTPReturn::test_tpreturn_nonservice() {
 	userlogc((char*) "test_tpreturn_nonservice");
 	// THIS IS ILLEGAL STATE TABLE
 	int len = 25;
-	char *toReturn = new char[len];
+	char *toReturn = (char*) malloc(len);
 	strcpy(toReturn, "test_tpreturn_nonservice");
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
-	delete toReturn;
+	free(toReturn);
 }
 
 void TestTPReturn::test_tpreturn_nonbuffer() {
 	userlogc((char*) "test_tpreturn_nonbuffer");
 	sendlen = strlen("tprnb") + 1;
-	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((sendbuf
+			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT(
+			(rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen))
+					!= NULL);
 	(void) strcpy(sendbuf, "tprnb");
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	int id = ::tpcall((char*) "TestTPReturn", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, 0);
+	int id = ::tpcall((char*) "TestTPReturn", (char *) sendbuf, sendlen,
+			(char **) &rcvbuf, &rcvlen, 0);
 	long tperrnoS = tperrno;
 	CPPUNIT_ASSERT(id == -1);
 	CPPUNIT_ASSERT(tperrnoS == TPESVCERR);
@@ -79,8 +84,8 @@ void TestTPReturn::test_tpreturn_nonbuffer() {
 
 void testtpreturn_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "testtpreturn_service");
-	char *toReturn = new char[21];
+	char *toReturn = (char*) malloc(21);
 	strcpy(toReturn, "testtpreturn_service");
 	tpreturn(TPSUCCESS, 0, toReturn, 21, 0);
-	delete toReturn;
+	free(toReturn);
 }

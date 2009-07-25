@@ -36,6 +36,7 @@ void TestTPAdvertise::setUp() {
 
 	// Do local work
 	sendlen = 40;
+	rcvlen = sendlen;
 	sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen);
 	rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen);
 }

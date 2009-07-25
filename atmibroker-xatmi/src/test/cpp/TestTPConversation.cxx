@@ -47,11 +47,11 @@ void TestTPConversation::setUp() {
 	CPPUNIT_ASSERT(toCheck != -1);
 
 	sendlen = 11;
+	rcvlen = sendlen;
 	CPPUNIT_ASSERT((sendbuf
 			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT(
-			(rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen))
-					!= NULL);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+			!= NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
 }
 
@@ -143,16 +143,21 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 			int result = ::tpsend(svcinfo->cd, sendbuf, svcinfo->len,
 					TPRECVONLY, &revent);
 			if (result != -1) {
-				result = ::tprecv(svcinfo->cd, &rcvbuf, &svcinfo->len, 0, &revent);
+				result = ::tprecv(svcinfo->cd, &rcvbuf, &svcinfo->len, 0,
+						&revent);
 				if (result != -1) {
 					char* expectedResult = (char*) malloc(svcinfo->len);
 					sprintf(expectedResult, "yo%d", i);
 					char* errorMessage = (char*) malloc(svcinfo->len * 2 + 1);
 					sprintf(errorMessage, "%s/%s", expectedResult, rcvbuf);
 					if (strcmp(expectedResult, rcvbuf) != 0) {
+						free(expectedResult);
+						free(errorMessage);
 						fail = true;
 						break;
 					}
+					free(expectedResult);
+					free(errorMessage);
 				} else {
 					fail = true;
 					break;

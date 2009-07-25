@@ -151,6 +151,7 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(ServiceInfo* aServiceStructPtr,
 
 	XsdValidator validator;
 	if(validator.validate(schemaPath, configPath) == false) {
+		free(serviceConfigFilename);
 		return ;
 	}
 

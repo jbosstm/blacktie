@@ -38,6 +38,7 @@ void TestTPUnadvertise::setUp() {
 
 	// Do local work
 	sendlen = strlen("TestTPUnadvertise") + 1;
+	rcvlen = sendlen;
 	sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen);
 	rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen);
 	(void) strcpy(sendbuf, "TestTPUnadvertise");

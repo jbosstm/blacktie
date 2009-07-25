@@ -159,9 +159,10 @@ void TestTPRealloc::test_tprealloc_multi_x_octet() {
 void TestTPRealloc::test_tprealloc_nonbuffer() {
 	userlogc("test_tprealloc_nonbuffer");
 	m_nonallocated = (char*) malloc(10);
+	char* toFree = m_nonallocated;
 	m_nonallocated = ::tprealloc(m_nonallocated, 10);
-	free(m_nonallocated);
 	CPPUNIT_ASSERT(tperrno== TPEINVAL);
+	free(toFree);
 }
 
 void TestTPRealloc::test_tprealloc_null() {

@@ -36,8 +36,11 @@ void TestTPRecv::setUp() {
 	// Do local work
 	cd = -1;
 	sendlen = strlen("recv") + 1;
-	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	rcvlen = sendlen;
+	CPPUNIT_ASSERT((sendbuf
+			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+			!= NULL);
 	strcpy(sendbuf, "recv");
 	CPPUNIT_ASSERT(tperrno == 0);
 	int toCheck = tpadvertise((char*) "TestTPRecv", testtprecv_service);
@@ -66,7 +69,7 @@ void TestTPRecv::test_tprecv_sendonly() {
 	cd = ::tpconnect((char*) "TestTPRecv", sendbuf, sendlen, TPSENDONLY);
 	long revent = 0;
 	int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
-	CPPUNIT_ASSERT(tperrno== TPEPROTO);
+	CPPUNIT_ASSERT(tperrno == TPEPROTO);
 	CPPUNIT_ASSERT(result == -1);
 }
 

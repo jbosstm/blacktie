@@ -39,6 +39,7 @@ void TestTPFreeService::setUp() {
 	CPPUNIT_ASSERT(toCheck != -1);
 	m_allocated = NULL;
 
+	m_rcvlen = 1;
 	m_rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, 1);
 	CPPUNIT_ASSERT(m_rcvbuf != NULL);
 }
@@ -61,7 +62,8 @@ void TestTPFreeService::test_tpfree_x_octet() {
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
-	int toCheck = ::tpcall((char*) "TestTPFree", (char*) m_allocated, 0, (char**) &m_rcvbuf, &m_rcvlen, 0);
+	int toCheck = ::tpcall((char*) "TestTPFree", (char*) m_allocated, 10,
+			(char**) &m_rcvbuf, &m_rcvlen, 0);
 	CPPUNIT_ASSERT(toCheck != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(m_rcvbuf[0] == '0');
@@ -75,7 +77,8 @@ void TestTPFreeService::test_tpfree_x_common() {
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	int toCheck = ::tpcall((char*) "TestTPFree", (char*) m_allocated, 0, (char**) &m_rcvbuf, &m_rcvlen, 0);
+	int toCheck = ::tpcall((char*) "TestTPFree", (char*) m_allocated, 0,
+			(char**) &m_rcvbuf, &m_rcvlen, 0);
 	CPPUNIT_ASSERT(toCheck != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(m_rcvbuf[0] == '0');
@@ -89,7 +92,8 @@ void TestTPFreeService::test_tpfree_x_c_type() {
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
 
-	int toCheck = ::tpcall((char*) "TestTPFree", (char*) m_allocated, 0, (char**) &m_rcvbuf, &m_rcvlen, 0);
+	int toCheck = ::tpcall((char*) "TestTPFree", (char*) m_allocated, 0,
+			(char**) &m_rcvbuf, &m_rcvlen, 0);
 	CPPUNIT_ASSERT(toCheck != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(m_rcvbuf[0] == '0');
@@ -104,9 +108,7 @@ void testtpfreeservice_service(TPSVCINFO *svcinfo) {
 	::tpfree(svcinfo->data);
 
 	// Get the data from tptypes still
-	char type[8];
-	char subtype[16];
-	int toTest = ::tptypes(svcinfo->data, type, subtype);
+	int toTest = ::tptypes(svcinfo->data, NULL, NULL);
 
 	// Check the values of tptypes (should still have been valid
 	if (toTest == -1 || tperrno == TPEINVAL) {

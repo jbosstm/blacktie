@@ -35,8 +35,11 @@ void TestTPGetRply::setUp() {
 
 	// Do local work
 	sendlen = strlen("grply") + 1;
-	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	rcvlen = 22;
+	CPPUNIT_ASSERT((sendbuf
+			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+			!= NULL);
 	strcpy(sendbuf, "grply");
 	CPPUNIT_ASSERT(tperrno == 0);
 	int toCheck = tpadvertise((char*) "TestTPGetrply", testtpgetrply_service);
@@ -65,13 +68,13 @@ void TestTPGetRply::test_tpgetrply() {
 
 	// RETRIEVE THE RESPONSE
 	int valToTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
-	CPPUNIT_ASSERT(tperrno!= TPEINVAL);
-	CPPUNIT_ASSERT(tperrno!= TPEBADDESC);
-	CPPUNIT_ASSERT(tperrno!= TPEOTYPE);
-	CPPUNIT_ASSERT(tperrno!= TPETIME);
-	CPPUNIT_ASSERT(tperrno!= TPESVCFAIL);
-	CPPUNIT_ASSERT(tperrno!= TPESVCERR);
-	CPPUNIT_ASSERT(tperrno!= TPEBLOCK);
+	CPPUNIT_ASSERT(tperrno != TPEINVAL);
+	CPPUNIT_ASSERT(tperrno != TPEBADDESC);
+	CPPUNIT_ASSERT(tperrno != TPEOTYPE);
+	CPPUNIT_ASSERT(tperrno != TPETIME);
+	CPPUNIT_ASSERT(tperrno != TPESVCFAIL);
+	CPPUNIT_ASSERT(tperrno != TPESVCERR);
+	CPPUNIT_ASSERT(tperrno != TPEBLOCK);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(valToTest == 0);
 	CPPUNIT_ASSERT(strcmp(rcvbuf, "testtpgetrply_service") == 0);
@@ -84,13 +87,13 @@ void TestTPGetRply::test_tpgetrply_baddesc() {
 	int valToTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
 	CPPUNIT_ASSERT(valToTest == -1);
 	CPPUNIT_ASSERT(tperrno != 0);
-	CPPUNIT_ASSERT(tperrno!= TPEINVAL);
-	CPPUNIT_ASSERT(tperrno!= TPEOTYPE);
-	CPPUNIT_ASSERT(tperrno!= TPETIME);
-	CPPUNIT_ASSERT(tperrno!= TPESVCFAIL);
-	CPPUNIT_ASSERT(tperrno!= TPESVCERR);
-	CPPUNIT_ASSERT(tperrno!= TPEBLOCK);
-	CPPUNIT_ASSERT(tperrno== TPEBADDESC);
+	CPPUNIT_ASSERT(tperrno != TPEINVAL);
+	CPPUNIT_ASSERT(tperrno != TPEOTYPE);
+	CPPUNIT_ASSERT(tperrno != TPETIME);
+	CPPUNIT_ASSERT(tperrno != TPESVCFAIL);
+	CPPUNIT_ASSERT(tperrno != TPESVCERR);
+	CPPUNIT_ASSERT(tperrno != TPEBLOCK);
+	CPPUNIT_ASSERT(tperrno == TPEBADDESC);
 }
 
 void TestTPGetRply::test_tpgetrply_nullcd() {
@@ -98,13 +101,13 @@ void TestTPGetRply::test_tpgetrply_nullcd() {
 	int valToTest = ::tpgetrply(NULL, (char **) &rcvbuf, &rcvlen, 0);
 	CPPUNIT_ASSERT(valToTest == -1);
 	CPPUNIT_ASSERT(tperrno != 0);
-	CPPUNIT_ASSERT(tperrno!= TPEBADDESC);
-	CPPUNIT_ASSERT(tperrno!= TPEOTYPE);
-	CPPUNIT_ASSERT(tperrno!= TPETIME);
-	CPPUNIT_ASSERT(tperrno!= TPESVCFAIL);
-	CPPUNIT_ASSERT(tperrno!= TPESVCERR);
-	CPPUNIT_ASSERT(tperrno!= TPEBLOCK);
-	CPPUNIT_ASSERT(tperrno== TPEINVAL);
+	CPPUNIT_ASSERT(tperrno != TPEBADDESC);
+	CPPUNIT_ASSERT(tperrno != TPEOTYPE);
+	CPPUNIT_ASSERT(tperrno != TPETIME);
+	CPPUNIT_ASSERT(tperrno != TPESVCFAIL);
+	CPPUNIT_ASSERT(tperrno != TPESVCERR);
+	CPPUNIT_ASSERT(tperrno != TPEBLOCK);
+	CPPUNIT_ASSERT(tperrno == TPEINVAL);
 }
 
 void TestTPGetRply::test_tpgetrply_nullrcvbuf() {
@@ -113,13 +116,13 @@ void TestTPGetRply::test_tpgetrply_nullrcvbuf() {
 	int valToTest = ::tpgetrply(&cd, NULL, &rcvlen, 0);
 	CPPUNIT_ASSERT(valToTest == -1);
 	CPPUNIT_ASSERT(tperrno != 0);
-	CPPUNIT_ASSERT(tperrno!= TPEINVAL);
-	CPPUNIT_ASSERT(tperrno!= TPEOTYPE);
-	CPPUNIT_ASSERT(tperrno!= TPETIME);
-	CPPUNIT_ASSERT(tperrno!= TPESVCFAIL);
-	CPPUNIT_ASSERT(tperrno!= TPESVCERR);
-	CPPUNIT_ASSERT(tperrno!= TPEBLOCK);
-	CPPUNIT_ASSERT(tperrno== TPEBADDESC);
+	CPPUNIT_ASSERT(tperrno != TPEINVAL);
+	CPPUNIT_ASSERT(tperrno != TPEOTYPE);
+	CPPUNIT_ASSERT(tperrno != TPETIME);
+	CPPUNIT_ASSERT(tperrno != TPESVCFAIL);
+	CPPUNIT_ASSERT(tperrno != TPESVCERR);
+	CPPUNIT_ASSERT(tperrno != TPEBLOCK);
+	CPPUNIT_ASSERT(tperrno == TPEBADDESC);
 }
 
 void TestTPGetRply::test_tpgetrply_nullrcvlen() {
@@ -128,13 +131,13 @@ void TestTPGetRply::test_tpgetrply_nullrcvlen() {
 	int valToTest = ::tpgetrply(&cd, (char **) &rcvbuf, NULL, 0);
 	CPPUNIT_ASSERT(valToTest == -1);
 	CPPUNIT_ASSERT(tperrno != 0);
-	CPPUNIT_ASSERT(tperrno!= TPEBADDESC);
-	CPPUNIT_ASSERT(tperrno!= TPEOTYPE);
-	CPPUNIT_ASSERT(tperrno!= TPETIME);
-	CPPUNIT_ASSERT(tperrno!= TPESVCFAIL);
-	CPPUNIT_ASSERT(tperrno!= TPESVCERR);
-	CPPUNIT_ASSERT(tperrno!= TPEBLOCK);
-	CPPUNIT_ASSERT(tperrno== TPEINVAL);
+	CPPUNIT_ASSERT(tperrno != TPEBADDESC);
+	CPPUNIT_ASSERT(tperrno != TPEOTYPE);
+	CPPUNIT_ASSERT(tperrno != TPETIME);
+	CPPUNIT_ASSERT(tperrno != TPESVCFAIL);
+	CPPUNIT_ASSERT(tperrno != TPESVCERR);
+	CPPUNIT_ASSERT(tperrno != TPEBLOCK);
+	CPPUNIT_ASSERT(tperrno == TPEINVAL);
 }
 
 void testtpgetrply_service(TPSVCINFO *svcinfo) {

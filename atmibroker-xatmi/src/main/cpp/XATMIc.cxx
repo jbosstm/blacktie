@@ -427,7 +427,7 @@ int tpgetrply(int *id, char ** odata, long *olen, long flags) {
 			if (session == NULL) {
 				setSpecific(TPE_KEY, TSS_TPEBADDESC);
 			} else {
-				long event;
+				long event = 0;
 				toReturn = ::receive(session, odata, olen, flags, &event);
 				ptrAtmiBrokerClient->closeSession(*id);
 				if (event == TPESVCERR) {
@@ -559,8 +559,9 @@ void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 			} else {
 				session->setCanRecv(false);
 				if (rcode == TPESVCERR || bufferSize(data, len) == -1) {
+					::tpfree(data);
 					data = ::tpalloc((char*) "X_OCTET", NULL, 0);
-					::send(session, "", data, 1, 0, flags, TPFAIL, TPESVCERR);
+					::send(session, "", data, 0, 0, flags, TPFAIL, TPESVCERR);
 				} else {
 					::send(session, "", data, len, 0, flags, rval, rcode);
 				}

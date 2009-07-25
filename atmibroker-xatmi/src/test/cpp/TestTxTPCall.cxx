@@ -38,7 +38,8 @@ void TestTxTPCall::setUp() {
 	sendlen = strlen("TestTxTPCall") + 1;
 	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	(void) strcpy(sendbuf, "TestTxTPCall");
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, 60)) != NULL);
+	rcvlen = 60;
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen)) != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
 }
 
