@@ -364,6 +364,8 @@ int AtmiBrokerOTS::set_transaction_timeout(TRANSACTION_TIMEOUT timeout) {
 }
 
 int AtmiBrokerOTS::info(TXINFO *info) {
+	info->transaction_state = -1;
+
 	if (CORBA::is_nil(tx_current))
 		return TX_PROTOCOL_ERROR;
 

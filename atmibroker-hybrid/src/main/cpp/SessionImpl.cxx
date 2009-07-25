@@ -198,7 +198,7 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		}
 		serviceInvokation = false;
 	} else {
-		char* data_togo = (char *) malloc(message.len);
+		char* data_togo = new char[message.len];
 		LOG4CXX_TRACE(logger, (char*) "allocated");
 		memcpy(data_togo, message.data, message.len);
 		LOG4CXX_TRACE(logger, (char*) "copied: idata into: data_togo");

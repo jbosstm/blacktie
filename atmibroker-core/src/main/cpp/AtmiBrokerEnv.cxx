@@ -49,12 +49,11 @@ void AtmiBrokerEnv::discard_instance() {
 	if (ptrAtmiBrokerEnv != NULL) {
 		delete ptrAtmiBrokerEnv;
 		ptrAtmiBrokerEnv = NULL;
-		ENVIRONMENT_DIR = NULL;
 	}
 }
 
 void AtmiBrokerEnv::set_environment_dir(const char* dir) {
-	if(dir == NULL) {
+	if (dir == NULL) {
 		ENVIRONMENT_DIR = NULL;
 	} else {
 		ENVIRONMENT_DIR = strdup(dir);
@@ -68,17 +67,18 @@ AtmiBrokerEnv::AtmiBrokerEnv() {
 	char* ptrDir = NULL;
 	ptrDir = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
 
-	if(ptrDir != NULL && ENVIRONMENT_DIR == NULL){
+	if (ptrDir != NULL && ENVIRONMENT_DIR == NULL) {
 		AtmiBrokerEnv::set_environment_dir(ptrDir);
 	}
 
-	if(ENVIRONMENT_DIR) {
+	if (ENVIRONMENT_DIR) {
 		char aEnvFileName[256];
 
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "read env from dir: " << ENVIRONMENT_DIR);
+		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "read env from dir: "
+				<< ENVIRONMENT_DIR);
 		ACE_OS::snprintf(aEnvFileName, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"%s",
-						 ENVIRONMENT_DIR,
-						 ENVIRONMENT_FILE);
+				ENVIRONMENT_DIR,
+				ENVIRONMENT_FILE);
 		readenv(aEnvFileName, NULL);
 	} else {
 		readenv(NULL, NULL);
@@ -93,8 +93,9 @@ AtmiBrokerEnv::~AtmiBrokerEnv() {
 		free((*i).value);
 	}
 
-	if(ENVIRONMENT_DIR) {
+	if (ENVIRONMENT_DIR) {
 		free(ENVIRONMENT_DIR);
+		ENVIRONMENT_DIR = NULL;
 	}
 	envVariableInfoSeq.clear();
 
@@ -120,11 +121,13 @@ AtmiBrokerEnv::~AtmiBrokerEnv() {
 	xarmp = 0;
 
 	if (servers.size() != 0) {
-		for (ServersInfo::iterator server = servers.begin(); server != servers.end(); server++) {
+		for (ServersInfo::iterator server = servers.begin(); server
+				!= servers.end(); server++) {
 			free((*server)->serverName);
 
 			std::vector<ServiceInfo>* services = &(*server)->serviceVector;
-			for(std::vector<ServiceInfo>::iterator i = services->begin(); i != services->end(); i++) {
+			for (std::vector<ServiceInfo>::iterator i = services->begin(); i
+					!= services->end(); i++) {
 				free((*i).serviceName);
 				free((*i).transportLib);
 				free((*i).function_name);
@@ -143,10 +146,12 @@ AtmiBrokerEnv::~AtmiBrokerEnv() {
 char*
 AtmiBrokerEnv::getTransportLibrary(char* serviceName) {
 	if (servers.size() != 0) {
-		for (ServersInfo::iterator server = servers.begin(); server != servers.end(); server++) {
+		for (ServersInfo::iterator server = servers.begin(); server
+				!= servers.end(); server++) {
 			std::vector<ServiceInfo>* services = &(*server)->serviceVector;
-			for(std::vector<ServiceInfo>::iterator i = services->begin(); i != services->end(); i++) {
-				if(ACE_OS::strncmp((*i).serviceName, serviceName, 15) == 0){
+			for (std::vector<ServiceInfo>::iterator i = services->begin(); i
+					!= services->end(); i++) {
+				if (ACE_OS::strncmp((*i).serviceName, serviceName, 15) == 0) {
 					return (*i).transportLib;
 				}
 			}
@@ -175,7 +180,8 @@ AtmiBrokerEnv::getenv(char* anEnvName) {
 			return (*i).value;
 		}
 	}
-	LOG4CXX_ERROR(loggerAtmiBrokerEnv, (char*) "Could not locate: " << anEnvName);
+	LOG4CXX_ERROR(loggerAtmiBrokerEnv, (char*) "Could not locate: "
+			<< anEnvName);
 	throw new std::exception();
 }
 
@@ -236,7 +242,8 @@ int AtmiBrokerEnv::readenv(char* aEnvFileName, char* label) {
 		if (aAtmiBrokerEnvXml.parseXmlDescriptor(&envVariableInfoSeq, descPath)) {
 			readEnvironment = true;
 		} else {
-			LOG4CXX_ERROR(loggerAtmiBrokerEnv, (char*) "can not read " << descPath);
+			LOG4CXX_ERROR(loggerAtmiBrokerEnv, (char*) "can not read "
+					<< descPath);
 			throw std::exception();
 			//abort();
 			//return -1;

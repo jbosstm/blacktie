@@ -129,6 +129,8 @@ void TestTPAlloc::test_tpalloc_x_common_bigsubtype() {
 	CPPUNIT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
 	CPPUNIT_ASSERT(strncmp(subtype, "12345678901234567", 17) != 0);
 	CPPUNIT_ASSERT(strncmp(subtype, "1234567890123456", 16) == 0);
+	free(type);
+	free(subtype);
 }
 
 // 9.1.3

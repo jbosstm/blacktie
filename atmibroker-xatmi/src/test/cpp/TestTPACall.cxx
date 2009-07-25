@@ -106,7 +106,7 @@ void TestTPACall::test_tpacall_x_octet() {
 void testtpacall_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "testtpacall_service");
 	int len = 20;
-	char *toReturn = new char[len];
+	char *toReturn = (char*) malloc(len);
 	strcpy(toReturn, "testtpacall_service");
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 	free(toReturn);

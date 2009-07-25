@@ -98,8 +98,7 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 				associate_tx(control);
 			}
 		} catch (...) {
-			LOG4CXX_ERROR(loggerXATMI,
-					(char*) "send: call failed");
+			LOG4CXX_ERROR(loggerXATMI, (char*) "send: call failed");
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		}
 	} else {
@@ -329,13 +328,13 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 	if (len != -1) {
 		if (clientinit() != -1) {
 			Session* session = NULL;
+			int cd = -1;
 			try {
-				int cd = -1;
 				session = ptrAtmiBrokerClient->createSession(cd, svc);
 				if (cd != -1) {
 					toReturn = ::send(session, session->getReplyTo(), idata,
 							len, cd, flags, 0, 0);
-					if (toReturn != -1) {
+					if (toReturn >= 0) {
 						if (TPNOREPLY & flags) {
 							toReturn = 0;
 							ptrAtmiBrokerClient->closeSession(cd);
@@ -350,6 +349,9 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 				LOG4CXX_ERROR(loggerXATMI,
 						(char*) "tpacall failed to connect to service queue");
 				setSpecific(TPE_KEY, TSS_TPENOENT);
+				if (cd != -1) {
+					ptrAtmiBrokerClient->closeSession(cd);
+				}
 			}
 		}
 	}
@@ -371,33 +373,36 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 		if (len != -1) {
 			if (clientinit() != -1) {
 				int cd = -1;
+				Session* session = NULL;
 				try {
-					Session* session = ptrAtmiBrokerClient->createSession(cd,
-							svc);
+					session = ptrAtmiBrokerClient->createSession(cd, svc);
 					if (cd != -1) {
-						::send(session, session->getReplyTo(), idata, len, cd,
-								flags | TPCONV, 0, 0);
-						if (flags & TPRECVONLY) {
-							session->setCanSend(false);
-							LOG4CXX_DEBUG(
-									loggerXATMI,
-									(char*) "tpconnect set constraints session: "
-											<< session->getId() << " send: "
-											<< session->getCanSend()
-											<< " recv (not changed): "
-											<< session->getCanRecv());
-						} else {
-							session->setCanRecv(false);
-							LOG4CXX_DEBUG(
-									loggerXATMI,
-									(char*) "tpconnect set constraints session: "
-											<< session->getId()
-											<< " send (not changed): "
-											<< session->getCanSend()
-											<< " recv: "
-											<< session->getCanRecv());
+						int sendOk = ::send(session, session->getReplyTo(),
+								idata, len, cd, flags | TPCONV, 0, 0);
+						if (sendOk != -1) {
+							toReturn = cd;
+							if (flags & TPRECVONLY) {
+								session->setCanSend(false);
+								LOG4CXX_DEBUG(
+										loggerXATMI,
+										(char*) "tpconnect set constraints session: "
+												<< session->getId()
+												<< " send: "
+												<< session->getCanSend()
+												<< " recv (not changed): "
+												<< session->getCanRecv());
+							} else {
+								session->setCanRecv(false);
+								LOG4CXX_DEBUG(
+										loggerXATMI,
+										(char*) "tpconnect set constraints session: "
+												<< session->getId()
+												<< " send (not changed): "
+												<< session->getCanSend()
+												<< " recv: "
+												<< session->getCanRecv());
+							}
 						}
-						toReturn = cd;
 					} else {
 						setSpecific(TPE_KEY, TSS_TPELIMIT);
 					}
@@ -406,6 +411,9 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 							loggerXATMI,
 							(char*) "tpconnect failed to connect to service queue");
 					setSpecific(TPE_KEY, TSS_TPENOENT);
+					if (cd != -1) {
+						ptrAtmiBrokerClient->closeSession(cd);
+					}
 				}
 			}
 		}
@@ -500,7 +508,7 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 		if (len != -1) {
 			toReturn = ::send(session, session->getReplyTo(), idata, len, id,
 					flags && TPCONV, 0, 0);
-			if (flags & TPRECVONLY) {
+			if (toReturn != -1 && flags & TPRECVONLY) {
 				session->setCanSend(false);
 				session->setCanRecv(true);
 				LOG4CXX_DEBUG(loggerXATMI,
@@ -599,9 +607,7 @@ int tpdiscon(int id) {
 				ptrAtmiBrokerClient->closeSession(id);
 				LOG4CXX_TRACE(loggerXATMI, (char*) "tpdiscon session closed");
 			} catch (...) {
-				LOG4CXX_ERROR(
-						loggerXATMI,
-						(char*) "tpdiscon: call failed");
+				LOG4CXX_ERROR(loggerXATMI, (char*) "tpdiscon: call failed");
 				setSpecific(TPE_KEY, TSS_TPESYSTEM);
 			}
 		}

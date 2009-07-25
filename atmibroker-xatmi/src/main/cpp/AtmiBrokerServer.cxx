@@ -370,14 +370,17 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 	}
 	if (!found) {
 		setSpecific(TPE_KEY, TSS_TPELIMIT);
+		free(serviceName);
 		return false;
 	}
 	void (*serviceFunction)(TPSVCINFO*) = getServiceMethod(serviceName);
 	if (serviceFunction != NULL) {
 		if (serviceFunction == func) {
+			free(serviceName);
 			return true;
 		} else {
 			setSpecific(TPE_KEY, TSS_TPEMATCH);
+			free(serviceName);
 			return false;
 		}
 	}
@@ -385,6 +388,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 	Connection* connection = connections.getServerConnection(serviceName);
 	if (connection == NULL) {
 		setSpecific(TPE_KEY, TSS_TPESYSTEM);
+		free(serviceName);
 		return false;
 	}
 
@@ -425,6 +429,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 				LOG4CXX_ERROR(loggerAtmiBrokerServer,
 						"Could not advertise service with command: " << command);
 				tpfree(command);
+				free(serviceName);
 				return false;
 			} else if (responseLength != 1) {
 				LOG4CXX_ERROR(loggerAtmiBrokerServer,
@@ -432,11 +437,13 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 								<< response << " with length "
 								<< responseLength);
 				tpfree(command);
+				free(serviceName);
 				return false;
 			} else if (response[0] == 0) {
 				LOG4CXX_ERROR(loggerAtmiBrokerServer,
 						"Service returned with error: " << command);
 				tpfree(command);
+				free(serviceName);
 				return false;
 			}
 			tpfree(command);

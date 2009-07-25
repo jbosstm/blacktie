@@ -46,7 +46,7 @@ HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(CORBA_CONNECTION* connection)
 	LOG4CXX_DEBUG(logger, (char*) "tmp_servant " << this);
 	oid = poa->activate_object(this);
 	LOG4CXX_DEBUG(logger, (char*) "activated tmp_servant " << this);
-	CORBA::Object_ptr tmp_ref = poa->servant_to_reference(this);
+	CORBA::Object_var tmp_ref = poa->servant_to_reference(this);
 	AtmiBroker::EndpointQueue_var queue = AtmiBroker::EndpointQueue::_narrow(
 			tmp_ref);
 	this->name = orb->object_to_string(queue);
@@ -76,6 +76,12 @@ HybridCorbaEndpointQueue::~HybridCorbaEndpointQueue() {
 	LOG4CXX_DEBUG(logger, (char*) "destroy called: " << this);
 
 	lock->lock();
+	while (returnData.size() > 0) {
+		MESSAGE message = returnData.front();
+		returnData.pop();
+		LOG4CXX_DEBUG(logger, (char*) "returning message");
+		free(message.data);
+	}
 	if (!shutdown) {
 		shutdown = true;
 		lock->notifyAll();
@@ -90,7 +96,6 @@ HybridCorbaEndpointQueue::~HybridCorbaEndpointQueue() {
 		thePoa = NULL;
 		LOG4CXX_DEBUG(logger, (char*) "destroyed thePoa: " << thePoa);
 	}
-
 	LOG4CXX_DEBUG(logger, (char*) "destroyed: " << this);
 }
 
