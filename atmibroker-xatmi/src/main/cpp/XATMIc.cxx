@@ -91,7 +91,7 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			if (session->send(message)) {
 				toReturn = 0;
 			} else {
-				setSpecific(TPE_KEY, TSS_TPENOENT);
+				setSpecific(TPE_KEY, TSS_TPENOENT); // TODO - clean up session
 			}
 
 			if (control) {
