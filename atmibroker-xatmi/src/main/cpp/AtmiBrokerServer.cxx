@@ -513,7 +513,8 @@ void AtmiBrokerServer::unadvertiseService(char * svcname) {
 
 	for (std::vector<char*>::iterator i = advertisedServices.begin(); i
 			!= advertisedServices.end(); i++) {
-		if (strcmp(serviceName, (*i)) == 0) {
+		char* name = (*i);
+		if (strcmp(serviceName, name) == 0) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "remove_service_queue: " << serviceName);
 			Destination * destination = removeDestination(serviceName);
@@ -526,6 +527,7 @@ void AtmiBrokerServer::unadvertiseService(char * svcname) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "destroyed"
 					<< serviceName);
 			advertisedServices.erase(i);
+			free(name);
 			LOG4CXX_INFO(loggerAtmiBrokerServer,
 					(char*) "unadvertised service " << serviceName);
 			break;

@@ -53,9 +53,11 @@ void AtmiBrokerEnv::discard_instance() {
 }
 
 void AtmiBrokerEnv::set_environment_dir(const char* dir) {
-	if (dir == NULL) {
+	if (ENVIRONMENT_DIR != NULL) {
+		free(ENVIRONMENT_DIR);
 		ENVIRONMENT_DIR = NULL;
-	} else {
+	}
+	if (dir != NULL) {
 		ENVIRONMENT_DIR = strdup(dir);
 	}
 }
@@ -93,10 +95,7 @@ AtmiBrokerEnv::~AtmiBrokerEnv() {
 		free((*i).value);
 	}
 
-	if (ENVIRONMENT_DIR) {
-		free(ENVIRONMENT_DIR);
-		ENVIRONMENT_DIR = NULL;
-	}
+	set_environment_dir(NULL);
 	envVariableInfoSeq.clear();
 
 	//free(namingServiceId);

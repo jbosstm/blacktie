@@ -125,6 +125,7 @@ void TestTPAlloc::test_tpalloc_x_common_bigsubtype() {
 
 	char* type = (char*) malloc(10);
 	char* subtype = (char*) malloc(20);
+	memset(subtype, '\0', 20);
 	tptypes(m_allocated, type, subtype);
 	CPPUNIT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
 	CPPUNIT_ASSERT(strncmp(subtype, "12345678901234567", 17) != 0);
