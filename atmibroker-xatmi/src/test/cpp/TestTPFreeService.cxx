@@ -60,6 +60,7 @@ void TestTPFreeService::tearDown() {
 void TestTPFreeService::test_tpfree_x_octet() {
 	userlogc((char*) "test_tpfree_x_octet");
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
+	memset(m_allocated, '\0', 10);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	int toCheck = ::tpcall((char*) "TestTPFree", (char*) m_allocated, 10,

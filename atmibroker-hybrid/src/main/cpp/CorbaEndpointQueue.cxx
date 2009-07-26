@@ -62,11 +62,8 @@ HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(
 	thePoa->activate_object(this);
 	LOG4CXX_DEBUG(logger, (char*) "activated tmp_servant " << this);
 	CORBA::Object_var tmp_ref = thePoa->servant_to_reference(this);
-	CosNaming::Name
-			* name =
-					((CosNaming::NamingContextExt_ptr) connection->default_ctx)->to_name(
-							serviceName);
-	((CosNaming::NamingContext_ptr) connection->name_ctx)->bind(*name, tmp_ref);
+	CosNaming::Name * name = connection->default_ctx->to_name(serviceName);
+	connection->name_ctx->bind(*name, tmp_ref);
 	this->name = serviceName;
 }
 

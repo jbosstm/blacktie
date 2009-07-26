@@ -148,6 +148,7 @@ int receive(Session* session, char ** odata, long *olen, long flags,
 					}
 					*olen = message.len;
 					memcpy(*odata, (char*) message.data, *olen);
+					free(message.data);
 					if (message.rcode == TPESVCFAIL) {
 						*event = TPESVCFAIL;
 					} else if (message.rcode == TPESVCERR) {
@@ -344,6 +345,7 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 					}
 				} else {
 					setSpecific(TPE_KEY, TSS_TPELIMIT);
+					ptrAtmiBrokerClient->closeSession(cd);
 				}
 			} catch (...) {
 				LOG4CXX_ERROR(loggerXATMI,

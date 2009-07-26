@@ -38,8 +38,9 @@ void TestTPService::setUp() {
 
 	// Do local work
 	sendlen = strlen("TestTPService") + 1;
+	rcvlen = sendlen;
 	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen)) != NULL);
 	(void) strcpy(sendbuf, "TestTPService");
 	CPPUNIT_ASSERT(tperrno == 0);
 }

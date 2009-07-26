@@ -87,6 +87,7 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection, int id,
 
 HybridSessionImpl::~HybridSessionImpl() {
 	setSendTo(NULL);
+	temporaryQueue = NULL;
 	//delete temporaryQueue;
 
 	if (stompConnection) {

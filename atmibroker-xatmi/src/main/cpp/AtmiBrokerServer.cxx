@@ -475,6 +475,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 			LOG4CXX_ERROR(loggerAtmiBrokerServer,
 					(char*) "Could not remove the destination: " << serviceName);
 		}
+		free(serviceName);
 		return false;
 	} catch (...) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer,
@@ -486,6 +487,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 			LOG4CXX_ERROR(loggerAtmiBrokerServer,
 					(char*) "Could not remove the destination: " << serviceName);
 		}
+		free(serviceName);
 		return false;
 	}
 

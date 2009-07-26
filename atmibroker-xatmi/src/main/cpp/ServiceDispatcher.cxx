@@ -44,7 +44,6 @@ ServiceDispatcher::~ServiceDispatcher() {
 int ServiceDispatcher::svc(void) {
 	while (!stop) {
 		MESSAGE message = destination->receive(this->timeout);
-		message.len = message.len - 1;
 		if (!stop && message.len > -1) {
 			try {
 				onMessage(message);
