@@ -29,12 +29,12 @@
 #include "AtmiBrokerPoaFac.h"
 
 struct BLACKTIE_CORE_DLL corba_connection_t {
-	CORBA::ORB_ptr orbRef;
-	PortableServer::POA_ptr root_poa;
-	PortableServer::POAManager_ptr root_poa_manager;
-	CosNaming::NamingContextExt_ptr default_ctx;
-	CosNaming::NamingContext_ptr name_ctx;
-	PortableServer::POA_ptr callback_poa;
+	CORBA::ORB_var orbRef;
+	PortableServer::POA_var root_poa;
+	PortableServer::POAManager_var root_poa_manager;
+	CosNaming::NamingContextExt_var default_ctx;
+	CosNaming::NamingContext_var name_ctx;
+	PortableServer::POA_var callback_poa;
 	Worker* worker;
 	AtmiBrokerPoaFac* poaFactory;
 	char * connectionName;
