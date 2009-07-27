@@ -56,7 +56,7 @@ HybridConnectionImpl::~HybridConnectionImpl() {
 	shutdownBindings(this->connection);
 
 	apr_pool_destroy(pool);
-	apr_terminate();
+	//apr_terminate();
 	LOG4CXX_TRACE(logger, "Destroyed");
 }
 
