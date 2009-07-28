@@ -93,8 +93,15 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		String operation = st.nextToken();
 		String serviceName = st.nextToken();
 		byte[] success = new byte[1];
-		String server = (String) prop
-				.get("blacktie." + serviceName + ".server");
+		String server = null;
+		int k = -1;
+		if ((k = serviceName.indexOf("ADMIN")) > 0) {
+			String svcadm = serviceName.substring(0, k) + "ADMIN";
+			server = (String) prop.get("blacktie." + svcadm + ".server");
+		} else {
+			server = (String) prop.get("blacktie." + serviceName + ".server");
+		}
+
 		if (server != null) {
 			log.trace("Service " + serviceName + " exists for server: "
 					+ server);
