@@ -28,6 +28,7 @@ struct message_t {
 	long rcode;
 	long len;
 	long flags;
+	long ttl; /* the expiration time of the message */
 };
 typedef struct message_t MESSAGE;
 
