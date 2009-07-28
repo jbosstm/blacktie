@@ -57,8 +57,7 @@ void server_sigint_handler_callback(int sig_type) {
 			loggerAtmiBrokerServer,
 			(char*) "server_sigint_handler_callback Received shutdown signal: %d",
 			sig_type);
-	serverdone();
-	abort();
+	ptrServer->shutdown();
 }
 
 int serverrun() {
@@ -134,7 +133,6 @@ int serverinit(int argc, char** argv) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "set AtmiBrokerEnv dir " << ptrDir);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverinit called");
-			//signal(SIGINT, server_sigint_handler_callback);
 			ptrServer = new AtmiBrokerServer();
 
 			if (!serverInitialized) {
@@ -150,6 +148,7 @@ int serverinit(int argc, char** argv) {
 					userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
 							(char*) "Server Running");
 				}
+				signal(SIGINT, server_sigint_handler_callback);
 			}
 
 		} catch (...) {
@@ -327,6 +326,11 @@ int AtmiBrokerServer::block() {
 		toReturn = -1;
 	}
 	return toReturn;
+}
+
+void AtmiBrokerServer::shutdown() {
+	LOG4CXX_INFO(loggerAtmiBrokerServer, "Server prepare to shutdown");
+	this->finish->notify();
 }
 
 char *
@@ -515,13 +519,13 @@ void AtmiBrokerServer::unadvertiseService(char * svcname) {
 			!= advertisedServices.end(); i++) {
 		char* name = (*i);
 		if (strcmp(serviceName, name) == 0) {
+			removeAdminDestination(serviceName);
+
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "remove_service_queue: " << serviceName);
 			Destination * destination = removeDestination(serviceName);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "preparing to destroy" << serviceName);
-
-			removeAdminDestination(serviceName);
 
 			connection->destroyDestination(destination);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "destroyed"

@@ -57,6 +57,7 @@ public:
 	void advertiseAtBootime();
 	void server_done();
 	int  block();
+	void shutdown();
 
 private:
 	void (*getServiceMethod(const char * aServiceName))(TPSVCINFO *);
