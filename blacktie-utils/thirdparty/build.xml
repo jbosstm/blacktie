@@ -255,8 +255,8 @@
 		<copy file="${bdb.lib.dir}/libdb.so" todir="${build.dist}/lib" />
 	</target>
 	<target name="bdb-lib-windows" if="windows">
-		<copy file="${bdb.lib.dir}/libdb47.dll" todir="${build.dist}/lib" />
-		<copy file="${bdb.lib.dir}/libdb47d.dll" todir="${build.dist}/lib" />
+		<copy file="${bdb.lib.dir}/libdb47.lib" todir="${build.dist}/lib" />
+		<copy file="${bdb.lib.dir}/libdb47d.lib" todir="${build.dist}/lib" />
 	</target>
 	<target name="bdb" depends="clean,init">
 		<antcall target="purge"/>
@@ -264,7 +264,7 @@
 
 		<antcall target="bdb-lib-linux" />
 		<antcall target="bdb-lib-windows" />
-		<copy todir="${build.dist}/include/bdb">
+		<copy todir="${build.dist}/inc/bdb">
 			<fileset dir="${bdb.include.dir}" />
 		</copy>
 
