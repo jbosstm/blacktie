@@ -52,7 +52,6 @@ private:
 	apr_pool_t* pool;
 	stomp_frame* message;
 	char* receipt;
-	SynchronizableObject* lock;
 	bool shutdown;
 	char* name;
 	char* fullName;

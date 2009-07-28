@@ -33,9 +33,6 @@ HybridStompEndpointQueue::HybridStompEndpointQueue(
 	LOG4CXX_DEBUG(logger, "Creating endpoint queue: " << serviceName);
 	this->message = NULL;
 	shutdown = false;
-	lock = new SynchronizableObject();
-	LOG4CXX_DEBUG(logger, "Created lock: " << lock);
-
 	
 	std::string timeout = AtmiBrokerEnv::get_instance()->getenv((char*) "DestinationTimeout");
 	this->connection =  HybridConnectionImpl::connect(pool, atoi(timeout.c_str())); // TODO allow the timeout to be specified in configuration
@@ -96,18 +93,9 @@ HybridStompEndpointQueue::HybridStompEndpointQueue(
 HybridStompEndpointQueue::~HybridStompEndpointQueue() {
 	LOG4CXX_TRACE(logger, (char*) "destroying" << name);
 
-	lock->lock();
 	if (!shutdown) {
 		shutdown = true;
-		lock->notify();
 	}
-	lock->unlock();
-	// Reacquire the lock so we know its safe to delete it
-	lock->lock();
-	lock->unlock();
-	LOG4CXX_TRACE(logger, (char*) "deleting lock");
-	delete lock;
-	lock = NULL;
 	LOG4CXX_TRACE(logger, (char*) "freeing name" << name);
 	free(name);
 	free(fullName);
@@ -131,7 +119,6 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 	message.rval = -1;
 	message.rcode = -1;
 
-	lock->lock();
 	if (!shutdown) {
 		stomp_frame *frame = NULL;
 
@@ -247,19 +234,15 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 			}
 		}
 	}
-	lock->unlock();
 	return message;
 }
 
 void HybridStompEndpointQueue::disconnect() {
 	LOG4CXX_DEBUG(logger, (char*) "disconnecting: " << name);
-	lock->lock();
 	if (!shutdown) {
 		shutdown = true;
 		LOG4CXX_DEBUG(logger, (char*) "Shutdown set: " << name);
-		lock->notify();
 	}
-	lock->unlock();
 	LOG4CXX_DEBUG(logger, (char*) "disconnected: " << name);
 }
 
