@@ -26,12 +26,6 @@
 class TestTPAdvertise: public BaseServerTest {
 	CPPUNIT_TEST_SUITE( TestTPAdvertise);
 	CPPUNIT_TEST( test_tpadvertise_new_service);
-	//CPPUNIT_TEST( test_tpadvertise_readvertise);
-	CPPUNIT_TEST( test_tpadvertise_null_name_null);
-	CPPUNIT_TEST( test_tpadvertise_null_name_empty);
-	CPPUNIT_TEST( test_tpadvertise_different_method);
-	CPPUNIT_TEST( test_tpadvertise_idempotent);
-	CPPUNIT_TEST( test_tpadvertise_length_15);
 CPPUNIT_TEST_SUITE_END();
 
 public:
