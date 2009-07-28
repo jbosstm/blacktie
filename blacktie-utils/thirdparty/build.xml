@@ -264,7 +264,7 @@
 
 		<antcall target="bdb-lib-linux" />
 		<antcall target="bdb-lib-windows" />
-		<copy todir="${build.dist}/inc/bdb">
+		<copy todir="${build.dist}/include/bdb">
 			<fileset dir="${bdb.include.dir}" />
 		</copy>
 
