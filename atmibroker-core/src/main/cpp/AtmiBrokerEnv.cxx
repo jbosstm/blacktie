@@ -134,7 +134,7 @@ AtmiBrokerEnv::~AtmiBrokerEnv() {
 			}
 			services->clear();
 
-			free(*server);
+			delete (*server);
 		}
 		servers.clear();
 	}

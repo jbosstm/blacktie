@@ -22,26 +22,23 @@
 #include "TestMultiOrb.h"
 #include "AtmiBrokerPoaFac.h"
 #include "OrbManagement.h"
+#include "AtmiBrokerEnv.h"
 #include "Worker.h"
+#include "userlogc.h"
 
 void TestMultiOrb::setUp() {
-	// Perform global set up
 	TestFixture::setUp();
-
-	// Perform set up
 }
 
 void TestMultiOrb::tearDown() {
-	// Perform clean up
-
-	// Perform global clean up
+	AtmiBrokerEnv::discard_instance();
 	TestFixture::tearDown();
 }
 
 void TestMultiOrb::test() {
 	try {
-		CORBA_CONNECTION* serverConnection = initOrb((char*) "client");
-		CORBA_CONNECTION* clientConnection = initOrb((char*) "server");
+		CORBA_CONNECTION* serverConnection = initOrb((char*) "server");
+		CORBA_CONNECTION* clientConnection = initOrb((char*) "client");
 		shutdownBindings(serverConnection);
 		delete serverConnection;
 		serverConnection = NULL;

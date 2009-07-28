@@ -23,7 +23,7 @@ void ADMIN(TPSVCINFO* svcinfo) {
 	ACE_OS::strncpy(req, svcinfo->data, svcinfo->len);
 
 	char* toReturn = NULL;
-	int   len = 1;
+	long  len = 1;
 	toReturn = tpalloc((char*) "X_OCTET", NULL, len);
 	toReturn[0] = '0';
 

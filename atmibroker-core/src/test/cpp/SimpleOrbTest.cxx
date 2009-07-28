@@ -52,7 +52,7 @@ void SimpleOrbTest::test() {
 	PortableServer::POAManager_var poa_manager = poa->the_POAManager();
 	//assert(!CORBA::is_nil(poa_manager));
 	tmp_ref = orbRef->resolve_initial_references("NameService");
-	Worker *worker = new Worker(orbRef, "server");
+	Worker *worker = new Worker(orbRef, (char*) "server");
 	if (worker->activate(THR_NEW_LWP| THR_JOINABLE, 1, 0, ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
 		delete (worker);
 		worker = NULL;

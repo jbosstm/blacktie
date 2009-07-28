@@ -142,8 +142,7 @@ static void XMLCALL startElement
 	} else if (strcmp(name, "SERVER") == 0) {
 		processingServer = true;
 
-		ServerInfo* server = (ServerInfo*) malloc (sizeof(ServerInfo));
-		memset(server, 0, sizeof(ServerInfo));
+		ServerInfo* server = new ServerInfo;
 		if(atts != 0) {
 			if(atts[0] && strcmp(atts[0], "name") == 0) {
 				server->serverName = strdup(atts[1]);

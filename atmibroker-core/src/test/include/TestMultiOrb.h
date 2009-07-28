@@ -22,12 +22,10 @@
 #include "cppunit/TestFixture.h"
 
 class TestMultiOrb: public CppUnit::TestFixture {
-CPPUNIT_TEST_SUITE( TestMultiOrb )
-	;
-		CPPUNIT_TEST( test );
-		CPPUNIT_TEST( test_manyorb );
-	CPPUNIT_TEST_SUITE_END()
-	;
+	CPPUNIT_TEST_SUITE( TestMultiOrb );
+	CPPUNIT_TEST( test );
+	CPPUNIT_TEST( test_manyorb );
+	CPPUNIT_TEST_SUITE_END();
 
 public:
 	void test();
