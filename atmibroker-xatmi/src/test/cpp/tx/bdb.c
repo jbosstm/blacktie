@@ -19,7 +19,7 @@
 #include <string.h>
 #include <tx.h>
 
-#include "request.h"
+#include "tx/request.h"
 
 #ifdef BDB
 #include <db.h> /* Berkeley dB include */
@@ -57,13 +57,25 @@ static DBC * open_cursor(DB *dbp, int *ret)
 	return dbcp;
 }
 
-static int fexists(const char * fname)
+static int dexists(const char * fname)
 {
 	FILE *f = fopen(fname, "r");
 
-	if (!f) return 0;
+	if (!f) {
+#if 0
+		int rv = mkdir(fname);
 
-	fclose(f);
+		if (rv != 0) {
+			logit(0, (char *) "unable to crate database dir %s error %d", fname, rv);
+
+			return 0;
+		}
+#else
+		return 0;
+#endif
+	} else {
+		fclose(f);
+	}
 
 	return 1;
 }
@@ -77,7 +89,7 @@ static int opendb(DB **dbp, const char *backing_file, const char * dbname)
 	int ret;
 
 	logit(1, (char*) "opendb %s (%s)", backing_file, (dbname ? dbname : "one db per file"));
-	if ((ret = db_create(dbp, NULL, DB_XA_CREATE)) != 0 && !fexists(dbname))
+	if ((ret = db_create(dbp, NULL, DB_XA_CREATE)) != 0 && !dexists(dbname))
 		return fail("db_create error", ret);
 
 		if ((ret = (*dbp)->open(*dbp, NULL, backing_file, dbname, DB_BTREE, DB_CREATE, 0664)) != 0)
@@ -236,9 +248,11 @@ int bdb_access(test_req_t *req, test_req_t *resp)
 	DB *dbp;
 	int stat, rv;
 
+	logit(1, (char*) "bdb_access");
 	if ((stat = opendb(&dbp, req->db, NULL)) != 0)
 		return fail("db open error", stat);
 
+	logit(1, (char*) "bdb_access doWork");
 	if ((rv = doWork(dbp, req->op, req->data, resp)) != 0)
 		dbp->err(dbp, rv, "doWork");
 

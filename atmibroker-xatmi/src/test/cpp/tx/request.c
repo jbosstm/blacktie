@@ -24,7 +24,7 @@
 #include <tx.h>
 #include <userlogc.h>
 
-#include "request.h"
+#include "tx/request.h"
 
 /* helper methods for controling transactions */
 int is_begin(enum TX_TYPE txtype) {

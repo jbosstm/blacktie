@@ -75,3 +75,9 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestServerinit);
 /* Client Init */
 #include "TestClientInit.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestClientInit);
+
+#if 0
+#include "TestTxRMTPCall.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTxRMTPCall);
+#endif
+

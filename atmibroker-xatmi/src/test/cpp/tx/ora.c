@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <xa.h>
 
-#include "request.h"
+#include "tx/request.h"
 
 #ifdef ORACLE
 #include <oci.h>

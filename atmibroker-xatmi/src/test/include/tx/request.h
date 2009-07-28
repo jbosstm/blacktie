@@ -19,7 +19,7 @@
 #define __REQUEST_H
 
 #undef ORACLE
-#undef BDB
+#define BDB
 
 #ifndef ORACLE
 #define ora_access	null_access

@@ -31,7 +31,6 @@
 #include "ace/Null_Mutex.h"
 #include "ace/Based_Pointer_T.h"
 
-int DISABLE_XA = 0;
 bool XAResourceManagerFactory::getXID(XID& xid)
 {
 	CosTransactions::Control_ptr cp = (CosTransactions::Control_ptr) get_control();
@@ -83,13 +82,18 @@ LOG4CXX_DEBUG(xaResourceLogger,  (char *) "converted OTS tid len:" <<
 #endif
 		return true;
 	} catch (CosTransactions::Unavailable & e) {
-		return false;
+		LOG4CXX_ERROR(xaResourceLogger,  (char *) "XA-compatible Transaction Service raised unavailable");
+	} catch (const CORBA::OBJECT_NOT_EXIST &e) {
+		LOG4CXX_ERROR(xaResourceLogger,  (char *) "Unexpected exception converting xid: " << e._name());
+	} catch  (CORBA::Exception& e) {
+		LOG4CXX_ERROR(xaResourceLogger,  (char *) "Unexpected exception converting xid: " << e._name());
 	}
+
+	return false;
 }
 
 static int _rm_start(XAResourceManager* rm, XID& xid, long flags)
 {
-if (DISABLE_XA) return XA_OK;
 	LOG4CXX_TRACE(xaResourceLogger,  (char *) "_rm_start xid="
 		<< xid.formatID << ':'
 		<< xid.gtrid_length << ':'
@@ -101,7 +105,6 @@ if (DISABLE_XA) return XA_OK;
 }
 static int _rm_end(XAResourceManager* rm, XID& xid, long flags)
 {
-if (DISABLE_XA) return XA_OK;
 	LOG4CXX_TRACE(xaResourceLogger,  (char *) "_rm_end xid="
 		<< xid.formatID << ':'
 		<< xid.gtrid_length << ':'
@@ -181,7 +184,6 @@ int XAResourceManagerFactory::resumeRMs(CORBA_CONNECTION * connection)
 
 void XAResourceManagerFactory::createRMs(CORBA_CONNECTION * connection) throw (RMException)
 {
-if (DISABLE_XA) return ;
 	if (rms_.size() == 0) {
 		xarm_config_t * rmp = (xarmp == 0 ? 0 : xarmp->head);
 

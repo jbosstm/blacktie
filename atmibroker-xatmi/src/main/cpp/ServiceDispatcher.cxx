@@ -79,6 +79,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	long ilen = message.len;
 	long flags = message.flags;
 	void* control = message.control;
+	void* curr = get_control();
 	LOG4CXX_DEBUG(logger, (char*) "ilen: " << ilen << " flags: " << flags
 			<< "cd: " << message.correlationId);
 
@@ -130,6 +131,9 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	if (control) {
 		disassociate_tx(); // TODO figure out why tpreturn needs to stop Resource Managers
 	}
+
+	if (curr)
+		associate_tx(curr);
 
 	// CLEAN UP THE SENDER AND RECEIVER FOR THIS CLIENT
 	if (session->getCanSend()) {

@@ -44,8 +44,6 @@ void XAResourceAdaptorImpl::setComplete()
 		rm_->setComplete(&xid_);
 }
 
-// TODO cross check this implementation with JBossTS XAResourceRecord
-// CosTransactions::Resource implementation
 CosTransactions::Vote XAResourceAdaptorImpl::prepare()
 	throw (CosTransactions::HeuristicMixed,CosTransactions::HeuristicHazard)
 {
@@ -148,6 +146,7 @@ void XAResourceAdaptorImpl::rollback()
 	throw(CosTransactions::HeuristicCommit,CosTransactions::HeuristicMixed,CosTransactions::HeuristicHazard)
 {
 	int rv = xa_end (&xid_, rmid_, TMSUCCESS);
+
 	if (rv != XA_OK) {
 		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getWarn(), (char *) xa_switch_->name <<
 			(char*) ": rollback OTS resource end failed: error=" << rv << " rid=" << rmid_);
@@ -165,6 +164,7 @@ void XAResourceAdaptorImpl::rollback()
 void XAResourceAdaptorImpl::commit_one_phase() throw(CosTransactions::HeuristicHazard)
 {
 	int rv = xa_end (&xid_, rmid_, TMSUCCESS);
+
 	if (rv != XA_OK) {
 		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getWarn(), (char *) xa_switch_->name <<
 			(char*) ": commit 1PC OTS resource end failed: error=" << rv << " rid=" << rmid_);
@@ -241,6 +241,7 @@ int XAResourceAdaptorImpl::xa_forget (XID * txid, int rmid, long flags)
 }
 int XAResourceAdaptorImpl::xa_complete (int * handle, int * retvalue, int rmid, long flags)
 {
-	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "xa_complete " << rmid << (char*) ", flags=0x" << std::hex << flags);
+	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "xa_complete " << rmid
+		<< (char*) ", flags=0x" << std::hex << flags);
 	return xa_switch_->xa_complete_entry(handle, retvalue, rmid, flags);
 }

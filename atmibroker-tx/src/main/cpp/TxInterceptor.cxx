@@ -155,10 +155,14 @@ bool TxInterceptor::isTransactional(PortableInterceptor::ClientRequestInfo_ptr r
 		IOP::TaggedComponent_var comp = ri->get_effective_component(AtmiTx::TAG_OTS_POLICY);
 		LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getTrace(), (char *) "\tTRANSACTIONAL - " << ri->operation ());
 		return true;
+    } catch (const CORBA::BAD_PARAM &) {
+        ; // not an error means the the intercepted object is not transactional
 	} catch (const CORBA::SystemException& ex) {
-		// should be BAD_PARAM, minor code 25
+		LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getWarn(),
+			(char*) "client - isTransactional unexpected CORBA ex: " << ex._name() << (char*) " op=" << ri->operation ());
 	} catch (...) {
-		LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getWarn(), (char*) "isTransactional unexpected ex");
+		LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getWarn(),
+			(char*) "client - isTransactional unexpected ex" << (char*) " op=" << ri->operation ());
 	}
 
 	return false;
@@ -169,8 +173,11 @@ bool TxInterceptor::isTransactional(PortableInterceptor::ServerRequestInfo_ptr r
 		CORBA::Policy_var pv = ri->get_server_policy(AtmiTx::OTS_POLICY_TYPE);
 		LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getTrace(), (char *) "\tTRANSACTIONAL - " << ri->operation ());
 		return true;
+    } catch (const CORBA::INV_POLICY &) {
+		; // not an error - means that the intercepted object is not transactional
 	} catch (const CORBA::SystemException& ex) {
-		// should be INV_POLICY, minor code 2
+		LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getWarn(),
+			(char*) "server - isTransactional unexpected CORBA ex: " << ex._name() << (char*) " op=" << ri->operation ());
 	} catch (...) {
 		LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getWarn(),
 				(char*) "isTransactional unexpected ex, op: " << ri->operation ());
@@ -189,15 +196,15 @@ void TxInterceptor::update_tx_context(PortableInterceptor::ServerRequestInfo_ptr
 			if (!curr->_is_equivalent(ctrl)) {
 				// Drop the level to info since we are using service queues
 				// See comment in CorbaEndpointQueue::send
-				LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getDebug(),
+				LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getInfo(),
 						(char*) "\tcurrent and context are different");
 			}
-		}
+		} else {
+			associate_tx(ctrl, 0);
 
-		associate_tx(ctrl, 0);
-
-		LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getDebug(),
+			LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getDebug(),
 				ri->operation () << (char*) ": associated client tx with thread");
+		}
 	}
 }
 
@@ -208,9 +215,9 @@ void TxInterceptor::debug(bool isTx, const char * msg, const char* op) {
 			<< isTx << " TSS: " << getSpecific(TSS_KEY));
 }
 void TxInterceptor::debug(PortableInterceptor::ClientRequestInfo_ptr ri, const char* msg) {
-	debug(this->isTransactional(ri), msg, ri->operation());
+//	debug(this->isTransactional(ri), msg, ri->operation());
 }
 
 void TxInterceptor::debug(PortableInterceptor::ServerRequestInfo_ptr ri, const char* msg) {
-	debug(this->isTransactional(ri), msg, ri->operation());
+//	debug(this->isTransactional(ri), msg, ri->operation());
 }

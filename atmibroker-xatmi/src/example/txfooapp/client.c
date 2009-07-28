@@ -19,104 +19,90 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "xatmi.h"
-#include "tx.h"
+#include <xatmi.h>
+#include <tx.h>
 
-#include "userlogc.h"
-#include "client.h"
+#include "products.h"
 
-extern int DISABLE_XA;
-
-static enum DB_TYPE prod;
+static product_t prods[8];
+static char testid[16];
 static char *emps[] = {"8000", "8001", "8002", "8003", "8004", "8005", "8006", "8007"};
-#define DBF "db1" /* backing file for database 1 */
 
-static int is_begin(enum TX_TYPE txtype) {
-	return (txtype == TX_TYPE_BEGIN || txtype == TX_TYPE_BEGIN_COMMIT || txtype == TX_TYPE_BEGIN_ABORT);
-}
-static int is_commit(enum TX_TYPE txtype) {
-	return (txtype == TX_TYPE_COMMIT || txtype == TX_TYPE_BEGIN_COMMIT);
-}
-static int is_abort(enum TX_TYPE txtype) {
-	return (txtype == TX_TYPE_ABORT || txtype == TX_TYPE_BEGIN_ABORT);
-}
-static int start_tx(enum TX_TYPE txtype) {
-	if (is_begin(txtype)) {
-		userlogc((char*) "- Starting Transaction");
-		if (tx_begin() != TX_OK) {
-			userlogc((char*) "TX ERROR - Could not begin transaction: ");
-			return -1;
-		}
-	}
+static product_t *get_product(const char *pid) {
+    int id = atoi((char *) pid);
+    product_t *p;
 
-	return 0;
-}
-static int end_tx(enum TX_TYPE txtype) {
-	int rv = 0;
-	if (is_commit(txtype)) {
-		userlogc((char*) "- Commiting transaction");
-		if (tx_commit() != TX_OK)
-			rv = -1;
-	} else if (is_abort(txtype)) {
-		userlogc((char*) "- Rolling back transaction");
-		if (tx_rollback() != TX_OK)
-			rv = -1;
-	}
+    for (p = products; p->id != -1; p++)
+        if (p->id == id)
+            return p;
 
-	if (rv != 0)
-		userlogc((char*) "TX ERROR - Could not terminate transaction");
-
-	return rv;
+    return 0;
 }
 
-static int send_req(enum DB_TYPE ptype, const char * msg, const char *dbfile, const char *data, char op, char **prbuf) {
+static void set_test_id(const char *id) {
+	(void) strncpy(testid, id, sizeof (testid));
+}
+
+static int send_req(test_req_t *req, char **prbuf) {
 	long rsz = sizeof (test_req_t);
 	long callflags = 0L;
-	test_req_t *req;
 	test_req_t *resp;
 	int rv = 0;
 
 	resp = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", sizeof (test_req_t));
-	req = get_tbuf(data, dbfile, op, ptype, 0);
 
-	userlogc((char*) "Invoke Service DBS: prod=%d op=%c data=%s dbf=%s", req->prod, req->op, req->data, req->db);
+	logit(0, (char*) "Invoke Service DBS %4d: prod=%d op=%c data=%s dbf=%s", req->id, req->prod, req->op, req->data, req->db);
 	if (tpcall("DBS", (char *) req, sizeof (test_req_t), (char **) &resp, &rsz, callflags) == -1) {
-		userlogc((char*) "TP ERROR tperrno: %d", tperrno);
+		logit(0, (char*) "TP ERROR tperrno: %d", tperrno);
 		rv = -1;
+	} else if (prbuf && *prbuf) {
+		strncpy(*prbuf, resp->data, sizeof (resp->data));
 	}
 
-	tpfree((char *) req);
 	tpfree((char *) resp);
 
 	return rv;
 }
 
-static int count_records(const char *msg, char *key, int in_tx) {
-	test_req_t req, res;
-	product_t *p = products;
+static int count_records(const char *msg, char *key, int in_tx, int expect) {
 	int cnt = -1;
 
-	(void) strcpy(req.db, DBF);
-	(void) strcpy(req.data, key);
-	req.op = '1';
-
 	if (in_tx || start_tx(TX_TYPE_BEGIN) == 0) {
-		for (p = products; p->id != -1; p++) {
-			req.prod = p->id;
-			if (p->id != 0) {
-				int rc = (p->access(&req, &res) == 0 ? atoi(res.data) : -1);
+		int rv = 0;
+		test_req_t *req;
+		test_req_t res;
+		product_t *p = prods;
+		char *rbuf = (char *) (res.data);
 
-				if (rc == -1) {
-					userlogc("Error: Db %d access error", p->id);
-					return -1;
-				}
-				if (rc != cnt && cnt != -1) {
-					userlogc("All databases should have the same no of records: db %d cnt %d (prev was %d)", p->id, rc, cnt);
-					return -1;
-				}
+		for (p = prods; p->id != -1; p++) {
+			int remote = LOCAL_ACCESS;
 
-				cnt = rc;
+			if ((p->loc & remote) == 0)	/* the RM does not support the requested access type */
+				remote = p->loc;
+
+			req = get_buf((remote & REMOTE_ACCESS), key, p->dbname, '1', p->id, TX_TYPE_NONE, expect);
+			logit(0, "invoke prod %s (id=%d) remote=%d dbf=%s", p->pname, p->id, remote, p->dbname);
+
+			rv = ((remote & REMOTE_ACCESS) ? send_req(req, &rbuf) : p->access(req, &res));
+logit(0, "invoked ok");
+
+			if (rv)
+				logit(0, "BAD REQ %d", rv);
+
+			free_buf(remote, req);
+			rv = (rv == 0 ? atoi(res.data) : -1);
+
+logit(0, "and count is %d", rv);
+			if (rv == -1) {
+				logit(0, "Error: Db %d access error", p->id);
+				return -1;
 			}
+			if (rv != cnt && cnt != -1) {
+				logit(0, "All databases should have the same no of records: db %d cnt %d (prev was %d)", p->id, rv, cnt);
+				return -1;
+			}
+
+			cnt = rv;
 		}
 
 		if (in_tx || end_tx(TX_TYPE_COMMIT) == 0)
@@ -129,32 +115,47 @@ static int count_records(const char *msg, char *key, int in_tx) {
 static int check_count(const char *msg, char *key, int in_tx, int expect) {
 	int rcnt;
 
-	if ((rcnt = count_records(msg, key, 0)) != expect) {
-		userlogc("WRONG NUMBER OF RECORDS: %d expected %d", rcnt, expect);
+	if ((rcnt = count_records(msg, key, 0, expect)) != expect) {
+		logit(0, "WRONG NUMBER OF RECORDS: %d expected %d", rcnt, expect);
 		return -1;
 	}
 
+	logit(0, "%s: RECORD COUNT: %d expected %d", testid, rcnt, expect);
 	return 0;
 }
 
-static int db_op(const char * msg, const char *dbfile, const char *data, char op, enum TX_TYPE txtype, char **prbuf, int remote) {
+static int db_op(const char *msg, const char *data, char op, enum TX_TYPE txtype,
+				 char **prbuf, int remote, int migrating, int expect) {
 	if (msg)
-		userlogc((char *) msg);
+		logit(0, (char *) "%s: %s %s", testid, ((remote | REMOTE_ACCESS) ? "REMOTE" : "LOCAL"), msg);
 
 	if (start_tx(txtype) == 0) {
 		int rv = 0;
-		test_req_t req, res;
-		product_t *p = products;
+		test_req_t *req;
+		test_req_t res;
+		product_t *p = prods;
 
-		init_req(&req, 0, dbfile, data, op, TX_TYPE_NONE);
+		for (p = prods; p->id != -1; p++) {
+#if 0
+			if (migrating && (p->xaflags() & TMNOMIGRATE)) {
+				/* the RM does not support tx migration (see XA spec for explanation */
+				logit(0, "Info: RM %d does not support tx migration (switching from remote)", p->id);
+				remote = !remote;
+			}
+#endif
 
-		for (p = products; p->id != -1; p++) {
-			req.prod = p->id;
-			userlogc("invoke prod %d remote=%d dbf=%s", p->id, remote, dbfile);
-			rv = (remote ? send_req(p->id, msg, dbfile, data, op, prbuf) : p->access(&req, &res));
+			if ((p->loc & remote) == 0)	/* the RM does not support the requested access type */
+				remote = p->loc;
+
+			req = get_buf((remote & REMOTE_ACCESS), data, p->dbname, op, p->id, TX_TYPE_NONE, expect);
+			logit(0, "invoke prod %s (id=%d) remote=%d dbf=%s", p->pname, p->id, remote, p->dbname);
+
+			rv = ((remote & REMOTE_ACCESS) ? send_req(req, prbuf) : p->access(req, &res));
 
 			if (rv)
-				userlogc("BAD REQ %d", rv);
+				logit(0, "BAD REQ %d", rv);
+
+			free_buf(remote, req);
 		}
 
 		if (end_tx(txtype) == 0)
@@ -164,11 +165,14 @@ static int db_op(const char * msg, const char *dbfile, const char *data, char op
 	return -1;
 }
 
+/**
+ * ensure that all the target databases start off in the same state
+ */
 static int setup() {
 	int rv;
 
 	/* start off with no records */
-	if ((rv = db_op("DELETE AT SETUP", DBF, emps[0], '3', TX_TYPE_BEGIN_COMMIT, 0, 0)) != 0)
+	if ((rv = db_op("DELETE AT SETUP", emps[0], '3', TX_TYPE_BEGIN_COMMIT, 0, LOCAL_ACCESS, 0, -1)) != 0)
 		return rv;
 
 	if ((rv = check_count("COUNT RECORDS", emps[0], 0, 0)))
@@ -177,12 +181,15 @@ static int setup() {
 	return 0;
 }
 
+/**
+ * remove all the records added by the test
+ */
 static int teardown(int *cnt)
 {
 	int rv;
 
 	/* delete records starting from emps[0], */
-	if ((rv = db_op("LOCAL DELETE", DBF, emps[0], '3', TX_TYPE_BEGIN_COMMIT, 0, 0)))
+	if ((rv = db_op("DELETE", emps[0], '3', TX_TYPE_BEGIN_COMMIT, 0, LOCAL_ACCESS, 0, -1)))
 		return rv;
 
 	*cnt = 0;
@@ -192,23 +199,67 @@ static int teardown(int *cnt)
 	return 0;
 }
 
+static int test0(int *cnt)
+{
+	int rv;
+
+	set_test_id("Test 0");
+#if 1
+	/* ask the remote service to insert a record */
+	if ((rv = db_op("INSERT 1", emps[5], '0', TX_TYPE_BEGIN, 0, REMOTE_ACCESS, 0, -1)))
+		return rv;
+
+	/* ask the remote service to insert another record in the same transaction */
+	if ((rv = db_op("INSERT 2", emps[6], '0', TX_TYPE_NONE, 0, REMOTE_ACCESS, 0, -1)))
+		return rv;
+
+	/* insert a record and end the already running transaction */
+	if ((rv = db_op("INSERT", emps[7], '0', TX_TYPE_COMMIT, 0, LOCAL_ACCESS, 1, -1)))
+		return rv;
+
+	*cnt += 3;
+#else
+	if ((rv = db_op("INSERT 1", emps[5], '0', TX_TYPE_BEGIN_COMMIT, 0, LOCAL_ACCESS, 0, -1)))
+		return rv;
+	*cnt += 1;
+#endif
+	/* make sure the record count increases by 3 */
+	if ((rv = check_count("COUNT RECORDS", emps[0], 0, *cnt)))
+		return -1;
+
+	return 0;
+}
+
+/**
+ * start a transaction
+ * perform a remote insert on each target db
+ * perform another remote insert on each target db
+ * perform a local insert on each target db
+ * commit the transaction
+ *
+ * Note for databases that do not support tx migration (meaning that performing a
+ * remote insert followed by a local insert is not supported) the local operation
+ * is switched to a remote one (which ensures that all the updates are done in the
+ * same thread).
+ */
 static int test1(int *cnt)
 {
 	int rv;
 
+	set_test_id("Test 1");
 	/* ask the remote service to insert a record */
-	if ((rv = db_op("REMOTE INSERT 1", DBF, emps[5], '0', TX_TYPE_BEGIN, 0, 1)))
+	if ((rv = db_op("INSERT 1", emps[5], '0', TX_TYPE_BEGIN, 0, REMOTE_ACCESS, 0, -1)))
 		return rv;
 
 	/* ask the remote service to insert another record in the same transaction */
-	if ((rv = db_op("REMOTE INSERT 2", DBF, emps[6], '0', TX_TYPE_NONE, 0, 1)))
+	if ((rv = db_op("INSERT 2", emps[6], '0', TX_TYPE_NONE, 0, REMOTE_ACCESS, 0, -1)))
 		return rv;
-
 	/* insert a record and end the already running transaction */
-	if ((rv = db_op("LOCAL INSERT", DBF, emps[7], '0', TX_TYPE_COMMIT, 0, 0)))
+	if ((rv = db_op("INSERT", emps[7], '0', TX_TYPE_COMMIT, 0, LOCAL_ACCESS, 1, -1)))
 		return rv;
 
 	*cnt += 3;
+
 	/* make sure the record count increases by 3 */
 	if ((rv = check_count("COUNT RECORDS", emps[0], 0, *cnt)))
 		return -1;
@@ -216,20 +267,28 @@ static int test1(int *cnt)
 	return 0;
 }
 
+/**
+ * start a transaction
+ * perform a remote insert on each target db
+ * perform another remote insert on each target db
+ * perform a third remote insert on each target db
+ * commit the transaction
+ */
 static int test2(int *cnt)
 {
 	int rv;
 
+	set_test_id("Test 2");
 	/* ask the remote service to insert a record */
-	if ((rv = db_op("REMOTE INSERT 1", DBF, emps[0], '0', TX_TYPE_BEGIN, 0, 1)))
+	if ((rv = db_op("INSERT 1", emps[0], '0', TX_TYPE_BEGIN, 0, REMOTE_ACCESS, 0, -1)))
 		return rv;
 
 	/* ask the remote service to insert another record in the same transaction */
-	if ((rv = db_op("REMOTE INSERT 2", DBF, emps[1], '0', TX_TYPE_NONE, 0, 1)))
+	if ((rv = db_op("INSERT 2", emps[1], '0', TX_TYPE_NONE, 0, REMOTE_ACCESS, 0, -1)))
 		return rv;
 
 	/* insert a record and end the already running transaction */
-	if ((rv = db_op("REMOTE INSERT 3", DBF, emps[2], '0', TX_TYPE_COMMIT, 0, 1)))
+	if ((rv = db_op("INSERT 3", emps[2], '0', TX_TYPE_COMMIT, 0, REMOTE_ACCESS, 0, -1)))
 		return rv;
 
 	*cnt += 3;
@@ -240,17 +299,25 @@ static int test2(int *cnt)
 	return 0;
 }
 
+/**
+ * start a transaction
+ * insert a record into each db
+ * commit the transaction
+ *
+ * repeat the test but rollback the transaction instead of commit
+ */
 static int test3(int *cnt)
 {
 	int rv;
 
+	set_test_id("Test 3");
 	/* ask the remote service to insert a record */
-	if ((rv = db_op("REMOTE INSERT 1", DBF, emps[3], '0', TX_TYPE_BEGIN_COMMIT, 0, 1)))
+	if ((rv = db_op("INSERT 1", emps[3], '0', TX_TYPE_BEGIN_COMMIT, 0, REMOTE_ACCESS, 0, -1)))
 		return rv;
 
 	*cnt += 1;
 	/* delete records starting from emps[0] but abort it */
-	if ((rv = db_op("REMOTE INSERT WITH ABORT", DBF, emps[4], '1', TX_TYPE_BEGIN_ABORT, 0, 1)))
+	if ((rv = db_op("INSERT WITH ABORT", emps[4], '1', TX_TYPE_BEGIN_ABORT, 0, REMOTE_ACCESS, 0, -1)))
 		return rv;
 
 	if ((rv = check_count("COUNT RECORDS", emps[0], 0, *cnt)))
@@ -259,25 +326,32 @@ static int test3(int *cnt)
 	return 0;
 }
 
+/**
+ * start tx, do a remote insert on all dbs commit the tx
+ * start tx, do a remote update on all dbs commit the tx
+ * start tx, do a remote delete on all dbs abort the tx
+ * start tx, do a local delete on all dbs abort the tx
+ */
 static int test4(int *cnt)
 {
 	int rv;
 
+	set_test_id("Test 4");
 	/* ask the remote service to insert a record */
-	if ((rv = db_op("REMOTE INSERT 1", DBF, emps[4], '0', TX_TYPE_BEGIN_COMMIT, 0, 1)))
+	if ((rv = db_op("INSERT 1", emps[4], '0', TX_TYPE_BEGIN_COMMIT, 0, REMOTE_ACCESS, 0, -1)))
 		return rv;
 
 	*cnt += 1;
 	/* modify one of the records */
-	if ((rv = db_op("REMOTE UPDATE", DBF, emps[4], '2', TX_TYPE_BEGIN_COMMIT, 0, 1)))
+	if ((rv = db_op("UPDATE", emps[4], '2', TX_TYPE_BEGIN_COMMIT, 0, REMOTE_ACCESS, 0, -1)))
 		return rv;
 
 	/* remote delete records starting from emps[0] with abort*/
-	if ((rv = db_op("REMOTE DELETE WITH ABORT", DBF, emps[0], '3', TX_TYPE_BEGIN_ABORT, 0, 1)))
+	if ((rv = db_op("DELETE WITH ABORT", emps[0], '3', TX_TYPE_BEGIN_ABORT, 0, REMOTE_ACCESS, 0, -1)))
 		return rv;
 
 	/* local delete records starting from emps[0] with abort*/
-	if ((rv = db_op("LOCAL DELETE WITH ABORT", DBF, emps[0], '3', TX_TYPE_BEGIN_ABORT, 0, 0)))
+	if ((rv = db_op("DELETE WITH ABORT", emps[0], '3', TX_TYPE_BEGIN_ABORT, 0, LOCAL_ACCESS, 0, -1)))
 		return rv;
 
 	if ((rv = check_count("COUNT RECORDS", emps[0], 0, *cnt)))
@@ -286,26 +360,29 @@ static int test4(int *cnt)
 	return 0;
 }
 
-static int run_test()
+static int run_tests()
 {
-	int rv, cnt = 0;
+	int rv, i, cnt = 0;
+	struct test {
+		int (*test)(int *);
+	} tests[] = {
+#if 0
+		{test0},
+#else
+		{test1},
+		{test2},
+		{test3},
+		{test4},
+#endif
+		{0}
+	};
 
 	if ((rv = setup()))
 		return rv;
 
-#if 0
-	// TODO BDB hangs with this test
-	if ((rv = test1(&cnt)))
-		return rv;
-#else
-	if ((rv = test2(&cnt)))
-		return rv;
-	if ((rv = test3(&cnt)))
-		return rv;
-	if ((rv = test4(&cnt)))
-		return rv;
-#endif
-
+    for (i = 0; tests[i].test != 0; i++)
+		if ((rv = tests[i].test(&cnt)))
+			return rv;
 	if ((rv = teardown(&cnt)))
 		return rv;
 
@@ -315,22 +392,46 @@ static int run_test()
 int main(int argc, char **argv)
 {
 	int rv = -1;
+	int i;
 
-DISABLE_XA = 0;
-	if (argc <= 1 || strcmp("bdb", argv[1]) == 0)
-		prod = BDB;
-	else if (strcmp("ora", argv[1]) == 0)
-		prod = ORACLE;
-	else
-		fatal("Unsupported db - use ora or bdb\n");
+#if 0
+logit(0, (char*) "open");
+rv = tx_open();
+logit(0, (char*) "open rv=%d", rv);
+rv = tx_close();
+logit(0, (char*) "close rv=%d", rv);
+return 0;
+#endif
+    if (argc > 1) {
+        for (i = 1; i < argc; i++) {
+            product_t *p = get_product(argv[i]);
+
+            if (p == NULL)
+				fatal("Requested db is not supported\n");
+
+            prods[i - 1] = *p;
+        }
+
+        prods[i - 1].id = -1;
+        prods[i - 1].access = 0;
+        prods[i - 1].xaflags = 0;
+    } else {
+        for (i = 0; products[i].id != -1; i++)
+            prods[i] = products[i];
+
+		prods[i] = products[i];
+    }
 
 	if (tx_open() != TX_OK)
 		fatal("ERROR - Could not open transaction: ");
 
-	rv = run_test();
+	for (i = 0; prods[i].id != -1; i++)
+		logit(0, (char*) "INFO: %s (%s) id=%d flags=0x%x", prods[i].pname, prods[i].dbname, prods[i].id, prods[i].xaflags());
+
+	rv = run_tests();
 
 	if (tx_close() != TX_OK) {
-		userlogc((char*) "ERROR - Could not close transaction: ");
+		logit(0, (char*) "ERROR - Could not close transaction: ");
 		rv = -1;
 	}
 

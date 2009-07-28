@@ -15,29 +15,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#ifndef TESTTXRMTPCALL_H
+#define TESTTXRMTPCALL_H
 
-#include <xatmi.h>
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFixture.h>
 
-#include "products.h"
+#include "BaseServerTest.h"
 
-void DBS(TPSVCINFO * svcinfo) {
-	test_req_t *req = (test_req_t *) svcinfo->data;
-	test_req_t *resp = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", sizeof (test_req_t));
-	product_t *p = products;
+class TestTxRMTPCall: public BaseServerTest {
+	CPPUNIT_TEST_SUITE( TestTxRMTPCall);
+	CPPUNIT_TEST(test1);
+	CPPUNIT_TEST(test2);
+	CPPUNIT_TEST_SUITE_END();
 
-	resp->status = -1;
-	snprintf(resp->data, sizeof (resp->data), "Unsupported database: %s", req->db);
-	for (p = products; p->id != -1; p++) {
-		if (req->prod == p->id) {
-			strncpy(req->db, p->dbname, sizeof(req->db));
-			logit(0, (char*) "Service DBS %4d: prod=%8s (id=%d) op=%c data=%s", req->id, p->pname, p->id, req->op, req->data);
-			resp->status = p->access(req, resp);
-			break;
-		}
-	}
+public:
+	void test1();
+	void test2();
+	virtual void setUp();
+	virtual void tearDown();
 
-	tpreturn(1, 1, (char *) resp, sizeof (test_req_t), 0);
-}
+private:
+	char *sendbuf, *rcvbuf;
+	long sendlen, rcvlen;
+};
+
+#endif	// TESTTXRMTPCALL_H
