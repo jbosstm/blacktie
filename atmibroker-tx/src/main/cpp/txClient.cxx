@@ -74,23 +74,25 @@ int associate_serialized_tx(char *orbname, char* control)
 void * disassociate_tx(void)
 {
 	void *control = get_control();
+	if (control) {
+		LOG4CXX_LOGLS(txClientLogger, log4cxx::Level::getDebug(),
+				(char *) "disassociate_tx: caller=" << ACE_OS::thr_self());
 
-	LOG4CXX_LOGLS(txClientLogger, log4cxx::Level::getDebug(),
-			(char *) "disassociate_tx: caller=" << ACE_OS::thr_self());
-
-	try {
-		(void) AtmiBrokerOTS::get_instance()->rm_suspend();
-	}
-	catch (CORBA::Exception& e) {
-		LOG4CXX_LOGLS(txClientLogger, log4cxx::Level::getError(), 
-				(char*) "disassociate_tx - Unexpected CORBA exception: " <<
-				e._name());
-	} catch (...) {
-		LOG4CXX_LOGLS(txClientLogger, log4cxx::Level::getError(), (char *) "Error suspending RMs");
-	}
-
-	if (control)
+		try {
+			(void) AtmiBrokerOTS::get_instance()->rm_suspend();
+		}
+		catch (CORBA::Exception& e) {
+			LOG4CXX_LOGLS(txClientLogger, log4cxx::Level::getError(), 
+					(char*) "disassociate_tx - Unexpected CORBA exception: " <<
+					e._name());
+		} catch (...) {
+			LOG4CXX_LOGLS(txClientLogger, log4cxx::Level::getError(), (char *) "Error suspending RMs");
+		}
+	
 		destroySpecific(TSS_KEY);
+	} else {
+		LOG4CXX_LOGLS(txClientLogger, log4cxx::Level::getDebug(), (char *) "NO CONTROL");
+	}
 
 	return control;
 }
