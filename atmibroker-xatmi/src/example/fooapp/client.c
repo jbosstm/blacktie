@@ -48,6 +48,7 @@ int main(int argc, char **argv) {
 	strcpy(sbuf, "THIS IS YOUR CLIENT SPEAKING");
 	retbufsize = 15;
 	retbuf = tpalloc("X_OCTET", 0, retbufsize);
+	memset(retbuf, 0, retbufsize);
 
 	// tptypes
 	tptypes(sbuf, type, subtype);

@@ -559,9 +559,9 @@ void AtmiBrokerServer::removeAdminDestination(char* serviceName) {
 		long responseLength = 1;
 
 		if (isadm) {
-			commandLength = strlen(adm) + 16;
+			commandLength = strlen(adm) + 19;
 		} else {
-			commandLength = strlen(serviceName) + 16;
+			commandLength = strlen(serviceName) + 19;
 		}
 
 		char* command = (char*) ::tpalloc((char*) "X_OCTET", NULL,
@@ -571,9 +571,9 @@ void AtmiBrokerServer::removeAdminDestination(char* serviceName) {
 		memset(command, '\0', commandLength);
 
 		if (isadm) {
-			sprintf(command, "tpunadvertise,%s,", adm);
+			sprintf(command, "decrementconsumer,%s,", adm);
 		} else {
-			sprintf(command, "tpunadvertise,%s,", serviceName);
+			sprintf(command, "decrementconsumer,%s,", serviceName);
 		}
 
 		if (tpcall((char*) "BTStompAdmin", command, commandLength, &response,
