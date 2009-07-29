@@ -85,6 +85,64 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		return count.intValue();
 	}
 
+	int deployQueue(String serviceName) {
+		int result = 0;
+
+		try {
+			ObjectName objName = new ObjectName(
+					"jboss.messaging:service=ServerPeer");
+			if (isDeployQueue(objName, serviceName) == false) {
+				beanServerConnection.invoke(objName, "deployQueue",
+						new Object[] { serviceName, null },
+						new String[] { "java.lang.String",
+							"java.lang.String" });
+			}
+			result = 1;
+		} catch (Throwable t) {
+			log.error("Could not deploy queue of " + serviceName, t);
+		}
+
+		return result;
+	}
+
+	int undeployQueue(String serviceName) {
+		int result = 0;
+
+		try {
+			ObjectName objName = new ObjectName(
+					"jboss.messaging:service=ServerPeer");
+			if (isDeployQueue(objName, serviceName)) {
+				beanServerConnection.invoke(objName, "undeployQueue",
+						new Object[] { serviceName },
+						new String[] { "java.lang.String" });
+			}
+			result = 1;
+		} catch (Throwable t) {
+			log.error("Could not undeploy queue of " + serviceName, t);
+		}
+
+		return result;
+	}
+
+	int decrementConsumer(String serviceName) {
+		int consumerCounts;
+		int result = 0;
+
+		try {
+			consumerCounts = consumerCount(serviceName);
+			log.debug("Service " + serviceName + " has " + consumerCounts + " consumers");
+			if (consumerCounts == 1) {
+				result = undeployQueue(serviceName);
+			} else {
+				// THERE ARE OTHER SERVERS STILL ALIVE
+				result = 1;
+			}
+		} catch (Throwable t) {
+			log.error("Could not get consumer counts of " + serviceName, t);
+		}
+		return result;
+	}
+
 	public Response tpservice(TPSVCINFO svcinfo) {
 		log.debug("Message received");
 		Buffer recv = svcinfo.getBuffer();
@@ -95,6 +153,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		byte[] success = new byte[1];
 		String server = null;
 		int k = -1;
+
 		if ((k = serviceName.indexOf("ADMIN")) > 0) {
 			String svcadm = serviceName.substring(0, k) + "ADMIN";
 			server = (String) prop.get("blacktie." + svcadm + ".server");
@@ -103,59 +162,26 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		}
 
 		if (server != null) {
-			log.trace("Service " + serviceName + " exists for server: "
-					+ server);
+			log.trace("Service " + serviceName + " exists for server: " + server);
 			if (operation.equals("tpunadvertise")) {
 				log.trace("Unadvertising: " + serviceName);
-				try {
-					// ObjectName name = new ObjectName(
-					// "jboss.messaging.destination:service=Queue,name="
-					// + serviceName);
-					// beanServerConnection.invoke(name, "stop", null, null);
-					log.info(serviceName + " has " + consumerCount(serviceName)
-							+ " consumers");
-
-					ObjectName objName = new ObjectName(
-							"jboss.messaging:service=ServerPeer");
-					if (isDeployQueue(objName, serviceName)) {
-						beanServerConnection.invoke(objName, "undeployQueue",
-								new Object[] { serviceName },
-								new String[] { "java.lang.String" });
-					}
-
-					success[0] = 1;
-					log.debug("Unadvertised: " + serviceName);
-				} catch (Throwable t) {
-					log.error("Could not advertise the service", t);
-				}
+				success[0] = (byte)undeployQueue(serviceName);
 			} else if (operation.equals("tpadvertise")) {
 				log.trace("Advertising: " + serviceName);
-				try {
-					ObjectName objName = new ObjectName(
-							"jboss.messaging:service=ServerPeer");
-					if (isDeployQueue(objName, serviceName) == false) {
-						beanServerConnection.invoke(objName, "deployQueue",
-								new Object[] { serviceName, null },
-								new String[] { "java.lang.String",
-										"java.lang.String" });
-						/*
-						 * ObjectName name = new ObjectName(
-						 * "jboss.messaging.destination:service=Queue,name=" +
-						 * serviceName); beanServerConnection.invoke(name,
-						 * "start", null, null);
-						 */
-					}
-
-					success[0] = 1;
-					log.debug("Advertised: " + serviceName);
-				} catch (Throwable t) {
-					log.error("Could not advertise the service", t);
-				}
+				success[0] = (byte)deployQueue(serviceName);
+			} else if (operation.equals("decrementconsumer")) {
+				log.trace("Decrement consumer: " + serviceName);
+				success[0] = (byte)decrementConsumer(serviceName);
+			} else {
+				log.error("Unknow operation " + operation);
+				success[0] = 0;
 			}
 		} else {
 			log.error("Service " + serviceName
 					+ " cannot be located for server");
+			success[0] = 0;
 		}
+
 		Buffer buffer = new Buffer(null, null);
 		buffer.setData(success);
 		log.debug("Responding");
