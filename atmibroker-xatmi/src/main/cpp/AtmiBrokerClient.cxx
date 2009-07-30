@@ -109,10 +109,10 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 	AtmiBrokerMem::discard_instance();
 	shutdown_tx_broker();
 	AtmiBrokerEnv::discard_instance();
+	clientConnectionManager.closeConnections();
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleted services");
 	clientInitialized = false;
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "Client Shutdown");
-
 }
 
 Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
@@ -125,7 +125,7 @@ Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
 		Session* session = clientConnection->createSession(id, serviceName);
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "created session: " << id << " send: " << session->getCanSend() << " recv: " << session->getCanRecv());
 		return session;
-	} 
+	}
 
 	return NULL;
 }

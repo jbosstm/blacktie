@@ -32,6 +32,8 @@ public:
 	Connection* getClientConnection(char* serviceName);
 	Connection* getServerConnection(char* serviceName);
 
+	void closeConnections();
+
 private:
 	ConnectionMap manager;
 	Connection* getConnection(char* serviceName, char* side);

@@ -286,6 +286,7 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	AtmiBrokerEnv::discard_instance();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted services");
 
+	connections.closeConnections();
 	serverInitialized = false;
 }
 

@@ -31,41 +31,52 @@ log4cxx::LoggerPtr loggerConnectionManager(log4cxx::Logger::getLogger(
 #ifdef IDE_DEBUG
 #include "ConnectionImpl.h"
 #endif
-ConnectionManager::ConnectionManager()
-{
+ConnectionManager::ConnectionManager() {
 	LOG4CXX_TRACE(loggerConnectionManager, (char*) "constructor");
 }
 
-ConnectionManager::~ConnectionManager()
-{
+ConnectionManager::~ConnectionManager() {
 	LOG4CXX_TRACE(loggerConnectionManager, (char*) "destructor");
 
 	ConnectionMap::iterator it;
-	for(it = manager.begin(); it != manager.end(); it ++) {
+	for (it = manager.begin(); it != manager.end(); it++) {
+		delete (*it).second;
+	}
+	manager.clear();
+}
+
+void ConnectionManager::closeConnections() {
+	LOG4CXX_TRACE(loggerConnectionManager, (char*) "closeConnections");
+
+	ConnectionMap::iterator it;
+	for (it = manager.begin(); it != manager.end(); it++) {
 		delete (*it).second;
 	}
 	manager.clear();
 }
 
 Connection*
-ConnectionManager::getConnection(char* serviceName, char* side)
-{
-	char* transportLibrary = AtmiBrokerEnv::get_instance()->getTransportLibrary(serviceName);
-	if(transportLibrary == NULL){
-		LOG4CXX_WARN(loggerConnectionManager, (char*) "service " << serviceName << " has not transportLibrary config");
+ConnectionManager::getConnection(char* serviceName, char* side) {
+	char* transportLibrary =
+			AtmiBrokerEnv::get_instance()->getTransportLibrary(serviceName);
+	if (transportLibrary == NULL) {
+		LOG4CXX_WARN(loggerConnectionManager, (char*) "service " << serviceName
+				<< " has not transportLibrary config");
 		throw std::exception();
 	}
 
-	LOG4CXX_DEBUG(loggerConnectionManager, (char*) "service " << serviceName << " transport is " << transportLibrary);
+	LOG4CXX_DEBUG(loggerConnectionManager, (char*) "service " << serviceName
+			<< " transport is " << transportLibrary);
 	std::string key = side;
 	key.append("/");
 	key.append(transportLibrary);
 
 	ConnectionMap::iterator it;
 	it = manager.find(key);
-	
-	if(it != manager.end()) {
-		LOG4CXX_DEBUG(loggerConnectionManager, (char*) "find " << serviceName << " Connection in map " << (*it).second);
+
+	if (it != manager.end()) {
+		LOG4CXX_DEBUG(loggerConnectionManager, (char*) "find " << serviceName
+				<< " Connection in map " << (*it).second);
 		return (*it).second;
 	} else {
 #ifdef IDE_DEBUG
@@ -74,28 +85,30 @@ ConnectionManager::getConnection(char* serviceName, char* side)
 		LOG4CXX_DEBUG(loggerConnectionManager, (char*) "insert service " << key << " connection " << connection);
 		return connection;
 #else
-		connection_factory_t* connectionFactory = (connection_factory_t*) ::lookup_symbol(transportLibrary, "connectionFactory");
+		connection_factory_t* connectionFactory =
+				(connection_factory_t*) ::lookup_symbol(transportLibrary,
+						"connectionFactory");
 		if (connectionFactory != NULL) {
 			Connection* connection = connectionFactory->create_connection(side);
 			manager.insert(ConnectionMap::value_type(key, connection));
-			LOG4CXX_DEBUG(loggerConnectionManager, (char*) "insert service " << key << " connection " << connection);
+			LOG4CXX_DEBUG(loggerConnectionManager, (char*) "insert service "
+					<< key << " connection " << connection);
 			return connection;
 		}
 #endif
 	}
 
-	LOG4CXX_WARN(loggerConnectionManager, (char*) "can not create connection for service " << serviceName);
+	LOG4CXX_WARN(loggerConnectionManager,
+			(char*) "can not create connection for service " << serviceName);
 	return NULL;
 }
 
 Connection*
-ConnectionManager::getClientConnection(char* serviceName)
-{
-	return getConnection(serviceName, (char*)"client");
+ConnectionManager::getClientConnection(char* serviceName) {
+	return getConnection(serviceName, (char*) "client");
 }
 
 Connection*
-ConnectionManager::getServerConnection(char* serviceName)
-{
-	return getConnection(serviceName, (char*)"server");
+ConnectionManager::getServerConnection(char* serviceName) {
+	return getConnection(serviceName, (char*) "server");
 }

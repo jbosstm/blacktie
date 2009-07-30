@@ -54,6 +54,7 @@ HybridConnectionImpl::HybridConnectionImpl(char* connectionName) {
 HybridConnectionImpl::~HybridConnectionImpl() {
 	LOG4CXX_DEBUG(logger, (char*) "destructor: " << connectionName);
 	shutdownBindings(this->connection);
+	delete this->connection;
 
 	apr_pool_destroy(pool);
 	//apr_terminate();
