@@ -56,19 +56,22 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
 	this->canSend = true;
 	this->canRecv = true;
 
-	this->temporaryQueue = new HybridCorbaEndpointQueue(corbaConnection);
+	char * poaName = apr_itoa(pool, id);
+	this->temporaryQueue = new HybridCorbaEndpointQueue(corbaConnection,
+			poaName);
 	this->replyTo = temporaryQueue->getName();
 	LOG4CXX_TRACE(logger, "OK service session created");
 }
 
-HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection, int id,
-		const char* temporaryQueueName) {
+HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
+		apr_pool_t* pool, int id, const char* temporaryQueueName) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor corba");
 	this->id = id;
 	this->corbaConnection = connection;
 	serviceInvokation = false;
 
 	stompConnection = NULL;
+	this->pool = pool;
 	this->sendTo = NULL;
 
 	LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << temporaryQueueName);
@@ -80,15 +83,17 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection, int id,
 	this->canSend = true;
 	this->canRecv = true;
 
-	this->temporaryQueue = new HybridCorbaEndpointQueue(corbaConnection);
+	char * poaName = apr_itoa(pool, id);
+	this->temporaryQueue = new HybridCorbaEndpointQueue(corbaConnection,
+			poaName);
 	this->replyTo = temporaryQueue->getName();
 	LOG4CXX_DEBUG(logger, (char*) "constructor corba done");
 }
 
 HybridSessionImpl::~HybridSessionImpl() {
 	setSendTo(NULL);
+	delete temporaryQueue;
 	temporaryQueue = NULL;
-	//delete temporaryQueue;
 
 	if (stompConnection) {
 		LOG4CXX_TRACE(logger, (char*) "destroying");

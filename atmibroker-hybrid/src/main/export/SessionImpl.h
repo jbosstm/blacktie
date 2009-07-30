@@ -31,7 +31,7 @@ class HybridConnectionImpl;
 
 class BLACKTIE_HYBRID_DLL HybridSessionImpl: public virtual Session {
 public:
-	HybridSessionImpl(CORBA_CONNECTION* connection, int id, const char* temporaryQueueName);
+	HybridSessionImpl(CORBA_CONNECTION* connection, apr_pool_t* pool, int id, const char* temporaryQueueName);
 
 	HybridSessionImpl(CORBA_CONNECTION* connection, apr_pool_t* pool, int id, char* service);
 

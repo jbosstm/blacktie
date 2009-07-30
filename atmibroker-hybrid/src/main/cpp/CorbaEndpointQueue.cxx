@@ -36,19 +36,25 @@ log4cxx::LoggerPtr HybridCorbaEndpointQueue::logger(log4cxx::Logger::getLogger(
 // initialiser for all the virtual base class constructors that
 // require arguments, even those that we inherit indirectly.
 //
-HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(CORBA_CONNECTION* connection) {
+HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(
+		CORBA_CONNECTION* connection, char* id) {
+	LOG4CXX_DEBUG(logger, (char*) "Creating corba endpoint queue");
 	shutdown = false;
-	thePoa = NULL;
 	lock = new SynchronizableObject();
 
-	PortableServer::POA_ptr poa = connection->callback_poa;
-	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) connection->orbRef;
+	CORBA::PolicyList policies;
+	policies.length(0);
+	thePoa = connection->callback_poa->create_POA(id,
+			connection->root_poa_manager, policies);
+
 	LOG4CXX_DEBUG(logger, (char*) "tmp_servant " << this);
-	oid = poa->activate_object(this);
+	oid = thePoa->activate_object(this);
 	LOG4CXX_DEBUG(logger, (char*) "activated tmp_servant " << this);
-	CORBA::Object_var tmp_ref = poa->servant_to_reference(this);
+	CORBA::Object_var tmp_ref = thePoa->servant_to_reference(this);
 	AtmiBroker::EndpointQueue_var queue = AtmiBroker::EndpointQueue::_narrow(
 			tmp_ref);
+
+	CORBA::ORB_ptr orb = connection->orbRef;
 	this->name = orb->object_to_string(queue);
 	this->connection = connection;
 }
@@ -87,13 +93,13 @@ HybridCorbaEndpointQueue::~HybridCorbaEndpointQueue() {
 	delete lock;
 	lock = NULL;
 
-	if (thePoa != NULL) {
-		LOG4CXX_DEBUG(logger, (char*) "destroying thePoa: " << thePoa);
-		thePoa->destroy(true, true);
-		thePoa = NULL;
-		LOG4CXX_DEBUG(logger, (char*) "destroyed thePoa: " << thePoa);
-	}
+	LOG4CXX_DEBUG(logger, (char*) "destroying thePoa: " << thePoa);
+	thePoa->destroy(true, true);
+	thePoa = NULL;
+	LOG4CXX_DEBUG(logger, (char*) "destroyed thePoa: " << thePoa);
 	LOG4CXX_DEBUG(logger, (char*) "destroyed: " << this);
+
+	delete[] name;
 }
 
 void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,

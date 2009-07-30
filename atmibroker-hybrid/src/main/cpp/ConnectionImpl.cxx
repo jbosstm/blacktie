@@ -159,7 +159,7 @@ Session* HybridConnectionImpl::createSession(int id,
 		const char* temporaryQueueName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession temporaryQueueName: "
 			<< temporaryQueueName);
-	sessionMap[id] = new HybridSessionImpl(this->connection, id,
+	sessionMap[id] = new HybridSessionImpl(this->connection, this->pool, id,
 			temporaryQueueName);
 	return sessionMap[id];
 }

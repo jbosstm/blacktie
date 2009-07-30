@@ -342,6 +342,10 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 						} else {
 							toReturn = cd;
 						}
+					} else {
+						LOG4CXX_DEBUG(loggerXATMI,
+								(char*) "Session got dudded: " << cd);
+						ptrAtmiBrokerClient->closeSession(cd);
 					}
 				} else {
 					setSpecific(TPE_KEY, TSS_TPELIMIT);
@@ -404,6 +408,10 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 												<< " recv: "
 												<< session->getCanRecv());
 							}
+						} else {
+							LOG4CXX_DEBUG(loggerXATMI,
+									(char*) "Session got dudded: " << cd);
+							ptrAtmiBrokerClient->closeSession(cd);
 						}
 					} else {
 						setSpecific(TPE_KEY, TSS_TPELIMIT);

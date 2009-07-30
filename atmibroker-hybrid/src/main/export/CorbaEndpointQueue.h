@@ -37,7 +37,7 @@
 
 class BLACKTIE_HYBRID_DLL HybridCorbaEndpointQueue: public virtual Destination, public virtual POA_AtmiBroker::EndpointQueue {
 public:
-	HybridCorbaEndpointQueue(CORBA_CONNECTION* connection);
+	HybridCorbaEndpointQueue(CORBA_CONNECTION* connection, char* poaName);
 	HybridCorbaEndpointQueue(CORBA_CONNECTION* connection, PortableServer::POA_ptr poa, char* serviceName);
 	virtual ~HybridCorbaEndpointQueue();
 
@@ -57,7 +57,7 @@ private:
 	SynchronizableObject* lock;
 	bool shutdown;
 	const char* name;
-	PortableServer::POA_ptr thePoa;
+	PortableServer::POA_var thePoa;
 	CORBA_CONNECTION* connection;
 	PortableServer::ObjectId_var oid;
 

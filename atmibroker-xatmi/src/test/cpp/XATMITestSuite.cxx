@@ -68,7 +68,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestTPConversation);
 CPPUNIT_TEST_SUITE_REGISTRATION( LoopyServerAndClient);
 /* Transactional Request Response */
 #include "TestTxTPCall.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestTxTPCall);
+//CPPUNIT_TEST_SUITE_REGISTRATION( TestTxTPCall);
 /* Server Init */
 #include "TestServerinit.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestServerinit);
