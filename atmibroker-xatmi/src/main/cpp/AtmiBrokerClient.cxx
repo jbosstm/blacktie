@@ -59,13 +59,13 @@ int clientinit() {
 
 	if (ptrAtmiBrokerClient == NULL) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit called");
-		//signal(SIGINT, client_sigint_handler_callback);
 		ptrAtmiBrokerClient = new AtmiBrokerClient();
 		if (!clientInitialized) {
 			::clientdone();
 			toReturn = -1;
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		} else {
+			signal(SIGINT, client_sigint_handler_callback);
 			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "Client Initialized");
 		}
 	}

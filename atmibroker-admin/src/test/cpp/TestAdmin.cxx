@@ -73,6 +73,24 @@ void TestAdmin::testAdvertised() {
 	int cd = ::tpcall((char*) "foo_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
 	CPPUNIT_ASSERT(cd == 0);
 	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(recvlen == 1);
+	CPPUNIT_ASSERT(recvbuf[0] == '1');
+}
+
+void TestAdmin::testUnadvertiseUnknowService() {
+	long  sendlen = strlen("unadvertise,UNKNOW,") + 1;
+	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
+	strcpy(sendbuf, "unadvertise,UNKNOW,");
+
+	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
+	long  recvlen = 1;
+	int   cd;
+
+	cd = ::tpcall((char*) "foo_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
+	CPPUNIT_ASSERT(cd == 0);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(recvlen == 1);
+	CPPUNIT_ASSERT(recvbuf[0] == '0');
 }
 
 void TestAdmin::testUnadvertised() {
@@ -92,6 +110,8 @@ void TestAdmin::testUnadvertised() {
 	cd = ::tpcall((char*) "foo_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
 	CPPUNIT_ASSERT(cd == 0);
 	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(recvlen == 1);
+	CPPUNIT_ASSERT(recvbuf[0] == '1');
 
 	userlogc((char*) "TestAdmin::testUnadvertised tpacall BAR after unadvertise");
 	cd = ::tpacall((char*) "BAR", (char *) sendbuf, sendlen, TPNOREPLY);

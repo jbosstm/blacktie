@@ -28,6 +28,7 @@ extern "C" {
 extern BLACKTIE_XATMI_DLL int serverinit(int argc, char** argv);
 extern BLACKTIE_XATMI_DLL int serverrun();
 extern BLACKTIE_XATMI_DLL int serverdone();
+extern BLACKTIE_XATMI_DLL void server_sigint_handler_callback(int sig_type);
 #ifdef __cplusplus
 }
 #endif

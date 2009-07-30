@@ -30,6 +30,7 @@ void ADMIN(TPSVCINFO* svcinfo) {
 	if(strncmp(req, "serverdone", 10) == 0) {
 		LOG4CXX_INFO(loggerAtmiBrokerAdmin, (char*) "get serverdone command");
 		toReturn[0] = '1';
+		server_sigint_handler_callback(0);
 	} else if(strncmp(req, "advertise", 9) == 0) {
 		LOG4CXX_INFO(loggerAtmiBrokerAdmin, (char*) "get advertise command");
 		strtok(req, ",");
