@@ -559,9 +559,9 @@ void AtmiBrokerServer::removeAdminDestination(char* serviceName) {
 		long responseLength = 1;
 
 		if (isadm) {
-			commandLength = strlen(adm) + 19;
+			commandLength = strlen(adm) + 20;
 		} else {
-			commandLength = strlen(serviceName) + 19;
+			commandLength = strlen(serviceName) + 20;
 		}
 
 		char* command = (char*) ::tpalloc((char*) "X_OCTET", NULL,
