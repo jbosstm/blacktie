@@ -25,10 +25,11 @@
 					<SERVICE name='BTStompAdmin' transportLibrary='libatmibroker-hybrid.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
-			<SERVER>
+			<SERVER name='default'>
 				<SERVICE_NAMES>
 					<SERVICE name='BAR' transportLibrary='libatmibroker-hybrid.so'/>
 				</SERVICE_NAMES>
+				<ADMIN_SERVICE transportLibrary='libatmibroker-hybrid.so' />
 			</SERVER>
 		</SERVER_NAMES>
 		<ENV_VARIABLES>

@@ -143,6 +143,14 @@
 			</excludes>
 		</fileSet>
 		<fileSet>
+			<directory>../atmibroker-admin</directory>
+			<outputDirectory>atmibroker-admin</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
 			<directory>../codeGeneration</directory>
 			<outputDirectory>codeGeneration</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>

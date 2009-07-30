@@ -25,7 +25,7 @@
 					<SERVICE name='BTStompAdmin' transportLibrary='atmibroker-hybrid.dll'/>
 				</SERVICE_NAMES>
 			</SERVER>
-			<SERVER>
+			<SERVER name='default'>
 				<SERVICE_NAMES>
 					<SERVICE name='BAR' transportLibrary='atmibroker-hybrid.dll'/>
 					<SERVICE name='TestTPFree' transportLibrary='atmibroker-hybrid.dll'/>

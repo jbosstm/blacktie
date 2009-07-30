@@ -46,7 +46,12 @@
 					<SERVICE name='TestTPService' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='TestTPReturn' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='BAR' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='foo_ADMIN' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='foo_ADMIN' transportLibrary='libatmibroker-hybrid.so'/>
+				</SERVICE_NAMES>
+			</SERVER>
+			<SERVER name="default">
+				<SERVICE_NAMES>
+					<SERVICE name='default_ADMIN' transportLibrary='libatmibroker-hybrid.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>

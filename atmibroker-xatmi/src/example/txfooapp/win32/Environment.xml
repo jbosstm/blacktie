@@ -20,7 +20,7 @@
 	<ENVIRONMENT_DESCRIPTION>
 		<DOMAIN>fooapp</DOMAIN>
 		<SERVER_NAMES>
-			<SERVER>
+			<SERVER name='default'>
 				<SERVICE_NAMES>
 					<SERVICE name='DBS' transportLibrary='atmibroker-corba.dll'/>
 				</SERVICE_NAMES>
