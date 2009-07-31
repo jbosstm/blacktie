@@ -1,6 +1,8 @@
 package org.jboss.blacktie.administration;
 
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -12,11 +14,20 @@ import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.jms.Destination;
 import javax.jms.Queue;
+import javax.management.Attribute;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -29,6 +40,10 @@ import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.ejb3.annotation.Depends;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
 
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
@@ -82,9 +97,60 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 				"jboss.messaging.destination:service=Queue,name=" + serviceName);
 		Integer count = (Integer) beanServerConnection.getAttribute(objName,
 				"ConsumerCount");
+		Element security = (Element)beanServerConnection.getAttribute(objName, "SecurityConfig");
+		log.debug(serviceName + " security config is " + printNode(security));
 		return count.intValue();
 	}
+	
+	Element stringToElement(String s) throws Exception {
+		StringReader sreader = new StringReader(s);
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder parser = factory.newDocumentBuilder();
+		Document doc = parser.parse(new InputSource(sreader));
+		return doc.getDocumentElement();
+	}
+	
+	String printNode(Node node) {
+		try
+	    {
+	      // Set up the output transformer
+	      TransformerFactory transfac = TransformerFactory.newInstance();
+	      Transformer trans = transfac.newTransformer();
+	      trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+	      trans.setOutputProperty(OutputKeys.INDENT, "yes");
 
+	      // Print the DOM node
+
+	      StringWriter sw = new StringWriter();
+	      StreamResult result = new StreamResult(sw);
+	      DOMSource source = new DOMSource(node);
+	      trans.transform(source, result);
+	      String xmlString = sw.toString();
+
+	      return xmlString;
+	    } catch (TransformerException e)
+	    {
+	      log.error(e);
+	    }
+	    return null;
+	}
+
+	void setSecurityConfig(ObjectName objName) {
+		String security = "<security>\n"
+			+ " <role name=\"guest\" read=\"true\" write=\"true\"/>\n"
+			+ " <role name=\"publisher\" read=\"true\" write=\"true\" create=\"false\"/>\n"
+			+ " <role name=\"durpublisher\" read=\"true\" write=\"true\" create=\"true\"/>\n"
+			+ "</security>";
+		
+		try {
+			Element element = stringToElement(security);
+			Attribute attr = new Attribute("SecurityConfig", element);
+			beanServerConnection.setAttribute(objName, attr);
+		} catch (Throwable t) {
+			log.error("Could not set security config " + t);
+		}
+	}
+	
 	int deployQueue(String serviceName) {
 		int result = 0;
 
@@ -95,7 +161,10 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 				beanServerConnection.invoke(objName, "deployQueue",
 						new Object[] { serviceName, null },
 						new String[] { "java.lang.String",
-							"java.lang.String" });
+							"java.lang.String" });	
+				ObjectName queueName = new ObjectName(
+						"jboss.messaging.destination:service=Queue,name=" + serviceName);
+				setSecurityConfig(queueName);
 			}
 			result = 1;
 		} catch (Throwable t) {
