@@ -17,10 +17,11 @@
  */
 #include <cppunit/extensions/HelperMacros.h>
 
-#include <stdlib.h>
-
 #include "BaseServerTest.h"
 #include "XATMITestSuite.h"
+#include "ace/OS_NS_stdio.h"
+#include "ace/OS_NS_stdlib.h"
+#include "ace/OS_NS_string.h"
 
 #include "xatmi.h"
 #include "tx.h"
@@ -297,7 +298,7 @@ void tx_db_service(TPSVCINFO *svcinfo) {
     product_t *p = products;
 
     resp->status = -1;
-    snprintf(resp->data, sizeof (resp->data), "Unsupported database: %s", req->db);
+    ACE_OS::snprintf(resp->data, sizeof (resp->data), "Unsupported database: %s", req->db);
     for (p = products; p->id != -1; p++) {
         if (req->prod == p->id) {
             strncpy(req->db, p->dbname, sizeof(req->db));

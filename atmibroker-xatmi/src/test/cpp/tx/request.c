@@ -26,6 +26,10 @@
 
 #include "tx/request.h"
 
+#ifdef WIN32
+#define snprintf _snprintf
+#endif
+
 /* helper methods for controling transactions */
 int is_begin(enum TX_TYPE txtype) {
 	return (txtype == TX_TYPE_BEGIN || txtype == TX_TYPE_BEGIN_COMMIT || txtype == TX_TYPE_BEGIN_ABORT);
@@ -139,7 +143,7 @@ long null_xaflags()
 int null_access(test_req_t *req, test_req_t *resp)
 {
 	resp->status = 0;
-	(void) snprintf(resp->data, sizeof(resp->data), "%d", req->expect);
+	snprintf(resp->data, sizeof(resp->data), "%d", req->expect);
 
 	logit(0, "null_access: prod id=%d (%s) op=%c res=%s", req->prod, req->db, req->op, resp->data);
 

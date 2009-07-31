@@ -257,6 +257,8 @@
 	<target name="bdb-lib-windows" if="windows">
 		<copy file="${bdb.lib.dir}/libdb47.lib" todir="${build.dist}/lib" />
 		<copy file="${bdb.lib.dir}/libdb47d.lib" todir="${build.dist}/lib" />
+		<copy file="${bdb.bin.dir}/libdb47.dll" todir="${build.dist}/lib" />
+		<copy file="${bdb.bin.dir}/debug/libdb47d.dll" todir="${build.dist}/lib" />
 	</target>
 	<target name="bdb" depends="clean,init">
 		<antcall target="purge"/>

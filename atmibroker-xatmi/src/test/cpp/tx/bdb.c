@@ -22,11 +22,12 @@
 #include "tx/request.h"
 
 #ifdef BDB
-#include <db.h> /* Berkeley dB include */
+#include <bdb/db.h> /* Berkeley dB include */
 
 /* BerkeleyDb X/Open Resource Manager entry points */
 #ifdef WIN32
 extern __declspec(dllimport) struct xa_switch_t db_xa_switch;
+#define snprintf _snprintf
 #else
 struct xa_switch_t db_xa_switch;
 #endif
