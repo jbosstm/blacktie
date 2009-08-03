@@ -86,16 +86,30 @@ public class JABRemoteService implements Message {
 	 * Call the remote service within the scope of the transaction specified in
 	 * the signature of the invocation.
 	 * 
-	 * @param aJABTransaction
+	 * @param tx
 	 *            The transactional scoping.
+	 *            The current transaction is suspended if tx is null or not equal
+	 *            to the current transaction.
+	 *            If tx is not null and not equal to the current transaction then
+	 *            it is resumed.
+	 *            The transaction to thread association is restored after the
+	 *            method returns.
+	 *
 	 * @throws JABException
 	 *             If the call cannot be issued.
 	 */
-	public void call(JABTransaction aJABTransaction) throws JABException {
+	public void call(JABTransaction tx) throws JABException {
 		log.debug("JABService call");
+		JABTransaction prev = null;
 
 		try {
-			// TODO HANDLE TRANSACTION
+			if (tx == null) {
+				prev = JABTransaction.suspend();
+			} else if (!tx.equals(JABTransaction.current())) {
+				prev = JABTransaction.suspend();
+				JABTransaction.resume(tx);
+			}
+
 			Buffer request = requestMessage.getRequest();
 			Response response = connection.tpcall(serviceName, request, request
 					.getLength(), noTimeout ? Connection.TPNOTIME : 0);
@@ -103,7 +117,19 @@ public class JABRemoteService implements Message {
 			log.debug("service_request responsed");
 		} catch (Exception e) {
 			throw new JABException("Could not send tpcall", e);
+		} finally {
+			if (prev != null) {
+				if (tx != null) {
+					JABTransaction.suspend();
+				}
+
+				JABTransaction.resume(prev);
+			}
 		}
+	}
+
+	public void call() throws JABException {
+		JABTransaction prev = JABTransaction.suspend();
 	}
 
 	/**

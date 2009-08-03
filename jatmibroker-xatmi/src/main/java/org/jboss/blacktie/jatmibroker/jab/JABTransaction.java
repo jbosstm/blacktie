@@ -41,7 +41,7 @@ public class JABTransaction {
 	static TransactionFactory transactionFactory;
 	private JABSession jabSession;
 	private int timeout;
-	private Control control;
+	protected Control control;
 	private Terminator terminator;
 
 	private Hashtable _childThreads;
@@ -123,6 +123,16 @@ public class JABTransaction {
 		ThreadActionData.pushAction(this);
 
 		setTerminator(control);
+	}
+
+	public boolean equals (java.lang.Object obj) {
+		if (obj instanceof JABTransaction) {
+			JABTransaction other = (JABTransaction ) obj;
+
+			return control.equals(other.control);
+		}
+
+		return false;
 	}
 
 	public static void associateTx(String controlIOR) throws JABException {
@@ -250,38 +260,35 @@ public class JABTransaction {
 	}
 
 	/**
-	 * Suspend all transaction association from the invoking thread. When this
-	 * operation returns, the thread will be associated with no transactions.
-	 * 
+	 * Suspend the transaction association from the invoking thread. When this
+	 * operation returns, the thread will not be associated with a transaction.
+	 *
 	 * @return a handle on the current JABTransaction (if any) so that the
 	 *         thread can later resume association if required.
 	 */
-	/*
-	 * TODO public static final JABTransaction suspend() { JABTransaction curr =
-	 * ThreadActionData.currentAction();
-	 * 
-	 * if (curr != null) ThreadActionData.purgeActions();
-	 * 
-	 * return curr; }
-	 */
+	 public static final JABTransaction suspend() {
+		JABTransaction curr = ThreadActionData.currentAction();
+
+		if (curr != null)
+			ThreadActionData.purgeActions();
+
+		return curr;
+	}
+
 	/**
 	 * Resume transaction association on the current thread. If the specified
 	 * transaction is null, then this is the same as doing a suspend. If the
-	 * current thread is associated with transactions then those associations
+	 * current thread is associated with a transaction then that association
 	 * will be lost.
 	 * 
-	 * @param JABTransaction
-	 *            act the transaction to associate. If this is a nested
-	 *            transaction, then the thread will be associated with all of
-	 *            the transactions in the hierarchy.
-	 * 
+	 * @param JABTransaction act the transaction to associate.
 	 * @return <code>true</code> if association is successful,
 	 *         <code>false</code> otherwise.
 	 */
-	/*
-	 * TODO public static final boolean resume(JABTransaction act) { if (act ==
-	 * null) suspend(); else ThreadActionData.restoreActions(act);
-	 * 
-	 * return true; }
-	 */
+	 public static final boolean resume(JABTransaction act) {
+		if (act == null)
+			suspend();
+		else ThreadActionData.restoreActions(act);
+			return true;
+	}
 }
