@@ -25,6 +25,7 @@
 #include "TestTPReturn.h"
 
 extern void testtpreturn_service(TPSVCINFO *svcinfo);
+extern void testtpreturn_service_tpurcode(TPSVCINFO *svcinfo);
 
 void TestTPReturn::setUp() {
 	userlogc((char*) "TestTPReturn::setUp");
@@ -33,11 +34,6 @@ void TestTPReturn::setUp() {
 
 	// Setup server
 	BaseServerTest::setUp();
-
-	// Do local work
-	int toCheck = tpadvertise((char*) "TestTPReturn", testtpreturn_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
 }
 
 void TestTPReturn::tearDown() {
@@ -55,6 +51,10 @@ void TestTPReturn::tearDown() {
 
 // 8.1 8.3
 void TestTPReturn::test_tpreturn_nonservice() {
+	int toCheck = tpadvertise((char*) "TestTPReturn", testtpreturn_service);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
+
 	userlogc((char*) "test_tpreturn_nonservice");
 	// THIS IS ILLEGAL STATE TABLE
 	int len = 25;
@@ -66,6 +66,12 @@ void TestTPReturn::test_tpreturn_nonservice() {
 
 void TestTPReturn::test_tpreturn_nonbuffer() {
 	userlogc((char*) "test_tpreturn_nonbuffer");
+
+	// Do local work
+	int toCheck = tpadvertise((char*) "TestTPReturn", testtpreturn_service);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
+
 	sendlen = strlen("tprnb") + 1;
 	rcvlen = sendlen;
 	CPPUNIT_ASSERT((sendbuf
@@ -82,10 +88,54 @@ void TestTPReturn::test_tpreturn_nonbuffer() {
 	CPPUNIT_ASSERT(tperrnoS == TPESVCERR);
 }
 
+void TestTPReturn::test_tpreturn_tpurcode() {
+	userlogc((char*) "test_tpreturn_tpurcode");
+
+	// Do local work
+	int toCheck = tpadvertise((char*) "TestTPReturn",
+			testtpreturn_service_tpurcode);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
+
+	sendlen = 3;
+	rcvlen = 0;
+	CPPUNIT_ASSERT((sendbuf
+			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+			!= NULL);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	strcpy(sendbuf, "24");
+	int success = ::tpcall((char*) "TestTPReturn", (char *) sendbuf, sendlen,
+			(char **) &rcvbuf, &rcvlen, (long) 0);
+	CPPUNIT_ASSERT(success != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(tpurcode == 24);
+
+	strcpy(sendbuf, "77");
+	success = ::tpcall((char*) "TestTPReturn", (char *) sendbuf, sendlen,
+			(char **) &rcvbuf, &rcvlen, (long) 0);
+	CPPUNIT_ASSERT(success != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(tpurcode == 77);
+}
+
 void testtpreturn_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "testtpreturn_service");
 	char *toReturn = (char*) malloc(21);
 	strcpy(toReturn, "testtpreturn_service");
 	tpreturn(TPSUCCESS, 0, toReturn, 21, 0);
 	free(toReturn);
+}
+
+void testtpreturn_service_tpurcode(TPSVCINFO *svcinfo) {
+	userlogc((char*) "testtpreturn_service_tpurcode");
+	int len = 0;
+	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
+	if (strncmp(svcinfo->data, "24", 2) == 0) {
+		tpreturn(TPSUCCESS, 24, toReturn, len, 0);
+	} else {
+		tpreturn(TPSUCCESS, 77, toReturn, len, 0);
+	}
 }
