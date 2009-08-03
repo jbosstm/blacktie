@@ -35,6 +35,7 @@
 #include "AtmiBrokerMem.h"
 #include "AtmiBrokerEnv.h"
 
+long DISCON = 0x00000003;
 long timeout = -1;
 
 // Logger for XATMIc
@@ -97,8 +98,6 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			message.rval = rval;
 			if (session->send(message)) {
 				toReturn = 0;
-			} else {
-				setSpecific(TPE_KEY, TSS_TPENOENT); // TODO - clean up session
 			}
 
 			if (control) {
@@ -149,20 +148,32 @@ int receive(Session* session, char ** odata, long *olen, long flags,
 			try {
 				MESSAGE message = session->receive(time);
 				if (message.data != NULL) {
-					// TODO Handle TPNOCHANGE
-					if (len < message.len) {
-						*odata = ::tprealloc(*odata, message.len);
+					if (message.rval != DISCON) {
+						// TODO Handle TPNOCHANGE
+						if (len < message.len) {
+							*odata = ::tprealloc(*odata, message.len);
+						}
+						*olen = message.len;
+						memcpy(*odata, (char*) message.data, *olen);
+						free(message.data);
+					} else {
+						*event = TPEV_DISCONIMM;
 					}
-					*olen = message.len;
-					memcpy(*odata, (char*) message.data, *olen);
-					free(message.data);
+
 					if (message.rcode == TPESVCFAIL) {
-						*event = TPESVCFAIL;
+						setTpurcode(message.rcode);
+						*event = TPEV_SVCFAIL;
+						setSpecific(TPE_KEY, TSS_TPESVCFAIL);
 					} else if (message.rcode == TPESVCERR) {
-						*event = TPESVCERR;
-					}
-					setTpurcode(message.rcode);
-					if (message.flags && TPRECVONLY) {
+						*event = TPEV_SVCERR;
+						setSpecific(TPE_KEY, TSS_TPESVCERR);
+					} else if (message.rval == TPSUCCESS) {
+						toReturn = 0;
+						setTpurcode(message.rcode);
+						*event = TPEV_SVCSUCC;
+					} else if (message.flags && TPRECVONLY) {
+						toReturn = 0;
+						*event = TPEV_SENDONLY;
 						session->setCanSend(true);
 						session->setCanRecv(false);
 						LOG4CXX_DEBUG(
@@ -172,6 +183,7 @@ int receive(Session* session, char ** odata, long *olen, long flags,
 										<< session->getCanSend() << " recv: "
 										<< session->getCanRecv());
 					} else if (message.flags && TPSENDONLY) {
+						toReturn = 0;
 						session->setCanSend(true);
 						session->setCanRecv(false);
 						LOG4CXX_DEBUG(
@@ -180,12 +192,13 @@ int receive(Session* session, char ** odata, long *olen, long flags,
 										<< session->getId() << " send: "
 										<< session->getCanSend() << " recv: "
 										<< session->getCanRecv());
+					} else {
+						setSpecific(TPE_KEY, TSS_TPETIME);
 					}
-					free((char*) message.replyto);
-					LOG4CXX_DEBUG(loggerXATMI, (char*) "returning odata");
-					toReturn = 0;
-				} else {
-					setSpecific(TPE_KEY, TSS_TPETIME);
+					if (message.replyto != NULL) {
+						free((char*) message.replyto);
+						LOG4CXX_DEBUG(loggerXATMI, (char*) "returning odata");
+					}
 				}
 			} catch (...) {
 				LOG4CXX_ERROR(
@@ -624,6 +637,11 @@ int tpdiscon(int id) {
 		if (session == NULL) {
 			setSpecific(TPE_KEY, TSS_TPEBADDESC);
 		} else {
+			// SEND THE DISCONNECT TO THE REMOTE SIDE
+			long flags = 0;
+			char* data = ::tpalloc((char*) "X_OCTET", NULL, 1);
+			data[0] = NULL; // TODO SHOULD BE ABLE TO SEND ZERO LENGTH BUFFERS
+			::send(session, "", data, 1, id, flags, DISCON, 0);
 			try {
 				if (getSpecific(TSS_KEY)) {
 					toReturn = tx_rollback();

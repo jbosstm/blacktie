@@ -72,6 +72,9 @@ public class Connection {
 	public static int TPEEVENT = 22;
 	public static int TPEMATCH = 23;
 
+	public static short TPFAIL = 0x00000001;
+	public static short TPSUCCESS = 0x00000002;
+
 	public static int XATMI_SERVICE_NAME_LENGTH = 15;
 
 	private static int nextId;

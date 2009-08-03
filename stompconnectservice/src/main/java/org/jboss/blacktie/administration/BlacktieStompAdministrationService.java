@@ -36,6 +36,7 @@ import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
 import org.jboss.blacktie.jatmibroker.xatmi.mdb.MDBBlacktieService;
 import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
@@ -97,11 +98,12 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 				"jboss.messaging.destination:service=Queue,name=" + serviceName);
 		Integer count = (Integer) beanServerConnection.getAttribute(objName,
 				"ConsumerCount");
-		Element security = (Element)beanServerConnection.getAttribute(objName, "SecurityConfig");
+		Element security = (Element) beanServerConnection.getAttribute(objName,
+				"SecurityConfig");
 		log.debug(serviceName + " security config is " + printNode(security));
 		return count.intValue();
 	}
-	
+
 	Element stringToElement(String s) throws Exception {
 		StringReader sreader = new StringReader(s);
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -109,39 +111,37 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		Document doc = parser.parse(new InputSource(sreader));
 		return doc.getDocumentElement();
 	}
-	
+
 	String printNode(Node node) {
-		try
-	    {
-	      // Set up the output transformer
-	      TransformerFactory transfac = TransformerFactory.newInstance();
-	      Transformer trans = transfac.newTransformer();
-	      trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-	      trans.setOutputProperty(OutputKeys.INDENT, "yes");
+		try {
+			// Set up the output transformer
+			TransformerFactory transfac = TransformerFactory.newInstance();
+			Transformer trans = transfac.newTransformer();
+			trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+			trans.setOutputProperty(OutputKeys.INDENT, "yes");
 
-	      // Print the DOM node
+			// Print the DOM node
 
-	      StringWriter sw = new StringWriter();
-	      StreamResult result = new StreamResult(sw);
-	      DOMSource source = new DOMSource(node);
-	      trans.transform(source, result);
-	      String xmlString = sw.toString();
+			StringWriter sw = new StringWriter();
+			StreamResult result = new StreamResult(sw);
+			DOMSource source = new DOMSource(node);
+			trans.transform(source, result);
+			String xmlString = sw.toString();
 
-	      return xmlString;
-	    } catch (TransformerException e)
-	    {
-	      log.error(e);
-	    }
-	    return null;
+			return xmlString;
+		} catch (TransformerException e) {
+			log.error(e);
+		}
+		return null;
 	}
 
 	void setSecurityConfig(ObjectName objName) {
 		String security = "<security>\n"
-			+ " <role name=\"guest\" read=\"true\" write=\"true\"/>\n"
-			+ " <role name=\"publisher\" read=\"true\" write=\"true\" create=\"false\"/>\n"
-			+ " <role name=\"durpublisher\" read=\"true\" write=\"true\" create=\"true\"/>\n"
-			+ "</security>";
-		
+				+ " <role name=\"guest\" read=\"true\" write=\"true\"/>\n"
+				+ " <role name=\"publisher\" read=\"true\" write=\"true\" create=\"false\"/>\n"
+				+ " <role name=\"durpublisher\" read=\"true\" write=\"true\" create=\"true\"/>\n"
+				+ "</security>";
+
 		try {
 			Element element = stringToElement(security);
 			Attribute attr = new Attribute("SecurityConfig", element);
@@ -150,7 +150,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			log.error("Could not set security config " + t);
 		}
 	}
-	
+
 	int deployQueue(String serviceName) {
 		int result = 0;
 
@@ -159,11 +159,11 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 					"jboss.messaging:service=ServerPeer");
 			if (isDeployQueue(objName, serviceName) == false) {
 				beanServerConnection.invoke(objName, "deployQueue",
-						new Object[] { serviceName, null },
-						new String[] { "java.lang.String",
-							"java.lang.String" });	
+						new Object[] { serviceName, null }, new String[] {
+								"java.lang.String", "java.lang.String" });
 				ObjectName queueName = new ObjectName(
-						"jboss.messaging.destination:service=Queue,name=" + serviceName);
+						"jboss.messaging.destination:service=Queue,name="
+								+ serviceName);
 				setSecurityConfig(queueName);
 			}
 			result = 1;
@@ -199,7 +199,8 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 		try {
 			consumerCounts = consumerCount(serviceName);
-			log.debug("Service " + serviceName + " has " + consumerCounts + " consumers");
+			log.debug("Service " + serviceName + " has " + consumerCounts
+					+ " consumers");
 			if (consumerCounts == 1) {
 				result = undeployQueue(serviceName);
 			} else {
@@ -231,16 +232,17 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		}
 
 		if (server != null) {
-			log.trace("Service " + serviceName + " exists for server: " + server);
+			log.trace("Service " + serviceName + " exists for server: "
+					+ server);
 			if (operation.equals("tpunadvertise")) {
 				log.trace("Unadvertising: " + serviceName);
-				success[0] = (byte)undeployQueue(serviceName);
+				success[0] = (byte) undeployQueue(serviceName);
 			} else if (operation.equals("tpadvertise")) {
 				log.trace("Advertising: " + serviceName);
-				success[0] = (byte)deployQueue(serviceName);
+				success[0] = (byte) deployQueue(serviceName);
 			} else if (operation.equals("decrementconsumer")) {
 				log.trace("Decrement consumer: " + serviceName);
-				success[0] = (byte)decrementConsumer(serviceName);
+				success[0] = (byte) decrementConsumer(serviceName);
 			} else {
 				log.error("Unknow operation " + operation);
 				success[0] = 0;
@@ -254,6 +256,6 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		Buffer buffer = new Buffer(null, null);
 		buffer.setData(success);
 		log.debug("Responding");
-		return new Response((short) 0, 0, buffer, 1, 0);
+		return new Response(Connection.TPSUCCESS, 0, buffer, 1, 0);
 	}
 }

@@ -53,6 +53,8 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
 	strcpy(this->sendTo, "/queue/");
 	strncat(this->sendTo, serviceName, XATMI_SERVICE_NAME_LENGTH);
 
+	remoteEndpoint = NULL;
+
 	this->canSend = true;
 	this->canRecv = true;
 
@@ -182,6 +184,7 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		if (rc != APR_SUCCESS) {
 			LOG4CXX_ERROR(logger, "Could not send frame");
 			//setSpecific(TPE_KEY, TSS_TPESYSTEM);
+			setSpecific(TPE_KEY, TSS_TPENOENT); // TODO - clean up session
 		} else {
 			LOG4CXX_TRACE(logger, "Sent frame");
 			stomp_frame *framed;
@@ -189,9 +192,11 @@ bool HybridSessionImpl::send(MESSAGE message) {
 			if (rc != APR_SUCCESS) {
 				LOG4CXX_ERROR(logger, "Could not send frame");
 				//setSpecific(TPE_KEY, TSS_TPESYSTEM);
+				setSpecific(TPE_KEY, TSS_TPENOENT); // TODO - clean up session
 			} else if (strcmp(framed->command, (const char*) "ERROR") == 0) {
 				LOG4CXX_DEBUG(logger, (char*) "Got an error: " << framed->body);
 				//setSpecific(TPE_KEY, TSS_TPENOENT);
+				setSpecific(TPE_KEY, TSS_TPENOENT); // TODO - clean up session
 			} else if (strcmp(framed->command, (const char*) "RECEIPT") == 0) {
 				LOG4CXX_DEBUG(logger, (char*) "SEND RECEIPT: "
 						<< (char*) apr_hash_get(framed->headers, "receipt-id",
@@ -200,6 +205,7 @@ bool HybridSessionImpl::send(MESSAGE message) {
 			} else {
 				LOG4CXX_ERROR(logger, "Didn't get a receipt: "
 						<< framed->command << ", " << framed->body);
+				setSpecific(TPE_KEY, TSS_TPESYSTEM); // TODO - clean up session
 			}
 			LOG4CXX_DEBUG(logger, "Sent to: " << sendTo << " Command: "
 					<< frame.command << " Size: " << frame.body_length);
@@ -207,21 +213,23 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		}
 		serviceInvokation = false;
 	} else {
-		char* data_togo = new char[message.len];
-		LOG4CXX_TRACE(logger, (char*) "allocated");
-		memcpy(data_togo, message.data, message.len);
-		LOG4CXX_TRACE(logger, (char*) "copied: idata into: data_togo");
+		if (remoteEndpoint != NULL) {
+			char* data_togo = new char[message.len];
+			LOG4CXX_TRACE(logger, (char*) "allocated");
+			memcpy(data_togo, message.data, message.len);
+			LOG4CXX_TRACE(logger, (char*) "copied: idata into: data_togo");
 
-		LOG4CXX_DEBUG(logger, (char*) "Sending to remote queue: "
-				<< remoteEndpoint);
-		AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(
-				message.len, message.len, (unsigned char*) data_togo, true);
-		remoteEndpoint->send(message.replyto, message.rval, message.rcode,
-				aOctetSeq, message.len, message.correlationId, message.flags);
-		aOctetSeq = NULL;
-		LOG4CXX_DEBUG(logger, (char*) "Called back ");
-
-		toReturn = true;
+			LOG4CXX_DEBUG(logger, (char*) "Sending to remote queue: "
+					<< remoteEndpoint);
+			AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(
+					message.len, message.len, (unsigned char*) data_togo, true);
+			remoteEndpoint->send(message.replyto, message.rval, message.rcode,
+					aOctetSeq, message.len, message.correlationId,
+					message.flags);
+			aOctetSeq = NULL;
+			LOG4CXX_DEBUG(logger, (char*) "Called back ");
+			toReturn = true;
+		}
 	}
 	return toReturn;
 }
