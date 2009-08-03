@@ -107,6 +107,7 @@ int AtmiBrokerOTS::tx_open(void) {
 					CosNaming::Name * name = getNamingContextExt()->to_name(transFactoryId);
 					LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "resolve TransactionService: " << transFactoryId);
 					CORBA::Object_var obj = getNamingContextExt()->resolve(*name);
+					delete name;
 					LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "resolved TransactionService: " << (void*) obj);
 					tx_factory = CosTransactions::TransactionFactory::_narrow(obj);
 					LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "narrowed TransactionFactory: " << (void*) tx_factory);

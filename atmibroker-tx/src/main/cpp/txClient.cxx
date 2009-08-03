@@ -74,27 +74,26 @@ int associate_serialized_tx(char *orbname, char* control)
 void * disassociate_tx(void)
 {
 	void *control = get_control();
+
 	if (control) {
 		LOG4CXX_LOGLS(txClientLogger, log4cxx::Level::getDebug(),
 				(char *) "disassociate_tx: caller=" << ACE_OS::thr_self());
 
 		try {
 			(void) AtmiBrokerOTS::get_instance()->rm_suspend();
-		}
-		catch (CORBA::Exception& e) {
-			LOG4CXX_LOGLS(txClientLogger, log4cxx::Level::getError(), 
-					(char*) "disassociate_tx - Unexpected CORBA exception: " <<
-					e._name());
 		} catch (...) {
 			LOG4CXX_LOGLS(txClientLogger, log4cxx::Level::getError(), (char *) "Error suspending RMs");
 		}
-	
+
+		CurrentTx *tx = (CurrentTx *) getSpecific(TSS_KEY);
+		delete tx;
 		destroySpecific(TSS_KEY);
+
+		return control;
 	} else {
 		LOG4CXX_LOGLS(txClientLogger, log4cxx::Level::getDebug(), (char *) "NO CONTROL");
+		return NULL;
 	}
-
-	return control;
 }
 
 void * disassociate_tx_if_not_owner(void)
@@ -115,6 +114,7 @@ void * disassociate_tx_if_not_owner(void)
 				LOG4CXX_LOGLS(txClientLogger, log4cxx::Level::getDebug(), (char *) "Error suspending RMs");
 			}
 
+			delete tx;
 			destroySpecific(TSS_KEY);
 		}
 

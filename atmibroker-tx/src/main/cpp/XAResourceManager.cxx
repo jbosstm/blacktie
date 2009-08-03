@@ -184,7 +184,7 @@ int XAResourceManager::createServant(XID * xid)
 
 	try {
 		// get a CORBA reference to the servant so that it can be enlisted in the OTS transaction
-        	CORBA::Object_ptr ref = poa_->servant_to_reference(ra);
+       	CORBA::Object_var ref = poa_->servant_to_reference(ra);
 		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "narrowing resource");
 
 		CosTransactions::Resource_var v = CosTransactions::Resource::_narrow(ref);

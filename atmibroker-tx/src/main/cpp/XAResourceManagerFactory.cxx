@@ -57,6 +57,7 @@ bool XAResourceManagerFactory::getXID(XID& xid)
 // duplicate what JBossTS does - will be fixed in JBossTS 4.8.0 (see JBTM-577)
 		char JBOSSTS_NODE_SEPARATOR = '-';
 
+		memset(&xid, 0, sizeof (XID));
 		xid.formatID = otid.formatID;
 		xid.gtrid_length = 0; 
 		xid.bqual_length = otid.bqual_length; 

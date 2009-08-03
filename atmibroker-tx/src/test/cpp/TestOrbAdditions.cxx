@@ -33,5 +33,6 @@ void TestOrbAdditions::test_initorb() {
 		serverConnection = NULL;
 		shutdownBindings(clientConnection);
 		clientConnection = NULL;
+		delete serverPoaFactory;
 	}
 }

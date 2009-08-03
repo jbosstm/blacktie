@@ -47,7 +47,6 @@ void CurrentImpl::begin() throw(CORBA::SystemException, CosTransactions::Subtran
 		aControlThreadStruct->control = CosTransactions::Control::_duplicate(ctrl);
 		aControlThreadStruct->timeout = m_timeout;
 		// TODO assuming client
-		LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "control " << AtmiBrokerOTS::get_instance()->getOrb()->object_to_string(aControlThreadStruct->control));
 		aControlThreadStruct->thread = ACE_Thread::self();
 		ACE_Thread::self(aControlThreadStruct->threadHandle);
 		LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "thread " << aControlThreadStruct->thread <<
@@ -145,8 +144,10 @@ bool CurrentImpl::remove_control() throw (CORBA::SystemException) {
 
 	for (std::deque<ControlThreadStruct*>::iterator itControlThread = controlThreadDeque.begin(); itControlThread != controlThreadDeque.end(); itControlThread++) {
 		LOG4CXX_LOGLS(loggerCurrentImpl, log4cxx::Level::getDebug(), (char*) "next itControlThread is: " << (ACE_thread_t)(*itControlThread)->thread);
-		if ((*itControlThread)->thread == ACE_Thread::self())
+		if ((*itControlThread)->thread == ACE_Thread::self()) {
+			delete *itControlThread;
 			controlThreadDeque.erase(itControlThread);
+		}
 		removed = true;
 		return removed;
 	}
