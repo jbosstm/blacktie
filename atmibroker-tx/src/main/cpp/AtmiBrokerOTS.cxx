@@ -32,6 +32,7 @@
 #include "AtmiBrokerEnv.h"
 
 #include "txClient.h"
+#include "CurrentTx.h"
 
 #include "Worker.h"
 
@@ -76,18 +77,10 @@ AtmiBrokerOTS::AtmiBrokerOTS() :
 AtmiBrokerOTS::~AtmiBrokerOTS() {
 	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "destructor");
 	shutdownBindings(ots_connection);
-	/* TODO
-	 if (xaResourceMgrId)
-	 //free (xaResourceMgrId);
-	 if (transFactoryId)
-	 //free (transFactoryId);
-	 if (xaResourceName)
-	 //free (xaResourceName);
-	 if (xaOpenString)
-	 //free (xaOpenString);
-	 if (xaCloseString)
-	 //free (xaCloseString);
-	 */
+	if (ots_connection) {
+		delete ots_connection;
+		ots_connection = 0;
+	}
 }
 
 CORBA_CONNECTION* AtmiBrokerOTS::init_orb(char* name) {
@@ -284,7 +277,7 @@ int AtmiBrokerOTS::tx_complete(bool commit) {
 		outcome = TX_FAIL;
 	}
 
-LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_complete: after outcome: " << outcome);
+	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_complete: after outcome: " << outcome);
 #if 0
 try {
 	LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_complete: after status: " <<
@@ -294,6 +287,8 @@ try {
 }
 #endif
 
+	CurrentTx *tx = (CurrentTx *) getSpecific(TSS_KEY);
+	delete tx;
 	destroySpecific(TSS_KEY);	// TODO free Control
 	//TODO disassociateTx(); // check whether to suspend RMs
 	currentImpl->remove_control();

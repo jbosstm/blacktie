@@ -34,6 +34,7 @@ void TestTransactions::test_transactions()
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_begin());
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_commit());
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
+//	shutdown_tx_broker(); TODO this call produces SIGSEGV
 	userlogc_debug( (char*) "TestTransactions::test_transactions pass");
 }
 

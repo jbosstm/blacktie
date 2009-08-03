@@ -151,12 +151,6 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 	destroySpecific(SVC_SES);
 	destroySpecific(SVC_KEY);
-	destroySpecific(TSS_KEY);
-	void* tpr_key = getSpecific(TPR_KEY);
-	if (tpr_key != NULL) {
-		free(tpr_key);
-	}
-	destroySpecific(TPR_KEY);
 
 	LOG4CXX_TRACE(logger,
 			(char*) "Freeing the data that was passed to the service");

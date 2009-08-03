@@ -26,13 +26,21 @@ void TestOrbAdditions::test_initorb() {
 	for (int i = 0; i < 10; i++) {
 		CORBA_CONNECTION* serverConnection = (CORBA_CONNECTION *) start_tx_orb((char*) "server");
 		AtmiBrokerPoaFac* serverPoaFactory = new AtmiBrokerPoaFac();
-		PortableServer::POA_var server_poa = serverPoaFactory->createServerPoa(((CORBA::ORB_ptr) serverConnection->orbRef), "foo", ((PortableServer::POA_ptr) serverConnection->root_poa), ((PortableServer::POAManager_ptr) serverConnection->root_poa_manager));
+		PortableServer::POA_var server_poa =
+			serverPoaFactory->createServerPoa(((CORBA::ORB_ptr) serverConnection->orbRef),
+				"foo", ((PortableServer::POA_ptr) serverConnection->root_poa),
+				((PortableServer::POAManager_ptr) serverConnection->root_poa_manager));
 		CORBA_CONNECTION* clientConnection = (CORBA_CONNECTION *) start_tx_orb((char*) "client");
 
 		shutdownBindings(serverConnection);
-		serverConnection = NULL;
+		if (serverConnection)
+			delete serverConnection;
+
 		shutdownBindings(clientConnection);
-		clientConnection = NULL;
-		delete serverPoaFactory;
+		if (clientConnection)
+			delete clientConnection;
+
+		if (serverPoaFactory)
+			delete serverPoaFactory;
 	}
 }

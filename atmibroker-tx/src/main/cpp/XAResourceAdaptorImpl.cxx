@@ -28,6 +28,9 @@ XAResourceAdaptorImpl::XAResourceAdaptorImpl(
 
 XAResourceAdaptorImpl::~XAResourceAdaptorImpl()
 {
+	if (rc_) {
+		CORBA::release(rc_);
+	}
 }
 
 void XAResourceAdaptorImpl::notifyError(int reason, bool forget)
