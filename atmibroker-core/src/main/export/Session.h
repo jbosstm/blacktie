@@ -59,9 +59,24 @@ public:
 	bool getCanRecv() {
 		return canRecv;
 	}
+
+	/**
+	 * Set the last rcode
+	 */
+	void setLastRCode(long rcode) {
+		this->lastRCode = rcode;
+	}
+
+	/**
+	 * Get the last rcode
+	 */
+	long* getLastRCode() {
+		return &lastRCode;
+	}
 protected:
 	bool canSend;
 	bool canRecv;
+	long lastRCode;
 };
 
 #endif

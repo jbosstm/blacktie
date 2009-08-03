@@ -25,6 +25,7 @@ const int TSS_KEY = 0xaf; // key for accessing OTS control
 const int SVC_KEY = 0xb1; // key for accessing atmi service
 const int SVC_SES = 0xb4; // key for accessing service session
 const int TPE_KEY = 0xa5; // key for accessing tperrno
+const int TPR_KEY = 0xb6; // key for accessing tpurcode
 // define other keys here
 
 extern BLACKTIE_CORE_DLL int getKey();

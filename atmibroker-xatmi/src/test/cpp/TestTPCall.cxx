@@ -116,6 +116,7 @@ void TestTPCall::test_tpcall_x_octet() {
 	CPPUNIT_ASSERT(tperrno != TPESYSTEM);
 	CPPUNIT_ASSERT(tperrno != TPEOS);
 	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(tpurcode == 20);
 	CPPUNIT_ASSERT(id != -1);
 	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_octet") == 0);
 }
@@ -149,10 +150,12 @@ void TestTPCall::test_tpcall_x_octet_zero() {
 	CPPUNIT_ASSERT(tperrno != TPESYSTEM);
 	CPPUNIT_ASSERT(tperrno != TPEOS);
 	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(tpurcode == 21);
 	CPPUNIT_ASSERT(id != -1);
 	CPPUNIT_ASSERT(rcvlen == 0);
 }
 
+#include "malloc.h"
 // 9.1.2
 void TestTPCall::test_tpcall_x_common() {
 	userlogc((char*) "test_tpcall_x_common");
@@ -160,6 +163,7 @@ void TestTPCall::test_tpcall_x_common() {
 
 	DEPOSIT *dptr;
 	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
+	//TODO DO WE NEED TO DO THIS IN TPALLOC memset(dptr, '\0', 1024);
 	rcvlen = 60;
 
 	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
@@ -168,9 +172,16 @@ void TestTPCall::test_tpcall_x_common() {
 	dptr->acct_no = 12345678;
 	dptr->amount = 50;
 
+	userlogc("%d %d %d", sizeof(long), sizeof(int), sizeof(short));
+	char foo[sizeof(short)]; // 8
+	memcpy(foo, &sendbuf[8], sizeof(short));
+	short* bar = (short*) foo;
+	short barbar = *bar;
+
 	int id = ::tpcall((char*) "tpcall_x_common", (char*) dptr, 0,
 			(char**) &rcvbuf, &rcvlen, 0);
 	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(tpurcode == 22);
 	CPPUNIT_ASSERT(id != -1);
 	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_common") == 0);
 }
@@ -194,6 +205,7 @@ void TestTPCall::test_tpcall_x_c_type() {
 	int id = ::tpcall((char*) "tpcall_x_c_type", (char*) aptr, 0,
 			(char**) &rcvbuf, &rcvlen, TPNOCHANGE);
 	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(tpurcode == 23);
 	CPPUNIT_ASSERT(id != -1);
 	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_c_type") == 0);
 }
@@ -219,14 +231,14 @@ void test_tpcall_x_octet_service(TPSVCINFO *svcinfo) {
 			strcpy(toReturn, "dud");
 		}
 	}
-	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
+	tpreturn(TPSUCCESS, 20, toReturn, len, 0);
 }
 
 void test_tpcall_x_octet_service_zero(TPSVCINFO *svcinfo) {
 	userlogc((char*) "test_tpcall_x_octet_service_zero");
 	int len = 0;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
-	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
+	tpreturn(TPSUCCESS, 21, toReturn, len, 0);
 }
 
 void test_tpcall_x_common_service(TPSVCINFO *svcinfo) {
@@ -244,7 +256,7 @@ void test_tpcall_x_common_service(TPSVCINFO *svcinfo) {
 	} else {
 		strcpy(toReturn, "fail");
 	}
-	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
+	tpreturn(TPSUCCESS, 22, toReturn, len, 0);
 }
 
 void test_tpcall_x_c_type_service(TPSVCINFO *svcinfo) {
@@ -262,5 +274,5 @@ void test_tpcall_x_c_type_service(TPSVCINFO *svcinfo) {
 	} else {
 		strcpy(toReturn, "fail");
 	}
-	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
+	tpreturn(TPSUCCESS, 23, toReturn, len, 0);
 }

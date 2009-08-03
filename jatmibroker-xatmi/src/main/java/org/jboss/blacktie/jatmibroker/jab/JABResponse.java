@@ -80,4 +80,17 @@ public class JABResponse implements Message {
 	void clear() {
 		response = null;
 	}
+
+	/**
+	 * This is the rcode that tpreturn was invoked with
+	 * 
+	 * @return The return code
+	 */
+	int getRCode() {
+		if (response != null) {
+			return response.getRcode();
+		} else {
+			return -1;
+		}
+	}
 }

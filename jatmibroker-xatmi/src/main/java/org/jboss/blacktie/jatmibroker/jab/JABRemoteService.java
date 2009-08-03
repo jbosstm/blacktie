@@ -166,4 +166,13 @@ public class JABRemoteService implements Message {
 	public Message getResponse() {
 		return responseMessage;
 	}
+
+	/**
+	 * Get the rcode that tpreturn returned with.
+	 * 
+	 * @return The application return code.
+	 */
+	public int getRCode() {
+		return responseMessage.getRCode();
+	}
 }

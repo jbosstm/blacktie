@@ -100,10 +100,10 @@ extern BLACKTIE_XATMI_DLL int tpconnect(char * svc, char* idata, long ilen, long
 extern BLACKTIE_XATMI_DLL int tpdiscon(int id); // COMMUNICATION
 
 extern BLACKTIE_XATMI_DLL int _get_tperrno(void); // CLIENT
-extern BLACKTIE_XATMI_DLL long* _get_tpurcode(void); // CLIENT
+extern BLACKTIE_XATMI_DLL long _get_tpurcode(void); // CLIENT
 #ifdef __cplusplus
 }
 #endif
 #define tperrno (_get_tperrno())										// CLIENT
-#define tpurcode (*_get_tpurcode())										// CLIENT
+#define tpurcode (_get_tpurcode())										// CLIENT
 #endif // XATMI_H

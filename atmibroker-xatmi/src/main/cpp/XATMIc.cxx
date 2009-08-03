@@ -35,10 +35,6 @@
 #include "AtmiBrokerMem.h"
 #include "AtmiBrokerEnv.h"
 
-// Global state
-int _tperrno = 0;
-long _tpurcode = -1;
-
 long timeout = -1;
 
 // Logger for XATMIc
@@ -60,6 +56,17 @@ int bufferSize(char* data, int suggestedSize) {
 	}
 
 }
+
+void setTpurcode(long rcode) {
+	char* toClear = (char*) getSpecific(TPR_KEY);
+	if (toClear != NULL) {
+		free(toClear);
+	}
+	char* toStore = (char*) malloc(8 * sizeof(long));
+	sprintf(toStore, "%ld", rcode);
+	setSpecific(TPR_KEY, toStore);
+}
+
 int send(Session* session, const char* replyTo, char* idata, long ilen,
 		int correlationId, long flags, long rval, long rcode) {
 	LOG4CXX_DEBUG(loggerXATMI, (char*) "send - ilen: " << ilen << ": "
@@ -154,6 +161,7 @@ int receive(Session* session, char ** odata, long *olen, long flags,
 					} else if (message.rcode == TPESVCERR) {
 						*event = TPESVCERR;
 					}
+					setTpurcode(message.rcode);
 					if (message.flags && TPRECVONLY) {
 						session->setCanSend(true);
 						session->setCanRecv(false);
@@ -195,7 +203,6 @@ int receive(Session* session, char ** odata, long *olen, long flags,
 
 int _get_tperrno(void) {
 	LOG4CXX_DEBUG(loggerXATMI, (char*) "_get_tperrno");
-	//return &_tperrno;
 	char* err = (char*) getSpecific(TPE_KEY);
 	int toReturn = 0;
 	if (err != NULL) {
@@ -206,9 +213,16 @@ int _get_tperrno(void) {
 	return toReturn;
 }
 
-long * _get_tpurcode(void) {
-	LOG4CXX_ERROR(loggerXATMI, (char*) "_get_tpurcode - Not implemented");
-	return &_tpurcode;
+long _get_tpurcode(void) {
+	LOG4CXX_DEBUG(loggerXATMI, (char*) "_get_tpurcode");
+	char* rcode = (char*) getSpecific(TPR_KEY);
+	long toReturn = 0;
+	if (rcode != NULL) {
+		LOG4CXX_TRACE(loggerXATMI, (char*) "found _get_tpurcode" << rcode);
+		toReturn = atol(rcode);
+	}
+	LOG4CXX_DEBUG(loggerXATMI, (char*) "returning _get_tpurcode" << toReturn);
+	return toReturn;
 }
 
 int tpadvertise(char * svcname, void(*func)(TPSVCINFO *)) {
