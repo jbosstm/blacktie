@@ -37,6 +37,7 @@
 #include "ace/OS_NS_stdlib.h"
 #include "ace/OS_NS_string.h"
 #include "ace/Default_Constants.h"
+#include "ace/Signal.h"
 #include "ThreadLocalStorage.h"
 
 log4cxx::LoggerPtr loggerAtmiBrokerServer(log4cxx::Logger::getLogger(
@@ -57,6 +58,7 @@ void server_sigint_handler_callback(int sig_type) {
 			loggerAtmiBrokerServer,
 			(char*) "server_sigint_handler_callback Received shutdown signal: %d",
 			sig_type);
+	signal(SIGINT, SIG_IGN);
 	ptrServer->shutdown();
 }
 
@@ -148,7 +150,17 @@ int serverinit(int argc, char** argv) {
 					userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
 							(char*) "Server Running");
 				}
-				signal(SIGINT, server_sigint_handler_callback);
+				//signal(SIGINT, server_sigint_handler_callback);
+				ACE_Sig_Action sa (
+						reinterpret_cast <ACE_SignalHandler> (
+							server_sigint_handler_callback));
+
+				// Make sure we specify that SIGINT will be masked out
+				// during the signal handler's execution.
+				ACE_Sig_Set ss;
+				ss.sig_add (SIGINT);
+				sa.mask (ss);
+				sa.register_action (SIGINT);
 			}
 
 		} catch (...) {

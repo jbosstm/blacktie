@@ -33,6 +33,7 @@
 #include "ace/OS_NS_stdlib.h"
 #include "ace/OS_NS_string.h"
 #include "ace/Default_Constants.h"
+#include "ace/Signal.h"
 #include "ThreadLocalStorage.h"
 
 
@@ -65,7 +66,18 @@ int clientinit() {
 			toReturn = -1;
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		} else {
-			signal(SIGINT, client_sigint_handler_callback);
+			//signal(SIGINT, client_sigint_handler_callback);
+			ACE_Sig_Action sa (
+					reinterpret_cast <ACE_SignalHandler> (
+						client_sigint_handler_callback));
+
+  			// Make sure we specify that SIGINT will be masked out
+  			// during the signal handler's execution.
+  			ACE_Sig_Set ss;
+  			ss.sig_add (SIGINT);
+  			sa.mask (ss);
+  			sa.register_action (SIGINT);
+
 			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "Client Initialized");
 		}
 	}
