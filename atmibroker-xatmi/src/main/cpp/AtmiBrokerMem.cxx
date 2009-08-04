@@ -130,6 +130,7 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size) {
 		LOG4CXX_TRACE(logger, (char*) "tpalloc - created memoryInfo");
 		memoryInfo.memoryPtr = (char*) malloc(size);
 		memoryInfo.size = size;
+		memset(memoryInfo.memoryPtr, '\0', memoryInfo.size);
 		LOG4CXX_TRACE(logger, (char*) "tpalloc - sized: " << size);
 		memoryInfo.type = (char*) malloc(MAX_TYPE_SIZE + 1);
 		memset(memoryInfo.type, '\0', MAX_TYPE_SIZE + 1);
@@ -188,6 +189,7 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size) {
 				char* memPtr = (char*) realloc((void*) addr, size);
 				(*it).memoryPtr = memPtr;
 				(*it).size = size;
+				memset((*it).memoryPtr, '\0', (*it).size);
 				toReturn = memPtr;
 				LOG4CXX_DEBUG(logger, (char*) "updated - size: " << size);
 				break;

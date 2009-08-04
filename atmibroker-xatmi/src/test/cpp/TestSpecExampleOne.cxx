@@ -62,7 +62,8 @@ void TestSpecExampleOne::test_specexampleone() {
 	userlogc((char*) "TestSpecExampleOne::test_specexampleone");
 	DATA_BUFFER *dptr; /* DATA_BUFFER is a typed buffer of type */
 	DATA_BUFFER *cptr; /* X_C_TYPE and subtype dc_buf. The structure */
-	long dlen, clen; /* contains a character array named input and an */
+	long dlen = 0;
+	long clen = 0; /* contains a character array named input and an */
 	int cd; /* integer named output. */
 	/* allocate typed buffers */
 	dptr = (DATA_BUFFER *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", 0);

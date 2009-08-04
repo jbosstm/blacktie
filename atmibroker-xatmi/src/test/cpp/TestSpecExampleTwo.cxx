@@ -51,7 +51,8 @@ void TestSpecExampleTwo::tearDown() {
 void TestSpecExampleTwo::test_specexampletwo() {
 	userlogc((char*) "TestSpecExampleTwo::test_specexampletwo");
 	DATA_BUFFER *ptr; /* DATA_BUFFER is a typed buffer of type */
-	long len, event; /* X_C_TYPE and subtype inq_buf. The structure */
+	long len = 0;
+	long event = 0; /* X_C_TYPE and subtype inq_buf. The structure */
 	int cd; /* contains a character array named input and an */
 	/* array of integers named output. */
 	/* allocate typed buffer */
