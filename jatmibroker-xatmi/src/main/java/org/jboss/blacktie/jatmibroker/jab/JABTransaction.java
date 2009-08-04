@@ -182,7 +182,12 @@ public class JABTransaction {
 			ThreadActionData.popAction();
 			log.debug("called commit on terminator");
 		} catch (Exception e) {
-			throw new JABException("Could not commit the transaction", e);
+			// TODO build an JABException hierarchy so we can perform better error reporting
+			// presume abort and dissassociate the tx from the the current thread
+			active = false;
+			ThreadActionData.popAction();
+
+			throw new JABException("Could not commit the transaction: " + e.getMessage(), e);
 		}
 	}
 
@@ -190,13 +195,29 @@ public class JABTransaction {
 		log.debug("JABTransaction rollback");
 
 		try {
-			log.debug("calling rollback");
 			terminator.rollback();
 			active = false;
 			ThreadActionData.popAction();
 			log.debug("called rollback on terminator");
 		} catch (Exception e) {
-			throw new JABException("Could not rollback the transaction", e);
+			// presume abort and dissassociate the tx from the the current thread
+			active = false;
+			ThreadActionData.popAction();
+
+			throw new JABException("Could not rollback the transaction: " + e.getMessage(), e);
+		}
+	}
+
+	public void rollback_only() throws JABException {
+		log.debug("JABTransaction rollback_only");
+
+		try {
+			control.get_coordinator().rollback_only();
+			log.debug("tx marked rollback only");
+		} catch (Unavailable e) {
+			throw new JABException("Tx Manager unavailable for set rollback only", e);
+		} catch (Exception e) {
+			throw new JABException("Error setting rollback only", e);
 		}
 	}
 

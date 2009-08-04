@@ -55,6 +55,43 @@ public class JABClientTestCase extends TestCase {
 		aJabSession.closeSession();
 	}
 
+	public void test_tpcall_x_octet_commit_tx_rollback_only() throws Exception {
+		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(null);
+		JABSession aJabSession = new JABSession(aJabSessionAttributes);
+		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
+		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet", aJabSession);
+		transaction.rollback_only();
+		aJabService.setData("HOWS IT GOING DUDE????!!!!".getBytes());
+		aJabService.call(null);
+		try {
+			transaction.commit();
+			fail("committing a tx marked rollback only succeeded");
+		} catch (JABException e) {
+			// the exception is expected, but:
+			// exception should be CORBA::CORBA::TRANSACTION_ROLLEDBACK but JBossTM
+			// returns CORBA::OBJECT_NOT_EXIST instead in which case we would use presumed abort");
+		}
+		assertEquals("BAR SAYS HELLO", new String(aJabService.getData()));
+		aJabSession.closeSession();
+	}
+
+	public void test_tpcall_x_octet_rollback_tx_rollback_only() throws Exception {
+		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(null);
+		JABSession aJabSession = new JABSession(aJabSessionAttributes);
+		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
+		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet", aJabSession);
+		transaction.rollback_only();
+		aJabService.setData("HOWS IT GOING DUDE????!!!!".getBytes());
+		aJabService.call(null);
+		try {
+			transaction.rollback();
+		} catch (JABException e) {
+			fail("rolling back a tx marked rollback through exception: " + e.getMessage());
+		}
+		assertEquals("BAR SAYS HELLO", new String(aJabService.getData()));
+		aJabSession.closeSession();
+	}
+
 	public void test_tpcall_x_octet_no_tx() throws Exception {
 		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
 				null);
