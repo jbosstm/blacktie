@@ -611,34 +611,34 @@ void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 	if (clientinit() != -1) {
 		Session* session = (Session*) getSpecific(SVC_SES);
 		if (session != NULL) {
-			if (!session->getCanSend()) {
-				LOG4CXX_DEBUG(loggerXATMI, (char*) "Session can't send");
-				setSpecific(TPE_KEY, TSS_TPEPROTO);
-			} else {
-				session->setCanRecv(false);
-				if (data == NULL) {
-					data = ::tpalloc((char*) "X_OCTET", NULL, 0);
-				}
-				if (rcode == TPESVCERR || bufferSize(data, len) == -1) {
-					::tpfree(data);
-					data = ::tpalloc((char*) "X_OCTET", NULL, 0);
-					::send(session, "", data, 0, 0, flags, TPFAIL, TPESVCERR);
-				} else {
-					if (rval != TPSUCCESS && rval != TPFAIL) {
-						rval = TPFAIL;
-						//TODO MARK SET ROLLBACK ONLY
-					}
-					::send(session, "", data, len, 0, flags, rval, rcode);
-				}
-				::tpfree(data);
-				session->setSendTo(NULL);
-				session->setCanSend(false);
-				LOG4CXX_DEBUG(loggerXATMI,
-						(char*) "tpreturn set constraints session: "
-								<< session->getId() << " send: "
-								<< session->getCanSend() << " recv: "
-								<< session->getCanRecv());
+			if (!session->getCanSend() && rval != TPFAIL && data != NULL) {
+				rcode = TPESVCERR;
 			}
+			session->setCanRecv(false);
+			// CANT SEND NULL DATA
+			if (data == NULL) {
+				data = ::tpalloc((char*) "X_OCTET", NULL, 0);
+			}
+			if (rcode == TPESVCERR || bufferSize(data, len) == -1) {
+				::tpfree(data);
+				data = ::tpalloc((char*) "X_OCTET", NULL, 0);
+				::send(session, "", data, 0, 0, flags, TPFAIL, TPESVCERR);
+			} else {
+				if (rval != TPSUCCESS && rval != TPFAIL) {
+					rval = TPFAIL;
+					//TODO MARK SET ROLLBACK ONLY
+				}
+				::send(session, "", data, len, 0, flags, rval, rcode);
+			}
+			::tpfree(data);
+			session->setSendTo(NULL);
+			session->setCanSend(false);
+			LOG4CXX_DEBUG(loggerXATMI,
+					(char*) "tpreturn set constraints session: "
+							<< session->getId() << " send: "
+							<< session->getCanSend() << " recv: "
+							<< session->getCanRecv());
+
 		} else {
 			LOG4CXX_DEBUG(loggerXATMI, (char*) "Session is null");
 			setSpecific(TPE_KEY, TSS_TPEPROTO);
