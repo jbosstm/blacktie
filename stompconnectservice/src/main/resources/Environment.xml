@@ -25,7 +25,7 @@
 					<SERVICE name='BTStompAdmin' transportLibrary='libatmibroker-hybrid.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
-			<SERVER name='default'>
+			<SERVER name="foo">
 				<SERVICE_NAMES>
 					<SERVICE name='BAR' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='TestTPFree' transportLibrary='libatmibroker-hybrid.so'/>
@@ -50,6 +50,17 @@
 					<SERVICE name='DEBIT' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='CREDIT' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='INQUIRY' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='foo_ADMIN' transportLibrary='libatmibroker-hybrid.so'/>
+				</SERVICE_NAMES>
+			</SERVER>
+			<SERVER name='foo'>
+				<SERVICE_NAMES>
+					<SERVICE name='foo_ADMIN_1' transportLibrary='libatmibroker-hybrid.so'/>
+				</SERVICE_NAMES>
+			</SERVER>
+			<SERVER name="default">
+				<SERVICE_NAMES>
+					<SERVICE name='default_ADMIN' transportLibrary='libatmibroker-hybrid.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>
