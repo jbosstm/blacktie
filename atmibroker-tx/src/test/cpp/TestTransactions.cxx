@@ -225,17 +225,21 @@ void TestTransactions::test_RM()
 	userlogc_debug( (char*) "TestTransactions::test_RM pass");
 }
 
-void TestTransactions::test_rollback()	// TODO check the behaviour when a real RM is used
+void TestTransactions::test_rollback()
 {
+	// TODO check the behaviour when a real RM is used.
 	userlogc_debug( (char*) "TestTransactions::test_rollback begin");
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_open());
+
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_begin());
 	CPPUNIT_ASSERT_EQUAL(TX_OK, set_rollback_only());
 	check_info("set_rollback_only", 1, -1L, TX_UNCHAINED, 0L, TX_ROLLBACK_ONLY);
 	CPPUNIT_ASSERT_EQUAL(TX_ROLLBACK, tx_commit());
+
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
 	userlogc_debug( (char*) "TestTransactions::test_rollback pass");
 }
+
 static int fn1(char *a, int i, long l) { return 0; }
 static int fn2(XID *x, int i, long l) { return 0; }
 static int fn3(XID *, long l1, int i, long l2) { return 0; }
