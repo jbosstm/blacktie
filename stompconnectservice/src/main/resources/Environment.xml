@@ -16,49 +16,95 @@
 		02110-1301, USA.
 	-->
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			 xmlns="http://www.jboss.org/blacktie">
+        xmlns="http://www.jboss.org/blacktie">
 	<ENVIRONMENT_DESCRIPTION>
-		<DOMAIN>jboss</DOMAIN>
+		<DOMAIN>fooapp</DOMAIN>
 		<SERVER_NAMES>
-			<SERVER name='jboss'>
+			<SERVER name="jboss">
 				<SERVICE_NAMES>
 					<SERVICE name='BTStompAdmin' transportLibrary='libatmibroker-hybrid.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
-			<SERVER name="foo">
+			<SERVER name='default'>
 				<SERVICE_NAMES>
+					<SERVICE name='BAR' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='TestTPFree' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPCall' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='TestTPAdvertise' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='LOOPY' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPConversat'  transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPACall'  transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPCancel'  transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPConnect'  transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPDiscon'  transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPGetrply'  transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPSend'  transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPRecv'  transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPService'  transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPReturn'  transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='123456789012345' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='TestTPUnadverti' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='tpcall_x_octet' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='tpcall_x_common' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='tpcall_x_c_type' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='LOOPY' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPConversat' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPACall' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPCancel' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPConnect' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPDiscon' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPGetrply' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPSend' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPRecv' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPService' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPReturn' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='BAR' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='foo_ADMIN' transportLibrary='libatmibroker-hybrid.so'/>
-				</SERVICE_NAMES>
-			</SERVER>
-			<SERVER name="default">
-				<SERVICE_NAMES>
-					<SERVICE name='default_ADMIN' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='DEBIT' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='CREDIT' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='INQUIRY' transportLibrary='libatmibroker-hybrid.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>
+        <!--
+        <XA_RESOURCES>
+             <XA_RESOURCE>
+                <XA_RESOURCE_MGR_ID>2101</XA_RESOURCE_MGR_ID>
+                <XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
+                <XA_OPEN_STRING>target/db1</XA_OPEN_STRING>
+                <XA_CLOSE_STRING></XA_CLOSE_STRING>
+                <XA_SWITCH>db_xa_switch</XA_SWITCH>
+                <XA_LIB_NAME>db</XA_LIB_NAME>
+             </XA_RESOURCE>
+             <XA_RESOURCE>
+                <XA_RESOURCE_MGR_ID>2102</XA_RESOURCE_MGR_ID>
+                <XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
+                <XA_OPEN_STRING>target/db2</XA_OPEN_STRING>
+                <XA_CLOSE_STRING></XA_CLOSE_STRING>
+                <XA_SWITCH>db_xa_switch</XA_SWITCH>
+                <XA_LIB_NAME>db</XA_LIB_NAME>
+             </XA_RESOURCE>
+        </XA_RESOURCES>
+        -->
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
 				<NAME>ORBOPT</NAME>
 				<VALUE>-ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>TRANS_FACTORY_ID</NAME>
+				<VALUE>TransactionManagerService.OTS</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>LOG4CXXCONFIG</NAME>
+				<VALUE>log4cxx.properties</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectHost</NAME>
+				<VALUE>localhost</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectPort</NAME>
+				<VALUE>61613</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectUsr</NAME>
+				<VALUE>guest</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectPwd</NAME>
+				<VALUE>guest</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>DestinationTimeout</NAME>
+				<VALUE>2</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>RequestTimeout</NAME>

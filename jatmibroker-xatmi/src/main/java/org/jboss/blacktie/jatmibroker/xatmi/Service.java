@@ -119,7 +119,12 @@ public abstract class Service implements BlacktieService {
 				// TODO
 				// odata.value = serviceRequest.getBytes();
 				// olen.value = serviceRequest.getLength();
-				sender.send(null, response.getRval(), response.getRcode(),
+				short rval = response.getRval();
+				if (rval != Connection.TPSUCCESS && rval != Connection.TPFAIL) {
+					rval = Connection.TPFAIL;
+					// TODO SET ROLLBACK ONLY
+				}
+				sender.send(null, rval, response.getRcode(),
 						response.getBuffer().getData(), response.getLen(),
 						response.getFlags(), 0);
 

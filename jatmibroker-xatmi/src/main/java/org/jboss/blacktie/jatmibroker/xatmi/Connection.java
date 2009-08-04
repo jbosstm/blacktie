@@ -72,6 +72,7 @@ public class Connection {
 	public static int TPEEVENT = 22;
 	public static int TPEMATCH = 23;
 
+	// SERVICE CONDITIONS
 	public static short TPFAIL = 0x00000001;
 	public static short TPSUCCESS = 0x00000002;
 

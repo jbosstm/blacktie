@@ -35,34 +35,32 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestTPAdvertise);
 #include "TestTPCall.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPCall);
 #include "TestTPACall.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestTPACall );
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPACall);
 #include "TestTPCancel.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestTPCancel );
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPCancel);
 #include "TestTPGetRply.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestTPGetRply );
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPGetRply);
 /* Service Routing*/
 #include "TestTPService.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestTPService );
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPService);
 #include "TestTPReturn.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestTPReturn );
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPReturn);
 /* Conversation */
 #include "TestTPConnect.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestTPConnect );
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPConnect);
 #include "TestTPDiscon.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestTPDiscon );
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPDiscon);
 #include "TestTPRecv.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestTPRecv );
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPRecv);
 #include "TestTPSend.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestTPSend );
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTPSend);
 #include "TestTPConversation.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPConversation);
 /* Examples from the specification */
-/*
- #include "TestSpecExampleOne.h"
- CPPUNIT_TEST_SUITE_REGISTRATION( TestSpecExampleOne );
- #include "TestSpecExampleTwo.h"
- CPPUNIT_TEST_SUITE_REGISTRATION( TestSpecExampleTwo );
- */
+#include "TestSpecExampleOne.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestSpecExampleOne);
+#include "TestSpecExampleTwo.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestSpecExampleTwo);
 /* SERVER MANAGEMENT FUNCTIONS */
 #include "LoopyServerAndClient.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( LoopyServerAndClient);

@@ -47,6 +47,9 @@
 					<SERVICE name='tpcall_x_octet' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='tpcall_x_common' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='tpcall_x_c_type' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='DEBIT' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='CREDIT' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='INQUIRY' transportLibrary='libatmibroker-hybrid.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>

@@ -32,7 +32,7 @@ void TestSpecExampleTwo::setUp() {
 	BaseServerTest::setUp();
 
 	// Do local work
-	int toCheck = tpadvertise((char*) "TestSpecExampleTwo", inquiry_svc);
+	int toCheck = tpadvertise((char*) "INQUIRY", inquiry_svc);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toCheck != -1);
 }
@@ -40,7 +40,7 @@ void TestSpecExampleTwo::setUp() {
 void TestSpecExampleTwo::tearDown() {
 	userlogc((char*) "TestSpecExampleTwo::tearDown");
 	// Do local work
-	int toCheck = tpunadvertise((char*) "TestSpecExampleTwo");
+	int toCheck = tpunadvertise((char*) "INQUIRY");
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toCheck != -1);
 

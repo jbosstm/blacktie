@@ -31,9 +31,12 @@ void TestSpecExampleOne::setUp() {
 	// Setup server
 	BaseServerTest::setUp();
 
-
 	// Do local work
-	int toCheck = tpadvertise((char*) "TestSpecExampleOne", debit_credit_svc);
+	int toCheck = tpadvertise((char*) "DEBIT", debit_credit_svc);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
+
+	toCheck = tpadvertise((char*) "CREDIT", debit_credit_svc);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toCheck != -1);
 }
@@ -41,7 +44,11 @@ void TestSpecExampleOne::setUp() {
 void TestSpecExampleOne::tearDown() {
 	userlogc((char*) "TestSpecExampleOne::tearDown");
 	// Do local work
-	int toCheck = tpunadvertise((char*) "TestSpecExampleOne");
+	int toCheck = tpunadvertise((char*) "DEBIT");
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
+
+	toCheck = tpunadvertise((char*) "CREDIT");
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toCheck != -1);
 
@@ -67,7 +74,8 @@ void TestSpecExampleOne::test_specexampleone() {
 	/* issue asynchronous request to DEBIT, while it is processing... */
 	cd = tpacall((char*) "DEBIT", (char *) dptr, 0, TPSIGRSTRT);
 	/* ...issue synchronous request to CREDIT */
-	tpcall((char*) "CREDIT", (char *) cptr, 0, (char **) &cptr, &clen, TPSIGRSTRT);
+	tpcall((char*) "CREDIT", (char *) cptr, 0, (char **) &cptr, &clen,
+			TPSIGRSTRT);
 	/* retrieve DEBIT�s reply */
 	tpgetrply(&cd, (char **) &dptr, &dlen, TPSIGRSTRT);
 	if (dptr->output == OK && cptr->output == OK)

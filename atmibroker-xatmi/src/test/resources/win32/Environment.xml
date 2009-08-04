@@ -47,6 +47,9 @@
 					<SERVICE name='tpcall_x_octet' transportLibrary='atmibroker-hybrid.dll'/>
 					<SERVICE name='tpcall_x_common' transportLibrary='atmibroker-hybrid.dll'/>
 					<SERVICE name='tpcall_x_c_type' transportLibrary='atmibroker-hybrid.dll'/>
+					<SERVICE name='DEBIT' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='CREDIT' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='INQUIRY' transportLibrary='libatmibroker-hybrid.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>

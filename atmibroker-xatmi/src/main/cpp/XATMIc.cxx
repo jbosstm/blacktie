@@ -37,6 +37,7 @@
 
 long DISCON = 0x00000003;
 long timeout = -1;
+bool warned = false;
 
 // Logger for XATMIc
 log4cxx::LoggerPtr loggerXATMI(log4cxx::Logger::getLogger("loggerXATMI"));
@@ -124,8 +125,9 @@ int receive(Session* session, char ** odata, long *olen, long flags,
 	if (len != -1) {
 		LOG4CXX_DEBUG(loggerXATMI, (char*) "tprecv session: "
 				<< session->getId() << " olen: " << olen << " flags: " << flags);
-		if (flags & TPSIGRSTRT) {
+		if (flags & TPSIGRSTRT && !warned) {
 			LOG4CXX_ERROR(loggerXATMI, (char*) "TPSIGRSTRT NOT SUPPORTED");
+			warned = true;
 		}
 		if (session->getCanRecv()) {
 			// TODO Make configurable Default wait time is blocking (x1000 in SynchronizableObject)
@@ -171,7 +173,7 @@ int receive(Session* session, char ** odata, long *olen, long flags,
 						toReturn = 0;
 						setTpurcode(message.rcode);
 						*event = TPEV_SVCSUCC;
-					} else if (message.flags && TPRECVONLY) {
+					} else if (message.flags & TPRECVONLY) {
 						toReturn = 0;
 						*event = TPEV_SENDONLY;
 						session->setCanSend(true);
@@ -182,7 +184,7 @@ int receive(Session* session, char ** odata, long *olen, long flags,
 										<< session->getId() << " send: "
 										<< session->getCanSend() << " recv: "
 										<< session->getCanRecv());
-					} else if (message.flags && TPSENDONLY) {
+					} else if (message.flags & TPSENDONLY) {
 						toReturn = 0;
 						session->setCanSend(true);
 						session->setCanRecv(false);
@@ -192,6 +194,8 @@ int receive(Session* session, char ** odata, long *olen, long flags,
 										<< session->getId() << " send: "
 										<< session->getCanSend() << " recv: "
 										<< session->getCanRecv());
+					} else if (message.correlationId >= 0) {
+						toReturn = 0;
 					} else {
 						setSpecific(TPE_KEY, TSS_TPETIME);
 					}
@@ -206,6 +210,7 @@ int receive(Session* session, char ** odata, long *olen, long flags,
 						(char*) "Could not set the receive from the destination");
 			}
 		} else {
+			LOG4CXX_DEBUG(loggerXATMI, (char*) "Session can't receive");
 			setSpecific(TPE_KEY, TSS_TPEPROTO);
 		}
 	} else {
@@ -535,6 +540,7 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 					setSpecific(TPE_KEY, TSS_TPEBADDESC);
 				} else {
 					if (!session->getCanSend()) {
+						LOG4CXX_DEBUG(loggerXATMI, (char*) "Session can't send");
 						setSpecific(TPE_KEY, TSS_TPEPROTO);
 					} else {
 						len = ::bufferSize(idata, ilen);
@@ -544,7 +550,7 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 		}
 		if (len != -1) {
 			toReturn = ::send(session, session->getReplyTo(), idata, len, id,
-					flags && TPCONV, 0, 0);
+					flags | TPCONV, 0, 0);
 			if (toReturn != -1 && flags & TPRECVONLY) {
 				session->setCanSend(false);
 				session->setCanRecv(true);
@@ -579,11 +585,17 @@ int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 			setSpecific(TPE_KEY, TSS_TPEBADDESC);
 		} else {
 			toReturn = ::receive(session, odata, olen, flags, event);
-			if (*event == TPESVCERR) {
-				setSpecific(TPE_KEY, TSS_TPEEVENT);
+			if (*event == TPEV_SVCERR) {
+				setSpecific(TPE_KEY, TSS_TPESVCERR);
+				ptrAtmiBrokerClient->closeSession(id);
 				toReturn = -1;
-			} else if (*event == TPESVCFAIL) {
+			} else if (*event == TPEV_SVCFAIL) {
+				setSpecific(TPE_KEY, TSS_TPESVCFAIL);
+				ptrAtmiBrokerClient->closeSession(id);
+				toReturn = -1;
+			} else if (*event == TPEV_SVCSUCC) {
 				setSpecific(TPE_KEY, TSS_TPEEVENT);
+				ptrAtmiBrokerClient->closeSession(id);
 				toReturn = -1;
 			}
 		}
@@ -600,14 +612,22 @@ void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 		Session* session = (Session*) getSpecific(SVC_SES);
 		if (session != NULL) {
 			if (!session->getCanSend()) {
+				LOG4CXX_DEBUG(loggerXATMI, (char*) "Session can't send");
 				setSpecific(TPE_KEY, TSS_TPEPROTO);
 			} else {
 				session->setCanRecv(false);
+				if (data == NULL) {
+					data = ::tpalloc((char*) "X_OCTET", NULL, 0);
+				}
 				if (rcode == TPESVCERR || bufferSize(data, len) == -1) {
 					::tpfree(data);
 					data = ::tpalloc((char*) "X_OCTET", NULL, 0);
 					::send(session, "", data, 0, 0, flags, TPFAIL, TPESVCERR);
 				} else {
+					if (rval != TPSUCCESS && rval != TPFAIL) {
+						rval = TPFAIL;
+						//TODO MARK SET ROLLBACK ONLY
+					}
 					::send(session, "", data, len, 0, flags, rval, rcode);
 				}
 				::tpfree(data);
@@ -620,6 +640,7 @@ void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 								<< session->getCanRecv());
 			}
 		} else {
+			LOG4CXX_DEBUG(loggerXATMI, (char*) "Session is null");
 			setSpecific(TPE_KEY, TSS_TPEPROTO);
 		}
 	}
@@ -639,9 +660,9 @@ int tpdiscon(int id) {
 		} else {
 			// SEND THE DISCONNECT TO THE REMOTE SIDE
 			long flags = 0;
-			char* data = ::tpalloc((char*) "X_OCTET", NULL, 1);
-			data[0] = NULL; // TODO SHOULD BE ABLE TO SEND ZERO LENGTH BUFFERS
-			::send(session, "", data, 1, id, flags, DISCON, 0);
+			char* data = ::tpalloc((char*) "X_OCTET", NULL, 0);
+			//data[0] = NULL; // TODO SHOULD BE ABLE TO SEND ZERO LENGTH BUFFERS
+			::send(session, "", data, 0, id, flags, DISCON, 0);
 			try {
 				if (getSpecific(TSS_KEY)) {
 					toReturn = tx_rollback();
