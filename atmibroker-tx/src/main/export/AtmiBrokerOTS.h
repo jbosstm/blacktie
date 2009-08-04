@@ -72,6 +72,8 @@ public:
 
 	int tx_close(void);
 
+	int tx_rollback_only(void);
+
 	int set_commit_return(COMMIT_RETURN);
 	COMMIT_RETURN get_commit_return() {return whenReturn;}
 	int set_transaction_control(TRANSACTION_CONTROL);
@@ -85,7 +87,7 @@ public:
 	int suspend(long& tranid);
 	int resume(long tranid);
 
-	int rm_end(void);
+	int rm_end(int flags);
 	int rm_resume(void);
 	int rm_suspend(void);
 

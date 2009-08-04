@@ -148,9 +148,9 @@ void AtmiBrokerOTS::rm_close(void)
 {
 	xaRMFac.destroyRMs(ots_connection);
 }
-int AtmiBrokerOTS::rm_end(void)
+int AtmiBrokerOTS::rm_end(int flags)
 {
-	return xaRMFac.endRMs(ots_connection);
+	return xaRMFac.endRMs(ots_connection, flags);
 }
 int AtmiBrokerOTS::rm_resume(void)
 {
@@ -209,7 +209,29 @@ int AtmiBrokerOTS::tx_rollback(void)
 	return tx_complete(false);
 }
 
-int AtmiBrokerOTS::tx_complete(bool commit) {
+int AtmiBrokerOTS::tx_rollback_only(void) {
+	CosTransactions::Control_ptr cp = (CosTransactions::Control_ptr) get_control();
+
+	if (CORBA::is_nil(tx_current) || CORBA::is_nil(cp)) {
+		// either tx_open hasn't been called or not in a transaction
+		LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getDebug(), (char*) "tx_rollback_only: protocol violation");
+		return TX_PROTOCOL_ERROR;
+	}
+
+	try {
+		// inform the local resource managers
+		rm_end(TMFAIL);
+		// inform the OTS transaction
+		tx_current->rollback_only();
+	} catch (CORBA::SystemException & e) {
+		return TX_PROTOCOL_ERROR;
+	}
+
+	return TX_OK;
+}
+
+int AtmiBrokerOTS::tx_complete(bool commit)
+{
 	int outcome;
 	CosTransactions::Control_ptr cp = (CosTransactions::Control_ptr) get_control();
 
@@ -232,7 +254,7 @@ int AtmiBrokerOTS::tx_complete(bool commit) {
 			outcome = TX_OK;
 		} catch (CORBA::TRANSACTION_ROLLEDBACK &e) {
 			LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(),
-				(char*) "Transaction rolled back" << e._name());
+				(char*) "Transaction rolled back " << e._name());
 			outcome = TX_ROLLBACK;
 		} catch (CosTransactions::Unavailable & e) {
 			LOG4CXX_LOGLS(loggerAtmiBrokerOTS, log4cxx::Level::getError(),

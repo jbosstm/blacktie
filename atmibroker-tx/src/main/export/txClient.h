@@ -22,6 +22,12 @@
 #include "xa.h"
 
 /**
+ * Modify the transaction associated with the target thread such that the only
+ * possible outcome of the transaction is to roll back the transaction
+ */
+extern BLACKTIE_TX_DLL int set_rollback_only();
+
+/**
  * start an orb for making transactional service calls
  * (see orbInit in OrbManagement.h for implementation)
  */

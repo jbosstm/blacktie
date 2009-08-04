@@ -28,6 +28,11 @@
 
 log4cxx::LoggerPtr txClientLogger(log4cxx::Logger::getLogger("TxClient"));
 
+int set_rollback_only()
+{
+	return AtmiBrokerOTS::get_instance()->tx_rollback_only();
+}
+
 void * start_tx_orb(char* connectionName)
 {
 	return AtmiBrokerOTS::init_orb(connectionName);

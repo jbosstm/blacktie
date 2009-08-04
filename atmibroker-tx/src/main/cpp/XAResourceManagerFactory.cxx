@@ -167,10 +167,10 @@ int XAResourceManagerFactory::startRMs(CORBA_CONNECTION * connection)
 	LOG4CXX_DEBUG(xaResourceLogger,  (char *) "starting RMs");
 	return _rmiter(rms_, _rm_start, TMNOFLAGS);
 }
-int XAResourceManagerFactory::endRMs(CORBA_CONNECTION * connection)
+int XAResourceManagerFactory::endRMs(CORBA_CONNECTION * connection, int flags)
 {
 	LOG4CXX_DEBUG(xaResourceLogger,  (char *) "end RMs");
-	return _rmiter(rms_, _rm_end, TMSUCCESS);
+	return _rmiter(rms_, _rm_end, flags);
 }
 int XAResourceManagerFactory::suspendRMs(CORBA_CONNECTION * connection)
 {
