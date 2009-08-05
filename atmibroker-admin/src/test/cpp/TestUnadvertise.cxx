@@ -26,10 +26,10 @@ extern "C" {
 #include "ace/OS_NS_string.h"
 #include "xatmi.h"
 #include "userlogc.h"
-#include "TestAdmin.h"
+#include "TestUnadvertise.h"
 
-void TestAdmin::setUp() {
-	userlogc((char*) "TestAdmin::setUp");
+void TestUnadvertise::setUp() {
+	userlogc((char*) "TestUnadvertise::setUp");
 
 	char* argv[] = {(char*)"./server", (char*)"-i", (char*)"1", (char*)"foo"};
 	int argc = sizeof(argv)/sizeof(char*);
@@ -41,23 +41,60 @@ void TestAdmin::setUp() {
 
 }
 
-void TestAdmin::tearDown() {
-	userlogc((char*) "TestAdmin::tearDown");
+void TestUnadvertise::tearDown() {
+	userlogc((char*) "TestUnadvertise::tearDown");
 	serverdone();
 
 	clientdone();
 	CPPUNIT_ASSERT(tperrno == 0);
 }
 
-void TestAdmin::testServerdone() {
-	long  sendlen = strlen("serverdone") + 1;
+int TestUnadvertise::calladmin(char* command) {
+	long  sendlen = strlen(command) + 1;
 	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
-	strcpy(sendbuf, "serverdone");
+	strcpy(sendbuf, command);
 
 	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
 	long  recvlen = 1;
 
 	int cd = ::tpcall((char*) "foo_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
+	CPPUNIT_ASSERT(recvlen == 1);
+	CPPUNIT_ASSERT((recvbuf[0] == '1') || (recvbuf[0] == '0'));
+
+	return cd;
+}
+
+int TestUnadvertise::callBAR() {
+	long  sendlen = strlen((char*)"test") + 1;
+	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
+	strcpy(sendbuf, (char*) "test");
+
+	int cd = ::tpacall((char*) "BAR", (char *) sendbuf, sendlen, TPNOREPLY);
+	return cd;
+}
+
+void TestUnadvertise::testUnknowService() {
+	int   cd;
+
+	cd = calladmin((char*)"unadvertise,UNKNOW,");
 	CPPUNIT_ASSERT(cd == 0);
 	CPPUNIT_ASSERT(tperrno == 0);
+}
+
+void TestUnadvertise::testUnadvertise() {
+	int   cd;
+
+	userlogc((char*) "tpacall BAR before unadvertise");
+	cd = callBAR();
+	CPPUNIT_ASSERT(cd == 0);
+	CPPUNIT_ASSERT(tperrno == 0);
+	
+	cd = calladmin((char*)"unadvertise,BAR,");
+	CPPUNIT_ASSERT(cd == 0);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	userlogc((char*) "tpacall BAR after unadvertise");
+	cd = callBAR();
+	CPPUNIT_ASSERT(cd != 0);
+	CPPUNIT_ASSERT(tperrno != 0);
 }

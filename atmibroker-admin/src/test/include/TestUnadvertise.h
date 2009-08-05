@@ -15,9 +15,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "TestAdmin.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestAdmin );
-#include "TestAdvertise.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestAdvertise );
-#include "TestUnadvertise.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestUnadvertise );
+#ifndef TEST_UNADVERTISE_H
+#define TEST_UNADVERTISE_H
+
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFixture.h>
+
+class TestUnadvertise: public CppUnit::TestFixture {
+	CPPUNIT_TEST_SUITE( TestUnadvertise );
+	CPPUNIT_TEST( testUnknowService );
+	CPPUNIT_TEST( testUnadvertise );
+	CPPUNIT_TEST_SUITE_END();
+
+public:
+	void testUnknowService();
+	void testUnadvertise();
+	int  calladmin(char*);
+	int  callBAR();
+	virtual void setUp();
+	virtual void tearDown();
+};
+
+#endif
