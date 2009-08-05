@@ -50,8 +50,6 @@ char configDir[256];
 char server[30];
 int cid = 0;
 
-typedef void (*SVCFUNC)(TPSVCINFO *);
-
 void server_sigint_handler_callback(int sig_type) {
 	userlog(
 			log4cxx::Level::getInfo(),
@@ -187,6 +185,28 @@ int serverdone() {
 	return 0;
 }
 
+int isadvertised(char* name) {
+	if (ptrServer) {
+		if(ptrServer->isAdvertised(name)) {
+			return 0;
+		}
+	}
+	return -1;
+}
+
+int advertiseByAdmin(char* name) {
+	if(isadvertised(name) == 0) {
+		return 0;
+	}
+
+	if(ptrServer) {
+		if(ptrServer->advertiseService(name)) {
+			return 0;
+		}
+	}
+	return -1;
+}
+
 // AtmiBrokerServer constructor
 //
 // Note: since we use virtual inheritance, we must include an
@@ -305,26 +325,28 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 void AtmiBrokerServer::advertiseAtBootime() {
 	for (unsigned int i = 0; i < serverInfo.serviceVector.size(); i++) {
 		ServiceInfo* service = &serverInfo.serviceVector[i];
-		if (service->advertised) {
+		SVCFUNC func = NULL;
+		bool  status = false;
+
+		if (service->library_name != NULL) {
+			func = (SVCFUNC) ::lookup_symbol(service->library_name,
+					service->function_name);
+			if (func == NULL) {
+				LOG4CXX_WARN(loggerAtmiBrokerServer, "can not find "
+						<< service->function_name << " in "
+						<< service->library_name);
+			}
+		}
+
+		if (service->advertised && func != NULL) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, "begin advertise "
 					<< service->serviceName);
-			if (service->library_name != NULL) {
-				SVCFUNC func = (SVCFUNC) ::lookup_symbol(service->library_name,
-						service->function_name);
-				if (func == NULL) {
-					LOG4CXX_WARN(loggerAtmiBrokerServer, "can not find "
-							<< service->function_name << " in "
-							<< service->library_name);
-				} else {
-					advertiseService((char*) service->serviceName, func);
-				}
-			} else {
-				LOG4CXX_WARN(loggerAtmiBrokerServer, service->serviceName
-						<< " has no library name");
-			}
+			status = advertiseService((char*) service->serviceName, func);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, "end advertise "
 					<< service->serviceName);
 		}
+
+		updateServiceStatus(service, func, status);
 	}
 }
 
@@ -350,6 +372,40 @@ char *
 AtmiBrokerServer::getServerName() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "getServerName");
 	return serverName;
+}
+
+void AtmiBrokerServer::updateServiceStatus(ServiceInfo* service,
+		SVCFUNC func,
+		bool status) {
+	bool found = false;
+
+	for(std::vector<ServiceStatus>::iterator i = serviceStatus.begin();
+			i != serviceStatus.end(); i++ ) {
+		if((*i).service == service) {
+			(*i).func = func;
+			(*i).status = status;
+			found = true;
+			break;
+		}
+	}
+
+	if(found == false) {
+		ServiceStatus aServiceStatus;
+		aServiceStatus.service = service;
+		aServiceStatus.func = func;
+		aServiceStatus.status = status;
+		serviceStatus.push_back(aServiceStatus);
+	}
+}
+
+bool AtmiBrokerServer::advertiseService(char * svcname) {
+	for(std::vector<ServiceStatus>::iterator i = serviceStatus.begin();
+			i != serviceStatus.end(); i++ ) {
+		if(strncmp((*i).service->serviceName, svcname, XATMI_SERVICE_NAME_LENGTH) == 0) {
+			return advertiseService(svcname, (*i).func);
+		}
+	}
+	return false;
 }
 
 bool AtmiBrokerServer::advertiseService(char * svcname,
@@ -479,6 +535,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 				<< serviceName);
 
 		addDestination(destination, func, service);
+		updateServiceStatus(service, func, true);
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "added destination: "
 				<< serviceName);
 	} catch (CORBA::Exception& e) {
@@ -707,6 +764,7 @@ Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "waited for dispatcher: " << aServiceName);
 
+			updateServiceStatus((*i).serviceInfo, (*i).func, false);
 			serviceData.erase(i);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "removed: "
 					<< aServiceName);

@@ -21,6 +21,18 @@
 #define BLACKTIE_SERVERCONTROL_H_
 
 #include "atmiBrokerXatmiMacro.h"
+#include "AtmiBrokerEnvXml.h"
+#include "xatmi.h"
+
+typedef void (*SVCFUNC)(TPSVCINFO *);
+
+struct BLACKTIE_XATMI_DLL _service_status {
+	ServiceInfo* service;
+	bool    status;
+	SVCFUNC func;
+};
+
+typedef struct BLACKTIE_XATMI_DLL _service_status ServiceStatus;
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,6 +41,8 @@ extern BLACKTIE_XATMI_DLL int serverinit(int argc, char** argv);
 extern BLACKTIE_XATMI_DLL int serverrun();
 extern BLACKTIE_XATMI_DLL int serverdone();
 extern BLACKTIE_XATMI_DLL void server_sigint_handler_callback(int sig_type);
+extern BLACKTIE_XATMI_DLL int isadvertised(char* name);
+extern BLACKTIE_XATMI_DLL int advertiseByAdmin(char* name);
 #ifdef __cplusplus
 }
 #endif

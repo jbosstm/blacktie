@@ -29,6 +29,7 @@
 
 #include "xatmi.h"
 #include "AtmiBrokerEnvXml.h"
+#include "AtmiBrokerServerControl.h"
 #include "ConnectionManager.h"
 #include "Destination.h"
 #include "ServiceDispatcher.h"
@@ -54,6 +55,7 @@ public:
 	virtual void unadvertiseService(char * serviceName);
 
 	BLACKTIE_XATMI_DLL bool isAdvertised(char * serviceName);
+	bool advertiseService(char* serviceName);
 	void advertiseAtBootime();
 	void server_done();
 	int  block();
@@ -64,9 +66,11 @@ private:
 	void addDestination(Destination* destination, void(*func)(TPSVCINFO *), ServiceInfo* service);
 	Destination* removeDestination(const char * aServiceName);
 	void removeAdminDestination(char* svcname);
+	void updateServiceStatus(ServiceInfo* service, SVCFUNC func, bool status);
 
 	ConnectionManager connections;
 	std::vector<ServiceData> serviceData;
+	std::vector<ServiceStatus> serviceStatus;
 	std::vector<char*> advertisedServices;
 	char* serverName;
 	ServerInfo serverInfo;
