@@ -28,7 +28,6 @@ Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 			<SERVER name='foo'>
 				<SERVICE_NAMES>
 					<SERVICE name='BAR' transportLibrary='atmibroker-hybrid.dll' />
-					<SERVICE name='foo_ADMIN_1' transportLibrary='atmibroker-hybrid.dll' />
 				</SERVICE_NAMES>
 				<ADMIN_SERVICE transportLibrary='atmibroker-hybrid.dll' />
 			</SERVER>
