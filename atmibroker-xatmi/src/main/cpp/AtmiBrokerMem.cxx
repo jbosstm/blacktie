@@ -93,7 +93,7 @@ AtmiBrokerMem::~AtmiBrokerMem() {
 }
 
 char*
-AtmiBrokerMem::tpalloc(char* type, char* subtype, long size) {
+AtmiBrokerMem::tpalloc(char* type, char* subtype, long size, bool forcedDelete) {
 	char* toReturn = NULL;
 	LOG4CXX_TRACE(logger, (char*) "tpalloc locking");
 	lock->lock();
@@ -139,6 +139,7 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size) {
 		LOG4CXX_TRACE(logger, (char*) "tpalloc - copied type/"
 				<< memoryInfo.type << "/");
 		memoryInfo.subtype = (char*) malloc(MAX_SUBTYPE_SIZE + 1);
+		memoryInfo.forcedDelete = forcedDelete;
 		memset(memoryInfo.subtype, '\0', MAX_SUBTYPE_SIZE + 1);
 		strncpy(memoryInfo.subtype, subtype, MAX_SUBTYPE_SIZE);
 		LOG4CXX_TRACE(logger, (char*) "tpalloc - copied subtype/"
@@ -207,7 +208,7 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size) {
 	return toReturn;
 }
 
-void AtmiBrokerMem::tpfree(char* ptr) {
+void AtmiBrokerMem::tpfree(char* ptr, bool force) {
 	bool found = false;
 	LOG4CXX_TRACE(logger, (char*) "tpfree locking");
 	lock->lock();
@@ -224,25 +225,32 @@ void AtmiBrokerMem::tpfree(char* ptr) {
 			}
 			MemoryInfo memoryInfo = (*it);
 			if (memoryInfo.memoryPtr == ptr) {
-				LOG4CXX_DEBUG(logger, (char*) "freeing memoryPtr to reclaim: "
-						<< memoryInfo.size);
-				free(memoryInfo.memoryPtr);
-				if (memoryInfo.type != NULL) {
-					LOG4CXX_DEBUG(logger, (char*) "freeing type");
-					free(memoryInfo.type);
-				}
-				if (memoryInfo.subtype != NULL) {
-					LOG4CXX_DEBUG(logger, (char*) "freeing subtype");
-					free(memoryInfo.subtype);
-				}
-				LOG4CXX_DEBUG(logger, (char*) "freed memory");
+				if (!memoryInfo.forcedDelete || (memoryInfo.forcedDelete
+						&& force)) {
+					LOG4CXX_DEBUG(logger,
+							(char*) "freeing memoryPtr to reclaim: "
+									<< memoryInfo.size);
+					free(memoryInfo.memoryPtr);
+					if (memoryInfo.type != NULL) {
+						LOG4CXX_DEBUG(logger, (char*) "freeing type");
+						free(memoryInfo.type);
+					}
+					if (memoryInfo.subtype != NULL) {
+						LOG4CXX_DEBUG(logger, (char*) "freeing subtype");
+						free(memoryInfo.subtype);
+					}
+					LOG4CXX_DEBUG(logger, (char*) "freed memory");
 
-				LOG4CXX_DEBUG(logger, (char*) "removing  from vector");
-				memoryInfoVector.erase(it);
-				LOG4CXX_DEBUG(logger, (char*) "removed from vector ");
+					LOG4CXX_DEBUG(logger, (char*) "removing  from vector");
+					memoryInfoVector.erase(it);
+					LOG4CXX_DEBUG(logger, (char*) "removed from vector ");
 
-				found = true;
-				break;
+					found = true;
+					break;
+				} else {
+					LOG4CXX_DEBUG(logger,
+							(char*) "tpfree without force ignored");
+				}
 			}
 		}
 		LOG4CXX_DEBUG(logger, (char*) "tpfreed: " << memoryInfoVector.size());

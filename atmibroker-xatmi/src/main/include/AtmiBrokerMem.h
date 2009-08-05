@@ -30,6 +30,7 @@ struct _memory_info {
 	char* type;
 	char* subtype;
 	int size;
+	bool forcedDelete;
 };
 typedef _memory_info MemoryInfo;
 
@@ -41,11 +42,11 @@ public:
 
 	~AtmiBrokerMem();
 
-	char* tpalloc(char* type, char* subtype, long size);
+	char* tpalloc(char* type, char* subtype, long size, bool forcedDelete);
 
 	char* tprealloc(char * addr, long size);
 
-	void tpfree(char* ptr);
+	void tpfree(char* ptr, bool force);
 
 	long tptypes(char* ptr, char* type, char* subtype);
 

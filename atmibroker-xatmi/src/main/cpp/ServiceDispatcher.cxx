@@ -19,6 +19,7 @@
 #include "txClient.h"
 #include "ThreadLocalStorage.h"
 #include "AtmiBrokerEnv.h"
+#include "AtmiBrokerMem.h"
 
 log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger(
 		"ServiceDispatcher"));
@@ -88,8 +89,11 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	memset(&tpsvcinfo, '\0', sizeof(tpsvcinfo));
 	strcpy(tpsvcinfo.name, this->serviceName);
 	tpsvcinfo.flags = flags;
-	tpsvcinfo.data = message.data;
 	tpsvcinfo.len = ilen;
+	tpsvcinfo.data = AtmiBrokerMem::get_instance()->tpalloc(message.type,
+			message.subtype, ilen, true);
+	memcpy(tpsvcinfo.data, message.data, ilen);
+	free(message.data);
 
 	setSpecific(SVC_KEY, this);
 	setSpecific(SVC_SES, session);
@@ -143,7 +147,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 				(char*) "ServiceDispatcher caught error running during onMessage");
 	}
 
-	free(message.data);
+	AtmiBrokerMem::get_instance()->tpfree(tpsvcinfo.data, true);
 
 	if (control) {
 		disassociate_tx(); // TODO figure out why tpreturn needs to stop Resource Managers

@@ -172,11 +172,11 @@ void TestTPCall::test_tpcall_x_common() {
 	dptr->acct_no = 12345678;
 	dptr->amount = 50;
 
-	userlogc("%d %d %d", sizeof(long), sizeof(int), sizeof(short));
-	char foo[sizeof(short)]; // 8
-	memcpy(foo, &sendbuf[8], sizeof(short));
-	short* bar = (short*) foo;
-	short barbar = *bar;
+//	userlogc("%d %d %d", sizeof(long), sizeof(int), sizeof(short));
+//	char foo[sizeof(short)]; // 8
+//	memcpy(foo, &sendbuf[8], sizeof(short));
+//	short* bar = (short*) foo;
+//	short barbar = *bar;
 
 	int id = ::tpcall((char*) "tpcall_x_common", (char*) dptr, 0,
 			(char**) &rcvbuf, &rcvlen, 0);
