@@ -132,18 +132,21 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size, bool forcedDelete) 
 		memoryInfo.size = size;
 		memset(memoryInfo.memoryPtr, '\0', memoryInfo.size);
 		LOG4CXX_TRACE(logger, (char*) "tpalloc - sized: " << size);
+
 		memoryInfo.type = (char*) malloc(MAX_TYPE_SIZE + 1);
 		memset(memoryInfo.type, '\0', MAX_TYPE_SIZE + 1);
 		LOG4CXX_TRACE(logger, (char*) "type prep");
 		strncpy(memoryInfo.type, type, MAX_TYPE_SIZE);
 		LOG4CXX_TRACE(logger, (char*) "tpalloc - copied type/"
 				<< memoryInfo.type << "/");
+
 		memoryInfo.subtype = (char*) malloc(MAX_SUBTYPE_SIZE + 1);
-		memoryInfo.forcedDelete = forcedDelete;
 		memset(memoryInfo.subtype, '\0', MAX_SUBTYPE_SIZE + 1);
 		strncpy(memoryInfo.subtype, subtype, MAX_SUBTYPE_SIZE);
 		LOG4CXX_TRACE(logger, (char*) "tpalloc - copied subtype/"
 				<< memoryInfo.subtype << "/");
+
+		memoryInfo.forcedDelete = forcedDelete;
 
 		LOG4CXX_DEBUG(
 				logger,
@@ -160,7 +163,8 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size, bool forcedDelete) 
 	return toReturn;
 }
 
-char* AtmiBrokerMem::tprealloc(char * addr, long size) {
+char* AtmiBrokerMem::tprealloc(char * addr, long size, char* type,
+		char* subtype) {
 	char* toReturn = NULL;
 	LOG4CXX_TRACE(logger, (char*) "tprealloc locking");
 	lock->lock();
@@ -192,6 +196,26 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size) {
 				(*it).size = size;
 				memset((*it).memoryPtr, '\0', (*it).size);
 				toReturn = memPtr;
+
+				if (type != NULL) {
+					free((*it).type);
+					(*it).type = (char*) malloc(MAX_TYPE_SIZE + 1);
+					memset((*it).type, '\0', MAX_TYPE_SIZE + 1);
+					LOG4CXX_TRACE(logger, (char*) "type prep");
+					strncpy((*it).type, type, MAX_TYPE_SIZE);
+					LOG4CXX_TRACE(logger, (char*) "tpalloc - copied type/"
+							<< (*it).type << "/");
+				}
+
+				if (subtype != NULL) {
+					free((*it).subtype);
+					(*it).subtype = (char*) malloc(MAX_SUBTYPE_SIZE + 1);
+					memset((*it).subtype, '\0', MAX_SUBTYPE_SIZE + 1);
+					strncpy((*it).subtype, subtype, MAX_SUBTYPE_SIZE);
+					LOG4CXX_TRACE(logger, (char*) "tpalloc - copied subtype/"
+							<< (*it).subtype << "/");
+				}
+
 				LOG4CXX_DEBUG(logger, (char*) "updated - size: " << size);
 				break;
 			}

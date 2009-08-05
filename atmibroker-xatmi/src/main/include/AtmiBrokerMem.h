@@ -44,7 +44,7 @@ public:
 
 	char* tpalloc(char* type, char* subtype, long size, bool forcedDelete);
 
-	char* tprealloc(char * addr, long size);
+	char* tprealloc(char * addr, long size, char* type, char* subtype);
 
 	void tpfree(char* ptr, bool force);
 

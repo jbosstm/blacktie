@@ -82,8 +82,11 @@ HybridCorbaEndpointQueue::~HybridCorbaEndpointQueue() {
 	while (returnData.size() > 0) {
 		MESSAGE message = returnData.front();
 		returnData.pop();
-		LOG4CXX_DEBUG(logger, (char*) "returning message");
+		LOG4CXX_DEBUG(logger, (char*) "Freeing data message");
 		free(message.data);
+		free(message.type);
+		free(message.subtype);
+		free((char*) message.replyto);
 	}
 	if (!shutdown) {
 		shutdown = true;
@@ -175,6 +178,8 @@ MESSAGE HybridCorbaEndpointQueue::receive(long time) {
 	message.rcode = -1;
 	message.type = NULL;
 	message.subtype = NULL;
+	message.received = false;
+	message.ttl = -1;
 
 	lock->lock();
 	if (!shutdown) {

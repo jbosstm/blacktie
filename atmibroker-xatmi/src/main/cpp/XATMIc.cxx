@@ -37,7 +37,9 @@
 
 long DISCON = 0x00000003;
 long timeout = -1;
-bool warned = false;
+bool warnedTPSIGRSTRT = false;
+bool warnedTPNOBLOCK = false;
+bool warnedTPGETANY = false;
 
 // Logger for XATMIc
 log4cxx::LoggerPtr loggerXATMI(log4cxx::Logger::getLogger("loggerXATMI"));
@@ -76,13 +78,18 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 		int correlationId, long flags, long rval, long rcode) {
 	LOG4CXX_DEBUG(loggerXATMI, (char*) "send - ilen: " << ilen << ": "
 			<< "cd: " << correlationId << "flags: " << flags);
-	if (flags & TPSIGRSTRT) {
-		LOG4CXX_ERROR(loggerXATMI, (char*) "TPSIGRSTRT NOT SUPPORTED");
+	if (flags & TPSIGRSTRT && !warnedTPSIGRSTRT) {
+		LOG4CXX_ERROR(loggerXATMI, (char*) "TPSIGRSTRT NOT SUPPORTED FOR SENDS OR RECEIVES");
+		warnedTPSIGRSTRT = true;
+	}
+	if (flags & TPNOBLOCK && !warnedTPNOBLOCK) {
+		LOG4CXX_ERROR(loggerXATMI, (char*) "TPNOBLOCK NOT SUPPORTED FOR SENDS");
+		warnedTPNOBLOCK = true;
 	}
 	int toReturn = -1;
-	if (session->getCanSend()) {
+	void* control = 0;
+	if (session->getCanSend() || rval == DISCON) {
 		try {
-			void* control = 0;
 
 			if (~TPNOTRAN & flags) {
 				// don't run the call in a transaction
@@ -122,10 +129,6 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 				free(message.type);
 				free(message.subtype);
 			}
-
-			if (control) {
-				associate_tx(control);
-			}
 		} catch (...) {
 			LOG4CXX_ERROR(loggerXATMI, (char*) "send: call failed");
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
@@ -136,20 +139,30 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 		setSpecific(TPE_KEY, TSS_TPEPROTO);
 	}
 
+	if (control) {
+		associate_tx(control);
+	}
+
 	return toReturn;
 }
 
-int receive(Session* session, char ** odata, long *olen, long flags,
-		long* event) {
+int receive(int id, Session* session, char ** odata, long *olen, long flags,
+		long* event, bool closeSession) {
 	LOG4CXX_DEBUG(loggerXATMI, (char*) "Receive invoked");
 	int toReturn = -1;
 	int len = ::bufferSize(*odata, *olen);
 	if (len != -1) {
 		LOG4CXX_DEBUG(loggerXATMI, (char*) "tprecv session: "
 				<< session->getId() << " olen: " << olen << " flags: " << flags);
-		if (flags & TPSIGRSTRT && !warned) {
-			LOG4CXX_ERROR(loggerXATMI, (char*) "TPSIGRSTRT NOT SUPPORTED");
-			warned = true;
+		if (flags & TPSIGRSTRT && !warnedTPSIGRSTRT) {
+			LOG4CXX_ERROR(loggerXATMI,
+					(char*) "TPSIGRSTRT NOT SUPPORTED FOR SENDS OR RECEIVES");
+			warnedTPSIGRSTRT = true;
+		}
+		if (flags & TPGETANY && !warnedTPGETANY) {
+			LOG4CXX_ERROR(loggerXATMI,
+					(char*) "TPGETANY NOT SUPPORTED FOR RECEIVES");
+			warnedTPGETANY = true;
 		}
 		if (session->getCanRecv()) {
 			// TODO Make configurable Default wait time is blocking (x1000 in SynchronizableObject)
@@ -173,30 +186,51 @@ int receive(Session* session, char ** odata, long *olen, long flags,
 				MESSAGE message = session->receive(time);
 				if (message.received) {
 					if (message.rval != DISCON) {
-						if (flags & TPNOCHANGE) {
-							char* type = message.type;
-							char* subtype = message.subtype;
-							char* messageType = (char*) malloc(MAX_TYPE_SIZE);
-							char* messageSubtype = (char*) malloc(
-									MAX_SUBTYPE_SIZE);
-							tptypes(*odata, messageType, messageSubtype);
-							bool changed = strncmp(type, messageType,
-									MAX_TYPE_SIZE) != 0 || strncmp(subtype,
-									messageSubtype, MAX_SUBTYPE_SIZE) != 0;
-							free(messageType);
-							free(messageSubtype);
-							if (changed) {
-								setSpecific(TPE_KEY, TSS_TPEOTYPE);
-								free(message.data);
-								free(message.type);
-								free(message.subtype);
-								free((char*) message.replyto);
-								return toReturn;
+						char* type = message.type;
+						if (type == NULL) {
+							type = (char*) "";
+						}
+						char* subtype = message.subtype;
+						if (subtype == NULL) {
+							subtype = (char*) "";
+						}
+						char* messageType = (char*) malloc(MAX_TYPE_SIZE);
+						char* messageSubtype = (char*) malloc(MAX_SUBTYPE_SIZE);
+						tptypes(*odata, messageType, messageSubtype);
+						bool typesChanged = strncmp(type, messageType,
+								MAX_TYPE_SIZE) != 0 || strncmp(subtype,
+								messageSubtype, MAX_SUBTYPE_SIZE) != 0;
+						free(messageType);
+						free(messageSubtype);
+
+						if (flags & TPNOCHANGE && typesChanged) {
+							setSpecific(TPE_KEY, TSS_TPEOTYPE);
+							free(message.data);
+							free(message.type);
+							free(message.subtype);
+							free((char*) message.replyto);
+							if (closeSession) {
+								ptrAtmiBrokerClient->closeSession(id);
+								LOG4CXX_TRACE(loggerXATMI,
+										(char*) "receive session closed: "
+												<< id);
 							}
+							return toReturn;
 						}
-						if (len < message.len) {
-							*odata = ::tprealloc(*odata, message.len);
+
+						if (len < message.len && !typesChanged) {
+							*odata = AtmiBrokerMem::get_instance()->tprealloc(
+									*odata, message.len, NULL, NULL);
+						} else if (len < message.len && typesChanged) {
+							*odata = AtmiBrokerMem::get_instance()->tprealloc(
+									*odata, message.len, message.type,
+									message.subtype);
+						} else if (typesChanged) {
+							*odata = AtmiBrokerMem::get_instance()->tprealloc(
+									*odata, message.len, message.type,
+									message.subtype);
 						}
+
 						*olen = message.len;
 						if (message.len > 0) {
 							memcpy(*odata, (char*) message.data, *olen);
@@ -215,13 +249,19 @@ int receive(Session* session, char ** odata, long *olen, long flags,
 						setTpurcode(message.rcode);
 						*event = TPEV_SVCFAIL;
 						setSpecific(TPE_KEY, TSS_TPESVCFAIL);
+						ptrAtmiBrokerClient->closeSession(id);
+						closeSession = false;
 					} else if (message.rcode == TPESVCERR) {
 						*event = TPEV_SVCERR;
 						setSpecific(TPE_KEY, TSS_TPESVCERR);
+						ptrAtmiBrokerClient->closeSession(id);
+						closeSession = false;
 					} else if (message.rval == TPSUCCESS) {
 						toReturn = 0;
 						setTpurcode(message.rcode);
 						*event = TPEV_SVCSUCC;
+						ptrAtmiBrokerClient->closeSession(id);
+						closeSession = false;
 					} else if (message.flags & TPRECVONLY) {
 						toReturn = 0;
 						*event = TPEV_SENDONLY;
@@ -262,6 +302,12 @@ int receive(Session* session, char ** odata, long *olen, long flags,
 		LOG4CXX_ERROR(loggerXATMI, (char*) "Invalid data was sent");
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	}
+
+	if (closeSession) {
+		ptrAtmiBrokerClient->closeSession(id);
+		LOG4CXX_TRACE(loggerXATMI, (char*) "receive session closed: " << id);
+	}
+
 	return toReturn;
 }
 
@@ -352,7 +398,8 @@ char* tprealloc(char * addr, long size) {
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	char* toReturn = NULL;
 	if (clientinit() != -1) {
-		toReturn = AtmiBrokerMem::get_instance()->tprealloc(addr, size);
+		toReturn = AtmiBrokerMem::get_instance()->tprealloc(addr, size, NULL,
+				NULL);
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tprealloc returning" << " tperrno: "
 			<< tperrno);
@@ -386,12 +433,28 @@ int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen,
 		long flags) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpcall: " << svc << " ilen: " << ilen
 			<< " flags: " << flags);
-	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = -1;
-	if (clientinit() != -1) {
-		int cd = tpacall(svc, idata, ilen, flags);
-		if (cd != -1) {
-			toReturn = tpgetrply(&cd, odata, olen, flags);
+	setSpecific(TPE_KEY, TSS_TPERESET);
+
+	long toCheck = flags;
+	toCheck &= ~TPNOTRAN;
+	toCheck &= ~TPNOCHANGE;
+	toCheck &= ~TPNOBLOCK;
+	toCheck &= ~TPNOTIME;
+	toCheck &= ~TPSIGRSTRT;
+	if (toCheck != 0) {
+		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
+		setSpecific(TPE_KEY, TSS_TPEINVAL);
+	} else {
+		if (clientinit() != -1) {
+			long tpacallFlags = flags;
+			tpacallFlags &= ~TPNOCHANGE;
+			int cd = tpacall(svc, idata, ilen, tpacallFlags);
+			if (cd != -1) {
+				long tpgetrplyFlags = flags;
+				tpgetrplyFlags &= ~TPNOTRAN;
+				toReturn = tpgetrply(&cd, odata, olen, tpgetrplyFlags);
+			}
 		}
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpcall return: " << toReturn
@@ -402,40 +465,60 @@ int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen,
 int tpacall(char * svc, char* idata, long ilen, long flags) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpacall: " << svc << " ilen: " << ilen
 			<< " flags: " << flags);
-	setSpecific(TPE_KEY, TSS_TPERESET);
-	int len = ::bufferSize(idata, ilen);
 	int toReturn = -1;
-	if (len != -1) {
-		if (clientinit() != -1) {
-			Session* session = NULL;
-			int cd = -1;
-			try {
-				session = ptrAtmiBrokerClient->createSession(cd, svc);
-				if (cd != -1) {
-					toReturn = ::send(session, session->getReplyTo(), idata,
-							len, cd, flags, 0, 0);
-					if (toReturn >= 0) {
-						if (TPNOREPLY & flags) {
-							toReturn = 0;
-							ptrAtmiBrokerClient->closeSession(cd);
+	setSpecific(TPE_KEY, TSS_TPERESET);
+
+	long toCheck = flags;
+	toCheck &= ~TPNOTRAN;
+	toCheck &= ~TPNOREPLY;
+	toCheck &= ~TPNOBLOCK;
+	toCheck &= ~TPNOTIME;
+	toCheck &= ~TPSIGRSTRT;
+	if (toCheck != 0) {
+		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
+		setSpecific(TPE_KEY, TSS_TPEINVAL);
+	} else {
+		if (get_control() != NULL && flags & TPNOREPLY && !(flags & TPNOTRAN)) {
+			LOG4CXX_ERROR(
+					loggerXATMI,
+					(char*) "TPNOREPLY CALLED WITHOUT TPNOTRAN DURING TRANSACTION");
+			setSpecific(TPE_KEY, TSS_TPEINVAL);
+		} else {
+			int len = ::bufferSize(idata, ilen);
+			if (len != -1) {
+				if (clientinit() != -1) {
+					Session* session = NULL;
+					int cd = -1;
+					try {
+						session = ptrAtmiBrokerClient->createSession(cd, svc);
+						if (cd != -1) {
+							toReturn = ::send(session, session->getReplyTo(),
+									idata, len, cd, flags, 0, 0);
+							if (toReturn >= 0) {
+								if (TPNOREPLY & flags) {
+									toReturn = 0;
+									ptrAtmiBrokerClient->closeSession(cd);
+								} else {
+									toReturn = cd;
+								}
+							} else {
+								LOG4CXX_DEBUG(loggerXATMI,
+										(char*) "Session got dudded: " << cd);
+								ptrAtmiBrokerClient->closeSession(cd);
+							}
 						} else {
-							toReturn = cd;
+							setSpecific(TPE_KEY, TSS_TPELIMIT);
+							ptrAtmiBrokerClient->closeSession(cd);
 						}
-					} else {
-						LOG4CXX_DEBUG(loggerXATMI,
-								(char*) "Session got dudded: " << cd);
-						ptrAtmiBrokerClient->closeSession(cd);
+					} catch (...) {
+						LOG4CXX_ERROR(
+								loggerXATMI,
+								(char*) "tpacall failed to connect to service queue");
+						setSpecific(TPE_KEY, TSS_TPENOENT);
+						if (cd != -1) {
+							ptrAtmiBrokerClient->closeSession(cd);
+						}
 					}
-				} else {
-					setSpecific(TPE_KEY, TSS_TPELIMIT);
-					ptrAtmiBrokerClient->closeSession(cd);
-				}
-			} catch (...) {
-				LOG4CXX_ERROR(loggerXATMI,
-						(char*) "tpacall failed to connect to service queue");
-				setSpecific(TPE_KEY, TSS_TPENOENT);
-				if (cd != -1) {
-					ptrAtmiBrokerClient->closeSession(cd);
 				}
 			}
 		}
@@ -448,80 +531,93 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 int tpconnect(char * svc, char* idata, long ilen, long flags) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpconnect: " << svc << " ilen: "
 			<< ilen << " flags: " << flags);
-	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = -1;
-	if (flags & TPSENDONLY || flags & TPRECVONLY) {
-		int len = 0;
-		if (idata != NULL) {
-			len = ::bufferSize(idata, ilen);
-		}
-		if (len != -1) {
-			if (clientinit() != -1) {
-				int cd = -1;
-				Session* session = NULL;
-				try {
-					session = ptrAtmiBrokerClient->createSession(cd, svc);
-					if (cd != -1) {
-						int sendOk = ::send(session, session->getReplyTo(),
-								idata, len, cd, flags | TPCONV, 0, 0);
-						if (sendOk != -1) {
-							long olen = 4;
-							char* odata = (char*) tpalloc((char*) "X_OCTET",
-									NULL, olen);
-							long event = 0;
-							::tprecv(cd, &odata, &olen, flags, &event);
-							bool connected = strcmp(odata, "ACK") == 0;
-							tpfree(odata);
-							if (connected) {
-								toReturn = cd;
-								if (flags & TPRECVONLY) {
-									session->setCanSend(false);
-									LOG4CXX_DEBUG(
-											loggerXATMI,
-											(char*) "tpconnect set constraints session: "
-													<< session->getId()
-													<< " send: "
-													<< session->getCanSend()
-													<< " recv (not changed): "
-													<< session->getCanRecv());
+	setSpecific(TPE_KEY, TSS_TPERESET);
+
+	long toCheck = flags;
+	toCheck &= ~TPNOTRAN;
+	toCheck &= ~TPSENDONLY;
+	toCheck &= ~TPRECVONLY;
+	toCheck &= ~TPNOBLOCK;
+	toCheck &= ~TPNOTIME;
+	toCheck &= ~TPSIGRSTRT;
+	if (toCheck != 0) {
+		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
+		setSpecific(TPE_KEY, TSS_TPEINVAL);
+	} else {
+		if (!(flags & TPSENDONLY || flags & TPRECVONLY)) {
+			setSpecific(TPE_KEY, TSS_TPEINVAL);
+		} else {
+			int len = 0;
+			if (idata != NULL) {
+				len = ::bufferSize(idata, ilen);
+			}
+			if (len != -1) {
+				if (clientinit() != -1) {
+					int cd = -1;
+					Session* session = NULL;
+					try {
+						session = ptrAtmiBrokerClient->createSession(cd, svc);
+						if (cd != -1) {
+							int sendOk = ::send(session, session->getReplyTo(),
+									idata, len, cd, flags | TPCONV, 0, 0);
+							if (sendOk != -1) {
+								long olen = 4;
+								char* odata = (char*) tpalloc(
+										(char*) "X_OCTET", NULL, olen);
+								long event = 0;
+								::tprecv(cd, &odata, &olen, 0, &event);
+								bool connected = strcmp(odata, "ACK") == 0;
+								tpfree(odata);
+								if (connected) {
+									toReturn = cd;
+									if (flags & TPRECVONLY) {
+										session->setCanSend(false);
+										LOG4CXX_DEBUG(
+												loggerXATMI,
+												(char*) "tpconnect set constraints session: "
+														<< session->getId()
+														<< " send: "
+														<< session->getCanSend()
+														<< " recv (not changed): "
+														<< session->getCanRecv());
+									} else {
+										session->setCanRecv(false);
+										LOG4CXX_DEBUG(
+												loggerXATMI,
+												(char*) "tpconnect set constraints session: "
+														<< session->getId()
+														<< " send (not changed): "
+														<< session->getCanSend()
+														<< " recv: "
+														<< session->getCanRecv());
+									}
 								} else {
-									session->setCanRecv(false);
-									LOG4CXX_DEBUG(
-											loggerXATMI,
-											(char*) "tpconnect set constraints session: "
-													<< session->getId()
-													<< " send (not changed): "
-													<< session->getCanSend()
-													<< " recv: "
-													<< session->getCanRecv());
+									LOG4CXX_DEBUG(loggerXATMI,
+											(char*) "COULD NOT CONNECT: " << cd);
+									ptrAtmiBrokerClient->closeSession(cd);
+									setSpecific(TPE_KEY, TSS_TPESYSTEM);
 								}
 							} else {
 								LOG4CXX_DEBUG(loggerXATMI,
-										(char*) "COULD NOT CONNECT: " << cd);
+										(char*) "Session got dudded: " << cd);
 								ptrAtmiBrokerClient->closeSession(cd);
-								setSpecific(TPE_KEY, TSS_TPESYSTEM);
 							}
 						} else {
-							LOG4CXX_DEBUG(loggerXATMI,
-									(char*) "Session got dudded: " << cd);
+							setSpecific(TPE_KEY, TSS_TPELIMIT);
+						}
+					} catch (...) {
+						LOG4CXX_ERROR(
+								loggerXATMI,
+								(char*) "tpconnect failed to connect to service queue");
+						setSpecific(TPE_KEY, TSS_TPENOENT);
+						if (cd != -1) {
 							ptrAtmiBrokerClient->closeSession(cd);
 						}
-					} else {
-						setSpecific(TPE_KEY, TSS_TPELIMIT);
-					}
-				} catch (...) {
-					LOG4CXX_ERROR(
-							loggerXATMI,
-							(char*) "tpconnect failed to connect to service queue");
-					setSpecific(TPE_KEY, TSS_TPENOENT);
-					if (cd != -1) {
-						ptrAtmiBrokerClient->closeSession(cd);
 					}
 				}
 			}
 		}
-	} else {
-		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpconnect return: " << toReturn
 			<< " tperrno: " << tperrno);
@@ -530,28 +626,32 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 
 int tpgetrply(int *id, char ** odata, long *olen, long flags) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpgetrply " << id);
-	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = -1;
-	if (clientinit() != -1) {
-		if (id && olen) {
-			Session* session = ptrAtmiBrokerClient->getSession(*id);
-			if (session == NULL) {
-				setSpecific(TPE_KEY, TSS_TPEBADDESC);
-			} else {
-				long event = 0;
-				toReturn = ::receive(session, odata, olen, flags, &event);
-				ptrAtmiBrokerClient->closeSession(*id);
-				if (event == TPESVCERR) {
-					setSpecific(TPE_KEY, TSS_TPESVCERR);
-					toReturn = -1;
-				} else if (event == TPESVCFAIL) {
-					setSpecific(TPE_KEY, TSS_TPESVCFAIL);
-					toReturn = -1;
+	setSpecific(TPE_KEY, TSS_TPERESET);
+
+	long toCheck = flags;
+	toCheck &= ~TPGETANY;
+	toCheck &= ~TPNOCHANGE;
+	toCheck &= ~TPNOBLOCK;
+	toCheck &= ~TPNOTIME;
+	toCheck &= ~TPSIGRSTRT;
+	if (toCheck != 0) {
+		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
+		setSpecific(TPE_KEY, TSS_TPEINVAL);
+	} else {
+		if (clientinit() != -1) {
+			if (id && olen) {
+				Session* session = ptrAtmiBrokerClient->getSession(*id);
+				if (session == NULL) {
+					setSpecific(TPE_KEY, TSS_TPEBADDESC);
+				} else {
+					long event = 0;
+					toReturn = ::receive(*id, session, odata, olen, flags,
+							&event, true);
 				}
-				LOG4CXX_TRACE(loggerXATMI, (char*) "tpgetrply session closed");
+			} else {
+				setSpecific(TPE_KEY, TSS_TPEINVAL);
 			}
-		} else {
-			setSpecific(TPE_KEY, TSS_TPEINVAL);
 		}
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpgetrply return: " << toReturn
@@ -582,43 +682,54 @@ int tpcancel(int id) {
 
 int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpsend " << id);
-	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = -1;
-	int len = ::bufferSize(idata, ilen);
-	if (len != -1) {
-		if (clientinit() != -1) {
-			Session* session = (Session*) getSpecific(SVC_SES);
-			if (session != NULL) {
-				if (session->getId() != id) {
-					session = NULL;
+	setSpecific(TPE_KEY, TSS_TPERESET);
+
+	long toCheck = flags;
+	toCheck &= ~TPRECVONLY;
+	toCheck &= ~TPNOBLOCK;
+	toCheck &= ~TPNOTIME;
+	toCheck &= ~TPSIGRSTRT;
+	if (toCheck != 0) {
+		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
+		setSpecific(TPE_KEY, TSS_TPEINVAL);
+	} else {
+		int len = ::bufferSize(idata, ilen);
+		if (len != -1) {
+			if (clientinit() != -1) {
+				Session* session = (Session*) getSpecific(SVC_SES);
+				if (session != NULL) {
+					if (session->getId() != id) {
+						session = NULL;
+					}
 				}
-			}
-			if (session == NULL) {
-				if (clientinit() != -1) {
-					session = ptrAtmiBrokerClient->getSession(id);
-					if (session == NULL) {
-						setSpecific(TPE_KEY, TSS_TPEBADDESC);
-						len = -1;
-					} else {
-						if (!session->getCanSend()) {
-							LOG4CXX_DEBUG(loggerXATMI,
-									(char*) "Session can't send");
-							setSpecific(TPE_KEY, TSS_TPEPROTO);
+				if (session == NULL) {
+					if (clientinit() != -1) {
+						session = ptrAtmiBrokerClient->getSession(id);
+						if (session == NULL) {
+							setSpecific(TPE_KEY, TSS_TPEBADDESC);
+							len = -1;
+						} else {
+							if (!session->getCanSend()) {
+								LOG4CXX_DEBUG(loggerXATMI,
+										(char*) "Session can't send");
+								setSpecific(TPE_KEY, TSS_TPEPROTO);
+							}
 						}
 					}
 				}
-			}
-			if (len != -1) {
-				toReturn = ::send(session, session->getReplyTo(), idata, len,
-						id, flags | TPCONV, 0, 0);
-				if (toReturn != -1 && flags & TPRECVONLY) {
-					session->setCanSend(false);
-					session->setCanRecv(true);
-					LOG4CXX_DEBUG(loggerXATMI,
-							(char*) "tpsend set constraints session: "
-									<< session->getId() << " send: "
-									<< session->getCanSend() << " recv: "
-									<< session->getCanRecv());
+				if (len != -1) {
+					toReturn = ::send(session, session->getReplyTo(), idata,
+							len, id, flags, 0, 0);
+					if (toReturn != -1 && flags & TPRECVONLY) {
+						session->setCanSend(false);
+						session->setCanRecv(true);
+						LOG4CXX_DEBUG(loggerXATMI,
+								(char*) "tpsend set constraints session: "
+										<< session->getId() << " send: "
+										<< session->getCanSend() << " recv: "
+										<< session->getCanRecv());
+					}
 				}
 			}
 		}
@@ -630,34 +741,37 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 
 int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tprecv " << id);
-	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = -1;
-	if (clientinit() != -1) {
-		Session* session = (Session*) getSpecific(SVC_SES);
-		if (session != NULL && session->getId() != id) {
-			session = NULL;
-		}
-		if (session == NULL) {
-			if (clientinit() != -1) {
-				session = ptrAtmiBrokerClient->getSession(id);
+	setSpecific(TPE_KEY, TSS_TPERESET);
+
+	long toCheck = flags;
+	toCheck &= ~TPNOCHANGE;
+	toCheck &= ~TPNOBLOCK;
+	toCheck &= ~TPNOTIME;
+	toCheck &= ~TPSIGRSTRT;
+	if (toCheck != 0) {
+		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
+		setSpecific(TPE_KEY, TSS_TPEINVAL);
+	} else {
+		if (clientinit() != -1) {
+			Session* session = (Session*) getSpecific(SVC_SES);
+			if (session != NULL && session->getId() != id) {
+				session = NULL;
 			}
-		}
-		if (session == NULL) {
-			setSpecific(TPE_KEY, TSS_TPEBADDESC);
-		} else {
-			toReturn = ::receive(session, odata, olen, flags, event);
-			if (*event == TPEV_SVCERR) {
-				setSpecific(TPE_KEY, TSS_TPESVCERR);
-				ptrAtmiBrokerClient->closeSession(id);
-				toReturn = -1;
-			} else if (*event == TPEV_SVCFAIL) {
-				setSpecific(TPE_KEY, TSS_TPESVCFAIL);
-				ptrAtmiBrokerClient->closeSession(id);
-				toReturn = -1;
-			} else if (*event == TPEV_SVCSUCC) {
-				setSpecific(TPE_KEY, TSS_TPEEVENT);
-				ptrAtmiBrokerClient->closeSession(id);
-				toReturn = -1;
+			if (session == NULL) {
+				if (clientinit() != -1) {
+					session = ptrAtmiBrokerClient->getSession(id);
+				}
+			}
+			if (session == NULL) {
+				setSpecific(TPE_KEY, TSS_TPEBADDESC);
+			} else {
+				toReturn = ::receive(id, session, odata, olen, flags, event,
+						false);
+				if (*event == TPEV_SVCSUCC) {
+					setSpecific(TPE_KEY, TSS_TPEEVENT);
+					toReturn = -1;
+				}
 			}
 		}
 	}
@@ -669,40 +783,48 @@ int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpreturn " << rval);
 	setSpecific(TPE_KEY, TSS_TPERESET);
-	if (clientinit() != -1) {
-		Session* session = (Session*) getSpecific(SVC_SES);
-		if (session != NULL) {
-			if (!session->getCanSend() && rval != TPFAIL && data != NULL) {
-				rcode = TPESVCERR;
-			}
-			session->setCanRecv(false);
-			// CANT SEND NULL DATA
-			if (data == NULL) {
-				data = ::tpalloc((char*) "X_OCTET", NULL, 0);
-			}
-			if (rcode == TPESVCERR || bufferSize(data, len) == -1) {
-				::tpfree(data);
-				data = ::tpalloc((char*) "X_OCTET", NULL, 0);
-				::send(session, "", data, 0, 0, flags, TPFAIL, TPESVCERR);
-			} else {
-				if (rval != TPSUCCESS && rval != TPFAIL) {
-					rval = TPFAIL;
-					//TODO MARK SET ROLLBACK ONLY
-				}
-				::send(session, "", data, len, 0, flags, rval, rcode);
-			}
-			::tpfree(data);
-			session->setSendTo(NULL);
-			session->setCanSend(false);
-			LOG4CXX_DEBUG(loggerXATMI,
-					(char*) "tpreturn set constraints session: "
-							<< session->getId() << " send: "
-							<< session->getCanSend() << " recv: "
-							<< session->getCanRecv());
 
-		} else {
-			LOG4CXX_DEBUG(loggerXATMI, (char*) "Session is null");
-			setSpecific(TPE_KEY, TSS_TPEPROTO);
+	long toCheck = flags;
+	if (toCheck != 0) {
+		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
+		setSpecific(TPE_KEY, TSS_TPEINVAL);
+	} else {
+		if (clientinit() != -1) {
+			Session* session = (Session*) getSpecific(SVC_SES);
+			if (session != NULL) {
+				if (!session->getCanSend() && rval != TPFAIL && data != NULL) {
+					rcode = TPESVCERR;
+					rval = TPFAIL;
+				}
+				session->setCanRecv(false);
+				// CANT SEND NULL DATA
+				if (data == NULL) {
+					data = ::tpalloc((char*) "X_OCTET", NULL, 0);
+				}
+				if (rcode == TPESVCERR || bufferSize(data, len) == -1) {
+					::tpfree(data);
+					data = ::tpalloc((char*) "X_OCTET", NULL, 0);
+					::send(session, "", data, 0, 0, flags, TPFAIL, TPESVCERR);
+				} else {
+					if (rval != TPSUCCESS && rval != TPFAIL) {
+						rval = TPFAIL;
+						//TODO MARK SET ROLLBACK ONLY
+					}
+					::send(session, "", data, len, 0, flags, rval, rcode);
+				}
+				::tpfree(data);
+				session->setSendTo(NULL);
+				session->setCanSend(false);
+				LOG4CXX_DEBUG(loggerXATMI,
+						(char*) "tpreturn set constraints session: "
+								<< session->getId() << " send: "
+								<< session->getCanSend() << " recv: "
+								<< session->getCanRecv());
+
+			} else {
+				LOG4CXX_DEBUG(loggerXATMI, (char*) "Session is null");
+				setSpecific(TPE_KEY, TSS_TPEPROTO);
+			}
 		}
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpreturn returning" << " tperrno: "
@@ -720,10 +842,9 @@ int tpdiscon(int id) {
 			setSpecific(TPE_KEY, TSS_TPEBADDESC);
 		} else {
 			// SEND THE DISCONNECT TO THE REMOTE SIDE
-			long flags = 0;
 			char* data = ::tpalloc((char*) "X_OCTET", NULL, 0);
 			//data[0] = NULL; // TODO SHOULD BE ABLE TO SEND ZERO LENGTH BUFFERS
-			::send(session, "", data, 0, id, flags, DISCON, 0);
+			::send(session, "", data, 0, id, TPNOTRAN, DISCON, 0);
 			try {
 				if (getSpecific(TSS_KEY)) {
 					toReturn = tx_rollback();

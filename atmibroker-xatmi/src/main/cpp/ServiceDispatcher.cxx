@@ -90,10 +90,17 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	strcpy(tpsvcinfo.name, this->serviceName);
 	tpsvcinfo.flags = flags;
 	tpsvcinfo.len = ilen;
-	tpsvcinfo.data = AtmiBrokerMem::get_instance()->tpalloc(message.type,
-			message.subtype, ilen, true);
-	memcpy(tpsvcinfo.data, message.data, ilen);
-	free(message.data);
+
+	if (message.data != NULL) {
+		tpsvcinfo.data = AtmiBrokerMem::get_instance()->tpalloc(message.type,
+				message.subtype, ilen, true);
+		if (message.len > 0) {
+			memcpy(tpsvcinfo.data, message.data, ilen);
+		}
+		free(message.data);
+	} else {
+		tpsvcinfo.data = NULL;
+	}
 
 	setSpecific(SVC_KEY, this);
 	setSpecific(SVC_SES, session);
@@ -103,9 +110,8 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 		long olen = 4;
 		char* odata = (char*) tpalloc((char*) "X_OCTET", NULL, olen);
 		strcpy(odata, "ACK");
-		long flags = 0;
 		long revent = 0;
-		long result = tpsend(tpsvcinfo.cd, odata, olen, flags, &revent);
+		long result = tpsend(tpsvcinfo.cd, odata, olen, 0, &revent);
 		if (result == -1) {
 			connection->closeSession(message.correlationId);
 			destroySpecific(SVC_SES);
