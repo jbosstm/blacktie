@@ -115,7 +115,7 @@ bool CorbaSessionImpl::send(MESSAGE message) {
 	LOG4CXX_TRACE(logger, (char*) "copied: idata into: data_togo");
 
 	AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(message.len, message.len, (unsigned char*) data_togo, true);
-	remoteEndpoint->send(message.replyto, message.rval, message.rcode, aOctetSeq, message.len, message.correlationId, message.flags);
+	remoteEndpoint->send(message.replyto, message.rval, message.rcode, aOctetSeq, message.len, message.correlationId, message.flags, message.type, message.subtype);
 	aOctetSeq = NULL;
 	LOG4CXX_DEBUG(logger, (char*) "Called back ");
 	return true;

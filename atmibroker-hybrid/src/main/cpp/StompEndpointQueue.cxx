@@ -28,17 +28,18 @@
 log4cxx::LoggerPtr HybridStompEndpointQueue::logger(log4cxx::Logger::getLogger(
 		"HybridStompEndpointQueue"));
 
-HybridStompEndpointQueue::HybridStompEndpointQueue(
-		apr_pool_t* pool, char* serviceName) {
+HybridStompEndpointQueue::HybridStompEndpointQueue(apr_pool_t* pool,
+		char* serviceName) {
 	LOG4CXX_DEBUG(logger, "Creating endpoint queue: " << serviceName);
 	this->message = NULL;
 	shutdown = false;
 	lock = new SynchronizableObject();
 	LOG4CXX_DEBUG(logger, "Created lock: " << lock);
 
-	
-	std::string timeout = AtmiBrokerEnv::get_instance()->getenv((char*) "DestinationTimeout");
-	this->connection =  HybridConnectionImpl::connect(pool, atoi(timeout.c_str())); // TODO allow the timeout to be specified in configuration
+	std::string timeout = AtmiBrokerEnv::get_instance()->getenv(
+			(char*) "DestinationTimeout");
+	this->connection = HybridConnectionImpl::connect(pool,
+			atoi(timeout.c_str())); // TODO allow the timeout to be specified in configuration
 	this->pool = pool;
 
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
@@ -108,7 +109,7 @@ HybridStompEndpointQueue::~HybridStompEndpointQueue() {
 	free(name);
 	free(fullName);
 	LOG4CXX_TRACE(logger, (char*) "freed name");
-		
+
 	LOG4CXX_TRACE(logger, (char*) "destroying");
 	HybridConnectionImpl::disconnect(connection, pool);
 	LOG4CXX_TRACE(logger, (char*) "destroyed");
@@ -199,8 +200,8 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 					(const char*) "null") != 0) {
 				LOG4CXX_TRACE(logger, "Read a non-null control: " << control
 						<< "/");
-				if (associate_serialized_tx((char*) "ots",
-						(char*) control) != XA_OK) {
+				if (associate_serialized_tx((char*) "ots", (char*) control)
+						!= XA_OK) {
 					LOG4CXX_ERROR(logger, "Unable to handle control");
 					setSpecific(TPE_KEY, TSS_TPESYSTEM);
 					unableToAssociateTx = true;
@@ -222,10 +223,28 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 						"messagercode", APR_HASH_KEY_STRING);
 				LOG4CXX_TRACE(logger, "Extracted rcode");
 
-				message.len = frame->body_length;
+				char * type = (char*) apr_hash_get(frame->headers,
+						"messagetype", APR_HASH_KEY_STRING);
+				LOG4CXX_TRACE(logger, "Extracted messagetype");
+				message.type = type;
+
+				char * subtype = (char*) apr_hash_get(frame->headers,
+						"messagesubtype", APR_HASH_KEY_STRING);
+				LOG4CXX_TRACE(logger, "Extracted messagesubtype");
+				message.subtype = subtype;
+
+				message.len = frame->body_length - 1;
 				LOG4CXX_TRACE(logger, "Set length: " << message.len);
-				message.data = frame->body;
+				if (message.len == 0 && strlen(message.type) == 0) {
+					message.data = NULL;
+				} else {
+					message.data = (char*) malloc(message.len);
+					if (message.len > 0) {
+						memcpy(message.data, frame->body, message.len);
+					}
+				}
 				LOG4CXX_TRACE(logger, "Set body");
+
 				message.replyto = (const char*) apr_hash_get(frame->headers,
 						"messagereplyto", APR_HASH_KEY_STRING);
 				LOG4CXX_TRACE(logger, "Set replyto: " << message.replyto);
@@ -240,6 +259,7 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 				LOG4CXX_TRACE(logger, "Set rcode: " << message.rcode);
 				message.control = get_control();
 				LOG4CXX_TRACE(logger, "Set control: " << message.control);
+				message.received = true;
 			}
 		}
 	}

@@ -104,8 +104,8 @@ HybridCorbaEndpointQueue::~HybridCorbaEndpointQueue() {
 
 void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 		CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen,
-		CORBA::Long correlationId, CORBA::Long flags)
-		throw (CORBA::SystemException ) {
+		CORBA::Long correlationId, CORBA::Long flags, const char* type,
+		const char* subtype) throw (CORBA::SystemException ) {
 	LOG4CXX_DEBUG(logger, (char*) "send called:" << this);
 	lock->lock();
 	if (!shutdown) {
@@ -118,13 +118,7 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 
 		MESSAGE message;
 		message.correlationId = correlationId;
-		LOG4CXX_TRACE(logger, (char*) "Allocating DATA");
-		message.data = (char*) malloc(ilen);
-		LOG4CXX_TRACE(logger, (char*) "Allocated");
-		memcpy(message.data, (char*) idata.get_buffer(), ilen);
-		LOG4CXX_TRACE(logger, (char*) "Copied");
 		message.flags = flags;
-		message.len = ilen;
 		message.rcode = rcode;
 		if (replyto_ior != NULL) {
 			LOG4CXX_TRACE(logger, (char*) "Duplicating the replyto");
@@ -133,10 +127,28 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 		} else {
 			message.replyto = NULL;
 		}
+		message.type = strdup(type);
+		message.subtype = strdup(subtype);
+
+		message.len = ilen - 1;
+		if (message.len == 0 && strlen(message.type) == 0) {
+			message.data = NULL;
+		} else {
+			LOG4CXX_TRACE(logger, (char*) "Allocating DATA");
+			message.data = (char*) malloc(message.len);
+			LOG4CXX_TRACE(logger, (char*) "Allocated");
+			if (message.len > 0) {
+				memcpy(message.data, (char*) idata.get_buffer(), message.len);
+				LOG4CXX_TRACE(logger, (char*) "Copied");
+			}
+		}
+
 		message.rval = rval;
 		LOG4CXX_TRACE(logger, (char*) "Getting control");
 		message.control = disassociate_tx_if_not_owner();
 		LOG4CXX_TRACE(logger, (char*) "Got control");
+
+		message.received = true;
 		// For remote comms this thread (comes from a pool) is different from the thread that will
 		// eventually consume the message. For local comms this is not the case.
 		// Thus we cannot dissassociate any transaction from the thread here (using destroySpecific)
@@ -161,6 +173,8 @@ MESSAGE HybridCorbaEndpointQueue::receive(long time) {
 	message.control = NULL;
 	message.rval = -1;
 	message.rcode = -1;
+	message.type = NULL;
+	message.subtype = NULL;
 
 	lock->lock();
 	if (!shutdown) {

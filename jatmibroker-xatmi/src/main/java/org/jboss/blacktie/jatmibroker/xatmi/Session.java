@@ -117,7 +117,8 @@ public class Session {
 		if (sender != null) {
 			log.debug("Sender not null, sending");
 			sender.send(getReceiver().getReplyTo(), (short) 0, 0, buffer
-					.getData(), len, cd, flags);
+					.getData(), len, cd, flags, buffer.getType(), buffer
+					.getSubtype());
 		} else {
 			throw new ConnectionException(-1, "Session in receive mode", null);
 		}
@@ -150,8 +151,8 @@ public class Session {
 		}
 
 		log.debug("Initializing a new buffer");
-		// TODO WE SHOULD BE SENDING THE TYPE, SUBTYPE AND CONNECTION ID?
-		Buffer received = new Buffer(null, null);
+		// TODO WE SHOULD BE SENDING THE CONNECTION ID?
+		Buffer received = new Buffer(m.type, m.subtype);
 		received.setData(m.data);
 		log.debug("Prepared and ready to launch");
 		return received;

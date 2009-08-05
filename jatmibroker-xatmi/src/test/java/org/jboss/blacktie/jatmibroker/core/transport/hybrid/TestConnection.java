@@ -46,7 +46,7 @@ public class TestConnection extends TestCase {
 		Sender clientSender = clientTransport.getSender("TestOne");
 		Receiver clientReceiver = clientTransport.createReceiver();
 		clientSender.send(clientReceiver.getReplyTo(), (short) 1, 1, "hi"
-				.getBytes(), 2, 0, 0);
+				.getBytes(), 2, 0, 0, "X_OCTET", null);
 		Message receive = serviceDispatcher.receive(0);
 		assertTrue(receive.len == 2);
 
@@ -56,7 +56,7 @@ public class TestConnection extends TestCase {
 		log.info("Chatting");
 		for (int i = 0; i < 100; i++) {
 			serviceSender.send(serviceReceiver.getReplyTo(), (short) 1, 1,
-					"chat".getBytes(), 4, 0, 0);
+					"chat".getBytes(), 4, 0, 0, "X_OCTET", null);
 			Message receive2 = clientReceiver.receive(0);
 			assertTrue(receive2.len == 4);
 		}

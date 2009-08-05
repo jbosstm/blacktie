@@ -140,6 +140,15 @@ MESSAGE HybridSessionImpl::receive(long time) {
 bool HybridSessionImpl::send(MESSAGE message) {
 	LOG4CXX_DEBUG(logger, "HybridSessionImpl::send");
 
+	message.len = message.len + 1;
+	char* data_togo = new char[message.len];
+	data_togo[message.len - 1] = NULL;
+	LOG4CXX_TRACE(logger, (char*) "allocated");
+	if (message.len > 1) {
+		memcpy(data_togo, message.data, message.len - 1);
+		LOG4CXX_TRACE(logger, (char*) "copied: idata into: data_togo");
+	}
+
 	bool toReturn = false;
 	if (serviceInvokation) {
 		stomp_frame frame;
@@ -149,7 +158,7 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING, "send");
 
 		frame.body_length = message.len;
-		frame.body = message.data;
+		frame.body = data_togo;
 		if (message.replyto && strcmp(message.replyto, "") != 0) {
 			LOG4CXX_TRACE(logger, "send set messagereplyto: "
 					<< message.replyto);
@@ -168,6 +177,10 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		apr_hash_set(frame.headers, "messageflags", APR_HASH_KEY_STRING, flags);
 		apr_hash_set(frame.headers, "messagerval", APR_HASH_KEY_STRING, rval);
 		apr_hash_set(frame.headers, "messagercode", APR_HASH_KEY_STRING, rcode);
+		apr_hash_set(frame.headers, "messagetype", APR_HASH_KEY_STRING,
+				message.type);
+		apr_hash_set(frame.headers, "messagesubtype", APR_HASH_KEY_STRING,
+				message.subtype);
 		char* control = serialize_tx((char*) "ots");
 		if (control) {
 			LOG4CXX_TRACE(logger, "Sending serialized control: " << control);
@@ -209,23 +222,18 @@ bool HybridSessionImpl::send(MESSAGE message) {
 			}
 			LOG4CXX_DEBUG(logger, "Sent to: " << sendTo << " Command: "
 					<< frame.command << " Size: " << frame.body_length);
-
+			delete[] data_togo;
 		}
 		serviceInvokation = false;
 	} else {
 		if (remoteEndpoint != NULL) {
-			char* data_togo = new char[message.len];
-			LOG4CXX_TRACE(logger, (char*) "allocated");
-			memcpy(data_togo, message.data, message.len);
-			LOG4CXX_TRACE(logger, (char*) "copied: idata into: data_togo");
-
 			LOG4CXX_DEBUG(logger, (char*) "Sending to remote queue: "
 					<< remoteEndpoint);
 			AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(
 					message.len, message.len, (unsigned char*) data_togo, true);
 			remoteEndpoint->send(message.replyto, message.rval, message.rcode,
 					aOctetSeq, message.len, message.correlationId,
-					message.flags);
+					message.flags, message.type, message.subtype);
 			aOctetSeq = NULL;
 			LOG4CXX_DEBUG(logger, (char*) "Called back ");
 			toReturn = true;

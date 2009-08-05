@@ -41,7 +41,7 @@ public:
 	HybridCorbaEndpointQueue(CORBA_CONNECTION* connection, PortableServer::POA_ptr poa, char* serviceName);
 	virtual ~HybridCorbaEndpointQueue();
 
-	virtual void send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags) throw (CORBA::SystemException );
+	virtual void send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags, const char* type, const char* subtype) throw (CORBA::SystemException );
 
 	virtual void disconnect() throw (CORBA::SystemException );
 

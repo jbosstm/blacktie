@@ -92,7 +92,9 @@ module AtmiBroker {
 				  in octetSeq idata,
 				  in long ilen,
 				  in long correlationId, 
-				  in long flags);	  
+				  in long flags, 
+				  in string type,
+				  in string subtype);	  
 	
 		void disconnect();
 	};

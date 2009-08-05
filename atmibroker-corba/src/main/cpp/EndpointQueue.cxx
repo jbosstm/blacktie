@@ -84,7 +84,7 @@ CorbaEndpointQueue::~CorbaEndpointQueue() {
 	LOG4CXX_DEBUG(logger, (char*) "destroyed");
 }
 
-void CorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags) throw (CORBA::SystemException ) {
+void CorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags, const char* type, const char* subtype) throw (CORBA::SystemException ) {
 	lock->lock();
 	if (!shutdown) {
 		LOG4CXX_DEBUG(logger, (char*) "send called.");
@@ -108,6 +108,8 @@ void CorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval, CORBA:
 			message.replyto = strdup(replyto_ior);
 			LOG4CXX_TRACE(logger, (char*) "Duplicated");
 		}
+		message.type = strdup(type);
+		message.subtype = strdup(subtype);
 		message.rval = rval;
 		// For remote comms this thread (comes from a pool) is different from the thread that will
 		// eventually consume the message. For local comms this is not the case.
@@ -133,6 +135,8 @@ MESSAGE CorbaEndpointQueue::receive(long time) {
 	message.control = NULL;
 	message.rval = -1;
 	message.rcode = -1;
+	message.type = NULL;
+	message.subtype = NULL;
 
 	lock->lock();
 	if (!shutdown) {

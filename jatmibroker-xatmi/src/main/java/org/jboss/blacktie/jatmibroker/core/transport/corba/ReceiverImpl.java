@@ -145,22 +145,26 @@ public class ReceiverImpl extends EndpointQueuePOA implements Receiver {
 	// "AtmiBroker.ClientCallback.client_callback".
 	//
 	public void send(String replyto_ior, short rval, int rcode, byte[] idata,
-			int ilen, int cd, int flags) {
+			int ilen, int cd, int flags, String type, String subtype) {
 		if (callbackIOR != null) {
 			log.debug("Received: " + callbackIOR);
 		}
 		Message message = new Message();
-
-		message.len = ilen;
-		message.data = new byte[message.len];
-		System.arraycopy(idata, 0, message.data, 0, message.len);
-
 		message.cd = cd;
 		message.replyTo = replyto_ior;
 		message.flags = flags;
 		message.control = null;// TODO
 		message.rval = rval;
 		message.rcode = rcode;
+		message.type = type;
+		message.subtype = subtype;
+		message.len = ilen - 1;
+		if (message.len == 0 && message.type == "") {
+			message.data = null;
+		} else {
+			message.data = new byte[message.len];
+			System.arraycopy(idata, 0, message.data, 0, message.len);
+		}
 		synchronized (this) {
 			returnData.add(message);
 			notify();

@@ -57,7 +57,8 @@ public class SenderImpl implements Sender {
 	}
 
 	public void send(Object replyTo, short rval, int rcode, byte[] data,
-			int len, int correlationId, int flags) throws ConnectionException {
+			int len, int correlationId, int flags, String type, String subtype)
+			throws ConnectionException {
 		if (closed) {
 			throw new ConnectionException(Connection.TPEPROTO, "Sender closed");
 		}
@@ -82,8 +83,11 @@ public class SenderImpl implements Sender {
 			message.setStringProperty("messageflags", String.valueOf(flags));
 			message.setStringProperty("messagerval", String.valueOf(rval));
 			message.setStringProperty("messagercode", String.valueOf(rcode));
+			message.setStringProperty("messagetype", type == null ? "" : type);
+			message.setStringProperty("messagesubtype", subtype == null ? ""
+					: subtype);
 
-			byte[] toSend = new byte[len];
+			byte[] toSend = new byte[len + 1];
 			System.arraycopy(data, 0, toSend, 0, len);
 			message.writeBytes(toSend, 0, toSend.length);
 			sender.send(message);

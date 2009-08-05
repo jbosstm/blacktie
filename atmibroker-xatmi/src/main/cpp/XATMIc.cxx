@@ -43,6 +43,9 @@ bool warned = false;
 log4cxx::LoggerPtr loggerXATMI(log4cxx::Logger::getLogger("loggerXATMI"));
 
 int bufferSize(char* data, int suggestedSize) {
+	if (data == NULL) {
+		return 0;
+	}
 	int data_size = ::tptypes(data, NULL, NULL);
 	if (data_size >= 0) {
 		if (suggestedSize <= 0 || suggestedSize > data_size) {
@@ -97,8 +100,27 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			message.flags = flags;
 			message.rcode = rcode;
 			message.rval = rval;
+			message.type = NULL;
+			message.subtype = NULL;
+			if (message.data != NULL) {
+				message.type = (char*) malloc(MAX_TYPE_SIZE + 1);
+				memset(message.type, '\0', MAX_TYPE_SIZE + 1);
+				message.subtype = (char*) malloc(MAX_SUBTYPE_SIZE + 1);
+				memset(message.subtype, '\0', MAX_SUBTYPE_SIZE + 1);
+				::tptypes(idata, message.type, message.subtype);
+			}
+			if (message.type == NULL) {
+				message.type = (char*) "";
+			}
+			if (message.subtype == NULL) {
+				message.subtype = (char*) "";
+			}
 			if (session->send(message)) {
 				toReturn = 0;
+			}
+			if (message.data != NULL) {
+				free(message.type);
+				free(message.subtype);
 			}
 
 			if (control) {
@@ -149,15 +171,41 @@ int receive(Session* session, char ** odata, long *olen, long flags,
 			LOG4CXX_DEBUG(loggerXATMI, (char*) "Setting timeout to: " << time);
 			try {
 				MESSAGE message = session->receive(time);
-				if (message.data != NULL) {
+				if (message.received) {
 					if (message.rval != DISCON) {
-						// TODO Handle TPNOCHANGE
+						if (flags & TPNOCHANGE) {
+							char* type = message.type;
+							char* subtype = message.subtype;
+							char* messageType = (char*) malloc(MAX_TYPE_SIZE);
+							char* messageSubtype = (char*) malloc(
+									MAX_SUBTYPE_SIZE);
+							tptypes(*odata, messageType, messageSubtype);
+							bool changed = strncmp(type, messageType, MAX_TYPE_SIZE) != 0
+									|| strncmp(subtype, messageSubtype, MAX_SUBTYPE_SIZE) != 0;
+							free(messageType);
+							free(messageSubtype);
+							if (changed) {
+								setSpecific(TPE_KEY, TSS_TPEOTYPE);
+								free(message.data);
+								free(message.type);
+								free(message.subtype);
+								free((char*) message.replyto);
+								return toReturn;
+							}
+						}
 						if (len < message.len) {
 							*odata = ::tprealloc(*odata, message.len);
 						}
 						*olen = message.len;
-						memcpy(*odata, (char*) message.data, *olen);
+						if (message.len > 0) {
+							memcpy(*odata, (char*) message.data, *olen);
+						} else if (message.data == NULL) {
+							*odata = NULL;
+						}
 						free(message.data);
+						free(message.type);
+						free(message.subtype);
+						free((char*) message.replyto);
 					} else {
 						*event = TPEV_DISCONIMM;
 					}
@@ -198,10 +246,6 @@ int receive(Session* session, char ** odata, long *olen, long flags,
 						toReturn = 0;
 					} else {
 						setSpecific(TPE_KEY, TSS_TPETIME);
-					}
-					if (message.replyto != NULL) {
-						free((char*) message.replyto);
-						LOG4CXX_DEBUG(loggerXATMI, (char*) "returning odata");
 					}
 				}
 			} catch (...) {
@@ -418,27 +462,41 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 						int sendOk = ::send(session, session->getReplyTo(),
 								idata, len, cd, flags | TPCONV, 0, 0);
 						if (sendOk != -1) {
-							toReturn = cd;
-							if (flags & TPRECVONLY) {
-								session->setCanSend(false);
-								LOG4CXX_DEBUG(
-										loggerXATMI,
-										(char*) "tpconnect set constraints session: "
-												<< session->getId()
-												<< " send: "
-												<< session->getCanSend()
-												<< " recv (not changed): "
-												<< session->getCanRecv());
+							long olen = 4;
+							char* odata = (char*) tpalloc((char*) "X_OCTET",
+									NULL, olen);
+							long event = 0;
+							::tprecv(cd, &odata, &olen, flags, &event);
+							bool connected = strcmp(odata, "ACK") == 0;
+							tpfree(odata);
+							if (connected) {
+								toReturn = cd;
+								if (flags & TPRECVONLY) {
+									session->setCanSend(false);
+									LOG4CXX_DEBUG(
+											loggerXATMI,
+											(char*) "tpconnect set constraints session: "
+													<< session->getId()
+													<< " send: "
+													<< session->getCanSend()
+													<< " recv (not changed): "
+													<< session->getCanRecv());
+								} else {
+									session->setCanRecv(false);
+									LOG4CXX_DEBUG(
+											loggerXATMI,
+											(char*) "tpconnect set constraints session: "
+													<< session->getId()
+													<< " send (not changed): "
+													<< session->getCanSend()
+													<< " recv: "
+													<< session->getCanRecv());
+								}
 							} else {
-								session->setCanRecv(false);
-								LOG4CXX_DEBUG(
-										loggerXATMI,
-										(char*) "tpconnect set constraints session: "
-												<< session->getId()
-												<< " send (not changed): "
-												<< session->getCanSend()
-												<< " recv: "
-												<< session->getCanRecv());
+								LOG4CXX_DEBUG(loggerXATMI,
+										(char*) "COULD NOT CONNECT: " << cd);
+								ptrAtmiBrokerClient->closeSession(cd);
+								setSpecific(TPE_KEY, TSS_TPESYSTEM);
 							}
 						} else {
 							LOG4CXX_DEBUG(loggerXATMI,

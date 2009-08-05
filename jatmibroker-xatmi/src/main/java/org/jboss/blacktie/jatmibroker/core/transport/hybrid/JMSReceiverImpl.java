@@ -81,16 +81,19 @@ public class JMSReceiverImpl implements Receiver {
 						.getStringProperty("messageflags"));
 				int cd = new Integer(message
 						.getStringProperty("messagecorrelationId"));
-				byte[] bytes = new byte[len];
-				bytesMessage.readBytes(bytes);
 
 				org.jboss.blacktie.jatmibroker.core.transport.Message toProcess = new org.jboss.blacktie.jatmibroker.core.transport.Message();
 				toProcess.replyTo = replyTo;
-				toProcess.len = len;
 				toProcess.serviceName = serviceName;
 				toProcess.flags = flags;
 				toProcess.cd = cd;
-				toProcess.data = bytes;
+				toProcess.len = len - 1;
+				if (toProcess.len == 0 && toProcess.type == "") {
+					toProcess.data = null;
+				} else {
+					toProcess.data = new byte[toProcess.len];
+					bytesMessage.readBytes(toProcess.data);
+				}
 				if (controlIOR != null) {
 					try {
 						JABTransaction.associateTx(controlIOR); // associate tx

@@ -27,10 +27,12 @@ class TestTPConversation: public BaseServerTest {
 CPPUNIT_TEST_SUITE( TestTPConversation)
 	;
 		CPPUNIT_TEST( test_conversation);
+		CPPUNIT_TEST( test_short_conversation);
 	CPPUNIT_TEST_SUITE_END()
 	;
 public:
 	void test_conversation();
+	void test_short_conversation();
 	virtual void setUp();
 	virtual void tearDown();
 private:

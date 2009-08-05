@@ -27,4 +27,6 @@ public class Message {
 	public int rcode;
 	public int cd;
 	public String serviceName;
+	public String type;
+	public String subtype;
 }

@@ -90,7 +90,7 @@ public abstract class Service implements BlacktieService {
 		log.debug("Created the session");
 
 		// THIS IS THE FIRST CALL
-		Buffer buffer = new Buffer(null, null);
+		Buffer buffer = new Buffer(message.type, message.subtype);
 		buffer.setData(message.data);
 		// TODO NO SESSIONS
 		// NOT PASSING OVER THE SERVICE NAME
@@ -116,17 +116,14 @@ public abstract class Service implements BlacktieService {
 
 			if (sender != null && response != null) {
 				log.trace("Sending response");
-				// TODO
-				// odata.value = serviceRequest.getBytes();
-				// olen.value = serviceRequest.getLength();
 				short rval = response.getRval();
 				if (rval != Connection.TPSUCCESS && rval != Connection.TPFAIL) {
 					rval = Connection.TPFAIL;
 					// TODO SET ROLLBACK ONLY
 				}
-				sender.send(null, rval, response.getRcode(),
-						response.getBuffer().getData(), response.getLen(),
-						response.getFlags(), 0);
+				sender.send("", rval, response.getRcode(), response.getBuffer()
+						.getData(), response.getLen(), response.getFlags(), 0,
+						buffer.getType(), buffer.getSubtype());
 
 			} else if (sender == null && response != null) {
 				log.error("No sender avaible but message to be sent");

@@ -90,8 +90,25 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	tpsvcinfo.flags = flags;
 	tpsvcinfo.data = message.data;
 	tpsvcinfo.len = ilen;
-	if (tpsvcinfo.flags && TPCONV) {
+
+	setSpecific(SVC_KEY, this);
+	setSpecific(SVC_SES, session);
+
+	if (tpsvcinfo.flags & TPCONV) {
 		tpsvcinfo.cd = correlationId;
+		long olen = 4;
+		char* odata = (char*) tpalloc((char*) "X_OCTET", NULL, olen);
+		strcpy(odata, "ACK");
+		long flags = 0;
+		long revent = 0;
+		long result = tpsend(tpsvcinfo.cd, odata, olen, flags, &revent);
+		if (result == -1) {
+			connection->closeSession(message.correlationId);
+			destroySpecific(SVC_SES);
+			destroySpecific(SVC_KEY);
+			return;
+		}
+
 	} else {
 		LOG4CXX_DEBUG(logger, (char*) "cd not being set");
 	}
@@ -116,8 +133,6 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 		// the call to m_func
 		associate_tx(control);
 	}
-	setSpecific(SVC_KEY, this);
-	setSpecific(SVC_SES, session);
 	try {
 		LOG4CXX_TRACE(logger, (char*) "Calling function");
 		this->func(&tpsvcinfo);
@@ -127,6 +142,8 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 				logger,
 				(char*) "ServiceDispatcher caught error running during onMessage");
 	}
+
+	free(message.data);
 
 	if (control) {
 		disassociate_tx(); // TODO figure out why tpreturn needs to stop Resource Managers

@@ -36,12 +36,25 @@ public class SenderImpl implements Sender {
 	}
 
 	public void send(Object replyTo, short rval, int rcode, byte[] data,
-			int len, int correlationId, int flags) {
+			int len, int correlationId, int flags, String type, String subtype) {
 		String toReplyTo = (String) replyTo;
 		if (toReplyTo == null) {
+			log.trace("Reply to set as null");
 			toReplyTo = "";
 		}
-		queue.send(toReplyTo, rval, rcode, data, len + 1, correlationId, flags);
+		if (type == null) {
+			log.trace("Type set as null");
+			type = "";
+		}
+		if (subtype == null) {
+			log.trace("Subtype set as null");
+			subtype = "";
+		}
+		len = len + 1;
+		byte[] toSend = new byte[len];
+		System.arraycopy(data, 0, toSend, 0, len - 1);
+		queue.send(toReplyTo, rval, rcode, data, len, correlationId, flags,
+				type, subtype);
 	}
 
 	public void close() {

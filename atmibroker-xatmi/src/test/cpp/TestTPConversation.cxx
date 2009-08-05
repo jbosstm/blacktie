@@ -30,6 +30,7 @@
 int interationCount = 100;
 
 extern void testTPConversation_service(TPSVCINFO *svcinfo);
+extern void testTPConversation_short_service(TPSVCINFO *svcinfo);
 
 void TestTPConversation::setUp() {
 	userlogc((char*) "TestTPConversation::setUp");
@@ -41,10 +42,6 @@ void TestTPConversation::setUp() {
 
 	// Do local work
 	cd = -1;
-	int toCheck = tpadvertise((char*) "TestTPConversation",
-			testTPConversation_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
 
 	sendlen = 11;
 	rcvlen = sendlen;
@@ -69,6 +66,12 @@ void TestTPConversation::tearDown() {
 }
 
 void TestTPConversation::test_conversation() {
+
+	int toCheck = tpadvertise((char*) "TestTPConversation",
+			testTPConversation_service);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
+
 	userlogc((char*) "test_conversation");
 	strcpy(sendbuf, "conversate");
 	cd
@@ -117,7 +120,32 @@ void TestTPConversation::test_conversation() {
 	free(errorMessage);
 }
 
+void TestTPConversation::test_short_conversation() {
+
+	int toCheck = tpadvertise((char*) "TestTPConversation",
+			testTPConversation_short_service);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
+
+	userlogc((char*) "test_short_conversation");
+	cd = ::tpconnect((char*) "TestTPConversation", NULL, 0, TPRECVONLY);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(cd != -1);
+
+	long revent = 0;
+	int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(result != -1);
+	CPPUNIT_ASSERT(strcmp("hi0", rcvbuf) == 0);
+
+	result = ::tpgetrply(&cd, &rcvbuf, &rcvlen, 0);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(result != -1);
+	CPPUNIT_ASSERT(strcmp("hi1", rcvbuf) == 0);
+}
+
 void testTPConversation_service(TPSVCINFO *svcinfo) {
+
 	userlogc((char*) "testTPConversation_service");
 	bool fail = false;
 	char *sendbuf = ::tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
@@ -180,4 +208,15 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 	::tpfree(rcvbuf);
 	free(expectedResult);
 	free(errorMessage);
+}
+
+void testTPConversation_short_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "testTPConversation_short_service");
+	long sendlen = 4;
+	long revent = 0;
+	char *sendbuf = ::tpalloc((char*) "X_OCTET", NULL, sendlen);
+	strcpy(sendbuf, "hi0");
+	::tpsend(svcinfo->cd, sendbuf, sendlen, 0, &revent);
+	strcpy(sendbuf, "hi1");
+	tpreturn(TPSUCCESS, 0, sendbuf, sendlen, 0);
 }

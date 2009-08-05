@@ -29,6 +29,9 @@ struct message_t {
 	long len;
 	long flags;
 	long ttl; /* the expiration time of the message */
+	char* type;
+	char* subtype;
+	bool received;
 };
 typedef struct message_t MESSAGE;
 
