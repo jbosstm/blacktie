@@ -28,7 +28,6 @@ Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 			<SERVER name='foo'>
 				<SERVICE_NAMES>
 					<SERVICE name='BAR' transportLibrary='libatmibroker-hybrid.so' />
-					<SERVICE name='foo_ADMIN_1' transportLibrary='libatmibroker-hybrid.so' />
 				</SERVICE_NAMES>
 				<ADMIN_SERVICE transportLibrary='libatmibroker-hybrid.so' />
 			</SERVER>

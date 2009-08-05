@@ -129,7 +129,21 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 
 Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "creating session: " << serviceName);
-	Connection* clientConnection = clientConnectionManager.getClientConnection(serviceName);
+	char* svc;
+	char  adm[16];
+
+	svc = serviceName;
+	if(strstr(serviceName, "ADMIN") != NULL) {
+		int i;
+		for(i = strlen(serviceName); i >=0 && serviceName[i] != '_'; i--);
+		if(i > 0) {
+			memset(adm, 0, 16);
+			ACE_OS::strncpy(adm, serviceName, i);
+			svc = adm;
+		}
+	}
+
+	Connection* clientConnection = clientConnectionManager.getClientConnection(svc);
 
 	if(clientConnection != NULL) {
 		currentConnection = clientConnection;
