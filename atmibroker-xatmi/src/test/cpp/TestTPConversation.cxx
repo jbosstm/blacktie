@@ -86,8 +86,8 @@ void TestTPConversation::test_conversation() {
 	for (int i = 0; i < interationCount; i++) {
 		int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
 		sprintf(tperrnoS, "%d", tperrno);
-		CPPUNIT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
-		CPPUNIT_ASSERT(result != -1);
+		CPPUNIT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEEVENT);
+		CPPUNIT_ASSERT(result == -1);
 		char* expectedResult = (char*) malloc(sendlen);
 		sprintf(expectedResult, "hi%d", i);
 		char* errorMessage = (char*) malloc(sendlen * 2 + 1);
@@ -173,7 +173,7 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 			if (result != -1) {
 				result = ::tprecv(svcinfo->cd, &rcvbuf, &svcinfo->len, 0,
 						&revent);
-				if (result != -1) {
+				if (result == -1 && revent == TPEV_SENDONLY) {
 					char* expectedResult = (char*) malloc(svcinfo->len);
 					sprintf(expectedResult, "yo%d", i);
 					char* errorMessage = (char*) malloc(svcinfo->len * 2 + 1);

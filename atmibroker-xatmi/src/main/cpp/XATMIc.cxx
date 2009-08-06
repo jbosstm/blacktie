@@ -205,6 +205,7 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 						free(messageSubtype);
 
 						if (flags & TPNOCHANGE && typesChanged) {
+							// TODO rollback-only
 							setSpecific(TPE_KEY, TSS_TPEOTYPE);
 							free(message.data);
 							free(message.type);
@@ -299,9 +300,6 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 			LOG4CXX_DEBUG(loggerXATMI, (char*) "Session can't receive");
 			setSpecific(TPE_KEY, TSS_TPEPROTO);
 		}
-	} else {
-		LOG4CXX_ERROR(loggerXATMI, (char*) "Invalid data was sent");
-		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	}
 
 	if (closeSession) {
@@ -508,7 +506,7 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 								ptrAtmiBrokerClient->closeSession(cd);
 							}
 						} else {
-							setSpecific(TPE_KEY, TSS_TPELIMIT);
+							setSpecific(TPE_KEY, TSS_TPESYSTEM);
 							ptrAtmiBrokerClient->closeSession(cd);
 						}
 					} catch (...) {
@@ -605,7 +603,7 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 								ptrAtmiBrokerClient->closeSession(cd);
 							}
 						} else {
-							setSpecific(TPE_KEY, TSS_TPELIMIT);
+							setSpecific(TPE_KEY, TSS_TPESYSTEM);
 						}
 					} catch (...) {
 						LOG4CXX_ERROR(
@@ -730,13 +728,13 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 
 						if (session->getLastEvent() == TPEV_SVCFAIL) {
 							setTpurcode(session->getLastRCode());
+						} else if (session->getLastEvent() == TPEV_SVCSUCC || session->getLastEvent() == TPEV_DISCONIMM) {
+							setSpecific(TPE_KEY, TSS_TPEEVENT);
+							toReturn = -1;
 						}
 						ptrAtmiBrokerClient->closeSession(id);
 						LOG4CXX_TRACE(loggerXATMI,
 								(char*) "tpsend closed session");
-					} else if (!session->getCanSend()) {
-						LOG4CXX_DEBUG(loggerXATMI, (char*) "Session can't send");
-						setSpecific(TPE_KEY, TSS_TPEPROTO);
 					} else {
 						toReturn = ::send(session, session->getReplyTo(),
 								idata, len, id, flags, 0, 0);
@@ -789,7 +787,8 @@ int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 			} else {
 				toReturn = ::receive(id, session, odata, olen, flags, event,
 						false);
-				if (*event == TPEV_SVCSUCC) {
+				if (*event == TPEV_SVCSUCC || *event == TPEV_DISCONIMM
+						|| *event == TPEV_SENDONLY) {
 					setSpecific(TPE_KEY, TSS_TPEEVENT);
 					toReturn = -1;
 				}
@@ -862,10 +861,12 @@ int tpdiscon(int id) {
 		if (session == NULL) {
 			setSpecific(TPE_KEY, TSS_TPEBADDESC);
 		} else {
-			// SEND THE DISCONNECT TO THE REMOTE SIDE
-			char* data = ::tpalloc((char*) "X_OCTET", NULL, 0);
-			//data[0] = NULL; // TODO SHOULD BE ABLE TO SEND ZERO LENGTH BUFFERS
-			::send(session, "", data, 0, id, TPNOTRAN, DISCON, 0);
+			// CHECK TO MAKE SURE THE REMOTE SIDE IS "EXPECTING" DISCONNECTS STILL
+			if (session->getLastEvent() == 0) {
+				// SEND THE DISCONNECT TO THE REMOTE SIDE
+				char* data = ::tpalloc((char*) "X_OCTET", NULL, 0);
+				::send(session, "", data, 0, id, TPNOTRAN, DISCON, 0);
+			}
 			try {
 				if (getSpecific(TSS_KEY)) {
 					toReturn = tx_rollback();
