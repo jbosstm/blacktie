@@ -59,9 +59,11 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
 	this->canRecv = true;
 
 	char * poaName = apr_itoa(pool, id);
-	this->temporaryQueue = new HybridCorbaEndpointQueue(corbaConnection,
+	this->temporaryQueue = new HybridCorbaEndpointQueue(this, corbaConnection,
 			poaName);
 	this->replyTo = temporaryQueue->getName();
+	this->lastEvent = 0;
+	this->lastRCode = 0;
 	LOG4CXX_TRACE(logger, "OK service session created");
 }
 
@@ -86,9 +88,11 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
 	this->canRecv = true;
 
 	char * poaName = apr_itoa(pool, id);
-	this->temporaryQueue = new HybridCorbaEndpointQueue(corbaConnection,
+	this->temporaryQueue = new HybridCorbaEndpointQueue(this, corbaConnection,
 			poaName);
 	this->replyTo = temporaryQueue->getName();
+	this->lastEvent = 0;
+	this->lastRCode = 0;
 	LOG4CXX_DEBUG(logger, (char*) "constructor corba done");
 }
 

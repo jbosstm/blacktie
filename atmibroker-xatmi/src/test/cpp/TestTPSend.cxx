@@ -33,7 +33,6 @@ void TestTPSend::setUp() {
 	// Setup server
 	BaseServerTest::setUp();
 
-
 	// Do local work
 	cd = -1;
 	int toCheck = tpadvertise((char*) "TestTPSend", testtpsend_service);
@@ -41,8 +40,11 @@ void TestTPSend::setUp() {
 	CPPUNIT_ASSERT(toCheck != -1);
 
 	sendlen = strlen("tpsend") + 1;
-	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((sendbuf
+			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT(
+			(rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen))
+					!= NULL);
 	strcpy(sendbuf, "tpsend");
 	CPPUNIT_ASSERT(tperrno == 0);
 }
@@ -66,8 +68,9 @@ void TestTPSend::tearDown() {
 void TestTPSend::test_tpsend_recvonly() {
 	userlogc((char*) "test_tpsend_recvonly");
 	cd = ::tpconnect((char*) "TestTPSend", sendbuf, sendlen, TPRECVONLY);
-	int result = ::tpsend(cd, sendbuf, sendlen, 0, 0);
-	CPPUNIT_ASSERT(tperrno== TPEPROTO);
+	long event = 0;
+	int result = ::tpsend(cd, sendbuf, sendlen, 0, &event);
+	CPPUNIT_ASSERT((event == TPEV_SVCERR) || (tperrno == TPEPROTO));
 	CPPUNIT_ASSERT(result == -1);
 }
 

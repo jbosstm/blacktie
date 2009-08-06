@@ -35,9 +35,11 @@
 #include "Destination.h"
 #include "SynchronizableObject.h"
 
+class HybridSessionImpl;
+
 class BLACKTIE_HYBRID_DLL HybridCorbaEndpointQueue: public virtual Destination, public virtual POA_AtmiBroker::EndpointQueue {
 public:
-	HybridCorbaEndpointQueue(CORBA_CONNECTION* connection, char* poaName);
+	HybridCorbaEndpointQueue(HybridSessionImpl* session, CORBA_CONNECTION* connection, char* poaName);
 	HybridCorbaEndpointQueue(CORBA_CONNECTION* connection, PortableServer::POA_ptr poa, char* serviceName);
 	virtual ~HybridCorbaEndpointQueue();
 
@@ -52,6 +54,7 @@ public:
 	PortableServer::POA_ptr getPoa();
 
 private:
+	HybridSessionImpl* session;
 	static log4cxx::LoggerPtr logger;
 	std::queue<MESSAGE> returnData;
 	SynchronizableObject* lock;

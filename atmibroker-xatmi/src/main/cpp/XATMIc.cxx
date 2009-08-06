@@ -79,7 +79,8 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 	LOG4CXX_DEBUG(loggerXATMI, (char*) "send - ilen: " << ilen << ": "
 			<< "cd: " << correlationId << "flags: " << flags);
 	if (flags & TPSIGRSTRT && !warnedTPSIGRSTRT) {
-		LOG4CXX_ERROR(loggerXATMI, (char*) "TPSIGRSTRT NOT SUPPORTED FOR SENDS OR RECEIVES");
+		LOG4CXX_ERROR(loggerXATMI,
+				(char*) "TPSIGRSTRT NOT SUPPORTED FOR SENDS OR RECEIVES");
 		warnedTPSIGRSTRT = true;
 	}
 	if (flags & TPNOBLOCK && !warnedTPNOBLOCK) {
@@ -245,15 +246,15 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 						*event = TPEV_DISCONIMM;
 					}
 
-					if (message.rcode == TPESVCFAIL) {
+					if (message.rcode == TPESVCERR) {
+						*event = TPEV_SVCERR;
+						setSpecific(TPE_KEY, TSS_TPESVCERR);
+						ptrAtmiBrokerClient->closeSession(id);
+						closeSession = false;
+					} else if (message.rval == TPFAIL) {
 						setTpurcode(message.rcode);
 						*event = TPEV_SVCFAIL;
 						setSpecific(TPE_KEY, TSS_TPESVCFAIL);
-						ptrAtmiBrokerClient->closeSession(id);
-						closeSession = false;
-					} else if (message.rcode == TPESVCERR) {
-						*event = TPEV_SVCERR;
-						setSpecific(TPE_KEY, TSS_TPESVCERR);
 						ptrAtmiBrokerClient->closeSession(id);
 						closeSession = false;
 					} else if (message.rval == TPSUCCESS) {
@@ -709,26 +710,46 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 						if (session == NULL) {
 							setSpecific(TPE_KEY, TSS_TPEBADDESC);
 							len = -1;
-						} else {
-							if (!session->getCanSend()) {
-								LOG4CXX_DEBUG(loggerXATMI,
-										(char*) "Session can't send");
-								setSpecific(TPE_KEY, TSS_TPEPROTO);
-							}
 						}
 					}
 				}
 				if (len != -1) {
-					toReturn = ::send(session, session->getReplyTo(), idata,
-							len, id, flags, 0, 0);
-					if (toReturn != -1 && flags & TPRECVONLY) {
-						session->setCanSend(false);
-						session->setCanRecv(true);
-						LOG4CXX_DEBUG(loggerXATMI,
-								(char*) "tpsend set constraints session: "
-										<< session->getId() << " send: "
-										<< session->getCanSend() << " recv: "
-										<< session->getCanRecv());
+					if (session->getLastEvent() != 0) {
+						if (revent != 0) {
+							*revent = session->getLastEvent();
+							LOG4CXX_DEBUG(
+									loggerXATMI,
+									(char*) "Session has event, will be closed: "
+											<< *revent);
+						} else {
+							LOG4CXX_ERROR(
+									loggerXATMI,
+									(char*) "Session has event, will be closed: "
+											<< session->getLastEvent());
+						}
+
+						if (session->getLastEvent() == TPEV_SVCFAIL) {
+							setTpurcode(session->getLastRCode());
+						}
+						ptrAtmiBrokerClient->closeSession(id);
+						LOG4CXX_TRACE(loggerXATMI,
+								(char*) "tpsend closed session");
+					} else if (!session->getCanSend()) {
+						LOG4CXX_DEBUG(loggerXATMI, (char*) "Session can't send");
+						setSpecific(TPE_KEY, TSS_TPEPROTO);
+					} else {
+						toReturn = ::send(session, session->getReplyTo(),
+								idata, len, id, flags, 0, 0);
+						if (toReturn != -1 && flags & TPRECVONLY) {
+							session->setCanSend(false);
+							session->setCanRecv(true);
+							LOG4CXX_DEBUG(loggerXATMI,
+									(char*) "tpsend set constraints session: "
+											<< session->getId() << " send: "
+											<< session->getCanSend()
+											<< " recv: "
+											<< session->getCanRecv());
+						}
 					}
 				}
 			}

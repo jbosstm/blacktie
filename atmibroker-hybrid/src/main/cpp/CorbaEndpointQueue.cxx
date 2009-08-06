@@ -26,9 +26,20 @@
 #include "CorbaEndpointQueue.h"
 #include "ThreadLocalStorage.h"
 #include "txClient.h"
+#include "SessionImpl.h"
 
 log4cxx::LoggerPtr HybridCorbaEndpointQueue::logger(log4cxx::Logger::getLogger(
 		"HybridCorbaEndpointQueue"));
+
+long TPFAIL = 0x00000001;
+long DISCON = 0x00000003;
+
+int TPESVCERR = 10;
+int TPESVCFAIL = 11;
+
+long TPEV_DISCONIMM = 0x0001;
+long TPEV_SVCERR = 0x0002;
+long TPEV_SVCFAIL = 0x0004;
 
 // EndpointQueue constructor
 //
@@ -36,7 +47,7 @@ log4cxx::LoggerPtr HybridCorbaEndpointQueue::logger(log4cxx::Logger::getLogger(
 // initialiser for all the virtual base class constructors that
 // require arguments, even those that we inherit indirectly.
 //
-HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(
+HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(HybridSessionImpl* session,
 		CORBA_CONNECTION* connection, char* id) {
 	LOG4CXX_DEBUG(logger, (char*) "Creating corba endpoint queue");
 	shutdown = false;
@@ -57,6 +68,7 @@ HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(
 	CORBA::ORB_ptr orb = connection->orbRef;
 	this->name = orb->object_to_string(queue);
 	this->connection = connection;
+	this->session = session;
 }
 
 HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(
@@ -71,6 +83,7 @@ HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(
 	CosNaming::Name * name = connection->default_ctx->to_name(serviceName);
 	connection->name_ctx->bind(*name, tmp_ref);
 	this->name = serviceName;
+	this->session = NULL;
 }
 
 // ~EndpointQueue destructor.
@@ -156,6 +169,14 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 		// eventually consume the message. For local comms this is not the case.
 		// Thus we cannot dissassociate any transaction from the thread here (using destroySpecific)
 
+		if (message.rval == DISCON) {
+			session->setLastEvent(TPEV_DISCONIMM);
+		} else if (message.rcode == TPESVCERR) {
+			session->setLastEvent(TPEV_SVCERR);
+		} else if (message.rval == TPFAIL) {
+			session->setLastEvent(TPEV_SVCFAIL);
+			session->setLastRCode(message.rcode);
+		}
 		returnData.push(message);
 		LOG4CXX_DEBUG(logger, (char*) "notifying");
 		lock->notify();

@@ -63,6 +63,20 @@ public:
 	/**
 	 * Set the last rcode
 	 */
+	void setLastEvent(long event) {
+		this->lastEvent = event;
+	}
+
+	/**
+	 * Get the last rcode
+	 */
+	long getLastEvent() {
+		return lastEvent;
+	}
+
+	/**
+	 * Set the last rcode
+	 */
 	void setLastRCode(long rcode) {
 		this->lastRCode = rcode;
 	}
@@ -70,12 +84,13 @@ public:
 	/**
 	 * Get the last rcode
 	 */
-	long* getLastRCode() {
-		return &lastRCode;
+	long getLastRCode() {
+		return lastRCode;
 	}
 protected:
 	bool canSend;
 	bool canRecv;
+	long lastEvent;
 	long lastRCode;
 };
 
