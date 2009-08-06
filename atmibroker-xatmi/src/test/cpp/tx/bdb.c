@@ -89,12 +89,18 @@ static int opendb(DB **dbp, const char *backing_file, const char * dbname)
 {
 	int ret;
 
-	logit(1, (char*) "opendb %s (%s)", backing_file, (dbname ? dbname : "one db per file"));
-	if ((ret = db_create(dbp, NULL, DB_XA_CREATE)) != 0 && !dexists(dbname))
-		return fail("db_create error", ret);
-
-		if ((ret = (*dbp)->open(*dbp, NULL, backing_file, dbname, DB_BTREE, DB_CREATE, 0664)) != 0)
-			(*dbp)->err(*dbp, ret, "DB->open %d", ret);
+	if ((ret = db_create(dbp, NULL, DB_XA_CREATE)) != 0 && !dexists(backing_file)) {
+		logit(0, (char*) "db_create error %d (%s)", ret, backing_file);
+		(*dbp)->err(*dbp, ret, "DB->create %d", ret);
+printf("XXdb_create error %d (%s)", ret, backing_file);
+	} else if ((ret = (*dbp)->open(*dbp, NULL, backing_file, dbname, DB_BTREE, DB_CREATE, 0664)) != 0) {
+		logit(0, (char*) "db_open error %d (%s)", ret, backing_file);
+		(*dbp)->err(*dbp, ret, "DB->open %d", ret);
+printf("XXdb_open error %d (%s)", ret, backing_file);
+	} else {
+		logit(0, (char*) "db_create and db_open of %s ok", backing_file);
+printf("XXdb_create and db_open of %s ok", backing_file);
+	}
 
 	return ret;
 }
@@ -249,11 +255,11 @@ int bdb_access(test_req_t *req, test_req_t *resp)
 	DB *dbp;
 	int stat, rv;
 
-	logit(1, (char*) "bdb_access");
+	logit(0, (char*) "bdb_access");
 	if ((stat = opendb(&dbp, req->db, NULL)) != 0)
 		return fail("db open error", stat);
 
-	logit(1, (char*) "bdb_access doWork");
+	logit(0, (char*) "bdb_access doWork");
 	if ((rv = doWork(dbp, req->op, req->data, resp)) != 0)
 		dbp->err(dbp, rv, "doWork");
 

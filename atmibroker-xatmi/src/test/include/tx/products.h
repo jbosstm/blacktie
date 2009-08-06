@@ -49,11 +49,9 @@ typedef struct product {
 } product_t;
 
 product_t products[] = {
-/*
 	{0, "null db", "null", ANY_ACCESS, null_access, null_xaflags},
 	{1, "ora - blacktie", "blacktie", ANY_ACCESS, ora_access, ora_xaflags},
 	{2, "bdb - db1", "db1", REMOTE_ACCESS, bdb_access, bdb_xaflags},
-*/
 	{3, "bdb - db2", "db2", REMOTE_ACCESS, bdb_access, bdb_xaflags},
 	{-1, 0, 0, 0, 0},
 };
