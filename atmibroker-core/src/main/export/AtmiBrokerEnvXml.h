@@ -72,9 +72,9 @@ typedef BLACKTIE_CORE_DLL struct _server_info {
 	short maxConsumers;
 	short maxReplicas;
 	short logLevel;
-	std::string securityType;
-	std::string orbType;
-	std::string queueSpaceName;
+	//std::string securityType;
+	//std::string orbType;
+	//std::string queueSpaceName;
 
 	std::vector<ServiceInfo> serviceVector;
 } ServerInfo;
