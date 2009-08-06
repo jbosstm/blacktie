@@ -40,7 +40,7 @@ public class TestTPACall extends TestCase {
 
 	public void test_tpacall() throws Exception {
 		byte[] echo = "echo".getBytes();
-		Buffer buffer = new Buffer(null, null);
+		Buffer buffer = new Buffer("X_OCTET", null);
 		buffer.setData(echo);
 		int cd = connection.tpacall("TestTPACall", buffer, echo.length, 0);
 		Response response = connection.tpgetrply(cd, 0);

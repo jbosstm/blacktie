@@ -56,7 +56,7 @@ public class ConnectionImplTest extends TestCase {
 		String aString = "Hello from Java Land";
 		Receiver endpoint = proxy.createReceiver();
 		serviceFactory.send(endpoint.getReplyTo(), (short) 0, 0, aString
-				.getBytes(), aString.getBytes().length, 0, 0, "", "");
+				.getBytes(), aString.getBytes().length, 0, 0, "X_OCTET", "");
 		Message receive = endpoint.receive(0);
 
 		assertNotNull(receive);
