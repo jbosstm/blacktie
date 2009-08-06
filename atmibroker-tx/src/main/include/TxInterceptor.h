@@ -24,8 +24,8 @@
 #include "tao/PI/ORBInitInfo.h"
 #include "tao/PI/ClientRequestInfo.h"
 #include "tao/PI_Server/ServerRequestInfoA.h"
+#include "CosTransactionsS.h"
 
-#include "AtmiBrokerOTS.h"
 #include "TxPolicyC.h"
 
 #include "log4cxx/logger.h"

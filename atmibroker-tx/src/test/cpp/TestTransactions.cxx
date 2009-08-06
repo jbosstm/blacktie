@@ -26,6 +26,18 @@
 
 #include "ace/OS_NS_unistd.h"
 
+void TestTransactions::setUp()
+{
+	// make sure the thread is clean - TODO check whether this needed - it shouldn't be
+	release_control(disassociate_tx());
+	TestFixture::setUp();
+}
+void TestTransactions::tearDown()
+{
+	shutdown_tx_broker();
+	TestFixture::tearDown();
+}
+
 // sanity check
 void TestTransactions::test_transactions()
 {
@@ -34,7 +46,6 @@ void TestTransactions::test_transactions()
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_begin());
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_commit());
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
-//	shutdown_tx_broker(); TODO this call produces SIGSEGV
 	userlogc_debug( (char*) "TestTransactions::test_transactions pass");
 }
 
@@ -62,6 +73,7 @@ void TestTransactions::test_protocol()
 
 	// reopen the transaction - begin should succeed
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_open());
+	userlogc_debug( (char*) "TestTransactions::test_protocol 2nd begin");
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_begin());
 	// should not be able to close a transaction before calling tx_commit or tx_rollback
 	CPPUNIT_ASSERT(tx_close() != TX_OK);
@@ -86,7 +98,7 @@ static void check_info(const char *msg, int rv,
 	TXINFO txinfo;
 
 	userlogc_debug( (char*) "TestTransactions::check_info begin");
-	CPPUNIT_ASSERT_EQUAL(rv, tx_info(&txinfo));
+	CPPUNIT_ASSERT_MESSAGE(msg, rv == tx_info(&txinfo));
 
 	if (cr >= 0) CPPUNIT_ASSERT_MESSAGE(msg, txinfo.when_return == cr);
 	if (tc >= 0) CPPUNIT_ASSERT_MESSAGE(msg, txinfo.transaction_control == tc);
@@ -182,6 +194,21 @@ void TestTransactions::test_timeout()
 	userlogc_debug( (char*) "TestTransactions::test_timeout pass");
 }
 
+void TestTransactions::test_rollback()
+{
+	// TODO check the behaviour when a real RM is used.
+	userlogc_debug( (char*) "TestTransactions::test_rollback begin");
+	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_open());
+
+	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_begin());
+	CPPUNIT_ASSERT_EQUAL(TX_OK, set_rollback_only());
+	check_info("set_rollback_only", 1, -1L, TX_UNCHAINED, 0L, TX_ROLLBACK_ONLY);
+	CPPUNIT_ASSERT_EQUAL(TX_ROLLBACK, tx_commit());
+
+	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
+	userlogc_debug( (char*) "TestTransactions::test_rollback pass");
+}
+
 void TestTransactions::test_RM()
 {
 	/* cause RM 102 to generate a mixed heuristic */
@@ -225,21 +252,6 @@ void TestTransactions::test_RM()
 	userlogc_debug( (char*) "TestTransactions::test_RM pass");
 }
 
-void TestTransactions::test_rollback()
-{
-	// TODO check the behaviour when a real RM is used.
-	userlogc_debug( (char*) "TestTransactions::test_rollback begin");
-	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_open());
-
-	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_begin());
-	CPPUNIT_ASSERT_EQUAL(TX_OK, set_rollback_only());
-	check_info("set_rollback_only", 1, -1L, TX_UNCHAINED, 0L, TX_ROLLBACK_ONLY);
-	CPPUNIT_ASSERT_EQUAL(TX_ROLLBACK, tx_commit());
-
-	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
-	userlogc_debug( (char*) "TestTransactions::test_rollback pass");
-}
-
 static int fn1(char *a, int i, long l) { return 0; }
 static int fn2(XID *x, int i, long l) { return 0; }
 static int fn3(XID *, long l1, int i, long l2) { return 0; }
@@ -276,7 +288,8 @@ void TestTransactions::test_register_resource()
 	CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) get_control();
 	// there should be a transaction running
 	CPPUNIT_ASSERT_MESSAGE("curr is nil", !CORBA::is_nil(curr));
-	CosTransactions::Coordinator_ptr c = curr->get_coordinator();
+	CosTransactions::Coordinator_ptr c = curr->get_coordinator(); // will leak curr if exception
+	release_control(curr);
 	// and it should have a coordinator
 	CPPUNIT_ASSERT_MESSAGE("coordinator is nil", !CORBA::is_nil(c));
 

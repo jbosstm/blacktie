@@ -199,6 +199,8 @@ void TxInterceptor::update_tx_context(PortableInterceptor::ServerRequestInfo_ptr
 				LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getInfo(),
 						(char*) "\tcurrent and context are different");
 			}
+
+			release_control(curr);
 		} else {
 			associate_tx(ctrl, 0);
 

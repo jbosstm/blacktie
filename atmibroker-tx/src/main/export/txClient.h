@@ -39,13 +39,6 @@ extern BLACKTIE_TX_DLL void * start_tx_orb(char *);
 extern BLACKTIE_TX_DLL void shutdown_tx_broker(void);
 
 /**
- * disassociate a transaction from the current thread
- * (also suspends all Resource Managers linked into the running applications)
- * returns the transaction that was previously associated
- */
-extern BLACKTIE_TX_DLL void * disassociate_tx(void);
-
-/**
  * associate a transaction with the current thread
  * (also resumes all Resource Managers linked into the running applications)
  */
@@ -73,15 +66,38 @@ extern BLACKTIE_TX_DLL int associate_serialized_tx(char *, char *);
 extern BLACKTIE_TX_DLL char* serialize_tx(char *);
 
 /**
+ * disassociate a transaction from the current thread
+ * (also suspends all Resource Managers linked into the running applications)
+ * returns the transaction that was previously associated
+ *
+ * Returns the OTS control associated with the current thread. The caller
+ * is responsible for calling release_control on the returned value.
+ */
+extern BLACKTIE_TX_DLL void * disassociate_tx(void);
+
+/**
  * Disassociate any transaction associated with the current thread only
- * if the caller did not start the thread
+ * if the caller did not start the thread.
+ *
+ * Returns the OTS control associated with the current thread. The caller
+ * is responsible for calling release_control on the returned value.
  */
 extern BLACKTIE_TX_DLL void * disassociate_tx_if_not_owner(void);
 
 /**
  * Return the OTS control associated with the current thread
+ * The caller is responsible for calling release_control on the
+ * returned control.
  */
 extern BLACKTIE_TX_DLL void * get_control();
+
+/**
+ * Release an OTS control returned by:
+ * get_control	(TODO StompEndpointQueue, ServiceDispatcher)
+ * disassociate_tx (TODO ServiceDispatcher, XATMIc)
+ * disassociate_tx_if_not_owner (TODO EndpointQueue, CorbaEndpointQueue)
+ */
+extern BLACKTIE_TX_DLL void release_control(void *);
 
 /**
  * Associate an OTS control with the current thread. The second parameter should

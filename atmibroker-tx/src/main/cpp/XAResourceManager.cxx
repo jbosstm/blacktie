@@ -170,6 +170,7 @@ int XAResourceManager::createServant(XID * xid)
 
 	CosTransactions::Coordinator_ptr c = curr->get_coordinator();
 
+	release_control(curr);
 	// create a servant to represent the new branch identified by xid
 	try {
 		ra = new XAResourceAdaptorImpl(this, xid, rmid_, xa_switch_);
@@ -257,10 +258,13 @@ void XAResourceManager::setComplete(XID * xid)
 	for (XABranchMap::iterator i = branches_.begin(); i != branches_.end(); ++i)
 	{
 		if (compareXids(i->first, xid) == 0) {
-			XAResourceAdaptorImpl * r = i->second;
+			XAResourceAdaptorImpl *r = i->second;
 			XID * key = i->first;
+			PortableServer::ObjectId_var id(poa_->servant_to_id(r));
 
+			poa_->deactivate_object(id.in());
 			branches_.erase(i->first);
+
 			delete r;
 			free(key);
 

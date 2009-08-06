@@ -34,9 +34,12 @@
 bool XAResourceManagerFactory::getXID(XID& xid)
 {
 	CosTransactions::Control_ptr cp = (CosTransactions::Control_ptr) get_control();
+	bool ok = false;
 
-	if (CORBA::is_nil(cp))
+	if (CORBA::is_nil(cp)) {
+		LOG4CXX_WARN(xaResourceLogger,  (char *) "getXID: no tx associated with the callers thread");
 		return false;
+	}
 
 	try {
 		CosTransactions::Coordinator_var cv = cp->get_coordinator();
@@ -81,16 +84,20 @@ LOG4CXX_DEBUG(xaResourceLogger,  (char *) "converted OTS tid len:" <<
 	otid.tid.length() << (char *) " otid bqual len: " << otid.bqual_length << (char *) " gtrid: " << xid.gtrid_length << (char *) " bqual: " << xid.bqual_length);
 
 #endif
-		return true;
+		ok = true;
 	} catch (CosTransactions::Unavailable & e) {
 		LOG4CXX_ERROR(xaResourceLogger,  (char *) "XA-compatible Transaction Service raised unavailable");
 	} catch (const CORBA::OBJECT_NOT_EXIST &e) {
 		LOG4CXX_ERROR(xaResourceLogger,  (char *) "Unexpected exception converting xid: " << e._name());
 	} catch  (CORBA::Exception& e) {
 		LOG4CXX_ERROR(xaResourceLogger,  (char *) "Unexpected exception converting xid: " << e._name());
+	} catch  (...) {
+		LOG4CXX_ERROR(xaResourceLogger,  (char *) "Unexpected generic exception converting xid");
 	}
 
-	return false;
+	release_control(cp);
+
+	return ok;
 }
 
 static int _rm_start(XAResourceManager* rm, XID& xid, long flags)
@@ -143,7 +150,7 @@ XAResourceManagerFactory::XAResourceManagerFactory()
 
 XAResourceManagerFactory::~XAResourceManagerFactory()
 {
-	destroyRMs(NULL);
+	destroyRMs();
 }
 
 XAResourceManager * XAResourceManagerFactory::findRM(long id)
@@ -153,7 +160,7 @@ XAResourceManager * XAResourceManagerFactory::findRM(long id)
 	return (i == rms_.end() ? NULL : i->second);
 }
 
-void XAResourceManagerFactory::destroyRMs(CORBA_CONNECTION * connection)
+void XAResourceManagerFactory::destroyRMs()
 {
 	for (ResourceManagerMap::iterator i = rms_.begin(); i != rms_.end(); ++i)
 		delete i->second;
@@ -161,26 +168,16 @@ void XAResourceManagerFactory::destroyRMs(CORBA_CONNECTION * connection)
 	rms_.clear();
 }
 
-int XAResourceManagerFactory::startRMs(CORBA_CONNECTION * connection)
+int XAResourceManagerFactory::startRMs(int flags)
 {
 	// there is a current transaction (otherwise the call doesn't need to start the RMs
-	LOG4CXX_DEBUG(xaResourceLogger,  (char *) "starting RMs");
-	return _rmiter(rms_, _rm_start, TMNOFLAGS);
+	LOG4CXX_DEBUG(xaResourceLogger,  (char *) "starting RMs flags=0x" << std::hex << flags);
+	return _rmiter(rms_, _rm_start, flags);
 }
-int XAResourceManagerFactory::endRMs(CORBA_CONNECTION * connection, int flags)
+int XAResourceManagerFactory::endRMs(int flags)
 {
-	LOG4CXX_DEBUG(xaResourceLogger,  (char *) "end RMs");
+	LOG4CXX_DEBUG(xaResourceLogger,  (char *) "end RMs flags=0x" << std::hex << flags);
 	return _rmiter(rms_, _rm_end, flags);
-}
-int XAResourceManagerFactory::suspendRMs(CORBA_CONNECTION * connection)
-{
-	LOG4CXX_DEBUG(xaResourceLogger,  (char *) "supsend RMs");
-	return _rmiter(rms_, _rm_end, TMSUSPEND);
-}
-int XAResourceManagerFactory::resumeRMs(CORBA_CONNECTION * connection)
-{
-	LOG4CXX_DEBUG(xaResourceLogger,  (char *) "resume RMs");
-	return _rmiter(rms_, _rm_start, TMRESUME);
 }
 
 void XAResourceManagerFactory::createRMs(CORBA_CONNECTION * connection) throw (RMException)
