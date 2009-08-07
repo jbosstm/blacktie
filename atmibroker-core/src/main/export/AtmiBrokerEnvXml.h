@@ -42,9 +42,6 @@ public:
 };
 
 typedef struct BLACKTIE_CORE_DLL xarm_config {
-	bool threadModel;
-	bool automaticAssociation;
-	bool dynamicRegistrationOptimization;
 	long resourceMgrId;
 	char * resourceName;
 	char * openString;

@@ -62,9 +62,6 @@
 							<xsd:element name="XA_CLOSE_STRING" type="xsd:string" />
 							<xsd:element name="XA_SWITCH" type="xsd:string" />
 							<xsd:element name="XA_LIB_NAME" type="xsd:string" />
-							<xsd:element name="XA_THREAD_MODEL" type="xsd:string" minOccurs="0" />
-							<xsd:element name="XA_AUTOMATIC_ASSOCIATION" type="xsd:string" minOccurs="0"/>
-							<xsd:element name="XA_DYNAMIC_REGISTRATION_OPTIMIZATION" type="xsd:string" minOccurs="0"/>
 						</xsd:sequence>
 					</xsd:complexType>
 				</xsd:element>
