@@ -61,28 +61,26 @@ public class XMLParserTest extends TestCase {
 		String arg1 = "-ORBInitRef";
 		String arg2 = "NameService=corbaloc::localhost:3528/NameService";
 		String server = "standalone-server";
-		String serviceName = "TestOne";
 		String transport = "libatmibroker-stomp.so";
-		// String library = "libBAR.so";
-		// String function = "TestOne";
 		String advertised = "true";
 		String size = "1";
+		String function = "org.jboss.blacktie.jatmibroker.xatmi.TestTPCallService";
 
 		assertTrue(server.equals(prop.getProperty("blacktie.TestOne.server")));
 		assertTrue(transport.equals(prop
 				.getProperty("blacktie.XMLParserTest.transportLib")));
-		// assertTrue(function.equals(prop
-		// .getProperty("blacktie.TestOne.function_name")));
+		assertTrue(function.equals(prop
+				.getProperty("blacktie.JAVA_Converse.java_class_name")));
 		// assertTrue(library
 		// .equals(prop.getProperty("blacktie.TestOne.library_name")));
 		assertTrue(advertised.equals(prop
-				.getProperty("blacktie.TestOne.advertised")));
+				.getProperty("blacktie.JAVA_Converse.advertised")));
 		assertTrue(domain.equals(prop.getProperty("blacktie.domain.name")));
 		assertTrue(transid.equals(prop.getProperty("blacktie.trans.factoryid")));
 		assertTrue(args.equals(prop.getProperty("blacktie.orb.args")));
 		assertTrue(arg1.equals(prop.getProperty("blacktie.orb.arg.1")));
 		assertTrue(arg2.equals(prop.getProperty("blacktie.orb.arg.2")));
-		assertTrue(size.equals(prop.getProperty("blacktie.TestOne.size")));
+		assertTrue(size.equals(prop.getProperty("blacktie.JAVA_Converse.size")));
 		assertTrue("log4cxx.properties".equals(prop
 				.getProperty("LOG4CXXCONFIG")));
 	}

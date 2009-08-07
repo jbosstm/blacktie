@@ -47,22 +47,16 @@ import AtmiBroker.ServerInfo;
 import AtmiBroker.ServerPOA;
 import AtmiBroker.ServiceInfo;
 
-public class AtmiBrokerServer extends ServerPOA {
+public class AtmiBrokerServer {
 	private static final Logger log = LogManager
 			.getLogger(AtmiBrokerServer.class);
-	private POA poa;
-	private String serverName;
-	private byte[] activate_object;
 	private Map<String, ServiceData> serviceData = new HashMap<String, ServiceData>();
-	private boolean bound;
 	private OrbManagement orbManagement;
 	private Properties properties;
 	private static final String DEFAULT_POOL_SIZE = "1";
 
 	public AtmiBrokerServer(String serverName, String configurationDir)
 			throws ConfigurationException, ConnectionException {
-		this.serverName = serverName;
-
 		AtmiBrokerServerXML server = new AtmiBrokerServerXML(serverName);
 		properties = server.getProperties(configurationDir);
 
@@ -70,30 +64,6 @@ public class AtmiBrokerServer extends ServerPOA {
 			orbManagement = new OrbManagement(properties, true);
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Could not connect to orb", t);
-		}
-
-		Policy[] policiesArray = new Policy[1];
-		List<Policy> policies = new ArrayList<Policy>(1);
-		policies.add(orbManagement.getRootPoa().create_thread_policy(
-				ThreadPolicyValue.ORB_CTRL_MODEL));
-		policies.toArray(policiesArray);
-		try {
-			this.poa = orbManagement.getRootPoa().create_POA(serverName,
-					orbManagement.getRootPoa().the_POAManager(), policiesArray);
-		} catch (Throwable t) {
-			throw new ConnectionException(-1,
-					"Server appears to be already running", t);
-		}
-
-		try {
-			activate_object = poa.activate_object(this);
-			NameComponent[] name = orbManagement.getNamingContextExt().to_name(
-					serverName);
-			Object servant_to_reference = poa.servant_to_reference(this);
-			orbManagement.getNamingContext().bind(name, servant_to_reference);
-			bound = true;
-		} catch (Throwable t) {
-			throw new ConnectionException(-1, "Could not bind server", t);
 		}
 
 		String services = (String) properties.get("blacktie." + serverName
@@ -111,22 +81,11 @@ public class AtmiBrokerServer extends ServerPOA {
 	}
 
 	public void close() throws ConnectionException {
-		Iterator<ServiceData> iterator = serviceData.values().iterator();
-		while (iterator.hasNext()) {
-			iterator.next().close();
-			iterator.remove();
-		}
-
-		if (bound) {
-			try {
-				NameComponent[] name = orbManagement.getNamingContextExt()
-						.to_name(serverName);
-				orbManagement.getNamingContext().unbind(name);
-				poa.deactivate_object(activate_object);
-				bound = false;
-			} catch (Throwable t) {
-				throw new ConnectionException(-1, "Could not unbind server", t);
-			}
+		Iterator<String> names = serviceData.keySet().iterator();
+		while (names.hasNext()) {
+			ServiceData next = serviceData.get(names.next());
+			next.close();
+			names.remove();
 		}
 	}
 
@@ -157,6 +116,9 @@ public class AtmiBrokerServer extends ServerPOA {
 							"Could not create service factory for: "
 									+ serviceName, t);
 				}
+			} else {
+				throw new ConnectionException(Connection.TPEMATCH,
+						"Service already registered");
 			}
 		} catch (Throwable t) {
 			String message = "Could not advertise: " + serviceName;
@@ -176,78 +138,6 @@ public class AtmiBrokerServer extends ServerPOA {
 				log.error("Could not unadvertise: " + serviceName, t);
 			}
 		}
-	}
-
-	public ServiceInfo[] get_all_service_info() {
-		log.error("NO-OP get_all_service_info");
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public EnvVariableInfo[] get_environment_variable_info() {
-		log.error("NO-OP get_environment_variable_info");
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public int get_queue_log(String queue_name) {
-		log.error("NO-OP get_queue_log");
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public ServerInfo get_server_info() {
-		log.error("NO-OP get_server_info");
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public ServiceInfo get_service_info(String service_name) {
-		log.error("NO-OP get_service_info");
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void server_done() {
-		log.error("NO-OP server_done");
-		// TODO Auto-generated method stub
-
-	}
-
-	public short server_init() {
-		log.error("NO-OP server_init");
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public void set_environment_descriptor(String xml_descriptor) {
-		log.error("NO-OP set_environment_descriptor");
-		// TODO Auto-generated method stub
-
-	}
-
-	public void set_server_descriptor(String xml_descriptor) {
-		log.error("NO-OP set_server_descriptor");
-		// TODO Auto-generated method stub
-
-	}
-
-	public void set_service_descriptor(String serviceName, String xml_descriptor) {
-		log.error("NO-OP set_service_descriptor");
-		// TODO Auto-generated method stub
-
-	}
-
-	public void start_service(String service_name) {
-		log.error("NO-OP start_service");
-		// TODO Auto-generated method stub
-
-	}
-
-	public void stop_service(String service_name) {
-		log.error("NO-OP stop_service");
-		// TODO Auto-generated method stub
-
 	}
 
 	private class ServiceData {

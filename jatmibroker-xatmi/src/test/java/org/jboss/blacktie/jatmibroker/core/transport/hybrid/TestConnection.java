@@ -28,11 +28,11 @@ public class TestConnection extends TestCase {
 		Properties properties = xml.getProperties();
 
 		serviceTransportFactory = TransportFactory.loadTransportFactory(
-				"TestOne", properties);
+				"JAVA_Converse", properties);
 		serviceTransport = serviceTransportFactory.createTransport();
 
 		clientTransportFactory = TransportFactory.loadTransportFactory(
-				"TestOne", properties);
+				"JAVA_Converse", properties);
 		clientTransport = clientTransportFactory.createTransport();
 	}
 
@@ -42,8 +42,9 @@ public class TestConnection extends TestCase {
 	}
 
 	public void test() throws ConnectionException {
-		Receiver serviceDispatcher = serviceTransport.getReceiver("TestOne");
-		Sender clientSender = clientTransport.getSender("TestOne");
+		Receiver serviceDispatcher = serviceTransport
+				.getReceiver("JAVA_Converse");
+		Sender clientSender = clientTransport.getSender("JAVA_Converse");
 		Receiver clientReceiver = clientTransport.createReceiver();
 		clientSender.send(clientReceiver.getReplyTo(), (short) 1, 1, "hi"
 				.getBytes(), 2, 0, 0, "X_OCTET", null);

@@ -31,7 +31,7 @@ public class TestTPConversation extends TestCase {
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
-		this.server.tpadvertise("TestTwo", TestTPConversationService.class
+		this.server.tpadvertise("TestOne", TestTPConversationService.class
 				.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
@@ -50,7 +50,7 @@ public class TestTPConversation extends TestCase {
 		Buffer buffer = new Buffer(null, null);
 		buffer.setData("conversate".getBytes());
 
-		Session session = connection.tpconnect("TestTwo", buffer, 10, 0);
+		Session session = connection.tpconnect("TestOne", buffer, 10, 0);
 		for (int i = 0; i < iterationCount; i++) {
 			Buffer tprecv = session.tprecv(0);
 			assertEquals("hi" + i, new String(tprecv.getData()));

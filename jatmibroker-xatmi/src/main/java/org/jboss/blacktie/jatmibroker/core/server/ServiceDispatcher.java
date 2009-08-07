@@ -46,7 +46,7 @@ public class ServiceDispatcher extends Service implements Runnable {
 		super(serviceName);
 		this.callback = callback;
 		this.receiver = receiver;
-		thread = new Thread(this, "XATMIServiceDispatcher");
+		thread = new Thread(this, serviceName + "-Dispatcher");
 		thread.start();
 		log.debug("Created");
 	}
