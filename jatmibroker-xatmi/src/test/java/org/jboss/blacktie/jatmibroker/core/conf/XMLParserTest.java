@@ -84,23 +84,4 @@ public class XMLParserTest extends TestCase {
 		assertTrue("log4cxx.properties".equals(prop
 				.getProperty("LOG4CXXCONFIG")));
 	}
-	//
-	// public void testServerXML() throws Exception {
-	// Properties prop = new Properties();
-	//
-	// XMLServerHandler handler = new XMLServerHandler(prop);
-	// XMLParser xmlserver = new XMLParser(handler, "Server.xsd");
-	// xmlserver.parse(new File("linux/foo/SERVER.xml"));
-	// }
-	//
-	// public void testClientXML() throws Exception {
-	// Properties prop = new Properties();
-	//
-	// XMLClientHandler handler = new XMLClientHandler(prop);
-	// XMLParser xmlclient = new XMLParser(handler, "Client.xsd");
-	// xmlclient.parse(new File("linux/CLIENT.xml"));
-	//
-	// String server = "foo";
-	// assertTrue(server.equals(prop.getProperty("blacktie.server.name")));
-	// }
 }
