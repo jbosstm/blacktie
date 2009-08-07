@@ -427,6 +427,7 @@ CosTransactions::Control_ptr TxManager::tx_suspend(TxControl *tx, int thr_id, in
         (void) TxManager::get_instance()->rm_end(flags);
 		// disassociate the transaction from the callers thread
 		tx->suspend();
+		delete tx;
 
 		return ctrl;
     }

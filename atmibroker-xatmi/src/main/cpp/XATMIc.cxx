@@ -477,7 +477,9 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	} else {
-		if (get_control() != NULL && flags & TPNOREPLY && !(flags & TPNOTRAN)) {
+		void *ctrl = get_control();
+
+		if (ctrl != NULL && flags & TPNOREPLY && !(flags & TPNOTRAN)) {
 			LOG4CXX_ERROR(
 					loggerXATMI,
 					(char*) "TPNOREPLY CALLED WITHOUT TPNOTRAN DURING TRANSACTION");
@@ -521,6 +523,8 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 				}
 			}
 		}
+
+		release_control(ctrl);
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpacall return: " << toReturn
 			<< " tperrno: " << tperrno);

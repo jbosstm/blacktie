@@ -81,6 +81,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	long flags = message.flags;
 	void* control = message.control;
 	void* curr = get_control();
+	// Note there is no corresponding release_control since it is passed to associate_tx
 	LOG4CXX_DEBUG(logger, (char*) "ilen: " << ilen << " flags: " << flags
 			<< "cd: " << message.correlationId);
 

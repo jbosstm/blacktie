@@ -195,7 +195,7 @@ int XAResourceManager::createServant(XID * xid)
 			*cp = *xid;
 
 			ra->setRecoveryCoordinator(rc);
-				branches_[cp] = ra;
+			branches_[cp] = ra;
 
 			return XA_OK;
 		}
@@ -208,7 +208,8 @@ int XAResourceManager::createServant(XID * xid)
 		LOG4CXX_TRACE(xaResourceLogger, (char*) "createServant: unexpected error");
 	}
 
-	delete ra;
+//	delete ra;
+	ra->_remove_ref();	// now only the POA has a reference to ra
 
 	return XAER_NOTA;
 }
@@ -231,7 +232,6 @@ void XAResourceManager::setComplete(XID * xid)
 		<< xid->bqual_length << ':'
 		<< xid->data);
 
-
 	for (XABranchMap::iterator i = branches_.begin(); i != branches_.end(); ++i)
 	{
 		if (compareXids(i->first, xid) == 0) {
@@ -239,10 +239,10 @@ void XAResourceManager::setComplete(XID * xid)
 			XID * key = i->first;
 			PortableServer::ObjectId_var id(poa_->servant_to_id(r));
 
+			r->_remove_ref();	// deactivate will delete r
 			poa_->deactivate_object(id.in());
 			branches_.erase(i->first);
 
-			delete r;
 			free(key);
 
 			return;
