@@ -42,7 +42,7 @@ int is_abort(enum TX_TYPE txtype) {
 }
 int start_tx(enum TX_TYPE txtype) {
 	if (is_begin(txtype)) {
-		logit(0, (char*) "- Starting Transaction");
+		logit(1, (char*) "- Starting Transaction");
 		if (tx_begin() != TX_OK) {
 			logit(0, (char*) "TX ERROR - Could not begin transaction: ");
 			return -1;
@@ -54,11 +54,11 @@ int start_tx(enum TX_TYPE txtype) {
 int end_tx(enum TX_TYPE txtype) {
 	int rv = 0;
 	if (is_commit(txtype)) {
-		logit(0, (char*) "- Commiting transaction");
+		logit(1, (char*) "- Commiting transaction");
 		if (tx_commit() != TX_OK)
 			rv = -1;
 	} else if (is_abort(txtype)) {
-		logit(0, (char*) "- Rolling back transaction");
+		logit(1, (char*) "- Rolling back transaction");
 		if (tx_rollback() != TX_OK)
 			rv = -1;
 	}
@@ -108,8 +108,12 @@ test_req_t * get_buf(int remote, const char *data, const char *dbfile, char op, 
 	else
 		req = (test_req_t *) malloc(sizeof (test_req_t));
 
-	if (req == NULL)
-		fatal("out of memory (for alloc)");
+	if (req == NULL) {
+		/*fatal("out of memory (for alloc)");*/
+		logit(0, "out of memory (for alloc)");
+
+		return NULL;
+	}
 
 	_init_req(req, prod, dbfile, data, op, txtype, expect);
 
@@ -125,14 +129,15 @@ void free_buf(int remote, test_req_t *req) {
 
 int fail(const char *reason, int ret)
 {
-	fprintf(stderr, "%s: %d\n", reason, ret);
+	logit(0, "%s: %d\n", reason, ret);
 	return ret;
 }
 
-void fatal(const char *msg)
+int fatal(const char *msg)
 {
 	logit(0, msg);
-	exit (-1);
+	/*exit (-1);*/
+	return -1;
 }
 
 long null_xaflags()
@@ -145,7 +150,7 @@ int null_access(test_req_t *req, test_req_t *resp)
 	resp->status = 0;
 	snprintf(resp->data, sizeof(resp->data), "%d", req->expect);
 
-	logit(0, "null_access: prod id=%d (%s) op=%c res=%s", req->prod, req->db, req->op, resp->data);
+	logit(1, "null_access: prod id=%d (%s) op=%c res=%s", req->prod, req->db, req->op, resp->data);
 
 	return 0;
 }

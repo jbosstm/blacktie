@@ -75,6 +75,6 @@ void ODBCTest::test() {
 }
 #else
 void ODBCTest::test() {
-	CPPUNIT_ASSERT("NOT IMPLEMENTED" == "true");
+	CPPUNIT_FAIL("NOT IMPLEMENTED");
 }
 #endif

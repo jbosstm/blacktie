@@ -52,7 +52,7 @@ typedef struct test_req {
 } test_req_t;
 
 /* common methods */
-void fatal(const char *msg);
+int fatal(const char *msg);
 int fail(const char *reason, int ret);
 void logit(int debug, const char * format, ...);
 test_req_t * get_buf(int remote, const char *data, const char *dbfile, char op, int prod, enum TX_TYPE txtype, int expect);

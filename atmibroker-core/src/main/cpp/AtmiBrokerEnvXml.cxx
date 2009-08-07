@@ -78,9 +78,6 @@ static bool processingXaOpenString = false;
 static bool processingXaCloseString = false;
 static bool processingXaSwitch = false;
 static bool processingXaLibName = false;
-static bool processingXaThreadModel = false;
-static bool processingXaAutomaticAssociation = false;
-static bool processingXaDynamicRegistrationOptimization = false;
 static bool processingDomain = false;
 static bool processingEnvVariables = false;
 static bool processingEnvVariable = false;
@@ -107,9 +104,6 @@ AtmiBrokerEnvXml::AtmiBrokerEnvXml() {
 	processingXaCloseString = false;
 	processingXaSwitch = false;
 	processingXaLibName = false;
-	processingXaThreadModel = false;
-	processingXaAutomaticAssociation = false;
-	processingXaDynamicRegistrationOptimization = false;
 	processingDomain = false;
 	processingEnvVariables = false;
 	processingEnvVariable = false;
@@ -126,6 +120,49 @@ static void warn(const char * reason) {
 		LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) reason);
 	//std::invalid_argument ex(reason);
 	//throw ex;
+}
+
+/**
+ * Duplicate a value. If the value contains an expression of the for ${ENV}
+ * then ENV is interpreted as an environment variable and ${ENV} is replaced
+ * by its value (if ENV is not set it is replaced by null string).
+ *
+ * WARNING: only the first such occurence is expanded. TODO generalise the function
+ */
+static char * XMLCALL copy_value(const char *value) {
+	char *s = strchr(value, '$');
+	char *e;
+
+	if (s && *(s + 1) == '{' && (e = strchr(s, '}'))) { 
+		size_t esz = e - s - 2;
+		char *en = strndup(s + 2, esz);
+		char *ev = ACE_OS::getenv(en);  /* ACE_OS::getenv(en);*/
+		char *pr = strndup(value, (s - value));
+		size_t rsz;
+		char *v;
+
+		if (ev == NULL) {
+			LOG4CXX_WARN(loggerAtmiBrokerEnvXml, (char*) "env variable is unset: " << en);
+			ev = (char *) "";
+		}
+
+		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char *) "expanding env: "
+			<< (s + 2) << (char *) " and e=" << e << (char *) " and en="
+			<< en << (char *) " and pr=" << pr << (char *) " and ev=" << ev);
+		e += 1;
+		rsz = ACE_OS::strlen(pr) + ACE_OS::strlen(e) + ACE_OS::strlen(ev) + 1; /* add 1 for null terminator */
+		v = (char *) malloc(rsz);
+
+		ACE_OS::snprintf(v, rsz, "%s%s%s", pr, ev, e);
+		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, value << (char*) " -> " << v);
+
+		free(en);
+		free(pr);
+
+		return v;
+	}
+
+	return strdup(value);
 }
 
 static void XMLCALL startElement
@@ -145,9 +182,9 @@ static void XMLCALL startElement
 		ServerInfo* server = new ServerInfo;
 		if(atts != 0) {
 			if(atts[0] && strcmp(atts[0], "name") == 0) {
-				server->serverName = strdup(atts[1]);
+				server->serverName = copy_value(atts[1]);
 			} else {
-				server->serverName = strdup("default");
+				server->serverName = copy_value("default");
 			}
 		}
 
@@ -204,15 +241,6 @@ static void XMLCALL startElement
 	} else if (strcmp(name, "XA_LIB_NAME") == 0) {
 		if (xarmp == 0) warn("XML document error: XA_RESOURCES element is invalid");
 		processingXaLibName = true;
-	} else if (strcmp(name, "XA_THREAD_MODEL") == 0) {
-		if (xarmp == 0) warn("XML document error: XA_RESOURCES element is invalid");
-		processingXaThreadModel = true;
-	} else if (strcmp(name, "XA_AUTOMATIC_ASSOCIATION") == 0) {
-		if (xarmp == 0) warn("XML document error: XA_RESOURCES element is invalid");
-		processingXaAutomaticAssociation = true;
-	} else if (strcmp(name, "XA_DYNAMIC_REGISTRATION_OPTIMIZATION") == 0) {
-		if (xarmp == 0) warn("XML document error: XA_RESOURCES element is invalid");
-		processingXaDynamicRegistrationOptimization = true;
 	} else if (strcmp(name, "ENV_VARIABLES") == 0) {
 		processingEnvVariables = true;
 	} else if (strcmp(name, "ENV_VARIABLE") == 0) {
@@ -234,7 +262,7 @@ static void XMLCALL startElement
 
 		if(atts != 0) {
 			ServiceInfo service;
-			char*       server;
+			char* server;
 
 			memset(&service, 0, sizeof(ServiceInfo));
 			server = servers.back()->serverName;
@@ -242,14 +270,14 @@ static void XMLCALL startElement
 			if(strcmp(name, "ADMIN_SERVICE") == 0 ) {
 				char adm[16];
 				ACE_OS::snprintf(adm, 15, "%s_ADMIN", server);
-				service.serviceName = strdup(adm);
+				service.serviceName = copy_value(adm);
 			}
 
 			for(int i = 0; atts[i]; i += 2) {
 				if(strcmp(atts[i], "name") == 0) {
-					service.serviceName = strdup(atts[i+1]);
+					service.serviceName = copy_value(atts[i+1]);
 				} else if(strcmp(atts[i], "transportLibrary") == 0) {
-					service.transportLib = strdup(atts[i+1]);
+					service.transportLib = copy_value(atts[i+1]);
 				}
 			}
 
@@ -271,7 +299,7 @@ static void XMLCALL startElement
 			xml.parseXmlDescriptor(&service, service.serviceName, configDir);
 
 			if(service.function_name == NULL) {
-				service.function_name = strdup(service.serviceName);
+				service.function_name = copy_value(service.serviceName);
 			}
 			servers.back()->serviceVector.push_back(service);
 		}
@@ -302,19 +330,19 @@ static void XMLCALL endElement
 	} else if (strcmp(last_element, "QSPACE_NAME") == 0) {
 		storedElement = true;
 		processingQSpaceName = false;
-		queue_name = strdup(last_value);
+		queue_name = copy_value(last_value);
 	} else if (strcmp(last_element, "NAMING_SERVICE_ID") == 0) {
 		processingNamingServiceId = false;
-		namingServiceId = strdup(last_value);
+		namingServiceId = copy_value(last_value);
 	} else if (strcmp(last_element, "NOTIFY_SERVICE_ID") == 0) {
 		processingNotifyServiceId = false;
-		notifyServiceId = strdup(last_value);
+		notifyServiceId = copy_value(last_value);
 	} else if (strcmp(last_element, "LOGGING_SERVICE_ID") == 0) {
 		processingLoggingServiceId = false;
-		loggingServiceId = strdup(last_value);
+		loggingServiceId = copy_value(last_value);
 	} else if (strcmp(last_element, "TRANS_FACTORY_ID") == 0) {
 		processingTransFactoryId = false;
-		transFactoryId = strdup(last_value);
+		transFactoryId = copy_value(last_value);
 	*/
 	} else if (strcmp(last_element, "XA_RESOURCES") == 0) {
 		processingXaResources = false;
@@ -325,28 +353,19 @@ static void XMLCALL endElement
 		if (xarmp) xarmp->resourceMgrId = atol(last_value);
 	} else if (strcmp(last_element, "XA_RESOURCE_NAME") == 0) {
 		processingXaResourceName = false;
-		if (xarmp) xarmp->resourceName = strdup(last_value);
+		if (xarmp) xarmp->resourceName = copy_value(last_value);
 	} else if (strcmp(last_element, "XA_OPEN_STRING") == 0) {
 		processingXaOpenString = false;
-		if (xarmp) xarmp->openString = strdup(last_value);
+		if (xarmp) xarmp->openString = copy_value(last_value);
 	} else if (strcmp(last_element, "XA_CLOSE_STRING") == 0) {
 		processingXaCloseString = false;
-		if (xarmp) xarmp->closeString = strdup(last_value);
+		if (xarmp) xarmp->closeString = copy_value(last_value);
 	} else if (strcmp(last_element, "XA_SWITCH") == 0) {
 		processingXaSwitch = false;
-		if (xarmp) xarmp->xasw = strdup(last_value);
+		if (xarmp) xarmp->xasw = copy_value(last_value);
 	} else if (strcmp(last_element, "XA_LIB_NAME") == 0) {
 		processingXaLibName = false;
-		if (xarmp) xarmp->xalib = strdup(last_value);
-	} else if (strcmp(last_element, "XA_THREAD_MODEL") == 0) {
-		processingXaThreadModel = false;
-		if (xarmp) xarmp->threadModel = (strcmp(last_value, "TRUE") == 0);
-	} else if (strcmp(last_element, "XA_AUTOMATIC_ASSOCIATION") == 0) {
-		processingXaAutomaticAssociation = false;
-		if (xarmp) xarmp->automaticAssociation = (strcmp(last_value, "TRUE") == 0);
-	} else if (strcmp(last_element, "XA_DYNAMIC_REGISTRATION_OPTIMIZATION") == 0) {
-		processingXaDynamicRegistrationOptimization = false;
-		if (xarmp) xarmp->dynamicRegistrationOptimization = (strcmp(last_value, "TRUE") == 0);
+		if (xarmp) xarmp->xalib = copy_value(last_value);
 	} else if (strcmp(last_element, "ENV_VARIABLES") == 0) {
 		processingEnvVariables = false;
 	} else if (strcmp(last_element, "ENV_VARIABLE") == 0) {
@@ -357,12 +376,12 @@ static void XMLCALL endElement
 		int index = envVariableCount - 1;
 		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "\tstoring EnvName %s at index %d" << last_value << index);
 		processingEnvName = false;
-		(*aEnvironmentStructPtr)[index].name = strdup(last_value);
+		(*aEnvironmentStructPtr)[index].name = copy_value(last_value);
 	} else if (strcmp(last_element, "VALUE") == 0) {
 		int index = envVariableCount - 1;
 		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "\tstoring Env Value %s at index %d" << last_value << index);
 		processingEnvValue = false;
-		(*aEnvironmentStructPtr)[index].value = strdup(last_value);
+		(*aEnvironmentStructPtr)[index].value = copy_value(last_value);
 	} else if(strcmp(last_element, "SERVER_NAMES") == 0) {
 		processingServerNames = false;
 	} else if(strcmp(last_element, "SERVER") == 0) {

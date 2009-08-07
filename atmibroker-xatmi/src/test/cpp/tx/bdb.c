@@ -63,17 +63,7 @@ static int dexists(const char * fname)
 	FILE *f = fopen(fname, "r");
 
 	if (!f) {
-#if 0
-		int rv = mkdir(fname);
-
-		if (rv != 0) {
-			logit(0, (char *) "unable to crate database dir %s error %d", fname, rv);
-
-			return 0;
-		}
-#else
 		return 0;
-#endif
 	} else {
 		fclose(f);
 	}
@@ -92,14 +82,11 @@ static int opendb(DB **dbp, const char *backing_file, const char * dbname)
 	if ((ret = db_create(dbp, NULL, DB_XA_CREATE)) != 0 && !dexists(backing_file)) {
 		logit(0, (char*) "db_create error %d (%s)", ret, backing_file);
 		(*dbp)->err(*dbp, ret, "DB->create %d", ret);
-printf("XXdb_create error %d (%s)", ret, backing_file);
 	} else if ((ret = (*dbp)->open(*dbp, NULL, backing_file, dbname, DB_BTREE, DB_CREATE, 0664)) != 0) {
 		logit(0, (char*) "db_open error %d (%s)", ret, backing_file);
 		(*dbp)->err(*dbp, ret, "DB->open %d", ret);
-printf("XXdb_open error %d (%s)", ret, backing_file);
 	} else {
-		logit(0, (char*) "db_create and db_open of %s ok", backing_file);
-printf("XXdb_create and db_open of %s ok", backing_file);
+		logit(1, (char*) "db_create and db_open of %s ok", backing_file);
 	}
 
 	return ret;
@@ -161,28 +148,6 @@ static int doDelete(DB *dbp, char *k) {
 
 	return ret;
 }
-
-/*
-static void debug_dump(DB *dbp) {
-    DBT key, value;
-    DBC *cur;
-    int ret;
-
-    if ((ret = dbp->cursor(dbp, 0, &cur, 0)) != 0) {
-		logit(0, "dump: cursor error %d\n", ret);
-	} else {
-    	memset(&key, 0, sizeof(key));
-    	memset(&value, 0, sizeof(value));
-
-		logit(0, "dump: dumping\n");
-    	while(!(ret = cur->c_get(cur, &key, &value, DB_NEXT))) {
-        	logit(0, "dump: key=%s data=%s\n", (char *) (key.data), (char *) (value.data));
-    	}
-
-    	ret = cur->c_close(cur);
-	}
-}
-*/
 
 static int doSelect(DB *dbp, char *kv, int *rcnt) {
 	int ret;
@@ -255,11 +220,11 @@ int bdb_access(test_req_t *req, test_req_t *resp)
 	DB *dbp;
 	int stat, rv;
 
-	logit(0, (char*) "bdb_access");
+	logit(1, (char*) "bdb_access");
 	if ((stat = opendb(&dbp, req->db, NULL)) != 0)
 		return fail("db open error", stat);
 
-	logit(0, (char*) "bdb_access doWork");
+	logit(1, (char*) "bdb_access doWork");
 	if ((rv = doWork(dbp, req->op, req->data, resp)) != 0)
 		dbp->err(dbp, rv, "doWork");
 

@@ -42,6 +42,7 @@
 
 #ifdef WIN32
 extern __declspec(dllimport) struct xa_switch_t xaoswd;
+#define snprintf _snprintf
 #else
 struct xa_switch_t xaoswd;
 #endif
@@ -142,10 +143,12 @@ static int doSelect(OCISvcCtx *svcCtx, OCIStmt *stmthp, OCIError *errhp, int emp
 
 	/* exectute the select */
 	if (status == OCI_SUCCESS)
-		status = OCIStmtExecute(svcCtx, stmthp, errhp, (ub4) 0, (ub4) 0, (CONST OCISnapshot *) NULL, (OCISnapshot *) NULL, OCI_DEFAULT);
+		status = OCIStmtExecute(svcCtx, stmthp, errhp, (ub4) 0, (ub4) 0,
+			(CONST OCISnapshot *) NULL, (OCISnapshot *) NULL, OCI_DEFAULT);
 
 	logit(1, "executing statement: %s :1=%d", sql, empno);
 	*rcnt = 0;
+
 	if (status != OCI_SUCCESS && status != OCI_NO_DATA) {
 		show_error(errhp, status);
 		return status;
@@ -213,22 +216,22 @@ int ora_access(test_req_t *req, test_req_t *resp)
 	OCISvcCtx *svcCtx;
 	sword status;
 
-	logit(0, "ora_access op=%c data=%s db=%s", req->op, req->data, req->db);
+	logit(1, "ora_access op=%c data=%s db=%s", req->op, req->data, req->db);
 	/* opening an XA connection creates an environment and service context */
 	xaEnv = (struct OCIEnv *) xaoEnv((text *) req->db) ;
 	svcCtx = (struct OCISvcCtx *) xaoSvcCtx((text *) req->db);
 
 	if (!xaEnv || !svcCtx)
-		fatal("Unable to obtain env and/or service context!");
+		return fatal("Unable to obtain env and/or service context!");
 
 	/* initialise OCI handles */
 	if (OCI_SUCCESS != OCIHandleAlloc((dvoid *)xaEnv, (dvoid **)&errhp,
 		OCI_HTYPE_ERROR, 0, (dvoid **)0))
-		fatal("Unable to allocate statement handle");
+		return fatal("Unable to allocate statement handle");
 
 	if (OCI_SUCCESS != OCIHandleAlloc((dvoid *)xaEnv, (dvoid **)&stmthp,
 		OCI_HTYPE_STMT, 0, (dvoid **)0))
-		fatal("Unable to allocate error handle");
+		return fatal("Unable to allocate error handle");
 
 	/* run the test */
 	status = doWork(req->op, req->data, svcCtx, stmthp, errhp, resp);

@@ -321,6 +321,7 @@
 			<env key="LD_LIBRARY_PATH" value="../cxx/runtime/lib:../cxx/test/lib:../${configuration.type}/${lib.type}" />
 			<env key="BLACKTIE_SCHEMA_DIR" value="${atmibroker.schema.dir}" />
 			<env key="BLACKTIE_CONFIGURATION_DIR" value="${atmibroker.configuration.dir}" />
+			<env key="BUILD_DIR" value="${project.build.directory}" />
 		</exec>
 	</target>
 	<target name="_test-msvc" depends="init" if="is-msvc">
@@ -328,6 +329,7 @@
 			<env key="Path" value="${env.Path};..\cxx\runtime\lib;..\cxx\test\lib;..\${configuration.type}\${lib.type}" />
 			<env key="BLACKTIE_SCHEMA_DIR" value="${atmibroker.schema.dir}" />
 			<env key="BLACKTIE_CONFIGURATION_DIR" value="${atmibroker.configuration.dir}" />
+			<env key="BUILD_DIR" value="${project.build.directory}" />
 		</exec>
 	</target>
 

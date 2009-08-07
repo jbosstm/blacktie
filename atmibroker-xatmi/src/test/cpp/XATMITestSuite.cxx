@@ -16,6 +16,7 @@
  * MA  02110-1301, USA.
  */
 /* Typed Buffer Functions */
+#if 1
 #include "TestTPAlloc.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPAlloc);
 #include "TestTPTypes.h"
@@ -64,18 +65,20 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestSpecExampleTwo);
 /* SERVER MANAGEMENT FUNCTIONS */
 #include "LoopyServerAndClient.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( LoopyServerAndClient);
-/* Transactional Request Response */
-#include "TestTxTPCall.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestTxTPCall);
 /* Server Init */
 #include "TestServerinit.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestServerinit);
 /* Client Init */
 #include "TestClientInit.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestClientInit);
-
-#if 0
-#include "TestTxRMTPCall.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestTxRMTPCall);
 #endif
 
+/* Transactional Request Response */
+#include "TestTxTPCall.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTxTPCall);
+#ifndef WIN32
+#include "tx/TestTxRMTPCall.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTxRMTPCall);
+#else
+//TODO
+#endif
