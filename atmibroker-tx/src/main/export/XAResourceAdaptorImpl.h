@@ -26,7 +26,8 @@
 #include <map>
 
 #include "CosTransactionsS.h"
-#include "xa.h"
+
+#include "txClient.h"
 
 extern log4cxx::LoggerPtr xaResourceLogger;
 

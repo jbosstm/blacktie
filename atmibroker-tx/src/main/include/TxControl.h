@@ -20,7 +20,7 @@
 
 #include <tao/ORB.h>
 #include "CosTransactionsS.h"
-#include "tx.h"
+#include "txClient.h"
 
 namespace atmibroker {
 	namespace tx {

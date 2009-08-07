@@ -21,6 +21,14 @@
 #include "tx.h"
 #include "xa.h"
 
+#ifndef WIN32
+#define FTRACE(logger, message) { \
+		LOG4CXX_TRACE(logger, __LINE__ << (char *) ":" << __FUNCTION__ << (char *) ":" << message); }
+
+#else
+#define FTRACE(clazz, message)
+#endif
+
 /**
  * Modify the transaction associated with the target thread such that the only
  * possible outcome of the transaction is to roll back the transaction

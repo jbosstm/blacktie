@@ -31,6 +31,8 @@
 namespace atmibroker {
     namespace tx {
 
+log4cxx::LoggerPtr txmlogger(log4cxx::Logger::getLogger("TxLogManager"));
+
 TxManager *TxManager::_instance = NULL;
 
 TxManager *TxManager::get_instance()
@@ -43,6 +45,7 @@ TxManager *TxManager::get_instance()
 
 void TxManager::discard_instance()
 {
+	FTRACE(txmlogger, "ENTER");
 	if (_instance != NULL) {
 		delete _instance;
 		_instance = NULL;
@@ -52,14 +55,13 @@ void TxManager::discard_instance()
 TxManager::TxManager() :
 	_whenReturn(TX_COMMIT_DECISION_LOGGED), _controlMode(TX_UNCHAINED), _timeout (0L), _isOpen(false)
 {
-	LOG4CXX_DEBUG(txlogger, (char*) "TxManager: constructing");
+	FTRACE(txmlogger, "ENTER");
 	_connection = init_orb((char*) "ots");
 }
 
 TxManager::~TxManager()
 {
-	LOG4CXX_DEBUG(txlogger, (char*) "TxManager: destroying");
-
+	FTRACE(txmlogger, "ENTER");
 	if (_connection) {
 		shutdownBindings(_connection);
 		delete _connection;
@@ -68,16 +70,18 @@ TxManager::~TxManager()
 
 CORBA_CONNECTION* TxManager::init_orb(char* name)
 {
+	FTRACE(txmlogger, "ENTER");
 	register_tx_interceptors(name);
 	return ::initOrb(name);
 }
 
 atmibroker::tx::TxControl *TxManager::currentTx(const char *msg)
 {
+	FTRACE(txmlogger, "ENTER");
 	atmibroker::tx::TxControl *tx = NULL;
 
 	if ((!_isOpen || (tx = (atmibroker::tx::TxControl *) getSpecific(TSS_KEY)) == NULL || !tx->isActive(NULL, true)) && msg) {
-		LOG4CXX_INFO(txlogger, (char*) "protocol violation (" << msg << ") open="
+		LOG4CXX_INFO(txmlogger, (char*) "protocol violation (" << msg << ") open="
 			<< _isOpen << (char*) " TSS_KEY=" << getSpecific(TSS_KEY));
 	}
 
@@ -86,9 +90,10 @@ atmibroker::tx::TxControl *TxManager::currentTx(const char *msg)
 
 int TxManager::begin(void)
 {
+	FTRACE(txmlogger, "ENTER");
 	if (!_isOpen || getSpecific(TSS_KEY)) {
 		// either open hasn't been called or already in a transaction
-		LOG4CXX_WARN(txlogger, (char*) "begin: protocol violation: open="
+		LOG4CXX_WARN(txmlogger, (char*) "begin: protocol violation: open="
 			<< _isOpen << (char*) " TSS_KEY=" << getSpecific(TSS_KEY));
 		return TX_PROTOCOL_ERROR;
 	} else {
@@ -96,7 +101,7 @@ int TxManager::begin(void)
 		CosTransactions::Control_ptr ctrl = _txfac->create(_timeout);
 
 		if (CORBA::is_nil(ctrl)) {
-			LOG4CXX_WARN(txlogger, (char*) "begin: create returned nil control");
+			LOG4CXX_WARN(txmlogger, (char*) "begin: create returned nil control");
 			return TX_ERROR;
 		}
 
@@ -106,7 +111,7 @@ int TxManager::begin(void)
 
 		if (rc != XA_OK) {
 			// one or more RMs failed to start - roll back the transaction
-			LOG4CXX_WARN(txlogger, (char*) "begin: XA resume error: " << rc);
+			LOG4CXX_WARN(txmlogger, (char*) "begin: XA resume error: " << rc);
 			try {
 				CosTransactions::Terminator_var term = ctrl->get_terminator();
 
@@ -119,23 +124,26 @@ int TxManager::begin(void)
 		}
 	}
 
-	LOG4CXX_DEBUG(txlogger, (char*) "begin: ok");
+	LOG4CXX_DEBUG(txmlogger, (char*) "begin: ok");
 
 	return TX_OK;
 }
 
 int TxManager::commit(void)
 {
+	FTRACE(txmlogger, "ENTER");
 	return complete(true);
 }
 
 int TxManager::rollback(void)
 {
+	FTRACE(txmlogger, "ENTER");
 	return complete(false);
 }
 
 int TxManager::rollback_only(void)
 {
+	FTRACE(txmlogger, "ENTER");
 	atmibroker::tx::TxControl *tx = currentTx("rollback_only");
 
 	if (tx == NULL)
@@ -148,6 +156,7 @@ int TxManager::rollback_only(void)
 
 int TxManager::complete(bool commit)
 {
+	FTRACE(txmlogger, "ENTER");
 	int outcome;
 	atmibroker::tx::TxControl *tx = currentTx("complete");
 
@@ -162,6 +171,7 @@ int TxManager::complete(bool commit)
 
 int TxManager::chainTransaction(int outcome)
 {
+	FTRACE(txmlogger, "ENTER");
 	/*
 	 * NOTE: outcome will only truly represent the outcome of commit if the commit_return
 	 * characteristic is TX_COMMIT_COMPLETED (see method reportHeuristics()).
@@ -191,6 +201,7 @@ int TxManager::chainTransaction(int outcome)
 
 int TxManager::set_commit_return(COMMIT_RETURN when_return)
 {
+	FTRACE(txmlogger, "ENTER");
 	if (!_isOpen)
 		return TX_PROTOCOL_ERROR;
 	else if (when_return != TX_COMMIT_DECISION_LOGGED && when_return != TX_COMMIT_COMPLETED)
@@ -203,6 +214,7 @@ int TxManager::set_commit_return(COMMIT_RETURN when_return)
 
 int TxManager::set_transaction_control(TRANSACTION_CONTROL mode)
 {
+	FTRACE(txmlogger, "ENTER");
 	if (!_isOpen)
 		return TX_PROTOCOL_ERROR;
 	else if (mode != TX_UNCHAINED && mode != TX_CHAINED)
@@ -215,6 +227,7 @@ int TxManager::set_transaction_control(TRANSACTION_CONTROL mode)
 
 int TxManager::set_transaction_timeout(TRANSACTION_TIMEOUT timeout)
 {
+	FTRACE(txmlogger, "ENTER");
 	if (!_isOpen)
 		return TX_PROTOCOL_ERROR;
 	else if (timeout < 0)
@@ -227,6 +240,7 @@ int TxManager::set_transaction_timeout(TRANSACTION_TIMEOUT timeout)
 
 int TxManager::info(TXINFO *info)
 {
+	FTRACE(txmlogger, "ENTER");
 	if (!_isOpen)
 		return TX_PROTOCOL_ERROR;
 
@@ -246,7 +260,7 @@ int TxManager::info(TXINFO *info)
 		if (tx != NULL) {
 			XAResourceManagerFactory::getXID(info->xid);
 			info->transaction_state = tx->get_status();
-			LOG4CXX_DEBUG(txlogger, (char*) "info status=" << info->transaction_state);
+			LOG4CXX_DEBUG(txmlogger, (char*) "info status=" << info->transaction_state);
 		}
 	}
 
@@ -255,37 +269,38 @@ int TxManager::info(TXINFO *info)
 
 int TxManager::open(void)
 {
+	FTRACE(txmlogger, "ENTER");
 	int rc;
 
 	if (_isOpen)
 		return TX_OK;
 
-	LOG4CXX_DEBUG(txlogger, (char*) "open ");
+	LOG4CXX_DEBUG(txmlogger, (char*) "open ");
 
 	if (_txfac == NULL) {
 		char *transFactoryId = AtmiBrokerEnv::get_instance()->getenv((char*)"TRANS_FACTORY_ID");
 
 		if (transFactoryId == NULL || strlen(transFactoryId) == 0) {
-			LOG4CXX_ERROR(txlogger, (char*) "Please set the TRANS_FACTORY_ID env variable");
+			LOG4CXX_ERROR(txmlogger, (char*) "Please set the TRANS_FACTORY_ID env variable");
 			return TX_ERROR;
 		}
 
 		try {
 			CosNaming::NamingContextExt_ptr nce = (CosNaming::NamingContextExt_ptr) _connection->default_ctx;
 			CosNaming::Name *name = nce->to_name(transFactoryId);
-			LOG4CXX_DEBUG(txlogger, (char*) "resolving Tx Fac Id: " << transFactoryId);
+			LOG4CXX_DEBUG(txmlogger, (char*) "resolving Tx Fac Id: " << transFactoryId);
 			CORBA::Object_var obj = nce->resolve(*name);
 			delete name;
-			LOG4CXX_DEBUG(txlogger, (char*) "resolved OK: " << (void*) obj);
+			LOG4CXX_DEBUG(txmlogger, (char*) "resolved OK: " << (void*) obj);
 			_txfac = CosTransactions::TransactionFactory::_narrow(obj);
-			LOG4CXX_DEBUG(txlogger, (char*) "narrowed OK: " << (void*) _txfac);
+			LOG4CXX_DEBUG(txmlogger, (char*) "narrowed OK: " << (void*) _txfac);
 
 		} catch (CORBA::SystemException & e) {
-			LOG4CXX_ERROR(txlogger, 
+			LOG4CXX_ERROR(txmlogger, 
 				(char*) "Error resolving Tx Service: " << e._name() << " minor code: " << e.minor());
 			return TX_ERROR;
 		} catch (...) {
-			LOG4CXX_ERROR(txlogger, 
+			LOG4CXX_ERROR(txmlogger, 
 				(char*) "Unknown error resolving Tx Service: " << transFactoryId);
 			return TX_ERROR;
 		}
@@ -298,21 +313,22 @@ int TxManager::open(void)
 
 	rc = rm_open();
 
-	LOG4CXX_DEBUG(txlogger, (char*) "open XA status: " << rc);
+	LOG4CXX_DEBUG(txmlogger, (char*) "open XA status: " << rc);
 	return TX_OK;
 }
 
 int TxManager::close(void)
 {
+	FTRACE(txmlogger, "ENTER");
 	if (!_isOpen)
 		return TX_OK;
 
 	if (getSpecific(TSS_KEY)) {
-		LOG4CXX_WARN(txlogger, (char*) "close: transaction still active");
+		LOG4CXX_WARN(txmlogger, (char*) "close: transaction still active");
 		return TX_PROTOCOL_ERROR;
 	}
 
-	LOG4CXX_DEBUG(txlogger, (char*) "close ");
+	LOG4CXX_DEBUG(txmlogger, (char*) "close ");
 	_isOpen = false;
 	rm_close();
 
@@ -321,30 +337,35 @@ int TxManager::close(void)
 
 int TxManager::rm_open(void)
 {
+	FTRACE(txmlogger, "ENTER");
 	try {
 		_xaRMFac.createRMs(_connection);
 		return 0;
 	} catch (RMException& ex) {
-		LOG4CXX_WARN(txlogger, (char*) "failed to load RMs: " << ex.what());
+		LOG4CXX_WARN(txmlogger, (char*) "failed to load RMs: " << ex.what());
 		return -1;
 	}
 }
 void TxManager::rm_close(void)
 {
+	FTRACE(txmlogger, "ENTER");
 	_xaRMFac.destroyRMs();
 }
 int TxManager::rm_end(int flags)
 {
+	FTRACE(txmlogger, "ENTER");
 	return _xaRMFac.endRMs(flags);
 }
 int TxManager::rm_start(int flags)
 {
+	FTRACE(txmlogger, "ENTER");
 	return _xaRMFac.startRMs(flags);
 }
 
 // static methods
 CosTransactions::Control_ptr TxManager::get_ots_control()
 {
+	FTRACE(txmlogger, "ENTER");
     TxControl *tx = (TxControl *) getSpecific(TSS_KEY);
 
     return (tx ? tx->get_ots_control() : 0);
@@ -352,17 +373,20 @@ CosTransactions::Control_ptr TxManager::get_ots_control()
 
 int TxManager::tx_resume(CosTransactions::Control_ptr control, int flags)
 {
+	FTRACE(txmlogger, "ENTER");
     return TxManager::tx_resume(control, ACE_OS::thr_self(), flags);
 }
 
 int TxManager::tx_resume(CosTransactions::Control_ptr control, int creator, int flags)
 {
+	FTRACE(txmlogger, "ENTER");
     return TxManager::tx_resume(new TxControl(control, creator), flags);
 }
 
 int TxManager::tx_resume(char* ctrlIOR, char *orbname, int flags)
 {
-    LOG4CXX_DEBUG(txlogger, (char*) "tx_resume orb=" << orbname << (char *) " IOR=" << ctrlIOR);
+	FTRACE(txmlogger, "ENTER");
+    LOG4CXX_DEBUG(txmlogger, (char*) "tx_resume orb=" << orbname << (char *) " IOR=" << ctrlIOR);
     CORBA::Object_ptr p = atmi_string_to_object(ctrlIOR, orbname);
 
     if (!CORBA::is_nil(p)) {
@@ -371,7 +395,7 @@ int TxManager::tx_resume(char* ctrlIOR, char *orbname, int flags)
 
         return TxManager::tx_resume(cptr, 0, flags); // why 0 tid
     } else {
-		LOG4CXX_WARN(txlogger, (char*) "tx_resume: control IOR is invalid");
+		LOG4CXX_WARN(txmlogger, (char*) "tx_resume: control IOR is invalid");
 	}
 
     return TMER_INVAL;
@@ -379,6 +403,7 @@ int TxManager::tx_resume(char* ctrlIOR, char *orbname, int flags)
 
 int TxManager::tx_resume(TxControl *tx, int flags)
 {
+	FTRACE(txmlogger, "ENTER");
 	int rc = XAER_NOTA;
 
     try {
@@ -386,14 +411,14 @@ int TxManager::tx_resume(TxControl *tx, int flags)
 		// must associate the tx with the thread before calling start on each open RM
    		setSpecific(TSS_KEY, tx);
 		if ((rc = TxManager::get_instance()->rm_start(flags)) == XA_OK) {
-			LOG4CXX_DEBUG(txlogger, (char *) "Resume tx: ok");
+			LOG4CXX_DEBUG(txmlogger, (char *) "Resume tx: ok");
 
 			return TX_OK;
 		} else {
-			LOG4CXX_WARN(txlogger, (char *) "Resume tx: error: " << rc);
+			LOG4CXX_WARN(txmlogger, (char *) "Resume tx: error: " << rc);
 		}
     } catch (...) {
-        LOG4CXX_DEBUG(txlogger, (char *) "Resume tx: generic exception");
+        LOG4CXX_DEBUG(txmlogger, (char *) "Resume tx: generic exception");
     }
 
 	destroySpecific(TSS_KEY);
@@ -403,11 +428,13 @@ int TxManager::tx_resume(TxControl *tx, int flags)
 
 CosTransactions::Control_ptr TxManager::tx_suspend(int flags)
 {
+	FTRACE(txmlogger, "ENTER");
     return (tx_suspend((TxControl *) getSpecific(TSS_KEY), 0, flags));
 }
 
 CosTransactions::Control_ptr TxManager::tx_suspend(int thr_id, int flags)
 {
+	FTRACE(txmlogger, "ENTER");
     return (tx_suspend((TxControl *) getSpecific(TSS_KEY), thr_id, flags));
 }
 
@@ -417,6 +444,7 @@ CosTransactions::Control_ptr TxManager::tx_suspend(int thr_id, int flags)
  */
 CosTransactions::Control_ptr TxManager::tx_suspend(TxControl *tx, int thr_id, int flags)
 {
+	FTRACE(txmlogger, "ENTER");
     if (tx &&
 		tx->isActive(NULL, true) &&	// tx is active
 		(thr_id == 0 || tx->thr_id() != (int) thr_id))	// not the owning thread or don't care about owners

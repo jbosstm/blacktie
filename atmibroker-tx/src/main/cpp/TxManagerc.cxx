@@ -22,96 +22,110 @@
 
 using namespace atmibroker::tx;
 
+log4cxx::LoggerPtr txmclogger(log4cxx::Logger::getLogger("TxLogManagerc"));
+
 /* X/Open tx interface */
 
 int tx_open(void) {
+	FTRACE(txmclogger, "ENTER");
 	return TxManager::get_instance()->open();
 }
 
 int tx_begin(void) {
+	FTRACE(txmclogger, "ENTER");
 	return TxManager::get_instance()->begin();
 }
 
 int tx_commit(void) {
+	FTRACE(txmclogger, "ENTER");
 	return TxManager::get_instance()->commit();
 }
 
 int tx_rollback(void) {
+	FTRACE(txmclogger, "ENTER");
 	return TxManager::get_instance()->rollback();
 }
 
 int tx_close(void) {
+	FTRACE(txmclogger, "ENTER");
 	return TxManager::get_instance()->close();
 }
 
 int tx_set_commit_return(COMMIT_RETURN when_return) {
+	FTRACE(txmclogger, "ENTER");
 	return TxManager::get_instance()->set_commit_return(when_return);
 }
 int tx_set_transaction_control(TRANSACTION_CONTROL control) {
+	FTRACE(txmclogger, "ENTER");
 	return TxManager::get_instance()->set_transaction_control(control);
 }
 int tx_set_transaction_timeout(TRANSACTION_TIMEOUT timeout) {
+	FTRACE(txmclogger, "ENTER");
 	return TxManager::get_instance()->set_transaction_timeout(timeout);
 }
 int tx_info(TXINFO *info) {
+	FTRACE(txmclogger, "ENTER");
 	return TxManager::get_instance()->info(info);
 }
 
 /* Blacktie tx interface additions */
 int set_rollback_only()
 {
+	FTRACE(txmclogger, "ENTER");
     return TxManager::get_instance()->rollback_only();
 }
 
 void * start_tx_orb(char* connectionName)
 {
-	LOG4CXX_TRACE(txlogger, (char*) "TxManagerc: start_tx_orb");
+	FTRACE(txmclogger, "ENTER");
     return TxManager::init_orb(connectionName);
 }
 
 void shutdown_tx_broker(void)
 {
-	LOG4CXX_TRACE(txlogger, (char*) "TxManagerc: shutdown_tx_broker");
+	FTRACE(txmclogger, "ENTER");
     TxManager::discard_instance();
 }
 
 int associate_tx(void *control)
 {
-	LOG4CXX_TRACE(txlogger, (char*) "TxManagerc: associate_tx");
+	FTRACE(txmclogger, "ENTER");
     return atmibroker::tx::TxManager::tx_resume((CosTransactions::Control_ptr) control, TMRESUME);
 }
 
 int associate_tx(void *control, int tid)
 {
-	LOG4CXX_TRACE(txlogger, (char*) "TxManagerc: associate_tx: tid=" << tid);
+	FTRACE(txmclogger, "ENTER" << tid);
     return atmibroker::tx::TxManager::tx_resume((CosTransactions::Control_ptr) control, tid, TMRESUME);
 }
 
 int associate_serialized_tx(char *orbname, char* ctrlIOR)
 {
-	LOG4CXX_TRACE(txlogger, (char*) "associate_serialized_tx orb=" << orbname);
+	FTRACE(txmclogger, "ENTER" << orbname);
     return atmibroker::tx::TxManager::tx_resume(ctrlIOR, orbname, TMRESUME);
 }
 
 void * disassociate_tx(void)
 {
-	LOG4CXX_TRACE(txlogger, (char*) "disassociate_tx");
+	FTRACE(txmclogger, "ENTER");
     return (void *) atmibroker::tx::TxManager::tx_suspend(TMSUSPEND | TMMIGRATE);
 }
 
 void * disassociate_tx_if_not_owner(void)
 {
-	LOG4CXX_TRACE(txlogger, (char*) "disassociate_tx_if_not_owner");
+	FTRACE(txmclogger, "ENTER");
     return (void *) atmibroker::tx::TxManager::tx_suspend(ACE_OS::thr_self(), TMSUSPEND | TMMIGRATE);
 }
 
 void * get_control()
 {
+	FTRACE(txmclogger, "ENTER");
     return (void *) atmibroker::tx::TxManager::get_ots_control();
 }
 
 void release_control(void *control)
 {
+	FTRACE(txmclogger, "ENTER");
     CosTransactions::Control_ptr cp = (CosTransactions::Control_ptr) control;
 
 	try {
@@ -123,7 +137,7 @@ void release_control(void *control)
 
 char* serialize_tx(char *orbname)
 {
-	LOG4CXX_TRACE(txlogger, (char*) "serialize_tx orb=" << orbname);
+	FTRACE(txmclogger, "ENTER" << orbname);
     CORBA::ORB_ptr orb = find_orb(orbname);
     CosTransactions::Control_ptr ctrl = atmibroker::tx::TxManager::get_ots_control();
 

@@ -22,18 +22,24 @@
 namespace atmibroker {
 	namespace tx {
 
-log4cxx::LoggerPtr txlogger(log4cxx::Logger::getLogger("TxLogger"));
+log4cxx::LoggerPtr txclogger(log4cxx::Logger::getLogger("TxLogControl"));
 
-TxControl::TxControl() : _tid(0), _ctrl(NULL) {}
-TxControl::TxControl(CosTransactions::Control_ptr ctrl, int tid) : _tid(tid), _ctrl(ctrl) {}
+TxControl::TxControl() : _tid(0), _ctrl(NULL) {
+	FTRACE(txclogger, "ENTER");
+}
+TxControl::TxControl(CosTransactions::Control_ptr ctrl, int tid) : _tid(tid), _ctrl(ctrl) {
+	FTRACE(txclogger, "ENTER");
+}
 
 TxControl::~TxControl()
 {
+	FTRACE(txclogger, "ENTER");
 	suspend();
 }
 
 int TxControl::end(bool commit, bool reportHeuristics)
 {
+	FTRACE(txclogger, "ENTER");
 	int outcome;
 
 	if (!isActive("end", true)) {
@@ -44,47 +50,47 @@ int TxControl::end(bool commit, bool reportHeuristics)
 		CosTransactions::Terminator_var term = _ctrl->get_terminator();
 
 		if (CORBA::is_nil(term)) {
-			LOG4CXX_WARN(txlogger, (char*) "end: no terminator");
+			LOG4CXX_WARN(txclogger, (char*) "end: no terminator");
 			outcome = TX_FAIL;
 		} else {
 			try {
 
 				// ask the transaction service to end the tansaction
 				(commit ? term->commit(reportHeuristics) : term->rollback());
-				LOG4CXX_DEBUG(txlogger, (char*) "end: ok");
+				LOG4CXX_DEBUG(txclogger, (char*) "end: ok");
 				outcome = TX_OK;
 
 			} catch (CORBA::TRANSACTION_ROLLEDBACK &e) {
-				LOG4CXX_INFO(txlogger, (char*) "end: rolled back: " << e._name());
+				LOG4CXX_INFO(txclogger, (char*) "end: rolled back: " << e._name());
 				outcome = TX_ROLLBACK;
 			} catch (CosTransactions::Unavailable & e) {
-				LOG4CXX_INFO(txlogger, (char*) "end: unavailable: " << e._name());
+				LOG4CXX_INFO(txclogger, (char*) "end: unavailable: " << e._name());
 				outcome = TX_FAIL; // TM failed temporarily
 			} catch (CosTransactions::HeuristicMixed &e) {
-				LOG4CXX_INFO(txlogger, (char*) "end: HeuristicMixed: " << e._name());
+				LOG4CXX_INFO(txclogger, (char*) "end: HeuristicMixed: " << e._name());
 				// can be thrown if commit_return characteristic is TX_COMMIT_COMPLETED
 				outcome = TX_MIXED;
 			} catch (CosTransactions::HeuristicHazard &e) {
-				LOG4CXX_ERROR(txlogger, (char*) "end: HeuristicHazard: " << e._name());
+				LOG4CXX_ERROR(txclogger, (char*) "end: HeuristicHazard: " << e._name());
 				// can be thrown if commit_return characteristic is TX_COMMIT_COMPLETED
 				outcome = TX_HAZARD;
 			} catch (CORBA::SystemException & e) {
-				LOG4CXX_WARN(txlogger, (char*) "end: " << e._name() << " minor: " << e.minor());
+				LOG4CXX_WARN(txclogger, (char*) "end: " << e._name() << " minor: " << e.minor());
 				outcome = TX_FAIL;
 			} catch (...) {
-				LOG4CXX_WARN(txlogger, (char*) "end: unknown error");
+				LOG4CXX_WARN(txclogger, (char*) "end: unknown error");
 				outcome = TX_FAIL; // TM failed temporarily
 			}
 		}
 	} catch (CosTransactions::Unavailable & e) {
-		LOG4CXX_WARN(txlogger, (char*) "end: term unavailable: " << e._name());
+		LOG4CXX_WARN(txclogger, (char*) "end: term unavailable: " << e._name());
 		outcome = TX_FAIL;
 	} catch (CORBA::OBJECT_NOT_EXIST & e) {
-		LOG4CXX_WARN(txlogger, (char*) "end: term ex " << e._name() << " minor: " << e.minor());
+		LOG4CXX_WARN(txclogger, (char*) "end: term ex " << e._name() << " minor: " << e.minor());
 		// transaction no longer exists (presumed abort)
 		outcome = TX_ROLLBACK;
 	} catch (CORBA::SystemException & e) {
-		LOG4CXX_WARN(txlogger, (char*) "end: term sys ex " << e._name() << " minor: " << e.minor());
+		LOG4CXX_WARN(txclogger, (char*) "end: term sys ex " << e._name() << " minor: " << e.minor());
 		outcome = TX_FAIL;
 	}
 
@@ -95,16 +101,19 @@ int TxControl::end(bool commit, bool reportHeuristics)
 
 int TxControl::commit(bool reportHeuristics)
 {
+	FTRACE(txclogger, "ENTER");
 	return end(true, reportHeuristics);
 }
 
 int TxControl::rollback()
 {
+	FTRACE(txclogger, "ENTER");
 	return end(false, false);
 }
 
 int TxControl::rollback_only()
 {
+	FTRACE(txclogger, "ENTER");
 	if (!isActive("rollback_only", true)) {
 		return TX_PROTOCOL_ERROR;
 	}
@@ -118,9 +127,9 @@ int TxControl::rollback_only()
 		}
 	} catch (CosTransactions::Unavailable & e) {
 		// no coordinator
-		LOG4CXX_WARN(txlogger, (char*) "rollback_only: unavailable");
+		LOG4CXX_WARN(txclogger, (char*) "rollback_only: unavailable");
 	} catch (CORBA::SystemException & e) {
-		LOG4CXX_WARN(txlogger, (char*) "rollback_only: " << e._name() << " minor: " << e.minor());
+		LOG4CXX_WARN(txclogger, (char*) "rollback_only: " << e._name() << " minor: " << e.minor());
 	}
 
 	return TX_FAIL;
@@ -128,6 +137,7 @@ int TxControl::rollback_only()
 
 CosTransactions::Status TxControl::get_ots_status()
 {
+	FTRACE(txclogger, "ENTER");
 	if (!isActive(NULL, false)) {
 		return CosTransactions::StatusNoTransaction;
 	}
@@ -140,7 +150,7 @@ CosTransactions::Status TxControl::get_ots_status()
 	} catch (CosTransactions::Unavailable & e) {
 		// no coordinator
 	} catch (CORBA::SystemException & e) {
-		LOG4CXX_WARN(txlogger, (char*) "status: " << e._name() << " minor: " << e.minor());
+		LOG4CXX_WARN(txclogger, (char*) "status: " << e._name() << " minor: " << e.minor());
 	}
 
 	return CosTransactions::StatusUnknown;
@@ -148,6 +158,7 @@ CosTransactions::Status TxControl::get_ots_status()
 
 int TxControl::get_status()
 {
+	FTRACE(txclogger, "ENTER");
 	switch (get_ots_status()) {
 	case CosTransactions::StatusActive:
 	case CosTransactions::StatusPreparing:
@@ -176,6 +187,7 @@ int TxControl::get_status()
 
 int TxControl::get_timeout(CORBA::ULong *timeout)
 {
+	FTRACE(txclogger, "ENTER");
 	if (!isActive(NULL, false)) {
 		return TX_PROTOCOL_ERROR;
 	}
@@ -186,7 +198,7 @@ int TxControl::get_timeout(CORBA::ULong *timeout)
 		*timeout = context->timeout;
 		return TX_OK;
 	} catch (CORBA::SystemException & e) {
-		LOG4CXX_WARN(txlogger, (char*) "get timeout: " << e._name() << " minor: " << e.minor());
+		LOG4CXX_WARN(txclogger, (char*) "get timeout: " << e._name() << " minor: " << e.minor());
 		return TX_FAIL;
 	}
 }
@@ -198,6 +210,7 @@ int TxControl::get_timeout(CORBA::ULong *timeout)
  */
 CosTransactions::Control_ptr TxControl::get_ots_control()
 {
+	FTRACE(txclogger, "ENTER");
 	return (CORBA::is_nil(_ctrl) ? NULL : CosTransactions::Control::_duplicate(_ctrl));
 }
 
@@ -206,11 +219,12 @@ CosTransactions::Control_ptr TxControl::get_ots_control()
  */
 void TxControl::suspend()
 {
+	FTRACE(txclogger, "ENTER");
 	if (!CORBA::is_nil(_ctrl)) {
 		try {	// c.f. TxManager::tx_suspend
 			(void) CORBA::release(_ctrl);
 		} catch (CORBA::SystemException & e) {
-			LOG4CXX_WARN(txlogger, (char*) "end: error unref control: " << e._name() << " minor: " << e.minor());
+			LOG4CXX_WARN(txclogger, (char*) "end: error unref control: " << e._name() << " minor: " << e.minor());
 		}
 	}
 
@@ -225,10 +239,11 @@ void TxControl::suspend()
  */
 bool TxControl::isActive(const char *msg, bool expect)
 {
+	FTRACE(txclogger, "ENTER");
 	bool c = (!CORBA::is_nil(_ctrl));
 
 	if (c != expect && msg) {
-		LOG4CXX_WARN(txlogger, (char*) "protocol violation: " << msg);
+		LOG4CXX_WARN(txclogger, (char*) "protocol violation: " << msg);
 	}
 
 	return c;
