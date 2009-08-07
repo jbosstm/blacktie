@@ -47,7 +47,7 @@ public:
 
 	static bool getXID(XID &);
 private:
-        ResourceManagerMap rms_;
+	ResourceManagerMap rms_;
 
 	XAResourceManager * createRM(CORBA_CONNECTION *, xarm_config_t *) throw (RMException);
 };

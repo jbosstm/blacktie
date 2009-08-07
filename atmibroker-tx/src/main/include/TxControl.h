@@ -56,7 +56,6 @@ public:
 private:
 
 	int end(bool commit, bool report);
-	int chainTransaction(int outcome);
 
 	int _tid;	// ACE thread id
 	CosTransactions::Control_ptr _ctrl;

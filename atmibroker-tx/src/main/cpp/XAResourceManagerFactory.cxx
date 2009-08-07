@@ -65,7 +65,7 @@ bool XAResourceManagerFactory::getXID(XID& xid)
 		xid.gtrid_length = 0; 
 		xid.bqual_length = otid.bqual_length; 
 
-LOG4CXX_DEBUG(xaResourceLogger,  (char *) "converting OTS tid: ");
+		LOG4CXX_TRACE(xaResourceLogger,  (char *) "converting OTS tid: ");
 		for (int i = 0; i < otid.bqual_length; i++) {
 			if (otid.tid[i] == JBOSSTS_NODE_SEPARATOR) {
 				xid.gtrid_length = i; 
@@ -80,8 +80,9 @@ LOG4CXX_DEBUG(xaResourceLogger,  (char *) "converting OTS tid: ");
 
 			xid.data[i] = otid.tid[i];
 		}
-LOG4CXX_DEBUG(xaResourceLogger,  (char *) "converted OTS tid len:" <<
-	otid.tid.length() << (char *) " otid bqual len: " << otid.bqual_length << (char *) " gtrid: " << xid.gtrid_length << (char *) " bqual: " << xid.bqual_length);
+		LOG4CXX_TRACE(xaResourceLogger,  (char *) "converted OTS tid len:" <<
+			otid.tid.length() << (char *) " otid bqual len: " << otid.bqual_length <<
+			(char *) " gtrid: " << xid.gtrid_length << (char *) " bqual: " << xid.bqual_length);
 
 #endif
 		ok = true;

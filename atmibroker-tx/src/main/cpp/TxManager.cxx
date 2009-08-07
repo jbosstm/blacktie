@@ -52,13 +52,13 @@ void TxManager::discard_instance()
 TxManager::TxManager() :
 	_whenReturn(TX_COMMIT_DECISION_LOGGED), _controlMode(TX_UNCHAINED), _timeout (0L), _isOpen(false)
 {
-	LOG4CXX_LOGLS(txlogger, log4cxx::Level::getDebug(), (char*) "TxManager: constructing");
+	LOG4CXX_DEBUG(txlogger, (char*) "TxManager: constructing");
 	_connection = init_orb((char*) "ots");
 }
 
 TxManager::~TxManager()
 {
-	LOG4CXX_LOGLS(txlogger, log4cxx::Level::getDebug(), (char*) "TxManager: destroying");
+	LOG4CXX_DEBUG(txlogger, (char*) "TxManager: destroying");
 
 	if (_connection) {
 		shutdownBindings(_connection);
@@ -77,7 +77,7 @@ atmibroker::tx::TxControl *TxManager::currentTx(const char *msg)
 	atmibroker::tx::TxControl *tx = NULL;
 
 	if ((!_isOpen || (tx = (atmibroker::tx::TxControl *) getSpecific(TSS_KEY)) == NULL || !tx->isActive(NULL, true)) && msg) {
-		LOG4CXX_LOGLS(txlogger, log4cxx::Level::getInfo(), (char*) "protocol violation (" << msg << ") open="
+		LOG4CXX_INFO(txlogger, (char*) "protocol violation (" << msg << ") open="
 			<< _isOpen << (char*) " TSS_KEY=" << getSpecific(TSS_KEY));
 	}
 
@@ -88,7 +88,7 @@ int TxManager::begin(void)
 {
 	if (!_isOpen || getSpecific(TSS_KEY)) {
 		// either open hasn't been called or already in a transaction
-		LOG4CXX_LOGLS(txlogger, log4cxx::Level::getWarn(), (char*) "begin: protocol violation: open="
+		LOG4CXX_WARN(txlogger, (char*) "begin: protocol violation: open="
 			<< _isOpen << (char*) " TSS_KEY=" << getSpecific(TSS_KEY));
 		return TX_PROTOCOL_ERROR;
 	} else {
@@ -96,7 +96,7 @@ int TxManager::begin(void)
 		CosTransactions::Control_ptr ctrl = _txfac->create(_timeout);
 
 		if (CORBA::is_nil(ctrl)) {
-			LOG4CXX_LOGLS(txlogger, log4cxx::Level::getWarn(), (char*) "begin: create returned nil control");
+			LOG4CXX_WARN(txlogger, (char*) "begin: create returned nil control");
 			return TX_ERROR;
 		}
 
@@ -106,7 +106,7 @@ int TxManager::begin(void)
 
 		if (rc != XA_OK) {
 			// one or more RMs failed to start - roll back the transaction
-			LOG4CXX_LOGLS(txlogger, log4cxx::Level::getWarn(), (char*) "begin: XA resume error: " << rc);
+			LOG4CXX_WARN(txlogger, (char*) "begin: XA resume error: " << rc);
 			try {
 				CosTransactions::Terminator_var term = ctrl->get_terminator();
 
@@ -119,7 +119,7 @@ int TxManager::begin(void)
 		}
 	}
 
-	LOG4CXX_LOGLS(txlogger, log4cxx::Level::getDebug(), (char*) "begin: ok");
+	LOG4CXX_DEBUG(txlogger, (char*) "begin: ok");
 
 	return TX_OK;
 }
@@ -246,7 +246,7 @@ int TxManager::info(TXINFO *info)
 		if (tx != NULL) {
 			XAResourceManagerFactory::getXID(info->xid);
 			info->transaction_state = tx->get_status();
-			LOG4CXX_LOGLS(txlogger, log4cxx::Level::getDebug(), (char*) "info status=" << info->transaction_state);
+			LOG4CXX_DEBUG(txlogger, (char*) "info status=" << info->transaction_state);
 		}
 	}
 
@@ -260,33 +260,33 @@ int TxManager::open(void)
 	if (_isOpen)
 		return TX_OK;
 
-	LOG4CXX_LOGLS(txlogger, log4cxx::Level::getDebug(), (char*) "open ");
+	LOG4CXX_DEBUG(txlogger, (char*) "open ");
 
 	if (_txfac == NULL) {
 		char *transFactoryId = AtmiBrokerEnv::get_instance()->getenv((char*)"TRANS_FACTORY_ID");
 
 		if (transFactoryId == NULL || strlen(transFactoryId) == 0) {
-			LOG4CXX_LOGLS(txlogger, log4cxx::Level::getError(), (char*) "Please set the TRANS_FACTORY_ID env variable");
+			LOG4CXX_ERROR(txlogger, (char*) "Please set the TRANS_FACTORY_ID env variable");
 			return TX_ERROR;
 		}
 
 		try {
 			CosNaming::NamingContextExt_ptr nce = (CosNaming::NamingContextExt_ptr) _connection->default_ctx;
 			CosNaming::Name *name = nce->to_name(transFactoryId);
-			LOG4CXX_LOGLS(txlogger, log4cxx::Level::getDebug(), (char*) "resolving Tx Fac Id: " << transFactoryId);
+			LOG4CXX_DEBUG(txlogger, (char*) "resolving Tx Fac Id: " << transFactoryId);
 			CORBA::Object_var obj = nce->resolve(*name);
 			delete name;
-			LOG4CXX_LOGLS(txlogger, log4cxx::Level::getDebug(), (char*) "resolved OK: " << (void*) obj);
+			LOG4CXX_DEBUG(txlogger, (char*) "resolved OK: " << (void*) obj);
 			_txfac = CosTransactions::TransactionFactory::_narrow(obj);
-			LOG4CXX_LOGLS(txlogger, log4cxx::Level::getDebug(), (char*) "narrowed OK: " << (void*) _txfac);
+			LOG4CXX_DEBUG(txlogger, (char*) "narrowed OK: " << (void*) _txfac);
 
 		} catch (CORBA::SystemException & e) {
-			LOG4CXX_LOGLS(txlogger, log4cxx::Level::getError(),
-				(char*) "Error resolving Transation Service: " << e._name() << " minor code: " << e.minor());
+			LOG4CXX_ERROR(txlogger, 
+				(char*) "Error resolving Tx Service: " << e._name() << " minor code: " << e.minor());
 			return TX_ERROR;
 		} catch (...) {
-			LOG4CXX_LOGLS(txlogger, log4cxx::Level::getError(),
-				(char*) "Unknown error resolving Transation Service: " << transFactoryId);
+			LOG4CXX_ERROR(txlogger, 
+				(char*) "Unknown error resolving Tx Service: " << transFactoryId);
 			return TX_ERROR;
 		}
 	}
@@ -298,7 +298,7 @@ int TxManager::open(void)
 
 	rc = rm_open();
 
-	LOG4CXX_LOGLS(txlogger, log4cxx::Level::getDebug(), (char*) "open XA status: " << rc);
+	LOG4CXX_DEBUG(txlogger, (char*) "open XA status: " << rc);
 	return TX_OK;
 }
 
@@ -308,11 +308,11 @@ int TxManager::close(void)
 		return TX_OK;
 
 	if (getSpecific(TSS_KEY)) {
-		LOG4CXX_LOGLS(txlogger, log4cxx::Level::getWarn(), (char*) "close: transaction still active");
+		LOG4CXX_WARN(txlogger, (char*) "close: transaction still active");
 		return TX_PROTOCOL_ERROR;
 	}
 
-	LOG4CXX_LOGLS(txlogger, log4cxx::Level::getDebug(), (char*) "close ");
+	LOG4CXX_DEBUG(txlogger, (char*) "close ");
 	_isOpen = false;
 	rm_close();
 
@@ -325,7 +325,7 @@ int TxManager::rm_open(void)
 		_xaRMFac.createRMs(_connection);
 		return 0;
 	} catch (RMException& ex) {
-		LOG4CXX_LOGLS(txlogger, log4cxx::Level::getWarn(), (char*) "failed to load RMs: " << ex.what());
+		LOG4CXX_WARN(txlogger, (char*) "failed to load RMs: " << ex.what());
 		return -1;
 	}
 }
@@ -362,7 +362,7 @@ int TxManager::tx_resume(CosTransactions::Control_ptr control, int creator, int 
 
 int TxManager::tx_resume(char* ctrlIOR, char *orbname, int flags)
 {
-    LOG4CXX_LOGLS(txlogger, log4cxx::Level::getDebug(), (char*) "tx_resume orb=" << orbname << (char *) " IOR=" << ctrlIOR);
+    LOG4CXX_DEBUG(txlogger, (char*) "tx_resume orb=" << orbname << (char *) " IOR=" << ctrlIOR);
     CORBA::Object_ptr p = atmi_string_to_object(ctrlIOR, orbname);
 
     if (!CORBA::is_nil(p)) {
@@ -371,7 +371,7 @@ int TxManager::tx_resume(char* ctrlIOR, char *orbname, int flags)
 
         return TxManager::tx_resume(cptr, 0, flags); // why 0 tid
     } else {
-		LOG4CXX_LOGLS(txlogger, log4cxx::Level::getWarn(), (char*) "tx_resume: control IOR is invalid");
+		LOG4CXX_WARN(txlogger, (char*) "tx_resume: control IOR is invalid");
 	}
 
     return TMER_INVAL;
@@ -386,14 +386,14 @@ int TxManager::tx_resume(TxControl *tx, int flags)
 		// must associate the tx with the thread before calling start on each open RM
    		setSpecific(TSS_KEY, tx);
 		if ((rc = TxManager::get_instance()->rm_start(flags)) == XA_OK) {
-			LOG4CXX_LOGLS(txlogger, log4cxx::Level::getDebug(), (char *) "Resume tx: ok");
+			LOG4CXX_DEBUG(txlogger, (char *) "Resume tx: ok");
 
 			return TX_OK;
 		} else {
-			LOG4CXX_LOGLS(txlogger, log4cxx::Level::getWarn(), (char *) "Resume tx: error: " << rc);
+			LOG4CXX_WARN(txlogger, (char *) "Resume tx: error: " << rc);
 		}
     } catch (...) {
-        LOG4CXX_LOGLS(txlogger, log4cxx::Level::getDebug(), (char *) "Resume tx: generic exception");
+        LOG4CXX_DEBUG(txlogger, (char *) "Resume tx: generic exception");
     }
 
 	destroySpecific(TSS_KEY);

@@ -23,7 +23,7 @@ XAResourceAdaptorImpl::XAResourceAdaptorImpl(
 	XAResourceManager * rm, XID * xid, CORBA::Long rmid, struct xa_switch_t * xa_switch) throw (RMException) :
 	rm_(rm), xid_(*xid), complete_(false), rmid_(rmid), xa_switch_(xa_switch)
 {
-	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "new OTS resource rmid:" << rmid_);
+	LOG4CXX_TRACE(xaResourceLogger, (char*) "new OTS resource rmid:" << rmid_);
 }
 
 XAResourceAdaptorImpl::~XAResourceAdaptorImpl()
@@ -52,14 +52,14 @@ CosTransactions::Vote XAResourceAdaptorImpl::prepare()
 {
 	int rv = xa_end (&xid_, rmid_, TMSUCCESS);
 	if (rv != XA_OK) {
-		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getWarn(), (char *) xa_switch_->name <<
+		LOG4CXX_WARN(xaResourceLogger, (char *) xa_switch_->name <<
 			(char*) ": prepare OTS resource end failed: error=" << rv << " rid=" << rmid_);
 	} else {
-		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getDebug(), (char*) "OTS resource end rv=" << rv << " rid=" << rmid_);
+		LOG4CXX_DEBUG(xaResourceLogger, (char*) "OTS resource end rv=" << rv << " rid=" << rmid_);
 	}
 
 	rv = xa_switch_->xa_prepare_entry(&xid_, rmid_, TMNOFLAGS);
-	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getDebug(), (char*) "OTS resource prepare rv=" << rv << " rid=" << rmid_);
+	LOG4CXX_DEBUG(xaResourceLogger, (char*) "OTS resource prepare rv=" << rv << " rid=" << rmid_);
 
 	switch (rv) {
 	case XA_OK:
@@ -137,7 +137,7 @@ void XAResourceAdaptorImpl::commit()
 		CosTransactions::HeuristicHazard)
 {
 	int rv = xa_commit (&xid_, rmid_, TMNOFLAGS);	// no need for xa_end since prepare must have been called
-	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "OTS resource commit rv=" << rv);
+	LOG4CXX_TRACE(xaResourceLogger, (char*) "OTS resource commit rv=" << rv);
 
 	terminate(rv);
 
@@ -151,14 +151,14 @@ void XAResourceAdaptorImpl::rollback()
 	int rv = xa_end (&xid_, rmid_, TMSUCCESS);
 
 	if (rv != XA_OK) {
-		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getWarn(), (char *) xa_switch_->name <<
+		LOG4CXX_WARN(xaResourceLogger, (char *) xa_switch_->name <<
 			(char*) ": rollback OTS resource end failed: error=" << rv << " rid=" << rmid_);
 	} else {
-		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getDebug(), (char*) "OTS resource end rv=" << rv << " rid=" << rmid_);
+		LOG4CXX_DEBUG(xaResourceLogger, (char*) "OTS resource end rv=" << rv << " rid=" << rmid_);
 	}
 
 	rv = xa_rollback (&xid_, rmid_, TMNOFLAGS);
-	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getDebug(), (char*) "OTS resource rollback rv=" << rv);
+	LOG4CXX_DEBUG(xaResourceLogger, (char*) "OTS resource rollback rv=" << rv);
 	terminate(rv);
 	// TODO figure out whether to forget this branch
 	setComplete();
@@ -169,14 +169,14 @@ void XAResourceAdaptorImpl::commit_one_phase() throw(CosTransactions::HeuristicH
 	int rv = xa_end (&xid_, rmid_, TMSUCCESS);
 
 	if (rv != XA_OK) {
-		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getWarn(), (char *) xa_switch_->name <<
+		LOG4CXX_WARN(xaResourceLogger, (char *) xa_switch_->name <<
 			(char*) ": commit 1PC OTS resource end failed: error=" << rv << " rid=" << rmid_);
 	} else {
-		LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getDebug(), (char*) "1PC OTS resource end ok, rid=" << rmid_);
+		LOG4CXX_DEBUG(xaResourceLogger, (char*) "1PC OTS resource end ok, rid=" << rmid_);
 	}
 
 	rv = xa_commit (&xid_, rmid_, TMONEPHASE);
-	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getDebug(), (char*) "1PC OTS resource commit rv=" << rv);
+	LOG4CXX_DEBUG(xaResourceLogger, (char*) "1PC OTS resource commit rv=" << rv);
 
 	terminate(rv);
 	setComplete();
@@ -185,7 +185,7 @@ void XAResourceAdaptorImpl::commit_one_phase() throw(CosTransactions::HeuristicH
 void XAResourceAdaptorImpl::forget()
 {
 	int rv = xa_forget (&xid_, rmid_, TMNOFLAGS);
-	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "OTS resource forget rv=" << rv);
+	LOG4CXX_TRACE(xaResourceLogger, (char*) "OTS resource forget rv=" << rv);
 	setComplete();
 }
 // accessors
@@ -209,42 +209,42 @@ long XAResourceAdaptorImpl::get_version()
 }
 int XAResourceAdaptorImpl::xa_start (XID * txid, int rmid, long flags)
 {
-	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "xa_start: rmid= " << rmid << (char*) ", flags 0x" << std::hex << flags);
+	LOG4CXX_TRACE(xaResourceLogger, (char*) "xa_start: rmid= " << rmid << (char*) ", flags 0x" << std::hex << flags);
 	return xa_switch_->xa_start_entry(txid, rmid, flags);
 }
 int XAResourceAdaptorImpl::xa_end (XID * txid, int rmid, long flags)
 {
-	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "xa_end: rmid= " << rmid << (char*) ", flags 0x" << std::hex << flags);
+	LOG4CXX_TRACE(xaResourceLogger, (char*) "xa_end: rmid= " << rmid << (char*) ", flags 0x" << std::hex << flags);
 	return xa_switch_->xa_end_entry(txid, rmid, flags);
 }
 int XAResourceAdaptorImpl::xa_rollback (XID * txid, int rmid, long flags)
 {
-	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "xa_rollback: rmid= " << rmid << (char*) ", flags=0x" << std::hex << flags);
+	LOG4CXX_TRACE(xaResourceLogger, (char*) "xa_rollback: rmid= " << rmid << (char*) ", flags=0x" << std::hex << flags);
 	return xa_switch_->xa_rollback_entry(txid, rmid, flags);
 }
 int XAResourceAdaptorImpl::xa_prepare (XID * txid, int rmid, long flags)
 {
-	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "xa_prepare: rmid= " << rmid << (char*) ", flags=0x" << std::hex << flags);
+	LOG4CXX_TRACE(xaResourceLogger, (char*) "xa_prepare: rmid= " << rmid << (char*) ", flags=0x" << std::hex << flags);
 	return xa_switch_->xa_prepare_entry(txid, rmid, flags);
 }
 int XAResourceAdaptorImpl::xa_commit (XID * txid, int rmid, long flags)
 {
-	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "xa_commit rmid=" << rmid << (char*) ", flags=0x" << std::hex << flags);
+	LOG4CXX_TRACE(xaResourceLogger, (char*) "xa_commit rmid=" << rmid << (char*) ", flags=0x" << std::hex << flags);
 	return xa_switch_->xa_commit_entry(txid, rmid, flags);
 }
 int XAResourceAdaptorImpl::xa_recover (XID * txid, long xxx, int rmid, long flags)
 {
-	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "xa_recover: rmid= " << rmid << (char*) ", flags=0x" << std::hex << flags);
+	LOG4CXX_TRACE(xaResourceLogger, (char*) "xa_recover: rmid= " << rmid << (char*) ", flags=0x" << std::hex << flags);
 	return xa_switch_->xa_recover_entry(txid, xxx, rmid, flags);
 }
 int XAResourceAdaptorImpl::xa_forget (XID * txid, int rmid, long flags)
 {
-	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), "xa_forget: rmid= " << rmid << (char*) ", flags=0x" << std::hex << flags);
+	LOG4CXX_TRACE(xaResourceLogger, "xa_forget: rmid= " << rmid << (char*) ", flags=0x" << std::hex << flags);
 	return xa_switch_->xa_forget_entry(txid, rmid, flags);
 }
 int XAResourceAdaptorImpl::xa_complete (int * handle, int * retvalue, int rmid, long flags)
 {
-	LOG4CXX_LOGLS(xaResourceLogger, log4cxx::Level::getTrace(), (char*) "xa_complete " << rmid
+	LOG4CXX_TRACE(xaResourceLogger, (char*) "xa_complete " << rmid
 		<< (char*) ", flags=0x" << std::hex << flags);
 	return xa_switch_->xa_complete_entry(handle, retvalue, rmid, flags);
 }

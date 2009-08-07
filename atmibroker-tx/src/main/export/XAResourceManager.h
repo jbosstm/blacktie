@@ -38,15 +38,15 @@ extern log4cxx::LoggerPtr xaResourceLogger;
 class BLACKTIE_TX_DLL XAResourceManager
 {
 public:
-        XAResourceManager(CORBA_CONNECTION *, const char *, const char *, const char *, CORBA::Long, struct xa_switch_t *)
-                throw (RMException);
-        virtual ~XAResourceManager();
+	XAResourceManager(CORBA_CONNECTION *, const char *, const char *, const char *, CORBA::Long, struct xa_switch_t *)
+		throw (RMException);
+	virtual ~XAResourceManager();
 
 	int xa_start (XID *, int, long);
 	int xa_end (XID *, int, long);
 
-        // return the resource id
-        CORBA::Long rmid(void) {return rmid_;};
+	// return the resource id
+	CORBA::Long rmid(void) {return rmid_;};
 	void notifyError(XID *, int, bool);
 	void setComplete(XID*);
 	const char * name() {return name_;}
@@ -55,16 +55,16 @@ private:
 	typedef std::map<XID *, XAResourceAdaptorImpl *> XABranchMap;
 	XABranchMap branches_;
 
-        PortableServer::POA_ptr poa_;
-        CORBA_CONNECTION* connection_;
-        const char *name_;
-        const char *openString_;
-        const char *closeString_;
-        CORBA::Long rmid_;
-        struct xa_switch_t * xa_switch_;
+	PortableServer::POA_ptr poa_;
+	CORBA_CONNECTION* connection_;
+	const char *name_;
+	const char *openString_;
+	const char *closeString_;
+	CORBA::Long rmid_;
+	struct xa_switch_t * xa_switch_;
 
 	void createPOA();
-        int createServant(XID *);
+	int createServant(XID *);
 	XAResourceAdaptorImpl * locateBranch(XID *);
 
 	void show_branches(const char *, XID *);

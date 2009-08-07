@@ -21,14 +21,9 @@
 #ifndef _TXMANAGER_H
 #define _TXMANAGER_H
 
-#include <orbsvcs/CosNamingS.h>
-#include "CosTransactionsS.h"
-
 #include "CorbaConnection.h"
-
 #include "TxControl.h"
 #include "XAResourceManagerFactory.h"
-#include "tx.h"
 
 namespace atmibroker {
 	namespace tx {
@@ -60,14 +55,14 @@ public:	// public static methods
 
 	static CORBA_CONNECTION* init_orb(char* name);
 
-    static CosTransactions::Control_ptr get_ots_control();	// ref count of ptr is incremented
-    static int tx_resume(CosTransactions::Control_ptr control, int flags);
-    static int tx_resume(CosTransactions::Control_ptr control, int creator, int flags);
+	static CosTransactions::Control_ptr get_ots_control();	// ref count of ptr is incremented
+	static int tx_resume(CosTransactions::Control_ptr control, int flags);
+	static int tx_resume(CosTransactions::Control_ptr control, int creator, int flags);
 	static int tx_resume(char* ctrlIOR, char *orbname, int flags);
-    static int tx_resume(TxControl *, int flags);
-    static CosTransactions::Control_ptr tx_suspend(int flags);
-    static CosTransactions::Control_ptr tx_suspend(int, int flags);
-    static CosTransactions::Control_ptr tx_suspend(TxControl *, int, int flags);
+	static int tx_resume(TxControl *, int flags);
+	static CosTransactions::Control_ptr tx_suspend(int flags);
+	static CosTransactions::Control_ptr tx_suspend(int, int flags);
+	static CosTransactions::Control_ptr tx_suspend(TxControl *, int, int flags);
 
 private:
 	TxManager();

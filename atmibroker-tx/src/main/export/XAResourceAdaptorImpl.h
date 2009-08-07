@@ -51,17 +51,17 @@ public:
 	CosTransactions::RecoveryCoordinator_ptr getRecoveryCoordinator() {return rc_;}
 
 	// XA methods
-        char* get_name(); /* name of resource manager */
-        long get_flags(); /* resource manager specific options */
-        long get_version(); /* must be 0 */
-        int xa_start (XID *, int, long);
-        int xa_end (XID *, int, long);
-        int xa_rollback (XID *, int, long);
-        int xa_prepare (XID *, int, long);
-        int xa_commit (XID *, int, long);
-        int xa_recover (XID *, long, int, long);
-        int xa_forget (XID *, int, long);
-        int xa_complete (int *, int *, int, long);
+	char* get_name(); /* name of resource manager */
+	long get_flags(); /* resource manager specific options */
+	long get_version(); /* must be 0 */
+	int xa_start (XID *, int, long);
+	int xa_end (XID *, int, long);
+	int xa_rollback (XID *, int, long);
+	int xa_prepare (XID *, int, long);
+	int xa_commit (XID *, int, long);
+	int xa_recover (XID *, long, int, long);
+	int xa_forget (XID *, int, long);
+	int xa_complete (int *, int *, int, long);
 
 private:
 	XAResourceManager * rm_;
@@ -72,9 +72,9 @@ private:
 	CosTransactions::RecoveryCoordinator_ptr rc_;
 
 	void terminate(int) throw(
-                CosTransactions::HeuristicRollback,
-                CosTransactions::HeuristicMixed,
-                CosTransactions::HeuristicHazard);
+		CosTransactions::HeuristicRollback,
+		CosTransactions::HeuristicMixed,
+		CosTransactions::HeuristicHazard);
 
 	void setComplete();
 	void notifyError(int, bool);

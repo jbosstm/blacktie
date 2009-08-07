@@ -65,43 +65,43 @@ int set_rollback_only()
 
 void * start_tx_orb(char* connectionName)
 {
-	LOG4CXX_LOGLS(txlogger, log4cxx::Level::getTrace(), (char*) "TxManagerc: start_tx_orb");
+	LOG4CXX_TRACE(txlogger, (char*) "TxManagerc: start_tx_orb");
     return TxManager::init_orb(connectionName);
 }
 
 void shutdown_tx_broker(void)
 {
-	LOG4CXX_LOGLS(txlogger, log4cxx::Level::getTrace(), (char*) "TxManagerc: shutdown_tx_broker");
+	LOG4CXX_TRACE(txlogger, (char*) "TxManagerc: shutdown_tx_broker");
     TxManager::discard_instance();
 }
 
 int associate_tx(void *control)
 {
-	LOG4CXX_LOGLS(txlogger, log4cxx::Level::getTrace(), (char*) "TxManagerc: associate_tx");
+	LOG4CXX_TRACE(txlogger, (char*) "TxManagerc: associate_tx");
     return atmibroker::tx::TxManager::tx_resume((CosTransactions::Control_ptr) control, TMRESUME);
 }
 
 int associate_tx(void *control, int tid)
 {
-	LOG4CXX_LOGLS(txlogger, log4cxx::Level::getTrace(), (char*) "TxManagerc: associate_tx: tid=" << tid);
+	LOG4CXX_TRACE(txlogger, (char*) "TxManagerc: associate_tx: tid=" << tid);
     return atmibroker::tx::TxManager::tx_resume((CosTransactions::Control_ptr) control, tid, TMRESUME);
 }
 
 int associate_serialized_tx(char *orbname, char* ctrlIOR)
 {
-	LOG4CXX_LOGLS(txlogger, log4cxx::Level::getTrace(), (char*) "associate_serialized_tx orb=" << orbname);
+	LOG4CXX_TRACE(txlogger, (char*) "associate_serialized_tx orb=" << orbname);
     return atmibroker::tx::TxManager::tx_resume(ctrlIOR, orbname, TMRESUME);
 }
 
 void * disassociate_tx(void)
 {
-	LOG4CXX_LOGLS(txlogger, log4cxx::Level::getTrace(), (char*) "disassociate_tx");
+	LOG4CXX_TRACE(txlogger, (char*) "disassociate_tx");
     return (void *) atmibroker::tx::TxManager::tx_suspend(TMSUSPEND | TMMIGRATE);
 }
 
 void * disassociate_tx_if_not_owner(void)
 {
-	LOG4CXX_LOGLS(txlogger, log4cxx::Level::getTrace(), (char*) "disassociate_tx_if_not_owner");
+	LOG4CXX_TRACE(txlogger, (char*) "disassociate_tx_if_not_owner");
     return (void *) atmibroker::tx::TxManager::tx_suspend(ACE_OS::thr_self(), TMSUSPEND | TMMIGRATE);
 }
 
@@ -123,7 +123,7 @@ void release_control(void *control)
 
 char* serialize_tx(char *orbname)
 {
-	LOG4CXX_LOGLS(txlogger, log4cxx::Level::getTrace(), (char*) "serialize_tx orb=" << orbname);
+	LOG4CXX_TRACE(txlogger, (char*) "serialize_tx orb=" << orbname);
     CORBA::ORB_ptr orb = find_orb(orbname);
     CosTransactions::Control_ptr ctrl = atmibroker::tx::TxManager::get_ots_control();
 

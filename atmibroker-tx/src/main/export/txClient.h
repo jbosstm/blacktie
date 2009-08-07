@@ -93,8 +93,8 @@ extern BLACKTIE_TX_DLL void * get_control();
 
 /**
  * Release an OTS control returned by:
- * get_control	(TODO StompEndpointQueue, ServiceDispatcher)
- * disassociate_tx (TODO ServiceDispatcher, XATMIc)
+ * get_control	(TODO StompEndpointQueue)
+ * disassociate_tx (TODO ServiceDispatcher)
  * disassociate_tx_if_not_owner (TODO EndpointQueue, CorbaEndpointQueue)
  */
 extern BLACKTIE_TX_DLL void release_control(void *);
