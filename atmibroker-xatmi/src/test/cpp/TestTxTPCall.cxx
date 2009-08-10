@@ -29,12 +29,8 @@ extern void test_tx_tpcall_x_octet_service_without_tx(TPSVCINFO *svcinfo);
 extern void test_tx_tpcall_x_octet_service_with_tx(TPSVCINFO *svcinfo);
 
 void TestTxTPCall::setUp() {
-	userlogc((char*) "TestTxTPCall::setUp");
-	sendbuf = NULL;
-	rcvbuf = NULL;
 	BaseServerTest::setUp();
 
-	// Do local work
 	sendlen = strlen("TestTxTPCall") + 1;
 	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	(void) strcpy(sendbuf, "TestTxTPCall");
@@ -44,16 +40,15 @@ void TestTxTPCall::setUp() {
 }
 
 void TestTxTPCall::tearDown() {
-	userlogc((char*) "TestTxTPCall::tearDown");
-	// Do local work
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
+
 	// Clean up server
 	BaseServerTest::tearDown();
 }
 
 void TestTxTPCall::test_tpcall_without_tx() {
-	userlogc((char*) "test_tpcall_without_tx");
+	userlogc((char*) "TxLog: test_tpcall_without_tx");
 	tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_without_tx);
 
 	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
@@ -61,26 +56,30 @@ void TestTxTPCall::test_tpcall_without_tx() {
 	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "test_tx_tpcall_x_octet_service_without_tx") == 0);
 	// make sure there is no active transaction
 	CPPUNIT_ASSERT(tx_commit() != TX_OK);
+	userlogc_debug((char*) "TxLog: test_tpcall_without_tx: passed");
 }
 
 void TestTxTPCall::test_tpcall_with_tx() {
-	userlogc((char*) "test_tpcall_with_tx");
+	userlogc((char*) "TxLog: test_tpcall_with_tx");
 
 	tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_with_tx);
 
 	// start a transaction
+	userlogc_debug((char*) "TxLog: test_tpcall_with_tx: tx_open");
 	CPPUNIT_ASSERT(tx_open() == TX_OK);
 	CPPUNIT_ASSERT(tx_begin() == TX_OK);
 	(void) ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
+	userlogc_debug((char*) "TxLog: test_tpcall_with_tx: tx_commit");
 	// make sure there is still an active transaction - ie starting a new one should fail
-	CPPUNIT_ASSERT(tx_begin() != TX_OK);
+/*	CPPUNIT_ASSERT(tx_begin() != TX_OK);*/
 	CPPUNIT_ASSERT(tx_commit() == TX_OK);
 	CPPUNIT_ASSERT(tx_close() == TX_OK);
 	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "test_tx_tpcall_x_octet_service_with_tx") == 0);
 }
 
+/* service routines */
 void test_tx_tpcall_x_octet_service_without_tx(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tx_tpcall_x_octet_service_without_tx");
+	userlogc((char*) "TxLog: service running: test_tx_tpcall_x_octet_service_without_tx");
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	TXINFO txinfo;
@@ -94,7 +93,7 @@ void test_tx_tpcall_x_octet_service_without_tx(TPSVCINFO *svcinfo) {
 }
 
 void test_tx_tpcall_x_octet_service_with_tx(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tx_tpcall_x_octet_service_with_tx");
+	userlogc((char*) "TxLog: service running: test_tx_tpcall_x_octet_service_with_tx");
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	TXINFO txinfo;

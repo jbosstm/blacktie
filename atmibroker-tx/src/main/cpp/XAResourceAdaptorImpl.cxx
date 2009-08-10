@@ -21,7 +21,7 @@ log4cxx::LoggerPtr xaralogger(log4cxx::Logger::getLogger("TxLogXAAdaptor"));
 
 XAResourceAdaptorImpl::XAResourceAdaptorImpl(
 	XAResourceManager * rm, XID * xid, CORBA::Long rmid, struct xa_switch_t * xa_switch) throw (RMException) :
-	rm_(rm), xid_(*xid), complete_(false), rmid_(rmid), xa_switch_(xa_switch)
+	rm_(rm), xid_(*xid), complete_(false), rmid_(rmid), xa_switch_(xa_switch), flags_(0)
 {
 	FTRACE(xaralogger, "ENTER" << (char*) " new OTS resource rmid:" << rmid_);
 }
@@ -218,6 +218,11 @@ long XAResourceAdaptorImpl::get_flags()
 	FTRACE(xaralogger, "ENTER");
 	return xa_switch_->flags;
 }
+int XAResourceAdaptorImpl::set_flags(int flags)
+{
+	FTRACE(xaralogger, "ENTER (" << std::hex << flags << (char *) ") flags_=0x" << std::hex << flags_);
+	return flags_;
+}
 long XAResourceAdaptorImpl::get_version()
 {
 	FTRACE(xaralogger, "ENTER");
@@ -226,16 +231,18 @@ long XAResourceAdaptorImpl::get_version()
 int XAResourceAdaptorImpl::xa_start (XID * txid, int rmid, long flags)
 {
 	FTRACE(xaralogger, (char*) "ENTER rmid= " << rmid << (char*) ", flags 0x" << std::hex << flags);
+	set_flags(flags);
 	return xa_switch_->xa_start_entry(txid, rmid, flags);
 }
 int XAResourceAdaptorImpl::xa_end (XID * txid, int rmid, long flags)
 {
 	FTRACE(xaralogger, (char*) "ENTER rmid= " << rmid << (char*) ", flags 0x" << std::hex << flags);
+	set_flags(flags);
 	return xa_switch_->xa_end_entry(txid, rmid, flags);
 }
 int XAResourceAdaptorImpl::xa_rollback (XID * txid, int rmid, long flags)
 {
-	FTRACE(xaralogger, (char*) "ENTER xa_rollback: rmid= " << rmid << (char*) ", flags=0x" << std::hex << flags);
+	FTRACE(xaralogger, (char*) "ENTER rmid= " << rmid << (char*) ", flags=0x" << std::hex << flags);
 	return xa_switch_->xa_rollback_entry(txid, rmid, flags);
 }
 int XAResourceAdaptorImpl::xa_prepare (XID * txid, int rmid, long flags)
@@ -255,12 +262,11 @@ int XAResourceAdaptorImpl::xa_recover (XID * txid, long xxx, int rmid, long flag
 }
 int XAResourceAdaptorImpl::xa_forget (XID * txid, int rmid, long flags)
 {
-	FTRACE(xaralogger, "ENTER: rmid= " << rmid << (char*) ", flags=0x" << std::hex << flags);
+	FTRACE(xaralogger, (char*) "ENTER: rmid= " << rmid << (char*) ", flags=0x" << std::hex << flags);
 	return xa_switch_->xa_forget_entry(txid, rmid, flags);
 }
 int XAResourceAdaptorImpl::xa_complete (int * handle, int * retvalue, int rmid, long flags)
 {
-	FTRACE(xaralogger, (char*) "ENTER " << rmid
-		<< (char*) ", flags=0x" << std::hex << flags);
+	FTRACE(xaralogger, (char*) "ENTER " << rmid << (char*) ", flags=0x" << std::hex << flags);
 	return xa_switch_->xa_complete_entry(handle, retvalue, rmid, flags);
 }

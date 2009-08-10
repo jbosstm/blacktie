@@ -445,10 +445,10 @@ CosTransactions::Control_ptr TxManager::tx_suspend(int thr_id, int flags)
 CosTransactions::Control_ptr TxManager::tx_suspend(TxControl *tx, int thr_id, int flags)
 {
 	FTRACE(txmlogger, "ENTER");
-    if (tx &&
-		tx->isActive(NULL, true) &&	// tx is active
-		(thr_id == 0 || tx->thr_id() != (int) thr_id))	// not the owning thread or don't care about owners
-	{
+    if (tx
+		&& tx->isActive(NULL, true)	// tx is active
+//TODO		&& (thr_id == 0 || tx->thr_id() != (int) thr_id)	// not the owning thread or don't care about owners
+	    ) {
 		// increment the control reference count
 		CosTransactions::Control_ptr ctrl = tx->get_ots_control();
 		// suspend all open Resource Managers (TMSUSPEND TMMIGRATE TMSUCCESS TMFAIL)
@@ -457,9 +457,11 @@ CosTransactions::Control_ptr TxManager::tx_suspend(TxControl *tx, int thr_id, in
 		tx->suspend();
 		delete tx;
 
+		FTRACE(txmlogger, "< ctrl: " << ctrl);
 		return ctrl;
     }
 
+	FTRACE(txmlogger, "< ctrl: 0x0");
      return NULL;
 }
 

@@ -263,7 +263,7 @@ void XAResourceManager::setComplete(XID * xid)
 
 int XAResourceManager::xa_start (XID * xid, int rmid, long flags)
 {
-	FTRACE(xarmlogger, "ENTER");
+	FTRACE(xarmlogger, "ENTER " << rmid << (char *) ": flags=" << std::hex << flags);
 	XAResourceAdaptorImpl * resource = locateBranch(xid);
 	int rv;
 
@@ -285,7 +285,7 @@ int XAResourceManager::xa_start (XID * xid, int rmid, long flags)
 
 int XAResourceManager::xa_end (XID * xid, int rmid, long flags)
 {
-	FTRACE(xarmlogger, "ENTER");
+	FTRACE(xarmlogger, "ENTER " << rmid << (char *) ": flags=" << std::hex << flags);
 	XAResourceAdaptorImpl * resource = locateBranch(xid);
 
 	return resource ? resource->xa_end(xid, rmid, flags) : XAER_NOTA;

@@ -23,7 +23,7 @@
 
 #ifndef WIN32
 #define FTRACE(logger, message) { \
-		LOG4CXX_TRACE(logger, __LINE__ << (char *) ":" << __FUNCTION__ << (char *) ":" << message); }
+		LOG4CXX_TRACE(logger, __FUNCTION__ << (char *) ":" << __LINE__ << (char *) ":" << message); }
 
 #else
 #define FTRACE(clazz, message)

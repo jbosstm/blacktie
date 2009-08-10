@@ -24,9 +24,6 @@ namespace atmibroker {
 
 log4cxx::LoggerPtr txclogger(log4cxx::Logger::getLogger("TxLogControl"));
 
-TxControl::TxControl() : _tid(0), _ctrl(NULL) {
-	FTRACE(txclogger, "ENTER");
-}
 TxControl::TxControl(CosTransactions::Control_ptr ctrl, int tid) : _tid(tid), _ctrl(ctrl) {
 	FTRACE(txclogger, "ENTER");
 }
@@ -40,47 +37,19 @@ TxControl::~TxControl()
 int TxControl::end(bool commit, bool reportHeuristics)
 {
 	FTRACE(txclogger, "ENTER");
-	int outcome;
+	int outcome = TX_OK;
+	CosTransactions::Terminator_var term;
 
 	if (!isActive("end", true)) {
 		return TX_PROTOCOL_ERROR;
 	}
 
 	try {
-		CosTransactions::Terminator_var term = _ctrl->get_terminator();
+		term = _ctrl->get_terminator();
 
 		if (CORBA::is_nil(term)) {
 			LOG4CXX_WARN(txclogger, (char*) "end: no terminator");
 			outcome = TX_FAIL;
-		} else {
-			try {
-
-				// ask the transaction service to end the tansaction
-				(commit ? term->commit(reportHeuristics) : term->rollback());
-				LOG4CXX_DEBUG(txclogger, (char*) "end: ok");
-				outcome = TX_OK;
-
-			} catch (CORBA::TRANSACTION_ROLLEDBACK &e) {
-				LOG4CXX_INFO(txclogger, (char*) "end: rolled back: " << e._name());
-				outcome = TX_ROLLBACK;
-			} catch (CosTransactions::Unavailable & e) {
-				LOG4CXX_INFO(txclogger, (char*) "end: unavailable: " << e._name());
-				outcome = TX_FAIL; // TM failed temporarily
-			} catch (CosTransactions::HeuristicMixed &e) {
-				LOG4CXX_INFO(txclogger, (char*) "end: HeuristicMixed: " << e._name());
-				// can be thrown if commit_return characteristic is TX_COMMIT_COMPLETED
-				outcome = TX_MIXED;
-			} catch (CosTransactions::HeuristicHazard &e) {
-				LOG4CXX_ERROR(txclogger, (char*) "end: HeuristicHazard: " << e._name());
-				// can be thrown if commit_return characteristic is TX_COMMIT_COMPLETED
-				outcome = TX_HAZARD;
-			} catch (CORBA::SystemException & e) {
-				LOG4CXX_WARN(txclogger, (char*) "end: " << e._name() << " minor: " << e.minor());
-				outcome = TX_FAIL;
-			} catch (...) {
-				LOG4CXX_WARN(txclogger, (char*) "end: unknown error");
-				outcome = TX_FAIL; // TM failed temporarily
-			}
 		}
 	} catch (CosTransactions::Unavailable & e) {
 		LOG4CXX_WARN(txclogger, (char*) "end: term unavailable: " << e._name());
@@ -89,11 +58,37 @@ int TxControl::end(bool commit, bool reportHeuristics)
 		LOG4CXX_WARN(txclogger, (char*) "end: term ex " << e._name() << " minor: " << e.minor());
 		// transaction no longer exists (presumed abort)
 		outcome = TX_ROLLBACK;
-	} catch (CORBA::SystemException & e) {
-		LOG4CXX_WARN(txclogger, (char*) "end: term sys ex " << e._name() << " minor: " << e.minor());
-		outcome = TX_FAIL;
 	}
 
+	if (outcome == TX_OK) {
+		try {
+			// ask the transaction service to end the tansaction
+			(commit ? term->commit(reportHeuristics) : term->rollback());
+
+		} catch (CORBA::TRANSACTION_ROLLEDBACK &e) {
+			LOG4CXX_INFO(txclogger, (char*) "end: rolled back: " << e._name());
+			outcome = TX_ROLLBACK;
+		} catch (CosTransactions::Unavailable & e) {
+			LOG4CXX_INFO(txclogger, (char*) "end: unavailable: " << e._name());
+			outcome = TX_FAIL; // TM failed temporarily
+		} catch (CosTransactions::HeuristicMixed &e) {
+			LOG4CXX_INFO(txclogger, (char*) "end: HeuristicMixed: " << e._name());
+			// can be thrown if commit_return characteristic is TX_COMMIT_COMPLETED
+			outcome = TX_MIXED;
+		} catch (CosTransactions::HeuristicHazard &e) {
+			LOG4CXX_ERROR(txclogger, (char*) "end: HeuristicHazard: " << e._name());
+			// can be thrown if commit_return characteristic is TX_COMMIT_COMPLETED
+			outcome = TX_HAZARD;
+		} catch (CORBA::SystemException & e) {
+			LOG4CXX_WARN(txclogger, (char*) "end: " << e._name() << " minor: " << e.minor());
+			outcome = TX_FAIL;
+		} catch (...) {
+			LOG4CXX_WARN(txclogger, (char*) "end: unknown error");
+			outcome = TX_FAIL; // TM failed temporarily
+		}
+	}
+
+	LOG4CXX_DEBUG(txclogger, (char*) "end: outcome: " << outcome);
 	suspend();
 
 	return outcome;

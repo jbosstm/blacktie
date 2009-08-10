@@ -104,25 +104,33 @@ public class JABRemoteService implements Message {
 
 		try {
 			if (tx == null) {
+				log.debug("service_request tx is null");
 				prev = JABTransaction.suspend();
 			} else if (!tx.equals(JABTransaction.current())) {
+				log.debug("service_request suspend " + prev + " resume " + tx);
 				prev = JABTransaction.suspend();
 				JABTransaction.resume(tx);
+			} else {
+				log.debug("service_request tx same as current");
 			}
 
 			Buffer request = requestMessage.getRequest();
+			log.debug("service_request tpcall");
 			Response response = connection.tpcall(serviceName, request, request
 					.getLength(), noTimeout ? Connection.TPNOTIME : 0);
 			responseMessage.setResponse(response);
 			log.debug("service_request responsed");
 		} catch (Exception e) {
+			log.warn("service_request exception: " + e.getMessage());
 			throw new JABException("Could not send tpcall", e);
 		} finally {
 			if (prev != null) {
 				if (tx != null) {
+					log.debug("service_request resp: suspending current: " + JABTransaction.current());
 					JABTransaction.suspend();
 				}
 
+				log.debug("service_request resuming prev: " + prev);
 				JABTransaction.resume(prev);
 			}
 		}

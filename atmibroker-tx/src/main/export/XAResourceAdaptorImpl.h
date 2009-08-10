@@ -71,12 +71,14 @@ private:
 	CORBA::Long rmid_;
 	struct xa_switch_t * xa_switch_;
 	CosTransactions::RecoveryCoordinator_ptr rc_;
+	int flags_;
 
 	void terminate(int) throw(
 		CosTransactions::HeuristicRollback,
 		CosTransactions::HeuristicMixed,
 		CosTransactions::HeuristicHazard);
 
+	int set_flags(int flags);
 	void setComplete();
 	void notifyError(int, bool);
 };

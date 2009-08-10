@@ -18,7 +18,6 @@
 #ifndef _TX_CONTROL_H
 #define _TX_CONTROL_H
 
-#include <tao/ORB.h>
 #include "CosTransactionsS.h"
 #include "txClient.h"
 
@@ -33,7 +32,6 @@ extern log4cxx::LoggerPtr txlogger;
  */
 class TxControl {
 public:
-	TxControl();
 	TxControl(CosTransactions::Control_ptr ctrl, int tid);
 	virtual ~TxControl();
 

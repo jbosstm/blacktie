@@ -112,7 +112,7 @@ static int _rm_start(XAResourceManager* rm, XID& xid, long flags)
 		<< xid.gtrid_length << ':'
 		<< xid.bqual_length << ':'
 		<< xid.data
-		<< (char *) " flags=" << flags);
+		<< (char *) " flags=" << std::hex << flags);
 
 	return rm->xa_start(&xid, rm->rmid(), flags);
 }
@@ -124,7 +124,7 @@ static int _rm_end(XAResourceManager* rm, XID& xid, long flags)
 		<< xid.gtrid_length << ':'
 		<< xid.bqual_length << ':'
 		<< xid.data
-		<< (char *) " flags=" << flags);
+		<< (char *) " flags=" << std::hex << flags);
 
 	return rm->xa_end(&xid, rm->rmid(), flags);
 }
