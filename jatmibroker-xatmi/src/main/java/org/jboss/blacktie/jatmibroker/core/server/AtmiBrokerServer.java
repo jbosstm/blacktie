@@ -36,16 +36,6 @@ import org.jboss.blacktie.jatmibroker.core.transport.TransportFactory;
 import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.omg.CORBA.Object;
-import org.omg.CORBA.Policy;
-import org.omg.CosNaming.NameComponent;
-import org.omg.PortableServer.POA;
-import org.omg.PortableServer.ThreadPolicyValue;
-
-import AtmiBroker.EnvVariableInfo;
-import AtmiBroker.ServerInfo;
-import AtmiBroker.ServerPOA;
-import AtmiBroker.ServiceInfo;
 
 public class AtmiBrokerServer {
 	private static final Logger log = LogManager

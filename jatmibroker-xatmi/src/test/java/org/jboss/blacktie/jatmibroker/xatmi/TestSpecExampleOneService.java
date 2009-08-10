@@ -2,7 +2,6 @@ package org.jboss.blacktie.jatmibroker.xatmi;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.omg.dds.LENGTH_UNLIMITED;
 
 public class TestSpecExampleOneService implements BlacktieService {
 	private static final Logger log = LogManager

@@ -24,10 +24,12 @@ import java.util.Properties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.core.transport.EventListener;
 import org.jboss.blacktie.jatmibroker.core.transport.Message;
 import org.jboss.blacktie.jatmibroker.core.transport.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.core.tx.TxIORInterceptor;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.omg.CORBA.Any;
 import org.omg.CORBA.ORB;
@@ -52,6 +54,7 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 	private String queueName;
 	private OrbManagement orbManagement;
 	private int timeout = 0;
+	private EventListener eventListener;
 
 	private List<Policy> getPolicies(ORB orb, POA poa)
 			throws ConfigurationException, ConnectionException {
@@ -107,11 +110,12 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 		this.orbManagement = orbManagement;
 	}
 
-	CorbaReceiverImpl(OrbManagement orbManagement, Properties properties)
-			throws ConnectionException {
+	CorbaReceiverImpl(EventListener eventListener, OrbManagement orbManagement,
+			Properties properties) throws ConnectionException {
+		log.debug("ClientCallbackImpl constructor");
 		ORB orb = orbManagement.getOrb();
 		POA poa = orbManagement.getRootPoa();
-		log.debug("ClientCallbackImpl constructor");
+		this.eventListener = eventListener;
 
 		try {
 			try {
@@ -168,6 +172,18 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 			message.data = new byte[message.len];
 			System.arraycopy(idata, 0, message.data, 0, message.len);
 		}
+
+		if (eventListener != null) {
+			if (message.rval == eventListener.getDisconCode()) {
+				eventListener.setLastEvent(Connection.TPEV_DISCONIMM);
+			} else if (message.rcode == Connection.TPESVCERR) {
+				eventListener.setLastEvent(Connection.TPEV_SVCERR);
+			} else if (message.rval == Connection.TPFAIL) {
+				eventListener.setLastEvent(Connection.TPEV_SVCFAIL);
+				eventListener.setLastRCode(message.rcode);
+			}
+		}
+
 		synchronized (this) {
 			returnData.add(message);
 			notify();
@@ -191,7 +207,8 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 				}
 			}
 			if (returnData.isEmpty()) {
-				throw new ConnectionException(-1, "Did not receive a message");
+				throw new ConnectionException(Connection.TPETIME,
+						"Did not receive a message");
 			} else {
 				return returnData.remove(0);
 			}

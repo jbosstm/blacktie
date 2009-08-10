@@ -30,8 +30,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.transport.Message;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
-import org.jboss.blacktie.jatmibroker.jab.JABException;
-import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public class JMSReceiverImpl implements Receiver {
@@ -103,7 +102,8 @@ public class JMSReceiverImpl implements Receiver {
 				toProcess.control = controlIOR;
 				return toProcess;
 			}
-			throw new ConnectionException(-1, "Did not receive a message");
+			throw new ConnectionException(Connection.TPETIME,
+					"Did not receive a message");
 		} catch (JMSException t) {
 			throw new ConnectionException(-1, "Couldn't receive the message", t);
 		}

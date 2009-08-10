@@ -732,7 +732,8 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 
 						if (session->getLastEvent() == TPEV_SVCFAIL) {
 							setTpurcode(session->getLastRCode());
-						} else if (session->getLastEvent() == TPEV_SVCSUCC || session->getLastEvent() == TPEV_DISCONIMM) {
+						} else if (session->getLastEvent() == TPEV_SVCSUCC
+								|| session->getLastEvent() == TPEV_DISCONIMM) {
 							setSpecific(TPE_KEY, TSS_TPEEVENT);
 							toReturn = -1;
 						}
@@ -868,8 +869,7 @@ int tpdiscon(int id) {
 			// CHECK TO MAKE SURE THE REMOTE SIDE IS "EXPECTING" DISCONNECTS STILL
 			if (session->getLastEvent() == 0) {
 				// SEND THE DISCONNECT TO THE REMOTE SIDE
-				char* data = ::tpalloc((char*) "X_OCTET", NULL, 0);
-				::send(session, "", data, 0, id, TPNOTRAN, DISCON, 0);
+				::send(session, "", NULL, 0, id, TPNOTRAN, DISCON, 0);
 			}
 			try {
 				if (getSpecific(TSS_KEY)) {

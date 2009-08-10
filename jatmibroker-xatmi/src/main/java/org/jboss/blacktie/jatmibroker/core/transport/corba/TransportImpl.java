@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.transport.EventListener;
 import org.jboss.blacktie.jatmibroker.core.transport.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.core.transport.Sender;
@@ -100,6 +101,12 @@ public class TransportImpl implements Runnable, Transport {
 
 	public Receiver createReceiver() throws ConnectionException {
 		log.debug("createClientCallback create client callback");
+		return new ReceiverImpl(orbManagement);
+	}
+
+	public Receiver createReceiver(EventListener session)
+			throws ConnectionException {
+		log.warn("Transport does not support events");
 		return new ReceiverImpl(orbManagement);
 	}
 

@@ -8,6 +8,35 @@ public class TestSpecExampleTwoService implements BlacktieService {
 			.getLogger(TestSpecExampleTwoService.class);
 
 	public Response tpservice(TPSVCINFO svcinfo) {
-		return null;
+		try {
+			log.info("inquiry_svc");
+			short rval;
+			/* extract initial typed buffer sent as part of tpconnect() */
+			Buffer ptr = svcinfo.getBuffer();
+			ptr.format(new String[] { "input", "output", "failTest" },
+					new Class[] { char[].class, int.class, int.class },
+					new int[] { 100, 0, 0 });
+
+			/*
+			 * Parse input string, ptr->input, and retrieve records. Return 10
+			 * records at a time to client. Records are placed in ptr->output,
+			 * an array of account records.
+			 */
+			for (int i = 0; i < 5; i++) {
+				/* gather from DBMS next 10 records into ptr->output array */
+				svcinfo.getSession().tpsend(ptr, 0, Connection.TPSIGRSTRT);
+			}
+			// TODO DO OK AND FAIL
+			if (ptr.getInt("failTest") == 0) {
+				rval = Connection.TPSUCCESS;
+			} else {
+				rval = Connection.TPFAIL; /* global transaction will not commit */
+			}
+			/* terminate service routine, send no data, and */
+			/* terminate connection */
+			return new Response(rval, 0, null, 0, 0);
+		} catch (ConnectionException e) {
+			return new Response(Connection.TPFAIL, 0, null, 0, 0);
+		}
 	}
 }

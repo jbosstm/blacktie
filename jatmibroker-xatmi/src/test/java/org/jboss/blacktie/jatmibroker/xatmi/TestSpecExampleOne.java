@@ -60,12 +60,12 @@ public class TestSpecExampleOne extends TestCase {
 		/* allocate typed buffers */
 		Buffer dptr = new Buffer("X_C_TYPE", "dc_buf"); // TODO ,0
 		dptr.format(new String[] { "input", "output", "failTest" },
-				new Class[] { char[].class, int.class, int.class },
-				new int[] { 100, 0, 0 });
+				new Class[] { char[].class, int.class, int.class }, new int[] {
+						100, 0, 0 });
 		Buffer cptr = new Buffer("X_C_TYPE", "dc_buf"); // TODO ,0
 		cptr.format(new String[] { "input", "output", "failTest" },
-				new Class[] { char[].class, int.class, int.class },
-				new int[] { 100, 0, 0 });
+				new Class[] { char[].class, int.class, int.class }, new int[] {
+						100, 0, 0 });
 		/* populate typed buffers with input data */
 		dptr.setString("input", "debit account 123 by 50");
 		cptr.setString("input", "credit account 456 by 50");
@@ -77,15 +77,15 @@ public class TestSpecExampleOne extends TestCase {
 				Connection.TPSIGRSTRT);
 		cptr = response.getBuffer();
 		cptr.format(new String[] { "input", "output", "failTest" },
-				new Class[] { char[].class, int.class, int.class },
-				new int[] { 100, 0, 0 });
+				new Class[] { char[].class, int.class, int.class }, new int[] {
+						100, 0, 0 });
 		clen = response.getLen();
 		/* retrieve DEBIT�s reply */
 		response = connection.tpgetrply(cd, Connection.TPSIGRSTRT);
 		dptr = response.getBuffer();
 		dptr.format(new String[] { "input", "output", "failTest" },
-				new Class[] { char[].class, int.class, int.class },
-				new int[] { 100, 0, 0 });
+				new Class[] { char[].class, int.class, int.class }, new int[] {
+						100, 0, 0 });
 		dlen = response.getLen();
 		if (dptr.getInt("output") == OK && cptr.getInt("output") == OK) {
 			// TODO tx_commit(); /* commit global transaction */

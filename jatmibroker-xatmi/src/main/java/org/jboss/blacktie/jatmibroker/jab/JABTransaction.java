@@ -125,9 +125,9 @@ public class JABTransaction {
 		setTerminator(control);
 	}
 
-	public boolean equals (java.lang.Object obj) {
+	public boolean equals(java.lang.Object obj) {
 		if (obj instanceof JABTransaction) {
-			JABTransaction other = (JABTransaction ) obj;
+			JABTransaction other = (JABTransaction) obj;
 
 			return control.equals(other.control);
 		}
@@ -182,12 +182,15 @@ public class JABTransaction {
 			ThreadActionData.popAction();
 			log.debug("called commit on terminator");
 		} catch (Exception e) {
-			// TODO build an JABException hierarchy so we can perform better error reporting
-			// presume abort and dissassociate the tx from the the current thread
+			// TODO build an JABException hierarchy so we can perform better
+			// error reporting
+			// presume abort and dissassociate the tx from the the current
+			// thread
 			active = false;
 			ThreadActionData.popAction();
 
-			throw new JABException("Could not commit the transaction: " + e.getMessage(), e);
+			throw new JABException("Could not commit the transaction: "
+					+ e.getMessage(), e);
 		}
 	}
 
@@ -200,11 +203,13 @@ public class JABTransaction {
 			ThreadActionData.popAction();
 			log.debug("called rollback on terminator");
 		} catch (Exception e) {
-			// presume abort and dissassociate the tx from the the current thread
+			// presume abort and dissassociate the tx from the the current
+			// thread
 			active = false;
 			ThreadActionData.popAction();
 
-			throw new JABException("Could not rollback the transaction: " + e.getMessage(), e);
+			throw new JABException("Could not rollback the transaction: "
+					+ e.getMessage(), e);
 		}
 	}
 
@@ -215,7 +220,8 @@ public class JABTransaction {
 			control.get_coordinator().rollback_only();
 			log.debug("tx marked rollback only");
 		} catch (Unavailable e) {
-			throw new JABException("Tx Manager unavailable for set rollback only", e);
+			throw new JABException(
+					"Tx Manager unavailable for set rollback only", e);
 		} catch (Exception e) {
 			throw new JABException("Error setting rollback only", e);
 		}
@@ -283,11 +289,11 @@ public class JABTransaction {
 	/**
 	 * Suspend the transaction association from the invoking thread. When this
 	 * operation returns, the thread will not be associated with a transaction.
-	 *
+	 * 
 	 * @return a handle on the current JABTransaction (if any) so that the
 	 *         thread can later resume association if required.
 	 */
-	 public static final JABTransaction suspend() {
+	public static final JABTransaction suspend() {
 		JABTransaction curr = ThreadActionData.currentAction();
 
 		if (curr != null)
@@ -302,14 +308,16 @@ public class JABTransaction {
 	 * current thread is associated with a transaction then that association
 	 * will be lost.
 	 * 
-	 * @param JABTransaction act the transaction to associate.
+	 * @param JABTransaction
+	 *            act the transaction to associate.
 	 * @return <code>true</code> if association is successful,
 	 *         <code>false</code> otherwise.
 	 */
-	 public static final boolean resume(JABTransaction act) {
+	public static final boolean resume(JABTransaction act) {
 		if (act == null)
 			suspend();
-		else ThreadActionData.restoreActions(act);
-			return true;
+		else
+			ThreadActionData.restoreActions(act);
+		return true;
 	}
 }

@@ -41,42 +41,49 @@ public class Connection {
 	private static final Logger log = LogManager.getLogger(Connection.class);
 
 	// AVAILABLE FLAGS
-	public static int TPNOBLOCK = 0x00000001;
-	public static int TPSIGRSTRT = 0x00000002;
-	public static int TPNOREPLY = 0x00000004;
-	public static int TPNOTRAN = 0x00000008;
-	public static int TPTRAN = 0x00000010;
-	public static int TPNOTIME = 0x00000020;
-	public static int TPGETANY = 0x00000080;
-	public static int TPNOCHANGE = 0x00000100;
-	public static int TPCONV = 0x00000400;
-	public static int TPSENDONLY = 0x00000800;
-	public static int TPRECVONLY = 0x00001000;
+	public static final int TPNOBLOCK = 0x00000001;
+	public static final int TPSIGRSTRT = 0x00000002;
+	public static final int TPNOREPLY = 0x00000004;
+	public static final int TPNOTRAN = 0x00000008;
+	public static final int TPTRAN = 0x00000010;
+	public static final int TPNOTIME = 0x00000020;
+	public static final int TPGETANY = 0x00000080;
+	public static final int TPNOCHANGE = 0x00000100;
+	public static final int TPCONV = 0x00000400;
+	public static final int TPSENDONLY = 0x00000800;
+	public static final int TPRECVONLY = 0x00001000;
 
 	// ERROR CONDITIONS
-	public static int TPEBADDESC = 2;
-	public static int TPEBLOCK = 3;
-	public static int TPEINVAL = 4;
-	public static int TPELIMIT = 5;
-	public static int TPENOENT = 6;
-	public static int TPEOS = 7;
-	public static int TPEPROTO = 9;
-	public static int TPESVCERR = 10;
-	public static int TPESVCFAIL = 11;
-	public static int TPESYSTEM = 12;
-	public static int TPETIME = 13;
-	public static int TPETRAN = 14;
-	public static int TPGOTSIG = 15;
-	public static int TPEITYPE = 17;
-	public static int TPEOTYPE = 18;
-	public static int TPEEVENT = 22;
-	public static int TPEMATCH = 23;
+	public static final int TPEBADDESC = 2;
+	public static final int TPEBLOCK = 3;
+	public static final int TPEINVAL = 4;
+	public static final int TPELIMIT = 5;
+	public static final int TPENOENT = 6;
+	public static final int TPEOS = 7;
+	public static final int TPEPROTO = 9;
+	public static final int TPESVCERR = 10;
+	public static final int TPESVCFAIL = 11;
+	public static final int TPESYSTEM = 12;
+	public static final int TPETIME = 13;
+	public static final int TPETRAN = 14;
+	public static final int TPGOTSIG = 15;
+	public static final int TPEITYPE = 17;
+	public static final int TPEOTYPE = 18;
+	public static final int TPEEVENT = 22;
+	public static final int TPEMATCH = 23;
 
 	// SERVICE CONDITIONS
-	public static short TPFAIL = 0x00000001;
-	public static short TPSUCCESS = 0x00000002;
+	public static final short TPFAIL = 0x00000001;
+	public static final short TPSUCCESS = 0x00000002;
 
-	public static int XATMI_SERVICE_NAME_LENGTH = 15;
+	// Events
+	public static final long TPEV_DISCONIMM = 0x0001;
+	public static final long TPEV_SVCERR = 0x0002;
+	public static final long TPEV_SVCFAIL = 0x0004;
+	public static final long TPEV_SVCSUCC = 0x0008;
+	public static final long TPEV_SENDONLY = 0x0020;
+
+	public static final int XATMI_SERVICE_NAME_LENGTH = 15;
 
 	private static int nextId;
 
@@ -143,7 +150,10 @@ public class Connection {
 		}
 		svc = svc.substring(0, Math.min(Connection.XATMI_SERVICE_NAME_LENGTH,
 				svc.length()));
-		int correlationId = nextId++;
+		int correlationId = 0;
+		synchronized (this) {
+			correlationId = nextId++;
+		}
 		Transport transport = getTransport(svc);
 		Receiver endpoint = transport.createReceiver();
 		temporaryQueues.put(correlationId, endpoint);
@@ -216,16 +226,47 @@ public class Connection {
 	 *            The flags to use
 	 * @return The connection descriptor
 	 */
-	public Session tpconnect(String svc, Buffer buffer, int len, int flags)
+	public Session tpconnect(String svc, Buffer toSend, int len, int flags)
 			throws ConnectionException {
+
 		svc = svc.substring(0, Math.min(Connection.XATMI_SERVICE_NAME_LENGTH,
 				svc.length()));
 		// Initiate the session
-		int cd = tpacall(svc, buffer, len, flags);
-		Receiver endpoint = temporaryQueues.get(cd);
+		boolean hasTPSIGSTRT = (flags & TPSIGRSTRT) == 1;
+		if (hasTPSIGSTRT && !warnedTPSIGRSTRT) {
+			log.error("TPSIGRSTRT NOT SUPPORTED FOR SENDS OR RECEIVES");
+			warnedTPSIGRSTRT = true;
+		}
+		svc = svc.substring(0, Math.min(Connection.XATMI_SERVICE_NAME_LENGTH,
+				svc.length()));
+		int correlationId = 0;
+		synchronized (this) {
+			correlationId = nextId++;
+		}
+		Transport transport = getTransport(svc);
+		Session session = new Session(transport, correlationId);
+		Receiver endpoint = session.getReceiver();
+		temporaryQueues.put(correlationId, endpoint);
+		// TODO HANDLE TRANSACTION
+		String type = null;
+		String subtype = null;
+		byte[] data = null;
+		if (toSend != null) {
+			toSend.serialize();
+			if (!toSend.equals("X_OCTET")) {
+				len = toSend.getLength();
+			}
+			data = toSend.getData();
+			type = toSend.getType();
+			subtype = toSend.getSubtype();
+		} else {
+			type = "X_OCTET";
+		}
+
+		transport.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
+				data, len, correlationId, flags, type, subtype);
 		// Return a handle to allow the connection to send/receive data on
-		Session session = new Session(getTransport(svc), cd, endpoint);
-		sessions.put(cd, session);
+		sessions.put(correlationId, session);
 		return session;
 	}
 

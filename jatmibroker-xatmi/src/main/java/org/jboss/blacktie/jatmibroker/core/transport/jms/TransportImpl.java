@@ -27,12 +27,16 @@ import javax.jms.Session;
 import javax.jms.TemporaryQueue;
 import javax.naming.Context;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.transport.EventListener;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.core.transport.Sender;
 import org.jboss.blacktie.jatmibroker.core.transport.Transport;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public class TransportImpl implements Transport {
+	private static final Logger log = LogManager.getLogger(TransportImpl.class);
 
 	private Context context;
 	private Connection connection;
@@ -108,5 +112,11 @@ public class TransportImpl implements Transport {
 			throw new ConnectionException(-1,
 					"Could not create the temporary receiver", t);
 		}
+	}
+
+	public Receiver createReceiver(EventListener session)
+			throws ConnectionException {
+		log.warn("Transport does not support events");
+		return createReceiver();
 	}
 }

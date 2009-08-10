@@ -20,6 +20,7 @@ package org.jboss.blacktie.jatmibroker.xatmi;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.core.transport.EventListener;
 import org.jboss.blacktie.jatmibroker.core.transport.Message;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.core.transport.Sender;
@@ -51,18 +52,33 @@ public class Session {
 	private Receiver receiver;
 
 	/**
+	 * The event listener allows us to hear events on tpsend
+	 */
+	private EventListener eventListener;
+
+	/**
+	 * The last event received by the session, this is either discon, SUCC,
+	 * FAIL, ERR
+	 */
+	private long lastEvent = -1;
+
+	/**
+	 * The last rcode
+	 */
+	private int lastRCode = 0;
+
+	/**
 	 * Create a new session
 	 * 
 	 * @param transport
 	 * @param cd
-	 * @param receiver2
 	 * @throws ConfigurationException
 	 */
-	Session(Transport transport, int cd, Receiver receiver)
-			throws ConnectionException {
+	Session(Transport transport, int cd) throws ConnectionException {
 		this.transport = transport;
 		this.cd = cd;
-		this.receiver = receiver;
+		this.eventListener = new EventListenerImpl(this);
+		this.receiver = transport.createReceiver(eventListener);
 	}
 
 	/**
@@ -78,6 +94,8 @@ public class Session {
 		this.transport = transport;
 		this.cd = cd;
 		this.sender = sender;
+		this.eventListener = new EventListenerImpl(this);
+		this.receiver = transport.createReceiver(eventListener);
 	}
 
 	/**
@@ -113,6 +131,11 @@ public class Session {
 	public void tpsend(Buffer toSend, int len, int flags)
 			throws ConnectionException {
 		log.debug("tpsend invoked");
+		if (this.lastEvent > -1) {
+			throw new ConnectionException(Connection.TPEEVENT, lastEvent,
+					lastRCode, "Event existed on descriptor: " + lastEvent,
+					null);
+		}
 		// Can only send in certain circumstances
 		if (sender != null) {
 			log.debug("Sender not null, sending");
@@ -131,8 +154,8 @@ public class Session {
 				type = "X_OCTET";
 			}
 
-			sender.send(getReceiver().getReplyTo(), (short) 0, 0, data, len,
-					cd, flags, type, subtype);
+			sender.send(receiver.getReplyTo(), (short) 0, 0, data, len, cd,
+					flags, type, subtype);
 		} else {
 			throw new ConnectionException(-1, "Session in receive mode", null);
 		}
@@ -148,8 +171,8 @@ public class Session {
 	 * @return The next response
 	 */
 	public Buffer tprecv(int flags) throws ConnectionException {
-		Message m = getReceiver().receive(flags);
 		log.debug("Receiving");
+		Message m = receiver.receive(flags);
 		// Prepare the outbound channel
 		if (m.replyTo == null
 				|| (sender != null && !m.replyTo.equals(sender.getSendTo()))) {
@@ -157,7 +180,7 @@ public class Session {
 			sender.close();
 			sender = null;
 		}
-		if (sender == null && m.replyTo != null) {
+		if (sender == null && m.replyTo != null && !m.replyTo.equals("")) {
 			log.trace("Will require a new sender");
 			sender = transport.createSender(m.replyTo);
 		} else {
@@ -169,6 +192,20 @@ public class Session {
 		Buffer received = new Buffer(m.type, m.subtype);
 		received.setData(m.data);
 		log.debug("Prepared and ready to launch");
+		// Check we didn't just get an event while waiting
+		if (this.lastEvent > -1) {
+			throw new ConnectionException(Connection.TPEEVENT, lastEvent,
+					lastRCode, "Event existed on descriptor: " + lastEvent,
+					received);
+		} else if ((m.flags & Connection.TPRECVONLY) == 1) {
+			throw new ConnectionException(Connection.TPEEVENT,
+					Connection.TPEV_SENDONLY, 0, "Reporting send only event",
+					received);
+		} else if (m.rval == Connection.TPSUCCESS) {
+			throw new ConnectionException(Connection.TPEEVENT,
+					Connection.TPEV_SVCSUCC, 0,
+					"Service completed successfully event", received);
+		}
 		return received;
 	}
 
@@ -179,7 +216,9 @@ public class Session {
 	 *            The connection descriptor to use
 	 */
 	public void tpdiscon() throws ConnectionException {
-		throw new ConnectionException(-1, "Waiting for implementation", null);
+		sender.send("", eventListener.getDisconCode(), 0, null, 0, cd, 0, null,
+				null);
+
 	}
 
 	/**
@@ -191,11 +230,37 @@ public class Session {
 		return cd;
 	}
 
-	private Receiver getReceiver() throws ConnectionException {
-		if (receiver == null) {
-			receiver = transport.createReceiver();
-			log.debug("Created a new receiver");
+	private void setLastEvent(long lastEvent) {
+		this.lastEvent = lastEvent;
+	}
+
+	public void setLastRCode(int rcode) {
+		this.lastRCode = rcode;
+	}
+
+	private class EventListenerImpl implements EventListener {
+
+		private Session session;
+
+		public EventListenerImpl(Session session) {
+			this.session = session;
 		}
+
+		public short getDisconCode() {
+			return 0x00000003;
+		}
+
+		public void setLastEvent(long lastEvent) {
+			session.setLastEvent(lastEvent);
+		}
+
+		public void setLastRCode(int rcode) {
+			session.setLastRCode(rcode);
+
+		}
+	}
+
+	Receiver getReceiver() {
 		return receiver;
 	}
 }

@@ -25,8 +25,7 @@ import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
 
 public class TestTPACall extends TestCase {
-	private static final Logger log = LogManager
-			.getLogger(TestTPACall.class);
+	private static final Logger log = LogManager.getLogger(TestTPACall.class);
 	private AtmiBrokerServer server;
 	private Connection connection;
 

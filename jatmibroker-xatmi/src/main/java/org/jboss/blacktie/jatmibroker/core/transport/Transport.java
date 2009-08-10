@@ -52,10 +52,23 @@ public interface Transport {
 	/**
 	 * Create a receiver on a temporary queue.
 	 * 
-	 * @return
+	 * @return The receiver
 	 * @throws ConfigurationException
 	 */
 	public Receiver createReceiver() throws ConnectionException;
 
+	/**
+	 * Create a receiver giving it the session to receive events upon.
+	 * 
+	 * @param session
+	 *            The session to receive events
+	 * @return The receiver
+	 * @throws ConnectionException
+	 *             Incase the received cannot be created
+	 */
+	public Receiver createReceiver(EventListener session)
+			throws ConnectionException;
+
 	public void close() throws ConnectionException;
+
 }

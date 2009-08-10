@@ -92,7 +92,7 @@ public abstract class Service implements BlacktieService {
 		}
 		log.trace("obtained transport");
 		Sender sender = null;
-		if (message.replyTo != null) {
+		if (message.replyTo != null && !message.replyTo.equals("")) {
 			sender = transport.createSender(message.replyTo);
 		} else {
 			log.trace("NO REPLY TO REQUIRED");
