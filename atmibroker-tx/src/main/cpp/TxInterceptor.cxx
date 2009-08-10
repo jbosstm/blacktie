@@ -22,10 +22,11 @@
 
 #include "txClient.h"
 
-log4cxx::LoggerPtr atmiTxInterceptorLogger(log4cxx::Logger::getLogger("TxInterceptor"));
+log4cxx::LoggerPtr atmiTxInterceptorLogger(log4cxx::Logger::getLogger("TxLogInterceptor"));
 
 TxInterceptor::TxInterceptor(const char *orbname, IOP::CodecFactory_var cf, const char* name) :
 	name_(name), orbname_(strdup(orbname)) {
+	FTRACE(atmiTxInterceptorLogger, "ENTER");
 	// create a GIOP 1.2 CDR encapsulation Codec (to match whatever is in jacorb.properties)
 	IOP::Encoding encoding;
 
@@ -37,21 +38,25 @@ TxInterceptor::TxInterceptor(const char *orbname, IOP::CodecFactory_var cf, cons
 
 }
 TxInterceptor::~TxInterceptor() {
+	FTRACE(atmiTxInterceptorLogger, "ENTER");
 	if (orbname_ != 0)
 		free(orbname_);
 }
 
 char* TxInterceptor::name() {
+	FTRACE(atmiTxInterceptorLogger, "ENTER");
 	return CORBA::string_dup(this->name_);
 }
 
 char* TxInterceptor::get_control_ior()
 {
+	FTRACE(atmiTxInterceptorLogger, "ENTER");
 	return serialize_tx(orbname_);
 }
 
 CosTransactions::Control_ptr TxInterceptor::ior_to_control(char * ior)
 {
+	FTRACE(atmiTxInterceptorLogger, "ENTER");
 	CORBA::Object_ptr p = atmi_string_to_object(ior, orbname_);
 
 	if (ior != NULL)
@@ -69,6 +74,7 @@ CosTransactions::Control_ptr TxInterceptor::ior_to_control(char * ior)
 }
 
 CosTransactions::Control_ptr TxInterceptor::extract_tx_from_context(PortableInterceptor::ServerRequestInfo_ptr ri) {
+	FTRACE(atmiTxInterceptorLogger, "ENTER");
 	if (isTransactional(ri)) {
 		return this->ior_to_control(extract_ior_from_context(ri));
 	} else {
@@ -77,6 +83,7 @@ CosTransactions::Control_ptr TxInterceptor::extract_tx_from_context(PortableInte
 }
 
 CosTransactions::Control_ptr TxInterceptor::extract_tx_from_context(PortableInterceptor::ClientRequestInfo_ptr ri) {
+	FTRACE(atmiTxInterceptorLogger, "ENTER");
 	if (isTransactional(ri)) {
 		return this->ior_to_control(extract_ior_from_context(ri));
 	} else {
@@ -85,6 +92,7 @@ CosTransactions::Control_ptr TxInterceptor::extract_tx_from_context(PortableInte
 }
 
 char * TxInterceptor::extract_ior_from_context(PortableInterceptor::ServerRequestInfo_ptr ri) {
+	FTRACE(atmiTxInterceptorLogger, "ENTER");
 	try {
 		IOP::ServiceContext_var sc = ri->get_request_service_context(tx_context_id);
 		CORBA::OctetSeq ocSeq = sc->context_data;
@@ -105,6 +113,7 @@ char * TxInterceptor::extract_ior_from_context(PortableInterceptor::ServerReques
 	return NULL;
 }
 char * TxInterceptor::extract_ior_from_context(PortableInterceptor::ClientRequestInfo_ptr ri) {
+	FTRACE(atmiTxInterceptorLogger, "ENTER");
 	try {
 		IOP::ServiceContext_var sc = ri->get_request_service_context(tx_context_id);
 		CORBA::OctetSeq ocSeq = sc->context_data;
@@ -125,6 +134,7 @@ char * TxInterceptor::extract_ior_from_context(PortableInterceptor::ClientReques
 }
 
 bool TxInterceptor::add_ior_to_context(PortableInterceptor::ClientRequestInfo_ptr ri) {
+	FTRACE(atmiTxInterceptorLogger, "ENTER");
 	if (this->isTransactional(ri)) {
 		// add the ior for the transaction to the service contexts
 		char *ior = this->get_control_ior();
@@ -151,6 +161,7 @@ bool TxInterceptor::add_ior_to_context(PortableInterceptor::ClientRequestInfo_pt
 }
 
 bool TxInterceptor::isTransactional(PortableInterceptor::ClientRequestInfo_ptr ri) {
+	FTRACE(atmiTxInterceptorLogger, "ENTER");
 	try {
 		IOP::TaggedComponent_var comp = ri->get_effective_component(AtmiTx::TAG_OTS_POLICY);
 		LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getTrace(), (char *) "\tTRANSACTIONAL - " << ri->operation ());
@@ -169,6 +180,7 @@ bool TxInterceptor::isTransactional(PortableInterceptor::ClientRequestInfo_ptr r
 }
 
 bool TxInterceptor::isTransactional(PortableInterceptor::ServerRequestInfo_ptr ri) {
+	FTRACE(atmiTxInterceptorLogger, "ENTER");
 	try {
 		CORBA::Policy_var pv = ri->get_server_policy(AtmiTx::OTS_POLICY_TYPE);
 		LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getTrace(), (char *) "\tTRANSACTIONAL - " << ri->operation ());
@@ -187,6 +199,7 @@ bool TxInterceptor::isTransactional(PortableInterceptor::ServerRequestInfo_ptr r
 }
 
 void TxInterceptor::update_tx_context(PortableInterceptor::ServerRequestInfo_ptr ri) {
+	FTRACE(atmiTxInterceptorLogger, "ENTER");
 	CosTransactions::Control_ptr ctrl = this->extract_tx_from_context(ri);
 
 	if (!CORBA::is_nil(ctrl)) {
@@ -211,15 +224,18 @@ void TxInterceptor::update_tx_context(PortableInterceptor::ServerRequestInfo_ptr
 }
 
 void TxInterceptor::debug(bool isTx, const char * msg, const char* op) {
+	FTRACE(atmiTxInterceptorLogger, "ENTER");
 	log4cxx::LevelPtr lvl = (isTx ? log4cxx::Level::getDebug() : log4cxx::Level::getTrace());
 	LOG4CXX_LOGLS(atmiTxInterceptorLogger, lvl,
 			this->name_ << msg << (char*) " " << op << (char*) " transactional="
 			<< isTx << " TSS: " << getSpecific(TSS_KEY));
 }
 void TxInterceptor::debug(PortableInterceptor::ClientRequestInfo_ptr ri, const char* msg) {
+	FTRACE(atmiTxInterceptorLogger, "ENTER");
 //	debug(this->isTransactional(ri), msg, ri->operation());
 }
 
 void TxInterceptor::debug(PortableInterceptor::ServerRequestInfo_ptr ri, const char* msg) {
+	FTRACE(atmiTxInterceptorLogger, "ENTER");
 //	debug(this->isTransactional(ri), msg, ri->operation());
 }

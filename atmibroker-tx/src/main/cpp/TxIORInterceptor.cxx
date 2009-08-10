@@ -23,10 +23,12 @@
 
 #include <iostream>
 
-log4cxx::LoggerPtr loggerTxIORInterceptor(log4cxx::Logger::getLogger("ATMITxIORInterceptor"));
+log4cxx::LoggerPtr loggerTxIORInterceptor(log4cxx::Logger::getLogger("TxLogIORInterceptor"));
 
 TxIORInterceptor::TxIORInterceptor(const char *orbname, IOP::CodecFactory_var cf) :
-	TxInterceptor(orbname, cf, "ATMITxIORInterceptor") {}
+	TxInterceptor(orbname, cf, "ATMITxIORInterceptor") {
+	FTRACE(loggerTxIORInterceptor, "ENTER");
+}
 
 
 /**
@@ -36,26 +38,27 @@ TxIORInterceptor::TxIORInterceptor(const char *orbname, IOP::CodecFactory_var cf
  * implicit transaction propagation.
  */
 void TxIORInterceptor::establish_components(PortableInterceptor::IORInfo_ptr info) {
-        try {
-                PortableInterceptor::ObjectReferenceTemplate_var at = info->adapter_template();
-                PortableInterceptor::AdapterName_var an = at->adapter_name ();
+	FTRACE(loggerTxIORInterceptor, "ENTER");
+	try {
+		PortableInterceptor::ObjectReferenceTemplate_var at = info->adapter_template();
+		PortableInterceptor::AdapterName_var an = at->adapter_name ();
 
-                // if an->length is 1 then this is the root POA:
-                // do not apply the tag to the root POA
-                                if (an->length () > 1) {
-                        LOG4CXX_LOGLS(loggerTxIORInterceptor, log4cxx::Level::getTrace(), (char*) "establish_components: ");
+		// if an->length is 1 then this is the root POA:
+		// do not apply the tag to the root POA
+		if (an->length () > 1) {
+			LOG4CXX_LOGLS(loggerTxIORInterceptor, log4cxx::Level::getTrace(), (char*) "establish_components: ");
 
-                        CORBA::Policy_var policy(info->get_effective_policy(AtmiTx::OTS_POLICY_TYPE));
-                        AtmiTx::OTSPolicy_var txpolicy(AtmiTx::OTSPolicy::_narrow(policy.in()));
+			CORBA::Policy_var policy(info->get_effective_policy(AtmiTx::OTS_POLICY_TYPE));
+			AtmiTx::OTSPolicy_var txpolicy(AtmiTx::OTSPolicy::_narrow(policy.in()));
 
-                        addOTSTag(info);
-                }
-        } catch (CORBA::SystemException& ex) {
-                // should be 'IDL:omg.org/CORBA/INV_POLICY:1.0' with minor code (3) to indicate that
-                // the target IOR is not transactional
-                //TODO check minor code and print a warning if appropriate
-                //ex._tao_print_exception ("TxIORInterceptor exception: ");
-                ex.completed( CORBA::COMPLETED_YES );
+			addOTSTag(info);
+		}
+	} catch (CORBA::SystemException& ex) {
+		// should be 'IDL:omg.org/CORBA/INV_POLICY:1.0' with minor code (3) to indicate that
+		// the target IOR is not transactional
+		//TODO check minor code and print a warning if appropriate
+		//ex._tao_print_exception ("TxIORInterceptor exception: ");
+		ex.completed( CORBA::COMPLETED_YES );
 	}
 }
 
@@ -63,27 +66,27 @@ void TxIORInterceptor::establish_components(PortableInterceptor::IORInfo_ptr inf
  * tag the input IORInfo as transactional 
  */
 void TxIORInterceptor::addOTSTag(PortableInterceptor::IORInfo_ptr info) {
-        LOG4CXX_LOGLS(loggerTxIORInterceptor, log4cxx::Level::getTrace(), (char*) "addOTSTag: ");
+	FTRACE(loggerTxIORInterceptor, "ENTER");
 
-        IOP::TaggedComponent comp;      // create an IOR tag
-        comp.tag = AtmiTx::TAG_OTS_POLICY;
+	IOP::TaggedComponent comp;	  // create an IOR tag
+	comp.tag = AtmiTx::TAG_OTS_POLICY;
 
-        // we want to encode a tranaction policy into the tag
-                CORBA::Any policy_val;
-        policy_val <<= AtmiTx::ADAPTS;
-        CORBA::OctetSeq_var ev = this->codec_->encode_value(policy_val);
+	// we want to encode a tranaction policy into the tag
+	CORBA::Any policy_val;
+	policy_val <<= AtmiTx::ADAPTS;
+	CORBA::OctetSeq_var ev = this->codec_->encode_value(policy_val);
 
-        comp.component_data.replace(ev->maximum(),      // max
-                                   ev->length(),        // len
-                                   ev->get_buffer(),    // buffer
-                                   0);                  // no release
+	comp.component_data.replace(ev->maximum(),	  // max
+							   ev->length(),		// len
+							   ev->get_buffer(),	// buffer
+							   0);				  // no release
 
-        try {
-                // Add the tagged component to all profiles.
-                                info->add_ior_component (comp);
-                info->add_ior_component_to_profile (comp, IOP::TAG_INTERNET_IOP);
-        } catch (CORBA::SystemException& ex) {
-                ex._tao_print_exception ("TxIORInterceptor add tag: ");
-        }
+	try {
+			// Add the tagged component to all profiles.
+		info->add_ior_component (comp);
+		info->add_ior_component_to_profile (comp, IOP::TAG_INTERNET_IOP);
+	} catch (CORBA::SystemException& ex) {
+		ex._tao_print_exception ("TxIORInterceptor add tag: ");
+	}
 }
 

@@ -52,17 +52,17 @@ public:
 public:	// public static methods
 	static TxManager* get_instance();
 	static void discard_instance();
-
 	static CORBA_CONNECTION* init_orb(char* name);
-
 	static CosTransactions::Control_ptr get_ots_control();	// ref count of ptr is incremented
-	static int tx_resume(CosTransactions::Control_ptr control, int flags);
-	static int tx_resume(CosTransactions::Control_ptr control, int creator, int flags);
-	static int tx_resume(char* ctrlIOR, char *orbname, int flags);
-	static int tx_resume(TxControl *, int flags);
-	static CosTransactions::Control_ptr tx_suspend(int flags);
-	static CosTransactions::Control_ptr tx_suspend(int, int flags);
-	static CosTransactions::Control_ptr tx_suspend(TxControl *, int, int flags);
+
+public:	// suspend and resume
+	int tx_resume(CosTransactions::Control_ptr control, int flags);
+	int tx_resume(CosTransactions::Control_ptr control, int creator, int flags);
+	int tx_resume(char* ctrlIOR, char *orbname, int flags);
+	int tx_resume(TxControl *, int flags);
+	CosTransactions::Control_ptr tx_suspend(int flags);
+	CosTransactions::Control_ptr tx_suspend(int, int flags);
+	CosTransactions::Control_ptr tx_suspend(TxControl *, int, int flags);
 
 private:
 	TxManager();

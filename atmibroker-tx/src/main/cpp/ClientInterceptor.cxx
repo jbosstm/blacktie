@@ -23,31 +23,44 @@
 
 #include <iostream>
 
-log4cxx::LoggerPtr atmiClientInterceptorlogger(log4cxx::Logger::getLogger("ClientInterceptor"));
+log4cxx::LoggerPtr atmiClientInterceptorlogger(log4cxx::Logger::getLogger("TxLogClientInterceptor"));
 
 ClientInterceptor::ClientInterceptor(const char *orbname, IOP::CodecFactory_var cf) :
-	TxInterceptor(orbname, cf, "ATMIClientTxInterceptor") {}
+	TxInterceptor(orbname, cf, "ATMIClientTxInterceptor") {
+	FTRACE(atmiClientInterceptorlogger, "ENTER");
+}
 
 void ClientInterceptor::send_poll(PortableInterceptor::ClientRequestInfo_ptr ri) {
+	FTRACE(atmiClientInterceptorlogger, "ENTER");
 }
 
 void ClientInterceptor::send_request(PortableInterceptor::ClientRequestInfo_ptr ri) {
+	FTRACE(atmiClientInterceptorlogger, "ENTER");
 	debug(ri, ":send_request");
 	this->add_ior_to_context(ri);
 }
 
 void ClientInterceptor::receive_reply(PortableInterceptor::ClientRequestInfo_ptr ri) {
+	FTRACE(atmiClientInterceptorlogger, "ENTER");
 	debug(ri, ":receive_reply");
 }
 
 void ClientInterceptor::receive_other(PortableInterceptor::ClientRequestInfo_ptr ri) {
+	FTRACE(atmiClientInterceptorlogger, "ENTER");
 	debug(ri, ":receive_other");
 }
 
 void ClientInterceptor::receive_exception(PortableInterceptor::ClientRequestInfo_ptr ri) {
+	FTRACE(atmiClientInterceptorlogger, "ENTER");
 	debug(ri, ":receive_exception");
 }
 
-void ClientInterceptor::resume_tx(PortableInterceptor::ClientRequestInfo_ptr ri) { }
+void ClientInterceptor::resume_tx(PortableInterceptor::ClientRequestInfo_ptr ri) {
+	FTRACE(atmiClientInterceptorlogger, "ENTER");
+	debug(ri, ":receive_exception");
+}
 
-long ClientInterceptor::find_control(CORBA::ULong requestId, bool erase) { return 0L; }
+long ClientInterceptor::find_control(CORBA::ULong requestId, bool erase) {
+	FTRACE(atmiClientInterceptorlogger, "ENTER");
+	return 0L;
+}

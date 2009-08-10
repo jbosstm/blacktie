@@ -309,6 +309,7 @@ void TestTxRMTPCall::test2() {
 		userlogc("tx_open error %d", rv);
 	} else if (start_tx(req->txtype) == 0) {
 		rv = send_req(req, &rbuf);
+		CPPUNIT_ASSERT(rv == 0);
 		if (end_tx(req->txtype) != 0)
 			userlogc("TestTxRMTPCall::test2 end tx failed");
 

@@ -36,7 +36,7 @@ TxInitializer* TxInitializer::instance = NULL;
 
 
 
-log4cxx::LoggerPtr loggerTxInitializer(log4cxx::Logger::getLogger("TxInitializer"));
+log4cxx::LoggerPtr loggerTxInitializer(log4cxx::Logger::getLogger("TxLogInitializer"));
 TxInitializer* TxInitializer::get_instance() {
 	if (instance == NULL) {
 		instance = new TxInitializer();
@@ -49,15 +49,18 @@ TxInitializer::TxInitializer() : orbname_(0) {
 }
 
 void TxInitializer::set_orb(const char * name) {
+	FTRACE(loggerTxInitializer, "ENTER");
 	if (orbname_ != 0)
 		free(orbname_);
 	orbname_ = strdup(name);
 }
 
 void TxInitializer::pre_init(PortableInterceptor::ORBInitInfo_ptr info) {
+	FTRACE(loggerTxInitializer, "ENTER");
 }
 
 void TxInitializer::post_init(PortableInterceptor::ORBInitInfo_ptr info) {
+	FTRACE(loggerTxInitializer, "ENTER");
 	LOG4CXX_LOGLS(loggerTxInitializer, log4cxx::Level::getDebug(), (char*) "");
 
 	// register policy factories
@@ -94,5 +97,6 @@ void TxInitializer::post_init(PortableInterceptor::ORBInitInfo_ptr info) {
 }
 
 void register_tx_interceptors(const char *name) {
+	FTRACE(loggerTxInitializer, "ENTER");
 	TxInitializer::get_instance()->set_orb(name);
 }

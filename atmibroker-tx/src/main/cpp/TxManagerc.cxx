@@ -78,7 +78,7 @@ int set_rollback_only()
 void * start_tx_orb(char* connectionName)
 {
 	FTRACE(txmclogger, "ENTER");
-    return TxManager::init_orb(connectionName);
+    return TxManager::get_instance()->init_orb(connectionName);
 }
 
 void shutdown_tx_broker(void)
@@ -91,31 +91,31 @@ void shutdown_tx_broker(void)
 int associate_tx(void *control)
 {
 	FTRACE(txmclogger, "ENTER");
-    return atmibroker::tx::TxManager::tx_resume((CosTransactions::Control_ptr) control, TMRESUME);
+    return TxManager::get_instance()->tx_resume((CosTransactions::Control_ptr) control, TMRESUME);
 }
 
 int associate_tx(void *control, int tid)
 {
 	FTRACE(txmclogger, "ENTER" << tid);
-    return atmibroker::tx::TxManager::tx_resume((CosTransactions::Control_ptr) control, tid, TMRESUME);
+    return TxManager::get_instance()->tx_resume((CosTransactions::Control_ptr) control, tid, TMRESUME);
 }
 
 int associate_serialized_tx(char *orbname, char* ctrlIOR)
 {
 	FTRACE(txmclogger, "ENTER" << orbname);
-    return atmibroker::tx::TxManager::tx_resume(ctrlIOR, orbname, TMRESUME);
+    return TxManager::get_instance()->tx_resume(ctrlIOR, orbname, TMRESUME);
 }
 
 void * disassociate_tx(void)
 {
 	FTRACE(txmclogger, "ENTER");
-    return (void *) atmibroker::tx::TxManager::tx_suspend(TMSUSPEND | TMMIGRATE);
+    return (void *) TxManager::get_instance()->tx_suspend(TMSUSPEND | TMMIGRATE);
 }
 
 void * disassociate_tx_if_not_owner(void)
 {
 	FTRACE(txmclogger, "ENTER");
-    void *ctrl = (void *) atmibroker::tx::TxManager::tx_suspend(ACE_OS::thr_self(), TMSUSPEND | TMMIGRATE);
+    void *ctrl = (void *) TxManager::get_instance()->tx_suspend(ACE_OS::thr_self(), TMSUSPEND | TMMIGRATE);
 	FTRACE(txmclogger, "< with control " << ctrl);
 
 	return ctrl;
@@ -124,7 +124,7 @@ void * disassociate_tx_if_not_owner(void)
 void * get_control()
 {
 	FTRACE(txmclogger, "ENTER");
-    void *ctrl = (void *) atmibroker::tx::TxManager::get_ots_control();
+    void *ctrl = (void *) TxManager::get_ots_control();
 	FTRACE(txmclogger, "< with control " << ctrl);
 	return ctrl;
 }
@@ -147,7 +147,7 @@ char* serialize_tx(char *orbname)
 {
 	FTRACE(txmclogger, "ENTER " << orbname);
     CORBA::ORB_ptr orb = find_orb(orbname);
-    CosTransactions::Control_ptr ctrl = atmibroker::tx::TxManager::get_ots_control();
+    CosTransactions::Control_ptr ctrl = TxManager::get_ots_control();
 
     if (!CORBA::is_nil(orb) && !CORBA::is_nil(ctrl))
         return ACE_OS::strdup(orb->object_to_string(ctrl));

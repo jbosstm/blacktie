@@ -24,6 +24,7 @@
 
 	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
 		<param name="target" value="System.out" />
+		<param name="Threshold" value="INFO" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern"
 				value="%d %-5p %t (%-20.20c{2}:%-4L) %3x - %m%n" />
@@ -41,8 +42,8 @@
 		</layout>
 	</appender>
 
+
 	<root>
-		<priority value="info" />
 		<appender-ref ref="CONSOLE" />
 		<appender-ref ref="ROLLING" />
 	</root>

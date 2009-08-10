@@ -27,6 +27,7 @@
 #include "CosTransactionsS.h"
 
 #include "TxPolicyC.h"
+#include "txClient.h"
 
 #include "log4cxx/logger.h"
 

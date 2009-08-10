@@ -386,8 +386,9 @@ int TxManager::tx_resume(CosTransactions::Control_ptr control, int creator, int 
 int TxManager::tx_resume(char* ctrlIOR, char *orbname, int flags)
 {
 	FTRACE(txmlogger, "ENTER");
-    LOG4CXX_DEBUG(txmlogger, (char*) "tx_resume orb=" << orbname << (char *) " IOR=" << ctrlIOR);
     CORBA::Object_ptr p = atmi_string_to_object(ctrlIOR, orbname);
+
+    LOG4CXX_DEBUG(txmlogger, (char*) "tx_resume orb=" << orbname << (char *) " IOR=" << ctrlIOR << " ptr=" << p);
 
     if (!CORBA::is_nil(p)) {
         CosTransactions::Control_ptr cptr = CosTransactions::Control::_narrow(p);
@@ -395,7 +396,7 @@ int TxManager::tx_resume(char* ctrlIOR, char *orbname, int flags)
 
         return TxManager::tx_resume(cptr, 0, flags); // why 0 tid
     } else {
-		LOG4CXX_WARN(txmlogger, (char*) "tx_resume: control IOR is invalid");
+		LOG4CXX_WARN(txmlogger, (char*) "tx_resume: invalid control IOR: " << ctrlIOR);
 	}
 
     return TMER_INVAL;
@@ -413,7 +414,7 @@ int TxManager::tx_resume(TxControl *tx, int flags)
 		if ((rc = TxManager::get_instance()->rm_start(flags)) == XA_OK) {
 			LOG4CXX_DEBUG(txmlogger, (char *) "Resume tx: ok");
 
-			return TX_OK;
+			return XA_OK;
 		} else {
 			LOG4CXX_WARN(txmlogger, (char *) "Resume tx: error: " << rc);
 		}

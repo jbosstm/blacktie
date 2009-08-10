@@ -317,6 +317,10 @@ CORBA::Object_ptr atmi_string_to_object(char * ior, char * orbid) {
 
 		if (orb)
 			return orb->string_to_object(ior);
+		else
+			LOG4CXX_LOGLS(loggerOrbManagement, log4cxx::Level::getTrace(), "no such orb");
+	} else {
+		LOG4CXX_LOGLS(loggerOrbManagement, log4cxx::Level::getTrace(), "no such ior");
 	}
 
 	return NULL;
