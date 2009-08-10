@@ -64,6 +64,7 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
 	this->replyTo = temporaryQueue->getName();
 	this->lastEvent = 0;
 	this->lastRCode = 0;
+	this->serviceName = serviceName;
 	LOG4CXX_TRACE(logger, "OK service session created");
 }
 
@@ -93,6 +94,7 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
 	this->replyTo = temporaryQueue->getName();
 	this->lastEvent = 0;
 	this->lastRCode = 0;
+	this->serviceName = 0;
 	LOG4CXX_DEBUG(logger, (char*) "constructor corba done");
 }
 
@@ -181,6 +183,10 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		apr_hash_set(frame.headers, "messageflags", APR_HASH_KEY_STRING, flags);
 		apr_hash_set(frame.headers, "messagerval", APR_HASH_KEY_STRING, rval);
 		apr_hash_set(frame.headers, "messagercode", APR_HASH_KEY_STRING, rcode);
+		if (serviceName != NULL) {
+			apr_hash_set(frame.headers, "servicename", APR_HASH_KEY_STRING,
+					serviceName);
+		}
 		apr_hash_set(frame.headers, "messagetype", APR_HASH_KEY_STRING,
 				message.type);
 		apr_hash_set(frame.headers, "messagesubtype", APR_HASH_KEY_STRING,

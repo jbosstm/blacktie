@@ -110,15 +110,29 @@ public class Session {
 	 * @param flags
 	 *            The flags to use
 	 */
-	public void tpsend(Buffer buffer, int len, int flags)
+	public void tpsend(Buffer toSend, int len, int flags)
 			throws ConnectionException {
 		log.debug("tpsend invoked");
 		// Can only send in certain circumstances
 		if (sender != null) {
 			log.debug("Sender not null, sending");
-			sender.send(getReceiver().getReplyTo(), (short) 0, 0, buffer
-					.getData(), len, cd, flags, buffer.getType(), buffer
-					.getSubtype());
+			String type = null;
+			String subtype = null;
+			byte[] data = null;
+			if (toSend != null) {
+				toSend.serialize();
+				if (!toSend.equals("X_OCTET")) {
+					len = toSend.getLength();
+				}
+				data = toSend.getData();
+				type = toSend.getType();
+				subtype = toSend.getSubtype();
+			} else {
+				type = "X_OCTET";
+			}
+
+			sender.send(getReceiver().getReplyTo(), (short) 0, 0, data, len,
+					cd, flags, type, subtype);
 		} else {
 			throw new ConnectionException(-1, "Session in receive mode", null);
 		}

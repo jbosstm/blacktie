@@ -91,6 +91,8 @@ public class Connection {
 
 	private Map<Integer, Session> sessions = new HashMap<Integer, Session>();
 
+	private static boolean warnedTPSIGRSTRT;
+
 	/**
 	 * The connection
 	 * 
@@ -131,8 +133,14 @@ public class Connection {
 	 *            The flags to use
 	 * @return The connection descriptor
 	 */
-	public int tpacall(String svc, Buffer buffer, int len, int flags)
+	public int tpacall(String svc, Buffer toSend, int len, int flags)
 			throws ConnectionException {
+
+		boolean hasTPSIGSTRT = (flags & TPSIGRSTRT) == 1;
+		if (hasTPSIGSTRT && !warnedTPSIGRSTRT) {
+			log.error("TPSIGRSTRT NOT SUPPORTED FOR SENDS OR RECEIVES");
+			warnedTPSIGRSTRT = true;
+		}
 		svc = svc.substring(0, Math.min(Connection.XATMI_SERVICE_NAME_LENGTH,
 				svc.length()));
 		int correlationId = nextId++;
@@ -140,9 +148,23 @@ public class Connection {
 		Receiver endpoint = transport.createReceiver();
 		temporaryQueues.put(correlationId, endpoint);
 		// TODO HANDLE TRANSACTION
+		String type = null;
+		String subtype = null;
+		byte[] data = null;
+		if (toSend != null) {
+			toSend.serialize();
+			if (!toSend.equals("X_OCTET")) {
+				len = toSend.getLength();
+			}
+			data = toSend.getData();
+			type = toSend.getType();
+			subtype = toSend.getSubtype();
+		} else {
+			type = "X_OCTET";
+		}
+
 		transport.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
-				buffer.getData(), len, correlationId, flags, buffer.getType(),
-				buffer.getSubtype());
+				data, len, correlationId, flags, type, subtype);
 		return correlationId;
 	}
 
@@ -169,6 +191,12 @@ public class Connection {
 	 * @return The response from the server
 	 */
 	public Response tpgetrply(int cd, int flags) throws ConnectionException {
+		boolean hasTPSIGSTRT = (flags & TPSIGRSTRT) == 1;
+		if (hasTPSIGSTRT && !warnedTPSIGRSTRT) {
+			log.error("TPSIGRSTRT NOT SUPPORTED FOR SENDS OR RECEIVES");
+			warnedTPSIGRSTRT = true;
+		}
+
 		Response toReturn = receive(cd, flags);
 		Session session = sessions.remove(cd);
 		if (session != null) {

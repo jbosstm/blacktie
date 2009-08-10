@@ -7,6 +7,8 @@ import javax.jms.MessageListener;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.jab.JABException;
+import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Service;
 
@@ -41,25 +43,36 @@ public abstract class MDBBlacktieService extends Service implements
 
 	public void onMessage(Message message) {
 		try {
+			String controlIOR = message.getStringProperty("messagecontrol");
 			BytesMessage bytesMessage = ((BytesMessage) message);
 			// TODO String replyTo = message.getStringProperty("reply-to");
 			String replyTo = message.getStringProperty("messagereplyto");
 			int len = (int) bytesMessage.getBodyLength();
-			String serviceName = message.getStringProperty("serviceName");
+			String serviceName = message.getStringProperty("servicename");
 			int flags = new Integer(message.getStringProperty("messageflags"));
 			int cd = new Integer(message
 					.getStringProperty("messagecorrelationId"));
-			byte[] bytes = new byte[len];
-			bytesMessage.readBytes(bytes);
+
+			String type = message.getStringProperty("messagetype");
+			String subtype = message.getStringProperty("messagesubtype");
+			log.debug("type: " + type + " subtype: " + subtype);
 
 			org.jboss.blacktie.jatmibroker.core.transport.Message toProcess = new org.jboss.blacktie.jatmibroker.core.transport.Message();
+			toProcess.type = type;
+			toProcess.subtype = subtype;
 			toProcess.replyTo = replyTo;
-			toProcess.len = len;
 			toProcess.serviceName = serviceName;
 			toProcess.flags = flags;
-			toProcess.control = message.getStringProperty("messagecontrol");
 			toProcess.cd = cd;
-			toProcess.data = bytes;
+			toProcess.len = len - 1;
+			if (toProcess.len == 0 && toProcess.type == "") {
+				toProcess.data = null;
+			} else {
+				toProcess.data = new byte[toProcess.len];
+				bytesMessage.readBytes(toProcess.data);
+			}
+			toProcess.control = controlIOR;
+
 			log.debug("SERVER onMessage: ior: " + toProcess.control);
 			processMessage(toProcess);
 			log.debug("Processed message");

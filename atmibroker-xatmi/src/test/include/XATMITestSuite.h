@@ -43,7 +43,7 @@ typedef struct deposit_t DEPOSIT;
 struct data_buffer_t {
 	char input[100];
 	int output;
-	bool failTest;
+	int failTest;
 };
 typedef struct data_buffer_t DATA_BUFFER;
 

@@ -75,7 +75,7 @@ public class ReceiverImpl implements Receiver {
 				// TODO String replyTo = message.getStringProperty("reply-to");
 				Destination replyTo = message.getJMSReplyTo();
 				int len = (int) bytesMessage.getBodyLength();
-				String serviceName = message.getStringProperty("serviceName");
+				String serviceName = message.getStringProperty("servicename");
 				int flags = new Integer(message
 						.getStringProperty("messageflags"));
 				int cd = new Integer(message

@@ -28,6 +28,8 @@ import org.jboss.blacktie.jatmibroker.core.transport.Message;
 import org.jboss.blacktie.jatmibroker.core.transport.Sender;
 import org.jboss.blacktie.jatmibroker.core.transport.Transport;
 import org.jboss.blacktie.jatmibroker.core.transport.TransportFactory;
+import org.jboss.blacktie.jatmibroker.jab.JABException;
+import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 
 /**
  * All services should extend this class as it provides the core service
@@ -73,6 +75,15 @@ public abstract class Service implements BlacktieService {
 	 *             In case communication fails
 	 */
 	protected void processMessage(Message message) throws ConnectionException {
+		if (message.control != null) {
+			try {
+				JABTransaction.associateTx(message.control); // associate tx
+				// with current
+				// thread
+			} catch (JABException e) {
+				log.warn("Got an invalid tx from queue: " + e);
+			}
+		}
 		if (JtsTransactionImple.hasTransaction()) {
 			log
 					.error("Blacktie MDBs must not be called with a transactional context");
@@ -94,8 +105,8 @@ public abstract class Service implements BlacktieService {
 		buffer.setData(message.data);
 		// TODO NO SESSIONS
 		// NOT PASSING OVER THE SERVICE NAME
-		TPSVCINFO tpsvcinfo = new TPSVCINFO(null, buffer, message.flags,
-				session);
+		TPSVCINFO tpsvcinfo = new TPSVCINFO(message.serviceName, buffer,
+				message.flags, session);
 		log.debug("Prepared the data for passing to the service");
 
 		boolean hasTx = (message.control != null && message.control.length() != 0);
@@ -121,9 +132,24 @@ public abstract class Service implements BlacktieService {
 					rval = Connection.TPFAIL;
 					// TODO SET ROLLBACK ONLY
 				}
-				sender.send("", rval, response.getRcode(), response.getBuffer()
-						.getData(), response.getLen(), response.getFlags(), 0,
-						buffer.getType(), buffer.getSubtype());
+				Buffer toSend = response.getBuffer();
+				int len = response.getLen();
+				String type = null;
+				String subtype = null;
+				byte[] data = null;
+				if (toSend != null) {
+					toSend.serialize();
+					if (!toSend.equals("X_OCTET")) {
+						len = toSend.getLength();
+					}
+					data = toSend.getData();
+					type = toSend.getType();
+					subtype = toSend.getSubtype();
+				} else {
+					type = "X_OCTET";
+				}
+				sender.send("", rval, response.getRcode(), data, len, response
+						.getFlags(), 0, type, subtype);
 
 			} else if (sender == null && response != null) {
 				log.error("No sender avaible but message to be sent");

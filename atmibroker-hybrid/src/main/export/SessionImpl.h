@@ -57,6 +57,7 @@ private:
 	const char* replyTo;
 	char* sendTo;
 	bool serviceInvokation;
+	char* serviceName;
 };
 
 #endif

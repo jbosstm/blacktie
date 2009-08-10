@@ -253,9 +253,13 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			success[0] = 0;
 		}
 
-		Buffer buffer = new Buffer(null, null);
-		buffer.setData(success);
-		log.debug("Responding");
-		return new Response(Connection.TPSUCCESS, 0, buffer, 1, 0);
+		try {
+			Buffer buffer = new Buffer("X_OCTET", null);
+			buffer.setData(success);
+			log.debug("Responding");
+			return new Response(Connection.TPSUCCESS, 0, buffer, 1, 0);
+		} catch (ConnectionException e) {
+			return new Response(Connection.TPFAIL, 0, null, 0, 0);
+		}
 	}
 }

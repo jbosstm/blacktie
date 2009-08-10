@@ -21,10 +21,13 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
 
 public class TestTPCall extends TestCase {
+	private static final Logger log = LogManager.getLogger(TestTPCall.class);
 	private AtmiBrokerServer server;
 	private Connection connection;
 
@@ -44,7 +47,7 @@ public class TestTPCall extends TestCase {
 
 	public void test() throws ConnectionException, IOException,
 			ClassNotFoundException {
-		Buffer buffer = new Buffer(null, null);
+		Buffer buffer = new Buffer("X_OCTET", null);
 		buffer.setData("echo".getBytes());
 		Response response = connection.tpcall("TestOne", buffer, 4, 0);
 		byte[] responseData = response.getBuffer().getData();

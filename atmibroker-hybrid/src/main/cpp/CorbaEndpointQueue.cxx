@@ -201,6 +201,7 @@ MESSAGE HybridCorbaEndpointQueue::receive(long time) {
 	message.subtype = NULL;
 	message.received = false;
 	message.ttl = -1;
+	message.serviceName = NULL;
 
 	lock->lock();
 	if (!shutdown) {

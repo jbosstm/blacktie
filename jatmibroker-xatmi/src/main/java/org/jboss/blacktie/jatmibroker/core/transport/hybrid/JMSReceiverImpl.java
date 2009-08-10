@@ -76,13 +76,19 @@ public class JMSReceiverImpl implements Receiver {
 				// TODO String replyTo = message.getStringProperty("reply-to");
 				String replyTo = message.getStringProperty("messagereplyto");
 				int len = (int) bytesMessage.getBodyLength();
-				String serviceName = message.getStringProperty("serviceName");
+				String serviceName = message.getStringProperty("servicename");
 				int flags = new Integer(message
 						.getStringProperty("messageflags"));
 				int cd = new Integer(message
 						.getStringProperty("messagecorrelationId"));
 
+				String type = message.getStringProperty("messagetype");
+				String subtype = message.getStringProperty("messagesubtype");
+				log.debug("type: " + type + " subtype: " + subtype);
+
 				org.jboss.blacktie.jatmibroker.core.transport.Message toProcess = new org.jboss.blacktie.jatmibroker.core.transport.Message();
+				toProcess.type = type;
+				toProcess.subtype = subtype;
 				toProcess.replyTo = replyTo;
 				toProcess.serviceName = serviceName;
 				toProcess.flags = flags;
@@ -94,16 +100,7 @@ public class JMSReceiverImpl implements Receiver {
 					toProcess.data = new byte[toProcess.len];
 					bytesMessage.readBytes(toProcess.data);
 				}
-				if (controlIOR != null) {
-					try {
-						JABTransaction.associateTx(controlIOR); // associate tx
-						// with current
-						// thread
-					} catch (JABException e) {
-						log.warn("Got an invalid tx from queue "
-								+ destination.getQueueName() + ": " + e);
-					}
-				}
+				toProcess.control = controlIOR;
 				return toProcess;
 			}
 			throw new ConnectionException(-1, "Did not receive a message");

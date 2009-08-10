@@ -75,7 +75,7 @@ public class JMSSenderImpl implements Sender {
 				message.setStringProperty("messagereplyto", (String) replyTo);
 			}
 			if (service) {
-				message.setStringProperty("serviceName", name);
+				message.setStringProperty("servicename", name);
 			}
 			message.setStringProperty("messagecorrelationId", String
 					.valueOf(correlationId));
@@ -87,7 +87,9 @@ public class JMSSenderImpl implements Sender {
 					: subtype);
 
 			byte[] toSend = new byte[len + 1];
-			System.arraycopy(data, 0, toSend, 0, len);
+			if (data != null) {
+				System.arraycopy(data, 0, toSend, 0, len);
+			}
 			message.writeBytes(toSend, 0, toSend.length);
 			sender.send(message);
 		} catch (Throwable t) {

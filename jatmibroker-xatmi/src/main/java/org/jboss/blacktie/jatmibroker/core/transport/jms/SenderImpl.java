@@ -76,7 +76,7 @@ public class SenderImpl implements Sender {
 				// TODOmessage.setStringProperty("reply-to", replyTo);
 			}
 			if (service) {
-				message.setStringProperty("serviceName", name);
+				message.setStringProperty("servicename", name);
 			}
 			message.setStringProperty("messagecorrelationId", String
 					.valueOf(correlationId));

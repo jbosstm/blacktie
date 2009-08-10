@@ -19,10 +19,19 @@ package org.jboss.blacktie.jatmibroker.xatmi;
 
 import junit.framework.TestCase;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
 
 public class TestSpecExampleOne extends TestCase {
+	private static final Logger log = LogManager
+			.getLogger(TestSpecExampleOne.class);
+
+	public static final int OK = 1;
+
+	public static final int NOT_OK = 0;
+
 	private AtmiBrokerServer server;
 	private Connection connection;
 
@@ -43,6 +52,45 @@ public class TestSpecExampleOne extends TestCase {
 		server.close();
 	}
 
-	public void test() {
+	public void test() throws ConnectionException {
+		log.info("TestSpecExampleOne::test_specexampleone");
+		long dlen = 0;
+		long clen = 0; /* contains a character array named input and an */
+		int cd; /* integer named output. */
+		/* allocate typed buffers */
+		Buffer dptr = new Buffer("X_C_TYPE", "dc_buf"); // TODO ,0
+		dptr.format(new String[] { "input", "output", "failTest" },
+				new Class[] { char[].class, int.class, int.class },
+				new int[] { 100, 0, 0 });
+		Buffer cptr = new Buffer("X_C_TYPE", "dc_buf"); // TODO ,0
+		cptr.format(new String[] { "input", "output", "failTest" },
+				new Class[] { char[].class, int.class, int.class },
+				new int[] { 100, 0, 0 });
+		/* populate typed buffers with input data */
+		dptr.setString("input", "debit account 123 by 50");
+		cptr.setString("input", "credit account 456 by 50");
+		// TODO tx_begin(); /* start global transaction */
+		/* issue asynchronous request to DEBIT, while it is processing... */
+		cd = connection.tpacall("TestOne", dptr, 0, Connection.TPSIGRSTRT);
+		/* ...issue synchronous request to CREDIT */
+		Response response = connection.tpcall("TestTwo", cptr, 0,
+				Connection.TPSIGRSTRT);
+		cptr = response.getBuffer();
+		cptr.format(new String[] { "input", "output", "failTest" },
+				new Class[] { char[].class, int.class, int.class },
+				new int[] { 100, 0, 0 });
+		clen = response.getLen();
+		/* retrieve DEBIT�s reply */
+		response = connection.tpgetrply(cd, Connection.TPSIGRSTRT);
+		dptr = response.getBuffer();
+		dptr.format(new String[] { "input", "output", "failTest" },
+				new Class[] { char[].class, int.class, int.class },
+				new int[] { 100, 0, 0 });
+		dlen = response.getLen();
+		if (dptr.getInt("output") == OK && cptr.getInt("output") == OK) {
+			// TODO tx_commit(); /* commit global transaction */
+		} else {
+			// TODO tx_rollback(); /* rollback global transaction */
+		}
 	}
 }

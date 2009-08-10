@@ -32,6 +32,7 @@ struct message_t {
 	char* type;
 	char* subtype;
 	bool received;
+	char* serviceName;
 };
 typedef struct message_t MESSAGE;
 

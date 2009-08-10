@@ -127,6 +127,11 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 	message.control = NULL;
 	message.rval = -1;
 	message.rcode = -1;
+	message.type = NULL;
+	message.subtype = NULL;
+	message.received = false;
+	message.ttl = -1;
+	message.serviceName = NULL;
 
 	lock->lock();
 	if (!shutdown) {
@@ -233,6 +238,10 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 				LOG4CXX_TRACE(logger, "Extracted messagesubtype");
 				message.subtype = subtype;
 
+				char * serviceName = (char*) apr_hash_get(frame->headers,
+						"servicename", APR_HASH_KEY_STRING);
+				LOG4CXX_TRACE(logger, "Extracted servicename");
+
 				message.len = frame->body_length - 1;
 				LOG4CXX_TRACE(logger, "Set length: " << message.len);
 				if (message.len == 0 && strlen(message.type) == 0) {
@@ -259,6 +268,8 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 				LOG4CXX_TRACE(logger, "Set rcode: " << message.rcode);
 				message.control = get_control();
 				LOG4CXX_TRACE(logger, "Set control: " << message.control);
+				message.serviceName = serviceName;
+				LOG4CXX_TRACE(logger, "set serviceName");
 				message.received = true;
 			}
 		}
