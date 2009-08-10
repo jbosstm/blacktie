@@ -72,7 +72,7 @@ public class JABClientTestCase extends TestCase {
 		aJabSession.closeSession();
 	}
 
-	public void xtest_tpcall_x_octet_commit_tx_rollback_only() throws Exception {
+	public void test_tpcall_x_octet_commit_tx_rollback_only() throws Exception {
 		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(null);
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
@@ -92,7 +92,7 @@ public class JABClientTestCase extends TestCase {
 		aJabSession.closeSession();
 	}
 
-	public void xtest_tpcall_x_octet_rollback_tx_rollback_only() throws Exception {
+	public void test_tpcall_x_octet_rollback_tx_rollback_only() throws Exception {
 		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(null);
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
@@ -109,7 +109,7 @@ public class JABClientTestCase extends TestCase {
 		aJabSession.closeSession();
 	}
 
-	public void xtest_tpcall_x_octet_no_tx() throws Exception {
+	public void test_tpcall_x_octet_no_tx() throws Exception {
 		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
 				null);
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
@@ -120,7 +120,7 @@ public class JABClientTestCase extends TestCase {
 		aJabSession.closeSession();
 	}
 
-	public void xtest_tpcall_x_octet_suspend_tx() throws Exception {
+	public void test_tpcall_x_octet_suspend_tx() throws Exception {
 		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
 				null);
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
