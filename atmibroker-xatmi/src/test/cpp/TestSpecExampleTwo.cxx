@@ -93,7 +93,7 @@ void inquiry_svc(TPSVCINFO *svcinfo) {
 		tpsend(svcinfo->cd, (char *) ptr, 0, TPSIGRSTRT, &event);
 	}
 	// TODO DO OK AND FAIL
-	if (!ptr->failTest) {
+	if (ptr->failTest == 0) {
 		rval = TPSUCCESS;
 	} else {
 		rval = TPFAIL; /* global transaction will not commit */

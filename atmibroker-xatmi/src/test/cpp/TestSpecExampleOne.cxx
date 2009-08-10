@@ -108,7 +108,7 @@ void debit_credit_svc(TPSVCINFO *svcinfo) {
 		 */
 	}
 	// TODO MAKE TWO TESTS
-	if (!dc_ptr->failTest) {
+	if (dc_ptr->failTest == 0) {
 		rval = TPSUCCESS;
 		dc_ptr->output = OK;
 	} else {
