@@ -194,6 +194,14 @@ int isadvertised(char* name) {
 	return -1;
 }
 
+int getServiceStatus(char* str) {
+	if (ptrServer) {
+		return ptrServer->getServiceStatus(str);
+	}
+
+	return -1;
+}
+
 int advertiseByAdmin(char* name) {
 	if(isadvertised(name) == 0) {
 		return 0;
@@ -372,6 +380,19 @@ char *
 AtmiBrokerServer::getServerName() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "getServerName");
 	return serverName;
+}
+
+int AtmiBrokerServer::getServiceStatus(char* str) {
+	int len = 0;
+
+	for(std::vector<ServiceStatus>::iterator i = serviceStatus.begin();
+			i != serviceStatus.end(); i++ ) {
+		len += ACE_OS::sprintf(str + len, "%s,%d\n", 
+				                          (*i).service,
+										  (*i).status);
+	}
+
+	return len;
 }
 
 void AtmiBrokerServer::updateServiceStatus(ServiceInfo* service,

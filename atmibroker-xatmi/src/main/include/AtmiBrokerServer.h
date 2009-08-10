@@ -57,6 +57,7 @@ public:
 	BLACKTIE_XATMI_DLL bool isAdvertised(char * serviceName);
 	bool advertiseService(char* serviceName);
 	void advertiseAtBootime();
+	int  getServiceStatus(char* str);
 	void server_done();
 	int  block();
 	void shutdown();
