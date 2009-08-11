@@ -49,6 +49,22 @@ void TestAdmin::tearDown() {
 	CPPUNIT_ASSERT(tperrno == 0);
 }
 
+void TestAdmin::testStatus() {
+	long  sendlen = strlen("status") + 1;
+	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
+	strcpy(sendbuf, "status");
+
+	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
+	long  recvlen = 1;
+
+	int cd = ::tpcall((char*) "foo_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
+	CPPUNIT_ASSERT(cd == 0);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(recvbuf[0] == '1');
+	userlogc((char*) "len is %d, service status: %s", recvlen, &recvbuf[1]);
+
+}
+
 void TestAdmin::testServerdone() {
 	long  sendlen = strlen("serverdone") + 1;
 	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);

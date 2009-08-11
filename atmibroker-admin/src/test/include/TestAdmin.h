@@ -24,10 +24,12 @@
 class TestAdmin: public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE( TestAdmin );
 	CPPUNIT_TEST( testServerdone );
+	CPPUNIT_TEST( testStatus );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
 	void testServerdone();
+	void testStatus();
 	virtual void setUp();
 	virtual void tearDown();
 };

@@ -49,6 +49,11 @@ void ADMIN(TPSVCINFO* svcinfo) {
 		} else {
 			LOG4CXX_WARN(loggerAtmiBrokerAdmin, (char*) "unadvertise service " << svc << " FAIL");
 		}
+	} else if(strncmp(req, "status", 6) == 0) {
+		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get status command");
+		toReturn = tprealloc(toReturn, 1024);
+		len += getServiceStatus(&toReturn[1]) + 1;
+		toReturn[0] = '1';
 	}
 
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerAdmin,
