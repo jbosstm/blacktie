@@ -37,7 +37,7 @@ public class TestTPConversationService implements BlacktieService {
 			}
 			String response = "hi" + iterationCount;
 			buffer.setData(response.getBytes());
-			return new Response((short) 0, 0, buffer, response.length(), 0);
+			return new Response(Connection.TPSUCCESS, 0, buffer, response.length(), 0);
 		} catch (ConnectionException e) {
 			return new Response(Connection.TPFAIL, Connection.TPEITYPE, null,
 					0, 0);

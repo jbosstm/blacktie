@@ -319,6 +319,13 @@ public class Connection {
 		// TODO WE SHOULD BE SENDING THE CONNECTION ID?
 		Buffer received = new Buffer(m.type, m.subtype);
 		received.setData(m.data);
-		return new Response(m.rval, m.rcode, received, m.len, m.flags);
+		Response response = new Response(m.rval, m.rcode, received, m.len,
+				m.flags);
+		if (m.rval == Connection.TPFAIL) {
+			throw new ConnectionException(m.rcode, 0L, m.rcode,
+					"Got a fail back from the remote service", received);
+		} else {
+			return response;
+		}
 	}
 }

@@ -17,8 +17,6 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
-import java.io.IOException;
-
 import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
@@ -33,7 +31,6 @@ public class TestTPCall extends TestCase {
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
-		this.server.tpadvertise("TestOne", TestTPCallService.class.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -45,12 +42,22 @@ public class TestTPCall extends TestCase {
 		server.close();
 	}
 
-	public void test() throws ConnectionException, IOException,
-			ClassNotFoundException {
-		Buffer buffer = new Buffer("X_OCTET", null);
-		buffer.setData("echo".getBytes());
-		Response response = connection.tpcall("TestOne", buffer, 4, 0);
-		byte[] responseData = response.getBuffer().getData();
-		assertEquals("ohce", new String(responseData));
+	public void test_tpcall_x_octet() throws ConnectionException {
+		log.info("test_tpcall_x_octet");
+		this.server.tpadvertise("TestOne", TestTPCallServiceXOctet.class
+				.getName());
+
+		String toSend = "test_tpcall_x_octet";
+		int sendlen = toSend.length() + 1;
+		int rcvlen = sendlen;
+		Buffer sendbuf = new Buffer("X_OCTET", null);
+		sendbuf.setData(toSend.getBytes());
+
+		Response rcvbuf = connection.tpcall("TestOne", sendbuf, sendlen, 0);
+		assertTrue(rcvbuf != null);
+		assertTrue(rcvbuf.getBuffer() != null);
+		assertTrue(rcvbuf.getBuffer().getData() != null);
+		assertTrue(new String(rcvbuf.getBuffer().getData())
+				.equals("tpcall_x_octet"));
 	}
 }
