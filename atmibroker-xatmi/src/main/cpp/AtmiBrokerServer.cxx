@@ -385,13 +385,19 @@ AtmiBrokerServer::getServerName() {
 int AtmiBrokerServer::getServiceStatus(char* str) {
 	int len = 0;
 
+	//TODO make sure length of str is enough
+	len += ACE_OS::sprintf(str + len, "<server>");
+	len += ACE_OS::sprintf(str + len, "<name>%s</name>", serverName);
+	len += ACE_OS::sprintf(str + len, "<services>");
 	for(std::vector<ServiceStatus>::iterator i = serviceStatus.begin();
 			i != serviceStatus.end(); i++ ) {
-		len += ACE_OS::sprintf(str + len, "%s,%d\n", 
-				                          (*i).service,
+		len += ACE_OS::sprintf(str + len, "<service><name>%s</name><status>%d</status></service>", 
+				                          (*i).service->serviceName,
 										  (*i).status);
 	}
 
+	len += ACE_OS::sprintf(str + len, "</services>");
+	len += ACE_OS::sprintf(str + len, "</server>");
 	return len;
 }
 
