@@ -77,7 +77,7 @@ public class TxRequestInterceptor extends LocalObject implements
 			if (curr != null) {
 				log.trace("adding tx");
 				Control control = curr.getControl();
-				CORBA::String_var ior = orbManagement.getOrb().object_to_string(control);
+				String ior = orbManagement.getOrb().object_to_string(control);
 				log.trace("tx ior: " + ior);
 				ri.add_request_service_context(new ServiceContext(
 						tx_context_id, ior.getBytes()), false);

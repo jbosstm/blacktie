@@ -29,7 +29,7 @@ class TestTransactions: public CppUnit::TestFixture {
 	CPPUNIT_TEST(test_info);
 	CPPUNIT_TEST(test_timeout);
 	CPPUNIT_TEST(test_rollback);
-	CPPUNIT_TEST(test_RM);
+//	CPPUNIT_TEST(test_RM);
 	CPPUNIT_TEST_SUITE_END();
 
 public:
