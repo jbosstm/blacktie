@@ -38,7 +38,7 @@ int is_abort(enum TX_TYPE txtype) {
 }
 int start_tx(enum TX_TYPE txtype) {
 	if (is_begin(txtype)) {
-		logit(0, (char*) "- Starting Transaction");
+		logit(1, (char*) "- Starting Transaction");
 		if (tx_begin() != TX_OK) {
 			logit(0, (char*) "TX ERROR - Could not begin transaction: ");
 			return -1;
@@ -50,11 +50,11 @@ int start_tx(enum TX_TYPE txtype) {
 int end_tx(enum TX_TYPE txtype) {
 	int rv = 0;
 	if (is_commit(txtype)) {
-		logit(0, (char*) "- Commiting transaction");
+		logit(1, (char*) "- Commiting transaction");
 		if (tx_commit() != TX_OK)
 			rv = -1;
 	} else if (is_abort(txtype)) {
-		logit(0, (char*) "- Rolling back transaction");
+		logit(1, (char*) "- Rolling back transaction");
 		if (tx_rollback() != TX_OK)
 			rv = -1;
 	}
@@ -141,7 +141,7 @@ int null_access(test_req_t *req, test_req_t *resp)
 	resp->status = 0;
 	(void) snprintf(resp->data, sizeof(resp->data), "%d", req->expect);
 
-	logit(0, "null_access: prod id=%d (%s) op=%c res=%s", req->prod, req->db, req->op, resp->data);
+	logit(1, "null_access: prod id=%d (%s) op=%c res=%s", req->prod, req->db, req->op, resp->data);
 
 	return 0;
 }

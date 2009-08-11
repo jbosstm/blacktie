@@ -73,7 +73,6 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestServerinit);
 CPPUNIT_TEST_SUITE_REGISTRATION( TestClientInit);
 #endif
 
-#if 0
 /* Transactional Request Response */
 #include "TestTxTPCall.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTxTPCall);
@@ -82,5 +81,4 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestTxTPCall);
 //CPPUNIT_TEST_SUITE_REGISTRATION( TestTxRMTPCall);
 #else
 //TODO
-#endif
 #endif

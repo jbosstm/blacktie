@@ -68,6 +68,7 @@ void TestTxTPCall::test_tpcall_with_tx() {
 	userlogc_debug((char*) "TxLog: test_tpcall_with_tx: tx_open");
 	CPPUNIT_ASSERT(tx_open() == TX_OK);
 	CPPUNIT_ASSERT(tx_begin() == TX_OK);
+	userlogc_debug((char*) "TxLog: test_tpcall_with_tx: tpcall");
 	(void) ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
 	userlogc_debug((char*) "TxLog: test_tpcall_with_tx: tx_commit");
 	// make sure there is still an active transaction - ie starting a new one should fail

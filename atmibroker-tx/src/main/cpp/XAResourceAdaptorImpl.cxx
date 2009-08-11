@@ -53,20 +53,23 @@ void XAResourceAdaptorImpl::setComplete()
 CosTransactions::Vote XAResourceAdaptorImpl::prepare()
 	throw (CosTransactions::HeuristicMixed,CosTransactions::HeuristicHazard)
 {
-	FTRACE(xaralogger, "ENTER");
-	int rv = xa_end (&xid_, rmid_, TMSUCCESS);
+	FTRACE(xaralogger, "ENTER flags_=0x" << std::hex << flags_);
+	int rv1 = xa_end (&xid_, rmid_, TMSUCCESS);
+	int rv2 = xa_switch_->xa_prepare_entry(&xid_, rmid_, TMNOFLAGS);
 
-	if (rv != XA_OK) {
-		LOG4CXX_WARN(xaralogger, (char *) xa_switch_->name <<
-			(char*) ": prepare OTS resource end failed: error=" << rv << " rid=" << rmid_);
-	} else {
-		LOG4CXX_DEBUG(xaralogger, (char*) "OTS resource end rv=" << rv << " rid=" << rmid_);
+	if (rv1 != XA_OK && rv2 == XA_OK) {
+		// TODO figure out who's setting it
+		LOG4CXX_DEBUG(xaralogger, (char*) "OTS resource: end TMSUCCESS was already set");
 	}
 
-	rv = xa_switch_->xa_prepare_entry(&xid_, rmid_, TMNOFLAGS);
-	LOG4CXX_DEBUG(xaralogger, (char*) "OTS resource prepare rv=" << rv << " rid=" << rmid_);
+	if (rv2 != XA_OK) {
+		LOG4CXX_WARN(xaralogger, (char *) xa_switch_->name <<
+			(char*) ": prepare OTS resource error: " << rv2 << " rid=" << rmid_ << (char*) " rv1=" << rv1);
+	} else {
+		LOG4CXX_DEBUG(xaralogger, (char*) "prepare OTS resource end ok: rid=" << rmid_ << (char*) " rv1=" << rv1);
+	}
 
-	switch (rv) {
+	switch (rv2) {
 	case XA_OK:
 		return CosTransactions::VoteCommit;
 	case XA_RDONLY:
