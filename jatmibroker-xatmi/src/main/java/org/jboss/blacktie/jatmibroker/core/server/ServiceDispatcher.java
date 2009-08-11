@@ -40,9 +40,9 @@ public class ServiceDispatcher extends Service implements Runnable {
 	private Object dier = new Object();
 	private boolean dead;
 
-	ServiceDispatcher(Transport transport, String serviceName,
-			BlacktieService callback, Receiver receiver)
-			throws ConfigurationException, ConnectionException {
+	ServiceDispatcher(String serviceName, BlacktieService callback,
+			Receiver receiver) throws ConfigurationException,
+			ConnectionException {
 		super(serviceName);
 		this.callback = callback;
 		this.receiver = receiver;
@@ -98,7 +98,7 @@ public class ServiceDispatcher extends Service implements Runnable {
 		log.trace("Closed set");
 	}
 
-	public void close() {
+	public void close() throws ConnectionException {
 		synchronized (dier) {
 			log.trace("Notifying dier");
 			dier.notify();
@@ -115,6 +115,7 @@ public class ServiceDispatcher extends Service implements Runnable {
 				}
 			}
 		}
+		super.close();
 	}
 
 	public Response tpservice(TPSVCINFO svcinfo) {

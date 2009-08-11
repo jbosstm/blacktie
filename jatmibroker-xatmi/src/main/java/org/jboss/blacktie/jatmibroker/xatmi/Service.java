@@ -66,6 +66,15 @@ public abstract class Service implements BlacktieService {
 	}
 
 	/**
+	 * Clean up resources for this service
+	 * 
+	 * @throws ConnectionException
+	 */
+	public void close() throws ConnectionException {
+		transport.close();
+	}
+
+	/**
 	 * Entry points should pass control to this method as soon as reasonably
 	 * possible.
 	 * 

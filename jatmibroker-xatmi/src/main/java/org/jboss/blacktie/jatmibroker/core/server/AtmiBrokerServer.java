@@ -152,7 +152,7 @@ public class AtmiBrokerServer {
 
 			Class callback = Class.forName(serviceClassName);
 			for (int i = 0; i < size; i++) {
-				dispatchers.add(new ServiceDispatcher(connection, serviceName,
+				dispatchers.add(new ServiceDispatcher(serviceName,
 						(BlacktieService) callback.newInstance(), receiver));
 			}
 		}
@@ -168,6 +168,8 @@ public class AtmiBrokerServer {
 
 			// Disconnect the receiver
 			receiver.close();
+			// Disconnect the transport
+			connection.close();
 
 			// Clean up the consumers
 			iterator = dispatchers.iterator();
