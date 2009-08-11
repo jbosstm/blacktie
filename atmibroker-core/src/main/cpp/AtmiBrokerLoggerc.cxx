@@ -52,6 +52,18 @@ void userlogc(const char * format, ...) {
 	}
 }
 
+extern "C"BLACKTIE_CORE_DLL
+void userlogc_debug(const char * format, ...) {
+	if (loggerAtmiBrokerLogc->isEnabledFor(log4cxx::Level::getDebug())) {
+		char str[MAXLOGSIZE];
+		va_list args;
+		va_start(args, format);
+		vsnprintf(str, MAXLOGSIZE, format, args);
+		va_end(args);
+		LOG4CXX_LOGLS(loggerAtmiBrokerLogc, log4cxx::Level::getInfo(), str);
+	}
+}
+
 void userlog(const log4cxx::LevelPtr& level, const char * format, ...) {
 	if (loggerAtmiBrokerLogc->isEnabledFor(level)) {
 		char str[MAXLOGSIZE];
@@ -88,8 +100,3 @@ void userlog(const log4cxx::LevelPtr& level, log4cxx::LoggerPtr& logger,
 		LOG4CXX_LOGLS(logger, level, str);
 	}
 }
-
-extern "C"BLACKTIE_CORE_DLL void userlogc_debug(const char * format, ...) {
-	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerLogc, format);
-}
-

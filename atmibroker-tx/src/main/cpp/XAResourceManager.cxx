@@ -128,24 +128,26 @@ void XAResourceManager::createPOA() {
 	ACE_OS::sprintf(name, ACE_TEXT("%s%d"), "ATMI_RM_", rmid_);
 
 	try {
-			this->poa_ = parent_poa->create_POA(name, poa_manager, policies);
+		this->poa_ = parent_poa->create_POA(name, poa_manager, policies);
 //			LOG4CXX_TRACE(xarmlogger,  (char *) "created poa");
+		p1->destroy();
 	} catch (PortableServer::POA::AdapterAlreadyExists &) {
 		try {
+			p1->destroy();
 			this->poa_ = parent_poa->find_POA(name, false);
 		} catch (const PortableServer::POA::AdapterNonExistent &) {
+			p1->destroy();
 			LOG4CXX_WARN(xarmlogger, (char *) "Duplicate RM POA - name = " << name);
 			RMException ex("Duplicate RM POA", EINVAL);
 			throw ex;
 		}
 
 	} catch (PortableServer::POA::InvalidPolicy &) {
+		p1->destroy();
 		LOG4CXX_WARN(xarmlogger, (char *) "Invalid RM POA policy");
 		RMException ex("Invalid RM POA policy", EINVAL);
 		throw ex;
 	}
-
-	policies[0]->destroy();
 
 	// take the POA out of its holding state
 	PortableServer::POAManager_var mgr = this->poa_->the_POAManager();

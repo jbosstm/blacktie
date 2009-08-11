@@ -83,6 +83,7 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 
 	LOG4CXX_DEBUG(loggerOrbManagement,
 			(char*) "getNamingServiceAndContext getting Naming Service Ext");
+{
 	CORBA::Object_var tmp_ref = connection->orbRef->resolve_initial_references(
 			"NameService");
 	LOG4CXX_DEBUG(
@@ -90,6 +91,7 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 			(char*) "getNamingServiceAndContext got orbRef->resolve_initial_references, tmp_ref = %p"
 					<< (void*) tmp_ref);
 	connection->default_ctx = CosNaming::NamingContextExt::_narrow(tmp_ref);
+}
 	LOG4CXX_DEBUG(
 			loggerOrbManagement,
 			(char*) "getNamingServiceAndContext narrowed tmp_ref, default_context = "
@@ -98,12 +100,14 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 	try {
 		LOG4CXX_DEBUG(loggerOrbManagement,
 				(char*) "getNamingServiceAndContext domain is  %s" << domain);
+{
 		CORBA::Object_var tmp_ref =
 				connection->default_ctx->resolve_str(domain);
 		connection->name_ctx = CosNaming::NamingContext::_narrow(tmp_ref);
 		LOG4CXX_DEBUG(
 				loggerOrbManagement,
 				(char*) "getNamingServiceAndContext found domain naming context");
+}
 	} catch (const CosNaming::NamingContext::NotFound&) {
 		CosNaming::Name_var name = connection->default_ctx->to_name(domain);
 		connection->name_ctx = connection->default_ctx->bind_new_context(name);
@@ -111,6 +115,7 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 				loggerOrbManagement,
 				(char*) "getNamingServiceAndContext created domain naming context");
 	}
+
 	LOG4CXX_DEBUG(loggerOrbManagement,
 			(char*) "getNamingServiceAndContext got Naming Service Instance ");
 
@@ -125,8 +130,10 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 
 	//try {
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "resolving the root POA");
-	tmp_ref = connection->orbRef->resolve_initial_references("RootPOA");
+{
+	CORBA::Object_var tmp_ref = connection->orbRef->resolve_initial_references("RootPOA");
 	connection->root_poa = PortableServer::POA::_narrow(tmp_ref);
+}
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "resolved the root POA: "
 			<< connection->root_poa);
 
@@ -186,6 +193,7 @@ void shutdownBindings(CORBA_CONNECTION* connection) {
 				}
 
 				if (connection->worker != NULL) {
+//					ACE_Thread_Manager::instance()->wait_task(((Worker*) connection->worker));
 					((Worker*) connection->worker)->wait();
 					delete ((Worker*) connection->worker);
 					connection->worker = NULL;
@@ -249,6 +257,9 @@ void shutdownBindings(CORBA_CONNECTION* connection) {
 					LOG4CXX_DEBUG(loggerOrbManagement,
 							(char*) "shutdownBindings destroying root_poa");
 					//		delete poa;
+					//connection->root_poa->destroy(false, false); // hmm it doesn't like this
+					//destroy(in boolean etherealize_objects,  in boolean wait_for_completion)
+
 					connection->root_poa = NULL;
 					LOG4CXX_DEBUG(loggerOrbManagement,
 							(char*) "shutdownBindings destroyed root_poa");
@@ -298,8 +309,10 @@ char* atmi_object_to_string(CORBA::Object_ptr ctrl, char * orbid) {
 	if (!CORBA::is_nil(ctrl)) {
 		CORBA::ORB_ptr orb = find_orb(orbid);
 
-		if (orb)
-			return ACE_OS::strdup(orb->object_to_string(ctrl));
+		if (orb) {
+			CORBA::String_var cs = orb->object_to_string(ctrl);
+			return ACE_OS::strdup(cs);
+		}
 	}
 
 	LOG4CXX_LOGLS(loggerOrbManagement, log4cxx::Level::getTrace(),

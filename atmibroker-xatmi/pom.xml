@@ -36,12 +36,16 @@
 				<executions>
 					<execution>
 						<id>mk-bdb-dir</id>
-						<phase>test-compile</phase>
+						<phase>test</phase>
 						<goals>
 							<goal>run</goal>
 						</goals>
 						<configuration>
 							<tasks>
+								<delete failonerror="false" quiet="true">
+								    <fileset dir="${project.build.directory}/db1" includes="**/*"/>
+								    <fileset dir="${project.build.directory}/db2" includes="**/*"/>
+								</delete>
 								<mkdir dir="${project.build.directory}/db1"/>
 								<mkdir dir="${project.build.directory}/db2"/>
 							</tasks>

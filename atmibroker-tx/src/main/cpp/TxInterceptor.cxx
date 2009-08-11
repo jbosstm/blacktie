@@ -39,8 +39,10 @@ TxInterceptor::TxInterceptor(const char *orbname, IOP::CodecFactory_var cf, cons
 }
 TxInterceptor::~TxInterceptor() {
 	FTRACE(atmiTxInterceptorLogger, "ENTER");
-	if (orbname_ != 0)
+	if (orbname_ != 0) {
 		free(orbname_);
+		orbname_ = 0;
+	}
 }
 
 char* TxInterceptor::name() {

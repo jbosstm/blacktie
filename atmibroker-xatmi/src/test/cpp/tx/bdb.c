@@ -176,13 +176,19 @@ static int doSelect(DB *dbp, char *kv, int *rcnt) {
 		}
 	}
 
-	logit(1, "doSelect %d records", *rcnt);
-	if (ret != DB_NOTFOUND)
+	logit(1, "doSelect %d records (rv=%d)", *rcnt, ret);
+	if (ret != DB_NOTFOUND) {
 		dbp->err(dbp, ret, "DBcursor->get");
+		logit(1, "DBcursor->get error %d", ret);
+	}
 
-	if ((ret = dbcp->c_close(dbcp)) != 0)
-		dbp->err(dbp, ret, "cursor->c_close");
+	logit(1, "doSelect closing (ret=%d)", ret);
+	if ((ret = dbcp->c_close(dbcp)) != 0) {
+		dbp->err(dbp, ret, "DBcursor->c_close");
+		logit(1, "DBcursor->c_close error %d", ret);
+	}
 
+	logit(1, "doSelect returning (ret=%d)", ret);
 	return ret;
 }
 
@@ -221,16 +227,20 @@ int bdb_access(test_req_t *req, test_req_t *resp)
 	int stat, rv;
 
 	logit(1, (char*) "bdb_access");
-	if ((stat = opendb(&dbp, req->db, NULL)) != 0)
-		return fail("db open error", stat);
-
-	logit(1, (char*) "bdb_access doWork");
-	if ((rv = doWork(dbp, req->op, req->data, resp)) != 0)
+	if ((rv = opendb(&dbp, req->db, NULL)) != 0) {
+		logit(0, (char*) "bdb_access db open error %d", rv);
+	} else if ((rv = doWork(dbp, req->op, req->data, resp)) != 0) {
 		dbp->err(dbp, rv, "doWork");
+		logit(0, (char*) "bdb_access doWork error %d", rv);
+	}
 
-	if ((stat = dbp->close(dbp, 0)) != 0)
-		return fail("db close error", stat);
+	if ((stat = dbp->close(dbp, 0)) != 0) {
+		logit(0, (char*) "bdb_access db close error %d", stat);
+		return stat;
+	}
 
+	logit(1, (char*) "bdb_access result %d", rv);
+	resp->status = rv;
 	return rv;
 }
 #endif

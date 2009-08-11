@@ -57,12 +57,14 @@ TxManager::TxManager() :
 {
 	FTRACE(txmlogger, "ENTER");
 	_connection = init_orb((char*) "ots");
+	 LOG4CXX_DEBUG(txmlogger, (char*) "new CONNECTION: " << _connection);
 }
 
 TxManager::~TxManager()
 {
 	FTRACE(txmlogger, "ENTER");
 	if (_connection) {
+	 	LOG4CXX_DEBUG(txmlogger, (char*) "deleting CONNECTION: " << _connection);
 		shutdownBindings(_connection);
 		delete _connection;
 	}
@@ -106,6 +108,7 @@ int TxManager::begin(void)
 		}
 
 		TxControl *tx = new TxControl(ctrl, ACE_OS::thr_self());
+		LOG4CXX_DEBUG(txmlogger, (char*) "TXCONTROL created " << tx);
 		// associate the tx with the callers thread and enlist all open RMs with the tx
 		int rc = TxManager::tx_resume(tx, TMNOFLAGS);
 
@@ -165,6 +168,8 @@ int TxManager::complete(bool commit)
 
 	// each RM wrapper calls calls xa_end 
 	outcome = (commit ? tx->commit(reportHeuristics()) : tx->rollback());
+	LOG4CXX_DEBUG(txmlogger, (char*) "TXCONTROL complete " << tx);
+	delete tx;
 
 	return (isChained() ? chainTransaction(outcome) : outcome);
 }
@@ -371,12 +376,6 @@ CosTransactions::Control_ptr TxManager::get_ots_control()
     return (tx ? tx->get_ots_control() : 0);
 }
 
-int TxManager::tx_resume(CosTransactions::Control_ptr control, int flags)
-{
-	FTRACE(txmlogger, "ENTER");
-    return TxManager::tx_resume(control, ACE_OS::thr_self(), flags);
-}
-
 int TxManager::tx_resume(CosTransactions::Control_ptr control, int creator, int flags)
 {
 	FTRACE(txmlogger, "ENTER");
@@ -424,13 +423,10 @@ int TxManager::tx_resume(TxControl *tx, int flags)
 
 	destroySpecific(TSS_KEY);
 
-	return rc;
-}
+	LOG4CXX_DEBUG(txmlogger, (char*) "TXCONTROL rm failure deleting " << tx);
+	delete tx;
 
-CosTransactions::Control_ptr TxManager::tx_suspend(int flags)
-{
-	FTRACE(txmlogger, "ENTER");
-    return (tx_suspend((TxControl *) getSpecific(TSS_KEY), 0, flags));
+	return rc;
 }
 
 CosTransactions::Control_ptr TxManager::tx_suspend(int thr_id, int flags)
@@ -456,6 +452,7 @@ CosTransactions::Control_ptr TxManager::tx_suspend(TxControl *tx, int thr_id, in
         (void) TxManager::get_instance()->rm_end(flags);
 		// disassociate the transaction from the callers thread
 		tx->suspend();
+		LOG4CXX_DEBUG(txmlogger, (char*) "TXCONTROL deleting " << tx);
 		delete tx;
 
 		FTRACE(txmlogger, "< ctrl: " << ctrl);

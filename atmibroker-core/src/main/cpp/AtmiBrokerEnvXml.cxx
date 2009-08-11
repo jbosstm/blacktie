@@ -30,6 +30,7 @@
 #include "XsdValidator.h"
 
 #include "log4cxx/logger.h"
+#include "ace/ACE.h"
 #include "ace/OS_NS_stdlib.h"
 #include "ace/OS_NS_stdio.h"
 #include "ace/OS_NS_string.h"
@@ -135,9 +136,9 @@ static char * XMLCALL copy_value(const char *value) {
 
 	if (s && *(s + 1) == '{' && (e = strchr(s, '}'))) { 
 		size_t esz = e - s - 2;
-		char *en = strndup(s + 2, esz);
+		char *en = ACE::strndup(s + 2, esz);
 		char *ev = ACE_OS::getenv(en);  /* ACE_OS::getenv(en);*/
-		char *pr = strndup(value, (s - value));
+		char *pr = ACE::strndup(value, (s - value));
 		size_t rsz;
 		char *v;
 

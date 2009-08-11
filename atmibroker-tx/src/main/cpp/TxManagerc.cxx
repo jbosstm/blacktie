@@ -91,7 +91,7 @@ void shutdown_tx_broker(void)
 int associate_tx(void *control)
 {
 	FTRACE(txmclogger, "ENTER");
-    return TxManager::get_instance()->tx_resume((CosTransactions::Control_ptr) control, TMRESUME);
+    return TxManager::get_instance()->tx_resume((CosTransactions::Control_ptr) control, ACE_OS::thr_self(), TMRESUME);
 }
 
 int associate_tx(void *control, int tid)
@@ -109,7 +109,7 @@ int associate_serialized_tx(char *orbname, char* ctrlIOR)
 void * disassociate_tx(void)
 {
 	FTRACE(txmclogger, "ENTER");
-    return (void *) TxManager::get_instance()->tx_suspend(TMSUSPEND | TMMIGRATE);
+    return (void *) TxManager::get_instance()->tx_suspend(0, TMSUSPEND | TMMIGRATE);
 }
 
 void * disassociate_tx_if_not_owner(void)
@@ -149,8 +149,13 @@ char* serialize_tx(char *orbname)
     CORBA::ORB_ptr orb = find_orb(orbname);
     CosTransactions::Control_ptr ctrl = TxManager::get_ots_control();
 
-    if (!CORBA::is_nil(orb) && !CORBA::is_nil(ctrl))
-        return ACE_OS::strdup(orb->object_to_string(ctrl));
+    if (!CORBA::is_nil(orb) && !CORBA::is_nil(ctrl)) {
+		CORBA::String_var cs = orb->object_to_string(ctrl);
+		char *cstr = ACE_OS::strdup(cs);
+		CORBA::release(ctrl);
+
+        return cstr;
+	}
 
 	FTRACE(txmclogger, "< No tx ior");
     return NULL;

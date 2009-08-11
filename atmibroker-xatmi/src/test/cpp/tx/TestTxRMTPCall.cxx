@@ -33,6 +33,7 @@ extern "C" {
 }
 
 extern void tx_db_service(TPSVCINFO *svcinfo);
+extern void tx_db_service2(TPSVCINFO *svcinfo);
 
 static const char * const TX_RM_SVC = "tpcall_x_octet";
 
@@ -260,7 +261,29 @@ void TestTxRMTPCall::tearDown() {
  * same thread).
  */
 void TestTxRMTPCall::test1() {
+return;
 	int rv;
+	test_req_t *resp = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", sizeof (test_req_t));
+	test_req_t *req = get_buf(1, "", "", '1', 1, TX_TYPE_BEGIN_COMMIT, 0);
+	long rcvlen = (long) sizeof (test_req_t);
+
+	tpadvertise((char *) TX_RM_SVC, tx_db_service2);
+
+#if 1
+	rv = ::tpcall((char*) "tpcall_x_octet", (char *) req, sizeof (test_req_t), (char **) &resp, &rcvlen, (long) 0);
+#else
+	rcvlen = 64;
+	sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, 64);
+	rcvbuf  = (char *) tpalloc((char*) "X_OCTET", NULL, 64);
+
+	rv = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, 64, (char **) &rcvbuf, &rcvlen, (long) 0);
+#endif
+    CPPUNIT_ASSERT(tperrno == 0);
+    CPPUNIT_ASSERT(rv != -1);
+
+	::tpfree((char *) resp);
+	free_buf(1, req);
+
 return;
 	init();
 	set_test_id("Test 1");
@@ -308,8 +331,10 @@ void TestTxRMTPCall::test2() {
 	if ((rv = tx_open()) != TX_OK) {
 		userlogc("tx_open error %d", rv);
 	} else if (start_tx(req->txtype) == 0) {
+		userlogc_debug("TestTxRMTPCall::test2 send_req");
 		rv = send_req(req, &rbuf);
-		CPPUNIT_ASSERT(rv == 0);
+		userlogc_debug("TestTxRMTPCall::test2 result=%d", rv);
+		CPPUNIT_ASSERT((rv == 0));
 		if (end_tx(req->txtype) != 0)
 			userlogc("TestTxRMTPCall::test2 end tx failed");
 
@@ -321,6 +346,17 @@ void TestTxRMTPCall::test2() {
 	::tpfree((char *) res);
 
 	CPPUNIT_ASSERT(rv == 0);
+}
+
+void tx_db_service2(TPSVCINFO *svcinfo) {
+    int len = 64;
+    char *resp = ::tpalloc((char*) "X_OCTET", NULL, len);
+
+    resp = ::tpalloc((char*) "X_C_TYPE", (char *) "dc_buf2", len);
+
+    strcpy(resp, svcinfo->data);
+    tpreturn(TPSUCCESS, 0, resp, len, 0);
+//	tpreturn(1, 1, (char *) resp, len, 0);
 }
 
 void tx_db_service(TPSVCINFO *svcinfo) {
@@ -335,18 +371,19 @@ void tx_db_service(TPSVCINFO *svcinfo) {
 	if (!is_tx_in_state(req->txtype)) {
 		userlogc("TRANSACTION not in expected state");
 	} else {
-		ACE_OS::snprintf(resp->data, sizeof (resp->data), "Unsupported database: %s", req->db);
+//		ACE_OS::snprintf(resp->data, sizeof (resp->data), "Unsupported database: %s", req->db);
 		for (p = products; p->id != -1; p++) {
 			if (req->prod == p->id) {
+				int rv;
 				strncpy(req->db, p->dbname, sizeof(req->db));
 				userlogc_debug("Service %s %4d: prod=%8s (id=%d) op=%c tx=0x%x data=%s", TX_RM_SVC,
 					req->id, p->pname, p->id, req->op, req->txtype, req->data);
-				resp->status = p->access(req, resp);
-				userlogc_debug("Service %s %4d: resp->status=%d", TX_RM_SVC, req->id, resp->status);
+				rv = p->access(req, resp);
+				userlogc_debug("Service %s %4d: resp->status=%d rv=%d", TX_RM_SVC, req->id, resp->status, rv);
 				break;
 			}
 		}
 	}
 
-	tpreturn(1, 1, (char *) resp, sizeof (test_req_t), 0);
+	tpreturn(TPSUCCESS, 0, (char *) resp, sizeof (test_req_t), 0);
 }
