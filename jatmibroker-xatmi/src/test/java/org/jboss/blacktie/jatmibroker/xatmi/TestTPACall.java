@@ -43,6 +43,26 @@ public class TestTPACall extends TestCase {
 		server.close();
 	}
 
-	public void test() {
+	public void test_tpacall() throws ConnectionException {
+		log.info("test_tpacall");
+		byte[] toSend = "test_tpacall".getBytes();
+		int sendlen = toSend.length;
+		Buffer sendbuf = new Buffer("X_OCTET", null);
+		sendbuf.setData(toSend);
+
+		int cd = connection.tpacall("TestOne", sendbuf, sendlen,
+				Connection.TPNOREPLY);
+		assertTrue(cd == 0);
+
+		try {
+			connection.tpgetrply(cd, 0);
+			fail("Was able to get a reply");
+		} catch (ConnectionException e) {
+			assertTrue(e.getTperrno() == Connection.TPEBADDESC);
+		}
+	}
+
+	public void xtest_tpacall_x_octet() {
+		// NOT REQUIRED AS IT IS A DUPLICATE OF ABOVE
 	}
 }

@@ -143,7 +143,7 @@ public class Connection {
 	public int tpacall(String svc, Buffer toSend, int len, int flags)
 			throws ConnectionException {
 
-		boolean hasTPSIGSTRT = (flags & TPSIGRSTRT) == 1;
+		boolean hasTPSIGSTRT = (flags & TPSIGRSTRT) != 0;
 		if (hasTPSIGSTRT && !warnedTPSIGRSTRT) {
 			log.error("TPSIGRSTRT NOT SUPPORTED FOR SENDS OR RECEIVES");
 			warnedTPSIGRSTRT = true;
@@ -152,7 +152,7 @@ public class Connection {
 				svc.length()));
 		int correlationId = 0;
 		synchronized (this) {
-			correlationId = nextId++;
+			correlationId = ++nextId;
 		}
 		Transport transport = getTransport(svc);
 		Receiver endpoint = transport.createReceiver();
@@ -175,6 +175,9 @@ public class Connection {
 
 		transport.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
 				data, len, correlationId, flags, type, subtype);
+		if ((flags & Connection.TPNOREPLY) != 0) {
+			correlationId = 0;
+		}
 		return correlationId;
 	}
 
@@ -201,7 +204,7 @@ public class Connection {
 	 * @return The response from the server
 	 */
 	public Response tpgetrply(int cd, int flags) throws ConnectionException {
-		boolean hasTPSIGSTRT = (flags & TPSIGRSTRT) == 1;
+		boolean hasTPSIGSTRT = (flags & TPSIGRSTRT) != 0;
 		if (hasTPSIGSTRT && !warnedTPSIGRSTRT) {
 			log.error("TPSIGRSTRT NOT SUPPORTED FOR SENDS OR RECEIVES");
 			warnedTPSIGRSTRT = true;
@@ -232,7 +235,7 @@ public class Connection {
 		svc = svc.substring(0, Math.min(Connection.XATMI_SERVICE_NAME_LENGTH,
 				svc.length()));
 		// Initiate the session
-		boolean hasTPSIGSTRT = (flags & TPSIGRSTRT) == 1;
+		boolean hasTPSIGSTRT = (flags & TPSIGRSTRT) != 0;
 		if (hasTPSIGSTRT && !warnedTPSIGRSTRT) {
 			log.error("TPSIGRSTRT NOT SUPPORTED FOR SENDS OR RECEIVES");
 			warnedTPSIGRSTRT = true;
@@ -308,6 +311,10 @@ public class Connection {
 
 	private Response receive(int cd, int flags) throws ConnectionException {
 		Receiver endpoint = temporaryQueues.remove(cd);
+		if (endpoint == null) {
+			throw new ConnectionException(Connection.TPEBADDESC,
+					"Session does not exist");
+		}
 		Message m = endpoint.receive(flags);
 		// TODO WE SHOULD BE SENDING THE CONNECTION ID?
 		Buffer received = new Buffer(m.type, m.subtype);
