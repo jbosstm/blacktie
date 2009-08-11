@@ -67,8 +67,8 @@ public class TestSpecExampleOne extends TestCase {
 				new Class[] { char[].class, int.class, int.class }, new int[] {
 						100, 0, 0 });
 		/* populate typed buffers with input data */
-		dptr.setString("input", "debit account 123 by 50");
-		cptr.setString("input", "credit account 456 by 50");
+		dptr.setCharArray("input", "debit account 123 by 50".toCharArray());
+		cptr.setCharArray("input", "credit account 456 by 50".toCharArray());
 		// TODO tx_begin(); /* start global transaction */
 		/* issue asynchronous request to DEBIT, while it is processing... */
 		cd = connection.tpacall("TestOne", dptr, 0, Connection.TPSIGRSTRT);

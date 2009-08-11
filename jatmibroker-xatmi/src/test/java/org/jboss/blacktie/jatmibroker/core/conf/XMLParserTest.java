@@ -64,7 +64,7 @@ public class XMLParserTest extends TestCase {
 		String transport = "libatmibroker-stomp.so";
 		String advertised = "true";
 		String size = "1";
-		String function = "org.jboss.blacktie.jatmibroker.xatmi.TestTPCallService";
+		String function = "org.jboss.blacktie.jatmibroker.xatmi.TestTPCallServiceXOctet";
 
 		assertTrue(server.equals(prop.getProperty("blacktie.TestOne.server")));
 		assertTrue(transport.equals(prop

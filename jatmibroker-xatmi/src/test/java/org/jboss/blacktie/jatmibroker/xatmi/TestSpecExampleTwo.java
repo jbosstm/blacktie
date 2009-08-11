@@ -58,8 +58,10 @@ public class TestSpecExampleTwo extends TestCase {
 				char[].class, int.class, int.class }, new int[] { 100, 0, 0 });
 
 		/* populate typed buffer with input data */
-		ptr.setString("input",
-				"retrieve all accounts with balances less than 0");
+		ptr
+				.setCharArray("input",
+						"retrieve all accounts with balances less than 0"
+								.toCharArray());
 		// TODO tx_begin(); /* start global transaction */
 		/* connect to conversational service, send input data, & yield control */
 		cd = connection.tpconnect("TestOne", ptr, 0, Connection.TPRECVONLY

@@ -80,4 +80,48 @@ public class TestTPCall extends TestCase {
 		assertTrue(new String(rcvbuf.getBuffer().getData())
 				.equals("tpcall_x_octet"));
 	}
+
+	public void test_tpcall_x_common() throws ConnectionException {
+		log.info("test_tpcall_x_common");
+		this.server.tpadvertise("TestOne", TestTPCallServiceXCommon.class
+				.getName());
+
+		Buffer dptr = new Buffer("X_COMMON", "deposit");
+		dptr.format(new String[] { "acct_no", "amount", "balance", "status",
+				"status_len" }, new Class[] { long.class, short.class,
+				short.class, char[].class, short.class }, new int[] { 0, 0, 0,
+				128, 0 });
+
+		dptr.setLong("acct_no", 12345678);
+		dptr.setShort("amount", (short) 50);
+
+		Response rcvbuf = connection.tpcall("TestOne", dptr, 0, 0);
+		assertTrue(rcvbuf.getRcode() == 22);
+		assertTrue(new String(rcvbuf.getBuffer().getData())
+				.equals("tpcall_x_common"));
+	}
+
+	public void test_tpcall_x_c_type() throws ConnectionException {
+		log.info("test_tpcall_x_c_type");
+		this.server.tpadvertise("TestOne", TestTPCallServiceXCType.class
+				.getName());
+
+		Buffer aptr = new Buffer("X_C_TYPE", "acct_info");
+		aptr.format(new String[] { "acct_no", "name", "address", "balance" },
+				new Class[] { long.class, char[].class, char[].class,
+						float[].class }, new int[] { 0, 50, 100, 2 });
+
+		aptr.setLong("acct_no", 12345678);
+		aptr.setCharArray("name", "TOM".toCharArray());
+		float[] balances = new float[2];
+		balances[0] = 1.1F;
+		balances[1] = 2.2F;
+		aptr.setFloatArray("balance", balances);
+
+		Response rcvbuf = connection.tpcall("TestOne", aptr, 0,
+				Connection.TPNOCHANGE);
+		assertTrue(rcvbuf.getRcode() == 23);
+		assertTrue(new String(rcvbuf.getBuffer().getData())
+				.equals("tpcall_x_c_type"));
+	}
 }
