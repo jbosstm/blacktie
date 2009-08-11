@@ -42,6 +42,26 @@ public class TestTPCall extends TestCase {
 		server.close();
 	}
 
+	public void test_tpcall_unknown_service() throws ConnectionException {
+		log.info("test_tpcall_unknown_service");
+
+		String message = "test_tpcall_unknown_service";
+		int sendlen = message.length() + 1;
+		Buffer sendbuf = new Buffer("X_OCTET", null);
+		sendbuf.setData("test_tpcall_unknown_service".getBytes());
+
+		try {
+			Response rcvbuf = connection.tpcall("UNKNOWN_SERVICE", sendbuf,
+					sendlen, 0);
+			fail("Expected TPENOENT, got a buffer with rval: "
+					+ rcvbuf.getRval());
+		} catch (ConnectionException e) {
+			if (e.getTperrno() != Connection.TPENOENT) {
+				fail("Expected TPENOENT, got: " + e.getTperrno());
+			}
+		}
+	}
+
 	public void test_tpcall_x_octet() throws ConnectionException {
 		log.info("test_tpcall_x_octet");
 		this.server.tpadvertise("TestOne", TestTPCallServiceXOctet.class

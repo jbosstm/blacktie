@@ -301,7 +301,7 @@ public class Connection {
 				toReturn = TransportFactory.loadTransportFactory(serviceName,
 						properties).createTransport();
 			} catch (ConfigurationException e) {
-				throw new ConnectionException(-1,
+				throw new ConnectionException(Connection.TPENOENT,
 						"Could not load transport for: " + serviceName, e);
 			}
 			transports.put(serviceName, toReturn);
