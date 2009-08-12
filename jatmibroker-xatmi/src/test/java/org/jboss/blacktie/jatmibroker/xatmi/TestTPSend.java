@@ -28,6 +28,9 @@ public class TestTPSend extends TestCase {
 	private static final Logger log = LogManager.getLogger(TestTPSend.class);
 	private AtmiBrokerServer server;
 	private Connection connection;
+	private int sendlen;
+	private Buffer sendbuf;
+	private Session cd;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
@@ -36,13 +39,31 @@ public class TestTPSend extends TestCase {
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
+
+		sendlen = "tpsend".length() + 1;
+		sendbuf = new Buffer("X_OCTET", null);
+		sendbuf.setData("tpsend".getBytes());
+
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
+		if (cd != null) {
+			cd.tpdiscon();
+		}
+
 		connection.close();
 		server.close();
 	}
 
-	public void test() {
+	public void test_tpsend_recvonly() throws ConnectionException {
+		log.info("test_tpsend_recvonly");
+		cd = connection.tpconnect("TestOne", sendbuf, sendlen,
+				Connection.TPRECVONLY);
+		try {
+			cd.tpsend(sendbuf, sendlen, 0);
+		} catch (ConnectionException e) {
+			assertTrue((e.getEvent() == Connection.TPEV_SVCERR)
+					|| (e.getTperrno() == Connection.TPEPROTO));
+		}
 	}
 }

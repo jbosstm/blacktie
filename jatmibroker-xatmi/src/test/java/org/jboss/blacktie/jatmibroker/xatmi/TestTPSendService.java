@@ -8,6 +8,7 @@ public class TestTPSendService implements BlacktieService {
 			.getLogger(TestTPSendService.class);
 
 	public Response tpservice(TPSVCINFO svcinfo) {
+		log.info("testtpsend_service");
 		return null;
 	}
 }
