@@ -43,6 +43,60 @@ public class TestTPCancel extends TestCase {
 		server.close();
 	}
 
-	public void test() {
+	public void test_tpcancel() throws ConnectionException {
+		log.info("test_tpcancel");
+		byte[] message = "cancel".getBytes();
+		int sendlen = message.length + 1;
+		Buffer sendbuf = new Buffer("X_OCTET", null);
+		sendbuf.setData(message);
+
+		int cd = connection.tpacall("TestOne", sendbuf, sendlen, 0);
+		assertTrue(cd != -1);
+		assertTrue(cd != 0);
+
+		// CANCEL THE REQUEST
+		int cancelled = connection.tpcancel(cd);
+		assertTrue(cancelled != -1);
+
+		// FAIL TO RETRIEVE THE RESPONSE
+		try {
+			Response valToTest = connection.tpgetrply(cd, 0);
+			assertNull("Could get a reply", valToTest);
+			fail("Method completed ok");
+		} catch (ConnectionException e) {
+			assertTrue(e.getTperrno() == Connection.TPEBADDESC);
+		}
+	}
+
+	public void test_tpcancel_noreply() throws ConnectionException {
+		log.info("test_tpcancel_noreply");
+		byte[] message = "cancel".getBytes();
+		int sendlen = message.length + 1;
+		Buffer sendbuf = new Buffer("X_OCTET", null);
+		sendbuf.setData(message);
+
+		int cd = connection.tpacall("TestOne", sendbuf, sendlen,
+				Connection.TPNOREPLY);
+		assertTrue(cd == 0);
+
+		// CANCEL THE REQUEST
+		try {
+			int cancelled = connection.tpcancel(cd);
+			fail("Could cancel a TPNOREPLY tpacall");
+		} catch (ConnectionException e) {
+			assertTrue(e.getTperrno() == Connection.TPEBADDESC);
+		}
+	}
+
+	// 8.5
+	public void test_tpcancel_baddesc() {
+		log.info("test_tpcancel_baddesc");
+		// CANCEL THE REQUEST
+		try {
+			int cancelled = connection.tpcancel(2);
+			fail("Could cancel a TPNOREPLY tpacall");
+		} catch (ConnectionException e) {
+			assertTrue(e.getTperrno() == Connection.TPEBADDESC);
+		}
 	}
 }

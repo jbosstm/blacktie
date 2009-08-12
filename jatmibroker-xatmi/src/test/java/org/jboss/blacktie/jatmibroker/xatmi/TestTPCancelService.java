@@ -8,6 +8,25 @@ public class TestTPCancelService implements BlacktieService {
 			.getLogger(TestTPCancelService.class);
 
 	public Response tpservice(TPSVCINFO svcinfo) {
-		return null;
+		log.info("testtpcancel_service");
+		if ((svcinfo.getFlags() & Connection.TPNOREPLY) != 0) {
+			int len = 21;
+			Buffer toReturn;
+			try {
+				String received = new String(svcinfo.getBuffer().getData());
+				if (received.equals("cancel")) {
+					toReturn = new Buffer("X_OCTET", null);
+					toReturn.setData("testtpcancel_service".getBytes());
+					return new Response(Connection.TPSUCCESS, 0, toReturn, len,
+							0);
+				} else {
+					return new Response(Connection.TPFAIL, 1, null, 0, 0);
+				}
+			} catch (ConnectionException e) {
+				return new Response(Connection.TPFAIL, 2, null, 0, 0);
+			}
+		} else {
+			return null;
+		}
 	}
 }

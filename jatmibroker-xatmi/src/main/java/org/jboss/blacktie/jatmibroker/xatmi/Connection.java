@@ -189,9 +189,17 @@ public class Connection {
 	 * @param flags
 	 *            The flags to use
 	 */
-	public void tpcancel(int cd, int flags) throws ConnectionException {
-		Receiver endpoint = temporaryQueues.get(cd);
-		endpoint.close();
+	public int tpcancel(int cd) throws ConnectionException {
+		int toReturn = -1;
+		Receiver endpoint = temporaryQueues.remove(cd);
+		if (endpoint != null) {
+			endpoint.close();
+			toReturn = 0;
+		} else {
+			throw new ConnectionException(Connection.TPEBADDESC, "cd " + cd
+					+ " does not exist");
+		}
+		return toReturn;
 	}
 
 	/**
