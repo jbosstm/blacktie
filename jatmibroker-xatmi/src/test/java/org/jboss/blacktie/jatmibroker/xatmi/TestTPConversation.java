@@ -126,4 +126,9 @@ public class TestTPConversation extends TestCase {
 		}
 		return 0;
 	}
+
+	public static int strcmp(Buffer buffer, String string) {
+		return strcmp(string, buffer);
+	}
+
 }
