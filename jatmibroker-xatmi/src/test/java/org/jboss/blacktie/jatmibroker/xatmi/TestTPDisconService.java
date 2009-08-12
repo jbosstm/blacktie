@@ -8,6 +8,7 @@ public class TestTPDisconService implements BlacktieService {
 			.getLogger(TestTPDisconService.class);
 
 	public Response tpservice(TPSVCINFO svcinfo) {
+		log.info("testtpdiscon_service");
 		return null;
 	}
 }
