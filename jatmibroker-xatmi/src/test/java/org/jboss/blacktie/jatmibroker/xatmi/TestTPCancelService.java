@@ -9,7 +9,7 @@ public class TestTPCancelService implements BlacktieService {
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		log.info("testtpcancel_service");
-		if ((svcinfo.getFlags() & Connection.TPNOREPLY) != 0) {
+		if ((svcinfo.getFlags() & Connection.TPNOREPLY) != Connection.TPNOREPLY) {
 			int len = 21;
 			Buffer toReturn;
 			try {

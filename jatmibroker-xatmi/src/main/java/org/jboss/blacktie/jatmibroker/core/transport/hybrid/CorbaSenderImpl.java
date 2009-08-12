@@ -52,13 +52,13 @@ public class CorbaSenderImpl implements Sender {
 			log.trace("Subtype set as null");
 			subtype = "";
 		}
-		len = len + 1;
-		byte[] toSend = new byte[len];
+		byte[] toSend = new byte[len + 1];
 		if (data != null) {
-			System.arraycopy(data, 0, toSend, 0, len - 1);
+			int min = Math.min(len, data.length);
+			System.arraycopy(data, 0, toSend, 0, min);
 		}
-		queue.send(toReplyTo, rval, rcode, toSend, len, correlationId, flags,
-				type, subtype);
+		queue.send(toReplyTo, rval, rcode, toSend, len + 1, correlationId,
+				flags, type, subtype);
 		log.debug("Sent the message");
 	}
 

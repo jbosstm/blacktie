@@ -17,6 +17,7 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -256,8 +257,8 @@ public class Connection {
 		}
 		Transport transport = getTransport(svc);
 		Session session = new Session(transport, correlationId);
+
 		Receiver endpoint = session.getReceiver();
-		temporaryQueues.put(correlationId, endpoint);
 		// TODO HANDLE TRANSACTION
 		String type = null;
 		String subtype = null;
@@ -275,9 +276,23 @@ public class Connection {
 		}
 
 		transport.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
-				data, len, correlationId, flags, type, subtype);
+				data, len, correlationId, flags | TPCONV, type, subtype);
+
+		Buffer odata = session.tprecv(0);
+		byte[] ack = new byte[4];
+		byte[] bytes = "ACK".getBytes();
+		System.arraycopy(bytes, 0, ack, 0, 3);
+		byte[] response = odata.getData();
+		boolean connected = Arrays.equals(ack, response);
+		if (!connected) {
+			session.close();
+			throw new ConnectionException(Connection.TPETIME,
+					"Could not connect");
+		} else {
+			temporaryQueues.put(correlationId, endpoint);
+			sessions.put(correlationId, session);
+		}
 		// Return a handle to allow the connection to send/receive data on
-		sessions.put(correlationId, session);
 		return session;
 	}
 

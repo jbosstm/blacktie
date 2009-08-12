@@ -128,8 +128,9 @@ public class Session {
 	 * @param flags
 	 *            The flags to use
 	 */
-	public void tpsend(Buffer toSend, int len, int flags)
+	public long tpsend(Buffer toSend, int len, int flags)
 			throws ConnectionException {
+		long toReturn = -1;
 		log.debug("tpsend invoked");
 		if (this.lastEvent > -1) {
 			throw new ConnectionException(Connection.TPEEVENT, lastEvent,
@@ -144,21 +145,23 @@ public class Session {
 			byte[] data = null;
 			if (toSend != null) {
 				toSend.serialize();
-				if (!toSend.equals("X_OCTET")) {
-					len = toSend.getLength();
-				}
 				data = toSend.getData();
 				type = toSend.getType();
 				subtype = toSend.getSubtype();
+				if (!type.equals("X_OCTET")) {
+					len = toSend.getLength();
+				}
 			} else {
 				type = "X_OCTET";
 			}
 
 			sender.send(receiver.getReplyTo(), (short) 0, 0, data, len, cd,
 					flags, type, subtype);
+			toReturn = 0;
 		} else {
 			throw new ConnectionException(-1, "Session in receive mode", null);
 		}
+		return toReturn;
 	}
 
 	/**

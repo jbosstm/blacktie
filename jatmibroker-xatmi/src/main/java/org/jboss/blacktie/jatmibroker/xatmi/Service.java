@@ -101,13 +101,30 @@ public abstract class Service implements BlacktieService {
 		}
 		log.trace("obtained transport");
 		Sender sender = null;
-		if (message.replyTo != null && !message.replyTo.equals("")) {
+		boolean hasTPNOREPLY = (message.flags & Connection.TPNOREPLY) == Connection.TPNOREPLY;
+		if (!hasTPNOREPLY && message.replyTo != null
+				&& !message.replyTo.equals("")) {
 			sender = transport.createSender(message.replyTo);
 		} else {
 			log.trace("NO REPLY TO REQUIRED");
 		}
-		Session session = new Session(transport, message.cd, sender);
-		log.debug("Created the session");
+
+		Session session = null;
+		boolean hasTPCONV = (message.flags & Connection.TPCONV) == Connection.TPCONV;
+		if (hasTPCONV) {
+			session = new Session(transport, message.cd, sender);
+			log.debug("Created the session");
+			int olen = 4;
+			Buffer odata = new Buffer("X_OCTET", null);
+			odata.setData("ACK".getBytes());
+			long result = session.tpsend(odata, olen, 0);
+			if (result == -1) {
+				session.close();
+				return;
+			}
+		} else {
+			log.debug("cd not being set");
+		}
 
 		// THIS IS THE FIRST CALL
 		Buffer buffer = new Buffer(message.type, message.subtype);
@@ -168,7 +185,9 @@ public abstract class Service implements BlacktieService {
 				log.debug("No need to send a response");
 			}
 		} finally {
-			session.close();
+			if (session != null) {
+				session.close();
+			}
 		}
 	}
 }

@@ -28,6 +28,10 @@ public class TestTPConnect extends TestCase {
 	private static final Logger log = LogManager.getLogger(TestTPConnect.class);
 	private AtmiBrokerServer server;
 	private Connection connection;
+	private int sendlen;
+	private Buffer sendbuf;
+	private Session cd;
+	private Session cd2;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
@@ -37,13 +41,52 @@ public class TestTPConnect extends TestCase {
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
+
+		byte[] message = "connect".getBytes();
+		sendlen = message.length + 1;
+		sendbuf = new Buffer("X_OCTET", null);
+		sendbuf.setData(message);
+		cd = null;
+		cd2 = null;
 	}
 
-	public void tearDown() throws ConnectionException, ConfigurationException {
+	public void tearDown() throws ConnectionException {
+		// Do local work
+		if (cd != null) {
+			cd.tpdiscon();
+			cd = null;
+		}
+		if (cd2 != null) {
+			cd2.tpdiscon();
+			cd2 = null;
+		}
+
 		connection.close();
 		server.close();
 	}
 
-	public void test() {
+	public void test_tpconnect() throws ConnectionException {
+		log.info("test_tpconnect");
+		cd = connection.tpconnect("TestOne", sendbuf, sendlen,
+				Connection.TPSENDONLY);
+		assertTrue(cd != null);
+	}
+
+	public void test_tpconnect_double_connect() throws ConnectionException {
+		log.info("test_tpconnect_double_connect");
+		cd = connection.tpconnect("TestOne", sendbuf, sendlen,
+				Connection.TPSENDONLY);
+		cd2 = connection.tpconnect("TestOne", sendbuf, sendlen,
+				Connection.TPSENDONLY);
+		assertTrue(cd != null);
+		assertTrue(cd2 != null);
+		assertTrue(cd != cd2);
+		assertTrue(!cd.equals(cd2));
+	}
+
+	public void test_tpconnect_nodata() throws ConnectionException {
+		log.info("test_tpconnect_nodata");
+		cd = connection.tpconnect("TestOne", null, 0, Connection.TPSENDONLY);
+		assertTrue(cd != null);
 	}
 }
