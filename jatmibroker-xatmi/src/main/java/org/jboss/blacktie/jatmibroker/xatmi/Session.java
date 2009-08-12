@@ -128,9 +128,9 @@ public class Session {
 	 * @param flags
 	 *            The flags to use
 	 */
-	public long tpsend(Buffer toSend, int len, int flags)
+	public int tpsend(Buffer toSend, int len, int flags)
 			throws ConnectionException {
-		long toReturn = -1;
+		int toReturn = -1;
 		log.debug("tpsend invoked");
 		if (this.lastEvent > -1) {
 			throw new ConnectionException(Connection.TPEEVENT, lastEvent,
@@ -200,7 +200,7 @@ public class Session {
 			throw new ConnectionException(Connection.TPEEVENT, lastEvent,
 					lastRCode, "Event existed on descriptor: " + lastEvent,
 					received);
-		} else if ((m.flags & Connection.TPRECVONLY) == 1) {
+		} else if ((m.flags & Connection.TPRECVONLY) == Connection.TPRECVONLY) {
 			throw new ConnectionException(Connection.TPEEVENT,
 					Connection.TPEV_SENDONLY, 0, "Reporting send only event",
 					received);

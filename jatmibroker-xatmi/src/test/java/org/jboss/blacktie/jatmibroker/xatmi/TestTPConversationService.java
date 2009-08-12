@@ -1,5 +1,7 @@
 package org.jboss.blacktie.jatmibroker.xatmi;
 
+import java.util.Arrays;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -9,35 +11,64 @@ public class TestTPConversationService implements BlacktieService {
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		try {
-			Session session = svcinfo.getSession();
-			Buffer buffer = new Buffer("X_OCTET", null);
-			int iterationCount = 100;
-			byte[] received = svcinfo.getBuffer().getData();
-			if (new String(received).equals("conversate")) {
-				for (int i = 0; i < iterationCount; i++) {
-					byte[] toSend = ("hi" + i).getBytes();
-					buffer.setData(toSend);
-					try {
-						session.tpsend(buffer, toSend.length, 0);
-						Buffer tprecv = session.tprecv(0);
-						byte[] returnedData = tprecv.getData();
-						if (!new String(returnedData).equals(("yo" + i))) {
-							buffer.setData(received);
-							return new Response((short) 0, 0, buffer,
-									received.length, 0);
+			log.info("testTPConversation_service");
+			boolean fail = false;
+			Buffer sendbuf = new Buffer("X_OCTET", null);
+
+			if (!Arrays.equals("conversate".getBytes(), svcinfo.getBuffer()
+					.getData())) {
+				if (svcinfo.getBuffer() != null) {
+					log.error("Got invalid data %s"
+							+ new String(svcinfo.getBuffer().getData()));
+				} else {
+					log.error("GOT A NULL");
+				}
+				fail = true;
+			} else {
+				long revent = 0;
+				log.info("Chatting");
+				for (int i = 0; i < TestTPConversation.interationCount; i++) {
+					sendbuf.setData(("hi" + i).getBytes());
+					// userlogc((char*) "testTPConversation_service:%s:",
+					// sendbuf);
+					int result = svcinfo.getSession().tpsend(sendbuf,
+							svcinfo.getBuffer().getLength(),
+							Connection.TPRECVONLY);
+					if (result != -1) {
+						try {
+							svcinfo.getSession().tprecv(0);
+							fail = true;
+							break;
+						} catch (ConnectionException e) {
+							Buffer rcvbuf = e.getReceived();
+							if (rcvbuf != null
+									&& e.getEvent() == Connection.TPEV_SENDONLY) {
+								if (TestTPConversation.strcmp("yo" + i, rcvbuf) != 0) {
+									fail = true;
+									break;
+								}
+							} else {
+								fail = true;
+								break;
+							}
 						}
-					} catch (ConnectionException t) {
-						t.printStackTrace();
-						return null;
+					} else {
+						fail = true;
+						break;
 					}
 				}
-			} else {
-				buffer.setData(received);
-				return new Response((short) 0, 0, buffer, received.length, 0);
+				log.info("Chatted");
 			}
-			String response = "hi" + iterationCount;
-			buffer.setData(response.getBytes());
-			return new Response(Connection.TPSUCCESS, 0, buffer, response.length(), 0);
+
+			if (fail) {
+				return new Response((short) Connection.TPESVCFAIL, 0, sendbuf,
+						0, 0);
+			} else {
+				sendbuf.setData(("hi" + TestTPConversation.interationCount)
+						.getBytes());
+				return new Response(Connection.TPSUCCESS, 0, sendbuf, svcinfo
+						.getBuffer().getLength(), 0);
+			}
 		} catch (ConnectionException e) {
 			return new Response(Connection.TPFAIL, Connection.TPEITYPE, null,
 					0, 0);

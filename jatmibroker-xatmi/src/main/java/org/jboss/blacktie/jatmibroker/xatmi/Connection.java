@@ -144,7 +144,7 @@ public class Connection {
 	public int tpacall(String svc, Buffer toSend, int len, int flags)
 			throws ConnectionException {
 
-		boolean hasTPSIGSTRT = (flags & TPSIGRSTRT) != 0;
+		boolean hasTPSIGSTRT = (flags & TPSIGRSTRT) == TPSIGRSTRT;
 		if (hasTPSIGSTRT && !warnedTPSIGRSTRT) {
 			log.error("TPSIGRSTRT NOT SUPPORTED FOR SENDS OR RECEIVES");
 			warnedTPSIGRSTRT = true;
@@ -176,7 +176,7 @@ public class Connection {
 
 		transport.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
 				data, len, correlationId, flags, type, subtype);
-		if ((flags & Connection.TPNOREPLY) != 0) {
+		if ((flags & Connection.TPNOREPLY) == Connection.TPNOREPLY) {
 			correlationId = 0;
 		}
 		return correlationId;
@@ -213,7 +213,7 @@ public class Connection {
 	 * @return The response from the server
 	 */
 	public Response tpgetrply(int cd, int flags) throws ConnectionException {
-		boolean hasTPSIGSTRT = (flags & TPSIGRSTRT) != 0;
+		boolean hasTPSIGSTRT = (flags & TPSIGRSTRT) == TPSIGRSTRT;
 		if (hasTPSIGSTRT && !warnedTPSIGRSTRT) {
 			log.error("TPSIGRSTRT NOT SUPPORTED FOR SENDS OR RECEIVES");
 			warnedTPSIGRSTRT = true;
@@ -244,7 +244,7 @@ public class Connection {
 		svc = svc.substring(0, Math.min(Connection.XATMI_SERVICE_NAME_LENGTH,
 				svc.length()));
 		// Initiate the session
-		boolean hasTPSIGSTRT = (flags & TPSIGRSTRT) != 0;
+		boolean hasTPSIGSTRT = (flags & TPSIGRSTRT) == TPSIGRSTRT;
 		if (hasTPSIGSTRT && !warnedTPSIGRSTRT) {
 			log.error("TPSIGRSTRT NOT SUPPORTED FOR SENDS OR RECEIVES");
 			warnedTPSIGRSTRT = true;
