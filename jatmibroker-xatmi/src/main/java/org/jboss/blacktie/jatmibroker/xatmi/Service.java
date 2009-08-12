@@ -147,8 +147,15 @@ public abstract class Service implements BlacktieService {
 				JtsTransactionImple.resume(message.control);
 
 			log.debug("Invoking the XATMI service");
-			Response response = tpservice(tpsvcinfo);
-			log.debug("Service invoked");
+			Response response = null;
+			try {
+				response = tpservice(tpsvcinfo);
+				log.debug("Service invoked");
+			} catch (Throwable t) {
+				log.error("Service error detected", t);
+				response = new Response(Connection.TPFAIL,
+						Connection.TPESVCERR, null, 0, 0);
+			}
 
 			if (hasTx) // and suspend it again
 				JtsTransactionImple.suspend();

@@ -8,6 +8,7 @@ public class TestTPReturnService implements BlacktieService {
 			.getLogger(TestTPReturnService.class);
 
 	public Response tpservice(TPSVCINFO svcinfo) {
-		return null;
+		log.info("testtpreturn_service");
+		throw new RuntimeException("tpreturn exception");
 	}
 }

@@ -31,7 +31,6 @@ public class TestTPReturn extends TestCase {
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
-		this.server.tpadvertise("TestOne", TestTPReturnService.class.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -43,6 +42,55 @@ public class TestTPReturn extends TestCase {
 		server.close();
 	}
 
-	public void test() {
+	// 8.1 8.3 not possible in java
+	// public void test_tpreturn_nonservice() {
+	// this.server.tpadvertise("TestOne", TestTPReturnService.class.getName());
+	//
+	// log.info("test_tpreturn_nonservice");
+	// // THIS IS ILLEGAL STATE TABLE
+	// int len = 25;
+	// char *toReturn = (char*) malloc(len);
+	// strcpy(toReturn, "test_tpreturn_nonservice");
+	// tpreturn(TPSUCCESS, 0, toReturn, len, 0);
+	// free(toReturn);
+	// }
+
+	// REMOVE SERVICE JUST THROWS EXCEPTION
+	public void test_tpreturn_nonbuffer() throws ConnectionException {
+		log.info("test_tpreturn_nonbuffer");
+
+		// Do local work
+		this.server.tpadvertise("TestOne", TestTPReturnService.class.getName());
+
+		int sendlen = "tprnb".length() + 1;
+		Buffer sendbuf = new Buffer("X_OCTET", null);
+		sendbuf.setData("tprnb".getBytes());
+
+		try {
+			connection.tpcall("TestOne", sendbuf, sendlen, 0);
+			fail("Managed to send call");
+		} catch (ConnectionException e) {
+			assertTrue(e.getTperrno() == Connection.TPESVCERR);
+		}
+	}
+
+	public void test_tpreturn_tpurcode() throws ConnectionException {
+		log.info("test_tpreturn_tpurcode");
+
+		// Do local work
+		this.server.tpadvertise("TestOne", TestTPReturnServiceTpurcode.class
+				.getName());
+
+		int sendlen = 3;
+		Buffer sendbuf = new Buffer("X_OCTET", null);
+		sendbuf.setData("24".getBytes());
+		Response success = connection.tpcall("TestOne", sendbuf, sendlen, 0);
+		assertTrue(success != null);
+		assertTrue(success.getRcode() == 24);
+
+		sendbuf.setData("77".getBytes());
+		success = connection.tpcall("TestOne", sendbuf, sendlen, 0);
+		assertTrue(success != null);
+		assertTrue(success.getRcode() == 77);
 	}
 }
