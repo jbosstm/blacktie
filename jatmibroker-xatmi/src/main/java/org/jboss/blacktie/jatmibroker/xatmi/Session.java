@@ -68,10 +68,22 @@ public class Session {
 	private int lastRCode = 0;
 
 	/**
+	 * Is the session in read mode.
+	 */
+	private boolean canSend = true;
+
+	/**
+	 * Is the session in write mode, so to speak.
+	 */
+	private boolean canRecv = true;
+
+	/**
 	 * Create a new session
 	 * 
 	 * @param transport
 	 * @param cd
+	 * @param c
+	 * @param b
 	 * @throws ConfigurationException
 	 */
 	Session(Transport transport, int cd) throws ConnectionException {
@@ -79,6 +91,9 @@ public class Session {
 		this.cd = cd;
 		this.eventListener = new EventListenerImpl(this);
 		this.receiver = transport.createReceiver(eventListener);
+
+		this.canSend = false;
+		this.canRecv = true;
 	}
 
 	/**
@@ -96,6 +111,31 @@ public class Session {
 		this.sender = sender;
 		this.eventListener = new EventListenerImpl(this);
 		this.receiver = transport.createReceiver(eventListener);
+
+		this.canRecv = false;
+		this.canSend = true;
+	}
+
+	void setCreatorState(long sentFlags) {
+		// Sort out session state
+		if ((sentFlags & Connection.TPSENDONLY) == Connection.TPSENDONLY) {
+			canSend = true;
+			canRecv = false;
+		} else if ((sentFlags & Connection.TPRECVONLY) == Connection.TPRECVONLY) {
+			canSend = false;
+			canRecv = true;
+		}
+	}
+
+	void setCreatedState(long receivedFlags) {
+		// Sort out session state
+		if ((receivedFlags & Connection.TPSENDONLY) == Connection.TPSENDONLY) {
+			canSend = false;
+			canRecv = true;
+		} else if ((receivedFlags & Connection.TPRECVONLY) == Connection.TPRECVONLY) {
+			canSend = true;
+			canRecv = false;
+		}
 	}
 
 	/**
@@ -136,6 +176,9 @@ public class Session {
 			throw new ConnectionException(Connection.TPEEVENT, lastEvent,
 					lastRCode, "Event existed on descriptor: " + lastEvent,
 					null);
+		} else if (!canSend) {
+			throw new ConnectionException(Connection.TPEPROTO,
+					"Session can't send");
 		}
 		// Can only send in certain circumstances
 		if (sender != null) {
@@ -157,6 +200,16 @@ public class Session {
 
 			sender.send(receiver.getReplyTo(), (short) 0, 0, data, len, cd,
 					flags, type, subtype);
+
+			// Sort out session state
+			if ((flags & Connection.TPSENDONLY) == Connection.TPSENDONLY) {
+				canSend = true;
+				canRecv = false;
+			} else if ((flags & Connection.TPRECVONLY) == Connection.TPRECVONLY) {
+				canSend = false;
+				canRecv = true;
+			}
+
 			toReturn = 0;
 		} else {
 			throw new ConnectionException(-1, "Session in receive mode", null);
@@ -175,6 +228,14 @@ public class Session {
 	 */
 	public Buffer tprecv(int flags) throws ConnectionException {
 		log.debug("Receiving");
+		if (this.lastEvent > -1) {
+			throw new ConnectionException(Connection.TPEEVENT, lastEvent,
+					lastRCode, "Event existed on descriptor: " + lastEvent,
+					null);
+		} else if (!canRecv) {
+			throw new ConnectionException(Connection.TPEPROTO,
+					"Session can't receive");
+		}
 		Message m = receiver.receive(flags);
 		// Prepare the outbound channel
 		if (m.replyTo == null
@@ -195,6 +256,16 @@ public class Session {
 		Buffer received = new Buffer(m.type, m.subtype);
 		received.setData(m.data);
 		log.debug("Prepared and ready to launch");
+
+		// Sort out session state
+		if ((m.flags & Connection.TPSENDONLY) == Connection.TPSENDONLY) {
+			canSend = false;
+			canRecv = true;
+		} else if ((m.flags & Connection.TPRECVONLY) == Connection.TPRECVONLY) {
+			canSend = true;
+			canRecv = false;
+		}
+
 		// Check we didn't just get an event while waiting
 		if (this.lastEvent > -1) {
 			throw new ConnectionException(Connection.TPEEVENT, lastEvent,

@@ -121,6 +121,8 @@ public abstract class Service implements BlacktieService {
 			if (result == -1) {
 				session.close();
 				return;
+			} else {
+				session.setCreatedState(message.flags);
 			}
 		} else {
 			log.debug("cd not being set");

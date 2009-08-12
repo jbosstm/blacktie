@@ -289,6 +289,7 @@ public class Connection {
 			throw new ConnectionException(Connection.TPETIME,
 					"Could not connect");
 		} else {
+			session.setCreatorState(flags);
 			temporaryQueues.put(correlationId, endpoint);
 			sessions.put(correlationId, session);
 		}

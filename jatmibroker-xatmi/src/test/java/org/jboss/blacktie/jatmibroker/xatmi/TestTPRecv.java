@@ -28,6 +28,9 @@ public class TestTPRecv extends TestCase {
 	private static final Logger log = LogManager.getLogger(TestTPRecv.class);
 	private AtmiBrokerServer server;
 	private Connection connection;
+	private int sendlen;
+	private Buffer sendbuf;
+	private Session cd;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
@@ -36,13 +39,28 @@ public class TestTPRecv extends TestCase {
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
+
+		sendlen = "recv".length() + 1;
+		sendbuf = new Buffer("X_OCTET", null);
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
+		if (cd != null) {
+			cd.tpdiscon();
+		}
 		connection.close();
 		server.close();
 	}
 
-	public void test() {
+	public void test_tprecv_sendonly() throws ConnectionException {
+		log.info("test_tprecv_sendonly");
+		cd = connection.tpconnect("TestOne", sendbuf, sendlen,
+				Connection.TPSENDONLY);
+		try {
+			cd.tprecv(0);
+			fail("expected proto error");
+		} catch (ConnectionException e) {
+			assertTrue(e.getTperrno() == Connection.TPEPROTO);
+		}
 	}
 }
