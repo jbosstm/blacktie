@@ -22,10 +22,12 @@ public class TestTPCallServiceXCType implements BlacktieService {
 			char[] receivedName = new char[3];
 			System.arraycopy(aptr.getCharArray("name"), 0, receivedName, 0, 3);
 			char[] expectedName = "TOM".toCharArray();
-			if (aptr.getLong("acct_no") == 12345678
+			long accountNumber = aptr.getLong("acct_no");
+			float balanceOne = aptr.getFloatArray("balance")[0];
+			float balanceTwo = aptr.getFloatArray("balance")[1];
+			if (accountNumber == 12345678
 					&& Arrays.equals(receivedName, expectedName)
-					&& aptr.getFloatArray("balance")[0] == 1.1F
-					&& aptr.getFloatArray("balance")[1] == 2.2F) {
+					&& balanceOne == 1.1F && balanceTwo == 2.2F) {
 				ok = true;
 			}
 			int len = 60;

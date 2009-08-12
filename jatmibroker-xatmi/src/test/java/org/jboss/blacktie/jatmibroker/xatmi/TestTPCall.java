@@ -17,6 +17,8 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
+import java.util.Arrays;
+
 import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
@@ -69,7 +71,6 @@ public class TestTPCall extends TestCase {
 
 		String toSend = "test_tpcall_x_octet";
 		int sendlen = toSend.length() + 1;
-		int rcvlen = sendlen;
 		Buffer sendbuf = new Buffer("X_OCTET", null);
 		sendbuf.setData(toSend.getBytes());
 
@@ -77,8 +78,11 @@ public class TestTPCall extends TestCase {
 		assertTrue(rcvbuf != null);
 		assertTrue(rcvbuf.getBuffer() != null);
 		assertTrue(rcvbuf.getBuffer().getData() != null);
-		assertTrue(new String(rcvbuf.getBuffer().getData())
-				.equals("tpcall_x_octet"));
+		byte[] received = rcvbuf.getBuffer().getData();
+		byte[] expected = new byte[received.length];
+		System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0,
+				"tpcall_x_octet".getBytes().length);
+		assertTrue(Arrays.equals(received, expected));
 	}
 
 	public void test_tpcall_x_common() throws ConnectionException {
@@ -97,8 +101,11 @@ public class TestTPCall extends TestCase {
 
 		Response rcvbuf = connection.tpcall("TestOne", dptr, 0, 0);
 		assertTrue(rcvbuf.getRcode() == 22);
-		assertTrue(new String(rcvbuf.getBuffer().getData())
-				.equals("tpcall_x_common"));
+		byte[] received = rcvbuf.getBuffer().getData();
+		byte[] expected = new byte[received.length];
+		System.arraycopy("tpcall_x_common".getBytes(), 0, expected, 0,
+				"tpcall_x_common".getBytes().length);
+		assertTrue(Arrays.equals(received, expected));
 	}
 
 	public void test_tpcall_x_c_type() throws ConnectionException {
@@ -121,7 +128,10 @@ public class TestTPCall extends TestCase {
 		Response rcvbuf = connection.tpcall("TestOne", aptr, 0,
 				Connection.TPNOCHANGE);
 		assertTrue(rcvbuf.getRcode() == 23);
-		assertTrue(new String(rcvbuf.getBuffer().getData())
-				.equals("tpcall_x_c_type"));
+		byte[] received = rcvbuf.getBuffer().getData();
+		byte[] expected = new byte[received.length];
+		System.arraycopy("tpcall_x_c_type".getBytes(), 0, expected, 0,
+				"tpcall_x_c_type".getBytes().length);
+		assertTrue(Arrays.equals(received, expected));
 	}
 }

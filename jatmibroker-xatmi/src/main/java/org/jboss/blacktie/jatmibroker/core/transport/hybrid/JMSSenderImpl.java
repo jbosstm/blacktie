@@ -88,7 +88,8 @@ public class JMSSenderImpl implements Sender {
 
 			byte[] toSend = new byte[len + 1];
 			if (data != null) {
-				System.arraycopy(data, 0, toSend, 0, len);
+				int min = Math.min(len, data.length);
+				System.arraycopy(data, 0, toSend, 0, min);
 			}
 			message.writeBytes(toSend, 0, toSend.length);
 			sender.send(message);

@@ -1,5 +1,7 @@
 package org.jboss.blacktie.jatmibroker.xatmi;
 
+import java.util.Arrays;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -11,8 +13,11 @@ public class TestTPCallServiceXOctet implements BlacktieService {
 		log.info("test_tpcall_x_octet_service");
 		boolean ok = false;
 		if (svcinfo.getBuffer() != null) {
-			if (new String(svcinfo.getBuffer().getData())
-					.equals("test_tpcall_x_octet")) {
+			byte[] received = svcinfo.getBuffer().getData();
+			byte[] expected = new byte["test_tpcall_x_octet".getBytes().length + 1];
+			System.arraycopy("test_tpcall_x_octet".getBytes(), 0, expected, 0,
+					received.length - 1);
+			if (Arrays.equals(received, expected)) {
 				ok = true;
 			}
 		}
