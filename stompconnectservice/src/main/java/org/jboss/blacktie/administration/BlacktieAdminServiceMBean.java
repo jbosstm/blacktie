@@ -41,4 +41,10 @@ public interface BlacktieAdminServiceMBean {
 	 * 
 	 */
 	public String getDomainName();
+
+	/** 
+	 * Get servers name
+	 *
+	 */
+	public java.util.List getServersName() throws Exception;
 }
