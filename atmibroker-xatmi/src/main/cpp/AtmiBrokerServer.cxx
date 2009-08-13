@@ -392,7 +392,7 @@ int AtmiBrokerServer::getServiceStatus(char* str) {
 	for(std::vector<ServiceStatus>::iterator i = serviceStatus.begin();
 			i != serviceStatus.end(); i++ ) {
 		len += ACE_OS::sprintf(str + len, "<service><name>%s</name><status>%d</status></service>", 
-				                          (*i).service->serviceName,
+				                          (*i).name,
 										  (*i).status);
 	}
 
@@ -408,7 +408,7 @@ void AtmiBrokerServer::updateServiceStatus(ServiceInfo* service,
 
 	for(std::vector<ServiceStatus>::iterator i = serviceStatus.begin();
 			i != serviceStatus.end(); i++ ) {
-		if((*i).service == service) {
+		if(strcmp((*i).name, service->serviceName) == 0) {
 			(*i).func = func;
 			(*i).status = status;
 			found = true;
@@ -418,7 +418,7 @@ void AtmiBrokerServer::updateServiceStatus(ServiceInfo* service,
 
 	if(found == false) {
 		ServiceStatus aServiceStatus;
-		aServiceStatus.service = service;
+		ACE_OS::strncpy(aServiceStatus.name, service->serviceName, 15);
 		aServiceStatus.func = func;
 		aServiceStatus.status = status;
 		serviceStatus.push_back(aServiceStatus);
@@ -428,7 +428,7 @@ void AtmiBrokerServer::updateServiceStatus(ServiceInfo* service,
 bool AtmiBrokerServer::advertiseService(char * svcname) {
 	for(std::vector<ServiceStatus>::iterator i = serviceStatus.begin();
 			i != serviceStatus.end(); i++ ) {
-		if(strncmp((*i).service->serviceName, svcname, XATMI_SERVICE_NAME_LENGTH) == 0) {
+		if(strncmp((*i).name, svcname, XATMI_SERVICE_NAME_LENGTH) == 0) {
 			return advertiseService(svcname, (*i).func);
 		}
 	}

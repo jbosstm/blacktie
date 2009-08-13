@@ -21,14 +21,13 @@
 #define BLACKTIE_SERVERCONTROL_H_
 
 #include "atmiBrokerXatmiMacro.h"
-#include "AtmiBrokerEnvXml.h"
 #include "xatmi.h"
 
 typedef void (*SVCFUNC)(TPSVCINFO *);
 
 struct BLACKTIE_XATMI_DLL _service_status {
-	ServiceInfo* service;
-	bool    status;
+	char    name[XATMI_SERVICE_NAME_LENGTH];
+	int     status;
 	SVCFUNC func;
 };
 
