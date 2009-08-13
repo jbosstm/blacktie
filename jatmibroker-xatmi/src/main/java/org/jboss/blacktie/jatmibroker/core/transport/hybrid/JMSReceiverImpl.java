@@ -17,6 +17,8 @@
  */
 package org.jboss.blacktie.jatmibroker.core.transport.hybrid;
 
+import java.util.Properties;
+
 import javax.jms.BytesMessage;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -41,18 +43,21 @@ public class JMSReceiverImpl implements Receiver {
 	private boolean isTemporary;
 	private int timeout = 0;
 
-	JMSReceiverImpl(Session session) throws JMSException {
+	JMSReceiverImpl(Session session, Properties properties) throws JMSException {
 		destination = session.createTemporaryQueue();
 		receiver = session.createConsumer(destination);
 		isTemporary = true;
+		timeout = Integer.parseInt(properties.getProperty("DestinationTimeout",
+				"10")) * 1000;
 		log.debug("Creating a consumer on: " + destination.getQueueName());
-		timeout = 2000; // TODO Make configurable
 	}
 
-	JMSReceiverImpl(Session session, Destination destination)
-			throws JMSException, NamingException {
+	JMSReceiverImpl(Session session, Destination destination,
+			Properties properties) throws JMSException, NamingException {
 		this.destination = (Queue) destination;
 		receiver = session.createConsumer(destination);
+		timeout = Integer.parseInt(properties.getProperty("DestinationTimeout",
+				"2")) * 1000;
 		log.debug("Creating a consumer on: " + this.destination.getQueueName());
 	}
 

@@ -133,7 +133,7 @@ public class TransportImpl implements Runnable, Transport {
 			Destination destination = (Destination) context.lookup("/queue/"
 					+ serviceName);
 			log.debug("Resolved destination");
-			return new JMSReceiverImpl(session, destination);
+			return new JMSReceiverImpl(session, destination, properties);
 		} catch (Throwable t) {
 			throw new ConnectionException(-1,
 					"Could not create the receiver on: " + serviceName, t);

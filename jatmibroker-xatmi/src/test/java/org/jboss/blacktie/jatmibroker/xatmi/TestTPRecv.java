@@ -60,7 +60,8 @@ public class TestTPRecv extends TestCase {
 			cd.tprecv(0);
 			fail("expected proto error");
 		} catch (ConnectionException e) {
-			assertTrue(e.getTperrno() == Connection.TPEPROTO);
+			assertTrue((e.getEvent() == Connection.TPEV_SVCERR)
+					|| (e.getTperrno() == Connection.TPEPROTO));
 		}
 	}
 }

@@ -9,6 +9,6 @@ public class TestTPConnectService implements BlacktieService {
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		log.info("testtpconnect_service");
-		return null;
+		return new Response(Connection.TPSUCCESS, 0, null, 0, 0);
 	}
 }

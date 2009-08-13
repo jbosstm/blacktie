@@ -151,6 +151,11 @@ public abstract class Service implements BlacktieService {
 			try {
 				response = tpservice(tpsvcinfo);
 				log.debug("Service invoked");
+				if (!hasTPNOREPLY && response == null) {
+					log.error("Error, expected response but none returned");
+					response = new Response(Connection.TPFAIL,
+							Connection.TPESVCERR, null, 0, 0);
+				}
 			} catch (Throwable t) {
 				log.error("Service error detected", t);
 				response = new Response(Connection.TPFAIL,

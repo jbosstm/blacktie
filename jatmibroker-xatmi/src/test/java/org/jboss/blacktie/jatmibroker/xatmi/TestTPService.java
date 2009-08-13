@@ -28,6 +28,8 @@ public class TestTPService extends TestCase {
 	private static final Logger log = LogManager.getLogger(TestTPService.class);
 	private AtmiBrokerServer server;
 	private Connection connection;
+	private int sendlen;
+	private Buffer sendbuf;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
@@ -37,6 +39,10 @@ public class TestTPService extends TestCase {
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
+
+		sendlen = "TestTPService".length() + 1;
+		sendbuf = new Buffer("X_OCTET", null);
+		sendbuf.setData("TestTPService".getBytes());
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
@@ -44,6 +50,13 @@ public class TestTPService extends TestCase {
 		server.close();
 	}
 
-	public void test() {
+	public void test_tpservice_notpreturn() {
+		log.info("test_tpservice_notpreturn");
+		try {
+			connection.tpcall("TestOne", sendbuf, sendlen, 0);
+			fail("Managed call");
+		} catch (ConnectionException e) {
+			assertTrue(e.getTperrno() == Connection.TPESVCERR);
+		}
 	}
 }

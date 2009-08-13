@@ -278,21 +278,29 @@ public class Connection {
 		transport.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
 				data, len, correlationId, flags | TPCONV, type, subtype);
 
-		Buffer odata = session.tprecv(0);
+		byte[] response = null;
+		try {
+			Buffer odata = session.tprecv(0);
+			response = odata.getData();
+		} catch (ConnectionException e) {
+			if (e.getReceived() != null) {
+				response = e.getReceived().getData();
+			}
+		}
 		byte[] ack = new byte[4];
 		byte[] bytes = "ACK".getBytes();
 		System.arraycopy(bytes, 0, ack, 0, 3);
-		byte[] response = odata.getData();
-		boolean connected = Arrays.equals(ack, response);
+		boolean connected = response == null ? false : Arrays.equals(ack,
+				response);
 		if (!connected) {
 			session.close();
 			throw new ConnectionException(Connection.TPETIME,
 					"Could not connect");
-		} else {
-			session.setCreatorState(flags);
-			temporaryQueues.put(correlationId, endpoint);
-			sessions.put(correlationId, session);
 		}
+		session.setCreatorState(flags);
+		temporaryQueues.put(correlationId, endpoint);
+		sessions.put(correlationId, session);
+
 		// Return a handle to allow the connection to send/receive data on
 		return session;
 	}

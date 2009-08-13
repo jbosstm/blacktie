@@ -93,6 +93,7 @@ public class JMSSenderImpl implements Sender {
 			}
 			message.writeBytes(toSend, 0, toSend.length);
 			sender.send(message);
+			log.debug("sent message");
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Could not send the message", t);
 		}
