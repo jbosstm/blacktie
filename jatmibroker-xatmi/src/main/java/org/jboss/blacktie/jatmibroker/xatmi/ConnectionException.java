@@ -20,7 +20,7 @@ public class ConnectionException extends Exception {
 	 *            The error code
 	 */
 	public ConnectionException(int tperrno, String string, Throwable t) {
-		super(string, t);
+		super(string + ": " + tperrno, t);
 		this.tperrno = tperrno;
 	}
 
@@ -33,7 +33,7 @@ public class ConnectionException extends Exception {
 	 *            The message
 	 */
 	public ConnectionException(int tperrno, String string) {
-		super(string);
+		super(string + ": " + tperrno);
 		this.tperrno = tperrno;
 	}
 
@@ -53,7 +53,7 @@ public class ConnectionException extends Exception {
 	 */
 	public ConnectionException(int tperrno, long event, int lastRCode,
 			String string, Buffer received) {
-		super(string);
+		super(string + ": " + tperrno);
 		this.tperrno = tperrno;
 		this.event = event;
 		this.received = received;

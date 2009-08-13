@@ -24,6 +24,7 @@ import org.jboss.blacktie.jatmibroker.core.transport.Message;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.core.transport.Transport;
 import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.Service;
@@ -55,13 +56,25 @@ public class ServiceDispatcher extends Service implements Runnable {
 		log.debug("Running");
 		try {
 			while (!closed) {
-				Message message = receiver.receive(0);
-				log.trace("Received");
 				try {
-					this.processMessage(message);
-					log.trace("Processed");
-				} catch (Throwable t) {
-					log.error("Can't process the message", t);
+					Message message = receiver.receive(0);
+					log.trace("Received");
+					try {
+						this.processMessage(message);
+						log.trace("Processed");
+					} catch (Throwable t) {
+						log.error("Can't process the message", t);
+					}
+
+				} catch (ConnectionException e) {
+					if (closed) {
+						throw e;
+					}
+					if (e.getTperrno() == Connection.TPETIME) {
+						log.debug("Got a timeout");
+					} else {
+						throw e;
+					}
 				}
 			}
 		} catch (Throwable t) {

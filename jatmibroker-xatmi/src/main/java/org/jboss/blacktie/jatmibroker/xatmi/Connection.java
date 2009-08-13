@@ -285,6 +285,9 @@ public class Connection {
 		} catch (ConnectionException e) {
 			if (e.getReceived() != null) {
 				response = e.getReceived().getData();
+			} else {
+				throw new ConnectionException(e.getTperrno(),
+						"Could not connect");
 			}
 		}
 		byte[] ack = new byte[4];

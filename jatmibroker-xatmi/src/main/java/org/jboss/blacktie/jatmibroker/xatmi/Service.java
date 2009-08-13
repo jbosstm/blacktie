@@ -110,38 +110,39 @@ public abstract class Service implements BlacktieService {
 		}
 
 		Session session = null;
-		boolean hasTPCONV = (message.flags & Connection.TPCONV) == Connection.TPCONV;
-		if (hasTPCONV) {
-			session = new Session(transport, message.cd, sender);
-			log.debug("Created the session");
-			int olen = 4;
-			Buffer odata = new Buffer("X_OCTET", null);
-			odata.setData("ACK".getBytes());
-			long result = session.tpsend(odata, olen, 0);
-			if (result == -1) {
-				session.close();
-				return;
-			} else {
-				session.setCreatedState(message.flags);
-			}
-		} else {
-			log.debug("cd not being set");
-		}
-
-		// THIS IS THE FIRST CALL
-		Buffer buffer = new Buffer(message.type, message.subtype);
-		buffer.setData(message.data);
-		// TODO NO SESSIONS
-		// NOT PASSING OVER THE SERVICE NAME
-		TPSVCINFO tpsvcinfo = new TPSVCINFO(message.serviceName, buffer,
-				message.flags, session);
-		log.debug("Prepared the data for passing to the service");
-
-		boolean hasTx = (message.control != null && message.control.length() != 0);
-
-		log.debug("hasTx=" + hasTx + " ior: " + message.control);
-
 		try {
+			boolean hasTPCONV = (message.flags & Connection.TPCONV) == Connection.TPCONV;
+			if (hasTPCONV) {
+				session = new Session(transport, message.cd, sender);
+				log.debug("Created the session");
+				int olen = 4;
+				Buffer odata = new Buffer("X_OCTET", null);
+				odata.setData("ACK".getBytes());
+				long result = session.tpsend(odata, olen, 0);
+				if (result == -1) {
+					session.close();
+					return;
+				} else {
+					session.setCreatedState(message.flags);
+				}
+			} else {
+				log.debug("cd not being set");
+			}
+
+			// THIS IS THE FIRST CALL
+			Buffer buffer = new Buffer(message.type, message.subtype);
+			buffer.setData(message.data);
+			// TODO NO SESSIONS
+			// NOT PASSING OVER THE SERVICE NAME
+			TPSVCINFO tpsvcinfo = new TPSVCINFO(message.serviceName, buffer,
+					message.flags, session);
+			log.debug("Prepared the data for passing to the service");
+
+			boolean hasTx = (message.control != null && message.control
+					.length() != 0);
+
+			log.debug("hasTx=" + hasTx + " ior: " + message.control);
+
 			if (hasTx) // make sure any foreign tx is resumed before calling the
 				// service routine
 				JtsTransactionImple.resume(message.control);
@@ -201,6 +202,8 @@ public abstract class Service implements BlacktieService {
 		} finally {
 			if (session != null) {
 				session.close();
+			} else if (sender != null) {
+				sender.close();
 			}
 		}
 	}
