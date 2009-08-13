@@ -632,6 +632,11 @@ int tpgetrply(int *id, char ** odata, long *olen, long flags) {
 	int toReturn = -1;
 	setSpecific(TPE_KEY, TSS_TPERESET);
 
+	if (odata == NULL || *odata == NULL) {
+		setSpecific(TPE_KEY, TSS_TPEINVAL);
+		return toReturn;
+	}
+
 	long toCheck = flags;
 	toCheck &= ~TPGETANY;
 	toCheck &= ~TPNOCHANGE;

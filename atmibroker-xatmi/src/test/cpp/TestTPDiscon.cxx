@@ -71,12 +71,14 @@ void TestTPDiscon::test_tpdiscon() {
 
 void TestTPDiscon::test_tpdiscon_baddescr() {
 	userlogc((char*) "test_tpdiscon_baddescr");
-	::tpdiscon(2);
+	::tpdiscon(cd + 1);
+	CPPUNIT_ASSERT(tperrno == TPEBADDESC);
 }
 
 void TestTPDiscon::test_tpdiscon_negdescr() {
 	userlogc((char*) "test_tpdiscon_negdescr");
 	::tpdiscon(-1);
+	CPPUNIT_ASSERT(tperrno == TPEBADDESC);
 }
 
 void testtpdiscon_service(TPSVCINFO *svcinfo) {

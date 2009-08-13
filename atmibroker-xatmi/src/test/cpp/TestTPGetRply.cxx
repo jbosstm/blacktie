@@ -112,17 +112,20 @@ void TestTPGetRply::test_tpgetrply_nullcd() {
 
 void TestTPGetRply::test_tpgetrply_nullrcvbuf() {
 	userlogc((char*) "test_tpgetrply_nullrcvbuf");
-	int cd = 2;
+	int cd = ::tpacall((char*) "TestTPGetrply", (char *) sendbuf, sendlen, 0);
+	CPPUNIT_ASSERT(cd != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+
 	int valToTest = ::tpgetrply(&cd, NULL, &rcvlen, 0);
 	CPPUNIT_ASSERT(valToTest == -1);
 	CPPUNIT_ASSERT(tperrno != 0);
-	CPPUNIT_ASSERT(tperrno != TPEINVAL);
 	CPPUNIT_ASSERT(tperrno != TPEOTYPE);
 	CPPUNIT_ASSERT(tperrno != TPETIME);
 	CPPUNIT_ASSERT(tperrno != TPESVCFAIL);
 	CPPUNIT_ASSERT(tperrno != TPESVCERR);
 	CPPUNIT_ASSERT(tperrno != TPEBLOCK);
-	CPPUNIT_ASSERT(tperrno == TPEBADDESC);
+	CPPUNIT_ASSERT(tperrno != TPEBADDESC);
+	CPPUNIT_ASSERT(tperrno == TPEINVAL);
 }
 
 void TestTPGetRply::test_tpgetrply_nullrcvlen() {

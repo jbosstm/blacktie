@@ -91,6 +91,11 @@ HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(
 HybridCorbaEndpointQueue::~HybridCorbaEndpointQueue() {
 	LOG4CXX_DEBUG(logger, (char*) "destroy called: " << this);
 
+	LOG4CXX_DEBUG(logger, (char*) "destroying thePoa: " << thePoa);
+	thePoa->destroy(true, true);
+	thePoa = NULL;
+	LOG4CXX_DEBUG(logger, (char*) "destroyed thePoa: " << thePoa);
+
 	lock->lock();
 	while (returnData.size() > 0) {
 		MESSAGE message = returnData.front();
@@ -106,16 +111,10 @@ HybridCorbaEndpointQueue::~HybridCorbaEndpointQueue() {
 		lock->notifyAll();
 	}
 	lock->unlock();
-	delete lock;
-	lock = NULL;
-
-	LOG4CXX_DEBUG(logger, (char*) "destroying thePoa: " << thePoa);
-	thePoa->destroy(true, true);
-	thePoa = NULL;
-	LOG4CXX_DEBUG(logger, (char*) "destroyed thePoa: " << thePoa);
-	LOG4CXX_DEBUG(logger, (char*) "destroyed: " << this);
 
 	delete[] name;
+	delete lock;
+	LOG4CXX_DEBUG(logger, (char*) "destroyed: " << this);
 }
 
 void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
@@ -123,66 +122,69 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 		CORBA::Long correlationId, CORBA::Long flags, const char* type,
 		const char* subtype) throw (CORBA::SystemException ) {
 	LOG4CXX_DEBUG(logger, (char*) "send called:" << this);
-	lock->lock();
 	if (!shutdown) {
-		LOG4CXX_DEBUG(logger, (char*) "send called.");
-		if (replyto_ior != NULL) {
-			LOG4CXX_DEBUG(logger, (char*) "send reply to = " << replyto_ior);
-		}
-		LOG4CXX_DEBUG(logger, (char*) "send ilen = " << ilen);
-		LOG4CXX_DEBUG(logger, (char*) "send flags = " << flags);
-
-		MESSAGE message;
-		message.correlationId = correlationId;
-		message.flags = flags;
-		message.rcode = rcode;
-		if (replyto_ior != NULL) {
-			LOG4CXX_TRACE(logger, (char*) "Duplicating the replyto");
-			message.replyto = strdup(replyto_ior);
-			LOG4CXX_TRACE(logger, (char*) "Duplicated");
-		} else {
-			message.replyto = NULL;
-		}
-		message.type = strdup(type);
-		message.subtype = strdup(subtype);
-
-		message.len = ilen - 1;
-		if (message.len == 0 && strlen(message.type) == 0) {
-			message.data = NULL;
-		} else {
-			LOG4CXX_TRACE(logger, (char*) "Allocating DATA");
-			message.data = (char*) malloc(message.len);
-			LOG4CXX_TRACE(logger, (char*) "Allocated");
-			if (message.len > 0) {
-				memcpy(message.data, (char*) idata.get_buffer(), message.len);
-				LOG4CXX_TRACE(logger, (char*) "Copied");
+		lock->lock();
+		if (!shutdown) {
+			LOG4CXX_DEBUG(logger, (char*) "send called.");
+			if (replyto_ior != NULL) {
+				LOG4CXX_DEBUG(logger, (char*) "send reply to = " << replyto_ior);
 			}
+			LOG4CXX_DEBUG(logger, (char*) "send ilen = " << ilen);
+			LOG4CXX_DEBUG(logger, (char*) "send flags = " << flags);
+
+			MESSAGE message;
+			message.correlationId = correlationId;
+			message.flags = flags;
+			message.rcode = rcode;
+			if (replyto_ior != NULL) {
+				LOG4CXX_TRACE(logger, (char*) "Duplicating the replyto");
+				message.replyto = strdup(replyto_ior);
+				LOG4CXX_TRACE(logger, (char*) "Duplicated");
+			} else {
+				message.replyto = NULL;
+			}
+			message.type = strdup(type);
+			message.subtype = strdup(subtype);
+
+			message.len = ilen - 1;
+			if (message.len == 0 && strlen(message.type) == 0) {
+				message.data = NULL;
+			} else {
+				LOG4CXX_TRACE(logger, (char*) "Allocating DATA");
+				message.data = (char*) malloc(message.len);
+				LOG4CXX_TRACE(logger, (char*) "Allocated");
+				if (message.len > 0) {
+					memcpy(message.data, (char*) idata.get_buffer(),
+							message.len);
+					LOG4CXX_TRACE(logger, (char*) "Copied");
+				}
+			}
+
+			message.rval = rval;
+			LOG4CXX_TRACE(logger, (char*) "Getting control");
+			message.control = disassociate_tx_if_not_owner();
+			LOG4CXX_TRACE(logger, (char*) "Got control");
+
+			message.received = true;
+			// For remote comms this thread (comes from a pool) is different from the thread that will
+			// eventually consume the message. For local comms this is not the case.
+			// Thus we cannot dissassociate any transaction from the thread here (using destroySpecific)
+
+			if (message.rval == DISCON) {
+				session->setLastEvent(TPEV_DISCONIMM);
+			} else if (message.rcode == TPESVCERR) {
+				session->setLastEvent(TPEV_SVCERR);
+			} else if (message.rval == TPFAIL) {
+				session->setLastEvent(TPEV_SVCFAIL);
+				session->setLastRCode(message.rcode);
+			}
+			returnData.push(message);
+			LOG4CXX_DEBUG(logger, (char*) "notifying");
+			lock->notify();
 		}
-
-		message.rval = rval;
-		LOG4CXX_TRACE(logger, (char*) "Getting control");
-		message.control = disassociate_tx_if_not_owner();
-		LOG4CXX_TRACE(logger, (char*) "Got control");
-
-		message.received = true;
-		// For remote comms this thread (comes from a pool) is different from the thread that will
-		// eventually consume the message. For local comms this is not the case.
-		// Thus we cannot dissassociate any transaction from the thread here (using destroySpecific)
-
-		if (message.rval == DISCON) {
-			session->setLastEvent(TPEV_DISCONIMM);
-		} else if (message.rcode == TPESVCERR) {
-			session->setLastEvent(TPEV_SVCERR);
-		} else if (message.rval == TPFAIL) {
-			session->setLastEvent(TPEV_SVCFAIL);
-			session->setLastRCode(message.rcode);
-		}
-		returnData.push(message);
-		LOG4CXX_DEBUG(logger, (char*) "notifying");
-		lock->notify();
+		LOG4CXX_DEBUG(logger, (char*) "notified");
+		lock->unlock();
 	}
-	LOG4CXX_DEBUG(logger, (char*) "notified");
-	lock->unlock();
 }
 
 MESSAGE HybridCorbaEndpointQueue::receive(long time) {

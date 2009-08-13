@@ -32,7 +32,7 @@ extern "C"void BAR(TPSVCINFO * svcinfo) {
 	char* buffer = tpalloc((char*) "X_OCTET", NULL, sendlen);
 	strncpy(buffer, "BAR SAYS HELLO", 14);
 
-	tpreturn(1, 1, buffer, sendlen, 0);
+	tpreturn(TPSUCCESS, 1, buffer, sendlen, 0);
 }
 
 extern "C"void TestTPACall(TPSVCINFO * svcinfo) {
@@ -41,10 +41,10 @@ extern "C"void TestTPACall(TPSVCINFO * svcinfo) {
 		int sendlen = 16;
 		char* buffer = tpalloc((char*) "X_OCTET", NULL, sendlen);
 		strncpy(buffer, "helloTestTPACall", 16);
-		tpreturn(1, 1, buffer, sendlen, 0);
+		tpreturn(TPSUCCESS, 1, buffer, sendlen, 0);
 	} else {
 		userlogc((char*) "Returning badness");
-		tpreturn(1, 1, svcinfo->data, svcinfo->len, 0);
+		tpreturn(TPFAIL, 1, svcinfo->data, svcinfo->len, 0);
 	}
 }
 
@@ -52,7 +52,7 @@ extern "C"void tpcall_x_octet(TPSVCINFO * svcinfo) {
 	int sendlen = 14;
 	char* buffer = tpalloc((char*) "X_OCTET", 0, sendlen);
 	strncpy(buffer, "BAR SAYS HELLO", 14);
-	tpreturn(1, 1, buffer, sendlen, 0);
+	tpreturn(TPSUCCESS, 1, buffer, sendlen, 0);
 }
 
 struct test_t {
@@ -75,7 +75,7 @@ extern "C"void tpcall_x_c_type(TPSVCINFO * svcinfo) {
 	buffer->floater = 444.97;
 	buffer->doubley = 7.7;
 	strcpy(buffer->status, "tpcall_x_c_type");
-	tpreturn(1, 1, (char*) buffer, 0, 0);
+	tpreturn(TPSUCCESS, 1, (char*) buffer, 0, 0);
 }
 
 extern "C"
