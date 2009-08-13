@@ -131,10 +131,10 @@ static void warn(const char * reason) {
  * WARNING: only the first such occurence is expanded. TODO generalise the function
  */
 static char * XMLCALL copy_value(const char *value) {
-	char *s = strchr(value, '$');
+	char *s = (char *) strchr(value, '$');
 	char *e;
 
-	if (s && *(s + 1) == '{' && (e = strchr(s, '}'))) { 
+	if (s && *(s + 1) == '{' && (e = (char *) strchr(s, '}'))) { 
 		size_t esz = e - s - 2;
 		char *en = ACE::strndup(s + 2, esz);
 		char *ev = ACE_OS::getenv(en);  /* ACE_OS::getenv(en);*/
