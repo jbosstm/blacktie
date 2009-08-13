@@ -26,6 +26,8 @@
 
 #include "ace/OS_NS_unistd.h"
 
+#include "TxManager.h"
+
 void TestTransactions::setUp()
 {
 	// make sure the thread is clean - TODO check whether this needed - it shouldn't be
@@ -37,6 +39,17 @@ void TestTransactions::tearDown()
 	shutdown_tx_broker();
 	TestFixture::tearDown();
 }
+
+#if 0
+void TestTransactions::is_sane()
+{
+	atmibroker::tx::TxManager *txm = atmibroker::tx::TxManager::get_instance();
+	txm->open();
+	txm->mem_test();
+	txm->close();
+	atmibroker::tx::TxManager::discard_instance();
+}
+#endif
 
 // sanity check
 void TestTransactions::test_transactions()

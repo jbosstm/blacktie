@@ -33,6 +33,60 @@
 
 log4cxx::LoggerPtr xarflogger(log4cxx::Logger::getLogger("TxLogXAFactory"));
 
+#if 0
+static PortableServer::POA_var xyzpoa;
+static XAResourceAdaptorImpl *rm_servant;
+
+void XAResourceManagerFactory::test(CORBA_CONNECTION *connection, CosTransactions::Control_ptr &curr, long rmid)
+{
+    // root poa
+    CORBA::Object_var obj = connection->orbRef->resolve_initial_references("RootPOA");
+    PortableServer::POA_var rootp = PortableServer::POA::_narrow(obj);
+
+    // policy for persisent refs and user assigned ids
+    PortableServer::LifespanPolicy_var lifespan = rootp->create_lifespan_policy(PortableServer::PERSISTENT);
+    PortableServer::IdAssignmentPolicy_var assign = rootp->create_id_assignment_policy(PortableServer::USER_ID);
+    CORBA::PolicyList pl;
+    pl.length(2);
+    pl[0] = PortableServer::LifespanPolicy::_duplicate(lifespan);
+    pl[1] = PortableServer::IdAssignmentPolicy::_duplicate(assign);
+
+    // child poa for RMs
+    PortableServer::POA_var xyzpoa = rootp->create_POA("RM1", PortableServer::POAManager::_nil(), pl);
+
+    // create and activate a servant
+    XID xid;
+	XAResourceManagerFactory::getXID(xid);
+    XAResourceManager *rm = findRM(rmid);
+	LOG4CXX_DEBUG(xarflogger,  (char *) "creating new servant for rmid: " << rmid);
+    rm_servant = new XAResourceAdaptorImpl(rm, &xid, rm->rmid(), rm->get_xa_switch());
+
+    PortableServer::ObjectId_var oid = PortableServer::string_to_ObjectId("RM1_xares_1");
+    xyzpoa->activate_object_with_id(oid, rm_servant);
+    lifespan->destroy();
+    assign->destroy();
+	rm_servant->_remove_ref();
+
+	// get an obj ref and enlist it with the TM
+	try {
+//		CORBA::Object_var ref = xyzpoa->id_to_reference (oid.in());
+        CORBA::Object_var ref = xyzpoa->servant_to_reference(rm_servant);
+		CosTransactions::Resource_var v = CosTransactions::Resource::_narrow(ref);
+//		CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) get_control();
+		CosTransactions::Coordinator_ptr c = curr->get_coordinator();
+//		CORBA::release(curr);
+LOG4CXX_DEBUG(xarflogger,  (char *) "registering resource");
+		CosTransactions::RecoveryCoordinator_ptr rc = c->register_resource(v);
+LOG4CXX_DEBUG(xarflogger,  (char *) "rc is " << rc);
+		rm_servant->setRecoveryCoordinator(rc);
+		CORBA::release(c);
+	} catch (const CORBA::SystemException& e) {
+		LOG4CXX_WARN(xarflogger, (char*) "mem_test ex: " << e._name() << " minor: " << e.minor());
+	}
+LOG4CXX_DEBUG(xarflogger,  (char *) "TEST 10");
+}
+#endif
+
 bool XAResourceManagerFactory::getXID(XID& xid)
 {
 	FTRACE(xarflogger, "ENTER");
@@ -160,6 +214,8 @@ XAResourceManagerFactory::~XAResourceManagerFactory()
 {
 	FTRACE(xarflogger, "ENTER");
 	destroyRMs();
+
+//    CORBA::release(xyzpoa);
 }
 
 XAResourceManager * XAResourceManagerFactory::findRM(long id)

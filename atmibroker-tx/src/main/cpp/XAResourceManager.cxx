@@ -29,10 +29,12 @@ void XAResourceManager::show_branches(const char *msg, XID * xid)
 			<< xid->gtrid_length << " bqual_length: " << xid->bqual_length);
 	}
 
-	for (XABranchMap::iterator i = branches_.begin(); i != branches_.end(); ++i)
+	for (XABranchMap::iterator i = branches_.begin(); i != branches_.end(); ++i) {
+		XID *xi = i->first;
 		LOG4CXX_TRACE(xarmlogger, 
-			(char *) msg << ": XID: formatID: " << i->first->formatID << " gtrid_length: "
-			<< i->first->gtrid_length << " bqual_length: " << i->first->bqual_length);
+			(char *) msg << ": XID: formatID: " << xi->formatID << " gtrid_length: "
+			<< xi->gtrid_length << " bqual_length: " << xi->bqual_length);
+	}
 }
 
 static int compareXids(XID * xid1, XID * xid2)
@@ -96,8 +98,10 @@ XAResourceManager::~XAResourceManager() {
 	if (rv != XA_OK)
 		LOG4CXX_WARN(xarmlogger, (char *) " close RM " << name_ << " failed: " << rv);
 
-	if (!CORBA::is_nil(poa_))
+	if (!CORBA::is_nil(poa_)) {
+		CORBA::release(poa_);
 		poa_ = NULL;
+	}
 }
 
 void XAResourceManager::createPOA() {
@@ -106,20 +110,17 @@ void XAResourceManager::createPOA() {
 	//PortableServer::POA_var rpoa = PortableServer::POA::_narrow(obj);
 
 	PortableServer::POAManager_ptr poa_manager = (PortableServer::POAManager_ptr) connection_->root_poa_manager;
-//	LOG4CXX_TRACE(xarmlogger,  (char *) "got poa_manager");
 	PortableServer::POA_ptr parent_poa = (PortableServer::POA_ptr) connection_->root_poa;
-//	LOG4CXX_TRACE(xarmlogger,  (char *) "got parent_poa");
 	PortableServer::LifespanPolicy_var p1 = parent_poa->create_lifespan_policy(PortableServer::PERSISTENT);
-//	LOG4CXX_TRACE(xarmlogger,  (char *) "got p1");
+//	PortableServer::IdAssignmentPolicy_var p2 = parent_poa->create_id_assignment_policy(PortableServer::USER_ID);
 
 	CORBA::PolicyList policies;
 	policies.length(1);
-//	LOG4CXX_TRACE(xarmlogger,  (char *) "initialized policies");
 
 	// the servant object references must survive failure of the ORB in order to support recover of 
 	// transaction branches (the default orb policy for servants is transient)
 	policies[0] = PortableServer::LifespanPolicy::_duplicate(p1);
-//	LOG4CXX_TRACE(xarmlogger,  (char *) "duplicated policy 1");
+//	policies[1] = PortableServer::IdAssignmentPolicy::_duplicate(p2);
 
 	// create a new POA for this RM
 
@@ -132,11 +133,10 @@ void XAResourceManager::createPOA() {
 //			LOG4CXX_TRACE(xarmlogger,  (char *) "created poa");
 		p1->destroy();
 	} catch (PortableServer::POA::AdapterAlreadyExists &) {
+		p1->destroy();
 		try {
-			p1->destroy();
 			this->poa_ = parent_poa->find_POA(name, false);
 		} catch (const PortableServer::POA::AdapterNonExistent &) {
-			p1->destroy();
 			LOG4CXX_WARN(xarmlogger, (char *) "Duplicate RM POA - name = " << name);
 			RMException ex("Duplicate RM POA", EINVAL);
 			throw ex;
@@ -155,6 +155,76 @@ void XAResourceManager::createPOA() {
 //	LOG4CXX_TRACE(xarmlogger,  (char *) "activated mgr");
 }
 
+int XAResourceManager::createServant(XID * xid)
+{
+	FTRACE(xarmlogger, "ENTER");
+    int res;
+	XAResourceAdaptorImpl *ra = NULL;
+    CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) get_control();
+    CosTransactions::Coordinator_ptr coord = NULL;
+
+    if (CORBA::is_nil(curr))
+	    return XAER_NOTA;
+
+	try {
+	    // create a servant to represent the new branch identified by xid
+		ra = new XAResourceAdaptorImpl(this, xid, rmid_, xa_switch_);
+	    // and activate it
+	    PortableServer::ObjectId_var objId = poa_->activate_object(ra);
+
+		// get a CORBA reference to the servant so that it can be enlisted in the OTS transaction
+	   	CORBA::Object_var ref = poa_->servant_to_reference(ra);
+        ra->_remove_ref();	// now only the POA has a reference to ra TODO
+
+		CosTransactions::Resource_var v = CosTransactions::Resource::_narrow(ref);
+
+		// enlist it with the transaction
+		LOG4CXX_TRACE(xarmlogger, (char*) "enlisting resource");
+	    coord = curr->get_coordinator();
+		CosTransactions::RecoveryCoordinator_ptr rc = coord->register_resource(v);
+		ra->setRecoveryCoordinator(rc);
+		//c->register_synchronization(new XAResourceSynchronization(xid, rmid_, xa_switch_));
+
+		if (CORBA::is_nil(rc)) {
+			LOG4CXX_TRACE(xarmlogger, (char*) "createServant: nill RecoveryCoordinator ");
+            res = XAER_RMFAIL;
+		} else {
+			XID * cp = (XID *) malloc(sizeof(XID));
+
+			if (cp == 0) {
+				LOG4CXX_ERROR(xarmlogger, (char *) "out of memory");
+				res = XAER_RMFAIL;
+			} else {
+			    *cp = *xid;
+			    branches_[cp] = ra;
+                ra = NULL;
+			    res = XA_OK;
+            }
+		}
+	} catch (RMException& ex) {
+		LOG4CXX_WARN(xarmlogger, (char*) "unable to create resource adaptor for branch: " << ex.what());
+	} catch (PortableServer::POA::ServantNotActive&) {
+		LOG4CXX_ERROR(xarmlogger, (char*) "createServant: poa inactive");
+	} catch (CosTransactions::Inactive&) {
+		LOG4CXX_TRACE(xarmlogger, (char*) "createServant: tx inactive (too late for registration)");
+	} catch (const CORBA::SystemException& e) {
+        LOG4CXX_WARN(xarmlogger, (char*) "Resource registration error: " << e._name() << " minor: " << e.minor());
+	}
+
+    if (ra)
+        delete ra;
+
+	if (!CORBA::is_nil(curr))
+        CORBA::release(curr);
+
+	if (!CORBA::is_nil(coord))
+        CORBA::release(coord);
+
+	return res;
+}
+
+#if 0
+static int sid = 1;
 int XAResourceManager::createServant(XID * xid)
 {
 	FTRACE(xarmlogger, "ENTER");
@@ -177,7 +247,14 @@ int XAResourceManager::createServant(XID * xid)
 	}
 
 	// and activate it
+#if 0
 	PortableServer::ObjectId_var objId = poa_->activate_object(ra);
+#else
+	PortableServer::ObjectId_var oid = PortableServer::string_to_ObjectId("RM1_xares_" + sid++);
+	poa_->activate_object_with_id(oid, ra);
+#endif
+
+	ra->_remove_ref();	// now only the POA has a reference to ra
 
 	try {
 		// get a CORBA reference to the servant so that it can be enlisted in the OTS transaction
@@ -212,16 +289,13 @@ int XAResourceManager::createServant(XID * xid)
 		LOG4CXX_ERROR(xarmlogger, (char*) "createServant: poa inactive");
 	} catch (CosTransactions::Inactive&) {
 		LOG4CXX_TRACE(xarmlogger, (char*) "createServant: tx inactive (too late for registration)");
-	} catch (const CORBA::SystemException& ex) {
-		ex._tao_print_exception("Resource registration error: ");
-		LOG4CXX_TRACE(xarmlogger, (char*) "createServant: unexpected error");
+	} catch (const CORBA::SystemException& e) {
+        LOG4CXX_WARN(xarflogger, (char*) "Resource registration error: " << e._name() << " minor: " << e.minor());
 	}
-
-//	delete ra;
-	ra->_remove_ref();	// now only the POA has a reference to ra
 
 	return XAER_NOTA;
 }
+#endif
 
 void XAResourceManager::notifyError(XID * xid, int xa_error, bool forget)
 {
@@ -247,10 +321,11 @@ void XAResourceManager::setComplete(XID * xid)
 	{
 		if (compareXids(i->first, xid) == 0) {
 			XAResourceAdaptorImpl *r = i->second;
-			XID * key = i->first;
+            XID * key = i->first;
 			PortableServer::ObjectId_var id(poa_->servant_to_id(r));
-
+#ifdef XYZ
 			r->_remove_ref();	// deactivate will delete r
+#endif
 			poa_->deactivate_object(id.in());
 			branches_.erase(i->first);
 
@@ -299,7 +374,7 @@ XAResourceAdaptorImpl * XAResourceManager::locateBranch(XID * xid)
 	XABranchMap::iterator iter;
 
 	for (iter = branches_.begin(); iter != branches_.end(); ++iter)
-		if (compareXids((*iter).first, xid) == 0)
+		if (compareXids(iter->first, xid) == 0)
 			return (*iter).second;
 
 	return NULL;

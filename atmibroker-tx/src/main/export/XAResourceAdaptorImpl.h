@@ -34,7 +34,7 @@ extern log4cxx::LoggerPtr xaResourceLogger;
 class XAResourceManager;
 
 class BLACKTIE_TX_DLL XAResourceAdaptorImpl :
-	public virtual POA_CosTransactions::Resource
+	public virtual POA_CosTransactions::Resource, public virtual PortableServer::RefCountServantBase
 {
 public:
 	XAResourceAdaptorImpl(XAResourceManager *, XID *, CORBA::Long, struct xa_switch_t *) throw (RMException);

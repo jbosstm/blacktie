@@ -51,6 +51,7 @@ public:
 	void setComplete(XID*);
 	const char * name() {return name_;}
 
+	struct xa_switch_t * get_xa_switch() { return xa_switch_;}
 private:
 	typedef std::map<XID *, XAResourceAdaptorImpl *> XABranchMap;
 	XABranchMap branches_;

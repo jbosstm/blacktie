@@ -90,6 +90,46 @@ atmibroker::tx::TxControl *TxManager::currentTx(const char *msg)
 	return tx;
 }
 
+#if 0
+int TxManager::mem_test(void)
+{
+#define T1 1
+#if defined(T1)
+    begin();
+	rm_start(TMNOFLAGS);
+	rm_end(TMSUCCESS);
+	commit();
+#elif defined(T2)
+	xbegin();
+	_xaRMFac.test(_connection, 100L);
+//	rm_start(TMNOFLAGS);
+//	rm_end(TMSUCCESS);
+	xcommit();
+#else
+	try {
+		CosTransactions::Control_ptr ctrl = _txfac->create(_timeout);
+		CosTransactions::Terminator_var term = ctrl->get_terminator();
+
+        TxControl *tx = new TxControl(ctrl, 0);
+   		setSpecific(TSS_KEY, tx);
+	    _xaRMFac.test(_connection, ctrl, 100L);
+        delete tx;
+
+		term->commit(true);
+
+	//	CORBA::release(ctrl);
+
+		LOG4CXX_INFO(txmlogger, (char*) "mem_test 1 ok");
+		return TX_OK;
+	} catch (CORBA::SystemException & e) {
+		LOG4CXX_WARN(txmlogger, (char*) "mem_test ex: " << e._name() << " minor: " << e.minor());
+		return TX_FAIL;
+	}
+#endif
+	return TX_OK;
+}
+#endif
+
 int TxManager::begin(void)
 {
 	FTRACE(txmlogger, "ENTER");
@@ -424,7 +464,7 @@ int TxManager::tx_resume(TxControl *tx, int flags)
 	destroySpecific(TSS_KEY);
 
 	LOG4CXX_DEBUG(txmlogger, (char*) "TXCONTROL rm failure deleting " << tx);
-	delete tx;
+//XYZ	delete tx;
 
 	return rc;
 }
@@ -453,7 +493,7 @@ CosTransactions::Control_ptr TxManager::tx_suspend(TxControl *tx, int thr_id, in
 		// disassociate the transaction from the callers thread
 		tx->suspend();
 		LOG4CXX_DEBUG(txmlogger, (char*) "TXCONTROL deleting " << tx);
-		delete tx;
+//XYZ		delete tx;
 
 		FTRACE(txmlogger, "< ctrl: " << ctrl);
 		return ctrl;

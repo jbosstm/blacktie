@@ -21,7 +21,7 @@ log4cxx::LoggerPtr xaralogger(log4cxx::Logger::getLogger("TxLogXAAdaptor"));
 
 XAResourceAdaptorImpl::XAResourceAdaptorImpl(
 	XAResourceManager * rm, XID * xid, CORBA::Long rmid, struct xa_switch_t * xa_switch) throw (RMException) :
-	rm_(rm), xid_(*xid), complete_(false), rmid_(rmid), xa_switch_(xa_switch), flags_(0)
+	rm_(rm), xid_(*xid), complete_(false), rmid_(rmid), xa_switch_(xa_switch), rc_(0), flags_(0)
 {
 	FTRACE(xaralogger, "ENTER" << (char*) " new OTS resource rmid:" << rmid_);
 }
@@ -29,7 +29,7 @@ XAResourceAdaptorImpl::XAResourceAdaptorImpl(
 XAResourceAdaptorImpl::~XAResourceAdaptorImpl()
 {
 	FTRACE(xaralogger, "ENTER");
-	if (rc_) {
+	if (!CORBA::is_nil(rc_)) {
 		CORBA::release(rc_);
 	}
 }
