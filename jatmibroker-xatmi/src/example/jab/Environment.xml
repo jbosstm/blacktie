@@ -25,7 +25,7 @@
 					<SERVICE name='BTStompAdmin' transportLibrary='hybrid'/>
 				</SERVICE_NAMES>
 			</SERVER>
-			<SERVER>
+			<SERVER name="default">
 				<SERVICE_NAMES>
 					<SERVICE name='BAR' transportLibrary='hybrid'/>
 				</SERVICE_NAMES>
