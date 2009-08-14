@@ -21,6 +21,7 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
+import org.w3c.dom.Element;
 
 /*
  * JBoss, Home of Professional Open Source
@@ -83,5 +84,24 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 			}
 		}
 		return serversName;
+	}
+
+	public Element listServiceStatus(String serverName, int id) {
+		//TODO
+		return null;
+	}
+
+	public Boolean advertise(String serverName, int id, String serviceName) {
+		//TODO
+		return false;
+	}
+
+	public Boolean unadvertise(String serverName, int id, String serviceName) {
+		//TODO
+		return false;
+	}
+
+	public void shutdown(String serverName, int id) {
+		//TODO
 	}
 }

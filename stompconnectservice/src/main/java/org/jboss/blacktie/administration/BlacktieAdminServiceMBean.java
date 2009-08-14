@@ -47,4 +47,29 @@ public interface BlacktieAdminServiceMBean {
 	 *
 	 */
 	public java.util.List getServersName() throws Exception;
+
+	/**
+	 * @description List all service status
+	 * @param serverName
+	 * @param id
+	 */
+	public org.w3c.dom.Element listServiceStatus(String serverName, int id);
+
+	/**
+	 * @description Advetising service
+	 * @param serverName
+	 * @param id
+	 * @param serviceName
+	 */
+	public Boolean advertise(String serverName, int id, String serviceName);
+
+	/**
+	 * Unadvertising service
+	 */
+	public Boolean unadvertise(String serverName, int id, String serviceName);
+
+	/**
+	 * Shutdown server
+	 */
+	public void shutdown(String serverName, int id);
 }
