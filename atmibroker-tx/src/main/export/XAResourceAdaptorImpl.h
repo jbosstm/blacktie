@@ -18,16 +18,14 @@
 #ifndef XARESOURCEADAPTORIMPL_H
 #define XARESOURCEADAPTORIMPL_H
 
+#include "CosTransactionsS.h"
 #include "atmiBrokerTxMacro.h"
-#include "log4cxx/logger.h"
 #include "RMException.h"
 #include "XAResourceManager.h"
 
 #include <map>
 
-#include "CosTransactionsS.h"
-
-#include "txClient.h"
+#include "txi.h"
 
 extern log4cxx::LoggerPtr xaResourceLogger;
 

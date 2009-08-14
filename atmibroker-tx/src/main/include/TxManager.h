@@ -28,7 +28,7 @@
 namespace atmibroker {
 	namespace tx {
 
-class TxManager {
+class BLACKTIE_TX_DLL TxManager {
 public:
 	int open(void);
 	int begin(void);

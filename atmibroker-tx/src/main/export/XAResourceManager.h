@@ -19,17 +19,15 @@
 #define XARESOURCEMANAGERFACTORY_H
 
 #include "atmiBrokerTxMacro.h"
-#include "log4cxx/logger.h"
 #include "CorbaConnection.h"
 #include "RMException.h"
 #include "XAResourceAdaptorImpl.h"
-#include "txClient.h"
+#include "txi.h"
 
 #include <map>
 
 #include <tao/PortableServer/PortableServer.h>
 #include "CosTransactionsS.h"
-#include "xa.h"
 
 class XAResourceAdaptorImpl;
 

@@ -18,6 +18,7 @@
 #ifndef _TXIORINTERCEPTOR_H
 #define _TXIORINTERCEPTOR_H
 
+#include "atmiBrokerTxMacro.h"
 #include "tao/PortableInterceptorC.h"
 #include "tao/LocalObject.h"
 #include "tao/IORInterceptor_Adapter.h"
@@ -28,7 +29,7 @@
 /**
  * IOR interceptor for tagging IORs as transactional
  */
-class TxIORInterceptor:
+class BLACKTIE_TX_DLL TxIORInterceptor:
         public virtual PortableInterceptor::IORInterceptor,
         public TxInterceptor
 {

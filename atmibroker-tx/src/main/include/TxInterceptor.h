@@ -27,11 +27,7 @@
 #include "CosTransactionsS.h"
 
 #include "TxPolicyC.h"
-#include "txClient.h"
-
-#include "log4cxx/logger.h"
-
-
+#include "txi.h"
 
 // ORB request service context id for tagging service contexts (as transactional)
 const CORBA::ULong tx_context_id = 0xabcd;

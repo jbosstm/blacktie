@@ -18,7 +18,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include "TestOrbAdditions.h"
 #include "Worker.h"
-#include "txClient.h"
+#include "txi.h"
 #include "OrbManagement.h"
 #include "AtmiBrokerPoaFac.h"
 

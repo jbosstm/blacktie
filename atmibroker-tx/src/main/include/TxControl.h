@@ -19,7 +19,7 @@
 #define _TX_CONTROL_H
 
 #include "CosTransactionsS.h"
-#include "txClient.h"
+#include "txi.h"
 
 namespace atmibroker {
 	namespace tx {
@@ -30,7 +30,7 @@ extern log4cxx::LoggerPtr txlogger;
  * An object that gets associated with a thread when there
  * is an active transaction.
  */
-class TxControl {
+class BLACKTIE_TX_DLL TxControl {
 public:
 	TxControl(CosTransactions::Control_ptr ctrl, int tid);
 	virtual ~TxControl();
