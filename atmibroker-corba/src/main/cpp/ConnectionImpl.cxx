@@ -23,7 +23,7 @@
 #include "ConnectionImpl.h"
 #include "SessionImpl.h"
 #include "OrbManagement.h"
-#include "txClient.h"
+#include "txx.h"
 #include "AtmiBrokerPoaFac.h"
 #include "EndpointQueue.h"
 

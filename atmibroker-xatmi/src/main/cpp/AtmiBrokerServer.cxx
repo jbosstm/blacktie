@@ -29,7 +29,7 @@
 #include "userlog.h"
 #include "AtmiBrokerServerControl.h"
 #include "AtmiBrokerMem.h"
-#include "txClient.h"
+#include "txx.h"
 #include "OrbManagement.h"
 #include "SymbolLoader.h"
 #include "ace/Get_Opt.h"

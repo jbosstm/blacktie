@@ -18,6 +18,10 @@
 #ifndef __PRODUCTS_H
 #define __PRODUCTS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "tx/request.h"
 
 /**
@@ -55,5 +59,9 @@ product_t products[] = {
 	{3, "bdb - db2", "db2", REMOTE_ACCESS, bdb_access, bdb_xaflags},
 	{-1, 0, 0, 0, 0},
 };
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __PRODUCTS_H */

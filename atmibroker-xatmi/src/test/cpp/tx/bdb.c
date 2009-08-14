@@ -80,13 +80,13 @@ static int opendb(DB **dbp, const char *backing_file, const char * dbname)
 	int ret;
 
 	if ((ret = db_create(dbp, NULL, DB_XA_CREATE)) != 0 && !dexists(backing_file)) {
-		logit(0, (char*) "db_create error %d (%s)", ret, backing_file);
+		userlogc_warn( (char*) "db_create error %d (%s)", ret, backing_file);
 		(*dbp)->err(*dbp, ret, "DB->create %d", ret);
 	} else if ((ret = (*dbp)->open(*dbp, NULL, backing_file, dbname, DB_BTREE, DB_CREATE, 0664)) != 0) {
-		logit(0, (char*) "db_open error %d (%s)", ret, backing_file);
+		userlogc_warn( (char*) "db_open error %d (%s)", ret, backing_file);
 		(*dbp)->err(*dbp, ret, "DB->open %d", ret);
 	} else {
-		logit(1, (char*) "db_create and db_open of %s ok", backing_file);
+		userlogc_debug( (char*) "db_create and db_open of %s ok", backing_file);
 	}
 
 	return ret;
@@ -98,7 +98,7 @@ static int doInsert(DB *dbp, char *k, char *v) {
 
 	init_rec(&key, &data, k, v);
 
-	logit(1, (char*) "insert %s=%s", k, v);
+	userlogc_debug( (char*) "insert %s=%s", k, v);
 
 	if ((ret = dbp->put(dbp, NULL, &key, &data, DB_NOOVERWRITE)) != 0)
 		dbp->err(dbp, ret, "DB->put");
@@ -112,7 +112,7 @@ static int doUpdate(DB *dbp, char *k, char *v) {
 
 	init_rec(&key, &data, k, v);
 
-	logit(1, (char*) "update %s=%s", k, v);
+	userlogc_debug( (char*) "update %s=%s", k, v);
 
 	if ((ret = dbp->put(dbp, NULL, &key, &data, 0)) != 0)
 		dbp->err(dbp, ret, "DB->update");
@@ -127,7 +127,7 @@ static int doDelete(DB *dbp, char *k) {
 	k = 0;
    	init_rec(&key, &data, k, 0);
 
-	logit(1, (char*) "delete %s", k);
+	userlogc_debug( (char*) "delete %s", k);
 
 	if (k != 0 && strlen(k) != 0) {
 		if ((ret = dbp->del(dbp, NULL, &key, 0)) != 0)
@@ -156,7 +156,7 @@ static int doSelect(DB *dbp, char *kv, int *rcnt) {
 	char **vv = 0;
 
 	dbcp = open_cursor(dbp, &ret);
-	logit(1, "doSelect key=%s", kv);
+	userlogc_debug( "doSelect key=%s", kv);
 	*rcnt = 0;
 
 	if (ret != 0)
@@ -168,7 +168,7 @@ static int doSelect(DB *dbp, char *kv, int *rcnt) {
 		**vv = 0;
 
 	while ((ret = dbcp->get(dbcp, &key, &data, DB_NEXT)) == 0) {
-		logit(1, "record: %s=%s", (char *) key.data, (char *) data.data);
+		userlogc_debug( "record: %s=%s", (char *) key.data, (char *) data.data);
 		*rcnt += 1;
 		if (vv != NULL && kv != NULL && strcmp(kv, (char *) key.data) == 0) {
 			strcpy(*vv, (char *) data.data);
@@ -176,19 +176,19 @@ static int doSelect(DB *dbp, char *kv, int *rcnt) {
 		}
 	}
 
-	logit(1, "doSelect %d records (rv=%d)", *rcnt, ret);
+	userlogc_debug( "doSelect %d records (rv=%d)", *rcnt, ret);
 	if (ret != DB_NOTFOUND) {
 		dbp->err(dbp, ret, "DBcursor->get");
-		logit(1, "DBcursor->get error %d", ret);
+		userlogc_warn( "DBcursor->get error %d", ret);
 	}
 
-	logit(1, "doSelect closing (ret=%d)", ret);
+	userlogc_debug( "doSelect closing (ret=%d)", ret);
 	if ((ret = dbcp->c_close(dbcp)) != 0) {
 		dbp->err(dbp, ret, "DBcursor->c_close");
-		logit(1, "DBcursor->c_close error %d", ret);
+		userlogc_warn( "DBcursor->c_close error %d", ret);
 	}
 
-	logit(1, "doSelect returning (ret=%d)", ret);
+	userlogc_debug( "doSelect returning (ret=%d)", ret);
 	return ret;
 }
 
@@ -198,7 +198,7 @@ static int doWork(DB *dbp, char op, char *arg, test_req_t *resp)
 	char *v1 = "Jim,Janitor,7902,17-DEC-80,900,0,20";
 	char *v2 = "Jim,Director,7902,17-DEC-80,900,0,20";
 
-	logit(1, "doWork op=%c arg=%s", op, arg);
+	userlogc_debug( "doWork op=%c arg=%s", op, arg);
 	(resp->data)[0] = 0;
 
 	if (op == '0') {
@@ -226,20 +226,20 @@ int bdb_access(test_req_t *req, test_req_t *resp)
 	DB *dbp;
 	int stat, rv;
 
-	logit(1, (char*) "bdb_access");
+	userlogc_debug( (char*) "bdb_access");
 	if ((rv = opendb(&dbp, req->db, NULL)) != 0) {
-		logit(0, (char*) "bdb_access db open error %d", rv);
+		userlogc_warn( (char*) "bdb_access db open error %d", rv);
 	} else if ((rv = doWork(dbp, req->op, req->data, resp)) != 0) {
 		dbp->err(dbp, rv, "doWork");
-		logit(0, (char*) "bdb_access doWork error %d", rv);
+		userlogc_warn( (char*) "bdb_access doWork error %d", rv);
 	}
 
 	if ((stat = dbp->close(dbp, 0)) != 0) {
-		logit(0, (char*) "bdb_access db close error %d", stat);
+		userlogc_warn( (char*) "bdb_access db close error %d", stat);
 		return stat;
 	}
 
-	logit(1, (char*) "bdb_access result %d", rv);
+	userlogc_debug( (char*) "bdb_access result %d", rv);
 	resp->status = rv;
 	return rv;
 }

@@ -93,10 +93,10 @@ int txx_bind(void *control)
     return TxManager::get_instance()->tx_resume((CosTransactions::Control_ptr) control, ACE_OS::thr_self(), TMRESUME);
 }
 
-int txx_bind(void *control, int tid)
+int txx_bind_foreign(void *control)
 {
-    FTRACE(txmclogger, "ENTER " << tid);
-    return TxManager::get_instance()->tx_resume((CosTransactions::Control_ptr) control, tid, TMRESUME);
+    FTRACE(txmclogger, "ENTER");
+    return TxManager::get_instance()->tx_resume((CosTransactions::Control_ptr) control, 0, TMRESUME);
 }
 
 int txx_associate_serialized(char *orbname, char* ctrlIOR)

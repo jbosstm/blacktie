@@ -22,7 +22,7 @@
 #include "EndpointQueue.h"
 #include "ThreadLocalStorage.h"
 #include "ConnectionImpl.h"
-#include "txClient.h"
+#include "txx.h"
 
 log4cxx::LoggerPtr StompEndpointQueue::logger(log4cxx::Logger::getLogger(
 		"StompEndpointQueue"));

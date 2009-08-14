@@ -25,7 +25,7 @@
 
 #include "CorbaEndpointQueue.h"
 #include "ThreadLocalStorage.h"
-#include "txClient.h"
+#include "txx.h"
 #include "SessionImpl.h"
 
 log4cxx::LoggerPtr HybridCorbaEndpointQueue::logger(log4cxx::Logger::getLogger(

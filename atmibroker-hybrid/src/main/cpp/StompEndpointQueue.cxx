@@ -21,7 +21,7 @@
 #include "malloc.h"
 #include "StompEndpointQueue.h"
 #include "ThreadLocalStorage.h"
-#include "txClient.h"
+#include "txx.h"
 #include "ConnectionImpl.h"
 #include "AtmiBrokerEnv.h"
 

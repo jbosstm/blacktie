@@ -25,7 +25,7 @@
 #include "SessionImpl.h"
 #include "CorbaEndpointQueue.h"
 #include "StompEndpointQueue.h"
-#include "txClient.h"
+#include "txx.h"
 
 #include "ThreadLocalStorage.h"
 #include "AtmiBrokerEnv.h"

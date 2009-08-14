@@ -24,13 +24,15 @@
 #include "ace/OS_NS_string.h"
 
 #include "xatmi.h"
-#include "tx.h"
 
 #include "tx/TestTxRMTPCall.h"
+#include "tx/txi.h"
 
 extern "C" {
 #include "tx/products.h"
 }
+
+extern log4cxx::LoggerPtr loggerAtmiBrokerLogc;
 
 extern void tx_db_service(TPSVCINFO *svcinfo);
 extern void tx_db_service2(TPSVCINFO *svcinfo);
@@ -48,12 +50,13 @@ static void set_test_id(const char *id) {
 }
 
 static int is_tx_in_state(enum TX_TYPE txtype) {
+    FTRACE(loggerAtmiBrokerLogc, "ENTER");
 	TXINFO txinfo;
 	int rv = tx_info(&txinfo);
 	int ts = (txtype == TX_TYPE_NONE ? -1 : TX_ACTIVE);
 
 	if (rv < 0) {
-		userlogc("is_tx_in_state tx_info error: %d", rv);
+		userlogc_warn("is_tx_in_state tx_info error: %d", rv);
 		return 0;
 	}
 
@@ -63,6 +66,7 @@ static int is_tx_in_state(enum TX_TYPE txtype) {
 }
 
 static int send_req(test_req_t *req, char **prbuf) {
+    FTRACE(loggerAtmiBrokerLogc, "ENTER");
 	long rsz = sizeof (test_req_t);
 	long callflags = 0L;
 	test_req_t *resp;
@@ -73,7 +77,7 @@ static int send_req(test_req_t *req, char **prbuf) {
 	userlogc_debug( "Invoke Service %s %4d: prod=%d op=%c data=%s dbf=%s tx=%d", TX_RM_SVC,
 		req->id, req->prod, req->op, req->data, req->db, req->txtype);
 	if (tpcall((char *) TX_RM_SVC, (char *) req, sizeof (test_req_t), (char **) &resp, &rsz, callflags) == -1) {
-		userlogc( "TP ERROR tperrno: %d", tperrno);
+		userlogc_warn( "TP ERROR tperrno: %d", tperrno);
 		rv = -1;
 	} else if (prbuf && *prbuf) {
 		strncpy(*prbuf, resp->data, sizeof (resp->data));
@@ -88,6 +92,7 @@ static int send_req(test_req_t *req, char **prbuf) {
 }
 
 static int count_records(const char *msg, const char *key, int in_tx, int expect) {
+    FTRACE(loggerAtmiBrokerLogc, "ENTER");
 	int cnt = -1;
 
 	if (in_tx || start_tx(TX_TYPE_BEGIN) == 0) {
@@ -109,18 +114,18 @@ static int count_records(const char *msg, const char *key, int in_tx, int expect
 			rv = ((remote & REMOTE_ACCESS) ? send_req(req, &rbuf) : p->access(req, &res));
 
 			if (rv)
-				userlogc( "BAD REQ %d", rv);
+				userlogc_warn( "%d: BAD REQ %d", req->id, rv);
 
 			free_buf(remote, req);
 			rv = (rv == 0 ? atoi(res.data) : -1);
 
 			userlogc_debug( "and count is %d", rv);
 			if (rv == -1) {
-				userlogc( "Error: Db %d access error", p->id);
+				userlogc_warn( "Error: Db %d access error", p->id);
 				return -1;
 			}
 			if (rv != cnt && cnt != -1) {
-				userlogc( "All databases should have the same no of records: db %d cnt %d (prev was %d)", p->id, rv, cnt);
+				userlogc_warn( "All databases should have the same no of records: db %d cnt %d (prev was %d)", p->id, rv, cnt);
 				return -1;
 			}
 
@@ -135,10 +140,11 @@ static int count_records(const char *msg, const char *key, int in_tx, int expect
 }
 
 static int check_count(const char *msg, const char *key, int in_tx, int expect) {
+    FTRACE(loggerAtmiBrokerLogc, "ENTER");
 	int rcnt;
 
 	if ((rcnt = count_records(msg, key, 0, expect)) != expect) {
-		userlogc( "WRONG NUMBER OF RECORDS: %d expected %d", rcnt, expect);
+		userlogc_warn( "WRONG NUMBER OF RECORDS: %d expected %d", rcnt, expect);
 		return -1;
 	}
 
@@ -148,6 +154,7 @@ static int check_count(const char *msg, const char *key, int in_tx, int expect) 
 
 static int db_op(const char *msg, const char *data, char op, enum TX_TYPE txtype,
 				 char **prbuf, int remote, int migrating, int expect) {
+    FTRACE(loggerAtmiBrokerLogc, "ENTER");
 	if (msg)
 		userlogc_debug( "%s: %s %s", testid, ((remote | REMOTE_ACCESS) ? "REMOTE" : "LOCAL"), msg);
 
@@ -176,7 +183,7 @@ static int db_op(const char *msg, const char *data, char op, enum TX_TYPE txtype
 			rv = ((remote & REMOTE_ACCESS) ? send_req(req, prbuf) : p->access(req, &res));
 
 			if (rv)
-				userlogc( "BAD REQ %d", rv);
+				userlogc_warn( "%d: BAD REQ %d", req->id, rv);
 
 			free_buf(remote, req);
 		}
@@ -189,6 +196,7 @@ static int db_op(const char *msg, const char *data, char op, enum TX_TYPE txtype
 }
 
 static void init() {
+    FTRACE(loggerAtmiBrokerLogc, "ENTER");
 	userlogc("TestTxRMTPCall::init");
 	int rv;
 
@@ -196,40 +204,41 @@ static void init() {
 	tpadvertise((char *) TX_RM_SVC, tx_db_service);
 
 	if ((rv = tx_open()) != TX_OK)
-		userlogc("tx_open error %d", rv);
+		userlogc_warn("tx_open error %d", rv);
 
 	CPPUNIT_ASSERT_MESSAGE("tx_open error", rv == 0);
 
 	/* start off with no records */
 	if ((rv = db_op("DELETE AT SETUP", emps[0], '3', TX_TYPE_BEGIN_COMMIT, 0, LOCAL_ACCESS, 0, -1)) != 0)
-		userlogc("DELETE error %d", rv);
+		userlogc_warn("DELETE error %d", rv);
 
 	CPPUNIT_ASSERT_MESSAGE("DELETE AT SETUP error", rv == 0);
 
 	if ((rv = check_count("COUNT RECORDS", emps[0], 0, 0)))
-		userlogc("COUNT AT SETUP - WRONG number of records %d", rv);
+		userlogc_warn("COUNT AT SETUP - WRONG number of records %d", rv);
 
 	CPPUNIT_ASSERT_MESSAGE("COUNT AT SETUP error", rv == 0);
 }
 
 static void fini() {
+    FTRACE(loggerAtmiBrokerLogc, "ENTER");
 	int rv;
 
 	userlogc("TestTxRMTPCall::tearDown");
 
 	/* delete records starting from emps[0], */
 	if ((rv = db_op("DELETE", emps[0], '3', TX_TYPE_BEGIN_COMMIT, 0, LOCAL_ACCESS, 0, -1)))
-		userlogc("DELETE AT TEARDOWN error %d", rv);
+		userlogc_warn("DELETE AT TEARDOWN error %d", rv);
 
 	CPPUNIT_ASSERT_MESSAGE("DELETE AT TEARDOWN error", rv == 0);
 	cnt = 0;
 	if ((rv = check_count("COUNT RECORDS", emps[0], 0, cnt)))
-		userlogc("COUNT AT TEARDOWN - WRONG number of records %d", rv);
+		userlogc_warn("COUNT AT TEARDOWN - WRONG number of records %d", rv);
 
 	CPPUNIT_ASSERT_MESSAGE("COUNT AT TEARDOWN error", rv == 0);
 
 	if ((rv = tx_close()) != TX_OK)
-		userlogc("tx_close error %d", rv);
+		userlogc_warn("tx_close error %d", rv);
 
 	CPPUNIT_ASSERT_MESSAGE("tx_close error", rv == 0);
 
@@ -237,12 +246,14 @@ static void fini() {
 }
 
 void TestTxRMTPCall::setUp() {
+    FTRACE(loggerAtmiBrokerLogc, "ENTER");
 	userlogc("TestTxRMTPCall::setUp");
 
 	BaseServerTest::setUp();
 }
 
 void TestTxRMTPCall::tearDown() {
+    FTRACE(loggerAtmiBrokerLogc, "ENTER");
 	userlogc("TestTxRMTPCall::tearDown");
 	// Clean up server
 	BaseServerTest::tearDown();
@@ -261,8 +272,10 @@ void TestTxRMTPCall::tearDown() {
  * same thread).
  */
 void TestTxRMTPCall::test1() {
+    FTRACE(loggerAtmiBrokerLogc, "ENTER");
 return;
 	int rv;
+#if 0
 	test_req_t *resp = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", sizeof (test_req_t));
 	test_req_t *req = get_buf(1, "", "", '1', 1, TX_TYPE_BEGIN_COMMIT, 0);
 	long rcvlen = (long) sizeof (test_req_t);
@@ -285,23 +298,24 @@ return;
 	free_buf(1, req);
 
 return;
+#endif
 	init();
 	set_test_id("Test 1");
 	/* ask the remote service to insert a record */
 	if ((rv = db_op("INSERT 1", emps[5], '0', TX_TYPE_BEGIN, 0, REMOTE_ACCESS, 0, -1)))
-		userlogc("INSERT 1 error %d", rv);
+		userlogc_warn("INSERT 1 error %d", rv);
 
 	CPPUNIT_ASSERT_EQUAL(rv, 0);
 
 	/* ask the remote service to insert another record in the same transaction */
 	if ((rv = db_op("INSERT 2", emps[6], '0', TX_TYPE_NONE, 0, REMOTE_ACCESS, 0, -1)))
-		userlogc("INSERT 2 error %d", rv);
+		userlogc_warn("INSERT 2 error %d", rv);
 
 	CPPUNIT_ASSERT_EQUAL(rv, 0);
 
 	/* insert a record and end the already running transaction */
 	if ((rv = db_op("INSERT 3", emps[7], '0', TX_TYPE_COMMIT, 0, LOCAL_ACCESS, 1, -1)))
-		userlogc("INSERT 3 error %d", rv);
+		userlogc_warn("INSERT 3 error %d", rv);
 
 	CPPUNIT_ASSERT_EQUAL(rv, 0);
 
@@ -309,13 +323,16 @@ return;
 
 	/* make sure the record count increases by 3 */
 	if ((rv = check_count("COUNT RECORDS", emps[0], 0, cnt)))
-		userlogc("COUNT RECORDS error %d", rv);
+		userlogc_warn("COUNT RECORDS error %d", rv);
 
 	CPPUNIT_ASSERT_EQUAL(rv, 0);
 	fini();
 }
 
 void TestTxRMTPCall::test2() {
+    FTRACE(loggerAtmiBrokerLogc, "ENTER");
+//	userlogc("TestTxRMTPCall::test2 RENABLE ME");
+//return;
 	int pid = 2;
 	int rv = -1;
 
@@ -329,17 +346,17 @@ void TestTxRMTPCall::test2() {
 	userlogc_debug("TestTxRMTPCall::test2 tx=%d", req->txtype);
 
 	if ((rv = tx_open()) != TX_OK) {
-		userlogc("tx_open error %d", rv);
+		userlogc_warn("tx_open error %d", rv);
 	} else if (start_tx(req->txtype) == 0) {
 		userlogc_debug("TestTxRMTPCall::test2 send_req");
 		rv = send_req(req, &rbuf);
 		userlogc_debug("TestTxRMTPCall::test2 result=%d", rv);
 		CPPUNIT_ASSERT((rv == 0));
 		if (end_tx(req->txtype) != 0)
-			userlogc("TestTxRMTPCall::test2 end tx failed");
+			userlogc_warn("TestTxRMTPCall::test2 end tx failed");
 
 		if ((rv = tx_close()) != TX_OK)
-			userlogc("tx_close error %d", rv);
+			userlogc_warn("tx_close error %d", rv);
 	}
 
 	free_buf(1, req);
@@ -349,6 +366,7 @@ void TestTxRMTPCall::test2() {
 }
 
 void tx_db_service2(TPSVCINFO *svcinfo) {
+    FTRACE(loggerAtmiBrokerLogc, "ENTER");
     int len = 64;
     char *resp = ::tpalloc((char*) "X_OCTET", NULL, len);
 
@@ -369,7 +387,7 @@ void tx_db_service(TPSVCINFO *svcinfo) {
 	resp->status = -1;
 
 	if (!is_tx_in_state(req->txtype)) {
-		userlogc("TRANSACTION not in expected state");
+		userlogc_warn("TRANSACTION not in expected state");
 	} else {
 //		ACE_OS::snprintf(resp->data, sizeof (resp->data), "Unsupported database: %s", req->db);
 		for (p = products; p->id != -1; p++) {

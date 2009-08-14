@@ -15,11 +15,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef _TXCLIENT_H
-#define _TXCLIENT_H
+#ifndef _TXX_H
+#define _TXX_H
 
 #include "tx.h"
 #include "xa.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Modify the transaction associated with the target thread such that the only
@@ -45,10 +49,10 @@ extern BLACKTIE_TX_DLL void txx_stop(void);
 extern BLACKTIE_TX_DLL int txx_bind(void *);
 
 /**
- * Associate an OTS control with the current thread. The second parameter should
- * correspond to an (ACE) thread id
+ * Associate an OTS control with the current thread - the caller is not
+ * the owner of the transaction (TODO delete not needed).
  */
-extern BLACKTIE_TX_DLL int txx_bind(void *, int);
+extern BLACKTIE_TX_DLL int txx_bind_foreign(void *);
 
 /**
  * Associate a transaction with the current thread:
@@ -104,4 +108,8 @@ extern BLACKTIE_TX_DLL void * txx_get_control();
  */
 extern BLACKTIE_TX_DLL void txx_release_control(void *);
 
-#endif //_TXCLIENT_H
+#ifdef __cplusplus
+}
+#endif
+
+#endif //_TXX_H

@@ -219,7 +219,7 @@ void TxInterceptor::update_tx_context(PortableInterceptor::ServerRequestInfo_ptr
         } else {
             LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getDebug(),
                 ri->operation () << (char*) ": associating client tx with thread");
-            txx_bind(ctrl, 0);
+            txx_bind_foreign(ctrl);
         }
     }
 }

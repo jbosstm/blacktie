@@ -25,7 +25,7 @@
 #include "StompEndpointQueue.h"
 
 #include "OrbManagement.h"
-#include "txClient.h"
+#include "txx.h"
 #include "AtmiBrokerPoaFac.h"
 
 log4cxx::LoggerPtr HybridConnectionImpl::logger(log4cxx::Logger::getLogger(

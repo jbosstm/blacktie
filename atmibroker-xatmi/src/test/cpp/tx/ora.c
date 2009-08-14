@@ -65,9 +65,9 @@ static void show_error(dvoid *errhp, sword status) {
 		text buf[256];
 		sb4 err = 0;
 		(void) OCIErrorGet(errhp, (ub4) 1, (text *) NULL, &err, buf, (ub4) sizeof(buf), OCI_HTYPE_ERROR);
-		logit(0, "OCI error %d: %s", (int) err, buf);
+		userlogc_warn( "OCI error %d: %s", (int) err, buf);
 	} else {
-		logit(0, "OCI error: %d", (int) status);
+		userlogc_warn( "OCI error: %d", (int) status);
 	}
 }
 
@@ -157,10 +157,10 @@ static int doSelect(OCISvcCtx *svcCtx, OCIStmt *stmthp, OCIError *errhp, int emp
 			status = OCIStmtFetch(stmthp, errhp, (ub4) 1, (ub4) OCI_FETCH_NEXT, (ub4) OCI_DEFAULT);
 			if (status != OCI_SUCCESS && status != OCI_SUCCESS_WITH_INFO)
 				break;
-			logit(1, "Name: %s Job: %s", emp, job);
+			userlogc_debug( "Name: %s Job: %s", emp, job);
 			(*rcnt) += 1;
 		}
-		logit(1, "result: %d", *rcnt);
+		userlogc_debug( "result: %d", *rcnt);
 
 		return OCI_SUCCESS;
 	}
@@ -171,7 +171,7 @@ static sword doWork(char op, char *arg, OCISvcCtx *svcCtx, OCIStmt *stmthp, OCIE
 	sword status = OCI_SUCCESS;
 	int empno;
 
-	logit(1, "doWork op=%c arg=%s", op, arg);
+	userlogc_debug( "doWork op=%c arg=%s", op, arg);
 	empno = (*arg ? atoi(arg) : 8000);
 	(resp->data)[0] = 0;
 
@@ -216,7 +216,7 @@ int ora_access(test_req_t *req, test_req_t *resp)
 	OCISvcCtx *svcCtx;
 	sword status;
 
-	logit(1, "ora_access op=%c data=%s db=%s", req->op, req->data, req->db);
+	userlogc_debug( "ora_access op=%c data=%s db=%s", req->op, req->data, req->db);
 	/* opening an XA connection creates an environment and service context */
 	xaEnv = (struct OCIEnv *) xaoEnv((text *) req->db) ;
 	svcCtx = (struct OCISvcCtx *) xaoSvcCtx((text *) req->db);
@@ -235,7 +235,7 @@ int ora_access(test_req_t *req, test_req_t *resp)
 
 	/* run the test */
 	status = doWork(req->op, req->data, svcCtx, stmthp, errhp, resp);
-	logit(1, "%d: doWork %c returned: %s", status, req->op, resp->data);
+	userlogc_debug( "%d: doWork %c returned: %s", status, req->op, resp->data);
 
 //	return status;	// OCI_SUCCESS is 0
 	return (status != OCI_SUCCESS);	// 0 means success

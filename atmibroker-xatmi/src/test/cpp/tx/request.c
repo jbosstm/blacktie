@@ -42,9 +42,9 @@ int is_abort(enum TX_TYPE txtype) {
 }
 int start_tx(enum TX_TYPE txtype) {
 	if (is_begin(txtype)) {
-		logit(1, (char*) "- Starting Transaction");
+		userlogc_debug((char*) "- Starting Transaction");
 		if (tx_begin() != TX_OK) {
-			logit(0, (char*) "TX ERROR - Could not begin transaction: ");
+			userlogc_warn((char*) "TX ERROR - Could not begin transaction: ");
 			return -1;
 		}
 	}
@@ -54,33 +54,19 @@ int start_tx(enum TX_TYPE txtype) {
 int end_tx(enum TX_TYPE txtype) {
 	int rv = 0;
 	if (is_commit(txtype)) {
-		logit(1, (char*) "- Commiting transaction");
+		userlogc_debug( (char*) "- Commiting transaction");
 		if (tx_commit() != TX_OK)
 			rv = -1;
 	} else if (is_abort(txtype)) {
-		logit(1, (char*) "- Rolling back transaction");
+		userlogc_debug( (char*) "- Rolling back transaction");
 		if (tx_rollback() != TX_OK)
 			rv = -1;
 	}
 
 	if (rv != 0)
-		logit(0, (char*) "TX ERROR - Could not terminate transaction");
+		userlogc_warn( (char*) "TX ERROR - Could not terminate transaction");
 
 	return rv;
-}
-
-/* log a message */
-void logit(int debug, const char * format, ...) {
-	char str[1024];
-	va_list args;
-	va_start(args, format);
-	vsnprintf(str, sizeof (str), format, args);
-	va_end(args);
-
-	if (debug)
-		userlogc_debug(str);
-	else
-		userlogc(str);
 }
 
 static int reqid = 0;
@@ -110,7 +96,7 @@ test_req_t * get_buf(int remote, const char *data, const char *dbfile, char op, 
 
 	if (req == NULL) {
 		/*fatal("out of memory (for alloc)");*/
-		logit(0, "out of memory (for alloc)");
+		userlogc_warn("out of memory (for alloc)");
 
 		return NULL;
 	}
@@ -129,13 +115,13 @@ void free_buf(int remote, test_req_t *req) {
 
 int fail(const char *reason, int ret)
 {
-	logit(0, "%s: %d\n", reason, ret);
+	userlogc_warn( "%s: %d\n", reason, ret);
 	return ret;
 }
 
 int fatal(const char *msg)
 {
-	logit(0, msg);
+	userlogc_warn( msg);
 	/*exit (-1);*/
 	return -1;
 }
@@ -150,7 +136,7 @@ int null_access(test_req_t *req, test_req_t *resp)
 	resp->status = 0;
 	snprintf(resp->data, sizeof(resp->data), "%d", req->expect);
 
-	logit(1, "null_access: prod id=%d (%s) op=%c res=%s", req->prod, req->db, req->op, resp->data);
+	userlogc_debug( "null_access: prod id=%d (%s) op=%c res=%s", req->prod, req->db, req->op, resp->data);
 
 	return 0;
 }

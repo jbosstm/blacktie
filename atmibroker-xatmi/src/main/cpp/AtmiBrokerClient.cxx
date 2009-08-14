@@ -27,7 +27,7 @@
 #include "AtmiBrokerClientControl.h"
 #include "AtmiBrokerMem.h"
 #include "AtmiBrokerEnv.h"
-#include "txClient.h"
+#include "txx.h"
 #include "SymbolLoader.h"
 #include "ace/OS_NS_stdio.h"
 #include "ace/OS_NS_stdlib.h"

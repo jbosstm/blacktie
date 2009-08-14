@@ -18,6 +18,8 @@
 #ifndef __REQUEST_H
 #define __REQUEST_H
 
+#include "userlogc.h"
+
 #undef ORACLE
 #define BDB
 
@@ -54,7 +56,6 @@ typedef struct test_req {
 /* common methods */
 int fatal(const char *msg);
 int fail(const char *reason, int ret);
-void logit(int debug, const char * format, ...);
 test_req_t * get_buf(int remote, const char *data, const char *dbfile, char op, int prod, enum TX_TYPE txtype, int expect);
 void free_buf(int remote, test_req_t *req);
 

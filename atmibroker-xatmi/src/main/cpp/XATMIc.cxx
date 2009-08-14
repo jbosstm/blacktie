@@ -25,7 +25,7 @@
 #include "log4cxx/logger.h"
 
 #include "ThreadLocalStorage.h"
-#include "txClient.h"
+#include "txx.h"
 #include "xatmi.h"
 #include "Session.h"
 #include "AtmiBrokerClientControl.h"

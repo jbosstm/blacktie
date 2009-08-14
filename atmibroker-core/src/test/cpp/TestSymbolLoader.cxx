@@ -41,8 +41,8 @@ void TestSymbolLoader::test() {
 		ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=linux");
 	#endif
 	AtmiBrokerEnv::discard_instance();
-	char* lib = (char *) AtmiBrokerEnv::get_instance()->getenv("test-lib");
-	char* symbol = (char *) AtmiBrokerEnv::get_instance()->getenv("test-symbol");
+	char* lib = (char *) AtmiBrokerEnv::get_instance()->getenv((char *) "test-lib");
+	char* symbol = (char *) AtmiBrokerEnv::get_instance()->getenv((char *) "test-symbol");
 	ACE_DLL dll;
 	int retval = dll.open(lib, ACE_DEFAULT_SHLIB_MODE, 0);
 

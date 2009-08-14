@@ -16,7 +16,7 @@
  * MA  02110-1301, USA.
  */
 #include "ServiceDispatcher.h"
-#include "txClient.h"
+#include "txx.h"
 #include "ThreadLocalStorage.h"
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerMem.h"

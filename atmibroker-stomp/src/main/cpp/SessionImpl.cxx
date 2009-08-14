@@ -24,7 +24,7 @@
 #include "malloc.h"
 #include "SessionImpl.h"
 #include "EndpointQueue.h"
-#include "txClient.h"
+#include "txx.h"
 
 #include "ThreadLocalStorage.h"
 
