@@ -48,7 +48,7 @@ HybridConnectionImpl::HybridConnectionImpl(char* connectionName) {
 	}
 	LOG4CXX_TRACE(logger, (char*) "Pool created");
 
-	this->connection = (CORBA_CONNECTION *) start_tx_orb(connectionName);
+	this->connection = (CORBA_CONNECTION *) txx_start(connectionName);
 }
 
 HybridConnectionImpl::~HybridConnectionImpl() {

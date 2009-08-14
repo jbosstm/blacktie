@@ -69,50 +69,50 @@ int tx_info(TXINFO *info) {
 }
 
 /* Blacktie tx interface additions */
-int set_rollback_only()
+int txx_rollback_only()
 {
 	FTRACE(txmclogger, "ENTER");
     return TxManager::get_instance()->rollback_only();
 }
 
-void * start_tx_orb(char* connectionName)
+void * txx_start(char* connectionName)
 {
 	FTRACE(txmclogger, "ENTER");
     return TxManager::get_instance()->init_orb(connectionName);
 }
 
-void shutdown_tx_broker(void)
+void txx_stop(void)
 {
 	FTRACE(txmclogger, "ENTER");
     TxManager::discard_instance();
 	FTRACE(txmclogger, "<");
 }
 
-int associate_tx(void *control)
+int txx_bind(void *control)
 {
-	FTRACE(txmclogger, "ENTER");
+	FTRACE(txmclogger, "ENTER " << control);
     return TxManager::get_instance()->tx_resume((CosTransactions::Control_ptr) control, ACE_OS::thr_self(), TMRESUME);
 }
 
-int associate_tx(void *control, int tid)
+int txx_bind(void *control, int tid)
 {
-	FTRACE(txmclogger, "ENTER" << tid);
+	FTRACE(txmclogger, "ENTER " << tid);
     return TxManager::get_instance()->tx_resume((CosTransactions::Control_ptr) control, tid, TMRESUME);
 }
 
-int associate_serialized_tx(char *orbname, char* ctrlIOR)
+int txx_associate_serialized(char *orbname, char* ctrlIOR)
 {
 	FTRACE(txmclogger, "ENTER" << orbname);
     return TxManager::get_instance()->tx_resume(ctrlIOR, orbname, TMRESUME);
 }
 
-void * disassociate_tx(void)
+void *txx_unbind(void)
 {
 	FTRACE(txmclogger, "ENTER");
     return (void *) TxManager::get_instance()->tx_suspend(0, TMSUSPEND | TMMIGRATE);
 }
 
-void * disassociate_tx_if_not_owner(void)
+void *txx_unbind_if_not_owner(void)
 {
 	FTRACE(txmclogger, "ENTER");
     void *ctrl = (void *) TxManager::get_instance()->tx_suspend(ACE_OS::thr_self(), TMSUSPEND | TMMIGRATE);
@@ -121,7 +121,7 @@ void * disassociate_tx_if_not_owner(void)
 	return ctrl;
 }
 
-void * get_control()
+void *txx_get_control()
 {
 	FTRACE(txmclogger, "ENTER");
     void *ctrl = (void *) TxManager::get_ots_control();
@@ -129,7 +129,7 @@ void * get_control()
 	return ctrl;
 }
 
-void release_control(void *control)
+void txx_release_control(void *control)
 {
 	FTRACE(txmclogger, "ENTER");
     CosTransactions::Control_ptr cp = (CosTransactions::Control_ptr) control;
@@ -143,7 +143,7 @@ void release_control(void *control)
 	}
 }
 
-char* serialize_tx(char *orbname)
+char* txx_serialize(char *orbname)
 {
 	FTRACE(txmclogger, "ENTER " << orbname);
     CORBA::ORB_ptr orb = find_orb(orbname);

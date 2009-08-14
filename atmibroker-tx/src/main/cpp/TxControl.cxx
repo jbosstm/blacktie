@@ -19,6 +19,12 @@
 #include "ThreadLocalStorage.h"
 #include "TxControl.h"
 
+#define TX_GUARD(msg, expect) { \
+    FTRACE(txclogger, "ENTER"); \
+    if (!isActive(msg, expect)) {   \
+        return TX_PROTOCOL_ERROR;   \
+    }}
+
 namespace atmibroker {
 	namespace tx {
 
@@ -36,13 +42,9 @@ TxControl::~TxControl()
 
 int TxControl::end(bool commit, bool reportHeuristics)
 {
-	FTRACE(txclogger, "ENTER");
+    TX_GUARD("end", true);
 	int outcome = TX_OK;
 	CosTransactions::Terminator_var term;
-
-	if (!isActive("end", true)) {
-		return TX_PROTOCOL_ERROR;
-	}
 
 	try {
 		term = _ctrl->get_terminator();
@@ -108,10 +110,7 @@ int TxControl::rollback()
 
 int TxControl::rollback_only()
 {
-	FTRACE(txclogger, "ENTER");
-	if (!isActive("rollback_only", true)) {
-		return TX_PROTOCOL_ERROR;
-	}
+    TX_GUARD("rollback_only", true);
 
 	try {
 		CosTransactions::Coordinator_var coord = _ctrl->get_coordinator();
@@ -182,10 +181,7 @@ int TxControl::get_status()
 
 int TxControl::get_timeout(CORBA::ULong *timeout)
 {
-	FTRACE(txclogger, "ENTER");
-	if (!isActive(NULL, false)) {
-		return TX_PROTOCOL_ERROR;
-	}
+    TX_GUARD(NULL, false);
 
 	try {
 		CosTransactions::PropagationContext* context = _ctrl->get_coordinator()->get_txcontext();

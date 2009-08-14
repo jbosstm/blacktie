@@ -32,7 +32,7 @@ log4cxx::LoggerPtr CorbaConnectionImpl::logger(log4cxx::Logger::getLogger(
 
 CorbaConnectionImpl::CorbaConnectionImpl(char* connectionName) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor");
-	this->connection = (CORBA_CONNECTION *) start_tx_orb(connectionName);
+	this->connection = (CORBA_CONNECTION *) txx_start(connectionName);
 }
 
 CorbaConnectionImpl::~CorbaConnectionImpl() {

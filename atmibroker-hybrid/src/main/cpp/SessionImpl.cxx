@@ -191,7 +191,7 @@ bool HybridSessionImpl::send(MESSAGE message) {
 				message.type);
 		apr_hash_set(frame.headers, "messagesubtype", APR_HASH_KEY_STRING,
 				message.subtype);
-		char* control = serialize_tx((char*) "ots");
+		char* control = txx_serialize((char*) "ots");
 		if (control) {
 			LOG4CXX_TRACE(logger, "Sending serialized control: " << control);
 			apr_hash_set(frame.headers, "messagecontrol", APR_HASH_KEY_STRING,

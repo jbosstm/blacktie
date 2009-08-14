@@ -120,7 +120,7 @@ bool StompSessionImpl::send(MESSAGE message) {
 	apr_hash_set(frame.headers, "messageflags", APR_HASH_KEY_STRING, flags);
 	apr_hash_set(frame.headers, "messagerval", APR_HASH_KEY_STRING, rval);
 	apr_hash_set(frame.headers, "messagercode", APR_HASH_KEY_STRING, rcode);
-	char* control = serialize_tx((char*) "ots");
+	char* control = txx_serialize((char*) "ots");
 	if (control) {
 		LOG4CXX_TRACE(logger, "Sending serialized control: " << control);
 		apr_hash_set(frame.headers, "messagecontrol", APR_HASH_KEY_STRING,

@@ -53,7 +53,7 @@ char* TxInterceptor::name() {
 char* TxInterceptor::get_control_ior()
 {
 	FTRACE(atmiTxInterceptorLogger, "ENTER");
-	return serialize_tx(orbname_);
+	return txx_serialize(orbname_);
 }
 
 CosTransactions::Control_ptr TxInterceptor::ior_to_control(char * ior)
@@ -205,7 +205,7 @@ void TxInterceptor::update_tx_context(PortableInterceptor::ServerRequestInfo_ptr
 	CosTransactions::Control_ptr ctrl = this->extract_tx_from_context(ri);
 
 	if (!CORBA::is_nil(ctrl)) {
-		CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) get_control();
+		CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) txx_get_control();
 
 		if (!CORBA::is_nil(curr)) {
 			if (!curr->_is_equivalent(ctrl)) {
@@ -215,12 +215,11 @@ void TxInterceptor::update_tx_context(PortableInterceptor::ServerRequestInfo_ptr
 						(char*) "\tcurrent and context are different");
 			}
 
-			release_control(curr);
+			txx_release_control(curr);
 		} else {
-			associate_tx(ctrl, 0);
-
 			LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getDebug(),
-				ri->operation () << (char*) ": associated client tx with thread");
+				ri->operation () << (char*) ": associating client tx with thread");
+			txx_bind(ctrl, 0);
 		}
 	}
 }

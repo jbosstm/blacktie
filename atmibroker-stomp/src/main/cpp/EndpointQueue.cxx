@@ -259,7 +259,7 @@ MESSAGE StompEndpointQueue::receive(long time) {
 			bool unableToAssociateTx = false;
 			if (transactional && control && control != NULL && strcmp(control, (const char*) "null") != 0) {
 				LOG4CXX_TRACE(logger, "Read a non-null control: " << control << "/");
-				if (associate_serialized_tx((char*) "serverAdministration",
+				if (txx_associate_serialized((char*) "serverAdministration",
 						(char*) control) != XA_OK) {
 					LOG4CXX_ERROR(logger, "Unable to handle control");
 					setSpecific(TPE_KEY, TSS_TPESYSTEM);

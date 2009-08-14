@@ -90,7 +90,7 @@ LOG4CXX_DEBUG(xarflogger,  (char *) "TEST 10");
 bool XAResourceManagerFactory::getXID(XID& xid)
 {
 	FTRACE(xarflogger, "ENTER");
-	CosTransactions::Control_ptr cp = (CosTransactions::Control_ptr) get_control();
+	CosTransactions::Control_ptr cp = (CosTransactions::Control_ptr) txx_get_control();
 	bool ok = false;
 
 	if (CORBA::is_nil(cp)) {
@@ -153,7 +153,7 @@ bool XAResourceManagerFactory::getXID(XID& xid)
 		LOG4CXX_ERROR(xarflogger,  (char *) "Unexpected generic exception converting xid");
 	}
 
-	release_control(cp);
+	txx_release_control(cp);
 
 	return ok;
 }

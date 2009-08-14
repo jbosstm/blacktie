@@ -119,7 +119,7 @@ AtmiBrokerClient::AtmiBrokerClient() {
 AtmiBrokerClient::~AtmiBrokerClient() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "destructor");
 	AtmiBrokerMem::discard_instance();
-	shutdown_tx_broker();
+	txx_stop();
 	AtmiBrokerEnv::discard_instance();
 	clientConnectionManager.closeConnections();
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleted services");

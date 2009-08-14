@@ -26,31 +26,38 @@
 		LOG4CXX_TRACE(logger, __FUNCTION__ << (char *) ":" << __LINE__ << (char *) ":" << message); }
 
 #else
-#define FTRACE(clazz, message)
+#define FTRACE(logger, message) { \
+		LOG4CXX_TRACE(logger, (char *) << message); }
 #endif
 
 /**
  * Modify the transaction associated with the target thread such that the only
  * possible outcome of the transaction is to roll back the transaction
  */
-extern BLACKTIE_TX_DLL int set_rollback_only();
+extern BLACKTIE_TX_DLL int txx_rollback_only();
 
 /**
  * start an orb for making transactional service calls
  * (see orbInit in OrbManagement.h for implementation)
  */
-extern BLACKTIE_TX_DLL void * start_tx_orb(char *);
+extern BLACKTIE_TX_DLL void * txx_start(char *);
 
 /**
  * stop the transaction manager proxy
  */
-extern BLACKTIE_TX_DLL void shutdown_tx_broker(void);
+extern BLACKTIE_TX_DLL void txx_stop(void);
 
 /**
  * associate a transaction with the current thread
  * (also resumes all Resource Managers linked into the running applications)
  */
-extern BLACKTIE_TX_DLL int associate_tx(void *);
+extern BLACKTIE_TX_DLL int txx_bind(void *);
+
+/**
+ * Associate an OTS control with the current thread. The second parameter should
+ * correspond to an (ACE) thread id
+ */
+extern BLACKTIE_TX_DLL int txx_bind(void *, int);
 
 /**
  * Associate a transaction with the current thread:
@@ -61,7 +68,7 @@ extern BLACKTIE_TX_DLL int associate_tx(void *);
  *
  * Return a non-negative value on success
  */
-extern BLACKTIE_TX_DLL int associate_serialized_tx(char *, char *);
+extern BLACKTIE_TX_DLL int txx_associate_serialized(char *, char *);
 
 /**
  * Convert the transaction associated with the calling thread into a string.
@@ -71,7 +78,7 @@ extern BLACKTIE_TX_DLL int associate_serialized_tx(char *, char *);
  *
  * Return a non-negative value on success
  */
-extern BLACKTIE_TX_DLL char* serialize_tx(char *);
+extern BLACKTIE_TX_DLL char* txx_serialize(char *);
 
 /**
  * disassociate a transaction from the current thread
@@ -81,7 +88,7 @@ extern BLACKTIE_TX_DLL char* serialize_tx(char *);
  * Returns the OTS control associated with the current thread. The caller
  * is responsible for calling release_control on the returned value.
  */
-extern BLACKTIE_TX_DLL void * disassociate_tx(void);
+extern BLACKTIE_TX_DLL void * txx_unbind(void);
 
 /**
  * Disassociate any transaction associated with the current thread only
@@ -90,27 +97,20 @@ extern BLACKTIE_TX_DLL void * disassociate_tx(void);
  * Returns the OTS control associated with the current thread. The caller
  * is responsible for calling release_control on the returned value.
  */
-extern BLACKTIE_TX_DLL void * disassociate_tx_if_not_owner(void);
+extern BLACKTIE_TX_DLL void * txx_unbind_if_not_owner(void);
 
 /**
  * Return the OTS control associated with the current thread
  * The caller is responsible for calling release_control on the
  * returned control.
  */
-extern BLACKTIE_TX_DLL void * get_control();
+extern BLACKTIE_TX_DLL void * txx_get_control();
 
 /**
  * Release an OTS control returned by:
- * get_control	(TODO StompEndpointQueue)
- * disassociate_tx (TODO ServiceDispatcher)
- * disassociate_tx_if_not_owner (TODO EndpointQueue, CorbaEndpointQueue)
+ * get_control
+ * disassociate_tx_if_not_owner
  */
-extern BLACKTIE_TX_DLL void release_control(void *);
-
-/**
- * Associate an OTS control with the current thread. The second parameter should
- * correspond to an (ACE) thread id
- */
-extern BLACKTIE_TX_DLL int associate_tx(void *, int);
+extern BLACKTIE_TX_DLL void txx_release_control(void *);
 
 #endif //_TXCLIENT_H

@@ -94,7 +94,8 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 
 			if (~TPNOTRAN & flags) {
 				// don't run the call in a transaction
-				control = disassociate_tx();
+		        LOG4CXX_TRACE(loggerXATMI, (char*) "TPNOTRAN - disassociate tx");
+				control = txx_unbind();
 			}
 
 			LOG4CXX_TRACE(loggerXATMI, (char*) "allocating data to go: "
@@ -141,7 +142,8 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 	}
 
 	if (control) {
-		associate_tx(control);
+		LOG4CXX_TRACE(loggerXATMI, (char*) "TPNOTRAN - re-associate tx");
+		(void) txx_bind(control);
 	}
 
 	return toReturn;
@@ -477,7 +479,7 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	} else {
-		void *ctrl = get_control();
+		void *ctrl = txx_get_control();
 
 		if (ctrl != NULL && flags & TPNOREPLY && !(flags & TPNOTRAN)) {
 			LOG4CXX_ERROR(
@@ -524,7 +526,7 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 			}
 		}
 
-		release_control(ctrl);
+		txx_release_control(ctrl);
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpacall return: " << toReturn
 			<< " tperrno: " << tperrno);

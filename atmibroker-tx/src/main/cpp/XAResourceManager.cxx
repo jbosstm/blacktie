@@ -160,7 +160,7 @@ int XAResourceManager::createServant(XID * xid)
 	FTRACE(xarmlogger, "ENTER");
     int res;
 	XAResourceAdaptorImpl *ra = NULL;
-    CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) get_control();
+    CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) txx_get_control();
     CosTransactions::Coordinator_ptr coord = NULL;
 
     if (CORBA::is_nil(curr))
@@ -229,13 +229,13 @@ int XAResourceManager::createServant(XID * xid)
 {
 	FTRACE(xarmlogger, "ENTER");
 	XAResourceAdaptorImpl * ra;
-	CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) get_control();
+	CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) txx_get_control();
 	if (CORBA::is_nil(curr))
 		return XAER_NOTA;
 
 	CosTransactions::Coordinator_ptr c = curr->get_coordinator();
 
-	release_control(curr);
+	txx_release_control(curr);
 	// create a servant to represent the new branch identified by xid
 	try {
 		ra = new XAResourceAdaptorImpl(this, xid, rmid_, xa_switch_);

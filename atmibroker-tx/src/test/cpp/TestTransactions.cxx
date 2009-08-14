@@ -31,12 +31,13 @@
 void TestTransactions::setUp()
 {
 	// make sure the thread is clean - TODO check whether this needed - it shouldn't be
-	release_control(disassociate_tx());
+	userlogc_debug( (char*) "TestTransactions::setUp disassociate: cleaning thread");
+	txx_release_control(txx_unbind());
 	TestFixture::setUp();
 }
 void TestTransactions::tearDown()
 {
-	shutdown_tx_broker();
+	txx_stop();
 	TestFixture::tearDown();
 }
 
@@ -214,7 +215,7 @@ void TestTransactions::test_rollback()
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_open());
 
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_begin());
-	CPPUNIT_ASSERT_EQUAL(TX_OK, set_rollback_only());
+	CPPUNIT_ASSERT_EQUAL(TX_OK, txx_rollback_only());
 	check_info("set_rollback_only", 1, -1L, TX_UNCHAINED, 0L, TX_ROLLBACK_ONLY);
 	CPPUNIT_ASSERT_EQUAL(TX_ROLLBACK, tx_commit());
 
@@ -298,11 +299,11 @@ void TestTransactions::test_register_resource()
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_open());
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_begin());
 
-	CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) get_control();
+	CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) txx_get_control();
 	// there should be a transaction running
 	CPPUNIT_ASSERT_MESSAGE("curr is nil", !CORBA::is_nil(curr));
 	CosTransactions::Coordinator_ptr c = curr->get_coordinator(); // will leak curr if exception
-	release_control(curr);
+	txx_release_control(curr);
 	// and it should have a coordinator
 	CPPUNIT_ASSERT_MESSAGE("coordinator is nil", !CORBA::is_nil(c));
 

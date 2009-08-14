@@ -161,8 +161,8 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 			}
 
 			message.rval = rval;
-			LOG4CXX_TRACE(logger, (char*) "Getting control");
-			message.control = disassociate_tx_if_not_owner();
+			LOG4CXX_TRACE(logger, (char*) "Getting control via disassociate_tx");
+			message.control = txx_unbind_if_not_owner();
 			LOG4CXX_TRACE(logger, (char*) "Got control");
 
 			message.received = true;

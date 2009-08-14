@@ -51,11 +51,13 @@ void TestTxTPCall::test_tpcall_without_tx() {
 	userlogc((char*) "TxLog: test_tpcall_without_tx");
 	tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_without_tx);
 
+	CPPUNIT_ASSERT(tx_open() == TX_OK);
 	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
 	CPPUNIT_ASSERT(id != -1);
 	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "test_tx_tpcall_x_octet_service_without_tx") == 0);
 	// make sure there is no active transaction
 	CPPUNIT_ASSERT(tx_commit() != TX_OK);
+	CPPUNIT_ASSERT(tx_close() == TX_OK);
 	userlogc_debug((char*) "TxLog: test_tpcall_without_tx: passed");
 }
 
@@ -84,8 +86,9 @@ void test_tx_tpcall_x_octet_service_without_tx(TPSVCINFO *svcinfo) {
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	TXINFO txinfo;
-	::tx_info(&txinfo);
-	if (txinfo.transaction_state != TX_ACTIVE) {
+    int inTx = ::tx_info(&txinfo);
+	userlogc((char*) "TxLog: service running: test_tx_tpcall_x_octet_service_without_tx inTx=%d", inTx);
+	if (inTx == 0) { // or && txinfo.transaction_state != TX_ACTIVE
 		strcpy(toReturn, "test_tx_tpcall_x_octet_service_without_tx");
 	} else {
 		strcpy(toReturn, svcinfo->data);
@@ -98,8 +101,9 @@ void test_tx_tpcall_x_octet_service_with_tx(TPSVCINFO *svcinfo) {
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	TXINFO txinfo;
-	::tx_info(&txinfo);
-	if (txinfo.transaction_state == TX_ACTIVE) {
+    int inTx = ::tx_info(&txinfo);
+	userlogc((char*) "TxLog: service running: test_tx_tpcall_x_octet_service_with_tx inTx=%d", inTx);
+	if (inTx == 1) { // or && txinfo.transaction_state == TX_ACTIVE
 		strcpy(toReturn, "test_tx_tpcall_x_octet_service_with_tx");
 	} else {
 		strcpy(toReturn, svcinfo->data);

@@ -80,10 +80,10 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	long ilen = message.len;
 	long flags = message.flags;
 	void* control = message.control;
-	void* curr = get_control();
-	// Note there is no corresponding release_control since it is passed to associate_tx
+	void* curr = NULL;
+	// Note there is no corresponding txx_release_control since it is passed to txx_bind
 	LOG4CXX_DEBUG(logger, (char*) "ilen: " << ilen << " flags: " << flags
-			<< "cd: " << message.correlationId);
+			<< "cd: " << message.correlationId << " message.control=" << control << " curr: " << curr);
 
 	// PREPARE THE STRUCT FOR SENDING TO THE CLIENT
 	TPSVCINFO tpsvcinfo;
@@ -138,12 +138,19 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	}
 
 	// HANDLE THE CLIENT INVOCATION
-	if (control) {
-		tpsvcinfo.flags = (tpsvcinfo.flags | TPTRAN);
-		// TODO wrap TSS control in a Transaction object and make sure any current
-		// control associated with the thread is suspended here and resumed after
-		// the call to m_func
-		associate_tx(control);
+	bool assocTx = (control && (curr = txx_get_control()) != control);
+
+	if (assocTx) {
+	    tpsvcinfo.flags = (tpsvcinfo.flags | TPTRAN);
+	    // TODO wrap TSS control in a Transaction object and make sure any current
+	    // control associated with the thread is suspended here and resumed after
+	    // the call to m_func
+	    if (curr) {
+            LOG4CXX_DEBUG(logger, (char*) "onMessage disassociate curr tx");
+            txx_release_control(txx_unbind());
+        }
+        LOG4CXX_DEBUG(logger, (char*) "onMessage associate new tx");
+	    txx_bind(control);
 	}
 	try {
 		LOG4CXX_TRACE(logger, (char*) "Calling function");
@@ -157,12 +164,10 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 	AtmiBrokerMem::get_instance()->tpfree(tpsvcinfo.data, true);
 
-	if (control) {
-		disassociate_tx(); // TODO figure out why tpreturn needs to stop Resource Managers
-	}
-
-	if (curr)
-		associate_tx(curr);
+    if (assocTx) {
+        LOG4CXX_DEBUG(logger, (char*) "onMessage disassociate new tx");
+        txx_release_control(txx_unbind());
+    }
 
 	// CLEAN UP THE SENDER AND RECEIVER FOR THIS CLIENT
 	if (session->getCanSend()) {

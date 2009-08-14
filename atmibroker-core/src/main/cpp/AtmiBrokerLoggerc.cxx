@@ -60,7 +60,7 @@ void userlogc_debug(const char * format, ...) {
 		va_start(args, format);
 		vsnprintf(str, MAXLOGSIZE, format, args);
 		va_end(args);
-		LOG4CXX_LOGLS(loggerAtmiBrokerLogc, log4cxx::Level::getInfo(), str);
+		LOG4CXX_LOGLS(loggerAtmiBrokerLogc, log4cxx::Level::getDebug(), str);
 	}
 }
 
