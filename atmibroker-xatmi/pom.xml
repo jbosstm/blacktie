@@ -36,7 +36,7 @@
 				<executions>
 					<execution>
 						<id>mk-bdb-dir</id>
-						<phase>initialize</phase>
+						<phase>test-compile</phase>
 						<goals>
 							<goal>run</goal>
 						</goals>
