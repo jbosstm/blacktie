@@ -20,11 +20,15 @@ package org.jboss.blacktie.example.mdb;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.blacktie.jatmibroker.xatmi.mdb.MDBBlacktieService;
+
+import org.jboss.ejb3.annotation.Depends;
 
 @javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 @MessageDriven(activationConfig = {
@@ -34,19 +38,20 @@ import org.jboss.blacktie.jatmibroker.xatmi.mdb.MDBBlacktieService;
 public class EchoServiceTestService extends MDBBlacktieService implements
 		javax.jms.MessageListener {
 
-	public EchoServiceTestService() {
+	public EchoServiceTestService() throws ConnectionException, ConfigurationException {
 		super("EchoService");
 	}
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		String rcvd = new String(svcinfo.getBuffer().getData());
-		Buffer buffer = new Buffer(null, null);
 		try {
+			Buffer buffer = new Buffer("X_OCTET", null);
 			buffer.setData(rcvd.getBytes());
+			return new Response(Connection.TPSUCCESS, 0, buffer, rcvd.length(), 0);
 		} catch (ConnectionException e2) {
 			rcvd = "";
 			e2.printStackTrace();
+			return new Response(Connection.TPFAIL, 0, null, 0, 0);
 		}
-		return new Response((short) 0, 0, buffer, rcvd.length(), 0);
 	}
 }

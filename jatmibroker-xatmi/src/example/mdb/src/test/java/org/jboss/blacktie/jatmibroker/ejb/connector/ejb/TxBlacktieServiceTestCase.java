@@ -66,7 +66,7 @@ public class TxBlacktieServiceTestCase extends TestCase {
 
 	public void test1() throws ConnectionException, JABException {
 		byte[] args = "test=test1,tx=true".getBytes();
-		Buffer buffer = new Buffer(null, null);
+		Buffer buffer = new Buffer("X_OCTET", null);
 		buffer.setData(args);
 
 		JABTransaction transaction = startTx();
@@ -79,7 +79,7 @@ public class TxBlacktieServiceTestCase extends TestCase {
 
 	public void test2() throws ConnectionException, JABException {
 		byte[] args = "test=test2,tx=true".getBytes();
-		Buffer buffer = new Buffer(null, null);
+		Buffer buffer = new Buffer("X_OCTET", null);
 		buffer.setData(args);
 
 		Response response = connection.tpcall("TxEchoService", buffer,
@@ -90,7 +90,7 @@ public class TxBlacktieServiceTestCase extends TestCase {
 
 	public void test3() throws ConnectionException, JABException {
 		byte[] args = "test=test3,tx=false".getBytes();
-		Buffer buffer = new Buffer(null, null);
+		Buffer buffer = new Buffer("X_OCTET", null);
 		buffer.setData(args);
 
 		Response response = connection.tpcall("TxEchoService", buffer,
@@ -101,7 +101,7 @@ public class TxBlacktieServiceTestCase extends TestCase {
 
 	public void test4() throws ConnectionException, JABException {
 		byte[] args = "test=test4,tx=false".getBytes();
-		Buffer buffer = new Buffer(null, null);
+		Buffer buffer = new Buffer("X_OCTET", null);
 		buffer.setData(args);
 
 		JABTransaction transaction = startTx();
@@ -120,7 +120,7 @@ public class TxBlacktieServiceTestCase extends TestCase {
 	 */
 	public void test5() throws ConnectionException, JABException {
 		byte[] args = "test=test5,tx=create".getBytes();
-		Buffer buffer = new Buffer(null, null);
+		Buffer buffer = new Buffer("X_OCTET", null);
 		buffer.setData(args);
 
 		Response response = connection.tpcall("TxEchoService", buffer,

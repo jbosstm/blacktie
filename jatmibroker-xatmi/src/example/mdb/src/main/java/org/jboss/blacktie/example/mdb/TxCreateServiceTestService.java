@@ -32,6 +32,8 @@ import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.blacktie.jatmibroker.xatmi.mdb.MDBBlacktieService;
 
+import org.jboss.ejb3.annotation.Depends;
+
 @javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
@@ -42,7 +44,7 @@ public class TxCreateServiceTestService extends MDBBlacktieService implements
 	private static final Logger log = LogManager
 			.getLogger(TxCreateServiceTestService.class);
 
-	public TxCreateServiceTestService() {
+	public TxCreateServiceTestService() throws ConfigurationException, ConnectionException {
 		super("TxCreateService");
 	}
 
@@ -64,14 +66,15 @@ public class TxCreateServiceTestService extends MDBBlacktieService implements
 	public Response tpservice(TPSVCINFO svcinfo) {
 		String rcvd = new String(svcinfo.getBuffer().getData());
 		String resp = serviceRequest(rcvd);
-		Buffer buffer = new Buffer(null, null);
+		Buffer buffer = null;
 		try {
+			buffer = new Buffer("X_OCTET", null);
 			buffer.setData(resp.getBytes());
+			return new Response(Connection.TPSUCCESS, 0, buffer, resp.length(), 0);
 		} catch (ConnectionException e) {
 			resp = "";
 			log.error("Caught an exception", e);
+			return new Response(Connection.TPFAIL, 0, null, 0, 0);
 		}
-		return new Response((short) 0, 0, buffer, resp.length(), 0);
-
 	}
 }

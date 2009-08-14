@@ -38,6 +38,8 @@ import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.blacktie.jatmibroker.xatmi.mdb.MDBBlacktieService;
 
+import org.jboss.ejb3.annotation.Depends;
+
 @javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
@@ -50,7 +52,7 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 	private static final String[] names = { "FirstBTBean/remote",
 			"SecondBTBean/remote" };
 
-	public TxEchoServiceTestService() {
+	public TxEchoServiceTestService() throws ConnectionException, ConfigurationException {
 		super("TxEchoService");
 	}
 
@@ -101,13 +103,13 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 			try {
 				Connection connection = getConnection();
 				byte[] echo = args.getBytes();
-				Buffer buffer = new Buffer(null, null);
+				Buffer buffer = new Buffer("X_OCTET", null);
 				buffer.setData(echo);
 
 				log.debug("Invoking TxCreateService...");
 				Response response = connection.tpcall("TxCreateService",
 						buffer, echo.length, 0);
-				String responseData = (String) response.getBuffer().getData();
+				String responseData = new String(response.getBuffer().getData());
 				log.debug("TxCreateService response: " + responseData);
 
 				// check that the remote service created a transaction
@@ -154,13 +156,14 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 			log.warn("error: " + e);
 			resp = e.getMessage();
 		}
-		Buffer buffer = new Buffer(null, null);
 		try {
+			Buffer buffer = new Buffer("X_OCTET", null);
 			buffer.setData(resp.getBytes());
+			return new Response(Connection.TPSUCCESS, 0, buffer, resp.length(), 0);
 		} catch (ConnectionException e) {
 			resp = "";
 			log.error("Caught an exception", e);
+			return new Response(Connection.TPFAIL, 0, null, 0, 0);
 		}
-		return new Response((short) 0, 0, buffer, resp.length(), 0);
 	}
 }
