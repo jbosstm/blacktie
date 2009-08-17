@@ -1,5 +1,6 @@
 package org.jboss.blacktie.administration;
 
+import java.io.StringReader;
 import java.util.Properties;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -27,7 +28,12 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 
 /*
  * JBoss, Home of Professional Open Source
@@ -97,6 +103,14 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 		return serversName;
 	}
 	
+	private Element stringToElement(String s) throws Exception {
+		StringReader sreader = new StringReader(s.trim());
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder parser = factory.newDocumentBuilder();
+		Document doc = parser.parse(new InputSource(sreader));
+		return doc.getDocumentElement();
+	}
+	
 	private Response callAdminService(String serverName, int id, String command) throws ConnectionException {
 		int sendlen = command.length() + 1;
 		Buffer sendbuf = new Buffer("X_OCTET", null);
@@ -109,7 +123,24 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 	}
 
 	public Element listServiceStatus(String serverName, int id) {
-		//TODO
+		String command = "status";
+		Response buf = null;
+		String status = null;
+		try {
+			buf = callAdminService(serverName, id, command);
+			if(buf != null) {
+				byte[] received = buf.getBuffer().getData();
+				if(received[0] == '1') {				
+					status = new String(received, 1, received.length - 1);
+					log.info("status is " + status);
+					return stringToElement(status);
+				}
+			}
+		} catch (ConnectionException e) {
+			log.error("call server " + serverName + " id " + id + " failed with " + e.getTperrno());
+		} catch (Exception e) {
+			log.error("response " + status + " error with " + e);
+		}
 		return null;
 	}
 
