@@ -142,6 +142,11 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 	}
 
 	public void shutdown(String serverName, int id) {
-		//TODO
+		String command = "serverdone";
+		try {
+			callAdminService(serverName, id, command);
+		} catch (ConnectionException e) {
+			log.error("call server " + serverName + " id " + id + " failed with " + e.getTperrno());
+		}
 	}
 }
