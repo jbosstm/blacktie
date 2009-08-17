@@ -31,12 +31,12 @@ namespace atmibroker {
 log4cxx::LoggerPtr txclogger(log4cxx::Logger::getLogger("TxLogControl"));
 
 TxControl::TxControl(CosTransactions::Control_ptr ctrl, int tid) : _tid(tid), _ctrl(ctrl) {
-	FTRACE(txclogger, "ENTER");
+	FTRACE(txclogger, "ENTER new TXCONTROL: " << this);
 }
 
 TxControl::~TxControl()
 {
-	FTRACE(txclogger, "ENTER");
+	FTRACE(txclogger, "ENTER delete TXCONTROL: " << this);
 	suspend();
 }
 

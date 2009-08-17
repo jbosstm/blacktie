@@ -22,6 +22,7 @@
 #include "TxManager.h"
 #include "AtmiBrokerEnv.h"
 #include "ace/Thread.h"
+//#include "AtmiBrokerMem.h"
 
 #define TX_GUARD(cond) {    \
     FTRACE(txmlogger, "ENTER"); \
@@ -34,24 +35,29 @@ namespace atmibroker {
     namespace tx {
 
 log4cxx::LoggerPtr txmlogger(log4cxx::Logger::getLogger("TxLogManager"));
-
+//SynchronizableObject* AtmiBrokerMem::lock = new SynchronizableObject();
 TxManager *TxManager::_instance = NULL;
 
 TxManager *TxManager::get_instance()
 {
+    // TODO add synchronization
+    // lock->lock();
     if (_instance == NULL)
         _instance = new TxManager();
 
+    // lock->unlock();
     return _instance;
 }
 
 void TxManager::discard_instance()
 {
     FTRACE(txmlogger, "ENTER");
+    // lock->lock();
     if (_instance != NULL) {
         delete _instance;
         _instance = NULL;
     }
+    // lock->unlock();
 }
 
 TxManager::TxManager() :
@@ -84,9 +90,9 @@ atmibroker::tx::TxControl *TxManager::currentTx(const char *msg)
     FTRACE(txmlogger, "ENTER");
     atmibroker::tx::TxControl *tx = NULL;
 
-    if ((!_isOpen || (tx = (atmibroker::tx::TxControl *) getSpecific(TSS_KEY)) == NULL || !tx->isActive(NULL, true)) && msg) {
+    if ((!_isOpen || (tx = (TxControl *) getSpecific(TSS_KEY)) == NULL || !tx->isActive(NULL, true)) && msg) {
         LOG4CXX_INFO(txmlogger, (char*) "protocol violation (" << msg << ") open="
-            << _isOpen << (char*) " TSS_KEY=" << getSpecific(TSS_KEY));
+            << _isOpen << " TSS_KEY=" << getSpecific(TSS_KEY));
     }
 
     return tx;
@@ -145,7 +151,6 @@ int TxManager::begin(void)
     }
 
     TxControl *tx = new TxControl(ctrl, ACE_OS::thr_self());
-    LOG4CXX_DEBUG(txmlogger, (char*) "TXCONTROL  created " << tx);
     // associate the tx with the callers thread and enlist all open RMs with the tx
     int rc = TxManager::tx_resume(tx, TMNOFLAGS);
 
@@ -160,7 +165,6 @@ int TxManager::begin(void)
         } catch (...) {
         }
 
-        LOG4CXX_DEBUG(txmlogger, (char*) "TXCONTROL deleting " << tx);
         delete tx;
 
         return TX_ERROR;
@@ -201,9 +205,9 @@ int TxManager::complete(bool commit)
 
     TX_GUARD(((tx = currentTx("complete")) != NULL));
 
-    // each RM wrapper calls calls xa_end 
+    // no need to call rm_end since each RM wrapper calls xa_end during the prepare call
     outcome = (commit ? tx->commit(reportHeuristics()) : tx->rollback());
-    LOG4CXX_DEBUG(txmlogger, (char*) "TXCONTROL complete " << tx);
+
     delete tx;
 
     return (isChained() ? chainTransaction(outcome) : outcome);
@@ -243,7 +247,8 @@ int TxManager::set_commit_return(COMMIT_RETURN when_return)
 {
     TX_GUARD(_isOpen);
 
-    if (when_return != TX_COMMIT_DECISION_LOGGED && when_return != TX_COMMIT_COMPLETED)
+    if (when_return != TX_COMMIT_DECISION_LOGGED &&
+        when_return != TX_COMMIT_COMPLETED)
         return TX_EINVAL;
 
     _whenReturn = when_return;
@@ -286,19 +291,21 @@ int TxManager::info(TXINFO *info)
         (info->xid).formatID = -1L; // means the XID is null
         info->when_return = _whenReturn;
         info->transaction_control = _controlMode;
-        // the timeout that will be used when this process begins the next transaction
-        // (it is not neccessarily the timeout for the current transaction since
-        // this may have been set in another process or it may have been changed by
-        // this process after the current transaction was started).
+        /*
+         * the timeout that will be used when this process begins the next transaction
+         * (it is not neccessarily the timeout for the current transaction since
+         * this may have been set in another process or it may have been changed by
+         * this process after the current transaction was started).
+         */
         info->transaction_timeout = _timeout;
 
         if (tx != NULL) {
             XAResourceManagerFactory::getXID(info->xid);
             info->transaction_state = tx->get_status();
-            LOG4CXX_DEBUG(txmlogger, (char*) "info status=" << info->transaction_state);
         }
     }
 
+    LOG4CXX_DEBUG(txmlogger, (char*) "info status=" << info->transaction_state << " tx=" << tx);
     return (tx != NULL ? 1 : 0);
 }
 
@@ -338,16 +345,16 @@ int TxManager::open(void)
         }
     }
 
-    // re-initialize values
-    _controlMode = TX_UNCHAINED;
-    _timeout = 0L;
-
     if (rm_open() != 0) {
         LOG4CXX_ERROR(txmlogger, (char*) "At least one resource manager failed");
         (void) rm_close();
 
         return TX_ERROR;
     }
+
+    // re-initialize values
+    _controlMode = TX_UNCHAINED;
+    _timeout = 0L;
 
     _isOpen = true;
 
@@ -379,23 +386,27 @@ int TxManager::rm_open(void)
         return -1;
     }
 }
+
+// private methods
+
 void TxManager::rm_close(void)
 {
     FTRACE(txmlogger, "ENTER");
     _xaRMFac.destroyRMs();
 }
+
 int TxManager::rm_end(int flags)
 {
     FTRACE(txmlogger, "ENTER");
     return _xaRMFac.endRMs(flags);
 }
+
 int TxManager::rm_start(int flags)
 {
     FTRACE(txmlogger, "ENTER");
     return _xaRMFac.startRMs(flags);
 }
 
-// static methods
 CosTransactions::Control_ptr TxManager::get_ots_control()
 {
     FTRACE(txmlogger, "ENTER");
@@ -408,10 +419,8 @@ int TxManager::tx_resume(CosTransactions::Control_ptr control, int creator, int 
 {
     FTRACE(txmlogger, "ENTER");
     TxControl *tx = new TxControl(control, creator);
-    LOG4CXX_DEBUG(txmlogger, (char*) "TXCONTROL  created " << tx);
     int rc = TxManager::tx_resume(tx, flags);
     if (rc != XA_OK) {
-        LOG4CXX_DEBUG(txmlogger, (char*) "TXCONTROL  idelete " << tx);
         delete tx;
     }
 
@@ -442,8 +451,12 @@ int TxManager::tx_resume(TxControl *tx, int flags)
     FTRACE(txmlogger, "ENTER " << tx << " - flags=" << std::hex << flags);
     int rc = XAER_NOTA;
 
-    if (getSpecific(TSS_KEY))
-        LOG4CXX_WARN(txmlogger, (char *) "Thread already associated with " << getSpecific(TSS_KEY));
+    if (getSpecific(TSS_KEY)) {
+        TxControl *pt = (TxControl *) getSpecific(TSS_KEY);
+
+        LOG4CXX_WARN(txmlogger, (char *) "Thread already bound to " << pt << " (deleting it)");
+        delete pt;
+    }
 
     try {
         // TMJOIN TMRESUME TMNOFLAGS
@@ -457,7 +470,7 @@ int TxManager::tx_resume(TxControl *tx, int flags)
             LOG4CXX_WARN(txmlogger, (char *) "Resume tx: error: " << rc);
         }
     } catch (...) {
-        LOG4CXX_DEBUG(txmlogger, (char *) "Resume tx: generic exception");
+        LOG4CXX_WARN(txmlogger, (char *) "Resume tx: generic exception");
     }
 
     destroySpecific(TSS_KEY);
@@ -488,7 +501,6 @@ CosTransactions::Control_ptr TxManager::tx_suspend(TxControl *tx, int thr_id, in
         (void) TxManager::get_instance()->rm_end(flags);
         // disassociate the transaction from the callers thread
         tx->suspend();
-        LOG4CXX_DEBUG(txmlogger, (char*) "TXCONTROL deleting " << tx << (char *) " (via suspend)");
         delete tx;
 
         FTRACE(txmlogger, "< ctrl: " << ctrl);
