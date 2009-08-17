@@ -12,6 +12,12 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
+import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
+import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
+import org.jboss.blacktie.jatmibroker.xatmi.Response;
 
 import javax.jms.Destination;
 import javax.jms.Queue;
@@ -45,6 +51,7 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 	private static final Logger log = LogManager.getLogger(BlacktieAdminService.class);
 	private Properties prop = new Properties();
 	private MBeanServerConnection beanServerConnection;
+	private Connection connection;
 
 	public void start() throws Exception {
 		JMXServiceURL u = new JMXServiceURL(
@@ -55,10 +62,14 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 		XMLEnvHandler handler = new XMLEnvHandler("", prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 		xmlenv.parse("Environment.xml");
+
+		ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory();
+		connection = connectionFactory.getConnection();
 		log.info("Admin Server Started");
 	}
 
 	public void stop() throws Exception {
+		connection.close();
 		log.info("Admin Server Stopped");
 	}
 
@@ -85,6 +96,17 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 		}
 		return serversName;
 	}
+	
+	private Response callAdminService(String serverName, int id, String command) throws ConnectionException {
+		int sendlen = command.length() + 1;
+		Buffer sendbuf = new Buffer("X_OCTET", null);
+		sendbuf.setData(command.getBytes());
+		
+		String service = serverName + "_ADMIN_" + id;
+
+		Response rcvbuf = connection.tpcall(service, sendbuf, sendlen, 0);
+		return rcvbuf;
+	}
 
 	public Element listServiceStatus(String serverName, int id) {
 		//TODO
@@ -92,12 +114,30 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 	}
 
 	public Boolean advertise(String serverName, int id, String serviceName) {
-		//TODO
+		String command = "advertise," + serviceName + ",";
+		try {
+			Response buf = callAdminService(serverName, id, command);
+			if(buf != null) {
+				byte[] received = buf.getBuffer().getData();
+				return (received[0] == '1');
+			}
+		} catch (ConnectionException e) {
+			log.error("call server " + serverName + " id " + id + " failed with " + e.getTperrno());
+		}
 		return false;
 	}
 
 	public Boolean unadvertise(String serverName, int id, String serviceName) {
-		//TODO
+		String command = "unadvertise," + serviceName + ",";
+		try {
+			Response buf = callAdminService(serverName, id, command);
+			if(buf != null) {
+				byte[] received = buf.getBuffer().getData();
+				return (received[0] == '1');
+			}
+		} catch (ConnectionException e) {
+			log.error("call server " + serverName + " id " + id + " failed with " + e.getTperrno());
+		}
 		return false;
 	}
 
