@@ -58,12 +58,12 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 	private MBeanServerConnection beanServerConnection;
 
-	private Properties prop = new Properties();
 
 	public BlacktieStompAdministrationService() throws IOException,
 			ConfigurationException, ConnectionException {
 		super("BTStompAdmin");
 
+		Properties prop = new Properties();
 		XMLEnvHandler handler = new XMLEnvHandler("", prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 		xmlenv.parse("Environment.xml");
@@ -224,41 +224,48 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		String server = null;
 		int k = -1;
 
-		if ((k = serviceName.indexOf("ADMIN")) > 0) {
-			String svcadm = serviceName.substring(0, k) + "ADMIN";
-			server = (String) prop.get("blacktie." + svcadm + ".server");
-		} else {
-			server = (String) prop.get("blacktie." + serviceName + ".server");
-		}
-
-		if (server != null) {
-			log.trace("Service " + serviceName + " exists for server: "
-					+ server);
-			if (operation.equals("tpunadvertise")) {
-				log.trace("Unadvertising: " + serviceName);
-				success[0] = (byte) undeployQueue(serviceName);
-			} else if (operation.equals("tpadvertise")) {
-				log.trace("Advertising: " + serviceName);
-				success[0] = (byte) deployQueue(serviceName);
-			} else if (operation.equals("decrementconsumer")) {
-				log.trace("Decrement consumer: " + serviceName);
-				success[0] = (byte) decrementConsumer(serviceName);
+		try {
+			Properties prop = new Properties();
+			XMLEnvHandler handler = new XMLEnvHandler("", prop);
+			XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
+			xmlenv.parse("Environment.xml");
+			
+			if ((k = serviceName.indexOf("ADMIN")) > 0) {
+				String svcadm = serviceName.substring(0, k) + "ADMIN";
+				server = (String) prop.get("blacktie." + svcadm + ".server");
 			} else {
-				log.error("Unknow operation " + operation);
+				server = (String) prop.get("blacktie." + serviceName + ".server");
+			}
+
+			if (server != null) {
+				log.trace("Service " + serviceName + " exists for server: "
+						+ server);
+				if (operation.equals("tpunadvertise")) {
+					log.trace("Unadvertising: " + serviceName);
+					success[0] = (byte) undeployQueue(serviceName);
+				} else if (operation.equals("tpadvertise")) {
+					log.trace("Advertising: " + serviceName);
+					success[0] = (byte) deployQueue(serviceName);
+				} else if (operation.equals("decrementconsumer")) {
+					log.trace("Decrement consumer: " + serviceName);
+					success[0] = (byte) decrementConsumer(serviceName);
+				} else {
+					log.error("Unknow operation " + operation);
+					success[0] = 0;
+				}
+			} else {
+				log.error("Service " + serviceName
+						+ " cannot be located for server");
 				success[0] = 0;
 			}
-		} else {
-			log.error("Service " + serviceName
-					+ " cannot be located for server");
-			success[0] = 0;
-		}
 
-		try {
 			Buffer buffer = new Buffer("X_OCTET", null);
 			buffer.setData(success);
 			log.debug("Responding");
 			return new Response(Connection.TPSUCCESS, 0, buffer, 1, 0);
 		} catch (ConnectionException e) {
+			return new Response(Connection.TPFAIL, 0, null, 0, 0);
+		} catch (ConfigurationException e) {
 			return new Response(Connection.TPFAIL, 0, null, 0, 0);
 		}
 	}
