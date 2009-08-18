@@ -90,6 +90,10 @@
 				<VALUE>-ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
+				<NAME>JMXURL</NAME>
+				<VALUE>service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
 				<NAME>TRANS_FACTORY_ID</NAME>
 				<VALUE>TransactionManagerService.OTS</VALUE>
 			</ENV_VARIABLE>

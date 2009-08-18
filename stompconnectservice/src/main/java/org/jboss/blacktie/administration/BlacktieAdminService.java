@@ -60,14 +60,16 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 	private Connection connection;
 
 	public void start() throws Exception {
-		JMXServiceURL u = new JMXServiceURL(
-				"service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector");
-		JMXConnector c = JMXConnectorFactory.connect(u);
-		beanServerConnection = c.getMBeanServerConnection();
-
 		XMLEnvHandler handler = new XMLEnvHandler("", prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 		xmlenv.parse("Environment.xml");
+
+		JMXServiceURL u = new JMXServiceURL(
+				(String)prop.get("JMXURL"));
+		JMXConnector c = JMXConnectorFactory.connect(u);
+		beanServerConnection = c.getMBeanServerConnection();
+
+		
 
 		ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory();
 		connection = connectionFactory.getConnection();
