@@ -99,7 +99,7 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 
 	try {
 		LOG4CXX_DEBUG(loggerOrbManagement,
-				(char*) "getNamingServiceAndContext domain is  %s" << domain);
+				(char*) "getNamingServiceAndContext domain is " << domain);
 {
 		CORBA::Object_var tmp_ref =
 				connection->default_ctx->resolve_str(domain);
@@ -109,12 +109,22 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 				(char*) "getNamingServiceAndContext found domain naming context");
 }
 	} catch (const CosNaming::NamingContext::NotFound&) {
+		LOG4CXX_DEBUG(
+				loggerOrbManagement,
+				(char*) "Find failed, trying to create");
 		CosNaming::Name_var name = connection->default_ctx->to_name(domain);
+		LOG4CXX_DEBUG(
+				loggerOrbManagement,
+				(char*) "Got name: " << domain);
 		connection->name_ctx = connection->default_ctx->bind_new_context(name);
 		LOG4CXX_DEBUG(
 				loggerOrbManagement,
 				(char*) "getNamingServiceAndContext created domain naming context");
-	}
+	}catch (const CORBA::SystemException& ex) {
+        LOG4CXX_ERROR(loggerOrbManagement,
+            (char*) "Got unexpected : " << ex._name());
+		throw ;
+    } 
 
 	LOG4CXX_DEBUG(loggerOrbManagement,
 			(char*) "getNamingServiceAndContext got Naming Service Instance ");
