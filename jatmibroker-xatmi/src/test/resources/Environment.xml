@@ -32,7 +32,11 @@
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
 				<NAME>ORBOPT</NAME>
-				<VALUE>-ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
+				<VALUE>-ORBInitRef NameService=corbaloc::${JBOSSAS_IP_ADDR}:3528/NameService</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>java.naming.provider.url</NAME>
+				<VALUE>jnp://${JBOSSAS_IP_ADDR}:1099</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>TRANS_FACTORY_ID</NAME>
@@ -44,7 +48,7 @@
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>StompConnectHost</NAME>
-				<VALUE>localhost</VALUE>
+				<VALUE>${JBOSSAS_IP_ADDR}</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>StompConnectPort</NAME>

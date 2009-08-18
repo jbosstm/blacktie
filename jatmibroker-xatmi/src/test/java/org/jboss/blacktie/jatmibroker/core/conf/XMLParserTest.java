@@ -59,7 +59,9 @@ public class XMLParserTest extends TestCase {
 		String transid = "TransactionManagerService.OTS";
 		String args = "2";
 		String arg1 = "-ORBInitRef";
-		String arg2 = "NameService=corbaloc::localhost:3528/NameService";
+		String arg2 = "NameService=corbaloc::";
+		String arg3 = ":3528/NameService";
+
 		String server = "standalone-server";
 		String transport = "libatmibroker-stomp.so";
 		String advertised = "true";
@@ -79,7 +81,9 @@ public class XMLParserTest extends TestCase {
 		assertTrue(transid.equals(prop.getProperty("blacktie.trans.factoryid")));
 		assertTrue(args.equals(prop.getProperty("blacktie.orb.args")));
 		assertTrue(arg1.equals(prop.getProperty("blacktie.orb.arg.1")));
-		assertTrue(arg2.equals(prop.getProperty("blacktie.orb.arg.2")));
+		assertTrue(((String)prop.getProperty("blacktie.orb.arg.2")).startsWith(arg2));
+		assertTrue(((String)prop.getProperty("blacktie.orb.arg.2")).endsWith(arg3));
+
 		assertTrue(size.equals(prop.getProperty("blacktie.JAVA_Converse.size")));
 		assertTrue("log4cxx.properties".equals(prop
 				.getProperty("LOG4CXXCONFIG")));

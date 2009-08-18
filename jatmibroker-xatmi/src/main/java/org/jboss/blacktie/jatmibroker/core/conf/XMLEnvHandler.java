@@ -142,6 +142,7 @@ public class XMLEnvHandler extends DefaultHandler {
 
 	public void endElement(String namespaceURI, String localName, String qName)
 			throws SAXException {
+		String jbossasIpAddr = System.getenv("JBOSSAS_IP_ADDR");
 		if (DOMAIN.equals(localName)) {
 			prop.setProperty("blacktie.domain.name", value);
 			domainElement = "";
@@ -165,7 +166,11 @@ public class XMLEnvHandler extends DefaultHandler {
 
 			for (int i = 1; i <= orbargs; i++) {
 				String arg = "blacktie.orb.arg." + i;
-				prop.setProperty(arg, argv[i - 1]);
+				String toSet = argv[i - 1];
+				if (jbossasIpAddr != null) {
+					toSet = toSet.replace("${JBOSSAS_IP_ADDR}", jbossasIpAddr);
+				}
+				prop.setProperty(arg, toSet);
 				log.debug(arg + " is " + argv[i - 1]);
 			}
 			isORBOPT = false;
@@ -176,6 +181,10 @@ public class XMLEnvHandler extends DefaultHandler {
 			valueElement = "";
 		} else if (VALUE.equals(localName)) {
 			valueElement = "";
+
+			if (jbossasIpAddr != null) {
+				value = value.replace("${JBOSSAS_IP_ADDR}", jbossasIpAddr);
+			}
 			prop.setProperty(name, value);
 		} else if (SERVER_NAME.equals(localName)) {
 			serverElement = "";

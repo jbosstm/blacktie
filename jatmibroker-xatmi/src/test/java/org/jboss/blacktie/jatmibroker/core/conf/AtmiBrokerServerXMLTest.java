@@ -44,8 +44,6 @@ public class AtmiBrokerServerXMLTest extends TestCase {
 				.getProperty("blacktie.trans.factoryid")));
 		assertTrue("2".equals(prop.getProperty("blacktie.orb.args")));
 		assertTrue("-ORBInitRef".equals(prop.getProperty("blacktie.orb.arg.1")));
-		assertTrue("NameService=corbaloc::localhost:3528/NameService"
-				.equals(prop.getProperty("blacktie.orb.arg.2")));
 	}
 
 	public void testEnv() throws Exception {
@@ -58,7 +56,5 @@ public class AtmiBrokerServerXMLTest extends TestCase {
 				.getProperty("blacktie.trans.factoryid")));
 		assertTrue("2".equals(prop.getProperty("blacktie.orb.args")));
 		assertTrue("-ORBInitRef".equals(prop.getProperty("blacktie.orb.arg.1")));
-		assertTrue("NameService=corbaloc::localhost:3528/NameService"
-				.equals(prop.getProperty("blacktie.orb.arg.2")));
 	}
 }
