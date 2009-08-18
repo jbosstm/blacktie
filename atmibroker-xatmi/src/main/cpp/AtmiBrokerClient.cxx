@@ -45,10 +45,12 @@ log4cxx::LoggerPtr loggerAtmiBrokerClient(log4cxx::Logger::getLogger(
 bool clientInitialized;
 
 void client_sigint_handler_callback(int sig_type) {
+	signal(SIGINT, SIG_IGN);
 	LOG4CXX_WARN(loggerAtmiBrokerClient,
-			(char*) "client_sigint_handler_callback Received shutdown signal: "
-					<< sig_type);
+			(char*) "SIGINT Detected: Shutting down client this may take several minutes");
 	clientdone();
+	LOG4CXX_WARN(loggerAtmiBrokerClient,
+			(char*) "Shutdown complete");
 	abort();
 }
 

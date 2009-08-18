@@ -166,6 +166,7 @@
 		<failOnErrorTests>true</failOnErrorTests>
 		<configuration.type>debug</configuration.type>
 		<toolchain.compiler>gcc</toolchain.compiler>
+		<jbossas.ip.addr>localhost</jbossas.ip.addr>
 	</properties>
 
 </project>

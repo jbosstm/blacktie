@@ -244,24 +244,33 @@
       <requiresProject>true</requiresProject>
       <description>run the cpp unit tests</description>
       <parameters>
-		<parameter>
-	 	  <name>atmibroker.schema.dir</name>
-		  <property>atmibroker.schema.dir</property>
+	<parameter>
+ 	  <name>atmibroker.schema.dir</name>
+	  <property>atmibroker.schema.dir</property>
           <required>true</required>
           <readonly>false</readonly>
           <defaultValue>xsd</defaultValue>
           <type>java.lang.String</type>
           <description>Schema directory</description>
-		</parameter>
-		<parameter>
-	 	  <name>atmibroker.configuration.dir</name>
-		  <property>atmibroker.configuration.dir</property>
+	</parameter>
+	<parameter>
+ 	  <name>atmibroker.configuration.dir</name>
+	  <property>atmibroker.configuration.dir</property>
           <required>true</required>
           <readonly>false</readonly>
           <defaultValue>linux</defaultValue>
           <type>java.lang.String</type>
           <description>Configuration directory</description>
-		</parameter>
+	</parameter>
+        <parameter>
+          <name>jbossas.ip.addr</name>
+          <property>jbossas.ip.addr</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>localhost</defaultValue>
+          <type>java.lang.String</type>
+          <description>The IP address of the app server</description>
+        </parameter>
 
         <parameter>
           <name>failOnErrorTests</name>

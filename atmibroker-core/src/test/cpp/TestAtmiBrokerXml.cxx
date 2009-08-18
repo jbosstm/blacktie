@@ -41,7 +41,7 @@ void TestAtmiBrokerXml::test_env() {
 	char* value;
 
 	value = AtmiBrokerEnv::get_instance()->getenv((char*)"ORBOPT");
-	CPPUNIT_ASSERT(strcmp(value, "-ORBInitRef NameService=corbaloc::localhost:3528/NameService") == 0);
+	CPPUNIT_ASSERT(strncmp(value, "-ORBInitRef NameService=corbaloc::", 34) == 0);
 	CPPUNIT_ASSERT(strcmp(domain, "fooapp") == 0);
 	CPPUNIT_ASSERT(xarmp != 0);
 

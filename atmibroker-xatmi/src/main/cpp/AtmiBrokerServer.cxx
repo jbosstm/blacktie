@@ -51,13 +51,16 @@ char server[30];
 int cid = 0;
 
 void server_sigint_handler_callback(int sig_type) {
+	signal(SIGINT, SIG_IGN);
 	userlog(
 			log4cxx::Level::getInfo(),
 			loggerAtmiBrokerServer,
-			(char*) "server_sigint_handler_callback Received shutdown signal: %d",
-			sig_type);
-	signal(SIGINT, SIG_IGN);
+			(char*) "SIGINT Detected: Shutting down server this may take several minutes");
 	ptrServer->shutdown();
+	userlog(
+			log4cxx::Level::getInfo(),
+			loggerAtmiBrokerServer,
+			(char*) "SIGINT Detected: Shutdown complete");
 }
 
 int serverrun() {

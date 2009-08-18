@@ -63,14 +63,14 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 	public BlacktieStompAdministrationService() throws IOException,
 			ConfigurationException, ConnectionException {
 		super("BTStompAdmin");
-		JMXServiceURL u = new JMXServiceURL(
-				"service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector");
-		JMXConnector c = JMXConnectorFactory.connect(u);
-		beanServerConnection = c.getMBeanServerConnection();
 
 		XMLEnvHandler handler = new XMLEnvHandler("", prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 		xmlenv.parse("Environment.xml");
+		JMXServiceURL u = new JMXServiceURL(
+				(String)prop.get("JMXURL"));
+		JMXConnector c = JMXConnectorFactory.connect(u);
+		beanServerConnection = c.getMBeanServerConnection();
 	}
 
 	boolean isDeployQueue(ObjectName objName, String serviceName)

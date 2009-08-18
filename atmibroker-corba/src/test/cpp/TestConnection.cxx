@@ -52,8 +52,8 @@ void TestConnection::test() {
 	clientSend.data = clientData;
 	clientSend.len = 6;
 	clientSend.replyto = client->getReplyTo();
-	clientSend.type = "";
-	clientSend.subtype = "";
+	clientSend.type = (char*) "";
+	clientSend.subtype = (char*) "";
 	client->send(clientSend);
 	MESSAGE serviceReceived = destination->receive(0);
 	CPPUNIT_ASSERT(clientSend.len == serviceReceived.len);
@@ -69,8 +69,8 @@ void TestConnection::test() {
 		serviceSend.data = serviceData;
 		serviceSend.len = 4;
 		serviceSend.replyto = NULL;
-		serviceSend.type = "";
-		serviceSend.subtype = "";
+		serviceSend.type = (char*) "";
+		serviceSend.subtype = (char*) "";
 		service->send(serviceSend);
 		MESSAGE clientReceived = client->receive(0);
 		CPPUNIT_ASSERT(serviceSend.len == clientReceived.len);

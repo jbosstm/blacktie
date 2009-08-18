@@ -87,11 +87,15 @@
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
 				<NAME>ORBOPT</NAME>
-				<VALUE>-ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
+				<VALUE>-ORBInitRef NameService=corbaloc::172.16.130.186:3528/NameService</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>java.naming.provider.url</NAME>
+				<VALUE>jnp://172.16.130.186:1099</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>JMXURL</NAME>
-				<VALUE>service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector</VALUE>
+				<VALUE>service:jmx:rmi:///jndi/rmi://172.16.130.186:1090/jmxconnector</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>TRANS_FACTORY_ID</NAME>
@@ -103,7 +107,7 @@
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>StompConnectHost</NAME>
-				<VALUE>localhost</VALUE>
+				<VALUE>172.16.130.186</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>StompConnectPort</NAME>

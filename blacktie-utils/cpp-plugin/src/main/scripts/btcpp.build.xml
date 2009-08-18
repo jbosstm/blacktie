@@ -322,6 +322,7 @@
 			<env key="BLACKTIE_SCHEMA_DIR" value="${atmibroker.schema.dir}" />
 			<env key="BLACKTIE_CONFIGURATION_DIR" value="${atmibroker.configuration.dir}" />
 			<env key="BUILD_DIR" value="${project.build.directory}" />
+			<env key="JBOSSAS_IP_ADDR" value="${jbossas.ip.addr}"/>
 		</exec>
 	</target>
 	<target name="_test-msvc" depends="init" if="is-msvc">
@@ -330,6 +331,7 @@
 			<env key="BLACKTIE_SCHEMA_DIR" value="${atmibroker.schema.dir}" />
 			<env key="BLACKTIE_CONFIGURATION_DIR" value="${atmibroker.configuration.dir}" />
 			<env key="BUILD_DIR" value="${project.build.directory}" />
+			<env key="JBOSSAS_IP_ADDR" value="${jbossas.ip.addr}"/>
 		</exec>
 	</target>
 
