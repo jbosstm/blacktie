@@ -41,6 +41,7 @@
 						<LD_LIBRARY_PATH>${ld_library_path}</LD_LIBRARY_PATH>
 						<BLACKTIE_CONFIGURATION_DIR>${atmibroker.configuration.dir}</BLACKTIE_CONFIGURATION_DIR>
 						<BLACKTIE_SCHEMA_DIR>xsd</BLACKTIE_SCHEMA_DIR>
+						<JBOSSAS_IP_ADDR>${jbossas.ip.addr}</JBOSSAS_IP_ADDR>
 					</environmentVariables>
 				</configuration>
 			</plugin>
@@ -57,6 +58,11 @@
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>atmibroker-xatmi</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.blacktie</groupId>
+			<artifactId>atmibroker-hybrid</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
