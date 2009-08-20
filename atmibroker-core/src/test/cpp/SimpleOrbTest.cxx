@@ -44,7 +44,8 @@ void SimpleOrbTest::test() {
 	int argc = 2;
 	char *argv[2];
 	argv[0] = (char*) "-ORBInitRef";
-	argv[1] = (char*) "NameService=corbaloc::172.16.130.186:3528/NameService";
+	//argv[1] = (char*) "NameService=corbaloc::172.16.130.186:3528/NameService";
+	argv[1] = (char*) "NameService=corbaloc::localhost:3528/NameService";
 	//CORBA::ORB_ptr orbRef = CORBA::ORB_init(argc, argv, "server");
 	CORBA::ORB_ptr orbRef = CORBA::ORB_init(argc, argv, "server");
 	CORBA::Object_var tmp_ref = orbRef->resolve_initial_references("RootPOA");
