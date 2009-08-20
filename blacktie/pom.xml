@@ -118,8 +118,6 @@
 		<module>../tx-test-utilities</module>
 		<module>../atmibroker-core</module>
 		<module>../atmibroker-tx</module>
-		<module>../atmibroker-corba</module>
-		<module>../atmibroker-stomp</module>
 		<module>../atmibroker-hybrid</module>
 		<module>../atmibroker-xatmi</module>
 		<module>../atmibroker-admin</module>
