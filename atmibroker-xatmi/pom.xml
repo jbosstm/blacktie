@@ -69,11 +69,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>atmibroker-corba</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>atmibroker-hybrid</artifactId>
 			<scope>test</scope>
 		</dependency>
