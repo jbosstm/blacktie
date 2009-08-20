@@ -27,6 +27,6 @@
 
 #else
 #define FTRACE(logger, message) { \
-        LOG4CXX_TRACE(logger, (char *) << message); }
+        LOG4CXX_TRACE(logger, (char *) message); }
 #endif
 #endif //_TXI_H
