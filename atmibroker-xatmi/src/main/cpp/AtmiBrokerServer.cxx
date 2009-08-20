@@ -366,7 +366,9 @@ int AtmiBrokerServer::block() {
 	int toReturn = 0;
 	LOG4CXX_INFO(loggerAtmiBrokerServer, "Server waiting for requests...");
 	try {
-		this->finish->wait(0);
+		finish->lock();
+		finish->wait(0);
+		finish->unlock();
 	} catch (...) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer, "Unexpected exception");
 		toReturn = -1;
@@ -376,7 +378,9 @@ int AtmiBrokerServer::block() {
 
 void AtmiBrokerServer::shutdown() {
 	LOG4CXX_INFO(loggerAtmiBrokerServer, "Server prepare to shutdown");
-	this->finish->notify();
+	finish->lock();
+	finish->notify();
+	finish->unlock();
 }
 
 char *
