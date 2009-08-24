@@ -21,12 +21,14 @@ import java.io.InputStream;
 import java.net.URL;
 
 import javax.xml.XMLConstants;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -55,6 +57,12 @@ public class XMLParser {
 	 */
 	private void create(String xsdFilename) throws ConfigurationException {
 		try {
+			String schemaDir = System.getenv("BLACKTIE_SCHEMA_DIR");
+			if (schemaDir != null) {
+				schemaDir = schemaDir + System.getProperty("file.separator");
+				xsdFilename = schemaDir + xsdFilename;
+			}
+
 			// Obtain a new instance of a SAXParserFactory.
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			factory.setNamespaceAware(true);
@@ -64,13 +72,20 @@ public class XMLParser {
 					.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			URL resource = Thread.currentThread().getContextClassLoader()
 					.getResource(xsdFilename);
+			if (resource == null) {
+				throw new ConfigurationException("Could not load the schema: "
+						+ xsdFilename);
+			}
 			schema = schemaFactory.newSchema(resource);
 			factory.setSchema(schema);
 
 			saxParser = factory.newSAXParser();
-		} catch (Throwable t) {
-			throw new ConfigurationException("Could not create a SAXParser: ",
-					t);
+		} catch (SAXException e) {
+			throw new ConfigurationException("Could not create a SAXParser: "
+					+ e.getMessage(), e);
+		} catch (ParserConfigurationException e) {
+			throw new ConfigurationException("Could not create a SAXParser: "
+					+ e.getMessage(), e);
 		}
 	}
 
