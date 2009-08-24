@@ -24,14 +24,14 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
 
-public class TestTPACall extends TestCase {
-	private static final Logger log = LogManager.getLogger(TestTPACall.class);
+public class TestTPCancel extends TestCase {
+	private static final Logger log = LogManager.getLogger(TestTPCancel.class);
 	private AtmiBrokerServer server;
 	private Connection connection;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
-		this.server.tpadvertise("TestOne", TestTPACallService.class.getName());
+		this.server.tpadvertise("TestOne", TestTPCancelService.class.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -43,26 +43,60 @@ public class TestTPACall extends TestCase {
 		server.close();
 	}
 
-	public void test_tpacall() throws ConnectionException {
-		log.info("test_tpacall");
-		byte[] toSend = "test_tpacall".getBytes();
-		int sendlen = toSend.length;
+	public void test_tpcancel() throws ConnectionException {
+		log.info("test_tpcancel");
+		byte[] message = "cancel".getBytes();
+		int sendlen = message.length + 1;
 		Buffer sendbuf = new Buffer("X_OCTET", null);
-		sendbuf.setData(toSend);
+		sendbuf.setData(message);
 
-		int cd = connection.tpacall("TestOne", sendbuf, sendlen,
-				Connection.TPNOREPLY);
-		assertTrue(cd == 0);
+		int cd = connection.tpacall("TestOne", sendbuf, sendlen, 0);
+		assertTrue(cd != -1);
+		assertTrue(cd != 0);
 
+		// CANCEL THE REQUEST
+		int cancelled = connection.tpcancel(cd);
+		assertTrue(cancelled != -1);
+
+		// FAIL TO RETRIEVE THE RESPONSE
 		try {
-			connection.tpgetrply(cd, 0);
-			fail("Was able to get a reply");
+			Response valToTest = connection.tpgetrply(cd, 0);
+			assertNull("Could get a reply", valToTest);
+			fail("Method completed ok");
 		} catch (ConnectionException e) {
 			assertTrue(e.getTperrno() == Connection.TPEBADDESC);
 		}
 	}
 
-	public void xtest_tpacall_x_octet() {
-		// NOT REQUIRED AS IT IS A DUPLICATE OF ABOVE
+	public void test_tpcancel_noreply() throws ConnectionException {
+		log.info("test_tpcancel_noreply");
+		byte[] message = "cancel".getBytes();
+		int sendlen = message.length + 1;
+		Buffer sendbuf = new Buffer("X_OCTET", null);
+		sendbuf.setData(message);
+
+		int cd = connection.tpacall("TestOne", sendbuf, sendlen,
+				Connection.TPNOREPLY);
+		assertTrue(cd == 0);
+
+		// CANCEL THE REQUEST
+		try {
+			int cancelled = connection.tpcancel(cd);
+			fail("Could cancel a TPNOREPLY tpacall");
+		} catch (ConnectionException e) {
+			assertTrue(e.getTperrno() == Connection.TPEBADDESC);
+		}
+	}
+
+	// 8.5
+	public void test_tpcancel_baddesc() {
+		log.info("test_tpcancel_baddesc");
+		// CANCEL THE REQUEST
+		try {
+			int cancelled = connection.tpcancel(2);
+			fail("Could cancel a TPNOREPLY tpacall");
+		} catch (ConnectionException e) {
+			assertTrue(e.getTperrno() == Connection.TPEBADDESC);
+		}
 	}
 }

@@ -24,45 +24,44 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
 
-public class TestTPACall extends TestCase {
-	private static final Logger log = LogManager.getLogger(TestTPACall.class);
+public class TestTPRecv extends TestCase {
+	private static final Logger log = LogManager.getLogger(TestTPRecv.class);
 	private AtmiBrokerServer server;
 	private Connection connection;
+	private int sendlen;
+	private Buffer sendbuf;
+	private Session cd;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
-		this.server.tpadvertise("TestOne", TestTPACallService.class.getName());
+		this.server.tpadvertise("TestOne", TestTPRecvService.class.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
+
+		sendlen = "recv".length() + 1;
+		sendbuf = new Buffer("X_OCTET", null);
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
+		if (cd != null) {
+			cd.tpdiscon();
+		}
 		connection.close();
 		server.close();
 	}
 
-	public void test_tpacall() throws ConnectionException {
-		log.info("test_tpacall");
-		byte[] toSend = "test_tpacall".getBytes();
-		int sendlen = toSend.length;
-		Buffer sendbuf = new Buffer("X_OCTET", null);
-		sendbuf.setData(toSend);
-
-		int cd = connection.tpacall("TestOne", sendbuf, sendlen,
-				Connection.TPNOREPLY);
-		assertTrue(cd == 0);
-
+	public void test_tprecv_sendonly() throws ConnectionException {
+		log.info("test_tprecv_sendonly");
+		cd = connection.tpconnect("TestOne", sendbuf, sendlen,
+				Connection.TPSENDONLY);
 		try {
-			connection.tpgetrply(cd, 0);
-			fail("Was able to get a reply");
+			cd.tprecv(0);
+			fail("expected proto error");
 		} catch (ConnectionException e) {
-			assertTrue(e.getTperrno() == Connection.TPEBADDESC);
+			assertTrue((e.getEvent() == Connection.TPEV_SVCERR)
+					|| (e.getTperrno() == Connection.TPEPROTO));
 		}
-	}
-
-	public void xtest_tpacall_x_octet() {
-		// NOT REQUIRED AS IT IS A DUPLICATE OF ABOVE
 	}
 }

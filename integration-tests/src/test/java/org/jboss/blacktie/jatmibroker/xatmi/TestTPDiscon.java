@@ -24,18 +24,22 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
 
-public class TestTPACall extends TestCase {
-	private static final Logger log = LogManager.getLogger(TestTPACall.class);
+public class TestTPDiscon extends TestCase {
+	private static final Logger log = LogManager.getLogger(TestTPDiscon.class);
 	private AtmiBrokerServer server;
 	private Connection connection;
+	private Session cd;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		this.server = new AtmiBrokerServer("standalone-server", null);
-		this.server.tpadvertise("TestOne", TestTPACallService.class.getName());
+		this.server.tpadvertise("TestOne", TestTPDisconService.class.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
+
+		cd = connection.tpconnect("TestOne", null, 0,
+				Connection.TPSENDONLY);
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
@@ -43,26 +47,21 @@ public class TestTPACall extends TestCase {
 		server.close();
 	}
 
-	public void test_tpacall() throws ConnectionException {
-		log.info("test_tpacall");
-		byte[] toSend = "test_tpacall".getBytes();
-		int sendlen = toSend.length;
-		Buffer sendbuf = new Buffer("X_OCTET", null);
-		sendbuf.setData(toSend);
-
-		int cd = connection.tpacall("TestOne", sendbuf, sendlen,
-				Connection.TPNOREPLY);
-		assertTrue(cd == 0);
-
-		try {
-			connection.tpgetrply(cd, 0);
-			fail("Was able to get a reply");
-		} catch (ConnectionException e) {
-			assertTrue(e.getTperrno() == Connection.TPEBADDESC);
-		}
+	public void test_tpdiscon() throws ConnectionException {
+		log.info("TestOne");
+		cd.tpdiscon();
+		cd = null;
 	}
-
-	public void xtest_tpacall_x_octet() {
-		// NOT REQUIRED AS IT IS A DUPLICATE OF ABOVE
-	}
+	//
+	// public void test_tpdiscon_baddescr() {
+	// log.info("test_tpdiscon_baddescr");
+	// cd.tpdiscon(2);
+	// CPPUNIT_ASSERT(tperrno == TPEBADDESC);
+	// }
+	//
+	// public void test_tpdiscon_negdescr() {
+	// log.info("test_tpdiscon_negdescr");
+	// cd.tpdiscon(-1);
+	// CPPUNIT_ASSERT(tperrno == TPEBADDESC);
+	// }
 }

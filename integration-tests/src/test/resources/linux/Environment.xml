@@ -27,8 +27,10 @@
 			</SERVER>
 			<SERVER name='standalone-server'>
 				<SERVICE_NAMES>
-					<SERVICE name='LOOPY' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPConversat' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestOne' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTwo' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='JAVA_Converse' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='XMLParserTest' transportLibrary='libatmibroker-stomp.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
 			<SERVER name='foo'>
