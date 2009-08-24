@@ -28,7 +28,7 @@
    -->
    <server name="Blactkie Domain"
            discovery="BlacktiePluginDiscoveryComponent"
-           class="BlactkiePluginServerComponent"
+           class="DomainComponent"
            description="blacktie domain">
 
       <!--       
@@ -37,9 +37,23 @@
                  such as a display name and description.
       -->
 
-	   <subcategories>
-         <subcategory name="Servers"
-                      description="Blacktie Servers"/>
-      </subcategories>
+	  <service name="Server"
+		  discovery="ServerDiscoveryComponent"
+		  class="ServerComponent"
+		  description="blacktie server">
+		  <operation name="shutdown" displayName="shutdown" description="Shutdown instance for the specified id">
+			  <parameters>
+				  <c:simple-property required="true" name="id" displayName="id" description="server id"/>
+			  </parameters>
+			  <results>
+				  <c:notes>Shutdown return message</c:notes>
+				  <c:simple-property name="result" type="longString"/>
+			  </results>
+		  </operation>
+
+		  <metric property="instanceCount" measurementType="dynamic" displayType="summary" displayName="server instances"
+			  defaultOn="true" defaultInterval="60000" dataType="measurement" description="The number of running instances of server"/>
+
+	  </service>
    </server>
 </plugin>

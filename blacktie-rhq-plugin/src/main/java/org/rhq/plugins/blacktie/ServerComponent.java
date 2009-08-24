@@ -19,12 +19,29 @@
 package org.rhq.plugins.blacktie;
 
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
+
+import javax.jms.Destination;
+import javax.jms.Queue;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
+import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
+import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
+import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.rhq.core.domain.configuration.Configuration;
 import org.rhq.core.domain.configuration.ConfigurationUpdateStatus;
 import org.rhq.core.domain.content.PackageType;
@@ -62,9 +79,9 @@ import org.rhq.core.pluginapi.operation.OperationResult;
  *
  * @author John Mazzitelli
  */
-public class BlacktiePluginServerComponent implements ResourceComponent, MeasurementFacet, OperationFacet,
+public class ServerComponent implements ResourceComponent, MeasurementFacet, OperationFacet,
     ConfigurationFacet, ContentFacet, DeleteResourceFacet, CreateChildResourceFacet {
-    private final Log log = LogFactory.getLog(BlacktiePluginServerComponent.class);
+    private final Log log = LogFactory.getLog(ServerComponent.class);
 
     /**
      * Represents the resource configuration of the custom product being managed.
@@ -76,6 +93,41 @@ public class BlacktiePluginServerComponent implements ResourceComponent, Measure
      * performing its processing.
      */
     private ResourceContext resourceContext;
+    
+    private Properties prop = new Properties();
+    
+    private MBeanServerConnection beanServerConnection;
+    
+    private String serverName = null;
+    
+    private Connection connection;
+    
+    private int getInstancesCount() throws Exception {
+    	ObjectName objName = new ObjectName("jboss.messaging:service=ServerPeer");
+    	HashSet<Destination> dests = (HashSet) beanServerConnection.getAttribute(objName, "Destinations");
+    	int n = 0;
+    	
+    	for(Destination dest : dests) {
+    		if (dest instanceof Queue) {
+    			String qname = ((Queue) dest).getQueueName();
+
+    			if (qname.indexOf(serverName + "_ADMIN") >= 0) {
+    				n++;
+    			}
+    		}
+    	}
+    	
+    	return n;
+    }
+    
+    private Response callAdminService(String service, String command) throws ConnectionException {
+		int sendlen = command.length() + 1;
+		Buffer sendbuf = new Buffer("X_OCTET", null);
+		sendbuf.setData(command.getBytes());
+
+		Response rcvbuf = connection.tpcall(service, sendbuf, sendlen, 0);
+		return rcvbuf;
+	}
 
     /**
      * This is called when your component has been started with the given context. You normally initialize some internal
@@ -85,6 +137,24 @@ public class BlacktiePluginServerComponent implements ResourceComponent, Measure
      */
     public void start(ResourceContext context) {
         resourceContext = context;
+
+        try{
+        	XMLEnvHandler handler = new XMLEnvHandler("", prop);
+        	XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
+        	xmlenv.parse("Environment.xml");
+        	JMXServiceURL u = new JMXServiceURL(
+        			(String)prop.get("JMXURL"));
+        	JMXConnector c = JMXConnectorFactory.connect(u);
+        	beanServerConnection = c.getMBeanServerConnection();
+        	
+        	serverName = context.getResourceKey();
+        	
+        	ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory();
+    		connection = connectionFactory.getConnection();
+        } catch (Exception e) {
+        	log.error("start server " + serverName + " plugin error with " + e);
+        }
+        System.out.println("start resource: " + serverName);
     }
 
     /**
@@ -104,9 +174,18 @@ public class BlacktiePluginServerComponent implements ResourceComponent, Measure
      * @see ResourceComponent#getAvailability()
      */
     public AvailabilityType getAvailability() {
-        // TODO: here you normally make some type of connection attempt to the managed resource
-        //       to determine if it is really up and running.
-        return AvailabilityType.UP;
+    	int n = 0;
+    	
+    	try {
+    		n = getInstancesCount();
+    	} catch (Exception e) {
+    	}
+    	
+    	if(n > 0){
+    		return AvailabilityType.UP;
+    	} else {
+    		return AvailabilityType.DOWN;
+    	}
     }
 
     /**
@@ -117,20 +196,22 @@ public class BlacktiePluginServerComponent implements ResourceComponent, Measure
      * @see MeasurementFacet#getValues(MeasurementReport, Set)
      */
     public void getValues(MeasurementReport report, Set<MeasurementScheduleRequest> requests) {
-        for (MeasurementScheduleRequest request : requests) {
-            String name = request.getName();
+    	for (MeasurementScheduleRequest request : requests) {
+    		String name = request.getName();
 
-            // TODO: based on the request information, you must collect the requested measurement(s)
-            //       you can use the name of the measurement to determine what you actually need to collect
-            try {
-                Number value = new Integer(1); // dummy measurement value - this should come from the managed resource
-                report.addData(new MeasurementDataNumeric(request, value.doubleValue()));
-            } catch (Exception e) {
-                log.error("Failed to obtain measurement [" + name + "]. Cause: " + e);
-            }
-        }
+    		try {
+    			if(name.equals("instanceCount")){
+    				
+    				int n = getInstancesCount();
+    				Number value = new Integer(n); // dummy measurement value - this should come from the managed resource
+    				report.addData(new MeasurementDataNumeric(request, value.doubleValue()));
+    			}
+    		} catch (Exception e) {
+    			log.error("Failed to obtain measurement [" + name + "]. Cause: " + e);
+    		}
+    	}
 
-        return;
+    	return;
     }
 
     /**
@@ -139,8 +220,23 @@ public class BlacktiePluginServerComponent implements ResourceComponent, Measure
      *
      * @see OperationFacet#invokeOperation(String, Configuration)
      */
-    public OperationResult invokeOperation(String name, Configuration configuration) {
-        return null;
+    public OperationResult invokeOperation(String name, Configuration params) {
+    	OperationResult result = new OperationResult();
+    	
+    	if(name.equals("shutdown")) {
+    		String id = params.getSimpleValue("id", null);
+    		String service = serverName + "_ADMIN_" + id;
+    	
+    		System.out.println("shutdown server of " + service);
+    		try {
+    			callAdminService(service, "serverdone");
+    			result.setSimpleResult("OK");
+    		} catch (Exception e) {
+    			log.error("call " + service + " command serverdone failed with " + e);
+    			result.setErrorMessage("call " + service + " command serverdone failed with " + e);
+    		}
+    	}
+        return result;
     }
 
     /**

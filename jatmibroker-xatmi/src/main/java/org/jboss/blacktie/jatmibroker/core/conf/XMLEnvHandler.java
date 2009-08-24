@@ -17,7 +17,11 @@
  */
 package org.jboss.blacktie.jatmibroker.core.conf;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -56,15 +60,19 @@ public class XMLEnvHandler extends DefaultHandler {
 
 	private String serverName;
 	private String configDir;
+	
+	private Set<String> servers = new HashSet<String>();
 
 	public XMLEnvHandler(String configDir) {
 		prop = new Properties();
+		prop.put("blacktie.domain.servers", servers);
 		this.configDir = configDir;
 	}
 
 	public XMLEnvHandler(String configDir, Properties prop) {
 		this.prop = prop;
-		this.configDir = configDir;
+		prop.put("blacktie.domain.servers", servers);
+		this.configDir = configDir;	
 	}
 
 	public Properties getProperty() {
@@ -98,6 +106,7 @@ public class XMLEnvHandler extends DefaultHandler {
 				for (int i = 0; i < atts.getLength(); i++) {
 					if (atts.getLocalName(i).equals("name")) {
 						serverName = atts.getValue(i);
+						servers.add(serverName);
 					}
 				}
 			}

@@ -180,6 +180,7 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 			callAdminService(serverName, id, command);
 		} catch (ConnectionException e) {
 			log.error("call server " + serverName + " id " + id + " failed with " + e.getTperrno());
+			e.printStackTrace();
 		}
 	}
 }
