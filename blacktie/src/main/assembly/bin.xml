@@ -211,5 +211,13 @@
 				<include>Environment.xml</include>
 			</includes>
 		</fileSet>
+		<fileSet>
+			<directory>../blacktie-rhq-plugin/target/
+			</directory>
+			<outputDirectory>stompconnectservice</outputDirectory>
+			<includes>
+				<include>blacktie-rhq-plugin-*.jar</include>
+			</includes>
+		</fileSet>
 	</fileSets>
 </assembly> 

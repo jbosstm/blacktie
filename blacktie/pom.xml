@@ -115,6 +115,7 @@
 		<module>../atmibroker-idl</module>
 		<module>../jatmibroker-xatmi</module>
 		<module>../stompconnectservice</module>
+		<module>../blacktie-rhq-plugin</module>
 		<module>../tx-test-utilities</module>
 		<module>../atmibroker-core</module>
 		<module>../atmibroker-tx</module>

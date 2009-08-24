@@ -174,5 +174,13 @@
 				<exclude>target/**</exclude>
 			</excludes>
 		</fileSet>
+		<fileSet>
+			<directory>../blacktie-rhq-plugin</directory>
+			<outputDirectory>blacktie-rhq-plugin</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
 	</fileSets>
 </assembly>

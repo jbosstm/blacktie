@@ -14,7 +14,7 @@
 
 	<artifactId>blacktie-rhq-plugin</artifactId>
 	<packaging>jar</packaging>
-	<name>Jopr Blacktie Plugin</name>
+	<name>Blacktie RHQ Plugin</name>
 	<description>A plugin for managing blacktie server</description>
 
 	<properties>
