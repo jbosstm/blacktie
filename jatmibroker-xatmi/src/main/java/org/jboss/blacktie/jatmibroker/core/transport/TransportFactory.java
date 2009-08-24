@@ -53,13 +53,7 @@ public abstract class TransportFactory {
 		log.debug("Transport library was: " + transportLibrary);
 		// Determine the transport class to load
 		String className = null;
-		if (transportLibrary.contains("corba")) {
-			className = org.jboss.blacktie.jatmibroker.core.transport.corba.TransportFactoryImpl.class
-					.getName();
-		} else if (transportLibrary.contains("stomp")) {
-			className = org.jboss.blacktie.jatmibroker.core.transport.jms.TransportFactoryImpl.class
-					.getName();
-		} else if (transportLibrary.contains("hybrid")) {
+		if (transportLibrary.contains("hybrid")) {
 			className = org.jboss.blacktie.jatmibroker.core.transport.hybrid.TransportFactoryImpl.class
 					.getName();
 		}
