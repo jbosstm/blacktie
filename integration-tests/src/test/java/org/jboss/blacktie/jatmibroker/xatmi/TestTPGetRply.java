@@ -21,20 +21,24 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.RunServer;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
 
 public class TestTPGetRply extends TestCase {
 	private static final Logger log = LogManager.getLogger(TestTPGetRply.class);
-	private AtmiBrokerServer server;
+	private RunServer server = new RunServer(); // private AtmiBrokerServer
+	// server;
 	private Connection connection;
 	private int sendlen;
 	private Buffer sendbuf;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
-		this.server = new AtmiBrokerServer("standalone-server", null);
-		this.server
-				.tpadvertise("TestOne", TestTPGetRplyService.class.getName());
+		server.serverinit();
+		server.tpadvertiseTestTPGetrply();
+		// //this.server = new
+		// AtmiBrokerServer("standalone-server", null);
+		// this.server
+		// .tpadvertise("TestOne", TestTPGetRplyService.class//.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -48,12 +52,12 @@ public class TestTPGetRply extends TestCase {
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
 		connection.close();
-		server.close();
+		server.serverdone(); // server.close();
 	}
 
 	public void test_tpgetrply() throws ConnectionException {
 		log.info("test_tpgetrply");
-		int cd = connection.tpacall("TestOne", sendbuf, sendlen, 0);
+		int cd = connection.tpacall("TestTPGetrply", sendbuf, sendlen, 0);
 		assertTrue(cd != -1);
 
 		// RETRIEVE THE RESPONSE

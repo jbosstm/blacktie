@@ -25,11 +25,11 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.RunServer;
 import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerClientXML;
+import org.jboss.blacktie.jatmibroker.core.transport.Message;
+import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
+import org.jboss.blacktie.jatmibroker.core.transport.Sender;
 import org.jboss.blacktie.jatmibroker.core.transport.Transport;
 import org.jboss.blacktie.jatmibroker.core.transport.TransportFactory;
-import org.jboss.blacktie.jatmibroker.core.transport.Sender;
-import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
-import org.jboss.blacktie.jatmibroker.core.transport.Message;
 
 public class ConnectionImplTest extends TestCase {
 	private static final Logger log = LogManager

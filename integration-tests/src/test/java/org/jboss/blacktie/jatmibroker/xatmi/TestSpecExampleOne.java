@@ -21,8 +21,8 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.RunServer;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
 
 public class TestSpecExampleOne extends TestCase {
 	private static final Logger log = LogManager
@@ -32,15 +32,22 @@ public class TestSpecExampleOne extends TestCase {
 
 	public static final int NOT_OK = 0;
 
-	private AtmiBrokerServer server;
+	private RunServer server = new RunServer(); // private AtmiBrokerServer
+	// server;
 	private Connection connection;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
-		this.server = new AtmiBrokerServer("standalone-server", null);
-		this.server.tpadvertise("TestOne", TestSpecExampleOneService.class
-				.getName());
-		this.server.tpadvertise("TestTwo", TestSpecExampleOneService.class
-				.getName());
+		server.serverinit();
+		server.tpadvertiseCREDIT();
+		server.tpadvertiseDEBIT();
+		// //this.server = new
+		// AtmiBrokerServer("standalone-server", null);
+		// //this.server//.tpadvertise("TestOne",
+		// TestSpecExampleOneService.class
+		// .getName());
+		// //this.server//.tpadvertise("TestTwo",
+		// TestSpecExampleOneService.class
+		// .getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -49,7 +56,7 @@ public class TestSpecExampleOne extends TestCase {
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
 		connection.close();
-		server.close();
+		server.serverdone(); // server.close();
 	}
 
 	public void test() throws ConnectionException {
@@ -71,9 +78,9 @@ public class TestSpecExampleOne extends TestCase {
 		cptr.setCharArray("input", "credit account 456 by 50".toCharArray());
 		// TODO tx_begin(); /* start global transaction */
 		/* issue asynchronous request to DEBIT, while it is processing... */
-		cd = connection.tpacall("TestOne", dptr, 0, Connection.TPSIGRSTRT);
+		cd = connection.tpacall("DEBIT", dptr, 0, Connection.TPSIGRSTRT);
 		/* ...issue synchronous request to CREDIT */
-		Response response = connection.tpcall("TestTwo", cptr, 0,
+		Response response = connection.tpcall("CREDIT", cptr, 0,
 				Connection.TPSIGRSTRT);
 		cptr = response.getBuffer();
 		cptr.format(new String[] { "input", "output", "failTest" },

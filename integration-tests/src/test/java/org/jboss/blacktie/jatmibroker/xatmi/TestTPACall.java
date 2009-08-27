@@ -21,17 +21,22 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.RunServer;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
 
 public class TestTPACall extends TestCase {
 	private static final Logger log = LogManager.getLogger(TestTPACall.class);
-	private AtmiBrokerServer server;
+	private RunServer server = new RunServer(); // private AtmiBrokerServer
+	// server;
 	private Connection connection;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
-		this.server = new AtmiBrokerServer("standalone-server", null);
-		this.server.tpadvertise("TestOne", TestTPACallService.class.getName());
+		server.serverinit();
+		server.tpadvertiseTestTPACall();
+		// //this.server = new
+		// AtmiBrokerServer("standalone-server", null);
+		// //this.server//.tpadvertise("TestOne",
+		// TestTPACallService.class//.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -40,7 +45,7 @@ public class TestTPACall extends TestCase {
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
 		connection.close();
-		server.close();
+		server.serverdone(); // server.close();
 	}
 
 	public void test_tpacall() throws ConnectionException {
@@ -50,7 +55,7 @@ public class TestTPACall extends TestCase {
 		Buffer sendbuf = new Buffer("X_OCTET", null);
 		sendbuf.setData(toSend);
 
-		int cd = connection.tpacall("TestOne", sendbuf, sendlen,
+		int cd = connection.tpacall("TestTPACall", sendbuf, sendlen,
 				Connection.TPNOREPLY);
 		assertTrue(cd == 0);
 

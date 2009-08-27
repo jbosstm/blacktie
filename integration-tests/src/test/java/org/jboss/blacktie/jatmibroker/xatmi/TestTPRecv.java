@@ -21,20 +21,25 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.RunServer;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
 
 public class TestTPRecv extends TestCase {
 	private static final Logger log = LogManager.getLogger(TestTPRecv.class);
-	private AtmiBrokerServer server;
+	private RunServer server = new RunServer(); // private AtmiBrokerServer
+	// server;
 	private Connection connection;
 	private int sendlen;
 	private Buffer sendbuf;
 	private Session cd;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
-		this.server = new AtmiBrokerServer("standalone-server", null);
-		this.server.tpadvertise("TestOne", TestTPRecvService.class.getName());
+		server.serverinit();
+		server.tpadvertiseTestTPRecv();
+		// //this.server = new
+		// AtmiBrokerServer("standalone-server", null);
+		// //this.server//.tpadvertise("TestOne",
+		// TestTPRecvService.class//.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -49,12 +54,12 @@ public class TestTPRecv extends TestCase {
 			cd.tpdiscon();
 		}
 		connection.close();
-		server.close();
+		server.serverdone(); // server.close();
 	}
 
 	public void test_tprecv_sendonly() throws ConnectionException {
 		log.info("test_tprecv_sendonly");
-		cd = connection.tpconnect("TestOne", sendbuf, sendlen,
+		cd = connection.tpconnect("TestTPRecv", sendbuf, sendlen,
 				Connection.TPSENDONLY);
 		try {
 			cd.tprecv(0);

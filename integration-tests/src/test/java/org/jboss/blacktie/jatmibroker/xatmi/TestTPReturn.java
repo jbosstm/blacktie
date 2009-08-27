@@ -21,16 +21,19 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.RunServer;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
 
 public class TestTPReturn extends TestCase {
 	private static final Logger log = LogManager.getLogger(TestTPReturn.class);
-	private AtmiBrokerServer server;
+	private RunServer server = new RunServer(); // private AtmiBrokerServer
+	// server;
 	private Connection connection;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
-		this.server = new AtmiBrokerServer("standalone-server", null);
+		server.serverinit();
+		// //this.server = new
+		// AtmiBrokerServer("standalone-server", null);
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -39,12 +42,13 @@ public class TestTPReturn extends TestCase {
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
 		connection.close();
-		server.close();
+		server.serverdone(); // server.close();
 	}
 
 	// 8.1 8.3 not possible in java
 	// public void test_tpreturn_nonservice() {
-	// this.server.tpadvertise("TestOne", TestTPReturnService.class.getName());
+	// ////this.server//.tpadvertise("TestOne",
+	// TestTPReturnService.class//.getName());
 	//
 	// log.info("test_tpreturn_nonservice");
 	// // THIS IS ILLEGAL STATE TABLE
@@ -60,17 +64,18 @@ public class TestTPReturn extends TestCase {
 		log.info("test_tpreturn_nonbuffer");
 
 		// Do local work
-		this.server.tpadvertise("TestOne", TestTPReturnService.class.getName());
+		server.tpadvertiseTestTPReturn();
 
 		int sendlen = "tprnb".length() + 1;
 		Buffer sendbuf = new Buffer("X_OCTET", null);
 		sendbuf.setData("tprnb".getBytes());
 
 		try {
-			connection.tpcall("TestOne", sendbuf, sendlen, 0);
+			connection.tpcall("TestTPReturn", sendbuf, sendlen, 0);
 			fail("Managed to send call");
 		} catch (ConnectionException e) {
-			assertTrue(e.getTperrno() == Connection.TPESVCERR);
+			assertTrue("Error was: " + e.getTperrno(),
+					e.getTperrno() == Connection.TPESVCERR);
 		}
 	}
 
@@ -78,18 +83,18 @@ public class TestTPReturn extends TestCase {
 		log.info("test_tpreturn_tpurcode");
 
 		// Do local work
-		this.server.tpadvertise("TestOne", TestTPReturnServiceTpurcode.class
-				.getName());
+		server.tpadvertiseTestTPReturn2();
 
 		int sendlen = 3;
 		Buffer sendbuf = new Buffer("X_OCTET", null);
 		sendbuf.setData("24".getBytes());
-		Response success = connection.tpcall("TestOne", sendbuf, sendlen, 0);
+		Response success = connection.tpcall("TestTPReturn2", sendbuf, sendlen,
+				0);
 		assertTrue(success != null);
 		assertTrue(success.getRcode() == 24);
 
 		sendbuf.setData("77".getBytes());
-		success = connection.tpcall("TestOne", sendbuf, sendlen, 0);
+		success = connection.tpcall("TestTPReturn2", sendbuf, sendlen, 0);
 		assertTrue(success != null);
 		assertTrue(success.getRcode() == 77);
 	}

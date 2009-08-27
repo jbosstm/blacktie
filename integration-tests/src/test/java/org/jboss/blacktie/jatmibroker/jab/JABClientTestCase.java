@@ -17,16 +17,12 @@
  */
 package org.jboss.blacktie.jatmibroker.jab;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.util.Arrays;
 
 import junit.framework.TestCase;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.RunServer;
 
 public class JABClientTestCase extends TestCase {
@@ -49,6 +45,7 @@ public class JABClientTestCase extends TestCase {
 	public void setUp() throws InterruptedException {
 		cleanThread();
 		runServer.serverinit();
+		runServer.tpadvertisetpcallXOctet();
 	}
 
 	public void tearDown() {
@@ -61,51 +58,71 @@ public class JABClientTestCase extends TestCase {
 				null);
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
-		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet", aJabSession);
-		aJabService.setData("HOWS IT GOING DUDE????!!!!".getBytes());
+		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet",
+				aJabSession);
+		aJabService.setData("test_tpcall_x_octet".getBytes());
 		log.debug("calling tpcall_x_octet with tx");
 		aJabService.call(transaction);
 		log.debug("called tpcall_x_octet with tx, commiting ...");
 		transaction.commit();
 		log.debug("tpcall_x_octet commit ok");
-		assertEquals("BAR SAYS HELLO", new String(aJabService.getData()));
+		byte[] expected = new byte[60];
+		System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0, 14);
+		byte[] received = aJabService.getData();
+		assertTrue(Arrays.equals(expected, received));
 		aJabSession.closeSession();
 	}
 
 	public void test_tpcall_x_octet_commit_tx_rollback_only() throws Exception {
-		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(null);
+		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
+				null);
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
-		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet", aJabSession);
+		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet",
+				aJabSession);
 		transaction.rollback_only();
-		aJabService.setData("HOWS IT GOING DUDE????!!!!".getBytes());
+		aJabService.setData("test_tpcall_x_octet".getBytes());
 		aJabService.call(null);
 		try {
 			transaction.commit();
 			fail("committing a tx marked rollback only succeeded");
 		} catch (JABException e) {
 			// the exception is expected, but:
-			// exception should be CORBA::CORBA::TRANSACTION_ROLLEDBACK but JBossTM
-			// returns CORBA::OBJECT_NOT_EXIST instead in which case we would use presumed abort");
+			// exception should be CORBA::CORBA::TRANSACTION_ROLLEDBACK but
+			// JBossTM
+			// returns CORBA::OBJECT_NOT_EXIST instead in which case we would
+			// use presumed abort");
 		}
-		assertEquals("BAR SAYS HELLO", new String(aJabService.getData()));
+		byte[] expected = new byte[60];
+		System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0, 14);
+		byte[] received = aJabService.getData();
+		assertTrue(Arrays.equals(expected, received));
+
 		aJabSession.closeSession();
 	}
 
-	public void test_tpcall_x_octet_rollback_tx_rollback_only() throws Exception {
-		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(null);
+	public void test_tpcall_x_octet_rollback_tx_rollback_only()
+			throws Exception {
+		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
+				null);
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
-		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet", aJabSession);
+		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet",
+				aJabSession);
 		transaction.rollback_only();
-		aJabService.setData("HOWS IT GOING DUDE????!!!!".getBytes());
+		aJabService.setData("test_tpcall_x_octet".getBytes());
 		aJabService.call(null);
 		try {
 			transaction.rollback();
 		} catch (JABException e) {
-			fail("rolling back a tx marked rollback through exception: " + e.getMessage());
+			fail("rolling back a tx marked rollback through exception: "
+					+ e.getMessage());
 		}
-		assertEquals("BAR SAYS HELLO", new String(aJabService.getData()));
+		byte[] expected = new byte[60];
+		System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0, 14);
+		byte[] received = aJabService.getData();
+		assertTrue(Arrays.equals(expected, received));
+
 		aJabSession.closeSession();
 	}
 
@@ -113,10 +130,15 @@ public class JABClientTestCase extends TestCase {
 		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
 				null);
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
-		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet", aJabSession);
-		aJabService.setData("HOWS IT GOING DUDE????!!!!".getBytes());
+		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet",
+				aJabSession);
+		aJabService.setData("test_tpcall_x_octet".getBytes());
 		aJabService.call(null);
-		assertEquals("BAR SAYS HELLO", new String(aJabService.getData()));
+		byte[] expected = new byte[60];
+		System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0, 14);
+		byte[] received = aJabService.getData();
+		assertTrue(Arrays.equals(expected, received));
+
 		aJabSession.closeSession();
 	}
 
@@ -125,51 +147,44 @@ public class JABClientTestCase extends TestCase {
 				null);
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
-		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet", aJabSession);
-		aJabService.setData("HOWS IT GOING DUDE????!!!!".getBytes());
+		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet",
+				aJabSession);
+		aJabService.setData("test_tpcall_x_octet".getBytes());
 		aJabService.call(null);
 		transaction.commit();
-		assertEquals("BAR SAYS HELLO", new String(aJabService.getData()));
+		byte[] expected = new byte[60];
+		System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0, 14);
+		byte[] received = aJabService.getData();
+		assertTrue(Arrays.equals(expected, received));
+
 		aJabSession.closeSession();
 	}
 
-// TODO
-/*
-	public void xtest_tpcall_x_c_type() throws Exception {
-		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
-				null);
-		JABSession aJabSession = new JABSession(aJabSessionAttributes);
-		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
-		JABRemoteService aJabService = new JABRemoteService(aJabSession,
-				"tpcall_x_c_type");
-
-		// Assemble the message
-		ByteArrayOutputStream baos = new ByteArrayOutputStream(512);
-		DataOutputStream dos = new DataOutputStream(baos);
-		dos.writeInt(222);
-		dos.writeShort((short) 33);
-		dos.writeLong(11l);
-		dos.writeChar('c');
-		dos.writeFloat(444.97f);
-		dos.writeDouble(7.7d);
-		dos.writeUTF("tpcall_x_c_type");
-		byte[] data = baos.toByteArray();
-
-		aJabService.setBuffer("X_C_TYPE", data, data.length);
-		aJabService.call(transaction);
-		transaction.commit();
-		aJabSession.endSession();
-
-		byte[] response = aJabService.getResponseData();
-		ByteArrayInputStream bais = new ByteArrayInputStream(response);
-		DataInputStream dis = new DataInputStream(bais);
-		assertEquals(222, dis.readInt());
-		assertEquals(33, dis.readShort());
-		assertEquals(11, dis.readLong());
-		assertEquals('c', dis.readChar());
-		assertEquals(444.97, dis.readFloat());
-		assertEquals(7.7, dis.readDouble());
-		assertEquals("tpcall_x_c_type", dis.readUTF());
-	}
-*/
+	// TODO
+	/*
+	 * public void xtest_tpcall_x_c_type() throws Exception {
+	 * JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
+	 * null); JABSession aJabSession = new JABSession(aJabSessionAttributes);
+	 * JABTransaction transaction = new JABTransaction(aJabSession, 5000);
+	 * JABRemoteService aJabService = new JABRemoteService(aJabSession,
+	 * "tpcall_x_c_type");
+	 * 
+	 * // Assemble the message ByteArrayOutputStream baos = new
+	 * ByteArrayOutputStream(512); DataOutputStream dos = new
+	 * DataOutputStream(baos); dos.writeInt(222); dos.writeShort((short) 33);
+	 * dos.writeLong(11l); dos.writeChar('c'); dos.writeFloat(444.97f);
+	 * dos.writeDouble(7.7d); dos.writeUTF("tpcall_x_c_type"); byte[] data =
+	 * baos.toByteArray();
+	 * 
+	 * aJabService.setBuffer("X_C_TYPE", data, data.length);
+	 * aJabService.call(transaction); transaction.commit();
+	 * aJabSession.endSession();
+	 * 
+	 * byte[] response = aJabService.getResponseData(); ByteArrayInputStream
+	 * bais = new ByteArrayInputStream(response); DataInputStream dis = new
+	 * DataInputStream(bais); assertEquals(222, dis.readInt()); assertEquals(33,
+	 * dis.readShort()); assertEquals(11, dis.readLong()); assertEquals('c',
+	 * dis.readChar()); assertEquals(444.97, dis.readFloat()); assertEquals(7.7,
+	 * dis.readDouble()); assertEquals("tpcall_x_c_type", dis.readUTF()); }
+	 */
 }

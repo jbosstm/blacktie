@@ -18,11 +18,62 @@
 package org.jboss.blacktie.jatmibroker;
 
 public class RunServer {
-	public native void serverinit();
-
-	public native void serverdone();
 
 	static {
 		System.loadLibrary("testsuite");
 	}
+
+	public native void serverinit();
+
+	public native void serverdone();
+
+	public native void tpadvertiseBAR();
+
+	public native void tpadvertiseLOOPY();
+
+	public native void tpadvertiseDEBIT();
+
+	public native void tpadvertiseCREDIT();
+
+	public native void tpadvertiseINQUIRY();
+
+	public native void tpadvertiseTestTPACall();
+
+	public native void tpadvertisetpcallXOctet();
+
+	public native void tpadvertisetpcallXOctetZero();
+
+	public native void tpadvertisetpcallXCommon();
+
+	public native void tpadvertisetpcallXCType();
+
+	public native void tpadvertiseTestTPCancel();
+
+	public native void tpadvertiseTestTPConnect();
+
+	public native void tpadvertiseTestTPConversation();
+
+	public native void tpadvertiseTestTPConversa2();
+
+	public native void tpadvertiseTestTPDiscon();
+
+	public native void tpadvertiseTestTPFree();
+
+	public native void tpadvertiseTestTPGetrply();
+
+	public native void tpadvertiseTestTPRecv();
+
+	public native void tpadvertiseTestTPReturn();
+
+	public native void tpadvertiseTestTPReturn2();
+
+	public native void tpadvertiseTestTPSend();
+
+	public native void tpadvertiseTestTPService();
+
+	public native void tpadvertiseTestTPUnadvertise();
+
+	public native void tpadvertiseTX1();
+
+	public native void tpadvertiseTX2();
 }
