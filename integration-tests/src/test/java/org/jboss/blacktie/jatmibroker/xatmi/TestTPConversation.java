@@ -27,8 +27,7 @@ import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 public class TestTPConversation extends TestCase {
 	private static final Logger log = LogManager
 			.getLogger(TestTPConversation.class);
-	private RunServer server = new RunServer(); // private AtmiBrokerServer
-	// server;
+	private RunServer server = new RunServer();
 
 	private Connection connection;
 	private int sendlen;
@@ -39,10 +38,6 @@ public class TestTPConversation extends TestCase {
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		server.serverinit();
-		server.tpadvertiseTestTPConversation();
-		server.tpadvertiseTestTPConversa2();
-		// //this.server = new
-		// AtmiBrokerServer("standalone-server", null);
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -54,19 +49,16 @@ public class TestTPConversation extends TestCase {
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
 		connection.close();
-		server.serverdone(); // server.close();
+		server.serverdone();
 	}
 
 	public void test_conversation() throws ConnectionException {
 		log.info("test_conversation");
-
-		// //this.server//.tpadvertise("TestOne",
-		// TestTPConversationService.class
-		// .getName());
+		server.tpadvertiseTestTPConversation();
 
 		sendbuf.setData("conversate".getBytes());
-		cd = connection.tpconnect("TestTPConversation", sendbuf, sendlen,
-				Connection.TPRECVONLY);
+		cd = connection.tpconnect(server.getServiceNameTestTPConversation(),
+				sendbuf, sendlen, Connection.TPRECVONLY);
 		long revent = 0;
 		log.info("Started conversation");
 		for (int i = 0; i < interationCount; i++) {
@@ -96,14 +88,11 @@ public class TestTPConversation extends TestCase {
 	}
 
 	public void test_short_conversation() throws ConnectionException {
-
-		// //this.server//.tpadvertise("TestOne",
-		// TestTPConversationServiceShort.class
-		// .getName());
+		server.tpadvertiseTestTPConversa2();
 
 		log.info("test_short_conversation");
-		cd = connection.tpconnect("TestTPConversa2", null, 0,
-				Connection.TPRECVONLY);
+		cd = connection.tpconnect(server.getServiceNameTestTPConversa2(), null,
+				0, Connection.TPRECVONLY);
 		assertTrue(cd != null);
 
 		Buffer rcvbuf = cd.tprecv(0);

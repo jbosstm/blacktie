@@ -26,8 +26,7 @@ import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 
 public class TestTPSend extends TestCase {
 	private static final Logger log = LogManager.getLogger(TestTPSend.class);
-	private RunServer server = new RunServer(); // private AtmiBrokerServer
-	// server;
+	private RunServer server = new RunServer();
 	private Connection connection;
 	private int sendlen;
 	private Buffer sendbuf;
@@ -36,10 +35,6 @@ public class TestTPSend extends TestCase {
 	public void setUp() throws ConnectionException, ConfigurationException {
 		server.serverinit();
 		server.tpadvertiseTestTPSend();
-		// //this.server = new
-		// AtmiBrokerServer("standalone-server", null);
-		// //this.server//.tpadvertise("TestOne",
-		// TestTPSendService.class//.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -57,13 +52,13 @@ public class TestTPSend extends TestCase {
 		}
 
 		connection.close();
-		server.serverdone(); // server.close();
+		server.serverdone();
 	}
 
 	public void test_tpsend_recvonly() throws ConnectionException {
 		log.info("test_tpsend_recvonly");
-		cd = connection.tpconnect("TestTPSend", sendbuf, sendlen,
-				Connection.TPRECVONLY);
+		cd = connection.tpconnect(server.getServiceNameTestTPSend(), sendbuf,
+				sendlen, Connection.TPRECVONLY);
 		try {
 			cd.tpsend(sendbuf, sendlen, 0);
 		} catch (ConnectionException e) {

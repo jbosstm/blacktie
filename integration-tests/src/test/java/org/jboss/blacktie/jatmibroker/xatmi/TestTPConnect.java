@@ -26,8 +26,7 @@ import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 
 public class TestTPConnect extends TestCase {
 	private static final Logger log = LogManager.getLogger(TestTPConnect.class);
-	private RunServer server = new RunServer(); // private AtmiBrokerServer
-	// server;
+	private RunServer server = new RunServer();
 	private Connection connection;
 	private int sendlen;
 	private Buffer sendbuf;
@@ -37,10 +36,6 @@ public class TestTPConnect extends TestCase {
 	public void setUp() throws ConnectionException, ConfigurationException {
 		server.serverinit();
 		server.tpadvertiseTestTPConnect();
-		// //this.server = new
-		// AtmiBrokerServer("standalone-server", null);
-		// this.server
-		// .tpadvertise("TestOne", TestTPConnectService.class//.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -71,17 +66,17 @@ public class TestTPConnect extends TestCase {
 
 	public void test_tpconnect() throws ConnectionException {
 		log.info("test_tpconnect");
-		cd = connection.tpconnect("TestTPConnect", sendbuf, sendlen,
-				Connection.TPRECVONLY);
+		cd = connection.tpconnect(server.getServiceNameTestTPConnect(),
+				sendbuf, sendlen, Connection.TPRECVONLY);
 		assertTrue(cd != null);
 	}
 
 	public void test_tpconnect_double_connect() throws ConnectionException {
 		log.info("test_tpconnect_double_connect");
-		cd = connection.tpconnect("TestTPConnect", sendbuf, sendlen,
-				Connection.TPRECVONLY);
-		cd2 = connection.tpconnect("TestTPConnect", sendbuf, sendlen,
-				Connection.TPRECVONLY);
+		cd = connection.tpconnect(server.getServiceNameTestTPConnect(),
+				sendbuf, sendlen, Connection.TPRECVONLY);
+		cd2 = connection.tpconnect(server.getServiceNameTestTPConnect(),
+				sendbuf, sendlen, Connection.TPRECVONLY);
 		assertTrue(cd != null);
 		assertTrue(cd2 != null);
 		assertTrue(cd != cd2);
@@ -90,8 +85,8 @@ public class TestTPConnect extends TestCase {
 
 	public void test_tpconnect_nodata() throws ConnectionException {
 		log.info("test_tpconnect_nodata");
-		cd = connection.tpconnect("TestTPConnect", null, 0,
-				Connection.TPRECVONLY);
+		cd = connection.tpconnect(server.getServiceNameTestTPConnect(), null,
+				0, Connection.TPRECVONLY);
 		assertTrue(cd != null);
 	}
 }

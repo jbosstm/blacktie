@@ -32,22 +32,13 @@ public class TestSpecExampleOne extends TestCase {
 
 	public static final int NOT_OK = 0;
 
-	private RunServer server = new RunServer(); // private AtmiBrokerServer
-	// server;
+	private RunServer server = new RunServer();
 	private Connection connection;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		server.serverinit();
 		server.tpadvertiseCREDIT();
 		server.tpadvertiseDEBIT();
-		// //this.server = new
-		// AtmiBrokerServer("standalone-server", null);
-		// //this.server//.tpadvertise("TestOne",
-		// TestSpecExampleOneService.class
-		// .getName());
-		// //this.server//.tpadvertise("TestTwo",
-		// TestSpecExampleOneService.class
-		// .getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -78,10 +69,11 @@ public class TestSpecExampleOne extends TestCase {
 		cptr.setCharArray("input", "credit account 456 by 50".toCharArray());
 		// TODO tx_begin(); /* start global transaction */
 		/* issue asynchronous request to DEBIT, while it is processing... */
-		cd = connection.tpacall("DEBIT", dptr, 0, Connection.TPSIGRSTRT);
-		/* ...issue synchronous request to CREDIT */
-		Response response = connection.tpcall("CREDIT", cptr, 0,
+		cd = connection.tpacall(server.getServiceNameDEBIT(), dptr, 0,
 				Connection.TPSIGRSTRT);
+		/* ...issue synchronous request to CREDIT */
+		Response response = connection.tpcall(server.getServiceNameCREDIT(),
+				cptr, 0, Connection.TPSIGRSTRT);
 		cptr = response.getBuffer();
 		cptr.format(new String[] { "input", "output", "failTest" },
 				new Class[] { char[].class, int.class, int.class }, new int[] {

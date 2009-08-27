@@ -26,8 +26,7 @@ import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 
 public class TestTPRecv extends TestCase {
 	private static final Logger log = LogManager.getLogger(TestTPRecv.class);
-	private RunServer server = new RunServer(); // private AtmiBrokerServer
-	// server;
+	private RunServer server = new RunServer();
 	private Connection connection;
 	private int sendlen;
 	private Buffer sendbuf;
@@ -36,10 +35,6 @@ public class TestTPRecv extends TestCase {
 	public void setUp() throws ConnectionException, ConfigurationException {
 		server.serverinit();
 		server.tpadvertiseTestTPRecv();
-		// //this.server = new
-		// AtmiBrokerServer("standalone-server", null);
-		// //this.server//.tpadvertise("TestOne",
-		// TestTPRecvService.class//.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -54,13 +49,13 @@ public class TestTPRecv extends TestCase {
 			cd.tpdiscon();
 		}
 		connection.close();
-		server.serverdone(); // server.close();
+		server.serverdone();
 	}
 
 	public void test_tprecv_sendonly() throws ConnectionException {
 		log.info("test_tprecv_sendonly");
-		cd = connection.tpconnect("TestTPRecv", sendbuf, sendlen,
-				Connection.TPSENDONLY);
+		cd = connection.tpconnect(server.getServiceNameTestTPRecv(), sendbuf,
+				sendlen, Connection.TPSENDONLY);
 		try {
 			cd.tprecv(0);
 			fail("expected proto error");

@@ -26,14 +26,11 @@ import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 
 public class TestTPReturn extends TestCase {
 	private static final Logger log = LogManager.getLogger(TestTPReturn.class);
-	private RunServer server = new RunServer(); // private AtmiBrokerServer
-	// server;
+	private RunServer server = new RunServer();
 	private Connection connection;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		server.serverinit();
-		// //this.server = new
-		// AtmiBrokerServer("standalone-server", null);
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -42,7 +39,7 @@ public class TestTPReturn extends TestCase {
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
 		connection.close();
-		server.serverdone(); // server.close();
+		server.serverdone();
 	}
 
 	// 8.1 8.3 not possible in java
@@ -71,7 +68,8 @@ public class TestTPReturn extends TestCase {
 		sendbuf.setData("tprnb".getBytes());
 
 		try {
-			connection.tpcall("TestTPReturn", sendbuf, sendlen, 0);
+			connection.tpcall(server.getServiceNameTestTPReturn(), sendbuf,
+					sendlen, 0);
 			fail("Managed to send call");
 		} catch (ConnectionException e) {
 			assertTrue("Error was: " + e.getTperrno(),
@@ -88,13 +86,14 @@ public class TestTPReturn extends TestCase {
 		int sendlen = 3;
 		Buffer sendbuf = new Buffer("X_OCTET", null);
 		sendbuf.setData("24".getBytes());
-		Response success = connection.tpcall("TestTPReturn2", sendbuf, sendlen,
-				0);
+		Response success = connection.tpcall(server
+				.getServiceNameTestTPReturn2(), sendbuf, sendlen, 0);
 		assertTrue(success != null);
 		assertTrue(success.getRcode() == 24);
 
 		sendbuf.setData("77".getBytes());
-		success = connection.tpcall("TestTPReturn2", sendbuf, sendlen, 0);
+		success = connection.tpcall(server.getServiceNameTestTPReturn2(),
+				sendbuf, sendlen, 0);
 		assertTrue(success != null);
 		assertTrue(success.getRcode() == 77);
 	}

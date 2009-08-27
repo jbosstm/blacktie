@@ -27,18 +27,12 @@ import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 public class TestSpecExampleTwo extends TestCase {
 	private static final Logger log = LogManager
 			.getLogger(TestSpecExampleTwo.class);
-	private RunServer server = new RunServer(); // private AtmiBrokerServer
-	// server;
+	private RunServer server = new RunServer();
 	private Connection connection;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		server.serverinit();
 		server.tpadvertiseINQUIRY();
-		// //this.server = new
-		// AtmiBrokerServer("standalone-server", null);
-		// //this.server//.tpadvertise("TestOne",
-		// TestSpecExampleTwoService.class
-		// .getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -69,8 +63,8 @@ public class TestSpecExampleTwo extends TestCase {
 								.toCharArray());
 		// TODO tx_begin(); /* start global transaction */
 		/* connect to conversational service, send input data, & yield control */
-		cd = connection.tpconnect("INQUIRY", ptr, 0, Connection.TPRECVONLY
-				| Connection.TPSIGRSTRT);
+		cd = connection.tpconnect(server.getServiceNameINQUIRY(), ptr, 0,
+				Connection.TPRECVONLY | Connection.TPSIGRSTRT);
 		do {
 
 			try {

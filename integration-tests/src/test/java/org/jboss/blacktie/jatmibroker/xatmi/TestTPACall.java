@@ -26,17 +26,12 @@ import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 
 public class TestTPACall extends TestCase {
 	private static final Logger log = LogManager.getLogger(TestTPACall.class);
-	private RunServer server = new RunServer(); // private AtmiBrokerServer
-	// server;
+	private RunServer server = new RunServer();
 	private Connection connection;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		server.serverinit();
 		server.tpadvertiseTestTPACall();
-		// //this.server = new
-		// AtmiBrokerServer("standalone-server", null);
-		// //this.server//.tpadvertise("TestOne",
-		// TestTPACallService.class//.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -55,8 +50,8 @@ public class TestTPACall extends TestCase {
 		Buffer sendbuf = new Buffer("X_OCTET", null);
 		sendbuf.setData(toSend);
 
-		int cd = connection.tpacall("TestTPACall", sendbuf, sendlen,
-				Connection.TPNOREPLY);
+		int cd = connection.tpacall(server.getServiceNameTestTPACall(),
+				sendbuf, sendlen, Connection.TPNOREPLY);
 		assertTrue(cd == 0);
 
 		try {

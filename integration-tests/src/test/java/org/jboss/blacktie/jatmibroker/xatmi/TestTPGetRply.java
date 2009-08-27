@@ -26,8 +26,7 @@ import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 
 public class TestTPGetRply extends TestCase {
 	private static final Logger log = LogManager.getLogger(TestTPGetRply.class);
-	private RunServer server = new RunServer(); // private AtmiBrokerServer
-	// server;
+	private RunServer server = new RunServer();
 	private Connection connection;
 	private int sendlen;
 	private Buffer sendbuf;
@@ -35,10 +34,6 @@ public class TestTPGetRply extends TestCase {
 	public void setUp() throws ConnectionException, ConfigurationException {
 		server.serverinit();
 		server.tpadvertiseTestTPGetrply();
-		// //this.server = new
-		// AtmiBrokerServer("standalone-server", null);
-		// this.server
-		// .tpadvertise("TestOne", TestTPGetRplyService.class//.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -52,12 +47,13 @@ public class TestTPGetRply extends TestCase {
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
 		connection.close();
-		server.serverdone(); // server.close();
+		server.serverdone();
 	}
 
 	public void test_tpgetrply() throws ConnectionException {
 		log.info("test_tpgetrply");
-		int cd = connection.tpacall("TestTPGetrply", sendbuf, sendlen, 0);
+		int cd = connection.tpacall(server.getServiceNameTestTPGetrply(),
+				sendbuf, sendlen, 0);
 		assertTrue(cd != -1);
 
 		// RETRIEVE THE RESPONSE

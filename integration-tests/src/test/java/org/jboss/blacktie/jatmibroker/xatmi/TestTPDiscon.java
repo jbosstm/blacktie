@@ -26,30 +26,25 @@ import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 
 public class TestTPDiscon extends TestCase {
 	private static final Logger log = LogManager.getLogger(TestTPDiscon.class);
-	private RunServer server = new RunServer(); // private AtmiBrokerServer
-	// server;
+	private RunServer server = new RunServer();
 	private Connection connection;
 	private Session cd;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		server.serverinit();
 		server.tpadvertiseTestTPDiscon();
-		// //this.server = new
-		// AtmiBrokerServer("standalone-server", null);
-		// //this.server//.tpadvertise("TestOne",
-		// TestTPDisconService.class//.getName());
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
 
-		cd = connection.tpconnect("TestTPDiscon", null, 0,
+		cd = connection.tpconnect(server.getServiceNameTestTPDiscon(), null, 0,
 				Connection.TPSENDONLY);
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
 		connection.close();
-		server.serverdone(); // server.close();
+		server.serverdone();
 	}
 
 	public void test_tpdiscon() throws ConnectionException {

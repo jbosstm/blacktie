@@ -76,4 +76,106 @@ public class RunServer {
 	public native void tpadvertiseTX1();
 
 	public native void tpadvertiseTX2();
+
+	// SERVICE NAMES
+	public String getServiceNameBAR() {
+		return "BAR";
+	}
+
+	public String getServiceNameLOOPY() {
+		return "LOOPY";
+	}
+
+	public String getServiceNameDEBIT() {
+		return "DEBIT";
+	}
+
+	public String getServiceNameCREDIT() {
+		return "CREDIT";
+	}
+
+	public String getServiceNameINQUIRY() {
+		return "INQUIRY";
+	}
+
+	public String getServiceNameTestTPACall() {
+		return "TestTPACall";
+	}
+
+	public String getServiceNametpcallXOctet() {
+		return "tpcall_x_octet";
+	}
+
+	public String getServiceNametpcallXOctetZero() {
+		return "tpcall_x_octet_zero";
+	}
+
+	public String getServiceNametpcallXCommon() {
+		return "tpcall_x_common";
+	}
+
+	public String getServiceNametpcallXCType() {
+		return "tpcall_x_c_type";
+	}
+
+	public String getServiceNameTestTPCancel() {
+		return "TestTPCancel";
+	}
+
+	public String getServiceNameTestTPConnect() {
+		return "TestTPConnect";
+	}
+
+	public String getServiceNameTestTPConversation() {
+		return "TestTPConversation";
+	}
+
+	public String getServiceNameTestTPDiscon() {
+		return "TestTPDiscon";
+	}
+
+	public String getServiceNameTestTPConversa2() {
+		return "TestTPConversa2";
+	}
+
+	public String getServiceNameTestTPFree() {
+		return "TestTPFree";
+	}
+
+	public String getServiceNameTestTPGetrply() {
+		return "TestTPGetrply";
+	}
+
+	public String getServiceNameTestTPRecv() {
+		return "TestTPRecv";
+	}
+
+	public String getServiceNameTestTPReturn() {
+		return "TestTPReturn";
+	}
+
+	public String getServiceNameTestTPReturn2() {
+		return "TestTPReturn2";
+	}
+
+	public String getServiceNameTestTPSend() {
+		return "TestTPSend";
+	}
+
+	public String getServiceNameTestTPService() {
+		return "TestTPService";
+	}
+
+	public String getServiceNameTestTPUnadvertise() {
+		return "TestTPUnadvertise";
+	}
+
+	public String getServiceNameTX1() {
+		throw new RuntimeException("NOT SUPPORTED");
+	}
+
+	public String getServiceNameTX2() {
+		throw new RuntimeException("NOT SUPPORTED");
+	}
+
 }
