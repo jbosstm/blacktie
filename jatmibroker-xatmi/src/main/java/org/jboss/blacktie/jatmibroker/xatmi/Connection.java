@@ -352,14 +352,17 @@ public class Connection {
 		}
 		Message m = endpoint.receive(flags);
 		// TODO WE SHOULD BE SENDING THE CONNECTION ID?
-		Buffer received = new Buffer(m.type, m.subtype);
-		received.setData(m.data);
-		Response response = new Response(m.rval, m.rcode, received, m.len,
-				m.flags);
+		Buffer received = null;
+		if (m.type != null && !m.type.equals("")) {
+			received = new Buffer(m.type, m.subtype);
+			received.setData(m.data);
+		}
 		if (m.rval == Connection.TPFAIL) {
 			throw new ConnectionException(m.rcode, 0L, m.rcode,
 					"Got a fail back from the remote service", received);
 		} else {
+			Response response = new Response(m.rval, m.rcode, received, m.len,
+					m.flags);
 			return response;
 		}
 	}

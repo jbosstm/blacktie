@@ -149,7 +149,7 @@ bool HybridSessionImpl::send(MESSAGE message) {
 	message.len = message.len + 1;
 	char* data_togo = new char[message.len];
 	data_togo[message.len - 1] = NULL;
-	LOG4CXX_TRACE(logger, (char*) "allocated");
+	LOG4CXX_TRACE(logger, (char*) "allocated: " + message.len);
 	if (message.len > 1) {
 		memcpy(data_togo, message.data, message.len - 1);
 		LOG4CXX_TRACE(logger, (char*) "copied: idata into: data_togo");

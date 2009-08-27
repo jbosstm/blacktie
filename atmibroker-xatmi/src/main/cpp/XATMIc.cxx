@@ -812,7 +812,7 @@ int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 	return toReturn;
 }
 
-void tpreturn(int rval, long rcode, char* data, long len, long flags) {
+void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpreturn " << rval);
 	setSpecific(TPE_KEY, TSS_TPERESET);
 
@@ -822,29 +822,29 @@ void tpreturn(int rval, long rcode, char* data, long len, long flags) {
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	} else {
 		if (clientinit() != -1) {
+			int len = ::bufferSize(idata, ilen);
 			Session* session = (Session*) getSpecific(SVC_SES);
 			if (session != NULL) {
-				if (!session->getCanSend() && rval != TPFAIL && data != NULL) {
+				if (!session->getCanSend() && rval != TPFAIL && idata != NULL) {
 					rcode = TPESVCERR;
 					rval = TPFAIL;
 				}
 				session->setCanRecv(false);
 				// CANT SEND NULL DATA
-				if (data == NULL) {
-					data = ::tpalloc((char*) "X_OCTET", NULL, 0);
+				if (idata == NULL) {
+					idata = ::tpalloc((char*) "X_OCTET", NULL, 0);
 				}
-				if (rcode == TPESVCERR || bufferSize(data, len) == -1) {
-					::tpfree(data);
-					data = ::tpalloc((char*) "X_OCTET", NULL, 0);
-					::send(session, "", data, 0, 0, flags, TPFAIL, TPESVCERR);
+				if (rcode == TPESVCERR || len == -1) {
+					::tpfree(idata);
+					::send(session, "", NULL, 0, 0, flags, TPFAIL, TPESVCERR);
 				} else {
 					if (rval != TPSUCCESS && rval != TPFAIL) {
 						rval = TPFAIL;
 						//TODO MARK SET ROLLBACK ONLY
 					}
-					::send(session, "", data, len, 0, flags, rval, rcode);
+					::send(session, "", idata, len, 0, flags, rval, rcode);
 				}
-				::tpfree(data);
+				::tpfree(idata);
 				session->setSendTo(NULL);
 				session->setCanSend(false);
 				LOG4CXX_DEBUG(loggerXATMI,

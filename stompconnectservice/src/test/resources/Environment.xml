@@ -33,6 +33,7 @@
 					<SERVICE name='TestTPAdvertise' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='LOOPY' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='TestTPConversat'  transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPConversa2'  transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='TestTPACall'  transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='TestTPCancel'  transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='TestTPConnect'  transportLibrary='libatmibroker-hybrid.so'/>
@@ -42,6 +43,7 @@
 					<SERVICE name='TestTPRecv'  transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='TestTPService'  transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='TestTPReturn'  transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPReturn2'  transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='123456789012345' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='TestTPUnadverti' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='tpcall_x_octet' transportLibrary='libatmibroker-hybrid.so'/>
