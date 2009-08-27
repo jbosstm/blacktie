@@ -51,11 +51,9 @@ public class RunServer {
 	}
 
 	public void tpadvertiseBAR() {
-		throw new RuntimeException("NOT IMPLEMENTED");
 	}
 
 	public void tpadvertiseLOOPY() {
-		throw new RuntimeException("NOT IMPLEMENTED");
 	}
 
 	public void tpadvertiseDEBIT() throws ConnectionException {
@@ -83,7 +81,6 @@ public class RunServer {
 	}
 
 	public void tpadvertisetpcallXOctetZero() throws ConnectionException {
-		throw new RuntimeException("NOT IMPLEMENTED");
 	}
 
 	public void tpadvertisetpcallXCommon() throws ConnectionException {
@@ -120,7 +117,6 @@ public class RunServer {
 	}
 
 	public void tpadvertiseTestTPFree() throws ConnectionException {
-		throw new RuntimeException("NOT SUPPORTED");
 	}
 
 	public void tpadvertiseTestTPGetrply() throws ConnectionException {
@@ -151,14 +147,112 @@ public class RunServer {
 	}
 
 	public void tpadvertiseTestTPUnadvertise() throws ConnectionException {
-		throw new RuntimeException("NOT SUPPORTED");
 	}
 
 	public void tpadvertiseTX1() throws ConnectionException {
-		throw new RuntimeException("NOT SUPPORTED");
 	}
 
 	public void tpadvertiseTX2() throws ConnectionException {
+	}
+
+	// SERVICE NAMES
+	public String getServiceNameBAR() {
+		throw new RuntimeException("NOT IMPLEMENTED");
+	}
+
+	public String getServiceNameLOOPY() {
+		throw new RuntimeException("NOT IMPLEMENTED");
+	}
+
+	public String getServiceNameDEBIT() {
+		return "TestOne";
+	}
+
+	public String getServiceNameCREDIT() {
+		return "TestTwo";
+	}
+
+	public String getServiceNameINQUIRY() {
+		return "TestOne";
+	}
+
+	public String getServiceNameTestTPACall() {
+		return "TestOne";
+	}
+
+	public String getServiceNametpcallXOctet() {
+		return "TestOne";
+	}
+
+	public String getServiceNametpcallXOctetZero() {
+		throw new RuntimeException("NOT IMPLEMENTED");
+	}
+
+	public String getServiceNametpcallXCommon() {
+		return "TestOne";
+	}
+
+	public String getServiceNametpcallXCType() {
+		return "TestOne";
+	}
+
+	public String getServiceNameTestTPCancel() {
+		return "TestOne";
+	}
+
+	public String getServiceNameTestTPConnect() {
+		return "TestOne";
+	}
+
+	public String getServiceNameTestTPConversation() {
+		return "TestOne";
+	}
+
+	public String getServiceNameTestTPDiscon() {
+		return "TestOne";
+	}
+
+	public String getServiceNameTestTPConversa2() {
+		return "TestOne";
+	}
+
+	public String getServiceNameTestTPFree() {
+		throw new RuntimeException("NOT SUPPORTED");
+	}
+
+	public String getServiceNameTestTPGetrply() {
+		return "TestOne";
+	}
+
+	public String getServiceNameTestTPRecv() {
+		return "TestOne";
+	}
+
+	public String getServiceNameTestTPReturn() {
+		return "TestOne";
+	}
+
+	public String getServiceNameTestTPReturn2() {
+		return "TestOne";
+	}
+
+	public String getServiceNameTestTPSend() {
+		return "TestOne";
+	}
+
+	public String getServiceNameTestTPService() {
+		return "TestOne";
+	}
+
+	public String getServiceNameTestTPUnadvertise() {
+		throw new RuntimeException("NOT SUPPORTED");
+	}
+
+	public String getServiceNameTX1() {
+		throw new RuntimeException("NOT SUPPORTED");
+	}
+
+	public String getServiceNameTX2() {
 		throw new RuntimeException("NOT SUPPORTED");
 	}
 }

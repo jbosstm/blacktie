@@ -21,12 +21,12 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.RunServer;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
 
 public class TestTPConnect extends TestCase {
 	private static final Logger log = LogManager.getLogger(TestTPConnect.class);
-	private AtmiBrokerServer server;
+	private RunServer server = new RunServer();
 	private Connection connection;
 	private int sendlen;
 	private Buffer sendbuf;
@@ -34,9 +34,8 @@ public class TestTPConnect extends TestCase {
 	private Session cd2;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
-		this.server = new AtmiBrokerServer("standalone-server", null);
-		this.server
-				.tpadvertise("TestOne", TestTPConnectService.class.getName());
+		server.serverinit();
+		server.tpadvertiseTestTPConnect();
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -62,22 +61,22 @@ public class TestTPConnect extends TestCase {
 		}
 
 		connection.close();
-		server.close();
+		server.serverdone(); // server.close();
 	}
 
 	public void test_tpconnect() throws ConnectionException {
 		log.info("test_tpconnect");
-		cd = connection.tpconnect("TestOne", sendbuf, sendlen,
-				Connection.TPRECVONLY);
+		cd = connection.tpconnect(server.getServiceNameTestTPConnect(),
+				sendbuf, sendlen, Connection.TPRECVONLY);
 		assertTrue(cd != null);
 	}
 
 	public void test_tpconnect_double_connect() throws ConnectionException {
 		log.info("test_tpconnect_double_connect");
-		cd = connection.tpconnect("TestOne", sendbuf, sendlen,
-				Connection.TPRECVONLY);
-		cd2 = connection.tpconnect("TestOne", sendbuf, sendlen,
-				Connection.TPRECVONLY);
+		cd = connection.tpconnect(server.getServiceNameTestTPConnect(),
+				sendbuf, sendlen, Connection.TPRECVONLY);
+		cd2 = connection.tpconnect(server.getServiceNameTestTPConnect(),
+				sendbuf, sendlen, Connection.TPRECVONLY);
 		assertTrue(cd != null);
 		assertTrue(cd2 != null);
 		assertTrue(cd != cd2);
@@ -86,7 +85,8 @@ public class TestTPConnect extends TestCase {
 
 	public void test_tpconnect_nodata() throws ConnectionException {
 		log.info("test_tpconnect_nodata");
-		cd = connection.tpconnect("TestOne", null, 0, Connection.TPRECVONLY);
+		cd = connection.tpconnect(server.getServiceNameTestTPConnect(), null,
+				0, Connection.TPRECVONLY);
 		assertTrue(cd != null);
 	}
 }

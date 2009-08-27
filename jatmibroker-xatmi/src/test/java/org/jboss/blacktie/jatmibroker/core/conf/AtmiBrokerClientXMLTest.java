@@ -51,7 +51,9 @@ public class AtmiBrokerClientXMLTest extends TestCase {
 		assertTrue(transid.equals(prop.getProperty("blacktie.trans.factoryid")));
 		assertTrue(args.equals(prop.getProperty("blacktie.orb.args")));
 		assertTrue(arg1.equals(prop.getProperty("blacktie.orb.arg.1")));
-		assertTrue(((String)prop.getProperty("blacktie.orb.arg.2")).startsWith(arg2));
-		assertTrue(((String)prop.getProperty("blacktie.orb.arg.2")).endsWith(arg3));
+		assertTrue(((String) prop.getProperty("blacktie.orb.arg.2"))
+				.startsWith(arg2));
+		assertTrue(((String) prop.getProperty("blacktie.orb.arg.2"))
+				.endsWith(arg3));
 	}
 }

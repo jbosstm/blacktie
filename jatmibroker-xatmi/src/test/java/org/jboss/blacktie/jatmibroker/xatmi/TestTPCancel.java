@@ -21,17 +21,17 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.RunServer;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
 
 public class TestTPCancel extends TestCase {
 	private static final Logger log = LogManager.getLogger(TestTPCancel.class);
-	private AtmiBrokerServer server;
+	private RunServer server = new RunServer();
 	private Connection connection;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
-		this.server = new AtmiBrokerServer("standalone-server", null);
-		this.server.tpadvertise("TestOne", TestTPCancelService.class.getName());
+		server.serverinit();
+		server.tpadvertiseTestTPCancel();
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -40,7 +40,7 @@ public class TestTPCancel extends TestCase {
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
 		connection.close();
-		server.close();
+		server.serverdone();
 	}
 
 	public void test_tpcancel() throws ConnectionException {
@@ -50,7 +50,8 @@ public class TestTPCancel extends TestCase {
 		Buffer sendbuf = new Buffer("X_OCTET", null);
 		sendbuf.setData(message);
 
-		int cd = connection.tpacall("TestOne", sendbuf, sendlen, 0);
+		int cd = connection.tpacall(server.getServiceNameTestTPCancel(),
+				sendbuf, sendlen, 0);
 		assertTrue(cd != -1);
 		assertTrue(cd != 0);
 
@@ -75,8 +76,8 @@ public class TestTPCancel extends TestCase {
 		Buffer sendbuf = new Buffer("X_OCTET", null);
 		sendbuf.setData(message);
 
-		int cd = connection.tpacall("TestOne", sendbuf, sendlen,
-				Connection.TPNOREPLY);
+		int cd = connection.tpacall(server.getServiceNameTestTPCancel(),
+				sendbuf, sendlen, Connection.TPNOREPLY);
 		assertTrue(cd == 0);
 
 		// CANCEL THE REQUEST

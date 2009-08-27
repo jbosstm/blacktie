@@ -21,20 +21,19 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.RunServer;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
 
 public class TestTPService extends TestCase {
 	private static final Logger log = LogManager.getLogger(TestTPService.class);
-	private AtmiBrokerServer server;
+	private RunServer server = new RunServer();
 	private Connection connection;
 	private int sendlen;
 	private Buffer sendbuf;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
-		this.server = new AtmiBrokerServer("standalone-server", null);
-		this.server
-				.tpadvertise("TestOne", TestTPServiceService.class.getName());
+		server.serverinit();
+		server.tpadvertiseTestTPService();
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -47,16 +46,18 @@ public class TestTPService extends TestCase {
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
 		connection.close();
-		server.close();
+		server.serverdone();
 	}
 
 	public void test_tpservice_notpreturn() {
 		log.info("test_tpservice_notpreturn");
 		try {
-			connection.tpcall("TestOne", sendbuf, sendlen, 0);
+			connection.tpcall(server.getServiceNameTestTPService(), sendbuf,
+					sendlen, 0);
 			fail("Managed call");
 		} catch (ConnectionException e) {
-			assertTrue(e.getTperrno() == Connection.TPESVCERR);
+			assertTrue("Error was: " + e.getTperrno(),
+					e.getTperrno() == Connection.TPESVCERR);
 		}
 	}
 }

@@ -9,11 +9,11 @@ public class TestTPACallService implements BlacktieService {
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		log.info("testtpacall_service");
-//		int len = 20;
-//		char *toReturn = (char*) malloc(len);
-//		strcpy(toReturn, "testtpacall_service");
-//		tpreturn(TPSUCCESS, 0, toReturn, len, 0);
-//		free(toReturn);
+		// int len = 20;
+		// char *toReturn = (char*) malloc(len);
+		// strcpy(toReturn, "testtpacall_service");
+		// tpreturn(TPSUCCESS, 0, toReturn, len, 0);
+		// free(toReturn);
 		throw new RuntimeException("Error simulated");
 	}
 }

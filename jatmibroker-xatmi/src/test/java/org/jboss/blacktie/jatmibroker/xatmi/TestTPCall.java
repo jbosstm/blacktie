@@ -23,16 +23,16 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.RunServer;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
 
 public class TestTPCall extends TestCase {
 	private static final Logger log = LogManager.getLogger(TestTPCall.class);
-	private AtmiBrokerServer server;
+	private RunServer server = new RunServer();
 	private Connection connection;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
-		this.server = new AtmiBrokerServer("standalone-server", null);
+		server.serverinit();
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -41,7 +41,7 @@ public class TestTPCall extends TestCase {
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
 		connection.close();
-		server.close();
+		server.serverdone();
 	}
 
 	public void test_tpcall_unknown_service() throws ConnectionException {
@@ -66,15 +66,15 @@ public class TestTPCall extends TestCase {
 
 	public void test_tpcall_x_octet() throws ConnectionException {
 		log.info("test_tpcall_x_octet");
-		this.server.tpadvertise("TestOne", TestTPCallServiceXOctet.class
-				.getName());
+		server.tpadvertisetpcallXOctet();
 
 		String toSend = "test_tpcall_x_octet";
 		int sendlen = toSend.length() + 1;
 		Buffer sendbuf = new Buffer("X_OCTET", null);
 		sendbuf.setData(toSend.getBytes());
 
-		Response rcvbuf = connection.tpcall("TestOne", sendbuf, sendlen, 0);
+		Response rcvbuf = connection.tpcall(
+				server.getServiceNametpcallXOctet(), sendbuf, sendlen, 0);
 		assertTrue(rcvbuf != null);
 		assertTrue(rcvbuf.getBuffer() != null);
 		assertTrue(rcvbuf.getBuffer().getData() != null);
@@ -87,8 +87,7 @@ public class TestTPCall extends TestCase {
 
 	public void test_tpcall_x_common() throws ConnectionException {
 		log.info("test_tpcall_x_common");
-		this.server.tpadvertise("TestOne", TestTPCallServiceXCommon.class
-				.getName());
+		server.tpadvertisetpcallXCommon();
 
 		Buffer dptr = new Buffer("X_COMMON", "deposit");
 		dptr.format(new String[] { "acct_no", "amount", "balance", "status",
@@ -99,7 +98,8 @@ public class TestTPCall extends TestCase {
 		dptr.setLong("acct_no", 12345678);
 		dptr.setShort("amount", (short) 50);
 
-		Response rcvbuf = connection.tpcall("TestOne", dptr, 0, 0);
+		Response rcvbuf = connection.tpcall(server
+				.getServiceNametpcallXCommon(), dptr, 0, 0);
 		assertTrue(rcvbuf.getRcode() == 22);
 		byte[] received = rcvbuf.getBuffer().getData();
 		byte[] expected = new byte[received.length];
@@ -110,8 +110,7 @@ public class TestTPCall extends TestCase {
 
 	public void test_tpcall_x_c_type() throws ConnectionException {
 		log.info("test_tpcall_x_c_type");
-		this.server.tpadvertise("TestOne", TestTPCallServiceXCType.class
-				.getName());
+		server.tpadvertisetpcallXCType();
 
 		Buffer aptr = new Buffer("X_C_TYPE", "acct_info");
 		aptr.format(new String[] { "acct_no", "name", "address", "balance" },
@@ -125,7 +124,8 @@ public class TestTPCall extends TestCase {
 		balances[1] = 2.2F;
 		aptr.setFloatArray("balance", balances);
 
-		Response rcvbuf = connection.tpcall("TestOne", aptr, 0,
+		Response rcvbuf = connection.tpcall(
+				server.getServiceNametpcallXCType(), aptr, 0,
 				Connection.TPNOCHANGE);
 		assertTrue(rcvbuf.getRcode() == 23);
 		byte[] received = rcvbuf.getBuffer().getData();

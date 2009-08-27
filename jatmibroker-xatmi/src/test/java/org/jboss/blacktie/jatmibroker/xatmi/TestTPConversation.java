@@ -17,20 +17,17 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
-import java.io.IOException;
-import java.util.Arrays;
-
 import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.RunServer;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
 
 public class TestTPConversation extends TestCase {
 	private static final Logger log = LogManager
 			.getLogger(TestTPConversation.class);
-	private AtmiBrokerServer server;
+	private RunServer server = new RunServer();
 
 	private Connection connection;
 	private int sendlen;
@@ -40,7 +37,7 @@ public class TestTPConversation extends TestCase {
 	static int interationCount = 100;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
-		this.server = new AtmiBrokerServer("standalone-server", null);
+		server.serverinit();
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -52,18 +49,16 @@ public class TestTPConversation extends TestCase {
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
 		connection.close();
-		server.close();
+		server.serverdone();
 	}
 
 	public void test_conversation() throws ConnectionException {
 		log.info("test_conversation");
-
-		this.server.tpadvertise("TestOne", TestTPConversationService.class
-				.getName());
+		server.tpadvertiseTestTPConversation();
 
 		sendbuf.setData("conversate".getBytes());
-		cd = connection.tpconnect("TestOne", sendbuf, sendlen,
-				Connection.TPRECVONLY);
+		cd = connection.tpconnect(server.getServiceNameTestTPConversation(),
+				sendbuf, sendlen, Connection.TPRECVONLY);
 		long revent = 0;
 		log.info("Started conversation");
 		for (int i = 0; i < interationCount; i++) {
@@ -87,16 +82,17 @@ public class TestTPConversation extends TestCase {
 		Response rcvbuf = connection.tpgetrply(cd.getCd(), 0);
 
 		String expectedResult = ("hi" + interationCount);
+		log.info("Expected: " + expectedResult + " Received: "
+				+ new String(rcvbuf.getBuffer().getData()));
 		assertTrue(strcmp(expectedResult, rcvbuf.getBuffer()) == 0);
 	}
 
 	public void test_short_conversation() throws ConnectionException {
-
-		this.server.tpadvertise("TestOne", TestTPConversationServiceShort.class
-				.getName());
+		server.tpadvertiseTestTPConversa2();
 
 		log.info("test_short_conversation");
-		cd = connection.tpconnect("TestOne", null, 0, Connection.TPRECVONLY);
+		cd = connection.tpconnect(server.getServiceNameTestTPConversa2(), null,
+				0, Connection.TPRECVONLY);
 		assertTrue(cd != null);
 
 		Buffer rcvbuf = cd.tprecv(0);

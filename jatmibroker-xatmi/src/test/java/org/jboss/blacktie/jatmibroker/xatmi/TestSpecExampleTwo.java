@@ -21,19 +21,18 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.RunServer;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
 
 public class TestSpecExampleTwo extends TestCase {
 	private static final Logger log = LogManager
 			.getLogger(TestSpecExampleTwo.class);
-	private AtmiBrokerServer server;
+	private RunServer server = new RunServer();
 	private Connection connection;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
-		this.server = new AtmiBrokerServer("standalone-server", null);
-		this.server.tpadvertise("TestOne", TestSpecExampleTwoService.class
-				.getName());
+		server.serverinit();
+		server.tpadvertiseINQUIRY();
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -42,7 +41,7 @@ public class TestSpecExampleTwo extends TestCase {
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
 		connection.close();
-		server.close();
+		server.serverdone(); // server.close();
 	}
 
 	public void test() throws ConnectionException {
@@ -64,8 +63,8 @@ public class TestSpecExampleTwo extends TestCase {
 								.toCharArray());
 		// TODO tx_begin(); /* start global transaction */
 		/* connect to conversational service, send input data, & yield control */
-		cd = connection.tpconnect("TestOne", ptr, 0, Connection.TPRECVONLY
-				| Connection.TPSIGRSTRT);
+		cd = connection.tpconnect(server.getServiceNameINQUIRY(), ptr, 0,
+				Connection.TPRECVONLY | Connection.TPSIGRSTRT);
 		do {
 
 			try {
