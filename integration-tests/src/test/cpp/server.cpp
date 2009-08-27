@@ -158,6 +158,12 @@ void test_tpcall_x_common_service(TPSVCINFO *svcinfo) {
 	DEPOSIT *dptr = (DEPOSIT*) svcinfo->data;
 	if (dptr->acct_no == 12345678 && dptr->amount == 50) {
 		ok = true;
+	} else {
+		char* foo = svcinfo->data;
+		for (int i = 0; i < svcinfo->len; i++) {
+			userlogc((char*) "Position: %d was: %o", i, foo[i]);
+		}
+		userlogc((char*) "Data was: %d/%d", dptr->acct_no, dptr->amount);
 	}
 
 	int len = 60;
@@ -174,8 +180,10 @@ void test_tpcall_x_c_type_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "test_tpcall_x_c_type_service");
 	bool ok = false;
 	ACCT_INFO *aptr = (ACCT_INFO*) svcinfo->data;
-	if (aptr->acct_no == 12345678 && strcmp(aptr->name, "TOM") == 0
-			&& aptr->balances[0] == 1.1F && aptr->balances[1] == 2.2F) {
+	bool acctEq = aptr->acct_no == 12345678;
+	bool nameEq = strcmp(aptr->name, "TOM") == 0;
+	bool balsEq = aptr->balances[0] == 1.1F && aptr->balances[1] == 2.2F;
+	if (acctEq && nameEq && balsEq) {
 		ok = true;
 	}
 	int len = 60;
@@ -202,25 +210,26 @@ void testtpconnect_service(TPSVCINFO *svcinfo) {
 }
 void testTPConversation_service(TPSVCINFO *svcinfo) {
 
-	userlogc((char*) "testTPConversation_service");
+	userlogc((char*) "testTPConversation_service ");
 	bool fail = false;
 	char *sendbuf = ::tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
 	char *rcvbuf = ::tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
 
-	char* expectedResult = (char*) malloc(svcinfo->len + 1);
+	char* expectedResult = (char*) malloc(11);
 	strcpy(expectedResult, "conversate");
-	char* errorMessage = (char*) malloc(svcinfo->len * 2 + 2);
+	char* errorMessage = (char*) malloc(10 + 1 + svcinfo->len + 1);
 	sprintf(errorMessage, "%s/%s", expectedResult, svcinfo->data);
 	if (strncmp(expectedResult, svcinfo->data, 10) != 0) {
+		userlogc((char*) "Fail");
 		if (svcinfo->data != NULL) {
-			userlogc("Got invalid data");
+			userlogc((char*) "Got invalid data");
 		} else {
-			userlogc("GOT A NULL");
+			userlogc((char*) "GOT A NULL");
 		}
 		fail = true;
 	} else {
 		long revent = 0;
-		userlogc("Chatting");
+		userlogc((char*) "Chatting");
 		for (int i = 0; i < interationCount; i++) {
 			sprintf(sendbuf, "hi%d", i);
 			//userlogc((char*) "testTPConversation_service:%s:", sendbuf);
@@ -251,7 +260,7 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 				break;
 			}
 		}
-		userlogc("Chatted");
+		userlogc((char*) "Chatted");
 	}
 
 	if (fail) {
@@ -347,13 +356,13 @@ void testtpunadvertise_service(TPSVCINFO *svcinfo) {
 }
 void test_tx_tpcall_x_octet_service_without_tx(TPSVCINFO *svcinfo) {
 	userlogc(
-			(char*) "TxLog: service running: test_tx_tpcall_x_octet_service_without_tx");
+			(char*) (char*) "TxLog: service running: test_tx_tpcall_x_octet_service_without_tx");
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
 	userlogc(
-			(char*) "TxLog: service running: test_tx_tpcall_x_octet_service_without_tx inTx=%d",
+			(char*) (char*) "TxLog: service running: test_tx_tpcall_x_octet_service_without_tx inTx=%d",
 			inTx);
 	if (inTx == 0) { // or && txinfo.transaction_state != TX_ACTIVE
 		strcpy(toReturn, "test_tx_tpcall_x_octet_service_without_tx");
@@ -365,13 +374,13 @@ void test_tx_tpcall_x_octet_service_without_tx(TPSVCINFO *svcinfo) {
 
 void test_tx_tpcall_x_octet_service_with_tx(TPSVCINFO *svcinfo) {
 	userlogc(
-			(char*) "TxLog: service running: test_tx_tpcall_x_octet_service_with_tx");
+			(char*) (char*) "TxLog: service running: test_tx_tpcall_x_octet_service_with_tx");
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
 	userlogc(
-			(char*) "TxLog: service running: test_tx_tpcall_x_octet_service_with_tx inTx=%d",
+			(char*) (char*) "TxLog: service running: test_tx_tpcall_x_octet_service_with_tx inTx=%d",
 			inTx);
 	if (inTx == 1) { // or && txinfo.transaction_state == TX_ACTIVE
 		strcpy(toReturn, "test_tx_tpcall_x_octet_service_with_tx");

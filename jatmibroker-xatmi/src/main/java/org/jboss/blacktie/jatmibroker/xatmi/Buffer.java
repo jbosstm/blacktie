@@ -418,7 +418,7 @@ public class Buffer implements Serializable {
 						} else if (types[i] == long.class) {
 							structure.put(keys[i], dis.readLong());
 						} else if (types[i] == char.class) {
-							structure.put(keys[i], dis.readChar());
+							structure.put(keys[i], dis.readByte());
 						} else if (types[i] == float.class) {
 							structure.put(keys[i], dis.readFloat());
 						} else if (types[i] == double.class) {
@@ -444,7 +444,8 @@ public class Buffer implements Serializable {
 						} else if (types[i] == char[].class) {
 							char[] toRead = new char[lengths[i]];
 							for (int j = 0; j < lengths[i]; j++) {
-								toRead[j] = dis.readChar();
+								byte b = dis.readByte();
+								toRead[j] = (char) b;
 							}
 							structure.put(keys[i], toRead);
 						} else if (types[i] == float[].class) {
@@ -510,9 +511,9 @@ public class Buffer implements Serializable {
 					} else if (types[i] == char.class) {
 						Character toWrite = (Character) structure.get(keys[i]);
 						if (toWrite != null) {
-							dos.writeChar(toWrite);
+							dos.writeByte(getLowOrderByte(toWrite));
 						} else {
-							dos.writeChar('\0');
+							dos.writeByte(getHighOrderByte('\0'));
 						}
 					} else if (types[i] == float.class) {
 						Float toWrite = (Float) structure.get(keys[i]);
@@ -570,11 +571,11 @@ public class Buffer implements Serializable {
 						if (toWrite != null) {
 							max = Math.min(lengths[i], toWrite.length);
 							for (int j = 0; j < max; j++) {
-								dos.writeChar(toWrite[j]);
+								dos.writeByte(getLowOrderByte(toWrite[j]));
 							}
 						}
 						for (int j = max; j < lengths[i]; j++) {
-							dos.writeChar('\0');
+							dos.writeByte(getHighOrderByte('\0'));
 						}
 					} else if (types[i] == float[].class) {
 						float[] toWrite = (float[]) structure.get(keys[i]);
@@ -617,5 +618,15 @@ public class Buffer implements Serializable {
 			}
 			data = baos.toByteArray();
 		}
+	}
+
+	private byte getLowOrderByte(char c) {
+		byte[] bytes = { (byte) (c & 0xff), (byte) (c >> 8 & 0xff) };
+		return bytes[0];
+	}
+	
+	private byte getHighOrderByte(char c) {
+		byte[] bytes = { (byte) (c & 0xff), (byte) (c >> 8 & 0xff) };
+		return bytes[1];
 	}
 }
