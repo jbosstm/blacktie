@@ -14,20 +14,25 @@ public class TestTPCallServiceXCType implements BlacktieService {
 			log.info("test_tpcall_x_c_type_service");
 			boolean ok = false;
 			Buffer aptr = svcinfo.getBuffer();
-			aptr.format(
-					new String[] { "acct_no", "name", "address", "balance" },
-					new Class[] { long.class, char[].class, char[].class,
-							float[].class }, new int[] { 0, 50, 100, 2 });
+			aptr.format(new String[] { "acct_no", "name", "address", "foo",
+					"balance" }, new Class[] { long.class, char[].class,
+					char[].class, float[].class, double[].class }, new int[] {
+					0, 50, 100, 2, 2 });
 
 			char[] receivedName = new char[3];
 			System.arraycopy(aptr.getCharArray("name"), 0, receivedName, 0, 3);
 			char[] expectedName = "TOM".toCharArray();
 			long accountNumber = aptr.getLong("acct_no");
-			float balanceOne = aptr.getFloatArray("balance")[0];
-			float balanceTwo = aptr.getFloatArray("balance")[1];
+
+			float fooOne = aptr.getFloatArray("foo")[0];
+			float fooTwo = aptr.getFloatArray("foo")[1];
+
+			double balanceOne = aptr.getDoubleArray("balance")[0];
+			double balanceTwo = aptr.getDoubleArray("balance")[1];
 			if (accountNumber == 12345678
 					&& Arrays.equals(receivedName, expectedName)
-					&& balanceOne == 1.1F && balanceTwo == 2.2F) {
+					&& fooOne == 1.1F && fooTwo == 2.2F && balanceOne == 1.1
+					&& balanceTwo == 2.2) {
 				ok = true;
 			}
 			int len = 60;

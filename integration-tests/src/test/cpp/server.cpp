@@ -182,8 +182,9 @@ void test_tpcall_x_c_type_service(TPSVCINFO *svcinfo) {
 	ACCT_INFO *aptr = (ACCT_INFO*) svcinfo->data;
 	bool acctEq = aptr->acct_no == 12345678;
 	bool nameEq = strcmp(aptr->name, "TOM") == 0;
-	bool balsEq = aptr->balances[0] == 1.1F && aptr->balances[1] == 2.2F;
-	if (acctEq && nameEq && balsEq) {
+	bool fooEq = aptr->foo[0] == 1.1F && aptr->foo[1] == 2.2F;
+	bool balsEq = aptr->balances[0] == 1.1 && aptr->balances[1] == 2.2;
+	if (acctEq && nameEq && fooEq && balsEq) {
 		ok = true;
 	}
 	int len = 60;

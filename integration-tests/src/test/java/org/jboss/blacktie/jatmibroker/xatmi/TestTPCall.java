@@ -113,16 +113,23 @@ public class TestTPCall extends TestCase {
 		server.tpadvertisetpcallXCType();
 
 		Buffer aptr = new Buffer("X_C_TYPE", "acct_info");
-		aptr.format(new String[] { "acct_no", "name", "address", "balance" },
-				new Class[] { long.class, char[].class, char[].class,
-						float[].class }, new int[] { 0, 50, 100, 2 });
+		aptr.format(new String[] { "acct_no", "name", "address", "foo",
+				"balance" }, new Class[] { long.class, char[].class,
+				char[].class, float[].class, double[].class }, new int[] { 0,
+				50, 100, 2, 2 });
 
 		aptr.setLong("acct_no", 12345678);
 		aptr.setCharArray("name", "TOM".toCharArray());
-		float[] balances = new float[2];
-		balances[0] = 1.1F;
-		balances[1] = 2.2F;
-		aptr.setFloatArray("balance", balances);
+
+		float[] foo = new float[2];
+		foo[0] = 1.1F;
+		foo[1] = 2.2F;
+		aptr.setFloatArray("foo", foo);
+
+		double[] balances = new double[2];
+		balances[0] = 1.1;
+		balances[1] = 2.2;
+		aptr.setDoubleArray("balance", balances);
 
 		Response rcvbuf = connection.tpcall(
 				server.getServiceNametpcallXCType(), aptr, 0,

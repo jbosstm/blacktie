@@ -866,7 +866,7 @@ public class Buffer implements Serializable {
 		readPad(dis, currentPos % LONG_SIZE);
 
 		currentPos += LONG_SIZE;
-		double x = dis.readLong();
+		double x = dis.readDouble();
 		ByteBuffer bbuf = ByteBuffer.allocate(LONG_SIZE);
 		bbuf.order(ByteOrder.LITTLE_ENDIAN);
 		bbuf.putDouble(x);
