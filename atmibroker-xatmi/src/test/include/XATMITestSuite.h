@@ -27,7 +27,8 @@ struct acct_info_t {
 	long acct_no;
 	char name[50];
 	char address[100];
-	float balances[2];
+	float foo[2];
+	double balances[2];
 };
 typedef struct acct_info_t ACCT_INFO;
 

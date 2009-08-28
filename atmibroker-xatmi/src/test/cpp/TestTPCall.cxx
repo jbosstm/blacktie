@@ -172,11 +172,11 @@ void TestTPCall::test_tpcall_x_common() {
 	dptr->acct_no = 12345678;
 	dptr->amount = 50;
 
-//	userlogc("%d %d %d", sizeof(long), sizeof(int), sizeof(short));
-//	char foo[sizeof(short)]; // 8
-//	memcpy(foo, &sendbuf[8], sizeof(short));
-//	short* bar = (short*) foo;
-//	short barbar = *bar;
+	//	userlogc("%d %d %d", sizeof(long), sizeof(int), sizeof(short));
+	//	char foo[sizeof(short)]; // 8
+	//	memcpy(foo, &sendbuf[8], sizeof(short));
+	//	short* bar = (short*) foo;
+	//	short barbar = *bar;
 
 	int id = ::tpcall((char*) "tpcall_x_common", (char*) dptr, 0,
 			(char**) &rcvbuf, &rcvlen, 0);
@@ -199,8 +199,11 @@ void TestTPCall::test_tpcall_x_c_type() {
 	sendbuf = (char*) aptr;
 	aptr->acct_no = 12345678;
 	strcpy(aptr->name, "TOM");
-	aptr->balances[0] = 1.1F;
-	aptr->balances[1] = 2.2F;
+	aptr->foo[0] = 1.1F;
+	aptr->foo[1] = 2.2F;
+
+	aptr->balances[0] = 1.1;
+	aptr->balances[1] = 2.2;
 
 	int id = ::tpcall((char*) "tpcall_x_c_type", (char*) aptr, 0,
 			(char**) &rcvbuf, &rcvlen, TPNOCHANGE);
@@ -263,8 +266,11 @@ void test_tpcall_x_c_type_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "test_tpcall_x_c_type_service");
 	bool ok = false;
 	ACCT_INFO *aptr = (ACCT_INFO*) svcinfo->data;
-	if (aptr->acct_no == 12345678 && strcmp(aptr->name, "TOM") == 0
-			&& aptr->balances[0] == 1.1F && aptr->balances[1] == 2.2F) {
+	bool acctEq = aptr->acct_no == 12345678;
+	bool nameEq = strcmp(aptr->name, "TOM") == 0;
+	bool fooEq = aptr->foo[0] == 1.1F && aptr->foo[1] == 2.2F;
+	bool balsEq = aptr->balances[0] == 1.1 && aptr->balances[1] == 2.2;
+	if (acctEq && nameEq && fooEq && balsEq) {
 		ok = true;
 	}
 	int len = 60;
