@@ -6,11 +6,11 @@
  * full listing of individual contributors.
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU Lesser General Public License, v. 2.1.
+ * of the GNU Lesser General public  License, v. 2.1.
  * This program is distributed in the hope that it will be useful, but WITHOUT A
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
- * PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
- * You should have received a copy of the GNU Lesser General Public License,
+ * PARTICULAR PURPOSE.  See the GNU Lesser General public  License for more details.
+ * You should have received a copy of the GNU Lesser General public  License,
  * v.2.1 along with this distribution; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
@@ -23,21 +23,34 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 /**
  * This class encapsulates the response from the remote service and the return
  * code
  */
 public class Buffer implements Serializable {
+	private static final Logger log = LogManager.getLogger(Buffer.class);
 
 	private static List<String> bufferTypes = new ArrayList<String>();
 	private static List<Class> x_octetTypes = new ArrayList<Class>();
 	private static List<Class> x_commonTypes = new ArrayList<Class>();
 	private static List<Class> x_c_typeTypes = new ArrayList<Class>();
+
+	private static final int LONG_SIZE = 8;
+
+	private static final int INT_SIZE = 4;
+
+	private static final int SHORT_SIZE = 2;
+
 	static {
 		String[] bufferType = new String[] { "X_OCTET", "X_C_TYPE", "X_COMMON" };
 		for (int i = 0; i < bufferType.length; i++) {
@@ -83,6 +96,8 @@ public class Buffer implements Serializable {
 	private int[] lengths;
 	private boolean deserialized;
 	private boolean formatted;
+
+	int currentPos = 0;
 
 	/**
 	 * Create a new buffer
@@ -183,6 +198,50 @@ public class Buffer implements Serializable {
 			throw new ConnectionException(Connection.TPEITYPE,
 					"Key is not part of the structure: " + key);
 		} else if (types[position] != short.class) {
+			throw new ConnectionException(Connection.TPEITYPE,
+					"Key is not request type, it is a: " + types[position]);
+
+		}
+		structure.put(key, value);
+	}
+
+	public float getFloat(String key) throws ConnectionException {
+		if (!formatted) {
+			throw new ConnectionException(Connection.TPEPROTO,
+					"Message not formatted");
+		}
+		int position = -1;
+		for (int i = 0; i < keys.length; i++) {
+			if (keys[i].equals(key)) {
+				position = i;
+			}
+		}
+		if (position == -1) {
+			throw new ConnectionException(Connection.TPEITYPE,
+					"Key is not part of the structure: " + key);
+		} else if (types[position] != float.class) {
+			throw new ConnectionException(Connection.TPEITYPE,
+					"Key is not request type, it is a: " + types[position]);
+
+		}
+		return (Float) structure.get(key);
+	}
+
+	public void setFloat(String key, float value) throws ConnectionException {
+		if (!formatted) {
+			throw new ConnectionException(Connection.TPEPROTO,
+					"Message not formatted");
+		}
+		int position = -1;
+		for (int i = 0; i < keys.length; i++) {
+			if (keys[i].equals(key)) {
+				position = i;
+			}
+		}
+		if (position == -1) {
+			throw new ConnectionException(Connection.TPEITYPE,
+					"Key is not part of the structure: " + key);
+		} else if (types[position] != float.class) {
 			throw new ConnectionException(Connection.TPEITYPE,
 					"Key is not request type, it is a: " + types[position]);
 
@@ -368,6 +427,51 @@ public class Buffer implements Serializable {
 		structure.put(key, value);
 	}
 
+	public double[] getDoubleArray(String key) throws ConnectionException {
+		if (!formatted) {
+			throw new ConnectionException(Connection.TPEPROTO,
+					"Message not formatted");
+		}
+		int position = -1;
+		for (int i = 0; i < keys.length; i++) {
+			if (keys[i].equals(key)) {
+				position = i;
+			}
+		}
+		if (position == -1) {
+			throw new ConnectionException(Connection.TPEITYPE,
+					"Key is not part of the structure: " + key);
+		} else if (types[position] != double[].class) {
+			throw new ConnectionException(Connection.TPEITYPE,
+					"Key is not request type, it is a: " + types[position]);
+
+		}
+		return (double[]) structure.get(key);
+	}
+
+	public void setDoubleArray(String key, double[] value)
+			throws ConnectionException {
+		if (!formatted) {
+			throw new ConnectionException(Connection.TPEPROTO,
+					"Message not formatted");
+		}
+		int position = -1;
+		for (int i = 0; i < keys.length; i++) {
+			if (keys[i].equals(key)) {
+				position = i;
+			}
+		}
+		if (position == -1) {
+			throw new ConnectionException(Connection.TPEITYPE,
+					"Key is not part of the structure: " + key);
+		} else if (types[position] != double[].class) {
+			throw new ConnectionException(Connection.TPEITYPE,
+					"Key is not request type, it is a: " + types[position]);
+
+		}
+		structure.put(key, value);
+	}
+
 	public void format(String[] keys, Class[] types, int[] lengths)
 			throws ConnectionException {
 		if (type.equals("X_OCTET")) {
@@ -387,6 +491,7 @@ public class Buffer implements Serializable {
 	}
 
 	void deserialize() throws ConnectionException {
+		currentPos = 0;
 		if (!type.equals("X_OCTET")) {
 			if (!deserialized && data != null) {
 				if (keys == null) {
@@ -412,52 +517,51 @@ public class Buffer implements Serializable {
 
 					try {
 						if (types[i] == int.class) {
-							structure.put(keys[i], dis.readInt());
+							structure.put(keys[i], readInt(dis));
 						} else if (types[i] == short.class) {
-							structure.put(keys[i], dis.readShort());
+							structure.put(keys[i], readShort(dis));
 						} else if (types[i] == long.class) {
-							structure.put(keys[i], dis.readLong());
+							structure.put(keys[i], readLong(dis));
 						} else if (types[i] == char.class) {
-							structure.put(keys[i], dis.readByte());
+							structure.put(keys[i], readChar(dis));
 						} else if (types[i] == float.class) {
-							structure.put(keys[i], dis.readFloat());
+							structure.put(keys[i], readFloat(dis));
 						} else if (types[i] == double.class) {
-							structure.put(keys[i], dis.readDouble());
+							structure.put(keys[i], readDouble(dis));
 						} else if (types[i] == int[].class) {
 							int[] toRead = new int[lengths[i]];
 							for (int j = 0; j < lengths[i]; j++) {
-								toRead[j] = dis.readInt();
+								toRead[j] = readInt(dis);
 							}
 							structure.put(keys[i], toRead);
 						} else if (types[i] == short[].class) {
 							short[] toRead = new short[lengths[i]];
 							for (int j = 0; j < lengths[i]; j++) {
-								toRead[j] = dis.readShort();
+								toRead[j] = readShort(dis);
 							}
 							structure.put(keys[i], toRead);
 						} else if (types[i] == long[].class) {
 							long[] toRead = new long[lengths[i]];
 							for (int j = 0; j < lengths[i]; j++) {
-								toRead[j] = dis.readLong();
+								toRead[j] = readLong(dis);
 							}
 							structure.put(keys[i], toRead);
 						} else if (types[i] == char[].class) {
 							char[] toRead = new char[lengths[i]];
 							for (int j = 0; j < lengths[i]; j++) {
-								byte b = dis.readByte();
-								toRead[j] = (char) b;
+								toRead[j] = readChar(dis);
 							}
 							structure.put(keys[i], toRead);
 						} else if (types[i] == float[].class) {
 							float[] toRead = new float[lengths[i]];
 							for (int j = 0; j < lengths[i]; j++) {
-								toRead[j] = dis.readFloat();
+								toRead[j] = readFloat(dis);
 							}
 							structure.put(keys[i], toRead);
 						} else if (types[i] == double[].class) {
 							double[] toRead = new double[lengths[i]];
 							for (int j = 0; j < lengths[i]; j++) {
-								toRead[j] = dis.readDouble();
+								toRead[j] = readDouble(dis);
 							}
 							structure.put(keys[i], toRead);
 						} else {
@@ -481,6 +585,7 @@ public class Buffer implements Serializable {
 	}
 
 	void serialize() throws ConnectionException {
+		currentPos = 0;
 		if (!type.equals("X_OCTET")) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			DataOutputStream dos = new DataOutputStream(baos);
@@ -490,44 +595,44 @@ public class Buffer implements Serializable {
 					if (types[i] == int.class) {
 						Integer toWrite = (Integer) structure.get(keys[i]);
 						if (toWrite != null) {
-							dos.writeInt(toWrite);
+							writeInt(dos, toWrite);
 						} else {
-							dos.writeInt(0);
+							writeInt(dos, 0);
 						}
 					} else if (types[i] == short.class) {
 						Short toWrite = (Short) structure.get(keys[i]);
 						if (toWrite != null) {
-							dos.writeShort(toWrite);
+							writeShort(dos, toWrite);
 						} else {
-							dos.writeShort(0);
+							writeShort(dos, (short) 0);
 						}
 					} else if (types[i] == long.class) {
 						Long toWrite = (Long) structure.get(keys[i]);
 						if (toWrite != null) {
-							dos.writeLong(toWrite);
+							writeLong(dos, toWrite);
 						} else {
-							dos.writeLong(0);
+							writeLong(dos, 0);
 						}
 					} else if (types[i] == char.class) {
 						Character toWrite = (Character) structure.get(keys[i]);
 						if (toWrite != null) {
-							dos.writeByte(getLowOrderByte(toWrite));
+							writeChar(dos, toWrite);
 						} else {
-							dos.writeByte(getHighOrderByte('\0'));
+							writeChar(dos, '\0');
 						}
 					} else if (types[i] == float.class) {
 						Float toWrite = (Float) structure.get(keys[i]);
 						if (toWrite != null) {
-							dos.writeFloat(toWrite);
+							writeFloat(dos, toWrite);
 						} else {
-							dos.writeFloat(0);
+							writeFloat(dos, 0);
 						}
 					} else if (types[i] == double.class) {
 						Double toWrite = (Double) structure.get(keys[i]);
 						if (toWrite != null) {
-							dos.writeDouble(toWrite);
+							writeDouble(dos, toWrite);
 						} else {
-							dos.writeInt(0);
+							writeDouble(dos, 0);
 						}
 					} else if (types[i] == int[].class) {
 						int[] toWrite = (int[]) structure.get(keys[i]);
@@ -535,11 +640,11 @@ public class Buffer implements Serializable {
 						if (toWrite != null) {
 							max = Math.min(lengths[i], toWrite.length);
 							for (int j = 0; j < lengths[i]; j++) {
-								dos.writeInt(toWrite[j]);
+								writeInt(dos, toWrite[j]);
 							}
 						}
 						for (int j = max; j < lengths[i]; j++) {
-							dos.writeInt(0);
+							writeInt(dos, 0);
 						}
 					} else if (types[i] == short[].class) {
 						short[] toWrite = (short[]) structure.get(keys[i]);
@@ -547,11 +652,11 @@ public class Buffer implements Serializable {
 						if (toWrite != null) {
 							max = Math.min(lengths[i], toWrite.length);
 							for (int j = 0; j < lengths[i]; j++) {
-								dos.writeShort(toWrite[j]);
+								writeShort(dos, toWrite[j]);
 							}
 						}
 						for (int j = max; j < lengths[i]; j++) {
-							dos.writeShort(0);
+							writeShort(dos, (short) 0);
 						}
 					} else if (types[i] == long[].class) {
 						long[] toWrite = (long[]) structure.get(keys[i]);
@@ -559,11 +664,11 @@ public class Buffer implements Serializable {
 						if (toWrite != null) {
 							max = Math.min(lengths[i], toWrite.length);
 							for (int j = 0; j < lengths[i]; j++) {
-								dos.writeLong(toWrite[j]);
+								writeLong(dos, toWrite[j]);
 							}
 						}
 						for (int j = max; j < lengths[i]; j++) {
-							dos.writeLong(0);
+							writeLong(dos, 0);
 						}
 					} else if (types[i] == char[].class) {
 						char[] toWrite = (char[]) structure.get(keys[i]);
@@ -571,11 +676,11 @@ public class Buffer implements Serializable {
 						if (toWrite != null) {
 							max = Math.min(lengths[i], toWrite.length);
 							for (int j = 0; j < max; j++) {
-								dos.writeByte(getLowOrderByte(toWrite[j]));
+								writeChar(dos, toWrite[j]);
 							}
 						}
 						for (int j = max; j < lengths[i]; j++) {
-							dos.writeByte(getHighOrderByte('\0'));
+							writeChar(dos, '\0');
 						}
 					} else if (types[i] == float[].class) {
 						float[] toWrite = (float[]) structure.get(keys[i]);
@@ -583,11 +688,11 @@ public class Buffer implements Serializable {
 						if (toWrite != null) {
 							max = Math.min(lengths[i], toWrite.length);
 							for (int j = 0; j < lengths[i]; j++) {
-								dos.writeFloat(toWrite[j]);
+								writeFloat(dos, toWrite[j]);
 							}
 						}
 						for (int j = max; j < lengths[i]; j++) {
-							dos.writeFloat(0);
+							writeFloat(dos, 0);
 						}
 					} else if (types[i] == double[].class) {
 						double[] toWrite = (double[]) structure.get(keys[i]);
@@ -595,11 +700,11 @@ public class Buffer implements Serializable {
 						if (toWrite != null) {
 							max = Math.min(lengths[i], toWrite.length);
 							for (int j = 0; j < lengths[i]; j++) {
-								dos.writeDouble(toWrite[j]);
+								writeDouble(dos, toWrite[j]);
 							}
 						}
 						for (int j = max; j < lengths[i]; j++) {
-							dos.writeDouble(0);
+							writeDouble(dos, 0);
 						}
 					} else {
 						throw new ConnectionException(Connection.TPEOTYPE,
@@ -620,13 +725,152 @@ public class Buffer implements Serializable {
 		}
 	}
 
-	private byte getLowOrderByte(char c) {
-		byte[] bytes = { (byte) (c & 0xff), (byte) (c >> 8 & 0xff) };
-		return bytes[0];
+	private void writePad(DataOutputStream dos, int size) throws IOException {
+		for (int i = 0; i < size; i++) {
+			writeChar(dos, '\0');
+		}
 	}
-	
-	private byte getHighOrderByte(char c) {
+
+	private void readPad(DataInputStream dis, int size) throws IOException {
+		for (int i = 0; i < size; i++) {
+			readChar(dis);
+		}
+	}
+
+	private void writeChar(DataOutputStream dos, char c) throws IOException {
 		byte[] bytes = { (byte) (c & 0xff), (byte) (c >> 8 & 0xff) };
-		return bytes[1];
+		dos.writeByte(bytes[0]);
+
+		currentPos += 1;
+	}
+
+	private char readChar(DataInputStream dis) throws IOException {
+		currentPos += 1;
+
+		byte read = dis.readByte();
+		return (char) read;
+	}
+
+	private void writeLong(DataOutputStream dos, long x) throws IOException {
+		writePad(dos, currentPos % LONG_SIZE);
+
+		ByteBuffer bbuf = ByteBuffer.allocate(LONG_SIZE);
+		bbuf.order(ByteOrder.BIG_ENDIAN);
+		bbuf.putLong(x);
+		bbuf.order(ByteOrder.LITTLE_ENDIAN);
+		long toWrite = bbuf.getLong(0);
+		dos.writeLong(toWrite);
+		currentPos += LONG_SIZE;
+	}
+
+	private long readLong(DataInputStream dis) throws IOException {
+		readPad(dis, currentPos % LONG_SIZE);
+
+		currentPos += LONG_SIZE;
+		long x = dis.readLong();
+		ByteBuffer bbuf = ByteBuffer.allocate(LONG_SIZE);
+		bbuf.order(ByteOrder.LITTLE_ENDIAN);
+		bbuf.putLong(x);
+		bbuf.order(ByteOrder.BIG_ENDIAN);
+		return bbuf.getLong(0);
+	}
+
+	private void writeInt(DataOutputStream dos, int x) throws IOException {
+		writePad(dos, currentPos % INT_SIZE);
+
+		ByteBuffer bbuf = ByteBuffer.allocate(INT_SIZE);
+		bbuf.order(ByteOrder.BIG_ENDIAN);
+		bbuf.putInt(x);
+		bbuf.order(ByteOrder.LITTLE_ENDIAN);
+		int toWrite = bbuf.getInt(0);
+		dos.writeInt(toWrite);
+		currentPos += INT_SIZE;
+	}
+
+	private int readInt(DataInputStream dis) throws IOException {
+		readPad(dis, currentPos % INT_SIZE);
+
+		currentPos += INT_SIZE;
+		int x = dis.readInt();
+		ByteBuffer bbuf = ByteBuffer.allocate(INT_SIZE);
+		bbuf.order(ByteOrder.LITTLE_ENDIAN);
+		bbuf.putInt(x);
+		bbuf.order(ByteOrder.BIG_ENDIAN);
+		return bbuf.getInt(0);
+	}
+
+	private void writeShort(DataOutputStream dos, short x) throws IOException {
+		writePad(dos, currentPos % SHORT_SIZE);
+
+		ByteBuffer bbuf = ByteBuffer.allocate(SHORT_SIZE);
+		bbuf.order(ByteOrder.BIG_ENDIAN);
+		bbuf.putShort(x);
+		bbuf.order(ByteOrder.LITTLE_ENDIAN);
+		short toWrite = bbuf.getShort(0);
+		dos.writeShort(toWrite);
+
+		currentPos += SHORT_SIZE;
+	}
+
+	private short readShort(DataInputStream dis) throws IOException {
+		readPad(dis, currentPos % SHORT_SIZE);
+
+		currentPos += SHORT_SIZE;
+		short x = dis.readShort();
+		ByteBuffer bbuf = ByteBuffer.allocate(SHORT_SIZE);
+		bbuf.order(ByteOrder.LITTLE_ENDIAN);
+		bbuf.putShort(x);
+		bbuf.order(ByteOrder.BIG_ENDIAN);
+		return bbuf.getShort(0);
+	}
+
+	private void writeFloat(DataOutputStream dos, float x) throws IOException {
+		writePad(dos, currentPos % INT_SIZE);
+
+		ByteBuffer bbuf = ByteBuffer.allocate(INT_SIZE);
+		bbuf.order(ByteOrder.BIG_ENDIAN);
+		bbuf.putFloat(x);
+		bbuf.order(ByteOrder.LITTLE_ENDIAN);
+		float toWrite = bbuf.getFloat(0);
+		dos.writeFloat(toWrite);
+
+		currentPos += INT_SIZE;
+	}
+
+	private float readFloat(DataInputStream dis) throws IOException {
+		readPad(dis, currentPos % INT_SIZE);
+
+		currentPos += INT_SIZE;
+		float x = dis.readFloat();
+		ByteBuffer bbuf = ByteBuffer.allocate(INT_SIZE);
+		bbuf.order(ByteOrder.LITTLE_ENDIAN);
+		bbuf.putFloat(x);
+		bbuf.order(ByteOrder.BIG_ENDIAN);
+		return bbuf.getFloat(0);
+	}
+
+	private void writeDouble(DataOutputStream dos, double x) throws IOException {
+		writePad(dos, currentPos % LONG_SIZE);
+
+		ByteBuffer bbuf = ByteBuffer.allocate(LONG_SIZE);
+		bbuf.order(ByteOrder.BIG_ENDIAN);
+		bbuf.putDouble(x);
+		bbuf.order(ByteOrder.LITTLE_ENDIAN);
+		double toWrite = bbuf.getDouble(0);
+		dos.writeDouble(toWrite);
+
+		currentPos += LONG_SIZE;
+	}
+
+	private double readDouble(DataInputStream dis) throws IOException {
+		readPad(dis, currentPos % LONG_SIZE);
+
+		currentPos += LONG_SIZE;
+		double x = dis.readLong();
+		ByteBuffer bbuf = ByteBuffer.allocate(LONG_SIZE);
+		bbuf.order(ByteOrder.LITTLE_ENDIAN);
+		bbuf.putDouble(x);
+		bbuf.order(ByteOrder.BIG_ENDIAN);
+		return bbuf.getDouble(0);
 	}
 }
