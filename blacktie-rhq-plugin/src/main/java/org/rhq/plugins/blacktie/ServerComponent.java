@@ -227,7 +227,6 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet, Ope
     		String id = params.getSimpleValue("id", null);
     		String service = serverName + "_ADMIN_" + id;
     	
-    		System.out.println("shutdown server of " + service);
     		try {
     			callAdminService(service, "serverdone");
     			result.setSimpleResult("OK");
@@ -235,7 +234,26 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet, Ope
     			log.error("call " + service + " command serverdone failed with " + e);
     			result.setErrorMessage("call " + service + " command serverdone failed with " + e);
     		}
-    	}
+    	} else if(name.equals("listServiceStatus")) {
+    		String id = params.getSimpleValue("id", null);
+    		String service = serverName + "_ADMIN_" + id;
+
+			try {
+				Response buf = null;
+				buf = callAdminService(service, "status");
+				if(buf != null) {
+					byte[] received = buf.getBuffer().getData();
+					if(received[0] == '1') {				
+						String status = new String(received, 1, received.length - 1);
+						System.out.println("status is " + status);
+    					result.setSimpleResult(status);
+					}
+				}
+			} catch (Exception e) {
+    			log.error("call " + service + " command status failed with " + e);
+    			result.setErrorMessage("call " + service + " command status failed with " + e);
+			}
+		}
         return result;
     }
 

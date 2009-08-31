@@ -47,7 +47,17 @@
 			  </parameters>
 			  <results>
 				  <c:notes>Shutdown return message</c:notes>
-				  <c:simple-property name="result" type="longString"/>
+				  <c:simple-property name="operationResult" type="longString"/>
+			  </results>
+		  </operation>
+
+		  <operation name="listServiceStatus" displayName="listServiceStatus" description="list services status">
+			  <parameters>
+				  <c:simple-property required="true" name="id" displayName="id" description="server id"/>
+			  </parameters>
+			  <results>
+				  <c:notes>Services status</c:notes>
+				  <c:simple-property name="operationResult" type="longString"/>
 			  </results>
 		  </operation>
 
