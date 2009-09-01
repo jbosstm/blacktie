@@ -87,37 +87,31 @@ void txx_stop(void)
     FTRACE(txmclogger, "<");
 }
 
-int txx_bind(void *control)
-{
-    FTRACE(txmclogger, "ENTER " << control);
-    return TxManager::get_instance()->tx_resume((CosTransactions::Control_ptr) control, ACE_OS::thr_self(), TMRESUME);
-}
-
-int txx_bind_foreign(void *control)
-{
-    FTRACE(txmclogger, "ENTER");
-    return TxManager::get_instance()->tx_resume((CosTransactions::Control_ptr) control, 0, TMRESUME);
-}
-
 int txx_associate_serialized(char *orbname, char* ctrlIOR)
 {
     FTRACE(txmclogger, "ENTER" << orbname);
-    return TxManager::get_instance()->tx_resume(ctrlIOR, orbname, TMRESUME);
+    CORBA::Object_ptr p = atmi_string_to_object(ctrlIOR, orbname);
+
+    LOG4CXX_DEBUG(txmclogger, (char*) "tx_resume orb=" << orbname << (char *) " IOR=" << ctrlIOR << " ptr=" << p);
+
+    if (!CORBA::is_nil(p)) {
+        CosTransactions::Control_ptr cptr = CosTransactions::Control::_narrow(p);
+        CORBA::release(p); // dispose of it now that we have narrowed the object reference
+
+        return TxManager::get_instance()->tx_resume(cptr, TMJOIN);
+    } else {
+        LOG4CXX_WARN(txmclogger, (char*) "tx_resume: invalid control IOR: " << ctrlIOR);
+    }
+
+    return TMER_INVAL;
 }
 
-void *txx_unbind(void)
+void *txx_unbind()
 {
     FTRACE(txmclogger, "ENTER");
-    return (void *) TxManager::get_instance()->tx_suspend(0, TMSUSPEND | TMMIGRATE);
-}
-
-void *txx_unbind_if_not_owner(void)
-{
-    FTRACE(txmclogger, "ENTER");
-    void *ctrl = (void *) TxManager::get_instance()->tx_suspend(ACE_OS::thr_self(), TMSUSPEND | TMMIGRATE);
-    FTRACE(txmclogger, "< with control " << ctrl);
-
-    return ctrl;
+    // TODO can we call txx_rollback_only from here - check xatmi spec return code
+    return (void *) TxManager::get_instance()->tx_suspend((TMSUSPEND | TMMIGRATE));
+//    return (void *) TxManager::get_instance()->tx_suspend(TMSUCCESS);
 }
 
 void *txx_get_control()
@@ -158,4 +152,21 @@ char* txx_serialize(char *orbname)
 
     FTRACE(txmclogger, "< No tx ior");
     return NULL;
+}
+
+int txx_suspend(int cd)
+{
+    FTRACE(txmclogger, "ENTER");
+    return TxManager::get_instance()->suspend(cd);
+}
+
+int txx_resume(int cd)
+{
+    FTRACE(txmclogger, "ENTER");
+    return TxManager::get_instance()->resume(cd);
+}
+
+bool txx_isCdTransactional(int cd)
+{
+    return TxManager::get_instance()->isCdTransactional(cd);
 }

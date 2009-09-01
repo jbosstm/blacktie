@@ -18,6 +18,7 @@
 #include "log4cxx/logger.h"
 #include "ThreadLocalStorage.h"
 #include "TxControl.h"
+#include "TxManager.h"
 
 #define TX_GUARD(msg, expect) { \
     FTRACE(txclogger, "ENTER"); \
@@ -37,12 +38,23 @@ TxControl::TxControl(CosTransactions::Control_ptr ctrl, int tid) : _tid(tid), _c
 TxControl::~TxControl()
 {
 	FTRACE(txclogger, "ENTER delete TXCONTROL: " << this);
+
+    if (_cds.size() != 0) {
+        LOG4CXX_ERROR(txclogger, (char*) "delete called with outstanding tp calls");
+    }
+
 	suspend();
 }
 
 int TxControl::end(bool commit, bool reportHeuristics)
 {
     TX_GUARD("end", true);
+
+    if (_cds.size() != 0) {
+        LOG4CXX_WARN(txclogger, (char*) "protocol error: there are outstanding tp calls");
+        return TX_PROTOCOL_ERROR;
+    }
+
 	int outcome = TX_OK;
 	CosTransactions::Terminator_var term;
 
@@ -238,6 +250,11 @@ bool TxControl::isActive(const char *msg, bool expect)
 	}
 
 	return c;
+}
+
+bool TxControl::isOriginator()
+{
+    return (_tid != 0);
 }
 
 } //	namespace tx

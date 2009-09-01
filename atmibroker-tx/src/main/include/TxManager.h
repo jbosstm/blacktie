@@ -56,10 +56,13 @@ public:	// public static methods
 	static CosTransactions::Control_ptr get_ots_control();	// ref count of ptr is incremented
 
 public:	// suspend and resume
-	int tx_resume(CosTransactions::Control_ptr control, int creator, int flags);
-	int tx_resume(char* ctrlIOR, char *orbname, int flags);
-	CosTransactions::Control_ptr tx_suspend(int, int flags);
-	CosTransactions::Control_ptr tx_suspend(TxControl *, int, int flags);
+	int tx_resume(CosTransactions::Control_ptr control, int flags);
+	CosTransactions::Control_ptr tx_suspend(int flags);
+	CosTransactions::Control_ptr tx_suspend(TxControl *, int flags);
+
+    int resume(int cd);
+    int suspend(int cd);
+    bool isCdTransactional(int cd);
 
 private:
 	TxManager();

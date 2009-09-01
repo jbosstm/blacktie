@@ -21,6 +21,7 @@
 #include "OrbManagement.h"
 
 #include "txi.h"
+#include "TxManager.h"
 
 log4cxx::LoggerPtr atmiTxInterceptorLogger(log4cxx::Logger::getLogger("TxLogInterceptor"));
 
@@ -154,6 +155,7 @@ bool TxInterceptor::add_ior_to_context(PortableInterceptor::ClientRequestInfo_pt
             ACE_OS::memcpy(sc_buf, ior, slen);
             ri->add_request_service_context(sc, 1);
 
+            LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getDebug(), (char*) "request is transactional");
             CORBA::string_free(ior);
             return true;
         }
@@ -219,7 +221,7 @@ void TxInterceptor::update_tx_context(PortableInterceptor::ServerRequestInfo_ptr
         } else {
             LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getDebug(),
                 ri->operation () << (char*) ": associating client tx with thread");
-            txx_bind_foreign(ctrl);
+            (void) atmibroker::tx::TxManager::get_instance()->tx_resume(ctrl, TMJOIN);
         }
     }
 }

@@ -17,12 +17,14 @@
  */
 #include "ThreadLocalStorage.h"
 #include "XAResourceManagerFactory.h"
+//#include "XABranchManager.h"
 #include "TxInitializer.h"
 #include "OrbManagement.h"
 #include "TxManager.h"
 #include "AtmiBrokerEnv.h"
 #include "ace/Thread.h"
 //#include "AtmiBrokerMem.h"
+#include <vector>
 
 #define TX_GUARD(cond) {    \
     FTRACE(txmlogger, "ENTER"); \
@@ -31,12 +33,14 @@
         return TX_PROTOCOL_ERROR;   \
     }}
 
+int isServer = 1;
 namespace atmibroker {
     namespace tx {
 
 log4cxx::LoggerPtr txmlogger(log4cxx::Logger::getLogger("TxLogManager"));
 //SynchronizableObject* AtmiBrokerMem::lock = new SynchronizableObject();
 TxManager *TxManager::_instance = NULL;
+//XXXextern xarm_config_t* xarmp;
 
 TxManager *TxManager::get_instance()
 {
@@ -72,6 +76,7 @@ TxManager::~TxManager()
 {
     FTRACE(txmlogger, "ENTER");
     if (_connection) {
+        (void) close();
         LOG4CXX_DEBUG(txmlogger, (char*) "deleting CONNECTION: " << _connection);
         shutdownBindings(_connection);
         delete _connection;
@@ -81,7 +86,7 @@ TxManager::~TxManager()
 CORBA_CONNECTION* TxManager::init_orb(char* name)
 {
     FTRACE(txmlogger, "ENTER");
-    register_tx_interceptors(name);
+//    register_tx_interceptors(name); CORBA transport is depracated
     return ::initOrb(name);
 }
 
@@ -97,46 +102,6 @@ atmibroker::tx::TxControl *TxManager::currentTx(const char *msg)
 
     return tx;
 }
-
-#if 0
-int TxManager::mem_test(void)
-{
-#define T1 1
-#if defined(T1)
-    begin();
-    rm_start(TMNOFLAGS);
-    rm_end(TMSUCCESS);
-    commit();
-#elif defined(T2)
-    xbegin();
-    _xaRMFac.test(_connection, 100L);
-//    rm_start(TMNOFLAGS);
-//    rm_end(TMSUCCESS);
-    xcommit();
-#else
-    try {
-        CosTransactions::Control_ptr ctrl = _txfac->create(_timeout);
-        CosTransactions::Terminator_var term = ctrl->get_terminator();
-
-        TxControl *tx = new TxControl(ctrl, 0);
-           setSpecific(TSS_KEY, tx);
-        _xaRMFac.test(_connection, ctrl, 100L);
-        delete tx;
-
-        term->commit(true);
-
-    //    CORBA::release(ctrl);
-
-        LOG4CXX_INFO(txmlogger, (char*) "mem_test 1 ok");
-        return TX_OK;
-    } catch (CORBA::SystemException & e) {
-        LOG4CXX_WARN(txmlogger, (char*) "mem_test ex: " << e._name() << " minor: " << e.minor());
-        return TX_FAIL;
-    }
-#endif
-    return TX_OK;
-}
-#endif
 
 int TxManager::begin(void)
 {
@@ -204,6 +169,14 @@ int TxManager::complete(bool commit)
     int outcome;
 
     TX_GUARD(((tx = currentTx("complete")) != NULL));
+
+    std::vector<int> &cds = tx->get_cds();
+
+    if (cds.size() != 0) {
+        LOG4CXX_WARN(txmlogger, (char*) "Ending a tx with outstanding xatmi descriptors is not allowed - rolling back");
+        // TODO how do we invalidate the descriptors
+        commit = false;
+    }
 
     // no need to call rm_end since each RM wrapper calls xa_end during the prepare call
     outcome = (commit ? tx->commit(reportHeuristics()) : tx->rollback());
@@ -379,7 +352,11 @@ int TxManager::rm_open(void)
 {
     FTRACE(txmlogger, "ENTER");
     try {
+#if 0
+        XABranchManager::get_instance().openRMs(*_connection);
+#else
         _xaRMFac.createRMs(_connection);
+#endif
         return 0;
     } catch (RMException& ex) {
         LOG4CXX_WARN(txmlogger, (char*) "failed to load RMs: " << ex.what());
@@ -388,23 +365,38 @@ int TxManager::rm_open(void)
 }
 
 // private methods
-
 void TxManager::rm_close(void)
 {
     FTRACE(txmlogger, "ENTER");
+#if 0
+    XABranchManager::get_instance().closeRMs();
+#else
     _xaRMFac.destroyRMs();
+#endif
 }
 
+// pre-requisite:- there is an active transaction
 int TxManager::rm_end(int flags)
 {
-    FTRACE(txmlogger, "ENTER");
-    return _xaRMFac.endRMs(flags);
+    FTRACE(txmlogger, "ENTER: " << std::hex << flags);
+    TxControl *tx = (TxControl *) getSpecific(TSS_KEY);
+#if 0
+    return (tx ? XABranchManager::get_instance().endRMs(tx->isOriginator(), flags) : XA_OK);
+#else
+    return (tx ? _xaRMFac.endRMs(tx->isOriginator(), flags) : XA_OK);
+#endif
 }
 
+// pre-requisite:- there is an active transaction
 int TxManager::rm_start(int flags)
 {
-    FTRACE(txmlogger, "ENTER");
-    return _xaRMFac.startRMs(flags);
+    FTRACE(txmlogger, "ENTER: " << std::hex << flags);
+    TxControl *tx = (TxControl *) getSpecific(TSS_KEY);
+#if 0
+    return (tx ? XABranchManager::get_instance().startRMs(tx->isOriginator(), flags) : XA_OK);
+#else
+    return (tx ? _xaRMFac.startRMs(tx->isOriginator(), flags) : XA_OK);
+#endif
 }
 
 CosTransactions::Control_ptr TxManager::get_ots_control()
@@ -415,35 +407,16 @@ CosTransactions::Control_ptr TxManager::get_ots_control()
     return (tx ? tx->get_ots_control() : 0);
 }
 
-int TxManager::tx_resume(CosTransactions::Control_ptr control, int creator, int flags)
+int TxManager::tx_resume(CosTransactions::Control_ptr control, int flags)
 {
     FTRACE(txmlogger, "ENTER");
-    TxControl *tx = new TxControl(control, creator);
+    TxControl *tx = new TxControl(control, 0);
     int rc = TxManager::tx_resume(tx, flags);
     if (rc != XA_OK) {
         delete tx;
     }
 
     return rc;
-}
-
-int TxManager::tx_resume(char* ctrlIOR, char *orbname, int flags)
-{
-    FTRACE(txmlogger, "ENTER");
-    CORBA::Object_ptr p = atmi_string_to_object(ctrlIOR, orbname);
-
-    LOG4CXX_DEBUG(txmlogger, (char*) "tx_resume orb=" << orbname << (char *) " IOR=" << ctrlIOR << " ptr=" << p);
-
-    if (!CORBA::is_nil(p)) {
-        CosTransactions::Control_ptr cptr = CosTransactions::Control::_narrow(p);
-        CORBA::release(p); // dispose of it now that we have narrowed the object reference
-
-        return TxManager::tx_resume(cptr, 0, flags); // why 0 tid
-    } else {
-        LOG4CXX_WARN(txmlogger, (char*) "tx_resume: invalid control IOR: " << ctrlIOR);
-    }
-
-    return TMER_INVAL;
 }
 
 int TxManager::tx_resume(TxControl *tx, int flags)
@@ -478,27 +451,25 @@ int TxManager::tx_resume(TxControl *tx, int flags)
     return rc;
 }
 
-CosTransactions::Control_ptr TxManager::tx_suspend(int thr_id, int flags)
+CosTransactions::Control_ptr TxManager::tx_suspend(int flags)
 {
     FTRACE(txmlogger, "ENTER");
-    return (tx_suspend((TxControl *) getSpecific(TSS_KEY), thr_id, flags));
+    return (tx_suspend((TxControl *) getSpecific(TSS_KEY), flags));
 }
 
 /**
  * Suspend the transaction and return the control.
  * The caller is responsible for releasing the returned control
  */
-CosTransactions::Control_ptr TxManager::tx_suspend(TxControl *tx, int thr_id, int flags)
+CosTransactions::Control_ptr TxManager::tx_suspend(TxControl *tx, int flags)
 {
     FTRACE(txmlogger, "ENTER");
-    if (tx
-        && tx->isActive(NULL, true)    // tx is active
-//        && (thr_id == 0 || tx->thr_id() != (int) thr_id)    // not the owning thread or don't care about owners
-        ) {
+
+    if (tx && tx->isActive(NULL, true)) {
         // increment the control reference count
         CosTransactions::Control_ptr ctrl = tx->get_ots_control();
         // suspend all open Resource Managers (TMSUSPEND TMMIGRATE TMSUCCESS TMFAIL)
-        (void) TxManager::get_instance()->rm_end(flags);
+        (void) rm_end(flags);
         // disassociate the transaction from the callers thread
         tx->suspend();
         delete tx;
@@ -509,6 +480,68 @@ CosTransactions::Control_ptr TxManager::tx_suspend(TxControl *tx, int thr_id, in
 
     FTRACE(txmlogger, "< ctrl: 0x0");
      return NULL;
+}
+
+int TxManager::resume(int cd)
+{
+    FTRACE(txmlogger, "ENTER");
+    TxControl *tx = (TxControl *) getSpecific(TSS_KEY);
+
+    if (tx) {
+        std::vector<int> &cds = tx->get_cds();
+        std::vector<int>::iterator i = std::find(cds.begin(), cds.end(), cd);
+
+        if (i != cds.end()) {
+            LOG4CXX_DEBUG(txmlogger, (char*) "Removing tp call " << cd << " from tx " << tx);
+            cds.erase(i++, i);
+
+            if (cds.size() == 0) {
+                LOG4CXX_DEBUG(txmlogger, (char*) "No more outstanding calls - resume RMs");
+                return rm_start(TMRESUME);
+            }
+        }
+    }
+
+    return XA_OK;
+}
+
+int TxManager::suspend(int cd)
+{
+    FTRACE(txmlogger, "ENTER: " << cd);
+    TxControl *tx = (TxControl *) getSpecific(TSS_KEY);
+
+    if (tx) {
+        std::vector<int> &cds = tx->get_cds();
+        std::vector<int>::iterator i = std::find(cds.begin(), cds.end(), cd);
+
+        if (i == cds.end()) {
+            LOG4CXX_DEBUG(txmlogger, (char*) "Adding tp call " << cd << " to tx " << tx);
+            cds.push_back(cd);
+
+            if (cds.size() == 1) {
+                LOG4CXX_DEBUG(txmlogger, (char*) "First outstanding call - suspending RMs");
+//return (isServer == 1 ? rm_end(TMSUSPEND) : rm_end(TMSUSPEND | TMMIGRATE));
+                return rm_end(TMSUSPEND | TMMIGRATE);
+            }
+        }
+    }
+
+    return XA_OK;
+}
+
+bool TxManager::isCdTransactional(int cd)
+{
+    FTRACE(txmlogger, "ENTER: " << cd);
+    TxControl *tx = (TxControl *) getSpecific(TSS_KEY);
+
+    if (tx) {
+        std::vector<int> &cds = tx->get_cds();
+        std::vector<int>::iterator i = std::find(cds.begin(), cds.end(), cd);
+        LOG4CXX_TRACE(txmlogger, (char*) "found=" << (i != cds.end()) << " tx=" << tx << " calls=" << cds.size());
+        return (i != cds.end());
+    }
+
+    return false;
 }
 
 } //    namespace tx

@@ -26,8 +26,7 @@
 #include <map>
 
 #include "txi.h"
-
-extern log4cxx::LoggerPtr xaResourceLogger;
+#include "XAStateModel.h"
 
 class XAResourceManager;
 
@@ -35,9 +34,10 @@ class BLACKTIE_TX_DLL XAResourceAdaptorImpl :
 	public virtual POA_CosTransactions::Resource, public virtual PortableServer::RefCountServantBase
 {
 public:
-	XAResourceAdaptorImpl(XAResourceManager *, XID *, CORBA::Long, struct xa_switch_t *) throw (RMException);
+	XAResourceAdaptorImpl(XAResourceManager*, XID&, XID&, CORBA::Long, struct xa_switch_t *) throw (RMException);
 	virtual ~XAResourceAdaptorImpl();
 
+    // OTS resource methods
 	CosTransactions::Vote prepare() throw (CosTransactions::HeuristicMixed,CosTransactions::HeuristicHazard);
 	void rollback() throw(CosTransactions::HeuristicCommit,CosTransactions::HeuristicMixed,CosTransactions::HeuristicHazard);
 	void commit() throw(CosTransactions::NotPrepared,CosTransactions::HeuristicRollback,CosTransactions::HeuristicMixed,CosTransactions::HeuristicHazard);
@@ -49,27 +49,20 @@ public:
 	void setRecoveryCoordinator(CosTransactions::RecoveryCoordinator_ptr rc) {rc_ = rc;}
 	CosTransactions::RecoveryCoordinator_ptr getRecoveryCoordinator() {return rc_;}
 
-	// XA methods
-	char* get_name(); /* name of resource manager */
-	long get_flags(); /* resource manager specific options */
-	long get_version(); /* must be 0 */
-	int xa_start (XID *, int, long);
-	int xa_end (XID *, int, long);
-	int xa_rollback (XID *, int, long);
-	int xa_prepare (XID *, int, long);
-	int xa_commit (XID *, int, long);
-	int xa_recover (XID *, long, int, long);
-	int xa_forget (XID *, int, long);
-	int xa_complete (int *, int *, int, long);
+	int xa_start (long);
+	int xa_end (long);
 
 private:
 	XAResourceManager * rm_;
 	XID xid_;
+	XID bid_;
 	bool complete_;
 	CORBA::Long rmid_;
 	struct xa_switch_t * xa_switch_;
 	CosTransactions::RecoveryCoordinator_ptr rc_;
 	int flags_;
+    int tightly_coupled_;
+    atmibroker::xa::XAStateModel sm_;
 
 	void terminate(int) throw(
 		CosTransactions::HeuristicRollback,
@@ -79,5 +72,13 @@ private:
 	int set_flags(int flags);
 	void setComplete();
 	void notifyError(int, bool);
+
+	// XA methods
+	int xa_rollback (long);
+	int xa_prepare (long);
+	int xa_commit (long);
+	int xa_recover (long, long);
+	int xa_forget (long);
+	int xa_complete (int *, int *, long);
 };
 #endif // XARESOURCEADAPTORIMPL_H

@@ -18,13 +18,12 @@
 #ifndef _TX_CONTROL_H
 #define _TX_CONTROL_H
 
+#include <vector>
 #include "CosTransactionsS.h"
 #include "txi.h"
 
 namespace atmibroker {
 	namespace tx {
-
-extern log4cxx::LoggerPtr txlogger;
 
 /**
  * An object that gets associated with a thread when there
@@ -45,18 +44,22 @@ public:
 
 	int thr_id() {return _tid;}
 	bool isActive(const char *, bool);
+	bool isOriginator();
 
 	// Note this op disassociates the tx and releases _ctrl:
 	// perhaps we should make it private and use
 	// friend TxManager;
 	void suspend();
 
+    // return a list of outstanding xatmi call descriptors associated with this tx
+    std::vector<int> &get_cds() {return _cds;}
 private:
 
 	int end(bool commit, bool report);
 
 	int _tid;	// ACE thread id
 	CosTransactions::Control_ptr _ctrl;
+    std::vector<int> _cds;  // xatmi outstanding tpacall descriptors
 };
 } //	namespace tx
 } //namespace atmibroker

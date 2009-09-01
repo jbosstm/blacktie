@@ -32,7 +32,7 @@ void TestTransactions::setUp()
 {
 	// make sure the thread is clean - TODO check whether this needed - it shouldn't be
 	userlogc_debug( (char*) "TestTransactions::setUp disassociate: cleaning thread");
-	txx_release_control(txx_unbind());
+//	txx_release_control(txx_unbind());
 	TestFixture::setUp();
 }
 void TestTransactions::tearDown()
@@ -41,16 +41,20 @@ void TestTransactions::tearDown()
 	TestFixture::tearDown();
 }
 
-#if 0
-void TestTransactions::is_sane()
+void TestTransactions::test_basic()
 {
+	userlogc_debug( (char*) "TestTransactions::test_basic begin");
 	atmibroker::tx::TxManager *txm = atmibroker::tx::TxManager::get_instance();
-	txm->open();
-	txm->mem_test();
-	txm->close();
+	CPPUNIT_ASSERT_EQUAL(TX_OK, txm->open());
+	CPPUNIT_ASSERT_EQUAL(TX_OK, txm->begin());
+	CPPUNIT_ASSERT_EQUAL(TX_OK, txm->suspend(123));
+	CPPUNIT_ASSERT_EQUAL(true, txm->isCdTransactional(123));
+	CPPUNIT_ASSERT_EQUAL(TX_OK, txm->resume(123));
+	CPPUNIT_ASSERT_EQUAL(TX_OK, txm->commit());
+	CPPUNIT_ASSERT_EQUAL(TX_OK, txm->close());
 	atmibroker::tx::TxManager::discard_instance();
+	userlogc( (char*) "TestTransactions::test_basic pass");
 }
-#endif
 
 // sanity check
 void TestTransactions::test_transactions()
@@ -60,7 +64,9 @@ void TestTransactions::test_transactions()
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_begin());
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_commit());
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
-	userlogc_debug( (char*) "TestTransactions::test_transactions pass");
+
+    
+	userlogc( (char*) "TestTransactions::test_transactions pass");
 }
 
 // check for protocol errors in a transactions lifecycle
@@ -103,7 +109,7 @@ void TestTransactions::test_protocol()
 
 	// close should succeed
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
-	userlogc_debug( (char*) "TestTransactions::test_protocol pass");
+	userlogc( (char*) "TestTransactions::test_protocol pass");
 }
 
 static void check_info(const char *msg, int rv,
@@ -118,7 +124,7 @@ static void check_info(const char *msg, int rv,
 	if (tc >= 0) CPPUNIT_ASSERT_MESSAGE(msg, txinfo.transaction_control == tc);
 	if (tt >= 0) CPPUNIT_ASSERT_MESSAGE(msg, txinfo.transaction_timeout == tt);
 	if (ts >= 0) CPPUNIT_ASSERT_MESSAGE(msg, txinfo.transaction_state == ts);
-	userlogc_debug( (char*) "TestTransactions::check_info pass");
+	userlogc( (char*) "TestTransactions::check_info pass");
 }
 
 void TestTransactions::test_info()
@@ -162,7 +168,7 @@ void TestTransactions::test_info()
 	check_info("TX_UNCHAINED after rollback", 0, TX_COMMIT_COMPLETED, TX_UNCHAINED, 10L, -1);
 
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
-	userlogc_debug( (char*) "TestTransactions::test_info pass");
+	userlogc( (char*) "TestTransactions::test_info pass");
 }
 
 // test for transaction timeout behaviour
@@ -205,7 +211,7 @@ void TestTransactions::test_timeout()
 	(void) dummy_rm_del_fault(fault1.id);
 	(void) dummy_rm_del_fault(fault2.id);
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
-	userlogc_debug( (char*) "TestTransactions::test_timeout pass");
+	userlogc( (char*) "TestTransactions::test_timeout pass");
 }
 
 void TestTransactions::test_rollback()
@@ -220,7 +226,7 @@ void TestTransactions::test_rollback()
 	CPPUNIT_ASSERT_EQUAL(TX_ROLLBACK, tx_commit());
 
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
-	userlogc_debug( (char*) "TestTransactions::test_rollback pass");
+	userlogc( (char*) "TestTransactions::test_rollback pass");
 }
 
 void TestTransactions::test_RM()
@@ -263,7 +269,7 @@ void TestTransactions::test_RM()
 
 	/* should still be able to clean up after failing to commit a chained transaction */
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
-	userlogc_debug( (char*) "TestTransactions::test_RM pass");
+	userlogc( (char*) "TestTransactions::test_RM pass");
 }
 
 static int fn1(char *a, int i, long l) { return 0; }
@@ -320,7 +326,7 @@ void TestTransactions::test_register_resource()
 	// now for the real test:
 	// - create a CosTransactions::Resource ...
 	//XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(findConnection("ots"), "Dummy", "", "", 123L, &real_resource);
-	XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(NULL, &xid, 123L, &real_resource);
+	XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(NULL, xid, xid, 123L, &real_resource);
 	//XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(123L, &real_resource);
 	CORBA::Object_ptr ref = poa->servant_to_reference(ra);
 	CosTransactions::Resource_var v = CosTransactions::Resource::_narrow(ref);
@@ -342,5 +348,5 @@ void TestTransactions::test_register_resource()
 	CPPUNIT_ASSERT_MESSAGE("resource did not complete", ra->is_complete());
 	// clean up
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
-	userlogc_debug( (char*) "TestTransactions::test_register_resource pass");
+	userlogc( (char*) "TestTransactions::test_register_resource pass");
 }

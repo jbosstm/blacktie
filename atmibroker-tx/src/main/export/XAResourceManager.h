@@ -40,14 +40,15 @@ public:
 		throw (RMException);
 	virtual ~XAResourceManager();
 
-	int xa_start (XID *, int, long);
-	int xa_end (XID *, int, long);
+	int xa_start (XID *, long);
+	int xa_end (XID *, long);
 
 	// return the resource id
 	CORBA::Long rmid(void) {return rmid_;};
 	void notifyError(XID *, int, bool);
 	void setComplete(XID*);
 	const char * name() {return name_;}
+    int xa_flags();
 
 	struct xa_switch_t * get_xa_switch() { return xa_switch_;}
 private:
@@ -67,5 +68,6 @@ private:
 	XAResourceAdaptorImpl * locateBranch(XID *);
 
 	void show_branches(const char *, XID *);
+    XID gen_xid(XID &gid);
 };
 #endif // XARESOURCEMANAGERFACTORY_H

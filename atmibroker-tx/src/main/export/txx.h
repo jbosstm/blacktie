@@ -26,6 +26,16 @@ extern "C" {
 #endif
 
 /**
+ * suspend/resume Resource Managers whilst there are outstanding xatmi calls
+ */
+extern BLACKTIE_TX_DLL int txx_resume(int cd);
+extern BLACKTIE_TX_DLL int txx_suspend(int cd);
+/**
+ * test wether the supplied xatmi call descriptor is transactional
+ */
+extern BLACKTIE_TX_DLL bool txx_isCdTransactional(int cd);
+
+/**
  * Modify the transaction associated with the target thread such that the only
  * possible outcome of the transaction is to roll back the transaction
  */
@@ -41,18 +51,6 @@ extern BLACKTIE_TX_DLL void * txx_start(char *);
  * stop the transaction manager proxy
  */
 extern BLACKTIE_TX_DLL void txx_stop(void);
-
-/**
- * associate a transaction with the current thread
- * (also resumes all Resource Managers linked into the running applications)
- */
-extern BLACKTIE_TX_DLL int txx_bind(void *);
-
-/**
- * Associate an OTS control with the current thread - the caller is not
- * the owner of the transaction (TODO delete not needed).
- */
-extern BLACKTIE_TX_DLL int txx_bind_foreign(void *);
 
 /**
  * Associate a transaction with the current thread:
@@ -83,16 +81,7 @@ extern BLACKTIE_TX_DLL char* txx_serialize(char *);
  * Returns the OTS control associated with the current thread. The caller
  * is responsible for calling release_control on the returned value.
  */
-extern BLACKTIE_TX_DLL void * txx_unbind(void);
-
-/**
- * Disassociate any transaction associated with the current thread only
- * if the caller did not start the thread.
- *
- * Returns the OTS control associated with the current thread. The caller
- * is responsible for calling release_control on the returned value.
- */
-extern BLACKTIE_TX_DLL void * txx_unbind_if_not_owner(void);
+extern BLACKTIE_TX_DLL void * txx_unbind();
 
 /**
  * Return the OTS control associated with the current thread
@@ -104,7 +93,7 @@ extern BLACKTIE_TX_DLL void * txx_get_control();
 /**
  * Release an OTS control returned by:
  * get_control
- * disassociate_tx_if_not_owner
+ * txx_unbind
  */
 extern BLACKTIE_TX_DLL void txx_release_control(void *);
 

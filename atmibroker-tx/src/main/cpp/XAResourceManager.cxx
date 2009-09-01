@@ -17,23 +17,23 @@
  */
 #include "XAResourceManager.h"
 #include "ThreadLocalStorage.h"
+#include "ace/OS_NS_time.h"
 
 log4cxx::LoggerPtr xarmlogger(log4cxx::Logger::getLogger("TxLogXAManager"));
 
+ostream& operator<<(ostream &os, const XID& xid)
+{
+    os << xid.formatID << ':' << xid.gtrid_length << ':' << xid.bqual_length << ':' << xid.data;
+    return os;
+}
+
 void XAResourceManager::show_branches(const char *msg, XID * xid)
 {
-    FTRACE(xarmlogger, "ENTER");
-    if (xid) {
-        LOG4CXX_TRACE(xarmlogger, 
-            (char *) "XID: XID: formatID: " << xid->formatID << " gtrid_length: "
-            << xid->gtrid_length << " bqual_length: " << xid->bqual_length);
-    }
+    FTRACE(xarmlogger, "ENTER " << *xid);
 
     for (XABranchMap::iterator i = branches_.begin(); i != branches_.end(); ++i) {
-        XID *xi = i->first;
-        LOG4CXX_TRACE(xarmlogger, 
-            (char *) msg << ": XID: formatID: " << xi->formatID << " gtrid_length: "
-            << xi->gtrid_length << " bqual_length: " << xi->bqual_length);
+
+        LOG4CXX_TRACE(xarmlogger, (char *) "XID: " << *(i->first)); 
     }
 }
 
@@ -69,14 +69,14 @@ XAResourceManager::XAResourceManager(
     rmid_(rmid), xa_switch_(xa_switch) {
 
     FTRACE(xarmlogger, "ENTER " << (char *) "new RM name: " << name << (char *) " openinfo: " <<
-        openString << (char *) " rmid: " << rmid);
+        openString << (char *) " rmid: " << rmid_);
 
     if (name == NULL) {
         RMException ex("Invalid RM name", EINVAL);
         throw ex;
     }
 
-    int rv = xa_switch_->xa_open_entry((char *) openString, rmid, TMNOFLAGS);
+    int rv = xa_switch_->xa_open_entry((char *) openString, rmid_, TMNOFLAGS);
 
     LOG4CXX_TRACE(xarmlogger,  (char *) "xa_open: " << rv);
 
@@ -168,13 +168,14 @@ int XAResourceManager::createServant(XID * xid)
 
     try {
         // create a servant to represent the new branch identified by xid
-        ra = new XAResourceAdaptorImpl(this, xid, rmid_, xa_switch_);
+        XID bid = gen_xid(*xid);
+        ra = new XAResourceAdaptorImpl(this, *xid, bid, rmid_, xa_switch_);
         // and activate it
         PortableServer::ObjectId_var objId = poa_->activate_object(ra);
 
         // get a CORBA reference to the servant so that it can be enlisted in the OTS transaction
-           CORBA::Object_var ref = poa_->servant_to_reference(ra);
-        ra->_remove_ref();    // now only the POA has a reference to ra TODO
+        CORBA::Object_var ref = poa_->servant_to_reference(ra);
+        ra->_remove_ref();    // now only the POA has a reference to ra
 
         CosTransactions::Resource_var v = CosTransactions::Resource::_narrow(ref);
 
@@ -223,80 +224,6 @@ int XAResourceManager::createServant(XID * xid)
     return res;
 }
 
-#if 0
-static int sid = 1;
-int XAResourceManager::createServant(XID * xid)
-{
-    FTRACE(xarmlogger, "ENTER");
-    XAResourceAdaptorImpl * ra;
-    CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) txx_get_control();
-    if (CORBA::is_nil(curr))
-        return XAER_NOTA;
-
-    CosTransactions::Coordinator_ptr c = curr->get_coordinator();
-
-    txx_release_control(curr);
-    // create a servant to represent the new branch identified by xid
-    try {
-        ra = new XAResourceAdaptorImpl(this, xid, rmid_, xa_switch_);
-    } catch (RMException& ex) {
-        LOG4CXX_WARN(xarmlogger, 
-            (char*) "unable to create resource adaptor for transaction branch: " << ex.what());
-
-        return XAER_RMFAIL;
-    }
-
-    // and activate it
-#if 0
-    PortableServer::ObjectId_var objId = poa_->activate_object(ra);
-#else
-    PortableServer::ObjectId_var oid = PortableServer::string_to_ObjectId("RM1_xares_" + sid++);
-    poa_->activate_object_with_id(oid, ra);
-#endif
-
-    ra->_remove_ref();    // now only the POA has a reference to ra
-
-    try {
-        // get a CORBA reference to the servant so that it can be enlisted in the OTS transaction
-           CORBA::Object_var ref = poa_->servant_to_reference(ra);
-        LOG4CXX_TRACE(xarmlogger, (char*) "narrowing resource");
-
-        CosTransactions::Resource_var v = CosTransactions::Resource::_narrow(ref);
-
-        // enlist it with the transaction
-        LOG4CXX_TRACE(xarmlogger, (char*) "enlisting resource");
-        CosTransactions::RecoveryCoordinator_ptr rc = c->register_resource(v);
-        //c->register_synchronization(new XAResourceSynchronization(xid, rmid_, xa_switch_));
-
-        if (CORBA::is_nil(rc)) {
-            LOG4CXX_TRACE(xarmlogger, (char*) "createServant: nill RecoveryCoordinator ");
-        } else {
-            XID * cp = (XID *) malloc(sizeof(XID));
-
-            if (cp == 0) {
-                LOG4CXX_ERROR(xarmlogger, (char *) "out of memory");
-                return XAER_RMFAIL;
-            }
-
-            *cp = *xid;
-
-            ra->setRecoveryCoordinator(rc);
-            branches_[cp] = ra;
-
-            return XA_OK;
-        }
-    } catch (PortableServer::POA::ServantNotActive&) {
-        LOG4CXX_ERROR(xarmlogger, (char*) "createServant: poa inactive");
-    } catch (CosTransactions::Inactive&) {
-        LOG4CXX_TRACE(xarmlogger, (char*) "createServant: tx inactive (too late for registration)");
-    } catch (const CORBA::SystemException& e) {
-        LOG4CXX_WARN(xarflogger, (char*) "Resource registration error: " << e._name() << " minor: " << e.minor());
-    }
-
-    return XAER_NOTA;
-}
-#endif
-
 void XAResourceManager::notifyError(XID * xid, int xa_error, bool forget)
 {
     FTRACE(xarmlogger, "ENTER");
@@ -311,11 +238,7 @@ void XAResourceManager::setComplete(XID * xid)
     FTRACE(xarmlogger, "ENTER");
     XABranchMap::iterator iter;
 
-    LOG4CXX_TRACE(xarmlogger, (char*) "RM removing branch: "
-        << xid->formatID << ':'
-        << xid->gtrid_length << ':'
-        << xid->bqual_length << ':'
-        << xid->data);
+    LOG4CXX_TRACE(xarmlogger, (char*) "removing branch: " << *xid);
 
     for (XABranchMap::iterator i = branches_.begin(); i != branches_.end(); ++i)
     {
@@ -338,34 +261,45 @@ void XAResourceManager::setComplete(XID * xid)
     LOG4CXX_TRACE(xarmlogger, (char*) "... unknown branch");
 }
 
-int XAResourceManager::xa_start (XID * xid, int rmid, long flags)
+int XAResourceManager::xa_start (XID * xid, long flags)
 {
-    FTRACE(xarmlogger, "ENTER " << rmid << (char *) ": flags=" << std::hex << flags);
+    FTRACE(xarmlogger, "ENTER " << rmid_ << (char *) ": flags=" << std::hex << flags << " lookup XID: " << *xid);
     XAResourceAdaptorImpl * resource = locateBranch(xid);
     int rv;
 
     if (resource == NULL) {
+        FTRACE(xarmlogger, "creating branch " << *xid);
         if ((rv = createServant(xid)) != XA_OK)
             return rv;
 
         if ((resource = locateBranch(xid)) == NULL)    // cannot be NULL
             return XAER_RMERR;
 
-        return resource->xa_start(xid, rmid, TMNOFLAGS);
+        FTRACE(xarmlogger, "starting branch " << *xid);
+        return resource->xa_start(TMNOFLAGS);
     }
 
-    if (flags | (TMRESUME & TMJOIN))
-        return  resource->xa_start(xid, rmid, flags);
-    else
-        return  resource->xa_start(xid, rmid, TMJOIN);
+    FTRACE(xarmlogger, "existing branch " << *xid);
+//    return resource->xa_start(flags);
+    return resource->xa_start(TMRESUME);
+
+//    if (flags | (TMRESUME & TMJOIN))
+//        return  resource->xa_start(flags);
+//    else
+//        return  resource->xa_start(TMJOIN);
 }
 
-int XAResourceManager::xa_end (XID * xid, int rmid, long flags)
+int XAResourceManager::xa_end (XID * xid, long flags)
 {
-    FTRACE(xarmlogger, "ENTER " << rmid << (char *) ": flags=" << std::hex << flags);
+    FTRACE(xarmlogger, "ENTER end branch " << *xid << " rmid=" << rmid_ << " flags=" << std::hex << flags);
     XAResourceAdaptorImpl * resource = locateBranch(xid);
 
-    return resource ? resource->xa_end(xid, rmid, flags) : XAER_NOTA;
+    if (resource == NULL) {
+        LOG4CXX_WARN(xarmlogger, (char *) " no such branch " << *xid);
+        return XAER_NOTA;
+    }
+
+    return resource->xa_end(flags);
 }
 
 XAResourceAdaptorImpl * XAResourceManager::locateBranch(XID * xid)
@@ -373,9 +307,33 @@ XAResourceAdaptorImpl * XAResourceManager::locateBranch(XID * xid)
     FTRACE(xarmlogger, "ENTER");
     XABranchMap::iterator iter;
 
-    for (iter = branches_.begin(); iter != branches_.end(); ++iter)
+    for (iter = branches_.begin(); iter != branches_.end(); ++iter) {
+        LOG4CXX_TRACE(xarmlogger, (char *) "compare: " << *xid << " with " << *(iter->first));
+
         if (compareXids(iter->first, xid) == 0)
             return (*iter).second;
+    }
 
     return NULL;
+}
+
+int XAResourceManager::xa_flags()
+{
+    return xa_switch_->flags;
+}
+
+XID XAResourceManager::gen_xid(XID &gid)
+{
+    XID xid = {gid.formatID, gid.gtrid_length};
+    int i;
+
+    for (i = 0; i < gid.gtrid_length; i++)
+        xid.data[i] = gid.data[i];
+
+    // TODO improve on the uniqueness (eg include IP)
+    ACE_Time_Value now = ACE_OS::gettimeofday();
+    (void) sprintf(xid.data + i, "%ld%ld", now.sec(), now.usec());
+    xid.bqual_length = strlen(xid.data + i);
+
+    return xid;
 }

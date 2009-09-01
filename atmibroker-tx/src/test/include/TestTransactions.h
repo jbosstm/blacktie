@@ -24,7 +24,7 @@
 
 class TestTransactions: public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE(TestTransactions);
-//	CPPUNIT_TEST(is_sane);
+	CPPUNIT_TEST(test_basic);
 	CPPUNIT_TEST(test_transactions);
 	CPPUNIT_TEST(test_protocol);
 	CPPUNIT_TEST(test_info);
@@ -37,7 +37,7 @@ public:
 	void setUp();
 	void tearDown();
 
-//	void is_sane();
+	void test_basic();
 	void test_transactions();
 	void test_protocol();
 	void test_info();
