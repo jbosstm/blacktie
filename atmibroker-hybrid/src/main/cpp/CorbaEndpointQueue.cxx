@@ -161,9 +161,11 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 			}
 
 			message.rval = rval;
+/* TODO 
 			LOG4CXX_TRACE(logger, (char*) "Getting control via disassociate_tx");
-			message.control = txx_unbind_if_not_owner();
+			message.control = txx_unbind();
 			LOG4CXX_TRACE(logger, (char*) "Got control");
+*/
 
 			message.received = true;
 			// For remote comms this thread (comes from a pool) is different from the thread that will

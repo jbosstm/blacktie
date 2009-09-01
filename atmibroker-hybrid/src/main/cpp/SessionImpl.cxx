@@ -191,18 +191,16 @@ bool HybridSessionImpl::send(MESSAGE message) {
 				message.type);
 		apr_hash_set(frame.headers, "messagesubtype", APR_HASH_KEY_STRING,
 				message.subtype);
-		char* control = txx_serialize((char*) "ots");
-		if (control) {
-			LOG4CXX_TRACE(logger, "Sending serialized control: " << control);
+
+        if (message.control) {
+			LOG4CXX_TRACE(logger, "Sending serialized control: " << message.control);
 			apr_hash_set(frame.headers, "messagecontrol", APR_HASH_KEY_STRING,
-					control);
+					message.control);
 		}
 
 		LOG4CXX_DEBUG(logger, "Send to: " << sendTo << " Command: "
 				<< frame.command << " Size: " << frame.body_length);
 		apr_status_t rc = stomp_write(stompConnection, &frame, pool);
-		if (control)
-			free(control);
 
 		if (rc != APR_SUCCESS) {
 			LOG4CXX_ERROR(logger, "Could not send frame");

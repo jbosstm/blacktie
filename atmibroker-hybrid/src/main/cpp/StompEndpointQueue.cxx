@@ -197,81 +197,67 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 		if (frame != NULL) {
 			LOG4CXX_DEBUG(logger, "Received from: " << name << " Command: "
 					<< frame->command);
-			char* control = (char*) apr_hash_get(frame->headers,
+			message.control = (char*) apr_hash_get(frame->headers,
 					"messagecontrol", APR_HASH_KEY_STRING);
-			LOG4CXX_TRACE(logger, "Extracted control");
-			bool unableToAssociateTx = false;
-			if (transactional && control && control != NULL && strcmp(control,
-					(const char*) "null") != 0) {
-				LOG4CXX_TRACE(logger, "Read a non-null control: " << control
-						<< "/");
-				if (txx_associate_serialized((char*) "ots", (char*) control)
-						!= XA_OK) {
-					LOG4CXX_ERROR(logger, "Unable to handle control");
-					setSpecific(TPE_KEY, TSS_TPESYSTEM);
-					unableToAssociateTx = true;
-				}
-			}
-			if (!unableToAssociateTx) {
-				LOG4CXX_TRACE(logger, "Ready to handle message");
-				char * correlationId = (char*) apr_hash_get(frame->headers,
+			LOG4CXX_TRACE(logger, "Extracted control: " << message.control);
+
+			LOG4CXX_TRACE(logger, "Ready to handle message");
+			char * correlationId = (char*) apr_hash_get(frame->headers,
 						"messagecorrelationId", APR_HASH_KEY_STRING);
-				LOG4CXX_TRACE(logger, "Read a correlation ID" << correlationId);
-				LOG4CXX_TRACE(logger, "Extracted correlationID");
-				char * flags = (char*) apr_hash_get(frame->headers,
-						"messageflags", APR_HASH_KEY_STRING);
-				LOG4CXX_TRACE(logger, "Extracted flags");
-				char * rval = (char*) apr_hash_get(frame->headers,
-						"messagerval", APR_HASH_KEY_STRING);
-				LOG4CXX_TRACE(logger, "Extracted rval");
-				char * rcode = (char*) apr_hash_get(frame->headers,
-						"messagercode", APR_HASH_KEY_STRING);
-				LOG4CXX_TRACE(logger, "Extracted rcode");
+			LOG4CXX_TRACE(logger, "Read a correlation ID" << correlationId);
+			LOG4CXX_TRACE(logger, "Extracted correlationID");
+			char * flags = (char*) apr_hash_get(frame->headers,
+					"messageflags", APR_HASH_KEY_STRING);
+			LOG4CXX_TRACE(logger, "Extracted flags");
+			char * rval = (char*) apr_hash_get(frame->headers,
+					"messagerval", APR_HASH_KEY_STRING);
+			LOG4CXX_TRACE(logger, "Extracted rval");
+			char * rcode = (char*) apr_hash_get(frame->headers,
+					"messagercode", APR_HASH_KEY_STRING);
+			LOG4CXX_TRACE(logger, "Extracted rcode");
 
-				char * type = (char*) apr_hash_get(frame->headers,
-						"messagetype", APR_HASH_KEY_STRING);
-				LOG4CXX_TRACE(logger, "Extracted messagetype");
-				message.type = type;
+			char * type = (char*) apr_hash_get(frame->headers,
+					"messagetype", APR_HASH_KEY_STRING);
+			LOG4CXX_TRACE(logger, "Extracted messagetype");
+			message.type = type;
 
-				char * subtype = (char*) apr_hash_get(frame->headers,
-						"messagesubtype", APR_HASH_KEY_STRING);
-				LOG4CXX_TRACE(logger, "Extracted messagesubtype");
-				message.subtype = subtype;
+			char * subtype = (char*) apr_hash_get(frame->headers,
+				"messagesubtype", APR_HASH_KEY_STRING);
+			LOG4CXX_TRACE(logger, "Extracted messagesubtype");
+			message.subtype = subtype;
 
-				char * serviceName = (char*) apr_hash_get(frame->headers,
-						"servicename", APR_HASH_KEY_STRING);
-				LOG4CXX_TRACE(logger, "Extracted servicename");
+			char * serviceName = (char*) apr_hash_get(frame->headers,
+					"servicename", APR_HASH_KEY_STRING);
+			LOG4CXX_TRACE(logger, "Extracted servicename");
 
-				message.len = frame->body_length - 1;
-				LOG4CXX_TRACE(logger, "Set length: " << message.len);
-				if (message.len == 0 && strlen(message.type) == 0) {
-					message.data = NULL;
-				} else {
-					message.data = (char*) malloc(message.len);
-					if (message.len > 0) {
-						memcpy(message.data, frame->body, message.len);
-					}
+			message.len = frame->body_length - 1;
+			LOG4CXX_TRACE(logger, "Set length: " << message.len);
+			if (message.len == 0 && strlen(message.type) == 0) {
+				message.data = NULL;
+			} else {
+				message.data = (char*) malloc(message.len);
+				if (message.len > 0) {
+					memcpy(message.data, frame->body, message.len);
 				}
-				LOG4CXX_TRACE(logger, "Set body");
-
-				message.replyto = (const char*) apr_hash_get(frame->headers,
-						"messagereplyto", APR_HASH_KEY_STRING);
-				LOG4CXX_TRACE(logger, "Set replyto: " << message.replyto);
-				message.correlationId = apr_atoi64(correlationId);
-				LOG4CXX_TRACE(logger, "Set correlationId: "
-						<< message.correlationId);
-				message.flags = apr_atoi64(flags);
-				LOG4CXX_TRACE(logger, "Set flags: " << message.flags);
-				message.rval = apr_atoi64(rval);
-				LOG4CXX_TRACE(logger, "Set rval: " << message.rval);
-				message.rcode = apr_atoi64(rcode);
-				LOG4CXX_TRACE(logger, "Set rcode: " << message.rcode);
-				message.control = txx_get_control();
-				LOG4CXX_TRACE(logger, "Set control: " << message.control);
-				message.serviceName = serviceName;
-				LOG4CXX_TRACE(logger, "set serviceName");
-				message.received = true;
 			}
+			LOG4CXX_TRACE(logger, "Set body");
+
+			message.replyto = (const char*) apr_hash_get(frame->headers,
+					"messagereplyto", APR_HASH_KEY_STRING);
+			LOG4CXX_TRACE(logger, "Set replyto: " << message.replyto);
+			message.correlationId = apr_atoi64(correlationId);
+			LOG4CXX_TRACE(logger, "Set correlationId: "
+					<< message.correlationId);
+			message.flags = apr_atoi64(flags);
+			LOG4CXX_TRACE(logger, "Set flags: " << message.flags);
+			message.rval = apr_atoi64(rval);
+			LOG4CXX_TRACE(logger, "Set rval: " << message.rval);
+			message.rcode = apr_atoi64(rcode);
+			LOG4CXX_TRACE(logger, "Set rcode: " << message.rcode);
+			LOG4CXX_TRACE(logger, "Set control: " << message.control);
+			message.serviceName = serviceName;
+			LOG4CXX_TRACE(logger, "set serviceName");
+			message.received = true;
 		}
 	}
 	lock->unlock();

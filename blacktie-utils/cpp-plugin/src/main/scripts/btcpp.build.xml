@@ -283,6 +283,7 @@
 			<fileset refid="fileset.test"/>
 			<fileset refid="fileset.gen.test"/>
 
+			<defineset define="UNITTEST" />
 			<defineset define="TAO_COMP" />
 			<defineset define="WIN32" if="is-msvc" />
 
