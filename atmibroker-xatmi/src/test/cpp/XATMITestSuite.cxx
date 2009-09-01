@@ -76,9 +76,5 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestClientInit);
 /* Transactional Request Response */
 #include "TestTxTPCall.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTxTPCall);
-#ifndef WIN32
 #include "tx/TestTxRMTPCall.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestTxRMTPCall);
-#else
-//TODO
-#endif
+//TODO CPPUNIT_TEST_SUITE_REGISTRATION( TestTxRMTPCall);

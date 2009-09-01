@@ -17,11 +17,6 @@
  */
 /* Based on the code samples in the Oracle Streams Advanced Queuing User's Guide and Reference */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <xa.h>
-
 #include "tx/request.h"
 
 #ifdef ORACLE
@@ -42,7 +37,6 @@
 
 #ifdef WIN32
 extern __declspec(dllimport) struct xa_switch_t xaoswd;
-#define snprintf _snprintf
 #else
 struct xa_switch_t xaoswd;
 #endif
@@ -65,9 +59,9 @@ static void show_error(dvoid *errhp, sword status) {
 		text buf[256];
 		sb4 err = 0;
 		(void) OCIErrorGet(errhp, (ub4) 1, (text *) NULL, &err, buf, (ub4) sizeof(buf), OCI_HTYPE_ERROR);
-		userlogc_warn( "OCI error %d: %s", (int) err, buf);
+		userlogc_warn( "TxLog OCI error %d: %s", (int) err, buf);
 	} else {
-		userlogc_warn( "OCI error: %d", (int) status);
+		userlogc_warn( "TxLog OCI error: %d", (int) status);
 	}
 }
 
@@ -77,7 +71,7 @@ static int doSql(OCISvcCtx *svcCtx, OCIStmt *stmthp, OCIError *errhp, text *sql,
 	sword status = OCIStmtPrepare(stmthp, errhp, (text *) sql, (ub4) strlen((char *)sql),
 		(ub4) OCI_NTV_SYNTAX, (ub4) OCI_DEFAULT);
 
-	logit(1, "executing statement: %s :1=%d", sql, empno);
+	userlogc_debug( "TxLog executing statement: %s :1=%d", sql, empno);
 
 	/* bind empno to the statement */
 	if (empno > 0 && status == OCI_SUCCESS)
@@ -123,7 +117,7 @@ static int doSelect(OCISvcCtx *svcCtx, OCIStmt *stmthp, OCIError *errhp, int emp
 	OCIDefine *stmtdef1 = (OCIDefine *) 0;
 	OCIDefine *stmtdef2 = (OCIDefine *) 0;
 
-	logit(1, "doSelect: :1=%d", empno);
+	userlogc_debug( "TxLog doSelect: :1=%d", empno);
 	sword status = OCIStmtPrepare(stmthp, errhp, (text *) sql, (ub4) strlen((char *) sql),
 		(ub4) OCI_NTV_SYNTAX, (ub4) OCI_DEFAULT);
 
@@ -143,12 +137,10 @@ static int doSelect(OCISvcCtx *svcCtx, OCIStmt *stmthp, OCIError *errhp, int emp
 
 	/* exectute the select */
 	if (status == OCI_SUCCESS)
-		status = OCIStmtExecute(svcCtx, stmthp, errhp, (ub4) 0, (ub4) 0,
-			(CONST OCISnapshot *) NULL, (OCISnapshot *) NULL, OCI_DEFAULT);
+		status = OCIStmtExecute(svcCtx, stmthp, errhp, (ub4) 0, (ub4) 0, (CONST OCISnapshot *) NULL, (OCISnapshot *) NULL, OCI_DEFAULT);
 
-	logit(1, "executing statement: %s :1=%d", sql, empno);
+	userlogc_debug( "TxLog executing statement: %s :1=%d", sql, empno);
 	*rcnt = 0;
-
 	if (status != OCI_SUCCESS && status != OCI_NO_DATA) {
 		show_error(errhp, status);
 		return status;
@@ -157,10 +149,10 @@ static int doSelect(OCISvcCtx *svcCtx, OCIStmt *stmthp, OCIError *errhp, int emp
 			status = OCIStmtFetch(stmthp, errhp, (ub4) 1, (ub4) OCI_FETCH_NEXT, (ub4) OCI_DEFAULT);
 			if (status != OCI_SUCCESS && status != OCI_SUCCESS_WITH_INFO)
 				break;
-			userlogc_debug( "Name: %s Job: %s", emp, job);
+			userlogc_debug( "TxLog Name: %s Job: %s", emp, job);
 			(*rcnt) += 1;
 		}
-		userlogc_debug( "result: %d", *rcnt);
+		userlogc_debug( "TxLog result: %d", *rcnt);
 
 		return OCI_SUCCESS;
 	}
@@ -171,7 +163,7 @@ static sword doWork(char op, char *arg, OCISvcCtx *svcCtx, OCIStmt *stmthp, OCIE
 	sword status = OCI_SUCCESS;
 	int empno;
 
-	userlogc_debug( "doWork op=%c arg=%s", op, arg);
+	userlogc_debug( "TxLog doWork op=%c arg=%s", op, arg);
 	empno = (*arg ? atoi(arg) : 8000);
 	(resp->data)[0] = 0;
 
@@ -216,26 +208,26 @@ int ora_access(test_req_t *req, test_req_t *resp)
 	OCISvcCtx *svcCtx;
 	sword status;
 
-	userlogc_debug( "ora_access op=%c data=%s db=%s", req->op, req->data, req->db);
+	userlogc_debug( "TxLog ora_access op=%c data=%s db=%s", req->op, req->data, req->db);
 	/* opening an XA connection creates an environment and service context */
 	xaEnv = (struct OCIEnv *) xaoEnv((text *) req->db) ;
 	svcCtx = (struct OCISvcCtx *) xaoSvcCtx((text *) req->db);
 
 	if (!xaEnv || !svcCtx)
-		return fatal("Unable to obtain env and/or service context!");
+		return fatal("TxLog ORA:- Unable to obtain env and/or service context!");
 
 	/* initialise OCI handles */
 	if (OCI_SUCCESS != OCIHandleAlloc((dvoid *)xaEnv, (dvoid **)&errhp,
 		OCI_HTYPE_ERROR, 0, (dvoid **)0))
-		return fatal("Unable to allocate statement handle");
+		return fatal("ORA:- Unable to allocate statement handle");
 
 	if (OCI_SUCCESS != OCIHandleAlloc((dvoid *)xaEnv, (dvoid **)&stmthp,
 		OCI_HTYPE_STMT, 0, (dvoid **)0))
-		return fatal("Unable to allocate error handle");
+		return fatal("ORA:- Unable to allocate error handle");
 
 	/* run the test */
 	status = doWork(req->op, req->data, svcCtx, stmthp, errhp, resp);
-	userlogc_debug( "%d: doWork %c returned: %s", status, req->op, resp->data);
+	userlogc_debug( "TxLog %d: doWork %c returned: %s", status, req->op, resp->data);
 
 //	return status;	// OCI_SUCCESS is 0
 	return (status != OCI_SUCCESS);	// 0 means success

@@ -79,11 +79,9 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	int correlationId = message.correlationId;
 	long ilen = message.len;
 	long flags = message.flags;
-	void* control = message.control;
-	void* curr = NULL;
-	// Note there is no corresponding txx_release_control since it is passed to txx_bind
+
 	LOG4CXX_DEBUG(logger, (char*) "ilen: " << ilen << " flags: " << flags
-			<< "cd: " << message.correlationId << " message.control=" << control << " curr: " << curr);
+			<< "cd: " << message.correlationId << " message.control=" << message.control);
 
 	// PREPARE THE STRUCT FOR SENDING TO THE CLIENT
 	TPSVCINFO tpsvcinfo;
@@ -138,20 +136,14 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	}
 
 	// HANDLE THE CLIENT INVOCATION
-	bool assocTx = (control && (curr = txx_get_control()) != control);
-
-	if (assocTx) {
-	    tpsvcinfo.flags = (tpsvcinfo.flags | TPTRAN);
-	    // TODO wrap TSS control in a Transaction object and make sure any current
-	    // control associated with the thread is suspended here and resumed after
-	    // the call to m_func
-	    if (curr) {
-            LOG4CXX_DEBUG(logger, (char*) "onMessage disassociate curr tx");
-            txx_release_control(txx_unbind());
+    if (message.control != NULL) {
+        if (txx_associate_serialized((char*) "ots", (char*) message.control) != XA_OK) {
+            LOG4CXX_ERROR(logger, "Unable to handle control");
+            setSpecific(TPE_KEY, TSS_TPESYSTEM);
         }
-        LOG4CXX_DEBUG(logger, (char*) "onMessage associate new tx");
-	    txx_bind(control);
-	}
+	    tpsvcinfo.flags = (tpsvcinfo.flags | TPTRAN);
+    }
+
 	try {
 		LOG4CXX_TRACE(logger, (char*) "Calling function");
 		this->func(&tpsvcinfo);
@@ -164,8 +156,8 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 	AtmiBrokerMem::get_instance()->tpfree(tpsvcinfo.data, true);
 
-    if (assocTx) {
-        LOG4CXX_DEBUG(logger, (char*) "onMessage disassociate new tx");
+    if (message.control != NULL) {
+        LOG4CXX_DEBUG(logger, (char*) "onMessage disassociate tx");
         txx_release_control(txx_unbind());
     }
 

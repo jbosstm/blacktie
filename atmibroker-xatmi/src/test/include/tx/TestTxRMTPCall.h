@@ -25,19 +25,13 @@
 
 class TestTxRMTPCall: public BaseServerTest {
 	CPPUNIT_TEST_SUITE( TestTxRMTPCall);
-	CPPUNIT_TEST(test1);
-	CPPUNIT_TEST(test2);
+	CPPUNIT_TEST(test0);
 	CPPUNIT_TEST_SUITE_END();
 
 public:
-	void test1();
-	void test2();
-	virtual void setUp();
-	virtual void tearDown();
-
-private:
-	char *sendbuf, *rcvbuf;
-	long sendlen, rcvlen;
+	void test0();
+//	virtual void setUp();
+//	virtual void tearDown();
 };
 
 #endif	// TESTTXRMTPCALL_H

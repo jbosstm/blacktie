@@ -88,16 +88,9 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 		warnedTPNOBLOCK = true;
 	}
 	int toReturn = -1;
-	void* control = 0;
+
 	if (session->getCanSend() || rval == DISCON) {
 		try {
-
-			if (~TPNOTRAN & flags) {
-				// don't run the call in a transaction
-		        LOG4CXX_TRACE(loggerXATMI, (char*) "TPNOTRAN - disassociate tx");
-				control = txx_unbind();
-			}
-
 			LOG4CXX_TRACE(loggerXATMI, (char*) "allocating data to go: "
 					<< ilen);
 
@@ -124,9 +117,13 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			if (message.subtype == NULL) {
 				message.subtype = (char*) "";
 			}
+            message.control = ((TPNOTRAN & flags) ? NULL : txx_serialize((char*) "ots"));
 			if (session->send(message)) {
 				toReturn = 0;
 			}
+            if (message.control)
+                free(message.control);
+
 			if (message.data != NULL) {
 				free(message.type);
 				free(message.subtype);
@@ -139,11 +136,6 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 		LOG4CXX_ERROR(loggerXATMI, (char*) "Session " << correlationId
 				<< "can't send");
 		setSpecific(TPE_KEY, TSS_TPEPROTO);
-	}
-
-	if (control) {
-		LOG4CXX_TRACE(loggerXATMI, (char*) "TPNOTRAN - re-associate tx");
-		(void) txx_bind(control);
 	}
 
 	return toReturn;
@@ -465,7 +457,7 @@ int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen,
 
 int tpacall(char * svc, char* idata, long ilen, long flags) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpacall: " << svc << " ilen: " << ilen
-			<< " flags: " << flags);
+			<< " flags: 0x" << std::hex << flags);
 	int toReturn = -1;
 	setSpecific(TPE_KEY, TSS_TPERESET);
 
@@ -479,11 +471,17 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	} else {
-		void *ctrl = txx_get_control();
+        bool transactional = !(flags & TPNOTRAN);
 
-		if (ctrl != NULL && flags & TPNOREPLY && !(flags & TPNOTRAN)) {
-			LOG4CXX_ERROR(
-					loggerXATMI,
+        if (transactional) {
+		    void *ctrl = txx_get_control();
+            if (ctrl == NULL)
+                transactional = false;
+		    txx_release_control(ctrl);
+        }
+
+		if (transactional && (flags & TPNOREPLY)) {
+			LOG4CXX_ERROR(loggerXATMI,
 					(char*) "TPNOREPLY CALLED WITHOUT TPNOTRAN DURING TRANSACTION");
 			setSpecific(TPE_KEY, TSS_TPEINVAL);
 		} else {
@@ -494,7 +492,12 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 					int cd = -1;
 					try {
 						session = ptrAtmiBrokerClient->createSession(cd, svc);
+                        LOG4CXX_TRACE(loggerXATMI, (char*) "new session: " << session <<
+                            " cd: " << cd << " transactional: " << transactional);
+
 						if (cd != -1) {
+                            if (transactional)
+                                txx_suspend(cd);
 							toReturn = ::send(session, session->getReplyTo(),
 									idata, len, cd, flags, 0, 0);
 							if (toReturn >= 0) {
@@ -522,11 +525,18 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 							ptrAtmiBrokerClient->closeSession(cd);
 						}
 					}
+
+					if (transactional && toReturn < 0) {
+                        // txx_suspend was called but there was an error so
+                        // resume (note we didn't check for TPNOREPLY since we are in
+                        // the else arm of if (transactional && (flags & TPNOREPLY))
+						LOG4CXX_DEBUG(loggerXATMI, (char*) "tpacall resume cd="
+                            << cd << " rv=" << toReturn);
+                        txx_resume(cd);
+                    }
 				}
 			}
 		}
-
-		txx_release_control(ctrl);
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpacall return: " << toReturn
 			<< " tperrno: " << tperrno);
@@ -658,6 +668,7 @@ int tpgetrply(int *id, char ** odata, long *olen, long flags) {
 					long event = 0;
 					toReturn = ::receive(*id, session, odata, olen, flags,
 							&event, true);
+                    txx_resume(*id);
 				}
 			} else {
 				setSpecific(TPE_KEY, TSS_TPEINVAL);
@@ -671,9 +682,13 @@ int tpgetrply(int *id, char ** odata, long *olen, long flags) {
 
 int tpcancel(int id) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpcancel " << id);
-	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = -1;
-	if (clientinit() != -1) {
+
+	setSpecific(TPE_KEY, TSS_TPERESET);
+    if (::txx_isCdTransactional(id)) {
+        LOG4CXX_TRACE(loggerXATMI, (char*) "tpcancel not allowed (TSS_TPETRAN)");
+        setSpecific(TPE_KEY, TSS_TPETRAN);
+    } else if (clientinit() != -1) {
 		if (getSpecific(TSS_KEY)) {
 			setSpecific(TPE_KEY, TSS_TPETRAN);
 		}
@@ -684,7 +699,7 @@ int tpcancel(int id) {
 		} else {
 			setSpecific(TPE_KEY, TSS_TPEBADDESC);
 		}
-	}
+    }
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpcancel return: " << toReturn
 			<< " tperrno: " << tperrno);
 	return toReturn;
@@ -840,10 +855,13 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 				} else {
 					if (rval != TPSUCCESS && rval != TPFAIL) {
 						rval = TPFAIL;
-						//TODO MARK SET ROLLBACK ONLY
 					}
 					::send(session, "", idata, len, 0, flags, rval, rcode);
 				}
+
+                if (rval == TPFAIL)
+                    txx_rollback_only();
+
 				::tpfree(idata);
 				session->setSendTo(NULL);
 				session->setCanSend(false);
@@ -880,7 +898,7 @@ int tpdiscon(int id) {
 			}
 			try {
 				if (getSpecific(TSS_KEY)) {
-					toReturn = tx_rollback();
+					toReturn = txx_rollback_only();
 				}
 				ptrAtmiBrokerClient->closeSession(id);
 				LOG4CXX_TRACE(loggerXATMI, (char*) "tpdiscon session closed");

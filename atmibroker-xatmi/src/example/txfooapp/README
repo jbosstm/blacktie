@@ -19,10 +19,11 @@
 PRE-REQUISITE
 Download Berkeley from:
 http://www.oracle.com/technology/software/products/berkeley-db/index.html
+
 ON LINUX
 Extract to <USER_HOME>/db-4.7.25
 Follow the instructions on: http://www.oracle.com/technology/documentation/berkeley-db/db/ref/build_unix/intro.html
-	NOTE: We use the default install location of /usr/local/BerkeleyDB.4.7/
+	NOTE: On linux we use the default install location of /usr/local/BerkeleyDB.4.7/
 
 ON WINDOWS
 Extract to c:\db-4.7.25
@@ -31,17 +32,21 @@ NOTE I needed to alter the db_dll Linker settings to remove bufferoverflowU
 NOTE I needed to alter the build profile to be Debug x86 as the default was 64bit
 NOTE I get 3 failures during build two for tcl.h and one for jni.h but I ignore these
 
-NOTE
-The file Environment.xml (in the linux and win32 directories) needs to reference the location of the library,
-if you install it elsewhere remember to update the <XA_LIB_NAME> tag.
+The example also supports ORACLE db (which can be downloaded from
+http://www.oracle.com/technology/software/products/database/index.html)
+To include this database in the example comment out the line in request.h that says #undef ORACLE
+and uncomment the relevent section in Environment.xml that refers to Oracle_XA. 
+This section includes a string that tells BlackTie the ORACLE database name and credentials.
+The one shipped expects credentials scott/tiger and database name of ORCL. These are the defaults for a standard
+ORACLE installation.
 
-NOTE: You may need to update $BLACKTIE_BIN_DIR/bin/generate-executables.xml to add db-4.7 to the list of libs in 
-libsets-main-dependencies (line 43)
-NOTE: On windows you need to update that file to add the following includepath:
-	<includepath path="C:/db-4.7.25/build_windows/"/>
-NOTE: On windows you need to add the following libset
-	<libset dir="C:/db-4.7.25/build_windows/Debug" libs="libdb47${lib.suffix}" />
-NOTE: You will need to set the PATH/LD_LIBRARY_PATH to include the external library folder for Berkeley
+Also note that the file Environment.xml (in the linux and win32 directories) needs to reference the location of
+the database library - if you install it elsewhere remember to update the <XA_LIB_NAME> tag.
+
+NOTE: On windows you need to the build line (referred to below should have an includepath similar to:
+	-Dx.inc.dir="C:/db-4.7.25/build_windows/"
+and a lib path similar to:
+	-Dx.lib.dir="C:/db-4.7.25/build_windows/Debug" libs="libdb47${lib.suffix}"
 
 
 1. SET ENVIRONMENT VARIABLES
@@ -54,28 +59,32 @@ On Windows:
 Then, execute the script setenv
 
 2. CREATE THE CLIENT and SERVER
-On Linux:
-	 $BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="request.c bdb.c ora.c client.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh" -Dx.lib.dir2="/usr/local/BerkeleyDB.4.7/lib" -Dx.libs2="db" 
+These compile lines include support for running against Berkeley Db and Oracle. If you do not have one or more of these
+products do not include them on the compile lines below:
 
-	$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=DBS -Dserver.includes="request.c bdb.c ora.c DbService.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh" -Dx.lib.dir2="/usr/local/BerkeleyDB.4.7/lib" -Dx.libs2="db" 
+On Linux:
+    $BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c bdb.c ora.c cutil.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh" -Dx.lib.dir2="/usr/local/BerkeleyDB.4.7/lib" -Dx.libs2="db"
+
+	$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c bdb.c ora.c DbService.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh" -Dx.lib.dir2="/usr/local/BerkeleyDB.4.7/lib" -Dx.libs2="db" 
 
 On Windows:
-	 $BLACKTIE_BIN_DIR/bin/generate_client.bat -Dclient.includes="request.c bdb.c ora.c client.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh" -Dx.lib.dir2="/usr/local/BerkeleyDB.4.7/lib" -Dx.libs2="db" 
+	 $BLACKTIE_BIN_DIR/bin/generate_client.bat -Dclient.includes="request.c bdb.c ora.c client.c cutil.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh" -Dx.lib.dir2="/usr/local/BerkeleyDB.4.7/lib" -Dx.libs2="db" 
 
-	$BLACKTIE_BIN_DIR/bin/generate_server.bat -Dservice.names=DBS -Dserver.includes="request.c bdb.c ora.c DbService.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh" -Dx.lib.dir2="/usr/local/BerkeleyDB.4.7/lib" -Dx.libs2="db" 
+	$BLACKTIE_BIN_DIR/bin/generate_server.bat -Dservice.names=DbTestSvc -Dserver.includes="request.c bdb.c ora.c DbService.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh" -Dx.lib.dir2="/usr/local/BerkeleyDB.4.7/lib" -Dx.libs2="db" 
 
 
 4. RUN THE APPLICATIONS
-Make sure that the naming and transaction services are running, if not, run the JBoss server:
-<JBOSS_HOME>/bin/run.sh|bat -c all
+Start the JBoss server (<JBOSS_HOME>/bin/run.sh|bat -c all)
+
 4.1 RUN THE SERVER
 Make sure any required 3rd party libraries are on the library path. For example:
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/product/11.1.0/db_1/lib
+similar, on windows set PATH=...
 ./server -c <win32|linux>
 4.2 RUN THE CLIENT
 You will need to set the environment variable BLACKTIE_CONFIGURATION_DIR to either win32 or linux prior to running the client
-./client <any arg> to write records
-./client to read a single record back
+./client
+This runs a set of tests that exercise the various ways of interacting with resource managers.
 
-Note: The db records are stored in the directories db1 and db2. To clear out the database just delete the contents
-but not the directories themselves (on linux rm db*/*)
+Note: The db records are stored in the directories db1 and db2. If these becomes corrupt or you just want to start afresh
+clear out the database by deleting the contents but not the directories themselves (on linux rm db*/*)

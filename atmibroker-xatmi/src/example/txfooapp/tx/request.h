@@ -18,16 +18,20 @@
 #ifndef __REQUEST_H
 #define __REQUEST_H
 
-#undef UNITTEST
+#if 0
 #ifdef UNITTEST
 #include "ace/OS_NS_stdio.h"
 #include "ace/OS_NS_stdlib.h"
 #include "ace/OS_NS_string.h"
+#include "ace/OS_NS_stdarg.h"
 #else
+#include <stdio.h>
+#include <stdarg.h>
+#endif
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#endif
 
 #include <userlogc.h>
 #include <xatmi.h>
@@ -43,8 +47,8 @@ extern __declspec(dllimport) struct xa_switch_t db_xa_switch;
 #endif
 
 #define BDB
-//#define ORACLE
-#undef ORACLE
+#define ORACLE
+/*#undef ORACLE*/
 
 #ifndef ORACLE
 #define ora_access	null_access

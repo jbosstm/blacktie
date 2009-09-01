@@ -280,6 +280,10 @@ AtmiBrokerServer::AtmiBrokerServer() {
 			return;
 		}
 
+        if (tx_open() != TX_OK)
+            LOG4CXX_WARN(loggerAtmiBrokerServer, serverName
+					<< (char *) " transaction configuration error, proceeding  without transactions");
+
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 				(char*) "server_init(): finished.");
 

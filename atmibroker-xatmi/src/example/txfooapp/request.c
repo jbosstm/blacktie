@@ -15,72 +15,81 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
+#include "tx/request.h"
 
-#include <xatmi.h>
-#include <tx.h>
-#include <userlogc.h>
-
-#include "request.h"
+product_t products[] = {
+//    {0, "null db", "null", ANY_ACCESS, null_access, null_xaflags},
+//  {1, "ora - blacktie", "blacktie", ANY_ACCESS, ora_access, ora_xaflags},
+//  {2, "ora - bt", "bt", ANY_ACCESS, ora_access, ora_xaflags},
+    {3, "bdb - db1", "db1", REMOTE_ACCESS, bdb_access, bdb_xaflags},
+    {4, "bdb - db2", "db2", REMOTE_ACCESS, bdb_access, bdb_xaflags},
+    {-1, 0, 0, 0, 0},
+};
 
 /* helper methods for controling transactions */
 int is_begin(enum TX_TYPE txtype) {
+    userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	return (txtype == TX_TYPE_BEGIN || txtype == TX_TYPE_BEGIN_COMMIT || txtype == TX_TYPE_BEGIN_ABORT);
 }
 int is_commit(enum TX_TYPE txtype) {
+    userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	return (txtype == TX_TYPE_COMMIT || txtype == TX_TYPE_BEGIN_COMMIT);
 }
 int is_abort(enum TX_TYPE txtype) {
+    userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	return (txtype == TX_TYPE_ABORT || txtype == TX_TYPE_BEGIN_ABORT);
 }
 int start_tx(enum TX_TYPE txtype) {
+    int rv = TX_OK;
+
+    userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	if (is_begin(txtype)) {
-		logit(1, (char*) "- Starting Transaction");
-		if (tx_begin() != TX_OK) {
-			logit(0, (char*) "TX ERROR - Could not begin transaction: ");
-			return -1;
-		}
+		userlogc_debug( "TxLog - Starting Transaction");
+		rv = tx_begin();
 	}
 
-	return 0;
+    if (rv != TX_OK)
+		userlogc_warn( "TxLog TX ERROR %d starting transaction", rv);
+
+	return rv;
 }
 int end_tx(enum TX_TYPE txtype) {
-	int rv = 0;
+	int rv = TX_OK;
+    userlogc_debug( "%s:%d", __FUNCTION__, __LINE__);
+
 	if (is_commit(txtype)) {
-		logit(1, (char*) "- Commiting transaction");
-		if (tx_commit() != TX_OK)
-			rv = -1;
+		userlogc_debug( "TxLog - Commiting transaction");
+		rv = tx_commit();
 	} else if (is_abort(txtype)) {
-		logit(1, (char*) "- Rolling back transaction");
-		if (tx_rollback() != TX_OK)
-			rv = -1;
+		userlogc_debug( "TxLog - Rolling back transaction");
+		rv = tx_rollback();
 	}
 
-	if (rv != 0)
-		logit(0, (char*) "TX ERROR - Could not terminate transaction");
+	if (rv != TX_OK)
+		userlogc_warn( "TxLog TX finish error %d", rv);
 
 	return rv;
 }
 
-/* log a message */
-void logit(int debug, const char * format, ...) {
-	char str[1024];
-	va_list args;
-	va_start(args, format);
-	vsnprintf(str, sizeof (str), format, args);
-	va_end(args);
+int is_tx_in_state(enum TX_TYPE txtype) {
+    userlogc_debug( "TxLog %s:%d %d", __FUNCTION__, __LINE__, txtype);
+    TXINFO txinfo;
+    int rv = tx_info(&txinfo);
+    int ts = (txtype == TX_TYPE_NONE ? -1 : TX_ACTIVE);
 
-	if (debug)
-		userlogc_debug(str);
-	else
-		userlogc(str);
+    if (rv < 0) {
+        userlogc_warn("TxLog is_tx_in_state tx_info error: %d", rv);
+        return 0;
+    }
+
+    userlogc_debug("TxLog validating tx status actual %d vrs desired %d", txinfo.transaction_state, ts);
+
+    return (txinfo.transaction_state == ts);
 }
 
 static int reqid = 0;
 static void _init_req(test_req_t *req, int prodid, const char *dbfile, const char *data, char op, enum TX_TYPE txtype, int expect) {
+    userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	req->prod = prodid;
 	req->txtype = txtype;
 	req->expect = expect;
@@ -91,28 +100,32 @@ static void _init_req(test_req_t *req, int prodid, const char *dbfile, const cha
 	req->db[0] = 0;
 
 	if (data)
-		(void) strncpy(req->data, data, sizeof(req->data));
+		(void) strncpy(req->data, data, sizeof(req->data) - 1);
 	if (dbfile)
-		(void) strncpy(req->db, dbfile, sizeof(req->db));
+		(void) strncpy(req->db, dbfile, sizeof(req->db) - 1);
 }
 
 test_req_t * get_buf(int remote, const char *data, const char *dbfile, char op, int prod, enum TX_TYPE txtype, int expect) {
 	test_req_t *req;
+    userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 
 	if (remote)
 		req = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", sizeof (test_req_t));
 	else
 		req = (test_req_t *) malloc(sizeof (test_req_t));
 
-	if (req == NULL)
-		fatal("out of memory (for alloc)");
-
-	_init_req(req, prod, dbfile, data, op, txtype, expect);
+	if (req != NULL) {
+        (void *) memset(req, 0, sizeof (test_req_t));
+	    _init_req(req, prod, dbfile, data, op, txtype, expect);
+    } else {
+		(void) fatal("out of memory (for alloc)");
+    }
 
 	return req;
 }
 
 void free_buf(int remote, test_req_t *req) {
+    userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	if (remote)
 		tpfree((char *) req);
 	else
@@ -121,27 +134,38 @@ void free_buf(int remote, test_req_t *req) {
 
 int fail(const char *reason, int ret)
 {
-	fprintf(stderr, "%s: %d\n", reason, ret);
+    userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	userlogc_warn( "TxLog %s: %d\n", reason, ret);
 	return ret;
 }
 
-void fatal(const char *msg)
+int fatal(const char *msg)
 {
-	logit(0, msg);
+    userlogc_debug( "TxLog %s:%d: %s", __FUNCTION__, __LINE__, msg);
+    return -1;
+/*
+#ifdef UNITTEST
+    CPPUNIT_FAIL(msg);
+#else
+	userlogc_warn( msg);
 	exit (-1);
+#endif
+*/
 }
 
 long null_xaflags()
 {
+    userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	return 0L;
 }
 
 int null_access(test_req_t *req, test_req_t *resp)
 {
+    userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	resp->status = 0;
 	(void) snprintf(resp->data, sizeof(resp->data), "%d", req->expect);
 
-	logit(1, "null_access: prod id=%d (%s) op=%c res=%s", req->prod, req->db, req->op, resp->data);
+	userlogc_debug( "TxLog null_access: prod id=%d (%s) op=%c res=%s", req->prod, req->db, req->op, resp->data);
 
 	return 0;
 }
