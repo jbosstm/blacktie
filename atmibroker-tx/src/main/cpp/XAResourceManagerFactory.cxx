@@ -51,7 +51,7 @@ bool XAResourceManagerFactory::getXID(XID& xid)
 
         int otidlen = (int) otid.tid.length();
         char JBOSSTS_NODE_SEPARATOR = '-';
-        char tid[otidlen];    // copy of the ots tid
+        char tid[1024];    // copy of the ots tid TODO
         char *bq;   // the branch qualifier component
 
         memset(&xid, 0, sizeof (XID));
