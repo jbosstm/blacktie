@@ -136,7 +136,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	}
 
 	// HANDLE THE CLIENT INVOCATION
-    if (message.control != NULL) {
+    if (message.control != NULL && strcmp((char*)message.control, "null") != 0) {
         if (txx_associate_serialized((char*) "ots", (char*) message.control) != XA_OK) {
             LOG4CXX_ERROR(logger, "Unable to handle control");
             setSpecific(TPE_KEY, TSS_TPESYSTEM);
@@ -156,7 +156,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 	AtmiBrokerMem::get_instance()->tpfree(tpsvcinfo.data, true);
 
-    if (message.control != NULL) {
+    if (message.control != NULL && strcmp((char*)message.control, "null") != 0) {
         LOG4CXX_DEBUG(logger, (char*) "onMessage disassociate tx");
         txx_release_control(txx_unbind());
     }
