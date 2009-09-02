@@ -152,6 +152,7 @@
 			<fileset dir="${src.main}" includes="${src.tobuild}" excludes="${src.excludes}" />
 
 			<defineset define="WIN32" if="is-windows" />
+			<defineset define="${x.define}" if="x.define" />
 
 			&includepath-main-dependencies;
 			<includepath path="${x.inc.dir}"/>

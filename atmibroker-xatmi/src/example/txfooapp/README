@@ -15,76 +15,103 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  MA  02110-1301, USA.
 
+1. INTRODUCTION
+===============
+This example shows how to use XA compliant databases with BlackTie and has been tested against Berkeley Db
+and ORACLE 11g. To compile in support for Berkeley Db you will need to pass a preprocessor macro called BDB
+to the BlackTie utility that generates executables (as explained below). Similary for ORACLE support.
 
-PRE-REQUISITE
-Download Berkeley from:
+To include a particular database during runtime you will need to update the BlackTie Environment.xml file
+with information specific to the required database. The example xml files (in the linux and win32 directories)
+includes notes and examples on how to configure ORACLE and BDB support.
+
+Berkeley DB and Oracle 11g can be downloaded from:
 http://www.oracle.com/technology/software/products/berkeley-db/index.html
+and
+http://www.oracle.com/technology/software/products/database/index.html)
+respectively.
 
-ON LINUX
-Extract to <USER_HOME>/db-4.7.25
+For example, ON LINUX extract to <USER_HOME>/db-4.7.25
 Follow the instructions on: http://www.oracle.com/technology/documentation/berkeley-db/db/ref/build_unix/intro.html
-	NOTE: On linux we use the default install location of /usr/local/BerkeleyDB.4.7/
+Update the Environment.xml file with the path to the BerkeleyDB library or use the default and set the environment
+variable BDB_HOME to the installation directory, for example
+    export BDB_HOME=/usr/local/BerkeleyDB.4.7/
 
-ON WINDOWS
-Extract to c:\db-4.7.25
-Follow the instructions on: http://www.oracle.com/technology/documentation/berkeley-db/db/ref/build_win/intro.html
+For WINDOWS extract to c:\db-4.7.25, for examle, and then follow the instructions
+at: http://www.oracle.com/technology/documentation/berkeley-db/db/ref/build_win/intro.html
 NOTE I needed to alter the db_dll Linker settings to remove bufferoverflowU
 NOTE I needed to alter the build profile to be Debug x86 as the default was 64bit
 NOTE I get 3 failures during build two for tcl.h and one for jni.h but I ignore these
 
-The example also supports ORACLE db (which can be downloaded from
-http://www.oracle.com/technology/software/products/database/index.html)
-To include this database in the example comment out the line in request.h that says #undef ORACLE
-and uncomment the relevent section in Environment.xml that refers to Oracle_XA. 
-This section includes a string that tells BlackTie the ORACLE database name and credentials.
-The one shipped expects credentials scott/tiger and database name of ORCL. These are the defaults for a standard
-ORACLE installation.
+2. BUILDING THE EXAMPLE
+=======================
 
-Also note that the file Environment.xml (in the linux and win32 directories) needs to reference the location of
-the database library - if you install it elsewhere remember to update the <XA_LIB_NAME> tag.
-
-NOTE: On windows you need to the build line (referred to below should have an includepath similar to:
-	-Dx.inc.dir="C:/db-4.7.25/build_windows/"
-and a lib path similar to:
-	-Dx.lib.dir="C:/db-4.7.25/build_windows/Debug" libs="libdb47${lib.suffix}"
-
-
-1. SET ENVIRONMENT VARIABLES
-In order to run the example you need to make sure that you have set the environment
-appropriately. You will need to make sure that you edit the variables with values starting with REPLACE_WITH_: 
-On Linux you need to edit:
+Make sure your environment is suitable for running BlackTie applications by sourcing the setenv scripts
+that came with the BlackTie distribution. On linux systems source:
     $BLACKTIE_BIN_DIR/setenv.sh
-On Windows:
+and on windows execute:
     %BLACKTIE_BIN_DIR%\setenv.bat
-Then, execute the script setenv
 
-2. CREATE THE CLIENT and SERVER
-These compile lines include support for running against Berkeley Db and Oracle. If you do not have one or more of these
-products do not include them on the compile lines below:
+To compile a BlackTie client and server use the generate_client and generate_server scripts that came with the
+distribution. The linux versions have a .sh suffix and windows versions have a .bat suffix.
 
-On Linux:
-    $BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c bdb.c ora.c cutil.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh" -Dx.lib.dir2="/usr/local/BerkeleyDB.4.7/lib" -Dx.libs2="db"
+generate_client accepts arguments that specify which files to compile (-Dclient.includes=...), location of any required
+include directories (-Dx.inc.dir=) and the location of any required libraries (-Dx.lib.dir= and -Dx.libs=).
+[If you need to pass in more include directories and libraries use -Dx.inc.dir2=..., -Dx.lib.dir2=... and -Dx.libs2=...].
+It also accepts a list of preprocessor macro definitions (-Dx.define="comma separated list of macro names"). Thus, for example,
+to compile the client for use with Oracle11g and Berkely Db:
 
-	$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c bdb.c ora.c DbService.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh" -Dx.lib.dir2="/usr/local/BerkeleyDB.4.7/lib" -Dx.libs2="db" 
+$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c bdb.c ora.c cutil.c" \
+    -Dx.inc.dir="/usr/include" \
+    -Dx.inc.dir2="/usr/local/product/11.1.0/db_1/rdbms/public" \
+    -Dx.lib.dir="/usr/lib" -Dx.libs="db" \
+    -Dx.lib.dir2="/usr/local/product/11.1.0/db_1/lib" -Dx.libs2="occi clntsh" \
+    -Dx.define="BDB, ORACLE"
 
-On Windows:
-	 $BLACKTIE_BIN_DIR/bin/generate_client.bat -Dclient.includes="request.c bdb.c ora.c client.c cutil.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh" -Dx.lib.dir2="/usr/local/BerkeleyDB.4.7/lib" -Dx.libs2="db" 
+[Notice that /usr/lib and /usr/include have been included to illustrate the use of x.inc.dir2 etc although you
+would not normally need to include standard system paths]
 
-	$BLACKTIE_BIN_DIR/bin/generate_server.bat -Dservice.names=DbTestSvc -Dserver.includes="request.c bdb.c ora.c DbService.c" -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh" -Dx.lib.dir2="/usr/local/BerkeleyDB.4.7/lib" -Dx.libs2="db" 
+Similarly for generating the server:
 
+$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c bdb.c ora.c DbService.c" \
+    -Dx.inc.dir="/usr/include" \
+    -Dx.inc.dir2="/usr/local/product/11.1.0/db_1/rdbms/public" \
+    -Dx.lib.dir="/usr/lib" -Dx.libs="db" \
+    -Dx.lib.dir2="/usr/local/product/11.1.0/db_1/lib" -Dx.libs2="occi clntsh" \
+    -Dx.define="BDB, ORACLE"
 
-4. RUN THE APPLICATIONS
+If you don't need ORACLE 11g just remove the lines that refer to its libraries and includes (and the ORACLE
+preprocessor macro).
+
+Windows compile lines are similar. For example, to build a server for use with Berkeley Db only:
+
+$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c bdb.c ora.c DbService.c" \
+    -Dx.inc.dir="C:/db-4.7.25/build_windows/" \
+	-Dx.lib.dir="C:/db-4.7.25/build_windows/Debug" -Dx.libs="libdb47${lib.suffix}" \
+    -Dx.define="BDB"
+
+3. RUNNING THE EXAMPLE
+======================
 Start the JBoss server (<JBOSS_HOME>/bin/run.sh|bat -c all)
+Make sure all required libraries are on the library path, something like
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/product/11.1.0/db_1/lib
+or
+    set PATH=%PATH%;C:\db-4.7.25\build_windows\Debug
 
-4.1 RUN THE SERVER
-Make sure any required 3rd party libraries are on the library path. For example:
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/product/11.1.0/db_1/lib
-similar, on windows set PATH=...
-./server -c <win32|linux>
-4.2 RUN THE CLIENT
-You will need to set the environment variable BLACKTIE_CONFIGURATION_DIR to either win32 or linux prior to running the client
-./client
-This runs a set of tests that exercise the various ways of interacting with resource managers.
+3.1 START THE SERVER
+====================
+    ./server -c <win32|linux>
+
+3.2 START THE CLIENT
+====================
+The client needs to know where the configuration directories resides so set the following environment variable:
+    export BLACKTIE_CONFIGURATION_DIR=linux
+    set BLACKTIE_CONFIGURATION_DIR=win32
+
+    ./client
+
+This runs a set of tests that exercise the various ways of interacting with resource managers. Please refer
+to the source file cutil.c to see what client/server/transaction combinations are used.
 
 Note: The db records are stored in the directories db1 and db2. If these becomes corrupt or you just want to start afresh
 clear out the database by deleting the contents but not the directories themselves (on linux rm db*/*)

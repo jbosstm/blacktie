@@ -19,10 +19,14 @@
 
 product_t products[] = {
 //    {0, "null db", "null", ANY_ACCESS, null_access, null_xaflags},
-//  {1, "ora - blacktie", "blacktie", ANY_ACCESS, ora_access, ora_xaflags},
-//  {2, "ora - bt", "bt", ANY_ACCESS, ora_access, ora_xaflags},
+#ifdef ORACLE
+    {1, "ora - blacktie", "blacktie", ANY_ACCESS, ora_access, ora_xaflags},
+    {2, "ora - bt", "bt", ANY_ACCESS, ora_access, ora_xaflags},
+#endif
+#ifdef BDB
     {3, "bdb - db1", "db1", REMOTE_ACCESS, bdb_access, bdb_xaflags},
     {4, "bdb - db2", "db2", REMOTE_ACCESS, bdb_access, bdb_xaflags},
+#endif
     {-1, 0, 0, 0, 0},
 };
 
@@ -72,8 +76,9 @@ int end_tx(enum TX_TYPE txtype) {
 }
 
 int is_tx_in_state(enum TX_TYPE txtype) {
-    userlogc_debug( "TxLog %s:%d %d", __FUNCTION__, __LINE__, txtype);
-    TXINFO txinfo;
+	TXINFO txinfo;
+/*    userlogc_debug( "TxLog %s:%d %d", __FUNCTION__, __LINE__, txtype);*/
+    
     int rv = tx_info(&txinfo);
     int ts = (txtype == TX_TYPE_NONE ? -1 : TX_ACTIVE);
 

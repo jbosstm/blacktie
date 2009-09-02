@@ -21,16 +21,9 @@
 #include "atmiBrokerCoreMacro.h"
 #include "userlogc.h"
 
-#undef UNITTEST
-#ifdef UNITTEST
-#include "ace/OS_NS_stdio.h"
-#include "ace/OS_NS_stdlib.h"
-#include "ace/OS_NS_string.h"
-#else
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#endif
 
 #include <userlogc.h>
 #include <xatmi.h>
@@ -57,10 +50,6 @@ typedef struct BLACKTIE_XATMI_DLL test_req {
 	enum TX_TYPE txtype;
 	int status;
 } test_req_t;
-
-#define BDB
-//#define ORACLE
-#undef ORACLE
 
 #ifndef ORACLE
 #define ora_access	null_access
