@@ -149,6 +149,7 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet, Ope
         	
         	serverName = context.getResourceKey();
         	
+			// Connect to JMS Server with null user
         	prop.remove("StompConnectUsr");
         	ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory(prop);
     		connection = connectionFactory.getConnection();
@@ -223,11 +224,11 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet, Ope
      */
     public OperationResult invokeOperation(String name, Configuration params) {
     	OperationResult result = new OperationResult();
+    	String id = params.getSimpleValue("id", null);
+    	String service = serverName + "_ADMIN_" + id;
+		Response buf = null;
     	
     	if(name.equals("shutdown")) {
-    		String id = params.getSimpleValue("id", null);
-    		String service = serverName + "_ADMIN_" + id;
-    	
     		try {
     			callAdminService(service, "serverdone");
     			result.setSimpleResult("OK");
@@ -236,11 +237,7 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet, Ope
     			result.setErrorMessage("call " + service + " command serverdone failed with " + e);
     		}
     	} else if(name.equals("listServiceStatus")) {
-    		String id = params.getSimpleValue("id", null);
-    		String service = serverName + "_ADMIN_" + id;
-
 			try {
-				Response buf = null;
 				buf = callAdminService(service, "status");
 				if(buf != null) {
 					byte[] received = buf.getBuffer().getData();
@@ -249,10 +246,32 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet, Ope
 						System.out.println("status is " + status);
     					result.setSimpleResult(status);
 					}
+				} else {
+					result.setErrorMessage("no service status");
 				}
 			} catch (Exception e) {
     			log.error("call " + service + " command status failed with " + e);
     			result.setErrorMessage("call " + service + " command status failed with " + e);
+			}
+		} else if(name.equals("advertise") || name.equals("unadvertise")) {
+    		String svc = params.getSimpleValue("service", null);
+			String command = name + "," + svc + ",";
+
+			try{
+				buf = callAdminService(service, command);
+				if(buf != null) {
+					byte[] received = buf.getBuffer().getData();
+					if(received[0] == '1') {				
+						result.setSimpleResult(name + " " + svc + " OK");
+					} else {
+						result.setSimpleResult(name + " " + svc + " FAIL");
+					}
+				} else {
+					result.setErrorMessage("can not " + name + " " + svc);
+				}
+			} catch (Exception e) {
+    			log.error("call " + service + " command " + command + " failed with " + e);
+    			result.setErrorMessage("call " + service + " command " + command + " failed with " + e);
 			}
 		}
         return result;
