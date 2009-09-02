@@ -24,7 +24,7 @@ public class ConnectionFactory {
 	 */
 	public static synchronized ConnectionFactory getConnectionFactory()
 			throws ConnectionException {
-		return new ConnectionFactory(null);
+		return new ConnectionFactory((String)null);
 	}
 
 	/**
@@ -36,6 +36,11 @@ public class ConnectionFactory {
 	public static synchronized ConnectionFactory getConnectionFactory(
 			String configurationDirectory) throws ConnectionException {
 		return new ConnectionFactory(configurationDirectory);
+	}
+	
+	public static synchronized ConnectionFactory getConnectionFactory(
+			Properties prop) throws ConnectionException {
+		return new ConnectionFactory(prop);
 	}
 
 	/**
@@ -53,6 +58,10 @@ public class ConnectionFactory {
 			throw new ConnectionException(-1, "Could not load properties", e);
 		}
 
+	}
+
+	private ConnectionFactory(Properties prop) {
+		properties = prop;
 	}
 
 	/**

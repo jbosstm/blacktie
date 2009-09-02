@@ -149,7 +149,8 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet, Ope
         	
         	serverName = context.getResourceKey();
         	
-        	ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory();
+        	prop.remove("StompConnectUsr");
+        	ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory(prop);
     		connection = connectionFactory.getConnection();
         } catch (Exception e) {
         	log.error("start server " + serverName + " plugin error with " + e);
