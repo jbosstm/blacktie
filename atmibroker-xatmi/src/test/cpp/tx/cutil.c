@@ -205,34 +205,11 @@ static int teardown(int *cnt)
 static int test0(int *cnt)
 {
 	int rv;
+
     userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 
 	set_test_id("Test 0");
-int rcnt = count_records("test0", emps[0], 0, 0);
-	/* ask the remote service to insert a record */
-	if ((rv = db_op("INSERT 1", emps[3], '0', TX_TYPE_BEGIN_COMMIT, 0, REMOTE_ACCESS, 0, -1)))
-		return rv;
-	if ((rv = db_op("INSERT 2", emps[4], '0', TX_TYPE_BEGIN_COMMIT, 0, REMOTE_ACCESS, 0, -1)))
-		return rv;
 
-	/* delete records starting from emps[0] but abort it */
-	if ((rv = db_op("INSERT WITH ABORT", emps[5], '1', TX_TYPE_BEGIN_ABORT, 0, REMOTE_ACCESS, 0, -1)))
-		return rv;
-
-userlogc_debug("TxLog counting records - expecting %d", rcnt + 2);
-int rcnt2 = count_records("test0", emps[0], 0, 0);
-userlogc_debug("TxLog counting records - got %d", rcnt2);
-	if ((rv = check_count("COUNT RECORDS", emps[0], 0, rcnt + 2)))
-		return rv;
-return 0;
-	/* ask the remote service to insert another record in the same transaction */
-	if ((rv = db_op("INSERT 2", emps[6], '0', TX_TYPE_NONE, 0, REMOTE_ACCESS, 0, -1)))
-		return rv;
-	/* insert a record and end the already running transaction */
-	if ((rv = db_op("INSERT", emps[7], '0', TX_TYPE_COMMIT, 0, REMOTE_ACCESS, 1, -1)))
-		return rv;
-
-return 0;
 #if 1
 	/* ask the remote service to insert a record */
 	if ((rv = db_op("INSERT 1", emps[5], '0', TX_TYPE_BEGIN, 0, REMOTE_ACCESS, 0, -1)))

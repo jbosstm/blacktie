@@ -72,8 +72,9 @@ int end_tx(enum TX_TYPE txtype) {
 }
 
 int is_tx_in_state(enum TX_TYPE txtype) {
-    userlogc_debug( "TxLog %s:%d %d", __FUNCTION__, __LINE__, txtype);
-    TXINFO txinfo;
+	TXINFO txinfo;
+/*    userlogc_debug( "TxLog %s:%d %d", __FUNCTION__, __LINE__, txtype);*/
+    
     int rv = tx_info(&txinfo);
     int ts = (txtype == TX_TYPE_NONE ? -1 : TX_ACTIVE);
 
