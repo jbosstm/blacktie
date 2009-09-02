@@ -201,7 +201,7 @@ static int teardown(int *cnt)
 	return 0;
 }
 
-#if 1
+#ifdef TEST0
 static int test0(int *cnt)
 {
 	int rv;

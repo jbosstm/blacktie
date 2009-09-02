@@ -29,7 +29,12 @@
 #include <xatmi.h>
 #include <tx.h>
 
+#ifdef UNITTEST
+#define BDB
+static const char * const TXTEST_SVC_NAME = "tx_db_service";
+#else
 static const char * const TXTEST_SVC_NAME = "BAR";
+#endif
 
 enum TX_TYPE {
 	TX_TYPE_BEGIN,

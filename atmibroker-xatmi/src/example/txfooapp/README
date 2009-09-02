@@ -35,7 +35,7 @@ For example, ON LINUX extract to <USER_HOME>/db-4.7.25
 Follow the instructions on: http://www.oracle.com/technology/documentation/berkeley-db/db/ref/build_unix/intro.html
 Update the Environment.xml file with the path to the BerkeleyDB library or use the default and set the environment
 variable BDB_HOME to the installation directory, for example
-    export BDB_HOME=/usr/local/BerkeleyDB.4.7/
+    export BDB_HOME=/usr
 
 For WINDOWS extract to c:\db-4.7.25, for examle, and then follow the instructions
 at: http://www.oracle.com/technology/documentation/berkeley-db/db/ref/build_win/intro.html

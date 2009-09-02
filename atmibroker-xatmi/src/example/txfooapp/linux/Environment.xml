@@ -48,14 +48,13 @@
                   Each product includes two resources configurations (since we want
                   demonstrate distributed transactions involving more than one resource manager).
 			   -->
-			 <!--
 			 <XA_RESOURCE>
 			 	<XA_RESOURCE_MGR_ID>2101</XA_RESOURCE_MGR_ID>
 			 	<XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
 			 	<XA_OPEN_STRING>db1</XA_OPEN_STRING>
 			 	<XA_CLOSE_STRING></XA_CLOSE_STRING>
 			 	<XA_SWITCH>db_xa_switch</XA_SWITCH>
-			 	<XA_LIB_NAME>${BDB_HOME}/lib/libdb.so</XA_LIB_NAME>
+			 	<XA_LIB_NAME>/usr/lib/libdb.so</XA_LIB_NAME>
 			 </XA_RESOURCE>
 			 <XA_RESOURCE>
 			 	<XA_RESOURCE_MGR_ID>2102</XA_RESOURCE_MGR_ID>
@@ -63,10 +62,9 @@
 			 	<XA_OPEN_STRING>db2</XA_OPEN_STRING>
 			 	<XA_CLOSE_STRING></XA_CLOSE_STRING>
 			 	<XA_SWITCH>db_xa_switch</XA_SWITCH>
-			 	<XA_LIB_NAME>${BDB_HOME}/lib/libdb.so</XA_LIB_NAME>
+			 	<XA_LIB_NAME>/usr/lib/libdb.so</XA_LIB_NAME>
 			 </XA_RESOURCE>
-			 -->
-             <--
+             <!--
              Similarly for including ORACLE databases in the example. The open string includes all the
              inforamtion needed for making XA connections. For example, the first XA resource below is
              refering to an ORACLE database called ORCL and credentials scott/tiger. When installing
