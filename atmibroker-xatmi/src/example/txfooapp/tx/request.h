@@ -31,7 +31,7 @@
 
 #ifdef UNITTEST
 #define BDB
-static const char * const TXTEST_SVC_NAME = "tx_db_service";
+static const char * const TXTEST_SVC_NAME = "tpcall_x_octet";
 #else
 static const char * const TXTEST_SVC_NAME = "BAR";
 #endif

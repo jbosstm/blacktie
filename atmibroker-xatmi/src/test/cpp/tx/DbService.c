@@ -17,7 +17,6 @@
  */
 #include "tx/request.h"
 
-/* function name must match TXTEST_SVC_NAME - see README */
 #ifdef UNITTEST
 void tx_db_service(TPSVCINFO *svcinfo)
 #else

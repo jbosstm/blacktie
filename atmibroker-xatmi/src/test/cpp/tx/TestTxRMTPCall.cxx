@@ -21,24 +21,14 @@
 #include "BaseServerTest.h"
 #include "XATMITestSuite.h"
 
-void xtx_db_service(TPSVCINFO *svcinfo);
 extern "C" {
 #include "tx/request.h"
 extern int run_tests(product_t *prod_array);
 extern void tx_db_service(TPSVCINFO *svcinfo);
 }
 
-#if 1
-void xtx_db_service(TPSVCINFO *svcinfo) {
-    userlogc((char*) "TxLog: xtx_db_service running");
-    tx_db_service(svcinfo);
-}
-#endif
-
 void TestTxRMTPCall::test0() {
-CPPUNIT_ASSERT_MESSAGE("TestTxRMTPCall::test0 is disabled", true);
-return;
-    CPPUNIT_ASSERT(tpadvertise((char*) "tpcall_x_octet", xtx_db_service)  != -1);
+    CPPUNIT_ASSERT(tpadvertise((char*) "tpcall_x_octet", tx_db_service)  != -1);
     CPPUNIT_ASSERT(tperrno == 0);
 
     CPPUNIT_ASSERT(run_tests(products) == 0);
