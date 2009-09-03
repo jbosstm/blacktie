@@ -14,8 +14,6 @@ XAStateModel::XAStateModel() : astate_(T0), bstate_(S0)
 
 int XAStateModel::transition(XID& xid, enum XAEVENT method, long flags, int rv)
 {
-#ifdef XASM
-    // only do XA state model checks if required since it is a performance overhead
     int rv1 = XA_OK, rv2;
 
     LOG4CXX_TRACE(xasmlogger, "transition:ENTER xid="
@@ -23,6 +21,8 @@ int XAStateModel::transition(XID& xid, enum XAEVENT method, long flags, int rv)
         << " rv=" << rv << " flags=" << std::hex << flags << show_flags(flags)
         << " method=" << method << " astate=" << astate_ << " bstate=" << bstate_);
 
+#ifdef XASM
+    // only do XA state model checks if required since it is a performance overhead
     if ((method < XACALL_PREPARE ))
         rv1 =  atransition(&astate_,  method, flags, rv);
 
@@ -35,6 +35,9 @@ int XAStateModel::transition(XID& xid, enum XAEVENT method, long flags, int rv)
     }
 
     LOG4CXX_TRACE(xasmlogger, (char*) "transition: rv1=" << rv1 << " rv2=" << rv2);
+#else
+    rv1 = XA_OK;
+    rv2 = XA_OK;
 #endif
 
     return rv;

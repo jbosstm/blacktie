@@ -491,9 +491,11 @@ int TxManager::resume(int cd)
         std::vector<int>::iterator i = std::find(cds.begin(), cds.end(), cd);
 
         if (i != cds.end()) {
-            LOG4CXX_DEBUG(txmlogger, (char*) "Removing tp call " << cd << " from tx " << tx);
+            LOG4CXX_DEBUG(txmlogger, (char*) "Removing tp call " << cd << " from tx "
+                << tx << " remaining tpcalls: " << cds.size());
             cds.erase(i++, i);
 
+            LOG4CXX_DEBUG(txmlogger, (char*) "Deleted cd - remaining tpcalls: " << cds.size());
             if (cds.size() == 0) {
                 LOG4CXX_DEBUG(txmlogger, (char*) "No more outstanding calls - resume RMs");
                 return rm_start(TMRESUME);
