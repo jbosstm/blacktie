@@ -25,7 +25,6 @@ extern "C" {
 #endif
 
 extern int run_tests(product_t *prod_array);
-extern int isServer;
 
 static product_t *get_product(const char *pid) {
     int id = atoi((char *) pid);
@@ -70,7 +69,6 @@ int main(int argc, char **argv)
             prods[i].pname, prods[i].dbname, prods[i].id, prods[i].xaflags());
     }
 
-isServer = 0;
 	rv = run_tests(prods);
 
 	userlogc("TxLog Test %s (%d)\n", (rv ? "failed" : "passed"), rv);

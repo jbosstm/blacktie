@@ -832,6 +832,7 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 	setSpecific(TPE_KEY, TSS_TPERESET);
 
 	long toCheck = flags;
+
 	if (toCheck != 0) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
@@ -849,18 +850,25 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 				if (idata == NULL) {
 					idata = ::tpalloc((char*) "X_OCTET", NULL, 0);
 				}
+
 				if (rcode == TPESVCERR || len == -1) {
+                    // mark rollback only and disassociate tx if present
+                    if (getSpecific(TSS_KEY) != NULL)
+                        txx_release_control(txx_unbind(true));
+
 					::tpfree(idata);
 					::send(session, "", NULL, 0, 0, flags, TPFAIL, TPESVCERR);
 				} else {
 					if (rval != TPSUCCESS && rval != TPFAIL) {
 						rval = TPFAIL;
 					}
+
+                    // mark rollback only and disassociate tx if present
+                    if (getSpecific(TSS_KEY) != NULL)
+                        txx_release_control(txx_unbind((rval == TPFAIL)));
+
 					::send(session, "", idata, len, 0, flags, rval, rcode);
 				}
-
-                if (rval == TPFAIL)
-                    txx_rollback_only();
 
 				::tpfree(idata);
 				session->setSendTo(NULL);

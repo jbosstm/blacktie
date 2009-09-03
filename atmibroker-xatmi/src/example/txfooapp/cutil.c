@@ -418,7 +418,7 @@ int run_tests(product_t *prod_array)
             userlogc_warn( (char*) "TxLog %s FAILED", tests[i].name);
 			return rv;
         }
-        userlogc_warn( (char*) "TxLog %s PASSED", tests[i].name);
+        userlogc( (char*) "TxLog %s PASSED", tests[i].name);
     }
 
     userlogc( (char*) "TxLog Tests complete");

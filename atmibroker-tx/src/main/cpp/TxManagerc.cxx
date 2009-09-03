@@ -106,10 +106,12 @@ int txx_associate_serialized(char *orbname, char* ctrlIOR)
     return TMER_INVAL;
 }
 
-void *txx_unbind()
+void *txx_unbind(bool rollback)
 {
-    FTRACE(txmclogger, "ENTER");
-    // TODO can we call txx_rollback_only from here - check xatmi spec return code
+    FTRACE(txmclogger, "ENTER rollback=" << rollback);
+    if (rollback)
+        (void) TxManager::get_instance()->rollback_only();
+
     return (void *) TxManager::get_instance()->tx_suspend((TMSUSPEND | TMMIGRATE));
 //    return (void *) TxManager::get_instance()->tx_suspend(TMSUCCESS);
 }

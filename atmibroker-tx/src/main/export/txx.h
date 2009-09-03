@@ -78,10 +78,13 @@ extern BLACKTIE_TX_DLL char* txx_serialize(char *);
  * (also suspends all Resource Managers linked into the running applications)
  * returns the transaction that was previously associated
  *
+ * If the request argument rollback is set to true then the transaction is
+ * marked rollback only prior to disassociation from the thread
+ *
  * Returns the OTS control associated with the current thread. The caller
  * is responsible for calling release_control on the returned value.
  */
-extern BLACKTIE_TX_DLL void * txx_unbind();
+extern BLACKTIE_TX_DLL void * txx_unbind(bool rollback);
 
 /**
  * Return the OTS control associated with the current thread

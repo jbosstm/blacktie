@@ -118,7 +118,7 @@ static int check_count(const char *msg, char *key, int in_tx, int expect) {
 		return -1;
 	}
 
-	userlogc( "TxLog %s: RECORD COUNT: %d expected %d", testid, rcnt, expect);
+	userlogc_debug( "TxLog %s: RECORD COUNT: %d expected %d", testid, rcnt, expect);
 	return 0;
 }
 
@@ -418,7 +418,7 @@ int run_tests(product_t *prod_array)
             userlogc_warn( (char*) "TxLog %s FAILED", tests[i].name);
 			return rv;
         }
-        userlogc_warn( (char*) "TxLog %s PASSED", tests[i].name);
+        userlogc( (char*) "TxLog %s PASSED", tests[i].name);
     }
 
     userlogc( (char*) "TxLog Tests complete");

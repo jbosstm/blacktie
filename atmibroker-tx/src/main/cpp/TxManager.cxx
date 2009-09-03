@@ -33,7 +33,6 @@
         return TX_PROTOCOL_ERROR;   \
     }}
 
-int isServer = 1;
 namespace atmibroker {
     namespace tx {
 
@@ -520,7 +519,6 @@ int TxManager::suspend(int cd)
 
             if (cds.size() == 1) {
                 LOG4CXX_DEBUG(txmlogger, (char*) "First outstanding call - suspending RMs");
-//return (isServer == 1 ? rm_end(TMSUSPEND) : rm_end(TMSUSPEND | TMMIGRATE));
                 return rm_end(TMSUSPEND | TMMIGRATE);
             }
         }

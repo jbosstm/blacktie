@@ -156,14 +156,15 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 	AtmiBrokerMem::get_instance()->tpfree(tpsvcinfo.data, true);
 
-    if (message.control != NULL && strcmp((char*)message.control, "null") != 0) {
-        LOG4CXX_DEBUG(logger, (char*) "onMessage disassociate tx");
-        txx_release_control(txx_unbind());
-    }
-
 	// CLEAN UP THE SENDER AND RECEIVER FOR THIS CLIENT
 	if (session->getCanSend()) {
-		LOG4CXX_TRACE(logger, (char*) "Returning error");
+		LOG4CXX_TRACE(logger, (char*) "Returning error - marking tx as rollback only if "
+            << getSpecific(TSS_KEY));
+
+        // mark tx rollback only and disassociate if present
+        if (getSpecific(TSS_KEY) != NULL)
+            txx_release_control(txx_unbind(true));
+
 		::tpreturn(TPFAIL, TPESVCERR, NULL, 0, 0);
 		LOG4CXX_TRACE(logger, (char*) "Returned error");
 	}

@@ -23,7 +23,7 @@ using namespace atmibroker::xa;
 
 XAResourceAdaptorImpl::XAResourceAdaptorImpl(
     XAResourceManager * rm, XID& xid, XID& bid, CORBA::Long rmid, struct xa_switch_t * xa_switch) throw (RMException) :
-    rm_(rm), xid_(xid), bid_(bid), complete_(false), rmid_(rmid), xa_switch_(xa_switch), rc_(0), //astate_(T0), bstate_(S0),
+    rm_(rm), xid_(xid), bid_(bid), complete_(false), rmid_(rmid), xa_switch_(xa_switch), rc_(0),
     tightly_coupled_(0)
 {
     FTRACE(xaralogger, "ENTER" << (char*) " new OTS resource rmid:" << rmid_);
@@ -57,7 +57,7 @@ CosTransactions::Vote XAResourceAdaptorImpl::prepare()
     throw (CosTransactions::HeuristicMixed,CosTransactions::HeuristicHazard)
 {
     FTRACE(xaralogger, "ENTER astate=" << sm_.astate() << " bstate=" << sm_.bstate());
-    int rv2, rv1 = XA_OK;
+    int rv1, rv2;
 
     // This resource is joining an existing branch. In this case the thread that
     // originally started the branch is responsible for all updates the RM.
@@ -66,11 +66,7 @@ CosTransactions::Vote XAResourceAdaptorImpl::prepare()
     if (tightly_coupled_)
         return CosTransactions::VoteReadOnly;
 
-//    if (sm_.astate() == T2)
-//        rv1 = xa_start(&xid_, TMRESUME);
-
     rv1 = xa_end(TMSUCCESS);
-
     rv2 = xa_prepare(TMNOFLAGS);
 
     if (rv1 != XA_OK && rv2 == XA_OK) {
@@ -242,20 +238,6 @@ int XAResourceAdaptorImpl::xa_start (long flags)
 {
     FTRACE(xaralogger, (char*) "ENTER astate=" << sm_.astate() << " bstate=" << sm_.bstate());
  
-#ifdef USEST
-    if (flags & TMJOIN) {
-        FTRACE(xaralogger, (char*) "branch is tightly coupled to other branches");
-//        tightly_coupled_ = 1;
-    }
-    if (sm_.astate() == T0) {
-        flags = TMNOFLAGS;
-    } else if (sm_.astate() == T2) {
-        flags = TMRESUME;
-    } else {
-        LOG4CXX_INFO(xaralogger, (char*) "branch already associated - ignoring xa_start request");
-        return XA_OK;
-    }
-#endif
     int rv = xa_switch_->xa_start_entry(&bid_, rmid_, flags);
     return sm_.transition(bid_, XACALL_START, flags, rv);
 }
@@ -263,30 +245,13 @@ int XAResourceAdaptorImpl::xa_end (long flags)
 {
     FTRACE(xaralogger, (char*) "ENTER bstate=" << std::hex << sm_.bstate() << " flags=" << flags);
   
-#if 0
-    if (sm_.bstate() == S1) {
-        int rv = xa_switch_->xa_end_entry(&bid_, rmid_, flags);
-        return sm_.transition(bid_, XACALL_END, flags, rv);
-    } else if (sm_.bstate() == S3) {
-        LOG4CXX_TRACE(xaralogger, "xa_end: branch already prepared");
-        return XA_OK;
-    } else if (sm_.bstate() == S4) {
-        LOG4CXX_TRACE(xaralogger, "xa_end: branch already marked rollback only");
-        return XA_RBROLLBACK;
-    } else {
-        LOG4CXX_TRACE(xaralogger, "xa_end: branch is not active - returning XAER_PROTO");
-return XA_OK;
-        //TODO RENABLE after testing return XAER_PROTO;
-        int rv = xa_switch_->xa_end_entry(&bid_, rmid_, flags);
-        return sm_.transition(bid_, XACALL_END, flags, rv);
-    }
-#endif
     int rv = xa_switch_->xa_end_entry(&bid_, rmid_, flags);
     return sm_.transition(bid_, XACALL_END, flags, rv);
 }
 int XAResourceAdaptorImpl::xa_rollback (long flags)
 {
     FTRACE(xaralogger, (char*) "ENTER bstate=" << sm_.bstate());
+
     int rv = xa_switch_->xa_rollback_entry(&bid_, rmid_, flags);
     return sm_.transition(bid_, XACALL_ROLLBACK, flags, rv);
 }
