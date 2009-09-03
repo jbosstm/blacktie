@@ -16,7 +16,7 @@
  * MA  02110-1301, USA.
  */
 /* Typed Buffer Functions */
-#if 0
+#if 1
 #include "TestTPAlloc.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPAlloc);
 #include "TestTPTypes.h"
@@ -75,6 +75,6 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestClientInit);
 
 /* Transactional Request Response */
 #include "TestTxTPCall.h"
-//CPPUNIT_TEST_SUITE_REGISTRATION( TestTxTPCall);
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTxTPCall);
 #include "tx/TestTxRMTPCall.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTxRMTPCall);
