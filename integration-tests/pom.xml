@@ -24,7 +24,7 @@
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>integration-test</artifactId>
+	<artifactId>integration-tests</artifactId>
 	<name>Blacktie Java/C C/Java XATMI Tests</name>
 	<packaging>jar</packaging>
 
