@@ -33,6 +33,8 @@ int main(int argc, char **argv) {
 	char *sbuf;
 	long sbufsize;
 	long callflags;
+	int i;
+for (i = 0; i < 10; i++) {
 
 	txstatus = tx_open();
 	if (txstatus != TX_OK) {
@@ -71,6 +73,6 @@ int main(int argc, char **argv) {
 	if (txstatus != TX_OK) {
 		userlogc((char*) "ERROR - Could not close transaction: ", sbuf);
 	}
-
+}
 	return 0;
 }
