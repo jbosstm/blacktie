@@ -280,14 +280,16 @@ AtmiBrokerServer::AtmiBrokerServer() {
 			return;
 		}
 
-        if (tx_open() != TX_OK)
-            LOG4CXX_WARN(loggerAtmiBrokerServer, serverName
-					<< (char *) " transaction configuration error, proceeding  without transactions");
+        if (tx_open() != TX_OK) {
+		    setSpecific(TPE_KEY, TSS_TPESYSTEM);
 
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-				(char*) "server_init(): finished.");
+            LOG4CXX_ERROR(loggerAtmiBrokerServer, serverName
+					<< (char *) " transaction configuration error, aborting server startup");
+        } else {
+		    serverInitialized = true;
 
-		serverInitialized = true;
+            LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_init(): finished.");
+        }
 	} catch (CORBA::Exception& e) {
 		userlog(log4cxx::Level::getError(), loggerAtmiBrokerServer,
 				(char*) "serverinit - Unexpected CORBA exception: %s",
@@ -300,12 +302,14 @@ AtmiBrokerServer::AtmiBrokerServer() {
 //
 AtmiBrokerServer::~AtmiBrokerServer() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "destructor");
-	if (serverInitialized) {
-		server_done();
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "Server done");
+	server_done();
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "Server done");
+
+    if (finish != NULL) {
 		delete finish;
 		finish = NULL;
-	}
+    }
+
 	serviceData.clear();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted service array");
 
