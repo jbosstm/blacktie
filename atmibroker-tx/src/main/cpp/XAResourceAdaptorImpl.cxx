@@ -244,7 +244,11 @@ int XAResourceAdaptorImpl::xa_start (long flags)
 int XAResourceAdaptorImpl::xa_end (long flags)
 {
     FTRACE(xaralogger, (char*) "ENTER bstate=" << std::hex << sm_.bstate() << " flags=" << flags);
-  
+ 
+    // if the branch is already idle just return OK - see ch 6 of the XA specification
+    if (sm_.bstate() == S2)
+        return XA_OK;
+
     int rv = xa_switch_->xa_end_entry(&bid_, rmid_, flags);
     return sm_.transition(bid_, XACALL_END, flags, rv);
 }

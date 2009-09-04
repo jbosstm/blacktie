@@ -12,6 +12,10 @@ XAStateModel::XAStateModel() : astate_(T0), bstate_(S0)
 {
 }
 
+// enable XA state model checks - can be disabled to improve performance overhead
+// provided XAResourceAdaptorImpl remembers when it goes into state Idle (via calls to xa_end).
+// XAResourceAdaptorImpl::xa_end is the only place where the current state is consulted
+#define XASM
 int XAStateModel::transition(XID& xid, enum XAEVENT method, long flags, int rv)
 {
     int rv1 = XA_OK, rv2;
@@ -22,7 +26,6 @@ int XAStateModel::transition(XID& xid, enum XAEVENT method, long flags, int rv)
         << " method=" << method << " astate=" << astate_ << " bstate=" << bstate_);
 
 #ifdef XASM
-    // only do XA state model checks if required since it is a performance overhead
     if ((method < XACALL_PREPARE ))
         rv1 =  atransition(&astate_,  method, flags, rv);
 
