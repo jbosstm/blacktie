@@ -204,6 +204,7 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 						if (flags & TPNOCHANGE && typesChanged) {
 							// TODO rollback-only
 							setSpecific(TPE_KEY, TSS_TPEOTYPE);
+							txx_rollback_only();
 							free(message.data);
 							free(message.type);
 							free(message.subtype);
@@ -214,7 +215,6 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 										(char*) "receive session closed: "
 										<< id);
 							}
-							txx_rollback_only();
 							return toReturn;
 						}
 
