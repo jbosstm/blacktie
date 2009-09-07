@@ -168,11 +168,32 @@ public abstract class Service implements BlacktieService {
 
 			if (sender != null && response != null) {
 				log.trace("Sending response");
+				int rcode = response.rcode;
+				if (rcode == Connection.TPESVCERR) {
+					if (JABTransaction.current() != null) {
+						try {
+							JABTransaction.current().rollback_only();
+						} catch (JABException e) {
+							throw new ConnectionException(Connection.TPESYSTEM,
+									"Could not mark transaction for rollback only");
+						}
+					}
+				}
 				short rval = response.getRval();
 				if (rval != Connection.TPSUCCESS && rval != Connection.TPFAIL) {
 					rval = Connection.TPFAIL;
-					// TODO SET ROLLBACK ONLY
 				}
+				if (rval == Connection.TPFAIL) {
+					if (JABTransaction.current() != null) {
+						try {
+							JABTransaction.current().rollback_only();
+						} catch (JABException e) {
+							throw new ConnectionException(Connection.TPESYSTEM,
+									"Could not mark transaction for rollback only");
+						}
+					}
+				}
+
 				Buffer toSend = response.getBuffer();
 				int len = response.getLen();
 				String type = null;
@@ -189,13 +210,26 @@ public abstract class Service implements BlacktieService {
 				} else {
 					type = "X_OCTET";
 				}
-				sender.send("", rval, response.getRcode(), data, len, response
-						.getFlags(), 0, type, subtype);
+				sender.send("", rval, rcode, data, len, response.getFlags(), 0,
+						type, subtype);
 
 			} else if (sender == null && response != null) {
 				log.error("No sender avaible but message to be sent");
 			} else if (sender != null && response == null) {
-				log.error("Sender waiting but no response");
+				log.error("Returning error - marking tx as rollback only if ");
+				if (JABTransaction.current() != null) {
+					try {
+						JABTransaction.current().rollback_only();
+					} catch (JABException e) {
+						throw new ConnectionException(Connection.TPESYSTEM,
+								"Could not mark transaction for rollback only");
+					}
+				}
+
+				sender.send("", Connection.TPFAIL, Connection.TPESVCERR, null,
+						0, 0, 0, null, null);
+
+				log.error("Returned error");
 			} else {
 				log.debug("No need to send a response");
 			}

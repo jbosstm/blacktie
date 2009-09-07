@@ -24,7 +24,7 @@ public class ConnectionFactory {
 	 */
 	public static synchronized ConnectionFactory getConnectionFactory()
 			throws ConnectionException {
-		return new ConnectionFactory((String)null);
+		return new ConnectionFactory((String) null);
 	}
 
 	/**
@@ -37,7 +37,7 @@ public class ConnectionFactory {
 			String configurationDirectory) throws ConnectionException {
 		return new ConnectionFactory(configurationDirectory);
 	}
-	
+
 	public static synchronized ConnectionFactory getConnectionFactory(
 			Properties prop) throws ConnectionException {
 		return new ConnectionFactory(prop);

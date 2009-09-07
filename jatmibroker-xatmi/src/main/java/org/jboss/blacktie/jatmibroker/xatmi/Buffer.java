@@ -32,6 +32,8 @@ import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.jab.JABException;
+import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 
 /**
  * This class encapsulates the response from the remote service and the return
@@ -707,6 +709,15 @@ public class Buffer implements Serializable {
 							writeDouble(dos, 0);
 						}
 					} else {
+						if (JABTransaction.current() != null) {
+							try {
+								JABTransaction.current().rollback_only();
+							} catch (JABException e) {
+								throw new ConnectionException(
+										Connection.TPESYSTEM,
+										"Could not mark transaction for rollback only");
+							}
+						}
 						throw new ConnectionException(Connection.TPEOTYPE,
 								"Could not serialize: " + types[i]);
 					}

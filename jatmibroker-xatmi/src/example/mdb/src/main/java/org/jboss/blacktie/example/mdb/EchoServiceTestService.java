@@ -38,7 +38,8 @@ import org.jboss.ejb3.annotation.Depends;
 public class EchoServiceTestService extends MDBBlacktieService implements
 		javax.jms.MessageListener {
 
-	public EchoServiceTestService() throws ConnectionException, ConfigurationException {
+	public EchoServiceTestService() throws ConnectionException,
+			ConfigurationException {
 		super("EchoService");
 	}
 
@@ -47,7 +48,8 @@ public class EchoServiceTestService extends MDBBlacktieService implements
 		try {
 			Buffer buffer = new Buffer("X_OCTET", null);
 			buffer.setData(rcvd.getBytes());
-			return new Response(Connection.TPSUCCESS, 0, buffer, rcvd.length(), 0);
+			return new Response(Connection.TPSUCCESS, 0, buffer, rcvd.length(),
+					0);
 		} catch (ConnectionException e2) {
 			rcvd = "";
 			e2.printStackTrace();

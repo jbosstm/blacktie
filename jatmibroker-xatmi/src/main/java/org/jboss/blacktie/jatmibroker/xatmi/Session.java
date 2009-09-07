@@ -25,6 +25,8 @@ import org.jboss.blacktie.jatmibroker.core.transport.Message;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.core.transport.Sender;
 import org.jboss.blacktie.jatmibroker.core.transport.Transport;
+import org.jboss.blacktie.jatmibroker.jab.JABException;
+import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 
 /**
  * This is the session to send data on.
@@ -290,7 +292,15 @@ public class Session {
 	 *            The connection descriptor to use
 	 */
 	public void tpdiscon() throws ConnectionException {
-		sender.send("", eventListener.getDisconCode(), 0, null, 0, cd, 0, null,
+		if (JABTransaction.current() != null) {
+			try {
+				JABTransaction.current().rollback_only();
+			} catch (JABException e) {
+				throw new ConnectionException(Connection.TPESYSTEM,
+						"Could not mark transaction for rollback only");
+			}
+		}
+		sender.send("", EventListener.DISCON_CODE, 0, null, 0, cd, 0, null,
 				null);
 
 	}
@@ -318,10 +328,6 @@ public class Session {
 
 		public EventListenerImpl(Session session) {
 			this.session = session;
-		}
-
-		public short getDisconCode() {
-			return 0x00000003;
 		}
 
 		public void setLastEvent(long lastEvent) {

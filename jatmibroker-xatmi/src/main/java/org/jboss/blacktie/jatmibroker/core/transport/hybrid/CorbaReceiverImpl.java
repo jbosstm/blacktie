@@ -29,6 +29,8 @@ import org.jboss.blacktie.jatmibroker.core.transport.Message;
 import org.jboss.blacktie.jatmibroker.core.transport.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.core.tx.TxIORInterceptor;
+import org.jboss.blacktie.jatmibroker.jab.JABException;
+import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.omg.CORBA.Any;
@@ -148,9 +150,6 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 		return m_default_poa;
 	}
 
-	// client_callback() -- Implements IDL operation
-	// "AtmiBroker.ClientCallback.client_callback".
-	//
 	public void send(String replyto_ior, short rval, int rcode, byte[] idata,
 			int ilen, int cd, int flags, String type, String subtype) {
 		if (callbackIOR != null) {
@@ -174,7 +173,7 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 		}
 
 		if (eventListener != null) {
-			if (message.rval == eventListener.getDisconCode()) {
+			if (message.rval == EventListener.DISCON_CODE) {
 				eventListener.setLastEvent(Connection.TPEV_DISCONIMM);
 			} else if (message.rcode == Connection.TPESVCERR) {
 				eventListener.setLastEvent(Connection.TPEV_SVCERR);
@@ -207,10 +206,52 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 				}
 			}
 			if (returnData.isEmpty()) {
+				if (JABTransaction.current() != null) {
+					try {
+						JABTransaction.current().rollback_only();
+					} catch (JABException e) {
+						throw new ConnectionException(Connection.TPESYSTEM,
+								"Could not mark transaction for rollback only");
+					}
+				}
 				throw new ConnectionException(Connection.TPETIME,
 						"Did not receive a message");
 			} else {
-				return returnData.remove(0);
+				Message message = returnData.remove(0);
+				if (message != null) {
+					if (message.rval == EventListener.DISCON_CODE) {
+						if (JABTransaction.current() != null) {
+							try {
+								JABTransaction.current().rollback_only();
+							} catch (JABException e) {
+								throw new ConnectionException(
+										Connection.TPESYSTEM,
+										"Could not mark transaction for rollback only");
+							}
+						}
+					} else if (message.rcode == Connection.TPESVCERR) {
+						if (JABTransaction.current() != null) {
+							try {
+								JABTransaction.current().rollback_only();
+							} catch (JABException e) {
+								throw new ConnectionException(
+										Connection.TPESYSTEM,
+										"Could not mark transaction for rollback only");
+							}
+						}
+					} else if (message.rval == Connection.TPFAIL) {
+						if (JABTransaction.current() != null) {
+							try {
+								JABTransaction.current().rollback_only();
+							} catch (JABException e) {
+								throw new ConnectionException(
+										Connection.TPESYSTEM,
+										"Could not mark transaction for rollback only");
+							}
+						}
+					}
+				}
+				return message;
 			}
 		}
 	}

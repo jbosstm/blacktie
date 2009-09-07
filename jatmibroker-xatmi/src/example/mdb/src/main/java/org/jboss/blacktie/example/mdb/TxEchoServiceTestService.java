@@ -52,7 +52,8 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 	private static final String[] names = { "FirstBTBean/remote",
 			"SecondBTBean/remote" };
 
-	public TxEchoServiceTestService() throws ConnectionException, ConfigurationException {
+	public TxEchoServiceTestService() throws ConnectionException,
+			ConfigurationException {
 		super("TxEchoService");
 	}
 
@@ -159,7 +160,8 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 		try {
 			Buffer buffer = new Buffer("X_OCTET", null);
 			buffer.setData(resp.getBytes());
-			return new Response(Connection.TPSUCCESS, 0, buffer, resp.length(), 0);
+			return new Response(Connection.TPSUCCESS, 0, buffer, resp.length(),
+					0);
 		} catch (ConnectionException e) {
 			resp = "";
 			log.error("Caught an exception", e);

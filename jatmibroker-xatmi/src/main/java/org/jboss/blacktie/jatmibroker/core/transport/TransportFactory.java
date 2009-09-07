@@ -39,11 +39,11 @@ public abstract class TransportFactory {
 
 		if ((k = serviceName.indexOf("ADMIN")) > 0) {
 			String svcadm = serviceName.substring(0, k) + "ADMIN";
-			transportLibrary = (String) properties.get("blacktie." 
-				+ svcadm + ".transportLib");
+			transportLibrary = (String) properties.get("blacktie." + svcadm
+					+ ".transportLib");
 		} else {
 			transportLibrary = (String) properties.get("blacktie."
-				+ serviceName + ".transportLib");
+					+ serviceName + ".transportLib");
 		}
 
 		if (transportLibrary == null) {

@@ -40,8 +40,8 @@ public class OrbManagement {
 
 		String namingContextExt = properties
 				.getProperty("blacktie.domain.name");
-		int numberOfOrbArgs = Integer.parseInt(properties
-				.getProperty("blacktie.orb.args", "0"));
+		int numberOfOrbArgs = Integer.parseInt(properties.getProperty(
+				"blacktie.orb.args", "0"));
 		List<String> orbArgs = new ArrayList<String>(numberOfOrbArgs);
 		for (int i = 1; i <= numberOfOrbArgs; i++) {
 			orbArgs.add(properties.getProperty("blacktie.orb.arg." + i));

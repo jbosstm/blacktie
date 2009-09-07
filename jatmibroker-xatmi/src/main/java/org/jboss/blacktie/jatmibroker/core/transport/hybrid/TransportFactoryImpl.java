@@ -55,8 +55,8 @@ public class TransportFactoryImpl extends TransportFactory {
 					"org.jnp.interfaces.NamingContextFactory");
 			props.setProperty("java.naming.factory.url.pkgs",
 					"org.jboss.naming:org.jnp.interfaces");
-			props.setProperty("java.naming.provider.url",
-					(String)properties.get("java.naming.provider.url"));
+			props.setProperty("java.naming.provider.url", (String) properties
+					.get("java.naming.provider.url"));
 			props.putAll(properties);
 			context = new InitialContext(props);
 			factory = (ConnectionFactory) context.lookup("ConnectionFactory");

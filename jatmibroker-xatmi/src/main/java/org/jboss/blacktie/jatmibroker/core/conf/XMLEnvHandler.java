@@ -17,9 +17,7 @@
  */
 package org.jboss.blacktie.jatmibroker.core.conf;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -60,7 +58,7 @@ public class XMLEnvHandler extends DefaultHandler {
 
 	private String serverName;
 	private String configDir;
-	
+
 	private Set<String> servers = new HashSet<String>();
 
 	public XMLEnvHandler(String configDir) {
@@ -72,7 +70,7 @@ public class XMLEnvHandler extends DefaultHandler {
 	public XMLEnvHandler(String configDir, Properties prop) {
 		this.prop = prop;
 		prop.put("blacktie.domain.servers", servers);
-		this.configDir = configDir;	
+		this.configDir = configDir;
 	}
 
 	public Properties getProperty() {

@@ -44,7 +44,8 @@ public class TxCreateServiceTestService extends MDBBlacktieService implements
 	private static final Logger log = LogManager
 			.getLogger(TxCreateServiceTestService.class);
 
-	public TxCreateServiceTestService() throws ConfigurationException, ConnectionException {
+	public TxCreateServiceTestService() throws ConfigurationException,
+			ConnectionException {
 		super("TxCreateService");
 	}
 
@@ -70,7 +71,8 @@ public class TxCreateServiceTestService extends MDBBlacktieService implements
 		try {
 			buffer = new Buffer("X_OCTET", null);
 			buffer.setData(resp.getBytes());
-			return new Response(Connection.TPSUCCESS, 0, buffer, resp.length(), 0);
+			return new Response(Connection.TPSUCCESS, 0, buffer, resp.length(),
+					0);
 		} catch (ConnectionException e) {
 			resp = "";
 			log.error("Caught an exception", e);
