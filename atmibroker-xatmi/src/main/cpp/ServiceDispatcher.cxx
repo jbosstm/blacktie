@@ -20,6 +20,7 @@
 #include "ThreadLocalStorage.h"
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerMem.h"
+#include "txx.h"
 
 log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger(
 		"ServiceDispatcher"));
@@ -160,8 +161,9 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	if (session->getCanSend()) {
 		LOG4CXX_TRACE(logger, (char*) "Returning error - marking tx as rollback only if "
             << getSpecific(TSS_KEY));
+		txx_rollback_only();
 
-        // mark tx rollback only and disassociate if present
+        // disassociate if present
         if (getSpecific(TSS_KEY) != NULL)
             txx_release_control(txx_unbind(true));
 
