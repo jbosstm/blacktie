@@ -75,7 +75,8 @@ void TestRollbackOnly::test_tpcall_TPETIME() {
 	userlogc((char*) "inTx=%d", inTx);
 	CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
 	CPPUNIT_ASSERT(tx_commit() == TX_ROLLBACK);
-	//TODO CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK);
+	// TODO ::tx_info(&txinfo);
+	// TODO CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK);
 }
 
 void test_tpcall_TPETIME_service(TPSVCINFO *svcinfo) {
@@ -110,7 +111,8 @@ void TestRollbackOnly::test_tpcall_TPEOTYPE() {
 	userlogc((char*) "inTx=%d", inTx);
 	CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
 	CPPUNIT_ASSERT(tx_commit() == TX_ROLLBACK);
-	//TODO CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK);
+	// TODO ::tx_info(&txinfo);
+	// TODO CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK);
 }
 
 void test_tpcall_TPEOTYPE_service(TPSVCINFO *svcinfo) {
@@ -141,7 +143,8 @@ void TestRollbackOnly::test_tpcall_TPESVCFAIL() {
 	userlogc((char*) "inTx=%d", inTx);
 	CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
 	CPPUNIT_ASSERT(tx_commit() == TX_ROLLBACK);
-	//TODO CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK);
+	// TODO ::tx_info(&txinfo);
+	// TODO CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK);
 }
 
 void test_tpcall_TPESVCFAIL_service(TPSVCINFO *svcinfo) {
@@ -172,7 +175,8 @@ void TestRollbackOnly::test_tprecv_TPEV_DISCONIMM() {
 	userlogc((char*) "inTx=%d", inTx);
 	CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
 	CPPUNIT_ASSERT(tx_commit() == TX_ROLLBACK);
-	//TODO CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK);
+	// TODO ::tx_info(&txinfo);
+	// TODO CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK);
 }
 
 void test_tprecv_TPEV_DISCONIMM_service(TPSVCINFO *svcinfo) {
@@ -214,7 +218,8 @@ void TestRollbackOnly::test_tprecv_TPEV_SVCFAIL() {
 	userlogc((char*) "inTx=%d", inTx);
 	CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
 	CPPUNIT_ASSERT(tx_commit() == TX_ROLLBACK);
-	//TODO CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK);
+	// TODO ::tx_info(&txinfo);
+	// TODO CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK);
 }
 
 void test_tprecv_TPEV_SVCFAIL_service(TPSVCINFO *svcinfo) {
@@ -243,7 +248,8 @@ void TestRollbackOnly::test_no_tpreturn() {
 	userlogc((char*) "inTx=%d", inTx);
 	CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
 	CPPUNIT_ASSERT(tx_commit() == TX_ROLLBACK);
-	//TODO CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK);
+	// TODO ::tx_info(&txinfo);
+	// TODO CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK);
 }
 
 void test_no_tpreturn_service(TPSVCINFO *svcinfo) {
