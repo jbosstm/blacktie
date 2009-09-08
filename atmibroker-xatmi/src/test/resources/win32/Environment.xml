@@ -50,6 +50,7 @@
 					<SERVICE name='DEBIT' transportLibrary='atmibroker-hybrid.dll'/>
 					<SERVICE name='CREDIT' transportLibrary='atmibroker-hybrid.dll'/>
 					<SERVICE name='INQUIRY' transportLibrary='atmibroker-hybrid.dll'/>
+					<SERVICE name='TestRbkOnly' transportLibrary='atmibroker-hybrid.dll'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>

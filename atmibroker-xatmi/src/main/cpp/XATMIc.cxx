@@ -292,6 +292,9 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 						setSpecific(TPE_KEY, TSS_TPETIME);
 						txx_rollback_only();
 					}
+				} else {
+					setSpecific(TPE_KEY, TSS_TPETIME);
+					txx_rollback_only();
 				}
 			} catch (...) {
 				LOG4CXX_ERROR(
