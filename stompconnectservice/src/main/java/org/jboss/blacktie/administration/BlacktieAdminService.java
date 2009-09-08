@@ -58,6 +58,7 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 	private Properties prop = new Properties();
 	private MBeanServerConnection beanServerConnection;
 	private Connection connection;
+	private PingThread pingThread;
 
 	public void start() throws Exception {
 		XMLEnvHandler handler = new XMLEnvHandler("", prop);
@@ -69,15 +70,17 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 		JMXConnector c = JMXConnectorFactory.connect(u);
 		beanServerConnection = c.getMBeanServerConnection();
 
-		
-
 		ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory();
 		connection = connectionFactory.getConnection();
+		pingThread = new PingThread(beanServerConnection);
+		pingThread.startThread();
+		
 		log.info("Admin Server Started");
 	}
 
 	public void stop() throws Exception {
 		connection.close();
+		pingThread.stopThread();
 		log.info("Admin Server Stopped");
 	}
 
