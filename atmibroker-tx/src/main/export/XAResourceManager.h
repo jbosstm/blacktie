@@ -15,44 +15,42 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef XARESOURCEMANAGERFACTORY_H
-#define XARESOURCEMANAGERFACTORY_H
+#ifndef _XARESOURCEMANAGER_H
+#define _XARESOURCEMANAGER_H
 
-#include "atmiBrokerTxMacro.h"
 #include "CorbaConnection.h"
-#include "RMException.h"
 #include "XAResourceAdaptorImpl.h"
-#include "txi.h"
-
-#include <map>
-
-#include <tao/PortableServer/PortableServer.h>
-#include "CosTransactionsS.h"
 
 class XAResourceAdaptorImpl;
 
-extern log4cxx::LoggerPtr xaResourceLogger;
+class xid_cmp
+{   
+public: 
+    bool operator()(const XID& xid1, const XID& xid2);
+};  
 
 class BLACKTIE_TX_DLL XAResourceManager
 {
 public:
-	XAResourceManager(CORBA_CONNECTION *, const char *, const char *, const char *, CORBA::Long, struct xa_switch_t *)
-		throw (RMException);
+	XAResourceManager(CORBA_CONNECTION *, const char *, const char *, const char *,
+		CORBA::Long, struct xa_switch_t *, XARecoveryLog& log) throw (RMException);
 	virtual ~XAResourceManager();
 
 	int xa_start (XID *, long);
 	int xa_end (XID *, long);
+	int recover(XID& xid, const char* rc);
 
 	// return the resource id
 	CORBA::Long rmid(void) {return rmid_;};
-	void notifyError(XID *, int, bool);
-	void setComplete(XID*);
+	void notify_error(XID *, int, bool);
+	void set_complete(XID*);
 	const char * name() {return name_;}
     int xa_flags();
 
 	struct xa_switch_t * get_xa_switch() { return xa_switch_;}
 private:
-	typedef std::map<XID *, XAResourceAdaptorImpl *> XABranchMap;
+	//typedef std::map<XID *, XAResourceAdaptorImpl *> XABranchMap;
+	typedef std::map<XID, XAResourceAdaptorImpl *, xid_cmp> XABranchMap;
 	XABranchMap branches_;
 
 	PortableServer::POA_ptr poa_;
@@ -62,12 +60,13 @@ private:
 	const char *closeString_;
 	CORBA::Long rmid_;
 	struct xa_switch_t * xa_switch_;
+	XARecoveryLog& rclog_;
 
 	void createPOA();
-	int createServant(XID *);
+	int createServant(XID &);
 	XAResourceAdaptorImpl * locateBranch(XID *);
 
 	void show_branches(const char *, XID *);
-    XID gen_xid(XID &gid);
+    XID gen_xid(long rmid, XID &gid);
 };
-#endif // XARESOURCEMANAGERFACTORY_H
+#endif // _XARESOURCEMANAGER_H

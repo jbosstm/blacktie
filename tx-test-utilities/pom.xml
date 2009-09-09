@@ -30,6 +30,10 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.jboss.blacktie</groupId>
+			<artifactId>atmibroker-core</artifactId>
+		</dependency>
 	</dependencies>
 
 	<profiles>

@@ -15,24 +15,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef XARESOURCEADAPTORFACTORY_H
-#define XARESOURCEADAPTORFACTORY_H
+#ifndef _XARESOURCEMANAGERFACTORY_H
+#define _XARESOURCEMANAGERFACTORY_H
 
 #include "XAResourceManager.h"
-
 #include "AtmiBrokerEnvXml.h"
-
-#include <map>
 
 typedef std::map<long, XAResourceManager *> ResourceManagerMap;
 
-/*
- * XAResourceManagerFactory
- *
- * XAResourceManager
- *
- * XAResourceAdaptorImpl
- */
 class BLACKTIE_TX_DLL XAResourceManagerFactory
 {
 public:
@@ -48,7 +38,9 @@ public:
 	static bool getXID(XID &);
 private:
 	ResourceManagerMap rms_;
+	XARecoveryLog rclog_;
 
 	XAResourceManager * createRM(CORBA_CONNECTION *, xarm_config_t *) throw (RMException);
+	void recover_branches();
 };
-#endif	// XARESOURCEADAPTORFACTORY_H
+#endif	// _XARESOURCEMANAGERFACTORY_H

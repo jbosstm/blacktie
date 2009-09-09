@@ -122,7 +122,7 @@ static int check_count(const char *msg, char *key, int in_tx, int expect) {
 	return 0;
 }
 
-static int db_op(const char *msg, const char *data, char op, enum TX_TYPE txtype,
+static int db_op(const char *msg, const char *data, char op, int txtype,
 				 char **prbuf, int remote, int migrating, int expect) {
     userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	if (msg)
@@ -381,6 +381,24 @@ static int test4(int *cnt)
 	return 0;
 }
 
+/* cause the program to halt during phase 2 of the transaction 2PC protocol */
+static int testrc(int *cnt)
+{
+	int rv;
+    userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+
+	set_test_id("Test 5");
+	/* ask the remote service to insert a record but to halt during commit */
+	if ((rv = db_op("INSERT 1", emps[4], '0', TX_TYPE_BEGIN_COMMIT | TX_TYPE_HALT, 0, REMOTE_ACCESS, 0, -1))) {
+    	userlogc_warn( "Server failed as expected");
+		return rv;
+	}
+
+    userlogc_warn( "Server should have halted");
+
+	return -1;
+}
+
 int run_tests(product_t *prod_array)
 {
 	int rv, i, cnt = 0;
@@ -388,8 +406,9 @@ int run_tests(product_t *prod_array)
         const char *name;
 		int (*test)(int *);
 	} tests[] = {
-#undef TX_MCALLS
-#if defined(TX_MCALLS)   // tx extends over multiple tpacalls
+#if defined(TX_RC)   // test recovery
+		{"testrc", testrc},
+#elif defined(TX_MCALLS)   // tx extends over multiple tpacalls
 		{"test1", test1},
 		{"test2", test2},
 #elif defined(TX_SCALL)  // tx is active for a single tpacall

@@ -33,6 +33,8 @@
 
 log4cxx::LoggerPtr xarflogger(log4cxx::Logger::getLogger("TxLogXAFactory"));
 
+extern std::ostream& operator<<(std::ostream &os, const XID& xid);
+
 bool XAResourceManagerFactory::getXID(XID& xid)
 {
     FTRACE(xarflogger, "ENTER");
@@ -194,6 +196,34 @@ int XAResourceManagerFactory::endRMs(bool isOriginator, int flags)
     return _rmiter(rms_, _rm_end, isOriginator, flags);
 }
 
+// see if there are any transaction branches in need of revovery
+void XAResourceManagerFactory::recover_branches()
+{
+	XID* xid;
+	char* rc;
+	void *cursor;
+
+    FTRACE(xarflogger, "ENTER");
+	rclog_.cursor_begin(&cursor);
+
+	while (rclog_.cursor_next(cursor, (void**) &xid, (void**) &rc) == 0) {
+		long rmid = atol((char *) (xid->data + xid->gtrid_length));
+    	XAResourceManager *rm = findRM(rmid);
+
+		LOG4CXX_DEBUG(xarflogger,  (char *) "recover_branches: looking for rm " << rmid);
+		if (rm != NULL) {
+			rm->recover(*xid, rc);
+		} else {
+			LOG4CXX_DEBUG(xarflogger,  (char *) "recover_branches rm not found");
+		}
+
+		free(xid);
+		free(rc);
+	}
+
+	rclog_.cursor_end(cursor);
+}
+
 void XAResourceManagerFactory::createRMs(CORBA_CONNECTION * connection) throw (RMException)
 {
     FTRACE(xarflogger, "ENTER");
@@ -215,6 +245,8 @@ void XAResourceManagerFactory::createRMs(CORBA_CONNECTION * connection) throw (R
             rmp = rmp->next;
         }
     }
+
+	recover_branches();
 }
 
 /**
@@ -271,7 +303,7 @@ XAResourceManager * XAResourceManagerFactory::createRM(
 
     LOG4CXX_TRACE(xarflogger,  (char *) "creating xa rm: " << xa_switch->name);
     XAResourceManager * a = new XAResourceManager(
-        connection, rmp->resourceName, rmp->openString, rmp->closeString, rmp->resourceMgrId, xa_switch);
+        connection, rmp->resourceName, rmp->openString, rmp->closeString, rmp->resourceMgrId, xa_switch, rclog_);
     LOG4CXX_TRACE(xarflogger,  (char *) "created xarm");
 
     if (a != NULL)

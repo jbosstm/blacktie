@@ -17,6 +17,7 @@
  */
 #include "xa.h"
 #include "testrm.h"
+#include <userlogc.h>
 
 #include <stdlib.h>
 #include "ace/OS_NS_unistd.h"
@@ -38,6 +39,7 @@ int dummy_rm_del_fault(int id)
 {
 	fault_t *curr, *prev = 0;
 
+	userlogc_debug("dummy_rm: del_fault: %d", id);
 	for (curr = faults; curr; prev = curr, curr = curr->next) {
 		if (curr->id == id) {
 			if (prev == NULL)
@@ -56,10 +58,14 @@ int dummy_rm_del_fault(int id)
 
 int dummy_rm_add_fault(fault_t *fault)
 {
+	fault_t *last;
+
+	userlogc_debug("dummy_rm: del_fault:");
+
 	if (fault == 0)
 		return 1;
 
-	fault_t *last = last_fault();
+	last = last_fault();
 
 	fault->next = 0;
 
@@ -79,13 +85,18 @@ static int apply_faults(enum XA_OP op, int rmid)
 {
 	fault_t *f;
 
+	userlogc_debug("dummy_rm: apply_faults: op=%d rmid=%d", op, rmid);
+
 	for (f = faults; f; f = f->next) {
 		if (f->rmid == rmid && f->op == op) {
-			/*printf("applying fault to op %d rc %d\n", op, f->rc);*/
+			userlogc_debug("dummy_rm: applying fault to op %d rc %d\n", op, f->rc);
 			switch (f->xf) {
 			default:
 				break;
 			case F_HALT:
+				/* generate a SEGV fault */
+				f->arg = 0;
+				*((char *) f->arg) = 0;
 				break;
 			case F_DELAY:
 				long* timeout = (long*)f->arg;
@@ -137,9 +148,9 @@ static int complete(int *ip1, int *ip2, int i, long l) {
 struct xa_switch_t testxasw = {
 	"DummyRM", 0L, 0,
 	open, close,
-        start, end, rollback, prepare, commit,
-        recover,
-        forget,
-        complete
+	start, end, rollback, prepare, commit,
+	recover,
+	forget,
+	complete
 };
 

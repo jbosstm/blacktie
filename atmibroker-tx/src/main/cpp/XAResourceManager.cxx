@@ -33,28 +33,27 @@ void XAResourceManager::show_branches(const char *msg, XID * xid)
 
     for (XABranchMap::iterator i = branches_.begin(); i != branches_.end(); ++i) {
 
-        LOG4CXX_TRACE(xarmlogger, (char *) "XID: " << *(i->first)); 
+        LOG4CXX_TRACE(xarmlogger, (char *) "XID: " << (i->first)); 
     }
 }
 
-static int compareXids(XID * xid1, XID * xid2)
+static int compareXids(const XID& xid1, const XID& xid2)
 {
-    FTRACE(xarmlogger, "ENTER");
-    if (xid1 == xid2)
-        return 0;
+    char *x1 = (char *) &xid1;
+    char *x2 = (char *) &xid2;
+    char *e = (char *) (x1 + sizeof (XID));
 
-    if ((xid1->formatID == xid2->formatID)
-        && (xid1->gtrid_length == xid2->gtrid_length)
-        && (xid1->bqual_length == xid2->bqual_length))
-    {
-        for (int i = 0; i < (xid1->gtrid_length + xid1->bqual_length); i++)
-            if (xid1->data[i] != xid2->data[i])
-                return -1;
+    while (x1 < e)
+        if (*x1 < *x2)
+            return -1;
+        else if (*x1++ > *x2++)
+            return 1;
 
-        return 0;    // XIDs are equal
-    } else {
-        return 1;
-    }
+    return 0;
+}
+
+bool xid_cmp::operator()(const XID& xid1, const XID& xid2) {
+	return (compareXids(xid1, xid2) < 0);
 }
 
 XAResourceManager::XAResourceManager(
@@ -63,10 +62,11 @@ XAResourceManager::XAResourceManager(
     const char * openString,
     const char * closeString,
     CORBA::Long rmid,
-    struct xa_switch_t * xa_switch) throw (RMException) :
+    struct xa_switch_t * xa_switch,
+	XARecoveryLog& log) throw (RMException) :
 
     poa_(NULL), connection_(connection), name_(name), openString_(openString), closeString_(closeString),
-    rmid_(rmid), xa_switch_(xa_switch) {
+    rmid_(rmid), xa_switch_(xa_switch), rclog_(log) {
 
     FTRACE(xarmlogger, "ENTER " << (char *) "new RM name: " << name << (char *) " openinfo: " <<
         openString << (char *) " rmid: " << rmid_);
@@ -112,15 +112,15 @@ void XAResourceManager::createPOA() {
     PortableServer::POAManager_ptr poa_manager = (PortableServer::POAManager_ptr) connection_->root_poa_manager;
     PortableServer::POA_ptr parent_poa = (PortableServer::POA_ptr) connection_->root_poa;
     PortableServer::LifespanPolicy_var p1 = parent_poa->create_lifespan_policy(PortableServer::PERSISTENT);
-//    PortableServer::IdAssignmentPolicy_var p2 = parent_poa->create_id_assignment_policy(PortableServer::USER_ID);
+    PortableServer::IdAssignmentPolicy_var p2 = parent_poa->create_id_assignment_policy(PortableServer::USER_ID);
 
     CORBA::PolicyList policies;
-    policies.length(1);
+    policies.length(2);	// Set this to 1 to disable USER_ID policy
 
     // the servant object references must survive failure of the ORB in order to support recover of 
     // transaction branches (the default orb policy for servants is transient)
     policies[0] = PortableServer::LifespanPolicy::_duplicate(p1);
-//    policies[1] = PortableServer::IdAssignmentPolicy::_duplicate(p2);
+    policies[1] = PortableServer::IdAssignmentPolicy::_duplicate(p2);
 
     // create a new POA for this RM
 
@@ -130,10 +130,9 @@ void XAResourceManager::createPOA() {
 
     try {
         this->poa_ = parent_poa->create_POA(name, poa_manager, policies);
-//            LOG4CXX_TRACE(xarmlogger,  (char *) "created poa");
-        p1->destroy();
+        p1->destroy(); p2->destroy();
     } catch (PortableServer::POA::AdapterAlreadyExists &) {
-        p1->destroy();
+        p1->destroy(); p2->destroy();
         try {
             this->poa_ = parent_poa->find_POA(name, false);
         } catch (const PortableServer::POA::AdapterNonExistent &) {
@@ -143,7 +142,7 @@ void XAResourceManager::createPOA() {
         }
 
     } catch (PortableServer::POA::InvalidPolicy &) {
-        p1->destroy();
+        p1->destroy(); p2->destroy();
         LOG4CXX_WARN(xarmlogger, (char *) "Invalid RM POA policy");
         RMException ex("Invalid RM POA policy", EINVAL);
         throw ex;
@@ -152,10 +151,87 @@ void XAResourceManager::createPOA() {
     // take the POA out of its holding state
     PortableServer::POAManager_var mgr = this->poa_->the_POAManager();
     mgr->activate();
-//    LOG4CXX_TRACE(xarmlogger,  (char *) "activated mgr");
 }
 
-int XAResourceManager::createServant(XID * xid)
+int XAResourceManager::recover(XID& bid, const char* rc)
+{
+    FTRACE(xarmlogger, "ENTER");
+
+	CORBA::Object_var ref = connection_->orbRef->string_to_object(rc);
+	XAResourceAdaptorImpl *ra = NULL;
+
+	if (CORBA::is_nil(ref)) {
+		LOG4CXX_INFO(xarmlogger, (char *) "Invalid recovery coordinator ref: " << rc);
+		return -1;
+	} else {
+		CosTransactions::RecoveryCoordinator_var rcv = CosTransactions::RecoveryCoordinator::_narrow(ref);
+
+		if (CORBA::is_nil(rcv)) {
+			LOG4CXX_INFO(xarmlogger, (char *) "Could not narrow recovery coordinator ref: " << rc);
+		} else {
+        	ra = new XAResourceAdaptorImpl(this, bid, bid, rmid_, xa_switch_, rclog_);
+
+            if (branches_[bid] != NULL) {
+				// log an error since we need to clean up the previous servant
+				LOG4CXX_ERROR(xarmlogger, (char *) "Recovery: branch already exists: " << bid);
+			}
+
+#if 0
+			// activate the servant
+        	PortableServer::ObjectId_var objId = poa_->activate_object(ra);
+
+        	// get a CORBA reference to the servant so that it passed the TM so that phase 2 can be replayed
+        	CORBA::Object_var ref = poa_->servant_to_reference(ra);
+#else
+			std::string s = (char *) (bid.data + bid.gtrid_length);
+			PortableServer::ObjectId_var objId = PortableServer::string_to_ObjectId(s.c_str());
+			poa_->activate_object_with_id(objId, ra);
+        	// get a CORBA reference to the servant so that it can be enlisted in the OTS transaction
+			CORBA::Object_var ref = poa_->id_to_reference(objId.in());
+#endif
+        	ra->_remove_ref();    // now only the POA has a reference to ra
+
+	        CosTransactions::Resource_var v = CosTransactions::Resource::_narrow(ref);
+
+        	LOG4CXX_TRACE(xarmlogger, (char*) "replaying resource: " << connection_->orbRef->object_to_string(v));
+
+			try {
+				/*
+				 * Replay phase 2. The spec says we should use the same resource.
+				 * If we really do need to use the same one then we need to reconstruct it
+				 * with the same reference by setting the PortableServer::USER_ID
+				 * policy on the creating POA (and use the same name based on the branch id).
+				 *
+				 * Remember to deal with heuristics (see section 2-50 of the OMG OTS spec).
+				 */
+				Status txs = rcv->replay_completion(v);
+
+				LOG4CXX_DEBUG(xarmlogger, (char *) "Recovery: TM reports transaction status: " << txs);
+
+				switch (txs) {
+				case CosTransactions::StatusNoTransaction:
+					LOG4CXX_INFO(xarmlogger, (char *) "Recovery: TM reports no such transaction");
+					break;
+				default:
+					// TODO check spec to verify that the TM will replay phase 2 for all the other statuses
+            		branches_[bid] = ra;
+					break;
+				}
+			} catch (CosTransactions::NotPrepared& e) {
+				LOG4CXX_INFO(xarmlogger, (char *) "Recovery: TM says the transaction as not prepared");
+			} catch (const CORBA::SystemException& e) {
+        		LOG4CXX_WARN(xarmlogger, (char*) "Recovery: replay error: " << e._name() << " minor: " << e.minor());
+			}
+		}
+	}
+
+//	if (ra)
+//		delete ra;
+
+	return XA_OK;	// means the caller is not allowed to clear the log
+}
+
+int XAResourceManager::createServant(XID& xid)
 {
     FTRACE(xarmlogger, "ENTER");
     int res;
@@ -168,39 +244,42 @@ int XAResourceManager::createServant(XID * xid)
 
     try {
         // create a servant to represent the new branch identified by xid
-        XID bid = gen_xid(*xid);
-        ra = new XAResourceAdaptorImpl(this, *xid, bid, rmid_, xa_switch_);
+        XID bid = gen_xid(rmid_, xid);
+        ra = new XAResourceAdaptorImpl(this, xid, bid, rmid_, xa_switch_, rclog_);
+#if 0
         // and activate it
         PortableServer::ObjectId_var objId = poa_->activate_object(ra);
-
         // get a CORBA reference to the servant so that it can be enlisted in the OTS transaction
         CORBA::Object_var ref = poa_->servant_to_reference(ra);
-        ra->_remove_ref();    // now only the POA has a reference to ra
+#else
+		std::string s = (char *) (bid.data + bid.gtrid_length);
+		PortableServer::ObjectId_var objId = PortableServer::string_to_ObjectId(s.c_str());
+		poa_->activate_object_with_id(objId, ra);
+        // get a CORBA reference to the servant so that it can be enlisted in the OTS transaction
+		CORBA::Object_var ref = poa_->id_to_reference(objId.in());
+#endif
+
+		ra->_remove_ref();    // now only the POA has a reference to ra
 
         CosTransactions::Resource_var v = CosTransactions::Resource::_narrow(ref);
 
         // enlist it with the transaction
-        LOG4CXX_TRACE(xarmlogger, (char*) "enlisting resource");
+        LOG4CXX_TRACE(xarmlogger, (char*) "enlisting resource: " << connection_->orbRef->object_to_string(v));
         coord = curr->get_coordinator();
         CosTransactions::RecoveryCoordinator_ptr rc = coord->register_resource(v);
-        ra->setRecoveryCoordinator(rc);
         //c->register_synchronization(new XAResourceSynchronization(xid, rmid_, xa_switch_));
 
         if (CORBA::is_nil(rc)) {
             LOG4CXX_TRACE(xarmlogger, (char*) "createServant: nill RecoveryCoordinator ");
             res = XAER_RMFAIL;
         } else {
-            XID * cp = (XID *) malloc(sizeof(XID));
+			CORBA::String_var rcref = connection_->orbRef->object_to_string(rc);
+        	ra->set_recovery_coordinator(ACE_OS::strdup(rcref));
+       		CORBA::release(rc);
 
-            if (cp == 0) {
-                LOG4CXX_ERROR(xarmlogger, (char *) "out of memory");
-                res = XAER_RMFAIL;
-            } else {
-                *cp = *xid;
-                branches_[cp] = ra;
-                ra = NULL;
-                res = XA_OK;
-            }
+            branches_[xid] = ra;
+			res = XA_OK;
+            ra = NULL;
         }
     } catch (RMException& ex) {
         LOG4CXX_WARN(xarmlogger, (char*) "unable to create resource adaptor for branch: " << ex.what());
@@ -224,16 +303,15 @@ int XAResourceManager::createServant(XID * xid)
     return res;
 }
 
-void XAResourceManager::notifyError(XID * xid, int xa_error, bool forget)
+void XAResourceManager::notify_error(XID * xid, int xa_error, bool forget)
 {
-    FTRACE(xarmlogger, "ENTER");
-    LOG4CXX_TRACE(xarmlogger, (char*) "notifyError reason:" << xa_error);
+    FTRACE(xarmlogger, "ENTER: reason: " << xa_error);
 
     if (forget)
-        setComplete(xid);
+        set_complete(xid);
 }
 
-void XAResourceManager::setComplete(XID * xid)
+void XAResourceManager::set_complete(XID * xid)
 {
     FTRACE(xarmlogger, "ENTER");
     XABranchMap::iterator iter;
@@ -242,17 +320,14 @@ void XAResourceManager::setComplete(XID * xid)
 
     for (XABranchMap::iterator i = branches_.begin(); i != branches_.end(); ++i)
     {
-        if (compareXids(i->first, xid) == 0) {
+        if (compareXids(i->first, (const XID&) (*xid)) == 0) {
             XAResourceAdaptorImpl *r = i->second;
-            XID * key = i->first;
             PortableServer::ObjectId_var id(poa_->servant_to_id(r));
 #ifdef XYZ
             r->_remove_ref();    // deactivate will delete r
 #endif
             poa_->deactivate_object(id.in());
             branches_.erase(i->first);
-
-            free(key);
 
             return;
         }
@@ -269,7 +344,7 @@ int XAResourceManager::xa_start (XID * xid, long flags)
 
     if (resource == NULL) {
         FTRACE(xarmlogger, "creating branch " << *xid);
-        if ((rv = createServant(xid)) != XA_OK)
+        if ((rv = createServant(*xid)) != XA_OK)
             return rv;
 
         if ((resource = locateBranch(xid)) == NULL)    // cannot be NULL
@@ -280,13 +355,7 @@ int XAResourceManager::xa_start (XID * xid, long flags)
     }
 
     FTRACE(xarmlogger, "existing branch " << *xid);
-//    return resource->xa_start(flags);
     return resource->xa_start(TMRESUME);
-
-//    if (flags | (TMRESUME & TMJOIN))
-//        return  resource->xa_start(flags);
-//    else
-//        return  resource->xa_start(TMJOIN);
 }
 
 int XAResourceManager::xa_end (XID * xid, long flags)
@@ -308,12 +377,14 @@ XAResourceAdaptorImpl * XAResourceManager::locateBranch(XID * xid)
     XABranchMap::iterator iter;
 
     for (iter = branches_.begin(); iter != branches_.end(); ++iter) {
-        LOG4CXX_TRACE(xarmlogger, (char *) "compare: " << *xid << " with " << *(iter->first));
+        LOG4CXX_TRACE(xarmlogger, (char *) "compare: " << *xid << " with " << (iter->first));
 
-        if (compareXids(iter->first, xid) == 0)
+        if (compareXids(iter->first, (const XID&) (*xid)) == 0) {
             return (*iter).second;
+		}
     }
 
+    LOG4CXX_DEBUG(xarmlogger, (char *) " branch not found");
     return NULL;
 }
 
@@ -322,7 +393,7 @@ int XAResourceManager::xa_flags()
     return xa_switch_->flags;
 }
 
-XID XAResourceManager::gen_xid(XID &gid)
+XID XAResourceManager::gen_xid(long id, XID &gid)
 {
     XID xid = {gid.formatID, gid.gtrid_length};
     int i;
@@ -332,7 +403,7 @@ XID XAResourceManager::gen_xid(XID &gid)
 
     // TODO improve on the uniqueness (eg include IP)
     ACE_Time_Value now = ACE_OS::gettimeofday();
-    (void) sprintf(xid.data + i, "%ld%ld", now.sec(), now.usec());
+    (void) sprintf(xid.data + i, "%ld:%ld%ld", id, now.sec(), now.usec());
     xid.bqual_length = strlen(xid.data + i);
 
     return xid;

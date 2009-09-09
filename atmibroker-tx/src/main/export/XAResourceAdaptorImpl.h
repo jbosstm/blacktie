@@ -15,18 +15,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef XARESOURCEADAPTORIMPL_H
-#define XARESOURCEADAPTORIMPL_H
+#ifndef _XARESOURCEADAPTORIMPL_H
+#define _XARESOURCEADAPTORIMPL_H
 
-#include "CosTransactionsS.h"
-#include "atmiBrokerTxMacro.h"
-#include "RMException.h"
-#include "XAResourceManager.h"
+#include "XARecoveryLog.h"
+#include "XAStateModel.h"
+#include "txi.h"
 
 #include <map>
+#include <tao/PortableServer/PortableServer.h>
+#include "CosTransactionsS.h"
+#include "XAResourceManager.h"
 
-#include "txi.h"
-#include "XAStateModel.h"
+using namespace CosTransactions;
 
 class XAResourceManager;
 
@@ -34,20 +35,18 @@ class BLACKTIE_TX_DLL XAResourceAdaptorImpl :
 	public virtual POA_CosTransactions::Resource, public virtual PortableServer::RefCountServantBase
 {
 public:
-	XAResourceAdaptorImpl(XAResourceManager*, XID&, XID&, CORBA::Long, struct xa_switch_t *) throw (RMException);
+	XAResourceAdaptorImpl(XAResourceManager*, XID&, XID&, CORBA::Long, struct xa_switch_t *, XARecoveryLog&) throw (RMException);
 	virtual ~XAResourceAdaptorImpl();
 
     // OTS resource methods
-	CosTransactions::Vote prepare() throw (CosTransactions::HeuristicMixed,CosTransactions::HeuristicHazard);
-	void rollback() throw(CosTransactions::HeuristicCommit,CosTransactions::HeuristicMixed,CosTransactions::HeuristicHazard);
-	void commit() throw(CosTransactions::NotPrepared,CosTransactions::HeuristicRollback,CosTransactions::HeuristicMixed,CosTransactions::HeuristicHazard);
-	void commit_one_phase() throw(CosTransactions::HeuristicHazard);
+	Vote prepare() throw (HeuristicMixed,HeuristicHazard);
+	void rollback() throw(HeuristicCommit,HeuristicMixed,HeuristicHazard);
+	void commit() throw(NotPrepared,HeuristicRollback,HeuristicMixed,HeuristicHazard);
+	void commit_one_phase() throw(HeuristicHazard);
 	void forget();
 
-	// has this resource been completed
-	bool is_complete();
-	void setRecoveryCoordinator(CosTransactions::RecoveryCoordinator_ptr rc) {rc_ = rc;}
-	CosTransactions::RecoveryCoordinator_ptr getRecoveryCoordinator() {return rc_;}
+	bool is_complete();	// has this resource finished 2PC - need for testing
+	void set_recovery_coordinator(char *rc) {rc_ = rc;}
 
 	int xa_start (long);
 	int xa_end (long);
@@ -59,19 +58,21 @@ private:
 	bool complete_;
 	CORBA::Long rmid_;
 	struct xa_switch_t * xa_switch_;
-	CosTransactions::RecoveryCoordinator_ptr rc_;
+	char *rc_;
 	int flags_;
     int tightly_coupled_;
     atmibroker::xa::XAStateModel sm_;
+	XARecoveryLog& rclog_;
+	bool prepared_;
 
 	void terminate(int) throw(
-		CosTransactions::HeuristicRollback,
-		CosTransactions::HeuristicMixed,
-		CosTransactions::HeuristicHazard);
+		HeuristicRollback,
+		HeuristicMixed,
+		HeuristicHazard);
 
 	int set_flags(int flags);
-	void setComplete();
-	void notifyError(int, bool);
+	void set_complete();
+	void notify_error(int, bool);
 
 	// XA methods
 	int xa_rollback (long);
@@ -81,4 +82,4 @@ private:
 	int xa_forget (long);
 	int xa_complete (int *, int *, long);
 };
-#endif // XARESOURCEADAPTORIMPL_H
+#endif // _XARESOURCEADAPTORIMPL_H

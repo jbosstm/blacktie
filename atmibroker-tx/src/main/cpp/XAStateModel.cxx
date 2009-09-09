@@ -5,6 +5,8 @@ log4cxx::LoggerPtr xasmlogger(log4cxx::Logger::getLogger("TxLogXASM"));
 
 static std::string flag_dbg_str;
 
+extern std::ostream& operator<<(std::ostream &os, const XID& xid);
+
 namespace atmibroker {
     namespace xa {
 

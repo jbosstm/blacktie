@@ -19,42 +19,44 @@
 
 log4cxx::LoggerPtr xaralogger(log4cxx::Logger::getLogger("TxLogXAAdaptor"));
 
+extern std::ostream& operator<<(std::ostream &os, const XID& xid);
+
 using namespace atmibroker::xa;
 
 XAResourceAdaptorImpl::XAResourceAdaptorImpl(
-    XAResourceManager * rm, XID& xid, XID& bid, CORBA::Long rmid, struct xa_switch_t * xa_switch) throw (RMException) :
+    XAResourceManager * rm, XID& xid, XID& bid, CORBA::Long rmid,
+	struct xa_switch_t * xa_switch, XARecoveryLog& log) throw (RMException) :
     rm_(rm), xid_(xid), bid_(bid), complete_(false), rmid_(rmid), xa_switch_(xa_switch), rc_(0),
-    tightly_coupled_(0)
+    tightly_coupled_(0), rclog_(log), prepared_(false)
 {
-    FTRACE(xaralogger, "ENTER" << (char*) " new OTS resource rmid:" << rmid_);
+    FTRACE(xaralogger, "ENTER" << (char*) " new OTS resource rmid:" << rmid_ << " branch id: " << bid_);
 }
 
 XAResourceAdaptorImpl::~XAResourceAdaptorImpl()
 {
     FTRACE(xaralogger, "ENTER");
-    if (!CORBA::is_nil(rc_)) {
-        CORBA::release(rc_);
-    }
+	if (rc_)
+		free(rc_);
 }
 
-void XAResourceAdaptorImpl::notifyError(int reason, bool forget)
+void XAResourceAdaptorImpl::notify_error(int reason, bool forget)
 {
     FTRACE(xaralogger, "ENTER");
     if (rm_)
-        rm_->notifyError(&xid_, reason, forget);
+        rm_->notify_error(&xid_, reason, forget);
 }
 
-void XAResourceAdaptorImpl::setComplete()
+void XAResourceAdaptorImpl::set_complete()
 {
     FTRACE(xaralogger, "ENTER");
     complete_ = true;
 
     if (rm_)
-        rm_->setComplete(&xid_);
+        rm_->set_complete(&xid_);
 }
 
-CosTransactions::Vote XAResourceAdaptorImpl::prepare()
-    throw (CosTransactions::HeuristicMixed,CosTransactions::HeuristicHazard)
+Vote XAResourceAdaptorImpl::prepare()
+    throw (HeuristicMixed,HeuristicHazard)
 {
     FTRACE(xaralogger, "ENTER astate=" << sm_.astate() << " bstate=" << sm_.bstate());
     int rv1, rv2;
@@ -64,7 +66,7 @@ CosTransactions::Vote XAResourceAdaptorImpl::prepare()
     // Disable since we have introduced bid_ for unique branches for work
     // performed on the RM from different processes
     if (tightly_coupled_)
-        return CosTransactions::VoteReadOnly;
+        return VoteReadOnly;
 
     rv1 = xa_end(TMSUCCESS);
     rv2 = xa_prepare(TMNOFLAGS);
@@ -81,11 +83,22 @@ CosTransactions::Vote XAResourceAdaptorImpl::prepare()
             << (char*) " rv1=" << rv1 << " rv2=" << rv2 << " bstate=" << sm_.bstate());
     }
 
+	if (rc_ == NULL) {
+		rv2 = XA_RDONLY;
+		LOG4CXX_ERROR(xaralogger, (char *) "prepare called but no recovery coordinator has been set - assuming RDONLY");
+	}
+
+	if (rv2 == XA_OK) {
+		// about to vote commit - remember the descision
+		rclog_.add(bid_, rc_, strlen(rc_) + 1);
+		prepared_ = true;
+	}
+
     switch (rv2) {
     case XA_OK:
-        return CosTransactions::VoteCommit;
+        return VoteCommit;
     case XA_RDONLY:
-        return CosTransactions::VoteReadOnly;
+        return VoteReadOnly;
     case XA_RBROLLBACK:
     case XA_RBCOMMFAIL:
     case XA_RBDEADLOCK:
@@ -100,25 +113,34 @@ CosTransactions::Vote XAResourceAdaptorImpl::prepare()
     case XAER_NOTA:
     case XAER_INVAL:
     case XAER_PROTO:
-        return CosTransactions::VoteRollback;
+        return VoteRollback;
     default:     // shouldn't happen
-        return CosTransactions::VoteRollback;
+        return VoteRollback;
     }
 }
 
 void XAResourceAdaptorImpl::terminate(int rv)
     throw(
-        CosTransactions::HeuristicRollback,
-        CosTransactions::HeuristicMixed,
-        CosTransactions::HeuristicHazard)
+        HeuristicRollback,
+        HeuristicMixed,
+        HeuristicHazard)
 {
     FTRACE(xaralogger, "ENTER");
+
+	// remove the entry for this branch from the recovery log
+	if (prepared_ && rclog_.del(bid_) != 0) {
+        LOG4CXX_DEBUG(xaralogger, (char *) xa_switch_->name <<
+            ": terminate - entry not found in recovery log rid=" << rmid_);
+
+		rclog_.dump();
+	}
+
     switch (rv) {
     default:
         break;
     case XA_HEURHAZ: {
-        CosTransactions::HeuristicHazard e;
-        notifyError(rv, true);
+        HeuristicHazard e;
+        notify_error(rv, true);
         throw e;
         break;
     }
@@ -134,14 +156,14 @@ void XAResourceAdaptorImpl::terminate(int rv)
     case XA_RBPROTO:
     case XA_RBTIMEOUT:
     case XA_RBTRANSIENT: {
-        CosTransactions::HeuristicRollback e;
-        notifyError(rv, true);
+        HeuristicRollback e;
+        notify_error(rv, true);
         throw e;
         break;
     }
     case XA_HEURMIX: {
-        CosTransactions::HeuristicMixed e;
-        notifyError(rv, true);
+        HeuristicMixed e;
+        notify_error(rv, true);
         throw e;
         break;
     }
@@ -150,14 +172,14 @@ void XAResourceAdaptorImpl::terminate(int rv)
 
 void XAResourceAdaptorImpl::commit()
     throw(
-        CosTransactions::NotPrepared,
-        CosTransactions::HeuristicRollback,
-        CosTransactions::HeuristicMixed,
-        CosTransactions::HeuristicHazard)
+        NotPrepared,
+        HeuristicRollback,
+        HeuristicMixed,
+        HeuristicHazard)
 {
     FTRACE(xaralogger, "ENTER");
     if (tightly_coupled_) {
-        setComplete();
+        set_complete();
         return;
     }
     int rv = xa_commit (TMNOFLAGS);    // no need for xa_end since prepare must have been called
@@ -166,15 +188,15 @@ void XAResourceAdaptorImpl::commit()
 
     terminate(rv);
 
-    setComplete();
+    set_complete();
 }
 
 void XAResourceAdaptorImpl::rollback()
-    throw(CosTransactions::HeuristicCommit,CosTransactions::HeuristicMixed,CosTransactions::HeuristicHazard)
+    throw(HeuristicCommit,HeuristicMixed,HeuristicHazard)
 {
     FTRACE(xaralogger, "ENTER");
     if (tightly_coupled_) {
-        setComplete();
+        set_complete();
         return;
     }
 
@@ -191,14 +213,14 @@ void XAResourceAdaptorImpl::rollback()
     LOG4CXX_DEBUG(xaralogger, (char*) "OTS resource rollback rv=" << rv);
     terminate(rv);
 
-    setComplete();
+    set_complete();
 }
 
-void XAResourceAdaptorImpl::commit_one_phase() throw(CosTransactions::HeuristicHazard)
+void XAResourceAdaptorImpl::commit_one_phase() throw(HeuristicHazard)
 {
     FTRACE(xaralogger, "ENTER");
     if (tightly_coupled_) {
-        setComplete();
+        set_complete();
         return;
     }
 
@@ -215,7 +237,7 @@ void XAResourceAdaptorImpl::commit_one_phase() throw(CosTransactions::HeuristicH
     LOG4CXX_DEBUG(xaralogger, (char*) "1PC OTS resource commit rv=" << rv);
 
     terminate(rv);
-    setComplete();
+    set_complete();
 }
 
 void XAResourceAdaptorImpl::forget()
@@ -224,7 +246,7 @@ void XAResourceAdaptorImpl::forget()
     int rv = xa_forget (TMNOFLAGS);
 
     LOG4CXX_TRACE(xaralogger, (char*) "OTS resource forget rv=" << rv);
-    setComplete();
+    set_complete();
 }
 // accessors
 bool XAResourceAdaptorImpl::is_complete()

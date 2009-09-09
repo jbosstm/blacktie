@@ -41,6 +41,55 @@ void TestTransactions::tearDown()
 	TestFixture::tearDown();
 }
 
+void TestTransactions::test_rclog()
+{
+	XID* xid;
+	char* rcp;
+	void *cursor;
+	XARecoveryLog log("test_recovery_log");
+	int CNT = 4;
+    XID xids[] = {
+        {1L, 1L, 0L},
+        {2L, 1L, 0L},
+        {3L, 1L, 0L},
+        {2L, 1L, 0L, "DAB"},
+    };
+    const char * rc[] = {"RC1 x x x", "RC2 y y y", "RC3 z z z", "RC2 a a a"};
+    char *rcr[] = {0, 0, 0, 0};
+
+    for (int i = 0; i < CNT; i++)
+        log.add(xids[i], rc[i], strlen(rc[i]) + 1); 
+
+    for (int i = 0; i < CNT; i++)
+        log.get(xids[i], (void**) &rcr[i]); 
+
+    for (int i = 0; i < CNT; i++)
+		CPPUNIT_ASSERT(strcmp(rc[i], rcr[i]) == 0);
+
+    for (int i = 0; i < CNT; i++)
+        free(rcr[i]);
+
+	// test the cursor interface by deleting all the records
+	CPPUNIT_ASSERT(log.cursor_begin(&cursor) == 0);
+    while (log.cursor_next(cursor, (void**) &xid, (void**) &rcp) == 0) {
+//TODO		log.del(*xid);
+//        printf("xid: %d:%d:%d value: %s\n", xid->formatID, xid->gtrid_length, xid->bqual_length, rcp);
+        free(xid);
+        free(rcp);
+    }
+	CPPUNIT_ASSERT(log.cursor_end(cursor) == 0);
+	// empty the log
+	CPPUNIT_ASSERT(log.erase_all() == 0);
+
+	// make sure there are no more records
+	CPPUNIT_ASSERT(log.cursor_begin(&cursor) == 0);
+    while (log.cursor_next(cursor, (void**) &xid, (void**) &rc) == 0) {
+		CPPUNIT_FAIL("All recover records should have been deleted from log: test_recovery_log");
+	}
+
+	CPPUNIT_ASSERT(log.cursor_end(cursor) == 0);
+}
+
 void TestTransactions::test_basic()
 {
 	userlogc_debug( (char*) "TestTransactions::test_basic begin");
@@ -300,6 +349,7 @@ static XID xid = {
  */
 void TestTransactions::test_register_resource()
 {
+	XARecoveryLog log;
 	userlogc_debug( (char*) "TestTransactions::test_register_resource begin");
 	// start a transaction running
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_open());
@@ -325,9 +375,9 @@ void TestTransactions::test_register_resource()
 
 	// now for the real test:
 	// - create a CosTransactions::Resource ...
-	//XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(findConnection("ots"), "Dummy", "", "", 123L, &real_resource);
-	XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(NULL, xid, xid, 123L, &real_resource);
-	//XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(123L, &real_resource);
+	//XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(findConnection("ots"), "Dummy", "", "", 123L, &real_resource, log);
+	XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(NULL, xid, xid, 123L, &real_resource, log);
+	//XAResourceAdaptorImpl * ra = new XAResourceAdaptorImpl(123L, &real_resource, log);
 	CORBA::Object_ptr ref = poa->servant_to_reference(ra);
 	CosTransactions::Resource_var v = CosTransactions::Resource::_narrow(ref);
 

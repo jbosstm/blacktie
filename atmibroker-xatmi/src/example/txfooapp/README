@@ -115,3 +115,28 @@ to the source file cutil.c to see what client/server/transaction combinations ar
 
 Note: The db records are stored in the directories db1 and db2. If these becomes corrupt or you just want to start afresh
 clear out the database by deleting the contents but not the directories themselves (on linux rm db*/*)
+
+APPENDIX: RECOVERY
+==================
+To test recovery you will need to link against a library only available in the test suite. Define the macro TX_RC
+as shown below. When the client will send a request that causes the server to generate a segmentation fault after
+the prepare phase of the transaction commitment protocol.
+
+After the server has failed restart the server. You should see server recovering the failed transaction.
+TODO: note the recovery part isn't working yet.
+
+$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c bdb.c ora.c DbService.c" \
+     -Dx.inc.dir="/home/mmusgrov/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
+     -Dx.inc.dir2="/usr/local/product/11.1.0/db_1/rdbms/public" \
+     -Dx.lib.dir="/home/mmusgrov/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="dummy-rm" \
+     -Dx.lib.dir2="/usr/local/product/11.1.0/db_1/lib" -Dx.libs2="occi clntsh"     -Dx.define="BDB, TX_RC"
+
+$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c bdb.c ora.c cutil.c" \
+    -Dx.inc.dir="/home/mmusgrov/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
+    -Dx.inc.dir2="/usr/local/product/11.1.0/db_1/rdbms/public" \
+    -Dx.lib.dir="/home/mmusgrov/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="dummy-rm" \
+    -Dx.lib.dir2="/usr/local/product/11.1.0/db_1/lib" -Dx.libs2="occi clntsh" \
+    -Dx.define="BDB, TX_RC"
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/product/11.1.0/db_1/lib:/home/mmusgrov/blacktie/trunk/atmibroker-tx/target/cxx/test/lib
+
