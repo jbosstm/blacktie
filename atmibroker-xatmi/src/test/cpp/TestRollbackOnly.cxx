@@ -75,22 +75,6 @@ void TestRollbackOnly::test_tpcall_TPETIME() {
 	userlogc((char*) "inTx=%d", inTx);
 	CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
 	CPPUNIT_ASSERT(tx_commit() == TX_ROLLBACK);
-	// TODO ::tx_info(&txinfo);
-	// TODO CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK);
-}
-
-void test_tpcall_TPETIME_service(TPSVCINFO *svcinfo) {
-	int timeout = 11;
-	userlogc((char*) "test_tpcall_TPETIME_service, sleeping for %d seconds",
-			timeout);
-	ACE_OS::sleep(timeout);
-	userlogc((char*) "test_tpcall_TPETIME_service, slept for %d seconds",
-			timeout);
-
-	int len = 60;
-	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
-	strcpy(toReturn, "test_tpcall_TPETIME_service");
-	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }
 
 void TestRollbackOnly::test_tpcall_TPEOTYPE() {
@@ -111,16 +95,6 @@ void TestRollbackOnly::test_tpcall_TPEOTYPE() {
 	userlogc((char*) "inTx=%d", inTx);
 	CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
 	CPPUNIT_ASSERT(tx_commit() == TX_ROLLBACK);
-	// TODO ::tx_info(&txinfo);
-	// TODO CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK);
-}
-
-void test_tpcall_TPEOTYPE_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tpcall_TPEOTYPE_service");
-	int len = 60;
-	char *toReturn = ::tpalloc((char*) "X_C_TYPE", (char*) "test", len);
-	strcpy(toReturn, "test_tpcall_TPEOTYPE_service");
-	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }
 
 void TestRollbackOnly::test_tpcall_TPESVCFAIL() {
@@ -143,16 +117,6 @@ void TestRollbackOnly::test_tpcall_TPESVCFAIL() {
 	userlogc((char*) "inTx=%d", inTx);
 	CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
 	CPPUNIT_ASSERT(tx_commit() == TX_ROLLBACK);
-	// TODO ::tx_info(&txinfo);
-	// TODO CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK);
-}
-
-void test_tpcall_TPESVCFAIL_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tpcall_TPESVCFAIL_service");
-	int len = 60;
-	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
-	strcpy(toReturn, "test_tpcall_TPESVCFAIL_service");
-	tpreturn(TPFAIL, 0, toReturn, len, 0);
 }
 
 void TestRollbackOnly::test_tprecv_TPEV_DISCONIMM() {
@@ -175,22 +139,6 @@ void TestRollbackOnly::test_tprecv_TPEV_DISCONIMM() {
 	userlogc((char*) "inTx=%d", inTx);
 	CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
 	CPPUNIT_ASSERT(tx_commit() == TX_ROLLBACK);
-	// TODO ::tx_info(&txinfo);
-	// TODO CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK);
-}
-
-void test_tprecv_TPEV_DISCONIMM_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tprecv_TPEV_DISCONIMM_service");
-	long rcvlen = 60;
-	long revent = 0;
-	char* rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen);
-
-	int status = ::tprecv(svcinfo->cd, (char **) &rcvbuf, &rcvlen, (long) 0,
-			&revent);
-	TXINFO txinfo;
-	int inTx = ::tx_info(&txinfo);
-	bool rbkOnly = (txinfo.transaction_state == TX_ROLLBACK_ONLY);
-	userlogc((char*) "status=%d, inTx=%d, rbkOnly=%d", status, inTx, rbkOnly);
 }
 
 void TestRollbackOnly::test_tprecv_TPEV_SVCFAIL() {
@@ -218,16 +166,6 @@ void TestRollbackOnly::test_tprecv_TPEV_SVCFAIL() {
 	userlogc((char*) "inTx=%d", inTx);
 	CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
 	CPPUNIT_ASSERT(tx_commit() == TX_ROLLBACK);
-	// TODO ::tx_info(&txinfo);
-	// TODO CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK);
-}
-
-void test_tprecv_TPEV_SVCFAIL_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tprecv_TPEV_SVCFAIL_service");
-	int len = 60;
-	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
-	strcpy(toReturn, "test_tprecv_TPEV_SVCFAIL_service");
-	tpreturn(TPFAIL, 0, toReturn, len, 0);
 }
 
 void TestRollbackOnly::test_no_tpreturn() {
@@ -248,10 +186,5 @@ void TestRollbackOnly::test_no_tpreturn() {
 	userlogc((char*) "inTx=%d", inTx);
 	CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
 	CPPUNIT_ASSERT(tx_commit() == TX_ROLLBACK);
-	// TODO ::tx_info(&txinfo);
-	// TODO CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK);
 }
 
-void test_no_tpreturn_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_no_tpreturn_service");
-}

@@ -31,7 +31,7 @@ class TestRollbackOnly: public BaseServerTest {
 	CPPUNIT_TEST( test_tprecv_TPEV_DISCONIMM);
 	CPPUNIT_TEST( test_tprecv_TPEV_SVCFAIL);
 	CPPUNIT_TEST( test_no_tpreturn);
-	// TODO CPPUNIT_TEST( test_tpcall_TPEV_SVCERR_openconnections);
+	// TODO CPPUNIT_TEST( test_tpcall_TPESVCERR_openconnections);
 	// TODO CPPUNIT_TEST( test_tprecv_TPEV_SVCERR_openconnections);
 CPPUNIT_TEST_SUITE_END();
 
@@ -42,7 +42,7 @@ public:
 	void test_tprecv_TPEV_DISCONIMM();
 	void test_tprecv_TPEV_SVCFAIL();
 	void test_no_tpreturn();
-	// TODO void test_tpcall_TPEV_SVCERR_openconnections();
+	// TODO void test_tpcall_TPESVCERR_openconnections();
 	// TODO void test_tprecv_TPEV_SVCERR_openconnections();
 	virtual void setUp();
 	virtual void tearDown();
