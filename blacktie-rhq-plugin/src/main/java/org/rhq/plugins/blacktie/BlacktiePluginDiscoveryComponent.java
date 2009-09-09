@@ -88,7 +88,7 @@ public class BlacktiePluginDiscoveryComponent implements ResourceDiscoveryCompon
 
         set.add(resource);
         } catch (Exception e) {
-        	log.equals("get domain name error with " + e);
+        	log.error("get domain name error with " + e);
         }
         return set;
     }

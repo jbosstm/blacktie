@@ -32,6 +32,10 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
+//import javax.jms.ConnectionFactory;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -99,8 +103,10 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet, Ope
     private MBeanServerConnection beanServerConnection;
     
     private String serverName = null;
+
+	private Connection connection = null;
     
-    private Connection connection;
+	private boolean callTest = true;
     
     private int getInstancesCount() throws Exception {
     	ObjectName objName = new ObjectName("jboss.messaging:service=ServerPeer");
@@ -129,6 +135,26 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet, Ope
 		return rcvbuf;
 	}
 
+	private void testJMSConnection() throws Exception {
+		Properties props = new Properties();
+		props.setProperty("java.naming.factory.initial",
+				"org.jnp.interfaces.NamingContextFactory");
+		props.setProperty("java.naming.factory.url.pkgs",
+				"org.jboss.naming:org.jnp.interfaces");
+		props.setProperty("java.naming.provider.url", (String) prop.get("java.naming.provider.url"));
+		props.putAll(prop);
+		javax.naming.Context context = new InitialContext(props);
+		javax.jms.ConnectionFactory factory = (javax.jms.ConnectionFactory) context.lookup("ConnectionFactory");
+		String username = (String) prop.get("StompConnectUsr");
+		String password = (String) prop.get("StompConnectPwd");
+		if (username != null) {
+			factory.createConnection(username, password);
+		} else {
+			factory.createConnection();
+		}
+		log.debug("testJMSConnection OK");
+	}
+
     /**
      * This is called when your component has been started with the given context. You normally initialize some internal
      * state of your component as well as attempt to make a stateful connection to your managed resource.
@@ -148,15 +174,13 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet, Ope
         	beanServerConnection = c.getMBeanServerConnection();
         	
         	serverName = context.getResourceKey();
-        	
-			// Connect to JMS Server with null user
-        	prop.remove("StompConnectUsr");
+
         	ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory(prop);
     		connection = connectionFactory.getConnection();
         } catch (Exception e) {
         	log.error("start server " + serverName + " plugin error with " + e);
         }
-        System.out.println("start resource: " + serverName);
+        log.debug("start resource: " + serverName);
     }
 
     /**
@@ -228,11 +252,22 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet, Ope
     	String service = serverName + "_ADMIN_" + id;
 		Response buf = null;
     	
+		try {
+			if(callTest) {
+				testJMSConnection();
+				callTest = false;
+			}
+		} catch (Exception e) {
+			result.setErrorMessage("connect to jms server failed with " + e);
+			return result;
+		}
+
     	if(name.equals("shutdown")) {
     		try {
     			callAdminService(service, "serverdone");
     			result.setSimpleResult("OK");
     		} catch (Exception e) {
+				callTest = true; 
     			log.error("call " + service + " command serverdone failed with " + e);
     			result.setErrorMessage("call " + service + " command serverdone failed with " + e);
     		}
@@ -243,13 +278,14 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet, Ope
 					byte[] received = buf.getBuffer().getData();
 					if(received[0] == '1') {				
 						String status = new String(received, 1, received.length - 1);
-						System.out.println("status is " + status);
+						log.debug("status is " + status);
     					result.setSimpleResult(status);
 					}
 				} else {
 					result.setErrorMessage("no service status");
 				}
 			} catch (Exception e) {
+				callTest = true;
     			log.error("call " + service + " command status failed with " + e);
     			result.setErrorMessage("call " + service + " command status failed with " + e);
 			}
@@ -270,10 +306,19 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet, Ope
 					result.setErrorMessage("can not " + name + " " + svc);
 				}
 			} catch (Exception e) {
+				callTest = true;
     			log.error("call " + service + " command " + command + " failed with " + e);
     			result.setErrorMessage("call " + service + " command " + command + " failed with " + e);
 			}
+		} else if(name.equals("test")) {
+			try{
+				testJMSConnection();
+				result.setSimpleResult("OK");
+			} catch (Exception e) {
+				result.setErrorMessage("test connect jms server failed with " + e);
+			}
 		}
+
         return result;
     }
 
