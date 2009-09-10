@@ -230,11 +230,7 @@ public class Session {
 	 */
 	public Buffer tprecv(int flags) throws ConnectionException {
 		log.debug("Receiving");
-		if (this.lastEvent > -1) {
-			throw new ConnectionException(Connection.TPEEVENT, lastEvent,
-					lastRCode, "Event existed on descriptor: " + lastEvent,
-					null);
-		} else if (!canRecv) {
+		if (!canRecv) {
 			throw new ConnectionException(Connection.TPEPROTO,
 					"Session can't receive");
 		}
