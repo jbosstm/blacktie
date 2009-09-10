@@ -2,7 +2,7 @@
 #include "ace/OS_NS_stdio.h"
 #include "ace/OS_NS_string.h"
 
-#include <db.h>
+//#include <db.h>
 #include <iostream>
 
 #include "AtmiBrokerEnv.h"
@@ -14,6 +14,7 @@ log4cxx::LoggerPtr xarcllogger(log4cxx::Logger::getLogger("TxLogXARecoverLog"));
 
 extern std::ostream& operator<<(std::ostream &os, const XID& xid);
 
+/*
 static int putrec(DB *dbp, const void *k, size_t ksz, const void *v, size_t vsz)
 {
 	DBT key, data; 
@@ -115,7 +116,7 @@ static int copy_data(DBT& data,  void **rc)
 
 	return 0;
 }
-
+*/
 #define DEF_RCLOG_NAME	"rclog"
 
 XARecoveryLog::XARecoveryLog(const char *dbfile) throw (RMException)
@@ -157,20 +158,22 @@ XARecoveryLog::~XARecoveryLog()
 int XARecoveryLog::add(const XID& xid, const void* recoveryCoordinator, size_t vsz)
 {
 	FTRACE(xarcllogger, "ENTER adding xid: " << xid);
-
+#if 0
 opendb((DB **) &dbp_, "rclog");
 	int rc = putrec((DB *)dbp_, &xid, sizeof (xid), recoveryCoordinator, vsz);
 closedb((DB *)dbp_, 0);
 return rc;
+#endif
+return 0;
 }
 
 int XARecoveryLog::get(const XID& xid, void **rc)
 {
+#if 0
 	DBT data;
 	int ret;
 
 	FTRACE(xarcllogger, "ENTER geting xid: " << xid);
-
 opendb((DB **) &dbp_, "rclog");
 	memset(&data, 0, sizeof(data)); 
 	if ((ret = getrec((DB *)dbp_, &xid, sizeof (xid), &data)) == 0)
@@ -178,12 +181,14 @@ opendb((DB **) &dbp_, "rclog");
 
 closedb((DB *)dbp_, 0);
 	return ret;
+#endif
+return 0;
 }
 
 int XARecoveryLog::del(const XID& xid)
 {
 	FTRACE(xarcllogger, "ENTER deleting xid: " << xid);
-
+#if 0
 opendb((DB **) &dbp_, "rclog");
 	int ret = delrec((DB *)dbp_, &xid, sizeof (xid));
 
@@ -192,14 +197,16 @@ opendb((DB **) &dbp_, "rclog");
 
 closedb((DB *)dbp_, 0);
 	return ret;
+#endif
+return 0;
 }
 
 int XARecoveryLog::erase_all()
 {
+#if 0
 	XID* xid;
 	char* rc;
 	void* cursor;
-
 	FTRACE(xarcllogger, "ENTER dumping recovery records ...");
 	cursor_begin(&cursor);
 
@@ -211,11 +218,12 @@ int XARecoveryLog::erase_all()
 	}
 
 	cursor_end(cursor);
-
+#endif
 	return 0;
 }
 
 int XARecoveryLog::cursor_begin(void **cursor) {
+#if 0
 	int ret;
 	DBC* dbcp;
 	DB* dbp = (DB *)dbp_;
@@ -226,9 +234,12 @@ dbp = (DB *)dbp_;
 		*cursor = dbcp;
 
 	return ret;
+#endif
+return 0;
 }
 
 int XARecoveryLog::cursor_next(void* cursor, void** kv, void** dv) {
+#if 0
 	int ret;
 	DBC *dbcp = (DBC *) cursor;
 	DBT key, val;
@@ -241,9 +252,12 @@ int XARecoveryLog::cursor_next(void* cursor, void** kv, void** dv) {
 	}
 
 	return ret;
+#endif
+return 0;
 }
 
 int XARecoveryLog::cursor_end(void* cursor) {
+#if 0
 	int ret;
 	DBC *dbcp = (DBC *) cursor;
 
@@ -253,9 +267,12 @@ int XARecoveryLog::cursor_end(void* cursor) {
 
 closedb((DB *)dbp_, 0);
 	return ret;
+#endif
+return 0;
 }
 
 int XARecoveryLog::dump() {
+#if 0
 	XID* xid;
 	char* rc;
 	void* cursor;
@@ -272,4 +289,6 @@ int XARecoveryLog::dump() {
 	cursor_end(cursor);
 
 	return 0;
+#endif
+return 0;
 }

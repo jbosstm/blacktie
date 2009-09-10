@@ -153,9 +153,33 @@ void XAResourceManager::createPOA() {
     mgr->activate();
 }
 
+#if 0
+void register_ior(CORBA::Object_var& cobj)
+{
+	CORBA::ORB_var& orb = connection_->orbRef;
+
+	// register the POA name with the implementation repository
+		connection_->orbRef->_tao_add_to_IOR_table (name, xx.in ());
+	CORBA::Object_var table_object = orb->resolve_initial_references ("IORTable");
+
+    // Stringify all the object referencs.
+    CORBA::String_var ior = orb->object_to_string (cobj.in());
+
+	IORTable::Table_var adapter = IORTable::Table::_narrow(table_object.in());
+    if (CORBA::is_nil (adapter.in())) {
+        ACE_ERROR ((LM_ERROR, "Nil IORTable\n"));
+    } else {
+        CORBA::String_var ior = orb->object_to_string (cobj.in ());
+
+        adapter->bind ("childPOA", ior.in ());
+    }
+}
+#endif
+
 int XAResourceManager::recover(XID& bid, const char* rc)
 {
     FTRACE(xarmlogger, "ENTER");
+return 0;
 
 	CORBA::Object_var ref = connection_->orbRef->string_to_object(rc);
 	XAResourceAdaptorImpl *ra = NULL;

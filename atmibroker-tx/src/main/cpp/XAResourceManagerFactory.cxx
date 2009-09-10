@@ -199,6 +199,8 @@ int XAResourceManagerFactory::endRMs(bool isOriginator, int flags)
 // see if there are any transaction branches in need of revovery
 void XAResourceManagerFactory::recover_branches()
 {
+// disable whilst rewriting the recovery log
+#if 0
 	XID* xid;
 	char* rc;
 	void *cursor;
@@ -222,6 +224,7 @@ void XAResourceManagerFactory::recover_branches()
 	}
 
 	rclog_.cursor_end(cursor);
+#endif
 }
 
 void XAResourceManagerFactory::createRMs(CORBA_CONNECTION * connection) throw (RMException)

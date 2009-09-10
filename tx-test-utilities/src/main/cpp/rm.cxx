@@ -17,7 +17,7 @@
  */
 #include "xa.h"
 #include "testrm.h"
-#include <userlogc.h>
+/*#include <userlogc.h>*/
 
 #include <stdlib.h>
 #include "ace/OS_NS_unistd.h"
@@ -39,7 +39,7 @@ int dummy_rm_del_fault(int id)
 {
 	fault_t *curr, *prev = 0;
 
-	userlogc_debug("dummy_rm: del_fault: %d", id);
+	/*printf("dummy_rm: del_fault: %d", id);*/
 	for (curr = faults; curr; prev = curr, curr = curr->next) {
 		if (curr->id == id) {
 			if (prev == NULL)
@@ -60,7 +60,7 @@ int dummy_rm_add_fault(fault_t *fault)
 {
 	fault_t *last;
 
-	userlogc_debug("dummy_rm: del_fault:");
+	/*printf("dummy_rm: del_fault:");*/
 
 	if (fault == 0)
 		return 1;
@@ -85,11 +85,11 @@ static int apply_faults(enum XA_OP op, int rmid)
 {
 	fault_t *f;
 
-	userlogc_debug("dummy_rm: apply_faults: op=%d rmid=%d", op, rmid);
+	/*printf("dummy_rm: apply_faults: op=%d rmid=%d", op, rmid);*/
 
 	for (f = faults; f; f = f->next) {
 		if (f->rmid == rmid && f->op == op) {
-			userlogc_debug("dummy_rm: applying fault to op %d rc %d\n", op, f->rc);
+			/*printf("dummy_rm: applying fault to op %d rc %d\n", op, f->rc);*/
 			switch (f->xf) {
 			default:
 				break;
