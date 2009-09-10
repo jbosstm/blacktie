@@ -183,6 +183,11 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		apr_hash_set(frame.headers, "messageflags", APR_HASH_KEY_STRING, flags);
 		apr_hash_set(frame.headers, "messagerval", APR_HASH_KEY_STRING, rval);
 		apr_hash_set(frame.headers, "messagercode", APR_HASH_KEY_STRING, rcode);
+		if (message.ttl > 0) {
+			char * ttl = apr_itoa(pool, message.ttl);
+			apr_hash_set(frame.headers, "expires", APR_HASH_KEY_STRING, ttl);
+			LOG4CXX_TRACE(logger, "Set the expires time to live: " << ttl);
+		}
 		if (serviceName != NULL) {
 			apr_hash_set(frame.headers, "servicename", APR_HASH_KEY_STRING,
 					serviceName);

@@ -121,6 +121,10 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			}
 			message.control = ((TPNOTRAN & flags) ? NULL : txx_serialize(
 					(char*) "ots"));
+			char* ttl = AtmiBrokerEnv::get_instance()->getenv(
+									(char*) "TimeToLive");
+			message.ttl = (ttl == NULL) ? -1 : atoi(ttl);
+
 			if (session->send(message)) {
 				toReturn = 0;
 			}
@@ -176,6 +180,11 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 					timeout = (long) (atoi(
 							AtmiBrokerEnv::get_instance()->getenv(
 									(char*) "RequestTimeout")));
+					char* ttl = AtmiBrokerEnv::get_instance()->getenv(
+									(char*) "TimeToLive");
+					if(ttl != NULL) {
+						timeout += (long) atoi(ttl);
+					}
 				}
 				time = timeout;
 			}
