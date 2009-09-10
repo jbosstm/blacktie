@@ -835,7 +835,8 @@ int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 				toReturn = ::receive(id, session, odata, olen, flags, event,
 						false);
 				if (*event == TPEV_SVCSUCC || *event == TPEV_DISCONIMM
-						|| *event == TPEV_SENDONLY) {
+						|| *event == TPEV_SENDONLY || *event == TPEV_SVCFAIL
+						|| *event == TPEV_SVCERR) {
 					setSpecific(TPE_KEY, TSS_TPEEVENT);
 					toReturn = -1;
 				}

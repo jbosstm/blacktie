@@ -19,6 +19,12 @@ package org.jboss.blacktie.jatmibroker;
 
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
+import org.jboss.blacktie.jatmibroker.tx.TestRollbackOnlyNoTpreturnService;
+import org.jboss.blacktie.jatmibroker.tx.TestRollbackOnlyTpcallTPEOTYPEService;
+import org.jboss.blacktie.jatmibroker.tx.TestRollbackOnlyTpcallTPESVCFAILService;
+import org.jboss.blacktie.jatmibroker.tx.TestRollbackOnlyTpcallTPETIMEService;
+import org.jboss.blacktie.jatmibroker.tx.TestRollbackOnlyTprecvTPEVDISCONIMMService;
+import org.jboss.blacktie.jatmibroker.tx.TestRollbackOnlyTprecvTPEVSVCFAILService;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.TestSpecExampleOneService;
 import org.jboss.blacktie.jatmibroker.xatmi.TestSpecExampleTwoService;
@@ -254,5 +260,47 @@ public class RunServer {
 
 	public String getServiceNameTX2() {
 		throw new RuntimeException("NOT SUPPORTED");
+	}
+
+	public String getServiceNameTestRollbackOnly() {
+		return "TestOne";
+		// return "TestRbkOnly";
+	}
+
+	public void tpadvertiseTestRollbackOnlyTpcallTPETIMEService()
+			throws ConnectionException {
+		this.server.tpadvertise(getServiceNameTestRollbackOnly(),
+				TestRollbackOnlyTpcallTPETIMEService.class.getName());
+	}
+
+	public void tpadvertiseTestTpcallTPEOTYPEService()
+			throws ConnectionException {
+		this.server.tpadvertise(getServiceNameTestRollbackOnly(),
+				TestRollbackOnlyTpcallTPEOTYPEService.class.getName());
+
+	}
+
+	public void tpadvertiseTestRollbackOnlyTpcallTPESVCFAILService()
+			throws ConnectionException {
+		this.server.tpadvertise(getServiceNameTestRollbackOnly(),
+				TestRollbackOnlyTpcallTPESVCFAILService.class.getName());
+	}
+
+	public void tpadvertiseTestRollbackOnlyTprecvTPEVDISCONIMMService()
+			throws ConnectionException {
+		this.server.tpadvertise(getServiceNameTestRollbackOnly(),
+				TestRollbackOnlyTprecvTPEVDISCONIMMService.class.getName());
+	}
+
+	public void tpadvertiseTestRollbackOnlyTprecvTPEVSVCFAILService()
+			throws ConnectionException {
+		this.server.tpadvertise(getServiceNameTestRollbackOnly(),
+				TestRollbackOnlyTprecvTPEVSVCFAILService.class.getName());
+	}
+
+	public void tpadvertiseTestRollbackOnlyNoTpreturnService()
+			throws ConnectionException {
+		this.server.tpadvertise(getServiceNameTestRollbackOnly(),
+				TestRollbackOnlyNoTpreturnService.class.getName());
 	}
 }

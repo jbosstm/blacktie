@@ -358,7 +358,12 @@ public class Connection {
 			received.setData(m.data);
 		}
 		if (m.rval == Connection.TPFAIL) {
-			throw new ConnectionException(m.rcode, 0L, m.rcode,
+			if (m.rcode == Connection.TPESVCERR) {
+				throw new ConnectionException(Connection.TPESVCERR, 0L,
+						m.rcode, "Got an error back from the remote service",
+						received);
+			}
+			throw new ConnectionException(Connection.TPESVCFAIL, 0L, m.rcode,
 					"Got a fail back from the remote service", received);
 		} else {
 			Response response = new Response(m.rval, m.rcode, received, m.len,

@@ -159,7 +159,7 @@ void TestRollbackOnly::test_tprecv_TPEV_SVCFAIL() {
 			"test_tprecv_TPEV_SVCFAIL_service") == 0);
 	CPPUNIT_ASSERT(status == -1);
 	CPPUNIT_ASSERT(revent == TPEV_SVCFAIL);
-	CPPUNIT_ASSERT(tperrno == TPESVCFAIL);
+	CPPUNIT_ASSERT(tperrno == TPEEVENT);
 
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
