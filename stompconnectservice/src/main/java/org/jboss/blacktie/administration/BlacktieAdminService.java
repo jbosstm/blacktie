@@ -57,8 +57,8 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 	private static final Logger log = LogManager.getLogger(BlacktieAdminService.class);
 	private Properties prop = new Properties();
 	private MBeanServerConnection beanServerConnection;
-	private Connection connection;
-	private PingThread pingThread;
+	private Connection  connection;
+	private QueueReaper reaper;
 
 	public void start() throws Exception {
 		XMLEnvHandler handler = new XMLEnvHandler("", prop);
@@ -72,15 +72,15 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 
 		ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory();
 		connection = connectionFactory.getConnection();
-		pingThread = new PingThread(beanServerConnection);
-		pingThread.startThread();
+		reaper = new QueueReaper(beanServerConnection);
+		reaper.startThread();
 		
 		log.info("Admin Server Started");
 	}
 
 	public void stop() throws Exception {
 		connection.close();
-		pingThread.stopThread();
+		reaper.stopThread();
 		log.info("Admin Server Stopped");
 	}
 

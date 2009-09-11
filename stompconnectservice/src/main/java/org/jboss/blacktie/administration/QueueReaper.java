@@ -32,12 +32,12 @@ import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
  * MA  02110-1301, USA.
  */
 
-public class PingThread implements Runnable {
+public class QueueReaper implements Runnable {
 	/** logger */
-	private static final Logger log = LogManager.getLogger(PingThread.class);
+	private static final Logger log = LogManager.getLogger(QueueReaper.class);
 	
 	/** Interval at which to run */
-	private long interval = 30 * 1000;
+	private long interval = 30 * 1000; //TODO make this configurable
 
 	/** Thread to run */
 	private Thread thread;
@@ -47,7 +47,7 @@ public class PingThread implements Runnable {
 	
 	private MBeanServerConnection beanServerConnection;
 	
-	public PingThread(MBeanServerConnection conn) {	    
+	public QueueReaper(MBeanServerConnection conn) {	    
 		this.thread = new Thread(this);
 		this.thread.setDaemon(true);
 		this.thread.setPriority(Thread.MIN_PRIORITY);
@@ -99,8 +99,8 @@ public class PingThread implements Runnable {
 						if (transportLibrary != null && transportLibrary.contains("hybrid") &&
 							isCreatedProgrammatically(serviceName) && 
 							consumerCount(serviceName) == 0) {
-							Thread.sleep(5000);
-							// check again
+							Thread.sleep(30 * 1000); //TODO make this configurable
+							//double check consumer is 0
 							if(consumerCount(serviceName) == 0) {
 								undeployQueue(serviceName);
 								log.info("undeploy service " + serviceName + " for consumer is 0");
