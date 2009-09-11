@@ -28,7 +28,7 @@
 #include "TestRollbackOnly.h"
 
 extern void test_tpcall_TPETIME_service(TPSVCINFO *svcinfo) {
-	int timeout = 11;
+	int timeout = 21;
 	userlogc((char*) "test_tpcall_TPETIME_service, sleeping for %d seconds",
 			timeout);
 	ACE_OS::sleep(timeout);
