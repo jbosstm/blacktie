@@ -69,6 +69,10 @@ Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 				<NAME>RequestTimeout</NAME>
 				<VALUE>10</VALUE>
 			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>TimeToLive</NAME>
+				<VALUE>10</VALUE>
+			</ENV_VARIABLE>
 		</ENV_VARIABLES>
 	</ENVIRONMENT_DESCRIPTION>
 </ENVIRONMENT>
