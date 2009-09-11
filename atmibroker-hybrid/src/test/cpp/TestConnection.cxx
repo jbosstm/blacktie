@@ -63,6 +63,7 @@ void TestConnection::test() {
 		clientSend.replyto = client->getReplyTo();
 		clientSend.type = (char*) "";
 		clientSend.subtype = (char*) "";
+		clientSend.ttl = 10 * 1000;
 		client->send(clientSend);
 		MESSAGE serviceReceived = destination->receive(0);
 		free(clientData);

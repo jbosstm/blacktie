@@ -52,6 +52,7 @@
 					<SERVICE name='DEBIT' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='CREDIT' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='INQUIRY' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestRbkOnly' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='foo_ADMIN' transportLibrary='libatmibroker-hybrid.so'/>
 				</SERVICE_NAMES>
 			</SERVER>

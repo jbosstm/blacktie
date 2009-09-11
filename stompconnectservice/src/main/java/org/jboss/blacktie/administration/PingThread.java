@@ -37,7 +37,7 @@ public class PingThread implements Runnable {
 	private static final Logger log = LogManager.getLogger(PingThread.class);
 	
 	/** Interval at which to run */
-	private long interval = 5000;
+	private long interval = 30 * 1000;
 
 	/** Thread to run */
 	private Thread thread;
@@ -99,8 +99,12 @@ public class PingThread implements Runnable {
 						if (transportLibrary != null && transportLibrary.contains("hybrid") &&
 							isCreatedProgrammatically(serviceName) && 
 							consumerCount(serviceName) == 0) {
-							undeployQueue(serviceName);
-							log.info("undeploy service " + serviceName + " for consumer is 0");
+							Thread.sleep(5000);
+							// check again
+							if(consumerCount(serviceName) == 0) {
+								undeployQueue(serviceName);
+								log.info("undeploy service " + serviceName + " for consumer is 0");
+							}
 						}
 					}
 				}
