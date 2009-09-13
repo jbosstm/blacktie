@@ -1,131 +1,53 @@
-#include "ace/OS_NS_stdlib.h"
-#include "ace/OS_NS_stdio.h"
-#include "ace/OS_NS_string.h"
-
-//#include <db.h>
 #include <iostream>
+#include <string>
+#include <sstream>
 
-#include "AtmiBrokerEnv.h"
-#include "txi.h"
+#include "log4cxx/logger.h"
 
 #include "XARecoveryLog.h"
+#include "AtmiBrokerEnv.h"
 
-log4cxx::LoggerPtr xarcllogger(log4cxx::Logger::getLogger("TxLogXARecoverLog"));
+// the persistent store for recovery records
+static const char* DEF_RCLOG_NAME = "rclog";
+static char RCLOGPATH[1024];
 
-extern std::ostream& operator<<(std::ostream &os, const XID& xid);
+log4cxx::LoggerPtr xarcllogger(log4cxx::Logger::getLogger("TxLogXARecoveryLog"));
+
+using namespace std;
+
+// convert an X/Open XID to a string (used as a key into the allocator to retrieve the rrec_t data type
+// associated with the key)
+static string xid_to_string(XID& xid)
+{
+	std::stringstream out;
+
+	out << xid.formatID << ':' << xid.gtrid_length << ':'<< xid.bqual_length << ':' << (char *) (xid.data + xid.gtrid_length);
+
+	return out.str();
+}
 
 /*
-static int putrec(DB *dbp, const void *k, size_t ksz, const void *v, size_t vsz)
+// comparator for XID's
+static int compareXids(const XID& xid1, const XID& xid2)
 {
-	DBT key, data; 
-	int ret;
+	char *x1 = (char *) &xid1;
+	char *x2 = (char *) &xid2;
+	char *e = (char *) (x1 + sizeof (XID));
 
-	memset(&key, 0, sizeof (key));
-	key.data = (void *) k;
-	key.size = ksz;
-	memset(&data, 0, sizeof (data));
-	data.data = (void *) v;
-	data.size = vsz;
-
-	if ((ret = dbp->put(dbp, NULL, &key, &data, 0)) == 0) {
-		LOG4CXX_TRACE(xarcllogger, "db op put: key: " << (char *) key.data <<
-			" value: " << (char *)data.data << " vsz: " << vsz); 
-	} else {
-		LOG4CXX_WARN(xarcllogger, " db op put: " << db_strerror(ret)); 
-	} 
-
-	return ret;
-}
-
-static int getrec(DB *dbp, const void *k, size_t ksz, DBT *data)
-{
-	DBT key; 
-	int ret;
-
-	memset(&key, 0, sizeof(key)); 
-	key.data = (void *) k; 
-	key.size = ksz;
-
-	if ((ret = dbp->get(dbp, NULL, &key, data, 0)) == 0) {
-		LOG4CXX_TRACE(xarcllogger, "db op get: key: " << (char *) key.data <<
-			" value: " << (char *)data->data << " vsz: " << data->size);
-	} else {
-		LOG4CXX_WARN(xarcllogger, "db op get: " << db_strerror(ret)); 
-	}
-
-	return ret;
-}
-
-static int delrec(DB *dbp, const void *k, size_t ksz)
-{
-	DBT key; 
-	int ret;
-
-	memset(&key, 0, sizeof(key)); 
-	key.data = (void *) k; 
-	key.size = ksz;
-
-	if ((ret = dbp->del(dbp, NULL, &key, 0)) == 0) {
-		LOG4CXX_TRACE(xarcllogger, "db op del: key: " << (char *) k); 
-	} else {
-		LOG4CXX_WARN(xarcllogger, "db op del: key: " << (char *) k <<
-			" error: " << db_strerror(ret)); 
-	} 
-
-	return ret;
-}
-
-static int closedb(DB *dbp, int ret)
-{
-	int rv;
-
-	if ((rv = dbp->close(dbp, 0)) != 0 && ret == 0) {
-		LOG4CXX_WARN(xarcllogger, "db op close: " << db_strerror(rv)); 
-	    return rv; 
-	}
-
-	LOG4CXX_TRACE(xarcllogger, "db op close ok"); 
-	return (ret); 
-}
-
-static int opendb(DB **dbp, const char *dbfile)
-{
-	int ret;
-
-	if ((ret = db_create(dbp, NULL, 0)) != 0) {
-		LOG4CXX_WARN(xarcllogger, "db op create: " << db_strerror(ret)); 
-		return (1); 
-	} 
-
-	if ((ret = (*dbp)->open(*dbp, NULL, dbfile, NULL, DB_BTREE, DB_CREATE, 0664)) != 0) {
-		LOG4CXX_WARN(xarcllogger, "db op open " << dbfile << " error: " << db_strerror(ret)); 
-		return closedb(*dbp, ret);
-	}
-
-	return 0;
-}
-
-static int copy_data(DBT& data,  void **rc)
-{
-	if ((*rc = malloc(data.size)) == NULL) {
-		LOG4CXX_ERROR(xarcllogger, "XARecoverLog: out of memory"); 
-		return -1;
-	}
-
-	memcpy(*rc, data.data, data.size);
+	while (x1 < e)
+		if (*x1 < *x2)
+			return -1;
+		else if (*x1++ > *x2++)
+			return 1;
 
 	return 0;
 }
 */
-#define DEF_RCLOG_NAME	"rclog"
 
-XARecoveryLog::XARecoveryLog(const char *dbfile) throw (RMException)
+// locate the path to the backing store for the recovery log
+static void init_logpath(const char *fname)
 {
-	char RCLOGPATH[1024];
-//	int ret;
-	char *logfile = (dbfile == NULL ? ACE_OS::getenv("BLACKTIE_RECOVERY_LOG") : (char *) dbfile);
-
-	FTRACE(xarcllogger, "ENTER logfile: " << logfile);
+	char *logfile = (fname == NULL ? ACE_OS::getenv("BLACKTIE_RECOVERY_LOG") : (char *) fname);
 
 	if (logfile == NULL) {
 		char *logdir = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
@@ -137,158 +59,149 @@ XARecoveryLog::XARecoveryLog(const char *dbfile) throw (RMException)
 	} else {
 		ACE_OS::snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s", logfile);
 	}
+}
 
-	LOG4CXX_DEBUG(xarcllogger, "Opening recovery log: " << RCLOGPATH); 
+/*
+ * Construct a recovery log for storing XID's and their associated OTS Recovery Records.
+ * The (ACE) memory pool for the log is backed by a memory mapped file)
+ */
+XARecoveryLog::XARecoveryLog(const char* logfile) throw (RMException)
+{
+	ACE_MMAP_Memory_Pool_Options opts(ACE_DEFAULT_BASE_ADDR);
+	init_logpath(logfile);
 
-//	if ((ret = opendb((DB **) &dbp_, RCLOGPATH)) != 0) {
-//		(void) closedb((DB *)dbp_, 0);
-//		throw new RMException("Error opening recovery log", ret);
-//	}
+	LOG4CXX_TRACE(xarcllogger, (char *) "Using file " << RCLOGPATH);
 
-	FTRACE(xarcllogger, "ENTER dumping logfile: " << RCLOGPATH);
-//	dump();
+	pool_ = new mmpool_t(RCLOGPATH, RCLOGPATH, &opts);
+
+	if (pool_ == 0)
+		throw new RMException("Error creating recovery log allocator", -1);
 }
 
 XARecoveryLog::~XARecoveryLog()
 {
-	FTRACE(xarcllogger, "ENTER");
-//TODO	(void) closedb((DB *)dbp_, 0);
+	LOG4CXX_TRACE(xarcllogger, (char *) "destructor");
+	delete pool_;
 }
 
-int XARecoveryLog::add(const XID& xid, const void* recoveryCoordinator, size_t vsz)
+/*
+ * Insert a recovery record into persistent storage.
+ * The bind call ensures that the record is synced to disk. [Asside:- any changes made to the
+ * rrec_t data type after the bind are automatically synced to disk, the implementation does
+ * use this feature.]
+ */
+int XARecoveryLog::add_rec(XID& xid, char *ior)
 {
-	FTRACE(xarcllogger, "ENTER adding xid: " << xid);
-#if 0
-opendb((DB **) &dbp_, "rclog");
-	int rc = putrec((DB *)dbp_, &xid, sizeof (xid), recoveryCoordinator, vsz);
-closedb((DB *)dbp_, 0);
-return rc;
+	// malloc enough space from the memory mapped recovery log for the requested branch
+	// plus space to hold the IOR (include the string null terminator for easy debugging
+	void* mp = pool_->malloc(sizeof (rrec_t) + strlen(ior) + 1);
+	char* iorcpy = (char*) mp + sizeof (rrec_t);
+	// the ace allocator keys its blocks by name - use the string form of the XID as the key
+	string key = xid_to_string(xid);
+	int rv = -1;
+
+	LOG4CXX_TRACE(xarcllogger, (char *) "adding XID: " << key.c_str() << " IOR: " << ior);
+
+	if(mp == 0) {
+		LOG4CXX_ERROR(xarcllogger, (char *) "Out of memory");
+	} else {
+		ACE_OS::memcpy(iorcpy, ior, strlen(ior) + 1);
+
+		// new the space for the rrec_t using the memory allocated from the allocator
+		rrec_t* rrp = new (mp) rrec_t(xid, iorcpy);
+
+		// and bind the name (the string form of the xid) to the allocated block
+		if ((rv = pool_->bind(key.c_str(), rrp)) == -1) {
+			LOG4CXX_ERROR(xarcllogger,  (char *) "Errory binding key: " << rv);
+		} else {
+			rv = 0;
+		}
+#ifdef TESTSYNC 
+		// to test that the allocator synced the block after the bind generate
+		// a segmentation fault. The block should be stored in the backing file
+		// for the allocator so it should be present if a find_rec call is issued
+		// on restart.
+		if (strcmp(ior, "SEGV") == 0) {
+			char *p = 0;
+			*p = 0;
+		}
 #endif
-return 0;
-}
-
-int XARecoveryLog::get(const XID& xid, void **rc)
-{
-#if 0
-	DBT data;
-	int ret;
-
-	FTRACE(xarcllogger, "ENTER geting xid: " << xid);
-opendb((DB **) &dbp_, "rclog");
-	memset(&data, 0, sizeof(data)); 
-	if ((ret = getrec((DB *)dbp_, &xid, sizeof (xid), &data)) == 0)
-		copy_data(data, rc);
-
-closedb((DB *)dbp_, 0);
-	return ret;
-#endif
-return 0;
-}
-
-int XARecoveryLog::del(const XID& xid)
-{
-	FTRACE(xarcllogger, "ENTER deleting xid: " << xid);
-#if 0
-opendb((DB **) &dbp_, "rclog");
-	int ret = delrec((DB *)dbp_, &xid, sizeof (xid));
-
-	if (ret != 0)
-		dump();
-
-closedb((DB *)dbp_, 0);
-	return ret;
-#endif
-return 0;
-}
-
-int XARecoveryLog::erase_all()
-{
-#if 0
-	XID* xid;
-	char* rc;
-	void* cursor;
-	FTRACE(xarcllogger, "ENTER dumping recovery records ...");
-	cursor_begin(&cursor);
-
-	while (cursor_next(cursor, (void**) &xid, (void**) &rc) == 0) {
-		LOG4CXX_DEBUG(xarcllogger, "erasing xid: "<< *xid << " value: " << rc);
-		(void) delrec((DB *)dbp_, xid, sizeof (*xid));
-		free(xid);
-		free(rc);
 	}
 
-	cursor_end(cursor);
-#endif
-	return 0;
+	return rv;
 }
 
-int XARecoveryLog::cursor_begin(void **cursor) {
-#if 0
-	int ret;
-	DBC* dbcp;
-	DB* dbp = (DB *)dbp_;
-
-opendb((DB **) &dbp_, "rclog");
-dbp = (DB *)dbp_;
-	if ((ret = dbp->cursor(dbp, NULL, &dbcp, 0)) == 0)
-		*cursor = dbcp;
-
-	return ret;
-#endif
-return 0;
+// locate a recovery record by XID
+rrec_t*  XARecoveryLog::find_rec(XID& xid)
+{
+    string s = xid_to_string(xid);
+    return find_rec(s.c_str());
 }
 
-int XARecoveryLog::cursor_next(void* cursor, void** kv, void** dv) {
-#if 0
-	int ret;
-	DBC *dbcp = (DBC *) cursor;
-	DBT key, val;
+// locate a recovery record by binding name (in this implementation the name
+// is the string form of the XID
+rrec_t* XARecoveryLog::find_rec(const char *name)
+{
+	void *rec;
 
-	memset(&key, 0, sizeof(key)); 
-	memset(&val, 0, sizeof(val)); 
-	if ((ret = dbcp->get(dbcp, &key, &val, DB_NEXT)) == 0) {
-		copy_data(key, (void **) kv);
-		copy_data(val, (void **) dv);
+//  use an iterator to find by anything other than name or XID
+//  mmpool_iter_t i(*pool_);
+//  for (void *rec = 0; i.next(rec) != 0; i.advance ()) {
+//	  rrec_t *rrp = reinterpret_cast<rrec_t *> (rec);
+//  }
+	if (pool_->find(name, rec) == -1)
+		return 0;
+	else
+		return reinterpret_cast<rrec_t *> (rec);
+}
+
+int XARecoveryLog::del_rec(XID& xid)
+{
+	string s = xid_to_string(xid);
+
+	LOG4CXX_TRACE(xarcllogger, (char *) "deleting XID: " << s.c_str());
+	return del_rec(s.c_str());
+}
+
+// unbinding the name of a block is the delete operation
+int XARecoveryLog::del_rec(const char *name)
+{
+	if (pool_->unbind(name) != -1)
+		return 0;
+
+	return -1;
+}
+
+/*
+ * Obtain an iterator for the log. Note that this implementation uses ACE_Null_Mutex
+ * to protect the log - ie there is now protection for concurrent threads modifying the
+ * same record (see the XARecoveryLog header for the allocator definition if there is a
+ * requirement for protecting access to the log). 
+ */
+void* XARecoveryLog::aquire_iter()
+{
+	return new mmpool_iter_t(*pool_);
+}
+
+// the aquire_iter operation returns an handle that consumes memory so must be released
+// when done.
+void XARecoveryLog::release_iter(void *iter)
+{
+	if (iter)
+		delete reinterpret_cast<mmpool_iter_t *> (iter);
+}
+
+rrec_t* XARecoveryLog::next(void *iter)
+{
+	if (iter) {
+		mmpool_iter_t* i = reinterpret_cast<mmpool_iter_t *> (iter);
+		void *rec = 0;
+
+		if (i->next(rec)) {
+			i->advance();
+			return reinterpret_cast<rrec_t *> (rec);
+		}
 	}
-
-	return ret;
-#endif
-return 0;
-}
-
-int XARecoveryLog::cursor_end(void* cursor) {
-#if 0
-	int ret;
-	DBC *dbcp = (DBC *) cursor;
-
-	if ((ret = dbcp->c_close(dbcp)) != 0) {
-		LOG4CXX_WARN(xarcllogger, " cursor close: " << db_strerror(ret)); 
-    }
-
-closedb((DB *)dbp_, 0);
-	return ret;
-#endif
-return 0;
-}
-
-int XARecoveryLog::dump() {
-#if 0
-	XID* xid;
-	char* rc;
-	void* cursor;
-
-	FTRACE(xarcllogger, "ENTER dumping recovery records ...");
-	cursor_begin(&cursor);
-
-	while (cursor_next(cursor, (void**) &xid, (void**) &rc) == 0) {
-		LOG4CXX_DEBUG(xarcllogger, "xid: "<< *xid << " value: " << rc);
-		free(xid);
-		free(rc);
-	}
-
-	cursor_end(cursor);
 
 	return 0;
-#endif
-return 0;
 }

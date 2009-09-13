@@ -15,6 +15,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#include <string>
+#include <sstream>
+
 #include <cppunit/extensions/HelperMacros.h>
 #include "TestTransactions.h"
 #include "OrbManagement.h"
@@ -28,6 +31,17 @@
 
 #include "TxManager.h"
 
+using namespace std;
+
+static string xid_to_string(XID& xid)
+{
+    std::stringstream out;
+
+    out << xid.formatID << ':' << xid.gtrid_length << ':'<< xid.bqual_length << ':' << (char *) (xid.data + xid.gtrid_length);
+
+    return out.str();
+}
+
 void TestTransactions::setUp()
 {
 	// make sure the thread is clean - TODO check whether this needed - it shouldn't be
@@ -35,6 +49,7 @@ void TestTransactions::setUp()
 //	txx_release_control(txx_unbind());
 	TestFixture::setUp();
 }
+
 void TestTransactions::tearDown()
 {
 	txx_stop();
@@ -43,54 +58,58 @@ void TestTransactions::tearDown()
 
 void TestTransactions::test_rclog()
 {
-	// disable whilst the recovery log is rewritten
-#if 0
-	XID* xid;
-	char* rcp;
-	void *cursor;
 	XARecoveryLog log("test_recovery_log");
-	int CNT = 4;
-    XID xids[] = {
-        {1L, 1L, 0L},
-        {2L, 1L, 0L},
-        {3L, 1L, 0L},
-        {2L, 1L, 0L, "DAB"},
-    };
-    const char * rc[] = {"RC1 x x x", "RC2 y y y", "RC3 z z z", "RC2 a a a"};
-    char *rcr[] = {0, 0, 0, 0};
 
-    for (int i = 0; i < CNT; i++)
-        log.add(xids[i], rc[i], strlen(rc[i]) + 1); 
+	XID gid = {1L, 1L, 0L};
+	XID xid = XAResourceManager::gen_xid(200, gid);
+	XID xid2 = XAResourceManager::gen_xid(201, gid);
+	string key = xid_to_string(xid);
+	rrec_t* rrp;
+	int rv, cnt = 0;
+	void *i;
+	char* ior = (char *) "IOR:1";
 
-    for (int i = 0; i < CNT; i++)
-        log.get(xids[i], (void**) &rcr[i]); 
+	// add a record
+	rv = log.add_rec(xid, ior);
+	CPPUNIT_ASSERT(rv == 0);
 
-    for (int i = 0; i < CNT; i++)
-		CPPUNIT_ASSERT(strcmp(rc[i], rcr[i]) == 0);
+	// delete it by XID
+	rv = log.del_rec(xid);
+	CPPUNIT_ASSERT(rv == 0);
 
-    for (int i = 0; i < CNT; i++)
-        free(rcr[i]);
+	// add a record
+	rv = log.add_rec(xid, ior);
+	CPPUNIT_ASSERT(rv == 0);
 
-	// test the cursor interface by deleting all the records
-	CPPUNIT_ASSERT(log.cursor_begin(&cursor) == 0);
-    while (log.cursor_next(cursor, (void**) &xid, (void**) &rcp) == 0) {
-//		log.del(*xid);
-//      printf("xid: %d:%d:%d value: %s\n", xid->formatID, xid->gtrid_length, xid->bqual_length, rcp);
-        free(xid);
-        free(rcp);
-    }
-	CPPUNIT_ASSERT(log.cursor_end(cursor) == 0);
-	// empty the log
-	CPPUNIT_ASSERT(log.erase_all() == 0);
+	// delete it by key
+	rv = log.del_rec(key.c_str());
+	CPPUNIT_ASSERT(rv == 0);
 
-	// make sure there are no more records
-	CPPUNIT_ASSERT(log.cursor_begin(&cursor) == 0);
-    while (log.cursor_next(cursor, (void**) &xid, (void**) &rc) == 0) {
-		CPPUNIT_FAIL("All recover records should have been deleted from log: test_recovery_log");
+	// add a record
+	rv = log.add_rec(xid, ior);
+	CPPUNIT_ASSERT(rv == 0);
+
+	// find it by key
+	rrp = log.find_rec(key.c_str());
+	CPPUNIT_ASSERT(rrp != 0);
+
+	// find it by xid
+	rrp = log.find_rec(xid);
+	CPPUNIT_ASSERT(rrp != 0);
+
+	// add another records
+	CPPUNIT_ASSERT(log.add_rec(xid2, (char *) "IOR:2") == 0);
+
+	// use an iterator to check that there are two records
+	i = log.aquire_iter();
+	CPPUNIT_ASSERT(i != 0);
+	while ((rrp = log.next(i)) != 0) {
+		cnt += 1;
+		log.del_rec(rrp->xid());
 	}
 
-	CPPUNIT_ASSERT(log.cursor_end(cursor) == 0);
-#endif
+	CPPUNIT_ASSERT(cnt >= 2);
+	log.release_iter(i);
 }
 
 void TestTransactions::test_basic()
@@ -117,7 +136,7 @@ void TestTransactions::test_transactions()
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_commit());
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
 
-    
+	
 	userlogc( (char*) "TestTransactions::test_transactions pass");
 }
 
@@ -336,10 +355,10 @@ static struct xa_switch_t real_resource = { "DummyRM", 0L, 0, fn1, fn1, /* open 
 };
 // manufacture a dummy RM transaction id
 static XID xid = {
-        1L, /* long formatID */
-        0L, /* long gtrid_length */
-        0L, /* long bqual_length */
-        {0} /* char data[XIDDATASIZE]; */
+		1L, /* long formatID */
+		0L, /* long gtrid_length */
+		0L, /* long bqual_length */
+		{0} /* char data[XIDDATASIZE]; */
 };
 
 

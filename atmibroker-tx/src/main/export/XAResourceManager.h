@@ -48,6 +48,7 @@ public:
     int xa_flags();
 
 	struct xa_switch_t * get_xa_switch() { return xa_switch_;}
+    static XID gen_xid(long rmid, XID &gid);
 private:
 	//typedef std::map<XID *, XAResourceAdaptorImpl *> XABranchMap;
 	typedef std::map<XID, XAResourceAdaptorImpl *, xid_cmp> XABranchMap;
@@ -67,6 +68,5 @@ private:
 	XAResourceAdaptorImpl * locateBranch(XID *);
 
 	void show_branches(const char *, XID *);
-    XID gen_xid(long rmid, XID &gid);
 };
 #endif // _XARESOURCEMANAGER_H

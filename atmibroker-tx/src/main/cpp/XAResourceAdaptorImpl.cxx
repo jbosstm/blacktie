@@ -90,7 +90,7 @@ Vote XAResourceAdaptorImpl::prepare()
 
 	if (rv2 == XA_OK) {
 		// about to vote commit - remember the descision
-		rclog_.add(bid_, rc_, strlen(rc_) + 1);
+		rclog_.add_rec(bid_, rc_);
 		prepared_ = true;
 	}
 
@@ -128,11 +128,9 @@ void XAResourceAdaptorImpl::terminate(int rv)
     FTRACE(xaralogger, "ENTER");
 
 	// remove the entry for this branch from the recovery log
-	if (prepared_ && rclog_.del(bid_) != 0) {
+	if (prepared_ && rclog_.del_rec(bid_) != 0) {
         LOG4CXX_DEBUG(xaralogger, (char *) xa_switch_->name <<
             ": terminate - entry not found in recovery log rid=" << rmid_);
-
-		rclog_.dump();
 	}
 
     switch (rv) {

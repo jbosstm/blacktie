@@ -179,7 +179,6 @@ void register_ior(CORBA::Object_var& cobj)
 int XAResourceManager::recover(XID& bid, const char* rc)
 {
     FTRACE(xarmlogger, "ENTER");
-return 0;
 
 	CORBA::Object_var ref = connection_->orbRef->string_to_object(rc);
 	XAResourceAdaptorImpl *ra = NULL;
