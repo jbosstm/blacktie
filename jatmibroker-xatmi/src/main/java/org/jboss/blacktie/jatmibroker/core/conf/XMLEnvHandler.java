@@ -178,7 +178,7 @@ public class XMLEnvHandler extends DefaultHandler {
 					toSet = toSet.replace("${JBOSSAS_IP_ADDR}", jbossasIpAddr);
 				}
 				prop.setProperty(arg, toSet);
-				log.debug(arg + " is " + argv[i - 1]);
+				log.debug(arg + " is " + toSet);
 			}
 			isORBOPT = false;
 			valueElement = "";

@@ -29,6 +29,7 @@ import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
 import org.omg.CosTransactions.Control;
+import org.omg.CosTransactions.Status;
 import org.omg.CosTransactions.Terminator;
 import org.omg.CosTransactions.TransactionFactory;
 import org.omg.CosTransactions.TransactionFactoryHelper;
@@ -123,6 +124,10 @@ public class JABTransaction {
 		ThreadActionData.pushAction(this);
 
 		setTerminator(control);
+	}
+	
+	public Status getStatus() throws Unavailable {
+		return control.get_coordinator().get_status();
 	}
 
 	public boolean equals(java.lang.Object obj) {
