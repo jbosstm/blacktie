@@ -24,12 +24,24 @@ extern "C" {
 #include "ace/OS_NS_stdlib.h"
 #include "ace/OS_NS_stdio.h"
 #include "ace/OS_NS_string.h"
+#include "ace/OS_NS_unistd.h"
 #include "xatmi.h"
 #include "userlogc.h"
-#include "TestAdmin.h"
+#include "TestTimeToLive.h"
 
-void TestAdmin::setUp() {
-	userlogc((char*) "TestAdmin::setUp");
+void test_TTL_service(TPSVCINFO *svcinfo) {
+	long timeout = 45;
+
+	ACE_OS::sleep(timeout);
+
+	int len = 60;
+	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
+	strcpy(toReturn, "test_tpcall_TTL_service");
+	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
+}
+
+void TestTimeToLive::setUp() {
+	userlogc((char*) "TestTimeToLive::setUp");
 
 	char* argv[] = {(char*)"./server", (char*)"-i", (char*)"1", (char*)"foo"};
 	int argc = sizeof(argv)/sizeof(char*);
@@ -39,72 +51,58 @@ void TestAdmin::setUp() {
 	CPPUNIT_ASSERT(initted != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
 
+	int rc = tpadvertise((char*) "TTL", test_TTL_service);
+
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(rc != -1);
 }
 
-void TestAdmin::tearDown() {
-	userlogc((char*) "TestAdmin::tearDown");
+void TestTimeToLive::tearDown() {
+	userlogc((char*) "TestTimeToLive::tearDown");
 	serverdone();
 
 	clientdone();
 	CPPUNIT_ASSERT(tperrno == 0);
 }
 
-void TestAdmin::testStatus() {
-	long  sendlen = strlen("status") + 1;
-	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
-	strcpy(sendbuf, "status");
+void TestTimeToLive::testTTL() {
+	int cd;
 
-	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
-	long  recvlen = 1;
+	cd = callTTL();
+	CPPUNIT_ASSERT(cd == -1);
+	CPPUNIT_ASSERT(tperrno == TPETIME);
 
-	int cd = ::tpcall((char*) "foo_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
-	CPPUNIT_ASSERT(cd == 0);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(recvbuf[0] == '1');
-	userlogc((char*) "len is %d, service status: %s", recvlen, &recvbuf[1]);
+	cd = callTTL();
+	CPPUNIT_ASSERT(cd == -1);
+	CPPUNIT_ASSERT(tperrno == TPETIME);
 
+	CPPUNIT_ASSERT(getTTLCounter() == 1);
 }
 
-void TestAdmin::testMessageCounter() {
-	CPPUNIT_ASSERT(getBARCounter() == 0);
-	CPPUNIT_ASSERT(callBAR() == 0);
-	CPPUNIT_ASSERT(getBARCounter() == 1);
-}
-
-int TestAdmin::callBAR() {
+int TestTimeToLive::callTTL() {
 	long  sendlen = strlen((char*)"test") + 1;
 	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
 	strcpy(sendbuf, (char*) "test");
 
-	int cd = ::tpacall((char*) "BAR", (char *) sendbuf, sendlen, TPNOREPLY);
+	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
+	long  recvlen = 1;
+
+	int cd = ::tpcall((char*) "TTL", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, 0);
 	return cd;
 }
 
-long TestAdmin::getBARCounter() {
-	long sendlen = strlen("counter,BAR,") + 1;
+long TestTimeToLive::getTTLCounter() {
+	long sendlen = strlen("counter,TTL,") + 1;
 	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
-	strcpy(sendbuf, "counter,BAR,");
+	strcpy(sendbuf, "counter,TTL,");
 
 	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
 	long  recvlen = 1;
 
-	int cd = ::tpcall((char*) "foo_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
+	int cd = ::tpcall((char*) "foo_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, 0);
 	CPPUNIT_ASSERT(cd == 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(recvbuf[0] == '1');
 
 	return (atol(&recvbuf[1]));
-}
-
-void TestAdmin::testServerdone() {
-	long  sendlen = strlen("serverdone") + 1;
-	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
-	strcpy(sendbuf, "serverdone");
-
-	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
-	long  recvlen = 1;
-
-	int cd = ::tpcall((char*) "foo_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
-	CPPUNIT_ASSERT(cd == 0);
-	CPPUNIT_ASSERT(tperrno == 0);
 }

@@ -28,6 +28,7 @@
 			<SERVER name="foo">
 				<SERVICE_NAMES>
 					<SERVICE name='BAR' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TTL' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='TestTPFree' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='TestTPCall' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='TestTPAdvertise' transportLibrary='libatmibroker-hybrid.so'/>

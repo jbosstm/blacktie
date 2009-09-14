@@ -15,13 +15,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#if 0
-#include "TestAdmin.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestAdmin );
-#include "TestAdvertise.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestAdvertise );
-#include "TestUnadvertise.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestUnadvertise );
+#ifndef TEST_TIMETOLIVE_H
+#define TEST_TIMETOLIVE_H
+
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFixture.h>
+
+class TestTimeToLive: public CppUnit::TestFixture {
+	CPPUNIT_TEST_SUITE( TestTimeToLive );
+	CPPUNIT_TEST( testTTL );
+	CPPUNIT_TEST_SUITE_END();
+
+public:
+	void testTTL();
+	int  callTTL();
+	long getTTLCounter();
+	virtual void setUp();
+	virtual void tearDown();
+};
+
 #endif
-#include "TestTimeToLive.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestTimeToLive );
