@@ -15,17 +15,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
-
 #include "ace/OS_NS_unistd.h"
 
-#include "BaseServerTest.h"
-#include "XATMITestSuite.h"
+#include "userlogc.h"
 
 #include "xatmi.h"
 #include "tx.h"
-
-#include "TestRollbackOnly.h"
 
 extern void test_tpcall_TPETIME_service(TPSVCINFO *svcinfo) {
 	int timeout = 21;
