@@ -91,6 +91,7 @@
 			 	<XA_LIB_NAME>${ORACLE_HOME}/lib/libclntsh.so</XA_LIB_NAME>
 			 </XA_RESOURCE>
 			 -->
+			<!-- uncomment to test recovery - see the README
 			<XA_RESOURCE>
 				<XA_RESOURCE_MGR_ID>202</XA_RESOURCE_MGR_ID>
 				<XA_RESOURCE_NAME>DummyDb</XA_RESOURCE_NAME>
@@ -99,11 +100,15 @@
 				<XA_SWITCH>testxasw</XA_SWITCH>
 				<XA_LIB_NAME>libdummy-rm.so</XA_LIB_NAME>
 			</XA_RESOURCE>
+			-->
 		</XA_RESOURCES>
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
 				<NAME>ORBOPT</NAME>
 				<VALUE>-ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
+				<!-- to use a fixed ORB endpoint
+				<VALUE>-ORBListenEndpoints iiop://localhost:9032/portspan=10 -ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
+				-->
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>TRANS_FACTORY_ID</NAME>

@@ -118,25 +118,82 @@ clear out the database by deleting the contents but not the directories themselv
 
 APPENDIX: RECOVERY
 ==================
-To test recovery you will need to link against a library only available in the test suite. Define the macro TX_RC
-as shown below. When the client will send a request that causes the server to generate a segmentation fault after
-the prepare phase of the transaction commitment protocol.
+To test recovery you will need to link against a library that is only available in the test suite (which you'll need to build
+from source - the library is called libdummy-rm.so).
 
-After the server has failed restart the server. You should see server recovering the failed transaction.
-TODO: note the recovery part isn't working yet.
+When building the client and server define the macro TX_RC as shown below. When the client runs it sends a request to
+the server that causes the server to generate a segmentation fault after the prepare phase of the transaction commitment
+protocol. This will ensure that there is a pending transaction in need of recovery.
+
+Restart the server. The BlackTie log (blacktie.log) should show the system recovering the failed transaction. The expected
+message sequence is:
+
+An entry that indicates BlackTie is attempting the recovery with the following message (for each failed branch):
+	"... Recovering resource with branch id: <branch id> and recovery IOR: ..."
+Then after one or two minutes the branch should attempt to commit with the following message:
+	"... Commiting resource with branch id: <branch id>"
+
+Note also that the Transaction Manager running in the JBoss AS should report messages on the console. One to show the
+error that occurs when the server generates a segmentation fault during commit:
+	"14:42:23,556 WARN  [loggerI18N] [com.arjuna.ats.internal.jts.resources.rrcaught] ResourceRecord commit - caught exception: org.omg.CORBA.TRANSIENT: Retries exceeded, couldn't reconnect to 127.0.0.1:9032  vmcid: 0x0  minor code: 0  completed: No"
+
+and another message that indicates successful recovery of the pending transaction:
+	"14:43:47,576 INFO  [loggerI18N] [com.arjuna.ats.internal.jts.recovery.transactions.TransactionCache_5] [com.arjuna.ats.internal.jts.recovery.transactions.TransactionCache_5] - Transaction 7f000001:e2a7:4aadfb4c:a89 recovery completed"
+
+Required Configuration Changes:
+-------------------------------
+
+The XA resource that generates the segmentation fault needs to be included in Environment.xml as follows:
+            <XA_RESOURCE>
+                <XA_RESOURCE_MGR_ID>202</XA_RESOURCE_MGR_ID>
+                <XA_RESOURCE_NAME>DummyDb</XA_RESOURCE_NAME>
+                <XA_OPEN_STRING></XA_OPEN_STRING>
+                <XA_CLOSE_STRING></XA_CLOSE_STRING>
+                <XA_SWITCH>testxasw</XA_SWITCH>
+                <XA_LIB_NAME>libdummy-rm.so</XA_LIB_NAME>
+            </XA_RESOURCE>
+
+After failure the server needs to either restart on the same ORB endpoint or needs to use a CORBA implementaton repository:
+- to use the same end point add something similar to the following in the ORBOPT environment entry (the portspan is required
+since the server can start more than one orb so a range of ports is necessary):
+	<NAME>ORBOPT</NAME>
+    <VALUE>-ORBListenEndpoints iiop://localhost:9032/portspan=10 -ORBInitRef ...</VALUE>
+- or to use an implementation repository:
+	<NAME>ORBOPT</NAME>
+	<VALUE>-ORBUseImR 1 -ORBInitRef ...</VALUE>
+
+Example command line for compiling and linking the server and client (defines the TX_RC macro and links against the
+dummy XA resource library):
 
 $BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c bdb.c ora.c DbService.c" \
-     -Dx.inc.dir="/home/mmusgrov/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
-     -Dx.inc.dir2="/usr/local/product/11.1.0/db_1/rdbms/public" \
-     -Dx.lib.dir="/home/mmusgrov/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="dummy-rm" \
-     -Dx.lib.dir2="/usr/local/product/11.1.0/db_1/lib" -Dx.libs2="occi clntsh"     -Dx.define="BDB, TX_RC"
+     -Dx.inc.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
+     -Dx.lib.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="dummy-rm" \
+     -Dx.define="BDB, TX_RC"
 
 $BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c bdb.c ora.c cutil.c" \
-    -Dx.inc.dir="/home/mmusgrov/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
-    -Dx.inc.dir2="/usr/local/product/11.1.0/db_1/rdbms/public" \
-    -Dx.lib.dir="/home/mmusgrov/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="dummy-rm" \
-    -Dx.lib.dir2="/usr/local/product/11.1.0/db_1/lib" -Dx.libs2="occi clntsh" \
+    -Dx.inc.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
+    -Dx.lib.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="dummy-rm" \
     -Dx.define="BDB, TX_RC"
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/product/11.1.0/db_1/lib:/home/mmusgrov/blacktie/trunk/atmibroker-tx/target/cxx/test/lib
+And to include oracle in the test:
+
+$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c bdb.c ora.c DbService.c" \
+     -Dx.inc.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
+     -Dx.inc.dir2="/usr/local/product/11.1.0/db_1/rdbms/public" \
+     -Dx.lib.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="dummy-rm" \
+     -Dx.lib.dir2="/usr/local/product/11.1.0/db_1/lib" -Dx.libs2="occi clntsh" \
+     -Dx.define="BDB, ORACLE, TX_RC"
+
+Note that the library path needs to include the location of the dummy-rm library. For example:
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/product/11.1.0/db_1/lib:$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib
+
+Note that recovery implies that the various components in the system need to store state on disk. If things don't go according
+to plan you will need to either manually recover the transaction or, since this is only a demo example, manually
+clear the logs:
+
+	BlackTie recovery log: rclog and linux/rclog	# safe to delete these logs
+	Berkeley db logs: db1/* and db2/*	# safe to delete these logs
+	JBossTS logs: $JBOSS_HOME/server/<server name>/data/tx-object-store/
+		# probably not wise to delete these unless you know that there are no other transactions in the system
 

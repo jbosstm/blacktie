@@ -199,32 +199,26 @@ int XAResourceManagerFactory::endRMs(bool isOriginator, int flags)
 // see if there are any transaction branches in need of revovery
 void XAResourceManagerFactory::recover_branches()
 {
-// disable whilst rewriting the recovery log
-#if 0
-	XID* xid;
-	char* rc;
-	void *cursor;
+	void *i;
+	rrec_t* rrp;
 
     FTRACE(xarflogger, "ENTER");
-	rclog_.cursor_begin(&cursor);
 
-	while (rclog_.cursor_next(cursor, (void**) &xid, (void**) &rc) == 0) {
-		long rmid = atol((char *) (xid->data + xid->gtrid_length));
+	i = rclog_.aquire_iter();
+
+	while ((rrp = rclog_.next(i)) != 0) {
+		long rmid = atol((char *) ((rrp->xid()).data + (rrp->xid()).gtrid_length));
     	XAResourceManager *rm = findRM(rmid);
 
 		LOG4CXX_DEBUG(xarflogger,  (char *) "recover_branches: looking for rm " << rmid);
 		if (rm != NULL) {
-			rm->recover(*xid, rc);
+			rm->recover(rrp->xid(), rrp->ior());
 		} else {
 			LOG4CXX_DEBUG(xarflogger,  (char *) "recover_branches rm not found");
 		}
-
-		free(xid);
-		free(rc);
 	}
 
-	rclog_.cursor_end(cursor);
-#endif
+	rclog_.release_iter(i);
 }
 
 void XAResourceManagerFactory::createRMs(CORBA_CONNECTION * connection) throw (RMException)

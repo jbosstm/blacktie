@@ -288,6 +288,7 @@ int XAResourceAdaptorImpl::xa_prepare (long flags)
 int XAResourceAdaptorImpl::xa_commit (long flags)
 {
     FTRACE(xaralogger, (char*) "ENTER bstate=" << sm_.bstate());
+	LOG4CXX_DEBUG(xaralogger, (char*) "Commiting resource with branch id: " << bid_);
     int rv = xa_switch_->xa_commit_entry(&bid_, rmid_, flags);
     return sm_.transition(bid_, XACALL_COMMIT, flags, rv);
 }

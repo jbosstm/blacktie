@@ -153,29 +153,6 @@ void XAResourceManager::createPOA() {
     mgr->activate();
 }
 
-#if 0
-void register_ior(CORBA::Object_var& cobj)
-{
-	CORBA::ORB_var& orb = connection_->orbRef;
-
-	// register the POA name with the implementation repository
-		connection_->orbRef->_tao_add_to_IOR_table (name, xx.in ());
-	CORBA::Object_var table_object = orb->resolve_initial_references ("IORTable");
-
-    // Stringify all the object referencs.
-    CORBA::String_var ior = orb->object_to_string (cobj.in());
-
-	IORTable::Table_var adapter = IORTable::Table::_narrow(table_object.in());
-    if (CORBA::is_nil (adapter.in())) {
-        ACE_ERROR ((LM_ERROR, "Nil IORTable\n"));
-    } else {
-        CORBA::String_var ior = orb->object_to_string (cobj.in ());
-
-        adapter->bind ("childPOA", ior.in ());
-    }
-}
-#endif
-
 int XAResourceManager::recover(XID& bid, const char* rc)
 {
     FTRACE(xarmlogger, "ENTER");
@@ -195,12 +172,12 @@ int XAResourceManager::recover(XID& bid, const char* rc)
         	ra = new XAResourceAdaptorImpl(this, bid, bid, rmid_, xa_switch_, rclog_);
 
             if (branches_[bid] != NULL) {
-				// log an error since we need to clean up the previous servant
+				// log an error since we forgot to clean up the previous servant
 				LOG4CXX_ERROR(xarmlogger, (char *) "Recovery: branch already exists: " << bid);
 			}
 
-#if 0
 			// activate the servant
+#if 0
         	PortableServer::ObjectId_var objId = poa_->activate_object(ra);
 
         	// get a CORBA reference to the servant so that it passed the TM so that phase 2 can be replayed
@@ -216,7 +193,8 @@ int XAResourceManager::recover(XID& bid, const char* rc)
 
 	        CosTransactions::Resource_var v = CosTransactions::Resource::_narrow(ref);
 
-        	LOG4CXX_TRACE(xarmlogger, (char*) "replaying resource: " << connection_->orbRef->object_to_string(v));
+        	LOG4CXX_DEBUG(xarmlogger, (char*) "Recovering resource with branch id: " << bid <<
+				" and recovery IOR: " << connection_->orbRef->object_to_string(v));
 
 			try {
 				/*
@@ -340,6 +318,11 @@ void XAResourceManager::set_complete(XID * xid)
     XABranchMap::iterator iter;
 
     LOG4CXX_TRACE(xarmlogger, (char*) "removing branch: " << *xid);
+
+	if (rclog_.del_rec(*xid) != 0) {
+		// probably a readonly resource
+    	LOG4CXX_TRACE(xarmlogger, (char*) "branch completion notification with out a corresponding log entry: " << *xid);
+	}
 
     for (XABranchMap::iterator i = branches_.begin(); i != branches_.end(); ++i)
     {
