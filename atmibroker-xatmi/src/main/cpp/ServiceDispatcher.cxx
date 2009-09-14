@@ -37,6 +37,7 @@ ServiceDispatcher::ServiceDispatcher(Destination* destination,
 	std::string timeout = AtmiBrokerEnv::get_instance()->getenv(
 			(char*) "DestinationTimeout");
 	this->timeout = (long) (atoi(timeout.c_str()) * 1000000);
+	this->counter = 0;
 }
 
 ServiceDispatcher::~ServiceDispatcher() {
@@ -48,6 +49,7 @@ int ServiceDispatcher::svc(void) {
 		MESSAGE message = destination->receive(this->timeout);
 		if (!stop && message.len > -1) {
 			try {
+				counter += 1;
 				onMessage(message);
 			} catch (...) {
 				LOG4CXX_ERROR(
@@ -189,4 +191,8 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 void ServiceDispatcher::shutdown() {
 	stop = true;
+}
+
+long ServiceDispatcher::getCounter() {
+	return counter;
 }

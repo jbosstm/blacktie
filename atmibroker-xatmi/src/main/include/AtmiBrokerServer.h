@@ -58,6 +58,7 @@ public:
 	bool advertiseService(char* serviceName);
 	void advertiseAtBootime();
 	int  getServiceStatus(char* str);
+	long getServiceMessageCounter(char* serviceName);
 	void server_done();
 	int  block();
 	void shutdown();

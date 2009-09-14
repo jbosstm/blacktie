@@ -32,6 +32,7 @@ public:
 	~ServiceDispatcher();
 	int svc();
 	void shutdown();
+	long getCounter();
 private:
 	void onMessage(MESSAGE message);
 	static log4cxx::LoggerPtr logger;
@@ -42,6 +43,7 @@ private:
 	Session* session;
 	bool stop;
 	long timeout;
+	long counter;
 };
 
 #endif

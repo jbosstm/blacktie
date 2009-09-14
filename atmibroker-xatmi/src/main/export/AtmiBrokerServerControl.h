@@ -43,6 +43,7 @@ extern BLACKTIE_XATMI_DLL void server_sigint_handler_callback(int sig_type);
 extern BLACKTIE_XATMI_DLL int isadvertised(char* name);
 extern BLACKTIE_XATMI_DLL int advertiseByAdmin(char* name);
 extern BLACKTIE_XATMI_DLL int getServiceStatus(char* str);
+extern BLACKTIE_XATMI_DLL long getServiceMessageCounter(char* serviceName);
 #ifdef __cplusplus
 }
 #endif

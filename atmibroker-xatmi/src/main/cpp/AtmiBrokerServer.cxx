@@ -205,6 +205,14 @@ int getServiceStatus(char* str) {
 	return -1;
 }
 
+long getServiceMessageCounter(char* serviceName) {
+	if (ptrServer) {
+		return ptrServer->getServiceMessageCounter(serviceName);
+	}
+
+	return 0;
+}
+
 int advertiseByAdmin(char* name) {
 	if(isadvertised(name) == 0) {
 		return 0;
@@ -827,6 +835,24 @@ void AtmiBrokerServer::server_done() {
 	}
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_done(): returning.");
+}
+
+long AtmiBrokerServer::getServiceMessageCounter(char* serviceName) {
+	for(std::vector<ServiceData>::iterator i = serviceData.begin();
+			i != serviceData.end();
+			i++) {
+		if(strncmp((*i).destination->getName(), serviceName,
+					XATMI_SERVICE_NAME_LENGTH) == 0) {
+			long counter = 0;
+			for (std::vector<ServiceDispatcher*>::iterator dispatcher = (*i).dispatchers.begin();
+					dispatcher != (*i).dispatchers.end();
+					dispatcher++) {
+				counter += (*dispatcher)->getCounter();
+			}
+			return counter;
+		}
+	}
+	return 0;
 }
 
 void (*AtmiBrokerServer::getServiceMethod(const char * aServiceName))(TPSVCINFO *) {
