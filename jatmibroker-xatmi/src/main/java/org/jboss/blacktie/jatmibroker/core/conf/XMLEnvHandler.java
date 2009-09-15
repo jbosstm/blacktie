@@ -38,6 +38,7 @@ public class XMLEnvHandler extends DefaultHandler {
 	private final String ENV_VARIABLE = "ENV_VARIABLE";
 	private final String SERVER_NAME = "SERVER";
 	private final String SERVICE_NAME = "SERVICE";
+	private final String ADMIN_SERVICE_NAME = "ADMIN_SERVICE";
 	private final String NAME = "NAME";
 	private final String VALUE = "VALUE";
 
@@ -108,11 +109,16 @@ public class XMLEnvHandler extends DefaultHandler {
 					}
 				}
 			}
-		} else if (SERVICE_NAME.equals(localName)) {
+		} else if (SERVICE_NAME.equals(localName) || ADMIN_SERVICE_NAME.equals(localName)) {
 			serviceElement = SERVICE_NAME;
 			String serviceName = null;
+			String transport = null;
 
 			if (atts != null) {
+				if(ADMIN_SERVICE_NAME.equals(localName)) {
+					serviceName = serverName + "_ADMIN";
+				}
+
 				for (int i = 0; i < atts.getLength(); i++) {
 					if (atts.getLocalName(i).equals("name")) {
 						serviceName = atts.getValue(i);
@@ -124,12 +130,17 @@ public class XMLEnvHandler extends DefaultHandler {
 							serviceName = null;
 							break;
 						}
-						String skey = "blacktie." + serviceName + ".server";
-						prop.put(skey, serverName);
 					} else if (atts.getLocalName(i).equals("transportLibrary")) {
-						String transport = atts.getValue(i);
-						String key = "blacktie." + serviceName
-								+ ".transportLib";
+						transport = atts.getValue(i);
+					}
+				}
+
+				if(serviceName != null) {
+					String key = "blacktie." + serviceName + ".server";
+					prop.put(key, serverName);
+
+					if(transport != null) {
+						key = "blacktie." + serviceName + ".transportLib";
 						prop.put(key, transport);
 					}
 				}

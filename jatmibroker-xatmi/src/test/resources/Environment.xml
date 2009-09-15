@@ -27,6 +27,7 @@
 					<SERVICE name='JAVA_Converse' transportLibrary='libatmibroker-hybrid.so'/>
 					<SERVICE name='XMLParserTest' transportLibrary='libatmibroker-stomp.so'/>
 				</SERVICE_NAMES>
+				<ADMIN_SERVICE transportLibrary='libatmibroker-hybrid.so' />
 			</SERVER>
 		</SERVER_NAMES>
 		<ENV_VARIABLES>

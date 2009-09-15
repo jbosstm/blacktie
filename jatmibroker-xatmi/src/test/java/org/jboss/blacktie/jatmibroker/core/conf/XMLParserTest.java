@@ -68,6 +68,8 @@ public class XMLParserTest extends TestCase {
 		String size = "1";
 		String function = "org.jboss.blacktie.jatmibroker.xatmi.TestTPCallServiceXOctet";
 
+		String adminTransport = "libatmibroker-hybrid.so";
+
 		assertTrue(server.equals(prop.getProperty("blacktie.TestOne.server")));
 		assertTrue(transport.equals(prop
 				.getProperty("blacktie.XMLParserTest.transportLib")));
@@ -89,5 +91,6 @@ public class XMLParserTest extends TestCase {
 		assertTrue(size.equals(prop.getProperty("blacktie.JAVA_Converse.size")));
 		assertTrue("log4cxx.properties".equals(prop
 				.getProperty("LOG4CXXCONFIG")));
+		assertTrue(adminTransport.equals(prop.getProperty("blacktie." + server + "_ADMIN.transportLib")));
 	}
 }
