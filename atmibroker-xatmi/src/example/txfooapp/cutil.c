@@ -77,7 +77,7 @@ static int count_records(const char *msg, char *key, int in_tx, int expect) {
 			userlogc_debug( "TxLog xyz_access op=%c data=%s db=%s", req->op, req->data, req->db);
 
 			rv = ((remote & REMOTE_ACCESS) ? send_req(req, &rbuf) : p->access(req, &res));
-userlogc_debug( "TxLog invoked ok");
+			userlogc_debug( "TxLog invoked ok");
 
 			if (rv)
 				userlogc_warn( "TxLog BAD REQ %d", rv);
@@ -85,7 +85,7 @@ userlogc_debug( "TxLog invoked ok");
 			free_buf(remote, req);
 			rv = (rv == 0 ? atoi(res.data) : -1);
 
-userlogc_debug( "TxLog and count is %d", rv);
+			userlogc_debug( "TxLog and count is %d", rv);
 			if (rv == -1) {
 				userlogc_warn( "TxLog Error: Db %d access error", p->id);
 			}
@@ -388,14 +388,24 @@ static int testrc(int *cnt)
 
 	set_test_id("Test 5");
 	/* ask the remote service to insert a record but to halt during commit */
-	if ((rv = db_op("INSERT 1", emps[4], '0', TX_TYPE_BEGIN_COMMIT | TX_TYPE_HALT, 0, REMOTE_ACCESS, 0, -1))) {
-		userlogc_warn( "Server failed as expected");
+	if ((rv = tx_set_commit_return(TX_COMMIT_COMPLETED))) /* report heuristics */
+		userlogc_warn( "tx_set_commit_return error: %d" , rv);
+
+	if ((rv = db_op("INSERT 1", emps[4], '0', TX_TYPE_BEGIN_COMMIT_HALT, 0, REMOTE_ACCESS, 0, -1))) {
+		userlogc_warn( "tpcall error %d" , rv);
 		return rv;
 	}
 
-	userlogc_warn( "Server should have halted");
+	/*
+	 * Unfortunately there is no way of knowing the outcome of commiting the transaction.
+	 * TODO check the circumstances under which heuristics are generated
+	 * I also need to figure out why killing the server a number of times corrupts the
+	 * Berkeley DB (which makes recovery kind of useless)
+	 */
+	userlogc("tx status: %d (should be -1 meaning no transaction)", get_tx_status());
+	(void) tx_set_commit_return(TX_COMMIT_DECISION_LOGGED); /* return when the commit decision is logged */
 
-	return -1;
+	return 0;
 }
 
 int run_tests(product_t *prod_array)

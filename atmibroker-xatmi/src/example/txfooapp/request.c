@@ -31,19 +31,19 @@ product_t products[] = {
 };
 
 /* helper methods for controling transactions */
-int is_begin(int txtype) {
+int is_begin(enum TX_TYPE txtype) {
 	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
-	return ((txtype & TX_TYPE_BEGIN));
+	return (txtype & TX_TYPE_BEGIN);
 }
-int is_commit(int txtype) {
+int is_commit(enum TX_TYPE txtype) {
 	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	return (txtype & TX_TYPE_COMMIT);
 }
-int is_abort(int txtype) {
+int is_abort(enum TX_TYPE txtype) {
 	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
-	return (txtype == TX_TYPE_ABORT);
+	return (txtype & TX_TYPE_ABORT);
 }
-int start_tx(int txtype) {
+int start_tx(enum TX_TYPE txtype) {
 	int rv = TX_OK;
 
 	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
@@ -57,7 +57,7 @@ int start_tx(int txtype) {
 
 	return rv;
 }
-int end_tx(int txtype) {
+int end_tx(enum TX_TYPE txtype) {
 	int rv = TX_OK;
 	userlogc_debug( "%s:%d", __FUNCTION__, __LINE__);
 
@@ -75,25 +75,36 @@ int end_tx(int txtype) {
 	return rv;
 }
 
-int is_tx_in_state(int txtype) {
-	TXINFO txinfo;
+int is_tx_in_state(enum TX_TYPE txtype) {
+	int txs;
+	int ts;
 /*	userlogc_debug( "TxLog %s:%d %d", __FUNCTION__, __LINE__, txtype);*/
 	
+	ts = (txtype == TX_TYPE_NONE ? -1 : TX_ACTIVE);
+	txs = get_tx_status();
+
+	userlogc_debug("TxLog validating tx status actual %d vrs desired %d", txs, ts);
+
+	return (txs == ts);
+}
+
+int get_tx_status()
+{
+	TXINFO txinfo;
 	int rv = tx_info(&txinfo);
-	int ts = (txtype == TX_TYPE_NONE ? -1 : TX_ACTIVE);
 
 	if (rv < 0) {
 		userlogc_warn("TxLog is_tx_in_state tx_info error: %d", rv);
-		return 0;
+		return rv;
 	}
 
-	userlogc_debug("TxLog validating tx status actual %d vrs desired %d", txinfo.transaction_state, ts);
+	userlogc_debug("TxLog tx status %d", txinfo.transaction_state);
 
-	return (txinfo.transaction_state == ts);
+	return (txinfo.transaction_state);
 }
 
 static int reqid = 0;
-static void _init_req(test_req_t *req, int prodid, const char *dbfile, const char *data, char op, int txtype, int expect) {
+static void _init_req(test_req_t *req, int prodid, const char *dbfile, const char *data, char op, enum TX_TYPE txtype, int expect) {
 	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	req->prod = prodid;
 	req->txtype = txtype;
@@ -110,7 +121,7 @@ static void _init_req(test_req_t *req, int prodid, const char *dbfile, const cha
 		(void) strncpy(req->db, dbfile, sizeof(req->db) - 1);
 }
 
-test_req_t * get_buf(int remote, const char *data, const char *dbfile, char op, int prod, int txtype, int expect) {
+test_req_t * get_buf(int remote, const char *data, const char *dbfile, char op, int prod, enum TX_TYPE txtype, int expect) {
 	test_req_t *req;
 	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 

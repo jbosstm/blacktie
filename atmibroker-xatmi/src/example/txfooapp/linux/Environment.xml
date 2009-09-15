@@ -16,26 +16,48 @@
 		02110-1301, USA.
 	-->
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://www.jboss.org/blacktie">
+        xmlns="http://www.jboss.org/blacktie">
 	<ENVIRONMENT_DESCRIPTION>
 		<DOMAIN>fooapp</DOMAIN>
 		<SERVER_NAMES>
-		    <SERVER name="jboss">
-		        <SERVICE_NAMES>
-		            <SERVICE name='BTStompAdmin' transportLibrary='libatmibroker-hybrid.so'/>
-		        </SERVICE_NAMES>
-		    </SERVER>
+			<SERVER name="jboss">
+				<SERVICE_NAMES>
+					<SERVICE name='BTStompAdmin' transportLibrary='libatmibroker-hybrid.so'/>
+				</SERVICE_NAMES>
+			</SERVER>
 			<SERVER name='default'>
 				<SERVICE_NAMES>
 					<SERVICE name='BAR' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPFree' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPCall' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPAdvertise' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='LOOPY' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPConversat'  transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPACall'  transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPCancel'  transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPConnect'  transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPDiscon'  transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPGetrply'  transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPSend'  transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPRecv'  transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPService'  transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPReturn'  transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='123456789012345' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestTPUnadverti' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='tpcall_x_octet' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='tpcall_x_common' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='tpcall_x_c_type' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='DEBIT' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='CREDIT' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='INQUIRY' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='TestRbkOnly' transportLibrary='libatmibroker-hybrid.so'/>
 				</SERVICE_NAMES>
-				<ADMIN_SERVICE transportLibrary='libatmibroker-hybrid.so' />
 			</SERVER>
 		</SERVER_NAMES>
-		<XA_RESOURCES>
-			 <!--
-			      To include a given database in the example uncomment the relevant XA resource entry.
-			      Note that the Berkeley Db example resources require backing files to operate.
+        <XA_RESOURCES>
+             <!--
+                  To include a given database in the example uncomment the relevant XA resource entry.
+                  Note that the Berkeley Db example resources require backing files to operate.
                   These files reside in a directory specified in the XA_OPEN_STRING. For example,
                   to use the first <XA_RESOURCE> entry below make sure that a directory called
                   db1 exists (relative to the current working directory of the executable).
@@ -47,23 +69,23 @@
 
                   Each product includes two resources configurations (since we want
                   demonstrate distributed transactions involving more than one resource manager).
-			   -->
-			 <XA_RESOURCE>
-			 	<XA_RESOURCE_MGR_ID>2101</XA_RESOURCE_MGR_ID>
-			 	<XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
-			 	<XA_OPEN_STRING>db1</XA_OPEN_STRING>
-			 	<XA_CLOSE_STRING></XA_CLOSE_STRING>
-			 	<XA_SWITCH>db_xa_switch</XA_SWITCH>
-			 	<XA_LIB_NAME>/usr/lib/libdb.so</XA_LIB_NAME>
-			 </XA_RESOURCE>
-			 <XA_RESOURCE>
-			 	<XA_RESOURCE_MGR_ID>2102</XA_RESOURCE_MGR_ID>
-			 	<XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
-			 	<XA_OPEN_STRING>db2</XA_OPEN_STRING>
-			 	<XA_CLOSE_STRING></XA_CLOSE_STRING>
-			 	<XA_SWITCH>db_xa_switch</XA_SWITCH>
-			 	<XA_LIB_NAME>/usr/lib/libdb.so</XA_LIB_NAME>
-			 </XA_RESOURCE>
+               -->
+             <XA_RESOURCE>
+                <XA_RESOURCE_MGR_ID>2101</XA_RESOURCE_MGR_ID>
+                <XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
+                <XA_OPEN_STRING>db1</XA_OPEN_STRING>
+                <XA_CLOSE_STRING></XA_CLOSE_STRING>
+                <XA_SWITCH>db_xa_switch</XA_SWITCH>
+                <XA_LIB_NAME>db</XA_LIB_NAME>
+             </XA_RESOURCE>
+             <XA_RESOURCE>
+                <XA_RESOURCE_MGR_ID>2102</XA_RESOURCE_MGR_ID>
+                <XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
+                <XA_OPEN_STRING>db2</XA_OPEN_STRING>
+                <XA_CLOSE_STRING></XA_CLOSE_STRING>
+                <XA_SWITCH>db_xa_switch</XA_SWITCH>
+                <XA_LIB_NAME>db</XA_LIB_NAME>
+             </XA_RESOURCE>
              <!--
              Similarly for including ORACLE databases in the example. The open string includes all the
              inforamtion needed for making XA connections. For example, the first XA resource below is
@@ -73,43 +95,43 @@
              For more information refer to:
                  http://download.oracle.com/docs/cd/B28359_01/appdev.111/b28424/adfns_xa.htm
              -->
-			 <!--
-			 <XA_RESOURCE>
-			 	<XA_RESOURCE_MGR_ID>2</XA_RESOURCE_MGR_ID>
-			 	<XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
-			 	<XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+DB=ORCL</XA_OPEN_STRING>
-			 	<XA_CLOSE_STRING></XA_CLOSE_STRING>
-			 	<XA_SWITCH>xaosw</XA_SWITCH>
-			 	<XA_LIB_NAME>${ORACLE_HOME}/lib/libclntsh.so</XA_LIB_NAME>
-			 </XA_RESOURCE>
-			 <XA_RESOURCE>
-			 	<XA_RESOURCE_MGR_ID>1</XA_RESOURCE_MGR_ID>
-			 	<XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
-			 	<XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+DB=blacktie</XA_OPEN_STRING>
-			 	<XA_CLOSE_STRING></XA_CLOSE_STRING>
-			 	<XA_SWITCH>xaosw</XA_SWITCH>
-			 	<XA_LIB_NAME>${ORACLE_HOME}/lib/libclntsh.so</XA_LIB_NAME>
-			 </XA_RESOURCE>
-			 -->
-			<!-- uncomment to test recovery - see the README
-			<XA_RESOURCE>
-				<XA_RESOURCE_MGR_ID>202</XA_RESOURCE_MGR_ID>
-				<XA_RESOURCE_NAME>DummyDb</XA_RESOURCE_NAME>
-				<XA_OPEN_STRING></XA_OPEN_STRING>
-				<XA_CLOSE_STRING></XA_CLOSE_STRING>
-				<XA_SWITCH>testxasw</XA_SWITCH>
-				<XA_LIB_NAME>libdummy-rm.so</XA_LIB_NAME>
-			</XA_RESOURCE>
-			-->
-		</XA_RESOURCES>
+             <!--
+             <XA_RESOURCE>
+                <XA_RESOURCE_MGR_ID>2</XA_RESOURCE_MGR_ID>
+                <XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
+                <XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+DB=ORCL</XA_OPEN_STRING>
+                <XA_CLOSE_STRING></XA_CLOSE_STRING>
+                <XA_SWITCH>xaosw</XA_SWITCH>
+                <XA_LIB_NAME>${ORACLE_HOME}/lib/libclntsh.so</XA_LIB_NAME>
+             </XA_RESOURCE>
+             <XA_RESOURCE>
+                <XA_RESOURCE_MGR_ID>1</XA_RESOURCE_MGR_ID>
+                <XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
+                <XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+DB=blacktie</XA_OPEN_STRING>
+                <XA_CLOSE_STRING></XA_CLOSE_STRING>
+                <XA_SWITCH>xaosw</XA_SWITCH>
+                <XA_LIB_NAME>${ORACLE_HOME}/lib/libclntsh.so</XA_LIB_NAME>
+             </XA_RESOURCE>
+             -->
+            <XA_RESOURCE>
+                <XA_RESOURCE_MGR_ID>202</XA_RESOURCE_MGR_ID>
+                <XA_RESOURCE_NAME>DummyDb</XA_RESOURCE_NAME>
+                <XA_OPEN_STRING></XA_OPEN_STRING>
+                <XA_CLOSE_STRING></XA_CLOSE_STRING>
+                <XA_SWITCH>testxasw</XA_SWITCH>
+                <XA_LIB_NAME>libdummy-rm.so</XA_LIB_NAME>
+            </XA_RESOURCE>
+             <!--
+             -->
+        </XA_RESOURCES>
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
 				<NAME>ORBOPT</NAME>
 				<VALUE>-ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
-				<!-- to use a fixed ORB endpoint
-				<VALUE>-ORBListenEndpoints iiop://localhost:9032/portspan=10 -ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
-				-->
 			</ENV_VARIABLE>
+<!--
+				<VALUE>-ORBListenEndpoints iiop://localhost:9032/portspan=10 -ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
+-->
 			<ENV_VARIABLE>
 				<NAME>TRANS_FACTORY_ID</NAME>
 				<VALUE>TransactionManagerService.OTS</VALUE>
@@ -119,6 +141,22 @@
 				<VALUE>log4cxx.properties</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
+				<NAME>StompConnectHost</NAME>
+				<VALUE>localhost</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectPort</NAME>
+				<VALUE>61613</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectUsr</NAME>
+				<VALUE>guest</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectPwd</NAME>
+				<VALUE>guest</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
 				<NAME>DestinationTimeout</NAME>
 				<VALUE>2</VALUE>
 			</ENV_VARIABLE>
@@ -126,30 +164,10 @@
 				<NAME>RequestTimeout</NAME>
 				<VALUE>10</VALUE>
 			</ENV_VARIABLE>
-            <ENV_VARIABLE>
-                <NAME>StompConnectHost</NAME>
-                <VALUE>localhost</VALUE>
-            </ENV_VARIABLE>
-            <ENV_VARIABLE>
-                <NAME>StompConnectPort</NAME>
-                <VALUE>61613</VALUE>
-            </ENV_VARIABLE>
-            <ENV_VARIABLE>
-                <NAME>StompConnectUsr</NAME>
-                <VALUE>guest</VALUE>
-            </ENV_VARIABLE>
-            <ENV_VARIABLE>
-                <NAME>StompConnectPwd</NAME>
-                <VALUE>guest</VALUE>
-            </ENV_VARIABLE>
-            <ENV_VARIABLE>
-                <NAME>DestinationTimeout</NAME>
-                <VALUE>5</VALUE>
-            </ENV_VARIABLE>
-            <ENV_VARIABLE>
-                <NAME>RequestTimeout</NAME>
-                <VALUE>10</VALUE>
-            </ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>TimeToLive</NAME>
+				<VALUE>10</VALUE>
+			</ENV_VARIABLE>
 		</ENV_VARIABLES>
 	</ENVIRONMENT_DESCRIPTION>
 </ENVIRONMENT>

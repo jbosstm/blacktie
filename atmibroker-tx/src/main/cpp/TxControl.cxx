@@ -110,7 +110,7 @@ int TxControl::end(bool commit, bool reportHeuristics)
 
 int TxControl::commit(bool reportHeuristics)
 {
-	FTRACE(txclogger, "ENTER");
+	FTRACE(txclogger, "ENTER report " << reportHeuristics);
 	return end(true, reportHeuristics);
 }
 
@@ -165,7 +165,9 @@ CosTransactions::Status TxControl::get_ots_status()
 int TxControl::get_status()
 {
 	FTRACE(txclogger, "ENTER");
-	switch (get_ots_status()) {
+	CosTransactions::Status status = get_ots_status();
+
+	switch (status) {
 	case CosTransactions::StatusActive:
 	case CosTransactions::StatusPreparing:
 	case CosTransactions::StatusPrepared:
@@ -187,6 +189,7 @@ int TxControl::get_status()
 
 	case CosTransactions::StatusNoTransaction:
 	default:
+		LOG4CXX_DEBUG(txclogger, (char*) "get_status default: " << status);
 		return -1;	// there is no #define for NO TX
 	}
 }
