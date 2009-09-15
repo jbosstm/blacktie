@@ -45,9 +45,9 @@ static int send_req(test_req_t *req, char **prbuf) {
 		strncpy(*prbuf, resp->data, sizeof (resp->data));
 	}
 
-	tpfree((char *) resp);
 
     userlogc_debug( "TxLog %s:%d tpcall res=%d status=%d", __FUNCTION__, __LINE__, rv, resp->status);
+	tpfree((char *) resp);
 	return rv;
 }
 
