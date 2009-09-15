@@ -36,14 +36,15 @@ static const char * const TXTEST_SVC_NAME = "tpcall_x_octet";
 static const char * const TXTEST_SVC_NAME = "BAR";
 #endif
 
-enum TX_TYPE {
-	TX_TYPE_BEGIN,
-	TX_TYPE_COMMIT,
-	TX_TYPE_ABORT,
-	TX_TYPE_BEGIN_COMMIT,
-	TX_TYPE_BEGIN_ABORT,
-	TX_TYPE_NONE,
-};
+#define TX_TYPE_NONE	0x0
+#define TX_TYPE_BEGIN	0x1
+#define TX_TYPE_COMMIT	0x2
+#define TX_TYPE_ABORT	0x4
+#define TX_TYPE_HALT	0x8
+
+#define TX_TYPE_END				(TX_TYPE_COMMIT | TX_TYPE_ABORT)
+#define TX_TYPE_BEGIN_COMMIT	(TX_TYPE_BEGIN | TX_TYPE_COMMIT)
+#define TX_TYPE_BEGIN_ABORT		(TX_TYPE_ABORT | TX_TYPE_COMMIT)
 
 typedef struct BLACKTIE_XATMI_DLL test_req {
 	char db[16];
@@ -52,7 +53,7 @@ typedef struct BLACKTIE_XATMI_DLL test_req {
 	int  id;	// request id
 	int  expect;	// for testing null products (ie force success)
 	int  prod;
-	enum TX_TYPE txtype;
+	int txtype;
 	int status;
 } test_req_t;
 
@@ -72,16 +73,16 @@ typedef struct BLACKTIE_XATMI_DLL test_req {
  */
 
 #define REMOTE_ACCESS   0x1
-#define LOCAL_ACCESS    0x2
+#define LOCAL_ACCESS	0x2
 #define ANY_ACCESS  (REMOTE_ACCESS | LOCAL_ACCESS)
 
 typedef struct BLACKTIE_XATMI_DLL product {
-    int id; /* id for the product (used by servers to index into products) */
-    const char *pname;  /* a name for the product configuration */
-    const char *dbname; /* identifies the database */
-    int loc;    /* bitmap indicating what kind of access is allowed */
-    int (*access)(test_req_t *, test_req_t *);  // function for doing CRUD operations
-    long (*xaflags)();  // function to return the flags supported by the Resource Manager
+	int id; /* id for the product (used by servers to index into products) */
+	const char *pname;  /* a name for the product configuration */
+	const char *dbname; /* identifies the database */
+	int loc;	/* bitmap indicating what kind of access is allowed */
+	int (*access)(test_req_t *, test_req_t *);  // function for doing CRUD operations
+	long (*xaflags)();  // function to return the flags supported by the Resource Manager
 } product_t;
 
 extern product_t products[];
@@ -98,21 +99,21 @@ extern __declspec(dllimport) struct xa_switch_t db_xa_switch;
 /* common methods */
 extern int fatal(const char *msg);
 extern int fail(const char *reason, int ret);
-extern test_req_t * get_buf(int remote, const char *data, const char *dbfile, char op, int prod, enum TX_TYPE txtype, int expect);
+extern test_req_t * get_buf(int remote, const char *data, const char *dbfile, char op, int prod, int txtype, int expect);
 extern void free_buf(int remote, test_req_t *req);
 
 /* helper methods for controling transactions */
 
-extern  int is_begin(enum TX_TYPE txtype);
-extern int is_commit(enum TX_TYPE txtype);
-extern int is_abort(enum TX_TYPE txtype);
-extern int start_tx(enum TX_TYPE txtype);
-extern int end_tx(enum TX_TYPE txtype);
+extern  int is_begin(int txtype);
+extern int is_commit(int txtype);
+extern int is_abort(int txtype);
+extern int start_tx(int txtype);
+extern int end_tx(int txtype);
 
 extern int null_access(test_req_t *req, test_req_t *resp);
 extern int ora_access(test_req_t *req, test_req_t *resp);
 extern int bdb_access(test_req_t *req, test_req_t *resp);
-extern int is_tx_in_state(enum TX_TYPE txtype);
+extern int is_tx_in_state(int txtype);
 
 extern long null_xaflags();
 extern long ora_xaflags();
