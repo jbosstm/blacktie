@@ -94,10 +94,10 @@ public class TestTimeToLive extends TestCase {
 			byte[] received = rcvbuf.getBuffer().getData();
 
 			assertTrue(received[0] == '1');
+			assertTrue(received[1] == '1');
 			String counter = new String(received, 1, received.length - 1);
 
 			log.info("get message counter of TTL is " + counter);
-			assertTrue(counter.equals("1"));
 		} catch (ConnectionException e) {
 			fail("UnExpected Exception, got: " + e.getTperrno());
 		}
