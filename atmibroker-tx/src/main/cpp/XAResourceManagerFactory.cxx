@@ -204,6 +204,9 @@ void XAResourceManagerFactory::recover_branches()
 
     FTRACE(xarflogger, "ENTER");
 
+	if (ACE_OS::getenv("BLACKTIE.TX.RECOVERY.DISABLE"))
+		return;
+
 	i = rclog_.aquire_iter();
 
 	while ((rrp = rclog_.next(i)) != 0) {

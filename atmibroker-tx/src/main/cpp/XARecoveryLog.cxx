@@ -67,21 +67,27 @@ static void init_logpath(const char *fname)
  */
 XARecoveryLog::XARecoveryLog(const char* logfile) throw (RMException)
 {
-	ACE_MMAP_Memory_Pool_Options opts(ACE_DEFAULT_BASE_ADDR);
-	init_logpath(logfile);
+	if (ACE_OS::getenv("BLACKTIE.TX.RECOVERY.DISABLE")) {
+		LOG4CXX_INFO(xarcllogger, (char *) "Disabling transaction recovery");
+		pool_ = NULL;
+	} else {
+		ACE_MMAP_Memory_Pool_Options opts(ACE_DEFAULT_BASE_ADDR);
+		init_logpath(logfile);
 
-	LOG4CXX_TRACE(xarcllogger, (char *) "Using file " << RCLOGPATH);
+		LOG4CXX_TRACE(xarcllogger, (char *) "Using file " << RCLOGPATH);
 
-	pool_ = new mmpool_t(RCLOGPATH, RCLOGPATH, &opts);
+		pool_ = new mmpool_t(RCLOGPATH, RCLOGPATH, &opts);
 
-	if (pool_ == 0)
-		throw new RMException("Error creating recovery log allocator", -1);
+		if (pool_ == 0)
+			throw new RMException("Error creating recovery log allocator", -1);
+	}
 }
 
 XARecoveryLog::~XARecoveryLog()
 {
 	LOG4CXX_TRACE(xarcllogger, (char *) "destructor");
-	delete pool_;
+	if (pool_)
+		delete pool_;
 }
 
 /*
@@ -92,40 +98,43 @@ XARecoveryLog::~XARecoveryLog()
  */
 int XARecoveryLog::add_rec(XID& xid, char *ior)
 {
-	// malloc enough space from the memory mapped recovery log for the requested branch
-	// plus space to hold the IOR (include the string null terminator for easy debugging
-	void* mp = pool_->malloc(sizeof (rrec_t) + strlen(ior) + 1);
-	char* iorcpy = (char*) mp + sizeof (rrec_t);
-	// the ace allocator keys its blocks by name - use the string form of the XID as the key
-	string key = xid_to_string(xid);
-	int rv = -1;
+	int rv = 0;
 
-	LOG4CXX_TRACE(xarcllogger, (char *) "adding XID: " << key.c_str() << " IOR: " << ior);
+	if (pool_) {
+		// malloc enough space from the memory mapped recovery log for the requested branch
+		// plus space to hold the IOR (include the string null terminator for easy debugging
+		void* mp = pool_->malloc(sizeof (rrec_t) + strlen(ior) + 1);
+		char* iorcpy = (char*) mp + sizeof (rrec_t);
+		// the ace allocator keys its blocks by name - use the string form of the XID as the key
+		string key = xid_to_string(xid);
 
-	if(mp == 0) {
-		LOG4CXX_ERROR(xarcllogger, (char *) "Out of memory");
-	} else {
-		ACE_OS::memcpy(iorcpy, ior, strlen(ior) + 1);
+		LOG4CXX_TRACE(xarcllogger, (char *) "adding XID: " << key.c_str() << " IOR: " << ior);
 
-		// new the space for the rrec_t using the memory allocated from the allocator
-		rrec_t* rrp = new (mp) rrec_t(xid, iorcpy);
-
-		// and bind the name (the string form of the xid) to the allocated block
-		if ((rv = pool_->bind(key.c_str(), rrp)) == -1) {
-			LOG4CXX_ERROR(xarcllogger,  (char *) "Errory binding key: " << rv);
+		if(mp == 0) {
+			LOG4CXX_ERROR(xarcllogger, (char *) "Out of memory");
+			rv = -1;
 		} else {
-			rv = 0;
-		}
+			ACE_OS::memcpy(iorcpy, ior, strlen(ior) + 1);
+
+			// new the space for the rrec_t using the memory allocated from the allocator
+			rrec_t* rrp = new (mp) rrec_t(xid, iorcpy);
+
+			// and bind the name (the string form of the xid) to the allocated block
+			if ((rv = pool_->bind(key.c_str(), rrp)) == -1) {
+				LOG4CXX_ERROR(xarcllogger,  (char *) "Errory binding key: " << rv);
+				rv = -1;
+			}
 #ifdef TESTSYNC 
-		// to test that the allocator synced the block after the bind generate
-		// a segmentation fault. The block should be stored in the backing file
-		// for the allocator so it should be present if a find_rec call is issued
-		// on restart.
-		if (strcmp(ior, "SEGV") == 0) {
-			char *p = 0;
-			*p = 0;
-		}
+			// to test that the allocator synced the block after the bind generate
+			// a segmentation fault. The block should be stored in the backing file
+			// for the allocator so it should be present if a find_rec call is issued
+			// on restart.
+			if (strcmp(ior, "SEGV") == 0) {
+				char *p = 0;
+				*p = 0;
+			}
 #endif
+		}
 	}
 
 	return rv;
@@ -143,6 +152,9 @@ rrec_t*  XARecoveryLog::find_rec(XID& xid)
 rrec_t* XARecoveryLog::find_rec(const char *name)
 {
 	void *rec;
+
+	if (pool_ == 0)
+		return 0;
 
 //  use an iterator to find by anything other than name or XID
 //  mmpool_iter_t i(*pool_);
@@ -166,7 +178,7 @@ int XARecoveryLog::del_rec(XID& xid)
 // unbinding the name of a block is the delete operation
 int XARecoveryLog::del_rec(const char *name)
 {
-	if (pool_->unbind(name) != -1)
+	if (pool_ == 0 || pool_->unbind(name) != -1)
 		return 0;
 
 	return -1;
@@ -180,7 +192,7 @@ int XARecoveryLog::del_rec(const char *name)
  */
 void* XARecoveryLog::aquire_iter()
 {
-	return new mmpool_iter_t(*pool_);
+	return (pool_ ? new mmpool_iter_t(*pool_) : NULL);
 }
 
 // the aquire_iter operation returns an handle that consumes memory so must be released

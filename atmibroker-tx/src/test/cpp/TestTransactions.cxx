@@ -19,6 +19,7 @@
 #include <sstream>
 
 #include <cppunit/extensions/HelperMacros.h>
+#include "AtmiBrokerEnv.h"
 #include "TestTransactions.h"
 #include "OrbManagement.h"
 #include "txi.h"
@@ -35,11 +36,11 @@ using namespace std;
 
 static string xid_to_string(XID& xid)
 {
-    std::stringstream out;
+	std::stringstream out;
 
-    out << xid.formatID << ':' << xid.gtrid_length << ':'<< xid.bqual_length << ':' << (char *) (xid.data + xid.gtrid_length);
+	out << xid.formatID << ':' << xid.gtrid_length << ':'<< xid.bqual_length << ':' << (char *) (xid.data + xid.gtrid_length);
 
-    return out.str();
+	return out.str();
 }
 
 void TestTransactions::setUp()
@@ -101,15 +102,17 @@ void TestTransactions::test_rclog()
 	CPPUNIT_ASSERT(log.add_rec(xid2, (char *) "IOR:2") == 0);
 
 	// use an iterator to check that there are two records
-	i = log.aquire_iter();
-	CPPUNIT_ASSERT(i != 0);
-	while ((rrp = log.next(i)) != 0) {
-		cnt += 1;
-		log.del_rec(rrp->xid());
-	}
+	if (ACE_OS::getenv("BLACKTIE.TX.RECOVERY.DISABLE") == NULL) {
+		i = log.aquire_iter();
+		CPPUNIT_ASSERT(i != 0);
+		while ((rrp = log.next(i)) != 0) {
+			cnt += 1;
+			log.del_rec(rrp->xid());
+		}
 
-	CPPUNIT_ASSERT(cnt >= 2);
-	log.release_iter(i);
+		CPPUNIT_ASSERT(cnt >= 2);
+		log.release_iter(i);
+	}
 }
 
 void TestTransactions::test_basic()
