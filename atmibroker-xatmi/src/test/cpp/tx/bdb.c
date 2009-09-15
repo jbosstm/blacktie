@@ -36,7 +36,7 @@ static void init_DBT(DBT *val, char *v)
 {
 	memset(val, 0, sizeof(DBT));
 	val->data = v;
-	if (v) val->size = strlen(v);
+	if (v) val->size = strlen(v) + 1;
 }
 
 static void init_rec(DBT *key, DBT *val, char *k, char *v)
