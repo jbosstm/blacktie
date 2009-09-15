@@ -24,6 +24,7 @@
 #include "string.h"
 
 #include "AtmiBrokerServerControl.h"
+#include "ace/OS_NS_unistd.h"
 #include "xatmi.h"
 #include "tx.h"
 #include "userlogc.h"
@@ -464,14 +465,23 @@ void test_tx_tpcall_x_octet_service_with_tx(TPSVCINFO *svcinfo) {
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }
 
+void test_time_to_live_service(TPSVCINFO *svcinfo) {
+	ACE_OS::sleep(45);
+	int len = 60;
+	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
+	strcpy(toReturn, "test_time_to_live_service");
+
+	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
+}
+
 extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_serverinit(JNIEnv *, jobject) {
 	int exit_status = -1;
 	userlogc((char*) "serverinit called");
 #ifdef WIN32
-	char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"default"};
+	char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"default", (char*)"-i", (char*)"1"};
 #else
-	char* argv[] = {(char*)"server", (char*)"-c", (char*)"linux", (char*)"default"};
+	char* argv[] = {(char*)"server", (char*)"-c", (char*)"linux", (char*)"default", (char*)"-i", (char*)"1"};
 #endif
 	int argc = sizeof(argv)/sizeof(char*);
 
@@ -608,6 +618,12 @@ extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPUnadvertise(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPUnadvertise",
 			testtpunadvertise_service);
+}
+
+extern "C"
+JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTTL(JNIEnv *, jobject) {
+	tpadvertise((char*) "TTL",
+			test_time_to_live_service);
 }
 
 extern "C"

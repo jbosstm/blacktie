@@ -73,6 +73,8 @@ public class RunServer {
 
 	public native void tpadvertiseTestTPUnadvertise();
 
+	public native void tpadvertiseTestTTL();
+
 	public native void tpadvertiseTX1();
 
 	public native void tpadvertiseTX2();

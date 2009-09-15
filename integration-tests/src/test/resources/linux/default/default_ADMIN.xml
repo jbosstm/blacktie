@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<SERVICE xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xmlns="http://www.jboss.org/blacktie">
+	<SERVICE_DESCRIPTION function_name='ADMIN' library_name='libatmibroker-admin.so' advertised='true'>
+    	<SIZE>1</SIZE>
+	</SERVICE_DESCRIPTION>
+</SERVICE>
