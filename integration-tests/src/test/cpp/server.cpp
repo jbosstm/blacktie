@@ -42,70 +42,15 @@ int interationCount = 100;
 #include "userlogc.h"
 
 
-#include "ace/OS_NS_unistd.h"
+extern void test_tpcall_TPETIME_service(TPSVCINFO *svcinfo);
+extern void test_tpcall_TPEOTYPE_service(TPSVCINFO *svcinfo);
+extern void test_tpcall_TPESVCFAIL_service(TPSVCINFO *svcinfo);
+extern void test_tprecv_TPEV_DISCONIMM_service(TPSVCINFO *svcinfo);
+extern void test_tprecv_TPEV_SVCFAIL_service(TPSVCINFO *svcinfo);
+extern void test_no_tpreturn_service(TPSVCINFO *svcinfo);
 
-#include "userlogc.h"
-
-#include "xatmi.h"
-#include "tx.h"
-
-extern void test_tpcall_TPETIME_service(TPSVCINFO *svcinfo) {
-	int timeout = 21;
-	userlogc((char*) "test_tpcall_TPETIME_service, sleeping for %d seconds",
-			timeout);
-	ACE_OS::sleep(timeout);
-	userlogc((char*) "test_tpcall_TPETIME_service, slept for %d seconds",
-			timeout);
-
-	int len = 60;
-	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
-	strcpy(toReturn, "test_tpcall_TPETIME_service");
-	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
-}
-
-extern void test_tpcall_TPEOTYPE_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tpcall_TPEOTYPE_service");
-	int len = 60;
-	char *toReturn = ::tpalloc((char*) "X_C_TYPE", (char*) "test", len);
-	strcpy(toReturn, "test_tpcall_TPEOTYPE_service");
-	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
-}
-
-extern void test_tpcall_TPESVCFAIL_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tpcall_TPESVCFAIL_service");
-	int len = 60;
-	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
-	strcpy(toReturn, "test_tpcall_TPESVCFAIL_service");
-	tpreturn(TPFAIL, 0, toReturn, len, 0);
-}
-
-extern void test_tprecv_TPEV_DISCONIMM_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tprecv_TPEV_DISCONIMM_service");
-	long rcvlen = 60;
-	long revent = 0;
-	char* rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen);
-
-	int status = ::tprecv(svcinfo->cd, (char **) &rcvbuf, &rcvlen, (long) 0,
-			&revent);
-	TXINFO txinfo;
-	int inTx = ::tx_info(&txinfo);
-	bool rbkOnly = (txinfo.transaction_state == TX_ROLLBACK_ONLY);
-	userlogc((char*) "status=%d, inTx=%d, rbkOnly=%d", status, inTx, rbkOnly);
-}
-
-extern void test_tprecv_TPEV_SVCFAIL_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tprecv_TPEV_SVCFAIL_service");
-	int len = 60;
-	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
-	strcpy(toReturn, "test_tprecv_TPEV_SVCFAIL_service");
-	tpreturn(TPFAIL, 0, toReturn, len, 0);
-}
-
-extern void test_no_tpreturn_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_no_tpreturn_service");
-}
-
-extern "C"void BAR(TPSVCINFO * svcinfo) {
+extern "C"
+void BAR(TPSVCINFO * svcinfo) {
 	int sendlen = 14;
 	char* buffer = tpalloc((char*) "X_OCTET", NULL, sendlen);
 	strncpy(buffer, "BAR SAYS HELLO", 14);
@@ -113,7 +58,7 @@ extern "C"void BAR(TPSVCINFO * svcinfo) {
 	tpreturn(TPSUCCESS, 1, buffer, sendlen, 0);
 }
 
-extern "C"void tpcall_x_octet(TPSVCINFO * svcinfo) {
+void tpcall_x_octet(TPSVCINFO * svcinfo) {
 	int sendlen = 14;
 	char* buffer = tpalloc((char*) "X_OCTET", 0, sendlen);
 	strncpy(buffer, "BAR SAYS HELLO", 14);
@@ -466,7 +411,13 @@ void test_tx_tpcall_x_octet_service_with_tx(TPSVCINFO *svcinfo) {
 }
 
 void test_time_to_live_service(TPSVCINFO *svcinfo) {
-	ACE_OS::sleep(45);
+	int timeout = 45;
+	userlogc((char*) "test_time_to_live_service sleeping for %d seconds",
+			timeout);
+	ACE_OS::sleep(timeout);
+	userlogc((char*) "test_time_to_live_service, slept for %d seconds",
+			timeout);
+
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	strcpy(toReturn, "test_time_to_live_service");

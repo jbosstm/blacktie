@@ -25,16 +25,6 @@
 					<SERVICE name='BTStompAdmin' transportLibrary='libatmibroker-hybrid.so'/>
 				</SERVICE_NAMES>
 			</SERVER>
-			<!-- 
-			<SERVER name='standalone-server'>
-				<SERVICE_NAMES>
-					<SERVICE name='TestOne' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTwo' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='JAVA_Converse' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='XMLParserTest' transportLibrary='libatmibroker-stomp.so'/>
-				</SERVICE_NAMES>
-			</SERVER>
-			 -->
 			<SERVER name='default'>
 				<SERVICE_NAMES>
 					<SERVICE name='BAR' transportLibrary='libatmibroker-hybrid.so'/>

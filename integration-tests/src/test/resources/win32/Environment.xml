@@ -25,16 +25,6 @@
 					<SERVICE name='BTStompAdmin' transportLibrary='atmibroker-hybrid.dll'/>
 				</SERVICE_NAMES>
 			</SERVER>
-			<!-- 
-			<SERVER name='standalone-server'>
-				<SERVICE_NAMES>
-					<SERVICE name='TestOne' transportLibrary='atmibroker-hybrid.dll'/>
-					<SERVICE name='TestTwo' transportLibrary='atmibroker-hybrid.dll'/>
-					<SERVICE name='JAVA_Converse' transportLibrary='atmibroker-hybrid.dll'/>
-					<SERVICE name='XMLParserTest' transportLibrary='libatmibroker-stomp.so'/>
-				</SERVICE_NAMES>
-			</SERVER>
-			 -->
 			<SERVER name='default'>
 				<SERVICE_NAMES>
 					<SERVICE name='BAR' transportLibrary='atmibroker-hybrid.dll'/>
