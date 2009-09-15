@@ -31,6 +31,79 @@
 
 int interationCount = 100;
 
+#include "ace/OS_NS_unistd.h"
+
+
+
+
+#include "xatmi.h"
+#include "tx.h"
+#include "userlogc.h"
+
+
+#include "ace/OS_NS_unistd.h"
+
+#include "userlogc.h"
+
+#include "xatmi.h"
+#include "tx.h"
+
+extern void test_tpcall_TPETIME_service(TPSVCINFO *svcinfo) {
+	int timeout = 21;
+	userlogc((char*) "test_tpcall_TPETIME_service, sleeping for %d seconds",
+			timeout);
+	ACE_OS::sleep(timeout);
+	userlogc((char*) "test_tpcall_TPETIME_service, slept for %d seconds",
+			timeout);
+
+	int len = 60;
+	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
+	strcpy(toReturn, "test_tpcall_TPETIME_service");
+	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
+}
+
+extern void test_tpcall_TPEOTYPE_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "test_tpcall_TPEOTYPE_service");
+	int len = 60;
+	char *toReturn = ::tpalloc((char*) "X_C_TYPE", (char*) "test", len);
+	strcpy(toReturn, "test_tpcall_TPEOTYPE_service");
+	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
+}
+
+extern void test_tpcall_TPESVCFAIL_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "test_tpcall_TPESVCFAIL_service");
+	int len = 60;
+	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
+	strcpy(toReturn, "test_tpcall_TPESVCFAIL_service");
+	tpreturn(TPFAIL, 0, toReturn, len, 0);
+}
+
+extern void test_tprecv_TPEV_DISCONIMM_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "test_tprecv_TPEV_DISCONIMM_service");
+	long rcvlen = 60;
+	long revent = 0;
+	char* rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen);
+
+	int status = ::tprecv(svcinfo->cd, (char **) &rcvbuf, &rcvlen, (long) 0,
+			&revent);
+	TXINFO txinfo;
+	int inTx = ::tx_info(&txinfo);
+	bool rbkOnly = (txinfo.transaction_state == TX_ROLLBACK_ONLY);
+	userlogc((char*) "status=%d, inTx=%d, rbkOnly=%d", status, inTx, rbkOnly);
+}
+
+extern void test_tprecv_TPEV_SVCFAIL_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "test_tprecv_TPEV_SVCFAIL_service");
+	int len = 60;
+	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
+	strcpy(toReturn, "test_tprecv_TPEV_SVCFAIL_service");
+	tpreturn(TPFAIL, 0, toReturn, len, 0);
+}
+
+extern void test_no_tpreturn_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "test_no_tpreturn_service");
+}
+
 extern "C"void BAR(TPSVCINFO * svcinfo) {
 	int sendlen = 14;
 	char* buffer = tpalloc((char*) "X_OCTET", NULL, sendlen);
@@ -546,3 +619,34 @@ extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTX2(JNIEnv *, jobject) {
 	tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_with_tx);
 }
+
+extern "C"
+JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestRollbackOnlyTpcallTPETIMEService(JNIEnv *, jobject) {
+	tpadvertise((char*) "TestRbkOnly", test_tpcall_TPETIME_service);
+}
+
+extern "C"
+JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestRollbackOnlyTpcallTPEOTYPEService(JNIEnv *, jobject) {
+	tpadvertise((char*) "TestRbkOnly", test_tpcall_TPEOTYPE_service);
+}
+
+extern "C"
+JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestRollbackOnlyTpcallTPESVCFAILService(JNIEnv *, jobject) {
+	tpadvertise((char*) "TestRbkOnly", test_tpcall_TPESVCFAIL_service);
+}
+
+extern "C"
+JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestRollbackOnlyTprecvTPEVDISCONIMMService(JNIEnv *, jobject) {
+	tpadvertise((char*) "TestRbkOnly", test_tprecv_TPEV_DISCONIMM_service);
+}
+
+extern "C"
+JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestRollbackOnlyTprecvTPEVSVCFAILService(JNIEnv *, jobject) {
+	tpadvertise((char*) "TestRbkOnly", test_tprecv_TPEV_SVCFAIL_service);
+}
+
+extern "C"
+JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestRollbackOnlyNoTpreturnService(JNIEnv *, jobject) {
+	tpadvertise((char*) "TestRbkOnly", test_no_tpreturn_service);
+}
+

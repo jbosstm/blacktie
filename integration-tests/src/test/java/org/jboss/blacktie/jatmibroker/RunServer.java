@@ -178,4 +178,20 @@ public class RunServer {
 		throw new RuntimeException("NOT SUPPORTED");
 	}
 
+	public String getServiceNameTestRollbackOnly() {
+		return "TestRbkOnly";
+	}
+
+	public native void tpadvertiseTestRollbackOnlyTpcallTPETIMEService();
+
+	public native void tpadvertiseTestTpcallTPEOTYPEService();
+
+	public native void tpadvertiseTestRollbackOnlyTpcallTPESVCFAILService();
+
+	public native void tpadvertiseTestRollbackOnlyTprecvTPEVDISCONIMMService();
+
+	public native void tpadvertiseTestRollbackOnlyTprecvTPEVSVCFAILService();
+
+	public native void tpadvertiseTestRollbackOnlyNoTpreturnService();
+
 }
