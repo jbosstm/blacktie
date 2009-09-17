@@ -75,6 +75,7 @@ public class JMSReceiverImpl implements Receiver {
 			javax.jms.Message message = receiver.receive(timeout);
 			if (message != null) {
 				log.debug("Received from: " + destination.getQueueName());
+				log.debug("getJMSExpiration is " + message.getJMSExpiration());
 				String controlIOR = message.getStringProperty("messagecontrol");
 				BytesMessage bytesMessage = ((BytesMessage) message);
 				// TODO String replyTo = message.getStringProperty("reply-to");

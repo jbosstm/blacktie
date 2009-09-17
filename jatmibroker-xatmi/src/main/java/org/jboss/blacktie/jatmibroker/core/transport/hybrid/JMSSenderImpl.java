@@ -57,7 +57,7 @@ public class JMSSenderImpl implements Sender {
 	}
 
 	public void send(Object replyTo, short rval, int rcode, byte[] data,
-			int len, int correlationId, int flags, String type, String subtype)
+			int len, int correlationId, int flags, int ttl, String type, String subtype)
 			throws ConnectionException {
 		if (closed) {
 			throw new ConnectionException(Connection.TPEPROTO, "Sender closed");
@@ -77,6 +77,7 @@ public class JMSSenderImpl implements Sender {
 			if (service) {
 				message.setStringProperty("servicename", name);
 			}
+
 			message.setStringProperty("messagecorrelationId", String
 					.valueOf(correlationId));
 			message.setStringProperty("messageflags", String.valueOf(flags));
@@ -92,7 +93,15 @@ public class JMSSenderImpl implements Sender {
 				System.arraycopy(data, 0, toSend, 0, min);
 			}
 			message.writeBytes(toSend, 0, toSend.length);
-			sender.send(message);
+			if (ttl > 0) {
+				int deliveryMode = message.getJMSDeliveryMode();
+				int priority = message.getJMSPriority();
+
+				log.debug("send message with time-to-live " + ttl);
+				sender.send(message, deliveryMode, priority, ttl);
+			} else {
+				sender.send(message);
+			}
 			log.debug("sent message");
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Could not send the message", t);

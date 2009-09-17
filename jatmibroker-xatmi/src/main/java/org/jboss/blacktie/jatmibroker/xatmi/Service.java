@@ -210,7 +210,7 @@ public abstract class Service implements BlacktieService {
 				} else {
 					type = "X_OCTET";
 				}
-				sender.send("", rval, rcode, data, len, response.getFlags(), 0,
+				sender.send("", rval, rcode, data, len, response.getFlags(), 0, 0,
 						type, subtype);
 
 			} else if (sender == null && response != null) {
@@ -227,7 +227,7 @@ public abstract class Service implements BlacktieService {
 				}
 
 				sender.send("", Connection.TPFAIL, Connection.TPESVCERR, null,
-						0, 0, 0, null, null);
+						0, 0, 0, 0, null, null);
 
 				log.error("Returned error");
 			} else {

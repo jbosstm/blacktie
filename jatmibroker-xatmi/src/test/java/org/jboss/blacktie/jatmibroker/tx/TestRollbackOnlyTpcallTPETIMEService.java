@@ -15,12 +15,10 @@ public class TestRollbackOnlyTpcallTPETIMEService implements BlacktieService {
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		try {
-			int timeout = 11;
-			log.info("test_tpcall_TPETIME_service, sleeping for %d seconds"
-					+ timeout);
+			int timeout = 21;
+			log.info("test_tpcall_TPETIME_service, sleeping for " + timeout + " seconds");
 			Thread.sleep(timeout * 1000);
-			log.info("test_tpcall_TPETIME_service, slept for %d seconds"
-					+ timeout);
+			log.info("test_tpcall_TPETIME_service, slept for " + timeout + " seconds");
 
 			int len = 60;
 			Buffer toReturn = new Buffer("X_OCTET", null);

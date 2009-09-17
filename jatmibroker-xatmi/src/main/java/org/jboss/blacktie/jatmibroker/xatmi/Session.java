@@ -201,7 +201,7 @@ public class Session {
 			}
 
 			sender.send(receiver.getReplyTo(), (short) 0, 0, data, len, cd,
-					flags, type, subtype);
+					flags, 0, type, subtype);
 
 			// Sort out session state
 			if ((flags & Connection.TPSENDONLY) == Connection.TPSENDONLY) {
@@ -296,7 +296,7 @@ public class Session {
 						"Could not mark transaction for rollback only");
 			}
 		}
-		sender.send("", EventListener.DISCON_CODE, 0, null, 0, cd, 0, null,
+		sender.send("", EventListener.DISCON_CODE, 0, null, 0, cd, 0, 0, null,
 				null);
 
 	}

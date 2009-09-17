@@ -174,8 +174,14 @@ public class Connection {
 			type = "X_OCTET";
 		}
 
+		String timeToLive = properties.getProperty("TimeToLive");
+		int ttl = 0;
+
+		if (timeToLive != null) {
+			ttl = Integer.parseInt(timeToLive) * 1000;
+		}
 		transport.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
-				data, len, correlationId, flags, type, subtype);
+				data, len, correlationId, flags, ttl, type, subtype);
 		if ((flags & Connection.TPNOREPLY) == Connection.TPNOREPLY) {
 			correlationId = 0;
 		}
@@ -275,8 +281,14 @@ public class Connection {
 			type = "X_OCTET";
 		}
 
+		String timeToLive = properties.getProperty("TimeToLive");
+		int ttl = 0;
+
+		if (timeToLive != null) {
+			ttl = Integer.parseInt(timeToLive) * 1000;
+		}
 		transport.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
-				data, len, correlationId, flags | TPCONV, type, subtype);
+				data, len, correlationId, flags | TPCONV, ttl, type, subtype);
 
 		byte[] response = null;
 		try {

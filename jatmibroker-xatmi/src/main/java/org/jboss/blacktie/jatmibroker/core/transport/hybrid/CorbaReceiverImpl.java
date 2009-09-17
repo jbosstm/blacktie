@@ -142,7 +142,8 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Cannot create the receiver", t);
 		}
-		timeout = Integer.parseInt(properties.getProperty("RequestTimeout")) * 1000;
+		timeout = Integer.parseInt(properties.getProperty("RequestTimeout")) * 1000 +
+				  Integer.parseInt(properties.getProperty("TimeToLive")) * 1000;
 	}
 
 	public POA _default_POA() {

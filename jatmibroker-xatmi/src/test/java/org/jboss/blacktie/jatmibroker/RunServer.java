@@ -43,6 +43,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.TestTPReturnService;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPReturnServiceTpurcode;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPSendService;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPServiceService;
+import org.jboss.blacktie.jatmibroker.xatmi.TestTTLService;
 
 public class RunServer {
 
@@ -161,6 +162,10 @@ public class RunServer {
 	public void tpadvertiseTX2() throws ConnectionException {
 	}
 
+	public void tpadvertiseTTL() throws ConnectionException {
+		this.server.tpadvertise("TestOne", TestTTLService.class.getName());
+	}
+
 	// SERVICE NAMES
 	public String getServiceNameBAR() {
 		throw new RuntimeException("NOT IMPLEMENTED");
@@ -260,6 +265,10 @@ public class RunServer {
 
 	public String getServiceNameTX2() {
 		throw new RuntimeException("NOT SUPPORTED");
+	}
+
+	public String getServiceNameTTL() {
+		return "TestOne";
 	}
 
 	public String getServiceNameTestRollbackOnly() {

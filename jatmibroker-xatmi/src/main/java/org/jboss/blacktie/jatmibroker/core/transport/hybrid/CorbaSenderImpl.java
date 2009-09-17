@@ -37,7 +37,7 @@ public class CorbaSenderImpl implements Sender {
 	}
 
 	public void send(Object replyTo, short rval, int rcode, byte[] data,
-			int len, int correlationId, int flags, String type, String subtype) {
+			int len, int correlationId, int flags, int ttl, String type, String subtype) {
 		log.debug("Sending the message");
 		String toReplyTo = (String) replyTo;
 		if (toReplyTo == null) {
