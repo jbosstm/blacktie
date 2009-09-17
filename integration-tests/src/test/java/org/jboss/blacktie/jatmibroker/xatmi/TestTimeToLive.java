@@ -81,6 +81,8 @@ public class TestTimeToLive extends TestCase {
 		}
 
 		try {
+			log.info("wait for first message process");
+			Thread.sleep(6 * 1000);
 			String toSend = "counter,TTL,";
 			int sendlen = toSend.length() + 1;
 			Buffer sendbuf = new Buffer("X_OCTET", null);
@@ -100,6 +102,8 @@ public class TestTimeToLive extends TestCase {
 			log.info("get message counter of TTL is " + counter);
 		} catch (ConnectionException e) {
 			fail("UnExpected Exception, got: " + e.getTperrno());
+		} catch (Exception e) {
+			fail("Exception, got: " + e);
 		}
 	}
 }
