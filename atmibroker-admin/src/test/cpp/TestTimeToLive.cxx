@@ -33,6 +33,7 @@ void test_TTL_service(TPSVCINFO *svcinfo) {
 	long timeout = 45;
 
 	ACE_OS::sleep(timeout);
+	userlogc((char*) "TTL sleep timeout %d seconds", timeout);
 
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
@@ -71,12 +72,17 @@ void TestTimeToLive::testTTL() {
 	cd = callTTL();
 	CPPUNIT_ASSERT(cd == -1);
 	CPPUNIT_ASSERT(tperrno == TPETIME);
+	userlogc((char*)"send first message");
 
 	cd = callTTL();
 	CPPUNIT_ASSERT(cd == -1);
 	CPPUNIT_ASSERT(tperrno == TPETIME);
+	userlogc((char*)"send second message");
 
-	CPPUNIT_ASSERT(getTTLCounter() == 1);
+	ACE_OS::sleep(30);
+	long n = getTTLCounter();	
+	userlogc((char*)"TTL get message counter is %d", n);
+	CPPUNIT_ASSERT(n == 1);
 }
 
 int TestTimeToLive::callTTL() {
