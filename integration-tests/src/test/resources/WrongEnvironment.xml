@@ -22,13 +22,13 @@ Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 		<SERVER_NAMESTOM>
 			<SERVERTOM>
 				<SERVICE_NAMESTOM>
-					<SERVICETOM name='TEST' transportLibrary='atmibroker-corba.so' />
+					<SERVICETOM name='TEST' />
 				</SERVICE_NAMESTOM>
 			</SERVERTOM>
 			<SERVERTOM name='foo'>
 				<SERVICE_NAMESTOM>
-					<SERVICETOM name='BAR' transportLibrary='atmibroker-corba.so' />
-					<SERVICETOM name='ECHO' transportLibrary='atmibroker-stomp.so' />
+					<SERVICETOM name='BAR' />
+					<SERVICETOM name='ECHO' />
 				</SERVICE_NAMESTOM>
 			</SERVERTOM>
 		</SERVER_NAMESTOM>

@@ -22,16 +22,16 @@ Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 		<SERVER_NAMES>
 			<SERVER name='default'>
 				<SERVICE_NAMES>
-					<SERVICE name='TEST' transportLibrary='libatmibroker-corba.so' />
+					<SERVICE name='TEST'/>
 				</SERVICE_NAMES>
-				<ADMIN_SERVICE transportLibrary='libatmibroker-stomp.so' />
+				<ADMIN_SERVICE/>
 			</SERVER>
 			<SERVER name='foo'>
 				<SERVICE_NAMES>
-					<SERVICE name='BAR' transportLibrary='libatmibroker-corba.so' />
-					<SERVICE name='ECHO' transportLibrary='libatmibroker-stomp.so' />
+					<SERVICE name='BAR'/>
+					<SERVICE name='ECHO'/>
 				</SERVICE_NAMES>
-				<ADMIN_SERVICE transportLibrary='libatmibroker-stomp.so' />
+				<ADMIN_SERVICE/>
 			</SERVER>
 		</SERVER_NAMES> 
 		<ENV_VARIABLES>

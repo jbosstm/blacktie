@@ -22,35 +22,35 @@
 		<SERVER_NAMES>
 			<SERVER name="jboss">
 				<SERVICE_NAMES>
-					<SERVICE name='BTStompAdmin' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='BTStompAdmin'/>
 				</SERVICE_NAMES>
 			</SERVER>
 			<SERVER name='default'>
 				<SERVICE_NAMES>
-					<SERVICE name='BAR' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPFree' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPCall' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPAdvertise' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='LOOPY' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPConversat'  transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPACall'  transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPCancel'  transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPConnect'  transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPDiscon'  transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPGetrply'  transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPSend'  transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPRecv'  transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPService'  transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPReturn'  transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='123456789012345' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTPUnadverti' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='tpcall_x_octet' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='tpcall_x_common' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='tpcall_x_c_type' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='DEBIT' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='CREDIT' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='INQUIRY' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestRbkOnly' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='BAR'/>
+					<SERVICE name='TestTPFree'/>
+					<SERVICE name='TestTPCall'/>
+					<SERVICE name='TestTPAdvertise'/>
+					<SERVICE name='LOOPY'/>
+					<SERVICE name='TestTPConversat' />
+					<SERVICE name='TestTPACall' />
+					<SERVICE name='TestTPCancel' />
+					<SERVICE name='TestTPConnect' />
+					<SERVICE name='TestTPDiscon' />
+					<SERVICE name='TestTPGetrply' />
+					<SERVICE name='TestTPSend' />
+					<SERVICE name='TestTPRecv' />
+					<SERVICE name='TestTPService' />
+					<SERVICE name='TestTPReturn' />
+					<SERVICE name='123456789012345'/>
+					<SERVICE name='TestTPUnadverti'/>
+					<SERVICE name='tpcall_x_octet'/>
+					<SERVICE name='tpcall_x_common'/>
+					<SERVICE name='tpcall_x_c_type'/>
+					<SERVICE name='DEBIT'/>
+					<SERVICE name='CREDIT'/>
+					<SERVICE name='INQUIRY'/>
+					<SERVICE name='TestRbkOnly'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>

@@ -22,12 +22,12 @@
 		<SERVER_NAMES>
 			<SERVER name='standalone-server'>
 				<SERVICE_NAMES>
-					<SERVICE name='TestOne' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TestTwo' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='JAVA_Converse' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='XMLParserTest' transportLibrary='libatmibroker-stomp.so'/>
+					<SERVICE name='TestOne'/>
+					<SERVICE name='TestTwo'/>
+					<SERVICE name='JAVA_Converse'/>
+					<SERVICE name='XMLParserTest'/>
 				</SERVICE_NAMES>
-				<ADMIN_SERVICE transportLibrary='libatmibroker-hybrid.so' />
+				<ADMIN_SERVICE />
 			</SERVER>
 		</SERVER_NAMES>
 		<ENV_VARIABLES>

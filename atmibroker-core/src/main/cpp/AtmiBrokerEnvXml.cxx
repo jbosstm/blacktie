@@ -263,6 +263,7 @@ static void XMLCALL startElement
 
 		if(atts != 0) {
 			ServiceInfo service;
+			service.transportLib = NULL;
 			char* server;
 
 			memset(&service, 0, sizeof(ServiceInfo));
@@ -277,10 +278,20 @@ static void XMLCALL startElement
 			for(int i = 0; atts[i]; i += 2) {
 				if(strcmp(atts[i], "name") == 0) {
 					service.serviceName = copy_value(atts[i+1]);
-				} else if(strcmp(atts[i], "transportLibrary") == 0) {
-					service.transportLib = copy_value(atts[i+1]);
+					LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "set name: " << service.serviceName);
 				}
+//				else if(strcmp(atts[i], "transportLibrary") == 0) {
+//					service.transportLib = copy_value(atts[i+1]);
+//				}
 			}
+			LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "setting transportlib");
+#ifdef WIN32
+			service.transportLib = strdup("atmibroker-hybrid.dll");
+#else
+			service.transportLib = strdup("libatmibroker-hybrid.so");
+#endif
+			LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "set transportlib: " << service.transportLib);
+
 
 			char* dir = AtmiBrokerEnv::ENVIRONMENT_DIR;
 			if(dir == NULL) {

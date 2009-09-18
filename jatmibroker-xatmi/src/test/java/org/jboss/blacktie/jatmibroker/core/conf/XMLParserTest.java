@@ -63,12 +63,12 @@ public class XMLParserTest extends TestCase {
 		String arg3 = ":3528/NameService";
 
 		String server = "standalone-server";
-		String transport = "libatmibroker-stomp.so";
+		String transport = "hybrid";
 		String advertised = "true";
 		String size = "1";
 		String function = "org.jboss.blacktie.jatmibroker.xatmi.TestTPCallServiceXOctet";
 
-		String adminTransport = "libatmibroker-hybrid.so";
+		String adminTransport = "hybrid";
 
 		assertTrue(server.equals(prop.getProperty("blacktie.TestOne.server")));
 		assertTrue(transport.equals(prop

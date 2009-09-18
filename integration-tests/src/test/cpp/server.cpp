@@ -239,13 +239,14 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 	strcpy(expectedResult, "conversate");
 	userlogc((char*) "testTPConversation_service expected: %s", expectedResult);
 
-	int errorMessageLen = 10 + 1 + svcinfo->len + 1;
+
+/*	int errorMessageLen = 10 + 1 + svcinfo->len + 1;
 	userlogc((char*) "testTPConversation_service errorMessageLen: %d", errorMessageLen);
 	
 	char* errorMessage = (char*) malloc(errorMessageLen);
 	sprintf(errorMessage, "%s/%s", expectedResult, svcinfo->data);
 	userlogc((char*) "testTPConversation_service errorMessage will be: %s", errorMessage);
-
+*/
 	if (strncmp(expectedResult, svcinfo->data, 10) != 0) {
 		userlogc((char*) "Fail");
 		if (svcinfo->data != NULL) {
@@ -268,16 +269,16 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 				if (result == -1 && revent == TPEV_SENDONLY) {
 					char* expectedResult = (char*) malloc(svcinfo->len);
 					sprintf(expectedResult, "yo%d", i);
-					char* errorMessage = (char*) malloc(svcinfo->len * 2 + 1);
-					sprintf(errorMessage, "%s/%s", expectedResult, rcvbuf);
+//					char* errorMessage = (char*) malloc(svcinfo->len * 2 + 1);
+//					sprintf(errorMessage, "%s/%s", expectedResult, rcvbuf);
 					if (strcmp(expectedResult, rcvbuf) != 0) {
 						free(expectedResult);
-						free(errorMessage);
+//						free(errorMessage);
 						fail = true;
 						break;
 					}
 					free(expectedResult);
-					free(errorMessage);
+//					free(errorMessage);
 				} else {
 					fail = true;
 					break;
@@ -299,7 +300,7 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 
 	::tpfree(rcvbuf);
 	free(expectedResult);
-	free(errorMessage);
+//	free(errorMessage);
 }
 
 void testTPConversation_short_service(TPSVCINFO *svcinfo) {

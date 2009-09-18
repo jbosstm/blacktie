@@ -22,16 +22,16 @@
 		<SERVER_NAMES>
 			<SERVER name='default'>
 				<SERVICE_NAMES>
-					<SERVICE name='TEST' transportLibrary='atmibroker-corba.dll' />
+					<SERVICE name='TEST'/>
 				</SERVICE_NAMES>
-				<ADMIN_SERVICE transportLibrary='atmibroker-stomp.dll' />
+				<ADMIN_SERVICE/>
 			</SERVER>
 			<SERVER name='foo'>
 				<SERVICE_NAMES>
-					<SERVICE name='BAR' transportLibrary='atmibroker-corba.dll' />
-					<SERVICE name='ECHO' transportLibrary='atmibroker-stomp.dll' />
+					<SERVICE name='BAR'/>
+					<SERVICE name='ECHO'/>
 				</SERVICE_NAMES>
-				<ADMIN_SERVICE transportLibrary='atmibroker-stomp.dll' />
+				<ADMIN_SERVICE/>
 			</SERVER>
 		</SERVER_NAMES> 
 		<XA_RESOURCES>

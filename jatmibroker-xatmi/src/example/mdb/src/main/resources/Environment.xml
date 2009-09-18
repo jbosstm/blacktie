@@ -22,9 +22,9 @@
 		<SERVER_NAMES>
 			<SERVER name='ejb-connector-tests'>
 				<SERVICE_NAMES>
-					<SERVICE name='EchoService' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TxEchoService' transportLibrary='libatmibroker-hybrid.so'/>
-					<SERVICE name='TxCreateService' transportLibrary='libatmibroker-hybrid.so'/>
+					<SERVICE name='EchoService'/>
+					<SERVICE name='TxEchoService'/>
+					<SERVICE name='TxCreateService'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>

@@ -95,8 +95,8 @@ public class QueueReaper implements Runnable {
 					Destination dest = it.next();
 					if (dest instanceof Queue) {
 						String serviceName = ((Queue) dest).getQueueName();
-						String transportLibrary = (String) prop.get("blacktie." + serviceName + ".transportLib");
-						if (transportLibrary != null && transportLibrary.contains("hybrid") &&
+						String server = (String) prop.get("blacktie." + serviceName + ".server");
+						if (server != null &&
 							isCreatedProgrammatically(serviceName) && 
 							consumerCount(serviceName) == 0) {
 							Thread.sleep(30 * 1000); //TODO make this configurable

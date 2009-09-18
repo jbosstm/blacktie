@@ -130,22 +130,20 @@ public class XMLEnvHandler extends DefaultHandler {
 							serviceName = null;
 							break;
 						}
-					} else if (atts.getLocalName(i).equals("transportLibrary")) {
-						transport = atts.getValue(i);
 					}
+//					else if (atts.getLocalName(i).equals("transportLibrary")) {
+//						transport = atts.getValue(i);
+//					}
 				}
 
 				if(serviceName != null) {
 					String key = "blacktie." + serviceName + ".server";
 					prop.put(key, serverName);
-
-					if(transport != null) {
-						key = "blacktie." + serviceName + ".transportLib";
-						prop.put(key, transport);
-					}
 				}
 			}
 
+			prop.put("blacktie." + serviceName + ".transportLib", "hybrid");
+			
 			if (serviceName != null) {
 				AtmiBrokerServiceXML xml = new AtmiBrokerServiceXML(serverName,
 						serviceName, prop);

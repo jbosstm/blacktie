@@ -32,17 +32,12 @@
 										<xsd:element name="SERVICE" minOccurs="1" maxOccurs="unbounded">
 											<xsd:complexType>
 												<xsd:attribute name="name" type="svcstring" use="required" />
-												<xsd:attribute name="transportLibrary" type="xsd:string" use="required"/>
 											</xsd:complexType>
 										</xsd:element>
 									</xsd:sequence>
 								</xsd:complexType>
 							</xsd:element>
-							<xsd:element name="ADMIN_SERVICE" minOccurs="0" maxOccurs="1">
-								<xsd:complexType>
-									<xsd:attribute name="transportLibrary" type="xsd:string" use="required"/>
-								</xsd:complexType>
-							</xsd:element>
+							<xsd:element name="ADMIN_SERVICE" minOccurs="0" maxOccurs="1"/>
 						</xsd:sequence>
 						<xsd:attribute name="name" type="xsd:string" use="required" />
 					</xsd:complexType>
