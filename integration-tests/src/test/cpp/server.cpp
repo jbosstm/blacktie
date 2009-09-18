@@ -244,7 +244,7 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 	
 	char* errorMessage = (char*) malloc(errorMessageLen);
 	sprintf(errorMessage, "%s/%s", expectedResult, svcinfo->data);
-	userlogc((char*) "testTPConversation_service errorMessage will be: %d", errorMessage);
+	userlogc((char*) "testTPConversation_service errorMessage will be: %s", errorMessage);
 
 	if (strncmp(expectedResult, svcinfo->data, 10) != 0) {
 		userlogc((char*) "Fail");
