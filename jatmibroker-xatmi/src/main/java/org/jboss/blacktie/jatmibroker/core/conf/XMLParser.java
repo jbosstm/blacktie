@@ -17,6 +17,7 @@
  */
 package org.jboss.blacktie.jatmibroker.core.conf;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 
@@ -28,6 +29,8 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -35,6 +38,8 @@ import org.xml.sax.helpers.DefaultHandler;
  * Class to create a parser and parse an XML file
  */
 public class XMLParser {
+
+	private static final Logger log = LogManager.getLogger(XMLParser.class);
 
 	private DefaultHandler handler;
 	private SAXParser saxParser;
@@ -59,6 +64,7 @@ public class XMLParser {
 		try {
 			String schemaDir = System.getenv("BLACKTIE_SCHEMA_DIR");
 			if (schemaDir != null) {
+				log.debug("SCHEMA DIR: " + schemaDir);
 				schemaDir = schemaDir + System.getProperty("file.separator");
 				xsdFilename = schemaDir + xsdFilename;
 			}
@@ -72,11 +78,17 @@ public class XMLParser {
 					.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			URL resource = Thread.currentThread().getContextClassLoader()
 					.getResource(xsdFilename);
-			if (resource == null) {
-				throw new ConfigurationException("Could not load the schema: "
-						+ xsdFilename);
+			if (resource != null) {
+				schema = schemaFactory.newSchema(resource);
+			} else {
+				File file = new File(xsdFilename);
+				if (file.exists()) {
+					schema = schemaFactory.newSchema(file);
+				} else {
+					throw new ConfigurationException(
+							"Could not load the schema: " + xsdFilename);
+				}
 			}
-			schema = schemaFactory.newSchema(resource);
 			factory.setSchema(schema);
 
 			saxParser = factory.newSAXParser();

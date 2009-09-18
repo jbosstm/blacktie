@@ -249,7 +249,7 @@
 	  <property>atmibroker.schema.dir</property>
           <required>true</required>
           <readonly>false</readonly>
-          <defaultValue>xsd</defaultValue>
+          <defaultValue>../cxx/compile/</defaultValue>
           <type>java.lang.String</type>
           <description>Schema directory</description>
 	</parameter>

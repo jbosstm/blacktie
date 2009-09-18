@@ -40,7 +40,7 @@
 						<Path>${ld_library_path}</Path>
 						<LD_LIBRARY_PATH>${ld_library_path}</LD_LIBRARY_PATH>
 						<BLACKTIE_CONFIGURATION_DIR>${atmibroker.configuration.dir}</BLACKTIE_CONFIGURATION_DIR>
-						<BLACKTIE_SCHEMA_DIR>xsd</BLACKTIE_SCHEMA_DIR>
+						<BLACKTIE_SCHEMA_DIR>${project.build.directory}/cxx/test/</BLACKTIE_SCHEMA_DIR>
 						<JBOSSAS_IP_ADDR>${jbossas.ip.addr}</JBOSSAS_IP_ADDR>
 					</environmentVariables>
 				</configuration>
