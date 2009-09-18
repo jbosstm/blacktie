@@ -237,8 +237,15 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 
 	char* expectedResult = (char*) malloc(11);
 	strcpy(expectedResult, "conversate");
-	char* errorMessage = (char*) malloc(10 + 1 + svcinfo->len + 1);
+	userlogc((char*) "testTPConversation_service expected: %s", expectedResult);
+
+	int errorMessageLen = 10 + 1 + svcinfo->len + 1;
+	userlogc((char*) "testTPConversation_service errorMessageLen: %d", errorMessageLen);
+	
+	char* errorMessage = (char*) malloc(errorMessageLen);
 	sprintf(errorMessage, "%s/%s", expectedResult, svcinfo->data);
+	userlogc((char*) "testTPConversation_service errorMessage will be: %d", errorMessage);
+
 	if (strncmp(expectedResult, svcinfo->data, 10) != 0) {
 		userlogc((char*) "Fail");
 		if (svcinfo->data != NULL) {
@@ -248,8 +255,8 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 		}
 		fail = true;
 	} else {
-		long revent = 0;
 		userlogc((char*) "Chatting");
+		long revent = 0;
 		for (int i = 0; i < interationCount; i++) {
 			sprintf(sendbuf, "hi%d", i);
 			//userlogc((char*) "testTPConversation_service:%s:", sendbuf);
