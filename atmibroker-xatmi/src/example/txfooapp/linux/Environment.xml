@@ -123,6 +123,22 @@
             </XA_RESOURCE>
              <!--
              -->
+			 <XA_RESOURCE configuration="win32">
+			 	<XA_RESOURCE_MGR_ID>2101</XA_RESOURCE_MGR_ID>
+			 	<XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
+			 	<XA_OPEN_STRING>db1</XA_OPEN_STRING>
+			 	<XA_CLOSE_STRING></XA_CLOSE_STRING>
+			 	<XA_SWITCH>db_xa_switch</XA_SWITCH>
+			 	<XA_LIB_NAME>C:\db-4.7.25\build_windows\Debug\libdb47d.dll</XA_LIB_NAME>
+			 </XA_RESOURCE>
+			 <XA_RESOURCE configuration="win32">
+			 	<XA_RESOURCE_MGR_ID>2102</XA_RESOURCE_MGR_ID>
+			 	<XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
+			 	<XA_OPEN_STRING>db2</XA_OPEN_STRING>
+			 	<XA_CLOSE_STRING></XA_CLOSE_STRING>
+			 	<XA_SWITCH>db_xa_switch</XA_SWITCH>
+			 	<XA_LIB_NAME>C:\db-4.7.25\build_windows\Debug\libdb47d.dll</XA_LIB_NAME>
+			 </XA_RESOURCE>
         </XA_RESOURCES>
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>

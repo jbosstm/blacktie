@@ -63,19 +63,19 @@ void TestAtmiBrokerXml::test_env() {
 	CPPUNIT_ASSERT(strcmp((*services)[2].serviceName, "foo_ADMIN") == 0);
 	CPPUNIT_ASSERT(strcmp((*services)[2].transportLib, "atmibroker-hybrid.dll") == 0);
 #else
-	userlogc((char*)"RUNNING");
+
 	CPPUNIT_ASSERT(strcmp((*services)[0].transportLib, "libatmibroker-hybrid.so") == 0);
-	userlogc((char*)"RUNNING");
+
 	CPPUNIT_ASSERT(strcmp((*services)[0].library_name, "libBAR.so") == 0);
-	userlogc((char*)"RUNNING");
+
 	CPPUNIT_ASSERT(strcmp((*services)[1].serviceName, "ECHO") == 0);
-	userlogc((char*)"RUNNING");
+
 	CPPUNIT_ASSERT(strcmp((*services)[1].transportLib, "libatmibroker-hybrid.so") == 0);
-	userlogc((char*)"RUNNING");
+
 	CPPUNIT_ASSERT(strcmp((*services)[2].serviceName, "foo_ADMIN") == 0);
-	userlogc((char*)"RUNNING");
+
 	CPPUNIT_ASSERT(strcmp((*services)[2].transportLib, "libatmibroker-hybrid.so") == 0);
-	userlogc((char*)"RUNNING");
+
 #endif
 	CPPUNIT_ASSERT((*services)[0].advertised == false);
 
@@ -87,7 +87,7 @@ void TestAtmiBrokerXml::test_env() {
 	CPPUNIT_ASSERT(strcmp(transport, "libatmibroker-hybrid.so") == 0);
 #endif
 
-	userlogc((char*)"RUNNING");
+
 	AtmiBrokerEnv::discard_instance();
-	userlogc((char*)"RUNNING");
+
 }

@@ -27,6 +27,74 @@
 			</SERVER>
 		</SERVER_NAMES>
 		<XA_RESOURCES>
+             <!--
+                  To include a given database in the example uncomment the relevant XA resource entry.
+                  Note that the Berkeley Db example resources require backing files to operate.
+                  These files reside in a directory specified in the XA_OPEN_STRING. For example,
+                  to use the first <XA_RESOURCE configuration="linux"> entry below make sure that a directory called
+                  db1 exists (relative to the current working directory of the executable).
+
+                  Make sure the <XA_RESOURCE_MGR_ID> entry for each resource is unique.
+                  The <XA_LIB_NAME> is the path to the library that implements XA interface
+                  to the database. This path can begin with an environment variable if
+                  required (as in the ORACLE example below).
+
+                  Each product includes two resources configurations (since we want
+                  demonstrate distributed transactions involving more than one resource manager).
+               -->
+             <XA_RESOURCE configuration="linux">
+                <XA_RESOURCE_MGR_ID>2101</XA_RESOURCE_MGR_ID>
+                <XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
+                <XA_OPEN_STRING>db1</XA_OPEN_STRING>
+                <XA_CLOSE_STRING></XA_CLOSE_STRING>
+                <XA_SWITCH>db_xa_switch</XA_SWITCH>
+                <XA_LIB_NAME>db</XA_LIB_NAME>
+             </XA_RESOURCE>
+             <XA_RESOURCE configuration="linux">
+                <XA_RESOURCE_MGR_ID>2102</XA_RESOURCE_MGR_ID>
+                <XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
+                <XA_OPEN_STRING>db2</XA_OPEN_STRING>
+                <XA_CLOSE_STRING></XA_CLOSE_STRING>
+                <XA_SWITCH>db_xa_switch</XA_SWITCH>
+                <XA_LIB_NAME>db</XA_LIB_NAME>
+             </XA_RESOURCE>
+             <!--
+             Similarly for including ORACLE databases in the example. The open string includes all the
+             inforamtion needed for making XA connections. For example, the first XA resource below is
+             refering to an ORACLE database called ORCL and credentials scott/tiger. When installing
+             ORACLE the default database is ORCL (and a user called scott with password tiger is created).
+
+             For more information refer to:
+                 http://download.oracle.com/docs/cd/B28359_01/appdev.111/b28424/adfns_xa.htm
+             -->
+             <!--
+             <XA_RESOURCE configuration="linux">
+                <XA_RESOURCE_MGR_ID>2</XA_RESOURCE_MGR_ID>
+                <XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
+                <XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+DB=ORCL</XA_OPEN_STRING>
+                <XA_CLOSE_STRING></XA_CLOSE_STRING>
+                <XA_SWITCH>xaosw</XA_SWITCH>
+                <XA_LIB_NAME>${ORACLE_HOME}/lib/libclntsh.so</XA_LIB_NAME>
+             </XA_RESOURCE>
+             <XA_RESOURCE configuration="linux">
+                <XA_RESOURCE_MGR_ID>1</XA_RESOURCE_MGR_ID>
+                <XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
+                <XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+DB=blacktie</XA_OPEN_STRING>
+                <XA_CLOSE_STRING></XA_CLOSE_STRING>
+                <XA_SWITCH>xaosw</XA_SWITCH>
+                <XA_LIB_NAME>${ORACLE_HOME}/lib/libclntsh.so</XA_LIB_NAME>
+             </XA_RESOURCE>
+             -->
+            <XA_RESOURCE configuration="linux">
+                <XA_RESOURCE_MGR_ID>202</XA_RESOURCE_MGR_ID>
+                <XA_RESOURCE_NAME>DummyDb</XA_RESOURCE_NAME>
+                <XA_OPEN_STRING></XA_OPEN_STRING>
+                <XA_CLOSE_STRING></XA_CLOSE_STRING>
+                <XA_SWITCH>testxasw</XA_SWITCH>
+                <XA_LIB_NAME>libdummy-rm.so</XA_LIB_NAME>
+            </XA_RESOURCE>
+             <!--
+             -->
 			 <XA_RESOURCE configuration="win32">
 			 	<XA_RESOURCE_MGR_ID>2101</XA_RESOURCE_MGR_ID>
 			 	<XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>

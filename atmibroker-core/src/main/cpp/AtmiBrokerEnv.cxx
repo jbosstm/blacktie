@@ -34,7 +34,7 @@ log4cxx::LoggerPtr loggerAtmiBrokerEnv(log4cxx::Logger::getLogger(
 		"AtmiBrokerEnv"));
 
 int AtmiBrokerEnv::ENV_VARIABLE_SIZE = 30;
-char *AtmiBrokerEnv::ENVIRONMENT_FILE = (char*) "Environment.xml";
+
 char *AtmiBrokerEnv::ENVIRONMENT_DIR = NULL;
 AtmiBrokerEnv *AtmiBrokerEnv::ptrAtmiBrokerEnv = NULL;
 
@@ -54,7 +54,7 @@ void AtmiBrokerEnv::discard_instance() {
 
 void AtmiBrokerEnv::set_environment_dir(const char* dir) {
 	if (ENVIRONMENT_DIR != NULL) {
-		free(ENVIRONMENT_DIR);
+		free( ENVIRONMENT_DIR);
 		ENVIRONMENT_DIR = NULL;
 	}
 	if (dir != NULL) {
@@ -74,14 +74,7 @@ AtmiBrokerEnv::AtmiBrokerEnv() {
 	}
 
 	if (ENVIRONMENT_DIR) {
-		char aEnvFileName[256];
-
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "read env from dir: "
-				<< ENVIRONMENT_DIR);
-		ACE_OS::snprintf(aEnvFileName, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"%s",
-				ENVIRONMENT_DIR,
-				ENVIRONMENT_FILE);
-		readenv(aEnvFileName, NULL);
+		readenv(ptrDir, NULL);
 	} else {
 		readenv(NULL, NULL);
 	}
@@ -95,7 +88,7 @@ AtmiBrokerEnv::~AtmiBrokerEnv() {
 		free((*i).value);
 	}
 
-	set_environment_dir(NULL);
+	set_environment_dir( NULL);
 	envVariableInfoSeq.clear();
 
 	//free(namingServiceId);
@@ -113,7 +106,7 @@ AtmiBrokerEnv::~AtmiBrokerEnv() {
 		free(xarmp->xasw);
 		free(xarmp->xalib);
 
-		free(xarmp);
+		free( xarmp);
 
 		xarmp = next;
 	}
@@ -223,30 +216,31 @@ int AtmiBrokerEnv::putenv(char* anEnvNameValue) {
 	return 1;
 }
 
-int AtmiBrokerEnv::readenv(char* aEnvFileName, char* label) {
+int AtmiBrokerEnv::readenv(char* configuration, char* label) {
 	if (!readEnvironment) {
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnv,
-				(char*) "readenv ignores label variable");
-		char* descPath;
-
-		if (aEnvFileName != NULL) {
-			descPath = aEnvFileName;
+		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "readenv");
+		if (configuration != NULL) {
+			LOG4CXX_DEBUG(loggerAtmiBrokerEnv,
+					(char*) "readenv configuration: " << configuration);
 		} else {
-			descPath = ENVIRONMENT_FILE;
+			LOG4CXX_DEBUG(loggerAtmiBrokerEnv,
+					(char*) "readenv default configuration");
 		}
 
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "readenv file: " << descPath);
-
 		AtmiBrokerEnvXml aAtmiBrokerEnvXml;
-		if (aAtmiBrokerEnvXml.parseXmlDescriptor(&envVariableInfoSeq, descPath)) {
-			for (std::vector<envVar_t>::iterator i = envVariableInfoSeq.begin(); i != envVariableInfoSeq.end(); ++i )
+		if (aAtmiBrokerEnvXml.parseXmlDescriptor(&envVariableInfoSeq,
+				configuration)) {
+			for (std::vector<envVar_t>::iterator i = envVariableInfoSeq.begin(); i
+					!= envVariableInfoSeq.end(); ++i)
 				if (ACE_OS::setenv(i->name, i->value, 1) != 0)
-					LOG4CXX_INFO(loggerAtmiBrokerEnv, (char*) "Out of memory setting env variable: " << i->name);
-				
+					LOG4CXX_ERROR(loggerAtmiBrokerEnv,
+							(char*) "Out of memory setting env variable: "
+									<< i->name);
+
 			readEnvironment = true;
 		} else {
-			LOG4CXX_ERROR(loggerAtmiBrokerEnv, (char*) "can not read "
-					<< descPath);
+			LOG4CXX_ERROR(loggerAtmiBrokerEnv,
+					(char*) "can not read configuration for: " << configuration);
 			throw std::exception();
 			//abort();
 			//return -1;
