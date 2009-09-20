@@ -16,17 +16,22 @@
 		02110-1301, USA.
 	-->
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://www.jboss.org/blacktie">
+        xmlns="http://www.jboss.org/blacktie">
 	<ENVIRONMENT_DESCRIPTION>
 		<DOMAIN>fooapp</DOMAIN>
 		<SERVER_NAMES>
+			<SERVER name="jboss">
+				<SERVICE_NAMES>
+					<SERVICE name='BTStompAdmin'/>
+				</SERVICE_NAMES>
+			</SERVER>
 			<SERVER name='default'>
 				<SERVICE_NAMES>
 					<SERVICE name='DBS'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>
-		<XA_RESOURCES>
+        <XA_RESOURCES>
              <!--
                   To include a given database in the example uncomment the relevant XA resource entry.
                   Note that the Berkeley Db example resources require backing files to operate.
@@ -111,12 +116,15 @@
 			 	<XA_SWITCH>db_xa_switch</XA_SWITCH>
 			 	<XA_LIB_NAME>C:\db-4.7.25\build_windows\Debug\libdb47d.dll</XA_LIB_NAME>
 			 </XA_RESOURCE>
-		</XA_RESOURCES>
+        </XA_RESOURCES>
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
 				<NAME>ORBOPT</NAME>
 				<VALUE>-ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
 			</ENV_VARIABLE>
+<!--
+				<VALUE>-ORBListenEndpoints iiop://localhost:9032/portspan=10 -ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
+-->
 			<ENV_VARIABLE>
 				<NAME>TRANS_FACTORY_ID</NAME>
 				<VALUE>TransactionManagerService.OTS</VALUE>
@@ -126,11 +134,31 @@
 				<VALUE>log4cxx.properties</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
+				<NAME>StompConnectHost</NAME>
+				<VALUE>localhost</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectPort</NAME>
+				<VALUE>61613</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectUsr</NAME>
+				<VALUE>guest</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>StompConnectPwd</NAME>
+				<VALUE>guest</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
 				<NAME>DestinationTimeout</NAME>
 				<VALUE>2</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>RequestTimeout</NAME>
+				<VALUE>10</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>TimeToLive</NAME>
 				<VALUE>10</VALUE>
 			</ENV_VARIABLE>
 		</ENV_VARIABLES>

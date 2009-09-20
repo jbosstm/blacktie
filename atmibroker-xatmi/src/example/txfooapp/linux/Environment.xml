@@ -27,30 +27,7 @@
 			</SERVER>
 			<SERVER name='default'>
 				<SERVICE_NAMES>
-					<SERVICE name='BAR'/>
-					<SERVICE name='TestTPFree'/>
-					<SERVICE name='TestTPCall'/>
-					<SERVICE name='TestTPAdvertise'/>
-					<SERVICE name='LOOPY'/>
-					<SERVICE name='TestTPConversat' />
-					<SERVICE name='TestTPACall' />
-					<SERVICE name='TestTPCancel' />
-					<SERVICE name='TestTPConnect' />
-					<SERVICE name='TestTPDiscon' />
-					<SERVICE name='TestTPGetrply' />
-					<SERVICE name='TestTPSend' />
-					<SERVICE name='TestTPRecv' />
-					<SERVICE name='TestTPService' />
-					<SERVICE name='TestTPReturn' />
-					<SERVICE name='123456789012345'/>
-					<SERVICE name='TestTPUnadverti'/>
-					<SERVICE name='tpcall_x_octet'/>
-					<SERVICE name='tpcall_x_common'/>
-					<SERVICE name='tpcall_x_c_type'/>
-					<SERVICE name='DEBIT'/>
-					<SERVICE name='CREDIT'/>
-					<SERVICE name='INQUIRY'/>
-					<SERVICE name='TestRbkOnly'/>
+					<SERVICE name='DBS'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>
