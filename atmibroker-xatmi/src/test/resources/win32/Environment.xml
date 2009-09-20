@@ -55,7 +55,7 @@
 			</SERVER>
 		</SERVER_NAMES>
         <XA_RESOURCES>
-             <XA_RESOURCE>
+             <XA_RESOURCE configuration="win32">
                 <XA_RESOURCE_MGR_ID>2101</XA_RESOURCE_MGR_ID>
                 <XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
                 <XA_OPEN_STRING>${BUILD_DIR}/db1</XA_OPEN_STRING>
@@ -64,7 +64,7 @@
                 <XA_LIB_NAME>db</XA_LIB_NAME>
              </XA_RESOURCE>
              <!--
-             <XA_RESOURCE>
+             <XA_RESOURCE configuration="win32">
                 <XA_RESOURCE_MGR_ID>2102</XA_RESOURCE_MGR_ID>
                 <XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
                 <XA_OPEN_STRING>${BUILD_DIR}/db2</XA_OPEN_STRING>
