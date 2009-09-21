@@ -157,7 +157,7 @@ static char * XMLCALL copy_value(const char *value) {
 		v = (char *) malloc(rsz);
 
 		ACE_OS::snprintf(v, rsz, "%s%s%s", pr, ev, e);
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, value << (char*) " -> " << v);
+		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, value << (char*) " -> " << v);
 
 		free(en);
 		free(pr);
@@ -204,7 +204,7 @@ static void XMLCALL startElement
 			char * conf = copy_value(atts[1]);
 			LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "comparing" << conf << " with " << configuration);
 			if (strcmp(conf, configuration) == 0) {
-				LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "processing xaresource");
+				LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processing xaresource");
 				processingXaResource = true;
 				xarm_config_t *p;
 				if ((p = (xarm_config_t *) malloc(sizeof(xarm_config_t))) == 0) {
@@ -242,11 +242,24 @@ static void XMLCALL startElement
 		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processing ENV_VARIABLES");
 		processingEnvVariables = true;
 	} else if (strcmp(name, "ENV_VARIABLE") == 0) {
-		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processing ENV_VARIABLE");
-		processingEnvVariable = true;
-		envVariableCount++;
-		envVar_t envVar;
-		(*aEnvironmentStructPtr).push_back(envVar);
+		if(atts != 0 && atts[0] && strcmp(atts[0], "configuration") == 0) {
+			char * conf = copy_value(atts[1]);
+			LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "comparing" << conf << " with " << configuration);
+			if (strcmp(conf, configuration) == 0) {
+				LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processing ENV_VARIABLE");
+				processingEnvVariable = true;
+			} else {
+				LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "CONFIGURATION NOT APPLICABLE FOR ENV_VARIABLE: " << conf);
+			}
+		} else {
+			processingEnvVariable = true;
+		}
+
+		if (processingEnvVariable) {
+			envVariableCount++;
+			envVar_t envVar;
+			(*aEnvironmentStructPtr).push_back(envVar);
+		}
 	} else if (strcmp(name, "NAME") == 0) {
 		processingEnvName = true;
 	} else if (strcmp(name, "VALUE") == 0) {
@@ -276,13 +289,13 @@ static void XMLCALL startElement
 			for(int i = 0; atts[i]; i += 2) {
 				if(strcmp(atts[i], "name") == 0) {
 					service.serviceName = copy_value(atts[i+1]);
-					LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "set name: " << service.serviceName);
+					LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "set name: " << service.serviceName);
 				}
 				//				else if(strcmp(atts[i], "transportLibrary") == 0) {
 				//					service.transportLib = copy_value(atts[i+1]);
 				//				}
 			}
-			LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "setting transportlib");
+			LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "setting transportlib");
 #ifdef WIN32
 			service.transportLib = strdup("atmibroker-hybrid.dll");
 #else
@@ -372,19 +385,25 @@ static void XMLCALL endElement
 	} else if (strcmp(last_element, "ENV_VARIABLES") == 0) {
 		processingEnvVariables = false;
 	} else if (strcmp(last_element, "ENV_VARIABLE") == 0) {
-		int index = envVariableCount - 1;
-		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "\tstored EnvVariable at index %d" << index);
+		if (processingEnvVariable) {
+			int index = envVariableCount - 1;
+			LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "stored EnvVariable at index %d" << index);
+		}
 		processingEnvVariable = false;
 	} else if (strcmp(last_element, "NAME") == 0) {
-		int index = envVariableCount - 1;
-		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "\tstoring EnvName %s at index %d" << last_value << index);
+		if (processingEnvVariable) {
+			int index = envVariableCount - 1;
+			(*aEnvironmentStructPtr)[index].name = copy_value(last_value);
+			LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "stored EnvName %s at index %d" << last_value << index);
+		}
 		processingEnvName = false;
-		(*aEnvironmentStructPtr)[index].name = copy_value(last_value);
 	} else if (strcmp(last_element, "VALUE") == 0) {
-		int index = envVariableCount - 1;
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "\tstoring Env Value %s at index %d" << last_value << index);
+		if (processingEnvVariable) {
+			int index = envVariableCount - 1;
+			(*aEnvironmentStructPtr)[index].value = copy_value(last_value);
+			LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "stored Env Value %s at index %d" << last_value << index);
+		}
 		processingEnvValue = false;
-		(*aEnvironmentStructPtr)[index].value = copy_value(last_value);
 	} else if(strcmp(last_element, "SERVER_NAMES") == 0) {
 		processingServerNames = false;
 	} else if(strcmp(last_element, "SERVER") == 0) {
@@ -438,93 +457,93 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(
 
 	schemaDir = ACE_OS::getenv("BLACKTIE_SCHEMA_DIR");
 	if (schemaDir) {
-		ACE_OS::snprintf(schemaPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"Environment.xsd", schemaDir);
-	} else {
-		ACE_OS::strcpy(schemaPath, "Environment.xsd");
+ACE_OS	::snprintf(schemaPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"Environment.xsd", schemaDir);
+} else {
+	ACE_OS::strcpy(schemaPath, "Environment.xsd");
+}
+
+LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "schemaPath is "
+		<< schemaPath);
+
+XsdValidator validator;
+if (validator.validate(schemaPath, aDescriptorFileName) == false) {
+	return false;
+}
+struct stat s; /* file stats */
+FILE *aDescriptorFile = fopen(aDescriptorFileName, "r");
+
+if (!aDescriptorFile) {
+	LOG4CXX_ERROR(loggerAtmiBrokerEnvXml,
+			(char*) "loadfile: fopen failed on %s" << aDescriptorFileName);
+	return false;
+}
+
+LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "read file %p"
+		<< aDescriptorFile);
+
+/* Use fstat to obtain the file size */
+if (fstat(fileno(aDescriptorFile), &s) != 0) {
+	/* fstat failed */
+	LOG4CXX_ERROR(loggerAtmiBrokerEnvXml,
+			(char*) "loadfile: fstat failed on %s" << aDescriptorFileName);
+}
+if (s.st_size == 0) {
+	LOG4CXX_ERROR(loggerAtmiBrokerEnvXml,
+			(char*) "loadfile: file %s is empty" << aDescriptorFileName);
+}
+LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml,
+		(char*) "loadfile: file %s is %d long" << aDescriptorFileName
+		<< s.st_size);
+
+char *buf = (char *) malloc(sizeof(char) * s.st_size);
+if (!buf) {
+	/* malloc failed */
+	LOG4CXX_ERROR(
+			loggerAtmiBrokerEnvXml,
+			(char*) "loadfile: Could not allocate enough memory to load file %s"
+			<< aDescriptorFileName);
+}
+for (unsigned int i = 0; i < sizeof(buf); i++)
+*(buf + i) = '\0';
+//memcpy(buf,'\0',s.st_size);
+LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml,
+		(char*) "loadfile: Allocated enough memory to load file %d"
+		<< s.st_size);
+
+XML_Parser parser = XML_ParserCreate(NULL);
+int done;
+strcpy(element, "");
+strcpy(value, "");
+XML_SetUserData(parser, aEnvironmentStructPtr);
+XML_SetElementHandler(parser, startElement, endElement);
+XML_SetCharacterDataHandler(parser, characterData);
+do {
+	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "reading file");
+	size_t len = fread(buf, 1, s.st_size, aDescriptorFile);
+	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "length is '%d'" << len);
+	done = len < sizeof(buf);
+	if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR) {
+		LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "%d at line %d"
+				<< XML_ErrorString(XML_GetErrorCode(parser))
+				<< XML_GetCurrentLineNumber(parser));
+		toReturn = false;
+		break;
 	}
+}while (!done);
+free(buf);
+XML_ParserFree(parser);
 
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "schemaPath is "
-			<< schemaPath);
+fflush(aDescriptorFile);
+fclose(aDescriptorFile);
 
-	XsdValidator validator;
-	if (validator.validate(schemaPath, aDescriptorFileName) == false) {
-		return false;
-	}
-	struct stat s; /* file stats */
-	FILE *aDescriptorFile = fopen(aDescriptorFileName, "r");
+LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml,
+		(char*) "leaving parseXmlDescriptor() %s" << aDescriptorFileName);
 
-	if (!aDescriptorFile) {
-		LOG4CXX_ERROR(loggerAtmiBrokerEnvXml,
-				(char*) "loadfile: fopen failed on %s" << aDescriptorFileName);
-		return false;
-	}
+if (warnCnt) {
+	warnCnt = 0;
+	return false;
+}
 
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "read file %p"
-			<< aDescriptorFile);
-
-	/* Use fstat to obtain the file size */
-	if (fstat(fileno(aDescriptorFile), &s) != 0) {
-		/* fstat failed */
-		LOG4CXX_ERROR(loggerAtmiBrokerEnvXml,
-				(char*) "loadfile: fstat failed on %s" << aDescriptorFileName);
-	}
-	if (s.st_size == 0) {
-		LOG4CXX_ERROR(loggerAtmiBrokerEnvXml,
-				(char*) "loadfile: file %s is empty" << aDescriptorFileName);
-	}
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml,
-			(char*) "loadfile: file %s is %d long" << aDescriptorFileName
-					<< s.st_size);
-
-	char *buf = (char *) malloc(sizeof(char) * s.st_size);
-	if (!buf) {
-		/* malloc failed */
-		LOG4CXX_ERROR(
-				loggerAtmiBrokerEnvXml,
-				(char*) "loadfile: Could not allocate enough memory to load file %s"
-						<< aDescriptorFileName);
-	}
-	for (unsigned int i = 0; i < sizeof(buf); i++)
-		*(buf + i) = '\0';
-	//memcpy(buf,'\0',s.st_size);
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml,
-			(char*) "loadfile: Allocated enough memory to load file %d"
-					<< s.st_size);
-
-	XML_Parser parser = XML_ParserCreate(NULL);
-	int done;
-	strcpy(element, "");
-	strcpy(value, "");
-	XML_SetUserData(parser, aEnvironmentStructPtr);
-	XML_SetElementHandler(parser, startElement, endElement);
-	XML_SetCharacterDataHandler(parser, characterData);
-	do {
-		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "reading file");
-		size_t len = fread(buf, 1, s.st_size, aDescriptorFile);
-		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "length is '%d'" << len);
-		done = len < sizeof(buf);
-		if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR) {
-			LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "%d at line %d"
-					<< XML_ErrorString(XML_GetErrorCode(parser))
-					<< XML_GetCurrentLineNumber(parser));
-			toReturn = false;
-			break;
-		}
-	} while (!done);
-	free(buf);
-	XML_ParserFree(parser);
-
-	fflush(aDescriptorFile);
-	fclose(aDescriptorFile);
-
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml,
-			(char*) "leaving parseXmlDescriptor() %s" << aDescriptorFileName);
-
-	if (warnCnt) {
-		warnCnt = 0;
-		return false;
-	}
-
-	return toReturn;
+return toReturn;
 }
 

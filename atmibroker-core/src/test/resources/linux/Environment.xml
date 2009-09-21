@@ -16,71 +16,76 @@
 		02110-1301, USA.
 	-->
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			 xmlns="http://www.jboss.org/blacktie">
+	xmlns="http://www.jboss.org/blacktie">
 	<ENVIRONMENT_DESCRIPTION>
 		<DOMAIN>fooapp</DOMAIN>
 		<SERVER_NAMES>
 			<SERVER name='default'>
 				<SERVICE_NAMES>
-					<SERVICE name='TEST'/>
+					<SERVICE name='TEST' />
 				</SERVICE_NAMES>
-				<ADMIN_SERVICE/>
+				<ADMIN_SERVICE />
 			</SERVER>
 			<SERVER name='foo'>
 				<SERVICE_NAMES>
-					<SERVICE name='BAR'/>
-					<SERVICE name='ECHO'/>
+					<SERVICE name='BAR' />
+					<SERVICE name='ECHO' />
 				</SERVICE_NAMES>
-				<ADMIN_SERVICE/>
+				<ADMIN_SERVICE />
 			</SERVER>
-		</SERVER_NAMES> 
+		</SERVER_NAMES>
 		<XA_RESOURCES>
-			 <XA_RESOURCE configuration="linux">
+			<XA_RESOURCE configuration="linux">
 				<XA_RESOURCE_MGR_ID>100</XA_RESOURCE_MGR_ID>
 				<XA_RESOURCE_NAME>DummyDb</XA_RESOURCE_NAME>
 				<XA_OPEN_STRING></XA_OPEN_STRING>
 				<XA_CLOSE_STRING></XA_CLOSE_STRING>
 				<XA_SWITCH>testxasw</XA_SWITCH>
 				<XA_LIB_NAME>libdummy-rm.so</XA_LIB_NAME>
-			 </XA_RESOURCE>
-			 <XA_RESOURCE configuration="linux">
+			</XA_RESOURCE>
+			<XA_RESOURCE configuration="linux">
 				<XA_RESOURCE_MGR_ID>102</XA_RESOURCE_MGR_ID>
 				<XA_RESOURCE_NAME>DummyDb2</XA_RESOURCE_NAME>
 				<XA_OPEN_STRING></XA_OPEN_STRING>
 				<XA_CLOSE_STRING></XA_CLOSE_STRING>
 				<XA_SWITCH>testxasw</XA_SWITCH>
 				<XA_LIB_NAME>libdummy-rm.so</XA_LIB_NAME>
-			 </XA_RESOURCE>
-			 <XA_RESOURCE configuration="win32">
+			</XA_RESOURCE>
+			<XA_RESOURCE configuration="win32">
 				<XA_RESOURCE_MGR_ID>100</XA_RESOURCE_MGR_ID>
 				<XA_RESOURCE_NAME>DummyDb</XA_RESOURCE_NAME>
 				<XA_OPEN_STRING></XA_OPEN_STRING>
 				<XA_CLOSE_STRING></XA_CLOSE_STRING>
 				<XA_SWITCH>testxasw</XA_SWITCH>
 				<XA_LIB_NAME>dummy-rm.dll</XA_LIB_NAME>
-			 </XA_RESOURCE>
-			 <XA_RESOURCE configuration="win32">
+			</XA_RESOURCE>
+			<XA_RESOURCE configuration="win32">
 				<XA_RESOURCE_MGR_ID>102</XA_RESOURCE_MGR_ID>
 				<XA_RESOURCE_NAME>DummyDb2</XA_RESOURCE_NAME>
 				<XA_OPEN_STRING></XA_OPEN_STRING>
 				<XA_CLOSE_STRING></XA_CLOSE_STRING>
 				<XA_SWITCH>testxasw</XA_SWITCH>
 				<XA_LIB_NAME>dummy-rm.dll</XA_LIB_NAME>
-			 </XA_RESOURCE>
+			</XA_RESOURCE>
 		</XA_RESOURCES>
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
 				<NAME>ORBOPT</NAME>
-				<VALUE>-ORBInitRef NameService=corbaloc::${JBOSSAS_IP_ADDR}:3528/NameService</VALUE>
+				<VALUE>-ORBInitRef
+					NameService=corbaloc::${JBOSSAS_IP_ADDR}:3528/NameService</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE configuration="linux">
+				<NAME>test-lib</NAME>
+				<VALUE>libdummy-rm.so</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE configuration="win32">
+				<NAME>test-lib</NAME>
+				<VALUE>dummy-rm.dll</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
-	            <NAME>test-lib</NAME>
-                 <VALUE>libdummy-rm.so</VALUE>
-            </ENV_VARIABLE>
-            <ENV_VARIABLE>
-	            <NAME>test-symbol</NAME>
-                <VALUE>testxasw</VALUE>
-            </ENV_VARIABLE>
+				<NAME>test-symbol</NAME>
+				<VALUE>testxasw</VALUE>
+			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>LOG4CXXCONFIG</NAME>
 				<VALUE>log4cxx.properties</VALUE>
