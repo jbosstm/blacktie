@@ -99,7 +99,10 @@ public class QueueReaper implements Runnable {
 						if (server != null &&
 							isCreatedProgrammatically(serviceName) && 
 							consumerCount(serviceName) == 0) {
-							Thread.sleep(30 * 1000); //TODO make this configurable
+
+				  			this.interval = Integer.parseInt(prop.getProperty("QueueReaperInterval", "30")) * 1000;
+							Thread.sleep(this.interval);
+
 							//double check consumer is 0
 							if(consumerCount(serviceName) == 0) {
 								undeployQueue(serviceName);
