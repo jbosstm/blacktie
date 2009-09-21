@@ -28,8 +28,12 @@ class TestAtmiBrokerXml: public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE_END();
 
 public:
+	virtual void setUp();
+	virtual void tearDown();
 	void test_service();
 	void test_env();
+private:
+	char* env;
 };
 
 #endif

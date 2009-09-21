@@ -32,6 +32,9 @@ public:
 	void test_manyorb();
 	virtual void setUp();
 	virtual void tearDown();
+
+private:
+	char* env;
 };
 
 #endif // TestMultiOrb_H

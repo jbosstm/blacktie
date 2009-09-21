@@ -34,6 +34,17 @@ Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 				<ADMIN_SERVICE/>
 			</SERVER>
 		</SERVER_NAMES> 
+		<XA_RESOURCES>
+			 <XA_RESOURCE configuration="xmltest">
+				<XA_RESOURCE_MGR_ID>100</XA_RESOURCE_MGR_ID>
+				<XA_RESOURCE_NAME>DummyDb</XA_RESOURCE_NAME>
+				<XA_OPEN_STRING></XA_OPEN_STRING>
+				<XA_CLOSE_STRING></XA_CLOSE_STRING>
+				<XA_SWITCH>testxasw</XA_SWITCH>
+				<XA_LIB_NAME>xmltestdummy-rm.xmltest</XA_LIB_NAME>
+			 </XA_RESOURCE>
+		</XA_RESOURCES>
+
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
 				<NAME>ORBOPT</NAME>
