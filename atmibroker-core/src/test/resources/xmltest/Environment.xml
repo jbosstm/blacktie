@@ -58,13 +58,13 @@
 				<NAME>MYLIBTEST</NAME>
 				<VALUE>libfoo.so</VALUE>
 			</ENV_VARIABLE>
-			<ENV_VARIABLE configuration="win32">
-				<NAME>MYLIBTEST</NAME>
-				<VALUE>foo.dll</VALUE>
-			</ENV_VARIABLE>
 			<ENV_VARIABLE configuration="xmltest">
 				<NAME>MYLIBTEST</NAME>
 				<VALUE>xmltestfoo.xmltest</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE configuration="win32">
+				<NAME>MYLIBTEST</NAME>
+				<VALUE>foo.dll</VALUE>
 			</ENV_VARIABLE>
 		</ENV_VARIABLES>
 	</ENVIRONMENT_DESCRIPTION>

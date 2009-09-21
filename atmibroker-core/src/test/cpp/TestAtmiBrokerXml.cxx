@@ -37,7 +37,7 @@ void TestAtmiBrokerXml::setUp() {
 
 void TestAtmiBrokerXml::tearDown() {
 	// Perform clean up
-	if(env != NULL) {
+	if (env != NULL) {
 		char orig_env[256];
 		ACE_OS::snprintf(orig_env, 256, "BLACKTIE_CONFIGURATION_DIR=%s", env);
 		ACE_OS::putenv(orig_env);
@@ -68,6 +68,8 @@ void TestAtmiBrokerXml::test_service() {
 void TestAtmiBrokerXml::test_env() {
 	userlogc((char*) "RUNNING");
 	char* value;
+	value = AtmiBrokerEnv::get_instance()->getenv((char*) "MYLIBTEST");
+	CPPUNIT_ASSERT(strcmp(value, "xmltestfoo.xmltest") == 0);
 
 	value = AtmiBrokerEnv::get_instance()->getenv((char*) "ORBOPT");
 	CPPUNIT_ASSERT(strncmp(value, "-ORBInitRef NameService=corbaloc::", 34)
