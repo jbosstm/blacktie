@@ -81,6 +81,7 @@
 										<xsd:element name="VALUE" type="xsd:string"
 											minOccurs="1" maxOccurs="unbounded" />
 									</xsd:sequence>
+									<xsd:attribute name="configuration" type="xsd:string" />
 								</xsd:complexType>
 							</xsd:element>
 						</xsd:sequence>
