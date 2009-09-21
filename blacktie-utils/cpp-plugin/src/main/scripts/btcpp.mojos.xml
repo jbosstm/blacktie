@@ -258,7 +258,7 @@
 	  <property>atmibroker.configuration.dir</property>
           <required>true</required>
           <readonly>false</readonly>
-          <defaultValue>linux</defaultValue>
+          <defaultValue>.</defaultValue>
           <type>java.lang.String</type>
           <description>Configuration directory</description>
 	</parameter>

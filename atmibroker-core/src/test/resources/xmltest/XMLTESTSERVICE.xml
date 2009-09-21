@@ -3,7 +3,7 @@
 	xmlns="http://www.jboss.org/blacktie">
 	<SERVICE_DESCRIPTION function_name='BAR'
 		advertised='false'>
-		<LIBRARY_NAME configuration="xmltest" value="libBAR.so"/>
+		<LIBRARY_NAME configuration="xmltest" value="libXMLTESTSERVICE.so"/>
 		<LIBRARY_NAME configuration="win32" value="win32.dll"/>
 		<LIBRARY_NAME configuration="linux" value="linux.so"/>
 		<SIZE>5</SIZE>

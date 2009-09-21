@@ -57,9 +57,7 @@ void server_sigint_handler_callback(int sig_type) {
 			loggerAtmiBrokerServer,
 			(char*) "SIGINT Detected: Shutting down server this may take several minutes");
 	ptrServer->shutdown();
-	userlog(
-			log4cxx::Level::getInfo(),
-			loggerAtmiBrokerServer,
+	userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
 			(char*) "SIGINT Detected: Shutdown complete");
 }
 
@@ -100,13 +98,11 @@ int parsecmdline(int argc, char** argv) {
 	return r;
 }
 
-const char* getConfigurationDir() {
+const char* getConfiguration() {
 	const char* dir = NULL;
 
 	if (configFromCmdline) {
 		dir = configDir;
-	} else {
-		dir = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
 	}
 
 	return dir;
@@ -115,7 +111,6 @@ const char* getConfigurationDir() {
 int serverinit(int argc, char** argv) {
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = 0;
-	const char* ptrDir = NULL;
 
 	ACE_OS::strncpy(server, "default", 30);
 
@@ -126,15 +121,16 @@ int serverinit(int argc, char** argv) {
 	}
 
 	if (toReturn != -1 && ptrServer == NULL) {
-		ptrDir = getConfigurationDir();
-		if (ptrDir != NULL)
-			AtmiBrokerEnv::set_environment_dir(ptrDir);
+		const char* configuration = getConfiguration();
+		if (configuration != NULL) {
+			AtmiBrokerEnv::set_configuration(configuration);
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+					(char*) "set AtmiBrokerEnv dir " << configuration);
+		}
 
 		try {
 			initializeLogger();
 			AtmiBrokerEnv::get_instance();
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-					(char*) "set AtmiBrokerEnv dir " << ptrDir);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverinit called");
 			ptrServer = new AtmiBrokerServer();
 
@@ -152,16 +148,16 @@ int serverinit(int argc, char** argv) {
 							(char*) "Server Running");
 				}
 				//signal(SIGINT, server_sigint_handler_callback);
-				ACE_Sig_Action sa (
-						reinterpret_cast <ACE_SignalHandler> (
-							server_sigint_handler_callback));
+				ACE_Sig_Action
+						sa(
+								reinterpret_cast<ACE_SignalHandler> (server_sigint_handler_callback));
 
 				// Make sure we specify that SIGINT will be masked out
 				// during the signal handler's execution.
 				ACE_Sig_Set ss;
-				ss.sig_add (SIGINT);
-				sa.mask (ss);
-				sa.register_action (SIGINT);
+				ss.sig_add(SIGINT);
+				sa.mask(ss);
+				sa.register_action(SIGINT);
 			}
 
 		} catch (...) {
@@ -190,7 +186,7 @@ int serverdone() {
 
 int isadvertised(char* name) {
 	if (ptrServer) {
-		if(ptrServer->isAdvertised(name)) {
+		if (ptrServer->isAdvertised(name)) {
 			return 0;
 		}
 	}
@@ -214,12 +210,12 @@ long getServiceMessageCounter(char* serviceName) {
 }
 
 int advertiseByAdmin(char* name) {
-	if(isadvertised(name) == 0) {
+	if (isadvertised(name) == 0) {
 		return 0;
 	}
 
-	if(ptrServer) {
-		if(ptrServer->advertiseService(name)) {
+	if (ptrServer) {
+		if (ptrServer->advertiseService(name)) {
 			return 0;
 		}
 	}
@@ -235,9 +231,6 @@ int advertiseByAdmin(char* name) {
 AtmiBrokerServer::AtmiBrokerServer() {
 	try {
 		finish = new SynchronizableObject();
-		const char* ptrDir;
-
-		ptrDir = getConfigurationDir();
 		serverName = server;
 		unsigned int i;
 
@@ -288,16 +281,19 @@ AtmiBrokerServer::AtmiBrokerServer() {
 			return;
 		}
 
-        if (tx_open() != TX_OK) {
-		    setSpecific(TPE_KEY, TSS_TPESYSTEM);
+		if (tx_open() != TX_OK) {
+			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 
-            LOG4CXX_ERROR(loggerAtmiBrokerServer, serverName
-					<< (char *) " transaction configuration error, aborting server startup");
-        } else {
-		    serverInitialized = true;
+			LOG4CXX_ERROR(
+					loggerAtmiBrokerServer,
+					serverName
+							<< (char *) " transaction configuration error, aborting server startup");
+		} else {
+			serverInitialized = true;
 
-            LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_init(): finished.");
-        }
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+					(char*) "server_init(): finished.");
+		}
 	} catch (CORBA::Exception& e) {
 		userlog(log4cxx::Level::getError(), loggerAtmiBrokerServer,
 				(char*) "serverinit - Unexpected CORBA exception: %s",
@@ -313,10 +309,10 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	server_done();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "Server done");
 
-    if (finish != NULL) {
+	if (finish != NULL) {
 		delete finish;
 		finish = NULL;
-    }
+	}
 
 	serviceData.clear();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted service array");
@@ -353,7 +349,7 @@ void AtmiBrokerServer::advertiseAtBootime() {
 	for (unsigned int i = 0; i < serverInfo.serviceVector.size(); i++) {
 		ServiceInfo* service = &serverInfo.serviceVector[i];
 		SVCFUNC func = NULL;
-		bool  status = false;
+		bool status = false;
 
 		if (service->library_name != NULL) {
 			func = (SVCFUNC) ::lookup_symbol(service->library_name,
@@ -412,11 +408,11 @@ int AtmiBrokerServer::getServiceStatus(char* str) {
 	len += ACE_OS::sprintf(str + len, "<server>");
 	len += ACE_OS::sprintf(str + len, "<name>%s</name>", serverName);
 	len += ACE_OS::sprintf(str + len, "<services>");
-	for(std::vector<ServiceStatus>::iterator i = serviceStatus.begin();
-			i != serviceStatus.end(); i++ ) {
-		len += ACE_OS::sprintf(str + len, "<service><name>%s</name><status>%d</status></service>",
-				                          (*i).name,
-										  (*i).status);
+	for (std::vector<ServiceStatus>::iterator i = serviceStatus.begin(); i
+			!= serviceStatus.end(); i++) {
+		len += ACE_OS::sprintf(str + len,
+				"<service><name>%s</name><status>%d</status></service>",
+				(*i).name, (*i).status);
 	}
 
 	len += ACE_OS::sprintf(str + len, "</services>");
@@ -424,14 +420,14 @@ int AtmiBrokerServer::getServiceStatus(char* str) {
 	return len;
 }
 
-void AtmiBrokerServer::updateServiceStatus(ServiceInfo* service,
-		SVCFUNC func,
+void AtmiBrokerServer::updateServiceStatus(ServiceInfo* service, SVCFUNC func,
 		bool status) {
 	bool found = false;
 
-	for(std::vector<ServiceStatus>::iterator i = serviceStatus.begin();
-			i != serviceStatus.end(); i++ ) {
-		if(strncmp((*i).name, service->serviceName, XATMI_SERVICE_NAME_LENGTH) == 0) {
+	for (std::vector<ServiceStatus>::iterator i = serviceStatus.begin(); i
+			!= serviceStatus.end(); i++) {
+		if (strncmp((*i).name, service->serviceName, XATMI_SERVICE_NAME_LENGTH)
+				== 0) {
 			(*i).func = func;
 			(*i).status = status;
 			found = true;
@@ -439,9 +435,10 @@ void AtmiBrokerServer::updateServiceStatus(ServiceInfo* service,
 		}
 	}
 
-	if(found == false) {
+	if (found == false) {
 		ServiceStatus aServiceStatus;
-		ACE_OS::strncpy(aServiceStatus.name, service->serviceName, XATMI_SERVICE_NAME_LENGTH);
+		ACE_OS::strncpy(aServiceStatus.name, service->serviceName,
+				XATMI_SERVICE_NAME_LENGTH);
 		aServiceStatus.func = func;
 		aServiceStatus.status = status;
 		serviceStatus.push_back(aServiceStatus);
@@ -449,9 +446,9 @@ void AtmiBrokerServer::updateServiceStatus(ServiceInfo* service,
 }
 
 bool AtmiBrokerServer::advertiseService(char * svcname) {
-	for(std::vector<ServiceStatus>::iterator i = serviceStatus.begin();
-			i != serviceStatus.end(); i++ ) {
-		if(strncmp((*i).name, svcname, XATMI_SERVICE_NAME_LENGTH) == 0) {
+	for (std::vector<ServiceStatus>::iterator i = serviceStatus.begin(); i
+			!= serviceStatus.end(); i++) {
+		if (strncmp((*i).name, svcname, XATMI_SERVICE_NAME_LENGTH) == 0) {
 			return advertiseService(svcname, (*i).func);
 		}
 	}
@@ -838,15 +835,14 @@ void AtmiBrokerServer::server_done() {
 }
 
 long AtmiBrokerServer::getServiceMessageCounter(char* serviceName) {
-	for(std::vector<ServiceData>::iterator i = serviceData.begin();
-			i != serviceData.end();
-			i++) {
-		if(strncmp((*i).destination->getName(), serviceName,
-					XATMI_SERVICE_NAME_LENGTH) == 0) {
+	for (std::vector<ServiceData>::iterator i = serviceData.begin(); i
+			!= serviceData.end(); i++) {
+		if (strncmp((*i).destination->getName(), serviceName,
+				XATMI_SERVICE_NAME_LENGTH) == 0) {
 			long counter = 0;
-			for (std::vector<ServiceDispatcher*>::iterator dispatcher = (*i).dispatchers.begin();
-					dispatcher != (*i).dispatchers.end();
-					dispatcher++) {
+			for (std::vector<ServiceDispatcher*>::iterator dispatcher =
+					(*i).dispatchers.begin(); dispatcher
+					!= (*i).dispatchers.end(); dispatcher++) {
 				counter += (*dispatcher)->getCounter();
 			}
 			return counter;

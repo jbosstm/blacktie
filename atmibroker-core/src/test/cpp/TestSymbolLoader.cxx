@@ -32,14 +32,13 @@ void TestSymbolLoader::test() {
 	if(env != NULL){
 		ACE_OS::snprintf(orig_env, 256, "BLACKTIE_CONFIGURATION_DIR=%s", env);
 	}
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=.");
+#ifdef WIN32
+	AtmiBrokerEnv::set_configuration("win32");
+#else
+	AtmiBrokerEnv::set_configuration("linux");
+#endif
 
-	#ifdef WIN32
-		userlogc((char*) "WIN32");
-		ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=win32");
-	#else	
-		userlogc((char*) "linux");
-		ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=linux");
-	#endif
 	AtmiBrokerEnv::discard_instance();
 	char* lib = (char *) AtmiBrokerEnv::get_instance()->getenv((char *) "test-lib");
 	char* symbol = (char *) AtmiBrokerEnv::get_instance()->getenv((char *) "test-symbol");

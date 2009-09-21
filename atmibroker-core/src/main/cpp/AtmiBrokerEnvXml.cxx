@@ -433,23 +433,24 @@ static void XMLCALL characterData
 }
 
 bool AtmiBrokerEnvXml::parseXmlDescriptor(
-		std::vector<envVar_t>* aEnvironmentStructPtr, char * conf) {
+		std::vector<envVar_t>* aEnvironmentStructPtr,
+		const char * configurationDir, char * conf) {
 
 	char aDescriptorFileName[256];
 
-	if (conf != NULL) {
+	if (configurationDir != NULL) {
 		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "read env from dir: "
-				<< conf);
+				<< configurationDir);
 		ACE_OS::snprintf(aDescriptorFileName, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"Environment.xml",
-				conf);
+				configurationDir);
 		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml,
 				(char*) "in parseXmlDescriptor() " << aDescriptorFileName);
-		configuration = conf;
 	} else {
 		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml,
 				(char*) "read env from default file");
 		ACE_OS::strcpy(aDescriptorFileName, "Environment.xml");
 	}
+	configuration = conf;
 
 	bool toReturn = true;
 	char schemaPath[256];
@@ -457,93 +458,93 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(
 
 	schemaDir = ACE_OS::getenv("BLACKTIE_SCHEMA_DIR");
 	if (schemaDir) {
-ACE_OS	::snprintf(schemaPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"Environment.xsd", schemaDir);
-} else {
-	ACE_OS::strcpy(schemaPath, "Environment.xsd");
-}
-
-LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "schemaPath is "
-		<< schemaPath);
-
-XsdValidator validator;
-if (validator.validate(schemaPath, aDescriptorFileName) == false) {
-	return false;
-}
-struct stat s; /* file stats */
-FILE *aDescriptorFile = fopen(aDescriptorFileName, "r");
-
-if (!aDescriptorFile) {
-	LOG4CXX_ERROR(loggerAtmiBrokerEnvXml,
-			(char*) "loadfile: fopen failed on %s" << aDescriptorFileName);
-	return false;
-}
-
-LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "read file %p"
-		<< aDescriptorFile);
-
-/* Use fstat to obtain the file size */
-if (fstat(fileno(aDescriptorFile), &s) != 0) {
-	/* fstat failed */
-	LOG4CXX_ERROR(loggerAtmiBrokerEnvXml,
-			(char*) "loadfile: fstat failed on %s" << aDescriptorFileName);
-}
-if (s.st_size == 0) {
-	LOG4CXX_ERROR(loggerAtmiBrokerEnvXml,
-			(char*) "loadfile: file %s is empty" << aDescriptorFileName);
-}
-LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml,
-		(char*) "loadfile: file %s is %d long" << aDescriptorFileName
-		<< s.st_size);
-
-char *buf = (char *) malloc(sizeof(char) * s.st_size);
-if (!buf) {
-	/* malloc failed */
-	LOG4CXX_ERROR(
-			loggerAtmiBrokerEnvXml,
-			(char*) "loadfile: Could not allocate enough memory to load file %s"
-			<< aDescriptorFileName);
-}
-for (unsigned int i = 0; i < sizeof(buf); i++)
-*(buf + i) = '\0';
-//memcpy(buf,'\0',s.st_size);
-LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml,
-		(char*) "loadfile: Allocated enough memory to load file %d"
-		<< s.st_size);
-
-XML_Parser parser = XML_ParserCreate(NULL);
-int done;
-strcpy(element, "");
-strcpy(value, "");
-XML_SetUserData(parser, aEnvironmentStructPtr);
-XML_SetElementHandler(parser, startElement, endElement);
-XML_SetCharacterDataHandler(parser, characterData);
-do {
-	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "reading file");
-	size_t len = fread(buf, 1, s.st_size, aDescriptorFile);
-	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "length is '%d'" << len);
-	done = len < sizeof(buf);
-	if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR) {
-		LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "%d at line %d"
-				<< XML_ErrorString(XML_GetErrorCode(parser))
-				<< XML_GetCurrentLineNumber(parser));
-		toReturn = false;
-		break;
+		ACE_OS::snprintf(schemaPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"Environment.xsd", schemaDir);
+	} else {
+		ACE_OS::strcpy(schemaPath, "Environment.xsd");
 	}
-}while (!done);
-free(buf);
-XML_ParserFree(parser);
 
-fflush(aDescriptorFile);
-fclose(aDescriptorFile);
+	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "schemaPath is "
+			<< schemaPath);
 
-LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml,
-		(char*) "leaving parseXmlDescriptor() %s" << aDescriptorFileName);
+	XsdValidator validator;
+	if (validator.validate(schemaPath, aDescriptorFileName) == false) {
+		return false;
+	}
+	struct stat s; /* file stats */
+	FILE *aDescriptorFile = fopen(aDescriptorFileName, "r");
 
-if (warnCnt) {
-	warnCnt = 0;
-	return false;
-}
+	if (!aDescriptorFile) {
+		LOG4CXX_ERROR(loggerAtmiBrokerEnvXml,
+				(char*) "loadfile: fopen failed on %s" << aDescriptorFileName);
+		return false;
+	}
 
-return toReturn;
+	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "read file %p"
+			<< aDescriptorFile);
+
+	/* Use fstat to obtain the file size */
+	if (fstat(fileno(aDescriptorFile), &s) != 0) {
+		/* fstat failed */
+		LOG4CXX_ERROR(loggerAtmiBrokerEnvXml,
+				(char*) "loadfile: fstat failed on %s" << aDescriptorFileName);
+	}
+	if (s.st_size == 0) {
+		LOG4CXX_ERROR(loggerAtmiBrokerEnvXml,
+				(char*) "loadfile: file %s is empty" << aDescriptorFileName);
+	}
+	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml,
+			(char*) "loadfile: file %s is %d long" << aDescriptorFileName
+					<< s.st_size);
+
+	char *buf = (char *) malloc(sizeof(char) * s.st_size);
+	if (!buf) {
+		/* malloc failed */
+		LOG4CXX_ERROR(
+				loggerAtmiBrokerEnvXml,
+				(char*) "loadfile: Could not allocate enough memory to load file %s"
+						<< aDescriptorFileName);
+	}
+	for (unsigned int i = 0; i < sizeof(buf); i++)
+		*(buf + i) = '\0';
+	//memcpy(buf,'\0',s.st_size);
+	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml,
+			(char*) "loadfile: Allocated enough memory to load file %d"
+					<< s.st_size);
+
+	XML_Parser parser = XML_ParserCreate(NULL);
+	int done;
+	strcpy(element, "");
+	strcpy(value, "");
+	XML_SetUserData(parser, aEnvironmentStructPtr);
+	XML_SetElementHandler(parser, startElement, endElement);
+	XML_SetCharacterDataHandler(parser, characterData);
+	do {
+		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "reading file");
+		size_t len = fread(buf, 1, s.st_size, aDescriptorFile);
+		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "length is '%d'" << len);
+		done = len < sizeof(buf);
+		if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR) {
+			LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "%d at line %d"
+					<< XML_ErrorString(XML_GetErrorCode(parser))
+					<< XML_GetCurrentLineNumber(parser));
+			toReturn = false;
+			break;
+		}
+	} while (!done);
+	free(buf);
+	XML_ParserFree(parser);
+
+	fflush(aDescriptorFile);
+	fclose(aDescriptorFile);
+
+	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml,
+			(char*) "leaving parseXmlDescriptor() %s" << aDescriptorFileName);
+
+	if (warnCnt) {
+		warnCnt = 0;
+		return false;
+	}
+
+	return toReturn;
 }
 

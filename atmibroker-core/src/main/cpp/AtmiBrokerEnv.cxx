@@ -38,6 +38,8 @@ int AtmiBrokerEnv::ENV_VARIABLE_SIZE = 30;
 char *AtmiBrokerEnv::ENVIRONMENT_DIR = NULL;
 AtmiBrokerEnv *AtmiBrokerEnv::ptrAtmiBrokerEnv = NULL;
 
+char* configuration = NULL;
+
 AtmiBrokerEnv *
 AtmiBrokerEnv::get_instance() {
 	if (ptrAtmiBrokerEnv == NULL)
@@ -62,22 +64,24 @@ void AtmiBrokerEnv::set_environment_dir(const char* dir) {
 	}
 }
 
+void AtmiBrokerEnv::set_configuration(const char* dir) {
+	if (dir != NULL) {
+		configuration = strdup(dir);
+	} else {
+		configuration = NULL;
+	}
+}
+
 AtmiBrokerEnv::AtmiBrokerEnv() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "constructor");
 	readEnvironment = false;
 
-	char* ptrDir = NULL;
-	ptrDir = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
-
-	if (ptrDir != NULL && ENVIRONMENT_DIR == NULL) {
-		AtmiBrokerEnv::set_environment_dir(ptrDir);
+	char* ptrDir = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
+	set_environment_dir(ptrDir);
+	if (configuration == NULL) {
+		configuration = strdup("");
 	}
-
-	if (ENVIRONMENT_DIR) {
-		readenv(ptrDir, NULL);
-	} else {
-		readenv(NULL, NULL);
-	}
+	readenv();
 }
 
 AtmiBrokerEnv::~AtmiBrokerEnv() {
@@ -89,6 +93,7 @@ AtmiBrokerEnv::~AtmiBrokerEnv() {
 	}
 
 	set_environment_dir( NULL);
+	set_configuration(NULL);
 	envVariableInfoSeq.clear();
 
 	//free(namingServiceId);
@@ -216,12 +221,12 @@ int AtmiBrokerEnv::putenv(char* anEnvNameValue) {
 	return 1;
 }
 
-int AtmiBrokerEnv::readenv(char* configuration, char* label) {
+int AtmiBrokerEnv::readenv() {
 	if (!readEnvironment) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "readenv");
-		if (configuration != NULL) {
+		if (ENVIRONMENT_DIR != NULL) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerEnv,
-					(char*) "readenv configuration: " << configuration);
+					(char*) "readenv configuration dir: " << ENVIRONMENT_DIR);
 		} else {
 			LOG4CXX_DEBUG(loggerAtmiBrokerEnv,
 					(char*) "readenv default configuration");
@@ -229,7 +234,7 @@ int AtmiBrokerEnv::readenv(char* configuration, char* label) {
 
 		AtmiBrokerEnvXml aAtmiBrokerEnvXml;
 		if (aAtmiBrokerEnvXml.parseXmlDescriptor(&envVariableInfoSeq,
-				configuration)) {
+				ENVIRONMENT_DIR, configuration)) {
 			for (std::vector<envVar_t>::iterator i = envVariableInfoSeq.begin(); i
 					!= envVariableInfoSeq.end(); ++i)
 				if (ACE_OS::setenv(i->name, i->value, 1) != 0)
@@ -239,11 +244,16 @@ int AtmiBrokerEnv::readenv(char* configuration, char* label) {
 
 			readEnvironment = true;
 		} else {
-			LOG4CXX_ERROR(loggerAtmiBrokerEnv,
-					(char*) "can not read configuration for: " << configuration);
+			if (ENVIRONMENT_DIR != NULL) {
+				LOG4CXX_ERROR(loggerAtmiBrokerEnv,
+						(char*) "can not read configuration for: "
+								<< ENVIRONMENT_DIR);
+			} else {
+				LOG4CXX_ERROR(
+						loggerAtmiBrokerEnv,
+						(char*) "can not read configuration default configuration");
+			}
 			throw std::exception();
-			//abort();
-			//return -1;
 		}
 	}
 	return 1;

@@ -234,19 +234,6 @@
 		</dependency>
 		<!-- END TEST -->
 	</dependencies>
-	<profiles>
-		<profile>
-			<id>windows</id>
-			<activation>
-				<os>
-					<family>windows</family>
-				</os>
-			</activation>
-			<properties>
-				<atmibroker.configuration.dir>win32</atmibroker.configuration.dir>
-			</properties>
-		</profile>
-	</profiles>
 	<properties>
 		<test.output.type>shared</test.output.type>
 	</properties>

@@ -45,6 +45,14 @@ static string xid_to_string(XID& xid)
 
 void TestTransactions::setUp()
 {
+	txx_stop();
+	AtmiBrokerEnv::discard_instance();
+#ifdef WIN32
+	AtmiBrokerEnv::set_configuration("win32");
+#else
+	AtmiBrokerEnv::set_configuration("linux");
+#endif
+
 	// make sure the thread is clean - TODO check whether this needed - it shouldn't be
 	userlogc_debug( (char*) "TestTransactions::setUp disassociate: cleaning thread");
 //	txx_release_control(txx_unbind());
@@ -55,6 +63,8 @@ void TestTransactions::tearDown()
 {
 	txx_stop();
 	TestFixture::tearDown();
+
+	AtmiBrokerEnv::set_configuration(NULL);
 }
 
 void TestTransactions::test_rclog()

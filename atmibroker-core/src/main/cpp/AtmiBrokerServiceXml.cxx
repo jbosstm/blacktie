@@ -170,7 +170,6 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(ServiceInfo* aServiceStructPtr,
 		const char * aDescriptorFileName, const char * ConfigurationDir, char* conf) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml,
 			(char*) "in parseXmlDescriptor() " << aDescriptorFileName);
-	configuration = conf;
 
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
 	int XATMI_SERVICE_NAME_LENGTH = 15;
@@ -212,6 +211,14 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(ServiceInfo* aServiceStructPtr,
 		free(serviceConfigFilename);
 		return;
 	}
+
+	if (conf == NULL) {
+		LOG4CXX_ERROR(loggerAtmiBrokerServiceXml,
+				(char*) "server was started with -c <configuration> unspecified and service configured: " << aDescriptorFileName);
+		throw new std::exception();
+	}
+	configuration = conf;
+
 
 	struct stat s; /* file stats */
 	FILE *aDescriptorFile = fopen(configPath, "r");

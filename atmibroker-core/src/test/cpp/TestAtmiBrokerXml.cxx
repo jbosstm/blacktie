@@ -55,10 +55,11 @@ void TestAtmiBrokerXml::test_service() {
 	AtmiBrokerServiceXml xml;
 	ServiceInfo service;
 
-	xml.parseXmlDescriptor(&service, "BAR", "xmltest/foo", (char*) "xmltest");
+	xml.parseXmlDescriptor(&service, "XMLTESTSERVICE", "xmltest",
+			(char*) "xmltest");
 	CPPUNIT_ASSERT(service.poolSize == 5);
 	CPPUNIT_ASSERT(strcmp(service.function_name, "BAR") == 0);
-	CPPUNIT_ASSERT(strcmp(service.library_name, "libBAR.so") == 0);
+	CPPUNIT_ASSERT(strcmp(service.library_name, "libXMLTESTSERVICE.so") == 0);
 	CPPUNIT_ASSERT(service.advertised == false);
 
 	free(service.function_name);
@@ -67,6 +68,7 @@ void TestAtmiBrokerXml::test_service() {
 
 void TestAtmiBrokerXml::test_env() {
 	userlogc((char*) "RUNNING");
+	AtmiBrokerEnv::set_configuration("xmltest");
 	char* value;
 	value = AtmiBrokerEnv::get_instance()->getenv((char*) "MYLIBTEST");
 	CPPUNIT_ASSERT(strcmp(value, "xmltestfoo.xmltest") == 0);
@@ -83,34 +85,20 @@ void TestAtmiBrokerXml::test_env() {
 	CPPUNIT_ASSERT(strcmp(server->serverName, "foo") == 0);
 	std::vector<ServiceInfo>* services = &server->serviceVector;
 	CPPUNIT_ASSERT(strcmp((*services)[0].serviceName, "BAR") == 0);
-	CPPUNIT_ASSERT((*services)[0].poolSize == 5);
-	CPPUNIT_ASSERT(strcmp((*services)[0].function_name, "BAR") == 0);
+	CPPUNIT_ASSERT(strcmp((*services)[1].serviceName, "ECHO") == 0);
+	CPPUNIT_ASSERT(strcmp((*services)[2].serviceName, "foo_ADMIN") == 0);
 #ifdef WIN32
 	CPPUNIT_ASSERT(strcmp((*services)[0].transportLib, "atmibroker-hybrid.dll") == 0);
-	CPPUNIT_ASSERT(strcmp((*services)[0].library_name, "BAR.dll") == 0);
-	CPPUNIT_ASSERT(strcmp((*services)[1].serviceName, "ECHO") == 0);
 	CPPUNIT_ASSERT(strcmp((*services)[1].transportLib, "atmibroker-hybrid.dll") == 0);
-	CPPUNIT_ASSERT(strcmp((*services)[2].serviceName, "foo_ADMIN") == 0);
 	CPPUNIT_ASSERT(strcmp((*services)[2].transportLib, "atmibroker-hybrid.dll") == 0);
 #else
-
 	CPPUNIT_ASSERT(strcmp((*services)[0].transportLib,
 			"libatmibroker-hybrid.so") == 0);
-
-	CPPUNIT_ASSERT(strcmp((*services)[0].library_name, "libBAR.so") == 0);
-
-	CPPUNIT_ASSERT(strcmp((*services)[1].serviceName, "ECHO") == 0);
-
 	CPPUNIT_ASSERT(strcmp((*services)[1].transportLib,
 			"libatmibroker-hybrid.so") == 0);
-
-	CPPUNIT_ASSERT(strcmp((*services)[2].serviceName, "foo_ADMIN") == 0);
-
 	CPPUNIT_ASSERT(strcmp((*services)[2].transportLib,
 			"libatmibroker-hybrid.so") == 0);
-
 #endif
-	CPPUNIT_ASSERT((*services)[0].advertised == false);
 
 	char* transport = AtmiBrokerEnv::get_instance()->getTransportLibrary(
 			(char*) "BAR");

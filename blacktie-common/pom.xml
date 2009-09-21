@@ -57,6 +57,7 @@
 				<toolchain.compiler>msvc</toolchain.compiler>
 				<ld_library_path>${env.Path};${project.build.directory}/cxx/runtime/lib;${project.build.directory}/cxx/test/lib;${project.build.directory}</ld_library_path>
 				<exclude_unpack_type></exclude_unpack_type>
+				<atmibroker.configuration.dir>.</atmibroker.configuration.dir>
 			</properties>
 		</profile>
 		<profile>
@@ -70,7 +71,7 @@
 				<toolchain.compiler>gcc</toolchain.compiler>
 				<ld_library_path>${project.build.directory}/cxx/runtime/lib:${project.build.directory}/cxx/test/lib:${project.build.directory}</ld_library_path>
 				<export.dll></export.dll>
-				<atmibroker.configuration.dir>linux</atmibroker.configuration.dir>
+				<atmibroker.configuration.dir>.</atmibroker.configuration.dir>
 				<exclude_unpack_type>zip</exclude_unpack_type>
 			</properties>
 		</profile>

@@ -54,7 +54,6 @@
 			<activation> <os> <family>windows</family> </os> </activation>
 			<properties>
 				<export.dll>_BLACKTIE_TX_DLL</export.dll>
-				<atmibroker.configuration.dir>win32</atmibroker.configuration.dir>
 			</properties>
 		</profile>	      
 	</profiles>

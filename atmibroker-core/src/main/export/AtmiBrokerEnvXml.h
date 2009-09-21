@@ -37,7 +37,9 @@ public:
 
 	~AtmiBrokerEnvXml();
 
-	bool parseXmlDescriptor(std::vector<envVar_t>*, char * aDescriptorFileName);
+	bool parseXmlDescriptor(std::vector<envVar_t>*,
+			const char * ConfigurationDir,
+			char * configuration);
 };
 
 typedef struct BLACKTIE_CORE_DLL xarm_config {

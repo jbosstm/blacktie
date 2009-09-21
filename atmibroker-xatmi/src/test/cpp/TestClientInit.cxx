@@ -49,12 +49,6 @@ void TestClientInit::test_config_env() {
 		ACE_OS::snprintf(orig_env, 256, "BLACKTIE_CONFIGURATION_DIR=%s", env);
 	}
 
-#ifdef WIN32
-	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=win32");
-#else
-	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=linux");
-#endif
-
 	CPPUNIT_ASSERT(tperrno == 0);
 	int valToTest = ::clientinit();
 	CPPUNIT_ASSERT(valToTest != -1);

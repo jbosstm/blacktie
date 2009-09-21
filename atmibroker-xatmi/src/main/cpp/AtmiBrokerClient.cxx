@@ -102,11 +102,6 @@ int clientdone() {
 
 AtmiBrokerClient::AtmiBrokerClient() {
 	try {
-		char* envDir = NULL;
-
-		envDir = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
-		AtmiBrokerEnv::set_environment_dir(envDir);
-
 		nextSessionId = 0;
 		clientInitialized = true;
 		currentConnection = NULL;

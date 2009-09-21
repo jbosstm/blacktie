@@ -29,9 +29,18 @@ void BaseServerTest::setUp() {
 	// Perform initial start up
 	BaseTest::setUp();
 
-	int initted = serverinit(0, NULL);
+	int result;
+
+#ifdef WIN32
+		char* argv1[] = {(char*)"server", (char*)"-c", (char*)"win32"};
+#else
+		char* argv1[] = {(char*)"server", (char*)"-c", (char*)"linux"};
+#endif
+	int argc1 = sizeof(argv1)/sizeof(char*);
+
+	result = serverinit(argc1, argv1);
 	// Check that there is no error on server setup
-	CPPUNIT_ASSERT(initted != -1);
+	CPPUNIT_ASSERT(result != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
 }
 
