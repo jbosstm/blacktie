@@ -150,7 +150,7 @@ public class XMLEnvHandler extends DefaultHandler {
 				try {
 					xml.getProperties(configDir);
 				} catch (ConfigurationException e) {
-					throw new SAXException(e);
+					throw new SAXException(e.getMessage(), e);
 				}
 			}
 		}

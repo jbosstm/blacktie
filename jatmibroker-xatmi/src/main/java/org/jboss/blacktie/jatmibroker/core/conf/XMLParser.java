@@ -117,7 +117,7 @@ public class XMLParser {
 						.getResourceAsStream(env), handler);
 				return true;
 			} catch (Throwable t) {
-				throw new ConfigurationException("Errors parse : " + env, t);
+				throw new ConfigurationException("Errors parse : " + env + " due to: " + t.getMessage(), t);
 			}
 		}
 		return false;

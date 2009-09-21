@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <SERVICE xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xmlns="http://www.jboss.org/blacktie">
-	<SERVICE_DESCRIPTION library_name='dummy-rm.dll' advertised='true'>
-    	<SIZE>1</SIZE>
+	<SERVICE_DESCRIPTION advertised='false'>
+		<LIBRARY_NAME configuration="linux" value="libdummy-rm.so" />
+		<LIBRARY_NAME configuration="win32" value="dummy-rm.dll" />
+	    	<SIZE>1</SIZE>
 	</SERVICE_DESCRIPTION>
 </SERVICE>

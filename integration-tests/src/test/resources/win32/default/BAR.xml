@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <SERVICE xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xmlns="http://www.jboss.org/blacktie">
-<SERVICE_DESCRIPTION advertised="false">
-    <SIZE>1</SIZE>
-</SERVICE_DESCRIPTION>
+	xmlns="http://www.jboss.org/blacktie">
+	<SERVICE_DESCRIPTION advertised='true'>
+		<LIBRARY_NAME configuration="linux" value="libtestsuite.so"/>
+		<LIBRARY_NAME configuration="win32" value="testsuite.dll"/>
+		<SIZE>2</SIZE>
+	</SERVICE_DESCRIPTION>
 </SERVICE>

@@ -318,7 +318,7 @@ static void XMLCALL startElement
 			service.advertised = false;
 			service.poolSize = 1;
 			AtmiBrokerServiceXml xml;
-			xml.parseXmlDescriptor(&service, service.serviceName, configDir);
+			xml.parseXmlDescriptor(&service, service.serviceName, configDir, configuration);
 
 			if(service.function_name == NULL) {
 				service.function_name = copy_value(service.serviceName);

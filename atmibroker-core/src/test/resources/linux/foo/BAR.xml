@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <SERVICE xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
-	<SERVICE_DESCRIPTION library_name='libBAR.so'>
+	<SERVICE_DESCRIPTION>
+		<LIBRARY_NAME configuration="linux" value="libBAR.so" />
+		<LIBRARY_NAME configuration="win32" value="BAR.dll"/>
 		<SIZE>5</SIZE>
 	</SERVICE_DESCRIPTION>
 </SERVICE>

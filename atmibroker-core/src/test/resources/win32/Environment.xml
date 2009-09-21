@@ -86,7 +86,6 @@
 				<NAME>test-symbol</NAME>
 				<VALUE>testxasw</VALUE>
 			</ENV_VARIABLE>
-
 			<ENV_VARIABLE>
 				<NAME>LOG4CXXCONFIG</NAME>
 				<VALUE>log4cxx.properties</VALUE>

@@ -55,7 +55,7 @@ void TestAtmiBrokerXml::test_service() {
 	AtmiBrokerServiceXml xml;
 	ServiceInfo service;
 
-	xml.parseXmlDescriptor(&service, "BAR", "xmltest/foo");
+	xml.parseXmlDescriptor(&service, "BAR", "xmltest/foo", (char*) "xmltest");
 	CPPUNIT_ASSERT(service.poolSize == 5);
 	CPPUNIT_ASSERT(strcmp(service.function_name, "BAR") == 0);
 	CPPUNIT_ASSERT(strcmp(service.library_name, "libBAR.so") == 0);

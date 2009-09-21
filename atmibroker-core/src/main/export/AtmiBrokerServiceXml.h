@@ -42,7 +42,8 @@ public:
 
 	void parseXmlDescriptor(ServiceInfo* serviceData, 
 							const char * aDescriptorFileName,
-							const char * ConfigurationDir = NULL);
+							const char * ConfigurationDir,
+							char * configuration);
 };
 
 #endif

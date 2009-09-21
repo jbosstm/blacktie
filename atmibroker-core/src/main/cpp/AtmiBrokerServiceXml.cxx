@@ -27,6 +27,7 @@
 #include "XsdValidator.h"
 #include "userlog.h"
 #include "log4cxx/logger.h"
+#include "ace/ACE.h"
 #include "ace/OS_NS_stdlib.h"
 #include "ace/OS_NS_stdio.h"
 #include "ace/OS_NS_string.h"
@@ -46,29 +47,83 @@ static int depth = 0;
 static bool processingService = false;
 static bool processingPoolSize = false;
 
+static char* configuration;
+
 AtmiBrokerServiceXml::AtmiBrokerServiceXml() {
 }
 
 AtmiBrokerServiceXml::~AtmiBrokerServiceXml() {
 }
 
+/**
+ * Duplicate a value. If the value contains an expression of the for ${ENV}
+ * then ENV is interpreted as an environment variable and ${ENV} is replaced
+ * by its value (if ENV is not set it is replaced by null string).
+ *
+ * WARNING: only the first such occurence is expanded. TODO generalise the function
+ */
+static char * XMLCALL copy_value(const char *value) {
+	char *s = (char *) strchr(value, '$');
+	char *e;
+
+	if (s && *(s + 1) == '{' && (e = (char *) strchr(s, '}'))) {
+		size_t esz = e - s - 2;
+		char *en = ACE::strndup(s + 2, esz);
+		char *ev = ACE_OS::getenv(en); /* ACE_OS::getenv(en);*/
+		char *pr = ACE::strndup(value, (s - value));
+		size_t rsz;
+		char *v;
+
+		if (ev == NULL) {
+			LOG4CXX_WARN(loggerAtmiBrokerServiceXml, (char*) "env variable is unset: " << en);
+			ev = (char *) "";
+		}
+
+		LOG4CXX_TRACE(loggerAtmiBrokerServiceXml, (char *) "expanding env: "
+				<< (s + 2) << (char *) " and e=" << e << (char *) " and en="
+				<< en << (char *) " and pr=" << pr << (char *) " and ev=" << ev);
+		e += 1;
+		rsz = ACE_OS::strlen(pr) + ACE_OS::strlen(e) + ACE_OS::strlen(ev) + 1; /* add 1 for null terminator */
+		v = (char *) malloc(rsz);
+
+		ACE_OS::snprintf(v, rsz, "%s%s%s", pr, ev, e);
+		LOG4CXX_TRACE(loggerAtmiBrokerServiceXml, value << (char*) " -> " << v);
+
+		free(en);
+		free(pr);
+
+		return v;
+	}
+
+	return strdup(value);
+}
+
 static void XMLCALL startElement(void *userData, const char *name, const char **atts) {
 	ServiceInfo* aServiceStructPtr = (ServiceInfo*) userData;
 
 	if (strcmp(name, "SERVICE ") == 0) {
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "start element SERVICE");
+		LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "start element SERVICE");
 		processingService = true;
 	} else if (strcmp(name, "SIZE") == 0) {
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "processing MAX Cache for service ");
+		LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "processing MAX Cache for service ");
 		processingPoolSize = true;
+	} else if (strcmp(name, "LIBRARY_NAME") == 0) {
+		if(atts != 0 && atts[0] && strcmp(atts[0], "configuration") == 0) {
+			char * conf = copy_value(atts[1]);
+			LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "comparing" << conf << " with " << configuration);
+			if (strcmp(conf, configuration) == 0) {
+				aServiceStructPtr->library_name = strdup(atts[3]);
+				LOG4CXX_TRACE(loggerAtmiBrokerServiceXml, (char*) "processed LIBRARY_NAME: " << aServiceStructPtr->library_name);
+			} else {
+				LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "CONFIGURATION NOT APPLICABLE FOR LIBRARY_NAME: " << conf);
+			}
+		}
 	} else if(strcmp(name, "SERVICE_DESCRIPTION") == 0) {
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "processing SERVICE DESCRIPTION");
+		LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "processing SERVICE DESCRIPTION");
 		if(atts != 0) {
 			for(int i = 0; atts[i]; i += 2) {
 				if(strcmp(atts[i], "function_name") == 0) {
 					aServiceStructPtr->function_name = strdup(atts[i+1]);
-				} else if(strcmp(atts[i], "library_name") == 0) {
-					aServiceStructPtr->library_name = strdup(atts[i+1]);
 				} else if(strcmp(atts[i], "advertised") == 0) {
 					if(strcmp(atts[i+1], "true") == 0) {
 						aServiceStructPtr->advertised = true;
@@ -92,7 +147,7 @@ static void XMLCALL endElement(void *userData, const char *name) {
 	strcpy(last_value, value);
 
 	if (strcmp(last_element, "SIZE") == 0) {
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml, (char*) "storing MaxCache %s", last_value);
+		LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "storing MaxCache " << last_value);
 		processingPoolSize = false;
 		aServiceStructPtr->poolSize = (short) atol(last_value);
 	}
@@ -112,89 +167,90 @@ static void XMLCALL characterData(void *userData, const char *cdata, int len) {
 }
 
 void AtmiBrokerServiceXml::parseXmlDescriptor(ServiceInfo* aServiceStructPtr,
-		const char * aDescriptorFileName, const char * ConfigurationDir) {
-	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml,
-			(char*) "in parseXmlDescriptor() %s", aDescriptorFileName);
+		const char * aDescriptorFileName, const char * ConfigurationDir, char* conf) {
+	LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml,
+			(char*) "in parseXmlDescriptor() " << aDescriptorFileName);
+	configuration = conf;
 
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
 	int XATMI_SERVICE_NAME_LENGTH = 15;
-	char* serviceConfigFilename = (char*) malloc(XATMI_SERVICE_NAME_LENGTH + 10); // TODO this is the length of the service + 10
+	char* serviceConfigFilename =
+			(char*) malloc(XATMI_SERVICE_NAME_LENGTH + 10); // TODO this is the length of the service + 10
 	memset(serviceConfigFilename, '\0', XATMI_SERVICE_NAME_LENGTH + 10);
-	strncpy(serviceConfigFilename, aDescriptorFileName, XATMI_SERVICE_NAME_LENGTH); // TODO this is the length of the service
+	strncpy(serviceConfigFilename, aDescriptorFileName,
+			XATMI_SERVICE_NAME_LENGTH); // TODO this is the length of the service
 	strcat(serviceConfigFilename, ".xml");
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "loading: "
 			<< serviceConfigFilename);
 	char configPath[256];
 	memset(configPath, '\0', 256);
-	if(ConfigurationDir != NULL){
-		ACE_OS::snprintf(configPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"%s",
-										ConfigurationDir, serviceConfigFilename);
+	if (ConfigurationDir != NULL) {
+		ACE_OS::snprintf(configPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"%s", ConfigurationDir, serviceConfigFilename);
 	} else {
 		ACE_OS::strncpy(configPath, serviceConfigFilename, 256);
 	}
 
-	LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "configPath is : " << configPath);
+	LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "configPath is : "
+			<< configPath);
 
-	char  schemaPath[256];
+	char schemaPath[256];
 	char* schemaDir;
 
 	schemaDir = ACE_OS::getenv("BLACKTIE_SCHEMA_DIR");
-	if(schemaDir) {
+	if (schemaDir) {
 		ACE_OS::snprintf(schemaPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"Service.xsd", schemaDir);
 	} else {
 		ACE_OS::strcpy(schemaPath, "Service.xsd");
 	}
 
-	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml,
-			(char*) "schemaPath %s", schemaPath);
+	LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "schemaPath "
+			<< schemaPath);
 
 	XsdValidator validator;
-	if(validator.validate(schemaPath, configPath) == false) {
+	if (validator.validate(schemaPath, configPath) == false) {
 		free(serviceConfigFilename);
-		return ;
+		return;
 	}
 
 	struct stat s; /* file stats */
 	FILE *aDescriptorFile = fopen(configPath, "r");
 
-	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml,
-			(char*) "read file %p", aDescriptorFile);
+	LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "read file "
+			<< aDescriptorFile);
 
 	if (!aDescriptorFile) {
-		userlog(log4cxx::Level::getWarn(), loggerAtmiBrokerServiceXml,
-				(char*) "parseXmlDescriptor could not load service config %s",
-				serviceConfigFilename);
+		LOG4CXX_WARN(loggerAtmiBrokerServiceXml,
+				(char*) "parseXmlDescriptor could not load service config"
+						<< serviceConfigFilename);
 		free(serviceConfigFilename);
 		return;
 	}
 	/* Use fstat to obtain the file size */
 	if (fstat(fileno(aDescriptorFile), &s) != 0) {
 		/* fstat failed */
-		userlog(log4cxx::Level::getError(), loggerAtmiBrokerServiceXml,
-				(char*) "loadfile: fstat failed on %s", serviceConfigFilename);
+		LOG4CXX_ERROR(loggerAtmiBrokerServiceXml,
+				(char*) "loadfile: fstat failed on: " << serviceConfigFilename);
 	}
 	if (s.st_size == 0) {
-		userlog(log4cxx::Level::getError(), loggerAtmiBrokerServiceXml,
-				(char*) "loadfile: file %s is empty", serviceConfigFilename);
+		LOG4CXX_ERROR(loggerAtmiBrokerServiceXml,
+				(char*) "loadfile: file is empty: " << serviceConfigFilename);
 	}
-	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml,
-			(char*) "loadfile: file %s is %d long", serviceConfigFilename,
-			s.st_size);
+	LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "loadfile: file "
+			<< serviceConfigFilename << " is SIZE " << s.st_size);
 
 	char *buf = (char *) malloc(sizeof(char) * s.st_size + 1);
 	if (!buf) {
-		userlog(
-				log4cxx::Level::getError(),
+		LOG4CXX_ERROR(
 				loggerAtmiBrokerServiceXml,
-				(char*) "loadfile: Could not allocate enough memory to load file %s",
-				serviceConfigFilename);
+				(char*) "loadfile: Could not allocate enough memory to load file: "
+						<< serviceConfigFilename);
 	}
 
 	memset(buf, '\0', s.st_size + 1);
-	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml,
-			(char*) "loadfile: Allocated enough memory to load file %d",
-			s.st_size);
+	LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml,
+			(char*) "loadfile: Allocated enough memory to load file: "
+					<< s.st_size);
 
 	XML_Parser parser = XML_ParserCreate(NULL);
 	int done;
@@ -205,13 +261,12 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(ServiceInfo* aServiceStructPtr,
 	XML_SetCharacterDataHandler(parser, characterData);
 	do {
 		size_t len = fread(buf, 1, s.st_size, aDescriptorFile);
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml,
-				(char*) "buf is %s", buf);
+		LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "buf is " << buf);
 		done = len < sizeof(buf);
 		if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR) {
-			userlog(log4cxx::Level::getError(), loggerAtmiBrokerServiceXml,
-					(char*) "%d at line %d", XML_ErrorString(XML_GetErrorCode(
-							parser)), XML_GetCurrentLineNumber(parser));
+			LOG4CXX_ERROR(loggerAtmiBrokerServiceXml, (char*) "Error: "
+					<< XML_ErrorString(XML_GetErrorCode(parser)) << " at line "
+					<< XML_GetCurrentLineNumber(parser));
 			break;
 		}
 	} while (!done);
@@ -221,10 +276,11 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(ServiceInfo* aServiceStructPtr,
 	fflush(aDescriptorFile);
 	fclose(aDescriptorFile);
 
-	if(aServiceStructPtr->function_name == NULL) {
-		aServiceStructPtr->function_name = strdup(aServiceStructPtr->serviceName);
+	if (aServiceStructPtr->function_name == NULL) {
+		aServiceStructPtr->function_name = strdup(
+				aServiceStructPtr->serviceName);
 	}
-	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServiceXml,
-			(char*) "leaving parseXmlDescriptor() %s", serviceConfigFilename);
+	LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml,
+			(char*) "leaving parseXmlDescriptor() " << serviceConfigFilename);
 	free(serviceConfigFilename);
 }
