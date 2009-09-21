@@ -79,4 +79,4 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestClientInit);
 #include "tx/TestTxRMTPCall.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTxRMTPCall);
 #include "TestRollbackOnly.h"
-//CPPUNIT_TEST_SUITE_REGISTRATION( TestRollbackOnly);
+CPPUNIT_TEST_SUITE_REGISTRATION( TestRollbackOnly);

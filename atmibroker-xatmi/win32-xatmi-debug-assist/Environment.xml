@@ -25,7 +25,7 @@
 					<SERVICE name='BTStompAdmin'/>
 				</SERVICE_NAMES>
 			</SERVER>
-			<SERVER>
+			<SERVER name='default'>
 				<SERVICE_NAMES>
 					<SERVICE name='BAR'/>
 					<SERVICE name='TestTPFree'/>
@@ -47,13 +47,55 @@
 					<SERVICE name='tpcall_x_octet'/>
 					<SERVICE name='tpcall_x_common'/>
 					<SERVICE name='tpcall_x_c_type'/>
+					<SERVICE name='DEBIT'/>
+					<SERVICE name='CREDIT'/>
+					<SERVICE name='INQUIRY'/>
+					<SERVICE name='TestRbkOnly'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>
+        <XA_RESOURCES>
+             <XA_RESOURCE configuration="linux">
+                <XA_RESOURCE_MGR_ID>2101</XA_RESOURCE_MGR_ID>
+                <XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
+                <XA_OPEN_STRING>${BUILD_DIR}/db1</XA_OPEN_STRING>
+                <XA_CLOSE_STRING></XA_CLOSE_STRING>
+                <XA_SWITCH>db_xa_switch</XA_SWITCH>
+                <XA_LIB_NAME>db</XA_LIB_NAME>
+             </XA_RESOURCE>
+             <!--
+             <XA_RESOURCE configuration="linux">
+                <XA_RESOURCE_MGR_ID>2102</XA_RESOURCE_MGR_ID>
+                <XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
+                <XA_OPEN_STRING>${BUILD_DIR}/db2</XA_OPEN_STRING>
+                <XA_CLOSE_STRING></XA_CLOSE_STRING>
+                <XA_SWITCH>db_xa_switch</XA_SWITCH>
+                <XA_LIB_NAME>db</XA_LIB_NAME>
+             </XA_RESOURCE>
+             -->
+             <XA_RESOURCE configuration="win32">
+                <XA_RESOURCE_MGR_ID>2101</XA_RESOURCE_MGR_ID>
+                <XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
+                <XA_OPEN_STRING>${BUILD_DIR}/db1</XA_OPEN_STRING>
+                <XA_CLOSE_STRING></XA_CLOSE_STRING>
+                <XA_SWITCH>db_xa_switch</XA_SWITCH>
+                <XA_LIB_NAME>db</XA_LIB_NAME>
+             </XA_RESOURCE>
+             <!--
+             <XA_RESOURCE configuration="win32">
+                <XA_RESOURCE_MGR_ID>2102</XA_RESOURCE_MGR_ID>
+                <XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
+                <XA_OPEN_STRING>${BUILD_DIR}/db2</XA_OPEN_STRING>
+                <XA_CLOSE_STRING></XA_CLOSE_STRING>
+                <XA_SWITCH>db_xa_switch</XA_SWITCH>
+                <XA_LIB_NAME>db</XA_LIB_NAME>
+             </XA_RESOURCE>
+             -->
+        </XA_RESOURCES>
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
 				<NAME>ORBOPT</NAME>
-				<VALUE>-ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
+				<VALUE>-ORBInitRef NameService=corbaloc::${JBOSSAS_IP_ADDR}:3528/NameService</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>TRANS_FACTORY_ID</NAME>
@@ -65,7 +107,7 @@
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>StompConnectHost</NAME>
-				<VALUE>localhost</VALUE>
+				<VALUE>${JBOSSAS_IP_ADDR}</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>StompConnectPort</NAME>
@@ -85,6 +127,10 @@
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
 				<NAME>RequestTimeout</NAME>
+				<VALUE>10</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>TimeToLive</NAME>
 				<VALUE>10</VALUE>
 			</ENV_VARIABLE>
 		</ENV_VARIABLES>

@@ -32,7 +32,7 @@ log4cxx::LoggerPtr HybridCorbaEndpointQueue::logger(log4cxx::Logger::getLogger(
 		"HybridCorbaEndpointQueue"));
 
 long TPFAIL = 0x00000001;
-long DISCON = 0x00000003;
+long COE_DISCON = 0x00000003;
 
 int TPESVCERR = 10;
 int TPESVCFAIL = 11;
@@ -166,7 +166,7 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 			// eventually consume the message. For local comms this is not the case.
 			// Thus we cannot dissassociate any transaction from the thread here (using destroySpecific)
 
-			if (message.rval == DISCON) {
+			if (message.rval == COE_DISCON) {
 				session->setLastEvent(TPEV_DISCONIMM);
 			} else if (message.rcode == TPESVCERR) {
 				session->setLastEvent(TPEV_SVCERR);
