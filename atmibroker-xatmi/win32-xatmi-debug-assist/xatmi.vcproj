@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;..\..\atmibroker-core\target\cxx\compile\include\expat&quot;;&quot;..\..\atmibroker-core\src\test\include&quot;;&quot;..\..\atmibroker-core\src\main\include&quot;;&quot;..\..\atmibroker-core\src\main\export&quot;;&quot;..\..\atmibroker-hybrid\src\main\include&quot;;&quot;..\..\atmibroker-hybrid\src\main\export&quot;;&quot;..\..\atmibroker-hybrid\target\cxx\compile\include\apr-1&quot;;&quot;..\..\atmibroker-hybrid\target\cxx\compile\include\stomp&quot;;&quot;..\..\atmibroker-tx\src\main\export&quot;;&quot;..\..\atmibroker-tx\src\main\include&quot;;&quot;..\..\atmibroker-xatmi\src\test\include&quot;;&quot;..\..\atmibroker-xatmi\src\main\include&quot;;&quot;..\..\atmibroker-xatmi\src\main\export&quot;;&quot;..\..\atmibroker-xatmi\target\cxx\runtime\include&quot;;&quot;..\..\atmibroker-xatmi\target\cxx\test\include&quot;"
-				PreprocessorDefinitions="WIN32;TAO_COMP;_CRT_SECURE_NO_WARNINGS;BLACKTIE_CORE_MACRO=;BLACKTIE_CORE_DLL=;BLACKTIE_XATMI_MACRO=;BLACKTIE_XATMI_DLL=;BLACKTIE_STOMP_MACRO=;BLACKTIE_STOMP_DLL=;BLACKTIE_TX_MACRO=;BLACKTIE_TX_DLL=;BLACKTIE_HYBRID_MACRO=;BLACKTIE_HYBRID_DLL=;IDE_DEBUG"
+				PreprocessorDefinitions="WIN32;TAO_COMP;_CRT_SECURE_NO_WARNINGS;BLACKTIE_CORE_MACRO=;BLACKTIE_CORE_DLL=;BLACKTIE_XATMI_MACRO=;BLACKTIE_XATMI_DLL=;BLACKTIE_STOMP_MACRO=;BLACKTIE_STOMP_DLL=;BLACKTIE_TX_MACRO=;BLACKTIE_TX_DLL=;BLACKTIE_HYBRID_MACRO=;BLACKTIE_HYBRID_DLL=;IDE_DEBUG;UNITTEST"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -187,14 +187,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\atmibroker-tx\src\main\cpp\AtmiBrokerOTS.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-tx\src\main\cpp\AtmiBrokerOTSc.cxx"
-				>
-			</File>
-			<File
 				RelativePath="..\..\atmibroker-core\src\main\cpp\AtmiBrokerPoaFac.cxx"
 				>
 			</File>
@@ -204,10 +196,6 @@
 			</File>
 			<File
 				RelativePath="..\..\atmibroker-core\src\main\cpp\AtmiBrokerServiceXml.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-tx\src\main\cpp\AtmiBrokerXA_ResourceManagerFactoryImpl.cxx"
 				>
 			</File>
 			<File
@@ -235,31 +223,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\atmibroker-tx\src\main\cpp\ConnectorImpl.cxx"
-				>
-			</File>
-			<File
 				RelativePath="..\..\atmibroker-hybrid\src\main\cpp\CorbaEndpointQueue.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\..\atmibroker-tx\src\main\cpp\CurrentConnectionImpl.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-tx\src\main\cpp\CurrentImpl.cxx"
-				>
-			</File>
-			<File
 				RelativePath="..\..\atmibroker-core\src\test\cpp\ExceptionCase.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-tx\src\main\cpp\LocalResourceManager.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-tx\src\main\cpp\LocalResourceManagerCache.cxx"
 				>
 			</File>
 			<File
@@ -280,10 +248,6 @@
 			</File>
 			<File
 				RelativePath="..\..\atmibroker-tx\src\main\cpp\OTSPolicyFactory.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-tx\src\main\cpp\ResourceManagerCache.cxx"
 				>
 			</File>
 			<File
@@ -439,7 +403,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\atmibroker-tx\src\main\cpp\txClient.cxx"
+				RelativePath="..\..\atmibroker-tx\src\main\cpp\TxControl.cxx"
 				>
 			</File>
 			<File
@@ -455,7 +419,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\atmibroker-tx\src\main\cpp\TxManager.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-tx\src\main\cpp\TxManagerc.cxx"
+				>
+			</File>
+			<File
 				RelativePath="..\..\atmibroker-core\src\main\cpp\Worker.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-tx\src\main\cpp\XARecoveryLog.cxx"
 				>
 			</File>
 			<File
@@ -468,6 +444,10 @@
 			</File>
 			<File
 				RelativePath="..\..\atmibroker-tx\src\main\cpp\XAResourceManagerFactory.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\..\atmibroker-tx\src\main\cpp\XAStateModel.cxx"
 				>
 			</File>
 			<File
@@ -550,10 +530,6 @@
 			</File>
 			<File
 				RelativePath="..\..\atmibroker-tx\src\main\export\atmiBrokerTxMacro.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-tx\src\main\include\AtmiBrokerXA_ResourceManagerFactoryImpl.h"
 				>
 			</File>
 			<File
@@ -821,19 +797,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\atmibroker-tx\src\main\export\txClient.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-tx\src\main\include\TxInitializer.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-tx\src\main\include\TxInterceptor.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-tx\src\main\include\TxIORInterceptor.h"
+				RelativePath="..\..\atmibroker-tx\src\main\export\txx.h"
 				>
 			</File>
 			<File
