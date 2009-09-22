@@ -54,7 +54,7 @@
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>
-        <XA_RESOURCES>
+       <XA_RESOURCES>
              <XA_RESOURCE configuration="linux">
                 <XA_RESOURCE_MGR_ID>2101</XA_RESOURCE_MGR_ID>
                 <XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
@@ -63,34 +63,14 @@
                 <XA_SWITCH>db_xa_switch</XA_SWITCH>
                 <XA_LIB_NAME>db</XA_LIB_NAME>
              </XA_RESOURCE>
-             <!--
-             <XA_RESOURCE configuration="linux">
-                <XA_RESOURCE_MGR_ID>2102</XA_RESOURCE_MGR_ID>
-                <XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
-                <XA_OPEN_STRING>${BUILD_DIR}/db2</XA_OPEN_STRING>
-                <XA_CLOSE_STRING></XA_CLOSE_STRING>
-                <XA_SWITCH>db_xa_switch</XA_SWITCH>
-                <XA_LIB_NAME>db</XA_LIB_NAME>
-             </XA_RESOURCE>
-             -->
              <XA_RESOURCE configuration="win32">
                 <XA_RESOURCE_MGR_ID>2101</XA_RESOURCE_MGR_ID>
                 <XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
                 <XA_OPEN_STRING>${BUILD_DIR}/db1</XA_OPEN_STRING>
                 <XA_CLOSE_STRING></XA_CLOSE_STRING>
                 <XA_SWITCH>db_xa_switch</XA_SWITCH>
-                <XA_LIB_NAME>db</XA_LIB_NAME>
+                <XA_LIB_NAME>libdb47.dll</XA_LIB_NAME>
              </XA_RESOURCE>
-             <!--
-             <XA_RESOURCE configuration="win32">
-                <XA_RESOURCE_MGR_ID>2102</XA_RESOURCE_MGR_ID>
-                <XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
-                <XA_OPEN_STRING>${BUILD_DIR}/db2</XA_OPEN_STRING>
-                <XA_CLOSE_STRING></XA_CLOSE_STRING>
-                <XA_SWITCH>db_xa_switch</XA_SWITCH>
-                <XA_LIB_NAME>db</XA_LIB_NAME>
-             </XA_RESOURCE>
-             -->
         </XA_RESOURCES>
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
