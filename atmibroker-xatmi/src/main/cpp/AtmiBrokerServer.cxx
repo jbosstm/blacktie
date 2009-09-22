@@ -125,7 +125,7 @@ int serverinit(int argc, char** argv) {
 		if (configuration != NULL) {
 			AtmiBrokerEnv::set_configuration(configuration);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-					(char*) "set AtmiBrokerEnv dir " << configuration);
+					(char*) "set AtmiBrokerEnv configuration type " << configuration);
 		}
 
 		try {
