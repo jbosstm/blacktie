@@ -317,6 +317,28 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet, Ope
 			} catch (Exception e) {
 				result.setErrorMessage("test connect jms server failed with " + e);
 			}
+		} else if(name.equals("getServiceCounter")) {
+    		String svc = params.getSimpleValue("service", null);
+			String command = "counter," + svc + ",";
+
+			try {
+				buf = callAdminService(service, command);
+				if(buf != null) {
+					byte[] received = buf.getBuffer().getData();
+					if(received[0] == '1') {				
+						String n = new String(received, 1, received.length - 1);
+						result.setSimpleResult(n);
+					} else {
+						result.setSimpleResult("-1");
+					}
+				} else {
+					result.setErrorMessage("can not get counter of " + svc);
+				}
+			} catch (Exception e) {
+				callTest = true;
+				log.error("call " + service + " command " + command + " failed with " + e);
+    			result.setErrorMessage("call " + service + " command " + command + " failed with " + e);
+			}
 		}
 
         return result;
