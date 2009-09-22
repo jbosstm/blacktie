@@ -16,6 +16,7 @@
  * MA  02110-1301, USA.
  */
 #include <string>
+#include <sstream>
 #include <queue>
 
 #ifdef TAO_COMP
@@ -130,7 +131,11 @@ int serverinit(int argc, char** argv) {
 
 		try {
 			initializeLogger();
-			AtmiBrokerEnv::get_instance();
+			AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
+			std::stringstream sid;
+			sid << "BLACKTIE_SERVER_NAME=" << domain << server << cid;
+			env->putenv((char *) (sid.str().c_str()));
+
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverinit called");
 			ptrServer = new AtmiBrokerServer();
 

@@ -35,6 +35,7 @@ public:
 	~AtmiBrokerEnv();
 
 	char* getenv(char* anEnvName);
+	const char* getenv(const char* anEnvName, const char* defValue);
 
 	int putenv(char* anEnvNameValue);
 

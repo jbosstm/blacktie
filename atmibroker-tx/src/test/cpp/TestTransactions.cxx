@@ -34,15 +34,6 @@
 
 using namespace std;
 
-static string xid_to_string(XID& xid)
-{
-	std::stringstream out;
-
-	out << xid.formatID << ':' << xid.gtrid_length << ':'<< xid.bqual_length << ':' << (char *) (xid.data + xid.gtrid_length);
-
-	return out.str();
-}
-
 void TestTransactions::setUp()
 {
 	txx_stop();
@@ -69,59 +60,45 @@ void TestTransactions::tearDown()
 
 void TestTransactions::test_rclog()
 {
-	XARecoveryLog log("test_recovery_log");
+	try {
+		XARecoveryLog log("test_recovery_log");
 
-	XID gid = {1L, 1L, 0L};
-	XID xid = XAResourceManager::gen_xid(200, gid);
-	XID xid2 = XAResourceManager::gen_xid(201, gid);
-	string key = xid_to_string(xid);
-	rrec_t* rrp;
-	int rv, cnt = 0;
-	void *i;
-	char* ior = (char *) "IOR:1";
+		XID gid = {1L, 1L, 0L};
+		XID xid = XAResourceManager::gen_xid(200, gid);
+		XID xid2 = XAResourceManager::gen_xid(201, gid);
+		int rv, cnt = 0;
+		char* ior = (char *) "IOR:1";
 
-	// add a record
-	rv = log.add_rec(xid, ior);
-	CPPUNIT_ASSERT(rv == 0);
+		// add a record
+		rv = log.add_rec(xid, ior);
+		CPPUNIT_ASSERT(rv == 0);
 
-	// delete it by XID
-	rv = log.del_rec(xid);
-	CPPUNIT_ASSERT(rv == 0);
+		// delete it by XID
+		rv = log.del_rec(xid);
+		CPPUNIT_ASSERT(rv == 0);
 
-	// add a record
-	rv = log.add_rec(xid, ior);
-	CPPUNIT_ASSERT(rv == 0);
+		// add a record
+		rv = log.add_rec(xid, ior);
+		CPPUNIT_ASSERT(rv == 0);
 
-	// delete it by key
-	rv = log.del_rec(key.c_str());
-	CPPUNIT_ASSERT(rv == 0);
+		// find it by xid
+		ior = log.find_ior(xid);
+		CPPUNIT_ASSERT(ior != 0);
 
-	// add a record
-	rv = log.add_rec(xid, ior);
-	CPPUNIT_ASSERT(rv == 0);
+		// add another record
+		CPPUNIT_ASSERT(log.add_rec(xid2, (char *) "IOR:2") == 0);
 
-	// find it by key
-	rrp = log.find_rec(key.c_str());
-	CPPUNIT_ASSERT(rrp != 0);
-
-	// find it by xid
-	rrp = log.find_rec(xid);
-	CPPUNIT_ASSERT(rrp != 0);
-
-	// add another records
-	CPPUNIT_ASSERT(log.add_rec(xid2, (char *) "IOR:2") == 0);
-
-	// use an iterator to check that there are two records
-	if (ACE_OS::getenv("BLACKTIE.TX.RECOVERY.DISABLE") == NULL) {
-		i = log.aquire_iter();
-		CPPUNIT_ASSERT(i != 0);
-		while ((rrp = log.next(i)) != 0) {
+		// use an iterator to check that there are two records
+		for (rrec_t* rr = log.find_next(0); rr; rr = log.find_next(rr)) {
 			cnt += 1;
-			log.del_rec(rrp->xid());
+			log.del_rec(rr->xid);
 		}
 
 		CPPUNIT_ASSERT(cnt >= 2);
-		log.release_iter(i);
+	} catch (RMException e) {
+		std::string s = "Error creating recovery log: ";
+		s += e.what();
+		CPPUNIT_FAIL(s.c_str());
 	}
 }
 

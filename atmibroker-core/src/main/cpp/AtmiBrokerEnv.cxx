@@ -163,8 +163,7 @@ AtmiBrokerEnv::getTransportLibrary(char* serviceName) {
 	return NULL;
 }
 
-char*
-AtmiBrokerEnv::getenv(char* anEnvName) {
+const char* AtmiBrokerEnv::getenv(const char* anEnvName, const char* defValue) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "getenv %s" << anEnvName);
 
 	char *envValue = ::getenv(anEnvName);
@@ -182,6 +181,17 @@ AtmiBrokerEnv::getenv(char* anEnvName) {
 			return (*i).value;
 		}
 	}
+
+	return defValue;
+}
+
+char*
+AtmiBrokerEnv::getenv(char* anEnvName) {
+	const char* val = getenv(anEnvName, NULL);
+
+	if (val != NULL)
+		return (char *) val;
+
 	LOG4CXX_ERROR(loggerAtmiBrokerEnv, (char*) "Could not locate: "
 			<< anEnvName);
 	throw new std::exception();

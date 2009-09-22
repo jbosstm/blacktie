@@ -17,13 +17,12 @@
  */
 #include "ThreadLocalStorage.h"
 #include "XAResourceManagerFactory.h"
-//#include "XABranchManager.h"
 #include "TxInitializer.h"
 #include "OrbManagement.h"
 #include "TxManager.h"
 #include "AtmiBrokerEnv.h"
 #include "ace/Thread.h"
-//#include "AtmiBrokerMem.h"
+#include "SynchronizableObject.h"
 #include <vector>
 
 #define TX_GUARD(cond) {    \
@@ -37,30 +36,30 @@ namespace atmibroker {
     namespace tx {
 
 log4cxx::LoggerPtr txmlogger(log4cxx::Logger::getLogger("TxLogManager"));
-//SynchronizableObject* AtmiBrokerMem::lock = new SynchronizableObject();
+SynchronizableObject lock_;
 TxManager *TxManager::_instance = NULL;
 //XXXextern xarm_config_t* xarmp;
 
 TxManager *TxManager::get_instance()
 {
     // TODO add synchronization
-    // lock->lock();
+    lock_.lock();
     if (_instance == NULL)
         _instance = new TxManager();
 
-    // lock->unlock();
+    lock_.unlock();
     return _instance;
 }
 
 void TxManager::discard_instance()
 {
     FTRACE(txmlogger, "ENTER");
-    // lock->lock();
+    lock_.lock();
     if (_instance != NULL) {
         delete _instance;
         _instance = NULL;
     }
-    // lock->unlock();
+    lock_.unlock();
 }
 
 TxManager::TxManager() :
