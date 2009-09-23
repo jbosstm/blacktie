@@ -50,8 +50,8 @@ extern void test_no_tpreturn_service(TPSVCINFO *svcinfo);
 extern void test_tx_tpcall_x_octet_service_without_tx(TPSVCINFO *svcinfo);
 extern void test_tx_tpcall_x_octet_service_with_tx(TPSVCINFO *svcinfo);
 
-extern "C"
-void BAR(TPSVCINFO * svcinfo) {
+
+extern "C" void BAR(TPSVCINFO * svcinfo) {
 	int sendlen = 14;
 	char* buffer = tpalloc((char*) "X_OCTET", NULL, sendlen);
 	strncpy(buffer, "BAR SAYS HELLO", 14);
@@ -411,6 +411,7 @@ JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_serverinit(
 	int argc = sizeof(argv)/sizeof(char*);
 
 	exit_status = serverinit(argc, argv);
+	exit_status = tpadvertise((char*) "BAR", BAR);
 	userlogc((char*) "serverinit returning");
 	return;
 }
