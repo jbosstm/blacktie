@@ -54,14 +54,21 @@ bool XAResourceManagerFactory::getXID(XID& xid)
 
 		int otidlen = (int) otid.tid.length();
 		char JBOSSTS_NODE_SEPARATOR = '-';
-		char tid[1024];	// copy of the ots tid TODO
+		char *tid, *p; // copy of the ots tid
 		char *bq;   // the branch qualifier component
+
+		p = tid = (char*) malloc(otidlen);
+
+		if (tid == 0) {
+			LOG4CXX_WARN(xarflogger, (char*) "Out of memory whilst converting OTS tid");
+			return false;
+		}
 
 		memset(&xid, 0, sizeof (XID));
 		xid.formatID = otid.formatID;
 
-		for (int k = 0; k < otidlen; k++)
-			tid[k] = otid.tid[k];
+		for (int k = 0; k < otidlen; p++, k++)
+			*p = otid.tid[k];
 
 		LOG4CXX_TRACE(xarflogger,  (char *) "converting OTS tid " << tid);
 
@@ -84,6 +91,7 @@ bool XAResourceManagerFactory::getXID(XID& xid)
 			memcpy(xid.data + xid.gtrid_length, bq, xid.bqual_length);
 		}
 
+		free(tid);
 		LOG4CXX_TRACE(xarflogger,  (char *) "converted OTS tid len:" << otidlen << (char *) " XID: "
 			<< xid.formatID << ':' << xid.gtrid_length << ':' << xid.bqual_length << ':' << xid.data);
 
