@@ -250,13 +250,6 @@ int AtmiBrokerEnv::readenv() {
 		AtmiBrokerEnvXml aAtmiBrokerEnvXml;
 		if (aAtmiBrokerEnvXml.parseXmlDescriptor(&envVariableInfoSeq,
 				ENVIRONMENT_DIR, configuration)) {
-			for (std::vector<envVar_t>::iterator i = envVariableInfoSeq.begin(); i
-					!= envVariableInfoSeq.end(); ++i)
-				if (ACE_OS::setenv(i->name, i->value, 1) != 0)
-					LOG4CXX_ERROR(loggerAtmiBrokerEnv,
-							(char*) "Out of memory setting env variable: "
-									<< i->name);
-
 			readEnvironment = true;
 		} else {
 			if (ENVIRONMENT_DIR != NULL) {
