@@ -22,6 +22,6 @@
 
 extern void updateInfo(void *infoVoid, long whenReturn, long controlMode, long timeout, long status); //infoVoid is TXINFO from tx.h
 
-extern XID getXid(void *infoVoid);
+extern XID& getXid(void *infoVoid);
 
 #endif

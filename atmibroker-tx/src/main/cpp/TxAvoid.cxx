@@ -42,7 +42,7 @@ void updateInfo(void *infoVoid, long whenReturn, long controlMode, long timeout,
     LOG4CXX_DEBUG(loggerTxAvoid, (char*) "info status=" << info->transaction_state);
 }
 
-extern XID getXid(void *infoVoid) {
+extern XID& getXid(void *infoVoid) {
 	TXINFO* info = (TXINFO*) infoVoid;
 	return info->xid;
 }
