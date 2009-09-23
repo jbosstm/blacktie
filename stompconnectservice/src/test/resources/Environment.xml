@@ -116,6 +116,10 @@
 				<VALUE>10</VALUE>
 			</ENV_VARIABLE>
 			<ENV_VARIABLE>
+				<NAME>TimeToLive</NAME>
+				<VALUE>10</VALUE>
+			</ENV_VARIABLE>
+			<ENV_VARIABLE>
 				<NAME>QueueReaperInterval</NAME>
 				<VALUE>30</VALUE>
 			</ENV_VARIABLE>
