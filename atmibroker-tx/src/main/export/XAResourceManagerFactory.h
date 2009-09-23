@@ -39,8 +39,10 @@ public:
 private:
 	ResourceManagerMap rms_;
 	XARecoveryLog rclog_;
+	PortableServer::POA_ptr poa_;
 
 	XAResourceManager * createRM(CORBA_CONNECTION *, xarm_config_t *) throw (RMException);
 	void recover_branches();
+	void create_poa(CORBA_CONNECTION * connection) throw (RMException);
 };
 #endif	// _XARESOURCEMANAGERFACTORY_H

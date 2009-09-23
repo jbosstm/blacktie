@@ -70,21 +70,15 @@ static void init_logpath(const char *fname)
 {
 	// if fname is not passed see if the log name is set in the environent
 	const char *logfile = (fname != NULL ? fname :
-		AtmiBrokerEnv::get_instance()->getenv((char*) "BLACKTIE_RECOVERY_LOG", 0));
+		AtmiBrokerEnv::get_instance()->getenv((char*) "BLACKTIE_SERVER_NAME", DEF_LOG));
+	const char *logdir = AtmiBrokerEnv::get_instance()->getenv("BLACKTIE_CONFIGURATION_DIR", 0);
 
-	LOG4CXX_TRACE(xarcllogger, (char *) "init_logpath: logfile=" << logfile);
-	if (logfile == NULL) {
-		// logfile is not specified - use a sensible default:
-		const char *logdir = AtmiBrokerEnv::get_instance()->getenv("BLACKTIE_CONFIGURATION_DIR", 0);
+	LOG4CXX_TRACE(xarcllogger, (char *) "init_logpath: logfile=" << logfile << " logdir=" << logdir);
 
-		LOG4CXX_TRACE(xarcllogger, (char *) "init_logpath: logdir=" << logdir);
-		if (logdir)
-			ACE_OS::snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s/%s", logdir, DEF_LOG);
-		else
-			ACE_OS::snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s", DEF_LOG);
-	} else {
-		ACE_OS::snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s", logfile);
-	}
+	if (logdir)
+		ACE_OS::snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s/%s.rc", logdir, DEF_LOG);
+	else
+		ACE_OS::snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s.rc", DEF_LOG);
 
 	LOG4CXX_TRACE(xarcllogger, (char *) "Using log file " << RCLOGPATH);
 }

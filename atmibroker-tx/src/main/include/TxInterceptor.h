@@ -38,15 +38,16 @@ const CORBA::ULong tx_context_id = 0xabcd;
 class BLACKTIE_TX_DLL TxInterceptor
 {
 public:
-        TxInterceptor(const char *, IOP::CodecFactory_var, const char*);
-        virtual ~TxInterceptor();
+	TxInterceptor(const char *, IOP::CodecFactory_var, const char*);
+	virtual ~TxInterceptor();
 
-        virtual char *name();
-        virtual void destroy() {}
+	virtual char *name();
+	virtual void destroy() {}
 
 	const char * get_orb() { return orbname_; }
+
 protected:
-        char* get_control_ior();
+	char* get_control_ior();
 	bool isTransactional(PortableInterceptor::ServerRequestInfo_ptr);
 	bool isTransactional(PortableInterceptor::ClientRequestInfo_ptr);
 	char * extract_ior_from_context(PortableInterceptor::ClientRequestInfo_ptr);
@@ -60,12 +61,10 @@ protected:
 	void debug(PortableInterceptor::ClientRequestInfo_ptr, const char* msg);
 	void debug(PortableInterceptor::ServerRequestInfo_ptr, const char* msg);
 
-        const char *name_;
-        IOP::Codec_var codec_;
-        AtmiTx::OTSPolicyValue tpv_;
+	const char *name_;
+	IOP::Codec_var codec_;
+	AtmiTx::OTSPolicyValue tpv_;
 	char * orbname_;
-
-private:
 };
 
 #endif

@@ -51,15 +51,15 @@ public:
 	// friend TxManager;
 	void suspend();
 
-    // return a list of outstanding xatmi call descriptors associated with this tx
-    std::vector<int> &get_cds() {return _cds;}
+	// return a list of outstanding xatmi call descriptors associated with this tx
+	std::vector<int> &get_cds() {return _cds;}
 private:
 
 	int end(bool commit, bool report);
 
 	int _tid;	// ACE thread id
 	CosTransactions::Control_ptr _ctrl;
-    std::vector<int> _cds;  // xatmi outstanding tpacall descriptors
+	std::vector<int> _cds;  // xatmi outstanding tpacall descriptors
 };
 } //	namespace tx
 } //namespace atmibroker

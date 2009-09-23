@@ -29,10 +29,10 @@
  * Policy Factory for OTSPolicy
  */
 class OTSPolicyFactory :
-        public virtual PortableInterceptor::PolicyFactory,
-        public virtual ::CORBA::LocalObject
+	public virtual PortableInterceptor::PolicyFactory,
+	public virtual ::CORBA::LocalObject
 {
 public:
-        virtual CORBA::Policy_ptr create_policy (CORBA::PolicyType, const CORBA::Any &);
+	virtual CORBA::Policy_ptr create_policy (CORBA::PolicyType, const CORBA::Any &);
 };
 #endif  // OTS_POLICY_FACTORY_H 

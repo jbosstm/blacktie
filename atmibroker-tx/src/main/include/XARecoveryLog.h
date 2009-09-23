@@ -32,9 +32,9 @@
  * The string form of the IOR follows directly after the recovery record).
  */
 typedef struct rrec {
-    size_t next;	// offset to the next free block
-    long magic;		// mark to indicate the block is allocated
-    XID xid;
+	size_t next;	// offset to the next free block
+	long magic;		// mark to indicate the block is allocated
+	XID xid;
 } rrec_t;
 
 class BLACKTIE_TX_DLL XARecoveryLog {

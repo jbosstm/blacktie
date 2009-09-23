@@ -23,10 +23,10 @@
 
 #ifndef WIN32
 #define FTRACE(logger, message) { \
-        LOG4CXX_TRACE(logger, __FUNCTION__ << (char *) ":" << __LINE__ << (char *) ":" << message); }
+	LOG4CXX_TRACE(logger, __FUNCTION__ << (char *) ":" << __LINE__ << (char *) ":" << message); }
 
 #else
 #define FTRACE(logger, message) { \
-        LOG4CXX_TRACE(logger, (char *) message); }
+	LOG4CXX_TRACE(logger, (char *) message); }
 #endif
 #endif //_TXI_H

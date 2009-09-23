@@ -38,7 +38,7 @@ public:
 	XAResourceAdaptorImpl(XAResourceManager*, XID&, XID&, CORBA::Long, struct xa_switch_t *, XARecoveryLog&) throw (RMException);
 	virtual ~XAResourceAdaptorImpl();
 
-    // OTS resource methods
+	// OTS resource methods
 	Vote prepare() throw (HeuristicMixed,HeuristicHazard);
 	void rollback() throw(HeuristicCommit,HeuristicMixed,HeuristicHazard);
 	void commit() throw(NotPrepared,HeuristicRollback,HeuristicMixed,HeuristicHazard);
@@ -60,8 +60,8 @@ private:
 	struct xa_switch_t * xa_switch_;
 	char *rc_;
 	int flags_;
-    int tightly_coupled_;
-    atmibroker::xa::XAStateModel sm_;
+	int tightly_coupled_;
+	atmibroker::xa::XAStateModel sm_;
 	XARecoveryLog& rclog_;
 	bool prepared_;
 

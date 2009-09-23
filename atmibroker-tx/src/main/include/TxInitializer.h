@@ -29,12 +29,12 @@ class BLACKTIE_TX_DLL TxInitializer : public virtual PortableInterceptor::ORBIni
 {
 public:
 	static TxInitializer* get_instance();
-    void set_orb(const char *);
-    virtual void pre_init (PortableInterceptor::ORBInitInfo_ptr info);
-    virtual void post_init (PortableInterceptor::ORBInitInfo_ptr info);
+	void set_orb(const char *);
+	virtual void pre_init (PortableInterceptor::ORBInitInfo_ptr info);
+	virtual void post_init (PortableInterceptor::ORBInitInfo_ptr info);
 
 protected:
-    TxInitializer();
+	TxInitializer();
 	const char * get_orb() { return orbname_; }
 
 	char * orbname_;

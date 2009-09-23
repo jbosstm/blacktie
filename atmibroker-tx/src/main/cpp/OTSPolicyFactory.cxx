@@ -19,16 +19,16 @@
 
 CORBA::Policy_ptr OTSPolicyFactory::create_policy(CORBA::PolicyType type, const CORBA::Any & value)
 {
-        if (type != AtmiTx::OTS_POLICY_TYPE)
-                throw CORBA::PolicyError(CORBA::BAD_POLICY_TYPE);
+		if (type != AtmiTx::OTS_POLICY_TYPE)
+				throw CORBA::PolicyError(CORBA::BAD_POLICY_TYPE);
 
-        CORBA::UShort val;
+		CORBA::UShort val;
 
-        if (!(value >>= val))
-                throw CORBA::INTERNAL();
+		if (!(value >>= val))
+				throw CORBA::INTERNAL();
 
-        OTSPolicy* p = 0;
-        ACE_NEW_THROW_EX(p, OTSPolicy(val), CORBA::NO_MEMORY());
+		OTSPolicy* p = 0;
+		ACE_NEW_THROW_EX(p, OTSPolicy(val), CORBA::NO_MEMORY());
 
-        return p;
+		return p;
 }

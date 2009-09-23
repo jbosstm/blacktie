@@ -60,9 +60,9 @@ public:	// suspend and resume
 	CosTransactions::Control_ptr tx_suspend(int flags);
 	CosTransactions::Control_ptr tx_suspend(TxControl *, int flags);
 
-    int resume(int cd);
-    int suspend(int cd);
-    bool isCdTransactional(int cd);
+	int resume(int cd);
+	int suspend(int cd);
+	bool isCdTransactional(int cd);
 
 private:
 	TxManager();

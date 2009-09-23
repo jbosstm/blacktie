@@ -24,64 +24,64 @@ extern std::ostream& operator<<(std::ostream &os, const XID& xid);
 using namespace atmibroker::xa;
 
 XAResourceAdaptorImpl::XAResourceAdaptorImpl(
-    XAResourceManager * rm, XID& xid, XID& bid, CORBA::Long rmid,
+	XAResourceManager * rm, XID& xid, XID& bid, CORBA::Long rmid,
 	struct xa_switch_t * xa_switch, XARecoveryLog& log) throw (RMException) :
-    rm_(rm), xid_(xid), bid_(bid), complete_(false), rmid_(rmid), xa_switch_(xa_switch), rc_(0),
-    tightly_coupled_(0), rclog_(log), prepared_(false)
+	rm_(rm), xid_(xid), bid_(bid), complete_(false), rmid_(rmid), xa_switch_(xa_switch), rc_(0),
+	tightly_coupled_(0), rclog_(log), prepared_(false)
 {
-    FTRACE(xaralogger, "ENTER" << (char*) " new OTS resource rmid:" << rmid_ << " branch id: " << bid_);
+	FTRACE(xaralogger, "ENTER" << (char*) " new OTS resource rmid:" << rmid_ << " branch id: " << bid_);
 }
 
 XAResourceAdaptorImpl::~XAResourceAdaptorImpl()
 {
-    FTRACE(xaralogger, "ENTER");
+	FTRACE(xaralogger, "ENTER");
 	if (rc_)
 		free(rc_);
 }
 
 void XAResourceAdaptorImpl::notify_error(int reason, bool forget)
 {
-    FTRACE(xaralogger, "ENTER");
-    if (rm_)
-        rm_->notify_error(&xid_, reason, forget);
+	FTRACE(xaralogger, "ENTER");
+	if (rm_)
+		rm_->notify_error(&xid_, reason, forget);
 }
 
 void XAResourceAdaptorImpl::set_complete()
 {
-    FTRACE(xaralogger, "ENTER");
-    complete_ = true;
+	FTRACE(xaralogger, "ENTER");
+	complete_ = true;
 
-    if (rm_)
-        rm_->set_complete(&xid_);
+	if (rm_)
+		rm_->set_complete(&xid_);
 }
 
 Vote XAResourceAdaptorImpl::prepare()
-    throw (HeuristicMixed,HeuristicHazard)
+	throw (HeuristicMixed,HeuristicHazard)
 {
-    FTRACE(xaralogger, "ENTER astate=" << sm_.astate() << " bstate=" << sm_.bstate());
-    int rv1, rv2;
+	FTRACE(xaralogger, "ENTER astate=" << sm_.astate() << " bstate=" << sm_.bstate());
+	int rv1, rv2;
 
-    // This resource is joining an existing branch. In this case the thread that
-    // originally started the branch is responsible for all updates the RM.
-    // Disable since we have introduced bid_ for unique branches for work
-    // performed on the RM from different processes
-    if (tightly_coupled_)
-        return VoteReadOnly;
+	// This resource is joining an existing branch. In this case the thread that
+	// originally started the branch is responsible for all updates the RM.
+	// Disable since we have introduced bid_ for unique branches for work
+	// performed on the RM from different processes
+	if (tightly_coupled_)
+		return VoteReadOnly;
 
-    rv1 = xa_end(TMSUCCESS);
-    rv2 = xa_prepare(TMNOFLAGS);
+	rv1 = xa_end(TMSUCCESS);
+	rv2 = xa_prepare(TMNOFLAGS);
 
-    if (rv1 != XA_OK && rv2 == XA_OK) {
-        LOG4CXX_DEBUG(xaralogger, (char*) "OTS resource: end TMSUCCESS was already set");
-    }
+	if (rv1 != XA_OK && rv2 == XA_OK) {
+		LOG4CXX_DEBUG(xaralogger, (char*) "OTS resource: end TMSUCCESS was already set");
+	}
 
-    if (rv2 != XA_OK && rv2 != XA_RDONLY) {
-        LOG4CXX_WARN(xaralogger, (char *) xa_switch_->name <<
-            (char*) ": prepare OTS resource error: " << rv2 << " rid=" << rmid_ << (char*) " rv1=" << rv1);
-    } else {
-        LOG4CXX_DEBUG(xaralogger, (char*) "prepare OTS resource end ok: rid=" << rmid_
-            << (char*) " rv1=" << rv1 << " rv2=" << rv2 << " bstate=" << sm_.bstate());
-    }
+	if (rv2 != XA_OK && rv2 != XA_RDONLY) {
+		LOG4CXX_WARN(xaralogger, (char *) xa_switch_->name <<
+			(char*) ": prepare OTS resource error: " << rv2 << " rid=" << rmid_ << (char*) " rv1=" << rv1);
+	} else {
+		LOG4CXX_DEBUG(xaralogger, (char*) "prepare OTS resource end ok: rid=" << rmid_
+			<< (char*) " rv1=" << rv1 << " rv2=" << rv2 << " bstate=" << sm_.bstate());
+	}
 
 	if (rc_ == NULL) {
 		rv2 = XA_RDONLY;
@@ -94,219 +94,219 @@ Vote XAResourceAdaptorImpl::prepare()
 		prepared_ = true;
 	}
 
-    switch (rv2) {
-    case XA_OK:
-        return VoteCommit;
-    case XA_RDONLY:
-        return VoteReadOnly;
-    case XA_RBROLLBACK:
-    case XA_RBCOMMFAIL:
-    case XA_RBDEADLOCK:
-    case XA_RBINTEGRITY:
-    case XA_RBOTHER:
-    case XA_RBPROTO:
-    case XA_RBTIMEOUT:
-    case XA_RBTRANSIENT:
-    case XAER_ASYNC:
-    case XAER_RMERR:
-    case XAER_RMFAIL:
-    case XAER_NOTA:
-    case XAER_INVAL:
-    case XAER_PROTO:
-        return VoteRollback;
-    default:     // shouldn't happen
-        return VoteRollback;
-    }
+	switch (rv2) {
+	case XA_OK:
+		return VoteCommit;
+	case XA_RDONLY:
+		return VoteReadOnly;
+	case XA_RBROLLBACK:
+	case XA_RBCOMMFAIL:
+	case XA_RBDEADLOCK:
+	case XA_RBINTEGRITY:
+	case XA_RBOTHER:
+	case XA_RBPROTO:
+	case XA_RBTIMEOUT:
+	case XA_RBTRANSIENT:
+	case XAER_ASYNC:
+	case XAER_RMERR:
+	case XAER_RMFAIL:
+	case XAER_NOTA:
+	case XAER_INVAL:
+	case XAER_PROTO:
+		return VoteRollback;
+	default:	 // shouldn't happen
+		return VoteRollback;
+	}
 }
 
 void XAResourceAdaptorImpl::terminate(int rv)
-    throw(
-        HeuristicRollback,
-        HeuristicMixed,
-        HeuristicHazard)
+	throw(
+		HeuristicRollback,
+		HeuristicMixed,
+		HeuristicHazard)
 {
-    FTRACE(xaralogger, "ENTER");
+	FTRACE(xaralogger, "ENTER");
 
 	// remove the entry for this branch from the recovery log
 	if (prepared_ && rclog_.del_rec(bid_) != 0) {
-        LOG4CXX_DEBUG(xaralogger, (char *) xa_switch_->name <<
-            ": terminate - entry not found in recovery log rid=" << rmid_);
+		LOG4CXX_DEBUG(xaralogger, (char *) xa_switch_->name <<
+			": terminate - entry not found in recovery log rid=" << rmid_);
 	}
 
-    switch (rv) {
-    default:
-        break;
-    case XA_HEURHAZ: {
-        HeuristicHazard e;
-        notify_error(rv, true);
-        throw e;
-        break;
-    }
-    case XA_HEURCOM:
-        // a heuristic descision to commit was made (we were lucky) 
-        break;
-    case XA_HEURRB:
-    case XA_RBROLLBACK:    // these codes may be returned only if the TMONEPHASE flag was set
-    case XA_RBCOMMFAIL:
-    case XA_RBDEADLOCK:
-    case XA_RBINTEGRITY:
-    case XA_RBOTHER:
-    case XA_RBPROTO:
-    case XA_RBTIMEOUT:
-    case XA_RBTRANSIENT: {
-        HeuristicRollback e;
-        notify_error(rv, true);
-        throw e;
-        break;
-    }
-    case XA_HEURMIX: {
-        HeuristicMixed e;
-        notify_error(rv, true);
-        throw e;
-        break;
-    }
-    }
+	switch (rv) {
+	default:
+		break;
+	case XA_HEURHAZ: {
+		HeuristicHazard e;
+		notify_error(rv, true);
+		throw e;
+		break;
+	}
+	case XA_HEURCOM:
+		// a heuristic descision to commit was made (we were lucky) 
+		break;
+	case XA_HEURRB:
+	case XA_RBROLLBACK:	// these codes may be returned only if the TMONEPHASE flag was set
+	case XA_RBCOMMFAIL:
+	case XA_RBDEADLOCK:
+	case XA_RBINTEGRITY:
+	case XA_RBOTHER:
+	case XA_RBPROTO:
+	case XA_RBTIMEOUT:
+	case XA_RBTRANSIENT: {
+		HeuristicRollback e;
+		notify_error(rv, true);
+		throw e;
+		break;
+	}
+	case XA_HEURMIX: {
+		HeuristicMixed e;
+		notify_error(rv, true);
+		throw e;
+		break;
+	}
+	}
 }
 
 void XAResourceAdaptorImpl::commit()
-    throw(
-        NotPrepared,
-        HeuristicRollback,
-        HeuristicMixed,
-        HeuristicHazard)
+	throw(
+		NotPrepared,
+		HeuristicRollback,
+		HeuristicMixed,
+		HeuristicHazard)
 {
-    FTRACE(xaralogger, "ENTER");
-    if (tightly_coupled_) {
-        set_complete();
-        return;
-    }
-    int rv = xa_commit (TMNOFLAGS);    // no need for xa_end since prepare must have been called
+	FTRACE(xaralogger, "ENTER");
+	if (tightly_coupled_) {
+		set_complete();
+		return;
+	}
+	int rv = xa_commit (TMNOFLAGS);	// no need for xa_end since prepare must have been called
 
-    LOG4CXX_TRACE(xaralogger, (char*) "OTS resource commit rv=" << rv);
+	LOG4CXX_TRACE(xaralogger, (char*) "OTS resource commit rv=" << rv);
 
-    terminate(rv);
+	terminate(rv);
 
-    set_complete();
+	set_complete();
 }
 
 void XAResourceAdaptorImpl::rollback()
-    throw(HeuristicCommit,HeuristicMixed,HeuristicHazard)
+	throw(HeuristicCommit,HeuristicMixed,HeuristicHazard)
 {
-    FTRACE(xaralogger, "ENTER");
-    if (tightly_coupled_) {
-        set_complete();
-        return;
-    }
+	FTRACE(xaralogger, "ENTER");
+	if (tightly_coupled_) {
+		set_complete();
+		return;
+	}
 
-    int rv = xa_end (TMSUCCESS);
+	int rv = xa_end (TMSUCCESS);
 
-    if (rv != XA_OK) {
-        LOG4CXX_WARN(xaralogger, (char *) xa_switch_->name <<
-            (char*) ": rollback OTS resource end failed: error=" << rv << " rid=" << rmid_);
-    } else {
-        LOG4CXX_DEBUG(xaralogger, (char*) "OTS resource end rv=" << rv << " rid=" << rmid_);
-    }
+	if (rv != XA_OK) {
+		LOG4CXX_WARN(xaralogger, (char *) xa_switch_->name <<
+			(char*) ": rollback OTS resource end failed: error=" << rv << " rid=" << rmid_);
+	} else {
+		LOG4CXX_DEBUG(xaralogger, (char*) "OTS resource end rv=" << rv << " rid=" << rmid_);
+	}
 
-    rv = xa_rollback (TMNOFLAGS);
-    LOG4CXX_DEBUG(xaralogger, (char*) "OTS resource rollback rv=" << rv);
-    terminate(rv);
+	rv = xa_rollback (TMNOFLAGS);
+	LOG4CXX_DEBUG(xaralogger, (char*) "OTS resource rollback rv=" << rv);
+	terminate(rv);
 
-    set_complete();
+	set_complete();
 }
 
 void XAResourceAdaptorImpl::commit_one_phase() throw(HeuristicHazard)
 {
-    FTRACE(xaralogger, "ENTER");
-    if (tightly_coupled_) {
-        set_complete();
-        return;
-    }
+	FTRACE(xaralogger, "ENTER");
+	if (tightly_coupled_) {
+		set_complete();
+		return;
+	}
 
-    int rv = xa_end (TMSUCCESS);
+	int rv = xa_end (TMSUCCESS);
 
-    if (rv != XA_OK) {
-        LOG4CXX_WARN(xaralogger, (char *) xa_switch_->name <<
-            (char*) ": commit 1PC OTS resource end failed: error=" << rv << " rid=" << rmid_);
-    } else {
-        LOG4CXX_DEBUG(xaralogger, (char*) "1PC OTS resource end ok, rid=" << rmid_);
-    }
+	if (rv != XA_OK) {
+		LOG4CXX_WARN(xaralogger, (char *) xa_switch_->name <<
+			(char*) ": commit 1PC OTS resource end failed: error=" << rv << " rid=" << rmid_);
+	} else {
+		LOG4CXX_DEBUG(xaralogger, (char*) "1PC OTS resource end ok, rid=" << rmid_);
+	}
 
-    rv = xa_commit (TMONEPHASE);
-    LOG4CXX_DEBUG(xaralogger, (char*) "1PC OTS resource commit rv=" << rv);
+	rv = xa_commit (TMONEPHASE);
+	LOG4CXX_DEBUG(xaralogger, (char*) "1PC OTS resource commit rv=" << rv);
 
-    terminate(rv);
-    set_complete();
+	terminate(rv);
+	set_complete();
 }
 
 void XAResourceAdaptorImpl::forget()
 {
-    FTRACE(xaralogger, "ENTER");
-    int rv = xa_forget (TMNOFLAGS);
+	FTRACE(xaralogger, "ENTER");
+	int rv = xa_forget (TMNOFLAGS);
 
-    LOG4CXX_TRACE(xaralogger, (char*) "OTS resource forget rv=" << rv);
-    set_complete();
+	LOG4CXX_TRACE(xaralogger, (char*) "OTS resource forget rv=" << rv);
+	set_complete();
 }
 // accessors
 bool XAResourceAdaptorImpl::is_complete()
 {
-    FTRACE(xaralogger, "ENTER");
-    return complete_;
+	FTRACE(xaralogger, "ENTER");
+	return complete_;
 }
 
 // XA methods
 int XAResourceAdaptorImpl::xa_start (long flags)
 {
-    FTRACE(xaralogger, (char*) "ENTER astate=" << sm_.astate() << " bstate=" << sm_.bstate());
+	FTRACE(xaralogger, (char*) "ENTER astate=" << sm_.astate() << " bstate=" << sm_.bstate());
  
-    int rv = xa_switch_->xa_start_entry(&bid_, rmid_, flags);
-    return sm_.transition(bid_, XACALL_START, flags, rv);
+	int rv = xa_switch_->xa_start_entry(&bid_, rmid_, flags);
+	return sm_.transition(bid_, XACALL_START, flags, rv);
 }
 int XAResourceAdaptorImpl::xa_end (long flags)
 {
-    FTRACE(xaralogger, (char*) "ENTER bstate=" << std::hex << sm_.bstate() << " flags=" << flags);
+	FTRACE(xaralogger, (char*) "ENTER bstate=" << std::hex << sm_.bstate() << " flags=" << flags);
  
-    // if the branch is already idle just return OK - see ch 6 of the XA specification
-    if (sm_.bstate() == S2)
-        return XA_OK;
+	// if the branch is already idle just return OK - see ch 6 of the XA specification
+	if (sm_.bstate() == S2)
+		return XA_OK;
 
-    int rv = xa_switch_->xa_end_entry(&bid_, rmid_, flags);
-    return sm_.transition(bid_, XACALL_END, flags, rv);
+	int rv = xa_switch_->xa_end_entry(&bid_, rmid_, flags);
+	return sm_.transition(bid_, XACALL_END, flags, rv);
 }
 int XAResourceAdaptorImpl::xa_rollback (long flags)
 {
-    FTRACE(xaralogger, (char*) "ENTER bstate=" << sm_.bstate());
+	FTRACE(xaralogger, (char*) "ENTER bstate=" << sm_.bstate());
 
-    int rv = xa_switch_->xa_rollback_entry(&bid_, rmid_, flags);
-    return sm_.transition(bid_, XACALL_ROLLBACK, flags, rv);
+	int rv = xa_switch_->xa_rollback_entry(&bid_, rmid_, flags);
+	return sm_.transition(bid_, XACALL_ROLLBACK, flags, rv);
 }
 int XAResourceAdaptorImpl::xa_prepare (long flags)
 {
-    FTRACE(xaralogger, (char*) "ENTER bstate=" << sm_.bstate());
-    int rv = xa_switch_->xa_prepare_entry(&bid_, rmid_, flags);
-    return sm_.transition(bid_, XACALL_PREPARE, flags, rv);
+	FTRACE(xaralogger, (char*) "ENTER bstate=" << sm_.bstate());
+	int rv = xa_switch_->xa_prepare_entry(&bid_, rmid_, flags);
+	return sm_.transition(bid_, XACALL_PREPARE, flags, rv);
 }
 int XAResourceAdaptorImpl::xa_commit (long flags)
 {
-    FTRACE(xaralogger, (char*) "ENTER bstate=" << sm_.bstate());
+	FTRACE(xaralogger, (char*) "ENTER bstate=" << sm_.bstate());
 	LOG4CXX_DEBUG(xaralogger, (char*) "Commiting resource with branch id: " << bid_);
-    int rv = xa_switch_->xa_commit_entry(&bid_, rmid_, flags);
-    return sm_.transition(bid_, XACALL_COMMIT, flags, rv);
+	int rv = xa_switch_->xa_commit_entry(&bid_, rmid_, flags);
+	return sm_.transition(bid_, XACALL_COMMIT, flags, rv);
 }
 int XAResourceAdaptorImpl::xa_recover (long xxx, long flags)
 {
-    FTRACE(xaralogger, (char*) "ENTER bstate=" << sm_.bstate());
-    int rv = xa_switch_->xa_recover_entry(&bid_, xxx, rmid_, flags);
-    return sm_.transition(bid_, XACALL_RECOVER, flags, rv);
+	FTRACE(xaralogger, (char*) "ENTER bstate=" << sm_.bstate());
+	int rv = xa_switch_->xa_recover_entry(&bid_, xxx, rmid_, flags);
+	return sm_.transition(bid_, XACALL_RECOVER, flags, rv);
 }
 int XAResourceAdaptorImpl::xa_forget (long flags)
 {
-    FTRACE(xaralogger, (char*) "ENTER bstate=" << sm_.bstate());
-    int rv = xa_switch_->xa_forget_entry(&bid_, rmid_, flags);
-    return sm_.transition(bid_, XACALL_FORGET, flags, rv);
+	FTRACE(xaralogger, (char*) "ENTER bstate=" << sm_.bstate());
+	int rv = xa_switch_->xa_forget_entry(&bid_, rmid_, flags);
+	return sm_.transition(bid_, XACALL_FORGET, flags, rv);
 }
 int XAResourceAdaptorImpl::xa_complete (int * handle, int * retvalue, long flags)
 {
-    FTRACE(xaralogger, (char*) "ENTER");
-    int rv = xa_switch_->xa_complete_entry(handle, retvalue, rmid_, flags);
-    return rv;
+	FTRACE(xaralogger, (char*) "ENTER");
+	int rv = xa_switch_->xa_complete_entry(handle, retvalue, rmid_, flags);
+	return rv;
 }

@@ -25,22 +25,22 @@
  * simulate CosTransactions OTSPolicy
  */
 class OTSPolicy :
-        public virtual AtmiTx::OTSPolicy,
-        public virtual ::CORBA::LocalObject
+	public virtual AtmiTx::OTSPolicy,
+	public virtual ::CORBA::LocalObject
 {
 public:
-        OTSPolicy(CORBA::UShort val);
+	OTSPolicy(CORBA::UShort val);
 
-        virtual CORBA::UShort tpv(void);
-        virtual CORBA::PolicyType policy_type(void);
-        virtual CORBA::Policy_ptr copy(void);
-        virtual void destroy(void);
+	virtual CORBA::UShort tpv(void);
+	virtual CORBA::PolicyType policy_type(void);
+	virtual CORBA::Policy_ptr copy(void);
+	virtual void destroy(void);
 
 protected:
-~OTSPolicy(void);
+	~OTSPolicy(void);
 
 private:
-        const CORBA::UShort tpv_;
+	const CORBA::UShort tpv_;
 };
 
 #endif // OTS_POLICY_H

@@ -30,33 +30,31 @@
  * Client side orb request intercpetor for implicit transaction propagation
  */
 class BLACKTIE_TX_DLL ClientInterceptor:
-        public virtual PortableInterceptor::ClientRequestInterceptor,
-        public virtual ::CORBA::LocalObject,
-        public virtual TxInterceptor
+	public virtual PortableInterceptor::ClientRequestInterceptor,
+	public virtual ::CORBA::LocalObject,
+	public virtual TxInterceptor
 {
 public:
-        ClientInterceptor(const char *, IOP::CodecFactory_var);
-        virtual ~ClientInterceptor() {}
+	ClientInterceptor(const char *, IOP::CodecFactory_var);
+	virtual ~ClientInterceptor() {}
 
-        virtual char* name() { return TxInterceptor::name();}
-        virtual void destroy() { TxInterceptor::destroy();}
+	virtual char* name() { return TxInterceptor::name();}
+	virtual void destroy() { TxInterceptor::destroy();}
 
-        virtual void send_poll(PortableInterceptor::ClientRequestInfo_ptr ri);
-        virtual void send_request(PortableInterceptor::ClientRequestInfo_ptr ri);
-        virtual void receive_reply(PortableInterceptor::ClientRequestInfo_ptr ri);
-        virtual void receive_other(PortableInterceptor::ClientRequestInfo_ptr ri);
-        virtual void receive_exception(PortableInterceptor::ClientRequestInfo_ptr ri);
+	virtual void send_poll(PortableInterceptor::ClientRequestInfo_ptr ri);
+	virtual void send_request(PortableInterceptor::ClientRequestInfo_ptr ri);
+	virtual void receive_reply(PortableInterceptor::ClientRequestInfo_ptr ri);
+	virtual void receive_other(PortableInterceptor::ClientRequestInfo_ptr ri);
+	virtual void receive_exception(PortableInterceptor::ClientRequestInfo_ptr ri);
 
 private:
-        void resume_tx(PortableInterceptor::ClientRequestInfo_ptr);
+	void resume_tx(PortableInterceptor::ClientRequestInfo_ptr);
 	long find_control(CORBA::ULong requestId, bool);
 
-        // outstanding requests to transaction map
-        typedef std::map<CORBA::ULong, long> ActiveTxMap;
+	// outstanding requests to transaction map
+	typedef std::map<CORBA::ULong, long> ActiveTxMap;
 
-        ActiveTxMap pending;
-
-private:
+	ActiveTxMap pending;
 };
 
 #endif // CLIENTINTERCEPTOR_H

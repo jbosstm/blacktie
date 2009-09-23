@@ -26,14 +26,14 @@ class XAResourceAdaptorImpl;
 class xid_cmp
 {   
 public: 
-    bool operator()(const XID& xid1, const XID& xid2);
+	bool operator()(const XID& xid1, const XID& xid2);
 };  
 
 class BLACKTIE_TX_DLL XAResourceManager
 {
 public:
 	XAResourceManager(CORBA_CONNECTION *, const char *, const char *, const char *,
-		CORBA::Long, struct xa_switch_t *, XARecoveryLog& log) throw (RMException);
+		CORBA::Long, struct xa_switch_t *, XARecoveryLog& log, PortableServer::POA_ptr poa) throw (RMException);
 	virtual ~XAResourceManager();
 
 	int xa_start (XID *, long);
@@ -45,12 +45,12 @@ public:
 	void notify_error(XID *, int, bool);
 	void set_complete(XID*);
 	const char * name() {return name_;}
-    int xa_flags();
+	int xa_flags();
 
 	struct xa_switch_t * get_xa_switch() { return xa_switch_;}
-    static XID gen_xid(long rmid, XID &gid);
+	static XID gen_xid(long rmid, XID &gid);
+
 private:
-	//typedef std::map<XID *, XAResourceAdaptorImpl *> XABranchMap;
 	typedef std::map<XID, XAResourceAdaptorImpl *, xid_cmp> XABranchMap;
 	XABranchMap branches_;
 

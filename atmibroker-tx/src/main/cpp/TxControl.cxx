@@ -21,10 +21,10 @@
 #include "TxManager.h"
 
 #define TX_GUARD(msg, expect) { \
-    FTRACE(txclogger, "ENTER"); \
-    if (!isActive(msg, expect)) {   \
-        return TX_PROTOCOL_ERROR;   \
-    }}
+	FTRACE(txclogger, "ENTER"); \
+	if (!isActive(msg, expect)) {   \
+		return TX_PROTOCOL_ERROR;   \
+	}}
 
 namespace atmibroker {
 	namespace tx {
@@ -39,21 +39,21 @@ TxControl::~TxControl()
 {
 	FTRACE(txclogger, "ENTER delete TXCONTROL: " << this);
 
-    if (_cds.size() != 0) {
-        LOG4CXX_ERROR(txclogger, (char*) "delete called with outstanding tp calls");
-    }
+	if (_cds.size() != 0) {
+		LOG4CXX_ERROR(txclogger, (char*) "delete called with outstanding tp calls");
+	}
 
 	suspend();
 }
 
 int TxControl::end(bool commit, bool reportHeuristics)
 {
-    TX_GUARD("end", true);
+	TX_GUARD("end", true);
 
-    if (_cds.size() != 0) {
-        LOG4CXX_WARN(txclogger, (char*) "protocol error: there are outstanding tp calls");
-        return TX_PROTOCOL_ERROR;
-    }
+	if (_cds.size() != 0) {
+		LOG4CXX_WARN(txclogger, (char*) "protocol error: there are outstanding tp calls");
+		return TX_PROTOCOL_ERROR;
+	}
 
 	int outcome = TX_OK;
 	CosTransactions::Terminator_var term;
@@ -122,7 +122,7 @@ int TxControl::rollback()
 
 int TxControl::rollback_only()
 {
-    TX_GUARD("rollback_only", true);
+	TX_GUARD("rollback_only", true);
 
 	try {
 		CosTransactions::Coordinator_var coord = _ctrl->get_coordinator();
@@ -196,7 +196,7 @@ int TxControl::get_status()
 
 int TxControl::get_timeout(CORBA::ULong *timeout)
 {
-    TX_GUARD(NULL, false);
+	TX_GUARD(NULL, false);
 
 	try {
 		CosTransactions::PropagationContext* context = _ctrl->get_coordinator()->get_txcontext();
@@ -257,7 +257,7 @@ bool TxControl::isActive(const char *msg, bool expect)
 
 bool TxControl::isOriginator()
 {
-    return (_tid != 0);
+	return (_tid != 0);
 }
 
 } //	namespace tx

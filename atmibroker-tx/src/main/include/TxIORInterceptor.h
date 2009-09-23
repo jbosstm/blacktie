@@ -30,23 +30,23 @@
  * IOR interceptor for tagging IORs as transactional
  */
 class BLACKTIE_TX_DLL TxIORInterceptor:
-        public virtual PortableInterceptor::IORInterceptor,
-        public TxInterceptor
+	public virtual PortableInterceptor::IORInterceptor,
+	public TxInterceptor
 {
 public:
-        TxIORInterceptor(const char *, IOP::CodecFactory_var);
-        virtual ~TxIORInterceptor() {}
+	TxIORInterceptor(const char *, IOP::CodecFactory_var);
+	virtual ~TxIORInterceptor() {}
 
-        char* name() { return TxInterceptor::name();}
-        void destroy() { TxInterceptor::destroy();}
+	char* name() { return TxInterceptor::name();}
+	void destroy() { TxInterceptor::destroy();}
 
-        void establish_components(PortableInterceptor::IORInfo_ptr info);
+	void establish_components(PortableInterceptor::IORInfo_ptr info);
 
-        void components_established (PortableInterceptor::IORInfo_ptr) {}
-        void adapter_manager_state_changed(PortableInterceptor::AdapterManagerId, PortableInterceptor::AdapterState) {}
-        void adapter_state_changed(const PortableInterceptor::ObjectReferenceTemplateSeq&, PortableInterceptor::AdapterState) {}
+	void components_established (PortableInterceptor::IORInfo_ptr) {}
+	void adapter_manager_state_changed(PortableInterceptor::AdapterManagerId, PortableInterceptor::AdapterState) {}
+	void adapter_state_changed(const PortableInterceptor::ObjectReferenceTemplateSeq&, PortableInterceptor::AdapterState) {}
 
 private:
-        void addOTSTag(PortableInterceptor::IORInfo_ptr info);
+	void addOTSTag(PortableInterceptor::IORInfo_ptr info);
 };
 #endif //_TXIORINTERCEPTOR_H

@@ -38,57 +38,57 @@ TxInitializer* TxInitializer::instance = NULL;
 
 log4cxx::LoggerPtr loggerTxInitializer(log4cxx::Logger::getLogger("TxLogInitializer"));
 TxInitializer* TxInitializer::get_instance() {
-    if (instance == NULL) {
-        instance = new TxInitializer();
-        PortableInterceptor::register_orb_initializer(instance);
-    }
-    return instance;
+	if (instance == NULL) {
+		instance = new TxInitializer();
+		PortableInterceptor::register_orb_initializer(instance);
+	}
+	return instance;
 }
 
 TxInitializer::TxInitializer() : orbname_(0) {
 }
 
 void TxInitializer::set_orb(const char * name) {
-    FTRACE(loggerTxInitializer, "ENTER");
-    if (orbname_ != 0)
-        free(orbname_);
-    orbname_ = strdup(name);
+	FTRACE(loggerTxInitializer, "ENTER");
+	if (orbname_ != 0)
+		free(orbname_);
+	orbname_ = strdup(name);
 }
 
 void TxInitializer::pre_init(PortableInterceptor::ORBInitInfo_ptr info) {
-    FTRACE(loggerTxInitializer, "ENTER");
+	FTRACE(loggerTxInitializer, "ENTER");
 }
 
 void TxInitializer::post_init(PortableInterceptor::ORBInitInfo_ptr info) {
-    FTRACE(loggerTxInitializer, "ENTER");
-    LOG4CXX_LOGLS(loggerTxInitializer, log4cxx::Level::getDebug(), (char*) "");
+	FTRACE(loggerTxInitializer, "ENTER");
+	LOG4CXX_LOGLS(loggerTxInitializer, log4cxx::Level::getDebug(), (char*) "");
 
-    // register policy factories
-    PortableInterceptor::PolicyFactory_ptr p;
+	// register policy factories
+	PortableInterceptor::PolicyFactory_ptr p;
 
-    ACE_NEW_THROW_EX(p, OTSPolicyFactory,
-            CORBA::NO_MEMORY(CORBA::SystemException::_tao_minor_code(TAO::VMCID, ENOMEM), CORBA::COMPLETED_NO));
+	ACE_NEW_THROW_EX(p, OTSPolicyFactory,
+			CORBA::NO_MEMORY(CORBA::SystemException::_tao_minor_code(TAO::VMCID, ENOMEM), CORBA::COMPLETED_NO));
 
-    PortableInterceptor::PolicyFactory_var pf(p);
-    info->register_policy_factory(AtmiTx::OTS_POLICY_TYPE, pf.in());
+	PortableInterceptor::PolicyFactory_var pf(p);
+	info->register_policy_factory(AtmiTx::OTS_POLICY_TYPE, pf.in());
 
-    IOP::CodecFactory_var cf = info->codec_factory();
+	IOP::CodecFactory_var cf = info->codec_factory();
 
-    // register IOR interceptors
-    PortableInterceptor::IORInterceptor_var iori = new TxIORInterceptor(orbname_, cf);
-    info->add_ior_interceptor(iori.in());
+	// register IOR interceptors
+	PortableInterceptor::IORInterceptor_var iori = new TxIORInterceptor(orbname_, cf);
+	info->add_ior_interceptor(iori.in());
 
-    // register server side interceptors.
-    PortableInterceptor::ServerRequestInterceptor_var si = new ServerInterceptor(orbname_, cf);
-    info->add_server_request_interceptor(si.in());
+	// register server side interceptors.
+	PortableInterceptor::ServerRequestInterceptor_var si = new ServerInterceptor(orbname_, cf);
+	info->add_server_request_interceptor(si.in());
 
-    // register client side interceptors.
-    PortableInterceptor::ClientRequestInterceptor_var ci = new ClientInterceptor(orbname_, cf);
-    info->add_client_request_interceptor(ci.in());
-    FTRACE(loggerTxInitializer, "<");
+	// register client side interceptors.
+	PortableInterceptor::ClientRequestInterceptor_var ci = new ClientInterceptor(orbname_, cf);
+	info->add_client_request_interceptor(ci.in());
+	FTRACE(loggerTxInitializer, "<");
 }
 
 void register_tx_interceptors(const char *name) {
-    FTRACE(loggerTxInitializer, "ENTER");
-    TxInitializer::get_instance()->set_orb(name);
+	FTRACE(loggerTxInitializer, "ENTER");
+	TxInitializer::get_instance()->set_orb(name);
 }

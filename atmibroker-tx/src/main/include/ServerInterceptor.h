@@ -27,24 +27,24 @@
  * Server side orb request intercpetor for implicit transaction propagation
  */
 class BLACKTIE_TX_DLL ServerInterceptor:
-        public virtual TxInterceptor,
-        public PortableInterceptor::ServerRequestInterceptor
+	public virtual TxInterceptor,
+	public PortableInterceptor::ServerRequestInterceptor
 {
 public:
-        ServerInterceptor(const char *, IOP::CodecFactory_var);
-        virtual ~ServerInterceptor() {}
+	ServerInterceptor(const char *, IOP::CodecFactory_var);
+	virtual ~ServerInterceptor() {}
 
-        virtual char* name() { return TxInterceptor::name();}
-        virtual void destroy() { TxInterceptor::destroy();}
+	virtual char* name() { return TxInterceptor::name();}
+	virtual void destroy() { TxInterceptor::destroy();}
 
-        virtual void receive_request(PortableInterceptor::ServerRequestInfo_ptr);
-        virtual void receive_request_service_contexts(PortableInterceptor::ServerRequestInfo_ptr);
-        virtual void send_reply(PortableInterceptor::ServerRequestInfo_ptr);
-        virtual void send_exception(PortableInterceptor::ServerRequestInfo_ptr);
-        virtual void send_other(PortableInterceptor::ServerRequestInfo_ptr);
+	virtual void receive_request(PortableInterceptor::ServerRequestInfo_ptr);
+	virtual void receive_request_service_contexts(PortableInterceptor::ServerRequestInfo_ptr);
+	virtual void send_reply(PortableInterceptor::ServerRequestInfo_ptr);
+	virtual void send_exception(PortableInterceptor::ServerRequestInfo_ptr);
+	virtual void send_other(PortableInterceptor::ServerRequestInfo_ptr);
 
 private:
-        bool policyCheck(PortableInterceptor::ServerRequestInfo_ptr);
+	bool policyCheck(PortableInterceptor::ServerRequestInfo_ptr);
 };
 
 #endif

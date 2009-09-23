@@ -30,20 +30,20 @@ OTSPolicy::~OTSPolicy(void)
 
 AtmiTx::OTSPolicyValue OTSPolicy::tpv(void)
 {
-        return this->tpv_;
+	return this->tpv_;
 }
 
 CORBA::PolicyType OTSPolicy::policy_type(void)
 {
-        return AtmiTx::OTS_POLICY_TYPE;
+	return AtmiTx::OTS_POLICY_TYPE;
 }
 
 CORBA::Policy_ptr OTSPolicy::copy(void)
 {
-        CORBA::Policy_ptr p;
-        ACE_NEW_THROW_EX(p, OTSPolicy(this->tpv_), CORBA::NO_MEMORY());
+	CORBA::Policy_ptr p;
+	ACE_NEW_THROW_EX(p, OTSPolicy(this->tpv_), CORBA::NO_MEMORY());
 
-        return p;
+	return p;
 }
 
 void OTSPolicy::destroy(void)
