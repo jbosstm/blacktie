@@ -26,7 +26,6 @@
 #include "AtmiBrokerServerControl.h"
 #include "ace/OS_NS_unistd.h"
 #include "xatmi.h"
-#include "tx.h"
 #include "userlogc.h"
 #include "XATMITestSuite.h"
 
@@ -38,7 +37,6 @@ int interationCount = 100;
 
 
 #include "xatmi.h"
-#include "tx.h"
 #include "userlogc.h"
 
 
@@ -48,6 +46,9 @@ extern void test_tpcall_TPESVCFAIL_service(TPSVCINFO *svcinfo);
 extern void test_tprecv_TPEV_DISCONIMM_service(TPSVCINFO *svcinfo);
 extern void test_tprecv_TPEV_SVCFAIL_service(TPSVCINFO *svcinfo);
 extern void test_no_tpreturn_service(TPSVCINFO *svcinfo);
+
+extern void test_tx_tpcall_x_octet_service_without_tx(TPSVCINFO *svcinfo);
+extern void test_tx_tpcall_x_octet_service_with_tx(TPSVCINFO *svcinfo);
 
 extern "C"
 void BAR(TPSVCINFO * svcinfo) {
@@ -381,41 +382,6 @@ void testtpunadvertise_service(TPSVCINFO *svcinfo) {
 	// Changed length from 0L to svcinfo->len
 	tpreturn(TPSUCCESS, 0, toReturn, 25, 0);
 	delete toReturn;
-}
-void test_tx_tpcall_x_octet_service_without_tx(TPSVCINFO *svcinfo) {
-	userlogc(
-			(char*) (char*) "TxLog: service running: test_tx_tpcall_x_octet_service_without_tx");
-	int len = 60;
-	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
-	TXINFO txinfo;
-	int inTx = ::tx_info(&txinfo);
-	userlogc(
-			(char*) (char*) "TxLog: service running: test_tx_tpcall_x_octet_service_without_tx inTx=%d",
-			inTx);
-	if (inTx == 0) { // or && txinfo.transaction_state != TX_ACTIVE
-		strcpy(toReturn, "test_tx_tpcall_x_octet_service_without_tx");
-	} else {
-		strcpy(toReturn, svcinfo->data);
-	}
-	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
-}
-
-void test_tx_tpcall_x_octet_service_with_tx(TPSVCINFO *svcinfo) {
-	userlogc(
-			(char*) (char*) "TxLog: service running: test_tx_tpcall_x_octet_service_with_tx");
-	int len = 60;
-	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
-	TXINFO txinfo;
-	int inTx = ::tx_info(&txinfo);
-	userlogc(
-			(char*) (char*) "TxLog: service running: test_tx_tpcall_x_octet_service_with_tx inTx=%d",
-			inTx);
-	if (inTx == 1) { // or && txinfo.transaction_state == TX_ACTIVE
-		strcpy(toReturn, "test_tx_tpcall_x_octet_service_with_tx");
-	} else {
-		strcpy(toReturn, svcinfo->data);
-	}
-	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }
 
 void test_time_to_live_service(TPSVCINFO *svcinfo) {

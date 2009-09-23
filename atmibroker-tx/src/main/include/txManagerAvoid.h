@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2008, Red Hat, Inc., and others contributors as indicated
+ * Copyright 2009, Red Hat, Inc., and others contributors as indicated
  * by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -15,17 +15,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef BaseTest_H
-#define BaseTest_H
+#ifndef _TXMANAGERAVOID_H
+#define _TXMANAGERAVOID_H
 
-#include "cppunit/TestFixture.h"
-#include <string.h>
-#include "userlogc.h"
 
-class BaseTest: public CppUnit::TestFixture {
-public:
-	virtual void setUp();
-	virtual void tearDown();
-};
+extern int txManager_begin(void);
+extern int txManager_close(void);
+extern int txManager_commit(void);
+extern int txManager_open(void);
+extern int txManager_rollback(void);
+extern int txManager_set_commit_return(long);
+extern int txManager_set_transaction_control(long control);
+extern int txManager_set_transaction_timeout(long timeout);
+extern int txManager_info(void *);
 
-#endif // BaseTest_H
+#endif

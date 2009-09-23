@@ -71,7 +71,7 @@ typedef long TRANSACTION_CONTROL;
 typedef long TRANSACTION_TIMEOUT;
 
 /* transaction state values */
-typedef long TX_TRANSACTION_STATE;
+typedef long TRANSACTION_STATE;
 #define TX_ACTIVE 0
 #define TX_TIMEOUT_ROLLBACK_ONLY 1
 #define TX_ROLLBACK_ONLY 2
@@ -82,7 +82,7 @@ struct tx_info_t {
  COMMIT_RETURN       when_return;
  TRANSACTION_CONTROL transaction_control;
  TRANSACTION_TIMEOUT transaction_timeout;
- TX_TRANSACTION_STATE   transaction_state;
+ TRANSACTION_STATE   transaction_state;
 };
 typedef struct tx_info_t TXINFO;
 

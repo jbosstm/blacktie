@@ -25,6 +25,60 @@
 #include "TxControl.h"
 #include "XAResourceManagerFactory.h"
 
+#define TX_NOT_SUPPORTED   1   /* normal execution */
+#define TX_OK              0   /* normal execution */
+#define TX_OUTSIDE        -1   /* application is in an RM local
+                                  transaction */
+#define TX_ROLLBACK       -2   /* transaction was rolled back */
+#define TX_MIXED          -3   /* transaction was partially committed
+                                  and partially rolled back */
+#define TX_HAZARD         -4   /* transaction may have been partially
+                                  committed and partially rolled back*/
+#define TX_PROTOCOL_ERROR -5   /* routine invoked in an improper
+                                  context */
+#define TX_ERROR          -6   /* transient error */
+#define TX_FAIL           -7   /* fatal error */
+#define TX_EINVAL         -8   /* invalid arguments were given */
+#define TX_COMMITTED      -9   /* the transaction was heuristically
+                                  committed */
+#define TX_NO_BEGIN       -100 /* transaction committed plus new
+                                  transaction could not be started */
+#define TX_ROLLBACK_NO_BEGIN (TX_ROLLBACK+TX_NO_BEGIN)
+/* transaction rollback plus new
+ transaction could not be started */
+#define TX_MIXED_NO_BEGIN (TX_MIXED+TX_NO_BEGIN)
+/* mixed plus transaction could not
+ be started */
+#define TX_HAZARD_NO_BEGIN (TX_HAZARD+TX_NO_BEGIN)
+/* hazard plus transaction could not
+ be started */
+#define TX_COMMITTED_NO_BEGIN (TX_COMMITTED+TX_NO_BEGIN)
+/* heuristically committed plus
+ transaction could not be started */
+
+/*
+ * Definitions for tx_*() routines
+ */
+
+/* commit return values */
+typedef long COMMIT_RETURN;
+#define TX_COMMIT_COMPLETED 0
+#define TX_COMMIT_DECISION_LOGGED 1
+
+/* transaction control values */
+typedef long TRANSACTION_CONTROL;
+#define TX_UNCHAINED 0
+#define TX_CHAINED 1
+
+/* type of transaction timeouts */
+typedef long TRANSACTION_TIMEOUT;
+
+/* transaction state values */
+//typedef long TRANSACTION_STATE;
+#define TX_ACTIVE 0
+#define TX_TIMEOUT_ROLLBACK_ONLY 1
+#define TX_ROLLBACK_ONLY 2
+
 namespace atmibroker {
 	namespace tx {
 
@@ -43,7 +97,7 @@ public:
 	TRANSACTION_CONTROL get_transaction_control() {return _controlMode;}
 	int set_transaction_timeout(TRANSACTION_TIMEOUT);
 	TRANSACTION_TIMEOUT get_transaction_timeout() {return _timeout;}
-	int info(TXINFO *);
+	int info(void *); //TXINFO from tx.h
 	bool isChained() {return _controlMode == TX_CHAINED;}
 	bool reportHeuristics() {return _whenReturn == TX_COMMIT_COMPLETED;}
 

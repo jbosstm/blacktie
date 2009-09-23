@@ -165,7 +165,7 @@ int XAResourceManager::recover(XID& bid, const char* rc)
 					break;
 				}
 			} catch (CosTransactions::NotPrepared& e) {
-				LOG4CXX_INFO(xarmlogger, (char *) "Recovery: TM says the transaction as not prepared");
+				LOG4CXX_INFO(xarmlogger, (char *) "Recovery: TM says the transaction as not prepared: " << e._name());
 			} catch (const CORBA::SystemException& e) {
 				LOG4CXX_WARN(xarmlogger, (char*) "Recovery: replay error: " << e._name() << " minor: " << e.minor());
 			}

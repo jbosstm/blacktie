@@ -41,6 +41,16 @@
 #include "ace/Signal.h"
 #include "ThreadLocalStorage.h"
 
+// WORK AROUND FOR NO tx.h
+#define TX_OK              0
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern BLACKTIE_TX_DLL int tx_open(void);
+#ifdef __cplusplus
+}
+#endif
+
 log4cxx::LoggerPtr loggerAtmiBrokerServer(log4cxx::Logger::getLogger(
 		"AtmiBrokerServer"));
 AtmiBrokerServer * ptrServer = NULL;

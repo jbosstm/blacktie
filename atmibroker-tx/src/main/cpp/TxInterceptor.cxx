@@ -102,36 +102,39 @@ char * TxInterceptor::extract_ior_from_context(PortableInterceptor::ServerReques
 		const char * ior = reinterpret_cast<const char *> (ocSeq.get_buffer());
 		LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getTrace(), (char *) "\tserver received ior: " << ior);
 
-		if (ior != NULL)
-			return strdup(ior);
-	} catch (const CORBA::BAD_PARAM &) {
-		// this means that there is no service context for tx_context_id which means that eiter:
-		// - the caller is non-transactional, or
-		// - the caller is not running in transaction context
-	} catch (CORBA::SystemException& ex) {
-		LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getWarn(), (char *) "\tserver service context error");
-		throw ;
-	}
+
+        if (ior != NULL)
+            return strdup(ior);
+    } catch (const CORBA::BAD_PARAM & ex) {
+        // this means that there is no service context for tx_context_id which means that eiter:
+        // - the caller is non-transactional, or
+        // - the caller is not running in transaction context
+		LOG4CXX_TRACE(atmiTxInterceptorLogger, (char*) "extract_ior_from_context: " << ex._name());
+    } catch (CORBA::SystemException& ex) {
+		LOG4CXX_WARN(atmiTxInterceptorLogger, (char *) "server service context error: " << ex._name());
+        throw ;
+    }
 
 	return NULL;
 }
 char * TxInterceptor::extract_ior_from_context(PortableInterceptor::ClientRequestInfo_ptr ri) {
-	FTRACE(atmiTxInterceptorLogger, "ENTER");
-	try {
-		IOP::ServiceContext_var sc = ri->get_request_service_context(tx_context_id);
-		CORBA::OctetSeq ocSeq = sc->context_data;
-		const char * ior = reinterpret_cast<const char *> (ocSeq.get_buffer());
-		LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getTrace(), (char *) "\tclient received ior: " << ior);
-		if (ior != NULL)
-			return strdup(ior);
-	} catch (const CORBA::BAD_PARAM &) {
-		// this means that there is no service context for tx_context_id which means that eiter:
-		// - the caller is non-transactional, or
-		// - the caller is not running in transaction context
-	} catch (CORBA::SystemException& ex) {
-		LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getWarn(), (char *) "\tclient service context error");
-		throw ;
-	}
+    FTRACE(atmiTxInterceptorLogger, "ENTER");
+    try {
+        IOP::ServiceContext_var sc = ri->get_request_service_context(tx_context_id);
+        CORBA::OctetSeq ocSeq = sc->context_data;
+        const char * ior = reinterpret_cast<const char *> (ocSeq.get_buffer());
+        LOG4CXX_LOGLS(atmiTxInterceptorLogger, log4cxx::Level::getTrace(), (char *) "\tclient received ior: " << ior);
+        if (ior != NULL)
+            return strdup(ior);
+    } catch (const CORBA::BAD_PARAM & ex) {
+        // this means that there is no service context for tx_context_id which means that eiter:
+        // - the caller is non-transactional, or
+        // - the caller is not running in transaction context
+		LOG4CXX_TRACE(atmiTxInterceptorLogger, (char*) "extract_ior_from_context: " << ex._name());
+    } catch (CORBA::SystemException& ex) {
+        LOG4CXX_WARN(atmiTxInterceptorLogger, (char *) "client service context error: " << ex._name());
+        throw ;
+    }
 
 	return NULL;
 }

@@ -24,6 +24,7 @@
 #include "ace/Thread.h"
 #include "SynchronizableObject.h"
 #include <vector>
+#include "txAvoid.h"
 
 #define TX_GUARD(cond) {	\
 	FTRACE(txmlogger, "ENTER"); \
@@ -251,33 +252,25 @@ int TxManager::set_transaction_timeout(TRANSACTION_TIMEOUT timeout)
 	return TX_OK;
 }
 
-int TxManager::info(TXINFO *info)
+int TxManager::info(void *info)
 {
 	TX_GUARD(_isOpen);
 
 	atmibroker::tx::TxControl *tx = currentTx(NULL);
 
-	if (info != 0) {
-		info->transaction_state = -1L;
-		(info->xid).formatID = -1L; // means the XID is null
-		info->when_return = _whenReturn;
-		info->transaction_control = _controlMode;
-		/*
-		 * the timeout that will be used when this process begins the next transaction
-		 * (it is not neccessarily the timeout for the current transaction since
-		 * this may have been set in another process or it may have been changed by
-		 * this process after the current transaction was started).
-		 */
-		info->transaction_timeout = _timeout;
-
-		if (tx != NULL) {
-			XAResourceManagerFactory::getXID(info->xid);
-			info->transaction_state = tx->get_status();
-		}
-	}
-
-	LOG4CXX_DEBUG(txmlogger, (char*) "info status=" << info->transaction_state << " tx=" << tx);
-	return (tx != NULL ? 1 : 0);
+    if (info != 0) {
+        long whenReturn = _whenReturn;
+        long controlMode = _controlMode;
+		long status = -1;
+        long timeout = _timeout;
+        if (tx != NULL) {
+			XAResourceManagerFactory::getXID(::getXid(info));
+            status = tx->get_status();
+        }
+		::updateInfo(info, whenReturn, controlMode, timeout, status);
+    }
+    LOG4CXX_DEBUG(txmlogger, (char*) "info tx=" << tx);
+    return (tx != NULL ? 1 : 0);
 }
 
 int TxManager::open(void)

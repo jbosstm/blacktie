@@ -18,7 +18,6 @@
 #ifndef _TXX_H
 #define _TXX_H
 
-#include "tx.h"
 #include "xa.h"
 
 #ifdef __cplusplus

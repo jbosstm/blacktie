@@ -23,50 +23,6 @@ using namespace atmibroker::tx;
 
 log4cxx::LoggerPtr txmclogger(log4cxx::Logger::getLogger("TxLogManagerc"));
 
-/* X/Open tx interface */
-
-int tx_open(void) {
-	FTRACE(txmclogger, "ENTER");
-	return TxManager::get_instance()->open();
-}
-
-int tx_begin(void) {
-	FTRACE(txmclogger, "ENTER");
-	return TxManager::get_instance()->begin();
-}
-
-int tx_commit(void) {
-	FTRACE(txmclogger, "ENTER");
-	return TxManager::get_instance()->commit();
-}
-
-int tx_rollback(void) {
-	FTRACE(txmclogger, "ENTER");
-	return TxManager::get_instance()->rollback();
-}
-
-int tx_close(void) {
-	FTRACE(txmclogger, "ENTER");
-	return TxManager::get_instance()->close();
-}
-
-int tx_set_commit_return(COMMIT_RETURN when_return) {
-	FTRACE(txmclogger, "ENTER");
-	return TxManager::get_instance()->set_commit_return(when_return);
-}
-int tx_set_transaction_control(TRANSACTION_CONTROL control) {
-	FTRACE(txmclogger, "ENTER");
-	return TxManager::get_instance()->set_transaction_control(control);
-}
-int tx_set_transaction_timeout(TRANSACTION_TIMEOUT timeout) {
-	FTRACE(txmclogger, "ENTER");
-	return TxManager::get_instance()->set_transaction_timeout(timeout);
-}
-int tx_info(TXINFO *info) {
-	FTRACE(txmclogger, "ENTER");
-	return TxManager::get_instance()->info(info);
-}
-
 /* Blacktie tx interface additions */
 int txx_rollback_only()
 {

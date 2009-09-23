@@ -15,20 +15,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "ace/OS_NS_unistd.h"
 
+#include <string.h>
 #include "userlogc.h"
 
 #include "xatmi.h"
 #include "tx.h"
+#include "Sleeper.h"
 
 extern void test_tpcall_TPETIME_service(TPSVCINFO *svcinfo) {
 	int timeout = 21;
-	userlogc((char*) "test_tpcall_TPETIME_service, sleeping for %d seconds",
-			timeout);
-	ACE_OS::sleep(timeout);
-	userlogc((char*) "test_tpcall_TPETIME_service, slept for %d seconds",
-			timeout);
+	::sleeper(timeout);
 
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);

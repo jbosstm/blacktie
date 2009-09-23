@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2008, Red Hat, Inc., and others contributors as indicated
+ * Copyright 2009, Red Hat, Inc., and others contributors as indicated
  * by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -15,17 +15,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef BaseTest_H
-#define BaseTest_H
+#ifndef _TXAVOID_H
+#define _TXAVOID_H
 
-#include "cppunit/TestFixture.h"
-#include <string.h>
-#include "userlogc.h"
+#include "xa.h"
 
-class BaseTest: public CppUnit::TestFixture {
-public:
-	virtual void setUp();
-	virtual void tearDown();
-};
+extern void updateInfo(void *infoVoid, long whenReturn, long controlMode, long timeout, long status); //infoVoid is TXINFO from tx.h
 
-#endif // BaseTest_H
+extern XID getXid(void *infoVoid);
+
+#endif

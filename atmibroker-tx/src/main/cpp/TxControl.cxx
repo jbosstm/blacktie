@@ -133,7 +133,7 @@ int TxControl::rollback_only()
 		}
 	} catch (CosTransactions::Unavailable & e) {
 		// no coordinator
-		LOG4CXX_WARN(txclogger, (char*) "rollback_only: unavailable");
+		LOG4CXX_WARN(txclogger, (char*) "rollback_only: unavailable: " << e._name());
 	} catch (CORBA::SystemException & e) {
 		LOG4CXX_WARN(txclogger, (char*) "rollback_only: " << e._name() << " minor: " << e.minor());
 	}
@@ -155,6 +155,7 @@ CosTransactions::Status TxControl::get_ots_status()
 			return (coord->get_status());
 	} catch (CosTransactions::Unavailable & e) {
 		// no coordinator
+		LOG4CXX_TRACE(txclogger, (char*) "unavailable: " << e._name());
 	} catch (CORBA::SystemException & e) {
 		LOG4CXX_WARN(txclogger, (char*) "status: " << e._name() << " minor: " << e.minor());
 	}

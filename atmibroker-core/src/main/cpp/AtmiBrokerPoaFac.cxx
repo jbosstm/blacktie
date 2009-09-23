@@ -48,10 +48,8 @@ void add_transaction_policy(CORBA::ORB_ptr& orb, CORBA::PolicyList& policies,
 	try {
 		policies[index++] = orb->create_policy(AtmiTx::OTS_POLICY_TYPE, any);
 	} catch (const ::CORBA::PolicyError& ex) {
-		userlog(
-				log4cxx::Level::getInfo(),
-				loggerAtmiBrokerPoaFac,
-				(char*) "no policy factory for AtmiTx::OTS_POLICY_TYPE has been registered");
+		LOG4CXX_INFO(loggerAtmiBrokerPoaFac,
+				(char*) "no policy factory for AtmiTx::OTS_POLICY_TYPE has been registered: " << ex._name());
 	} catch (...) {
 		userlog(
 				log4cxx::Level::getInfo(),

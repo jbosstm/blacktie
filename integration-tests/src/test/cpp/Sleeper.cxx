@@ -15,17 +15,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef BaseTest_H
-#define BaseTest_H
 
-#include "cppunit/TestFixture.h"
-#include <string.h>
+#include "Sleeper.h"
+#include "ace/OS_NS_unistd.h"
 #include "userlogc.h"
 
-class BaseTest: public CppUnit::TestFixture {
-public:
-	virtual void setUp();
-	virtual void tearDown();
-};
-
-#endif // BaseTest_H
+void sleeper(int timeout) {
+	userlogc((char*) "sleeper, sleeping for %d seconds", timeout);
+	ACE_OS::sleep(timeout);
+	userlogc((char*) "sleeper, slept for %d seconds", timeout);
+}

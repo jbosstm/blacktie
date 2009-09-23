@@ -87,16 +87,16 @@ bool XAResourceManagerFactory::getXID(XID& xid)
 		LOG4CXX_TRACE(xarflogger,  (char *) "converted OTS tid len:" << otidlen << (char *) " XID: "
 			<< xid.formatID << ':' << xid.gtrid_length << ':' << xid.bqual_length << ':' << xid.data);
 
-		ok = true;
-	} catch (CosTransactions::Unavailable & e) {
-		LOG4CXX_ERROR(xarflogger,  (char *) "XA-compatible Transaction Service raised unavailable");
-	} catch (const CORBA::OBJECT_NOT_EXIST &e) {
-		LOG4CXX_ERROR(xarflogger,  (char *) "Unexpected exception converting xid: " << e._name());
-	} catch  (CORBA::Exception& e) {
-		LOG4CXX_ERROR(xarflogger,  (char *) "Unexpected exception converting xid: " << e._name());
-	} catch  (...) {
-		LOG4CXX_ERROR(xarflogger,  (char *) "Unexpected generic exception converting xid");
-	}
+        ok = true;
+    } catch (CosTransactions::Unavailable & e) {
+        LOG4CXX_ERROR(xarflogger,  (char *) "XA-compatible Transaction Service raised unavailable: " << e._name());
+    } catch (const CORBA::OBJECT_NOT_EXIST &e) {
+        LOG4CXX_ERROR(xarflogger,  (char *) "Unexpected exception converting xid: " << e._name());
+    } catch  (CORBA::Exception& e) {
+        LOG4CXX_ERROR(xarflogger,  (char *) "Unexpected exception converting xid: " << e._name());
+    } catch  (...) {
+        LOG4CXX_ERROR(xarflogger,  (char *) "Unexpected generic exception converting xid");
+    }
 
 	txx_release_control(cp);
 
