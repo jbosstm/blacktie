@@ -229,7 +229,7 @@ void XARecoveryLog::sync_rec(void* p, size_t sz) {
 }
 
 rrec_t* XARecoveryLog::next_rec(rrec_t* p) {
-	return (p->next == 0 ? 0 : arena_ + p->next);
+	return (p->next && p->next < nblocks_ ?  arena_ + p->next : 0);
 }
 
 int XARecoveryLog::del_rec(XID& xid) {
