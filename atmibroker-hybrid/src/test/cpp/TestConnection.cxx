@@ -69,8 +69,8 @@ void TestConnection::test() {
 		MESSAGE serviceReceived = destination->receive(0);
 		free(clientData);
 		free(serviceReceived.data);
-		free(serviceReceived.type);
-		free(serviceReceived.subtype);
+		//free(serviceReceived.type);
+		//free(serviceReceived.subtype);
 		CPPUNIT_ASSERT(clientSend.len == serviceReceived.len);
 
 		clientAddress = serviceReceived.replyto;
