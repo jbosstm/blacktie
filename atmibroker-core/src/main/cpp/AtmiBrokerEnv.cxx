@@ -75,8 +75,6 @@ void AtmiBrokerEnv::set_configuration(const char* dir) {
 	}
 	if (dir != NULL) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "setting configuration type: " << dir);
-		if (configuration)
-			free(configuration);
 
 		configuration = strdup(dir);
 	} else {
