@@ -25,9 +25,9 @@
 #include "ace/OS_NS_stdio.h"
 #include "userlogc.h"
 
+#include "malloc.h"
+#include <string.h>
 void TestAtmiBrokerXml::setUp() {
-	env = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
-
 	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=xmltest");
 	AtmiBrokerEnv::discard_instance();
 
@@ -37,14 +37,7 @@ void TestAtmiBrokerXml::setUp() {
 
 void TestAtmiBrokerXml::tearDown() {
 	// Perform clean up
-	if (env != NULL) {
-		char orig_env[256];
-		ACE_OS::snprintf(orig_env, 256, "BLACKTIE_CONFIGURATION_DIR=%s", env);
-		ACE_OS::putenv(orig_env);
-	} else {
-		ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=");
-	}
-
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=");
 	AtmiBrokerEnv::discard_instance();
 
 	// Perform global clean up

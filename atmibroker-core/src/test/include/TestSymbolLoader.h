@@ -30,6 +30,8 @@ CPPUNIT_TEST_SUITE( TestSymbolLoader)
 
 public:
 	void test();
+	virtual void setUp();
+	virtual void tearDown();
 };
 
 #endif

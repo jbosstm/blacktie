@@ -26,13 +26,24 @@
 #include "AtmiBrokerEnv.h"
 #include "userlogc.h"
 
-void TestSymbolLoader::test() {
-	char orig_env[256];
-	char* env = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
-	if(env != NULL){
-		ACE_OS::snprintf(orig_env, 256, "BLACKTIE_CONFIGURATION_DIR=%s", env);
-	}
+void TestSymbolLoader::setUp() {
 	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=.");
+	AtmiBrokerEnv::discard_instance();
+
+	// Perform global set up
+	TestFixture::setUp();
+}
+
+void TestSymbolLoader::tearDown() {
+	// Perform clean up
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=");
+	AtmiBrokerEnv::discard_instance();
+
+	// Perform global clean up
+	TestFixture::tearDown();
+}
+
+void TestSymbolLoader::test() {
 #ifdef WIN32
 	AtmiBrokerEnv::set_configuration("win32");
 #else
@@ -64,12 +75,4 @@ void TestSymbolLoader::test() {
 		userlogc((char *) "symbol addr%s=%s", sym, e.what());
 		CPPUNIT_FAIL("exception");
 	}
-	
-	if(env != NULL) {
-		ACE_OS::putenv(orig_env);
-	} else {
-		ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=");
-	}
-
-	AtmiBrokerEnv::discard_instance();
 }

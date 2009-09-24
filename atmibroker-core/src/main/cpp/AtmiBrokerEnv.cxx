@@ -68,12 +68,15 @@ void AtmiBrokerEnv::set_environment_dir(const char* dir) {
 }
 
 void AtmiBrokerEnv::set_configuration(const char* dir) {
+	if (configuration != NULL) {
+		free( configuration);
+		configuration = NULL;
+	}
 	if (dir != NULL) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "setting configuration type: " << dir);
 		configuration = strdup(dir);
 	} else {
 		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "setting configuration to null");
-		configuration = NULL;
 	}
 }
 

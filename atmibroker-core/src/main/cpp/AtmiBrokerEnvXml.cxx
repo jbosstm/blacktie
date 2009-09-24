@@ -243,13 +243,12 @@ static void XMLCALL startElement
 		processingEnvVariables = true;
 	} else if (strcmp(name, "ENV_VARIABLE") == 0) {
 		if(atts != 0 && atts[0] && strcmp(atts[0], "configuration") == 0) {
-			char * conf = copy_value(atts[1]);
-			LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "comparing" << conf << " with " << configuration);
-			if (strcmp(conf, configuration) == 0) {
+			LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "comparing" << atts[1] << " with " << configuration);
+			if (strcmp(atts[1], configuration) == 0) {
 				LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processing ENV_VARIABLE");
 				processingEnvVariable = true;
 			} else {
-				LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "CONFIGURATION NOT APPLICABLE FOR ENV_VARIABLE: " << conf);
+				LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "CONFIGURATION NOT APPLICABLE FOR ENV_VARIABLE: " << atts[1]);
 			}
 		} else {
 			processingEnvVariable = true;
