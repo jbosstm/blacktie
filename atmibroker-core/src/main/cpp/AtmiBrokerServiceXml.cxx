@@ -55,49 +55,6 @@ AtmiBrokerServiceXml::AtmiBrokerServiceXml() {
 AtmiBrokerServiceXml::~AtmiBrokerServiceXml() {
 }
 
-/**
- * Duplicate a value. If the value contains an expression of the for ${ENV}
- * then ENV is interpreted as an environment variable and ${ENV} is replaced
- * by its value (if ENV is not set it is replaced by null string).
- *
- * WARNING: only the first such occurence is expanded. TODO generalise the function
- */
-static char * XMLCALL copy_value(const char *value) {
-	char *s = (char *) strchr(value, '$');
-	char *e;
-
-	if (s && *(s + 1) == '{' && (e = (char *) strchr(s, '}'))) {
-		size_t esz = e - s - 2;
-		char *en = ACE::strndup(s + 2, esz);
-		char *ev = ACE_OS::getenv(en); /* ACE_OS::getenv(en);*/
-		char *pr = ACE::strndup(value, (s - value));
-		size_t rsz;
-		char *v;
-
-		if (ev == NULL) {
-			LOG4CXX_WARN(loggerAtmiBrokerServiceXml, (char*) "env variable is unset: " << en);
-			ev = (char *) "";
-		}
-
-		LOG4CXX_TRACE(loggerAtmiBrokerServiceXml, (char *) "expanding env: "
-				<< (s + 2) << (char *) " and e=" << e << (char *) " and en="
-				<< en << (char *) " and pr=" << pr << (char *) " and ev=" << ev);
-		e += 1;
-		rsz = ACE_OS::strlen(pr) + ACE_OS::strlen(e) + ACE_OS::strlen(ev) + 1; /* add 1 for null terminator */
-		v = (char *) malloc(rsz);
-
-		ACE_OS::snprintf(v, rsz, "%s%s%s", pr, ev, e);
-		LOG4CXX_TRACE(loggerAtmiBrokerServiceXml, value << (char*) " -> " << v);
-
-		free(en);
-		free(pr);
-
-		return v;
-	}
-
-	return strdup(value);
-}
-
 static void XMLCALL startElement(void *userData, const char *name, const char **atts) {
 	ServiceInfo* aServiceStructPtr = (ServiceInfo*) userData;
 
@@ -109,13 +66,12 @@ static void XMLCALL startElement(void *userData, const char *name, const char **
 		processingPoolSize = true;
 	} else if (strcmp(name, "LIBRARY_NAME") == 0) {
 		if(atts != 0 && atts[0] && strcmp(atts[0], "configuration") == 0) {
-			char * conf = copy_value(atts[1]);
-			LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "comparing" << conf << " with " << configuration);
-			if (strcmp(conf, configuration) == 0) {
+			LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "comparing" << atts[1] << " with " << configuration);
+			if (strcmp(atts[1], configuration) == 0) {
 				aServiceStructPtr->library_name = strdup(atts[3]);
 				LOG4CXX_TRACE(loggerAtmiBrokerServiceXml, (char*) "processed LIBRARY_NAME: " << aServiceStructPtr->library_name);
 			} else {
-				LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "CONFIGURATION NOT APPLICABLE FOR LIBRARY_NAME: " << conf);
+				LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "CONFIGURATION NOT APPLICABLE FOR LIBRARY_NAME: " << atts[1]);
 			}
 		}
 	} else if(strcmp(name, "SERVICE_DESCRIPTION") == 0) {
