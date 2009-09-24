@@ -25,6 +25,7 @@
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerEnvXml.h"
 #include "log4cxx/logger.h"
+#include "ace/ACE.h"
 #include "ace/OS_NS_stdlib.h"
 #include "ace/OS_NS_stdio.h"
 #include "ace/OS_NS_string.h"
@@ -74,6 +75,9 @@ void AtmiBrokerEnv::set_configuration(const char* dir) {
 	}
 	if (dir != NULL) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "setting configuration type: " << dir);
+		if (configuration)
+			free(configuration);
+
 		configuration = strdup(dir);
 	} else {
 		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "setting configuration to null");
@@ -203,38 +207,14 @@ AtmiBrokerEnv::getenv(char* anEnvName) {
 int AtmiBrokerEnv::putenv(char* anEnvNameValue) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "putenv %s" << anEnvNameValue);
 
-	::putenv(anEnvNameValue);
-
-	int size = strlen(anEnvNameValue);
-
-	char * name = (char*) malloc(size);
-	memset(name, '\0', size);
-	char * value = (char*) malloc(size);
-	memset(value, '\0', size);
-
-	int i = 0;
-	for (; i < size; i++) {
-		if (anEnvNameValue[i] == '=')
-			break;
-		else
-			name[i] = anEnvNameValue[i];
-	}
-	int j = 0;
-	i++;
-	for (; i < size; i++, j++) {
-		value[j] = anEnvNameValue[i];
-	}
-
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "putenv name '%s' value '%s'"
-			<< name << value);
-
+	char *p = strchr(anEnvNameValue, '=');
 	envVar_t envVar;
-	envVar.name = strdup(name);
-	envVar.value = strdup(value);
+
+	envVar.name =  ACE::strndup(anEnvNameValue, (size_t) (p - anEnvNameValue));
+	envVar.value = ACE::strndup(p + 1, (int) (strlen(anEnvNameValue) - strlen(p)));
 	envVariableInfoSeq.push_back(envVar);
 
-	free(name);
-	free(value);
+	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "putenv name '" << envVar.name << "' value '" << envVar.value);
 
 	return 1;
 }
