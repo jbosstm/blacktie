@@ -73,9 +73,6 @@ static void XMLCALL startElement(void *userData, const char *name, const char **
 			} else {
 				LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "CONFIGURATION NOT APPLICABLE FOR LIBRARY_NAME: " << atts[1]);
 			}
-
-			if (conf)
-				free(conf);
 		}
 	} else if(strcmp(name, "SERVICE_DESCRIPTION") == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "processing SERVICE DESCRIPTION");
