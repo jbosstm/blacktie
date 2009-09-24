@@ -68,6 +68,9 @@ void TestConnection::test() {
 		client->send(clientSend);
 		MESSAGE serviceReceived = destination->receive(0);
 		free(clientData);
+		free(serviceReceived.data);
+		free(serviceReceived.type);
+		free(serviceReceived.subtype);
 		CPPUNIT_ASSERT(clientSend.len == serviceReceived.len);
 
 		clientAddress = serviceReceived.replyto;
@@ -95,6 +98,8 @@ void TestConnection::test() {
 		free(serviceData);
 		free(clientReceived.data);
 		free((char*) clientReceived.replyto);
+		free(clientReceived.type);
+		free(clientReceived.subtype);
 		CPPUNIT_ASSERT(serviceSend.len == clientReceived.len);
 
 		MESSAGE clientSend;
@@ -115,7 +120,10 @@ void TestConnection::test() {
 		free(clientData);
 		free(serviceReceived.data);
 		free((char*) serviceReceived.replyto);
+		free(serviceReceived.type);
+		free(serviceReceived.subtype);
 		CPPUNIT_ASSERT(clientSend.len == serviceReceived.len);
 	}
 	userlogc("Iterated");
+	serverConnection->destroyDestination(destination);
 }
