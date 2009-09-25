@@ -467,6 +467,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname) {
 			return advertiseService(svcname, (*i).func);
 		}
 	}
+	LOG4CXX_WARN(loggerAtmiBrokerServer, (char*) "Could not advertise service, was not registered in Environment.xml: " << svcname);
 	return false;
 }
 
