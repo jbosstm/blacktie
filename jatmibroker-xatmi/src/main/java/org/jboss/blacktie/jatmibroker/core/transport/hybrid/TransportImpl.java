@@ -52,17 +52,19 @@ public class TransportImpl implements Runnable, Transport {
 	private Properties properties;
 
 	TransportImpl(OrbManagement orbManagement, Context context,
-			ConnectionFactory factory, Properties properties)
+			Connection connection, Properties properties)
 			throws InvalidName, NotFound, CannotProceed,
 			org.omg.CosNaming.NamingContextPackage.InvalidName,
 			AdapterInactive, AlreadyBound, JMSException {
 		log.debug("Creating transport");
 		this.orbManagement = orbManagement;
+		this.connection = connection;
 
 		callbackThread = new Thread(this);
 		callbackThread.setDaemon(true);
 		callbackThread.start();
 
+		/*
 		String username = (String) properties.get("StompConnectUsr");
 		String password = (String) properties.get("StompConnectPwd");
 		if (username != null) {
@@ -70,10 +72,12 @@ public class TransportImpl implements Runnable, Transport {
 		} else {
 			connection = factory.createConnection();
 		}
-		connection.start();
+		*/
+
+		this.connection.start();
 
 		this.context = context;
-		this.session = connection
+		this.session = this.connection
 				.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
 		this.properties = properties;

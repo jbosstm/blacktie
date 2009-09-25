@@ -19,6 +19,7 @@ package org.jboss.blacktie.jatmibroker.core.transport.hybrid;
 
 import java.util.Properties;
 
+import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -39,16 +40,12 @@ public class TransportFactoryImpl extends TransportFactory {
 	private Properties props;
 	private Context context;
 	private ConnectionFactory factory;
+	private Connection connection;
 
 	protected void setProperties(Properties properties)
 			throws ConfigurationException {
 		log.debug("Creating OrbManagement");
-		try {
-			orbManagement = new OrbManagement(properties, false);
-		} catch (Throwable t) {
-			throw new ConfigurationException(
-					"Could not create the orb management function", t);
-		}
+		
 		try {
 			props = new Properties();
 			props.setProperty("java.naming.factory.initial",
@@ -60,18 +57,35 @@ public class TransportFactoryImpl extends TransportFactory {
 			props.putAll(properties);
 			context = new InitialContext(props);
 			factory = (ConnectionFactory) context.lookup("ConnectionFactory");
+
+			String username = (String) props.get("StompConnectUsr");
+			String password = (String) props.get("StompConnectPwd");
+			if (username != null) {
+				connection = factory.createConnection(username, password);
+			} else {
+				connection = factory.createConnection();
+			}
 		} catch (Throwable t) {
 			throw new ConfigurationException(
 					"Could not create the required connection", t);
 		}
+
+		try {
+			orbManagement = new OrbManagement(properties, false);
+		} catch (Throwable t) {
+			throw new ConfigurationException(
+					"Could not create the orb management function", t);
+		}
+		
 		log.debug("Created OrbManagement");
 	}
 
 	public Transport createTransport() throws ConnectionException {
 		log.debug("Creating");
 		TransportImpl instance = null;
+
 		try {
-			instance = new TransportImpl(orbManagement, context, factory, props);
+			instance = new TransportImpl(orbManagement, context, connection, props);
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Could not connect to server", t);
 		}

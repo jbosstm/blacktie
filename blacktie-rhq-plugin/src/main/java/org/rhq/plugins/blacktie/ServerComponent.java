@@ -41,6 +41,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
+import org.jboss.blacktie.jatmibroker.core.transport.TransportFactory ;
 import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
@@ -152,6 +153,7 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet, Ope
 		} else {
 			factory.createConnection();
 		}
+		//TransportFactory.loadTransportFactory("BAR", prop).createTransport();
 		log.debug("testJMSConnection OK");
 	}
 
@@ -252,6 +254,7 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet, Ope
     	String service = serverName + "_ADMIN_" + id;
 		Response buf = null;
     	
+		/*
 		try {
 			if(callTest) {
 				testJMSConnection();
@@ -261,6 +264,7 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet, Ope
 			result.setErrorMessage("connect to jms server failed with " + e);
 			return result;
 		}
+		*/
 
     	if(name.equals("shutdown")) {
     		try {
