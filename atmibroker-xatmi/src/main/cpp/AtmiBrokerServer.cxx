@@ -505,6 +505,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 		}
 	}
 	if (!found) {
+		LOG4CXX_WARN(loggerAtmiBrokerServer, (char*) "Could not advertise service, was not registered for server in Environment.xml: " << svcname);
 		setSpecific(TPE_KEY, TSS_TPELIMIT);
 		free(serviceName);
 		return false;
