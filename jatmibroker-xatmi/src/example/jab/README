@@ -34,6 +34,4 @@ javac JABClient.java
 Follow the instructions in $BLACKTIE_BIN_DIR/examples/xatmi/fooapp to start a server  
 
 4. RUN THE JAB Application
-Export the environment variable BLACKTIE_CONFIGURATION_DIR to be the working directory
-e.g. export BLACKTIE_CONFIGURATION_DIR=.
 java JABClient message

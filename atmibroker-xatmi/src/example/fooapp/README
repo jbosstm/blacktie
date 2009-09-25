@@ -64,15 +64,9 @@ NOTE: If you get the following error you have not started the JBoss server:
 2009-06-23 08:51:51,270 [0x7f627be63750] ERROR AtmiBrokerServer          - serverinit - Unexpected CORBA exception: TRANSIENT
 2009-06-23 08:51:51,270 [0x7f627be63750] INFO  AtmiBrokerLogc            - main Unexpected exception in serverrun()
 6.2 RUN THE CLIENT
-You will need to set the environment variable BLACKTIE_CONFIGURATION_DIR to either win32 or linux prior to running the client
 ./client
 NOTE: If you get the following error you have not sourced setenv.sh|bat
 ./client: error while loading shared libraries: libTAO_CosNaming.so.1.6.7: cannot open shared object file: No such file or directoryI
-NOTE: If you get the following error it means you did not set BLACKTIE_CONFIGURATION_DIR to the correct folder:
-[tom@localhost fooapp]$ ./client 
-terminate called after throwing an instance of 'std::logic_error'
-  what():  basic_string::_S_construct NULL not valid
-Aborted
 
 
 7. JAB CLIENTS
