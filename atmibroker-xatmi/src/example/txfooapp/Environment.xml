@@ -27,7 +27,7 @@
 			</SERVER>
 			<SERVER name='default'>
 				<SERVICE_NAMES>
-					<SERVICE name='DBS'/>
+					<SERVICE name='BAR'/>
 				</SERVICE_NAMES>
 			</SERVER>
 		</SERVER_NAMES>
@@ -90,6 +90,7 @@
                 <XA_LIB_NAME>${ORACLE_HOME}/lib/libclntsh.so</XA_LIB_NAME>
              </XA_RESOURCE>
              -->
+             <!--
             <XA_RESOURCE configuration="linux">
                 <XA_RESOURCE_MGR_ID>202</XA_RESOURCE_MGR_ID>
                 <XA_RESOURCE_NAME>DummyDb</XA_RESOURCE_NAME>
@@ -98,6 +99,7 @@
                 <XA_SWITCH>testxasw</XA_SWITCH>
                 <XA_LIB_NAME>libdummy-rm.so</XA_LIB_NAME>
             </XA_RESOURCE>
+             -->
              <!--
              -->
 			 <XA_RESOURCE configuration="win32">

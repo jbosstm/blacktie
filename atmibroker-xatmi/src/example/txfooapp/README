@@ -104,10 +104,6 @@ or
 
 3.2 START THE CLIENT
 ====================
-The client needs to know where the configuration directories resides so set the following environment variable:
-    export BLACKTIE_CONFIGURATION_DIR=linux
-    set BLACKTIE_CONFIGURATION_DIR=win32
-
     ./client
 
 This runs a set of tests that exercise the various ways of interacting with resource managers. Please refer
