@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#if 0
+#if 1
 #include "TestAdmin.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestAdmin );
 #include "TestAdvertise.h"

@@ -54,7 +54,7 @@ void ADMIN(TPSVCINFO* svcinfo) {
 		toReturn = tprealloc(toReturn, 1024);
 		len += getServiceStatus(&toReturn[1]) + 1;
 		toReturn[0] = '1';
-	} else if(strncmp(req, "counter", 6) == 0) {
+	} else if(strncmp(req, "counter", 7) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get counter command");
 		strtok(req, ",");
 		char* svc = strtok(NULL, ",");
