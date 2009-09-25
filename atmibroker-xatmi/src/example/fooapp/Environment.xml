@@ -73,6 +73,10 @@
 				<NAME>TimeToLive</NAME>
 				<VALUE>10</VALUE>
 			</ENV_VARIABLE>
+			<ENV_VARIABLE>
+				<NAME>java.naming.provider.url</NAME>
+				<VALUE>jnp://localhost:1099</VALUE>
+			</ENV_VARIABLE>
 		</ENV_VARIABLES>
 	</ENVIRONMENT_DESCRIPTION>
 </ENVIRONMENT>
