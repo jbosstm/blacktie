@@ -157,7 +157,10 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		try {
 			ObjectName objName = new ObjectName(
 					"jboss.messaging:service=ServerPeer");
-			if (isDeployQueue(objName, serviceName) == false) {
+			boolean queue = false;
+
+			queue = isDeployQueue(objName, serviceName);
+			if (queue == false) {
 				beanServerConnection.invoke(objName, "deployQueue",
 						new Object[] { serviceName, null }, new String[] {
 								"java.lang.String", "java.lang.String" });
@@ -166,7 +169,12 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 								+ serviceName);
 				setSecurityConfig(queueName);
 			}
-			result = 1;
+
+			if(queue == false || !serviceName.contains("ADMIN") ) {
+				result = 1;	
+			} else {
+				log.info("can not advertise ADMIN with same id");
+			}
 		} catch (Throwable t) {
 			log.error("Could not deploy queue of " + serviceName, t);
 		}
