@@ -28,8 +28,14 @@ static char  orig_env[256];
 void TestServerinit::test_serverinit() {
 	userlogc((char*) "test_serverinit");
 	int result;
+#ifdef WIN32
+	char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"-i", (char*)"1"};
+#else
+	char* argv[] = {(char*)"server", (char*)"-c", (char*)"linux", (char*)"-i", (char*)"1"};
+#endif
+	int argc = sizeof(argv)/sizeof(char*);
 
-	result = serverinit(0, NULL);
+	result = serverinit(argc, argv);
 	CPPUNIT_ASSERT(result != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
 
@@ -42,7 +48,7 @@ void TestServerinit::test_serverinit() {
 void TestServerinit::test_config_env() {
 	userlogc((char*) "TestServerinit::test_config_env");
 	int result;
-	char* argv[] = {(char*)"server"};
+	char* argv[] = {(char*)"server", (char*)"-i", (char*)"1"};
 	int argc = sizeof(argv)/sizeof(char*);
 	char* env = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
 	if(env != NULL){
@@ -73,9 +79,9 @@ void TestServerinit::test_config_cmdline() {
 	int result;
 
 #ifdef WIN32
-		char* argv1[] = {(char*)"server", (char*)"-c", (char*)"win32"};
+		char* argv1[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"-i", (char*)"1"};
 #else
-		char* argv1[] = {(char*)"server", (char*)"-c", (char*)"linux"};
+		char* argv1[] = {(char*)"server", (char*)"-c", (char*)"linux", (char*)"-i", (char*)"1"};
 #endif
 	int argc1 = sizeof(argv1)/sizeof(char*);
 
@@ -97,7 +103,20 @@ void TestServerinit::test_config_cmdline() {
 
 	result = serverinit(argc2, argv2);
 	CPPUNIT_ASSERT(result == -1);
+	serverdone();
+
+	/* make the -i paramenter mandatory */
+	char* argv3[] = {(char*)"server"};
+	int argc3 = sizeof(argv3)/sizeof(char*);
+
+	result = serverinit(argc3, argv3);
+	CPPUNIT_ASSERT(result == -1);
+
+	result = serverdone();
+	CPPUNIT_ASSERT(result != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
 }
+
 void test_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "test_service");
 }

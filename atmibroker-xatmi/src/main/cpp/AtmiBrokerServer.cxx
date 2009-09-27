@@ -57,9 +57,10 @@ AtmiBrokerServer * ptrServer = NULL;
 bool serverInitialized = false;
 PortableServer::POA_var server_poa;
 bool configFromCmdline = false;
+bool isBootAdminService = true;
 char configDir[256];
 char server[30];
-int cid = 0;
+int serverid = 0;
 
 void server_sigint_handler_callback(int sig_type) {
 	signal(SIGINT, SIG_IGN);
@@ -81,6 +82,7 @@ int parsecmdline(int argc, char** argv) {
 	ACE_Get_Opt getopt(argc, argv, ACE_TEXT("c:i:"));
 	int c;
 	int r = 0;
+	bool isSetServerId = false;
 
 	configFromCmdline = false;
 	while ((c = getopt()) != -1) {
@@ -90,9 +92,12 @@ int parsecmdline(int argc, char** argv) {
 			ACE_OS::strncpy(configDir, getopt.opt_arg(), 256);
 			break;
 		case 'i':
-			cid = atoi(getopt.opt_arg());
-			if (cid <= 0)
+			serverid = atoi(getopt.opt_arg());
+			if (serverid <= 0) {
 				r = -1;
+			} else {
+				isSetServerId = true;
+			}
 			break;
 		default:
 			r = -1;
@@ -104,6 +109,11 @@ int parsecmdline(int argc, char** argv) {
 		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer,
 				(char*) "opt_ind is %d, server is %s", last, argv[last]);
 		ACE_OS::strncpy(server, argv[last], 30);
+	}
+
+	if (isSetServerId == false) {
+		fprintf(stderr, "you must specify a server id with -i\n");
+		r = -1;
 	}
 
 	return r;
@@ -126,7 +136,7 @@ int serverinit(int argc, char** argv) {
 	ACE_OS::strncpy(server, "default", 30);
 
 	if (argc > 0 && parsecmdline(argc, argv) != 0) {
-		fprintf(stderr, "usage:%s [-c config] [-i id] [server]\n", argv[0]);
+		fprintf(stderr, "usage:%s [-c config] -i id [server]\n", argv[0]);
 		toReturn = -1;
 		setSpecific(TPE_KEY, TSS_TPESYSTEM);
 	}
@@ -143,7 +153,7 @@ int serverinit(int argc, char** argv) {
 			initializeLogger();
 			AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
 			std::stringstream sid;
-			sid << "BLACKTIE_SERVER_NAME=" << domain << server << cid;
+			sid << "BLACKTIE_SERVER_NAME=" << domain << server << serverid;
 			env->putenv((char *) (sid.str().c_str()));
 
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverinit called");
@@ -155,13 +165,15 @@ int serverinit(int argc, char** argv) {
 				setSpecific(TPE_KEY, TSS_TPESYSTEM);
 			} else {
 				ptrServer->advertiseAtBootime();
-				if (cid > 0) {
-					userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
-							(char*) "Server %d Running", cid);
-				} else {
-					userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
-							(char*) "Server Running");
+
+				if(isBootAdminService == false) {
+					userlog(log4cxx::Level::getWarn(), loggerAtmiBrokerServer,
+							(char*) "Maybe the same server id running");
+					throw std::exception();
 				}
+
+				userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
+						(char*) "Server %d Running", serverid);
 				//signal(SIGINT, server_sigint_handler_callback);
 				ACE_Sig_Action
 						sa(
@@ -483,7 +495,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 	bool isadm = false;
 	ACE_OS::snprintf(adm, 16, "%s_ADMIN", server);
 	if (strcmp(adm, svcname) == 0) {
-		ACE_OS::snprintf(adm, 16, "%s_ADMIN_%d", server, cid);
+		ACE_OS::snprintf(adm, 16, "%s_ADMIN_%d", server, serverid);
 		isadm = true;
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "advertise Admin svc "
 				<< adm);
@@ -581,6 +593,10 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 						"Service returned with error: " << command);
 				tpfree(command);
 				free(serviceName);
+
+				if(isadm) {
+					isBootAdminService = false;
+				}
 				return false;
 			}
 			tpfree(command);
@@ -680,7 +696,7 @@ void AtmiBrokerServer::removeAdminDestination(char* serviceName) {
 
 	ACE_OS::snprintf(adm, 16, "%s_ADMIN", server);
 	if (strcmp(adm, serviceName) == 0) {
-		ACE_OS::snprintf(adm, 16, "%s_ADMIN_%d", server, cid);
+		ACE_OS::snprintf(adm, 16, "%s_ADMIN_%d", server, serverid);
 		isadm = true;
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "unadvertise Admin svc "
 				<< adm);

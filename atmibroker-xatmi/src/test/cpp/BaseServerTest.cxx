@@ -32,13 +32,13 @@ void BaseServerTest::setUp() {
 	int result;
 
 #ifdef WIN32
-		char* argv1[] = {(char*)"server", (char*)"-c", (char*)"win32"};
+		char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"-i", (char*)"1"};
 #else
-		char* argv1[] = {(char*)"server", (char*)"-c", (char*)"linux"};
+		char* argv[] = {(char*)"server", (char*)"-c", (char*)"linux", (char*)"-i", (char*)"1"};
 #endif
-	int argc1 = sizeof(argv1)/sizeof(char*);
+	int argc = sizeof(argv)/sizeof(char*);
 
-	result = serverinit(argc1, argv1);
+	result = serverinit(argc, argv);
 	// Check that there is no error on server setup
 	CPPUNIT_ASSERT(result != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
