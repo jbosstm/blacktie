@@ -105,6 +105,8 @@ int get_tx_status()
 
 static int reqid = 0;
 static void _init_req(test_req_t *req, int prodid, const char *dbfile, const char *data, char op, enum TX_TYPE txtype, int expect) {
+	char *p;
+
 	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	req->prod = prodid;
 	req->txtype = txtype;
@@ -119,6 +121,11 @@ static void _init_req(test_req_t *req, int prodid, const char *dbfile, const cha
 		(void) strncpy(req->data, data, sizeof(req->data) - 1);
 	if (dbfile)
 		(void) strncpy(req->db, dbfile, sizeof(req->db) - 1);
+
+	p = req->data + sizeof(req->data) - 1;
+	*p = 0;
+	p = req->db + sizeof(req->db) - 1;
+	*p = 0;
 }
 
 test_req_t * get_buf(int remote, const char *data, const char *dbfile, char op, int prod, enum TX_TYPE txtype, int expect) {

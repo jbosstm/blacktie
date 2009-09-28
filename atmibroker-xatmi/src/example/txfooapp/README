@@ -26,9 +26,11 @@ with information specific to the required database. The example xml files (in th
 includes notes and examples on how to configure ORACLE and BDB support.
 
 Berkeley DB and Oracle 11g can be downloaded from:
-http://www.oracle.com/technology/software/products/berkeley-db/index.html
+http://www.oracle.com/technology/software/products/berkeley-db/db/index.html (tested on release
+Berkeley DB 4.7.25NC.tar.gz , without encryption after unpacking the archive and consult the README
+for build instructions)
 and
-http://www.oracle.com/technology/software/products/database/index.html)
+http://www.oracle.com/technology/software/products/database/index.html (tested on release 11.1.0.6.0)
 respectively.
 
 For example, ON LINUX extract to <USER_HOME>/db-4.7.25
