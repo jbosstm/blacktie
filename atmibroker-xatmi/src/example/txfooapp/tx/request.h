@@ -95,7 +95,6 @@ extern "C" {
 
 #ifdef WIN32
 extern __declspec(dllimport) struct xa_switch_t db_xa_switch;
-#define snprintf userlogc_snprintf
 #endif
 
 /* common methods */

@@ -178,7 +178,7 @@ int null_access(test_req_t *req, test_req_t *resp)
 {
 	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	resp->status = 0;
-	(void) snprintf(resp->data, sizeof(resp->data), "%d", req->expect);
+	(void) userlogc_snprintf(resp->data, sizeof(resp->data), "%d", req->expect);
 
 	userlogc_debug( "TxLog null_access: prod id=%d (%s) op=%c res=%s", req->prod, req->db, req->op, resp->data);
 

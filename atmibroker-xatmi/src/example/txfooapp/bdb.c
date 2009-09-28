@@ -27,7 +27,6 @@
 /* BerkeleyDb X/Open Resource Manager entry points */
 #ifdef WIN32
 extern __declspec(dllimport) struct xa_switch_t db_xa_switch;
-#define snprintf userlogc_snprintf
 #else
 struct xa_switch_t db_xa_switch;
 #endif
@@ -206,7 +205,7 @@ static int doWork(DB *dbp, char op, char *arg, test_req_t *resp)
 	} else if (op == '1') {
 		int rcnt = 0;   // no of matching records
 		status = doSelect(dbp, arg, &rcnt);
-		snprintf(resp->data, sizeof (resp->data), "%d", rcnt);
+		userlogc_snprintf(resp->data, sizeof (resp->data), "%d", rcnt);
 	} else if (op == '2') {
 		status = doUpdate(dbp, arg, v2);
 	} else if (op == '3') {
