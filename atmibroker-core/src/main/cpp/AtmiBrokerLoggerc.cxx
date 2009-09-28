@@ -41,6 +41,16 @@ log4cxx::LoggerPtr loggerAtmiBrokerLogc(log4cxx::Logger::getLogger(
 bool loggerInitialized;
 
 extern "C"BLACKTIE_CORE_DLL
+int userlogc_snprintf(char *str, size_t size, const char * format, ...) {
+	va_list args;
+	int ret;
+	va_start(args, format);
+	ret = vsnprintf(str, size, format, args);
+	va_end(args);
+	return ret;
+}
+
+extern "C"BLACKTIE_CORE_DLL
 void userlogc(const char * format, ...) {
 	if (loggerAtmiBrokerLogc->isEnabledFor(log4cxx::Level::getInfo())) {
 		char str[MAXLOGSIZE];
