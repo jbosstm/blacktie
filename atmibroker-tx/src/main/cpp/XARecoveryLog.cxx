@@ -107,13 +107,13 @@ static void init_logpath(const char *fname)
 XARecoveryLog::XARecoveryLog(const char* logfile) throw (RMException) :
 	arena_(0), nblocks_((size_t) 0), maxblocks_(0)
 {
-		init_logpath(logfile);
+	init_logpath(logfile);
 
-		if (!load_log(RCLOGPATH)) {
-			LOG4CXX_ERROR(xarcllogger, (char *) "Error creating recovery log");
-			//throw new RMException("Error creating recovery log ", -1);
-			//TODO propagate the exception
-		}
+	if (!load_log(RCLOGPATH)) {
+		LOG4CXX_ERROR(xarcllogger, (char *) "Error creating recovery log");
+		//throw new RMException("Error creating recovery log ", -1);
+		//TODO propagate the exception
+	}
 }
 
 /**
@@ -192,6 +192,9 @@ bool XARecoveryLog::morecore(size_t nblocks, bool dosync) {
 	size_t nsz;
 	rrec_t* ar;
 
+	if (!log_.is_open())
+		return false;
+
 	if (nblocks < NBLOCKS)
 		nblocks = NBLOCKS;
 
@@ -236,6 +239,9 @@ int XARecoveryLog::del_rec(XID& xid) {
 	rrec_t* prev;
 	rrec_t* next;
 
+	if (!log_.is_open())
+		return -1;
+
 	lock_.lock();
 	if (find(xid, &prev, &next) != 0) {
 		LOG4CXX_TRACE(xarcllogger, (char *) "del_rec: xid " << xid_to_string(xid).c_str() << " not found");
@@ -273,6 +279,9 @@ const char* XARecoveryLog::get_ior(rrec_t& rr) {
  * the handle but not ones inserted before it.
  */
 rrec_t* XARecoveryLog::find_next(rrec_t* from) {
+	if (!log_.is_open())
+		return 0;
+
 	if (from == 0) {
 		if (arena_->magic == INUSE)
 			return arena_;
@@ -292,6 +301,9 @@ rrec_t* XARecoveryLog::find_next(rrec_t* from) {
  * in prev - use for deleting records).
  */
 int XARecoveryLog::find(XID xid, rrec_t** prev, rrec_t** next) {
+	if (!log_.is_open())
+		return -1;
+
 	*prev = arena_;
 	*next = arena_;
 
@@ -328,6 +340,9 @@ int XARecoveryLog::add_rec(XID& xid, char* ior) {
 
 	LOG4CXX_TRACE(xarcllogger, (char *) "looking for a block of size " << nblocks * sizeof (rrec_t));
 
+	if (!log_.is_open())
+		return -1;
+
 	lock_.lock();
 	if ((fb = next_free(nblocks)) == 0) {
 		LOG4CXX_TRACE(xarcllogger, (char *) "\tno space, increasing arena\n");
@@ -362,6 +377,9 @@ int XARecoveryLog::add_rec(XID& xid, char* ior) {
  */
 rrec_t* XARecoveryLog::next_free(size_t nblocks) {
 	size_t sz = 0;
+
+	if (!log_.is_open())
+		return 0;
 
 	for (rrec_t* p = arena_; p; ) {
 		if (p->magic == INUSE) {
