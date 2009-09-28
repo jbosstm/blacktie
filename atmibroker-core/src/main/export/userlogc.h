@@ -19,6 +19,7 @@
 #define USERLOG_H
 
 #include "atmiBrokerCoreMacro.h"
+#include <string.h>
 
 #ifdef __cplusplus
 extern "C" {
