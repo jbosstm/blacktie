@@ -69,16 +69,22 @@ int clientinit() {
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		} else {
 			//signal(SIGINT, client_sigint_handler_callback);
-			ACE_Sig_Action sa (
-					reinterpret_cast <ACE_SignalHandler> (
-						client_sigint_handler_callback));
+			ACE_Sig_Action sa;								
+			sa.retrieve_action(SIGINT);
 
-  			// Make sure we specify that SIGINT will be masked out
-  			// during the signal handler's execution.
-  			ACE_Sig_Set ss;
-  			ss.sig_add (SIGINT);
-  			sa.mask (ss);
-  			sa.register_action (SIGINT);
+			if(sa.handler() != SIG_DFL) {
+				LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "SIGINT handler callback have been register");
+			} else {
+				// Make sure we specify that SIGINT will be masked out
+  				// during the signal handler's execution.
+  				ACE_Sig_Set ss;
+  				ss.sig_add (SIGINT);
+  				sa.mask (ss);
+				sa.handler(reinterpret_cast <ACE_SignalHandler> (
+						client_sigint_handler_callback));
+  				sa.register_action (SIGINT);
+				LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "register client_sigint_handler_callback");
+			}	
 
 			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "Client Initialized");
 		}
