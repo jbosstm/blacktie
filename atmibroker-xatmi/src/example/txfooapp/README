@@ -83,12 +83,12 @@ $BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="
 If you don't need ORACLE 11g just remove the lines that refer to its libraries and includes (and the ORACLE
 preprocessor macro).
 
-Windows compile lines are similar. For example, to build a server for use with Berkeley Db only:
+Windows compile lines are similar. For example, to build a server for use with Berkeley Db (debug library) only:
 
 %BLACKTIE_BIN_DIR%/bin/generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c bdb.c ora.c DbService.c" \
     -Dx.inc.dir="C:/db-4.7.25/build_windows/" \
     -Dx.lib.dir="C:/db-4.7.25/build_windows/Debug" \
-    -Dx.libs="libdb47${lib.suffix}" \
+    -Dx.libs="libdb47d" \
     -Dx.define="BDB"
 
 3. RUNNING THE EXAMPLE
