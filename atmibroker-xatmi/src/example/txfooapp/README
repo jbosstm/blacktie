@@ -98,6 +98,14 @@ Windows compile lines are similar. For example, to build a server for use with B
     -Dx.libs="libdb47d" \
     -Dx.define="BDB"
 
+To build the client:
+
+%BLACKTIE_BIN_DIR%/bin/generate_client.bat -Dclient.includes="client.c request.c bdb.c ora.c cutil.c" \
+    -Dx.inc.dir="C:/db-4.7.25/build_windows/" \
+    -Dx.lib.dir="C:/db-4.7.25/build_windows/Debug" \
+    -Dx.libs="libdb47d" \
+    -Dx.define="BDB"
+
 NOTE: If you get the following error you have not edited or executed setenv correctly:
 java org.apache.tools.ant.launch.Launcher -f /bin/generate-executables.xml -Dconfiguration.ty
 pe=debug -Dbasedir=. -Dtoolchain.compiler=msvc server -Dservice.names=BAR -Dserver.includes="request.c bdb.c ora.c DbService.c"     -Dx.inc.dir="C:/db-4.7.25/bu
