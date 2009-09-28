@@ -39,7 +39,19 @@ NOTE: If you get the following error you have not installed cpp-tasks into your 
 	BUILD FAILED
 	/home/tom/blacktie/dist/blacktie-1.0-M4-SNAPSHOT/bin/generate-executables.xml:113: The following error occurred while executing this line:
 	/home/tom/blacktie/dist/blacktie-1.0-M4-SNAPSHOT/bin/generate-executables.xml:140: Problem: failed to create task or type cc
-
+NOTE: If you get the following error you have not edited or executed setenv correctly:
+java org.apache.tools.ant.launch.Launcher -f /bin/generate-executables.xml -Dconfiguration.type
+=debug -Dbasedir=. -Dtoolchain.compiler=msvc server -Dservice.names=BAR -Dserver.includes=BarService.c
+Exception in thread "main" java.lang.NoClassDefFoundError: org/apache/tools/ant/launch/Launcher
+Caused by: java.lang.ClassNotFoundException: org.apache.tools.ant.launch.Launcher
+        at java.net.URLClassLoader$1.run(URLClassLoader.java:200)
+        at java.security.AccessController.doPrivileged(Native Method)
+        at java.net.URLClassLoader.findClass(URLClassLoader.java:188)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:307)
+        at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:301)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:252)
+        at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:320)
+Could not find the main class: org.apache.tools.ant.launch.Launcher.  Program will exit.
 
 3. CREATE THE CLIENT
 On Linux:
