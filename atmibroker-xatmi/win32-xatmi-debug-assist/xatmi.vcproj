@@ -40,8 +40,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;..\..\atmibroker-core\src\main\include&quot;;&quot;..\..\atmibroker-core\src\main\export&quot;;&quot;..\..\atmibroker-hybrid\src\test\include&quot;;&quot;..\..\atmibroker-core\src\test\include&quot;;&quot;..\..\atmibroker-hybrid\src\main\include&quot;;&quot;..\..\atmibroker-hybrid\src\main\export&quot;;&quot;..\..\atmibroker-tx\src\main\export&quot;;&quot;..\..\atmibroker-tx\src\main\include&quot;;&quot;..\..\atmibroker-xatmi\src\test\include&quot;;&quot;..\..\atmibroker-xatmi\src\main\include&quot;;&quot;..\..\atmibroker-xatmi\src\main\export&quot;;&quot;..\..\atmibroker-core\target\cxx\compile\include\expat&quot;;&quot;..\..\atmibroker-hybrid\target\cxx\compile\include\apr-1&quot;;&quot;..\..\atmibroker-hybrid\target\cxx\compile\include\stomp&quot;;&quot;..\..\atmibroker-xatmi\target\cxx\runtime\include&quot;;&quot;..\..\atmibroker-xatmi\target\cxx\test\include&quot;"
-				PreprocessorDefinitions="WIN32;TAO_COMP;_CRT_SECURE_NO_WARNINGS;BLACKTIE_CORE_MACRO=;BLACKTIE_CORE_DLL=;BLACKTIE_XATMI_MACRO=;BLACKTIE_XATMI_DLL=;BLACKTIE_STOMP_MACRO=;BLACKTIE_STOMP_DLL=;BLACKTIE_TX_MACRO=;BLACKTIE_TX_DLL=;BLACKTIE_HYBRID_MACRO=;BLACKTIE_HYBRID_DLL=;IDE_DEBUG;UNITTEST"
+				AdditionalIncludeDirectories="..\..\atmibroker-xatmi\src\example\txfooapp;C:\db-4.7.25\build_windows;..\..\atmibroker-core\src\main\include;..\..\atmibroker-core\src\main\export;C:\blacktie\svn\atmibroker-core\target\cxx\compile\include\expat;..\..\atmibroker-hybrid\src\main\include;..\..\atmibroker-hybrid\src\main\export;C:\blacktie\svn\atmibroker-hybrid\target\cxx\compile\include\stomp;C:\blacktie\svn\atmibroker-hybrid\target\cxx\compile\include\apr-1;..\..\atmibroker-tx\src\main\export;..\..\atmibroker-tx\src\main\include;..\..\atmibroker-xatmi\src\main\include;..\..\atmibroker-xatmi\src\main\export;..\..\atmibroker-xatmi\target\cxx\runtime\include"
+				PreprocessorDefinitions="WIN32;TAO_COMP;_CRT_SECURE_NO_WARNINGS;BLACKTIE_CORE_MACRO=;BLACKTIE_CORE_DLL=;BLACKTIE_XATMI_MACRO=;BLACKTIE_XATMI_DLL=;BLACKTIE_STOMP_MACRO=;BLACKTIE_STOMP_DLL=;BLACKTIE_TX_MACRO=;BLACKTIE_TX_DLL=;BLACKTIE_HYBRID_MACRO=;BLACKTIE_HYBRID_DLL=;IDE_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -60,8 +60,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ACEd.lib TAO_AnyTypeCoded.lib TAO_CodecFactoryd.lib TAO_CosNamingd.lib TAO_IDL_BEd.lib TAO_IDL_FEd.lib TAO_IORInterceptord.lib TAO_ObjRefTemplated.lib TAO_PI_Serverd.lib TAO_PId.lib TAO_PortableServerd.lib TAO_Valuetyped.lib TAOd.lib atmibroker-idl.lib libapr-1.lib libexpat.lib libstomp.lib log4cxx.lib cppunitd_dll.lib xerces-c_3D.lib"
-				AdditionalLibraryDirectories="C:\blacktie\util\ACE+TAO-5.6.7\ACE_wrappers\lib;..\..\atmibroker-xatmi\target\cxx\test\lib;..\..\atmibroker-xatmi\target\cxx\runtime\lib"
+				AdditionalDependencies="libdb47d.lib ACEd.lib TAO_AnyTypeCoded.lib TAO_CodecFactoryd.lib TAO_CosNamingd.lib TAO_IDL_BEd.lib TAO_IDL_FEd.lib TAO_IORInterceptord.lib TAO_ObjRefTemplated.lib TAO_PI_Serverd.lib TAO_PId.lib TAO_PortableServerd.lib TAO_Valuetyped.lib TAOd.lib libapr-1.lib libexpat.lib libstomp.lib log4cxx.lib xerces-c_3D.lib atmibroker-idl.lib"
+				AdditionalLibraryDirectories="C:\db-4.7.25\build_windows\Debug;..\..\atmibroker-xatmi\target\cxx\runtime\lib"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -199,14 +199,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\test\cpp\BaseServerTest.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\BaseTest.cxx"
-				>
-			</File>
-			<File
 				RelativePath="..\..\atmibroker-tx\src\main\cpp\ClientInterceptor.cxx"
 				>
 			</File>
@@ -224,10 +216,6 @@
 			</File>
 			<File
 				RelativePath="..\..\atmibroker-hybrid\src\main\cpp\CorbaEndpointQueue.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\LoopyServerAndClient.cxx"
 				>
 			</File>
 			<File
@@ -255,10 +243,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\test\cpp\Sleeper.cxx"
-				>
-			</File>
-			<File
 				RelativePath="..\..\atmibroker-hybrid\src\main\cpp\StompEndpointQueue.cxx"
 				>
 			</File>
@@ -268,118 +252,6 @@
 			</File>
 			<File
 				RelativePath="..\..\atmibroker-core\src\main\cpp\SynchronizableObject.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestClientInit.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-hybrid\src\test\cpp\TestConnection.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestRollbackOnly.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestRollbackOnlyServices.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\target\generated-sources\TestRunner.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestServerinit.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestSpecExampleOne.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestSpecExampleTwo.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-hybrid\src\test\cpp\TestSuite.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestTPACall.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestTPAdvertise.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestTPAlloc.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestTPCall.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestTPCancel.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestTPConnect.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestTPConversation.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestTPDiscon.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestTPFree.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestTPFreeService.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestTPGetRply.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestTPRealloc.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestTPRecv.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestTPReturn.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestTPSend.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestTPService.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestTPTypes.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestTPUnadvertise.cxx"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\cpp\TestTxTPCall.cxx"
 				>
 			</File>
 			<File
@@ -447,16 +319,36 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\test\cpp\XATMITestSuite.cxx"
-				>
-			</File>
-			<File
 				RelativePath="..\..\atmibroker-core\src\main\cpp\XsdValidator.cxx"
 				>
 			</File>
 			<Filter
 				Name="core"
 				>
+				<File
+					RelativePath="..\..\..\dist\blacktie-1.0-MR6-SNAPSHOT\examples\xatmi\txfooapp\bdb.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\dist\blacktie-1.0-MR6-SNAPSHOT\examples\xatmi\txfooapp\cutil.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\dist\blacktie-1.0-MR6-SNAPSHOT\examples\xatmi\txfooapp\DbService.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\dist\blacktie-1.0-MR6-SNAPSHOT\examples\xatmi\txfooapp\ora.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\dist\blacktie-1.0-MR6-SNAPSHOT\examples\xatmi\txfooapp\request.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\dist\blacktie-1.0-MR6-SNAPSHOT\examples\xatmi\txfooapp\server.c"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -533,14 +425,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\test\include\BaseServerTest.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\BaseTest.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\atmibroker-tx\src\main\include\ClientInterceptor.h"
 				>
 			</File>
@@ -581,10 +465,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\atmibroker-core\src\test\include\ExceptionCase.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\atmibroker-tx\src\main\include\LocalResourceManager.h"
 				>
 			</File>
@@ -593,19 +473,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\test\include\LoopyServerAndClient.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\atmibroker-core\src\main\export\Message.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\atmibroker-core\src\main\export\MessageListener.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-core\src\test\include\ODBCTest.h"
 				>
 			</File>
 			<File
@@ -645,14 +517,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\atmibroker-core\src\test\include\SimpleOrbTest.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\Sleeper.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\atmibroker-hybrid\src\main\export\StompEndpointQueue.h"
 				>
 			</File>
@@ -662,130 +526,6 @@
 			</File>
 			<File
 				RelativePath="..\..\atmibroker-core\src\main\export\SynchronizableObject.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestBufferAllocation.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestClientInit.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-hybrid\src\test\include\TestConnection.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-core\src\test\include\TestConnection.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-core\src\test\include\TestMultiOrb.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestServerinit.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestSpecExampleOne.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestSpecExampleTwo.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-core\src\test\include\TestSymbolLoader.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-core\src\test\include\TestSynchronizableObject.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestTPACall.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestTPAdvertise.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestTPAlloc.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestTPCall.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestTPCancel.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestTPConnect.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestTPConversation.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestTPDiscon.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestTPFree.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestTPFreeService.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestTPGetRply.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestTPRealloc.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestTPRecv.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestTPReturn.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestTPSend.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestTPService.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestTPTypes.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestTPUnadvertise.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\test\include\TestTxTPCall.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-core\src\test\include\TestUserlog.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\atmibroker-core\src\test\include\TestXsdValidator.h"
 				>
 			</File>
 			<File
@@ -845,16 +585,20 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\test\include\XATMITestSuite.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\atmibroker-core\src\main\export\XsdValidator.h"
 				>
 			</File>
 			<Filter
 				Name="core"
 				>
+				<Filter
+					Name="tx"
+					>
+					<File
+						RelativePath="..\src\example\txfooapp\tx\request.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
