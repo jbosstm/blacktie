@@ -74,7 +74,7 @@
 		<mkdir dir="${build.dist}/lib" />
 	</target>
 
-	<target name="thirdparty" depends="bdb,log4cxx,cppunit,expat,apr-1,stomp,jbossas,java-devel,ace,xercesc" />
+	<target name="thirdparty" depends="log4cxx,cppunit,expat,apr-1,stomp,jbossas,java-devel,ace,xercesc" />
 	<target name="install" depends="thirdparty" />
 
 	<target name="jbossas" depends="clean,init">
@@ -249,29 +249,6 @@
 		</copy>
 
 		<install-artifact groupId="expat.contrib" artifactId="expat" name="expat" version="${expat.version}" description="repackage of expat, the C library for parsing XML, written by James Clark." />
-	</target>
-
-	<target name="bdb-lib-linux" if="linux">
-		<copy file="${bdb.lib.dir}/libdb.so" todir="${build.dist}/lib" />
-	</target>
-	<target name="bdb-lib-windows" if="windows">
-		<copy file="${bdb.lib.dir}/libdb47.lib" todir="${build.dist}/lib" />
-		<copy file="${bdb.lib.dir}/libdb47d.lib" todir="${build.dist}/lib" />
-		<copy file="${bdb.bin.dir}/libdb47.dll" todir="${build.dist}/lib" />
-		<copy file="${bdb.bin.dir}/debug/libdb47d.dll" todir="${build.dist}/lib" />
-	</target>
-	<target name="bdb" depends="clean,init">
-		<antcall target="purge"/>
-		<validate-files inc.dir="${bdb.include.dir}" lib.dir="${bdb.lib.dir}" artifactId="bdb" />
-
-		<antcall target="bdb-lib-linux" />
-		<antcall target="bdb-lib-windows" />
-		<copy todir="${build.dist}/include/bdb">
-			<fileset dir="${bdb.include.dir}" />
-		</copy>
-
-		<install-artifact groupId="bdb.contrib" artifactId="bdb" name="bdb"
-		                  version="${bdb.version}" description="repackage of BerkeleyDB" />
 	</target>
 
 	<target name="cppunit-lib-linux" if="linux">

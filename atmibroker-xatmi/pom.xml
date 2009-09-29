@@ -29,33 +29,6 @@
 	<name>Blacktie C++ XATMI Implementation</name>
 	<packaging>jar</packaging>
 
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>mk-bdb-dir</id>
-						<phase>test-compile</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<tasks>
-								<delete failonerror="false" quiet="true">
-								    <fileset dir="${project.build.directory}/db1" includes="**/*"/>
-								    <fileset dir="${project.build.directory}/db2" includes="**/*"/>
-								</delete>
-								<mkdir dir="${project.build.directory}/db1"/>
-								<mkdir dir="${project.build.directory}/db2"/>
-							</tasks>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
-
 	<dependencies>
 		<dependency>
 			<groupId>cppunit.contrib</groupId>
@@ -80,12 +53,6 @@
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>dummy-rm</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>bdb.contrib</groupId>
-			<artifactId>bdb</artifactId>
-			<version>4.7.25</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

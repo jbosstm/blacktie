@@ -48,9 +48,9 @@ static void get_error(test_req_t *resp, dvoid *errhp, sword status) {
 		sb4 err = 0;
 		(void) OCIErrorGet(errhp, (ub4) 1, (text *) NULL, &err, (text *) buf, (ub4) sizeof (buf), OCI_HTYPE_ERROR);
 
-		snprintf(resp->data, sizeof (resp->data), "%s", buf);
+		userlogc_snprintf(resp->data, sizeof (resp->data), "%s", buf);
 	} else {
-	   	snprintf(resp->data, sizeof (resp->data), "OCI error: %d", (int) status);
+	   	userlogc_snprintf(resp->data, sizeof (resp->data), "OCI error: %d", (int) status);
 	}
 }
 
@@ -172,7 +172,7 @@ static sword doWork(char op, char *arg, OCISvcCtx *svcCtx, OCIStmt *stmthp, OCIE
 	} else if (op == '1') {
 		int rcnt = 0;	// no of matching records
 		status = doSelect(svcCtx, stmthp, errhp, empno, &rcnt);
-	   	snprintf(resp->data, sizeof (resp->data), "%d", rcnt);
+	   	userlogc_snprintf(resp->data, sizeof (resp->data), "%d", rcnt);
 	} else if (op == '2') {
 		status = doUpdate(svcCtx, stmthp, errhp, empno);
 	} else if (op == '3') {

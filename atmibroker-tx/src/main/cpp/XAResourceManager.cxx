@@ -181,7 +181,7 @@ int XAResourceManager::recover(XID& bid, const char* rc)
 int XAResourceManager::createServant(XID& xid)
 {
 	FTRACE(xarmlogger, "ENTER");
-	int res;
+	int res = XA_OK;
 	XAResourceAdaptorImpl *ra = NULL;
 	CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) txx_get_control();
 	CosTransactions::Coordinator_ptr coord = NULL;

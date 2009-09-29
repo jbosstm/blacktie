@@ -53,8 +53,8 @@ void BAR(TPSVCINFO * svcinfo)
 		if (req->prod == p->id) {
 			int rv;
 			strncpy(req->db, p->dbname, sizeof(req->db));
-			userlogc_debug("TxLog Service %s %4d: prod=%8s (id=%d) op=%c tx=0x%x data=%s", TXTEST_SVC_NAME,
-					req->id, p->pname, p->id, req->op, req->txtype, req->data);
+			userlogc_debug("TxLog Service %s %4d: prod=%8s (id=%d) op=%c tx=0x%x data=%s expect=%d", TXTEST_SVC_NAME,
+					req->id, p->pname, p->id, req->op, req->txtype, req->data, req->expect);
 			rv = p->access(req, resp);
 			userlogc_debug("TxLog Service %s %4d: resp->status=%d rv=%d", TXTEST_SVC_NAME, req->id, resp->status, rv);
 

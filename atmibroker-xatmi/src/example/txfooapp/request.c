@@ -18,14 +18,10 @@
 #include "tx/request.h"
 
 product_t products[] = {
-//	{0, "null db", "null", ANY_ACCESS, null_access, null_xaflags},
+	{0, "null db", "null", ANY_ACCESS, null_access, null_xaflags},
 #ifdef ORACLE
 	{1, "ora - blacktie", "blacktie", ANY_ACCESS, ora_access, ora_xaflags},
 	{2, "ora - bt", "bt", ANY_ACCESS, ora_access, ora_xaflags},
-#endif
-#ifdef BDB
-	{3, "bdb - db1", "db1", REMOTE_ACCESS, bdb_access, bdb_xaflags},
-	{4, "bdb - db2", "db2", REMOTE_ACCESS, bdb_access, bdb_xaflags},
 #endif
 	{-1, 0, 0, 0, 0},
 };

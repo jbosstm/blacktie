@@ -17,33 +17,16 @@
 
 1. INTRODUCTION
 ===============
-This example shows how to use XA compliant databases with BlackTie and has been tested against Berkeley Db
-and ORACLE 11g. To compile in support for Berkeley Db you will need to pass a preprocessor macro called BDB
-to the BlackTie utility that generates executables (as explained below). Similary for ORACLE support.
+This example shows how to use an XA compliant database with BlackTie and has been tested against
+ORACLE 11g. To compile in support for ORACLE you will need to pass a preprocessor macro called ORACLE
+to the BlackTie utility that generates executables (as explained below).
 
 To include a particular database during runtime you will need to update the BlackTie Environment.xml file
 with information specific to the required database. The example xml files (in the linux and win32 directories)
-includes notes and examples on how to configure ORACLE and BDB support.
+includes notes and examples on how to configure ORACLE support.
 
-Berkeley DB and Oracle 11g can be downloaded from:
-http://www.oracle.com/technology/software/products/berkeley-db/db/index.html (tested on release
-Berkeley DB 4.7.25NC.tar.gz , without encryption after unpacking the archive and consult the README
-for build instructions)
-and
+Oracle 11g can be downloaded from:
 http://www.oracle.com/technology/software/products/database/index.html (tested on release 11.1.0.6.0)
-respectively.
-
-For example, ON LINUX extract to <USER_HOME>/db-4.7.25
-Follow the instructions on: http://www.oracle.com/technology/documentation/berkeley-db/db/ref/build_unix/intro.html
-Update the Environment.xml file with the path to the BerkeleyDB library or use the default and set the environment
-variable BDB_HOME to the installation directory, for example
-    export BDB_HOME=/usr
-
-For WINDOWS extract to c:\db-4.7.25, for examle, and then follow the instructions
-at: http://www.oracle.com/technology/documentation/berkeley-db/db/ref/build_win/intro.html
-NOTE I needed to alter the db_dll Linker settings to remove bufferoverflowU
-NOTE I needed to alter the build profile to be Debug x86 as the default was 64bit
-NOTE I get 3 failures during build two for tcl.h and one for jni.h but I ignore these
 
 2. BUILDING THE EXAMPLE
 =======================
@@ -58,7 +41,6 @@ On Windows:
 You MUST use an environment configured with the VC++ development tools, e.g. launch:
 C:\Program Files\Microsoft Visual Studio 9.0\VC\vcvarsall.bat
 
-
 To compile a BlackTie client and server use the generate_client and generate_server scripts that came with the
 distribution. The linux versions have a .sh suffix and windows versions have a .bat suffix.
 
@@ -66,50 +48,24 @@ generate_client accepts arguments that specify which files to compile (-Dclient.
 include directories (-Dx.inc.dir=) and the location of any required libraries (-Dx.lib.dir= and -Dx.libs=).
 [If you need to pass in more include directories and libraries use -Dx.inc.dir2=..., -Dx.lib.dir2=... and -Dx.libs2=...].
 It also accepts a list of preprocessor macro definitions (-Dx.define="comma separated list of macro names"). Thus, for example,
-to compile the client for use with Oracle11g and Berkely Db:
+to compile the client for use with Oracle11g:
 
-$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c bdb.c ora.c cutil.c" \
-    -Dx.inc.dir="/usr/include" \
-    -Dx.inc.dir2="/usr/local/product/11.1.0/db_1/rdbms/public" \
-    -Dx.lib.dir="/usr/lib" -Dx.libs="db" \
-    -Dx.lib.dir2="/usr/local/product/11.1.0/db_1/lib" -Dx.libs2="occi clntsh" \
-    -Dx.define="BDB, ORACLE"
-
-[Notice that /usr/lib and /usr/include have been included to illustrate the use of x.inc.dir2 etc although you
-would not normally need to include standard system paths]
+$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" \
+    -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" \
+    -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh" \
+    -Dx.define="ORACLE"
 
 Similarly for generating the server:
 
-$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c bdb.c ora.c DbService.c" \
-    -Dx.inc.dir="/usr/include" \
-    -Dx.inc.dir2="/usr/local/product/11.1.0/db_1/rdbms/public" \
-    -Dx.lib.dir="/usr/lib" -Dx.libs="db" \
-    -Dx.lib.dir2="/usr/local/product/11.1.0/db_1/lib" -Dx.libs2="occi clntsh" \
-    -Dx.define="BDB, ORACLE"
+$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" \
+    -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" \
+    -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh" \
+    -Dx.define="ORACLE"
 
-If you don't need ORACLE 11g just remove the lines that refer to its libraries and includes (and the ORACLE
-preprocessor macro).
-
-Windows compile lines are similar. For example, to build a server for use with Berkeley Db (debug library) only:
-
-%BLACKTIE_BIN_DIR%/bin/generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c bdb.c ora.c DbService.c" \
-    -Dx.inc.dir="C:/db-4.7.25/build_windows/" \
-    -Dx.lib.dir="C:/db-4.7.25/build_windows/Debug" \
-    -Dx.libs="libdb47d" \
-    -Dx.define="BDB"
-
-To build the client:
-
-%BLACKTIE_BIN_DIR%/bin/generate_client.bat -Dclient.includes="client.c request.c bdb.c ora.c cutil.c" \
-    -Dx.inc.dir="C:/db-4.7.25/build_windows/" \
-    -Dx.lib.dir="C:/db-4.7.25/build_windows/Debug" \
-    -Dx.libs="libdb47d" \
-    -Dx.define="BDB"
+Windows compile lines are similar.
 
 NOTE: If you get the following error you have not edited or executed setenv correctly:
-java org.apache.tools.ant.launch.Launcher -f /bin/generate-executables.xml -Dconfiguration.ty
-pe=debug -Dbasedir=. -Dtoolchain.compiler=msvc server -Dservice.names=BAR -Dserver.includes="request.c bdb.c ora.c DbService.c"     -Dx.inc.dir="C:/db-4.7.25/bu
-ild_windows/"     -Dx.lib.dir="C:/db-4.7.25/build_windows/Debug"     -Dx.libs="libdb47${lib.suffix}"     -Dx.define="BDB"
+java org.apache.tools.ant.launch.Launcher -f /bin/generate-executables.xml -Dconfiguration.type=debug -Dbasedir=. -Dtoolchain.compiler=msvc server -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="C:/<ora include dir>" -Dx.lib.dir="<ora lib dir>" -Dx.libs="occi.dll clntsh.dll" -Dx.define="ORACLE"
 Exception in thread "main" java.lang.NoClassDefFoundError: org/apache/tools/ant/launch/Launcher
 Caused by: java.lang.ClassNotFoundException: org.apache.tools.ant.launch.Launcher
         at java.net.URLClassLoader$1.run(URLClassLoader.java:200)
@@ -134,7 +90,7 @@ Start the JBoss server (<JBOSS_HOME>/bin/run.sh|bat -c all)
 Make sure all required libraries are on the library path, something like
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/product/11.1.0/db_1/lib
 or
-    set PATH=%PATH%;C:\db-4.7.25\build_windows\Debug
+    set PATH=%PATH%;C:\<ora lib dir>
 
 3.1 START THE SERVER
 ====================
@@ -146,9 +102,6 @@ or
 
 This runs a set of tests that exercise the various ways of interacting with resource managers. Please refer
 to the source file cutil.c to see what client/server/transaction combinations are used.
-
-Note: The db records are stored in the directories db1 and db2. If these becomes corrupt or you just want to start afresh
-clear out the database by deleting the contents but not the directories themselves (on linux rm db*/*)
 
 APPENDIX: RECOVERY
 ==================
@@ -199,24 +152,19 @@ since the server can start more than one orb so a range of ports is necessary):
 Example command line for compiling and linking the server and client (defines the TX_RC macro and links against the
 dummy XA resource library):
 
-$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c bdb.c ora.c DbService.c" \
-     -Dx.inc.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
-     -Dx.lib.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="dummy-rm" \
-     -Dx.define="BDB, TX_RC"
-
-$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c bdb.c ora.c cutil.c" \
-    -Dx.inc.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
-    -Dx.lib.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="dummy-rm" \
-    -Dx.define="BDB, TX_RC"
-
-And to include oracle in the test:
-
-$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c bdb.c ora.c DbService.c" \
+$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" \
      -Dx.inc.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
      -Dx.inc.dir2="/usr/local/product/11.1.0/db_1/rdbms/public" \
      -Dx.lib.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="dummy-rm" \
      -Dx.lib.dir2="/usr/local/product/11.1.0/db_1/lib" -Dx.libs2="occi clntsh" \
-     -Dx.define="BDB, ORACLE, TX_RC"
+     -Dx.define="ORACLE, TX_RC"
+
+$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" \
+     -Dx.inc.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
+     -Dx.inc.dir2="/usr/local/product/11.1.0/db_1/rdbms/public" \
+     -Dx.lib.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="dummy-rm" \
+     -Dx.lib.dir2="/usr/local/product/11.1.0/db_1/lib" -Dx.libs2="occi clntsh" \
+     -Dx.define="ORACLE, TX_RC"
 
 Note that the library path needs to include the location of the dummy-rm library. For example:
 
@@ -227,7 +175,6 @@ to plan you will need to either manually recover the transaction or, since this 
 clear the logs:
 
 	BlackTie recovery log: rclog and linux/rclog	# safe to delete these logs
-	Berkeley db logs: db1/* and db2/*	# safe to delete these logs
 	JBossTS logs: $JBOSS_HOME/server/<server name>/data/tx-object-store/
 		# probably not wise to delete these unless you know that there are no other transactions in the system
 

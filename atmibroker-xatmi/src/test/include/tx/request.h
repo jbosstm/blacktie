@@ -30,7 +30,6 @@
 #include <tx.h>
 
 #ifdef UNITTEST
-#define BDB
 static const char * const TXTEST_SVC_NAME = "tpcall_x_octet";
 #else
 static const char * const TXTEST_SVC_NAME = "BAR";
@@ -64,11 +63,6 @@ typedef struct BLACKTIE_XATMI_DLL test_req {
 #define ora_xaflags	null_xaflags
 #endif
 
-#ifndef BDB
-#define bdb_access	null_access
-#define bdb_xaflags	null_xaflags
-#endif
-
 /*
  * some RMs do not allow mixed access - in fact Berkeley Db doesn't even support
  * 2 dbs in different files one accessed remotely and the other locally
@@ -95,7 +89,6 @@ extern "C" {
 
 #ifdef WIN32
 extern __declspec(dllimport) struct xa_switch_t db_xa_switch;
-#define snprintf userlogc_snprintf
 #endif
 
 /* common methods */
@@ -114,13 +107,11 @@ extern int end_tx(enum TX_TYPE txtype);
 
 extern int null_access(test_req_t *req, test_req_t *resp);
 extern int ora_access(test_req_t *req, test_req_t *resp);
-extern int bdb_access(test_req_t *req, test_req_t *resp);
 extern int is_tx_in_state(enum TX_TYPE txtype);
 extern int get_tx_status();
 
 extern long null_xaflags();
 extern long ora_xaflags();
-extern long bdb_xaflags();
 
 #ifdef __cplusplus
 }

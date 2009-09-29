@@ -23,10 +23,6 @@ product_t products[] = {
 	{1, "ora - blacktie", "blacktie", ANY_ACCESS, ora_access, ora_xaflags},
 	{2, "ora - bt", "bt", ANY_ACCESS, ora_access, ora_xaflags},
 #endif
-#ifdef BDB
-	{3, "bdb - db1", "db1", REMOTE_ACCESS, bdb_access, bdb_xaflags},
-	{4, "bdb - db2", "db2", REMOTE_ACCESS, bdb_access, bdb_xaflags},
-#endif
 	{-1, 0, 0, 0, 0},
 };
 
@@ -171,7 +167,7 @@ int null_access(test_req_t *req, test_req_t *resp)
 {
 	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	resp->status = 0;
-	(void) snprintf(resp->data, sizeof(resp->data), "%d", req->expect);
+	(void) userlogc_snprintf(resp->data, sizeof(resp->data), "%d", req->expect);
 
 	userlogc_debug( "TxLog null_access: prod id=%d (%s) op=%c res=%s", req->prod, req->db, req->op, resp->data);
 

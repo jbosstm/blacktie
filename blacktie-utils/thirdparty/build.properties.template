@@ -36,8 +36,3 @@ xercesc.version=3.0.1
 java-devel.include.dir=/usr/local/jdk1.5.0_15/include/
 java-devel.platform.include.dir=/usr/local/jdk1.5.0_15/include/linux
 java-devel.version=1.5.0_15
-
-bdb.lib.dir=/usr/local/BerkeleyDB.4.7/lib
-bdb.include.dir=/usr/local/BerkeleyDB.4.7/include/
-bdb.bin.dir=/usr/local/BerkeleyDB.4.7/bin
-bdb.version=4.7.25
