@@ -121,11 +121,10 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 		CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen,
 		CORBA::Long correlationId, CORBA::Long flags, const char* type,
 		const char* subtype) throw (CORBA::SystemException ) {
-	LOG4CXX_DEBUG(logger, (char*) "send called:" << this);
 	if (!shutdown) {
 		lock->lock();
 		if (!shutdown) {
-			LOG4CXX_DEBUG(logger, (char*) "send called.");
+			LOG4CXX_DEBUG(logger, (char*) "send called" << this);
 			if (replyto_ior != NULL) {
 				LOG4CXX_DEBUG(logger, (char*) "send reply to = " << replyto_ior);
 			}
@@ -177,8 +176,10 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 			returnData.push(message);
 			LOG4CXX_DEBUG(logger, (char*) "notifying");
 			lock->notify();
+			LOG4CXX_DEBUG(logger, (char*) "notified");
+		} else {
+			LOG4CXX_WARN(logger, (char*) "MESSAGE DISCARDED - queue shutdown");
 		}
-		LOG4CXX_DEBUG(logger, (char*) "notified");
 		lock->unlock();
 	}
 }
