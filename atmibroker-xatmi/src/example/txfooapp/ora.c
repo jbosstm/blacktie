@@ -213,8 +213,11 @@ int ora_access(test_req_t *req, test_req_t *resp)
 	xaEnv = (struct OCIEnv *) xaoEnv((text *) req->db) ;
 	svcCtx = (struct OCISvcCtx *) xaoSvcCtx((text *) req->db);
 
-	if (!xaEnv || !svcCtx)
-		return fatal("TxLog ORA:- Unable to obtain env and/or service context!");
+	if (!xaEnv || !svcCtx) {
+		userlogc_warn( "TxLog Unable to obtain env and/or service context! xaEnv=%p svcCtx=%p db=%s",
+			xaEnv, svcCtx, req->db);
+		return -1;
+	}
 
 	/* initialise OCI handles */
 	if (OCI_SUCCESS != OCIHandleAlloc((dvoid *)xaEnv, (dvoid **)&errhp,

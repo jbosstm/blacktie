@@ -98,6 +98,8 @@ or
 
 3.2 START THE CLIENT
 ====================
+	indicate which platform the client is running on:
+	export BLACKTIE_CONFIGURATION=<win32|linux>
     ./client
 
 This runs a set of tests that exercise the various ways of interacting with resource managers. Please refer

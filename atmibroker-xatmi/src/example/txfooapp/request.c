@@ -21,7 +21,7 @@ product_t products[] = {
 	{0, "null db", "null", ANY_ACCESS, null_access, null_xaflags},
 #ifdef ORACLE
 	{1, "ora - blacktie", "blacktie", ANY_ACCESS, ora_access, ora_xaflags},
-	{2, "ora - bt", "bt", ANY_ACCESS, ora_access, ora_xaflags},
+	{2, "ora - ORCL", "ORCL", ANY_ACCESS, ora_access, ora_xaflags},
 #endif
 	{-1, 0, 0, 0, 0},
 };
@@ -160,7 +160,7 @@ int fail(const char *reason, int ret)
 
 int fatal(const char *msg)
 {
-	userlogc_debug( "TxLog %s:%d: %s", __FUNCTION__, __LINE__, msg);
+	userlogc_warn( "TxLog %s:%d: %s", __FUNCTION__, __LINE__, msg);
 	return -1;
 }
 

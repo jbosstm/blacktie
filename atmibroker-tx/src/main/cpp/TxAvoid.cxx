@@ -49,43 +49,43 @@ extern XID& getXid(void *infoVoid) {
 
 /* X/Open tx interface */
 int tx_open(void) {
-    LOG4CXX_DEBUG(loggerTxAvoid, "ENTER");
+    LOG4CXX_DEBUG(loggerTxAvoid, "tx_open: ENTER");
     return txManager_open();
 }
 
 int tx_begin(void) {
-    LOG4CXX_DEBUG(loggerTxAvoid, "ENTER");
+    LOG4CXX_DEBUG(loggerTxAvoid, "tx_begin: ENTER");
     return txManager_begin();
 }
 
 int tx_commit(void) {
-    LOG4CXX_DEBUG(loggerTxAvoid, "ENTER");
+    LOG4CXX_DEBUG(loggerTxAvoid, "tx_commit: ENTER");
     return txManager_commit();
 }
 
 int tx_rollback(void) {
-    LOG4CXX_DEBUG(loggerTxAvoid, "ENTER");
+    LOG4CXX_DEBUG(loggerTxAvoid, "tx_rollback: ENTER");
     return txManager_rollback();
 }
 
 int tx_close(void) {
-    LOG4CXX_DEBUG(loggerTxAvoid, "ENTER");
+    LOG4CXX_DEBUG(loggerTxAvoid, "tx_close: ENTER");
     return txManager_close();
 }
 
 int tx_set_commit_return(COMMIT_RETURN when_return) {
-    LOG4CXX_DEBUG(loggerTxAvoid, "ENTER");
+    LOG4CXX_DEBUG(loggerTxAvoid, "tx_set_commit_return: ENTER");
     return txManager_set_commit_return(when_return);
 }
 int tx_set_transaction_control(TRANSACTION_CONTROL control) {
-    LOG4CXX_DEBUG(loggerTxAvoid, "ENTER");
+    LOG4CXX_DEBUG(loggerTxAvoid, "tx_set_transaction_control: ENTER");
     return txManager_set_transaction_control(control);
 }
 int tx_set_transaction_timeout(TRANSACTION_TIMEOUT timeout) {
-    LOG4CXX_DEBUG(loggerTxAvoid, "ENTER");
+    LOG4CXX_DEBUG(loggerTxAvoid, "tx_set_transaction_timeout: ENTER");
     return txManager_set_transaction_timeout(timeout);
 }
 int tx_info(TXINFO *info) {
-    LOG4CXX_DEBUG(loggerTxAvoid, "ENTER");
+    LOG4CXX_DEBUG(loggerTxAvoid, "tx_info: ENTER");
     return txManager_info(info);
 }

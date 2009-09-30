@@ -127,8 +127,10 @@ static int _rmiter(ResourceManagerMap& rms, int (*func)(XAResourceManager *, XID
 	FTRACE(xarflogger, "ENTER: flags=0x" << std::hex << flags << " tx owner=" << isOriginator);
 	XID xid;
 
-	if (!XAResourceManagerFactory::getXID(xid))
+	if (!XAResourceManagerFactory::getXID(xid)) {
+		LOG4CXX_TRACE(xarflogger,  (char *) "No tx ... returning");
 		return XAER_NOTA;
+	}
 
 	for (ResourceManagerMap::iterator i = rms.begin(); i != rms.end(); ++i) {
 		XAResourceManager * rm = i->second;
@@ -228,7 +230,7 @@ void XAResourceManagerFactory::recover_branches()
 
 void XAResourceManagerFactory::createRMs(CORBA_CONNECTION * connection) throw (RMException)
 {
-	FTRACE(xarflogger, "ENTER");
+	FTRACE(xarflogger, "ENTER rmsize: " << rms_.size());
 
 	if (CORBA::is_nil(poa_))
 		create_poa(connection);

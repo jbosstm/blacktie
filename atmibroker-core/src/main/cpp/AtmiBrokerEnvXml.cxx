@@ -168,6 +168,22 @@ static char * XMLCALL copy_value(const char *value) {
 	return strdup(value);
 }
 
+static bool applicable_config(char *config, const char *attribute) {
+	if (config == NULL || ACE_OS::strlen(config) == 0) {
+		// see if it is set in the environment
+		if ((config = ACE_OS::getenv("BLACKTIE_CONFIGURATION")) == 0)
+			return false;
+	}
+
+	char * conf = copy_value(attribute);
+	bool rtn = strcmp(conf, config);
+
+	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "comparing " << conf << " with " << config);
+	free(conf);
+
+	return (rtn == 0);
+}
+
 static void XMLCALL startElement
 (void *userData, const char *name, const char **atts) {
 	std::vector<envVar_t>* aEnvironmentStructPtr = (std::vector<envVar_t>*) userData;
@@ -200,29 +216,26 @@ static void XMLCALL startElement
 		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processing xaresources");
 		processingXaResources = true;
 	} else if (strcmp(name, "XA_RESOURCE") == 0) {
-		if(atts != 0 && atts[0] && strcmp(atts[0], "configuration") == 0) {
-			char * conf = copy_value(atts[1]);
-			LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "comparing" << conf << " with " << configuration);
-			if (strcmp(conf, configuration) == 0) {
-				LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processing xaresource");
-				processingXaResource = true;
-				xarm_config_t *p;
-				if ((p = (xarm_config_t *) malloc(sizeof(xarm_config_t))) == 0) {
-					warnCnt = 0;
-					warn("out of memory");
-				} else {
-					(void *) memset(p, 0, sizeof(xarm_config_t));
+		if(atts != 0 && atts[0] && strcmp(atts[0], "configuration") == 0 &&
+			applicable_config(configuration, atts[1])) {
 
-					if (xarmp == 0) {
-						p->head = p;
-					} else {
-						xarmp->next = p;
-						p->head = xarmp->head;
-					}
-					xarmp = p;
+			LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processing xaresource");
+			processingXaResource = true;
+			xarm_config_t *p;
+			if ((p = (xarm_config_t *) malloc(sizeof(xarm_config_t))) == 0) {
+				warnCnt = 0;
+				warn("out of memory");
+			} else {
+				(void *) memset(p, 0, sizeof(xarm_config_t));
+
+				if (xarmp == 0) {
+					p->head = p;
+				} else {
+					xarmp->next = p;
+					p->head = xarmp->head;
 				}
+				xarmp = p;
 			}
-			free(conf);
 		} else {
 			LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "NO CONFIGURATION ATTRIBUTE FOR XA_RESOURCE");
 		}
@@ -450,6 +463,8 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(
 		ACE_OS::strcpy(aDescriptorFileName, "Environment.xml");
 	}
 	configuration = conf;
+
+	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, "BLACKTIE_CONFIGURATION: " << configuration);
 
 	bool toReturn = true;
 	char schemaPath[256];
