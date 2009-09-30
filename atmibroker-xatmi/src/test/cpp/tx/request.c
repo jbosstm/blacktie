@@ -18,7 +18,7 @@
 #include "tx/request.h"
 
 product_t products[] = {
-//	{0, "null db", "null", ANY_ACCESS, null_access, null_xaflags},
+	{0, "null db", "null", ANY_ACCESS, null_access, null_xaflags},
 #ifdef ORACLE
 	{1, "ora - blacktie", "blacktie", ANY_ACCESS, ora_access, ora_xaflags},
 	{2, "ora - bt", "bt", ANY_ACCESS, ora_access, ora_xaflags},
