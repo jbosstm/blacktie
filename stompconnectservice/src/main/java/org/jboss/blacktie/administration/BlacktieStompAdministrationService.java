@@ -172,8 +172,10 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 			if(queue == false || !serviceName.contains("ADMIN") ) {
 				result = 1;	
-			} else {
+			} else if(consumerCount(serviceName) > 0){
 				log.info("can not advertise ADMIN with same id");
+			} else {
+				result = 1;
 			}
 		} catch (Throwable t) {
 			log.error("Could not deploy queue of " + serviceName, t);
