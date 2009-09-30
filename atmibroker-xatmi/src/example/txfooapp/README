@@ -51,15 +51,15 @@ It also accepts a list of preprocessor macro definitions (-Dx.define="comma sepa
 to compile the client for use with Oracle11g:
 
 $BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" \
-    -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" \
-    -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh" \
+    -Dx.inc.dir="${ORACLE_HOME}/rdbms/public" \
+    -Dx.lib.dir="${ORACLE_HOME}/lib" -Dx.libs="occi clntsh" \
     -Dx.define="ORACLE"
 
 Similarly for generating the server:
 
 $BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" \
-    -Dx.inc.dir="/usr/local/product/11.1.0/db_1/rdbms/public" \
-    -Dx.lib.dir="/usr/local/product/11.1.0/db_1/lib" -Dx.libs="occi clntsh" \
+    -Dx.inc.dir="${ORACLE_HOME}/rdbms/public" \
+    -Dx.lib.dir="${ORACLE_HOME}/lib" -Dx.libs="occi clntsh" \
     -Dx.define="ORACLE"
 
 Windows compile lines are similar.
@@ -88,7 +88,7 @@ C:\blacktie\dist\blacktie-1.0-MR6-SNAPSHOT\bin\generate-executables.xml:144: Cou
 ======================
 Start the JBoss server (<JBOSS_HOME>/bin/run.sh|bat -c all)
 Make sure all required libraries are on the library path, something like
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/product/11.1.0/db_1/lib
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ORACLE_HOME}/lib
 or
     set PATH=%PATH%;C:\<ora lib dir>
 
@@ -156,21 +156,21 @@ dummy XA resource library):
 
 $BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" \
      -Dx.inc.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
-     -Dx.inc.dir2="/usr/local/product/11.1.0/db_1/rdbms/public" \
+     -Dx.inc.dir2="${ORACLE_HOME}/rdbms/public" \
      -Dx.lib.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="dummy-rm" \
-     -Dx.lib.dir2="/usr/local/product/11.1.0/db_1/lib" -Dx.libs2="occi clntsh" \
+     -Dx.lib.dir2="${ORACLE_HOME}/lib" -Dx.libs2="occi clntsh" \
      -Dx.define="ORACLE, TX_RC"
 
 $BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" \
      -Dx.inc.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
-     -Dx.inc.dir2="/usr/local/product/11.1.0/db_1/rdbms/public" \
+     -Dx.inc.dir2="${ORACLE_HOME}/rdbms/public" \
      -Dx.lib.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="dummy-rm" \
-     -Dx.lib.dir2="/usr/local/product/11.1.0/db_1/lib" -Dx.libs2="occi clntsh" \
+     -Dx.lib.dir2="${ORACLE_HOME}/lib" -Dx.libs2="occi clntsh" \
      -Dx.define="ORACLE, TX_RC"
 
 Note that the library path needs to include the location of the dummy-rm library. For example:
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/product/11.1.0/db_1/lib:$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ORACLE_HOME}/lib:$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib
 
 Note that recovery implies that the various components in the system need to store state on disk. If things don't go according
 to plan you will need to either manually recover the transaction or, since this is only a demo example, manually
