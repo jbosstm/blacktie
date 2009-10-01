@@ -304,7 +304,7 @@ int TxManager::open(void)
 			return TX_ERROR;
 		} catch (...) {
 			LOG4CXX_ERROR(txmlogger, 
-				(char*) "Unknown error resolving Tx Service: " << transFactoryId);
+				(char*) "Unknown error resolving Tx Service did you run ant jts in the JBoss distribution and edit the jbossts properties to bind the service in the CORBA naming service: " << transFactoryId);
 			return TX_ERROR;
 		}
 	}

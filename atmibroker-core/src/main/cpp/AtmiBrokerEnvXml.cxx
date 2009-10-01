@@ -216,8 +216,7 @@ static void XMLCALL startElement
 		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processing xaresources");
 		processingXaResources = true;
 	} else if (strcmp(name, "XA_RESOURCE") == 0) {
-		if(atts != 0 && atts[0] && strcmp(atts[0], "configuration") == 0 &&
-			applicable_config(configuration, atts[1])) {
+		if(strcmp(atts[0], "configuration") == 0 &&	applicable_config(configuration, atts[1])) {
 
 			LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processing xaresource");
 			processingXaResource = true;
@@ -237,7 +236,7 @@ static void XMLCALL startElement
 				xarmp = p;
 			}
 		} else {
-			LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "NO CONFIGURATION ATTRIBUTE FOR XA_RESOURCE");
+			LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "CONFIGURATION NOT APPLICABLE FOR XA_RESOURCE: " << atts[1]);
 		}
 	} else if (strcmp(name, "XA_RESOURCE_MGR_ID") == 0) {
 		processingXaResourceMgrId = true;
