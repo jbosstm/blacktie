@@ -28,6 +28,9 @@ includes notes and examples on how to configure ORACLE support.
 Oracle 11g can be downloaded from:
 http://www.oracle.com/technology/software/products/database/index.html (tested on release 11.1.0.6.0)
 
+For all stages of this example it is recommended that you have set ORACLE_HOME to the distribution of 
+ORACLE you have installed.
+
 2. BUILDING THE EXAMPLE
 =======================
 
@@ -52,15 +55,15 @@ to compile the client for use with Oracle11g:
 
 On Linux:
 $BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" \
-    -Dx.inc.dir="${ORACLE_HOME}/rdbms/public" \
-    -Dx.lib.dir="${ORACLE_HOME}/lib" -Dx.libs="occi clntsh" \
+    -Dx.inc.dir="$ORACLE_HOME/rdbms/public" \
+    -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" \
     -Dx.define="ORACLE"
 
 Similarly for generating the server:
 
 $BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" \
-    -Dx.inc.dir="${ORACLE_HOME}/rdbms/public" \
-    -Dx.lib.dir="${ORACLE_HOME}/lib" -Dx.libs="occi clntsh" \
+    -Dx.inc.dir="$ORACLE_HOME/rdbms/public" \
+    -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" \
     -Dx.define="ORACLE"
 
 On Windows:
@@ -94,7 +97,7 @@ C:\blacktie\dist\blacktie-1.0-MR6-SNAPSHOT\bin\generate-executables.xml:144: Cou
 ======================
 Start the JBoss server (<JBOSS_HOME>/bin/run.sh|bat -c all)
 Make sure all required libraries are on the library path, something like
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ORACLE_HOME}/lib
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib
 or
     set PATH=%PATH%;C:\<ora lib dir>
 
@@ -162,21 +165,21 @@ dummy XA resource library):
 
 $BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" \
      -Dx.inc.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
-     -Dx.inc.dir2="${ORACLE_HOME}/rdbms/public" \
+     -Dx.inc.dir2="$ORACLE_HOME/rdbms/public" \
      -Dx.lib.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="dummy-rm" \
-     -Dx.lib.dir2="${ORACLE_HOME}/lib" -Dx.libs2="occi clntsh" \
+     -Dx.lib.dir2="$ORACLE_HOME/lib" -Dx.libs2="occi clntsh" \
      -Dx.define="ORACLE, TX_RC"
 
 $BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" \
      -Dx.inc.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
-     -Dx.inc.dir2="${ORACLE_HOME}/rdbms/public" \
+     -Dx.inc.dir2="$ORACLE_HOME/rdbms/public" \
      -Dx.lib.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="dummy-rm" \
-     -Dx.lib.dir2="${ORACLE_HOME}/lib" -Dx.libs2="occi clntsh" \
+     -Dx.lib.dir2="$ORACLE_HOME/lib" -Dx.libs2="occi clntsh" \
      -Dx.define="ORACLE, TX_RC"
 
 Note that the library path needs to include the location of the dummy-rm library. For example:
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ORACLE_HOME}/lib:$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib:$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib
 
 Note that recovery implies that the various components in the system need to store state on disk. If things don't go according
 to plan you will need to either manually recover the transaction or, since this is only a demo example, manually
