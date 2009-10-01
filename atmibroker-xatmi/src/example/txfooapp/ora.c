@@ -113,12 +113,13 @@ static int doSelect(OCISvcCtx *svcCtx, OCIStmt *stmthp, OCIError *errhp, int emp
 	text *sql = (text *) "SELECT ENAME,JOB FROM EMP WHERE EMPNO >= :1" ;
 	char emp[20];
 	char job[20];
+	sword status;
 
 	OCIDefine *stmtdef1 = (OCIDefine *) 0;
 	OCIDefine *stmtdef2 = (OCIDefine *) 0;
 
 	userlogc_debug( "TxLog doSelect: :1=%d", empno);
-	sword status = OCIStmtPrepare(stmthp, errhp, (text *) sql, (ub4) strlen((char *) sql),
+	status = OCIStmtPrepare(stmthp, errhp, (text *) sql, (ub4) strlen((char *) sql),
 		(ub4) OCI_NTV_SYNTAX, (ub4) OCI_DEFAULT);
 
 	/* bind empno to the statement */

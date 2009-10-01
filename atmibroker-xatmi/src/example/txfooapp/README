@@ -50,6 +50,7 @@ include directories (-Dx.inc.dir=) and the location of any required libraries (-
 It also accepts a list of preprocessor macro definitions (-Dx.define="comma separated list of macro names"). Thus, for example,
 to compile the client for use with Oracle11g:
 
+On Linux:
 $BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" \
     -Dx.inc.dir="${ORACLE_HOME}/rdbms/public" \
     -Dx.lib.dir="${ORACLE_HOME}/lib" -Dx.libs="occi clntsh" \
@@ -62,7 +63,12 @@ $BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="
     -Dx.lib.dir="${ORACLE_HOME}/lib" -Dx.libs="occi clntsh" \
     -Dx.define="ORACLE"
 
-Windows compile lines are similar.
+On Windows:
+%BLACKTIE_BIN_DIR%/bin/generate_client.bat -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.define="ORACLE"
+
+Similarly for generating the server:
+
+%BLACKTIE_BIN_DIR%/bin/generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.define="ORACLE"
 
 NOTE: If you get the following error you have not edited or executed setenv correctly:
 java org.apache.tools.ant.launch.Launcher -f /bin/generate-executables.xml -Dconfiguration.type=debug -Dbasedir=. -Dtoolchain.compiler=msvc server -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="C:/<ora include dir>" -Dx.lib.dir="<ora lib dir>" -Dx.libs="occi.dll clntsh.dll" -Dx.define="ORACLE"
