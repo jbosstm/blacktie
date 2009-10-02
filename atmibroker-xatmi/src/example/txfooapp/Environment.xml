@@ -73,7 +73,7 @@
              <XA_RESOURCE configuration="linux">
                 <XA_RESOURCE_MGR_ID>2</XA_RESOURCE_MGR_ID>
                 <XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
-                <XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+DB=ORCL</XA_OPEN_STRING>
+                <XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+DB=ORCL+LogDir=.</XA_OPEN_STRING>
                 <XA_CLOSE_STRING></XA_CLOSE_STRING>
                 <XA_SWITCH>xaosw</XA_SWITCH>
                 <XA_LIB_NAME>${ORACLE_HOME}/lib/libclntsh.so</XA_LIB_NAME>
@@ -81,7 +81,7 @@
              <XA_RESOURCE configuration="linux">
                 <XA_RESOURCE_MGR_ID>1</XA_RESOURCE_MGR_ID>
                 <XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
-                <XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+DB=blacktie</XA_OPEN_STRING>
+                <XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+DB=blacktie+LogDir=.</XA_OPEN_STRING>
                 <XA_CLOSE_STRING></XA_CLOSE_STRING>
                 <XA_SWITCH>xaosw</XA_SWITCH>
                 <XA_LIB_NAME>${ORACLE_HOME}/lib/libclntsh.so</XA_LIB_NAME>
@@ -89,7 +89,7 @@
           <XA_RESOURCE configuration="win32">
             <XA_RESOURCE_MGR_ID>2</XA_RESOURCE_MGR_ID>
             <XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
-            <XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+DB=ORCL</XA_OPEN_STRING>
+            <XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+DB=ORCL+LogDir=.</XA_OPEN_STRING>
             <XA_CLOSE_STRING></XA_CLOSE_STRING>
             <XA_SWITCH>xaosw</XA_SWITCH>
             <XA_LIB_NAME>${ORACLE_HOME}/BIN/oraclient11.dll</XA_LIB_NAME>
@@ -97,7 +97,7 @@
           <XA_RESOURCE configuration="win32">
             <XA_RESOURCE_MGR_ID>1</XA_RESOURCE_MGR_ID>
             <XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
-            <XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+DB=blacktie</XA_OPEN_STRING>
+            <XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+DB=blacktie+LogDir=.</XA_OPEN_STRING>
             <XA_CLOSE_STRING></XA_CLOSE_STRING>
             <XA_SWITCH>xaosw</XA_SWITCH>
             <XA_LIB_NAME>${ORACLE_HOME}/BIN/oraclient11.dll</XA_LIB_NAME>
