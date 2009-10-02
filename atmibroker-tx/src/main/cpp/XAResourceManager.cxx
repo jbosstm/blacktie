@@ -347,6 +347,7 @@ int XAResourceManager::xa_flags()
 
 XID XAResourceManager::gen_xid(long id, XID &gid)
 {
+	FTRACE(xarmlogger, "ENTER");
 	XID xid = {gid.formatID, gid.gtrid_length};
 	int i;
 
@@ -358,5 +359,6 @@ XID XAResourceManager::gen_xid(long id, XID &gid)
 	(void) sprintf(xid.data + i, "%ld:%ld%ld", id, now.sec(), now.usec());
 	xid.bqual_length = strlen(xid.data + i);
 
+	FTRACE(xarmlogger, "Leaving with XID: " << xid);
 	return xid;
 }
