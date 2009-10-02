@@ -40,8 +40,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\atmibroker-xatmi\src\example\txfooapp;C:\db-4.7.25\build_windows;..\..\atmibroker-core\src\main\include;..\..\atmibroker-core\src\main\export;C:\blacktie\svn\atmibroker-core\target\cxx\compile\include\expat;..\..\atmibroker-hybrid\src\main\include;..\..\atmibroker-hybrid\src\main\export;C:\blacktie\svn\atmibroker-hybrid\target\cxx\compile\include\stomp;C:\blacktie\svn\atmibroker-hybrid\target\cxx\compile\include\apr-1;..\..\atmibroker-tx\src\main\export;..\..\atmibroker-tx\src\main\include;..\..\atmibroker-xatmi\src\main\include;..\..\atmibroker-xatmi\src\main\export;..\..\atmibroker-xatmi\target\cxx\runtime\include"
-				PreprocessorDefinitions="WIN32;TAO_COMP;_CRT_SECURE_NO_WARNINGS;BLACKTIE_CORE_MACRO=;BLACKTIE_CORE_DLL=;BLACKTIE_XATMI_MACRO=;BLACKTIE_XATMI_DLL=;BLACKTIE_STOMP_MACRO=;BLACKTIE_STOMP_DLL=;BLACKTIE_TX_MACRO=;BLACKTIE_TX_DLL=;BLACKTIE_HYBRID_MACRO=;BLACKTIE_HYBRID_DLL=;IDE_DEBUG"
+				AdditionalIncludeDirectories="C:\app\BlackHat\product\11.1.0\db_1\OCI\include;&quot;..\..\atmibroker-xatmi\src\example\txfooapp&quot;;&quot;..\..\atmibroker-core\src\main\include&quot;;&quot;..\..\atmibroker-core\src\main\export&quot;;&quot;C:\blacktie\svn\atmibroker-core\target\cxx\compile\include\expat&quot;;&quot;..\..\atmibroker-hybrid\src\main\include&quot;;&quot;..\..\atmibroker-hybrid\src\main\export&quot;;&quot;C:\blacktie\svn\atmibroker-hybrid\target\cxx\compile\include\stomp&quot;;&quot;C:\blacktie\svn\atmibroker-hybrid\target\cxx\compile\include\apr-1&quot;;&quot;..\..\atmibroker-tx\src\main\export&quot;;&quot;..\..\atmibroker-tx\src\main\include&quot;;&quot;..\..\atmibroker-xatmi\src\main\include&quot;;&quot;..\..\atmibroker-xatmi\src\main\export&quot;;&quot;..\..\atmibroker-xatmi\target\cxx\runtime\include&quot;"
+				PreprocessorDefinitions="WIN32;TAO_COMP;_CRT_SECURE_NO_WARNINGS;BLACKTIE_CORE_MACRO=;BLACKTIE_CORE_DLL=;BLACKTIE_XATMI_MACRO=;BLACKTIE_XATMI_DLL=;BLACKTIE_STOMP_MACRO=;BLACKTIE_STOMP_DLL=;BLACKTIE_TX_MACRO=;BLACKTIE_TX_DLL=;BLACKTIE_HYBRID_MACRO=;BLACKTIE_HYBRID_DLL=;IDE_DEBUG;ORACLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -60,8 +60,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libdb47d.lib ACEd.lib TAO_AnyTypeCoded.lib TAO_CodecFactoryd.lib TAO_CosNamingd.lib TAO_IDL_BEd.lib TAO_IDL_FEd.lib TAO_IORInterceptord.lib TAO_ObjRefTemplated.lib TAO_PI_Serverd.lib TAO_PId.lib TAO_PortableServerd.lib TAO_Valuetyped.lib TAOd.lib libapr-1.lib libexpat.lib libstomp.lib log4cxx.lib xerces-c_3D.lib atmibroker-idl.lib"
-				AdditionalLibraryDirectories="C:\db-4.7.25\build_windows\Debug;..\..\atmibroker-xatmi\target\cxx\runtime\lib"
+				AdditionalDependencies="oci.lib ACEd.lib TAO_AnyTypeCoded.lib TAO_CodecFactoryd.lib TAO_CosNamingd.lib TAO_IDL_BEd.lib TAO_IDL_FEd.lib TAO_IORInterceptord.lib TAO_ObjRefTemplated.lib TAO_PI_Serverd.lib TAO_PId.lib TAO_PortableServerd.lib TAO_Valuetyped.lib TAOd.lib libapr-1.lib libexpat.lib libstomp.lib log4cxx.lib xerces-c_3D.lib atmibroker-idl.lib"
+				AdditionalLibraryDirectories="C:\app\BlackHat\product\11.1.0\db_1\OCI\lib\MSVC;&quot;..\..\atmibroker-xatmi\target\cxx\runtime\lib&quot;"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -326,7 +326,7 @@
 				Name="core"
 				>
 				<File
-					RelativePath="..\..\..\dist\blacktie-1.0-MR6-SNAPSHOT\examples\xatmi\txfooapp\bdb.c"
+					RelativePath="..\..\..\dist\blacktie-1.0-MR6-SNAPSHOT\examples\xatmi\txfooapp\client.c"
 					>
 				</File>
 				<File
@@ -343,10 +343,6 @@
 				</File>
 				<File
 					RelativePath="..\..\..\dist\blacktie-1.0-MR6-SNAPSHOT\examples\xatmi\txfooapp\request.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\dist\blacktie-1.0-MR6-SNAPSHOT\examples\xatmi\txfooapp\server.c"
 					>
 				</File>
 			</Filter>
