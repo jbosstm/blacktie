@@ -29,8 +29,6 @@ Then, execute the script setenv
 2. RUN THE EXAMPLE
 This example makes use of maven to build, deploy and test an XATMI service deployed 
 as an MDB.
-You must ensure that BLACKTIE_CONFIGURATION_DIR is either not set or set to the 
-empty string before running the test.
 
 If you are running the test from the src distribution just run:
 
