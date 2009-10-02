@@ -21,6 +21,9 @@
 
 log4cxx::LoggerPtr xarmlogger(log4cxx::Logger::getLogger("TxLogXAManager"));
 
+SynchronizableObject* XAResourceManager::lock = new SynchronizableObject();
+int XAResourceManager::counter = 0;
+
 ostream& operator<<(ostream &os, const XID& xid)
 {
 	os << xid.formatID << ':' << xid.gtrid_length << ':' << xid.bqual_length << ':' << xid.data;
@@ -351,12 +354,17 @@ XID XAResourceManager::gen_xid(long id, XID &gid)
 	XID xid = {gid.formatID, gid.gtrid_length};
 	int i;
 
+	int myCounter = -1;
+	lock->lock();
+	myCounter = ++counter;
+	lock->unlock();
+
 	for (i = 0; i < gid.gtrid_length; i++)
 		xid.data[i] = gid.data[i];
 
 	// TODO improve on the uniqueness (eg include IP)
 	ACE_Time_Value now = ACE_OS::gettimeofday();
-	(void) sprintf(xid.data + i, "%ld:%ld%ld", id, now.sec(), now.usec());
+	(void) sprintf(xid.data + i, "%d:%d:%d:%d", myCounter, id, now.sec(), now.usec());
 	xid.bqual_length = strlen(xid.data + i);
 
 	FTRACE(xarmlogger, "Leaving with XID: " << xid);

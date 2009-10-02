@@ -68,5 +68,8 @@ private:
 	XAResourceAdaptorImpl * locateBranch(XID *);
 
 	void show_branches(const char *, XID *);
+
+	static SynchronizableObject* lock;
+	static int counter;
 };
 #endif // _XARESOURCEMANAGER_H
