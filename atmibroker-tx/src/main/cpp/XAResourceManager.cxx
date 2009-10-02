@@ -84,6 +84,8 @@ XAResourceManager::XAResourceManager(
 	LOG4CXX_TRACE(xarmlogger,  (char *) "xa_open: " << rv);
 
 	if (rv != XA_OK) {
+		LOG4CXX_ERROR(xarmlogger,  (char *) "xa_open error: " << rv);
+
 		RMException ex("xa_open", rv);
 		throw ex;
 	}
