@@ -85,17 +85,15 @@ static string xid_to_string(XID& xid)
  */
 static void init_logpath(const char *fname)
 {
-	// if fname is not passed see if the log name is set in the environent
-	const char *logfile = (fname != NULL ? fname :
-		AtmiBrokerEnv::get_instance()->getenv((char*) "BLACKTIE_SERVER_NAME", DEF_LOG));
-	const char *logdir = AtmiBrokerEnv::get_instance()->getenv("BLACKTIE_CONFIGURATION_DIR", 0);
+	if (fname) {
+		ACE_OS::snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s", fname);
+	} else {
+		// if fname is not passed see if the log name is set in the environent
+		const char *rcLog    = AtmiBrokerEnv::get_instance()->getenv((char*) "BLACKTIE_RC_LOG_NAME", DEF_LOG);
+		const char *servName = AtmiBrokerEnv::get_instance()->getenv((char*) "BLACKTIE_SERVER_NAME", rcLog);
 
-	LOG4CXX_TRACE(xarcllogger, (char *) "init_logpath: logfile=" << logfile << " logdir=" << logdir);
-
-	if (logdir)
-		ACE_OS::snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s/%s.rc", logdir, DEF_LOG);
-	else
-		ACE_OS::snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s.rc", DEF_LOG);
+		ACE_OS::snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s", servName);
+	}
 
 	LOG4CXX_TRACE(xarcllogger, (char *) "Using log file " << RCLOGPATH);
 }
@@ -107,9 +105,10 @@ static void init_logpath(const char *fname)
 XARecoveryLog::XARecoveryLog(const char* logfile) throw (RMException) :
 	arena_(0), nblocks_((size_t) 0), maxblocks_(0)
 {
+	bool isClient = false; //(AtmiBrokerEnv::get_instance()->getenv("BLACKTIE_CONFIGURATION", 0) != 0);
 	init_logpath(logfile);
 
-	if (!load_log(RCLOGPATH)) {
+	if (!isClient && !load_log(RCLOGPATH)) {
 		LOG4CXX_ERROR(xarcllogger, (char *) "Error creating recovery log");
 		//throw new RMException("Error creating recovery log ", -1);
 		//TODO propagate the exception

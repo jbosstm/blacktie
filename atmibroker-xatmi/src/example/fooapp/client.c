@@ -56,11 +56,11 @@ for (i = 0; i < 10; i++) {
 	tptypes(sbuf, type, subtype);
 
 	// tpcall
-	userlogc((char*) "Calling tpcall with input: %s", sbuf);
+//	userlogc((char*) "Calling tpcall with input: %s", sbuf);
 	tpstatus = tpcall("BAR", sbuf, sbufsize, (char **) &retbuf,
 			&retbufsize, callflags);
-	userlogc((char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
-			retbufsize, retbuf, tpstatus, tperrno);
+//	userlogc((char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
+//			retbufsize, retbuf, tpstatus, tperrno);
 
 	tpfree(sbuf);
 	tpfree(retbuf);

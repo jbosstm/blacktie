@@ -367,7 +367,7 @@ XID XAResourceManager::gen_xid(long id, XID &gid)
 	// TODO improve on the uniqueness (eg include IP)
 	ACE_Time_Value now = ACE_OS::gettimeofday();
 	// the first long in the XID data must contain the RM id
-	(void) sprintf(xid.data + i, "%d:%d:%d:%d", id, myCounter, now.sec(), now.usec());
+	(void) sprintf(xid.data + i, "%ld:%d:%ld:%ld", id, myCounter, now.sec(), now.usec());
 	xid.bqual_length = strlen(xid.data + i);
 
 	FTRACE(xarmlogger, "Leaving with XID: " << xid);

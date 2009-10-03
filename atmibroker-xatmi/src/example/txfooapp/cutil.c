@@ -450,8 +450,10 @@ int run_tests(product_t *prod_array)
 	}
 
 	userlogc( (char*) "TxLog Tests complete");
+#ifndef TX_RC   // test recovery
 	if ((rv = teardown(&cnt)))
 		return rv;
+#endif
 
 	if (tx_close() != TX_OK) {
 		userlogc_warn( (char*) "TxLog ERROR - Could not close transaction: ");

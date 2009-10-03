@@ -118,6 +118,10 @@ Indicate which platform the client is running on:
 This runs a set of tests that exercise the various ways of interacting with resource managers. Please refer
 to the source file cutil.c to see what client/server/transaction combinations are used.
 
+[If you run more than one client from the same directory you will need to configure a unique recovery log name by
+setting the following environment variable:
+	export BLACKTIE_RC_LOG_NAME=<unique file name>
+
 APPENDIX: RECOVERY
 ==================
 To test recovery you will need to link against a library that is only available in the test suite (which you'll need to build
@@ -125,7 +129,9 @@ from source - the library is called libdummy-rm.so).
 
 When building the client and server define the macro TX_RC as shown below. When the client runs it sends a request to
 the server that causes the server to generate a segmentation fault after the prepare phase of the transaction commitment
-protocol. This will ensure that there is a pending transaction in need of recovery.
+protocol. This will ensure that there is a pending transaction in need of recovery. See the note below about running
+select statements showing that one of the database instances got the commit but the other one will have the commit pending
+(ie the record will not be present until the transaction is recovered).
 
 Restart the server. The BlackTie log (blacktie.log) should show the system recovering the failed transaction. The expected
 message sequence is:
@@ -155,7 +161,18 @@ The XA resource that generates the segmentation fault needs to be included in En
                 <XA_LIB_NAME>libdummy-rm.so</XA_LIB_NAME>
             </XA_RESOURCE>
 
-After failure the server needs to either restart on the same ORB endpoint or needs to use a CORBA implementaton repository:
+Make sure that the XA_RESOURCE_MGR_ID lies between the two ORACLE Resource Manager ids. This will ensure that the
+ORACLE instance with the lower id will commit but the one with the higher id will not have committed.
+
+The test inserts an employee with id 8004 into the emp table. After running the client:
+	select empno from emp where empno=8004; should return 1 record on the db with sid ORCL
+	select empno from emp where empno=8004; should return 0 records on the db with sid blacktie.
+
+When the server is restarted and recovery is complete (should take a couple of minutes) retry the selects. This time
+both instances should return 1 record.
+
+Note that after failure the server needs to either restart on the same ORB endpoint (the easiest to configure)
+or needs to use a CORBA implementaton repository:
 - to use the same end point add something similar to the following in the ORBOPT environment entry (the portspan is required
 since the server can start more than one orb so a range of ports is necessary):
 	<NAME>ORBOPT</NAME>
