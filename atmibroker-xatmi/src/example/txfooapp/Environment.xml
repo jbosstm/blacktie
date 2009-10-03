@@ -45,14 +45,6 @@
                -->
              <!--
             <XA_RESOURCE configuration="linux">
-                <XA_RESOURCE_MGR_ID>201</XA_RESOURCE_MGR_ID>
-                <XA_RESOURCE_NAME>DummyDb</XA_RESOURCE_NAME>
-                <XA_OPEN_STRING></XA_OPEN_STRING>
-                <XA_CLOSE_STRING></XA_CLOSE_STRING>
-                <XA_SWITCH>testxasw</XA_SWITCH>
-                <XA_LIB_NAME>libdummy-rm.so</XA_LIB_NAME>
-            </XA_RESOURCE>
-            <XA_RESOURCE configuration="linux">
                 <XA_RESOURCE_MGR_ID>202</XA_RESOURCE_MGR_ID>
                 <XA_RESOURCE_NAME>DummyDb</XA_RESOURCE_NAME>
                 <XA_OPEN_STRING></XA_OPEN_STRING>
