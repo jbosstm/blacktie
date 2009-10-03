@@ -216,6 +216,7 @@ void XAResourceManagerFactory::recover_branches()
 	FTRACE(xarflogger, "ENTER");
 
 	for (rrec_t* rrp = rclog_.find_next(0); rrp; rrp = rclog_.find_next(rrp)) {
+		// the first long in the XID data contains the RM id
 		long rmid = ACE_OS::atol((char *) ((rrp->xid).data + (rrp->xid).gtrid_length));
 		XAResourceManager *rm = findRM(rmid);
 
