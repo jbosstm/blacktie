@@ -206,7 +206,7 @@ Note that recovery implies that the various components in the system need to sto
 to plan you will need to either manually recover the transaction or, since this is only a demo example, manually
 clear the logs:
 
-	BlackTie recovery log: rclog and linux/rclog	# safe to delete these logs
+	BlackTie recovery log: fooapp* # safe to delete these logs
 	JBossTS logs: $JBOSS_HOME/server/<server name>/data/tx-object-store/
 		# probably not wise to delete these unless you know that there are no other transactions in the system
 

@@ -87,7 +87,7 @@
             <XA_LIB_NAME>${ORACLE_HOME}/BIN/oraclient11.dll</XA_LIB_NAME>
           </XA_RESOURCE>
              <!--
-             <XA_RESOURCE configuration="linux">
+             <XA_RESOURCE configuration="win32">
                 <XA_RESOURCE_MGR_ID>202</XA_RESOURCE_MGR_ID>
                 <XA_RESOURCE_NAME>DummyDb</XA_RESOURCE_NAME>
                 <XA_OPEN_STRING></XA_OPEN_STRING>
@@ -108,11 +108,11 @@
 		<ENV_VARIABLES>
 			<ENV_VARIABLE>
 				<NAME>ORBOPT</NAME>
-				<VALUE>-ORBListenEndpoints iiop://localhost:9032/portspan=10 -ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
+				<VALUE>-ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
 			</ENV_VARIABLE>
 			<!--
+				<VALUE>-ORBListenEndpoints iiop://localhost:9032/portspan=10 -ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
 			     to start the ORB on a fixed endpoint to test recovery use the following:
-				<VALUE>-ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
 			  -->
 			<ENV_VARIABLE>
 				<NAME>TRANS_FACTORY_ID</NAME>
