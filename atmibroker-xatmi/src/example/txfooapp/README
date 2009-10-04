@@ -184,6 +184,7 @@ since the server can start more than one orb so a range of ports is necessary):
 Example command line for compiling and linking the server and client (defines the TX_RC macro and links against the
 dummy XA resource library):
 
+On Linux:
 $BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" \
      -Dx.inc.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
      -Dx.inc.dir2="$ORACLE_HOME/rdbms/public" \
@@ -198,9 +199,16 @@ $BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="
      -Dx.lib.dir2="$ORACLE_HOME/lib" -Dx.libs2="occi clntsh" \
      -Dx.define="ORACLE, TX_RC"
 
-Note that the library path needs to include the location of the dummy-rm library. For example:
+On Windows:
+%BLACKTIE_BIN_DIR%/bin/generate_client.bat -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci"      -Dx.inc.dir2="c:/blacktie/svn/atmibroker-tx/target/cxx/test/include"      -Dx.lib.dir2="c:/blacktie/svn/atmibroker-tx/target/cxx/test/lib" -Dx.libs2="dummy-rm"     -Dx.define="ORACLE, TX_RC"
 
+%BLACKTIE_BIN_DIR%/bin/generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci"           -Dx.inc.dir2="C:/blacktie/svn/atmibroker-tx/target/cxx/test/include"      -Dx.lib.dir2="c:/blacktie/svn/atmibroker-tx/target/cxx/test/lib" -Dx.libs2="dummy-rm"      -Dx.define="ORACLE, TX_RC"
+
+Note that the library path needs to include the location of the dummy-rm library. For example:
+On Linux:
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib:$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib
+On Windows:
+set PATH=%PATH%;%ORACLE_HOME%/bin;c:/blacktie/svn/atmibroker-tx/target/cxx/test/lib
 
 Note that recovery implies that the various components in the system need to store state on disk. If things don't go according
 to plan you will need to either manually recover the transaction or, since this is only a demo example, manually
