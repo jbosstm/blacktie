@@ -78,6 +78,7 @@ void AtmiBrokerEnv::set_configuration(const char* dir) {
 
 		configuration = strdup(dir);
 	} else {
+		configuration = strdup("");
 		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "setting configuration to null");
 	}
 }
@@ -86,10 +87,9 @@ AtmiBrokerEnv::AtmiBrokerEnv() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "constructor");
 	readEnvironment = false;
 
-	char* ptrDir = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
-	set_environment_dir(ptrDir);
+	set_environment_dir(ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR"));
 	if (configuration == NULL) {
-		configuration = strdup("");
+		set_configuration(ACE_OS::getenv("BLACKTIE_CONFIGURATION"));
 	}
 	readenv();
 }
