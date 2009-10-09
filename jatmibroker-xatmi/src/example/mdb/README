@@ -37,9 +37,9 @@ If you are running the test from the src distribution just run:
 If you are running the test from a binary distribution you will need to ensure that 
 the JAtmiBroker XATMI library is installed in your .m2 Maven folder:
 cd BLACKTIE_HOME/jatmibroker-xatmi
-mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=jatmibroker-xatmi -Dversion=1.0-MR5-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=jatmibroker-xatmi-1.0-MR5-SNAPSHOT.jar
-mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=blacktie-xsd -Dversion=1.0-MR5-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=blacktie-xsd-1.0-MR5-SNAPSHOT.jar
-mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=atmibroker-idl -Dversion=1.0-MR5-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=atmibroker-idl-1.0-MR5-SNAPSHOT.jar
+mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=jatmibroker-xatmi -Dversion=2.0-MR1-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=jatmibroker-xatmi-2.0-MR1-SNAPSHOT.jar
+mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=blacktie-xsd -Dversion=2.0-MR1-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=blacktie-xsd-2.0-MR1-SNAPSHOT.jar
+mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=atmibroker-idl -Dversion=2.0-MR1-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=atmibroker-idl-2.0-MR1-SNAPSHOT.jar
 cd JBOSS_HOME/client
 mvn install:install-file -DgroupId=jboss -DartifactId=jboss-javaee -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jboss-javaee.jar
 mvn install:install-file -DgroupId=jboss -DartifactId=jboss-ejb3-ext-api -Dversion=5.1.0.GA -Dpackaging=jar -DgeneratePom=true -Dfile=jboss-ejb3-ext-api.jar
