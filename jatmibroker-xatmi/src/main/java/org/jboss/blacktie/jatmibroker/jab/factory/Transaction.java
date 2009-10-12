@@ -18,6 +18,8 @@
 package org.jboss.blacktie.jatmibroker.jab.factory;
 
 import org.jboss.blacktie.jatmibroker.jab.JABException;
+import org.jboss.blacktie.jatmibroker.jab.JABSession;
+import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 
 /**
  * The JABTransaction provides the programmer access to the underlying
@@ -25,7 +27,7 @@ import org.jboss.blacktie.jatmibroker.jab.JABException;
  * 
  * @see JABConnection
  */
-public class JABTransaction {
+public class Transaction {
 
 	/**
 	 * The connection that created the transaction, the transaction must be
@@ -34,9 +36,9 @@ public class JABTransaction {
 	private JABConnection connection;
 
 	/**
-	 * Any timeout for the transaction can be provided here
+	 * The real transaction wrapper
 	 */
-	private int timeout;
+	private JABTransaction jabTransaction;
 
 	/**
 	 * The constructor is hidden from the programmer as it should be created
@@ -49,9 +51,15 @@ public class JABTransaction {
 	 * @throws JABException
 	 *             In case the transaction cannot be created
 	 */
-	JABTransaction(JABConnection connection, int timeout) throws JABException {
+	Transaction(JABConnection connection, JABSession session, int timeout)
+			throws JABException {
 		this.connection = connection;
-		this.timeout = timeout;
+		try {
+			this.jabTransaction = new JABTransaction(session, timeout);
+		} catch (Throwable e) {
+			throw new JABException("Could not create the transaction: "
+					+ e.getMessage(), e);
+		}
 	}
 
 	/**
@@ -61,6 +69,7 @@ public class JABTransaction {
 	 *             In case the transaction cannot be committed
 	 */
 	public synchronized void commit() throws JABException {
+		jabTransaction.commit();
 		connection.removeTransaction(this);
 	}
 
@@ -71,6 +80,16 @@ public class JABTransaction {
 	 *             In case the transaction cannot be rolled back successfully
 	 */
 	public synchronized void rollback() throws JABException {
+		jabTransaction.rollback();
 		connection.removeTransaction(this);
+	}
+
+	/**
+	 * Get the transaction wrapper
+	 * 
+	 * @return The transaction wrapper
+	 */
+	JABTransaction getJABTransaction() {
+		return jabTransaction;
 	}
 }

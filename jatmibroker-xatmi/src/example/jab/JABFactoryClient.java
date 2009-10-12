@@ -22,7 +22,7 @@ import org.jboss.blacktie.jatmibroker.jab.factory.JABBuffer;
 import org.jboss.blacktie.jatmibroker.jab.factory.JABConnection;
 import org.jboss.blacktie.jatmibroker.jab.factory.JABConnectionFactory;
 import org.jboss.blacktie.jatmibroker.jab.factory.JABResponse;
-import org.jboss.blacktie.jatmibroker.jab.factory.JABTransaction;
+import org.jboss.blacktie.jatmibroker.jab.factory.Transaction;
 
 public class JABFactoryClient {
 	private static final Logger log = LogManager
@@ -38,7 +38,7 @@ public class JABFactoryClient {
 		try {
 			JABConnectionFactory jcf = JABConnectionFactory.getInstance();
 			JABConnection c = jcf.getConnection("connection");
-			JABTransaction t = c.beginTransaction(-1);
+			Transaction t = c.beginTransaction(-1);
 			JABBuffer b = new JABBuffer();
 			b.setValue(message.getBytes());
 			log.info("Calling call with input: " + message);

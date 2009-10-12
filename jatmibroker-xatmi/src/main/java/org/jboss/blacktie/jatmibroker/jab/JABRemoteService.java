@@ -135,10 +135,6 @@ public class JABRemoteService implements Message {
 		}
 	}
 
-	public void call() throws JABException {
-		JABTransaction prev = JABTransaction.suspend();
-	}
-
 	/**
 	 * Clear the request and response buffers prior to a re-invocation.
 	 */

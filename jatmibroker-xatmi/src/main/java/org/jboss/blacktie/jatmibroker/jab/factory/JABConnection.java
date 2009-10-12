@@ -21,7 +21,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.jab.JABException;
+import org.jboss.blacktie.jatmibroker.jab.JABSession;
+import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
+import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 
 /**
@@ -33,18 +40,35 @@ import org.jboss.blacktie.jatmibroker.xatmi.Response;
  */
 public class JABConnection {
 	/**
+	 * The logger to debug using
+	 */
+	private static final Logger log = LogManager.getLogger(JABConnection.class);
+
+	/**
 	 * The list of open transactions
 	 */
-	private List<JABTransaction> transactions = new ArrayList<JABTransaction>();
+	private List<Transaction> transactions = new ArrayList<Transaction>();
+	private Connection connection;
+	private JABSession session;
+
+	private Transaction transaction;
 
 	/**
 	 * The constructor is hidden from classes as it is intended to be used
 	 * solely by the JABConnectionFactory class.
 	 * 
+	 * @param connection
+	 *            The connection to send requests on
+	 * @param session
+	 *            The session to use for creating transactions
+	 * 
 	 * @throws JABException
 	 *             If the connection cannot be established
 	 */
-	JABConnection() throws JABException {
+	JABConnection(Connection connection, JABSession session)
+			throws JABException {
+		this.connection = connection;
+		this.session = session;
 	}
 
 	/**
@@ -58,9 +82,13 @@ public class JABConnection {
 	 * @throws JABException
 	 *             In case the transaction cannot be created
 	 */
-	public synchronized JABTransaction beginTransaction(int timeout)
+	public synchronized Transaction beginTransaction(int timeout)
 			throws JABException {
-		return new JABTransaction(this, timeout);
+		if (transaction != null) {
+			return transaction;
+		}
+		transaction = new Transaction(this, session, timeout);
+		return transaction;
 	}
 
 	/**
@@ -80,8 +108,47 @@ public class JABConnection {
 	 *             In case the service cannot be contacted
 	 */
 	public synchronized JABResponse call(String serviceName, JABBuffer toSend,
-			JABTransaction transaction) throws JABException {
-		return new JABResponse(new Response((short) -1, -1, null, -1, -1));
+			Transaction transaction) throws JABException {
+		log.debug("call");
+		JABResponse responseMessage;
+		JABTransaction tx = transaction.getJABTransaction();
+		JABTransaction prev = null;
+
+		try {
+			if (tx == null) {
+				log.debug("service_request tx is null");
+				prev = JABTransaction.suspend();
+			} else if (!tx.equals(JABTransaction.current())) {
+				log.debug("service_request suspend " + prev + " resume " + tx);
+				prev = JABTransaction.suspend();
+				JABTransaction.resume(tx);
+			} else {
+				log.debug("service_request tx same as current");
+			}
+
+			Buffer request = new Buffer("X_OCTET", null);
+			request.setData(toSend.getValue());
+			log.debug("service_request tpcall");
+			Response response = connection.tpcall(serviceName, request, request
+					.getLength(), Connection.TPNOTIME);
+			responseMessage = new JABResponse(response);
+			log.debug("service_request responsed");
+		} catch (Exception e) {
+			log.warn("service_request exception: " + e.getMessage());
+			throw new JABException("Could not send tpcall", e);
+		} finally {
+			if (prev != null) {
+				if (tx != null) {
+					log.debug("service_request resp: suspending current: "
+							+ JABTransaction.current());
+					JABTransaction.suspend();
+				}
+
+				log.debug("service_request resuming prev: " + prev);
+				JABTransaction.resume(prev);
+			}
+		}
+		return responseMessage;
 	}
 
 	/**
@@ -91,13 +158,19 @@ public class JABConnection {
 	 *             In case associated state cannot be cleaned up
 	 */
 	public synchronized void close() throws JABException {
-		Iterator<JABTransaction> iterator = transactions.iterator();
+		Iterator<Transaction> iterator = transactions.iterator();
 		while (iterator.hasNext()) {
-			JABTransaction next = iterator.next();
+			Transaction next = iterator.next();
 			synchronized (next) {
 				next.rollback();
 			}
 			iterator.remove();
+		}
+		try {
+			connection.close();
+		} catch (ConnectionException e) {
+			throw new JABException("Could not close the connection: "
+					+ e.getMessage(), e);
 		}
 	}
 
@@ -107,7 +180,7 @@ public class JABConnection {
 	 * @param transaction
 	 *            The completed transaction
 	 */
-	synchronized void removeTransaction(JABTransaction transaction) {
+	synchronized void removeTransaction(Transaction transaction) {
 		transactions.remove(transaction);
 	}
 }

@@ -48,16 +48,15 @@ public class JABSession {
 	 * Create a new connection to the server-side using the state defined in the
 	 * session attributes
 	 * 
-	 * @param aJABSessionAttributes
+	 * @param attributes
 	 *            The attributes to use
 	 * @throws JABException
 	 *             In case the connection cannot be established
 	 */
-	public JABSession(JABSessionAttributes aJABSessionAttributes)
-			throws JABException {
+	public JABSession(JABSessionAttributes attributes) throws JABException {
 		log.debug("JABSession constructor");
 		try {
-			jabSessionAttributes = aJABSessionAttributes;
+			jabSessionAttributes = attributes;
 			ConnectionFactory connectionFactory = ConnectionFactory
 					.getConnectionFactory();
 			connection = connectionFactory.getConnection();

@@ -125,7 +125,7 @@ public class JABTransaction {
 
 		setTerminator(control);
 	}
-	
+
 	public Status getStatus() throws Unavailable {
 		return control.get_coordinator().get_status();
 	}
