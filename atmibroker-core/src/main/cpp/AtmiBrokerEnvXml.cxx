@@ -42,6 +42,9 @@ log4cxx::LoggerPtr loggerAtmiBrokerEnvXml(log4cxx::Logger::getLogger(
 xarm_config_t * xarmp = 0;
 ServersInfo servers;
 
+OrbConfig orbConfig;
+MqConfig mqConfig;
+
 //char* notifyServiceId;
 //char* namingServiceId;
 //char* loggingServiceId;
@@ -59,8 +62,6 @@ static int depth = 0;
 
 static int envVariableCount = 0;
 
-static bool processingEnvironment = false;
-static bool processingEnvironmentDescription = false;
 static bool processingServer = false;
 //static bool processingQSpaceName = false;
 //static bool processingNamingServiceId = false;
@@ -89,8 +90,6 @@ AtmiBrokerEnvXml::AtmiBrokerEnvXml() {
 	depth = 0;
 	envVariableCount = 0;
 
-	processingEnvironment = false;
-	processingEnvironmentDescription = false;
 	processingServer = false;
 	//	processingQSpaceName = false;
 	//	processingNamingServiceId = false;
@@ -191,10 +190,34 @@ static void XMLCALL startElement
 	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processing element " << name);
 	if (strcmp(name, "ENVIRONMENT xmnls") == 0 || strcmp(name, "ENVIRONMENT") == 0) {
 		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "starting to read");
-		processingEnvironment = true;
-	} else if (strcmp(name, "ENVIRONMENT_DESCRIPTION") == 0) {
-		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processing ENVIRONMENT_DESCRIPTION");
-		processingEnvironmentDescription = true;
+	} else if (strcmp(name, "ORB") == 0) {
+		for(int i = 0; atts[i]; i += 2) {
+			if(strcmp(atts[i], "OPT") == 0) {
+				orbConfig.opt = copy_value(atts[i+1]);
+				LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "set opt: " << orbConfig.opt);
+			} else if(strcmp(atts[i], "TRANS_FACTORY_ID") == 0) {
+				orbConfig.transactionFactoryName = copy_value(atts[i+1]);
+				LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "set tFN: " << orbConfig.transactionFactoryName);
+			}
+		}
+	} else if (strcmp(name, "MQ") == 0) {
+		for(int i = 0; atts[i]; i += 2) {
+			if(strcmp(atts[i], "HOST") == 0) {
+				mqConfig.host = copy_value(atts[i+1]);
+			} else if(strcmp(atts[i], "PORT") == 0) {
+				mqConfig.port = atoi(atts[i+1]);
+			} else if(strcmp(atts[i], "USER") == 0) {
+				mqConfig.user = copy_value(atts[i+1]);
+			} else if(strcmp(atts[i], "PASSWORD") == 0) {
+				mqConfig.pwd = copy_value(atts[i+1]);
+			} else if(strcmp(atts[i], "DESTINATION_TIMEOUT") == 0) {
+				mqConfig.destinationTimeout = atoi(atts[i+1]);
+			} else if(strcmp(atts[i], "RECEIVE_TIMEOUT") == 0) {
+				mqConfig.requestTimeout = atoi(atts[i+1]);
+			} else if(strcmp(atts[i], "TIME_TO_LIVE") == 0) {
+				mqConfig.timeToLive = atoi(atts[i+1]);
+			}
+		}
 	} else if (strcmp(name, "SERVER") == 0) {
 		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processing SERVER");
 		processingServer = true;

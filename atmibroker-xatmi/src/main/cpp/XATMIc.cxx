@@ -123,12 +123,7 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 					(char*) "ots"));
 			message.ttl = -1;
 
-			try {
-				char* ttl = AtmiBrokerEnv::get_instance()->getenv(
-									(char*) "TimeToLive");
-				message.ttl = atoi(ttl) * 1000;
-			} catch (...) {
-			}
+			message.ttl = mqConfig.timeToLive * 1000;
 
 			if (session->send(message)) {
 				toReturn = 0;
@@ -182,15 +177,8 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 				LOG4CXX_DEBUG(loggerXATMI, (char*) "TPNOTIME = BLOCKING CALL");
 			} else {
 				if (timeout == -1) {
-					timeout = (long) (atoi(
-							AtmiBrokerEnv::get_instance()->getenv(
-									(char*) "RequestTimeout")));
-					try {
-						char* ttl = AtmiBrokerEnv::get_instance()->getenv(
-									(char*) "TimeToLive");
-						timeout += (long) atoi(ttl);
-					} catch (...) {
-					}
+					timeout = (long) mqConfig.requestTimeout;
+					timeout += (long) mqConfig.timeToLive;
 				}
 				time = timeout;
 			}
@@ -228,7 +216,7 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 								ptrAtmiBrokerClient->closeSession(id);
 								LOG4CXX_TRACE(loggerXATMI,
 										(char*) "receive session closed: "
-										<< id);
+												<< id);
 							}
 							return toReturn;
 						}
@@ -288,9 +276,9 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 						LOG4CXX_DEBUG(
 								loggerXATMI,
 								(char*) "receive TPRECVONLY set constraints session: "
-								<< session->getId() << " send: "
-								<< session->getCanSend() << " recv: "
-								<< session->getCanRecv());
+										<< session->getId() << " send: "
+										<< session->getCanSend() << " recv: "
+										<< session->getCanRecv());
 					} else if (message.flags & TPSENDONLY) {
 						toReturn = 0;
 						session->setCanSend(true);
@@ -298,9 +286,9 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 						LOG4CXX_DEBUG(
 								loggerXATMI,
 								(char*) "receive TPSENDONLY set constraints session: "
-								<< session->getId() << " send: "
-								<< session->getCanSend() << " recv: "
-								<< session->getCanRecv());
+										<< session->getId() << " send: "
+										<< session->getCanSend() << " recv: "
+										<< session->getCanRecv());
 					} else if (message.correlationId >= 0) {
 						toReturn = 0;
 					} else {
@@ -507,7 +495,8 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 		}
 
 		if (transactional && (flags & TPNOREPLY)) {
-			LOG4CXX_ERROR(loggerXATMI,
+			LOG4CXX_ERROR(
+					loggerXATMI,
 					(char*) "TPNOREPLY CALLED WITHOUT TPNOTRAN DURING TRANSACTION");
 			setSpecific(TPE_KEY, TSS_TPEINVAL);
 		} else {
@@ -518,8 +507,9 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 					int cd = -1;
 					try {
 						session = ptrAtmiBrokerClient->createSession(cd, svc);
-						LOG4CXX_TRACE(loggerXATMI, (char*) "new session: " << session <<
-								" cd: " << cd << " transactional: " << transactional);
+						LOG4CXX_TRACE(loggerXATMI, (char*) "new session: "
+								<< session << " cd: " << cd
+								<< " transactional: " << transactional);
 
 						if (cd != -1) {
 							if (transactional)
@@ -617,21 +607,21 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 										LOG4CXX_DEBUG(
 												loggerXATMI,
 												(char*) "tpconnect set constraints session: "
-												<< session->getId()
-												<< " send: "
-												<< session->getCanSend()
-												<< " recv (not changed): "
-												<< session->getCanRecv());
+														<< session->getId()
+														<< " send: "
+														<< session->getCanSend()
+														<< " recv (not changed): "
+														<< session->getCanRecv());
 									} else {
 										session->setCanRecv(false);
 										LOG4CXX_DEBUG(
 												loggerXATMI,
 												(char*) "tpconnect set constraints session: "
-												<< session->getId()
-												<< " send (not changed): "
-												<< session->getCanSend()
-												<< " recv: "
-												<< session->getCanRecv());
+														<< session->getId()
+														<< " send (not changed): "
+														<< session->getCanSend()
+														<< " recv: "
+														<< session->getCanRecv());
 									}
 								} else {
 									LOG4CXX_DEBUG(loggerXATMI,
@@ -770,12 +760,12 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 							LOG4CXX_DEBUG(
 									loggerXATMI,
 									(char*) "Session has event, will be closed: "
-									<< *revent);
+											<< *revent);
 						} else {
 							LOG4CXX_ERROR(
 									loggerXATMI,
 									(char*) "Session has event, will be closed: "
-									<< session->getLastEvent());
+											<< session->getLastEvent());
 						}
 
 						if (session->getLastEvent() == TPEV_SVCFAIL) {
@@ -796,10 +786,10 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 							session->setCanRecv(true);
 							LOG4CXX_DEBUG(loggerXATMI,
 									(char*) "tpsend set constraints session: "
-									<< session->getId() << " send: "
-									<< session->getCanSend()
-									<< " recv: "
-									<< session->getCanRecv());
+											<< session->getId() << " send: "
+											<< session->getCanSend()
+											<< " recv: "
+											<< session->getCanRecv());
 						}
 					}
 				}
@@ -911,9 +901,9 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 				session->setCanSend(false);
 				LOG4CXX_DEBUG(loggerXATMI,
 						(char*) "tpreturn set constraints session: "
-						<< session->getId() << " send: "
-						<< session->getCanSend() << " recv: "
-						<< session->getCanRecv());
+								<< session->getId() << " send: "
+								<< session->getCanSend() << " recv: "
+								<< session->getCanRecv());
 
 			} else {
 				LOG4CXX_DEBUG(loggerXATMI, (char*) "Session is null");

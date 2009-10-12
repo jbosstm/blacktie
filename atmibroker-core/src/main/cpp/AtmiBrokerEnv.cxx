@@ -61,10 +61,12 @@ void AtmiBrokerEnv::set_environment_dir(const char* dir) {
 		ENVIRONMENT_DIR = NULL;
 	}
 	if (dir != NULL) {
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "setting configuration dir: " << dir);
+		LOG4CXX_DEBUG(loggerAtmiBrokerEnv,
+				(char*) "setting configuration dir: " << dir);
 		ENVIRONMENT_DIR = strdup(dir);
 	} else {
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "setting configuration to null");
+		LOG4CXX_DEBUG(loggerAtmiBrokerEnv,
+				(char*) "setting configuration to null");
 	}
 }
 
@@ -74,12 +76,14 @@ void AtmiBrokerEnv::set_configuration(const char* dir) {
 		configuration = NULL;
 	}
 	if (dir != NULL) {
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "setting configuration type: " << dir);
+		LOG4CXX_DEBUG(loggerAtmiBrokerEnv,
+				(char*) "setting configuration type: " << dir);
 
 		configuration = strdup(dir);
 	} else {
 		configuration = strdup("");
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "setting configuration to null");
+		LOG4CXX_DEBUG(loggerAtmiBrokerEnv,
+				(char*) "setting configuration to null");
 	}
 }
 
@@ -147,6 +151,18 @@ AtmiBrokerEnv::~AtmiBrokerEnv() {
 		servers.clear();
 	}
 
+	free(orbConfig.opt);
+	free(orbConfig.transactionFactoryName);
+	orbConfig.opt = NULL;
+	orbConfig.transactionFactoryName = NULL;
+
+	free(mqConfig.host);
+	free(mqConfig.user);
+	free(mqConfig.pwd);
+	mqConfig.host = NULL;
+	mqConfig.user = NULL;
+	mqConfig.pwd = NULL;
+
 	readEnvironment = false;
 }
 
@@ -208,11 +224,13 @@ int AtmiBrokerEnv::putenv(char* anEnvNameValue) {
 	char *p = strchr(anEnvNameValue, '=');
 	envVar_t envVar;
 
-	envVar.name =  ACE::strndup(anEnvNameValue, (size_t) (p - anEnvNameValue));
-	envVar.value = ACE::strndup(p + 1, (int) (strlen(anEnvNameValue) - strlen(p)));
+	envVar.name = ACE::strndup(anEnvNameValue, (size_t)(p - anEnvNameValue));
+	envVar.value = ACE::strndup(p + 1, (int) (strlen(anEnvNameValue)
+			- strlen(p)));
 	envVariableInfoSeq.push_back(envVar);
 
-	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "putenv name '" << envVar.name << "' value '" << envVar.value);
+	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "putenv name '" << envVar.name
+			<< "' value '" << envVar.value);
 
 	return 1;
 }

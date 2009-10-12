@@ -34,9 +34,7 @@ ServiceDispatcher::ServiceDispatcher(Destination* destination,
 	this->func = func;
 	session = NULL;
 	stop = false;
-	std::string timeout = AtmiBrokerEnv::get_instance()->getenv(
-			(char*) "DestinationTimeout");
-	this->timeout = (long) (atoi(timeout.c_str()) * 1000000);
+	this->timeout = (long) (mqConfig.destinationTimeout * 1000000);
 	this->counter = 0;
 }
 
@@ -84,7 +82,8 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	long flags = message.flags;
 
 	LOG4CXX_DEBUG(logger, (char*) "ilen: " << ilen << " flags: " << flags
-			<< "cd: " << message.correlationId << " message.control=" << message.control);
+			<< "cd: " << message.correlationId << " message.control="
+			<< message.control);
 
 	// PREPARE THE STRUCT FOR SENDING TO THE CLIENT
 	TPSVCINFO tpsvcinfo;
@@ -117,8 +116,8 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 		long result = tpsend(tpsvcinfo.cd, odata, olen, 0, &revent);
 		if (result == -1) {
 			connection->closeSession(message.correlationId);
-			destroySpecific(SVC_SES);
-			destroySpecific(SVC_KEY);
+			destroySpecific( SVC_SES);
+			destroySpecific( SVC_KEY);
 			return;
 		}
 
@@ -139,13 +138,14 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	}
 
 	// HANDLE THE CLIENT INVOCATION
-    if (message.control != NULL && strcmp((char*)message.control, "null") != 0) {
-        if (txx_associate_serialized((char*) "ots", (char*) message.control) != XA_OK) {
-            LOG4CXX_ERROR(logger, "Unable to handle control");
-            setSpecific(TPE_KEY, TSS_TPESYSTEM);
-        }
-	    tpsvcinfo.flags = (tpsvcinfo.flags | TPTRAN);
-    }
+	if (message.control != NULL && strcmp((char*) message.control, "null") != 0) {
+		if (txx_associate_serialized((char*) "ots", (char*) message.control)
+				!= XA_OK) {
+			LOG4CXX_ERROR(logger, "Unable to handle control");
+			setSpecific(TPE_KEY, TSS_TPESYSTEM);
+		}
+		tpsvcinfo.flags = (tpsvcinfo.flags | TPTRAN);
+	}
 
 	try {
 		LOG4CXX_TRACE(logger, (char*) "Calling function");
@@ -161,13 +161,14 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 	// CLEAN UP THE SENDER AND RECEIVER FOR THIS CLIENT
 	if (session->getCanSend()) {
-		LOG4CXX_TRACE(logger, (char*) "Returning error - marking tx as rollback only if "
-            << getSpecific(TSS_KEY));
+		LOG4CXX_TRACE(logger,
+				(char*) "Returning error - marking tx as rollback only if "
+						<< getSpecific(TSS_KEY));
 		txx_rollback_only();
 
-        // disassociate if present
-        if (getSpecific(TSS_KEY) != NULL)
-            txx_release_control(txx_unbind(true));
+		// disassociate if present
+		if (getSpecific(TSS_KEY) != NULL)
+			txx_release_control(txx_unbind(true));
 
 		::tpreturn(TPFAIL, TPESVCERR, NULL, 0, 0);
 		LOG4CXX_TRACE(logger, (char*) "Returned error");
@@ -180,8 +181,8 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	//	HybridConnectionImpl* instance = dynamic_cast<HybridConnectionImpl*> (connection);
 	//shutdownBindings(instance->connection);
 
-	destroySpecific(SVC_SES);
-	destroySpecific(SVC_KEY);
+	destroySpecific( SVC_SES);
+	destroySpecific( SVC_KEY);
 
 	LOG4CXX_TRACE(logger,
 			(char*) "Freeing the data that was passed to the service");

@@ -52,10 +52,9 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 	connection->poaFactory = NULL;
 
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "initOrb initing ORB");
-
-	std::string values =
-			AtmiBrokerEnv::get_instance()->getenv((char*) "ORBOPT");
-	LOG4CXX_TRACE(loggerOrbManagement, (char*) "initOrb ORBOPT: " << values);
+	AtmiBrokerEnv::get_instance();
+	std::string values = orbConfig.opt;
+	LOG4CXX_TRACE(loggerOrbManagement, (char*) "initOrb OPT: " << values);
 	char * cstr, *p;
 	cstr = new char[values.size() + 1];
 	strcpy(cstr, values.c_str());

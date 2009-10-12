@@ -2,21 +2,13 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://www.jboss.org/blacktie" xmlns="http://www.jboss.org/blacktie"
 	elementFormDefault="qualified">
-	<xsd:element name="ENVIRONMENT">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element ref="ENVIRONMENT_DESCRIPTION" minOccurs="1"
-					maxOccurs="unbounded" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
 	<xsd:simpleType name="svcstring">
 		<xsd:restriction base="xsd:string">
 			<xsd:minLength value="1" />
 			<xsd:maxLength value="15" />
 		</xsd:restriction>
 	</xsd:simpleType>
-	<xsd:element name="ENVIRONMENT_DESCRIPTION">
+	<xsd:element name="ENVIRONMENT">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="DOMAIN" type="xsd:string" />
@@ -69,6 +61,31 @@
 						</xsd:sequence>
 					</xsd:complexType>
 				</xsd:element>
+				<xsd:element name="ORB" minOccurs="1" maxOccurs="1">
+					<xsd:complexType>
+						<xsd:attribute name="OPT" type="xsd:string" use="required" />
+						<xsd:attribute name="TRANS_FACTORY_ID" type="xsd:string"
+							use="required" />
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="MQ" minOccurs="1" maxOccurs="1">
+					<xsd:complexType>
+						<xsd:attribute name="HOST" type="xsd:string" use="required" />
+						<xsd:attribute name="PORT" type="xsd:int" use="required" />
+						<xsd:attribute name="USER" type="xsd:string" use="required" />
+						<xsd:attribute name="PASSWORD" type="xsd:string"
+							use="required" />
+						<xsd:attribute name="DESTINATION_TIMEOUT" type="xsd:int"
+							use="required" />
+						<xsd:attribute name="RECEIVE_TIMEOUT" type="xsd:int"
+							use="required" />
+						<xsd:attribute name="TIME_TO_LIVE" type="xsd:int"
+							use="required" />
+						<xsd:attribute name="NAMING_URL" type="xsd:string"
+							use="optional" />
+					</xsd:complexType>
+				</xsd:element>
+
 				<xsd:element name="ENV_VARIABLES">
 					<xsd:complexType>
 						<xsd:sequence>

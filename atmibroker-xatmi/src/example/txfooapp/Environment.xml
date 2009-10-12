@@ -16,144 +16,111 @@
 		02110-1301, USA.
 	-->
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns="http://www.jboss.org/blacktie">
-	<ENVIRONMENT_DESCRIPTION>
-		<DOMAIN>fooapp</DOMAIN>
-		<SERVER_NAMES>
-			<SERVER name="jboss">
-				<SERVICE_NAMES>
-					<SERVICE name='BTStompAdmin'/>
-				</SERVICE_NAMES>
-			</SERVER>
-			<SERVER name='default'>
-				<SERVICE_NAMES>
-					<SERVICE name='BAR'/>
-				</SERVICE_NAMES>
-			</SERVER>
-		</SERVER_NAMES>
-        <XA_RESOURCES>
-             <!--
-                  To include a given database in the example uncomment the relevant XA resource entry.
+	xmlns="http://www.jboss.org/blacktie">
+	<DOMAIN>fooapp</DOMAIN>
+	<SERVER_NAMES>
+		<SERVER name="jboss">
+			<SERVICE_NAMES>
+				<SERVICE name='BTStompAdmin' />
+			</SERVICE_NAMES>
+		</SERVER>
+		<SERVER name='default'>
+			<SERVICE_NAMES>
+				<SERVICE name='BAR' />
+			</SERVICE_NAMES>
+		</SERVER>
+	</SERVER_NAMES>
+	<XA_RESOURCES>
+		<!--
+			To include a given database in the example uncomment the relevant XA
+			resource entry. Make sure the <XA_RESOURCE_MGR_ID> entry for each
+			resource is unique. The <XA_LIB_NAME> is the path to the library that
+			implements XA interface to the database. This path can begin with an
+			environment variable if required (as in the ORACLE example below).
 
-                  Make sure the <XA_RESOURCE_MGR_ID> entry for each resource is unique.
-                  The <XA_LIB_NAME> is the path to the library that implements XA interface
-                  to the database. This path can begin with an environment variable if
-                  required (as in the ORACLE example below).
-
-                  Each product includes two resources configurations (since we want to
-                  demonstrate distributed transactions involving more than one resource manager).
-               -->
-             <!--
-             Configuration for including ORACLE databases in the example. The open string includes all the
-             inforamtion needed for making XA connections. For example, the first XA resource below is
-             refering to an ORACLE database called ORCL and credentials scott/tiger. When installing
-             ORACLE the default database is ORCL (and a user called scott with password tiger is created).
-
-             For more information refer to:
-                 http://download.oracle.com/docs/cd/B28359_01/appdev.111/b28424/adfns_xa.htm
-             -->
-             <XA_RESOURCE configuration="linux">
-                <XA_RESOURCE_MGR_ID>201</XA_RESOURCE_MGR_ID>
-                <XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
-                <XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+SqlNet=ORCL+DB=ORCL+LogDir=.</XA_OPEN_STRING>
-                <XA_CLOSE_STRING></XA_CLOSE_STRING>
-                <XA_SWITCH>xaosw</XA_SWITCH>
-                <XA_LIB_NAME>${ORACLE_HOME}/lib/libclntsh.so</XA_LIB_NAME>
-             </XA_RESOURCE>
-             <!--
-             <XA_RESOURCE configuration="linux">
-                <XA_RESOURCE_MGR_ID>202</XA_RESOURCE_MGR_ID>
-                <XA_RESOURCE_NAME>DummyDb</XA_RESOURCE_NAME>
-                <XA_OPEN_STRING></XA_OPEN_STRING>
-                <XA_CLOSE_STRING></XA_CLOSE_STRING>
-                <XA_SWITCH>testxasw</XA_SWITCH>
-                <XA_LIB_NAME>libdummy-rm.so</XA_LIB_NAME>
-             </XA_RESOURCE>
-             -->
-             <XA_RESOURCE configuration="linux">
-                <XA_RESOURCE_MGR_ID>203</XA_RESOURCE_MGR_ID>
-                <XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
-                <XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+SqlNet=blacktie+DB=blacktie+LogDir=.</XA_OPEN_STRING>
-                <XA_CLOSE_STRING></XA_CLOSE_STRING>
-                <XA_SWITCH>xaosw</XA_SWITCH>
-                <XA_LIB_NAME>${ORACLE_HOME}/lib/libclntsh.so</XA_LIB_NAME>
-             </XA_RESOURCE>
-          <XA_RESOURCE configuration="win32">
-            <XA_RESOURCE_MGR_ID>201</XA_RESOURCE_MGR_ID>
-            <XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
-            <XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+SqlNet=ORCL+DB=ORCL+LogDir=.</XA_OPEN_STRING>
-            <XA_CLOSE_STRING></XA_CLOSE_STRING>
-            <XA_SWITCH>xaosw</XA_SWITCH>
-            <XA_LIB_NAME>${ORACLE_HOME}/BIN/oraclient11.dll</XA_LIB_NAME>
-          </XA_RESOURCE>
-             <!--
-             <XA_RESOURCE configuration="win32">
-                <XA_RESOURCE_MGR_ID>202</XA_RESOURCE_MGR_ID>
-                <XA_RESOURCE_NAME>DummyDb</XA_RESOURCE_NAME>
-                <XA_OPEN_STRING></XA_OPEN_STRING>
-                <XA_CLOSE_STRING></XA_CLOSE_STRING>
-                <XA_SWITCH>testxasw</XA_SWITCH>
-                <XA_LIB_NAME>libdummy-rm.so</XA_LIB_NAME>
-             </XA_RESOURCE>
-             -->
-          <XA_RESOURCE configuration="win32">
-            <XA_RESOURCE_MGR_ID>203</XA_RESOURCE_MGR_ID>
-            <XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
-            <XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+SqlNet=blacktie+DB=blacktie+LogDir=.</XA_OPEN_STRING>
-            <XA_CLOSE_STRING></XA_CLOSE_STRING>
-            <XA_SWITCH>xaosw</XA_SWITCH>
-            <XA_LIB_NAME>${ORACLE_HOME}/BIN/oraclient11.dll</XA_LIB_NAME>
-          </XA_RESOURCE>
-        </XA_RESOURCES>
-		<ENV_VARIABLES>
-			<ENV_VARIABLE>
-				<NAME>ORBOPT</NAME>
-				<VALUE>-ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
-			</ENV_VARIABLE>
-			<!--
-				<VALUE>-ORBListenEndpoints iiop://localhost:9032/portspan=10 -ORBInitRef NameService=corbaloc::localhost:3528/NameService</VALUE>
-			     to start the ORB on a fixed endpoint to test recovery use the following:
-			  -->
-			<ENV_VARIABLE>
-				<NAME>TRANS_FACTORY_ID</NAME>
-				<VALUE>TransactionManagerService.OTS</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>RC_LOG_NAME</NAME>
-				<VALUE>${BLACKTIE_RC_LOG_NAME}</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>LOG4CXXCONFIG</NAME>
-				<VALUE>log4cxx.properties</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>StompConnectHost</NAME>
-				<VALUE>localhost</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>StompConnectPort</NAME>
-				<VALUE>61613</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>StompConnectUsr</NAME>
-				<VALUE>guest</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>StompConnectPwd</NAME>
-				<VALUE>guest</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>DestinationTimeout</NAME>
-				<VALUE>2</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>RequestTimeout</NAME>
-				<VALUE>10</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>TimeToLive</NAME>
-				<VALUE>10</VALUE>
-			</ENV_VARIABLE>
-		</ENV_VARIABLES>
-	</ENVIRONMENT_DESCRIPTION>
+			Each product includes two resources configurations (since we want to
+			demonstrate distributed transactions involving more than one resource
+			manager).
+		-->
+		<!--
+			Configuration for including ORACLE databases in the example. The open
+			string includes all the inforamtion needed for making XA connections.
+			For example, the first XA resource below is refering to an ORACLE
+			database called ORCL and credentials scott/tiger. When installing
+			ORACLE the default database is ORCL (and a user called scott with
+			password tiger is created). For more information refer to:
+			http://download.oracle.com/docs/cd/B28359_01/appdev.111/b28424/adfns_xa.htm
+		-->
+		<XA_RESOURCE configuration="linux">
+			<XA_RESOURCE_MGR_ID>201</XA_RESOURCE_MGR_ID>
+			<XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
+			<XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+SqlNet=ORCL+DB=ORCL+LogDir=.
+			</XA_OPEN_STRING>
+			<XA_CLOSE_STRING></XA_CLOSE_STRING>
+			<XA_SWITCH>xaosw</XA_SWITCH>
+			<XA_LIB_NAME>${ORACLE_HOME}/lib/libclntsh.so</XA_LIB_NAME>
+		</XA_RESOURCE>
+		<!--
+			<XA_RESOURCE configuration="linux">
+			<XA_RESOURCE_MGR_ID>202</XA_RESOURCE_MGR_ID>
+			<XA_RESOURCE_NAME>DummyDb</XA_RESOURCE_NAME>
+			<XA_OPEN_STRING></XA_OPEN_STRING> <XA_CLOSE_STRING></XA_CLOSE_STRING>
+			<XA_SWITCH>testxasw</XA_SWITCH>
+			<XA_LIB_NAME>libdummy-rm.so</XA_LIB_NAME> </XA_RESOURCE>
+		-->
+		<XA_RESOURCE configuration="linux">
+			<XA_RESOURCE_MGR_ID>203</XA_RESOURCE_MGR_ID>
+			<XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
+			<XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+SqlNet=blacktie+DB=blacktie+LogDir=.
+			</XA_OPEN_STRING>
+			<XA_CLOSE_STRING></XA_CLOSE_STRING>
+			<XA_SWITCH>xaosw</XA_SWITCH>
+			<XA_LIB_NAME>${ORACLE_HOME}/lib/libclntsh.so</XA_LIB_NAME>
+		</XA_RESOURCE>
+		<XA_RESOURCE configuration="win32">
+			<XA_RESOURCE_MGR_ID>201</XA_RESOURCE_MGR_ID>
+			<XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
+			<XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+SqlNet=ORCL+DB=ORCL+LogDir=.
+			</XA_OPEN_STRING>
+			<XA_CLOSE_STRING></XA_CLOSE_STRING>
+			<XA_SWITCH>xaosw</XA_SWITCH>
+			<XA_LIB_NAME>${ORACLE_HOME}/BIN/oraclient11.dll</XA_LIB_NAME>
+		</XA_RESOURCE>
+		<!--
+			<XA_RESOURCE configuration="win32">
+			<XA_RESOURCE_MGR_ID>202</XA_RESOURCE_MGR_ID>
+			<XA_RESOURCE_NAME>DummyDb</XA_RESOURCE_NAME>
+			<XA_OPEN_STRING></XA_OPEN_STRING> <XA_CLOSE_STRING></XA_CLOSE_STRING>
+			<XA_SWITCH>testxasw</XA_SWITCH>
+			<XA_LIB_NAME>libdummy-rm.so</XA_LIB_NAME> </XA_RESOURCE>
+		-->
+		<XA_RESOURCE configuration="win32">
+			<XA_RESOURCE_MGR_ID>203</XA_RESOURCE_MGR_ID>
+			<XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
+			<XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+SqlNet=blacktie+DB=blacktie+LogDir=.
+			</XA_OPEN_STRING>
+			<XA_CLOSE_STRING></XA_CLOSE_STRING>
+			<XA_SWITCH>xaosw</XA_SWITCH>
+			<XA_LIB_NAME>${ORACLE_HOME}/BIN/oraclient11.dll</XA_LIB_NAME>
+		</XA_RESOURCE>
+	</XA_RESOURCES>
+	<ORB
+		OPT="-ORBInitRef NameService=corbaloc::localhost:3528/NameService"
+		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
+	<!--
+		OPT="-ORBListenEndpoints iiop://localhost:9032/portspan=10 -ORBInitRef NameService=corbaloc::localhost:3528/NameService" 
+		to start the ORB on a fixed endpoint to test recovery use the following:
+	-->
+	<MQ HOST="${JBOSSAS_IP_ADDR}" PORT="61613" USER="guest" PASSWORD="guest"
+		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" />
+	<ENV_VARIABLES>
+		<ENV_VARIABLE>
+			<NAME>RC_LOG_NAME</NAME>
+			<VALUE>${BLACKTIE_RC_LOG_NAME}</VALUE>
+		</ENV_VARIABLE>
+		<ENV_VARIABLE>
+			<NAME>LOG4CXXCONFIG</NAME>
+			<VALUE>log4cxx.properties</VALUE>
+		</ENV_VARIABLE>
+	</ENV_VARIABLES>
 </ENVIRONMENT>

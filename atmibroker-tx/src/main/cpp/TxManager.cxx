@@ -281,7 +281,8 @@ int TxManager::open(void)
 		return TX_OK;
 
 	if (_txfac == NULL) {
-		char *transFactoryId = AtmiBrokerEnv::get_instance()->getenv((char*)"TRANS_FACTORY_ID");
+		AtmiBrokerEnv::get_instance();
+		char *transFactoryId = orbConfig.transactionFactoryName;
 
 		if (transFactoryId == NULL || strlen(transFactoryId) == 0) {
 			LOG4CXX_ERROR(txmlogger, (char*) "Please set the TRANS_FACTORY_ID env variable");

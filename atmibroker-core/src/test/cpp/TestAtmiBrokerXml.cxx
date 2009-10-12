@@ -66,7 +66,7 @@ void TestAtmiBrokerXml::test_env() {
 	value = AtmiBrokerEnv::get_instance()->getenv((char*) "MYLIBTEST");
 	CPPUNIT_ASSERT(strcmp(value, "xmltestfoo.xmltest") == 0);
 
-	value = AtmiBrokerEnv::get_instance()->getenv((char*) "ORBOPT");
+	value = orbConfig.opt;
 	CPPUNIT_ASSERT(strncmp(value, "-ORBInitRef NameService=corbaloc::", 34)
 			== 0);
 	CPPUNIT_ASSERT(strcmp(domain, "fooapp") == 0);

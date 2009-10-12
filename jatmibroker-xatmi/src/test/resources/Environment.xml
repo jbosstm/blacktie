@@ -16,65 +16,29 @@
 		02110-1301, USA.
 	-->
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			 xmlns="http://www.jboss.org/blacktie">
-	<ENVIRONMENT_DESCRIPTION>
-		<DOMAIN>fooapp</DOMAIN>
-		<SERVER_NAMES>
-			<SERVER name='standalone-server'>
-				<SERVICE_NAMES>
-					<SERVICE name='TestOne'/>
-					<SERVICE name='TestTwo'/>
-					<SERVICE name='JAVA_Converse'/>
-					<SERVICE name='XMLParserTest'/>
-				</SERVICE_NAMES>
-				<ADMIN_SERVICE />
-			</SERVER>
-		</SERVER_NAMES>
-		<ENV_VARIABLES>
-			<ENV_VARIABLE>
-				<NAME>ORBOPT</NAME>
-				<VALUE>-ORBInitRef NameService=corbaloc::${JBOSSAS_IP_ADDR}:3528/NameService</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>java.naming.provider.url</NAME>
-				<VALUE>jnp://${JBOSSAS_IP_ADDR}:1099</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>TRANS_FACTORY_ID</NAME>
-				<VALUE>TransactionManagerService.OTS</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>LOG4CXXCONFIG</NAME>
-				<VALUE>log4cxx.properties</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>StompConnectHost</NAME>
-				<VALUE>${JBOSSAS_IP_ADDR}</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>StompConnectPort</NAME>
-				<VALUE>61613</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>StompConnectUsr</NAME>
-				<VALUE>guest</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>StompConnectPwd</NAME>
-				<VALUE>guest</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>DestinationTimeout</NAME>
-				<VALUE>2</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>RequestTimeout</NAME>
-				<VALUE>10</VALUE>
-			</ENV_VARIABLE>
-			<ENV_VARIABLE>
-				<NAME>TimeToLive</NAME>
-				<VALUE>10</VALUE>
-			</ENV_VARIABLE>
-		</ENV_VARIABLES>
-	</ENVIRONMENT_DESCRIPTION>
+	xmlns="http://www.jboss.org/blacktie">
+	<DOMAIN>fooapp</DOMAIN>
+	<SERVER_NAMES>
+		<SERVER name='standalone-server'>
+			<SERVICE_NAMES>
+				<SERVICE name='TestOne' />
+				<SERVICE name='TestTwo' />
+				<SERVICE name='JAVA_Converse' />
+				<SERVICE name='XMLParserTest' />
+			</SERVICE_NAMES>
+			<ADMIN_SERVICE />
+		</SERVER>
+	</SERVER_NAMES>
+	<ORB
+		OPT="-ORBInitRef NameService=corbaloc::${JBOSSAS_IP_ADDR}:3528/NameService"
+		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
+	<MQ HOST="${JBOSSAS_IP_ADDR}" PORT="61613" USER="guest" PASSWORD="guest"
+		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10"
+		NAMING_URL="jnp://${JBOSSAS_IP_ADDR}:1099" />
+	<ENV_VARIABLES>
+		<ENV_VARIABLE>
+			<NAME>LOG4CXXCONFIG</NAME>
+			<VALUE>log4cxx.properties</VALUE>
+		</ENV_VARIABLE>
+	</ENV_VARIABLES>
 </ENVIRONMENT>

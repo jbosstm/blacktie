@@ -41,10 +41,8 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
 	serviceInvokation = true;
 
 	stompConnection = NULL;
-	std::string timeout = AtmiBrokerEnv::get_instance()->getenv(
-			(char*) "RequestTimeout");
-	stompConnection
-			= HybridConnectionImpl::connect(pool, atoi(timeout.c_str())); // TODO allow the timeout to be specified in configuration
+	stompConnection = HybridConnectionImpl::connect(pool,
+			mqConfig.requestTimeout);
 	this->pool = pool;
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
 	int XATMI_SERVICE_NAME_LENGTH = 15;
@@ -99,7 +97,7 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
 }
 
 HybridSessionImpl::~HybridSessionImpl() {
-	setSendTo(NULL);
+	setSendTo( NULL);
 	delete temporaryQueue;
 	temporaryQueue = NULL;
 
@@ -138,7 +136,7 @@ MESSAGE HybridSessionImpl::receive(long time) {
 	if (message.replyto != NULL && strcmp(message.replyto, "") != 0) {
 		setSendTo(message.replyto);
 	} else {
-		setSendTo(NULL);
+		setSendTo( NULL);
 	}
 	return message;
 }
@@ -197,8 +195,9 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		apr_hash_set(frame.headers, "messagesubtype", APR_HASH_KEY_STRING,
 				message.subtype);
 
-        if (message.control) {
-			LOG4CXX_TRACE(logger, "Sending serialized control: " << message.control);
+		if (message.control) {
+			LOG4CXX_TRACE(logger, "Sending serialized control: "
+					<< message.control);
 			apr_hash_set(frame.headers, "messagecontrol", APR_HASH_KEY_STRING,
 					message.control);
 		}

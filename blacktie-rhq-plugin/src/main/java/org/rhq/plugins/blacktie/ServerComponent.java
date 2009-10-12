@@ -146,13 +146,13 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet, Ope
 		props.putAll(prop);
 		javax.naming.Context context = new InitialContext(props);
 		javax.jms.ConnectionFactory factory = (javax.jms.ConnectionFactory) context.lookup("ConnectionFactory");
-		String username = (String) prop.get("StompConnectUsr");
-		String password = (String) prop.get("StompConnectPwd");
-		if (username != null) {
-			factory.createConnection(username, password);
-		} else {
+//		String username = (String) prop.get("StompConnectUsr");
+//		String password = (String) prop.get("StompConnectPwd");
+//		if (username != null) {
+//			factory.createConnection(username, password);
+//		} else {
 			factory.createConnection();
-		}
+//		}
 		//TransportFactory.loadTransportFactory("BAR", prop).createTransport();
 		log.debug("testJMSConnection OK");
 	}

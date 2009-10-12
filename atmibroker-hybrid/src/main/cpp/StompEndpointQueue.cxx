@@ -36,10 +36,8 @@ HybridStompEndpointQueue::HybridStompEndpointQueue(apr_pool_t* pool,
 	lock = new SynchronizableObject();
 	LOG4CXX_DEBUG(logger, "Created lock: " << lock);
 
-	std::string timeout = AtmiBrokerEnv::get_instance()->getenv(
-			(char*) "DestinationTimeout");
 	this->connection = HybridConnectionImpl::connect(pool,
-			atoi(timeout.c_str())); // TODO allow the timeout to be specified in configuration
+			mqConfig.destinationTimeout);
 	this->pool = pool;
 
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
@@ -106,8 +104,8 @@ HybridStompEndpointQueue::~HybridStompEndpointQueue() {
 	delete lock;
 	lock = NULL;
 	LOG4CXX_TRACE(logger, (char*) "freeing name" << name);
-	free(name);
-	free(fullName);
+	free( name);
+	free( fullName);
 	LOG4CXX_TRACE(logger, (char*) "freed name");
 
 	LOG4CXX_TRACE(logger, (char*) "destroying");
@@ -203,26 +201,26 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 
 			LOG4CXX_TRACE(logger, "Ready to handle message");
 			char * correlationId = (char*) apr_hash_get(frame->headers,
-						"messagecorrelationId", APR_HASH_KEY_STRING);
+					"messagecorrelationId", APR_HASH_KEY_STRING);
 			LOG4CXX_TRACE(logger, "Read a correlation ID" << correlationId);
 			LOG4CXX_TRACE(logger, "Extracted correlationID");
-			char * flags = (char*) apr_hash_get(frame->headers,
-					"messageflags", APR_HASH_KEY_STRING);
+			char * flags = (char*) apr_hash_get(frame->headers, "messageflags",
+					APR_HASH_KEY_STRING);
 			LOG4CXX_TRACE(logger, "Extracted flags");
-			char * rval = (char*) apr_hash_get(frame->headers,
-					"messagerval", APR_HASH_KEY_STRING);
+			char * rval = (char*) apr_hash_get(frame->headers, "messagerval",
+					APR_HASH_KEY_STRING);
 			LOG4CXX_TRACE(logger, "Extracted rval");
-			char * rcode = (char*) apr_hash_get(frame->headers,
-					"messagercode", APR_HASH_KEY_STRING);
+			char * rcode = (char*) apr_hash_get(frame->headers, "messagercode",
+					APR_HASH_KEY_STRING);
 			LOG4CXX_TRACE(logger, "Extracted rcode");
 
-			char * type = (char*) apr_hash_get(frame->headers,
-					"messagetype", APR_HASH_KEY_STRING);
+			char * type = (char*) apr_hash_get(frame->headers, "messagetype",
+					APR_HASH_KEY_STRING);
 			LOG4CXX_TRACE(logger, "Extracted messagetype");
 			message.type = type;
 
 			char * subtype = (char*) apr_hash_get(frame->headers,
-				"messagesubtype", APR_HASH_KEY_STRING);
+					"messagesubtype", APR_HASH_KEY_STRING);
 			LOG4CXX_TRACE(logger, "Extracted messagesubtype");
 			message.subtype = subtype;
 

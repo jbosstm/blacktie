@@ -34,24 +34,14 @@ public class XMLEnvHandler extends DefaultHandler {
 	private static final Logger log = LogManager.getLogger(XMLEnvHandler.class);
 
 	private final String DOMAIN = "DOMAIN";
-	private final String ENV_VARIABLES = "ENV_VARIABLES";
-	private final String ENV_VARIABLE = "ENV_VARIABLE";
 	private final String SERVER_NAME = "SERVER";
 	private final String SERVICE_NAME = "SERVICE";
 	private final String ADMIN_SERVICE_NAME = "ADMIN_SERVICE";
 	private final String NAME = "NAME";
 	private final String VALUE = "VALUE";
+	private final String ORB = "ORB";
+	private final String MQ = "MQ";
 
-	private String domainElement;
-	private String serverElement;
-	private String serviceElement;
-	private String varsElement;
-	private String varElement;
-	private String nameElement;
-	private String valueElement;
-	private int orbargs;
-	private Boolean isORBOPT;
-	private Boolean isTrans;
 	private Properties prop;
 
 	private String value;
@@ -59,6 +49,8 @@ public class XMLEnvHandler extends DefaultHandler {
 
 	private String serverName;
 	private String configDir;
+
+	private String jbossasIpAddr = System.getenv("JBOSSAS_IP_ADDR");
 
 	private Set<String> servers = new HashSet<String>();
 
@@ -88,19 +80,7 @@ public class XMLEnvHandler extends DefaultHandler {
 			String qName, Attributes atts) throws SAXException {
 		value = "";
 
-		if (DOMAIN.equals(localName)) {
-			domainElement = DOMAIN;
-		} else if (ENV_VARIABLES.equals(localName)) {
-			varsElement = ENV_VARIABLES;
-			orbargs = 0;
-		} else if (NAME.equals(localName)) {
-			nameElement = NAME;
-			isORBOPT = false;
-			isTrans = false;
-		} else if (VALUE.equals(localName)) {
-			valueElement = VALUE;
-		} else if (SERVER_NAME.equals(localName)) {
-			serverElement = SERVER_NAME;
+		if (SERVER_NAME.equals(localName)) {
 			if (atts != null) {
 				for (int i = 0; i < atts.getLength(); i++) {
 					if (atts.getLocalName(i).equals("name")) {
@@ -109,13 +89,65 @@ public class XMLEnvHandler extends DefaultHandler {
 					}
 				}
 			}
-		} else if (SERVICE_NAME.equals(localName) || ADMIN_SERVICE_NAME.equals(localName)) {
-			serviceElement = SERVICE_NAME;
+		} else if (ORB.equals(localName)) {
+			for (int j = 0; j < atts.getLength(); j++) {
+				if (atts.getLocalName(j).equals("OPT")) {
+					String[] argv;
+					argv = atts.getValue(j).split(" ");
+					int orbargs = argv.length;
+
+					for (int i = 1; i <= orbargs; i++) {
+						String arg = "blacktie.orb.arg." + i;
+						String toSet = argv[i - 1];
+						if (jbossasIpAddr != null) {
+							toSet = toSet.replace("${JBOSSAS_IP_ADDR}",
+									jbossasIpAddr);
+						}
+						prop.setProperty(arg, toSet);
+						log.debug(arg + " is " + toSet);
+					}
+
+					log.debug("blacktie.orb.args is " + orbargs);
+					prop.setProperty("blacktie.orb.args", Integer
+							.toString(orbargs));
+				} else if (atts.getLocalName(j).equals("TRANS_FACTORY_ID")) {
+					prop.setProperty("blacktie.trans.factoryid", atts
+							.getValue(j));
+				}
+			}
+		} else if (MQ.equals(localName)) {
+			for (int i = 0; i < atts.getLength(); i++) {
+				if (atts.getLocalName(i).equals("USER")) {
+					String value = atts.getValue(i);
+					prop.setProperty("StompConnectUsr", value);
+				} else if (atts.getLocalName(i).equals("PASSWORD")) {
+					String value = atts.getValue(i);
+					prop.setProperty("StompConnectPwd", value);
+				} else if (atts.getLocalName(i).equals("DESTINATION_TIMEOUT")) {
+					String value = atts.getValue(i);
+					prop.setProperty("DestinationTimeout", value);
+				} else if (atts.getLocalName(i).equals("RECEIVE_TIMEOUT")) {
+					String value = atts.getValue(i);
+					prop.setProperty("RequestTimeout", value);
+				} else if (atts.getLocalName(i).equals("TIME_TO_LIVE")) {
+					String value = atts.getValue(i);
+					prop.setProperty("TimeToLive", value);
+				} else if (atts.getLocalName(i).equals("NAMING_URL")) {
+					String value = atts.getValue(i);
+					if (jbossasIpAddr != null) {
+						value = value.replace("${JBOSSAS_IP_ADDR}",
+								jbossasIpAddr);
+					}
+					prop.setProperty("java.naming.provider.url", value);
+				}
+			}
+		} else if (SERVICE_NAME.equals(localName)
+				|| ADMIN_SERVICE_NAME.equals(localName)) {
 			String serviceName = null;
 			String transport = null;
 
 			if (atts != null) {
-				if(ADMIN_SERVICE_NAME.equals(localName)) {
+				if (ADMIN_SERVICE_NAME.equals(localName)) {
 					serviceName = serverName + "_ADMIN";
 				}
 
@@ -131,19 +163,16 @@ public class XMLEnvHandler extends DefaultHandler {
 							break;
 						}
 					}
-//					else if (atts.getLocalName(i).equals("transportLibrary")) {
-//						transport = atts.getValue(i);
-//					}
 				}
 
-				if(serviceName != null) {
+				if (serviceName != null) {
 					String key = "blacktie." + serviceName + ".server";
 					prop.put(key, serverName);
 				}
 			}
 
 			prop.put("blacktie." + serviceName + ".transportLib", "hybrid");
-			
+
 			if (serviceName != null) {
 				AtmiBrokerServiceXML xml = new AtmiBrokerServiceXML(serverName,
 						serviceName, prop);
@@ -158,54 +187,15 @@ public class XMLEnvHandler extends DefaultHandler {
 
 	public void endElement(String namespaceURI, String localName, String qName)
 			throws SAXException {
-		String jbossasIpAddr = System.getenv("JBOSSAS_IP_ADDR");
 		if (DOMAIN.equals(localName)) {
 			prop.setProperty("blacktie.domain.name", value);
-			domainElement = "";
-		} else if (ENV_VARIABLES.equals(localName)) {
-			varsElement = "";
-			log.debug("blacktie.orb.args is " + orbargs);
-			prop.setProperty("blacktie.orb.args", Integer.toString(orbargs));
-		} else if (NAME.equals(localName) && value.equals("ORBOPT")) {
-			isORBOPT = true;
-			nameElement = "";
-		} else if (NAME.equals(localName) && value.equals("TRANS_FACTORY_ID")) {
-			isTrans = true;
-			nameElement = "";
 		} else if (NAME.equals(localName)) {
 			name = value;
-			nameElement = "";
-		} else if (VALUE.equals(localName) && isORBOPT) {
-			String[] argv;
-			argv = value.split(" ");
-			orbargs = argv.length;
-
-			for (int i = 1; i <= orbargs; i++) {
-				String arg = "blacktie.orb.arg." + i;
-				String toSet = argv[i - 1];
-				if (jbossasIpAddr != null) {
-					toSet = toSet.replace("${JBOSSAS_IP_ADDR}", jbossasIpAddr);
-				}
-				prop.setProperty(arg, toSet);
-				log.debug(arg + " is " + toSet);
-			}
-			isORBOPT = false;
-			valueElement = "";
-		} else if (VALUE.equals(localName) && isTrans) {
-			prop.setProperty("blacktie.trans.factoryid", value);
-			isTrans = false;
-			valueElement = "";
 		} else if (VALUE.equals(localName)) {
-			valueElement = "";
-
 			if (jbossasIpAddr != null) {
 				value = value.replace("${JBOSSAS_IP_ADDR}", jbossasIpAddr);
 			}
 			prop.setProperty(name, value);
-		} else if (SERVER_NAME.equals(localName)) {
-			serverElement = "";
-		} else if (SERVICE_NAME.equals(localName)) {
-			serviceElement = "";
 		}
 	}
 }

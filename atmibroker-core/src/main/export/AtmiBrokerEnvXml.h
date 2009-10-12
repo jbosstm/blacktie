@@ -53,15 +53,30 @@ typedef struct BLACKTIE_CORE_DLL xarm_config {
 	struct xarm_config * head;
 }xarm_config_t;
 
+typedef BLACKTIE_CORE_DLL struct _mq_config {
+	char* host;
+	int port;
+	char* user;
+	char* pwd;
+	int destinationTimeout;
+	int requestTimeout;
+	int timeToLive;
+}MqConfig;
+
+typedef BLACKTIE_CORE_DLL struct _orb_config {
+	char* opt;
+	char* transactionFactoryName;
+}OrbConfig;
+
 typedef BLACKTIE_CORE_DLL struct _service_info {
 	char* serviceName;
 	char* securityType;
 	char* transportLib;
 	char* function_name;
 	char* library_name;
-	int   poolSize;
-	bool  advertised;
-} ServiceInfo;
+	int poolSize;
+	bool advertised;
+}ServiceInfo;
 
 typedef BLACKTIE_CORE_DLL struct _server_info {
 	char* serverName;
@@ -75,17 +90,15 @@ typedef BLACKTIE_CORE_DLL struct _server_info {
 	//std::string queueSpaceName;
 
 	std::vector<ServiceInfo> serviceVector;
-} ServerInfo;
+}ServerInfo;
 
 typedef std::vector<ServerInfo*> ServersInfo;
 
 extern BLACKTIE_CORE_DLL xarm_config_t * xarmp;
 extern BLACKTIE_CORE_DLL ServersInfo servers;
 extern BLACKTIE_CORE_DLL char domain[30];
-//extern BLACKTIE_CORE_DLL char * loggingServiceId;
-//extern BLACKTIE_CORE_DLL char * notifyServiceId;
-//extern BLACKTIE_CORE_DLL char * namingServiceId;
-//extern BLACKTIE_CORE_DLL char * queue_name;
-//extern BLACKTIE_CORE_DLL char* transFactoryId;
+extern BLACKTIE_CORE_DLL OrbConfig orbConfig;
+extern BLACKTIE_CORE_DLL MqConfig mqConfig;
 
+//extern BLACKTIE_CORE_DLL char * namingServiceId;
 #endif

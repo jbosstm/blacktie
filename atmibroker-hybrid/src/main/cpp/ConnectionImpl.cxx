@@ -67,16 +67,13 @@ bool HybridConnectionImpl::requiresAdminCall() {
 
 stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 	stomp_connection* connection = NULL;
-	std::string host = AtmiBrokerEnv::get_instance()->getenv(
-			(char*) "StompConnectHost");
-	std::string port = AtmiBrokerEnv::get_instance()->getenv(
-			(char*) "StompConnectPort");
-	LOG4CXX_DEBUG(logger, "Connecting to: " << host << ":" << port);
-	int portNum = atoi(port.c_str());
+	std::string host = mqConfig.host;
+	int portNum = mqConfig.port;
+	LOG4CXX_DEBUG(logger, "Connecting to: " << host << ":" << portNum);
 	apr_status_t rc = stomp_connect(&connection, host.c_str(), portNum, pool);
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, (char*) "Could not connect: " << host << ", "
-				<< port << ": " << rc);
+				<< portNum << ": " << rc);
 		throw new std::exception();
 	}
 
@@ -86,10 +83,8 @@ stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 		LOG4CXX_DEBUG(logger, (char*) "Set socket options");
 	}
 
-	std::string usr = AtmiBrokerEnv::get_instance()->getenv(
-			(char*) "StompConnectUsr");
-	std::string pwd = AtmiBrokerEnv::get_instance()->getenv(
-			(char*) "StompConnectPwd");
+	std::string usr = mqConfig.user;
+	std::string pwd = mqConfig.pwd;
 	LOG4CXX_DEBUG(logger, "Sending CONNECT");
 	stomp_frame frame;
 	frame.command = (char*) "CONNECT";
