@@ -56,13 +56,14 @@ public class JABTransaction {
 	}
 
 	public JABTransaction(JABSession aJABSession, int aTimeout)
-			throws JABException, NotFound, CannotProceed,
+			throws TransactionException, NotFound, CannotProceed,
 			org.omg.CosNaming.NamingContextPackage.InvalidName, InvalidName,
 			AdapterInactive {
 		log.debug("JABTransaction constructor");
 
 		if (current() != null)
-			throw new JABException("Nested transactions are not supported");
+			throw new TransactionException(
+					"Nested transactions are not supported");
 
 		jabSession = aJABSession;
 		timeout = aTimeout;
@@ -97,7 +98,7 @@ public class JABTransaction {
 			orbManagement = new OrbManagement(sessionAttrs.getProperties(),
 					true);
 		} catch (org.omg.CORBA.UserException cue) {
-			throw new JABException(cue.getMessage(), cue);
+			throw new TransactionException(cue.getMessage(), cue);
 		}
 
 		org.omg.CORBA.Object obj = orbManagement.getOrb().string_to_object(
@@ -115,7 +116,8 @@ public class JABTransaction {
 				ThreadActionData.popAction();
 			} else {
 				log.info("Different IORs and different object");
-				throw new JABException("Nested transactions are not supported");
+				throw new TransactionException(
+						"Nested transactions are not supported");
 			}
 		}
 
@@ -140,22 +142,23 @@ public class JABTransaction {
 		return false;
 	}
 
-	public static void associateTx(String controlIOR) throws JABException {
+	public static void associateTx(String controlIOR)
+			throws TransactionException {
 		try {
 			// TODO make sure this works in the AS and standalone
 			org.jboss.blacktie.jatmibroker.core.transport.JtsTransactionImple
 					.resume(controlIOR);
 		} catch (Throwable t) {
-			new JABTransaction(controlIOR);
+			new TransactionException(controlIOR);
 		}
 	}
 
-	private void setTerminator(Control c) throws JABException {
+	private void setTerminator(Control c) throws TransactionException {
 		try {
 			terminator = control.get_terminator();
 			log.debug("Terminator is " + terminator);
 		} catch (Unavailable e) {
-			throw new JABException("Could not get the terminator", e);
+			throw new TransactionException("Could not get the terminator", e);
 		}
 	}
 
@@ -177,7 +180,7 @@ public class JABTransaction {
 		return jabSession;
 	}
 
-	public void commit() throws JABException {
+	public void commit() throws TransactionException {
 		log.debug("JABTransaction commit");
 
 		try {
@@ -187,19 +190,20 @@ public class JABTransaction {
 			ThreadActionData.popAction();
 			log.debug("called commit on terminator");
 		} catch (Exception e) {
-			// TODO build an JABException hierarchy so we can perform better
+			// TODO build an JABTransactionException hierarchy so we can perform
+			// better
 			// error reporting
 			// presume abort and dissassociate the tx from the the current
 			// thread
 			active = false;
 			ThreadActionData.popAction();
 
-			throw new JABException("Could not commit the transaction: "
+			throw new TransactionException("Could not commit the transaction: "
 					+ e.getMessage(), e);
 		}
 	}
 
-	public void rollback() throws JABException {
+	public void rollback() throws TransactionException {
 		log.debug("JABTransaction rollback");
 
 		try {
@@ -213,22 +217,22 @@ public class JABTransaction {
 			active = false;
 			ThreadActionData.popAction();
 
-			throw new JABException("Could not rollback the transaction: "
-					+ e.getMessage(), e);
+			throw new TransactionException(
+					"Could not rollback the transaction: " + e.getMessage(), e);
 		}
 	}
 
-	public void rollback_only() throws JABException {
+	public void rollback_only() throws TransactionException {
 		log.debug("JABTransaction rollback_only");
 
 		try {
 			control.get_coordinator().rollback_only();
 			log.debug("tx marked rollback only");
 		} catch (Unavailable e) {
-			throw new JABException(
+			throw new TransactionException(
 					"Tx Manager unavailable for set rollback only", e);
 		} catch (Exception e) {
-			throw new JABException("Error setting rollback only", e);
+			throw new TransactionException("Error setting rollback only", e);
 		}
 	}
 

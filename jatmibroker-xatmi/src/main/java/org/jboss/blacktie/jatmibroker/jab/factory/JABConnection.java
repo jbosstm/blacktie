@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.jab.JABException;
 import org.jboss.blacktie.jatmibroker.jab.JABSession;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
+import org.jboss.blacktie.jatmibroker.jab.TransactionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
@@ -83,7 +84,7 @@ public class JABConnection {
 	 *             In case the transaction cannot be created
 	 */
 	public synchronized Transaction beginTransaction(int timeout)
-			throws JABException {
+			throws TransactionException {
 		if (transaction != null) {
 			return transaction;
 		}
@@ -104,11 +105,15 @@ public class JABConnection {
 	 * @param transaction
 	 *            The transaction to use, may be null
 	 * @return The buffer returned from the remote service
+	 * 
+	 * @throws TransactionException
+	 *             In case the transaction cannot be handled
 	 * @throws JABException
 	 *             In case the service cannot be contacted
 	 */
 	public synchronized JABResponse call(String serviceName, JABBuffer toSend,
-			Transaction transaction) throws JABException {
+			Transaction transaction) throws TransactionException,
+			JABException {
 		log.debug("call");
 		JABResponse responseMessage;
 		JABTransaction tx = transaction.getJABTransaction();

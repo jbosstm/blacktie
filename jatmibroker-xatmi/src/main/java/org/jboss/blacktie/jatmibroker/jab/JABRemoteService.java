@@ -93,10 +93,13 @@ public class JABRemoteService implements Message {
 	 *            transaction then it is resumed. The transaction to thread
 	 *            association is restored after the method returns.
 	 * 
+	 * @throws TransactionException
+	 *             If the transaction cannot be handled
 	 * @throws JABException
 	 *             If the call cannot be issued.
 	 */
-	public void call(JABTransaction tx) throws JABException {
+	public void call(JABTransaction tx) throws TransactionException,
+			JABException {
 		log.debug("JABService call");
 		JABTransaction prev = null;
 

@@ -20,6 +20,7 @@ package org.jboss.blacktie.jatmibroker.jab.factory;
 import org.jboss.blacktie.jatmibroker.jab.JABException;
 import org.jboss.blacktie.jatmibroker.jab.JABSession;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
+import org.jboss.blacktie.jatmibroker.jab.TransactionException;
 
 /**
  * The JABTransaction provides the programmer access to the underlying
@@ -52,13 +53,13 @@ public class Transaction {
 	 *             In case the transaction cannot be created
 	 */
 	Transaction(JABConnection connection, JABSession session, int timeout)
-			throws JABException {
+			throws TransactionException {
 		this.connection = connection;
 		try {
 			this.jabTransaction = new JABTransaction(session, timeout);
 		} catch (Throwable e) {
-			throw new JABException("Could not create the transaction: "
-					+ e.getMessage(), e);
+			throw new TransactionException(
+					"Could not create the transaction: " + e.getMessage(), e);
 		}
 	}
 
@@ -68,7 +69,7 @@ public class Transaction {
 	 * @throws JABException
 	 *             In case the transaction cannot be committed
 	 */
-	public synchronized void commit() throws JABException {
+	public synchronized void commit() throws TransactionException {
 		jabTransaction.commit();
 		connection.removeTransaction(this);
 	}
@@ -79,7 +80,7 @@ public class Transaction {
 	 * @throws JABException
 	 *             In case the transaction cannot be rolled back successfully
 	 */
-	public synchronized void rollback() throws JABException {
+	public synchronized void rollback() throws TransactionException {
 		jabTransaction.rollback();
 		connection.removeTransaction(this);
 	}
