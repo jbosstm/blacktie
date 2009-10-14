@@ -115,7 +115,8 @@ void TestAtmiBrokerXml::test_env() {
 	CPPUNIT_ASSERT(foob->attributes[Balance2]->count == 2);
 	CPPUNIT_ASSERT(foob->attributes[Balance2]->length == 0);
 	CPPUNIT_ASSERT(strcmp(foob->attributes[Balance2]->defaultValue, "1") == 0);
-	CPPUNIT_ASSERT(strcmp(foob->attributes[accountName]->id, "accountName") == 0);
+	CPPUNIT_ASSERT(strcmp(foob->attributes[accountName]->id, "accountName")
+			== 0);
 	CPPUNIT_ASSERT(strcmp(foob->attributes[accountName]->type, "char*[]") == 0);
 	CPPUNIT_ASSERT(foob->attributes[accountName]->count == 2);
 	CPPUNIT_ASSERT(foob->attributes[accountName]->length == 10);
@@ -155,6 +156,12 @@ void TestAtmiBrokerXml::test_env() {
 	CPPUNIT_ASSERT(barb->attributes[barbq2]->count == 0);
 	CPPUNIT_ASSERT(barb->attributes[barbq2]->length == 0);
 	CPPUNIT_ASSERT(strcmp(barb->attributes[barbq2]->defaultValue, "2") == 0);
+
+	Buffers::iterator it;
+	for (it = buffers.begin(); it != buffers.end(); ++it) {
+		Buffer* buffer = it->second;
+		userlogc((char*) "Buffer name: %s", buffer->name);
+	}
 
 	AtmiBrokerEnv::discard_instance();
 
