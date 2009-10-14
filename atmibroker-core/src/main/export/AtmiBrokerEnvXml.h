@@ -92,8 +92,16 @@ typedef BLACKTIE_CORE_DLL struct _server_info {
 	std::vector<ServiceInfo> serviceVector;
 }ServerInfo;
 
+struct ltstr
+{
+  bool operator()(const char* s1, const char* s2) const
+  {
+    return strcmp(s1, s2) < 0;
+  }
+};
+
 typedef BLACKTIE_CORE_DLL struct _attribute {
-	char* id;
+	const char* id;
 	char* type;
 	int count;
 	int length;
@@ -101,11 +109,11 @@ typedef BLACKTIE_CORE_DLL struct _attribute {
 }Attribute;
 
 typedef BLACKTIE_CORE_DLL struct _buffer {
-	char* name;
-	std::map<char*, Attribute> attributes;
+	const char* name;
+	std::map<const char*, Attribute*, ltstr> attributes;
 }Buffer;
 
-typedef BLACKTIE_CORE_DLL std::map<char*, Buffer> Buffers;
+typedef BLACKTIE_CORE_DLL std::map<const char*, Buffer*, ltstr> Buffers;
 
 typedef std::vector<ServerInfo*> ServersInfo;
 

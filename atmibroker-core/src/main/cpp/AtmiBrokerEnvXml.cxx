@@ -234,26 +234,41 @@ static void XMLCALL startElement
 		}
 	} else if (strcmp(name, "BUFFER") == 0) {
 		currentBufferName = copy_value(atts[1]);
-		Buffer buffer;
-		buffer.name = currentBufferName;
-		buffers[buffer.name] = buffer;
+		Buffer* buffer = buffers[currentBufferName];
+		if (buffer == NULL) {
+			Buffer* buffer = new Buffer();
+			buffer->name = currentBufferName;
+			buffers[buffer->name] = buffer;
+		} else {
+			LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "Duplicate buffer detected: " << currentBufferName);
+		}
 	} else if (strcmp(name, "ATTRIBUTE") == 0) {
 		if (currentBufferName != NULL) {
-			Attribute attribute;
+			Attribute* attribute = new Attribute();
+			attribute->id = NULL;
+			attribute->type = NULL;
+			attribute->count = 0;
+			attribute->length = 0;
+			attribute->defaultValue = NULL;
 			for(int i = 0; atts[i]; i += 2) {
 				if(strcmp(atts[i], "id") == 0) {
-					attribute.id = copy_value(atts[i+1]);
+					attribute->id = copy_value(atts[i+1]);
 				} else if(strcmp(atts[i], "type") == 0) {
-					attribute.type = copy_value(atts[i+1]);
+					attribute->type = copy_value(atts[i+1]);
 				} else if(strcmp(atts[i], "count") == 0) {
-					attribute.count = atoi(atts[i+1]);
+					attribute->count = atoi(atts[i+1]);
 				} else if(strcmp(atts[i], "length") == 0) {
-					attribute.length = atoi(atts[i+1]);
+					attribute->length = atoi(atts[i+1]);
 				} else if(strcmp(atts[i], "default") == 0) {
-					attribute.defaultValue = copy_value(atts[i+1]);
+					attribute->defaultValue = copy_value(atts[i+1]);
 				}
 			}
-			buffers[currentBufferName].attributes[attribute.id] = attribute;
+			Attribute* toCheck = buffers[currentBufferName]->attributes[attribute->id];
+			if (toCheck == NULL) {
+				buffers[currentBufferName]->attributes[attribute->id] = attribute;
+			} else {
+				LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "Duplicate attribute detected: " << attribute->id);
+			}
 		} else {
 			LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "No buffer is being processed");
 		}

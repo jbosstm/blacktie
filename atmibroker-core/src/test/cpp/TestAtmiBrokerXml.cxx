@@ -101,6 +101,61 @@ void TestAtmiBrokerXml::test_env() {
 	CPPUNIT_ASSERT(strcmp(transport, "libatmibroker-hybrid.so") == 0);
 #endif
 
+	CPPUNIT_ASSERT(buffers.size() == 2);
+
+	char* foo = (char*) "foo";
+	Buffer* foob = buffers[foo];
+	CPPUNIT_ASSERT(strcmp(foob->name, "foo") == 0);
+	CPPUNIT_ASSERT(foob->attributes.size() == 3);
+	char* Balance2 = (char*) "Balance2";
+	char* Balance = (char*) "Balance";
+	char* accountName = (char*) "accountName";
+	CPPUNIT_ASSERT(strcmp(foob->attributes[Balance2]->id, "Balance2") == 0);
+	CPPUNIT_ASSERT(strcmp(foob->attributes[Balance2]->type, "float[]") == 0);
+	CPPUNIT_ASSERT(foob->attributes[Balance2]->count == 2);
+	CPPUNIT_ASSERT(foob->attributes[Balance2]->length == 0);
+	CPPUNIT_ASSERT(strcmp(foob->attributes[Balance2]->defaultValue, "1") == 0);
+	CPPUNIT_ASSERT(strcmp(foob->attributes[accountName]->id, "accountName") == 0);
+	CPPUNIT_ASSERT(strcmp(foob->attributes[accountName]->type, "char*[]") == 0);
+	CPPUNIT_ASSERT(foob->attributes[accountName]->count == 2);
+	CPPUNIT_ASSERT(foob->attributes[accountName]->length == 10);
+	CPPUNIT_ASSERT(strcmp(foob->attributes[accountName]->defaultValue, "foo")
+			== 0);
+	CPPUNIT_ASSERT(strcmp(foob->attributes[Balance]->id, "Balance") == 0);
+	CPPUNIT_ASSERT(strcmp(foob->attributes[Balance]->type, "long") == 0);
+	CPPUNIT_ASSERT(foob->attributes[Balance]->count == 0);
+	CPPUNIT_ASSERT(foob->attributes[Balance]->length == 0);
+	CPPUNIT_ASSERT(strcmp(foob->attributes[Balance]->defaultValue, "12") == 0);
+
+	char* bar = (char*) "bar";
+	Buffer* barb = buffers[bar];
+	CPPUNIT_ASSERT(strcmp(barb->name, "bar") == 0);
+	CPPUNIT_ASSERT(barb->attributes.size() == 4);
+	char* barlance = (char*) "barlance";
+	char* barbq = (char*) "barbq";
+	char* barlance1 = (char*) "barlance1";
+	char* barbq2 = (char*) "barbq2";
+	CPPUNIT_ASSERT(strcmp(barb->attributes[barlance]->id, "barlance") == 0);
+	CPPUNIT_ASSERT(strcmp(barb->attributes[barlance]->type, "int[]") == 0);
+	CPPUNIT_ASSERT(barb->attributes[barlance]->count == 4);
+	CPPUNIT_ASSERT(barb->attributes[barlance]->length == 0);
+	CPPUNIT_ASSERT(strcmp(barb->attributes[barlance]->defaultValue, "1") == 0);
+	CPPUNIT_ASSERT(strcmp(barb->attributes[barbq]->id, "barbq") == 0);
+	CPPUNIT_ASSERT(strcmp(barb->attributes[barbq]->type, "short") == 0);
+	CPPUNIT_ASSERT(barb->attributes[barbq]->count == 0);
+	CPPUNIT_ASSERT(barb->attributes[barbq]->length == 0);
+	CPPUNIT_ASSERT(strcmp(barb->attributes[barbq]->defaultValue, "2") == 0);
+	CPPUNIT_ASSERT(strcmp(barb->attributes[barlance1]->id, "barlance1") == 0);
+	CPPUNIT_ASSERT(strcmp(barb->attributes[barlance1]->type, "int[]") == 0);
+	CPPUNIT_ASSERT(barb->attributes[barlance1]->count == 4);
+	CPPUNIT_ASSERT(barb->attributes[barlance1]->length == 0);
+	CPPUNIT_ASSERT(strcmp(barb->attributes[barlance1]->defaultValue, "1") == 0);
+	CPPUNIT_ASSERT(strcmp(barb->attributes[barbq2]->id, "barbq2") == 0);
+	CPPUNIT_ASSERT(strcmp(barb->attributes[barbq2]->type, "short") == 0);
+	CPPUNIT_ASSERT(barb->attributes[barbq2]->count == 0);
+	CPPUNIT_ASSERT(barb->attributes[barbq2]->length == 0);
+	CPPUNIT_ASSERT(strcmp(barb->attributes[barbq2]->defaultValue, "2") == 0);
+
 	AtmiBrokerEnv::discard_instance();
 
 }
