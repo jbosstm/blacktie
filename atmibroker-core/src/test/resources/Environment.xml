@@ -90,4 +90,10 @@
 			<VALUE>log4cxx.properties</VALUE>
 		</ENV_VARIABLE>
 	</ENV_VARIABLES>
+	<BUFFERS>
+		<BUFFER name="one">
+			<ATTRIBUTE id="Balance" type="float[]" count="2" default="1"/>
+			<ATTRIBUTE id="accountName" type="char*[]" count="2" length="10" default="foo"/>
+		</BUFFER>
+	</BUFFERS>
 </ENVIRONMENT>
