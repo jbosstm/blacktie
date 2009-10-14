@@ -91,9 +91,13 @@
 		</ENV_VARIABLE>
 	</ENV_VARIABLES>
 	<BUFFERS>
-		<BUFFER name="one">
+		<BUFFER name="foo">
 			<ATTRIBUTE id="Balance" type="float[]" count="2" default="1"/>
 			<ATTRIBUTE id="accountName" type="char*[]" count="2" length="10" default="foo"/>
+		</BUFFER>
+		<BUFFER name="bar">
+			<ATTRIBUTE id="barlance" type="int[]" count="4" default="1"/>
+			<ATTRIBUTE id="barbq" type="short" default="2"/>
 		</BUFFER>
 	</BUFFERS>
 </ENVIRONMENT>

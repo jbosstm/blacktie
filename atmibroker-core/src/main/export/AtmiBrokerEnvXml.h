@@ -21,8 +21,8 @@
 
 #include "atmiBrokerCoreMacro.h"
 
+#include <map>
 #include <string.h>
-
 #include <vector>
 
 typedef struct {
@@ -92,13 +92,27 @@ typedef BLACKTIE_CORE_DLL struct _server_info {
 	std::vector<ServiceInfo> serviceVector;
 }ServerInfo;
 
+typedef BLACKTIE_CORE_DLL struct _attribute {
+	char* id;
+	char* type;
+	int count;
+	int length;
+	char* defaultValue;
+}Attribute;
+
+typedef BLACKTIE_CORE_DLL struct _buffer {
+	char* name;
+	std::map<char*, Attribute> attributes;
+}Buffer;
+
+typedef BLACKTIE_CORE_DLL std::map<char*, Buffer> Buffers;
+
 typedef std::vector<ServerInfo*> ServersInfo;
 
+extern BLACKTIE_CORE_DLL Buffers buffers;
 extern BLACKTIE_CORE_DLL xarm_config_t * xarmp;
 extern BLACKTIE_CORE_DLL ServersInfo servers;
 extern BLACKTIE_CORE_DLL char domain[30];
 extern BLACKTIE_CORE_DLL OrbConfig orbConfig;
 extern BLACKTIE_CORE_DLL MqConfig mqConfig;
-
-//extern BLACKTIE_CORE_DLL char * namingServiceId;
 #endif

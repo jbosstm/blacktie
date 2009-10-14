@@ -120,28 +120,35 @@
 						</xsd:sequence>
 					</xsd:complexType>
 				</xsd:element>
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<xsd:element name="BUFFERS">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="BUFFER" minOccurs="1" maxOccurs="unbounded">
+				<xsd:element name="BUFFERS" minOccurs="0" maxOccurs="unbounded">
 					<xsd:complexType>
 						<xsd:sequence>
-							<xsd:element name="ATTRIBUTE">
+							<xsd:element name="BUFFER" minOccurs="1" maxOccurs="unbounded">
 								<xsd:complexType>
-									<xsd:attribute name="id" type="xsd:string" use="required" />
-									<!--  char, long, short, double, char* -->
-									<xsd:attribute name="type" type="xsd:string" use="required" />
-									<xsd:attribute name="count" type="xsd:int" use="required" />
-									<xsd:attribute name="length" type="xsd:int" use="optional" />
-									<xsd:attribute name="default" type="xsd:string"
-										use="required" />
+									<xsd:sequence>
+										<xsd:element name="ATTRIBUTE" minOccurs="1" maxOccurs="unbounded">
+											<xsd:complexType>
+												<xsd:attribute name="id" type="xsd:string"
+													use="required" />
+												<!--
+													short, int, long, float, double, char, char*, short[],
+													int[], long[], float[], double[], char[], char*[]
+												-->
+												<xsd:attribute name="type" type="xsd:string"
+													use="required" />
+												<xsd:attribute name="count" type="xsd:int"
+													use="optional" />
+												<xsd:attribute name="length" type="xsd:int"
+													use="optional" />
+												<xsd:attribute name="default" type="xsd:string"
+													use="required" />
+											</xsd:complexType>
+										</xsd:element>
+									</xsd:sequence>
+									<xsd:attribute name="name" type="xsd:string" use="required" />
 								</xsd:complexType>
 							</xsd:element>
 						</xsd:sequence>
-						<xsd:attribute name="name" type="xsd:string" use="required" />
 					</xsd:complexType>
 				</xsd:element>
 			</xsd:sequence>
