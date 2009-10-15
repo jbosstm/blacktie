@@ -308,6 +308,9 @@ static void XMLCALL startElement
 				}
 			} else {
 				LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "Duplicate attribute detected: " << attribute->id);
+				free(attribute->id);
+				free(attribute->type);
+				free(attribute->defaultValue);
 				delete attribute;
 			}
 		} else {

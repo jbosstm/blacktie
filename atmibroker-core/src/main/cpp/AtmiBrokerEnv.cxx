@@ -166,6 +166,7 @@ AtmiBrokerEnv::~AtmiBrokerEnv() {
 	Buffers::iterator it;
 	for (it = buffers.begin(); it != buffers.end(); ++it) {
 		Buffer* buffer = it->second;
+		free(buffer->name);
 		buffer->name = NULL;
 		buffer->size = -1;
 
@@ -173,6 +174,7 @@ AtmiBrokerEnv::~AtmiBrokerEnv() {
 		Attributes::iterator i;
 		for (i = buffer->attributes.begin(); i != buffer->attributes.end(); ++i) {
 			Attribute* attribute = i->second;
+			free(attribute->id);
 			attribute->id = NULL;
 			free(attribute->type);
 			free(attribute->defaultValue);
