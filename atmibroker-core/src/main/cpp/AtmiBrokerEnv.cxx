@@ -163,6 +163,27 @@ AtmiBrokerEnv::~AtmiBrokerEnv() {
 	mqConfig.user = NULL;
 	mqConfig.pwd = NULL;
 
+	Buffers::iterator it;
+	for (it = buffers.begin(); it != buffers.end(); ++it) {
+		Buffer* buffer = it->second;
+		buffer->name = NULL;
+		buffer->size = -1;
+
+		//std::vector<ServiceInfo>* services = &(*server)->serviceVector;
+		Attributes::iterator i;
+		for (i = buffer->attributes.begin(); i != buffer->attributes.end(); ++i) {
+			Attribute* attribute = i->second;
+			attribute->id = NULL;
+			free(attribute->type);
+			free(attribute->defaultValue);
+			delete attribute;
+		}
+		buffer->attributes.clear();
+
+		delete buffer;
+	}
+	buffers.clear();
+
 	readEnvironment = false;
 }
 

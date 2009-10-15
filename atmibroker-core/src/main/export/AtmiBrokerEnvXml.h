@@ -114,6 +114,8 @@ typedef BLACKTIE_CORE_DLL struct _buffer {
 	long size;
 }Buffer;
 
+typedef BLACKTIE_CORE_DLL std::map<const char*, Attribute*, ltstr> Attributes;
+
 typedef BLACKTIE_CORE_DLL std::map<const char*, Buffer*, ltstr> Buffers;
 
 typedef std::vector<ServerInfo*> ServersInfo;
