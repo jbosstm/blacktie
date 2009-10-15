@@ -302,7 +302,7 @@ static void XMLCALL startElement
 				} else if (strcmp(attribute->type, "double[]") == 0) {
 					buffers[currentBufferName]->size = buffers[currentBufferName]->size + DOUBLE_SIZE * attribute->count;
 				} else if (strcmp(attribute->type, "char[]") == 0) {
-					buffers[currentBufferName]->size = buffers[currentBufferName]->size + CHAR_SIZE * attribute->count;
+					buffers[currentBufferName]->size = buffers[currentBufferName]->size + CHAR_SIZE * attribute->length;
 				} else if (strcmp(attribute->type, "char*[]") == 0) {
 					buffers[currentBufferName]->size = buffers[currentBufferName]->size + (CHAR_SIZE * attribute->length * attribute->count);
 				}

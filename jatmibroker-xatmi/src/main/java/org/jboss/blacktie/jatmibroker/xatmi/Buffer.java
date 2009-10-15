@@ -48,11 +48,11 @@ public class Buffer implements Serializable {
 	private static List<Class> x_c_typeTypes = new ArrayList<Class>();
 
 	private static final int LONG_SIZE = 8;
-
 	private static final int INT_SIZE = 4;
-
 	private static final int SHORT_SIZE = 2;
-
+	private static final int FLOAT_SIZE = INT_SIZE;
+	private static final int DOUBLE_SIZE = LONG_SIZE;
+	
 	static {
 		String[] bufferType = new String[] { "X_OCTET", "X_C_TYPE", "X_COMMON" };
 		for (int i = 0; i < bufferType.length; i++) {
@@ -836,24 +836,24 @@ public class Buffer implements Serializable {
 	}
 
 	private void writeFloat(DataOutputStream dos, float x) throws IOException {
-		writePad(dos, currentPos % INT_SIZE);
+		writePad(dos, currentPos % FLOAT_SIZE);
 
-		ByteBuffer bbuf = ByteBuffer.allocate(INT_SIZE);
+		ByteBuffer bbuf = ByteBuffer.allocate(FLOAT_SIZE);
 		bbuf.order(ByteOrder.BIG_ENDIAN);
 		bbuf.putFloat(x);
 		bbuf.order(ByteOrder.LITTLE_ENDIAN);
 		float toWrite = bbuf.getFloat(0);
 		dos.writeFloat(toWrite);
 
-		currentPos += INT_SIZE;
+		currentPos += FLOAT_SIZE;
 	}
 
 	private float readFloat(DataInputStream dis) throws IOException {
-		readPad(dis, currentPos % INT_SIZE);
+		readPad(dis, currentPos % FLOAT_SIZE);
 
-		currentPos += INT_SIZE;
+		currentPos += FLOAT_SIZE;
 		float x = dis.readFloat();
-		ByteBuffer bbuf = ByteBuffer.allocate(INT_SIZE);
+		ByteBuffer bbuf = ByteBuffer.allocate(FLOAT_SIZE);
 		bbuf.order(ByteOrder.LITTLE_ENDIAN);
 		bbuf.putFloat(x);
 		bbuf.order(ByteOrder.BIG_ENDIAN);
@@ -861,24 +861,24 @@ public class Buffer implements Serializable {
 	}
 
 	private void writeDouble(DataOutputStream dos, double x) throws IOException {
-		writePad(dos, currentPos % LONG_SIZE);
+		writePad(dos, currentPos % DOUBLE_SIZE);
 
-		ByteBuffer bbuf = ByteBuffer.allocate(LONG_SIZE);
+		ByteBuffer bbuf = ByteBuffer.allocate(DOUBLE_SIZE);
 		bbuf.order(ByteOrder.BIG_ENDIAN);
 		bbuf.putDouble(x);
 		bbuf.order(ByteOrder.LITTLE_ENDIAN);
 		double toWrite = bbuf.getDouble(0);
 		dos.writeDouble(toWrite);
 
-		currentPos += LONG_SIZE;
+		currentPos += DOUBLE_SIZE;
 	}
 
 	private double readDouble(DataInputStream dis) throws IOException {
-		readPad(dis, currentPos % LONG_SIZE);
+		readPad(dis, currentPos % DOUBLE_SIZE);
 
-		currentPos += LONG_SIZE;
+		currentPos += DOUBLE_SIZE;
 		double x = dis.readDouble();
-		ByteBuffer bbuf = ByteBuffer.allocate(LONG_SIZE);
+		ByteBuffer bbuf = ByteBuffer.allocate(DOUBLE_SIZE);
 		bbuf.order(ByteOrder.LITTLE_ENDIAN);
 		bbuf.putDouble(x);
 		bbuf.order(ByteOrder.BIG_ENDIAN);

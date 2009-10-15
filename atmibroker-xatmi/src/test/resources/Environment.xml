@@ -64,4 +64,14 @@
 			<VALUE>log4cxx.properties</VALUE>
 		</ENV_VARIABLE>
 	</ENV_VARIABLES>
+
+	<BUFFERS>
+		<BUFFER name="acct_info">
+			<ATTRIBUTE id="acct_no" type="long" default="1" />
+			<ATTRIBUTE id="name" type="char[]" length="50" default="" />
+			<ATTRIBUTE id="address" type="char[]" length="100" default="" />
+			<ATTRIBUTE id="foo" type="float[]" count="2" default="0.00" />
+			<ATTRIBUTE id="balances" type="double[]" count="2" default="0" />
+		</BUFFER>
+	</BUFFERS>
 </ENVIRONMENT>
