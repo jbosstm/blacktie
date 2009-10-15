@@ -64,6 +64,14 @@ static bool processingEnvVariable = false;
 static char* currentBufferName = NULL;
 static char* configuration = NULL;
 
+static int CHAR_SIZE = 1;
+static int LONG_SIZE = 8;
+static int INT_SIZE = 4;
+static int SHORT_SIZE = 2;
+static int FLOAT_SIZE = INT_SIZE;
+static int DOUBLE_SIZE = LONG_SIZE;
+
+
 AtmiBrokerEnvXml::AtmiBrokerEnvXml() {
 	depth = 0;
 	envVariableCount = 0;
@@ -238,6 +246,7 @@ static void XMLCALL startElement
 		if (buffer == NULL) {
 			Buffer* buffer = new Buffer();
 			buffer->name = currentBufferName;
+			buffer->size = 0;
 			buffers[buffer->name] = buffer;
 		} else {
 			LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "Duplicate buffer detected: " << currentBufferName);
@@ -263,11 +272,43 @@ static void XMLCALL startElement
 					attribute->defaultValue = copy_value(atts[i+1]);
 				}
 			}
+
 			Attribute* toCheck = buffers[currentBufferName]->attributes[attribute->id];
 			if (toCheck == NULL) {
 				buffers[currentBufferName]->attributes[attribute->id] = attribute;
+				// short, int, long, float, double, char, char*
+				if (strcmp(attribute->type, "short") == 0) {
+					buffers[currentBufferName]->size = buffers[currentBufferName]->size + SHORT_SIZE;
+				} else if (strcmp(attribute->type, "int") == 0) {
+					buffers[currentBufferName]->size = buffers[currentBufferName]->size + INT_SIZE;
+				} else if (strcmp(attribute->type, "long") == 0) {
+					buffers[currentBufferName]->size = buffers[currentBufferName]->size + LONG_SIZE;
+				} else if (strcmp(attribute->type, "float") == 0) {
+					buffers[currentBufferName]->size = buffers[currentBufferName]->size + FLOAT_SIZE;
+				} else if (strcmp(attribute->type, "double") == 0) {
+					buffers[currentBufferName]->size = buffers[currentBufferName]->size + DOUBLE_SIZE;
+				} else if (strcmp(attribute->type, "char") == 0) {
+					buffers[currentBufferName]->size = buffers[currentBufferName]->size + CHAR_SIZE;
+				} else if (strcmp(attribute->type, "char*") == 0) {
+					buffers[currentBufferName]->size = buffers[currentBufferName]->size + (CHAR_SIZE * attribute->length);
+				} else if (strcmp(attribute->type, "short[]") == 0) {
+					buffers[currentBufferName]->size = buffers[currentBufferName]->size + SHORT_SIZE * attribute->count;
+				} else if (strcmp(attribute->type, "int[]") == 0) {
+					buffers[currentBufferName]->size = buffers[currentBufferName]->size + INT_SIZE * attribute->count;
+				} else if (strcmp(attribute->type, "long[]") == 0) {
+					buffers[currentBufferName]->size = buffers[currentBufferName]->size + LONG_SIZE * attribute->count;
+				} else if (strcmp(attribute->type, "float[]") == 0) {
+					buffers[currentBufferName]->size = buffers[currentBufferName]->size + FLOAT_SIZE * attribute->count;
+				} else if (strcmp(attribute->type, "double[]") == 0) {
+					buffers[currentBufferName]->size = buffers[currentBufferName]->size + DOUBLE_SIZE * attribute->count;
+				} else if (strcmp(attribute->type, "char[]") == 0) {
+					buffers[currentBufferName]->size = buffers[currentBufferName]->size + CHAR_SIZE * attribute->count;
+				} else if (strcmp(attribute->type, "char*[]") == 0) {
+					buffers[currentBufferName]->size = buffers[currentBufferName]->size + (CHAR_SIZE * attribute->length * attribute->count);
+				}
 			} else {
 				LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "Duplicate attribute detected: " << attribute->id);
+				delete attribute;
 			}
 		} else {
 			LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "No buffer is being processed");

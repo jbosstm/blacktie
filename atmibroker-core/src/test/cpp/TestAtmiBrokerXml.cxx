@@ -106,6 +106,7 @@ void TestAtmiBrokerXml::test_env() {
 	char* foo = (char*) "foo";
 	Buffer* foob = buffers[foo];
 	CPPUNIT_ASSERT(strcmp(foob->name, "foo") == 0);
+	CPPUNIT_ASSERT(foob->size == ((4 * 2) + 8 + (1 * 2 * 10)));
 	CPPUNIT_ASSERT(foob->attributes.size() == 3);
 	char* Balance2 = (char*) "Balance2";
 	char* Balance = (char*) "Balance";
@@ -131,6 +132,7 @@ void TestAtmiBrokerXml::test_env() {
 	char* bar = (char*) "bar";
 	Buffer* barb = buffers[bar];
 	CPPUNIT_ASSERT(strcmp(barb->name, "bar") == 0);
+	CPPUNIT_ASSERT(barb->size == ((4 * 4) + (2) + (4 * 4) + (2)));
 	CPPUNIT_ASSERT(barb->attributes.size() == 4);
 	char* barlance = (char*) "barlance";
 	char* barbq = (char*) "barbq";
