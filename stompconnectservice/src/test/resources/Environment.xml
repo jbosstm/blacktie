@@ -33,6 +33,7 @@
 		</SERVER>
 		<SERVER name="foo">
 			<SERVICE_NAMES>
+				<SERVICE name='PBF' />
 				<SERVICE name='BAR' />
 				<SERVICE name='TTL' />
 				<SERVICE name='TestTPFree' />
@@ -83,8 +84,7 @@
 	<ENV_VARIABLES>
 		<ENV_VARIABLE>
 			<NAME>JMXURL</NAME>
-			<VALUE>service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector
-			</VALUE>
+			<VALUE>service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector</VALUE>
 		</ENV_VARIABLE>
 		<ENV_VARIABLE>
 			<NAME>LOG4CXXCONFIG</NAME>
