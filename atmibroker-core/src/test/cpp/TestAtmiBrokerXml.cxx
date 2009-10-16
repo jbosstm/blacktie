@@ -107,7 +107,7 @@ void TestAtmiBrokerXml::test_env() {
 	Buffer* foob = buffers[foo];
 	CPPUNIT_ASSERT(strcmp(foob->name, "foo") == 0);
 	CPPUNIT_ASSERT(foob->wireSize == ((4 * 3) + 8 + (1 * 2 * 10)));
-	CPPUNIT_ASSERT(foob->memSize == 44);
+	CPPUNIT_ASSERT(foob->memSize == sizeof(FOO));
 	CPPUNIT_ASSERT(foob->attributes.size() == 3);
 	char* Balance2 = (char*) "Balance2";
 	char* Balance = (char*) "Balance";
@@ -119,7 +119,7 @@ void TestAtmiBrokerXml::test_env() {
 	CPPUNIT_ASSERT(strcmp(foob->attributes[Balance2]->defaultValue, "1") == 0);
 	CPPUNIT_ASSERT(strcmp(foob->attributes[accountName]->id, "accountName")
 			== 0);
-	CPPUNIT_ASSERT(strcmp(foob->attributes[accountName]->type, "char*[]") == 0);
+	CPPUNIT_ASSERT(strcmp(foob->attributes[accountName]->type, "char[]") == 0);
 	CPPUNIT_ASSERT(foob->attributes[accountName]->count == 2);
 	CPPUNIT_ASSERT(foob->attributes[accountName]->length == 10);
 	CPPUNIT_ASSERT(strcmp(foob->attributes[accountName]->defaultValue, "foo")
@@ -134,7 +134,7 @@ void TestAtmiBrokerXml::test_env() {
 	Buffer* barb = buffers[bar];
 	CPPUNIT_ASSERT(strcmp(barb->name, "bar") == 0);
 	CPPUNIT_ASSERT(barb->wireSize == ((4 * 4) + (2) + (4 * 4) + (2)));
-	CPPUNIT_ASSERT(barb->memSize == 38);
+	CPPUNIT_ASSERT(barb->memSize == sizeof(BAR));
 	CPPUNIT_ASSERT(barb->attributes.size() == 4);
 	char* barlance = (char*) "barlance";
 	char* barbq = (char*) "barbq";

@@ -21,11 +21,25 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
 
+struct foo_t {
+	float Balance2[3];
+	long Balance;
+	char accountName[2][10];
+};
+typedef struct foo_t FOO;
+
+struct bar_t {
+	int barlance[4];
+	short barbq;
+	int barlance1[4];
+	short barbq2;
+};
+typedef struct bar_t BAR;
+
 class TestAtmiBrokerXml: public CppUnit::TestFixture {
-	CPPUNIT_TEST_SUITE( TestAtmiBrokerXml );
-	CPPUNIT_TEST(test_service);
-	CPPUNIT_TEST(test_env);
-	CPPUNIT_TEST_SUITE_END();
+	CPPUNIT_TEST_SUITE( TestAtmiBrokerXml);
+	CPPUNIT_TEST( test_service);
+	CPPUNIT_TEST( test_env);CPPUNIT_TEST_SUITE_END();
 
 public:
 	virtual void setUp();

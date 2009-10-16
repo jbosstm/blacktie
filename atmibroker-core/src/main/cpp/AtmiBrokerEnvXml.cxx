@@ -61,8 +61,9 @@ static int envVariableCount = 0;
 
 static bool processingXaResource = false;
 static bool processingEnvVariable = false;
-static char* currentBufferName = NULL;
 static char* configuration = NULL;
+static char* currentBufferName = NULL;
+static int currentMaxTypeSize = 0;
 
 static int CHAR_SIZE = sizeof(char);//1;
 static int LONG_SIZE = sizeof(long);//8;
@@ -79,6 +80,7 @@ AtmiBrokerEnvXml::AtmiBrokerEnvXml() {
 	processingXaResource = false;
 	processingEnvVariable = false;
 	currentBufferName = NULL;
+	currentMaxTypeSize = 0;
 	configuration = NULL;
 }
 
@@ -242,6 +244,7 @@ static void XMLCALL startElement
 		}
 	} else if (strcmp(name, "BUFFER") == 0) {
 		currentBufferName = copy_value(atts[1]);
+		currentMaxTypeSize = 0;
 		Buffer* buffer = buffers[currentBufferName];
 		if (buffer == NULL) {
 			Buffer* buffer = new Buffer();
@@ -251,6 +254,7 @@ static void XMLCALL startElement
 			buffers[buffer->name] = buffer;
 		} else {
 			LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "Duplicate buffer detected: " << currentBufferName);
+			currentBufferName = NULL;
 		}
 	} else if (strcmp(name, "ATTRIBUTE") == 0) {
 		if (currentBufferName != NULL) {
@@ -280,9 +284,9 @@ static void XMLCALL startElement
 			int typeSize = -1;
 			int instanceSize = -1;
 			Attribute* toCheck = buffers[currentBufferName]->attributes[attribute->id];
+			bool fail = false;
 			if (toCheck == NULL) {
-				buffers[currentBufferName]->attributes[attribute->id] = attribute;
-				// short, int, long, float, double, char, char*
+				// short, int, long, float, double, char
 				if (strcmp(attribute->type, "short") == 0) {
 					typeSize = SHORT_SIZE;
 					instanceSize = SHORT_SIZE;
@@ -301,9 +305,6 @@ static void XMLCALL startElement
 				} else if (strcmp(attribute->type, "char") == 0) {
 					typeSize = CHAR_SIZE;
 					instanceSize = CHAR_SIZE;
-				} else if (strcmp(attribute->type, "char*") == 0) {
-					typeSize = CHAR_SIZE;
-					instanceSize = CHAR_SIZE * attribute->length;
 				} else if (strcmp(attribute->type, "short[]") == 0) {
 					typeSize = SHORT_SIZE;
 					instanceSize = SHORT_SIZE * attribute->count;
@@ -321,15 +322,31 @@ static void XMLCALL startElement
 					instanceSize = DOUBLE_SIZE * attribute->count;
 				} else if (strcmp(attribute->type, "char[]") == 0) {
 					typeSize = CHAR_SIZE;
-					instanceSize = CHAR_SIZE * attribute->length;
-				} else if (strcmp(attribute->type, "char*[]") == 0) {
-					typeSize = CHAR_SIZE;
-					instanceSize = CHAR_SIZE * attribute->length * attribute->count;
+					instanceSize = CHAR_SIZE * attribute->count * attribute->length;
+				} else {
+					LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "Unknown attribute type: " << attribute->type);
+					fail = true;
 				}
-				buffers[currentBufferName]->memSize = buffers[currentBufferName]->memSize + (buffers[currentBufferName]->memSize % typeSize);
-				attribute->memPosition = buffers[currentBufferName]->memSize;
-				buffers[currentBufferName]->wireSize = buffers[currentBufferName]->wireSize + instanceSize;
-				buffers[currentBufferName]->memSize = buffers[currentBufferName]->memSize + instanceSize;
+
+				if (!fail) {
+					buffers[currentBufferName]->attributes[attribute->id] = attribute;
+
+					// Extend the buffer by the required extra buffer size
+					if (currentMaxTypeSize < typeSize) {
+						currentMaxTypeSize = typeSize;
+					}
+
+					buffers[currentBufferName]->memSize = buffers[currentBufferName]->memSize + (buffers[currentBufferName]->memSize % typeSize);
+					attribute->memPosition = buffers[currentBufferName]->memSize;
+					buffers[currentBufferName]->wireSize = buffers[currentBufferName]->wireSize + instanceSize;
+					buffers[currentBufferName]->memSize = buffers[currentBufferName]->memSize + instanceSize;
+				} else {
+					LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "Cleaning attribute: " << attribute->id);
+					free(attribute->id);
+					free(attribute->type);
+					free(attribute->defaultValue);
+					delete attribute;
+				}
 			} else {
 				LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "Duplicate attribute detected: " << attribute->id);
 				free(attribute->id);
@@ -458,7 +475,17 @@ static void XMLCALL endElement
 			LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "stored Env Value %s at index %d" << last_value << index);
 		}
 	} else if (strcmp(last_element, "BUFFER") == 0) {
-		currentBufferName = NULL;
+		if (currentBufferName != NULL) {
+			int currentSize = buffers[currentBufferName]->memSize;
+			if (currentSize != 0) {
+				int toPad = (currentSize % currentMaxTypeSize);
+				buffers[currentBufferName]->memSize = currentSize + toPad;
+			} else {
+				buffers[currentBufferName]->memSize = 1;
+			}
+			currentBufferName = NULL;
+			currentMaxTypeSize = 0;
+		}
 	}
 	depth -= 1;
 }
