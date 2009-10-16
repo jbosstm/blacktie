@@ -120,7 +120,7 @@ void TestPBF::test_tptypes() {
 	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toTest == 182);
+	CPPUNIT_ASSERT(toTest == sizeof(ACCT_INFO));
 	CPPUNIT_ASSERT(strncmp(type, "R_PBF", 8) == 0);
 	CPPUNIT_ASSERT(strcmp(subtype, "acct_info") == 0);
 	free(type);

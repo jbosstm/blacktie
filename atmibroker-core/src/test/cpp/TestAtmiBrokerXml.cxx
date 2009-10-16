@@ -119,7 +119,7 @@ void TestAtmiBrokerXml::test_env() {
 	CPPUNIT_ASSERT(strcmp(foob->attributes[Balance2]->defaultValue, "1") == 0);
 	CPPUNIT_ASSERT(strcmp(foob->attributes[accountName]->id, "accountName")
 			== 0);
-	CPPUNIT_ASSERT(strcmp(foob->attributes[accountName]->type, "char[]") == 0);
+	CPPUNIT_ASSERT(strcmp(foob->attributes[accountName]->type, "char[][]") == 0);
 	CPPUNIT_ASSERT(foob->attributes[accountName]->count == 2);
 	CPPUNIT_ASSERT(foob->attributes[accountName]->length == 10);
 	CPPUNIT_ASSERT(strcmp(foob->attributes[accountName]->defaultValue, "foo")

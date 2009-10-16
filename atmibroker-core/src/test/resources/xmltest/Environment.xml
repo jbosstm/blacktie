@@ -71,7 +71,7 @@
 			<ATTRIBUTE id="Balance2" type="float[]" count="3" default="1" />
 			<ATTRIBUTE id="Balance" type="long" default="12" />
 			<ATTRIBUTE id="Balance" type="int" default="1" />
-			<ATTRIBUTE id="accountName" type="char[]" count="2" length="10"
+			<ATTRIBUTE id="accountName" type="char[][]" count="2" length="10"
 				default="foo" />
 		</BUFFER>
 		<BUFFER name="bar">

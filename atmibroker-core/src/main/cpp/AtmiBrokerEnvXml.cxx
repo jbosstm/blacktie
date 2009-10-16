@@ -258,6 +258,7 @@ static void XMLCALL startElement
 		}
 	} else if (strcmp(name, "ATTRIBUTE") == 0) {
 		if (currentBufferName != NULL) {
+			Buffer* buffer = buffers[currentBufferName];
 			Attribute* attribute = new Attribute();
 			attribute->id = NULL;
 			attribute->type = NULL;
@@ -279,11 +280,11 @@ static void XMLCALL startElement
 					attribute->defaultValue = copy_value(atts[i+1]);
 				}
 			}
-			attribute->wirePosition = buffers[currentBufferName]->wireSize;
+			attribute->wirePosition = buffer->wireSize;
 
 			int typeSize = -1;
 			int instanceSize = -1;
-			Attribute* toCheck = buffers[currentBufferName]->attributes[attribute->id];
+			Attribute* toCheck = buffer->attributes[attribute->id];
 			bool fail = false;
 			if (toCheck == NULL) {
 				// short, int, long, float, double, char
@@ -305,6 +306,9 @@ static void XMLCALL startElement
 				} else if (strcmp(attribute->type, "char") == 0) {
 					typeSize = CHAR_SIZE;
 					instanceSize = CHAR_SIZE;
+				} else if (strcmp(attribute->type, "char[]") == 0) {
+					typeSize = CHAR_SIZE;
+					instanceSize = CHAR_SIZE * attribute->length;
 				} else if (strcmp(attribute->type, "short[]") == 0) {
 					typeSize = SHORT_SIZE;
 					instanceSize = SHORT_SIZE * attribute->count;
@@ -320,7 +324,7 @@ static void XMLCALL startElement
 				} else if (strcmp(attribute->type, "double[]") == 0) {
 					typeSize = DOUBLE_SIZE;
 					instanceSize = DOUBLE_SIZE * attribute->count;
-				} else if (strcmp(attribute->type, "char[]") == 0) {
+				} else if (strcmp(attribute->type, "char[][]") == 0) {
 					typeSize = CHAR_SIZE;
 					instanceSize = CHAR_SIZE * attribute->count * attribute->length;
 				} else {
@@ -329,17 +333,17 @@ static void XMLCALL startElement
 				}
 
 				if (!fail) {
-					buffers[currentBufferName]->attributes[attribute->id] = attribute;
+					buffer->attributes[attribute->id] = attribute;
 
 					// Extend the buffer by the required extra buffer size
 					if (currentMaxTypeSize < typeSize) {
 						currentMaxTypeSize = typeSize;
 					}
 
-					buffers[currentBufferName]->memSize = buffers[currentBufferName]->memSize + (buffers[currentBufferName]->memSize % typeSize);
-					attribute->memPosition = buffers[currentBufferName]->memSize;
-					buffers[currentBufferName]->wireSize = buffers[currentBufferName]->wireSize + instanceSize;
-					buffers[currentBufferName]->memSize = buffers[currentBufferName]->memSize + instanceSize;
+					buffer->memSize = buffer->memSize + (buffer->memSize % typeSize);
+					attribute->memPosition = buffer->memSize;
+					buffer->wireSize = buffer->wireSize + instanceSize;
+					buffer->memSize = buffer->memSize + instanceSize;
 				} else {
 					LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "Cleaning attribute: " << attribute->id);
 					free(attribute->id);
@@ -476,12 +480,13 @@ static void XMLCALL endElement
 		}
 	} else if (strcmp(last_element, "BUFFER") == 0) {
 		if (currentBufferName != NULL) {
-			int currentSize = buffers[currentBufferName]->memSize;
+			Buffer* buffer = buffers[currentBufferName];
+			int currentSize = buffer->memSize;
 			if (currentSize != 0) {
 				int toPad = (currentSize % currentMaxTypeSize);
-				buffers[currentBufferName]->memSize = currentSize + toPad;
+				buffer->memSize = currentSize + toPad;
 			} else {
-				buffers[currentBufferName]->memSize = 1;
+				buffer->memSize = 1;
 			}
 			currentBufferName = NULL;
 			currentMaxTypeSize = 0;
