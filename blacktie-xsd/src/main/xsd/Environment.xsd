@@ -138,8 +138,8 @@
 												<xsd:attribute name="id" type="xsd:string"
 													use="required" />
 												<!--
-													short, int, long, float, double, char, char*, short[],
-													int[], long[], float[], double[], char[], char*[]
+													short, int, long, float, double, char, short[], int[],
+													long[], float[], double[], char[]
 												-->
 												<xsd:attribute name="type" type="xsd:string"
 													use="required" />
