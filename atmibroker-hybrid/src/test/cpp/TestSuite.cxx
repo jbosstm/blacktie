@@ -15,5 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#include "TestBufferConverterImpl.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestBufferConverterImpl );
 #include "TestConnection.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestConnection );

@@ -251,6 +251,7 @@ static void XMLCALL startElement
 			buffer->name = currentBufferName;
 			buffer->wireSize = 0;
 			buffer->memSize = 0;
+			buffer->lastPad = 0;
 			buffers[buffer->name] = buffer;
 		} else {
 			LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "Duplicate buffer detected: " << currentBufferName);
@@ -280,53 +281,51 @@ static void XMLCALL startElement
 					attribute->defaultValue = copy_value(atts[i+1]);
 				}
 			}
-			attribute->wirePosition = buffer->wireSize;
 
 			int typeSize = -1;
-			int instanceSize = -1;
 			Attribute* toCheck = buffer->attributes[attribute->id];
 			bool fail = false;
 			if (toCheck == NULL) {
 				// short, int, long, float, double, char
 				if (strcmp(attribute->type, "short") == 0) {
 					typeSize = SHORT_SIZE;
-					instanceSize = SHORT_SIZE;
+					attribute->instanceSize = SHORT_SIZE;
 				} else if (strcmp(attribute->type, "int") == 0) {
 					typeSize = INT_SIZE;
-					instanceSize = INT_SIZE;
+					attribute->instanceSize = INT_SIZE;
 				} else if (strcmp(attribute->type, "long") == 0) {
 					typeSize = LONG_SIZE;
-					instanceSize = LONG_SIZE;
+					attribute->instanceSize = LONG_SIZE;
 				} else if (strcmp(attribute->type, "float") == 0) {
 					typeSize = FLOAT_SIZE;
-					instanceSize = FLOAT_SIZE;
+					attribute->instanceSize = FLOAT_SIZE;
 				} else if (strcmp(attribute->type, "double") == 0) {
 					typeSize = DOUBLE_SIZE;
-					instanceSize = DOUBLE_SIZE;
+					attribute->instanceSize = DOUBLE_SIZE;
 				} else if (strcmp(attribute->type, "char") == 0) {
 					typeSize = CHAR_SIZE;
-					instanceSize = CHAR_SIZE;
+					attribute->instanceSize = CHAR_SIZE;
 				} else if (strcmp(attribute->type, "char[]") == 0) {
 					typeSize = CHAR_SIZE;
-					instanceSize = CHAR_SIZE * attribute->length;
+					attribute->instanceSize = CHAR_SIZE * attribute->length;
 				} else if (strcmp(attribute->type, "short[]") == 0) {
 					typeSize = SHORT_SIZE;
-					instanceSize = SHORT_SIZE * attribute->count;
+					attribute->instanceSize = SHORT_SIZE * attribute->count;
 				} else if (strcmp(attribute->type, "int[]") == 0) {
 					typeSize = INT_SIZE;
-					instanceSize = INT_SIZE * attribute->count;
+					attribute->instanceSize = INT_SIZE * attribute->count;
 				} else if (strcmp(attribute->type, "long[]") == 0) {
 					typeSize = LONG_SIZE;
-					instanceSize = LONG_SIZE * attribute->count;
+					attribute->instanceSize = LONG_SIZE * attribute->count;
 				} else if (strcmp(attribute->type, "float[]") == 0) {
 					typeSize = FLOAT_SIZE;
-					instanceSize = FLOAT_SIZE * attribute->count;
+					attribute->instanceSize = FLOAT_SIZE * attribute->count;
 				} else if (strcmp(attribute->type, "double[]") == 0) {
 					typeSize = DOUBLE_SIZE;
-					instanceSize = DOUBLE_SIZE * attribute->count;
+					attribute->instanceSize = DOUBLE_SIZE * attribute->count;
 				} else if (strcmp(attribute->type, "char[][]") == 0) {
 					typeSize = CHAR_SIZE;
-					instanceSize = CHAR_SIZE * attribute->count * attribute->length;
+					attribute->instanceSize = CHAR_SIZE * attribute->count * attribute->length;
 				} else {
 					LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "Unknown attribute type: " << attribute->type);
 					fail = true;
@@ -342,8 +341,9 @@ static void XMLCALL startElement
 
 					buffer->memSize = buffer->memSize + (buffer->memSize % typeSize);
 					attribute->memPosition = buffer->memSize;
-					buffer->wireSize = buffer->wireSize + instanceSize;
-					buffer->memSize = buffer->memSize + instanceSize;
+					attribute->wirePosition = buffer->wireSize;
+					buffer->wireSize = buffer->wireSize + attribute->instanceSize;
+					buffer->memSize = buffer->memSize + attribute->instanceSize;
 				} else {
 					LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "Cleaning attribute: " << attribute->id);
 					free(attribute->id);
@@ -483,9 +483,10 @@ static void XMLCALL endElement
 			Buffer* buffer = buffers[currentBufferName];
 			int currentSize = buffer->memSize;
 			if (currentSize != 0) {
-				int toPad = (currentSize % currentMaxTypeSize);
-				buffer->memSize = currentSize + toPad;
+				buffer->lastPad = (currentSize % currentMaxTypeSize);
+				buffer->memSize = currentSize + buffer->lastPad;
 			} else {
+				buffer->lastPad = 1;
 				buffer->memSize = 1;
 			}
 			currentBufferName = NULL;
