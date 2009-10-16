@@ -15,9 +15,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-/* Typed Buffer Functions */
 #include "TestPBF.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestPBF);
+/* Typed Buffer Functions */
 #include "TestTPAlloc.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPAlloc);
 #include "TestTPTypes.h"

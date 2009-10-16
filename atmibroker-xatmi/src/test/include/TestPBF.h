@@ -21,25 +21,26 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
 
-#include "BaseTest.h"
+#include "BaseServerTest.h"
 
 struct acct_info_t {
-	long acct_no;
-	char name[50];
-	char address[100];
-	float foo[2];
-	double balances[2];
+	long acct_no; // 8
+	char name[50]; // 50
+	char address[100]; // 100
+	float foo[2]; // 4 * 2
+	double balances[2]; // 8 * 2
 };
 typedef struct acct_info_t ACCT_INFO;
 
-class TestPBF: public BaseTest {
+class TestPBF: public BaseServerTest {
 	CPPUNIT_TEST_SUITE( TestPBF);
 	CPPUNIT_TEST( test_tpalloc);
 	CPPUNIT_TEST( test_tpalloc_nonzero);
 	CPPUNIT_TEST( test_tpalloc_subtype_required);
 	CPPUNIT_TEST( test_tprealloc);
 	CPPUNIT_TEST( test_tptypes);
-	CPPUNIT_TEST( test_tpfree);CPPUNIT_TEST_SUITE_END();
+	CPPUNIT_TEST( test_tpfree);
+	CPPUNIT_TEST( test_tpcall);CPPUNIT_TEST_SUITE_END();
 public:
 	void test_tpalloc();
 	void test_tpalloc_nonzero();
@@ -48,11 +49,12 @@ public:
 	void test_tprealloc();
 	void test_tptypes();
 	void test_tpfree();
+	void test_tpcall();
 
 	virtual void setUp();
 	virtual void tearDown();
 private:
-	char * m_allocated;
+	char *m_allocated, *sendbuf, *rcvbuf;
 };
 
 #endif

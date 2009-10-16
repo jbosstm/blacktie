@@ -26,6 +26,7 @@
 		</SERVER>
 		<SERVER name='default'>
 			<SERVICE_NAMES>
+				<SERVICE name='PBF' />
 				<SERVICE name='BAR' />
 				<SERVICE name='TestTPFree' />
 				<SERVICE name='TestTPCall' />
@@ -72,6 +73,7 @@
 			<ATTRIBUTE id="address" type="char[]" length="100" default="" />
 			<ATTRIBUTE id="foo" type="float[]" count="2" default="0.00" />
 			<ATTRIBUTE id="balances" type="double[]" count="2" default="0" />
+			<!-- <ATTRIBUTE id="pad" type="char*" length="2" default="0" /> -->
 		</BUFFER>
 	</BUFFERS>
 </ENVIRONMENT>

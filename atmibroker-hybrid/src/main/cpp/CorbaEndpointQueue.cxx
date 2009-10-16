@@ -145,7 +145,8 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 			message.type = strdup(type);
 			message.subtype = strdup(subtype);
 
-			message.len = ilen - 1;
+			int pad = 1;
+			message.len = ilen - pad;
 			if (message.len == 0 && strlen(message.type) == 0) {
 				message.data = NULL;
 			} else {

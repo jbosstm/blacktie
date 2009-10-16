@@ -45,7 +45,7 @@ ServiceDispatcher::~ServiceDispatcher() {
 int ServiceDispatcher::svc(void) {
 	while (!stop) {
 		MESSAGE message = destination->receive(this->timeout);
-		if (!stop && message.len > -1) {
+		if (!stop && message.received) {
 			try {
 				counter += 1;
 				onMessage(message);
@@ -75,8 +75,6 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 	// EXTRACT THE DATA FROM THE INBOUND MESSAGE
 
-	//	char* idata = (char *) malloc(message.len);
-	//	memcpy(idata, message.data, message.len);
 	int correlationId = message.correlationId;
 	long ilen = message.len;
 	long flags = message.flags;

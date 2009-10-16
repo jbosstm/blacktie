@@ -228,7 +228,8 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 					"servicename", APR_HASH_KEY_STRING);
 			LOG4CXX_TRACE(logger, "Extracted servicename");
 
-			message.len = frame->body_length - 1;
+			int pad = 1;
+			message.len = frame->body_length - pad;
 			LOG4CXX_TRACE(logger, "Set length: " << message.len);
 			if (message.len == 0 && strlen(message.type) == 0) {
 				message.data = NULL;

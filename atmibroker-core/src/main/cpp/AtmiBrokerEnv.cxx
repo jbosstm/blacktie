@@ -168,7 +168,8 @@ AtmiBrokerEnv::~AtmiBrokerEnv() {
 		Buffer* buffer = it->second;
 		free(buffer->name);
 		buffer->name = NULL;
-		buffer->size = -1;
+		buffer->memSize = -1;
+		buffer->wireSize = -1;
 
 		//std::vector<ServiceInfo>* services = &(*server)->serviceVector;
 		Attributes::iterator i;

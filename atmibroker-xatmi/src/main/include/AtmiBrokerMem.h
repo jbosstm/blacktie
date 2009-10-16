@@ -42,7 +42,7 @@ public:
 
 	~AtmiBrokerMem();
 
-	char* tpalloc(char* type, char* subtype, long size, bool forcedDelete);
+	char* tpalloc(char* type, char* subtype, long size, bool serviceAllocated);
 
 	char* tprealloc(char * addr, long size, char* type, char* subtype);
 

@@ -106,12 +106,15 @@ typedef BLACKTIE_CORE_DLL struct _attribute {
 	int count;
 	int length;
 	char* defaultValue;
+	int wirePosition;
+	int memPosition;
 }Attribute;
 
 typedef BLACKTIE_CORE_DLL struct _buffer {
 	char* name;
 	std::map<const char*, Attribute*, ltstr> attributes;
-	long size;
+	long wireSize;
+	long memSize;
 }Buffer;
 
 typedef BLACKTIE_CORE_DLL std::map<const char*, Attribute*, ltstr> Attributes;

@@ -94,7 +94,8 @@ AtmiBrokerMem::~AtmiBrokerMem() {
 }
 
 char*
-AtmiBrokerMem::tpalloc(char* type, char* subtype, long size, bool forcedDelete) {
+AtmiBrokerMem::tpalloc(char* type, char* subtype, long size,
+		bool serviceAllocated) {
 	char* toReturn = NULL;
 	LOG4CXX_TRACE(logger, (char*) "tpalloc locking");
 	lock->lock();
@@ -110,7 +111,7 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size, bool forcedDelete) 
 		LOG4CXX_ERROR(logger, (char*) "tpalloc - unknown buffer type: "
 				<< subtype);
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
-	} else if (strcmp(type, "R_PBF") == 0 && size != 0) {
+	} else if (!serviceAllocated && strcmp(type, "R_PBF") == 0 && size != 0) {
 		LOG4CXX_ERROR(logger, (char*) "tpalloc - R_PBF size must be 0");
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	} else if (size < 0) {
@@ -134,7 +135,7 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size, bool forcedDelete) 
 			}
 		} else if (strcmp(type, "R_PBF") == 0) {
 			LOG4CXX_DEBUG(logger, (char*) "tpalloc character array ");
-			size = buffers[subtype]->size;
+			size = buffers[subtype]->memSize;
 		}
 		LOG4CXX_DEBUG(logger, (char*) "tpalloc - type: subtype: size:" << type
 				<< ":" << subtype << ":" << size);
@@ -158,7 +159,7 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size, bool forcedDelete) 
 		LOG4CXX_TRACE(logger, (char*) "tpalloc - copied subtype/"
 				<< memoryInfo.subtype << "/");
 
-		memoryInfo.forcedDelete = forcedDelete;
+		memoryInfo.forcedDelete = serviceAllocated;
 
 		LOG4CXX_DEBUG(
 				logger,
