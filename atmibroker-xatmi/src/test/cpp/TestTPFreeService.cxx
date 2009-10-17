@@ -47,8 +47,8 @@ void TestTPFreeService::setUp() {
 void TestTPFreeService::tearDown() {
 	userlogc((char*) "TestTPFreeService::tearDown");
 	// Do local work
-	::tpfree(m_allocated);
-	::tpfree(m_rcvbuf);
+	::tpfree( m_allocated);
+	::tpfree( m_rcvbuf);
 	int toCheck = tpunadvertise((char*) "TestTPFree");
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toCheck != -1);
@@ -73,7 +73,8 @@ void TestTPFreeService::test_tpfree_x_octet() {
 void TestTPFreeService::test_tpfree_x_common() {
 	userlogc((char*) "test_tpfree_x_common");
 	DEPOSIT *dptr;
-	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
+	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "deposit",
+			sizeof(DEPOSIT));
 	m_allocated = (char*) dptr;
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -88,7 +89,8 @@ void TestTPFreeService::test_tpfree_x_common() {
 void TestTPFreeService::test_tpfree_x_c_type() {
 	userlogc((char*) "test_tpfree_x_c_type");
 	ACCT_INFO *aptr;
-	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
+	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info",
+			sizeof(ACCT_INFO));
 	m_allocated = (char*) aptr;
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);

@@ -98,7 +98,7 @@ void TestTPReturn::test_tpreturn_tpurcode() {
 	CPPUNIT_ASSERT(toCheck != -1);
 
 	sendlen = 3;
-	rcvlen = 0;
+	rcvlen = 1;
 	CPPUNIT_ASSERT((sendbuf
 			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -131,7 +131,7 @@ void testtpreturn_service(TPSVCINFO *svcinfo) {
 
 void testtpreturn_service_tpurcode(TPSVCINFO *svcinfo) {
 	userlogc((char*) "testtpreturn_service_tpurcode");
-	int len = 0;
+	int len = 1;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	if (strncmp(svcinfo->data, "24", 2) == 0) {
 		tpreturn(TPSUCCESS, 24, toReturn, len, 0);

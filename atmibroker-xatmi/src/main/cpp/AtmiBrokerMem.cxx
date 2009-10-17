@@ -117,6 +117,9 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size,
 	} else if (size < 0) {
 		LOG4CXX_ERROR(logger, (char*) "tpalloc - negative size");
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
+	} else if (strcmp(type, "R_PBF") != 0 && size == 0) {
+		LOG4CXX_ERROR(logger, (char*) "tpalloc - buffer type requires size");
+		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	} else if (strncmp(type, "X_OCTET", MAX_TYPE_SIZE) != 0 && strncmp(type,
 			"X_COMMON", MAX_TYPE_SIZE) != 0 && strncmp(type, "X_C_TYPE",
 			MAX_TYPE_SIZE) != 0 && strncmp(type, "R_PBF", MAX_TYPE_SIZE) != 0) {
@@ -126,13 +129,6 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size,
 		if (strcmp(type, "X_OCTET") == 0) {
 			LOG4CXX_DEBUG(logger, (char*) "tpalloc character array ");
 			subtype = (char*) "";
-		} else if (strcmp(type, "X_COMMON") == 0 || strcmp(type, "X_C_TYPE")
-				== 0) {
-			LOG4CXX_DEBUG(logger, (char*) "tpalloc X_COMMON/X_C_TYPE");
-			if (size < 1024) {
-				LOG4CXX_DEBUG(logger, (char*) "tpalloc resizing");
-				size = 1024;
-			}
 		} else if (strcmp(type, "R_PBF") == 0) {
 			LOG4CXX_DEBUG(logger, (char*) "tpalloc character array ");
 			size = buffers[subtype]->memSize;
@@ -188,6 +184,9 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size, char* type,
 	} else if (size < 0) {
 		LOG4CXX_ERROR(logger, (char*) "tprealloc - negative size");
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
+	} else if (size == 0) {
+		LOG4CXX_ERROR(logger, (char*) "tprealloc - requires positive size");
+		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	} else {
 		LOG4CXX_DEBUG(logger, (char*) "tprealloc hunting " << size);
 		for (std::vector<MemoryInfo>::iterator it = memoryInfoVector.begin(); it
@@ -201,15 +200,6 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size, char* type,
 			} else if ((*it).memoryPtr == addr) {
 				LOG4CXX_DEBUG(logger, (char*) "found matching memory with size"
 						<< (*it).size);
-
-				if (size < 1024) {
-					if (strncmp((*it).type, "X_COMMON", 8) == 0) {
-						size = 1024;
-					} else if (strncmp((*it).type, "X_C_TYPE", 8) == 0) {
-						size = 1024;
-					}
-				}
-
 				char* memPtr = (char*) realloc((void*) addr, size);
 				(*it).memoryPtr = memPtr;
 				(*it).size = size;

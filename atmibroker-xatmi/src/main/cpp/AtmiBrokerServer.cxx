@@ -553,7 +553,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 
 		if (connection->requiresAdminCall()) {
 			long commandLength;
-			long responseLength = 0;
+			long responseLength = 1;
 
 			if (isadm) {
 				commandLength = strlen(adm) + 14;

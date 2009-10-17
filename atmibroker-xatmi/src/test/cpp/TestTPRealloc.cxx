@@ -36,12 +36,12 @@ void TestTPRealloc::tearDown() {
 	userlogc((char*) "TestTPRealloc::tearDown");
 	if (m_allocated) {
 		// Do local work
-		::tpfree(m_allocated);
+		::tpfree( m_allocated);
 		m_allocated = NULL;
 	}
 	if (m_nonallocated != NULL) {
 
-		free(m_nonallocated);
+		free( m_nonallocated);
 		m_nonallocated = NULL;
 	}
 	BaseTest::tearDown();
@@ -53,8 +53,8 @@ void TestTPRealloc::test_tprealloc_negative_x_octet() {
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
-	m_allocated = ::tprealloc(m_allocated, -1);
-	CPPUNIT_ASSERT(tperrno== TPEINVAL);
+	::tprealloc(m_allocated, -1);
+	CPPUNIT_ASSERT(tperrno == TPEINVAL);
 }
 
 // THIS DOES NOT WORK AS YOU CANNOT REALLOC A ZERO BUFFER AS IT CANT BE FOUND
@@ -63,8 +63,8 @@ void TestTPRealloc::test_tprealloc_zero_x_octet() {
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
-	m_allocated = ::tprealloc(m_allocated, 0);
-	CPPUNIT_ASSERT(tperrno == 0);
+	::tprealloc(m_allocated, 0);
+	CPPUNIT_ASSERT(tperrno == TPEINVAL);
 
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);
@@ -74,7 +74,7 @@ void TestTPRealloc::test_tprealloc_zero_x_octet() {
 	free(type);
 	free(subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toTest == 0);
+	CPPUNIT_ASSERT(toTest == 10);
 }
 
 void TestTPRealloc::test_tprealloc_larger_x_octet() {
@@ -161,14 +161,14 @@ void TestTPRealloc::test_tprealloc_nonbuffer() {
 	m_nonallocated = (char*) malloc(10);
 	char* toFree = m_nonallocated;
 	m_nonallocated = ::tprealloc(m_nonallocated, 10);
-	CPPUNIT_ASSERT(tperrno== TPEINVAL);
+	CPPUNIT_ASSERT(tperrno == TPEINVAL);
 	free(toFree);
 }
 
 void TestTPRealloc::test_tprealloc_null() {
 	userlogc("test_tprealloc_null");
 	m_nonallocated = ::tprealloc(NULL, 10);
-	CPPUNIT_ASSERT(tperrno== TPEINVAL);
+	CPPUNIT_ASSERT(tperrno == TPEINVAL);
 }
 
 // X_COMMON
@@ -177,8 +177,8 @@ void TestTPRealloc::test_tprealloc_negative_x_common() {
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "deposit", 2048);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
-	m_allocated = ::tprealloc(m_allocated, -1);
-	CPPUNIT_ASSERT(tperrno== TPEINVAL);
+	::tprealloc(m_allocated, -1);
+	CPPUNIT_ASSERT(tperrno == TPEINVAL);
 }
 
 void TestTPRealloc::test_tprealloc_zero_x_common() {
@@ -186,8 +186,8 @@ void TestTPRealloc::test_tprealloc_zero_x_common() {
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "deposit", 2048);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
-	m_allocated = ::tprealloc(m_allocated, 0);
-	CPPUNIT_ASSERT(tperrno == 0);
+	::tprealloc(m_allocated, 0);
+	CPPUNIT_ASSERT(tperrno == TPEINVAL);
 
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);
@@ -197,7 +197,7 @@ void TestTPRealloc::test_tprealloc_zero_x_common() {
 	free(type);
 	free(subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toTest == 1024);
+	CPPUNIT_ASSERT(toTest == 2048);
 }
 
 void TestTPRealloc::test_tprealloc_larger_x_common() {
@@ -235,7 +235,7 @@ void TestTPRealloc::test_tprealloc_smaller_x_common() {
 	free(type);
 	free(subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toTest == 1024);
+	CPPUNIT_ASSERT(toTest == 512);
 }
 
 void TestTPRealloc::test_tprealloc_samesize_x_common() {
@@ -284,8 +284,8 @@ void TestTPRealloc::test_tprealloc_negative_x_c_type() {
 	m_allocated = tpalloc((char*) "X_C_TYPE", (char*) "test", 2048);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
-	m_allocated = ::tprealloc(m_allocated, -1);
-	CPPUNIT_ASSERT(tperrno== TPEINVAL);
+	::tprealloc(m_allocated, -1);
+	CPPUNIT_ASSERT(tperrno == TPEINVAL);
 }
 
 void TestTPRealloc::test_tprealloc_zero_x_c_type() {
@@ -293,8 +293,8 @@ void TestTPRealloc::test_tprealloc_zero_x_c_type() {
 	m_allocated = tpalloc((char*) "X_C_TYPE", (char*) "test", 2048);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
-	m_allocated = ::tprealloc(m_allocated, 0);
-	CPPUNIT_ASSERT(tperrno == 0);
+	::tprealloc(m_allocated, 0);
+	CPPUNIT_ASSERT(tperrno == TPEINVAL);
 
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);
@@ -304,7 +304,7 @@ void TestTPRealloc::test_tprealloc_zero_x_c_type() {
 	free(type);
 	free(subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toTest == 1024);
+	CPPUNIT_ASSERT(toTest == 2048);
 }
 
 void TestTPRealloc::test_tprealloc_larger_x_c_type() {
@@ -342,7 +342,7 @@ void TestTPRealloc::test_tprealloc_smaller_x_c_type() {
 	free(type);
 	free(subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toTest == 1024);
+	CPPUNIT_ASSERT(toTest == 512);
 }
 
 void TestTPRealloc::test_tprealloc_samesize_x_c_type() {

@@ -50,8 +50,8 @@ void TestRollbackOnly::setUp() {
 void TestRollbackOnly::tearDown() {
 	CPPUNIT_ASSERT(tx_close() == TX_OK);
 
-	::tpfree(sendbuf);
-	::tpfree(rcvbuf);
+	::tpfree( sendbuf);
+	::tpfree( rcvbuf);
 
 	// Clean up server
 	BaseServerTest::tearDown();

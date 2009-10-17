@@ -56,7 +56,7 @@ void TestSpecExampleTwo::test_specexampletwo() {
 	int cd; /* contains a character array named input and an */
 	/* array of integers named output. */
 	/* allocate typed buffer */
-	ptr = (DATA_BUFFER *) tpalloc((char*) "X_C_TYPE", (char*) "inq_buf", 0);
+	ptr = (DATA_BUFFER *) tpalloc((char*) "X_C_TYPE", (char*) "inq_buf", sizeof(DATA_BUFFER));
 	/* populate typed buffer with input data */
 	strcpy(ptr->input, "retrieve all accounts with balances less than 0");
 	tx_begin(); /* start global transaction */

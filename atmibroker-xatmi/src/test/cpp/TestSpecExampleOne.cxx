@@ -66,8 +66,8 @@ void TestSpecExampleOne::test_specexampleone() {
 	long clen = 0; /* contains a character array named input and an */
 	int cd; /* integer named output. */
 	/* allocate typed buffers */
-	dptr = (DATA_BUFFER *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", 0);
-	cptr = (DATA_BUFFER *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", 0);
+	dptr = (DATA_BUFFER *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", sizeof(DATA_BUFFER));
+	cptr = (DATA_BUFFER *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", sizeof(DATA_BUFFER));
 	/* populate typed buffers with input data */
 	strcpy(dptr->input, "debit account 123 by 50");
 	strcpy(cptr->input, "credit account 456 by 50");

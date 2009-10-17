@@ -36,7 +36,7 @@ void TestTPAlloc::setUp() {
 void TestTPAlloc::tearDown() {
 	userlogc((char*) "TestTPAlloc::tearDown");
 	if (m_allocated) {
-		::tpfree(m_allocated);
+		::tpfree( m_allocated);
 		m_allocated = NULL;
 	}
 	// Do local work
@@ -46,16 +46,8 @@ void TestTPAlloc::tearDown() {
 void TestTPAlloc::test_tpalloc_zero() {
 	userlogc((char*) "test_tpalloc_zero");
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, 0);
-	CPPUNIT_ASSERT(m_allocated != NULL);
-	CPPUNIT_ASSERT(tperrno == 0);
-
-	char type[8];
-	char subtype[16];
-	int toTest = ::tptypes(m_allocated, type, subtype);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toTest == 0);
-	CPPUNIT_ASSERT(strncmp(type, "X_OCTET", 8) == 0);
-	CPPUNIT_ASSERT(strcmp(subtype, "") == 0);
+	CPPUNIT_ASSERT(m_allocated == NULL);
+	CPPUNIT_ASSERT(tperrno == TPEINVAL);
 }
 
 void TestTPAlloc::test_tpalloc_negative() {
@@ -93,7 +85,8 @@ void TestTPAlloc::test_tpalloc_x_octet() {
 void TestTPAlloc::test_tpalloc_x_common() {
 	userlogc((char*) "test_tpalloc_x_common");
 	DEPOSIT *dptr;
-	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
+	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "deposit",
+			sizeof(DEPOSIT));
 	m_allocated = (char*) dptr;
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -118,7 +111,7 @@ void TestTPAlloc::test_tpalloc_x_common_bigsubtype() {
 	userlogc((char*) "test_tpalloc_x_common_bigsubtype");
 	DEPOSIT *dptr;
 	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "12345678901234567",
-			0);
+			sizeof(DEPOSIT));
 	m_allocated = (char*) dptr;
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -138,7 +131,8 @@ void TestTPAlloc::test_tpalloc_x_common_bigsubtype() {
 void TestTPAlloc::test_tpalloc_x_c_type() {
 	userlogc((char*) "test_tpalloc_x_c_type");
 	ACCT_INFO *aptr;
-	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
+	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info",
+			sizeof(ACCT_INFO));
 	m_allocated = (char*) aptr;
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
