@@ -30,24 +30,26 @@ public:
 	/**
 	 * Convert the buffer for on the wire transfer
 	 *
+	 * @param bufferType The type of the buffer
 	 * @param bufferSubtype The identifier of this buffer
 	 * @param memoryFormatBuffer The buffer in memory
 	 *
 	 * @return wireFormatBuffer The converted buffer for sending on the wire
 	 * @return The length of the converted buffer
 	 */
-	static char* convertToWireFormat(char* bufferSubtype, char* memoryFormatBuffer, int* wireFormatBufferLength);
+	static char* convertToWireFormat(char* bufferType, char* bufferSubtype, char* memoryFormatBuffer, long* wireFormatBufferLength);
 
 	/**
 	 * Convert the buffer for on the wire transfer
 	 *
+	 * @param bufferType The type of the buffer
 	 * @param bufferSubtype The identifier of this buffer
 	 * @param wireFormatBuffer The buffer as received on the wire
 	 *
 	 * @return memoryFormatBuffer The converted buffer for use in memory
 	 * @return The length of the converted buffer
 	 */
-	static char* convertToMemoryFormat(char* bufferSubtype, char* wireFormatBuffer, int* memoryFormatBufferLength);
+	static char* convertToMemoryFormat(char* bufferType, char* bufferSubtype, char* wireFormatBuffer, long* memoryFormatBufferLength);
 private:
 	/**
 	 * Used to log the classes information.

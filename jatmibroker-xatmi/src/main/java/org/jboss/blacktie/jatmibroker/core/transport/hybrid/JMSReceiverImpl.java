@@ -42,6 +42,7 @@ public class JMSReceiverImpl implements Receiver {
 	private MessageConsumer receiver;
 	private boolean isTemporary;
 	private int timeout = 0;
+	private static int pad = 0;
 
 	JMSReceiverImpl(Session session, Properties properties) throws JMSException {
 		destination = session.createTemporaryQueue();
@@ -74,38 +75,10 @@ public class JMSReceiverImpl implements Receiver {
 			log.debug("Receiving from: " + destination.getQueueName());
 			javax.jms.Message message = receiver.receive(timeout);
 			if (message != null) {
+				BytesMessage bytesMessage = ((BytesMessage) message);
 				log.debug("Received from: " + destination.getQueueName());
 				log.debug("getJMSExpiration is " + message.getJMSExpiration());
-				String controlIOR = message.getStringProperty("messagecontrol");
-				BytesMessage bytesMessage = ((BytesMessage) message);
-				// TODO String replyTo = message.getStringProperty("reply-to");
-				String replyTo = message.getStringProperty("messagereplyto");
-				int len = (int) bytesMessage.getBodyLength();
-				String serviceName = message.getStringProperty("servicename");
-				int flags = new Integer(message
-						.getStringProperty("messageflags"));
-				int cd = new Integer(message
-						.getStringProperty("messagecorrelationId"));
-
-				String type = message.getStringProperty("messagetype");
-				String subtype = message.getStringProperty("messagesubtype");
-				log.debug("type: " + type + " subtype: " + subtype);
-
-				org.jboss.blacktie.jatmibroker.core.transport.Message toProcess = new org.jboss.blacktie.jatmibroker.core.transport.Message();
-				toProcess.type = type;
-				toProcess.subtype = subtype;
-				toProcess.replyTo = replyTo;
-				toProcess.serviceName = serviceName;
-				toProcess.flags = flags;
-				toProcess.cd = cd;
-				toProcess.len = len - 1;
-				if (toProcess.len == 0 && toProcess.type == "") {
-					toProcess.data = null;
-				} else {
-					toProcess.data = new byte[toProcess.len];
-					bytesMessage.readBytes(toProcess.data);
-				}
-				toProcess.control = controlIOR;
+				org.jboss.blacktie.jatmibroker.core.transport.Message toProcess = convertFromBytesMessage(bytesMessage);
 				return toProcess;
 			}
 			throw new ConnectionException(Connection.TPETIME,
@@ -126,5 +99,36 @@ public class JMSReceiverImpl implements Receiver {
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Could not delete the queue", t);
 		}
+	}
+
+	public static org.jboss.blacktie.jatmibroker.core.transport.Message convertFromBytesMessage(
+			BytesMessage message) throws JMSException {
+		String controlIOR = message.getStringProperty("messagecontrol");
+		String replyTo = message.getStringProperty("messagereplyto");
+		int len = (int) message.getBodyLength();
+		String serviceName = message.getStringProperty("servicename");
+		int flags = new Integer(message.getStringProperty("messageflags"));
+		int cd = new Integer(message.getStringProperty("messagecorrelationId"));
+
+		String type = message.getStringProperty("messagetype");
+		String subtype = message.getStringProperty("messagesubtype");
+		log.debug("type: " + type + " subtype: " + subtype);
+
+		org.jboss.blacktie.jatmibroker.core.transport.Message toProcess = new org.jboss.blacktie.jatmibroker.core.transport.Message();
+		toProcess.type = type;
+		toProcess.subtype = subtype;
+		toProcess.replyTo = replyTo;
+		toProcess.serviceName = serviceName;
+		toProcess.flags = flags;
+		toProcess.cd = cd;
+		toProcess.len = len - pad;
+		if (toProcess.type == "") {
+			toProcess.data = null;
+		} else {
+			toProcess.data = new byte[toProcess.len];
+			message.readBytes(toProcess.data);
+		}
+		toProcess.control = controlIOR;
+		return toProcess;
 	}
 }

@@ -41,6 +41,8 @@ public class JMSSenderImpl implements Sender {
 	boolean service;
 	private boolean closed;
 	private Destination destination;
+	
+	private int pad = 0;
 
 	JMSSenderImpl(Session session, Destination destination)
 			throws NamingException, JMSException {
@@ -87,9 +89,9 @@ public class JMSSenderImpl implements Sender {
 			message.setStringProperty("messagesubtype", subtype == null ? ""
 					: subtype);
 
-			byte[] toSend = new byte[len + 1];
+			byte[] toSend = new byte[len + pad];
 			if (data != null) {
-				int min = Math.min(len, data.length);
+				int min = Math.min(toSend.length, data.length);
 				System.arraycopy(data, 0, toSend, 0, min);
 			}
 			message.writeBytes(toSend, 0, toSend.length);

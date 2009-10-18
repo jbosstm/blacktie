@@ -24,6 +24,7 @@
 #include "txx.h"
 #include "ConnectionImpl.h"
 #include "AtmiBrokerEnv.h"
+#include "BufferConverterImpl.h"
 
 log4cxx::LoggerPtr HybridStompEndpointQueue::logger(log4cxx::Logger::getLogger(
 		"HybridStompEndpointQueue"));
@@ -228,18 +229,10 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 					"servicename", APR_HASH_KEY_STRING);
 			LOG4CXX_TRACE(logger, "Extracted servicename");
 
-			int pad = 1;
-			message.len = frame->body_length - pad;
-			LOG4CXX_TRACE(logger, "Set length: " << message.len);
-			if (message.len == 0 && strlen(message.type) == 0) {
-				message.data = NULL;
-			} else {
-				message.data = (char*) malloc(message.len);
-				if (message.len > 0) {
-					memcpy(message.data, frame->body, message.len);
-				}
-			}
-			LOG4CXX_TRACE(logger, "Set body");
+			message.len = frame->body_length;
+			message.data = BufferConverterImpl::convertToMemoryFormat(
+					message.type, message.subtype, frame->body, &message.len);
+			LOG4CXX_TRACE(logger, "Set body and length: " << message.len);
 
 			message.replyto = (const char*) apr_hash_get(frame->headers,
 					"messagereplyto", APR_HASH_KEY_STRING);

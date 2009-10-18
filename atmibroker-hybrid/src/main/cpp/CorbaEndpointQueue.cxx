@@ -27,6 +27,7 @@
 #include "ThreadLocalStorage.h"
 #include "txx.h"
 #include "SessionImpl.h"
+#include "BufferConverterImpl.h"
 
 log4cxx::LoggerPtr HybridCorbaEndpointQueue::logger(log4cxx::Logger::getLogger(
 		"HybridCorbaEndpointQueue"));
@@ -120,7 +121,7 @@ HybridCorbaEndpointQueue::~HybridCorbaEndpointQueue() {
 void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 		CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen,
 		CORBA::Long correlationId, CORBA::Long flags, const char* type,
-		const char* subtype) throw (CORBA::SystemException ) {
+		const char* subtype) throw (CORBA::SystemException) {
 	if (!shutdown) {
 		lock->lock();
 		if (!shutdown) {
@@ -145,20 +146,10 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 			message.type = strdup(type);
 			message.subtype = strdup(subtype);
 
-			int pad = 1;
-			message.len = ilen - pad;
-			if (message.len == 0 && strlen(message.type) == 0) {
-				message.data = NULL;
-			} else {
-				LOG4CXX_TRACE(logger, (char*) "Allocating DATA");
-				message.data = (char*) malloc(message.len);
-				LOG4CXX_TRACE(logger, (char*) "Allocated");
-				if (message.len > 0) {
-					memcpy(message.data, (char*) idata.get_buffer(),
-							message.len);
-					LOG4CXX_TRACE(logger, (char*) "Copied");
-				}
-			}
+			message.len = ilen;
+			message.data = BufferConverterImpl::convertToMemoryFormat(
+					message.type, message.subtype, (char*) idata.get_buffer(),
+					&message.len);
 
 			message.rval = rval;
 			message.received = true;
@@ -220,7 +211,7 @@ MESSAGE HybridCorbaEndpointQueue::receive(long time) {
 	return message;
 }
 
-void HybridCorbaEndpointQueue::disconnect() throw (CORBA::SystemException ) {
+void HybridCorbaEndpointQueue::disconnect() throw (CORBA::SystemException) {
 	LOG4CXX_DEBUG(logger, (char*) "disconnect");
 	lock->lock();
 	if (!shutdown) {

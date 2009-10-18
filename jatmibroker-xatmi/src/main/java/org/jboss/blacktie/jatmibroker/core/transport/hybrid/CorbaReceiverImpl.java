@@ -57,6 +57,8 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 	private OrbManagement orbManagement;
 	private int timeout = 0;
 	private EventListener eventListener;
+	
+	private int pad = 0;
 
 	private List<Policy> getPolicies(ORB orb, POA poa)
 			throws ConfigurationException, ConnectionException {
@@ -165,7 +167,7 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 		message.rcode = rcode;
 		message.type = type;
 		message.subtype = subtype;
-		message.len = ilen - 1;
+		message.len = ilen - pad;
 		if (message.len == 0 && message.type == "") {
 			message.data = null;
 		} else {

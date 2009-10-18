@@ -29,6 +29,7 @@ public class CorbaSenderImpl implements Sender {
 			.getLogger(CorbaSenderImpl.class);
 	private EndpointQueue queue;
 	private String name;
+	private int pad = 0;
 
 	CorbaSenderImpl(org.omg.CORBA.Object serviceFactoryObject, String name) {
 		this.queue = EndpointQueueHelper.narrow(serviceFactoryObject);
@@ -37,7 +38,8 @@ public class CorbaSenderImpl implements Sender {
 	}
 
 	public void send(Object replyTo, short rval, int rcode, byte[] data,
-			int len, int correlationId, int flags, int ttl, String type, String subtype) {
+			int len, int correlationId, int flags, int ttl, String type,
+			String subtype) {
 		log.debug("Sending the message");
 		String toReplyTo = (String) replyTo;
 		if (toReplyTo == null) {
@@ -52,13 +54,13 @@ public class CorbaSenderImpl implements Sender {
 			log.trace("Subtype set as null");
 			subtype = "";
 		}
-		byte[] toSend = new byte[len + 1];
+		byte[] toSend = new byte[len + pad];
 		if (data != null) {
-			int min = Math.min(len, data.length);
+			int min = Math.min(toSend.length, data.length);
 			System.arraycopy(data, 0, toSend, 0, min);
 		}
-		queue.send(toReplyTo, rval, rcode, toSend, len + 1, correlationId,
-				flags, type, subtype);
+		queue.send(toReplyTo, rval, rcode, toSend, toSend.length,
+				correlationId, flags, type, subtype);
 		log.debug("Sent the message");
 	}
 

@@ -30,6 +30,8 @@
 #include "ThreadLocalStorage.h"
 #include "AtmiBrokerEnv.h"
 
+#include "BufferConverterImpl.h"
+
 log4cxx::LoggerPtr HybridSessionImpl::logger(log4cxx::Logger::getLogger(
 		"HybridSessionImpl"));
 
@@ -144,15 +146,8 @@ MESSAGE HybridSessionImpl::receive(long time) {
 bool HybridSessionImpl::send(MESSAGE message) {
 	LOG4CXX_DEBUG(logger, "HybridSessionImpl::send");
 
-	int pad = 1;
-	message.len = message.len + pad;
-	char* data_togo = new char[message.len];
-	data_togo[message.len - 1] = NULL;
-	LOG4CXX_TRACE(logger, (char*) "allocated: " + message.len);
-	if (message.len > pad) {
-		memcpy(data_togo, message.data, message.len - pad);
-		LOG4CXX_TRACE(logger, (char*) "copied: idata into: data_togo");
-	}
+	char* data_togo = BufferConverterImpl::convertToWireFormat(message.type,
+			message.subtype, message.data, &message.len);
 
 	bool toReturn = false;
 	if (serviceInvokation) {
