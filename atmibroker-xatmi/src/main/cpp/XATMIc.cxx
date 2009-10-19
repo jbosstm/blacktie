@@ -855,33 +855,37 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	} else {
 		if (clientinit() != -1) {
-			int len = ::bufferSize(idata, ilen);
+			int len = 0;
+			if (idata != NULL) {
+				len = ::bufferSize(idata, ilen);
+			}
 			Session* session = (Session*) getSpecific(SVC_SES);
 			if (session != NULL) {
-				if (!session->getCanSend() && rval != TPFAIL && idata != NULL) {
+				if (!session->getCanSend() && !(rval == TPFAIL && idata == NULL)) {
+					LOG4CXX_TRACE(loggerXATMI, (char*) "generating TPESVCERR");
 					rcode = TPESVCERR;
 					rval = TPFAIL;
 				}
 				session->setCanRecv(false);
-				// CANT SEND NULL DATA
-				if (idata == NULL) {
-					idata = ::tpalloc((char*) "X_OCTET", NULL, 0);
-				}
 
 				if (rcode == TPESVCERR || len == -1) {
 					// mark rollback only and disassociate tx if present
 					txx_rollback_only();
 					if (getSpecific(TSS_KEY) != NULL)
 						txx_release_control(txx_unbind(true));
-
-					::tpfree(idata);
+					if (idata != NULL) {
+						::tpfree(idata);
+					}
 					::send(session, "", NULL, 0, 0, flags, TPFAIL, TPESVCERR);
+					LOG4CXX_TRACE(loggerXATMI, (char*) "sent TPESVCERR");
 				} else {
 					if (rval != TPSUCCESS && rval != TPFAIL) {
 						rval = TPFAIL;
+						LOG4CXX_TRACE(loggerXATMI, (char*) "generating TPFAIL");
 					}
 					if (rval == TPFAIL) {
 						txx_rollback_only();
+						LOG4CXX_TRACE(loggerXATMI, (char*) "will send TPFAIL");
 					}
 
 					// TODO send a fail if there are any outstanding replies or
@@ -894,6 +898,7 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 						txx_release_control(txx_unbind((rval == TPFAIL)));
 
 					::send(session, "", idata, len, 0, flags, rval, rcode);
+					LOG4CXX_TRACE(loggerXATMI, (char*) "sent response");
 				}
 
 				::tpfree(idata);

@@ -249,10 +249,13 @@ public class Session {
 			log.debug("Not setting the sender");
 		}
 
-		log.debug("Initializing a new buffer");
-		// TODO WE SHOULD BE SENDING THE CONNECTION ID?
-		Buffer received = new Buffer(m.type, m.subtype);
-		received.setData(m.data);
+		Buffer received = null;
+		if (m.type != null && !m.type.equals("")) {
+			log.debug("Initializing a new buffer");
+			// TODO WE SHOULD BE SENDING THE CONNECTION ID?
+			received = new Buffer(m.type, m.subtype);
+			received.setData(m.data);
+		}
 		log.debug("Prepared and ready to launch");
 
 		// Sort out session state

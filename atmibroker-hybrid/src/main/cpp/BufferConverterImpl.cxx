@@ -35,7 +35,7 @@ char* BufferConverterImpl::convertToWireFormat(char* bufferType,
 	char* data_togo = NULL;
 
 	if (strlen(bufferType) == 0) {
-		LOG4CXX_INFO(logger, (char*) "Sending NULL buffer");
+		LOG4CXX_TRACE(logger, (char*) "Sending NULL buffer");
 		*wireFormatBufferLength = 1;
 		data_togo = new char[*wireFormatBufferLength];
 	} else if (strncmp(bufferType, "R_PBF", 8) != 0) {
