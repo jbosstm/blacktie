@@ -58,8 +58,8 @@ public class Transaction {
 		try {
 			this.jabTransaction = new JABTransaction(session, timeout);
 		} catch (Throwable e) {
-			throw new TransactionException(
-					"Could not create the transaction: " + e.getMessage(), e);
+			throw new TransactionException("Could not create the transaction: "
+					+ e.getMessage(), e);
 		}
 	}
 

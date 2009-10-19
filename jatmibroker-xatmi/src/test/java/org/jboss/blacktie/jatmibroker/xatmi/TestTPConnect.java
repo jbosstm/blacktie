@@ -43,7 +43,7 @@ public class TestTPConnect extends TestCase {
 
 		byte[] message = "connect".getBytes();
 		sendlen = message.length + 1;
-		sendbuf = new X_OCTET();
+		sendbuf = connection.tpalloc("X_OCTET", null);
 		sendbuf.setData(message);
 		cd = null;
 		cd2 = null;

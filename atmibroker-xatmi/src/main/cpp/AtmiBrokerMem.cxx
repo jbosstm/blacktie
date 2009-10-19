@@ -103,33 +103,37 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size,
 	if (!type) {
 		LOG4CXX_ERROR(logger, (char*) "tpalloc - no type");
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
-	} else if ((strcmp(type, "X_COMMON") == 0 || strcmp(type, "X_C_TYPE") == 0
-			|| strcmp(type, "R_PBF") == 0) && !subtype) {
+	} else if ((strncmp(type, "X_COMMON", MAX_TYPE_SIZE) == 0 || strncmp(type,
+			"X_C_TYPE", MAX_TYPE_SIZE) == 0) && !subtype) {
 		LOG4CXX_ERROR(logger, (char*) "tpalloc - no subtype");
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
-	} else if (strcmp(type, "R_PBF") == 0 && buffers[subtype] == NULL) {
+	} else if ((strncmp(type, "X_COMMON", MAX_TYPE_SIZE) == 0 || strncmp(type,
+			"X_C_TYPE", MAX_TYPE_SIZE) == 0) && buffers[subtype] == NULL) {
 		LOG4CXX_ERROR(logger, (char*) "tpalloc - unknown buffer type: "
 				<< subtype);
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
-	} else if (!serviceAllocated && strcmp(type, "R_PBF") == 0 && size != 0) {
-		LOG4CXX_ERROR(logger, (char*) "tpalloc - R_PBF size must be 0");
+	} else if (!serviceAllocated && (strcmp(type, "X_COMMON") == 0 || strcmp(
+			type, "X_C_TYPE") == 0) && size != 0) {
+		LOG4CXX_ERROR(logger,
+				(char*) "tpalloc - X_C_TYPE/X_COMMON size must be 0");
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	} else if (size < 0) {
 		LOG4CXX_ERROR(logger, (char*) "tpalloc - negative size");
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
-	} else if (strcmp(type, "R_PBF") != 0 && size == 0) {
+	} else if (strncmp(type, "X_OCTET", 8) == 0 && size == 0) {
 		LOG4CXX_ERROR(logger, (char*) "tpalloc - buffer type requires size");
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	} else if (strncmp(type, "X_OCTET", MAX_TYPE_SIZE) != 0 && strncmp(type,
 			"X_COMMON", MAX_TYPE_SIZE) != 0 && strncmp(type, "X_C_TYPE",
-			MAX_TYPE_SIZE) != 0 && strncmp(type, "R_PBF", MAX_TYPE_SIZE) != 0) {
+			MAX_TYPE_SIZE) != 0) {
 		LOG4CXX_ERROR(logger, (char*) "tpalloc DONT YET know type: " << type);
 		setSpecific(TPE_KEY, TSS_TPENOENT);
 	} else {
 		if (strcmp(type, "X_OCTET") == 0) {
 			LOG4CXX_DEBUG(logger, (char*) "tpalloc character array ");
 			subtype = (char*) "";
-		} else if (strcmp(type, "R_PBF") == 0) {
+		} else if (strcmp(type, "X_COMMON") == 0 || strcmp(type, "X_C_TYPE")
+				== 0) {
 			LOG4CXX_DEBUG(logger, (char*) "tpalloc character array ");
 			size = buffers[subtype]->memSize;
 		}
@@ -193,9 +197,11 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size, char* type,
 				!= memoryInfoVector.end(); it++) {
 			LOG4CXX_TRACE(logger, (char*) "next memoryInfo id is with size: "
 					<< (*it).size);
-			if (strncmp((*it).type, "R_PBF", 8) == 0) {
-				LOG4CXX_ERROR(logger,
-						(char*) "tprealloc - cannot resize a R_RBF buffer");
+			if (strncmp((*it).type, "X_COMMON", MAX_TYPE_SIZE) == 0 || strncmp(
+					(*it).type, "X_C_TYPE", MAX_TYPE_SIZE) == 0) {
+				LOG4CXX_ERROR(
+						logger,
+						(char*) "tprealloc - cannot resize a X_C_TYPE/X_COMMON buffer");
 				break;
 			} else if ((*it).memoryPtr == addr) {
 				LOG4CXX_DEBUG(logger, (char*) "found matching memory with size"

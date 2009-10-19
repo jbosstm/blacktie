@@ -270,7 +270,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 				success[0] = 0;
 			}
 
-			Buffer buffer = new X_OCTET();
+			Buffer buffer = svcinfo.tpalloc("X_OCTET", null);
 			buffer.setData(success);
 			log.debug("Responding");
 			return new Response(Connection.TPSUCCESS, 0, buffer, 1, 0);

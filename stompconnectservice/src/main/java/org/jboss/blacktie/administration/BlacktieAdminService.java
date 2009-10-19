@@ -118,7 +118,7 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 	
 	private Response callAdminService(String serverName, int id, String command) throws ConnectionException {
 		int sendlen = command.length() + 1;
-		Buffer sendbuf = new X_OCTET();
+		Buffer sendbuf = connection.tpalloc("X_OCTET", null);
 		sendbuf.setData(command.getBytes());
 		
 		String service = serverName + "_ADMIN_" + id;

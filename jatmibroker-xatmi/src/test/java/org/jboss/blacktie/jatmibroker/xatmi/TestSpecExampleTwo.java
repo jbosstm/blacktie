@@ -52,9 +52,7 @@ public class TestSpecExampleTwo extends TestCase {
 		Session cd; /* contains a character array named input and an */
 		/* array of integers named output. */
 		/* allocate typed buffer */
-		Buffer ptr = new R_PBF("inq_buf");
-		ptr.format(new String[] { "input", "output", "failTest" }, new Class[] {
-				char[].class, int.class, int.class }, new int[] { 100, 0, 0 });
+		Buffer ptr = connection.tpalloc("X_C_TYPE", "inq_buf");
 
 		/* populate typed buffer with input data */
 		ptr

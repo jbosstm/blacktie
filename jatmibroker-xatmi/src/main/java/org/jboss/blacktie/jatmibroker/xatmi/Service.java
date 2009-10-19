@@ -47,6 +47,11 @@ public abstract class Service implements BlacktieService {
 	private Transport transport;
 
 	/**
+	 * The properties to use
+	 */
+	private Properties properties;
+
+	/**
 	 * The service needs the name of the service so that it can be resolved in
 	 * the Environment.xml file
 	 * 
@@ -57,7 +62,6 @@ public abstract class Service implements BlacktieService {
 	 */
 	public Service(String name) throws ConfigurationException,
 			ConnectionException {
-		Properties properties;
 		AtmiBrokerClientXML xml = new AtmiBrokerClientXML();
 		properties = xml.getProperties();
 		transport = TransportFactory.loadTransportFactory(name, properties)
@@ -113,7 +117,7 @@ public abstract class Service implements BlacktieService {
 		try {
 			boolean hasTPCONV = (message.flags & Connection.TPCONV) == Connection.TPCONV;
 			if (hasTPCONV) {
-				session = new Session(transport, message.cd, sender);
+				session = new Session(properties, transport, message.cd, sender);
 				log.debug("Created the session");
 				int olen = 4;
 				Buffer odata = new X_OCTET();
@@ -131,21 +135,27 @@ public abstract class Service implements BlacktieService {
 
 			// THIS IS THE FIRST CALL
 			Buffer buffer = null;
-			if (message.type != null) {
+			if (message.type != null && !message.type.equals("")) {
 				if (message.type.equals("X_OCTET")) {
 					log.debug("Initializing a new X_OCTET");
 					buffer = new X_OCTET();
 					buffer.setData(message.data);
+				} else if (message.type.equals("X_C_TYPE")) {
+					log.debug("Initializing a new X_C_TYPE");
+					buffer = new X_C_TYPE(message.subtype, properties,
+							message.data);
+					buffer.setData(message.data);
 				} else {
-					log.debug("Initializing a new R_PBF");
-					buffer = new R_PBF(message.subtype);
+					log.debug("Initializing a new X_COMMON");
+					buffer = new X_COMMON(message.subtype, properties,
+							message.data);
 					buffer.setData(message.data);
 				}
 			}
 			// TODO NO SESSIONS
 			// NOT PASSING OVER THE SERVICE NAME
 			TPSVCINFO tpsvcinfo = new TPSVCINFO(message.serviceName, buffer,
-					message.flags, session);
+					message.flags, session, properties);
 			log.debug("Prepared the data for passing to the service");
 
 			boolean hasTx = (message.control != null && message.control

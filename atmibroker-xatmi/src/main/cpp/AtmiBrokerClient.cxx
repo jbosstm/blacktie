@@ -108,6 +108,7 @@ int clientdone() {
 
 AtmiBrokerClient::AtmiBrokerClient() {
 	try {
+		AtmiBrokerEnv::get_instance();
 		nextSessionId = 0;
 		clientInitialized = true;
 		currentConnection = NULL;

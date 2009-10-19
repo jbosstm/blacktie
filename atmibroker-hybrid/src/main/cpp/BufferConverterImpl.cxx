@@ -37,9 +37,9 @@ char* BufferConverterImpl::convertToWireFormat(char* bufferType,
 	if (strlen(bufferType) == 0) {
 		LOG4CXX_TRACE(logger, (char*) "Sending NULL buffer");
 		*wireFormatBufferLength = 1;
-		data_togo = new char[*wireFormatBufferLength];
-	} else if (strncmp(bufferType, "R_PBF", 8) != 0) {
-		data_togo = new char[*wireFormatBufferLength + pad];
+		data_togo = (char*) malloc(*wireFormatBufferLength);
+	} else if (strncmp(bufferType, "X_OCTET", 8) == 0) {
+		data_togo = (char*) malloc(*wireFormatBufferLength + pad);
 		LOG4CXX_TRACE(logger, (char*) "allocated: " << *wireFormatBufferLength
 				+ pad);
 		if (pad > 0) {
@@ -52,7 +52,7 @@ char* BufferConverterImpl::convertToWireFormat(char* bufferType,
 		}
 	} else {
 		Buffer* buffer = buffers[bufferSubtype];
-		data_togo = new char[buffer->wireSize + pad];
+		data_togo = (char*) malloc(buffer->wireSize + pad);
 		LOG4CXX_TRACE(logger, (char*) "allocated: " << buffer->wireSize + pad);
 		if (pad > 0) {
 			data_togo[buffer->wireSize + pad] = NULL;
@@ -91,8 +91,8 @@ char* BufferConverterImpl::convertToMemoryFormat(char* bufferType,
 	if (strlen(bufferType) == 0) {
 		LOG4CXX_TRACE(logger, (char*) "Received NULL buffer");
 		*memoryFormatBufferLength = 0;
-	} else if (strncmp(bufferType, "R_PBF", 8) != 0) {
-		LOG4CXX_TRACE(logger, (char*) "Received a non R_PBF buffer");
+	} else if (strncmp(bufferType, "X_OCTET", 8) == 0) {
+		LOG4CXX_TRACE(logger, (char*) "Received an X_OCTET buffer");
 		*memoryFormatBufferLength = *memoryFormatBufferLength - pad;
 		LOG4CXX_TRACE(logger, (char*) "Allocating DATA");
 		data_tostay = (char*) malloc(*memoryFormatBufferLength);
@@ -102,7 +102,8 @@ char* BufferConverterImpl::convertToMemoryFormat(char* bufferType,
 			LOG4CXX_TRACE(logger, (char*) "Copied");
 		}
 	} else {
-		LOG4CXX_TRACE(logger, (char*) "Received a R_PBF buffer: " << bufferSubtype);
+		LOG4CXX_TRACE(logger, (char*) "Received a non X_OCTET buffer: "
+				<< bufferSubtype);
 		Buffer* buffer = buffers[bufferSubtype];
 		if (*memoryFormatBufferLength != buffer->wireSize) {
 			LOG4CXX_ERROR(

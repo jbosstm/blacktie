@@ -384,18 +384,15 @@ void testtpunadvertise_service(TPSVCINFO *svcinfo) {
 	delete toReturn;
 }
 
-void test_time_to_live_service(TPSVCINFO *svcinfo) {
-	int timeout = 45;
-	userlogc((char*) "test_time_to_live_service sleeping for %d seconds",
-			timeout);
+void test_TTL_service(TPSVCINFO *svcinfo) {
+	long timeout = 45;
+
 	ACE_OS::sleep(timeout);
-	userlogc((char*) "test_time_to_live_service, slept for %d seconds",
-			timeout);
+	userlogc((char*) "TTL sleep timeout %d seconds", timeout);
 
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
-	strcpy(toReturn, "test_time_to_live_service");
-
+	strcpy(toReturn, "test_tpcall_TTL_service");
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }
 
@@ -547,12 +544,6 @@ JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertise
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTTL(JNIEnv *, jobject) {
-	tpadvertise((char*) "TTL",
-			test_time_to_live_service);
-}
-
-extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTX1(JNIEnv *, jobject) {
 	tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_without_tx);
 }
@@ -592,3 +583,7 @@ JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertise
 	tpadvertise((char*) "TestRbkOnly", test_no_tpreturn_service);
 }
 
+extern "C"
+JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTTL(JNIEnv *, jobject) {
+	tpadvertise((char*) "TTL", test_TTL_service);
+}

@@ -49,7 +49,7 @@ public class TestTPCall extends TestCase {
 
 		String message = "test_tpcall_unknown_service";
 		int sendlen = message.length() + 1;
-		Buffer sendbuf = new X_OCTET();
+		Buffer sendbuf = connection.tpalloc("X_OCTET", null);
 		sendbuf.setData("test_tpcall_unknown_service".getBytes());
 
 		try {
@@ -70,7 +70,7 @@ public class TestTPCall extends TestCase {
 
 		String toSend = "test_tpcall_x_octet";
 		int sendlen = toSend.length() + 1;
-		Buffer sendbuf = new X_OCTET();
+		Buffer sendbuf = connection.tpalloc("X_OCTET", null);
 		sendbuf.setData(toSend.getBytes());
 
 		Response rcvbuf = connection.tpcall(
@@ -85,15 +85,11 @@ public class TestTPCall extends TestCase {
 		assertTrue(Arrays.equals(received, expected));
 	}
 
-	public void xtest_tpcall_x_common() throws ConnectionException {
+	public void test_tpcall_x_common() throws ConnectionException {
 		log.info("test_tpcall_x_common");
 		server.tpadvertisetpcallXCommon();
 
-		Buffer dptr = new R_PBF("deposit");
-		dptr.format(new String[] { "acct_no", "amount", "balance", "status",
-				"status_len" }, new Class[] { long.class, short.class,
-				short.class, char[].class, short.class }, new int[] { 0, 0, 0,
-				128, 0 });
+		Buffer dptr = connection.tpalloc("X_COMMON", "deposit");
 
 		dptr.setLong("acct_no", 12345678);
 		dptr.setShort("amount", (short) 50);
@@ -108,15 +104,11 @@ public class TestTPCall extends TestCase {
 		assertTrue(Arrays.equals(received, expected));
 	}
 
-	public void xtest_tpcall_x_c_type() throws ConnectionException {
+	public void test_tpcall_x_c_type() throws ConnectionException {
 		log.info("test_tpcall_x_c_type");
 		server.tpadvertisetpcallXCType();
 
-		Buffer aptr = new R_PBF("acct_info");
-		aptr.format(new String[] { "acct_no", "name", "address", "foo",
-				"balance" }, new Class[] { long.class, char[].class,
-				char[].class, float[].class, double[].class }, new int[] { 0,
-				50, 100, 2, 2 });
+		Buffer aptr = connection.tpalloc("X_C_TYPE", "acct_info");
 
 		aptr.setLong("acct_no", 12345678);
 		aptr.setCharArray("name", "TOM".toCharArray());
@@ -129,7 +121,7 @@ public class TestTPCall extends TestCase {
 		double[] balances = new double[2];
 		balances[0] = 1.1;
 		balances[1] = 2.2;
-		aptr.setDoubleArray("balance", balances);
+		aptr.setDoubleArray("balances", balances);
 
 		Response rcvbuf = connection.tpcall(
 				server.getServiceNametpcallXCType(), aptr, 0,

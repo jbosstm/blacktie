@@ -18,8 +18,8 @@
 package org.jboss.blacktie.jatmibroker.jab;
 
 import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
 /**
  * The JABRequest class wraps the output parameter to the service.
@@ -32,12 +32,17 @@ public class JABRequest implements Message {
 	 * The buffer to send.
 	 */
 	private Buffer request;
+	private Connection connection;
 
 	/**
 	 * The request should be created from the JABRemoteService getRequest
 	 * method.
+	 * 
+	 * @param connection
+	 *            The connection to use
 	 */
-	JABRequest() {
+	JABRequest(Connection connection) {
+		this.connection = connection;
 	}
 
 	/**
@@ -61,7 +66,7 @@ public class JABRequest implements Message {
 	 */
 	public void setData(byte[] data) throws JABException {
 		try {
-			request = new X_OCTET();
+			request = connection.tpalloc("X_OCTET", null);
 		} catch (ConnectionException e) {
 			throw new JABException("Could not create an X_OCTET buffer", e);
 		}

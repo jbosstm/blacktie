@@ -41,7 +41,7 @@ public class TestTPSend extends TestCase {
 		connection = connectionFactory.getConnection();
 
 		sendlen = "tpsend".length() + 1;
-		sendbuf = new X_OCTET();
+		sendbuf = connection.tpalloc("X_OCTET", null);
 		sendbuf.setData("tpsend".getBytes());
 
 	}

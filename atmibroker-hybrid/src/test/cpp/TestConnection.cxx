@@ -61,7 +61,7 @@ void TestConnection::test() {
 		clientSend.rval = 0;
 		clientSend.rcode = 0;
 		clientSend.replyto = client->getReplyTo();
-		clientSend.type = (char*) "TEST";
+		clientSend.type = (char*) "X_OCTET";
 		clientSend.subtype = (char*) "";
 		clientSend.ttl = 10 * 1000;
 		clientSend.control = NULL;
@@ -90,7 +90,7 @@ void TestConnection::test() {
 		serviceSend.rval = 0;
 		serviceSend.rcode = 0;
 		serviceSend.replyto = service->getReplyTo();
-		serviceSend.type = (char*) "TEST2";
+		serviceSend.type = (char*) "X_OCTET";
 		serviceSend.subtype = (char*) "";
 		serviceSend.control = NULL;
 		service->send(serviceSend);
@@ -114,7 +114,7 @@ void TestConnection::test() {
 		clientSend.rcode = 0;
 		clientSend.len = 4;
 		clientSend.replyto = client->getReplyTo();
-		clientSend.type = (char*) "TEST3";
+		clientSend.type = (char*) "X_OCTET";
 		clientSend.subtype = (char*) "";
 		client->send(clientSend);
 		MESSAGE serviceReceived = service->receive(0);

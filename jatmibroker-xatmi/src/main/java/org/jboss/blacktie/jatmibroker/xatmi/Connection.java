@@ -114,6 +114,33 @@ public class Connection {
 	}
 
 	/**
+	 * Allocate a new buffer
+	 * 
+	 * @param type
+	 *            The type of the buffer
+	 * @param subType
+	 *            The subtype of the buffer
+	 * @return The new buffer
+	 * @throws ConnectionException
+	 */
+	public Buffer tpalloc(String type, String subtype)
+			throws ConnectionException {
+		if (type == null) {
+			throw new ConnectionException(Connection.TPEINVAL,
+					"No type provided");
+		} else if (type.equals("X_OCTET")) {
+			log.debug("Initializing a new X_OCTET");
+			return new X_OCTET();
+		} else if (type.equals("X_C_TYPE")) {
+			log.debug("Initializing a new X_C_TYPE");
+			return new X_C_TYPE(subtype, properties);
+		} else {
+			log.debug("Initializing a new X_COMMON");
+			return new X_COMMON(subtype, properties);
+		}
+	}
+
+	/**
 	 * Synchronous call
 	 * 
 	 * @param svc
@@ -260,7 +287,7 @@ public class Connection {
 			correlationId = nextId++;
 		}
 		Transport transport = getTransport(svc);
-		Session session = new Session(transport, correlationId);
+		Session session = new Session(properties, transport, correlationId);
 
 		Receiver endpoint = session.getReceiver();
 		// TODO HANDLE TRANSACTION
@@ -358,31 +385,34 @@ public class Connection {
 			throw new ConnectionException(Connection.TPEBADDESC,
 					"Session does not exist");
 		}
-		Message m = endpoint.receive(flags);
+		Message message = endpoint.receive(flags);
 		// TODO WE SHOULD BE SENDING THE CONNECTION ID?
-		Buffer received = null;
-		if (m.type != null) {
-			if (m.type.equals("X_OCTET")) {
+		Buffer buffer = null;
+		if (message.type != null && !message.type.equals("")) {
+			if (message.type.equals("X_OCTET")) {
 				log.debug("Initializing a new X_OCTET");
-				received = new X_OCTET();
-				received.setData(m.data);
+				buffer = new X_OCTET();
+				buffer.setData(message.data);
+			} else if (message.type.equals("X_C_TYPE")) {
+				log.debug("Initializing a new X_C_TYPE");
+				buffer = new X_C_TYPE(message.subtype, properties, message.data);
 			} else {
-				log.debug("Initializing a new R_PBF");
-				received = new R_PBF(m.subtype);
-				received.setData(m.data);
+				log.debug("Initializing a new X_COMMON");
+				buffer = new X_COMMON(message.subtype, properties, message.data);
 			}
 		}
-		if (m.rval == Connection.TPFAIL) {
-			if (m.rcode == Connection.TPESVCERR) {
+		if (message.rval == Connection.TPFAIL) {
+			if (message.rcode == Connection.TPESVCERR) {
 				throw new ConnectionException(Connection.TPESVCERR, 0L,
-						m.rcode, "Got an error back from the remote service",
-						received);
+						message.rcode,
+						"Got an error back from the remote service", buffer);
 			}
-			throw new ConnectionException(Connection.TPESVCFAIL, 0L, m.rcode,
-					"Got a fail back from the remote service", received);
+			throw new ConnectionException(Connection.TPESVCFAIL, 0L,
+					message.rcode, "Got a fail back from the remote service",
+					buffer);
 		} else {
-			Response response = new Response(m.rval, m.rcode, received, m.len,
-					m.flags);
+			Response response = new Response(message.rval, message.rcode,
+					buffer, message.len, message.flags);
 			return response;
 		}
 	}

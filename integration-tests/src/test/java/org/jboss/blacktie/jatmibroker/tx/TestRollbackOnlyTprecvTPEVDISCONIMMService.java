@@ -9,18 +9,21 @@ import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 
-public class TestRollbackOnlyTprecvTPEVSVCFAILService implements
+public class TestRollbackOnlyTprecvTPEVDISCONIMMService implements
 		BlacktieService {
 	private static final Logger log = LogManager
-			.getLogger(TestRollbackOnlyTprecvTPEVSVCFAILService.class);
+			.getLogger(TestRollbackOnlyTprecvTPEVDISCONIMMService.class);
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		try {
-			log.info("test_tprecv_TPEV_SVCFAIL_service");
-			int len = 60;
-			Buffer toReturn = svcinfo.tpalloc("X_OCTET", null);
-			toReturn.setData("test_tprecv_TPEV_SVCFAIL_service".getBytes());
-			return new Response(Connection.TPFAIL, 0, toReturn, len, 0);
+			log.info("test_tprecv_TPEV_DISCONIMM_service");
+			Buffer status = svcinfo.getSession().tprecv(0);
+			TXINFO txinfo = new TXINFO();
+			int inTx = TX.tx_info(txinfo);
+			boolean rbkOnly = (txinfo.transaction_state == TX.TX_ROLLBACK_ONLY);
+			log.info("status=%d, inTx=%d, rbkOnly=%d" + status + " " + inTx
+					+ " " + rbkOnly);
+			return null;
 		} catch (ConnectionException e) {
 			return new Response(Connection.TPFAIL, Connection.TPEITYPE, null,
 					0, 0);

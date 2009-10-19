@@ -11,7 +11,7 @@ public class TestTPConversationServiceShort implements BlacktieService {
 		try {
 			log.info("testTPConversation_short_service");
 			int sendlen = 4;
-			Buffer sendbuf = new X_OCTET();
+			Buffer sendbuf = svcinfo.tpalloc("X_OCTET", null);
 			sendbuf.setData("hi0".getBytes());
 			svcinfo.getSession().tpsend(sendbuf, sendlen, 0);
 			sendbuf.setData("hi1".getBytes());

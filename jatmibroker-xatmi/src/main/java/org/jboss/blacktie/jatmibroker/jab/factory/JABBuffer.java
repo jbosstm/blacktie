@@ -19,8 +19,8 @@ package org.jboss.blacktie.jatmibroker.jab.factory;
 
 import org.jboss.blacktie.jatmibroker.jab.JABException;
 import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
 /**
  * The JABBuffer allows the programmer to invoked XATMI services which accept
@@ -41,22 +41,23 @@ public class JABBuffer {
 	private boolean readOnly;
 
 	/**
-	 * Create a new JABBuffer which is suitable for sending to a remote XATMI
-	 * service
+	 * The connection to use
 	 */
-	public JABBuffer() {
-
-	}
+	private Connection connection;
 
 	/**
 	 * Used as an extension point by the JABResponse class
 	 * 
+	 * @param connection
+	 *            The connection to use
+	 * 
 	 * @param buffer
 	 *            The buffer that was received from the remote service
 	 */
-	JABBuffer(Buffer buffer) {
+	JABBuffer(Connection connection, Buffer buffer) {
 		readOnly = true;
 		this.value = buffer;
+		this.connection = connection;
 	}
 
 	/**
@@ -71,7 +72,7 @@ public class JABBuffer {
 	public void setValue(byte[] value) throws JABException {
 		if (!readOnly) {
 			try {
-				this.value = new X_OCTET();
+				this.value = connection.tpalloc("X_OCTET", null);
 			} catch (ConnectionException e) {
 				throw new JABException("Could not create an X_OCTET buffer", e);
 			}

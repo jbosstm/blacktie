@@ -52,15 +52,16 @@ void TestBufferConverterImpl::test() {
 
 	long expectedWireSize = 142;
 	long wireSize = -1;
-	char* wireBuffer = BufferConverterImpl::convertToWireFormat("R_PBF",
-			"DEPOSIT", (char*) deposit, &wireSize);
+	char* wireBuffer = BufferConverterImpl::convertToWireFormat(
+			(char*) "X_C_TYPE", (char*) "DEPOSIT", (char*) deposit, &wireSize);
 	CPPUNIT_ASSERT(expectedWireSize == wireSize);
 
-	long expectedMemorySize = 148;
+	long expectedMemorySize = sizeof(DEPOSIT);
 	long memorySize = -1;
 	DEPOSIT* memoryBuffer =
-			(DEPOSIT*) BufferConverterImpl::convertToMemoryFormat("R_PBF",
-					"DEPOSIT", (char*) wireBuffer, &memorySize);
+			(DEPOSIT*) BufferConverterImpl::convertToMemoryFormat(
+					(char*) "X_C_TYPE", (char*) "DEPOSIT", (char*) wireBuffer,
+					&memorySize);
 	CPPUNIT_ASSERT(expectedMemorySize == memorySize);
 
 	// CHECK THE CONTENT OF THE CONVERTED BUFFER

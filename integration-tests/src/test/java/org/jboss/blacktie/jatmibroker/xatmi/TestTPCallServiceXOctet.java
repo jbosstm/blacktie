@@ -25,7 +25,7 @@ public class TestTPCallServiceXOctet implements BlacktieService {
 		int len = 60;
 		Buffer toReturn;
 		try {
-			toReturn = new X_OCTET();
+			toReturn = svcinfo.tpalloc("X_OCTET", null);
 			if (ok) {
 				toReturn.setData("tpcall_x_octet".getBytes());
 			} else {

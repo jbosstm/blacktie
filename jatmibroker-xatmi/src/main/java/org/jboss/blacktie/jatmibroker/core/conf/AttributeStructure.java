@@ -15,16 +15,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core.transport;
+package org.jboss.blacktie.jatmibroker.core.conf;
 
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-
-public interface Sender {
-	public Object getSendTo();
-
-	public void send(Object replyTo, short rval, int rcode, byte[] data,
-			int len, int correlationId, int flags, int ttl, String type,
-			String subtype) throws ConnectionException;
-
-	public void close() throws ConnectionException;
+public class AttributeStructure {
+	public String id;
+	public Class type;
+	int count;
+	public int length;
+	String defaultValue;
+	long wirePosition;
+	long memPosition;
+	int instanceSize;
 }

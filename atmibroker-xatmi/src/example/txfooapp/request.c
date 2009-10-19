@@ -129,7 +129,7 @@ test_req_t * get_buf(int remote, const char *data, const char *dbfile, char op, 
 	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 
 	if (remote)
-		req = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", sizeof (test_req_t));
+		req = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", 0);
 	else
 		req = (test_req_t *) malloc(sizeof (test_req_t));
 

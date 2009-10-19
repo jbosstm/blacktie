@@ -6,26 +6,24 @@
  * full listing of individual contributors.
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU Lesser General public  License, v. 2.1.
+ * of the GNU Lesser General Public License, v. 2.1.
  * This program is distributed in the hope that it will be useful, but WITHOUT A
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
- * PARTICULAR PURPOSE.  See the GNU Lesser General public  License for more details.
- * You should have received a copy of the GNU Lesser General public  License,
+ * PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+ * You should have received a copy of the GNU Lesser General Public License,
  * v.2.1 along with this distribution; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.xatmi;
+package org.jboss.blacktie.jatmibroker.core.conf;
 
-public class R_PBF extends Buffer {
+import java.util.HashMap;
+import java.util.Map;
 
-	/**
-	 * The default ID
-	 */
-	private static final long serialVersionUID = 1L;
-
-	public R_PBF(String subtype) throws ConnectionException {
-		super("R_PBF", subtype);
-	}
-
+public class BufferStructure {
+	String name;
+	public Map<String, AttributeStructure> attributes = new HashMap<String, AttributeStructure>();
+	long wireSize;
+	long memSize;
+	int lastPad;
 }

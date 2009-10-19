@@ -41,7 +41,7 @@ void BAR(TPSVCINFO * svcinfo)
 #endif
 {
 	test_req_t *req = (test_req_t *) svcinfo->data;
-	test_req_t *resp = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", sizeof (test_req_t));
+	test_req_t *resp = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", 0);
 	product_t *p = products;
 
 	userlogc_debug( "TxLog %s service %s running", __FUNCTION__, TXTEST_SVC_NAME);

@@ -1,11 +1,20 @@
 package org.jboss.blacktie.jatmibroker.xatmi;
 
 import java.io.Serializable;
+import java.util.Properties;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 /**
  * This is the inbound service data struct
  */
 public class TPSVCINFO implements Serializable {
+	/**
+	 * The logger to use.
+	 */
+	private static final Logger log = LogManager.getLogger(TPSVCINFO.class);
+
 	/**
 	 * 
 	 */
@@ -31,6 +40,8 @@ public class TPSVCINFO implements Serializable {
 	 */
 	private Session session;
 
+	private Properties properties;
+
 	/**
 	 * Create a new tpsvcinfo wrapper class
 	 * 
@@ -42,14 +53,18 @@ public class TPSVCINFO implements Serializable {
 	 *            The length of the said data
 	 * @param flags
 	 *            The flags that the client issued
-	 * @param cd
+	 * @param session
 	 *            The connection descriptor used
+	 * @param properties
+	 *            The properties to use
 	 */
-	public TPSVCINFO(String name, Buffer buffer, long flags, Session session) {
+	TPSVCINFO(String name, Buffer buffer, long flags, Session session,
+			Properties properties) {
 		this.name = name;
 		this.buffer = buffer;
 		this.flags = flags;
 		this.session = session;
+		this.properties = properties;
 	}
 
 	/**
@@ -87,4 +102,33 @@ public class TPSVCINFO implements Serializable {
 	public Session getSession() {
 		return session;
 	}
+
+	/**
+	 * Allocate a new buffer
+	 * 
+	 * @param type
+	 *            The type of the buffer
+	 * @param subtype
+	 *            The subtype of the buffer
+	 * @return The new buffer
+	 * @throws ConnectionException
+	 *             If the buffer cannot be created or the subtype located
+	 */
+	public Buffer tpalloc(String type, String subtype)
+			throws ConnectionException {
+		if (type == null) {
+			throw new ConnectionException(Connection.TPEINVAL,
+					"No type provided");
+		} else if (type.equals("X_OCTET")) {
+			log.debug("Initializing a new X_OCTET");
+			return new X_OCTET();
+		} else if (type.equals("X_C_TYPE")) {
+			log.debug("Initializing a new X_C_TYPE");
+			return new X_C_TYPE(subtype, properties);
+		} else {
+			log.debug("Initializing a new X_COMMON");
+			return new X_COMMON(subtype, properties);
+		}
+	}
+
 }

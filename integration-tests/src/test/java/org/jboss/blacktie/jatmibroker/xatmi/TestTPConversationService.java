@@ -13,7 +13,7 @@ public class TestTPConversationService implements BlacktieService {
 		try {
 			log.info("testTPConversation_service");
 			boolean fail = false;
-			Buffer sendbuf = new X_OCTET();
+			Buffer sendbuf = svcinfo.tpalloc("X_OCTET", null);
 
 			if (!Arrays.equals("conversate".getBytes(), svcinfo.getBuffer()
 					.getData())) {

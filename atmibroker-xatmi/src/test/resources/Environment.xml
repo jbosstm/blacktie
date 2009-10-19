@@ -67,12 +67,35 @@
 	</ENV_VARIABLES>
 
 	<BUFFERS>
+		<BUFFER name="1234567890123456">
+			<ATTRIBUTE id="key" type="char[]" length="10" default="" />
+		</BUFFER>
+		<BUFFER name="test">
+			<ATTRIBUTE id="key" type="char[]" length="28" default="" />
+		</BUFFER>
 		<BUFFER name="acct_info">
 			<ATTRIBUTE id="acct_no" type="long" default="1" />
 			<ATTRIBUTE id="name" type="char[]" length="50" default="" />
 			<ATTRIBUTE id="address" type="char[]" length="100" default="" />
-			<ATTRIBUTE id="foo" type="float[]" count="2" default="0.00" />
-			<ATTRIBUTE id="balances" type="double[]" count="2" default="0" />
+			<ATTRIBUTE id="foo" type="float[]" length="2" default="0.00" />
+			<ATTRIBUTE id="balances" type="double[]" length="2" default="0" />
+		</BUFFER>
+		<BUFFER name="deposit">
+			<ATTRIBUTE id="acct_no" type="long" default="-1" />
+			<ATTRIBUTE id="amount" type="short" default="-1" />
+			<ATTRIBUTE id="balance" type="short" default="-1" />
+			<ATTRIBUTE id="status" type="char[]" length="128" default="" />
+			<ATTRIBUTE id="status_len" type="short" default="0" />
+		</BUFFER>
+		<BUFFER name="inq_buf">
+			<ATTRIBUTE id="input" type="char[]" length="100" default="" />
+			<ATTRIBUTE id="output" type="int" default="-1" />
+			<ATTRIBUTE id="failTest" type="int" default="-1" />
+		</BUFFER>
+		<BUFFER name="dc_buf">
+			<ATTRIBUTE id="input" type="char[]" length="100" default="" />
+			<ATTRIBUTE id="output" type="int" default="-1" />
+			<ATTRIBUTE id="failTest" type="int" default="-1" />
 		</BUFFER>
 	</BUFFERS>
 </ENVIRONMENT>

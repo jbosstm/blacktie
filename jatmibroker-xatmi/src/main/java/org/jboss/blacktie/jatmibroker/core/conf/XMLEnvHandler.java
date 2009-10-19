@@ -17,7 +17,9 @@
  */
 package org.jboss.blacktie.jatmibroker.core.conf;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -34,6 +36,8 @@ public class XMLEnvHandler extends DefaultHandler {
 	private static final Logger log = LogManager.getLogger(XMLEnvHandler.class);
 
 	private final String DOMAIN = "DOMAIN";
+	private final String BUFFER = "BUFFER";
+	private final String ATTRIBUTE = "ATTRIBUTE";
 	private final String SERVER_NAME = "SERVER";
 	private final String SERVICE_NAME = "SERVICE";
 	private final String ADMIN_SERVICE_NAME = "ADMIN_SERVICE";
@@ -54,20 +58,22 @@ public class XMLEnvHandler extends DefaultHandler {
 
 	private Set<String> servers = new HashSet<String>();
 
-	public XMLEnvHandler(String configDir) {
-		prop = new Properties();
-		prop.put("blacktie.domain.servers", servers);
-		this.configDir = configDir;
-	}
+	private Map<String, BufferStructure> buffers = new HashMap<String, BufferStructure>();
+
+	private String currentBufferName;
+
+	static int CHAR_SIZE = 1;
+	static int LONG_SIZE = 8;
+	static int INT_SIZE = 4;
+	static int SHORT_SIZE = 2;
+	static int FLOAT_SIZE = 4;
+	static int DOUBLE_SIZE = 8;
 
 	public XMLEnvHandler(String configDir, Properties prop) {
 		this.prop = prop;
 		prop.put("blacktie.domain.servers", servers);
+		prop.put("blacktie.domain.buffers", buffers);
 		this.configDir = configDir;
-	}
-
-	public Properties getProperty() {
-		return prop;
 	}
 
 	public void characters(char[] ch, int start, int length)
@@ -88,6 +94,134 @@ public class XMLEnvHandler extends DefaultHandler {
 						servers.add(serverName);
 					}
 				}
+			}
+		} else if (BUFFER.equals(localName)) {
+			currentBufferName = atts.getValue(0);
+			BufferStructure buffer = buffers.get(currentBufferName);
+			if (buffer == null) {
+				buffer = new BufferStructure();
+				buffer.name = currentBufferName;
+				buffer.wireSize = 0;
+				buffer.memSize = 0;
+				buffer.lastPad = 0;
+				buffers.put(currentBufferName, buffer);
+			} else {
+				log.error("Duplicate buffer detected: " + currentBufferName);
+				currentBufferName = null;
+			}
+
+		} else if (ATTRIBUTE.equals(localName)) {
+			if (currentBufferName != null) {
+				BufferStructure buffer = buffers.get(currentBufferName);
+				AttributeStructure attribute = new AttributeStructure();
+				attribute.id = null;
+				attribute.type = null;
+				attribute.count = 0;
+				attribute.length = 0;
+				attribute.defaultValue = null;
+				attribute.wirePosition = 0;
+				attribute.memPosition = 0;
+				String type = null;
+				for (int i = 0; i < atts.getLength(); i++) {
+					if (atts.getLocalName(i).equals("id")) {
+						attribute.id = atts.getValue(i);
+					} else if (atts.getLocalName(i).equals("type")) {
+						type = atts.getValue(i);
+					} else if (atts.getLocalName(i).equals("count")) {
+						attribute.count = Integer.parseInt(atts.getValue(i));
+					} else if (atts.getLocalName(i).equals("length")) {
+						attribute.length = Integer.parseInt(atts.getValue(i));
+					} else if (atts.getLocalName(i).equals("default")) {
+						attribute.defaultValue = atts.getValue(i);
+					}
+				}
+
+				int typeSize = -1;
+				AttributeStructure toCheck = buffer.attributes
+						.get(attribute.id);
+				boolean fail = false;
+				if (toCheck == null) {
+					// short, int, long, float, double, char
+					if (type.equals("short")) {
+						typeSize = SHORT_SIZE;
+						attribute.instanceSize = SHORT_SIZE;
+						attribute.type = short.class;
+					} else if (type.equals("int")) {
+						typeSize = INT_SIZE;
+						attribute.instanceSize = INT_SIZE;
+						attribute.type = int.class;
+					} else if (type.equals("long")) {
+						typeSize = LONG_SIZE;
+						attribute.instanceSize = LONG_SIZE;
+						attribute.type = long.class;
+					} else if (type.equals("float")) {
+						typeSize = FLOAT_SIZE;
+						attribute.instanceSize = FLOAT_SIZE;
+						attribute.type = float.class;
+					} else if (type.equals("double")) {
+						typeSize = DOUBLE_SIZE;
+						attribute.instanceSize = DOUBLE_SIZE;
+						attribute.type = double.class;
+					} else if (type.equals("char")) {
+						typeSize = CHAR_SIZE;
+						attribute.instanceSize = CHAR_SIZE;
+						attribute.type = char.class;
+					} else if (type.equals("char[]")) {
+						typeSize = CHAR_SIZE;
+						attribute.instanceSize = CHAR_SIZE * attribute.length;
+						attribute.type = char[].class;
+					} else if (type.equals("short[]")) {
+						typeSize = SHORT_SIZE;
+						attribute.instanceSize = SHORT_SIZE * attribute.length;
+						attribute.type = short[].class;
+					} else if (type.equals("int[]")) {
+						typeSize = INT_SIZE;
+						attribute.instanceSize = INT_SIZE * attribute.length;
+						attribute.type = int[].class;
+					} else if (type.equals("long[]")) {
+						typeSize = LONG_SIZE;
+						attribute.instanceSize = LONG_SIZE * attribute.length;
+						attribute.type = long[].class;
+					} else if (type.equals("float[]")) {
+						typeSize = FLOAT_SIZE;
+						attribute.instanceSize = FLOAT_SIZE * attribute.length;
+						attribute.type = float[].class;
+					} else if (type.equals("double[]")) {
+						typeSize = DOUBLE_SIZE;
+						attribute.instanceSize = DOUBLE_SIZE * attribute.length;
+						attribute.type = double[].class;
+					} else if (type.equals("char[][]")) {
+						typeSize = CHAR_SIZE;
+						attribute.instanceSize = CHAR_SIZE * attribute.length
+								* attribute.count;
+						attribute.type = char[][].class;
+					} else {
+						log.error("Unknown attribute type: " + attribute.type);
+						fail = true;
+					}
+
+					if (!fail) {
+						buffer.attributes.put(attribute.id, attribute);
+
+						// Extend the buffer by the required extra buffer size
+						if (buffer.lastPad < typeSize) {
+							buffer.lastPad = typeSize;
+						}
+
+						buffer.memSize = buffer.memSize
+								+ (buffer.memSize % typeSize);
+						attribute.memPosition = buffer.memSize;
+						attribute.wirePosition = buffer.wireSize;
+						buffer.wireSize = buffer.wireSize
+								+ attribute.instanceSize;
+						buffer.memSize = buffer.memSize
+								+ attribute.instanceSize;
+					}
+				} else {
+					log.error("Duplicate attribute detected: " + attribute.id);
+				}
+			} else {
+				log.error("No buffer is being processed");
 			}
 		} else if (ORB.equals(localName)) {
 			for (int j = 0; j < atts.getLength(); j++) {

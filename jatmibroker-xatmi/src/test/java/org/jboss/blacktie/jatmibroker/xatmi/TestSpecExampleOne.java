@@ -56,14 +56,8 @@ public class TestSpecExampleOne extends TestCase {
 		long clen = 0; /* contains a character array named input and an */
 		int cd; /* integer named output. */
 		/* allocate typed buffers */
-		Buffer dptr = new R_PBF("dc_buf"); // TODO ,0
-		dptr.format(new String[] { "input", "output", "failTest" },
-				new Class[] { char[].class, int.class, int.class }, new int[] {
-						100, 0, 0 });
-		Buffer cptr = new R_PBF("dc_buf"); // TODO ,0
-		cptr.format(new String[] { "input", "output", "failTest" },
-				new Class[] { char[].class, int.class, int.class }, new int[] {
-						100, 0, 0 });
+		Buffer dptr = connection.tpalloc("X_C_TYPE", "dc_buf"); // TODO ,0
+		Buffer cptr = connection.tpalloc("X_C_TYPE", "dc_buf"); // TODO ,0
 		/* populate typed buffers with input data */
 		dptr.setCharArray("input", "debit account 123 by 50".toCharArray());
 		cptr.setCharArray("input", "credit account 456 by 50".toCharArray());
@@ -75,16 +69,10 @@ public class TestSpecExampleOne extends TestCase {
 		Response response = connection.tpcall(server.getServiceNameCREDIT(),
 				cptr, 0, Connection.TPSIGRSTRT);
 		cptr = response.getBuffer();
-		cptr.format(new String[] { "input", "output", "failTest" },
-				new Class[] { char[].class, int.class, int.class }, new int[] {
-						100, 0, 0 });
 		clen = response.getLen();
 		/* retrieve DEBIT�s reply */
 		response = connection.tpgetrply(cd, Connection.TPSIGRSTRT);
 		dptr = response.getBuffer();
-		dptr.format(new String[] { "input", "output", "failTest" },
-				new Class[] { char[].class, int.class, int.class }, new int[] {
-						100, 0, 0 });
 		dlen = response.getLen();
 		if (dptr.getInt("output") == OK && cptr.getInt("output") == OK) {
 			// TODO tx_commit(); /* commit global transaction */

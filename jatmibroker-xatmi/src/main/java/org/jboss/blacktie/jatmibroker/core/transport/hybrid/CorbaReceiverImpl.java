@@ -57,7 +57,7 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 	private OrbManagement orbManagement;
 	private int timeout = 0;
 	private EventListener eventListener;
-	
+
 	private int pad = 0;
 
 	private List<Policy> getPolicies(ORB orb, POA poa)
@@ -144,8 +144,9 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Cannot create the receiver", t);
 		}
-		timeout = Integer.parseInt(properties.getProperty("RequestTimeout")) * 1000 +
-				  Integer.parseInt(properties.getProperty("TimeToLive")) * 1000;
+		timeout = Integer.parseInt(properties.getProperty("RequestTimeout"))
+				* 1000 + Integer.parseInt(properties.getProperty("TimeToLive"))
+				* 1000;
 	}
 
 	public POA _default_POA() {

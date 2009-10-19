@@ -47,7 +47,7 @@ public class TestTPACall extends TestCase {
 		log.info("test_tpacall");
 		byte[] toSend = "test_tpacall".getBytes();
 		int sendlen = toSend.length;
-		Buffer sendbuf = new X_OCTET();
+		Buffer sendbuf = connection.tpalloc("X_OCTET", null);
 		sendbuf.setData(toSend);
 
 		int cd = connection.tpacall(server.getServiceNameTestTPACall(),

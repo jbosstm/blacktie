@@ -73,7 +73,7 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 	private void processCommand(String command, int expectation)
 			throws ConnectionException {
 		byte[] toSend = command.getBytes();
-		Buffer buffer = new X_OCTET();
+		Buffer buffer = connection.tpalloc("X_OCTET", null);
 		buffer.setData(toSend);
 
 		Response response = connection.tpcall("BTStompAdmin", buffer, buffer

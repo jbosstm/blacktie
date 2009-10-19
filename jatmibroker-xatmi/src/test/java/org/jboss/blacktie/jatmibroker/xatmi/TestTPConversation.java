@@ -43,7 +43,7 @@ public class TestTPConversation extends TestCase {
 				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
 		sendlen = 11;
-		sendbuf = new X_OCTET();
+		sendbuf = connection.tpalloc("X_OCTET", null);
 
 	}
 

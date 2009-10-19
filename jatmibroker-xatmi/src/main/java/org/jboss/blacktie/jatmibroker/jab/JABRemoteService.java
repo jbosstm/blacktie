@@ -78,7 +78,7 @@ public class JABRemoteService implements Message {
 
 		connection = aJABSession.getConnection();
 		serviceName = aServiceName;
-		requestMessage = new JABRequest();
+		requestMessage = new JABRequest(connection);
 		responseMessage = new JABResponse();
 	}
 

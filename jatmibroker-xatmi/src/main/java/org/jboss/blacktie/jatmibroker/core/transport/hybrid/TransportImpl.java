@@ -20,7 +20,6 @@ package org.jboss.blacktie.jatmibroker.core.transport.hybrid;
 import java.util.Properties;
 
 import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
@@ -52,8 +51,8 @@ public class TransportImpl implements Runnable, Transport {
 	private Properties properties;
 
 	TransportImpl(OrbManagement orbManagement, Context context,
-			Connection connection, Properties properties)
-			throws InvalidName, NotFound, CannotProceed,
+			Connection connection, Properties properties) throws InvalidName,
+			NotFound, CannotProceed,
 			org.omg.CosNaming.NamingContextPackage.InvalidName,
 			AdapterInactive, AlreadyBound, JMSException {
 		log.debug("Creating transport");
@@ -65,20 +64,17 @@ public class TransportImpl implements Runnable, Transport {
 		callbackThread.start();
 
 		/*
-		String username = (String) properties.get("StompConnectUsr");
-		String password = (String) properties.get("StompConnectPwd");
-		if (username != null) {
-			connection = factory.createConnection(username, password);
-		} else {
-			connection = factory.createConnection();
-		}
-		*/
+		 * String username = (String) properties.get("StompConnectUsr"); String
+		 * password = (String) properties.get("StompConnectPwd"); if (username
+		 * != null) { connection = factory.createConnection(username, password);
+		 * } else { connection = factory.createConnection(); }
+		 */
 
 		this.connection.start();
 
 		this.context = context;
-		this.session = this.connection
-				.createSession(false, Session.AUTO_ACKNOWLEDGE);
+		this.session = this.connection.createSession(false,
+				Session.AUTO_ACKNOWLEDGE);
 
 		this.properties = properties;
 		log.debug("Created transport");

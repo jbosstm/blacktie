@@ -35,10 +35,9 @@ extern void test_tpcall_TPETIME_service(TPSVCINFO *svcinfo) {
 
 extern void test_tpcall_TPEOTYPE_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "test_tpcall_TPEOTYPE_service");
-	int len = 60;
-	char *toReturn = ::tpalloc((char*) "X_C_TYPE", (char*) "test", len);
+	char *toReturn = ::tpalloc((char*) "X_C_TYPE", (char*) "test", 0);
 	strcpy(toReturn, "test_tpcall_TPEOTYPE_service");
-	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
+	tpreturn(TPSUCCESS, 0, toReturn, 0, 0);
 }
 
 extern void test_tpcall_TPESVCFAIL_service(TPSVCINFO *svcinfo) {

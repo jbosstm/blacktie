@@ -17,8 +17,6 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
-import java.util.Arrays;
-
 import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
@@ -27,7 +25,8 @@ import org.jboss.blacktie.jatmibroker.RunServer;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 
 public class TestTimeToLive extends TestCase {
-	private static final Logger log = LogManager.getLogger(TestTimeToLive.class);
+	private static final Logger log = LogManager
+			.getLogger(TestTimeToLive.class);
 	private RunServer server = new RunServer();
 	private Connection connection;
 
@@ -44,24 +43,21 @@ public class TestTimeToLive extends TestCase {
 		server.serverdone();
 	}
 
-	public void test_call_ttl() {
+	public void test_call_ttl() throws ConnectionException {
 		log.info("test_call_ttl");
-		
-		try{
-			server.tpadvertiseTTL();
-		} catch (ConnectionException e) {
-			fail("tpadvertise TTL failed with " + e);
-		}
 
-		try{
+		server.tpadvertiseTTL();
+
+		try {
 			log.info("send first message");
 
 			String toSend = "test_call_ttl_1";
 			int sendlen = toSend.length() + 1;
-			Buffer sendbuf = new X_OCTET();
+			Buffer sendbuf = connection.tpalloc("X_OCTET", null);
 			sendbuf.setData(toSend.getBytes());
 
-			Response rcvbuf = connection.tpcall(server.getServiceNameTTL(), sendbuf, sendlen, 0);
+			Response rcvbuf = connection.tpcall(server.getServiceNameTTL(),
+					sendbuf, sendlen, 0);
 			fail("Expected TPETIME, got a buffer with rval: "
 					+ rcvbuf.getRval());
 		} catch (ConnectionException e) {
@@ -70,15 +66,16 @@ public class TestTimeToLive extends TestCase {
 			}
 		}
 
-		try{
+		try {
 			log.info("send second message");
 
 			String toSend = "test_call_ttl_2";
 			int sendlen = toSend.length() + 1;
-			Buffer sendbuf = new X_OCTET();
+			Buffer sendbuf = connection.tpalloc("X_OCTET", null);
 			sendbuf.setData(toSend.getBytes());
 
-			Response rcvbuf = connection.tpcall(server.getServiceNameTTL(), sendbuf, sendlen, 0);
+			Response rcvbuf = connection.tpcall(server.getServiceNameTTL(),
+					sendbuf, sendlen, 0);
 			fail("Expected TPETIME, got a buffer with rval: "
 					+ rcvbuf.getRval());
 		} catch (ConnectionException e) {
@@ -98,10 +95,11 @@ public class TestTimeToLive extends TestCase {
 		try {
 			String toSend = "counter";
 			int sendlen = toSend.length() + 1;
-			Buffer sendbuf = new X_OCTET();
+			Buffer sendbuf = connection.tpalloc("X_OCTET", null);
 			sendbuf.setData(toSend.getBytes());
 
-			Response rcvbuf = connection.tpcall(server.getServiceNameTTL(), sendbuf, sendlen, 0);
+			Response rcvbuf = connection.tpcall(server.getServiceNameTTL(),
+					sendbuf, sendlen, 0);
 
 			assertTrue(rcvbuf != null);
 			assertTrue(rcvbuf.getBuffer() != null);

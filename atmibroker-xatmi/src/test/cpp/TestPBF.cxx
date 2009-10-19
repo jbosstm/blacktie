@@ -60,7 +60,7 @@ void TestPBF::tearDown() {
 void TestPBF::test_tpalloc() {
 	userlogc((char*) "test_tpalloc");
 	ACCT_INFO *aptr;
-	aptr = (ACCT_INFO*) tpalloc((char*) "R_PBF", (char*) "acct_info", 0);
+	aptr = (ACCT_INFO*) tpalloc((char*) "X_COMMON", (char*) "acct_info", 0);
 
 	m_allocated = (char*) aptr;
 	CPPUNIT_ASSERT(m_allocated != NULL);
@@ -84,28 +84,28 @@ void TestPBF::test_tpalloc() {
 
 void TestPBF::test_tpalloc_nonzero() {
 	userlogc((char*) "test_tpalloc_nonzero");
-	m_allocated = tpalloc((char*) "R_PBF", (char*) "acct_info", 10);
+	m_allocated = tpalloc((char*) "X_COMMON", (char*) "acct_info", 10);
 	CPPUNIT_ASSERT(m_allocated == NULL);
 	CPPUNIT_ASSERT(tperrno == TPEINVAL);
 }
 
 void TestPBF::test_tpalloc_subtype_required() {
 	userlogc((char*) "test_tpalloc_subtype_required");
-	m_allocated = tpalloc((char*) "R_PBF", NULL, 0);
+	m_allocated = tpalloc((char*) "X_COMMON", NULL, 0);
 	CPPUNIT_ASSERT(tperrno == TPEINVAL);
 	CPPUNIT_ASSERT(m_allocated == NULL);
 }
 
 void TestPBF::test_tpalloc_wrong_subtype() {
 	userlogc((char*) "test_tpalloc_subtype_required");
-	m_allocated = tpalloc((char*) "R_PBF", (char*) "not_exist", 0);
+	m_allocated = tpalloc((char*) "X_COMMON", (char*) "not_exist", 0);
 	CPPUNIT_ASSERT(tperrno == TPEINVAL);
 	CPPUNIT_ASSERT(m_allocated == NULL);
 }
 
 void TestPBF::test_tprealloc() {
 	userlogc("test_tprealloc");
-	m_allocated = tpalloc((char*) "R_PBF", (char*) "acct_info", 0);
+	m_allocated = tpalloc((char*) "X_COMMON", (char*) "acct_info", 0);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	m_allocated = ::tprealloc(m_allocated, 10);
 	CPPUNIT_ASSERT(tperrno == TPEINVAL);
@@ -113,7 +113,7 @@ void TestPBF::test_tprealloc() {
 
 void TestPBF::test_tptypes() {
 	userlogc((char*) "test_tptypes");
-	m_allocated = tpalloc((char*) "R_PBF", (char*) "acct_info", 0);
+	m_allocated = tpalloc((char*) "X_COMMON", (char*) "acct_info", 0);
 	CPPUNIT_ASSERT(m_allocated != NULL);
 
 	char* type = (char*) malloc(8);
@@ -121,7 +121,7 @@ void TestPBF::test_tptypes() {
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toTest == sizeof(ACCT_INFO));
-	CPPUNIT_ASSERT(strncmp(type, "R_PBF", 8) == 0);
+	CPPUNIT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
 	CPPUNIT_ASSERT(strcmp(subtype, "acct_info") == 0);
 	free(type);
 	free(subtype);
@@ -130,7 +130,7 @@ void TestPBF::test_tptypes() {
 void TestPBF::test_tpfree() {
 	userlogc((char*) "test_tpfree");
 	ACCT_INFO *aptr;
-	aptr = (ACCT_INFO*) tpalloc((char*) "R_PBF", (char*) "acct_info", 0);
+	aptr = (ACCT_INFO*) tpalloc((char*) "X_COMMON", (char*) "acct_info", 0);
 	m_allocated = (char*) aptr;
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -146,7 +146,7 @@ void TestPBF::test_tpcall() {
 	CPPUNIT_ASSERT(tperrno == 0);
 
 	ACCT_INFO *aptr;
-	aptr = (ACCT_INFO*) tpalloc((char*) "R_PBF", (char*) "acct_info", 0);
+	aptr = (ACCT_INFO*) tpalloc((char*) "X_COMMON", (char*) "acct_info", 0);
 	long rcvlen = 60;
 
 	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))

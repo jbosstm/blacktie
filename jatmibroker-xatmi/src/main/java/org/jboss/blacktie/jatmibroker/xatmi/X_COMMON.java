@@ -19,8 +19,9 @@ package org.jboss.blacktie.jatmibroker.xatmi;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
-public class X_OCTET extends Buffer {
+public class X_COMMON extends Buffer {
 
 	/**
 	 * The default ID
@@ -30,14 +31,23 @@ public class X_OCTET extends Buffer {
 	private static List<Class> types = new ArrayList<Class>();
 
 	static {
-		Class[] x_octetType = new Class[] { byte[].class };
-		for (int i = 0; i < x_octetType.length; i++) {
-			types.add(x_octetType[i]);
+		Class[] x_commonType = new Class[] { short.class, long.class,
+				char.class, short[].class, long[].class, char[].class };
+		for (int i = 0; i < x_commonType.length; i++) {
+			types.add(x_commonType[i]);
 		}
 	}
 
-	public X_OCTET() throws ConnectionException {
-		super("X_OCTET", null, false, types, null);
+	public X_COMMON(String subtype, Properties properties)
+			throws ConnectionException {
+		super("X_COMMON", subtype, true, types, properties);
+	}
+
+	X_COMMON(String subtype, Properties properties, byte[] data)
+			throws ConnectionException {
+		super("X_COMMON", subtype, true, types, properties);
+		setData(data);
+		deserialize();
 	}
 
 }

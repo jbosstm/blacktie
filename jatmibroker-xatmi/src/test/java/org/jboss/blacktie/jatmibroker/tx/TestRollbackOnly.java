@@ -29,7 +29,6 @@ import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
 import org.jboss.blacktie.jatmibroker.xatmi.Session;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPConversation;
-import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class TestRollbackOnly extends TestCase {
 	private static final Logger log = LogManager
@@ -47,7 +46,7 @@ public class TestRollbackOnly extends TestCase {
 		connection = connectionFactory.getConnection();
 
 		sendlen = "TestRbkOnly".length() + 1;
-		sendbuf = new X_OCTET();
+		sendbuf = connection.tpalloc("X_OCTET", null);
 		sendbuf.setData("TestRbkOnly".getBytes());
 	}
 
@@ -85,8 +84,8 @@ public class TestRollbackOnly extends TestCase {
 		assertTrue(TX.tx_begin() == TX.TX_OK);
 
 		try {
-			connection.tpcall(server.getServiceNameTestRollbackOnly(), sendbuf, sendlen,
-					Connection.TPNOCHANGE);
+			connection.tpcall(server.getServiceNameTestRollbackOnly(), sendbuf,
+					sendlen, Connection.TPNOCHANGE);
 			fail("Expected e.getTperrno() == TPEOTYPE");
 		} catch (ConnectionException e) {
 			assertTrue(e.getTperrno() == Connection.TPEOTYPE);

@@ -63,7 +63,6 @@ static bool processingXaResource = false;
 static bool processingEnvVariable = false;
 static char* configuration = NULL;
 static char* currentBufferName = NULL;
-static int currentMaxTypeSize = 0;
 
 static int CHAR_SIZE = sizeof(char);//1;
 static int LONG_SIZE = sizeof(long);//8;
@@ -80,7 +79,6 @@ AtmiBrokerEnvXml::AtmiBrokerEnvXml() {
 	processingXaResource = false;
 	processingEnvVariable = false;
 	currentBufferName = NULL;
-	currentMaxTypeSize = 0;
 	configuration = NULL;
 }
 
@@ -244,7 +242,6 @@ static void XMLCALL startElement
 		}
 	} else if (strcmp(name, "BUFFER") == 0) {
 		currentBufferName = copy_value(atts[1]);
-		currentMaxTypeSize = 0;
 		Buffer* buffer = buffers[currentBufferName];
 		if (buffer == NULL) {
 			Buffer* buffer = new Buffer();
@@ -310,22 +307,22 @@ static void XMLCALL startElement
 					attribute->instanceSize = CHAR_SIZE * attribute->length;
 				} else if (strcmp(attribute->type, "short[]") == 0) {
 					typeSize = SHORT_SIZE;
-					attribute->instanceSize = SHORT_SIZE * attribute->count;
+					attribute->instanceSize = SHORT_SIZE * attribute->length;
 				} else if (strcmp(attribute->type, "int[]") == 0) {
 					typeSize = INT_SIZE;
-					attribute->instanceSize = INT_SIZE * attribute->count;
+					attribute->instanceSize = INT_SIZE * attribute->length;
 				} else if (strcmp(attribute->type, "long[]") == 0) {
 					typeSize = LONG_SIZE;
-					attribute->instanceSize = LONG_SIZE * attribute->count;
+					attribute->instanceSize = LONG_SIZE * attribute->length;
 				} else if (strcmp(attribute->type, "float[]") == 0) {
 					typeSize = FLOAT_SIZE;
-					attribute->instanceSize = FLOAT_SIZE * attribute->count;
+					attribute->instanceSize = FLOAT_SIZE * attribute->length;
 				} else if (strcmp(attribute->type, "double[]") == 0) {
 					typeSize = DOUBLE_SIZE;
-					attribute->instanceSize = DOUBLE_SIZE * attribute->count;
+					attribute->instanceSize = DOUBLE_SIZE * attribute->length;
 				} else if (strcmp(attribute->type, "char[][]") == 0) {
 					typeSize = CHAR_SIZE;
-					attribute->instanceSize = CHAR_SIZE * attribute->count * attribute->length;
+					attribute->instanceSize = CHAR_SIZE * attribute->length * attribute->count;
 				} else {
 					LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "Unknown attribute type: " << attribute->type);
 					fail = true;
@@ -335,8 +332,8 @@ static void XMLCALL startElement
 					buffer->attributes[attribute->id] = attribute;
 
 					// Extend the buffer by the required extra buffer size
-					if (currentMaxTypeSize < typeSize) {
-						currentMaxTypeSize = typeSize;
+					if (buffer->lastPad < typeSize) {
+						buffer->lastPad = typeSize;
 					}
 
 					buffer->memSize = buffer->memSize + (buffer->memSize % typeSize);
@@ -483,14 +480,17 @@ static void XMLCALL endElement
 			Buffer* buffer = buffers[currentBufferName];
 			int currentSize = buffer->memSize;
 			if (currentSize != 0) {
-				buffer->lastPad = (currentSize % currentMaxTypeSize);
-				buffer->memSize = currentSize + buffer->lastPad;
+				if (currentSize % buffer->lastPad != 0) {
+					buffer->lastPad = buffer->lastPad - (currentSize % buffer->lastPad);
+					buffer->memSize = currentSize + buffer->lastPad;
+				} else {
+					buffer->lastPad = 0;
+				}
 			} else {
 				buffer->lastPad = 1;
 				buffer->memSize = 1;
 			}
 			currentBufferName = NULL;
-			currentMaxTypeSize = 0;
 		}
 	}
 	depth -= 1;

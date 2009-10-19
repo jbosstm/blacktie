@@ -40,7 +40,7 @@ public class TestTPGetRply extends TestCase {
 		connection = connectionFactory.getConnection();
 
 		sendlen = "grply".length() + 1;
-		sendbuf = new X_OCTET();
+		sendbuf = connection.tpalloc("X_OCTET", null);
 		sendbuf.setData("grply".getBytes());
 
 	}

@@ -64,7 +64,7 @@ public class TestTPReturn extends TestCase {
 		server.tpadvertiseTestTPReturn();
 
 		int sendlen = "tprnb".length() + 1;
-		Buffer sendbuf = new X_OCTET();
+		Buffer sendbuf = connection.tpalloc("X_OCTET", null);
 		sendbuf.setData("tprnb".getBytes());
 
 		try {
@@ -84,7 +84,7 @@ public class TestTPReturn extends TestCase {
 		server.tpadvertiseTestTPReturn2();
 
 		int sendlen = 3;
-		Buffer sendbuf = new X_OCTET();
+		Buffer sendbuf = connection.tpalloc("X_OCTET", null);
 		sendbuf.setData("24".getBytes());
 		Response success = connection.tpcall(server
 				.getServiceNameTestTPReturn2(), sendbuf, sendlen, 0);

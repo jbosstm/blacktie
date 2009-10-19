@@ -12,14 +12,6 @@ public class TestSpecExampleOneService implements BlacktieService {
 		short rval;
 		/* extract request typed buffer */
 		Buffer dc_ptr = svcinfo.getBuffer();
-		try {
-			dc_ptr.format(new String[] { "input", "output", "failTest" },
-					new Class[] { char[].class, int.class, int.class },
-					new int[] { 100, 0, 0 });
-		} catch (ConnectionException e) {
-			return new Response(Connection.TPFAIL, Connection.TPEITYPE, dc_ptr,
-					dc_ptr.getLength(), 0);
-		}
 		/*
 		 * Depending on service name used to invoke this routine, perform either
 		 * debit or credit work.

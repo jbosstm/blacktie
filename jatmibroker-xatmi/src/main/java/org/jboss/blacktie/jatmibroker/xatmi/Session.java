@@ -17,6 +17,8 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
+import java.util.Properties;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
@@ -79,6 +81,8 @@ public class Session {
 	 */
 	private boolean canRecv = true;
 
+	private Properties properties;
+
 	/**
 	 * Create a new session
 	 * 
@@ -88,7 +92,9 @@ public class Session {
 	 * @param b
 	 * @throws ConfigurationException
 	 */
-	Session(Transport transport, int cd) throws ConnectionException {
+	Session(Properties properties, Transport transport, int cd)
+			throws ConnectionException {
+		this.properties = properties;
 		this.transport = transport;
 		this.cd = cd;
 		this.eventListener = new EventListenerImpl(this);
@@ -106,8 +112,9 @@ public class Session {
 	 * @param receiver2
 	 * @throws ConfigurationException
 	 */
-	Session(Transport transport, int cd, Sender sender)
+	Session(Properties properties, Transport transport, int cd, Sender sender)
 			throws ConnectionException {
+		this.properties = properties;
 		this.transport = transport;
 		this.cd = cd;
 		this.sender = sender;
@@ -249,15 +256,8 @@ public class Session {
 
 		Buffer received = null;
 		if (m.type != null) {
-			if (m.type.equals("X_OCTET")) {
-				log.debug("Initializing a new X_OCTET");
-				received = new X_OCTET();
-				received.setData(m.data);
-			} else {
-				log.debug("Initializing a new R_PBF");
-				received = new R_PBF(m.subtype);
-				received.setData(m.data);
-			}
+			received = tpalloc("X_OCTET", null);
+			received.setData(m.data);
 		}
 		log.debug("Prepared and ready to launch");
 
@@ -344,5 +344,33 @@ public class Session {
 
 	Receiver getReceiver() {
 		return receiver;
+	}
+
+	/**
+	 * Allocate a new buffer
+	 * 
+	 * @param type
+	 *            The type of the buffer
+	 * @param subtype
+	 *            The subtype of the buffer
+	 * @return The new buffer
+	 * @throws ConnectionException
+	 *             If the buffer cannot be created or the subtype located
+	 */
+	private Buffer tpalloc(String type, String subtype)
+			throws ConnectionException {
+		if (type == null) {
+			throw new ConnectionException(Connection.TPEINVAL,
+					"No type provided");
+		} else if (type.equals("X_OCTET")) {
+			log.debug("Initializing a new X_OCTET");
+			return new X_OCTET();
+		} else if (type.equals("X_C_TYPE")) {
+			log.debug("Initializing a new X_C_TYPE");
+			return new X_C_TYPE(subtype, properties);
+		} else {
+			log.debug("Initializing a new X_COMMON");
+			return new X_COMMON(subtype, properties);
+		}
 	}
 }

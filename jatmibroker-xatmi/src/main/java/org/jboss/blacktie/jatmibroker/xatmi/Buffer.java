@@ -25,13 +25,16 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.conf.AttributeStructure;
+import org.jboss.blacktie.jatmibroker.core.conf.BufferStructure;
 import org.jboss.blacktie.jatmibroker.jab.JABException;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 
@@ -42,41 +45,11 @@ import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 public abstract class Buffer implements Serializable {
 	private static final Logger log = LogManager.getLogger(Buffer.class);
 
-	private static List<String> bufferTypes = new ArrayList<String>();
-	private static List<Class> x_octetTypes = new ArrayList<Class>();
-	private static List<Class> x_commonTypes = new ArrayList<Class>();
-	private static List<Class> x_c_typeTypes = new ArrayList<Class>();
-
 	private static final int LONG_SIZE = 8;
 	private static final int INT_SIZE = 4;
 	private static final int SHORT_SIZE = 2;
 	private static final int FLOAT_SIZE = INT_SIZE;
 	private static final int DOUBLE_SIZE = LONG_SIZE;
-	
-	static {
-		String[] bufferType = new String[] { "X_OCTET", "R_PBF" };
-		for (int i = 0; i < bufferType.length; i++) {
-			bufferTypes.add(bufferType[i]);
-		}
-
-		Class[] x_octetType = new Class[] { byte[].class };
-		for (int i = 0; i < x_octetType.length; i++) {
-			x_octetTypes.add(x_octetType[i]);
-		}
-		Class[] x_commonType = new Class[] { short.class, long.class,
-				char.class, short[].class, long[].class, char[].class };
-		for (int i = 0; i < x_commonType.length; i++) {
-			x_commonTypes.add(x_commonType[i]);
-		}
-		Class[] x_c_typeType = new Class[] { int.class, short.class,
-				long.class, char.class, float.class, double.class, int[].class,
-				short[].class, long[].class, char[].class, float[].class,
-				double[].class };
-		for (int i = 0; i < x_c_typeType.length; i++) {
-			x_c_typeTypes.add(x_c_typeType[i]);
-		}
-
-	}
 
 	/**
 	 * 
@@ -88,10 +61,6 @@ public abstract class Buffer implements Serializable {
 	 */
 	private byte[] data;
 
-	private String type;
-
-	private String subtype;
-
 	private Map<String, Object> structure = new HashMap<String, Object>();
 	private String[] keys;
 	private Class[] types;
@@ -101,38 +70,57 @@ public abstract class Buffer implements Serializable {
 
 	int currentPos = 0;
 
+	private List<Class> supportedTypes;
+
+	private boolean requiresSerialization;
+
+	private String type;
+
+	private String subtype;
+
 	/**
 	 * Create a new buffer
 	 * 
-	 * @param type
-	 * @param subtype
+	 * @param properties
+	 * 
+	 * @param types
 	 * @throws ConnectionException
 	 */
-	public Buffer(String type, String subtype) throws ConnectionException {
-		if (!bufferTypes.contains(type)) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Unknown buffer type: " + type);
-		}
+	Buffer(String type, String subtype, boolean requiresSerialization,
+			List<Class> supportedTypes, Properties properties)
+			throws ConnectionException {
 		this.type = type;
 		this.subtype = subtype;
-	}
+		this.requiresSerialization = requiresSerialization;
+		this.supportedTypes = supportedTypes;
 
-	/**
-	 * Get the return value
-	 * 
-	 * @return The return value
-	 */
-	public String getType() {
-		return type;
-	}
-
-	/**
-	 * Get the return code
-	 * 
-	 * @return The return code
-	 */
-	public String getSubtype() {
-		return subtype;
+		if (requiresSerialization) {
+			Map<String, BufferStructure> buffers = (Map<String, BufferStructure>) properties
+					.get("blacktie.domain.buffers");
+			BufferStructure buffer = buffers.get(subtype);
+			if (buffer == null) {
+				throw new ConnectionException(Connection.TPEITYPE,
+						"Subtype was not registered: " + subtype);
+			}
+			String[] ids = new String[buffer.attributes.size()];
+			Class[] types = new Class[buffer.attributes.size()];
+			int[] length = new int[buffer.attributes.size()];
+			Iterator<AttributeStructure> iterator = buffer.attributes.values()
+					.iterator();
+			int i = 0;
+			while (iterator.hasNext()) {
+				AttributeStructure attribute = iterator.next();
+				ids[i] = attribute.id;
+				types[i] = attribute.type;
+				if (!supportedTypes.contains(types[i])) {
+					throw new ConnectionException(Connection.TPEITYPE,
+							"Cannot use type configured in buffer " + types[i]);
+				}
+				length[i] = attribute.length;
+				i++;
+			}
+			format(ids, types, length);
+		}
 	}
 
 	/**
@@ -474,12 +462,8 @@ public abstract class Buffer implements Serializable {
 		structure.put(key, value);
 	}
 
-	public void format(String[] keys, Class[] types, int[] lengths)
+	private void format(String[] keys, Class[] types, int[] lengths)
 			throws ConnectionException {
-		if (type.equals("X_OCTET")) {
-			throw new ConnectionException(-1,
-					"Tried to format an X_OCTET buffer");
-		}
 		structure.clear();
 		if (keys.length != types.length || types.length != lengths.length) {
 			throw new ConnectionException(-1,
@@ -489,12 +473,11 @@ public abstract class Buffer implements Serializable {
 		this.types = types;
 		this.lengths = lengths;
 		formatted = true;
-		deserialize();
 	}
 
 	void deserialize() throws ConnectionException {
 		currentPos = 0;
-		if (!type.equals("X_OCTET")) {
+		if (requiresSerialization) {
 			if (!deserialized && data != null) {
 				if (keys == null) {
 					throw new ConnectionException(Connection.TPEITYPE,
@@ -503,18 +486,9 @@ public abstract class Buffer implements Serializable {
 				ByteArrayInputStream bais = new ByteArrayInputStream(data);
 				DataInputStream dis = new DataInputStream(bais);
 				for (int i = 0; i < types.length; i++) {
-					if (type.equals("X_OCTET")
-							&& !x_octetTypes.contains(types[i])) {
+					if (!supportedTypes.contains(types[i])) {
 						throw new ConnectionException(Connection.TPEITYPE,
-								"Cannot read type from X_OCTET " + types[i]);
-					} else if (type.equals("X_C_TYPE")
-							&& !x_c_typeTypes.contains(types[i])) {
-						throw new ConnectionException(Connection.TPEITYPE,
-								"Cannot read type from X_C_TYPE " + types[i]);
-					} else if (type.equals("X_COMMON")
-							&& !x_commonTypes.contains(types[i])) {
-						throw new ConnectionException(Connection.TPEITYPE,
-								"Cannot read type from X_COMMON " + types[i]);
+								"Cannot read type from buffer " + types[i]);
 					}
 
 					try {
@@ -588,7 +562,7 @@ public abstract class Buffer implements Serializable {
 
 	void serialize() throws ConnectionException {
 		currentPos = 0;
-		if (!type.equals("X_OCTET")) {
+		if (requiresSerialization) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			DataOutputStream dos = new DataOutputStream(baos);
 			for (int i = 0; i < types.length; i++) {
@@ -883,5 +857,23 @@ public abstract class Buffer implements Serializable {
 		bbuf.putDouble(x);
 		bbuf.order(ByteOrder.BIG_ENDIAN);
 		return bbuf.getDouble(0);
+	}
+
+	/**
+	 * Get the type
+	 * 
+	 * @return The type
+	 */
+	public String getType() {
+		return type;
+	}
+
+	/**
+	 * Get the subtype
+	 * 
+	 * @return The subtype
+	 */
+	public String getSubtype() {
+		return subtype;
 	}
 }

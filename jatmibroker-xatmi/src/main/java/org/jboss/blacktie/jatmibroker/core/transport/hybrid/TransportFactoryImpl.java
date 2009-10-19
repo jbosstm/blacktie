@@ -45,7 +45,7 @@ public class TransportFactoryImpl extends TransportFactory {
 	protected void setProperties(Properties properties)
 			throws ConfigurationException {
 		log.debug("Creating OrbManagement");
-		
+
 		try {
 			props = new Properties();
 			props.setProperty("java.naming.factory.initial",
@@ -76,7 +76,7 @@ public class TransportFactoryImpl extends TransportFactory {
 			throw new ConfigurationException(
 					"Could not create the orb management function", t);
 		}
-		
+
 		log.debug("Created OrbManagement");
 	}
 
@@ -85,7 +85,8 @@ public class TransportFactoryImpl extends TransportFactory {
 		TransportImpl instance = null;
 
 		try {
-			instance = new TransportImpl(orbManagement, context, connection, props);
+			instance = new TransportImpl(orbManagement, context, connection,
+					props);
 		} catch (Throwable t) {
 			throw new ConnectionException(-1, "Could not connect to server", t);
 		}

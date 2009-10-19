@@ -17,6 +17,7 @@
  */
 package org.jboss.blacktie.jatmibroker;
 
+
 public class RunServer {
 
 	static {
@@ -72,8 +73,6 @@ public class RunServer {
 	public native void tpadvertiseTestTPService();
 
 	public native void tpadvertiseTestTPUnadvertise();
-
-	public native void tpadvertiseTestTTL();
 
 	public native void tpadvertiseTX1();
 
@@ -183,6 +182,10 @@ public class RunServer {
 	public String getServiceNameTestRollbackOnly() {
 		return "TestRbkOnly";
 	}
+	
+	public String getServiceNameTTL() {
+		return "TTL";
+	}
 
 	public native void tpadvertiseTestRollbackOnlyTpcallTPETIMEService();
 
@@ -196,4 +199,5 @@ public class RunServer {
 
 	public native void tpadvertiseTestRollbackOnlyNoTpreturnService();
 
+	public native void tpadvertiseTTL();
 }

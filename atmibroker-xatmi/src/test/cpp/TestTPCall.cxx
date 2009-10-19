@@ -162,9 +162,7 @@ void TestTPCall::test_tpcall_x_common() {
 	tpadvertise((char*) "tpcall_x_common", test_tpcall_x_common_service);
 
 	DEPOSIT *dptr;
-	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "deposit",
-			sizeof(DEPOSIT));
-	//TODO DO WE NEED TO DO THIS IN TPALLOC memset(dptr, '\0', 1024);
+	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	rcvlen = 60;
 
 	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
@@ -192,8 +190,7 @@ void TestTPCall::test_tpcall_x_c_type() {
 	tpadvertise((char*) "tpcall_x_c_type", test_tpcall_x_c_type_service);
 
 	ACCT_INFO *aptr;
-	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info",
-			sizeof(ACCT_INFO));
+	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	rcvlen = 60;
 
 	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))

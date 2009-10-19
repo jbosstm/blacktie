@@ -125,7 +125,7 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet, Ope
     
     private Response callAdminService(String service, String command) throws ConnectionException {
 		int sendlen = command.length() + 1;
-		Buffer sendbuf = new X_OCTET();
+		Buffer sendbuf = connection.tpalloc("X_OCTET", null);
 		sendbuf.setData(command.getBytes());
 
 		Response rcvbuf = connection.tpcall(service, sendbuf, sendlen, 0);

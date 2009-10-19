@@ -85,8 +85,7 @@ void TestTPAlloc::test_tpalloc_x_octet() {
 void TestTPAlloc::test_tpalloc_x_common() {
 	userlogc((char*) "test_tpalloc_x_common");
 	DEPOSIT *dptr;
-	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "deposit",
-			sizeof(DEPOSIT));
+	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	m_allocated = (char*) dptr;
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -110,8 +109,8 @@ void TestTPAlloc::test_tpalloc_x_common() {
 void TestTPAlloc::test_tpalloc_x_common_bigsubtype() {
 	userlogc((char*) "test_tpalloc_x_common_bigsubtype");
 	DEPOSIT *dptr;
-	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "12345678901234567",
-			sizeof(DEPOSIT));
+	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "1234567890123456",
+			0);
 	m_allocated = (char*) dptr;
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -131,8 +130,7 @@ void TestTPAlloc::test_tpalloc_x_common_bigsubtype() {
 void TestTPAlloc::test_tpalloc_x_c_type() {
 	userlogc((char*) "test_tpalloc_x_c_type");
 	ACCT_INFO *aptr;
-	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info",
-			sizeof(ACCT_INFO));
+	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	m_allocated = (char*) aptr;
 	CPPUNIT_ASSERT(m_allocated != NULL);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -162,14 +160,14 @@ void TestTPAlloc::test_tpalloc_unknowntype() {
 
 void TestTPAlloc::test_tpalloc_x_common_subtype_required() {
 	userlogc((char*) "test_tpalloc_x_common_subtype_required");
-	m_allocated = tpalloc((char*) "X_COMMON", NULL, 25);
+	m_allocated = tpalloc((char*) "X_COMMON", NULL, 0);
 	CPPUNIT_ASSERT(tperrno == TPEINVAL);
 	CPPUNIT_ASSERT(m_allocated == NULL);
 }
 
 void TestTPAlloc::test_tpalloc_x_c_type_subtype_required() {
 	userlogc((char*) "test_tpalloc_x_c_type_subtype_required");
-	m_allocated = tpalloc((char*) "X_C_TYPE", NULL, 25);
+	m_allocated = tpalloc((char*) "X_C_TYPE", NULL, 0);
 	CPPUNIT_ASSERT(tperrno == TPEINVAL);
 	CPPUNIT_ASSERT(m_allocated == NULL);
 }
