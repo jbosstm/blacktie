@@ -51,7 +51,7 @@ public class TestTimeToLive extends TestCase {
 		try{
 			String toSend = "test_call_ttl_1";
 			int sendlen = toSend.length() + 1;
-			Buffer sendbuf = new Buffer("X_OCTET", null);
+			Buffer sendbuf = new X_OCTET();
 			sendbuf.setData(toSend.getBytes());
 
 			log.info("send first message");
@@ -67,7 +67,7 @@ public class TestTimeToLive extends TestCase {
 		try{
 			String toSend = "test_call_ttl_2";
 			int sendlen = toSend.length() + 1;
-			Buffer sendbuf = new Buffer("X_OCTET", null);
+			Buffer sendbuf = new X_OCTET();
 			sendbuf.setData(toSend.getBytes());
 
 			log.info("send second message");
@@ -85,7 +85,7 @@ public class TestTimeToLive extends TestCase {
 			Thread.sleep(6 * 1000);
 			String toSend = "counter,TTL,";
 			int sendlen = toSend.length() + 1;
-			Buffer sendbuf = new Buffer("X_OCTET", null);
+			Buffer sendbuf = new X_OCTET();
 			sendbuf.setData(toSend.getBytes());
 
 			Response rcvbuf = connection.tpcall("default_ADMIN_1", sendbuf, sendlen, 0);

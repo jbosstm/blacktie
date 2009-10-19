@@ -15,7 +15,7 @@ public class TestTPCallServiceXOctetZero implements BlacktieService {
 			for (int i = 0; i < toSend.length; i++) {
 				toSend[i] = recv[--j];
 			}
-			Buffer toReturn = new Buffer("X_OCTET", null);
+			Buffer toReturn = new X_OCTET();
 			toReturn.setData(toSend);
 			return new Response((short) 0, 0, toReturn, toSend.length, 0);
 		} catch (ConnectionException e) {

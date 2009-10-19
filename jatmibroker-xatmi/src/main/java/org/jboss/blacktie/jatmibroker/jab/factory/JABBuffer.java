@@ -20,6 +20,7 @@ package org.jboss.blacktie.jatmibroker.jab.factory;
 import org.jboss.blacktie.jatmibroker.jab.JABException;
 import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
 /**
  * The JABBuffer allows the programmer to invoked XATMI services which accept
@@ -70,7 +71,7 @@ public class JABBuffer {
 	public void setValue(byte[] value) throws JABException {
 		if (!readOnly) {
 			try {
-				this.value = new Buffer("X_OCTET", null);
+				this.value = new X_OCTET();
 			} catch (ConnectionException e) {
 				throw new JABException("Could not create an X_OCTET buffer", e);
 			}

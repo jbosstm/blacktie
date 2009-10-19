@@ -56,11 +56,11 @@ public class TestSpecExampleOne extends TestCase {
 		long clen = 0; /* contains a character array named input and an */
 		int cd; /* integer named output. */
 		/* allocate typed buffers */
-		Buffer dptr = new Buffer("X_C_TYPE", "dc_buf"); // TODO ,0
+		Buffer dptr = new R_PBF("dc_buf"); // TODO ,0
 		dptr.format(new String[] { "input", "output", "failTest" },
 				new Class[] { char[].class, int.class, int.class }, new int[] {
 						100, 0, 0 });
-		Buffer cptr = new Buffer("X_C_TYPE", "dc_buf"); // TODO ,0
+		Buffer cptr = new R_PBF("dc_buf"); // TODO ,0
 		cptr.format(new String[] { "input", "output", "failTest" },
 				new Class[] { char[].class, int.class, int.class }, new int[] {
 						100, 0, 0 });

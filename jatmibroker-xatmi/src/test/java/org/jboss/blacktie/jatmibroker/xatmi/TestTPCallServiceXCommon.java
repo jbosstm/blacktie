@@ -23,7 +23,7 @@ public class TestTPCallServiceXCommon implements BlacktieService {
 			}
 
 			int len = 60;
-			Buffer toReturn = new Buffer("X_OCTET", null);
+			Buffer toReturn = new X_OCTET();
 			if (ok) {
 				toReturn.setData("tpcall_x_common".getBytes());
 			} else {

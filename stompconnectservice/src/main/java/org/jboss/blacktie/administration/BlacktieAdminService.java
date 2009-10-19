@@ -19,6 +19,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
+import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
 import javax.jms.Destination;
 import javax.jms.Queue;
@@ -64,7 +65,6 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 		XMLEnvHandler handler = new XMLEnvHandler("", prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 		xmlenv.parse("Environment.xml");
-
 		JMXServiceURL u = new JMXServiceURL(
 				(String)prop.get("JMXURL"));
 		JMXConnector c = JMXConnectorFactory.connect(u);
@@ -118,7 +118,7 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 	
 	private Response callAdminService(String serverName, int id, String command) throws ConnectionException {
 		int sendlen = command.length() + 1;
-		Buffer sendbuf = new Buffer("X_OCTET", null);
+		Buffer sendbuf = new X_OCTET();
 		sendbuf.setData(command.getBytes());
 		
 		String service = serverName + "_ADMIN_" + id;

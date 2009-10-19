@@ -92,6 +92,7 @@ char* BufferConverterImpl::convertToMemoryFormat(char* bufferType,
 		LOG4CXX_TRACE(logger, (char*) "Received NULL buffer");
 		*memoryFormatBufferLength = 0;
 	} else if (strncmp(bufferType, "R_PBF", 8) != 0) {
+		LOG4CXX_TRACE(logger, (char*) "Received a non R_PBF buffer");
 		*memoryFormatBufferLength = *memoryFormatBufferLength - pad;
 		LOG4CXX_TRACE(logger, (char*) "Allocating DATA");
 		data_tostay = (char*) malloc(*memoryFormatBufferLength);
@@ -101,6 +102,7 @@ char* BufferConverterImpl::convertToMemoryFormat(char* bufferType,
 			LOG4CXX_TRACE(logger, (char*) "Copied");
 		}
 	} else {
+		LOG4CXX_TRACE(logger, (char*) "Received a R_PBF buffer: " << bufferSubtype);
 		Buffer* buffer = buffers[bufferSubtype];
 		if (*memoryFormatBufferLength != buffer->wireSize) {
 			LOG4CXX_ERROR(

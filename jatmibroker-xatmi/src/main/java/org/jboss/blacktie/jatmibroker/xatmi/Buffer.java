@@ -39,7 +39,7 @@ import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
  * This class encapsulates the response from the remote service and the return
  * code
  */
-public class Buffer implements Serializable {
+public abstract class Buffer implements Serializable {
 	private static final Logger log = LogManager.getLogger(Buffer.class);
 
 	private static List<String> bufferTypes = new ArrayList<String>();
@@ -54,7 +54,7 @@ public class Buffer implements Serializable {
 	private static final int DOUBLE_SIZE = LONG_SIZE;
 	
 	static {
-		String[] bufferType = new String[] { "X_OCTET", "X_C_TYPE", "X_COMMON" };
+		String[] bufferType = new String[] { "X_OCTET", "R_PBF" };
 		for (int i = 0; i < bufferType.length; i++) {
 			bufferTypes.add(bufferType[i]);
 		}

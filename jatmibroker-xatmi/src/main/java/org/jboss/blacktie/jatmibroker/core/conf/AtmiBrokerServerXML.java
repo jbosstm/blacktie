@@ -63,11 +63,7 @@ public class AtmiBrokerServerXML {
 
 		XMLEnvHandler env = new XMLEnvHandler(configDir, prop);
 		XMLParser xmlenv = new XMLParser(env, "Environment.xsd");
-		boolean parsed = xmlenv.parse(envXML);
-		if (!parsed) {
-			throw new ConfigurationException(
-					"Could not load the Environment.xml file: " + envXML);
-		}
+		xmlenv.parse(envXML);
 
 		return prop;
 	}

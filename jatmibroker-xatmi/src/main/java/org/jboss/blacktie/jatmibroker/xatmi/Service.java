@@ -116,7 +116,7 @@ public abstract class Service implements BlacktieService {
 				session = new Session(transport, message.cd, sender);
 				log.debug("Created the session");
 				int olen = 4;
-				Buffer odata = new Buffer("X_OCTET", null);
+				Buffer odata = new X_OCTET();
 				odata.setData("ACK".getBytes());
 				long result = session.tpsend(odata, olen, 0);
 				if (result == -1) {
@@ -131,9 +131,16 @@ public abstract class Service implements BlacktieService {
 
 			// THIS IS THE FIRST CALL
 			Buffer buffer = null;
-			if (message.type != null && !message.type.equals("")) {
-				buffer = new Buffer(message.type, message.subtype);
-				buffer.setData(message.data);
+			if (message.type != null) {
+				if (message.type.equals("X_OCTET")) {
+					log.debug("Initializing a new X_OCTET");
+					buffer = new X_OCTET();
+					buffer.setData(message.data);
+				} else {
+					log.debug("Initializing a new R_PBF");
+					buffer = new R_PBF(message.subtype);
+					buffer.setData(message.data);
+				}
 			}
 			// TODO NO SESSIONS
 			// NOT PASSING OVER THE SERVICE NAME

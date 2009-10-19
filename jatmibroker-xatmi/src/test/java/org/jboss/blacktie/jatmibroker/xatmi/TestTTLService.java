@@ -18,7 +18,7 @@ public class TestTTLService implements BlacktieService {
 			log.info("test_ttl_service get data: " + data);
 
 			int len = 60;
-			Buffer toReturn = new Buffer("X_OCTET", null);
+			Buffer toReturn = new X_OCTET();
 
 			if (data.contains("counter")) {
 				toReturn.setData(String.valueOf(n).getBytes());

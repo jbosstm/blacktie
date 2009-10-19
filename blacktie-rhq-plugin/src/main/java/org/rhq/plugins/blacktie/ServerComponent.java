@@ -31,22 +31,18 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
-
-//import javax.jms.ConnectionFactory;
-import javax.naming.Context;
 import javax.naming.InitialContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
-import org.jboss.blacktie.jatmibroker.core.transport.TransportFactory ;
 import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
+import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 import org.rhq.core.domain.configuration.Configuration;
 import org.rhq.core.domain.configuration.ConfigurationUpdateStatus;
 import org.rhq.core.domain.content.PackageType;
@@ -129,7 +125,7 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet, Ope
     
     private Response callAdminService(String service, String command) throws ConnectionException {
 		int sendlen = command.length() + 1;
-		Buffer sendbuf = new Buffer("X_OCTET", null);
+		Buffer sendbuf = new X_OCTET();
 		sendbuf.setData(command.getBytes());
 
 		Response rcvbuf = connection.tpcall(service, sendbuf, sendlen, 0);

@@ -8,6 +8,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
+import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class TestRollbackOnlyTprecvTPEVSVCFAILService implements
 		BlacktieService {
@@ -18,7 +19,7 @@ public class TestRollbackOnlyTprecvTPEVSVCFAILService implements
 		try {
 			log.info("test_tprecv_TPEV_SVCFAIL_service");
 			int len = 60;
-			Buffer toReturn = new Buffer("X_OCTET", null);
+			Buffer toReturn = new X_OCTET();
 			toReturn.setData("test_tprecv_TPEV_SVCFAIL_service".getBytes());
 			return new Response(Connection.TPFAIL, 0, toReturn, len, 0);
 		} catch (ConnectionException e) {

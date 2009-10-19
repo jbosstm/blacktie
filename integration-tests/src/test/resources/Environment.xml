@@ -61,8 +61,8 @@
 		OPT="-ORBInitRef NameService=corbaloc::${JBOSSAS_IP_ADDR}:3528/NameService"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
 	<MQ HOST="${JBOSSAS_IP_ADDR}" PORT="61613" USER="guest" PASSWORD="guest"
-		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" 
-		NAMING_URL="jnp://localhost:1099"/>
+		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10"
+		NAMING_URL="jnp://localhost:1099" />
 	<ENV_VARIABLES>
 		<ENV_VARIABLE>
 			<NAME>BLACKTIE.TX.RECOVERY.DISABLE</NAME>
@@ -73,4 +73,23 @@
 			<VALUE>log4cxx.properties</VALUE>
 		</ENV_VARIABLE>
 	</ENV_VARIABLES>
+	<BUFFERS>
+		<BUFFER name="acct_info">
+			<ATTRIBUTE id="acct_no" type="long" default="1" />
+			<ATTRIBUTE id="name" type="char[]" length="50" default="" />
+			<ATTRIBUTE id="address" type="char[]" length="100" default="" />
+			<ATTRIBUTE id="foo" type="float[]" count="2" default="0.00" />
+			<ATTRIBUTE id="balances" type="double[]" count="2" default="0" />
+		</BUFFER>
+		<BUFFER name="inq_buf">
+			<ATTRIBUTE id="input" type="char[]" length="100" default="" />
+			<ATTRIBUTE id="output" type="int" default="-1" />
+			<ATTRIBUTE id="failTest" type="int" default="-1" />
+		</BUFFER>
+		<BUFFER name="dc_buf">
+			<ATTRIBUTE id="input" type="char[]" length="100" default="" />
+			<ATTRIBUTE id="output" type="int" default="-1" />
+			<ATTRIBUTE id="failTest" type="int" default="-1" />
+		</BUFFER>
+	</BUFFERS>
 </ENVIRONMENT>

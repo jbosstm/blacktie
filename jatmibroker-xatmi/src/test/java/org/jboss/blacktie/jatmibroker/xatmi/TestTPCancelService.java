@@ -15,7 +15,7 @@ public class TestTPCancelService implements BlacktieService {
 			try {
 				String received = new String(svcinfo.getBuffer().getData());
 				if (received.equals("cancel")) {
-					toReturn = new Buffer("X_OCTET", null);
+					toReturn = new X_OCTET();
 					toReturn.setData("testtpcancel_service".getBytes());
 					return new Response(Connection.TPSUCCESS, 0, toReturn, len,
 							0);

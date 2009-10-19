@@ -38,15 +38,11 @@ public class XMLParserTest extends TestCase {
 		XMLEnvHandler handler = new XMLEnvHandler("", prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 		try {
-			if (xmlenv.parse("WrongEnvironment.xml")) {
-				fail("Should have thrown a parser exception");
-			} else {
-				fail("Should have found the file");
-			}
+			xmlenv.parse("WrongEnvironment.xml");
+			fail("Should have thrown a parser exception or found the file");
 		} catch (ConfigurationException e) {
 			// THIS IS OK
 		}
-
 	}
 
 	public void testEnvironmentXML() throws Exception {
@@ -91,6 +87,7 @@ public class XMLParserTest extends TestCase {
 		assertTrue(size.equals(prop.getProperty("blacktie.JAVA_Converse.size")));
 		assertTrue("log4cxx.properties".equals(prop
 				.getProperty("LOG4CXXCONFIG")));
-		assertTrue(adminTransport.equals(prop.getProperty("blacktie." + server + "_ADMIN.transportLib")));
+		assertTrue(adminTransport.equals(prop.getProperty("blacktie." + server
+				+ "_ADMIN.transportLib")));
 	}
 }

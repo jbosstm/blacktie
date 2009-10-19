@@ -8,6 +8,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
+import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class TestRollbackOnlyTpcallTPETIMEService implements BlacktieService {
 	private static final Logger log = LogManager
@@ -21,7 +22,7 @@ public class TestRollbackOnlyTpcallTPETIMEService implements BlacktieService {
 			log.info("test_tpcall_TPETIME_service, slept for " + timeout + " seconds");
 
 			int len = 60;
-			Buffer toReturn = new Buffer("X_OCTET", null);
+			Buffer toReturn = new X_OCTET();
 			toReturn.setData("test_tpcall_TPETIME_service".getBytes());
 			return new Response(Connection.TPSUCCESS, 0, toReturn, len, 0);
 		} catch (ConnectionException e) {

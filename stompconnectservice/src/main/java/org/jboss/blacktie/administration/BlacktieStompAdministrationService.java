@@ -40,6 +40,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
+import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 import org.jboss.ejb3.annotation.Depends;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -269,7 +270,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 				success[0] = 0;
 			}
 
-			Buffer buffer = new Buffer("X_OCTET", null);
+			Buffer buffer = new X_OCTET();
 			buffer.setData(success);
 			log.debug("Responding");
 			return new Response(Connection.TPSUCCESS, 0, buffer, 1, 0);

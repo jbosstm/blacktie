@@ -361,9 +361,16 @@ public class Connection {
 		Message m = endpoint.receive(flags);
 		// TODO WE SHOULD BE SENDING THE CONNECTION ID?
 		Buffer received = null;
-		if (m.type != null && !m.type.equals("")) {
-			received = new Buffer(m.type, m.subtype);
-			received.setData(m.data);
+		if (m.type != null) {
+			if (m.type.equals("X_OCTET")) {
+				log.debug("Initializing a new X_OCTET");
+				received = new X_OCTET();
+				received.setData(m.data);
+			} else {
+				log.debug("Initializing a new R_PBF");
+				received = new R_PBF(m.subtype);
+				received.setData(m.data);
+			}
 		}
 		if (m.rval == Connection.TPFAIL) {
 			if (m.rcode == Connection.TPESVCERR) {

@@ -29,6 +29,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
 import org.jboss.blacktie.jatmibroker.xatmi.Session;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPConversation;
+import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class TestRollbackOnly extends TestCase {
 	private static final Logger log = LogManager
@@ -46,7 +47,7 @@ public class TestRollbackOnly extends TestCase {
 		connection = connectionFactory.getConnection();
 
 		sendlen = "TestRbkOnly".length() + 1;
-		sendbuf = new Buffer("X_OCTET", null);
+		sendbuf = new X_OCTET();
 		sendbuf.setData("TestRbkOnly".getBytes());
 	}
 

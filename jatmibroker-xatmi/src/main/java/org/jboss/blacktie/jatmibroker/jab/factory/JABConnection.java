@@ -31,6 +31,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
+import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
 /**
  * The JAB connection abstraction allows invocations to services to several
@@ -131,7 +132,7 @@ public class JABConnection {
 				log.debug("service_request tx same as current");
 			}
 
-			Buffer request = new Buffer("X_OCTET", null);
+			Buffer request = new X_OCTET();
 			request.setData(toSend.getValue());
 			log.debug("service_request tpcall");
 			Response response = connection.tpcall(serviceName, request, request

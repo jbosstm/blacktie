@@ -58,7 +58,7 @@ public class TestTimeToLive extends TestCase {
 
 			String toSend = "test_call_ttl_1";
 			int sendlen = toSend.length() + 1;
-			Buffer sendbuf = new Buffer("X_OCTET", null);
+			Buffer sendbuf = new X_OCTET();
 			sendbuf.setData(toSend.getBytes());
 
 			Response rcvbuf = connection.tpcall(server.getServiceNameTTL(), sendbuf, sendlen, 0);
@@ -75,7 +75,7 @@ public class TestTimeToLive extends TestCase {
 
 			String toSend = "test_call_ttl_2";
 			int sendlen = toSend.length() + 1;
-			Buffer sendbuf = new Buffer("X_OCTET", null);
+			Buffer sendbuf = new X_OCTET();
 			sendbuf.setData(toSend.getBytes());
 
 			Response rcvbuf = connection.tpcall(server.getServiceNameTTL(), sendbuf, sendlen, 0);
@@ -98,7 +98,7 @@ public class TestTimeToLive extends TestCase {
 		try {
 			String toSend = "counter";
 			int sendlen = toSend.length() + 1;
-			Buffer sendbuf = new Buffer("X_OCTET", null);
+			Buffer sendbuf = new X_OCTET();
 			sendbuf.setData(toSend.getBytes());
 
 			Response rcvbuf = connection.tpcall(server.getServiceNameTTL(), sendbuf, sendlen, 0);

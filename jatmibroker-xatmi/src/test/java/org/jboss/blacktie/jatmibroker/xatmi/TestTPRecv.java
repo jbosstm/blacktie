@@ -41,7 +41,7 @@ public class TestTPRecv extends TestCase {
 		connection = connectionFactory.getConnection();
 
 		sendlen = "recv".length() + 1;
-		sendbuf = new Buffer("X_OCTET", null);
+		sendbuf = new X_OCTET();
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {

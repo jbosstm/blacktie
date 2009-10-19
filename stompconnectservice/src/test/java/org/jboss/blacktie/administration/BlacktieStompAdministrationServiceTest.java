@@ -25,6 +25,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
+import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class BlacktieStompAdministrationServiceTest extends TestCase {
 	private Connection connection;
@@ -42,18 +43,14 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 	public void test() throws ConnectionException {
 		processCommand("tpadvertise,BAR,", 1);
 		try {
-			Buffer buffer = new Buffer(null, null);
-			buffer.setData(new byte[0]);
-			connection.tpacall("BAR", buffer, 0, Connection.TPNOREPLY);
+			connection.tpacall("BAR", null, 0, Connection.TPNOREPLY);
 		} catch (ConnectionException e) {
 			fail("Was not able to send the request : " + e.getMessage());
 		}
 
 		processCommand("tpunadvertise,BAR,", 1);
 		try {
-			Buffer buffer = new Buffer(null, null);
-			buffer.setData(new byte[0]);
-			connection.tpcall("BAR", buffer, 0, Connection.TPNOREPLY);
+			connection.tpcall("BAR", null, 0, Connection.TPNOREPLY);
 			fail("Was able to send the request");
 		} catch (ConnectionException e) {
 			// EXPECTED
@@ -62,9 +59,7 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 		processCommand("tpadvertise,BAR,", 1);
 
 		try {
-			Buffer buffer = new Buffer(null, null);
-			buffer.setData(new byte[0]);
-			connection.tpacall("BAR", buffer, 0, Connection.TPNOREPLY);
+			connection.tpacall("BAR", null, 0, Connection.TPNOREPLY);
 		} catch (ConnectionException e) {
 			fail("Was not able to send the request : " + e.getMessage());
 		}
@@ -74,11 +69,11 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 	public void testUnknownService() throws ConnectionException {
 		processCommand("tpadvertise,UNKNOWN_SERVICE,", 0);
 	}
-		
 
-	private void processCommand(String command, int expectation) throws ConnectionException {
+	private void processCommand(String command, int expectation)
+			throws ConnectionException {
 		byte[] toSend = command.getBytes();
-		Buffer buffer = new Buffer(null, null);
+		Buffer buffer = new X_OCTET();
 		buffer.setData(toSend);
 
 		Response response = connection.tpcall("BTStompAdmin", buffer, buffer
