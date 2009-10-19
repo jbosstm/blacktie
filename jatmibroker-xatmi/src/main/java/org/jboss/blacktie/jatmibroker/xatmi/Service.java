@@ -130,8 +130,11 @@ public abstract class Service implements BlacktieService {
 			}
 
 			// THIS IS THE FIRST CALL
-			Buffer buffer = new Buffer(message.type, message.subtype);
-			buffer.setData(message.data);
+			Buffer buffer = null;
+			if (message.type != null && !message.type.equals("")) {
+				buffer = new Buffer(message.type, message.subtype);
+				buffer.setData(message.data);
+			}
 			// TODO NO SESSIONS
 			// NOT PASSING OVER THE SERVICE NAME
 			TPSVCINFO tpsvcinfo = new TPSVCINFO(message.serviceName, buffer,
@@ -207,11 +210,9 @@ public abstract class Service implements BlacktieService {
 					if (!type.equals("X_OCTET")) {
 						len = toSend.getLength();
 					}
-				} else {
-					type = "X_OCTET";
 				}
-				sender.send("", rval, rcode, data, len, response.getFlags(), 0, 0,
-						type, subtype);
+				sender.send("", rval, rcode, data, len, response.getFlags(), 0,
+						0, type, subtype);
 
 			} else if (sender == null && response != null) {
 				log.error("No sender avaible but message to be sent");

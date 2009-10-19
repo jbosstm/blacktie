@@ -196,8 +196,6 @@ public class Session {
 				if (!type.equals("X_OCTET")) {
 					len = toSend.getLength();
 				}
-			} else {
-				type = "X_OCTET";
 			}
 
 			sender.send(receiver.getReplyTo(), (short) 0, 0, data, len, cd,

@@ -20,6 +20,8 @@ package org.jboss.blacktie.jatmibroker.core.transport.hybrid;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.transport.Sender;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
 import AtmiBroker.EndpointQueue;
 import AtmiBroker.EndpointQueueHelper;
@@ -30,6 +32,7 @@ public class CorbaSenderImpl implements Sender {
 	private EndpointQueue queue;
 	private String name;
 	private int pad = 0;
+	private boolean closed;
 
 	CorbaSenderImpl(org.omg.CORBA.Object serviceFactoryObject, String name) {
 		this.queue = EndpointQueueHelper.narrow(serviceFactoryObject);
@@ -39,8 +42,15 @@ public class CorbaSenderImpl implements Sender {
 
 	public void send(Object replyTo, short rval, int rcode, byte[] data,
 			int len, int correlationId, int flags, int ttl, String type,
-			String subtype) {
+			String subtype) throws ConnectionException {
 		log.debug("Sending the message");
+		if (closed) {
+			throw new ConnectionException(Connection.TPEPROTO, "Sender closed");
+		}
+		if (data == null) {
+			data = new byte[1];
+			len = 1;
+		}
 		String toReplyTo = (String) replyTo;
 		if (toReplyTo == null) {
 			log.trace("Reply to set as null");
@@ -54,6 +64,10 @@ public class CorbaSenderImpl implements Sender {
 			log.trace("Subtype set as null");
 			subtype = "";
 		}
+		if (len < 1) {
+			throw new ConnectionException(Connection.TPEINVAL,
+					"Length of buffer must be greater than 0");
+		}
 		byte[] toSend = new byte[len + pad];
 		if (data != null) {
 			int min = Math.min(toSend.length, data.length);
@@ -66,7 +80,8 @@ public class CorbaSenderImpl implements Sender {
 
 	public void close() {
 		log.debug("Close called");
-		// TODO
+		closed = true;
+		log.debug("Sender closed: " + name);
 	}
 
 	public Object getSendTo() {

@@ -41,7 +41,7 @@ public class JMSSenderImpl implements Sender {
 	boolean service;
 	private boolean closed;
 	private Destination destination;
-	
+
 	private int pad = 0;
 
 	JMSSenderImpl(Session session, Destination destination)
@@ -59,15 +59,26 @@ public class JMSSenderImpl implements Sender {
 	}
 
 	public void send(Object replyTo, short rval, int rcode, byte[] data,
-			int len, int correlationId, int flags, int ttl, String type, String subtype)
-			throws ConnectionException {
+			int len, int correlationId, int flags, int ttl, String type,
+			String subtype) throws ConnectionException {
 		if (closed) {
 			throw new ConnectionException(Connection.TPEPROTO, "Sender closed");
 		}
+
+		if (data == null) {
+			data = new byte[1];
+			len = 1;
+		}
+		if (len < 1) {
+			throw new ConnectionException(Connection.TPEINVAL,
+					"Length of buffer must be greater than 0");
+		}
+
+		if (name != null) {
+			log.debug("Sender sending: " + name);
+		}
+
 		try {
-			if (name != null) {
-				log.debug("Sender sending: " + name);
-			}
 			BytesMessage message = session.createBytesMessage();
 			String ior = JtsTransactionImple.getTransactionIOR();
 
@@ -105,8 +116,9 @@ public class JMSSenderImpl implements Sender {
 				sender.send(message);
 			}
 			log.debug("sent message");
-		} catch (Throwable t) {
-			throw new ConnectionException(-1, "Could not send the message", t);
+		} catch (JMSException e) {
+			throw new ConnectionException(-1, "Could not send the message: "
+					+ e.getMessage(), e);
 		}
 	}
 

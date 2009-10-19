@@ -170,8 +170,6 @@ public class Connection {
 			if (!type.equals("X_OCTET")) {
 				len = toSend.getLength();
 			}
-		} else {
-			type = "X_OCTET";
 		}
 
 		String timeToLive = properties.getProperty("TimeToLive");
@@ -277,8 +275,6 @@ public class Connection {
 			data = toSend.getData();
 			type = toSend.getType();
 			subtype = toSend.getSubtype();
-		} else {
-			type = "X_OCTET";
 		}
 
 		String timeToLive = properties.getProperty("TimeToLive");
