@@ -78,7 +78,7 @@ void TestRollbackOnly::test_tpcall_TPETIME() {
 }
 
 void TestRollbackOnly::test_tpcall_TPEOTYPE() {
-	userlogc((char*) "test_tpcall_TPETIME");
+	userlogc((char*) "test_tpcall_TPEOTYPE");
 	int rc = tpadvertise((char*) "TestRbkOnly", test_tpcall_TPEOTYPE_service);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(rc != -1);
