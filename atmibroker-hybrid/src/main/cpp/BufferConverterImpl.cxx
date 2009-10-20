@@ -23,8 +23,6 @@
 
 #include "AtmiBrokerEnvXml.h"
 
-int pad = 0;
-
 log4cxx::LoggerPtr BufferConverterImpl::logger(log4cxx::Logger::getLogger(
 		"BufferConverterImpl"));
 
@@ -39,25 +37,17 @@ char* BufferConverterImpl::convertToWireFormat(char* bufferType,
 		*wireFormatBufferLength = 1;
 		data_togo = (char*) malloc(*wireFormatBufferLength);
 	} else if (strncmp(bufferType, "X_OCTET", 8) == 0) {
-		data_togo = (char*) malloc(*wireFormatBufferLength + pad);
-		LOG4CXX_TRACE(logger, (char*) "allocated: " << *wireFormatBufferLength
-				+ pad);
-		if (pad > 0) {
-			data_togo[*wireFormatBufferLength + pad] = NULL;
-			LOG4CXX_TRACE(logger, (char*) "added trailing null");
-		}
+		data_togo = (char*) malloc(*wireFormatBufferLength);
+		LOG4CXX_TRACE(logger, (char*) "allocated: " << *wireFormatBufferLength);
 		if (*wireFormatBufferLength != 0) {
-			memcpy(data_togo, memoryFormatBuffer, *wireFormatBufferLength - pad);
+			memcpy(data_togo, memoryFormatBuffer, *wireFormatBufferLength);
 			LOG4CXX_TRACE(logger, (char*) "copied: idata into: data_togo");
 		}
 	} else {
 		Buffer* buffer = buffers[bufferSubtype];
-		data_togo = (char*) malloc(buffer->wireSize + pad);
-		LOG4CXX_TRACE(logger, (char*) "allocated: " << buffer->wireSize + pad);
-		if (pad > 0) {
-			data_togo[buffer->wireSize + pad] = NULL;
-			LOG4CXX_TRACE(logger, (char*) "added trailing null");
-		}
+		data_togo = (char*) malloc(buffer->wireSize);
+		memset(data_togo, '\0', buffer->wireSize);
+		LOG4CXX_TRACE(logger, (char*) "allocated: " << buffer->wireSize);
 
 		// Copy the attributes in
 		int copiedAmount = 0;
@@ -74,7 +64,7 @@ char* BufferConverterImpl::convertToWireFormat(char* bufferType,
 		}
 
 		if (copiedAmount != buffer->wireSize) {
-			LOG4CXX_ERROR(logger, (char*) "DID NOT FILL THE BUFFER Amount: "
+			LOG4CXX_TRACE(logger, (char*) "DID NOT FILL THE BUFFER Amount: "
 					<< copiedAmount << " Expected: " << buffer->wireSize);
 		}
 		*wireFormatBufferLength = buffer->wireSize;
@@ -93,7 +83,7 @@ char* BufferConverterImpl::convertToMemoryFormat(char* bufferType,
 		*memoryFormatBufferLength = 0;
 	} else if (strncmp(bufferType, "X_OCTET", 8) == 0) {
 		LOG4CXX_TRACE(logger, (char*) "Received an X_OCTET buffer");
-		*memoryFormatBufferLength = *memoryFormatBufferLength - pad;
+		*memoryFormatBufferLength = *memoryFormatBufferLength;
 		LOG4CXX_TRACE(logger, (char*) "Allocating DATA");
 		data_tostay = (char*) malloc(*memoryFormatBufferLength);
 		LOG4CXX_TRACE(logger, (char*) "Allocated");
@@ -113,6 +103,7 @@ char* BufferConverterImpl::convertToMemoryFormat(char* bufferType,
 							<< buffer->wireSize);
 		}
 		data_tostay = new char[buffer->memSize];
+		memset(data_tostay, '\0', buffer->memSize);
 		LOG4CXX_TRACE(logger, (char*) "allocated: " << buffer->memSize);
 
 		// TODO ASSUMES ATMIBROKERMEM HAS INITED THE MEMORY WITH DETAILS
