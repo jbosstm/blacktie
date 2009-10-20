@@ -67,17 +67,17 @@ char* BufferConverterImpl::convertToWireFormat(char* bufferType,
 			Attribute* attribute = i->second;
 			memcpy(&data_togo[attribute->wirePosition],
 					&memoryFormatBuffer[attribute->memPosition],
-					attribute->instanceSize);
-			copiedAmount = copiedAmount + attribute->instanceSize;
+					attribute->memSize);
+			copiedAmount = copiedAmount + attribute->memSize;
 			LOG4CXX_TRACE(logger, (char*) "copied: idata into: data_togo: "
-					<< attribute->instanceSize);
+					<< attribute->memSize);
 		}
 
 		if (copiedAmount != buffer->wireSize) {
 			LOG4CXX_ERROR(logger, (char*) "DID NOT FILL THE BUFFER Amount: "
 					<< copiedAmount << " Expected: " << buffer->wireSize);
 		}
-		*wireFormatBufferLength = copiedAmount;
+		*wireFormatBufferLength = buffer->wireSize;
 	}
 	return data_togo;
 }
@@ -121,9 +121,9 @@ char* BufferConverterImpl::convertToMemoryFormat(char* bufferType,
 			Attribute* attribute = i->second;
 			memcpy(&data_tostay[attribute->memPosition],
 					&memoryFormatBuffer[attribute->wirePosition],
-					attribute->instanceSize);
+					attribute->wireSize);
 			LOG4CXX_TRACE(logger, (char*) "copied: idata into: data_togo: "
-					<< attribute->instanceSize);
+					<< attribute->wireSize);
 		}
 		*memoryFormatBufferLength = buffer->memSize;
 	}

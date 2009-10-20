@@ -108,7 +108,8 @@ typedef BLACKTIE_CORE_DLL struct _attribute {
 	char* defaultValue;
 	int wirePosition;
 	int memPosition;
-	int instanceSize;
+	int wireSize;
+	int memSize;
 }Attribute;
 
 typedef BLACKTIE_CORE_DLL struct _buffer {

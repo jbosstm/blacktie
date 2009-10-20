@@ -17,9 +17,11 @@
 	-->
 <SERVICE xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
-	<SERVICE_DESCRIPTION advertised='true'>
-		<LIBRARY_NAME configuration="linux" value="libdummy-rm.so" />
-		<LIBRARY_NAME configuration="win32" value="dummy-rm.dll" />
-		<SIZE>2</SIZE>
+	<SERVICE_DESCRIPTION function_name='BAR'
+		advertised='false'>
+		<LIBRARY_NAME configuration="xmltest" value="libXMLTESTSERVICE.so" />
+		<LIBRARY_NAME configuration="win32" value="win32.dll" />
+		<LIBRARY_NAME configuration="linux" value="linux.so" />
+		<SIZE>5</SIZE>
 	</SERVICE_DESCRIPTION>
 </SERVICE>

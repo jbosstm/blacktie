@@ -26,96 +26,34 @@
 		</SERVER>
 		<SERVER name='default'>
 			<SERVICE_NAMES>
+				<SERVICE name='PBF' />
 				<SERVICE name='BAR' />
+				<SERVICE name='TestTPFree' />
+				<SERVICE name='TestTPCall' />
+				<SERVICE name='TestTPAdvertise' />
+				<SERVICE name='LOOPY' />
+				<SERVICE name='TestTPConversat' />
+				<SERVICE name='TestTPACall' />
+				<SERVICE name='TestTPCancel' />
+				<SERVICE name='TestTPConnect' />
+				<SERVICE name='TestTPDiscon' />
+				<SERVICE name='TestTPGetrply' />
+				<SERVICE name='TestTPSend' />
+				<SERVICE name='TestTPRecv' />
+				<SERVICE name='TestTPService' />
+				<SERVICE name='TestTPReturn' />
+				<SERVICE name='123456789012345' />
+				<SERVICE name='TestTPUnadverti' />
+				<SERVICE name='tpcall_x_octet' />
+				<SERVICE name='tpcall_x_common' />
+				<SERVICE name='tpcall_x_c_type' />
+				<SERVICE name='DEBIT' />
+				<SERVICE name='CREDIT' />
+				<SERVICE name='INQUIRY' />
+				<SERVICE name='TestRbkOnly' />
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVER_NAMES>
-	<XA_RESOURCES>
-		<!--
-			To include a given database in the example uncomment the relevant XA
-			resource entry. Note that the Berkeley Db example resources require
-			backing files to operate. These files reside in a directory specified
-			in the XA_OPEN_STRING. For example, to use the first <XA_RESOURCE
-			configuration="linux"> entry below make sure that a directory called
-			db1 exists (relative to the current working directory of the
-			executable). Make sure the <XA_RESOURCE_MGR_ID> entry for each
-			resource is unique. The <XA_LIB_NAME> is the path to the library that
-			implements XA interface to the database. This path can begin with an
-			environment variable if required (as in the ORACLE example below).
-
-			Each product includes two resources configurations (since we want
-			demonstrate distributed transactions involving more than one resource
-			manager).
-		-->
-		<XA_RESOURCE configuration="linux">
-			<XA_RESOURCE_MGR_ID>2101</XA_RESOURCE_MGR_ID>
-			<XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
-			<XA_OPEN_STRING>db1</XA_OPEN_STRING>
-			<XA_CLOSE_STRING></XA_CLOSE_STRING>
-			<XA_SWITCH>db_xa_switch</XA_SWITCH>
-			<XA_LIB_NAME>db</XA_LIB_NAME>
-		</XA_RESOURCE>
-		<XA_RESOURCE configuration="linux">
-			<XA_RESOURCE_MGR_ID>2102</XA_RESOURCE_MGR_ID>
-			<XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
-			<XA_OPEN_STRING>db2</XA_OPEN_STRING>
-			<XA_CLOSE_STRING></XA_CLOSE_STRING>
-			<XA_SWITCH>db_xa_switch</XA_SWITCH>
-			<XA_LIB_NAME>db</XA_LIB_NAME>
-		</XA_RESOURCE>
-		<!--
-			Similarly for including ORACLE databases in the example. The open
-			string includes all the inforamtion needed for making XA connections.
-			For example, the first XA resource below is refering to an ORACLE
-			database called ORCL and credentials scott/tiger. When installing
-			ORACLE the default database is ORCL (and a user called scott with
-			password tiger is created). For more information refer to:
-			http://download.oracle.com/docs/cd/B28359_01/appdev.111/b28424/adfns_xa.htm
-		-->
-		<!--
-			<XA_RESOURCE configuration="linux">
-			<XA_RESOURCE_MGR_ID>2</XA_RESOURCE_MGR_ID>
-			<XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
-			<XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+DB=ORCL</XA_OPEN_STRING>
-			<XA_CLOSE_STRING></XA_CLOSE_STRING> <XA_SWITCH>xaosw</XA_SWITCH>
-			<XA_LIB_NAME>${ORACLE_HOME}/lib/libclntsh.so</XA_LIB_NAME>
-			</XA_RESOURCE> <XA_RESOURCE configuration="linux">
-			<XA_RESOURCE_MGR_ID>1</XA_RESOURCE_MGR_ID>
-			<XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
-			<XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+DB=blacktie</XA_OPEN_STRING>
-			<XA_CLOSE_STRING></XA_CLOSE_STRING> <XA_SWITCH>xaosw</XA_SWITCH>
-			<XA_LIB_NAME>${ORACLE_HOME}/lib/libclntsh.so</XA_LIB_NAME>
-			</XA_RESOURCE>
-		-->
-		<!--
-			<XA_RESOURCE configuration="linux">
-			<XA_RESOURCE_MGR_ID>202</XA_RESOURCE_MGR_ID>
-			<XA_RESOURCE_NAME>DummyDb</XA_RESOURCE_NAME>
-			<XA_OPEN_STRING></XA_OPEN_STRING> <XA_CLOSE_STRING></XA_CLOSE_STRING>
-			<XA_SWITCH>testxasw</XA_SWITCH>
-			<XA_LIB_NAME>libdummy-rm.so</XA_LIB_NAME> </XA_RESOURCE>
-		-->
-		<!--
-             -->
-		<XA_RESOURCE configuration="win32">
-			<XA_RESOURCE_MGR_ID>2101</XA_RESOURCE_MGR_ID>
-			<XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
-			<XA_OPEN_STRING>db1</XA_OPEN_STRING>
-			<XA_CLOSE_STRING></XA_CLOSE_STRING>
-			<XA_SWITCH>db_xa_switch</XA_SWITCH>
-			<XA_LIB_NAME>C:\db-4.7.25\build_windows\Debug\libdb47d.dll
-			</XA_LIB_NAME>
-		</XA_RESOURCE>
-		<XA_RESOURCE configuration="win32">
-			<XA_RESOURCE_MGR_ID>2102</XA_RESOURCE_MGR_ID>
-			<XA_RESOURCE_NAME>BerkeleyDB</XA_RESOURCE_NAME>
-			<XA_OPEN_STRING>db2</XA_OPEN_STRING>
-			<XA_CLOSE_STRING></XA_CLOSE_STRING>
-			<XA_SWITCH>db_xa_switch</XA_SWITCH>
-			<XA_LIB_NAME>C:\db-4.7.25\build_windows\Debug\libdb47d.dll
-			</XA_LIB_NAME>
-		</XA_RESOURCE>
-	</XA_RESOURCES>
 	<ORB
 		OPT="-ORBInitRef NameService=corbaloc::${JBOSSAS_IP_ADDR}:3528/NameService"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
@@ -127,4 +65,37 @@
 			<VALUE>log4cxx.properties</VALUE>
 		</ENV_VARIABLE>
 	</ENV_VARIABLES>
+
+	<BUFFERS>
+		<BUFFER name="1234567890123456">
+			<ATTRIBUTE id="key" type="char[]" length="10" default="" />
+		</BUFFER>
+		<BUFFER name="test">
+			<ATTRIBUTE id="key" type="char[]" length="28" default="" />
+		</BUFFER>
+		<BUFFER name="acct_info">
+			<ATTRIBUTE id="acct_no" type="long" default="1" />
+			<ATTRIBUTE id="name" type="char[]" length="50" default="" />
+			<ATTRIBUTE id="address" type="char[]" length="100" default="" />
+			<ATTRIBUTE id="foo" type="float[]" length="2" default="0.00" />
+			<ATTRIBUTE id="balances" type="double[]" length="2" default="0" />
+		</BUFFER>
+		<BUFFER name="deposit">
+			<ATTRIBUTE id="acct_no" type="long" default="-1" />
+			<ATTRIBUTE id="amount" type="short" default="-1" />
+			<ATTRIBUTE id="balance" type="short" default="-1" />
+			<ATTRIBUTE id="status" type="char[]" length="128" default="" />
+			<ATTRIBUTE id="status_len" type="short" default="0" />
+		</BUFFER>
+		<BUFFER name="inq_buf">
+			<ATTRIBUTE id="input" type="char[]" length="100" default="" />
+			<ATTRIBUTE id="output" type="int" default="-1" />
+			<ATTRIBUTE id="failTest" type="int" default="-1" />
+		</BUFFER>
+		<BUFFER name="dc_buf">
+			<ATTRIBUTE id="input" type="char[]" length="100" default="" />
+			<ATTRIBUTE id="output" type="int" default="-1" />
+			<ATTRIBUTE id="failTest" type="int" default="-1" />
+		</BUFFER>
+	</BUFFERS>
 </ENVIRONMENT>

@@ -64,12 +64,19 @@ static bool processingEnvVariable = false;
 static char* configuration = NULL;
 static char* currentBufferName = NULL;
 
-static int CHAR_SIZE = sizeof(char);//1;
-static int LONG_SIZE = sizeof(long);//8;
-static int INT_SIZE = sizeof(int);//4;
-static int SHORT_SIZE = sizeof(short);//2;
-static int FLOAT_SIZE = sizeof(float);//INT_SIZE;
-static int DOUBLE_SIZE = sizeof(double);//LONG_SIZE;
+static int MEM_CHAR_SIZE = sizeof(char);//1;
+static int MEM_LONG_SIZE = sizeof(long);//8;
+static int MEM_INT_SIZE = sizeof(int);//4;
+static int MEM_SHORT_SIZE = sizeof(short);//2;
+static int MEM_FLOAT_SIZE = sizeof(float);//INT_SIZE;
+static int MEM_DOUBLE_SIZE = sizeof(double);//LONG_SIZE;
+
+static int WIRE_CHAR_SIZE = 1;
+static int WIRE_LONG_SIZE = 8;
+static int WIRE_INT_SIZE = 4;
+static int WIRE_SHORT_SIZE = 2;
+static int WIRE_FLOAT_SIZE = 4;
+static int WIRE_DOUBLE_SIZE = 8;
 
 
 AtmiBrokerEnvXml::AtmiBrokerEnvXml() {
@@ -279,50 +286,77 @@ static void XMLCALL startElement
 				}
 			}
 
-			int typeSize = -1;
+			int memTypeSize = -1;
+			int wireTypeSize = -1;
 			Attribute* toCheck = buffer->attributes[attribute->id];
 			bool fail = false;
 			if (toCheck == NULL) {
 				// short, int, long, float, double, char
 				if (strcmp(attribute->type, "short") == 0) {
-					typeSize = SHORT_SIZE;
-					attribute->instanceSize = SHORT_SIZE;
+					memTypeSize = MEM_SHORT_SIZE;
+					wireTypeSize = WIRE_SHORT_SIZE;
+					attribute->memSize = memTypeSize;
+					attribute->wireSize = wireTypeSize;
 				} else if (strcmp(attribute->type, "int") == 0) {
-					typeSize = INT_SIZE;
-					attribute->instanceSize = INT_SIZE;
+					memTypeSize = MEM_INT_SIZE;
+					wireTypeSize = WIRE_INT_SIZE;
+					attribute->memSize = memTypeSize;
+					attribute->wireSize = wireTypeSize;
 				} else if (strcmp(attribute->type, "long") == 0) {
-					typeSize = LONG_SIZE;
-					attribute->instanceSize = LONG_SIZE;
+					memTypeSize = MEM_LONG_SIZE;
+					wireTypeSize = WIRE_LONG_SIZE;
+					attribute->memSize = memTypeSize;
+					attribute->wireSize = wireTypeSize;
 				} else if (strcmp(attribute->type, "float") == 0) {
-					typeSize = FLOAT_SIZE;
-					attribute->instanceSize = FLOAT_SIZE;
+					memTypeSize = MEM_FLOAT_SIZE;
+					wireTypeSize = WIRE_FLOAT_SIZE;
+					attribute->memSize = memTypeSize;
+					attribute->wireSize = wireTypeSize;
 				} else if (strcmp(attribute->type, "double") == 0) {
-					typeSize = DOUBLE_SIZE;
-					attribute->instanceSize = DOUBLE_SIZE;
+					memTypeSize = MEM_DOUBLE_SIZE;
+					wireTypeSize = WIRE_DOUBLE_SIZE;
+					attribute->memSize = memTypeSize;
+					attribute->wireSize = wireTypeSize;
 				} else if (strcmp(attribute->type, "char") == 0) {
-					typeSize = CHAR_SIZE;
-					attribute->instanceSize = CHAR_SIZE;
+					memTypeSize = MEM_CHAR_SIZE;
+					wireTypeSize = WIRE_CHAR_SIZE;
+					attribute->memSize = memTypeSize;
+					attribute->wireSize = wireTypeSize;
 				} else if (strcmp(attribute->type, "char[]") == 0) {
-					typeSize = CHAR_SIZE;
-					attribute->instanceSize = CHAR_SIZE * attribute->length;
+					memTypeSize = MEM_CHAR_SIZE;
+					wireTypeSize = WIRE_CHAR_SIZE;
+					attribute->memSize = memTypeSize * attribute->length;
+					attribute->wireSize = wireTypeSize * attribute->length;
 				} else if (strcmp(attribute->type, "short[]") == 0) {
-					typeSize = SHORT_SIZE;
-					attribute->instanceSize = SHORT_SIZE * attribute->length;
+					memTypeSize = MEM_SHORT_SIZE;
+					wireTypeSize = WIRE_SHORT_SIZE;
+					attribute->memSize = memTypeSize * attribute->length;
+					attribute->wireSize = wireTypeSize * attribute->length;
 				} else if (strcmp(attribute->type, "int[]") == 0) {
-					typeSize = INT_SIZE;
-					attribute->instanceSize = INT_SIZE * attribute->length;
+					memTypeSize = MEM_INT_SIZE;
+					wireTypeSize = WIRE_INT_SIZE;
+					attribute->memSize = memTypeSize * attribute->length;
+					attribute->wireSize = wireTypeSize * attribute->length;
 				} else if (strcmp(attribute->type, "long[]") == 0) {
-					typeSize = LONG_SIZE;
-					attribute->instanceSize = LONG_SIZE * attribute->length;
+					memTypeSize = MEM_LONG_SIZE;
+					wireTypeSize = WIRE_LONG_SIZE;
+					attribute->memSize = memTypeSize * attribute->length;
+					attribute->wireSize = wireTypeSize * attribute->length;
 				} else if (strcmp(attribute->type, "float[]") == 0) {
-					typeSize = FLOAT_SIZE;
-					attribute->instanceSize = FLOAT_SIZE * attribute->length;
+					memTypeSize = MEM_FLOAT_SIZE;
+					wireTypeSize = WIRE_FLOAT_SIZE;
+					attribute->memSize = memTypeSize * attribute->length;
+					attribute->wireSize = wireTypeSize * attribute->length;
 				} else if (strcmp(attribute->type, "double[]") == 0) {
-					typeSize = DOUBLE_SIZE;
-					attribute->instanceSize = DOUBLE_SIZE * attribute->length;
+					memTypeSize = MEM_DOUBLE_SIZE;
+					wireTypeSize = WIRE_DOUBLE_SIZE;
+					attribute->memSize = memTypeSize * attribute->length;
+					attribute->wireSize = wireTypeSize * attribute->length;
 				} else if (strcmp(attribute->type, "char[][]") == 0) {
-					typeSize = CHAR_SIZE;
-					attribute->instanceSize = CHAR_SIZE * attribute->length * attribute->count;
+					memTypeSize = MEM_CHAR_SIZE;
+					wireTypeSize = WIRE_CHAR_SIZE;
+					attribute->memSize = memTypeSize * attribute->length * attribute->count;
+					attribute->wireSize = wireTypeSize * attribute->length * attribute->count;
 				} else {
 					LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "Unknown attribute type: " << attribute->type);
 					fail = true;
@@ -332,15 +366,15 @@ static void XMLCALL startElement
 					buffer->attributes[attribute->id] = attribute;
 
 					// Extend the buffer by the required extra buffer size
-					if (buffer->lastPad < typeSize) {
-						buffer->lastPad = typeSize;
+					if (buffer->lastPad < memTypeSize) {
+						buffer->lastPad = memTypeSize;
 					}
 
-					buffer->memSize = buffer->memSize + (buffer->memSize % typeSize);
+					buffer->memSize = buffer->memSize + (buffer->memSize % memTypeSize);
 					attribute->memPosition = buffer->memSize;
 					attribute->wirePosition = buffer->wireSize;
-					buffer->wireSize = buffer->wireSize + attribute->instanceSize;
-					buffer->memSize = buffer->memSize + attribute->instanceSize;
+					buffer->wireSize = buffer->wireSize + attribute->wireSize;
+					buffer->memSize = buffer->memSize + attribute->memSize;
 				} else {
 					LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "Cleaning attribute: " << attribute->id);
 					free(attribute->id);
