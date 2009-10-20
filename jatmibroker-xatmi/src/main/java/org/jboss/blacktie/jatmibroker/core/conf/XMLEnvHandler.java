@@ -137,10 +137,9 @@ public class XMLEnvHandler extends DefaultHandler {
 				}
 
 				int typeSize = -1;
-				AttributeStructure toCheck = buffer.attributes
-						.get(attribute.id);
+				boolean contains = buffer.attributeNames.contains(attribute.id);
 				boolean fail = false;
-				if (toCheck == null) {
+				if (!contains) {
 					// short, int, long, float, double, char
 					if (type.equals("short")) {
 						typeSize = SHORT_SIZE;
@@ -201,7 +200,7 @@ public class XMLEnvHandler extends DefaultHandler {
 					}
 
 					if (!fail) {
-						buffer.attributes.put(attribute.id, attribute);
+						buffer.attributes.add(attribute);
 
 						// Extend the buffer by the required extra buffer size
 						if (buffer.lastPad < typeSize) {

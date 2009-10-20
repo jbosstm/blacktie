@@ -105,7 +105,7 @@ public abstract class Buffer implements Serializable {
 			String[] ids = new String[buffer.attributes.size()];
 			Class[] types = new Class[buffer.attributes.size()];
 			int[] length = new int[buffer.attributes.size()];
-			Iterator<AttributeStructure> iterator = buffer.attributes.values()
+			Iterator<AttributeStructure> iterator = buffer.attributes
 					.iterator();
 			int i = 0;
 			while (iterator.hasNext()) {
@@ -710,18 +710,6 @@ public abstract class Buffer implements Serializable {
 		}
 	}
 
-	private void writePad(DataOutputStream dos, int size) throws IOException {
-		for (int i = 0; i < size; i++) {
-			writeChar(dos, '\0');
-		}
-	}
-
-	private void readPad(DataInputStream dis, int size) throws IOException {
-		for (int i = 0; i < size; i++) {
-			readChar(dis);
-		}
-	}
-
 	private void writeChar(DataOutputStream dos, char c) throws IOException {
 		byte[] bytes = { (byte) (c & 0xff), (byte) (c >> 8 & 0xff) };
 		dos.writeByte(bytes[0]);
@@ -737,8 +725,6 @@ public abstract class Buffer implements Serializable {
 	}
 
 	private void writeLong(DataOutputStream dos, long x) throws IOException {
-		writePad(dos, currentPos % LONG_SIZE);
-
 		ByteBuffer bbuf = ByteBuffer.allocate(LONG_SIZE);
 		bbuf.order(ByteOrder.BIG_ENDIAN);
 		bbuf.putLong(x);
@@ -749,8 +735,6 @@ public abstract class Buffer implements Serializable {
 	}
 
 	private long readLong(DataInputStream dis) throws IOException {
-		readPad(dis, currentPos % LONG_SIZE);
-
 		currentPos += LONG_SIZE;
 		long x = dis.readLong();
 		ByteBuffer bbuf = ByteBuffer.allocate(LONG_SIZE);
@@ -761,8 +745,6 @@ public abstract class Buffer implements Serializable {
 	}
 
 	private void writeInt(DataOutputStream dos, int x) throws IOException {
-		writePad(dos, currentPos % INT_SIZE);
-
 		ByteBuffer bbuf = ByteBuffer.allocate(INT_SIZE);
 		bbuf.order(ByteOrder.BIG_ENDIAN);
 		bbuf.putInt(x);
@@ -773,8 +755,6 @@ public abstract class Buffer implements Serializable {
 	}
 
 	private int readInt(DataInputStream dis) throws IOException {
-		readPad(dis, currentPos % INT_SIZE);
-
 		currentPos += INT_SIZE;
 		int x = dis.readInt();
 		ByteBuffer bbuf = ByteBuffer.allocate(INT_SIZE);
@@ -785,8 +765,6 @@ public abstract class Buffer implements Serializable {
 	}
 
 	private void writeShort(DataOutputStream dos, short x) throws IOException {
-		writePad(dos, currentPos % SHORT_SIZE);
-
 		ByteBuffer bbuf = ByteBuffer.allocate(SHORT_SIZE);
 		bbuf.order(ByteOrder.BIG_ENDIAN);
 		bbuf.putShort(x);
@@ -798,8 +776,6 @@ public abstract class Buffer implements Serializable {
 	}
 
 	private short readShort(DataInputStream dis) throws IOException {
-		readPad(dis, currentPos % SHORT_SIZE);
-
 		currentPos += SHORT_SIZE;
 		short x = dis.readShort();
 		ByteBuffer bbuf = ByteBuffer.allocate(SHORT_SIZE);
@@ -810,8 +786,6 @@ public abstract class Buffer implements Serializable {
 	}
 
 	private void writeFloat(DataOutputStream dos, float x) throws IOException {
-		writePad(dos, currentPos % FLOAT_SIZE);
-
 		ByteBuffer bbuf = ByteBuffer.allocate(FLOAT_SIZE);
 		bbuf.order(ByteOrder.BIG_ENDIAN);
 		bbuf.putFloat(x);
@@ -823,8 +797,6 @@ public abstract class Buffer implements Serializable {
 	}
 
 	private float readFloat(DataInputStream dis) throws IOException {
-		readPad(dis, currentPos % FLOAT_SIZE);
-
 		currentPos += FLOAT_SIZE;
 		float x = dis.readFloat();
 		ByteBuffer bbuf = ByteBuffer.allocate(FLOAT_SIZE);
@@ -835,8 +807,6 @@ public abstract class Buffer implements Serializable {
 	}
 
 	private void writeDouble(DataOutputStream dos, double x) throws IOException {
-		writePad(dos, currentPos % DOUBLE_SIZE);
-
 		ByteBuffer bbuf = ByteBuffer.allocate(DOUBLE_SIZE);
 		bbuf.order(ByteOrder.BIG_ENDIAN);
 		bbuf.putDouble(x);
@@ -848,8 +818,6 @@ public abstract class Buffer implements Serializable {
 	}
 
 	private double readDouble(DataInputStream dis) throws IOException {
-		readPad(dis, currentPos % DOUBLE_SIZE);
-
 		currentPos += DOUBLE_SIZE;
 		double x = dis.readDouble();
 		ByteBuffer bbuf = ByteBuffer.allocate(DOUBLE_SIZE);

@@ -17,12 +17,13 @@
  */
 package org.jboss.blacktie.jatmibroker.core.conf;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BufferStructure {
 	String name;
-	public Map<String, AttributeStructure> attributes = new HashMap<String, AttributeStructure>();
+	public List<String> attributeNames = new ArrayList<String>();
+	public List<AttributeStructure> attributes = new ArrayList<AttributeStructure>();
 	long wireSize;
 	long memSize;
 	int lastPad;
