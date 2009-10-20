@@ -15,15 +15,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef TESTCONNECTION
-#define TESTCONNECTION
+#ifndef TestStompConnection_H
+#define TestStompConnection_H
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
 #include "ConnectionImpl.h"
 
-class TestConnection: public CppUnit::TestFixture {
-	CPPUNIT_TEST_SUITE( TestConnection);
+class TestStompConnection: public CppUnit::TestFixture {
+	CPPUNIT_TEST_SUITE( TestStompConnection);
 	CPPUNIT_TEST( test);
 CPPUNIT_TEST_SUITE_END()
 ;

@@ -17,5 +17,5 @@
  */
 #include "TestBufferConverterImpl.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestBufferConverterImpl );
-#include "TestConnection.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestConnection );
+#include "TestStompConnection.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestStompConnection );

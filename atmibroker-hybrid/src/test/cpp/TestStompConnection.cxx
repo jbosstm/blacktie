@@ -17,20 +17,20 @@
  */
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "TestConnection.h"
+#include "TestStompConnection.h"
 
 #include "userlogc.h"
 
-void TestConnection::setUp() {
-	userlogc("TestConnection::setUp");
+void TestStompConnection::setUp() {
+	userlogc("TestStompConnection::setUp");
 	serverConnection = NULL;
 	clientConnection = NULL;
 	serverConnection = new HybridConnectionImpl((char*) "server");
 	clientConnection = new HybridConnectionImpl((char*) "client");
 }
 
-void TestConnection::tearDown() {
-	userlogc("TestConnection::tearDown");
+void TestStompConnection::tearDown() {
+	userlogc("TestStompConnection::tearDown");
 	if (serverConnection) {
 		delete serverConnection;
 	}
@@ -39,8 +39,8 @@ void TestConnection::tearDown() {
 	}
 }
 
-void TestConnection::test() {
-	userlogc("TestConnection::test");
+void TestStompConnection::test() {
+	userlogc("TestStompConnection::test");
 
 	Destination* destination = serverConnection->createDestination(
 			(char*) "JAVA_Converse");
