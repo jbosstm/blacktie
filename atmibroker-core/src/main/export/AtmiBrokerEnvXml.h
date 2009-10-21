@@ -105,7 +105,6 @@ typedef BLACKTIE_CORE_DLL struct _attribute {
 	char* type;
 	int count;
 	int length;
-	char* defaultValue;
 	int wirePosition;
 	int memPosition;
 	int wireSize;

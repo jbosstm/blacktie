@@ -58,7 +58,8 @@
 		OPT="-ORBInitRef NameService=corbaloc::${JBOSSAS_IP_ADDR}:3528/NameService"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
 	<MQ HOST="${JBOSSAS_IP_ADDR}" PORT="61613" USER="guest" PASSWORD="guest"
-		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" />
+		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10"
+		NAMING_URL="jnp://localhost:1099" />
 	<ENV_VARIABLES>
 		<ENV_VARIABLE>
 			<NAME>LOG4CXXCONFIG</NAME>
@@ -68,34 +69,44 @@
 
 	<BUFFERS>
 		<BUFFER name="1234567890123456">
-			<ATTRIBUTE id="key" type="char[]" length="10" default="" />
+			<ATTRIBUTE id="key" type="char[]" length="10" />
 		</BUFFER>
 		<BUFFER name="test">
-			<ATTRIBUTE id="key" type="char[]" length="28" default="" />
+			<ATTRIBUTE id="key" type="char[]" length="28" />
 		</BUFFER>
 		<BUFFER name="acct_info">
-			<ATTRIBUTE id="acct_no" type="long" default="1" />
-			<ATTRIBUTE id="name" type="char[]" length="50" default="" />
-			<ATTRIBUTE id="address" type="char[]" length="100" default="" />
-			<ATTRIBUTE id="foo" type="float[]" length="2" default="0.00" />
-			<ATTRIBUTE id="balances" type="double[]" length="2" default="0" />
+			<ATTRIBUTE id="acct_no" type="long" />
+			<ATTRIBUTE id="name" type="char[]" length="50" />
+			<ATTRIBUTE id="address" type="char[]" length="100" />
+			<ATTRIBUTE id="foo" type="float[]" length="2" />
+			<ATTRIBUTE id="balances" type="double[]" length="2" />
 		</BUFFER>
 		<BUFFER name="deposit">
-			<ATTRIBUTE id="acct_no" type="long" default="-1" />
-			<ATTRIBUTE id="amount" type="short" default="-1" />
-			<ATTRIBUTE id="balance" type="short" default="-1" />
-			<ATTRIBUTE id="status" type="char[]" length="128" default="" />
-			<ATTRIBUTE id="status_len" type="short" default="0" />
+			<ATTRIBUTE id="acct_no" type="long" />
+			<ATTRIBUTE id="amount" type="short" />
+			<ATTRIBUTE id="balance" type="short" />
+			<ATTRIBUTE id="status" type="char[]" length="128" />
+			<ATTRIBUTE id="status_len" type="short" />
 		</BUFFER>
 		<BUFFER name="inq_buf">
-			<ATTRIBUTE id="input" type="char[]" length="100" default="" />
-			<ATTRIBUTE id="output" type="int" default="-1" />
-			<ATTRIBUTE id="failTest" type="int" default="-1" />
+			<ATTRIBUTE id="input" type="char[]" length="100" />
+			<ATTRIBUTE id="output" type="int" />
+			<ATTRIBUTE id="failTest" type="int" />
 		</BUFFER>
 		<BUFFER name="dc_buf">
-			<ATTRIBUTE id="input" type="char[]" length="100" default="" />
-			<ATTRIBUTE id="output" type="int" default="-1" />
-			<ATTRIBUTE id="failTest" type="int" default="-1" />
+			<ATTRIBUTE id="input" type="char[]" length="100" />
+			<ATTRIBUTE id="output" type="int" />
+			<ATTRIBUTE id="failTest" type="int" />
+		</BUFFER>
+		<BUFFER name="test_req">
+			<ATTRIBUTE id="db" type="char[]" length="16" />
+			<ATTRIBUTE id="data" type="char[]" length="80" />
+			<ATTRIBUTE id="op" type="char" />
+			<ATTRIBUTE id="id" type="int" />
+			<ATTRIBUTE id="expect" type="int" />
+			<ATTRIBUTE id="prod" type="int" />
+			<ATTRIBUTE id="txtype" type="int" />
+			<ATTRIBUTE id="status" type="int" />
 		</BUFFER>
 	</BUFFERS>
 </ENVIRONMENT>

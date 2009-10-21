@@ -21,7 +21,7 @@ product_t products[] = {
 	{0, "null db", "null", ANY_ACCESS, null_access, null_xaflags},
 #ifdef ORACLE
 	{1, "ora - blacktie", "blacktie", ANY_ACCESS, ora_access, ora_xaflags},
-	{2, "ora - ORCL", "ORCL", ANY_ACCESS, ora_access, ora_xaflags},
+	{2, "ora - bt", "bt", ANY_ACCESS, ora_access, ora_xaflags},
 #endif
 	{-1, 0, 0, 0, 0},
 };
@@ -101,8 +101,6 @@ int get_tx_status()
 
 static int reqid = 0;
 static void _init_req(test_req_t *req, int prodid, const char *dbfile, const char *data, char op, enum TX_TYPE txtype, int expect) {
-	char *p;
-
 	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	req->prod = prodid;
 	req->txtype = txtype;
@@ -117,11 +115,6 @@ static void _init_req(test_req_t *req, int prodid, const char *dbfile, const cha
 		(void) strncpy(req->data, data, sizeof(req->data) - 1);
 	if (dbfile)
 		(void) strncpy(req->db, dbfile, sizeof(req->db) - 1);
-
-	p = req->data + sizeof(req->data) - 1;
-	*p = 0;
-	p = req->db + sizeof(req->db) - 1;
-	*p = 0;
 }
 
 test_req_t * get_buf(int remote, const char *data, const char *dbfile, char op, int prod, enum TX_TYPE txtype, int expect) {
@@ -129,12 +122,13 @@ test_req_t * get_buf(int remote, const char *data, const char *dbfile, char op, 
 	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 
 	if (remote)
-		req = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", 0);
+		req = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "test_req", 0);
 	else
 		req = (test_req_t *) malloc(sizeof (test_req_t));
 
 	if (req != NULL) {
-		(void *) memset(req, 0, sizeof (test_req_t));
+		int foo = sizeof (test_req_t);
+		(void *) memset(req, 0, foo);
 		_init_req(req, prod, dbfile, data, op, txtype, expect);
 	} else {
 		(void) fatal("out of memory (for alloc)");
@@ -160,7 +154,7 @@ int fail(const char *reason, int ret)
 
 int fatal(const char *msg)
 {
-	userlogc_warn( "TxLog %s:%d: %s", __FUNCTION__, __LINE__, msg);
+	userlogc_debug( "TxLog %s:%d: %s", __FUNCTION__, __LINE__, msg);
 	return -1;
 }
 

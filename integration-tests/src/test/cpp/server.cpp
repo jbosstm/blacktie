@@ -492,7 +492,7 @@ JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertise
 
 extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPConversa2(JNIEnv *, jobject) {
-	tpadvertise((char*) "TestTPConversa2",
+	tpadvertise((char*) "TestTPConversation",
 			testTPConversation_short_service);
 }
 
@@ -523,7 +523,7 @@ JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertise
 
 extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPReturn2(JNIEnv *, jobject) {
-	tpadvertise((char*) "TestTPReturn2",
+	tpadvertise((char*) "TestTPReturn",
 			testtpreturn_service_tpurcode);
 }
 

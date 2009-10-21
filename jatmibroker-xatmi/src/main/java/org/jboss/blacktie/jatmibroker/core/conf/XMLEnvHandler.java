@@ -118,7 +118,6 @@ public class XMLEnvHandler extends DefaultHandler {
 				attribute.type = null;
 				attribute.count = 0;
 				attribute.length = 0;
-				attribute.defaultValue = null;
 				attribute.wirePosition = 0;
 				attribute.memPosition = 0;
 				String type = null;
@@ -131,8 +130,6 @@ public class XMLEnvHandler extends DefaultHandler {
 						attribute.count = Integer.parseInt(atts.getValue(i));
 					} else if (atts.getLocalName(i).equals("length")) {
 						attribute.length = Integer.parseInt(atts.getValue(i));
-					} else if (atts.getLocalName(i).equals("default")) {
-						attribute.defaultValue = atts.getValue(i);
 					}
 				}
 

@@ -123,4 +123,16 @@
 			<VALUE>log4cxx.properties</VALUE>
 		</ENV_VARIABLE>
 	</ENV_VARIABLES>
+	<BUFFERS>
+		<BUFFER name="test_req">
+			<ATTRIBUTE id="db" type="char[]" length="16" />
+			<ATTRIBUTE id="data" type="char[]" length="80" />
+			<ATTRIBUTE id="op" type="char" />
+			<ATTRIBUTE id="id" type="int" />
+			<ATTRIBUTE id="expect" type="int" />
+			<ATTRIBUTE id="prod" type="int" />
+			<ATTRIBUTE id="txtype" type="int" />
+			<ATTRIBUTE id="status" type="int" />
+		</BUFFER>
+	</BUFFERS>
 </ENVIRONMENT>

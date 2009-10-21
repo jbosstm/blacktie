@@ -122,12 +122,13 @@ test_req_t * get_buf(int remote, const char *data, const char *dbfile, char op, 
 	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 
 	if (remote)
-		req = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", 0);
+		req = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "test_req", 0);
 	else
 		req = (test_req_t *) malloc(sizeof (test_req_t));
 
 	if (req != NULL) {
-		(void *) memset(req, 0, sizeof (test_req_t));
+		int foo = sizeof (test_req_t);
+		(void *) memset(req, 0, foo);
 		_init_req(req, prod, dbfile, data, op, txtype, expect);
 	} else {
 		(void) fatal("out of memory (for alloc)");

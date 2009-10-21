@@ -19,20 +19,20 @@
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
 	<SERVER_NAMES>
-		<SERVER name='jboss'>
+		<SERVER name="jboss">
 			<SERVICE_NAMES>
 				<SERVICE name='BTStompAdmin' />
 			</SERVICE_NAMES>
 		</SERVER>
 		<SERVER name='default'>
 			<SERVICE_NAMES>
+				<SERVICE name='PBF' />
 				<SERVICE name='BAR' />
 				<SERVICE name='TestTPFree' />
 				<SERVICE name='TestTPCall' />
 				<SERVICE name='TestTPAdvertise' />
 				<SERVICE name='LOOPY' />
 				<SERVICE name='TestTPConversat' />
-				<SERVICE name='TestTPConversa2' />
 				<SERVICE name='TestTPACall' />
 				<SERVICE name='TestTPCancel' />
 				<SERVICE name='TestTPConnect' />
@@ -42,7 +42,6 @@
 				<SERVICE name='TestTPRecv' />
 				<SERVICE name='TestTPService' />
 				<SERVICE name='TestTPReturn' />
-				<SERVICE name='TestTPReturn2' />
 				<SERVICE name='123456789012345' />
 				<SERVICE name='TestTPUnadverti' />
 				<SERVICE name='tpcall_x_octet' />
@@ -52,9 +51,7 @@
 				<SERVICE name='CREDIT' />
 				<SERVICE name='INQUIRY' />
 				<SERVICE name='TestRbkOnly' />
-				<SERVICE name='TTL' />
 			</SERVICE_NAMES>
-			<ADMIN_SERVICE />
 		</SERVER>
 	</SERVER_NAMES>
 	<ORB
@@ -65,44 +62,51 @@
 		NAMING_URL="jnp://localhost:1099" />
 	<ENV_VARIABLES>
 		<ENV_VARIABLE>
-			<NAME>BLACKTIE.TX.RECOVERY.DISABLE</NAME>
-			<VALUE>1</VALUE>
-		</ENV_VARIABLE>
-		<ENV_VARIABLE>
 			<NAME>LOG4CXXCONFIG</NAME>
 			<VALUE>log4cxx.properties</VALUE>
 		</ENV_VARIABLE>
 	</ENV_VARIABLES>
+
 	<BUFFERS>
 		<BUFFER name="1234567890123456">
-			<ATTRIBUTE id="key" type="char[]" length="10" default="" />
+			<ATTRIBUTE id="key" type="char[]" length="10" />
 		</BUFFER>
 		<BUFFER name="test">
-			<ATTRIBUTE id="key" type="char[]" length="28" default="" />
+			<ATTRIBUTE id="key" type="char[]" length="28" />
 		</BUFFER>
 		<BUFFER name="acct_info">
-			<ATTRIBUTE id="acct_no" type="long" default="1" />
-			<ATTRIBUTE id="name" type="char[]" length="50" default="" />
-			<ATTRIBUTE id="address" type="char[]" length="100" default="" />
-			<ATTRIBUTE id="foo" type="float[]" length="2" default="0.00" />
-			<ATTRIBUTE id="balances" type="double[]" length="2" default="0" />
+			<ATTRIBUTE id="acct_no" type="long" />
+			<ATTRIBUTE id="name" type="char[]" length="50" />
+			<ATTRIBUTE id="address" type="char[]" length="100" />
+			<ATTRIBUTE id="foo" type="float[]" length="2" />
+			<ATTRIBUTE id="balances" type="double[]" length="2" />
 		</BUFFER>
 		<BUFFER name="deposit">
-			<ATTRIBUTE id="acct_no" type="long" default="-1" />
-			<ATTRIBUTE id="amount" type="short" default="-1" />
-			<ATTRIBUTE id="balance" type="short" default="-1" />
-			<ATTRIBUTE id="status" type="char[]" length="128" default="" />
-			<ATTRIBUTE id="status_len" type="short" default="0" />
+			<ATTRIBUTE id="acct_no" type="long" />
+			<ATTRIBUTE id="amount" type="short" />
+			<ATTRIBUTE id="balance" type="short" />
+			<ATTRIBUTE id="status" type="char[]" length="128" />
+			<ATTRIBUTE id="status_len" type="short" />
 		</BUFFER>
 		<BUFFER name="inq_buf">
-			<ATTRIBUTE id="input" type="char[]" length="100" default="" />
-			<ATTRIBUTE id="output" type="int" default="-1" />
-			<ATTRIBUTE id="failTest" type="int" default="-1" />
+			<ATTRIBUTE id="input" type="char[]" length="100" />
+			<ATTRIBUTE id="output" type="int" />
+			<ATTRIBUTE id="failTest" type="int" />
 		</BUFFER>
 		<BUFFER name="dc_buf">
-			<ATTRIBUTE id="input" type="char[]" length="100" default="" />
-			<ATTRIBUTE id="output" type="int" default="-1" />
-			<ATTRIBUTE id="failTest" type="int" default="-1" />
+			<ATTRIBUTE id="input" type="char[]" length="100" />
+			<ATTRIBUTE id="output" type="int" />
+			<ATTRIBUTE id="failTest" type="int" />
+		</BUFFER>
+		<BUFFER name="test_req">
+			<ATTRIBUTE id="db" type="char[]" length="16" />
+			<ATTRIBUTE id="data" type="char[]" length="80" />
+			<ATTRIBUTE id="op" type="char" />
+			<ATTRIBUTE id="id" type="int" />
+			<ATTRIBUTE id="expect" type="int" />
+			<ATTRIBUTE id="prod" type="int" />
+			<ATTRIBUTE id="txtype" type="int" />
+			<ATTRIBUTE id="status" type="int" />
 		</BUFFER>
 	</BUFFERS>
 </ENVIRONMENT>

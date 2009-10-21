@@ -179,7 +179,6 @@ AtmiBrokerEnv::~AtmiBrokerEnv() {
 				free(attribute->id);
 				attribute->id = NULL;
 				free(attribute->type);
-				free(attribute->defaultValue);
 				delete attribute;
 			}
 			buffer->attributes.clear();

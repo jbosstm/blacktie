@@ -22,7 +22,6 @@ public class AttributeStructure {
 	public Class type;
 	int count;
 	public int length;
-	String defaultValue;
 	long wirePosition;
 	long memPosition;
 	int instanceSize;

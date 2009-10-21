@@ -35,9 +35,11 @@ char* BufferConverterImpl::convertToWireFormat(char* bufferType,
 	if (strlen(bufferType) == 0) {
 		LOG4CXX_TRACE(logger, (char*) "Sending NULL buffer");
 		*wireFormatBufferLength = 1;
-		data_togo = (char*) malloc(*wireFormatBufferLength);
+		data_togo = new char[*wireFormatBufferLength];
+		data_togo[0] = NULL;
 	} else if (strncmp(bufferType, "X_OCTET", 8) == 0) {
-		data_togo = (char*) malloc(*wireFormatBufferLength);
+		data_togo = new char[*wireFormatBufferLength];
+
 		LOG4CXX_TRACE(logger, (char*) "allocated: " << *wireFormatBufferLength);
 		if (*wireFormatBufferLength != 0) {
 			memcpy(data_togo, memoryFormatBuffer, *wireFormatBufferLength);
@@ -45,7 +47,7 @@ char* BufferConverterImpl::convertToWireFormat(char* bufferType,
 		}
 	} else {
 		Buffer* buffer = buffers[bufferSubtype];
-		data_togo = (char*) malloc(buffer->wireSize);
+		data_togo = new char[buffer->wireSize];
 		memset(data_togo, '\0', buffer->wireSize);
 		LOG4CXX_TRACE(logger, (char*) "allocated: " << buffer->wireSize);
 
@@ -102,7 +104,8 @@ char* BufferConverterImpl::convertToMemoryFormat(char* bufferType,
 							<< *memoryFormatBufferLength << " Expected: "
 							<< buffer->wireSize);
 		}
-		data_tostay = new char[buffer->memSize];
+		data_tostay = (char*) malloc(buffer->memSize);
+
 		memset(data_tostay, '\0', buffer->memSize);
 		LOG4CXX_TRACE(logger, (char*) "allocated: " << buffer->memSize);
 

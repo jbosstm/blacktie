@@ -54,7 +54,7 @@ typedef struct BLACKTIE_XATMI_DLL test_req {
 	int  id;	// request id
 	int  expect;	// for testing null products (ie force success)
 	int  prod;
-	enum TX_TYPE txtype;
+	int txtype; //enum TX_TYPE
 	int status;
 } test_req_t;
 

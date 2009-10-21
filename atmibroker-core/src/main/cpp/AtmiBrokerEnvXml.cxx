@@ -269,7 +269,6 @@ static void XMLCALL startElement
 			attribute->type = NULL;
 			attribute->count = 0;
 			attribute->length = 0;
-			attribute->defaultValue = NULL;
 			attribute->wirePosition = 0;
 			attribute->memPosition = 0;
 			for(int i = 0; atts[i]; i += 2) {
@@ -281,8 +280,6 @@ static void XMLCALL startElement
 					attribute->count = atoi(atts[i+1]);
 				} else if(strcmp(atts[i], "length") == 0) {
 					attribute->length = atoi(atts[i+1]);
-				} else if(strcmp(atts[i], "default") == 0) {
-					attribute->defaultValue = copy_value(atts[i+1]);
 				}
 			}
 
@@ -379,14 +376,12 @@ static void XMLCALL startElement
 					LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "Cleaning attribute: " << attribute->id);
 					free(attribute->id);
 					free(attribute->type);
-					free(attribute->defaultValue);
 					delete attribute;
 				}
 			} else {
 				LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "Duplicate attribute detected: " << attribute->id);
 				free(attribute->id);
 				free(attribute->type);
-				free(attribute->defaultValue);
 				delete attribute;
 			}
 		} else {

@@ -31,12 +31,11 @@
 	</ENV_VARIABLES>
 	<BUFFERS>
 		<BUFFER name="DEPOSIT">
-			<ATTRIBUTE type="long" id="acct_no" default="-1" />
-			<ATTRIBUTE type="short" id="amount" default="-1" />
-			<ATTRIBUTE type="short" id="balance" default="-1" />
-			<ATTRIBUTE type="char[]" id="status" length="128"
-				default="NULL" />
-			<ATTRIBUTE type="short" id="status_len" default="-1" />
+			<ATTRIBUTE type="long" id="acct_no" />
+			<ATTRIBUTE type="short" id="amount" />
+			<ATTRIBUTE type="short" id="balance" />
+			<ATTRIBUTE type="char[]" id="status" length="128" />
+			<ATTRIBUTE type="short" id="status_len" />
 		</BUFFER>
 	</BUFFERS>
 </ENVIRONMENT>

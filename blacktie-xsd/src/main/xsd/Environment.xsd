@@ -147,8 +147,6 @@
 													use="optional" />
 												<xsd:attribute name="length" type="xsd:int"
 													use="optional" />
-												<xsd:attribute name="default" type="xsd:string"
-													use="required" />
 											</xsd:complexType>
 										</xsd:element>
 									</xsd:sequence>

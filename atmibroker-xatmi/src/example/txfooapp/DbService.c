@@ -41,7 +41,7 @@ void BAR(TPSVCINFO * svcinfo)
 #endif
 {
 	test_req_t *req = (test_req_t *) svcinfo->data;
-	test_req_t *resp = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", 0);
+	test_req_t *resp = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "test_req", 0);
 	product_t *p = products;
 
 	userlogc_debug( "TxLog %s service %s running", __FUNCTION__, TXTEST_SVC_NAME);
@@ -53,8 +53,8 @@ void BAR(TPSVCINFO * svcinfo)
 		if (req->prod == p->id) {
 			int rv;
 			strncpy(req->db, p->dbname, sizeof(req->db));
-			userlogc_debug("TxLog Service %s %4d: prod=%8s (id=%d) op=%c tx=0x%x data=%s expect=%d", TXTEST_SVC_NAME,
-					req->id, p->pname, p->id, req->op, req->txtype, req->data, req->expect);
+			userlogc_debug("TxLog Service %s %4d: prod=%8s (id=%d) op=%c tx=0x%x data=%s", TXTEST_SVC_NAME,
+					req->id, p->pname, p->id, req->op, req->txtype, req->data);
 			rv = p->access(req, resp);
 			userlogc_debug("TxLog Service %s %4d: resp->status=%d rv=%d", TXTEST_SVC_NAME, req->id, resp->status, rv);
 

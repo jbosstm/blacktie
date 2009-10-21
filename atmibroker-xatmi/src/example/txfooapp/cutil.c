@@ -33,7 +33,7 @@ static int send_req(test_req_t *req, char **prbuf) {
 	int rv = 0;
 
 	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
-	resp = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "dc_buf", 0);
+	resp = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "test_req", 0);
 
 	userlogc_debug( "TxLog Invoke Service %s %4d: prod=%d op=%c data=%s dbf=%s tx=%d",
 		TXTEST_SVC_NAME, req->id, req->prod, req->op, req->data, req->db, req->txtype);
@@ -450,10 +450,8 @@ int run_tests(product_t *prod_array)
 	}
 
 	userlogc( (char*) "TxLog Tests complete");
-#ifndef TX_RC   // test recovery
 	if ((rv = teardown(&cnt)))
 		return rv;
-#endif
 
 	if (tx_close() != TX_OK) {
 		userlogc_warn( (char*) "TxLog ERROR - Could not close transaction: ");

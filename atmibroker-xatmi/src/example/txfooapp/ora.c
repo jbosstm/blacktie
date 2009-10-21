@@ -113,13 +113,12 @@ static int doSelect(OCISvcCtx *svcCtx, OCIStmt *stmthp, OCIError *errhp, int emp
 	text *sql = (text *) "SELECT ENAME,JOB FROM EMP WHERE EMPNO >= :1" ;
 	char emp[20];
 	char job[20];
-	sword status;
 
 	OCIDefine *stmtdef1 = (OCIDefine *) 0;
 	OCIDefine *stmtdef2 = (OCIDefine *) 0;
 
 	userlogc_debug( "TxLog doSelect: :1=%d", empno);
-	status = OCIStmtPrepare(stmthp, errhp, (text *) sql, (ub4) strlen((char *) sql),
+	sword status = OCIStmtPrepare(stmthp, errhp, (text *) sql, (ub4) strlen((char *) sql),
 		(ub4) OCI_NTV_SYNTAX, (ub4) OCI_DEFAULT);
 
 	/* bind empno to the statement */
@@ -214,11 +213,8 @@ int ora_access(test_req_t *req, test_req_t *resp)
 	xaEnv = (struct OCIEnv *) xaoEnv((text *) req->db) ;
 	svcCtx = (struct OCISvcCtx *) xaoSvcCtx((text *) req->db);
 
-	if (!xaEnv || !svcCtx) {
-		userlogc_warn( "TxLog Unable to obtain env and/or service context! xaEnv=%p svcCtx=%p db=%s",
-			xaEnv, svcCtx, req->db);
-		return -1;
-	}
+	if (!xaEnv || !svcCtx)
+		return fatal("TxLog ORA:- Unable to obtain env and/or service context!");
 
 	/* initialise OCI handles */
 	if (OCI_SUCCESS != OCIHandleAlloc((dvoid *)xaEnv, (dvoid **)&errhp,
