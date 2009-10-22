@@ -16,7 +16,8 @@ public class TestTPCallServiceXCType implements BlacktieService {
 			Buffer aptr = svcinfo.getBuffer();
 
 			char[] receivedName = new char[3];
-			System.arraycopy(aptr.getCharArray("name"), 0, receivedName, 0, 3);
+			char[] charArray = aptr.getCharArray("name");
+			System.arraycopy(charArray, 0, receivedName, 0, 3);
 			char[] expectedName = "TOM".toCharArray();
 			long accountNumber = aptr.getLong("acct_no");
 

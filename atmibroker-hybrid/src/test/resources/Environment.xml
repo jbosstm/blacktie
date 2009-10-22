@@ -34,7 +34,7 @@
 			<ATTRIBUTE type="long" id="acct_no" />
 			<ATTRIBUTE type="short" id="amount" />
 			<ATTRIBUTE type="short" id="balance" />
-			<ATTRIBUTE type="char[]" id="status" length="128" />
+			<ATTRIBUTE type="char[]" id="status" arrayLength="128" />
 			<ATTRIBUTE type="short" id="status_len" />
 		</BUFFER>
 	</BUFFERS>

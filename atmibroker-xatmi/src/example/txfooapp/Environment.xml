@@ -125,8 +125,8 @@
 	</ENV_VARIABLES>
 	<BUFFERS>
 		<BUFFER name="test_req">
-			<ATTRIBUTE id="db" type="char[]" length="16" />
-			<ATTRIBUTE id="data" type="char[]" length="80" />
+			<ATTRIBUTE id="db" type="char[]" arrayLength="16" />
+			<ATTRIBUTE id="data" type="char[]" arrayLength="80" />
 			<ATTRIBUTE id="op" type="char" />
 			<ATTRIBUTE id="id" type="int" />
 			<ATTRIBUTE id="expect" type="int" />

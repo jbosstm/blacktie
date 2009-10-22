@@ -68,20 +68,20 @@
 	</ENV_VARIABLES>
 	<BUFFERS>
 		<BUFFER name="foo">
-			<ATTRIBUTE id="Balance2" type="float[]" length="3" />
+			<ATTRIBUTE id="Balance2" type="float[]" arrayLength="3" />
 			<ATTRIBUTE id="Balance" type="long" />
 			<ATTRIBUTE id="Balance" type="int" />
-			<ATTRIBUTE id="accountName" type="char[][]" length="10"
-				count="2" />
+			<ATTRIBUTE id="accountName" type="char[][]" arrayLength="10"
+				arrayCount="2" />
 		</BUFFER>
 		<BUFFER name="bar">
-			<ATTRIBUTE id="barlance" type="int[]" length="4" />
+			<ATTRIBUTE id="barlance" type="int[]" arrayLength="4" />
 			<ATTRIBUTE id="barbq" type="short" />
-			<ATTRIBUTE id="barlance1" type="int[]" length="4" />
+			<ATTRIBUTE id="barlance1" type="int[]" arrayLength="4" />
 			<ATTRIBUTE id="barbq2" type="short" />
 		</BUFFER>
 		<BUFFER name="bar">
-			<ATTRIBUTE id="barlance" type="int[]" length="4" />
+			<ATTRIBUTE id="barlance" type="int[]" arrayLength="4" />
 		</BUFFER>
 	</BUFFERS>
 </ENVIRONMENT>

@@ -276,9 +276,9 @@ static void XMLCALL startElement
 					attribute->id = copy_value(atts[i+1]);
 				} else if(strcmp(atts[i], "type") == 0) {
 					attribute->type = copy_value(atts[i+1]);
-				} else if(strcmp(atts[i], "count") == 0) {
+				} else if(strcmp(atts[i], "arrayCount") == 0) {
 					attribute->count = atoi(atts[i+1]);
-				} else if(strcmp(atts[i], "length") == 0) {
+				} else if(strcmp(atts[i], "arrayLength") == 0) {
 					attribute->length = atoi(atts[i+1]);
 				}
 			}
@@ -322,36 +322,60 @@ static void XMLCALL startElement
 				} else if (strcmp(attribute->type, "char[]") == 0) {
 					memTypeSize = MEM_CHAR_SIZE;
 					wireTypeSize = WIRE_CHAR_SIZE;
+					if (attribute->length == 0) {
+						attribute->length = 1;
+					}
 					attribute->memSize = memTypeSize * attribute->length;
 					attribute->wireSize = wireTypeSize * attribute->length;
 				} else if (strcmp(attribute->type, "short[]") == 0) {
 					memTypeSize = MEM_SHORT_SIZE;
 					wireTypeSize = WIRE_SHORT_SIZE;
+					if (attribute->length == 0) {
+						attribute->length = 1;
+					}
 					attribute->memSize = memTypeSize * attribute->length;
 					attribute->wireSize = wireTypeSize * attribute->length;
 				} else if (strcmp(attribute->type, "int[]") == 0) {
 					memTypeSize = MEM_INT_SIZE;
 					wireTypeSize = WIRE_INT_SIZE;
+					if (attribute->length == 0) {
+						attribute->length = 1;
+					}
 					attribute->memSize = memTypeSize * attribute->length;
 					attribute->wireSize = wireTypeSize * attribute->length;
 				} else if (strcmp(attribute->type, "long[]") == 0) {
 					memTypeSize = MEM_LONG_SIZE;
 					wireTypeSize = WIRE_LONG_SIZE;
+					if (attribute->length == 0) {
+						attribute->length = 1;
+					}
 					attribute->memSize = memTypeSize * attribute->length;
 					attribute->wireSize = wireTypeSize * attribute->length;
 				} else if (strcmp(attribute->type, "float[]") == 0) {
 					memTypeSize = MEM_FLOAT_SIZE;
 					wireTypeSize = WIRE_FLOAT_SIZE;
+					if (attribute->length == 0) {
+						attribute->length = 1;
+					}
 					attribute->memSize = memTypeSize * attribute->length;
 					attribute->wireSize = wireTypeSize * attribute->length;
 				} else if (strcmp(attribute->type, "double[]") == 0) {
 					memTypeSize = MEM_DOUBLE_SIZE;
 					wireTypeSize = WIRE_DOUBLE_SIZE;
+					if (attribute->length == 0) {
+						attribute->length = 1;
+					}
 					attribute->memSize = memTypeSize * attribute->length;
 					attribute->wireSize = wireTypeSize * attribute->length;
 				} else if (strcmp(attribute->type, "char[][]") == 0) {
 					memTypeSize = MEM_CHAR_SIZE;
 					wireTypeSize = WIRE_CHAR_SIZE;
+					if (attribute->length == 0) {
+						attribute->length = 1;
+					}
+					if (attribute->count == 0) {
+						attribute->count = 1;
+					}
 					attribute->memSize = memTypeSize * attribute->length * attribute->count;
 					attribute->wireSize = wireTypeSize * attribute->length * attribute->count;
 				} else {

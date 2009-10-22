@@ -69,38 +69,38 @@
 
 	<BUFFERS>
 		<BUFFER name="1234567890123456">
-			<ATTRIBUTE id="key" type="char[]" length="10" />
+			<ATTRIBUTE id="key" type="char[]" arrayLength="10" />
 		</BUFFER>
 		<BUFFER name="test">
-			<ATTRIBUTE id="key" type="char[]" length="28" />
+			<ATTRIBUTE id="key" type="char[]" arrayLength="28" />
 		</BUFFER>
 		<BUFFER name="acct_info">
 			<ATTRIBUTE id="acct_no" type="long" />
-			<ATTRIBUTE id="name" type="char[]" length="50" />
-			<ATTRIBUTE id="address" type="char[]" length="100" />
-			<ATTRIBUTE id="foo" type="float[]" length="2" />
-			<ATTRIBUTE id="balances" type="double[]" length="2" />
+			<ATTRIBUTE id="name" type="char[]" arrayLength="50" />
+			<ATTRIBUTE id="address" type="char[]" arrayLength="100" />
+			<ATTRIBUTE id="foo" type="float[]" arrayLength="2" />
+			<ATTRIBUTE id="balances" type="double[]" arrayLength="2" />
 		</BUFFER>
 		<BUFFER name="deposit">
 			<ATTRIBUTE id="acct_no" type="long" />
 			<ATTRIBUTE id="amount" type="short" />
 			<ATTRIBUTE id="balance" type="short" />
-			<ATTRIBUTE id="status" type="char[]" length="128" />
+			<ATTRIBUTE id="status" type="char[]" arrayLength="128" />
 			<ATTRIBUTE id="status_len" type="short" />
 		</BUFFER>
 		<BUFFER name="inq_buf">
-			<ATTRIBUTE id="input" type="char[]" length="100" />
+			<ATTRIBUTE id="input" type="char[]" arrayLength="100" />
 			<ATTRIBUTE id="output" type="int" />
 			<ATTRIBUTE id="failTest" type="int" />
 		</BUFFER>
 		<BUFFER name="dc_buf">
-			<ATTRIBUTE id="input" type="char[]" length="100" />
+			<ATTRIBUTE id="input" type="char[]" arrayLength="100" />
 			<ATTRIBUTE id="output" type="int" />
 			<ATTRIBUTE id="failTest" type="int" />
 		</BUFFER>
 		<BUFFER name="test_req">
-			<ATTRIBUTE id="db" type="char[]" length="16" />
-			<ATTRIBUTE id="data" type="char[]" length="80" />
+			<ATTRIBUTE id="db" type="char[]" arrayLength="16" />
+			<ATTRIBUTE id="data" type="char[]" arrayLength="80" />
 			<ATTRIBUTE id="op" type="char" />
 			<ATTRIBUTE id="id" type="int" />
 			<ATTRIBUTE id="expect" type="int" />

@@ -126,9 +126,9 @@ public class XMLEnvHandler extends DefaultHandler {
 						attribute.id = atts.getValue(i);
 					} else if (atts.getLocalName(i).equals("type")) {
 						type = atts.getValue(i);
-					} else if (atts.getLocalName(i).equals("count")) {
+					} else if (atts.getLocalName(i).equals("arrayCount")) {
 						attribute.count = Integer.parseInt(atts.getValue(i));
-					} else if (atts.getLocalName(i).equals("length")) {
+					} else if (atts.getLocalName(i).equals("arrayLength")) {
 						attribute.length = Integer.parseInt(atts.getValue(i));
 					}
 				}
@@ -163,30 +163,54 @@ public class XMLEnvHandler extends DefaultHandler {
 						attribute.instanceSize = CHAR_SIZE;
 						attribute.type = char.class;
 					} else if (type.equals("char[]")) {
+						if (attribute.length == 0) {
+							attribute.length = 1;
+						}
 						typeSize = CHAR_SIZE;
 						attribute.instanceSize = CHAR_SIZE * attribute.length;
 						attribute.type = char[].class;
 					} else if (type.equals("short[]")) {
+						if (attribute.length == 0) {
+							attribute.length = 1;
+						}
 						typeSize = SHORT_SIZE;
 						attribute.instanceSize = SHORT_SIZE * attribute.length;
 						attribute.type = short[].class;
 					} else if (type.equals("int[]")) {
+						if (attribute.length == 0) {
+							attribute.length = 1;
+						}
 						typeSize = INT_SIZE;
 						attribute.instanceSize = INT_SIZE * attribute.length;
 						attribute.type = int[].class;
 					} else if (type.equals("long[]")) {
+						if (attribute.length == 0) {
+							attribute.length = 1;
+						}
 						typeSize = LONG_SIZE;
 						attribute.instanceSize = LONG_SIZE * attribute.length;
 						attribute.type = long[].class;
 					} else if (type.equals("float[]")) {
+						if (attribute.length == 0) {
+							attribute.length = 1;
+						}
 						typeSize = FLOAT_SIZE;
 						attribute.instanceSize = FLOAT_SIZE * attribute.length;
 						attribute.type = float[].class;
 					} else if (type.equals("double[]")) {
+						if (attribute.length == 0) {
+							attribute.length = 1;
+						}
 						typeSize = DOUBLE_SIZE;
 						attribute.instanceSize = DOUBLE_SIZE * attribute.length;
 						attribute.type = double[].class;
 					} else if (type.equals("char[][]")) {
+						if (attribute.length == 0) {
+							attribute.length = 1;
+						}
+						if (attribute.count == 0) {
+							attribute.count = 1;
+						}
 						typeSize = CHAR_SIZE;
 						attribute.instanceSize = CHAR_SIZE * attribute.length
 								* attribute.count;

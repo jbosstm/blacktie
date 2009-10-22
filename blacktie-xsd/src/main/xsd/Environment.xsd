@@ -47,6 +47,16 @@
 			<xsd:enumeration value="char[][]" />
 		</xsd:restriction>
 	</xsd:simpleType>
+	<xsd:simpleType name="arrayCount">
+		<xsd:restriction base="xsd:int">
+			<xsd:minInclusive value="1" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="arrayLength">
+		<xsd:restriction base="xsd:int">
+			<xsd:minInclusive value="1" />
+		</xsd:restriction>
+	</xsd:simpleType>
 	<xsd:element name="ENVIRONMENT">
 		<xsd:complexType>
 			<xsd:sequence>
@@ -156,9 +166,9 @@
 													use="required" />
 												<xsd:attribute name="type" type="attributeType"
 													use="required" />
-												<xsd:attribute name="count" type="xsd:int"
+												<xsd:attribute name="arrayCount" type="arrayCount"
 													use="optional" />
-												<xsd:attribute name="length" type="xsd:int"
+												<xsd:attribute name="arrayLength" type="arrayLength"
 													use="optional" />
 											</xsd:complexType>
 										</xsd:element>
