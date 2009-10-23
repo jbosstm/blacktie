@@ -23,7 +23,8 @@ import org.codehaus.stomp.jms.StompConnect;
  */
 
 public class StompConnectService implements StompConnectServiceMBean {
-	private static final Logger log = LogManager.getLogger(StompConnectService.class);
+	private static final Logger log = LogManager
+			.getLogger(StompConnectService.class);
 	protected StompConnect connect = new StompConnect();
 	private String uri;
 	private String connectionFactoryName;

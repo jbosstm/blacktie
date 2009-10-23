@@ -29,7 +29,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.Response;
  * 
  * @see JABSession
  */
-public class JABRemoteService implements Message {
+public class JABRemoteService {
 	/**
 	 * The logger to debug using
 	 */
@@ -49,12 +49,12 @@ public class JABRemoteService implements Message {
 	/**
 	 * The buffer to send.
 	 */
-	private JABRequest requestMessage;
+	private JABMessage requestMessage;
 
 	/**
-	 * The response obtained.
+	 * The buffer to send.
 	 */
-	private JABResponse responseMessage;
+	private JABMessage responseMessage;
 
 	/**
 	 * Should the service wait forever.
@@ -72,14 +72,13 @@ public class JABRemoteService implements Message {
 	 * @throws JABException
 	 *             In case the remote service cannot be accessed.
 	 */
-	public JABRemoteService(String aServiceName, JABSession aJABSession)
-			throws JABException {
+	public JABRemoteService(String aServiceName, JABSession aJABSession,
+			String bufferType, String bufferSubType) throws JABException {
 		log.debug("JABService constructor");
 
 		connection = aJABSession.getConnection();
 		serviceName = aServiceName;
-		requestMessage = new JABRequest(connection);
-		responseMessage = new JABResponse();
+		requestMessage = new JABMessage(connection, bufferType, bufferSubType);
 	}
 
 	/**
@@ -115,11 +114,12 @@ public class JABRemoteService implements Message {
 				log.debug("service_request tx same as current");
 			}
 
-			Buffer request = requestMessage.getRequest();
+			Buffer request = requestMessage.getBuffer();
 			log.debug("service_request tpcall");
-			Response response = connection.tpcall(serviceName, request, request
-					.getLength(), noTimeout ? Connection.TPNOTIME : 0);
-			responseMessage.setResponse(response);
+			Response response = connection.tpcall(serviceName, request,
+					requestMessage.getLength(), noTimeout ? Connection.TPNOTIME
+							: 0);
+			responseMessage = new JABMessage(response);
 			log.debug("service_request responsed");
 		} catch (Exception e) {
 			log.warn("service_request exception: " + e.getMessage());
@@ -144,31 +144,7 @@ public class JABRemoteService implements Message {
 	public void clear() {
 		log.debug("JABService clear");
 		requestMessage.clear();
-		responseMessage.clear();
-	}
-
-	/**
-	 * Set the data to send to a remote service.
-	 * 
-	 * @param data
-	 *            The date to send
-	 * @throws JABException
-	 *             In case the string is malformed
-	 */
-	public void setData(byte[] data) throws JABException {
-		log.debug("JABService set buffer");
-		requestMessage.setData(data);
-	}
-
-	/**
-	 * Get the content of the remote service response.
-	 * 
-	 * @throws JABException
-	 *             If the content is not as expected.
-	 */
-	public byte[] getData() throws JABException {
-		log.debug("JABService get buffer");
-		return responseMessage.getData();
+		responseMessage = null;
 	}
 
 	/**
@@ -204,7 +180,11 @@ public class JABRemoteService implements Message {
 	 * 
 	 * @return The application return code.
 	 */
-	public int getRCode() {
-		return responseMessage.getRCode();
+	int getRCode() {
+		if (responseMessage != null) {
+			return responseMessage.getRCode();
+		} else {
+			return -1;
+		}
 	}
 }

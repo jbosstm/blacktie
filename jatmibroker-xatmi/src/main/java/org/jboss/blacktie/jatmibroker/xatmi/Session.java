@@ -196,12 +196,11 @@ public class Session {
 			String subtype = null;
 			byte[] data = null;
 			if (toSend != null) {
-				toSend.serialize();
-				data = toSend.getData();
+				data = toSend.serialize();
 				type = toSend.getType();
 				subtype = toSend.getSubtype();
 				if (!type.equals("X_OCTET")) {
-					len = toSend.getLength();
+					len = data.length;
 				}
 			}
 
@@ -254,10 +253,10 @@ public class Session {
 			log.debug("Not setting the sender");
 		}
 
-		Buffer received = null;
+		X_OCTET received = null;
 		if (m.type != null) {
-			received = tpalloc("X_OCTET", null);
-			received.setData(m.data);
+			received = (X_OCTET) tpalloc("X_OCTET", null);
+			received.setByteArray(m.data);
 		}
 		log.debug("Prepared and ready to launch");
 

@@ -36,8 +36,21 @@ public class X_OCTET extends Buffer {
 		}
 	}
 
-	public X_OCTET() throws ConnectionException {
+	X_OCTET() throws ConnectionException {
 		super("X_OCTET", null, false, types, null);
+	}
+
+	X_OCTET(byte[] data) throws ConnectionException {
+		super("X_OCTET", null, false, types, null);
+		deserialize(data);
+	}
+
+	public void setByteArray(byte[] bytes) {
+		super.setRawData(bytes);
+	}
+
+	public byte[] getByteArray() {
+		return super.getRawData();
 	}
 
 }

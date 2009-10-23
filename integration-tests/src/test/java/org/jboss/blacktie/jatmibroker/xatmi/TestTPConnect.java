@@ -29,7 +29,7 @@ public class TestTPConnect extends TestCase {
 	private RunServer server = new RunServer();
 	private Connection connection;
 	private int sendlen;
-	private Buffer sendbuf;
+	private X_OCTET sendbuf;
 	private Session cd;
 	private Session cd2;
 
@@ -43,8 +43,8 @@ public class TestTPConnect extends TestCase {
 
 		byte[] message = "connect".getBytes();
 		sendlen = message.length + 1;
-		sendbuf = connection.tpalloc("X_OCTET", null);
-		sendbuf.setData(message);
+		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf.setByteArray(message);
 		cd = null;
 		cd2 = null;
 	}

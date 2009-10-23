@@ -13,15 +13,15 @@ public class TestTTLService implements BlacktieService {
 
 		try {
 			int timeout = 45;
-			Buffer dptr = svcinfo.getBuffer();
-			String data = new String(dptr.getData());
+			X_OCTET dptr = (X_OCTET) svcinfo.getBuffer();
+			String data = new String(dptr.getByteArray());
 			log.info("test_ttl_service get data: " + data);
 
 			int len = 60;
-			Buffer toReturn = svcinfo.tpalloc("X_OCTET", null);
+			X_OCTET toReturn = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
 
 			if (data.contains("counter")) {
-				toReturn.setData(String.valueOf(n).getBytes());
+				toReturn.setByteArray(String.valueOf(n).getBytes());
 			} else {
 				n++;
 				try {
@@ -30,7 +30,7 @@ public class TestTTLService implements BlacktieService {
 					Thread.sleep(timeout * 1000);
 					log.info("test_ttl_service slept for " + timeout
 							+ " seconds");
-					toReturn.setData("test_ttl_service".getBytes());
+					toReturn.setByteArray("test_ttl_service".getBytes());
 				} catch (Exception e) {
 					log.error("sleep failed with " + e);
 				}

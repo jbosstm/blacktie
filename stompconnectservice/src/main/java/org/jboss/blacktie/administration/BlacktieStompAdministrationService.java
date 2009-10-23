@@ -3,12 +3,10 @@ package org.jboss.blacktie.administration;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
 import java.util.Properties;
+import java.util.StringTokenizer;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
@@ -34,13 +32,12 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
-import org.jboss.blacktie.jatmibroker.xatmi.mdb.MDBBlacktieService;
-import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
+import org.jboss.blacktie.jatmibroker.xatmi.mdb.MDBBlacktieService;
 import org.jboss.ejb3.annotation.Depends;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -59,7 +56,6 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 	private MBeanServerConnection beanServerConnection;
 
-
 	public BlacktieStompAdministrationService() throws IOException,
 			ConfigurationException, ConnectionException {
 		super("BTStompAdmin");
@@ -68,8 +64,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		XMLEnvHandler handler = new XMLEnvHandler("", prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 		xmlenv.parse("Environment.xml");
-		JMXServiceURL u = new JMXServiceURL(
-				(String)prop.get("JMXURL"));
+		JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
 		JMXConnector c = JMXConnectorFactory.connect(u);
 		beanServerConnection = c.getMBeanServerConnection();
 	}
@@ -171,9 +166,9 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 				setSecurityConfig(queueName);
 			}
 
-			if(queue == false || !serviceName.contains("ADMIN") ) {
-				result = 1;	
-			} else if(consumerCount(serviceName) > 0){
+			if (queue == false || !serviceName.contains("ADMIN")) {
+				result = 1;
+			} else if (consumerCount(serviceName) > 0) {
 				log.info("can not advertise ADMIN with same id");
 			} else {
 				result = 1;
@@ -226,8 +221,8 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		log.debug("Message received");
-		Buffer recv = svcinfo.getBuffer();
-		String string = new String(recv.getData());
+		X_OCTET recv = (X_OCTET) svcinfo.getBuffer();
+		String string = new String(recv.getByteArray());
 		StringTokenizer st = new StringTokenizer(string, ",", false);
 		String operation = st.nextToken();
 		String serviceName = st.nextToken();
@@ -240,12 +235,13 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			XMLEnvHandler handler = new XMLEnvHandler("", prop);
 			XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 			xmlenv.parse("Environment.xml");
-			
+
 			if ((k = serviceName.indexOf("ADMIN")) > 0) {
 				String svcadm = serviceName.substring(0, k) + "ADMIN";
 				server = (String) prop.get("blacktie." + svcadm + ".server");
 			} else {
-				server = (String) prop.get("blacktie." + serviceName + ".server");
+				server = (String) prop.get("blacktie." + serviceName
+						+ ".server");
 			}
 
 			if (server != null) {
@@ -270,8 +266,8 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 				success[0] = 0;
 			}
 
-			Buffer buffer = svcinfo.tpalloc("X_OCTET", null);
-			buffer.setData(success);
+			X_OCTET buffer = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
+			buffer.setByteArray(success);
 			log.debug("Responding");
 			return new Response(Connection.TPSUCCESS, 0, buffer, 1, 0);
 		} catch (ConnectionException e) {

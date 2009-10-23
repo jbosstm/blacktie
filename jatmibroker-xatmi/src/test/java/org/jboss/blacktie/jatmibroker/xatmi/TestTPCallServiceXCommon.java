@@ -11,7 +11,7 @@ public class TestTPCallServiceXCommon implements BlacktieService {
 		try {
 			log.info("test_tpcall_x_common_service");
 			boolean ok = false;
-			Buffer dptr = svcinfo.getBuffer();
+			X_COMMON dptr = (X_COMMON) svcinfo.getBuffer();
 
 			if (dptr.getLong("acct_no") == 12345678
 					&& dptr.getShort("amount") == 50) {
@@ -19,11 +19,11 @@ public class TestTPCallServiceXCommon implements BlacktieService {
 			}
 
 			int len = 60;
-			Buffer toReturn = svcinfo.tpalloc("X_OCTET", null);
+			X_OCTET toReturn = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
 			if (ok) {
-				toReturn.setData("tpcall_x_common".getBytes());
+				toReturn.setByteArray("tpcall_x_common".getBytes());
 			} else {
-				toReturn.setData("fail".getBytes());
+				toReturn.setByteArray("fail".getBytes());
 			}
 			return new Response(Connection.TPSUCCESS, 22, toReturn, len, 0);
 		} catch (ConnectionException e) {

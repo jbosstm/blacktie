@@ -32,22 +32,70 @@ public class X_COMMON extends Buffer {
 
 	static {
 		Class[] x_commonType = new Class[] { short.class, long.class,
-				char.class, short[].class, long[].class, char[].class };
+				byte.class, short[].class, long[].class, byte[].class };
 		for (int i = 0; i < x_commonType.length; i++) {
 			types.add(x_commonType[i]);
 		}
 	}
 
-	public X_COMMON(String subtype, Properties properties)
-			throws ConnectionException {
+	X_COMMON(String subtype, Properties properties) throws ConnectionException {
 		super("X_COMMON", subtype, true, types, properties);
 	}
 
 	X_COMMON(String subtype, Properties properties, byte[] data)
 			throws ConnectionException {
 		super("X_COMMON", subtype, true, types, properties);
-		setData(data);
-		deserialize();
+		deserialize(data);
 	}
 
+	public short getShort(String key) throws ConnectionException {
+		return ((Short) getAttributeValue(key, short.class)).shortValue();
+	}
+
+	public void setShort(String key, short value) throws ConnectionException {
+		setAttributeValue(key, short.class, value);
+	}
+
+	public long getLong(String key) throws ConnectionException {
+		return ((Long) getAttributeValue(key, long.class)).longValue();
+	}
+
+	public void setLong(String key, long value) throws ConnectionException {
+		setAttributeValue(key, long.class, value);
+	}
+
+	public byte getByte(String key) throws ConnectionException {
+		return ((Byte) getAttributeValue(key, byte.class)).byteValue();
+	}
+
+	public void setByte(String key, byte value) throws ConnectionException {
+		setAttributeValue(key, byte.class, value);
+	}
+
+	public short[] getShortArray(String key) throws ConnectionException {
+		return (short[]) getAttributeValue(key, short[].class);
+	}
+
+	public void setShortArray(String key, short[] value)
+			throws ConnectionException {
+		setAttributeValue(key, short[].class, value);
+	}
+
+	public long[] getLongArray(String key) throws ConnectionException {
+		return (long[]) getAttributeValue(key, long[].class);
+	}
+
+	public void setLongArray(String key, long[] value)
+			throws ConnectionException {
+		setAttributeValue(key, long[].class, value);
+	}
+
+	public byte[] getByteArray(String key) throws ConnectionException {
+		return (byte[]) getAttributeValue(key, byte[].class);
+	}
+
+	public void setByteArray(String key, byte[] value)
+			throws ConnectionException {
+		setAttributeValue(key, byte[].class, value);
+	}
 }

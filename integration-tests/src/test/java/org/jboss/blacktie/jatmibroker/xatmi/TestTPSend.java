@@ -29,7 +29,7 @@ public class TestTPSend extends TestCase {
 	private RunServer server = new RunServer();
 	private Connection connection;
 	private int sendlen;
-	private Buffer sendbuf;
+	private X_OCTET sendbuf;
 	private Session cd;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
@@ -41,8 +41,8 @@ public class TestTPSend extends TestCase {
 		connection = connectionFactory.getConnection();
 
 		sendlen = "tpsend".length() + 1;
-		sendbuf = connection.tpalloc("X_OCTET", null);
-		sendbuf.setData("tpsend".getBytes());
+		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf.setByteArray("tpsend".getBytes());
 
 	}
 

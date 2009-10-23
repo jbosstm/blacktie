@@ -29,7 +29,7 @@ public class TestTPService extends TestCase {
 	private RunServer server = new RunServer();
 	private Connection connection;
 	private int sendlen;
-	private Buffer sendbuf;
+	private X_OCTET sendbuf;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		server.serverinit();
@@ -40,8 +40,8 @@ public class TestTPService extends TestCase {
 		connection = connectionFactory.getConnection();
 
 		sendlen = "TestTPService".length() + 1;
-		sendbuf = connection.tpalloc("X_OCTET", null);
-		sendbuf.setData("TestTPService".getBytes());
+		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf.setByteArray("TestTPService".getBytes());
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {

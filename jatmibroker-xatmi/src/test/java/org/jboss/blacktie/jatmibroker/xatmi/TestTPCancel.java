@@ -47,8 +47,8 @@ public class TestTPCancel extends TestCase {
 		log.info("test_tpcancel");
 		byte[] message = "cancel".getBytes();
 		int sendlen = message.length + 1;
-		Buffer sendbuf = connection.tpalloc("X_OCTET", null);
-		sendbuf.setData(message);
+		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf.setByteArray(message);
 
 		int cd = connection.tpacall(server.getServiceNameTestTPCancel(),
 				sendbuf, sendlen, 0);
@@ -73,8 +73,8 @@ public class TestTPCancel extends TestCase {
 		log.info("test_tpcancel_noreply");
 		byte[] message = "cancel".getBytes();
 		int sendlen = message.length + 1;
-		Buffer sendbuf = connection.tpalloc("X_OCTET", null);
-		sendbuf.setData(message);
+		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf.setByteArray(message);
 
 		int cd = connection.tpacall(server.getServiceNameTestTPCancel(),
 				sendbuf, sendlen, Connection.TPNOREPLY);

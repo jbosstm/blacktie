@@ -17,7 +17,6 @@
  */
 package org.jboss.blacktie.jatmibroker.jab.factory;
 
-import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 
 /**
@@ -29,11 +28,6 @@ import org.jboss.blacktie.jatmibroker.xatmi.Response;
 public class JABResponse extends JABBuffer {
 
 	/**
-	 * The response from the service
-	 */
-	private Response response;
-
-	/**
 	 * The constructor is hidden from standard application programs as it should
 	 * only be created when a response is available for processing
 	 * 
@@ -43,9 +37,8 @@ public class JABResponse extends JABBuffer {
 	 * @param response
 	 *            The response from the XATMI service
 	 */
-	JABResponse(Connection connection, Response response) {
-		super(connection, response.getBuffer());
-		this.response = response;
+	JABResponse(Response response) {
+		super(response);
 	}
 
 	/**
@@ -54,6 +47,6 @@ public class JABResponse extends JABBuffer {
 	 * @return The response code
 	 */
 	public int getResponseCode() {
-		return response.getRcode();
+		return getRCode();
 	}
 }

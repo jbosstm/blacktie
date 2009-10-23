@@ -19,18 +19,11 @@
 package org.rhq.plugins.blacktie;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.jms.Destination;
-import javax.jms.Queue;
 import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,64 +36,80 @@ import org.rhq.core.pluginapi.inventory.ResourceDiscoveryComponent;
 import org.rhq.core.pluginapi.inventory.ResourceDiscoveryContext;
 
 /**
- * This can be the start of your own custom plugin's discovery component. Review the javadoc for
- * {@link ResourceDiscoveryComponent}.
- *
+ * This can be the start of your own custom plugin's discovery component. Review
+ * the javadoc for {@link ResourceDiscoveryComponent}.
+ * 
  * @author John Mazzitelli
  */
 public class ServerDiscoveryComponent implements ResourceDiscoveryComponent {
-    private final Log log = LogFactory.getLog(ServerDiscoveryComponent.class);
-    private Properties prop = new Properties();
-    private MBeanServerConnection beanServerConnection;
-    
-    /**
-     * Review the javadoc for both {@link ResourceDiscoveryComponent} and {@link ResourceDiscoveryContext} to learn what
-     * you need to do in this method.
-     *
-     * @see ResourceDiscoveryComponent#discoverResources(ResourceDiscoveryContext)
-     */
-    public Set<DiscoveredResourceDetails> discoverResources(ResourceDiscoveryContext context) {;
-        log.info("Discovering my custom plugin's resources");
+	private final Log log = LogFactory.getLog(ServerDiscoveryComponent.class);
+	private Properties prop = new Properties();
+	private MBeanServerConnection beanServerConnection;
 
-        // if your plugin descriptor defined one or more <process-scan>s, then see if the plugin container
-        // auto-discovered processes using those process scan definitions.  Process all those that were found.
-        List<ProcessScanResult> autoDiscoveryResults = context.getAutoDiscoveredProcesses();
-        for (ProcessScanResult autoDiscoveryResult : autoDiscoveryResults) {
-            // determine if you want to include the result in this method's returned set of discovered resources
-        }
+	/**
+	 * Review the javadoc for both {@link ResourceDiscoveryComponent} and
+	 * {@link ResourceDiscoveryContext} to learn what you need to do in this
+	 * method.
+	 * 
+	 * @see ResourceDiscoveryComponent#discoverResources(ResourceDiscoveryContext)
+	 */
+	public Set<DiscoveredResourceDetails> discoverResources(
+			ResourceDiscoveryContext context) {
+		;
+		log.info("Discovering my custom plugin's resources");
 
-        List<Configuration> pluginConfigs = context.getPluginConfigurations();
-        for (Configuration pluginConfig : pluginConfigs) {
-            // pluginConfig contains information on a resource that was manually discovered/entered by the user
-            // take it and build a details object that represents that resource
-        }
+		// if your plugin descriptor defined one or more <process-scan>s, then
+		// see if the plugin container
+		// auto-discovered processes using those process scan definitions.
+		// Process all those that were found.
+		List<ProcessScanResult> autoDiscoveryResults = context
+				.getAutoDiscoveredProcesses();
+		for (ProcessScanResult autoDiscoveryResult : autoDiscoveryResults) {
+			// determine if you want to include the result in this method's
+			// returned set of discovered resources
+		}
 
-        // now perform your own discovery mechanism, if you have one.  For each resource discovered, you need to
-        // create a details object that describe the resource that you discovered.
-        HashSet<DiscoveredResourceDetails> set = new HashSet<DiscoveredResourceDetails>();
+		List<Configuration> pluginConfigs = context.getPluginConfigurations();
+		for (Configuration pluginConfig : pluginConfigs) {
+			// pluginConfig contains information on a resource that was manually
+			// discovered/entered by the user
+			// take it and build a details object that represents that resource
+		}
 
-        // key = this must be a unique string across all of your resources - see docs for uniqueness rules
-        // name = this is the name you give the new resource; it does not necessarily have to be unique
-        // version = this is any string that corresponds to the resource's version
-        // description = this is any string that you want to assign as the default description for your resource
-        try {
-        	XMLEnvHandler handler = new XMLEnvHandler("", prop);
-        	XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
-        	xmlenv.parse("Environment.xml");
-        	
-        	Set<String> servers = (Set<String>)prop.get("blacktie.domain.servers");
-        	for(String server : servers) {
-        		String admin = (String)prop.get("blacktie." + server + "_ADMIN" + ".transportLib");
-        		if(admin != null) {
-        			DiscoveredResourceDetails resource = new DiscoveredResourceDetails(
-        					context.getResourceType(),
-        					server, server, null, null, null, null);
-        			set.add(resource);
-        		}
-        	}        	     	
-        } catch (Exception e) {
-        	log.equals("get servers error with " + e);
-        }
-        return set;
-    }
+		// now perform your own discovery mechanism, if you have one. For each
+		// resource discovered, you need to
+		// create a details object that describe the resource that you
+		// discovered.
+		HashSet<DiscoveredResourceDetails> set = new HashSet<DiscoveredResourceDetails>();
+
+		// key = this must be a unique string across all of your resources - see
+		// docs for uniqueness rules
+		// name = this is the name you give the new resource; it does not
+		// necessarily have to be unique
+		// version = this is any string that corresponds to the resource's
+		// version
+		// description = this is any string that you want to assign as the
+		// default description for your resource
+		try {
+			XMLEnvHandler handler = new XMLEnvHandler("", prop);
+			XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
+			xmlenv.parse("Environment.xml");
+
+			Set<String> servers = (Set<String>) prop
+					.get("blacktie.domain.servers");
+			for (String server : servers) {
+				String admin = (String) prop.get("blacktie." + server
+						+ "_ADMIN" + ".transportLib");
+				if (admin != null) {
+					DiscoveredResourceDetails resource = new DiscoveredResourceDetails(
+							context.getResourceType(), server, server, null,
+							null, null, null);
+					set.add(resource);
+				}
+			}
+		} catch (Exception e) {
+			log.equals("get servers error with " + e);
+		}
+		return set;
+	}
 }

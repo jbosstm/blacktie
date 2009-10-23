@@ -56,11 +56,13 @@ public class TestSpecExampleOne extends TestCase {
 		long clen = 0; /* contains a character array named input and an */
 		int cd; /* integer named output. */
 		/* allocate typed buffers */
-		Buffer dptr = connection.tpalloc("X_C_TYPE", "dc_buf"); // TODO ,0
-		Buffer cptr = connection.tpalloc("X_C_TYPE", "dc_buf"); // TODO ,0
+		X_C_TYPE dptr = (X_C_TYPE) connection.tpalloc("X_C_TYPE", "dc_buf"); // TODO
+		// ,0
+		X_C_TYPE cptr = (X_C_TYPE) connection.tpalloc("X_C_TYPE", "dc_buf"); // TODO
+		// ,0
 		/* populate typed buffers with input data */
-		dptr.setCharArray("input", "debit account 123 by 50".toCharArray());
-		cptr.setCharArray("input", "credit account 456 by 50".toCharArray());
+		dptr.setByteArray("input", "debit account 123 by 50".getBytes());
+		cptr.setByteArray("input", "credit account 456 by 50".getBytes());
 		// TODO tx_begin(); /* start global transaction */
 		/* issue asynchronous request to DEBIT, while it is processing... */
 		cd = connection.tpacall(server.getServiceNameDEBIT(), dptr, 0,
@@ -68,11 +70,11 @@ public class TestSpecExampleOne extends TestCase {
 		/* ...issue synchronous request to CREDIT */
 		Response response = connection.tpcall(server.getServiceNameCREDIT(),
 				cptr, 0, Connection.TPSIGRSTRT);
-		cptr = response.getBuffer();
+		cptr = (X_C_TYPE) response.getBuffer();
 		clen = response.getLen();
 		/* retrieve DEBIT�s reply */
 		response = connection.tpgetrply(cd, Connection.TPSIGRSTRT);
-		dptr = response.getBuffer();
+		dptr = (X_C_TYPE) response.getBuffer();
 		dlen = response.getLen();
 		if (dptr.getInt("output") == OK && cptr.getInt("output") == OK) {
 			// TODO tx_commit(); /* commit global transaction */

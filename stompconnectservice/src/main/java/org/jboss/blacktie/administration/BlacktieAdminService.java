@@ -1,29 +1,14 @@
 package org.jboss.blacktie.administration;
 
 import java.io.StringReader;
-import java.util.Properties;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-
 import java.util.List;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
-import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
-import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
-import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
-import org.jboss.blacktie.jatmibroker.xatmi.Connection;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
-import org.jboss.blacktie.jatmibroker.xatmi.Response;
-import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
+import java.util.Properties;
 
 import javax.jms.Destination;
 import javax.jms.Queue;
-import javax.management.Attribute;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
@@ -32,6 +17,15 @@ import javax.management.remote.JMXServiceURL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
+import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
+import org.jboss.blacktie.jatmibroker.xatmi.Response;
+import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
@@ -55,26 +49,27 @@ import org.xml.sax.InputSource;
  */
 
 public class BlacktieAdminService implements BlacktieAdminServiceMBean {
-	private static final Logger log = LogManager.getLogger(BlacktieAdminService.class);
+	private static final Logger log = LogManager
+			.getLogger(BlacktieAdminService.class);
 	private Properties prop = new Properties();
 	private MBeanServerConnection beanServerConnection;
-	private Connection  connection;
+	private Connection connection;
 	private QueueReaper reaper;
 
 	public void start() throws Exception {
 		XMLEnvHandler handler = new XMLEnvHandler("", prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 		xmlenv.parse("Environment.xml");
-		JMXServiceURL u = new JMXServiceURL(
-				(String)prop.get("JMXURL"));
+		JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
 		JMXConnector c = JMXConnectorFactory.connect(u);
 		beanServerConnection = c.getMBeanServerConnection();
 
-		ConnectionFactory connectionFactory = ConnectionFactory.getConnectionFactory();
+		ConnectionFactory connectionFactory = ConnectionFactory
+				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
 		reaper = new QueueReaper(beanServerConnection);
 		reaper.startThread();
-		
+
 		log.info("Admin Server Started");
 	}
 
@@ -92,7 +87,8 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 		ArrayList<String> serversName = new ArrayList<String>();
 		ObjectName objName = new ObjectName(
 				"jboss.messaging:service=ServerPeer");
-		HashSet dests = (HashSet) beanServerConnection.getAttribute(objName, "Destinations");
+		HashSet dests = (HashSet) beanServerConnection.getAttribute(objName,
+				"Destinations");
 
 		Iterator<Destination> it = dests.iterator();
 		while (it.hasNext()) {
@@ -107,7 +103,7 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 		}
 		return serversName;
 	}
-	
+
 	private Element stringToElement(String s) throws Exception {
 		StringReader sreader = new StringReader(s.trim());
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -115,12 +111,13 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 		Document doc = parser.parse(new InputSource(sreader));
 		return doc.getDocumentElement();
 	}
-	
-	private Response callAdminService(String serverName, int id, String command) throws ConnectionException {
+
+	private Response callAdminService(String serverName, int id, String command)
+			throws ConnectionException {
 		int sendlen = command.length() + 1;
-		Buffer sendbuf = connection.tpalloc("X_OCTET", null);
-		sendbuf.setData(command.getBytes());
-		
+		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf.setByteArray(command.getBytes());
+
 		String service = serverName + "_ADMIN_" + id;
 
 		Response rcvbuf = connection.tpcall(service, sendbuf, sendlen, 0);
@@ -133,16 +130,17 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 		String status = null;
 		try {
 			buf = callAdminService(serverName, id, command);
-			if(buf != null) {
-				byte[] received = buf.getBuffer().getData();
-				if(received[0] == '1') {				
+			if (buf != null) {
+				byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
+				if (received[0] == '1') {
 					status = new String(received, 1, received.length - 1);
 					log.info("status is " + status);
 					return stringToElement(status);
 				}
 			}
 		} catch (ConnectionException e) {
-			log.error("call server " + serverName + " id " + id + " failed with " + e.getTperrno());
+			log.error("call server " + serverName + " id " + id
+					+ " failed with " + e.getTperrno());
 		} catch (Exception e) {
 			log.error("response " + status + " error with " + e);
 		}
@@ -153,12 +151,13 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 		String command = "advertise," + serviceName + ",";
 		try {
 			Response buf = callAdminService(serverName, id, command);
-			if(buf != null) {
-				byte[] received = buf.getBuffer().getData();
+			if (buf != null) {
+				byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
 				return (received[0] == '1');
 			}
 		} catch (ConnectionException e) {
-			log.error("call server " + serverName + " id " + id + " failed with " + e.getTperrno());
+			log.error("call server " + serverName + " id " + id
+					+ " failed with " + e.getTperrno());
 		}
 		return false;
 	}
@@ -167,12 +166,13 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 		String command = "unadvertise," + serviceName + ",";
 		try {
 			Response buf = callAdminService(serverName, id, command);
-			if(buf != null) {
-				byte[] received = buf.getBuffer().getData();
+			if (buf != null) {
+				byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
 				return (received[0] == '1');
 			}
 		} catch (ConnectionException e) {
-			log.error("call server " + serverName + " id " + id + " failed with " + e.getTperrno());
+			log.error("call server " + serverName + " id " + id
+					+ " failed with " + e.getTperrno());
 		}
 		return false;
 	}
@@ -182,7 +182,8 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 		try {
 			callAdminService(serverName, id, command);
 		} catch (ConnectionException e) {
-			log.error("call server " + serverName + " id " + id + " failed with " + e.getTperrno());
+			log.error("call server " + serverName + " id " + id
+					+ " failed with " + e.getTperrno());
 			e.printStackTrace();
 		}
 	}

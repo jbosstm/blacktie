@@ -9,9 +9,9 @@ public class TestTPReturnServiceTpurcode implements BlacktieService {
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		log.info("testtpreturn_service_tpurcode");
-		int len = 0;
+		int len = 1;
 		try {
-			Buffer toReturn = svcinfo.tpalloc("X_OCTET", null);
+			Buffer toReturn = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
 			if (TestTPConversation.strcmp(svcinfo.getBuffer(), "24") == 0) {
 				return new Response(Connection.TPSUCCESS, 24, toReturn, len, 0);
 			} else {

@@ -64,8 +64,8 @@ public class TestTPReturn extends TestCase {
 		server.tpadvertiseTestTPReturn();
 
 		int sendlen = "tprnb".length() + 1;
-		Buffer sendbuf = connection.tpalloc("X_OCTET", null);
-		sendbuf.setData("tprnb".getBytes());
+		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf.setByteArray("tprnb".getBytes());
 
 		try {
 			connection.tpcall(server.getServiceNameTestTPReturn(), sendbuf,
@@ -84,14 +84,14 @@ public class TestTPReturn extends TestCase {
 		server.tpadvertiseTestTPReturn2();
 
 		int sendlen = 3;
-		Buffer sendbuf = connection.tpalloc("X_OCTET", null);
-		sendbuf.setData("24".getBytes());
+		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf.setByteArray("24".getBytes());
 		Response success = connection.tpcall(server
 				.getServiceNameTestTPReturn2(), sendbuf, sendlen, 0);
 		assertTrue(success != null);
 		assertTrue(success.getRcode() == 24);
 
-		sendbuf.setData("77".getBytes());
+		sendbuf.setByteArray("77".getBytes());
 		success = connection.tpcall(server.getServiceNameTestTPReturn2(),
 				sendbuf, sendlen, 0);
 		assertTrue(success != null);

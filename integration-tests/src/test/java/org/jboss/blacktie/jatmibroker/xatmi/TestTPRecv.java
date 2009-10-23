@@ -29,7 +29,7 @@ public class TestTPRecv extends TestCase {
 	private RunServer server = new RunServer();
 	private Connection connection;
 	private int sendlen;
-	private Buffer sendbuf;
+	private X_OCTET sendbuf;
 	private Session cd;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
@@ -41,7 +41,7 @@ public class TestTPRecv extends TestCase {
 		connection = connectionFactory.getConnection();
 
 		sendlen = "recv".length() + 1;
-		sendbuf = connection.tpalloc("X_OCTET", null);
+		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {

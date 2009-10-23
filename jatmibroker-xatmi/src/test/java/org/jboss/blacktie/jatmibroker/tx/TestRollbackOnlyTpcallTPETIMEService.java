@@ -3,11 +3,11 @@ package org.jboss.blacktie.jatmibroker.tx;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
-import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
+import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class TestRollbackOnlyTpcallTPETIMEService implements BlacktieService {
 	private static final Logger log = LogManager
@@ -23,8 +23,8 @@ public class TestRollbackOnlyTpcallTPETIMEService implements BlacktieService {
 					+ " seconds");
 
 			int len = 60;
-			Buffer toReturn = svcinfo.tpalloc("X_OCTET", null);
-			toReturn.setData("test_tpcall_TPETIME_service".getBytes());
+			X_OCTET toReturn = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
+			toReturn.setByteArray("test_tpcall_TPETIME_service".getBytes());
 			return new Response(Connection.TPSUCCESS, 0, toReturn, len, 0);
 		} catch (ConnectionException e) {
 			return new Response(Connection.TPFAIL, 0, null, 0, 0);

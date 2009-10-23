@@ -11,12 +11,13 @@ public class TestTPCancelService implements BlacktieService {
 		log.info("testtpcancel_service");
 		if ((svcinfo.getFlags() & Connection.TPNOREPLY) != Connection.TPNOREPLY) {
 			int len = 21;
-			Buffer toReturn;
+			X_OCTET toReturn;
 			try {
-				String received = new String(svcinfo.getBuffer().getData());
+				String received = new String(((X_OCTET) svcinfo.getBuffer())
+						.getByteArray());
 				if (received.equals("cancel")) {
-					toReturn = svcinfo.tpalloc("X_OCTET", null);
-					toReturn.setData("testtpcancel_service".getBytes());
+					toReturn = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
+					toReturn.setByteArray("testtpcancel_service".getBytes());
 					return new Response(Connection.TPSUCCESS, 0, toReturn, len,
 							0);
 				} else {

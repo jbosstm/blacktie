@@ -10,8 +10,8 @@ public class TestTPGetRplyService implements BlacktieService {
 	public Response tpservice(TPSVCINFO svcinfo) {
 		try {
 			log.info("testtpgetrply_service");
-			Buffer toReturn = svcinfo.tpalloc("X_OCTET", null);
-			toReturn.setData("testtpgetrply_service".getBytes());
+			X_OCTET toReturn = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
+			toReturn.setByteArray("testtpgetrply_service".getBytes());
 			return new Response(Connection.TPSUCCESS, 0, toReturn, 22, 0);
 		} catch (ConnectionException e) {
 			return new Response(Connection.TPFAIL, 0, null, 22, 0);

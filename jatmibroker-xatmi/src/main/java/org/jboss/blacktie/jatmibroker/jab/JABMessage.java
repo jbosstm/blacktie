@@ -15,9 +15,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.jab.factory;
+package org.jboss.blacktie.jatmibroker.jab;
 
-import org.jboss.blacktie.jatmibroker.jab.JABException;
 import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
@@ -27,12 +26,11 @@ import org.jboss.blacktie.jatmibroker.xatmi.X_C_TYPE;
 import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
 /**
- * The JABBuffer allows the programmer to invoked XATMI services which accept
- * X_OCTET parameters.
+ * The JABRequest class wraps the output parameter to the service.
  * 
- * @see JABResponse
+ * @see JABRemoteService
  */
-public class JABBuffer {
+public class JABMessage implements Message {
 
 	/**
 	 * The rcode if this is a response
@@ -55,7 +53,7 @@ public class JABBuffer {
 	 * @param bufferType
 	 * @throws JABException
 	 */
-	JABBuffer(Connection connection, String bufferType, String bufferSubType)
+	JABMessage(Connection connection, String bufferType, String bufferSubType)
 			throws JABException {
 		try {
 			Buffer buffer = connection.tpalloc(bufferType, bufferSubType);
@@ -77,7 +75,7 @@ public class JABBuffer {
 	 * @param response
 	 *            The response
 	 */
-	JABBuffer(Response response) {
+	JABMessage(Response response) {
 		Buffer buffer = response.getBuffer();
 		if (buffer.getType().equals("X_OCTET")) {
 			xOctet = (X_OCTET) buffer;
@@ -332,10 +330,10 @@ public class JABBuffer {
 	public void setByteArray(String key, byte[] data) throws JABException {
 		if (xOctet != null) {
 			if (key.equals("X_OCTET")) {
+				xOctet.setByteArray(data);
+			} else {
 				throw new JABException(
 						"X_OCTET buffers contain a single attribute X_OCTET");
-			} else {
-				xOctet.setByteArray(data);
 			}
 		} else if (xCommon != null) {
 			try {

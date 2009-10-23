@@ -35,19 +35,19 @@ import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
 public class QueueReaper implements Runnable {
 	/** logger */
 	private static final Logger log = LogManager.getLogger(QueueReaper.class);
-	
+
 	/** Interval at which to run */
-	private long interval = 30 * 1000; //TODO make this configurable
+	private long interval = 30 * 1000; // TODO make this configurable
 
 	/** Thread to run */
 	private Thread thread;
 
 	/** Whether the thread is executing */
 	private boolean run;
-	
+
 	private MBeanServerConnection beanServerConnection;
-	
-	public QueueReaper(MBeanServerConnection conn) {	    
+
+	public QueueReaper(MBeanServerConnection conn) {
 		this.thread = new Thread(this);
 		this.thread.setDaemon(true);
 		this.thread.setPriority(Thread.MIN_PRIORITY);
@@ -65,7 +65,7 @@ public class QueueReaper implements Runnable {
 			log.debug("Thread already running");
 		}
 	}
-	
+
 	public void stopThread() {
 		if (!this.thread.isInterrupted()) {
 			this.thread.interrupt();
@@ -82,36 +82,39 @@ public class QueueReaper implements Runnable {
 			try {
 				ObjectName objName = new ObjectName(
 						"jboss.messaging:service=ServerPeer");
-				HashSet<Destination> dests = (HashSet<Destination>) 
-						beanServerConnection.getAttribute(objName, "Destinations");
+				HashSet<Destination> dests = (HashSet<Destination>) beanServerConnection
+						.getAttribute(objName, "Destinations");
 
 				Properties prop = new Properties();
 				XMLEnvHandler handler = new XMLEnvHandler("", prop);
 				XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 				xmlenv.parse("Environment.xml");
-				
+
 				Iterator<Destination> it = dests.iterator();
 				while (it.hasNext()) {
 					Destination dest = it.next();
 					if (dest instanceof Queue) {
 						String serviceName = ((Queue) dest).getQueueName();
-						String server = (String) prop.get("blacktie." + serviceName + ".server");
-						if (server != null &&
-							isCreatedProgrammatically(serviceName) && 
-							consumerCount(serviceName) == 0) {
+						String server = (String) prop.get("blacktie."
+								+ serviceName + ".server");
+						if (server != null
+								&& isCreatedProgrammatically(serviceName)
+								&& consumerCount(serviceName) == 0) {
 
-				  			this.interval = Integer.parseInt(prop.getProperty("QueueReaperInterval", "30")) * 1000;
+							this.interval = Integer.parseInt(prop.getProperty(
+									"QueueReaperInterval", "30")) * 1000;
 							Thread.sleep(this.interval);
 
-							//double check consumer is 0
-							if(consumerCount(serviceName) == 0) {
+							// double check consumer is 0
+							if (consumerCount(serviceName) == 0) {
 								undeployQueue(serviceName);
-								log.info("undeploy service " + serviceName + " for consumer is 0");
+								log.info("undeploy service " + serviceName
+										+ " for consumer is 0");
 							}
 						}
 					}
 				}
-				log.debug("Sleeping for "+this.interval+" ms");
+				log.debug("Sleeping for " + this.interval + " ms");
 				Thread.sleep(this.interval);
 			} catch (InterruptedException e) {
 				log.debug("Sleeping interrupted");
@@ -122,7 +125,7 @@ public class QueueReaper implements Runnable {
 			}
 		}
 	}
-	
+
 	int consumerCount(String serviceName) throws Exception {
 		ObjectName objName = new ObjectName(
 				"jboss.messaging.destination:service=Queue,name=" + serviceName);
@@ -130,22 +133,23 @@ public class QueueReaper implements Runnable {
 				"ConsumerCount");
 		return count.intValue();
 	}
-	
+
 	Boolean isCreatedProgrammatically(String serviceName) throws Exception {
 		ObjectName objName = new ObjectName(
 				"jboss.messaging.destination:service=Queue,name=" + serviceName);
-		return (Boolean) beanServerConnection.getAttribute(objName, "CreatedProgrammatically");
+		return (Boolean) beanServerConnection.getAttribute(objName,
+				"CreatedProgrammatically");
 	}
-	
+
 	int undeployQueue(String serviceName) {
 		int result = 0;
 
 		try {
 			ObjectName objName = new ObjectName(
 					"jboss.messaging:service=ServerPeer");
-				beanServerConnection.invoke(objName, "undeployQueue",
-						new Object[] { serviceName },
-						new String[] { "java.lang.String" });
+			beanServerConnection.invoke(objName, "undeployQueue",
+					new Object[] { serviceName },
+					new String[] { "java.lang.String" });
 			result = 1;
 		} catch (Throwable t) {
 			log.error("Could not undeploy queue of " + serviceName, t);

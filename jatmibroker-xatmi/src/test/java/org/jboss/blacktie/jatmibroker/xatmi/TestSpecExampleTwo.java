@@ -55,10 +55,8 @@ public class TestSpecExampleTwo extends TestCase {
 		Buffer ptr = connection.tpalloc("X_C_TYPE", "inq_buf");
 
 		/* populate typed buffer with input data */
-		ptr
-				.setCharArray("input",
-						"retrieve all accounts with balances less than 0"
-								.toCharArray());
+		((X_C_TYPE) ptr).setByteArray("input",
+				"retrieve all accounts with balances less than 0".getBytes());
 		// TODO tx_begin(); /* start global transaction */
 		/* connect to conversational service, send input data, & yield control */
 		cd = connection.tpconnect(server.getServiceNameINQUIRY(), ptr, 0,

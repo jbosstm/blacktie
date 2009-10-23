@@ -29,6 +29,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
 import org.jboss.blacktie.jatmibroker.xatmi.Session;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPConversation;
+import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class TestRollbackOnly extends TestCase {
 	private static final Logger log = LogManager
@@ -36,7 +37,7 @@ public class TestRollbackOnly extends TestCase {
 	private RunServer server = new RunServer();
 	private Connection connection;
 	private int sendlen;
-	private Buffer sendbuf;
+	private X_OCTET sendbuf;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		server.serverinit();
@@ -46,8 +47,8 @@ public class TestRollbackOnly extends TestCase {
 		connection = connectionFactory.getConnection();
 
 		sendlen = "TestRbkOnly".length() + 1;
-		sendbuf = connection.tpalloc("X_OCTET", null);
-		sendbuf.setData("TestRbkOnly".getBytes());
+		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf.setByteArray("TestRbkOnly".getBytes());
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
@@ -110,9 +111,8 @@ public class TestRollbackOnly extends TestCase {
 					sendlen, 0);
 			fail("Expected e.getTperrno() == TPESVCFAIL");
 		} catch (ConnectionException e) {
-			assertTrue(new String(e.getReceived().getData()),
-					TestTPConversation.strcmp(e.getReceived(),
-							"test_tpcall_TPESVCFAIL_service") == 0);
+			assertTrue(TestTPConversation.strcmp(e.getReceived(),
+					"test_tpcall_TPESVCFAIL_service") == 0);
 			assertTrue(e.getTperrno() == Connection.TPESVCFAIL);
 		}
 
@@ -160,8 +160,8 @@ public class TestRollbackOnly extends TestCase {
 			assertTrue(e.getEvent() == Connection.TPEV_SVCFAIL);
 			assertTrue(e.getTperrno() == Connection.TPEEVENT);
 			Buffer rcvbuf = e.getReceived();
-			assertTrue(new String(rcvbuf.getData()), TestTPConversation.strcmp(
-					rcvbuf, "test_tprecv_TPEV_SVCFAIL_service") == 0);
+			assertTrue(TestTPConversation.strcmp(rcvbuf,
+					"test_tprecv_TPEV_SVCFAIL_service") == 0);
 		}
 
 		TXINFO txinfo = new TXINFO();

@@ -27,7 +27,6 @@ import org.jboss.blacktie.jatmibroker.jab.JABException;
 import org.jboss.blacktie.jatmibroker.jab.JABSession;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 import org.jboss.blacktie.jatmibroker.jab.TransactionException;
-import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
@@ -70,6 +69,22 @@ public class JABConnection {
 			throws JABException {
 		this.connection = connection;
 		this.session = session;
+	}
+
+	/**
+	 * Create a new JABBuffer
+	 * 
+	 * @param type
+	 *            The type of the buffer
+	 * @param subType
+	 *            The subtype of the buffer
+	 * @return The new buffer
+	 * @throws JABException
+	 *             In case the buffer cannot be allocated
+	 */
+	public JABBuffer createJABBuffer(String type, String subType)
+			throws JABException {
+		return new JABBuffer(connection, type, subType);
 	}
 
 	/**
@@ -130,12 +145,10 @@ public class JABConnection {
 				log.debug("service_request tx same as current");
 			}
 
-			Buffer request = connection.tpalloc("X_OCTET", null);
-			request.setData(toSend.getValue());
 			log.debug("service_request tpcall");
-			Response response = connection.tpcall(serviceName, request, request
-					.getLength(), Connection.TPNOTIME);
-			responseMessage = new JABResponse(connection, response);
+			Response response = connection.tpcall(serviceName, toSend
+					.getBuffer(), toSend.getLength(), Connection.TPNOTIME);
+			responseMessage = new JABResponse(response);
 			log.debug("service_request responsed");
 		} catch (Exception e) {
 			log.warn("service_request exception: " + e.getMessage());

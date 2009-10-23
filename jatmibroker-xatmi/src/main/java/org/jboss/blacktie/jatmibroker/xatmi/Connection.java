@@ -190,12 +190,11 @@ public class Connection {
 		String subtype = null;
 		byte[] data = null;
 		if (toSend != null) {
-			toSend.serialize();
-			data = toSend.getData();
+			data = toSend.serialize();
 			type = toSend.getType();
 			subtype = toSend.getSubtype();
 			if (!type.equals("X_OCTET")) {
-				len = toSend.getLength();
+				len = data.length;
 			}
 		}
 
@@ -295,13 +294,12 @@ public class Connection {
 		String subtype = null;
 		byte[] data = null;
 		if (toSend != null) {
-			toSend.serialize();
-			if (!toSend.equals("X_OCTET")) {
-				len = toSend.getLength();
-			}
-			data = toSend.getData();
+			data = toSend.serialize();
 			type = toSend.getType();
 			subtype = toSend.getSubtype();
+			if (!type.equals("X_OCTET")) {
+				len = data.length;
+			}
 		}
 
 		String timeToLive = properties.getProperty("TimeToLive");
@@ -315,11 +313,11 @@ public class Connection {
 
 		byte[] response = null;
 		try {
-			Buffer odata = session.tprecv(0);
-			response = odata.getData();
+			X_OCTET odata = (X_OCTET) session.tprecv(0);
+			response = odata.getByteArray();
 		} catch (ConnectionException e) {
 			if (e.getReceived() != null) {
-				response = e.getReceived().getData();
+				response = ((X_OCTET) e.getReceived()).getByteArray();
 			} else {
 				throw new ConnectionException(e.getTperrno(),
 						"Could not connect");
@@ -391,8 +389,7 @@ public class Connection {
 		if (message.type != null && !message.type.equals("")) {
 			if (message.type.equals("X_OCTET")) {
 				log.debug("Initializing a new X_OCTET");
-				buffer = new X_OCTET();
-				buffer.setData(message.data);
+				buffer = new X_OCTET(message.data);
 			} else if (message.type.equals("X_C_TYPE")) {
 				log.debug("Initializing a new X_C_TYPE");
 				buffer = new X_C_TYPE(message.subtype, properties, message.data);

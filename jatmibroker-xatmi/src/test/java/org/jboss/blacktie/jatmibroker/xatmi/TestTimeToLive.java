@@ -53,8 +53,8 @@ public class TestTimeToLive extends TestCase {
 
 			String toSend = "test_call_ttl_1";
 			int sendlen = toSend.length() + 1;
-			Buffer sendbuf = connection.tpalloc("X_OCTET", null);
-			sendbuf.setData(toSend.getBytes());
+			X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+			sendbuf.setByteArray(toSend.getBytes());
 
 			Response rcvbuf = connection.tpcall(server.getServiceNameTTL(),
 					sendbuf, sendlen, 0);
@@ -71,8 +71,8 @@ public class TestTimeToLive extends TestCase {
 
 			String toSend = "test_call_ttl_2";
 			int sendlen = toSend.length() + 1;
-			Buffer sendbuf = connection.tpalloc("X_OCTET", null);
-			sendbuf.setData(toSend.getBytes());
+			X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+			sendbuf.setByteArray(toSend.getBytes());
 
 			Response rcvbuf = connection.tpcall(server.getServiceNameTTL(),
 					sendbuf, sendlen, 0);
@@ -95,16 +95,16 @@ public class TestTimeToLive extends TestCase {
 		try {
 			String toSend = "counter";
 			int sendlen = toSend.length() + 1;
-			Buffer sendbuf = connection.tpalloc("X_OCTET", null);
-			sendbuf.setData(toSend.getBytes());
+			X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+			sendbuf.setByteArray(toSend.getBytes());
 
 			Response rcvbuf = connection.tpcall(server.getServiceNameTTL(),
 					sendbuf, sendlen, 0);
 
 			assertTrue(rcvbuf != null);
 			assertTrue(rcvbuf.getBuffer() != null);
-			assertTrue(rcvbuf.getBuffer().getData() != null);
-			byte[] received = rcvbuf.getBuffer().getData();
+			assertTrue(((X_OCTET) rcvbuf.getBuffer()).getByteArray() != null);
+			byte[] received = ((X_OCTET) rcvbuf.getBuffer()).getByteArray();
 
 			String counter = new String(received);
 			log.info("get message counter of TTL is " + counter);

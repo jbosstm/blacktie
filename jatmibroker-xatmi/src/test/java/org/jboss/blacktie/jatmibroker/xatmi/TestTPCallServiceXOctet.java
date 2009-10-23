@@ -13,7 +13,7 @@ public class TestTPCallServiceXOctet implements BlacktieService {
 		log.info("test_tpcall_x_octet_service");
 		boolean ok = false;
 		if (svcinfo.getBuffer() != null) {
-			byte[] received = svcinfo.getBuffer().getData();
+			byte[] received = ((X_OCTET) svcinfo.getBuffer()).getByteArray();
 			byte[] expected = new byte["test_tpcall_x_octet".getBytes().length + 1];
 			System.arraycopy("test_tpcall_x_octet".getBytes(), 0, expected, 0,
 					received.length - 1);
@@ -23,19 +23,20 @@ public class TestTPCallServiceXOctet implements BlacktieService {
 		}
 
 		int len = 60;
-		Buffer toReturn;
+		X_OCTET toReturn;
 		try {
-			toReturn = svcinfo.tpalloc("X_OCTET", null);
+			toReturn = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
 			if (ok) {
-				toReturn.setData("tpcall_x_octet".getBytes());
+				toReturn.setByteArray("tpcall_x_octet".getBytes());
 			} else {
 				StringBuffer buffer = new StringBuffer("fail");
 				if (svcinfo.getBuffer() != null) {
-					buffer.append(new String(svcinfo.getBuffer().getData()));
+					buffer.append(new String(((X_OCTET) svcinfo.getBuffer())
+							.getByteArray()));
 				} else {
 					buffer.append("dud");
 				}
-				toReturn.setData("fail".getBytes());
+				toReturn.setByteArray("fail".getBytes());
 			}
 			return new Response(Connection.TPSUCCESS, 20, toReturn, len, 0);
 		} catch (ConnectionException e) {

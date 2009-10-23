@@ -49,8 +49,8 @@ public class TestTPCall extends TestCase {
 
 		String message = "test_tpcall_unknown_service";
 		int sendlen = message.length() + 1;
-		Buffer sendbuf = connection.tpalloc("X_OCTET", null);
-		sendbuf.setData("test_tpcall_unknown_service".getBytes());
+		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf.setByteArray("test_tpcall_unknown_service".getBytes());
 
 		try {
 			Response rcvbuf = connection.tpcall("UNKNOWN_SERVICE", sendbuf,
@@ -70,15 +70,15 @@ public class TestTPCall extends TestCase {
 
 		String toSend = "test_tpcall_x_octet";
 		int sendlen = toSend.length() + 1;
-		Buffer sendbuf = connection.tpalloc("X_OCTET", null);
-		sendbuf.setData(toSend.getBytes());
+		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf.setByteArray(toSend.getBytes());
 
 		Response rcvbuf = connection.tpcall(
 				server.getServiceNametpcallXOctet(), sendbuf, sendlen, 0);
 		assertTrue(rcvbuf != null);
 		assertTrue(rcvbuf.getBuffer() != null);
-		assertTrue(rcvbuf.getBuffer().getData() != null);
-		byte[] received = rcvbuf.getBuffer().getData();
+		assertTrue(((X_OCTET) rcvbuf.getBuffer()).getByteArray() != null);
+		byte[] received = ((X_OCTET) rcvbuf.getBuffer()).getByteArray();
 		byte[] expected = new byte[received.length];
 		System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0,
 				"tpcall_x_octet".getBytes().length);
@@ -89,7 +89,7 @@ public class TestTPCall extends TestCase {
 		log.info("test_tpcall_x_common");
 		server.tpadvertisetpcallXCommon();
 
-		Buffer dptr = connection.tpalloc("X_COMMON", "deposit");
+		X_COMMON dptr = (X_COMMON) connection.tpalloc("X_COMMON", "deposit");
 
 		dptr.setLong("acct_no", 12345678);
 		dptr.setShort("amount", (short) 50);
@@ -97,7 +97,7 @@ public class TestTPCall extends TestCase {
 		Response rcvbuf = connection.tpcall(server
 				.getServiceNametpcallXCommon(), dptr, 0, 0);
 		assertTrue(rcvbuf.getRcode() == 22);
-		byte[] received = rcvbuf.getBuffer().getData();
+		byte[] received = ((X_OCTET) rcvbuf.getBuffer()).getByteArray();
 		byte[] expected = new byte[received.length];
 		System.arraycopy("tpcall_x_common".getBytes(), 0, expected, 0,
 				"tpcall_x_common".getBytes().length);
@@ -108,10 +108,10 @@ public class TestTPCall extends TestCase {
 		log.info("test_tpcall_x_c_type");
 		server.tpadvertisetpcallXCType();
 
-		Buffer aptr = connection.tpalloc("X_C_TYPE", "acct_info");
+		X_C_TYPE aptr = (X_C_TYPE) connection.tpalloc("X_C_TYPE", "acct_info");
 
 		aptr.setLong("acct_no", 12345678);
-		aptr.setCharArray("name", "TOM".toCharArray());
+		aptr.setByteArray("name", "TOM".getBytes());
 
 		float[] foo = new float[2];
 		foo[0] = 1.1F;
@@ -127,7 +127,7 @@ public class TestTPCall extends TestCase {
 				server.getServiceNametpcallXCType(), aptr, 0,
 				Connection.TPNOCHANGE);
 		assertTrue(rcvbuf.getRcode() == 23);
-		byte[] received = rcvbuf.getBuffer().getData();
+		byte[] received = ((X_OCTET) rcvbuf.getBuffer()).getByteArray();
 		byte[] expected = new byte[received.length];
 		System.arraycopy("tpcall_x_c_type".getBytes(), 0, expected, 0,
 				"tpcall_x_c_type".getBytes().length);

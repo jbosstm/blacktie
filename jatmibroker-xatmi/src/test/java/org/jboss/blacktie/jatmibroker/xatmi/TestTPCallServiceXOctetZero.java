@@ -9,14 +9,14 @@ public class TestTPCallServiceXOctetZero implements BlacktieService {
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		try {
-			byte[] recv = svcinfo.getBuffer().getData();
+			byte[] recv = ((X_OCTET) svcinfo.getBuffer()).getByteArray();
 			byte[] toSend = new byte[recv.length];
 			int j = recv.length;
 			for (int i = 0; i < toSend.length; i++) {
 				toSend[i] = recv[--j];
 			}
-			Buffer toReturn = svcinfo.tpalloc("X_OCTET", null);
-			toReturn.setData(toSend);
+			X_OCTET toReturn = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
+			toReturn.setByteArray(toSend);
 			return new Response((short) 0, 0, toReturn, toSend.length, 0);
 		} catch (ConnectionException e) {
 			return new Response(Connection.TPFAIL, Connection.TPEITYPE, null,

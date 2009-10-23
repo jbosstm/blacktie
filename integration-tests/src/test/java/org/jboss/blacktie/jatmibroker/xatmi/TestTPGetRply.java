@@ -29,7 +29,7 @@ public class TestTPGetRply extends TestCase {
 	private RunServer server = new RunServer();
 	private Connection connection;
 	private int sendlen;
-	private Buffer sendbuf;
+	private X_OCTET sendbuf;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		server.serverinit();
@@ -40,8 +40,8 @@ public class TestTPGetRply extends TestCase {
 		connection = connectionFactory.getConnection();
 
 		sendlen = "grply".length() + 1;
-		sendbuf = connection.tpalloc("X_OCTET", null);
-		sendbuf.setData("grply".getBytes());
+		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf.setByteArray("grply".getBytes());
 
 	}
 

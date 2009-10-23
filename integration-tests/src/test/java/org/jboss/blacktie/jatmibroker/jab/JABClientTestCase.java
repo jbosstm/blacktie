@@ -59,8 +59,9 @@ public class JABClientTestCase extends TestCase {
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
 		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet",
-				aJabSession);
-		aJabService.setData("test_tpcall_x_octet".getBytes());
+				aJabSession, "X_OCTET", null);
+		aJabService.getRequest().setByteArray("X_OCTET",
+				"test_tpcall_x_octet".getBytes());
 		log.debug("calling tpcall_x_octet with tx");
 		aJabService.call(transaction);
 		log.debug("called tpcall_x_octet with tx, commiting ...");
@@ -68,7 +69,7 @@ public class JABClientTestCase extends TestCase {
 		log.debug("tpcall_x_octet commit ok");
 		byte[] expected = new byte[60];
 		System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0, 14);
-		byte[] received = aJabService.getData();
+		byte[] received = aJabService.getResponse().getByteArray("X_OCTET");
 		assertTrue(Arrays.equals(expected, received));
 		aJabSession.closeSession();
 	}
@@ -79,9 +80,10 @@ public class JABClientTestCase extends TestCase {
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
 		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet",
-				aJabSession);
+				aJabSession, "X_OCTET", null);
 		transaction.rollback_only();
-		aJabService.setData("test_tpcall_x_octet".getBytes());
+		aJabService.getRequest().setByteArray("X_OCTET",
+				"test_tpcall_x_octet".getBytes());
 		aJabService.call(null);
 		try {
 			transaction.commit();
@@ -95,7 +97,7 @@ public class JABClientTestCase extends TestCase {
 		}
 		byte[] expected = new byte[60];
 		System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0, 14);
-		byte[] received = aJabService.getData();
+		byte[] received = aJabService.getResponse().getByteArray("X_OCTET");
 		assertTrue(Arrays.equals(expected, received));
 
 		aJabSession.closeSession();
@@ -108,9 +110,10 @@ public class JABClientTestCase extends TestCase {
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
 		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet",
-				aJabSession);
+				aJabSession, "X_OCTET", null);
 		transaction.rollback_only();
-		aJabService.setData("test_tpcall_x_octet".getBytes());
+		aJabService.getRequest().setByteArray("X_OCTET",
+				"test_tpcall_x_octet".getBytes());
 		aJabService.call(null);
 		try {
 			transaction.rollback();
@@ -120,7 +123,7 @@ public class JABClientTestCase extends TestCase {
 		}
 		byte[] expected = new byte[60];
 		System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0, 14);
-		byte[] received = aJabService.getData();
+		byte[] received = aJabService.getResponse().getByteArray("X_OCTET");
 		assertTrue(Arrays.equals(expected, received));
 
 		aJabSession.closeSession();
@@ -131,12 +134,13 @@ public class JABClientTestCase extends TestCase {
 				null);
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet",
-				aJabSession);
-		aJabService.setData("test_tpcall_x_octet".getBytes());
+				aJabSession, "X_OCTET", null);
+		aJabService.getRequest().setByteArray("X_OCTET",
+				"test_tpcall_x_octet".getBytes());
 		aJabService.call(null);
 		byte[] expected = new byte[60];
 		System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0, 14);
-		byte[] received = aJabService.getData();
+		byte[] received = aJabService.getResponse().getByteArray("X_OCTET");
 		assertTrue(Arrays.equals(expected, received));
 
 		aJabSession.closeSession();
@@ -148,13 +152,14 @@ public class JABClientTestCase extends TestCase {
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
 		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet",
-				aJabSession);
-		aJabService.setData("test_tpcall_x_octet".getBytes());
+				aJabSession, "X_OCTET", null);
+		aJabService.getRequest().setByteArray("X_OCTET",
+				"test_tpcall_x_octet".getBytes());
 		aJabService.call(null);
 		transaction.commit();
 		byte[] expected = new byte[60];
 		System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0, 14);
-		byte[] received = aJabService.getData();
+		byte[] received = aJabService.getResponse().getByteArray("X_OCTET");
 		assertTrue(Arrays.equals(expected, received));
 
 		aJabSession.closeSession();

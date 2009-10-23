@@ -120,8 +120,8 @@ public abstract class Service implements BlacktieService {
 				session = new Session(properties, transport, message.cd, sender);
 				log.debug("Created the session");
 				int olen = 4;
-				Buffer odata = new X_OCTET();
-				odata.setData("ACK".getBytes());
+				X_OCTET odata = new X_OCTET();
+				odata.setByteArray("ACK".getBytes());
 				long result = session.tpsend(odata, olen, 0);
 				if (result == -1) {
 					session.close();
@@ -138,18 +138,15 @@ public abstract class Service implements BlacktieService {
 			if (message.type != null && !message.type.equals("")) {
 				if (message.type.equals("X_OCTET")) {
 					log.debug("Initializing a new X_OCTET");
-					buffer = new X_OCTET();
-					buffer.setData(message.data);
+					buffer = new X_OCTET(message.data);
 				} else if (message.type.equals("X_C_TYPE")) {
 					log.debug("Initializing a new X_C_TYPE");
 					buffer = new X_C_TYPE(message.subtype, properties,
 							message.data);
-					buffer.setData(message.data);
 				} else {
 					log.debug("Initializing a new X_COMMON");
 					buffer = new X_COMMON(message.subtype, properties,
 							message.data);
-					buffer.setData(message.data);
 				}
 			}
 			// TODO NO SESSIONS
@@ -220,12 +217,11 @@ public abstract class Service implements BlacktieService {
 				String subtype = null;
 				byte[] data = null;
 				if (toSend != null) {
-					toSend.serialize();
-					data = toSend.getData();
+					data = toSend.serialize();
 					type = toSend.getType();
 					subtype = toSend.getSubtype();
 					if (!type.equals("X_OCTET")) {
-						len = toSend.getLength();
+						len = data.length;
 					}
 				}
 				sender.send("", rval, rcode, data, len, response.getFlags(), 0,

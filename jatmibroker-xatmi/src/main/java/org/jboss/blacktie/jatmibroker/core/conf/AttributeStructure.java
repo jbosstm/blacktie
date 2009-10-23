@@ -20,7 +20,7 @@ package org.jboss.blacktie.jatmibroker.core.conf;
 public class AttributeStructure {
 	public String id;
 	public Class type;
-	int count;
+	public int count;
 	public int length;
 	long wirePosition;
 	long memPosition;

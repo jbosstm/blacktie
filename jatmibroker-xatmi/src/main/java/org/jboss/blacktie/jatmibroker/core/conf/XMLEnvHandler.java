@@ -161,14 +161,14 @@ public class XMLEnvHandler extends DefaultHandler {
 					} else if (type.equals("char")) {
 						typeSize = CHAR_SIZE;
 						attribute.instanceSize = CHAR_SIZE;
-						attribute.type = char.class;
+						attribute.type = byte.class;
 					} else if (type.equals("char[]")) {
 						if (attribute.length == 0) {
 							attribute.length = 1;
 						}
 						typeSize = CHAR_SIZE;
 						attribute.instanceSize = CHAR_SIZE * attribute.length;
-						attribute.type = char[].class;
+						attribute.type = byte[].class;
 					} else if (type.equals("short[]")) {
 						if (attribute.length == 0) {
 							attribute.length = 1;
@@ -214,7 +214,7 @@ public class XMLEnvHandler extends DefaultHandler {
 						typeSize = CHAR_SIZE;
 						attribute.instanceSize = CHAR_SIZE * attribute.length
 								* attribute.count;
-						attribute.type = char[][].class;
+						attribute.type = byte[][].class;
 					} else {
 						log.error("Unknown attribute type: " + attribute.type);
 						fail = true;

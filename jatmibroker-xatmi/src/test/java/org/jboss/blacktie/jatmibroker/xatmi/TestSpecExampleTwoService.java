@@ -12,7 +12,7 @@ public class TestSpecExampleTwoService implements BlacktieService {
 			log.info("inquiry_svc");
 			short rval;
 			/* extract initial typed buffer sent as part of tpconnect() */
-			Buffer ptr = svcinfo.getBuffer();
+			X_C_TYPE ptr = (X_C_TYPE) svcinfo.getBuffer();
 
 			/*
 			 * Parse input string, ptr->input, and retrieve records. Return 10

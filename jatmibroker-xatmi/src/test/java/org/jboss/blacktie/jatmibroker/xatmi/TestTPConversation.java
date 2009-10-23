@@ -31,7 +31,7 @@ public class TestTPConversation extends TestCase {
 
 	private Connection connection;
 	private int sendlen;
-	private Buffer sendbuf;
+	private X_OCTET sendbuf;
 	private Session cd;
 
 	static int interationCount = 100;
@@ -43,7 +43,7 @@ public class TestTPConversation extends TestCase {
 				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
 		sendlen = 11;
-		sendbuf = connection.tpalloc("X_OCTET", null);
+		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
 
 	}
 
@@ -56,7 +56,7 @@ public class TestTPConversation extends TestCase {
 		log.info("test_conversation");
 		server.tpadvertiseTestTPConversation();
 
-		sendbuf.setData("conversate".getBytes());
+		sendbuf.setByteArray("conversate".getBytes());
 		cd = connection.tpconnect(server.getServiceNameTestTPConversation(),
 				sendbuf, sendlen, Connection.TPRECVONLY);
 		long revent = 0;
@@ -72,7 +72,7 @@ public class TestTPConversation extends TestCase {
 				String expectedResult = ("hi" + i);
 				assertTrue(strcmp(expectedResult, rcvbuf) == 0);
 
-				sendbuf.setData(("yo" + i).getBytes());
+				sendbuf.setByteArray(("yo" + i).getBytes());
 				// userlogc((char*) "test_conversation:%s:", sendbuf);
 				int result = cd.tpsend(sendbuf, sendlen, Connection.TPRECVONLY);
 				assertTrue(result != -1);
@@ -83,7 +83,7 @@ public class TestTPConversation extends TestCase {
 
 		String expectedResult = ("hi" + interationCount);
 		log.info("Expected: " + expectedResult + " Received: "
-				+ new String(rcvbuf.getBuffer().getData()));
+				+ new String(((X_OCTET) rcvbuf.getBuffer()).getByteArray()));
 		assertTrue(strcmp(expectedResult, rcvbuf.getBuffer()) == 0);
 	}
 
@@ -105,7 +105,7 @@ public class TestTPConversation extends TestCase {
 
 	public static int strcmp(String string, Buffer buffer) {
 		byte[] expected = string.getBytes();
-		byte[] received = buffer.getData();
+		byte[] received = ((X_OCTET) buffer).getByteArray();
 		if (received.length < expected.length) {
 			return -1;
 		}

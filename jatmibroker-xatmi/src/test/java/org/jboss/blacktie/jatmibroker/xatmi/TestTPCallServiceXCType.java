@@ -13,12 +13,12 @@ public class TestTPCallServiceXCType implements BlacktieService {
 		try {
 			log.info("test_tpcall_x_c_type_service");
 			boolean ok = false;
-			Buffer aptr = svcinfo.getBuffer();
+			X_C_TYPE aptr = (X_C_TYPE) svcinfo.getBuffer();
 
-			char[] receivedName = new char[3];
-			char[] charArray = aptr.getCharArray("name");
+			byte[] receivedName = new byte[3];
+			byte[] charArray = aptr.getByteArray("name");
 			System.arraycopy(charArray, 0, receivedName, 0, 3);
-			char[] expectedName = "TOM".toCharArray();
+			byte[] expectedName = "TOM".getBytes();
 			long accountNumber = aptr.getLong("acct_no");
 
 			float fooOne = aptr.getFloatArray("foo")[0];
@@ -33,11 +33,11 @@ public class TestTPCallServiceXCType implements BlacktieService {
 				ok = true;
 			}
 			int len = 60;
-			Buffer toReturn = svcinfo.tpalloc("X_OCTET", null);
+			X_OCTET toReturn = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
 			if (ok) {
-				toReturn.setData("tpcall_x_c_type".getBytes());
+				toReturn.setByteArray("tpcall_x_c_type".getBytes());
 			} else {
-				toReturn.setData("fail".getBytes());
+				toReturn.setByteArray("fail".getBytes());
 			}
 			return new Response(Connection.TPSUCCESS, 23, toReturn, len, 0);
 		} catch (ConnectionException e) {

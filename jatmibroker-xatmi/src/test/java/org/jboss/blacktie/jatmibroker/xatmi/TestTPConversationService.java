@@ -1,7 +1,5 @@
 package org.jboss.blacktie.jatmibroker.xatmi;
 
-import java.util.Arrays;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -13,13 +11,14 @@ public class TestTPConversationService implements BlacktieService {
 		try {
 			log.info("testTPConversation_service");
 			boolean fail = false;
-			Buffer sendbuf = svcinfo.tpalloc("X_OCTET", null);
+			X_OCTET sendbuf = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
 
-			if (!Arrays.equals("conversate".getBytes(), svcinfo.getBuffer()
-					.getData())) {
+			if (TestTPConversation.strcmp((X_OCTET) svcinfo.getBuffer(),
+					"conversate") != 0) {
 				if (svcinfo.getBuffer() != null) {
 					log.error("Got invalid data %s"
-							+ new String(svcinfo.getBuffer().getData()));
+							+ new String(((X_OCTET) svcinfo.getBuffer())
+									.getByteArray()));
 				} else {
 					log.error("GOT A NULL");
 				}
@@ -28,12 +27,12 @@ public class TestTPConversationService implements BlacktieService {
 				long revent = 0;
 				log.info("Chatting");
 				for (int i = 0; i < TestTPConversation.interationCount; i++) {
-					sendbuf.setData(("hi" + i).getBytes());
+					byte[] bytes = ("hi" + i).getBytes();
+					sendbuf.setByteArray(bytes);
 					// userlogc((char*) "testTPConversation_service:%s:",
 					// sendbuf);
 					int result = svcinfo.getSession().tpsend(sendbuf,
-							svcinfo.getBuffer().getLength(),
-							Connection.TPRECVONLY);
+							bytes.length, Connection.TPRECVONLY);
 					if (result != -1) {
 						try {
 							svcinfo.getSession().tprecv(0);
@@ -64,10 +63,11 @@ public class TestTPConversationService implements BlacktieService {
 				return new Response((short) Connection.TPESVCFAIL, 0, sendbuf,
 						0, 0);
 			} else {
-				sendbuf.setData(("hi" + TestTPConversation.interationCount)
-						.getBytes());
-				return new Response(Connection.TPSUCCESS, 0, sendbuf, svcinfo
-						.getBuffer().getLength(), 0);
+				byte[] bytes = ("hi" + TestTPConversation.interationCount)
+						.getBytes();
+				sendbuf.setByteArray(bytes);
+				return new Response(Connection.TPSUCCESS, 0, sendbuf,
+						bytes.length, 0);
 			}
 		} catch (ConnectionException e) {
 			return new Response(Connection.TPFAIL, Connection.TPEITYPE, null,

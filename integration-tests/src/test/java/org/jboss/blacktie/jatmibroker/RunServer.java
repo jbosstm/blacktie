@@ -17,7 +17,6 @@
  */
 package org.jboss.blacktie.jatmibroker;
 
-
 public class RunServer {
 
 	static {
@@ -182,7 +181,7 @@ public class RunServer {
 	public String getServiceNameTestRollbackOnly() {
 		return "TestRbkOnly";
 	}
-	
+
 	public String getServiceNameTTL() {
 		return "TTL";
 	}

@@ -45,6 +45,7 @@ import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 public abstract class Buffer implements Serializable {
 	private static final Logger log = LogManager.getLogger(Buffer.class);
 
+	private static final int BYTE_SIZE = 1;
 	private static final int LONG_SIZE = 8;
 	private static final int INT_SIZE = 4;
 	private static final int SHORT_SIZE = 2;
@@ -55,11 +56,6 @@ public abstract class Buffer implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	/**
-	 * The response from the server
-	 */
-	private byte[] data;
 
 	private Map<String, Object> structure = new HashMap<String, Object>();
 	private String[] keys;
@@ -78,10 +74,15 @@ public abstract class Buffer implements Serializable {
 
 	private String subtype;
 
+	private byte[] data;
+
+	private int[] counts;
+
 	/**
 	 * Create a new buffer
 	 * 
 	 * @param properties
+	 * @param b
 	 * 
 	 * @param types
 	 * @throws ConnectionException
@@ -105,6 +106,7 @@ public abstract class Buffer implements Serializable {
 			String[] ids = new String[buffer.attributes.size()];
 			Class[] types = new Class[buffer.attributes.size()];
 			int[] length = new int[buffer.attributes.size()];
+			int[] count = new int[buffer.attributes.size()];
 			Iterator<AttributeStructure> iterator = buffer.attributes
 					.iterator();
 			int i = 0;
@@ -117,353 +119,15 @@ public abstract class Buffer implements Serializable {
 							"Cannot use type configured in buffer " + types[i]);
 				}
 				length[i] = attribute.length;
+				count[i] = attribute.count;
 				i++;
 			}
-			format(ids, types, length);
+			format(ids, types, length, count);
 		}
 	}
 
-	/**
-	 * Set the data to send.
-	 * 
-	 * @param data
-	 *            The data
-	 * @throws IOException
-	 */
-	public void setData(byte[] data) {
-		this.data = data;
-	}
-
-	/**
-	 * Get the data
-	 * 
-	 * @return The data
-	 */
-	public byte[] getData() {
-		return data;
-	}
-
-	public int getLength() {
-		if (data == null) {
-			return 0;
-		} else {
-			return data.length;
-		}
-	}
-
-	public int getShort(String key) throws ConnectionException {
-		if (!formatted) {
-			throw new ConnectionException(Connection.TPEPROTO,
-					"Message not formatted");
-		}
-		int position = -1;
-		for (int i = 0; i < keys.length; i++) {
-			if (keys[i].equals(key)) {
-				position = i;
-			}
-		}
-		if (position == -1) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not part of the structure: " + key);
-		} else if (types[position] != short.class) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not request type, it is a: " + types[position]);
-
-		}
-		return (Short) structure.get(key);
-	}
-
-	public void setShort(String key, short value) throws ConnectionException {
-		if (!formatted) {
-			throw new ConnectionException(Connection.TPEPROTO,
-					"Message not formatted");
-		}
-		int position = -1;
-		for (int i = 0; i < keys.length; i++) {
-			if (keys[i].equals(key)) {
-				position = i;
-			}
-		}
-		if (position == -1) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not part of the structure: " + key);
-		} else if (types[position] != short.class) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not request type, it is a: " + types[position]);
-
-		}
-		structure.put(key, value);
-	}
-
-	public float getFloat(String key) throws ConnectionException {
-		if (!formatted) {
-			throw new ConnectionException(Connection.TPEPROTO,
-					"Message not formatted");
-		}
-		int position = -1;
-		for (int i = 0; i < keys.length; i++) {
-			if (keys[i].equals(key)) {
-				position = i;
-			}
-		}
-		if (position == -1) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not part of the structure: " + key);
-		} else if (types[position] != float.class) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not request type, it is a: " + types[position]);
-
-		}
-		return (Float) structure.get(key);
-	}
-
-	public void setFloat(String key, float value) throws ConnectionException {
-		if (!formatted) {
-			throw new ConnectionException(Connection.TPEPROTO,
-					"Message not formatted");
-		}
-		int position = -1;
-		for (int i = 0; i < keys.length; i++) {
-			if (keys[i].equals(key)) {
-				position = i;
-			}
-		}
-		if (position == -1) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not part of the structure: " + key);
-		} else if (types[position] != float.class) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not request type, it is a: " + types[position]);
-
-		}
-		structure.put(key, value);
-	}
-
-	public int getInt(String key) throws ConnectionException {
-		if (!formatted) {
-			throw new ConnectionException(Connection.TPEPROTO,
-					"Message not formatted");
-		}
-		int position = -1;
-		for (int i = 0; i < keys.length; i++) {
-			if (keys[i].equals(key)) {
-				position = i;
-			}
-		}
-		if (position == -1) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not part of the structure: " + key);
-		} else if (types[position] != int.class) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not request type, it is a: " + types[position]);
-
-		}
-		return (Integer) structure.get(key);
-	}
-
-	public void setInt(String key, int value) throws ConnectionException {
-		if (!formatted) {
-			throw new ConnectionException(Connection.TPEPROTO,
-					"Message not formatted");
-		}
-		int position = -1;
-		for (int i = 0; i < keys.length; i++) {
-			if (keys[i].equals(key)) {
-				position = i;
-			}
-		}
-		if (position == -1) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not part of the structure: " + key);
-		} else if (types[position] != int.class) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not request type, it is a: " + types[position]);
-
-		}
-		structure.put(key, value);
-	}
-
-	public long getLong(String key) throws ConnectionException {
-		if (!formatted) {
-			throw new ConnectionException(Connection.TPEPROTO,
-					"Message not formatted");
-		}
-		int position = -1;
-		for (int i = 0; i < keys.length; i++) {
-			if (keys[i].equals(key)) {
-				position = i;
-			}
-		}
-		if (position == -1) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not part of the structure: " + key);
-		} else if (types[position] != long.class) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not request type, it is a: " + types[position]);
-
-		}
-		return (Long) structure.get(key);
-	}
-
-	public void setLong(String key, long value) throws ConnectionException {
-		if (!formatted) {
-			throw new ConnectionException(Connection.TPEPROTO,
-					"Message not formatted");
-		}
-		int position = -1;
-		for (int i = 0; i < keys.length; i++) {
-			if (keys[i].equals(key)) {
-				position = i;
-			}
-		}
-		if (position == -1) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not part of the structure: " + key);
-		} else if (types[position] != long.class) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not request type, it is a: " + types[position]);
-
-		}
-		structure.put(key, value);
-	}
-
-	public char[] getCharArray(String key) throws ConnectionException {
-		if (!formatted) {
-			throw new ConnectionException(Connection.TPEPROTO,
-					"Message not formatted");
-		}
-		int position = -1;
-		for (int i = 0; i < keys.length; i++) {
-			if (keys[i].equals(key)) {
-				position = i;
-			}
-		}
-		if (position == -1) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not part of the structure: " + key);
-		} else if (types[position] != char[].class) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not request type, it is a: " + types[position]);
-
-		}
-		return (char[]) structure.get(key);
-	}
-
-	public void setCharArray(String key, char[] value)
-			throws ConnectionException {
-		if (!formatted) {
-			throw new ConnectionException(Connection.TPEPROTO,
-					"Message not formatted");
-		}
-		int position = -1;
-		for (int i = 0; i < keys.length; i++) {
-			if (keys[i].equals(key)) {
-				position = i;
-			}
-		}
-		if (position == -1) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not part of the structure: " + key);
-		} else if (types[position] != char[].class) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not request type, it is a: " + types[position]);
-
-		}
-		structure.put(key, value);
-	}
-
-	public float[] getFloatArray(String key) throws ConnectionException {
-		if (!formatted) {
-			throw new ConnectionException(Connection.TPEPROTO,
-					"Message not formatted");
-		}
-		int position = -1;
-		for (int i = 0; i < keys.length; i++) {
-			if (keys[i].equals(key)) {
-				position = i;
-			}
-		}
-		if (position == -1) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not part of the structure: " + key);
-		} else if (types[position] != float[].class) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not request type, it is a: " + types[position]);
-
-		}
-		return (float[]) structure.get(key);
-	}
-
-	public void setFloatArray(String key, float[] value)
-			throws ConnectionException {
-		if (!formatted) {
-			throw new ConnectionException(Connection.TPEPROTO,
-					"Message not formatted");
-		}
-		int position = -1;
-		for (int i = 0; i < keys.length; i++) {
-			if (keys[i].equals(key)) {
-				position = i;
-			}
-		}
-		if (position == -1) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not part of the structure: " + key);
-		} else if (types[position] != float[].class) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not request type, it is a: " + types[position]);
-
-		}
-		structure.put(key, value);
-	}
-
-	public double[] getDoubleArray(String key) throws ConnectionException {
-		if (!formatted) {
-			throw new ConnectionException(Connection.TPEPROTO,
-					"Message not formatted");
-		}
-		int position = -1;
-		for (int i = 0; i < keys.length; i++) {
-			if (keys[i].equals(key)) {
-				position = i;
-			}
-		}
-		if (position == -1) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not part of the structure: " + key);
-		} else if (types[position] != double[].class) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not request type, it is a: " + types[position]);
-
-		}
-		return (double[]) structure.get(key);
-	}
-
-	public void setDoubleArray(String key, double[] value)
-			throws ConnectionException {
-		if (!formatted) {
-			throw new ConnectionException(Connection.TPEPROTO,
-					"Message not formatted");
-		}
-		int position = -1;
-		for (int i = 0; i < keys.length; i++) {
-			if (keys[i].equals(key)) {
-				position = i;
-			}
-		}
-		if (position == -1) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not part of the structure: " + key);
-		} else if (types[position] != double[].class) {
-			throw new ConnectionException(Connection.TPEITYPE,
-					"Key is not request type, it is a: " + types[position]);
-
-		}
-		structure.put(key, value);
-	}
-
-	private void format(String[] keys, Class[] types, int[] lengths)
-			throws ConnectionException {
+	private void format(String[] keys, Class[] types, int[] lengths,
+			int[] counts) throws ConnectionException {
 		structure.clear();
 		if (keys.length != types.length || types.length != lengths.length) {
 			throw new ConnectionException(-1,
@@ -472,10 +136,11 @@ public abstract class Buffer implements Serializable {
 		this.keys = keys;
 		this.types = types;
 		this.lengths = lengths;
+		this.counts = counts;
 		formatted = true;
 	}
 
-	void deserialize() throws ConnectionException {
+	void deserialize(byte[] data) throws ConnectionException {
 		currentPos = 0;
 		if (requiresSerialization) {
 			if (!deserialized && data != null) {
@@ -498,8 +163,8 @@ public abstract class Buffer implements Serializable {
 							structure.put(keys[i], readShort(dis));
 						} else if (types[i] == long.class) {
 							structure.put(keys[i], readLong(dis));
-						} else if (types[i] == char.class) {
-							structure.put(keys[i], readChar(dis));
+						} else if (types[i] == byte.class) {
+							structure.put(keys[i], readByte(dis));
 						} else if (types[i] == float.class) {
 							structure.put(keys[i], readFloat(dis));
 						} else if (types[i] == double.class) {
@@ -522,10 +187,10 @@ public abstract class Buffer implements Serializable {
 								toRead[j] = readLong(dis);
 							}
 							structure.put(keys[i], toRead);
-						} else if (types[i] == char[].class) {
-							char[] toRead = new char[lengths[i]];
+						} else if (types[i] == byte[].class) {
+							byte[] toRead = new byte[lengths[i]];
 							for (int j = 0; j < lengths[i]; j++) {
-								toRead[j] = readChar(dis);
+								toRead[j] = readByte(dis);
 							}
 							structure.put(keys[i], toRead);
 						} else if (types[i] == float[].class) {
@@ -538,6 +203,14 @@ public abstract class Buffer implements Serializable {
 							double[] toRead = new double[lengths[i]];
 							for (int j = 0; j < lengths[i]; j++) {
 								toRead[j] = readDouble(dis);
+							}
+							structure.put(keys[i], toRead);
+						} else if (types[i] == byte[][].class) {
+							byte[][] toRead = new byte[counts[i]][lengths[i]];
+							for (int k = 0; k < counts[i]; k++) {
+								for (int j = 0; j < lengths[i]; j++) {
+									toRead[k][j] = readByte(dis);
+								}
 							}
 							structure.put(keys[i], toRead);
 						} else {
@@ -555,13 +228,16 @@ public abstract class Buffer implements Serializable {
 										+ lengths[i]);
 					}
 				}
-				deserialized = true;
 			}
+		} else {
+			this.data = data;
 		}
+		deserialized = true;
 	}
 
-	void serialize() throws ConnectionException {
+	byte[] serialize() throws ConnectionException {
 		currentPos = 0;
+		byte[] toReturn = null;
 		if (requiresSerialization) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			DataOutputStream dos = new DataOutputStream(baos);
@@ -589,12 +265,13 @@ public abstract class Buffer implements Serializable {
 						} else {
 							writeLong(dos, 0);
 						}
-					} else if (types[i] == char.class) {
-						Character toWrite = (Character) structure.get(keys[i]);
+					} else if (types[i] == byte.class) {
+						Byte toWrite = (Byte) structure.get(keys[i]);
 						if (toWrite != null) {
-							writeChar(dos, toWrite);
+							writeByte(dos, toWrite);
 						} else {
-							writeChar(dos, '\0');
+							// writeByte(dos, '\0');
+							writeByte(dos, (byte) 0);
 						}
 					} else if (types[i] == float.class) {
 						Float toWrite = (Float) structure.get(keys[i]);
@@ -646,17 +323,18 @@ public abstract class Buffer implements Serializable {
 						for (int j = max; j < lengths[i]; j++) {
 							writeLong(dos, 0);
 						}
-					} else if (types[i] == char[].class) {
-						char[] toWrite = (char[]) structure.get(keys[i]);
+					} else if (types[i] == byte[].class) {
+						byte[] toWrite = (byte[]) structure.get(keys[i]);
 						int max = 0;
 						if (toWrite != null) {
 							max = Math.min(lengths[i], toWrite.length);
 							for (int j = 0; j < max; j++) {
-								writeChar(dos, toWrite[j]);
+								writeByte(dos, toWrite[j]);
 							}
 						}
 						for (int j = max; j < lengths[i]; j++) {
-							writeChar(dos, '\0');
+							// writeByte(dos, '\0');
+							writeByte(dos, (byte) 0);
 						}
 					} else if (types[i] == float[].class) {
 						float[] toWrite = (float[]) structure.get(keys[i]);
@@ -682,6 +360,19 @@ public abstract class Buffer implements Serializable {
 						for (int j = max; j < lengths[i]; j++) {
 							writeDouble(dos, 0);
 						}
+					} else if (types[i] == byte[][].class) {
+						byte[][] toWrite = (byte[][]) structure.get(keys[i]);
+						if (toWrite != null) {
+							for (int k = 0; k < counts[i]; k++) {
+								for (int j = 0; j < lengths[i]; j++) {
+									writeByte(dos, toWrite[k][j]);
+								}
+							}
+						} else {
+							for (int j = 0; j < counts[i] * lengths[i]; j++) {
+								writeByte(dos, (byte) 0);
+							}
+						}
 					} else {
 						if (JABTransaction.current() != null) {
 							try {
@@ -706,22 +397,31 @@ public abstract class Buffer implements Serializable {
 									+ lengths[i]);
 				}
 			}
-			data = baos.toByteArray();
+			toReturn = baos.toByteArray();
+		} else {
+			toReturn = getRawData();
 		}
+		if (toReturn == null) {
+			toReturn = new byte[1];
+		}
+		return toReturn;
 	}
 
-	private void writeChar(DataOutputStream dos, char c) throws IOException {
-		byte[] bytes = { (byte) (c & 0xff), (byte) (c >> 8 & 0xff) };
-		dos.writeByte(bytes[0]);
+	private void writeByte(DataOutputStream dos, byte b) throws IOException {
+		dos.writeByte(b);
 
 		currentPos += 1;
 	}
 
-	private char readChar(DataInputStream dis) throws IOException {
+	private byte readByte(DataInputStream dis) throws IOException {
 		currentPos += 1;
 
-		byte read = dis.readByte();
-		return (char) read;
+		byte x = dis.readByte();
+		ByteBuffer bbuf = ByteBuffer.allocate(BYTE_SIZE);
+		bbuf.order(ByteOrder.LITTLE_ENDIAN);
+		bbuf.put(x);
+		bbuf.order(ByteOrder.BIG_ENDIAN);
+		return bbuf.get(0);
 	}
 
 	private void writeLong(DataOutputStream dos, long x) throws IOException {
@@ -843,5 +543,67 @@ public abstract class Buffer implements Serializable {
 	 */
 	public String getSubtype() {
 		return subtype;
+	}
+
+	/**
+	 * Clear the content of the buffer
+	 */
+	public void clear() {
+		structure.clear();
+		data = null;
+	}
+
+	protected Object getAttributeValue(String key, Class type)
+			throws ConnectionException {
+		if (!formatted) {
+			throw new ConnectionException(Connection.TPEPROTO,
+					"Message not formatted");
+		}
+		int position = -1;
+		for (int i = 0; i < keys.length; i++) {
+			if (keys[i].equals(key)) {
+				position = i;
+			}
+		}
+		if (position == -1) {
+			throw new ConnectionException(Connection.TPEITYPE,
+					"Key is not part of the structure: " + key);
+		} else if (types[position] != type) {
+			throw new ConnectionException(Connection.TPEITYPE,
+					"Key is not request type, it is a: " + types[position]);
+
+		}
+		return structure.get(key);
+	}
+
+	protected void setAttributeValue(String key, Class type, Object value)
+			throws ConnectionException {
+		if (!formatted) {
+			throw new ConnectionException(Connection.TPEPROTO,
+					"Message not formatted");
+		}
+		int position = -1;
+		for (int i = 0; i < keys.length; i++) {
+			if (keys[i].equals(key)) {
+				position = i;
+			}
+		}
+		if (position == -1) {
+			throw new ConnectionException(Connection.TPEITYPE,
+					"Key is not part of the structure: " + key);
+		} else if (types[position] != type) {
+			throw new ConnectionException(Connection.TPEITYPE,
+					"Key is not request type, it is a: " + types[position]);
+
+		}
+		structure.put(key, value);
+	}
+
+	protected void setRawData(byte[] bytes) {
+		this.data = bytes;
+	}
+
+	protected byte[] getRawData() {
+		return data;
 	}
 }
