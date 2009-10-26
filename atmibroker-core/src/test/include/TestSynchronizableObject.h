@@ -21,6 +21,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
 #include <ace/Task.h>
+#include <tao/ORB.h>
 #include "SynchronizableObject.h"
 #include "userlogc.h"
 
@@ -51,6 +52,7 @@ public:
 	void testWaitNotify();
 private:
 	Waiter* waiter;
+	CORBA::ORB_var orbRef;
 };
 
 #endif

@@ -19,7 +19,6 @@
 
 #include "TestSynchronizableObject.h"
 
-#include <tao/ORB.h>
 #include "userlogc.h"
 #include "ace/OS_NS_unistd.h"
 
@@ -61,7 +60,7 @@ int Waiter::svc(void){
 
 void TestSynchronizableObject::setUp() {
 	int argc = 0;
-	(void) CORBA::ORB_init(argc, NULL, "null");
+	orbRef = CORBA::ORB_init(argc, NULL, "null");
 	waiter = new Waiter();
 	if (waiter->activate(THR_NEW_LWP| THR_JOINABLE, 1, 0, ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
 		delete (waiter);
@@ -75,6 +74,12 @@ void TestSynchronizableObject::tearDown() {
 		delete waiter;
 		waiter = NULL;
 	}
+	if (!CORBA::is_nil(orbRef))
+		orbRef->shutdown(1);
+	if (!CORBA::is_nil(orbRef))
+		orbRef->destroy();
+
+	orbRef = NULL;
 }
 
 void TestSynchronizableObject::testWaitNotify() {

@@ -20,16 +20,18 @@ package org.jboss.blacktie.jatmibroker.jab.factory;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.jab.JABException;
+import org.jboss.blacktie.jatmibroker.jab.JABMessage;
+import org.jboss.blacktie.jatmibroker.jab.JABRemoteService;
 import org.jboss.blacktie.jatmibroker.jab.JABSession;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 import org.jboss.blacktie.jatmibroker.jab.TransactionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.blacktie.jatmibroker.xatmi.Response;
 
 /**
  * The JAB connection abstraction allows invocations to services to several
@@ -72,22 +74,6 @@ public class JABConnection {
 	}
 
 	/**
-	 * Create a new JABBuffer
-	 * 
-	 * @param type
-	 *            The type of the buffer
-	 * @param subType
-	 *            The subtype of the buffer
-	 * @return The new buffer
-	 * @throws JABException
-	 *             In case the buffer cannot be allocated
-	 */
-	public JABBuffer createJABBuffer(String type, String subType)
-			throws JABException {
-		return new JABBuffer(connection, type, subType);
-	}
-
-	/**
 	 * Begin a new transaction. This transaction reference can then be used in
 	 * calls to "call" and completed via the options on the JABTransaction class
 	 * itself.
@@ -127,44 +113,19 @@ public class JABConnection {
 	 *             In case the service cannot be contacted
 	 */
 	public synchronized JABResponse call(String serviceName, JABBuffer toSend,
-			Transaction transaction) throws TransactionException, JABException {
+			Transaction transaction, String bufferType, String bufferSubType)
+			throws TransactionException, JABException {
 		log.debug("call");
-		JABResponse responseMessage;
+
 		JABTransaction tx = transaction.getJABTransaction();
-		JABTransaction prev = null;
 
-		try {
-			if (tx == null) {
-				log.debug("service_request tx is null");
-				prev = JABTransaction.suspend();
-			} else if (!tx.equals(JABTransaction.current())) {
-				log.debug("service_request suspend " + prev + " resume " + tx);
-				prev = JABTransaction.suspend();
-				JABTransaction.resume(tx);
-			} else {
-				log.debug("service_request tx same as current");
-			}
+		JABRemoteService remoteService = new JABRemoteService(serviceName,
+				session, bufferType, bufferSubType);
+		serialize(toSend, remoteService.getRequest());
+		remoteService.call(tx);
+		JABResponse responseMessage = new JABResponse(remoteService.getRCode());
+		deserialize(responseMessage, remoteService.getResponse());
 
-			log.debug("service_request tpcall");
-			Response response = connection.tpcall(serviceName, toSend
-					.getBuffer(), toSend.getLength(), Connection.TPNOTIME);
-			responseMessage = new JABResponse(response);
-			log.debug("service_request responsed");
-		} catch (Exception e) {
-			log.warn("service_request exception: " + e.getMessage());
-			throw new JABException("Could not send tpcall", e);
-		} finally {
-			if (prev != null) {
-				if (tx != null) {
-					log.debug("service_request resp: suspending current: "
-							+ JABTransaction.current());
-					JABTransaction.suspend();
-				}
-
-				log.debug("service_request resuming prev: " + prev);
-				JABTransaction.resume(prev);
-			}
-		}
 		return responseMessage;
 	}
 
@@ -199,5 +160,85 @@ public class JABConnection {
 	 */
 	synchronized void removeTransaction(Transaction transaction) {
 		transactions.remove(transaction);
+	}
+
+	private void serialize(JABBuffer buffer, JABMessage message) {
+		Map<String, Class> messageFormat = message.getMessageFormat();
+		Iterator<String> iterator = messageFormat.keySet().iterator();
+		while (iterator.hasNext()) {
+			String key = iterator.next();
+			Class type = messageFormat.get(key);
+			setBufferValue(buffer, message, key, type);
+		}
+	}
+
+	private void deserialize(JABBuffer buffer, JABMessage message) {
+		Map<String, Class> messageFormat = message.getMessageFormat();
+		Iterator<String> iterator = messageFormat.keySet().iterator();
+		while (iterator.hasNext()) {
+			String key = iterator.next();
+			Class type = messageFormat.get(key);
+			setMessageValue(buffer, message, key, type);
+		}
+
+	}
+
+	private void setBufferValue(JABBuffer buffer, JABMessage message,
+			String key, Class type) {
+		try {
+			if (type == byte.class) {
+				buffer.setValue(key, message.getByte(key));
+			} else if (type == short.class) {
+				buffer.setValue(key, message.getShort(key));
+			} else if (type == int.class) {
+				buffer.setValue(key, message.getInt(key));
+			} else if (type == double.class) {
+				buffer.setValue(key, message.getDouble(key));
+			} else if (type == float.class) {
+				buffer.setValue(key, message.getFloat(key));
+			} else if (type == byte[].class) {
+				buffer.setArrayValue(key, message.getByteArray(key));
+			} else if (type == short[].class) {
+				buffer.setArrayValue(key, message.getShortArray(key));
+			} else if (type == int[].class) {
+				buffer.setArrayValue(key, message.getIntArray(key));
+			} else if (type == double[].class) {
+				buffer.setArrayValue(key, message.getDoubleArray(key));
+			} else if (type == float[].class) {
+				buffer.setArrayValue(key, message.getFloatArray(key));
+			}
+		} catch (JABException e) {
+			log.trace("Could not locate the message property: " + e);
+		}
+	}
+
+	private void setMessageValue(JABBuffer buffer, JABMessage message,
+			String key, Class type) {
+		try {
+			if (type == byte.class) {
+				message.setByte(key, ((Byte) buffer.getValue(key)));
+			} else if (type == short.class) {
+				message.setShort(key, ((Short) buffer.getValue(key)));
+			} else if (type == int.class) {
+				message.setInt(key, ((Integer) buffer.getValue(key)));
+			} else if (type == double.class) {
+				message.setDouble(key, ((Double) buffer.getValue(key)));
+			} else if (type == float.class) {
+				message.setFloat(key, ((Float) buffer.getValue(key)));
+			} else if (type == byte[].class) {
+				message.setByteArray(key, buffer.getByteArray(key));
+			} else if (type == short[].class) {
+				message.setShortArray(key, buffer.getShortArray(key));
+			} else if (type == int[].class) {
+				message.setIntArray(key, buffer.getIntArray(key));
+			} else if (type == double[].class) {
+				message.setDoubleArray(key, buffer.getDoubleArray(key));
+			} else if (type == float[].class) {
+				message.setFloatArray(key, buffer.getFloatArray(key));
+			}
+		} catch (JABException e) {
+			log.trace("Could not locate the message property: " + e);
+		}
+
 	}
 }

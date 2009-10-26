@@ -92,12 +92,10 @@ typedef BLACKTIE_CORE_DLL struct _server_info {
 	std::vector<ServiceInfo> serviceVector;
 }ServerInfo;
 
-struct ltstr
-{
-  bool operator()(const char* s1, const char* s2) const
-  {
-    return strcmp(s1, s2) < 0;
-  }
+struct ltstr {
+	bool operator()(const char* s1, const char* s2) const {
+		return strcmp(s1, s2) < 0;
+	}
 };
 
 typedef BLACKTIE_CORE_DLL struct _attribute {

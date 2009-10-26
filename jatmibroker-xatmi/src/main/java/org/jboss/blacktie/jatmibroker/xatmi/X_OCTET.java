@@ -52,5 +52,4 @@ public class X_OCTET extends Buffer {
 	public byte[] getByteArray() {
 		return super.getRawData();
 	}
-
 }

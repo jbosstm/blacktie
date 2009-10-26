@@ -162,7 +162,7 @@ public class JABRemoteService {
 	 * 
 	 * @return The requests input
 	 */
-	public Message getRequest() {
+	public JABMessage getRequest() {
 		return requestMessage;
 	}
 
@@ -171,7 +171,7 @@ public class JABRemoteService {
 	 * 
 	 * @return The requests output
 	 */
-	public Message getResponse() {
+	public JABMessage getResponse() {
 		return responseMessage;
 	}
 
@@ -180,7 +180,7 @@ public class JABRemoteService {
 	 * 
 	 * @return The application return code.
 	 */
-	int getRCode() {
+	public int getRCode() {
 		if (responseMessage != null) {
 			return responseMessage.getRCode();
 		} else {

@@ -78,6 +78,8 @@ public abstract class Buffer implements Serializable {
 
 	private int[] counts;
 
+	private Map<String, Class> format = new HashMap<String, Class>();
+
 	/**
 	 * Create a new buffer
 	 * 
@@ -123,7 +125,13 @@ public abstract class Buffer implements Serializable {
 				i++;
 			}
 			format(ids, types, length, count);
+		} else {
+			format.put("X_OCTET", byte[].class);
 		}
+	}
+
+	public Map<String, Class> getFormat() {
+		return format;
 	}
 
 	private void format(String[] keys, Class[] types, int[] lengths,
@@ -137,6 +145,10 @@ public abstract class Buffer implements Serializable {
 		this.types = types;
 		this.lengths = lengths;
 		this.counts = counts;
+
+		for (int i = 0; i < keys.length; i++) {
+			format.put(keys[i], types[i]);
+		}
 		formatted = true;
 	}
 

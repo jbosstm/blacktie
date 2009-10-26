@@ -248,9 +248,10 @@ static void XMLCALL startElement
 			(*aEnvironmentStructPtr).push_back(envVar);
 		}
 	} else if (strcmp(name, "BUFFER") == 0) {
-		currentBufferName = copy_value(atts[1]);
-		Buffer* buffer = buffers[currentBufferName];
+		char * bufferName = copy_value(atts[1]);
+		Buffer* buffer = buffers[bufferName];
 		if (buffer == NULL) {
+			currentBufferName = bufferName;
 			Buffer* buffer = new Buffer();
 			buffer->name = currentBufferName;
 			buffer->wireSize = 0;
@@ -259,6 +260,7 @@ static void XMLCALL startElement
 			buffers[buffer->name] = buffer;
 		} else {
 			LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "Duplicate buffer detected: " << currentBufferName);
+			free (bufferName);
 			currentBufferName = NULL;
 		}
 	} else if (strcmp(name, "ATTRIBUTE") == 0) {

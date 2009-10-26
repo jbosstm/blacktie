@@ -17,8 +17,6 @@
  */
 package org.jboss.blacktie.jatmibroker.jab.factory;
 
-import org.jboss.blacktie.jatmibroker.xatmi.Response;
-
 /**
  * The JABResponse class extends the standard JABBuffer by allowing the
  * programmer access to the xatmi.h::rcode state returned from an XATMI service
@@ -28,17 +26,19 @@ import org.jboss.blacktie.jatmibroker.xatmi.Response;
 public class JABResponse extends JABBuffer {
 
 	/**
+	 * The response code of the service
+	 */
+	private int responseCode;
+
+	/**
 	 * The constructor is hidden from standard application programs as it should
 	 * only be created when a response is available for processing
 	 * 
-	 * @param connection
-	 *            The connection to use
-	 * 
-	 * @param response
+	 * @param responseCode
 	 *            The response from the XATMI service
 	 */
-	JABResponse(Response response) {
-		super(response);
+	JABResponse(int responseCode) {
+		this.responseCode = responseCode;
 	}
 
 	/**
@@ -47,6 +47,6 @@ public class JABResponse extends JABBuffer {
 	 * @return The response code
 	 */
 	public int getResponseCode() {
-		return getRCode();
+		return responseCode;
 	}
 }

@@ -41,28 +41,32 @@ void SimpleOrbTest::tearDown() {
 }
 
 void SimpleOrbTest::test() {
-	int argc = 2;
-	char *argv[2];
-	argv[0] = (char*) "-ORBInitRef";
-	//argv[1] = (char*) "NameService=corbaloc::172.16.130.186:3528/NameService";
-	argv[1] = (char*) "NameService=corbaloc::localhost:3528/NameService";
-	//CORBA::ORB_ptr orbRef = CORBA::ORB_init(argc, argv, "server");
-	CORBA::ORB_ptr orbRef = CORBA::ORB_init(argc, argv, "server");
-	CORBA::Object_var tmp_ref = orbRef->resolve_initial_references("RootPOA");
-	PortableServer::POA_var poa = PortableServer::POA::_narrow(tmp_ref);
-	PortableServer::POAManager_var poa_manager = poa->the_POAManager();
-	//assert(!CORBA::is_nil(poa_manager));
-	tmp_ref = orbRef->resolve_initial_references("NameService");
-	Worker *worker = new Worker(orbRef, (char*) "server");
-	if (worker->activate(THR_NEW_LWP| THR_JOINABLE, 1, 0, ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
-		delete (worker);
-		worker = NULL;
-	}
-	try {
-		CosNaming::NamingContextExt_var default_ctx = CosNaming::NamingContextExt::_narrow(tmp_ref);
-	} catch (CORBA::Exception &e) {
-		CPPUNIT_FAIL("COULDN'T Narrow the default context");
-	}
+	for (int i = 0; i < 10; i++) {
+		int argc = 2;
+		char *argv[2];
+		argv[0] = (char*) "-ORBInitRef";
+		//argv[1] = (char*) "NameService=corbaloc::172.16.130.186:3528/NameService";
+		argv[1] = (char*) "NameService=corbaloc::localhost:3528/NameService";
+		//CORBA::ORB_ptr orbRef = CORBA::ORB_init(argc, argv, "server");
+		CORBA::ORB_var orbRef = CORBA::ORB_init(argc, argv, "server");
+		CORBA::Object_var tmp_ref = orbRef->resolve_initial_references(
+				"RootPOA");
+		PortableServer::POA_var poa = PortableServer::POA::_narrow(tmp_ref);
+		PortableServer::POAManager_var poa_manager = poa->the_POAManager();
+		//assert(!CORBA::is_nil(poa_manager));
+		tmp_ref = orbRef->resolve_initial_references("NameService");
+		Worker *worker = new Worker(orbRef, (char*) "server");
+		if (worker->activate(THR_NEW_LWP | THR_JOINABLE, 1, 0,
+				ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
+			delete (worker);
+			worker = NULL;
+		}
+		try {
+			CosNaming::NamingContextExt_var default_ctx =
+					CosNaming::NamingContextExt::_narrow(tmp_ref);
+		} catch (CORBA::Exception &e) {
+			CPPUNIT_FAIL("COULDN'T Narrow the default context");
+		}
 		if (!CORBA::is_nil(orbRef))
 			orbRef->shutdown(1);
 		if (!CORBA::is_nil(orbRef))
@@ -74,10 +78,12 @@ void SimpleOrbTest::test() {
 			worker = NULL;
 		}
 
+		//free (orbRef);
 		orbRef = NULL;
 		poa_manager = NULL;
 		poa = NULL;
 		CPPUNIT_ASSERT(CORBA::is_nil(orbRef));
 		CPPUNIT_ASSERT(CORBA::is_nil(poa_manager));
 		CPPUNIT_ASSERT(CORBA::is_nil(poa));
+	}
 }

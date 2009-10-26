@@ -17,6 +17,8 @@
  */
 package org.jboss.blacktie.jatmibroker.jab;
 
+import java.util.Map;
+
 import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
@@ -490,6 +492,16 @@ public class JABMessage implements Message {
 			return xOctet.getByteArray().length;
 		} else {
 			return 0;
+		}
+	}
+
+	public Map<String, Class> getMessageFormat() {
+		if (xOctet != null) {
+			return xOctet.getFormat();
+		} else if (xCommon != null) {
+			return xCommon.getFormat();
+		} else {
+			return xCType.getFormat();
 		}
 	}
 }

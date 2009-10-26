@@ -17,481 +17,173 @@
  */
 package org.jboss.blacktie.jatmibroker.jab.factory;
 
-import org.jboss.blacktie.jatmibroker.jab.JABException;
-import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
-import org.jboss.blacktie.jatmibroker.xatmi.Connection;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.blacktie.jatmibroker.xatmi.Response;
-import org.jboss.blacktie.jatmibroker.xatmi.X_COMMON;
-import org.jboss.blacktie.jatmibroker.xatmi.X_C_TYPE;
-import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
 
 /**
- * The JABBuffer allows the programmer to invoked XATMI services which accept
- * X_OCTET parameters.
+ * The JABBuffer is a map of parameters that are passed to/returned from a
+ * remote XATMI service.
  * 
  * @see JABResponse
  */
 public class JABBuffer {
 
 	/**
-	 * The rcode if this is a response
+	 * Any array data types are stored here
 	 */
-	private int rcode;
-
-	private X_OCTET xOctet;
-
-	private X_COMMON xCommon;
-
-	private X_C_TYPE xCType;
+	private Map<String, Vector<Object>> arrays = new HashMap<String, Vector<Object>>();
 
 	/**
-	 * The request should be created from the JABRemoteService getRequest
-	 * method.
-	 * 
-	 * @param connection
-	 *            The connection to use
-	 * @param bufferSubType
-	 * @param bufferType
-	 * @throws JABException
+	 * Any individual items are stored here
 	 */
-	JABBuffer(Connection connection, String bufferType, String bufferSubType)
-			throws JABException {
-		try {
-			Buffer buffer = connection.tpalloc(bufferType, bufferSubType);
-			if (buffer.getType().equals("X_OCTET")) {
-				xOctet = (X_OCTET) buffer;
-			} else if (buffer.getType().equals("X_COMMON")) {
-				xCommon = (X_COMMON) buffer;
-			} else {
-				xCType = (X_C_TYPE) buffer;
-			}
-		} catch (ConnectionException e) {
-			throw new JABException("Could not create an X_OCTET buffer", e);
-		}
-	}
+	private Map<String, Object> items = new HashMap<String, Object>();
 
 	/**
-	 * Create a message from the response
-	 * 
-	 * @param response
-	 *            The response
-	 */
-	JABBuffer(Response response) {
-		Buffer buffer = response.getBuffer();
-		if (buffer.getType().equals("X_OCTET")) {
-			xOctet = (X_OCTET) buffer;
-		} else if (buffer.getType().equals("X_COMMON")) {
-			xCommon = (X_COMMON) buffer;
-		} else {
-			xCType = (X_C_TYPE) buffer;
-		}
-		rcode = response.getRcode();
-	}
-
-	/**
-	 * An internal method to access the actual buffer.
-	 * 
-	 * @return The buffer
-	 */
-	Buffer getBuffer() {
-		if (xOctet != null) {
-			return xOctet;
-		} else if (xCommon != null) {
-			return xCommon;
-		} else {
-			return xCType;
-		}
-	}
-
-	/**
-	 * Clear the real buffer
-	 */
-	void clear() {
-		if (xOctet != null) {
-			xOctet.clear();
-		} else if (xCommon != null) {
-			xCommon.clear();
-		} else {
-			xCType.clear();
-		}
-	}
-
-	/**
-	 * Get the rcode that tpreturn returned with.
-	 * 
-	 * @return The application return code.
-	 */
-	int getRCode() {
-		return rcode;
-	}
-
-	/**
-	 * Get the content of the buffer
+	 * Get the size of the data
 	 * 
 	 * @param key
-	 *            The content of the buffer to set
-	 * @param position
-	 *            The position to check
-	 * @throws JABException
-	 *             In case the content is malformed
+	 *            The type of the data to look for
+	 * @return The size
 	 */
-	public byte getByte(String key) throws JABException {
-		if (xOctet != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else if (xCommon != null) {
-			try {
-				return xCommon.getByte(key);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
-		} else {
-			try {
-				return xCType.getByte(key);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
+	public synchronized int size(String key) {
+		int toReturn = 0;
+		Vector<Object> vector = arrays.get(key);
+		if (vector != null) {
+			toReturn = vector.size();
+		}
+		return toReturn;
+	}
+
+	/**
+	 * Get the value of a certain index of the data
+	 * 
+	 * @param key
+	 *            The type of the data
+	 * @param index
+	 *            The index to check for
+	 * @return The value
+	 */
+	public synchronized Object getValue(String key, int index) {
+		Object toReturn = null;
+		Vector<Object> vector = arrays.get(key);
+		if (vector != null) {
+			toReturn = vector.get(index);
+		}
+		return toReturn;
+	}
+
+	/**
+	 * Get the value of a certain type of data
+	 * 
+	 * @param key
+	 *            The type of the data
+	 * @return The value
+	 */
+	public synchronized Object getValue(String key) {
+		return items.get(key);
+	}
+
+	/**
+	 * Set the value of the data at a certain index
+	 * 
+	 * @param key
+	 *            The key to change
+	 * @param index
+	 *            The index to alter
+	 * @param value
+	 *            The value to set it to
+	 */
+	public synchronized void setValue(String key, int index, Object value) {
+		Vector<Object> vector = arrays.get(key);
+		if (vector == null) {
+			vector = new Vector<Object>();
+		}
+		if (vector.size() < index) {
+			vector.setSize(index);
+		}
+		vector.set(index, value);
+	}
+
+	/**
+	 * Set the value of an item
+	 * 
+	 * @param key
+	 *            The item name
+	 * @param value
+	 *            The value to use
+	 */
+	public synchronized void setValue(String key, Object value) {
+		items.put(key, value);
+	}
+
+	void setArrayValue(String key, byte[] array) {
+		for (int i = 0; i < array.length; i++) {
+			setValue(key, i, array[i]);
 		}
 	}
 
-	public byte[] getByteArray(String key) throws JABException {
-		if (xOctet != null) {
-			if (key.equals("X_OCTET")) {
-				return xOctet.getByteArray();
-			} else {
-				throw new JABException(
-						"X_OCTET buffers contain a single attribute X_OCTET");
-			}
-		} else if (xCommon != null) {
-			try {
-				return xCommon.getByteArray(key);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
-		} else {
-			try {
-				return xCType.getByteArray(key);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
+	void setArrayValue(String key, short[] array) {
+		for (int i = 0; i < array.length; i++) {
+			setValue(key, i, array[i]);
 		}
 	}
 
-	public byte[][] getByteArrayArray(String key) throws JABException {
-		if (xOctet != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else if (xCommon != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else {
-			try {
-				return xCType.getByteArrayArray(key);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
+	void setArrayValue(String key, int[] array) {
+		for (int i = 0; i < array.length; i++) {
+			setValue(key, i, array[i]);
 		}
 	}
 
-	public double getDouble(String key) throws JABException {
-		if (xOctet != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else if (xCommon != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else {
-			try {
-				return xCType.getDouble(key);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
+	void setArrayValue(String key, double[] array) {
+		for (int i = 0; i < array.length; i++) {
+			setValue(key, i, array[i]);
 		}
 	}
 
-	public double[] getDoubleArray(String key) throws JABException {
-		if (xOctet != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else if (xCommon != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else {
-			try {
-				return xCType.getDoubleArray(key);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
+	void setArrayValue(String key, float[] array) {
+		for (int i = 0; i < array.length; i++) {
+			setValue(key, i, array[i]);
 		}
 	}
 
-	public float getFloat(String key) throws JABException {
-		if (xOctet != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else if (xCommon != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else {
-			try {
-				return xCType.getFloat(key);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
+	byte[] getByteArray(String key) {
+		byte[] toReturn = new byte[size(key)];
+		for (int i = 0; i < toReturn.length; i++) {
+			toReturn[i] = (Byte) getValue(key, i);
 		}
+		return toReturn;
 	}
 
-	public float[] getFloatArray(String key) throws JABException {
-		if (xOctet != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else if (xCommon != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else {
-			try {
-				return xCType.getFloatArray(key);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
+	short[] getShortArray(String key) {
+		short[] toReturn = new short[size(key)];
+		for (int i = 0; i < toReturn.length; i++) {
+			toReturn[i] = (Short) getValue(key, i);
 		}
+		return toReturn;
 	}
 
-	public int getInt(String key) throws JABException {
-		if (xOctet != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else if (xCommon != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else {
-			try {
-				return xCType.getInt(key);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
+	int[] getIntArray(String key) {
+		int[] toReturn = new int[size(key)];
+		for (int i = 0; i < toReturn.length; i++) {
+			toReturn[i] = (Integer) getValue(key, i);
 		}
+		return toReturn;
 	}
 
-	public int[] getIntArray(String key) throws JABException {
-		if (xOctet != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else if (xCommon != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else {
-			try {
-				return xCType.getIntArray(key);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
+	double[] getDoubleArray(String key) {
+		double[] toReturn = new double[size(key)];
+		for (int i = 0; i < toReturn.length; i++) {
+			toReturn[i] = (Double) getValue(key, i);
 		}
+		return toReturn;
 	}
 
-	public short getShort(String key) throws JABException {
-		if (xOctet != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else if (xCommon != null) {
-			try {
-				return xCommon.getShort(key);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
-		} else {
-			try {
-				return xCType.getShort(key);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
+	float[] getFloatArray(String key) {
+		float[] toReturn = new float[size(key)];
+		for (int i = 0; i < toReturn.length; i++) {
+			toReturn[i] = (Float) getValue(key, i);
 		}
-	}
-
-	public short[] getShortArray(String key) throws JABException {
-		if (xOctet != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else if (xCommon != null) {
-			try {
-				return xCommon.getShortArray(key);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
-		} else {
-			try {
-				return xCType.getShortArray(key);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
-		}
-	}
-
-	public void setByte(String key, byte data) throws JABException {
-		if (xOctet != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else if (xCommon != null) {
-			try {
-				xCommon.setByte(key, data);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
-		} else {
-			try {
-				xCType.setByte(key, data);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
-		}
-	}
-
-	public void setByteArray(String key, byte[] data) throws JABException {
-		if (xOctet != null) {
-			if (key.equals("X_OCTET")) {
-				throw new JABException(
-						"X_OCTET buffers contain a single attribute X_OCTET");
-			} else {
-				xOctet.setByteArray(data);
-			}
-		} else if (xCommon != null) {
-			try {
-				xCommon.setByteArray(key, data);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
-		} else {
-			try {
-				xCType.setByteArray(key, data);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
-		}
-	}
-
-	public void setByteArrayArray(String key, byte[][] data)
-			throws JABException {
-		if (xOctet != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else if (xCommon != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else {
-			try {
-				xCType.setByteArrayArray(key, data);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
-		}
-	}
-
-	public void setDouble(String key, double data) throws JABException {
-		if (xOctet != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else if (xCommon != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else {
-			try {
-				xCType.setDouble(key, data);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
-		}
-	}
-
-	public void setDoubleArray(String key, double[] data) throws JABException {
-		if (xOctet != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else if (xCommon != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else {
-			try {
-				xCType.setDoubleArray(key, data);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
-		}
-	}
-
-	public void setFloat(String key, float data) throws JABException {
-		if (xOctet != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else if (xCommon != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else {
-			try {
-				xCType.setFloat(key, data);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
-		}
-	}
-
-	public void setFloatArray(String key, float[] data) throws JABException {
-		if (xOctet != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else if (xCommon != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else {
-			try {
-				xCType.setFloatArray(key, data);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
-		}
-	}
-
-	public void setInt(String key, int data) throws JABException {
-		if (xOctet != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else if (xCommon != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else {
-			try {
-				xCType.setInt(key, data);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
-		}
-	}
-
-	public void setIntArray(String key, int[] data) throws JABException {
-		if (xOctet != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else if (xCommon != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else {
-			try {
-				xCType.setIntArray(key, data);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
-		}
-	}
-
-	public void setShort(String key, short data) throws JABException {
-		if (xOctet != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else if (xCommon != null) {
-			try {
-				xCommon.setShort(key, data);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
-		} else {
-			try {
-				xCType.setShort(key, data);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
-		}
-	}
-
-	public void setShortArray(String key, short[] data) throws JABException {
-		if (xOctet != null) {
-			throw new JABException("Not supported for this buffer type");
-		} else if (xCommon != null) {
-			try {
-				xCommon.setShortArray(key, data);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
-		} else {
-			try {
-				xCType.setShortArray(key, data);
-			} catch (Throwable t) {
-				throw new JABException(t.getMessage(), t);
-			}
-		}
-	}
-
-	int getLength() {
-		if (xOctet != null) {
-			return xOctet.getByteArray().length;
-		} else {
-			return 0;
-		}
+		return toReturn;
 	}
 }

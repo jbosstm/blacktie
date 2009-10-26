@@ -24,7 +24,7 @@
 class SimpleOrbTest: public CppUnit::TestFixture {
 CPPUNIT_TEST_SUITE( SimpleOrbTest )
 	;
-		//TODO REENABLE WHEN WE IT WILL READ ENV>XML FOR LOCALHOST _> IP ADDR CPPUNIT_TEST( test );
+		CPPUNIT_TEST( test );
 	CPPUNIT_TEST_SUITE_END()
 	;
 
