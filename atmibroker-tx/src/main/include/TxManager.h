@@ -106,7 +106,6 @@ public:
 public:	// public static methods
 	static TxManager* get_instance();
 	static void discard_instance();
-	static CORBA_CONNECTION* init_orb(char* name);
 	static CosTransactions::Control_ptr get_ots_control();	// ref count of ptr is incremented
 
 public:	// suspend and resume

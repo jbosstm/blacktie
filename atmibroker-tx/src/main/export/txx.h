@@ -41,12 +41,6 @@ extern BLACKTIE_TX_DLL bool txx_isCdTransactional(int cd);
 extern BLACKTIE_TX_DLL int txx_rollback_only();
 
 /**
- * start an orb for making transactional service calls
- * (see orbInit in OrbManagement.h for implementation)
- */
-extern BLACKTIE_TX_DLL void * txx_start(char *);
-
-/**
  * stop the transaction manager proxy
  */
 extern BLACKTIE_TX_DLL void txx_stop(void);

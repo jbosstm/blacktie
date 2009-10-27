@@ -67,7 +67,7 @@ TxManager::TxManager() :
 	_whenReturn(TX_COMMIT_DECISION_LOGGED), _controlMode(TX_UNCHAINED), _timeout (0L), _isOpen(false)
 {
 	FTRACE(txmlogger, "ENTER");
-	_connection = init_orb((char*) "ots");
+	_connection = ::initOrb((char*) "ots");
 	LOG4CXX_DEBUG(txmlogger, (char*) "new CONNECTION: " << _connection);
 }
 
@@ -80,13 +80,6 @@ TxManager::~TxManager()
 		shutdownBindings(_connection);
 		delete _connection;
 	}
-}
-
-CORBA_CONNECTION* TxManager::init_orb(char* name)
-{
-	FTRACE(txmlogger, "ENTER");
-//	register_tx_interceptors(name); CORBA transport is depracated
-	return ::initOrb(name);
 }
 
 atmibroker::tx::TxControl *TxManager::currentTx(const char *msg)

@@ -20,6 +20,7 @@
 #include "TestStompConnection.h"
 
 #include "userlogc.h"
+#include "AtmiBrokerEnv.h"
 
 void TestStompConnection::setUp() {
 	userlogc("TestStompConnection::setUp");
@@ -37,6 +38,7 @@ void TestStompConnection::tearDown() {
 	if (clientConnection) {
 		delete clientConnection;
 	}
+	AtmiBrokerEnv::discard_instance();
 }
 
 void TestStompConnection::test() {
@@ -78,7 +80,8 @@ void TestStompConnection::test() {
 
 	Session* service = serverConnection->createSession(1, clientAddress);
 	userlogc("Iterating");
-	for (int i = 0; i < 1000; i++) {
+	int iterations = 100;
+	for (int i = 0; i < iterations; i++) {
 		MESSAGE serviceSend;
 		char* serviceData = (char*) malloc(4);
 		memset(serviceData, '\0', 4);
@@ -118,6 +121,7 @@ void TestStompConnection::test() {
 		clientSend.subtype = (char*) "";
 		client->send(clientSend);
 		MESSAGE serviceReceived = service->receive(0);
+		CPPUNIT_ASSERT(serviceReceived.received);
 		CPPUNIT_ASSERT(strcmp(clientSend.type, serviceReceived.type) == 0);
 		CPPUNIT_ASSERT(clientSend.len == serviceReceived.len);
 		free(clientData);

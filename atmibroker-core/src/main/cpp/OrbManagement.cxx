@@ -82,15 +82,15 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 
 	LOG4CXX_DEBUG(loggerOrbManagement,
 			(char*) "getNamingServiceAndContext getting Naming Service Ext");
-{
-	CORBA::Object_var tmp_ref = connection->orbRef->resolve_initial_references(
-			"NameService");
-	LOG4CXX_DEBUG(
-			loggerOrbManagement,
-			(char*) "getNamingServiceAndContext got orbRef->resolve_initial_references, tmp_ref = %p"
-					<< (void*) tmp_ref);
-	connection->default_ctx = CosNaming::NamingContextExt::_narrow(tmp_ref);
-}
+	{
+		CORBA::Object_var tmp_ref =
+				connection->orbRef->resolve_initial_references("NameService");
+		LOG4CXX_DEBUG(
+				loggerOrbManagement,
+				(char*) "getNamingServiceAndContext got orbRef->resolve_initial_references, tmp_ref = %p"
+						<< (void*) tmp_ref);
+		connection->default_ctx = CosNaming::NamingContextExt::_narrow(tmp_ref);
+	}
 	LOG4CXX_DEBUG(
 			loggerOrbManagement,
 			(char*) "getNamingServiceAndContext narrowed tmp_ref, default_context = "
@@ -99,38 +99,35 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 	try {
 		LOG4CXX_DEBUG(loggerOrbManagement,
 				(char*) "getNamingServiceAndContext domain is " << domain);
-{
-		CORBA::Object_var tmp_ref =
-				connection->default_ctx->resolve_str(domain);
-		connection->name_ctx = CosNaming::NamingContext::_narrow(tmp_ref);
-		LOG4CXX_DEBUG(
-				loggerOrbManagement,
-				(char*) "getNamingServiceAndContext found domain naming context");
-}
+		{
+			CORBA::Object_var tmp_ref = connection->default_ctx->resolve_str(
+					domain);
+			connection->name_ctx = CosNaming::NamingContext::_narrow(tmp_ref);
+			LOG4CXX_DEBUG(
+					loggerOrbManagement,
+					(char*) "getNamingServiceAndContext found domain naming context");
+		}
 	} catch (const CosNaming::NamingContext::NotFound&) {
-		LOG4CXX_DEBUG(
-				loggerOrbManagement,
+		LOG4CXX_DEBUG(loggerOrbManagement,
 				(char*) "Find failed, trying to create");
 		CosNaming::Name_var name = connection->default_ctx->to_name(domain);
-		LOG4CXX_DEBUG(
-				loggerOrbManagement,
-				(char*) "Got name: " << domain);
+		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "Got name: " << domain);
 		connection->name_ctx = connection->default_ctx->bind_new_context(name);
 		LOG4CXX_DEBUG(
 				loggerOrbManagement,
 				(char*) "getNamingServiceAndContext created domain naming context");
-	}catch (const CORBA::SystemException& ex) {
-        LOG4CXX_ERROR(loggerOrbManagement,
-            (char*) "Got unexpected : " << ex._name());
+	} catch (const CORBA::SystemException& ex) {
+		LOG4CXX_ERROR(loggerOrbManagement, (char*) "Got unexpected : "
+				<< ex._name());
 		throw ;
-    } 
+	}
 
 	LOG4CXX_DEBUG(loggerOrbManagement,
 			(char*) "getNamingServiceAndContext got Naming Service Instance ");
 
 	connection->worker = new Worker(connection->orbRef, connectionName);
 	if (((Worker*) connection->worker)->activate(THR_NEW_LWP | THR_JOINABLE, 1,
-			0, ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
+					0, ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
 		delete ((Worker*) connection->worker);
 		connection->worker = NULL;
 		LOG4CXX_ERROR(loggerOrbManagement,
@@ -139,10 +136,8 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 
 	//try {
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "resolving the root POA");
-{
 	CORBA::Object_var tmp_ref = connection->orbRef->resolve_initial_references("RootPOA");
 	connection->root_poa = PortableServer::POA::_narrow(tmp_ref);
-}
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "resolved the root POA: "
 			<< connection->root_poa);
 
@@ -150,7 +145,7 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 	connection->root_poa_manager = connection->root_poa->the_POAManager();
 	LOG4CXX_DEBUG(loggerOrbManagement,
 			(char*) "getRootPOAAndManager got the root POA manager: "
-					<< connection->root_poa_manager);
+			<< connection->root_poa_manager);
 
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "creating POA with name client");
 
@@ -160,7 +155,7 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 	connection->poaFactory = poaFac;
 	LOG4CXX_DEBUG(loggerOrbManagement,
 			(char*) "createClientCallbackPOA created POA: "
-					<< connection->callback_poa);
+			<< connection->callback_poa);
 
 	connection->root_poa_manager->activate();
 	LOG4CXX_DEBUG(loggerOrbManagement,
@@ -202,7 +197,7 @@ void shutdownBindings(CORBA_CONNECTION* connection) {
 				}
 
 				if (connection->worker != NULL) {
-//					ACE_Thread_Manager::instance()->wait_task(((Worker*) connection->worker));
+					//					ACE_Thread_Manager::instance()->wait_task(((Worker*) connection->worker));
 					((Worker*) connection->worker)->wait();
 					delete ((Worker*) connection->worker);
 					connection->worker = NULL;
@@ -217,7 +212,7 @@ void shutdownBindings(CORBA_CONNECTION* connection) {
 					LOG4CXX_DEBUG(loggerOrbManagement,
 							(char*) "shutdownBindings destroying ORB");
 					connection->orbRef->destroy();
-					connection->orbRef = NULL;
+					CORBA::release(connection->orbRef);
 					LOG4CXX_DEBUG(loggerOrbManagement,
 							(char*) "shutdownBindings destroyed ORB");
 				} catch (CORBA::Exception &ex) {
@@ -340,9 +335,11 @@ CORBA::Object_ptr atmi_string_to_object(char * ior, char * orbid) {
 		if (orb)
 			return orb->string_to_object(ior);
 		else
-			LOG4CXX_LOGLS(loggerOrbManagement, log4cxx::Level::getTrace(), "no such orb");
+			LOG4CXX_LOGLS(loggerOrbManagement, log4cxx::Level::getTrace(),
+					"no such orb");
 	} else {
-		LOG4CXX_LOGLS(loggerOrbManagement, log4cxx::Level::getTrace(), "no such ior");
+		LOG4CXX_LOGLS(loggerOrbManagement, log4cxx::Level::getTrace(),
+				"no such ior");
 	}
 
 	return NULL;

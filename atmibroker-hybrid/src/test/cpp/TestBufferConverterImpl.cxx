@@ -71,4 +71,8 @@ void TestBufferConverterImpl::test() {
 	CPPUNIT_ASSERT(deposit->acct_no == memoryBuffer->acct_no);
 	CPPUNIT_ASSERT(strcmp(deposit->status, memoryBuffer->status) == 0);
 	CPPUNIT_ASSERT(deposit->status_len == memoryBuffer->status_len);
+
+	delete[] wireBuffer;
+	free(deposit);
+	free(memoryBuffer);
 }

@@ -30,7 +30,7 @@
 
 struct BLACKTIE_CORE_DLL corba_connection_t {
     ~corba_connection_t() {if (worker) delete worker;}
-	CORBA::ORB_var orbRef;
+	CORBA::ORB_ptr orbRef;
 	PortableServer::POA_var root_poa;
 	PortableServer::POAManager_var root_poa_manager;
 	CosNaming::NamingContextExt_var default_ctx;

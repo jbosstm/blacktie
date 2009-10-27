@@ -30,12 +30,6 @@ int txx_rollback_only()
 	return TxManager::get_instance()->rollback_only();
 }
 
-void * txx_start(char* connectionName)
-{
-	FTRACE(txmclogger, "ENTER");
-	return TxManager::get_instance()->init_orb(connectionName);
-}
-
 void txx_stop(void)
 {
 	FTRACE(txmclogger, "ENTER");

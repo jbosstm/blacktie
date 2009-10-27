@@ -66,8 +66,7 @@ HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(HybridSessionImpl* session,
 	AtmiBroker::EndpointQueue_var queue = AtmiBroker::EndpointQueue::_narrow(
 			tmp_ref);
 
-	CORBA::ORB_ptr orb = connection->orbRef;
-	this->name = orb->object_to_string(queue);
+	this->name = connection->orbRef->object_to_string(queue);
 	this->connection = connection;
 	this->session = session;
 }

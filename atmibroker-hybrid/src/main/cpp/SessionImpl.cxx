@@ -80,8 +80,8 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
 	this->sendTo = NULL;
 
 	LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << temporaryQueueName);
-	CORBA::ORB_ptr orb = (CORBA::ORB_ptr) corbaConnection->orbRef;
-	CORBA::Object_var tmp_ref = orb->string_to_object(temporaryQueueName);
+	CORBA::Object_var tmp_ref = corbaConnection->orbRef->string_to_object(
+			temporaryQueueName);
 	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 	LOG4CXX_DEBUG(logger, (char*) "connected to %s" << temporaryQueueName);
 
@@ -112,21 +112,18 @@ HybridSessionImpl::~HybridSessionImpl() {
 }
 
 void HybridSessionImpl::setSendTo(const char* destinationName) {
-	if (this->sendTo != NULL) {
-		if (destinationName == NULL || strcmp(destinationName, this->sendTo)
-				!= 0) {
-			::free(this->sendTo);
-			this->sendTo = NULL;
-		}
+	if (this->sendTo != NULL && (destinationName == NULL || strcmp(
+			destinationName, this->sendTo) != 0)) {
+		::free(this->sendTo);
+		remoteEndpoint = NULL;
+		this->sendTo = NULL;
 	}
-	//	if (remoteEndpoint) {
-	//		remoteEndpoint = NULL;
-	//	}
+
 	if (destinationName != NULL && strcmp(destinationName, "") != 0
 			&& this->sendTo == NULL) {
-		CORBA::ORB_ptr orb = (CORBA::ORB_ptr) corbaConnection->orbRef;
 		LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << destinationName);
-		CORBA::Object_var tmp_ref = orb->string_to_object(destinationName);
+		CORBA::Object_var tmp_ref = corbaConnection->orbRef->string_to_object(
+				destinationName);
 		remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
 		LOG4CXX_DEBUG(logger, (char*) "connected to %s" << destinationName);
 		this->sendTo = strdup((char*) destinationName);

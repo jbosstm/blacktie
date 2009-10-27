@@ -48,15 +48,21 @@ HybridConnectionImpl::HybridConnectionImpl(char* connectionName) {
 	}
 	LOG4CXX_TRACE(logger, (char*) "Pool created");
 
-	this->connection = (CORBA_CONNECTION *) txx_start(connectionName);
+	this->connection = (CORBA_CONNECTION *) initOrb(connectionName);
 }
 
 HybridConnectionImpl::~HybridConnectionImpl() {
+	std::map<int, HybridSessionImpl*>::iterator i;
+
+	for (i = sessionMap.begin(); i != sessionMap.end(); ++i) {
+		closeSession((*i).first);
+	}
+
 	LOG4CXX_DEBUG(logger, (char*) "destructor: " << connectionName);
 	shutdownBindings(this->connection);
 	delete this->connection;
 
-	apr_pool_destroy(pool);
+	apr_pool_destroy( pool);
 	//apr_terminate();
 	LOG4CXX_TRACE(logger, "Destroyed");
 }
@@ -128,7 +134,8 @@ void HybridConnectionImpl::disconnect(stomp_connection* connection,
 	frame.headers = NULL;
 	frame.body_length = -1;
 	frame.body = NULL;
-	LOG4CXX_TRACE(logger, (char*) "Sending DISCONNECT" << connection << "pool" << pool);
+	LOG4CXX_TRACE(logger, (char*) "Sending DISCONNECT" << connection << "pool"
+			<< pool);
 	apr_status_t rc = stomp_write(connection, &frame, pool);
 	LOG4CXX_TRACE(logger, (char*) "Sent DISCONNECT");
 	if (rc != APR_SUCCESS) {
@@ -166,7 +173,8 @@ Destination* HybridConnectionImpl::createDestination(char* serviceName) {
 }
 
 void HybridConnectionImpl::destroyDestination(Destination* destination) {
-	HybridStompEndpointQueue* queue = dynamic_cast<HybridStompEndpointQueue*> (destination);
+	HybridStompEndpointQueue* queue =
+			dynamic_cast<HybridStompEndpointQueue*> (destination);
 	delete queue;
 }
 
