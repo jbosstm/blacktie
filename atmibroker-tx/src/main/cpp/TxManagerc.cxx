@@ -24,58 +24,57 @@ using namespace atmibroker::tx;
 log4cxx::LoggerPtr txmclogger(log4cxx::Logger::getLogger("TxLogManagerc"));
 
 /* Blacktie tx interface additions */
-int txx_rollback_only()
-{
+int txx_rollback_only() {
 	FTRACE(txmclogger, "ENTER");
 	return TxManager::get_instance()->rollback_only();
 }
 
-void txx_stop(void)
-{
+void txx_stop(void) {
 	FTRACE(txmclogger, "ENTER");
 	TxManager::discard_instance();
 	FTRACE(txmclogger, "<");
 }
 
-int txx_associate_serialized(char *orbname, char* ctrlIOR)
-{
-	FTRACE(txmclogger, "ENTER" << orbname);
-	CORBA::Object_ptr p = atmi_string_to_object(ctrlIOR, orbname);
+int txx_associate_serialized(char* ctrlIOR) {
+	FTRACE(txmclogger, "ENTER" << ctrlIOR);
+	CORBA::Object_ptr p =
+			TxManager::get_instance()->getOrb()->string_to_object(ctrlIOR);
 
-	LOG4CXX_DEBUG(txmclogger, (char*) "tx_resume orb=" << orbname << (char *) " IOR=" << ctrlIOR << " ptr=" << p);
+	LOG4CXX_DEBUG(txmclogger, (char*) "tx_resume IOR=" << ctrlIOR << " ptr="
+			<< p);
 
 	if (!CORBA::is_nil(p)) {
-		CosTransactions::Control_ptr cptr = CosTransactions::Control::_narrow(p);
+		CosTransactions::Control_ptr cptr =
+				CosTransactions::Control::_narrow(p);
 		CORBA::release(p); // dispose of it now that we have narrowed the object reference
 
 		return TxManager::get_instance()->tx_resume(cptr, TMJOIN);
 	} else {
-		LOG4CXX_WARN(txmclogger, (char*) "tx_resume: invalid control IOR: " << ctrlIOR);
+		LOG4CXX_WARN(txmclogger, (char*) "tx_resume: invalid control IOR: "
+				<< ctrlIOR);
 	}
 
 	return TMER_INVAL;
 }
 
-void *txx_unbind(bool rollback)
-{
+void *txx_unbind(bool rollback) {
 	FTRACE(txmclogger, "ENTER rollback=" << rollback);
 	if (rollback)
 		(void) TxManager::get_instance()->rollback_only();
 
-	return (void *) TxManager::get_instance()->tx_suspend((TMSUSPEND | TMMIGRATE));
-//	return (void *) TxManager::get_instance()->tx_suspend(TMSUCCESS);
+	return (void *) TxManager::get_instance()->tx_suspend((TMSUSPEND
+			| TMMIGRATE));
+	//	return (void *) TxManager::get_instance()->tx_suspend(TMSUCCESS);
 }
 
-void *txx_get_control()
-{
+void *txx_get_control() {
 	FTRACE(txmclogger, "ENTER");
 	void *ctrl = (void *) TxManager::get_ots_control();
 	FTRACE(txmclogger, "< with control " << ctrl);
 	return ctrl;
 }
 
-void txx_release_control(void *control)
-{
+void txx_release_control(void *control) {
 	FTRACE(txmclogger, "ENTER");
 	CosTransactions::Control_ptr cp = (CosTransactions::Control_ptr) control;
 
@@ -88,37 +87,32 @@ void txx_release_control(void *control)
 	}
 }
 
-char* txx_serialize(char *orbname)
-{
-	FTRACE(txmclogger, "ENTER " << orbname);
-	CORBA::ORB_ptr orb = find_orb(orbname);
+char* txx_serialize() {
+	FTRACE(txmclogger, "ENTER");
+	char* toReturn = NULL;
 	CosTransactions::Control_ptr ctrl = TxManager::get_ots_control();
 
-	if (!CORBA::is_nil(orb) && !CORBA::is_nil(ctrl)) {
+	if (!CORBA::is_nil(ctrl)) {
+		CORBA::ORB_ptr orb = TxManager::get_instance()->getOrb();
 		CORBA::String_var cs = orb->object_to_string(ctrl);
-		char *cstr = ACE_OS::strdup(cs);
-		CORBA::release(ctrl);
-
-		return cstr;
+		toReturn = ACE_OS::strdup(cs);
 	}
 
+	CORBA::release(ctrl);
 	FTRACE(txmclogger, "< No tx ior");
-	return NULL;
+	return toReturn;
 }
 
-int txx_suspend(int cd)
-{
+int txx_suspend(int cd) {
 	FTRACE(txmclogger, "ENTER");
 	return TxManager::get_instance()->suspend(cd);
 }
 
-int txx_resume(int cd)
-{
+int txx_resume(int cd) {
 	FTRACE(txmclogger, "ENTER");
 	return TxManager::get_instance()->resume(cd);
 }
 
-bool txx_isCdTransactional(int cd)
-{
+bool txx_isCdTransactional(int cd) {
 	return TxManager::get_instance()->isCdTransactional(cd);
 }

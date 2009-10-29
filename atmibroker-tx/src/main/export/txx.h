@@ -54,7 +54,7 @@ extern BLACKTIE_TX_DLL void txx_stop(void);
  *
  * Return a non-negative value on success
  */
-extern BLACKTIE_TX_DLL int txx_associate_serialized(char *, char *);
+extern BLACKTIE_TX_DLL int txx_associate_serialized(char *);
 
 /**
  * Convert the transaction associated with the calling thread into a string.
@@ -64,7 +64,7 @@ extern BLACKTIE_TX_DLL int txx_associate_serialized(char *, char *);
  *
  * Return a non-negative value on success
  */
-extern BLACKTIE_TX_DLL char* txx_serialize(char *);
+extern BLACKTIE_TX_DLL char* txx_serialize();
 
 /**
  * disassociate a transaction from the current thread

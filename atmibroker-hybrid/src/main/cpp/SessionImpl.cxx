@@ -35,11 +35,13 @@
 log4cxx::LoggerPtr HybridSessionImpl::logger(log4cxx::Logger::getLogger(
 		"HybridSessionImpl"));
 
-HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
-		apr_pool_t* pool, int id, char* serviceName) {
+HybridSessionImpl::HybridSessionImpl(char* connectionName,
+		CORBA_CONNECTION* connection, apr_pool_t* pool, int id,
+		char* serviceName) {
 	LOG4CXX_TRACE(logger, (char*) "constructor service");
 	this->id = id;
 	this->corbaConnection = connection;
+	this->temporaryQueueName = NULL;
 	serviceInvokation = true;
 
 	stompConnection = NULL;
@@ -58,7 +60,8 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
 	this->canSend = true;
 	this->canRecv = true;
 
-	char * poaName = apr_itoa(pool, id);
+	char * poaName = (char*) malloc(30);
+	::sprintf(poaName, "%s%d", connectionName, id);
 	this->temporaryQueue = new HybridCorbaEndpointQueue(this, corbaConnection,
 			poaName);
 	this->replyTo = temporaryQueue->getName();
@@ -68,27 +71,30 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
 	LOG4CXX_TRACE(logger, "OK service session created");
 }
 
-HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
-		apr_pool_t* pool, int id, const char* temporaryQueueName) {
+HybridSessionImpl::HybridSessionImpl(char* connectionName,
+		CORBA_CONNECTION* connection, apr_pool_t* pool, int id,
+		const char* temporaryQueueName) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor corba");
 	this->id = id;
 	this->corbaConnection = connection;
+	this->temporaryQueueName = temporaryQueueName;
 	serviceInvokation = false;
 
 	stompConnection = NULL;
 	this->pool = pool;
 	this->sendTo = NULL;
 
-	LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << temporaryQueueName);
+	LOG4CXX_DEBUG(logger, (char*) "QREM Connecting: " << temporaryQueueName);
 	CORBA::Object_var tmp_ref = corbaConnection->orbRef->string_to_object(
 			temporaryQueueName);
 	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	LOG4CXX_DEBUG(logger, (char*) "connected to %s" << temporaryQueueName);
+	LOG4CXX_DEBUG(logger, (char*) "QREM Connected: " << temporaryQueueName);
 
 	this->canSend = true;
 	this->canRecv = true;
 
-	char * poaName = apr_itoa(pool, id);
+	char * poaName = (char*) malloc(30);
+	::sprintf(poaName, "%s%d", connectionName, id);
 	this->temporaryQueue = new HybridCorbaEndpointQueue(this, corbaConnection,
 			poaName);
 	this->replyTo = temporaryQueue->getName();
@@ -100,6 +106,7 @@ HybridSessionImpl::HybridSessionImpl(CORBA_CONNECTION* connection,
 
 HybridSessionImpl::~HybridSessionImpl() {
 	setSendTo( NULL);
+	LOG4CXX_TRACE(logger, (char*) "QREM Closed: " << replyTo);
 	delete temporaryQueue;
 	temporaryQueue = NULL;
 
@@ -108,6 +115,11 @@ HybridSessionImpl::~HybridSessionImpl() {
 		HybridConnectionImpl::disconnect(stompConnection, pool);
 		LOG4CXX_TRACE(logger, (char*) "destroyed");
 		stompConnection = NULL;
+	}
+	if (temporaryQueueName != NULL) {
+		LOG4CXX_TRACE(logger, (char*) "QREM Disconnected: "
+				<< temporaryQueueName);
+		temporaryQueueName = NULL;
 	}
 }
 

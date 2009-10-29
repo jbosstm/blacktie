@@ -25,26 +25,4 @@
 extern BLACKTIE_CORE_DLL CORBA_CONNECTION* initOrb(char* name);
 extern BLACKTIE_CORE_DLL void shutdownBindings(CORBA_CONNECTION* connection);
 
-/**
- * locate an orb by name
- * - input parameter is the orb id of the target orb. If it is NULL then an
- *   arbitary orb will be returned
- */
-extern BLACKTIE_CORE_DLL CORBA::ORB_ptr find_orb(const char *);
-
-/**
- * convert a object into an IOR:
- * the first parameter is ptr to a Corba object
- * the second parameter is the name of the orb that owns t (if NULL then
- * an arbitary orb will be used to perform the conversion)he object
- */
-extern BLACKTIE_CORE_DLL char* atmi_object_to_string(CORBA::Object_ptr, char *);
-
-/**
- * convert an IOR into a Corba object:
- * the input parameter is the name of the orb that owns the IOR (if NULL then
- * an arbitary orb will be used to perform the conversion)
- */
-extern BLACKTIE_CORE_DLL CORBA::Object_ptr atmi_string_to_object(char *, char *);
-
 #endif

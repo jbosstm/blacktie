@@ -29,7 +29,8 @@ Worker::Worker(CORBA::ORB_ptr orb, char* orbName) {
 int Worker::svc(void) {
 	try {
 		this->orb->run();
-		LOG4CXX_TRACE(logger, "terminating" << orbName);
+		LOG4CXX_TRACE(logger, "terminated");
+//		LOG4CXX_TRACE(logger, "terminating" << orbName);
 	} catch (CORBA::Exception& e) {
 		LOG4CXX_ERROR(logger, (char*) "Unexpected CORBA exception: "
 			<< e._name() << " orb: " << orbName);

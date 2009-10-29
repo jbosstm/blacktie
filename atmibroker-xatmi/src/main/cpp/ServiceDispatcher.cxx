@@ -21,6 +21,7 @@
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerMem.h"
 #include "txx.h"
+#include <tao/ORB.h>
 
 log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger(
 		"ServiceDispatcher"));
@@ -49,6 +50,13 @@ int ServiceDispatcher::svc(void) {
 			try {
 				counter += 1;
 				onMessage(message);
+			} catch (const CORBA::BAD_PARAM& ex) {
+				LOG4CXX_WARN(logger, (char*) "Service dispatcher BAD_PARAM: "
+						<< ex._name());
+			} catch (const CORBA::SystemException& ex) {
+				LOG4CXX_WARN(logger,
+						(char*) "Service dispatcher SystemException: "
+								<< ex._name());
 			} catch (...) {
 				LOG4CXX_ERROR(
 						logger,
@@ -137,8 +145,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 	// HANDLE THE CLIENT INVOCATION
 	if (message.control != NULL && strcmp((char*) message.control, "null") != 0) {
-		if (txx_associate_serialized((char*) "ots", (char*) message.control)
-				!= XA_OK) {
+		if (txx_associate_serialized((char*) message.control) != XA_OK) {
 			LOG4CXX_ERROR(logger, "Unable to handle control");
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		}
@@ -162,20 +169,18 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 		LOG4CXX_TRACE(logger,
 				(char*) "Returning error - marking tx as rollback only if "
 						<< getSpecific(TSS_KEY));
-		txx_rollback_only();
-
-		// disassociate if present
-		if (getSpecific(TSS_KEY) != NULL)
-			txx_release_control(txx_unbind(true));
-
 		::tpreturn(TPFAIL, TPESVCERR, NULL, 0, 0);
 		LOG4CXX_TRACE(logger, (char*) "Returned error");
+	} else if (getSpecific(TSS_KEY) != NULL) {
+		txx_release_control(txx_unbind(true));
 	}
 
-	LOG4CXX_TRACE(logger, (char*) "ServiceDispatcher closing session");
+	LOG4CXX_TRACE(logger, (char*) "ServiceDispatcher closing session: "
+			<< message.correlationId);
 	connection->closeSession(message.correlationId);
 	//	session = NULL;
-	LOG4CXX_TRACE(logger, (char*) "ServiceDispatcher session closed");
+	LOG4CXX_TRACE(logger, (char*) "ServiceDispatcher session closed: "
+			<< message.correlationId);
 	//	HybridConnectionImpl* instance = dynamic_cast<HybridConnectionImpl*> (connection);
 	//shutdownBindings(instance->connection);
 

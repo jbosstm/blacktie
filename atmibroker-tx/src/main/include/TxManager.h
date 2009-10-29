@@ -116,6 +116,7 @@ public:	// suspend and resume
 	int resume(int cd);
 	int suspend(int cd);
 	bool isCdTransactional(int cd);
+	CORBA::ORB_ptr getOrb();
 
 private:
 	TxManager();

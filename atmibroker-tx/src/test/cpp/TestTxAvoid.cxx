@@ -123,7 +123,7 @@ void* doFive() {
 	CPPUNIT_ASSERT_MESSAGE("coordinator is nil", !CORBA::is_nil(c));
 
 	// a side effect of starting a transaction is to start an orb
-	CORBA::ORB_ptr orb = find_orb("ots");
+	CORBA::ORB_var orb = atmibroker::tx::TxManager::get_instance()->getOrb();
 	CPPUNIT_ASSERT_MESSAGE("orb is nil", !CORBA::is_nil(orb));
 	// get a handle on a poa
 	CORBA::Object_var obj = orb->resolve_initial_references("RootPOA");

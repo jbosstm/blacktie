@@ -48,10 +48,8 @@ void TestMultiOrb::test() {
 		CORBA_CONNECTION* serverConnection = initOrb((char*) "server");
 		CORBA_CONNECTION* clientConnection = initOrb((char*) "client");
 		shutdownBindings(serverConnection);
-		delete serverConnection;
 		serverConnection = NULL;
 		shutdownBindings(clientConnection);
-		delete clientConnection;
 		clientConnection = NULL;
 	} catch (CORBA::Exception &e) {
 		CPPUNIT_FAIL("COULDN'T CONNECT TO NAME SERVICE");
@@ -66,10 +64,8 @@ void TestMultiOrb::test_manyorb() {
 		CORBA_CONNECTION* clientConnection = initOrb((char*) "client");
 
 		shutdownBindings(serverConnection);
-		delete serverConnection;
 		serverConnection = NULL;
 		shutdownBindings(clientConnection);
-		delete clientConnection;
 		clientConnection = NULL;
 
 		delete serverPoaFactory;

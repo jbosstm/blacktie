@@ -33,12 +33,8 @@ void TestOrbAdditions::test_initorb() {
 		CORBA_CONNECTION* clientConnection = (CORBA_CONNECTION *) initOrb((char*) "client");
 
 		shutdownBindings(serverConnection);
-		if (serverConnection)
-			delete serverConnection;
 
 		shutdownBindings(clientConnection);
-		if (clientConnection)
-			delete clientConnection;
 
 		if (serverPoaFactory)
 			delete serverPoaFactory;

@@ -30,11 +30,10 @@
 
 struct BLACKTIE_CORE_DLL corba_connection_t {
     ~corba_connection_t() {if (worker) delete worker;}
-	CORBA::ORB_ptr orbRef;
+	CORBA::ORB_var orbRef;
 	PortableServer::POA_var root_poa;
 	PortableServer::POAManager_var root_poa_manager;
-	CosNaming::NamingContextExt_var default_ctx;
-	CosNaming::NamingContext_var name_ctx;
+	CosNaming::NamingContextExt_ptr default_ctx;
 	PortableServer::POA_var callback_poa;
 	Worker* worker;
 	AtmiBrokerPoaFac* poaFactory;

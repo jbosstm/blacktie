@@ -82,7 +82,7 @@ static int count_records(const char *msg, char *key, int in_tx, int expect) {
 			if (rv)
 				userlogc_warn( "TxLog BAD REQ %d", rv);
 
-			free_buf(remote, req);
+			free_buf((remote & REMOTE_ACCESS), req);
 			rv = (rv == 0 ? atoi(res.data) : -1);
 
 			userlogc_debug( "TxLog and count is %d", rv);
@@ -154,7 +154,7 @@ static int db_op(const char *msg, const char *data, char op, int txtype,
 			if (rv)
 				userlogc_warn( "TxLog BAD REQ %d", rv);
 
-			free_buf(remote, req);
+			free_buf((remote & REMOTE_ACCESS), req);
 		}
 
 		if (end_tx(txtype) == TX_OK)

@@ -69,21 +69,7 @@ HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(HybridSessionImpl* session,
 	this->name = connection->orbRef->object_to_string(queue);
 	this->connection = connection;
 	this->session = session;
-}
-
-HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(
-		CORBA_CONNECTION* connection, PortableServer::POA_ptr poa,
-		char* serviceName) {
-	shutdown = false;
-	thePoa = poa;
-	lock = new SynchronizableObject();
-	thePoa->activate_object(this);
-	LOG4CXX_DEBUG(logger, (char*) "activated tmp_servant " << this);
-	CORBA::Object_var tmp_ref = thePoa->servant_to_reference(this);
-	CosNaming::Name * name = connection->default_ctx->to_name(serviceName);
-	connection->name_ctx->bind(*name, tmp_ref);
-	this->name = serviceName;
-	this->session = NULL;
+	this->poaName = id;
 }
 
 // ~EndpointQueue destructor.
@@ -114,6 +100,7 @@ HybridCorbaEndpointQueue::~HybridCorbaEndpointQueue() {
 
 	delete[] name;
 	delete lock;
+	free(poaName);
 	LOG4CXX_DEBUG(logger, (char*) "destroyed: " << this);
 }
 

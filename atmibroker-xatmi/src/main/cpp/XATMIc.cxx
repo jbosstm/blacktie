@@ -119,8 +119,7 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			if (message.subtype == NULL) {
 				message.subtype = (char*) "";
 			}
-			message.control = ((TPNOTRAN & flags) ? NULL : txx_serialize(
-					(char*) "ots"));
+			message.control = (TPNOTRAN & flags) ? NULL : txx_serialize();
 			message.ttl = -1;
 
 			message.ttl = mqConfig.timeToLive * 1000;
@@ -486,11 +485,11 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	} else {
 		bool transactional = !(flags & TPNOTRAN);
-
 		if (transactional) {
 			void *ctrl = txx_get_control();
-			if (ctrl == NULL)
+			if (ctrl == NULL) {
 				transactional = false;
+			}
 			txx_release_control(ctrl);
 		}
 
@@ -861,7 +860,8 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 			}
 			Session* session = (Session*) getSpecific(SVC_SES);
 			if (session != NULL) {
-				if (!session->getCanSend() && !(rval == TPFAIL && idata == NULL)) {
+				if (!session->getCanSend()
+						&& !(rval == TPFAIL && idata == NULL)) {
 					LOG4CXX_TRACE(loggerXATMI, (char*) "generating TPESVCERR");
 					rcode = TPESVCERR;
 					rval = TPFAIL;

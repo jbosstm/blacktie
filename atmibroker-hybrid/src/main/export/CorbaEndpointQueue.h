@@ -63,6 +63,7 @@ private:
 	PortableServer::POA_var thePoa;
 	CORBA_CONNECTION* connection;
 	PortableServer::ObjectId_var oid;
+	char* poaName;
 
 	// The following are not implemented
 	HybridCorbaEndpointQueue(const HybridCorbaEndpointQueue &);

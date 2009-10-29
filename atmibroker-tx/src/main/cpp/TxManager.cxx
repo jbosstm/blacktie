@@ -78,8 +78,11 @@ TxManager::~TxManager()
 		(void) close();
 		LOG4CXX_DEBUG(txmlogger, (char*) "deleting CONNECTION: " << _connection);
 		shutdownBindings(_connection);
-		delete _connection;
 	}
+}
+
+CORBA::ORB_ptr TxManager::getOrb() {
+	return _connection->orbRef;
 }
 
 atmibroker::tx::TxControl *TxManager::currentTx(const char *msg)
@@ -283,10 +286,9 @@ int TxManager::open(void)
 		}
 
 		try {
-			CosNaming::NamingContextExt_ptr nce = (CosNaming::NamingContextExt_ptr) _connection->default_ctx;
-			CosNaming::Name *name = nce->to_name(transFactoryId);
+			CosNaming::Name *name = _connection->default_ctx->to_name(transFactoryId);
 			LOG4CXX_DEBUG(txmlogger, (char*) "resolving Tx Fac Id: " << transFactoryId);
-			CORBA::Object_var obj = nce->resolve(*name);
+			CORBA::Object_var obj = _connection->default_ctx->resolve(*name);
 			delete name;
 			LOG4CXX_DEBUG(txmlogger, (char*) "resolved OK: " << (void*) obj);
 			_txfac = CosTransactions::TransactionFactory::_narrow(obj);

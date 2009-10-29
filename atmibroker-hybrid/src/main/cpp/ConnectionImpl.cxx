@@ -60,7 +60,6 @@ HybridConnectionImpl::~HybridConnectionImpl() {
 
 	LOG4CXX_DEBUG(logger, (char*) "destructor: " << connectionName);
 	shutdownBindings(this->connection);
-	delete this->connection;
 
 	apr_pool_destroy( pool);
 	//apr_terminate();
@@ -153,7 +152,7 @@ void HybridConnectionImpl::disconnect(stomp_connection* connection,
 
 Session* HybridConnectionImpl::createSession(int id, char * serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession serviceName: " << serviceName);
-	sessionMap[id] = new HybridSessionImpl(this->connection, pool, id,
+	sessionMap[id] = new HybridSessionImpl(this->connectionName, this->connection, pool, id,
 			serviceName);
 	return sessionMap[id];
 }
@@ -162,7 +161,7 @@ Session* HybridConnectionImpl::createSession(int id,
 		const char* temporaryQueueName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession temporaryQueueName: "
 			<< temporaryQueueName);
-	sessionMap[id] = new HybridSessionImpl(this->connection, this->pool, id,
+	sessionMap[id] = new HybridSessionImpl(this->connectionName, this->connection, this->pool, id,
 			temporaryQueueName);
 	return sessionMap[id];
 }
