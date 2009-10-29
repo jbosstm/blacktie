@@ -46,9 +46,14 @@ SynchronizableObject instance_lock;
 AtmiBrokerEnv *
 AtmiBrokerEnv::get_instance() {
 	instance_lock.lock();
-	if (ptrAtmiBrokerEnv == NULL)
-		ptrAtmiBrokerEnv = new AtmiBrokerEnv();
-	instance_lock.unlock();
+	try {
+		if (ptrAtmiBrokerEnv == NULL)
+			ptrAtmiBrokerEnv = new AtmiBrokerEnv();
+		instance_lock.unlock();
+	} catch (...) {
+		instance_lock.unlock();
+		throw ;
+	}
 	return ptrAtmiBrokerEnv;
 }
 

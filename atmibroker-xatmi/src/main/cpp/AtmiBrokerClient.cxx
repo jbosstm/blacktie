@@ -36,7 +36,6 @@
 #include "ace/Signal.h"
 #include "ThreadLocalStorage.h"
 
-
 AtmiBrokerClient * ptrAtmiBrokerClient;
 
 log4cxx::LoggerPtr loggerAtmiBrokerClient(log4cxx::Logger::getLogger(
@@ -47,11 +46,11 @@ SynchronizableObject client_lock;
 
 void client_sigint_handler_callback(int sig_type) {
 	signal(SIGINT, SIG_IGN);
-	LOG4CXX_WARN(loggerAtmiBrokerClient,
+	LOG4CXX_WARN(
+			loggerAtmiBrokerClient,
 			(char*) "SIGINT Detected: Shutting down client this may take several minutes");
 	clientdone();
-	LOG4CXX_WARN(loggerAtmiBrokerClient,
-			(char*) "Shutdown complete");
+	LOG4CXX_WARN(loggerAtmiBrokerClient, (char*) "Shutdown complete");
 	abort();
 }
 
@@ -65,27 +64,34 @@ int clientinit() {
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit called");
 		ptrAtmiBrokerClient = new AtmiBrokerClient();
 		if (!clientInitialized) {
-			::clientdone();
+			LOG4CXX_DEBUG(loggerAtmiBrokerClient,
+					(char*) "clientinit deleting Client");
+			delete ptrAtmiBrokerClient;
+			ptrAtmiBrokerClient = NULL;
+			LOG4CXX_DEBUG(loggerAtmiBrokerClient,
+					(char*) "clientinit deleted Client");
 			toReturn = -1;
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		} else {
 			//signal(SIGINT, client_sigint_handler_callback);
-			ACE_Sig_Action sa;								
+			ACE_Sig_Action sa;
 			sa.retrieve_action(SIGINT);
 
-			if(sa.handler() != SIG_DFL) {
-				LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "SIGINT handler callback have been register");
+			if (sa.handler() != SIG_DFL) {
+				LOG4CXX_DEBUG(loggerAtmiBrokerClient,
+						(char*) "SIGINT handler callback have been register");
 			} else {
 				// Make sure we specify that SIGINT will be masked out
-  				// during the signal handler's execution.
-  				ACE_Sig_Set ss;
-  				ss.sig_add (SIGINT);
-  				sa.mask (ss);
-				sa.handler(reinterpret_cast <ACE_SignalHandler> (
-						client_sigint_handler_callback));
-  				sa.register_action (SIGINT);
-				LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "register client_sigint_handler_callback");
-			}	
+				// during the signal handler's execution.
+				ACE_Sig_Set ss;
+				ss.sig_add(SIGINT);
+				sa.mask(ss);
+				sa.handler(
+						reinterpret_cast<ACE_SignalHandler> (client_sigint_handler_callback));
+				sa.register_action(SIGINT);
+				LOG4CXX_DEBUG(loggerAtmiBrokerClient,
+						(char*) "register client_sigint_handler_callback");
+			}
 
 			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "Client Initialized");
 		}
@@ -101,11 +107,11 @@ int clientdone() {
 	client_lock.lock();
 	if (ptrAtmiBrokerClient) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient,
-				(char*) "clientinit deleting Corba Client");
+				(char*) "clientdone deleting Corba Client");
 		delete ptrAtmiBrokerClient;
 		ptrAtmiBrokerClient = NULL;
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient,
-				(char*) "clientinit deleted Corba Client");
+				(char*) "clientdone deleted Corba Client");
 	}
 	client_lock.unlock();
 
@@ -114,11 +120,11 @@ int clientdone() {
 
 AtmiBrokerClient::AtmiBrokerClient() {
 	try {
+		lock = new SynchronizableObject();
 		AtmiBrokerEnv::get_instance();
 		nextSessionId = 0;
 		clientInitialized = true;
 		currentConnection = NULL;
-		lock = new SynchronizableObject();
 	} catch (...) {
 		LOG4CXX_ERROR(loggerAtmiBrokerClient,
 				(char*) "clientinit Unexpected exception");
@@ -139,30 +145,35 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 }
 
 Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
-	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "creating session: " << serviceName);
+	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "creating session: "
+			<< serviceName);
 	char* svc;
-	char  adm[16];
+	char adm[16];
 	Session* session = NULL;
 
 	svc = serviceName;
-	if(strstr(serviceName, "ADMIN") != NULL) {
+	if (strstr(serviceName, "ADMIN") != NULL) {
 		int i;
-		for(i = strlen(serviceName); i >=0 && serviceName[i] != '_'; i--);
-		if(i > 0) {
+		for (i = strlen(serviceName); i >= 0 && serviceName[i] != '_'; i--)
+			;
+		if (i > 0) {
 			memset(adm, 0, 16);
 			ACE_OS::strncpy(adm, serviceName, i);
 			svc = adm;
 		}
 	}
 
-	lock->lock();
-	Connection* clientConnection = clientConnectionManager.getClientConnection(svc);
+	Connection* clientConnection = clientConnectionManager.getClientConnection(
+			svc);
 
-	if(clientConnection != NULL) {
+	lock->lock();
+	if (clientConnection != NULL) {
 		currentConnection = clientConnection;
 		id = nextSessionId++;
 		session = clientConnection->createSession(id, serviceName);
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "created session: " << id << " send: " << session->getCanSend() << " recv: " << session->getCanRecv());
+		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "created session: " << id
+				<< " send: " << session->getCanSend() << " recv: "
+				<< session->getCanRecv());
 	}
 	lock->unlock();
 
@@ -176,16 +187,19 @@ Session* AtmiBrokerClient::getSession(int id) {
 		session = currentConnection->getSession(id);
 	}
 	if (session != NULL) {
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "got session: " << id << " send: " << session->getCanSend() << " recv: " << session->getCanRecv());
+		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "got session: " << id
+				<< " send: " << session->getCanSend() << " recv: "
+				<< session->getCanRecv());
 	} else {
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "did not get session: " << id);
+		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "did not get session: "
+				<< id);
 	}
 	return session;
 }
 
 void AtmiBrokerClient::closeSession(int id) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "close session: " << id);
-	if(currentConnection != NULL) {
+	if (currentConnection != NULL) {
 		currentConnection->closeSession(id);
 	}
 }
