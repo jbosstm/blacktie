@@ -24,6 +24,7 @@
 
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerEnvXml.h"
+#include "SynchronizableObject.h"
 #include "log4cxx/logger.h"
 #include "ace/ACE.h"
 #include "ace/OS_NS_stdlib.h"
@@ -40,19 +41,24 @@ char *AtmiBrokerEnv::ENVIRONMENT_DIR = NULL;
 AtmiBrokerEnv *AtmiBrokerEnv::ptrAtmiBrokerEnv = NULL;
 
 char* configuration = NULL;
+SynchronizableObject instance_lock;
 
 AtmiBrokerEnv *
 AtmiBrokerEnv::get_instance() {
+	instance_lock.lock();
 	if (ptrAtmiBrokerEnv == NULL)
 		ptrAtmiBrokerEnv = new AtmiBrokerEnv();
+	instance_lock.unlock();
 	return ptrAtmiBrokerEnv;
 }
 
 void AtmiBrokerEnv::discard_instance() {
+	instance_lock.lock();
 	if (ptrAtmiBrokerEnv != NULL) {
 		delete ptrAtmiBrokerEnv;
 		ptrAtmiBrokerEnv = NULL;
 	}
+	instance_lock.unlock();
 }
 
 void AtmiBrokerEnv::set_environment_dir(const char* dir) {

@@ -43,6 +43,7 @@ log4cxx::LoggerPtr loggerAtmiBrokerClient(log4cxx::Logger::getLogger(
 		"AtmiBrokerClient"));
 
 bool clientInitialized;
+SynchronizableObject client_lock;
 
 void client_sigint_handler_callback(int sig_type) {
 	signal(SIGINT, SIG_IGN);
@@ -58,8 +59,8 @@ int clientinit() {
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = 0;
 
+	client_lock.lock();
 	initializeLogger();
-
 	if (ptrAtmiBrokerClient == NULL) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit called");
 		ptrAtmiBrokerClient = new AtmiBrokerClient();
@@ -89,12 +90,15 @@ int clientinit() {
 			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "Client Initialized");
 		}
 	}
+	client_lock.unlock();
 	return toReturn;
 }
 
 int clientdone() {
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientdone called");
+
+	client_lock.lock();
 	if (ptrAtmiBrokerClient) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient,
 				(char*) "clientinit deleting Corba Client");
@@ -103,6 +107,8 @@ int clientdone() {
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient,
 				(char*) "clientinit deleted Corba Client");
 	}
+	client_lock.unlock();
+
 	return 0;
 }
 
@@ -112,7 +118,7 @@ AtmiBrokerClient::AtmiBrokerClient() {
 		nextSessionId = 0;
 		clientInitialized = true;
 		currentConnection = NULL;
-
+		lock = new SynchronizableObject();
 	} catch (...) {
 		LOG4CXX_ERROR(loggerAtmiBrokerClient,
 				(char*) "clientinit Unexpected exception");
@@ -127,6 +133,7 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 	AtmiBrokerEnv::discard_instance();
 	clientConnectionManager.closeConnections();
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleted services");
+	delete lock;
 	clientInitialized = false;
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "Client Shutdown");
 }
@@ -135,6 +142,7 @@ Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "creating session: " << serviceName);
 	char* svc;
 	char  adm[16];
+	Session* session = NULL;
 
 	svc = serviceName;
 	if(strstr(serviceName, "ADMIN") != NULL) {
@@ -147,17 +155,18 @@ Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
 		}
 	}
 
+	lock->lock();
 	Connection* clientConnection = clientConnectionManager.getClientConnection(svc);
 
 	if(clientConnection != NULL) {
 		currentConnection = clientConnection;
 		id = nextSessionId++;
-		Session* session = clientConnection->createSession(id, serviceName);
+		session = clientConnection->createSession(id, serviceName);
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "created session: " << id << " send: " << session->getCanSend() << " recv: " << session->getCanRecv());
-		return session;
 	}
+	lock->unlock();
 
-	return NULL;
+	return session;
 }
 
 Session* AtmiBrokerClient::getSession(int id) {

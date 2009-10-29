@@ -25,6 +25,7 @@
 #include "Connection.h"
 #include "Session.h"
 #include "ConnectionManager.h"
+#include "SynchronizableObject.h"
 
 class AtmiBrokerClient {
 public:
@@ -38,6 +39,7 @@ protected:
 	//std::map<std::string, Connection*> clientConnectionMap;
 	ConnectionManager clientConnectionManager;
 	int nextSessionId;
+	SynchronizableObject* lock;
 };
 
 // CLIENT
