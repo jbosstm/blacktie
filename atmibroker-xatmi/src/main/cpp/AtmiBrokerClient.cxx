@@ -163,9 +163,15 @@ Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
 		}
 	}
 
+	Connection* clientConnection = NULL;
 	lock->lock();
-	Connection* clientConnection = clientConnectionManager.getClientConnection(
-			svc);
+	try {
+		clientConnection = clientConnectionManager.getClientConnection(
+				svc);
+	} catch (...) {
+		lock->unlock();
+		throw;
+	}
 
 	if (clientConnection != NULL) {
 		currentConnection = clientConnection;
