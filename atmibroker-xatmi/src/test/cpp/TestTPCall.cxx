@@ -87,6 +87,26 @@ void TestTPCall::test_tpcall_x_octet_lessdata() {
 	CPPUNIT_FAIL("UNIMPLEMENTED");
 }
 
+void TestTPCall::test_tpcall_null_service() {
+	userlogc((char*) "test_tpcall_x_octet");
+	tpadvertise((char*) "tpcall_x_octet", test_tpcall_x_octet_service);
+
+	sendlen = strlen("test_tpcall_x_octet") + 1;
+	rcvlen = sendlen;
+	CPPUNIT_ASSERT((sendbuf
+			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+			!= NULL);
+	(void) strcpy(sendbuf, "test_tpcall_x_octet");
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	int id = ::tpcall(NULL, (char *) sendbuf, sendlen, (char **) &rcvbuf,
+			&rcvlen, (long) 0);
+	CPPUNIT_ASSERT(tperrno == TPEINVAL);
+	CPPUNIT_ASSERT(id == -1);
+	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_octet") != 0);
+}
+
 void TestTPCall::test_tpcall_x_octet() {
 	userlogc((char*) "test_tpcall_x_octet");
 	tpadvertise((char*) "tpcall_x_octet", test_tpcall_x_octet_service);

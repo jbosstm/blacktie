@@ -147,6 +147,10 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "creating session: "
 			<< serviceName);
+	if (serviceName == NULL) {
+		setSpecific(TPE_KEY, TSS_TPEINVAL);
+		return NULL;
+	}
 	char* svc;
 	char adm[16];
 	Session* session = NULL;
@@ -166,11 +170,10 @@ Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
 	Connection* clientConnection = NULL;
 	lock->lock();
 	try {
-		clientConnection = clientConnectionManager.getClientConnection(
-				svc);
+		clientConnection = clientConnectionManager.getClientConnection(svc);
 	} catch (...) {
 		lock->unlock();
-		throw;
+		throw ;
 	}
 
 	if (clientConnection != NULL) {

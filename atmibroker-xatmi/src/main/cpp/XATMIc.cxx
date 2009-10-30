@@ -527,7 +527,7 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 										(char*) "Session got dudded: " << cd);
 								ptrAtmiBrokerClient->closeSession(cd);
 							}
-						} else {
+						} else if (tperrno == 0){
 							setSpecific(TPE_KEY, TSS_TPESYSTEM);
 							ptrAtmiBrokerClient->closeSession(cd);
 						}
@@ -633,7 +633,7 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 										(char*) "Session got dudded: " << cd);
 								ptrAtmiBrokerClient->closeSession(cd);
 							}
-						} else {
+						} else if (tperrno == 0){
 							setSpecific(TPE_KEY, TSS_TPESYSTEM);
 						}
 					} catch (...) {
