@@ -59,8 +59,8 @@ int clientinit() {
 	int toReturn = 0;
 
 	client_lock.lock();
-	initializeLogger();
 	if (ptrAtmiBrokerClient == NULL) {
+		initializeLogger();
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit called");
 		ptrAtmiBrokerClient = new AtmiBrokerClient();
 		if (!clientInitialized) {
@@ -163,10 +163,10 @@ Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
 		}
 	}
 
+	lock->lock();
 	Connection* clientConnection = clientConnectionManager.getClientConnection(
 			svc);
 
-	lock->lock();
 	if (clientConnection != NULL) {
 		currentConnection = clientConnection;
 		id = nextSessionId++;
