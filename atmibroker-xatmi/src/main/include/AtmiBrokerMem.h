@@ -44,7 +44,8 @@ public:
 
 	char* tpalloc(char* type, char* subtype, long size, bool serviceAllocated);
 
-	char* tprealloc(char * addr, long size, char* type, char* subtype);
+	char* tprealloc(char * addr, long size, char* type, char* subtype,
+			bool force);
 
 	void tpfree(char* ptr, bool force);
 

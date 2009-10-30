@@ -177,7 +177,7 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size,
 }
 
 char* AtmiBrokerMem::tprealloc(char * addr, long size, char* type,
-		char* subtype) {
+		char* subtype, bool force) {
 	char* toReturn = NULL;
 	LOG4CXX_TRACE(logger, (char*) "tprealloc locking");
 	lock->lock();
@@ -197,8 +197,9 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size, char* type,
 				!= memoryInfoVector.end(); it++) {
 			LOG4CXX_TRACE(logger, (char*) "next memoryInfo id is with size: "
 					<< (*it).size);
-			if (strncmp((*it).type, "X_COMMON", MAX_TYPE_SIZE) == 0 || strncmp(
-					(*it).type, "X_C_TYPE", MAX_TYPE_SIZE) == 0) {
+			if ((force == false) && (strncmp((*it).type, "X_COMMON",
+					MAX_TYPE_SIZE) == 0 || strncmp((*it).type, "X_C_TYPE",
+					MAX_TYPE_SIZE) == 0)) {
 				LOG4CXX_ERROR(
 						logger,
 						(char*) "tprealloc - cannot resize a X_C_TYPE/X_COMMON buffer");

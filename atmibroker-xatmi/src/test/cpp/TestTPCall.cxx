@@ -232,6 +232,77 @@ void TestTPCall::test_tpcall_x_c_type() {
 	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_c_type") == 0);
 }
 
+void TestTPCall::test_tpcall_with_TPNOCHANGE() {
+	userlogc((char*) "test_tpcall_with_TPNOCHANGE");
+	tpadvertise((char*) "tpcall_x_c_type", test_tpcall_x_c_type_service);
+
+	ACCT_INFO *aptr;
+	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
+	rcvlen = 60;
+
+	rcvbuf = (char *) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
+	CPPUNIT_ASSERT(rcvbuf != NULL);
+	sendbuf = (char*) aptr;
+	aptr->acct_no = 12345678;
+	strcpy(aptr->name, "TOM");
+	aptr->foo[0] = 1.1F;
+	aptr->foo[1] = 2.2F;
+
+	aptr->balances[0] = 1.1;
+	aptr->balances[1] = 2.2;
+
+	int id = ::tpcall((char*) "tpcall_x_c_type", (char*) aptr, 0,
+			(char**) &rcvbuf, &rcvlen, TPNOCHANGE);
+	CPPUNIT_ASSERT(tperrno == TPEOTYPE);
+	CPPUNIT_ASSERT(id == -1);
+
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
+	long toTest = ::tptypes(rcvbuf, type, subtype);
+	CPPUNIT_ASSERT(strncmp(type, "X_C_TYPE", 8) == 0);
+	CPPUNIT_ASSERT(strncmp(subtype, "acct_info", 16) == 0);
+	CPPUNIT_ASSERT(toTest == 184);
+	free(type);
+	free(subtype);
+
+}
+
+void TestTPCall::test_tpcall_without_TPNOCHANGE() {
+	userlogc((char*) "test_tpcall_without_TPNOCHANGE");
+	tpadvertise((char*) "tpcall_x_c_type", test_tpcall_x_c_type_service);
+
+	ACCT_INFO *aptr;
+	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
+	rcvlen = 60;
+
+	rcvbuf = (char *) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
+	CPPUNIT_ASSERT(rcvbuf != NULL);
+	sendbuf = (char*) aptr;
+	aptr->acct_no = 12345678;
+	strcpy(aptr->name, "TOM");
+	aptr->foo[0] = 1.1F;
+	aptr->foo[1] = 2.2F;
+
+	aptr->balances[0] = 1.1;
+	aptr->balances[1] = 2.2;
+
+	int id = ::tpcall((char*) "tpcall_x_c_type", (char*) aptr, 0,
+			(char**) &rcvbuf, &rcvlen, 0);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(tpurcode == 23);
+	CPPUNIT_ASSERT(id != -1);
+	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_c_type") == 0);
+	CPPUNIT_ASSERT(rcvlen == 60);
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
+	long toTest = ::tptypes(rcvbuf, type, subtype);
+	CPPUNIT_ASSERT(strcmp(type, "X_OCTET") == 0);
+	CPPUNIT_ASSERT(strcmp(subtype, "") == 0);
+	CPPUNIT_ASSERT(toTest == 60);
+	free(type);
+	free(subtype);
+}
+
 void test_tpcall_x_octet_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "test_tpcall_x_octet_service");
 	bool ok = false;

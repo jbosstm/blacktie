@@ -222,15 +222,15 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 
 						if (len < message.len && !typesChanged) {
 							*odata = AtmiBrokerMem::get_instance()->tprealloc(
-									*odata, message.len, NULL, NULL);
+									*odata, message.len, NULL, NULL, true);
 						} else if (len < message.len && typesChanged) {
 							*odata = AtmiBrokerMem::get_instance()->tprealloc(
 									*odata, message.len, message.type,
-									message.subtype);
+									message.subtype, true);
 						} else if (typesChanged) {
 							*odata = AtmiBrokerMem::get_instance()->tprealloc(
 									*odata, message.len, message.type,
-									message.subtype);
+									message.subtype, true);
 						}
 
 						*olen = message.len;
@@ -405,7 +405,7 @@ char* tprealloc(char * addr, long size) {
 	char* toReturn = NULL;
 	if (clientinit() != -1) {
 		toReturn = AtmiBrokerMem::get_instance()->tprealloc(addr, size, NULL,
-				NULL);
+				NULL, false);
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tprealloc returning" << " tperrno: "
 			<< tperrno);
@@ -527,7 +527,7 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 										(char*) "Session got dudded: " << cd);
 								ptrAtmiBrokerClient->closeSession(cd);
 							}
-						} else if (tperrno == 0){
+						} else if (tperrno == 0) {
 							setSpecific(TPE_KEY, TSS_TPESYSTEM);
 							ptrAtmiBrokerClient->closeSession(cd);
 						}
@@ -633,7 +633,7 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 										(char*) "Session got dudded: " << cd);
 								ptrAtmiBrokerClient->closeSession(cd);
 							}
-						} else if (tperrno == 0){
+						} else if (tperrno == 0) {
 							setSpecific(TPE_KEY, TSS_TPESYSTEM);
 						}
 					} catch (...) {

@@ -25,6 +25,8 @@
 
 class TestTPCall: public BaseServerTest {
 	CPPUNIT_TEST_SUITE( TestTPCall);
+	CPPUNIT_TEST( test_tpcall_without_TPNOCHANGE);
+	CPPUNIT_TEST( test_tpcall_with_TPNOCHANGE);
 	CPPUNIT_TEST( test_tpcall_unknown_service);
 	CPPUNIT_TEST( test_tpcall_null_service);
 	// TODO THIS REQUIRES TESTS TO BE ABLE TO STOP THE NAMING SERVICE CPPUNIT_TEST( test_tpcall_systemerr);
@@ -39,6 +41,8 @@ public:
 void test_tpcall_unknown_service();
 void test_tpcall_null_service();
 void test_tpcall_systemerr();
+void test_tpcall_without_TPNOCHANGE();
+void test_tpcall_with_TPNOCHANGE();
 void test_tpcall_x_octet();
 void test_tpcall_x_octet_zero();
 void test_tpcall_x_common();
