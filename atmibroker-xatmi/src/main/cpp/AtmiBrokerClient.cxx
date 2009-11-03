@@ -168,23 +168,19 @@ Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
 	}
 
 	Connection* clientConnection = NULL;
-	lock->lock();
-	try {
-		clientConnection = clientConnectionManager.getClientConnection(svc);
-	} catch (...) {
-		lock->unlock();
-		throw ;
-	}
+	clientConnection = clientConnectionManager.getClientConnection(svc);
 
 	if (clientConnection != NULL) {
+		lock->lock();
 		currentConnection = clientConnection;
 		id = nextSessionId++;
+		lock->unlock();
+
 		session = clientConnection->createSession(id, serviceName);
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "created session: " << id
 				<< " send: " << session->getCanSend() << " recv: "
 				<< session->getCanRecv());
 	}
-	lock->unlock();
 
 	return session;
 }

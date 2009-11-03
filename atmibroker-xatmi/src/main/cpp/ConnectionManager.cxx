@@ -33,26 +33,26 @@ log4cxx::LoggerPtr loggerConnectionManager(log4cxx::Logger::getLogger(
 #endif
 ConnectionManager::ConnectionManager() {
 	LOG4CXX_TRACE(loggerConnectionManager, (char*) "constructor");
+	lock = new SynchronizableObject();
 }
 
 ConnectionManager::~ConnectionManager() {
 	LOG4CXX_TRACE(loggerConnectionManager, (char*) "destructor");
 
-	ConnectionMap::iterator it;
-	for (it = manager.begin(); it != manager.end(); it++) {
-		delete (*it).second;
-	}
-	manager.clear();
+	this->closeConnections();
+	delete lock;
 }
 
 void ConnectionManager::closeConnections() {
 	LOG4CXX_TRACE(loggerConnectionManager, (char*) "closeConnections");
 
+	lock->lock();
 	ConnectionMap::iterator it;
 	for (it = manager.begin(); it != manager.end(); it++) {
 		delete (*it).second;
 	}
 	manager.clear();
+	lock->unlock();
 }
 
 Connection*
@@ -71,18 +71,21 @@ ConnectionManager::getConnection(char* serviceName, char* side) {
 	key.append("/");
 	key.append(transportLibrary);
 
+	lock->lock();
 	ConnectionMap::iterator it;
 	it = manager.find(key);
 
 	if (it != manager.end()) {
 		LOG4CXX_DEBUG(loggerConnectionManager, (char*) "find " << serviceName
 				<< " Connection in map " << (*it).second);
+		lock->unlock();
 		return (*it).second;
 	} else {
 #ifdef IDE_DEBUG
 		Connection* connection = new HybridConnectionImpl(side);
 		manager.insert(ConnectionMap::value_type(key, connection));
 		LOG4CXX_DEBUG(loggerConnectionManager, (char*) "insert service " << key << " connection " << connection);
+		lock->unlock();
 		return connection;
 #else
 		connection_factory_t* connectionFactory =
@@ -93,6 +96,7 @@ ConnectionManager::getConnection(char* serviceName, char* side) {
 			manager.insert(ConnectionMap::value_type(key, connection));
 			LOG4CXX_DEBUG(loggerConnectionManager, (char*) "insert service "
 					<< key << " connection " << connection);
+			lock->unlock();
 			return connection;
 		}
 #endif
@@ -100,6 +104,7 @@ ConnectionManager::getConnection(char* serviceName, char* side) {
 
 	LOG4CXX_WARN(loggerConnectionManager,
 			(char*) "can not create connection for service " << serviceName);
+	lock->unlock();
 	return NULL;
 }
 

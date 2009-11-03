@@ -21,6 +21,7 @@
 #include <string>
 #include <map>
 #include "Connection.h"
+#include "SynchronizableObject.h"
 
 typedef std::map<std::string, Connection*> ConnectionMap;
 
@@ -36,6 +37,7 @@ public:
 
 private:
 	ConnectionMap manager;
+	SynchronizableObject* lock;
 	Connection* getConnection(char* serviceName, char* side);
 };
 
