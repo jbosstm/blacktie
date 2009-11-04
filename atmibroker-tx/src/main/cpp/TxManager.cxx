@@ -100,7 +100,7 @@ atmibroker::tx::TxControl *TxManager::currentTx(const char *msg)
 
 int TxManager::begin(void)
 {
-	TX_GUARD(_isOpen && !getSpecific(TSS_KEY));
+	TX_GUARD((_isOpen && !getSpecific(TSS_KEY)));
 
 	// start a new transaction
 	CosTransactions::Control_ptr ctrl = _txfac->create(_timeout);
