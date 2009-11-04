@@ -110,7 +110,7 @@ void TestTransactions::test_protocol()
 	userlogc_debug( (char*) "TestTransactions::test_protocol 2nd begin");
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_begin());
 	// should not be able to close a transaction before calling tx_commit or tx_rollback
-	CPPUNIT_ASSERT(tx_close() != TX_OK);
+	CPPUNIT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_close());
 	// rollback should succeed
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_rollback());
 	// should not be able to commit or rollback a transaction after it has already completed
@@ -123,6 +123,14 @@ void TestTransactions::test_protocol()
 
 	// close should succeed
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
+
+	// tx_begin should return TX_PROTOCOL_ERROR if caller is already in transaction mode
+	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_open());
+	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_begin());
+	CPPUNIT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_begin());
+	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_commit());
+	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
+	
 	userlogc( (char*) "TestTransactions::test_protocol pass");
 }
 
@@ -182,6 +190,9 @@ void TestTransactions::test_info()
 	check_info("TX_UNCHAINED after rollback", 0, TX_COMMIT_COMPLETED, TX_UNCHAINED, 10L, -1);
 
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
+
+	// If info is null, no TXINFO structure is returned
+	CPPUNIT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_info(NULL));
 	userlogc( (char*) "TestTransactions::test_info pass");
 }
 
