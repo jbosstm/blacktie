@@ -197,7 +197,7 @@ static void* work2(void *args)
 // XsdValidator is not thread safe
 static int bug211() {
 	thr_arg_t args = {1, MSG1, "bug211: two threads reading env", "BAR", X_OCTET, X_OCTET, 0, 0};
-	return lotsofwork(2, work, &args);
+	return lotsofwork(2, ACE_THR_FUNC(&work), &args);
 }
 
 // tpcall should return TPEINVAL if the service name is invalid
@@ -214,7 +214,7 @@ static int bug212a() {
 	long flags2 = TPNOTRAN | TPNOTIME;
 	thr_arg_t arg1 = {1, MSG1, "bug212a: TPNOTIME", "BAR", X_OCTET, X_OCTET, flags2, 0};
 
-	return lotsofwork(1, work, &arg1);
+	return lotsofwork(1, ACE_THR_FUNC(&work), &arg1);
 }
 static int bug212b() {
 	// Similarly specifying TPNOBLOCK means that if a blocking condition does exist then the caller
@@ -224,35 +224,35 @@ static int bug212b() {
 
 	thr_arg_t args = {1, MSG1, "bug212b: TPNOBLOCK", "BAR", X_OCTET, X_OCTET, flags3, 0};
 
-	return lotsofwork(1, work, &args);
+	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
 }
 
 // TPSIGRSTRT flag isn't supported on tpcall
 static int bug214() {
 	thr_arg_t args = {1, MSG1, "bug214: TPSIGRSTRT flag not supported on tpcall", "BAR", X_OCTET, X_OCTET, TPSIGRSTRT, 0};
-	return lotsofwork(1, work, &args);
+	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
 }
 
 // tpcall failure with multiple threads
 static int bug215() {
 	thr_arg_t args = {0, MSG1, "bug215: tpcall failure with lots of threads", "BAR", X_OCTET, X_OCTET, 0, 0};
-	return lotsofwork(2, work2, &args);
+	return lotsofwork(2, ACE_THR_FUNC(&work2), &args);
 }
 
 static int bug216a() {
 	thr_arg_t args = {1, MSG1, "bug216: tp bufs should morph if they're the wrong type", "BAR", X_OCTET, X_C_TYPE, 0, 0};
-	return lotsofwork(1, work, &args);
+	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
 }
 
 static int bug216b() {
 	thr_arg_t args = {1, MSG1, "bug216: passing the wrong return buffer type with TPNOCHANGE",
 		"BAR", X_OCTET, X_C_TYPE, TPNOCHANGE, TPEOTYPE};
-	return lotsofwork(1, work, &args);
+	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
 }
 
 static int bug217() {
 	thr_arg_t args = {1, MSG1, "bug217: make sure tpurcode works", "BAR", X_OCTET, X_OCTET, 0, 0};
-	(void) lotsofwork(1, work, &args);
+	(void) lotsofwork(1, ACE_THR_FUNC(&work), &args);
 	do_assert(1, &(args.result), tpurcode == 99, "tpurcode should have been 99: tpurcode=%d tperrno=%d", tpurcode, tperrno);
 	return args.result;
 }
