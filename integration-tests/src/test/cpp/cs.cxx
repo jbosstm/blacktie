@@ -26,18 +26,13 @@
 #include "ace/Thread.h"
 #include "ace/Synch.h"
 
-/*
- g++ -I$HOME/blacktie/trunk/atmibroker-xatmi/target/cxx/compile/include -I$HOME/blacktie/trunk/atmibroker-xatmi/target/classes/include -lACE -L/home/mmusgrov/blacktie/releases/blacktie-1.0-MR6-SNAPSHOT/lib -latmibroker-xatmi cs.c -o cs
- */
-
-#if 1
-
-#include <unistd.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 
+#ifndef WIN32
 #include "tx.h"
+#endif
 
 static ACE_Mutex mutex_;
 const char *MSG1 = "CLIENT REQUEST		";
@@ -303,8 +298,23 @@ static int t5() {
 	return do_tpcall(&args);
 }
 
+static int tx = 0;
+static int startTx() {
+#ifndef WIN32
+	if (tx && (tx_open() != TX_OK || tx_begin() != TX_OK))
+		return 1;
+#endif
+	return 0;
+}
+static int endTx() {
+#ifndef WIN32
+	if (tx && (tx_commit() != TX_OK || tx_close() != TX_OK))
+		return 1;
+#endif
+	return 0;
+}
+
 int run_client(int argc, char **argv) {
-	int tx = 0;
 	int res = 0;
 	int bug = 217;
 
@@ -313,7 +323,7 @@ int run_client(int argc, char **argv) {
 
 	userlogc((char*) "starting test %d", bug);
 
-	if (tx && (tx_open() != TX_OK || tx_begin() != TX_OK))
+	if (startTx() != 0)
 		userlogc((char*) "ERROR - Could not open or begin transaction: ");
 	else {
 		switch (bug) {
@@ -337,7 +347,7 @@ int run_client(int argc, char **argv) {
 		default: break;
 		}
 
-		if (tx && (tx_commit() != TX_OK || tx_close() != TX_OK))
+		if (endTx() != 0)
 			userlogc((char*) "ERROR - Could not commit or close transaction: ");
 	}
 
@@ -345,7 +355,6 @@ int run_client(int argc, char **argv) {
 
 	return res;
 }
-#endif
 
 void BAR (TPSVCINFO *);
 void TestTPCall (TPSVCINFO *);
