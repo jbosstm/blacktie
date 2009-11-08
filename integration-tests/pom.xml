@@ -43,6 +43,17 @@
 						<BLACKTIE_SCHEMA_DIR>${project.build.directory}/cxx/test/</BLACKTIE_SCHEMA_DIR>
 						<JBOSSAS_IP_ADDR>${jbossas.ip.addr}</JBOSSAS_IP_ADDR>
 					</environmentVariables>
+					<systemProperties>
+						<property>
+							<name>TEST_REPORTS_DIR</name>
+							<value>${project.build.directory}/surefire-reports</value>
+						</property>
+						<property>
+							<name>CLIENT_SERVER_EXE</name>
+							<value>${project.build.directory}/cs</value>
+						</property>
+					</systemProperties>
+
 				</configuration>
 			</plugin>
 			<plugin>
