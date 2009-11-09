@@ -255,8 +255,9 @@ void TestTransactions::test_rollback()
 	// TODO check the behaviour when a real RM is used.
 	userlogc_debug( (char*) "TestTransactions::test_rollback begin");
 
+	fault_t fault1 = {0, 102, O_XA_COMMIT, XA_HEURHAZ};
 	/* cause RM 102 start to fail */
-	fault_t fault = {0, 102, O_XA_START, XAER_RMERR};
+	fault_t fault2 = {0, 102, O_XA_START, XAER_RMERR};
 
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_open());
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_begin());
@@ -266,10 +267,19 @@ void TestTransactions::test_rollback()
 
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_set_transaction_control(TX_CHAINED));
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_begin());
-	(void) dummy_rm_add_fault(&fault);
+	(void) dummy_rm_add_fault(&fault2);
 	doFour();
 	CPPUNIT_ASSERT_EQUAL(TX_ROLLBACK_NO_BEGIN, tx_commit());
-	(void) dummy_rm_del_fault(fault.id);
+	(void) dummy_rm_del_fault(fault2.id);
+
+	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_set_commit_return(TX_COMMIT_COMPLETED));
+	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_begin());
+	(void) dummy_rm_add_fault(&fault1);
+	(void) dummy_rm_add_fault(&fault2);
+	CPPUNIT_ASSERT_EQUAL(TX_HAZARD_NO_BEGIN, tx_commit());
+
+	(void) dummy_rm_del_fault(fault1.id);
+	(void) dummy_rm_del_fault(fault2.id);
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
 	userlogc( (char*) "TestTransactions::test_rollback pass");
 }
