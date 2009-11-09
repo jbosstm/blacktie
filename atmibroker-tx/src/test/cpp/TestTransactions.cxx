@@ -130,7 +130,18 @@ void TestTransactions::test_protocol()
 	CPPUNIT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_begin());
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_commit());
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
-	
+
+	/* cause RM 102 start to fail */
+	fault_t fault = {0, 102, O_XA_START, XAER_RMERR};
+	(void) dummy_rm_add_fault(&fault);
+
+	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_open());
+	// tx_begin should return TX_ERROR if rm return errors, and the caller is not in transaction mode
+	CPPUNIT_ASSERT_EQUAL(TX_ERROR, tx_begin());
+	CPPUNIT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_commit());
+	/* cleanup */
+	(void) dummy_rm_del_fault(fault.id);
+	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
 	userlogc( (char*) "TestTransactions::test_protocol pass");
 }
 
@@ -243,13 +254,22 @@ void TestTransactions::test_rollback()
 {
 	// TODO check the behaviour when a real RM is used.
 	userlogc_debug( (char*) "TestTransactions::test_rollback begin");
-	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_open());
 
+	/* cause RM 102 start to fail */
+	fault_t fault = {0, 102, O_XA_START, XAER_RMERR};
+
+	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_open());
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_begin());
 	doFour();
 	check_info("set_rollback_only", 1, -1L, TX_UNCHAINED, 0L, TX_ROLLBACK_ONLY);
 	CPPUNIT_ASSERT_EQUAL(TX_ROLLBACK, tx_commit());
 
+	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_set_transaction_control(TX_CHAINED));
+	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_begin());
+	(void) dummy_rm_add_fault(&fault);
+	doFour();
+	CPPUNIT_ASSERT_EQUAL(TX_ROLLBACK_NO_BEGIN, tx_commit());
+	(void) dummy_rm_del_fault(fault.id);
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
 	userlogc( (char*) "TestTransactions::test_rollback pass");
 }
