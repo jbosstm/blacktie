@@ -25,6 +25,10 @@
 
 class TestTPCall: public BaseServerTest {
 	CPPUNIT_TEST_SUITE( TestTPCall);
+	CPPUNIT_TEST( test_tpcall_without_TPNOBLOCK);
+	CPPUNIT_TEST( test_tpcall_with_TPNOBLOCK);
+	CPPUNIT_TEST( test_tpcall_without_TPNOTIME);
+	CPPUNIT_TEST( test_tpcall_with_TPNOTIME);
 	CPPUNIT_TEST( test_tpcall_without_TPNOCHANGE);
 	CPPUNIT_TEST( test_tpcall_with_TPNOCHANGE);
 	CPPUNIT_TEST( test_tpcall_unknown_service);
@@ -38,22 +42,26 @@ class TestTPCall: public BaseServerTest {
 CPPUNIT_TEST_SUITE_END();
 
 public:
-void test_tpcall_unknown_service();
-void test_tpcall_null_service();
-void test_tpcall_systemerr();
-void test_tpcall_without_TPNOCHANGE();
-void test_tpcall_with_TPNOCHANGE();
-void test_tpcall_x_octet();
-void test_tpcall_x_octet_zero();
-void test_tpcall_x_common();
-void test_tpcall_x_c_type();
-void test_tpcall_x_octet_lessdata();
-virtual void setUp();
-virtual void tearDown();
+	void test_tpcall_unknown_service();
+	void test_tpcall_null_service();
+	void test_tpcall_systemerr();
+	void test_tpcall_without_TPNOCHANGE();
+	void test_tpcall_with_TPNOCHANGE();
+	void test_tpcall_without_TPNOBLOCK();
+	void test_tpcall_with_TPNOBLOCK();
+	void test_tpcall_without_TPNOTIME();
+	void test_tpcall_with_TPNOTIME();
+	void test_tpcall_x_octet();
+	void test_tpcall_x_octet_zero();
+	void test_tpcall_x_common();
+	void test_tpcall_x_c_type();
+	void test_tpcall_x_octet_lessdata();
+	virtual void setUp();
+	virtual void tearDown();
 
 private:
-char *sendbuf, *rcvbuf;
-long sendlen, rcvlen;
+	char *sendbuf, *rcvbuf;
+	long sendlen, rcvlen;
 };
 
 #endif

@@ -23,11 +23,15 @@
 #include "xatmi.h"
 
 #include "TestTPCall.h"
+#include "Sleeper.h"
 
 extern void test_tpcall_x_octet_service(TPSVCINFO *svcinfo);
 extern void test_tpcall_x_octet_service_zero(TPSVCINFO *svcinfo);
 extern void test_tpcall_x_common_service(TPSVCINFO *svcinfo);
 extern void test_tpcall_x_c_type_service(TPSVCINFO *svcinfo);
+
+extern void test_tpcall_TPNOBLOCK(TPSVCINFO *svcinfo);
+extern void test_tpcall_TPNOTIME(TPSVCINFO *svcinfo);
 
 void TestTPCall::setUp() {
 	userlogc((char*) "TestTPCall::setUp");
@@ -371,4 +375,100 @@ void test_tpcall_x_c_type_service(TPSVCINFO *svcinfo) {
 		strcpy(toReturn, "fail");
 	}
 	tpreturn(TPSUCCESS, 23, toReturn, len, 0);
+}
+
+void TestTPCall::test_tpcall_with_TPNOBLOCK() {
+	char* toTest = (char*) "test_tpcall_TPNOBLOCK";
+	userlogc(toTest);
+	tpadvertise((char*) "tpcall_x_octet", test_tpcall_TPNOBLOCK);
+
+	sendlen = strlen(toTest) + 1;
+	rcvlen = sendlen;
+	CPPUNIT_ASSERT((sendbuf
+			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+			!= NULL);
+	(void) strcpy(sendbuf, toTest);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen,
+			(char **) &rcvbuf, &rcvlen, TPNOBLOCK);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(id != -1);
+	CPPUNIT_ASSERT(strcmp(rcvbuf, toTest) == 0);
+}
+
+void TestTPCall::test_tpcall_without_TPNOBLOCK() {
+	char* toTest = (char*) "test_tpcall_no_TPNOBLOCK";
+	userlogc(toTest);
+	tpadvertise((char*) "tpcall_x_octet", test_tpcall_TPNOBLOCK);
+
+	sendlen = strlen(toTest) + 1;
+	rcvlen = sendlen;
+	CPPUNIT_ASSERT((sendbuf
+			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+			!= NULL);
+	(void) strcpy(sendbuf, toTest);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen,
+			(char **) &rcvbuf, &rcvlen, (long) 0);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(id != -1);
+	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, toTest) == 0);
+}
+
+void TestTPCall::test_tpcall_without_TPNOTIME() {
+	char* toTest = (char*) "test_tpcall_no_TPNOTIME";
+	userlogc(toTest);
+	tpadvertise((char*) "tpcall_x_octet", test_tpcall_TPNOTIME);
+
+	sendlen = strlen(toTest) + 1;
+	rcvlen = sendlen;
+	CPPUNIT_ASSERT((sendbuf
+			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+			!= NULL);
+	(void) strcpy(sendbuf, toTest);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen,
+			(char **) &rcvbuf, &rcvlen, 0);
+	CPPUNIT_ASSERT(tperrno == TPETIME);
+	CPPUNIT_ASSERT(id == -1);
+	CPPUNIT_ASSERT(strcmp(rcvbuf, toTest) == -1);
+}
+
+void TestTPCall::test_tpcall_with_TPNOTIME() {
+	char* toTest = (char*) "test_tpcall_TPNOTIME";
+	userlogc(toTest);
+	tpadvertise((char*) "tpcall_x_octet", test_tpcall_TPNOTIME);
+
+	sendlen = strlen(toTest) + 1;
+	rcvlen = sendlen;
+	CPPUNIT_ASSERT((sendbuf
+			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+			!= NULL);
+	(void) strcpy(sendbuf, toTest);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen,
+			(char **) &rcvbuf, &rcvlen, TPNOTIME);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(id != -1);
+	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, toTest) == 0);
+}
+
+void test_tpcall_TPNOBLOCK(TPSVCINFO *svcinfo) {
+	userlogc((char*) "test_tpcall_TPNOBLOCK");
+	::sleeper(5);
+	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
+}
+
+void test_tpcall_TPNOTIME(TPSVCINFO *svcinfo) {
+	userlogc((char*) "test_tpcall_TPNOTIME");
+	::sleeper(21);
+	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
 }

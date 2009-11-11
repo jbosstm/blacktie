@@ -185,7 +185,10 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 			try {
 				MESSAGE message = session->receive(time);
 				if (message.received) {
-					if (message.rval != DISCON) {
+					if (message.rval == DISCON) {
+						*event = TPEV_DISCONIMM;
+						txx_rollback_only();
+					} else {
 						char* type = message.type;
 						if (type == NULL) {
 							type = (char*) "";
@@ -243,57 +246,60 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 						free(message.type);
 						free(message.subtype);
 						free((char*) message.replyto);
-					} else {
-						*event = TPEV_DISCONIMM;
-						txx_rollback_only();
-					}
 
-					if (message.rcode == TPESVCERR) {
-						*event = TPEV_SVCERR;
-						setSpecific(TPE_KEY, TSS_TPESVCERR);
-						txx_rollback_only();
-						ptrAtmiBrokerClient->closeSession(id);
-						closeSession = false;
-					} else if (message.rval == TPFAIL) {
-						setTpurcode(message.rcode);
-						*event = TPEV_SVCFAIL;
-						setSpecific(TPE_KEY, TSS_TPESVCFAIL);
-						txx_rollback_only();
-						ptrAtmiBrokerClient->closeSession(id);
-						closeSession = false;
-					} else if (message.rval == TPSUCCESS) {
-						toReturn = 0;
-						setTpurcode(message.rcode);
-						*event = TPEV_SVCSUCC;
-						ptrAtmiBrokerClient->closeSession(id);
-						closeSession = false;
-					} else if (message.flags & TPRECVONLY) {
-						toReturn = 0;
-						*event = TPEV_SENDONLY;
-						session->setCanSend(true);
-						session->setCanRecv(false);
-						LOG4CXX_DEBUG(
-								loggerXATMI,
-								(char*) "receive TPRECVONLY set constraints session: "
-										<< session->getId() << " send: "
-										<< session->getCanSend() << " recv: "
-										<< session->getCanRecv());
-					} else if (message.flags & TPSENDONLY) {
-						toReturn = 0;
-						session->setCanSend(true);
-						session->setCanRecv(false);
-						LOG4CXX_DEBUG(
-								loggerXATMI,
-								(char*) "receive TPSENDONLY set constraints session: "
-										<< session->getId() << " send: "
-										<< session->getCanSend() << " recv: "
-										<< session->getCanRecv());
-					} else if (message.correlationId >= 0) {
-						toReturn = 0;
-					} else {
-						setSpecific(TPE_KEY, TSS_TPETIME);
-						txx_rollback_only();
+						if (message.rcode == TPESVCERR) {
+							*event = TPEV_SVCERR;
+							setSpecific(TPE_KEY, TSS_TPESVCERR);
+							txx_rollback_only();
+							ptrAtmiBrokerClient->closeSession(id);
+							closeSession = false;
+						} else if (message.rval == TPFAIL) {
+							setTpurcode(message.rcode);
+							*event = TPEV_SVCFAIL;
+							setSpecific(TPE_KEY, TSS_TPESVCFAIL);
+							txx_rollback_only();
+							ptrAtmiBrokerClient->closeSession(id);
+							closeSession = false;
+						} else if (message.rval == TPSUCCESS) {
+							toReturn = 0;
+							setTpurcode(message.rcode);
+							*event = TPEV_SVCSUCC;
+							ptrAtmiBrokerClient->closeSession(id);
+							closeSession = false;
+						} else if (message.flags & TPRECVONLY) {
+							toReturn = 0;
+							*event = TPEV_SENDONLY;
+							session->setCanSend(true);
+							session->setCanRecv(false);
+							LOG4CXX_DEBUG(
+									loggerXATMI,
+									(char*) "receive TPRECVONLY set constraints session: "
+											<< session->getId() << " send: "
+											<< session->getCanSend()
+											<< " recv: "
+											<< session->getCanRecv());
+						} else if (message.flags & TPSENDONLY) {
+							toReturn = 0;
+							session->setCanSend(true);
+							session->setCanRecv(false);
+							LOG4CXX_DEBUG(
+									loggerXATMI,
+									(char*) "receive TPSENDONLY set constraints session: "
+											<< session->getId() << " send: "
+											<< session->getCanSend()
+											<< " recv: "
+											<< session->getCanRecv());
+						} else if (message.correlationId >= 0) {
+							toReturn = 0;
+						} else {
+							LOG4CXX_ERROR(loggerXATMI,
+									(char*) "COULD NOT PARSE RECEIVED MESSAGE");
+							setSpecific(TPE_KEY, TSS_TPESYSTEM);
+						}
 					}
+				} else if (TPNOBLOCK & flags) {
+					LOG4CXX_DEBUG(loggerXATMI,
+							(char*) "Message not immediately available");
 				} else {
 					setSpecific(TPE_KEY, TSS_TPETIME);
 					txx_rollback_only();
@@ -459,6 +465,7 @@ int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen,
 			if (cd != -1) {
 				long tpgetrplyFlags = flags;
 				tpgetrplyFlags &= ~TPNOTRAN;
+				tpgetrplyFlags &= ~TPNOBLOCK;
 				toReturn = tpgetrply(&cd, odata, olen, tpgetrplyFlags);
 			}
 		}

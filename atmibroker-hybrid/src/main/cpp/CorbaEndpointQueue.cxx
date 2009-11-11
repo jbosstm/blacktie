@@ -100,7 +100,7 @@ HybridCorbaEndpointQueue::~HybridCorbaEndpointQueue() {
 
 	delete[] name;
 	delete lock;
-	free(poaName);
+	free( poaName);
 	LOG4CXX_DEBUG(logger, (char*) "destroyed: " << this);
 }
 
@@ -182,7 +182,7 @@ MESSAGE HybridCorbaEndpointQueue::receive(long time) {
 
 	lock->lock();
 	if (!shutdown) {
-		if (returnData.size() == 0 && time != 0) {
+		if (returnData.size() == 0) {
 			LOG4CXX_DEBUG(logger, (char*) "waiting for %d" << time);
 			lock->wait(time);
 			LOG4CXX_DEBUG(logger, (char*) "out of wait");

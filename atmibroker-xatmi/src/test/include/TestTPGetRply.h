@@ -26,6 +26,8 @@
 class TestTPGetRply: public BaseServerTest {
 	CPPUNIT_TEST_SUITE( TestTPGetRply);
 	CPPUNIT_TEST( test_tpgetrply);
+	CPPUNIT_TEST( test_tpgetrply_with_TPNOBLOCK);
+	CPPUNIT_TEST( test_tpgetrply_without_TPNOBLOCK);
 	CPPUNIT_TEST( test_tpgetrply_baddesc);
 	CPPUNIT_TEST( test_tpgetrply_nullcd);
 	CPPUNIT_TEST( test_tpgetrply_nullrcvbuf);
@@ -33,6 +35,8 @@ class TestTPGetRply: public BaseServerTest {
 CPPUNIT_TEST_SUITE_END();
 public:
 void test_tpgetrply();
+void test_tpgetrply_without_TPNOBLOCK();
+void test_tpgetrply_with_TPNOBLOCK();
 void test_tpgetrply_baddesc();
 void test_tpgetrply_nullcd();
 void test_tpgetrply_nullrcvbuf();

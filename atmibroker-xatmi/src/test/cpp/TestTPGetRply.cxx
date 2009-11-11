@@ -22,8 +22,11 @@
 #include "xatmi.h"
 
 #include "TestTPGetRply.h"
+#include "Sleeper.h"
 
 extern void testtpgetrply_service(TPSVCINFO *svcinfo);
+
+extern void test_tpgetrply_TPNOBLOCK(TPSVCINFO *svcinfo);
 
 void TestTPGetRply::setUp() {
 	userlogc((char*) "TestTPGetRply::setUp");
@@ -42,16 +45,13 @@ void TestTPGetRply::setUp() {
 			!= NULL);
 	strcpy(sendbuf, "grply");
 	CPPUNIT_ASSERT(tperrno == 0);
-	int toCheck = tpadvertise((char*) "TestTPGetrply", testtpgetrply_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
 }
 
 void TestTPGetRply::tearDown() {
 	userlogc((char*) "TestTPGetRply::tearDown");
 	// Do local work
-	::tpfree(sendbuf);
-	::tpfree(rcvbuf);
+	::tpfree( sendbuf);
+	::tpfree( rcvbuf);
 	int toCheck = tpunadvertise((char*) "TestTPGetrply");
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(toCheck != -1);
@@ -62,6 +62,11 @@ void TestTPGetRply::tearDown() {
 
 void TestTPGetRply::test_tpgetrply() {
 	userlogc((char*) "test_tpgetrply");
+
+	int toCheck = tpadvertise((char*) "TestTPGetrply", testtpgetrply_service);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
+
 	int cd = ::tpacall((char*) "TestTPGetrply", (char *) sendbuf, sendlen, 0);
 	CPPUNIT_ASSERT(cd != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -83,6 +88,11 @@ void TestTPGetRply::test_tpgetrply() {
 // 8.5
 void TestTPGetRply::test_tpgetrply_baddesc() {
 	userlogc((char*) "test_tpgetrply_baddesc");
+
+	int toCheck = tpadvertise((char*) "TestTPGetrply", testtpgetrply_service);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
+
 	int cd = 2;
 	int valToTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
 	CPPUNIT_ASSERT(valToTest == -1);
@@ -98,6 +108,11 @@ void TestTPGetRply::test_tpgetrply_baddesc() {
 
 void TestTPGetRply::test_tpgetrply_nullcd() {
 	userlogc((char*) "test_tpgetrply_nullcd");
+
+	int toCheck = tpadvertise((char*) "TestTPGetrply", testtpgetrply_service);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
+
 	int valToTest = ::tpgetrply(NULL, (char **) &rcvbuf, &rcvlen, 0);
 	CPPUNIT_ASSERT(valToTest == -1);
 	CPPUNIT_ASSERT(tperrno != 0);
@@ -112,6 +127,11 @@ void TestTPGetRply::test_tpgetrply_nullcd() {
 
 void TestTPGetRply::test_tpgetrply_nullrcvbuf() {
 	userlogc((char*) "test_tpgetrply_nullrcvbuf");
+
+	int toCheck = tpadvertise((char*) "TestTPGetrply", testtpgetrply_service);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
+
 	int cd = ::tpacall((char*) "TestTPGetrply", (char *) sendbuf, sendlen, 0);
 	CPPUNIT_ASSERT(cd != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
@@ -130,6 +150,11 @@ void TestTPGetRply::test_tpgetrply_nullrcvbuf() {
 
 void TestTPGetRply::test_tpgetrply_nullrcvlen() {
 	userlogc((char*) "test_tpgetrply_nullrcvlen");
+
+	int toCheck = tpadvertise((char*) "TestTPGetrply", testtpgetrply_service);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toCheck != -1);
+
 	int cd = 2;
 	int valToTest = ::tpgetrply(&cd, (char **) &rcvbuf, NULL, 0);
 	CPPUNIT_ASSERT(valToTest == -1);
@@ -149,3 +174,45 @@ void testtpgetrply_service(TPSVCINFO *svcinfo) {
 	strcpy(toReturn, "testtpgetrply_service");
 	tpreturn(TPSUCCESS, 0, toReturn, 22, 0);
 }
+
+void TestTPGetRply::test_tpgetrply_with_TPNOBLOCK() {
+	userlogc((char*) "test_tpgetrply_with_TPNOBLOCK");
+	tpadvertise((char*) "TestTPGetrply", test_tpgetrply_TPNOBLOCK);
+
+	int cd = ::tpacall((char*) "TestTPGetrply", (char *) sendbuf, sendlen, 0);
+	CPPUNIT_ASSERT(cd != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	// RETRIEVE THE RESPONSE
+	int valToTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, TPNOBLOCK);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(valToTest == -1);
+	CPPUNIT_ASSERT(strcmp(rcvbuf, "test_tpgetrply_TPNOBLOCK") == -1);
+}
+
+void TestTPGetRply::test_tpgetrply_without_TPNOBLOCK() {
+	userlogc((char*) "test_tpgetrply_without_TPNOBLOCK");
+	tpadvertise((char*) "TestTPGetrply", test_tpgetrply_TPNOBLOCK);
+
+	int cd = ::tpacall((char*) "TestTPGetrply", (char *) sendbuf, sendlen, 0);
+	CPPUNIT_ASSERT(cd != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	// RETRIEVE THE RESPONSE
+	int valToTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(valToTest == 0);
+	CPPUNIT_ASSERT(strcmp(rcvbuf, "test_tpgetrply_TPNOBLOCK") == 0);
+}
+
+void test_tpgetrply_TPNOBLOCK(TPSVCINFO *svcinfo) {
+	char* response = (char*) "test_tpgetrply_TPNOBLOCK";
+	userlogc(response);
+
+	long sendlen = strlen(response) + 1;
+	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, sendlen);
+	strcpy(toReturn, response);
+	::sleeper(5);
+	tpreturn(TPSUCCESS, 0, toReturn, sendlen, 0);
+}
+
