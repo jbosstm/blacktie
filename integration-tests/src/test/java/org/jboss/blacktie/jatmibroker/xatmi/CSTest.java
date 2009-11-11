@@ -46,6 +46,7 @@ public class CSTest extends TestCase
 		if (++testCnt == NTESTS) {
 			try {
 				log.info("destroying server process");
+				server.interrupt();
 				server.getProcess().destroy();
 			} catch(Throwable e) {
 			}
@@ -143,9 +144,7 @@ public class CSTest extends TestCase
 			thread.join();
 			log.debug("startClient: joined - waiting for client process to exit");
 			client.getProcess().waitFor();
-			log.debug("startClient: done - closing streams");
-			ostream.close();
-			estream.close();
+			log.debug("startClient: done");
 		} else {
 		}
 
@@ -172,7 +171,6 @@ public class CSTest extends TestCase
 //		test_211(); test_2120(); test_2121(); test_213(); test_214(); test_215();
 //		test_2160(); test_2161(); test_217(); test_9001();
 //		test_0(); test_1(); test_2(); test_3(); test_4(); test_5(); 
-		System.out.println("destroying server");
 		server.getProcess().destroy();
 	}
 
@@ -183,6 +181,7 @@ public class CSTest extends TestCase
 		private FileOutputStream ostream;
 		private FileOutputStream estream;
 		private String[] envp;
+		private Thread thread;
 
 		TestProcess(FileOutputStream ostream, FileOutputStream estream, String prefix, String command, String[] envp) {
 			this.ostream = ostream;
@@ -194,9 +193,11 @@ public class CSTest extends TestCase
 
 		Process getProcess() { return proc; }
 		int exitValue() { return proc.exitValue(); }
-		FileOutputStream getOStream() { return ostream; }
+		void interrupt() { if (thread != null) thread.interrupt(); }
 
 		public void run() {
+			thread = Thread.currentThread();
+
 			try {
 				Runtime rt = Runtime.getRuntime();
 				proc = rt.exec(command, envp);
@@ -212,7 +213,14 @@ public class CSTest extends TestCase
 				while ((len = es.read(buf)) > 0)
 					estream.write(buf, 0, len);
 			} catch (IOException e) {
-				log.info(command + ": Error closing streams: " + e + " test count=" + testCnt);
+				if (!thread.interrupted())
+					log.info(command + ": IO error on stream write: " + e + " test count=" + testCnt);
+			}
+
+			try {
+				ostream.close();
+				estream.close();
+			} catch (IOException e) {
 			}
 		}
 	}
