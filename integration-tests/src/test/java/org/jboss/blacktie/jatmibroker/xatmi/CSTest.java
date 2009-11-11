@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 public class CSTest extends TestCase
 {
 	private static final Logger log = LogManager.getLogger(CSTest.class);
-	private static boolean DISABLED = true;	// disable tests until the C program is built correctly
+	private static boolean DISABLED = false;	// disable tests until the C program is built correctly
 
 	// Avoid having to start up and tear down a server for each test
 	// WARNING TODO NTESTS must match the actual number of tests
@@ -38,13 +38,14 @@ public class CSTest extends TestCase
 	private TestProcess client;
 	private String CS_EXE;
 	private String REPORT_DIR;
+	private String[] ENV_ARRAY;
 
 	public void tearDown() {
 		if (DISABLED) return;
-		log.info("tearDown " + (testCnt + 1) + " out of " + NTESTS);
+		log.debug("tearDown " + (testCnt + 1) + " out of " + NTESTS);
 		if (++testCnt == NTESTS) {
 			try {
-				System.out.println("destroying server");
+				log.info("destroying server process");
 				server.getProcess().destroy();
 			} catch(Throwable e) {
 			}
@@ -59,8 +60,18 @@ public class CSTest extends TestCase
 		if (server == null) {
 			log.info("CS Tests: SETUP REPORT_DIR=" + REPORT_DIR + " CLIENT_SERVER_EXE=" + CS_EXE);
 
+			ENV_ARRAY = new String[4];
+
+			ENV_ARRAY[0] = "LD_LIBRARY_PATH=" + System.getProperty("LD_LIBRARY_PATH");
+			ENV_ARRAY[1] = "BLACKTIE_CONFIGURATION_DIR=" + System.getProperty("BLACKTIE_CONFIGURATION_DIR");
+			ENV_ARRAY[2] = "BLACKTIE_SCHEMA_DIR=" + System.getProperty("BLACKTIE_SCHEMA_DIR");
+			ENV_ARRAY[3] = "JBOSSAS_IP_ADDR=" + System.getProperty("JBOSSAS_IP_ADDR");
+
+			for (int i = 0; i < 4; i++)
+				log.debug(ENV_ARRAY[i]);
+
 			try {
-				server = startServer();
+				server = startServer(ENV_ARRAY);
 				Thread.sleep(3000);
 			} catch (IOException e) {
 				System.err.printf("Server io exception: " + e);
@@ -91,7 +102,7 @@ public class CSTest extends TestCase
 		if (DISABLED) return;
 		try {
 			log.debug("waiting for test " + name);
-			TestProcess client = startClient(name, true);
+			TestProcess client = startClient(name, true, ENV_ARRAY);
 			int res = client.exitValue();
 
 			log.info("test " + name + (res == 0 ? " passed " : " failed ") + res);
@@ -103,10 +114,10 @@ public class CSTest extends TestCase
 		}
 	}
 
-	TestProcess startClient(String testname, boolean waitFor) throws IOException, InterruptedException {
+	TestProcess startClient(String testname, boolean waitFor, String[] envp) throws IOException, InterruptedException {
 		FileOutputStream ostream = new FileOutputStream(REPORT_DIR + "/test-" + testname + "-out.txt");
 		FileOutputStream estream = new FileOutputStream(REPORT_DIR + "/test-" + testname + "-err.txt");
-		TestProcess client = new TestProcess(ostream, estream, "client: ", CS_EXE + " " + testname);
+		TestProcess client = new TestProcess(ostream, estream, "client: ", CS_EXE + " " + testname, envp);
 		Thread thread = new Thread(client);
 
 		thread.start();
@@ -124,10 +135,10 @@ public class CSTest extends TestCase
 		return client;
 	}
 
-	TestProcess startServer() throws IOException {
+	TestProcess startServer(String[] envp) throws IOException {
 		FileOutputStream ostream = new FileOutputStream(REPORT_DIR + "/server-out.txt");
 		FileOutputStream estream = new FileOutputStream(REPORT_DIR + "/server-err.txt");
-		TestProcess server = new TestProcess(ostream, estream, "server: ", CS_EXE + " -c linux -i 1");
+		TestProcess server = new TestProcess(ostream, estream, "server: ", CS_EXE + " -c linux -i 1", envp);
 		Thread thread = new Thread(server);
 		thread.start();
 
@@ -154,12 +165,14 @@ public class CSTest extends TestCase
 		private Process proc;
 		private FileOutputStream ostream;
 		private FileOutputStream estream;
+		private String[] envp;
 
-		TestProcess(FileOutputStream ostream, FileOutputStream estream, String prefix, String command) {
+		TestProcess(FileOutputStream ostream, FileOutputStream estream, String prefix, String command, String[] envp) {
 			this.ostream = ostream;
 			this.estream = estream;
 			this.prefix = prefix;
 			this.command = command;
+			this.envp = envp;
 		}
 
 		Process getProcess() { return proc; }
@@ -169,7 +182,7 @@ public class CSTest extends TestCase
 		public void run() {
 			try {
 				Runtime rt = Runtime.getRuntime();
-				proc = rt.exec(command);
+				proc = rt.exec(command, envp);
 
 				InputStream is = proc.getInputStream();
 				InputStream es = proc.getErrorStream();
@@ -182,7 +195,7 @@ public class CSTest extends TestCase
 				while ((len = es.read(buf)) > 0)
 					estream.write(buf, 0, len);
 			} catch (IOException e) {
-				log.error("Error execing command: " + e);
+				log.info(command + ": Error closing streams: " + e + " test count=" + testCnt);
 			}
 		}
 	}

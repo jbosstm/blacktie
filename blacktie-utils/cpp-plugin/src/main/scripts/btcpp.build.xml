@@ -96,6 +96,9 @@
         <condition property="lib.prefix" value="">
             <isset property="is-msvc" />
         </condition>
+        <condition property="have.src.main.file">
+            <isset property="src.main.file" />
+        </condition>
         <available file="${src.dir}" property="src.dir.exists"/>
         <available file="${src.main}" property="src.main.exists"/>
         <available file="${src.test}" property="src.test.exists"/>
@@ -199,9 +202,9 @@
         <!--
              create a comma separated list of libraries from all the libraries in target/cxx/compile/lib
              -->
-                <fileset id="fileset.compile.libs" dir="target/cxx/compile/lib" includes="${lib.convert.pattern}" erroronmissingdir="false"/>
-                <property name="xcompile.libs" value="${toString:fileset.compile.libs}"/>
-                <convert-libset libdir="${xcompile.libs}" propname="compile.libs"/>
+        <fileset id="fileset.compile.libs" dir="target/cxx/compile/lib" includes="${lib.convert.pattern}" erroronmissingdir="false"/>
+        <property name="xcompile.libs" value="${toString:fileset.compile.libs}"/>
+        <convert-libset libdir="${xcompile.libs}" propname="compile.libs"/>
 
         <cc name="${toolchain.compiler}" rebuild="true" exceptions="true" outfile="target/${configuration.type}/${lib.type}/${project.artifactId}" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="${lib.type}" objdir="target/cpp-classes" debug="${debug}">
             <compiler name="${toolchain.compiler}" unless="is-msvc">
@@ -252,12 +255,54 @@
     </target>
     <target name="gen-test-runner" depends="gen-test-runner1,gen-test-runner2" />
 
-    <target name="test-compile" depends="fileset.test.check,gen-test-runner,package" if="have-tests">
+	<target name="init-cpp-test" depends="init">
         <mkdir dir="target/cpp-test-classes" />
-        <fail unless="test.output.type" />
         <copy todir="target/cpp-test-classes" failonerror="false" overwrite="true">
             <fileset dir="src/test/resources" />
         </copy>
+
+        <!--
+             create a comma separated list of libraries for use in <libset> 
+         -->
+        <fileset id="fileset.compile.libs" dir="target/cxx/compile/lib"
+                 includes="${lib.convert.pattern}" erroronmissingdir="false"/>
+        <property name="xcompile.libs" value="${toString:fileset.compile.libs}"/>
+        <convert-libset libdir="${xcompile.libs}" propname="compile.libs"/>
+        <fileset id="fileset.test.libs" dir="target/cxx/test/lib" includes="${lib.convert.pattern}"/>
+        <property name="xtest.libs" value="${toString:fileset.test.libs}"/>
+        <convert-libset libdir="${xtest.libs}" propname="test.libs"/>
+    </target>
+
+    <target name="generate-exe" depends="init-cpp-test" if="have.src.main.file">
+        <cc name="${toolchain.compiler}" exceptions="true" outfile="target/${src.main.file}"
+            subsystem="console" multithreaded="true" runtime="${runtime}" outtype="executable"
+            objdir="target/cpp-test-classes" debug="${debug}">
+
+            <compiler name="${toolchain.compiler}" unless="is-msvc"> &compiler-args-gcc; </compiler>
+            <compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
+
+       	    <fileset dir="${src.test}" includes="**/${src.main.file}.cxx" excludes="${src.excludes}" />
+
+            <defineset define="TAO_COMP, UNITTEST"/>
+            <defineset define="WIN32" if="is-msvc"/>
+
+            <includepath path="src/test/include" />
+            <includepath path="${src.export}" if="export.dir" />
+            <includepath path="src/main/include" />
+            <includepath path="${src.idl.main}/include" />
+            <includepath path="target/cxx/compile/include" />
+            <includepath path="target/cxx/compile/include/apr-1" />
+            <includepath path="target/cxx/compile/include/stomp" />
+            <includepath path="target/cxx/compile/include/expat" />
+            <includepath path="target/cxx/test/include" />
+
+            <libset dir="${project.build.directory}/cxx/compile/lib" libs="${compile.libs}" if="compile.libs"/>
+            <libset dir="${project.build.directory}/cxx/test/lib" libs="${test.libs}" if="test.libs"/>
+        </cc>
+    </target>
+
+    <target name="test-compile" depends="fileset.test.check,gen-test-runner,package,init-cpp-test" if="have-tests">
+        <fail unless="test.output.type" />
         <available file="target/${configuration.type}/${lib.type}" type="dir" property="main.built" />
 
         <!--

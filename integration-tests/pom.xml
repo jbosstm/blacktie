@@ -52,6 +52,26 @@
 							<name>CLIENT_SERVER_EXE</name>
 							<value>${project.build.directory}/cs</value>
 						</property>
+						<property>
+							<name>Path</name>
+							<value>${ld_library_path}</value>
+						</property>
+						<property>
+							<name>LD_LIBRARY_PATH</name>
+							<value>${ld_library_path}</value>
+						</property>
+						<property>
+							<name>BLACKTIE_CONFIGURATION_DIR</name>
+							<value>${atmibroker.configuration.dir}</value>
+						</property>
+						<property>
+							<name>BLACKTIE_SCHEMA_DIR</name>
+							<value>${project.build.directory}/cxx/test</value>
+						</property>
+						<property>
+							<name>JBOSSAS_IP_ADDR</name>
+							<value>${jbossas.ip.addr}</value>
+						</property>
 					</systemProperties>
 
 				</configuration>
@@ -62,6 +82,24 @@
 					<source>1.5</source>
 					<target>1.5</target>
 				</configuration>
+			</plugin>
+            <plugin>
+                <groupId>org.jboss.blacktie.plugins</groupId>
+                <artifactId>cpp-plugin</artifactId>
+
+                <configuration>
+                    <toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
+					<src.main.file>cs</src.main.file>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-exe</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>generate-exe</goal>
+                        </goals>
+                    </execution>
+                </executions>
 			</plugin>
 		</plugins>
 	</build>

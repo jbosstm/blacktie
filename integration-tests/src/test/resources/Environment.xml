@@ -108,5 +108,11 @@
 			<ATTRIBUTE id="txtype" type="int" />
 			<ATTRIBUTE id="status" type="int" />
 		</BUFFER>
+		<BUFFER name="sub_type">
+			<ATTRIBUTE id="data" type="char[]" arrayLength="64" />
+			<ATTRIBUTE id="op" type="char" />
+			<ATTRIBUTE id="id" type="int" />
+		</BUFFER>
+
 	</BUFFERS>
 </ENVIRONMENT>
