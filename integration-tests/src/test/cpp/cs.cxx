@@ -262,7 +262,7 @@ static int bug217() {
 
 static int t9001() {
 	char *buf = (char *) tpalloc((char *) X_C_TYPE, (char*) "sub_type", 10);
-	int res;
+	int res = 0;
 	do_assert(1, &res, buf != 0, "tpalloc with X_C_TYPE and non-zero len: tperrno=%d (spec says size is optional)", tperrno);
 	tpfree(buf);
 	return res;
