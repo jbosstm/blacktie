@@ -351,3 +351,22 @@ void TestTransactions::test_register_resource()
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
 	userlogc( (char*) "TestTransactions::test_register_resource pass");
 }
+
+/*
+ * Test tx_set_commit_return(), tx_set_transaction_control(), tx_set_transaction_timeout()
+ */
+void TestTransactions::test_tx_set()
+{
+	userlogc( (char*) "TestTransactions::test_tx_set begin");
+	// tx_set_* return TX_PROTOCOL_ERROR if not call tx_open
+	CPPUNIT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_set_transaction_control(TX_CHAINED));
+	CPPUNIT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_set_commit_return(TX_COMMIT_COMPLETED));
+	CPPUNIT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_set_transaction_timeout(10));
+	
+	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_open());
+	CPPUNIT_ASSERT_EQUAL(TX_EINVAL, tx_set_transaction_contorl(2));
+	CPPUNIT_ASSERT_EQUAL(TX_EINVAL, tx_set_commit_return(2));
+	CPPUNIT_ASSERT_EQUAL(TX_EINVAL, tx_set_transaction_timeout(-1));
+	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
+	userlogc( (char*) "TestTransactions::test_tx_set pass");
+}
