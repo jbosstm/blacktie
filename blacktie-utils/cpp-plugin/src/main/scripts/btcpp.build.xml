@@ -301,8 +301,13 @@
         </cc>
     </target>
 
-    <target name="test-compile" depends="fileset.test.check,gen-test-runner,package,init-cpp-test" if="have-tests">
+    <target name="test-compile" depends="fileset.test.check,gen-test-runner,package" if="have-tests">
+        <mkdir dir="target/cpp-test-classes" />
         <fail unless="test.output.type" />
+        <copy todir="target/cpp-test-classes" failonerror="false" overwrite="true">
+            <fileset dir="src/test/resources" />
+        </copy>
+
         <available file="target/${configuration.type}/${lib.type}" type="dir" property="main.built" />
 
         <!--
