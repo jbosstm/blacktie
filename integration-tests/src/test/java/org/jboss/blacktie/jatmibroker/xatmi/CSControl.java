@@ -42,7 +42,7 @@ public class CSControl
 		super.finalize();
 	}
 
-	public void tearDown() {
+	void tearDown() {
 		try {
 			if (server != null) {
 				log.info("destroying server process");
@@ -53,7 +53,7 @@ public class CSControl
 		}
 	}
 
-	public void setUp() {
+	void setUp() {
 		REPORT_DIR = System.getProperty("TEST_REPORTS_DIR", ".");
 		CS_EXE = System.getProperty("CLIENT_SERVER_EXE", "./cs");
 
@@ -81,7 +81,7 @@ public class CSControl
 		}
 	}
 
-	void runTest(String name) {
+	public void runTest(String name) {
 		try {
 			log.debug("waiting for test " + name);
 			TestProcess client = startClient(name, true, ENV_ARRAY);
