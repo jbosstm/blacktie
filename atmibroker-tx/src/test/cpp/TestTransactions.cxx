@@ -364,7 +364,7 @@ void TestTransactions::test_tx_set()
 	CPPUNIT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_set_transaction_timeout(10));
 	
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_open());
-	CPPUNIT_ASSERT_EQUAL(TX_EINVAL, tx_set_transaction_contorl(2));
+	CPPUNIT_ASSERT_EQUAL(TX_EINVAL, tx_set_transaction_control(2));
 	CPPUNIT_ASSERT_EQUAL(TX_EINVAL, tx_set_commit_return(2));
 	CPPUNIT_ASSERT_EQUAL(TX_EINVAL, tx_set_transaction_timeout(-1));
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
