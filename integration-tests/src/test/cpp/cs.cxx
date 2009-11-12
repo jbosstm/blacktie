@@ -190,7 +190,7 @@ static void* work2(void *args)
 
 	userlogc("Thread (t) finished %d out of %d calls successful\n", okcalls, ncalls * 2);
 
-	params->result = (okcalls == ncalls * 2);
+	params->result = ((okcalls == ncalls * 2)?0:1);
 	return args;
 }
 
