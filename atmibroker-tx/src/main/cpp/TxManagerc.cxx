@@ -18,6 +18,7 @@
 
 #include "TxManager.h"
 #include "OrbManagement.h"
+#include "ThreadLocalStorage.h"
 
 using namespace atmibroker::tx;
 
@@ -26,7 +27,7 @@ log4cxx::LoggerPtr txmclogger(log4cxx::Logger::getLogger("TxLogManagerc"));
 /* Blacktie tx interface additions */
 int txx_rollback_only() {
 	FTRACE(txmclogger, "ENTER");
-	return TxManager::get_instance()->rollback_only();
+	return (getSpecific(TSS_KEY) == NULL ? TX_OK : TxManager::get_instance()->rollback_only());
 }
 
 void txx_stop(void) {
@@ -59,6 +60,9 @@ int txx_associate_serialized(char* ctrlIOR) {
 
 void *txx_unbind(bool rollback) {
 	FTRACE(txmclogger, "ENTER rollback=" << rollback);
+	if (getSpecific(TSS_KEY) == NULL)
+		return NULL;
+
 	if (rollback)
 		(void) TxManager::get_instance()->rollback_only();
 
