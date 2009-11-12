@@ -48,6 +48,7 @@ typedef struct thr_arg {
 	const char *rcvtype;
 	long flags;
 	int expect;
+	long expect2;
 	int result;
 } thr_arg_t;
 
@@ -109,6 +110,9 @@ static int do_tpcall(thr_arg_t *args) {
 	do_assert(args->failonerror, &args->result, tperrno == args->expect,
 		"%s: wrong response from tpcall %s %s tpstatus=%d flags=%d expect=%d tperrno=%d",
 		args->msg, args->svc, args->sndtype, tpstatus, args->flags, args->expect, tperrno);
+	do_assert(args->failonerror, &args->result, tpurcode == args->expect2,
+			"tpurcode: expected=%d tpurcode=%d",
+			args->expect2, tpurcode);
 
 	tpfree(sbuf);
 	tpfree(rbuf);
@@ -196,13 +200,13 @@ static void* work2(void *args)
 
 // XsdValidator is not thread safe
 static int bug211() {
-	thr_arg_t args = {1, MSG1, "bug211: two threads reading env", "BAR", X_OCTET, X_OCTET, 0, 0};
+	thr_arg_t args = {1, MSG1, "bug211: two threads reading env", "BAR", X_OCTET, X_OCTET, 0, 0, 99};
 	return lotsofwork(2, ACE_THR_FUNC(&work), &args);
 }
 
 // tpcall should return TPEINVAL if the service name is invalid
 static int bug213() {
-	thr_arg_t args = {1, MSG1, "bug213: NULL service name", NULL, X_OCTET, X_OCTET, 0, TPEINVAL};
+	thr_arg_t args = {1, MSG1, "bug213: NULL service name", NULL, X_OCTET, X_OCTET, 0, TPEINVAL, 0};
 	return do_tpcall(&args);
 }
 
@@ -212,7 +216,7 @@ static int bug212a() {
 	// as no output buffers). Thus if such a condition does not exist the call should succeed as normal.
 	// However if bug 212 is present then the call returns TPNOTIME
 	long flags2 = TPNOTRAN | TPNOTIME;
-	thr_arg_t arg1 = {1, MSG1, "bug212a: TPNOTIME", "BAR", X_OCTET, X_OCTET, flags2, 0};
+	thr_arg_t arg1 = {1, MSG1, "bug212a: TPNOTIME", "BAR", X_OCTET, X_OCTET, flags2, 0, 99};
 
 	return lotsofwork(1, ACE_THR_FUNC(&work), &arg1);
 }
@@ -222,38 +226,37 @@ static int bug212b() {
 	// However if bug 212 is present then the call returns TPNOTIME
 	long flags3 = TPNOTRAN | TPNOBLOCK;
 
-	thr_arg_t args = {1, MSG1, "bug212b: TPNOBLOCK", "BAR", X_OCTET, X_OCTET, flags3, 0};
+	thr_arg_t args = {1, MSG1, "bug212b: TPNOBLOCK", "BAR", X_OCTET, X_OCTET, flags3, 0, 99};
 
 	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
 }
 
 // TPSIGRSTRT flag isn't supported on tpcall
 static int bug214() {
-	thr_arg_t args = {1, MSG1, "bug214: TPSIGRSTRT flag not supported on tpcall", "BAR", X_OCTET, X_OCTET, TPSIGRSTRT, 0};
+	thr_arg_t args = {1, MSG1, "bug214: TPSIGRSTRT flag not supported on tpcall", "BAR", X_OCTET, X_OCTET, TPSIGRSTRT, 0, 99};
 	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
 }
 
 // tpcall failure with multiple threads
 static int bug215() {
-	thr_arg_t args = {0, MSG1, "bug215: tpcall failure with lots of threads", "BAR", X_OCTET, X_OCTET, 0, 0};
+	thr_arg_t args = {0, MSG1, "bug215: tpcall failure with lots of threads", "BAR", X_OCTET, X_OCTET, 0, 0, 99};
 	return lotsofwork(2, ACE_THR_FUNC(&work2), &args);
 }
 
 static int bug216a() {
-	thr_arg_t args = {1, MSG1, "bug216: tp bufs should morph if they're the wrong type", "BAR", X_OCTET, X_C_TYPE, 0, 0};
+	thr_arg_t args = {1, MSG1, "bug216: tp bufs should morph if they're the wrong type", "BAR", X_OCTET, X_C_TYPE, 0, 0, 99};
 	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
 }
 
 static int bug216b() {
 	thr_arg_t args = {1, MSG1, "bug216: passing the wrong return buffer type with TPNOCHANGE",
-		"BAR", X_OCTET, X_C_TYPE, TPNOCHANGE, TPEOTYPE};
+		"BAR", X_OCTET, X_C_TYPE, TPNOCHANGE, TPEOTYPE, 99};
 	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
 }
 
 static int bug217() {
-	thr_arg_t args = {1, MSG1, "bug217: make sure tpurcode works", "BAR", X_OCTET, X_OCTET, 0, 0};
+	thr_arg_t args = {1, MSG1, "bug217: make sure tpurcode works", "BAR", X_OCTET, X_OCTET, 0, 0, 99};
 	(void) lotsofwork(1, ACE_THR_FUNC(&work), &args);
-	do_assert(1, &(args.result), tpurcode == 99, "tpurcode should have been 99: tpurcode=%d tperrno=%d", tpurcode, tperrno);
 	return args.result;
 }
 
@@ -267,34 +270,34 @@ static int t9001() {
 
 // sanity check
 static int t0() {
-	thr_arg_t args = {1, MSG1, "ok test", "BAR", X_OCTET, X_OCTET, 0, 0};
+	thr_arg_t args = {1, MSG1, "ok test", "BAR", X_OCTET, X_OCTET, 0, 0, 99};
 	return do_tpcall(&args);
 }
 
 // tell the server to set a flag on tpreturn (should generate TPESVCERR)
 static int t1() {
-	thr_arg_t args = {1, "T1", "set flag on tpreturn should fail", "BAR", X_OCTET, X_OCTET, TPNOTRAN, TPESVCERR};
+	thr_arg_t args = {1, "T1", "set flag on tpreturn should fail", "BAR", X_OCTET, X_OCTET, TPNOTRAN, TPESVCERR, 0};
 	return do_tpcall(&args);
 }
 static int t2() {
-	thr_arg_t args = {1, "T2", "tell the service to free the the service buffer", "BAR", X_OCTET, X_OCTET, TPNOTRAN, 0};
+	thr_arg_t args = {1, "T2", "tell the service to free the the service buffer", "BAR", X_OCTET, X_OCTET, TPNOTRAN, 0, 99};
 	return do_tpcall(&args);
 }
 
 // telling the service to not tpreturn should generate an error
 static int t3() {
-	thr_arg_t args = {1, "T3", "no tpreturn", "BAR", X_OCTET, X_OCTET, 0, TPESVCERR};
+	thr_arg_t args = {1, "T3", "no tpreturn", "BAR", X_OCTET, X_OCTET, 0, TPESVCERR, 0};
 	return do_tpcall(&args);
 }
 
 // telling service to call tpreturn outside service routine should have no effect
 static int t4() {
-	thr_arg_t args = {1, "T4", "tpreturn outside service routing", "BAR", X_OCTET, X_OCTET, 0, 0};
+	thr_arg_t args = {1, "T4", "tpreturn outside service routing", "BAR", X_OCTET, X_OCTET, 0, 0, 99};
 	return do_tpcall(&args);
 }
 
 static int t5() {
-	thr_arg_t args = {1, "T5", "tpreturn TPFAIL", "BAR", X_OCTET, X_OCTET, 0, TPESVCFAIL};
+	thr_arg_t args = {1, "T5", "tpreturn TPFAIL", "BAR", X_OCTET, X_OCTET, 0, TPESVCFAIL, 99};
 	return do_tpcall(&args);
 }
 

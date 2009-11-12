@@ -209,6 +209,7 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 						if (flags & TPNOCHANGE && typesChanged) {
 							// TODO rollback-only
 							setSpecific(TPE_KEY, TSS_TPEOTYPE);
+							setTpurcode(message.rcode);
 							txx_rollback_only();
 							free(message.data);
 							free(message.type);

@@ -85,8 +85,19 @@ void TestPBF::test_tpalloc() {
 void TestPBF::test_tpalloc_nonzero() {
 	userlogc((char*) "test_tpalloc_nonzero");
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "acct_info", 10);
-	CPPUNIT_ASSERT(m_allocated == NULL);
-	CPPUNIT_ASSERT(tperrno == TPEINVAL);
+	CPPUNIT_ASSERT(m_allocated != NULL);
+	CPPUNIT_ASSERT(tperrno == 0);
+
+	char* type = (char*) malloc(8);
+	char* subtype = (char*) malloc(16);
+	int toTest = ::tptypes(m_allocated, type, subtype);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(toTest == sizeof(ACCT_INFO));
+	CPPUNIT_ASSERT(toTest != 10);
+	CPPUNIT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
+	CPPUNIT_ASSERT(strcmp(subtype, "acct_info") == 0);
+	free(type);
+	free(subtype);
 }
 
 void TestPBF::test_tpalloc_subtype_required() {

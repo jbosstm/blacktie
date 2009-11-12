@@ -63,10 +63,10 @@ public class CSTest extends TestCase
 
 			ENV_ARRAY = new String[4];
 
-			ENV_ARRAY[0] = "LD_LIBRARY_PATH=" + System.getProperty("LD_LIBRARY_PATH");
-			ENV_ARRAY[1] = "BLACKTIE_CONFIGURATION_DIR=" + System.getProperty("BLACKTIE_CONFIGURATION_DIR");
-			ENV_ARRAY[2] = "BLACKTIE_SCHEMA_DIR=" + System.getProperty("BLACKTIE_SCHEMA_DIR");
-			ENV_ARRAY[3] = "JBOSSAS_IP_ADDR=" + System.getProperty("JBOSSAS_IP_ADDR");
+			ENV_ARRAY[0] = "LD_LIBRARY_PATH=" + System.getenv("LD_LIBRARY_PATH");
+			ENV_ARRAY[1] = "BLACKTIE_CONFIGURATION_DIR=" + System.getenv("BLACKTIE_CONFIGURATION_DIR");
+			ENV_ARRAY[2] = "BLACKTIE_SCHEMA_DIR=" + System.getenv("BLACKTIE_SCHEMA_DIR");
+			ENV_ARRAY[3] = "JBOSSAS_IP_ADDR=" + System.getenv("JBOSSAS_IP_ADDR");
 
 			for (int i = 0; i < 4; i++)
 				log.debug(ENV_ARRAY[i]);

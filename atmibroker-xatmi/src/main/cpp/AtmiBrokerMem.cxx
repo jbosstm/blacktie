@@ -112,11 +112,6 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size,
 		LOG4CXX_ERROR(logger, (char*) "tpalloc - unknown buffer type: "
 				<< subtype);
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
-	} else if (!serviceAllocated && (strcmp(type, "X_COMMON") == 0 || strcmp(
-			type, "X_C_TYPE") == 0) && size != 0) {
-		LOG4CXX_ERROR(logger,
-				(char*) "tpalloc - X_C_TYPE/X_COMMON size must be 0");
-		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	} else if (size < 0) {
 		LOG4CXX_ERROR(logger, (char*) "tpalloc - negative size");
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
@@ -134,7 +129,11 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size,
 			subtype = (char*) "";
 		} else if (strcmp(type, "X_COMMON") == 0 || strcmp(type, "X_C_TYPE")
 				== 0) {
-			LOG4CXX_DEBUG(logger, (char*) "tpalloc character array ");
+			if (!serviceAllocated && size != 0) {
+				LOG4CXX_WARN(logger,
+						(char*) "tpalloc - X_C_TYPE/X_COMMON size should be 0");
+			}
+			LOG4CXX_DEBUG(logger, (char*) "tpalloc X_C_TYPE/X_COMMON");
 			size = buffers[subtype]->memSize;
 		}
 		LOG4CXX_DEBUG(logger, (char*) "tpalloc - type: subtype: size:" << type
@@ -200,7 +199,7 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size, char* type,
 			if ((force == false) && (strncmp((*it).type, "X_COMMON",
 					MAX_TYPE_SIZE) == 0 || strncmp((*it).type, "X_C_TYPE",
 					MAX_TYPE_SIZE) == 0)) {
-				LOG4CXX_ERROR(
+				LOG4CXX_WARN(
 						logger,
 						(char*) "tprealloc - cannot resize a X_C_TYPE/X_COMMON buffer");
 				break;
