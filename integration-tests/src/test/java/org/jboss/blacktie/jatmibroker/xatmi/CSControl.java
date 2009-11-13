@@ -23,7 +23,7 @@ import junit.framework.TestCase;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-public class CSControl
+public abstract class CSControl extends TestCase
 {
 	private static final Logger log = LogManager.getLogger(CSControl.class);
 
@@ -35,16 +35,7 @@ public class CSControl
 	private ProcessBuilder serverBuilder;
 	private ProcessBuilder clientBuilder;
 
-	public CSControl() {
-		setUp();
-	}
-
-	protected void finalize() throws Throwable {
-		tearDown();
-		super.finalize();
-	}
-
-	void tearDown() {
+	public void tearDown() {
 		try {
 			if (server != null) {
 				log.info("destroying server process");
@@ -54,7 +45,7 @@ public class CSControl
 		}
 	}
 
-	void setUp() {
+	public void setUp() {
 		REPORT_DIR = System.getProperty("TEST_REPORTS_DIR", ".");
 		CS_EXE = System.getProperty("CLIENT_SERVER_EXE", "./cs");
 
