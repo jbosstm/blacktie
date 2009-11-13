@@ -25,6 +25,8 @@ import org.apache.log4j.Logger;
 public abstract class CSControl extends TestCase
 {
 	private static final Logger log = LogManager.getLogger(CSControl.class);
+	// the byte pattern written by a server to indicate that it has advertised its services
+	private static final byte[] HANDSHAKE = {83,69,82,86,73,67,69,83,32,82,69,65,68,89};
 
 	private TestProcess server;
 	private TestProcess client;
@@ -61,11 +63,10 @@ public abstract class CSControl extends TestCase
 
 		try {
 			server = startServer(ENV_ARRAY);
-			Thread.sleep(3000);
 		} catch (IOException e) {
-			System.err.printf("Server io exception: " + e);
+			throw new RuntimeException("Server io exception: ", e);
 		} catch (InterruptedException e) {
-			System.err.printf("Server interrupted: " + e);
+			throw new RuntimeException("Server interrupted: ", e);
 		}
 	}
 
@@ -84,10 +85,10 @@ public abstract class CSControl extends TestCase
 		}
 	}
 
-	TestProcess startClient(String testname, boolean waitFor, String[] envp) throws IOException, InterruptedException {
+	private TestProcess startClient(String testname, boolean waitFor, String[] envp) throws IOException, InterruptedException {
 		FileOutputStream ostream = new FileOutputStream(REPORT_DIR + "/test-" + testname + "-out.txt");
 		FileOutputStream estream = new FileOutputStream(REPORT_DIR + "/test-" + testname + "-err.txt");
-		TestProcess client = new TestProcess(ostream, estream, "client: ", CS_EXE + " " + testname, envp);
+		TestProcess client = new TestProcess(ostream, estream, "client", CS_EXE + " " + testname, envp);
 		Thread thread = new Thread(client);
 
 		thread.start();
@@ -103,18 +104,23 @@ public abstract class CSControl extends TestCase
 		return client;
 	}
 
-	TestProcess startServer(String[] envp) throws IOException {
+	private TestProcess startServer(String[] envp) throws IOException, InterruptedException {
 		FileOutputStream ostream = new FileOutputStream(REPORT_DIR + "/server-out.txt");
 		FileOutputStream estream = new FileOutputStream(REPORT_DIR + "/server-err.txt");
-		TestProcess server = new TestProcess(ostream, estream, "server: ", CS_EXE + " -c linux -i 1", envp);
+		TestProcess server = new TestProcess(ostream, estream, "server", CS_EXE + " -c linux -i 1", envp);
 		Thread thread = new Thread(server);
-		thread.start();
+
+		synchronized (server) {
+			// start the C server and wait for it to indicate that it has advertised its services
+			thread.start();
+			server.wait();
+		}
 
 		return server;
 	}
 
 	class TestProcess implements Runnable {
-		private String prefix;
+		private String type;
 		private String command;
 		private Process proc;
 		private FileOutputStream ostream;
@@ -122,10 +128,10 @@ public abstract class CSControl extends TestCase
 		private String[] envp;
 		private Thread thread;
 
-		TestProcess(FileOutputStream ostream, FileOutputStream estream, String prefix, String command, String[] envp) {
+		TestProcess(FileOutputStream ostream, FileOutputStream estream, String type, String command, String[] envp) {
 			this.ostream = ostream;
 			this.estream = estream;
-			this.prefix = prefix;
+			this.type = type;
 			this.command = command;
 			this.envp = envp;
 		}
@@ -145,15 +151,54 @@ public abstract class CSControl extends TestCase
 				InputStream es = proc.getErrorStream();
 				byte[] buf = new byte[1024];
 				int len;
+				int match = -1;
 
-				while ((len = is.read(buf)) > 0)
-					ostream.write(buf, 0, len);
+				/*
+				 * redirect the process I/O to a file - if it is a server then notify any waiters when the server
+				 * outputs a magic sequence indicating that it has advertised its services
+				 */
+				if ("server".equals(type)) {
+					// assume the HANDSHAKE sequence can be read in one go
+/*
+					while ((len = is.read(buf)) > 0) {
+						if (match == -1 && (match = KMPMatch.indexOf(buf, HANDSHAKE, len)) != -1) {
+							synchronized (this) { this.notify(); }
+						}
+
+						ostream.write(buf, 0, len);
+					}
+*/
+					int pos = 0;
+					while ((len = is.read(buf, pos, buf.length - pos)) > 0) {
+						ostream.write(buf, pos, len);
+
+						if (match == -1) {
+							pos += len;
+
+							if ((match = KMPMatch.indexOf(buf, HANDSHAKE, pos)) != -1) {
+								synchronized (this) { this.notify(); }
+								pos = 0;
+							} else if (pos == buf.length) {
+								ostream.write("missing synchronization sequence from service - force notify".getBytes("UTF-8"));
+								log.warn("missing synchronization sequence from service");
+								synchronized (this) { this.notify(); }
+								pos = 0;
+								match = 0;
+							}
+						} else {
+							pos = 0;
+						}
+					}
+				} else {
+					while ((len = is.read(buf)) > 0)
+						ostream.write(buf, 0, len);
+				}
 
 				while ((len = es.read(buf)) > 0)
 					estream.write(buf, 0, len);
 			} catch (IOException e) {
 				if (!thread.interrupted())
-					log.info(command + ": IO error on stream write: " + e);
+					log.warn(command + ": IO error on stream write: " + e);
 			}
 
 			try {
