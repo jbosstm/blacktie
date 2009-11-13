@@ -18,7 +18,6 @@
 package org.jboss.blacktie.jatmibroker.xatmi;
 
 import java.io.*;
-import java.util.Map;
 import junit.framework.TestCase;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -29,17 +28,16 @@ public abstract class CSControl extends TestCase
 
 	private TestProcess server;
 	private TestProcess client;
-	private TestCase testCase = new TestCase() {};
 	private String CS_EXE;
 	private String REPORT_DIR;
-	private ProcessBuilder serverBuilder;
-	private ProcessBuilder clientBuilder;
+	private String[] ENV_ARRAY;
 
 	public void tearDown() {
 		try {
 			if (server != null) {
-				log.info("destroying server process");
-				server.destroy();
+				log.debug("destroying server process");
+				server.interrupt();
+				server.getProcess().destroy();
 			}
 		} catch(Throwable e) {
 		}
@@ -50,43 +48,35 @@ public abstract class CSControl extends TestCase
 		CS_EXE = System.getProperty("CLIENT_SERVER_EXE", "./cs");
 
 		log.debug("CS Tests: SETUP REPORT_DIR=" + REPORT_DIR + " CLIENT_SERVER_EXE=" + CS_EXE);
-		clientBuilder = new ProcessBuilder();
-		serverBuilder = new ProcessBuilder();
 
-		clientBuilder.redirectErrorStream(true);
-		serverBuilder.redirectErrorStream(true);
+		ENV_ARRAY = new String[4];
 
-		Map<String, String> environment = serverBuilder.environment();
+		ENV_ARRAY[0] = "LD_LIBRARY_PATH=" + System.getenv("LD_LIBRARY_PATH");
+		ENV_ARRAY[1] = "BLACKTIE_CONFIGURATION_DIR=" + System.getenv("BLACKTIE_CONFIGURATION_DIR");
+		ENV_ARRAY[2] = "BLACKTIE_SCHEMA_DIR=" + System.getenv("BLACKTIE_SCHEMA_DIR");
+		ENV_ARRAY[3] = "JBOSSAS_IP_ADDR=" + System.getenv("JBOSSAS_IP_ADDR");
 
-		environment.clear();
-		environment.put("LD_LIBRARY_PATH", System.getenv("LD_LIBRARY_PATH"));
-		environment.put("BLACKTIE_CONFIGURATION_DIR", System.getenv("BLACKTIE_CONFIGURATION_DIR"));
-		environment.put("BLACKTIE_SCHEMA_DIR", System.getenv("BLACKTIE_SCHEMA_DIR"));
-		environment.put("JBOSSAS_IP_ADDR", System.getenv("JBOSSAS_IP_ADDR"));
-
-		clientBuilder.environment().putAll(environment);
-		serverBuilder.command(CS_EXE, "-c", "linux", "-i", "1");
+		for (int i = 0; i < 4; i++)
+			log.debug(ENV_ARRAY[i]);
 
 		try {
-			server = startServer(serverBuilder);
+			server = startServer(ENV_ARRAY);
+			Thread.sleep(3000);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			System.err.printf("Server io exception: " + e);
 		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
+			System.err.printf("Server interrupted: " + e);
 		}
 	}
 
 	public void runTest(String name) {
 		try {
 			log.debug("waiting for test " + name);
-			// NOTE clientBuilder is not synchronized
-			clientBuilder.command(CS_EXE, name);
-			TestProcess client = startClient(name, true, clientBuilder);
-			log.debug("startClient: joined - waiting for client process to exit");
-			int res = client.waitFor();
+			TestProcess client = startClient(name, true, ENV_ARRAY);
+			int res = client.exitValue();
 
 			log.info("test " + name + (res == 0 ? " passed " : " failed ") + res);
-			testCase.assertTrue(res == 0);
+			assertTrue(res == 0);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} catch (InterruptedException e) {
@@ -94,77 +84,81 @@ public abstract class CSControl extends TestCase
 		}
 	}
 
-	TestProcess startClient(String testname, boolean waitFor, ProcessBuilder builder) throws IOException, InterruptedException {
-		TestProcess client = new TestProcess(REPORT_DIR + "/test-" + testname + ".txt", "client: ", builder);
+	TestProcess startClient(String testname, boolean waitFor, String[] envp) throws IOException, InterruptedException {
+		FileOutputStream ostream = new FileOutputStream(REPORT_DIR + "/test-" + testname + "-out.txt");
+		FileOutputStream estream = new FileOutputStream(REPORT_DIR + "/test-" + testname + "-err.txt");
+		TestProcess client = new TestProcess(ostream, estream, "client: ", CS_EXE + " " + testname, envp);
 		Thread thread = new Thread(client);
 
 		thread.start();
 		if (waitFor) {
 			log.debug("startClient: waiting to join with client thread ...");
 			thread.join();
+			log.debug("startClient: joined - waiting for client process to exit");
+			client.getProcess().waitFor();
+			log.debug("startClient: done");
+		} else {
 		}
 
 		return client;
 	}
 
-	TestProcess startServer(ProcessBuilder builder) throws IOException, InterruptedException {
-		TestProcess server = new TestProcess(REPORT_DIR + "/server.txt", "server: ", builder);
+	TestProcess startServer(String[] envp) throws IOException {
+		FileOutputStream ostream = new FileOutputStream(REPORT_DIR + "/server-out.txt");
+		FileOutputStream estream = new FileOutputStream(REPORT_DIR + "/server-err.txt");
+		TestProcess server = new TestProcess(ostream, estream, "server: ", CS_EXE + " -c linux -i 1", envp);
 		Thread thread = new Thread(server);
-
-		synchronized (server) {
-			thread.start();
-			server.wait();	// wait for the process to be created
-		}
+		thread.start();
 
 		return server;
 	}
 
 	class TestProcess implements Runnable {
 		private String prefix;
-		private FileOutputStream ostream;
-		private ProcessBuilder builder;
-
+		private String command;
 		private Process proc;
+		private FileOutputStream ostream;
+		private FileOutputStream estream;
+		private String[] envp;
 		private Thread thread;
 
-		TestProcess(String outFile, String prefix, ProcessBuilder builder) throws IOException {
-			this.ostream = new FileOutputStream(outFile);
+		TestProcess(FileOutputStream ostream, FileOutputStream estream, String prefix, String command, String[] envp) {
+			this.ostream = ostream;
+			this.estream = estream;
 			this.prefix = prefix;
-			this.builder = builder;
+			this.command = command;
+			this.envp = envp;
 		}
 
-		int waitFor() throws InterruptedException { return proc.waitFor();}
-		void destroy() {
-			if (thread != null)
-				thread.interrupt();
-
-			if (proc != null)
-				proc.destroy();
-		}
+		Process getProcess() { return proc; }
+		int exitValue() { return proc.exitValue(); }
+		void interrupt() { if (thread != null) thread.interrupt(); }
 
 		public void run() {
 			thread = Thread.currentThread();
 
 			try {
-				proc = builder.start();
-
-				synchronized (this) {
-					this.notify();
-				}
+				Runtime rt = Runtime.getRuntime();
+				proc = rt.exec(command, envp);
 
 				InputStream is = proc.getInputStream();
+				InputStream es = proc.getErrorStream();
 				byte[] buf = new byte[1024];
 				int len;
 
 				while ((len = is.read(buf)) > 0)
 					ostream.write(buf, 0, len);
+
+				while ((len = es.read(buf)) > 0)
+					estream.write(buf, 0, len);
 			} catch (IOException e) {
 				if (!thread.interrupted())
-					log.info(builder.command() + "IO error on stream write: " + e);
+					log.info(command + ": IO error on stream write: " + e);
 			}
 
 			try {
 				ostream.close();
+				estream.close();
 			} catch (IOException e) {
 			}
 		}

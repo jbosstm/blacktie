@@ -19,7 +19,6 @@ package org.jboss.blacktie.jatmibroker.xatmi;
 
 public class CSTPBuffer extends CSControl
 {
-	private static final org.apache.log4j.Logger log = org.apache.log4j.LogManager.getLogger(CSTPBuffer.class);
 	// tpalloc with X_C_TYPE and non-zero len: tperrno=%d (spec says size is optional)
 	public void test_9001() { runTest("9001"); }
 }
