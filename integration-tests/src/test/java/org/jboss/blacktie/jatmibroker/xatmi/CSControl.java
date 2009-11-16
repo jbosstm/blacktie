@@ -28,6 +28,8 @@ public abstract class CSControl extends TestCase
 	// the byte pattern written by a server to indicate that it has advertised its services
 	private static final byte[] HANDSHAKE = {83,69,82,86,73,67,69,83,32,82,69,65,68,89};
 
+	private ProcessBuilder serverBuilder;
+	private ProcessBuilder clientBuilder;
 	private TestProcess server;
 	private TestProcess client;
 	private String CS_EXE;
@@ -48,21 +50,23 @@ public abstract class CSControl extends TestCase
 	public void setUp() {
 		REPORT_DIR = System.getProperty("TEST_REPORTS_DIR", ".");
 		CS_EXE = System.getProperty("CLIENT_SERVER_EXE", "./cs");
+clientBuilder = new ProcessBuilder();
+serverBuilder = new ProcessBuilder();
+//clientBuilder.redirectErrorStream(true);
+//serverBuilder.redirectErrorStream(true);
 
-		log.debug("CS Tests: SETUP REPORT_DIR=" + REPORT_DIR + " CLIENT_SERVER_EXE=" + CS_EXE);
-
-		ENV_ARRAY = new String[4];
-
-		ENV_ARRAY[0] = "LD_LIBRARY_PATH=" + System.getenv("LD_LIBRARY_PATH");
-		ENV_ARRAY[1] = "BLACKTIE_CONFIGURATION_DIR=" + System.getenv("BLACKTIE_CONFIGURATION_DIR");
-		ENV_ARRAY[2] = "BLACKTIE_SCHEMA_DIR=" + System.getenv("BLACKTIE_SCHEMA_DIR");
-		ENV_ARRAY[3] = "JBOSSAS_IP_ADDR=" + System.getenv("JBOSSAS_IP_ADDR");
-
-		for (int i = 0; i < 4; i++)
-			log.debug(ENV_ARRAY[i]);
+java.util.Map<String, String> environment = serverBuilder.environment();
+//environment.clear();
+environment.put("LD_LIBRARY_PATH", System.getenv("LD_LIBRARY_PATH"));
+environment.put("BLACKTIE_CONFIGURATION_DIR", System.getenv("BLACKTIE_CONFIGURATION_DIR"));
+environment.put("BLACKTIE_SCHEMA_DIR", System.getenv("BLACKTIE_SCHEMA_DIR"));
+environment.put("JBOSSAS_IP_ADDR", System.getenv("JBOSSAS_IP_ADDR"));
+environment.put("PATH", System.getenv("PATH"));
+clientBuilder.environment().putAll(environment);
+serverBuilder.command(CS_EXE, "-c", "linux", "-i", "1");
 
 		try {
-			server = startServer(ENV_ARRAY);
+			server = startServer(serverBuilder);
 		} catch (IOException e) {
 			throw new RuntimeException("Server io exception: ", e);
 		} catch (InterruptedException e) {
@@ -73,7 +77,8 @@ public abstract class CSControl extends TestCase
 	public void runTest(String name) {
 		try {
 			log.debug("waiting for test " + name);
-			TestProcess client = startClient(name, true, ENV_ARRAY);
+			clientBuilder.command(CS_EXE, name);
+			TestProcess client = startClient(name, true, clientBuilder);
 			int res = client.exitValue();
 
 			log.info("test " + name + (res == 0 ? " passed " : " failed ") + res);
@@ -85,10 +90,10 @@ public abstract class CSControl extends TestCase
 		}
 	}
 
-	private TestProcess startClient(String testname, boolean waitFor, String[] envp) throws IOException, InterruptedException {
+	private TestProcess startClient(String testname, boolean waitFor, ProcessBuilder builder) throws IOException, InterruptedException {
 		FileOutputStream ostream = new FileOutputStream(REPORT_DIR + "/test-" + testname + "-out.txt");
 		FileOutputStream estream = new FileOutputStream(REPORT_DIR + "/test-" + testname + "-err.txt");
-		TestProcess client = new TestProcess(ostream, estream, "client", CS_EXE + " " + testname, envp);
+		TestProcess client = new TestProcess(ostream, estream, "client", builder);
 		Thread thread = new Thread(client);
 
 		thread.start();
@@ -104,10 +109,10 @@ public abstract class CSControl extends TestCase
 		return client;
 	}
 
-	private TestProcess startServer(String[] envp) throws IOException, InterruptedException {
+	private TestProcess startServer(ProcessBuilder builder) throws IOException, InterruptedException {
 		FileOutputStream ostream = new FileOutputStream(REPORT_DIR + "/server-out.txt");
 		FileOutputStream estream = new FileOutputStream(REPORT_DIR + "/server-err.txt");
-		TestProcess server = new TestProcess(ostream, estream, "server", CS_EXE + " -c linux -i 1", envp);
+		TestProcess server = new TestProcess(ostream, estream, "server", builder);
 		Thread thread = new Thread(server);
 
 		synchronized (server) {
@@ -125,15 +130,15 @@ public abstract class CSControl extends TestCase
 		private Process proc;
 		private FileOutputStream ostream;
 		private FileOutputStream estream;
-		private String[] envp;
 		private Thread thread;
+		private ProcessBuilder builder;
 
-		TestProcess(FileOutputStream ostream, FileOutputStream estream, String type, String command, String[] envp) {
+		TestProcess(FileOutputStream ostream, FileOutputStream estream, String type, ProcessBuilder builder) {
 			this.ostream = ostream;
 			this.estream = estream;
 			this.type = type;
 			this.command = command;
-			this.envp = envp;
+			this.builder = builder;
 		}
 
 		Process getProcess() { return proc; }
@@ -144,8 +149,7 @@ public abstract class CSControl extends TestCase
 			thread = Thread.currentThread();
 
 			try {
-				Runtime rt = Runtime.getRuntime();
-				proc = rt.exec(command, envp);
+				proc = builder.start();
 
 				InputStream is = proc.getInputStream();
 				InputStream es = proc.getErrorStream();
@@ -198,7 +202,7 @@ public abstract class CSControl extends TestCase
 					estream.write(buf, 0, len);
 			} catch (IOException e) {
 				if (!thread.interrupted())
-					log.warn(command + ": IO error on stream write: " + e);
+					log.warn(builder.command() + ": IO error on stream write: " + e);
 			}
 
 			try {

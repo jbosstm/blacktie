@@ -397,7 +397,7 @@ void TestTPCall(TPSVCINFO * svcinfo) {
 
 /* the byte pattern written to file descriptor 1 to indicate that the server has advertised its services */
 static const unsigned char HANDSHAKE[] = {83,69,82,86,73,67,69,83,32,82,69,65,68,89};
-static const size_t HANDSHAKE_LEN = 14;
+static const ssize_t HANDSHAKE_LEN = 14;
 
 int run_server(int argc, char **argv) {
 	int exit_status = serverinit(argc, argv);
