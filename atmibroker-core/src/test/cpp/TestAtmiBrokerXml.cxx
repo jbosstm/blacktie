@@ -79,17 +79,13 @@ void TestAtmiBrokerXml::test_env() {
 	std::vector<ServiceInfo>* services = &server->serviceVector;
 	CPPUNIT_ASSERT(strcmp((*services)[0].serviceName, "BAR") == 0);
 	CPPUNIT_ASSERT(strcmp((*services)[1].serviceName, "ECHO") == 0);
-	CPPUNIT_ASSERT(strcmp((*services)[2].serviceName, "foo_ADMIN") == 0);
 #ifdef WIN32
 	CPPUNIT_ASSERT(strcmp((*services)[0].transportLib, "atmibroker-hybrid.dll") == 0);
 	CPPUNIT_ASSERT(strcmp((*services)[1].transportLib, "atmibroker-hybrid.dll") == 0);
-	CPPUNIT_ASSERT(strcmp((*services)[2].transportLib, "atmibroker-hybrid.dll") == 0);
 #else
 	CPPUNIT_ASSERT(strcmp((*services)[0].transportLib,
 			"libatmibroker-hybrid.so") == 0);
 	CPPUNIT_ASSERT(strcmp((*services)[1].transportLib,
-			"libatmibroker-hybrid.so") == 0);
-	CPPUNIT_ASSERT(strcmp((*services)[2].transportLib,
 			"libatmibroker-hybrid.so") == 0);
 #endif
 

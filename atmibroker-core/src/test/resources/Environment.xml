@@ -23,14 +23,12 @@
 			<SERVICE_NAMES>
 				<SERVICE name='TEST' />
 			</SERVICE_NAMES>
-			<ADMIN_SERVICE />
 		</SERVER>
 		<SERVER name='foo'>
 			<SERVICE_NAMES>
 				<SERVICE name='BAR' />
 				<SERVICE name='ECHO' />
 			</SERVICE_NAMES>
-			<ADMIN_SERVICE />
 		</SERVER>
 	</SERVER_NAMES>
 	<XA_RESOURCES>

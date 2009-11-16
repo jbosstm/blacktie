@@ -26,7 +26,6 @@
 				<SERVICE name='JAVA_Converse' />
 				<SERVICE name='XMLParserTest' />
 			</SERVICE_NAMES>
-			<ADMIN_SERVICE />
 		</SERVER>
 	</SERVER_NAMES>
 	<ORB
