@@ -79,7 +79,7 @@ static void do_assert(int failonerror, int* res, int cond, const char *fmt, ...)
 
 //static int do_tpcall(int failonerror, const char *data, const char *msg, const char *svc, const char *sndtype, long flags, int expect) {
 static int do_tpcall(thr_arg_t *args) {
-	int tpstatus;
+	int tpstatus = 0;
 	char *rbuf;
 	char *sbuf;
 	char type[20];

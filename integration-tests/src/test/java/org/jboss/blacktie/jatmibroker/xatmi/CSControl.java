@@ -34,36 +34,34 @@ public abstract class CSControl extends TestCase
 	private TestProcess client;
 	private String CS_EXE;
 	private String REPORT_DIR;
-	private String[] ENV_ARRAY;
 
 	public void tearDown() {
 		try {
-			if (server != null) {
-				log.debug("destroying server process");
-				server.interrupt();
-				server.getProcess().destroy();
-			}
+			log.debug("destroying server process");
+			server.interrupt();
+			server.getProcess().destroy();
 		} catch(Throwable e) {
+			throw new RuntimeException("Server shutdown error: ", e);
 		}
 	}
 
 	public void setUp() {
 		REPORT_DIR = System.getProperty("TEST_REPORTS_DIR", ".");
 		CS_EXE = System.getProperty("CLIENT_SERVER_EXE", "./cs");
-clientBuilder = new ProcessBuilder();
-serverBuilder = new ProcessBuilder();
-//clientBuilder.redirectErrorStream(true);
-//serverBuilder.redirectErrorStream(true);
+		clientBuilder = new ProcessBuilder();
+		serverBuilder = new ProcessBuilder();
+		//clientBuilder.redirectErrorStream(true);
+		//serverBuilder.redirectErrorStream(true);
 
-java.util.Map<String, String> environment = serverBuilder.environment();
-//environment.clear();
-environment.put("LD_LIBRARY_PATH", System.getenv("LD_LIBRARY_PATH"));
-environment.put("BLACKTIE_CONFIGURATION_DIR", System.getenv("BLACKTIE_CONFIGURATION_DIR"));
-environment.put("BLACKTIE_SCHEMA_DIR", System.getenv("BLACKTIE_SCHEMA_DIR"));
-environment.put("JBOSSAS_IP_ADDR", System.getenv("JBOSSAS_IP_ADDR"));
-environment.put("PATH", System.getenv("PATH"));
-clientBuilder.environment().putAll(environment);
-serverBuilder.command(CS_EXE, "-c", "linux", "-i", "1");
+		java.util.Map<String, String> environment = serverBuilder.environment();
+		//environment.clear();
+		environment.put("LD_LIBRARY_PATH", System.getenv("LD_LIBRARY_PATH"));
+		environment.put("BLACKTIE_CONFIGURATION_DIR", System.getenv("BLACKTIE_CONFIGURATION_DIR"));
+		environment.put("BLACKTIE_SCHEMA_DIR", System.getenv("BLACKTIE_SCHEMA_DIR"));
+		environment.put("JBOSSAS_IP_ADDR", System.getenv("JBOSSAS_IP_ADDR"));
+		environment.put("PATH", System.getenv("PATH"));
+		clientBuilder.environment().putAll(environment);
+		serverBuilder.command(CS_EXE, "-c", "linux", "-i", "1");
 
 		try {
 			server = startServer(serverBuilder);
@@ -78,7 +76,7 @@ serverBuilder.command(CS_EXE, "-c", "linux", "-i", "1");
 		try {
 			log.debug("waiting for test " + name);
 			clientBuilder.command(CS_EXE, name);
-			TestProcess client = startClient(name, true, clientBuilder);
+			TestProcess client = startClient(name, clientBuilder);
 			int res = client.exitValue();
 
 			log.info("test " + name + (res == 0 ? " passed " : " failed ") + res);
@@ -90,21 +88,18 @@ serverBuilder.command(CS_EXE, "-c", "linux", "-i", "1");
 		}
 	}
 
-	private TestProcess startClient(String testname, boolean waitFor, ProcessBuilder builder) throws IOException, InterruptedException {
+	private TestProcess startClient(String testname, ProcessBuilder builder) throws IOException, InterruptedException {
 		FileOutputStream ostream = new FileOutputStream(REPORT_DIR + "/test-" + testname + "-out.txt");
 		FileOutputStream estream = new FileOutputStream(REPORT_DIR + "/test-" + testname + "-err.txt");
 		TestProcess client = new TestProcess(ostream, estream, "client", builder);
 		Thread thread = new Thread(client);
 
 		thread.start();
-		if (waitFor) {
-			log.debug("startClient: waiting to join with client thread ...");
-			thread.join();
-			log.debug("startClient: joined - waiting for client process to exit");
-			client.getProcess().waitFor();
-			log.debug("startClient: done");
-		} else {
-		}
+		log.debug("startClient: waiting to join with client thread ...");
+		thread.join();
+		log.debug("startClient: joined - waiting for client process to exit");
+		client.getProcess().waitFor();
+		log.debug("startClient: done");
 
 		return client;
 	}
