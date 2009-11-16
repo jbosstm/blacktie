@@ -16,10 +16,6 @@
  * MA  02110-1301, USA.
  */
 #include <cppunit/extensions/HelperMacros.h>
-extern "C" {
-#include "AtmiBrokerServerControl.h"
-#include "AtmiBrokerClientControl.h"
-}
 
 #include "ace/OS_NS_stdlib.h"
 #include "ace/OS_NS_stdio.h"
@@ -43,37 +39,20 @@ void test_TTL_service(TPSVCINFO *svcinfo) {
 
 void TestTimeToLive::setUp() {
 	userlogc((char*) "TestTimeToLive::setUp");
-
-#ifdef WIN32
-	char* argv[] = {(char*)"server", (char*)"-i", (char*)"1", (char*)"-c", (char*)"win32", (char*)"foo"};
-#else
-	char* argv[] = {(char*)"server", (char*)"-i", (char*)"1", (char*)"-c", (char*)"linux", (char*)"foo"};
-#endif
-
-	int argc = sizeof(argv)/sizeof(char*);
-
-	int initted = serverinit(argc, argv);
-	// Check that there is no error on server setup
-	CPPUNIT_ASSERT(initted != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
-
-	int rc = tpadvertise((char*) "TTL", test_TTL_service);
-
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(rc != -1);
+	BaseServerTest::setUp();
 }
 
 void TestTimeToLive::tearDown() {
 	userlogc((char*) "TestTimeToLive::tearDown");
-	serverdone();
-
-	clientdone();
-	CPPUNIT_ASSERT(tperrno == 0);
+	BaseServerTest::tearDown();
 }
 
 void TestTimeToLive::testTTL() {
-	int cd;
+	int rc = tpadvertise((char*) "TTL", test_TTL_service);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(rc != -1);
 
+	int cd;
 	cd = callTTL();
 	CPPUNIT_ASSERT(cd == -1);
 	CPPUNIT_ASSERT(tperrno == TPETIME);
@@ -110,7 +89,7 @@ long TestTimeToLive::getTTLCounter() {
 	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
 	long  recvlen = 1;
 
-	int cd = ::tpcall((char*) "foo_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, 0);
+	int cd = ::tpcall((char*) "default_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, 0);
 	CPPUNIT_ASSERT(cd == 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(recvbuf[0] == '1');

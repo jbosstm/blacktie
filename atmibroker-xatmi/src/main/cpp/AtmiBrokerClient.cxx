@@ -151,24 +151,10 @@ Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
 		return NULL;
 	}
-	char* svc;
-	char adm[16];
 	Session* session = NULL;
 
-	svc = serviceName;
-	if (strstr(serviceName, "ADMIN") != NULL) {
-		int i;
-		for (i = strlen(serviceName); i >= 0 && serviceName[i] != '_'; i--)
-			;
-		if (i > 0) {
-			memset(adm, 0, 16);
-			ACE_OS::strncpy(adm, serviceName, i);
-			svc = adm;
-		}
-	}
-
 	Connection* clientConnection = NULL;
-	clientConnection = clientConnectionManager.getClientConnection(svc);
+	clientConnection = clientConnectionManager.getClientConnection(serviceName);
 
 	if (clientConnection != NULL) {
 		lock->lock();

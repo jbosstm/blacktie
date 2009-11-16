@@ -16,10 +16,6 @@
  * MA  02110-1301, USA.
  */
 #include <cppunit/extensions/HelperMacros.h>
-extern "C" {
-#include "AtmiBrokerServerControl.h"
-#include "AtmiBrokerClientControl.h"
-}
 
 #include "ace/OS_NS_stdlib.h"
 #include "ace/OS_NS_stdio.h"
@@ -30,27 +26,12 @@ extern "C" {
 
 void TestAdvertise::setUp() {
 	userlogc((char*) "TestAdvertise::setUp");
-
-#ifdef WIN32
-	char* argv[] = {(char*)"server", (char*)"-i", (char*)"1", (char*)"-c", (char*)"win32", (char*)"foo"};
-#else
-	char* argv[] = {(char*)"server", (char*)"-i", (char*)"1", (char*)"-c", (char*)"linux", (char*)"foo"};
-#endif
-	int argc = sizeof(argv)/sizeof(char*);
-
-	int initted = serverinit(argc, argv);
-	// Check that there is no error on server setup
-	CPPUNIT_ASSERT(initted != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
-
+	BaseServerTest::setUp();
 }
 
 void TestAdvertise::tearDown() {
 	userlogc((char*) "TestAdvertise::tearDown");
-	serverdone();
-
-	clientdone();
-	CPPUNIT_ASSERT(tperrno == 0);
+	BaseServerTest::tearDown();
 }
 
 int TestAdvertise::callBAR() {
@@ -70,7 +51,7 @@ int TestAdvertise::calladmin(char* command) {
 	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
 	long  recvlen = 1;
 
-	int cd = ::tpcall((char*) "foo_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
+	int cd = ::tpcall((char*) "default_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
 	CPPUNIT_ASSERT(recvlen == 1);
 	CPPUNIT_ASSERT((recvbuf[0] == '1') || (recvbuf[0] == '0'));
 

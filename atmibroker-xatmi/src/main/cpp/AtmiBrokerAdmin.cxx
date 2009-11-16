@@ -1,8 +1,25 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2008, Red Hat, Inc., and others contributors as indicated
+ * by the @authors tag. All rights reserved.
+ * See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the GNU Lesser General Public License, v. 2.1.
+ * This program is distributed in the hope that it will be useful, but WITHOUT A
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+ * You should have received a copy of the GNU Lesser General Public License,
+ * v.2.1 along with this distribution; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA  02110-1301, USA.
+ */
+
 #include "log4cxx/logger.h"
 #include "ace/OS_NS_stdlib.h"
 #include "ace/OS_NS_stdio.h"
 #include "ace/OS_NS_string.h"
-#include "AtmiBrokerAdmin.h"
 #include "AtmiBrokerServerControl.h"
 #include "xatmi.h"
 #include "userlog.h"
@@ -10,10 +27,6 @@
 
 log4cxx::LoggerPtr loggerAtmiBrokerAdmin(log4cxx::Logger::getLogger(
 			"AtmiBrokerAdmin"));
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 void ADMIN(TPSVCINFO* svcinfo) {
 	char* req = (char*) malloc ((svcinfo->len + 1) * sizeof(char));
@@ -51,7 +64,7 @@ void ADMIN(TPSVCINFO* svcinfo) {
 		}
 	} else if(strncmp(req, "status", 6) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get status command");
-		toReturn = tprealloc(toReturn, 1024);
+		toReturn = tprealloc(toReturn, 4096);
 		len += getServiceStatus(&toReturn[1]) + 1;
 		toReturn[0] = '1';
 	} else if(strncmp(req, "counter", 7) == 0) {
@@ -73,7 +86,3 @@ void ADMIN(TPSVCINFO* svcinfo) {
 	free(req);
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }
-
-#ifdef __cplusplus
-}
-#endif

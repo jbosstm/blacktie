@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2009, Red Hat, Inc., and others contributors as indicated
+ * Copyright 2008, Red Hat, Inc., and others contributors as indicated
  * by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -15,25 +15,27 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-/* Export/Include macros for Win32 compilation */
-#ifndef BLACKTIE_ADMIN_MACRO 
-#define BLACKTIE_ADMIN_MACRO 
+#ifndef TEST_UNADVERTISE_H
+#define TEST_UNADVERTISE_H
 
-/* Only do defines if we're compiling on Win32 */
-#ifdef WIN32
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFixture.h>
 
-#ifdef _BLACKTIE_ADMIN_DLL
-#define BLACKTIE_ADMIN_DLL __declspec(dllexport)
-#else
-#define BLACKTIE_ADMIN_DLL __declspec(dllimport)
+#include "BaseServerTest.h"
+
+class TestUnadvertise: public BaseServerTest {
+	CPPUNIT_TEST_SUITE( TestUnadvertise );
+	CPPUNIT_TEST( testUnknowService );
+	CPPUNIT_TEST( testUnadvertise );
+	CPPUNIT_TEST_SUITE_END();
+
+public:
+	void testUnknowService();
+	void testUnadvertise();
+	int  calladmin(char*);
+	int  callBAR();
+	virtual void setUp();
+	virtual void tearDown();
+};
+
 #endif
-
-#else /* Non-win32 platform. Macros need to pre-process away */
-
-/* examples */
-
-#define BLACKTIE_ADMIN_DLL
-
-#endif
-
-#endif /* BLACKTIE_ADMIN_MACRO */

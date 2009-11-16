@@ -15,13 +15,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#if 1
-#include "TestAdmin.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestAdmin );
-#include "TestAdvertise.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestAdvertise );
-#include "TestUnadvertise.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestUnadvertise );
+#ifndef TEST_ADVERTISE_H
+#define TEST_ADVERTISE_H
+
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFixture.h>
+
+#include "BaseServerTest.h"
+
+class TestAdvertise: public BaseServerTest{
+	CPPUNIT_TEST_SUITE( TestAdvertise );
+	CPPUNIT_TEST( testUnknowService );
+	CPPUNIT_TEST( testService );
+	CPPUNIT_TEST( testAdvertise );
+	CPPUNIT_TEST_SUITE_END();
+
+public:
+	void testUnknowService();
+	void testService();
+	void testAdvertise();
+	int  calladmin(char*);
+	int  callBAR();
+	virtual void setUp();
+	virtual void tearDown();
+};
+
 #endif
-#include "TestTimeToLive.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestTimeToLive );

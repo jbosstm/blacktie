@@ -15,23 +15,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef TEST_UNADVERTISE_H
-#define TEST_UNADVERTISE_H
+#ifndef TEST_TIMETOLIVE_H
+#define TEST_TIMETOLIVE_H
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
 
-class TestUnadvertise: public CppUnit::TestFixture {
-	CPPUNIT_TEST_SUITE( TestUnadvertise );
-	CPPUNIT_TEST( testUnknowService );
-	CPPUNIT_TEST( testUnadvertise );
+#include "BaseServerTest.h"
+
+class TestTimeToLive: public BaseServerTest {
+	CPPUNIT_TEST_SUITE( TestTimeToLive );
+	CPPUNIT_TEST( testTTL );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
-	void testUnknowService();
-	void testUnadvertise();
-	int  calladmin(char*);
-	int  callBAR();
+	void testTTL();
+	int  callTTL();
+	long getTTLCounter();
 	virtual void setUp();
 	virtual void tearDown();
 };

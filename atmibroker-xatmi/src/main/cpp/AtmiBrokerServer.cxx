@@ -40,6 +40,7 @@
 #include "ace/Default_Constants.h"
 #include "ace/Signal.h"
 #include "ThreadLocalStorage.h"
+#include "xatmi.h"
 
 // WORK AROUND FOR NO tx.h
 #define TX_OK              0
@@ -50,6 +51,8 @@ extern BLACKTIE_TX_DLL int tx_open(void);
 #ifdef __cplusplus
 }
 #endif
+
+extern void ADMIN(TPSVCINFO* svcinfo);
 
 log4cxx::LoggerPtr loggerAtmiBrokerServer(log4cxx::Logger::getLogger(
 		"AtmiBrokerServer"));
@@ -166,6 +169,11 @@ int serverinit(int argc, char** argv) {
 			} else {
 				ptrServer->advertiseAtBootime();
 
+				// make ADMIN service mandatory for server
+				char adm[XATMI_SERVICE_NAME_LENGTH + 1];
+				ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server, serverid);
+				tpadvertise(adm, ADMIN);
+
 				if(isBootAdminService == false) {
 					userlog(log4cxx::Level::getWarn(), loggerAtmiBrokerServer,
 							(char*) "Maybe the same server id running");
@@ -266,6 +274,21 @@ AtmiBrokerServer::AtmiBrokerServer() {
 		for (i = 0; i < servers.size(); i++) {
 			if (strcmp(servers[i]->serverName, serverName) == 0) {
 				serverInfo.serverName = strdup(servers[i]->serverName);
+				// add server ADMIN
+				char adm[XATMI_SERVICE_NAME_LENGTH + 1];
+				ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server, serverid);
+				ServiceInfo service;
+				memset(&service, 0, sizeof(ServiceInfo));
+				service.serviceName = strdup(adm);
+				#ifdef WIN32
+					service.transportLib = strdup("atmibroker-hybrid.dll");
+				#else
+					service.transportLib = strdup("libatmibroker-hybrid.so");
+				#endif
+				service.poolSize = 1;
+				service.advertised = false;
+				serverInfo.serviceVector.push_back(service);
+
 				for (unsigned int j = 0; j < servers[i]->serviceVector.size(); j++) {
 					ServiceInfo service;
 					memset(&service, 0, sizeof(ServiceInfo));
@@ -438,7 +461,7 @@ int AtmiBrokerServer::getServiceStatus(char* str) {
 	for (std::vector<ServiceStatus>::iterator i = serviceStatus.begin(); i
 			!= serviceStatus.end(); i++) {
 		len += ACE_OS::sprintf(str + len,
-				"<service><name>%s</name><status>%d</status></service>",
+				"<service><name>%.15s</name><status>%d</status></service>",
 				(*i).name, (*i).status);
 	}
 
@@ -491,11 +514,10 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 		return false;
 	}
 
-	char adm[16];
 	bool isadm = false;
-	ACE_OS::snprintf(adm, 16, "%s_ADMIN", server);
+	char adm[XATMI_SERVICE_NAME_LENGTH + 1];
+	ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server, serverid);
 	if (strcmp(adm, svcname) == 0) {
-		ACE_OS::snprintf(adm, 16, "%s_ADMIN_%d", server, serverid);
 		isadm = true;
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "advertise Admin svc "
 				<< adm);
@@ -555,11 +577,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 			long commandLength;
 			long responseLength = 1;
 
-			if (isadm) {
-				commandLength = strlen(adm) + 14;
-			} else {
-				commandLength = strlen(serviceName) + 14;
-			}
+			commandLength = strlen(serviceName) + 14;
 
 			char* command = (char*) ::tpalloc((char*) "X_OCTET", NULL,
 					commandLength);
@@ -567,11 +585,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 					responseLength);
 			memset(command, '\0', commandLength);
 
-			if (isadm) {
-				sprintf(command, "tpadvertise,%s,", adm);
-			} else {
-				sprintf(command, "tpadvertise,%s,", serviceName);
-			}
+			sprintf(command, "tpadvertise,%s,", serviceName);
 
 			if (tpcall((char*) "BTStompAdmin", command, commandLength,
 					&response, &responseLength, TPNOTRAN) != 0) {
@@ -605,11 +619,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 				(char*) "invoked create_service_queue: " << serviceName);
 
 		Destination* destination;
-		if (isadm) {
-			destination = connection->createDestination(adm);
-		} else {
-			destination = connection->createDestination(serviceName);
-		}
+		destination = connection->createDestination(serviceName);
 
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "created destination: "
 				<< serviceName);
@@ -691,28 +701,13 @@ void AtmiBrokerServer::unadvertiseService(char * svcname) {
 }
 
 void AtmiBrokerServer::removeAdminDestination(char* serviceName) {
-	char adm[16];
-	bool isadm = false;
-
-	ACE_OS::snprintf(adm, 16, "%s_ADMIN", server);
-	if (strcmp(adm, serviceName) == 0) {
-		ACE_OS::snprintf(adm, 16, "%s_ADMIN_%d", server, serverid);
-		isadm = true;
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "unadvertise Admin svc "
-				<< adm);
-	}
-
 	Connection* connection = connections.getServerConnection(serviceName);
 
 	if (connection->requiresAdminCall()) {
 		long commandLength;
 		long responseLength = 1;
 
-		if (isadm) {
-			commandLength = strlen(adm) + 20;
-		} else {
-			commandLength = strlen(serviceName) + 20;
-		}
+		commandLength = strlen(serviceName) + 20;
 
 		char* command = (char*) ::tpalloc((char*) "X_OCTET", NULL,
 				commandLength);
@@ -720,11 +715,7 @@ void AtmiBrokerServer::removeAdminDestination(char* serviceName) {
 				responseLength);
 		memset(command, '\0', commandLength);
 
-		if (isadm) {
-			sprintf(command, "decrementconsumer,%s,", adm);
-		} else {
-			sprintf(command, "decrementconsumer,%s,", serviceName);
-		}
+		sprintf(command, "decrementconsumer,%s,", serviceName);
 
 		if (tpcall((char*) "BTStompAdmin", command, commandLength, &response,
 				&responseLength, TPNOTRAN) != 0) {

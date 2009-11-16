@@ -30,27 +30,12 @@ extern "C" {
 
 void TestAdmin::setUp() {
 	userlogc((char*) "TestAdmin::setUp");
-
-#ifdef WIN32
-	char* argv[] = {(char*)"server", (char*)"-i", (char*)"1", (char*)"-c", (char*)"win32", (char*)"foo"};
-#else
-	char* argv[] = {(char*)"server", (char*)"-i", (char*)"1", (char*)"-c", (char*)"linux", (char*)"foo"};
-#endif
-	int argc = sizeof(argv)/sizeof(char*);
-
-	int initted = serverinit(argc, argv);
-	// Check that there is no error on server setup
-	CPPUNIT_ASSERT(initted != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
-
+	BaseServerTest::setUp();
 }
 
 void TestAdmin::tearDown() {
 	userlogc((char*) "TestAdmin::tearDown");
-	serverdone();
-
-	clientdone();
-	CPPUNIT_ASSERT(tperrno == 0);
+	BaseServerTest::tearDown();
 }
 
 void TestAdmin::testStatus() {
@@ -61,7 +46,7 @@ void TestAdmin::testStatus() {
 	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
 	long  recvlen = 1;
 
-	int cd = ::tpcall((char*) "foo_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
+	int cd = ::tpcall((char*) "default_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
 	CPPUNIT_ASSERT(cd == 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(recvbuf[0] == '1');
@@ -92,7 +77,7 @@ long TestAdmin::getBARCounter() {
 	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
 	long  recvlen = 1;
 
-	int cd = ::tpcall((char*) "foo_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
+	int cd = ::tpcall((char*) "default_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
 	CPPUNIT_ASSERT(cd == 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 	CPPUNIT_ASSERT(recvbuf[0] == '1');
@@ -108,7 +93,7 @@ void TestAdmin::testServerdone() {
 	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
 	long  recvlen = 1;
 
-	int cd = ::tpcall((char*) "foo_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
+	int cd = ::tpcall((char*) "default_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
 	CPPUNIT_ASSERT(cd == 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 }
