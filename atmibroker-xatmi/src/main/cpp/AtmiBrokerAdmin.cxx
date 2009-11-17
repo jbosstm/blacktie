@@ -56,7 +56,7 @@ void ADMIN(TPSVCINFO* svcinfo) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get unadvertise command");
 		strtok(req, ",");
 		char* svc = strtok(NULL, ",");
-		if (svc != NULL && tpunadvertise(svc) == 0) {
+		if (svc != NULL && strcmp(svc, svcinfo->name) != 0 && tpunadvertise(svc) == 0) {
 			toReturn[0] = '1';
 			LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "unadvertise service " << svc << " OK");
 		} else {

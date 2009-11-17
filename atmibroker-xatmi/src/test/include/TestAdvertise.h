@@ -34,7 +34,7 @@ public:
 	void testUnknowService();
 	void testService();
 	void testAdvertise();
-	int  calladmin(char*);
+	int  calladmin(char*, char);
 	int  callBAR();
 	virtual void setUp();
 	virtual void tearDown();

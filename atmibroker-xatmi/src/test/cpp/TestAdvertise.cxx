@@ -43,7 +43,7 @@ int TestAdvertise::callBAR() {
 	return cd;
 }
 
-int TestAdvertise::calladmin(char* command) {
+int TestAdvertise::calladmin(char* command, char expect) {
 	long  sendlen = strlen(command) + 1;
 	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
 	strcpy(sendbuf, command);
@@ -53,7 +53,7 @@ int TestAdvertise::calladmin(char* command) {
 
 	int cd = ::tpcall((char*) "default_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
 	CPPUNIT_ASSERT(recvlen == 1);
-	CPPUNIT_ASSERT((recvbuf[0] == '1') || (recvbuf[0] == '0'));
+	CPPUNIT_ASSERT(recvbuf[0] == expect);
 
 	return cd;
 }
@@ -61,7 +61,7 @@ int TestAdvertise::calladmin(char* command) {
 void TestAdvertise::testService() {
 	int cd;
 
-	cd = calladmin((char*)"advertise,BAR,");
+	cd = calladmin((char*)"advertise,BAR,", '1');
 	CPPUNIT_ASSERT(cd == 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 }
@@ -69,7 +69,7 @@ void TestAdvertise::testService() {
 void TestAdvertise::testUnknowService() {
 	int   cd;
 
-	cd = calladmin((char*)"advertise,UNKNOW,");
+	cd = calladmin((char*)"advertise,UNKNOW,", '0');
 	CPPUNIT_ASSERT(cd == 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 }
@@ -78,7 +78,7 @@ void TestAdvertise::testAdvertise() {
 	int   cd;
 
 	userlogc((char*) "unadvertise BAR");
-	cd = calladmin((char*)"unadvertise,BAR,");
+	cd = calladmin((char*)"unadvertise,BAR,", '1');
 	CPPUNIT_ASSERT(cd == 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 
@@ -88,7 +88,7 @@ void TestAdvertise::testAdvertise() {
 	CPPUNIT_ASSERT(tperrno != 0);
 
 	userlogc((char*) "advertise BAR again");
-	cd = calladmin((char*)"advertise,BAR,");
+	cd = calladmin((char*)"advertise,BAR,", '1');
 	CPPUNIT_ASSERT(cd == 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 

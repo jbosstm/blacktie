@@ -34,7 +34,7 @@ void TestUnadvertise::tearDown() {
 	BaseServerTest::tearDown();
 }
 
-int TestUnadvertise::calladmin(char* command) {
+int TestUnadvertise::calladmin(char* command, char expect) {
 	long  sendlen = strlen(command) + 1;
 	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
 	strcpy(sendbuf, command);
@@ -44,7 +44,7 @@ int TestUnadvertise::calladmin(char* command) {
 
 	int cd = ::tpcall((char*) "default_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
 	CPPUNIT_ASSERT(recvlen == 1);
-	CPPUNIT_ASSERT((recvbuf[0] == '1') || (recvbuf[0] == '0'));
+	CPPUNIT_ASSERT(recvbuf[0] == expect);
 
 	return cd;
 }
@@ -58,10 +58,19 @@ int TestUnadvertise::callBAR() {
 	return cd;
 }
 
+void TestUnadvertise::testAdminService() {
+	int cd;
+
+	// should not unadvertise ADMIN service by itself
+	cd = calladmin((char*)"unadvertise,default_ADMIN_1", '0');
+	CPPUNIT_ASSERT(cd == 0);
+	CPPUNIT_ASSERT(tperrno == 0);
+}
+
 void TestUnadvertise::testUnknowService() {
 	int   cd;
 
-	cd = calladmin((char*)"unadvertise,UNKNOW,");
+	cd = calladmin((char*)"unadvertise,UNKNOW,", '0');
 	CPPUNIT_ASSERT(cd == 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 }
@@ -74,7 +83,7 @@ void TestUnadvertise::testUnadvertise() {
 	CPPUNIT_ASSERT(cd == 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 	
-	cd = calladmin((char*)"unadvertise,BAR,");
+	cd = calladmin((char*)"unadvertise,BAR,", '1');
 	CPPUNIT_ASSERT(cd == 0);
 	CPPUNIT_ASSERT(tperrno == 0);
 

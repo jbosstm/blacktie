@@ -25,14 +25,16 @@
 
 class TestUnadvertise: public BaseServerTest {
 	CPPUNIT_TEST_SUITE( TestUnadvertise );
+	CPPUNIT_TEST( testAdminService );
 	CPPUNIT_TEST( testUnknowService );
 	CPPUNIT_TEST( testUnadvertise );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
+	void testAdminService();
 	void testUnknowService();
 	void testUnadvertise();
-	int  calladmin(char*);
+	int  calladmin(char*, char);
 	int  callBAR();
 	virtual void setUp();
 	virtual void tearDown();
