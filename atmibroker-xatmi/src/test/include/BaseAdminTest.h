@@ -15,37 +15,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#ifndef BASE_ADMIN_TEST_H
+#define BASE_ADMIN_TEST_H
 
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFixture.h>
 
-#ifndef BLACKTIE_SERVERCONTROL_H_
-#define BLACKTIE_SERVERCONTROL_H_
+#include "BaseServerTest.h"
 
-#include "atmiBrokerXatmiMacro.h"
-#include "xatmi.h"
-
-typedef void (*SVCFUNC)(TPSVCINFO *);
-
-struct BLACKTIE_XATMI_DLL _service_status {
-	char    name[XATMI_SERVICE_NAME_LENGTH];
-	int     status;
-	SVCFUNC func;
+class BaseAdminTest: public BaseServerTest {
+public:
+	int  callADMIN(char*, char, int, long*);
+	int  callBAR(int);
+	virtual void setUp();
+	virtual void tearDown();
 };
-
-typedef struct BLACKTIE_XATMI_DLL _service_status ServiceStatus;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern BLACKTIE_XATMI_DLL int serverinit(int argc, char** argv);
-extern BLACKTIE_XATMI_DLL int serverrun();
-extern BLACKTIE_XATMI_DLL int serverdone();
-extern BLACKTIE_XATMI_DLL void server_sigint_handler_callback(int sig_type);
-extern BLACKTIE_XATMI_DLL int isadvertised(char* name);
-extern BLACKTIE_XATMI_DLL int advertiseByAdmin(char* name);
-extern BLACKTIE_XATMI_DLL int getServiceStatus(char** str, char* svc);
-extern BLACKTIE_XATMI_DLL long getServiceMessageCounter(char* serviceName);
-#ifdef __cplusplus
-}
-#endif
 
 #endif

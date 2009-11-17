@@ -21,9 +21,9 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
 
-#include "BaseServerTest.h"
+#include "BaseAdminTest.h"
 
-class TestAdvertise: public BaseServerTest{
+class TestAdvertise: public BaseAdminTest {
 	CPPUNIT_TEST_SUITE( TestAdvertise );
 	CPPUNIT_TEST( testUnknowService );
 	CPPUNIT_TEST( testService );
@@ -34,8 +34,6 @@ public:
 	void testUnknowService();
 	void testService();
 	void testAdvertise();
-	int  calladmin(char*, char);
-	int  callBAR();
 	virtual void setUp();
 	virtual void tearDown();
 };

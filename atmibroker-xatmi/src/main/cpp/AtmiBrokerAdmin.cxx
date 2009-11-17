@@ -29,14 +29,14 @@ log4cxx::LoggerPtr loggerAtmiBrokerAdmin(log4cxx::Logger::getLogger(
 			"AtmiBrokerAdmin"));
 
 void ADMIN(TPSVCINFO* svcinfo) {
-	char* req = (char*) malloc ((svcinfo->len + 1) * sizeof(char));
-	memset(req, 0, svcinfo->len + 1);
-	ACE_OS::strncpy(req, svcinfo->data, svcinfo->len);
-
 	char* toReturn = NULL;
 	long  len = 1;
+	char* req = svcinfo->data;
 	toReturn = tpalloc((char*) "X_OCTET", NULL, len);
 	toReturn[0] = '0';
+
+	strtok(req, ",");
+	char* svc = strtok(NULL, ",");
 
 	if(strncmp(req, "serverdone", 10) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get serverdone command");
@@ -44,8 +44,6 @@ void ADMIN(TPSVCINFO* svcinfo) {
 		server_sigint_handler_callback(0);
 	} else if(strncmp(req, "advertise", 9) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get advertise command");
-		strtok(req, ",");
-		char* svc = strtok(NULL, ",");
 		if(svc != NULL && advertiseByAdmin(svc) == 0) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "advertise service " << svc << " OK");
 			toReturn[0] = '1';
@@ -54,8 +52,6 @@ void ADMIN(TPSVCINFO* svcinfo) {
 		}
 	} else if(strncmp(req, "unadvertise", 11) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get unadvertise command");
-		strtok(req, ",");
-		char* svc = strtok(NULL, ",");
 		if (svc != NULL && strcmp(svc, svcinfo->name) != 0 && tpunadvertise(svc) == 0) {
 			toReturn[0] = '1';
 			LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "unadvertise service " << svc << " OK");
@@ -64,13 +60,19 @@ void ADMIN(TPSVCINFO* svcinfo) {
 		}
 	} else if(strncmp(req, "status", 6) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get status command");
-		toReturn = tprealloc(toReturn, 4096);
-		len += getServiceStatus(&toReturn[1]) + 1;
-		toReturn[0] = '1';
+		char* status = NULL;
+
+		len += getServiceStatus(&status, svc) + 1;
+		if (len > 1 && status != NULL) {
+			toReturn = tprealloc(toReturn, len);
+			ACE_OS::memcpy(&toReturn[1], status, len - 1);
+			free(status);
+			toReturn[0] = '1';
+		} else {
+			LOG4CXX_WARN(loggerAtmiBrokerAdmin, (char*) "get server status FAIL");
+		}
 	} else if(strncmp(req, "counter", 7) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get counter command");
-		strtok(req, ",");
-		char* svc = strtok(NULL, ",");
 		long counter = 0;
 
 		if(svc != NULL) {
@@ -78,11 +80,12 @@ void ADMIN(TPSVCINFO* svcinfo) {
 			counter = getServiceMessageCounter(svc);
 			len += ACE_OS::sprintf(&toReturn[1], "%ld", counter) + 1;
 			toReturn[0] = '1';
+		} else {
+			LOG4CXX_WARN(loggerAtmiBrokerAdmin, (char*) "get counter FAIL");
 		}
 	}
 
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerAdmin,
 			(char*) "service done");
-	free(req);
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }

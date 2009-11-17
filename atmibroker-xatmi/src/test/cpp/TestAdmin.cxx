@@ -16,84 +16,45 @@
  * MA  02110-1301, USA.
  */
 #include <cppunit/extensions/HelperMacros.h>
-extern "C" {
-#include "AtmiBrokerServerControl.h"
-#include "AtmiBrokerClientControl.h"
-}
-
-#include "ace/OS_NS_stdlib.h"
-#include "ace/OS_NS_stdio.h"
-#include "ace/OS_NS_string.h"
-#include "xatmi.h"
-#include "userlogc.h"
 #include "TestAdmin.h"
 
 void TestAdmin::setUp() {
 	userlogc((char*) "TestAdmin::setUp");
-	BaseServerTest::setUp();
+	BaseAdminTest::setUp();
 }
 
 void TestAdmin::tearDown() {
 	userlogc((char*) "TestAdmin::tearDown");
-	BaseServerTest::tearDown();
+	BaseAdminTest::tearDown();
 }
 
-void TestAdmin::testStatus() {
-	long  sendlen = strlen("status") + 1;
-	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
-	strcpy(sendbuf, "status");
+long TestAdmin::getBARCounter() {
+	long n = 0;
+	int cd;
 
-	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
-	long  recvlen = 1;
-
-	int cd = ::tpcall((char*) "default_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
+	cd = callADMIN((char*)"counter,BAR,", '1', 0, &n);	
 	CPPUNIT_ASSERT(cd == 0);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(recvbuf[0] == '1');
-	userlogc((char*) "len is %d, service status: %s", recvlen, &recvbuf[1]);
 
+	return n;
+}
+void TestAdmin::testStatus() {
+	int cd;
+
+	cd = callADMIN((char*)"status", '1', 0, NULL);
+	CPPUNIT_ASSERT(cd == 0);
+	cd = callADMIN((char*)"status,BAR,", '1', 0, NULL);
+	CPPUNIT_ASSERT(cd == 0);
 }
 
 void TestAdmin::testMessageCounter() {
 	CPPUNIT_ASSERT(getBARCounter() == 0);
-	CPPUNIT_ASSERT(callBAR() == 0);
+	CPPUNIT_ASSERT(callBAR(0) == 0);
 	CPPUNIT_ASSERT(getBARCounter() == 1);
 }
 
-int TestAdmin::callBAR() {
-	long  sendlen = strlen((char*)"test") + 1;
-	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
-	strcpy(sendbuf, (char*) "test");
-
-	int cd = ::tpacall((char*) "BAR", (char *) sendbuf, sendlen, TPNOREPLY);
-	return cd;
-}
-
-long TestAdmin::getBARCounter() {
-	long sendlen = strlen("counter,BAR,") + 1;
-	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
-	strcpy(sendbuf, "counter,BAR,");
-
-	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
-	long  recvlen = 1;
-
-	int cd = ::tpcall((char*) "default_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
-	CPPUNIT_ASSERT(cd == 0);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(recvbuf[0] == '1');
-
-	return (atol(&recvbuf[1]));
-}
-
 void TestAdmin::testServerdone() {
-	long  sendlen = strlen("serverdone") + 1;
-	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
-	strcpy(sendbuf, "serverdone");
+	int cd;
 
-	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
-	long  recvlen = 1;
-
-	int cd = ::tpcall((char*) "default_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
+	cd = callADMIN((char*)"serverdone", '1', 0, NULL);
 	CPPUNIT_ASSERT(cd == 0);
-	CPPUNIT_ASSERT(tperrno == 0);
 }

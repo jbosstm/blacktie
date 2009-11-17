@@ -228,9 +228,9 @@ int isadvertised(char* name) {
 	return -1;
 }
 
-int getServiceStatus(char* str) {
+int getServiceStatus(char** str, char* svc) {
 	if (ptrServer) {
-		return ptrServer->getServiceStatus(str);
+		return ptrServer->getServiceStatus(str, svc);
 	}
 
 	return -1;
@@ -451,22 +451,29 @@ AtmiBrokerServer::getServerName() {
 	return serverName;
 }
 
-int AtmiBrokerServer::getServiceStatus(char* str) {
+int AtmiBrokerServer::getServiceStatus(char** toReturn, char* svc) {
 	int len = 0;
-
-	//TODO make sure length of str is enough
+	char* str;
+	int n = (svc != NULL) ? 1: serviceStatus.size();
+	int size = sizeof(char) * 64 + sizeof(char) * 65 * n;
+	
+	str = (char*)malloc(size);
 	len += ACE_OS::sprintf(str + len, "<server>");
 	len += ACE_OS::sprintf(str + len, "<name>%s</name>", serverName);
 	len += ACE_OS::sprintf(str + len, "<services>");
 	for (std::vector<ServiceStatus>::iterator i = serviceStatus.begin(); i
 			!= serviceStatus.end(); i++) {
-		len += ACE_OS::sprintf(str + len,
-				"<service><name>%.15s</name><status>%d</status></service>",
-				(*i).name, (*i).status);
+		if(svc == NULL || ACE_OS::strcmp(svc, (*i).name) == 0) {
+			len += ACE_OS::sprintf(str + len,
+					"<service><name>%.15s</name><status>%d</status></service>",
+					(*i).name, (*i).status);
+			if(svc != NULL) break;
+		}
 	}
 
 	len += ACE_OS::sprintf(str + len, "</services>");
 	len += ACE_OS::sprintf(str + len, "</server>");
+	*toReturn = str;
 	return len;
 }
 

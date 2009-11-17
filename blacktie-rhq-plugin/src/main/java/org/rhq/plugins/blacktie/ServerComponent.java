@@ -109,7 +109,6 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 
 	private Connection connection = null;
 
-	private boolean callTest = true;
 
 	private int getInstancesCount() throws Exception {
 		ObjectName objName = new ObjectName(
@@ -139,29 +138,6 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 
 		Response rcvbuf = connection.tpcall(service, sendbuf, sendlen, 0);
 		return rcvbuf;
-	}
-
-	private void testJMSConnection() throws Exception {
-		Properties props = new Properties();
-		props.setProperty("java.naming.factory.initial",
-				"org.jnp.interfaces.NamingContextFactory");
-		props.setProperty("java.naming.factory.url.pkgs",
-				"org.jboss.naming:org.jnp.interfaces");
-		props.setProperty("java.naming.provider.url", (String) prop
-				.get("java.naming.provider.url"));
-		props.putAll(prop);
-		javax.naming.Context context = new InitialContext(props);
-		javax.jms.ConnectionFactory factory = (javax.jms.ConnectionFactory) context
-				.lookup("ConnectionFactory");
-		// String username = (String) prop.get("StompConnectUsr");
-		// String password = (String) prop.get("StompConnectPwd");
-		// if (username != null) {
-		// factory.createConnection(username, password);
-		// } else {
-		factory.createConnection();
-		// }
-		// TransportFactory.loadTransportFactory("BAR", prop).createTransport();
-		log.debug("testJMSConnection OK");
 	}
 
 	/**
@@ -272,27 +248,25 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 		String service = serverName + "_ADMIN_" + id;
 		Response buf = null;
 
-		/*
-		 * try { if(callTest) { testJMSConnection(); callTest = false; } } catch
-		 * (Exception e) {
-		 * result.setErrorMessage("connect to jms server failed with " + e);
-		 * return result; }
-		 */
-
 		if (name.equals("shutdown")) {
 			try {
 				callAdminService(service, "serverdone");
 				result.setSimpleResult("OK");
 			} catch (Exception e) {
-				callTest = true;
 				log.error("call " + service
 						+ " command serverdone failed with " + e);
 				result.setErrorMessage("call " + service
 						+ " command serverdone failed with " + e);
 			}
 		} else if (name.equals("listServiceStatus")) {
+			String svc = params.getSimpleValue("service", null);
+			String command = "status";
+
 			try {
-				buf = callAdminService(service, "status");
+				if(svc != null) {
+					command = command + "," + svc + ",";
+				}
+				buf = callAdminService(service, command);
 				if (buf != null) {
 					byte[] received = ((X_OCTET) buf.getBuffer())
 							.getByteArray();
@@ -306,7 +280,6 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 					result.setErrorMessage("no service status");
 				}
 			} catch (Exception e) {
-				callTest = true;
 				log.error("call " + service + " command status failed with "
 						+ e);
 				result.setErrorMessage("call " + service
@@ -330,19 +303,10 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 					result.setErrorMessage("can not " + name + " " + svc);
 				}
 			} catch (Exception e) {
-				callTest = true;
 				log.error("call " + service + " command " + command
 						+ " failed with " + e);
 				result.setErrorMessage("call " + service + " command "
 						+ command + " failed with " + e);
-			}
-		} else if (name.equals("test")) {
-			try {
-				testJMSConnection();
-				result.setSimpleResult("OK");
-			} catch (Exception e) {
-				result.setErrorMessage("test connect jms server failed with "
-						+ e);
 			}
 		} else if (name.equals("getServiceCounter")) {
 			String svc = params.getSimpleValue("service", null);
@@ -363,7 +327,6 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 					result.setErrorMessage("can not get counter of " + svc);
 				}
 			} catch (Exception e) {
-				callTest = true;
 				log.error("call " + service + " command " + command
 						+ " failed with " + e);
 				result.setErrorMessage("call " + service + " command "
