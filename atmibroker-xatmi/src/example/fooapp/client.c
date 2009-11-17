@@ -47,6 +47,7 @@ for (i = 0; i < 10; i++) {
 	callflags = 0;
 	sbufsize = 29;
 	sbuf = tpalloc("X_OCTET", 0, sbufsize);
+	memset(sbuf, 0, sbufsize);
 	strcpy(sbuf, "THIS IS YOUR CLIENT SPEAKING");
 	retbufsize = 15;
 	retbuf = tpalloc("X_OCTET", 0, retbufsize);
@@ -56,11 +57,11 @@ for (i = 0; i < 10; i++) {
 	tptypes(sbuf, type, subtype);
 
 	// tpcall
-//	userlogc((char*) "Calling tpcall with input: %s", sbuf);
+	userlogc((char*) "Calling tpcall with input: %s", sbuf);
 	tpstatus = tpcall("BAR", sbuf, sbufsize, (char **) &retbuf,
 			&retbufsize, callflags);
-//	userlogc((char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
-//			retbufsize, retbuf, tpstatus, tperrno);
+	userlogc((char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
+			retbufsize, retbuf, tpstatus, tperrno);
 
 	tpfree(sbuf);
 	tpfree(retbuf);

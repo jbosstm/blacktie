@@ -111,7 +111,7 @@
 		OPT="-ORBListenEndpoints iiop://localhost:9032/portspan=10 -ORBInitRef NameService=corbaloc::localhost:3528/NameService" 
 		to start the ORB on a fixed endpoint to test recovery use the following:
 	-->
-	<MQ HOST="${JBOSSAS_IP_ADDR}" PORT="61613" USER="guest" PASSWORD="guest"
+	<MQ HOST="localhost" PORT="61613" USER="guest" PASSWORD="guest"
 		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" />
 	<ENV_VARIABLES>
 		<ENV_VARIABLE>
