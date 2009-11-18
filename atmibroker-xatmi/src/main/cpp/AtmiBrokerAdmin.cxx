@@ -44,7 +44,7 @@ void ADMIN(TPSVCINFO* svcinfo) {
 		server_sigint_handler_callback(0);
 	} else if(strncmp(req, "advertise", 9) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get advertise command");
-		if(svc != NULL && advertiseByAdmin(svc) == 0) {
+		if(svc != NULL && strcmp(svc, svcinfo->name) != 0 && advertiseByAdmin(svc) == 0) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "advertise service " << svc << " OK");
 			toReturn[0] = '1';
 		} else {
