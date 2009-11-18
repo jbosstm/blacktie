@@ -413,25 +413,24 @@ static void XMLCALL startElement
 		} else {
 			LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "No buffer is being processed");
 		}
-	} else if(strcmp(name, "SERVICE") == 0 ||
-			strcmp(name, "ADMIN_SERVICE") == 0) {
-
+	} else if(strcmp(name, "SERVICE") == 0) {
 		if(atts != 0) {
 			ServiceInfo service;
 			service.transportLib = NULL;
+			char adm[16];
+			int  len;
 			char* server;
 
 			memset(&service, 0, sizeof(ServiceInfo));
 			server = servers.back()->serverName;
-
-			if(strcmp(name, "ADMIN_SERVICE") == 0 ) {
-				char adm[16];
-				ACE_OS::snprintf(adm, 15, "%s_ADMIN", server);
-				service.serviceName = copy_value(adm);
-			}
+			len = ACE_OS::snprintf(adm, 16, "%s_ADMIN", server);
 
 			for(int i = 0; atts[i]; i += 2) {
 				if(strcmp(atts[i], "name") == 0) {
+					if(ACE_OS::strncmp(atts[i+1], adm, len) == 0) {
+						LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "Can not define " << atts[i+1]);
+						throw std::exception();
+					}
 					service.serviceName = copy_value(atts[i+1]);
 					LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "set name: " << service.serviceName);
 				}
