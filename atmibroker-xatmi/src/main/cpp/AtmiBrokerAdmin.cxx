@@ -64,8 +64,8 @@ void ADMIN(TPSVCINFO* svcinfo) {
 
 		len += getServiceStatus(&status, svc) + 1;
 		if (len > 1 && status != NULL) {
-			toReturn = tprealloc(toReturn, len);
-			ACE_OS::memcpy(&toReturn[1], status, len - 1);
+			toReturn = tprealloc(toReturn, len + 1);
+			ACE_OS::memcpy(&toReturn[1], status, len);
 			free(status);
 			toReturn[0] = '1';
 		} else {
