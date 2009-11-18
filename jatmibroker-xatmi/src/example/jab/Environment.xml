@@ -28,7 +28,6 @@
 			<SERVICE_NAMES>
 				<SERVICE name='BAR' />
 			</SERVICE_NAMES>
-			<ADMIN_SERVICE />
 		</SERVER>
 	</SERVER_NAMES>
 	<ORB OPT="-ORBInitRef NameService=corbaloc::localhost:3528/NameService"
