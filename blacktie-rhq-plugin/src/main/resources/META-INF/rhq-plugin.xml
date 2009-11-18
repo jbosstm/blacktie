@@ -95,12 +95,6 @@
 			  </results>
 		  </operation>
 
-		  <operation name="test" displayName="test" description="test connect jms server">
-			  <results>
-				  <c:notes>Test Result</c:notes>
-				  <c:simple-property name="operationResult" type="longString"/>
-			  </results>
-		  </operation>
 		  <metric property="instanceCount" measurementType="dynamic" displayType="summary" displayName="server instances"
 			  defaultOn="true" defaultInterval="60000" dataType="measurement" description="The number of running instances of server"/>
 
