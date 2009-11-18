@@ -33,6 +33,9 @@ void TestAdvertise::testService() {
 
 	cd = callADMIN((char*)"advertise,BAR,", '1', 0, NULL);
 	CPPUNIT_ASSERT(cd == 0);
+
+	cd = callADMIN((char*)"advertise,default_ADMIN_1,", '0', 0, NULL);
+	CPPUNIT_ASSERT(cd == 0);
 }
 
 void TestAdvertise::testUnknowService() {
