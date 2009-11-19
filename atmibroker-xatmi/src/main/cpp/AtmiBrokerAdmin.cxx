@@ -78,7 +78,7 @@ void ADMIN(TPSVCINFO* svcinfo) {
 		if(svc != NULL) {
 			toReturn = tprealloc(toReturn, 16);
 			counter = getServiceMessageCounter(svc);
-			len += ACE_OS::sprintf(&toReturn[1], "%ld", counter) + 1;
+			len += ACE_OS::sprintf(&toReturn[1], "%ld", counter);
 			toReturn[0] = '1';
 		} else {
 			LOG4CXX_WARN(loggerAtmiBrokerAdmin, (char*) "get counter FAIL");

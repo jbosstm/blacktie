@@ -95,17 +95,12 @@ public class ServerDiscoveryComponent implements ResourceDiscoveryComponent {
 			XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 			xmlenv.parse("Environment.xml");
 
-			Set<String> servers = (Set<String>) prop
-					.get("blacktie.domain.servers");
+			Set<String> servers = (Set<String>) prop.get("blacktie.domain.servers");
 			for (String server : servers) {
-				String admin = (String) prop.get("blacktie." + server
-						+ "_ADMIN" + ".transportLib");
-				if (admin != null) {
-					DiscoveredResourceDetails resource = new DiscoveredResourceDetails(
-							context.getResourceType(), server, server, null,
-							null, null, null);
-					set.add(resource);
-				}
+				DiscoveredResourceDetails resource = new DiscoveredResourceDetails(
+						context.getResourceType(), server, server, null,
+						null, null, null);
+				set.add(resource);
 			}
 		} catch (Exception e) {
 			log.equals("get servers error with " + e);

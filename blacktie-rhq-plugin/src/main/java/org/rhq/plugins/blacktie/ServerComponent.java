@@ -19,6 +19,7 @@
 package org.rhq.plugins.blacktie;
 
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -32,6 +33,12 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.naming.InitialContext;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,6 +72,7 @@ import org.rhq.core.pluginapi.inventory.ResourceContext;
 import org.rhq.core.pluginapi.measurement.MeasurementFacet;
 import org.rhq.core.pluginapi.operation.OperationFacet;
 import org.rhq.core.pluginapi.operation.OperationResult;
+import org.w3c.dom.Element;
 
 /**
  * This can be the start of your own custom plugin's server component. Review
@@ -108,26 +116,17 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 	private String serverName = null;
 
 	private Connection connection = null;
+	
+	private ObjectName blacktieAdmin = null;
 
-
+	@SuppressWarnings("unchecked")
 	private int getInstancesCount() throws Exception {
-		ObjectName objName = new ObjectName(
-				"jboss.messaging:service=ServerPeer");
-		HashSet<Destination> dests = (HashSet) beanServerConnection
-				.getAttribute(objName, "Destinations");
-		int n = 0;
-
-		for (Destination dest : dests) {
-			if (dest instanceof Queue) {
-				String qname = ((Queue) dest).getQueueName();
-
-				if (qname.indexOf(serverName + "_ADMIN") >= 0) {
-					n++;
-				}
-			}
-		}
-
-		return n;
+		List<Integer> ids = (List<Integer>)beanServerConnection.invoke(blacktieAdmin, 
+				"listRunningInstanceIds",
+				new Object[] { serverName }, 
+				new String[] {"java.lang.String"});
+		
+		return ids.size();
 	}
 
 	private Response callAdminService(String service, String command)
@@ -163,6 +162,7 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 			ConnectionFactory connectionFactory = ConnectionFactory
 					.getConnectionFactory(prop);
 			connection = connectionFactory.getConnection();
+			blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
 		} catch (Exception e) {
 			log.error("start server " + serverName + " plugin error with " + e);
 		}
@@ -244,93 +244,97 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 	 */
 	public OperationResult invokeOperation(String name, Configuration params) {
 		OperationResult result = new OperationResult();
-		String id = params.getSimpleValue("id", null);
-		String service = serverName + "_ADMIN_" + id;
+		int id = Integer.parseInt(params.getSimpleValue("id", "0"));
+		String serviceName = params.getSimpleValue("service", null);
 		Response buf = null;
 
 		if (name.equals("shutdown")) {
 			try {
-				callAdminService(service, "serverdone");
+				beanServerConnection.invoke(blacktieAdmin, 
+						"shutdown",
+						new Object[] { serverName, id}, 
+						new String[] {"java.lang.String", "int"});
 				result.setSimpleResult("OK");
 			} catch (Exception e) {
-				log.error("call " + service
-						+ " command serverdone failed with " + e);
-				result.setErrorMessage("call " + service
-						+ " command serverdone failed with " + e);
+				log.error("call shutdown servers failed with " + e);
+				result.setErrorMessage("call shutdown servers failed with " + e);
 			}
 		} else if (name.equals("listServiceStatus")) {
-			String svc = params.getSimpleValue("service", null);
-			String command = "status";
-
 			try {
-				if(svc != null) {
-					command = command + "," + svc + ",";
-				}
-				buf = callAdminService(service, command);
-				if (buf != null) {
-					byte[] received = ((X_OCTET) buf.getBuffer())
-							.getByteArray();
-					if (received[0] == '1') {
-						String status = new String(received, 1,
-								received.length - 1);
-						log.debug("status is " + status);
-						result.setSimpleResult(status);
+				Element status = (Element)beanServerConnection.invoke(blacktieAdmin, 
+						"listServiceStatus",
+						new Object[] { serverName, id, serviceName}, 
+						new String[] {"java.lang.String", "int", "java.lang.String"});
+				
+				
+				if (status != null) {
+					try {
+						// Set up the output transformer
+						TransformerFactory transfac = TransformerFactory.newInstance();
+						Transformer trans = transfac.newTransformer();
+						trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+						trans.setOutputProperty(OutputKeys.INDENT, "yes");
+
+						StringWriter sw = new StringWriter();
+						StreamResult sr = new StreamResult(sw);
+						DOMSource source = new DOMSource(status);
+						trans.transform(source, sr);
+						result.setSimpleResult(sw.toString());					
+					} catch (TransformerException e) {
+						log.error(e);
 					}
 				} else {
 					result.setErrorMessage("no service status");
 				}
 			} catch (Exception e) {
-				log.error("call " + service + " command status failed with "
-						+ e);
-				result.setErrorMessage("call " + service
-						+ " command status failed with " + e);
+				log.error("call status failed with "+ e);
+				result.setErrorMessage("call status failed with "+ e);
 			}
-		} else if (name.equals("advertise") || name.equals("unadvertise")) {
-			String svc = params.getSimpleValue("service", null);
-			String command = name + "," + svc + ",";
-
-			try {
-				buf = callAdminService(service, command);
-				if (buf != null) {
-					byte[] received = ((X_OCTET) buf.getBuffer())
-							.getByteArray();
-					if (received[0] == '1') {
-						result.setSimpleResult(name + " " + svc + " OK");
+		} else if (name.equals("advertise") || name.equals("unadvertise")) {		
+			if(serviceName == null) {
+				result.setErrorMessage("service name can not empty");
+			} else {
+				try{
+					Boolean r =  (Boolean)beanServerConnection.invoke(blacktieAdmin, 
+							name,
+							new Object[] { serverName, serviceName}, 
+							new String[] {"java.lang.String", "java.lang.String"});
+					if(r){
+						result.setSimpleResult(name + " OK");
 					} else {
-						result.setSimpleResult(name + " " + svc + " FAIL");
+						result.setSimpleResult(name + " FAIL");
 					}
-				} else {
-					result.setErrorMessage("can not " + name + " " + svc);
+				} catch (Exception e) {
+					log.error("call " + name + " service " + serviceName
+							+ " failed with " + e);
+					result.setErrorMessage("call " + name + " service " + serviceName
+							+ " failed with " + e);
 				}
-			} catch (Exception e) {
-				log.error("call " + service + " command " + command
-						+ " failed with " + e);
-				result.setErrorMessage("call " + service + " command "
-						+ command + " failed with " + e);
 			}
 		} else if (name.equals("getServiceCounter")) {
-			String svc = params.getSimpleValue("service", null);
-			String command = "counter," + svc + ",";
-
 			try {
-				buf = callAdminService(service, command);
-				if (buf != null) {
-					byte[] received = ((X_OCTET) buf.getBuffer())
-							.getByteArray();
-					if (received[0] == '1') {
-						String n = new String(received, 1, received.length - 1);
-						result.setSimpleResult(n);
-					} else {
-						result.setSimpleResult("-1");
-					}
+				if(serviceName == null) {
+					result.setErrorMessage("service name can not empty");
 				} else {
-					result.setErrorMessage("can not get counter of " + svc);
+					Long counter;
+					if(id == 0) {
+						counter = (Long)beanServerConnection.invoke(blacktieAdmin, 
+								"getServiceCounter",
+								new Object[] { serverName, serviceName}, 
+								new String[] {"java.lang.String", "java.lang.String"});
+					} else {
+						counter = (Long)beanServerConnection.invoke(blacktieAdmin, 
+								"getServiceIdCounter",
+								new Object[] { serverName, id, serviceName}, 
+								new String[] {"java.lang.String", "int", "java.lang.String"});
+					}
+					result.setSimpleResult(counter.toString());
 				}
 			} catch (Exception e) {
-				log.error("call " + service + " command " + command
+				log.error("call get counter of " + serviceName 
 						+ " failed with " + e);
-				result.setErrorMessage("call " + service + " command "
-						+ command + " failed with " + e);
+				result.setErrorMessage("call get counter of " + serviceName 
+						+ " failed with " + e);
 			}
 		}
 

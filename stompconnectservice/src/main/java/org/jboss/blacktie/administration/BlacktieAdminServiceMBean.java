@@ -1,5 +1,7 @@
 package org.jboss.blacktie.administration;
 
+import org.w3c.dom.Element;
+
 /*
  * JBoss, Home of Professional Open Source
  * Copyright 2008, Red Hat, Inc., and others contributors as indicated
@@ -37,36 +39,69 @@ public interface BlacktieAdminServiceMBean {
 	void stop() throws Exception;
 
 	/**
-	 * Get domain name
-	 * 
+	 * Retrieve the Domain Name
 	 */
 	public String getDomainName();
 
 	/**
-	 * Get servers name
-	 * 
+	 * Retrieve the software version of domain
 	 */
-	public java.util.List getServersName() throws Exception;
+	public String getSoftwareVersion();
 
 	/**
-	 * @description List all service status
-	 * @param serverName
-	 * @param id
+	 * Retrieve the full list of servers
 	 */
-	public org.w3c.dom.Element listServiceStatus(String serverName, int id);
+	public java.util.List<String> getServerList();
 
 	/**
-	 * @description Advetising service
-	 * @param serverName
-	 * @param id
-	 * @param serviceName
+	 * Discover running servers
 	 */
-	public Boolean advertise(String serverName, int id, String serviceName);
+	public java.util.List<String> listRunningServers();
 
 	/**
-	 * Unadvertising service
+	 * This calls pauseServer for each server in the domain
 	 */
-	public Boolean unadvertise(String serverName, int id, String serviceName);
+	public Boolean pauseDomain();
+
+	/**
+	 * This calls resumeDomain for each server in the domain
+	 */
+	public Boolean resumeDomain();
+
+	/**
+	 * Retrieves the counter for a service from all servers
+	 */
+	public long getServiceCounter(String serverName, String serviceName);
+	
+	/**
+	 * Retrieves the counter for a service from specify server
+	 */
+	public long getServiceIdCounter(String serverName, int id, String serviceName);
+
+	/**
+	 * Get the list of Ids of currently running servers
+	 */
+	public java.util.List<Integer> listRunningInstanceIds(String serverName);
+
+	/**
+	 * Describe the status of the servers in the domain
+	 */
+	public org.w3c.dom.Element getServersStatus();
+	
+	/** 
+	 * Describe the service status of server
+	 */
+	public Element listServiceStatus(String serverName, int id, String serviceName);
+
+	/**
+	 * Advertise service
+	 */
+	public Boolean advertise(String serverName, String serviceName);
+
+	/**
+	 * Unadvertise service
+	 */
+	public Boolean unadvertise(String serverName, String serviceName);
 
 	/**
 	 * Shutdown server
