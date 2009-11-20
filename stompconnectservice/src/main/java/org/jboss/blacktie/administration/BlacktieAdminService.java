@@ -174,7 +174,7 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 				if (dest instanceof Queue) {
 					String qname = ((Queue) dest).getQueueName();
 					for(String server : servers) {
-						int index = qname.indexOf(server + "_ADMIN_");
+						//int index = qname.indexOf(server + "_ADMIN_");
 						//log.debug("server is " + server + " qname is " + qname + " index is " + index);
 						if(qname.indexOf(server + "_ADMIN_") >= 0 && 
 								!runningServerList.contains(server)) {
@@ -247,12 +247,20 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 		}
 	}
 
-	public Element listServiceStatus(String serverName, int id, String serviceName) {
+	public Element listServiceStatus(String serverName, String serviceName) {
 		String command = "status";
 		Response buf = null;
 		String status = null;
+		List<Integer> ids = listRunningInstanceIds(serverName);
+		int id = 0;
+		
+		if(ids.size() == 0) {
+			log.warn(serverName + " is not running");
+			return null;
+		}
 		
 		try {
+			id = ids.get(0);
 			if(serviceName != null) {
 				command = command + "," + serviceName + ",";
 			}
@@ -315,7 +323,7 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 		}
 	}
 	
-	public long getServiceIdCounter(String serverName, int id, String serviceName) {
+	public long getServiceCounterById(String serverName, int id, String serviceName) {
 		long   counter = 0;
 		String command = "counter," + serviceName + ",";
 		
@@ -338,7 +346,7 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 		List<Integer> ids = listRunningInstanceIds(serverName);
 		
 		for(int i = 0; i < ids.size(); i++) {
-			counter += getServiceIdCounter(serverName, ids.get(i), serviceName);
+			counter += getServiceCounterById(serverName, ids.get(i), serviceName);
 		}
 		
 		return counter;

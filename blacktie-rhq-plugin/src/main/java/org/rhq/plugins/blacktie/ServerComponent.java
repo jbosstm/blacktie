@@ -114,8 +114,6 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 	private MBeanServerConnection beanServerConnection;
 
 	private String serverName = null;
-
-	private Connection connection = null;
 	
 	private ObjectName blacktieAdmin = null;
 
@@ -127,16 +125,6 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 				new String[] {"java.lang.String"});
 		
 		return ids.size();
-	}
-
-	private Response callAdminService(String service, String command)
-			throws ConnectionException {
-		int sendlen = command.length() + 1;
-		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
-		((X_OCTET) sendbuf).setByteArray(command.getBytes());
-
-		Response rcvbuf = connection.tpcall(service, sendbuf, sendlen, 0);
-		return rcvbuf;
 	}
 
 	/**
@@ -157,11 +145,7 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 			JMXConnector c = JMXConnectorFactory.connect(u);
 			beanServerConnection = c.getMBeanServerConnection();
 
-			serverName = context.getResourceKey();
-
-			ConnectionFactory connectionFactory = ConnectionFactory
-					.getConnectionFactory(prop);
-			connection = connectionFactory.getConnection();
+			serverName = context.getResourceKey();;
 			blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
 		} catch (Exception e) {
 			log.error("start server " + serverName + " plugin error with " + e);
@@ -246,7 +230,6 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 		OperationResult result = new OperationResult();
 		int id = Integer.parseInt(params.getSimpleValue("id", "0"));
 		String serviceName = params.getSimpleValue("service", null);
-		Response buf = null;
 
 		if (name.equals("shutdown")) {
 			try {
@@ -263,8 +246,8 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 			try {
 				Element status = (Element)beanServerConnection.invoke(blacktieAdmin, 
 						"listServiceStatus",
-						new Object[] { serverName, id, serviceName}, 
-						new String[] {"java.lang.String", "int", "java.lang.String"});
+						new Object[] { serverName, serviceName}, 
+						new String[] {"java.lang.String", "java.lang.String"});
 				
 				
 				if (status != null) {

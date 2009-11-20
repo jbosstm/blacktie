@@ -76,7 +76,7 @@ public interface BlacktieAdminServiceMBean {
 	/**
 	 * Retrieves the counter for a service from specify server
 	 */
-	public long getServiceIdCounter(String serverName, int id, String serviceName);
+	public long getServiceCounterById(String serverName, int id, String serviceName);
 
 	/**
 	 * Get the list of Ids of currently running servers
@@ -91,7 +91,7 @@ public interface BlacktieAdminServiceMBean {
 	/** 
 	 * Describe the service status of server
 	 */
-	public Element listServiceStatus(String serverName, int id, String serviceName);
+	public Element listServiceStatus(String serverName, String serviceName);
 
 	/**
 	 * Advertise service

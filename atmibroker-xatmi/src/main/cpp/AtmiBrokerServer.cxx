@@ -454,8 +454,9 @@ AtmiBrokerServer::getServerName() {
 int AtmiBrokerServer::getServiceStatus(char** toReturn, char* svc) {
 	int len = 0;
 	char* str;
-	//int n = (svc != NULL) ? 1: serviceStatus.size();
 	int size = sizeof(char) * (9 + 14 + strlen(serverName) + 11 + 12 + 10);
+	char adm[XATMI_SERVICE_NAME_LENGTH + 1];
+	ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server, serverid);
 	
 	str = (char*)malloc(size);
 	len += ACE_OS::sprintf(str + len, "<server>");
@@ -463,7 +464,8 @@ int AtmiBrokerServer::getServiceStatus(char** toReturn, char* svc) {
 	len += ACE_OS::sprintf(str + len, "<services>");
 	for (std::vector<ServiceStatus>::iterator i = serviceStatus.begin(); i
 			!= serviceStatus.end(); i++) {
-		if(svc == NULL || ACE_OS::strcmp(svc, (*i).name) == 0) {
+		if(strcmp(adm, (*i).name) != 0 && 
+			(svc == NULL || ACE_OS::strcmp(svc, (*i).name) == 0)) {
 			int svcsize = sizeof(char) * (50 + strlen((*i).name));
 			size += svcsize;
 			str = (char*)realloc(str, size);
