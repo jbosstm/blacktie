@@ -19,11 +19,26 @@
 package org.rhq.plugins.blacktie;
 
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
+
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
+import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
 import org.rhq.core.domain.configuration.Configuration;
 import org.rhq.core.domain.configuration.ConfigurationUpdateStatus;
 import org.rhq.core.domain.content.PackageType;
@@ -47,6 +62,7 @@ import org.rhq.core.pluginapi.inventory.ResourceContext;
 import org.rhq.core.pluginapi.measurement.MeasurementFacet;
 import org.rhq.core.pluginapi.operation.OperationFacet;
 import org.rhq.core.pluginapi.operation.OperationResult;
+import org.w3c.dom.Element;
 
 /**
  * This can be the start of your own custom plugin's server component. Review
@@ -82,6 +98,14 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 	 * your resource component can use when performing its processing.
 	 */
 	private ResourceContext resourceContext;
+	
+	private Properties prop = new Properties();
+
+	private MBeanServerConnection beanServerConnection;
+
+	private String domainName = null;
+	
+	private ObjectName blacktieAdmin = null;
 
 	/**
 	 * This is called when your component has been started with the given
@@ -92,6 +116,20 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 	 */
 	public void start(ResourceContext context) {
 		resourceContext = context;
+		
+		try {
+			XMLEnvHandler handler = new XMLEnvHandler("", prop);
+			XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
+			xmlenv.parse("Environment.xml");
+			JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
+			JMXConnector c = JMXConnectorFactory.connect(u);
+			beanServerConnection = c.getMBeanServerConnection();
+
+			domainName = context.getResourceKey();;
+			blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
+		} catch (Exception e) {
+			log.error("start domain " + domainName + " plugin error with " + e);
+		}
 	}
 
 	/**
@@ -161,7 +199,32 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 	 */
 	public OperationResult invokeOperation(String name,
 			Configuration configuration) {
-		return null;
+		OperationResult result = new OperationResult();
+		
+		try {
+			Object obj = beanServerConnection.invoke(blacktieAdmin, name, null, null);
+						
+			if(name.equals("getServersStatus")) {
+				Element status = (Element)obj;
+				// Set up the output transformer
+				TransformerFactory transfac = TransformerFactory.newInstance();
+				Transformer trans = transfac.newTransformer();
+				trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+				trans.setOutputProperty(OutputKeys.INDENT, "yes");
+
+				StringWriter sw = new StringWriter();
+				StreamResult sr = new StreamResult(sw);
+				DOMSource source = new DOMSource(status);
+				trans.transform(source, sr);
+				result.setSimpleResult(sw.toString());
+			} else {
+				result.setSimpleResult(obj.toString());
+			}
+		} catch (Exception e) {
+			result.setErrorMessage(e.toString());
+		}
+		
+		return result;
 	}
 
 	/**

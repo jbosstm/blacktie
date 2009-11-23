@@ -20,19 +20,15 @@ package org.rhq.plugins.blacktie;
 
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.jms.Destination;
-import javax.jms.Queue;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
-import javax.naming.InitialContext;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -44,11 +40,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
-import org.jboss.blacktie.jatmibroker.xatmi.Connection;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
-import org.jboss.blacktie.jatmibroker.xatmi.Response;
-import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 import org.rhq.core.domain.configuration.Configuration;
 import org.rhq.core.domain.configuration.ConfigurationUpdateStatus;
 import org.rhq.core.domain.content.PackageType;
@@ -102,11 +93,7 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 	 * managed.
 	 */
 	private Configuration resourceConfiguration;
-
-	/**
-	 * All AMPS plugins are stateful - this context contains information that
-	 * your resource component can use when performing its processing.
-	 */
+	
 	private ResourceContext resourceContext;
 
 	private Properties prop = new Properties();
@@ -118,13 +105,13 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 	private ObjectName blacktieAdmin = null;
 
 	@SuppressWarnings("unchecked")
-	private int getInstancesCount() throws Exception {
+	private List getInstancesCount() throws Exception {
 		List<Integer> ids = (List<Integer>)beanServerConnection.invoke(blacktieAdmin, 
 				"listRunningInstanceIds",
 				new Object[] { serverName }, 
 				new String[] {"java.lang.String"});
 		
-		return ids.size();
+		return ids;
 	}
 
 	/**
@@ -135,8 +122,6 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 	 * @see ResourceComponent#start(ResourceContext)
 	 */
 	public void start(ResourceContext context) {
-		resourceContext = context;
-
 		try {
 			XMLEnvHandler handler = new XMLEnvHandler("", prop);
 			XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
@@ -175,7 +160,7 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 		int n = 0;
 
 		try {
-			n = getInstancesCount();
+			n = getInstancesCount().size();
 		} catch (Exception e) {
 		}
 
@@ -202,7 +187,7 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 			try {
 				if (name.equals("instanceCount")) {
 
-					int n = getInstancesCount();
+					int n = getInstancesCount().size();
 					Number value = new Integer(n); // dummy measurement value -
 					// this should come from the
 					// managed resource
@@ -318,6 +303,13 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 						+ " failed with " + e);
 				result.setErrorMessage("call get counter of " + serviceName 
 						+ " failed with " + e);
+			}
+		} else if (name.equals("listRunningInstanceIds")) {
+			try {
+				result.setSimpleResult(getInstancesCount().toString());
+			} catch (Exception e) {
+				log.error("call getInstancesCounter failed with " + e);
+				result.setErrorMessage("call getInstancesCounter failed with " + e);
 			}
 		}
 

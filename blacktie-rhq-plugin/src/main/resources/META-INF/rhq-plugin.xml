@@ -25,6 +25,27 @@
 				  <c:simple-property name="operationResult" type="longString"/>
 			  </results>
 	  </operation>
+	  
+	  <operation name="reloadDomain" displayName="reloadDomain" description="reload all servers in the domain">
+			  <results>
+				  <c:notes>Return message</c:notes>
+				  <c:simple-property name="operationResult" type="longString"/>
+			  </results>
+	  </operation>
+	  
+	  <operation name="listRunningServers" displayName="listRunningServers" description="Discover running servers">
+			  <results>
+				  <c:notes>Return message</c:notes>
+				  <c:simple-property name="operationResult" type="longString"/>
+			  </results>
+	  </operation>
+	  
+	  <operation name="getServersStatus" displayName="getServersStatus" description="Describe the status of the servers in the domain">
+			  <results>
+				  <c:notes>Return message</c:notes>
+				  <c:simple-property name="operationResult" type="longString"/>
+			  </results>
+	  </operation>
 
 	  <service name="Server"
 		  discovery="ServerDiscoveryComponent"
@@ -36,6 +57,13 @@
 			  </parameters>
 			  <results>
 				  <c:notes>Shutdown return message</c:notes>
+				  <c:simple-property name="operationResult" type="longString"/>
+			  </results>
+		  </operation>
+		  
+		  <operation name="listRunningInstanceIds" displayName="listRunningInstanceIds" description="Get the list of Ids of currently running servers">
+			  <results>
+				  <c:notes>Running Ids</c:notes>
 				  <c:simple-property name="operationResult" type="longString"/>
 			  </results>
 		  </operation>

@@ -351,4 +351,29 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 		
 		return counter;
 	}
+
+	public Boolean reloadDomain() {
+		Boolean result = true;
+		List<String> servers = listRunningServers();
+		
+		for(int i = 0; i < servers.size(); i++) {
+			result = reloadServer(servers.get(i)) && result;
+		}
+		return result;
+	}
+
+	public Boolean reloadServer(String serverName) {
+		Boolean result = true;
+		List<Integer> ids = listRunningInstanceIds(serverName);
+		
+		for(int i = 0; i < ids.size(); i++) {
+			result = reloadServerById(serverName, ids.get(i)) && result;
+		}
+		return result;
+	}
+	
+	public Boolean reloadServerById(String serverName, int id) {
+		return false;
+		
+	}
 }

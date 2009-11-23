@@ -1,7 +1,5 @@
 package org.jboss.blacktie.administration;
 
-import org.w3c.dom.Element;
-
 /*
  * JBoss, Home of Professional Open Source
  * Copyright 2008, Red Hat, Inc., and others contributors as indicated
@@ -67,6 +65,18 @@ public interface BlacktieAdminServiceMBean {
 	 * This calls resumeDomain for each server in the domain
 	 */
 	public Boolean resumeDomain();
+	
+	/**
+	 * Halt servers, update configuration, restart
+	 */
+	public Boolean reloadDomain();
+	
+	/**
+	 * reload server
+	 */
+	public Boolean reloadServer(String serverName);
+	
+	public Boolean reloadServerById(String serverName, int id);
 
 	/**
 	 * Retrieves the counter for a service from all servers
@@ -91,7 +101,7 @@ public interface BlacktieAdminServiceMBean {
 	/** 
 	 * Describe the service status of server
 	 */
-	public Element listServiceStatus(String serverName, String serviceName);
+	public org.w3c.dom.Element listServiceStatus(String serverName, String serviceName);
 
 	/**
 	 * Advertise service
