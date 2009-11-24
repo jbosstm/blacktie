@@ -40,7 +40,6 @@ public class XMLEnvHandler extends DefaultHandler {
 	private final String ATTRIBUTE = "ATTRIBUTE";
 	private final String SERVER_NAME = "SERVER";
 	private final String SERVICE_NAME = "SERVICE";
-	private final String ADMIN_SERVICE_NAME = "ADMIN_SERVICE";
 	private final String NAME = "NAME";
 	private final String VALUE = "VALUE";
 	private final String ORB = "ORB";
@@ -295,16 +294,11 @@ public class XMLEnvHandler extends DefaultHandler {
 					prop.setProperty("java.naming.provider.url", value);
 				}
 			}
-		} else if (SERVICE_NAME.equals(localName)
-				|| ADMIN_SERVICE_NAME.equals(localName)) {
+		} else if (SERVICE_NAME.equals(localName)) {
 			String serviceName = null;
 			String transport = null;
 
 			if (atts != null) {
-				if (ADMIN_SERVICE_NAME.equals(localName)) {
-					serviceName = serverName + "_ADMIN";
-				}
-
 				for (int i = 0; i < atts.getLength(); i++) {
 					if (atts.getLocalName(i).equals("name")) {
 						serviceName = atts.getValue(i);
@@ -316,16 +310,27 @@ public class XMLEnvHandler extends DefaultHandler {
 							serviceName = null;
 							break;
 						}
+
+						if (serviceName.indexOf("_ADMIN") >= 0) {
+							log.warn("service " + serviceName + " is admin service");
+							serviceName = null;
+							break;
+						}
 					}
 				}
 
 				if (serviceName != null) {
 					String key = "blacktie." + serviceName + ".server";
-					prop.put(key, serverName);
+					if(prop.get(key) != null) {
+						log.warn("service " + serviceName + " has already define in " + prop.get(key));
+						serviceName = null;
+					} else {
+						prop.put(key, serverName);
+						prop.put("blacktie." + serviceName + ".transportLib", "hybrid");
+					}
 				}
 			}
 
-			prop.put("blacktie." + serviceName + ".transportLib", "hybrid");
 
 			if (serviceName != null) {
 				AtmiBrokerServiceXML xml = new AtmiBrokerServiceXML(serverName,

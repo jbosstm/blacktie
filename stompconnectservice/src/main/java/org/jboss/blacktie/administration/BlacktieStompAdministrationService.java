@@ -6,6 +6,7 @@ import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.ejb.ActivationConfigProperty;
@@ -225,6 +226,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		String string = new String(recv.getByteArray());
 		StringTokenizer st = new StringTokenizer(string, ",", false);
 		String operation = st.nextToken();
+		String serverName = st.nextToken();
 		String serviceName = st.nextToken();
 		byte[] success = new byte[1];
 		String server = null;
@@ -237,14 +239,17 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			xmlenv.parse("Environment.xml");
 
 			if ((k = serviceName.indexOf("ADMIN")) > 0) {
-				String svcadm = serviceName.substring(0, k) + "ADMIN";
-				server = (String) prop.get("blacktie." + svcadm + ".server");
+				server = serviceName.substring(0, k - 1);
+				Set<String> servers = (Set<String>) prop.get("blacktie.domain.servers");
+				if(servers.contains(server) == false) {
+					server = null;
+				}
 			} else {
 				server = (String) prop.get("blacktie." + serviceName
 						+ ".server");
 			}
 
-			if (server != null) {
+			if (server != null && server.equals(serverName)) {
 				log.trace("Service " + serviceName + " exists for server: "
 						+ server);
 				if (operation.equals("tpunadvertise")) {

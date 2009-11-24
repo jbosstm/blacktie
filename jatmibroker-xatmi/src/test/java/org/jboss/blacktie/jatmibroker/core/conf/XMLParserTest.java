@@ -45,6 +45,30 @@ public class XMLParserTest extends TestCase {
 		}
 	}
 
+	public void testAdminEnvironmentXML() throws Exception {
+		Properties prop = new Properties();
+		XMLEnvHandler handler = new XMLEnvHandler("", prop);
+		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
+		xmlenv.parse("AdminEnvironment.xml");
+
+		String server = "default";
+		assertFalse(server.equals(prop
+				.getProperty("blacktie.default_ADMIN_1.server")));
+		assertFalse(server.equals(prop
+				.getProperty("blacktie.foo_ADMIN_1.server")));
+	}
+
+	public void testSameService() throws Exception {
+		Properties prop = new Properties();
+		XMLEnvHandler handler = new XMLEnvHandler("", prop);
+		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
+		xmlenv.parse("SameEnvironment.xml");
+
+		String server = "default";
+		assertTrue(server.equals(prop
+				.getProperty("blacktie.BAR.server")));
+	}
+
 	public void testEnvironmentXML() throws Exception {
 		Properties prop = new Properties();
 		XMLEnvHandler handler = new XMLEnvHandler("", prop);

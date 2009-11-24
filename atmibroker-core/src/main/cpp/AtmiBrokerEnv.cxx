@@ -106,11 +106,22 @@ AtmiBrokerEnv::AtmiBrokerEnv() {
 	if (configuration == NULL) {
 		set_configuration(ACE_OS::getenv("BLACKTIE_CONFIGURATION"));
 	}
-	readenv();
+
+	try {
+		readenv();
+	} catch (...) {
+		destroy();
+		throw;
+	}
 }
 
 AtmiBrokerEnv::~AtmiBrokerEnv() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "destructor");
+	destroy();
+}
+
+void AtmiBrokerEnv::destroy() {
+	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "destroy");
 	for (std::vector<envVar_t>::iterator i = envVariableInfoSeq.begin(); i
 			!= envVariableInfoSeq.end(); i++) {
 		free((*i).name);

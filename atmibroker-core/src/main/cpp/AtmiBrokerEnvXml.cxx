@@ -158,6 +158,18 @@ static bool applicable_config(char *config, const char *attribute) {
 	return (rtn == 0);
 }
 
+static bool checkService(char* serverName, const char* serviceName) {
+	for(unsigned int i = 0; i < servers.size(); i ++) {
+		if(ACE_OS::strcmp(serverName, servers[i]->serverName) != 0) {
+			for(unsigned int j = 0; j < servers[i]->serviceVector.size(); j ++) {
+				if(ACE_OS::strcmp(serviceName, servers[i]->serviceVector[j].serviceName) == 0)
+					return true;
+			}
+		}
+	}
+	return false;
+}
+
 static void XMLCALL startElement
 (void *userData, const char *name, const char **atts) {
 	std::vector<envVar_t>* aEnvironmentStructPtr = (std::vector<envVar_t>*) userData;
@@ -427,9 +439,15 @@ static void XMLCALL startElement
 			for(int i = 0; atts[i]; i += 2) {
 				if(strcmp(atts[i], "name") == 0) {
 					if(ACE_OS::strstr(atts[i+1], adm)) {
-						LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "Can not define " << atts[i+1]);
+						LOG4CXX_WARN(loggerAtmiBrokerEnvXml, (char*) "Can not define " << atts[i+1]);
 						throw std::exception();
 					}
+
+					if(checkService(server, atts[i+1])) {
+						LOG4CXX_WARN(loggerAtmiBrokerEnvXml, (char*) "Can not define Same Service " << atts[i+1]);
+						throw std::exception();
+					}
+
 					service.serviceName = copy_value(atts[i+1]);
 					LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "set name: " << service.serviceName);
 				}
@@ -620,6 +638,7 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(
 		/* fstat failed */
 		LOG4CXX_ERROR(loggerAtmiBrokerEnvXml,
 				(char*) "loadfile: fstat failed on %s" << aDescriptorFileName);
+		return false;
 	}
 	if (s.st_size == 0) {
 		LOG4CXX_ERROR(loggerAtmiBrokerEnvXml,
@@ -636,6 +655,7 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(
 				loggerAtmiBrokerEnvXml,
 				(char*) "loadfile: Could not allocate enough memory to load file %s"
 						<< aDescriptorFileName);
+		return false;
 	}
 	for (unsigned int i = 0; i < sizeof(buf); i++)
 		*(buf + i) = '\0';
@@ -651,19 +671,28 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(
 	XML_SetUserData(parser, aEnvironmentStructPtr);
 	XML_SetElementHandler(parser, startElement, endElement);
 	XML_SetCharacterDataHandler(parser, characterData);
-	do {
-		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "reading file");
-		size_t len = fread(buf, 1, s.st_size, aDescriptorFile);
-		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "length is '%d'" << len);
-		done = len < sizeof(buf);
-		if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR) {
-			LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "%d at line %d"
-					<< XML_ErrorString(XML_GetErrorCode(parser))
-					<< XML_GetCurrentLineNumber(parser));
-			toReturn = false;
-			break;
-		}
-	} while (!done);
+	try {
+		do {
+			LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "reading file");
+			size_t len = fread(buf, 1, s.st_size, aDescriptorFile);
+			LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "length is '%d'" << len);
+			done = len < sizeof(buf);
+			if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR) {
+				LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "%d at line %d"
+						<< XML_ErrorString(XML_GetErrorCode(parser))
+						<< XML_GetCurrentLineNumber(parser));
+				toReturn = false;
+				break;
+			}
+		} while (!done);
+	} catch (...) {
+		free(buf);
+		XML_ParserFree(parser);
+		fflush(aDescriptorFile);
+		fclose(aDescriptorFile);
+		throw;
+	}
+
 	free(buf);
 	XML_ParserFree(parser);
 
@@ -680,4 +709,3 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(
 
 	return toReturn;
 }
-

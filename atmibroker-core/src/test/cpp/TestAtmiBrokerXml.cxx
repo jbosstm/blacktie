@@ -28,7 +28,6 @@
 #include "malloc.h"
 #include <string.h>
 void TestAtmiBrokerXml::setUp() {
-	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=xmltest");
 	AtmiBrokerEnv::discard_instance();
 
 	// Perform global set up
@@ -48,6 +47,7 @@ void TestAtmiBrokerXml::test_service() {
 	AtmiBrokerServiceXml xml;
 	ServiceInfo service;
 
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=xmltest");
 	xml.parseXmlDescriptor(&service, "XMLTESTSERVICE", "xmltest",
 			(char*) "xmltest");
 	CPPUNIT_ASSERT(service.poolSize == 5);
@@ -61,6 +61,7 @@ void TestAtmiBrokerXml::test_service() {
 
 void TestAtmiBrokerXml::test_env() {
 	userlogc((char*) "RUNNING");
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=xmltest");
 	AtmiBrokerEnv::set_configuration("xmltest");
 	char* value;
 	value = AtmiBrokerEnv::get_instance()->getenv((char*) "MYLIBTEST");
@@ -160,13 +161,27 @@ void TestAtmiBrokerXml::test_env() {
 }
 
 void TestAtmiBrokerXml::test_define_adminservice() {
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=wrongtest");
 
 	try {
-		AtmiBrokerEnv::set_configuration("wrongtest");
 		AtmiBrokerEnv::get_instance();
-		CPPUNIT_FAIL("CAN NOT DEFINE ADMIN SERVICE");
-	} catch (...) {
+	} catch (std::exception& e) {
 		userlogc((char*)"define admin services test ok");
-		AtmiBrokerEnv::discard_instance();
+		return;
 	}
+	
+	CPPUNIT_FAIL("CAN NOT DEFINE ADMIN SERVICE");
+}
+
+void TestAtmiBrokerXml::test_same_service() {
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=sametest");
+
+	try {
+		AtmiBrokerEnv::get_instance();
+	} catch (std::exception& e) {
+		userlogc((char*)"same services test ok");
+		return;
+	}
+
+	CPPUNIT_FAIL("CAN NOT DEFINE SAME SERVICE IN DIFFERENT SERVER");
 }

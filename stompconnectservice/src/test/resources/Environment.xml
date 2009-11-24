@@ -24,6 +24,11 @@
 				<SERVICE name='BTStompAdmin' />
 			</SERVICE_NAMES>
 		</SERVER>
+		<SERVER name="foo">
+			<SERVICE_NAMES>
+				<SERVICE name='FOOTest' />
+			</SERVICE_NAMES>
+		</SERVER>
 		<SERVER name='ejb-connector-tests'>
 			<SERVICE_NAMES>
 				<SERVICE name='EchoService' />
@@ -31,7 +36,7 @@
 				<SERVICE name='TxCreateService' />
 			</SERVICE_NAMES>
 		</SERVER>
-		<SERVER name="foo">
+		<SERVER name="default">
 			<SERVICE_NAMES>
 				<SERVICE name='PBF' />
 				<SERVICE name='BAR' />
@@ -61,18 +66,6 @@
 				<SERVICE name='CREDIT' />
 				<SERVICE name='INQUIRY' />
 				<SERVICE name='TestRbkOnly' />
-				<SERVICE name='foo_ADMIN' />
-				<SERVICE name='TTL' />
-			</SERVICE_NAMES>
-		</SERVER>
-		<SERVER name='foo'>
-			<SERVICE_NAMES>
-				<SERVICE name='foo_ADMIN_1' />
-			</SERVICE_NAMES>
-		</SERVER>
-		<SERVER name="default">
-			<SERVICE_NAMES>
-				<SERVICE name='default_ADMIN' />
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVER_NAMES>
