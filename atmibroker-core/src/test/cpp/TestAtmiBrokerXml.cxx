@@ -158,3 +158,15 @@ void TestAtmiBrokerXml::test_env() {
 	AtmiBrokerEnv::discard_instance();
 
 }
+
+void TestAtmiBrokerXml::test_define_adminservice() {
+
+	try {
+		AtmiBrokerEnv::set_configuration("wrongtest");
+		AtmiBrokerEnv::get_instance();
+		CPPUNIT_FAIL("CAN NOT DEFINE ADMIN SERVICE");
+	} catch (...) {
+		userlogc((char*)"define admin services test ok");
+		AtmiBrokerEnv::discard_instance();
+	}
+}

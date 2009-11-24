@@ -417,17 +417,16 @@ static void XMLCALL startElement
 		if(atts != 0) {
 			ServiceInfo service;
 			service.transportLib = NULL;
-			char adm[16];
-			int  len;
+			char  adm[16];
 			char* server;
 
-			memset(&service, 0, sizeof(ServiceInfo));
 			server = servers.back()->serverName;
-			len = ACE_OS::snprintf(adm, 16, "%s_ADMIN", server);
+			memset(&service, 0, sizeof(ServiceInfo));
+			ACE_OS::strcpy(adm, "_ADMIN");
 
 			for(int i = 0; atts[i]; i += 2) {
 				if(strcmp(atts[i], "name") == 0) {
-					if(ACE_OS::strncmp(atts[i+1], adm, len) == 0) {
+					if(ACE_OS::strstr(atts[i+1], adm)) {
 						LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "Can not define " << atts[i+1]);
 						throw std::exception();
 					}
