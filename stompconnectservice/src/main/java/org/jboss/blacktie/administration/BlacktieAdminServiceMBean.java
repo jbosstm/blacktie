@@ -102,6 +102,8 @@ public interface BlacktieAdminServiceMBean {
 	 * Describe the service status of server
 	 */
 	public org.w3c.dom.Element listServiceStatus(String serverName, String serviceName);
+	
+	public org.w3c.dom.Element listServiceStatusById(String serverName, int id, String serviceName);
 
 	/**
 	 * Advertise service

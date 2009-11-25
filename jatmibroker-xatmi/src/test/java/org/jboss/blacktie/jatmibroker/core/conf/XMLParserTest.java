@@ -49,24 +49,26 @@ public class XMLParserTest extends TestCase {
 		Properties prop = new Properties();
 		XMLEnvHandler handler = new XMLEnvHandler("", prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
-		xmlenv.parse("AdminEnvironment.xml");
-
-		String server = "default";
-		assertFalse(server.equals(prop
-				.getProperty("blacktie.default_ADMIN_1.server")));
-		assertFalse(server.equals(prop
-				.getProperty("blacktie.foo_ADMIN_1.server")));
+		
+		try {
+			xmlenv.parse("AdminEnvironment.xml");
+			fail("Should have thrown a exception");
+		} catch (ConfigurationException e) {
+			// THIS IS OK
+		}
 	}
 
 	public void testSameService() throws Exception {
 		Properties prop = new Properties();
 		XMLEnvHandler handler = new XMLEnvHandler("", prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
-		xmlenv.parse("SameEnvironment.xml");
-
-		String server = "default";
-		assertTrue(server.equals(prop
-				.getProperty("blacktie.BAR.server")));
+		
+		try {
+			xmlenv.parse("SameEnvironment.xml");
+			fail("Should have thrown a exception");
+		} catch (ConfigurationException e) {
+			// THIS IS OK
+		}
 	}
 
 	public void testEnvironmentXML() throws Exception {

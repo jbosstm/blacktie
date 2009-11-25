@@ -314,16 +314,16 @@ public class XMLEnvHandler extends DefaultHandler {
 						if (serviceName.indexOf("_ADMIN") >= 0) {
 							log.warn("service " + serviceName + " is admin service");
 							serviceName = null;
-							break;
+							throw new SAXException("Can not define ADMIN service");
 						}
 					}
 				}
 
 				if (serviceName != null) {
 					String key = "blacktie." + serviceName + ".server";
-					if(prop.get(key) != null) {
+					if(prop.get(key) != null && !((String)prop.get(key)).equals(serverName)) {
 						log.warn("service " + serviceName + " has already define in " + prop.get(key));
-						serviceName = null;
+						throw new SAXException("Can not define the same service");
 					} else {
 						prop.put(key, serverName);
 						prop.put("blacktie." + serviceName + ".transportLib", "hybrid");

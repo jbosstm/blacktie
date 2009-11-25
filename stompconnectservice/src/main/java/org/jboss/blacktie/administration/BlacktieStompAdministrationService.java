@@ -238,8 +238,8 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 			xmlenv.parse("Environment.xml");
 
-			if ((k = serviceName.indexOf("ADMIN")) > 0) {
-				server = serviceName.substring(0, k - 1);
+			if ((k = serviceName.indexOf("_ADMIN_")) > 0) {
+				server = serviceName.substring(0, k);
 				Set<String> servers = (Set<String>) prop.get("blacktie.domain.servers");
 				if(servers.contains(server) == false) {
 					server = null;

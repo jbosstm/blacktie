@@ -17,89 +17,67 @@
  */
 package org.jboss.blacktie.jatmibroker.admin;
 
-import java.util.Properties;
-
 import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.admin.AdministrationProxy;
-import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerClientXML;
+import org.jboss.blacktie.jatmibroker.RunServer;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
+import org.jboss.blacktie.jatmibroker.xatmi.Response;
+import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class AdministrationTest extends TestCase {
 	private static final Logger log = LogManager
 			.getLogger(AdministrationTest.class);
+	
+	private RunServer runServer = new RunServer();
+	private Connection connection;
+	private String service = "default_ADMIN_1";
+	
+	private String callAdmin(String command, char expect) throws Exception {
+		int sendlen = command.length() + 1;
+		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf.setByteArray(command.getBytes());
 
-	public void testTODO() {
-
+		Response buf = connection.tpcall(service, sendbuf, sendlen, 0);
+		assertTrue(buf != null);
+		byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
+		assertTrue(received[0] == expect);
+		
+		return new String(received, 1, received.length - 1);
+	}
+	
+	private void callBAR() throws ConnectionException {
+		log.info("call BAR");
+		connection.tpcall("BAR", null, 0, 0);
+	}
+	
+	public void setUp() throws Exception {
+		runServer.serverinit();
+		ConnectionFactory connectionFactory = ConnectionFactory
+		.getConnectionFactory();
+		connection = connectionFactory.getConnection();
+	}
+	
+	public void tearDown() {
+		runServer.serverdone();
+	}
+	
+	public void testGetServiceCounter() throws Exception {
+		int n = -1;
+		
+		callBAR();
+		n = Integer.parseInt(callAdmin("counter,BAR,", '1'));
+		assertTrue(n == 1);
 	}
 
-	public void xtest() throws Exception {
-		AtmiBrokerClientXML xml = new AtmiBrokerClientXML();
-		Properties properties = null;
-		properties = xml.getProperties();
-		String method = "BAR";
-
-		AdministrationProxy serverAdministration = new AdministrationProxy(
-				properties, "foo");
-
-		if (method.equals("server_init")) {
-			short aStatus = serverAdministration.server_init();
-			log.debug("status is " + aStatus);
-		} else if (method.equals("server_done")) {
-			serverAdministration.server_done();
-		} else if (method.equals("get_server_info")) {
-			AtmiBroker.ServerInfo aServerInfo = serverAdministration
-					.get_server_info();
-			log.debug("aServerInfo maxChannels " + aServerInfo.maxChannels);
-			log.debug("aServerInfo maxSuppliers " + aServerInfo.maxSuppliers);
-			log.debug("aServerInfo maxConsumers " + aServerInfo.maxConsumers);
-			log.debug("aServerInfo maxReplicas " + aServerInfo.maxReplicas);
-			log.debug("aServerInfo logLevel " + aServerInfo.logLevel);
-			log.debug("aServerInfo securityType " + aServerInfo.securityType);
-			log.debug("aServerInfo orbType " + aServerInfo.orbType);
-			log.debug("aServerInfo queueSpaceName "
-					+ aServerInfo.queueSpaceName);
-			for (int i = 0; i < aServerInfo.serviceNames.length; i++)
-				log.debug("aServerInfo serviceNames[" + i + "]"
-						+ aServerInfo.serviceNames[i]);
-		} else if (method.equals("get_all_service_info")) {
-			AtmiBroker.ServiceInfo[] aServiceInfo = serverAdministration
-					.get_all_service_info();
-			for (int i = 0; i < aServiceInfo.length; i++) {
-				log.debug("aServiceInfo[" + i + "] " + aServiceInfo[i]);
-				log.debug("aServiceInfo[" + i + "] serviceName "
-						+ aServiceInfo[i].serviceName);
-				log.debug("aServiceInfo[" + i + "] poolSize "
-						+ aServiceInfo[i].poolSize);
-				log.debug("aServiceInfo[" + i + "] securityType "
-						+ aServiceInfo[i].securityType);
-			}
-		} else if (method.equals("get_environment_variable_info")) {
-			AtmiBroker.EnvVariableInfo[] aEnvVarInfo = serverAdministration
-					.get_environment_variable_info();
-			for (int i = 0; i < aEnvVarInfo.length; i++)
-				log.debug("aEnvVarInfo[" + i + "] name " + aEnvVarInfo[i].name
-						+ " value " + aEnvVarInfo[i].value);
-		} else if (method.equals("set_server_descriptor")) {
-			String xml_descriptor = "<SERVER_INFO></SERVER_INFO>";
-			serverAdministration.set_server_descriptor(xml_descriptor);
-		} else if (method.equals("set_service_descriptor")) {
-			String aServiceName = "Bar";
-			String xml_descriptor = "<SERVICE_INFO></SERVICE_INFO>";
-			serverAdministration.set_service_descriptor(aServiceName,
-					xml_descriptor);
-		} else if (method.equals("set_environment_descriptor")) {
-			String xml_descriptor = "<ENVIRONMENT_INFO></ENVIRONMENT_INFO>";
-			serverAdministration.set_environment_descriptor(xml_descriptor);
-		} else if (method.equals("stop_service")) {
-			String aServiceName = "BAR";
-			serverAdministration.stop_service(aServiceName);
-		} else if (method.equals("start_service")) {
-			String aServiceName = "BAR";
-			serverAdministration.start_service(aServiceName);
-		}
-
-		serverAdministration.close();
+	public void testGetServiceStatus() throws Exception {
+		String status = callAdmin("status", '1');
+		log.info("status is " + status);
+		
+		status = callAdmin("status,BAR,", '1');
+		log.info("status is " + status);
 	}
 }

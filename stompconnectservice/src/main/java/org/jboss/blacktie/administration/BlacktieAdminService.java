@@ -1,6 +1,7 @@
 package org.jboss.blacktie.administration;
 
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,6 +18,12 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -64,6 +71,20 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 		DocumentBuilder parser = factory.newDocumentBuilder();
 		Document doc = parser.parse(new InputSource(sreader));
 		return doc.getDocumentElement();
+	}
+	
+	private String elementToString(Element element) throws Exception {
+			// Set up the output transformer
+			TransformerFactory transfac = TransformerFactory.newInstance();
+			Transformer trans = transfac.newTransformer();
+			trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+			trans.setOutputProperty(OutputKeys.INDENT, "yes");
+
+			StringWriter sw = new StringWriter();
+			StreamResult sr = new StreamResult(sw);
+			DOMSource source = new DOMSource(element);
+			trans.transform(source, sr);
+			return sw.toString();					
 	}
 
 	private Response callAdminService(String serverName, int id, String command)
@@ -231,7 +252,7 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 					for(int i = 0; i < ids.size(); i++) {
 						status += "<instance>";
 						status += "<id>" + ids.get(i) + "</id>";
-						status += "<status>0</status>";
+						status += "<status>1</status>";
 						status += "</instance>";
 					}
 					status += "</instances>";
@@ -248,39 +269,31 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 	}
 
 	public Element listServiceStatus(String serverName, String serviceName) {
-		String command = "status";
-		Response buf = null;
-		String status = null;
+		String  servers;
+		Element status = null;
 		List<Integer> ids = listRunningInstanceIds(serverName);
-		int id = 0;
 		
 		if(ids.size() == 0) {
-			log.warn(serverName + " is not running");
 			return null;
 		}
 		
 		try {
-			id = ids.get(0);
-			if(serviceName != null) {
-				command = command + "," + serviceName + ",";
-			}
-			
-			buf = callAdminService(serverName, id, command);
-			if (buf != null) {
-				byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
-				if (received[0] == '1') {
-					status = new String(received, 1, received.length - 1);
-					log.info("status is " + status);
-					return stringToElement(status);
+			servers = "<servers>";					
+			for(int i = 0; i < ids.size(); i ++) {
+				Element result = listServiceStatusById(serverName, ids.get(i), serviceName);
+				if(result != null) {
+					servers += "<instance><id>" + ids.get(i) + "</id>";
+					servers += elementToString(result);
+					servers += "</instance>";
 				}
 			}
-		} catch (ConnectionException e) {
-			log.error("call server " + serverName + " id " + id
-					+ " failed with " + e.getTperrno());
+			servers += "</servers>";
+			status = stringToElement(servers);
 		} catch (Exception e) {
-			log.error("response " + status + " error with " + e);
+			log.error(e);
 		}
-		return null;
+		
+		return  status;
 	}
 	
 	public Boolean advertise(String serverName, String serviceName) {
@@ -375,5 +388,34 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 	public Boolean reloadServerById(String serverName, int id) {
 		return false;
 		
+	}
+
+	public Element listServiceStatusById(String serverName, int id,
+			String serviceName) {
+		String command = "status";
+		Response buf = null;
+		String status = null;
+		
+		try {
+			if(serviceName != null) {
+				command = command + "," + serviceName + ",";
+			}
+			
+			buf = callAdminService(serverName, id, command);
+			if (buf != null) {
+				byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
+				if (received[0] == '1') {
+					status = new String(received, 1, received.length - 1);
+					log.info("status is " + status);
+					return stringToElement(status);
+				}
+			}
+		} catch (ConnectionException e) {
+			log.error("call server " + serverName + " id " + id
+					+ " failed with " + e.getTperrno());
+		} catch (Exception e) {
+			log.error("response " + status + " error with " + e);
+		}
+		return null;
 	}
 }

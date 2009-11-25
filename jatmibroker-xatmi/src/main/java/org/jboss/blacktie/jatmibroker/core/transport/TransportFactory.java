@@ -33,14 +33,10 @@ public abstract class TransportFactory {
 			Properties properties) throws ConfigurationException,
 			ConnectionException {
 		log.debug("Loading transport for: " + serviceName);
-
-		int k;
 		String transportLibrary;
 
-		if ((k = serviceName.indexOf("ADMIN")) > 0) {
-			String svcadm = serviceName.substring(0, k) + "ADMIN";
-			transportLibrary = (String) properties.get("blacktie." + svcadm
-					+ ".transportLib");
+		if (serviceName.indexOf("_ADMIN_") > 0) {
+			transportLibrary = "hybrid";
 		} else {
 			transportLibrary = (String) properties.get("blacktie."
 					+ serviceName + ".transportLib");

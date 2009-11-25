@@ -229,12 +229,19 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 			}
 		} else if (name.equals("listServiceStatus")) {
 			try {
-				Element status = (Element)beanServerConnection.invoke(blacktieAdmin, 
-						"listServiceStatus",
-						new Object[] { serverName, serviceName}, 
-						new String[] {"java.lang.String", "java.lang.String"});
-				
-				
+				Element status;
+				if(id == 0) {
+					status = (Element)beanServerConnection.invoke(blacktieAdmin, 
+							"listServiceStatus",
+							new Object[] { serverName, serviceName}, 
+							new String[] {"java.lang.String", "java.lang.String"});
+				} else {
+					status = (Element)beanServerConnection.invoke(blacktieAdmin, 
+							"listServiceStatusById",
+							new Object[] { serverName, id, serviceName}, 
+							new String[] {"java.lang.String", "int", "java.lang.String"});
+				}
+					
 				if (status != null) {
 					try {
 						// Set up the output transformer
@@ -292,7 +299,7 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 								new String[] {"java.lang.String", "java.lang.String"});
 					} else {
 						counter = (Long)beanServerConnection.invoke(blacktieAdmin, 
-								"getServiceIdCounter",
+								"getServiceCounterById",
 								new Object[] { serverName, id, serviceName}, 
 								new String[] {"java.lang.String", "int", "java.lang.String"});
 					}
