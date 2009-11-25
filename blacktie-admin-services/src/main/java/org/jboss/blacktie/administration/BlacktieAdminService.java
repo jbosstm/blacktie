@@ -19,18 +19,10 @@
 package org.jboss.blacktie.administration;
 
 import java.util.List;
-import java.util.Properties;
-
-import javax.management.MBeanServerConnection;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.admin.AdministrationProxy;
-import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
-import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
+import org.jboss.blacktie.administration.core.AdministrationProxy;
 import org.w3c.dom.Element;
 
 /**
