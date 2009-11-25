@@ -86,8 +86,8 @@
 			</excludes>
 		</fileSet>
 		<fileSet>
-			<directory>../stompconnectservice</directory>
-			<outputDirectory>stompconnectservice</outputDirectory>
+			<directory>../blacktie-admin-services</directory>
+			<outputDirectory>blacktie-admin-services</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<excludes>
 				<exclude>target/**</exclude>

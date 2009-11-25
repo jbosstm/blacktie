@@ -47,11 +47,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>stompconnectservice</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>dummy-rm</artifactId>
 			<scope>test</scope>
 		</dependency>

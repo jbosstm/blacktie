@@ -185,17 +185,17 @@
 			</excludes>
 		</fileSet>
 		<fileSet>
-			<directory>../stompconnectservice/target/
+			<directory>../blacktie-admin-services/target/
 			</directory>
-			<outputDirectory>stompconnectservice</outputDirectory>
+			<outputDirectory>blacktie-admin-services</outputDirectory>
 			<includes>
-				<include>stompconnectservice-*-with-dependencies.jar</include>
+				<include>blacktie-admin-services-*-with-dependencies.jar</include>
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../stompconnectservice/target/test-classes
+			<directory>../blacktie-admin-services/target/test-classes
 			</directory>
-			<outputDirectory>stompconnectservice</outputDirectory>
+			<outputDirectory>blacktie-admin-services</outputDirectory>
 			<includes>
 				<include>Environment.xml</include>
 			</includes>
@@ -203,7 +203,7 @@
 		<fileSet>
 			<directory>../blacktie-rhq-plugin/target/
 			</directory>
-			<outputDirectory>stompconnectservice</outputDirectory>
+			<outputDirectory>blacktie-admin-services</outputDirectory>
 			<includes>
 				<include>blacktie-rhq-plugin-*.jar</include>
 			</includes>

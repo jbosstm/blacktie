@@ -136,7 +136,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.blacktie</groupId>
-				<artifactId>stompconnectservice</artifactId>
+				<artifactId>blacktie-admin-services</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
