@@ -71,6 +71,11 @@ public class QueueReaper implements Runnable {
 			this.thread.interrupt();
 		}
 		this.run = false;
+		try {
+			this.thread.join();
+		} catch (InterruptedException e) {
+			log.warn("Could not join with reaper: " + e.getMessage());
+		}
 	}
 
 	public boolean isRunning() {

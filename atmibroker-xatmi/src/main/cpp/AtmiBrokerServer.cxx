@@ -115,7 +115,7 @@ int parsecmdline(int argc, char** argv) {
 	}
 
 	if (isSetServerId == false) {
-		fprintf(stderr, "you must specify a server id with -i\n");
+		fprintf(stderr, "you must specify a server id with -i greater than 0\n");
 		r = -1;
 	}
 

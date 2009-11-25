@@ -116,7 +116,7 @@
 		<!-- Define any third-party dependencies your plugin has here. -->
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>stompconnectservice</artifactId>
+			<artifactId>jatmibroker-xatmi</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>jboss</groupId>
