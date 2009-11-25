@@ -25,8 +25,8 @@
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>stompconnectservice</artifactId>
-	<name>Blacktie Stomp Administration</name>
+	<artifactId>blacktie-admin</artifactId>
+	<name>Blacktie Administration Services</name>
 	<packaging>jar</packaging>
 
 	<build>
