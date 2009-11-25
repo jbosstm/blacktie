@@ -1,5 +1,3 @@
-package org.jboss.blacktie.administration;
-
 /*
  * JBoss, Home of Professional Open Source
  * Copyright 2008, Red Hat, Inc., and others contributors as indicated
@@ -17,6 +15,7 @@ package org.jboss.blacktie.administration;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+package org.jboss.blacktie.administration;
 
 /**
  * This is the Admin service MBean

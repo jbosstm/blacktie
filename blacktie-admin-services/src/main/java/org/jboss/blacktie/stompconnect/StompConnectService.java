@@ -1,9 +1,3 @@
-package org.jboss.blacktie.stompconnect;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.codehaus.stomp.jms.StompConnect;
-
 /*
  * JBoss, Home of Professional Open Source
  * Copyright 2008, Red Hat, Inc., and others contributors as indicated
@@ -21,6 +15,11 @@ import org.codehaus.stomp.jms.StompConnect;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+package org.jboss.blacktie.stompconnect;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.codehaus.stomp.jms.StompConnect;
 
 public class StompConnectService implements StompConnectServiceMBean {
 	private static final Logger log = LogManager

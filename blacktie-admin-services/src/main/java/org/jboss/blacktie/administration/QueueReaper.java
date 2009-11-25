@@ -1,19 +1,3 @@
-package org.jboss.blacktie.administration;
-
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Properties;
-
-import javax.jms.Destination;
-import javax.jms.Queue;
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
-import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
-
 /*
  * JBoss, Home of Professional Open Source
  * Copyright 2008, Red Hat, Inc., and others contributors as indicated
@@ -31,6 +15,22 @@ import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+package org.jboss.blacktie.administration;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Properties;
+
+import javax.jms.Destination;
+import javax.jms.Queue;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
+import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
+
 
 public class QueueReaper implements Runnable {
 	/** logger */
