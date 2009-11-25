@@ -18,7 +18,7 @@
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>jboss</DOMAIN>
-	<SERVER_NAMES>
+	<SERVERS>
 		<SERVER name='ejb-connector-tests'>
 			<SERVICE_NAMES>
 				<SERVICE name='EchoService' />
@@ -26,7 +26,7 @@
 				<SERVICE name='TxCreateService' />
 			</SERVICE_NAMES>
 		</SERVER>
-	</SERVER_NAMES>
+	</SERVERS>
 	<ORB
 		OPT="-ORBInitRef NameService=corbaloc::localhost:3528/NameService"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />

@@ -61,7 +61,7 @@
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="DOMAIN" type="xsd:string" />
-				<xsd:element name="SERVER_NAMES" minOccurs="0">
+				<xsd:element name="SERVERS" minOccurs="0">
 					<xsd:complexType>
 						<xsd:sequence>
 							<xsd:element name="SERVER" minOccurs="1" maxOccurs="unbounded">

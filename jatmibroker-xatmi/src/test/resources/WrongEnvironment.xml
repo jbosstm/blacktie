@@ -18,7 +18,7 @@
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
-	<SERVER_NAMESTOM>
+	<SERVERSTOM>
 		<SERVERTOM>
 			<SERVICE_NAMESTOM>
 				<SERVICETOM name='TEST' />
@@ -30,5 +30,5 @@
 				<SERVICETOM name='ECHO' />
 			</SERVICE_NAMESTOM>
 		</SERVERTOM>
-	</SERVER_NAMESTOM>
+	</SERVERSTOM>
 </ENVIRONMENT>

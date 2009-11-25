@@ -19,7 +19,7 @@ Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 	xmlns="http://www.jboss.org/blacktie">
 	<ENVIRONMENT_DESCRIPTION>
 		<DOMAIN>fooapp</DOMAIN>
-		<SERVER_NAMESTOM>
+		<SERVERSTOM>
 			<SERVERTOM>
 				<SERVICE_NAMESTOM>
 					<SERVICETOM name='TEST' />
@@ -31,6 +31,6 @@ Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 					<SERVICETOM name='ECHO' />
 				</SERVICE_NAMESTOM>
 			</SERVERTOM>
-		</SERVER_NAMESTOM>
+		</SERVERSTOM>
 	</ENVIRONMENT_DESCRIPTION>
 </ENVIRONMENT>

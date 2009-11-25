@@ -18,14 +18,14 @@
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
-	<SERVER_NAMES>
+	<SERVERS>
 		<SERVER name='foo'>
 			<SERVICE_NAMES>
 				<SERVICE name='foo_ADMIN_1' />
 				<SERVICE name='default_ADMIN_1' />
 			</SERVICE_NAMES>
 		</SERVER>
-	</SERVER_NAMES>
+	</SERVERS>
 	<XA_RESOURCES>
 		<XA_RESOURCE configuration="linux">
 			<XA_RESOURCE_MGR_ID>100</XA_RESOURCE_MGR_ID>

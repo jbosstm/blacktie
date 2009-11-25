@@ -18,7 +18,7 @@
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
-	<SERVER_NAMES>
+	<SERVERS>
 		<SERVER name='default'>
 			<SERVICE_NAMES>
 				<SERVICE name='TEST' />
@@ -30,7 +30,7 @@
 				<SERVICE name='ECHO' />
 			</SERVICE_NAMES>
 		</SERVER>
-	</SERVER_NAMES>
+	</SERVERS>
 	<XA_RESOURCES>
 		<XA_RESOURCE configuration="linux">
 			<XA_RESOURCE_MGR_ID>100</XA_RESOURCE_MGR_ID>

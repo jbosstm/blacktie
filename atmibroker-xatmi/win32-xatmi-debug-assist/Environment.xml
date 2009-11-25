@@ -18,7 +18,7 @@
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
-	<SERVER_NAMES>
+	<SERVERS>
 		<SERVER name="jboss">
 			<SERVICE_NAMES>
 				<SERVICE name='BTStompAdmin' />
@@ -53,7 +53,7 @@
 				<SERVICE name='TestRbkOnly' />
 			</SERVICE_NAMES>
 		</SERVER>
-	</SERVER_NAMES>
+	</SERVERS>
 	<ORB
 		OPT="-ORBInitRef NameService=corbaloc::${JBOSSAS_IP_ADDR}:3528/NameService"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />

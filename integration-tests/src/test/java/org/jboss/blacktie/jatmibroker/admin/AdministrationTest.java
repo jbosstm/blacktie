@@ -65,6 +65,31 @@ public class AdministrationTest extends TestCase {
 		runServer.serverdone();
 	}
 	
+	public void testShutdown() throws Exception {
+		callAdmin("serverdone", '1');
+	}
+	
+	public void testAdvertiseAndUnadvertise() throws Exception {
+		callBAR();
+		callAdmin("unadvertise,BAR", '1');
+		try {
+			callBAR();
+			fail("Should fail when unadvertise BAR");
+		} catch (ConnectionException e) {
+			
+		}
+		callAdmin("advertise,BAR", '1');
+		callBAR();
+		
+		// can not (un)advertise ADMIN service
+		callAdmin("advertise,default_ADMIN_1", '0');
+		callAdmin("unadvertise,default_ADMIN_1", '0');
+		
+		// can not (un)advertise UNKNOW service
+		callAdmin("advertise,UNKNOW", '0');
+		callAdmin("unadvertise,UNKNOW", '0');
+	}
+	
 	public void testGetServiceCounter() throws Exception {
 		int n = -1;
 		
