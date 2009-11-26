@@ -93,7 +93,7 @@ public class ServerDiscoveryComponent implements ResourceDiscoveryComponent {
 		try {
 			XMLEnvHandler handler = new XMLEnvHandler("", prop);
 			XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
-			xmlenv.parse("Environment.xml");
+			xmlenv.parse("Environment.xml", true);
 
 			Set<String> servers = (Set<String>) prop.get("blacktie.domain.servers");
 			for (String server : servers) {

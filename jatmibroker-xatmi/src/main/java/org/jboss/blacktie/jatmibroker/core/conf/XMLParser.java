@@ -107,7 +107,8 @@ public class XMLParser {
 	 * @param envXML
 	 *            - File
 	 */
-	public boolean parse(String env) throws ConfigurationException {
+	public void parse(String env, boolean throwException)
+			throws ConfigurationException {
 		InputStream resource = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream(env);
 		if (resource != null) {
@@ -115,12 +116,13 @@ public class XMLParser {
 				schema.newValidator().validate(new StreamSource(resource));
 				saxParser.parse(Thread.currentThread().getContextClassLoader()
 						.getResourceAsStream(env), handler);
-				return true;
 			} catch (Throwable t) {
 				throw new ConfigurationException("Errors parse : " + env
 						+ " due to: " + t.getMessage(), t);
 			}
+		} else if (throwException) {
+			throw new ConfigurationException(
+					"Could not load the configuration file: " + env);
 		}
-		return false;
 	}
 }

@@ -71,7 +71,7 @@ public class AdministrationProxy {
 		log.info("debug Administration Proxy");
 		XMLEnvHandler handler = new XMLEnvHandler("", prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
-		xmlenv.parse("Environment.xml");
+		xmlenv.parse("Environment.xml", true);
 		servers = (Set<String>) prop.get("blacktie.domain.servers");
 		ConnectionFactory cf = ConnectionFactory.getConnectionFactory();
 		connection = cf.getConnection();

@@ -66,7 +66,7 @@ public class AtmiBrokerServiceXML {
 		XMLServiceHandler handler = new XMLServiceHandler(serverName,
 				serviceName, prop);
 		XMLParser xmlservice = new XMLParser(handler, "Service.xsd");
-		xmlservice.parse(serviceXML);
+		xmlservice.parse(serviceXML, false);
 
 		return prop;
 	}
