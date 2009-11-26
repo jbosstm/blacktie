@@ -106,17 +106,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>atmibroker-xatmi</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>atmibroker-hybrid</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>jatmibroker-xatmi</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.blacktie</groupId>
+			<artifactId>blacktie-admin-services</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -237,6 +232,16 @@
 			<scope>test</scope>
 		</dependency>
 		<!-- END JMS -->
+		<dependency>
+			<groupId>org.jboss.blacktie</groupId>
+			<artifactId>atmibroker-xatmi</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.blacktie</groupId>
+			<artifactId>atmibroker-hybrid</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<properties>
 		<test.output.type>shared</test.output.type>

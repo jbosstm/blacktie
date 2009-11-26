@@ -25,6 +25,11 @@
 				<SERVICE name='BTDomainAdmin' />
 			</SERVICE_NAMES>
 		</SERVER>
+		<SERVER name="foo">
+			<SERVICE_NAMES>
+				<SERVICE name='FOOTest' />
+			</SERVICE_NAMES>
+		</SERVER>
 		<SERVER name='default'>
 			<SERVICE_NAMES>
 				<SERVICE name='PBF' />
@@ -62,6 +67,10 @@
 		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10"
 		NAMING_URL="jnp://localhost:1099" />
 	<ENV_VARIABLES>
+		<ENV_VARIABLE>
+			<NAME>JMXURL</NAME>
+			<VALUE>service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector</VALUE>
+		</ENV_VARIABLE>
 		<ENV_VARIABLE>
 			<NAME>LOG4CXXCONFIG</NAME>
 			<VALUE>log4cxx.properties</VALUE>

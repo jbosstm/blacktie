@@ -40,33 +40,33 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 	}
 
 	public void test() throws ConnectionException {
-		processCommand("tpadvertise,BAR,", 1);
+		processCommand("tpadvertise,foo,FOOTest,", 1);
 		try {
-			connection.tpacall("BAR", null, 0, Connection.TPNOREPLY);
+			connection.tpacall("FOOTest", null, 0, Connection.TPNOREPLY);
 		} catch (ConnectionException e) {
 			fail("Was not able to send the request : " + e.getMessage());
 		}
 
-		processCommand("tpunadvertise,BAR,", 1);
+		processCommand("tpunadvertise,foo,FOOTest,", 1);
 		try {
-			connection.tpcall("BAR", null, 0, Connection.TPNOREPLY);
+			connection.tpcall("FOOTest", null, 0, Connection.TPNOREPLY);
 			fail("Was able to send the request");
 		} catch (ConnectionException e) {
 			// EXPECTED
 		}
 
-		processCommand("tpadvertise,BAR,", 1);
+		processCommand("tpadvertise,foo,FOOTest,", 1);
 
 		try {
-			connection.tpacall("BAR", null, 0, Connection.TPNOREPLY);
+			connection.tpacall("FOOTest", null, 0, Connection.TPNOREPLY);
 		} catch (ConnectionException e) {
 			fail("Was not able to send the request : " + e.getMessage());
 		}
-		processCommand("tpunadvertise,BAR,", 1);
+		processCommand("tpunadvertise,foo,FOOTest,", 1);
 	}
 
 	public void testUnknownService() throws ConnectionException {
-		processCommand("tpadvertise,UNKNOWN_SERVICE,", 0);
+		processCommand("tpadvertise,foo,UNKNOWN_SERVICE,", 0);
 	}
 
 	private void processCommand(String command, int expectation)
