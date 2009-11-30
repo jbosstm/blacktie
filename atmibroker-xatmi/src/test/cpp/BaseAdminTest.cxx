@@ -60,10 +60,18 @@ int BaseAdminTest::callBAR(int r) {
 	long  sendlen = strlen((char*)"test") + 1;
 	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
 	strcpy(sendbuf, (char*) "test");
+	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
+	long  recvlen = 1;
 
-	int cd = ::tpacall((char*) "BAR", (char *) sendbuf, sendlen, TPNOREPLY);
+
+	int cd = ::tpcall((char*) "BAR", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, 0);
 	CPPUNIT_ASSERT(r == tperrno);
+	if(tperrno == 0) {
+		CPPUNIT_ASSERT(recvbuf[0] == '1');
+	}
+
 	tpfree(sendbuf);
+	tpfree(recvbuf);
 
 	return cd;
 }

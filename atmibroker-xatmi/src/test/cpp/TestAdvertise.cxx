@@ -52,7 +52,7 @@ void TestAdvertise::testAdvertise() {
 	cd = callADMIN((char*)"unadvertise,BAR,", '1', 0, NULL);
 	CPPUNIT_ASSERT(cd == 0);
 
-	userlogc((char*) "tpacall BAR after unadvertise");
+	userlogc((char*) "tpcall BAR after unadvertise");
 	cd = callBAR(TPENOENT);
 	CPPUNIT_ASSERT(cd != 0);
 
@@ -60,7 +60,7 @@ void TestAdvertise::testAdvertise() {
 	cd = callADMIN((char*)"advertise,BAR,", '1', 0, NULL);
 	CPPUNIT_ASSERT(cd == 0);
 
-	userlogc((char*) "tpacall BAR after advertise");
+	userlogc((char*) "tpcall BAR after advertise");
 	cd = callBAR(0);
 	CPPUNIT_ASSERT(cd == 0);
 }

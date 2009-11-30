@@ -58,3 +58,32 @@ void TestAdmin::testServerdone() {
 	cd = callADMIN((char*)"serverdone", '1', 0, NULL);
 	CPPUNIT_ASSERT(cd == 0);
 }
+
+void TestAdmin::testServerPauseAndResume() {
+	int cd;
+
+	CPPUNIT_ASSERT(callBAR(0) == 0);
+	userlogc((char*)"call BAR OK");
+
+	cd = callADMIN((char*)"pause", '1', 0, NULL);
+	CPPUNIT_ASSERT(cd == 0);
+	userlogc((char*)"pause server OK");
+
+	userlogc((char*)"unadvertise on pause server should OK");
+	cd = callADMIN((char*)"unadvertise,BAR,", '1', 0, NULL);
+	CPPUNIT_ASSERT(cd == 0);
+
+	userlogc((char*)"advertise on pause server should OK, but service is still pause");
+	cd = callADMIN((char*)"advertise,BAR,", '1', 0, NULL);
+	CPPUNIT_ASSERT(cd == 0);
+
+	userlogc((char*)"call BAR should time out after 20 seconds");
+	CPPUNIT_ASSERT(callBAR(TPETIME) == -1);
+
+	cd = callADMIN((char*)"resume", '1', 0, NULL);
+	CPPUNIT_ASSERT(cd == 0);
+	userlogc((char*)"resume server OK");
+
+	CPPUNIT_ASSERT(callBAR(0) == 0);
+	userlogc((char*)"call BAR OK");
+}

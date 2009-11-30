@@ -167,8 +167,6 @@ int serverinit(int argc, char** argv) {
 				toReturn = -1;
 				setSpecific(TPE_KEY, TSS_TPESYSTEM);
 			} else {
-				ptrServer->advertiseAtBootime();
-
 				// make ADMIN service mandatory for server
 				char adm[XATMI_SERVICE_NAME_LENGTH + 1];
 				ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server, serverid);
@@ -179,6 +177,8 @@ int serverinit(int argc, char** argv) {
 							(char*) "Maybe the same server id running");
 					throw std::exception();
 				}
+
+				ptrServer->advertiseAtBootime();
 
 				userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
 						(char*) "Server %d Running", serverid);
@@ -257,6 +257,22 @@ int advertiseByAdmin(char* name) {
 	return -1;
 }
 
+int pauseServerByAdmin() {
+	if (ptrServer) {
+		return ptrServer->pause();
+	}
+
+	return -1;
+}
+
+int resumeServerByAdmin() {
+	if (ptrServer) {
+		return ptrServer->resume();
+	}
+
+	return -1;
+}
+
 // AtmiBrokerServer constructor
 //
 // Note: since we use virtual inheritance, we must include an
@@ -267,6 +283,7 @@ AtmiBrokerServer::AtmiBrokerServer() {
 	try {
 		finish = new SynchronizableObject();
 		serverName = server;
+		isPause = false;
 		unsigned int i;
 
 		serverInfo.serverName = NULL;
@@ -274,7 +291,7 @@ AtmiBrokerServer::AtmiBrokerServer() {
 		for (i = 0; i < servers.size(); i++) {
 			if (strcmp(servers[i]->serverName, serverName) == 0) {
 				serverInfo.serverName = strdup(servers[i]->serverName);
-				// add server ADMIN
+				// add service ADMIN
 				char adm[XATMI_SERVICE_NAME_LENGTH + 1];
 				ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server, serverid);
 				ServiceInfo service;
@@ -445,6 +462,54 @@ void AtmiBrokerServer::shutdown() {
 	finish->unlock();
 }
 
+int AtmiBrokerServer::pause() {
+	if (!isPause) {
+		char adm[XATMI_SERVICE_NAME_LENGTH + 1];
+		ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server, serverid);
+		for (std::vector<ServiceData>::iterator i = serviceData.begin(); i
+				!= serviceData.end(); i++) {
+			if(ACE_OS::strcmp((*i).serviceInfo->serviceName, adm) != 0) {
+				LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "pausing service"
+						<< (*i).serviceInfo->serviceName);
+				for (std::vector<ServiceDispatcher*>::iterator j =
+						(*i).dispatchers.begin(); j != (*i).dispatchers.end(); j++) {
+					ServiceDispatcher* dispatcher = (*j);
+					if (dispatcher->pause() != 0) {
+						LOG4CXX_WARN(loggerAtmiBrokerServer, (char*) "pause service dispatcher "
+								<< dispatcher << " failed");
+					}
+				}
+			}
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "pause service"
+					<< (*i).serviceInfo->serviceName << " done");
+		}	
+		isPause = true;
+	}
+	return 0;
+}
+
+int AtmiBrokerServer::resume() {
+	if(isPause) {
+		for (std::vector<ServiceData>::iterator i = serviceData.begin(); i
+				!= serviceData.end(); i++) {
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "resuming service"
+					<< (*i).serviceInfo->serviceName);
+			for (std::vector<ServiceDispatcher*>::iterator j =
+					(*i).dispatchers.begin(); j != (*i).dispatchers.end(); j++) {
+				ServiceDispatcher* dispatcher = (*j);
+				if (dispatcher->resume() != 0) {
+					LOG4CXX_WARN(loggerAtmiBrokerServer, (char*) "resume service dispatcher "
+							<< dispatcher << " failed");
+				}
+			}
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "resume service"
+					<< (*i).serviceInfo->serviceName << " done");
+		}	
+		isPause = false;
+	}
+	return 0;
+}
+
 char *
 AtmiBrokerServer::getServerName() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "getServerName");
@@ -500,6 +565,7 @@ void AtmiBrokerServer::updateServiceStatus(ServiceInfo* service, SVCFUNC func,
 
 	if (found == false) {
 		ServiceStatus aServiceStatus;
+		memset(&aServiceStatus, 0, sizeof(aServiceStatus));
 		ACE_OS::strncpy(aServiceStatus.name, service->serviceName,
 				XATMI_SERVICE_NAME_LENGTH);
 		aServiceStatus.func = func;
@@ -779,7 +845,7 @@ void AtmiBrokerServer::addDestination(Destination* destination, void(*func)(
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "createPool");
 	for (int i = 0; i < entry.serviceInfo->poolSize; i++) {
 		ServiceDispatcher* dispatcher = new ServiceDispatcher(destination,
-				connection, destination->getName(), func);
+				connection, destination->getName(), func, isPause);
 		if (dispatcher->activate(THR_NEW_LWP | THR_JOINABLE, 1, 0,
 				ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
 			delete dispatcher;
@@ -861,7 +927,7 @@ Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
 void AtmiBrokerServer::server_done() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_done()");
 
-	for (unsigned int i = 0; i < serverInfo.serviceVector.size(); i++) {
+	for (int i = serverInfo.serviceVector.size() - 1; i >= 0; i--) {
 		char* svcname = (char*) serverInfo.serviceVector[i].serviceName;
 		if (isAdvertised(svcname)) {
 			unadvertiseService(svcname);

@@ -83,6 +83,16 @@ void ADMIN(TPSVCINFO* svcinfo) {
 		} else {
 			LOG4CXX_WARN(loggerAtmiBrokerAdmin, (char*) "get counter FAIL");
 		}
+	} else if(strncmp(req, "pause", 5) == 0) {
+		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get pause command");
+		if(pauseServerByAdmin() == 0) {
+			toReturn[0] = '1';
+		}
+	} else if(strncmp(req, "resume", 6) == 0) {
+		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get resume command");
+		if(resumeServerByAdmin() == 0) {
+			toReturn[0] = '1';
+		}
 	}
 
 	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerAdmin,

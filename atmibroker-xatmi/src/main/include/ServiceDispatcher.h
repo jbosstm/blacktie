@@ -28,9 +28,11 @@
 
 class ServiceDispatcher: public ACE_Task_Base {
 public:
-	ServiceDispatcher(Destination* destination, Connection* connection, const char *serviceName, void(*func)(TPSVCINFO *));
+	ServiceDispatcher(Destination* destination, Connection* connection, const char *serviceName, void(*func)(TPSVCINFO *), bool isPause);
 	~ServiceDispatcher();
 	int svc();
+	int pause();
+	int resume();
 	void shutdown();
 	long getCounter();
 private:
@@ -42,6 +44,7 @@ private:
 	void (*func)(TPSVCINFO *);
 	Session* session;
 	bool stop;
+	bool isPause;
 	long timeout;
 	long counter;
 };

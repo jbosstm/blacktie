@@ -62,6 +62,8 @@ public:
 	void server_done();
 	int  block();
 	void shutdown();
+	int  pause();
+	int  resume();
 
 private:
 	void (*getServiceMethod(const char * aServiceName))(TPSVCINFO *);
@@ -77,6 +79,7 @@ private:
 	char* serverName;
 	ServerInfo serverInfo;
 	SynchronizableObject* finish;
+	bool isPause;
 
 	// The following are not implemented
 	//

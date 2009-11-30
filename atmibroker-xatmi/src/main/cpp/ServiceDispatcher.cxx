@@ -28,11 +28,12 @@ log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger(
 
 ServiceDispatcher::ServiceDispatcher(Destination* destination,
 		Connection* connection, const char *serviceName, void(*func)(
-				TPSVCINFO *)) {
+				TPSVCINFO *), bool isPause) {
 	this->destination = destination;
 	this->connection = connection;
 	this->serviceName = strdup(serviceName);
 	this->func = func;
+	this->isPause = isPause;
 	session = NULL;
 	stop = false;
 	this->timeout = (long) (mqConfig.destinationTimeout * 1000000);
@@ -43,10 +44,26 @@ ServiceDispatcher::~ServiceDispatcher() {
 	free(this->serviceName);
 }
 
+int ServiceDispatcher::pause(void) {
+	LOG4CXX_TRACE(logger, "ServiceDispatcher pause");
+	if(isPause == false) {
+		isPause = true;
+	}
+	return 0;
+}
+
+int ServiceDispatcher::resume(void) {
+	LOG4CXX_TRACE(logger, "ServiceDispatcher resume");
+	if(isPause) {
+		isPause = false;
+	}
+	return 0;
+}
+
 int ServiceDispatcher::svc(void) {
 	while (!stop) {
 		MESSAGE message = destination->receive(this->timeout);
-		if (!stop && message.received) {
+		if (!isPause && !stop && message.received) {
 			try {
 				counter += 1;
 				onMessage(message);
