@@ -77,83 +77,85 @@ stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 	LOG4CXX_DEBUG(logger, "Connecting to: " << host << ":" << portNum);
 	apr_status_t rc = stomp_connect(&connection, host.c_str(), portNum, pool);
 	if (rc != APR_SUCCESS) {
-		LOG4CXX_ERROR(logger, (char*) "Could not connect: " << host << ", "
+		LOG4CXX_ERROR(logger, (char*) "Connection failed: " << host << ", "
 				<< portNum << ": " << rc);
-		throw new std::exception();
-	}
-
-	if (timeout > 0) {
-		apr_socket_opt_set(connection->socket, APR_SO_NONBLOCK, 0);
-		apr_socket_timeout_set(connection->socket, 1000000 * timeout);
-		LOG4CXX_DEBUG(logger, (char*) "Set socket options");
-	}
-
-	std::string usr = mqConfig.user;
-	std::string pwd = mqConfig.pwd;
-	LOG4CXX_DEBUG(logger, "Sending CONNECT");
-	stomp_frame frame;
-	frame.command = (char*) "CONNECT";
-	frame.headers = apr_hash_make(pool);
-	apr_hash_set(frame.headers, "login", APR_HASH_KEY_STRING, usr.c_str());
-	apr_hash_set(frame.headers, "passcode", APR_HASH_KEY_STRING, pwd.c_str());
-	frame.body = NULL;
-	frame.body_length = -1;
-	LOG4CXX_DEBUG(logger, "Connecting...");
-	rc = stomp_write(connection, &frame, pool);
-	if (rc != APR_SUCCESS) {
-		LOG4CXX_ERROR(logger, (char*) "Could not send frame");
-		throw new std::exception();
-	}
-
-	LOG4CXX_DEBUG(logger, "Reading Response.");
-	stomp_frame * frameRead = NULL;
-	try {
-		rc = stomp_read(connection, &frameRead, pool);
-	} catch (...) {
-		LOG4CXX_ERROR(logger, (char*) "Could not read from socket");
-		throw new std::exception();
-	}
-	if (rc != APR_SUCCESS) {
-		LOG4CXX_ERROR(logger, (char*) "Could not read frame: " << rc
-				<< " from connection");
-		throw new std::exception();
+		disconnect(connection, pool);
 	} else {
-		LOG4CXX_DEBUG(logger, "Response: " << frameRead->command << ", "
-				<< frameRead->body);
-		LOG4CXX_DEBUG(logger, "Connected");
+		if (timeout > 0) {
+			apr_socket_opt_set(connection->socket, APR_SO_NONBLOCK, 0);
+			apr_socket_timeout_set(connection->socket, 1000000 * timeout);
+			LOG4CXX_DEBUG(logger, (char*) "Set socket options");
+		}
+
+		std::string usr = mqConfig.user;
+		std::string pwd = mqConfig.pwd;
+		LOG4CXX_DEBUG(logger, "Sending CONNECT");
+		stomp_frame frame;
+		frame.command = (char*) "CONNECT";
+		frame.headers = apr_hash_make(pool);
+		apr_hash_set(frame.headers, "login", APR_HASH_KEY_STRING, usr.c_str());
+		apr_hash_set(frame.headers, "passcode", APR_HASH_KEY_STRING,
+				pwd.c_str());
+		frame.body = NULL;
+		frame.body_length = -1;
+		LOG4CXX_DEBUG(logger, "Connecting...");
+		rc = stomp_write(connection, &frame, pool);
+		if (rc != APR_SUCCESS) {
+			LOG4CXX_ERROR(logger, (char*) "Could not send frame");
+			disconnect(connection, pool);
+		} else {
+			LOG4CXX_DEBUG(logger, "Reading Response.");
+			stomp_frame * frameRead = NULL;
+			try {
+				rc = stomp_read(connection, &frameRead, pool);
+				if (rc != APR_SUCCESS) {
+					LOG4CXX_ERROR(logger, (char*) "Could not read frame: "
+							<< rc << " from connection");
+					disconnect(connection, pool);
+				} else {
+					LOG4CXX_DEBUG(logger, "Response: " << frameRead->command
+							<< ", " << frameRead->body);
+					LOG4CXX_DEBUG(logger, "Connected");
+				}
+			} catch (...) {
+				LOG4CXX_ERROR(logger, (char*) "Could not read from socket");
+			}
+		}
 	}
 	return connection;
 }
 
 void HybridConnectionImpl::disconnect(stomp_connection* connection,
 		apr_pool_t* pool) {
-	LOG4CXX_DEBUG(logger, (char*) "HybridConnectionImpl::disconnect");
-	stomp_frame frame;
-	frame.command = (char*) "DISCONNECT";
-	frame.headers = NULL;
-	frame.body_length = -1;
-	frame.body = NULL;
-	LOG4CXX_TRACE(logger, (char*) "Sending DISCONNECT" << connection << "pool"
-			<< pool);
-	apr_status_t rc = stomp_write(connection, &frame, pool);
-	LOG4CXX_TRACE(logger, (char*) "Sent DISCONNECT");
-	if (rc != APR_SUCCESS) {
-		LOG4CXX_ERROR(logger, "Could not send frame");
-	}
+	if (connection != NULL) {
+		LOG4CXX_DEBUG(logger, (char*) "HybridConnectionImpl::disconnect");
+		stomp_frame frame;
+		frame.command = (char*) "DISCONNECT";
+		frame.headers = NULL;
+		frame.body_length = -1;
+		frame.body = NULL;
+		LOG4CXX_TRACE(logger, (char*) "Sending DISCONNECT" << connection
+				<< "pool" << pool);
+		apr_status_t rc = stomp_write(connection, &frame, pool);
+		LOG4CXX_TRACE(logger, (char*) "Sent DISCONNECT");
+		if (rc != APR_SUCCESS) {
+			LOG4CXX_ERROR(logger, "Could not send frame");
+		}
 
-	LOG4CXX_DEBUG(logger, "Disconnecting...");
-	rc = stomp_disconnect(&connection);
-	if (rc != APR_SUCCESS) {
-		LOG4CXX_ERROR(logger, "Could not disconnect");
-	} else {
-		LOG4CXX_DEBUG(logger, "Disconnected");
+		LOG4CXX_DEBUG(logger, "Disconnecting...");
+		rc = stomp_disconnect(&connection);
+		if (rc != APR_SUCCESS) {
+			LOG4CXX_ERROR(logger, "Could not disconnect");
+		} else {
+			LOG4CXX_DEBUG(logger, "Disconnected");
+		}
 	}
 }
 
 Session* HybridConnectionImpl::createSession(int id, char * serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession serviceName: " << serviceName);
-	sessionMap[id] = new HybridSessionImpl(this->connectionName, this->connection, pool, id,
-			serviceName);
+	sessionMap[id] = new HybridSessionImpl(this->connectionName,
+			this->connection, pool, id, serviceName);
 	return sessionMap[id];
 }
 
@@ -161,8 +163,8 @@ Session* HybridConnectionImpl::createSession(int id,
 		const char* temporaryQueueName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession temporaryQueueName: "
 			<< temporaryQueueName);
-	sessionMap[id] = new HybridSessionImpl(this->connectionName, this->connection, this->pool, id,
-			temporaryQueueName);
+	sessionMap[id] = new HybridSessionImpl(this->connectionName,
+			this->connection, this->pool, id, temporaryQueueName);
 	return sessionMap[id];
 }
 

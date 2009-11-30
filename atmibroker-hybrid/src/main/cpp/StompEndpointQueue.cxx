@@ -33,12 +33,10 @@ HybridStompEndpointQueue::HybridStompEndpointQueue(apr_pool_t* pool,
 		char* serviceName) {
 	LOG4CXX_DEBUG(logger, "Creating endpoint queue: " << serviceName);
 	this->message = NULL;
+	connected = false;
 	shutdown = false;
 	lock = new SynchronizableObject();
 	LOG4CXX_DEBUG(logger, "Created lock: " << lock);
-
-	this->connection = HybridConnectionImpl::connect(pool,
-			mqConfig.destinationTimeout);
 	this->pool = pool;
 
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
@@ -47,48 +45,9 @@ HybridStompEndpointQueue::HybridStompEndpointQueue(apr_pool_t* pool,
 	memset(queueName, '\0', 8 + XATMI_SERVICE_NAME_LENGTH + 1);
 	strcpy(queueName, "/queue/");
 	strncat(queueName, serviceName, XATMI_SERVICE_NAME_LENGTH);
-
-	stomp_frame frame;
-	frame.command = (char*) "SUB";
-	frame.headers = apr_hash_make(pool);
-	apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, queueName);
-	apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING, queueName);
-	frame.body_length = -1;
-	frame.body = NULL;
-	LOG4CXX_DEBUG(logger, "Send SUB: " << queueName);
-	apr_status_t rc = stomp_write(connection, &frame, pool);
-	if (rc != APR_SUCCESS) {
-		LOG4CXX_ERROR(logger, (char*) "Could not send frame");
-		throw std::exception();
-	} else {
-		stomp_frame *framed;
-		rc = stomp_read(connection, &framed, pool);
-		if (rc != APR_SUCCESS) {
-			LOG4CXX_ERROR(logger, "Could not read frame");
-			throw new std::exception();
-		} else if (strcmp(framed->command, (const char*) "ERROR") == 0) {
-			LOG4CXX_DEBUG(logger, (char*) "Got an error: " << framed->body);
-			throw new std::exception();
-		} else if (strcmp(framed->command, (const char*) "RECEIPT") == 0) {
-			LOG4CXX_DEBUG(logger, (char*) "svcQ RECEIPT: "
-					<< (char*) apr_hash_get(framed->headers, "receipt-id",
-							APR_HASH_KEY_STRING));
-		} else if (strcmp(framed->command, (const char*) "MESSAGE") == 0) {
-			LOG4CXX_DEBUG(
-					logger,
-					(char*) "Got message before receipt, allow a single receipt later");
-			this->message = framed;
-			this->receipt = queueName;
-		} else {
-			LOG4CXX_ERROR(logger, "Didn't get a receipt: " << framed->command
-					<< ", " << framed->body);
-			throw new std::exception();
-		}
-	}
-	this->name = strdup(serviceName);
 	this->fullName = queueName;
+	this->name = strdup(serviceName);
 	this->transactional = true;
-	LOG4CXX_DEBUG(logger, "Sent SUB: " << queueName);
 }
 
 // ~EndpointQueue destructor.
@@ -135,62 +94,75 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 	lock->lock();
 	if (!shutdown) {
 		stomp_frame *frame = NULL;
-
 		if (this->message) {
 			LOG4CXX_DEBUG(logger, "Handing off old message");
 			frame = this->message;
 			this->message = NULL;
 		} else {
 			LOG4CXX_DEBUG(logger, (char*) "Receivin from: " << name);
-			apr_status_t rc = stomp_read(connection, &frame, pool);
-			if (rc != APR_SUCCESS) {
-				LOG4CXX_DEBUG(logger, "Could not read frame for " << name
-						<< ": " << rc << " was the result");
-				setSpecific(TPE_KEY, TSS_TPESYSTEM);
-				frame = NULL;
-			} else if (strcmp(frame->command, (const char*) "ERROR") == 0) {
-				LOG4CXX_ERROR(logger, (char*) "Got an error: " << frame->body);
-				setSpecific(TPE_KEY, TSS_TPENOENT);
-				frame = NULL;
-			} else if (strcmp(frame->command, (const char*) "RECEIPT") == 0) {
-				char * receipt = (char*) apr_hash_get(frame->headers,
-						"receipt-id", APR_HASH_KEY_STRING);
-				if (this->receipt == NULL || strcmp(this->receipt, receipt)
-						!= 0) {
-					LOG4CXX_ERROR(logger,
-							(char*) "read an unexpected receipt for: " << name
-									<< ": " << receipt);
+			connect();
+			if (connected) {
+				apr_status_t rc = stomp_read(connection, &frame, pool);
+				if (rc == APR_TIMEUP) {
+					LOG4CXX_TRACE(logger, "Could not read frame for " << name
+							<< ": as the time limit expired");
+					setSpecific(TPE_KEY, TSS_TPETIME);
+					frame = NULL;
+				} else if (rc != APR_SUCCESS) {
+					LOG4CXX_WARN(logger, "Could not read frame for " << name
+							<< ": " << rc
+							<< " was the result, will attempt to reconnect");
 					setSpecific(TPE_KEY, TSS_TPESYSTEM);
 					frame = NULL;
-				} else {
-					LOG4CXX_DEBUG(logger, "Handling old receipt");
-					this->receipt = NULL;
-					rc = stomp_read(connection, &frame, pool);
-					if (rc != APR_SUCCESS) {
-						LOG4CXX_DEBUG(logger, "Could not read frame for "
-								<< name << ": " << rc << " was the result");
-						setSpecific(TPE_KEY, TSS_TPESYSTEM);
-						frame = NULL;
-					} else if (strcmp(frame->command, (const char*) "ERROR")
-							== 0) {
-						LOG4CXX_ERROR(logger, (char*) "Got an error: "
-								<< frame->body);
-						setSpecific(TPE_KEY, TSS_TPENOENT);
-						frame = NULL;
-					} else if (strcmp(frame->command, (const char*) "RECEIPT")
-							== 0) {
-						LOG4CXX_ERROR(logger, (char*) "read a RECEIPT for: "
-								<< name << ": " << (char*) apr_hash_get(
-								frame->headers, "receipt-id",
-								APR_HASH_KEY_STRING));
+					this->connected = false;
+				} else if (strcmp(frame->command, (const char*) "ERROR") == 0) {
+					LOG4CXX_ERROR(logger, (char*) "Got an error: "
+							<< frame->body);
+					setSpecific(TPE_KEY, TSS_TPENOENT);
+					frame = NULL;
+				} else if (strcmp(frame->command, (const char*) "RECEIPT") == 0) {
+					char * receipt = (char*) apr_hash_get(frame->headers,
+							"receipt-id", APR_HASH_KEY_STRING);
+					if (this->receipt == NULL || strcmp(this->receipt, receipt)
+							!= 0) {
+						LOG4CXX_ERROR(logger,
+								(char*) "read an unexpected receipt for: "
+										<< name << ": " << receipt);
 						setSpecific(TPE_KEY, TSS_TPESYSTEM);
 						frame = NULL;
 					} else {
-						LOG4CXX_DEBUG(logger, "Message received 2nd attempt");
+						LOG4CXX_DEBUG(logger, "Handling old receipt");
+						this->receipt = NULL;
+						rc = stomp_read(connection, &frame, pool);
+						if (rc != APR_SUCCESS) {
+							LOG4CXX_DEBUG(logger, "Could not read frame for "
+									<< name << ": " << rc << " was the result");
+							setSpecific(TPE_KEY, TSS_TPESYSTEM);
+							frame = NULL;
+						} else if (strcmp(frame->command, (const char*) "ERROR")
+								== 0) {
+							LOG4CXX_ERROR(logger, (char*) "Got an error: "
+									<< frame->body);
+							setSpecific(TPE_KEY, TSS_TPENOENT);
+							frame = NULL;
+						} else if (strcmp(frame->command,
+								(const char*) "RECEIPT") == 0) {
+							char * receipt = (char*) apr_hash_get(
+									frame->headers, "receipt-id",
+									APR_HASH_KEY_STRING);
+							LOG4CXX_ERROR(logger,
+									(char*) "read a RECEIPT for: " << name
+											<< ": " << receipt);
+							setSpecific(TPE_KEY, TSS_TPESYSTEM);
+							frame = NULL;
+						} else {
+							LOG4CXX_DEBUG(logger,
+									"Message received 2nd attempt");
+						}
 					}
+				} else {
+					LOG4CXX_DEBUG(logger, "Message received 1st attempt");
 				}
-			} else {
-				LOG4CXX_DEBUG(logger, "Message received 1st attempt");
 			}
 		}
 		if (frame != NULL) {
@@ -263,6 +235,67 @@ void HybridStompEndpointQueue::disconnect() {
 		LOG4CXX_DEBUG(logger, (char*) "Shutdown set: " << name);
 	}
 	LOG4CXX_DEBUG(logger, (char*) "disconnected: " << name);
+}
+
+void HybridStompEndpointQueue::connect() {
+	if (!connected) {
+		LOG4CXX_DEBUG(logger, (char*) "connecting: " << fullName);
+		this->connection = HybridConnectionImpl::connect(pool,
+				mqConfig.destinationTimeout);
+		if (this->connection != NULL) {
+
+			stomp_frame frame;
+			frame.command = (char*) "SUB";
+			frame.headers = apr_hash_make(pool);
+			apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING,
+					fullName);
+			apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING,
+					fullName);
+			frame.body_length = -1;
+			frame.body = NULL;
+			LOG4CXX_DEBUG(logger, "Send SUB: " << fullName);
+			apr_status_t rc = stomp_write(connection, &frame, pool);
+			if (rc != APR_SUCCESS) {
+				LOG4CXX_ERROR(logger, (char*) "Could not send frame");
+				HybridConnectionImpl::disconnect(connection, pool);
+			} else {
+				stomp_frame *framed;
+				rc = stomp_read(connection, &framed, pool);
+				if (rc != APR_SUCCESS) {
+					LOG4CXX_WARN(logger, "Could not read frame for " << name
+							<< ": " << rc << " was the result");
+					setSpecific(TPE_KEY, TSS_TPESYSTEM);
+					HybridConnectionImpl::disconnect(connection, pool);
+				} else if (strcmp(framed->command, (const char*) "ERROR") == 0) {
+					LOG4CXX_DEBUG(logger, (char*) "Got an error: "
+							<< framed->body);
+					setSpecific(TPE_KEY, TSS_TPENOENT);
+					HybridConnectionImpl::disconnect(connection, pool);
+				} else if (strcmp(framed->command, (const char*) "RECEIPT")
+						== 0) {
+					LOG4CXX_DEBUG(logger, (char*) "Got a receipt: "
+							<< (char*) apr_hash_get(framed->headers,
+									"receipt-id", APR_HASH_KEY_STRING));
+					this->connected = true;
+					LOG4CXX_DEBUG(logger, "Connected: " << fullName);
+				} else if (strcmp(framed->command, (const char*) "MESSAGE")
+						== 0) {
+					LOG4CXX_DEBUG(
+							logger,
+							(char*) "Got message before receipt, allow a single receipt later");
+					this->message = framed;
+					this->receipt = fullName;
+					this->connected = true;
+					LOG4CXX_DEBUG(logger, "Connected: " << fullName);
+				} else {
+					LOG4CXX_ERROR(logger,
+							"Didn't get a receipt or message unexpected error: "
+									<< framed->command << ", " << framed->body);
+					HybridConnectionImpl::disconnect(connection, pool);
+				}
+			}
+		}
+	}
 }
 
 const char * HybridStompEndpointQueue::getName() {
