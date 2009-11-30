@@ -482,8 +482,9 @@ int AtmiBrokerServer::pause() {
 			}
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "pause service"
 					<< (*i).serviceInfo->serviceName << " done");
-		}	
+		}
 		isPause = true;
+		LOG4CXX_INFO(loggerAtmiBrokerServer, (char*) "Server Pause");
 	}
 	return 0;
 }
@@ -506,6 +507,7 @@ int AtmiBrokerServer::resume() {
 					<< (*i).serviceInfo->serviceName << " done");
 		}	
 		isPause = false;
+		LOG4CXX_INFO(loggerAtmiBrokerServer, (char*) "Server Resume");
 	}
 	return 0;
 }
