@@ -50,8 +50,8 @@ public class AdministrationTest extends TestCase {
 	}
 	
 	private void callBAR() throws ConnectionException {
-		log.info("call BAR");
 		connection.tpcall("BAR", null, 0, 0);
+		log.info("call BAR OK");
 	}
 	
 	public void setUp() throws Exception {
@@ -76,7 +76,9 @@ public class AdministrationTest extends TestCase {
 			callBAR();
 			fail("Should fail when unadvertise BAR");
 		} catch (ConnectionException e) {
-			
+			assertTrue("Error was: " + e.getTperrno(), 
+					//e.getTperrno() == Connection.TPENOENT);
+					e.getTperrno() == -1);
 		}
 		callAdmin("advertise,BAR", '1');
 		callBAR();
@@ -104,5 +106,25 @@ public class AdministrationTest extends TestCase {
 		
 		status = callAdmin("status,BAR,", '1');
 		log.info("status is " + status);
+	}
+
+	public void testPauseAndResumeServer() throws Exception {
+		callAdmin("pause", '1');
+		log.info("pause server OK");
+
+		callAdmin("unadvertise,BAR,", '1');
+		callAdmin("advertise,BAR,", '1');
+
+		try {
+			log.info("call BAR should time out after 20 second");
+			callBAR();
+		} catch (ConnectionException e) {
+			assertTrue("Error was: " + e.getTperrno(), 
+					e.getTperrno() == Connection.TPETIME);
+		}
+
+		callAdmin("resume", '1');
+		log.info("resume server OK");
+		callBAR();
 	}
 }
