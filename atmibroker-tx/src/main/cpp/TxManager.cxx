@@ -22,7 +22,6 @@
 #include "TxManager.h"
 #include "AtmiBrokerEnv.h"
 #include "ace/Thread.h"
-#include "SynchronizableObject.h"
 #include <vector>
 #include "txAvoid.h"
 
@@ -36,31 +35,21 @@
 namespace atmibroker {
 	namespace tx {
 
+typedef ACE_Singleton<TxManager, ACE_Null_Mutex> TXMANAGER;
+
 log4cxx::LoggerPtr txmlogger(log4cxx::Logger::getLogger("TxLogManager"));
-SynchronizableObject lock_;
 TxManager *TxManager::_instance = NULL;
 //XXXextern xarm_config_t* xarmp;
 
 TxManager *TxManager::get_instance()
 {
-	// TODO add synchronization
-	lock_.lock();
-	if (_instance == NULL)
-		_instance = new TxManager();
-
-	lock_.unlock();
-	return _instance;
+	FTRACE(txmlogger, "ENTER");
+	return TXMANAGER::instance();
 }
 
 void TxManager::discard_instance()
 {
 	FTRACE(txmlogger, "ENTER");
-	lock_.lock();
-	if (_instance != NULL) {
-		delete _instance;
-		_instance = NULL;
-	}
-	lock_.unlock();
 }
 
 TxManager::TxManager() :
@@ -536,6 +525,13 @@ bool TxManager::isCdTransactional(int cd)
 
 	return false;
 }
+
+#if defined (ACE_HAS_EXPLICIT_TEMPLATE_INSTANTIATION)
+template class ACE_Singleton<TxManager, ACE_Null_Mutex>;
+#elif defined (ACE_HAS_TEMPLATE_INSTANTIATION_PRAGMA)
+pragma instantiate ACE_Singleton<TxManager, ACE_Null_Mutex>;
+#endif /* ACE_HAS_EXPLICIT_TEMPLATE_INSTANTIATION */
+
 
 } //	namespace tx
 } //namespace atmibroker
