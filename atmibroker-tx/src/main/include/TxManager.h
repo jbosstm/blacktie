@@ -24,7 +24,6 @@
 #include "CorbaConnection.h"
 #include "TxControl.h"
 #include "XAResourceManagerFactory.h"
-#include "ace/Singleton.h"
 
 #define TX_NOT_SUPPORTED   1   /* normal execution */
 #define TX_OK              0   /* normal execution */
@@ -84,7 +83,6 @@ namespace atmibroker {
 	namespace tx {
 
 class BLACKTIE_TX_DLL TxManager {
-friend class ACE_Singleton<TxManager, ACE_Null_Mutex>;
 public:
 	int open(void);
 	int begin(void);

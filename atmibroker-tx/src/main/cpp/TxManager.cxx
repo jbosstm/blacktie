@@ -24,6 +24,7 @@
 #include "ace/Thread.h"
 #include <vector>
 #include "txAvoid.h"
+#include "SynchronizableObject.h"
 
 #define TX_GUARD(cond) {	\
 	FTRACE(txmlogger, "ENTER"); \
@@ -35,21 +36,29 @@
 namespace atmibroker {
 	namespace tx {
 
-typedef ACE_Singleton<TxManager, ACE_Null_Mutex> TXMANAGER;
-
 log4cxx::LoggerPtr txmlogger(log4cxx::Logger::getLogger("TxLogManager"));
 TxManager *TxManager::_instance = NULL;
-//XXXextern xarm_config_t* xarmp;
+SynchronizableObject lock_;
 
 TxManager *TxManager::get_instance()
 {
 	FTRACE(txmlogger, "ENTER");
-	return TXMANAGER::instance();
+
+	lock_.lock();
+	if (_instance == NULL)
+		_instance = new TxManager();
+	lock_.unlock();
+
+	return _instance;
 }
 
 void TxManager::discard_instance()
 {
 	FTRACE(txmlogger, "ENTER");
+	if (_instance != NULL) {
+		delete _instance;
+		_instance = NULL;
+	}
 }
 
 TxManager::TxManager() :
