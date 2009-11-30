@@ -45,12 +45,35 @@ import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 public abstract class Buffer implements Serializable {
 	private static final Logger log = LogManager.getLogger(Buffer.class);
 
-	private static final int BYTE_SIZE = 1;
-	private static final int LONG_SIZE = 8;
-	private static final int INT_SIZE = 4;
-	private static final int SHORT_SIZE = 2;
-	private static final int FLOAT_SIZE = INT_SIZE;
-	private static final int DOUBLE_SIZE = LONG_SIZE;
+	/**
+	 * The agreed size of a byte.
+	 */
+	public static final int BYTE_SIZE = 1;
+
+	/**
+	 * The agreed size of a long.
+	 */
+	public static final int LONG_SIZE = 8;
+
+	/**
+	 * The agreed size of a int.
+	 */
+	public static final int INT_SIZE = 4;
+
+	/**
+	 * The agreed size of a short.
+	 */
+	public static final int SHORT_SIZE = 2;
+
+	/**
+	 * The agreed size of a float.
+	 */
+	public static final int FLOAT_SIZE = INT_SIZE;
+
+	/**
+	 * The agreed size of a double.
+	 */
+	public static final int DOUBLE_SIZE = LONG_SIZE;
 
 	/**
 	 * 

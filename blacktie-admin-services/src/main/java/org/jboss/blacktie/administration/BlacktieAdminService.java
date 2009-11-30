@@ -124,40 +124,99 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 		return administrationProxy.listServiceStatus(serverName, serviceName);
 	}
 
+	/**
+	 * Advertise a new service
+	 * 
+	 * @param serverName
+	 *            The name of the server
+	 * @param serviceName
+	 *            The name of the service
+	 */
 	public Boolean advertise(String serverName, String serviceName) {
 		return administrationProxy.advertise(serverName, serviceName);
 	}
 
+	/**
+	 * Unadvertise a new service
+	 * 
+	 * @param serverName
+	 *            The name of the server
+	 * @param serviceName
+	 *            The name of the service
+	 */
 	public Boolean unadvertise(String serverName, String serviceName) {
 		return administrationProxy.unadvertise(serverName, serviceName);
 	}
 
+	/**
+	 * Shutdown a server
+	 * 
+	 * @param serverName
+	 *            The name of the server
+	 * @param id
+	 *            The id of the server
+	 */
 	public void shutdown(String serverName, int id) {
 		administrationProxy.shutdown(serverName, id);
 	}
 
+	/**
+	 * Get the service counter and restrict it to a certain server, 0 for all.
+	 * 
+	 * @param serverName
+	 *            The name of the server
+	 * @param id
+	 *            The id of the server
+	 * @param serviceName
+	 *            The name of the service
+	 */
 	public long getServiceCounterById(String serverName, int id,
 			String serviceName) {
 		return administrationProxy.getServiceCounterById(serverName, id,
 				serviceName);
 	}
 
+	/**
+	 * Get the service counter for the domain.
+	 * 
+	 * @param serverName
+	 *            The name of the server
+	 * @param serviceName
+	 *            The name of the service
+	 */
+
 	public long getServiceCounter(String serverName, String serviceName) {
 		return administrationProxy.getServiceCounter(serverName, serviceName);
 	}
 
+	/**
+	 * Reload the domain
+	 */
 	public Boolean reloadDomain() {
 		return administrationProxy.reloadDomain();
 	}
 
+	/**
+	 * Reload the server (causes the server to update its configuration and
+	 * restart.
+	 * 
+	 * @param serverName
+	 *            The name of the server
+	 */
 	public Boolean reloadServer(String serverName) {
 		return administrationProxy.reloadServer(serverName);
 	}
 
-	public Boolean reloadServerById(String serverName, int id) {
-		return administrationProxy.reloadServerById(serverName, id);
-	}
-
+	/**
+	 * List the status of a service giving an optional id, 0 is all servers.
+	 * 
+	 * @param serverName
+	 *            The name of the server
+	 * @param id
+	 *            The id of the server
+	 * @param serviceName
+	 *            The name of the service
+	 */
 	public Element listServiceStatusById(String serverName, int id,
 			String serviceName) {
 		return administrationProxy.listServiceStatusById(serverName, id,

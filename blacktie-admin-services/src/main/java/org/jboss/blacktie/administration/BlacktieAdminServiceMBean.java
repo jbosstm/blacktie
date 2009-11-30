@@ -74,8 +74,6 @@ public interface BlacktieAdminServiceMBean {
 	 * reload server
 	 */
 	public Boolean reloadServer(String serverName);
-	
-	public Boolean reloadServerById(String serverName, int id);
 
 	/**
 	 * Retrieves the counter for a service from all servers
