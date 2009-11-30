@@ -15,9 +15,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#include "stdio.h"
 #include "xatmi.h"
 #include "testsvc.h"
 
 void BAR(TPSVCINFO * svcinfo) {
-	// Test for advertise in serverinit
+	int sendlen = 1;
+	char* buffer = tpalloc((char*) "X_OCTET", NULL, sendlen);
+	buffer[0] = '1';
+
+	tpreturn(TPSUCCESS, 1, buffer, sendlen, 0);
 }
