@@ -17,7 +17,6 @@
  */
 #include "ThreadLocalStorage.h"
 #include "XAResourceManagerFactory.h"
-#include "TxInitializer.h"
 #include "OrbManagement.h"
 #include "TxManager.h"
 #include "AtmiBrokerEnv.h"
