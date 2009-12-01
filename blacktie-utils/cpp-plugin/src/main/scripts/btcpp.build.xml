@@ -274,12 +274,14 @@
     </target>
 
 	<target name="generate-test-lib" depends="init-cpp-test" if="have.src.main.file">
+        <available file="target/${configuration.type}/${lib.type}" type="dir" property="main.built" />
         <cc name="${toolchain.compiler}" exceptions="true" outfile="target/${src.main.file}"
             subsystem="console" multithreaded="true" runtime="${runtime}" outtype="shared"
             objdir="target/cpp-test-classes" debug="${debug}">
 
             <compiler name="${toolchain.compiler}" unless="is-msvc"> &compiler-args-gcc; </compiler>
             <compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
+
 
 			<fileset dir="${src.test}" includes="**/${src.main.file}.cxx **/${src.main.file}.c" excludes="${src.excludes}" />
 
@@ -298,6 +300,7 @@
 
             <libset dir="${project.build.directory}/cxx/compile/lib" libs="${compile.libs}" if="compile.libs"/>
             <libset dir="${project.build.directory}/cxx/test/lib" libs="${test.libs}" if="test.libs"/>
+            <libset dir="target/${configuration.type}/${lib.type}" libs="${project.artifactId}" if="main.built" />
         </cc>
     </target>
 

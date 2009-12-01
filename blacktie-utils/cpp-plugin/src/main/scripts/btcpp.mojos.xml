@@ -141,6 +141,15 @@
           <type>java.lang.String</type>
           <description>Name of src file (without the .cxx extension) contain a C++ main</description>
         </parameter>
+		<parameter>
+          <name>artifactId</name>
+          <property>project.artifactId</property>
+          <required>true</required>
+          <readonly>true</readonly>
+          <defaultValue>${project.artifactId}</defaultValue>
+          <type>java.lang.String</type>
+          <description>The artifact name.</description>
+        </parameter>
         <parameter>
           <name>toolchain.compiler</name>
           <property>toolchain.compiler</property>
