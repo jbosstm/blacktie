@@ -104,6 +104,7 @@ Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 					<export.dll>${export.dll}</export.dll>
 					<atmibroker.configuration.dir>${atmibroker.configuration.dir}</atmibroker.configuration.dir>
 					<jbossas.ip.addr>${jbossas.ip.addr}</jbossas.ip.addr>
+					<test.excludes>${test.excludes}</test.excludes>
 				</configuration>
 
 				<executions>

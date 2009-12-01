@@ -245,5 +245,6 @@
 	</dependencies>
 	<properties>
 		<test.output.type>shared</test.output.type>
+		<test.excludes>**/cs.cxx</test.excludes>
 	</properties>
 </project>

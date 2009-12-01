@@ -17,7 +17,6 @@
  */
 #include "stdio.h"
 #include "xatmi.h"
-#include "testsvc.h"
 
 void BAR(TPSVCINFO * svcinfo) {
 	int sendlen = 1;

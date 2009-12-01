@@ -127,6 +127,68 @@
       </parameters>
     </mojo>
 
+	<mojo>
+      <goal>generate-test-lib</goal>
+      <call>generate-test-lib</call>
+      <phase>test-compile</phase>
+      <parameters>
+        <parameter>
+          <name>src.main.file</name>
+          <property>src.main.file</property>
+          <required>false</required>
+          <readonly>false</readonly>
+          <defaultValue></defaultValue>
+          <type>java.lang.String</type>
+          <description>Name of src file (without the .cxx extension) contain a C++ main</description>
+        </parameter>
+        <parameter>
+          <name>toolchain.compiler</name>
+          <property>toolchain.compiler</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>gcc</defaultValue>
+          <type>java.lang.String</type>
+          <description>Build type. Tested values are gcc|msvc</description>
+        </parameter>
+        <parameter>
+          <name>configuration.type</name>
+          <property>configuration.type</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>debug</defaultValue>
+          <type>java.lang.String</type>
+          <description>Build type. Permissable values are debug|release</description>
+        </parameter>
+        <parameter>
+          <name>buildDir</name>
+          <property>project.build.directory</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>${project.build.directory}</defaultValue>
+          <type>java.lang.String</type>
+          <description>Build directory.</description>
+        </parameter>
+        <parameter>
+ 	      <name>atmibroker.configuration.dir</name>
+	      <property>atmibroker.configuration.dir</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>.</defaultValue>
+          <type>java.lang.String</type>
+          <description>Configuration directory</description>
+	    </parameter>
+        <parameter>
+          <name>jbossas.ip.addr</name>
+          <property>jbossas.ip.addr</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>localhost</defaultValue>
+          <type>java.lang.String</type>
+          <description>The IP address of the app server</description>
+        </parameter>
+      </parameters>
+    </mojo>
+
     <mojo>
       <goal>generate-exe</goal>
       <call>generate-exe</call>
@@ -224,6 +286,13 @@
           <defaultValue>src/main/cpp</defaultValue>
           <type>java.lang.String</type>
           <description>location of main sources</description>
+        </parameter>
+        <parameter>
+          <name>test.excludes</name>
+          <property>test.excludes</property>
+          <readonly>false</readonly>
+          <type>java.lang.String</type>
+          <description>exculdes test source files</description>
         </parameter>
         <parameter>
           <name>test.output.type</name>

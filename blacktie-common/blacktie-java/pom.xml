@@ -63,6 +63,7 @@
 					<configuration.type>${configuration.type}</configuration.type>
 					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
 					<test.output.type>${test.output.type}</test.output.type>
+					<test.excludes>${test.excludes}</test.excludes>
 				</configuration>
 
 				<executions>

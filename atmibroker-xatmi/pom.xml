@@ -29,6 +29,29 @@
 	<name>Blacktie C++ XATMI Implementation</name>
 	<packaging>jar</packaging>
 
+	<build>
+		<plugins>
+			<plugin>
+                <groupId>org.jboss.blacktie.plugins</groupId>
+                <artifactId>cpp-plugin</artifactId>
+
+                <configuration>
+                    <toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
+					<src.main.file>BAR</src.main.file>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-test-lib</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>generate-test-lib</goal>
+                        </goals>
+                    </execution>
+                </executions>
+			</plugin>
+		</plugins>
+	</build>
+
 	<dependencies>
 		<dependency>
 			<groupId>cppunit.contrib</groupId>
@@ -45,11 +68,6 @@
 			<artifactId>atmibroker-hybrid</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>dummy-rm</artifactId>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 
 	<profiles>
@@ -64,6 +82,7 @@
 
 	<properties>
 		<generate.testrunner>true</generate.testrunner>
+		<test.excludes>**/BAR.c</test.excludes>
 	</properties>
 
 </project>

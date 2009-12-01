@@ -46,14 +46,14 @@ void TestUnadvertise::testUnknowService() {
 void TestUnadvertise::testUnadvertise() {
 	int   cd;
 
-	userlogc((char*) "tpacall BAR before unadvertise");
+	userlogc((char*) "tpcall BAR before unadvertise");
 	cd = callBAR(0);
 	CPPUNIT_ASSERT(cd == 0);
 	
 	cd = callADMIN((char*)"unadvertise,BAR,", '1', 0, NULL);
 	CPPUNIT_ASSERT(cd == 0);
 
-	userlogc((char*) "tpacall BAR after unadvertise");
+	userlogc((char*) "tpcall BAR after unadvertise");
 	cd = callBAR(TPENOENT);
 	CPPUNIT_ASSERT(cd != 0);
 }
