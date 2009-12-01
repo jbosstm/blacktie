@@ -23,24 +23,19 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.transport.EventListener;
 import org.jboss.blacktie.jatmibroker.core.transport.Message;
 import org.jboss.blacktie.jatmibroker.core.transport.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
-import org.jboss.blacktie.jatmibroker.core.tx.TxIORInterceptor;
 import org.jboss.blacktie.jatmibroker.jab.JABException;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.omg.CORBA.Any;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
-import org.omg.CORBA.PolicyError;
 import org.omg.CosNaming.NameComponent;
 import org.omg.PortableServer.POA;
-import org.omg.PortableServer.ThreadPolicyValue;
 import org.omg.PortableServer.POAPackage.AdapterAlreadyExists;
 import org.omg.PortableServer.POAPackage.AdapterNonExistent;
 
@@ -60,37 +55,15 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 
 	private int pad = 0;
 
-	private List<Policy> getPolicies(ORB orb, POA poa)
-			throws ConfigurationException, ConnectionException {
-		List<Policy> policies = new ArrayList<Policy>();
-		Any otsPolicy = orb.create_any();
-
-		otsPolicy.insert_short(TxIORInterceptor.ADAPTS);
-
-		policies.add(poa
-				.create_thread_policy(ThreadPolicyValue.SINGLE_THREAD_MODEL));
-
-		try {
-			policies.add(orb.create_policy(TxIORInterceptor.OTS_POLICY_TYPE,
-					otsPolicy));
-		} catch (PolicyError e) {
-			throw new ConnectionException(-1,
-					"POA TAG_OTS_POLICY policy creation error: " + e.reason, e);
-		}
-
-		return policies;
-	}
-
 	CorbaReceiverImpl(OrbManagement orbManagement, String queueName)
 			throws ConnectionException {
 		this.queueName = queueName;
 
 		try {
-			List<Policy> policies = getPolicies(orbManagement.getOrb(),
-					orbManagement.getRootPoa());
+			Policy[] policies = new Policy[0];
 			this.m_default_poa = orbManagement.getRootPoa().create_POA(
 					queueName, orbManagement.getRootPoa().the_POAManager(),
-					policies.toArray(new Policy[0]));
+					policies);
 		} catch (Throwable t) {
 			try {
 				this.m_default_poa = orbManagement.getRootPoa().find_POA(
@@ -123,9 +96,9 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 
 		try {
 			try {
-				List<Policy> policies = getPolicies(orb, poa);
+				Policy[] policies = new Policy[0];
 				m_default_poa = poa.create_POA("TODO", poa.the_POAManager(),
-						policies.toArray(new Policy[0]));
+						policies);
 			} catch (AdapterAlreadyExists e) {
 				m_default_poa = poa.find_POA("TODO", true);
 			}

@@ -6,7 +6,6 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.tx.TxInitializer;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CosNaming.NameComponent;
@@ -62,14 +61,10 @@ public class OrbManagement {
 		log.debug("setting properities");
 		p.setProperty(CorbaOrbClassProp, CorbaOrbClassValue);
 		p.setProperty(CorbaSingletonClassProp, CorbaSingletonClassValue);
-		p.setProperty("org.omg.PortableInterceptor.ORBInitializerClass."
-				+ org.jboss.blacktie.jatmibroker.core.tx.TxInitializer.class
-						.getName(), "");
 		p.setProperty("OAPort", "0");
 
 		log.debug("set properities");
 		log.debug(" initing orb");
-		TxInitializer.setOrbManagement(this);
 		orb = org.omg.CORBA.ORB.init(args, p);
 		log.debug(" inited orb");
 		log.debug(" resolving NameService");
