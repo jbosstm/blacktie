@@ -18,6 +18,7 @@
 #include "XAResourceManager.h"
 #include "ThreadLocalStorage.h"
 #include "ace/OS_NS_time.h"
+#include "ace/OS.h"
 
 log4cxx::LoggerPtr xarmlogger(log4cxx::Logger::getLogger("TxLogXAManager"));
 
@@ -104,6 +105,11 @@ XAResourceManager::~XAResourceManager() {
 		LOG4CXX_WARN(xarmlogger, (char *) " close RM " << name_ << " failed: " << rv);
 }
 
+/**
+ * replace branch completion on an XID that needs recovering.
+ * The rc parameter is the CORBA object reference of the
+ * Recovery Coordinator for the the branch represented by the XID
+ */
 int XAResourceManager::recover(XID& bid, const char* rc)
 {
 	FTRACE(xarmlogger, "ENTER");
@@ -181,6 +187,49 @@ int XAResourceManager::recover(XID& bid, const char* rc)
 //		delete ra;
 
 	return XA_OK;	// means the caller is not allowed to clear the log
+}
+
+/**
+ * Initiate a recovery scan on the RM looking for prepared or heuristically completed branches
+ * This functionality covers the following failure scenario:
+ * - server calls prepare on a RM
+ * - RM prepares but the the server fails before it can write to its transaction recovery log
+ * In this case the RM will have a pending transaction branch which does not appear in
+ * the recovery log. Calling xa_recover on the RM will return the 'missing' XID which the
+ * recovery scan will replay.
+ */
+int XAResourceManager::recover()
+{
+	XID xids[10];
+	long count = sizeof (xids) / sizeof (XID);
+	long flags = TMSTARTRSCAN;	// position the cursor at the start of the list
+	int nxids;
+
+	do {
+		// ask the RM for all XIDs that need recovering
+		int i;
+
+		nxids = xa_switch_->xa_recover_entry(xids, count, rmid_, flags);
+		flags = TMNOFLAGS;	// on the next call continue the scan from the current cursor position
+
+		for (i = 0; i < nxids; i++) {
+			// if the XID is one of ours it will encode the RM id:
+			long rmid = ACE_OS::atol((char *) (xids[i].data + xids[i].gtrid_length));
+
+			// only recover our own XIDs:- the first long in the XID data contains the RM id
+			if (rmid == rmid_) {
+				int rv = xa_switch_->xa_commit_entry((XID *) (xids + i), rmid_, TMNOWAIT);
+
+				if (rv != XA_OK) {
+					LOG4CXX_INFO(xarmlogger, (char*) "Unable to recover xid " << xids[i] << " for RM " << rmid_);
+				} else {
+					LOG4CXX_INFO(xarmlogger, (char*) "Successfully recovered xid " << xids[i] << " for RM " << rmid_);
+				}
+			}
+		}
+	} while (count == nxids);
+
+	return 0;
 }
 
 int XAResourceManager::createServant(XID& xid)

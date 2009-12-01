@@ -38,7 +38,8 @@ public:
 
 	int xa_start (XID *, long);
 	int xa_end (XID *, long);
-	int recover(XID& xid, const char* rc);
+	int recover(XID& xid, const char* rc);	// recover a single XID (on a potentially remote RM)
+	int recover();	// initiate a recovery scan on this RM
 
 	// return the resource id
 	CORBA::Long rmid(void) {return rmid_;};

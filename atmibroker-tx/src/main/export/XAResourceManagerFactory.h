@@ -34,6 +34,7 @@ public:
 	void destroyRMs();
 	int startRMs(bool, int);
 	int endRMs(bool, int);
+	void run_recovery();
 
 	static bool getXID(XID &);
 private:
@@ -42,7 +43,6 @@ private:
 	PortableServer::POA_ptr poa_;
 
 	XAResourceManager * createRM(CORBA_CONNECTION *, xarm_config_t *) throw (RMException);
-	void recover_branches();
 	void create_poa(CORBA_CONNECTION * connection) throw (RMException);
 };
 #endif	// _XARESOURCEMANAGERFACTORY_H

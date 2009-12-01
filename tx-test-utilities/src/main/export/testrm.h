@@ -18,8 +18,9 @@ enum XA_OP {
 
 enum X_FAULT {
         F_NONE,
-        F_HALT,
-        F_DELAY
+        F_HALT,	// generate a fatal error (that causes the process to terminate)
+        F_DELAY,	// sleep for a given period
+        F_ADD_XIDS	// used to tell the RM to simulate active XIDs
 };
 
 /*
@@ -32,7 +33,12 @@ typedef struct UTILITIES_DLL fault {
         int rc;                 // the value that the XA method should return
         enum X_FAULT xf;        // optional extra processing
         void *arg;              // optional arg for enum X_FAULT
+        int res;                // result field that the RM can use to pass back a status to the caller
+        int res2;               // another result field that the RM can use to pass back a status to the caller
 
+		/* fields private to the RM */
+        void *rmstate;          // state maintained by the dummy RM
+        struct fault *orig;	    // a pointer to the original fault specification
         struct fault *next;
 } fault_t;
 

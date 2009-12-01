@@ -211,10 +211,13 @@ int XAResourceManagerFactory::endRMs(bool isOriginator, int flags)
 }
 
 // see if there are any transaction branches in need of revovery
-void XAResourceManagerFactory::recover_branches()
+void XAResourceManagerFactory::run_recovery()
 {
 	FTRACE(xarflogger, "ENTER");
 
+	/*
+	 * iterate through the recovery log and try to recover each branch
+	 */
 	for (rrec_t* rrp = rclog_.find_next(0); rrp; rrp = rclog_.find_next(rrp)) {
 		// the first long in the XID data contains the RM id
 		long rmid = ACE_OS::atol((char *) ((rrp->xid).data + (rrp->xid).gtrid_length));
@@ -227,6 +230,14 @@ void XAResourceManagerFactory::recover_branches()
 			LOG4CXX_DEBUG(xarflogger,  (char *) "recover_branches rm not found");
 		}
 	}
+
+	/*
+	 * If the TM failed before updating its recovery log then there may RMs with pending
+	 * branches. Ask each registered RM to return all pending XIDs and if any belong to
+	 * the TM then replay the branch:
+	 */
+	for (ResourceManagerMap::iterator i = rms_.begin(); i != rms_.end(); ++i)
+		i->second->recover();
 }
 
 void XAResourceManagerFactory::createRMs(CORBA_CONNECTION * connection) throw (RMException)
@@ -255,7 +266,7 @@ void XAResourceManagerFactory::createRMs(CORBA_CONNECTION * connection) throw (R
 		}
 	}
 
-	recover_branches();
+	run_recovery();
 }
 
 /**

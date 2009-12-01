@@ -21,18 +21,12 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include "AtmiBrokerEnv.h"
 #include "TestTransactions.h"
-//#include "OrbManagement.h"
 #include "txi.h"
 #include "tx.h"
 #include "testrm.h"
 #include "ThreadLocalStorage.h"
-//#include "XAResourceAdaptorImpl.h"
 #include "userlogc.h"
 #include "testTxAvoid.h"
-
-//#include "ace/OS_NS_unistd.h"
-
-//#include "TxManager.h"
 
 //using namespace std;
 
@@ -327,6 +321,40 @@ void TestTransactions::test_RM()
 	userlogc( (char*) "TestTransactions::test_RM pass");
 }
 
+/**
+ * Test that XIDs are recovered via the XA spec xa_recover method.
+ * This functionality covers the following failure scenario:
+ * - server calls prepare on a RM
+ * - RM prepares but the the server fails before it can write to its transaction recovery log
+ * In this case the RM will have a pending transaction branch which does not appear in
+ * the recovery log. Calling xa_recover on the RM will return the 'missing' XID which the
+ * recovery scan will replay.
+ */
+void TestTransactions::test_RM_recovery_scan()
+{
+	int nbranches = 2;
+	fault_t fault1 = {0, 102, O_XA_RECOVER, XA_OK, F_ADD_XIDS, &nbranches, 0};
+
+	userlogc_debug( (char*) "TestTransactions::test_RM_recovery_scan begin");
+
+	/* tell the Resource Manager with rmid 102 to remember prepared XID's */
+	(void) dummy_rm_add_fault(&fault1);
+
+	/* tx_open() should trigger a recovery scan (see XAResourceManagerFactory::run_recovery() */
+	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_open());
+
+	// all resources should have been recovered
+	CPPUNIT_ASSERT_EQUAL(nbranches, fault1.res);
+	// and the number that were recovered should also be nbranches
+	CPPUNIT_ASSERT_EQUAL(nbranches, fault1.res2);
+
+//	atmibroker::tx::TxManager::get_instance()->getRMFac().run_recovery();
+
+	/* clean up */
+	(void) dummy_rm_del_fault(fault1.id);
+	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
+	userlogc( (char*) "TestTransactions::test_RM_recovery_scan pass");
+}
 
 /*
  * Test whether enlisting a resource with a remote transaction manager works
