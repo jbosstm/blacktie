@@ -33,6 +33,7 @@ HybridStompEndpointQueue::HybridStompEndpointQueue(apr_pool_t* pool,
 		char* serviceName) {
 	LOG4CXX_DEBUG(logger, "Creating endpoint queue: " << serviceName);
 	this->message = NULL;
+	this->receipt = NULL;
 	connected = false;
 	shutdown = false;
 	lock = new SynchronizableObject();
