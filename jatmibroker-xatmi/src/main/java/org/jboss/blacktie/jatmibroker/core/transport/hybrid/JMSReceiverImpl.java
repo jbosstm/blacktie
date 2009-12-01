@@ -50,7 +50,7 @@ public class JMSReceiverImpl implements Receiver {
 		isTemporary = true;
 		timeout = Integer.parseInt(properties.getProperty("DestinationTimeout",
 				"10")) * 1000;
-		log.debug("Creating a consumer on: " + destination.getQueueName());
+		log.debug("Creating a consumer on: " + this.destination.getQueueName() + " with timeout: " + timeout);
 	}
 
 	JMSReceiverImpl(Session session, Destination destination,
@@ -59,7 +59,7 @@ public class JMSReceiverImpl implements Receiver {
 		receiver = session.createConsumer(destination);
 		timeout = Integer.parseInt(properties.getProperty("DestinationTimeout",
 				"2")) * 1000;
-		log.debug("Creating a consumer on: " + this.destination.getQueueName());
+		log.debug("Creating a consumer on: " + this.destination.getQueueName() + " with timeout: " + timeout);
 	}
 
 	public Object getReplyTo() throws ConnectionException {

@@ -85,7 +85,7 @@ module AtmiBroker {
 	
 	interface EndpointQueue
 	{
-		oneway void send(
+		void send(
 				  in string replyto_ior,
 				  in short rval,
 				  in long rcode, 

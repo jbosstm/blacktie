@@ -26,7 +26,6 @@
 #include <string.h>
 #include <iostream>
 
-#include "TxPolicyS.h"
 #include "AtmiBrokerPoaFac.h"
 
 #include "userlog.h"
@@ -35,29 +34,6 @@
 log4cxx::LoggerPtr loggerAtmiBrokerPoaFac(log4cxx::Logger::getLogger(
 		"AtmiBrokerPoaFac"));
 
-// install transaction policy on this POA
-void add_transaction_policy(CORBA::ORB_ptr& orb, CORBA::PolicyList& policies,
-		PortableServer::POA_ptr poa, int& index, int maxindex) {
-	if (maxindex - index < 1)
-		return;
-
-	//policies[index++] = poa->create_request_processing_policy(PortableServer::USE_SERVANT_MANAGER);
-	CORBA::Any any;
-	any <<= AtmiTx::ADAPTS;
-
-	try {
-		policies[index++] = orb->create_policy(AtmiTx::OTS_POLICY_TYPE, any);
-	} catch (const ::CORBA::PolicyError& ex) {
-		LOG4CXX_INFO(loggerAtmiBrokerPoaFac,
-				(char*) "no policy factory for AtmiTx::OTS_POLICY_TYPE has been registered: " << ex._name());
-	} catch (...) {
-		userlog(
-				log4cxx::Level::getInfo(),
-				loggerAtmiBrokerPoaFac,
-				(char*) "unexpected error whilst createing policy: AtmiTx::OTS_POLICY_TYPE");
-		throw ; // don't know what to do about that
-	}
-}
 
 AtmiBrokerPoaFac::AtmiBrokerPoaFac() {
 	// Intentionally empty.
@@ -86,12 +62,10 @@ PortableServer::POA_ptr AtmiBrokerPoaFac::createServicePoa(CORBA::ORB_ptr orb,
 	// Create a policy list. Policies not set in the list get default values.
 	//
 	CORBA::PolicyList policies;
-	policies.length(2);
+	policies.length(1);
 	int i = 0;
 	policies[i++] = parent_poa->create_thread_policy(
 			PortableServer::ORB_CTRL_MODEL);
-	//	policies[i++] = parent_poa->create_lifespan_policy(PortableServer::PERSISTENT);
-	add_transaction_policy(orb, policies, parent_poa, i, policies.length());
 
 	return parent_poa->create_POA(poa_name, poa_manager, policies);
 }

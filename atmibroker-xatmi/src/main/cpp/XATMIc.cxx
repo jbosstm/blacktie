@@ -44,7 +44,7 @@ bool warnedTPNOBLOCK = false;
 bool warnedTPGETANY = false;
 
 // Logger for XATMIc
-log4cxx::LoggerPtr loggerXATMI(log4cxx::Logger::getLogger("loggerXATMI"));
+log4cxx::LoggerPtr loggerXATMI(log4cxx::Logger::getLogger("XATMIc"));
 
 int bufferSize(char* data, int suggestedSize) {
 	if (data == NULL) {

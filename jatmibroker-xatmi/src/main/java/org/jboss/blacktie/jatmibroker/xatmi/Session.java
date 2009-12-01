@@ -301,8 +301,14 @@ public class Session {
 						"Could not mark transaction for rollback only");
 			}
 		}
-		sender.send("", EventListener.DISCON_CODE, 0, null, 0, cd, 0, 0, null,
-				null);
+		try {
+			sender.send("", EventListener.DISCON_CODE, 0, null, 0, cd, 0, 0,
+					null, null);
+		} catch (org.omg.CORBA.OBJECT_NOT_EXIST one) {
+			log.warn("The disconnect called failed to notify the remote end");
+			log.debug("The disconnect called failed to notify the remote end",
+					one);
+		}
 
 	}
 

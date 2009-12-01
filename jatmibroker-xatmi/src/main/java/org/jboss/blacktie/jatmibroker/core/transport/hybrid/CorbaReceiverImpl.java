@@ -120,6 +120,7 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 		timeout = Integer.parseInt(properties.getProperty("RequestTimeout"))
 				* 1000 + Integer.parseInt(properties.getProperty("TimeToLive"))
 				* 1000;
+		log.debug("Timeout set as: " + timeout);
 	}
 
 	public POA _default_POA() {
@@ -127,7 +128,7 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 		return m_default_poa;
 	}
 
-	public void send(String replyto_ior, short rval, int rcode, byte[] idata,
+	public synchronized void send(String replyto_ior, short rval, int rcode, byte[] idata,
 			int ilen, int cd, int flags, String type, String subtype) {
 		if (callbackIOR != null) {
 			log.debug("Received: " + callbackIOR);
@@ -160,10 +161,8 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 			}
 		}
 
-		synchronized (this) {
-			returnData.add(message);
-			notify();
-		}
+		returnData.add(message);
+		notify();
 	}
 
 	public java.lang.Object getReplyTo() {
@@ -175,14 +174,16 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 			if (returnData.isEmpty()) {
 				try {
 					if (callbackIOR != null) {
-						log.debug("Waiting" + callbackIOR);
+						log.debug("Waiting: " + callbackIOR);
 					}
 					wait(timeout);
+					log.debug("Waited: " + callbackIOR);
 				} catch (InterruptedException e) {
 					log.error("Caught exception", e);
 				}
 			}
 			if (returnData.isEmpty()) {
+				log.debug("Empty return data: " + callbackIOR);
 				if (JABTransaction.current() != null) {
 					try {
 						JABTransaction.current().rollback_only();

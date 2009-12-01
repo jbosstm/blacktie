@@ -270,6 +270,7 @@ public class Connection {
 	 */
 	public Session tpconnect(String svc, Buffer toSend, int len, int flags)
 			throws ConnectionException {
+		log.debug("tpconnect: " + svc);
 
 		svc = svc.substring(0, Math.min(Connection.XATMI_SERVICE_NAME_LENGTH,
 				svc.length()));
@@ -308,16 +309,20 @@ public class Connection {
 		if (timeToLive != null) {
 			ttl = Integer.parseInt(timeToLive) * 1000;
 		}
+		log.debug("tpconnect sending data");
 		transport.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
 				data, len, correlationId, flags | TPCONV, ttl, type, subtype);
 
 		byte[] response = null;
 		try {
+			log.debug("tpconnect receiving data");
 			X_OCTET odata = (X_OCTET) session.tprecv(0);
 			response = odata.getByteArray();
+			log.debug("tpconnect received data");
 		} catch (ConnectionException e) {
 			if (e.getReceived() != null) {
 				response = ((X_OCTET) e.getReceived()).getByteArray();
+				log.debug("Caught an exception with data", e);
 			} else {
 				throw new ConnectionException(e.getTperrno(),
 						"Could not connect");
@@ -329,6 +334,7 @@ public class Connection {
 		boolean connected = response == null ? false : Arrays.equals(ack,
 				response);
 		if (!connected) {
+			log.error("Could not connect");
 			session.close();
 			throw new ConnectionException(Connection.TPETIME,
 					"Could not connect");

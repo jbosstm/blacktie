@@ -124,9 +124,11 @@ public abstract class Service implements BlacktieService {
 				odata.setByteArray("ACK".getBytes());
 				long result = session.tpsend(odata, olen, 0);
 				if (result == -1) {
+					log.debug("Could not send ack");
 					session.close();
 					return;
 				} else {
+					log.debug("Sent ack");
 					session.setCreatedState(message.flags);
 				}
 			} else {

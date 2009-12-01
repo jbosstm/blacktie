@@ -316,6 +316,8 @@ void testTPConversation_short_service(TPSVCINFO *svcinfo) {
 }
 void testtpdiscon_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "testtpdiscon_service");
+	long timeout = 2;
+	ACE_OS::sleep(timeout);
 }
 
 void testtpfreeservice_service(TPSVCINFO *svcinfo) {

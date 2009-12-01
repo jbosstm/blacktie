@@ -18,6 +18,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "BaseServerTest.h"
+#include "Sleeper.h"
 
 #include "xatmi.h"
 
@@ -83,4 +84,5 @@ void TestTPDiscon::test_tpdiscon_negdescr() {
 
 void testtpdiscon_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "testtpdiscon_service");
+	::sleeper(2);
 }
