@@ -104,12 +104,12 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 			connect();
 			if (connected) {
 				apr_status_t rc = stomp_read(connection, &frame, pool);
-				if (rc == APR_TIMEUP) {
+				if (rc == APR_TIMEUP || rc == 730060) {
 					LOG4CXX_TRACE(logger, "Could not read frame for " << name
 							<< ": as the time limit expired");
 					setSpecific(TPE_KEY, TSS_TPETIME);
 					frame = NULL;
-				} else if (rc != APR_SUCCESS) {
+				} else if (rc != APR_SUCCESS) { // win32 70014 on disconnect
 					LOG4CXX_WARN(logger, "Could not read frame for " << name
 							<< ": " << rc
 							<< " was the result, will attempt to reconnect");

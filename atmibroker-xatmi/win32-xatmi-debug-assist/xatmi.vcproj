@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="oci.lib ACEd.lib TAO_AnyTypeCoded.lib TAO_CodecFactoryd.lib TAO_CosNamingd.lib TAO_IDL_BEd.lib TAO_IDL_FEd.lib TAO_IORInterceptord.lib TAO_ObjRefTemplated.lib TAO_PI_Serverd.lib TAO_PId.lib TAO_PortableServerd.lib TAO_Valuetyped.lib TAOd.lib libapr-1.lib libexpat.lib libstomp.lib log4cxx.lib xerces-c_3D.lib atmibroker-idl.lib cppunitd_dll.lib"
+				AdditionalDependencies="oci.lib ACEd.lib TAO_AnyTypeCoded.lib TAO_CodecFactoryd.lib TAO_CosNamingd.lib TAO_IDL_BEd.lib TAO_IDL_FEd.lib TAO_IORInterceptord.lib TAO_ObjRefTemplated.lib TAO_PI_Serverd.lib TAO_PId.lib TAO_PortableServerd.lib TAO_Valuetyped.lib TAOd.lib libapr-1.lib libexpat.lib log4cxx.lib xerces-c_3D.lib atmibroker-idl.lib cppunitd_dll.lib libstomp.lib"
 				AdditionalLibraryDirectories="C:\app\BlackHat\product\11.1.0\db_1\OCI\lib\MSVC;&quot;..\..\atmibroker-xatmi\target\cxx\runtime\lib&quot;;&quot;..\..\atmibroker-xatmi\target\cxx\test\lib&quot;"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
@@ -166,10 +166,6 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
-			<File
-				RelativePath="..\target\generated-sources\TestRunner.cxx"
-				>
-			</File>
 			<Filter
 				Name="core"
 				>
@@ -221,6 +217,10 @@
 			<Filter
 				Name="xatmi"
 				>
+				<File
+					RelativePath="..\src\main\cpp\AtmiBrokerAdmin.cxx"
+					>
+				</File>
 				<File
 					RelativePath="..\src\main\cpp\AtmiBrokerClient.cxx"
 					>
@@ -278,39 +278,11 @@
 				Name="tx"
 				>
 				<File
-					RelativePath="..\..\atmibroker-tx\src\main\cpp\ClientInterceptor.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\..\atmibroker-tx\src\main\cpp\OTSPolicy.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\..\atmibroker-tx\src\main\cpp\OTSPolicyFactory.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\..\atmibroker-tx\src\main\cpp\ServerInterceptor.cxx"
-					>
-				</File>
-				<File
 					RelativePath="..\..\atmibroker-tx\src\main\cpp\TxAvoid.cxx"
 					>
 				</File>
 				<File
 					RelativePath="..\..\atmibroker-tx\src\main\cpp\TxControl.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\..\atmibroker-tx\src\main\cpp\TxInitializer.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\..\atmibroker-tx\src\main\cpp\TxInterceptor.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\..\atmibroker-tx\src\main\cpp\TxIORInterceptor.cxx"
 					>
 				</File>
 				<File
@@ -350,147 +322,11 @@
 				Name="test"
 				>
 				<File
-					RelativePath="..\src\test\cpp\BaseServerTest.cxx"
+					RelativePath="..\..\..\dist\blacktie-2.0-MR1-SNAPSHOT\examples\xatmi\fooapp\BarService.c"
 					>
 				</File>
 				<File
-					RelativePath="..\src\test\cpp\BaseTest.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\tx\cutil.c"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\tx\DbService.c"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\LoopyServerAndClient.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\tx\ora.c"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\tx\request.c"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\Sleeper.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestClientInit.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestPBF.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestRollbackOnly.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestRollbackOnlyServices.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestServerinit.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestSpecExampleOne.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestSpecExampleTwo.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPACall.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPAdvertise.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPAlloc.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPCall.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPCancel.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPConnect.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPConversation.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPDiscon.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPFree.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPFreeService.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPGetRply.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPRealloc.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPRecv.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPReturn.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPSend.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPService.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPTypes.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPUnadvertise.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\tx\TestTxRMTPCall.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTxTPCall.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\XATMITestSuite.cxx"
+					RelativePath="..\..\..\dist\blacktie-2.0-MR1-SNAPSHOT\examples\xatmi\fooapp\server.c"
 					>
 				</File>
 			</Filter>
@@ -616,23 +452,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\atmibroker-tx\src\main\include\ClientInterceptor.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\atmibroker-tx\src\main\include\OTSPolicy.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\atmibroker-tx\src\main\include\OTSPolicyFactory.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\atmibroker-tx\src\main\export\RMException.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\atmibroker-tx\src\main\include\ServerInterceptor.h"
 					>
 				</File>
 				<File
@@ -649,18 +469,6 @@
 				</File>
 				<File
 					RelativePath="..\..\atmibroker-tx\src\main\include\txi.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\atmibroker-tx\src\main\include\TxInitializer.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\atmibroker-tx\src\main\include\TxInterceptor.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\atmibroker-tx\src\main\include\TxIORInterceptor.h"
 					>
 				</File>
 				<File
