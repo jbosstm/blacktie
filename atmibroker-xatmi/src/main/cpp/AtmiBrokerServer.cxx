@@ -690,9 +690,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 				free(serviceName);
 				return false;
 			} else if (response[0] != 1) {
-				if(isadm && response[0] != 0) {
-					errorBootAdminService = response[0];	
-				} else {
+				if(!isadm || (errorBootAdminService = response[0]) == 2) {
 					LOG4CXX_ERROR(loggerAtmiBrokerServer,
 						"Service returned with error: " << command);
 					tpfree(command);
