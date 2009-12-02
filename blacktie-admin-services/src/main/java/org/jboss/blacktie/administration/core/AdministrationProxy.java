@@ -115,10 +115,9 @@ public class AdministrationProxy {
 		Response rcvbuf = connection.tpcall(service, sendbuf, sendlen, 0);
 		return rcvbuf;
 	}
-
-	private Boolean advertise(String serverName, int id, String serviceName) {
-		log.trace("advertise");
-		String command = "advertise," + serviceName + ",";
+	
+	private Boolean callAdminCommand(String serverName, int id, String command) {
+		log.trace("callAdminCommand");
 		try {
 			Response buf = callAdminService(serverName, id, command);
 			if (buf != null) {
@@ -126,26 +125,22 @@ public class AdministrationProxy {
 				return (received[0] == '1');
 			}
 		} catch (ConnectionException e) {
-			log.error("call server " + serverName + " id " + id
-					+ " failed with " + e.getTperrno());
+			log.error("call server " + serverName + " id " + id + " command " 
+					+ command + " failed with " + e.getTperrno());
 		}
 		return false;
+	}
+
+	private Boolean advertise(String serverName, int id, String serviceName) {
+		log.trace("advertise");
+		String command = "advertise," + serviceName + ",";
+		return callAdminCommand(serverName, id, command);
 	}
 
 	private Boolean unadvertise(String serverName, int id, String serviceName) {
 		log.trace("unadvertise");
 		String command = "unadvertise," + serviceName + ",";
-		try {
-			Response buf = callAdminService(serverName, id, command);
-			if (buf != null) {
-				byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
-				return (received[0] == '1');
-			}
-		} catch (ConnectionException e) {
-			log.error("call server " + serverName + " id " + id
-					+ " failed with " + e.getTperrno());
-		}
-		return false;
+		return callAdminCommand(serverName, id, command);
 	}
 
 	public String getDomainName() {
@@ -160,12 +155,56 @@ public class AdministrationProxy {
 
 	public Boolean pauseDomain() {
 		log.trace("pauseDomain");
-		return false;
+		Boolean result = true;
+		List<String> servers = listRunningServers();
+
+		for (int i = 0; i < servers.size(); i++) {
+			result = pauseServer(servers.get(i)) && result;
+		}
+		return result;
+	}
+	
+	public Boolean pauseServer(String serverName) {
+		log.trace("pauseServer");
+		Boolean result = true;
+		List<Integer> ids = listRunningInstanceIds(serverName);
+
+		for (int i = 0; i < ids.size(); i++) {
+			result = pauseServerById(serverName, ids.get(i)) && result;
+		}
+		return result;
+	}
+	
+	public Boolean pauseServerById(String serverName, int id) {
+		log.trace("pauseServerById");
+		return callAdminCommand(serverName, id, "pause");
 	}
 
 	public Boolean resumeDomain() {
 		log.trace("resumeDomain");
-		return false;
+		Boolean result = true;
+		List<String> servers = listRunningServers();
+
+		for (int i = 0; i < servers.size(); i++) {
+			result = resumeServer(servers.get(i)) && result;
+		}
+		return result;
+	}
+	
+	public Boolean resumeServer(String serverName) {
+		log.trace("resumeServer");
+		Boolean result = true;
+		List<Integer> ids = listRunningInstanceIds(serverName);
+
+		for (int i = 0; i < ids.size(); i++) {
+			result = resumeServerById(serverName, ids.get(i)) && result;
+		}
+		return result;	
+	}
+	
+	public Boolean resumeServerById(String serverName, int id) {
+		log.trace("resumeServerById");
+		return callAdminCommand(serverName, id, "resume");
 	}
 
 	public List<String> getServerList() {
