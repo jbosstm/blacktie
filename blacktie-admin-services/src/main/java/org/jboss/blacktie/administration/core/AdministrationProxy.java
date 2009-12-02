@@ -66,6 +66,8 @@ public class AdministrationProxy {
 	private Connection connection;
 	private Set<String> servers;
 
+	public static Boolean isDomainPause = false;
+	
 	public AdministrationProxy() throws IOException, ConfigurationException,
 			ConnectionException {
 		log.info("debug Administration Proxy");
@@ -161,6 +163,12 @@ public class AdministrationProxy {
 		for (int i = 0; i < servers.size(); i++) {
 			result = pauseServer(servers.get(i)) && result;
 		}
+		
+		if(result == true && isDomainPause == false) {
+			isDomainPause = true;
+			log.info("Domain pause");
+		}
+		
 		return result;
 	}
 	
@@ -188,6 +196,12 @@ public class AdministrationProxy {
 		for (int i = 0; i < servers.size(); i++) {
 			result = resumeServer(servers.get(i)) && result;
 		}
+		
+		if(result == true && isDomainPause == true) {
+			isDomainPause = false;
+			log.info("Domain resume");
+		}
+		
 		return result;
 	}
 	
@@ -346,6 +360,10 @@ public class AdministrationProxy {
 		List<Integer> ids = listRunningInstanceIds(serverName);
 		Boolean result = true;
 
+		if(ids.size() == 0){
+			return false;
+		}
+		
 		for (int i = 0; i < ids.size(); i++) {
 			result = advertise(serverName, ids.get(i), serviceName) && result;
 		}
@@ -357,6 +375,10 @@ public class AdministrationProxy {
 		log.trace("unadvertise");
 		List<Integer> ids = listRunningInstanceIds(serverName);
 		Boolean result = true;
+		
+		if(ids.size() == 0) {
+			return false;
+		}
 
 		for (int i = 0; i < ids.size(); i++) {
 			result = unadvertise(serverName, ids.get(i), serviceName) && result;

@@ -60,7 +60,7 @@ AtmiBrokerServer * ptrServer = NULL;
 bool serverInitialized = false;
 PortableServer::POA_var server_poa;
 bool configFromCmdline = false;
-bool isBootAdminService = true;
+int  errorBootAdminService = 0;
 char configDir[256];
 char server[30];
 int serverid = 0;
@@ -172,7 +172,7 @@ int serverinit(int argc, char** argv) {
 				ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server, serverid);
 				tpadvertise(adm, ADMIN);
 
-				if(isBootAdminService == false) {
+				if(errorBootAdminService == 2) {
 					userlog(log4cxx::Level::getWarn(), loggerAtmiBrokerServer,
 							(char*) "Maybe the same server id running");
 					throw std::exception();
@@ -443,7 +443,13 @@ void AtmiBrokerServer::advertiseAtBootime() {
 int AtmiBrokerServer::block() {
 
 	int toReturn = 0;
-	LOG4CXX_INFO(loggerAtmiBrokerServer, "Server waiting for requests...");
+	if(errorBootAdminService == 3) {
+		LOG4CXX_INFO(loggerAtmiBrokerServer, "Domain is paused");
+		pause();
+	} else {
+		LOG4CXX_INFO(loggerAtmiBrokerServer, "Server waiting for requests...");
+	}
+
 	try {
 		finish->lock();
 		finish->wait(0);
@@ -539,7 +545,7 @@ int AtmiBrokerServer::getServiceStatus(char** toReturn, char* svc) {
 
 			len += ACE_OS::sprintf(str + len,
 					"<service><name>%.15s</name><status>%d</status></service>",
-					(*i).name, (*i).status);
+					(*i).name, isPause && (*i).status? 2 : (*i).status);
 			if(svc != NULL) break;
 		}
 	}
@@ -683,16 +689,16 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 				tpfree(command);
 				free(serviceName);
 				return false;
-			} else if (response[0] == 0) {
-				LOG4CXX_ERROR(loggerAtmiBrokerServer,
+			} else if (response[0] != 1) {
+				if(isadm && response[0] != 0) {
+					errorBootAdminService = response[0];	
+				} else {
+					LOG4CXX_ERROR(loggerAtmiBrokerServer,
 						"Service returned with error: " << command);
-				tpfree(command);
-				free(serviceName);
-
-				if(isadm) {
-					isBootAdminService = false;
+					tpfree(command);
+					free(serviceName);
+					return false;
 				}
-				return false;
 			}
 			tpfree(command);
 		}

@@ -47,6 +47,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.administration.core.AdministrationProxy;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
@@ -184,10 +185,19 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 				setSecurityConfig(queueName);
 			}
 
-			if (queue == false || !serviceName.contains("ADMIN")) {
+			if (queue == false || !serviceName.contains("_ADMIN_")) {
 				result = 1;
+				if(AdministrationProxy.isDomainPause
+						&& serviceName.contains("_ADMIN_")){
+					log.info("Domain is pause");
+					result = 3;
+				}
 			} else if (consumerCount(serviceName) > 0) {
 				log.info("can not advertise ADMIN with same id");
+				result = 2;
+			} else if(AdministrationProxy.isDomainPause) {
+				log.info("Domain is pause");
+				result = 3;
 			} else {
 				result = 1;
 			}

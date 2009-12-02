@@ -277,7 +277,7 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 					if(r){
 						result.setSimpleResult(name + " OK");
 					} else {
-						result.setSimpleResult(name + " FAIL");
+						result.setErrorMessage(name + " FAIL");
 					}
 				} catch (Exception e) {
 					log.error("call " + name + " service " + serviceName
