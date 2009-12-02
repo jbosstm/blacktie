@@ -27,8 +27,8 @@
 #include "userlogc.h"
 
 void TestMultiOrb::setUp() {
+	// Perform set up
 	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=xmltest");
-	AtmiBrokerEnv::discard_instance();
 
 	// Perform global set up
 	TestFixture::setUp();
@@ -36,8 +36,7 @@ void TestMultiOrb::setUp() {
 
 void TestMultiOrb::tearDown() {
 	// Perform clean up
-	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=");
-	AtmiBrokerEnv::discard_instance();
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=.");
 
 	// Perform global clean up
 	TestFixture::tearDown();

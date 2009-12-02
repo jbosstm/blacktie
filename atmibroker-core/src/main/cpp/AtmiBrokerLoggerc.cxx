@@ -99,14 +99,14 @@ void userlog(const log4cxx::LevelPtr& level, const char * format, ...) {
 
 extern void initializeLogger() {
 	if (!loggerInitialized) {
-		if (AtmiBrokerEnv::get_instance()->getenv((char*) "LOG4CXXCONFIG")
-				!= NULL) {
-			log4cxx::PropertyConfigurator::configure(
-					AtmiBrokerEnv::get_instance()->getenv(
-							(char*) "LOG4CXXCONFIG"));
+		AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
+		if (env->getenv((char*) "LOG4CXXCONFIG") != NULL) {
+			log4cxx::PropertyConfigurator::configure(env->getenv(
+					(char*) "LOG4CXXCONFIG"));
 		} else {
 			log4cxx::BasicConfigurator::configure();
 		}
+		AtmiBrokerEnv::discard_instance();
 		loggerInitialized = true;
 	}
 }

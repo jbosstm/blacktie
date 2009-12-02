@@ -147,9 +147,14 @@ int serverinit(int argc, char** argv) {
 	if (toReturn != -1 && ptrServer == NULL) {
 		const char* configuration = getConfiguration();
 		if (configuration != NULL) {
-			AtmiBrokerEnv::set_configuration(configuration);
+			char* configurationEnv = (char*) malloc(23 + 1 + strlen(
+					configuration));
+			::sprintf(configurationEnv, "BLACKTIE_CONFIGURATION=%s",
+					configuration);
+			ACE_OS::putenv(configurationEnv);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-					(char*) "set AtmiBrokerEnv configuration type " << configuration);
+					(char*) "set AtmiBrokerEnv configuration type "
+							<< configuration);
 		}
 
 		try {
@@ -169,7 +174,8 @@ int serverinit(int argc, char** argv) {
 			} else {
 				// make ADMIN service mandatory for server
 				char adm[XATMI_SERVICE_NAME_LENGTH + 1];
-				ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server, serverid);
+				ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1,
+						"%s_ADMIN_%d", server, serverid);
 				tpadvertise(adm, ADMIN);
 
 				if(errorBootAdminService == 2) {
@@ -293,15 +299,16 @@ AtmiBrokerServer::AtmiBrokerServer() {
 				serverInfo.serverName = strdup(servers[i]->serverName);
 				// add service ADMIN
 				char adm[XATMI_SERVICE_NAME_LENGTH + 1];
-				ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server, serverid);
+				ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1,
+						"%s_ADMIN_%d", server, serverid);
 				ServiceInfo service;
 				memset(&service, 0, sizeof(ServiceInfo));
 				service.serviceName = strdup(adm);
-				#ifdef WIN32
-					service.transportLib = strdup("atmibroker-hybrid.dll");
-				#else
-					service.transportLib = strdup("libatmibroker-hybrid.so");
-				#endif
+#ifdef WIN32
+				service.transportLib = strdup("atmibroker-hybrid.dll");
+#else
+				service.transportLib = strdup("libatmibroker-hybrid.so");
+#endif
 				service.poolSize = 1;
 				service.advertised = false;
 				serverInfo.serviceVector.push_back(service);
@@ -471,18 +478,20 @@ void AtmiBrokerServer::shutdown() {
 int AtmiBrokerServer::pause() {
 	if (!isPause) {
 		char adm[XATMI_SERVICE_NAME_LENGTH + 1];
-		ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server, serverid);
+		ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d",
+				server, serverid);
 		for (std::vector<ServiceData>::iterator i = serviceData.begin(); i
 				!= serviceData.end(); i++) {
-			if(ACE_OS::strcmp((*i).serviceInfo->serviceName, adm) != 0) {
+			if (ACE_OS::strcmp((*i).serviceInfo->serviceName, adm) != 0) {
 				LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "pausing service"
 						<< (*i).serviceInfo->serviceName);
 				for (std::vector<ServiceDispatcher*>::iterator j =
 						(*i).dispatchers.begin(); j != (*i).dispatchers.end(); j++) {
 					ServiceDispatcher* dispatcher = (*j);
 					if (dispatcher->pause() != 0) {
-						LOG4CXX_WARN(loggerAtmiBrokerServer, (char*) "pause service dispatcher "
-								<< dispatcher << " failed");
+						LOG4CXX_WARN(loggerAtmiBrokerServer,
+								(char*) "pause service dispatcher "
+										<< dispatcher << " failed");
 					}
 				}
 			}
@@ -496,7 +505,7 @@ int AtmiBrokerServer::pause() {
 }
 
 int AtmiBrokerServer::resume() {
-	if(isPause) {
+	if (isPause) {
 		for (std::vector<ServiceData>::iterator i = serviceData.begin(); i
 				!= serviceData.end(); i++) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "resuming service"
@@ -505,13 +514,14 @@ int AtmiBrokerServer::resume() {
 					(*i).dispatchers.begin(); j != (*i).dispatchers.end(); j++) {
 				ServiceDispatcher* dispatcher = (*j);
 				if (dispatcher->resume() != 0) {
-					LOG4CXX_WARN(loggerAtmiBrokerServer, (char*) "resume service dispatcher "
-							<< dispatcher << " failed");
+					LOG4CXX_WARN(loggerAtmiBrokerServer,
+							(char*) "resume service dispatcher " << dispatcher
+									<< " failed");
 				}
 			}
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "resume service"
 					<< (*i).serviceInfo->serviceName << " done");
-		}	
+		}
 		isPause = false;
 		LOG4CXX_INFO(loggerAtmiBrokerServer, (char*) "Server Resume");
 	}
@@ -529,24 +539,26 @@ int AtmiBrokerServer::getServiceStatus(char** toReturn, char* svc) {
 	char* str;
 	int size = sizeof(char) * (9 + 14 + strlen(serverName) + 11 + 12 + 10);
 	char adm[XATMI_SERVICE_NAME_LENGTH + 1];
-	ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server, serverid);
-	
-	str = (char*)malloc(size);
+	ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server,
+			serverid);
+
+	str = (char*) malloc(size);
 	len += ACE_OS::sprintf(str + len, "<server>");
 	len += ACE_OS::sprintf(str + len, "<name>%s</name>", serverName);
 	len += ACE_OS::sprintf(str + len, "<services>");
 	for (std::vector<ServiceStatus>::iterator i = serviceStatus.begin(); i
 			!= serviceStatus.end(); i++) {
-		if(strcmp(adm, (*i).name) != 0 && 
-			(svc == NULL || ACE_OS::strcmp(svc, (*i).name) == 0)) {
+		if (strcmp(adm, (*i).name) != 0 && (svc == NULL || ACE_OS::strcmp(svc,
+				(*i).name) == 0)) {
 			int svcsize = sizeof(char) * (50 + strlen((*i).name));
 			size += svcsize;
-			str = (char*)realloc(str, size);
+			str = (char*) realloc(str, size);
 
 			len += ACE_OS::sprintf(str + len,
 					"<service><name>%.15s</name><status>%d</status></service>",
 					(*i).name, isPause && (*i).status? 2 : (*i).status);
-			if(svc != NULL) break;
+			if (svc != NULL)
+				break;
 		}
 	}
 
@@ -589,7 +601,10 @@ bool AtmiBrokerServer::advertiseService(char * svcname) {
 			return advertiseService(svcname, (*i).func);
 		}
 	}
-	LOG4CXX_WARN(loggerAtmiBrokerServer, (char*) "Could not advertise service, was not registered in Environment.xml: " << svcname);
+	LOG4CXX_WARN(
+			loggerAtmiBrokerServer,
+			(char*) "Could not advertise service, was not registered in Environment.xml: "
+					<< svcname);
 	return false;
 }
 
@@ -603,7 +618,8 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 
 	bool isadm = false;
 	char adm[XATMI_SERVICE_NAME_LENGTH + 1];
-	ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server, serverid);
+	ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server,
+			serverid);
 	if (strcmp(adm, svcname) == 0) {
 		isadm = true;
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "advertise Admin svc "
@@ -626,7 +642,10 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 		}
 	}
 	if (!found) {
-		LOG4CXX_WARN(loggerAtmiBrokerServer, (char*) "Could not advertise service, was not registered for server in Environment.xml: " << svcname);
+		LOG4CXX_WARN(
+				loggerAtmiBrokerServer,
+				(char*) "Could not advertise service, was not registered for server in Environment.xml: "
+						<< svcname);
 		setSpecific(TPE_KEY, TSS_TPELIMIT);
 		free(serviceName);
 		return false;

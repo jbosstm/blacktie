@@ -28,17 +28,13 @@
 #include "malloc.h"
 #include <string.h>
 void TestAtmiBrokerXml::setUp() {
-	AtmiBrokerEnv::discard_instance();
-
 	// Perform global set up
 	TestFixture::setUp();
 }
 
 void TestAtmiBrokerXml::tearDown() {
-	// Perform clean up
-	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=");
-	AtmiBrokerEnv::discard_instance();
-
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=.");
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION=");
 	// Perform global clean up
 	TestFixture::tearDown();
 }
@@ -62,9 +58,10 @@ void TestAtmiBrokerXml::test_service() {
 void TestAtmiBrokerXml::test_env() {
 	userlogc((char*) "RUNNING");
 	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=xmltest");
-	AtmiBrokerEnv::set_configuration("xmltest");
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION=xmltest");
+	AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
 	char* value;
-	value = AtmiBrokerEnv::get_instance()->getenv((char*) "MYLIBTEST");
+	value = env->getenv((char*) "MYLIBTEST");
 	CPPUNIT_ASSERT(strcmp(value, "xmltestfoo.xmltest") == 0);
 
 	value = orbConfig.opt;
@@ -90,8 +87,7 @@ void TestAtmiBrokerXml::test_env() {
 			"libatmibroker-hybrid.so") == 0);
 #endif
 
-	char* transport = AtmiBrokerEnv::get_instance()->getTransportLibrary(
-			(char*) "BAR");
+	char* transport = env->getTransportLibrary((char*) "BAR");
 #ifdef WIN32
 	CPPUNIT_ASSERT(strcmp(transport, "atmibroker-hybrid.dll") == 0);
 #else
@@ -165,12 +161,11 @@ void TestAtmiBrokerXml::test_define_adminservice() {
 
 	try {
 		AtmiBrokerEnv::get_instance();
+		AtmiBrokerEnv::discard_instance();
+		CPPUNIT_FAIL("CAN NOT DEFINE ADMIN SERVICE");
 	} catch (std::exception& e) {
-		userlogc((char*)"define admin services test ok");
-		return;
+		userlogc((char*) "define admin services test ok");
 	}
-	
-	CPPUNIT_FAIL("CAN NOT DEFINE ADMIN SERVICE");
 }
 
 void TestAtmiBrokerXml::test_same_service() {
@@ -178,10 +173,9 @@ void TestAtmiBrokerXml::test_same_service() {
 
 	try {
 		AtmiBrokerEnv::get_instance();
+		AtmiBrokerEnv::discard_instance();
+		CPPUNIT_FAIL("CAN NOT DEFINE SAME SERVICE IN DIFFERENT SERVER");
 	} catch (std::exception& e) {
-		userlogc((char*)"same services test ok");
-		return;
+		userlogc((char*) "same services test ok");
 	}
-
-	CPPUNIT_FAIL("CAN NOT DEFINE SAME SERVICE IN DIFFERENT SERVER");
 }

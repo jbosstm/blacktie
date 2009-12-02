@@ -26,6 +26,7 @@
 #include "Session.h"
 #include "ConnectionManager.h"
 #include "SynchronizableObject.h"
+#include "AtmiBrokerEnv.h"
 
 class AtmiBrokerClient {
 public:
@@ -40,6 +41,7 @@ protected:
 	ConnectionManager clientConnectionManager;
 	int nextSessionId;
 	SynchronizableObject* lock;
+	AtmiBrokerEnv* env;
 };
 
 // CLIENT

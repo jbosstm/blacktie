@@ -36,7 +36,7 @@ public:
 	void testStatus();
 	void testMessageCounter();
 	void testServerPauseAndResume();
-	long getBARCounter();
+	char* getBARCounter();
 	virtual void setUp();
 	virtual void tearDown();
 };

@@ -25,7 +25,7 @@
 
 class BaseAdminTest: public BaseServerTest {
 public:
-	int  callADMIN(char*, char, int, long*);
+	int  callADMIN(char*, char, int, char**);
 	int  callBAR(int);
 	virtual void setUp();
 	virtual void tearDown();

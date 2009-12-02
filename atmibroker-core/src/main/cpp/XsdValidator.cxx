@@ -23,10 +23,12 @@ log4cxx::LoggerPtr XsdValidator::logger(
 MYHandler::MYHandler()
 	: fSawErrors(false)
 {
+	LOG4CXX_TRACE(XsdValidator::getLogger(), "Created MYHandler");
 }
 
 MYHandler::~MYHandler()
 {
+	LOG4CXX_TRACE(XsdValidator::getLogger(), "Destroyed MYHandler");
 }
 
 void MYHandler::error(const SAXParseException& e)
@@ -193,8 +195,9 @@ bool XsdValidator::validate(const char* aXSDFileName, const char* aXMLFileName)
 			LOG4CXX_ERROR(logger, "Unexpected exception during parsing: " << aXMLFileName);
 		} 
 
+		LOG4CXX_DEBUG(logger, "deleting parser");
 		delete parser;
-		LOG4CXX_DEBUG(logger, "destory schema parser");
+		LOG4CXX_DEBUG(logger, "deleted parser");
 	}
 
 	return result;

@@ -89,10 +89,11 @@ static void init_logpath(const char *fname)
 		ACE_OS::snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s", fname);
 	} else {
 		// if fname is not passed see if the log name is set in the environent
-		const char *rcLog    = AtmiBrokerEnv::get_instance()->getenv((char*) "BLACKTIE_RC_LOG_NAME", DEF_LOG);
-		const char *servName = AtmiBrokerEnv::get_instance()->getenv((char*) "BLACKTIE_SERVER_NAME", rcLog);
-
+		AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
+		const char *rcLog    = env->getenv((char*) "BLACKTIE_RC_LOG_NAME", DEF_LOG);
+		const char *servName = env->getenv((char*) "BLACKTIE_SERVER_NAME", rcLog);
 		ACE_OS::snprintf(RCLOGPATH, sizeof (RCLOGPATH), "%s", servName);
+		AtmiBrokerEnv::discard_instance();
 	}
 
 	LOG4CXX_TRACE(xarcllogger, (char *) "Using log file " << RCLOGPATH);
@@ -105,7 +106,7 @@ static void init_logpath(const char *fname)
 XARecoveryLog::XARecoveryLog(const char* logfile) throw (RMException) :
 	arena_(0), nblocks_((size_t) 0), maxblocks_(0)
 {
-	bool isClient = false; //(AtmiBrokerEnv::get_instance()->getenv("BLACKTIE_CONFIGURATION", 0) != 0);
+	bool isClient = false;
 	init_logpath(logfile);
 
 	if (!isClient && !load_log(RCLOGPATH)) {
@@ -133,7 +134,9 @@ XARecoveryLog::~XARecoveryLog()
  */
 bool XARecoveryLog::load_log(const char* logname)
 {
-	const char* maxblk = AtmiBrokerEnv::get_instance()->getenv("BLACKTIE_MAX_RCLOG_SIZE", MAXBLOCKS);
+	AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
+	const char* maxblk = env->getenv("BLACKTIE_MAX_RCLOG_SIZE", MAXBLOCKS);
+	AtmiBrokerEnv::discard_instance();
 
 	ios_base::openmode mode = ios::out | ios::in | ios::binary;
 

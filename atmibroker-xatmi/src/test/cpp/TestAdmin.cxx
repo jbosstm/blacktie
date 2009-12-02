@@ -17,6 +17,7 @@
  */
 #include <cppunit/extensions/HelperMacros.h>
 #include "TestAdmin.h"
+#include "malloc.h"
 
 void TestAdmin::setUp() {
 	userlogc((char*) "TestAdmin::setUp");
@@ -28,8 +29,8 @@ void TestAdmin::tearDown() {
 	BaseAdminTest::tearDown();
 }
 
-long TestAdmin::getBARCounter() {
-	long n = 0;
+char* TestAdmin::getBARCounter() {
+	char* n = NULL;
 	int cd;
 
 	cd = callADMIN((char*)"counter,BAR,", '1', 0, &n);	
@@ -47,9 +48,13 @@ void TestAdmin::testStatus() {
 }
 
 void TestAdmin::testMessageCounter() {
-	CPPUNIT_ASSERT(getBARCounter() == 0);
+	char* barCounter = getBARCounter();
+	CPPUNIT_ASSERT(strncmp(barCounter, "0", 1) == 0);
+	free (barCounter);
 	CPPUNIT_ASSERT(callBAR(0) == 0);
-	CPPUNIT_ASSERT(getBARCounter() == 1);
+	barCounter = getBARCounter();
+	CPPUNIT_ASSERT(strncmp(barCounter, "1", 1) == 0);
+	free (barCounter);
 }
 
 void TestAdmin::testServerdone() {

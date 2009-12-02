@@ -122,7 +122,7 @@ public class XMLParser {
 			}
 		} else if (throwException) {
 			throw new ConfigurationException(
-					"Could not load the configuration file: " + env);
+					"Could not load the configuration file: " + env + " from directory: " + System.getProperty("user.dir"));
 		}
 	}
 }

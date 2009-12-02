@@ -71,10 +71,11 @@ bool HybridConnectionImpl::requiresAdminCall() {
 }
 
 stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
+	LOG4CXX_DEBUG(logger, "connect:" << timeout);
 	stomp_connection* connection = NULL;
 	std::string host = mqConfig.host;
 	int portNum = mqConfig.port;
-	LOG4CXX_DEBUG(logger, "Connecting to: " << host << ":" << portNum);
+	LOG4CXX_DEBUG(logger, "connect to: " << host << ":" << portNum);
 	apr_status_t rc = stomp_connect(&connection, host.c_str(), portNum, pool);
 	if (rc != APR_SUCCESS) {
 		LOG4CXX_ERROR(logger, (char*) "Connection failed: " << host << ", "

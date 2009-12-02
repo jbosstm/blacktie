@@ -26,10 +26,9 @@
 extern "C" {
 #include "AtmiBrokerClientControl.h"
 }
-static char  orig_env[256];
 
 void TestClientInit::test_clientinit() {
-	userlogc((char*) "test_clientinit");
+	userlogc((char*) "TestClientInit::test_clientinit");
 	CPPUNIT_ASSERT(tperrno == 0);
 	int valToTest = ::clientinit();
 	CPPUNIT_ASSERT(valToTest != -1);
@@ -41,13 +40,7 @@ void TestClientInit::test_clientinit() {
 }
 
 void TestClientInit::test_config_env() {
-	userlogc((char*) "test_config_env");
-	char* env;
-
-	env = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
-	if(env != NULL){
-		ACE_OS::snprintf(orig_env, 256, "BLACKTIE_CONFIGURATION_DIR=%s", env);
-	}
+	userlogc((char*) "TestClientInit::test_config_env");
 
 	CPPUNIT_ASSERT(tperrno == 0);
 	int valToTest = ::clientinit();
@@ -61,11 +54,6 @@ void TestClientInit::test_config_env() {
 	/* wrong envionment */
 	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=nosuch_conf");
 	valToTest = ::clientinit();
-	//CPPUNIT_ASSERT(valToTest == -1);
-
-	if(env != NULL) {
-		ACE_OS::putenv(orig_env);
-	} else {
-		ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=");
-	}
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=.");
+	CPPUNIT_ASSERT(valToTest == -1);
 }

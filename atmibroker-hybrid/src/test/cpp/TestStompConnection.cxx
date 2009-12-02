@@ -24,6 +24,8 @@
 
 void TestStompConnection::setUp() {
 	userlogc("TestStompConnection::setUp");
+	AtmiBrokerEnv::get_instance();
+
 	serverConnection = NULL;
 	clientConnection = NULL;
 	serverConnection = new HybridConnectionImpl((char*) "server");

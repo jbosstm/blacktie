@@ -30,7 +30,7 @@
 log4cxx::LoggerPtr loggerConnectionManager(log4cxx::Logger::getLogger(
 		"ConnectionManager"));
 extern char server[30];
-extern int  serverid;
+extern int serverid;
 
 #ifdef IDE_DEBUG
 #include "ConnectionImpl.h"
@@ -63,20 +63,23 @@ Connection*
 ConnectionManager::getConnection(char* serviceName, char* side) {
 	char* transportLibrary;
 	char adm[XATMI_SERVICE_NAME_LENGTH + 1];
-	ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server, serverid);
+	ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server,
+			serverid);
 
-	if(strcmp(serviceName, adm) == 0) {
+	if (strcmp(serviceName, adm) == 0) {
 #ifdef WIN32
 		transportLibrary = (char*) "atmibroker-hybrid.dll";
 #else
 		transportLibrary = (char*) "libatmibroker-hybrid.so";
 #endif
 	} else {
-		transportLibrary =
-			AtmiBrokerEnv::get_instance()->getTransportLibrary(serviceName);
+		AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
+		transportLibrary = env->getTransportLibrary(serviceName);
+		AtmiBrokerEnv::discard_instance();
 		if (transportLibrary == NULL) {
-			LOG4CXX_WARN(loggerConnectionManager, (char*) "service " << serviceName
-					<< " has not transportLibrary config");
+			LOG4CXX_WARN(loggerConnectionManager, (char*) "service "
+					<< serviceName
+					<< " is not configured in the Environment.xml");
 			throw std::exception();
 		}
 	}

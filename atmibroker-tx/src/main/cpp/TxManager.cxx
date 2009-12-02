@@ -64,6 +64,7 @@ TxManager::TxManager() :
 	_whenReturn(TX_COMMIT_DECISION_LOGGED), _controlMode(TX_UNCHAINED), _timeout (0L), _isOpen(false)
 {
 	FTRACE(txmlogger, "ENTER");
+	AtmiBrokerEnv::get_instance();
 	_connection = ::initOrb((char*) "ots");
 	LOG4CXX_DEBUG(txmlogger, (char*) "new CONNECTION: " << _connection);
 }
@@ -75,6 +76,7 @@ TxManager::~TxManager()
 		(void) close();
 		LOG4CXX_DEBUG(txmlogger, (char*) "deleting CONNECTION: " << _connection);
 		shutdownBindings(_connection);
+		AtmiBrokerEnv::discard_instance();
 	}
 }
 
@@ -274,7 +276,6 @@ int TxManager::open(void)
 		return TX_OK;
 
 	if (_txfac == NULL) {
-		AtmiBrokerEnv::get_instance();
 		char *transFactoryId = orbConfig.transactionFactoryName;
 
 		if (transFactoryId == NULL || strlen(transFactoryId) == 0) {
@@ -290,7 +291,6 @@ int TxManager::open(void)
 			LOG4CXX_DEBUG(txmlogger, (char*) "resolved OK: " << (void*) obj);
 			_txfac = CosTransactions::TransactionFactory::_narrow(obj);
 			LOG4CXX_DEBUG(txmlogger, (char*) "narrowed OK: " << (void*) _txfac);
-
 		} catch (CORBA::SystemException & e) {
 			LOG4CXX_ERROR(txmlogger, 
 				(char*) "Error resolving Tx Service: " << e._name() << " minor code: " << e.minor());

@@ -27,8 +27,6 @@
 #include "userlogc.h"
 
 void TestSymbolLoader::setUp() {
-	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=.");
-	AtmiBrokerEnv::discard_instance();
 
 	// Perform global set up
 	TestFixture::setUp();
@@ -36,8 +34,7 @@ void TestSymbolLoader::setUp() {
 
 void TestSymbolLoader::tearDown() {
 	// Perform clean up
-	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=");
-	AtmiBrokerEnv::discard_instance();
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION=");
 
 	// Perform global clean up
 	TestFixture::tearDown();
@@ -45,14 +42,14 @@ void TestSymbolLoader::tearDown() {
 
 void TestSymbolLoader::test() {
 #ifdef WIN32
-	AtmiBrokerEnv::set_configuration("win32");
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION=win32");
 #else
-	AtmiBrokerEnv::set_configuration("linux");
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION=linux");
 #endif
 
-	AtmiBrokerEnv::discard_instance();
-	char* lib = (char *) AtmiBrokerEnv::get_instance()->getenv((char *) "test-lib");
-	char* symbol = (char *) AtmiBrokerEnv::get_instance()->getenv((char *) "test-symbol");
+	AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
+	char* lib = (char *) env->getenv((char *) "test-lib");
+	char* symbol = (char *) env->getenv((char *) "test-symbol");
 	ACE_DLL dll;
 	int retval = dll.open(lib, ACE_DEFAULT_SHLIB_MODE, 0);
 
@@ -71,8 +68,10 @@ void TestSymbolLoader::test() {
 		}
 
 		userlogc((char*) "found symbol");
+		AtmiBrokerEnv::discard_instance();
 	} catch (std::exception& e) {
 		userlogc((char *) "symbol addr%s=%s", sym, e.what());
+		AtmiBrokerEnv::discard_instance();
 		CPPUNIT_FAIL("exception");
 	}
 }

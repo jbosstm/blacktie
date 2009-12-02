@@ -338,7 +338,9 @@ XAResourceManager * XAResourceManagerFactory::createRM(
 void XAResourceManagerFactory::create_poa(CORBA_CONNECTION * connection) throw (RMException) {
 	FTRACE(xarflogger, "ENTER");
 
-	const char* poaname = AtmiBrokerEnv::get_instance()->getenv("BLACKTIE_SERVER_NAME", "ATMI_RM_POA");
+	AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
+	const char* poaname = env->getenv("BLACKTIE_SERVER_NAME", "ATMI_RM_POA");
+	AtmiBrokerEnv::discard_instance();
 	PortableServer::POAManager_ptr poa_manager = (PortableServer::POAManager_ptr) connection->root_poa_manager;
 	PortableServer::POA_ptr parent_poa = (PortableServer::POA_ptr) connection->root_poa;
 	PortableServer::LifespanPolicy_var p1 = parent_poa->create_lifespan_policy(PortableServer::PERSISTENT);

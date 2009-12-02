@@ -21,9 +21,9 @@
 #include "ace/OS_NS_stdio.h"
 #include "ace/OS_NS_string.h"
 #include "AtmiBrokerServer.h"
+#include "AtmiBrokerClientControl.h"
 
 extern void test_service(TPSVCINFO *svcinfo);
-static char  orig_env[256];
 
 void TestServerinit::test_serverinit() {
 	userlogc((char*) "test_serverinit");
@@ -50,10 +50,6 @@ void TestServerinit::test_config_env() {
 	int result;
 	char* argv[] = {(char*)"server", (char*)"-i", (char*)"1"};
 	int argc = sizeof(argv)/sizeof(char*);
-	char* env = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
-	if(env != NULL){
-		ACE_OS::snprintf(orig_env, 256, "BLACKTIE_CONFIGURATION_DIR=%s", env);
-	}
 
 	result = serverinit(argc, argv);
 	CPPUNIT_ASSERT(result != -1);
@@ -63,15 +59,12 @@ void TestServerinit::test_config_env() {
 	CPPUNIT_ASSERT(result != -1);
 	CPPUNIT_ASSERT(tperrno == 0);
 
+	clientdone();
+
 	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=nosuch_conf");
 	result = serverinit(argc, argv);
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=.");
 	CPPUNIT_ASSERT(result == -1);
-
-	if(env != NULL) {
-		ACE_OS::putenv(orig_env);
-	} else {
-		ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=");
-	}
 }
 
 void TestServerinit::test_config_cmdline() {

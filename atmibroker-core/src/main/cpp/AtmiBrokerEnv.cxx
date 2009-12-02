@@ -42,26 +42,53 @@ AtmiBrokerEnv *AtmiBrokerEnv::ptrAtmiBrokerEnv = NULL;
 
 char* configuration = NULL;
 SynchronizableObject instance_lock;
+int referencesAtmiBrokerEnv = 0;
 
-AtmiBrokerEnv *
-AtmiBrokerEnv::get_instance() {
+AtmiBrokerEnv * AtmiBrokerEnv::get_instance() {
 	instance_lock.lock();
-	try {
-		if (ptrAtmiBrokerEnv == NULL)
-			ptrAtmiBrokerEnv = new AtmiBrokerEnv();
-		instance_lock.unlock();
-	} catch (...) {
-		instance_lock.unlock();
-		throw ;
+	if (referencesAtmiBrokerEnv == 0) {
+		if (ptrAtmiBrokerEnv == NULL) {
+			try {
+				LOG4CXX_DEBUG(loggerAtmiBrokerEnv,
+						(char*) "Creating AtmiBrokerEnv");
+				ptrAtmiBrokerEnv = new AtmiBrokerEnv();
+			} catch (...) {
+				instance_lock.unlock();
+				throw ;
+			}
+		} else {
+			LOG4CXX_WARN(loggerAtmiBrokerEnv,
+					(char*) "Did not create AtmiBrokerEnv");
+		}
 	}
+	referencesAtmiBrokerEnv++;
+	LOG4CXX_TRACE(loggerAtmiBrokerEnv,
+			(char*) "Reference count: " << referencesAtmiBrokerEnv);
+	instance_lock.unlock();
 	return ptrAtmiBrokerEnv;
 }
 
 void AtmiBrokerEnv::discard_instance() {
 	instance_lock.lock();
-	if (ptrAtmiBrokerEnv != NULL) {
-		delete ptrAtmiBrokerEnv;
-		ptrAtmiBrokerEnv = NULL;
+	referencesAtmiBrokerEnv--;
+	LOG4CXX_TRACE(loggerAtmiBrokerEnv, (char*) "Reference count: "
+			<< referencesAtmiBrokerEnv);
+	if (referencesAtmiBrokerEnv == 0) {
+		if (ptrAtmiBrokerEnv != NULL) {
+			try {
+				LOG4CXX_DEBUG(loggerAtmiBrokerEnv,
+						(char*) "Deleting AtmiBrokerEnv");
+				delete ptrAtmiBrokerEnv;
+			} catch (...) {
+				instance_lock.unlock();
+				ptrAtmiBrokerEnv = NULL;
+				throw ;
+			}
+			ptrAtmiBrokerEnv = NULL;
+		} else {
+			LOG4CXX_WARN(loggerAtmiBrokerEnv,
+					(char*) "Did not delete AtmiBrokerEnv");
+		}
 	}
 	instance_lock.unlock();
 }
@@ -103,15 +130,13 @@ AtmiBrokerEnv::AtmiBrokerEnv() {
 	readEnvironment = false;
 
 	set_environment_dir(ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR"));
-	if (configuration == NULL) {
-		set_configuration(ACE_OS::getenv("BLACKTIE_CONFIGURATION"));
-	}
+	set_configuration(ACE_OS::getenv("BLACKTIE_CONFIGURATION"));
 
 	try {
 		readenv();
 	} catch (...) {
 		destroy();
-		throw;
+		throw ;
 	}
 }
 
@@ -135,23 +160,24 @@ void AtmiBrokerEnv::destroy() {
 	//free(namingServiceId);
 	//free(transFactoryId);
 
-	if (xarmp)
+	if (xarmp) {
 		xarmp = xarmp->head;
 
-	while (xarmp) {
-		xarm_config_t * next = xarmp->next;
+		while (xarmp) {
+			xarm_config_t * next = xarmp->next;
 
-		free(xarmp->resourceName);
-		free(xarmp->openString);
-		free(xarmp->closeString);
-		free(xarmp->xasw);
-		free(xarmp->xalib);
+			free(xarmp->resourceName);
+			free(xarmp->openString);
+			free(xarmp->closeString);
+			free(xarmp->xasw);
+			free(xarmp->xalib);
 
-		free( xarmp);
+			free( xarmp);
 
-		xarmp = next;
+			xarmp = next;
+		}
+		xarmp = 0;
 	}
-	xarmp = 0;
 
 	if (servers.size() != 0) {
 		for (ServersInfo::iterator server = servers.begin(); server
@@ -173,11 +199,13 @@ void AtmiBrokerEnv::destroy() {
 		servers.clear();
 	}
 
+	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "free orbConfig");
 	free(orbConfig.opt);
 	free(orbConfig.transactionFactoryName);
 	orbConfig.opt = NULL;
 	orbConfig.transactionFactoryName = NULL;
 
+	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "free mqConfig");
 	free(mqConfig.host);
 	free(mqConfig.user);
 	free(mqConfig.pwd);

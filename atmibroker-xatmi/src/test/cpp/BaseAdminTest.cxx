@@ -32,7 +32,7 @@ void BaseAdminTest::tearDown() {
 	BaseServerTest::tearDown();
 }
 
-int BaseAdminTest::callADMIN(char* command, char expect, int r, long* n) {
+int BaseAdminTest::callADMIN(char* command, char expect, int r, char** n) {
 	long  sendlen = strlen(command) + 1;
 	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
 	strcpy(sendbuf, command);
@@ -45,7 +45,8 @@ int BaseAdminTest::callADMIN(char* command, char expect, int r, long* n) {
 	CPPUNIT_ASSERT(r == tperrno);
 
 	if(ACE_OS::strncmp(command, "counter", 7) == 0) {
-		*n = atol(&recvbuf[1]);
+		*n = (char*) malloc(recvlen -1);
+		memcpy(*n, &recvbuf[1], recvlen -1);
 	} else if(ACE_OS::strncmp(command, "status", 6) == 0) {
 		userlogc((char*) "len is %d, service status: %s", recvlen, &recvbuf[1]);
 	}

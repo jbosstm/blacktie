@@ -27,22 +27,22 @@
 #include "ThreadLocalStorage.h"
 #include "userlogc.h"
 #include "testTxAvoid.h"
+#include "ace/OS_NS_stdlib.h"
+#include "ace/OS_NS_stdio.h"
+#include "ace/OS_NS_string.h"
 
 //using namespace std;
 
 void TestTransactions::setUp()
 {
 	txx_stop();
-	AtmiBrokerEnv::discard_instance();
 #ifdef WIN32
-	AtmiBrokerEnv::set_configuration("win32");
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION=win32");
 #else
-	AtmiBrokerEnv::set_configuration("linux");
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION=linux");
 #endif
+	AtmiBrokerEnv::get_instance();
 
-	// make sure the thread is clean - TODO check whether this needed - it shouldn't be
-	userlogc_debug( (char*) "TestTransactions::setUp disassociate: cleaning thread");
-//	txx_release_control(txx_unbind());
 	TestFixture::setUp();
 }
 
@@ -51,7 +51,8 @@ void TestTransactions::tearDown()
 	txx_stop();
 	TestFixture::tearDown();
 
-	AtmiBrokerEnv::set_configuration(NULL);
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION=");
+	AtmiBrokerEnv::discard_instance();
 }
 
 void TestTransactions::test_rclog()
@@ -125,11 +126,10 @@ void TestTransactions::test_protocol()
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_commit());
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_close());
 
+	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_open());
 	/* cause RM 102 start to fail */
 	fault_t fault = {0, 102, O_XA_START, XAER_RMERR};
 	(void) dummy_rm_add_fault(&fault);
-
-	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_open());
 	// tx_begin should return TX_ERROR if rm return errors, and the caller is not in transaction mode
 	CPPUNIT_ASSERT_EQUAL(TX_ERROR, tx_begin());
 	CPPUNIT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_commit());

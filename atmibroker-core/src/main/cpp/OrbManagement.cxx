@@ -41,6 +41,7 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 	LOG4CXX_DEBUG(loggerOrbManagement, (char*) "initOrb" << connectionName);
 
 	if (references == 0) {
+		AtmiBrokerEnv::get_instance();
 		connection = new CORBA_CONNECTION;
 		connection->connectionName = connectionName;
 		connection->orbRef = NULL;
@@ -52,7 +53,6 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 		connection->poaFactory = NULL;
 
 		LOG4CXX_DEBUG(loggerOrbManagement, (char*) "initOrb initing ORB");
-		AtmiBrokerEnv::get_instance();
 		std::string values = orbConfig.opt;
 		LOG4CXX_TRACE(loggerOrbManagement, (char*) "initOrb OPT: " << values);
 		char * cstr, *p;
@@ -141,6 +141,7 @@ CORBA_CONNECTION* initOrb(char* connectionName) {
 		connection->root_poa_manager->activate();
 		LOG4CXX_DEBUG(loggerOrbManagement,
 				(char*) "activated poa - started processing requests");
+		AtmiBrokerEnv::discard_instance();
 	} else {
 		LOG4CXX_DEBUG(loggerOrbManagement,
 				(char*) "Returning corbaConnection singleton");

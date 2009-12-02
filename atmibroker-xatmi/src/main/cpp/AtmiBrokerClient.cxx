@@ -121,7 +121,8 @@ int clientdone() {
 AtmiBrokerClient::AtmiBrokerClient() {
 	try {
 		lock = new SynchronizableObject();
-		AtmiBrokerEnv::get_instance();
+		this->env = NULL;
+		this->env = AtmiBrokerEnv::get_instance();
 		nextSessionId = 0;
 		clientInitialized = true;
 		currentConnection = NULL;
@@ -136,7 +137,9 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "destructor");
 	AtmiBrokerMem::discard_instance();
 	txx_stop();
-	AtmiBrokerEnv::discard_instance();
+	if (env != NULL) {
+		AtmiBrokerEnv::discard_instance();
+	}
 	clientConnectionManager.closeConnections();
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleted services");
 	delete lock;
