@@ -26,6 +26,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
+import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 import org.jboss.blacktie.jatmibroker.xatmi.mdb.MDBBlacktieService;
 
 import org.jboss.ejb3.annotation.Depends;
@@ -44,14 +45,13 @@ public class EchoServiceTestService extends MDBBlacktieService implements
 	}
 
 	public Response tpservice(TPSVCINFO svcinfo) {
-		String rcvd = new String(svcinfo.getBuffer().getData());
+		X_OCTET rcvd = (X_OCTET) svcinfo.getBuffer();
 		try {
-			Buffer buffer = new Buffer("X_OCTET", null);
-			buffer.setData(rcvd.getBytes());
-			return new Response(Connection.TPSUCCESS, 0, buffer, rcvd.length(),
-					0);
+			X_OCTET buffer = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
+			buffer.setByteArray(rcvd.getByteArray());
+			return new Response(Connection.TPSUCCESS, 0, buffer, rcvd
+					.getByteArray().length, 0);
 		} catch (ConnectionException e2) {
-			rcvd = "";
 			e2.printStackTrace();
 			return new Response(Connection.TPFAIL, 0, null, 0, 0);
 		}

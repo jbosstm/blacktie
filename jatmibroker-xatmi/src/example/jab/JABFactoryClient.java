@@ -40,10 +40,10 @@ public class JABFactoryClient {
 			JABConnection c = jcf.getConnection("connection");
 			Transaction t = c.beginTransaction(-1);
 			JABBuffer b = new JABBuffer();
-			b.setValue(message.getBytes());
+			b.setValue("X_OCTET", message.getBytes());
 			log.info("Calling call with input: " + message);
-			JABResponse call = c.call("BAR", b, t);
-			log.info("Called call with output: " + call.getValue());
+			JABResponse call = c.call("BAR", b, t, "X_OCTET", null);
+			log.info("Called call with output: " + call.getValue("X_OCTET"));
 			t.commit();
 			jcf.closeConnection("connection");
 		} catch (JABException e) {

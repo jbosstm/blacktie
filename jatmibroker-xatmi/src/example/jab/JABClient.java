@@ -40,12 +40,13 @@ public class JABClient {
 			JABTransaction transaction = new JABTransaction(aJabSession, 5000);
 			JABRemoteService aJabService = new JABRemoteService("BAR",
 					aJabSession, "X_OCTET", null);
-			aJabService.getRequest().setByteArray("X_OCTET",
-				message.getBytes());
+			aJabService.getRequest()
+					.setByteArray("X_OCTET", message.getBytes());
 			log.info("Calling call with input: " + message);
 			aJabService.call(null);
 			log.info("Called call with output: "
-					+ new String(aJabService.getResponse().getByteArray("X_OCTET")));
+					+ new String(aJabService.getResponse().getByteArray(
+							"X_OCTET")));
 			transaction.commit();
 			aJabSession.closeSession();
 		} catch (JABException e) {

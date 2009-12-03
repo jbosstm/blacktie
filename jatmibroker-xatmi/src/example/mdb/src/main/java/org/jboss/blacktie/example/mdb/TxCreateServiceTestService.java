@@ -24,12 +24,12 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.transport.JtsTransactionImple;
-import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
+import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 import org.jboss.blacktie.jatmibroker.xatmi.mdb.MDBBlacktieService;
 
 import org.jboss.ejb3.annotation.Depends;
@@ -65,12 +65,13 @@ public class TxCreateServiceTestService extends MDBBlacktieService implements
 	}
 
 	public Response tpservice(TPSVCINFO svcinfo) {
-		String rcvd = new String(svcinfo.getBuffer().getData());
-		String resp = serviceRequest(rcvd);
-		Buffer buffer = null;
+		X_OCTET rcvd = (X_OCTET) svcinfo.getBuffer();
+		String rcv = new String(rcvd.getByteArray());
+		String resp = serviceRequest(rcv);
+		X_OCTET buffer = null;
 		try {
-			buffer = new Buffer("X_OCTET", null);
-			buffer.setData(resp.getBytes());
+			buffer = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
+			buffer.setByteArray(resp.getBytes());
 			return new Response(Connection.TPSUCCESS, 0, buffer, resp.length(),
 					0);
 		} catch (ConnectionException e) {

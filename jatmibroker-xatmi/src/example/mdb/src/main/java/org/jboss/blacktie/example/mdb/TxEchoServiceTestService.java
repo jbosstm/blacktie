@@ -30,12 +30,12 @@ import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.transport.JtsTransactionImple;
 import org.jboss.blacktie.jatmibroker.jab.JABException;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
-import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
+import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 import org.jboss.blacktie.jatmibroker.xatmi.mdb.MDBBlacktieService;
 
 import org.jboss.ejb3.annotation.Depends;
@@ -104,13 +104,14 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 			try {
 				Connection connection = getConnection();
 				byte[] echo = args.getBytes();
-				Buffer buffer = new Buffer("X_OCTET", null);
-				buffer.setData(echo);
+				X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null);
+				buffer.setByteArray(echo);
 
 				log.debug("Invoking TxCreateService...");
 				Response response = connection.tpcall("TxCreateService",
 						buffer, echo.length, 0);
-				String responseData = new String(response.getBuffer().getData());
+				X_OCTET rcvd = (X_OCTET) response.getBuffer();
+				String responseData = new String(rcvd.getByteArray());
 				log.debug("TxCreateService response: " + responseData);
 
 				// check that the remote service created a transaction
@@ -149,7 +150,8 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 	}
 
 	public Response tpservice(TPSVCINFO svcinfo) {
-		String rcvd = new String(svcinfo.getBuffer().getData());
+		X_OCTET rcv = (X_OCTET) svcinfo.getBuffer();
+		String rcvd = new String(rcv.getByteArray());
 		String resp;
 		try {
 			resp = serviceRequest(new String(rcvd));
@@ -158,8 +160,8 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 			resp = e.getMessage();
 		}
 		try {
-			Buffer buffer = new Buffer("X_OCTET", null);
-			buffer.setData(resp.getBytes());
+			X_OCTET buffer = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
+			buffer.setByteArray(resp.getBytes());
 			return new Response(Connection.TPSUCCESS, 0, buffer, resp.length(),
 					0);
 		} catch (ConnectionException e) {

@@ -20,11 +20,11 @@ package org.jboss.blacktie.jatmibroker.ejb.connector.ejb;
 import junit.framework.TestCase;
 
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
+import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class AbstractBlacktieServiceTestCase extends TestCase {
 	private Connection connection;
@@ -43,11 +43,12 @@ public class AbstractBlacktieServiceTestCase extends TestCase {
 	}
 
 	public void test() throws ConnectionException {
-		Buffer buffer = new Buffer("X_OCTET", null);
-		buffer.setData("echo".getBytes());
+		X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		buffer.setByteArray("echo".getBytes());
 
 		Response response = connection.tpcall("EchoService", buffer, 4, 0);
-		String responseData = new String(response.getBuffer().getData());
+		String responseData = new String(((X_OCTET) response.getBuffer())
+				.getByteArray());
 		assertEquals("echo", responseData);
 	}
 }
