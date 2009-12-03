@@ -117,9 +117,10 @@ static int doSelect(OCISvcCtx *svcCtx, OCIStmt *stmthp, OCIError *errhp, int emp
 	OCIDefine *stmtdef1 = (OCIDefine *) 0;
 	OCIDefine *stmtdef2 = (OCIDefine *) 0;
 
+	sword status = OCIStmtPrepare(stmthp, errhp, (text *) sql, (ub4) strlen((char *) sql), (ub4) OCI_NTV_SYNTAX, (ub4) OCI_DEFAULT);
+
+	// THIS IS A C FILE SO DECLARATIONS UP TOP
 	userlogc_debug( "TxLog doSelect: :1=%d", empno);
-	sword status = OCIStmtPrepare(stmthp, errhp, (text *) sql, (ub4) strlen((char *) sql),
-		(ub4) OCI_NTV_SYNTAX, (ub4) OCI_DEFAULT);
 
 	/* bind empno to the statement */
 	if (status == OCI_SUCCESS)
