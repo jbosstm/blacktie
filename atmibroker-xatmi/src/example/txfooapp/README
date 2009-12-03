@@ -23,7 +23,9 @@ to the BlackTie utility that generates executables (as explained below).
 
 To include a particular database during runtime you will need to update the BlackTie Environment.xml file
 with information specific to the required database. The example xml files (in the linux and win32 directories)
-includes notes and examples on how to configure ORACLE support.
+includes notes and examples on how to configure ORACLE support. The instance names of Oracle databases
+refered to in Environment.xml (specified in the open string) must match the names in the products
+array in the source file request.c.
 
 Oracle 11g can be downloaded from:
 http://www.oracle.com/technology/software/products/database/index.html (tested on release 11.1.0.6.0)
