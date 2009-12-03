@@ -103,7 +103,7 @@ Start the JBoss server (<JBOSS_HOME>/bin/run.sh|bat -c all)
 Make sure all required libraries are on the library path, something like
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib
 or
-    set PATH=%PATH%;C:\<ora lib dir>
+    set PATH=%PATH%;%ORACLE_HOME%\bin
 
 3.1 START THE SERVER
 ====================
