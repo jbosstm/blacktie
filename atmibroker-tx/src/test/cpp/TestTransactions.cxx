@@ -27,9 +27,7 @@
 #include "ThreadLocalStorage.h"
 #include "userlogc.h"
 #include "testTxAvoid.h"
-#include "ace/OS_NS_stdlib.h"
-#include "ace/OS_NS_stdio.h"
-#include "ace/OS_NS_string.h"
+
 
 //using namespace std;
 
@@ -37,9 +35,9 @@ void TestTransactions::setUp()
 {
 	txx_stop();
 #ifdef WIN32
-	ACE_OS::putenv("BLACKTIE_CONFIGURATION=win32");
+	::putenv("BLACKTIE_CONFIGURATION=win32");
 #else
-	ACE_OS::putenv("BLACKTIE_CONFIGURATION=linux");
+	::putenv("BLACKTIE_CONFIGURATION=linux");
 #endif
 	AtmiBrokerEnv::get_instance();
 
@@ -51,7 +49,7 @@ void TestTransactions::tearDown()
 	txx_stop();
 	TestFixture::tearDown();
 
-	ACE_OS::putenv("BLACKTIE_CONFIGURATION=");
+	::putenv("BLACKTIE_CONFIGURATION=");
 	AtmiBrokerEnv::discard_instance();
 }
 
