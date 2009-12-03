@@ -17,8 +17,9 @@
  */
 #include "stdio.h"
 #include "xatmi.h"
+#include "atmiBrokerXatmiMacro.h"
 
-void BAR(TPSVCINFO * svcinfo) {
+BLACKTIE_XATMI_DLL void BAR(TPSVCINFO * svcinfo) {
 	int sendlen = 1;
 	char* buffer = tpalloc((char*) "X_OCTET", NULL, sendlen);
 	buffer[0] = '1';

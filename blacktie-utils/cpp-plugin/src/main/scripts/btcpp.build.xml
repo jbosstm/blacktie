@@ -286,6 +286,7 @@
 			<fileset dir="${src.test}" includes="**/${src.main.file}.cxx **/${src.main.file}.c" excludes="${src.excludes}" />
 
             <defineset define="TAO_COMP, UNITTEST"/>
+		<defineset define="${export.dll}" if="define.dll" />
             <defineset define="WIN32" if="is-msvc"/>
 
             <includepath path="src/test/include" />

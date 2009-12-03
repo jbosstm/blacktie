@@ -185,7 +185,15 @@
           <defaultValue>.</defaultValue>
           <type>java.lang.String</type>
           <description>Configuration directory</description>
-	    </parameter>
+	  </parameter>
+	  <parameter>
+          <name>export.dll</name>
+          <property>export.dll</property>
+          <readonly>false</readonly>
+          <defaultValue></defaultValue>
+          <type>java.lang.String</type>
+          <description>export.dll</description>
+        </parameter>
         <parameter>
           <name>jbossas.ip.addr</name>
           <property>jbossas.ip.addr</property>
