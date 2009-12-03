@@ -332,7 +332,7 @@ void TestTransactions::test_RM()
  */
 void TestTransactions::test_RM_recovery_scan()
 {
-	int nbranches = 2;
+	long nbranches = 2;
 	fault_t fault1 = {0, 102, O_XA_RECOVER, XA_OK, F_ADD_XIDS, &nbranches, 0};
 
 	userlogc_debug( (char*) "TestTransactions::test_RM_recovery_scan begin");
@@ -344,9 +344,9 @@ void TestTransactions::test_RM_recovery_scan()
 	CPPUNIT_ASSERT_EQUAL(TX_OK, tx_open());
 
 	// all resources should have been recovered
-	CPPUNIT_ASSERT_EQUAL(nbranches, fault1.res);
+	CPPUNIT_ASSERT_EQUAL(nbranches, (long)fault1.res);
 	// and the number that were recovered should also be nbranches
-	CPPUNIT_ASSERT_EQUAL(nbranches, fault1.res2);
+	CPPUNIT_ASSERT_EQUAL(nbranches, (long)fault1.res2);
 
 //	atmibroker::tx::TxManager::get_instance()->getRMFac().run_recovery();
 
