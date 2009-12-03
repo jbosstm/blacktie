@@ -28,6 +28,11 @@
 #include "userlogc.h"
 #include "testTxAvoid.h"
 
+#ifndef WIN32
+#include "ace/OS_NS_stdlib.h"
+#include "ace/OS_NS_stdio.h"
+#include "ace/OS_NS_string.h"
+#endif
 
 //using namespace std;
 
@@ -37,7 +42,7 @@ void TestTransactions::setUp()
 #ifdef WIN32
 	::putenv("BLACKTIE_CONFIGURATION=win32");
 #else
-	::putenv("BLACKTIE_CONFIGURATION=linux");
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION=linux");
 #endif
 	AtmiBrokerEnv::get_instance();
 
