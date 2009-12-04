@@ -301,6 +301,7 @@ static void XMLCALL startElement
 			int wireTypeSize = -1;
 			Attribute* toCheck = buffer->attributes[attribute->id];
 			bool fail = false;
+			bool isDbl = false;
 			if (toCheck == NULL) {
 				// short, int, long, float, double, char
 				if (strcmp(attribute->type, "short") == 0) {
@@ -324,6 +325,7 @@ static void XMLCALL startElement
 					attribute->memSize = memTypeSize;
 					attribute->wireSize = wireTypeSize;
 				} else if (strcmp(attribute->type, "double") == 0) {
+					isDbl = true;
 					memTypeSize = MEM_DOUBLE_SIZE;
 					wireTypeSize = WIRE_DOUBLE_SIZE;
 					attribute->memSize = memTypeSize;
@@ -374,6 +376,7 @@ static void XMLCALL startElement
 					attribute->memSize = memTypeSize * attribute->length;
 					attribute->wireSize = wireTypeSize * attribute->length;
 				} else if (strcmp(attribute->type, "double[]") == 0) {
+					isDbl = true;
 					memTypeSize = MEM_DOUBLE_SIZE;
 					wireTypeSize = WIRE_DOUBLE_SIZE;
 					if (attribute->length == 0) {
@@ -400,15 +403,15 @@ static void XMLCALL startElement
 				if (!fail) {
 					buffer->attributes[attribute->id] = attribute;
 
-					// Extend the buffer by the required extra buffer size
-					if (buffer->lastPad < memTypeSize) {
-						// doubles are aligned on a (long) word boundary
-						if (strcmp(attribute->type, "double") == 0)
-							buffer->lastPad = MEM_LONG_SIZE;
-						else
-							buffer->lastPad = memTypeSize;
-					}
+					// doubles are aligned on a (long) word boundary
+					if (isDbl)
+						memTypeSize = MEM_LONG_SIZE;
 
+					// Extend the buffer by the required extra buffer size
+					if (buffer->lastPad < memTypeSize)
+							buffer->lastPad = memTypeSize;
+
+					// advance to then next alignment boundary
 					buffer->memSize = buffer->memSize + (buffer->memSize % memTypeSize);
 					attribute->memPosition = buffer->memSize;
 					attribute->wirePosition = buffer->wireSize;
