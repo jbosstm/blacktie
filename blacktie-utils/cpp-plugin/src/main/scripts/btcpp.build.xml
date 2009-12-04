@@ -24,6 +24,7 @@
 <compilerarg value="-c" />
 <compilerarg value="-fmessage-length=0" />
 <compilerarg value="-fPIC" />
+<compilerarg value="-malign-double" />
 '>
 <!ENTITY compiler-args-msvc '
 <compilerarg value="/wd4820" />
