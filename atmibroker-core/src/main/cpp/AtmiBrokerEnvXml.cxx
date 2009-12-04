@@ -402,7 +402,11 @@ static void XMLCALL startElement
 
 					// Extend the buffer by the required extra buffer size
 					if (buffer->lastPad < memTypeSize) {
-						buffer->lastPad = memTypeSize;
+						// doubles are aligned on a (long) word boundary
+						if (strcmp(attribute->type, "double") == 0)
+							buffer->lastPad = MEM_LONG_SIZE;
+						else
+							buffer->lastPad = memTypeSize;
 					}
 
 					buffer->memSize = buffer->memSize + (buffer->memSize % memTypeSize);
