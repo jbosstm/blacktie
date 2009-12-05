@@ -404,12 +404,16 @@ static void XMLCALL startElement
 					buffer->attributes[attribute->id] = attribute;
 
 					// doubles are aligned on a (long) word boundary
-					if (isDbl)
+#ifndef WIN32
+					if (isDbl) {
 						memTypeSize = MEM_LONG_SIZE;
+					}
+#endif
 
 					// Extend the buffer by the required extra buffer size
-					if (buffer->lastPad < memTypeSize)
+					if (buffer->lastPad < memTypeSize) {
 							buffer->lastPad = memTypeSize;
+					}
 
 					// advance to then next alignment boundary
 					buffer->memSize = buffer->memSize + (buffer->memSize % memTypeSize);
