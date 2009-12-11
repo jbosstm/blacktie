@@ -13,11 +13,12 @@ gcc -g -I$DB2PATH/include -L$DB2PATH/$LIB -ldb2 db2.c -o db2 && ./db2 1
 #include <sqlcli.h>
 #include "../../../../atmibroker-tx/src/main/export/xa.h"
  
+#include "tx/request.h"
+/*
 #define userlogc_warn   printf
 #define userlogc_debug  printf
 #define userlogc_snprintf   snprintf
 
-/*#include "tx/request.h"*/
 typedef struct test_req {
 	char db[16];
 	char data[80];
@@ -28,6 +29,7 @@ typedef struct test_req {
 	int txtype; //enum TX_TYPE
 	int status;
 } test_req_t;
+*/
 
 #ifdef DECLSPEC_DEFN
 extern __declspec(dllimport) struct xa_switch_t db2xa_switch_std;
@@ -69,9 +71,10 @@ static int check_error (int line, const char *msg, SQLCHAR sql[], SQLHDBC hdbc, 
     SQLSMALLINT pcbErrorMsg;
 	SQLRETURN rc = SQLError(SQL_NULL_HENV, hdbc, hstmt, szSqlState, &pfNativeError, szErrorMsg, cbErrorMsgMax, &pcbErrorMsg);
 
-    printf("ERROR: %s: %s\n", msg, sql);
+    printf("ERROR: %s: %s (code=%d)\n", msg, sql, rc);
     if (rc != SQL_SUCCESS) {
         userlogc_warn("DB2 error: SQL state: %s db2 code: %ld (%s)\n", szSqlState, pfNativeError, szErrorMsg);
+        printf("DB2 error: SQL state: %s db2 code: %ld (%s)\n", szSqlState, pfNativeError, szErrorMsg);
     }
 
 	return(SQL_ERROR);
@@ -147,7 +150,7 @@ static void init(SQLHENV *henv, SQLHDBC *hdbc) {
 	if (SQLExecDirect (hstmt, CTSQL, SQL_NTS) != SQL_SUCCESS)
 		; /* check_error (__LINE__, "SQLExecDirect", CTSQL, *hdbc, hstmt);*/
  
-	SQLTransact (*henv, *hdbc, SQL_COMMIT);		   /* commit create table */
+/*	SQLTransact (*henv, *hdbc, SQL_COMMIT);*/		   /* commit create table */
 	SQLFreeStmt (hstmt, SQL_DROP);
 }
 
@@ -176,8 +179,9 @@ static SQLRETURN doWork(char op, char *arg, SQLHENV henv, SQLHDBC hdbc, SQLHSTMT
 		status = doSql(henv, hdbc, shdl, (SQLCHAR *) buf1);
 	}
 
-	if (status == SQL_SUCCESS)
+/*	if (status == SQL_SUCCESS)
 		SQLTransact (henv, hdbc, SQL_COMMIT);
+*/
 
 	return status;
 }

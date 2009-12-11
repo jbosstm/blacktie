@@ -408,6 +408,7 @@ static int testrc(int *cnt)
 	return 0;
 }
 
+#define TX_ONECALL
 int run_tests(product_t *prod_array)
 {
 	int rv, i, cnt = 0;
@@ -423,6 +424,8 @@ int run_tests(product_t *prod_array)
 #elif defined(TX_SCALL)  // tx is active for a single tpacall
 		{"test3", test3},
 		{"test4", test4},
+#elif defined(TX_ONECALL)  // TODO delete
+		{"test3", test3},
 #else
 		{"test1", test1},
 		{"test2", test2},
