@@ -63,6 +63,11 @@ typedef struct BLACKTIE_XATMI_DLL test_req {
 #define ora_xaflags	null_xaflags
 #endif
 
+#ifndef DB2
+#define db2_access	null_access
+#define db2_xaflags	null_xaflags
+#endif
+
 /*
  * some RMs do not allow mixed access - in fact Berkeley Db doesn't even support
  * 2 dbs in different files one accessed remotely and the other locally
@@ -107,11 +112,13 @@ extern int end_tx(enum TX_TYPE txtype);
 
 extern int null_access(test_req_t *req, test_req_t *resp);
 extern int ora_access(test_req_t *req, test_req_t *resp);
+extern int db2_access(test_req_t *req, test_req_t *resp);
 extern int is_tx_in_state(enum TX_TYPE txtype);
 extern int get_tx_status();
 
 extern long null_xaflags();
 extern long ora_xaflags();
+extern long db2_xaflags();
 
 #ifdef __cplusplus
 }

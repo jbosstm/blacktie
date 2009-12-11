@@ -2,9 +2,13 @@
 #include <string.h>
 /*
  *	 TODO - work in progress. The DB2 examples hasn't been integrated yet.
+ *
+DB2PATH=$HOME/sqllib
+LIB="lib32"
+gcc -g -I$DB2PATH/include -L$DB2PATH/$LIB -ldb2 db2.c -o db2 && ./db2 1
+#define DB2
  */
 
-#define DB2
 #ifdef DB2
 #include <sqlcli.h>
 #include "../../../../atmibroker-tx/src/main/export/xa.h"
@@ -47,7 +51,7 @@ static SQLCHAR userid[] = "";
 static SQLCHAR passwd[] = "";
 static SQLCHAR dbAlias[] = "BLACKTIE";   /* db instance name */
 static SQLCHAR CTSQL[] = "CREATE TABLE XEMP (EMPNO integer NOT NULL PRIMARY KEY, ENAME varchar(32))";
-static SQLCHAR DTSQL[] = "DROP TABLE XEMP";
+/*static SQLCHAR DTSQL[] = "DROP TABLE XEMP";*/
 static SQLCHAR ISQL[] = "INSERT INTO XEMP VALUES (?, 'Jim')";
 static SQLCHAR USQL[] = "UPDATE XEMP SET ENAME='NEW_NAME' WHERE EMPNO=?";
 static SQLCHAR DSQL[] = "DELETE FROM XEMP WHERE EMPNO >= ?";
@@ -158,18 +162,18 @@ static SQLRETURN doWork(char op, char *arg, SQLHENV henv, SQLHDBC hdbc, SQLHSTMT
 	(resp->data)[0] = 0;
 
 	if (op == '0') {
-		(void) strsub(ISQL, buf1, sizeof (buf1), "?", buf2);
-		status = doSql(henv, hdbc, shdl, buf1);
+		(void) strsub((const char*) ISQL, buf1, sizeof (buf1), "?", buf2);
+		status = doSql(henv, hdbc, shdl, (SQLCHAR *) buf1);
 	} else if (op == '1') {
-		(void) strsub(SSQL, buf1, sizeof (buf1), "?", buf2);
-		status = doSelect(henv, hdbc, shdl, buf1, &rcnt);
+		(void) strsub((const char*) SSQL, buf1, sizeof (buf1), "?", buf2);
+		status = doSelect(henv, hdbc, shdl, (SQLCHAR *) buf1, &rcnt);
 		userlogc_snprintf(resp->data, sizeof (resp->data), "%d", rcnt);
 	} else if (op == '2') {
-		(void) strsub(USQL, buf1, sizeof (buf1), "?", buf2);
-		status = doSql(henv, hdbc, shdl, buf1);
+		(void) strsub((const char*) USQL, buf1, sizeof (buf1), "?", buf2);
+		status = doSql(henv, hdbc, shdl, (SQLCHAR *) buf1);
 	} else if (op == '3') {
-		(void) strsub(DSQL, buf1, sizeof (buf1), "?", buf2);
-		status = doSql(henv, hdbc, shdl, buf1);
+		(void) strsub((const char*) DSQL, buf1, sizeof (buf1), "?", buf2);
+		status = doSql(henv, hdbc, shdl, (SQLCHAR *) buf1);
 	}
 
 	if (status == SQL_SUCCESS)
@@ -198,7 +202,7 @@ int db2_access(test_req_t *req, test_req_t *resp)
 	return (int) status;
 }
 
-int main(int argc, char *argv[]) {
+static int xmain(int argc, char *argv[]) {
 	test_req_t res = {"blacktie", "0", '1'};
 	test_req_t req = {"blacktie", "0", '1'};
 	const char *empno = (argc > 2 ? argv[2] : "0");
@@ -210,6 +214,4 @@ int main(int argc, char *argv[]) {
 
 	return 0;
 }
-#else
-int main(int argc, char *argv[]) { return 0; }
 #endif

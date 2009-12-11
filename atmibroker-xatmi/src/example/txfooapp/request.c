@@ -19,9 +19,12 @@
 
 product_t products[] = {
 	{0, "null db", "null", ANY_ACCESS, null_access, null_xaflags},
+#ifdef DB2
+	{1, "db2 - blacktie", "blacktie", REMOTE_ACCESS, db2_access, db2_xaflags},
+#endif
 #ifdef ORACLE
-	{1, "ora - blacktie", "blacktie", ANY_ACCESS, ora_access, ora_xaflags},
-	{2, "ora - ORCL", "ORCL", ANY_ACCESS, ora_access, ora_xaflags},
+	{3, "ora - blacktie", "blacktie", ANY_ACCESS, ora_access, ora_xaflags},
+	{4, "ora - ORCL", "ORCL", ANY_ACCESS, ora_access, ora_xaflags},
 #endif
 	{-1, 0, 0, 0, 0},
 };
