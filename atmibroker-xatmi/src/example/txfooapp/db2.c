@@ -11,7 +11,7 @@ gcc -g -I$DB2PATH/include -L$DB2PATH/$LIB -ldb2 db2.c -o db2 && ./db2 1
 
 #ifdef DB2
 #include <sqlcli.h>
-#include "../../../../atmibroker-tx/src/main/export/xa.h"
+#include "xa.h"
  
 #include "tx/request.h"
 /*

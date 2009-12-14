@@ -46,7 +46,7 @@ ServiceDispatcher::~ServiceDispatcher() {
 
 int ServiceDispatcher::pause(void) {
 	LOG4CXX_TRACE(logger, "ServiceDispatcher pause");
-	if(isPause == false) {
+	if (isPause == false) {
 		isPause = true;
 	}
 	return 0;
@@ -54,7 +54,7 @@ int ServiceDispatcher::pause(void) {
 
 int ServiceDispatcher::resume(void) {
 	LOG4CXX_TRACE(logger, "ServiceDispatcher resume");
-	if(isPause) {
+	if (isPause) {
 		isPause = false;
 	}
 	return 0;
@@ -169,14 +169,20 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 		tpsvcinfo.flags = (tpsvcinfo.flags | TPTRAN);
 	}
 
-	try {
-		LOG4CXX_TRACE(logger, (char*) "Calling function");
-		this->func(&tpsvcinfo);
-		LOG4CXX_TRACE(logger, (char*) "Called function");
-	} catch (...) {
+	if (tperrno == 0) {
+		try {
+			LOG4CXX_TRACE(logger, (char*) "Calling function");
+			this->func(&tpsvcinfo);
+			LOG4CXX_TRACE(logger, (char*) "Called function");
+		} catch (...) {
+			LOG4CXX_ERROR(
+					logger,
+					(char*) "ServiceDispatcher caught error running during onMessage");
+		}
+	} else {
 		LOG4CXX_ERROR(
 				logger,
-				(char*) "ServiceDispatcher caught error running during onMessage");
+				(char*) "Not invoking tpservice as tpernno was not 0");
 	}
 
 	AtmiBrokerMem::get_instance()->tpfree(tpsvcinfo.data, true);

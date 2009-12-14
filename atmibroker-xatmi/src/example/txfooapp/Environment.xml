@@ -58,7 +58,7 @@
 			<XA_OPEN_STRING>SREG=T,DB=blacktie</XA_OPEN_STRING>
 			<XA_CLOSE_STRING></XA_CLOSE_STRING>
 			<XA_SWITCH>db2xa_switch_std</XA_SWITCH>
-			<XA_LIB_NAME>/home/blacktie/sqllib/lib32/libdb2.so</XA_LIB_NAME>
+			<XA_LIB_NAME>${DB2_LIB}/libdb2.so</XA_LIB_NAME>
 		</XA_RESOURCE>
 <!--
 		<XA_RESOURCE configuration="linux">

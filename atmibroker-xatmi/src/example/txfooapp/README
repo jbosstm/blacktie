@@ -18,22 +18,41 @@
 1. INTRODUCTION
 ===============
 This example shows how to use an XA compliant database with BlackTie and has been tested against
-ORACLE 11g. To compile in support for ORACLE you will need to pass a preprocessor macro called ORACLE
+ORACLE 11g or DB2 9.7.1. 
+
+To compile in support for ORACLE you will need to pass a preprocessor macro called ORACLE
 to the BlackTie utility that generates executables (as explained below).
+
+To compile in support of DB2 you need to pass a preprocessor macro called DB2 to the BlackTie utility
+that generates executables (as explained below).
+
+The preprocessor symbol is purely for the examples use, BlackTie does not require this symbol in its
+internal libraries.
 
 To include a particular database during runtime you will need to update the BlackTie Environment.xml file
 with information specific to the required database. The example xml files (in the linux and win32 directories)
-includes notes and examples on how to configure ORACLE support. The instance names of Oracle databases
+includes notes and examples on how to configure ORACLE and DB2 support. The instance names of Oracle databases
 refered to in Environment.xml (specified in the open string) must match the names in the products
 array in the source file request.c.
 
+ORACLE ONLY
 Oracle 11g can be downloaded from:
 http://www.oracle.com/technology/software/products/database/index.html (tested on release 11.1.0.6.0)
-
 For all stages of this example it is recommended that you have set ORACLE_HOME to the distribution of 
 ORACLE you have installed.
-
 IMPORTANT: You must NOT have ORACLE_SID set as we are using two resource managers in this example
+IMPORTANT: You must have the following databases initialized with example tables: ORCL and blacktie
+
+DB2 ONLY
+DB2 can be downloaded from:
+http://www-01.ibm.com/software/data/db2/linux-unix-windows/download.html (tested on release IBM DB2 Express-C 9.7)
+When you run the installer for DB2 Express-C choose "custom setup" and then also include the "Application Development Tools"
+IMPORTANT: The example assumes you have exported DB2DIR to the fully qualified include folder appropriate to your platform, e.g. /home/blacktie/sqllib
+IMPORTANT: For all stages of this example it is recommended that you have sourced the DB2DIR/db2profile script to initialize
+the environment
+IMPORTANT: DB2 requires additional shared memory to run "sysctl -w kernel.shmmax=1024000000"
+IMPORTANT: You must have the following databases initialized with example tables: blacktie
+
 
 2. BUILDING THE EXAMPLE
 =======================
@@ -57,25 +76,43 @@ include directories (-Dx.inc.dir=) and the location of any required libraries (-
 It also accepts a list of preprocessor macro definitions (-Dx.define="comma separated list of macro names"). Thus, for example,
 to compile the client for use with Oracle11g:
 
+ORACLE ONLY
 On Linux:
-$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" \
-    -Dx.inc.dir="$ORACLE_HOME/rdbms/public" \
-    -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" \
-    -Dx.define="ORACLE"
-
-Similarly for generating the server:
-
 $BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" \
     -Dx.inc.dir="$ORACLE_HOME/rdbms/public" \
     -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" \
     -Dx.define="ORACLE"
-
+Similarly for generating the client:
+$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" \
+    -Dx.inc.dir="$ORACLE_HOME/rdbms/public" \
+    -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" \
+    -Dx.define="ORACLE"
 On Windows:
+%BLACKTIE_BIN_DIR%/bin/generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.define="ORACLE"
+Similarly for generating the client:
 %BLACKTIE_BIN_DIR%/bin/generate_client.bat -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.define="ORACLE"
 
-Similarly for generating the server:
-
-%BLACKTIE_BIN_DIR%/bin/generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.define="ORACLE"
+DB2 ONLY
+On Linux:
+$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c db2.c DbService.c" \
+    -Dx.inc.dir="$DB2DIR/include" \
+    -Dx.lib.dir="$DB2DIR/lib" -Dx.libs="db2" \
+    -Dx.define="DB2"
+Similarly for generating the client:
+$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c db2.c cutil.c" \
+    -Dx.inc.dir="$DB2DIR/include" \
+    -Dx.lib.dir="$DB2DIR/lib" -Dx.libs="db2" \
+    -Dx.define="DB2"
+On Windows:
+%BLACKTIE_BIN_DIR%/bin/generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c db2.c DbService.c" \
+    -Dx.inc.dir="%DB2DIR%\include" \
+    -Dx.lib.dir="%DB2DIR%\lib" -Dx.libs="db2api" \
+    -Dx.define="DB2"
+Similarly for generating the client:
+%BLACKTIE_BIN_DIR%/bin/generate_client.bat -Dclient.includes="client.c request.c db2.c cutil.c" \
+    -Dx.inc.dir="%DB2DIR%\include" \
+    -Dx.lib.dir="%DB2DIR%\lib" -Dx.libs="db2api" \
+    -Dx.define="DB2"
 
 NOTE: If you get the following error you have not edited or executed setenv correctly:
 java org.apache.tools.ant.launch.Launcher -f /bin/generate-executables.xml -Dconfiguration.type=debug -Dbasedir=. -Dtoolchain.compiler=msvc server -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="C:/<ora include dir>" -Dx.lib.dir="<ora lib dir>" -Dx.libs="occi.dll clntsh.dll" -Dx.define="ORACLE"
@@ -100,10 +137,20 @@ C:\blacktie\dist\blacktie-1.0-MR6-SNAPSHOT\bin\generate-executables.xml:144: Cou
 3. RUNNING THE EXAMPLE
 ======================
 Start the JBoss server (<JBOSS_HOME>/bin/run.sh|bat -c all)
-Make sure all required libraries are on the library path, something like
+Make sure all required libraries are on the library path:
+
+ORACLE ONLY
+Something like
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib
 or
     set PATH=%PATH%;%ORACLE_HOME%\bin
+
+DB2 ONLY
+Sourcing the db2profile should put the libraries in the path
+Alternatively:
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DB2DIR/lib
+or
+    set PATH=%PATH%;%DB2DIR%\lib
 
 3.1 START THE SERVER
 ====================
