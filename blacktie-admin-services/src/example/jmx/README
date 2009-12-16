@@ -26,12 +26,14 @@ On Windows:
 	%BLACKTIE_BIN_DIR%\setenv.bat
 Then, execute the script setenv
 
-2. COMPILE THE JAB APPLICATION
-In a well configured environment, type the following:
-javac JABClient.java
-
 2. RUN THE SERVER
 Follow the instructions in $BLACKTIE_BIN_DIR/examples/xatmi/fooapp to start a server  
 
-4. RUN THE JAB Application
-java JABClient message
+3. RUN THE EXAMPLE ADMINISTRATION APPLICATION
+mvn test
+
+NOTE: forkMode MUST be set to none, if it is not, input will not be read by the 
+application. We have configured the pom.xml with forkMode=none, alternatively you
+may try -DforkMode=none, if this still doesn't work, please send a message to our forum
+where we will try to help you (please let us know the version of BlackTie, Java and 
+Maven you are using)
