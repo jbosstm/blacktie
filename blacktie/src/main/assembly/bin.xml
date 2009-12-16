@@ -118,6 +118,25 @@
 			</excludes>
 		</fileSet>
 		<fileSet>
+			<directory>../atmibroker-xatmi/src/example/admin/
+			</directory>
+			<outputDirectory>examples/admin/xatmi
+			</outputDirectory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../blacktie-admin-services/src/example/jmx/
+			</directory>
+			<outputDirectory>examples/admin/jmx
+			</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
 			<directory>../atmibroker-xatmi/src/main/export/
 			</directory>
 			<outputDirectory>include</outputDirectory>
