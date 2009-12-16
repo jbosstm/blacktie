@@ -23,57 +23,55 @@
 
 #include "userlogc.h"
 
+char prompt(char* prompt) {
+	userlogc("Please press return after you: %s...", prompt);
+	return getchar();
+}
+
+void output(char* operationName, char* list) {
+	userlogc("Output from %s: ", operationName);
+
+	char* nextToken = strtok(list, ",");
+	int i = 0;
+	while (nextToken != NULL) {
+		userlogc((char*) "Element: %d Value: %s", i, nextToken);
+		nextToken = strtok(NULL, " ");
+		i++;
+	}
+}
+
 int main(int argc, char **argv) {
-	int txstatus;
 	int tpstatus;
 	char *retbuf;
-	char type[20];
-	char subtype[20];
 	long retbufsize;
 	char *sbuf;
 	long sbufsize;
 	long callflags;
-	int i;
-for (i = 0; i < 10; i++) {
-
-	txstatus = tx_open();
-	if (txstatus != TX_OK) {
-		userlogc((char*) "ERROR - Could not open transaction: ");
-	}
-	txstatus = tx_begin();
-	if (txstatus != TX_OK) {
-		userlogc((char*) "ERROR - Could not begin transaction: ");
-	}
 	callflags = 0;
-	sbufsize = 29;
+	sbufsize = 20;
 	sbuf = tpalloc("X_OCTET", 0, sbufsize);
 	memset(sbuf, 0, sbufsize);
-	strcpy(sbuf, "THIS IS YOUR CLIENT SPEAKING");
-	retbufsize = 15;
+	strcpy(sbuf, "listRunningServers,");
+	retbufsize = 1;
 	retbuf = tpalloc("X_OCTET", 0, retbufsize);
-	memset(retbuf, 0, retbufsize);
 
-	// tptypes
-	tptypes(sbuf, type, subtype);
+	prompt("Start JBoss Application Server");
+	prompt("Start an XATMI server");
 
-	// tpcall
-	userlogc((char*) "Calling tpcall with input: %s", sbuf);
-	tpstatus = tpcall("BAR", sbuf, sbufsize, (char **) &retbuf,
+	// listRunningServers
+	tpstatus = tpcall("BTDomainAdmin", sbuf, sbufsize, (char **) &retbuf,
 			&retbufsize, callflags);
-	userlogc((char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
-			retbufsize, retbuf, tpstatus, tperrno);
+	char* noTrailingBar = (char*) malloc(retbufsize);
+	strncpy(noTrailingBar, retbuf, retbufsize - 1);
+	noTrailingBar[retbufsize - 1] = NULL;
+	output((char*) "listRunningServers", noTrailingBar);
+
+	//	userlogc(
+	//			(char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
+	//			retbufsize, retbuf, tpstatus, tperrno);
+
 
 	tpfree(sbuf);
 	tpfree(retbuf);
-
-	txstatus = tx_commit();
-	if (txstatus != TX_OK) {
-		userlogc((char*) "ERROR - Could not commit transaction: ", sbuf);
-	}
-	txstatus = tx_close();
-	if (txstatus != TX_OK) {
-		userlogc((char*) "ERROR - Could not close transaction: ", sbuf);
-	}
-}
 	return 0;
 }

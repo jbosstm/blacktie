@@ -131,6 +131,13 @@
 
 	<target name="client" depends="init,clean-client">
 		<fail unless="client.includes" />
+		<delete file="log4cxx.properties" />
+		<echo message="hi"/>
+		<unzip src="${env.BLACKTIE_BIN_DIR}/codeGeneration/codeGeneration.jar" dest=".">
+			<patternset>
+				<include name="log4cxx.properties" />
+			</patternset>
+		</unzip>
 		<property name="client.executable.file" value="client" />
 		<property name="client.src.tobuild" value="${client.includes}" />
 		<propertycopy property="executable.file" from="client.executable.file" override="true" />

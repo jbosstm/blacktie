@@ -95,10 +95,10 @@ public class JMXAdministrationTest extends TestCase {
 		return br.readLine();
 	}
 
-	private void output(String operationName, List listRunningServers) {
+	private void output(String operationName, List list) {
 		System.out.println("Output from: " + operationName);
 		int i = 0;
-		Iterator iterator = listRunningServers.iterator();
+		Iterator iterator = list.iterator();
 		while (iterator.hasNext()) {
 			System.out.println("Element: " + i + " Value: " + iterator.next());
 			i++;

@@ -62,7 +62,7 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 	}
 
 	public Response tpservice(TPSVCINFO svcinfo) {
-		log.debug("Message received");
+		log.info("Message received");
 		X_OCTET recv = (X_OCTET) svcinfo.getBuffer();
 		String string = new String(recv.getByteArray());
 		StringTokenizer parameters = new StringTokenizer(string, ",", false);
@@ -186,6 +186,7 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 			toReturn.append(iterator.next());
 			toReturn.append(',');
 		}
+		toReturn.append("|");
 		return toReturn.toString().getBytes();
 	}
 

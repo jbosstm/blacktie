@@ -25,21 +25,68 @@
 				<SERVICE name='BTDomainAdmin' />
 			</SERVICE_NAMES>
 		</SERVER>
-		<SERVER name='default'>
+		<SERVER name="foo">
 			<SERVICE_NAMES>
+				<SERVICE name='FOOTest' />
+			</SERVICE_NAMES>
+		</SERVER>
+		<SERVER name='ejb-connector-tests'>
+			<SERVICE_NAMES>
+				<SERVICE name='EchoService' />
+				<SERVICE name='TxEchoService' />
+				<SERVICE name='TxCreateService' />
+			</SERVICE_NAMES>
+		</SERVER>
+		<SERVER name="default">
+			<SERVICE_NAMES>
+				<SERVICE name='PBF' />
 				<SERVICE name='BAR' />
+				<SERVICE name='TTL' />
+				<SERVICE name='TestTPFree' />
+				<SERVICE name='TestTPCall' />
+				<SERVICE name='TestTPAdvertise' />
+				<SERVICE name='LOOPY' />
+				<SERVICE name='TestTPConversat' />
+				<SERVICE name='TestTPConversa2' />
+				<SERVICE name='TestTPACall' />
+				<SERVICE name='TestTPCancel' />
+				<SERVICE name='TestTPConnect' />
+				<SERVICE name='TestTPDiscon' />
+				<SERVICE name='TestTPGetrply' />
+				<SERVICE name='TestTPSend' />
+				<SERVICE name='TestTPRecv' />
+				<SERVICE name='TestTPService' />
+				<SERVICE name='TestTPReturn' />
+				<SERVICE name='TestTPReturn2' />
+				<SERVICE name='123456789012345' />
+				<SERVICE name='TestTPUnadverti' />
+				<SERVICE name='tpcall_x_octet' />
+				<SERVICE name='tpcall_x_common' />
+				<SERVICE name='tpcall_x_c_type' />
+				<SERVICE name='DEBIT' />
+				<SERVICE name='CREDIT' />
+				<SERVICE name='INQUIRY' />
+				<SERVICE name='TestRbkOnly' />
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>
-	<ORB
-		OPT="-ORBInitRef NameService=corbaloc::localhost:3528/NameService"
+	<ORB OPT="-ORBInitRef NameService=corbaloc::localhost:3528/NameService"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
 	<MQ HOST="localhost" PORT="61613" USER="guest" PASSWORD="guest"
-		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" />
+		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10"
+		NAMING_URL="jnp://localhost:1099" />
 	<ENV_VARIABLES>
+		<ENV_VARIABLE>
+			<NAME>JMXURL</NAME>
+			<VALUE>service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector</VALUE>
+		</ENV_VARIABLE>
 		<ENV_VARIABLE>
 			<NAME>LOG4CXXCONFIG</NAME>
 			<VALUE>log4cxx.properties</VALUE>
+		</ENV_VARIABLE>
+		<ENV_VARIABLE>
+			<NAME>QueueReaperInterval</NAME>
+			<VALUE>30</VALUE>
 		</ENV_VARIABLE>
 	</ENV_VARIABLES>
 </ENVIRONMENT>
