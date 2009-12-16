@@ -85,6 +85,7 @@ int ServiceDispatcher::svc(void) {
 }
 
 void ServiceDispatcher::onMessage(MESSAGE message) {
+	setSpecific(TPE_KEY, TSS_TPERESET);
 
 	LOG4CXX_DEBUG(logger, (char*) "svc()");
 
