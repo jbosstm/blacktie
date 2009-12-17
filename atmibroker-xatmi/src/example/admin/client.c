@@ -28,9 +28,11 @@ char prompt(char* prompt) {
 	return getchar();
 }
 
-void output(char* operationName, char* list) {
+void output(char* operationName, char* listIn) {
 	userlogc("Output from %s: ", operationName);
-
+	char* list = (char*) malloc(strlen(listIn) + 1);
+	list[strlen(listIn)] = NULL;
+	list = memcpy(list, listIn, strlen(listIn));
 	char* nextToken = strtok(list, ",");
 	int i = 0;
 	while (nextToken != NULL) {
@@ -40,6 +42,17 @@ void output(char* operationName, char* list) {
 	}
 }
 
+char* itemAt(char* list, int index) {
+	char* nextToken = strtok(list, ",");
+	int i = 0;
+	while (index < i) {
+		nextToken = strtok(NULL, " ");
+		i++;
+	}
+	return nextToken;
+}
+
+
 int main(int argc, char **argv) {
 	int tpstatus;
 	char *retbuf;
@@ -47,11 +60,8 @@ int main(int argc, char **argv) {
 	char *sbuf;
 	long sbufsize;
 	long callflags;
+	char* list;
 	callflags = 0;
-	sbufsize = 20;
-	sbuf = tpalloc("X_OCTET", 0, sbufsize);
-	memset(sbuf, 0, sbufsize);
-	strcpy(sbuf, "listRunningServers,");
 	retbufsize = 1;
 	retbuf = tpalloc("X_OCTET", 0, retbufsize);
 
@@ -59,17 +69,41 @@ int main(int argc, char **argv) {
 	prompt("Start an XATMI server");
 
 	// listRunningServers
+	sbufsize = strlen("listRunningServers,") + 1;
+	sbuf = tpalloc("X_OCTET", 0, sbufsize);
+	memset(sbuf, 0, sbufsize);
+	strcpy(sbuf, "listRunningServers,");
 	tpstatus = tpcall("BTDomainAdmin", sbuf, sbufsize, (char **) &retbuf,
 			&retbufsize, callflags);
-	char* noTrailingBar = (char*) malloc(retbufsize);
-	strncpy(noTrailingBar, retbuf, retbufsize - 1);
-	noTrailingBar[retbufsize - 1] = NULL;
-	output((char*) "listRunningServers", noTrailingBar);
+	list = (char*) malloc(retbufsize);
+	strncpy(list, retbuf, retbufsize - 1);
+	list[retbufsize - 1] = NULL;
+	output((char*) "listRunningServers", list);
 
-	//	userlogc(
-	//			(char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
-	//			retbufsize, retbuf, tpstatus, tperrno);
+	if (strlen(list) != 0) {
+		char response = prompt(
+				"Enter the id of a server to get the instance numbers of");
+		int index = atoi(&response);
 
+		// listRunningInstanceIds
+		char* serverName = itemAt(list, index);
+		sbufsize = strlen("listRunningInstanceIds") + strlen(serverName) + 1;
+		sbuf = tprealloc(sbuf, sbufsize);
+		memset(sbuf, 0, sbufsize + 1);
+		sprintf(sbuf, "listRunningInstanceIds,%s,", serverName);
+		tpstatus = tpcall("BTDomainAdmin", sbuf, sbufsize, (char **) &retbuf,
+				&retbufsize, callflags);
+		list = (char*) malloc(retbufsize);
+		strncpy(list, retbuf, retbufsize - 1);
+		list[retbufsize - 1] = NULL;
+		output((char*) "listRunningInstanceIds", list);
+
+		//	userlogc(
+		//			(char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
+		//			retbufsize, retbuf, tpstatus, tperrno);
+	} else {
+		userlogc((char*) "ERROR: There were no running servers detected");
+	}
 
 	tpfree(sbuf);
 	tpfree(retbuf);
