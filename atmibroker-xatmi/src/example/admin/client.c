@@ -22,6 +22,8 @@
 #include "tx.h"
 
 #include "userlogc.h"
+#include "malloc.h"
+#include <stdlib.h>
 
 char prompt(char* prompt) {
 	userlogc("Please press return after you: %s...", prompt);
@@ -31,7 +33,7 @@ char prompt(char* prompt) {
 void output(char* operationName, char* listIn) {
 	userlogc("Output from %s: ", operationName);
 	char* list = (char*) malloc(strlen(listIn) + 1);
-	list[strlen(listIn)] = NULL;
+	list[strlen(listIn)] = '\0';
 	list = memcpy(list, listIn, strlen(listIn));
 	char* nextToken = strtok(list, ",");
 	int i = 0;
@@ -52,7 +54,6 @@ char* itemAt(char* list, int index) {
 	return nextToken;
 }
 
-
 int main(int argc, char **argv) {
 	int tpstatus;
 	char *retbuf;
@@ -61,6 +62,7 @@ int main(int argc, char **argv) {
 	long sbufsize;
 	long callflags;
 	char* list;
+	char* serverName;
 	callflags = 0;
 	retbufsize = 1;
 	retbuf = tpalloc("X_OCTET", 0, retbufsize);
@@ -77,17 +79,17 @@ int main(int argc, char **argv) {
 			&retbufsize, callflags);
 	list = (char*) malloc(retbufsize);
 	strncpy(list, retbuf, retbufsize - 1);
-	list[retbufsize - 1] = NULL;
+	list[retbufsize - 1] = '\0';
 	output((char*) "listRunningServers", list);
 
 	if (strlen(list) != 0) {
 		char response = prompt(
 				"Enter the id of a server to get the instance numbers of");
 		int index = atoi(&response);
+		serverName = itemAt(list, index);
 
 		// listRunningInstanceIds
-		char* serverName = itemAt(list, index);
-		sbufsize = strlen("listRunningInstanceIds") + strlen(serverName) + 1;
+		sbufsize = strlen("listRunningInstanceIds,,") + strlen(serverName) + 1;
 		sbuf = tprealloc(sbuf, sbufsize);
 		memset(sbuf, 0, sbufsize + 1);
 		sprintf(sbuf, "listRunningInstanceIds,%s,", serverName);
@@ -95,12 +97,35 @@ int main(int argc, char **argv) {
 				&retbufsize, callflags);
 		list = (char*) malloc(retbufsize);
 		strncpy(list, retbuf, retbufsize - 1);
-		list[retbufsize - 1] = NULL;
+		list[retbufsize - 1] = '\0';
 		output((char*) "listRunningInstanceIds", list);
 
-		//	userlogc(
-		//			(char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
-		//			retbufsize, retbuf, tpstatus, tperrno);
+		prompt("Start a second instance of the same server");
+		getchar();
+
+		// listRunningInstanceIds
+		sbufsize = strlen("listRunningInstanceIds,,") + strlen(serverName) + 1;
+		sbuf = tprealloc(sbuf, sbufsize);
+		memset(sbuf, 0, sbufsize + 1);
+		sprintf(sbuf, "listRunningInstanceIds,%s,", serverName);
+		tpstatus = tpcall("BTDomainAdmin", sbuf, sbufsize, (char **) &retbuf,
+				&retbufsize, callflags);
+		list = (char*) malloc(retbufsize);
+		strncpy(list, retbuf, retbufsize - 1);
+		list[retbufsize - 1] = '\0';
+		output((char*) "listRunningInstanceIds", list);
+
+		response = prompt(
+				"Enter the instance id of the server you wish to shutdown");
+		int id = atoi(&response);
+
+		// shutdown
+		sbufsize = strlen("shutdown,,,,") + strlen(serverName) + 1 + 1;
+		sbuf = tprealloc(sbuf, sbufsize);
+		memset(sbuf, 0, sbufsize + 1);
+		sprintf(sbuf, "shutdown,%s,%d,", serverName, id);
+		tpstatus = tpcall("BTDomainAdmin", sbuf, sbufsize, (char **) &retbuf,
+				&retbufsize, callflags);
 	} else {
 		userlogc((char*) "ERROR: There were no running servers detected");
 	}
