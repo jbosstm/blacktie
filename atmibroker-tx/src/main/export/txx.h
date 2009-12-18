@@ -25,6 +25,11 @@ extern "C" {
 #endif
 
 /**
+ * Warning this interface is for use by blacktie modules only. Calling methods in this
+ * interface will invalidate your warranty
+ */
+
+/**
  * suspend/resume Resource Managers whilst there are outstanding xatmi calls
  */
 extern BLACKTIE_TX_DLL int txx_resume(int cd);
