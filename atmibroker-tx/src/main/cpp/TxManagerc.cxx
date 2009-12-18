@@ -49,7 +49,11 @@ int txx_associate_serialized(char* ctrlIOR) {
 				CosTransactions::Control::_narrow(p);
 		CORBA::release(p); // dispose of it now that we have narrowed the object reference
 
+#ifdef TEST_TMNOMIGRATE
+		return TxManager::get_instance()->tx_resume(cptr, TMNOFLAGS);
+#else
 		return TxManager::get_instance()->tx_resume(cptr, TMJOIN);
+#endif
 	} else {
 		LOG4CXX_WARN(txmclogger, (char*) "tx_resume: invalid control IOR: "
 				<< ctrlIOR);

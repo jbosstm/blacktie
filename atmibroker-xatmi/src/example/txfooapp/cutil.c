@@ -125,7 +125,7 @@ static int db_op(const char *msg, const char *data, char op, int txtype,
 				 char **prbuf, int remote, int migrating, int expect) {
 	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	if (msg)
-		userlogc( "TxLog %s: %s %s", testid, ((remote | REMOTE_ACCESS) ? "REMOTE" : "LOCAL"), msg);
+		userlogc( "TxLog %s: %s %s", testid, ((remote & REMOTE_ACCESS) ? "REMOTE" : "LOCAL"), msg);
 
 	if (start_tx(txtype) == TX_OK) {
 		int rv = 0;
@@ -152,7 +152,7 @@ static int db_op(const char *msg, const char *data, char op, int txtype,
 			rv = ((remote & REMOTE_ACCESS) ? send_req(req, prbuf) : p->access(req, &res));
 
 			if (rv)
-				userlogc_warn( "TxLog BAD REQ %d", rv);
+				userlogc_warn( "TxLog BAD REQ %d db name: %s", rv, p->dbname);
 
 			free_buf((remote & REMOTE_ACCESS), req);
 		}
@@ -200,6 +200,7 @@ static int teardown(int *cnt)
 	return 0;
 }
 
+#define xTEST0
 #ifdef TEST0
 static int test0(int *cnt)
 {
@@ -209,7 +210,7 @@ static int test0(int *cnt)
 
 	set_test_id("Test 0");
 
-#if 1
+#if 0
 	/* ask the remote service to insert a record */
 	if ((rv = db_op("INSERT 1", emps[5], '0', TX_TYPE_BEGIN, 0, REMOTE_ACCESS, 0, -1)))
 		return rv;
@@ -223,12 +224,14 @@ static int test0(int *cnt)
 		return rv;
 
 	*cnt += 3;
+
 #else
 	if ((rv = db_op("INSERT 1", emps[5], '0', TX_TYPE_BEGIN_COMMIT, 0, LOCAL_ACCESS, 0, -1)))
 		return rv;
 	*cnt += 1;
 #endif
-	/* make sure the record count increases by 3 */
+
+	/* make sure the record count increases by the the expected amount */
 	if ((rv = check_count("COUNT RECORDS", emps[0], 0, *cnt)))
 		return -1;
 
@@ -408,7 +411,6 @@ static int testrc(int *cnt)
 	return 0;
 }
 
-#define TX_ONECALL
 int run_tests(product_t *prod_array)
 {
 	int rv, i, cnt = 0;
@@ -424,8 +426,8 @@ int run_tests(product_t *prod_array)
 #elif defined(TX_SCALL)  // tx is active for a single tpacall
 		{"test3", test3},
 		{"test4", test4},
-#elif defined(TX_ONECALL)  // TODO delete
-		{"test3", test3},
+#elif defined(TEST0)  // TODO delete
+		{"test0", test0},
 #else
 		{"test1", test1},
 		{"test2", test2},
@@ -453,6 +455,7 @@ int run_tests(product_t *prod_array)
 	}
 
 	userlogc( (char*) "TxLog Tests complete");
+
 	if ((rv = teardown(&cnt)))
 		return rv;
 

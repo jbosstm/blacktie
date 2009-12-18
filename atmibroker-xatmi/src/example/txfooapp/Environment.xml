@@ -43,6 +43,24 @@
 			demonstrate distributed transactions involving more than one resource
 			manager).
 		-->
+		<XA_RESOURCE configuration="linux">
+			<XA_RESOURCE_MGR_ID>301</XA_RESOURCE_MGR_ID>
+			<XA_RESOURCE_NAME>DB2_XA</XA_RESOURCE_NAME>
+			<XA_OPEN_STRING>SREG=T,DB=BTDB1,CHAIN_END=F,TOC=P</XA_OPEN_STRING>
+			<XA_CLOSE_STRING></XA_CLOSE_STRING>
+			<XA_SWITCH>db2xa_switch_std</XA_SWITCH>
+			<XA_LIB_NAME>${DB2_LIB}/libdb2.so</XA_LIB_NAME>
+		</XA_RESOURCE>
+
+		<XA_RESOURCE configuration="linux">
+			<XA_RESOURCE_MGR_ID>302</XA_RESOURCE_MGR_ID>
+			<XA_RESOURCE_NAME>DB2_XA</XA_RESOURCE_NAME>
+			<XA_OPEN_STRING>SREG=T,DB=BTDB2,CHAIN_END=F,TOC=P</XA_OPEN_STRING>
+			<XA_CLOSE_STRING></XA_CLOSE_STRING>
+			<XA_SWITCH>db2xa_switch_std</XA_SWITCH>
+			<XA_LIB_NAME>${DB2_LIB}/libdb2.so</XA_LIB_NAME>
+		</XA_RESOURCE>
+
 		<!--
 			Configuration for including ORACLE databases in the example. The open
 			string includes all the inforamtion needed for making XA connections.
@@ -52,14 +70,6 @@
 			password tiger is created). For more information refer to:
 			http://download.oracle.com/docs/cd/B28359_01/appdev.111/b28424/adfns_xa.htm
 		-->
-		<XA_RESOURCE configuration="linux">
-			<XA_RESOURCE_MGR_ID>301</XA_RESOURCE_MGR_ID>
-			<XA_RESOURCE_NAME>DB2_XA</XA_RESOURCE_NAME>
-			<XA_OPEN_STRING>SREG=T,DB=blacktie</XA_OPEN_STRING>
-			<XA_CLOSE_STRING></XA_CLOSE_STRING>
-			<XA_SWITCH>db2xa_switch_std</XA_SWITCH>
-			<XA_LIB_NAME>${DB2_LIB}/libdb2.so</XA_LIB_NAME>
-		</XA_RESOURCE>
 <!--
 		<XA_RESOURCE configuration="linux">
 			<XA_RESOURCE_MGR_ID>201</XA_RESOURCE_MGR_ID>
@@ -109,10 +119,6 @@
 	<MQ HOST="localhost" PORT="61613" USER="guest" PASSWORD="guest"
 		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" />
 	<ENV_VARIABLES>
-		<ENV_VARIABLE>
-			<NAME>RC_LOG_NAME</NAME>
-			<VALUE>${BLACKTIE_RC_LOG_NAME}</VALUE>
-		</ENV_VARIABLE>
 		<ENV_VARIABLE>
 			<NAME>LOG4CXXCONFIG</NAME>
 			<VALUE>log4cxx.properties</VALUE>

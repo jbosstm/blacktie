@@ -118,6 +118,7 @@ public:	// suspend and resume
 	bool isCdTransactional(int cd);
 	CORBA::ORB_ptr getOrb();
 
+	int rm_end(int flags);
 private:
 	TxManager();
 	virtual ~TxManager();
@@ -129,7 +130,6 @@ private:
 	int rm_open(void);
 	void rm_close(void);
 	int rm_start(int flags);
-	int rm_end(int flags);
 
 private:
 	CORBA_CONNECTION *_connection;

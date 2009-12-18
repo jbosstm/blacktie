@@ -265,9 +265,16 @@ int XAResourceAdaptorImpl::xa_end (long flags)
 {
 	FTRACE(xaralogger, (char*) "ENTER bstate=" << std::hex << sm_.bstate() << " flags=" << flags);
  
+#ifdef TEST_TMNOMIGRATE
+	if ((flags & TMMIGRATE) && (xa_switch_->flags & TMNOMIGRATE)) {
+		flags &= ~TMMIGRATE & ~TMSUSPEND;
+		LOG4CXX_DEBUG(xaralogger, (char*) "xa_end: TMMIGRATE not supported reseting flags to: " << flags);
+	}
+
 	// if the branch is already idle just return OK - see ch 6 of the XA specification
-	//if (sm_.bstate() == S2)
-	//	return XA_OK;
+	if (sm_.bstate() == S2)
+		return XA_OK;
+#endif
 
 	int rv = xa_switch_->xa_end_entry(&bid_, rmid_, flags);
 	return sm_.transition(bid_, XACALL_END, flags, rv);

@@ -76,6 +76,9 @@ int TxControl::end(bool commit, bool reportHeuristics)
 
 	if (outcome == TX_OK) {
 		try {
+#ifdef TEST_TMNOMIGRATE
+			(void) TxManager::get_instance()->rm_end((TMSUCCESS));
+#endif
 			// ask the transaction service to end the tansaction
 			(commit ? term->commit(reportHeuristics) : term->rollback());
 

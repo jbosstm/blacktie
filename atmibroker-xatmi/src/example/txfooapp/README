@@ -31,7 +31,7 @@ internal libraries.
 
 To include a particular database during runtime you will need to update the BlackTie Environment.xml file
 with information specific to the required database. The example xml files (in the linux and win32 directories)
-includes notes and examples on how to configure ORACLE and DB2 support. The instance names of Oracle databases
+includes notes and examples on how to configure ORACLE and DB2 support. The instance names of databases
 refered to in Environment.xml (specified in the open string) must match the names in the products
 array in the source file request.c.
 
@@ -46,12 +46,35 @@ IMPORTANT: You must have the following databases initialized with example tables
 DB2 ONLY
 DB2 can be downloaded from:
 http://www-01.ibm.com/software/data/db2/linux-unix-windows/download.html (tested on release IBM DB2 Express-C 9.7)
+Install instructions are available at:
+ http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/index.jsp?topic=/com.ibm.db2.luw.qb.server.doc/doc/c0050562.html
 When you run the installer for DB2 Express-C choose "custom setup" and then also include the "Application Development Tools"
-IMPORTANT: The example assumes you have exported DB2DIR to the fully qualified include folder appropriate to your platform, e.g. /home/blacktie/sqllib
+
+IMPORTANT: The example assumes you have exported DB2DIR to the fully qualified include folder appropriate to your platform,
+e.g. /home/blacktie/sqllib
 IMPORTANT: For all stages of this example it is recommended that you have sourced the DB2DIR/db2profile script to initialize
 the environment
 IMPORTANT: DB2 requires additional shared memory to run "sysctl -w kernel.shmmax=1024000000"
-IMPORTANT: You must have the following databases initialized with example tables: blacktie
+IMPORTANT: If you are using multiple DB2 databases make sure they belong to the same "DB2 instance". A "DB2 instance" is a
+logical database server environment. This environment is controlled by setting the environment variable DB2INSTANCE to
+the user account that owns the DB2 server. For example, in linux, if you installed DB2 using a user account called blacktie
+then use
+	export DB2INSTANCE=blacktie
+(if your application needs to use different server environments then you should run seperate blacktie servers for
+each target DB2 server environment.
+The example references two databases using alias names of BTDB1 and BTDB2 (if you are using different database aliases
+then remember to change them in Environment.xml and reqest.c). Also note that aliases are case sensitive (in fact
+DB2 converts them to upper case) and 8 characters or less.
+
+For example, to create the DB2 databases using the DB2 command line tools:
+unix prompt> source <DB2 instance owners home dir>/sqllib/db2profile
+unix prompt> /opt/ibm/db2/V9.7/bin/db2
+Command Line Processor for DB2 Client 9.7.0
+db2 => db2start
+db2 => create database BTDB1
+db2 => create database BTDB2
+db2 => quit
+ 
 
 
 2. BUILDING THE EXAMPLE
@@ -148,6 +171,8 @@ or
 DB2 ONLY
 Sourcing the db2profile should put the libraries in the path
 Alternatively:
+	export DB2INSTANCE=blacktie
+	export DB2_LIB=/home/mmusgrov/sqllib/lib32
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DB2DIR/lib
 or
     set PATH=%PATH%;%DB2DIR%\lib
