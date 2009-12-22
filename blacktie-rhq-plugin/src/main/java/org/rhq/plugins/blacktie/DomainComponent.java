@@ -154,7 +154,16 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 		// TODO: here you normally make some type of connection attempt to the
 		// managed resource
 		// to determine if it is really up and running.
-		return AvailabilityType.UP;
+		AvailabilityType status = AvailabilityType.DOWN;
+		try {
+			Object obj = beanServerConnection.invoke(blacktieAdmin, "getDomainStatus", null, null);
+			if(!(Boolean)obj) {
+				status = AvailabilityType.UP;
+			}
+		} catch (Exception e) {
+			log.warn("get domain status failed with " + e);
+		}
+		return status;
 	}
 
 	/**

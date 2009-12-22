@@ -66,6 +66,13 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 	public String getSoftwareVersion() {
 		return administrationProxy.getSoftwareVersion();
 	}
+	
+	/**
+	 * Get domain status
+	 */
+	public Boolean getDomainStatus() {
+		return administrationProxy.getDomainStatus();
+	}
 
 	/**
 	 * Pause the domain

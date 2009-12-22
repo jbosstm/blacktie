@@ -54,6 +54,11 @@ public interface BlacktieAdminServiceMBean {
 	 * Discover running servers
 	 */
 	public java.util.List<String> listRunningServers();
+	
+	/**
+	 * Get current status of domain
+	 */
+	public Boolean getDomainStatus();
 
 	/**
 	 * This calls pauseServer for each server in the domain

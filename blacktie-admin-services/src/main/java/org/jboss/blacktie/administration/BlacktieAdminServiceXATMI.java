@@ -141,6 +141,9 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 				Element response = listServiceStatusById(serverName, id,
 						serviceName);
 				toReturn = response.toString().getBytes();
+			} else if(operation.equals("getDomainStatus")) {
+				boolean response = getDomainStatus();
+				toReturn = convertBoolean(response);
 			}
 
 			X_OCTET buffer = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
@@ -218,6 +221,13 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 	 */
 	private String getSoftwareVersion() {
 		return administrationProxy.getSoftwareVersion();
+	}
+	
+	/**
+	 * Get domain status
+	 */
+	private Boolean getDomainStatus() {
+		return administrationProxy.getDomainStatus();
 	}
 
 	/**

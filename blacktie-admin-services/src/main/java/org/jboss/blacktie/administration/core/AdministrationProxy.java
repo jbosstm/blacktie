@@ -154,6 +154,10 @@ public class AdministrationProxy {
 		log.trace("getSoftwareVersion");
 		return prop.getProperty("blacktie.domain.version");
 	}
+	
+	public Boolean getDomainStatus() {
+		return isDomainPause;
+	}
 
 	public Boolean pauseDomain() {
 		log.trace("pauseDomain");
