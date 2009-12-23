@@ -31,6 +31,7 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -82,28 +83,24 @@ import org.w3c.dom.Element;
  * 
  * @author John Mazzitelli
  */
-public class DomainComponent implements ResourceComponent, MeasurementFacet,
+public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 		OperationFacet, ConfigurationFacet, ContentFacet, DeleteResourceFacet,
 		CreateChildResourceFacet {
-	private final Log log = LogFactory.getLog(DomainComponent.class);
+	private final Log log = LogFactory.getLog(ServiceComponent.class);
 
 	/**
 	 * Represents the resource configuration of the custom product being
 	 * managed.
 	 */
 	private Configuration resourceConfiguration;
-
-	/**
-	 * All AMPS plugins are stateful - this context contains information that
-	 * your resource component can use when performing its processing.
-	 */
-	private ResourceContext resourceContext;
 	
+	private ResourceContext resourceContext;
+
 	private Properties prop = new Properties();
 
 	private MBeanServerConnection beanServerConnection;
 
-	private String domainName = null;
+	private String serviceName = null;
 	
 	private ObjectName blacktieAdmin = null;
 
@@ -115,8 +112,6 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 	 * @see ResourceComponent#start(ResourceContext)
 	 */
 	public void start(ResourceContext context) {
-		resourceContext = context;
-		
 		try {
 			XMLEnvHandler handler = new XMLEnvHandler("", prop);
 			XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
@@ -125,11 +120,12 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 			JMXConnector c = JMXConnectorFactory.connect(u);
 			beanServerConnection = c.getMBeanServerConnection();
 
-			domainName = context.getResourceKey();;
+			serviceName = context.getResourceKey();;
 			blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
 		} catch (Exception e) {
-			log.error("start domain " + domainName + " plugin error with " + e);
+			log.error("start server " + serviceName + " plugin error with " + e);
 		}
+		log.debug("start resource: " + serviceName);
 	}
 
 	/**
@@ -151,20 +147,7 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 	 * @see ResourceComponent#getAvailability()
 	 */
 	public AvailabilityType getAvailability() {
-		// TODO: here you normally make some type of connection attempt to the
-		// managed resource
-		// to determine if it is really up and running.
-		AvailabilityType status = AvailabilityType.UP;
-		try {
-			Object obj = beanServerConnection.invoke(blacktieAdmin, "getDomainStatus", null, null);
-			if((Boolean)obj) {
-				status = AvailabilityType.DOWN;
-			}
-		} catch (Exception e) {
-			log.warn("get domain status failed with " + e);
-			status = AvailabilityType.DOWN;
-		}
-		return status;
+		return AvailabilityType.UP;
 	}
 
 	/**
@@ -180,20 +163,6 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 		for (MeasurementScheduleRequest request : requests) {
 			String name = request.getName();
 
-			// TODO: based on the request information, you must collect the
-			// requested measurement(s)
-			// you can use the name of the measurement to determine what you
-			// actually need to collect
-			try {
-				Number value = new Integer(1); // dummy measurement value - this
-				// should come from the managed
-				// resource
-				report.addData(new MeasurementDataNumeric(request, value
-						.doubleValue()));
-			} catch (Exception e) {
-				log.error("Failed to obtain measurement [" + name
-						+ "]. Cause: " + e);
-			}
 		}
 
 		return;
@@ -207,33 +176,9 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 	 * 
 	 * @see OperationFacet#invokeOperation(String, Configuration)
 	 */
-	public OperationResult invokeOperation(String name,
-			Configuration configuration) {
+	public OperationResult invokeOperation(String name, Configuration params) {
 		OperationResult result = new OperationResult();
-		
-		try {
-			Object obj = beanServerConnection.invoke(blacktieAdmin, name, null, null);
-						
-			if(name.equals("getServersStatus")) {
-				Element status = (Element)obj;
-				// Set up the output transformer
-				TransformerFactory transfac = TransformerFactory.newInstance();
-				Transformer trans = transfac.newTransformer();
-				trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-				trans.setOutputProperty(OutputKeys.INDENT, "yes");
 
-				StringWriter sw = new StringWriter();
-				StreamResult sr = new StreamResult(sw);
-				DOMSource source = new DOMSource(status);
-				trans.transform(source, sr);
-				result.setSimpleResult(sw.toString());
-			} else {
-				result.setSimpleResult(obj.toString());
-			}
-		} catch (Exception e) {
-			result.setErrorMessage(e.toString());
-		}
-		
 		return result;
 	}
 

@@ -24,6 +24,10 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +38,9 @@ import org.rhq.core.pluginapi.inventory.DiscoveredResourceDetails;
 import org.rhq.core.pluginapi.inventory.ProcessScanResult;
 import org.rhq.core.pluginapi.inventory.ResourceDiscoveryComponent;
 import org.rhq.core.pluginapi.inventory.ResourceDiscoveryContext;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * This can be the start of your own custom plugin's discovery component. Review
@@ -41,10 +48,11 @@ import org.rhq.core.pluginapi.inventory.ResourceDiscoveryContext;
  * 
  * @author John Mazzitelli
  */
-public class ServerDiscoveryComponent implements ResourceDiscoveryComponent {
-	private final Log log = LogFactory.getLog(ServerDiscoveryComponent.class);
+public class ServiceDiscoveryComponent implements ResourceDiscoveryComponent {
+	private final Log log = LogFactory.getLog(ServiceDiscoveryComponent.class);
 	private Properties prop = new Properties();
 	private MBeanServerConnection beanServerConnection;
+	private ObjectName blacktieAdmin = null;
 
 	/**
 	 * Review the javadoc for both {@link ResourceDiscoveryComponent} and
@@ -55,14 +63,15 @@ public class ServerDiscoveryComponent implements ResourceDiscoveryComponent {
 	 */
 	public Set<DiscoveredResourceDetails> discoverResources(
 			ResourceDiscoveryContext context) {
-		log.info("Discovering my custom plugin's resources");
+		String serverName = context.getParentResourceContext().getResourceKey();
+		log.debug("Discovering service of " + serverName);
 
 		// if your plugin descriptor defined one or more <process-scan>s, then
 		// see if the plugin container
 		// auto-discovered processes using those process scan definitions.
 		// Process all those that were found.
 		List<ProcessScanResult> autoDiscoveryResults = context
-				.getAutoDiscoveredProcesses();
+		.getAutoDiscoveredProcesses();
 		for (ProcessScanResult autoDiscoveryResult : autoDiscoveryResults) {
 			// determine if you want to include the result in this method's
 			// returned set of discovered resources
@@ -81,6 +90,7 @@ public class ServerDiscoveryComponent implements ResourceDiscoveryComponent {
 		// discovered.
 		HashSet<DiscoveredResourceDetails> set = new HashSet<DiscoveredResourceDetails>();
 
+
 		// key = this must be a unique string across all of your resources - see
 		// docs for uniqueness rules
 		// name = this is the name you give the new resource; it does not
@@ -94,16 +104,33 @@ public class ServerDiscoveryComponent implements ResourceDiscoveryComponent {
 			XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 			xmlenv.parse("Environment.xml", true);
 
-			Set<String> servers = (Set<String>) prop.get("blacktie.domain.servers");
-			for (String server : servers) {
-				DiscoveredResourceDetails resource = new DiscoveredResourceDetails(
-						context.getResourceType(), server, server, null,
-						null, null, null);
-				set.add(resource);
+			JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
+			JMXConnector c = JMXConnectorFactory.connect(u);
+			beanServerConnection = c.getMBeanServerConnection();
+			blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
+
+			Element status;
+			status = (Element)beanServerConnection.invoke(blacktieAdmin, 
+					"listServiceStatus",
+					new Object[] { serverName, null}, 
+					new String[] {"java.lang.String", "java.lang.String"});
+
+			NodeList services = status.getElementsByTagName("name");
+			for(int i = 0; i < services.getLength(); i++) {
+				Node node = services.item(i);
+				String serviceName = node.getTextContent();
+
+				if(!serviceName.equals(serverName)) {
+					DiscoveredResourceDetails resource = new DiscoveredResourceDetails(
+							context.getResourceType(), serviceName, serviceName, null,
+							null, null, null);
+					set.add(resource);
+				}
 			}
 		} catch (Exception e) {
-			log.equals("get servers error with " + e);
+			log.error("get services error with " + e);
 		}
+
 		return set;
 	}
 }

@@ -112,7 +112,11 @@
 
 		  <metric property="instanceCount" measurementType="dynamic" displayType="summary" displayName="server instances"
 			  defaultOn="true" defaultInterval="60000" dataType="measurement" description="The number of running instances of server"/>
-
+		  <service name="Service"
+		  	  discovery="ServiceDiscoveryComponent"
+		  	  class="ServiceComponent"
+		  	  description="blacktie service">
+		  </service>
 	  </service>
    </server>
 </plugin>
