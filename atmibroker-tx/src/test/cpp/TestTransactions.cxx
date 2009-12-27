@@ -54,7 +54,7 @@ void TestTransactions::tearDown()
 	txx_stop();
 	TestFixture::tearDown();
 
-	::putenv("BLACKTIE_CONFIGURATION=");
+	::putenv((char*) "BLACKTIE_CONFIGURATION=");
 	AtmiBrokerEnv::discard_instance();
 }
 
