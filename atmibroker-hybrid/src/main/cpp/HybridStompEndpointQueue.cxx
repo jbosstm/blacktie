@@ -110,13 +110,13 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 					setSpecific(TPE_KEY, TSS_TPETIME);
 					frame = NULL;
 				} else if (rc != APR_SUCCESS) { // win32 70014 on disconnect
+					LOG4CXX_WARN(logger, "Could not read frame for " << name
+							<< ", will attempt to reconnect");
 					char errbuf[256];
 					apr_strerror(rc, errbuf, sizeof(errbuf));
-					LOG4CXX_WARN(logger, "Could not read frame for " << name
-							<< ": " << rc
-							<< " was the result, will attempt to reconnect: "
-							<< errbuf);
-					free(errbuf);
+					LOG4CXX_WARN(logger, (char*) "APR Error was: " << rc
+							<< ": " << errbuf);
+					//					free(errbuf);
 					setSpecific(TPE_KEY, TSS_TPESYSTEM);
 					frame = NULL;
 					this->connected = false;
@@ -141,12 +141,13 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 						rc = stomp_read(connection, &frame, pool);
 						if (rc != APR_SUCCESS) {
 							setSpecific(TPE_KEY, TSS_TPESYSTEM);
+							LOG4CXX_DEBUG(logger, "Could not read frame for "
+									<< name);
 							char errbuf[256];
 							apr_strerror(rc, errbuf, sizeof(errbuf));
-							LOG4CXX_DEBUG(logger, "Could not read frame for "
-									<< name << ": " << rc
-									<< " was the result: " << errbuf);
-							free(errbuf);
+							LOG4CXX_DEBUG(logger, (char*) "APR Error was: "
+									<< rc << ": " << errbuf);
+							//							free(errbuf);
 							frame = NULL;
 						} else if (strcmp(frame->command, (const char*) "ERROR")
 								== 0) {
@@ -265,22 +266,24 @@ void HybridStompEndpointQueue::connect() {
 			LOG4CXX_DEBUG(logger, "Send SUB: " << fullName);
 			apr_status_t rc = stomp_write(connection, &frame, pool);
 			if (rc != APR_SUCCESS) {
+				LOG4CXX_ERROR(logger, (char*) "Could not send frame");
 				char errbuf[256];
 				apr_strerror(rc, errbuf, sizeof(errbuf));
-				LOG4CXX_ERROR(logger, (char*) "Could not send frame: " << rc
-						<< ": " << errbuf);
-				free(errbuf);
+				LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc << ": "
+						<< errbuf);
+				//				free(errbuf);
 				HybridConnectionImpl::disconnect(connection, pool);
 			} else {
 				stomp_frame *framed;
 				rc = stomp_read(connection, &framed, pool);
 				if (rc != APR_SUCCESS) {
 					setSpecific(TPE_KEY, TSS_TPESYSTEM);
+					LOG4CXX_ERROR(logger, "Could not read frame for " << name);
 					char errbuf[256];
 					apr_strerror(rc, errbuf, sizeof(errbuf));
-					LOG4CXX_WARN(logger, "Could not read frame for " << name
-							<< ": " << rc << " was the result: " << errbuf);
-					free(errbuf);
+					LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc
+							<< ": " << errbuf);
+					//					free(errbuf);
 					HybridConnectionImpl::disconnect(connection, pool);
 				} else if (strcmp(framed->command, (const char*) "ERROR") == 0) {
 					LOG4CXX_DEBUG(logger, (char*) "Got an error: "

@@ -78,11 +78,12 @@ stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 	LOG4CXX_DEBUG(logger, "connect to: " << host << ":" << portNum);
 	apr_status_t rc = stomp_connect(&connection, host.c_str(), portNum, pool);
 	if (rc != APR_SUCCESS) {
+		LOG4CXX_ERROR(logger, (char*) "Connection failed: " << host << ", "
+				<< portNum);
 		char errbuf[256];
 		apr_strerror(rc, errbuf, sizeof(errbuf));
-		LOG4CXX_ERROR(logger, (char*) "Connection failed: " << host << ", "
-				<< portNum << ": " << rc << ": " << errbuf);
-		free(errbuf);
+		LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc << ": " << errbuf);
+		//		free(errbuf);
 		disconnect(connection, pool);
 	} else {
 		if (timeout > 0) {
@@ -105,11 +106,12 @@ stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 		LOG4CXX_DEBUG(logger, "Connecting...");
 		rc = stomp_write(connection, &frame, pool);
 		if (rc != APR_SUCCESS) {
+			LOG4CXX_ERROR(logger, (char*) "Could not send frame");
 			char errbuf[256];
 			apr_strerror(rc, errbuf, sizeof(errbuf));
-			LOG4CXX_ERROR(logger, (char*) "Could not send frame: " << rc
-					<< ": " << errbuf);
-			free(errbuf);
+			LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc << ": "
+					<< errbuf);
+			//			free(errbuf);
 			disconnect(connection, pool);
 		} else {
 			LOG4CXX_DEBUG(logger, "Reading Response.");
@@ -117,11 +119,12 @@ stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 			try {
 				rc = stomp_read(connection, &frameRead, pool);
 				if (rc != APR_SUCCESS) {
+					LOG4CXX_ERROR(logger, (char*) "Could not read frame");
 					char errbuf[256];
 					apr_strerror(rc, errbuf, sizeof(errbuf));
-					LOG4CXX_ERROR(logger, (char*) "Could not read frame: "
-							<< rc << " from connection: " << errbuf);
-					free(errbuf);
+					LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc
+							<< ": " << errbuf);
+					//					free(errbuf);
 					disconnect(connection, pool);
 				} else {
 					LOG4CXX_DEBUG(logger, "Response: " << frameRead->command
@@ -150,20 +153,23 @@ void HybridConnectionImpl::disconnect(stomp_connection* connection,
 		apr_status_t rc = stomp_write(connection, &frame, pool);
 		LOG4CXX_TRACE(logger, (char*) "Sent DISCONNECT");
 		if (rc != APR_SUCCESS) {
+			LOG4CXX_ERROR(logger, "Could not send frame");
 			char errbuf[256];
 			apr_strerror(rc, errbuf, sizeof(errbuf));
-			LOG4CXX_ERROR(logger, "Could not send frame: " << rc << ": "
+			LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc << ": "
 					<< errbuf);
-			free(errbuf);
+			//			free(errbuf);
 		}
 
 		LOG4CXX_DEBUG(logger, "Disconnecting...");
 		rc = stomp_disconnect(&connection);
 		if (rc != APR_SUCCESS) {
+			LOG4CXX_ERROR(logger, "Could not disconnect");
 			char errbuf[256];
 			apr_strerror(rc, errbuf, sizeof(errbuf));
-			LOG4CXX_ERROR(logger, "Could not disconnect: " << errbuf);
-			free(errbuf);
+			LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc << ": "
+					<< errbuf);
+			//			free(errbuf);
 		} else {
 			LOG4CXX_DEBUG(logger, "Disconnected");
 		}

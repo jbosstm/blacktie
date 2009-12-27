@@ -212,23 +212,25 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		apr_status_t rc = stomp_write(stompConnection, &frame, pool);
 
 		if (rc != APR_SUCCESS) {
+			LOG4CXX_ERROR(logger, "Could not send frame");
 			char errbuf[256];
 			apr_strerror(rc, errbuf, sizeof(errbuf));
-			LOG4CXX_ERROR(logger, "Could not send frame: " << rc << ": "
+			LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc << ": "
 					<< errbuf);
 			setSpecific(TPE_KEY, TSS_TPENOENT); // TODO - clean up session
-			free(errbuf);
+			//			free(errbuf);
 		} else {
 			LOG4CXX_TRACE(logger, "Sent frame");
 			stomp_frame *framed;
 			rc = stomp_read(stompConnection, &framed, pool);
 			if (rc != APR_SUCCESS) {
+				LOG4CXX_ERROR(logger, "Could not send frame");
 				char errbuf[256];
 				apr_strerror(rc, errbuf, sizeof(errbuf));
-				LOG4CXX_ERROR(logger, "Could not send frame: " << rc << ": "
+				LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc << ": "
 						<< errbuf);
 				setSpecific(TPE_KEY, TSS_TPENOENT); // TODO - clean up session
-				free(errbuf);
+				//				free(errbuf);
 			} else if (strcmp(framed->command, (const char*) "ERROR") == 0) {
 				LOG4CXX_DEBUG(logger, (char*) "Got an error: " << framed->body);
 				//setSpecific(TPE_KEY, TSS_TPENOENT);
