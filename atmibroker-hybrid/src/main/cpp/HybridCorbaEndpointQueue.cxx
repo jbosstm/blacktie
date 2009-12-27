@@ -23,10 +23,10 @@
 #include <orbsvcs/CosNamingS.h>
 #endif
 
-#include "CorbaEndpointQueue.h"
 #include "ThreadLocalStorage.h"
 #include "txx.h"
-#include "SessionImpl.h"
+#include "HybridCorbaEndpointQueue.h"
+#include "HybridSessionImpl.h"
 #include "BufferConverterImpl.h"
 
 log4cxx::LoggerPtr HybridCorbaEndpointQueue::logger(log4cxx::Logger::getLogger(

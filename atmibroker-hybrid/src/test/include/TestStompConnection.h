@@ -20,7 +20,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
-#include "ConnectionImpl.h"
+#include "HybridConnectionImpl.h"
 
 class TestStompConnection: public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE( TestStompConnection);

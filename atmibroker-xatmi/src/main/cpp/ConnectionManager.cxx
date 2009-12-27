@@ -33,7 +33,7 @@ extern char server[30];
 extern int serverid;
 
 #ifdef IDE_DEBUG
-#include "ConnectionImpl.h"
+#include "HybridConnectionImpl.h"
 #endif
 ConnectionManager::ConnectionManager() {
 	LOG4CXX_TRACE(loggerConnectionManager, (char*) "constructor");

@@ -16,10 +16,49 @@
  * MA  02110-1301, USA.
  */
 
-#include "HybridConnectionImpl.h"
+#ifndef HybridStompEndpointQueue_H_
+#define HybridStompEndpointQueue_H_
 
-static Connection* createConnection(char* connectionName) {
-	return new HybridConnectionImpl(connectionName);
+#include "atmiBrokerHybridMacro.h"
+
+#include <queue>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include "stomp.h"
+#ifdef __cplusplus
 }
+#endif
 
-struct connection_factory_t connectionFactory = { createConnection };
+#include "log4cxx/logger.h"
+#include "Destination.h"
+#include "SynchronizableObject.h"
+
+class BLACKTIE_HYBRID_DLL HybridStompEndpointQueue: public virtual Destination {
+public:
+	HybridStompEndpointQueue(apr_pool_t* pool, char* serviceName);
+	virtual ~HybridStompEndpointQueue();
+
+	virtual void disconnect();
+
+	virtual MESSAGE receive(long time);
+
+	virtual const char* getName();
+	const char* getFullName();
+private:
+	void connect();
+	static log4cxx::LoggerPtr logger;
+	stomp_connection* connection;
+	apr_pool_t* pool;
+	stomp_frame* message;
+	char* receipt;
+	SynchronizableObject* lock;
+	bool shutdown;
+	char* name;
+	char* fullName;
+	bool transactional;
+	bool connected;
+};
+
+#endif

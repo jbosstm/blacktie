@@ -15,50 +15,50 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-
-#ifndef StompEndpointQueue_H_
-#define StompEndpointQueue_H_
+#ifndef HybridSessionImpl_H_
+#define HybridSessionImpl_H_
 
 #include "atmiBrokerHybridMacro.h"
 
-#include <queue>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-#include "stomp.h"
-#ifdef __cplusplus
-}
-#endif
-
 #include "log4cxx/logger.h"
-#include "Destination.h"
-#include "SynchronizableObject.h"
+#include "Session.h"
+#include "CorbaConnection.h"
+#include "HybridConnectionImpl.h"
+#include "HybridCorbaEndpointQueue.h"
+#include "HybridStompEndpointQueue.h"
 
-class BLACKTIE_HYBRID_DLL HybridStompEndpointQueue: public virtual Destination {
+class HybridConnectionImpl;
+
+class BLACKTIE_HYBRID_DLL HybridSessionImpl: public virtual Session {
 public:
-	HybridStompEndpointQueue(apr_pool_t* pool, char* serviceName);
-	virtual ~HybridStompEndpointQueue();
+	HybridSessionImpl(char* connectionName, CORBA_CONNECTION* connection, apr_pool_t* pool, int id, const char* temporaryQueueName);
 
-	virtual void disconnect();
+	HybridSessionImpl(char* connectionName, CORBA_CONNECTION* connection, apr_pool_t* pool, int id, char* service);
 
-	virtual MESSAGE receive(long time);
+	virtual ~HybridSessionImpl();
 
-	virtual const char* getName();
-	const char* getFullName();
+	void setSendTo(const char* replyTo);
+
+	const char* getReplyTo();
+
+	MESSAGE receive(long time);
+
+	bool send(MESSAGE message);
+
+	int getId();
 private:
-	void connect();
 	static log4cxx::LoggerPtr logger;
-	stomp_connection* connection;
+	int id;
+	CORBA_CONNECTION* corbaConnection;
+	HybridCorbaEndpointQueue* temporaryQueue;
+	AtmiBroker::EndpointQueue_var remoteEndpoint;
+	stomp_connection* stompConnection;
 	apr_pool_t* pool;
-	stomp_frame* message;
-	char* receipt;
-	SynchronizableObject* lock;
-	bool shutdown;
-	char* name;
-	char* fullName;
-	bool transactional;
-	bool connected;
+	const char* replyTo;
+	char* sendTo;
+	bool serviceInvokation;
+	char* serviceName;
+	const char* temporaryQueueName;
 };
 
 #endif

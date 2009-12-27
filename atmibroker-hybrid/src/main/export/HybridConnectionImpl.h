@@ -15,8 +15,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef ConnectionImpl_H_
-#define ConnectionImpl_H_
+#ifndef HybridConnectionImpl_H_
+#define HybridConnectionImpl_H_
 
 #include "atmiBrokerHybridMacro.h"
 
@@ -34,7 +34,7 @@ extern "C" {
 #include "CorbaConnection.h"
 #include "Connection.h"
 #include "Destination.h"
-#include "SessionImpl.h"
+#include "HybridSessionImpl.h"
 
 class HybridSessionImpl;
 
