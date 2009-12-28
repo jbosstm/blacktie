@@ -27,7 +27,7 @@
 		<param name="Threshold" value="INFO" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern"
-				value="%d [%t] %-5p (%-20.20c{2}:%-4L) %3x - %m%n" />
+				value="%d [%t] %9x %-5p (%-25.25c{2}:%-4L) - %m%n" />
 		</layout>
 	</appender>
 
@@ -38,7 +38,7 @@
 		<param name="MaxBackupIndex" value="10" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern"
-				value="%d [%t] %-5p (%-20.20c{2}:%-4L) %3x - %m%n" />
+				value="%d [%t] %9x %-5p (%-25.25c{2}:%-4L) - %m%n" />
 		</layout>
 	</appender>
 
