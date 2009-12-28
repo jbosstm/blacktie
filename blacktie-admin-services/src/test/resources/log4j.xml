@@ -24,15 +24,28 @@
 
 	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
 		<param name="target" value="System.out" />
+		<param name="Threshold" value="INFO" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern"
-				value="%d %-5p %t (%-20.20c{2}:%-4L) %3x - %m%n" />
+				value="%d [%t] %-5p (%-20.20c{2}:%-4L) %3x - %m%n" />
 		</layout>
 	</appender>
 
+	<appender name="ROLLING" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="blacktie.log" />
+		<param name="Threshold" value="ALL" />
+		<param name="MaxFileSize" value="10000KB" />
+		<param name="MaxBackupIndex" value="10" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%d [%t] %-5p (%-20.20c{2}:%-4L) %3x - %m%n" />
+		</layout>
+	</appender>
+
+
 	<root>
-		<priority value="info" />
 		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="ROLLING" />
 	</root>
 
 </log4j:configuration>
