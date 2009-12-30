@@ -84,8 +84,8 @@ import org.w3c.dom.Element;
  * @author John Mazzitelli
  */
 public class ServiceComponent implements ResourceComponent, MeasurementFacet,
-		OperationFacet, ConfigurationFacet, ContentFacet, DeleteResourceFacet,
-		CreateChildResourceFacet {
+OperationFacet, ConfigurationFacet, ContentFacet, DeleteResourceFacet,
+CreateChildResourceFacet {
 	private final Log log = LogFactory.getLog(ServiceComponent.class);
 
 	/**
@@ -93,15 +93,16 @@ public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 	 * managed.
 	 */
 	private Configuration resourceConfiguration;
-	
+
 	private ResourceContext resourceContext;
 
 	private Properties prop = new Properties();
 
 	private MBeanServerConnection beanServerConnection;
 
+	private String serverName = null;
 	private String serviceName = null;
-	
+
 	private ObjectName blacktieAdmin = null;
 
 	/**
@@ -120,7 +121,8 @@ public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 			JMXConnector c = JMXConnectorFactory.connect(u);
 			beanServerConnection = c.getMBeanServerConnection();
 
-			serviceName = context.getResourceKey();;
+			serviceName = context.getResourceKey();
+			serverName = prop.getProperty("blacktie." + serviceName + ".server");
 			blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
 		} catch (Exception e) {
 			log.error("start server " + serviceName + " plugin error with " + e);
@@ -147,7 +149,18 @@ public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 	 * @see ResourceComponent#getAvailability()
 	 */
 	public AvailabilityType getAvailability() {
-		return AvailabilityType.UP;
+		AvailabilityType status = AvailabilityType.DOWN;
+
+		try {
+			ObjectName objName = new ObjectName(
+					"jboss.messaging.destination:service=Queue,name=" + 
+					serviceName);
+			beanServerConnection.getAttribute(objName, "ConsumerCount");
+			status = AvailabilityType.UP;
+		} catch (Exception e) {
+
+		}
+		return status;
 	}
 
 	/**
@@ -162,7 +175,6 @@ public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 			Set<MeasurementScheduleRequest> requests) {
 		for (MeasurementScheduleRequest request : requests) {
 			String name = request.getName();
-
 		}
 
 		return;
@@ -178,7 +190,93 @@ public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 	 */
 	public OperationResult invokeOperation(String name, Configuration params) {
 		OperationResult result = new OperationResult();
+		int id = Integer.parseInt(params.getSimpleValue("id", "0"));
 
+		if (name.equals("advertise") || name.equals("unadvertise")) {		
+			if(serviceName == null) {
+				result.setErrorMessage("service name can not empty");
+			} else {
+				try{
+					Boolean r =  (Boolean)beanServerConnection.invoke(blacktieAdmin, 
+							name,
+							new Object[] { serverName, serviceName}, 
+							new String[] {"java.lang.String", "java.lang.String"});
+					if(r){
+						result.setSimpleResult(name + " OK");
+					} else {
+						result.setErrorMessage(name + " FAIL");
+					}
+				} catch (Exception e) {
+					log.error("call " + name + " service " + serviceName
+							+ " failed with " + e);
+					result.setErrorMessage("call " + name + " service " + serviceName
+							+ " failed with " + e);
+				}
+			}
+		} else if (name.equals("listServiceStatus")) {
+			try {
+				Element status;
+				if(id == 0) {
+					status = (Element)beanServerConnection.invoke(blacktieAdmin, 
+							"listServiceStatus",
+							new Object[] { serverName, serviceName}, 
+							new String[] {"java.lang.String", "java.lang.String"});
+				} else {
+					status = (Element)beanServerConnection.invoke(blacktieAdmin, 
+							"listServiceStatusById",
+							new Object[] { serverName, id, serviceName}, 
+							new String[] {"java.lang.String", "int", "java.lang.String"});
+				}
+
+				if (status != null) {
+					try {
+						// Set up the output transformer
+						TransformerFactory transfac = TransformerFactory.newInstance();
+						Transformer trans = transfac.newTransformer();
+						trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+						trans.setOutputProperty(OutputKeys.INDENT, "yes");
+
+						StringWriter sw = new StringWriter();
+						StreamResult sr = new StreamResult(sw);
+						DOMSource source = new DOMSource(status);
+						trans.transform(source, sr);
+						result.setSimpleResult(sw.toString());					
+					} catch (TransformerException e) {
+						log.error(e);
+					}
+				} else {
+					result.setErrorMessage("no service status");
+				}
+			} catch (Exception e) {
+				log.error("call status failed with "+ e);
+				result.setErrorMessage("call status failed with "+ e);
+			}
+		} else if (name.equals("getServiceCounter")) {
+			try {
+				if(serviceName == null) {
+					result.setErrorMessage("service name can not empty");
+				} else {
+					Long counter;
+					if(id == 0) {
+						counter = (Long)beanServerConnection.invoke(blacktieAdmin, 
+								"getServiceCounter",
+								new Object[] { serverName, serviceName}, 
+								new String[] {"java.lang.String", "java.lang.String"});
+					} else {
+						counter = (Long)beanServerConnection.invoke(blacktieAdmin, 
+								"getServiceCounterById",
+								new Object[] { serverName, id, serviceName}, 
+								new String[] {"java.lang.String", "int", "java.lang.String"});
+					}
+					result.setSimpleResult(counter.toString());
+				}
+			} catch (Exception e) {
+				log.error("call get counter of " + serviceName 
+						+ " failed with " + e);
+				result.setErrorMessage("call get counter of " + serviceName 
+						+ " failed with " + e);
+			}
+		}
 		return result;
 	}
 
