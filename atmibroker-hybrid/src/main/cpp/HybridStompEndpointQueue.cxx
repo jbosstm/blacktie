@@ -69,10 +69,13 @@ HybridStompEndpointQueue::~HybridStompEndpointQueue() {
 	free( fullName);
 	LOG4CXX_TRACE(logger, (char*) "freed name");
 
-	LOG4CXX_TRACE(logger, (char*) "destroying");
-	HybridConnectionImpl::disconnect(connection, pool);
+	if (connected) {
+		LOG4CXX_TRACE(logger, (char*) "disconnecting");
+		HybridConnectionImpl::disconnect(connection, pool);
+		connection = NULL;
+		LOG4CXX_TRACE(logger, (char*) "disconnected");
+	}
 	LOG4CXX_TRACE(logger, (char*) "destroyed");
-	connection = NULL;
 }
 
 MESSAGE HybridStompEndpointQueue::receive(long time) {
