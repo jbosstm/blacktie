@@ -49,7 +49,7 @@ import org.w3c.dom.Element;
 @Depends("jboss.messaging.destination:service=Queue,name=BTDomainAdmin")
 @javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
-		javax.jms.MessageListener {
+		javax.jms.MessageListener, BlacktieAdminServiceMBean {
 	private static final Logger log = LogManager
 			.getLogger(BlacktieAdminServiceXATMI.class);
 
@@ -141,7 +141,7 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 				Element response = listServiceStatusById(serverName, id,
 						serviceName);
 				toReturn = response.toString().getBytes();
-			} else if(operation.equals("getDomainStatus")) {
+			} else if (operation.equals("getDomainStatus")) {
 				boolean response = getDomainStatus();
 				toReturn = convertBoolean(response);
 			}
@@ -212,49 +212,49 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 	/**
 	 * Retrieve the domain name
 	 */
-	private String getDomainName() {
+	public String getDomainName() {
 		return administrationProxy.getDomainName();
 	}
 
 	/**
 	 * Get the version of the blacktie software
 	 */
-	private String getSoftwareVersion() {
+	public String getSoftwareVersion() {
 		return administrationProxy.getSoftwareVersion();
 	}
-	
+
 	/**
 	 * Get domain status
 	 */
-	private Boolean getDomainStatus() {
+	public Boolean getDomainStatus() {
 		return administrationProxy.getDomainStatus();
 	}
 
 	/**
 	 * Pause the domain
 	 */
-	private Boolean pauseDomain() {
+	public Boolean pauseDomain() {
 		return administrationProxy.pauseDomain();
 	}
 
 	/**
 	 * Resume the domain
 	 */
-	private Boolean resumeDomain() {
+	public Boolean resumeDomain() {
 		return administrationProxy.resumeDomain();
 	}
 
 	/**
 	 * List the servers
 	 */
-	private List<String> getServerList() {
+	public List<String> getServerList() {
 		return administrationProxy.getServerList();
 	}
 
 	/**
 	 * List the running servers
 	 */
-	private List<String> listRunningServers() {
+	public List<String> listRunningServers() {
 		return administrationProxy.listRunningServers();
 	}
 
@@ -264,14 +264,14 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 	 * @param serverName
 	 *            The name of the server
 	 */
-	private List<Integer> listRunningInstanceIds(String serverName) {
+	public List<Integer> listRunningInstanceIds(String serverName) {
 		return administrationProxy.listRunningInstanceIds(serverName);
 	}
 
 	/**
 	 * Get the servers status for the domain
 	 */
-	private Element getServersStatus() {
+	public Element getServersStatus() {
 		return administrationProxy.getServersStatus();
 	}
 
@@ -283,7 +283,7 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 	 * @param serviceName
 	 *            The name of the service
 	 */
-	private Element listServiceStatus(String serverName, String serviceName) {
+	public Element listServiceStatus(String serverName, String serviceName) {
 		return administrationProxy.listServiceStatus(serverName, serviceName);
 	}
 
@@ -295,7 +295,7 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 	 * @param serviceName
 	 *            The name of the service
 	 */
-	private Boolean advertise(String serverName, String serviceName) {
+	public Boolean advertise(String serverName, String serviceName) {
 		return administrationProxy.advertise(serverName, serviceName);
 	}
 
@@ -307,7 +307,7 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 	 * @param serviceName
 	 *            The name of the service
 	 */
-	private Boolean unadvertise(String serverName, String serviceName) {
+	public Boolean unadvertise(String serverName, String serviceName) {
 		return administrationProxy.unadvertise(serverName, serviceName);
 	}
 
@@ -319,7 +319,7 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 	 * @param id
 	 *            The id of the server
 	 */
-	private void shutdown(String serverName, int id) {
+	public void shutdown(String serverName, int id) {
 		administrationProxy.shutdown(serverName, id);
 	}
 
@@ -333,7 +333,7 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 	 * @param serviceName
 	 *            The name of the service
 	 */
-	private long getServiceCounterById(String serverName, int id,
+	public long getServiceCounterById(String serverName, int id,
 			String serviceName) {
 		return administrationProxy.getServiceCounterById(serverName, id,
 				serviceName);
@@ -348,14 +348,14 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 	 *            The name of the service
 	 */
 
-	private long getServiceCounter(String serverName, String serviceName) {
+	public long getServiceCounter(String serverName, String serviceName) {
 		return administrationProxy.getServiceCounter(serverName, serviceName);
 	}
 
 	/**
 	 * Reload the domain
 	 */
-	private Boolean reloadDomain() {
+	public Boolean reloadDomain() {
 		return administrationProxy.reloadDomain();
 	}
 
@@ -366,7 +366,7 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 	 * @param serverName
 	 *            The name of the server
 	 */
-	private Boolean reloadServer(String serverName) {
+	public Boolean reloadServer(String serverName) {
 		return administrationProxy.reloadServer(serverName);
 	}
 
@@ -380,9 +380,20 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 	 * @param serviceName
 	 *            The name of the service
 	 */
-	private Element listServiceStatusById(String serverName, int id,
+	public Element listServiceStatusById(String serverName, int id,
 			String serviceName) {
 		return administrationProxy.listServiceStatusById(serverName, id,
 				serviceName);
+	}
+
+	public void start() throws Exception {
+		throw new RuntimeException(
+				"This operation is not applicable to the XATMI admin service");
+
+	}
+
+	public void stop() throws Exception {
+		throw new RuntimeException(
+				"This operation is not applicable to the XATMI admin service");
 	}
 }
