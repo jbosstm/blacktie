@@ -95,6 +95,8 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 	message.ttl = -1;
 	message.serviceName = NULL;
 
+	setSpecific(TPE_KEY, TSS_TPERESET);
+
 	lock->lock();
 	if (!shutdown) {
 		stomp_frame *frame = NULL;
@@ -138,20 +140,22 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 										<< name << ": " << receipt);
 						setSpecific(TPE_KEY, TSS_TPESYSTEM);
 						frame = NULL;
+						this->connected = false;
 					} else {
 						LOG4CXX_DEBUG(logger, "Handling old receipt");
 						this->receipt = NULL;
 						rc = stomp_read(connection, &frame, pool);
 						if (rc != APR_SUCCESS) {
-							setSpecific(TPE_KEY, TSS_TPESYSTEM);
-							LOG4CXX_DEBUG(logger, "Could not read frame for "
+							LOG4CXX_ERROR(logger, "Could not read frame for "
 									<< name);
 							char errbuf[256];
 							apr_strerror(rc, errbuf, sizeof(errbuf));
 							LOG4CXX_DEBUG(logger, (char*) "APR Error was: "
 									<< rc << ": " << errbuf);
 							//							free(errbuf);
+							setSpecific(TPE_KEY, TSS_TPESYSTEM);
 							frame = NULL;
+							this->connected = false;
 						} else if (strcmp(frame->command, (const char*) "ERROR")
 								== 0) {
 							LOG4CXX_ERROR(logger, (char*) "Got an error: "
@@ -168,6 +172,7 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 											<< ": " << receipt);
 							setSpecific(TPE_KEY, TSS_TPESYSTEM);
 							frame = NULL;
+							this->connected = false;
 						} else {
 							LOG4CXX_DEBUG(logger,
 									"Message received 2nd attempt");
@@ -176,6 +181,9 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 				} else {
 					LOG4CXX_DEBUG(logger, "Message received 1st attempt");
 				}
+			} else {
+				LOG4CXX_ERROR(logger, "receive failed - not connected");
+				setSpecific(TPE_KEY, TSS_TPESYSTEM);
 			}
 		}
 		if (frame != NULL) {

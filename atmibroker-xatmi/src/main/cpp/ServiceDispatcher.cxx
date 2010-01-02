@@ -79,6 +79,10 @@ int ServiceDispatcher::svc(void) {
 						logger,
 						(char*) "Service Dispatcher caught error running during onMessage");
 			}
+		} else if (tperrno == TPESYSTEM) {
+			LOG4CXX_WARN(
+					logger,
+					(char*) "Service dispatcher detected dead connection, attempting destination reconnect");
 		}
 	}
 	return 0;
@@ -181,8 +185,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 					(char*) "ServiceDispatcher caught error running during onMessage");
 		}
 	} else {
-		LOG4CXX_ERROR(
-				logger,
+		LOG4CXX_ERROR(logger,
 				(char*) "Not invoking tpservice as tpernno was not 0");
 	}
 
