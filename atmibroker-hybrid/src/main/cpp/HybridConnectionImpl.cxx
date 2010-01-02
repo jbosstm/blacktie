@@ -66,10 +66,6 @@ HybridConnectionImpl::~HybridConnectionImpl() {
 	LOG4CXX_TRACE(logger, "Destroyed");
 }
 
-bool HybridConnectionImpl::requiresAdminCall() {
-	return true;
-}
-
 stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 	LOG4CXX_DEBUG(logger, "connect:" << timeout);
 	stomp_connection* connection = NULL;

@@ -69,6 +69,7 @@ private:
 	void (*getServiceMethod(const char * aServiceName))(TPSVCINFO *);
 	void addDestination(Destination* destination, void(*func)(TPSVCINFO *), ServiceInfo* service);
 	Destination* removeDestination(const char * aServiceName);
+	bool createAdminDestination(char* svcname);
 	void removeAdminDestination(char* svcname);
 	void updateServiceStatus(ServiceInfo* service, SVCFUNC func, bool status);
 

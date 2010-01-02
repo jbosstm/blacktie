@@ -60,7 +60,7 @@ AtmiBrokerServer * ptrServer = NULL;
 bool serverInitialized = false;
 PortableServer::POA_var server_poa;
 bool configFromCmdline = false;
-int  errorBootAdminService = 0;
+int errorBootAdminService = 0;
 char configDir[256];
 char server[30];
 int serverid = 0;
@@ -178,7 +178,7 @@ int serverinit(int argc, char** argv) {
 						"%s_ADMIN_%d", server, serverid);
 				tpadvertise(adm, ADMIN);
 
-				if(errorBootAdminService == 2) {
+				if (errorBootAdminService == 2) {
 					userlog(log4cxx::Level::getWarn(), loggerAtmiBrokerServer,
 							(char*) "Maybe the same server id running");
 					throw std::exception();
@@ -450,7 +450,7 @@ void AtmiBrokerServer::advertiseAtBootime() {
 int AtmiBrokerServer::block() {
 
 	int toReturn = 0;
-	if(errorBootAdminService == 3) {
+	if (errorBootAdminService == 3) {
 		LOG4CXX_INFO(loggerAtmiBrokerServer, "Domain is paused");
 		pause();
 	} else {
@@ -556,7 +556,7 @@ int AtmiBrokerServer::getServiceStatus(char** toReturn, char* svc) {
 
 			len += ACE_OS::sprintf(str + len,
 					"<service><name>%.15s</name><status>%d</status></service>",
-					(*i).name, isPause && (*i).status? 2 : (*i).status);
+					(*i).name, isPause && (*i).status ? 2 : (*i).status);
 			if (svc != NULL)
 				break;
 		}
@@ -616,16 +616,6 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 		return false;
 	}
 
-	bool isadm = false;
-	char adm[XATMI_SERVICE_NAME_LENGTH + 1];
-	ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server,
-			serverid);
-	if (strcmp(adm, svcname) == 0) {
-		isadm = true;
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "advertise Admin svc "
-				<< adm);
-	}
-
 	char* serviceName = (char*) ::malloc(XATMI_SERVICE_NAME_LENGTH + 1);
 	memset(serviceName, '\0', XATMI_SERVICE_NAME_LENGTH + 1);
 	strncat(serviceName, svcname, XATMI_SERVICE_NAME_LENGTH);
@@ -676,62 +666,20 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 
 	// create reference for Service Queue and cache
 	try {
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "create_service_queue: "
-				<< serviceName);
+		toReturn = createAdminDestination(serviceName);
+		if (toReturn) {
+			Destination* destination;
+			destination = connection->createDestination(serviceName);
 
-		if (connection->requiresAdminCall()) {
-			long commandLength;
-			long responseLength = 1;
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+					(char*) "created destination: " << serviceName);
 
-			commandLength = strlen(serverName) + strlen(serviceName) + 15;
-
-			char* command = (char*) ::tpalloc((char*) "X_OCTET", NULL,
-					commandLength);
-			char* response = (char*) ::tpalloc((char*) "X_OCTET", NULL,
-					responseLength);
-			memset(command, '\0', commandLength);
-
-			sprintf(command, "tpadvertise,%s,%s,", serverName, serviceName);
-
-			if (tpcall((char*) "BTStompAdmin", command, commandLength,
-					&response, &responseLength, TPNOTRAN) != 0) {
-				LOG4CXX_ERROR(loggerAtmiBrokerServer,
-						"Could not advertise service with command: " << command);
-				tpfree(command);
-				free(serviceName);
-				return false;
-			} else if (responseLength != 1) {
-				LOG4CXX_ERROR(loggerAtmiBrokerServer,
-						"Service returned with unexpected response: "
-								<< response << " with length "
-								<< responseLength);
-				tpfree(command);
-				free(serviceName);
-				return false;
-			} else if (response[0] != 1) {
-				if(!isadm || (errorBootAdminService = response[0]) == 2) {
-					LOG4CXX_ERROR(loggerAtmiBrokerServer,
-						"Service returned with error: " << command);
-					tpfree(command);
-					free(serviceName);
-					return false;
-				}
-			}
-			tpfree(command);
+			addDestination(destination, func, service);
+			updateServiceStatus(service, func, true);
+			advertisedServices.push_back(serviceName);
+			LOG4CXX_INFO(loggerAtmiBrokerServer, (char*) "advertised service "
+					<< serviceName);
 		}
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-				(char*) "invoked create_service_queue: " << serviceName);
-
-		Destination* destination;
-		destination = connection->createDestination(serviceName);
-
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "created destination: "
-				<< serviceName);
-
-		addDestination(destination, func, service);
-		updateServiceStatus(service, func, true);
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "added destination: "
-				<< serviceName);
 	} catch (CORBA::Exception& e) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer,
 				(char*) "CORBA::Exception creating the destination: "
@@ -744,7 +692,6 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 					(char*) "Could not remove the destination: " << serviceName);
 		}
 		free(serviceName);
-		return false;
 	} catch (...) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer,
 				(char*) "Could not create the destination: " << serviceName);
@@ -756,13 +703,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 					(char*) "Could not remove the destination: " << serviceName);
 		}
 		free(serviceName);
-		return false;
 	}
-
-	advertisedServices.push_back(serviceName);
-	LOG4CXX_INFO(loggerAtmiBrokerServer, (char*) "advertised service "
-			<< serviceName);
-	toReturn = true;
 	return toReturn;
 }
 
@@ -804,37 +745,89 @@ void AtmiBrokerServer::unadvertiseService(char * svcname) {
 	free(serviceName);
 }
 
-void AtmiBrokerServer::removeAdminDestination(char* serviceName) {
-	Connection* connection = connections.getServerConnection(serviceName);
+bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "Creating admin queue for: "
+			<< serviceName);
 
-	if (connection->requiresAdminCall()) {
-		long commandLength;
-		long responseLength = 1;
+	bool isadm = false;
+	char adm[XATMI_SERVICE_NAME_LENGTH + 1];
+	ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server,
+			serverid);
+	if (strcmp(adm, serviceName) == 0) {
+		isadm = true;
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+				(char*) "advertising admin service");
+	}
 
-		commandLength = strlen(serverName) + strlen(serviceName) + 21;
+	long commandLength;
+	long responseLength = 1;
 
-		char* command = (char*) ::tpalloc((char*) "X_OCTET", NULL,
-				commandLength);
-		char* response = (char*) ::tpalloc((char*) "X_OCTET", NULL,
-				responseLength);
-		memset(command, '\0', commandLength);
+	commandLength = strlen(serverName) + strlen(serviceName) + 15;
 
-		sprintf(command, "decrementconsumer,%s,%s,", serverName, serviceName);
+	char* command = (char*) ::tpalloc((char*) "X_OCTET", NULL, commandLength);
+	char* response = (char*) ::tpalloc((char*) "X_OCTET", NULL, responseLength);
+	memset(command, '\0', commandLength);
 
-		if (tpcall((char*) "BTStompAdmin", command, commandLength, &response,
-				&responseLength, TPNOTRAN) != 0) {
-			LOG4CXX_ERROR(loggerAtmiBrokerServer,
-					"Could not advertise service with command: " << command);
-		} else if (responseLength != 1) {
-			LOG4CXX_ERROR(loggerAtmiBrokerServer,
-					"Service returned with unexpected response: " << response
-							<< " with length " << responseLength);
-		} else if (response[0] == 0) {
+	sprintf(command, "tpadvertise,%s,%s,", serverName, serviceName);
+
+	if (tpcall((char*) "BTStompAdmin", command, commandLength, &response,
+			&responseLength, TPNOTRAN) != 0) {
+		LOG4CXX_ERROR(loggerAtmiBrokerServer,
+				"Could not advertise service with command: " << command);
+		tpfree(command);
+		tpfree(response);
+		free(serviceName);
+		return false;
+	} else if (responseLength != 1) {
+		LOG4CXX_ERROR(loggerAtmiBrokerServer,
+				"Service returned with unexpected response: " << response
+						<< " with length " << responseLength);
+		tpfree(command);
+		tpfree(response);
+		free(serviceName);
+		return false;
+	} else if (response[0] != 1) {
+		if (!isadm || (errorBootAdminService = response[0]) == 2) {
 			LOG4CXX_ERROR(loggerAtmiBrokerServer,
 					"Service returned with error: " << command);
+			tpfree(command);
+			tpfree(response);
+			free(serviceName);
+			return false;
 		}
-		tpfree(command);
 	}
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "Created admin queue for: "
+			<< serviceName);
+	tpfree(command);
+	tpfree(response);
+	return true;
+}
+
+void AtmiBrokerServer::removeAdminDestination(char* serviceName) {
+	long commandLength;
+	long responseLength = 1;
+
+	commandLength = strlen(serverName) + strlen(serviceName) + 21;
+
+	char* command = (char*) ::tpalloc((char*) "X_OCTET", NULL, commandLength);
+	char* response = (char*) ::tpalloc((char*) "X_OCTET", NULL, responseLength);
+	memset(command, '\0', commandLength);
+
+	sprintf(command, "decrementconsumer,%s,%s,", serverName, serviceName);
+
+	if (tpcall((char*) "BTStompAdmin", command, commandLength, &response,
+			&responseLength, TPNOTRAN) != 0) {
+		LOG4CXX_ERROR(loggerAtmiBrokerServer,
+				"Could not advertise service with command: " << command);
+	} else if (responseLength != 1) {
+		LOG4CXX_ERROR(loggerAtmiBrokerServer,
+				"Service returned with unexpected response: " << response
+						<< " with length " << responseLength);
+	} else if (response[0] == 0) {
+		LOG4CXX_ERROR(loggerAtmiBrokerServer, "Service returned with error: "
+				<< command);
+	}
+	tpfree(command);
 }
 
 bool AtmiBrokerServer::isAdvertised(char * serviceName) {
