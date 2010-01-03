@@ -862,8 +862,8 @@ void AtmiBrokerServer::addDestination(Destination* destination, void(*func)(
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "createPool");
 	for (int i = 0; i < entry.serviceInfo->poolSize; i++) {
-		ServiceDispatcher* dispatcher = new ServiceDispatcher(destination,
-				connection, destination->getName(), func, isPause);
+		ServiceDispatcher* dispatcher = new ServiceDispatcher(this,
+				destination, connection, destination->getName(), func, isPause);
 		if (dispatcher->activate(THR_NEW_LWP | THR_JOINABLE, 1, 0,
 				ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
 			delete dispatcher;

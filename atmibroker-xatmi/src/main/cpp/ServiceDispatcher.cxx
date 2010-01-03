@@ -26,9 +26,12 @@
 log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger(
 		"ServiceDispatcher"));
 
-ServiceDispatcher::ServiceDispatcher(Destination* destination,
-		Connection* connection, const char *serviceName, void(*func)(
-				TPSVCINFO *), bool isPause) {
+SynchronizableObject reconnect;
+bool reconnected;
+
+ServiceDispatcher::ServiceDispatcher(AtmiBrokerServer* server,
+		Destination* destination, Connection* connection,
+		const char *serviceName, void(*func)(TPSVCINFO *), bool isPause) {
 	this->destination = destination;
 	this->connection = connection;
 	this->serviceName = strdup(serviceName);
@@ -38,6 +41,7 @@ ServiceDispatcher::ServiceDispatcher(Destination* destination,
 	stop = false;
 	this->timeout = (long) (mqConfig.destinationTimeout * 1000000);
 	this->counter = 0;
+	this->server = server;
 }
 
 ServiceDispatcher::~ServiceDispatcher() {
@@ -62,6 +66,9 @@ int ServiceDispatcher::resume(void) {
 
 int ServiceDispatcher::svc(void) {
 	while (!stop) {
+		reconnect.lock();
+		reconnected = false;
+		reconnect.unlock();
 		MESSAGE message = destination->receive(this->timeout);
 		if (!isPause && !stop && message.received) {
 			try {
@@ -82,7 +89,7 @@ int ServiceDispatcher::svc(void) {
 		} else if (tperrno == TPESYSTEM) {
 			LOG4CXX_WARN(
 					logger,
-					(char*) "Service dispatcher detected dead connection, attempting destination reconnect");
+					(char*) "Service dispatcher detected dead connection will reconnect after sleep");
 			int timeout = 10;
 			LOG4CXX_DEBUG(logger, (char*) "sleeper, sleeping for " << timeout
 					<< " seconds");
@@ -90,14 +97,13 @@ int ServiceDispatcher::svc(void) {
 			LOG4CXX_DEBUG(logger, (char*) "sleeper, slept for " << timeout
 					<< " seconds");
 		} else if (tperrno == TPENOENT) {
-			LOG4CXX_WARN(logger,
-					(char*) "Service dispatcher could not connect to queue");
-			int timeout = 10;
-			LOG4CXX_DEBUG(logger, (char*) "sleeper, sleeping for " << timeout
-					<< " seconds");
-			ACE_OS::sleep(timeout);
-			LOG4CXX_DEBUG(logger, (char*) "sleeper, slept for " << timeout
-					<< " seconds");
+			reconnect.lock();
+			if (!reconnected) {
+				LOG4CXX_WARN(logger,
+						(char*) "Service dispatcher could not connect to queue");
+				reconnected = this->server->createAdminDestination(serviceName);
+			}
+			reconnect.unlock();
 		}
 	}
 	return 0;

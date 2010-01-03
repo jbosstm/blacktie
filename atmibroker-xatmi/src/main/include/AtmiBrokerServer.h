@@ -35,6 +35,8 @@
 #include "ServiceDispatcher.h"
 #include "SynchronizableObject.h"
 
+class ServiceDispatcher;
+
 struct _service_data {
 	Destination* destination;
 	void (*func)(TPSVCINFO *);
@@ -64,12 +66,12 @@ public:
 	void shutdown();
 	int  pause();
 	int  resume();
+	bool createAdminDestination(char* svcname);
 
 private:
 	void (*getServiceMethod(const char * aServiceName))(TPSVCINFO *);
 	void addDestination(Destination* destination, void(*func)(TPSVCINFO *), ServiceInfo* service);
 	Destination* removeDestination(const char * aServiceName);
-	bool createAdminDestination(char* svcname);
 	void removeAdminDestination(char* svcname);
 	void updateServiceStatus(ServiceInfo* service, SVCFUNC func, bool status);
 

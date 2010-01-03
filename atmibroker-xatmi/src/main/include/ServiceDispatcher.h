@@ -25,10 +25,15 @@
 #include "Destination.h"
 #include "Connection.h"
 #include "Session.h"
+#include "AtmiBrokerServer.h"
+
+class AtmiBrokerServer;
 
 class ServiceDispatcher: public ACE_Task_Base {
 public:
-	ServiceDispatcher(Destination* destination, Connection* connection, const char *serviceName, void(*func)(TPSVCINFO *), bool isPause);
+	ServiceDispatcher(AtmiBrokerServer* server, Destination* destination,
+			Connection* connection, const char *serviceName, void(*func)(
+					TPSVCINFO *), bool isPause);
 	~ServiceDispatcher();
 	int svc();
 	int pause();
@@ -38,6 +43,7 @@ public:
 private:
 	void onMessage(MESSAGE message);
 	static log4cxx::LoggerPtr logger;
+	AtmiBrokerServer* server;
 	Destination* destination;
 	Connection* connection;
 	char* serviceName;
@@ -47,6 +53,7 @@ private:
 	bool isPause;
 	long timeout;
 	long counter;
+	bool requiresReconnect;
 };
 
 #endif
