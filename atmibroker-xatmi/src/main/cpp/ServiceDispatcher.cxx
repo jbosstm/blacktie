@@ -83,6 +83,21 @@ int ServiceDispatcher::svc(void) {
 			LOG4CXX_WARN(
 					logger,
 					(char*) "Service dispatcher detected dead connection, attempting destination reconnect");
+			int timeout = 10;
+			LOG4CXX_DEBUG(logger, (char*) "sleeper, sleeping for " << timeout
+					<< " seconds");
+			ACE_OS::sleep(timeout);
+			LOG4CXX_DEBUG(logger, (char*) "sleeper, slept for " << timeout
+					<< " seconds");
+		} else if (tperrno == TPENOENT) {
+			LOG4CXX_WARN(logger,
+					(char*) "Service dispatcher could not connect to queue");
+			int timeout = 10;
+			LOG4CXX_DEBUG(logger, (char*) "sleeper, sleeping for " << timeout
+					<< " seconds");
+			ACE_OS::sleep(timeout);
+			LOG4CXX_DEBUG(logger, (char*) "sleeper, slept for " << timeout
+					<< " seconds");
 		}
 	}
 	return 0;

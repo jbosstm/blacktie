@@ -182,8 +182,7 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 					LOG4CXX_DEBUG(logger, "Message received 1st attempt");
 				}
 			} else {
-				LOG4CXX_ERROR(logger, "receive failed - not connected");
-				setSpecific(TPE_KEY, TSS_TPESYSTEM);
+				LOG4CXX_ERROR(logger, "receive failed - not able to connect");
 			}
 		}
 		if (frame != NULL) {
@@ -264,7 +263,6 @@ void HybridStompEndpointQueue::connect() {
 		this->connection = HybridConnectionImpl::connect(pool,
 				mqConfig.destinationTimeout);
 		if (this->connection != NULL) {
-
 			stomp_frame frame;
 			frame.command = (char*) "SUB";
 			frame.headers = apr_hash_make(pool);
@@ -297,9 +295,9 @@ void HybridStompEndpointQueue::connect() {
 					//					free(errbuf);
 					HybridConnectionImpl::disconnect(connection, pool);
 				} else if (strcmp(framed->command, (const char*) "ERROR") == 0) {
+					setSpecific(TPE_KEY, TSS_TPENOENT);
 					LOG4CXX_DEBUG(logger, (char*) "Got an error: "
 							<< framed->body);
-					setSpecific(TPE_KEY, TSS_TPENOENT);
 					HybridConnectionImpl::disconnect(connection, pool);
 				} else if (strcmp(framed->command, (const char*) "RECEIPT")
 						== 0) {
@@ -318,12 +316,16 @@ void HybridStompEndpointQueue::connect() {
 					this->connected = true;
 					LOG4CXX_DEBUG(logger, "Connected: " << fullName);
 				} else {
+					setSpecific(TPE_KEY, TSS_TPESYSTEM);
 					LOG4CXX_ERROR(logger,
 							"Didn't get a receipt or message unexpected error: "
 									<< framed->command << ", " << framed->body);
 					HybridConnectionImpl::disconnect(connection, pool);
 				}
 			}
+		} else {
+			setSpecific(TPE_KEY, TSS_TPESYSTEM);
+			LOG4CXX_DEBUG(logger, "Not connected");
 		}
 	}
 }
