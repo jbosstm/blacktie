@@ -45,11 +45,12 @@ import org.w3c.dom.Element;
 
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTDomainAdmin") })
+		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTDomainAdmin") },
+		messageListenerInterface=javax.jms.MessageListener.class)
 @Depends("jboss.messaging.destination:service=Queue,name=BTDomainAdmin")
 @javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
-		javax.jms.MessageListener {
+		javax.jms.MessageListener, BlacktieAdministration {
 	private static final Logger log = LogManager
 			.getLogger(BlacktieAdminServiceXATMI.class);
 
