@@ -38,6 +38,7 @@
 					</xsd:complexType>
 				</xsd:element>
 				<xsd:element name="SIZE" type="xsd:string" />
+				<xsd:element name="USERLIST" type="xsd:string" minOccurs="0" />
 			</xsd:sequence>
 			<xsd:attribute name="function_name" type="xsd:string" />
 			<xsd:attribute name="java_class_name" type="xsd:string" />

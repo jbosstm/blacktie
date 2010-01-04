@@ -74,12 +74,12 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			.getLogger(BlacktieStompAdministrationService.class);
 
 	private MBeanServerConnection beanServerConnection;
-
+	private Properties prop = new Properties();
+	
 	public BlacktieStompAdministrationService() throws IOException,
 			ConfigurationException, ConnectionException {
 		super("BTStompAdmin");
 
-		Properties prop = new Properties();
 		XMLEnvHandler handler = new XMLEnvHandler("", prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 		xmlenv.parse("Environment.xml", true);
@@ -150,13 +150,28 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		return null;
 	}
 
-	void setSecurityConfig(ObjectName objName) {
-		String security = "<security>\n"
-				+ " <role name=\"guest\" read=\"true\" write=\"true\"/>\n"
-				+ " <role name=\"publisher\" read=\"true\" write=\"true\" create=\"false\"/>\n"
-				+ " <role name=\"durpublisher\" read=\"true\" write=\"true\" create=\"true\"/>\n"
-				+ "</security>";
-
+	void setSecurityConfig(ObjectName objName, String serviceName) {
+		log.debug("Get User access list from indivadual service xml");
+		String userList = (String) prop.get("balcktie." 
+                                          + serviceName
+                                          + ".userlist"); 
+		if(userList == null) {
+			log.debug("Get User access list from Environment.xml");
+			userList = (String) prop.get("USERLIST");
+			if(userList == null) {
+				log.debug("No user access list, will use guest");
+				userList = "guest";
+			}
+		}
+		
+		String security = "<security>\n";
+		String[] users = userList.split(",");
+		for(int i = 0; i < users.length; i ++) {
+			security += "<role name=\"" + users[i] + "\" read=\"true\" write=\"true\"/>\n";
+		}
+		security += "</security>";
+		
+		log.debug("access security is " + security);
 		try {
 			Element element = stringToElement(security);
 			Attribute attr = new Attribute("SecurityConfig", element);
@@ -182,7 +197,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 				ObjectName queueName = new ObjectName(
 						"jboss.messaging.destination:service=Queue,name="
 								+ serviceName);
-				setSecurityConfig(queueName);
+				setSecurityConfig(queueName, serviceName);
 			}
 
 			if (queue == false || !serviceName.contains("_ADMIN_")) {

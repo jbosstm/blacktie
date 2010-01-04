@@ -49,7 +49,7 @@ import org.w3c.dom.Element;
 @Depends("jboss.messaging.destination:service=Queue,name=BTDomainAdmin")
 @javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
-		javax.jms.MessageListener, BlacktieAdminServiceMBean {
+		javax.jms.MessageListener {
 	private static final Logger log = LogManager
 			.getLogger(BlacktieAdminServiceXATMI.class);
 

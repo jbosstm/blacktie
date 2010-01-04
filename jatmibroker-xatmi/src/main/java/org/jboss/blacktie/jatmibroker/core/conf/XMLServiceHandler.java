@@ -34,9 +34,11 @@ public class XMLServiceHandler extends DefaultHandler {
 
 	private final String SERVICE_NAME = "SERVICE_DESCRIPTION";
 	private final String SIZE = "SIZE";
+	private final String USERLIST = "USERLIST";
 
 	private String serviceElement;
 	private String sizeElement;
+	private String userlistElement;
 	private String serviceName;
 	private Properties prop;
 
@@ -54,6 +56,9 @@ public class XMLServiceHandler extends DefaultHandler {
 
 		if (SIZE.equals(sizeElement)) {
 			String key = "blacktie." + serviceName + ".size";
+			prop.setProperty(key, strValue);
+		} else if (USERLIST.equals(userlistElement)) {
+			String key = "blacktie." + serviceName + ".userlist";
 			prop.setProperty(key, strValue);
 		}
 	}
@@ -100,6 +105,8 @@ public class XMLServiceHandler extends DefaultHandler {
 			}
 		} else if (SIZE.equals(localName)) {
 			sizeElement = SIZE;
+		} else if (USERLIST.equals(localName)) {
+			userlistElement = USERLIST;
 		}
 	}
 
@@ -109,6 +116,8 @@ public class XMLServiceHandler extends DefaultHandler {
 			serviceElement = "";
 		} else if (SIZE.equals(localName)) {
 			sizeElement = "";
+		} else if (USERLIST.equals(localName)) {
+			userlistElement = "";
 		}
 	}
 }
