@@ -79,19 +79,21 @@ int ServiceDispatcher::svc(void) {
 				counter += 1;
 				ACE_Time_Value start = ACE_OS::gettimeofday();
 				onMessage(message);
-				ACE_Time_Value end   = ACE_OS::gettimeofday();
+				ACE_Time_Value end = ACE_OS::gettimeofday();
 				ACE_Time_Value tv = end - start;
 				unsigned long responseTime = tv.msec();
 
-				LOG4CXX_DEBUG(logger, (char*) "response time is " << responseTime);
+				LOG4CXX_DEBUG(logger, (char*) "response time is "
+						<< responseTime);
 
-				if(minResponseTime == 0 || responseTime < minResponseTime) {
+				if (minResponseTime == 0 || responseTime < minResponseTime) {
 					minResponseTime = responseTime;
 				}
 
-				avgResponseTime = ((avgResponseTime * (counter - 1)) + responseTime) / counter;
+				avgResponseTime = ((avgResponseTime * (counter - 1))
+						+ responseTime) / counter;
 
-				if(responseTime > maxResponseTime) {
+				if (responseTime > maxResponseTime) {
 					maxResponseTime = responseTime;
 				}
 
@@ -126,6 +128,11 @@ int ServiceDispatcher::svc(void) {
 				LOG4CXX_WARN(logger,
 						(char*) "Service dispatcher could not connect to queue");
 				reconnected = this->server->createAdminDestination(serviceName);
+				if (reconnected) {
+					LOG4CXX_INFO(logger,
+							(char*) "Service dispatcher reconnected to: "
+									<< serviceName);
+				}
 			}
 			reconnect.unlock();
 		}
@@ -273,7 +280,8 @@ long ServiceDispatcher::getCounter() {
 	return counter;
 }
 
-void ServiceDispatcher::getResponseTime(unsigned long* min, unsigned long* avg, unsigned long* max) {
+void ServiceDispatcher::getResponseTime(unsigned long* min, unsigned long* avg,
+		unsigned long* max) {
 	*min = minResponseTime;
 	*avg = avgResponseTime;
 	*max = maxResponseTime;
