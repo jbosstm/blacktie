@@ -96,17 +96,8 @@
 				  <c:notes>Services status</c:notes>
 				  <c:simple-property name="operationResult" type="longString"/>
 			    </results>
-		  	  </operation>
+		  	 </operation>
 		  	  
-		  	  <operation name="getServiceCounter" displayName="getServiceCounter" description="get services message counter">
-			  	<parameters>
-				  <c:simple-property required="false" name="id" displayName="id" description="server id"/>
-			    </parameters>
-			    <results>
-				  <c:notes>Services status</c:notes>
-				  <c:simple-property name="operationResult" type="longString"/>
-			    </results>
-		  	  </operation>
 		  </service>
 	  </service>
    </server>
