@@ -250,6 +250,13 @@ long getServiceMessageCounter(char* serviceName) {
 	return 0;
 }
 
+
+void getResponseTime(char* serviceName, unsigned long* min, unsigned long* avg,unsigned long* max) {
+	if (ptrServer) {
+		ptrServer->getResponseTime(serviceName, min, avg, max);
+	}
+}
+
 int advertiseByAdmin(char* name) {
 	if (isadvertised(name) == 0) {
 		return 0;
@@ -970,6 +977,42 @@ long AtmiBrokerServer::getServiceMessageCounter(char* serviceName) {
 		}
 	}
 	return 0;
+}
+void AtmiBrokerServer::getResponseTime(char* serviceName, 
+		                               unsigned long* min, 
+									   unsigned long* avg, 
+									   unsigned long* max) {
+	*min = 0;
+	*avg = 0;
+	*max = 0;
+
+	for (std::vector<ServiceData>::iterator i = serviceData.begin(); i
+			!= serviceData.end(); i++) {
+		if (strncmp((*i).destination->getName(), serviceName,
+				XATMI_SERVICE_NAME_LENGTH) == 0) {
+			long counter = 0;
+			long total = 0;
+			unsigned long min_time;
+			unsigned long max_time;
+			unsigned long avg_time;
+
+			for (std::vector<ServiceDispatcher*>::iterator dispatcher =
+					(*i).dispatchers.begin(); dispatcher
+					!= (*i).dispatchers.end(); dispatcher++) {
+				counter = (*dispatcher)->getCounter();
+				(*dispatcher)->getResponseTime(&min_time, &avg_time, &max_time);
+				if (*min == 0 || min_time < *min) {
+					*min = min_time;
+				}
+
+				*avg = ((*avg) * total + avg_time * counter) / (total + counter);
+
+				if (max_time > *max) {
+					*max = max_time;
+				}
+			}
+		}
+	}
 }
 
 void (*AtmiBrokerServer::getServiceMethod(const char * aServiceName))(TPSVCINFO *) {

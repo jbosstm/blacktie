@@ -81,7 +81,7 @@ void ADMIN(TPSVCINFO* svcinfo) {
 			len += ACE_OS::sprintf(&toReturn[1], "%ld", counter);
 			toReturn[0] = '1';
 		} else {
-			LOG4CXX_WARN(loggerAtmiBrokerAdmin, (char*) "get counter FAIL");
+			LOG4CXX_WARN(loggerAtmiBrokerAdmin, (char*) "get counter failed with no service");
 		}
 	} else if(strncmp(req, "pause", 5) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get pause command");
@@ -92,6 +92,20 @@ void ADMIN(TPSVCINFO* svcinfo) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get resume command");
 		if(resumeServerByAdmin() == 0) {
 			toReturn[0] = '1';
+		}
+	} else if(strncmp(req, "responsetime", 12) == 0) {
+		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get responsetime command");
+		unsigned long min;
+		unsigned long avg;
+		unsigned long max;
+
+		if(svc != NULL) {
+			toReturn = tprealloc(toReturn, 256);
+			getResponseTime(svc, &min, &avg, &max);
+			len += ACE_OS::sprintf(&toReturn[1], "%ld,%ld,%ld", min, avg, max);
+			toReturn[0] = '1';
+		} else {
+			LOG4CXX_WARN(loggerAtmiBrokerAdmin, (char*) "get response time failed with no service");
 		}
 	}
 

@@ -108,4 +108,9 @@ public interface BlacktieAdministration {
 	 * Shutdown server
 	 */
 	public void shutdown(String serverName, int id);
+
+	/**
+	 * Get service response time
+	 */
+	public String getResponseTimeById(String serverName, int id, String serviceName);
 }

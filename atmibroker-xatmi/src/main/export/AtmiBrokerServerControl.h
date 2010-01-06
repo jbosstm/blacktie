@@ -44,6 +44,7 @@ extern BLACKTIE_XATMI_DLL int isadvertised(char* name);
 extern BLACKTIE_XATMI_DLL int advertiseByAdmin(char* name);
 extern BLACKTIE_XATMI_DLL int getServiceStatus(char** str, char* svc);
 extern BLACKTIE_XATMI_DLL long getServiceMessageCounter(char* serviceName);
+extern BLACKTIE_XATMI_DLL void getResponseTime(char* serviceName, unsigned long* min, unsigned long* avg,unsigned long* max);
 extern BLACKTIE_XATMI_DLL int pauseServerByAdmin();
 extern BLACKTIE_XATMI_DLL int resumeServerByAdmin();
 #ifdef __cplusplus

@@ -412,6 +412,26 @@ public class AdministrationProxy {
 		}
 	}
 
+	public String getResponseTimeById(String serverName, int id, String serviceName) {
+		log.trace("getResponseTimeById");
+		String command = "responsetime," + serviceName + ",";
+
+		try {
+			Response buf = callAdminService(serverName, id, command);
+			if(buf != null) {
+				byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
+				return new String(received, 1, received.length -1);
+			}
+		} catch (ConnectionException e) {
+			log.error("call server " + serverName + " id " + id
+					+ " failed with " + e.getTperrno(), e);
+		} catch (RuntimeException e) {
+			log.error("Could not get response time from server: " + e.getMessage(), e);
+			throw e;
+		}
+		return null;
+	}
+
 	public long getServiceCounterById(String serverName, int id,
 			String serviceName) {
 		log.trace("getServiceCounterById");

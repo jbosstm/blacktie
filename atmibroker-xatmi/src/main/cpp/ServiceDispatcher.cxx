@@ -30,11 +30,6 @@ log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger(
 SynchronizableObject reconnect;
 bool reconnected;
 
-SynchronizableObject timelock;
-unsigned long minResponseTime;
-unsigned long avgResponseTime;
-unsigned long maxResponseTime;
-
 ServiceDispatcher::ServiceDispatcher(AtmiBrokerServer* server,
 		Destination* destination, Connection* connection,
 		const char *serviceName, void(*func)(TPSVCINFO *), bool isPause) {
@@ -48,6 +43,9 @@ ServiceDispatcher::ServiceDispatcher(AtmiBrokerServer* server,
 	this->timeout = (long) (mqConfig.destinationTimeout * 1000000);
 	this->counter = 0;
 	this->server = server;
+	this->minResponseTime = 0;
+	this->avgResponseTime = 0;
+	this->maxResponseTime = 0;
 }
 
 ServiceDispatcher::~ServiceDispatcher() {
@@ -87,7 +85,6 @@ int ServiceDispatcher::svc(void) {
 
 				LOG4CXX_DEBUG(logger, (char*) "response time is " << responseTime);
 
-				timelock.lock();
 				if(minResponseTime == 0 || responseTime < minResponseTime) {
 					minResponseTime = responseTime;
 				}
@@ -97,7 +94,6 @@ int ServiceDispatcher::svc(void) {
 				if(responseTime > maxResponseTime) {
 					maxResponseTime = responseTime;
 				}
-				timelock.unlock();
 
 				LOG4CXX_DEBUG(logger, (char*) "min:" << minResponseTime
 						<< (char*) " avg:" << avgResponseTime
@@ -275,4 +271,10 @@ void ServiceDispatcher::shutdown() {
 
 long ServiceDispatcher::getCounter() {
 	return counter;
+}
+
+void ServiceDispatcher::getResponseTime(unsigned long* min, unsigned long* avg, unsigned long* max) {
+	*min = minResponseTime;
+	*avg = avgResponseTime;
+	*max = maxResponseTime;
 }

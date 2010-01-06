@@ -40,6 +40,7 @@ public:
 	int resume();
 	void shutdown();
 	long getCounter();
+	void getResponseTime(unsigned long* min, unsigned long* avg, unsigned long* max);
 private:
 	void onMessage(MESSAGE message);
 	static log4cxx::LoggerPtr logger;
@@ -54,6 +55,9 @@ private:
 	long timeout;
 	long counter;
 	bool requiresReconnect;
+	unsigned long minResponseTime;
+	unsigned long avgResponseTime;
+	unsigned long maxResponseTime;
 };
 
 #endif
