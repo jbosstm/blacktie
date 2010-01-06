@@ -22,12 +22,18 @@
 #include "AtmiBrokerMem.h"
 #include "txx.h"
 #include <tao/ORB.h>
+#include <ace/OS_NS_time.h>
 
 log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger(
 		"ServiceDispatcher"));
 
 SynchronizableObject reconnect;
 bool reconnected;
+
+SynchronizableObject timelock;
+unsigned long minResponseTime;
+unsigned long avgResponseTime;
+unsigned long maxResponseTime;
 
 ServiceDispatcher::ServiceDispatcher(AtmiBrokerServer* server,
 		Destination* destination, Connection* connection,
@@ -73,7 +79,29 @@ int ServiceDispatcher::svc(void) {
 		if (!isPause && !stop && message.received) {
 			try {
 				counter += 1;
+				ACE_Time_Value start = ACE_OS::gettimeofday();
 				onMessage(message);
+				ACE_Time_Value end   = ACE_OS::gettimeofday();
+				ACE_Time_Value tv = end - start;
+				unsigned long responseTime = tv.msec();
+
+				LOG4CXX_DEBUG(logger, (char*) "response time is " << responseTime);
+
+				timelock.lock();
+				if(minResponseTime == 0 || responseTime < minResponseTime) {
+					minResponseTime = responseTime;
+				}
+
+				avgResponseTime = ((avgResponseTime * (counter - 1)) + responseTime) / counter;
+
+				if(responseTime > maxResponseTime) {
+					maxResponseTime = responseTime;
+				}
+				timelock.unlock();
+
+				LOG4CXX_DEBUG(logger, (char*) "min:" << minResponseTime
+						<< (char*) " avg:" << avgResponseTime
+						<< (char*) " max:" << maxResponseTime);
 			} catch (const CORBA::BAD_PARAM& ex) {
 				LOG4CXX_WARN(logger, (char*) "Service dispatcher BAD_PARAM: "
 						<< ex._name());
