@@ -59,7 +59,7 @@ import org.xml.sax.InputSource;
 
 public class AdministrationProxy {
 	private static final Logger log = LogManager
-			.getLogger(AdministrationProxy.class);
+	.getLogger(AdministrationProxy.class);
 	private Properties prop = new Properties();
 	private JMXConnector c;
 	private MBeanServerConnection beanServerConnection;
@@ -67,9 +67,9 @@ public class AdministrationProxy {
 	private Set<String> servers;
 
 	public static Boolean isDomainPause = false;
-	
+
 	public AdministrationProxy() throws IOException, ConfigurationException,
-			ConnectionException {
+	ConnectionException {
 		log.info("debug Administration Proxy");
 		XMLEnvHandler handler = new XMLEnvHandler("", prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
@@ -106,7 +106,7 @@ public class AdministrationProxy {
 	}
 
 	private Response callAdminService(String serverName, int id, String command)
-			throws ConnectionException {
+	throws ConnectionException {
 		log.trace("callAdminService");
 		int sendlen = command.length() + 1;
 		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
@@ -117,7 +117,7 @@ public class AdministrationProxy {
 		Response rcvbuf = connection.tpcall(service, sendbuf, sendlen, 0);
 		return rcvbuf;
 	}
-	
+
 	private Boolean callAdminCommand(String serverName, int id, String command) {
 		log.trace("callAdminCommand");
 		try {
@@ -154,7 +154,7 @@ public class AdministrationProxy {
 		log.trace("getSoftwareVersion");
 		return prop.getProperty("blacktie.domain.version");
 	}
-	
+
 	public Boolean getDomainStatus() {
 		return isDomainPause;
 	}
@@ -167,15 +167,15 @@ public class AdministrationProxy {
 		for (int i = 0; i < servers.size(); i++) {
 			result = pauseServer(servers.get(i)) && result;
 		}
-		
+
 		if(result == true && isDomainPause == false) {
 			isDomainPause = true;
 			log.info("Domain pause");
 		}
-		
+
 		return result;
 	}
-	
+
 	public Boolean pauseServer(String serverName) {
 		log.trace("pauseServer");
 		Boolean result = true;
@@ -186,7 +186,7 @@ public class AdministrationProxy {
 		}
 		return result;
 	}
-	
+
 	public Boolean pauseServerById(String serverName, int id) {
 		log.trace("pauseServerById");
 		return callAdminCommand(serverName, id, "pause");
@@ -200,15 +200,15 @@ public class AdministrationProxy {
 		for (int i = 0; i < servers.size(); i++) {
 			result = resumeServer(servers.get(i)) && result;
 		}
-		
+
 		if(result == true && isDomainPause == true) {
 			isDomainPause = false;
 			log.info("Domain resume");
 		}
-		
+
 		return result;
 	}
-	
+
 	public Boolean resumeServer(String serverName) {
 		log.trace("resumeServer");
 		Boolean result = true;
@@ -219,7 +219,7 @@ public class AdministrationProxy {
 		}
 		return result;	
 	}
-	
+
 	public Boolean resumeServerById(String serverName, int id) {
 		log.trace("resumeServerById");
 		return callAdminCommand(serverName, id, "resume");
@@ -242,7 +242,7 @@ public class AdministrationProxy {
 
 		try {
 			ObjectName objName = new ObjectName(
-					"jboss.messaging:service=ServerPeer");
+			"jboss.messaging:service=ServerPeer");
 			HashSet dests = (HashSet) beanServerConnection.getAttribute(
 					objName, "Destinations");
 
@@ -275,7 +275,7 @@ public class AdministrationProxy {
 
 		try {
 			ObjectName objName = new ObjectName(
-					"jboss.messaging:service=ServerPeer");
+			"jboss.messaging:service=ServerPeer");
 			HashSet dests = (HashSet) beanServerConnection.getAttribute(
 					objName, "Destinations");
 
@@ -367,7 +367,7 @@ public class AdministrationProxy {
 		if(ids.size() == 0){
 			return false;
 		}
-		
+
 		for (int i = 0; i < ids.size(); i++) {
 			result = advertise(serverName, ids.get(i), serviceName) && result;
 		}
@@ -379,7 +379,7 @@ public class AdministrationProxy {
 		log.trace("unadvertise");
 		List<Integer> ids = listRunningInstanceIds(serverName);
 		Boolean result = true;
-		
+
 		if(ids.size() == 0) {
 			return false;
 		}
@@ -415,12 +415,15 @@ public class AdministrationProxy {
 	public String getResponseTimeById(String serverName, int id, String serviceName) {
 		log.trace("getResponseTimeById");
 		String command = "responsetime," + serviceName + ",";
+		log.trace("response command is " + command);
 
 		try {
 			Response buf = callAdminService(serverName, id, command);
 			if(buf != null) {
 				byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
-				return new String(received, 1, received.length -1);
+				String result = new String(received, 1, received.length -1);
+				log.trace("response result is " + result);
+				return result;
 			}
 		} catch (ConnectionException e) {
 			log.error("call server " + serverName + " id " + id
@@ -430,6 +433,44 @@ public class AdministrationProxy {
 			throw e;
 		}
 		return null;
+	}
+
+	public String getResponseTime(String serverName, String serviceName) {
+		log.trace("getResponseTime");
+
+		List<Integer> ids = listRunningInstanceIds(serverName);
+		String responseTime;
+		long min = 0;
+		long avg = 0;
+		long max = 0;
+		long total = 0;
+
+		for (int i = 0; i < ids.size(); i++) {
+			responseTime = getResponseTimeById(serverName, ids.get(i),
+					serviceName);
+			String[] times = responseTime.split(",");
+
+			if(times.length == 3) {
+				long t = Long.valueOf(times[0]);
+				if (min == 0 || t < min) {
+					min = t;
+				}
+
+				t = Long.valueOf(times[2]);
+				if (t > max) {
+					max = t;
+				}
+
+				long counter = getServiceCounterById(serverName, ids.get(i),
+						serviceName);
+				t = Long.valueOf(times[1]);
+				if (total != 0 || counter != 0) {
+					avg = (avg * total + t * counter) / ( total + counter);
+				}
+			}
+		}
+
+		return String.format("%d,%d,%d", min, avg, max);
 	}
 
 	public long getServiceCounterById(String serverName, int id,

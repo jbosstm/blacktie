@@ -104,6 +104,8 @@ CreateChildResourceFacet {
 	private String serviceName = null;
 
 	private ObjectName blacktieAdmin = null;
+	
+	private String[]  times = null;
 
 	/**
 	 * This is called when your component has been started with the given
@@ -175,6 +177,43 @@ CreateChildResourceFacet {
 			Set<MeasurementScheduleRequest> requests) {
 		for (MeasurementScheduleRequest request : requests) {
 			String name = request.getName();
+			
+			try {
+				if (name.equals("messageCounter")) {
+					Number value = (Long)beanServerConnection.invoke(blacktieAdmin, 
+							"getServiceCounter",
+							new Object[] { serverName, serviceName}, 
+							new String[] {"java.lang.String", "java.lang.String"});
+					
+					report.addData(new MeasurementDataNumeric(request, value
+							.doubleValue()));
+				} else if (name.equals("minResponseTime")) {
+					String responseTime = (String)beanServerConnection.invoke(blacktieAdmin, 
+							"getResponseTime",
+							new Object[] { serverName, serviceName}, 
+							new String[] {"java.lang.String", "java.lang.String"});
+					times = responseTime.split(",");
+					Number value = Long.parseLong(times[0]);
+					report.addData(new MeasurementDataNumeric(request, value
+							.doubleValue()));
+				} else if (name.equals("avgResponseTime")) {
+					if(times != null) {
+						Number value = Long.parseLong(times[1]);
+						report.addData(new MeasurementDataNumeric(request, value
+								.doubleValue()));
+					}
+				} else if (name.equals("maxResponseTime")) {
+					if(times != null) {
+						Number value = Long.parseLong(times[2]);
+						report.addData(new MeasurementDataNumeric(request, value
+								.doubleValue()));
+					}
+				}
+			} catch (Exception e) {
+				log.error("Failed to obtain measurement [" + name
+						+ "]. Cause: " + e);
+				e.printStackTrace();
+			}
 		}
 
 		return;

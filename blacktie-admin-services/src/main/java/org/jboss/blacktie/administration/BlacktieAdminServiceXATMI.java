@@ -145,6 +145,11 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 			} else if (operation.equals("getDomainStatus")) {
 				boolean response = getDomainStatus();
 				toReturn = convertBoolean(response);
+			} else if (operation.equals("getResponseTime")) {
+				String serverName = getString(parameters);
+				String serviceName = getString(parameters);
+				String times = getResponseTime(serverName, serviceName);
+				toReturn = times.getBytes();
 			}
 
 			X_OCTET buffer = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
@@ -396,5 +401,15 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 	public void stop() throws Exception {
 		throw new RuntimeException(
 				"This operation is not applicable to the XATMI admin service");
+	}
+
+	public String getResponseTime(String serverName, String serviceName) {
+		return administrationProxy.getResponseTime(serverName, serviceName);
+	}
+
+	public String getResponseTimeById(String serverName, int id,
+			String serviceName) {
+		return administrationProxy.getResponseTimeById(serverName, id, 
+				serviceName);
 	}
 }

@@ -238,4 +238,9 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 		return administrationProxy.getResponseTimeById(serverName, id,
 				serviceName);
 	}
+
+	public String getResponseTime(String serverName, String serviceName) {
+		return administrationProxy.getResponseTime(serverName, 
+				serviceName);
+	}
 }

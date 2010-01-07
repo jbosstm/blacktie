@@ -113,4 +113,5 @@ public interface BlacktieAdministration {
 	 * Get service response time
 	 */
 	public String getResponseTimeById(String serverName, int id, String serviceName);
+	public String getResponseTime(String serverName, String serviceName);
 }

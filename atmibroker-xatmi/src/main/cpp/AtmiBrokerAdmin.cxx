@@ -37,6 +37,7 @@ void ADMIN(TPSVCINFO* svcinfo) {
 
 	strtok(req, ",");
 	char* svc = strtok(NULL, ",");
+	LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get request is " << req);
 
 	if(strncmp(req, "serverdone", 10) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get serverdone command");
@@ -102,7 +103,10 @@ void ADMIN(TPSVCINFO* svcinfo) {
 		if(svc != NULL) {
 			toReturn = tprealloc(toReturn, 256);
 			getResponseTime(svc, &min, &avg, &max);
-			len += ACE_OS::sprintf(&toReturn[1], "%ld,%ld,%ld", min, avg, max);
+			LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "min = " << min 
+					                          << (char*)" avg=" << avg
+											  << (char*)" max=" << max);
+			len += ACE_OS::sprintf(&toReturn[1], "%d,%d,%d", min, avg, max);
 			toReturn[0] = '1';
 		} else {
 			LOG4CXX_WARN(loggerAtmiBrokerAdmin, (char*) "get response time failed with no service");

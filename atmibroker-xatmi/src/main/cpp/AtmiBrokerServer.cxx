@@ -1005,7 +1005,9 @@ void AtmiBrokerServer::getResponseTime(char* serviceName,
 					*min = min_time;
 				}
 
-				*avg = ((*avg) * total + avg_time * counter) / (total + counter);
+				if (total != 0 || counter != 0) {
+					*avg = ((*avg) * total + avg_time * counter) / (total + counter);
+				}
 
 				if (max_time > *max) {
 					*max = max_time;

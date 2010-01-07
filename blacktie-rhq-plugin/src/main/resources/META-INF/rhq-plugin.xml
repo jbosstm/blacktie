@@ -97,6 +97,14 @@
 				  <c:simple-property name="operationResult" type="longString"/>
 			    </results>
 		  	 </operation>
+		  	 <metric property="messageCounter" measurementType="dynamic" displayType="summary" displayName="service message counter"
+			  defaultOn="true" defaultInterval="60000" dataType="measurement" description="The number of messages"/>
+		  	 <metric property="minResponseTime" measurementType="dynamic" displayType="summary" displayName="min response time"
+			  defaultOn="true" defaultInterval="60000" dataType="measurement" description="the minimum response time for requests serviced" units="milliseconds"/>
+		  	 <metric property="avgResponseTime" measurementType="dynamic" displayType="summary" displayName="avg response time"
+			  defaultOn="true" defaultInterval="60000" dataType="measurement" description="the average response time for requests serviced" units="milliseconds"/>
+		  	 <metric property="maxResponseTime" measurementType="dynamic" displayType="summary" displayName="max response time"
+			  defaultOn="true" defaultInterval="60000" dataType="measurement" description="the maximum response time for requests serviced" units="milliseconds"/>
 		  	  
 		  </service>
 	  </service>
