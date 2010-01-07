@@ -70,7 +70,6 @@
 			password tiger is created). For more information refer to:
 			http://download.oracle.com/docs/cd/B28359_01/appdev.111/b28424/adfns_xa.htm
 		-->
-<!--
 		<XA_RESOURCE configuration="linux">
 			<XA_RESOURCE_MGR_ID>201</XA_RESOURCE_MGR_ID>
 			<XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
@@ -89,7 +88,6 @@
 			<XA_SWITCH>xaosw</XA_SWITCH>
 			<XA_LIB_NAME>${ORACLE_HOME}/lib/libclntsh.so</XA_LIB_NAME>
 		</XA_RESOURCE>
-		-->
 		<XA_RESOURCE configuration="win32">
 			<XA_RESOURCE_MGR_ID>201</XA_RESOURCE_MGR_ID>
 			<XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>

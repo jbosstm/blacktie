@@ -34,17 +34,17 @@ XAStateModel::XAStateModel() : astate_(T0), bstate_(S0)
 // enable XA state model checks - can be disabled to improve performance overhead
 // provided XAResourceAdaptorImpl remembers when it goes into state Idle (via calls to xa_end).
 // XAResourceAdaptorImpl::xa_end is the only place where the current state is consulted
-#define XASM
+//#define XASM
 int XAStateModel::transition(XID& xid, enum XAEVENT method, long flags, int rv)
 {
-	int rv1 = XA_OK, rv2;
-
 	LOG4CXX_TRACE(xasmlogger, "transition:ENTER xid="
 		<< xid.formatID << ':' << xid.gtrid_length << ':' << xid.bqual_length << ':' << xid.data
 		<< " rv=" << rv << " flags=" << std::hex << flags << show_flags(flags)
 		<< " method=" << method << " astate=" << astate_ << " bstate=" << bstate_);
 
 #ifdef XASM
+	int rv1 = XA_OK, rv2;
+
 	if ((method < XACALL_PREPARE ))
 		rv1 =  atransition(&astate_,  method, flags, rv);
 
@@ -57,9 +57,6 @@ int XAStateModel::transition(XID& xid, enum XAEVENT method, long flags, int rv)
 	}
 
 	LOG4CXX_TRACE(xasmlogger, (char*) "transition: rv1=" << rv1 << " rv2=" << rv2);
-#else
-	rv1 = XA_OK;
-	rv2 = XA_OK;
 #endif
 
 	return rv;

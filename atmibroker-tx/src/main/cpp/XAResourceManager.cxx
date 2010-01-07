@@ -134,18 +134,12 @@ int XAResourceManager::recover(XID& bid, const char* rc)
 			}
 
 			// activate the servant
-#if 0
-			PortableServer::ObjectId_var objId = poa_->activate_object(ra);
-
-			// get a CORBA reference to the servant so that it passed the TM so that phase 2 can be replayed
-			CORBA::Object_var ref = poa_->servant_to_reference(ra);
-#else
 			std::string s = (char *) (bid.data + bid.gtrid_length);
 			PortableServer::ObjectId_var objId = PortableServer::string_to_ObjectId(s.c_str());
 			poa_->activate_object_with_id(objId, ra);
 			// get a CORBA reference to the servant so that it can be enlisted in the OTS transaction
 			CORBA::Object_var ref = poa_->id_to_reference(objId.in());
-#endif
+
 			ra->_remove_ref();	// now only the POA has a reference to ra
 
 			CosTransactions::Resource_var v = CosTransactions::Resource::_narrow(ref);
@@ -235,7 +229,7 @@ int XAResourceManager::recover()
 int XAResourceManager::createServant(XID& xid)
 {
 	FTRACE(xarmlogger, "ENTER");
-	int res = XA_OK;
+	int res = XAER_RMFAIL;
 	XAResourceAdaptorImpl *ra = NULL;
 	CosTransactions::Control_ptr curr = (CosTransactions::Control_ptr) txx_get_control();
 	CosTransactions::Coordinator_ptr coord = NULL;
@@ -287,6 +281,7 @@ int XAResourceManager::createServant(XID& xid)
 	} catch (PortableServer::POA::ServantNotActive&) {
 		LOG4CXX_ERROR(xarmlogger, (char*) "createServant: poa inactive");
 	} catch (CosTransactions::Inactive&) {
+		res = XAER_PROTO;
 		LOG4CXX_TRACE(xarmlogger, (char*) "createServant: tx inactive (too late for registration)");
 	} catch (const CORBA::SystemException& e) {
 		LOG4CXX_WARN(xarmlogger, (char*) "Resource registration error: " << e._name() << " minor: " << e.minor());
@@ -329,9 +324,8 @@ void XAResourceManager::set_complete(XID * xid)
 		if (compareXids(i->first, (const XID&) (*xid)) == 0) {
 			XAResourceAdaptorImpl *r = i->second;
 			PortableServer::ObjectId_var id(poa_->servant_to_id(r));
-#ifdef XYZ
-			r->_remove_ref();	// deactivate will delete r
-#endif
+
+			// Note: deactivate will delete r hence no call to r->_remove_ref();
 			poa_->deactivate_object(id.in());
 			branches_.erase(i->first);
 

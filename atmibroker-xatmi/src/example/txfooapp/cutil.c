@@ -28,7 +28,7 @@ static void set_test_id(const char *id) {
 
 static int send_req(test_req_t *req, char **prbuf) {
 	long rsz = sizeof (test_req_t);
-	long callflags = 0L;
+	long callflags = TPNOTIME;
 	test_req_t *resp;
 	int rv = 0;
 
@@ -45,7 +45,9 @@ static int send_req(test_req_t *req, char **prbuf) {
 		strncpy(*prbuf, resp->data, sizeof (resp->data));
 	}
 
-	userlogc_debug( "TxLog %s:%d tpcall res=%d status=%d", __FUNCTION__, __LINE__, rv, resp->status);
+	userlogc_debug( "TxLog %s:%d tpcall res=%d status=%d", __FUNCTION__, __LINE__,
+		rv, (resp ? resp->status : -2));
+
 	tpfree((char *) resp);
 	return rv;
 }
@@ -113,19 +115,18 @@ static int check_count(const char *msg, char *key, int in_tx, int expect) {
 	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 
 	if ((rcnt = count_records(msg, key, 0, expect)) != expect) {
-		userlogc_warn( "TxLog WRONG NUMBER OF RECORDS: %d expected %d", rcnt, expect);
+		userlogc_warn( "TxLog %s: WRONG NUMBER OF RECORDS: %d expected %d", msg, rcnt, expect);
 		return -1;
 	}
 
-	userlogc( "TxLog %s: RECORD COUNT: %d expected %d", testid, rcnt, expect);
+	userlogc( "TxLog %s: %s: RECORD COUNT: %d expected %d", testid, msg, rcnt, expect);
 	return 0;
 }
 
 static int db_op(const char *msg, const char *data, char op, int txtype,
 				 char **prbuf, int remote, int migrating, int expect) {
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
-	if (msg)
-		userlogc( "TxLog %s: %s %s", testid, ((remote & REMOTE_ACCESS) ? "REMOTE" : "LOCAL"), msg);
+
+/*	userlogc( "TxLog %s: %s %s", testid, ((remote & REMOTE_ACCESS) ? "REMOTE" : "LOCAL"), msg);*/
 
 	if (start_tx(txtype) == TX_OK) {
 		int rv = 0;
@@ -145,9 +146,12 @@ static int db_op(const char *msg, const char *data, char op, int txtype,
 			if ((p->loc & remote) == 0)	/* the RM does not support the requested access type */
 				remote = p->loc;
 
+			userlogc( "TxLog %s: prod: %s %s %s", testid, p->pname,
+				((remote & REMOTE_ACCESS) ? "REMOTE" : "LOCAL"), msg);
+
 			req = get_buf((remote & REMOTE_ACCESS), data, p->dbname, op, p->id, txtype, expect);
-			userlogc_debug( "TxLog invoke prod %s (id=%d) remote=%d dbf=%s", p->pname, p->id, remote, p->dbname);
-			userlogc_debug( "TxLog xyz_access op=%c data=%s db=%s", req->op, req->data, req->db);
+			userlogc_debug( "TxLog invoke prod %s (id=%d) remote=%d dbf=%s op=%c data=%s db=%s",
+				p->pname, p->id, remote, p->dbname, req->op, req->data, req->db);
 
 			rv = ((remote & REMOTE_ACCESS) ? send_req(req, prbuf) : p->access(req, &res));
 
@@ -199,45 +203,6 @@ static int teardown(int *cnt)
 
 	return 0;
 }
-
-#define xTEST0
-#ifdef TEST0
-static int test0(int *cnt)
-{
-	int rv;
-
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
-
-	set_test_id("Test 0");
-
-#if 0
-	/* ask the remote service to insert a record */
-	if ((rv = db_op("INSERT 1", emps[5], '0', TX_TYPE_BEGIN, 0, REMOTE_ACCESS, 0, -1)))
-		return rv;
-
-	/* ask the remote service to insert another record in the same transaction */
-	if ((rv = db_op("INSERT 2", emps[6], '0', TX_TYPE_NONE, 0, REMOTE_ACCESS, 0, -1)))
-		return rv;
-
-	/* insert a record and end the already running transaction */
-	if ((rv = db_op("INSERT", emps[7], '0', TX_TYPE_COMMIT, 0, LOCAL_ACCESS, 1, -1)))
-		return rv;
-
-	*cnt += 3;
-
-#else
-	if ((rv = db_op("INSERT 1", emps[5], '0', TX_TYPE_BEGIN_COMMIT, 0, LOCAL_ACCESS, 0, -1)))
-		return rv;
-	*cnt += 1;
-#endif
-
-	/* make sure the record count increases by the the expected amount */
-	if ((rv = check_count("COUNT RECORDS", emps[0], 0, *cnt)))
-		return -1;
-
-	return 0;
-}
-#endif
 
 /**
  * start a transaction
@@ -369,6 +334,8 @@ static int test4(int *cnt)
 	if ((rv = db_op("UPDATE", emps[4], '2', TX_TYPE_BEGIN_COMMIT, 0, REMOTE_ACCESS, 0, -1)))
 		return rv;
 
+	if ((rv = check_count("test4 COUNT RECORDS", emps[0], 0, *cnt)))
+		return rv;
 	/* remote delete records starting from emps[0] with abort*/
 	if ((rv = db_op("DELETE WITH ABORT", emps[0], '3', TX_TYPE_BEGIN_ABORT, 0, REMOTE_ACCESS, 0, -1)))
 		return rv;
@@ -376,10 +343,31 @@ static int test4(int *cnt)
 	/* local delete records starting from emps[0] with abort*/
 	if ((rv = db_op("DELETE WITH ABORT", emps[0], '3', TX_TYPE_BEGIN_ABORT, 0, LOCAL_ACCESS, 0, -1)))
 		return rv;
+	if ((rv = check_count("test4 DELETE WITH ABORT: COUNT RECORDS", emps[0], 0, *cnt)))
+		return rv;
+
+	return 0;
+}
+
+/**
+ * start a transaction
+ * insert a record into each db
+ * rollback the transaction
+ */
+static int test5(int *cnt)
+{
+	int rv;
+	userlogc_debug( "TxLog IN %s:%d", __FUNCTION__, __LINE__);
+
+	set_test_id("Test 5");
+	/* ask the remote service to insert a record */
+	if ((rv = db_op("INSERT 1", emps[3], '0', TX_TYPE_BEGIN_ABORT, 0, REMOTE_ACCESS, 0, -1)))
+		return rv;
 
 	if ((rv = check_count("COUNT RECORDS", emps[0], 0, *cnt)))
 		return rv;
 
+	userlogc_debug( "TxLog OUT %s:%d success", __FUNCTION__, __LINE__);
 	return 0;
 }
 
@@ -405,36 +393,31 @@ static int testrc(int *cnt)
 	 * I also need to figure out why killing the server a number of times corrupts the
 	 * Berkeley DB (which makes recovery kind of useless)
 	 */
-	userlogc("tx status: %d (should be -1 meaning no transaction)", get_tx_status());
+	userlogc("TxLog %s: tx status: %d (should be -1 meaning no transaction)", testid, get_tx_status());
 	(void) tx_set_commit_return(TX_COMMIT_DECISION_LOGGED); /* return when the commit decision is logged */
 
 	return 0;
 }
 
+#define xONETEST test5
 int run_tests(product_t *prod_array)
 {
 	int rv, i, cnt = 0;
 	struct test {
-		const char *name;
 		int (*test)(int *);
 	} tests[] = {
 #if defined(TX_RC)   // test recovery
-		{"testrc", testrc},
+		{testrc},
+#elif defined(ONETEST)
+		{ONETEST},
 #elif defined(TX_MCALLS)   // tx extends over multiple tpacalls
-		{"test1", test1},
-		{"test2", test2},
+		{test1}, {test2},
 #elif defined(TX_SCALL)  // tx is active for a single tpacall
-		{"test3", test3},
-		{"test4", test4},
-#elif defined(TEST0)  // TODO delete
-		{"test0", test0},
+		{test3}, {test4},
 #else
-		{"test1", test1},
-		{"test2", test2},
-		{"test3", test3},
-		{"test4", test4},
+		{test1}, {test2}, {test3}, {test4},
 #endif
-		{0, 0}
+		{0}
 	};
 	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 
@@ -443,19 +426,21 @@ int run_tests(product_t *prod_array)
 	if (tx_open() != TX_OK)
 		return fatal("TxLog ERROR - Could not open RMs");
 
+	set_test_id("setup");
 	if ((rv = setup()))
 		return rv;
 
 	for (i = 0; tests[i].test != 0; i++) {
 		if ((rv = tests[i].test(&cnt))) {
-			userlogc_warn( (char*) "TxLog %s FAILED", tests[i].name);
+			userlogc_warn( (char*) "TxLog %s FAILED", testid);
 			return rv;
 		}
-		userlogc( (char*) "TxLog %s PASSED", tests[i].name);
+		userlogc( (char*) "TxLog %s PASSED", testid);
 	}
 
 	userlogc( (char*) "TxLog Tests complete");
 
+	set_test_id("teardown");
 	if ((rv = teardown(&cnt)))
 		return rv;
 

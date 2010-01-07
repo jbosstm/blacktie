@@ -109,27 +109,27 @@ public:	// public static methods
 	static CosTransactions::Control_ptr get_ots_control();	// ref count of ptr is incremented
 
 public:	// suspend and resume
-	int tx_resume(CosTransactions::Control_ptr control, int flags);
-	CosTransactions::Control_ptr tx_suspend(int flags);
-	CosTransactions::Control_ptr tx_suspend(TxControl *, int flags);
+	int tx_resume(CosTransactions::Control_ptr control, int flags, int altflags = -1);
+	CosTransactions::Control_ptr tx_suspend(int flags, int altflags = -1);
+	CosTransactions::Control_ptr tx_suspend(TxControl *, int flags, int altflags = -1);
 
 	int resume(int cd);
 	int suspend(int cd);
 	bool isCdTransactional(int cd);
 	CORBA::ORB_ptr getOrb();
 
-	int rm_end(int flags);
+	int rm_end(int flags, int altflags = -1);
 private:
 	TxManager();
 	virtual ~TxManager();
 
-	int tx_resume(TxControl *, int flags);
+	int tx_resume(TxControl *, int flags, int altflags = -1);
 	int complete(bool commit);
 	int chainTransaction(int);
 
 	int rm_open(void);
 	void rm_close(void);
-	int rm_start(int flags);
+	int rm_start(int flags, int altflags = -1);
 
 private:
 	CORBA_CONNECTION *_connection;

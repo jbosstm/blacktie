@@ -336,11 +336,7 @@ int TxManager::rm_open(void)
 {
 	FTRACE(txmlogger, "ENTER");
 	try {
-#if 0
-		XABranchManager::get_instance().openRMs(*_connection);
-#else
 		_xaRMFac.createRMs(_connection);
-#endif
 		return 0;
 	} catch (RMException& ex) {
 		LOG4CXX_WARN(txmlogger, (char*) "failed to load RMs: " << ex.what());
@@ -352,35 +348,23 @@ int TxManager::rm_open(void)
 void TxManager::rm_close(void)
 {
 	FTRACE(txmlogger, "ENTER");
-#if 0
-	XABranchManager::get_instance().closeRMs();
-#else
 	_xaRMFac.destroyRMs();
-#endif
 }
 
 // pre-requisite:- there is an active transaction
-int TxManager::rm_end(int flags)
+int TxManager::rm_end(int flags, int altflags)
 {
 	FTRACE(txmlogger, "ENTER: " << std::hex << flags);
 	TxControl *tx = (TxControl *) getSpecific(TSS_KEY);
-#if 0
-	return (tx ? XABranchManager::get_instance().endRMs(tx->isOriginator(), flags) : XA_OK);
-#else
-	return (tx ? _xaRMFac.endRMs(tx->isOriginator(), flags) : XA_OK);
-#endif
+	return (tx ? _xaRMFac.endRMs(tx->isOriginator(), flags, altflags) : XA_OK);
 }
 
 // pre-requisite:- there is an active transaction
-int TxManager::rm_start(int flags)
+int TxManager::rm_start(int flags, int altflags)
 {
 	FTRACE(txmlogger, "ENTER: " << std::hex << flags);
 	TxControl *tx = (TxControl *) getSpecific(TSS_KEY);
-#if 0
-	return (tx ? XABranchManager::get_instance().startRMs(tx->isOriginator(), flags) : XA_OK);
-#else
-	return (tx ? _xaRMFac.startRMs(tx->isOriginator(), flags) : XA_OK);
-#endif
+	return (tx ? _xaRMFac.startRMs(tx->isOriginator(), flags, altflags) : XA_OK);
 }
 
 CosTransactions::Control_ptr TxManager::get_ots_control()
@@ -391,7 +375,7 @@ CosTransactions::Control_ptr TxManager::get_ots_control()
 	return (tx ? tx->get_ots_control() : 0);
 }
 
-int TxManager::tx_resume(CosTransactions::Control_ptr control, int flags)
+int TxManager::tx_resume(CosTransactions::Control_ptr control, int flags, int altflag)
 {
 	FTRACE(txmlogger, "ENTER");
 	TxControl *tx = new TxControl(control, 0);
@@ -403,7 +387,7 @@ int TxManager::tx_resume(CosTransactions::Control_ptr control, int flags)
 	return rc;
 }
 
-int TxManager::tx_resume(TxControl *tx, int flags)
+int TxManager::tx_resume(TxControl *tx, int flags, int altflags)
 {
 	FTRACE(txmlogger, "ENTER " << tx << " - flags=" << std::hex << flags);
 	int rc = XAER_NOTA;
@@ -419,7 +403,7 @@ int TxManager::tx_resume(TxControl *tx, int flags)
 		// TMJOIN TMRESUME TMNOFLAGS
 		// must associate the tx with the thread before calling start on each open RM
 		   setSpecific(TSS_KEY, tx);
-		if ((rc = TxManager::get_instance()->rm_start(flags)) == XA_OK) {
+		if ((rc = TxManager::get_instance()->rm_start(flags, altflags)) == XA_OK) {
 			LOG4CXX_DEBUG(txmlogger, (char *) "Resume tx: ok");
 
 			return XA_OK;
@@ -439,17 +423,17 @@ int TxManager::tx_resume(TxControl *tx, int flags)
 	return rc;
 }
 
-CosTransactions::Control_ptr TxManager::tx_suspend(int flags)
+CosTransactions::Control_ptr TxManager::tx_suspend(int flags, int altflags)
 {
 	FTRACE(txmlogger, "ENTER");
-	return (tx_suspend((TxControl *) getSpecific(TSS_KEY), flags));
+	return (tx_suspend((TxControl *) getSpecific(TSS_KEY), flags, altflags));
 }
 
 /**
  * Suspend the transaction and return the control.
  * The caller is responsible for releasing the returned control
  */
-CosTransactions::Control_ptr TxManager::tx_suspend(TxControl *tx, int flags)
+CosTransactions::Control_ptr TxManager::tx_suspend(TxControl *tx, int flags, int altflags)
 {
 	FTRACE(txmlogger, "ENTER");
 
@@ -457,7 +441,7 @@ CosTransactions::Control_ptr TxManager::tx_suspend(TxControl *tx, int flags)
 		// increment the control reference count
 		CosTransactions::Control_ptr ctrl = tx->get_ots_control();
 		// suspend all open Resource Managers (TMSUSPEND TMMIGRATE TMSUCCESS TMFAIL)
-		(void) rm_end(flags);
+		(void) rm_end(flags, altflags);
 		// disassociate the transaction from the callers thread
 		tx->suspend();
 		delete tx;

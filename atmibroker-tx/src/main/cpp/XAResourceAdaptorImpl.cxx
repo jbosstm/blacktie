@@ -27,7 +27,7 @@ XAResourceAdaptorImpl::XAResourceAdaptorImpl(
 	XAResourceManager * rm, XID& xid, XID& bid, CORBA::Long rmid,
 	struct xa_switch_t * xa_switch, XARecoveryLog& log) throw (RMException) :
 	rm_(rm), xid_(xid), bid_(bid), complete_(false), rmid_(rmid), xa_switch_(xa_switch), rc_(0),
-	tightly_coupled_(0), rclog_(log), prepared_(false)
+	eflags_(0L), tightly_coupled_(0), rclog_(log), prepared_(false)
 {
 	FTRACE(xaralogger, "ENTER" << (char*) " new OTS resource rmid:" << rmid_ << " branch id: " << bid_);
 }
@@ -192,6 +192,8 @@ void XAResourceAdaptorImpl::commit()
 void XAResourceAdaptorImpl::rollback()
 	throw(HeuristicCommit,HeuristicMixed,HeuristicHazard)
 {
+	long eflags = eflags_;
+
 	FTRACE(xaralogger, "ENTER");
 	if (tightly_coupled_) {
 		set_complete();
@@ -200,11 +202,15 @@ void XAResourceAdaptorImpl::rollback()
 
 	int rv = xa_end (TMSUCCESS);
 
-	if (rv != XA_OK) {
+	if (rv != XA_OK && eflags != TMSUCCESS) {
 		LOG4CXX_WARN(xaralogger, (char *) xa_switch_->name <<
-			(char*) ": rollback OTS resource end failed: error=" << rv << " rid=" << rmid_);
+			(char*) ": rollback OTS resource end error " << rv <<
+				" for rid " << rmid_ << " - flags=" << std::hex << eflags);
 	} else {
-		LOG4CXX_DEBUG(xaralogger, (char*) "OTS resource end rv=" << rv << " rid=" << rmid_);
+		// if rv != XA_OK and the branch was already idle then log at debug only - see ch 6 of the XA spec
+		LOG4CXX_DEBUG(xaralogger, (char *) xa_switch_->name <<
+			(char*) ": rollback OTS resource end result " << rv <<
+				" for rid " << rmid_ << " - flags=" << std::hex << eflags);
 	}
 
 	rv = xa_rollback (TMNOFLAGS);
@@ -265,16 +271,12 @@ int XAResourceAdaptorImpl::xa_end (long flags)
 {
 	FTRACE(xaralogger, (char*) "ENTER bstate=" << std::hex << sm_.bstate() << " flags=" << flags);
  
-#ifdef TEST_TMNOMIGRATE
-	if ((flags & TMMIGRATE) && (xa_switch_->flags & TMNOMIGRATE)) {
-		flags &= ~TMMIGRATE & ~TMSUSPEND;
-		LOG4CXX_DEBUG(xaralogger, (char*) "xa_end: TMMIGRATE not supported reseting flags to: " << flags);
-	}
+	LOG4CXX_DEBUG(xaralogger, (char*) "XA_END rmid: " << rmid_ << std::hex << " flags: " << eflags_ << " -> " << flags);
+	eflags_ = flags;
 
 	// if the branch is already idle just return OK - see ch 6 of the XA specification
-	if (sm_.bstate() == S2)
-		return XA_OK;
-#endif
+//	if (sm_.bstate() == S2)
+//		return XA_OK;
 
 	int rv = xa_switch_->xa_end_entry(&bid_, rmid_, flags);
 	return sm_.transition(bid_, XACALL_END, flags, rv);

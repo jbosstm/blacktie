@@ -122,7 +122,8 @@ static int _rm_end(XAResourceManager* rm, XID& xid, long flags)
 	return rm->xa_end(&xid, flags);
 }
 
-static int _rmiter(ResourceManagerMap& rms, int (*func)(XAResourceManager *, XID&, long), bool isOriginator, int flags)
+static int _rmiter(ResourceManagerMap& rms, int (*func)(XAResourceManager *, XID&, long),
+	bool isOriginator, int flags, int altflags)
 {
 	FTRACE(xarflogger, "ENTER: flags=0x" << std::hex << flags << " tx owner=" << isOriginator);
 	XID xid;
@@ -136,11 +137,11 @@ static int _rmiter(ResourceManagerMap& rms, int (*func)(XAResourceManager *, XID
 		XAResourceManager * rm = i->second;
 
 		LOG4CXX_TRACE(xarflogger,  (char *) rm->name() << ": xa flags=0x" << std::hex << rm->xa_flags());
+#if 0
 		// the next two hacks are for RMs that do not support TMMIGRATE
 		// if the calling thread created the transaction assume that it is an XATMI client
 		// and therefore will not be updating any local RMs
 		//if (isOriginator && (flags & TMMIGRATE) && (rm->xa_flags() & TMNOMIGRATE)) {
-#if 0
 		if (isOriginator && (rm->xa_flags() & TMNOMIGRATE)) {
 			LOG4CXX_DEBUG(xarflogger,  (char *) rm->name() << ": ignoring (TMNOMIGRATE is set)");
 			continue;
@@ -151,7 +152,7 @@ static int _rmiter(ResourceManagerMap& rms, int (*func)(XAResourceManager *, XID
 			flags = TMNOFLAGS;  // will this ever be a resume
 		}
 #endif
-		int rc = func(rm, xid, flags);
+		int rc = func(rm, xid, (rm->xa_flags() & TMNOMIGRATE) && altflags != -1 ? altflags : flags);
 
 		if (rc != XA_OK) {
 			LOG4CXX_DEBUG(xarflogger,  (char *) rm->name() << ": rm operation failed");
@@ -196,18 +197,18 @@ void XAResourceManagerFactory::destroyRMs()
 	rms_.clear();
 }
 
-int XAResourceManagerFactory::startRMs(bool isOriginator, int flags)
+int XAResourceManagerFactory::startRMs(bool isOriginator, int flags, int altflags)
 {
 	FTRACE(xarflogger, "ENTER");
 	LOG4CXX_DEBUG(xarflogger, (char *) " starting RMs flags=0x" << std::hex << flags);
 	// there is a current transaction (otherwise the call doesn't need to start the RMs
-	return _rmiter(rms_, _rm_start, isOriginator, flags);
+	return _rmiter(rms_, _rm_start, isOriginator, flags, altflags);
 }
-int XAResourceManagerFactory::endRMs(bool isOriginator, int flags)
+int XAResourceManagerFactory::endRMs(bool isOriginator, int flags, int altflags)
 {
 	FTRACE(xarflogger, "ENTER");
 	LOG4CXX_DEBUG(xarflogger,  (char *) "end RMs flags=0x" << std::hex << flags);
-	return _rmiter(rms_, _rm_end, isOriginator, flags);
+	return _rmiter(rms_, _rm_end, isOriginator, flags, altflags);
 }
 
 // see if there are any transaction branches in need of revovery

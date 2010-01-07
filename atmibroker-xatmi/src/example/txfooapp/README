@@ -51,7 +51,7 @@ Install instructions are available at:
 When you run the installer for DB2 Express-C choose "custom setup" and then also include the "Application Development Tools"
 
 IMPORTANT: The example assumes you have exported DB2DIR to the fully qualified include folder appropriate to your platform,
-e.g. /home/blacktie/sqllib
+e.g. /home/blacktie/sqllib and that DB2_LIB is set correctly eg $DB2DIR/lib on 64 bit systems and $DB2DIR/lib32 on 32 bit systems
 IMPORTANT: For all stages of this example it is recommended that you have sourced the DB2DIR/db2profile script to initialize
 the environment
 IMPORTANT: DB2 requires additional shared memory to run "sysctl -w kernel.shmmax=1024000000"
@@ -119,23 +119,44 @@ DB2 ONLY
 On Linux:
 $BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c db2.c DbService.c" \
     -Dx.inc.dir="$DB2DIR/include" \
-    -Dx.lib.dir="$DB2DIR/lib" -Dx.libs="db2" \
+    -Dx.lib.dir="$DB2_LIB" -Dx.libs="db2" \
     -Dx.define="DB2"
 Similarly for generating the client:
 $BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c db2.c cutil.c" \
     -Dx.inc.dir="$DB2DIR/include" \
-    -Dx.lib.dir="$DB2DIR/lib" -Dx.libs="db2" \
+    -Dx.lib.dir="$DB2_LIB" -Dx.libs="db2" \
     -Dx.define="DB2"
 On Windows:
 %BLACKTIE_BIN_DIR%/bin/generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c db2.c DbService.c" \
     -Dx.inc.dir="%DB2DIR%\include" \
-    -Dx.lib.dir="%DB2DIR%\lib" -Dx.libs="db2api" \
+    -Dx.lib.dir="%DB2_LIB%" -Dx.libs="db2api" \
     -Dx.define="DB2"
 Similarly for generating the client:
 %BLACKTIE_BIN_DIR%/bin/generate_client.bat -Dclient.includes="client.c request.c db2.c cutil.c" \
     -Dx.inc.dir="%DB2DIR%\include" \
-    -Dx.lib.dir="%DB2DIR%\lib" -Dx.libs="db2api" \
+    -Dx.lib.dir="%DB2_LIB%" -Dx.libs="db2api" \
     -Dx.define="DB2"
+
+DB2 and ORACLE together
+-----------------------
+On Linux:
+$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c db2.c ora.c DbService.c" \
+    -Dx.inc.dir="$ORACLE_HOME/rdbms/public" \
+    -Dx.inc.dir2="$DB2DIR/include" \
+    -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" \
+    -Dx.lib.dir2="$DB2_LIB" -Dx.libs2="db2" \
+    -Dx.define="ORACLE,DB2"
+Similarly for generating the client:
+$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c db2.c ora.c cutil.c" \
+    -Dx.inc.dir="$ORACLE_HOME/rdbms/public" \
+    -Dx.inc.dir2="$DB2DIR/include" \
+    -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" \
+    -Dx.lib.dir2="$DB2_LIB" -Dx.libs2="db2" \
+    -Dx.define="ORACLE,DB2"
+On Windows:
+%BLACKTIE_BIN_DIR%/bin/generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.inc.dir2="%DB2DIR%\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.lib.dir2="%DB2_LIB%" -Dx.libs2="db2api" -Dx.define="ORACLE,DB2"
+Similarly for generating the client:
+%BLACKTIE_BIN_DIR%/bin/generate_client.bat -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.inc.dir2="%DB2DIR%\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.lib.dir2="%DB2_LIB%" -Dx.libs2="db2api" -Dx.define="ORACLE,DB2"
 
 NOTE: If you get the following error you have not edited or executed setenv correctly:
 java org.apache.tools.ant.launch.Launcher -f /bin/generate-executables.xml -Dconfiguration.type=debug -Dbasedir=. -Dtoolchain.compiler=msvc server -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="C:/<ora include dir>" -Dx.lib.dir="<ora lib dir>" -Dx.libs="occi.dll clntsh.dll" -Dx.define="ORACLE"
@@ -173,9 +194,15 @@ Sourcing the db2profile should put the libraries in the path
 Alternatively:
 	export DB2INSTANCE=blacktie
 	export DB2_LIB=/home/mmusgrov/sqllib/lib32
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DB2DIR/lib
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DB2_LIB
+
 or
     set PATH=%PATH%;%DB2DIR%\lib
+
+BOTH
+As above with:
+	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DB2_LIB:$ORACLE_HOME/lib
+
 
 3.1 START THE SERVER
 ====================
@@ -195,6 +222,20 @@ to the source file cutil.c to see what client/server/transaction combinations ar
 [If you run more than one client from the same directory you will need to configure a unique recovery log name by
 setting the following environment variable:
 	export BLACKTIE_RC_LOG_NAME=<unique file name>
+
+3.3 WHAT IF THE TESTS HANG
+==========================
+
+The most likely cause is that the test is waiting on a Database lock held by in doubt transactions. Try resolving them
+using the tools that come with the database resource manager. For example, with DB2 run the interactive tool db2 and
+resolve using the command:
+	db2 => LIST INDOUBT TRANSACTIONS WITH PROMPTING
+and for Oracle use, for example, sqlplus:
+
+sqlplus ....
+SQL> select LOCAL_TRAN_ID, STATE from DBA_2PC_PENDING;
+SQL>  rollback force 'Oracle transaction id';
+
 
 APPENDIX: RECOVERY
 ==================

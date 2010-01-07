@@ -60,6 +60,7 @@ private:
 	struct xa_switch_t * xa_switch_;
 	char *rc_;
 	int flags_;
+	long eflags_;
 	int tightly_coupled_;
 	atmibroker::xa::XAStateModel sm_;
 	XARecoveryLog& rclog_;

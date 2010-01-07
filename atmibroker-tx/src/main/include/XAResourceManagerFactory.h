@@ -32,8 +32,8 @@ public:
 	XAResourceManager * findRM(long);
 	void createRMs(CORBA_CONNECTION *) throw (RMException);
 	void destroyRMs();
-	int startRMs(bool, int);
-	int endRMs(bool, int);
+	int startRMs(bool, int flags, int altflags = -1);
+	int endRMs(bool, int flags, int altflags = -1);
 	void run_recovery();
 
 	static bool getXID(XID &);
