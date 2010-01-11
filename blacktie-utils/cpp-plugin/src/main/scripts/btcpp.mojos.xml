@@ -393,6 +393,14 @@
       <description>run the cpp unit tests</description>
       <parameters>
 	<parameter>
+ 	  <name>use.valgrind</name>
+	  <property>use.valgrind</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <type>java.lang.String</type>
+          <description>Should tests be executed using valgrind</description>
+	</parameter>
+	<parameter>
  	  <name>atmibroker.schema.dir</name>
 	  <property>atmibroker.schema.dir</property>
           <required>true</required>

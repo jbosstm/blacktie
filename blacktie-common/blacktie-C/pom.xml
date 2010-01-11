@@ -105,6 +105,7 @@ Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 					<atmibroker.configuration.dir>${atmibroker.configuration.dir}</atmibroker.configuration.dir>
 					<jbossas.ip.addr>${jbossas.ip.addr}</jbossas.ip.addr>
 					<test.excludes>${test.excludes}</test.excludes>
+					<use.valgrind>${use.valgrind}</use.valgrind>
 				</configuration>
 
 				<executions>
@@ -156,6 +157,9 @@ Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 					<family>windows</family>
 				</os>
 			</activation>
+			<properties>
+				<use.valgrind>false</use.valgrind>
+			</properties>
 		</profile>
 
 		<profile>
@@ -165,6 +169,9 @@ Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 					<family>unix</family>
 				</os>
 			</activation>
+			<properties>
+				<use.valgrind>true</use.valgrind>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>

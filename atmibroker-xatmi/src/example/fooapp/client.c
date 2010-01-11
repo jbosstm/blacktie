@@ -19,12 +19,10 @@
 #include <string.h>
 
 #include "xatmi.h"
-#include "tx.h"
 
 #include "userlogc.h"
 
 int main(int argc, char **argv) {
-	int txstatus;
 	int tpstatus;
 	char *retbuf;
 	char type[20];
@@ -34,46 +32,29 @@ int main(int argc, char **argv) {
 	long sbufsize;
 	long callflags;
 	int i;
-for (i = 0; i < 10; i++) {
+	for (i = 0; i < 10; i++) {
+		callflags = 0;
+		sbufsize = 29;
+		sbuf = tpalloc("X_OCTET", 0, sbufsize);
+		memset(sbuf, 0, sbufsize);
+		strcpy(sbuf, "THIS IS YOUR CLIENT SPEAKING");
+		retbufsize = 15;
+		retbuf = tpalloc("X_OCTET", 0, retbufsize);
+		memset(retbuf, 0, retbufsize);
 
-	txstatus = tx_open();
-	if (txstatus != TX_OK) {
-		userlogc((char*) "ERROR - Could not open transaction: ");
+		// tptypes
+		tptypes(sbuf, type, subtype);
+
+		// tpcall
+		userlogc((char*) "Calling tpcall with input: %s", sbuf);
+		tpstatus = tpcall("BAR", sbuf, sbufsize, (char **) &retbuf,
+				&retbufsize, callflags);
+		userlogc(
+				(char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
+				retbufsize, retbuf, tpstatus, tperrno);
+
+		tpfree(sbuf);
+		tpfree(retbuf);
 	}
-	txstatus = tx_begin();
-	if (txstatus != TX_OK) {
-		userlogc((char*) "ERROR - Could not begin transaction: ");
-	}
-	callflags = 0;
-	sbufsize = 29;
-	sbuf = tpalloc("X_OCTET", 0, sbufsize);
-	memset(sbuf, 0, sbufsize);
-	strcpy(sbuf, "THIS IS YOUR CLIENT SPEAKING");
-	retbufsize = 15;
-	retbuf = tpalloc("X_OCTET", 0, retbufsize);
-	memset(retbuf, 0, retbufsize);
-
-	// tptypes
-	tptypes(sbuf, type, subtype);
-
-	// tpcall
-	userlogc((char*) "Calling tpcall with input: %s", sbuf);
-	tpstatus = tpcall("BAR", sbuf, sbufsize, (char **) &retbuf,
-			&retbufsize, callflags);
-	userlogc((char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
-			retbufsize, retbuf, tpstatus, tperrno);
-
-	tpfree(sbuf);
-	tpfree(retbuf);
-
-	txstatus = tx_commit();
-	if (txstatus != TX_OK) {
-		userlogc((char*) "ERROR - Could not commit transaction: ", sbuf);
-	}
-	txstatus = tx_close();
-	if (txstatus != TX_OK) {
-		userlogc((char*) "ERROR - Could not close transaction: ", sbuf);
-	}
-}
 	return 0;
 }
