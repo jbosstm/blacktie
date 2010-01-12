@@ -123,6 +123,7 @@
 				<include name="libTAO.so.*" />
 				<include name="libTAO_IDL_BE.so.*" />
 				<include name="libTAO_IDL_FE.so.*" />
+				<include name="libACE_gperf_lib.so.*" />
 			</fileset>
 		</sync>
 		<property name="libace" refid="acelibs"/> 
@@ -154,6 +155,7 @@
 				<include name="TAOd.dll" />
 				<include name="TAO_IDL_BEd.dll" />
 				<include name="TAO_IDL_FEd.dll" />
+				<include name="ACE_gperf_lib.dll" />
 
 				<include name="TAO_PId.lib" />
 				<include name="TAO_Valuetyped.lib" />
@@ -168,6 +170,7 @@
 				<include name="TAOd.lib" />
 				<include name="TAO_IDL_BEd.lib" />
 				<include name="TAO_IDL_FEd.lib" />
+				<include name="ACE_gperf_lib.lib" />
 			</fileset>
 		</sync>
 	</target>
