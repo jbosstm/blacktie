@@ -87,10 +87,18 @@ HybridCorbaEndpointQueue::~HybridCorbaEndpointQueue() {
 		MESSAGE message = returnData.front();
 		returnData.pop();
 		LOG4CXX_DEBUG(logger, (char*) "Freeing data message");
-		free(message.data);
-		free(message.type);
-		free(message.subtype);
-		free((char*) message.replyto);
+		if (message.data != NULL) {
+			free(message.data);
+		}
+		if (message.type != NULL) {
+			free(message.type);
+		}
+		if (message.subtype != NULL) {
+			free(message.subtype);
+		}
+		if (message.replyto != NULL) {
+			free((char*) message.replyto);
+		}
 	}
 	if (!shutdown) {
 		shutdown = true;
@@ -118,24 +126,30 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 		LOG4CXX_DEBUG(logger, (char*) "send flags = " << flags);
 
 		MESSAGE message;
+		message.type = NULL;
+		message.subtype = NULL;
+		message.len = 0;
+		message.data = NULL;
 		message.correlationId = correlationId;
 		message.flags = flags;
 		message.rcode = rcode;
-		if (replyto_ior != NULL) {
-			LOG4CXX_TRACE(logger, (char*) "Duplicating the replyto");
-			message.replyto = strdup(replyto_ior);
-			LOG4CXX_TRACE(logger, (char*) "Duplicated");
-		} else {
-			message.replyto = NULL;
-		}
-		message.type = strdup(type);
-		message.subtype = strdup(subtype);
-
-		message.len = ilen;
-		message.data = BufferConverterImpl::convertToMemoryFormat(message.type,
-				message.subtype, (char*) idata.get_buffer(), &message.len);
-
+		message.replyto = NULL;
 		message.rval = rval;
+		if (message.rval != COE_DISCON) {
+			message.type = strdup(type);
+			message.subtype = strdup(subtype);
+			message.len = ilen;
+			message.data = BufferConverterImpl::convertToMemoryFormat(
+					message.type, message.subtype, (char*) idata.get_buffer(),
+					&message.len);
+
+			if (replyto_ior != NULL) {
+				LOG4CXX_TRACE(logger, (char*) "Duplicating the replyto");
+				message.replyto = strdup(replyto_ior);
+				LOG4CXX_TRACE(logger, (char*) "Duplicated");
+			}
+		}
+
 		message.received = true;
 		// For remote comms this thread (comes from a pool) is different from the thread that will
 		// eventually consume the message. For local comms this is not the case.
