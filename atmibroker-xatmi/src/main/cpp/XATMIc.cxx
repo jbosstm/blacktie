@@ -67,7 +67,11 @@ int bufferSize(char* data, int suggestedSize) {
 }
 
 void setTpurcode(long rcode) {
-	destroySpecific(TPR_KEY);
+	char* retrieved = (char*) getSpecific(TPR_KEY);
+	if (retrieved != NULL) {
+		destroySpecific( TPR_KEY);
+		free(retrieved);
+	}
 	if (rcode > 0) {
 		char* toStore = (char*) malloc(8 * sizeof(long));
 		sprintf(toStore, "%ld", rcode);
