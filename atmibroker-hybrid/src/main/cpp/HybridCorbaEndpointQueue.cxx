@@ -108,58 +108,55 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 		CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen,
 		CORBA::Long correlationId, CORBA::Long flags, const char* type,
 		const char* subtype) throw (CORBA::SystemException) {
+	lock->lock();
 	if (!shutdown) {
-		lock->lock();
-		if (!shutdown) {
-			LOG4CXX_DEBUG(logger, (char*) "send called" << this);
-			if (replyto_ior != NULL) {
-				LOG4CXX_DEBUG(logger, (char*) "send reply to = " << replyto_ior);
-			}
-			LOG4CXX_DEBUG(logger, (char*) "send ilen = " << ilen);
-			LOG4CXX_DEBUG(logger, (char*) "send flags = " << flags);
-
-			MESSAGE message;
-			message.correlationId = correlationId;
-			message.flags = flags;
-			message.rcode = rcode;
-			if (replyto_ior != NULL) {
-				LOG4CXX_TRACE(logger, (char*) "Duplicating the replyto");
-				message.replyto = strdup(replyto_ior);
-				LOG4CXX_TRACE(logger, (char*) "Duplicated");
-			} else {
-				message.replyto = NULL;
-			}
-			message.type = strdup(type);
-			message.subtype = strdup(subtype);
-
-			message.len = ilen;
-			message.data = BufferConverterImpl::convertToMemoryFormat(
-					message.type, message.subtype, (char*) idata.get_buffer(),
-					&message.len);
-
-			message.rval = rval;
-			message.received = true;
-			// For remote comms this thread (comes from a pool) is different from the thread that will
-			// eventually consume the message. For local comms this is not the case.
-			// Thus we cannot dissassociate any transaction from the thread here (using destroySpecific)
-
-			if (message.rval == COE_DISCON) {
-				session->setLastEvent(TPEV_DISCONIMM);
-			} else if (message.rcode == TPESVCERR) {
-				session->setLastEvent(TPEV_SVCERR);
-			} else if (message.rval == TPFAIL) {
-				session->setLastEvent(TPEV_SVCFAIL);
-				session->setLastRCode(message.rcode);
-			}
-			returnData.push(message);
-			LOG4CXX_DEBUG(logger, (char*) "notifying");
-			lock->notify();
-			LOG4CXX_DEBUG(logger, (char*) "notified");
-		} else {
-			LOG4CXX_WARN(logger, (char*) "MESSAGE DISCARDED - queue shutdown");
+		LOG4CXX_DEBUG(logger, (char*) "send called" << this);
+		if (replyto_ior != NULL) {
+			LOG4CXX_DEBUG(logger, (char*) "send reply to = " << replyto_ior);
 		}
-		lock->unlock();
+		LOG4CXX_DEBUG(logger, (char*) "send ilen = " << ilen);
+		LOG4CXX_DEBUG(logger, (char*) "send flags = " << flags);
+
+		MESSAGE message;
+		message.correlationId = correlationId;
+		message.flags = flags;
+		message.rcode = rcode;
+		if (replyto_ior != NULL) {
+			LOG4CXX_TRACE(logger, (char*) "Duplicating the replyto");
+			message.replyto = strdup(replyto_ior);
+			LOG4CXX_TRACE(logger, (char*) "Duplicated");
+		} else {
+			message.replyto = NULL;
+		}
+		message.type = strdup(type);
+		message.subtype = strdup(subtype);
+
+		message.len = ilen;
+		message.data = BufferConverterImpl::convertToMemoryFormat(message.type,
+				message.subtype, (char*) idata.get_buffer(), &message.len);
+
+		message.rval = rval;
+		message.received = true;
+		// For remote comms this thread (comes from a pool) is different from the thread that will
+		// eventually consume the message. For local comms this is not the case.
+		// Thus we cannot dissassociate any transaction from the thread here (using destroySpecific)
+
+		if (message.rval == COE_DISCON) {
+			session->setLastEvent(TPEV_DISCONIMM);
+		} else if (message.rcode == TPESVCERR) {
+			session->setLastEvent(TPEV_SVCERR);
+		} else if (message.rval == TPFAIL) {
+			session->setLastEvent(TPEV_SVCFAIL);
+			session->setLastRCode(message.rcode);
+		}
+		returnData.push(message);
+		LOG4CXX_DEBUG(logger, (char*) "notifying");
+		lock->notify();
+		LOG4CXX_DEBUG(logger, (char*) "notified");
+	} else {
+		LOG4CXX_WARN(logger, (char*) "MESSAGE DISCARDED - queue shutdown");
 	}
+	lock->unlock();
 }
 
 MESSAGE HybridCorbaEndpointQueue::receive(long time) {

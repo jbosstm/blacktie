@@ -256,12 +256,18 @@ bool HybridSessionImpl::send(MESSAGE message) {
 					<< remoteEndpoint);
 			AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(
 					message.len, message.len, (unsigned char*) data_togo, true);
-			remoteEndpoint->send(message.replyto, message.rval, message.rcode,
-					aOctetSeq, message.len, message.correlationId,
-					message.flags, message.type, message.subtype);
-			aOctetSeq = NULL;
-			LOG4CXX_DEBUG(logger, (char*) "Called back ");
-			toReturn = true;
+			try {
+				remoteEndpoint->send(message.replyto, message.rval,
+						message.rcode, aOctetSeq, message.len,
+						message.correlationId, message.flags, message.type,
+						message.subtype);
+				aOctetSeq = NULL;
+				LOG4CXX_DEBUG(logger, (char*) "Called back ");
+				toReturn = true;
+			} catch (const CORBA::SystemException& ex) {
+				LOG4CXX_WARN(logger, (char*) "Caught SystemException: "
+						<< ex._name());
+			}
 		}
 	}
 	return toReturn;

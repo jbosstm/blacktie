@@ -147,11 +147,7 @@ int serverinit(int argc, char** argv) {
 	if (toReturn != -1 && ptrServer == NULL) {
 		const char* configuration = getConfiguration();
 		if (configuration != NULL) {
-			char* configurationEnv = (char*) malloc(23 + 1 + strlen(
-					configuration));
-			::sprintf(configurationEnv, "BLACKTIE_CONFIGURATION=%s",
-					configuration);
-			ACE_OS::putenv(configurationEnv);
+			AtmiBrokerEnv::set_configuration(configuration);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "set AtmiBrokerEnv configuration type "
 							<< configuration);
@@ -221,7 +217,12 @@ int serverdone() {
 		ptrServer = NULL;
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 				(char*) "serverdone deleted Corba server");
+
 	}
+//	if (configFromCmdline) {
+//		char* toFree = ACE_OS::getenv("BLACKTIE_CONFIGURATION");
+//		free(toFree);
+//	}
 	return 0;
 }
 
@@ -250,8 +251,8 @@ long getServiceMessageCounter(char* serviceName) {
 	return 0;
 }
 
-
-void getResponseTime(char* serviceName, unsigned long* min, unsigned long* avg,unsigned long* max) {
+void getResponseTime(char* serviceName, unsigned long* min, unsigned long* avg,
+		unsigned long* max) {
 	if (ptrServer) {
 		ptrServer->getResponseTime(serviceName, min, avg, max);
 	}
@@ -978,10 +979,8 @@ long AtmiBrokerServer::getServiceMessageCounter(char* serviceName) {
 	}
 	return 0;
 }
-void AtmiBrokerServer::getResponseTime(char* serviceName, 
-		                               unsigned long* min, 
-									   unsigned long* avg, 
-									   unsigned long* max) {
+void AtmiBrokerServer::getResponseTime(char* serviceName, unsigned long* min,
+		unsigned long* avg, unsigned long* max) {
 	*min = 0;
 	*avg = 0;
 	*max = 0;
@@ -1006,7 +1005,8 @@ void AtmiBrokerServer::getResponseTime(char* serviceName,
 				}
 
 				if (total != 0 || counter != 0) {
-					*avg = ((*avg) * total + avg_time * counter) / (total + counter);
+					*avg = ((*avg) * total + avg_time * counter) / (total
+							+ counter);
 				}
 
 				if (max_time > *max) {

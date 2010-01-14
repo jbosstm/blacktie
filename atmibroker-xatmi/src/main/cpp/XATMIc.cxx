@@ -67,13 +67,12 @@ int bufferSize(char* data, int suggestedSize) {
 }
 
 void setTpurcode(long rcode) {
-	char* toClear = (char*) getSpecific(TPR_KEY);
-	if (toClear != NULL) {
-		free(toClear);
+	destroySpecific(TPR_KEY);
+	if (rcode > 0) {
+		char* toStore = (char*) malloc(8 * sizeof(long));
+		sprintf(toStore, "%ld", rcode);
+		setSpecific(TPR_KEY, toStore);
 	}
-	char* toStore = (char*) malloc(8 * sizeof(long));
-	sprintf(toStore, "%ld", rcode);
-	setSpecific(TPR_KEY, toStore);
 }
 
 int send(Session* session, const char* replyTo, char* idata, long ilen,
@@ -150,6 +149,7 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 int receive(int id, Session* session, char ** odata, long *olen, long flags,
 		long* event, bool closeSession) {
 	LOG4CXX_DEBUG(loggerXATMI, (char*) "Receive invoked");
+	setTpurcode(0);
 	int toReturn = -1;
 	int len = ::bufferSize(*odata, *olen);
 	if (len != -1) {

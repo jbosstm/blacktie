@@ -30,6 +30,8 @@ log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger(
 SynchronizableObject reconnect;
 bool reconnected;
 
+extern void setTpurcode(long rcode);
+
 ServiceDispatcher::ServiceDispatcher(AtmiBrokerServer* server,
 		Destination* destination, Connection* connection,
 		const char *serviceName, void(*func)(TPSVCINFO *), bool isPause) {
@@ -136,6 +138,10 @@ int ServiceDispatcher::svc(void) {
 			}
 			reconnect.unlock();
 		}
+		if (message.data != NULL) {
+			free(message.data);
+		}
+		setTpurcode(0);
 	}
 	return 0;
 }
@@ -179,7 +185,6 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 		if (message.len > 0) {
 			memcpy(tpsvcinfo.data, message.data, ilen);
 		}
-		free(message.data);
 	} else {
 		tpsvcinfo.data = NULL;
 	}

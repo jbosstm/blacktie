@@ -44,6 +44,7 @@ public:
 
 	std::vector<envVar_t>& getEnvVariableInfoSeq();
 
+	static void set_configuration(const char* configuration);
 	static AtmiBrokerEnv* get_instance();
 	static void discard_instance();
 
@@ -53,7 +54,6 @@ public:
 private:
 
 	int readenv();
-	static void set_configuration(const char* configuration);
 
 	std::vector<envVar_t> envVariableInfoSeq;
 	bool readEnvironment;

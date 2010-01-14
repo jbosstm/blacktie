@@ -109,19 +109,17 @@ void AtmiBrokerEnv::set_environment_dir(const char* dir) {
 }
 
 void AtmiBrokerEnv::set_configuration(const char* dir) {
-	if (configuration != NULL) {
-		free( configuration);
-		configuration = NULL;
-	}
-	if (dir != NULL) {
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnv,
-				(char*) "setting configuration type: " << dir);
+	if (configuration == NULL) {
+		if (dir != NULL) {
+			LOG4CXX_DEBUG(loggerAtmiBrokerEnv,
+					(char*) "setting configuration type: " << dir);
 
-		configuration = strdup(dir);
-	} else {
-		configuration = strdup("");
-		LOG4CXX_DEBUG(loggerAtmiBrokerEnv,
-				(char*) "setting configuration to null");
+			configuration = strdup(dir);
+		} else {
+			configuration = strdup("");
+			LOG4CXX_DEBUG(loggerAtmiBrokerEnv,
+					(char*) "setting configuration to null");
+		}
 	}
 }
 
@@ -154,7 +152,10 @@ void AtmiBrokerEnv::destroy() {
 	}
 
 	set_environment_dir( NULL);
-	set_configuration(NULL);
+	if (configuration != NULL) {
+		free( configuration);
+		configuration = NULL;
+	}
 	envVariableInfoSeq.clear();
 
 	//free(namingServiceId);
