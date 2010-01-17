@@ -155,7 +155,7 @@
 				<include name="TAOd.dll" />
 				<include name="TAO_IDL_BEd.dll" />
 				<include name="TAO_IDL_FEd.dll" />
-				<include name="ACE_gperf_lib.dll" />
+				<include name="ACE_gperf_libd.dll" />
 
 				<include name="TAO_PId.lib" />
 				<include name="TAO_Valuetyped.lib" />
@@ -170,7 +170,7 @@
 				<include name="TAOd.lib" />
 				<include name="TAO_IDL_BEd.lib" />
 				<include name="TAO_IDL_FEd.lib" />
-				<include name="ACE_gperf_lib.lib" />
+				<include name="ACE_gperf_libd.lib" />
 			</fileset>
 		</sync>
 	</target>
