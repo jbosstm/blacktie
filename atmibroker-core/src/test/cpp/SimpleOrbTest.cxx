@@ -21,7 +21,7 @@
 #include <tao/ORB.h>
 #include <orbsvcs/CosNamingS.h>
 #include <tao/PortableServer/PortableServerC.h>
-#include <orbsvcs/CosNotificationS.h>
+//#include <orbsvcs/CosNotificationS.h>
 
 #include "SimpleOrbTest.h"
 #include "Worker.h"
