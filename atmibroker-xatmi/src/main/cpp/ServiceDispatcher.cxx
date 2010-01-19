@@ -44,6 +44,7 @@ ServiceDispatcher::ServiceDispatcher(AtmiBrokerServer* server,
 	stop = false;
 	this->timeout = (long) (mqConfig.destinationTimeout * 1000000);
 	this->counter = 0;
+	this->error_counter = 0;
 	this->server = server;
 	this->minResponseTime = 0;
 	this->avgResponseTime = 0;
@@ -255,6 +256,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 						<< getSpecific(TSS_KEY));
 		::tpreturn(TPFAIL, TPESVCERR, NULL, 0, 0);
 		LOG4CXX_TRACE(logger, (char*) "Returned error");
+		error_counter ++;
 	} else if (getSpecific(TSS_KEY) != NULL) {
 		txx_release_control(txx_unbind(true));
 	}
@@ -283,6 +285,10 @@ void ServiceDispatcher::shutdown() {
 
 long ServiceDispatcher::getCounter() {
 	return counter;
+}
+
+long ServiceDispatcher::getErrorCounter() {
+	return error_counter;
 }
 
 void ServiceDispatcher::getResponseTime(unsigned long* min, unsigned long* avg,

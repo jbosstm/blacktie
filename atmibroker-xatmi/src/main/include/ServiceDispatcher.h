@@ -40,6 +40,7 @@ public:
 	int resume();
 	void shutdown();
 	long getCounter();
+	long getErrorCounter();
 	void getResponseTime(unsigned long* min, unsigned long* avg, unsigned long* max);
 private:
 	void onMessage(MESSAGE message);
@@ -54,6 +55,7 @@ private:
 	bool isPause;
 	long timeout;
 	long counter;
+	long error_counter;
 	bool requiresReconnect;
 	unsigned long minResponseTime;
 	unsigned long avgResponseTime;
