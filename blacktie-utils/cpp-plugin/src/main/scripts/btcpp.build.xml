@@ -443,7 +443,6 @@
 			<arg value="--log-file=${project.artifactId}-valgrind.log" />
 			<arg value="-v" />
 			<arg value="--track-origins=yes" />
-			<arg value="--workaround-gcc296-bugs=yes" />
 			<arg value="../testsuite" />
 		</exec>
 	</target>
