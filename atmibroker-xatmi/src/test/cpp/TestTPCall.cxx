@@ -265,7 +265,7 @@ void TestTPCall::test_tpcall_with_TPNOCHANGE() {
 	long toTest = ::tptypes(rcvbuf, type, subtype);
 	CPPUNIT_ASSERT(strncmp(type, "X_C_TYPE", 8) == 0);
 	CPPUNIT_ASSERT(strncmp(subtype, "acct_info", 16) == 0);
-	CPPUNIT_ASSERT(toTest == 184);
+	CPPUNIT_ASSERT(toTest == sizeof(ACCT_INFO));
 	free(type);
 	free(subtype);
 
