@@ -48,7 +48,7 @@ public class ServiceDispatcher extends Service implements Runnable {
 		this.receiver = receiver;
 		thread = new Thread(this, serviceName + "-Dispatcher");
 		thread.start();
-		log.debug("Created");
+		log.debug("Created: " + thread.getName());
 	}
 
 	public void run() {
