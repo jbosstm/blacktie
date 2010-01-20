@@ -80,7 +80,7 @@ public class ServiceDispatcher extends Service implements Runnable {
 			if (!closed) {
 				log.error("Could not receive the message", t);
 			} else {
-				log.debug("Did not receive the message during shutdown", t);
+				log.debug("Did not receive the message during shutdown: " + t.getMessage(), t);
 			}
 		}
 
