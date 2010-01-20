@@ -45,6 +45,7 @@ public class CorbaSenderImpl implements Sender {
 			String subtype) throws ConnectionException {
 		log.debug("Sending the message");
 		if (closed) {
+			log.error("Sender closed");
 			throw new ConnectionException(Connection.TPEPROTO, "Sender closed");
 		}
 		if (data == null) {
@@ -65,6 +66,7 @@ public class CorbaSenderImpl implements Sender {
 			subtype = "";
 		}
 		if (len < 1) {
+			log.error("Length of buffer must be greater than 0");
 			throw new ConnectionException(Connection.TPEINVAL,
 					"Length of buffer must be greater than 0");
 		}
@@ -73,6 +75,7 @@ public class CorbaSenderImpl implements Sender {
 			int min = Math.min(toSend.length, data.length);
 			System.arraycopy(data, 0, toSend, 0, min);
 		}
+		log.debug("Preparing to send the message");
 		queue.send(toReplyTo, rval, rcode, toSend, toSend.length,
 				correlationId, flags, type, subtype);
 		log.debug("Sent the message");
