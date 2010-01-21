@@ -134,6 +134,7 @@ XARecoveryLog::~XARecoveryLog()
  */
 bool XARecoveryLog::load_log(const char* logname)
 {
+	LOG4CXX_TRACE(xarcllogger, (char *) "Loading log file: " << logname);
 	AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
 	const char* maxblk = env->getenv("BLACKTIE_MAX_RCLOG_SIZE", MAXBLOCKS);
 	AtmiBrokerEnv::discard_instance();
@@ -146,7 +147,7 @@ bool XARecoveryLog::load_log(const char* logname)
 	log_.open (logname, mode);
 
 	if (!log_.is_open()) {
-		LOG4CXX_ERROR(xarcllogger, (char *) "log open failed");
+		LOG4CXX_ERROR(xarcllogger, (char *) "log open failed for: " << logname);
 		return false;
 	}
 
