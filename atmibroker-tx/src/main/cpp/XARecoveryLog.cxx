@@ -18,6 +18,8 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <stdio.h>
+#include <errno.h>
 
 #include "log4cxx/logger.h"
 
@@ -141,9 +143,18 @@ bool XARecoveryLog::load_log(const char* logname)
 
 	ios_base::openmode mode = ios::out | ios::in | ios::binary;
 
-	// TODO I don't know how to create and open a file for I/O unless ios::app is set
-	log_.open (logname, mode | ios::app);
-	log_.close();
+	// make sure the log file exists
+	FILE *fp = fopen(logname, "a+");
+
+	if (fp == NULL) {
+		LOG4CXX_ERROR(xarcllogger, (char *) "log open failed: " << errno);
+		return false;
+	}
+
+	(void) fclose(fp);
+
+	//log_.open (logname, mode | ios::app);
+	//log_.close();
 	log_.open (logname, mode);
 
 	if (!log_.is_open()) {
