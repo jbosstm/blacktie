@@ -35,6 +35,12 @@ extern "C" {
 
 #define MAXLOGSIZE 2048
 
+#include "ace/ACE.h"
+#include "ace/OS_NS_stdlib.h"
+#include "ace/OS_NS_stdio.h"
+#include "ace/OS_NS_string.h"
+
+
 log4cxx::LoggerPtr loggerAtmiBrokerLogc(log4cxx::Logger::getLogger(
 		"AtmiBrokerLogc"));
 
@@ -99,14 +105,12 @@ void userlog(const log4cxx::LevelPtr& level, const char * format, ...) {
 
 extern void initializeLogger() {
 	if (!loggerInitialized) {
-		AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
-		if (env->getenv((char*) "LOG4CXXCONFIG") != NULL) {
-			log4cxx::PropertyConfigurator::configure(env->getenv(
-					(char*) "LOG4CXXCONFIG"));
+		char* config = ACE_OS::getenv("LOG4CXXCONFIG");
+		if (config != NULL) {
+			log4cxx::PropertyConfigurator::configure(config);
 		} else {
-			log4cxx::BasicConfigurator::configure();
+			log4cxx::PropertyConfigurator::configure("log4cxx.properties");
 		}
-		AtmiBrokerEnv::discard_instance();
 		loggerInitialized = true;
 	}
 }

@@ -154,8 +154,8 @@ int serverinit(int argc, char** argv) {
 		}
 
 		try {
-			initializeLogger();
 			AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
+			initializeLogger();
 			std::stringstream sid;
 			sid << "BLACKTIE_SERVER_NAME=" << domain << server << serverid;
 			env->putenv((char *) (sid.str().c_str()));

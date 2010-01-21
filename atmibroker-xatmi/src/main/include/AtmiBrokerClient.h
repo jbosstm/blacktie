@@ -41,7 +41,6 @@ protected:
 	ConnectionManager clientConnectionManager;
 	int nextSessionId;
 	SynchronizableObject* lock;
-	AtmiBrokerEnv* env;
 };
 
 // CLIENT

@@ -71,10 +71,6 @@
 			<NAME>JMXURL</NAME>
 			<VALUE>service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector</VALUE>
 		</ENV_VARIABLE>
-		<ENV_VARIABLE>
-			<NAME>LOG4CXXCONFIG</NAME>
-			<VALUE>log4cxx.properties</VALUE>
-		</ENV_VARIABLE>
 	</ENV_VARIABLES>
 
 	<BUFFERS>

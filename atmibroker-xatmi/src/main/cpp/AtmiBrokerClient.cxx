@@ -56,45 +56,56 @@ void client_sigint_handler_callback(int sig_type) {
 
 int clientinit() {
 	setSpecific(TPE_KEY, TSS_TPERESET);
-	int toReturn = 0;
+	int toReturn = -1;
 
 	client_lock.lock();
 	if (ptrAtmiBrokerClient == NULL) {
-		initializeLogger();
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit called");
-		ptrAtmiBrokerClient = new AtmiBrokerClient();
-		if (!clientInitialized) {
-			LOG4CXX_DEBUG(loggerAtmiBrokerClient,
-					(char*) "clientinit deleting Client");
-			delete ptrAtmiBrokerClient;
-			ptrAtmiBrokerClient = NULL;
-			LOG4CXX_DEBUG(loggerAtmiBrokerClient,
-					(char*) "clientinit deleted Client");
-			toReturn = -1;
-			setSpecific(TPE_KEY, TSS_TPESYSTEM);
-		} else {
-			//signal(SIGINT, client_sigint_handler_callback);
-			ACE_Sig_Action sa;
-			sa.retrieve_action(SIGINT);
-
-			if (sa.handler() != SIG_DFL) {
+		try {
+			AtmiBrokerEnv::get_instance();
+			initializeLogger();
+			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit called");
+			ptrAtmiBrokerClient = new AtmiBrokerClient();
+			if (!clientInitialized) {
 				LOG4CXX_DEBUG(loggerAtmiBrokerClient,
-						(char*) "SIGINT handler callback have been register");
+						(char*) "clientinit deleting Client");
+				delete ptrAtmiBrokerClient;
+				ptrAtmiBrokerClient = NULL;
+				LOG4CXX_DEBUG(loggerAtmiBrokerClient,
+						(char*) "clientinit deleted Client");
+				setSpecific(TPE_KEY, TSS_TPESYSTEM);
 			} else {
-				// Make sure we specify that SIGINT will be masked out
-				// during the signal handler's execution.
-				ACE_Sig_Set ss;
-				ss.sig_add(SIGINT);
-				sa.mask(ss);
-				sa.handler(
-						reinterpret_cast<ACE_SignalHandler> (client_sigint_handler_callback));
-				sa.register_action(SIGINT);
-				LOG4CXX_DEBUG(loggerAtmiBrokerClient,
-						(char*) "register client_sigint_handler_callback");
-			}
+				//signal(SIGINT, client_sigint_handler_callback);
+				ACE_Sig_Action sa;
+				sa.retrieve_action(SIGINT);
 
-			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "Client Initialized");
+				if (sa.handler() != SIG_DFL) {
+					LOG4CXX_DEBUG(
+							loggerAtmiBrokerClient,
+							(char*) "SIGINT handler callback have been register");
+				} else {
+					// Make sure we specify that SIGINT will be masked out
+					// during the signal handler's execution.
+					ACE_Sig_Set ss;
+					ss.sig_add(SIGINT);
+					sa.mask(ss);
+					sa.handler(
+							reinterpret_cast<ACE_SignalHandler> (client_sigint_handler_callback));
+					sa.register_action(SIGINT);
+					LOG4CXX_DEBUG(loggerAtmiBrokerClient,
+							(char*) "register client_sigint_handler_callback");
+				}
+
+				LOG4CXX_DEBUG(loggerAtmiBrokerClient,
+						(char*) "Client Initialized");
+				toReturn = 0;
+			}
+		} catch (...) {
+			LOG4CXX_ERROR(loggerAtmiBrokerClient,
+					(char*) "clientinit Unexpected exception");
+			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		}
+	} else {
+		toReturn = 0;
 	}
 	client_lock.unlock();
 	return toReturn;
@@ -121,8 +132,6 @@ int clientdone() {
 AtmiBrokerClient::AtmiBrokerClient() {
 	try {
 		lock = new SynchronizableObject();
-		this->env = NULL;
-		this->env = AtmiBrokerEnv::get_instance();
 		nextSessionId = 0;
 		clientInitialized = true;
 		currentConnection = NULL;
@@ -137,13 +146,11 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "destructor");
 	AtmiBrokerMem::discard_instance();
 	txx_stop();
-	if (env != NULL) {
-		AtmiBrokerEnv::discard_instance();
-	}
 	clientConnectionManager.closeConnections();
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleted services");
 	delete lock;
 	clientInitialized = false;
+	AtmiBrokerEnv::discard_instance();
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "Client Shutdown");
 }
 
