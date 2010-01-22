@@ -133,7 +133,7 @@
 					</xsd:complexType>
 				</xsd:element>
 
-				<xsd:element name="ENV_VARIABLES">
+				<xsd:element name="ENV_VARIABLES" minOccurs="0" maxOccurs="unbounded">
 					<xsd:complexType>
 						<xsd:sequence>
 							<xsd:element name="ENV_VARIABLE" minOccurs="0"
