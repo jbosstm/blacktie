@@ -243,4 +243,11 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 		return administrationProxy.getResponseTime(serverName, 
 				serviceName);
 	}
+	
+	/**
+	 * Get message queue depth
+	 */
+	public int getQueueDepth(String serverName, String serviceName) {
+		return administrationProxy.getQueueDepth(serverName, serviceName);
+	}
 }

@@ -31,6 +31,7 @@ import java.util.Set;
 import javax.jms.Destination;
 import javax.jms.Queue;
 import javax.management.MBeanServerConnection;
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
@@ -574,5 +575,18 @@ public class AdministrationProxy {
 		log.info("Closed Administration Proxy");
 		connection.close();
 		c.close();
+	}
+
+	public int getQueueDepth(String serverName, String serviceName) {
+		Integer depth;
+		try {
+			ObjectName objName = new ObjectName(
+					"jboss.messaging.destination:service=Queue,name=" + serviceName);
+			depth = (Integer)beanServerConnection.getAttribute(objName, "MessageCount");
+		} catch (Exception e) {
+			log.error("getQueueDepth failed with " + e);
+			return -1;
+		}
+		return depth.intValue();
 	}
 }

@@ -208,6 +208,13 @@ CreateChildResourceFacet {
 						report.addData(new MeasurementDataNumeric(request, value
 								.doubleValue()));
 					}
+				} else if (name.equals("queueDepth")) {
+					Number value = (Integer)beanServerConnection.invoke(blacktieAdmin, 
+							"getQueueDepth",
+							new Object[] { serverName, serviceName}, 
+							new String[] {"java.lang.String", "java.lang.String"});
+					report.addData(new MeasurementDataNumeric(request, value
+							.doubleValue()));
 				}
 			} catch (Exception e) {
 				log.error("Failed to obtain measurement [" + name

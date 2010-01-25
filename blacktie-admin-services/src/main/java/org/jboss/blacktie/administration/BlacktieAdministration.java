@@ -114,4 +114,9 @@ public interface BlacktieAdministration {
 	 */
 	public String getResponseTimeById(String serverName, int id, String serviceName);
 	public String getResponseTime(String serverName, String serviceName);
+	
+	/**
+	 * Get message queue depth
+	 */
+	public int getQueueDepth(String serverName, String serviceName);
 }
