@@ -100,6 +100,7 @@ It also accepts a list of preprocessor macro definitions (-Dx.define="comma sepa
 to compile the client for use with Oracle11g:
 
 ORACLE ONLY
+-----------
 On Linux:
 $BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" \
     -Dx.inc.dir="$ORACLE_HOME/rdbms/public" \
@@ -116,6 +117,7 @@ Similarly for generating the client:
 %BLACKTIE_BIN_DIR%/bin/generate_client.bat -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.define="ORACLE"
 
 DB2 ONLY
+--------
 On Linux:
 $BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c db2.c DbService.c" \
     -Dx.inc.dir="$DB2DIR/include" \
@@ -192,8 +194,8 @@ or
 DB2 ONLY
 Sourcing the db2profile should put the libraries in the path
 Alternatively:
-	export DB2INSTANCE=blacktie
-	export DB2_LIB=/home/mmusgrov/sqllib/lib32
+    export DB2INSTANCE=blacktie
+    export DB2_LIB=/home/mmusgrov/sqllib/lib32
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DB2_LIB
 
 or
@@ -222,6 +224,14 @@ to the source file cutil.c to see what client/server/transaction combinations ar
 [If you run more than one client from the same directory you will need to configure a unique recovery log name by
 setting the following environment variable:
 	export BLACKTIE_RC_LOG_NAME=<unique file name>
+
+NOTE: If you get the following error it means you have not exported BLACKTIE_CONFIGURATION correctly:
+2010-01-25 18:11:32,704 [0x7f805f2f5750] INFO  (AtmiBrokerLogc           :67  ) - TxLog setup: prod: ora - blacktie LOCAL DELETE AT SETUP
+2010-01-25 18:11:32,722 [0x7f805f2f5750] WARN  (AtmiBrokerLogc           :91  ) - TxLog BAD REQ -1 db name: blacktie
+2010-01-25 18:11:32,722 [0x7f805f2f5750] INFO  (AtmiBrokerLogc           :67  ) - TxLog setup: prod: ora - ORCL LOCAL DELETE AT SETUP
+2010-01-25 18:11:32,723 [0x7f805f2f5750] WARN  (AtmiBrokerLogc           :91  ) - TxLog BAD REQ -1 db name: ORCL
+2010-01-25 18:11:32,730 [0x7f805f2f5750] INFO  (AtmiBrokerLogc           :67  ) - TxLog Test failed (-1)
+
 
 3.3 WHAT IF THE TESTS HANG
 ==========================
