@@ -329,26 +329,26 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 }
 
 int _get_tperrno(void) {
-	LOG4CXX_DEBUG(loggerXATMI, (char*) "_get_tperrno");
+	LOG4CXX_TRACE(loggerXATMI, (char*) "_get_tperrno");
 	char* err = (char*) getSpecific(TPE_KEY);
 	int toReturn = 0;
 	if (err != NULL) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "found _get_tperrno" << err);
 		toReturn = atoi(err);
 	}
-	LOG4CXX_DEBUG(loggerXATMI, (char*) "returning _get_tperrno" << toReturn);
+	LOG4CXX_TRACE(loggerXATMI, (char*) "returning _get_tperrno" << toReturn);
 	return toReturn;
 }
 
 long _get_tpurcode(void) {
-	LOG4CXX_DEBUG(loggerXATMI, (char*) "_get_tpurcode");
+	LOG4CXX_TRACE(loggerXATMI, (char*) "_get_tpurcode");
 	char* rcode = (char*) getSpecific(TPR_KEY);
 	long toReturn = 0;
 	if (rcode != NULL) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "found _get_tpurcode" << rcode);
 		toReturn = atol(rcode);
 	}
-	LOG4CXX_DEBUG(loggerXATMI, (char*) "returning _get_tpurcode" << toReturn);
+	LOG4CXX_TRACE(loggerXATMI, (char*) "returning _get_tpurcode" << toReturn);
 	return toReturn;
 }
 

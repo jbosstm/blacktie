@@ -105,7 +105,7 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 			frame = this->message;
 			this->message = NULL;
 		} else {
-			LOG4CXX_DEBUG(logger, (char*) "Receivin from: " << name);
+			LOG4CXX_TRACE(logger, (char*) "Receiving from: " << name);
 			connect();
 			if (connected) {
 				apr_status_t rc = stomp_read(connection, &frame, pool);
