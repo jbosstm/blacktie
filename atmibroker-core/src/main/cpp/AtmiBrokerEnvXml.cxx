@@ -686,14 +686,17 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(
 		do {
 			LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "reading file");
 			size_t len = fread(buf, 1, s.st_size, aDescriptorFile);
-			LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "length is '%d'" << len);
 			done = len < sizeof(buf);
-			if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR) {
-				LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "%d at line %d"
-						<< XML_ErrorString(XML_GetErrorCode(parser))
-						<< XML_GetCurrentLineNumber(parser));
-				toReturn = false;
-				break;
+			if (len > 0) {
+				LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "buf is " << buf);
+
+				if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR) {
+					LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "%d at line %d"
+							<< XML_ErrorString(XML_GetErrorCode(parser))
+							<< XML_GetCurrentLineNumber(parser));
+					toReturn = false;
+					break;
+				}
 			}
 		} while (!done);
 	} catch (...) {

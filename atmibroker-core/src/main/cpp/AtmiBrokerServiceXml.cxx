@@ -224,13 +224,15 @@ void AtmiBrokerServiceXml::parseXmlDescriptor(ServiceInfo* aServiceStructPtr,
 	XML_SetCharacterDataHandler(parser, characterData);
 	do {
 		size_t len = fread(buf, 1, s.st_size, aDescriptorFile);
-		LOG4CXX_DEBUG(loggerAtmiBrokerServiceXml, (char*) "buf is " << buf);
 		done = len < sizeof(buf);
-		if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR) {
-			LOG4CXX_ERROR(loggerAtmiBrokerServiceXml, (char*) "Error: "
-					<< XML_ErrorString(XML_GetErrorCode(parser)) << " at line "
-					<< XML_GetCurrentLineNumber(parser));
-			break;
+		if (len > 0) {
+			LOG4CXX_TRACE(loggerAtmiBrokerServiceXml, (char*) "buf is " << buf);
+			if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR) {
+				LOG4CXX_ERROR(loggerAtmiBrokerServiceXml, (char*) "Error: "
+						<< XML_ErrorString(XML_GetErrorCode(parser)) << " at line "
+						<< XML_GetCurrentLineNumber(parser));
+				break;
+			}
 		}
 	} while (!done);
 	free(buf);
