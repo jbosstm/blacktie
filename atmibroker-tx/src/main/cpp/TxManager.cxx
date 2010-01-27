@@ -27,6 +27,10 @@
 
 #define TX_GUARD(cond) {	\
 	FTRACE(txmlogger, "ENTER"); \
+	if (_connection == NULL) { \
+		LOG4CXX_DEBUG(txmlogger, (char*) "Cannot connect to an ORB"); \
+		return TX_ERROR; \
+	} \
 	if (!cond) {  \
 		LOG4CXX_WARN(txmlogger, (char*) "protocol error: open: " << _isOpen << " transaction: " << getSpecific(TSS_KEY));   \
 		return TX_PROTOCOL_ERROR;   \
@@ -61,12 +65,18 @@ void TxManager::discard_instance()
 }
 
 TxManager::TxManager() :
-	_whenReturn(TX_COMMIT_DECISION_LOGGED), _controlMode(TX_UNCHAINED), _timeout (0L), _isOpen(false)
+	_whenReturn(TX_COMMIT_DECISION_LOGGED), _controlMode(TX_UNCHAINED), _timeout (0L), _isOpen(false), _connection(NULL)
 {
 	FTRACE(txmlogger, "ENTER");
 	AtmiBrokerEnv::get_instance();
-	_connection = ::initOrb((char*) "ots");
-	LOG4CXX_DEBUG(txmlogger, (char*) "new CONNECTION: " << _connection);
+	try {
+		_connection = ::initOrb((char*) "ots");
+		LOG4CXX_DEBUG(txmlogger, (char*) "new CONNECTION: " << _connection);
+	} catch (CORBA::SystemException & e) {
+		LOG4CXX_WARN(txmlogger, (char*) "Failed to connect to ORB for TM: " << e._name() << " minor code: " << e.minor());
+	} catch (...) {
+		LOG4CXX_WARN(txmlogger, (char*) "Unknown error looking up ORB for TM");
+	}
 }
 
 TxManager::~TxManager()
@@ -270,20 +280,22 @@ int TxManager::info(void *info)
 
 int TxManager::open(void)
 {
-	FTRACE(txmlogger, "ENTER");
+	TX_GUARD((true));
 
 	if (_isOpen)
 		return TX_OK;
 
 	if (_txfac == NULL) {
-		char *transFactoryId = orbConfig.transactionFactoryName;
-
-		if (transFactoryId == NULL || strlen(transFactoryId) == 0) {
-			LOG4CXX_ERROR(txmlogger, (char*) "Please set the TRANS_FACTORY_ID env variable");
-			return TX_ERROR;
-		}
+		char *transFactoryId = "";
 
 		try {
+			transFactoryId = orbConfig.transactionFactoryName;
+
+			if (transFactoryId == NULL || strlen(transFactoryId) == 0) {
+				LOG4CXX_ERROR(txmlogger, (char*) "Please set the TRANS_FACTORY_ID env variable");
+				return TX_ERROR;
+			}
+
 			CosNaming::Name *name = _connection->default_ctx->to_name(transFactoryId);
 			LOG4CXX_DEBUG(txmlogger, (char*) "resolving Tx Fac Id: " << transFactoryId);
 			CORBA::Object_var obj = _connection->default_ctx->resolve(*name);

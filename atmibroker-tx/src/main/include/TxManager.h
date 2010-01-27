@@ -132,7 +132,6 @@ private:
 	int rm_start(int flags, int altflags = -1);
 
 private:
-	CORBA_CONNECTION *_connection;
 	CosTransactions::TransactionFactory_var _txfac;
 	XAResourceManagerFactory _xaRMFac;
 
@@ -140,6 +139,7 @@ private:
 	TRANSACTION_CONTROL _controlMode;
 	TRANSACTION_TIMEOUT _timeout;
 	bool _isOpen;
+	CORBA_CONNECTION *_connection;
 
 private:
 	static TxManager *_instance;
