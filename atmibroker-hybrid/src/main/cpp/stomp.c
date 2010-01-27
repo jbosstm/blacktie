@@ -264,6 +264,8 @@ APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection, char *
             CHECK_SUCCESS;
             if( endline[0] != '\n' ) {
                printf("stomp_read_buffer endline[0] != \\n returning APR_EGENERAL, length was %d\n", length);
+               printf("character as a decimal: %d\n", endline[0]);
+               printf("character as a character: %c\n", endline[0]);
                return APR_EGENERAL;
             }
             break;
