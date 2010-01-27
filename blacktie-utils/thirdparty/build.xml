@@ -74,38 +74,8 @@
 		<mkdir dir="${build.dist}/lib" />
 	</target>
 
-	<target name="thirdparty" depends="log4cxx,cppunit,expat,apr-1,stomp,jbossas,java-devel,ace,xercesc" />
+	<target name="thirdparty" depends="log4cxx,cppunit,expat,apr-1,stomp,java-devel,ace,xercesc" />
 	<target name="install" depends="thirdparty" />
-
-	<target name="jbossas" depends="clean,init">
-		<antcall target="purge"/>
-		<validate-files inc.dir="${jbossas.lib.dir}" lib.dir="${jbossas.lib.dir}" artifactId="jbossas" />
-
-		<install-file-artifact filename="${jbossas.common.lib.dir}/jbossjts-jacorb.jar" groupId="jboss" artifactId="jbossjts-jacorb" name="jbossjts-jacorb" version="${jbossas.version}" description="jbossjts" />
-		<install-file-artifact filename="${jbossas.common.lib.dir}/jbossts-common.jar" groupId="jboss" artifactId="jbossts-common" name="jbossts-common" version="${jbossas.version}" description="jbossjts" />
-		<install-file-artifact filename="${jbossas.lib.dir}/jbossjts.jar" groupId="jboss" artifactId="jbossjts" name="jbossjts" version="${jbossas.version}" description="jbossjts" />
-
-		<install-file-artifact filename="${jbossas.lib.dir}/jboss-javaee.jar" groupId="jboss" artifactId="jboss-javaee" name="jboss-javaee" version="${jbossas.version}" description="jboss-javaee" />
-		<install-file-artifact filename="${jbossas.lib.dir}/jboss-client.jar" groupId="jboss" artifactId="jboss-client" name="jboss-client" version="${jbossas.version}" description="jboss-client" />
-		<install-file-artifact filename="${jbossas.lib.dir}/jboss-logging-spi.jar" groupId="jboss" artifactId="jboss-logging-spi" name="jboss-logging-spi" version="${jbossas.version}" description="jboss-logging-spi" />
-		<install-file-artifact filename="${jbossas.lib.dir}/jboss-security-spi.jar" groupId="jboss" artifactId="jboss-security-spi" name="jboss-security-spi" version="${jbossas.version}" description="jboss-security-spi" />
-		<install-file-artifact filename="${jbossas.lib.dir}/jboss-serialization.jar" groupId="jboss" artifactId="jboss-serialization" name="jboss-serialization" version="${jbossas.version}" description="jboss-serialization" />
-		<install-file-artifact filename="${jbossas.lib.dir}/jboss-common-core.jar" groupId="jboss" artifactId="jboss-common-core" name="jboss-common-core" version="${jbossas.version}" description="jboss-common-core" />
-		<install-file-artifact filename="${jbossas.lib.dir}/jboss-remoting.jar" groupId="jboss" artifactId="jboss-remoting" name="jboss-remoting" version="${jbossas.version}" description="jboss-remoting" />
-		<install-file-artifact filename="${jbossas.lib.dir}/jbosssx-client.jar" groupId="jboss" artifactId="jbosssx-client" name="jbosssx-client" version="${jbossas.version}" description="jbosssx-client" />
-		<install-file-artifact filename="${jbossas.lib.dir}/jboss-messaging-client.jar" groupId="jboss" artifactId="jboss-messaging-client" name="jboss-messaging-client" version="${jbossas.version}" description="jboss-messaging-client" />
-		<install-file-artifact filename="${jbossas.lib.dir}/jboss-integration.jar" groupId="jboss" artifactId="jboss-integration" name="jboss-integration" version="${jbossas.version}" description="jboss-integration" />
-		<install-file-artifact filename="${jbossas.lib.dir}/concurrent.jar" groupId="jboss" artifactId="concurrent" name="concurrent" version="${jbossas.version}" description="concurrent" />
-		<install-file-artifact filename="${jbossas.lib.dir}/jnp-client.jar" groupId="jboss" artifactId="jnp-client" name="jnp-client" version="${jbossas.version}" description="jnp-client" />
-		<install-file-artifact filename="${jbossas.lib.dir}/jacorb.jar" groupId="jboss" artifactId="jacorb" name="jacorb" version="${jbossas.version}" description="jacorb" />
-		<install-file-artifact filename="${jbossas.lib.dir}/javassist.jar" groupId="jboss" artifactId="javassist" name="javassist" version="${jbossas.version}" description="javassist" />
-		<install-file-artifact filename="${jbossas.lib.dir}/trove.jar" groupId="jboss" artifactId="trove" name="trove" version="${jbossas.version}" description="trove" />
-		<install-file-artifact filename="${jbossas.lib.dir}/jbossall-client.jar" groupId="jboss" artifactId="jbossall-client" name="jbossall-client" version="${jbossas.version}" description="jbossall-client" />
-		<install-file-artifact filename="${jbossas.lib.dir}/jboss-aop-client.jar" groupId="jboss" artifactId="jboss-aop-client" name="jboss-aop-client" version="${jbossas.version}" description="jboss-aop-client" />
-		<install-file-artifact filename="${jbossas.lib.dir}/jboss-mdr.jar" groupId="jboss" artifactId="jboss-mdr" name="jboss-mdr" version="${jbossas.version}" description="jboss-mdr" />
-		<install-file-artifact filename="${jbossas.lib.dir}/jboss-logging-log4j.jar" groupId="jboss" artifactId="jboss-logging-log4j" name="jboss-logging-log4j" version="${jbossas.version}" description="jboss-logging-log4j" />
-		<install-file-artifact filename="${jbossas.lib.dir}/jboss-ejb3-ext-api.jar" groupId="jboss" artifactId="jboss-ejb3-ext-api" name="jboss-ejb3-ext-api" version="${jbossas.version}" description="jboss-ejb3-ext-api" />
-	</target>
 
 	<target name="ace-lib-linux" if="linux">
 		<sync todir="${build.dist}/lib">
