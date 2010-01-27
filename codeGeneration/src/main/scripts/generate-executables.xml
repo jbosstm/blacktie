@@ -96,6 +96,8 @@
 		<condition property="x.libs" value="log4cxx"><not><isset property="x.libs" /></not></condition>
 		<condition property="x.lib.dir2" value="${env.BLACKTIE_BIN_DIR}/lib"><not><isset property="x.lib.dir2" /></not></condition>
 		<condition property="x.libs2" value="log4cxx"><not><isset property="x.libs2" /></not></condition>
+		<condition property="x.lib.dir3" value="${env.BLACKTIE_BIN_DIR}/lib"><not><isset property="x.lib.dir3" /></not></condition>
+		<condition property="x.libs3" value="log4cxx"><not><isset property="x.libs3" /></not></condition>
 	</target>
 
 	<target name="server" depends="init,clean-server">
@@ -164,10 +166,12 @@
 			&includepath-main-dependencies;
 			<includepath path="${x.inc.dir}"/>
 			<includepath path="${x.inc.dir2}"/>
+			<includepath path="${x.inc.dir3}"/>
 
 			&libsets-main-dependencies;
 			<libset dir="${x.lib.dir}" libs="${x.libs}"/>
 			<libset dir="${x.lib.dir2}" libs="${x.libs2}"/>
+			<libset dir="${x.lib.dir3}" libs="${x.libs3}"/>
 		</cc>
 	</target>
 

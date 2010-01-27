@@ -36,6 +36,20 @@ log4cxx::LoggerPtr xarflogger(log4cxx::Logger::getLogger("TxLogXAFactory"));
 
 extern std::ostream& operator<<(std::ostream &os, const XID& xid);
 
+/**
+ * Convert an OTS tid (using the currently associated OTS transaction) into an XA XID:
+ * - the gtrid (global transaction id) is provided by the first bytes in tid
+ *   and the following bqual_length bytes correspond to the bqual (branch qualifier)
+ *   part of the XID
+ *
+ * Only the gtrid portion is of interest since BlackTie creates its own XIDs for
+ * driving RMs (but the gtrid must match the one the transaction manager is using).
+ * Refer to the method XAResourceManager::gen_xid for how the branch qualifier
+ * portion of the XID is generated.
+ *
+ * Refer to sections 4.2 and 7.3 of the XA spec and appendix B.2.2 of the OTS spec
+ * for details
+ */
 bool XAResourceManagerFactory::getXID(XID& xid)
 {
 	FTRACE(xarflogger, "ENTER");
@@ -135,24 +149,10 @@ static int _rmiter(ResourceManagerMap& rms, int (*func)(XAResourceManager *, XID
 
 	for (ResourceManagerMap::iterator i = rms.begin(); i != rms.end(); ++i) {
 		XAResourceManager * rm = i->second;
+		int rc;
 
 		LOG4CXX_TRACE(xarflogger,  (char *) rm->name() << ": xa flags=0x" << std::hex << rm->xa_flags());
-#if 0
-		// the next two hacks are for RMs that do not support TMMIGRATE
-		// if the calling thread created the transaction assume that it is an XATMI client
-		// and therefore will not be updating any local RMs
-		//if (isOriginator && (flags & TMMIGRATE) && (rm->xa_flags() & TMNOMIGRATE)) {
-		if (isOriginator && (rm->xa_flags() & TMNOMIGRATE)) {
-			LOG4CXX_DEBUG(xarflogger,  (char *) rm->name() << ": ignoring (TMNOMIGRATE is set)");
-			continue;
-		}
-
-		if ((rm->xa_flags() & TMNOMIGRATE) && (flags & TMJOIN)) {
-			LOG4CXX_DEBUG(xarflogger,  (char *) rm->name() << ": switching TMJOIN to TMNOFLAGS (TMNOMIGRATE is set)");
-			flags = TMNOFLAGS;  // will this ever be a resume
-		}
-#endif
-		int rc = func(rm, xid, (rm->xa_flags() & TMNOMIGRATE) && altflags != -1 ? altflags : flags);
+		rc = func(rm, xid, (rm->xa_flags() & TMNOMIGRATE) && altflags != -1 ? altflags : flags);
 
 		if (rc != XA_OK) {
 			LOG4CXX_DEBUG(xarflogger,  (char *) rm->name() << ": rm operation failed");
@@ -211,10 +211,21 @@ int XAResourceManagerFactory::endRMs(bool isOriginator, int flags, int altflags)
 	return _rmiter(rms_, _rm_end, isOriginator, flags, altflags);
 }
 
-// see if there are any transaction branches in need of revovery
+/**
+ * See if there are any transaction branches in need of revovery. This call is performed
+ * once at startup so there should be no transactions created during the recovery scan.
+ */
 void XAResourceManagerFactory::run_recovery()
 {
 	FTRACE(xarflogger, "ENTER");
+
+	/*
+	 * If the TM failed before updating its recovery log then there may RMs with pending
+	 * branches. Ask each registered RM to return all pending XIDs and if any belong to
+	 * the TM but weren't in the recovery log then rollback the branch:
+	 */
+	for (ResourceManagerMap::iterator i = rms_.begin(); i != rms_.end(); ++i)
+		i->second->recover();
 
 	/*
 	 * iterate through the recovery log and try to recover each branch
@@ -224,21 +235,13 @@ void XAResourceManagerFactory::run_recovery()
 		long rmid = ACE_OS::atol((char *) ((rrp->xid).data + (rrp->xid).gtrid_length));
 		XAResourceManager *rm = findRM(rmid);
 
-		LOG4CXX_DEBUG(xarflogger,  (char *) "recover_branches: looking for rm " << rmid);
 		if (rm != NULL) {
-			rm->recover(rrp->xid, rclog_.get_ior(*rrp));
+			if (rm->recover(rrp->xid, rclog_.get_ior(*rrp)))
+				rclog_.del_rec(rrp->xid);
 		} else {
-			LOG4CXX_DEBUG(xarflogger,  (char *) "recover_branches rm not found");
+			LOG4CXX_DEBUG(xarflogger,  (char *) "recover_branches rm " << rmid << " not found");
 		}
 	}
-
-	/*
-	 * If the TM failed before updating its recovery log then there may RMs with pending
-	 * branches. Ask each registered RM to return all pending XIDs and if any belong to
-	 * the TM then replay the branch:
-	 */
-	for (ResourceManagerMap::iterator i = rms_.begin(); i != rms_.end(); ++i)
-		i->second->recover();
 }
 
 void XAResourceManagerFactory::createRMs(CORBA_CONNECTION * connection) throw (RMException)
@@ -284,6 +287,9 @@ XAResourceManager * XAResourceManagerFactory::createRM(
 	throw (RMException)
 {
 	FTRACE(xarflogger, "ENTER");
+	AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
+	const char* serverId = env->getenv("BLACKTIE_SERVER_ID", "0");
+
 	// make sure the XA_RESOURCE XML config is valid
 	if (rmp->resourceMgrId == 0 || rmp->xasw == NULL || rmp->xalib == NULL) {
 		LOG4CXX_DEBUG(xarflogger, 
@@ -309,11 +315,8 @@ XAResourceManager * XAResourceManagerFactory::createRM(
 	}
 
 	void * symbol = lookup_symbol(rmp->xalib, rmp->xasw);
-	LOG4CXX_TRACE(xarflogger,  (char *) "got symbol");
 	ptrdiff_t tmp = reinterpret_cast<ptrdiff_t> (symbol);
-	LOG4CXX_TRACE(xarflogger,  (char *) "cast to ptr");
 	struct xa_switch_t * xa_switch = reinterpret_cast<struct xa_switch_t *>(tmp);
-	LOG4CXX_TRACE(xarflogger,  (char *) "cast to struct");
 
 	if (xa_switch == NULL) {
 		LOG4CXX_ERROR(xarflogger, 
@@ -324,14 +327,14 @@ XAResourceManager * XAResourceManagerFactory::createRM(
 
 	LOG4CXX_TRACE(xarflogger,  (char *) "creating xa rm: " << xa_switch->name);
 	XAResourceManager * a = new XAResourceManager(
-		connection, rmp->resourceName, rmp->openString, rmp->closeString, rmp->resourceMgrId, xa_switch, rclog_, poa_);
+		connection, rmp->resourceName, rmp->openString, rmp->closeString, rmp->resourceMgrId, ACE_OS::atol((char *) serverId),
+		xa_switch, rclog_, poa_);
+
 	LOG4CXX_TRACE(xarflogger,  (char *) "created xarm");
 
 	if (a != NULL)
 		rms_[rmp->resourceMgrId] = a;
 	
-	LOG4CXX_TRACE(xarflogger,  (char *) "assigned rms_");
-
 	return a;
 }
 

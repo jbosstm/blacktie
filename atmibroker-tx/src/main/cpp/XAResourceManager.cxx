@@ -15,15 +15,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#include <string.h>
 #include "XAResourceManager.h"
 #include "ThreadLocalStorage.h"
 #include "ace/OS_NS_time.h"
 #include "ace/OS.h"
 
+#include "AtmiBrokerEnv.h"
+
 log4cxx::LoggerPtr xarmlogger(log4cxx::Logger::getLogger("TxLogXAManager"));
 
 SynchronizableObject* XAResourceManager::lock = new SynchronizableObject();
-int XAResourceManager::counter = 0;
+long XAResourceManager::counter = 0;
 
 ostream& operator<<(ostream &os, const XID& xid)
 {
@@ -66,11 +69,12 @@ XAResourceManager::XAResourceManager(
 	const char * openString,
 	const char * closeString,
 	CORBA::Long rmid,
+	long sid,
 	struct xa_switch_t * xa_switch,
 	XARecoveryLog& log, PortableServer::POA_ptr poa) throw (RMException) :
 
 	poa_(poa), connection_(connection), name_(name), openString_(openString), closeString_(closeString),
-	rmid_(rmid), xa_switch_(xa_switch), rclog_(log) {
+	rmid_(rmid), sid_(sid), xa_switch_(xa_switch), rclog_(log) {
 
 	FTRACE(xarmlogger, "ENTER " << (char *) "new RM name: " << name << (char *) " openinfo: " <<
 		openString << (char *) " rmid: " << rmid_);
@@ -106,12 +110,16 @@ XAResourceManager::~XAResourceManager() {
 }
 
 /**
- * replace branch completion on an XID that needs recovering.
+ * replay branch completion on an XID that needs recovering.
  * The rc parameter is the CORBA object reference of the
  * Recovery Coordinator for the the branch represented by the XID
+ *
+ * return bool true if it is OK for the caller to delete the associated recovery record
  */
-int XAResourceManager::recover(XID& bid, const char* rc)
+bool XAResourceManager::recover(XID& bid, const char* rc)
 {
+	bool delRecoveryRec = true;
+
 	FTRACE(xarmlogger, "ENTER");
 
 	CORBA::Object_var ref = connection_->orbRef->string_to_object(rc);
@@ -119,13 +127,15 @@ int XAResourceManager::recover(XID& bid, const char* rc)
 
 	if (CORBA::is_nil(ref)) {
 		LOG4CXX_INFO(xarmlogger, (char *) "Invalid recovery coordinator ref: " << rc);
-		return -1;
+		return delRecoveryRec;
 	} else {
 		CosTransactions::RecoveryCoordinator_var rcv = CosTransactions::RecoveryCoordinator::_narrow(ref);
 
 		if (CORBA::is_nil(rcv)) {
 			LOG4CXX_INFO(xarmlogger, (char *) "Could not narrow recovery coordinator ref: " << rc);
 		} else {
+			int rv;
+
 			ra = new XAResourceAdaptorImpl(this, bid, bid, rmid_, xa_switch_, rclog_);
 
 			if (branches_[bid] != NULL) {
@@ -158,29 +168,117 @@ int XAResourceManager::recover(XID& bid, const char* rc)
 				 */
 				Status txs = rcv->replay_completion(v);
 
-				LOG4CXX_DEBUG(xarmlogger, (char *) "Recovery: TM reports transaction status: " << txs);
+				LOG4CXX_DEBUG(xarmlogger, (char *) "Recovery: TM reports transaction status: " << txs
+					<< " (" << CosTransactions::StatusActive);
 
 				switch (txs) {
+				case CosTransactions::StatusUnknown:
+					// the TM must have presumed abort and discarded the transaction (? is this always the case)
+					// fallthru to next case
 				case CosTransactions::StatusNoTransaction:
-					LOG4CXX_INFO(xarmlogger, (char *) "Recovery: TM reports no such transaction");
+					// the TM must have presumed abort and discarded the transaction
+					// fallthru to next case
+				case CosTransactions::StatusRolledBack:
+					// the TM has already rolled back the transaction
+
+					// presumed abort - force the branch to rollback
+					LOG4CXX_INFO(xarmlogger, (char *) "Recovery: rolling back branch for RM " << xa_switch_->name);
+					rv = xa_switch_->xa_rollback_entry(&bid, rmid_, TMNOFLAGS);
+
+					if (rv != XA_OK) {
+						// ? under what circumstances is it possible to recover from this error
+						LOG4CXX_INFO(xarmlogger, (char *) "Recovery: RM returned XA error " << rv);
+					}
+
+					break;
+				case CosTransactions::StatusCommitted:
+					LOG4CXX_INFO(xarmlogger, (char *) "Recovery: committing branch for RM " << xa_switch_->name);
+					rv = xa_switch_->xa_commit_entry(&bid, rmid_, TMNOFLAGS);
+
+					if (rv != XA_OK) {
+						// ? under what circumstances is it possible to recover from this error
+						LOG4CXX_INFO(xarmlogger, (char *) "Recovery: RM returned XA error " << rv);
+					}
+
+					break;
+				/*
+				 * Note that the BlackTie server should only try to recover XIDs it finds in its prepared log
+				 * so the following status codes should never occur:
+				 */
+				case CosTransactions::StatusActive:
+				case CosTransactions::StatusMarkedRollback:
+					LOG4CXX_INFO(xarmlogger, (char *) "Recovery: TM returned an unexpected status");
+					break;
+				/*
+				 * The remaining cases imply that the TM will eventually tell us how to complete the branch
+				 */
+				case CosTransactions::StatusPrepared:
+				case CosTransactions::StatusPreparing:
+				case CosTransactions::StatusRollingBack:
+				case CosTransactions::StatusCommitting:
+					// the XAResourceAdapterImpl corresponding to the branch will remove the recovery record
+					LOG4CXX_INFO(xarmlogger,
+						(char *) "Recovery: replaying transaction (TM reports prepared/preparing or completing)");
+					branches_[bid] = ra;
+					delRecoveryRec = false;
 					break;
 				default:
-					// TODO check spec to verify that the TM will replay phase 2 for all the other statuses
-					branches_[bid] = ra;
+					// shouldn't happend all cases have been dealt with
 					break;
 				}
 			} catch (CosTransactions::NotPrepared& e) {
-				LOG4CXX_INFO(xarmlogger, (char *) "Recovery: TM says the transaction as not prepared: " << e._name());
+				LOG4CXX_WARN(xarmlogger, (char *) "Recovery: TM says the transaction as not prepared: " << e._name());
 			} catch (const CORBA::SystemException& e) {
 				LOG4CXX_WARN(xarmlogger, (char*) "Recovery: replay error: " << e._name() << " minor: " << e.minor());
 			}
+
+			if (delRecoveryRec)
+				delete ra;
 		}
 	}
 
-//	if (ra)
-//		delete ra;
+	return delRecoveryRec;
+}
 
-	return XA_OK;	// means the caller is not allowed to clear the log
+/**
+ * check whether it is OK to recover a given XID
+ */
+bool XAResourceManager::isRecoverable(XID &xid)
+{
+	/*
+	 * if the XID is one of ours it will encode the RM id and the server id
+	 * in the first two longs of the XID data (see XAResourceManager::gen_xid)
+	 */
+	char *bdata = (char *) (xid.data + xid.gtrid_length);
+	char *sp = strchr(bdata, ':');
+	long rmid = ACE_OS::atol(bdata);	// the RM id
+	long sid = (sp == 0 || ++sp == 0 ? 0L : ACE_OS::atol(sp));	// the server id
+
+	/*
+	 * Only recover our own XIDs - the reason we need to check the server id is to
+	 * avoid the possibility of a server rolling back another servers active XID
+	 *
+	 * Note that this means that a recovery log can only be processed by server
+	 * with the correct id.
+	 *
+	 * The user can override this behaviour, so that any server or client can recover any log,
+	 * via an environment variable:
+	 */
+
+	if (AtmiBrokerEnv::get_instance()->getenv((char*) "BLACKTIE_RC_LOG_NAME", NULL) != NULL)
+		sid = sid_;
+
+	if (rmid == rmid_ && sid == sid_) {
+		/*
+		 * If this XID does not appear in the recovery log then the server must have failed
+		 * after calling prepare on the RM but before writing the recovery log in which case
+		 * it is OK to recover the XID
+		 */
+		if (rclog_.find_ior(xid) == 0)
+			return true;
+	}
+
+	return false;
 }
 
 /**
@@ -190,35 +288,28 @@ int XAResourceManager::recover(XID& bid, const char* rc)
  * - RM prepares but the the server fails before it can write to its transaction recovery log
  * In this case the RM will have a pending transaction branch which does not appear in
  * the recovery log. Calling xa_recover on the RM will return the 'missing' XID which the
- * recovery scan will replay.
+ * recovery scan can rollback.
  */
 int XAResourceManager::recover()
 {
 	XID xids[10];
 	long count = sizeof (xids) / sizeof (XID);
 	long flags = TMSTARTRSCAN;	// position the cursor at the start of the list
-	int nxids;
+	int i, nxids;
 
 	do {
 		// ask the RM for all XIDs that need recovering
-		int i;
-
 		nxids = xa_switch_->xa_recover_entry(xids, count, rmid_, flags);
+
 		flags = TMNOFLAGS;	// on the next call continue the scan from the current cursor position
 
 		for (i = 0; i < nxids; i++) {
-			// if the XID is one of ours it will encode the RM id:
-			long rmid = ACE_OS::atol((char *) (xids[i].data + xids[i].gtrid_length));
+			// check whether this id needs rolling back
+			if (isRecoverable(xids[i])) {
+				int rv = xa_switch_->xa_rollback_entry((XID *) (xids + i), rmid_, TMNOFLAGS);
 
-			// only recover our own XIDs:- the first long in the XID data contains the RM id
-			if (rmid == rmid_) {
-				int rv = xa_switch_->xa_commit_entry((XID *) (xids + i), rmid_, TMNOWAIT);
-
-				if (rv != XA_OK) {
-					LOG4CXX_INFO(xarmlogger, (char*) "Unable to recover xid " << xids[i] << " for RM " << rmid_);
-				} else {
-					LOG4CXX_INFO(xarmlogger, (char*) "Successfully recovered xid " << xids[i] << " for RM " << rmid_);
-				}
+				LOG4CXX_INFO(xarmlogger, (char*) "Recovery of xid " << xids[i] << " for RM " << rmid_ <<
+					 " returned XA status " << rv);
 			}
 		}
 	} while (count == nxids);
@@ -238,8 +329,13 @@ int XAResourceManager::createServant(XID& xid)
 		return XAER_NOTA;
 
 	try {
-		// create a servant to represent the new branch identified by xid
-		XID bid = gen_xid(rmid_, xid);
+		/*
+		 * Generate an XID for the new branch. The XID should have the same global transaction id
+		 * that the Transaction Manager generated but should have a different branch qualifier
+		 * (since we want to have loose coupling semantics).
+		 */
+		XID bid = gen_xid(rmid_, sid_, xid);
+		// Create a servant to represent the new branch.
 		ra = new XAResourceAdaptorImpl(this, xid, bid, rmid_, xa_switch_, rclog_);
 #if 0
 		// and activate it
@@ -393,13 +489,22 @@ int XAResourceManager::xa_flags()
 	return xa_switch_->flags;
 }
 
-XID XAResourceManager::gen_xid(long id, XID &gid)
+/**
+ * Generate a new XID. The xid should be unique within the currently
+ * running process. Uniqueness is assured by including
+ *
+ * - the global transaction identifier (gid)
+ * - the server id (sid)
+ * - a counter
+ * - the current time
+ */
+XID XAResourceManager::gen_xid(long id, long sid, XID &gid)
 {
 	FTRACE(xarmlogger, "ENTER");
 	XID xid = {gid.formatID, gid.gtrid_length};
 	int i;
+	long myCounter = -1;
 
-	int myCounter = -1;
 	lock->lock();
 	myCounter = ++counter;
 	lock->unlock();
@@ -407,10 +512,11 @@ XID XAResourceManager::gen_xid(long id, XID &gid)
 	for (i = 0; i < gid.gtrid_length; i++)
 		xid.data[i] = gid.data[i];
 
-	// TODO improve on the uniqueness (eg include IP)
 	ACE_Time_Value now = ACE_OS::gettimeofday();
-	// the first long in the XID data must contain the RM id
-	(void) sprintf(xid.data + i, "%ld:%d:%ld:%ld", id, myCounter, now.sec(), now.usec());
+	/*
+	 * The first two longs in the XID data should contain the RM id and server id respectively.
+	 */
+	(void) sprintf(xid.data + i, "%ld:%ld:%ld:%ld:%ld", id, sid, myCounter, (long) now.sec(), (long) now.usec());
 	xid.bqual_length = strlen(xid.data + i);
 
 	FTRACE(xarmlogger, "Leaving with XID: " << xid);

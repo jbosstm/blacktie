@@ -29,8 +29,8 @@ try {
 		XARecoveryLog log("test_recovery_log");
 
 		XID gid = {1L, 1L, 0L};
-		XID xid = XAResourceManager::gen_xid(200, gid);
-		XID xid2 = XAResourceManager::gen_xid(201, gid);
+		XID xid = XAResourceManager::gen_xid(200, 0L, gid);
+		XID xid2 = XAResourceManager::gen_xid(201, 0L, gid);
 		int rv, cnt = 0;
 		char* ior = (char *) "IOR:1";
 

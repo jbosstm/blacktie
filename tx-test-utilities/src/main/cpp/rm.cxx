@@ -24,7 +24,7 @@
 #include "ace/OS_NS_time.h"
 #include "ace/OS.h"
 
-static int counter = 0;
+static long counter = 0;
 static fault_t *faults = 0;
 struct xid_array {
 	int count;
@@ -32,7 +32,7 @@ struct xid_array {
 	XID xids[10];
 };
 
-static XID gen_xid(long id, XID &gid)
+static XID gen_xid(long id, long sid, XID &gid)
 {
 	XID xid = {gid.formatID, gid.gtrid_length};
 	int i;
@@ -42,7 +42,7 @@ static XID gen_xid(long id, XID &gid)
 
 	ACE_Time_Value now = ACE_OS::gettimeofday();
 	// the first long in the XID data must contain the RM id
-	(void) sprintf(xid.data + i, "%ld:%d:%ld:%ld", id, counter++, now.sec(), now.usec());
+	(void) sprintf(xid.data + i, "%ld:%ld:%ld:%ld:%ld", id, sid, ++counter, now.sec(), now.usec());
 	xid.bqual_length = strlen(xid.data + i);
 
 	return xid;
@@ -114,7 +114,7 @@ int dummy_rm_add_fault(fault_t *fault)
 		xids->count = larg;
 
 		for (i = 0; i < xids->count; i++) {
-			XID xid = gen_xid(fault->rmid, gid);
+			XID xid = gen_xid(fault->rmid, 0L, gid);
 			memcpy(&(xids->xids[i]), &xid, sizeof (XID));
 		}
 	}

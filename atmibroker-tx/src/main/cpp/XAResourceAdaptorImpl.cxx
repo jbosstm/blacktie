@@ -17,6 +17,8 @@
  */
 #include "XAResourceAdaptorImpl.h"
 
+#include "ace/OS_NS_stdlib.h"	/* TODO delete when done testing TEST_BLACKTIE_209 */
+
 log4cxx::LoggerPtr xaralogger(log4cxx::Logger::getLogger("TxLogXAAdaptor"));
 
 extern std::ostream& operator<<(std::ostream &os, const XID& xid);
@@ -89,6 +91,13 @@ Vote XAResourceAdaptorImpl::prepare()
 	}
 
 	if (rv2 == XA_OK) {
+#if TX_RC == 3
+		if (ACE_OS::getenv("TEST_BLACKTIE_209")) {
+			LOG4CXX_INFO(xaralogger, (char *) "Test BLACKTIE_209:- SEGV after prepare but before writing log");
+			char *s = 0;
+			*s = 0;
+		}
+#endif
 		// about to vote commit - remember the descision
 		rclog_.add_rec(bid_, rc_);
 		prepared_ = true;

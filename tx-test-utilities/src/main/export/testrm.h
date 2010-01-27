@@ -4,6 +4,7 @@
 #include "utilitiesMacro.h"
 
 enum XA_OP {
+        O_XA_NONE,
         O_XA_OPEN,
         O_XA_CLOSE,
         O_XA_START,

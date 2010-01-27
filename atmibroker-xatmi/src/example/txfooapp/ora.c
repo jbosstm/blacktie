@@ -210,12 +210,18 @@ int ora_access(test_req_t *req, test_req_t *resp)
 	sword status;
 
 	userlogc_debug( "TxLog ora_access op=%c data=%s db=%s", req->op, req->data, req->db);
+
 	/* opening an XA connection creates an environment and service context */
 	xaEnv = (struct OCIEnv *) xaoEnv((text *) req->db) ;
 	svcCtx = (struct OCISvcCtx *) xaoSvcCtx((text *) req->db);
 
-	if (!xaEnv || !svcCtx)
-		return fatal("TxLog ORA:- Unable to obtain env and/or service context!");
+	userlogc("TxLog ora_access env=%p svc=%p\n", xaEnv, svcCtx);
+
+	if (xaEnv == NULL)
+		return fatal("TxLog ORA:- Unable to obtain env!");
+
+	if (svcCtx == NULL)
+		return fatal("TxLog ORA:- Unable to obtain service context!");
 
 	/* initialise OCI handles */
 	if (OCI_SUCCESS != OCIHandleAlloc((dvoid *)xaEnv, (dvoid **)&errhp,

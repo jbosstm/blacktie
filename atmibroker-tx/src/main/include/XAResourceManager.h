@@ -33,12 +33,12 @@ class BLACKTIE_TX_DLL XAResourceManager
 {
 public:
 	XAResourceManager(CORBA_CONNECTION *, const char *, const char *, const char *,
-		CORBA::Long, struct xa_switch_t *, XARecoveryLog& log, PortableServer::POA_ptr poa) throw (RMException);
+		CORBA::Long, long, struct xa_switch_t *, XARecoveryLog& log, PortableServer::POA_ptr poa) throw (RMException);
 	virtual ~XAResourceManager();
 
 	int xa_start (XID *, long);
 	int xa_end (XID *, long);
-	int recover(XID& xid, const char* rc);	// recover a single XID (on a potentially remote RM)
+	bool recover(XID& xid, const char* rc);	// recover a single XID (on a potentially remote RM)
 	int recover();	// initiate a recovery scan on this RM
 
 	// return the resource id
@@ -49,7 +49,7 @@ public:
 	int xa_flags();
 
 	struct xa_switch_t * get_xa_switch() { return xa_switch_;}
-	static XID gen_xid(long rmid, XID &gid);
+	static XID gen_xid(long rmid, long sid, XID &gid);
 
 private:
 	typedef std::map<XID, XAResourceAdaptorImpl *, xid_cmp> XABranchMap;
@@ -61,6 +61,7 @@ private:
 	const char *openString_;
 	const char *closeString_;
 	CORBA::Long rmid_;
+	long sid_;
 	struct xa_switch_t * xa_switch_;
 	XARecoveryLog& rclog_;
 
@@ -69,8 +70,9 @@ private:
 	XAResourceAdaptorImpl * locateBranch(XID *);
 
 	void show_branches(const char *, XID *);
+	bool isRecoverable(XID &xid);
 
 	static SynchronizableObject* lock;
-	static int counter;
+	static long counter;
 };
 #endif // _XARESOURCEMANAGER_H

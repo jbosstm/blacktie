@@ -28,7 +28,7 @@ static void set_test_id(const char *id) {
 
 static int send_req(test_req_t *req, char **prbuf) {
 	long rsz = sizeof (test_req_t);
-	long callflags = TPNOTIME;
+	long callflags = 0L; /*TPNOTIME;*/
 	test_req_t *resp;
 	int rv = 0;
 
@@ -375,6 +375,13 @@ static int test5(int *cnt)
 static int testrc(int *cnt)
 {
 	int rv;
+#if TX_RC == 1
+	int fault_type = TX_TYPE_BEGIN_COMMIT_HALT;
+#elif TX_RC == 2
+	int fault_type = TX_TYPE_BEGIN_PREPARE_HALT;
+#else
+	int fault_type = TX_TYPE_BEGIN_COMMIT;
+#endif
 	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 
 	set_test_id("Test 5");
@@ -382,7 +389,7 @@ static int testrc(int *cnt)
 	if ((rv = tx_set_commit_return(TX_COMMIT_COMPLETED))) /* report heuristics */
 		userlogc_warn( "tx_set_commit_return error: %d" , rv);
 
-	if ((rv = db_op("INSERT 1", emps[4], '0', TX_TYPE_BEGIN_COMMIT_HALT, 0, REMOTE_ACCESS, 0, -1))) {
+	if ((rv = db_op("INSERT 1", emps[4], '0', fault_type, 0, REMOTE_ACCESS, 0, -1))) {
 		userlogc_warn( "tpcall error %d" , rv);
 		return rv;
 	}
@@ -419,6 +426,7 @@ int run_tests(product_t *prod_array)
 #endif
 		{0}
 	};
+
 	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 
 	prods = prod_array;

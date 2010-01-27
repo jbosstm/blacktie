@@ -19,15 +19,31 @@
 
 #ifdef TX_RC
 #include "testrm.h"
-
+#ifndef TX_RC_RMID
+#define TX_RC_RMID 202
+#endif
+/**
+ * See if the request corresponds to a request to inject faults during
+ * 2PC processing
+ */
 static void inject_fault(int xa_method, int type)
 {
 	userlogc( "TxLog inject_fault check type=0x%x", type);
-	if (type & TX_TYPE_HALT) {
-		fault_t fault1 = {0, 202, O_XA_COMMIT, XA_OK, F_HALT, (void*) 0};
 
-		userlogc( "TxLog inject_fault adding halt");
-		(void) dummy_rm_add_fault(&fault1);
+	if (type & TX_TYPE_HALT) {
+		fault_t fault = {0, TX_RC_RMID, O_XA_NONE, XA_OK, F_HALT, (void*) 0};
+
+		if (type & TX_TYPE_PREPARE) {
+			fault.op = O_XA_PREPARE;
+			userlogc( "TxLog inject_fault adding halt on prepare");
+		} else if (type & TX_TYPE_COMMIT) {
+			fault.op = O_XA_COMMIT;
+			userlogc( "TxLog inject_fault adding halt on commit");
+		} else {
+			userlogc( "TxLog inject_fault not adding fault ");
+		}
+
+		(void) dummy_rm_add_fault(&fault);
 	}
 }
 #else
@@ -47,6 +63,7 @@ void BAR(TPSVCINFO * svcinfo)
 	userlogc_debug( "TxLog %s service %s running", __FUNCTION__, TXTEST_SVC_NAME);
 	resp->status = -1;
 
+	// see if the client wishes to inject a fault during 2PC protocol processing
 	inject_fault(O_XA_COMMIT, req->txtype);
 
 	for (p = products; p->id != -1; p++) {

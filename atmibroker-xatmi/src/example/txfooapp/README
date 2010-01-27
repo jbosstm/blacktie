@@ -95,7 +95,9 @@ distribution. The linux versions have a .sh suffix and windows versions have a .
 
 generate_client accepts arguments that specify which files to compile (-Dclient.includes=...), location of any required
 include directories (-Dx.inc.dir=) and the location of any required libraries (-Dx.lib.dir= and -Dx.libs=).
-[If you need to pass in more include directories and libraries use -Dx.inc.dir2=..., -Dx.lib.dir2=... and -Dx.libs2=...].
+[If you need to pass in more include directories and libraries use -Dx.inc.dir2=..., -Dx.lib.dir2=... and -Dx.libs2=...
+If you need even more, for example testing against three different resource manager products such as when testing recovery
+then use -Dx.inc.dir3=..., -Dx.lib.dir3=... and -Dx.libs3=...].
 It also accepts a list of preprocessor macro definitions (-Dx.define="comma separated list of macro names"). Thus, for example,
 to compile the client for use with Oracle11g:
 
@@ -253,10 +255,13 @@ To test recovery you will need to link against a library that is only available 
 from source - the library is called libdummy-rm.so).
 
 When building the client and server define the macro TX_RC as shown below. When the client runs it sends a request to
-the server that causes the server to generate a segmentation fault after the prepare phase of the transaction commitment
+the server that causes the server to generate a segmentation fault during the commit phase of the transaction commitment
 protocol. This will ensure that there is a pending transaction in need of recovery. See the note below about running
 select statements showing that one of the database instances got the commit but the other one will have the commit pending
 (ie the record will not be present until the transaction is recovered).
+
+[Note, to test failure after prepare but before the commit phase runs set TX_RC=2 when compiling the client
+(an example client compile line is shown below). This scenario should result in the transaction eventually being rolled back].
 
 Restart the server. The BlackTie log (blacktie.log) should show the system recovering the failed transaction. The expected
 message sequence is:
@@ -277,7 +282,7 @@ Required Configuration Changes:
 -------------------------------
 
 The XA resource that generates the segmentation fault needs to be included in Environment.xml as follows:
-            <XA_RESOURCE>
+            <XA_RESOURCE configuration="linux">
                 <XA_RESOURCE_MGR_ID>202</XA_RESOURCE_MGR_ID>
                 <XA_RESOURCE_NAME>DummyDb</XA_RESOURCE_NAME>
                 <XA_OPEN_STRING></XA_OPEN_STRING>
@@ -288,6 +293,13 @@ The XA resource that generates the segmentation fault needs to be included in En
 
 Make sure that the XA_RESOURCE_MGR_ID lies between the two ORACLE Resource Manager ids. This will ensure that the
 ORACLE instance with the lower id will commit but the one with the higher id will not have committed.
+
+Similarly, if you need to test against DB2 then set the XA_RESOURCE_MGR_ID appropriately. For example, the default
+XA_RESOURCE_MGR_ID for testing against DB2 are 302 and 304 (see Environment.xml) then use the value 303.
+
+The example needs to be compiled with the preprocessor definition TX_RC_RMID set to the correct XA_RESOURCE_MGR_ID
+(the default is 202).
+
 
 The test inserts an employee with id 8004 into the emp table. After running the client:
 	select empno from emp where empno=8004; should return 1 record on the db with sid ORCL
@@ -323,6 +335,12 @@ $BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="
      -Dx.lib.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="dummy-rm" \
      -Dx.lib.dir2="$ORACLE_HOME/lib" -Dx.libs2="occi clntsh" \
      -Dx.define="ORACLE, TX_RC"
+
+[Note: If you need to test DB2 recovery you will need to add an extra preprocessor define (see comment above regarding the
+XA_RESOURCE_MGR_ID setting for the DummyDb resource manager):
+
+     -Dx.define="ORACLE, TX_RC,TX_RC_RMID=302" ]
+
 
 On Windows:
 %BLACKTIE_BIN_DIR%/bin/generate_client.bat -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci"      -Dx.inc.dir2="c:/blacktie/trunk/atmibroker-tx/target/cxx/test/include"      -Dx.lib.dir2="c:/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs2="dummy-rm"     -Dx.define="ORACLE, TX_RC"
