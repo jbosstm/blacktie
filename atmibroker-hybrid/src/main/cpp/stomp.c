@@ -26,6 +26,8 @@ typedef off_t	off64_t;
 #include "apr_strings.h"
 #include "stomp.h"
 
+#include "userlogc.h"
+
 /********************************************************************************
  * 
  * Used to establish a connection
@@ -42,7 +44,7 @@ APR_DECLARE(apr_status_t) stomp_connect(stomp_connection **connection_ref, const
 	//
 	connection = apr_pcalloc(pool, sizeof(stomp_connection));
 	if( connection == NULL ) {
-		printf("stomp_connect cannot allocate for pool APR_ENOMEM\n");
+		userlogc_warn("stomp_connect cannot allocate for pool APR_ENOMEM\n");
 		return APR_ENOMEM;
 	}
    
@@ -91,7 +93,7 @@ APR_DECLARE(apr_status_t) stomp_disconnect(stomp_connection **connection_ref)
 	stomp_connection *connection = *connection_ref;
    
    if( connection_ref == NULL || *connection_ref==NULL ) {
-      printf("stomp_disconnect no connection_ref APR_EGENERAL\n");
+      userlogc_warn("stomp_disconnect no connection_ref APR_EGENERAL\n");
       return APR_EGENERAL;
    }
    
@@ -127,7 +129,7 @@ APR_DECLARE(apr_status_t) stomp_write_buffer(stomp_connection *connection, const
       remaining -= length;
       //      size += length;
       if( rc != APR_SUCCESS ) {
-         printf("stomp_write_buffer could not apr_socket_send returning %d\n", rc);
+         userlogc_warn("stomp_write_buffer could not apr_socket_send returning %d\n", rc);
          return rc;
       }
 	}
@@ -150,13 +152,13 @@ APR_DECLARE(apr_status_t) stomp_read_line(stomp_connection *connection, char **d
    
    rc = apr_pool_create(&tpool, pool);
    if( rc != APR_SUCCESS ) {
-      printf("stomp_read_line could not apr_pool_create returning %d\n", rc);
+      userlogc_warn("stomp_read_line could not apr_pool_create returning %d\n", rc);
       return rc;
    }
       
    head = tail = apr_pcalloc(tpool, sizeof(data_block_list));
    if( head == NULL ) {
-      printf("stomp_read_line could not apr_pcalloc returning APR_ENOMEM\n");
+      userlogc_warn("stomp_read_line could not apr_pcalloc returning APR_ENOMEM\n");
       return APR_ENOMEM;
    }
 
@@ -175,12 +177,13 @@ APR_DECLARE(apr_status_t) stomp_read_line(stomp_connection *connection, char **d
          // Keep reading bytes till end of line
          if( tail->data[i-1]=='\n') {
             // Null terminate the string instead of having the newline
+        	userlogc_trace("Null terminating the string");
 		    tail->data[i-1] = 0;
 			break;
          } else if( tail->data[i-1]==0 ) {
 			// Encountered 0 before end of line
 			apr_pool_destroy(tpool);
-                        printf("stomp_read_line tail->data[i-1]==0 returning APR_EGENERAL\n");
+            userlogc_warn("stomp_read_line tail->data[i-1]==0 returning APR_EGENERAL\n");
 			return APR_EGENERAL;
 		 }
          
@@ -189,7 +192,7 @@ APR_DECLARE(apr_status_t) stomp_read_line(stomp_connection *connection, char **d
             tail->next = apr_pcalloc(tpool, sizeof(data_block_list));
             if( tail->next == NULL ) {
                apr_pool_destroy(tpool);
-               printf("stomp_read_line could not apr_pcalloc (2nd code block) returning APR_ENOMEM\n");
+               userlogc_warn("stomp_read_line could not apr_pcalloc (2nd code block) returning APR_ENOMEM\n");
                return APR_ENOMEM;
             }
             tail=tail->next;
@@ -204,7 +207,7 @@ APR_DECLARE(apr_status_t) stomp_read_line(stomp_connection *connection, char **d
    p = *data;
    if( p==NULL ) {
       apr_pool_destroy(tpool);
-      printf("stomp_read_line could not apr_pcalloc (3rd code block) returning APR_ENOMEM\n");
+      userlogc_warn("stomp_read_line could not apr_pcalloc (3rd code block) returning APR_ENOMEM\n");
       return APR_ENOMEM;
    }
 
@@ -232,13 +235,13 @@ APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection, char *
    
    rc = apr_pool_create(&tpool, pool);
    if( rc != APR_SUCCESS ) {
-      printf("stomp_read_buffer could not apr_pool_create returning %d\n", rc);
+      userlogc_warn("stomp_read_buffer could not apr_pool_create returning %d\n", rc);
       return rc;
    }
       
    head = tail = apr_pcalloc(tpool, sizeof(data_block_list));
    if( head == NULL ) {
-      printf("stomp_read_line could not apr_pcalloc returning APR_ENONMEM\n");
+      userlogc_warn("stomp_read_line could not apr_pcalloc returning APR_ENONMEM\n");
       return APR_ENOMEM;
    }
    
@@ -263,9 +266,9 @@ APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection, char *
             rc = apr_socket_recv(connection->socket, endline, &length);
             CHECK_SUCCESS;
             if( endline[0] != '\n' ) {
-               printf("stomp_read_buffer endline[0] != \\n returning APR_EGENERAL, length was %d\n", length);
-               printf("character as a decimal: %d\n", endline[0]);
-               printf("character as a character: %c\n", endline[0]);
+               userlogc_warn("stomp_read_buffer endline[0] != \\n returning APR_EGENERAL, length was %d\n", length);
+               userlogc_warn("character as a decimal: %d\n", endline[0]);
+               userlogc_warn("character as a character: %c\n", endline[0]);
                return APR_EGENERAL;
             }
             break;
@@ -276,7 +279,7 @@ APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection, char *
             tail->next = apr_pcalloc(tpool, sizeof(data_block_list));
             if( tail->next == NULL ) {
                apr_pool_destroy(tpool);
-               printf("stomp_read_buffer could not apr_pcalloc (2nd block) returning APR_ENONMEM\n");
+               userlogc_warn("stomp_read_buffer could not apr_pcalloc (2nd block) returning APR_ENONMEM\n");
                return APR_ENOMEM;
             }
             tail=tail->next;
@@ -291,7 +294,7 @@ APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection, char *
    p = *data;
    if( p==NULL ) {
       apr_pool_destroy(tpool);
-      printf("stomp_read_buffer could not apr_pcalloc (3rd block) returning APR_ENONMEM\n");
+      userlogc_warn("stomp_read_buffer could not apr_pcalloc (3rd block) returning APR_ENONMEM\n");
       return APR_ENOMEM;
    }
    
@@ -385,13 +388,13 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection, stomp_frame *
       
    f = apr_pcalloc(pool, sizeof(stomp_frame));
    if( f == NULL ) {
-      printf("stomp_read returning APR_ENONMEM\n");
+      userlogc_warn("stomp_read returning APR_ENONMEM\n");
       return APR_ENOMEM;
    }
    
    f->headers = apr_hash_make(pool);
    if( f->headers == NULL ) {
-      printf("stomp_read returning 2nd APR_ENONMEM\n");
+     userlogc_warn("stomp_read returning 2nd APR_ENONMEM\n");
      return APR_ENOMEM;
    }
          
@@ -426,7 +429,7 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection, stomp_frame *
             p2 = strstr(p,":");
             if( p2 == NULL ) {
                // Expected at 1 : to delimit the key from the value.
-               printf("stomp_read returning APR_EGENERAL\n");
+               userlogc_warn("stomp_read returning APR_EGENERAL\n");
                return APR_EGENERAL;
             }
             
@@ -458,7 +461,7 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection, stomp_frame *
 			  rc = apr_socket_recv(connection->socket, endbuffer, &length);
 			  CHECK_SUCCESS;
 			  if(length != 2 || endbuffer[0] != '\0' || endbuffer[1] != '\n') {
-				  printf("stomp_read returning 2nd APR_EGENERAL\n");
+				  userlogc_warn("stomp_read returning 2nd APR_EGENERAL\n");
 				  return APR_EGENERAL;
                           }
 		  }
