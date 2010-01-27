@@ -43,6 +43,48 @@ void TestStompConnection::tearDown() {
 	AtmiBrokerEnv::discard_instance();
 }
 
+void TestStompConnection::testLibStomp() {
+	userlogc("TestStompConnection::test");
+
+	Destination* destination = serverConnection->createDestination(
+			(char*) "JAVA_Converse");
+
+	// THIS IS THE INITIAL EXCHANCE
+	userlogc("Iterating");
+	for (int i = 0; i < 100; i++) {
+		Session* client = clientConnection->createSession(1,
+				(char*) "JAVA_Converse");
+		MESSAGE clientSend;
+		char* clientData = (char*) malloc(6);
+		memset(clientData, '\0', 6);
+		strcpy(clientData, "hello");
+		clientSend.data = clientData;
+		clientSend.correlationId = 0;
+		clientSend.flags = 0;
+		clientSend.len = 5;
+		clientSend.rval = 0;
+		clientSend.rcode = 0;
+		clientSend.replyto = client->getReplyTo();
+		clientSend.type = (char*) "X_OCTET";
+		clientSend.subtype = (char*) "";
+		clientSend.ttl = 10 * 1000;
+		clientSend.control = NULL;
+		client->send(clientSend);
+		MESSAGE serviceReceived = destination->receive(0);
+		CPPUNIT_ASSERT(serviceReceived.received == true);
+		CPPUNIT_ASSERT(strcmp(clientSend.type, serviceReceived.type) == 0);
+		CPPUNIT_ASSERT(clientSend.len == serviceReceived.len);
+		free(clientData);
+		free(serviceReceived.data);
+		//		free(serviceReceived.type); - STOMP ALLOCATED - MUST NOT FREE
+		//		free(serviceReceived.subtype); - STOMP ALLOCATED - MUST NOT FREE
+		clientConnection->closeSession(1);
+	}
+
+	userlogc("Iterated");
+	serverConnection->destroyDestination(destination);
+}
+
 void TestStompConnection::test() {
 	userlogc("TestStompConnection::test");
 
@@ -71,6 +113,7 @@ void TestStompConnection::test() {
 		clientSend.control = NULL;
 		client->send(clientSend);
 		MESSAGE serviceReceived = destination->receive(0);
+		CPPUNIT_ASSERT(serviceReceived.received == true);
 		CPPUNIT_ASSERT(strcmp(clientSend.type, serviceReceived.type) == 0);
 		CPPUNIT_ASSERT(clientSend.len == serviceReceived.len);
 		free(clientData);
@@ -100,6 +143,7 @@ void TestStompConnection::test() {
 		serviceSend.control = NULL;
 		service->send(serviceSend);
 		MESSAGE clientReceived = client->receive(0);
+		CPPUNIT_ASSERT(clientReceived.received == true);
 		CPPUNIT_ASSERT(strcmp(serviceSend.type, clientReceived.type) == 0);
 		CPPUNIT_ASSERT(serviceSend.len == clientReceived.len);
 		free(serviceData);
