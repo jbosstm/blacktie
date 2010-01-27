@@ -263,7 +263,7 @@ APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection, char *
             rc = apr_socket_recv(connection->socket, endline, &length);
             CHECK_SUCCESS;
             if( endline[0] != '\n' ) {
-               printf("stomp_read_buffer endline[0] != \\n returning APR_EGENERAL\n");
+               printf("stomp_read_buffer endline[0] != \\n returning APR_EGENERAL, length was %d\n", length);
                return APR_EGENERAL;
             }
             break;
