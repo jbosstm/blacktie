@@ -37,11 +37,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>stomp.contrib</groupId>
-			<artifactId>stomp</artifactId>
-			<version>trunk-85</version>
-		</dependency>
-		<dependency>
 			<groupId>apr-1.contrib</groupId>
 			<artifactId>apr-1</artifactId>
 			<version>1.3.3</version>
