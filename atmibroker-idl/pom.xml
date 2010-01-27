@@ -63,26 +63,10 @@
 	</build>
 
 	<dependencies>
-		<!-- START JACORB -->
-		<dependency>
-			<groupId>avalon-framework</groupId>
-			<artifactId>avalon-framework</artifactId>
-			<version>4.1.5</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>logkit</groupId>
-			<artifactId>logkit</artifactId>
-			<version>1.2</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jacorb</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>provided</scope>
-		</dependency>
-		<!-- END JACORB -->
+	        <dependency>
+        		<groupId>org.jboss.integration</groupId>
+			<artifactId>jboss-corba-ots-spi</artifactId>
+        	</dependency>
 	</dependencies>
 
 	<profiles>

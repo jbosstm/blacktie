@@ -88,12 +88,6 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-javaee</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.15</version>
@@ -116,122 +110,77 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- START EJB -->
+		<dependency>
+			<groupId>org.jboss.javaee</groupId>
+			<artifactId>jboss-javaee</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- END EJB -->
 		<!-- START ORB -->
 		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jacorb</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>avalon-framework</groupId>
+			<groupId>apache-avalon</groupId>
 			<artifactId>avalon-framework</artifactId>
 			<version>4.1.5</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>logkit</groupId>
+			<groupId>apache-avalon-logkit</groupId>
 			<artifactId>logkit</artifactId>
 			<version>1.2</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<!-- END ORB -->
 		<!-- START JTS -->
 		<dependency>
-			<groupId>jboss</groupId>
+			<groupId>jboss.jbossts</groupId>
 			<artifactId>jbossjts</artifactId>
-			<version>5.1.0.GA</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>jboss</groupId>
+			<groupId>jboss.jbossts</groupId>
 			<artifactId>jbossjts-jacorb</artifactId>
-			<version>5.1.0.GA</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>jboss</groupId>
+			<groupId>jboss.jbossts</groupId>
 			<artifactId>jbossts-common</artifactId>
-			<version>5.1.0.GA</version>
+			<scope>provided</scope>
 		</dependency>
 		<!-- END JTS -->
-
 		<!-- START JMS -->
 		<dependency>
-			<groupId>jboss</groupId>
+			<groupId>jboss.messaging</groupId>
 			<artifactId>jboss-messaging-client</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jbossall-client</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-aop-client</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>javassist</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>trove</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
+			<groupId>org.jboss.naming</groupId>
 			<artifactId>jnp-client</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-logging-spi</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
+			<groupId>org.jboss.aop</groupId>
+			<artifactId>jboss-aop</artifactId>
+			<classifier>client</classifier>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>jboss</groupId>
+			<groupId>org.jboss.remoting</groupId>
 			<artifactId>jboss-remoting</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-common-core</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-mdr</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
+			<groupId>concurrent</groupId>
 			<artifactId>concurrent</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
+			<version>1.3.4</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>jboss</groupId>
+			<groupId>org.jboss.serialization</groupId>
 			<artifactId>jboss-serialization</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-logging-log4j</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
+			<version>1.1.0.Beta1</version>
+			<scope>provided</scope>
 		</dependency>
 		<!-- END JMS -->
 		<!-- START TEST -->

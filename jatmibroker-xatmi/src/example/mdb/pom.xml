@@ -19,6 +19,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
+	<parent>
+		<groupId>org.jboss.jbossas</groupId>
+		<artifactId>jboss-as-component-matrix</artifactId>
+		<version>5.1.0.GA</version>
+	</parent>
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>example-mdb-xatmi-service</artifactId>
@@ -26,6 +32,20 @@
 	<packaging>jar</packaging>
 
 	<name>Blacktie XATMI MDB Example</name>
+
+	<repositories>
+		<repository>
+			<id>repository.jboss.org</id>
+			<name>JBoss Releases Repository</name>
+			<url>http://repository.jboss.org/maven2</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
 	<build>
 		<plugins>
@@ -127,6 +147,21 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>org.jboss.blacktie</groupId>
+			<artifactId>atmibroker-idl</artifactId>
+			<version>2.0-MR2-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>ace.contrib</groupId>
+					<artifactId>ace</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>apache-log4cxx.contrib</groupId>
+		                        <artifactId>log4cxx</artifactId>
+				</exclusion>				
+			</exclusions>
+		</dependency>
+		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.15</version>
@@ -149,38 +184,17 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>blacktie-xsd</artifactId>
-			<version>2.0-MR2-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>atmibroker-idl</artifactId>
-			<version>2.0-MR2-SNAPSHOT</version>
-			<exclusions>
-				<exclusion>
-					<groupId>ace.contrib</groupId>
-					<artifactId>ace</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>apache-log4cxx.contrib</groupId>
-		                        <artifactId>log4cxx</artifactId>
-				</exclusion>				
-			</exclusions>
-		</dependency>
+
 
 		<dependency>
-			<groupId>jboss</groupId>
+			<groupId>org.jboss.javaee</groupId>
 			<artifactId>jboss-javaee</artifactId>
-			<version>5.1.0.GA</version>
 			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
-			<groupId>jboss</groupId>
+			<groupId>org.jboss.ejb3</groupId>
 			<artifactId>jboss-ejb3-ext-api</artifactId>
-			<version>5.1.0.GA</version>
+			<version>1.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -191,129 +205,74 @@
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
-        <!-- Transaction dependencies -->
-        <dependency>
-                <groupId>jboss</groupId>
-                <artifactId>jbossjts</artifactId>
-                <version>5.1.0.GA</version>
-        </dependency>
-        <dependency>
-                <groupId>jboss</groupId>
-                <artifactId>jbossjts-jacorb</artifactId>
-                <version>5.1.0.GA</version>
-                <scope>test</scope>
-        </dependency>
-        <dependency>
-                <groupId>jboss</groupId>
-                <artifactId>jbossts-common</artifactId>
-                <version>5.1.0.GA</version>
-                <scope>test</scope>
-        </dependency>
-        <dependency>
-                <groupId>jboss</groupId>
-                <artifactId>jacorb</artifactId>
-                <version>5.1.0.GA</version>
-                <scope>test</scope>
-        </dependency>
-	<dependency>
-		<groupId>avalon-framework</groupId>
-		<artifactId>avalon-framework</artifactId>
-		<version>4.1.5</version>
-		<scope>test</scope>
-	</dependency>
-	<dependency>
-		<groupId>logkit</groupId>
-		<artifactId>logkit</artifactId>
-		<version>1.2</version>
-		<scope>test</scope>
-	</dependency>
-        <!-- End transaction dependencies -->
-
 		<!-- START JBOSS -->
+		<!-- START ORB -->
 		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-javaee</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>provided</scope>
+			<groupId>apache-avalon</groupId>
+			<artifactId>avalon-framework</artifactId>
+			<version>4.1.5</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>jboss</groupId>
+			<groupId>apache-avalon-logkit</groupId>
+			<artifactId>logkit</artifactId>
+			<version>1.2</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- END ORB -->
+		<!-- START JTS -->
+		<dependency>
+			<groupId>jboss.jbossts</groupId>
+			<artifactId>jbossjts</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jboss.jbossts</groupId>
+			<artifactId>jbossjts-jacorb</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jboss.jbossts</groupId>
+			<artifactId>jbossts-common</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- END JTS -->
+		<!-- START JMS -->
+		<dependency>
+			<groupId>jboss.messaging</groupId>
 			<artifactId>jboss-messaging-client</artifactId>
-			<version>5.1.0.GA</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jbossall-client</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-aop-client</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>javassist</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>trove</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
+			<groupId>org.jboss.naming</groupId>
 			<artifactId>jnp-client</artifactId>
-			<version>5.1.0.GA</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-logging-spi</artifactId>
-			<version>5.1.0.GA</version>
+			<groupId>org.jboss.aop</groupId>
+			<artifactId>jboss-aop</artifactId>
+			<classifier>client</classifier>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>jboss</groupId>
+			<groupId>org.jboss.remoting</groupId>
 			<artifactId>jboss-remoting</artifactId>
-			<version>5.1.0.GA</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-common-core</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-mdr</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
+			<groupId>concurrent</groupId>
 			<artifactId>concurrent</artifactId>
-			<version>5.1.0.GA</version>
+			<version>1.3.4</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>jboss</groupId>
+			<groupId>org.jboss.serialization</groupId>
 			<artifactId>jboss-serialization</artifactId>
-			<version>5.1.0.GA</version>
+			<version>1.1.0.Beta1</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-logging-log4j</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
+		<!-- END JMS -->
+
 		<!-- END JBOSS -->
 	</dependencies>
 </project>

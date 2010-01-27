@@ -155,113 +155,26 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-javaee</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-ejb3-ext-api</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<!--  Test -->
+		<!--  START TEST -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- START JBOSS -->
+		<!--  END TEST -->
 		<dependency>
-			<groupId>jboss</groupId>
+			<groupId>org.jboss.javaee</groupId>
 			<artifactId>jboss-javaee</artifactId>
-			<version>5.1.0.GA</version>
 			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-messaging-client</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
+			<groupId>org.jboss.ejb3</groupId>
+			<artifactId>jboss-ejb3-ext-api</artifactId>
+			<version>1.0.0</version>
+			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jbossall-client</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-aop-client</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>javassist</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>trove</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jnp-client</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-logging-spi</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-remoting</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-common-core</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-mdr</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>concurrent</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-serialization</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-logging-log4j</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<!-- END JBOSS -->
+
 	</dependencies>
 </project>

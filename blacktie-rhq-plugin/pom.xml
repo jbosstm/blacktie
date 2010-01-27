@@ -44,6 +44,20 @@
 			<artifactId>rhq-core-domain</artifactId>
 			<version>${rhq.version}</version>
 			<scope>provided</scope> <!-- provided by the agent/plugin-container -->
+			<exclusions>
+				<exclusion>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.xml.bind</groupId>
+					<artifactId>jaxb-impl</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.xml.stream</groupId>
+					<artifactId>stax-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -51,6 +65,20 @@
 			<artifactId>rhq-core-plugin-api</artifactId>
 			<version>${rhq.version}</version>
 			<scope>provided</scope> <!-- provided by the agent/plugin-container -->
+			<exclusions>
+				<exclusion>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.xml.bind</groupId>
+					<artifactId>jaxb-impl</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.xml.stream</groupId>
+					<artifactId>stax-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -93,6 +121,12 @@
 			<artifactId>commons-logging</artifactId>
 			<version>1.1</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>servlet-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!--
@@ -113,94 +147,12 @@
 		</dependency>
 		-->
 
+
+
 		<!-- Define any third-party dependencies your plugin has here. -->
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>jatmibroker-xatmi</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-javaee</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-messaging-client</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jbossall-client</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-aop-client</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>javassist</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>trove</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jnp-client</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-logging-spi</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-remoting</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-common-core</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-mdr</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>concurrent</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-serialization</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-logging-log4j</artifactId>
-			<version>5.1.0.GA</version>
-			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
@@ -222,39 +174,25 @@
 				<version>${rhq.version}</version>
 			</plugin>
 
-			<!--
-			If your plugin has third-party jar dependencies that are not already available when deployed in the plugin
-			container, you can package these jars in your plugin. They go in your plugin jar's "lib" directory.
-			Uncomment the maven plugin definition below and define one or more jar files (aka "artifactItem" elements)
-			that you want to include in your plugin jar.
-			-->
-			<!--
 			<plugin>
-				<artifactId>maven-dependency-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>1.0-alpha-4</version>
 				<executions>
 					<execution>
-						<id>copy-dependencies</id>
-						<phase>process-resources</phase>
+						<id>ban-bad-dependencies</id>
 						<goals>
-							<goal>copy</goal>
+							<goal>enforce</goal>
 						</goals>
 						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>your-third-party-dep-group</groupId>
-									<artifactId>your-third-party-dep-artifact</artifactId>
-									<version>your-third-party-dep-version</version>
-								</artifactItem>
-							</artifactItems>
-							<outputDirectory>${project.build.outputDirectory}/lib</outputDirectory>
+							<skip>true</skip>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-			-->
-
 		</plugins>
 	</build>
+
 
 	<profiles>
 		<profile>

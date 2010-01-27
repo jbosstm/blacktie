@@ -659,7 +659,7 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(
 			(char*) "loadfile: file %s is %d long" << aDescriptorFileName
 					<< s.st_size);
 
-	char *buf = (char *) malloc(sizeof(char) * s.st_size);
+	char *buf = (char *) malloc(sizeof(char) * s.st_size + 1);
 	if (!buf) {
 		/* malloc failed */
 		LOG4CXX_ERROR(
@@ -668,9 +668,7 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(
 						<< aDescriptorFileName);
 		return false;
 	}
-	for (unsigned int i = 0; i < sizeof(buf); i++)
-		*(buf + i) = '\0';
-	//memcpy(buf,'\0',s.st_size);
+	memset(buf, '\0', s.st_size + 1);
 	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml,
 			(char*) "loadfile: Allocated enough memory to load file %d"
 					<< s.st_size);

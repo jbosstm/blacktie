@@ -81,6 +81,7 @@ stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 		LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc << ": " << errbuf);
 		//		free(errbuf);
 		disconnect(connection, pool);
+		connection = NULL;
 	} else {
 		if (timeout > 0) {
 			apr_socket_opt_set(connection->socket, APR_SO_NONBLOCK, 0);
@@ -109,6 +110,7 @@ stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 					<< errbuf);
 			//			free(errbuf);
 			disconnect(connection, pool);
+			connection = NULL;
 		} else {
 			LOG4CXX_DEBUG(logger, "Reading Response.");
 			stomp_frame * frameRead = NULL;
@@ -122,6 +124,7 @@ stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 							<< ": " << errbuf);
 					//					free(errbuf);
 					disconnect(connection, pool);
+					connection = NULL;
 				} else {
 					LOG4CXX_DEBUG(logger, "Response: " << frameRead->command
 							<< ", " << frameRead->body);
@@ -129,6 +132,8 @@ stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 				}
 			} catch (...) {
 				LOG4CXX_ERROR(logger, (char*) "Could not read from socket");
+				disconnect(connection, pool);
+				connection = NULL;
 			}
 		}
 	}
