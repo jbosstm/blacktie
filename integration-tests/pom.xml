@@ -106,7 +106,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>atmibroker-xatmi</artifactId>
+			<classifier>${bpa}</classifier><artifactId>atmibroker-xatmi</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

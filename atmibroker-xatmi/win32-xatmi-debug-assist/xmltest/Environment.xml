@@ -40,7 +40,7 @@
 			<XA_OPEN_STRING></XA_OPEN_STRING>
 			<XA_CLOSE_STRING></XA_CLOSE_STRING>
 			<XA_SWITCH>testxasw</XA_SWITCH>
-			<XA_LIB_NAME>xmltestdummy-rm.xmltest</XA_LIB_NAME>
+			<XA_LIB_NAME>xmltesttx-test-utilities.xmltest</XA_LIB_NAME>
 		</XA_RESOURCE>
 	</XA_RESOURCES>
 	<ORB

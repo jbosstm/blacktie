@@ -43,11 +43,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>atmibroker-tx</artifactId>
+			<classifier>${bpa}</classifier><artifactId>atmibroker-tx</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>atmibroker-core</artifactId>
+			<classifier>${bpa}</classifier><artifactId>atmibroker-core</artifactId>
 		</dependency>
 	</dependencies>
 

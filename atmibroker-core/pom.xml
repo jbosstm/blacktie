@@ -27,15 +27,19 @@
 	<artifactId>atmibroker-core</artifactId>
 	<name>Blacktie Core C++ Implementation</name>
 	<packaging>jar</packaging>
-	
+
 	<profiles>
 		<profile>
 			<id>windows</id>
-			<activation> <os> <family>windows</family> </os> </activation>
+			<activation>
+				<os>
+					<family>windows</family>
+				</os>
+			</activation>
 			<properties>
 				<export.dll>_BLACKTIE_CORE_DLL</export.dll>
 			</properties>
-		</profile>	      
+		</profile>
 	</profiles>
 
 	<properties>
@@ -55,6 +59,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
+			<classifier>${bpa}</classifier>
 			<artifactId>atmibroker-idl</artifactId>
 		</dependency>
 		<dependency>
@@ -70,7 +75,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>dummy-rm</artifactId>
+			<classifier>${bpa}</classifier>
+			<artifactId>tx-test-utilities</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

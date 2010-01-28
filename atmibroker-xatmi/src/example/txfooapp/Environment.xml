@@ -50,7 +50,7 @@
                 <XA_OPEN_STRING></XA_OPEN_STRING>
                 <XA_CLOSE_STRING></XA_CLOSE_STRING>
                 <XA_SWITCH>testxasw</XA_SWITCH>
-                <XA_LIB_NAME>libdummy-rm.so</XA_LIB_NAME>
+                <XA_LIB_NAME>libtx-test-utilities.so</XA_LIB_NAME>
             </XA_RESOURCE>
             -->
 		<XA_RESOURCE configuration="linux">

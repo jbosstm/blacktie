@@ -38,12 +38,12 @@
 
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>atmibroker-core</artifactId>
+			<classifier>${bpa}</classifier><artifactId>atmibroker-core</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>dummy-rm</artifactId>
+			<classifier>${bpa}</classifier><artifactId>tx-test-utilities</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

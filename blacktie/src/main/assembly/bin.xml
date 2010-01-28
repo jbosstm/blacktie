@@ -15,7 +15,7 @@
 		02110-1301, USA.
 	-->
 <assembly>
-	<id>bin</id>
+	<id>${bpa}-bin</id>
 	<includeBaseDirectory>true</includeBaseDirectory>
 	<formats>
 		<format>tar.gz</format>

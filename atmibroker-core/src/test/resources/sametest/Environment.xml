@@ -37,7 +37,7 @@
 			<XA_OPEN_STRING></XA_OPEN_STRING>
 			<XA_CLOSE_STRING></XA_CLOSE_STRING>
 			<XA_SWITCH>testxasw</XA_SWITCH>
-			<XA_LIB_NAME>libdummy-rm.so</XA_LIB_NAME>
+			<XA_LIB_NAME>libtx-test-utilities.so</XA_LIB_NAME>
 		</XA_RESOURCE>
 		<XA_RESOURCE configuration="linux">
 			<XA_RESOURCE_MGR_ID>102</XA_RESOURCE_MGR_ID>
@@ -45,7 +45,7 @@
 			<XA_OPEN_STRING></XA_OPEN_STRING>
 			<XA_CLOSE_STRING></XA_CLOSE_STRING>
 			<XA_SWITCH>testxasw</XA_SWITCH>
-			<XA_LIB_NAME>libdummy-rm.so</XA_LIB_NAME>
+			<XA_LIB_NAME>libtx-test-utilities.so</XA_LIB_NAME>
 		</XA_RESOURCE>
 		<XA_RESOURCE configuration="win32">
 			<XA_RESOURCE_MGR_ID>100</XA_RESOURCE_MGR_ID>
@@ -53,7 +53,7 @@
 			<XA_OPEN_STRING></XA_OPEN_STRING>
 			<XA_CLOSE_STRING></XA_CLOSE_STRING>
 			<XA_SWITCH>testxasw</XA_SWITCH>
-			<XA_LIB_NAME>dummy-rm.dll</XA_LIB_NAME>
+			<XA_LIB_NAME>tx-test-utilities.dll</XA_LIB_NAME>
 		</XA_RESOURCE>
 		<XA_RESOURCE configuration="win32">
 			<XA_RESOURCE_MGR_ID>102</XA_RESOURCE_MGR_ID>
@@ -61,7 +61,7 @@
 			<XA_OPEN_STRING></XA_OPEN_STRING>
 			<XA_CLOSE_STRING></XA_CLOSE_STRING>
 			<XA_SWITCH>testxasw</XA_SWITCH>
-			<XA_LIB_NAME>dummy-rm.dll</XA_LIB_NAME>
+			<XA_LIB_NAME>tx-test-utilities.dll</XA_LIB_NAME>
 		</XA_RESOURCE>
 	</XA_RESOURCES>
 	<ORB
@@ -72,11 +72,11 @@
 	<ENV_VARIABLES>
 		<ENV_VARIABLE configuration="linux">
 			<NAME>test-lib</NAME>
-			<VALUE>libdummy-rm.so</VALUE>
+			<VALUE>libtx-test-utilities.so</VALUE>
 		</ENV_VARIABLE>
 		<ENV_VARIABLE configuration="win32">
 			<NAME>test-lib</NAME>
-			<VALUE>dummy-rm.dll</VALUE>
+			<VALUE>tx-test-utilities.dll</VALUE>
 		</ENV_VARIABLE>
 		<ENV_VARIABLE>
 			<NAME>test-symbol</NAME>
