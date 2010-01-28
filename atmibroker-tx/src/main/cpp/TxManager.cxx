@@ -107,16 +107,38 @@ atmibroker::tx::TxControl *TxManager::currentTx(const char *msg)
 	return tx;
 }
 
+CosTransactions::Control_ptr TxManager::create_tx()
+{
+	CosTransactions::Control_ptr ctrl = NULL;
+
+	if (!CORBA::is_nil(_txfac)) {
+		try {
+			ctrl = _txfac->create(_timeout);
+		} catch (CORBA::SystemException & e) {
+			LOG4CXX_DEBUG(txmlogger, (char*) "Could not create tx: "
+				<< e._name() << " minor code: " << e.minor());
+		}
+	}
+
+	return ctrl;
+}
+
 int TxManager::begin(void)
 {
 	TX_GUARD((_isOpen && !getSpecific(TSS_KEY)));
 
 	// start a new transaction
-	CosTransactions::Control_ptr ctrl = _txfac->create(_timeout);
+	CosTransactions::Control_ptr ctrl = create_tx();
 
 	if (CORBA::is_nil(ctrl)) {
-		LOG4CXX_WARN(txmlogger, (char*) "begin: create returned nil control");
-		return TX_ERROR;
+		if (open_trans_factory() == TX_OK)
+			ctrl = create_tx();
+
+		if (CORBA::is_nil(ctrl)) {
+			LOG4CXX_WARN(txmlogger, (char*) "Unable to start a new transaction (nil control)");
+
+			return TX_ERROR;
+		}
 	}
 
 	TxControl *tx = new TxControl(ctrl, ACE_OS::thr_self());
@@ -131,7 +153,11 @@ int TxManager::begin(void)
 
 			if (!CORBA::is_nil(term))
 				term->rollback();
+		} catch (CORBA::SystemException & e) {
+			LOG4CXX_DEBUG(txmlogger, (char*) "Could not terminate tx after tx_resume failure: "
+				<< e._name() << " minor code: " << e.minor());
 		} catch (...) {
+			LOG4CXX_DEBUG(txmlogger, (char*) "Could not terminate tx after tx_resume failure (generic exception)");
 		}
 
 		delete tx;
@@ -278,6 +304,36 @@ int TxManager::info(void *info)
     return (tx != NULL ? 1 : 0);
 }
 
+int TxManager::open_trans_factory(void)
+{
+	char *transFactoryId = orbConfig.transactionFactoryName;
+
+	if (transFactoryId == NULL || strlen(transFactoryId) == 0) {
+		LOG4CXX_ERROR(txmlogger, (char*) "Please set the TRANS_FACTORY_ID env variable");
+		return TX_ERROR;
+	}
+
+	try {
+		CosNaming::Name *name = _connection->default_ctx->to_name(transFactoryId);
+		LOG4CXX_DEBUG(txmlogger, (char*) "resolving Tx Fac Id: " << transFactoryId);
+		CORBA::Object_var obj = _connection->default_ctx->resolve(*name);
+		delete name;
+		LOG4CXX_DEBUG(txmlogger, (char*) "resolved OK: " << (void*) obj);
+		_txfac = CosTransactions::TransactionFactory::_narrow(obj);
+		LOG4CXX_DEBUG(txmlogger, (char*) "narrowed OK: " << (void*) _txfac);
+	} catch (CORBA::SystemException & e) {
+		LOG4CXX_ERROR(txmlogger, 
+			(char*) "Error resolving Tx Service: " << e._name() << " minor code: " << e.minor());
+		return TX_ERROR;
+	} catch (...) {
+		LOG4CXX_ERROR(txmlogger, 
+			(char*) "Unknown error resolving Tx Service did you run ant jts in the JBoss distribution and edit the jbossts properties to bind the service in the CORBA naming service: " << transFactoryId);
+		return TX_ERROR;
+	}
+
+	return TX_OK;
+}
+
 int TxManager::open(void)
 {
 	TX_GUARD((true));
@@ -285,34 +341,8 @@ int TxManager::open(void)
 	if (_isOpen)
 		return TX_OK;
 
-	if (_txfac == NULL) {
-		char *transFactoryId = "";
-
-		try {
-			transFactoryId = orbConfig.transactionFactoryName;
-
-			if (transFactoryId == NULL || strlen(transFactoryId) == 0) {
-				LOG4CXX_ERROR(txmlogger, (char*) "Please set the TRANS_FACTORY_ID env variable");
-				return TX_ERROR;
-			}
-
-			CosNaming::Name *name = _connection->default_ctx->to_name(transFactoryId);
-			LOG4CXX_DEBUG(txmlogger, (char*) "resolving Tx Fac Id: " << transFactoryId);
-			CORBA::Object_var obj = _connection->default_ctx->resolve(*name);
-			delete name;
-			LOG4CXX_DEBUG(txmlogger, (char*) "resolved OK: " << (void*) obj);
-			_txfac = CosTransactions::TransactionFactory::_narrow(obj);
-			LOG4CXX_DEBUG(txmlogger, (char*) "narrowed OK: " << (void*) _txfac);
-		} catch (CORBA::SystemException & e) {
-			LOG4CXX_ERROR(txmlogger, 
-				(char*) "Error resolving Tx Service: " << e._name() << " minor code: " << e.minor());
-			return TX_ERROR;
-		} catch (...) {
-			LOG4CXX_ERROR(txmlogger, 
-				(char*) "Unknown error resolving Tx Service did you run ant jts in the JBoss distribution and edit the jbossts properties to bind the service in the CORBA naming service: " << transFactoryId);
-			return TX_ERROR;
-		}
-	}
+	if (open_trans_factory() != TX_OK)
+		return TX_ERROR;
 
 	if (rm_open() != 0) {
 		LOG4CXX_ERROR(txmlogger, (char*) "At least one resource manager failed");

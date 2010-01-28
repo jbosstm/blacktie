@@ -131,6 +131,9 @@ private:
 	void rm_close(void);
 	int rm_start(int flags, int altflags = -1);
 
+	int open_trans_factory(void);
+	CosTransactions::Control_ptr create_tx();
+
 private:
 	CosTransactions::TransactionFactory_var _txfac;
 	XAResourceManagerFactory _xaRMFac;
