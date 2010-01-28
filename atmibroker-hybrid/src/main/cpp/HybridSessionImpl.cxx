@@ -268,6 +268,8 @@ bool HybridSessionImpl::send(MESSAGE message) {
 				LOG4CXX_WARN(logger, (char*) "Caught SystemException: "
 						<< ex._name());
 			}
+		} else {
+			LOG4CXX_WARN(logger, (char*) "No remote endpoint to send to");
 		}
 	}
 	return toReturn;
