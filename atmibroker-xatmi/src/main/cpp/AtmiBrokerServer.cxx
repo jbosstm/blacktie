@@ -175,7 +175,8 @@ int serverinit(int argc, char** argv) {
 				char adm[XATMI_SERVICE_NAME_LENGTH + 1];
 				ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1,
 						"%s_ADMIN_%d", server, serverid);
-				tpadvertise(adm, ADMIN);
+				if (tpadvertise(adm, ADMIN) == -1)
+					return -1;
 
 				if (errorBootAdminService == 2) {
 					userlog(log4cxx::Level::getWarn(), loggerAtmiBrokerServer,

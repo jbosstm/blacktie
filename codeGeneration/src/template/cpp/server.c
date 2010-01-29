@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
 		//SERVICE_ADVERTISEMENTS
 		exit_status = serverrun();
 	} else {
-		userlogc((char*) "main Unexpected exception in serverrun()");
+		userlogc((char*) "error initialising server");
 	}
 	serverdone();
 	return exit_status;

@@ -209,7 +209,7 @@ bool HybridSessionImpl::send(MESSAGE message) {
 
 		LOG4CXX_DEBUG(logger, "Send to: " << sendTo << " Command: "
 				<< frame.command << " Size: " << frame.body_length);
-		apr_status_t rc = stomp_write(stompConnection, &frame, pool);
+		apr_status_t rc = stompConnection == NULL ? APR_ENOSOCKET : stomp_write(stompConnection, &frame, pool);
 
 		if (rc != APR_SUCCESS) {
 			LOG4CXX_ERROR(logger, "Could not send frame");
