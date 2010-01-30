@@ -423,7 +423,7 @@
 			<artifact:pom id="pom" file="${build.dir}/@{artifactId}.pom" />
 			<artifact:install>
 				<pom refid="pom" />
-				<attach file="${buildd.lib}/@{artifactId}-@{version}-${bpa}.zip" classifier="${bpa}"/>
+				<attach file="${buildd.lib}/@{artifactId}-@{version}-${bpa}.zip" classifier="${bpa}" type="zip"/>
 			</artifact:install>
 		</sequential>
 	</macrodef>
