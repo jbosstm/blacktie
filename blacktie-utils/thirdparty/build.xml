@@ -36,7 +36,7 @@
 		<get src="${maven.ant.dir}/${maven.ant.file}" dest="${lib.dir}/${maven.ant.file}" verbose="true" usetimestamp="true" />
 	</target>
 
-	<target name="init" depends="bootstrap">
+	<target name="init" depends="clean,bootstrap">
 		<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
 			<classpath>
 				<pathelement location="${lib.dir}/${maven.ant.file}" />
@@ -56,6 +56,9 @@
 					<not>
 						<isset property="windows" />
 					</not>
+					<not>
+						<isset property="bpa" />
+					</not>
 				</and>
 			</condition>
 		</fail>
@@ -68,13 +71,12 @@
 	</target>
 
 	<target name="purge">
-		<delete dir="${build.dist}/include" />
-		<delete dir="${build.dist}/lib" />
+		<delete dir="${build.dist}"/>
 		<mkdir dir="${build.dist}/include" />
 		<mkdir dir="${build.dist}/lib" />
 	</target>
 
-	<target name="thirdparty" depends="log4cxx,cppunit,expat,apr-1,stomp,java-devel,ace,xercesc" />
+	<target name="thirdparty" depends="log4cxx,cppunit,expat,apr-1,java-devel,xercesc,ace,stompconnect" />
 	<target name="install" depends="thirdparty" />
 
 	<target name="ace-lib-linux" if="linux">
@@ -144,7 +146,7 @@
 			</fileset>
 		</sync>
 	</target>
-	<target name="ace" depends="clean,init">
+	<target name="ace" depends="init">
 		<antcall target="purge"/>
 		<validate-files inc.dir="${ace.include.dir}" lib.dir="${ace.lib.dir}" artifactId="ace" />
 
@@ -197,6 +199,7 @@
 		</fail>
 		<copy todir="${build.dist}/bin" file="${tao.idl.compiler}" />
 		<copy todir="${build.dist}/bin" file="${ace.gperf}" />
+		<copy file="../../blacktie/licence/ace-tao.txt" tofile="${build.dist}/META-INF/LICENSE"/>
 
 		<install-zip-artifact groupId="ace.contrib" artifactId="ace" name="ace" version="${ace.version}" description="repackage of ACE+TAO, Douglas C. Schmidt's C++ networking toolkit" />
 	</target>
@@ -208,7 +211,7 @@
 		<copy file="${expat.lib.dir}/libexpat.dll" todir="${build.dist}/lib" />
 		<copy file="${expat.lib.dir}/libexpat.lib" todir="${build.dist}/lib" />
 	</target>
-	<target name="expat" depends="clean,init">
+	<target name="expat" depends="init">
 		<antcall target="purge"/>
 		<validate-files inc.dir="${expat.include.dir}" lib.dir="${expat.lib.dir}" artifactId="expat" />
 
@@ -220,6 +223,7 @@
 				<include name="expat_external.h" />
 			</fileset>
 		</copy>
+		<copy file="../../blacktie/licence/expat.txt" tofile="${build.dist}/META-INF/LICENSE"/>
 
 		<install-artifact groupId="expat.contrib" artifactId="expat" name="expat" version="${expat.version}" description="repackage of expat, the C library for parsing XML, written by James Clark." />
 	</target>
@@ -231,7 +235,7 @@
 		<copy file="${cppunit.lib.dir}/cppunitd_dll.dll" todir="${build.dist}/lib" />
 		<copy file="${cppunit.lib.dir}/cppunitd_dll.lib" todir="${build.dist}/lib" />
 	</target>
-	<target name="cppunit" depends="clean,init">
+	<target name="cppunit" depends="init">
 		<antcall target="purge"/>
 		<validate-files inc.dir="${cppunit.include.dir}" lib.dir="${cppunit.lib.dir}" artifactId="cppunit" />
 
@@ -240,6 +244,7 @@
 		<copy todir="${build.dist}/include/cppunit">
 			<fileset dir="${cppunit.include.dir}" />
 		</copy>
+		<copy file="../../blacktie/licence/cppunit.txt" tofile="${build.dist}/META-INF/LICENSE"/>
 
 		<install-artifact groupId="cppunit.contrib" artifactId="cppunit" name="cppunit" version="${cppunit.version}" description="repackage of CppUnit, the C++ port of the famous JUnit framework for unit testing" />
 	</target>
@@ -251,7 +256,7 @@
 		<copy file="${apr-1.lib.dir}/libapr-1.dll" todir="${build.dist}/lib" />
 		<copy file="${apr-1.lib.dir}/libapr-1.lib" todir="${build.dist}/lib" />
 	</target>
-	<target name="apr-1" depends="clean,init">
+	<target name="apr-1" depends="init">
 		<antcall target="purge"/>
 		<validate-files inc.dir="${apr-1.include.dir}" lib.dir="${apr-1.lib.dir}" artifactId="apr-1" />
 
@@ -260,41 +265,26 @@
 		<copy todir="${build.dist}/include/apr-1">
 			<fileset dir="${apr-1.include.dir}" includes="*.h" />
 		</copy>
+		<copy file="../../blacktie/licence/apr.txt" tofile="${build.dist}/META-INF/LICENSE"/>
 
 		<install-artifact groupId="apr-1.contrib" artifactId="apr-1" name="apr-1" version="${apr-1.version}" description="Apache Portable Runtime (APR)" />
 	</target>
 
-	<target name="stomp-lib-linux" if="linux">
-		<copy file="${stomp.lib.dir}/libstomp.so" todir="${build.dist}/lib" />
-	</target>
-	<target name="stomp-lib-windows" if="windows">
-		<copy file="${stomp.lib.dir}/libstomp.lib" todir="${build.dist}/lib" />
-		<copy file="${stomp.lib.dir}/libstomp.dll" todir="${build.dist}/lib" />
-	</target>
 	<target name="stomp-linux" if="linux">
 		<property name="mvn.exe" value="mvn"/>
 	</target>
 	<target name="stomp-windows" if="windows">
 		<property name="mvn.exe" value="mvn.bat"/>
 	</target>
-	<target name="stomp" depends="clean,init,stomp-linux,stomp-windows">
+	<target name="stompconnect" depends="init,stomp-linux,stomp-windows">
 		<antcall target="purge"/>
-		<validate-files inc.dir="${stomp.include.dir}" lib.dir="${stomp.lib.dir}" artifactId="stomp" />
-
-		<antcall target="stomp-lib-linux" />
-		<antcall target="stomp-lib-windows" />
-		<copy todir="${build.dist}/include/stomp">
-			<fileset dir="${stomp.include.dir}" includes="*.h" />
-		</copy>
-
-		<install-artifact groupId="stomp.contrib" artifactId="stomp" name="stomp" version="${stomp.version}" description="Streaming Text Orientated Messaging Protocol message broker wrapper" />
-		<exec executable="${mvn.exe}" dir="${stomp.include.dir}/../../stompconnect-1.0" failonerror="true">
+		<exec executable="${mvn.exe}" dir="${stompconnect.dir}" failonerror="true">
 			<arg value="install"/>
 			<arg value="-DskipTests"/>
 		</exec>
 	</target>
 
-	<target name="java-devel" depends="clean,init">
+	<target name="java-devel" depends="init">
 		<antcall target="purge"/>
 		<fail message="missing directories ${java-devel.include.dir} or ${java-devel.platform.include.dir}">
 			<condition>
@@ -313,6 +303,7 @@
 			<fileset dir="${java-devel.include.dir}" includes="*.h" />
 			<fileset dir="${java-devel.platform.include.dir}" includes="*.h" />
 		</copy>
+		<copy file="../../blacktie/licence/java-devel.txt" tofile="${build.dist}/META-INF/LICENSE"/>
 
 		<install-artifact groupId="sun" artifactId="java-devel" name="java-devel" version="${java-devel.version}" description="Java JNI header" />
 	</target>
@@ -326,7 +317,7 @@
 		<copy file="${log4cxx.lib.dir}/log4cxx.lib" todir="${build.dist}/lib" />
 	</target>
 
-	<target name="log4cxx" depends="clean,init">
+	<target name="log4cxx" depends="init">
 		<antcall target="purge"/>
 		<validate-files inc.dir="${log4cxx.include.dir}" lib.dir="${log4cxx.lib.dir}" artifactId="log4cxx" />
 
@@ -335,6 +326,7 @@
 		<copy todir="${build.dist}/include/log4cxx">
 			<fileset dir="${log4cxx.include.dir}" />
 		</copy>
+		<copy file="../../blacktie/licence/log4cxx.txt" tofile="${build.dist}/META-INF/LICENSE"/>
 
 		<install-artifact groupId="apache-log4cxx.contrib" artifactId="log4cxx" name="log4cxx" version="${log4cxx.version}" description="Re-packaging of log4cxx, a logging framework for C++ patterned after Apache log4j" />
 	</target>
@@ -353,7 +345,7 @@
 		<copy file="${xercesc.lib.dir}/xerces-c_3D.lib" todir="${build.dist}/lib" />
 	</target>
 
-	<target name="xercesc" depends="clean,init">
+	<target name="xercesc" depends="init">
 		<antcall target="purge"/>
 		<validate-files inc.dir="${xercesc.include.dir}/xercesc" lib.dir="${xercesc.lib.dir}" artifactId="xercesc" />
 		<antcall target="xercesc-lib-linux" />
@@ -364,18 +356,19 @@
 				<include name="**/*.c" />
 			</fileset>
 		</copy>
+		<copy file="../../blacktie/licence/xercesc.txt" tofile="${build.dist}/META-INF/LICENSE"/>
 
 		<install-zip-artifact groupId="apache-xercesc.contrib" artifactId="xercesc" name="xercesc" version="${xercesc.version}" description="a validating XML parser written in a portable subset of C++ "/>
 	</target>
 
 	<target name="zip-linux" if="linux">
 		<exec executable="/bin/sh" dir="${build.dist}">
-			<arg line="-c 'zip -y -q -r ../lib/${artifactId}-${version}.zip . -i \'*\''" />
+			<arg line="-c 'zip -y -q -r ../lib/${artifactId}-${version}-${bpa}.zip . -i \'*\''" />
 		</exec>
 	</target>
 
 	<target name="zip-windows" if="windows">
-		<zip destfile="${buildd.lib}/${artifactId}-${version}.zip">
+		<zip destfile="${buildd.lib}/${artifactId}-${version}-${bpa}.zip">
 			<fileset dir="${build.dist}" />
 		</zip>
 	</target>
@@ -389,8 +382,9 @@
 
 		<sequential>
 			<create-pom groupId="@{groupId}" artifactId="@{artifactId}" name="@{name}" version="@{version}" type="jar" description="@{description}" />
+			<copy file="${build.dir}/@{artifactId}.pom" tofile="${build.dist}/META-INF/maven/@{groupId}/@{artifactId}/pom.xml"/>
 
-			<jar destfile="${buildd.lib}/@{artifactId}-@{version}.jar">
+			<jar destfile="${buildd.lib}/@{artifactId}-@{version}-${bpa}.jar">
 				<manifest>
 					<attribute name="Implementation-Title" value="@{artifactId}" />
 					<attribute name="Implementation-Version" value="@{version}" />
@@ -399,8 +393,9 @@
 			</jar>
 
 			<artifact:pom id="pom" file="${build.dir}/@{artifactId}.pom" />
-			<artifact:install file="${buildd.lib}/@{artifactId}-@{version}.jar">
+			<artifact:install>
 				<pom refid="pom" />
+				<attach file="${buildd.lib}/@{artifactId}-@{version}-${bpa}.jar" classifier="${bpa}"/>
 			</artifact:install>
 		</sequential>
 	</macrodef>
@@ -414,6 +409,7 @@
 
 		<sequential>
 			<create-pom groupId="@{groupId}" artifactId="@{artifactId}" name="@{name}" version="@{version}" type="zip" description="@{description}" />
+			<copy file="${build.dir}/@{artifactId}.pom" tofile="${build.dist}/META-INF/maven/@{groupId}/@{artifactId}/pom.xml"/>
 
 			<antcall target="zip-linux">
 				<param name="artifactId" value="@{artifactId}" />
@@ -425,26 +421,9 @@
 			</antcall>
 
 			<artifact:pom id="pom" file="${build.dir}/@{artifactId}.pom" />
-			<artifact:install file="${buildd.lib}/@{artifactId}-@{version}.zip">
+			<artifact:install>
 				<pom refid="pom" />
-			</artifact:install>
-		</sequential>
-	</macrodef>
-
-	<macrodef name="install-file-artifact">
-		<attribute name="filename" />
-		<attribute name="groupId" />
-		<attribute name="artifactId" />
-		<attribute name="name" />
-		<attribute name="version" />
-		<attribute name="description" />
-
-		<sequential>
-			<create-pom groupId="@{groupId}" artifactId="@{artifactId}" name="@{name}" version="@{version}" type="jar" description="@{description}" />
-
-			<artifact:pom id="pom" file="${build.dir}/@{artifactId}.pom" />
-			<artifact:install file="@{filename}">
-				<pom refid="pom" />
+				<attach file="${buildd.lib}/@{artifactId}-@{version}-${bpa}.zip" classifier="${bpa}"/>
 			</artifact:install>
 		</sequential>
 	</macrodef>

@@ -1,11 +1,11 @@
 # Copy this file to build.properties and specify where the various 3rd party dependencies are located:
+bpa=fc10x64
+
 log4cxx.lib.dir=/home/mmusgrov/blacktie/util/apache-log4cxx/target/debug/shared
 log4cxx.include.dir=/home/mmusgrov/blacktie/util/apache-log4cxx/src/main/include/log4cxx
-log4cxx.version=trunk-696744
+log4cxx.version=902683
 
-stomp.lib.dir=/home/mmusgrov/blacktie/util/libstomp/target/debug/shared
-stomp.include.dir=/home/mmusgrov/blacktie/util/libstomp/src
-stomp.version=trunk-85
+stompconnect.dir=/home/tom/blacktie/utils/stompconnect-1.0
 
 apr-1.lib.dir=/usr/lib64
 apr-1.include.dir=/usr/include/apr-1
