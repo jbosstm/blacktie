@@ -281,12 +281,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>apache-log4cxx.contrib</groupId>
-			<artifactId>log4cxx</artifactId>
-			<version>trunk-696744</version>
+			<classifier>${bpa}</classifier><artifactId>log4cxx</artifactId>
+			<version>902683</version>
 		</dependency>
 		<dependency>
 			<groupId>ace.contrib</groupId>
-			<artifactId>ace</artifactId>
+			<classifier>${bpa}</classifier><artifactId>ace</artifactId>
 			<version>5.7.5</version>
 			<type>zip</type>
 		</dependency>

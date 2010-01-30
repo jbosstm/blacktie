@@ -98,7 +98,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>cppunit.contrib</groupId>
-			<artifactId>cppunit</artifactId>
+			<classifier>${bpa}</classifier><artifactId>cppunit</artifactId>
 			<version>1.12</version>
 			<scope>test</scope>
 		</dependency>
