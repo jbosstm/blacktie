@@ -24,9 +24,9 @@ import org.jboss.blacktie.jatmibroker.jab.factory.JABConnectionFactory;
 import org.jboss.blacktie.jatmibroker.jab.factory.JABResponse;
 import org.jboss.blacktie.jatmibroker.jab.factory.Transaction;
 
-public class JABFactoryClient {
+public class JABFactoryClientTest {
 	private static final Logger log = LogManager
-			.getLogger(JABFactoryClient.class);
+			.getLogger(JABFactoryClientTest.class);
 
 	public static void main(String[] args) throws Exception {
 		log.info("JABClient");

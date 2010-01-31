@@ -16,22 +16,22 @@ MA  02110-1301, USA.
 
 NOTE: You may like to create a backup of this folder before starting!
 
-1. SET ENVIRONMENT VARIABLES
-In order to run the example you need to make sure that you have set the environment
-appropriately. You will need to make sure that you edit the variables with values 
-starting with REPLACE_WITH_: 
-On Linux you need to edit:
-	$BLACKTIE_BIN_DIR/setenv.sh
-On Windows:
-	%BLACKTIE_BIN_DIR%\setenv.bat
-Then, execute the script setenv
-
-2. COMPILE THE JAB APPLICATION
-In a well configured environment, type the following:
-javac JABClient.java
-
-2. RUN THE SERVER
+1. RUN THE SERVER
 Follow the instructions in $BLACKTIE_BIN_DIR/examples/xatmi/fooapp to start a server  
 
-4. RUN THE JAB Application
-java JABClient message
+2. COMPILE AND RUN THE JAB APPLICATION
+If you are running the test from a binary distribution you will need to ensure that 
+the JAtmiBroker XATMI library is installed in your .m2 Maven folder:
+cd BLACKTIE_HOME/jatmibroker-xatmi
+mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=jatmibroker-xatmi -Dversion=2.0-MR1-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=jatmibroker-xatmi-2.0.jar
+mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=blacktie-xsd -Dversion=2.0-MR1-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=blacktie-xsd-2.0.jar
+mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=atmibroker-idl -Dversion=2.0-MR1-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=atmibroker-idl-${bpa}-2.0-MR2.jar
+
+After the dependencies are installed you can then run the example using the following command:
+mvn test -Dbpa=<PLAT_ARCH> where <PLAT_ARCH> is the platform or architecture you are on, e.g. fc10x64
+
+NOTE: forkMode MUST be set to none, if it is not, input will not be read by the 
+application. We have configured the pom.xml with forkMode=none, alternatively you
+may try -DforkMode=none, if this still doesn't work, please send a message to our forum
+where we will try to help you (please let us know the version of BlackTie, Java and 
+Maven you are using)

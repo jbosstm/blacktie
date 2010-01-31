@@ -15,24 +15,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import junit.framework.TestCase;
+
 import org.jboss.blacktie.jatmibroker.jab.JABException;
 import org.jboss.blacktie.jatmibroker.jab.JABRemoteService;
 import org.jboss.blacktie.jatmibroker.jab.JABSession;
 import org.jboss.blacktie.jatmibroker.jab.JABSessionAttributes;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 
-public class JABClient {
-	private static final Logger log = LogManager.getLogger(JABClient.class);
+public class JABClientTest extends TestCase {
+	private static final Logger log = LogManager.getLogger(JABClientTest.class);
 
-	public static void main(String[] args) throws Exception {
+	private InputStreamReader isr = new InputStreamReader(System.in);
+	private BufferedReader br = new BufferedReader(isr);
+
+	public void test() throws Exception {
 		log.info("JABClient");
-		if (args.length != 1) {
-			log.error("java JABClient message");
-			return;
-		}
-		String message = args[0];
+		String message = prompt("Enter a message to send");
 		try {
 			JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
 					null);
@@ -52,5 +58,10 @@ public class JABClient {
 		} catch (JABException e) {
 			log.error("JAB error: " + e.getMessage(), e);
 		}
+	}
+
+	private String prompt(String prompt) throws IOException {
+		System.out.println("Please press return after you: " + prompt + "...");
+		return br.readLine();
 	}
 }
