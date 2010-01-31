@@ -50,6 +50,29 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>1.0-beta-1</version>
+				<inherited>true</inherited>
+				<executions>
+					<execution>
+						<id>enforce-property</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireProperty>
+									<property>bpa</property>
+									<message>"You must specify a platform and architecture!"</message>
+								</requireProperty>
+							</rules>
+							<fail>true</fail>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<source>1.5</source>
@@ -142,12 +165,14 @@
 			<exclusions>
 				<exclusion>
 					<groupId>org.jboss.blacktie</groupId>
-					<classifier>${bpa}</classifier><classifier>${bpa}</classifier><artifactId>atmibroker-ssifier><artifactId>atmibroker-idl</artifactId>tId>atmibroker-idl</artifactId>
+					<artifactId>atmibroker-idl</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>or<classifier>${bpa}</classifier><artifactId>atmibroker-ssifier><classifier>${bpa}</classifier><classifier>${bpa}</classifier><artifactId>atmibroker-idl</artifactId>ier>${bpa}</classifier><classifier>${bpa}</classifier><artifactId>atmibroker-idl</artifactId>
+			<groupId>org.jboss.blacktie</groupId>
+			<artifactId>atmibroker-idl</artifactId>
+			<classifier>${bpa}</classifier>
 			<version>2.0-MR2-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
@@ -196,6 +221,13 @@
 			<version>1.0.0</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>jboss.jbossts</groupId>
+			<artifactId>jbossjts</artifactId>
+			<version>4.6.1.GA</version>
+			<scope>provided</scope>
+		</dependency>
+
 
 		<!--  Test -->
 		<dependency>
@@ -210,68 +242,145 @@
 			<groupId>apache-avalon</groupId>
 			<artifactId>avalon-framework</artifactId>
 			<version>4.1.5</version>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>apache-avalon-logkit</groupId>
 			<artifactId>logkit</artifactId>
 			<version>1.2</version>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
 		<!-- END ORB -->
 		<!-- START JTS -->
 		<dependency>
 			<groupId>jboss.jbossts</groupId>
 			<artifactId>jbossjts</artifactId>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>jboss.jbossts</groupId>
 			<artifactId>jbossjts-jacorb</artifactId>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>jboss.jbossts</groupId>
 			<artifactId>jbossts-common</artifactId>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
 		<!-- END JTS -->
 		<!-- START JMS -->
 		<dependency>
 			<groupId>jboss.messaging</groupId>
 			<artifactId>jboss-messaging-client</artifactId>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.naming</groupId>
 			<artifactId>jnp-client</artifactId>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.aop</groupId>
 			<artifactId>jboss-aop</artifactId>
 			<classifier>client</classifier>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.remoting</groupId>
 			<artifactId>jboss-remoting</artifactId>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>concurrent</groupId>
 			<artifactId>concurrent</artifactId>
 			<version>1.3.4</version>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.serialization</groupId>
 			<artifactId>jboss-serialization</artifactId>
 			<version>1.1.0.Beta1</version>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
 		<!-- END JMS -->
 
 		<!-- END JBOSS -->
+
+		<!-- REQUIRED DEPENDENCIES FOR BLACKTIE -->
+	        <dependency>
+        		<groupId>org.jboss.integration</groupId>
+			<artifactId>jboss-corba-ots-spi</artifactId>
+        	</dependency>
+		<dependency>
+			<groupId>org.jboss.javaee</groupId>
+			<artifactId>jboss-javaee</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>apache-avalon</groupId>
+			<artifactId>avalon-framework</artifactId>
+			<version>4.1.5</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>apache-avalon-logkit</groupId>
+			<artifactId>logkit</artifactId>
+			<version>1.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- START JTS -->
+		<dependency>
+			<groupId>jboss.jbossts</groupId>
+			<artifactId>jbossjts</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>jboss.jbossts</groupId>
+			<artifactId>jbossjts-jacorb</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>jboss.jbossts</groupId>
+			<artifactId>jbossts-common</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- END JTS -->
+		<!-- START JMS -->
+		<dependency>
+			<groupId>jboss.messaging</groupId>
+			<artifactId>jboss-messaging-client</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.naming</groupId>
+			<artifactId>jnp-client</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.aop</groupId>
+			<artifactId>jboss-aop</artifactId>
+			<classifier>client</classifier>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.remoting</groupId>
+			<artifactId>jboss-remoting</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>concurrent</groupId>
+			<artifactId>concurrent</artifactId>
+			<version>1.3.4</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.serialization</groupId>
+			<artifactId>jboss-serialization</artifactId>
+			<version>1.1.0.Beta1</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- END JMS -->
+		<!-- END REQUIRED DEPENDENCIES FOR BLACKTIE -->
+
 	</dependencies>
 </project>

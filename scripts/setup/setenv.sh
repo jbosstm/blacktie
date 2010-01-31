@@ -31,11 +31,9 @@ LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.
 export LD_LIBRARY_PATH
 
 CLASSPATH=
-for i in $BLACKTIE_BIN_DIR/codeGeneration/*.jar $BLACKTIE_BIN_DIR/jatmibroker-xatmi/*.jar $JBOSS_HOME/client/*.jar
+for i in $BLACKTIE_BIN_DIR/codeGeneration/*.jar
 do
 CLASSPATH="$CLASSPATH:$i"
 done
-CLASSPATH="$CLASSPATH:$BLACKTIE_BIN_DIR/bin"
-CLASSPATH="$CLASSPATH:."
 export CLASSPATH
 

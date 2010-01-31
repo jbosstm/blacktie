@@ -30,16 +30,12 @@ Then, execute the script setenv
 This example makes use of maven to build, deploy and test an XATMI service deployed 
 as an MDB.
 
-If you are running the test from the src distribution just run:
-
-	mvn install
-
 If you are running the test from a binary distribution you will need to ensure that 
 the JAtmiBroker XATMI library is installed in your .m2 Maven folder:
 cd BLACKTIE_HOME/jatmibroker-xatmi
-mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=jatmibroker-xatmi -Dversion=2.0-MR1-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=jatmibroker-xatmi-2.0-MR1-SNAPSHOT.jar
-mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=blacktie-xsd -Dversion=2.0-MR1-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=blacktie-xsd-2.0-MR1-SNAPSHOT.jar
-mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=atmibroker-idl -Dversion=2.0-MR1-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=atmibroker-idl-2.0-MR1-SNAPSHOT.jar
+mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=jatmibroker-xatmi -Dversion=2.0-MR1-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=jatmibroker-xatmi-2.0.jar
+mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=blacktie-xsd -Dversion=2.0-MR1-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=blacktie-xsd-2.0.jar
+mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=atmibroker-idl -Dversion=2.0-MR1-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=atmibroker-idl-${bpa}-2.0-MR2.jar
 
 After the dependencies are installed you can then run the example using the following command:
-mvn install
+	mvn install -Dbpa=<PLAT_ARCH> where <PLAT_ARCH> is for example fc10x64

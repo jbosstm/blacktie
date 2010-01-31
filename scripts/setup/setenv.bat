@@ -28,27 +28,4 @@ set PATH=%PATH%;.
 
 setlocal ENABLEDELAYEDEXPANSION
 FOR /R codeGeneration %%G IN (*.jar) DO set CLASSPATH=!CLASSPATH!;%%G
-FOR /R jatmibroker-xatmi %%G IN (*.jar) DO set CLASSPATH=!CLASSPATH!;%%G
 endlocal & set CLASSPATH=%CLASSPATH%
-set CLASSPATH=%CLASSPATH%;%JBOSS_HOME%\client\jboss-javaee.jar
-set CLASSPATH=%CLASSPATH%;%JBOSS_HOME%\client\jboss-ejb3-ext-api.jar
-set CLASSPATH=%CLASSPATH%;%JBOSS_HOME%\client\jbossjts.jar
-set CLASSPATH=%CLASSPATH%;%JBOSS_HOME%\client\jacorb.jar
-set CLASSPATH=%CLASSPATH%;%JBOSS_HOME%\client\jboss-messaging-client.jar
-set CLASSPATH=%CLASSPATH%;%JBOSS_HOME%\client\jbossall-client.jar
-set CLASSPATH=%CLASSPATH%;%JBOSS_HOME%\client\jboss-aop-client.jar
-set CLASSPATH=%CLASSPATH%;%JBOSS_HOME%\client\javassist.jar
-set CLASSPATH=%CLASSPATH%;%JBOSS_HOME%\client\trove.jar
-set CLASSPATH=%CLASSPATH%;%JBOSS_HOME%\client\jnp-client.jar
-set CLASSPATH=%CLASSPATH%;%JBOSS_HOME%\client\jboss-logging-spi.jar
-set CLASSPATH=%CLASSPATH%;%JBOSS_HOME%\client\jboss-remoting.jar
-set CLASSPATH=%CLASSPATH%;%JBOSS_HOME%\client\jboss-common-core.jar
-set CLASSPATH=%CLASSPATH%;%JBOSS_HOME%\client\jboss-mdr.jar
-set CLASSPATH=%CLASSPATH%;%JBOSS_HOME%\client\concurrent.jar
-set CLASSPATH=%CLASSPATH%;%JBOSS_HOME%\client\jboss-serialization.jar
-set CLASSPATH=%CLASSPATH%;%JBOSS_HOME%\client\jboss-logging-log4j.jar
-set CLASSPATH=%CLASSPATH%;%JBOSS_HOME%\common\lib\jbossjts-jacorb.jar
-set CLASSPATH=%CLASSPATH%;%JBOSS_HOME%\common\lib\jbossts-common.jar
-
-set CLASSPATH=%CLASSPATH%;%BLACKTIE_BIN_DIR%\bin
-set CLASSPATH=%CLASSPATH%;.

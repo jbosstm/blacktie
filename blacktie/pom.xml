@@ -132,17 +132,17 @@
 								</exec>
 								<echo message="update symlinks to zip" />
 								<exec executable="/bin/sh" dir="target">
-									<arg line="-c 'zip -q -u -y ${project.artifactId}-${project.version}-bin.zip ${project.artifactId}-${project.version}/lib/*'"/>
+									<arg line="-c 'zip -q -u -y ${project.artifactId}-${project.version}-${bpa}-bin.zip ${project.artifactId}-${project.version}/lib/*'"/>
 								</exec>
 								<echo message="update symlinks to tar.gz" />
 								<exec executable="gunzip" dir="target">
-									<arg line="${project.artifactId}-${project.version}-bin.tar.gz" />
+									<arg line="${project.artifactId}-${project.version}-${bpa}-bin.tar.gz" />
 								</exec>
 								<exec executable="tar" dir="target">
-									<arg line="uf ${project.artifactId}-${project.version}-bin.tar ${project.artifactId}-${project.version}/lib" />
+									<arg line="uf ${project.artifactId}-${project.version}-${bpa}-bin.tar ${project.artifactId}-${project.version}/lib" />
 								</exec>
 								<exec executable="gzip" dir="target">
-									<arg line="${project.artifactId}-${project.version}-bin.tar" />
+									<arg line="${project.artifactId}-${project.version}-${bpa}-bin.tar" />
 								</exec>
 							</tasks>
 						</configuration>
