@@ -165,6 +165,7 @@
 		<dependency>
 			<groupId>sun</groupId>
 			<classifier>${bpa}</classifier><artifactId>java-devel</artifactId>
+			<version>1.5.0_15</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
