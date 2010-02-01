@@ -258,19 +258,19 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\atmibroker-hybrid\src\main\cpp\ConnectionImpl.cxx"
+					RelativePath="..\..\atmibroker-hybrid\src\main\cpp\HybridConnectionImpl.cxx"
 					>
 				</File>
 				<File
-					RelativePath="..\..\atmibroker-hybrid\src\main\cpp\CorbaEndpointQueue.cxx"
+					RelativePath="..\..\atmibroker-hybrid\src\main\cpp\HybridCorbaEndpointQueue.cxx"
 					>
 				</File>
 				<File
-					RelativePath="..\..\atmibroker-hybrid\src\main\cpp\SessionImpl.cxx"
+					RelativePath="..\..\atmibroker-hybrid\src\main\cpp\HybridSessionImpl.cxx"
 					>
 				</File>
 				<File
-					RelativePath="..\..\atmibroker-hybrid\src\main\cpp\StompEndpointQueue.cxx"
+					RelativePath="..\..\atmibroker-hybrid\src\main\cpp\HybridStompEndpointQueue.cxx"
 					>
 				</File>
 			</Filter>
@@ -322,11 +322,179 @@
 				Name="test"
 				>
 				<File
-					RelativePath="..\..\..\dist\blacktie-2.0-MR1-SNAPSHOT\examples\xatmi\fooapp\BarService.c"
+					RelativePath="..\src\test\cpp\AdminTestSuite.cxx"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\dist\blacktie-2.0-MR1-SNAPSHOT\examples\xatmi\fooapp\server.c"
+					RelativePath="..\src\test\cpp\BAR.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\BaseAdminTest.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\BaseServerTest.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\BaseTest.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\tx\cutil.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\tx\DbService.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\LoopyServerAndClient.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\tx\ora.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\tx\request.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\Sleeper.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestAdmin.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestAdvertise.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestClientInit.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestPBF.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestRollbackOnly.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestRollbackOnlyServices.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\target\generated-sources\TestRunner.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestServerinit.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestSpecExampleOne.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestSpecExampleTwo.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestTimeToLive.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestTPACall.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestTPAdvertise.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestTPAlloc.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestTPCall.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestTPCancel.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestTPConnect.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestTPConversation.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestTPDiscon.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestTPFree.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestTPFreeService.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestTPGetRply.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestTPRealloc.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestTPRecv.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestTPReturn.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestTPSend.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestTPService.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestTPTypes.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestTPUnadvertise.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\tx\TestTxRMTPCall.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestTxTPCall.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\TestUnadvertise.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\src\test\cpp\XATMITestSuite.cxx"
 					>
 				</File>
 			</Filter>
@@ -428,19 +596,19 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\atmibroker-hybrid\src\main\export\ConnectionImpl.h"
+					RelativePath="..\..\atmibroker-hybrid\src\main\export\HybridConnectionImpl.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\atmibroker-hybrid\src\main\export\CorbaEndpointQueue.h"
+					RelativePath="..\..\atmibroker-hybrid\src\main\export\HybridCorbaEndpointQueue.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\atmibroker-hybrid\src\main\export\SessionImpl.h"
+					RelativePath="..\..\atmibroker-hybrid\src\main\export\HybridSessionImpl.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\atmibroker-hybrid\src\main\export\StompEndpointQueue.h"
+					RelativePath="..\..\atmibroker-hybrid\src\main\export\HybridStompEndpointQueue.h"
 					>
 				</File>
 			</Filter>
