@@ -47,7 +47,7 @@
 		<mkdir dir="${build.dist}" />
 		<mkdir dir="${build.dist}/include" />
 		<mkdir dir="${build.dist}/lib" />
-		<fail>
+		<fail message="Please specify either -Dlinux=true or -Dwindows=true on the build line">
 			<condition>
 				<and>
 					<not>
@@ -56,10 +56,14 @@
 					<not>
 						<isset property="windows" />
 					</not>
-					<not>
-						<isset property="bpa" />
-					</not>
 				</and>
+			</condition>
+		</fail>
+		<fail message="Please set the property bpa to the artifact extension">
+			<condition>
+				<not>
+					<isset property="bpa" />
+				</not>
 			</condition>
 		</fail>
 
