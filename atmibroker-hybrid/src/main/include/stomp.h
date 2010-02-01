@@ -42,11 +42,11 @@ typedef struct stomp_frame {
 
 
 
-APR_DECLARE(apr_status_t) stomp_connect(stomp_connection **connection_ref, const char *hostname, int port, apr_pool_t *pool);
-APR_DECLARE(apr_status_t) stomp_disconnect(stomp_connection **connection_ref);
+apr_status_t stomp_connect(stomp_connection **connection_ref, const char *hostname, int port, apr_pool_t *pool);
+apr_status_t stomp_disconnect(stomp_connection **connection_ref);
 
-APR_DECLARE(apr_status_t) stomp_write(stomp_connection *connection, stomp_frame *frame, apr_pool_t *pool);
-APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection, stomp_frame **frame, apr_pool_t *pool);
+apr_status_t stomp_write(stomp_connection *connection, stomp_frame *frame, apr_pool_t *pool);
+apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_pool_t *pool);
 
 #ifdef __cplusplus
 }

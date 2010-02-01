@@ -22,7 +22,7 @@ typedef off_t	off64_t;
 
 #include <stdlib.h>
 #include <string.h>
-#include "apr.h"
+//#include "apr.h"
 #include "apr_strings.h"
 #include "stomp.h"
 
@@ -33,7 +33,7 @@ typedef off_t	off64_t;
  * Used to establish a connection
  *
  ********************************************************************************/
-APR_DECLARE(apr_status_t) stomp_connect(stomp_connection **connection_ref, const char *hostname, int port, apr_pool_t *pool)
+apr_status_t stomp_connect(stomp_connection **connection_ref, const char *hostname, int port, apr_pool_t *pool)
 {
 	apr_status_t rc;
 	int socket_family;
@@ -87,7 +87,7 @@ APR_DECLARE(apr_status_t) stomp_connect(stomp_connection **connection_ref, const
 	return rc;	
 }
 
-APR_DECLARE(apr_status_t) stomp_disconnect(stomp_connection **connection_ref)
+apr_status_t stomp_disconnect(stomp_connection **connection_ref)
 {
    apr_status_t result, rc;
 	stomp_connection *connection = *connection_ref;
@@ -118,7 +118,7 @@ APR_DECLARE(apr_status_t) stomp_disconnect(stomp_connection **connection_ref)
  * read/write their buffers fully.
  *
  ********************************************************************************/
-APR_DECLARE(apr_status_t) stomp_write_buffer(stomp_connection *connection, const char *data, apr_size_t size)
+apr_status_t stomp_write_buffer(stomp_connection *connection, const char *data, apr_size_t size)
 {
    apr_size_t remaining = size;
    size=0;
@@ -141,7 +141,7 @@ typedef struct data_block_list {
    struct data_block_list *next;
 } data_block_list;
 
-APR_DECLARE(apr_status_t) stomp_read_line(stomp_connection *connection, char **data, int* length, apr_pool_t *pool)
+apr_status_t stomp_read_line(stomp_connection *connection, char **data, int* length, apr_pool_t *pool)
 {
    apr_pool_t *tpool;
    apr_status_t rc;
@@ -224,7 +224,7 @@ APR_DECLARE(apr_status_t) stomp_read_line(stomp_connection *connection, char **d
    return APR_SUCCESS;
 }
 
-APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection, char **data, apr_pool_t *pool)
+apr_status_t stomp_read_buffer(stomp_connection *connection, char **data, apr_pool_t *pool)
 {
    apr_pool_t *tpool;
    apr_status_t rc;
@@ -316,7 +316,7 @@ APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection, char *
  *
  ********************************************************************************/
 
-APR_DECLARE(apr_status_t) stomp_write(stomp_connection *connection, stomp_frame *frame, apr_pool_t* pool) {
+apr_status_t stomp_write(stomp_connection *connection, stomp_frame *frame, apr_pool_t* pool) {
    apr_status_t rc;
    
 #define CHECK_SUCCESS if( rc!=APR_SUCCESS ) { return rc; }
@@ -381,7 +381,7 @@ APR_DECLARE(apr_status_t) stomp_write(stomp_connection *connection, stomp_frame 
    return APR_SUCCESS;
 }
 
-APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection, stomp_frame **frame, apr_pool_t *pool) {
+apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_pool_t *pool) {
    
    apr_status_t rc;
    stomp_frame *f;
