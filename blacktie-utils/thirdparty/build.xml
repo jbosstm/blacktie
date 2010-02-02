@@ -374,6 +374,7 @@
 			<artifact:pom id="pom" file="${build.dir}/@{artifactId}.pom" />
 			<artifact:install>
 				<pom refid="pom" />
+				<attach file="${build.dir}/@{artifactId}.pom" type="pom"/>
 				<attach file="${buildd.lib}/@{artifactId}-@{version}-${bpa}.jar" classifier="${bpa}"/>
 			</artifact:install>
 		</sequential>
@@ -402,6 +403,7 @@
 			<artifact:pom id="pom" file="${build.dir}/@{artifactId}.pom" />
 			<artifact:install>
 				<pom refid="pom" />
+				<attach file="${build.dir}/@{artifactId}.pom" type="pom"/>
 				<attach file="${buildd.lib}/@{artifactId}-@{version}-${bpa}.zip" classifier="${bpa}" type="zip"/>
 			</artifact:install>
 		</sequential>
