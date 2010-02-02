@@ -15,6 +15,7 @@
 		Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 		02110-1301, USA.
 	-->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
@@ -24,8 +25,8 @@
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>atmibroker-core</artifactId>
-	<name>Blacktie Core C++ Implementation</name>
+	<artifactId>atmibroker-idl-cxx</artifactId>
+	<name>Blacktie CORBA Transport C++ Bindings</name>
 	<packaging>jar</packaging>
 
 	<developers>
@@ -74,53 +75,26 @@
 	<profiles>
 		<profile>
 			<id>windows</id>
-			<activation>
-				<os>
-					<family>windows</family>
-				</os>
-			</activation>
-			<properties>
-				<export.dll>_BLACKTIE_CORE_DLL</export.dll>
-			</properties>
-		</profile>
+			<activation> <os> <family>windows</family> </os> </activation>
+			<properties><export.dll>_BLACKTIE_IDL_DLL</export.dll></properties>
+		</profile>	      
 	</profiles>
 
-	<properties>
-		<generate.testrunner>true</generate.testrunner>
-	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<inherited>true</inherited>
+				<groupId>org.jboss.blacktie.plugins</groupId>
+				<artifactId>cpp-plugin</artifactId>
 
-	<dependencies>
-		<dependency>
-			<groupId>cppunit.contrib</groupId>
-			<classifier>${bpa}</classifier><artifactId>cppunit</artifactId>
-			<version>1.12</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>blacktie-xsd</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
-			<classifier>${bpa}</classifier>
-			<artifactId>atmibroker-idl-cxx</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>expat.contrib</groupId>
-			<classifier>${bpa}</classifier><artifactId>expat</artifactId>
-			<version>2.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>apache-xercesc.contrib</groupId>
-			<classifier>${bpa}</classifier><artifactId>xercesc</artifactId>
-			<version>3.0.1</version>
-			<type>zip</type>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
-			<classifier>${bpa}</classifier>
-			<artifactId>tx-test-utilities</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+				<configuration>
+					<idl.src.dir>../src/main/idl</idl.src.dir>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<properties>
+		<src.main>target/generated/tao_idl</src.main>
+	</properties>
 </project>

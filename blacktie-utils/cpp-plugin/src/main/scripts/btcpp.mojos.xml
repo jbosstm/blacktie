@@ -651,6 +651,15 @@
           <description>The artifact name.</description>
         </parameter>
         <parameter>
+          <name>idlSourceDir</name>
+          <property>idl.src.dir</property>
+          <required>true</required>
+          <readonly>false</readonly>
+          <defaultValue>src/main/idl</defaultValue>
+          <type>java.lang.String</type>
+          <description>The directory where the idl files live</description>
+        </parameter>
+        <parameter>
           <name>buildDir</name>
           <property>project.build.directory</property>
           <required>true</required>

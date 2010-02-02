@@ -25,10 +25,10 @@ the JAtmiBroker XATMI library is installed in your .m2 Maven folder:
 cd BLACKTIE_HOME/jatmibroker-xatmi
 mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=jatmibroker-xatmi -Dversion=2.0-MR1-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=jatmibroker-xatmi-2.0.jar
 mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=blacktie-xsd -Dversion=2.0-MR1-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=blacktie-xsd-2.0.jar
-mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=atmibroker-idl -Dversion=2.0-MR1-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=atmibroker-idl-${bpa}-2.0-MR2.jar
+mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=atmibroker-idl -Dversion=2.0-MR1-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=atmibroker-idl-java-2.0-MR2.jar
 
 After the dependencies are installed you can then run the example using the following command:
-mvn test -Dbpa=<PLAT_ARCH> where <PLAT_ARCH> is the platform or architecture you are on, e.g. fc10x64
+mvn test
 
 NOTE: forkMode MUST be set to none, if it is not, input will not be read by the 
 application. We have configured the pom.xml with forkMode=none, alternatively you

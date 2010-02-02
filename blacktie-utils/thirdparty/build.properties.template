@@ -11,11 +11,11 @@ apr-1.lib.dir=/usr/lib64
 apr-1.include.dir=/usr/include/apr-1
 apr-1.version=1.3.3
 
-ace.lib.dir=/home/mmusgrov/blacktie/util/ACE+TAO-5.7.5/ACE_wrappers/lib
-ace.include.dir=/home/mmusgrov/blacktie/util/ACE+TAO-5.7.5/ACE_wrappers/
-ace.version=5.7.5
-tao.idl.compiler=/home/mmusgrov/blacktie/util/ACE+TAO-5.7.5/ACE_wrappers/TAO/TAO_IDL/tao_idl
-ace.gperf=/home/mmusgrov/blacktie/util/ACE+TAO-5.7.5/ACE_wrappers/bin/ace_gperf
+ace.lib.dir=/home/tom/blacktie/utils/ACE+TAO-5.7.6/ACE_wrappers/lib
+ace.include.dir=/home/tom/blacktie/utils/ACE+TAO-5.7.6/ACE_wrappers/
+ace.version=5.7.6
+tao.idl.compiler=/home/tom/blacktie/utils/ACE+TAO-5.7.6/ACE_wrappers/TAO/TAO_IDL/tao_idl
+ace.gperf=/home/tom/blacktie/utils/ACE+TAO-5.7.6/ACE_wrappers/bin/ace_gperf
 
 expat.lib.dir=/usr/lib64
 expat.include.dir=/usr/include
@@ -28,7 +28,3 @@ cppunit.version=1.12
 xercesc.lib.dir=/home/zhfeng/blacktie/util/xerces-c-3.0.1/src/.libs
 xercesc.include.dir=/home/zhfeng/blacktie/util/xerces-c-3.0.1/src
 xercesc.version=3.0.1
-
-java-devel.include.dir=/usr/local/jdk1.5.0_15/include/
-java-devel.platform.include.dir=/usr/local/jdk1.5.0_15/include/linux
-java-devel.version=1.5.0_15

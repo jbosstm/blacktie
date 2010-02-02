@@ -99,29 +99,6 @@
 				<artifactId>maven-clean-plugin</artifactId>
 				<version>2.3</version>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>1.0-beta-1</version>
-				<inherited>true</inherited>
-				<executions>
-					<execution>
-						<id>enforce-property</id>
-						<goals>
-							<goal>enforce</goal>
-						</goals>
-						<configuration>
-							<rules>
-								<requireProperty>
-									<property>bpa</property>
-									<message>"You must specify a platform and architecture!"</message>
-								</requireProperty>
-							</rules>
-							<fail>true</fail>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 
@@ -196,14 +173,24 @@
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.blacktie</groupId>
-				<classifier>${bpa}</classifier>
-				<artifactId>tx-test-utilities</artifactId>
+				<artifactId>atmibroker-idl</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.blacktie</groupId>
+				<artifactId>atmibroker-idl-java</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.blacktie</groupId>
 				<classifier>${bpa}</classifier>
-				<artifactId>atmibroker-idl</artifactId>
+				<artifactId>atmibroker-idl-cxx</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.blacktie</groupId>
+				<classifier>${bpa}</classifier>
+				<artifactId>tx-test-utilities</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

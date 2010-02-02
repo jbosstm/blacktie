@@ -118,18 +118,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
-			<classifier>${bpa}</classifier>
-			<artifactId>atmibroker-idl</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>ace.contrib</groupId>
-					<artifactId>ace</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>apache-log4cxx.contrib</groupId>
-					<artifactId>log4cxx</artifactId>
-				</exclusion>
-			</exclusions>
+			<artifactId>atmibroker-idl-java</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>

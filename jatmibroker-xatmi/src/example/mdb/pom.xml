@@ -50,29 +50,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>1.0-beta-1</version>
-				<inherited>true</inherited>
-				<executions>
-					<execution>
-						<id>enforce-property</id>
-						<goals>
-							<goal>enforce</goal>
-						</goals>
-						<configuration>
-							<rules>
-								<requireProperty>
-									<property>bpa</property>
-									<message>"You must specify a platform and architecture!"</message>
-								</requireProperty>
-							</rules>
-							<fail>true</fail>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<source>1.5</source>
@@ -162,28 +139,6 @@
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>jatmibroker-xatmi</artifactId>
 			<version>2.0-MR2-SNAPSHOT</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.jboss.blacktie</groupId>
-					<artifactId>atmibroker-idl</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>atmibroker-idl</artifactId>
-			<classifier>${bpa}</classifier>
-			<version>2.0-MR2-SNAPSHOT</version>
-			<exclusions>
-				<exclusion>
-					<groupId>ace.contrib</groupId>
-					<artifactId>ace</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>apache-log4cxx.contrib</groupId>
-		                        <artifactId>log4cxx</artifactId>
-				</exclusion>				
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>

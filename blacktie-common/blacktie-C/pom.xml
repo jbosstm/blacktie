@@ -76,6 +76,29 @@
 			<plugin>
 				<inherited>true</inherited>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>1.0-beta-1</version>
+				<executions>
+					<execution>
+						<id>enforce-property</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireProperty>
+									<property>bpa</property>
+									<message>"You must specify a platform and architecture!"</message>
+								</requireProperty>
+							</rules>
+							<fail>true</fail>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<inherited>true</inherited>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
@@ -287,7 +310,7 @@
 		<dependency>
 			<groupId>ace.contrib</groupId>
 			<classifier>${bpa}</classifier><artifactId>ace</artifactId>
-			<version>5.7.5</version>
+			<version>5.7.6</version>
 			<type>zip</type>
 		</dependency>
 	</dependencies>

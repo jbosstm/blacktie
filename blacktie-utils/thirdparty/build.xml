@@ -80,7 +80,7 @@
 		<mkdir dir="${build.dist}/lib" />
 	</target>
 
-	<target name="thirdparty" depends="log4cxx,cppunit,expat,apr-1,java-devel,xercesc,ace,stompconnect" />
+	<target name="thirdparty" depends="log4cxx,cppunit,expat,apr-1,xercesc,ace,stompconnect" />
 	<target name="install" depends="thirdparty" />
 
 	<target name="ace-lib-linux" if="linux">
@@ -287,31 +287,6 @@
 			<arg value="-DskipTests"/>
 		</exec>
 	</target>
-
-	<target name="java-devel" depends="init">
-		<antcall target="purge"/>
-		<fail message="missing directories ${java-devel.include.dir} or ${java-devel.platform.include.dir}">
-			<condition>
-				<and>
-					<not>
-						<available file="${java-devel.include.dir}" type="dir" />
-					</not>
-					<not>
-						<available file="${java-devel.platform.include.dir}" type="dir" />
-					</not>
-				</and>
-			</condition>
-		</fail>
-
-		<copy todir="${build.dist}/include/">
-			<fileset dir="${java-devel.include.dir}" includes="*.h" />
-			<fileset dir="${java-devel.platform.include.dir}" includes="*.h" />
-		</copy>
-		<copy file="../../blacktie/licence/java-devel.txt" tofile="${build.dist}/META-INF/LICENSE"/>
-
-		<install-artifact groupId="sun" artifactId="java-devel" name="java-devel" version="${java-devel.version}" description="Java JNI header" />
-	</target>
-
 
 	<target name="log4cxx-lib-linux" if="linux">
 		<copy file="${log4cxx.lib.dir}/liblog4cxx.so" todir="${build.dist}/lib" />
