@@ -135,7 +135,6 @@
 		<available file="${idl.src.dir}" property="idl.src.dir.exists"/>
 		<available file="${src.main}" property="src.main.exists"/>
 		<available file="${src.test}" property="src.test.exists"/>
-		<echo message="has JNI ${include-jni-linux} ${env.JAVA_HOME}/include/linux"/>
 	</target>
 
 	<target name="clean" >
@@ -239,7 +238,6 @@
 		<fileset id="fileset.compile.libs" dir="target/cxx/compile/lib" includes="${lib.convert.pattern}" erroronmissingdir="false"/>
 		<property name="xcompile.libs" value="${toString:fileset.compile.libs}"/>
 		<convert-libset libdir="${xcompile.libs}" propname="compile.libs"/>
-		<echo message="1"/>
 		<cc name="${toolchain.compiler}" rebuild="true" exceptions="true" outfile="target/${configuration.type}/${lib.type}/${project.artifactId}" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="${lib.type}" objdir="target/cpp-classes" debug="${debug}">
 			<compiler name="${toolchain.compiler}" unless="is-msvc">
                 &compiler-args-gcc;
@@ -309,7 +307,6 @@
 
 	<target name="generate-test-lib" depends="init-cpp-test" if="have.src.main.file">
 		<available file="target/${configuration.type}/${lib.type}" type="dir" property="main.built" />
-		<echo message="2"/>
 		<cc name="${toolchain.compiler}" exceptions="true" outfile="target/${src.main.file}"
             subsystem="console" multithreaded="true" runtime="${runtime}" outtype="shared"
             objdir="target/cpp-test-classes" debug="${debug}">
@@ -347,7 +344,6 @@
 	</target>
 
 	<target name="generate-exe" depends="init-cpp-test" if="have.src.main.file">
-		<echo message="3"/>
 		<cc name="${toolchain.compiler}" exceptions="true" outfile="target/${src.main.file}"
             subsystem="console" multithreaded="true" runtime="${runtime}" outtype="executable"
             objdir="target/cpp-test-classes" debug="${debug}">
@@ -398,7 +394,6 @@
 		<property name="xtest.libs" value="${toString:fileset.test.libs}"/>
 		<convert-libset libdir="${xtest.libs}" propname="test.libs"/>
 		<!-- rebuild="true" -->
-		<echo message="4"/>
 		<cc name="${toolchain.compiler}" exceptions="true" outfile="target/testsuite"
             subsystem="console" multithreaded="true" runtime="${runtime}" outtype="${test.output.type}"
             objdir="target/cpp-test-classes" debug="${debug}">
