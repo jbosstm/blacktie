@@ -21,7 +21,9 @@ public class TestTTLService implements BlacktieService {
 			X_OCTET toReturn = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
 
 			if (data.contains("counter")) {
-				toReturn.setByteArray(String.valueOf(n).getBytes());
+				String counter = String.valueOf(n);
+				toReturn.setByteArray(counter.getBytes());
+				len = counter.length();
 			} else {
 				n++;
 				try {

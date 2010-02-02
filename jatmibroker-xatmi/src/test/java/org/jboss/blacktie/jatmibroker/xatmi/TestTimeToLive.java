@@ -106,6 +106,7 @@ public class TestTimeToLive extends TestCase {
 			assertTrue(((X_OCTET) rcvbuf.getBuffer()).getByteArray() != null);
 			byte[] received = ((X_OCTET) rcvbuf.getBuffer()).getByteArray();
 
+			log.info("received length is " + received.length);
 			String counter = new String(received);
 			log.info("get message counter of TTL is " + counter);
 			assertTrue(received[0] == '1');
