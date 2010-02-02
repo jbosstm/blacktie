@@ -80,7 +80,7 @@
 
                 <configuration>
                     <toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
-					<src.main.file>BAR</src.main.file>
+					<src.main.file>BAR</src.main.file>
                 </configuration>
                 <executions>
                     <execution>
