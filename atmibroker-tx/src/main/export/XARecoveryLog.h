@@ -22,7 +22,7 @@
 #include <fstream>
 #include "atmiBrokerTxMacro.h"
 #include "RMException.h"
-#include "SynchronizableObject.h"
+//#include "SynchronizableObject.h"
 
 /*
  * Simple log for recording branch recovery coordinators at
@@ -73,7 +73,7 @@ private:
 	rrec_t* arena_;
 	size_t nblocks_;
 	size_t maxblocks_;	// limit the arena to this many blocks (configurable)
-	SynchronizableObject lock_;
+//	SynchronizableObject lock_;
 
 	bool morecore(size_t nblocks, bool dosync);
 	void sync_rec(void* p, size_t sz);

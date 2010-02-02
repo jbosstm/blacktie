@@ -252,7 +252,7 @@ SQL>  rollback force 'Oracle transaction id';
 APPENDIX: RECOVERY
 ==================
 To test recovery you will need to link against a library that is only available in the test suite (which you'll need to build
-from source - the library is called libdummy-rm.so).
+from source - the library is called libtx-test-utilities.so).
 
 When building the client and server define the macro TX_RC as shown below. When the client runs it sends a request to
 the server that causes the server to generate a segmentation fault during the commit phase of the transaction commitment
@@ -288,7 +288,7 @@ The XA resource that generates the segmentation fault needs to be included in En
                 <XA_OPEN_STRING></XA_OPEN_STRING>
                 <XA_CLOSE_STRING></XA_CLOSE_STRING>
                 <XA_SWITCH>testxasw</XA_SWITCH>
-                <XA_LIB_NAME>libdummy-rm.so</XA_LIB_NAME>
+                <XA_LIB_NAME>libtx-test-utilities.so</XA_LIB_NAME>
             </XA_RESOURCE>
 
 Make sure that the XA_RESOURCE_MGR_ID lies between the two ORACLE Resource Manager ids. This will ensure that the
@@ -325,14 +325,14 @@ On Linux:
 $BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" \
      -Dx.inc.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
      -Dx.inc.dir2="$ORACLE_HOME/rdbms/public" \
-     -Dx.lib.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="dummy-rm" \
+     -Dx.lib.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="tx-test-utilities" \
      -Dx.lib.dir2="$ORACLE_HOME/lib" -Dx.libs2="occi clntsh" \
      -Dx.define="ORACLE, TX_RC"
 
 $BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" \
      -Dx.inc.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
      -Dx.inc.dir2="$ORACLE_HOME/rdbms/public" \
-     -Dx.lib.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="dummy-rm" \
+     -Dx.lib.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="tx-test-utilities" \
      -Dx.lib.dir2="$ORACLE_HOME/lib" -Dx.libs2="occi clntsh" \
      -Dx.define="ORACLE, TX_RC"
 
@@ -343,11 +343,11 @@ XA_RESOURCE_MGR_ID setting for the DummyDb resource manager):
 
 
 On Windows:
-%BLACKTIE_BIN_DIR%/bin/generate_client.bat -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci"      -Dx.inc.dir2="c:/blacktie/trunk/atmibroker-tx/target/cxx/test/include"      -Dx.lib.dir2="c:/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs2="dummy-rm"     -Dx.define="ORACLE, TX_RC"
+%BLACKTIE_BIN_DIR%/bin/generate_client.bat -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci"      -Dx.inc.dir2="c:/blacktie/trunk/atmibroker-tx/target/cxx/test/include"      -Dx.lib.dir2="c:/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs2="tx-test-utilities"     -Dx.define="ORACLE, TX_RC"
 
-%BLACKTIE_BIN_DIR%/bin/generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci"           -Dx.inc.dir2="C:/blacktie/trunk/atmibroker-tx/target/cxx/test/include"      -Dx.lib.dir2="c:/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs2="dummy-rm"      -Dx.define="ORACLE, TX_RC"
+%BLACKTIE_BIN_DIR%/bin/generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci"           -Dx.inc.dir2="C:/blacktie/trunk/atmibroker-tx/target/cxx/test/include"      -Dx.lib.dir2="c:/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs2="tx-test-utilities"      -Dx.define="ORACLE, TX_RC"
 
-Note that the library path needs to include the location of the dummy-rm library. For example:
+Note that the library path needs to include the location of the tx-test-utilities library. For example:
 On Linux:
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib:$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib
 On Windows:

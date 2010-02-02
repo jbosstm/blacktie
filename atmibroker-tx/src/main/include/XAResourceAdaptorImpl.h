@@ -18,6 +18,7 @@
 #ifndef _XARESOURCEADAPTORIMPL_H
 #define _XARESOURCEADAPTORIMPL_H
 
+#include "SynchronizableObject.h"
 #include "XARecoveryLog.h"
 #include "XAStateModel.h"
 #include "txi.h"

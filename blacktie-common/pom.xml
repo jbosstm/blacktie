@@ -178,11 +178,6 @@
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.blacktie</groupId>
-				<artifactId>atmibroker-idl</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.blacktie</groupId>
 				<artifactId>atmibroker-idl-java</artifactId>
 				<version>${project.version}</version>
 			</dependency>

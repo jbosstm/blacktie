@@ -30,6 +30,7 @@
 
 #include "XARecoveryLog.h"
 #include "AtmiBrokerEnv.h"
+#include "SynchronizableObject.h"
 
 #define INUSE 0xaf12L	// marker to indicate that the block is allocated
 #define NBLOCKS 0x100	// the minimum number of blocks to allocate when expanding the arena
@@ -51,6 +52,7 @@
 // the persistent store for recovery records
 static const char* DEF_LOG = "rclog";
 static char RCLOGPATH[1024];
+static SynchronizableObject lock_;
 
 log4cxx::LoggerPtr xarcllogger(log4cxx::Logger::getLogger("TxLogXARecoveryLog"));
 
