@@ -40,7 +40,7 @@
 	<includepath path="${env.BLACKTIE_BIN_DIR}/include"/>
 '>
 <!ENTITY libsets-main-dependencies '
-	<libset dir="${env.BLACKTIE_BIN_DIR}/lib" libs="${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix} log4cxx atmibroker-idl atmibroker-core atmibroker-tx atmibroker-xatmi" />
+	<libset dir="${env.BLACKTIE_BIN_DIR}/lib" libs="${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix} log4cxx atmibroker-idl-cxx atmibroker-core atmibroker-tx atmibroker-xatmi" />
 '>
 ]>
 <project name="generate-executables">
