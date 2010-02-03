@@ -37,9 +37,8 @@ public class JABClientTest extends TestCase {
 	private BufferedReader br = new BufferedReader(isr);
 
 	public void test() throws Exception {
-		log.info("JABClient");
-		String message = prompt("Enter a message to send");
-		try {
+			log.info("JABClient");
+			String message = prompt("Enter a message to send");
 			JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
 					null);
 			JABSession aJabSession = new JABSession(aJabSessionAttributes);
@@ -55,9 +54,6 @@ public class JABClientTest extends TestCase {
 							"X_OCTET")));
 			transaction.commit();
 			aJabSession.closeSession();
-		} catch (JABException e) {
-			log.error("JAB error: " + e.getMessage(), e);
-		}
 	}
 
 	private String prompt(String prompt) throws IOException {

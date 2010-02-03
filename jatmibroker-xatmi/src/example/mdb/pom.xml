@@ -139,11 +139,70 @@
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>jatmibroker-xatmi</artifactId>
 			<version>2.0-MR2-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.jboss.javaee</groupId>
+					<artifactId>jboss-javaee</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>jboss.jbossts</groupId>
+					<artifactId>jbossjts</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>jboss.jbossts</groupId>
+					<artifactId>jbossjts-jacorb</artifactId>
+				</exclusion>
+				<exclusion>
+		        		<groupId>org.jboss.integration</groupId>
+					<artifactId>jboss-corba-ots-spi</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>apache-avalon</groupId>
+					<artifactId>avalon-framework</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>apache-avalon-logkit</groupId>
+					<artifactId>logkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>jboss.jbossts</groupId>
+					<artifactId>jbossts-common</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>jboss.messaging</groupId>
+					<artifactId>jboss-messaging-client</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.jboss.naming</groupId>
+					<artifactId>jnp-client</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.jboss.aop</groupId>
+					<artifactId>jboss-aop</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.jboss.remoting</groupId>
+					<artifactId>jboss-remoting</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>concurrent</groupId>
+					<artifactId>concurrent</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.jboss.serialization</groupId>
+					<artifactId>jboss-serialization</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.15</version>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>com.sun.jmx</groupId>
@@ -164,6 +223,13 @@
 			</exclusions>
 		</dependency>
 
+<!--
+		<dependency>
+			<groupId>javax.jms</groupId>
+			<artifactId>jms</artifactId>
+			<version>1.1</version>
+		</dependency>
+-->
 
 		<dependency>
 			<groupId>org.jboss.javaee</groupId>
@@ -179,7 +245,6 @@
 		<dependency>
 			<groupId>jboss.jbossts</groupId>
 			<artifactId>jbossjts</artifactId>
-			<version>4.6.1.GA</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -197,65 +262,60 @@
 			<groupId>apache-avalon</groupId>
 			<artifactId>avalon-framework</artifactId>
 			<version>4.1.5</version>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>apache-avalon-logkit</groupId>
 			<artifactId>logkit</artifactId>
 			<version>1.2</version>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<!-- END ORB -->
 		<!-- START JTS -->
 		<dependency>
 			<groupId>jboss.jbossts</groupId>
-			<artifactId>jbossjts</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss.jbossts</groupId>
 			<artifactId>jbossjts-jacorb</artifactId>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>jboss.jbossts</groupId>
 			<artifactId>jbossts-common</artifactId>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<!-- END JTS -->
 		<!-- START JMS -->
 		<dependency>
 			<groupId>jboss.messaging</groupId>
 			<artifactId>jboss-messaging-client</artifactId>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.naming</groupId>
 			<artifactId>jnp-client</artifactId>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.aop</groupId>
 			<artifactId>jboss-aop</artifactId>
 			<classifier>client</classifier>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.remoting</groupId>
 			<artifactId>jboss-remoting</artifactId>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>concurrent</groupId>
 			<artifactId>concurrent</artifactId>
 			<version>1.3.4</version>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.serialization</groupId>
 			<artifactId>jboss-serialization</artifactId>
 			<version>1.1.0.Beta1</version>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<!-- END JMS -->
 
@@ -265,74 +325,65 @@
 	        <dependency>
         		<groupId>org.jboss.integration</groupId>
 			<artifactId>jboss-corba-ots-spi</artifactId>
+			<scope>test</scope>
         	</dependency>
-		<dependency>
-			<groupId>org.jboss.javaee</groupId>
-			<artifactId>jboss-javaee</artifactId>
-			<scope>provided</scope>
-		</dependency>
 		<dependency>
 			<groupId>apache-avalon</groupId>
 			<artifactId>avalon-framework</artifactId>
 			<version>4.1.5</version>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>apache-avalon-logkit</groupId>
 			<artifactId>logkit</artifactId>
 			<version>1.2</version>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<!-- START JTS -->
 		<dependency>
 			<groupId>jboss.jbossts</groupId>
-			<artifactId>jbossjts</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>jboss.jbossts</groupId>
 			<artifactId>jbossjts-jacorb</artifactId>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>jboss.jbossts</groupId>
 			<artifactId>jbossts-common</artifactId>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<!-- END JTS -->
 		<!-- START JMS -->
 		<dependency>
 			<groupId>jboss.messaging</groupId>
 			<artifactId>jboss-messaging-client</artifactId>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.naming</groupId>
 			<artifactId>jnp-client</artifactId>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.aop</groupId>
 			<artifactId>jboss-aop</artifactId>
 			<classifier>client</classifier>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.remoting</groupId>
 			<artifactId>jboss-remoting</artifactId>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>concurrent</groupId>
 			<artifactId>concurrent</artifactId>
 			<version>1.3.4</version>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.serialization</groupId>
 			<artifactId>jboss-serialization</artifactId>
 			<version>1.1.0.Beta1</version>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 		<!-- END JMS -->
 		<!-- END REQUIRED DEPENDENCIES FOR BLACKTIE -->
