@@ -69,7 +69,6 @@
 				<exclude>atmibroker-idl-cxx/target/**</exclude>
 				<exclude>atmibroker-idl-java/target/**</exclude>
 			</excludes>
-			</excludes>
 		</fileSet>
 		<fileSet>
 			<directory>../jatmibroker-xatmi</directory>
