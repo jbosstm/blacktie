@@ -66,6 +66,9 @@
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<excludes>
 				<exclude>target/**</exclude>
+				<exclude>atmibroker-idl-cxx/target/**</exclude>
+				<exclude>atmibroker-idl-java/target/**</exclude>
+			</excludes>
 			</excludes>
 		</fileSet>
 		<fileSet>
