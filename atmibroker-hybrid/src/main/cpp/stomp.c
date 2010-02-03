@@ -242,7 +242,7 @@ apr_status_t stomp_read_buffer(stomp_connection *connection, char **data, apr_po
       
    head = tail = apr_pcalloc(tpool, sizeof(data_block_list));
    if( head == NULL ) {
-      userlogc_warn("stomp_read_line could not apr_pcalloc returning APR_ENONMEM");
+      userlogc_warn("stomp_read_buffer could not apr_pcalloc returning APR_ENONMEM");
       return APR_ENOMEM;
    }
    
@@ -267,9 +267,8 @@ apr_status_t stomp_read_buffer(stomp_connection *connection, char **data, apr_po
             rc = apr_socket_recv(connection->socket, endline, &length);
             CHECK_SUCCESS;
             if( endline[0] != '\n' ) {
-               userlogc_warn("stomp_read_buffer endline[0] != \\n returning APR_EGENERAL, length was %d", length);
-               userlogc_warn("character as a decimal: %d", endline[0]);
-               userlogc_warn("character as a character: %c", endline[0]);
+               userlogc_warn("stomp_read_buffer endline[0] != \\n returning APR_EGENERAL, character as a decimal: %d", endline[0]);
+               userlogc_warn("tail->data length was: %d", bytesRead);
                return APR_EGENERAL;
             }
             break;
