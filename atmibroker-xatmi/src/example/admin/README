@@ -37,9 +37,9 @@ Follow the instructions in $BLACKTIE_BIN_DIR/examples/xatmi/fooapp to start a se
 
 3. CREATE THE CLIENT
 On Linux:
-	$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes=client.c
+	$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes=client.cxx
 On Windows:
-	%BLACKTIE_BIN_DIR%\bin\generate_client.bat -Dclient.includes=client.c
+	%BLACKTIE_BIN_DIR%\bin\generate_client.bat -Dclient.includes=client.cxx
 
 
 4 RUN THE CLIENT

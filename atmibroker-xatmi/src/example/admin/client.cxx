@@ -34,7 +34,7 @@ void output(char* operationName, char* listIn) {
 	userlogc("Output from %s: ", operationName);
 	char* list = (char*) malloc(strlen(listIn) + 1);
 	list[strlen(listIn)] = '\0';
-	list = memcpy(list, listIn, strlen(listIn));
+	list = (char*) memcpy(list, listIn, strlen(listIn));
 	char* nextToken = strtok(list, ",");
 	int i = 0;
 	while (nextToken != NULL) {
@@ -130,7 +130,7 @@ int main(int argc, char **argv) {
 		userlogc((char*) "ERROR: There were no running servers detected");
 	}
 
-	tpfree(sbuf);
+	//tpfree(sbuf);
 	tpfree(retbuf);
 	return 0;
 }
