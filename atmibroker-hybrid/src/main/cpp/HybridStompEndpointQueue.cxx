@@ -100,14 +100,14 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 	lock->lock();
 	if (!shutdown) {
 		stomp_frame *frame = NULL;
-		if (this->message) {
-			LOG4CXX_DEBUG(logger, "Handing off old message");
-			frame = this->message;
-			this->message = NULL;
-		} else {
-			LOG4CXX_TRACE(logger, (char*) "Receiving from: " << name);
-			connect();
-			if (connected) {
+		connect();
+		if (connected) {
+			if (this->message) {
+				LOG4CXX_DEBUG(logger, "Handing off old message");
+				frame = this->message;
+				this->message = NULL;
+			} else {
+				LOG4CXX_TRACE(logger, (char*) "Receiving from: " << name);
 				apr_status_t rc = stomp_read(connection, &frame, pool);
 				if (rc == APR_TIMEUP || rc == 730060) {
 					LOG4CXX_TRACE(logger, "Could not read frame for " << name
@@ -181,68 +181,71 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 				} else {
 					LOG4CXX_DEBUG(logger, "Message received 1st attempt");
 				}
-			} else {
-				LOG4CXX_ERROR(logger, "receive failed - not able to connect");
 			}
+			if (frame != NULL) {
+				LOG4CXX_DEBUG(logger, "Received from: " << name << " Command: "
+						<< frame->command);
+				message.control = (char*) apr_hash_get(frame->headers,
+						"messagecontrol", APR_HASH_KEY_STRING);
+				LOG4CXX_TRACE(logger, "Extracted control: " << message.control);
+
+				LOG4CXX_TRACE(logger, "Ready to handle message");
+				char * correlationId = (char*) apr_hash_get(frame->headers,
+						"messagecorrelationId", APR_HASH_KEY_STRING);
+				LOG4CXX_TRACE(logger, "Read a correlation ID" << correlationId);
+				LOG4CXX_TRACE(logger, "Extracted correlationID");
+				char * flags = (char*) apr_hash_get(frame->headers,
+						"messageflags", APR_HASH_KEY_STRING);
+				LOG4CXX_TRACE(logger, "Extracted flags");
+				char * rval = (char*) apr_hash_get(frame->headers,
+						"messagerval", APR_HASH_KEY_STRING);
+				LOG4CXX_TRACE(logger, "Extracted rval");
+				char * rcode = (char*) apr_hash_get(frame->headers,
+						"messagercode", APR_HASH_KEY_STRING);
+				LOG4CXX_TRACE(logger, "Extracted rcode");
+
+				char * type = (char*) apr_hash_get(frame->headers,
+						"messagetype", APR_HASH_KEY_STRING);
+				LOG4CXX_TRACE(logger, "Extracted messagetype");
+				message.type = type;
+
+				char * subtype = (char*) apr_hash_get(frame->headers,
+						"messagesubtype", APR_HASH_KEY_STRING);
+				LOG4CXX_TRACE(logger, "Extracted messagesubtype");
+				message.subtype = subtype;
+
+				char * serviceName = (char*) apr_hash_get(frame->headers,
+						"servicename", APR_HASH_KEY_STRING);
+				LOG4CXX_TRACE(logger, "Extracted servicename");
+
+				message.len = frame->body_length;
+				message.data = BufferConverterImpl::convertToMemoryFormat(
+						message.type, message.subtype, frame->body,
+						&message.len);
+				LOG4CXX_TRACE(logger, "Set body and length: " << message.len);
+
+				message.replyto = (const char*) apr_hash_get(frame->headers,
+						"messagereplyto", APR_HASH_KEY_STRING);
+				LOG4CXX_TRACE(logger, "Set replyto: " << message.replyto);
+				message.correlationId = apr_atoi64(correlationId);
+				LOG4CXX_TRACE(logger, "Set correlationId: "
+						<< message.correlationId);
+				message.flags = apr_atoi64(flags);
+				LOG4CXX_TRACE(logger, "Set flags: " << message.flags);
+				message.rval = apr_atoi64(rval);
+				LOG4CXX_TRACE(logger, "Set rval: " << message.rval);
+				message.rcode = apr_atoi64(rcode);
+				LOG4CXX_TRACE(logger, "Set rcode: " << message.rcode);
+				LOG4CXX_TRACE(logger, "Set control: " << message.control);
+				message.serviceName = serviceName;
+				LOG4CXX_TRACE(logger, "set serviceName");
+				message.received = true;
+			}
+		} else {
+			LOG4CXX_ERROR(logger, "receive failed - not able to connect");
 		}
-		if (frame != NULL) {
-			LOG4CXX_DEBUG(logger, "Received from: " << name << " Command: "
-					<< frame->command);
-			message.control = (char*) apr_hash_get(frame->headers,
-					"messagecontrol", APR_HASH_KEY_STRING);
-			LOG4CXX_TRACE(logger, "Extracted control: " << message.control);
-
-			LOG4CXX_TRACE(logger, "Ready to handle message");
-			char * correlationId = (char*) apr_hash_get(frame->headers,
-					"messagecorrelationId", APR_HASH_KEY_STRING);
-			LOG4CXX_TRACE(logger, "Read a correlation ID" << correlationId);
-			LOG4CXX_TRACE(logger, "Extracted correlationID");
-			char * flags = (char*) apr_hash_get(frame->headers, "messageflags",
-					APR_HASH_KEY_STRING);
-			LOG4CXX_TRACE(logger, "Extracted flags");
-			char * rval = (char*) apr_hash_get(frame->headers, "messagerval",
-					APR_HASH_KEY_STRING);
-			LOG4CXX_TRACE(logger, "Extracted rval");
-			char * rcode = (char*) apr_hash_get(frame->headers, "messagercode",
-					APR_HASH_KEY_STRING);
-			LOG4CXX_TRACE(logger, "Extracted rcode");
-
-			char * type = (char*) apr_hash_get(frame->headers, "messagetype",
-					APR_HASH_KEY_STRING);
-			LOG4CXX_TRACE(logger, "Extracted messagetype");
-			message.type = type;
-
-			char * subtype = (char*) apr_hash_get(frame->headers,
-					"messagesubtype", APR_HASH_KEY_STRING);
-			LOG4CXX_TRACE(logger, "Extracted messagesubtype");
-			message.subtype = subtype;
-
-			char * serviceName = (char*) apr_hash_get(frame->headers,
-					"servicename", APR_HASH_KEY_STRING);
-			LOG4CXX_TRACE(logger, "Extracted servicename");
-
-			message.len = frame->body_length;
-			message.data = BufferConverterImpl::convertToMemoryFormat(
-					message.type, message.subtype, frame->body, &message.len);
-			LOG4CXX_TRACE(logger, "Set body and length: " << message.len);
-
-			message.replyto = (const char*) apr_hash_get(frame->headers,
-					"messagereplyto", APR_HASH_KEY_STRING);
-			LOG4CXX_TRACE(logger, "Set replyto: " << message.replyto);
-			message.correlationId = apr_atoi64(correlationId);
-			LOG4CXX_TRACE(logger, "Set correlationId: "
-					<< message.correlationId);
-			message.flags = apr_atoi64(flags);
-			LOG4CXX_TRACE(logger, "Set flags: " << message.flags);
-			message.rval = apr_atoi64(rval);
-			LOG4CXX_TRACE(logger, "Set rval: " << message.rval);
-			message.rcode = apr_atoi64(rcode);
-			LOG4CXX_TRACE(logger, "Set rcode: " << message.rcode);
-			LOG4CXX_TRACE(logger, "Set control: " << message.control);
-			message.serviceName = serviceName;
-			LOG4CXX_TRACE(logger, "set serviceName");
-			message.received = true;
-		}
+	} else {
+		LOG4CXX_ERROR(logger, "receive failed - in shutdown");
 	}
 	lock->unlock();
 	return message;
