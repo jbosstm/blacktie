@@ -409,6 +409,7 @@ apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_p
       // Parse the command.
 	  rc = stomp_read_line(connection, &p, &length, pool);
 	  CHECK_SUCCESS;
+	  userlogc_trace("Read the command %s", p);
 
       f->command = p;
       
@@ -416,6 +417,7 @@ apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_p
       while( 1 ) {
          rc = stomp_read_line(connection, &p, &length, pool);
 		 CHECK_SUCCESS;
+         userlogc_trace("Read a header: %s", p);
 		 
 		 // Done with headers
 		 if(length == 0)
