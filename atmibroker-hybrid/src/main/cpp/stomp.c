@@ -44,7 +44,7 @@ apr_status_t stomp_connect(stomp_connection **connection_ref, const char *hostna
 	//
 	connection = apr_pcalloc(pool, sizeof(stomp_connection));
 	if( connection == NULL ) {
-		userlogc_warn("stomp_connect cannot allocate for pool APR_ENOMEM\n");
+		userlogc_warn("stomp_connect cannot allocate for pool APR_ENOMEM");
 		return APR_ENOMEM;
 	}
    
@@ -93,7 +93,7 @@ apr_status_t stomp_disconnect(stomp_connection **connection_ref)
 	stomp_connection *connection = *connection_ref;
    
    if( connection_ref == NULL || *connection_ref==NULL ) {
-      userlogc_warn("stomp_disconnect no connection_ref APR_EGENERAL\n");
+      userlogc_warn("stomp_disconnect no connection_ref APR_EGENERAL");
       return APR_EGENERAL;
    }
    
@@ -129,7 +129,7 @@ apr_status_t stomp_write_buffer(stomp_connection *connection, const char *data, 
       remaining -= length;
       //      size += length;
       if( rc != APR_SUCCESS ) {
-         userlogc_warn("stomp_write_buffer could not apr_socket_send returning %d\n", rc);
+         userlogc_warn("stomp_write_buffer could not apr_socket_send returning %d", rc);
          return rc;
       }
 	}
@@ -152,13 +152,13 @@ apr_status_t stomp_read_line(stomp_connection *connection, char **data, int* len
    
    rc = apr_pool_create(&tpool, pool);
    if( rc != APR_SUCCESS ) {
-      userlogc_warn("stomp_read_line could not apr_pool_create returning %d\n", rc);
+      userlogc_warn("stomp_read_line could not apr_pool_create returning %d", rc);
       return rc;
    }
       
    head = tail = apr_pcalloc(tpool, sizeof(data_block_list));
    if( head == NULL ) {
-      userlogc_warn("stomp_read_line could not apr_pcalloc returning APR_ENOMEM\n");
+      userlogc_warn("stomp_read_line could not apr_pcalloc returning APR_ENOMEM");
       return APR_ENOMEM;
    }
 
@@ -183,7 +183,8 @@ apr_status_t stomp_read_line(stomp_connection *connection, char **data, int* len
          } else if( tail->data[i-1]==0 ) {
 			// Encountered 0 before end of line
 			apr_pool_destroy(tpool);
-            userlogc_warn("stomp_read_line tail->data[i-1]==0 returning APR_EGENERAL\n");
+            userlogc_warn("stomp_read_line tail->data[i-1]==0 returning APR_EGENERAL");
+            userlogc_warn("tail->data was: %s", tail->data);
 			return APR_EGENERAL;
 		 }
          
@@ -192,7 +193,7 @@ apr_status_t stomp_read_line(stomp_connection *connection, char **data, int* len
             tail->next = apr_pcalloc(tpool, sizeof(data_block_list));
             if( tail->next == NULL ) {
                apr_pool_destroy(tpool);
-               userlogc_warn("stomp_read_line could not apr_pcalloc (2nd code block) returning APR_ENOMEM\n");
+               userlogc_warn("stomp_read_line could not apr_pcalloc (2nd code block) returning APR_ENOMEM");
                return APR_ENOMEM;
             }
             tail=tail->next;
@@ -207,7 +208,7 @@ apr_status_t stomp_read_line(stomp_connection *connection, char **data, int* len
    p = *data;
    if( p==NULL ) {
       apr_pool_destroy(tpool);
-      userlogc_warn("stomp_read_line could not apr_pcalloc (3rd code block) returning APR_ENOMEM\n");
+      userlogc_warn("stomp_read_line could not apr_pcalloc (3rd code block) returning APR_ENOMEM");
       return APR_ENOMEM;
    }
 
@@ -235,13 +236,13 @@ apr_status_t stomp_read_buffer(stomp_connection *connection, char **data, apr_po
    
    rc = apr_pool_create(&tpool, pool);
    if( rc != APR_SUCCESS ) {
-      userlogc_warn("stomp_read_buffer could not apr_pool_create returning %d\n", rc);
+      userlogc_warn("stomp_read_buffer could not apr_pool_create returning %d", rc);
       return rc;
    }
       
    head = tail = apr_pcalloc(tpool, sizeof(data_block_list));
    if( head == NULL ) {
-      userlogc_warn("stomp_read_line could not apr_pcalloc returning APR_ENONMEM\n");
+      userlogc_warn("stomp_read_line could not apr_pcalloc returning APR_ENONMEM");
       return APR_ENOMEM;
    }
    
@@ -266,9 +267,9 @@ apr_status_t stomp_read_buffer(stomp_connection *connection, char **data, apr_po
             rc = apr_socket_recv(connection->socket, endline, &length);
             CHECK_SUCCESS;
             if( endline[0] != '\n' ) {
-               userlogc_warn("stomp_read_buffer endline[0] != \\n returning APR_EGENERAL, length was %d\n", length);
-               userlogc_warn("character as a decimal: %d\n", endline[0]);
-               userlogc_warn("character as a character: %c\n", endline[0]);
+               userlogc_warn("stomp_read_buffer endline[0] != \\n returning APR_EGENERAL, length was %d", length);
+               userlogc_warn("character as a decimal: %d", endline[0]);
+               userlogc_warn("character as a character: %c", endline[0]);
                return APR_EGENERAL;
             }
             break;
@@ -279,7 +280,7 @@ apr_status_t stomp_read_buffer(stomp_connection *connection, char **data, apr_po
             tail->next = apr_pcalloc(tpool, sizeof(data_block_list));
             if( tail->next == NULL ) {
                apr_pool_destroy(tpool);
-               userlogc_warn("stomp_read_buffer could not apr_pcalloc (2nd block) returning APR_ENONMEM\n");
+               userlogc_warn("stomp_read_buffer could not apr_pcalloc (2nd block) returning APR_ENONMEM");
                return APR_ENOMEM;
             }
             tail=tail->next;
@@ -294,7 +295,7 @@ apr_status_t stomp_read_buffer(stomp_connection *connection, char **data, apr_po
    p = *data;
    if( p==NULL ) {
       apr_pool_destroy(tpool);
-      userlogc_warn("stomp_read_buffer could not apr_pcalloc (3rd block) returning APR_ENONMEM\n");
+      userlogc_warn("stomp_read_buffer could not apr_pcalloc (3rd block) returning APR_ENONMEM");
       return APR_ENOMEM;
    }
    
@@ -388,13 +389,13 @@ apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_p
       
    f = apr_pcalloc(pool, sizeof(stomp_frame));
    if( f == NULL ) {
-      userlogc_warn("stomp_read returning APR_ENONMEM\n");
+      userlogc_warn("stomp_read returning APR_ENONMEM");
       return APR_ENOMEM;
    }
    
    f->headers = apr_hash_make(pool);
    if( f->headers == NULL ) {
-     userlogc_warn("stomp_read returning 2nd APR_ENONMEM\n");
+     userlogc_warn("stomp_read returning 2nd APR_ENONMEM");
      return APR_ENOMEM;
    }
          
@@ -429,7 +430,7 @@ apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_p
             p2 = strstr(p,":");
             if( p2 == NULL ) {
                // Expected at 1 : to delimit the key from the value.
-               userlogc_warn("stomp_read returning APR_EGENERAL\n");
+               userlogc_warn("stomp_read returning APR_EGENERAL");
                return APR_EGENERAL;
             }
             
@@ -461,7 +462,7 @@ apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_p
 			  rc = apr_socket_recv(connection->socket, endbuffer, &length);
 			  CHECK_SUCCESS;
 			  if(length != 2 || endbuffer[0] != '\0' || endbuffer[1] != '\n') {
-				  userlogc_warn("stomp_read returning 2nd APR_EGENERAL\n");
+				  userlogc_warn("stomp_read returning 2nd APR_EGENERAL");
 				  return APR_EGENERAL;
                           }
 		  }
