@@ -31,12 +31,14 @@ char prompt(char* prompt) {
 }
 
 void output(char* operationName, char* listIn) {
+	char* list;
+	char* nextToken;
+	int i = 0;
 	userlogc("Output from %s: ", operationName);
-	char* list = (char*) malloc(strlen(listIn) + 1);
+	list = (char*) malloc(strlen(listIn) + 1);
 	list[strlen(listIn)] = '\0';
 	list = (char*) memcpy(list, listIn, strlen(listIn));
-	char* nextToken = strtok(list, ",");
-	int i = 0;
+	nextToken = strtok(list, ",");
 	while (nextToken != NULL) {
 		userlogc((char*) "Element: %d Value: %s", i, nextToken);
 		nextToken = strtok(NULL, " ");
@@ -63,6 +65,8 @@ int main(int argc, char **argv) {
 	long callflags;
 	char* list;
 	char* serverName;
+	int id;
+
 	callflags = 0;
 	retbufsize = 1;
 	retbuf = tpalloc("X_OCTET", 0, retbufsize);
@@ -117,7 +121,7 @@ int main(int argc, char **argv) {
 
 		response = prompt(
 				"Enter the instance id of the server you wish to shutdown");
-		int id = atoi(&response);
+		id = atoi(&response);
 
 		// shutdown
 		sbufsize = strlen("shutdown,,,,") + strlen(serverName) + 1 + 1;
