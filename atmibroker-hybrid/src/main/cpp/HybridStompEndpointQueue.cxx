@@ -287,6 +287,7 @@ void HybridStompEndpointQueue::connect() {
 				HybridConnectionImpl::disconnect(connection, pool);
 			} else {
 				stomp_frame *framed;
+				LOG4CXX_DEBUG(logger, "Reading response: " << fullName);
 				rc = stomp_read(connection, &framed, pool);
 				if (rc != APR_SUCCESS) {
 					setSpecific(TPE_KEY, TSS_TPESYSTEM);

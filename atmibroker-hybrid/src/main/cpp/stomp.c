@@ -39,6 +39,7 @@ apr_status_t stomp_connect(stomp_connection **connection_ref, const char *hostna
 	int socket_family;
 	stomp_connection *connection=NULL;
    
+	userlogc_trace("stomp_connect");
 	//
 	// Allocate the connection and a memory pool for the connection.
 	//
@@ -92,6 +93,7 @@ apr_status_t stomp_disconnect(stomp_connection **connection_ref)
    apr_status_t result, rc;
 	stomp_connection *connection = *connection_ref;
    
+	userlogc_trace("stomp_disconnect");
    if( connection_ref == NULL || *connection_ref==NULL ) {
       userlogc_warn("stomp_disconnect no connection_ref APR_EGENERAL");
       return APR_EGENERAL;
@@ -122,6 +124,7 @@ apr_status_t stomp_write_buffer(stomp_connection *connection, const char *data, 
 {
    apr_size_t remaining = size;
    size=0;
+   userlogc_trace("stomp_write_buffer");
 	while( remaining>0 ) {
 		apr_size_t length = remaining;
 		apr_status_t rc = apr_socket_send(connection->socket, data, &length);
@@ -149,7 +152,8 @@ apr_status_t stomp_read_line(stomp_connection *connection, char **data, int* len
    apr_size_t i=0;
    apr_size_t bytesRead=0;
    char *p;
-   
+
+   userlogc_trace("stomp_read_line");
    rc = apr_pool_create(&tpool, pool);
    if( rc != APR_SUCCESS ) {
       userlogc_warn("stomp_read_line could not apr_pool_create returning %d", rc);
@@ -233,7 +237,8 @@ apr_status_t stomp_read_buffer(stomp_connection *connection, char **data, apr_po
    apr_size_t i=0;
    apr_size_t bytesRead=0;
    char *p;
-   
+
+   userlogc_trace("stomp_read_buffer");
    rc = apr_pool_create(&tpool, pool);
    if( rc != APR_SUCCESS ) {
       userlogc_warn("stomp_read_buffer could not apr_pool_create returning %d", rc);
@@ -318,7 +323,8 @@ apr_status_t stomp_read_buffer(stomp_connection *connection, char **data, apr_po
 
 apr_status_t stomp_write(stomp_connection *connection, stomp_frame *frame, apr_pool_t* pool) {
    apr_status_t rc;
-   
+
+   userlogc_trace("stomp_write");
 #define CHECK_SUCCESS if( rc!=APR_SUCCESS ) { return rc; }
    // Write the command.
    rc = stomp_write_buffer(connection, frame->command, strlen(frame->command));
@@ -385,7 +391,8 @@ apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_p
    
    apr_status_t rc;
    stomp_frame *f;
-      
+
+   userlogc_trace("stomp_read");
    f = apr_pcalloc(pool, sizeof(stomp_frame));
    if( f == NULL ) {
       userlogc_warn("stomp_read returning APR_ENONMEM");
