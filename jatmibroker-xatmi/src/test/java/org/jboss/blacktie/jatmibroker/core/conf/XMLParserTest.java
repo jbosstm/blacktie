@@ -91,7 +91,7 @@ public class XMLParserTest extends TestCase {
 		String function = "org.jboss.blacktie.jatmibroker.xatmi.TestTPCallServiceXOctet";
 
 		String adminTransport = "hybrid";
-		String userlist = "guest,blacktie";
+		String userlist = "guest:true:true,blacktie:true:true";
 
 		assertTrue(server.equals(prop.getProperty("blacktie.TestOne.server")));
 		assertTrue(transport.equals(prop
@@ -112,6 +112,6 @@ public class XMLParserTest extends TestCase {
 				.endsWith(arg3));
 
 		assertTrue(size.equals(prop.getProperty("blacktie.JAVA_Converse.size")));
-		assertTrue(userlist.equals(prop.getProperty("blacktie.JAVA_Converse.userlist")));
+		assertTrue(userlist.equals(prop.getProperty("blacktie.JAVA_Converse.security")));
 	}
 }

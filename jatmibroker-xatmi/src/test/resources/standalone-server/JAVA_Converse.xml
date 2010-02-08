@@ -21,6 +21,9 @@
 		java_class_name="org.jboss.blacktie.jatmibroker.xatmi.TestTPCallServiceXOctet"
 		advertised="true">
 		<SIZE>1</SIZE>
-		<USERLIST>guest,blacktie</USERLIST>
+		<security>
+			<role name="guest" read="true" write="true"/>
+			<role name="blacktie" read="true" write="true"/>
+		</security>
 	</SERVICE_DESCRIPTION>
 </SERVICE>

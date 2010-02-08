@@ -38,7 +38,19 @@
 					</xsd:complexType>
 				</xsd:element>
 				<xsd:element name="SIZE" type="xsd:string" />
-				<xsd:element name="USERLIST" type="xsd:string" minOccurs="0" />
+				<xsd:element name="security" minOccurs="0" maxOccurs="1">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="role" minOccurs="1" maxOccurs="unbounded">
+								<xsd:complexType>
+									<xsd:attribute name="name" type="xsd:string" />
+									<xsd:attribute name="read" type="xsd:boolean" />
+									<xsd:attribute name="write" type="xsd:boolean" />
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
 			</xsd:sequence>
 			<xsd:attribute name="function_name" type="xsd:string" />
 			<xsd:attribute name="java_class_name" type="xsd:string" />

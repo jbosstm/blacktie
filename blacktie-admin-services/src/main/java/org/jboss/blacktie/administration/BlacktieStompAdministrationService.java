@@ -151,26 +151,19 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 	}
 
 	void setSecurityConfig(ObjectName objName, String serviceName) {
-		log.debug("Get User access list from indivadual service xml");
-		String userList = (String) prop.get("balcktie." 
-                                          + serviceName
-                                          + ".userlist"); 
-		if(userList == null) {
-			log.debug("Get User access list from Environment.xml");
-			userList = (String) prop.get("USERLIST");
-			if(userList == null) {
-				log.debug("No user access list, will use guest");
-				userList = "guest";
-			}
-		}
-		
+		log.debug("Get security configuration from service xml");
+		String roleList = (String) prop.getProperty("blacktie." + serviceName
+				+ ".security", "guest:true:true");
+
 		String security = "<security>\n";
-		String[] users = userList.split(",");
-		for(int i = 0; i < users.length; i ++) {
-			security += "<role name=\"" + users[i] + "\" read=\"true\" write=\"true\"/>\n";
+		String[] roles = roleList.split(",");
+		for (int i = 0; i < roles.length; i++) {
+			String[] details = roles[i].split(":");
+			security += "<role name=\"" + details[0] + "\" read=\""
+					+ details[1] + "\" write=\"" + details[2] + "\"/>\n";
 		}
 		security += "</security>";
-		
+
 		log.debug("access security is " + security);
 		try {
 			Element element = stringToElement(security);

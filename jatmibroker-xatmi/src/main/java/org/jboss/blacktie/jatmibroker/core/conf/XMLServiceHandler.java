@@ -34,14 +34,11 @@ public class XMLServiceHandler extends DefaultHandler {
 
 	private final String SERVICE_NAME = "SERVICE_DESCRIPTION";
 	private final String SIZE = "SIZE";
-	private final String USERLIST = "USERLIST";
+	private final String ROLE = "role";
 
-	private String serviceElement;
 	private String sizeElement;
-	private String userlistElement;
 	private String serviceName;
 	private Properties prop;
-
 	private String serverName;
 
 	XMLServiceHandler(String serverName, String serviceName, Properties prop) {
@@ -53,12 +50,8 @@ public class XMLServiceHandler extends DefaultHandler {
 	public void characters(char[] ch, int start, int length)
 			throws SAXException {
 		String strValue = new String(ch, start, length);
-
 		if (SIZE.equals(sizeElement)) {
 			String key = "blacktie." + serviceName + ".size";
-			prop.setProperty(key, strValue);
-		} else if (USERLIST.equals(userlistElement)) {
-			String key = "blacktie." + serviceName + ".userlist";
 			prop.setProperty(key, strValue);
 		}
 	}
@@ -66,7 +59,6 @@ public class XMLServiceHandler extends DefaultHandler {
 	public void startElement(String namespaceURI, String localName,
 			String qName, Attributes atts) throws SAXException {
 		if (SERVICE_NAME.equals(localName)) {
-			serviceElement = SERVICE_NAME;
 			String key = "blacktie." + serviceName;
 			String func_key = key + ".function_name";
 			String java_key = key + ".java_class_name";
@@ -105,19 +97,37 @@ public class XMLServiceHandler extends DefaultHandler {
 			}
 		} else if (SIZE.equals(localName)) {
 			sizeElement = SIZE;
-		} else if (USERLIST.equals(localName)) {
-			userlistElement = USERLIST;
+		} else if (ROLE.equals(localName)) {
+			String key = "blacktie." + serviceName + ".security";
+			String roleList = prop.getProperty(key, "");
+			String name = null;
+			String read = "false";
+			String write = "false";
+
+			for (int i = 0; i < atts.getLength(); i++) {
+				String attsLocalName = atts.getLocalName(i);
+				if (attsLocalName.equals("name")) {
+					name = atts.getValue(i);
+				} else if (atts.getLocalName(i).equals("read")) {
+					read = atts.getValue(i);
+				} else {
+					write = atts.getValue(i);
+				}
+			}
+			String role = name + ':' + read + ':' + write;
+			if (roleList.length() > 0) {
+				roleList = roleList + ',' + role;
+			} else {
+				roleList = role;
+			}
+			prop.put(key, roleList);
 		}
 	}
 
 	public void endElement(String namespaceURI, String localName, String qName)
 			throws SAXException {
-		if (SERVICE_NAME.equals(localName)) {
-			serviceElement = "";
-		} else if (SIZE.equals(localName)) {
+		if (SIZE.equals(localName)) {
 			sizeElement = "";
-		} else if (USERLIST.equals(localName)) {
-			userlistElement = "";
 		}
 	}
 }
