@@ -245,7 +245,7 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 			LOG4CXX_ERROR(logger, "receive failed - not able to connect");
 		}
 	} else {
-		LOG4CXX_ERROR(logger, "receive failed - in shutdown");
+		LOG4CXX_DEBUG(logger, "receive failed - in shutdown");
 	}
 	lock->unlock();
 	return message;
