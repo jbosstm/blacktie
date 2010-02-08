@@ -34,4 +34,4 @@ NOTE: forkMode MUST be set to none, if it is not, input will not be read by the
 application. We have configured the pom.xml with forkMode=none, alternatively you
 may try -DforkMode=none, if this still doesn't work, please send a message to our forum
 where we will try to help you (please let us know the version of BlackTie, Java and 
-Maven you are using)
+Maven you are using)

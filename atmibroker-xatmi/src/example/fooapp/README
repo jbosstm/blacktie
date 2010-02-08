@@ -94,6 +94,17 @@ NOTE: If you get the following error you have not sourced setenv.sh|bat
 If you would like to use a JAB Client to talk to the server, please see 
 <BLACKTIE_BIN_DIR>/examples/jab/fooapp
 
+
 8. ADMINISTRATION EXAMPLES
 If you would like to see administration in effect, please see
 <BLACKTIE_BIN_DIR>/examples/admin
+
+
+9. SECURITY EXAMPLES
+If you would like to see security in effect, please see
+<BLACKTIE_BIN_DIR>/examples/security
+
+
+10. TRANSACTION EXAMPLES
+If you would like to see transactions in effect, please see
+<BLACKTIE_BIN_DIR>/examples/xatmi/txfooapp
