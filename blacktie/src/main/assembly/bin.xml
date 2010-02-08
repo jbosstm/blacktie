@@ -99,6 +99,15 @@
 			</includes>
 		</fileSet>
 		<fileSet>
+			<directory>../atmibroker-xatmi/src/example/security/
+			</directory>
+			<outputDirectory>examples/security
+			</outputDirectory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
 			<directory>../jatmibroker-xatmi/src/example/jab/
 			</directory>
 			<outputDirectory>examples/jab
