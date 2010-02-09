@@ -24,6 +24,7 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.naming.Context;
+import javax.naming.NameNotFoundException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -110,6 +111,10 @@ public class TransportImpl implements Runnable, Transport {
 					+ serviceName);
 			log.trace("Resolved destination");
 			return new JMSSenderImpl(session, destination);
+		} catch (NameNotFoundException e) {
+			throw new ConnectionException(
+					org.jboss.blacktie.jatmibroker.xatmi.Connection.TPENOENT,
+					"Could not resolve destination: " + serviceName, e);
 		} catch (Throwable t) {
 			throw new ConnectionException(-1,
 					"Could not create a service sender: " + t.getMessage(), t);
@@ -134,6 +139,10 @@ public class TransportImpl implements Runnable, Transport {
 					+ serviceName);
 			log.debug("Resolved destination");
 			return new JMSReceiverImpl(session, destination, properties);
+		} catch (NameNotFoundException e) {
+			throw new ConnectionException(
+					org.jboss.blacktie.jatmibroker.xatmi.Connection.TPENOENT,
+					"Could not resolve destination: " + serviceName, e);
 		} catch (Throwable t) {
 			throw new ConnectionException(-1,
 					"Could not create the receiver on: " + serviceName, t);
