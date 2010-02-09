@@ -41,11 +41,10 @@ AtmiBrokerClient * ptrAtmiBrokerClient;
 log4cxx::LoggerPtr loggerAtmiBrokerClient(log4cxx::Logger::getLogger(
 		"AtmiBrokerClient"));
 
-bool clientInitialized;
+bool clientInitialized = false;
 SynchronizableObject client_lock;
 
 void client_sigint_handler_callback(int sig_type) {
-	signal(SIGINT, SIG_IGN);
 	LOG4CXX_WARN(
 			loggerAtmiBrokerClient,
 			(char*) "SIGINT Detected: Shutting down client this may take several minutes");
@@ -74,6 +73,13 @@ int clientinit() {
 						(char*) "clientinit deleted Client");
 				setSpecific(TPE_KEY, TSS_TPESYSTEM);
 			} else {
+				// ignore these signals
+				int sigs[] = {SIGHUP, SIGALRM, SIGTERM, SIGUSR1, SIGUSR2};
+
+				// install a handler for SIGINT
+				ptrAtmiBrokerClient->setSigHandler(new AtmiBrokerSignalHandler(client_sigint_handler_callback,
+					SIGINT, sigs, sizeof (sigs) / sizeof (int)));
+/*
 				//signal(SIGINT, client_sigint_handler_callback);
 				ACE_Sig_Action sa;
 				sa.retrieve_action(SIGINT);
@@ -94,7 +100,7 @@ int clientinit() {
 					LOG4CXX_DEBUG(loggerAtmiBrokerClient,
 							(char*) "register client_sigint_handler_callback");
 				}
-
+*/
 				LOG4CXX_DEBUG(loggerAtmiBrokerClient,
 						(char*) "Client Initialized");
 				toReturn = 0;
@@ -129,16 +135,14 @@ int clientdone() {
 	return 0;
 }
 
-AtmiBrokerClient::AtmiBrokerClient() {
+AtmiBrokerClient::AtmiBrokerClient() : currentConnection(NULL), nextSessionId(0), sigHandler(NULL) {
 	try {
 		lock = new SynchronizableObject();
-		nextSessionId = 0;
 		clientInitialized = true;
-		currentConnection = NULL;
 	} catch (...) {
+		setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		LOG4CXX_ERROR(loggerAtmiBrokerClient,
 				(char*) "clientinit Unexpected exception");
-		setSpecific(TPE_KEY, TSS_TPESYSTEM);
 	}
 }
 
@@ -150,6 +154,8 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleted services");
 	delete lock;
 	clientInitialized = false;
+	if (sigHandler != NULL)
+		delete sigHandler;
 	AtmiBrokerEnv::discard_instance();
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "Client Shutdown");
 }
@@ -173,6 +179,7 @@ Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
 		lock->unlock();
 
 		session = clientConnection->createSession(id, serviceName);
+		session->setSigHandler(sigHandler);
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "created session: " << id
 				<< " send: " << session->getCanSend() << " recv: "
 				<< session->getCanRecv());

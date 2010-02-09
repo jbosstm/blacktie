@@ -26,6 +26,7 @@
 #include "Session.h"
 #include "ConnectionManager.h"
 #include "SynchronizableObject.h"
+#include "AtmiBrokerSignalHandler.h"
 #include "AtmiBrokerEnv.h"
 
 class AtmiBrokerClient {
@@ -35,12 +36,14 @@ public:
 	Session* createSession(int& id, char* serviceName);
 	Session* getSession(int id);
 	void closeSession(int id);
+	void setSigHandler(AtmiBrokerSignalHandler* sigHandler) { this->sigHandler = sigHandler; }
 protected:
 	Connection* currentConnection;
 	//std::map<std::string, Connection*> clientConnectionMap;
 	ConnectionManager clientConnectionManager;
 	int nextSessionId;
 	SynchronizableObject* lock;
+	AtmiBrokerSignalHandler* sigHandler;
 };
 
 // CLIENT

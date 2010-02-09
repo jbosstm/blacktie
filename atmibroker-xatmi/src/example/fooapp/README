@@ -69,8 +69,9 @@ On Windows:
 	%BLACKTIE_BIN_DIR%\bin\generate_client.bat -Dclient.includes=client.c
 
 
-4. DEPLOY THE STOMPCONNECTSERVICE
-Copy the file BLACKTIE_BIN_DIR/stompconnectservice/stompconnectservice-<VERSION>-jar-with-dependencies.jar into JBOSS_HOME/server/all/deploy
+4. DEPLOY THE BLACKTIE ADMIN SERVICE
+Undeploy any older versions of the blacktie admin service
+Copy the file $BLACKTIE_BIN_DIR/blacktie-2.0-MR3-SNAPSHOT/blacktie-admin-services/blacktie-admin-services-2.0-MR3-SNAPSHOT-jar-with-dependencies.jar into $JBOSS_HOME/server/all/deploy
 
 
 5. RUN THE APPLICATION SERVER

@@ -19,6 +19,7 @@
 #define Session_H_
 
 #include "Message.h"
+#include "AtmiBrokerSignalHandler.h"
 
 class Session {
 public:
@@ -87,11 +88,27 @@ public:
 	long getLastRCode() {
 		return lastRCode;
 	}
+
+	void setSigHandler(AtmiBrokerSignalHandler* sigHandler) {
+		sigHandler_ = sigHandler;
+	}
+
+	void blockSignals() {
+		if (sigHandler_ != NULL)
+			sigHandler_->guard();
+	}
+
+	void unblockSignals() {
+		if (sigHandler_ != NULL)
+			sigHandler_->unguard();
+	}
+
 protected:
 	bool canSend;
 	bool canRecv;
 	long lastEvent;
 	long lastRCode;
+	AtmiBrokerSignalHandler* sigHandler_;
 };
 
 #endif
