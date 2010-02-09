@@ -184,7 +184,10 @@ C:\blacktie\dist\blacktie-1.0-MR6-SNAPSHOT\bin\generate-executables.xml:144: Cou
 
 3. RUNNING THE EXAMPLE
 ======================
+Undeploy any older versions of the blacktie admin service
+Copy the file $BLACKTIE_BIN_DIR/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all/deploy
 Start the JBoss server (<JBOSS_HOME>/bin/run.sh|bat -c all)
+
 Make sure all required libraries are on the library path:
 
 ORACLE ONLY
