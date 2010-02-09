@@ -187,8 +187,9 @@ apr_status_t stomp_read_line(stomp_connection *connection, char **data, int* len
          } else if( tail->data[i-1]==0 ) {
 			// Encountered 0 before end of line
 			apr_pool_destroy(tpool);
-            userlogc_warn("stomp_read_line tail->data[i-1]==0 returning APR_EGENERAL");
-            userlogc_warn("tail->data was: %s", tail->data);
+			userlogc_warn("stomp_read_line tail->data[i-1]==0 returning APR_EGENERAL");
+			userlogc_warn("tail->data length was: %d", bytesRead);
+			userlogc_warn("tail->data was: %s", tail->data);
 			return APR_EGENERAL;
 		 }
          
