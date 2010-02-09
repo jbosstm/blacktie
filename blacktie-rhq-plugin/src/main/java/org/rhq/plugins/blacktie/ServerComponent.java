@@ -96,8 +96,6 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 	
 	private ResourceContext resourceContext;
 
-	private Properties prop = new Properties();
-
 	private MBeanServerConnection beanServerConnection;
 
 	private String serverName = null;
@@ -123,6 +121,7 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 	 */
 	public void start(ResourceContext context) {
 		try {
+			Properties prop = new Properties();
 			XMLEnvHandler handler = new XMLEnvHandler("", prop);
 			XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 			xmlenv.parse("Environment.xml", true);

@@ -18,7 +18,10 @@
 package org.jboss.blacktie.administration;
 
 /**
- * This is the Admin service operations
+ * This is the Admin service operations.
+ * 
+ * Don't forget that all the operations need to be in the select statement of
+ * the Blacktie XATMI Administration Service
  */
 public interface BlacktieAdministration {
 
@@ -41,7 +44,7 @@ public interface BlacktieAdministration {
 	 * Discover running servers
 	 */
 	public java.util.List<String> listRunningServers();
-	
+
 	/**
 	 * Get current status of domain
 	 */
@@ -56,26 +59,36 @@ public interface BlacktieAdministration {
 	 * This calls resumeDomain for each server in the domain
 	 */
 	public Boolean resumeDomain();
-	
+
 	/**
 	 * Halt servers, update configuration, restart
 	 */
 	public Boolean reloadDomain();
-	
+
 	/**
 	 * reload server
 	 */
 	public Boolean reloadServer(String serverName);
 
 	/**
+	 * Get the name of the server that this service resides at.
+	 * 
+	 * @param serviceName
+	 *            The service name.
+	 * @return The server name.
+	 */
+	public String getServerName(String serviceName);
+
+	/**
 	 * Retrieves the counter for a service from all servers
 	 */
 	public long getServiceCounter(String serverName, String serviceName);
-	
+
 	/**
 	 * Retrieves the counter for a service from specify server
 	 */
-	public long getServiceCounterById(String serverName, int id, String serviceName);
+	public long getServiceCounterById(String serverName, int id,
+			String serviceName);
 
 	/**
 	 * Get the list of Ids of currently running servers
@@ -86,13 +99,15 @@ public interface BlacktieAdministration {
 	 * Describe the status of the servers in the domain
 	 */
 	public org.w3c.dom.Element getServersStatus();
-	
-	/** 
+
+	/**
 	 * Describe the service status of server
 	 */
-	public org.w3c.dom.Element listServiceStatus(String serverName, String serviceName);
-	
-	public org.w3c.dom.Element listServiceStatusById(String serverName, int id, String serviceName);
+	public org.w3c.dom.Element listServiceStatus(String serverName,
+			String serviceName);
+
+	public org.w3c.dom.Element listServiceStatusById(String serverName, int id,
+			String serviceName);
 
 	/**
 	 * Advertise service
@@ -112,9 +127,11 @@ public interface BlacktieAdministration {
 	/**
 	 * Get service response time
 	 */
-	public String getResponseTimeById(String serverName, int id, String serviceName);
+	public String getResponseTimeById(String serverName, int id,
+			String serviceName);
+
 	public String getResponseTime(String serverName, String serviceName);
-	
+
 	/**
 	 * Get message queue depth
 	 */

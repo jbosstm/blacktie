@@ -73,6 +73,10 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 			if (operation.equals("getDomainName")) {
 				String response = getDomainName();
 				toReturn = response.getBytes();
+			} else if (operation.equals("getServerName")) {
+				String serviceName = getString(parameters);
+				String response = getServerName(serviceName);
+				toReturn = response.getBytes();
 			} else if (operation.equals("getSoftwareVersion")) {
 				String response = getSoftwareVersion();
 				toReturn = response.getBytes();
@@ -420,5 +424,9 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 
 	public int getQueueDepth(String serverName, String serviceName) {
 		return administrationProxy.getQueueDepth(serverName, serviceName);
+	}
+
+	public String getServerName(String serviceName) {
+		return administrationProxy.getServerName(serviceName);
 	}
 }

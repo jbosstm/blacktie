@@ -24,6 +24,10 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +38,7 @@ import org.rhq.core.pluginapi.inventory.DiscoveredResourceDetails;
 import org.rhq.core.pluginapi.inventory.ProcessScanResult;
 import org.rhq.core.pluginapi.inventory.ResourceDiscoveryComponent;
 import org.rhq.core.pluginapi.inventory.ResourceDiscoveryContext;
+import org.w3c.dom.Element;
 
 /**
  * This can be the start of your own custom plugin's discovery component. Review
@@ -43,8 +48,8 @@ import org.rhq.core.pluginapi.inventory.ResourceDiscoveryContext;
  */
 public class ServerDiscoveryComponent implements ResourceDiscoveryComponent {
 	private final Log log = LogFactory.getLog(ServerDiscoveryComponent.class);
-	private Properties prop = new Properties();
 	private MBeanServerConnection beanServerConnection;
+	private ObjectName blacktieAdmin = null;
 
 	/**
 	 * Review the javadoc for both {@link ResourceDiscoveryComponent} and
@@ -90,15 +95,26 @@ public class ServerDiscoveryComponent implements ResourceDiscoveryComponent {
 		// description = this is any string that you want to assign as the
 		// default description for your resource
 		try {
+			Properties prop = new Properties();
 			XMLEnvHandler handler = new XMLEnvHandler("", prop);
 			XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 			xmlenv.parse("Environment.xml", true);
 
-			Set<String> servers = (Set<String>) prop.get("blacktie.domain.servers");
+			JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
+			JMXConnector c = JMXConnectorFactory.connect(u);
+			beanServerConnection = c.getMBeanServerConnection();
+			blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
+
+			// Get this list from the MBean so that we only need one service
+			// with the list
+			java.util.List<String> servers = (java.util.List<String>) beanServerConnection
+					.invoke(blacktieAdmin, "getServerList",
+							new Object[] {}, new String[] {});
+
 			for (String server : servers) {
 				DiscoveredResourceDetails resource = new DiscoveredResourceDetails(
-						context.getResourceType(), server, server, null,
-						null, null, null);
+						context.getResourceType(), server, server, null, null,
+						null, null);
 				set.add(resource);
 			}
 		} catch (Exception e) {

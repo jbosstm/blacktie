@@ -589,4 +589,8 @@ public class AdministrationProxy {
 		}
 		return depth.intValue();
 	}
+
+	public String getServerName(String serviceName) {
+		return prop.getProperty("blacktie." + serviceName + ".server");
+	}
 }

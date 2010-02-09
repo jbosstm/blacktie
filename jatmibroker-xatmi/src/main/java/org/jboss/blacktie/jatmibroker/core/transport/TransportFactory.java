@@ -38,13 +38,8 @@ public abstract class TransportFactory {
 		if (serviceName.indexOf("_ADMIN_") > 0) {
 			transportLibrary = "hybrid";
 		} else {
-			transportLibrary = (String) properties.get("blacktie."
-					+ serviceName + ".transportLib");
-		}
-
-		if (transportLibrary == null) {
-			throw new ConfigurationException("Transport library for "
-					+ serviceName + " was not defined");
+			transportLibrary = (String) properties.getProperty("blacktie."
+					+ serviceName + ".transportLib", "hybrid");
 		}
 		log.debug("Transport library was: " + transportLibrary);
 		// Determine the transport class to load

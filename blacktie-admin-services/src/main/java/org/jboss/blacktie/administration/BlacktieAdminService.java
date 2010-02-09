@@ -250,4 +250,11 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 	public int getQueueDepth(String serverName, String serviceName) {
 		return administrationProxy.getQueueDepth(serverName, serviceName);
 	}
+
+	/**
+	 * Get the server name
+	 */
+	public String getServerName(String serviceName) {
+		return administrationProxy.getServerName(serviceName);
+	}
 }

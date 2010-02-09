@@ -66,24 +66,11 @@ ConnectionManager::getConnection(char* serviceName, char* side) {
 	ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server,
 			serverid);
 
-	if (strcmp(serviceName, adm) == 0) {
 #ifdef WIN32
 		transportLibrary = (char*) "atmibroker-hybrid.dll";
 #else
 		transportLibrary = (char*) "libatmibroker-hybrid.so";
 #endif
-	} else {
-		AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
-		transportLibrary = env->getTransportLibrary(serviceName);
-		AtmiBrokerEnv::discard_instance();
-		if (transportLibrary == NULL) {
-			LOG4CXX_WARN(loggerConnectionManager, (char*) "service "
-					<< serviceName
-					<< " is not configured in the Environment.xml");
-			throw std::exception();
-		}
-	}
-
 	LOG4CXX_DEBUG(loggerConnectionManager, (char*) "service " << serviceName
 			<< " transport is " << transportLibrary);
 	std::string key = side;

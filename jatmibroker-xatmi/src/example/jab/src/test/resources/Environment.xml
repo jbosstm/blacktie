@@ -18,24 +18,9 @@
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
-	<SERVERS>
-		<SERVER name="jboss">
-			<SERVICE_NAMES>
-				<SERVICE name='BTStompAdmin' />
-				<SERVICE name='BTDomainAdmin' />
-			</SERVICE_NAMES>
-		</SERVER>
-		<SERVER name='default'>
-			<SERVICE_NAMES>
-				<SERVICE name='BAR' />
-			</SERVICE_NAMES>
-		</SERVER>
-	</SERVERS>
 	<ORB OPT="-ORBInitRef NameService=corbaloc::localhost:3528/NameService"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
 	<MQ HOST="localhost" PORT="61613" USER="guest" PASSWORD="guest"
 		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10"
 		NAMING_URL="jnp://localhost:1099" />
-	<ENV_VARIABLES>
-	</ENV_VARIABLES>
 </ENVIRONMENT>

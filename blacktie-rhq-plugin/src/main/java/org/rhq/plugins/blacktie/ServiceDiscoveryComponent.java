@@ -50,7 +50,6 @@ import org.w3c.dom.NodeList;
  */
 public class ServiceDiscoveryComponent implements ResourceDiscoveryComponent {
 	private final Log log = LogFactory.getLog(ServiceDiscoveryComponent.class);
-	private Properties prop = new Properties();
 	private MBeanServerConnection beanServerConnection;
 	private ObjectName blacktieAdmin = null;
 
@@ -100,6 +99,7 @@ public class ServiceDiscoveryComponent implements ResourceDiscoveryComponent {
 		// description = this is any string that you want to assign as the
 		// default description for your resource
 		try {
+			Properties prop = new Properties();
 			XMLEnvHandler handler = new XMLEnvHandler("", prop);
 			XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 			xmlenv.parse("Environment.xml", true);

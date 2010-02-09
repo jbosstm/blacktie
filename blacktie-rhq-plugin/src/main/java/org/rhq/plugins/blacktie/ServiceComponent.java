@@ -96,8 +96,6 @@ CreateChildResourceFacet {
 
 	private ResourceContext resourceContext;
 
-	private Properties prop = new Properties();
-
 	private MBeanServerConnection beanServerConnection;
 
 	private String serverName = null;
@@ -116,6 +114,7 @@ CreateChildResourceFacet {
 	 */
 	public void start(ResourceContext context) {
 		try {
+			Properties prop = new Properties();
 			XMLEnvHandler handler = new XMLEnvHandler("", prop);
 			XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 			xmlenv.parse("Environment.xml", true);
@@ -124,8 +123,12 @@ CreateChildResourceFacet {
 			beanServerConnection = c.getMBeanServerConnection();
 
 			serviceName = context.getResourceKey();
-			serverName = prop.getProperty("blacktie." + serviceName + ".server");
+
 			blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
+			// get name from MBean
+			serverName = (String) beanServerConnection.invoke(blacktieAdmin,
+					"getServerName", new Object[] { serviceName },
+					new String[] { "java.lang.String" });
 		} catch (Exception e) {
 			log.error("start server " + serviceName + " plugin error with " + e);
 		}

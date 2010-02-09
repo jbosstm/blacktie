@@ -36,17 +36,15 @@ public class JMXAdministrationTest extends TestCase {
 	public void test() throws IOException, ConfigurationException,
 			MalformedObjectNameException, NullPointerException,
 			InstanceNotFoundException, MBeanException, ReflectionException {
+		String url = "service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector";
 		System.out.println("usage: mvn test");
 		System.out
 				.println("warning: forkMode must be set to none, please see README");
 
-		prompt("Start JBoss Application Server");
+		prompt("Start JBoss Application Server, the following url must be available \""
+				+ url + "\"");
 
-		Properties prop = new Properties();
-		XMLEnvHandler handler = new XMLEnvHandler("", prop);
-		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
-		xmlenv.parse("Environment.xml", true);
-		JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
+		JMXServiceURL u = new JMXServiceURL(url);
 		JMXConnector c = JMXConnectorFactory.connect(u);
 		MBeanServerConnection beanServerConnection = c
 				.getMBeanServerConnection();

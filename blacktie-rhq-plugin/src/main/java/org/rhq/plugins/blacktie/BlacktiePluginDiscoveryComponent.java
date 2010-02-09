@@ -43,7 +43,6 @@ public class BlacktiePluginDiscoveryComponent implements
 		ResourceDiscoveryComponent {
 	private final Log log = LogFactory
 			.getLog(BlacktiePluginDiscoveryComponent.class);
-	private Properties prop = new Properties();
 
 	/**
 	 * Review the javadoc for both {@link ResourceDiscoveryComponent} and
@@ -89,6 +88,7 @@ public class BlacktiePluginDiscoveryComponent implements
 		// description = this is any string that you want to assign as the
 		// default description for your resource
 		try {
+			Properties prop = new Properties();
 			XMLEnvHandler handler = new XMLEnvHandler("", prop);
 			XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 			xmlenv.parse("Environment.xml", true);
