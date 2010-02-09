@@ -6,6 +6,7 @@ cp blacktie/target/blacktie-*-bin.tar.gz tmp
 cd tmp
 tar xfz blacktie-*-bin.tar.gz
 cd blacktie*/
+export VAR=`pwd`
 sed -i "s=REPLACE_WITH_INSTALL_LOCATION=$VAR=g" setenv.sh
 
 . setenv.sh
