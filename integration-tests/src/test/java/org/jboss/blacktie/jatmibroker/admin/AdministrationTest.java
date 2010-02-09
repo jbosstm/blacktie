@@ -66,10 +66,12 @@ public class AdministrationTest extends TestCase {
 	}
 	
 	public void testShutdown() throws Exception {
+		log.info("testShutdown");
 		callAdmin("serverdone", '1');
 	}
 	
 	public void testAdvertiseAndUnadvertise() throws Exception {
+		log.info("testAdvertiseAndUnadvertise");
 		callBAR();
 		callAdmin("unadvertise,BAR", '1');
 		try {
@@ -77,8 +79,7 @@ public class AdministrationTest extends TestCase {
 			fail("Should fail when unadvertise BAR");
 		} catch (ConnectionException e) {
 			assertTrue("Error was: " + e.getTperrno(), 
-					//e.getTperrno() == Connection.TPENOENT);
-					e.getTperrno() == -1);
+					e.getTperrno() == Connection.TPENOENT);
 		}
 		callAdmin("advertise,BAR", '1');
 		callBAR();
@@ -93,6 +94,7 @@ public class AdministrationTest extends TestCase {
 	}
 	
 	public void testGetServiceCounter() throws Exception {
+		log.info("testGetServiceCounter");
 		int n = -1;
 		
 		callBAR();
@@ -101,6 +103,7 @@ public class AdministrationTest extends TestCase {
 	}
 
 	public void testGetServiceStatus() throws Exception {
+		log.info("testGetServiceStatus");
 		String status = callAdmin("status", '1');
 		log.info("status is " + status);
 		
@@ -109,6 +112,7 @@ public class AdministrationTest extends TestCase {
 	}
 
 	public void testPauseAndResumeServer() throws Exception {
+		log.info("testPauseAndResumeServer");
 		callAdmin("pause", '1');
 		log.info("pause server OK");
 
