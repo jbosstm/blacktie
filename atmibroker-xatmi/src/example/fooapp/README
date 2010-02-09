@@ -71,7 +71,7 @@ On Windows:
 
 4. DEPLOY THE BLACKTIE ADMIN SERVICE
 Undeploy any older versions of the blacktie admin service
-Copy the file $BLACKTIE_BIN_DIR/blacktie-2.0-MR3-SNAPSHOT/blacktie-admin-services/blacktie-admin-services-2.0-MR3-SNAPSHOT-jar-with-dependencies.jar into $JBOSS_HOME/server/all/deploy
+Copy the file $BLACKTIE_BIN_DIR/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all/deploy
 
 
 5. RUN THE APPLICATION SERVER
