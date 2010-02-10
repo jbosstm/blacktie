@@ -15,6 +15,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#include <stdlib.h>
+#include <string.h>
 
 #include "AtmiBrokerSignalHandler.h"
 #include "log4cxx/logger.h"
@@ -25,23 +27,40 @@ ACE_Sig_Handler AtmiBrokerSignalHandler::handler_;
 
 AtmiBrokerSignalHandler::AtmiBrokerSignalHandler(
 	void (*func)(int signum),
-	int signum = -1,
-	int* signals = NULL, int sigcnt = 0) :
-	sigHandler_(func), signum_(signum), guard_(NULL), gCnt_(0), sig_pending_(false) {
+	int* hsignals = NULL, int hsigcnt = 0,
+	int* bsignals = NULL, int bsigcnt = 0) :
+		sigHandler_(func),
+		pending_sig_(0), guard_(NULL), gCnt_(0) {
 
-	LOG4CXX_DEBUG(logger_, (char*) "AtmiBrokerSignalHandler handler: " << func << " signum: " << signum);
-	if (signum_ > 0) {
-		ss_.sig_add(signum_);
+	LOG4CXX_DEBUG(logger_, (char*) "AtmiBrokerSignalHandler handler: " << func << " hsignals: " << hsignals);
 
-		handler_.register_handler(signum_, this);
+	if (hsigcnt > 0) {
+		hsignals_ = (int *) malloc((hsigcnt + 1) * sizeof (int));
+		(void) memcpy(hsignals_, hsignals, hsigcnt * sizeof (int));
+		hsignals_[hsigcnt] = 0;
+
+		for (int* sigp = hsignals_; *sigp != 0; sigp++) {
+			LOG4CXX_DEBUG(logger_, (char*) "handling and blocking signal " << *sigp);
+
+			ss_.sig_add(*sigp);
+			handler_.register_handler(*sigp, this);
+		}
+	} else {
+		hsignals_ = NULL;
 	}
 
-	if (signals != NULL) {
-		for (int i = 0; i < sigcnt; i++) {
-			LOG4CXX_DEBUG(logger_, (char*) "ignoring signal " << signals[i]);
-			handler_.register_handler(signals[i], this);
-			ss_.sig_add(signals[i]);
+	if (bsigcnt > 0) {
+		bsignals_ = (int *) malloc((bsigcnt + 1) * sizeof (int));
+		(void) memcpy(bsignals_, bsignals, bsigcnt * sizeof (int));
+		bsignals_[bsigcnt] = 0;
+
+		for (int* sigp = bsignals_; *sigp != 0; sigp++) {
+			LOG4CXX_DEBUG(logger_, (char*) "blocking signal " << *sigp);
+
+			ss_.sig_add(*sigp);
 		}
+	} else {
+		bsignals_ = NULL;
 	}
 }
 
@@ -52,39 +71,53 @@ AtmiBrokerSignalHandler::~AtmiBrokerSignalHandler() {
 		LOG4CXX_WARN(logger_, (char*) "~AtmiBrokerSignalHandler whilst in protected code section");
 	}
 
-	if (signum_ > 0)
-		handler_.remove_handler(signum_);
+	if (hsignals_ != NULL) {
+		for (int* sigp = hsignals_; *sigp != 0; sigp++)
+			handler_.remove_handler(*sigp);
+
+		free(hsignals_);
+	}
+
+	if (bsignals_ != NULL)
+		free(bsignals_);
 }
 
-int AtmiBrokerSignalHandler::handle_signal (int signum, siginfo_t * = 0, ucontext_t * = 0) {
+int AtmiBrokerSignalHandler::handle_signal(int signum, siginfo_t * = 0, ucontext_t * = 0) {
 
-	if (signum == signum_) {
-		LOG4CXX_DEBUG(logger_, (char*) "handling signal " << signum);
-		if (sigHandler_ != NULL) {
-			lock_.lock();
-			if (gCnt_ != 0) {
-				// received signal whilst another thread is in a protected section
-				LOG4CXX_DEBUG(logger_, (char*) "signalled inside protected section: gCnt_=" << gCnt_
-					<< " guard_=" << guard_);
-				sig_pending_ = true;
+	if (hsignals_ != NULL && sigHandler_ != NULL) {
+		for (int* sigp = hsignals_; *sigp != 0; sigp++) {
+			if (*sigp == signum) {
+
+				LOG4CXX_DEBUG(logger_, (char*) "handling signal " << signum);
+
+				lock_.lock();
+				if (gCnt_ != 0) {
+					// received signal whilst another thread is in a protected section
+					LOG4CXX_DEBUG(logger_, (char*) "signalled inside protected section: gCnt_=" << gCnt_
+						<< " guard_=" << guard_);
+					pending_sig_ = signum;
+				} else {
+					sigHandler_(signum);
+				}
+
+				lock_.unlock();
+
+				return 0;
 			}
-
-			if (!sig_pending_)
-				sigHandler_(signum_);
-			lock_.unlock();
 		}
-	} else {
-		LOG4CXX_DEBUG(logger_, (char*) "ignoring signal " << signum);
 	}
+			
+	LOG4CXX_DEBUG(logger_, (char*) "ignoring signal " << signum);
 
 	return 0;	// -1 would unregister the handler
 }
 
 void AtmiBrokerSignalHandler::guard() {
+	return; // TODO
 	lock_.lock();
 	LOG4CXX_DEBUG(logger_, (char*) "Starting protected code section");
 	if (guard_ == NULL) {
-		LOG4CXX_DEBUG(logger_, (char*) "Block sigset: " << ss_.is_member(signum_));
+		LOG4CXX_DEBUG(logger_, (char*) "Block sigset");
 		guard_ = new ACE_Sig_Guard(&ss_);
 	}
 
@@ -93,6 +126,7 @@ void AtmiBrokerSignalHandler::guard() {
 }
 
 void AtmiBrokerSignalHandler::unguard() {
+	return; // TODO
 	lock_.lock();
 	LOG4CXX_DEBUG(logger_, (char*) "Ending protected code section: gCnt=" << gCnt_);
 	if (guard_ == NULL) {
@@ -103,10 +137,10 @@ void AtmiBrokerSignalHandler::unguard() {
 		LOG4CXX_DEBUG(logger_, (char*) "Unblocking sigset");
 		delete guard_;
 		guard_ = NULL;
-		if (sig_pending_) {
+		if (pending_sig_) {
 			LOG4CXX_DEBUG(logger_, (char*) "and running pending sig handler ...");
-			sigHandler_(signum_);
-			sig_pending_ = false;
+			sigHandler_(pending_sig_);
+			pending_sig_ = 0;
 		}
 	}
 	lock_.unlock();

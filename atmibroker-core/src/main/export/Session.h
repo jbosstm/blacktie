@@ -23,6 +23,8 @@
 
 class Session {
 public:
+	Session() : sigHandler_(NULL) {
+	}
 	virtual ~Session() {
 	}
 	virtual void setSendTo(const char* replyTo) = 0;

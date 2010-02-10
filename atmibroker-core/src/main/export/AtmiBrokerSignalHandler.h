@@ -27,7 +27,7 @@
 class BLACKTIE_CORE_DLL AtmiBrokerSignalHandler : public ACE_Event_Handler
 {
 public:
-	AtmiBrokerSignalHandler(void (*func)(int signum), int signum, int* signals, int sigcnt);
+	AtmiBrokerSignalHandler(void (*func)(int signum), int* hsignals, int hsigcnt, int* bsignals, int bsigcnt);
 	virtual ~AtmiBrokerSignalHandler();
 
 	virtual int handle_signal (int signum, siginfo_t *, ucontext_t *);
@@ -51,14 +51,16 @@ private:
 
 private:
 	SynchronizableObject lock_;
+	ACE_Sig_Set ss_;	// set of signals to block during guarded sections of code
 
 	void (*sigHandler_)(int signum);
 
-	int signum_;	// the signal that needs to be handled
-	ACE_Sig_Set ss_;	// set of signals to block during guarded sections of code
+	int* hsignals_;	// the signals that need to be handled
+	int* bsignals_;	// the signals that need to be blocked (in addition to hsignals_)
+
+	int pending_sig_;	// a handleable signal was received whilst in a guarded section
 	ACE_Sig_Guard *guard_;
 	int gCnt_;  // number of unmatched calls to guard()
-	bool sig_pending_;	// a handleable signal was received whilst in a guarded section
 };
 
 #endif // _ATMIBROKERSIGNALHANDLER_H
