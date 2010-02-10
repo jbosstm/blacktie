@@ -40,6 +40,7 @@ public abstract class CSControl extends TestCase
 			log.debug("destroying server process");
 			server.interrupt();
 			server.getProcess().destroy();
+			log.debug("destroyed server process");
 		} catch(Throwable e) {
 			throw new RuntimeException("Server shutdown error: ", e);
 		}
