@@ -74,7 +74,7 @@ int clientinit() {
 				setSpecific(TPE_KEY, TSS_TPESYSTEM);
 			} else {
 				// ignore these signals
-				int sigs[] = {SIGHUP, SIGALRM, SIGTERM, SIGUSR1, SIGUSR2};
+				int sigs[] = {}; /*SIGHUP, SIGTERM, SIGALRM, SIGUSR1, SIGUSR2};*/
 
 				// install a handler for SIGINT
 				ptrAtmiBrokerClient->setSigHandler(new AtmiBrokerSignalHandler(client_sigint_handler_callback,
