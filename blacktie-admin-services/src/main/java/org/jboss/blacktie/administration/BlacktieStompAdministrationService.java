@@ -201,7 +201,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 					result = 3;
 				}
 			} else if (consumerCount(serviceName) > 0) {
-				log.info("can not advertise ADMIN with same id");
+				log.warn("can not advertise ADMIN with same id");
 				result = 2;
 			} else if(AdministrationProxy.isDomainPause) {
 				log.info("Domain is pause");
