@@ -23,8 +23,6 @@
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
 	<MQ HOST="${JBOSSAS_IP_ADDR}" PORT="61613" USER="guest" PASSWORD="guest"
 		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" />
-	<ENV_VARIABLES>
-	</ENV_VARIABLES>
 	<BUFFERS>
 		<BUFFER name="DEPOSIT">
 			<ATTRIBUTE type="long" id="acct_no" />

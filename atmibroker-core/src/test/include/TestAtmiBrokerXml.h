@@ -38,7 +38,6 @@ typedef struct bar_t BAR;
 
 class TestAtmiBrokerXml: public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE( TestAtmiBrokerXml);
-	CPPUNIT_TEST( test_service);
 	CPPUNIT_TEST( test_env);
 	CPPUNIT_TEST( test_define_adminservice);
 	CPPUNIT_TEST( test_same_service);
@@ -47,7 +46,6 @@ class TestAtmiBrokerXml: public CppUnit::TestFixture {
 public:
 	virtual void setUp();
 	virtual void tearDown();
-	void test_service();
 	void test_env();
 	void test_define_adminservice();
 	void test_same_service();

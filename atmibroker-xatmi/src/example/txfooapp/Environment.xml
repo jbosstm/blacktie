@@ -27,7 +27,7 @@
 		</SERVER>
 		<SERVER name='default'>
 			<SERVICE_NAMES>
-				<SERVICE name='BAR' />
+				<SERVICE name='BAR' size="5" />
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>
@@ -43,16 +43,14 @@
 			demonstrate distributed transactions involving more than one resource
 			manager).
 		-->
-<!--
-            <XA_RESOURCE configuration="linux">
-                <XA_RESOURCE_MGR_ID>302</XA_RESOURCE_MGR_ID>
-                <XA_RESOURCE_NAME>DummyDb</XA_RESOURCE_NAME>
-                <XA_OPEN_STRING></XA_OPEN_STRING>
-                <XA_CLOSE_STRING></XA_CLOSE_STRING>
-                <XA_SWITCH>testxasw</XA_SWITCH>
-                <XA_LIB_NAME>libtx-test-utilities.so</XA_LIB_NAME>
-            </XA_RESOURCE>
-            -->
+		<!--
+			<XA_RESOURCE configuration="linux">
+			<XA_RESOURCE_MGR_ID>302</XA_RESOURCE_MGR_ID>
+			<XA_RESOURCE_NAME>DummyDb</XA_RESOURCE_NAME>
+			<XA_OPEN_STRING></XA_OPEN_STRING> <XA_CLOSE_STRING></XA_CLOSE_STRING>
+			<XA_SWITCH>testxasw</XA_SWITCH>
+			<XA_LIB_NAME>libtx-test-utilities.so</XA_LIB_NAME> </XA_RESOURCE>
+		-->
 		<XA_RESOURCE configuration="linux">
 			<XA_RESOURCE_MGR_ID>301</XA_RESOURCE_MGR_ID>
 			<XA_RESOURCE_NAME>DB2_XA</XA_RESOURCE_NAME>
@@ -116,13 +114,13 @@
 			<XA_LIB_NAME>${ORACLE_HOME}/BIN/oraclient11.dll</XA_LIB_NAME>
 		</XA_RESOURCE>
 	</XA_RESOURCES>
-	<ORB
-		OPT="-ORBInitRef NameService=corbaloc::localhost:3528/NameService"
+	<ORB OPT="-ORBInitRef NameService=corbaloc::localhost:3528/NameService"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
 	<!--
-		OPT="-ORBListenEndpoints iiop://localhost:9032/portspan=10 -ORBInitRef NameService=corbaloc::localhost:3528/NameService" 
-TRANS_FACTORY_ID="TransactionManagerService.OTS" />
-		to start the ORB on a fixed endpoint to test recovery use the following:
+		OPT="-ORBListenEndpoints iiop://localhost:9032/portspan=10 -ORBInitRef
+		NameService=corbaloc::localhost:3528/NameService"
+		TRANS_FACTORY_ID="TransactionManagerService.OTS" /> to start the ORB
+		on a fixed endpoint to test recovery use the following:
 	-->
 	<MQ HOST="localhost" PORT="61613" USER="guest" PASSWORD="guest"
 		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" />

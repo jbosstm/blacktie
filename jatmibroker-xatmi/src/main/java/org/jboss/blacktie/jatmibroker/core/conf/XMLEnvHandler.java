@@ -44,6 +44,7 @@ public class XMLEnvHandler extends DefaultHandler {
 	private final String VALUE = "VALUE";
 	private final String ORB = "ORB";
 	private final String MQ = "MQ";
+	private final String ROLE = "role";
 
 	private Properties prop;
 
@@ -51,6 +52,7 @@ public class XMLEnvHandler extends DefaultHandler {
 	private String name;
 
 	private String serverName;
+	private String serviceName;
 	private String configDir;
 
 	private String jbossasIpAddr = System.getenv("JBOSSAS_IP_ADDR");
@@ -295,12 +297,10 @@ public class XMLEnvHandler extends DefaultHandler {
 				}
 			}
 		} else if (SERVICE_NAME.equals(localName)) {
-			String serviceName = null;
-			String transport = null;
-
 			if (atts != null) {
 				for (int i = 0; i < atts.getLength(); i++) {
-					if (atts.getLocalName(i).equals("name")) {
+					String attsLocalName = atts.getLocalName(i);
+					if (attsLocalName.equals("name")) {
 						serviceName = atts.getValue(i);
 						if (serviceName.length() > 15) {
 							log
@@ -311,35 +311,103 @@ public class XMLEnvHandler extends DefaultHandler {
 							break;
 						}
 
-						if (serviceName.indexOf("_ADMIN") >= 0) {
-							log.warn("service " + serviceName + " is admin service");
+						String serviceServer = (String) prop.get("blacktie."
+								+ serviceName + ".server");
+						if (serviceServer != null
+								&& !serviceServer.equals(serverName)) {
+							log.warn("service " + serviceName
+									+ " has already define in "
+									+ prop.get(serviceServer));
 							serviceName = null;
-							throw new SAXException("Can not define ADMIN service");
+							throw new SAXException(
+									"Can not define the same service");
 						}
+
+						if (serviceName.indexOf("_ADMIN") >= 0) {
+							log.warn("service " + serviceName
+									+ " is admin service");
+							serviceName = null;
+							throw new SAXException(
+									"Can not define ADMIN service");
+						}
+					} else if (attsLocalName.equals("function_name")) {
+						String func_key = "blacktie." + serviceName
+								+ ".function_name";
+						String function_name = atts.getValue(i);
+						prop.put(func_key, function_name);
+					} else if (attsLocalName.equals("java_class_name")) {
+						String java_key = "blacktie." + serviceName
+								+ ".java_class_name";
+						String java_class_name = atts.getValue(i);
+						prop.put(java_key, java_class_name);
+					} else if (attsLocalName.equals("library_name")) {
+						String lib_key = "blacktie." + serviceName
+								+ ".library_name";
+						String library_name = atts.getValue(i);
+						prop.put(lib_key, library_name);
+					} else if (attsLocalName.equals("advertised")) {
+						String advertised = atts.getValue(i);
+						String ad_key = "blacktie." + serviceName
+								+ ".advertised";
+						prop.put(ad_key, advertised);
+						if (advertised.equals("true")) {
+							String skey = "blacktie." + serverName
+									+ ".services";
+							String object = (String) prop.get(skey);
+							if (object == null) {
+								object = serviceName;
+							} else {
+								object = new String(object + "," + serviceName);
+							}
+							prop.put(skey, object);
+						}
+					} else if (attsLocalName.equals("size")) {
+						String sizeKey = "blacktie." + serviceName + ".size";
+						String sizeVal = atts.getValue(i);
+						prop.setProperty(sizeKey, sizeVal);
 					}
 				}
 
 				if (serviceName != null) {
-					String key = "blacktie." + serviceName + ".server";
-					if(prop.get(key) != null && !((String)prop.get(key)).equals(serverName)) {
-						log.warn("service " + serviceName + " has already define in " + prop.get(key));
-						throw new SAXException("Can not define the same service");
-					} else {
-						prop.put(key, serverName);
-						prop.put("blacktie." + serviceName + ".transportLib", "hybrid");
+					// If a function was not defined above
+					String func_key = "blacktie." + serviceName
+							+ ".function_name";
+					if (prop.get(func_key) == null) {
+						prop.put(func_key, serviceName);
 					}
+
+					prop.put("blacktie." + serviceName + ".server", serverName);
+					prop.put("blacktie." + serviceName + ".transportLib",
+							"hybrid");
+					log.trace("Added the service: " + serviceName);
 				}
 			}
-
-
+		} else if (ROLE.equals(localName)) {
 			if (serviceName != null) {
-				AtmiBrokerServiceXML xml = new AtmiBrokerServiceXML(serverName,
-						serviceName, prop);
-				try {
-					xml.getProperties(configDir);
-				} catch (ConfigurationException e) {
-					throw new SAXException(e.getMessage(), e);
+				String key = "blacktie." + serviceName + ".security";
+				String roleList = prop.getProperty(key, "");
+				String name = null;
+				String read = "false";
+				String write = "false";
+
+				for (int i = 0; i < atts.getLength(); i++) {
+					String attsLocalName = atts.getLocalName(i);
+					if (attsLocalName.equals("name")) {
+						name = atts.getValue(i);
+					} else if (atts.getLocalName(i).equals("read")) {
+						read = atts.getValue(i);
+					} else {
+						write = atts.getValue(i);
+					}
 				}
+				String role = name + ':' + read + ':' + write;
+				if (roleList.length() > 0) {
+					roleList = roleList + ',' + role;
+				} else {
+					roleList = role;
+				}
+				prop.put(key, roleList);
+				log.trace("Added the role: " + role);
 			}
 		}
 	}
@@ -355,6 +423,10 @@ public class XMLEnvHandler extends DefaultHandler {
 				value = value.replace("${JBOSSAS_IP_ADDR}", jbossasIpAddr);
 			}
 			prop.setProperty(name, value);
+		} else if (SERVICE_NAME.equals(localName)) {
+			if (serviceName != null) {
+				serviceName = null;
+			}
 		}
 	}
 }

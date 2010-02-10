@@ -28,10 +28,13 @@
 		<SERVER name='default'>
 			<SERVICE_NAMES>
 				<SERVICE name='PBF' />
-				<SERVICE name='BAR' />
+				<SERVICE name='BAR' advertised="true" size="2">
+					<LIBRARY_NAME configuration="linux" value="libtx-test-utilities.so" />
+					<LIBRARY_NAME configuration="win32" value="tx-test-utilities.dll" />
+				</SERVICE>
 				<SERVICE name='TestTPFree' />
 				<SERVICE name='TestTPCall' />
-				<SERVICE name='TestTPAdvertise' />
+				<SERVICE name='TestTPAdvertise' size="2" />
 				<SERVICE name='LOOPY' />
 				<SERVICE name='TestTPConversat' />
 				<SERVICE name='TestTPACall' />

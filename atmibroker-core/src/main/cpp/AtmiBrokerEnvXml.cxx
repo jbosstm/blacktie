@@ -26,7 +26,6 @@
 
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerEnvXml.h"
-#include "AtmiBrokerServiceXml.h"
 #include "XsdValidator.h"
 
 #include "log4cxx/logger.h"
@@ -40,6 +39,7 @@ log4cxx::LoggerPtr loggerAtmiBrokerEnvXml(log4cxx::Logger::getLogger(
 		"AtmiBrokerEnvXml"));
 xarm_config_t * xarmp = 0;
 ServersInfo servers;
+ServiceInfo service;
 Buffers buffers;
 
 OrbConfig orbConfig;
@@ -438,14 +438,16 @@ static void XMLCALL startElement
 		}
 	} else if(strcmp(name, "SERVICE") == 0) {
 		if(atts != 0) {
-			ServiceInfo service;
-			service.transportLib = NULL;
 			char  adm[16];
 			char* server;
 
 			server = servers.back()->serverName;
 			memset(&service, 0, sizeof(ServiceInfo));
 			ACE_OS::strcpy(adm, "_ADMIN");
+
+			service.transportLib = NULL;
+			service.advertised = false;
+			service.poolSize = 1;
 
 			for(int i = 0; atts[i]; i += 2) {
 				if(strcmp(atts[i], "name") == 0) {
@@ -461,6 +463,17 @@ static void XMLCALL startElement
 
 					service.serviceName = copy_value(atts[i+1]);
 					LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "set name: " << service.serviceName);
+				} else if(strcmp(atts[i], "function_name") == 0) {
+					service.function_name = strdup(atts[i+1]);
+				} else if(strcmp(atts[i], "advertised") == 0) {
+					if(strcmp(atts[i+1], "true") == 0) {
+						service.advertised = true;
+					} else {
+						service.advertised = false;
+					}
+				} else if (strcmp(atts[i], "size") == 0) {
+					LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "storing MaxCache " << last_value);
+					service.poolSize = (short) atol(atts[i+1]);
 				}
 			}
 			LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "setting transportlib");
@@ -471,27 +484,19 @@ static void XMLCALL startElement
 #endif
 			LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "set transportlib: " << service.transportLib);
 
-			char* dir = AtmiBrokerEnv::ENVIRONMENT_DIR;
-			if(dir == NULL) {
-				dir = ACE_OS::getenv("BLACKTIE_CONFIGURATION_DIR");
-			}
-			char configDir[256];
-
-			if(dir != NULL) {
-				ACE_OS::snprintf(configDir, 255, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"%s", dir, server);
-			} else {
-				ACE_OS::strncpy(configDir, server, 255);
-			}
-
-			service.advertised = false;
-			service.poolSize = 1;
-			AtmiBrokerServiceXml xml;
-			xml.parseXmlDescriptor(&service, service.serviceName, configDir, configuration);
-
 			if(service.function_name == NULL) {
 				service.function_name = copy_value(service.serviceName);
 			}
-			servers.back()->serviceVector.push_back(service);
+		}
+	} else if (strcmp(name, "LIBRARY_NAME") == 0) {
+		if(atts != 0 && atts[0] && strcmp(atts[0], "configuration") == 0) {
+			LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "comparing" << atts[1] << " with " << configuration);
+			if (strcmp(atts[1], configuration) == 0) {
+				service.library_name = copy_value(atts[3]);
+				LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processed LIBRARY_NAME: " << service.library_name);
+			} else {
+				LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "CONFIGURATION NOT APPLICABLE FOR LIBRARY_NAME: " << atts[1]);
+			}
 		}
 	}
 	strcpy(element, name);
@@ -574,6 +579,8 @@ static void XMLCALL endElement
 			}
 			currentBufferName = NULL;
 		}
+	} else if (strcmp(last_element, "SERVICE") == 0) {
+		servers.back()->serviceVector.push_back(service);
 	}
 	depth -= 1;
 }

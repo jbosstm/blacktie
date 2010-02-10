@@ -19,15 +19,14 @@
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
 	<SERVERS>
-		<SERVER name="jboss">
+		<SERVER name="secureServer">
 			<SERVICE_NAMES>
-				<SERVICE name='BTStompAdmin' />
-				<SERVICE name='BTDomainAdmin' />
-			</SERVICE_NAMES>
-		</SERVER>
-		<SERVER name='default'>
-			<SERVICE_NAMES>
-				<SERVICE name='BAR' />
+				<SERVICE name="SECURE" size="5">
+					<security>
+						<role name="guest" read="false" write="false" />
+						<role name="blacktie" read="true" write="true" />
+					</security>
+				</SERVICE>
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>

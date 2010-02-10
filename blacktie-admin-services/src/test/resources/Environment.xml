@@ -19,54 +19,64 @@
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
 	<SERVERS>
+		<SERVER name="secureServer">
+			<SERVICE_NAMES>
+				<SERVICE name="SECURE">
+					<security>
+						<role name="guest" read="false" write="false" />
+						<role name="blacktie" read="true" write="true" />
+					</security>
+				</SERVICE>
+			</SERVICE_NAMES>
+		</SERVER>
 		<SERVER name="jboss">
 			<SERVICE_NAMES>
-				<SERVICE name='BTStompAdmin' />
-				<SERVICE name='BTDomainAdmin' />
+				<SERVICE name="BTStompAdmin" />
+				<SERVICE name="BTDomainAdmin" />
 			</SERVICE_NAMES>
 		</SERVER>
 		<SERVER name="foo">
 			<SERVICE_NAMES>
-				<SERVICE name='FOOTest' />
+				<SERVICE name="FOOTest" />
 			</SERVICE_NAMES>
 		</SERVER>
-		<SERVER name='ejb-connector-tests'>
+		<SERVER name="ejb-connector-tests">
 			<SERVICE_NAMES>
-				<SERVICE name='EchoService' />
-				<SERVICE name='TxEchoService' />
-				<SERVICE name='TxCreateService' />
+				<SERVICE name="EchoService" />
+				<SERVICE name="TxEchoService" />
+				<SERVICE name="TxCreateService" />
 			</SERVICE_NAMES>
 		</SERVER>
 		<SERVER name="default">
 			<SERVICE_NAMES>
-				<SERVICE name='PBF' />
-				<SERVICE name='BAR' />
-				<SERVICE name='TTL' />
-				<SERVICE name='TestTPFree' />
-				<SERVICE name='TestTPCall' />
-				<SERVICE name='TestTPAdvertise' />
-				<SERVICE name='LOOPY' />
-				<SERVICE name='TestTPConversat' />
-				<SERVICE name='TestTPConversa2' />
-				<SERVICE name='TestTPACall' />
-				<SERVICE name='TestTPCancel' />
-				<SERVICE name='TestTPConnect' />
-				<SERVICE name='TestTPDiscon' />
-				<SERVICE name='TestTPGetrply' />
-				<SERVICE name='TestTPSend' />
-				<SERVICE name='TestTPRecv' />
-				<SERVICE name='TestTPService' />
-				<SERVICE name='TestTPReturn' />
-				<SERVICE name='TestTPReturn2' />
-				<SERVICE name='123456789012345' />
-				<SERVICE name='TestTPUnadverti' />
-				<SERVICE name='tpcall_x_octet' />
-				<SERVICE name='tpcall_x_common' />
-				<SERVICE name='tpcall_x_c_type' />
-				<SERVICE name='DEBIT' />
-				<SERVICE name='CREDIT' />
-				<SERVICE name='INQUIRY' />
-				<SERVICE name='TestRbkOnly' />
+				<SERVICE name="PBF" />
+				<SERVICE name="BAR" />
+				<SERVICE name="TTL" />
+				<SERVICE name="TestTPFree" />
+				<SERVICE name="TestTPCall" />
+				<SERVICE name="TestTPAdvertise" />
+				<SERVICE name="LOOPY" />
+				<SERVICE name="TestTPConversat" />
+				<SERVICE name="TestTPConversa2" />
+				<SERVICE name="TestTPACall" />
+				<SERVICE name="TestTPCancel" />
+				<SERVICE name="TestTPConnect" />
+				<SERVICE name="TestTPDiscon" />
+				<SERVICE name="TestTPGetrply" />
+				<SERVICE name="TestTPSend" />
+				<SERVICE name="TestTPRecv" />
+				<SERVICE name="TestTPService" />
+				<SERVICE name="TestTPReturn" />
+				<SERVICE name="TestTPReturn2" />
+				<SERVICE name="123456789012345" />
+				<SERVICE name="TestTPUnadverti" />
+				<SERVICE name="tpcall_x_octet" />
+				<SERVICE name="tpcall_x_common" />
+				<SERVICE name="tpcall_x_c_type" />
+				<SERVICE name="DEBIT" />
+				<SERVICE name="CREDIT" />
+				<SERVICE name="INQUIRY" />
+				<SERVICE name="TestRbkOnly" />
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>

@@ -61,7 +61,7 @@
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="DOMAIN" type="xsd:string" />
-				<xsd:element name="SERVERS" minOccurs="0">
+				<xsd:element name="SERVERS" minOccurs="0" maxOccurs="1">
 					<xsd:complexType>
 						<xsd:sequence>
 							<xsd:element name="SERVER" minOccurs="1" maxOccurs="unbounded">
@@ -73,8 +73,39 @@
 													<xsd:element name="SERVICE" minOccurs="1"
 														maxOccurs="unbounded">
 														<xsd:complexType>
+															<xsd:sequence>
+																<xsd:element name="security" minOccurs="0"
+																	maxOccurs="1">
+																	<xsd:complexType>
+																		<xsd:sequence>
+																			<xsd:element name="role" minOccurs="1"
+																				maxOccurs="unbounded">
+																				<xsd:complexType>
+																					<xsd:attribute name="name" type="xsd:string" />
+																					<xsd:attribute name="read" type="xsd:boolean" />
+																					<xsd:attribute name="write" type="xsd:boolean" />
+																				</xsd:complexType>
+																			</xsd:element>
+																		</xsd:sequence>
+																	</xsd:complexType>
+																</xsd:element>
+																<xsd:element name="LIBRARY_NAME" minOccurs="0"
+																	maxOccurs="unbounded">
+																	<xsd:complexType>
+																		<xsd:attribute name="configuration"
+																			type="xsd:string" use="required" />
+																		<xsd:attribute name="value" type="xsd:string"
+																			use="required" />
+																	</xsd:complexType>
+																</xsd:element>
+															</xsd:sequence>
 															<xsd:attribute name="name" type="svcstring"
 																use="required" />
+															<xsd:attribute name="function_name" type="xsd:string" />
+															<xsd:attribute name="java_class_name" type="xsd:string" />
+															<xsd:attribute name="advertised" type="xsd:boolean"
+																default="false" />
+															<xsd:attribute name="size" type="xsd:integer" />
 														</xsd:complexType>
 													</xsd:element>
 												</xsd:sequence>
@@ -133,10 +164,11 @@
 					</xsd:complexType>
 				</xsd:element>
 
-				<xsd:element name="ENV_VARIABLES" minOccurs="0" maxOccurs="unbounded">
+				<xsd:element name="ENV_VARIABLES" minOccurs="0"
+					maxOccurs="1">
 					<xsd:complexType>
 						<xsd:sequence>
-							<xsd:element name="ENV_VARIABLE" minOccurs="0"
+							<xsd:element name="ENV_VARIABLE" minOccurs="1"
 								maxOccurs="unbounded">
 								<xsd:complexType>
 									<xsd:sequence>
@@ -151,7 +183,7 @@
 						</xsd:sequence>
 					</xsd:complexType>
 				</xsd:element>
-				<xsd:element name="BUFFERS" minOccurs="0" maxOccurs="unbounded">
+				<xsd:element name="BUFFERS" minOccurs="0" maxOccurs="1">
 					<xsd:complexType>
 						<xsd:sequence>
 							<xsd:element name="BUFFER" minOccurs="1" maxOccurs="unbounded">

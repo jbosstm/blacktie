@@ -23,7 +23,14 @@
 			<SERVICE_NAMES>
 				<SERVICE name='TestOne' />
 				<SERVICE name='TestTwo' />
-				<SERVICE name='JAVA_Converse' />
+				<SERVICE name='JAVA_Converse'
+					java_class_name="org.jboss.blacktie.jatmibroker.xatmi.TestTPCallServiceXOctet"
+					advertised="true" size="1">
+					<security>
+						<role name="guest" read="true" write="true" />
+						<role name="blacktie" read="true" write="true" />
+					</security>
+				</SERVICE>
 				<SERVICE name='XMLParserTest' />
 			</SERVICE_NAMES>
 		</SERVER>
@@ -34,8 +41,6 @@
 	<MQ HOST="${JBOSSAS_IP_ADDR}" PORT="61613" USER="guest" PASSWORD="guest"
 		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10"
 		NAMING_URL="jnp://${JBOSSAS_IP_ADDR}:1099" />
-	<ENV_VARIABLES>
-	</ENV_VARIABLES>
 	<BUFFERS>
 		<BUFFER name="1234567890123456">
 			<ATTRIBUTE id="key" type="char[]" arrayLength="10" />

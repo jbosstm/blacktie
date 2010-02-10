@@ -17,13 +17,5 @@
 	-->
 <SERVICE xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
-	<SERVICE_DESCRIPTION
-		java_class_name="org.jboss.blacktie.jatmibroker.xatmi.TestTPCallServiceXOctet"
-		advertised="true">
-		<SIZE>1</SIZE>
-		<security>
-			<role name="guest" read="true" write="true"/>
-			<role name="blacktie" read="true" write="true"/>
-		</security>
-	</SERVICE_DESCRIPTION>
+	<SERVICE_DESCRIPTION/>
 </SERVICE>

@@ -18,7 +18,6 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "TestAtmiBrokerXml.h"
-#include "AtmiBrokerServiceXml.h"
 #include "AtmiBrokerEnvXml.h"
 #include "AtmiBrokerEnv.h"
 #include "ace/OS_NS_stdlib.h"
@@ -38,23 +37,6 @@ void TestAtmiBrokerXml::tearDown() {
 	// Perform global clean up
 	TestFixture::tearDown();
 }
-
-void TestAtmiBrokerXml::test_service() {
-	AtmiBrokerServiceXml xml;
-	ServiceInfo service;
-
-	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=xmltest");
-	xml.parseXmlDescriptor(&service, "XMLTESTSERVICE", "xmltest",
-			(char*) "xmltest");
-	CPPUNIT_ASSERT(service.poolSize == 5);
-	CPPUNIT_ASSERT(strcmp(service.function_name, "BAR") == 0);
-	CPPUNIT_ASSERT(strcmp(service.library_name, "libXMLTESTSERVICE.so") == 0);
-	CPPUNIT_ASSERT(service.advertised == false);
-
-	free(service.function_name);
-	free(service.library_name);
-}
-
 void TestAtmiBrokerXml::test_env() {
 	userlogc((char*) "RUNNING");
 	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=xmltest");
@@ -86,6 +68,11 @@ void TestAtmiBrokerXml::test_env() {
 	CPPUNIT_ASSERT(strcmp((*services)[1].transportLib,
 			"libatmibroker-hybrid.so") == 0);
 #endif
+
+	CPPUNIT_ASSERT((*services)[0].poolSize == 5);
+	CPPUNIT_ASSERT(strcmp((*services)[0].function_name, "BAR") == 0);
+	CPPUNIT_ASSERT(strcmp((*services)[0].library_name, "libXMLTESTSERVICE.so") == 0);
+	CPPUNIT_ASSERT((*services)[0].advertised == false);
 
 	char* transport = env->getTransportLibrary((char*) "BAR");
 #ifdef WIN32
