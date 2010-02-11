@@ -99,7 +99,7 @@ int parsecmdline(int argc, char** argv) {
 			break;
 		case 'i':
 			serverid = atoi(getopt.opt_arg());
-			if (serverid <= 0) {
+			if (serverid <= 0 || serverid > 9) {
 				r = -1;
 			} else {
 				isSetServerId = true;
@@ -118,7 +118,7 @@ int parsecmdline(int argc, char** argv) {
 	}
 
 	if (isSetServerId == false) {
-		fprintf(stderr, "you must specify a server id with -i greater than 0\n");
+		fprintf(stderr, "you must specify a server id with -i greater than 0 and less than 10\n");
 		r = -1;
 	}
 
@@ -328,12 +328,6 @@ AtmiBrokerServer::AtmiBrokerServer() {
 					service.transportLib = strdup(
 							servers[i]->serviceVector[j].transportLib);
 
-					if (servers[i]->serviceVector[j].securityType) {
-						service.securityType = strdup(
-								servers[i]->serviceVector[j].securityType);
-					} else {
-						service.securityType = NULL;
-					}
 					if (servers[i]->serviceVector[j].function_name) {
 						service.function_name = strdup(
 								servers[i]->serviceVector[j].function_name);
@@ -402,9 +396,6 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 		ServiceInfo* service = &serverInfo.serviceVector[i];
 		free(service->serviceName);
 		free(service->transportLib);
-		if (service->securityType != NULL) {
-			free(service->securityType);
-		}
 		if (service->function_name != NULL) {
 			free(service->function_name);
 		}

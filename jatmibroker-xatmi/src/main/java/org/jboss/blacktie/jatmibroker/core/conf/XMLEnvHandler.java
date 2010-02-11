@@ -92,9 +92,12 @@ public class XMLEnvHandler extends DefaultHandler {
 				for (int i = 0; i < atts.getLength(); i++) {
 					if (atts.getLocalName(i).equals("name")) {
 						serverName = atts.getValue(i);
-						servers.add(serverName);
 					}
 				}
+				if (serverName == null) {
+					serverName = "default";
+				}
+				servers.add(serverName);
 			}
 		} else if (BUFFER.equals(localName)) {
 			currentBufferName = atts.getValue(0);
@@ -383,8 +386,16 @@ public class XMLEnvHandler extends DefaultHandler {
 				}
 			}
 		} else if (ROLE.equals(localName)) {
+			String key = null;
 			if (serviceName != null) {
-				String key = "blacktie." + serviceName + ".security";
+				log.debug("Processing role for service" + serviceName);
+				key = "blacktie." + serviceName + ".security";
+			} else if (serverName != null) {
+				log.debug("Processing role for server: " + serverName);
+				key = "blacktie." + serverName + ".security";
+			}
+
+			if (key != null) {
 				String roleList = prop.getProperty(key, "");
 				String name = null;
 				String read = "false";
@@ -408,6 +419,8 @@ public class XMLEnvHandler extends DefaultHandler {
 				}
 				prop.put(key, roleList);
 				log.trace("Added the role: " + role);
+			} else {
+				log.error("Ignoring role as not processing service or server");
 			}
 		}
 	}

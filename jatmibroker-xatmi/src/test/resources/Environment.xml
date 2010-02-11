@@ -19,7 +19,7 @@
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
 	<SERVERS>
-		<SERVER name='standalone-server'>
+		<SERVER name='myserv'>
 			<SERVICE_NAMES>
 				<SERVICE name='TestOne' />
 				<SERVICE name='TestTwo' />

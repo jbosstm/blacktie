@@ -21,7 +21,7 @@
 #include "userlogc.h"
 #include "string.h"
 
-void BAR(TPSVCINFO * svcinfo) {
+void SECURE(TPSVCINFO * svcinfo) {
 	char* buffer;
 	int sendlen;
 

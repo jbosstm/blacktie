@@ -75,7 +75,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 	private MBeanServerConnection beanServerConnection;
 	private Properties prop = new Properties();
-	
+
 	public BlacktieStompAdministrationService() throws IOException,
 			ConfigurationException, ConnectionException {
 		super("BTStompAdmin");
@@ -100,11 +100,12 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 				String qname = ((Queue) dest).getQueueName();
 				log.debug("destination is " + qname);
 				if (qname.equals(serviceName)) {
-					log.debug("find serviceName " + serviceName);
+					log.trace("find serviceName " + serviceName);
 					return true;
 				}
 			}
 		}
+		log.trace("did not find serviceName " + serviceName);
 		return false;
 	}
 
@@ -151,30 +152,49 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 	}
 
 	void setSecurityConfig(ObjectName objName, String serviceName) {
-		log.debug("Get security configuration from service xml");
+		log.debug("Get security configuration from xml");
 		String roleList = (String) prop.getProperty("blacktie." + serviceName
-				+ ".security", "guest:true:true");
-
-		String security = "<security>\n";
-		String[] roles = roleList.split(",");
-		for (int i = 0; i < roles.length; i++) {
-			String[] details = roles[i].split(":");
-			security += "<role name=\"" + details[0] + "\" read=\""
-					+ details[1] + "\" write=\"" + details[2] + "\"/>\n";
+				+ ".security");
+		if (roleList == null) {
+			log.debug("Will use servers default security if present");
+			String server = (String) prop.getProperty("blacktie." + serviceName
+					+ ".server");
+			if (server == null && serviceName.indexOf("_ADMIN_") > 0) {
+				server = serviceName.substring(0, serviceName
+						.indexOf("_ADMIN_"));
+				log.trace("Using server name of: " + server);
+			}
+			roleList = (String) prop.getProperty("blacktie." + server
+					+ ".security");
+			if (roleList == null) {
+				log.warn("No security set for service: " + serviceName);
+				roleList = "";
+			}
 		}
-		security += "</security>";
 
-		log.debug("access security is " + security);
-		try {
-			Element element = stringToElement(security);
-			Attribute attr = new Attribute("SecurityConfig", element);
-			beanServerConnection.setAttribute(objName, attr);
-		} catch (Throwable t) {
-			log.error("Could not set security config " + t);
+		if (roleList.length() > 0) {
+			String security = "<security>\n";
+			String[] roles = roleList.split(",");
+			for (int i = 0; i < roles.length; i++) {
+				String[] details = roles[i].split(":");
+				security += "<role name=\"" + details[0] + "\" read=\""
+						+ details[1] + "\" write=\"" + details[2] + "\"/>\n";
+			}
+			security += "</security>";
+
+			log.trace("access security is " + security);
+			try {
+				Element element = stringToElement(security);
+				Attribute attr = new Attribute("SecurityConfig", element);
+				beanServerConnection.setAttribute(objName, attr);
+			} catch (Throwable t) {
+				log.error("Could not set security config " + t);
+			}
 		}
 	}
 
 	int deployQueue(String serviceName) {
+		log.trace("deployQueue: " + serviceName);
 		int result = 0;
 
 		try {
@@ -195,15 +215,15 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 			if (queue == false || !serviceName.contains("_ADMIN_")) {
 				result = 1;
-				if(AdministrationProxy.isDomainPause
-						&& serviceName.contains("_ADMIN_")){
+				if (AdministrationProxy.isDomainPause
+						&& serviceName.contains("_ADMIN_")) {
 					log.info("Domain is pause");
 					result = 3;
 				}
 			} else if (consumerCount(serviceName) > 0) {
 				log.warn("can not advertise ADMIN with same id");
 				result = 2;
-			} else if(AdministrationProxy.isDomainPause) {
+			} else if (AdministrationProxy.isDomainPause) {
 				log.info("Domain is pause");
 				result = 3;
 			} else {
@@ -275,9 +295,14 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 			if ((k = serviceName.indexOf("_ADMIN_")) > 0) {
 				server = serviceName.substring(0, k);
-				Set<String> servers = (Set<String>) prop.get("blacktie.domain.servers");
-				if(servers.contains(server) == false) {
+				Set<String> servers = (Set<String>) prop
+						.get("blacktie.domain.servers");
+				if (servers.contains(server) == false) {
+					log.warn("Could not find the server to advertise for: "
+							+ server);
 					server = null;
+				} else {
+					log.trace("Located server: " + server);
 				}
 			} else {
 				server = (String) prop.get("blacktie." + serviceName

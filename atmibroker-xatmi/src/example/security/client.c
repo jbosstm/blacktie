@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
 
 		// tpcall
 		userlogc((char*) "Calling tpcall with input: %s", sbuf);
-		tpstatus = tpcall("BAR", sbuf, sbufsize, (char **) &retbuf,
+		tpstatus = tpcall("SECURE", sbuf, sbufsize, (char **) &retbuf,
 				&retbufsize, callflags);
 		userlogc(
 				(char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",

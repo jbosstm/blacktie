@@ -84,7 +84,7 @@ public class XMLParserTest extends TestCase {
 		String arg2 = "NameService=corbaloc::";
 		String arg3 = ":3528/NameService";
 
-		String server = "standalone-server";
+		String server = "myserv";
 		String transport = "hybrid";
 		String advertised = "true";
 		String size = "1";

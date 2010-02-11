@@ -24,6 +24,12 @@
 			<xsd:maxLength value="15" />
 		</xsd:restriction>
 	</xsd:simpleType>
+	<xsd:simpleType name="svrstring">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1" />
+			<xsd:maxLength value="7" />
+		</xsd:restriction>
+	</xsd:simpleType>
 	<xsd:simpleType name="buffername">
 		<xsd:restriction base="xsd:string">
 			<xsd:minLength value="1" />
@@ -67,6 +73,21 @@
 							<xsd:element name="SERVER" minOccurs="1" maxOccurs="unbounded">
 								<xsd:complexType>
 									<xsd:sequence>
+										<xsd:element name="security" minOccurs="0"
+											maxOccurs="1">
+											<xsd:complexType>
+												<xsd:sequence>
+													<xsd:element name="role" minOccurs="1"
+														maxOccurs="unbounded">
+														<xsd:complexType>
+															<xsd:attribute name="name" type="xsd:string" />
+															<xsd:attribute name="read" type="xsd:boolean" />
+															<xsd:attribute name="write" type="xsd:boolean" />
+														</xsd:complexType>
+													</xsd:element>
+												</xsd:sequence>
+											</xsd:complexType>
+										</xsd:element>
 										<xsd:element name="SERVICE_NAMES">
 											<xsd:complexType>
 												<xsd:sequence>
@@ -112,7 +133,7 @@
 											</xsd:complexType>
 										</xsd:element>
 									</xsd:sequence>
-									<xsd:attribute name="name" type="xsd:string" use="required" />
+									<xsd:attribute name="name" type="svrstring" use="required" />
 								</xsd:complexType>
 							</xsd:element>
 						</xsd:sequence>

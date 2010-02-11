@@ -19,11 +19,13 @@
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
 	<SERVERS>
-		<SERVER name="secureServer">
+		<SERVER name="secure">
+			<security>
+				<role name="blacktie" read="true" write="true" />
+			</security>
 			<SERVICE_NAMES>
 				<SERVICE name="SECURE" size="5">
 					<security>
-						<role name="guest" read="false" write="false" />
 						<role name="blacktie" read="true" write="true" />
 					</security>
 				</SERVICE>
@@ -32,6 +34,6 @@
 	</SERVERS>
 	<ORB OPT="-ORBInitRef NameService=corbaloc::localhost:3528/NameService"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
-	<MQ HOST="localhost" PORT="61613" USER="guest" PASSWORD="guest"
+	<MQ HOST="localhost" PORT="61613" USER="blacktie" PASSWORD="blacktie"
 		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" />
 </ENVIRONMENT>

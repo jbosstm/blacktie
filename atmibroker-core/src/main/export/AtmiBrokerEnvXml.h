@@ -70,7 +70,6 @@ typedef BLACKTIE_CORE_DLL struct _orb_config {
 
 typedef BLACKTIE_CORE_DLL struct _service_info {
 	char* serviceName;
-	char* securityType;
 	char* transportLib;
 	char* function_name;
 	char* library_name;
@@ -85,9 +84,6 @@ typedef BLACKTIE_CORE_DLL struct _server_info {
 	short maxConsumers;
 	short maxReplicas;
 	short logLevel;
-	//std::string securityType;
-	//std::string orbType;
-	//std::string queueSpaceName;
 
 	std::vector<ServiceInfo> serviceVector;
 }ServerInfo;

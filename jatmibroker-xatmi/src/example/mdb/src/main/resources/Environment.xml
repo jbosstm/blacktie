@@ -19,7 +19,7 @@
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>jboss</DOMAIN>
 	<SERVERS>
-		<SERVER name='ejb-connector-tests'>
+		<SERVER name='ejbtest'>
 			<SERVICE_NAMES>
 				<SERVICE name='EchoService' />
 				<SERVICE name='TxEchoService' />

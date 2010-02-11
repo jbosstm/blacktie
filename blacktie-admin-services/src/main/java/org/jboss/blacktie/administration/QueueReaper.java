@@ -31,7 +31,6 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
 
-
 public class QueueReaper implements Runnable {
 	/** logger */
 	private static final Logger log = LogManager.getLogger(QueueReaper.class);
@@ -102,7 +101,7 @@ public class QueueReaper implements Runnable {
 						String serviceName = ((Queue) dest).getQueueName();
 						String server = (String) prop.get("blacktie."
 								+ serviceName + ".server");
-						if (server != null
+						if ((server != null || serviceName.contains("_ADMIN_"))
 								&& isCreatedProgrammatically(serviceName)
 								&& consumerCount(serviceName) == 0) {
 
@@ -113,9 +112,12 @@ public class QueueReaper implements Runnable {
 							// double check consumer is 0
 							if (consumerCount(serviceName) == 0) {
 								undeployQueue(serviceName);
-								log.info("undeploy service " + serviceName
+								log.warn("undeploy service " + serviceName
 										+ " for consumer is 0");
 							}
+						} else {
+							log.debug("Could not determine the server for: "
+									+ serviceName + " at: " + server);
 						}
 					}
 				}

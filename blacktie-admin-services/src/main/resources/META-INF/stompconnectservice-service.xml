@@ -15,6 +15,7 @@
 		<depends>jboss.messaging:service=PostOffice</depends>
 		<attribute name="SecurityConfig">
 			<security>
+				<role name="blacktie" read="true" write="true"/>
 				<role name="guest" read="true" write="true"/>
 				<role name="publisher" read="true" write="true" create="false"/>
 				<role name="durpublisher" read="true" write="true" create="true"/>
@@ -28,6 +29,7 @@
 		<depends>jboss.messaging:service=PostOffice</depends>
 		<attribute name="SecurityConfig">
 			<security>
+				<role name="blacktie" read="true" write="true"/>
 				<role name="guest" read="true" write="true"/>
 				<role name="publisher" read="true" write="true" create="false"/>
 				<role name="durpublisher" read="true" write="true" create="true"/>

@@ -63,7 +63,7 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 	}
 
 	public Response tpservice(TPSVCINFO svcinfo) {
-		log.info("Message received");
+		log.trace("Message received");
 		X_OCTET recv = (X_OCTET) svcinfo.getBuffer();
 		String string = new String(recv.getByteArray());
 		StringTokenizer parameters = new StringTokenizer(string, ",", false);
