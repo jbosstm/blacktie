@@ -35,6 +35,7 @@
 #include "ace/Default_Constants.h"
 #include "ace/Signal.h"
 #include "ThreadLocalStorage.h"
+#include "AtmiBrokerSignalHandler.h"
 
 AtmiBrokerClient * ptrAtmiBrokerClient;
 
@@ -44,13 +45,15 @@ log4cxx::LoggerPtr loggerAtmiBrokerClient(log4cxx::Logger::getLogger(
 bool clientInitialized = false;
 SynchronizableObject client_lock;
 
-void client_sigint_handler_callback(int sig_type) {
+int client_sigint_handler_callback(int sig_type) {
 	LOG4CXX_WARN(
 			loggerAtmiBrokerClient,
 			(char*) "SIGINT Detected: Shutting down client this may take several minutes");
 	clientdone();
 	LOG4CXX_WARN(loggerAtmiBrokerClient, (char*) "Shutdown complete");
-	abort();
+	exit(1);
+	/* NOTREACHED*/
+	return -1;
 }
 
 int clientinit() {
@@ -73,35 +76,9 @@ int clientinit() {
 						(char*) "clientinit deleted Client");
 				setSpecific(TPE_KEY, TSS_TPESYSTEM);
 			} else {
-				// ignore these signals
-				int handlesigs[] = {SIGINT, SIGTERM};
-				int blocksigs[] = {SIGHUP, SIGALRM, SIGUSR1, SIGUSR2};
+				// install a handler for SIGINT and SIGTERM
+				(ptrAtmiBrokerClient->getSigHandler()).setSigHandler(client_sigint_handler_callback);
 
-				// install a handler for SIGINT
-				ptrAtmiBrokerClient->setSigHandler(new AtmiBrokerSignalHandler(client_sigint_handler_callback,
-					handlesigs, sizeof (handlesigs) / sizeof (int), blocksigs, sizeof (blocksigs) / sizeof (int)));
-/*
-				//signal(SIGINT, client_sigint_handler_callback);
-				ACE_Sig_Action sa;
-				sa.retrieve_action(SIGINT);
-
-				if (sa.handler() != SIG_DFL) {
-					LOG4CXX_DEBUG(
-							loggerAtmiBrokerClient,
-							(char*) "SIGINT handler callback have been register");
-				} else {
-					// Make sure we specify that SIGINT will be masked out
-					// during the signal handler's execution.
-					ACE_Sig_Set ss;
-					ss.sig_add(SIGINT);
-					sa.mask(ss);
-					sa.handler(
-							reinterpret_cast<ACE_SignalHandler> (client_sigint_handler_callback));
-					sa.register_action(SIGINT);
-					LOG4CXX_DEBUG(loggerAtmiBrokerClient,
-							(char*) "register client_sigint_handler_callback");
-				}
-*/
 				LOG4CXX_DEBUG(loggerAtmiBrokerClient,
 						(char*) "Client Initialized");
 				toReturn = 0;
@@ -136,7 +113,7 @@ int clientdone() {
 	return 0;
 }
 
-AtmiBrokerClient::AtmiBrokerClient() : currentConnection(NULL), nextSessionId(0), sigHandler(NULL) {
+AtmiBrokerClient::AtmiBrokerClient() : currentConnection(NULL), nextSessionId(0) {
 	try {
 		lock = new SynchronizableObject();
 		clientInitialized = true;
@@ -155,8 +132,6 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit deleted services");
 	delete lock;
 	clientInitialized = false;
-	if (sigHandler != NULL)
-		delete sigHandler;
 	AtmiBrokerEnv::discard_instance();
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "Client Shutdown");
 }
@@ -180,7 +155,7 @@ Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
 		lock->unlock();
 
 		session = clientConnection->createSession(id, serviceName);
-		session->setSigHandler(sigHandler);
+		session->setSigHandler(&sigHandler);
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "created session: " << id
 				<< " send: " << session->getCanSend() << " recv: "
 				<< session->getCanRecv());

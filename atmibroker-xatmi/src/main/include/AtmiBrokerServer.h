@@ -34,6 +34,7 @@
 #include "Destination.h"
 #include "ServiceDispatcher.h"
 #include "SynchronizableObject.h"
+#include "AtmiBrokerSignalHandler.h"
 
 class ServiceDispatcher;
 
@@ -68,6 +69,7 @@ public:
 	int  pause();
 	int  resume();
 	bool createAdminDestination(char* svcname);
+	AtmiBrokerSignalHandler& getSigHandler() { return this->sigHandler; }
 
 private:
 	void (*getServiceMethod(const char * aServiceName))(TPSVCINFO *);
@@ -76,6 +78,7 @@ private:
 	void removeAdminDestination(char* svcname);
 	void updateServiceStatus(ServiceInfo* service, SVCFUNC func, bool status);
 
+	AtmiBrokerSignalHandler sigHandler;
 	ConnectionManager connections;
 	std::vector<ServiceData> serviceData;
 	std::vector<ServiceStatus> serviceStatus;

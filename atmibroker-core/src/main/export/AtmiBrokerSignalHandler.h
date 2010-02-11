@@ -27,11 +27,13 @@
 class BLACKTIE_CORE_DLL AtmiBrokerSignalHandler : public ACE_Event_Handler
 {
 public:
-	AtmiBrokerSignalHandler(void (*func)(int signum), int* hsignals, int hsigcnt, int* bsignals, int bsigcnt);
+	AtmiBrokerSignalHandler(int (*func)(int signum) = NULL);
+	AtmiBrokerSignalHandler(int (*func)(int signum), int* hsignals, int hsigcnt, int* bsignals, int bsigcnt);
 	virtual ~AtmiBrokerSignalHandler();
 
+	void setSigHandler(int (*sigHandler)(int signum)) { sigHandler_ = sigHandler; }
 	virtual int handle_signal (int signum, siginfo_t *, ucontext_t *);
-	// virtual int handle_exit (ACE_Process *);
+	virtual int handle_exit (ACE_Process *);
 
 	/**
 	 * Start blocking signals. Signals will be blocked until the number of
@@ -44,19 +46,18 @@ public:
 	 */
 	void unguard();
 
-	static log4cxx::LoggerPtr logger;
 private:
 	static log4cxx::LoggerPtr logger_;
 	static ACE_Sig_Handler handler_;
 
+	void init(int (*func)(int signum), int* hsignals, int hsigcnt, int* bsignals, int bsigcnt);
+
 private:
 	SynchronizableObject lock_;
-	ACE_Sig_Set ss_;	// set of signals to block during guarded sections of code
+	ACE_Sig_Set bss_;	// set of signals to block during guarded sections of code
+	ACE_Sig_Set hss_;	// set of signals to handle
 
-	void (*sigHandler_)(int signum);
-
-	int* hsignals_;	// the signals that need to be handled
-	int* bsignals_;	// the signals that need to be blocked (in addition to hsignals_)
+	int (*sigHandler_)(int signum);	// the actual signal handler
 
 	int pending_sig_;	// a handleable signal was received whilst in a guarded section
 	ACE_Sig_Guard *guard_;

@@ -65,8 +65,7 @@ char configDir[256];
 char server[30];
 int serverid = 0;
 
-void server_sigint_handler_callback(int sig_type) {
-	signal(SIGINT, SIG_IGN);
+int server_sigint_handler_callback(int sig_type) {
 	userlog(
 			log4cxx::Level::getInfo(),
 			loggerAtmiBrokerServer,
@@ -74,6 +73,10 @@ void server_sigint_handler_callback(int sig_type) {
 	ptrServer->shutdown();
 	userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
 			(char*) "SIGINT Detected: Shutdown complete");
+    //exit (1);
+    /* NOTREACHED*/
+    return -1;
+
 }
 
 int serverrun() {
@@ -186,19 +189,11 @@ int serverinit(int argc, char** argv) {
 
 				ptrServer->advertiseAtBootime();
 
+                // install a handler for the default set of signals (namely, SIGINT and SIGTERM)
+				(ptrServer->getSigHandler()).setSigHandler(server_sigint_handler_callback);
+
 				userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
 						(char*) "Server %d Running", serverid);
-				//signal(SIGINT, server_sigint_handler_callback);
-				ACE_Sig_Action
-						sa(
-								reinterpret_cast<ACE_SignalHandler> (server_sigint_handler_callback));
-
-				// Make sure we specify that SIGINT will be masked out
-				// during the signal handler's execution.
-				ACE_Sig_Set ss;
-				ss.sig_add(SIGINT);
-				sa.mask(ss);
-				sa.register_action(SIGINT);
 			}
 
 		} catch (...) {

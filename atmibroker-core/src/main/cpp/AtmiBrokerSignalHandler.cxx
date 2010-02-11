@@ -15,52 +15,52 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <stdlib.h>
-#include <string.h>
-
 #include "AtmiBrokerSignalHandler.h"
 #include "log4cxx/logger.h"
+#include "ace/Process.h"
+
+static int default_handlesigs[] = {SIGINT, SIGTERM};
+static int default_blocksigs[] = {SIGHUP, SIGALRM, SIGUSR1, SIGUSR2};
 
 log4cxx::LoggerPtr AtmiBrokerSignalHandler::logger_(log4cxx::Logger::getLogger(
 		"AtmiBrokerSignalHandler"));
 ACE_Sig_Handler AtmiBrokerSignalHandler::handler_;
 
+AtmiBrokerSignalHandler::AtmiBrokerSignalHandler(int (*func)(int signum)) {
+	init(func,
+		default_handlesigs, sizeof (default_handlesigs) / sizeof (int),
+		default_handlesigs, sizeof (default_blocksigs) / sizeof (int));
+}
+
 AtmiBrokerSignalHandler::AtmiBrokerSignalHandler(
-	void (*func)(int signum),
-	int* hsignals = NULL, int hsigcnt = 0,
-	int* bsignals = NULL, int bsigcnt = 0) :
-		sigHandler_(func),
-		pending_sig_(0), guard_(NULL), gCnt_(0) {
+	int (*func)(int signum),
+	int* hsignals, int hsigcnt,
+	int* bsignals, int bsigcnt) {
+	init(func, hsignals, hsigcnt, bsignals,  bsigcnt);
+}
+
+void AtmiBrokerSignalHandler::init(int (*func)(int signum), 
+	int* hsignals = default_handlesigs, int hsigcnt = sizeof (default_handlesigs) / sizeof (int),
+	int* bsignals = default_handlesigs, int bsigcnt = sizeof (default_blocksigs) / sizeof (int)) {
 
 	LOG4CXX_DEBUG(logger_, (char*) "AtmiBrokerSignalHandler handler: " << func << " hsignals: " << hsignals);
 
-	if (hsigcnt > 0) {
-		hsignals_ = (int *) malloc((hsigcnt + 1) * sizeof (int));
-		(void) memcpy(hsignals_, hsignals, hsigcnt * sizeof (int));
-		hsignals_[hsigcnt] = 0;
+	sigHandler_ = func;
+	pending_sig_ = 0;
+	guard_ = NULL;
+	gCnt_ = 0;
 
-		for (int* sigp = hsignals_; *sigp != 0; sigp++) {
-			LOG4CXX_DEBUG(logger_, (char*) "handling and blocking signal " << *sigp);
-
-			ss_.sig_add(*sigp);
-			handler_.register_handler(*sigp, this);
-		}
-	} else {
-		hsignals_ = NULL;
+	for (int i = 0; i < hsigcnt; i++) {
+		LOG4CXX_DEBUG(logger_, (char*) "handling and blocking signal " << i);
+		hss_.sig_add(hsignals[i]);
+		bss_.sig_add(hsignals[i]);
+		handler_.register_handler(hsignals[i], this);
 	}
 
-	if (bsigcnt > 0) {
-		bsignals_ = (int *) malloc((bsigcnt + 1) * sizeof (int));
-		(void) memcpy(bsignals_, bsignals, bsigcnt * sizeof (int));
-		bsignals_[bsigcnt] = 0;
-
-		for (int* sigp = bsignals_; *sigp != 0; sigp++) {
-			LOG4CXX_DEBUG(logger_, (char*) "blocking signal " << *sigp);
-
-			ss_.sig_add(*sigp);
-		}
-	} else {
-		bsignals_ = NULL;
+	for (int i = 0; i < bsigcnt; i++) {
+		LOG4CXX_DEBUG(logger_, (char*) "blocking signal " << i);
+		bss_.sig_add(bsignals[i]);
+		handler_.register_handler(bsignals[i], this);
 	}
 }
 
@@ -71,54 +71,68 @@ AtmiBrokerSignalHandler::~AtmiBrokerSignalHandler() {
 		LOG4CXX_WARN(logger_, (char*) "~AtmiBrokerSignalHandler whilst in protected code section");
 	}
 
-	if (hsignals_ != NULL) {
-		for (int* sigp = hsignals_; *sigp != 0; sigp++)
-			handler_.remove_handler(*sigp);
-
-		free(hsignals_);
+	for (int i = 1; i < ACE_NSIG; i++) {
+		if (hss_.is_member(i))
+			handler_.remove_handler(i);
 	}
+}
 
-	if (bsignals_ != NULL)
-		free(bsignals_);
+/**
+ * TODO decide if it would be useful to add an exit handler registration interface:
+ *   void addExitHandler(int (*exitHandler)(void))
+ * The use case would be to avoid reference counting AtmiBrokerEnv
+ *
+ * #include "ace/Process_Manager.h"
+ * ACE_Process_Manager process_mgr_;
+ * process_mgr_.register_handler(this);
+ */
+int AtmiBrokerSignalHandler::handle_exit(ACE_Process *proc) {
+	LOG4CXX_DEBUG(logger_, (char*) "Process " << proc->getpid() <<
+		" terminating with status " << proc->return_value());
+
+	return 0;
 }
 
 int AtmiBrokerSignalHandler::handle_signal(int signum, siginfo_t * = 0, ucontext_t * = 0) {
 
-	if (hsignals_ != NULL && sigHandler_ != NULL) {
-		for (int* sigp = hsignals_; *sigp != 0; sigp++) {
-			if (*sigp == signum) {
+	if (hss_.is_member(signum) && sigHandler_ != NULL) {
+		int rv = 0;
+		/*
+		 * Block further signals whilst the handler runs - BTW this does not mask the signal
+		 * for other threads.
+		 * TODO decide whether to have the requirement that sigHandler_ must be reentrant.
+		 * My vote is YES, handlers should be reentrant.
+		 */
+		//ACE_Sig_Guard block(&bss_);
 
-				LOG4CXX_DEBUG(logger_, (char*) "handling signal " << signum);
+		LOG4CXX_DEBUG(logger_, (char*) "handling signal " << signum);
 
-				lock_.lock();
-				if (gCnt_ != 0) {
-					// received signal whilst another thread is in a protected section
-					LOG4CXX_DEBUG(logger_, (char*) "signalled inside protected section: gCnt_=" << gCnt_
-						<< " guard_=" << guard_);
-					pending_sig_ = signum;
-				} else {
-					sigHandler_(signum);
-				}
-
-				lock_.unlock();
-
-				return 0;
-			}
+		lock_.lock();
+		if (gCnt_ != 0) {
+			// received signal whilst another thread is in a protected section
+			LOG4CXX_DEBUG(logger_, (char*) "signalled inside protected section: gCnt_=" << gCnt_
+				<< " guard_=" << guard_);
+			pending_sig_ = signum;
+		} else {
+			rv = sigHandler_(signum);
 		}
+
+		lock_.unlock();
+
+		return rv;	// -1 unregisters the handler
 	}
 			
 	LOG4CXX_DEBUG(logger_, (char*) "ignoring signal " << signum);
 
-	return 0;	// -1 would unregister the handler
+	return 0;
 }
 
 void AtmiBrokerSignalHandler::guard() {
-	return; // TODO
 	lock_.lock();
 	LOG4CXX_DEBUG(logger_, (char*) "Starting protected code section");
 	if (guard_ == NULL) {
 		LOG4CXX_DEBUG(logger_, (char*) "Block sigset");
-		guard_ = new ACE_Sig_Guard(&ss_);
+		guard_ = new ACE_Sig_Guard(&bss_);
 	}
 
 	gCnt_ += 1;
@@ -126,7 +140,6 @@ void AtmiBrokerSignalHandler::guard() {
 }
 
 void AtmiBrokerSignalHandler::unguard() {
-	return; // TODO
 	lock_.lock();
 	LOG4CXX_DEBUG(logger_, (char*) "Ending protected code section: gCnt=" << gCnt_);
 	if (guard_ == NULL) {
@@ -139,7 +152,9 @@ void AtmiBrokerSignalHandler::unguard() {
 		guard_ = NULL;
 		if (pending_sig_) {
 			LOG4CXX_DEBUG(logger_, (char*) "and running pending sig handler ...");
-			sigHandler_(pending_sig_);
+			if (sigHandler_ != NULL)
+				sigHandler_(pending_sig_);
+
 			pending_sig_ = 0;
 		}
 	}
