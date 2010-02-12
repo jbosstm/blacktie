@@ -31,30 +31,28 @@ int main(int argc, char **argv) {
 	char *sbuf;
 	long sbufsize;
 	long callflags;
-	int i;
-	for (i = 0; i < 10; i++) {
-		callflags = 0;
-		sbufsize = 29;
-		sbuf = tpalloc("X_OCTET", 0, sbufsize);
-		memset(sbuf, 0, sbufsize);
-		strcpy(sbuf, "THIS IS YOUR CLIENT SPEAKING");
-		retbufsize = 15;
-		retbuf = tpalloc("X_OCTET", 0, retbufsize);
-		memset(retbuf, 0, retbufsize);
 
-		// tptypes
-		tptypes(sbuf, type, subtype);
+	callflags = 0;
+	sbufsize = 29;
+	sbuf = tpalloc("X_OCTET", 0, sbufsize);
+	memset(sbuf, 0, sbufsize);
+	strcpy(sbuf, "THIS IS YOUR CLIENT SPEAKING");
+	retbufsize = 15;
+	retbuf = tpalloc("X_OCTET", 0, retbufsize);
+	memset(retbuf, 0, retbufsize);
 
-		// tpcall
-		userlogc((char*) "Calling tpcall with input: %s", sbuf);
-		tpstatus = tpcall("SECURE", sbuf, sbufsize, (char **) &retbuf,
-				&retbufsize, callflags);
-		userlogc(
-				(char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
-				retbufsize, retbuf, tpstatus, tperrno);
+	// tptypes
+	tptypes(sbuf, type, subtype);
 
-		tpfree(sbuf);
-		tpfree(retbuf);
-	}
-	return 0;
+	// tpcall
+	userlogc((char*) "Calling tpcall with input: %s", sbuf);
+	tpstatus = tpcall("SECURE", sbuf, sbufsize, (char **) &retbuf,
+			&retbufsize, callflags);
+	userlogc(
+			(char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
+			retbufsize, retbuf, tpstatus, tperrno);
+
+	tpfree(sbuf);
+	tpfree(retbuf);
+	return tpstatus;
 }
