@@ -3,10 +3,10 @@ set -m
 
 # SET UP THE DISTRIBUTION
 cd ../../
-rm -rf tmp
-mkdir tmp
-cp blacktie/target/blacktie-*-bin.tar.gz tmp
-cd tmp
+rm -rf dist
+mkdir dist
+cp blacktie/target/blacktie-*-bin.tar.gz dist
+cd dist
 tar xfz blacktie-*-bin.tar.gz
 cd blacktie*/
 export VAR=`pwd`
