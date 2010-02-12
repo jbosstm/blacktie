@@ -21,12 +21,13 @@
 	<SERVERS>
 		<SERVER name="secure">
 			<security>
-				<role name="blacktie" read="true" write="true" />
+				<role name="guest" read="false" write="true" />
+				<role name="publisher" read="true" write="false" />
 			</security>
 			<SERVICE_NAMES>
 				<SERVICE name="SECURE">
 					<security>
-						<role name="blacktie" read="true" write="true" />
+						<role name="publisher" read="true" write="true" />
 					</security>
 				</SERVICE>
 			</SERVICE_NAMES>
@@ -98,3 +99,4 @@
 		</ENV_VARIABLE>
 	</ENV_VARIABLES>
 </ENVIRONMENT>
+

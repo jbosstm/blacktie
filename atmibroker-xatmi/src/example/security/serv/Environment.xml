@@ -34,6 +34,6 @@
 	</SERVERS>
 	<ORB OPT="-ORBInitRef NameService=corbaloc::localhost:3528/NameService"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
-	<MQ HOST="localhost" PORT="61613" USER="blacktie" PASSWORD="blacktie"
+	<MQ HOST="localhost" PORT="61613" USER="dynsub" PASSWORD="dynsub"
 		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" />
 </ENVIRONMENT>

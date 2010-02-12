@@ -16,6 +16,17 @@ MA  02110-1301, USA.
 
 NOTE: You may like to create a backup of this folder before starting!
 
+0. INTRODUCTION
+This example shows how the services may be secured using the <security> element
+in the Environment.xml
+
+NOTE: This example makes use of default users provided in JBoss 5.1.0.GA, "guest"
+and "dynsub". "guest" has the role "guest", and "dynsub" has the role "publisher"
+and "durpublisher".
+These users are provided out of the box for JBM 1.4 and were chosen as they have 
+non-overlapping roles so we can show how to excluded "guest" users from certain 
+queues.
+
 1. SET ENVIRONMENT VARIABLES
 In order to run the example you need to make sure that you have set the environment
 appropriately. You will need to make sure that you edit the variables with values 
@@ -98,7 +109,34 @@ NOTE: If you get the following error you have not started the JBoss server:
 6.2 RUN THE CLIENT WITH INVALID CREDENTIALS
 export BLACKTIE_CONFIGURATION_DIR=guest
 ./client
+If you echo $? you will see the application returned an error
 
-6.2 RUN THE CLIENT WITH VALID CREDENTIALS
-export BLACKTIE_CONFIGURATION_DIR=blacktie
+6.3 RUN THE CLIENT WITH VALID CREDENTIALS
+export BLACKTIE_CONFIGURATION_DIR=dynsub
 ./client
+If you echo $? you will see the application completed successfully
+6.4 CREATE A NEW USER AND RUN THE TEST AGAIN
+Duplicate the "dynsub" folder as "bt"
+Edit bt/Environment.xml and change "dynsub" to "bt", with password "pwd"
+Edit serv/Environment.xml and change "dynsub" to "bt", with password "pwd"
+
+Edit: "serv/Environment.xml" and <JBOSS_HOME>/server/all/conf/Environment.xml
+Change the roles with name "publisher" to "blacktie"
+Remove the "guest" role
+
+Open:  <JBOSS_HOME>/server/all/deploy/messaging/hsqldb-persistence-service.xml
+Add:
+POPULATE.TABLES.15  = INSERT INTO JBM_USER (USER_ID, PASSWD) VALUES ('bt', 'pwd')
+POPULATE.TABLES.16 = INSERT INTO JBM_ROLE (ROLE_ID, USER_ID) VALUES ('blacktie','bt')
+
+
+Edit: <JBOSS_HOME>/server/all/conf/Environment.xml
+Change the user from "guest"/"guest" to "bt"/"pwd"
+
+Run step 6.1 above
+Run step 6.2 above
+Run step 6.3 above (this time the dynsub test will fail)
+
+export BLACKTIE_CONFIGURATION_DIR=bt
+./client
+If you echo $? you will see the application completed successfully
