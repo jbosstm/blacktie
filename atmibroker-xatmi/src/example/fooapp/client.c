@@ -32,8 +32,9 @@ int main(int argc, char **argv) {
 	long sbufsize;
 	long callflags;
 	int i;
+
 	for (i = 0; i < 10; i++) {
-		callflags = 0;
+		callflags = 0L;
 		sbufsize = 29;
 		sbuf = tpalloc("X_OCTET", 0, sbufsize);
 		memset(sbuf, 0, sbufsize);
@@ -52,6 +53,13 @@ int main(int argc, char **argv) {
 		userlogc(
 				(char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
 				retbufsize, retbuf, tpstatus, tperrno);
+
+		if (tpstatus == -1 && tperrno == TPENOENT) {
+			tpfree(sbuf);
+			tpfree(retbuf);
+
+			return -1;
+		}
 
 		tpfree(sbuf);
 		tpfree(retbuf);

@@ -95,14 +95,13 @@ public:
 		sigHandler_ = sigHandler;
 	}
 
-	void blockSignals() {
+	void blockSignals(bool sigRestart) {
 		if (sigHandler_ != NULL)
-			sigHandler_->guard();
+			sigHandler_->blockSignals(sigRestart);
 	}
 
-	void unblockSignals() {
-		if (sigHandler_ != NULL)
-			sigHandler_->unguard();
+	int unblockSignals() {
+		return (sigHandler_ != NULL ? sigHandler_->unblockSignals() : 0);
 	}
 
 protected:

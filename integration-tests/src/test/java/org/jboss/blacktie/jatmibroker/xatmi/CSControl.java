@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
 
 public abstract class CSControl extends TestCase
 {
-	private static final Logger log = LogManager.getLogger(CSControl.class);
+	static final Logger log = LogManager.getLogger(CSControl.class);
 	// the byte pattern written by a server to indicate that it has advertised its services
 	private static final byte[] HANDSHAKE = {83,69,82,86,73,67,69,83,32,82,69,65,68,89};
 

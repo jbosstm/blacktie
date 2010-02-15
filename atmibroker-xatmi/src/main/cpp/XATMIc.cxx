@@ -121,14 +121,13 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 
 			message.ttl = mqConfig.timeToLive * 1000;
 
-			if (flags & TPSIGRSTRT)
-				session->blockSignals();
+			session->blockSignals((flags & TPSIGRSTRT));
 
 			if (session->send(message))
 				toReturn = 0;
 
-			if (flags & TPSIGRSTRT)
-				session->unblockSignals();
+			if (session->unblockSignals() != 0 && (flags & TPSIGRSTRT) == 0)
+				toReturn = -1;
 
 			if (message.control)
 				free(message.control);
@@ -182,15 +181,14 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 			}
 			LOG4CXX_DEBUG(loggerXATMI, (char*) "Setting timeout to: " << time);
 			try {
-				if (flags & TPSIGRSTRT)
-					session->blockSignals();
+				session->blockSignals((flags & TPSIGRSTRT));
 
 				MESSAGE message = session->receive(time);
 
-				if (flags & TPSIGRSTRT)
-					session->unblockSignals();
-
-				if (message.received) {
+				if (session->unblockSignals() != 0 && (flags & TPSIGRSTRT) == 0) {
+					// signalled during the receive call TPSIGRSTRT wasn't requested
+					txx_rollback_only();
+				} else if (message.received) {
 					if (message.rval == DISCON) {
 						*event = TPEV_DISCONIMM;
 						txx_rollback_only();
@@ -465,6 +463,7 @@ int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen,
 			long tpacallFlags = flags;
 			tpacallFlags &= ~TPNOCHANGE;
 			int cd = tpacall(svc, idata, ilen, tpacallFlags);
+
 			if (cd != -1) {
 				long tpgetrplyFlags = flags;
 				tpgetrplyFlags &= ~TPNOTRAN;

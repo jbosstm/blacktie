@@ -22,6 +22,7 @@
 
 // key for storing control in thread specific storage
 const int TSS_KEY = 0xaf; // key for accessing OTS control
+const int TSS_SIG_KEY = 0xb0; // key for communicating receipt of a signal
 const int SVC_KEY = 0xb1; // key for accessing atmi service
 const int SVC_SES = 0xb4; // key for accessing service session
 const int TPE_KEY = 0xa5; // key for accessing tperrno

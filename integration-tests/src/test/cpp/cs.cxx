@@ -23,6 +23,7 @@
 #include "userlogc.h"
 #include "string.h"
 
+#include "ace/Thread_Manager.h"
 #include "ace/Thread.h"
 #include "ace/Synch.h"
 
@@ -49,6 +50,7 @@ typedef struct thr_arg {
 	long flags;
 	int expect;
 	long expect2;
+	int signum;
 	int result;
 } thr_arg_t;
 
@@ -75,6 +77,41 @@ static void do_assert(int failonerror, int* res, int cond, const char *fmt, ...)
 	}
 
 //	userlogc((char*) "successful assert for: cond=%d (%s)", cond, str);
+}
+
+/**
+ * Split a name value pair of the form "name=value" returning the name and value
+ * as distinct strings. In addition if the value is an integral type then its long
+ * value representation is returned.
+ *
+ * WARNING: the input char pointer is modified and therefore must not be a constant
+ * char pointer.
+ *
+ * @param nvp
+ * 	the input name value pair
+ * @param name
+ * 	holds the return value for the name portion of the pair
+ * @param value
+ * 	holds the return value for the value portion of the pair
+ * @param lvalue
+ * 	holds the return value for the value portion of the pair as a long
+ * 	(only valid if *value is non-zero
+ *
+ * 	@return
+ * 		zero if the value is not null
+ * 		non-zero otherwise
+ */
+int decode_nvp(char *nvp, char** value, long* lvalue) {
+    char* v = strchr(nvp, '=');
+
+    *value = (v == NULL ? NULL : v + 1);
+    if (v != NULL) {
+        *v = '\0';
+        *lvalue = atol(*value);
+		return 0;
+    }
+
+	return 1;
 }
 
 //static int do_tpcall(int failonerror, const char *data, const char *msg, const char *svc, const char *sndtype, long flags, int expect) {
@@ -107,10 +144,15 @@ static int do_tpcall(thr_arg_t *args) {
 	res = (tperrno == args->expect ? 0 : 1);
 	if (tpstatus)
 		userlogc((char *) "tpcall returned %d tperrno=%d expect=%d", tpstatus, tperrno, args->expect);
+
+	// check that tperrno has the expected value
 	do_assert(args->failonerror, &args->result, tperrno == args->expect,
 		"%s: wrong response from tpcall %s %s tpstatus=%d flags=%d expect=%d tperrno=%d",
 		args->msg, args->svc, args->sndtype, tpstatus, args->flags, args->expect, tperrno);
-	do_assert(args->failonerror, &args->result, tpurcode == args->expect2,
+
+	// if there was no service error then check that the service returned the expected value
+	if (tperrno == 0)
+		do_assert(args->failonerror, &args->result, tpurcode == args->expect2,
 			"tpurcode: expected=%d tpurcode=%d",
 			args->expect2, tpurcode);
 
@@ -120,37 +162,28 @@ static int do_tpcall(thr_arg_t *args) {
 	return res;
 }
 
-static int lotsofwork(int nthreads, ACE_THR_FUNC tfunc, thr_arg_t* arg) {
-	ACE_thread_t *tids = new ACE_thread_t[nthreads];
-	ACE_hthread_t *handles = new ACE_hthread_t[nthreads];
-	int i;
-
-	for (i = 0; i < nthreads; i++)
-		handles[i] = 0;
-
-	// spawn nthreads threads
-	if (ACE_Thread::spawn_n(tids, // return thread id for each thread
-		nthreads,
-		tfunc, // entry point for new thread
-		(void *) arg,	// args for thread entry point
-		THR_JOINABLE | THR_NEW_LWP,
-		ACE_DEFAULT_THREAD_PRIORITY,
-		0, 0, handles) != (size_t) nthreads) {
-				userlogc("Unable to start request number of threads\n");
-	}
-
-	for (int i = 0; i < nthreads; i++)
-		if (handles[i] != 0)
-			ACE_Thread::join(handles[i]);
-
-	return arg->result;
-}
-
 // thread entry point
 static void* work(void *args)
 {
 	(void) do_tpcall((thr_arg_t *) args);
 	return args;
+}
+
+static void signal_thread(ACE_thread_t& tid, int signum)
+{
+	userlogc((char*) "sleep 2 secs before sending signal %d to thread %d", signum, tid);
+	// allow enough time for the thread to perform a tpcall request
+	ACE_OS::sleep(2);
+	userlogc((char*) "sending signal %d to thread %d", signum, tid);
+	int rv1 = ACE_Thread::kill (tid, signum);
+	userlogc((char*) "thread kill returned %d", rv1);
+	// sending a signal to the process doesn't really test TPSIGRSTRT since the
+	// signal is unlikely to be sent to the thread that issued the tpcall with
+	// the TPSIGRSTRT flag set. But we test it anyway.
+#if 0
+	int rv2 = ACE_OS::kill(ACE_OS::getpid(), signum);
+	userlogc((char*) "process kill returned %d", rv2);
+#endif
 }
 
 // another thread entry point
@@ -177,7 +210,7 @@ static void* work2(void *args)
 #endif
 	mutex_.release();
 
-	ACE_OS::sleep(4);	// yield to ensure that all threads have initialised env (see bug BLACKTIE-211)
+//XXX	ACE_OS::sleep(4);	// yield to ensure that all threads have initialised env (see bug BLACKTIE-211)
 
 	for (int i = 0; i < ncalls; i++) {
 		params->svc = s1;
@@ -198,15 +231,44 @@ static void* work2(void *args)
 	return args;
 }
 
+static int lotsofwork(int nthreads, ACE_THR_FUNC tfunc, thr_arg_t* arg) {
+	ACE_thread_t *tids = new ACE_thread_t[nthreads];
+	ACE_hthread_t *handles = new ACE_hthread_t[nthreads];
+	int i;
+
+	for (i = 0; i < nthreads; i++)
+		handles[i] = 0;
+
+	// spawn nthreads threads
+	if (ACE_Thread::spawn_n(tids, // return thread id for each thread
+		nthreads,
+		tfunc, // entry point for new thread
+		(void *) arg,	// args for thread entry point
+		THR_JOINABLE | THR_NEW_LWP,
+		ACE_DEFAULT_THREAD_PRIORITY,
+		0, 0, handles) != (size_t) nthreads) {
+				userlogc("Unable to start request number of threads\n");
+	}
+
+	if (arg->signum > 0)
+		signal_thread(tids[0], arg->signum);
+
+	for (int i = 0; i < nthreads; i++)
+		if (handles[i] != 0)
+			ACE_Thread::join(handles[i]);
+
+	return arg->result;
+}
+
 // XsdValidator is not thread safe
 static int bug211() {
-	thr_arg_t args = {1, MSG1, "bug211: two threads reading env", "BAR", X_OCTET, X_OCTET, 0, 0, 99};
+	thr_arg_t args = {1, MSG1, "bug211: two threads reading env", "BAR", X_OCTET, X_OCTET, 0, 0, 99, 0};
 	return lotsofwork(2, ACE_THR_FUNC(&work), &args);
 }
 
 // tpcall should return TPEINVAL if the service name is invalid
 static int bug213() {
-	thr_arg_t args = {1, MSG1, "bug213: NULL service name", NULL, X_OCTET, X_OCTET, 0, TPEINVAL, 0};
+	thr_arg_t args = {1, MSG1, "bug213: NULL service name", NULL, X_OCTET, X_OCTET, 0, TPEINVAL, 0, 0};
 	return do_tpcall(&args);
 }
 
@@ -216,7 +278,7 @@ static int bug212a() {
 	// as no output buffers). Thus if such a condition does not exist the call should succeed as normal.
 	// However if bug 212 is present then the call returns TPNOTIME
 	long flags2 = TPNOTRAN | TPNOTIME;
-	thr_arg_t arg1 = {1, MSG1, "bug212a: TPNOTIME", "BAR", X_OCTET, X_OCTET, flags2, 0, 99};
+	thr_arg_t arg1 = {1, MSG1, "bug212a: TPNOTIME", "BAR", X_OCTET, X_OCTET, flags2, 0, 99, 0};
 
 	return lotsofwork(1, ACE_THR_FUNC(&work), &arg1);
 }
@@ -226,36 +288,36 @@ static int bug212b() {
 	// However if bug 212 is present then the call returns TPNOTIME
 	long flags3 = TPNOTRAN | TPNOBLOCK;
 
-	thr_arg_t args = {1, MSG1, "bug212b: TPNOBLOCK", "BAR", X_OCTET, X_OCTET, flags3, 0, 99};
+	thr_arg_t args = {1, MSG1, "bug212b: TPNOBLOCK", "BAR", X_OCTET, X_OCTET, flags3, 0, 99, 0};
 
 	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
 }
 
 // TPSIGRSTRT flag isn't supported on tpcall
 static int bug214() {
-	thr_arg_t args = {1, MSG1, "bug214: TPSIGRSTRT flag not supported on tpcall", "BAR", X_OCTET, X_OCTET, TPSIGRSTRT, 0, 99};
+	thr_arg_t args = {1, MSG1, "bug214: TPSIGRSTRT flag not supported on tpcall", "BAR", X_OCTET, X_OCTET, TPSIGRSTRT, 0, 99, 0};
 	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
 }
 
 // tpcall failure with multiple threads
 static int bug215() {
-	thr_arg_t args = {0, MSG1, "bug215: tpcall failure with lots of threads", "BAR", X_OCTET, X_OCTET, 0, 0, 99};
+	thr_arg_t args = {0, MSG1, "bug215: tpcall failure with lots of threads", "BAR", X_OCTET, X_OCTET, 0, 0, 99, 0};
 	return lotsofwork(2, ACE_THR_FUNC(&work2), &args);
 }
 
 static int bug216a() {
-	thr_arg_t args = {1, MSG1, "bug216: tp bufs should morph if they're the wrong type", "BAR", X_OCTET, X_C_TYPE, 0, 0, 99};
+	thr_arg_t args = {1, MSG1, "bug216: tp bufs should morph if they're the wrong type", "BAR", X_OCTET, X_C_TYPE, 0, 0, 99, 0};
 	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
 }
 
 static int bug216b() {
 	thr_arg_t args = {1, MSG1, "bug216: passing the wrong return buffer type with TPNOCHANGE",
-		"BAR", X_OCTET, X_C_TYPE, TPNOCHANGE, TPEOTYPE, 99};
+		"BAR", X_OCTET, X_C_TYPE, TPNOCHANGE, TPEOTYPE, 99, 0};
 	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
 }
 
 static int bug217() {
-	thr_arg_t args = {1, MSG1, "bug217: make sure tpurcode works", "BAR", X_OCTET, X_OCTET, 0, 0, 99};
+	thr_arg_t args = {1, MSG1, "bug217: make sure tpurcode works", "BAR", X_OCTET, X_OCTET, 0, 0, 99, 0};
 	(void) lotsofwork(1, ACE_THR_FUNC(&work), &args);
 	return args.result;
 }
@@ -270,37 +332,46 @@ static int t9001() {
 
 // sanity check
 static int t0() {
-	thr_arg_t args = {1, MSG1, "ok test", "BAR", X_OCTET, X_OCTET, 0, 0, 99};
+	thr_arg_t args = {1, MSG1, "ok test", "BAR", X_OCTET, X_OCTET, 0, 0, 99, 0};
 	return do_tpcall(&args);
 }
 
 // tell the server to set a flag on tpreturn (should generate TPESVCERR)
 static int t1() {
-	thr_arg_t args = {1, "T1", "set flag on tpreturn should fail", "BAR", X_OCTET, X_OCTET, TPNOTRAN, TPESVCERR, 0};
+	thr_arg_t args = {1, "T1", "set flag on tpreturn should fail", "BAR", X_OCTET, X_OCTET, TPNOTRAN, TPESVCERR, 0, 0};
 	return do_tpcall(&args);
 }
 static int t2() {
-	thr_arg_t args = {1, "T2", "tell the service to free the the service buffer", "BAR", X_OCTET, X_OCTET, TPNOTRAN, 0, 99};
+	thr_arg_t args = {1, "T2", "tell the service to free the the service buffer", "BAR", X_OCTET, X_OCTET, TPNOTRAN, 0, 99, 0};
 	return do_tpcall(&args);
 }
 
 // telling the service to not tpreturn should generate an error
 static int t3() {
-	thr_arg_t args = {1, "T3", "no tpreturn", "BAR", X_OCTET, X_OCTET, 0, TPESVCERR, 0};
+	thr_arg_t args = {1, "T3", "no tpreturn", "BAR", X_OCTET, X_OCTET, 0, TPESVCERR, 0, 0};
 	return do_tpcall(&args);
 }
 
 // telling service to call tpreturn outside service routine should have no effect
 static int t4() {
-	thr_arg_t args = {1, "T4", "tpreturn outside service routing", "BAR", X_OCTET, X_OCTET, 0, 0, 99};
+	thr_arg_t args = {1, "T4", "tpreturn outside service routing", "BAR", X_OCTET, X_OCTET, 0, 0, 99, 0};
 	return do_tpcall(&args);
 }
 
 static int t5() {
-	thr_arg_t args = {1, "T5", "tpreturn TPFAIL", "BAR", X_OCTET, X_OCTET, 0, TPESVCFAIL, 99};
+	thr_arg_t args = {1, "T5", "tpreturn TPFAIL", "BAR", X_OCTET, X_OCTET, 0, TPESVCFAIL, 99, 0};
 	return do_tpcall(&args);
 }
 
+static int t6() {
+	thr_arg_t args = {1, "T6=4", "set TPSIGRSTRT flag and send a signal", "BAR", X_OCTET, X_OCTET, TPSIGRSTRT, 0, 99, SIGALRM};
+	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
+}
+
+static int t7() {
+	thr_arg_t args = {1, "T6=4", "do not set TPSIGRSTRT flag and send a signal", "BAR", X_OCTET, X_OCTET, 0, TPGOTSIG, 99, SIGALRM};
+	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
+}
 static int tx = 0;
 static int startTx() {
 #ifndef WIN32
@@ -347,6 +418,8 @@ int run_client(int argc, char **argv) {
 		case 3:		res = t3(); break;
 		case 4:		res = t4(); break;
 		case 5:		res = t5(); break;
+		case 6:		res = t6(); break;
+		case 7:		res = t7(); break;
 		default: break;
 		}
 
@@ -367,16 +440,24 @@ void BAR(TPSVCINFO * svcinfo) {
 	int sendlen = 15;
 	long rflag = 0L;
 	int rval = TPSUCCESS;
+	char *arg;
+	long larg;
 
 	userlogc((char*) "bar called  - svc=%s data=%s len=%d flags=%d rcode=%d tperrno=%d",
 		svcinfo->name, svcinfo->data, svcinfo->len, svcinfo->flags, 99, tperrno);
 
-	if (strcmp(svcinfo->data, "T1") == 0)
+	decode_nvp(svcinfo->data, &arg, &larg);
+
+	if (strcmp(svcinfo->data, "T1") == 0) {
 		rflag = TPEBLOCK;
-	else if (strcmp(svcinfo->data, "T2") == 0)
+	} else if (strcmp(svcinfo->data, "T2") == 0) {
 		tpfree(svcinfo->data);
-	else if (strcmp(svcinfo->data, "T5") == 0)
+	} else if (strcmp(svcinfo->data, "T5") == 0) {
 		rval = TPFAIL;
+	} else if (strcmp(svcinfo->data, "T6") == 0 && arg != NULL) {
+		userlogc((char*) "bar sleeping for %d seconds", larg);
+		ACE_OS::sleep(larg);
+	}
 
 	buffer = tpalloc((char *) "X_OCTET", 0, sendlen);
 	strcpy(buffer, "BAR SAYS HELLO");

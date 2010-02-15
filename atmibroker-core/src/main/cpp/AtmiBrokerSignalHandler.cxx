@@ -16,6 +16,7 @@
  * MA  02110-1301, USA.
  */
 #include "AtmiBrokerSignalHandler.h"
+#include "ThreadLocalStorage.h"
 #include "log4cxx/logger.h"
 #include "ace/Process.h"
 
@@ -25,6 +26,50 @@ static int default_blocksigs[] = {SIGHUP, SIGALRM, SIGUSR1, SIGUSR2};
 log4cxx::LoggerPtr AtmiBrokerSignalHandler::logger_(log4cxx::Logger::getLogger(
 		"AtmiBrokerSignalHandler"));
 ACE_Sig_Handler AtmiBrokerSignalHandler::handler_;
+
+AtmiBrokerSignalGuard::AtmiBrokerSignalGuard(ACE_Sig_Set& bss) : guard_(NULL), bss_(bss), gCnt_(0), sig_(0) {
+}
+
+AtmiBrokerSignalGuard::~AtmiBrokerSignalGuard() {
+	if (guard_ != NULL) {
+		LOG4CXX_WARN(AtmiBrokerSignalHandler::logger_, (char*) "SIGNAL guard deleted with signals still blocked");
+
+		delete guard_;
+	}
+}
+
+int AtmiBrokerSignalGuard::blockSignals(bool block) {
+	LOG4CXX_DEBUG(AtmiBrokerSignalHandler::logger_, (char*) "SIGNAL: blockSignals: " << gCnt_);
+
+	if (block && guard_ == NULL) {
+		LOG4CXX_DEBUG(AtmiBrokerSignalHandler::logger_, (char*) "SIGNAL: blocking sigset");
+#ifdef XXX
+		guard_ = new ACE_Sig_Guard(&bss_);  // this will disable receipt of selected signals
+#else
+		guard_ = new ACE_Sig_Guard(NULL);  // this will disable receipt of all signals
+#endif
+	}
+
+	gCnt_ += 1;
+
+	return gCnt_;
+}
+
+int AtmiBrokerSignalGuard::unblockSignals() {
+	LOG4CXX_DEBUG(AtmiBrokerSignalHandler::logger_, (char*) "SIGNAL: unblockSignals: " << gCnt_);
+
+	if (gCnt_ == 0) {
+		LOG4CXX_WARN(AtmiBrokerSignalHandler::logger_, (char*) "SIGNAL: Unmatched call to unblockSignals.");
+	} else if (--gCnt_ == 0) {
+		LOG4CXX_DEBUG(AtmiBrokerSignalHandler::logger_, (char*) "SIGNAL: unblocking sigset ");
+		if (guard_ != NULL) {
+			delete guard_;
+			guard_ = NULL;
+		}
+	}
+
+	return gCnt_;
+}
 
 AtmiBrokerSignalHandler::AtmiBrokerSignalHandler(int (*func)(int signum)) {
 	init(func,
@@ -46,35 +91,40 @@ void AtmiBrokerSignalHandler::init(int (*func)(int signum),
 	LOG4CXX_DEBUG(logger_, (char*) "AtmiBrokerSignalHandler handler: " << func << " hsignals: " << hsignals);
 
 	sigHandler_ = func;
-	pending_sig_ = 0;
-	guard_ = NULL;
-	gCnt_ = 0;
 
 	for (int i = 0; i < hsigcnt; i++) {
-		LOG4CXX_DEBUG(logger_, (char*) "handling and blocking signal " << i);
+		LOG4CXX_DEBUG(logger_, (char*) "handling and blocking signal " << hsignals[i]);
 		hss_.sig_add(hsignals[i]);
 		bss_.sig_add(hsignals[i]);
-		handler_.register_handler(hsignals[i], this);
 	}
 
 	for (int i = 0; i < bsigcnt; i++) {
-		LOG4CXX_DEBUG(logger_, (char*) "blocking signal " << i);
+		LOG4CXX_DEBUG(logger_, (char*) "blocking signal " << hsignals[i]);
 		bss_.sig_add(bsignals[i]);
-		handler_.register_handler(bsignals[i], this);
 	}
+
+	// block all handleable signals when the handler runs
+	ACE_Sig_Action sa ((ACE_SignalHandler) 0, bss_, 0);
+
+#ifndef XXX
+	for (int i = 1; i < ACE_NSIG; i++)
+		if (bss_.is_member(i))
+			handler_.register_handler(i, this, &sa);
+#else
+	for (int i = 1; i < ACE_NSIG; i++)
+		if (hss_.is_member(i))
+			handler_.register_handler(i, this, &sa);
+#endif
 }
 
 AtmiBrokerSignalHandler::~AtmiBrokerSignalHandler() {
-	LOG4CXX_DEBUG(logger_, (char*) "~AtmiBrokerSignalHandler");
-
-	if (gCnt_ != 0 || guard_ != NULL) {
-		LOG4CXX_WARN(logger_, (char*) "~AtmiBrokerSignalHandler whilst in protected code section");
-	}
+	LOG4CXX_DEBUG(logger_, (char*) "~AtmiBrokerSignalHandler removing handlers");
 
 	for (int i = 1; i < ACE_NSIG; i++) {
-		if (hss_.is_member(i))
+		if (bss_.is_member(i))
 			handler_.remove_handler(i);
 	}
+	LOG4CXX_DEBUG(logger_, (char*) "~AtmiBrokerSignalHandler");
 }
 
 /**
@@ -95,68 +145,73 @@ int AtmiBrokerSignalHandler::handle_exit(ACE_Process *proc) {
 
 int AtmiBrokerSignalHandler::handle_signal(int signum, siginfo_t * = 0, ucontext_t * = 0) {
 
-	if (hss_.is_member(signum) && sigHandler_ != NULL) {
-		int rv = 0;
-		/*
-		 * Block further signals whilst the handler runs - BTW this does not mask the signal
-		 * for other threads.
-		 * TODO decide whether to have the requirement that sigHandler_ must be reentrant.
-		 * My vote is YES, handlers should be reentrant.
-		 */
-		//ACE_Sig_Guard block(&bss_);
+	AtmiBrokerSignalGuard* guard = (AtmiBrokerSignalGuard*) getSpecific(TSS_SIG_KEY);
+	bool pending = false;
+	int rv = 0;
 
-		LOG4CXX_DEBUG(logger_, (char*) "handling signal " << signum);
+	LOG4CXX_DEBUG(logger_, (char*) "SIGNAL: signum=" << signum << " guard=" << guard);
 
-		lock_.lock();
-		if (gCnt_ != 0) {
+	// check whether there is a handler for this particular signal
+	if (sigHandler_ != NULL && hss_.is_member(signum)) {
+		if (guard != NULL && guard->blockCount() > 0) {
 			// received signal whilst another thread is in a protected section
-			LOG4CXX_DEBUG(logger_, (char*) "signalled inside protected section: gCnt_=" << gCnt_
-				<< " guard_=" << guard_);
-			pending_sig_ = signum;
+			LOG4CXX_DEBUG(logger_, (char*) "SIGNAL: signalled inside protected section");
+			pending = true;
 		} else {
-			rv = sigHandler_(signum);
+			LOG4CXX_DEBUG(logger_, (char*) "SIGNAL: handling signal");
+			rv = sigHandler_(signum);	// -1 unregisters the handler
 		}
-
-		lock_.unlock();
-
-		return rv;	// -1 unregisters the handler
+	} else {
+		LOG4CXX_DEBUG(logger_, (char*) "SIGNAL: ignoring signal");
 	}
-			
-	LOG4CXX_DEBUG(logger_, (char*) "ignoring signal " << signum);
 
-	return 0;
+	if (guard != NULL) {
+		LOG4CXX_DEBUG(logger_, (char*) "SIGNAL: updating pending to " << pending);
+		guard->lastSignal(signum, pending);
+	}
+
+	return rv;
 }
 
-void AtmiBrokerSignalHandler::guard() {
-	lock_.lock();
-	LOG4CXX_DEBUG(logger_, (char*) "Starting protected code section");
-	if (guard_ == NULL) {
-		LOG4CXX_DEBUG(logger_, (char*) "Block sigset");
-		guard_ = new ACE_Sig_Guard(&bss_);
+void AtmiBrokerSignalHandler::blockSignals(bool sigRestart) {
+	AtmiBrokerSignalGuard* guard = (AtmiBrokerSignalGuard*) getSpecific(TSS_SIG_KEY);
+
+	if (guard == NULL) {
+		// TODO go through all code and handle the cases where new fails
+		if ((guard = new AtmiBrokerSignalGuard(bss_)) == NULL) {
+			LOG4CXX_ERROR(logger_, (char*) "Out of memory");
+			return;
+		}
+		setSpecific(TSS_SIG_KEY, guard);
 	}
 
-	gCnt_ += 1;
-	lock_.unlock();
+	(void) guard->blockSignals(sigRestart);
 }
 
-void AtmiBrokerSignalHandler::unguard() {
-	lock_.lock();
-	LOG4CXX_DEBUG(logger_, (char*) "Ending protected code section: gCnt=" << gCnt_);
-	if (guard_ == NULL) {
-		LOG4CXX_WARN(logger_, (char*) "Trying to exit an unguarded code section.\n");
-	} else if (gCnt_ <= 0) {
-		LOG4CXX_WARN(logger_, (char*) "Trying to exit an unguarded code section\n");
-	} else if (--gCnt_ == 0) {
-		LOG4CXX_DEBUG(logger_, (char*) "Unblocking sigset");
-		delete guard_;
-		guard_ = NULL;
-		if (pending_sig_) {
-			LOG4CXX_DEBUG(logger_, (char*) "and running pending sig handler ...");
-			if (sigHandler_ != NULL)
-				sigHandler_(pending_sig_);
+int AtmiBrokerSignalHandler::unblockSignals() {
+	AtmiBrokerSignalGuard* guard = (AtmiBrokerSignalGuard*) getSpecific(TSS_SIG_KEY);
+	int sig = 0;
 
-			pending_sig_ = 0;
+	if (guard == NULL) {
+		LOG4CXX_WARN(logger_, (char*) "SIGNAL: unmatched call to unblockSignals");
+	} else {
+		LOG4CXX_DEBUG(logger_, (char*) "SIGNAL: unblockSignals lastSig=" << guard->lastSignal() <<
+			" pending=" << guard->lastPending());
+
+		// has a signal was received since the guarded section of code was entered
+		if ((sig = guard->lastSignal()) != 0)
+			setSpecific(TPE_KEY, TSS_TPGOTSIG);
+
+		if (guard->unblockSignals() == 0) {
+			// see if a handleable signal was received whilst signals were blocked
+			if (sigHandler_ != NULL && guard->lastPending() != 0)
+				sigHandler_(guard->lastPending());	// run the handler
+
+			destroySpecific(TSS_SIG_KEY);
+
+			delete guard;   // this will re-enable receipt of signals
 		}
 	}
-	lock_.unlock();
+
+	return sig;
 }
