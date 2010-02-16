@@ -33,7 +33,7 @@ class ServiceDispatcher: public ACE_Task_Base {
 public:
 	ServiceDispatcher(AtmiBrokerServer* server, Destination* destination,
 			Connection* connection, const char *serviceName, void(*func)(
-					TPSVCINFO *), bool isPause);
+					TPSVCINFO *), bool isPause, SynchronizableObject* reconnect);
 	~ServiceDispatcher();
 	int svc();
 	int pause();
@@ -56,10 +56,10 @@ private:
 	long timeout;
 	long counter;
 	long error_counter;
-	bool requiresReconnect;
 	unsigned long minResponseTime;
 	unsigned long avgResponseTime;
 	unsigned long maxResponseTime;
+	SynchronizableObject* reconnect;
 };
 
 #endif

@@ -26,6 +26,8 @@ public:
 	}
 	virtual MESSAGE receive(long timeout) = 0;
 	virtual const char* getName() = 0;
+	virtual bool connected() = 0;
+	virtual bool connect() = 0;
 	virtual void disconnect() = 0;
 };
 

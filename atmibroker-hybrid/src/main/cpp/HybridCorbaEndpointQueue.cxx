@@ -208,6 +208,16 @@ MESSAGE HybridCorbaEndpointQueue::receive(long time) {
 	return message;
 }
 
+bool HybridCorbaEndpointQueue::connected() {
+	LOG4CXX_ERROR(logger, (char*) "connected NO-OP");
+	return false;
+}
+
+bool HybridCorbaEndpointQueue::connect() {
+	LOG4CXX_ERROR(logger, (char*) "connect NO-OP");
+	return false;
+}
+
 void HybridCorbaEndpointQueue::disconnect() throw (CORBA::SystemException) {
 	LOG4CXX_DEBUG(logger, (char*) "disconnect");
 	lock->lock();

@@ -45,6 +45,10 @@ public:
 
 	virtual void send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags, const char* type, const char* subtype) throw (CORBA::SystemException );
 
+	virtual bool connected();
+
+	virtual bool connect();
+
 	virtual void disconnect() throw (CORBA::SystemException );
 
 	virtual MESSAGE receive(long time);

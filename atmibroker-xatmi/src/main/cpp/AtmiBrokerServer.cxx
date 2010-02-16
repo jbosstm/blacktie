@@ -73,9 +73,9 @@ int server_sigint_handler_callback(int sig_type) {
 	ptrServer->shutdown();
 	userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
 			(char*) "SIGINT Detected: Shutdown complete");
-    //exit (1);
-    /* NOTREACHED*/
-    return -1;
+	//exit (1);
+	/* NOTREACHED*/
+	return -1;
 
 }
 
@@ -118,7 +118,8 @@ int parsecmdline(int argc, char** argv) {
 	}
 
 	if (isSetServerId == false) {
-		fprintf(stderr, "you must specify a server id with -i greater than 0 and less than 10\n");
+		fprintf(stderr,
+				"you must specify a server id with -i greater than 0 and less than 10\n");
 		r = -1;
 	}
 
@@ -189,8 +190,9 @@ int serverinit(int argc, char** argv) {
 
 				ptrServer->advertiseAtBootime();
 
-                // install a handler for the default set of signals (namely, SIGINT and SIGTERM)
-				(ptrServer->getSigHandler()).setSigHandler(server_sigint_handler_callback);
+				// install a handler for the default set of signals (namely, SIGINT and SIGTERM)
+				(ptrServer->getSigHandler()).setSigHandler(
+						server_sigint_handler_callback);
 
 				userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
 						(char*) "Server %d Running", serverid);
@@ -218,10 +220,10 @@ int serverdone() {
 				(char*) "serverdone deleted Corba server");
 
 	}
-//	if (configFromCmdline) {
-//		char* toFree = ACE_OS::getenv("BLACKTIE_CONFIGURATION");
-//		free(toFree);
-//	}
+	//	if (configFromCmdline) {
+	//		char* toFree = ACE_OS::getenv("BLACKTIE_CONFIGURATION");
+	//		free(toFree);
+	//	}
 	return 0;
 }
 
@@ -677,6 +679,8 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 			advertisedServices.push_back(serviceName);
 			LOG4CXX_INFO(loggerAtmiBrokerServer, (char*) "advertised service "
 					<< serviceName);
+		} else {
+			free(serviceName);
 		}
 	} catch (CORBA::Exception& e) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer,
@@ -774,7 +778,6 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 				"Could not advertise service with command: " << command);
 		tpfree(command);
 		tpfree(response);
-		free(serviceName);
 		return false;
 	} else if (responseLength != 1) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer,
@@ -782,7 +785,6 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 						<< " with length " << responseLength);
 		tpfree(command);
 		tpfree(response);
-		free(serviceName);
 		return false;
 	} else if (response[0] != 1) {
 		if (!isadm || (errorBootAdminService = response[0]) == 2) {
@@ -790,7 +792,6 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 					"Service returned with error: " << command);
 			tpfree(command);
 			tpfree(response);
-			free(serviceName);
 			return false;
 		}
 	}
@@ -859,9 +860,11 @@ void AtmiBrokerServer::addDestination(Destination* destination, void(*func)(
 	}
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "createPool");
+	SynchronizableObject* reconnect = new SynchronizableObject();
 	for (int i = 0; i < entry.serviceInfo->poolSize; i++) {
 		ServiceDispatcher* dispatcher = new ServiceDispatcher(this,
-				destination, connection, destination->getName(), func, isPause);
+				destination, connection, destination->getName(), func, isPause,
+				reconnect);
 		if (dispatcher->activate(THR_NEW_LWP | THR_JOINABLE, 1, 0,
 				ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
 			delete dispatcher;

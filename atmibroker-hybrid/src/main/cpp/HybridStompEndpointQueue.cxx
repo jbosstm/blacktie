@@ -34,7 +34,7 @@ HybridStompEndpointQueue::HybridStompEndpointQueue(apr_pool_t* pool,
 	LOG4CXX_DEBUG(logger, "Creating endpoint queue: " << serviceName);
 	this->message = NULL;
 	this->receipt = NULL;
-	connected = false;
+	_connected = false;
 	shutdown = false;
 	lock = new SynchronizableObject();
 	LOG4CXX_DEBUG(logger, "Created lock: " << lock);
@@ -69,7 +69,7 @@ HybridStompEndpointQueue::~HybridStompEndpointQueue() {
 	free( fullName);
 	LOG4CXX_TRACE(logger, (char*) "freed name");
 
-	if (connected) {
+	if (_connected) {
 		LOG4CXX_TRACE(logger, (char*) "disconnecting");
 		HybridConnectionImpl::disconnect(connection, pool);
 		connection = NULL;
@@ -101,7 +101,7 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 	if (!shutdown) {
 		stomp_frame *frame = NULL;
 		connect();
-		if (connected) {
+		if (_connected) {
 			if (this->message) {
 				LOG4CXX_DEBUG(logger, "Handing off old message");
 				frame = this->message;
@@ -124,7 +124,7 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 					//					free(errbuf);
 					setSpecific(TPE_KEY, TSS_TPESYSTEM);
 					frame = NULL;
-					this->connected = false;
+					this->_connected = false;
 				} else if (strcmp(frame->command, (const char*) "ERROR") == 0) {
 					LOG4CXX_ERROR(logger, (char*) "Got an error: "
 							<< frame->body);
@@ -140,7 +140,7 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 										<< name << ": " << receipt);
 						setSpecific(TPE_KEY, TSS_TPESYSTEM);
 						frame = NULL;
-						this->connected = false;
+						this->_connected = false;
 					} else {
 						LOG4CXX_DEBUG(logger, "Handling old receipt");
 						this->receipt = NULL;
@@ -155,7 +155,7 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 							//							free(errbuf);
 							setSpecific(TPE_KEY, TSS_TPESYSTEM);
 							frame = NULL;
-							this->connected = false;
+							this->_connected = false;
 						} else if (strcmp(frame->command, (const char*) "ERROR")
 								== 0) {
 							LOG4CXX_ERROR(logger, (char*) "Got an error: "
@@ -172,7 +172,7 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 											<< ": " << receipt);
 							setSpecific(TPE_KEY, TSS_TPESYSTEM);
 							frame = NULL;
-							this->connected = false;
+							this->_connected = false;
 						} else {
 							LOG4CXX_DEBUG(logger,
 									"Message received 2nd attempt");
@@ -251,6 +251,11 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 	return message;
 }
 
+bool HybridStompEndpointQueue::connected() {
+	LOG4CXX_DEBUG(logger, (char*) "connected: " << name);
+	return _connected;
+}
+
 void HybridStompEndpointQueue::disconnect() {
 	LOG4CXX_DEBUG(logger, (char*) "disconnecting: " << name);
 	if (!shutdown) {
@@ -260,8 +265,8 @@ void HybridStompEndpointQueue::disconnect() {
 	LOG4CXX_DEBUG(logger, (char*) "disconnected: " << name);
 }
 
-void HybridStompEndpointQueue::connect() {
-	if (!connected) {
+bool HybridStompEndpointQueue::connect() {
+	if (!_connected) {
 		LOG4CXX_DEBUG(logger, (char*) "connecting: " << fullName);
 		this->connection = HybridConnectionImpl::connect(pool,
 				mqConfig.destinationTimeout);
@@ -308,7 +313,7 @@ void HybridStompEndpointQueue::connect() {
 					LOG4CXX_DEBUG(logger, (char*) "Got a receipt: "
 							<< (char*) apr_hash_get(framed->headers,
 									"receipt-id", APR_HASH_KEY_STRING));
-					this->connected = true;
+					this->_connected = true;
 					LOG4CXX_DEBUG(logger, "Connected: " << fullName);
 				} else if (strcmp(framed->command, (const char*) "MESSAGE")
 						== 0) {
@@ -317,7 +322,7 @@ void HybridStompEndpointQueue::connect() {
 							(char*) "Got message before receipt, allow a single receipt later");
 					this->message = framed;
 					this->receipt = fullName;
-					this->connected = true;
+					this->_connected = true;
 					LOG4CXX_DEBUG(logger, "Connected: " << fullName);
 				} else {
 					setSpecific(TPE_KEY, TSS_TPESYSTEM);
@@ -332,6 +337,8 @@ void HybridStompEndpointQueue::connect() {
 			LOG4CXX_DEBUG(logger, "Not connected");
 		}
 	}
+
+	return _connected;
 }
 
 const char * HybridStompEndpointQueue::getName() {

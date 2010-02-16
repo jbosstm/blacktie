@@ -40,6 +40,10 @@ public:
 	HybridStompEndpointQueue(apr_pool_t* pool, char* serviceName);
 	virtual ~HybridStompEndpointQueue();
 
+	virtual bool connected();
+
+	virtual bool connect();
+
 	virtual void disconnect();
 
 	virtual MESSAGE receive(long time);
@@ -47,7 +51,6 @@ public:
 	virtual const char* getName();
 	const char* getFullName();
 private:
-	void connect();
 	static log4cxx::LoggerPtr logger;
 	stomp_connection* connection;
 	apr_pool_t* pool;
@@ -58,7 +61,7 @@ private:
 	char* name;
 	char* fullName;
 	bool transactional;
-	bool connected;
+	bool _connected;
 };
 
 #endif

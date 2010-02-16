@@ -27,14 +27,13 @@
 log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger(
 		"ServiceDispatcher"));
 
-SynchronizableObject reconnect;
-bool reconnected;
-
 extern void setTpurcode(long rcode);
 
 ServiceDispatcher::ServiceDispatcher(AtmiBrokerServer* server,
 		Destination* destination, Connection* connection,
-		const char *serviceName, void(*func)(TPSVCINFO *), bool isPause) {
+		const char *serviceName, void(*func)(TPSVCINFO *), bool isPause,
+		SynchronizableObject* reconnect) {
+	this->reconnect = reconnect;
 	this->destination = destination;
 	this->connection = connection;
 	this->serviceName = strdup(serviceName);
@@ -73,9 +72,6 @@ int ServiceDispatcher::resume(void) {
 
 int ServiceDispatcher::svc(void) {
 	while (!stop) {
-		reconnect.lock();
-		reconnected = false;
-		reconnect.unlock();
 		MESSAGE message = destination->receive(this->timeout);
 		if (!isPause && !stop && message.received) {
 			try {
@@ -115,34 +111,32 @@ int ServiceDispatcher::svc(void) {
 						logger,
 						(char*) "Service Dispatcher caught error running during onMessage");
 			}
+
+			if (message.data != NULL) {
+				free(message.data);
+			}
+			setTpurcode(0);
 		} else if (tperrno == TPESYSTEM) {
 			LOG4CXX_WARN(
 					logger,
 					(char*) "Service dispatcher detected dead connection will reconnect after sleep");
+			reconnect->lock();
 			int timeout = 10;
-			LOG4CXX_DEBUG(logger, (char*) "sleeper, sleeping for " << timeout
-					<< " seconds");
-			ACE_OS::sleep(timeout);
-			LOG4CXX_DEBUG(logger, (char*) "sleeper, slept for " << timeout
-					<< " seconds");
-		} else if (tperrno == TPENOENT) {
-			reconnect.lock();
-			if (!reconnected) {
-				LOG4CXX_WARN(logger,
-						(char*) "Service dispatcher could not connect to queue");
-				reconnected = this->server->createAdminDestination(serviceName);
-				if (reconnected) {
+			while (!stop && !destination->connected()) {
+				LOG4CXX_DEBUG(logger, (char*) "sleeper, sleeping for "
+						<< timeout << " seconds");
+				ACE_OS::sleep(timeout);
+				LOG4CXX_DEBUG(logger, (char*) "sleeper, slept for " << timeout
+						<< " seconds");
+				if (this->server->createAdminDestination(serviceName)) {
 					LOG4CXX_INFO(logger,
-							(char*) "Service dispatcher reconnected to: "
+							(char*) "Service dispatcher recreated: "
 									<< serviceName);
+					destination->connect();
 				}
 			}
-			reconnect.unlock();
+			reconnect->unlock();
 		}
-		if (message.data != NULL) {
-			free(message.data);
-		}
-		setTpurcode(0);
 	}
 	return 0;
 }
@@ -256,7 +250,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 						<< getSpecific(TSS_KEY));
 		::tpreturn(TPFAIL, TPESVCERR, NULL, 0, 0);
 		LOG4CXX_TRACE(logger, (char*) "Returned error");
-		error_counter ++;
+		error_counter++;
 	} else if (getSpecific(TSS_KEY) != NULL) {
 		txx_release_control(txx_unbind(true));
 	}
