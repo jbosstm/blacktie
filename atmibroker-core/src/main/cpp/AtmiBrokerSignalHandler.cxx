@@ -27,7 +27,7 @@ log4cxx::LoggerPtr AtmiBrokerSignalHandler::logger_(log4cxx::Logger::getLogger(
 		"AtmiBrokerSignalHandler"));
 ACE_Sig_Handler AtmiBrokerSignalHandler::handler_;
 
-AtmiBrokerSignalGuard::AtmiBrokerSignalGuard(ACE_Sig_Set& bss) : guard_(NULL), bss_(bss), gCnt_(0), sig_(0) {
+AtmiBrokerSignalGuard::AtmiBrokerSignalGuard(ACE_Sig_Set& bss) : guard_(NULL), bss_(bss), gCnt_(0), sig_(0), pending_(false) {
 }
 
 AtmiBrokerSignalGuard::~AtmiBrokerSignalGuard() {
