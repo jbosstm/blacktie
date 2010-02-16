@@ -275,6 +275,7 @@ apr_status_t stomp_read_buffer(stomp_connection *connection, char **data, apr_po
             if( endline[0] != '\n' ) {
                userlogc_warn("stomp_read_buffer endline[0] != \\n returning APR_EGENERAL, character as a decimal: %d", endline[0]);
                userlogc_warn("tail->data length was: %d", bytesRead);
+               userlogc_warn("tail->data was: %s", tail->data);
                return APR_EGENERAL;
             }
             break;
