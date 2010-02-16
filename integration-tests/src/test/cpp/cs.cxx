@@ -39,6 +39,10 @@ static ACE_Mutex mutex_;
 const char *MSG1 = "CLIENT REQUEST		";
 const char *MSG2 = "PAUSE - CLIENT REQUEST";
 
+static int tx = 0;
+static int startTx(int);
+static int endTx(int);
+
 // data type for controlling the work done by each thread
 typedef struct thr_arg {
 	int failonerror;
@@ -140,7 +144,27 @@ static int do_tpcall(thr_arg_t *args) {
 	userlogc((char *) "sbuf type: %s rbuf type: %s type: %s subtype: %s %d vrs %d",
 		args->sndtype, args->rcvtype, type, subtype, tpstatus, args->expect);
 
-	tpstatus = tpcall((char *) args->svc, sbuf, sbufsz, (char **) &rbuf, &rbufsz, args->flags);
+	if (strstr(args->data, "T8") == args->data) {
+		userlogc((char *) "T8: startTX");
+		if (startTx(true) != 0)
+			do_assert(args->failonerror, &res, false, "Could not open or begin transaction: ");
+
+		userlogc((char *) "T8: tpacall");
+		int cd = tpacall((char *) args->svc, sbuf, sbufsz, args->flags);
+		userlogc((char *) "T8: endTx");
+		int txres = endTx(true);
+
+		userlogc((char *) "T8: check assert");
+		do_assert(args->failonerror, &res, txres != TX_OK, "commit or close transaction succeeded with active descriptors");
+
+		userlogc((char *) "T8: tpgetrply");
+		tpstatus = tpgetrply(&cd, (char **) (char **) &rbuf, &rbufsz, args->flags);
+		userlogc((char *) "T8: finished");
+
+	} else {
+		tpstatus = tpcall((char *) args->svc, sbuf, sbufsz, (char **) &rbuf, &rbufsz, args->flags);
+	}
+
 	res = (tperrno == args->expect ? 0 : 1);
 	if (tpstatus)
 		userlogc((char *) "tpcall returned %d tperrno=%d expect=%d", tpstatus, tperrno, args->expect);
@@ -155,7 +179,6 @@ static int do_tpcall(thr_arg_t *args) {
 		do_assert(args->failonerror, &args->result, tpurcode == args->expect2,
 			"tpurcode: expected=%d tpurcode=%d",
 			args->expect2, tpurcode);
-
 	tpfree(sbuf);
 	tpfree(rbuf);
 
@@ -364,6 +387,7 @@ static int t5() {
 }
 
 static int t6() {
+	// TODO this test is for tpcall. Add tests for other xatmi API calls (tpacall etc_)
 	thr_arg_t args = {1, "T6=4", "set TPSIGRSTRT flag and send a signal", "BAR", X_OCTET, X_OCTET, TPSIGRSTRT, 0, 99, SIGALRM};
 	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
 }
@@ -372,17 +396,21 @@ static int t7() {
 	thr_arg_t args = {1, "T6=4", "do not set TPSIGRSTRT flag and send a signal", "BAR", X_OCTET, X_OCTET, 0, TPGOTSIG, 99, SIGALRM};
 	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
 }
-static int tx = 0;
-static int startTx() {
+static int t8() {
+	thr_arg_t args = {1, "T8", "commit tx with active descriptors", "BAR", X_OCTET, X_OCTET, 0, TPEBADDESC, 99, 0};
+	return do_tpcall(&args);
+}
+
+static int startTx(int enable) {
 #ifndef WIN32
-	if (tx && (tx_open() != TX_OK || tx_begin() != TX_OK))
+	if (enable && (tx_open() != TX_OK || tx_begin() != TX_OK))
 		return 1;
 #endif
 	return 0;
 }
-static int endTx() {
+static int endTx(int enable) {
 #ifndef WIN32
-	if (tx && (tx_commit() != TX_OK || tx_close() != TX_OK))
+	if (enable && (tx_commit() != TX_OK || tx_close() != TX_OK))
 		return 1;
 #endif
 	return 0;
@@ -397,7 +425,7 @@ int run_client(int argc, char **argv) {
 
 	userlogc((char*) "starting test %d", bug);
 
-	if (startTx() != 0)
+	if (startTx(tx) != 0)
 		userlogc((char*) "ERROR - Could not open or begin transaction: ");
 	else {
 		switch (bug) {
@@ -420,10 +448,11 @@ int run_client(int argc, char **argv) {
 		case 5:		res = t5(); break;
 		case 6:		res = t6(); break;
 		case 7:		res = t7(); break;
+		case 8:		res = t8(); break;
 		default: break;
 		}
 
-		if (endTx() != 0)
+		if (endTx(tx) != 0)
 			userlogc((char*) "ERROR - Could not commit or close transaction: ");
 	}
 

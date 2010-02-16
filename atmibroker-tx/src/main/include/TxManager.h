@@ -114,7 +114,7 @@ public:	// suspend and resume
 	CosTransactions::Control_ptr tx_suspend(TxControl *, int flags, int altflags = -1);
 
 	int resume(int cd);
-	int suspend(int cd);
+	int suspend(int cd, int (*invalidate)(int cd));
 	bool isCdTransactional(int cd);
 	CORBA::ORB_ptr getOrb();
 

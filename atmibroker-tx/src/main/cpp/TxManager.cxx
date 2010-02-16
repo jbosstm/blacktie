@@ -21,7 +21,6 @@
 #include "TxManager.h"
 #include "AtmiBrokerEnv.h"
 #include "ace/Thread.h"
-#include <vector>
 #include "txAvoid.h"
 #include "SynchronizableObject.h"
 
@@ -200,11 +199,24 @@ int TxManager::complete(bool commit)
 
 	TX_GUARD(((tx = currentTx("complete")) != NULL));
 
-	std::vector<int> &cds = tx->get_cds();
+	std::map<int, int (*)(int)> &cds = tx->get_cds();
 
 	if (cds.size() != 0) {
 		LOG4CXX_WARN(txmlogger, (char*) "Ending a tx with outstanding xatmi descriptors is not allowed - rolling back");
-		// TODO how do we invalidate the descriptors
+		// invalidate the descriptors
+		for (std::map<int,  int (*)(int)>::iterator i = cds.begin() ; i != cds.end(); i++) {
+			int cd = (*i).first;
+			int (*func)(int) = (*i).second;
+
+			 LOG4CXX_DEBUG(txmlogger, (char*) "Invalidating descriptor " << cd);
+
+			if (func != 0) {
+				int rv = func(cd);
+			 	LOG4CXX_DEBUG(txmlogger, (char*) "Invalidate returned " << rv);
+				// NOTE the invalidate function may mark the tx as rollback only
+			}
+		}
+
 		commit = false;
 	}
 
@@ -502,14 +514,13 @@ int TxManager::resume(int cd)
 	TxControl *tx = (TxControl *) getSpecific(TSS_KEY);
 
 	if (tx) {
-		std::vector<int> &cds = tx->get_cds();
-		std::vector<int>::iterator i = std::find(cds.begin(), cds.end(), cd);
+		std::map<int, int (*)(int)> &cds = tx->get_cds();
+		std::map<int,  int (*)(int)>::iterator i = cds.find(cd);
 
 		if (i != cds.end()) {
 			LOG4CXX_DEBUG(txmlogger, (char*) "Removing tp call " << cd << " from tx "
 				<< tx << " remaining tpcalls: " << cds.size());
 			cds.erase(i);
-			//cds.erase(i++, i);
 
 			LOG4CXX_DEBUG(txmlogger, (char*) "Deleted cd - remaining tpcalls: " << cds.size());
 			if (cds.size() == 0) {
@@ -522,18 +533,18 @@ int TxManager::resume(int cd)
 	return XA_OK;
 }
 
-int TxManager::suspend(int cd)
+int TxManager::suspend(int cd, int (*invalidate)(int cd))
 {
 	FTRACE(txmlogger, "ENTER: " << cd);
 	TxControl *tx = (TxControl *) getSpecific(TSS_KEY);
 
 	if (tx) {
-		std::vector<int> &cds = tx->get_cds();
-		std::vector<int>::iterator i = std::find(cds.begin(), cds.end(), cd);
+		std::map<int, int (*)(int)> &cds = tx->get_cds();
+		std::map<int, int (*)(int)>::iterator i = cds.find(cd);
 
 		if (i == cds.end()) {
 			LOG4CXX_DEBUG(txmlogger, (char*) "Adding tp call " << cd << " to tx " << tx);
-			cds.push_back(cd);
+			cds[cd] = invalidate;
 
 			if (cds.size() == 1) {
 				LOG4CXX_DEBUG(txmlogger, (char*) "First outstanding call - suspending RMs");
@@ -551,8 +562,8 @@ bool TxManager::isCdTransactional(int cd)
 	TxControl *tx = (TxControl *) getSpecific(TSS_KEY);
 
 	if (tx) {
-		std::vector<int> &cds = tx->get_cds();
-		std::vector<int>::iterator i = std::find(cds.begin(), cds.end(), cd);
+		std::map<int, int (*)(int)> &cds = tx->get_cds();
+		std::map<int, int (*)(int)>::iterator i = cds.find(cd);
 		LOG4CXX_TRACE(txmlogger, (char*) "found=" << (i != cds.end()) << " tx=" << tx << " calls=" << cds.size());
 		return (i != cds.end());
 	}

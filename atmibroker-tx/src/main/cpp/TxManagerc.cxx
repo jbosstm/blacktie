@@ -105,9 +105,9 @@ char* txx_serialize() {
 	return toReturn;
 }
 
-int txx_suspend(int cd) {
+int txx_suspend(int cd, int (*invalidate)(int cd)) {
 	FTRACE(txmclogger, "ENTER");
-	return TxManager::get_instance()->suspend(cd);
+	return TxManager::get_instance()->suspend(cd, invalidate);
 }
 
 int txx_resume(int cd) {

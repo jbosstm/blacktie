@@ -31,9 +31,14 @@ extern "C" {
 
 /**
  * suspend/resume Resource Managers whilst there are outstanding xatmi calls
+ * @param cd
+ * 	xatmi call descriptor
+ * @param invalidate
+ * 	callback for invalidating the passed in call descriptor (will only be called
+ * 	if the client tries to end a transaction whilst the descriptor is still active)
  */
 extern BLACKTIE_TX_DLL int txx_resume(int cd);
-extern BLACKTIE_TX_DLL int txx_suspend(int cd);
+extern BLACKTIE_TX_DLL int txx_suspend(int cd, int (*invalidate)(int cd));
 /**
  * test wether the supplied xatmi call descriptor is transactional
  */

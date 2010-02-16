@@ -72,7 +72,7 @@ userlogc_debug( (char*) "TestTransactions::test_basic begin");
 	atmibroker::tx::TxManager *txm = atmibroker::tx::TxManager::get_instance();
 	CPPUNIT_ASSERT_EQUAL(TX_OK, txm->open());
 	CPPUNIT_ASSERT_EQUAL(TX_OK, txm->begin());
-	CPPUNIT_ASSERT_EQUAL(TX_OK, txm->suspend(123));
+	CPPUNIT_ASSERT_EQUAL(TX_OK, txm->suspend(123, NULL));
 	CPPUNIT_ASSERT_EQUAL(true, txm->isCdTransactional(123));
 	CPPUNIT_ASSERT_EQUAL(TX_OK, txm->resume(123));
 	CPPUNIT_ASSERT_EQUAL(TX_OK, txm->commit());
