@@ -460,6 +460,7 @@ apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_p
 	  {
 		  char* content_length = apr_hash_get(f->headers, "content-length", APR_HASH_KEY_STRING);
 		  if(content_length) {
+			  userlogc_debug("Content-length detected");
 			  char endbuffer[2];
 			  apr_size_t length = 2;
 
@@ -478,6 +479,7 @@ apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_p
 		  }
 		  else
 		  {
+			  userlogc_debug("No content-length detected");
 			  // The remainder of the buffer (including the \n at the end) is the body)
 			  rc = stomp_read_buffer(connection, &f->body, pool);
 			  CHECK_SUCCESS;
