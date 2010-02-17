@@ -57,24 +57,22 @@ extern BLACKTIE_TX_DLL void txx_stop(void);
 
 /**
  * Associate a transaction with the current thread:
- * - input parameter 1 is the name of the orb that serialized the IOR passed in the second parameter.
- *   If it is NULL then any orb will be used (and if no orb exists or the orb id is invalid
- *   then a negative return code will be returned)
- * - input parameter 2 is a serialized transaction (ie an IOR)
+ * - input parameter 1 is a serialized transaction (ie an IOR)
+ * - input parameter 2 is a the time in seconds during which the txn remains alive
  *
  * Return a non-negative value on success
  */
-extern BLACKTIE_TX_DLL int txx_associate_serialized(char *);
+extern BLACKTIE_TX_DLL int txx_associate_serialized(char *, long);
 
 /**
  * Convert the transaction associated with the calling thread into a string.
- * - input parameter 1 is the name of the orb that will perform the serialization.
- *   If it is NULL then any orb will be used (and if no orb exists or the orb id is invalid
- *   then a negative return code will be returned)
+ * @param ttl
+ * 	output param holds the remaining time before which the txn is subject to rollback,
+ * 	a value of -1 indicates that the txn is not subject to timeouts
  *
- * Return a non-negative value on success
+ * Return a string representation of the txn
  */
-extern BLACKTIE_TX_DLL char* txx_serialize();
+extern BLACKTIE_TX_DLL char* txx_serialize(long* ttl);
 
 /**
  * disassociate a transaction from the current thread
@@ -102,6 +100,19 @@ extern BLACKTIE_TX_DLL void * txx_get_control();
  * txx_unbind
  */
 extern BLACKTIE_TX_DLL void txx_release_control(void *);
+
+/**
+ * Return the time left in seconds before any txn bound to the callers
+ * thread becomes eligible for rollback.
+ * @param
+ * 	the time left in seconds. A negative value means it is eligible for
+ * 	rollback. A value of 0 means 
+ * @return
+ * 	-1 if there in no txn
+ * 	0 if the ttl param was updated with a valid time to live value
+ * 	1 if the current txn is not subject to a timeout
+ */
+extern BLACKTIE_TX_DLL int txx_ttl(long* ttl);
 
 #ifdef __cplusplus
 }

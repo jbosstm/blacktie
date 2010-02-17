@@ -38,7 +38,6 @@
 #include "txx.h"
 
 long DISCON = 0x00000003;
-long timeout = -1;
 bool warnedTPNOBLOCK = false;
 bool warnedTPGETANY = false;
 
@@ -116,10 +115,9 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			if (message.subtype == NULL) {
 				message.subtype = (char*) "";
 			}
-			message.control = (TPNOTRAN & flags) ? NULL : txx_serialize();
-			message.ttl = -1;
-
-			message.ttl = mqConfig.timeToLive * 1000;
+			message.control = (TPNOTRAN & flags) ? NULL : txx_serialize(&(message.ttl));
+			if (message.control == NULL)
+				message.ttl = mqConfig.timeToLive * 1000;
 
 			session->blockSignals((flags & TPSIGRSTRT));
 
@@ -165,20 +163,27 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 		}
 		if (session->getCanRecv()) {
 			// TODO Make configurable Default wait time is blocking (x1000 in SynchronizableObject)
-			long time = -1;
-			if (TPNOBLOCK & flags) {
+			long time;
+			if (TPNOBLOCK & flags) {	// NB flags override any XATMI or transaction timeouts
 				time = 1;
 				LOG4CXX_DEBUG(loggerXATMI, (char*) "Setting timeout to 1");
 			} else if (TPNOTIME & flags) {
 				time = 0;
 				LOG4CXX_DEBUG(loggerXATMI, (char*) "TPNOTIME = BLOCKING CALL");
 			} else {
-				if (timeout == -1) {
-					timeout = (long) mqConfig.requestTimeout;
-					timeout += (long) mqConfig.timeToLive;
+				switch (txx_ttl(&time)) {
+				case -1:	// No transaction so use XATMI timeouts
+					time = (long) mqConfig.requestTimeout + (long) mqConfig.timeToLive;
+					break;
+				case 1:	// txn not subject to a timeout so block
+					time = 0;
+					break;
+				default:	/*FALLTHRU txx_ttl will only returns -1, 0 or 1*/
+				case 0:	// time has already been updated
+					break;
 				}
-				time = timeout;
 			}
+
 			LOG4CXX_DEBUG(loggerXATMI, (char*) "Setting timeout to: " << time);
 			try {
 				session->blockSignals((flags & TPSIGRSTRT));

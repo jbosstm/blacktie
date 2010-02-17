@@ -31,16 +31,21 @@ namespace atmibroker {
  */
 class BLACKTIE_TX_DLL TxControl {
 public:
-	TxControl(CosTransactions::Control_ptr ctrl, int tid);
+	TxControl(CosTransactions::Control_ptr ctrl, long timeout, int tid);
 	virtual ~TxControl();
 
 	int commit(bool report_heuristics);
 	int rollback();
 	int rollback_only();
 	CosTransactions::Status get_ots_status();
-	CosTransactions::Control_ptr get_ots_control();	// ref count of ptr is incremented
+	CosTransactions::Control_ptr get_ots_control(long* ttlp);	// ref count of ptr is incremented
 	int get_status();
 	int get_timeout(CORBA::ULong *);
+	/**
+	 * Return the amount of time in seconds remaining before the txn is subject to rollback,
+	 * a value -1 means the txn is not subject to timeouts
+	 */
+	long ttl();
 
 	int thr_id() {return _tid;}
 	bool isActive(const char *, bool);
@@ -58,9 +63,10 @@ private:
 
 	int end(bool commit, bool report);
 
+	long _ctime;	// creation time in seconds (since 1970)
+	long _ttl;	// time left until the tx is subject to being rolled back
 	int _tid;	// ACE thread id
 	CosTransactions::Control_ptr _ctrl;
-//	std::vector<int> _cds;  // xatmi outstanding tpacall descriptors
 	std::map<int, int (*)(int)> _cds;  // xatmi outstanding tpacall descriptors
 };
 } //	namespace tx

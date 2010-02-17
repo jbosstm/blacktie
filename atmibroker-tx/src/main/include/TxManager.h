@@ -106,10 +106,10 @@ public:
 public:	// public static methods
 	static TxManager* get_instance();
 	static void discard_instance();
-	static CosTransactions::Control_ptr get_ots_control();	// ref count of ptr is incremented
+	static CosTransactions::Control_ptr get_ots_control(long* ttl);	// ref count of ptr is incremented
 
 public:	// suspend and resume
-	int tx_resume(CosTransactions::Control_ptr control, int flags, int altflags = -1);
+	int tx_resume(CosTransactions::Control_ptr control, long ttl, int flags, int altflags = -1);
 	CosTransactions::Control_ptr tx_suspend(int flags, int altflags = -1);
 	CosTransactions::Control_ptr tx_suspend(TxControl *, int flags, int altflags = -1);
 
@@ -132,7 +132,7 @@ private:
 	int rm_start(int flags, int altflags = -1);
 
 	int open_trans_factory(void);
-	CosTransactions::Control_ptr create_tx();
+	CosTransactions::Control_ptr create_tx(TRANSACTION_TIMEOUT timeout);
 
 private:
 	CosTransactions::TransactionFactory_var _txfac;

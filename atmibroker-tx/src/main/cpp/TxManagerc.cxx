@@ -36,7 +36,7 @@ void txx_stop(void) {
 	FTRACE(txmclogger, "<");
 }
 
-int txx_associate_serialized(char* ctrlIOR) {
+int txx_associate_serialized(char* ctrlIOR, long ttl) {
 	FTRACE(txmclogger, "ENTER" << ctrlIOR);
 	CORBA::Object_ptr p =
 			TxManager::get_instance()->getOrb()->string_to_object(ctrlIOR);
@@ -49,7 +49,7 @@ int txx_associate_serialized(char* ctrlIOR) {
 				CosTransactions::Control::_narrow(p);
 		CORBA::release(p); // dispose of it now that we have narrowed the object reference
 
-		return TxManager::get_instance()->tx_resume(cptr, TMJOIN);
+		return TxManager::get_instance()->tx_resume(cptr, ttl, TMJOIN);
 	} else {
 		LOG4CXX_WARN(txmclogger, (char*) "tx_resume: invalid control IOR: "
 				<< ctrlIOR);
@@ -71,7 +71,7 @@ void *txx_unbind(bool rollback) {
 
 void *txx_get_control() {
 	FTRACE(txmclogger, "ENTER");
-	void *ctrl = (void *) TxManager::get_ots_control();
+	void *ctrl = (void *) TxManager::get_ots_control(NULL);
 	FTRACE(txmclogger, "< with control " << ctrl);
 	return ctrl;
 }
@@ -89,10 +89,10 @@ void txx_release_control(void *control) {
 	}
 }
 
-char* txx_serialize() {
+char* txx_serialize(long* ttl) {
 	FTRACE(txmclogger, "ENTER");
 	char* toReturn = NULL;
-	CosTransactions::Control_ptr ctrl = TxManager::get_ots_control();
+	CosTransactions::Control_ptr ctrl = TxManager::get_ots_control(ttl);
 
 	if (!CORBA::is_nil(ctrl)) {
 		CORBA::ORB_ptr orb = TxManager::get_instance()->getOrb();
@@ -117,4 +117,18 @@ int txx_resume(int cd) {
 
 bool txx_isCdTransactional(int cd) {
 	return TxManager::get_instance()->isCdTransactional(cd);
+}
+
+int txx_ttl(long* ttl) {
+	TxControl *tx = (TxControl*) getSpecific(TSS_KEY);
+
+	if (tx == NULL)
+		return -1;	/* indicates no txn is bound to the callers thread */
+
+	*ttl = tx->ttl();
+
+	if (*ttl < 0)
+		return 1;	/* indicates the txn is not subject to timeouts */
+
+	return 0;	/* indicates that *ttl corresponds to the time left for the txn to complete */
 }

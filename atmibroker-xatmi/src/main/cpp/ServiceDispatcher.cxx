@@ -219,7 +219,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 	// HANDLE THE CLIENT INVOCATION
 	if (message.control != NULL && strcmp((char*) message.control, "null") != 0) {
-		if (txx_associate_serialized((char*) message.control) != XA_OK) {
+		if (txx_associate_serialized((char*) message.control, message.ttl) != XA_OK) {
 			LOG4CXX_ERROR(logger, "Unable to handle control");
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		}

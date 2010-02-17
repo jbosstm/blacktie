@@ -176,20 +176,7 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 MESSAGE HybridCorbaEndpointQueue::receive(long time) {
 	LOG4CXX_DEBUG(logger, (char*) "service_response(): " << time);
 
-	MESSAGE message;
-	message.replyto = NULL;
-	message.correlationId = -1;
-	message.data = NULL;
-	message.len = -1;
-	message.flags = -1;
-	message.control = NULL;
-	message.rval = -1;
-	message.rcode = -1;
-	message.type = NULL;
-	message.subtype = NULL;
-	message.received = false;
-	message.ttl = -1;
-	message.serviceName = NULL;
+	MESSAGE message = {NULL, -1, NULL, NULL, -1, -1, -1, -1, -1, NULL, NULL, false, NULL};
 
 	lock->lock();
 	if (!shutdown) {

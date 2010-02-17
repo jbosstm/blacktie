@@ -39,14 +39,27 @@ HybridSessionImpl::HybridSessionImpl(char* connectionName,
 		CORBA_CONNECTION* connection, apr_pool_t* pool, int id,
 		char* serviceName) {
 	LOG4CXX_TRACE(logger, (char*) "constructor service");
+	long ttl;
+
+	switch (txx_ttl(&ttl)) {
+	case -1:	// no txn bound to thread so use XATMI timeouts
+		ttl = mqConfig.requestTimeout;
+		break;
+	default:	/*FALLTHRU - txx_ttl can only return -1, 0 or 1*/
+	case 0:	// will create a non-blocking socket that times out after ttl seconds
+		break;
+	case 1:
+		ttl = 0;	// will create a blocking socket
+		break;
+	}
+
 	this->id = id;
 	this->corbaConnection = connection;
 	this->temporaryQueueName = NULL;
 	serviceInvokation = true;
 
 	stompConnection = NULL;
-	stompConnection = HybridConnectionImpl::connect(pool,
-			mqConfig.requestTimeout);
+	stompConnection = HybridConnectionImpl::connect(pool, ttl);
 	this->pool = pool;
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
 	int XATMI_SERVICE_NAME_LENGTH = 15;

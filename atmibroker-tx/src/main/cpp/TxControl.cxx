@@ -19,6 +19,7 @@
 #include "ThreadLocalStorage.h"
 #include "TxControl.h"
 #include "TxManager.h"
+#include "ace/OS_NS_time.h"
 
 #define TX_GUARD(msg, expect) { \
 	FTRACE(txclogger, "ENTER"); \
@@ -31,8 +32,14 @@ namespace atmibroker {
 
 log4cxx::LoggerPtr txclogger(log4cxx::Logger::getLogger("TxLogControl"));
 
-TxControl::TxControl(CosTransactions::Control_ptr ctrl, int tid) : _tid(tid), _ctrl(ctrl) {
+TxControl::TxControl(CosTransactions::Control_ptr ctrl, long timeout, int tid) :
+	_ttl(timeout), _tid(tid), _ctrl(ctrl) {
 	FTRACE(txclogger, "ENTER new TXCONTROL: " << this);
+
+	if (timeout <= 0)
+		_ttl = -1;
+	else
+		_ctime = (long) (ACE_OS::gettimeofday().sec());
 }
 
 TxControl::~TxControl()
@@ -195,6 +202,20 @@ int TxControl::get_status()
 	}
 }
 
+/**
+ * Return -1 if the txn is subject to timeouts
+ * otherwise return the remaining time to live
+ */
+long TxControl::ttl()
+{
+	if (_ttl == -1)
+		return -1;
+
+	long ttl = _ttl - (long) (ACE_OS::gettimeofday().sec()) + _ctime;
+
+	return (ttl <= 0L ? 0L : ttl);
+}
+
 int TxControl::get_timeout(CORBA::ULong *timeout)
 {
 	TX_GUARD(NULL, false);
@@ -215,9 +236,13 @@ int TxControl::get_timeout(CORBA::ULong *timeout)
  * The caller is responsible for decrementing the ref count
  * of the returned pointer.
  */
-CosTransactions::Control_ptr TxControl::get_ots_control()
+CosTransactions::Control_ptr TxControl::get_ots_control(long* ttlp)
 {
 	FTRACE(txclogger, "ENTER");
+
+	if (ttlp != NULL)
+		*ttlp = ttl();
+
 	return (CORBA::is_nil(_ctrl) ? NULL : CosTransactions::Control::_duplicate(_ctrl));
 }
 

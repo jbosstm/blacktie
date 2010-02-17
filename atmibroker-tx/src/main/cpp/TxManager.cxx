@@ -106,13 +106,13 @@ atmibroker::tx::TxControl *TxManager::currentTx(const char *msg)
 	return tx;
 }
 
-CosTransactions::Control_ptr TxManager::create_tx()
+CosTransactions::Control_ptr TxManager::create_tx(TRANSACTION_TIMEOUT timeout)
 {
 	CosTransactions::Control_ptr ctrl = NULL;
 
 	if (!CORBA::is_nil(_txfac)) {
 		try {
-			ctrl = _txfac->create(_timeout);
+			ctrl = _txfac->create((long) timeout);
 		} catch (CORBA::SystemException & e) {
 			LOG4CXX_DEBUG(txmlogger, (char*) "Could not create tx: "
 				<< e._name() << " minor code: " << e.minor());
@@ -127,11 +127,12 @@ int TxManager::begin(void)
 	TX_GUARD((_isOpen && !getSpecific(TSS_KEY)));
 
 	// start a new transaction
-	CosTransactions::Control_ptr ctrl = create_tx();
+	TRANSACTION_TIMEOUT timeout = _timeout;	// take a copy since _timeout can change at any time
+	CosTransactions::Control_ptr ctrl = create_tx(timeout);
 
 	if (CORBA::is_nil(ctrl)) {
 		if (open_trans_factory() == TX_OK)
-			ctrl = create_tx();
+			ctrl = create_tx(timeout);
 
 		if (CORBA::is_nil(ctrl)) {
 			LOG4CXX_WARN(txmlogger, (char*) "Unable to start a new transaction (nil control)");
@@ -140,7 +141,7 @@ int TxManager::begin(void)
 		}
 	}
 
-	TxControl *tx = new TxControl(ctrl, ACE_OS::thr_self());
+	TxControl *tx = new TxControl(ctrl, (long) timeout, ACE_OS::thr_self());
 	// associate the tx with the callers thread and enlist all open RMs with the tx
 	int rc = TxManager::tx_resume(tx, TMNOFLAGS);
 
@@ -287,7 +288,7 @@ int TxManager::set_transaction_timeout(TRANSACTION_TIMEOUT timeout)
 {
 	TX_GUARD(_isOpen);
 
-	if (timeout < 0)
+	if (timeout < 0L)
 		return TX_EINVAL;
 
 	_timeout = timeout;
@@ -421,18 +422,18 @@ int TxManager::rm_start(int flags, int altflags)
 	return (tx ? _xaRMFac.startRMs(tx->isOriginator(), flags, altflags) : XA_OK);
 }
 
-CosTransactions::Control_ptr TxManager::get_ots_control()
+CosTransactions::Control_ptr TxManager::get_ots_control(long* ttl)
 {
 	FTRACE(txmlogger, "ENTER");
 	TxControl *tx = (TxControl *) getSpecific(TSS_KEY);
 
-	return (tx ? tx->get_ots_control() : 0);
+	return (tx ? tx->get_ots_control(ttl) : 0);
 }
 
-int TxManager::tx_resume(CosTransactions::Control_ptr control, int flags, int altflag)
+int TxManager::tx_resume(CosTransactions::Control_ptr control, long ttl, int flags, int altflag)
 {
 	FTRACE(txmlogger, "ENTER");
-	TxControl *tx = new TxControl(control, 0);
+	TxControl *tx = new TxControl(control, ttl, 0);
 	int rc = TxManager::tx_resume(tx, flags);
 	if (rc != XA_OK) {
 		delete tx;
@@ -493,7 +494,7 @@ CosTransactions::Control_ptr TxManager::tx_suspend(TxControl *tx, int flags, int
 
 	if (tx && tx->isActive(NULL, true)) {
 		// increment the control reference count
-		CosTransactions::Control_ptr ctrl = tx->get_ots_control();
+		CosTransactions::Control_ptr ctrl = tx->get_ots_control(NULL);
 		// suspend all open Resource Managers (TMSUSPEND TMMIGRATE TMSUCCESS TMFAIL)
 		(void) rm_end(flags, altflags);
 		// disassociate the transaction from the callers thread
