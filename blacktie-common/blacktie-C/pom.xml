@@ -81,6 +81,7 @@
 				<executions>
 					<execution>
 						<id>enforce-property</id>
+						<phase>validate</phase>
 						<goals>
 							<goal>enforce</goal>
 						</goals>
