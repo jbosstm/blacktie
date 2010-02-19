@@ -44,7 +44,7 @@ static void tx_fill_buf(TPSVCINFO *svcinfo) {
 void test_tx_tpcall_x_octet_service_tardy(TPSVCINFO *svcinfo) {
 	userlogc((char*) "TxLog: service running: test_tx_tpcall_x_octet_service_tardy");
 	tx_fill_buf(svcinfo);
-	ACE_OS::sleep(4L);
+	ACE_OS::sleep(6L);
 }
 
 void test_tx_tpcall_x_octet_service_without_tx(TPSVCINFO *svcinfo) {
