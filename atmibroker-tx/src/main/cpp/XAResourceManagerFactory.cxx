@@ -113,7 +113,8 @@ bool XAResourceManagerFactory::getXID(XID& xid)
     } catch (CosTransactions::Unavailable & e) {
         LOG4CXX_ERROR(xarflogger,  (char *) "XA-compatible Transaction Service raised unavailable: " << e._name());
     } catch (const CORBA::OBJECT_NOT_EXIST &e) {
-        LOG4CXX_ERROR(xarflogger,  (char *) "Unexpected exception converting xid: " << e._name());
+		// transaction has most likely timed out
+        LOG4CXX_DEBUG(xarflogger,  (char *) "Unexpected exception converting xid: " << e._name());
     } catch  (CORBA::Exception& e) {
         LOG4CXX_ERROR(xarflogger,  (char *) "Unexpected exception converting xid: " << e._name());
     } catch  (...) {

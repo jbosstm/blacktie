@@ -18,6 +18,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "BaseTest.h"
+#include "ThreadLocalStorage.h"
 
 #include "xatmi.h"
 extern "C" {
@@ -27,12 +28,16 @@ extern "C" {
 void BaseTest::setUp() {
 	// Perform global set up
 	TestFixture::setUp();
+	// previous tests may have left a txn on the thread
+	destroySpecific(TSS_KEY);
 }
 
 void BaseTest::tearDown() {
 	// Perform clean up
 	::clientdone();
 	CPPUNIT_ASSERT(tperrno == 0);
+	// previous tests may have left a txn on the thread
+	destroySpecific(TSS_KEY);
 
 	// Perform global clean up
 	TestFixture::tearDown();

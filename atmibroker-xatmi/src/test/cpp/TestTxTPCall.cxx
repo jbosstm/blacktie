@@ -61,8 +61,6 @@ void test_tx_tpcall_x_octet_service_with_tx(TPSVCINFO *svcinfo) {
 void TestTxTPCall::setUp() {
 	BaseServerTest::setUp();
 
-	// previous tests may have left a txn on the thread
-	destroySpecific(TSS_KEY);
 	CPPUNIT_ASSERT(tx_open() == TX_OK);
 	sendlen = strlen("TestTxTPCall") + 1;
 	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
@@ -77,6 +75,7 @@ void TestTxTPCall::tearDown() {
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
 
+	// test may have left a txn on the thread which would cause tx_close to fail
 	destroySpecific(TSS_KEY);
 	int rc = tpunadvertise((char*) "tpcall_x_octet");
 	CPPUNIT_ASSERT(tperrno == 0);
