@@ -174,12 +174,15 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 				switch (txx_ttl(&time)) {
 				case -1:	// No transaction so use XATMI timeouts
 					time = (long) mqConfig.requestTimeout + (long) mqConfig.timeToLive;
+					{LOG4CXX_TRACE(loggerXATMI, (char*) "receive txx_ttl returned -1 time=" << time)};
 					break;
 				case 1:	// txn not subject to a timeout so block
 					time = 0;
+					{LOG4CXX_TRACE(loggerXATMI, (char*) "receive txx_ttl returned 1 time=0"<< time)};
 					break;
 				default:	/*FALLTHRU txx_ttl will only returns -1, 0 or 1*/
 				case 0:	// time has already been updated
+					{LOG4CXX_TRACE(loggerXATMI, (char*) "receive txx_ttl returned 0 time=" << time)};
 					break;
 				}
 			}

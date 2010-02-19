@@ -19,6 +19,7 @@
 
 //#include "ace/OS_NS_unistd.h"
 
+#include "ThreadLocalStorage.h"
 #include "BaseServerTest.h"
 #include "XATMITestSuite.h"
 
@@ -37,6 +38,9 @@ extern void test_no_tpreturn_service(TPSVCINFO *svcinfo);
 void TestRollbackOnly::setUp() {
 	BaseServerTest::setUp();
 
+	// previous tests may have left a txn on the thread
+	destroySpecific(TSS_KEY);
+
 	sendlen = strlen("TestRbkOnly") + 1;
 	CPPUNIT_ASSERT((sendbuf
 			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
@@ -48,6 +52,7 @@ void TestRollbackOnly::setUp() {
 }
 
 void TestRollbackOnly::tearDown() {
+	destroySpecific(TSS_KEY);
 	CPPUNIT_ASSERT(tx_close() == TX_OK);
 
 	::tpfree( sendbuf);
@@ -64,6 +69,8 @@ void TestRollbackOnly::test_tpcall_TPETIME() {
 	CPPUNIT_ASSERT(rc != -1);
 
 	CPPUNIT_ASSERT(tx_open() == TX_OK);
+	// the TPETIME service sleeps for 8 so set the txn time to something smaller
+	CPPUNIT_ASSERT(tx_set_transaction_timeout(4) == TX_OK);
 	CPPUNIT_ASSERT(tx_begin() == TX_OK);
 
 	(void) ::tpcall((char*) "TestRbkOnly", (char *) sendbuf, sendlen,

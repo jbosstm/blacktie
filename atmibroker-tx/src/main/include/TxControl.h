@@ -63,6 +63,7 @@ private:
 
 	int end(bool commit, bool report);
 
+	bool _rbonly;	// txn marked rollback only after txn timeout
 	long _ctime;	// creation time in seconds (since 1970)
 	long _ttl;	// time left until the tx is subject to being rolled back
 	int _tid;	// ACE thread id

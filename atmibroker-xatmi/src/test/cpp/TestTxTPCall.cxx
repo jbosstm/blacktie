@@ -19,6 +19,7 @@
 
 #include "ace/OS_NS_unistd.h"
 
+#include "ThreadLocalStorage.h"
 #include "BaseServerTest.h"
 #include "XATMITestSuite.h"
 
@@ -32,7 +33,7 @@ static void tx_fill_buf(TPSVCINFO *svcinfo) {
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	TXINFO txinfo;
-    int inTx = ::tx_info(&txinfo);
+	int inTx = ::tx_info(&txinfo);
 
 	strcpy(toReturn, "inTx=");
 	strcat(toReturn, inTx ? "true" : "false");
@@ -60,6 +61,8 @@ void test_tx_tpcall_x_octet_service_with_tx(TPSVCINFO *svcinfo) {
 void TestTxTPCall::setUp() {
 	BaseServerTest::setUp();
 
+	// previous tests may have left a txn on the thread
+	destroySpecific(TSS_KEY);
 	CPPUNIT_ASSERT(tx_open() == TX_OK);
 	sendlen = strlen("TestTxTPCall") + 1;
 	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
@@ -74,9 +77,10 @@ void TestTxTPCall::tearDown() {
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
 
-    int rc = tpunadvertise((char*) "tpcall_x_octet");
-    CPPUNIT_ASSERT(tperrno == 0);
-    CPPUNIT_ASSERT(rc != -1);
+	destroySpecific(TSS_KEY);
+	int rc = tpunadvertise((char*) "tpcall_x_octet");
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(rc != -1);
 	CPPUNIT_ASSERT(tx_close() == TX_OK);
 
 	// Clean up server
@@ -87,7 +91,7 @@ void TestTxTPCall::tearDown() {
 void TestTxTPCall::test_timeout_no_tx() {
 	userlogc((char*) "TxLog: test_timeout_no_tx");
 	int rc = tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_tardy);
-    CPPUNIT_ASSERT(tperrno == 0 && rc != -1);
+	CPPUNIT_ASSERT(tperrno == 0 && rc != -1);
 	int cd = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
 	CPPUNIT_ASSERT(cd != -1);
 	CPPUNIT_ASSERT(tperrno != TPETIME);
@@ -111,8 +115,8 @@ void TestTxTPCall::test_timeout_with_tx() {
 void TestTxTPCall::test_tpcall_without_tx() {
 	userlogc((char*) "TxLog: test_tpcall_without_tx");
 	int rc = tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_without_tx);
-    CPPUNIT_ASSERT(tperrno == 0);
-    CPPUNIT_ASSERT(rc != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(rc != -1);
 
 	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
 	CPPUNIT_ASSERT(id != -1);
@@ -125,8 +129,8 @@ void TestTxTPCall::test_tpcall_without_tx() {
 void TestTxTPCall::test_tpcall_with_tx() {
 	userlogc((char*) "TxLog: test_tpcall_with_tx");
 	int rc = tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_with_tx);
-    CPPUNIT_ASSERT(tperrno == 0);
-    CPPUNIT_ASSERT(rc != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(rc != -1);
 
 	// start a transaction
 	userlogc_debug((char*) "TxLog: test_tpcall_with_tx: tx_open");
@@ -143,27 +147,27 @@ void TestTxTPCall::test_tpcall_with_tx() {
 void TestTxTPCall::test_tpcancel_with_tx() {
 	userlogc((char*) "TxLog: test_tpcancel_with_tx");
 	int rc = tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_with_tx);
-    CPPUNIT_ASSERT(tperrno == 0);
-    CPPUNIT_ASSERT(rc != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+	CPPUNIT_ASSERT(rc != -1);
 
 	// start a transaction
 	userlogc_debug((char*) "TxLog: test_tpcancel_with_tx: tx_open");
 	CPPUNIT_ASSERT(tx_begin() == TX_OK);
 	userlogc_debug((char*) "TxLog: test_tpcancel_with_tx: tpcall");
 	int cd = ::tpacall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen, (long) 0);
-    CPPUNIT_ASSERT(cd != -1);
-    CPPUNIT_ASSERT(tperrno == 0);
-    // cancel should fail with TPETRAN since the outstanding call is transactional
+	CPPUNIT_ASSERT(cd != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
+	// cancel should fail with TPETRAN since the outstanding call is transactional
 	userlogc_debug((char*) "TxLog: test_tpcancel_with_tx: tpcancel %d", cd);
-    int cancelled = ::tpcancel(cd);
-    CPPUNIT_ASSERT(cancelled == -1);
-    CPPUNIT_ASSERT(tperrno == TPETRAN);
-    // a tpgetrply should succeed since the tpcancel request will have failed
-    int res = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
-    CPPUNIT_ASSERT(res != -1);
-    CPPUNIT_ASSERT(tperrno == 0);
+	int cancelled = ::tpcancel(cd);
+	CPPUNIT_ASSERT(cancelled == -1);
+	CPPUNIT_ASSERT(tperrno == TPETRAN);
+	// a tpgetrply should succeed since the tpcancel request will have failed
+	int res = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
+	CPPUNIT_ASSERT(res != -1);
+	CPPUNIT_ASSERT(tperrno == 0);
 	userlogc_debug((char*) "TxLog: test_tpcancel_with_tx: tx_commit");
-    // commit should succeed since the failed tpcancel does not affect the callers tx
+	// commit should succeed since the failed tpcancel does not affect the callers tx
 	CPPUNIT_ASSERT(tx_commit() == TX_OK);
 	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "inTx=true") == 0);
 }

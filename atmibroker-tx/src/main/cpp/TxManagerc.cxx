@@ -122,10 +122,14 @@ bool txx_isCdTransactional(int cd) {
 int txx_ttl(long* ttl) {
 	TxControl *tx = (TxControl*) getSpecific(TSS_KEY);
 
+	LOG4CXX_TRACE(txmclogger, (char*) "txx_ttl tx=" << tx);
+
 	if (tx == NULL)
 		return -1;	/* indicates no txn is bound to the callers thread */
 
 	*ttl = tx->ttl();
+
+	LOG4CXX_TRACE(txmclogger, (char*) "tx->ttl()=" << *ttl);
 
 	if (*ttl < 0)
 		return 1;	/* indicates the txn is not subject to timeouts */

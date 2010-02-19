@@ -33,13 +33,13 @@ namespace atmibroker {
 log4cxx::LoggerPtr txclogger(log4cxx::Logger::getLogger("TxLogControl"));
 
 TxControl::TxControl(CosTransactions::Control_ptr ctrl, long timeout, int tid) :
-	_ttl(timeout), _tid(tid), _ctrl(ctrl) {
+	_rbonly(false), _ttl(timeout), _tid(tid), _ctrl(ctrl) {
 	FTRACE(txclogger, "ENTER new TXCONTROL: " << this);
+
+	_ctime = (long) (ACE_OS::gettimeofday().sec());
 
 	if (timeout <= 0)
 		_ttl = -1;
-	else
-		_ctime = (long) (ACE_OS::gettimeofday().sec());
 }
 
 TxControl::~TxControl()
@@ -76,9 +76,12 @@ int TxControl::end(bool commit, bool reportHeuristics)
 		LOG4CXX_WARN(txclogger, (char*) "end: term unavailable: " << e._name());
 		outcome = TX_FAIL;
 	} catch (CORBA::OBJECT_NOT_EXIST & e) {
-		LOG4CXX_WARN(txclogger, (char*) "end: term ex " << e._name() << " minor: " << e.minor());
+		LOG4CXX_DEBUG(txclogger, (char*) "end: term ex " << e._name() << " minor: " << e.minor());
 		// transaction no longer exists (presumed abort)
 		outcome = TX_ROLLBACK;
+	} catch (...) {
+		LOG4CXX_WARN(txclogger, (char*) "end: unknown error looking up terminator");
+		outcome = TX_FAIL; // TM failed temporarily
 	}
 
 	if (outcome == TX_OK) {
@@ -141,6 +144,11 @@ int TxControl::rollback_only()
 	} catch (CosTransactions::Unavailable & e) {
 		// no coordinator
 		LOG4CXX_WARN(txclogger, (char*) "rollback_only: unavailable: " << e._name());
+	} catch (CORBA::OBJECT_NOT_EXIST & e) {
+		// ought to be due to the txn timing out
+		LOG4CXX_DEBUG(txclogger, (char*) "rollback_only: " << e._name() << " minor: " << e.minor());
+		_rbonly = true;
+		return TX_OK;
 	} catch (CORBA::SystemException & e) {
 		LOG4CXX_WARN(txclogger, (char*) "rollback_only: " << e._name() << " minor: " << e.minor());
 	}
@@ -173,6 +181,10 @@ CosTransactions::Status TxControl::get_ots_status()
 int TxControl::get_status()
 {
 	FTRACE(txclogger, "ENTER");
+
+	if (_rbonly)
+		return TX_ROLLBACK_ONLY;
+
 	CosTransactions::Status status = get_ots_status();
 
 	switch (status) {
@@ -208,10 +220,14 @@ int TxControl::get_status()
  */
 long TxControl::ttl()
 {
+	FTRACE(txclogger, "ENTER ttl=" << _ttl << " ctime=" << _ctime << " now=" << ACE_OS::gettimeofday().sec());
+
 	if (_ttl == -1)
 		return -1;
 
 	long ttl = _ttl - (long) (ACE_OS::gettimeofday().sec()) + _ctime;
+
+	LOG4CXX_TRACE(txclogger, (char*) "> ttl=" << ttl);
 
 	return (ttl <= 0L ? 0L : ttl);
 }

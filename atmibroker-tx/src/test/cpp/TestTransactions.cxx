@@ -47,6 +47,9 @@ void TestTransactions::setUp()
 	AtmiBrokerEnv::get_instance();
 
 	TestFixture::setUp();
+
+	// previous tests may have left a txn on the thread
+	destroySpecific(TSS_KEY);
 }
 
 void TestTransactions::tearDown()
