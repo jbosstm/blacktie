@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 #include "BaseServerTest.h"
 
@@ -37,17 +37,17 @@ void TestTPConnect::setUp() {
 	cd = -1;
 	cd2 = -1;
 	int toCheck = tpadvertise((char*) "TestTPConnect", testtpconnect_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 
 	sendlen = strlen("connect") + 1;
-	CPPUNIT_ASSERT((sendbuf
+	BT_ASSERT((sendbuf
 			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT(
+	BT_ASSERT(
 			(rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen))
 					!= NULL);
 	strcpy(sendbuf, "connect");
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 }
 
 void TestTPConnect::tearDown() {
@@ -62,8 +62,8 @@ void TestTPConnect::tearDown() {
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
 	int toCheck = tpunadvertise((char*) "TestTPConnect");
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 
 	// Clean up server
 	BaseServerTest::tearDown();
@@ -72,34 +72,34 @@ void TestTPConnect::tearDown() {
 void TestTPConnect::test_tpconnect() {
 	userlogc((char*) "test_tpconnect");
 	cd = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, TPRECVONLY);
-	CPPUNIT_ASSERT(cd != -1);
+	BT_ASSERT(cd != -1);
 }
 
 void TestTPConnect::test_tpconnect_double_connect() {
 	userlogc((char*) "test_tpconnect_double_connect");
 	cd = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, TPRECVONLY);
 	cd2 = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, TPRECVONLY);
-	CPPUNIT_ASSERT(cd != -1);
-	CPPUNIT_ASSERT(cd2 != -1);
-	CPPUNIT_ASSERT(cd != cd2);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(tperrno != TPEINVAL);
-	CPPUNIT_ASSERT(tperrno != TPENOENT);
-	CPPUNIT_ASSERT(tperrno != TPEITYPE);
-	CPPUNIT_ASSERT(tperrno != TPELIMIT);
-	CPPUNIT_ASSERT(tperrno != TPETRAN);
-	CPPUNIT_ASSERT(tperrno != TPETIME);
-	CPPUNIT_ASSERT(tperrno != TPEBLOCK);
-	CPPUNIT_ASSERT(tperrno != TPGOTSIG);
-	CPPUNIT_ASSERT(tperrno != TPEPROTO);
-	CPPUNIT_ASSERT(tperrno != TPESYSTEM);
-	CPPUNIT_ASSERT(tperrno != TPEOS);
+	BT_ASSERT(cd != -1);
+	BT_ASSERT(cd2 != -1);
+	BT_ASSERT(cd != cd2);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno != TPEINVAL);
+	BT_ASSERT(tperrno != TPENOENT);
+	BT_ASSERT(tperrno != TPEITYPE);
+	BT_ASSERT(tperrno != TPELIMIT);
+	BT_ASSERT(tperrno != TPETRAN);
+	BT_ASSERT(tperrno != TPETIME);
+	BT_ASSERT(tperrno != TPEBLOCK);
+	BT_ASSERT(tperrno != TPGOTSIG);
+	BT_ASSERT(tperrno != TPEPROTO);
+	BT_ASSERT(tperrno != TPESYSTEM);
+	BT_ASSERT(tperrno != TPEOS);
 }
 
 void TestTPConnect::test_tpconnect_nodata() {
 	userlogc((char*) "test_tpconnect_nodata");
 	cd = ::tpconnect((char*) "TestTPConnect", NULL, 0, TPRECVONLY);
-	CPPUNIT_ASSERT(cd != -1);
+	BT_ASSERT(cd != -1);
 }
 
 void testtpconnect_service(TPSVCINFO *svcinfo) {

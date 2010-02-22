@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 #include "BaseServerTest.h"
 #include "BaseTest.h"
 
@@ -40,8 +40,8 @@ void BaseServerTest::setUp() {
 
 	result = serverinit(argc, argv);
 	// Check that there is no error on server setup
-	CPPUNIT_ASSERT(result != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(result != -1);
+	BT_ASSERT(tperrno == 0);
 }
 
 void BaseServerTest::tearDown() {

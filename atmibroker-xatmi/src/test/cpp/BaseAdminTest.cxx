@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 #include "ace/OS_NS_stdlib.h"
 #include "ace/OS_NS_stdio.h"
@@ -41,8 +41,8 @@ int BaseAdminTest::callADMIN(char* command, char expect, int r, char** n) {
 	long  recvlen = 1;
 
 	int cd = ::tpcall((char*) "default_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
-	CPPUNIT_ASSERT(recvbuf[0] == expect);
-	CPPUNIT_ASSERT(r == tperrno);
+	BT_ASSERT(recvbuf[0] == expect);
+	BT_ASSERT(r == tperrno);
 
 	if(ACE_OS::strncmp(command, "counter", 7) == 0) {
 		*n = (char*) malloc(recvlen -1);
@@ -66,9 +66,9 @@ int BaseAdminTest::callBAR(int r) {
 
 
 	int cd = ::tpcall((char*) "BAR", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, 0);
-	CPPUNIT_ASSERT(r == tperrno);
+	BT_ASSERT(r == tperrno);
 	if(tperrno == 0) {
-		CPPUNIT_ASSERT(recvbuf[0] == '1');
+		BT_ASSERT(recvbuf[0] == '1');
 	}
 
 	tpfree(sendbuf);

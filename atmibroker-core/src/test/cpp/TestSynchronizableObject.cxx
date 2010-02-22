@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 #include "TestSynchronizableObject.h"
 
@@ -65,7 +65,7 @@ void TestSynchronizableObject::setUp() {
 	if (waiter->activate(THR_NEW_LWP| THR_JOINABLE, 1, 0, ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
 		delete (waiter);
 		waiter = NULL;
-		CPPUNIT_FAIL("COULD NOT CREATE WAITER");
+		BT_FAIL("COULD NOT CREATE WAITER");
 	}
 }
 void TestSynchronizableObject::tearDown() {
@@ -96,5 +96,5 @@ void TestSynchronizableObject::testWaitNotify() {
 	userlogc("got notified");
 	lock2->unlock();
 	userlogc("main done");
-	CPPUNIT_ASSERT_MESSAGE("Was not notified", notified == true);
+	BT_ASSERT_MESSAGE("Was not notified", notified == true);
 }

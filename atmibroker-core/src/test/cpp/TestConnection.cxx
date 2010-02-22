@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 #include "TestConnection.h"
 
@@ -29,5 +29,5 @@ struct connection_factory_t connectionFactory = { createConnection };
 
 void TestConnection::test() {
 
-	CPPUNIT_ASSERT(connectionFactory.create_connection((char*) "foo") == NULL);
+	BT_ASSERT(connectionFactory.create_connection((char*) "foo") == NULL);
 }

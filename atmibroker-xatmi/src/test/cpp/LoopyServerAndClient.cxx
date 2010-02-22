@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 #include "LoopyServerAndClient.h"
 
@@ -46,24 +46,24 @@ void LoopyServerAndClient::testLoopyAll() {
 
 	for (int i = 0; i < 3; i++) {
 		result = serverinit(0, NULL);
-		CPPUNIT_ASSERT(result != -1);
-		CPPUNIT_ASSERT(tperrno == 0);
+		BT_ASSERT(result != -1);
+		BT_ASSERT(tperrno == 0);
 
 		result = clientinit();
-		CPPUNIT_ASSERT(result != -1);
-		CPPUNIT_ASSERT(tperrno == 0);
+		BT_ASSERT(result != -1);
+		BT_ASSERT(tperrno == 0);
 
 		result = tpadvertise((char*) "LOOPY", loopy);
-		CPPUNIT_ASSERT(result != -1);
-		CPPUNIT_ASSERT(tperrno == 0);
+		BT_ASSERT(result != -1);
+		BT_ASSERT(tperrno == 0);
 
 		result = clientdone();
-		CPPUNIT_ASSERT(result != -1);
-		CPPUNIT_ASSERT(tperrno == 0);
+		BT_ASSERT(result != -1);
+		BT_ASSERT(tperrno == 0);
 
 		result = serverdone();
-		CPPUNIT_ASSERT(result != -1);
-		CPPUNIT_ASSERT(tperrno == 0);
+		BT_ASSERT(result != -1);
+		BT_ASSERT(tperrno == 0);
 	}
 }
 
@@ -73,24 +73,24 @@ void LoopyServerAndClient::testLoopyAll2() {
 
 	for (int i = 0; i < 3; i++) {
 		result = serverinit(0, NULL);
-		CPPUNIT_ASSERT(result != -1);
-		CPPUNIT_ASSERT(tperrno == 0);
+		BT_ASSERT(result != -1);
+		BT_ASSERT(tperrno == 0);
 
 		result = tpadvertise((char*) "LOOPY", loopy);
-		CPPUNIT_ASSERT(result != -1);
-		CPPUNIT_ASSERT(tperrno == 0);
+		BT_ASSERT(result != -1);
+		BT_ASSERT(tperrno == 0);
 
 		result = clientinit();
-		CPPUNIT_ASSERT(result != -1);
-		CPPUNIT_ASSERT(tperrno == 0);
+		BT_ASSERT(result != -1);
+		BT_ASSERT(tperrno == 0);
 
 		result = clientdone();
-		CPPUNIT_ASSERT(result != -1);
-		CPPUNIT_ASSERT(tperrno == 0);
+		BT_ASSERT(result != -1);
+		BT_ASSERT(tperrno == 0);
 
 		result = serverdone();
-		CPPUNIT_ASSERT(result != -1);
-		CPPUNIT_ASSERT(tperrno == 0);
+		BT_ASSERT(result != -1);
+		BT_ASSERT(tperrno == 0);
 	}
 }
 
@@ -98,28 +98,28 @@ void LoopyServerAndClient::testLoopyAdvertise() {
 	userlogc((char*) "testLoopyAdvertise");
 	int result = 0;
 	result = serverinit(0, NULL);
-	CPPUNIT_ASSERT(result != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(result != -1);
+	BT_ASSERT(tperrno == 0);
 
 	result = clientinit();
-	CPPUNIT_ASSERT(result != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(result != -1);
+	BT_ASSERT(tperrno == 0);
 
 	for (int i = 0; i < 3; i++) {
 		result = tpadvertise((char*) "LOOPY", loopy);
-		CPPUNIT_ASSERT(result != -1);
-		CPPUNIT_ASSERT(tperrno == 0);
+		BT_ASSERT(result != -1);
+		BT_ASSERT(tperrno == 0);
 
 		result = tpunadvertise((char*) "LOOPY");
-		CPPUNIT_ASSERT(result != -1);
-		CPPUNIT_ASSERT(tperrno == 0);
+		BT_ASSERT(result != -1);
+		BT_ASSERT(tperrno == 0);
 	}
 
 	result = clientdone();
-	CPPUNIT_ASSERT(result != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(result != -1);
+	BT_ASSERT(tperrno == 0);
 
 	result = serverdone();
-	CPPUNIT_ASSERT(result != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(result != -1);
+	BT_ASSERT(tperrno == 0);
 }

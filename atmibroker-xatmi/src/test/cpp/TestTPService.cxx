@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 #include "BaseServerTest.h"
 
@@ -33,16 +33,16 @@ void TestTPService::setUp() {
 	// Setup server
 	BaseServerTest::setUp();
 	int toCheck = tpadvertise((char*) "TestTPService", testtpservice_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 
 	// Do local work
 	sendlen = strlen("TestTPService") + 1;
 	rcvlen = sendlen;
-	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen)) != NULL);
+	BT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen)) != NULL);
 	(void) strcpy(sendbuf, "TestTPService");
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 }
 
 void TestTPService::tearDown() {
@@ -52,8 +52,8 @@ void TestTPService::tearDown() {
 	::tpfree(rcvbuf);
 
 	int toCheck = tpunadvertise((char*) "TestTPService");
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 
 	// Clean up server
 	BaseServerTest::tearDown();
@@ -68,8 +68,8 @@ void TestTPService::test_tpservice_notpreturn() {
 	int tperrnoToCheck = tperrno;
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
-	CPPUNIT_ASSERT_MESSAGE(tperrnoS, tperrnoToCheck== TPESVCERR);
-	CPPUNIT_ASSERT(id == -1);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrnoToCheck== TPESVCERR);
+	BT_ASSERT(id == -1);
 	free(tperrnoS);
 }
 

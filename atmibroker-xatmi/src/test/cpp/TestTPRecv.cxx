@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 #include "BaseServerTest.h"
 
@@ -37,15 +37,15 @@ void TestTPRecv::setUp() {
 	cd = -1;
 	sendlen = strlen("recv") + 1;
 	rcvlen = sendlen;
-	CPPUNIT_ASSERT((sendbuf
+	BT_ASSERT((sendbuf
 			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
 	strcpy(sendbuf, "recv");
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 	int toCheck = tpadvertise((char*) "TestTPRecv", testtprecv_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 }
 
 void TestTPRecv::tearDown() {
@@ -57,8 +57,8 @@ void TestTPRecv::tearDown() {
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
 	int toCheck = tpunadvertise((char*) "TestTPRecv");
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 
 	// Clean up server
 	BaseServerTest::tearDown();
@@ -69,8 +69,8 @@ void TestTPRecv::test_tprecv_sendonly() {
 	cd = ::tpconnect((char*) "TestTPRecv", sendbuf, sendlen, TPSENDONLY);
 	long revent = 0;
 	int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
-	CPPUNIT_ASSERT(tperrno == TPEPROTO);
-	CPPUNIT_ASSERT(result == -1);
+	BT_ASSERT(tperrno == TPEPROTO);
+	BT_ASSERT(result == -1);
 }
 
 void testtprecv_service(TPSVCINFO *svcinfo) {

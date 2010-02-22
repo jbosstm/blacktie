@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 #include <cppunit/TestFixture.h>
 
 #ifdef TODO_WIN32
@@ -75,6 +75,6 @@ void ODBCTest::test() {
 }
 #else
 void ODBCTest::test() {
-	CPPUNIT_FAIL("NOT IMPLEMENTED");
+	BT_FAIL("NOT IMPLEMENTED");
 }
 #endif

@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 #include "TestBufferConverterImpl.h"
 #include "BufferConverterImpl.h"
@@ -54,7 +54,7 @@ void TestBufferConverterImpl::test() {
 	long wireSize = -1;
 	char* wireBuffer = BufferConverterImpl::convertToWireFormat(
 			(char*) "X_C_TYPE", (char*) "DEPOSIT", (char*) deposit, &wireSize);
-	CPPUNIT_ASSERT(expectedWireSize == wireSize);
+	BT_ASSERT(expectedWireSize == wireSize);
 
 	long expectedMemorySize = sizeof(DEPOSIT);
 	long memorySize = -1;
@@ -62,15 +62,15 @@ void TestBufferConverterImpl::test() {
 			(DEPOSIT*) BufferConverterImpl::convertToMemoryFormat(
 					(char*) "X_C_TYPE", (char*) "DEPOSIT", (char*) wireBuffer,
 					&memorySize);
-	CPPUNIT_ASSERT(expectedMemorySize == memorySize);
+	BT_ASSERT(expectedMemorySize == memorySize);
 
 	// CHECK THE CONTENT OF THE CONVERTED BUFFER
-	CPPUNIT_ASSERT(deposit->acct_no == memoryBuffer->acct_no);
-	CPPUNIT_ASSERT(deposit->amount == memoryBuffer->amount);
-	CPPUNIT_ASSERT(deposit->balance == memoryBuffer->balance);
-	CPPUNIT_ASSERT(deposit->acct_no == memoryBuffer->acct_no);
-	CPPUNIT_ASSERT(strcmp(deposit->status, memoryBuffer->status) == 0);
-	CPPUNIT_ASSERT(deposit->status_len == memoryBuffer->status_len);
+	BT_ASSERT(deposit->acct_no == memoryBuffer->acct_no);
+	BT_ASSERT(deposit->amount == memoryBuffer->amount);
+	BT_ASSERT(deposit->balance == memoryBuffer->balance);
+	BT_ASSERT(deposit->acct_no == memoryBuffer->acct_no);
+	BT_ASSERT(strcmp(deposit->status, memoryBuffer->status) == 0);
+	BT_ASSERT(deposit->status_len == memoryBuffer->status_len);
 
 	delete[] wireBuffer;
 	free(deposit);

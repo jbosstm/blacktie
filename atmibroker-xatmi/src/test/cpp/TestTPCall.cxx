@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 #include "BaseServerTest.h"
 #include "XATMITestSuite.h"
@@ -55,20 +55,20 @@ void TestTPCall::test_tpcall_systemerr() {
 	userlogc((char*) "test_tpcall_systemerr");
 	sendlen = strlen("test_tpcall_systemerr") + 1;
 	rcvlen = sendlen;
-	CPPUNIT_ASSERT((sendbuf
+	BT_ASSERT((sendbuf
 			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
 	(void) strcpy(sendbuf, "test_tpcall_systemerr");
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 
 	// TODO stopNamingService();
 
 	int id = ::tpcall((char*) "TestTPCall", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, (long) 0);
-	CPPUNIT_ASSERT(tperrno == TPESYSTEM);
-	CPPUNIT_ASSERT(id == -1);
-	CPPUNIT_ASSERT(strcmp(rcvbuf, "testtpcall") == -1);
+	BT_ASSERT(tperrno == TPESYSTEM);
+	BT_ASSERT(id == -1);
+	BT_ASSERT(strcmp(rcvbuf, "testtpcall") == -1);
 }
 
 void TestTPCall::test_tpcall_unknown_service() {
@@ -81,14 +81,14 @@ void TestTPCall::test_tpcall_unknown_service() {
 
 	int id = ::tpcall((char*) "UNKNOWN_SERVICE", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, (long) 0);
-	CPPUNIT_ASSERT(tperrno == TPENOENT);
-	CPPUNIT_ASSERT(id == -1);
-	CPPUNIT_ASSERT(tperrno != 0);
+	BT_ASSERT(tperrno == TPENOENT);
+	BT_ASSERT(id == -1);
+	BT_ASSERT(tperrno != 0);
 }
 
 void TestTPCall::test_tpcall_x_octet_lessdata() {
 	userlogc((char*) "test_tpcall_x_octet_lessdata");
-	CPPUNIT_FAIL("UNIMPLEMENTED");
+	BT_FAIL("UNIMPLEMENTED");
 }
 
 void TestTPCall::test_tpcall_null_service() {
@@ -97,18 +97,18 @@ void TestTPCall::test_tpcall_null_service() {
 
 	sendlen = strlen("test_tpcall_x_octet") + 1;
 	rcvlen = sendlen;
-	CPPUNIT_ASSERT((sendbuf
+	BT_ASSERT((sendbuf
 			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
 	(void) strcpy(sendbuf, "test_tpcall_x_octet");
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 
 	int id = ::tpcall(NULL, (char *) sendbuf, sendlen, (char **) &rcvbuf,
 			&rcvlen, (long) 0);
-	CPPUNIT_ASSERT(tperrno == TPEINVAL);
-	CPPUNIT_ASSERT(id == -1);
-	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_octet") != 0);
+	BT_ASSERT(tperrno == TPEINVAL);
+	BT_ASSERT(id == -1);
+	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_octet") != 0);
 }
 
 void TestTPCall::test_tpcall_x_octet() {
@@ -117,66 +117,66 @@ void TestTPCall::test_tpcall_x_octet() {
 
 	sendlen = strlen("test_tpcall_x_octet") + 1;
 	rcvlen = sendlen;
-	CPPUNIT_ASSERT((sendbuf
+	BT_ASSERT((sendbuf
 			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
 	(void) strcpy(sendbuf, "test_tpcall_x_octet");
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 
 	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, (long) 0);
-	CPPUNIT_ASSERT(tperrno != TPEINVAL);
-	CPPUNIT_ASSERT(tperrno != TPENOENT);
-	CPPUNIT_ASSERT(tperrno != TPEITYPE);
-	CPPUNIT_ASSERT(tperrno != TPEOTYPE);
-	CPPUNIT_ASSERT(tperrno != TPETRAN);
-	CPPUNIT_ASSERT(tperrno != TPETIME);
-	CPPUNIT_ASSERT(tperrno != TPESVCFAIL);
-	CPPUNIT_ASSERT(tperrno != TPESVCERR);
-	CPPUNIT_ASSERT(tperrno != TPEBLOCK);
-	CPPUNIT_ASSERT(tperrno != TPGOTSIG);
-	CPPUNIT_ASSERT(tperrno != TPEPROTO);
-	CPPUNIT_ASSERT(tperrno != TPESYSTEM);
-	CPPUNIT_ASSERT(tperrno != TPEOS);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(tpurcode == 20);
-	CPPUNIT_ASSERT(id != -1);
-	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_octet") == 0);
+	BT_ASSERT(tperrno != TPEINVAL);
+	BT_ASSERT(tperrno != TPENOENT);
+	BT_ASSERT(tperrno != TPEITYPE);
+	BT_ASSERT(tperrno != TPEOTYPE);
+	BT_ASSERT(tperrno != TPETRAN);
+	BT_ASSERT(tperrno != TPETIME);
+	BT_ASSERT(tperrno != TPESVCFAIL);
+	BT_ASSERT(tperrno != TPESVCERR);
+	BT_ASSERT(tperrno != TPEBLOCK);
+	BT_ASSERT(tperrno != TPGOTSIG);
+	BT_ASSERT(tperrno != TPEPROTO);
+	BT_ASSERT(tperrno != TPESYSTEM);
+	BT_ASSERT(tperrno != TPEOS);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(tpurcode == 20);
+	BT_ASSERT(id != -1);
+	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_octet") == 0);
 }
 
 void TestTPCall::test_tpcall_x_octet_zero() {
 	userlogc((char*) "test_tpcall_x_octet_zero");
 	tpadvertise((char*) "tpcall_x_octet", test_tpcall_x_octet_service_zero);
 
-	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, 0))
+	BT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, 0))
 			!= NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, 0))
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, 0))
 			!= NULL);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 
 	sendlen = 0;
 	rcvlen = sendlen;
 
 	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, 0,
 			(char **) &rcvbuf, &rcvlen, (long) 0);
-	CPPUNIT_ASSERT(tperrno != TPEINVAL);
-	CPPUNIT_ASSERT(tperrno != TPENOENT);
-	CPPUNIT_ASSERT(tperrno != TPEITYPE);
-	CPPUNIT_ASSERT(tperrno != TPEOTYPE);
-	CPPUNIT_ASSERT(tperrno != TPETRAN);
-	CPPUNIT_ASSERT(tperrno != TPETIME);
-	CPPUNIT_ASSERT(tperrno != TPESVCFAIL);
-	CPPUNIT_ASSERT(tperrno != TPESVCERR);
-	CPPUNIT_ASSERT(tperrno != TPEBLOCK);
-	CPPUNIT_ASSERT(tperrno != TPGOTSIG);
-	CPPUNIT_ASSERT(tperrno != TPEPROTO);
-	CPPUNIT_ASSERT(tperrno != TPESYSTEM);
-	CPPUNIT_ASSERT(tperrno != TPEOS);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(tpurcode == 21);
-	CPPUNIT_ASSERT(id != -1);
-	CPPUNIT_ASSERT(rcvlen == 0);
+	BT_ASSERT(tperrno != TPEINVAL);
+	BT_ASSERT(tperrno != TPENOENT);
+	BT_ASSERT(tperrno != TPEITYPE);
+	BT_ASSERT(tperrno != TPEOTYPE);
+	BT_ASSERT(tperrno != TPETRAN);
+	BT_ASSERT(tperrno != TPETIME);
+	BT_ASSERT(tperrno != TPESVCFAIL);
+	BT_ASSERT(tperrno != TPESVCERR);
+	BT_ASSERT(tperrno != TPEBLOCK);
+	BT_ASSERT(tperrno != TPGOTSIG);
+	BT_ASSERT(tperrno != TPEPROTO);
+	BT_ASSERT(tperrno != TPESYSTEM);
+	BT_ASSERT(tperrno != TPEOS);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(tpurcode == 21);
+	BT_ASSERT(id != -1);
+	BT_ASSERT(rcvlen == 0);
 }
 
 #include "malloc.h"
@@ -189,7 +189,7 @@ void TestTPCall::test_tpcall_x_common() {
 	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	rcvlen = 60;
 
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
 	sendbuf = (char*) dptr;
 	dptr->acct_no = 12345678;
@@ -203,10 +203,10 @@ void TestTPCall::test_tpcall_x_common() {
 
 	int id = ::tpcall((char*) "tpcall_x_common", (char*) dptr, 0,
 			(char**) &rcvbuf, &rcvlen, 0);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(tpurcode == 22);
-	CPPUNIT_ASSERT(id != -1);
-	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_common") == 0);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(tpurcode == 22);
+	BT_ASSERT(id != -1);
+	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_common") == 0);
 }
 // 9.1.3
 void TestTPCall::test_tpcall_x_c_type() {
@@ -217,7 +217,7 @@ void TestTPCall::test_tpcall_x_c_type() {
 	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	rcvlen = 60;
 
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
 	sendbuf = (char*) aptr;
 	aptr->acct_no = 12345678;
@@ -230,10 +230,10 @@ void TestTPCall::test_tpcall_x_c_type() {
 
 	int id = ::tpcall((char*) "tpcall_x_c_type", (char*) aptr, 0,
 			(char**) &rcvbuf, &rcvlen, TPNOCHANGE);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(tpurcode == 23);
-	CPPUNIT_ASSERT(id != -1);
-	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_c_type") == 0);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(tpurcode == 23);
+	BT_ASSERT(id != -1);
+	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_c_type") == 0);
 }
 
 void TestTPCall::test_tpcall_with_TPNOCHANGE() {
@@ -245,7 +245,7 @@ void TestTPCall::test_tpcall_with_TPNOCHANGE() {
 	rcvlen = 60;
 
 	rcvbuf = (char *) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
-	CPPUNIT_ASSERT(rcvbuf != NULL);
+	BT_ASSERT(rcvbuf != NULL);
 	sendbuf = (char*) aptr;
 	aptr->acct_no = 12345678;
 	strcpy(aptr->name, "TOM");
@@ -257,15 +257,15 @@ void TestTPCall::test_tpcall_with_TPNOCHANGE() {
 
 	int id = ::tpcall((char*) "tpcall_x_c_type", (char*) aptr, 0,
 			(char**) &rcvbuf, &rcvlen, TPNOCHANGE);
-	CPPUNIT_ASSERT(tperrno == TPEOTYPE);
-	CPPUNIT_ASSERT(id == -1);
+	BT_ASSERT(tperrno == TPEOTYPE);
+	BT_ASSERT(id == -1);
 
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);
 	long toTest = ::tptypes(rcvbuf, type, subtype);
-	CPPUNIT_ASSERT(strncmp(type, "X_C_TYPE", 8) == 0);
-	CPPUNIT_ASSERT(strncmp(subtype, "acct_info", 16) == 0);
-	CPPUNIT_ASSERT(toTest == sizeof(ACCT_INFO));
+	BT_ASSERT(strncmp(type, "X_C_TYPE", 8) == 0);
+	BT_ASSERT(strncmp(subtype, "acct_info", 16) == 0);
+	BT_ASSERT(toTest == sizeof(ACCT_INFO));
 	free(type);
 	free(subtype);
 
@@ -280,7 +280,7 @@ void TestTPCall::test_tpcall_without_TPNOCHANGE() {
 	rcvlen = 60;
 
 	rcvbuf = (char *) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
-	CPPUNIT_ASSERT(rcvbuf != NULL);
+	BT_ASSERT(rcvbuf != NULL);
 	sendbuf = (char*) aptr;
 	aptr->acct_no = 12345678;
 	strcpy(aptr->name, "TOM");
@@ -292,17 +292,17 @@ void TestTPCall::test_tpcall_without_TPNOCHANGE() {
 
 	int id = ::tpcall((char*) "tpcall_x_c_type", (char*) aptr, 0,
 			(char**) &rcvbuf, &rcvlen, 0);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(tpurcode == 23);
-	CPPUNIT_ASSERT(id != -1);
-	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_c_type") == 0);
-	CPPUNIT_ASSERT(rcvlen == 60);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(tpurcode == 23);
+	BT_ASSERT(id != -1);
+	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_c_type") == 0);
+	BT_ASSERT(rcvlen == 60);
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);
 	long toTest = ::tptypes(rcvbuf, type, subtype);
-	CPPUNIT_ASSERT(strcmp(type, "X_OCTET") == 0);
-	CPPUNIT_ASSERT(strcmp(subtype, "") == 0);
-	CPPUNIT_ASSERT(toTest == 60);
+	BT_ASSERT(strcmp(type, "X_OCTET") == 0);
+	BT_ASSERT(strcmp(subtype, "") == 0);
+	BT_ASSERT(toTest == 60);
 	free(type);
 	free(subtype);
 }
@@ -384,18 +384,18 @@ void TestTPCall::test_tpcall_with_TPNOBLOCK() {
 
 	sendlen = strlen(toTest) + 1;
 	rcvlen = sendlen;
-	CPPUNIT_ASSERT((sendbuf
+	BT_ASSERT((sendbuf
 			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
 	(void) strcpy(sendbuf, toTest);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 
 	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, TPNOBLOCK);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(id != -1);
-	CPPUNIT_ASSERT(strcmp(rcvbuf, toTest) == 0);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(id != -1);
+	BT_ASSERT(strcmp(rcvbuf, toTest) == 0);
 }
 
 void TestTPCall::test_tpcall_without_TPNOBLOCK() {
@@ -405,18 +405,18 @@ void TestTPCall::test_tpcall_without_TPNOBLOCK() {
 
 	sendlen = strlen(toTest) + 1;
 	rcvlen = sendlen;
-	CPPUNIT_ASSERT((sendbuf
+	BT_ASSERT((sendbuf
 			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
 	(void) strcpy(sendbuf, toTest);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 
 	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, (long) 0);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(id != -1);
-	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, toTest) == 0);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(id != -1);
+	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, toTest) == 0);
 }
 
 void TestTPCall::test_tpcall_without_TPNOTIME() {
@@ -426,18 +426,18 @@ void TestTPCall::test_tpcall_without_TPNOTIME() {
 
 	sendlen = strlen(toTest) + 1;
 	rcvlen = sendlen;
-	CPPUNIT_ASSERT((sendbuf
+	BT_ASSERT((sendbuf
 			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
 	(void) strcpy(sendbuf, toTest);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 
 	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, 0);
-	CPPUNIT_ASSERT(tperrno == TPETIME);
-	CPPUNIT_ASSERT(id == -1);
-	CPPUNIT_ASSERT(strcmp(rcvbuf, toTest) == -1);
+	BT_ASSERT(tperrno == TPETIME);
+	BT_ASSERT(id == -1);
+	BT_ASSERT(strcmp(rcvbuf, toTest) == -1);
 }
 
 void TestTPCall::test_tpcall_with_TPNOTIME() {
@@ -447,18 +447,18 @@ void TestTPCall::test_tpcall_with_TPNOTIME() {
 
 	sendlen = strlen(toTest) + 1;
 	rcvlen = sendlen;
-	CPPUNIT_ASSERT((sendbuf
+	BT_ASSERT((sendbuf
 			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
 	(void) strcpy(sendbuf, toTest);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 
 	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, TPNOTIME);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(id != -1);
-	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, toTest) == 0);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(id != -1);
+	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, toTest) == 0);
 }
 
 void test_tpcall_TPNOBLOCK(TPSVCINFO *svcinfo) {

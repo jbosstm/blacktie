@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 #include "BaseServerTest.h"
 
@@ -35,13 +35,13 @@ void TestTPCancel::setUp() {
 
 	// Do local work
 	sendlen = strlen("cancel") + 1;
-	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	BT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	strcpy(sendbuf, "cancel");
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 	int toCheck = tpadvertise((char*) "TestTPCancel", testtpcancel_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 }
 
 void TestTPCancel::tearDown() {
@@ -50,8 +50,8 @@ void TestTPCancel::tearDown() {
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
 	int toCheck = tpunadvertise((char*) "TestTPCancel");
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 
 	// Clean up server
 	BaseServerTest::tearDown();
@@ -60,36 +60,36 @@ void TestTPCancel::tearDown() {
 void TestTPCancel::test_tpcancel() {
 	userlogc((char*) "test_tpcancel");
 	int cd = ::tpacall((char*) "TestTPCancel", (char *) sendbuf, sendlen, 0);
-	CPPUNIT_ASSERT(cd != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(cd != -1);
+	BT_ASSERT(tperrno == 0);
 
 	// CANCEL THE REQUEST
 	int cancelled = ::tpcancel(cd);
-	CPPUNIT_ASSERT(cancelled != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(tperrno != TPEBADDESC);
-	CPPUNIT_ASSERT(tperrno != TPETRAN);
-	CPPUNIT_ASSERT(tperrno != TPEPROTO);
-	CPPUNIT_ASSERT(tperrno != TPESYSTEM);
-	CPPUNIT_ASSERT(tperrno != TPEOS);
+	BT_ASSERT(cancelled != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno != TPEBADDESC);
+	BT_ASSERT(tperrno != TPETRAN);
+	BT_ASSERT(tperrno != TPEPROTO);
+	BT_ASSERT(tperrno != TPESYSTEM);
+	BT_ASSERT(tperrno != TPEOS);
 
 	// FAIL TO RETRIEVE THE RESPONSE
 	int valToTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
-	CPPUNIT_ASSERT(tperrno == TPEBADDESC);
-	CPPUNIT_ASSERT(valToTest == -1);
+	BT_ASSERT(tperrno == TPEBADDESC);
+	BT_ASSERT(valToTest == -1);
 }
 
 void TestTPCancel::test_tpcancel_noreply() {
 	userlogc((char*) "test_tpcancel_noreply");
 	int cd = ::tpacall((char*) "TestTPCancel", (char *) sendbuf, sendlen, TPNOREPLY);
-	CPPUNIT_ASSERT(cd != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(cd != -1);
+	BT_ASSERT(tperrno == 0);
 
 	// CANCEL THE REQUEST
 	int cancelled = ::tpcancel(cd);
-	CPPUNIT_ASSERT(cancelled == -1);
-	CPPUNIT_ASSERT(tperrno != 0);
-	CPPUNIT_ASSERT(tperrno == TPEBADDESC);
+	BT_ASSERT(cancelled == -1);
+	BT_ASSERT(tperrno != 0);
+	BT_ASSERT(tperrno == TPEBADDESC);
 }
 
 // 8.5
@@ -97,8 +97,8 @@ void TestTPCancel::test_tpcancel_baddesc() {
 	userlogc((char*) "test_tpcancel_baddesc");
 	// CANCEL THE REQUEST
 	int cancelled = ::tpcancel(2);
-	CPPUNIT_ASSERT(cancelled == -1);
-	CPPUNIT_ASSERT(tperrno == TPEBADDESC);
+	BT_ASSERT(cancelled == -1);
+	BT_ASSERT(tperrno == TPEBADDESC);
 }
 
 void testtpcancel_service(TPSVCINFO *svcinfo) {

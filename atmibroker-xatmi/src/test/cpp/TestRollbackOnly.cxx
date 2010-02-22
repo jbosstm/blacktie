@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 //#include "ace/OS_NS_unistd.h"
 
@@ -42,18 +42,18 @@ void TestRollbackOnly::setUp() {
 	destroySpecific(TSS_KEY);
 
 	sendlen = strlen("TestRbkOnly") + 1;
-	CPPUNIT_ASSERT((sendbuf
+	BT_ASSERT((sendbuf
 			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	(void) strcpy(sendbuf, "TestRbkOnly");
 	rcvlen = 60;
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 }
 
 void TestRollbackOnly::tearDown() {
 	destroySpecific(TSS_KEY);
-	CPPUNIT_ASSERT(tx_close() == TX_OK);
+	BT_ASSERT(tx_close() == TX_OK);
 
 	::tpfree( sendbuf);
 	::tpfree( rcvbuf);
@@ -65,133 +65,133 @@ void TestRollbackOnly::tearDown() {
 void TestRollbackOnly::test_tpcall_TPETIME() {
 	userlogc((char*) "test_tpcall_TPETIME");
 	int rc = tpadvertise((char*) "TestRbkOnly", test_tpcall_TPETIME_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(rc != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(rc != -1);
 
-	CPPUNIT_ASSERT(tx_open() == TX_OK);
+	BT_ASSERT(tx_open() == TX_OK);
 	// the TPETIME service sleeps for 8 so set the txn time to something smaller
-	CPPUNIT_ASSERT(tx_set_transaction_timeout(4) == TX_OK);
-	CPPUNIT_ASSERT(tx_begin() == TX_OK);
+	BT_ASSERT(tx_set_transaction_timeout(4) == TX_OK);
+	BT_ASSERT(tx_begin() == TX_OK);
 
 	(void) ::tpcall((char*) "TestRbkOnly", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, (long) 0);
-	CPPUNIT_ASSERT(tperrno == TPETIME);
+	BT_ASSERT(tperrno == TPETIME);
 
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
 	userlogc((char*) "inTx=%d", inTx);
-	CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
-	CPPUNIT_ASSERT(tx_commit() == TX_ROLLBACK);
+	BT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
+	BT_ASSERT(tx_commit() == TX_ROLLBACK);
 }
 
 void TestRollbackOnly::test_tpcall_TPEOTYPE() {
 	userlogc((char*) "test_tpcall_TPEOTYPE");
 	int rc = tpadvertise((char*) "TestRbkOnly", test_tpcall_TPEOTYPE_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(rc != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(rc != -1);
 
-	CPPUNIT_ASSERT(tx_open() == TX_OK);
-	CPPUNIT_ASSERT(tx_begin() == TX_OK);
+	BT_ASSERT(tx_open() == TX_OK);
+	BT_ASSERT(tx_begin() == TX_OK);
 
 	(void) ::tpcall((char*) "TestRbkOnly", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, TPNOCHANGE);
-	CPPUNIT_ASSERT(tperrno == TPEOTYPE);
+	BT_ASSERT(tperrno == TPEOTYPE);
 
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
 	userlogc((char*) "inTx=%d", inTx);
-	CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
-	CPPUNIT_ASSERT(tx_commit() == TX_ROLLBACK);
+	BT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
+	BT_ASSERT(tx_commit() == TX_ROLLBACK);
 }
 
 void TestRollbackOnly::test_tpcall_TPESVCFAIL() {
 	userlogc((char*) "test_tpcall_TPESVCFAIL");
 	int rc = tpadvertise((char*) "TestRbkOnly", test_tpcall_TPESVCFAIL_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(rc != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(rc != -1);
 
-	CPPUNIT_ASSERT(tx_open() == TX_OK);
-	CPPUNIT_ASSERT(tx_begin() == TX_OK);
+	BT_ASSERT(tx_open() == TX_OK);
+	BT_ASSERT(tx_begin() == TX_OK);
 
 	(void) ::tpcall((char*) "TestRbkOnly", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, (long) 0);
-	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf,
+	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf,
 			"test_tpcall_TPESVCFAIL_service") == 0);
-	CPPUNIT_ASSERT(tperrno == TPESVCFAIL);
+	BT_ASSERT(tperrno == TPESVCFAIL);
 
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
 	userlogc((char*) "inTx=%d", inTx);
-	CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
-	CPPUNIT_ASSERT(tx_commit() == TX_ROLLBACK);
+	BT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
+	BT_ASSERT(tx_commit() == TX_ROLLBACK);
 }
 
 void TestRollbackOnly::test_tprecv_TPEV_DISCONIMM() {
 	userlogc((char*) "test_tprecv_TPEV_DISCONIMM");
 	int rc = tpadvertise((char*) "TestRbkOnly",
 			test_tprecv_TPEV_DISCONIMM_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(rc != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(rc != -1);
 
-	CPPUNIT_ASSERT(tx_open() == TX_OK);
-	CPPUNIT_ASSERT(tx_begin() == TX_OK);
+	BT_ASSERT(tx_open() == TX_OK);
+	BT_ASSERT(tx_begin() == TX_OK);
 
 	int cd = ::tpconnect((char*) "TestRbkOnly", (char *) sendbuf, sendlen,
 			TPSENDONLY);
 	::tpdiscon(cd);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
 	userlogc((char*) "inTx=%d", inTx);
-	CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
-	CPPUNIT_ASSERT(tx_commit() == TX_ROLLBACK);
+	BT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
+	BT_ASSERT(tx_commit() == TX_ROLLBACK);
 }
 
 void TestRollbackOnly::test_tprecv_TPEV_SVCFAIL() {
 	userlogc((char*) "test_tprecv_TPEV_SVCFAIL");
 	int rc = tpadvertise((char*) "TestRbkOnly",
 			test_tprecv_TPEV_SVCFAIL_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(rc != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(rc != -1);
 
-	CPPUNIT_ASSERT(tx_open() == TX_OK);
-	CPPUNIT_ASSERT(tx_begin() == TX_OK);
+	BT_ASSERT(tx_open() == TX_OK);
+	BT_ASSERT(tx_begin() == TX_OK);
 
 	int cd = ::tpconnect((char*) "TestRbkOnly", (char *) sendbuf, sendlen,
 			TPRECVONLY);
 	long revent = 0;
 	int status = ::tprecv(cd, (char **) &rcvbuf, &rcvlen, (long) 0, &revent);
-	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf,
+	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf,
 			"test_tprecv_TPEV_SVCFAIL_service") == 0);
-	CPPUNIT_ASSERT(status == -1);
-	CPPUNIT_ASSERT(revent == TPEV_SVCFAIL);
-	CPPUNIT_ASSERT(tperrno == TPEEVENT);
+	BT_ASSERT(status == -1);
+	BT_ASSERT(revent == TPEV_SVCFAIL);
+	BT_ASSERT(tperrno == TPEEVENT);
 
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
 	userlogc((char*) "inTx=%d", inTx);
-	CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
-	CPPUNIT_ASSERT(tx_commit() == TX_ROLLBACK);
+	BT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
+	BT_ASSERT(tx_commit() == TX_ROLLBACK);
 }
 
 void TestRollbackOnly::test_no_tpreturn() {
 	userlogc((char*) "test_no_tpreturn");
 	int rc = tpadvertise((char*) "TestRbkOnly", test_no_tpreturn_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(rc != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(rc != -1);
 
-	CPPUNIT_ASSERT(tx_open() == TX_OK);
-	CPPUNIT_ASSERT(tx_begin() == TX_OK);
+	BT_ASSERT(tx_open() == TX_OK);
+	BT_ASSERT(tx_begin() == TX_OK);
 
 	(void) ::tpcall((char*) "TestRbkOnly", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, (long) 0);
-	CPPUNIT_ASSERT(tperrno == TPESVCERR);
+	BT_ASSERT(tperrno == TPESVCERR);
 
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
 	userlogc((char*) "inTx=%d", inTx);
-	CPPUNIT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
-	CPPUNIT_ASSERT(tx_commit() == TX_ROLLBACK);
+	BT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
+	BT_ASSERT(tx_commit() == TX_ROLLBACK);
 }
 

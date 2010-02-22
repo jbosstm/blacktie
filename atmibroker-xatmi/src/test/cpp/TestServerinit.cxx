@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 #include "TestServerinit.h"
 #include "ace/OS_NS_stdlib.h"
 #include "ace/OS_NS_stdio.h"
@@ -36,13 +36,13 @@ void TestServerinit::test_serverinit() {
 	int argc = sizeof(argv)/sizeof(char*);
 
 	result = serverinit(argc, argv);
-	CPPUNIT_ASSERT(result != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(result != -1);
+	BT_ASSERT(tperrno == 0);
 
-	CPPUNIT_ASSERT(ptrServer->isAdvertised((char*)"BAR"));
+	BT_ASSERT(ptrServer->isAdvertised((char*)"BAR"));
 	result = serverdone();
-	CPPUNIT_ASSERT(result != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(result != -1);
+	BT_ASSERT(tperrno == 0);
 }
 
 void TestServerinit::test_config_env() {
@@ -52,19 +52,19 @@ void TestServerinit::test_config_env() {
 	int argc = sizeof(argv)/sizeof(char*);
 
 	result = serverinit(argc, argv);
-	CPPUNIT_ASSERT(result != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(result != -1);
+	BT_ASSERT(tperrno == 0);
 
 	result = serverdone();
-	CPPUNIT_ASSERT(result != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(result != -1);
+	BT_ASSERT(tperrno == 0);
 
 	clientdone();
 
 	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=nosuch_conf");
 	result = serverinit(argc, argv);
 	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=.");
-	CPPUNIT_ASSERT(result == -1);
+	BT_ASSERT(result == -1);
 }
 
 void TestServerinit::test_config_cmdline() {
@@ -79,23 +79,23 @@ void TestServerinit::test_config_cmdline() {
 	int argc1 = sizeof(argv1)/sizeof(char*);
 
 	result = serverinit(argc1, argv1);
-	CPPUNIT_ASSERT(result != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(result != -1);
+	BT_ASSERT(tperrno == 0);
 
 	int id = ::tpadvertise((char*) "TestTPAdvertise", test_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(id == 0);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(id == 0);
 
 	result = serverdone();
-	CPPUNIT_ASSERT(result != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(result != -1);
+	BT_ASSERT(tperrno == 0);
 
 	/* invalid command line arguments */
 	char* argv2[] = {(char*)"server", (char*)"-i", (char*)"conf"};
 	int argc2 = sizeof(argv2)/sizeof(char*);
 
 	result = serverinit(argc2, argv2);
-	CPPUNIT_ASSERT(result == -1);
+	BT_ASSERT(result == -1);
 	serverdone();
 
 	/* make the -i paramenter mandatory */
@@ -103,11 +103,11 @@ void TestServerinit::test_config_cmdline() {
 	int argc3 = sizeof(argv3)/sizeof(char*);
 
 	result = serverinit(argc3, argv3);
-	CPPUNIT_ASSERT(result == -1);
+	BT_ASSERT(result == -1);
 
 	result = serverdone();
-	CPPUNIT_ASSERT(result != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(result != -1);
+	BT_ASSERT(tperrno == 0);
 }
 
 void test_service(TPSVCINFO *svcinfo) {

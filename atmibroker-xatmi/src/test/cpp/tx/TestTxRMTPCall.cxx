@@ -16,7 +16,7 @@
  * MA  02110-1301, USA.
  */
 #include "tx/TestTxRMTPCall.h"
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 #include "BaseServerTest.h"
 #include "XATMITestSuite.h"
@@ -28,11 +28,11 @@ extern void tx_db_service(TPSVCINFO *svcinfo);
 }
 
 void TestTxRMTPCall::test0() {
-    CPPUNIT_ASSERT(tpadvertise((char*) "tpcall_x_octet", tx_db_service)  != -1);
-    CPPUNIT_ASSERT(tperrno == 0);
+    BT_ASSERT(tpadvertise((char*) "tpcall_x_octet", tx_db_service)  != -1);
+    BT_ASSERT(tperrno == 0);
 
-    CPPUNIT_ASSERT(run_tests(products) == 0);
+    BT_ASSERT(run_tests(products) == 0);
 
-    CPPUNIT_ASSERT(tpunadvertise((char*) "tpcall_x_octet")!= -1);
-    CPPUNIT_ASSERT(tperrno == 0);
+    BT_ASSERT(tpunadvertise((char*) "tpcall_x_octet")!= -1);
+    BT_ASSERT(tperrno == 0);
 }

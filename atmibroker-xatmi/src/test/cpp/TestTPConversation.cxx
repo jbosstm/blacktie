@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 #include "BaseServerTest.h"
 
@@ -45,11 +45,11 @@ void TestTPConversation::setUp() {
 
 	sendlen = 11;
 	rcvlen = sendlen;
-	CPPUNIT_ASSERT((sendbuf
+	BT_ASSERT((sendbuf
 			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 }
 
 void TestTPConversation::tearDown() {
@@ -58,8 +58,8 @@ void TestTPConversation::tearDown() {
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
 	int toCheck = tpunadvertise((char*) "TestTPConversation");
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 
 	// Clean up server
 	BaseServerTest::tearDown();
@@ -69,8 +69,8 @@ void TestTPConversation::test_conversation() {
 
 	int toCheck = tpadvertise((char*) "TestTPConversation",
 			testTPConversation_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 
 	userlogc((char*) "test_conversation");
 	strcpy(sendbuf, "conversate");
@@ -80,19 +80,19 @@ void TestTPConversation::test_conversation() {
 	long revent = 0;
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
-	CPPUNIT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
-	CPPUNIT_ASSERT(cd != -1);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	BT_ASSERT(cd != -1);
 	userlogc("Started conversation");
 	for (int i = 0; i < interationCount; i++) {
 		int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
 		sprintf(tperrnoS, "%d", tperrno);
-		CPPUNIT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEEVENT);
-		CPPUNIT_ASSERT(result == -1);
+		BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEEVENT);
+		BT_ASSERT(result == -1);
 		char* expectedResult = (char*) malloc(sendlen);
 		sprintf(expectedResult, "hi%d", i);
 		char* errorMessage = (char*) malloc(sendlen * 2 + 1);
 		sprintf(errorMessage, "%s/%s", expectedResult, rcvbuf);
-		CPPUNIT_ASSERT_MESSAGE(errorMessage, strcmp(expectedResult, rcvbuf)
+		BT_ASSERT_MESSAGE(errorMessage, strcmp(expectedResult, rcvbuf)
 				== 0);
 		free(expectedResult);
 		free(errorMessage);
@@ -101,21 +101,21 @@ void TestTPConversation::test_conversation() {
 		//userlogc((char*) "test_conversation:%s:", sendbuf);
 		result = ::tpsend(cd, sendbuf, sendlen, TPRECVONLY, &revent);
 		sprintf(tperrnoS, "%d", tperrno);
-		CPPUNIT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
-		CPPUNIT_ASSERT(result != -1);
+		BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+		BT_ASSERT(result != -1);
 	}
 	userlogc("Conversed");
 	int result = ::tpgetrply(&cd, &rcvbuf, &rcvlen, 0);
 	sprintf(tperrnoS, "%d", tperrno);
-	CPPUNIT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
-	CPPUNIT_ASSERT(result != -1);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	BT_ASSERT(result != -1);
 	free(tperrnoS);
 
 	char* expectedResult = (char*) malloc(sendlen);
 	sprintf(expectedResult, "hi%d", interationCount);
 	char* errorMessage = (char*) malloc(sendlen * 2 + 1);
 	sprintf(errorMessage, "%s/%s", expectedResult, rcvbuf);
-	CPPUNIT_ASSERT_MESSAGE(errorMessage, strcmp(expectedResult, rcvbuf) == 0);
+	BT_ASSERT_MESSAGE(errorMessage, strcmp(expectedResult, rcvbuf) == 0);
 	free(expectedResult);
 	free(errorMessage);
 }
@@ -124,24 +124,24 @@ void TestTPConversation::test_short_conversation() {
 
 	int toCheck = tpadvertise((char*) "TestTPConversation",
 			testTPConversation_short_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 
 	userlogc((char*) "test_short_conversation");
 	cd = ::tpconnect((char*) "TestTPConversation", NULL, 0, TPRECVONLY);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(cd != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(cd != -1);
 
 	long revent = 0;
 	int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(result != -1);
-	CPPUNIT_ASSERT(strcmp("hi0", rcvbuf) == 0);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(result != -1);
+	BT_ASSERT(strcmp("hi0", rcvbuf) == 0);
 
 	result = ::tpgetrply(&cd, &rcvbuf, &rcvlen, 0);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(result != -1);
-	CPPUNIT_ASSERT(strcmp("hi1", rcvbuf) == 0);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(result != -1);
+	BT_ASSERT(strcmp("hi1", rcvbuf) == 0);
 }
 
 void testTPConversation_service(TPSVCINFO *svcinfo) {

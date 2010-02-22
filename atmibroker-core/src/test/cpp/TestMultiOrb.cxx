@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 #include <cppunit/TestFixture.h>
 
 #include <tao/ORB.h>
@@ -51,7 +51,7 @@ void TestMultiOrb::test() {
 		shutdownBindings(clientConnection);
 		clientConnection = NULL;
 	} catch (CORBA::Exception &e) {
-		CPPUNIT_FAIL("COULDN'T CONNECT TO NAME SERVICE");
+		BT_FAIL("COULDN'T CONNECT TO NAME SERVICE");
 	}
 }
 

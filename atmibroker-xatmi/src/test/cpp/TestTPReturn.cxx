@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 #include "BaseServerTest.h"
 
@@ -42,8 +42,8 @@ void TestTPReturn::tearDown() {
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
 	int toCheck = tpunadvertise((char*) "TestTPReturn");
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 
 	// Clean up server
 	BaseServerTest::tearDown();
@@ -52,8 +52,8 @@ void TestTPReturn::tearDown() {
 // 8.1 8.3
 void TestTPReturn::test_tpreturn_nonservice() {
 	int toCheck = tpadvertise((char*) "TestTPReturn", testtpreturn_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 
 	userlogc((char*) "test_tpreturn_nonservice");
 	// THIS IS ILLEGAL STATE TABLE
@@ -69,23 +69,23 @@ void TestTPReturn::test_tpreturn_nonbuffer() {
 
 	// Do local work
 	int toCheck = tpadvertise((char*) "TestTPReturn", testtpreturn_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 
 	sendlen = strlen("tprnb") + 1;
 	rcvlen = sendlen;
-	CPPUNIT_ASSERT((sendbuf
+	BT_ASSERT((sendbuf
 			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
 	(void) strcpy(sendbuf, "tprnb");
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 
 	int id = ::tpcall((char*) "TestTPReturn", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, 0);
 	long tperrnoS = tperrno;
-	CPPUNIT_ASSERT(id == -1);
-	CPPUNIT_ASSERT(tperrnoS == TPESVCERR);
+	BT_ASSERT(id == -1);
+	BT_ASSERT(tperrnoS == TPESVCERR);
 }
 
 void TestTPReturn::test_tpreturn_tpurcode() {
@@ -94,31 +94,31 @@ void TestTPReturn::test_tpreturn_tpurcode() {
 	// Do local work
 	int toCheck = tpadvertise((char*) "TestTPReturn",
 			testtpreturn_service_tpurcode);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 
 	sendlen = 3;
 	rcvlen = 1;
-	CPPUNIT_ASSERT((sendbuf
+	BT_ASSERT((sendbuf
 			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 
 	strcpy(sendbuf, "24");
 	int success = ::tpcall((char*) "TestTPReturn", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, (long) 0);
-	CPPUNIT_ASSERT(success != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(tpurcode == 24);
+	BT_ASSERT(success != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(tpurcode == 24);
 
 	strcpy(sendbuf, "77");
 	success = ::tpcall((char*) "TestTPReturn", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, (long) 0);
-	CPPUNIT_ASSERT(success != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(tpurcode == 77);
+	BT_ASSERT(success != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(tpurcode == 77);
 }
 
 void testtpreturn_service(TPSVCINFO *svcinfo) {

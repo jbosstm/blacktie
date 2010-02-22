@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 #include "TestAdvertise.h"
 
 void TestAdvertise::setUp() {
@@ -32,17 +32,17 @@ void TestAdvertise::testService() {
 	int cd;
 
 	cd = callADMIN((char*)"advertise,BAR,", '1', 0, NULL);
-	CPPUNIT_ASSERT(cd == 0);
+	BT_ASSERT(cd == 0);
 
 	cd = callADMIN((char*)"advertise,default_ADMIN_1,", '0', 0, NULL);
-	CPPUNIT_ASSERT(cd == 0);
+	BT_ASSERT(cd == 0);
 }
 
 void TestAdvertise::testUnknowService() {
 	int   cd;
 
 	cd = callADMIN((char*)"advertise,UNKNOW,", '0', 0, NULL);
-	CPPUNIT_ASSERT(cd == 0);
+	BT_ASSERT(cd == 0);
 }
 
 void TestAdvertise::testAdvertise() {
@@ -50,17 +50,17 @@ void TestAdvertise::testAdvertise() {
 
 	userlogc((char*) "unadvertise BAR");
 	cd = callADMIN((char*)"unadvertise,BAR,", '1', 0, NULL);
-	CPPUNIT_ASSERT(cd == 0);
+	BT_ASSERT(cd == 0);
 
 	userlogc((char*) "tpcall BAR after unadvertise");
 	cd = callBAR(TPENOENT);
-	CPPUNIT_ASSERT(cd != 0);
+	BT_ASSERT(cd != 0);
 
 	userlogc((char*) "advertise BAR again");
 	cd = callADMIN((char*)"advertise,BAR,", '1', 0, NULL);
-	CPPUNIT_ASSERT(cd == 0);
+	BT_ASSERT(cd == 0);
 
 	userlogc((char*) "tpcall BAR after advertise");
 	cd = callBAR(0);
-	CPPUNIT_ASSERT(cd == 0);
+	BT_ASSERT(cd == 0);
 }

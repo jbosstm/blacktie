@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 #include "TestSymbolLoader.h"
 
@@ -55,7 +55,7 @@ void TestSymbolLoader::test() {
 
 	if (retval != 0) {
 		userlogc((char*) "lookup_dll- %s:%s", lib, dll.error());
-		CPPUNIT_FAIL("lookup_dll");
+		BT_FAIL("lookup_dll");
 	}
 	void* sym = NULL;
 	try {
@@ -64,7 +64,7 @@ void TestSymbolLoader::test() {
 		if (sym == NULL) {
 			userlogc((char*) "lookup_symbol- %s:%s", symbol, dll.error());
 			dll.close();
-			CPPUNIT_FAIL("lookup_symbol");
+			BT_FAIL("lookup_symbol");
 		}
 
 		userlogc((char*) "found symbol");
@@ -72,6 +72,6 @@ void TestSymbolLoader::test() {
 	} catch (std::exception& e) {
 		userlogc((char *) "symbol addr%s=%s", sym, e.what());
 		AtmiBrokerEnv::discard_instance();
-		CPPUNIT_FAIL("exception");
+		BT_FAIL("exception");
 	}
 }

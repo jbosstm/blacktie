@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 #include "TestAdmin.h"
 #include "malloc.h"
 
@@ -34,7 +34,7 @@ char* TestAdmin::getBARCounter() {
 	int cd;
 
 	cd = callADMIN((char*)"counter,BAR,", '1', 0, &n);	
-	CPPUNIT_ASSERT(cd == 0);
+	BT_ASSERT(cd == 0);
 
 	return n;
 }
@@ -42,18 +42,18 @@ void TestAdmin::testStatus() {
 	int cd;
 
 	cd = callADMIN((char*)"status", '1', 0, NULL);
-	CPPUNIT_ASSERT(cd == 0);
+	BT_ASSERT(cd == 0);
 	cd = callADMIN((char*)"status,BAR,", '1', 0, NULL);
-	CPPUNIT_ASSERT(cd == 0);
+	BT_ASSERT(cd == 0);
 }
 
 void TestAdmin::testMessageCounter() {
 	char* barCounter = getBARCounter();
-	CPPUNIT_ASSERT(strncmp(barCounter, "0", 1) == 0);
+	BT_ASSERT(strncmp(barCounter, "0", 1) == 0);
 	free (barCounter);
-	CPPUNIT_ASSERT(callBAR(0) == 0);
+	BT_ASSERT(callBAR(0) == 0);
 	barCounter = getBARCounter();
-	CPPUNIT_ASSERT(strncmp(barCounter, "1", 1) == 0);
+	BT_ASSERT(strncmp(barCounter, "1", 1) == 0);
 	free (barCounter);
 }
 
@@ -61,34 +61,34 @@ void TestAdmin::testServerdone() {
 	int cd;
 
 	cd = callADMIN((char*)"serverdone", '1', 0, NULL);
-	CPPUNIT_ASSERT(cd == 0);
+	BT_ASSERT(cd == 0);
 }
 
 void TestAdmin::testServerPauseAndResume() {
 	int cd;
 
-	CPPUNIT_ASSERT(callBAR(0) == 0);
+	BT_ASSERT(callBAR(0) == 0);
 	userlogc((char*)"call BAR OK");
 
 	cd = callADMIN((char*)"pause", '1', 0, NULL);
-	CPPUNIT_ASSERT(cd == 0);
+	BT_ASSERT(cd == 0);
 	userlogc((char*)"pause server OK");
 
 	userlogc((char*)"unadvertise on pause server should OK");
 	cd = callADMIN((char*)"unadvertise,BAR,", '1', 0, NULL);
-	CPPUNIT_ASSERT(cd == 0);
+	BT_ASSERT(cd == 0);
 
 	userlogc((char*)"advertise on pause server should OK, but service is still pause");
 	cd = callADMIN((char*)"advertise,BAR,", '1', 0, NULL);
-	CPPUNIT_ASSERT(cd == 0);
+	BT_ASSERT(cd == 0);
 
 	userlogc((char*)"call BAR should time out after 20 seconds");
-	CPPUNIT_ASSERT(callBAR(TPETIME) == -1);
+	BT_ASSERT(callBAR(TPETIME) == -1);
 
 	cd = callADMIN((char*)"resume", '1', 0, NULL);
-	CPPUNIT_ASSERT(cd == 0);
+	BT_ASSERT(cd == 0);
 	userlogc((char*)"resume server OK");
 
-	CPPUNIT_ASSERT(callBAR(0) == 0);
+	BT_ASSERT(callBAR(0) == 0);
 	userlogc((char*)"call BAR OK");
 }

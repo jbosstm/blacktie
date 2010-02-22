@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 #include "TestAtmiBrokerXml.h"
 #include "AtmiBrokerEnvXml.h"
@@ -44,94 +44,94 @@ void TestAtmiBrokerXml::test_env() {
 	AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
 	char* value;
 	value = env->getenv((char*) "MYLIBTEST");
-	CPPUNIT_ASSERT(strcmp(value, "xmltestfoo.xmltest") == 0);
+	BT_ASSERT(strcmp(value, "xmltestfoo.xmltest") == 0);
 
 	value = orbConfig.opt;
-	CPPUNIT_ASSERT(strncmp(value, "-ORBInitRef NameService=corbaloc::", 34)
+	BT_ASSERT(strncmp(value, "-ORBInitRef NameService=corbaloc::", 34)
 			== 0);
-	CPPUNIT_ASSERT(strcmp(domain, "fooapp") == 0);
-	CPPUNIT_ASSERT(xarmp != 0);
+	BT_ASSERT(strcmp(domain, "fooapp") == 0);
+	BT_ASSERT(xarmp != 0);
 
-	CPPUNIT_ASSERT(servers.size() == 2);
+	BT_ASSERT(servers.size() == 2);
 	ServerInfo* server = servers[1];
-	CPPUNIT_ASSERT(server != NULL);
-	CPPUNIT_ASSERT(strcmp(server->serverName, "foo") == 0);
+	BT_ASSERT(server != NULL);
+	BT_ASSERT(strcmp(server->serverName, "foo") == 0);
 	std::vector<ServiceInfo>* services = &server->serviceVector;
-	CPPUNIT_ASSERT(strcmp((*services)[0].serviceName, "BAR") == 0);
-	CPPUNIT_ASSERT(strcmp((*services)[1].serviceName, "ECHO") == 0);
+	BT_ASSERT(strcmp((*services)[0].serviceName, "BAR") == 0);
+	BT_ASSERT(strcmp((*services)[1].serviceName, "ECHO") == 0);
 #ifdef WIN32
-	CPPUNIT_ASSERT(strcmp((*services)[0].transportLib, "atmibroker-hybrid.dll") == 0);
-	CPPUNIT_ASSERT(strcmp((*services)[1].transportLib, "atmibroker-hybrid.dll") == 0);
+	BT_ASSERT(strcmp((*services)[0].transportLib, "atmibroker-hybrid.dll") == 0);
+	BT_ASSERT(strcmp((*services)[1].transportLib, "atmibroker-hybrid.dll") == 0);
 #else
-	CPPUNIT_ASSERT(strcmp((*services)[0].transportLib,
+	BT_ASSERT(strcmp((*services)[0].transportLib,
 			"libatmibroker-hybrid.so") == 0);
-	CPPUNIT_ASSERT(strcmp((*services)[1].transportLib,
+	BT_ASSERT(strcmp((*services)[1].transportLib,
 			"libatmibroker-hybrid.so") == 0);
 #endif
 
-	CPPUNIT_ASSERT((*services)[0].poolSize == 5);
-	CPPUNIT_ASSERT(strcmp((*services)[0].function_name, "BAR") == 0);
-	CPPUNIT_ASSERT(strcmp((*services)[0].library_name, "libXMLTESTSERVICE.so") == 0);
-	CPPUNIT_ASSERT((*services)[0].advertised == false);
+	BT_ASSERT((*services)[0].poolSize == 5);
+	BT_ASSERT(strcmp((*services)[0].function_name, "BAR") == 0);
+	BT_ASSERT(strcmp((*services)[0].library_name, "libXMLTESTSERVICE.so") == 0);
+	BT_ASSERT((*services)[0].advertised == false);
 
 	char* transport = env->getTransportLibrary((char*) "BAR");
 #ifdef WIN32
-	CPPUNIT_ASSERT(strcmp(transport, "atmibroker-hybrid.dll") == 0);
+	BT_ASSERT(strcmp(transport, "atmibroker-hybrid.dll") == 0);
 #else
-	CPPUNIT_ASSERT(strcmp(transport, "libatmibroker-hybrid.so") == 0);
+	BT_ASSERT(strcmp(transport, "libatmibroker-hybrid.so") == 0);
 #endif
 
-	CPPUNIT_ASSERT(buffers.size() == 2);
+	BT_ASSERT(buffers.size() == 2);
 
 	char* foo = (char*) "foo";
 	Buffer* foob = buffers[foo];
-	CPPUNIT_ASSERT(strcmp(foob->name, "foo") == 0);
-	CPPUNIT_ASSERT(foob->wireSize == ((4 * 3) + 8 + (1 * 2 * 10)));
-	CPPUNIT_ASSERT(foob->memSize == sizeof(FOO));
-	CPPUNIT_ASSERT(foob->attributes.size() == 3);
+	BT_ASSERT(strcmp(foob->name, "foo") == 0);
+	BT_ASSERT(foob->wireSize == ((4 * 3) + 8 + (1 * 2 * 10)));
+	BT_ASSERT(foob->memSize == sizeof(FOO));
+	BT_ASSERT(foob->attributes.size() == 3);
 	char* Balance2 = (char*) "Balance2";
 	char* Balance = (char*) "Balance";
 	char* accountName = (char*) "accountName";
-	CPPUNIT_ASSERT(strcmp(foob->attributes[Balance2]->id, "Balance2") == 0);
-	CPPUNIT_ASSERT(strcmp(foob->attributes[Balance2]->type, "float[]") == 0);
-	CPPUNIT_ASSERT(foob->attributes[Balance2]->length == 3);
-	CPPUNIT_ASSERT(foob->attributes[Balance2]->count == 0);
-	CPPUNIT_ASSERT(strcmp(foob->attributes[accountName]->id, "accountName")
+	BT_ASSERT(strcmp(foob->attributes[Balance2]->id, "Balance2") == 0);
+	BT_ASSERT(strcmp(foob->attributes[Balance2]->type, "float[]") == 0);
+	BT_ASSERT(foob->attributes[Balance2]->length == 3);
+	BT_ASSERT(foob->attributes[Balance2]->count == 0);
+	BT_ASSERT(strcmp(foob->attributes[accountName]->id, "accountName")
 			== 0);
-	CPPUNIT_ASSERT(strcmp(foob->attributes[accountName]->type, "char[][]") == 0);
-	CPPUNIT_ASSERT(foob->attributes[accountName]->length == 10);
-	CPPUNIT_ASSERT(foob->attributes[accountName]->count == 2);
-	CPPUNIT_ASSERT(strcmp(foob->attributes[Balance]->id, "Balance") == 0);
-	CPPUNIT_ASSERT(strcmp(foob->attributes[Balance]->type, "long") == 0);
-	CPPUNIT_ASSERT(foob->attributes[Balance]->count == 0);
-	CPPUNIT_ASSERT(foob->attributes[Balance]->length == 0);
+	BT_ASSERT(strcmp(foob->attributes[accountName]->type, "char[][]") == 0);
+	BT_ASSERT(foob->attributes[accountName]->length == 10);
+	BT_ASSERT(foob->attributes[accountName]->count == 2);
+	BT_ASSERT(strcmp(foob->attributes[Balance]->id, "Balance") == 0);
+	BT_ASSERT(strcmp(foob->attributes[Balance]->type, "long") == 0);
+	BT_ASSERT(foob->attributes[Balance]->count == 0);
+	BT_ASSERT(foob->attributes[Balance]->length == 0);
 
 	char* bar = (char*) "bar";
 	Buffer* barb = buffers[bar];
-	CPPUNIT_ASSERT(strcmp(barb->name, "bar") == 0);
-	CPPUNIT_ASSERT(barb->wireSize == ((4 * 4) + (2) + (4 * 4) + (2)));
-	CPPUNIT_ASSERT(barb->memSize == sizeof(BAR));
-	CPPUNIT_ASSERT(barb->attributes.size() == 4);
+	BT_ASSERT(strcmp(barb->name, "bar") == 0);
+	BT_ASSERT(barb->wireSize == ((4 * 4) + (2) + (4 * 4) + (2)));
+	BT_ASSERT(barb->memSize == sizeof(BAR));
+	BT_ASSERT(barb->attributes.size() == 4);
 	char* barlance = (char*) "barlance";
 	char* barbq = (char*) "barbq";
 	char* barlance1 = (char*) "barlance1";
 	char* barbq2 = (char*) "barbq2";
-	CPPUNIT_ASSERT(strcmp(barb->attributes[barlance]->id, "barlance") == 0);
-	CPPUNIT_ASSERT(strcmp(barb->attributes[barlance]->type, "int[]") == 0);
-	CPPUNIT_ASSERT(barb->attributes[barlance]->length == 4);
-	CPPUNIT_ASSERT(barb->attributes[barlance]->count == 0);
-	CPPUNIT_ASSERT(strcmp(barb->attributes[barbq]->id, "barbq") == 0);
-	CPPUNIT_ASSERT(strcmp(barb->attributes[barbq]->type, "short") == 0);
-	CPPUNIT_ASSERT(barb->attributes[barbq]->count == 0);
-	CPPUNIT_ASSERT(barb->attributes[barbq]->length == 0);
-	CPPUNIT_ASSERT(strcmp(barb->attributes[barlance1]->id, "barlance1") == 0);
-	CPPUNIT_ASSERT(strcmp(barb->attributes[barlance1]->type, "int[]") == 0);
-	CPPUNIT_ASSERT(barb->attributes[barlance1]->length == 4);
-	CPPUNIT_ASSERT(barb->attributes[barlance1]->count == 0);
-	CPPUNIT_ASSERT(strcmp(barb->attributes[barbq2]->id, "barbq2") == 0);
-	CPPUNIT_ASSERT(strcmp(barb->attributes[barbq2]->type, "short") == 0);
-	CPPUNIT_ASSERT(barb->attributes[barbq2]->count == 0);
-	CPPUNIT_ASSERT(barb->attributes[barbq2]->length == 0);
+	BT_ASSERT(strcmp(barb->attributes[barlance]->id, "barlance") == 0);
+	BT_ASSERT(strcmp(barb->attributes[barlance]->type, "int[]") == 0);
+	BT_ASSERT(barb->attributes[barlance]->length == 4);
+	BT_ASSERT(barb->attributes[barlance]->count == 0);
+	BT_ASSERT(strcmp(barb->attributes[barbq]->id, "barbq") == 0);
+	BT_ASSERT(strcmp(barb->attributes[barbq]->type, "short") == 0);
+	BT_ASSERT(barb->attributes[barbq]->count == 0);
+	BT_ASSERT(barb->attributes[barbq]->length == 0);
+	BT_ASSERT(strcmp(barb->attributes[barlance1]->id, "barlance1") == 0);
+	BT_ASSERT(strcmp(barb->attributes[barlance1]->type, "int[]") == 0);
+	BT_ASSERT(barb->attributes[barlance1]->length == 4);
+	BT_ASSERT(barb->attributes[barlance1]->count == 0);
+	BT_ASSERT(strcmp(barb->attributes[barbq2]->id, "barbq2") == 0);
+	BT_ASSERT(strcmp(barb->attributes[barbq2]->type, "short") == 0);
+	BT_ASSERT(barb->attributes[barbq2]->count == 0);
+	BT_ASSERT(barb->attributes[barbq2]->length == 0);
 
 	Buffers::iterator it;
 	for (it = buffers.begin(); it != buffers.end(); ++it) {
@@ -149,7 +149,7 @@ void TestAtmiBrokerXml::test_define_adminservice() {
 	try {
 		AtmiBrokerEnv::get_instance();
 		AtmiBrokerEnv::discard_instance();
-		CPPUNIT_FAIL("CAN NOT DEFINE ADMIN SERVICE");
+		BT_FAIL("CAN NOT DEFINE ADMIN SERVICE");
 	} catch (std::exception& e) {
 		userlogc((char*) "define admin services test ok");
 	}
@@ -161,7 +161,7 @@ void TestAtmiBrokerXml::test_same_service() {
 	try {
 		AtmiBrokerEnv::get_instance();
 		AtmiBrokerEnv::discard_instance();
-		CPPUNIT_FAIL("CAN NOT DEFINE SAME SERVICE IN DIFFERENT SERVER");
+		BT_FAIL("CAN NOT DEFINE SAME SERVICE IN DIFFERENT SERVER");
 	} catch (std::exception& e) {
 		userlogc((char*) "same services test ok");
 	}

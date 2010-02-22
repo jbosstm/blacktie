@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 #include "TestTPACall.h"
 #include "BaseServerTest.h"
 
@@ -34,8 +34,8 @@ void TestTPACall::setUp() {
 
 	// Set up local
 	int toCheck = tpadvertise((char*) "TestTPACall", testtpacall_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 }
 
 void TestTPACall::tearDown() {
@@ -48,8 +48,8 @@ void TestTPACall::tearDown() {
 		::tpfree(rcvbuf);
 	}
 	int toCheck = tpunadvertise((char*) "TestTPACall");
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 
 	// Clean up server
 	BaseServerTest::tearDown();
@@ -63,19 +63,19 @@ void TestTPACall::test_tpacall() {
 
 	int cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, sendlen,
 			TPNOREPLY);
-	CPPUNIT_ASSERT(cd == 0);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(tperrno != TPEINVAL);
-	CPPUNIT_ASSERT(tperrno != TPENOENT);
-	CPPUNIT_ASSERT(tperrno != TPEITYPE);
-	CPPUNIT_ASSERT(tperrno != TPELIMIT);
-	CPPUNIT_ASSERT(tperrno != TPETRAN);
-	CPPUNIT_ASSERT(tperrno != TPETIME);
-	CPPUNIT_ASSERT(tperrno != TPEBLOCK);
-	CPPUNIT_ASSERT(tperrno != TPGOTSIG);
-	CPPUNIT_ASSERT(tperrno != TPEPROTO);
-	CPPUNIT_ASSERT(tperrno != TPESYSTEM);
-	CPPUNIT_ASSERT(tperrno != TPEOS);
+	BT_ASSERT(cd == 0);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno != TPEINVAL);
+	BT_ASSERT(tperrno != TPENOENT);
+	BT_ASSERT(tperrno != TPEITYPE);
+	BT_ASSERT(tperrno != TPELIMIT);
+	BT_ASSERT(tperrno != TPETRAN);
+	BT_ASSERT(tperrno != TPETIME);
+	BT_ASSERT(tperrno != TPEBLOCK);
+	BT_ASSERT(tperrno != TPGOTSIG);
+	BT_ASSERT(tperrno != TPEPROTO);
+	BT_ASSERT(tperrno != TPESYSTEM);
+	BT_ASSERT(tperrno != TPEOS);
 }
 
 void TestTPACall::test_tpacall_systemerr() {
@@ -86,8 +86,8 @@ void TestTPACall::test_tpacall_systemerr() {
 
 	int cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, sendlen,
 			TPNOREPLY);
-	CPPUNIT_ASSERT(tperrno == TPESYSTEM);
-	CPPUNIT_ASSERT(cd == -1);
+	BT_ASSERT(tperrno == TPESYSTEM);
+	BT_ASSERT(cd == -1);
 }
 
 // 9.1.1

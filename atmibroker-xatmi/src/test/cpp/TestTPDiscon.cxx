@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 #include "BaseServerTest.h"
 #include "Sleeper.h"
@@ -35,17 +35,17 @@ void TestTPDiscon::setUp() {
 
 	// Do local work
 	sendlen = strlen("discon") + 1;
-	CPPUNIT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	BT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
 	strcpy(sendbuf, "discon");
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 
 	int toCheck = tpadvertise((char*) "TestTPDiscon", testtpdiscon_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 
 	cd = ::tpconnect((char*) "TestTPDiscon", sendbuf, sendlen, TPSENDONLY);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(cd != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(cd != -1);
 }
 
 void TestTPDiscon::tearDown() {
@@ -56,8 +56,8 @@ void TestTPDiscon::tearDown() {
 		::tpdiscon(cd);
 	}
 	int toCheck = tpunadvertise((char*) "TestTPDiscon");
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 
 	// Clean up server
 	BaseServerTest::tearDown();
@@ -66,20 +66,20 @@ void TestTPDiscon::tearDown() {
 void TestTPDiscon::test_tpdiscon() {
 	userlogc((char*) "test_tpdiscon");
 	::tpdiscon(cd);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 	cd = -1;
 }
 
 void TestTPDiscon::test_tpdiscon_baddescr() {
 	userlogc((char*) "test_tpdiscon_baddescr");
 	::tpdiscon(cd + 1);
-	CPPUNIT_ASSERT(tperrno == TPEBADDESC);
+	BT_ASSERT(tperrno == TPEBADDESC);
 }
 
 void TestTPDiscon::test_tpdiscon_negdescr() {
 	userlogc((char*) "test_tpdiscon_negdescr");
 	::tpdiscon(-1);
-	CPPUNIT_ASSERT(tperrno == TPEBADDESC);
+	BT_ASSERT(tperrno == TPEBADDESC);
 }
 
 void testtpdiscon_service(TPSVCINFO *svcinfo) {

@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 #include "TestClientInit.h"
 #include "ace/OS_NS_stdlib.h"
@@ -29,31 +29,31 @@ extern "C" {
 
 void TestClientInit::test_clientinit() {
 	userlogc((char*) "TestClientInit::test_clientinit");
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 	int valToTest = ::clientinit();
-	CPPUNIT_ASSERT(valToTest != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(valToTest != -1);
+	BT_ASSERT(tperrno == 0);
 
 	valToTest = ::clientdone();
-	CPPUNIT_ASSERT(valToTest != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(valToTest != -1);
+	BT_ASSERT(tperrno == 0);
 }
 
 void TestClientInit::test_config_env() {
 	userlogc((char*) "TestClientInit::test_config_env");
 
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 	int valToTest = ::clientinit();
-	CPPUNIT_ASSERT(valToTest != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(valToTest != -1);
+	BT_ASSERT(tperrno == 0);
 
 	valToTest = ::clientdone();
-	CPPUNIT_ASSERT(valToTest != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(valToTest != -1);
+	BT_ASSERT(tperrno == 0);
 
 	/* wrong envionment */
 	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=nosuch_conf");
 	valToTest = ::clientinit();
 	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=.");
-	CPPUNIT_ASSERT(valToTest == -1);
+	BT_ASSERT(valToTest == -1);
 }

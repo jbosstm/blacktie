@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 #include "XATMITestSuite.h"
 #include "BaseServerTest.h"
 
@@ -35,13 +35,13 @@ void TestTPFreeService::setUp() {
 
 	// Do local work
 	int toCheck = tpadvertise((char*) "TestTPFree", testtpfreeservice_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 	m_allocated = NULL;
 
 	m_rcvlen = 1;
 	m_rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, 1);
-	CPPUNIT_ASSERT(m_rcvbuf != NULL);
+	BT_ASSERT(m_rcvbuf != NULL);
 }
 
 void TestTPFreeService::tearDown() {
@@ -50,8 +50,8 @@ void TestTPFreeService::tearDown() {
 	::tpfree( m_allocated);
 	::tpfree( m_rcvbuf);
 	int toCheck = tpunadvertise((char*) "TestTPFree");
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 
 	// Clean up server
 	BaseServerTest::tearDown();
@@ -61,13 +61,13 @@ void TestTPFreeService::test_tpfree_x_octet() {
 	userlogc((char*) "test_tpfree_x_octet");
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
 	memset(m_allocated, '\0', 10);
-	CPPUNIT_ASSERT(m_allocated != NULL);
+	BT_ASSERT(m_allocated != NULL);
 
 	int toCheck = ::tpcall((char*) "TestTPFree", (char*) m_allocated, 10,
 			(char**) &m_rcvbuf, &m_rcvlen, 0);
-	CPPUNIT_ASSERT(toCheck != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(m_rcvbuf[0] == '1');
+	BT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(m_rcvbuf[0] == '1');
 }
 
 void TestTPFreeService::test_tpfree_x_common() {
@@ -75,14 +75,14 @@ void TestTPFreeService::test_tpfree_x_common() {
 	DEPOSIT *dptr;
 	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	m_allocated = (char*) dptr;
-	CPPUNIT_ASSERT(m_allocated != NULL);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(m_allocated != NULL);
+	BT_ASSERT(tperrno == 0);
 
 	int toCheck = ::tpcall((char*) "TestTPFree", (char*) m_allocated, 0,
 			(char**) &m_rcvbuf, &m_rcvlen, 0);
-	CPPUNIT_ASSERT(toCheck != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(m_rcvbuf[0] == '1');
+	BT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(m_rcvbuf[0] == '1');
 }
 
 void TestTPFreeService::test_tpfree_x_c_type() {
@@ -90,14 +90,14 @@ void TestTPFreeService::test_tpfree_x_c_type() {
 	ACCT_INFO *aptr;
 	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	m_allocated = (char*) aptr;
-	CPPUNIT_ASSERT(m_allocated != NULL);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(m_allocated != NULL);
+	BT_ASSERT(tperrno == 0);
 
 	int toCheck = ::tpcall((char*) "TestTPFree", (char*) m_allocated, 0,
 			(char**) &m_rcvbuf, &m_rcvlen, 0);
-	CPPUNIT_ASSERT(toCheck != -1);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(m_rcvbuf[0] == '1');
+	BT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(m_rcvbuf[0] == '1');
 }
 
 void testtpfreeservice_service(TPSVCINFO *svcinfo) {

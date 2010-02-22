@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 #include "BaseServerTest.h"
 #include "XATMITestSuite.h"
 #include "xatmi.h"
@@ -33,16 +33,16 @@ void TestSpecExampleTwo::setUp() {
 
 	// Do local work
 	int toCheck = tpadvertise((char*) "INQUIRY", inquiry_svc);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 }
 
 void TestSpecExampleTwo::tearDown() {
 	userlogc((char*) "TestSpecExampleTwo::tearDown");
 	// Do local work
 	int toCheck = tpunadvertise((char*) "INQUIRY");
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 
 	// Clean up server
 	BaseServerTest::tearDown();

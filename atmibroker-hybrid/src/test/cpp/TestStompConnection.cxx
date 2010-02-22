@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 #include "TestStompConnection.h"
 
@@ -71,9 +71,9 @@ void TestStompConnection::testLibStomp() {
 		clientSend.control = NULL;
 		client->send(clientSend);
 		MESSAGE serviceReceived = destination->receive(0);
-		CPPUNIT_ASSERT(serviceReceived.received == true);
-		CPPUNIT_ASSERT(strcmp(clientSend.type, serviceReceived.type) == 0);
-		CPPUNIT_ASSERT(clientSend.len == serviceReceived.len);
+		BT_ASSERT(serviceReceived.received == true);
+		BT_ASSERT(strcmp(clientSend.type, serviceReceived.type) == 0);
+		BT_ASSERT(clientSend.len == serviceReceived.len);
 		free(clientData);
 		free(serviceReceived.data);
 		//		free(serviceReceived.type); - STOMP ALLOCATED - MUST NOT FREE
@@ -113,9 +113,9 @@ void TestStompConnection::test() {
 		clientSend.control = NULL;
 		client->send(clientSend);
 		MESSAGE serviceReceived = destination->receive(0);
-		CPPUNIT_ASSERT(serviceReceived.received == true);
-		CPPUNIT_ASSERT(strcmp(clientSend.type, serviceReceived.type) == 0);
-		CPPUNIT_ASSERT(clientSend.len == serviceReceived.len);
+		BT_ASSERT(serviceReceived.received == true);
+		BT_ASSERT(strcmp(clientSend.type, serviceReceived.type) == 0);
+		BT_ASSERT(clientSend.len == serviceReceived.len);
 		free(clientData);
 		free(serviceReceived.data);
 		//		free(serviceReceived.type); - STOMP ALLOCATED - MUST NOT FREE
@@ -143,9 +143,9 @@ void TestStompConnection::test() {
 		serviceSend.control = NULL;
 		service->send(serviceSend);
 		MESSAGE clientReceived = client->receive(0);
-		CPPUNIT_ASSERT(clientReceived.received == true);
-		CPPUNIT_ASSERT(strcmp(serviceSend.type, clientReceived.type) == 0);
-		CPPUNIT_ASSERT(serviceSend.len == clientReceived.len);
+		BT_ASSERT(clientReceived.received == true);
+		BT_ASSERT(strcmp(serviceSend.type, clientReceived.type) == 0);
+		BT_ASSERT(serviceSend.len == clientReceived.len);
 		free(serviceData);
 		free(clientReceived.data);
 		free((char*) clientReceived.replyto);
@@ -167,9 +167,9 @@ void TestStompConnection::test() {
 		clientSend.subtype = (char*) "";
 		client->send(clientSend);
 		MESSAGE serviceReceived = service->receive(0);
-		CPPUNIT_ASSERT(serviceReceived.received);
-		CPPUNIT_ASSERT(strcmp(clientSend.type, serviceReceived.type) == 0);
-		CPPUNIT_ASSERT(clientSend.len == serviceReceived.len);
+		BT_ASSERT(serviceReceived.received);
+		BT_ASSERT(strcmp(clientSend.type, serviceReceived.type) == 0);
+		BT_ASSERT(clientSend.len == serviceReceived.len);
 		free(clientData);
 		free(serviceReceived.data);
 		free((char*) serviceReceived.replyto);

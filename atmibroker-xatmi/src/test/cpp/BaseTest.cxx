@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 #include "BaseTest.h"
 #include "ThreadLocalStorage.h"
@@ -35,7 +35,7 @@ void BaseTest::setUp() {
 void BaseTest::tearDown() {
 	// Perform clean up
 	::clientdone();
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 	// previous tests may have left a txn on the thread
 	destroySpecific(TSS_KEY);
 

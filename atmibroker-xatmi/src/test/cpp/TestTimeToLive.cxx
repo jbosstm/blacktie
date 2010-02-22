@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 #include "ace/OS_NS_stdlib.h"
 #include "ace/OS_NS_stdio.h"
@@ -49,24 +49,24 @@ void TestTimeToLive::tearDown() {
 
 void TestTimeToLive::testTTL() {
 	int rc = tpadvertise((char*) "TTL", test_TTL_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(rc != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(rc != -1);
 
 	int cd;
 	cd = callTTL();
-	CPPUNIT_ASSERT(cd == -1);
-	CPPUNIT_ASSERT(tperrno == TPETIME);
+	BT_ASSERT(cd == -1);
+	BT_ASSERT(tperrno == TPETIME);
 	userlogc((char*)"send first message");
 
 	cd = callTTL();
-	CPPUNIT_ASSERT(cd == -1);
-	CPPUNIT_ASSERT(tperrno == TPETIME);
+	BT_ASSERT(cd == -1);
+	BT_ASSERT(tperrno == TPETIME);
 	userlogc((char*)"send second message");
 
 	ACE_OS::sleep(30);
 	long n = getTTLCounter();	
 	userlogc((char*)"TTL get message counter is %d", n);
-	//CPPUNIT_ASSERT(n == 1);
+	//BT_ASSERT(n == 1);
 }
 
 int TestTimeToLive::callTTL() {
@@ -90,9 +90,9 @@ long TestTimeToLive::getTTLCounter() {
 	long  recvlen = 1;
 
 	int cd = ::tpcall((char*) "default_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, 0);
-	CPPUNIT_ASSERT(cd == 0);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(recvbuf[0] == '1');
+	BT_ASSERT(cd == 0);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(recvbuf[0] == '1');
 
 	return (atol(&recvbuf[1]));
 }

@@ -15,8 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
-#include <cppunit/TestFixture.h>
+#include "TestAssert.h"
 
 #include <tao/ORB.h>
 #include <orbsvcs/CosNamingS.h>
@@ -65,7 +64,7 @@ void SimpleOrbTest::test() {
 			CosNaming::NamingContextExt_var default_ctx =
 					CosNaming::NamingContextExt::_narrow(tmp_ref);
 		} catch (CORBA::Exception &e) {
-			CPPUNIT_FAIL("COULDN'T Narrow the default context");
+			BT_FAIL("COULDN'T Narrow the default context");
 		}
 		if (!CORBA::is_nil(orbRef))
 			orbRef->shutdown(1);
@@ -82,8 +81,8 @@ void SimpleOrbTest::test() {
 		orbRef = NULL;
 		poa_manager = NULL;
 		poa = NULL;
-		CPPUNIT_ASSERT(CORBA::is_nil(orbRef));
-		CPPUNIT_ASSERT(CORBA::is_nil(poa_manager));
-		CPPUNIT_ASSERT(CORBA::is_nil(poa));
+		BT_ASSERT(CORBA::is_nil(orbRef));
+		BT_ASSERT(CORBA::is_nil(poa_manager));
+		BT_ASSERT(CORBA::is_nil(poa));
 	}
 }

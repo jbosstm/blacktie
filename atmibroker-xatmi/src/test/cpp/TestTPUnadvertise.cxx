@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 
 #include "BaseServerTest.h"
 
@@ -34,8 +34,8 @@ void TestTPUnadvertise::setUp() {
 	BaseServerTest::setUp();
 	int toCheck = tpadvertise((char*) "TestTPUnadvertise",
 			testtpunadvertise_service);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toCheck != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
 
 	// Do local work
 	sendlen = strlen("TestTPUnadvertise") + 1;
@@ -61,57 +61,57 @@ void TestTPUnadvertise::tearDown() {
 void TestTPUnadvertise::test_tpunadvertise() {
 	userlogc((char*) "test_tpunadvertise");
 	int id = ::tpunadvertise((char*) "TestTPUnadvertise");
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(tperrno != TPEINVAL);
-	CPPUNIT_ASSERT(tperrno != TPENOENT);
-	CPPUNIT_ASSERT(tperrno != TPEPROTO);
-	CPPUNIT_ASSERT(tperrno != TPESYSTEM);
-	CPPUNIT_ASSERT(tperrno != TPEOS);
-	CPPUNIT_ASSERT(id != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno != TPEINVAL);
+	BT_ASSERT(tperrno != TPENOENT);
+	BT_ASSERT(tperrno != TPEPROTO);
+	BT_ASSERT(tperrno != TPESYSTEM);
+	BT_ASSERT(tperrno != TPEOS);
+	BT_ASSERT(id != -1);
 
 	id = ::tpcall((char*) "TestTPUnadvertise", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, (long) 0);
-	CPPUNIT_ASSERT(tperrno == TPENOENT);
-	CPPUNIT_ASSERT(id == -1);
-	CPPUNIT_ASSERT(strcmp(rcvbuf, "testtpunadvertise_service") != 0);
+	BT_ASSERT(tperrno == TPENOENT);
+	BT_ASSERT(id == -1);
+	BT_ASSERT(strcmp(rcvbuf, "testtpunadvertise_service") != 0);
 }
 
 void TestTPUnadvertise::test_tpunadvertise_twice() {
 	userlogc((char*) "test_tpunadvertise_twice");
 	int id = ::tpunadvertise((char*) "TestTPUnadvertise");
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(tperrno != TPEINVAL);
-	CPPUNIT_ASSERT(tperrno != TPENOENT);
-	CPPUNIT_ASSERT(tperrno != TPEPROTO);
-	CPPUNIT_ASSERT(tperrno != TPESYSTEM);
-	CPPUNIT_ASSERT(tperrno != TPEOS);
-	CPPUNIT_ASSERT(id != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno != TPEINVAL);
+	BT_ASSERT(tperrno != TPENOENT);
+	BT_ASSERT(tperrno != TPEPROTO);
+	BT_ASSERT(tperrno != TPESYSTEM);
+	BT_ASSERT(tperrno != TPEOS);
+	BT_ASSERT(id != -1);
 
 	id = ::tpunadvertise((char*) "TestTPUnadvertise");
-	CPPUNIT_ASSERT(tperrno == TPENOENT);
-	CPPUNIT_ASSERT(id == -1);
+	BT_ASSERT(tperrno == TPENOENT);
+	BT_ASSERT(id == -1);
 }
 
 void TestTPUnadvertise::test_tpunadvertise_null() {
 	userlogc((char*) "test_tpunadvertise_null");
 	int id = ::tpunadvertise(NULL);
-	CPPUNIT_ASSERT(tperrno == TPEINVAL);
-	CPPUNIT_ASSERT(id == -1);
+	BT_ASSERT(tperrno == TPEINVAL);
+	BT_ASSERT(id == -1);
 }
 
 void TestTPUnadvertise::test_tpunadvertise_empty() {
 	userlogc((char*) "test_tpunadvertise_empty");
 	int id = ::tpunadvertise((char*) "");
-	CPPUNIT_ASSERT(tperrno == TPEINVAL);
-	CPPUNIT_ASSERT(id == -1);
+	BT_ASSERT(tperrno == TPEINVAL);
+	BT_ASSERT(id == -1);
 }
 
 // 8.4
 void TestTPUnadvertise::test_tpunadvertise_not_advertised() {
 	userlogc((char*) "test_tpunadvertise_not_advertised");
 	int id = ::tpunadvertise((char*) "NONE");
-	CPPUNIT_ASSERT(tperrno == TPENOENT);
-	CPPUNIT_ASSERT(id == -1);
+	BT_ASSERT(tperrno == TPENOENT);
+	BT_ASSERT(id == -1);
 }
 
 void testtpunadvertise_service(TPSVCINFO *svcinfo) {

@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestAssert.h"
 #include "BaseTest.h"
 
 #include "xatmi.h"
@@ -33,7 +33,7 @@ void TestPBF::setUp() {
 	m_allocated = NULL;
 	sendbuf = NULL;
 	rcvbuf = NULL;
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 }
 
 void TestPBF::tearDown() {
@@ -63,8 +63,8 @@ void TestPBF::test_tpalloc() {
 	aptr = (ACCT_INFO*) tpalloc((char*) "X_COMMON", (char*) "acct_info", 0);
 
 	m_allocated = (char*) aptr;
-	CPPUNIT_ASSERT(m_allocated != NULL);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(m_allocated != NULL);
+	BT_ASSERT(tperrno == 0);
 	// Won't check length as typtypes does that
 
 	// ASSIGN SOME VALUES
@@ -74,28 +74,28 @@ void TestPBF::test_tpalloc() {
 	aptr->balances[1] = 0;
 
 	// CHECK THE ASSIGNATIONS
-	CPPUNIT_ASSERT(aptr->acct_no == 12345678);
-	CPPUNIT_ASSERT(strcmp(aptr->name,
+	BT_ASSERT(aptr->acct_no == 12345678);
+	BT_ASSERT(strcmp(aptr->name,
 			"1234567890123456789012345678901234567890123456789") == 0);
-	CPPUNIT_ASSERT(aptr->address == NULL || strcmp(aptr->address, "") == 0);
-	CPPUNIT_ASSERT(aptr->balances[0] == 0);
-	CPPUNIT_ASSERT(aptr->balances[1] == 0);
+	BT_ASSERT(aptr->address == NULL || strcmp(aptr->address, "") == 0);
+	BT_ASSERT(aptr->balances[0] == 0);
+	BT_ASSERT(aptr->balances[1] == 0);
 }
 
 void TestPBF::test_tpalloc_nonzero() {
 	userlogc((char*) "test_tpalloc_nonzero");
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "acct_info", 10);
-	CPPUNIT_ASSERT(m_allocated != NULL);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(m_allocated != NULL);
+	BT_ASSERT(tperrno == 0);
 
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toTest == sizeof(ACCT_INFO));
-	CPPUNIT_ASSERT(toTest != 10);
-	CPPUNIT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
-	CPPUNIT_ASSERT(strcmp(subtype, "acct_info") == 0);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toTest == sizeof(ACCT_INFO));
+	BT_ASSERT(toTest != 10);
+	BT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
+	BT_ASSERT(strcmp(subtype, "acct_info") == 0);
 	free(type);
 	free(subtype);
 }
@@ -103,37 +103,37 @@ void TestPBF::test_tpalloc_nonzero() {
 void TestPBF::test_tpalloc_subtype_required() {
 	userlogc((char*) "test_tpalloc_subtype_required");
 	m_allocated = tpalloc((char*) "X_COMMON", NULL, 0);
-	CPPUNIT_ASSERT(tperrno == TPEINVAL);
-	CPPUNIT_ASSERT(m_allocated == NULL);
+	BT_ASSERT(tperrno == TPEINVAL);
+	BT_ASSERT(m_allocated == NULL);
 }
 
 void TestPBF::test_tpalloc_wrong_subtype() {
 	userlogc((char*) "test_tpalloc_subtype_required");
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "not_exist", 0);
-	CPPUNIT_ASSERT(tperrno == TPEINVAL);
-	CPPUNIT_ASSERT(m_allocated == NULL);
+	BT_ASSERT(tperrno == TPEINVAL);
+	BT_ASSERT(m_allocated == NULL);
 }
 
 void TestPBF::test_tprealloc() {
 	userlogc("test_tprealloc");
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "acct_info", 0);
-	CPPUNIT_ASSERT(m_allocated != NULL);
+	BT_ASSERT(m_allocated != NULL);
 	m_allocated = ::tprealloc(m_allocated, 10);
-	CPPUNIT_ASSERT(tperrno == TPEINVAL);
+	BT_ASSERT(tperrno == TPEINVAL);
 }
 
 void TestPBF::test_tptypes() {
 	userlogc((char*) "test_tptypes");
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "acct_info", 0);
-	CPPUNIT_ASSERT(m_allocated != NULL);
+	BT_ASSERT(m_allocated != NULL);
 
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(toTest == sizeof(ACCT_INFO));
-	CPPUNIT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
-	CPPUNIT_ASSERT(strcmp(subtype, "acct_info") == 0);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toTest == sizeof(ACCT_INFO));
+	BT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
+	BT_ASSERT(strcmp(subtype, "acct_info") == 0);
 	free(type);
 	free(subtype);
 }
@@ -143,24 +143,24 @@ void TestPBF::test_tpfree() {
 	ACCT_INFO *aptr;
 	aptr = (ACCT_INFO*) tpalloc((char*) "X_COMMON", (char*) "acct_info", 0);
 	m_allocated = (char*) aptr;
-	CPPUNIT_ASSERT(m_allocated != NULL);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(m_allocated != NULL);
+	BT_ASSERT(tperrno == 0);
 
 	::tpfree( m_allocated);
 	m_allocated = NULL;
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 }
 
 void TestPBF::test_tpcall() {
 	userlogc((char*) "test_tpcall");
 	tpadvertise((char*) "PBF", pbf_service);
-	CPPUNIT_ASSERT(tperrno == 0);
+	BT_ASSERT(tperrno == 0);
 
 	ACCT_INFO *aptr;
 	aptr = (ACCT_INFO*) tpalloc((char*) "X_COMMON", (char*) "acct_info", 0);
 	long rcvlen = 60;
 
-	CPPUNIT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
 	sendbuf = (char*) aptr;
 	aptr->acct_no = 12345678;
@@ -176,10 +176,10 @@ void TestPBF::test_tpcall() {
 
 	int id = ::tpcall((char*) "PBF", (char*) aptr, 0, (char**) &rcvbuf,
 			&rcvlen, TPNOCHANGE);
-	CPPUNIT_ASSERT(tperrno == 0);
-	CPPUNIT_ASSERT(tpurcode == 23);
-	CPPUNIT_ASSERT(id != -1);
-	CPPUNIT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "pbf_service") == 0);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(tpurcode == 23);
+	BT_ASSERT(id != -1);
+	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "pbf_service") == 0);
 }
 
 void pbf_service(TPSVCINFO *svcinfo) {
