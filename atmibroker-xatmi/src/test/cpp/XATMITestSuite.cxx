@@ -72,10 +72,3 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestServerinit);
 /* Client Init */
 #include "TestClientInit.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestClientInit);
-/* Transactional Request Response */
-#include "TestTxTPCall.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestTxTPCall);
-#include "tx/TestTxRMTPCall.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestTxRMTPCall);
-#include "TestRollbackOnly.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestRollbackOnly);
