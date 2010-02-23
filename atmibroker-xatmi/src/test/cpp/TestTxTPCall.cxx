@@ -29,7 +29,7 @@
 #include "TestTxTPCall.h"
 
 /* service routines */
-static void tx_fill_buf(TPSVCINFO *svcinfo) {
+static void tx_fill_buf_rtn(TPSVCINFO *svcinfo) {
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	TXINFO txinfo;
@@ -44,17 +44,17 @@ static void tx_fill_buf(TPSVCINFO *svcinfo) {
 void test_tx_tpcall_x_octet_service_tardy(TPSVCINFO *svcinfo) {
 	userlogc((char*) "TxLog: service running: test_tx_tpcall_x_octet_service_tardy");
 	ACE_OS::sleep(6L);
-	tx_fill_buf(svcinfo);
+	tx_fill_buf_rtn(svcinfo);
 }
 
 void test_tx_tpcall_x_octet_service_without_tx(TPSVCINFO *svcinfo) {
 	userlogc((char*) "TxLog: service running: test_tx_tpcall_x_octet_service_without_tx");
-	tx_fill_buf(svcinfo);
+	tx_fill_buf_rtn(svcinfo);
 }
 
 void test_tx_tpcall_x_octet_service_with_tx(TPSVCINFO *svcinfo) {
 	userlogc((char*) "TxLog: service running: test_tx_tpcall_x_octet_service_with_tx");
-	tx_fill_buf(svcinfo);
+	tx_fill_buf_rtn(svcinfo);
 }
 
 /* test setup */

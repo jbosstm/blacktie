@@ -29,14 +29,14 @@
 	if (!(cond)) userlogc_debug("CHKCOND ASSERT FAILED %s:%d", __FILE__, __LINE__)
 
 #define	BT_ASSERT(cond)	{\
-	bool c = (cond);	\
-	CHKCOND(c);	\
-	CPPUNIT_ASSERT(c);}
+	bool _w12pq_u = (cond);	\
+	CHKCOND(_w12pq_u);	\
+	CPPUNIT_ASSERT(_w12pq_u);}
 
 #define	BT_ASSERT_MESSAGE(message,cond)	{\
-	bool c = (cond);	\
-	CHKCOND(c);	\
-	CPPUNIT_ASSERT_MESSAGE((message),c);} 
+	bool _w12pq_u = (cond);	\
+	CHKCOND(_w12pq_u);	\
+	CPPUNIT_ASSERT_MESSAGE((message),_w12pq_u);} 
 
 #define BT_ASSERT_EQUAL(expected,actual)	\
 	BTDBGPRE;CPPUNIT_ASSERT_EQUAL((expected),(actual));BTDBGPOST
