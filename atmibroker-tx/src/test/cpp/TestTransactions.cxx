@@ -37,7 +37,7 @@
 //check_info(const char *msg, int rv, COMMIT_RETURN cr, TRANSACTION_CONTROL tc, TRANSACTION_TIMEOUT tt, TRANSACTION_STATE ts)
 #define CHECKINFO(msg, rv, cr, tc, tt, ts)	{\
 	TXINFO txi;	\
-	int _x12txrv == tx_info(&txi);	\
+	int _x12txrv = tx_info(&txi);	\
 	BT_ASSERT_MESSAGE(msg, rv == _x12txrv);	\
 	userlogc_debug( (char*) "TestTransactions::check_info begin %ld=%ld %ld=%ld %ld=%ld %ld=%ld", txi.when_return, (cr), txi.transaction_control, (tc), txi.transaction_timeout, (tt), txi.transaction_state, (ts));	\
 	if ((cr) >= 0) BT_ASSERT_MESSAGE(msg, txi.when_return == (cr));	\
