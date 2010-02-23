@@ -32,6 +32,8 @@ log4cxx::LoggerPtr HybridConnectionImpl::logger(log4cxx::Logger::getLogger(
 		"HybridConnectionImpl"));
 
 HybridConnectionImpl::HybridConnectionImpl(char* connectionName) {
+	// Make sure the logger is initialized
+	AtmiBrokerEnv::get_instance();
 	LOG4CXX_DEBUG(logger, (char*) "constructor: " << connectionName);
 	this->connectionName = connectionName;
 	apr_status_t rc = apr_initialize();
@@ -64,6 +66,7 @@ HybridConnectionImpl::~HybridConnectionImpl() {
 	apr_pool_destroy( pool);
 	//apr_terminate();
 	LOG4CXX_TRACE(logger, "Destroyed");
+	AtmiBrokerEnv::discard_instance();
 }
 
 stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {

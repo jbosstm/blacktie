@@ -22,6 +22,7 @@
 #include <stdarg.h>
 #include <iostream>
 
+#include "userlog.h"
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerEnvXml.h"
 #include "SynchronizableObject.h"
@@ -45,6 +46,7 @@ SynchronizableObject instance_lock;
 int referencesAtmiBrokerEnv = 0;
 
 AtmiBrokerEnv * AtmiBrokerEnv::get_instance() {
+	initializeLogger();
 	instance_lock.lock();
 	if (referencesAtmiBrokerEnv == 0) {
 		if (ptrAtmiBrokerEnv == NULL) {

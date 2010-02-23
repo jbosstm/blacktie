@@ -64,7 +64,6 @@ int clientinit() {
 	if (ptrAtmiBrokerClient == NULL) {
 		try {
 			AtmiBrokerEnv::get_instance();
-			initializeLogger();
 			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit called");
 			ptrAtmiBrokerClient = new AtmiBrokerClient();
 			if (!clientInitialized) {

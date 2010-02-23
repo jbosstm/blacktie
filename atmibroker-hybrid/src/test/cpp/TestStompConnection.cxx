@@ -24,7 +24,6 @@
 
 void TestStompConnection::setUp() {
 	userlogc("TestStompConnection::setUp");
-	AtmiBrokerEnv::get_instance();
 
 	serverConnection = NULL;
 	clientConnection = NULL;
@@ -40,7 +39,6 @@ void TestStompConnection::tearDown() {
 	if (clientConnection) {
 		delete clientConnection;
 	}
-	AtmiBrokerEnv::discard_instance();
 }
 
 void TestStompConnection::testLibStomp() {

@@ -461,6 +461,7 @@
 			<arg value="--log-file=${project.artifactId}-valgrind.log" />
 			<arg value="-v" />
 			<arg value="--track-origins=yes" />
+			<arg value="--show-reachable=yes" />
 			<arg value="../testsuite" />
 		</exec>
 	</target>
