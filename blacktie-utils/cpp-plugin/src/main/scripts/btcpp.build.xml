@@ -461,8 +461,9 @@
 			<arg value="--log-file=${project.artifactId}-valgrind.log" />
 			<arg value="-v" />
 			<arg value="--track-origins=yes" />
-			<arg value="--show-reachable=yes" />
-			<arg value="--leak-resolution=high" />
+			<arg value="--show-reachable=false" />
+			<arg value="--leak-resolution=low" />
+			<arg value="--num-callers=40" />
 			<arg value="../testsuite" />
 		</exec>
 	</target>
