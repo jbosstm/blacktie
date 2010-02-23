@@ -37,16 +37,16 @@
 //check_info(const char *msg, int rv, COMMIT_RETURN cr, TRANSACTION_CONTROL tc, TRANSACTION_TIMEOUT tt, TRANSACTION_STATE ts)
 #define CHECKINFO(msg, rv, cr, tc, tt, ts)	{\
 	TXINFO txi;	\
-	int _x12txrv = tx_info(&txi);	\
-	BT_ASSERT_MESSAGE(msg, rv == _x12txrv);	\
-	userlogc_debug("TestTransactions::check_info begin %ld=%ld %ld=%ld %ld=%ld",	\
+	BT_ASSERT_MESSAGE(msg, rv == tx_info(&txi));	\
+	userlogc_debug("TestTransactions::check_info begin %ld=%ld %ld=%ld %ld=%ld %ld=%ld",	\
 		txi.when_return, (cr),	\
 		txi.transaction_control, (tc),	\
-		txi.transaction_timeout, (tt));	\
-	if ((cr) >= 0) BT_ASSERT_MESSAGE(msg, txi.when_return == (cr));	\
-	if ((tc) >= 0) BT_ASSERT_MESSAGE(msg, txi.transaction_control == (tc));	\
-    if ((tt) >= 0) BT_ASSERT_MESSAGE(msg, txi.transaction_timeout == (tt));	\
-    if ((ts) >= 0) BT_ASSERT_MESSAGE(msg, txi.transaction_state == (ts));}
+		txi.transaction_timeout, (tt),	\
+		txi.transaction_state, (ts));	\
+	if ((cr) >= 0l) BT_ASSERT_MESSAGE(msg, txi.when_return == (cr));	\
+	if ((tc) >= 0l) BT_ASSERT_MESSAGE(msg, txi.transaction_control == (tc));	\
+    if ((tt) >= 0l) BT_ASSERT_MESSAGE(msg, txi.transaction_timeout == (tt));	\
+    if ((ts) >= 0l) BT_ASSERT_MESSAGE(msg, txi.transaction_state == (ts));}
 
 
 void TestTransactions::setUp()
@@ -167,55 +167,36 @@ void TestTransactions::test_info()
 	// verify that the initial values are correct
 	// do not test for the initial value of info.when_return since it is implementation dependent
 	// if the second parameter is 1 then test that we are in transaction mode
-	CHECKINFO("initial values", 1, TX_COMMIT_DECISION_LOGGED, TX_UNCHAINED, 0L, TX_ACTIVE);
+	CHECKINFO("initial values", 1, TX_COMMIT_DECISION_LOGGED, TX_UNCHAINED, 0l, TX_ACTIVE);
 	BT_ASSERT_EQUAL(TX_OK, tx_commit());
 	// if the second parameter is 0 then test that we are not in transaction mode
-	CHECKINFO("not in tx context", 0, TX_COMMIT_DECISION_LOGGED, TX_UNCHAINED, 0L, -1);
+	CHECKINFO("not in tx context", 0, TX_COMMIT_DECISION_LOGGED, TX_UNCHAINED, 0l, -1l);
 
 	(void) tx_set_commit_return(TX_COMMIT_COMPLETED);
 	(void) tx_set_transaction_control(TX_CHAINED);
-	(void) tx_set_transaction_timeout(10);
+	(void) tx_set_transaction_timeout(10l);
 
 	// begin another transaction
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
 
 	// verify that the new values are correct and that there is a running transaction
-	CHECKINFO("modified values", 1, TX_COMMIT_COMPLETED, TX_CHAINED, 10L, TX_ACTIVE);
+	CHECKINFO("modified values", 1, TX_COMMIT_COMPLETED, TX_CHAINED, 10l, TX_ACTIVE);
 	// commit the transaction
 	userlogc_debug("TestTransactions::test_info commit chained tx");
 	BT_ASSERT_EQUAL(TX_OK, tx_commit());
 	// transaction control mode is TX_CHAINED so there should be an active transaction after a commit
-	CHECKINFO("TX_CHAINED after commit", 1, TX_COMMIT_COMPLETED, TX_CHAINED, 10L, TX_ACTIVE);
+	CHECKINFO("TX_CHAINED after commit", 1, TX_COMMIT_COMPLETED, TX_CHAINED, 10l, TX_ACTIVE);
 
 	// rollback the chained transaction
 	BT_ASSERT_EQUAL(TX_OK, tx_rollback());
 	// transaction control mode is TX_CHAINED so there should be an active transaction after a rollback
-	CHECKINFO("XX", 1, TX_COMMIT_COMPLETED, TX_CHAINED, 10L, TX_ACTIVE);
+	CHECKINFO("XX", 1, TX_COMMIT_COMPLETED, TX_CHAINED, 10l, TX_ACTIVE);
 
 	// stop chaining transactions
 	(void) tx_set_transaction_control(TX_UNCHAINED);
 	BT_ASSERT_EQUAL(TX_OK, tx_rollback());
 	// transaction control mode should now be TX_UNCHAINED so there should not be an active transaction after a rollback
-	CHECKINFO("TX_UNCHAINED after rollback", 0, TX_COMMIT_COMPLETED, TX_UNCHAINED, 10L, -1);
-
-#if 1
-{
-//CHECKINFO(msg, rv, cr, tc, tt, ts)	{
-{
-	TXINFO txi;	
-	int _x12txrv = tx_info(&txi);
-	BT_ASSERT_MESSAGE("XXX", 0 == _x12txrv);	
-	userlogc_debug("TestTransactions::check_info begin %ld=%ld %ld=%ld %ld=%ld %ld=%ld",	
-		txi.when_return, (TX_COMMIT_COMPLETED),	
-		txi.transaction_control, (TX_UNCHAINED),	
-		txi.transaction_timeout, (10L),	
-		txi.transaction_state, (-1));	
-	if ((TX_COMMIT_COMPLETED) >= 0) BT_ASSERT_MESSAGE("XXX", txi.when_return == (TX_COMMIT_COMPLETED));	
-	if ((TX_UNCHAINED) >= 0) BT_ASSERT_MESSAGE("XXX", txi.transaction_control == (TX_UNCHAINED));	
-    if ((10L) >= 0) BT_ASSERT_MESSAGE("XXX", txi.transaction_timeout == (10L));	
-    if ((-1) >= 0) BT_ASSERT_MESSAGE("XXX", txi.transaction_state == (-1));}
-}
-#endif
+	CHECKINFO("TX_UNCHAINED after rollback", 0, TX_COMMIT_COMPLETED, TX_UNCHAINED, 10l, -1l);
 
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
 
@@ -279,7 +260,7 @@ void TestTransactions::test_rollback()
 	BT_ASSERT_EQUAL(TX_OK, tx_open());
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
 	doFour();
-	CHECKINFO("set_rollback_only", 1, TX_COMMIT_DECISION_LOGGED, TX_UNCHAINED, 0L, TX_ROLLBACK_ONLY);
+	CHECKINFO("set_rollback_only", 1, TX_COMMIT_DECISION_LOGGED, TX_UNCHAINED, 0l, TX_ROLLBACK_ONLY);
 	BT_ASSERT_EQUAL(TX_ROLLBACK, tx_commit());
 
 	BT_ASSERT_EQUAL(TX_OK, tx_set_transaction_control(TX_CHAINED));
@@ -355,7 +336,7 @@ void TestTransactions::test_RM()
  */
 void TestTransactions::test_RM_recovery_scan()
 {
-	long nbranches = 2;
+	long nbranches = 2l;
 	fault_t fault1 = {0, 102, O_XA_RECOVER, XA_OK, F_ADD_XIDS, &nbranches, 0};
 
 	userlogc_debug("TestTransactions::test_RM_recovery_scan begin");
@@ -412,12 +393,12 @@ void TestTransactions::test_tx_set()
 	// tx_set_* return TX_PROTOCOL_ERROR if not call tx_open
 	BT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_set_transaction_control(TX_CHAINED));
 	BT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_set_commit_return(TX_COMMIT_COMPLETED));
-	BT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_set_transaction_timeout(10));
+	BT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_set_transaction_timeout(10l));
 	
 	BT_ASSERT_EQUAL(TX_OK, tx_open());
-	BT_ASSERT_EQUAL(TX_EINVAL, tx_set_transaction_control(2));
-	BT_ASSERT_EQUAL(TX_EINVAL, tx_set_commit_return(2));
-	BT_ASSERT_EQUAL(TX_EINVAL, tx_set_transaction_timeout(-1));
+	BT_ASSERT_EQUAL(TX_EINVAL, tx_set_transaction_control(2l));
+	BT_ASSERT_EQUAL(TX_EINVAL, tx_set_commit_return(2l));
+	BT_ASSERT_EQUAL(TX_EINVAL, tx_set_transaction_timeout(-1l));
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
 	userlogc("TestTransactions::test_tx_set pass");
 }

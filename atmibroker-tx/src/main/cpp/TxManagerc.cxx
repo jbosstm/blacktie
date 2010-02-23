@@ -131,7 +131,7 @@ int txx_ttl(long* ttl) {
 
 	LOG4CXX_TRACE(txmclogger, (char*) "tx->ttl()=" << *ttl);
 
-	if (*ttl < 0)
+	if (*ttl < 0l)
 		return 1;	/* indicates the txn is not subject to timeouts */
 
 	return 0;	/* indicates that *ttl corresponds to the time left for the txn to complete */

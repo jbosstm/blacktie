@@ -26,7 +26,7 @@
 log4cxx::LoggerPtr xarmlogger(log4cxx::Logger::getLogger("TxLogXAManager"));
 
 SynchronizableObject* XAResourceManager::lock = new SynchronizableObject();
-long XAResourceManager::counter = 0;
+long XAResourceManager::counter = 0l;
 
 ostream& operator<<(ostream &os, const XID& xid)
 {
@@ -252,7 +252,7 @@ bool XAResourceManager::isRecoverable(XID &xid)
 	char *bdata = (char *) (xid.data + xid.gtrid_length);
 	char *sp = strchr(bdata, ':');
 	long rmid = ACE_OS::atol(bdata);	// the RM id
-	long sid = (sp == 0 || ++sp == 0 ? 0L : ACE_OS::atol(sp));	// the server id
+	long sid = (sp == 0 || ++sp == 0 ? 0l : ACE_OS::atol(sp));	// the server id
 
 	/*
 	 * Only recover our own XIDs - the reason we need to check the server id is to
@@ -503,7 +503,7 @@ XID XAResourceManager::gen_xid(long id, long sid, XID &gid)
 	FTRACE(xarmlogger, "ENTER");
 	XID xid = {gid.formatID, gid.gtrid_length};
 	int i;
-	long myCounter = -1;
+	long myCounter = -1l;
 
 	lock->lock();
 	myCounter = ++counter;

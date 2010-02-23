@@ -70,7 +70,7 @@ void TestRollbackOnly::test_tpcall_TPETIME() {
 
 	BT_ASSERT(tx_open() == TX_OK);
 	// the TPETIME service sleeps for 8 so set the txn time to something smaller
-	BT_ASSERT(tx_set_transaction_timeout(4) == TX_OK);
+	BT_ASSERT(tx_set_transaction_timeout(4l) == TX_OK);
 	BT_ASSERT(tx_begin() == TX_OK);
 
 	(void) ::tpcall((char*) "TestRbkOnly", (char *) sendbuf, sendlen,
@@ -79,7 +79,7 @@ void TestRollbackOnly::test_tpcall_TPETIME() {
 
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
-	userlogc((char*) "inTx=%d tx status=%d", inTx, txinfo.transaction_state);
+	userlogc((char*) "inTx=%d tx status=%ld", inTx, txinfo.transaction_state);
 	BT_ASSERT(txinfo.transaction_state || TX_ROLLBACK_ONLY ||
 		txinfo.transaction_state == TX_TIMEOUT_ROLLBACK_ONLY);
 	BT_ASSERT(tx_commit() == TX_ROLLBACK);

@@ -29,7 +29,7 @@ XAResourceAdaptorImpl::XAResourceAdaptorImpl(
 	XAResourceManager * rm, XID& xid, XID& bid, CORBA::Long rmid,
 	struct xa_switch_t * xa_switch, XARecoveryLog& log) throw (RMException) :
 	rm_(rm), xid_(xid), bid_(bid), complete_(false), rmid_(rmid), xa_switch_(xa_switch), rc_(0),
-	eflags_(0L), tightly_coupled_(0), rclog_(log), prepared_(false)
+	eflags_(0l), tightly_coupled_(0), rclog_(log), prepared_(false)
 {
 	FTRACE(xaralogger, "ENTER" << (char*) " new OTS resource rmid:" << rmid_ << " branch id: " << bid_);
 }

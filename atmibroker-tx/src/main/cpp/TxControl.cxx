@@ -38,8 +38,8 @@ TxControl::TxControl(CosTransactions::Control_ptr ctrl, long timeout, int tid) :
 
 	_ctime = (long) (ACE_OS::gettimeofday().sec());
 
-	if (timeout <= 0)
-		_ttl = -1;
+	if (timeout <= 0l)
+		_ttl = -1l;
 }
 
 TxControl::~TxControl()
@@ -230,14 +230,14 @@ long TxControl::ttl()
 {
 	FTRACE(txclogger, "ENTER ttl=" << _ttl << " ctime=" << _ctime << " now=" << ACE_OS::gettimeofday().sec());
 
-	if (_ttl == -1)
-		return -1;
+	if (_ttl == -1l)
+		return -1l;
 
 	long ttl = _ttl - (long) (ACE_OS::gettimeofday().sec()) + _ctime;
 
 	LOG4CXX_TRACE(txclogger, (char*) "> ttl=" << ttl);
 
-	return (ttl <= 0L ? 0L : ttl);
+	return (ttl <= 0l ? 0l : ttl);
 }
 
 int TxControl::get_timeout(CORBA::ULong *timeout)

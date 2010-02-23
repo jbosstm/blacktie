@@ -64,7 +64,7 @@ void TxManager::discard_instance()
 }
 
 TxManager::TxManager() :
-	_whenReturn(TX_COMMIT_DECISION_LOGGED), _controlMode(TX_UNCHAINED), _timeout (0L), _isOpen(false), _connection(NULL)
+	_whenReturn(TX_COMMIT_DECISION_LOGGED), _controlMode(TX_UNCHAINED), _timeout (0l), _isOpen(false), _connection(NULL)
 {
 	FTRACE(txmlogger, "ENTER");
 	AtmiBrokerEnv::get_instance();
@@ -288,7 +288,7 @@ int TxManager::set_transaction_timeout(TRANSACTION_TIMEOUT timeout)
 {
 	TX_GUARD(_isOpen);
 
-	if (timeout < 0L)
+	if (timeout < 0l)
 		return TX_EINVAL;
 
 	_timeout = timeout;
@@ -305,7 +305,7 @@ int TxManager::info(void *info)
     if (info != 0) {
         long whenReturn = _whenReturn;
         long controlMode = _controlMode;
-		long status = -1L;
+		long status = -1l;
         long timeout = _timeout;
         if (tx != NULL) {
 			XAResourceManagerFactory::getXID(::getXid(info));
@@ -366,7 +366,7 @@ int TxManager::open(void)
 
 	// re-initialize values
 	_controlMode = TX_UNCHAINED;
-	_timeout = 0L;
+	_timeout = 0l;
 
 	_isOpen = true;
 

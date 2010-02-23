@@ -268,7 +268,7 @@ int XARecoveryLog::del_rec(XID& xid) {
 	// mark the block as free and sync it
 	LOG4CXX_TRACE(xarcllogger, (char *) "deleting xid " << xid_to_string(xid).c_str() <<
 		" at offset " << next->next << " IOR: " << IOR(next));
-	next->magic = 0L;
+	next->magic = 0l;
 	sync_rec(&(next->magic), sizeof (next->magic));
 
 	// a failure here will leave prev pointing to a free block
