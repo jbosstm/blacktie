@@ -171,6 +171,10 @@ CosTransactions::Status TxControl::get_ots_status()
 	} catch (CosTransactions::Unavailable & e) {
 		// no coordinator
 		LOG4CXX_TRACE(txclogger, (char*) "unavailable: " << e._name());
+	} catch (CORBA::OBJECT_NOT_EXIST & e) {
+		LOG4CXX_DEBUG(txclogger, (char*) "status: " << e._name() << " minor: " << e.minor());
+		// transaction no longer exists (presumed abort)
+		return CosTransactions::StatusNoTransaction;
 	} catch (CORBA::SystemException & e) {
 		LOG4CXX_WARN(txclogger, (char*) "status: " << e._name() << " minor: " << e.minor());
 	}
@@ -208,6 +212,10 @@ int TxControl::get_status()
 		return TX_ACTIVE;
 
 	case CosTransactions::StatusNoTransaction:
+		// Since XATMI thinks the txn exists but OTS says it doesn't then
+		// it must have been due to a timeout (a rollback would have
+		// deleted this TxControl object)
+		return TX_TIMEOUT_ROLLBACK_ONLY;
 	default:
 		LOG4CXX_DEBUG(txclogger, (char*) "get_status default: " << status);
 		return -1;	// there is no #define for NO TX

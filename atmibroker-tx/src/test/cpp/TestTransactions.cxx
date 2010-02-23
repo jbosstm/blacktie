@@ -39,7 +39,7 @@
 	TXINFO txi;	\
 	int _x12txrv = tx_info(&txi);	\
 	BT_ASSERT_MESSAGE(msg, rv == _x12txrv);	\
-	userlogc_debug("TestTransactions::check_info begin %ld=%ld %ld=%ld %ld=%ld %ld=%ld",	\
+	userlogc_debug("TestTransactions::check_info begin %ld=%ld %ld=%ld %ld=%ld",	\
 		txi.when_return, (cr),	\
 		txi.transaction_control, (tc),	\
 		txi.transaction_timeout, (tt));	\

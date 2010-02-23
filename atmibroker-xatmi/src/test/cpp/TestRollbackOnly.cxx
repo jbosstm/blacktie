@@ -79,8 +79,9 @@ void TestRollbackOnly::test_tpcall_TPETIME() {
 
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
-	userlogc((char*) "inTx=%d", inTx);
-	BT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
+	userlogc((char*) "inTx=%d tx status=%d", inTx, txinfo.transaction_state);
+	BT_ASSERT(txinfo.transaction_state || TX_ROLLBACK_ONLY ||
+		txinfo.transaction_state == TX_TIMEOUT_ROLLBACK_ONLY);
 	BT_ASSERT(tx_commit() == TX_ROLLBACK);
 }
 

@@ -305,7 +305,7 @@ int TxManager::info(void *info)
     if (info != 0) {
         long whenReturn = _whenReturn;
         long controlMode = _controlMode;
-		long status = -1;
+		long status = -1L;
         long timeout = _timeout;
         if (tx != NULL) {
 			XAResourceManagerFactory::getXID(::getXid(info));
