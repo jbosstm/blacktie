@@ -39,12 +39,15 @@
 	TXINFO txi;	\
 	int _x12txrv = tx_info(&txi);	\
 	BT_ASSERT_MESSAGE(msg, rv == _x12txrv);	\
-	userlogc_debug( (char*) "TestTransactions::check_info begin %ld=%ld %ld=%ld %ld=%ld %ld=%ld", txi.when_return, (cr), txi.transaction_control, (tc), txi.transaction_timeout, (tt), txi.transaction_state, (ts));	\
+	userlogc_debug("TestTransactions::check_info begin %ld=%ld %ld=%ld %ld=%ld %ld=%ld",	\
+		txi.when_return, (cr),	\
+		txi.transaction_control, (tc),	\
+		txi.transaction_timeout, (tt),	\
+		txi.transaction_state, (ts));	\
 	if ((cr) >= 0) BT_ASSERT_MESSAGE(msg, txi.when_return == (cr));	\
 	if ((tc) >= 0) BT_ASSERT_MESSAGE(msg, txi.transaction_control == (tc));	\
     if ((tt) >= 0) BT_ASSERT_MESSAGE(msg, txi.transaction_timeout == (tt));	\
-    if ((ts) >= 0) BT_ASSERT_MESSAGE(msg, txi.transaction_state == (ts));	\
-    userlogc( (char*) "TestTransactions::check_info pass");}
+    if ((ts) >= 0) BT_ASSERT_MESSAGE(msg, txi.transaction_state == (ts));}
 
 
 void TestTransactions::setUp()
@@ -85,20 +88,20 @@ void TestTransactions::test_basic()
 // sanity check
 void TestTransactions::test_transactions()
 {
-	userlogc_debug( (char*) "TestTransactions::test_transactions begin");
+	userlogc_debug("TestTransactions::test_transactions begin");
 	BT_ASSERT_EQUAL(TX_OK, tx_open());
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
 	BT_ASSERT_EQUAL(TX_OK, tx_commit());
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
 
 	
-	userlogc( (char*) "TestTransactions::test_transactions pass");
+	userlogc("TestTransactions::test_transactions pass");
 }
 
 // check for protocol errors in a transactions lifecycle
 void TestTransactions::test_protocol()
 {
-	userlogc_debug( (char*) "TestTransactions::test_protocol begin");
+	userlogc_debug("TestTransactions::test_protocol begin");
 	// should not be able to begin or complete a transaction before calling tx_open
 	BT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_begin());
 	BT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_commit());
@@ -119,7 +122,7 @@ void TestTransactions::test_protocol()
 
 	// reopen the transaction - begin should succeed
 	BT_ASSERT_EQUAL(TX_OK, tx_open());
-	userlogc_debug( (char*) "TestTransactions::test_protocol 2nd begin");
+	userlogc_debug("TestTransactions::test_protocol 2nd begin");
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
 	// should not be able to close a transaction before calling tx_commit or tx_rollback
 	BT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_close());
@@ -158,7 +161,7 @@ void TestTransactions::test_protocol()
 
 void TestTransactions::test_info()
 {
-	userlogc_debug( (char*) "TestTransactions::test_info begin");
+	userlogc_debug("TestTransactions::test_info begin");
 	BT_ASSERT_EQUAL(TX_OK, tx_open());
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
 
@@ -180,7 +183,7 @@ void TestTransactions::test_info()
 	// verify that the new values are correct and that there is a running transaction
 	CHECKINFO("modified values", 1, TX_COMMIT_COMPLETED, TX_CHAINED, 10L, TX_ACTIVE);
 	// commit the transaction
-	userlogc_debug( (char*) "TestTransactions::test_info commit chained tx");
+	userlogc_debug("TestTransactions::test_info commit chained tx");
 	BT_ASSERT_EQUAL(TX_OK, tx_commit());
 	// transaction control mode is TX_CHAINED so there should be an active transaction after a commit
 	CHECKINFO("TX_CHAINED after commit", 1, TX_COMMIT_COMPLETED, TX_CHAINED, 10L, TX_ACTIVE);
@@ -196,6 +199,25 @@ void TestTransactions::test_info()
 	// transaction control mode should now be TX_UNCHAINED so there should not be an active transaction after a rollback
 	CHECKINFO("TX_UNCHAINED after rollback", 0, TX_COMMIT_COMPLETED, TX_UNCHAINED, 10L, -1);
 
+#if 1
+{
+//CHECKINFO(msg, rv, cr, tc, tt, ts)	{
+{
+	TXINFO txi;	
+	int _x12txrv = tx_info(&txi);
+	BT_ASSERT_MESSAGE("XXX", 0 == _x12txrv);	
+	userlogc_debug("TestTransactions::check_info begin %ld=%ld %ld=%ld %ld=%ld %ld=%ld",	
+		txi.when_return, (TX_COMMIT_COMPLETED),	
+		txi.transaction_control, (TX_UNCHAINED),	
+		txi.transaction_timeout, (10L),	
+		txi.transaction_state, (-1));	
+	if ((TX_COMMIT_COMPLETED) >= 0) BT_ASSERT_MESSAGE("XXX", txi.when_return == (TX_COMMIT_COMPLETED));	
+	if ((TX_UNCHAINED) >= 0) BT_ASSERT_MESSAGE("XXX", txi.transaction_control == (TX_UNCHAINED));	
+    if ((10L) >= 0) BT_ASSERT_MESSAGE("XXX", txi.transaction_timeout == (10L));	
+    if ((-1) >= 0) BT_ASSERT_MESSAGE("XXX", txi.transaction_state == (-1));}
+}
+#endif
+
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
 
 	// If info is null, no TXINFO structure is returned
@@ -208,7 +230,7 @@ void TestTransactions::test_timeout()
 {
 	long timeout = 1;
 	long delay = 2;
-	userlogc_debug( (char*) "TestTransactions::test_timeout begin");
+	userlogc_debug("TestTransactions::test_timeout begin");
 	// cause RMs to sleep during 2PC
 	fault_t fault1 = {0, 102, O_XA_COMMIT, XA_OK, F_DELAY, (void*)&delay};
 	fault_t fault2 = {0, 100, O_XA_PREPARE, XA_OK, F_DELAY, (void*)&delay};
@@ -225,18 +247,18 @@ void TestTransactions::test_timeout()
 	// start another transaction
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
 	// sleep for longer than the timeout
-	userlogc_debug( (char*) "TestTransactions::test_timeout sleeping");
+	userlogc_debug("TestTransactions::test_timeout sleeping");
 	doSix(delay);
-	userlogc_debug( (char*) "TestTransactions::test_timeout testing for rollback on commit");
+	userlogc_debug("TestTransactions::test_timeout testing for rollback on commit");
 	BT_ASSERT_EQUAL(TX_ROLLBACK, tx_commit());
 
 	// cause the RM to delay for delay seconds during commit processing
 	(void) dummy_rm_add_fault(&fault1);
 	(void) dummy_rm_add_fault(&fault2);
-	userlogc_debug( (char*) "TestTransactions::test_timeout injecting delay after phase 1");
+	userlogc_debug("TestTransactions::test_timeout injecting delay after phase 1");
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
 	// once the transaction has started 2PC any further delays (beyond the timeout period) should have no effect
-	userlogc_debug( (char*) "TestTransactions::test_timeout validating that the delay was ignored");
+	userlogc_debug("TestTransactions::test_timeout validating that the delay was ignored");
 	BT_ASSERT_EQUAL(TX_OK, tx_commit());
 
 	/* cleanup */
@@ -249,7 +271,7 @@ void TestTransactions::test_timeout()
 void TestTransactions::test_rollback()
 {
 	// TODO check the behaviour when a real RM is used.
-	userlogc_debug( (char*) "TestTransactions::test_rollback begin");
+	userlogc_debug("TestTransactions::test_rollback begin");
 
 	fault_t fault1 = {0, 102, O_XA_COMMIT, XA_HEURHAZ};
 	/* cause RM 102 start to fail */
@@ -287,7 +309,7 @@ void TestTransactions::test_RM()
 	/* cause RM 102 start to fail */
 	fault_t fault2 = {0, 102, O_XA_START, XAER_RMERR};
 
-	userlogc_debug( (char*) "TestTransactions::test_RM begin");
+	userlogc_debug("TestTransactions::test_RM begin");
 	/* inject a commit fault in Resource Manager with rmid 102 */
 	(void) dummy_rm_add_fault(&fault1);
 
@@ -296,7 +318,7 @@ void TestTransactions::test_RM()
 	BT_ASSERT_EQUAL(TX_OK, tx_set_commit_return(TX_COMMIT_COMPLETED));
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
 	/* since we have added a XA_HEURMIX fault tx_commit should return an mixed error */
-	userlogc_debug( (char*) "TestTransactions::test_RM expecting TX_MIXED");
+	userlogc_debug("TestTransactions::test_RM expecting TX_MIXED");
 	BT_ASSERT_EQUAL(TX_MIXED, tx_commit());
 
 	/*
@@ -337,7 +359,7 @@ void TestTransactions::test_RM_recovery_scan()
 	long nbranches = 2;
 	fault_t fault1 = {0, 102, O_XA_RECOVER, XA_OK, F_ADD_XIDS, &nbranches, 0};
 
-	userlogc_debug( (char*) "TestTransactions::test_RM_recovery_scan begin");
+	userlogc_debug("TestTransactions::test_RM_recovery_scan begin");
 
 	/* tell the Resource Manager with rmid 102 to remember prepared XID's */
 	(void) dummy_rm_add_fault(&fault1);
@@ -355,7 +377,7 @@ void TestTransactions::test_RM_recovery_scan()
 	/* clean up */
 	(void) dummy_rm_del_fault(fault1.id);
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
-	userlogc( (char*) "TestTransactions::test_RM_recovery_scan pass");
+	userlogc("TestTransactions::test_RM_recovery_scan pass");
 }
 
 /*
@@ -367,7 +389,7 @@ void TestTransactions::test_RM_recovery_scan()
  */
 void TestTransactions::test_register_resource()
 {
-	userlogc_debug( (char*) "TestTransactions::test_register_resource begin");
+	userlogc_debug("TestTransactions::test_register_resource begin");
 	// start a transaction running
 	BT_ASSERT_EQUAL(TX_OK, tx_open());
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
@@ -379,7 +401,7 @@ void TestTransactions::test_register_resource()
 	doSeven(ra);
 	// clean up
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
-	userlogc( (char*) "TestTransactions::test_register_resource pass");
+	userlogc("TestTransactions::test_register_resource pass");
 }
 
 /*
@@ -387,7 +409,7 @@ void TestTransactions::test_register_resource()
  */
 void TestTransactions::test_tx_set()
 {
-	userlogc( (char*) "TestTransactions::test_tx_set begin");
+	userlogc("TestTransactions::test_tx_set begin");
 	// tx_set_* return TX_PROTOCOL_ERROR if not call tx_open
 	BT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_set_transaction_control(TX_CHAINED));
 	BT_ASSERT_EQUAL(TX_PROTOCOL_ERROR, tx_set_commit_return(TX_COMMIT_COMPLETED));
@@ -398,5 +420,5 @@ void TestTransactions::test_tx_set()
 	BT_ASSERT_EQUAL(TX_EINVAL, tx_set_commit_return(2));
 	BT_ASSERT_EQUAL(TX_EINVAL, tx_set_transaction_timeout(-1));
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
-	userlogc( (char*) "TestTransactions::test_tx_set pass");
+	userlogc("TestTransactions::test_tx_set pass");
 }
