@@ -42,8 +42,7 @@
 	userlogc_debug("TestTransactions::check_info begin %ld=%ld %ld=%ld %ld=%ld %ld=%ld",	\
 		txi.when_return, (cr),	\
 		txi.transaction_control, (tc),	\
-		txi.transaction_timeout, (tt),	\
-		txi.transaction_state, (ts));	\
+		txi.transaction_timeout, (tt));	\
 	if ((cr) >= 0) BT_ASSERT_MESSAGE(msg, txi.when_return == (cr));	\
 	if ((tc) >= 0) BT_ASSERT_MESSAGE(msg, txi.transaction_control == (tc));	\
     if ((tt) >= 0) BT_ASSERT_MESSAGE(msg, txi.transaction_timeout == (tt));	\
