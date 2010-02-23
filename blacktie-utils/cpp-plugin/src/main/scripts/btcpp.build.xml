@@ -462,6 +462,7 @@
 			<arg value="-v" />
 			<arg value="--track-origins=yes" />
 			<arg value="--show-reachable=yes" />
+			<arg value="--leak-resolution=high" />
 			<arg value="../testsuite" />
 		</exec>
 	</target>
