@@ -22,21 +22,29 @@
 #include "userlogc.h"
 
 #define	BTDBGPOST	\
-	userlogc_debug("POST ASSERT:")
+	userlogc_debug("POST ASSERT %s:%d", __FILE__, __LINE__)
 #define	BTDBGPRE	\
-	userlogc_debug("PRE ASSERT:")
+	userlogc_debug("PRE ASSERT %s:%d", __FILE__, __LINE__)
+#define	CHKCOND(cond)	\
+	if (!(cond)) userlogc_debug("CHKCOND ASSERT FAILED %s:%d", __FILE__, __LINE__)
 
-#define BT_ASSERT(cond)	\
-	BTDBGPRE;CPPUNIT_ASSERT((cond));BTDBGPOST
-#define BT_ASSERT_MESSAGE(message,cond)	\
-	BTDBGPRE;CPPUNIT_ASSERT_MESSAGE((message),(cond));BTDBGPOST
+#define	BT_ASSERT(cond)	{\
+	bool c = (cond);	\
+	CHKCOND(c);	\
+	CPPUNIT_ASSERT(c);}
+
+#define	BT_ASSERT_MESSAGE(message,cond)	{\
+	bool c = (cond);	\
+	CHKCOND(c);	\
+	CPPUNIT_ASSERT_MESSAGE((message),c);} 
+
 #define BT_ASSERT_EQUAL(expected,actual)	\
 	BTDBGPRE;CPPUNIT_ASSERT_EQUAL((expected),(actual));BTDBGPOST
 #define BT_ASSERT_EQUAL_MESSAGE(message,expected,actual)	\
 	BTDBGPRE;CPPUNIT_ASSERT_EQUAL_MESSAGE((message),(expected),(actual));BTDBGPOST
 
 #define BT_FAIL(message)	\
-	BTDBGPRE;CPPUNIT_FAIL((message));BTDBGPOST
+	userlogc_debug("ASSERT FAIL %s:%d", __FILE__, __LINE__);CPPUNIT_FAIL((message))
 
 #define BT_ASSERT_DOUBLES_EQUAL(expected,actual,delta)	\
 	BTDBGPRE;CPPUNIT_ASSERT_DOUBLES_EQUAL((expected),(actual),(delta));BTDBGPOST
