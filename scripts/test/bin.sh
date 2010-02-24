@@ -22,6 +22,7 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 ./server -c linux -i 1&
+sleep 3
 
 # RUN THE C CLIENT
 $BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes=client.c
@@ -53,6 +54,7 @@ fg
 # RUN THE FOOAPP SERVER AGAIN
 cd $BLACKTIE_BIN_DIR/examples/xatmi/fooapp
 ./server -c linux -i 1&
+sleep 3
 
 # SHUTDOWN THE SERVER RUNNING THE XATMI ADMIN CLIENT
 cd $BLACKTIE_BIN_DIR/examples/admin/xatmi
@@ -80,6 +82,7 @@ if [ "$?" != "0" ]; then
 fi
 export BLACKTIE_CONFIGURATION_DIR=serv
 ./server -c linux -i 1 secure&
+sleep 3
 unset BLACKTIE_CONFIGURATION_DIR
 
 # RUN THE "guest" USER CLIENT
