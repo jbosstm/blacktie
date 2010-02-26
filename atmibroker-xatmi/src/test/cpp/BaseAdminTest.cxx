@@ -33,6 +33,7 @@ void BaseAdminTest::tearDown() {
 }
 
 int BaseAdminTest::callADMIN(char* command, char expect, int r, char** n) {
+	userlogc("Command was %s", command);
 	long  sendlen = strlen(command) + 1;
 	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
 	strcpy(sendbuf, command);
