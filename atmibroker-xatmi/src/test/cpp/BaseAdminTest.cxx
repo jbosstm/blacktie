@@ -41,6 +41,7 @@ int BaseAdminTest::callADMIN(char* command, char expect, int r, char** n) {
 	long  recvlen = 1;
 
 	int cd = ::tpcall((char*) "default_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
+	BT_ASSERT(r != -1);
 	BT_ASSERT(recvbuf[0] == expect);
 	BT_ASSERT(r == tperrno);
 
@@ -66,6 +67,11 @@ int BaseAdminTest::callBAR(int r) {
 
 
 	int cd = ::tpcall((char*) "BAR", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, 0);
+	if (r == 0) {
+		BT_ASSERT(cd != -1);
+	} else {
+		BT_ASSERT(cd == -1);
+	}
 	BT_ASSERT(r == tperrno);
 	if(tperrno == 0) {
 		BT_ASSERT(recvbuf[0] == '1');
