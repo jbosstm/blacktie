@@ -104,6 +104,10 @@ public class QueueReaper implements Runnable {
 						if ((server != null || serviceName.contains("_ADMIN_"))
 								&& isCreatedProgrammatically(serviceName)
 								&& consumerCount(serviceName) == 0) {
+							log
+									.warn("undeploy service pending for "
+											+ serviceName
+											+ " as consumer count is 0, will check again in 30 seconds");
 
 							this.interval = Integer.parseInt(prop.getProperty(
 									"QueueReaperInterval", "30")) * 1000;

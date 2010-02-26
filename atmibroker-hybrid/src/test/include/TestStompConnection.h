@@ -24,7 +24,7 @@
 
 class TestStompConnection: public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE( TestStompConnection);
-//	CPPUNIT_TEST( testLibStomp);
+	CPPUNIT_TEST( testLibStomp);
 	CPPUNIT_TEST( test);
 CPPUNIT_TEST_SUITE_END()
 ;
