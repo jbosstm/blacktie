@@ -118,6 +118,9 @@ public class QueueReaper implements Runnable {
 								undeployQueue(serviceName);
 								log.warn("undeploy service " + serviceName
 										+ " for consumer is 0");
+							} else {
+								log.info("undeploy service not required for "
+										+ serviceName);
 							}
 						} else {
 							log.debug("Could not determine the server for: "
