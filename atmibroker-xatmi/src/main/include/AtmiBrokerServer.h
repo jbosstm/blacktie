@@ -62,6 +62,7 @@ public:
 	void advertiseAtBootime();
 	int  getServiceStatus(char** str, char* svc);
 	long getServiceMessageCounter(char* serviceName);
+	long getServiceErrorCounter(char* serviceName);
 	void getResponseTime(char* serviceName, unsigned long* min, unsigned long* avg, unsigned long* max);
 	void server_done();
 	int  block();

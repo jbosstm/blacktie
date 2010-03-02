@@ -28,6 +28,7 @@ class TestAdmin: public BaseAdminTest {
 	CPPUNIT_TEST( testServerdone );
 	CPPUNIT_TEST( testStatus );
 	CPPUNIT_TEST( testMessageCounter );
+	CPPUNIT_TEST( testErrorCounter );
 	CPPUNIT_TEST( testServerPauseAndResume );
 	CPPUNIT_TEST_SUITE_END();
 
@@ -35,8 +36,9 @@ public:
 	void testServerdone();
 	void testStatus();
 	void testMessageCounter();
+	void testErrorCounter();
 	void testServerPauseAndResume();
-	char* getBARCounter();
+	char* getBARCounter(char*);
 	virtual void setUp();
 	virtual void tearDown();
 };

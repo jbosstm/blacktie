@@ -29,11 +29,11 @@ void TestAdmin::tearDown() {
 	BaseAdminTest::tearDown();
 }
 
-char* TestAdmin::getBARCounter() {
+char* TestAdmin::getBARCounter(char* command) {
 	char* n = NULL;
 	int cd;
 
-	cd = callADMIN((char*)"counter,BAR,", '1', 0, &n);	
+	cd = callADMIN(command, '1', 0, &n);	
 	BT_ASSERT(cd == 0);
 
 	return n;
@@ -48,11 +48,22 @@ void TestAdmin::testStatus() {
 }
 
 void TestAdmin::testMessageCounter() {
-	char* barCounter = getBARCounter();
+	char* barCounter = getBARCounter((char*)"counter,BAR,");
 	BT_ASSERT(strncmp(barCounter, "0", 1) == 0);
 	free (barCounter);
 	BT_ASSERT(callBAR(0) == 0);
-	barCounter = getBARCounter();
+	barCounter = getBARCounter((char*)"counter,BAR,");
+	BT_ASSERT(strncmp(barCounter, "1", 1) == 0);
+	free (barCounter);
+}
+
+void TestAdmin::testErrorCounter() {
+	char* barCounter = getBARCounter((char*)"error_counter,BAR,");
+	BT_ASSERT(strncmp(barCounter, "0", 1) == 0);
+	free (barCounter);
+	BT_ASSERT(callBAR(TPESVCFAIL, (char*)"error_counter_test") == -1);
+	barCounter = getBARCounter((char*)"error_counter,BAR,");
+	userlogc("error counter = %s", barCounter);
 	BT_ASSERT(strncmp(barCounter, "1", 1) == 0);
 	free (barCounter);
 }

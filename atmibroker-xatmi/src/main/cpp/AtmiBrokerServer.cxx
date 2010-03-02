@@ -251,6 +251,14 @@ long getServiceMessageCounter(char* serviceName) {
 	return 0;
 }
 
+long getServiceErrorCounter(char* serviceName) {
+	if (ptrServer) {
+		return ptrServer->getServiceErrorCounter(serviceName);
+	}
+
+	return 0;
+}
+
 void getResponseTime(char* serviceName, unsigned long* min, unsigned long* avg,
 		unsigned long* max) {
 	if (ptrServer) {
@@ -971,6 +979,24 @@ long AtmiBrokerServer::getServiceMessageCounter(char* serviceName) {
 	}
 	return 0;
 }
+
+long AtmiBrokerServer::getServiceErrorCounter(char* serviceName) {
+	for (std::vector<ServiceData>::iterator i = serviceData.begin(); i
+			!= serviceData.end(); i++) {
+		if (strncmp((*i).destination->getName(), serviceName,
+				XATMI_SERVICE_NAME_LENGTH) == 0) {
+			long counter = 0;
+			for (std::vector<ServiceDispatcher*>::iterator dispatcher =
+					(*i).dispatchers.begin(); dispatcher
+					!= (*i).dispatchers.end(); dispatcher++) {
+				counter += (*dispatcher)->getErrorCounter();
+			}
+			return counter;
+		}
+	}
+	return 0;
+}
+
 void AtmiBrokerServer::getResponseTime(char* serviceName, unsigned long* min,
 		unsigned long* avg, unsigned long* max) {
 	*min = 0;

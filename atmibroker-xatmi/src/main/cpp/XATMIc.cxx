@@ -34,6 +34,7 @@
 #include "AtmiBrokerServer.h"
 #include "AtmiBrokerMem.h"
 #include "AtmiBrokerEnv.h"
+#include "ServiceDispatcher.h"
 
 #include "txx.h"
 
@@ -859,6 +860,7 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 				len = ::bufferSize(idata, ilen);
 			}
 			Session* session = (Session*) getSpecific(SVC_SES);
+			ServiceDispatcher* dispatcher = (ServiceDispatcher*) getSpecific(SVC_KEY);
 			if (session != NULL) {
 				if (!session->getCanSend()
 						&& !(rval == TPFAIL && idata == NULL)) {
@@ -878,6 +880,10 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 					}
 					::send(session, "", NULL, 0, 0, flags, TPFAIL, TPESVCERR);
 					LOG4CXX_TRACE(loggerXATMI, (char*) "sent TPESVCERR");
+					if(dispatcher != NULL) {
+						LOG4CXX_TRACE(loggerXATMI, (char*) "update error counter");
+						dispatcher->updateErrorCounter();
+					}
 				} else {
 					if (rval != TPSUCCESS && rval != TPFAIL) {
 						rval = TPFAIL;
@@ -886,6 +892,10 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 					if (rval == TPFAIL) {
 						txx_rollback_only();
 						LOG4CXX_TRACE(loggerXATMI, (char*) "will send TPFAIL");
+						if(dispatcher != NULL) {
+							LOG4CXX_TRACE(loggerXATMI, (char*) "update error counter");
+							dispatcher->updateErrorCounter();
+						}
 					}
 
 					// TODO send a fail if there are any outstanding replies or

@@ -250,7 +250,6 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 						<< getSpecific(TSS_KEY));
 		::tpreturn(TPFAIL, TPESVCERR, NULL, 0, 0);
 		LOG4CXX_TRACE(logger, (char*) "Returned error");
-		error_counter++;
 	} else if (getSpecific(TSS_KEY) != NULL) {
 		txx_release_control(txx_unbind(true));
 	}
@@ -283,6 +282,10 @@ long ServiceDispatcher::getCounter() {
 
 long ServiceDispatcher::getErrorCounter() {
 	return error_counter;
+}
+
+void ServiceDispatcher::updateErrorCounter() {
+	error_counter ++;
 }
 
 void ServiceDispatcher::getResponseTime(unsigned long* min, unsigned long* avg,

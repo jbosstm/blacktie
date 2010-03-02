@@ -16,6 +16,7 @@
  * MA  02110-1301, USA.
  */
 #include "stdio.h"
+#include "string.h"
 #include "xatmi.h"
 #include "atmiBrokerXatmiMacro.h"
 
@@ -24,5 +25,9 @@ BLACKTIE_XATMI_DLL void BAR(TPSVCINFO * svcinfo) {
 	char* buffer = tpalloc((char*) "X_OCTET", NULL, sendlen);
 	buffer[0] = '1';
 
-	tpreturn(TPSUCCESS, 1, buffer, sendlen, 0);
+	if(strcmp(svcinfo->data, "error_counter_test") == 0) {
+		tpreturn(TPFAIL, 1, buffer, sendlen, 0);
+	} else {
+		tpreturn(TPSUCCESS, 1, buffer, sendlen, 0);
+	}
 }

@@ -41,6 +41,7 @@ public:
 	void shutdown();
 	long getCounter();
 	long getErrorCounter();
+	void updateErrorCounter();
 	void getResponseTime(unsigned long* min, unsigned long* avg, unsigned long* max);
 private:
 	void onMessage(MESSAGE message);

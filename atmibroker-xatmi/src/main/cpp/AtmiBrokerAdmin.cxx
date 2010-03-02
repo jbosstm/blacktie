@@ -84,6 +84,18 @@ void ADMIN(TPSVCINFO* svcinfo) {
 		} else {
 			LOG4CXX_WARN(loggerAtmiBrokerAdmin, (char*) "get counter failed with no service");
 		}
+	} else if(strncmp(req, "error_counter", 13) == 0) {
+		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get error_counter command");
+		long counter = 0;
+
+		if(svc != NULL) {
+			toReturn = tprealloc(toReturn, 16);
+			counter = getServiceErrorCounter(svc);
+			len += ACE_OS::sprintf(&toReturn[1], "%ld", counter);
+			toReturn[0] = '1';
+		} else {
+			LOG4CXX_WARN(loggerAtmiBrokerAdmin, (char*) "get error counter failed with no service");
+		}
 	} else if(strncmp(req, "pause", 5) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get pause command");
 		if(pauseServerByAdmin() == 0) {

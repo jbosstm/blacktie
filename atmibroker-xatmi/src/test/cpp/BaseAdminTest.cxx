@@ -46,7 +46,8 @@ int BaseAdminTest::callADMIN(char* command, char expect, int r, char** n) {
 	BT_ASSERT(recvbuf[0] == expect);
 	BT_ASSERT(r == tperrno);
 
-	if(ACE_OS::strncmp(command, "counter", 7) == 0) {
+	if(ACE_OS::strncmp(command, "counter", 7) == 0 ||
+	   ACE_OS::strncmp(command, "error_counter", 13) == 0) {
 		*n = (char*) malloc(recvlen -1);
 		memcpy(*n, &recvbuf[1], recvlen -1);
 	} else if(ACE_OS::strncmp(command, "status", 6) == 0) {
@@ -59,10 +60,13 @@ int BaseAdminTest::callADMIN(char* command, char expect, int r, char** n) {
 	return cd;
 }
 
-int BaseAdminTest::callBAR(int r) {
-	long  sendlen = strlen((char*)"test") + 1;
+int BaseAdminTest::callBAR(int r, char* buf) {
+	if(buf == NULL) {
+		buf = (char*) "test";
+	}
+	long  sendlen = strlen(buf) + 1;
 	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
-	strcpy(sendbuf, (char*) "test");
+	strcpy(sendbuf, buf);
 	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
 	long  recvlen = 1;
 
@@ -73,6 +77,7 @@ int BaseAdminTest::callBAR(int r) {
 	} else {
 		BT_ASSERT(cd == -1);
 	}
+	userlogc((char*) "r = %d, tperrno = %d", r, tperrno);
 	BT_ASSERT(r == tperrno);
 	if(tperrno == 0) {
 		BT_ASSERT(recvbuf[0] == '1');
