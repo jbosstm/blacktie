@@ -18,9 +18,11 @@
 /* Administration functions Tests */
 #include "TestAdmin.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestAdmin );
+#if 0
 #include "TestAdvertise.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestAdvertise );
 #include "TestUnadvertise.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestUnadvertise );
 //#include "TestTimeToLive.h"
 //CPPUNIT_TEST_SUITE_REGISTRATION( TestTimeToLive );
+#endif
