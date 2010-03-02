@@ -25,11 +25,11 @@
 
 class TestAdmin: public BaseAdminTest {
 	CPPUNIT_TEST_SUITE( TestAdmin );
-	//CPPUNIT_TEST( testServerdone );
-	//CPPUNIT_TEST( testStatus );
-	//CPPUNIT_TEST( testMessageCounter );
+	CPPUNIT_TEST( testServerdone );
+	CPPUNIT_TEST( testStatus );
+	CPPUNIT_TEST( testMessageCounter );
 	CPPUNIT_TEST( testErrorCounter );
-	//CPPUNIT_TEST( testServerPauseAndResume );
+	CPPUNIT_TEST( testServerPauseAndResume );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
