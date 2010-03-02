@@ -285,6 +285,7 @@ bool HybridSessionImpl::send(MESSAGE message) {
 			LOG4CXX_WARN(logger, (char*) "No remote endpoint to send to");
 		}
 	}
+	LOG4CXX_DEBUG(logger, "HybridSessionImpl::sent");
 	return toReturn;
 }
 
