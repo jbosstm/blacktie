@@ -915,6 +915,8 @@ Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "disconnect notified " << aServiceName);
 
+			SynchronizableObject* reconnect = NULL;
+
 			for (std::vector<ServiceDispatcher*>::iterator j =
 					(*i).dispatchers.begin(); j != (*i).dispatchers.end();) {
 				ServiceDispatcher* dispatcher = (*j);
@@ -925,6 +927,7 @@ Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
 					dispatcher->wait();
 					LOG4CXX_TRACE(loggerAtmiBrokerServer,
 							(char*) "Deleting dispatcher " << aServiceName);
+					reconnect = dispatcher->getReconnect();
 					delete dispatcher;
 					LOG4CXX_TRACE(loggerAtmiBrokerServer,
 							(char*) "Dispatcher deleted " << aServiceName);
@@ -939,6 +942,11 @@ Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
 			}
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "waited for dispatcher: " << aServiceName);
+			if (reconnect != NULL) {
+				LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+						(char*) "Deleting reconnect");
+				delete reconnect;
+			}
 
 			updateServiceStatus((*i).serviceInfo, (*i).func, false);
 			serviceData.erase(i);

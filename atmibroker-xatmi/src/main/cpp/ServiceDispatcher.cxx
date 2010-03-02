@@ -136,6 +136,9 @@ int ServiceDispatcher::svc(void) {
 				}
 			}
 			reconnect->unlock();
+		} else {
+			LOG4CXX_DEBUG(logger, (char*) "Freeing data");
+			free (message.data);
 		}
 	}
 	return 0;
@@ -293,4 +296,8 @@ void ServiceDispatcher::getResponseTime(unsigned long* min, unsigned long* avg,
 	*min = minResponseTime;
 	*avg = avgResponseTime;
 	*max = maxResponseTime;
+}
+
+SynchronizableObject* ServiceDispatcher::getReconnect() {
+	return reconnect;
 }

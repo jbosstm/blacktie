@@ -43,6 +43,7 @@ public:
 	long getErrorCounter();
 	void updateErrorCounter();
 	void getResponseTime(unsigned long* min, unsigned long* avg, unsigned long* max);
+	SynchronizableObject* getReconnect();
 private:
 	void onMessage(MESSAGE message);
 	static log4cxx::LoggerPtr logger;
