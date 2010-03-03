@@ -58,13 +58,6 @@ echo '0
 # PICK UP THE CLOSING SERVER
 fg
 
-# RUN THE MDB EXAMPLE
-cd $BLACKTIE_BIN_DIR/examples/mdb
-mvn install
-if [ "$?" != "0" ]; then
-	exit -1
-fi
-
 # RUN THE SECURE SERVER
 cd $BLACKTIE_BIN_DIR/examples/security
 $BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=SECURE -Dserver.includes=BarService.c
@@ -106,3 +99,12 @@ echo '0
 # PICK UP THE CLOSING SERVER
 fg
 
+# RUN THE MDB EXAMPLE
+cd $BLACKTIE_BIN_DIR/examples/mdb
+mvn install
+if [ "$?" != "0" ]; then
+	exit -1
+fi
+
+# LET THE USER KNOW THE OUTPUT
+echo "All samples ran OK"
