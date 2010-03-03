@@ -99,6 +99,8 @@
 		  	 </operation>
 		  	 <metric property="messageCounter" measurementType="dynamic" displayType="summary" displayName="service message counter"
 			  defaultOn="true" defaultInterval="60000" dataType="measurement" description="The number of messages"/>
+			 <metric property="errorCounter" measurementType="dynamic" displayType="summary" displayName="service failed message counter"
+			  defaultOn="true" defaultInterval="60000" dataType="measurement" description="The number of TPESVCFAILE and TPESVCERR messages"/>
 		  	 <metric property="queueDepth" measurementType="dynamic" displayType="summary" displayName="service queue depth"
 			  defaultOn="true" defaultInterval="60000" dataType="measurement" description="The depth of queue"/>
 		  	 <metric property="minResponseTime" measurementType="dynamic" displayType="summary" displayName="min response time"

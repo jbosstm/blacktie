@@ -190,6 +190,14 @@ CreateChildResourceFacet {
 					
 					report.addData(new MeasurementDataNumeric(request, value
 							.doubleValue()));
+				} else if (name.equals("errorCounter")) {
+					Number value = (Long)beanServerConnection.invoke(blacktieAdmin, 
+							"getErrorCounter",
+							new Object[] { serverName, serviceName}, 
+							new String[] {"java.lang.String", "java.lang.String"});
+					
+					report.addData(new MeasurementDataNumeric(request, value
+							.doubleValue()));
 				} else if (name.equals("minResponseTime")) {
 					String responseTime = (String)beanServerConnection.invoke(blacktieAdmin, 
 							"getResponseTime",

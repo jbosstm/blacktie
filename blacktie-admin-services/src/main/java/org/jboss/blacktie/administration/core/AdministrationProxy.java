@@ -509,6 +509,40 @@ public class AdministrationProxy {
 
 		return counter;
 	}
+	
+	public long getErrorCounterById(String serverName, int id,
+			String serviceName) {
+		log.trace("getErrorCounterById");
+		long counter = 0;
+		String command = "error_counter," + serviceName + ",";
+		
+		try {
+			Response buf = callAdminService(serverName, id, command);
+			if (buf != null) {
+				byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
+				counter = Long.parseLong(new String(received, 1,
+						received.length - 1));
+			}
+		} catch (ConnectionException e) {
+			log.error("call server " + serverName + " id " + id
+					+ " failed with " + e.getTperrno());
+		}
+
+		return counter;
+	}
+	
+	public long getErrorCounter(String serverName, String serviceName) {
+		log.trace("getErrorCounter");
+		long counter = 0;
+		List<Integer> ids = listRunningInstanceIds(serverName);
+
+		for (int i = 0; i < ids.size(); i++) {
+			counter += getErrorCounterById(serverName, ids.get(i),
+					serviceName);
+		}
+
+		return counter;
+	}
 
 	public Boolean reloadDomain() {
 		log.trace("reloadDomain");

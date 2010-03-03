@@ -136,4 +136,15 @@ public interface BlacktieAdministration {
 	 * Get message queue depth
 	 */
 	public int getQueueDepth(String serverName, String serviceName);
+	
+	/**
+	 * Retrieves the error counter for a service from all servers
+	 */
+	public long getErrorCounter(String serverName, String serviceName);
+
+	/**
+	 * Retrieves the error counter for a service from specify server
+	 */
+	public long getErrorCounterById(String serverName, int id,
+			String serviceName);
 }

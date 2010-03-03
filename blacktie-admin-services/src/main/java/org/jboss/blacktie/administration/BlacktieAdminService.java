@@ -257,4 +257,16 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 	public String getServerName(String serviceName) {
 		return administrationProxy.getServerName(serviceName);
 	}
+
+	/**
+	 * Get error counter for service
+	 */
+	public long getErrorCounter(String serverName, String serviceName) {
+		return administrationProxy.getErrorCounter(serverName, serviceName);
+	}
+
+	public long getErrorCounterById(String serverName, int id,
+			String serviceName) {
+		return administrationProxy.getErrorCounterById(serverName, id, serviceName);
+	}
 }

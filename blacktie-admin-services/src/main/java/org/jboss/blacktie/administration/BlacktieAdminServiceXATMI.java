@@ -132,6 +132,11 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 				String serviceName = getString(parameters);
 				long response = getServiceCounter(serverName, serviceName);
 				toReturn = convertLong(response);
+			} else if (operation.equals("getErrorCounter")) {
+				String serverName = getString(parameters);
+				String serviceName = getString(parameters);
+				long response = getErrorCounter(serverName, serviceName);
+				toReturn = convertLong(response);
 			} else if (operation.equals("reloadDomain")) {
 				boolean response = reloadDomain();
 				toReturn = convertBoolean(response);
@@ -428,5 +433,14 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 
 	public String getServerName(String serviceName) {
 		return administrationProxy.getServerName(serviceName);
+	}
+	
+	public long getErrorCounter(String serverName, String serviceName) {
+		return administrationProxy.getErrorCounter(serverName, serviceName);
+	}
+
+	public long getErrorCounterById(String serverName, int id,
+			String serviceName) {
+		return administrationProxy.getErrorCounterById(serverName, id, serviceName);
 	}
 }
