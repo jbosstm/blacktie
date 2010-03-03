@@ -73,8 +73,6 @@ int server_sigint_handler_callback(int sig_type) {
 	ptrServer->shutdown();
 	userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
 			(char*) "SIGINT Detected: Shutdown complete");
-	//exit (1);
-	/* NOTREACHED*/
 	return -1;
 
 }
@@ -190,8 +188,7 @@ int serverinit(int argc, char** argv) {
 				ptrServer->advertiseAtBootime();
 
 				// install a handler for the default set of signals (namely, SIGINT and SIGTERM)
-				(ptrServer->getSigHandler()).setSigHandler(
-						server_sigint_handler_callback);
+				(env->getSignalHandler()).addSignalHandler(server_sigint_handler_callback, true);
 
 				userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
 						(char*) "Server %d Running", serverid);

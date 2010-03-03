@@ -18,75 +18,64 @@
 #ifndef _ATMIBROKERSIGNALHANDLER_H
 #define _ATMIBROKERSIGNALHANDLER_H
 
+#include <vector>
 #include "atmiBrokerCoreMacro.h"
-#include "SynchronizableObject.h"
-
+#include "log4cxx/logger.h"
+#include "ace/OS_NS_signal.h"
 #include "ace/Sig_Handler.h"
-#include "ace/Signal.h"
 
-class BLACKTIE_CORE_DLL AtmiBrokerSignalGuard
-{
-public:
-	AtmiBrokerSignalGuard(ACE_Sig_Set& bss);
-	~AtmiBrokerSignalGuard();
-
-	int blockCount() { return gCnt_; }
-	int lastPending() { return pending_ ? sig_ : 0; }
-	void lastSignal(int sig, bool pending) { sig_ = sig; pending_ = pending;}
-	int lastSignal() { return sig_; }
-	int blockSignals(bool block);
-	int unblockSignals();
-
-private:
-	ACE_Sig_Guard *guard_;	// the object that implements signal blocking
-	ACE_Sig_Set &bss_;	// the set of signals to block
-	int gCnt_;  // number of unmatched calls to guard()
-	int sig_;	// the last signal received by this thread
-	bool pending_;	// and whether the handlers need to be ran
-};
+extern int default_handlesigs[];
+extern int default_blocksigs[];
 
 class BLACKTIE_CORE_DLL AtmiBrokerSignalHandler : public ACE_Event_Handler
 {
 public:
-	AtmiBrokerSignalHandler(int (*func)(int signum) = NULL);
-	AtmiBrokerSignalHandler(int (*func)(int signum), int* hsignals, int hsigcnt, int* bsignals, int bsigcnt);
+	AtmiBrokerSignalHandler(int* hsignals = default_handlesigs, int* bsignals = default_blocksigs);
 	virtual ~AtmiBrokerSignalHandler();
 
-	void setSigHandler(int (*sigHandler)(int signum)) { sigHandler_ = sigHandler; }
-	virtual int handle_signal (int signum, siginfo_t *, ucontext_t *);
-	virtual int handle_exit (ACE_Process *);
+	virtual int handle_signal(int signum, siginfo_t *, ucontext_t *);
 
 	/**
-	 * If sigRestart is true start blocking signals (ie system calls will not be interrupted
-	 * by the receipt of a signal). Signals will be blocked until the number of
-	 * outstanding block calls is cancelled by an equal number of unblock calls.
-	 *
-	 * If sigRestart is false and a signal is received then any system call is interrupted
-	 * and the condition is notified when the matching call to unblockSignals is made.
-	 * For XATMI users this translates into tperrno being set to TPEGOTSIG.
+	 * Add a handler to be called when one of the signals in the set of handleable signals
+	 * is raised.
+	 * @param sigHandler
+	 * 	the function to be called when the signal is raised. If any handler returns -1 then
+	 * 	the process will exit after all handlers have finished
+	 * @param front
+	 *  if true the handler is placed at the front of the handler list
 	 */
-	void blockSignals(bool sigRestart);
+	void addSignalHandler(int (*sigHandler)(int signum), bool front = false);
 
-	/**
-	 * Reverses the effect of @see AtmiBrokerSignalHandler::blockSignals.
-	 * @return
-	 * 	the signal number of any signal delivered since the protected code block was entered
-	 * 	otherwise zero is returned
-	 */
+    /**
+     * If sigRestart is true start blocking signals (ie system calls will not be interrupted
+     * by the receipt of a signal). Signals will be blocked until the next call to
+     * unblockSignals is made.
+     *
+     * If sigRestart is false and a signal is received then any system call is interrupted
+     * and the condition is notified when the matching call to unblockSignals is made.
+     * For XATMI users this translates into tperrno being set to TPEGOTSIG.
+     * 
+     * @return 0 on success
+     */
+	int blockSignals(bool sigRestart);
+
+    /**
+     * Reverses the effect of @see AtmiBrokerSignalHandler::blockSignals.
+     * @return
+     *  the number of signals delivered since the protected code block was entered or
+     *  a negative value if there was an error
+     */
 	int unblockSignals();
 
-	static log4cxx::LoggerPtr logger_;
+private:
+	sigset_t bss_;
+	sigset_t hss_;
+	std::vector<int (*)(int)> handlers_;	// the actual signal handlers
+
+	int block_sigs(sigset_t*, sigset_t*, bool, bool);
+
 private:
 	static ACE_Sig_Handler handler_;
-
-	void init(int (*func)(int signum), int* hsignals, int hsigcnt, int* bsignals, int bsigcnt);
-
-private:
-//	SynchronizableObject lock_;
-	ACE_Sig_Set bss_;	// set of signals to block during guarded sections of code
-	ACE_Sig_Set hss_;	// set of signals to handle
-
-	int (*sigHandler_)(int signum);	// the actual signal handler
+	static log4cxx::LoggerPtr logger_;
 };
-
 #endif // _ATMIBROKERSIGNALHANDLER_H

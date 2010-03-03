@@ -137,7 +137,6 @@ int ServiceDispatcher::svc(void) {
 			}
 			reconnect->unlock();
 		} else {
-			LOG4CXX_DEBUG(logger, (char*) "Freeing data");
 			free (message.data);
 		}
 	}

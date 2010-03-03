@@ -26,9 +26,7 @@
 #include "Session.h"
 #include "ConnectionManager.h"
 #include "SynchronizableObject.h"
-#include "AtmiBrokerSignalHandler.h"
 #include "AtmiBrokerEnv.h"
-#include "AtmiBrokerSignalHandler.h"
 
 class AtmiBrokerClient {
 public:
@@ -37,7 +35,6 @@ public:
 	Session* createSession(int& id, char* serviceName);
 	Session* getSession(int id);
 	void closeSession(int id);
-	AtmiBrokerSignalHandler& getSigHandler() { return this->sigHandler; }
 
 protected:
 	Connection* currentConnection;
@@ -45,7 +42,6 @@ protected:
 	ConnectionManager clientConnectionManager;
 	int nextSessionId;
 	SynchronizableObject* lock;
-	AtmiBrokerSignalHandler sigHandler;
 };
 
 // CLIENT

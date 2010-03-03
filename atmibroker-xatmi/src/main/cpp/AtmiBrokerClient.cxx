@@ -51,8 +51,6 @@ int client_sigint_handler_callback(int sig_type) {
 			(char*) "SIGINT Detected: Shutting down client this may take several minutes");
 	clientdone();
 	LOG4CXX_WARN(loggerAtmiBrokerClient, (char*) "Shutdown complete");
-	exit(1);
-	/* NOTREACHED*/
 	return -1;
 }
 
@@ -63,7 +61,7 @@ int clientinit() {
 	client_lock.lock();
 	if (ptrAtmiBrokerClient == NULL) {
 		try {
-			AtmiBrokerEnv::get_instance();
+			AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
 			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit called");
 			ptrAtmiBrokerClient = new AtmiBrokerClient();
 			if (!clientInitialized) {
@@ -76,7 +74,7 @@ int clientinit() {
 				setSpecific(TPE_KEY, TSS_TPESYSTEM);
 			} else {
 				// install a handler for SIGINT and SIGTERM
-				(ptrAtmiBrokerClient->getSigHandler()).setSigHandler(client_sigint_handler_callback);
+				(env->getSignalHandler()).addSignalHandler(client_sigint_handler_callback);
 
 				LOG4CXX_DEBUG(loggerAtmiBrokerClient,
 						(char*) "Client Initialized");
@@ -154,7 +152,7 @@ Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
 		lock->unlock();
 
 		session = clientConnection->createSession(id, serviceName);
-		session->setSigHandler(&sigHandler);
+		session->setSigHandler(&(AtmiBrokerEnv::get_instance()->getSignalHandler()));
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "created session: " << id
 				<< " send: " << session->getCanSend() << " recv: "
 				<< session->getCanRecv());

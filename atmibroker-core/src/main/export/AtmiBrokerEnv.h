@@ -25,6 +25,7 @@
 #include <vector>
 
 #include "AtmiBrokerEnvXml.h"
+#include "AtmiBrokerSignalHandler.h"
 
 class BLACKTIE_CORE_DLL AtmiBrokerEnv {
 
@@ -43,6 +44,7 @@ public:
 	char* getTransportLibrary(char* serviceName);
 
 	std::vector<envVar_t>& getEnvVariableInfoSeq();
+	AtmiBrokerSignalHandler& getSignalHandler() { return this->sigHandler; }
 
 	static void set_configuration(const char* configuration);
 	static AtmiBrokerEnv* get_instance();
@@ -57,6 +59,7 @@ private:
 
 	std::vector<envVar_t> envVariableInfoSeq;
 	bool readEnvironment;
+	AtmiBrokerSignalHandler sigHandler;
 
 	static AtmiBrokerEnv* ptrAtmiBrokerEnv;
 	static void set_environment_dir(const char* configuration);
