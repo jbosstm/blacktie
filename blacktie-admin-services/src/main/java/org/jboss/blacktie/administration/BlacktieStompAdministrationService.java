@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
@@ -75,6 +76,8 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 	private MBeanServerConnection beanServerConnection;
 	private Properties prop = new Properties();
+
+	public static Hashtable<String, Long> QUEUE_CREATION_TIMES = new Hashtable<String, Long>();
 
 	public BlacktieStompAdministrationService() throws IOException,
 			ConfigurationException, ConnectionException {
@@ -196,6 +199,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 	int deployQueue(String serviceName) {
 		log.trace("deployQueue: " + serviceName);
 		int result = 0;
+		long currentTime = QUEUE_CREATION_TIMES.get(serviceName);
 
 		try {
 			ObjectName objName = new ObjectName(
@@ -204,13 +208,17 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 			queue = isDeployQueue(objName, serviceName);
 			if (queue == false) {
-				beanServerConnection.invoke(objName, "deployQueue",
-						new Object[] { serviceName, null }, new String[] {
-								"java.lang.String", "java.lang.String" });
-				ObjectName queueName = new ObjectName(
-						"jboss.messaging.destination:service=Queue,name="
-								+ serviceName);
-				setSecurityConfig(queueName, serviceName);
+				synchronized (QUEUE_CREATION_TIMES) {
+					QUEUE_CREATION_TIMES.put(serviceName, System
+							.currentTimeMillis());
+					beanServerConnection.invoke(objName, "deployQueue",
+							new Object[] { serviceName, null }, new String[] {
+									"java.lang.String", "java.lang.String" });
+					ObjectName queueName = new ObjectName(
+							"jboss.messaging.destination:service=Queue,name="
+									+ serviceName);
+					setSecurityConfig(queueName, serviceName);
+				}
 			}
 
 			if (queue == false || !serviceName.contains("_ADMIN_")) {
@@ -231,6 +239,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			}
 		} catch (Throwable t) {
 			log.error("Could not deploy queue of " + serviceName, t);
+			QUEUE_CREATION_TIMES.put(serviceName, currentTime);
 		}
 
 		return result;

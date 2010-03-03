@@ -101,7 +101,10 @@ public class QueueReaper implements Runnable {
 						String serviceName = ((Queue) dest).getQueueName();
 						String server = (String) prop.get("blacktie."
 								+ serviceName + ".server");
-						if ((server != null || serviceName.contains("_ADMIN_"))
+						long queueReapCheck = System.currentTimeMillis();
+						if (isOlderThanReapCheck(serviceName, queueReapCheck)
+								&& (server != null || serviceName
+										.contains("_ADMIN_"))
 								&& isCreatedProgrammatically(serviceName)
 								&& consumerCount(serviceName) == 0) {
 							log
@@ -114,7 +117,9 @@ public class QueueReaper implements Runnable {
 							Thread.sleep(this.interval);
 
 							// double check consumer is 0
-							if (consumerCount(serviceName) == 0) {
+							if (isOlderThanReapCheck(serviceName,
+									queueReapCheck)
+									&& consumerCount(serviceName) == 0) {
 								undeployQueue(serviceName);
 								log.warn("undeploy service " + serviceName
 										+ " for consumer is 0");
@@ -153,6 +158,15 @@ public class QueueReaper implements Runnable {
 				"jboss.messaging.destination:service=Queue,name=" + serviceName);
 		return (Boolean) beanServerConnection.getAttribute(objName,
 				"CreatedProgrammatically");
+	}
+
+	private boolean isOlderThanReapCheck(String serviceName, long queueReapCheck) {
+		// TODO THIS WILL NOT CLUSTER AS IT ASSUMES THE QUEUE WAS CREATED BY
+		// THIS SERVER
+		synchronized (BlacktieStompAdministrationService.QUEUE_CREATION_TIMES) {
+			return BlacktieStompAdministrationService.QUEUE_CREATION_TIMES
+					.get(serviceName) < queueReapCheck;
+		}
 	}
 
 	int undeployQueue(String serviceName) {
