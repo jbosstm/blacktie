@@ -199,6 +199,11 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 	int deployQueue(String serviceName) {
 		log.trace("deployQueue: " + serviceName);
 		int result = 0;
+		if (serviceName == null) {
+			throw new RuntimeException("Service name was null");
+		} else if (QUEUE_CREATION_TIMES == null) {
+			throw new RuntimeException("QUEUE_CREATION_TIMES was null");
+		}
 		long currentTime = QUEUE_CREATION_TIMES.get(serviceName);
 
 		try {
