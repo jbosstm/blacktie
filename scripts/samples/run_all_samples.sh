@@ -1,18 +1,9 @@
 # ALLOW JOBS TO BE BACKGROUNDED
 set -m
 
-# SET UP THE DISTRIBUTION
-cd ../../
-rm -rf dist
-mkdir dist
-cp blacktie/target/blacktie-*-bin.tar.gz dist
-cd dist
-tar xfz blacktie-*-bin.tar.gz
-cd blacktie*/
+# MAKE SURE THE ENVIRONMENT VARIABLES ARE SET
 export VAR=`pwd`
 sed -i "s=REPLACE_WITH_INSTALL_LOCATION=$VAR=g" setenv.sh
-
-# MAKE SURE THE ENVIRONMENT VARIABLES ARE SET
 . setenv.sh
 
 # RUN THE FOOAPP SERVER
