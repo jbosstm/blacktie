@@ -59,9 +59,9 @@ int clientinit() {
 
 	client_lock.lock();
 	if (ptrAtmiBrokerClient == NULL) {
-		AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
-
 		try {
+			// This must be in the try catch as the configuration may not exist
+			AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
 			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit called");
 			ptrAtmiBrokerClient = new AtmiBrokerClient();
 			if (!clientInitialized) {
