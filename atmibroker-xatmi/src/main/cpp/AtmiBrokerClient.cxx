@@ -73,7 +73,8 @@ int clientinit() {
 				setSpecific(TPE_KEY, TSS_TPESYSTEM);
 			} else {
 				// install a handler for SIGINT and SIGTERM
-				(env->getSignalHandler()).addSignalHandler(client_sigint_handler_callback);
+				(env->getSignalHandler()).addSignalHandler(
+						client_sigint_handler_callback);
 
 				LOG4CXX_DEBUG(loggerAtmiBrokerClient,
 						(char*) "Client Initialized");
@@ -88,6 +89,8 @@ int clientinit() {
 		toReturn = 0;
 	}
 	client_lock.unlock();
+	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit returning "
+			<< toReturn);
 	return toReturn;
 }
 
@@ -105,11 +108,12 @@ int clientdone() {
 				(char*) "clientdone deleted Corba Client");
 	}
 	client_lock.unlock();
-
+	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientdone returning 0");
 	return 0;
 }
 
-AtmiBrokerClient::AtmiBrokerClient() : currentConnection(NULL), nextSessionId(0) {
+AtmiBrokerClient::AtmiBrokerClient() :
+	currentConnection(NULL), nextSessionId(0) {
 	try {
 		lock = new SynchronizableObject();
 		clientInitialized = true;
@@ -151,7 +155,8 @@ Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
 		lock->unlock();
 
 		session = clientConnection->createSession(id, serviceName);
-		session->setSigHandler(&(AtmiBrokerEnv::get_instance()->getSignalHandler()));
+		session->setSigHandler(
+				&(AtmiBrokerEnv::get_instance()->getSignalHandler()));
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "created session: " << id
 				<< " send: " << session->getCanSend() << " recv: "
 				<< session->getCanRecv());
