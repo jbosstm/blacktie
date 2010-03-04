@@ -87,7 +87,6 @@ int clientinit() {
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		}
 
-		AtmiBrokerEnv::discard_instance();
 	} else {
 		toReturn = 0;
 	}

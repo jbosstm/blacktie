@@ -199,8 +199,6 @@ int serverinit(int argc, char** argv) {
 			toReturn = -1;
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		}
-
-		AtmiBrokerEnv::discard_instance();
 	}
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverinit returning: "
 			<< toReturn);

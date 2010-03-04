@@ -104,6 +104,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
+			<classifier>${bpa}</classifier><artifactId>atmibroker-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.blacktie</groupId>
 			<classifier>${bpa}</classifier><artifactId>atmibroker-tx</artifactId>
 		</dependency>
 		<dependency>
