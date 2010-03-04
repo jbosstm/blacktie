@@ -146,8 +146,6 @@ int serverinit(int argc, char** argv) {
 
 	if (toReturn != -1 && ptrServer == NULL) {
 		const char* configuration = getConfiguration();
-		AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
-
 		if (configuration != NULL) {
 			AtmiBrokerEnv::set_configuration(configuration);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
@@ -155,6 +153,7 @@ int serverinit(int argc, char** argv) {
 							<< configuration);
 		}
 
+		AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
 		try {
 			std::stringstream sname;
 			std::stringstream sid;
