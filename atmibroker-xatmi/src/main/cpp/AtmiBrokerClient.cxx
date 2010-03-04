@@ -155,8 +155,10 @@ Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
 		lock->unlock();
 
 		session = clientConnection->createSession(id, serviceName);
+
 		session->setSigHandler(
 				&(AtmiBrokerEnv::get_instance()->getSignalHandler()));
+		AtmiBrokerEnv::discard_instance();
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "created session: " << id
 				<< " send: " << session->getCanSend() << " recv: "
 				<< session->getCanRecv());

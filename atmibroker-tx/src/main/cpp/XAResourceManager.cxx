@@ -268,6 +268,8 @@ bool XAResourceManager::isRecoverable(XID &xid)
 	if (AtmiBrokerEnv::get_instance()->getenv((char*) "BLACKTIE_RC_LOG_NAME", NULL) != NULL)
 		sid = sid_;
 
+	AtmiBrokerEnv::discard_instance();
+
 	if (rmid == rmid_ && sid == sid_) {
 		/*
 		 * If this XID does not appear in the recovery log then the server must have failed

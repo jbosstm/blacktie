@@ -290,6 +290,7 @@ XAResourceManager * XAResourceManagerFactory::createRM(
 	FTRACE(xarflogger, "ENTER");
 	AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
 	const char* serverId = env->getenv("BLACKTIE_SERVER_ID", "0");
+	AtmiBrokerEnv::discard_instance();
 
 	// make sure the XA_RESOURCE XML config is valid
 	if (rmp->resourceMgrId == 0 || rmp->xasw == NULL || rmp->xalib == NULL) {
