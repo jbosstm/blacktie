@@ -192,7 +192,6 @@ int serverinit(int argc, char** argv) {
 				LOG4CXX_INFO(loggerAtmiBrokerServer, (char*) "Server "
 						<< serverid << " Running");
 			}
-
 		} catch (...) {
 			LOG4CXX_ERROR(loggerAtmiBrokerServer,
 					(char*) "Server startup failed");
@@ -200,6 +199,8 @@ int serverinit(int argc, char** argv) {
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		}
 	}
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverinit returning: "
+			<< toReturn);
 	return toReturn;
 }
 
@@ -215,6 +216,7 @@ int serverdone() {
 				(char*) "serverdone deleted Corba server");
 
 	}
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverdone returning 0");
 	//	if (configFromCmdline) {
 	//		char* toFree = ACE_OS::getenv("BLACKTIE_CONFIGURATION");
 	//		free(toFree);
