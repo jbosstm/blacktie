@@ -153,8 +153,8 @@ int serverinit(int argc, char** argv) {
 							<< configuration);
 		}
 
-		AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
 		try {
+			AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
 			std::stringstream sname;
 			std::stringstream sid;
 			sname << "BLACKTIE_SERVER_NAME=" << domain << server << serverid;
