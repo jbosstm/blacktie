@@ -146,6 +146,8 @@ int serverinit(int argc, char** argv) {
 
 	if (toReturn != -1 && ptrServer == NULL) {
 		const char* configuration = getConfiguration();
+		AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
+
 		if (configuration != NULL) {
 			AtmiBrokerEnv::set_configuration(configuration);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
@@ -154,7 +156,6 @@ int serverinit(int argc, char** argv) {
 		}
 
 		try {
-			AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
 			std::stringstream sname;
 			std::stringstream sid;
 			sname << "BLACKTIE_SERVER_NAME=" << domain << server << serverid;
@@ -198,6 +199,8 @@ int serverinit(int argc, char** argv) {
 			toReturn = -1;
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		}
+
+		AtmiBrokerEnv::discard_instance();
 	}
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverinit returning: "
 			<< toReturn);

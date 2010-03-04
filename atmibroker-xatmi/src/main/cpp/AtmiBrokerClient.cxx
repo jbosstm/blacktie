@@ -59,8 +59,9 @@ int clientinit() {
 
 	client_lock.lock();
 	if (ptrAtmiBrokerClient == NULL) {
+		AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
+
 		try {
-			AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
 			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit called");
 			ptrAtmiBrokerClient = new AtmiBrokerClient();
 			if (!clientInitialized) {
@@ -85,6 +86,8 @@ int clientinit() {
 					(char*) "clientinit Unexpected exception");
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		}
+
+		AtmiBrokerEnv::discard_instance();
 	} else {
 		toReturn = 0;
 	}

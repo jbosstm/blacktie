@@ -39,14 +39,14 @@
 	TXINFO txi;	\
 	BT_ASSERT_MESSAGE(msg, rv == tx_info(&txi));	\
 	userlogc_debug("TestTransactions::check_info begin %ld=%ld %ld=%ld %ld=%ld %ld=%ld",	\
-		txi.when_return, (cr),	\
-		txi.transaction_control, (tc),	\
-		txi.transaction_timeout, (tt),	\
-		txi.transaction_state, (ts));	\
-	if ((cr) >= 0l) BT_ASSERT_MESSAGE(msg, txi.when_return == (cr));	\
-	if ((tc) >= 0l) BT_ASSERT_MESSAGE(msg, txi.transaction_control == (tc));	\
-    if ((tt) >= 0l) BT_ASSERT_MESSAGE(msg, txi.transaction_timeout == (tt));	\
-    if ((ts) >= 0l) BT_ASSERT_MESSAGE(msg, txi.transaction_state == (ts));}
+		txi.when_return, (long) (cr),	\
+		txi.transaction_control, (long) (tc),	\
+		txi.transaction_timeout, (long) (tt),	\
+		txi.transaction_state, (long) (ts));	\
+	if ((long) (cr) >= 0l) BT_ASSERT_MESSAGE(msg, txi.when_return == (long) (cr));	\
+	if ((long) (tc) >= 0l) BT_ASSERT_MESSAGE(msg, txi.transaction_control == (long) (tc));	\
+    if ((long) (tt) >= 0l) BT_ASSERT_MESSAGE(msg, txi.transaction_timeout == (long) (tt));	\
+    if ((long) (ts) >= 0l) BT_ASSERT_MESSAGE(msg, txi.transaction_state == (long) (ts));}
 
 
 void TestTransactions::setUp()
