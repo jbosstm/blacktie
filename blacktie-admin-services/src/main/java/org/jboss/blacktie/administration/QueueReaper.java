@@ -102,9 +102,7 @@ public class QueueReaper implements Runnable {
 						String server = (String) prop.get("blacktie."
 								+ serviceName + ".server");
 						long queueReapCheck = System.currentTimeMillis();
-						if (isOlderThanReapCheck(serviceName, queueReapCheck)
-								&& (server != null || serviceName
-										.contains("_ADMIN_"))
+						if ((server != null || serviceName.contains("_ADMIN_"))
 								&& isCreatedProgrammatically(serviceName)
 								&& consumerCount(serviceName) == 0) {
 							log
@@ -164,8 +162,16 @@ public class QueueReaper implements Runnable {
 		// TODO THIS WILL NOT CLUSTER AS IT ASSUMES THE QUEUE WAS CREATED BY
 		// THIS SERVER
 		synchronized (BlacktieStompAdministrationService.QUEUE_CREATION_TIMES) {
-			return BlacktieStompAdministrationService.QUEUE_CREATION_TIMES
-					.get(serviceName) < queueReapCheck;
+			boolean toReturn = false;
+			Long creationTime = BlacktieStompAdministrationService.QUEUE_CREATION_TIMES
+					.get(serviceName);
+			if (creationTime != null) {
+				toReturn = creationTime < queueReapCheck;
+				if (!toReturn) {
+					log.warn("New queue will be ignored: " + serviceName);
+				}
+			}
+			return toReturn;
 		}
 	}
 
