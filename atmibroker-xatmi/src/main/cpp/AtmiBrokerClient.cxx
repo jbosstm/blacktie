@@ -23,7 +23,6 @@
 
 #include "AtmiBrokerClient.h"
 #include "xatmi.h"
-#include "userlog.h"
 #include "AtmiBrokerClientControl.h"
 #include "AtmiBrokerMem.h"
 #include "AtmiBrokerEnv.h"

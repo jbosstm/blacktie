@@ -27,7 +27,6 @@
 #include "AtmiBrokerServer.h"
 #include "AtmiBrokerPoaFac.h"
 #include "AtmiBrokerEnv.h"
-#include "userlog.h"
 #include "AtmiBrokerServerControl.h"
 #include "AtmiBrokerMem.h"
 #include "txx.h"
@@ -66,12 +65,11 @@ char server[30];
 int serverid = 0;
 
 int server_sigint_handler_callback(int sig_type) {
-	userlog(
-			log4cxx::Level::getInfo(),
+	LOG4CXX_INFO(
 			loggerAtmiBrokerServer,
 			(char*) "SIGINT Detected: Shutting down server this may take several minutes");
 	ptrServer->shutdown();
-	userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
+	LOG4CXX_INFO(loggerAtmiBrokerServer,
 			(char*) "SIGINT Detected: Shutdown complete");
 	return -1;
 
@@ -110,8 +108,8 @@ int parsecmdline(int argc, char** argv) {
 
 	int last = getopt.opt_ind();
 	if (r == 0 && last < argc) {
-		userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerServer,
-				(char*) "opt_ind is %d, server is %s", last, argv[last]);
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "opt_ind is " << last
+				<< ", server is " << argv[last]);
 		ACE_OS::strncpy(server, argv[last], 30);
 	}
 
@@ -180,7 +178,7 @@ int serverinit(int argc, char** argv) {
 					return -1;
 
 				if (errorBootAdminService == 2) {
-					userlog(log4cxx::Level::getWarn(), loggerAtmiBrokerServer,
+					LOG4CXX_WARN(loggerAtmiBrokerServer,
 							(char*) "Maybe the same server id running");
 					throw std::exception();
 				}
@@ -188,14 +186,15 @@ int serverinit(int argc, char** argv) {
 				ptrServer->advertiseAtBootime();
 
 				// install a handler for the default set of signals (namely, SIGINT and SIGTERM)
-				(env->getSignalHandler()).addSignalHandler(server_sigint_handler_callback, true);
+				(env->getSignalHandler()).addSignalHandler(
+						server_sigint_handler_callback, true);
 
-				userlog(log4cxx::Level::getInfo(), loggerAtmiBrokerServer,
-						(char*) "Server %d Running", serverid);
+				LOG4CXX_INFO(loggerAtmiBrokerServer, (char*) "Server "
+						<< serverid << " Running");
 			}
 
 		} catch (...) {
-			userlog(log4cxx::Level::getError(), loggerAtmiBrokerServer,
+			LOG4CXX_ERROR(loggerAtmiBrokerServer,
 					(char*) "Server startup failed");
 			toReturn = -1;
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
@@ -376,9 +375,9 @@ AtmiBrokerServer::AtmiBrokerServer() {
 					(char*) "server_init(): finished.");
 		}
 	} catch (CORBA::Exception& e) {
-		userlog(log4cxx::Level::getError(), loggerAtmiBrokerServer,
-				(char*) "serverinit - Unexpected CORBA exception: %s",
-				e._name());
+		LOG4CXX_ERROR(loggerAtmiBrokerServer,
+				(char*) "serverinit - Unexpected CORBA exception: "
+						<< e._name());
 		setSpecific(TPE_KEY, TSS_TPESYSTEM);
 	}
 }

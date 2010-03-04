@@ -28,7 +28,6 @@
 
 #include "AtmiBrokerPoaFac.h"
 
-#include "userlog.h"
 #include "log4cxx/logger.h"
 
 log4cxx::LoggerPtr loggerAtmiBrokerPoaFac(log4cxx::Logger::getLogger(

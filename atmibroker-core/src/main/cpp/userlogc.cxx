@@ -27,7 +27,6 @@
 #include "log4cxx/propertyconfigurator.h"
 #include "log4cxx/logmanager.h"
 
-#include "userlog.h"
 extern "C" {
 #include "userlogc.h"
 }
@@ -104,17 +103,6 @@ void userlogc_warn(const char * format, ...) {
 	}
 }
 
-void userlog(const log4cxx::LevelPtr& level, const char * format, ...) {
-	if (loggerAtmiBrokerLogc->isEnabledFor(level)) {
-		char str[MAXLOGSIZE];
-		va_list args;
-		va_start(args, format);
-		vsnprintf(str, MAXLOGSIZE, format, args);
-		va_end(args);
-		LOG4CXX_LOGLS(loggerAtmiBrokerLogc, level, str);
-	}
-}
-
 extern void initializeLogger() {
 	if (!loggerInitialized) {
 		char* config = ACE_OS::getenv("LOG4CXXCONFIG");
@@ -124,17 +112,5 @@ extern void initializeLogger() {
 			log4cxx::PropertyConfigurator::configure("log4cxx.properties");
 		}
 		loggerInitialized = true;
-	}
-}
-
-void userlog(const log4cxx::LevelPtr& level, log4cxx::LoggerPtr& logger,
-		const char * format, ...) {
-	if (logger->isEnabledFor(level)) {
-		char str[MAXLOGSIZE];
-		va_list args;
-		va_start(args, format);
-		vsnprintf(str, MAXLOGSIZE, format, args);
-		va_end(args);
-		LOG4CXX_LOGLS(logger, level, str);
 	}
 }

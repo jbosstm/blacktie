@@ -22,15 +22,14 @@
 #include "ace/OS_NS_string.h"
 #include "AtmiBrokerServerControl.h"
 #include "xatmi.h"
-#include "userlog.h"
 #include "string.h"
 
 log4cxx::LoggerPtr loggerAtmiBrokerAdmin(log4cxx::Logger::getLogger(
-			"AtmiBrokerAdmin"));
+		"AtmiBrokerAdmin"));
 
 void ADMIN(TPSVCINFO* svcinfo) {
 	char* toReturn = NULL;
-	long  len = 1;
+	long len = 1;
 	char* req = svcinfo->data;
 	toReturn = tpalloc((char*) "X_OCTET", NULL, len);
 	toReturn[0] = '0';
@@ -39,27 +38,33 @@ void ADMIN(TPSVCINFO* svcinfo) {
 	char* svc = strtok(NULL, ",");
 	LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get request is " << req);
 
-	if(strncmp(req, "serverdone", 10) == 0) {
+	if (strncmp(req, "serverdone", 10) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get serverdone command");
 		toReturn[0] = '1';
 		server_sigint_handler_callback(0);
-	} else if(strncmp(req, "advertise", 9) == 0) {
+	} else if (strncmp(req, "advertise", 9) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get advertise command");
-		if(svc != NULL && strcmp(svc, svcinfo->name) != 0 && advertiseByAdmin(svc) == 0) {
-			LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "advertise service " << svc << " OK");
+		if (svc != NULL && strcmp(svc, svcinfo->name) != 0 && advertiseByAdmin(
+				svc) == 0) {
+			LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "advertise service "
+					<< svc << " OK");
 			toReturn[0] = '1';
 		} else {
-			LOG4CXX_WARN(loggerAtmiBrokerAdmin, (char*) "advertise service " << svc << " FAIL");
+			LOG4CXX_WARN(loggerAtmiBrokerAdmin, (char*) "advertise service "
+					<< svc << " FAIL");
 		}
-	} else if(strncmp(req, "unadvertise", 11) == 0) {
+	} else if (strncmp(req, "unadvertise", 11) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get unadvertise command");
-		if (svc != NULL && strcmp(svc, svcinfo->name) != 0 && tpunadvertise(svc) == 0) {
+		if (svc != NULL && strcmp(svc, svcinfo->name) != 0
+				&& tpunadvertise(svc) == 0) {
 			toReturn[0] = '1';
-			LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "unadvertise service " << svc << " OK");
+			LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "unadvertise service "
+					<< svc << " OK");
 		} else {
-			LOG4CXX_WARN(loggerAtmiBrokerAdmin, (char*) "unadvertise service " << svc << " FAIL");
+			LOG4CXX_WARN(loggerAtmiBrokerAdmin, (char*) "unadvertise service "
+					<< svc << " FAIL");
 		}
-	} else if(strncmp(req, "status", 6) == 0) {
+	} else if (strncmp(req, "status", 6) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get status command");
 		char* status = NULL;
 
@@ -70,62 +75,65 @@ void ADMIN(TPSVCINFO* svcinfo) {
 			free(status);
 			toReturn[0] = '1';
 		} else {
-			LOG4CXX_WARN(loggerAtmiBrokerAdmin, (char*) "get server status FAIL");
+			LOG4CXX_WARN(loggerAtmiBrokerAdmin,
+					(char*) "get server status FAIL");
 		}
-	} else if(strncmp(req, "counter", 7) == 0) {
+	} else if (strncmp(req, "counter", 7) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get counter command");
 		long counter = 0;
 
-		if(svc != NULL) {
+		if (svc != NULL) {
 			toReturn = tprealloc(toReturn, 16);
 			counter = getServiceMessageCounter(svc);
 			len += ACE_OS::sprintf(&toReturn[1], "%ld", counter);
 			toReturn[0] = '1';
 		} else {
-			LOG4CXX_WARN(loggerAtmiBrokerAdmin, (char*) "get counter failed with no service");
+			LOG4CXX_WARN(loggerAtmiBrokerAdmin,
+					(char*) "get counter failed with no service");
 		}
-	} else if(strncmp(req, "error_counter", 13) == 0) {
-		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get error_counter command");
+	} else if (strncmp(req, "error_counter", 13) == 0) {
+		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin,
+				(char*) "get error_counter command");
 		long counter = 0;
 
-		if(svc != NULL) {
+		if (svc != NULL) {
 			toReturn = tprealloc(toReturn, 16);
 			counter = getServiceErrorCounter(svc);
 			len += ACE_OS::sprintf(&toReturn[1], "%ld", counter);
 			toReturn[0] = '1';
 		} else {
-			LOG4CXX_WARN(loggerAtmiBrokerAdmin, (char*) "get error counter failed with no service");
+			LOG4CXX_WARN(loggerAtmiBrokerAdmin,
+					(char*) "get error counter failed with no service");
 		}
-	} else if(strncmp(req, "pause", 5) == 0) {
+	} else if (strncmp(req, "pause", 5) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get pause command");
-		if(pauseServerByAdmin() == 0) {
+		if (pauseServerByAdmin() == 0) {
 			toReturn[0] = '1';
 		}
-	} else if(strncmp(req, "resume", 6) == 0) {
+	} else if (strncmp(req, "resume", 6) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get resume command");
-		if(resumeServerByAdmin() == 0) {
+		if (resumeServerByAdmin() == 0) {
 			toReturn[0] = '1';
 		}
-	} else if(strncmp(req, "responsetime", 12) == 0) {
+	} else if (strncmp(req, "responsetime", 12) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get responsetime command");
 		unsigned long min;
 		unsigned long avg;
 		unsigned long max;
 
-		if(svc != NULL) {
+		if (svc != NULL) {
 			toReturn = tprealloc(toReturn, 256);
 			getResponseTime(svc, &min, &avg, &max);
-			LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "min = " << min 
-					                          << (char*)" avg=" << avg
-											  << (char*)" max=" << max);
+			LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "min = " << min
+					<< (char*) " avg=" << avg << (char*) " max=" << max);
 			len += ACE_OS::sprintf(&toReturn[1], "%d,%d,%d", min, avg, max);
 			toReturn[0] = '1';
 		} else {
-			LOG4CXX_WARN(loggerAtmiBrokerAdmin, (char*) "get response time failed with no service");
+			LOG4CXX_WARN(loggerAtmiBrokerAdmin,
+					(char*) "get response time failed with no service");
 		}
 	}
 
-	userlog(log4cxx::Level::getDebug(), loggerAtmiBrokerAdmin,
-			(char*) "service done");
+	LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "service done");
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }

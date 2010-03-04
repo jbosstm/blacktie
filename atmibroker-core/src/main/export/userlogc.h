@@ -24,6 +24,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+extern BLACKTIE_CORE_DLL void initializeLogger();
 extern BLACKTIE_CORE_DLL void userlogc(const char * format, ...);
 extern BLACKTIE_CORE_DLL void userlogc_trace(const char * format, ...);
 extern BLACKTIE_CORE_DLL void userlogc_debug(const char * format, ...);

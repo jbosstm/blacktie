@@ -22,7 +22,7 @@
 #include <stdarg.h>
 #include <iostream>
 
-#include "userlog.h"
+#include "userlogc.h"
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerEnvXml.h"
 #include "SynchronizableObject.h"
