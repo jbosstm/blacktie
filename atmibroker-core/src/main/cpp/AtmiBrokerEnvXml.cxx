@@ -472,8 +472,8 @@ static void XMLCALL startElement
 						service.advertised = false;
 					}
 				} else if (strcmp(atts[i], "size") == 0) {
-					LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "storing MaxCache " << last_value);
 					service.poolSize = (short) atol(atts[i+1]);
+					LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "storing size " << service.poolSize);
 				}
 			}
 			LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "setting transportlib");
@@ -513,9 +513,10 @@ static void XMLCALL endElement
 	strcpy(last_element, name);
 	strcpy(last_value, value);
 
-	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "storing element " << last_element << (char *) " value=" << last_value);
+	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "storing element: " << last_element);
 
 	if (strcmp(last_element, "DOMAIN") == 0) {
+		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "storing domain value: " << last_value);
 		storedElement = true;
 		strcpy(domain, last_value);
 	} else if (strcmp(last_element, "XA_RESOURCE") == 0) {
@@ -596,7 +597,11 @@ static void XMLCALL characterData
 		value[i] = cdata[j];
 	}
 	value[i] = '\0';
-	LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "value is '%s'" << value);
+	if (value[0] == '\n') {
+		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "value starts with newline (may be other character data)");
+	} else {
+		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "value is :" << value);
+	}
 }
 
 bool AtmiBrokerEnvXml::parseXmlDescriptor(
