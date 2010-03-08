@@ -335,7 +335,7 @@ int AtmiBrokerEnv::readenv() {
 						<< ENVIRONMENT_DIR << "/Environment.xml");
 			} else {
 				LOG4CXX_ERROR(loggerAtmiBrokerEnv,
-						(char*) "can not parse ./Environment.xml");
+						(char*) "can not parse Environment.xml");
 			}
 			throw std::exception();
 		}
