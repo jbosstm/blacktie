@@ -24,6 +24,7 @@
 #include "xatmi.h"
 #include "string.h"
 
+extern const char* version;
 log4cxx::LoggerPtr loggerAtmiBrokerAdmin(log4cxx::Logger::getLogger(
 		"AtmiBrokerAdmin"));
 
@@ -78,6 +79,11 @@ void ADMIN(TPSVCINFO* svcinfo) {
 			LOG4CXX_WARN(loggerAtmiBrokerAdmin,
 					(char*) "get server status FAIL");
 		}
+	} else if (strncmp(req, "version", 7) == 0) {
+		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get version command");
+		toReturn = tprealloc(toReturn, strlen(version) + 1);
+		len += ACE_OS::sprintf(&toReturn[1], "%s", version);
+		toReturn[0] = '1';
 	} else if (strncmp(req, "counter", 7) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get counter command");
 		long counter = 0;

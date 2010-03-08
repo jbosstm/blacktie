@@ -38,6 +38,7 @@ char* TestAdmin::getBARCounter(char* command) {
 
 	return n;
 }
+
 void TestAdmin::testStatus() {
 	int cd;
 
@@ -45,6 +46,17 @@ void TestAdmin::testStatus() {
 	BT_ASSERT(cd == 0);
 	cd = callADMIN((char*)"status,BAR,", '1', 0, NULL);
 	BT_ASSERT(cd == 0);
+}
+
+void TestAdmin::testVersion() {
+	int cd;
+	char* ver = NULL;
+
+	cd = callADMIN((char*)"version", '1', 0, &ver);
+	BT_ASSERT(cd == 0);
+	userlogc((char*)"version is %s", ver);
+	BT_ASSERT(strcmp(ver, "2.0-MR3-SNAPSHOT") == 0);
+	free(ver);
 }
 
 void TestAdmin::testMessageCounter() {

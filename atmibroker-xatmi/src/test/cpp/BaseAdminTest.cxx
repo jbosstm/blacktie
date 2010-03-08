@@ -47,7 +47,8 @@ int BaseAdminTest::callADMIN(char* command, char expect, int r, char** n) {
 	BT_ASSERT(r == tperrno);
 
 	if(ACE_OS::strncmp(command, "counter", 7) == 0 ||
-	   ACE_OS::strncmp(command, "error_counter", 13) == 0) {
+	   ACE_OS::strncmp(command, "error_counter", 13) == 0 ||
+	   ACE_OS::strncmp(command, "version", 7) == 0) {
 		*n = (char*) malloc(recvlen);
 		memset(*n, 0, recvlen);
 		memcpy(*n, &recvbuf[1], recvlen -1);

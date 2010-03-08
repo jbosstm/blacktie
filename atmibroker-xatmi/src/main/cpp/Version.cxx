@@ -15,34 +15,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef TEST_ADMIN_H
-#define TEST_ADMIN_H
-
-#include <cppunit/extensions/HelperMacros.h>
-#include <cppunit/TestFixture.h>
-
-#include "BaseAdminTest.h"
-
-class TestAdmin: public BaseAdminTest {
-	CPPUNIT_TEST_SUITE( TestAdmin );
-	CPPUNIT_TEST( testServerdone );
-	CPPUNIT_TEST( testStatus );
-	CPPUNIT_TEST( testMessageCounter );
-	CPPUNIT_TEST( testErrorCounter );
-	CPPUNIT_TEST( testServerPauseAndResume );
-	CPPUNIT_TEST( testVersion );
-	CPPUNIT_TEST_SUITE_END();
-
-public:
-	void testServerdone();
-	void testStatus();
-	void testMessageCounter();
-	void testErrorCounter();
-	void testServerPauseAndResume();
-	void testVersion();
-	char* getBARCounter(char*);
-	virtual void setUp();
-	virtual void tearDown();
-};
-
-#endif
+#define QUOTEME_(x) #x
+#define QUOTEME(x) QUOTEME_(x)
+const char* version = QUOTEME(SOFTWARE_VERSION);

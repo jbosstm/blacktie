@@ -252,6 +252,7 @@
 				<define name="TAO_COMP"/>
 				<define name="${export.dll}" if="define.dll" />
 				<define name="WIN32" if="is-msvc"/>
+				<define name="SOFTWARE_VERSION" value="${project.version}" />
 			</defineset>
 
 			<includepath path="${src.export}" if="export.dir" />
