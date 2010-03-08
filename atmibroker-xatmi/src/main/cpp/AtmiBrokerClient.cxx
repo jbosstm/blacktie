@@ -83,7 +83,7 @@ int clientinit() {
 			}
 		} catch (...) {
 			LOG4CXX_ERROR(loggerAtmiBrokerClient,
-					(char*) "clientinit Unexpected exception");
+					(char*) "clientinit failed");
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		}
 

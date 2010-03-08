@@ -331,13 +331,11 @@ int AtmiBrokerEnv::readenv() {
 			readEnvironment = true;
 		} else {
 			if (ENVIRONMENT_DIR != NULL) {
-				LOG4CXX_ERROR(loggerAtmiBrokerEnv,
-						(char*) "can not read configuration for: "
-								<< ENVIRONMENT_DIR);
+				LOG4CXX_ERROR(loggerAtmiBrokerEnv, (char*) "can not parse "
+						<< ENVIRONMENT_DIR << "/Environment.xml");
 			} else {
-				LOG4CXX_ERROR(
-						loggerAtmiBrokerEnv,
-						(char*) "can not read configuration default configuration");
+				LOG4CXX_ERROR(loggerAtmiBrokerEnv,
+						(char*) "can not parse ./Environment.xml");
 			}
 			throw std::exception();
 		}

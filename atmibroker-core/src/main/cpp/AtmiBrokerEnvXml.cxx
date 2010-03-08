@@ -634,7 +634,9 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(
 	if (schemaDir) {
 		ACE_OS::snprintf(schemaPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"Environment.xsd", schemaDir);
 	} else {
-		ACE_OS::strcpy(schemaPath, "Environment.xsd");
+		LOG4CXX_ERROR(loggerAtmiBrokerEnvXml,
+				(char*) "BLACKTIE_SCHEMA_DIR is not set, cannot validate configuration");
+		return false;
 	}
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "schemaPath is "
@@ -642,6 +644,8 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(
 
 	XsdValidator validator;
 	if (validator.validate(schemaPath, aDescriptorFileName) == false) {
+		LOG4CXX_ERROR(loggerAtmiBrokerEnvXml,
+				(char*) "Environment.xml did not validate against Environment.xsd");
 		return false;
 	}
 	struct stat s; /* file stats */
