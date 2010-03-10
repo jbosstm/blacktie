@@ -24,27 +24,37 @@
 extern "C" void BAR(TPSVCINFO *svcinfo);
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_btadmin_server_RunServer_serverinit(JNIEnv *, jobject) {
+JNIEXPORT jint JNICALL Java_org_jboss_blacktie_btadmin_server_RunServer_serverinit(JNIEnv * env, jobject, jstring serverNameIn, jstring idIn) {
 	int exit_status = -1;
-	userlogc((char*) "serverinit called");
+	jboolean isCopy;
+	const char* serverName;
+	const char* id;
+
+	serverName = (env)->GetStringUTFChars(serverNameIn, &isCopy);
+	id = (env)->GetStringUTFChars(idIn, &isCopy);
+	userlogc((char*) "serverinit called: %s %s", serverName, id);
+
 #ifdef WIN32
-	char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"default", (char*)"-i", (char*)"1"};
+	char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)serverName, (char*)"-i", (char*)id};
 #else
-	char* argv[] = {(char*)"server", (char*)"-c", (char*)"linux", (char*)"default", (char*)"-i", (char*)"1"};
+	char* argv[] = {(char*)"server", (char*)"-c", (char*)"linux", (char*)serverName, (char*)"-i", (char*)id};
 #endif
 	int argc = sizeof(argv)/sizeof(char*);
 
 	exit_status = serverinit(argc, argv);
 	exit_status = tpadvertise((char*) "BAR", BAR);
+
+	(env)->ReleaseStringUTFChars(serverNameIn , serverName); // release jstring
+	(env)->ReleaseStringUTFChars(idIn , id); // release jstring
 	userlogc((char*) "serverinit returning");
-	return;
+	return exit_status;
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_btadmin_server_RunServer_serverdone(JNIEnv *, jobject) {
+JNIEXPORT jint JNICALL Java_org_jboss_blacktie_btadmin_server_RunServer_serverdone(JNIEnv *, jobject) {
 	int exit_status = -1;
 	userlogc((char*) "serverdone called");
 	exit_status = serverdone();
 	userlogc((char*) "serverdone returning");
-	return;
+	return exit_status;
 }

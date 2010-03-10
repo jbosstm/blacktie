@@ -32,11 +32,15 @@ public class ShutdownTest extends TestCase {
 
 	public void setUp() throws Exception {
 		this.commandHandler = new CommandHandler();
-		runServer.serverinit();
+		if (runServer.serverinit("default", "1") != 0) {
+			fail("Could not start the server");
+		}
 	}
 
 	public void tearDown() {
-		runServer.serverdone();
+		if (runServer.serverdone() != 0) {
+			fail("Could not stop the server");
+		}
 	}
 
 	public void testShutdownWithoutArgs() throws IOException,
