@@ -34,6 +34,11 @@ public interface BlacktieAdministration {
 	 * Retrieve the software version of domain
 	 */
 	public String getSoftwareVersion();
+	
+	/**
+	 * Retrieve the server version 
+	 */
+	public String getServerVersionById(String serverName, int id);
 
 	/**
 	 * Retrieve the full list of servers

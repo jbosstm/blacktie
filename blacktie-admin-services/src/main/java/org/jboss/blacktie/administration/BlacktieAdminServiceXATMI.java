@@ -164,6 +164,11 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 				String serviceName = getString(parameters);
 				int depth = getQueueDepth(serverName, serviceName);
 				toReturn = (new StringBuffer().append(depth)).toString().getBytes();
+			} else if( operation.equals("getServerVersionById")) {
+				String serverName = getString(parameters);
+				int id = getInt(parameters);
+				String response = getServerVersionById(serverName, id);
+				toReturn = response.getBytes();
 			}
 
 			X_OCTET buffer = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
@@ -442,5 +447,9 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 	public long getErrorCounterById(String serverName, int id,
 			String serviceName) {
 		return administrationProxy.getErrorCounterById(serverName, id, serviceName);
+	}
+
+	public String getServerVersionById(String serverName, int id) {
+		return administrationProxy.getServerVersionById(serverName, id);
 	}
 }

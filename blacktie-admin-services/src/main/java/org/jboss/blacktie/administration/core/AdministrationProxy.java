@@ -631,4 +631,26 @@ public class AdministrationProxy {
 	public String getServerName(String serviceName) {
 		return prop.getProperty("blacktie." + serviceName + ".server");
 	}
+	
+	public String getServerVersionById(String serverName, int id) {
+		log.trace("getServerVersionById");
+		String command = "version";
+		Response buf = null;
+		String version = null;
+		
+		try {
+			buf = callAdminService(serverName, id, command);
+			if (buf != null) {
+				byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
+				if (received[0] == '1') {
+					version = new String(received, 1, received.length - 1);
+					log.debug("version is " + version);
+				}
+			}
+		} catch (ConnectionException e) {
+			log.error("call server " + serverName + " id " + id
+					+ " failed with " + e.getTperrno());
+		}
+		return version;
+	}
 }

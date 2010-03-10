@@ -213,7 +213,6 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 	public OperationResult invokeOperation(String name, Configuration params) {
 		OperationResult result = new OperationResult();
 		int id = Integer.parseInt(params.getSimpleValue("id", "0"));
-		String serviceName = params.getSimpleValue("service", null);
 
 		if (name.equals("shutdown")) {
 			try {
@@ -232,6 +231,17 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 			} catch (Exception e) {
 				log.error("call getInstancesCounter failed with " + e);
 				result.setErrorMessage("call getInstancesCounter failed with " + e);
+			}
+		} else if(name.equals("getSoftwareVersion")) {
+			try {
+				String version = (String)beanServerConnection.invoke(blacktieAdmin, 
+						"getServerVersionById",
+						new Object[] { serverName, id}, 
+						new String[] {"java.lang.String", "int"});
+				result.setSimpleResult(version);
+			} catch (Exception e) {
+				log.error("call getServerVersionById failed with " + e);
+				result.setErrorMessage("call getServerVersionById failed with " + e);
 			}
 		}
 
