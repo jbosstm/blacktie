@@ -31,6 +31,7 @@ import javax.management.remote.JMXServiceURL;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.btadmin.commands.ListRunningInstanceIds;
 import org.jboss.blacktie.btadmin.commands.ListRunningServers;
 import org.jboss.blacktie.btadmin.commands.Shutdown;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
@@ -75,6 +76,10 @@ public class CommandHandler {
 			} else if (commandName.equals("listRunningServers")) {
 				log.trace("Will retrieve the list of running servers");
 				command = new ListRunningServers();
+			} else if (commandName.equals("listRunningInstanceIds")) {
+				log
+						.trace("Will retrieve the list of running instance ids for a server");
+				command = new ListRunningInstanceIds();
 			} else {
 				log.error("Command was not known: " + commandName);
 			}
@@ -155,13 +160,11 @@ public class CommandHandler {
 	 */
 	public static void output(String operationName, List list) {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("Output from: " + operationName + "\n");
+		buffer.append("Output from: " + operationName);
 		int i = 0;
 		Iterator iterator = list.iterator();
 		while (iterator.hasNext()) {
-			buffer
-					.append("Element: " + i + " Value: " + iterator.next()
-							+ "\n");
+			buffer.append("\nElement: " + i + " Value: " + iterator.next());
 			i++;
 		}
 		log.info(buffer);

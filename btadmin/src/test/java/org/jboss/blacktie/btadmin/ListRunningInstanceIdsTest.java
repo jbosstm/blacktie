@@ -25,7 +25,7 @@ import junit.framework.TestCase;
 
 import org.jboss.blacktie.btadmin.server.RunServer;
 
-public class ShutdownTest extends TestCase {
+public class ListRunningInstanceIdsTest extends TestCase {
 	private RunServer runServer = new RunServer();
 
 	private CommandHandler commandHandler;
@@ -40,54 +40,42 @@ public class ShutdownTest extends TestCase {
 		}
 	}
 
-	public void testShutdownWithoutArgs() throws IOException,
-			MalformedObjectNameException, NullPointerException {
-		String command = "shutdown";
+	public void testListRunningInstanceIdsWithoutServerName()
+			throws IOException, MalformedObjectNameException,
+			NullPointerException {
+		String command = "listRunningInstanceIds";
 		if (commandHandler.handleCommand(command.split(" ")) != -1) {
 			fail("Command was successful");
 		}
 	}
 
-	public void testShutdownWithoutId() throws IOException,
-			MalformedObjectNameException, NullPointerException {
-		String command = "shutdown default";
+	public void testListRunningInstanceIdsWithAdditionalParameters()
+			throws IOException, MalformedObjectNameException,
+			NullPointerException {
+		String command = "listRunningInstanceIds default 1";
 		if (commandHandler.handleCommand(command.split(" ")) != -1) {
 			fail("Command was successful");
 		}
 	}
 
-	public void testShutdownWithNonIntId() throws IOException,
-			MalformedObjectNameException, NullPointerException {
-		String command = "shutdown default one";
-		if (commandHandler.handleCommand(command.split(" ")) != -1) {
-			fail("Command was successful");
-		}
-	}
-
-	public void testShutdownWithoutServerName() throws IOException,
-			MalformedObjectNameException, NullPointerException {
-		String command = "shutdown 1";
-		if (commandHandler.handleCommand(command.split(" ")) != -1) {
-			fail("Command was successful");
-		}
-	}
-
-	public void testShutdown() throws IOException,
-			MalformedObjectNameException, NullPointerException {
-		if (runServer.serverinit("default", "1") != 0) {
-			fail("Could not start the server");
-		}
-		String command = "shutdown default 1";
+	public void testListRunningInstanceIdsWithNonRunningServer()
+			throws IOException, MalformedObjectNameException,
+			NullPointerException {
+		String command = "listRunningInstanceIds foo";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command was not successful");
 		}
 	}
 
-	public void testShutdownStoppedServer() throws IOException,
-			MalformedObjectNameException, NullPointerException {
-		String command = "shutdown default 1";
-		if (commandHandler.handleCommand(command.split(" ")) == 0) {
-			fail("Command was successful");
+	public void testListRunningInstanceIdsWithRunningServer()
+			throws IOException, MalformedObjectNameException,
+			NullPointerException {
+		if (runServer.serverinit("default", "1") != 0) {
+			fail("Could not start the server");
+		}
+		String command = "listRunningInstanceIds default";
+		if (commandHandler.handleCommand(command.split(" ")) != 0) {
+			fail("Command was not successful");
 		}
 	}
 }
