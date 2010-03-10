@@ -23,11 +23,20 @@ import javax.management.MalformedObjectNameException;
 
 import junit.framework.TestCase;
 
+import org.jboss.blacktie.btadmin.server.RunServer;
+
 public class ShutdownTest extends TestCase {
+	private RunServer runServer = new RunServer();
+
 	private CommandHandler commandHandler;
 
 	public void setUp() throws Exception {
 		this.commandHandler = new CommandHandler();
+		runServer.serverinit();
+	}
+
+	public void tearDown() {
+		runServer.serverdone();
 	}
 
 	public void testShutdownWithoutArgs() throws IOException,
