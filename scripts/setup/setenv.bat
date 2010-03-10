@@ -27,4 +27,5 @@ set PATH=%PATH%;.
 
 setlocal ENABLEDELAYEDEXPANSION
 FOR /R codeGeneration %%G IN (*.jar) DO set CLASSPATH=!CLASSPATH!;%%G
+FOR /R btadmin %%G IN (*.jar) DO set CLASSPATH=!CLASSPATH!;%%G
 endlocal & set CLASSPATH=%CLASSPATH%

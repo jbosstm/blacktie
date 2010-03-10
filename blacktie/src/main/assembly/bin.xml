@@ -25,6 +25,18 @@
 	<moduleSets>
 		<moduleSet>
 			<includes>
+				<include>org.jboss.blacktie:btadmin
+				</include>
+			</includes>
+			<binaries>
+				<outputDirectory>btadmin</outputDirectory>
+				<outputFileNameMapping>${module.artifactId}.${module.extension}
+				</outputFileNameMapping>
+				<unpack>false</unpack>
+			</binaries>
+		</moduleSet>
+		<moduleSet>
+			<includes>
 				<include>org.jboss.blacktie:codeGeneration
 				</include>
 			</includes>
@@ -96,6 +108,11 @@
 			<includes>
 				<include>*</include>
 			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../btadmin/src/main/scripts</directory>
+			<outputDirectory>bin</outputDirectory>
+			<fileMode>0755</fileMode>
 		</fileSet>
 		<fileSet>
 			<directory>../codeGeneration/src/main/scripts/
