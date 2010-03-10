@@ -65,7 +65,7 @@ public interface Command {
 	 * @throws IOException
 	 *             IPC errors
 	 */
-	public boolean invoke(MBeanServerConnection beanServerConnection,
+	public int invoke(MBeanServerConnection beanServerConnection,
 			ObjectName blacktieAdmin) throws InstanceNotFoundException,
 			MBeanException, ReflectionException, IOException;
 }

@@ -67,9 +67,10 @@ public class Shutdown implements Command {
 		}
 	}
 
-	public boolean invoke(MBeanServerConnection beanServerConnection,
+	public int invoke(MBeanServerConnection beanServerConnection,
 			ObjectName blacktieAdmin) throws InstanceNotFoundException,
 			MBeanException, ReflectionException, IOException {
+		int exitStatus = -1;
 		Boolean result = (Boolean) beanServerConnection.invoke(blacktieAdmin,
 				"shutdown", new Object[] { serverName, id }, new String[] {
 						"java.lang.String", "int" });
@@ -78,6 +79,9 @@ public class Shutdown implements Command {
 		} else {
 			log.error("Server could not be shutdown (may already be stopped)");
 		}
-		return result;
+		if (result) {
+			exitStatus = 0;
+		}
+		return exitStatus;
 	}
 }

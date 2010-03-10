@@ -62,8 +62,8 @@ public class CommandHandler {
 		this.blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
 	}
 
-	public boolean handleCommand(String[] args) {
-		boolean commandSuccessful = false;
+	public int handleCommand(String[] args) {
+		int exitStatus = -1;
 		if (args.length < 1) {
 			log.error("No command was provided");
 		} else {
@@ -127,8 +127,8 @@ public class CommandHandler {
 						log.trace("Arguments initialized");
 						try {
 							// Try to invoke the command
-							commandSuccessful = command.invoke(
-									beanServerConnection, blacktieAdmin);
+							exitStatus = command.invoke(beanServerConnection,
+									blacktieAdmin);
 							log.trace("Command invoked");
 						} catch (Exception e) {
 							log.error("Could not invoke the command: "
@@ -144,7 +144,7 @@ public class CommandHandler {
 				}
 			}
 		}
-		return commandSuccessful;
+		return exitStatus;
 	}
 
 	/**

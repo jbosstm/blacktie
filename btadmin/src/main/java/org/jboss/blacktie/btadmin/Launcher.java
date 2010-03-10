@@ -43,31 +43,28 @@ public class Launcher {
 			BasicConfigurator.configure();
 		}
 
-		boolean commandSuccessful = false;
+		int exitStatus = -1;
 		try {
 			CommandHandler commandHandler = new CommandHandler();
-			commandSuccessful = commandHandler.handleCommand(args);
+			exitStatus = commandHandler.handleCommand(args);
+			if (exitStatus == 0) {
+				log.trace("Command was successful");
+			} else {
+				log.trace("Command failed");
+			}
 		} catch (MalformedURLException e) {
 			log.error("JMXURL was incorrect: " + e.getMessage(), e);
 		} catch (IOException e) {
-			log
-					.error("Could not connect to mbean server: "
-							+ e.getMessage(), e);
+			log.error("No connect to mbean server: " + e.getMessage(), e);
 		} catch (MalformedObjectNameException e) {
 			log.error("MBean name was badly structured: " + e.getMessage(), e);
 		} catch (NullPointerException e) {
 			log.error("MBean name raised an NPE: " + e.getMessage(), e);
-		} catch (ConfigurationException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		} catch (ConfigurationException e) {
+			log.error("BlackTie Configuration invalid: " + e.getMessage(), e);
 		}
 
-		// Check whether we need to exit the launcher
-		if (commandSuccessful) {
-			log.trace("Command was successfull");
-		} else {
-			log.trace("Command failed");
-			System.exit(-1);
-		}
+		// Exit the launcher with the value of the command
+		System.exit(exitStatus);
 	}
 }

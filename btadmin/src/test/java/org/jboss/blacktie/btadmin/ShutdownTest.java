@@ -46,7 +46,7 @@ public class ShutdownTest extends TestCase {
 	public void testShutdownWithoutArgs() throws IOException,
 			MalformedObjectNameException, NullPointerException {
 		String command = "shutdown";
-		if (commandHandler.handleCommand(command.split(" "))) {
+		if (commandHandler.handleCommand(command.split(" ")) != -1) {
 			fail("Command was successful");
 		}
 	}
@@ -54,7 +54,7 @@ public class ShutdownTest extends TestCase {
 	public void testShutdownWithoutId() throws IOException,
 			MalformedObjectNameException, NullPointerException {
 		String command = "shutdown default";
-		if (commandHandler.handleCommand(command.split(" "))) {
+		if (commandHandler.handleCommand(command.split(" ")) != -1) {
 			fail("Command was successful");
 		}
 	}
@@ -62,7 +62,7 @@ public class ShutdownTest extends TestCase {
 	public void testShutdownWithNonIntId() throws IOException,
 			MalformedObjectNameException, NullPointerException {
 		String command = "shutdown default one";
-		if (commandHandler.handleCommand(command.split(" "))) {
+		if (commandHandler.handleCommand(command.split(" ")) != -1) {
 			fail("Command was successful");
 		}
 	}
@@ -70,7 +70,7 @@ public class ShutdownTest extends TestCase {
 	public void testShutdownWithoutServerName() throws IOException,
 			MalformedObjectNameException, NullPointerException {
 		String command = "shutdown 1";
-		if (commandHandler.handleCommand(command.split(" "))) {
+		if (commandHandler.handleCommand(command.split(" ")) != -1) {
 			fail("Command was successful");
 		}
 	}
@@ -78,7 +78,7 @@ public class ShutdownTest extends TestCase {
 	public void testShutdown() throws IOException,
 			MalformedObjectNameException, NullPointerException {
 		String command = "shutdown default 1";
-		if (!commandHandler.handleCommand(command.split(" "))) {
+		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command was not successful");
 		}
 	}
