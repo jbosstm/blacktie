@@ -67,7 +67,7 @@ public class Launcher {
 			log.error("MBean name (" + mbeanName + ") was raised an NPE: "
 					+ e.getMessage(), e);
 		}
-		
+
 		// Check whether we need to exit the launcher
 		if (commandSuccessful) {
 			log.trace("Command was successfull");
