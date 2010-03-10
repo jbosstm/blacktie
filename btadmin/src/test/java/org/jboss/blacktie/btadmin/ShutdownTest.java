@@ -82,4 +82,13 @@ public class ShutdownTest extends TestCase {
 			fail("Command was not successful");
 		}
 	}
+
+	public void testShutdownStoppedServer() throws IOException,
+			MalformedObjectNameException, NullPointerException {
+		runServer.serverdone();
+		String command = "shutdown default 1";
+		if (commandHandler.handleCommand(command.split(" ")) == 0) {
+			fail("Command was successful");
+		}
+	}
 }
