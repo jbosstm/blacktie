@@ -50,13 +50,6 @@ public class Shutdown implements Command {
 	private int id;
 
 	/**
-	 * Return the number of arguments expected for this command
-	 */
-	public int getExpectedArgsLength() {
-		return 2;
-	}
-
-	/**
 	 * Show the usage of the command
 	 */
 	public String getExampleUsage() {
@@ -70,7 +63,7 @@ public class Shutdown implements Command {
 			log.trace("Successfully parsed: " + args[1]);
 		} catch (NumberFormatException nfe) {
 			throw new IncompatibleArgsException(
-					"The third argument was expected to be the instance id to shutdown");
+					"The third argument was expected to be the (integer) instance id to shutdown");
 		}
 	}
 

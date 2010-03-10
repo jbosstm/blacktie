@@ -1,1 +1,4 @@
 java org.jboss.blacktie.btadmin.Launcher "$@"
+if [ "$?" != "0" ]; then
+	exit -1
+fi

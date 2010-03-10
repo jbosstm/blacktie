@@ -18,7 +18,6 @@
 package org.jboss.blacktie.btadmin.commands;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.management.InstanceNotFoundException;
@@ -27,40 +26,49 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.jboss.blacktie.btadmin.Command;
 import org.jboss.blacktie.btadmin.CommandHandler;
 import org.jboss.blacktie.btadmin.IncompatibleArgsException;
 
-public class ListRunningServers implements Command {
-	/**
-	 * The logger to use for output
-	 */
-	private static Logger log = LogManager.getLogger(Shutdown.class);
+/**
+ * List the running instance ids of a server.
+ */
+public class ListRunningInstanceIds implements Command {
 
 	/**
-	 * Show the usage of the command
+	 * The server name.
+	 */
+	private String serverName;
+
+	/**
+	 * Get the usage of the command.
 	 */
 	public String getExampleUsage() {
-		return "";
+		return "<serverName>";
 	}
 
 	/**
-	 * This is a no-op for this command
+	 * Get the number of arguments
+	 */
+	public int getExpectedArgsLength() {
+		return 1;
+	}
+
+	/**
+	 * Initialize the arguments for the command
 	 */
 	public void initializeArgs(String[] args) throws IncompatibleArgsException {
-		// NO-OP as no arguments
+		serverName = args[0];
 	}
 
-	/**
-	 * List the running servers to console and log file
-	 */
 	public void invoke(MBeanServerConnection beanServerConnection,
 			ObjectName blacktieAdmin) throws InstanceNotFoundException,
 			MBeanException, ReflectionException, IOException {
-		List<String> listRunningServers = (ArrayList<String>) beanServerConnection
-				.invoke(blacktieAdmin, "listRunningServers", null, null);
-		CommandHandler.output("listRunningServers", listRunningServers);
+		List<Integer> ids = (List<Integer>) beanServerConnection.invoke(
+				blacktieAdmin, "listRunningInstanceIds",
+				new Object[] { serverName },
+				new String[] { "java.lang.String" });
+		CommandHandler.output("listRunningInstanceIds", ids);
 	}
+
 }

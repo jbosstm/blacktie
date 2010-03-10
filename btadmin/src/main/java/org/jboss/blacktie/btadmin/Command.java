@@ -15,11 +15,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.btadmin.commands;
+package org.jboss.blacktie.btadmin;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
@@ -27,40 +25,47 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.jboss.blacktie.btadmin.Command;
-import org.jboss.blacktie.btadmin.CommandHandler;
-import org.jboss.blacktie.btadmin.IncompatibleArgsException;
+/**
+ * All commands that can be invoked by the admin CLI tool must implement this
+ * interface.
+ */
+public interface Command {
 
-public class ListRunningServers implements Command {
 	/**
-	 * The logger to use for output
+	 * Get an example of the usage of the command.
+	 * 
+	 * @return A string showing the usage of the command
 	 */
-	private static Logger log = LogManager.getLogger(Shutdown.class);
+	public String getExampleUsage();
 
 	/**
-	 * Show the usage of the command
+	 * This will initialize the arguments for the command, if the arguments are
+	 * not sufficient it will raise an exception.
+	 * 
+	 * @param args
+	 *            The arguments as received on the command line
+	 * @throws IncompatibleArgsException
+	 *             If the arguments are invalid
 	 */
-	public String getExampleUsage() {
-		return "";
-	}
+	public void initializeArgs(String[] args) throws IncompatibleArgsException;
 
 	/**
-	 * This is a no-op for this command
-	 */
-	public void initializeArgs(String[] args) throws IncompatibleArgsException {
-		// NO-OP as no arguments
-	}
-
-	/**
-	 * List the running servers to console and log file
+	 * Issue the command on the mbean server connection
+	 * 
+	 * @param beanServerConnection
+	 *            The connection to use
+	 * @param blacktieAdmin
+	 *            The mbean to user
+	 * @throws InstanceNotFoundException
+	 *             If the mbean does not exist
+	 * @throws MBeanException
+	 *             If there is an mbean error
+	 * @throws ReflectionException
+	 *             Reflective errors
+	 * @throws IOException
+	 *             IPC errors
 	 */
 	public void invoke(MBeanServerConnection beanServerConnection,
 			ObjectName blacktieAdmin) throws InstanceNotFoundException,
-			MBeanException, ReflectionException, IOException {
-		List<String> listRunningServers = (ArrayList<String>) beanServerConnection
-				.invoke(blacktieAdmin, "listRunningServers", null, null);
-		CommandHandler.output("listRunningServers", listRunningServers);
-	}
+			MBeanException, ReflectionException, IOException;
 }

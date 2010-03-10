@@ -29,8 +29,6 @@ import javax.management.remote.JMXServiceURL;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.btadmin.commands.ListRunningServers;
-import org.jboss.blacktie.btadmin.commands.Shutdown;
 
 /**
  * Launcher for the btadmin tool.
@@ -41,11 +39,9 @@ public class Launcher {
 	private static Logger log = LogManager.getLogger(Launcher.class);
 
 	public static void main(String[] args) {
-		if (args.length < 1) {
-			log.error("No command was provided");
-		}
 		String url = "service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector";
 		String mbeanName = "jboss.blacktie:service=Admin";
+		boolean commandSuccessful = false;
 		try {
 			// Initialize the connection to the mbean server
 			JMXServiceURL u = new JMXServiceURL(url);
@@ -54,52 +50,9 @@ public class Launcher {
 					.getMBeanServerConnection();
 			ObjectName blacktieAdmin = new ObjectName(mbeanName);
 
-			Command command = null;
-			if (args[0].equals("shutdown")) {
-				log.trace("Will execute the shutdown command");
-				command = new Shutdown();
-			} else if (args[0].equals("listRunningServers")) {
-				log.trace("Will retrieve the list of running servers");
-				command = new ListRunningServers();
-			} else {
-				log.error("Command was not known: " + args[0]);
-			}
-			if (command != null) {
-
-				// Create an new array for the commands arguments
-				String[] commandArgs = new String[args.length - 1];
-				if (commandArgs.length > 0) {
-					log.trace("Copying arguments for the command");
-					System.arraycopy(args, 1, commandArgs, 0,
-							commandArgs.length);
-				}
-
-				int expectedArgsLength = command.getExpectedArgsLength();
-				if (commandArgs.length != expectedArgsLength) {
-					log
-							.error("Arguments incompatible, expected "
-									+ expectedArgsLength + ", received: "
-									+ args.length);
-					log.error(("Expected Usage: " + args[0] + " " + command
-							.getExampleUsage()).trim());
-				} else {
-					try {
-						// Try to initialize the arguments
-						command.initializeArgs(args);
-						log.trace("Arguments initialized");
-					} catch (IncompatibleArgsException e) {
-						log.error("Arguments invalid: " + e.getMessage(), e);
-					}
-					try {
-						// Try to invoke the command
-						command.invoke(beanServerConnection, blacktieAdmin);
-						log.trace("Command invoked");
-					} catch (Exception e) {
-						log.error("Could not invoke the command: "
-								+ e.getMessage(), e);
-					}
-				}
-			}
+			CommandHandler commandHandler = new CommandHandler(
+					beanServerConnection, blacktieAdmin);
+			commandSuccessful = commandHandler.handleCommand(args);
 		} catch (MalformedURLException e) {
 			log.error("JMX URL (" + url + ") was incorrect: " + e.getMessage(),
 					e);
@@ -113,6 +66,14 @@ public class Launcher {
 		} catch (NullPointerException e) {
 			log.error("MBean name (" + mbeanName + ") was raised an NPE: "
 					+ e.getMessage(), e);
+		}
+		
+		// Check whether we need to exit the launcher
+		if (commandSuccessful) {
+			log.trace("Command was successfull");
+		} else {
+			log.trace("Command failed");
+			System.exit(-1);
 		}
 	}
 }
