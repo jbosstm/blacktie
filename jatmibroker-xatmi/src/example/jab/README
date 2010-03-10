@@ -17,7 +17,7 @@ MA  02110-1301, USA.
 NOTE: You may like to create a backup of this folder before starting!
 
 1. RUN THE SERVER
-Follow the instructions in $BLACKTIE_BIN_DIR/examples/xatmi/fooapp to start a server  
+Follow the instructions in $BLACKTIE_HOMEamples/xatmi/fooapp to start a server  
 
 2. COMPILE AND RUN THE JAB APPLICATION
 If you are running the test from a binary distribution you will need to ensure that 

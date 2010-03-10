@@ -21,9 +21,9 @@ In order to run the example you need to make sure that you have set the environm
 appropriately. You will need to make sure that you edit the variables with values 
 starting with REPLACE_WITH_: 
 On Linux you need to edit:
-	$BLACKTIE_BIN_DIR/setenv.sh
+	$BLACKTIE_HOME/setenv.sh
 On Windows:
-	%BLACKTIE_BIN_DIR%\setenv.bat
+	%BLACKTIE_HOME%\setenv.bat
 Then, execute the script setenv
 
 On Windows: 
@@ -33,9 +33,9 @@ C:\Program Files\Microsoft Visual Studio 9.0\VC\vcvarsall.bat
 
 2. CREATE THE SERVER
 On Linux:
-	$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes=BarService.c
+	$BLACKTIE_HOME/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes=BarService.c
 On Windows:
-	%BLACKTIE_BIN_DIR%\bin\generate_server.bat -Dservice.names=BAR -Dserver.includes=BarService.c
+	%BLACKTIE_HOME%\bin\generate_server.bat -Dservice.names=BAR -Dserver.includes=BarService.c
 NOTE: If you get the following error you have not installed ant-contrib into your ANT distribution:
 	BUILD FAILED
 	/home/tom/blacktie/dist/blacktie-1.0-M4-SNAPSHOT/bin/generate-executables.xml:160: Problem: failed to create task or type propertycopy
@@ -64,14 +64,14 @@ C:\blacktie\dist\blacktie-1.0-MR6-SNAPSHOT\bin\generate-executables.xml:144: Cou
 
 3. CREATE THE CLIENT
 On Linux:
-	$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes=client.c
+	$BLACKTIE_HOME/bin/generate_client.sh -Dclient.includes=client.c
 On Windows:
-	%BLACKTIE_BIN_DIR%\bin\generate_client.bat -Dclient.includes=client.c
+	%BLACKTIE_HOME%\bin\generate_client.bat -Dclient.includes=client.c
 
 
 4. DEPLOY THE BLACKTIE ADMIN SERVICE
 Undeploy any older versions of the blacktie admin service
-Copy the file $BLACKTIE_BIN_DIR/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all/deploy
+Copy the file $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all/deploy
 
 
 5. RUN THE APPLICATION SERVER
@@ -93,19 +93,19 @@ NOTE: If you get the following error you have not sourced setenv.sh|bat
 
 7. JAB CLIENTS
 If you would like to use a JAB Client to talk to the server, please see 
-<BLACKTIE_BIN_DIR>/examples/jab/fooapp
+<BLACKTIE_HOME>/examples/jab/fooapp
 
 
 8. ADMINISTRATION EXAMPLES
 If you would like to see administration in effect, please see
-<BLACKTIE_BIN_DIR>/examples/admin
+<BLACKTIE_HOME>/examples/admin
 
 
 9. SECURITY EXAMPLES
 If you would like to see security in effect, please see
-<BLACKTIE_BIN_DIR>/examples/security
+<BLACKTIE_HOME>/examples/security
 
 
 10. TRANSACTION EXAMPLES
 If you would like to see transactions in effect, please see
-<BLACKTIE_BIN_DIR>/examples/xatmi/txfooapp
+<BLACKTIE_HOME>/examples/xatmi/txfooapp

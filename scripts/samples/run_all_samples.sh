@@ -7,8 +7,8 @@ sed -i "s=REPLACE_WITH_INSTALL_LOCATION=$VAR=g" setenv.sh
 . setenv.sh
 
 # RUN THE FOOAPP SERVER
-cd $BLACKTIE_BIN_DIR/examples/xatmi/fooapp
-$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes=BarService.c
+cd $BLACKTIE_HOME/examples/xatmi/fooapp
+$BLACKTIE_HOME/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes=BarService.c
 if [ "$?" != "0" ]; then
 	exit -1
 fi
@@ -16,21 +16,21 @@ fi
 sleep 3
 
 # RUN THE C CLIENT
-$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes=client.c
+$BLACKTIE_HOME/bin/generate_client.sh -Dclient.includes=client.c
 ./client
 if [ "$?" != "0" ]; then
 	exit -1
 fi
 
 # RUN THE JAVA CLIENT
-cd $BLACKTIE_BIN_DIR/examples/jab
+cd $BLACKTIE_HOME/examples/jab
 echo hello | mvn test
 if [ "$?" != "0" ]; then
 	exit -1
 fi
 
 # RUN THE ADMIN JMX CLIENT
-cd $BLACKTIE_BIN_DIR/examples/admin/jmx
+cd $BLACKTIE_HOME/examples/admin/jmx
 echo '0
 0
 0
@@ -43,13 +43,13 @@ fi
 fg
 
 # RUN THE FOOAPP SERVER AGAIN
-cd $BLACKTIE_BIN_DIR/examples/xatmi/fooapp
+cd $BLACKTIE_HOME/examples/xatmi/fooapp
 ./server -c linux -i 1&
 sleep 3
 
 # SHUTDOWN THE SERVER RUNNING THE XATMI ADMIN CLIENT
-cd $BLACKTIE_BIN_DIR/examples/admin/xatmi
-$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes=client.c
+cd $BLACKTIE_HOME/examples/admin/xatmi
+$BLACKTIE_HOME/bin/generate_client.sh -Dclient.includes=client.c
 echo '0
 0
 0
@@ -59,8 +59,8 @@ echo '0
 fg
 
 # RUN THE SECURE SERVER
-cd $BLACKTIE_BIN_DIR/examples/security
-$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=SECURE -Dserver.includes=BarService.c
+cd $BLACKTIE_HOME/examples/security
+$BLACKTIE_HOME/bin/generate_server.sh -Dservice.names=SECURE -Dserver.includes=BarService.c
 if [ "$?" != "0" ]; then
 	exit -1
 fi
@@ -70,7 +70,7 @@ sleep 3
 unset BLACKTIE_CONFIGURATION_DIR
 
 # RUN THE "guest" USER CLIENT
-$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes=client.c
+$BLACKTIE_HOME/bin/generate_client.sh -Dclient.includes=client.c
 export BLACKTIE_CONFIGURATION_DIR=guest
 ./client
 # This test is expected to fail so make sure the exit status was not 0
@@ -88,8 +88,8 @@ fi
 unset BLACKTIE_CONFIGURATION_DIR
 
 # SHUTDOWN THE SERVER RUNNING THE XATMI ADMIN CLIENT
-cd $BLACKTIE_BIN_DIR/examples/admin/xatmi
-$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes=client.c
+cd $BLACKTIE_HOME/examples/admin/xatmi
+$BLACKTIE_HOME/bin/generate_client.sh -Dclient.includes=client.c
 unset BLACKTIE_CONFIGURATION_DIR
 echo '0
 0
@@ -100,7 +100,7 @@ echo '0
 fg
 
 # RUN THE MDB EXAMPLE
-cd $BLACKTIE_BIN_DIR/examples/mdb
+cd $BLACKTIE_HOME/examples/mdb
 mvn install
 if [ "$?" != "0" ]; then
 	exit -1

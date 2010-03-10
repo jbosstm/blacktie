@@ -37,10 +37,10 @@
 <compilerarg value="/wd4640"/>
 '>
 <!ENTITY includepath-main-dependencies '
-	<includepath path="${env.BLACKTIE_BIN_DIR}/include"/>
+	<includepath path="${env.BLACKTIE_HOME}/include"/>
 '>
 <!ENTITY libsets-main-dependencies '
-	<libset dir="${env.BLACKTIE_BIN_DIR}/lib" libs="${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix} log4cxx atmibroker-idl-cxx atmibroker-core atmibroker-tx atmibroker-xatmi" />
+	<libset dir="${env.BLACKTIE_HOME}/lib" libs="${expat.prefix}expat TAO_CosNaming${lib.suffix} TAO_AnyTypeCode${lib.suffix} TAO${lib.suffix} TAO_PortableServer${lib.suffix} ACE${lib.suffix} TAO_PI${lib.suffix} TAO_CodecFactory${lib.suffix} TAO_IORInterceptor${lib.suffix} TAO_ObjRefTemplate${lib.suffix} TAO_Valuetype${lib.suffix} TAO_PI_Server${lib.suffix} log4cxx atmibroker-idl-cxx atmibroker-core atmibroker-tx atmibroker-xatmi" />
 '>
 ]>
 <project name="generate-executables">
@@ -53,7 +53,7 @@
 	<property name="runtime" value="dynamic" />
 
 	<target name="init">
-		<fail unless="env.BLACKTIE_BIN_DIR" />
+		<fail unless="env.BLACKTIE_HOME" />
 		<fail unless="configuration.type" />
 		<fail unless="toolchain.compiler" />
 		<condition property="is-msvc">
@@ -92,11 +92,11 @@
 			<isset property="is-msvc" />
 		</condition>
 		<!-- define some defaults for extra libs - use something valid to stop cpptasks complaining -->
-		<condition property="x.lib.dir" value="${env.BLACKTIE_BIN_DIR}/lib"><not><isset property="x.lib.dir" /></not></condition>
+		<condition property="x.lib.dir" value="${env.BLACKTIE_HOME}/lib"><not><isset property="x.lib.dir" /></not></condition>
 		<condition property="x.libs" value="log4cxx"><not><isset property="x.libs" /></not></condition>
-		<condition property="x.lib.dir2" value="${env.BLACKTIE_BIN_DIR}/lib"><not><isset property="x.lib.dir2" /></not></condition>
+		<condition property="x.lib.dir2" value="${env.BLACKTIE_HOME}/lib"><not><isset property="x.lib.dir2" /></not></condition>
 		<condition property="x.libs2" value="log4cxx"><not><isset property="x.libs2" /></not></condition>
-		<condition property="x.lib.dir3" value="${env.BLACKTIE_BIN_DIR}/lib"><not><isset property="x.lib.dir3" /></not></condition>
+		<condition property="x.lib.dir3" value="${env.BLACKTIE_HOME}/lib"><not><isset property="x.lib.dir3" /></not></condition>
 		<condition property="x.libs3" value="log4cxx"><not><isset property="x.libs3" /></not></condition>
 	</target>
 
@@ -104,7 +104,7 @@
 		<fail unless="server.includes" />
 		<delete file="server.c" />
 		<delete file="log4cxx.properties" />
-		<unzip src="${env.BLACKTIE_BIN_DIR}/codeGeneration/codeGeneration.jar" dest=".">
+		<unzip src="${env.BLACKTIE_HOME}/codeGeneration/codeGeneration.jar" dest=".">
 			<patternset>
 				<include name="server.c" />
 				<include name="log4cxx.properties" />
@@ -135,7 +135,7 @@
 		<fail unless="client.includes" />
 		<delete file="log4cxx.properties" />
 		<echo message="hi"/>
-		<unzip src="${env.BLACKTIE_BIN_DIR}/codeGeneration/codeGeneration.jar" dest=".">
+		<unzip src="${env.BLACKTIE_HOME}/codeGeneration/codeGeneration.jar" dest=".">
 			<patternset>
 				<include name="log4cxx.properties" />
 			</patternset>

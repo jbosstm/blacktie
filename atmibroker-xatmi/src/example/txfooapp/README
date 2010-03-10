@@ -82,9 +82,9 @@ db2 => quit
 
 Make sure your environment is suitable for running BlackTie applications by sourcing the setenv scripts
 that came with the BlackTie distribution. On linux systems source:
-    $BLACKTIE_BIN_DIR/setenv.sh
+    $BLACKTIE_HOME/setenv.sh
 and on windows execute:
-    %BLACKTIE_BIN_DIR%\setenv.bat
+    %BLACKTIE_HOME%\setenv.bat
 
 On Windows: 
 You MUST use an environment configured with the VC++ development tools, e.g. launch:
@@ -104,39 +104,39 @@ to compile the client for use with Oracle11g:
 ORACLE ONLY
 -----------
 On Linux:
-$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" \
+$BLACKTIE_HOME/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" \
     -Dx.inc.dir="$ORACLE_HOME/rdbms/public" \
     -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" \
     -Dx.define="ORACLE"
 Similarly for generating the client:
-$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" \
+$BLACKTIE_HOME/bin/generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" \
     -Dx.inc.dir="$ORACLE_HOME/rdbms/public" \
     -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" \
     -Dx.define="ORACLE"
 On Windows:
-%BLACKTIE_BIN_DIR%/bin/generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.define="ORACLE"
+%BLACKTIE_HOME%/bin/generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.define="ORACLE"
 Similarly for generating the client:
-%BLACKTIE_BIN_DIR%/bin/generate_client.bat -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.define="ORACLE"
+%BLACKTIE_HOME%/bin/generate_client.bat -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.define="ORACLE"
 
 DB2 ONLY
 --------
 On Linux:
-$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c db2.c DbService.c" \
+$BLACKTIE_HOME/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c db2.c DbService.c" \
     -Dx.inc.dir="$DB2DIR/include" \
     -Dx.lib.dir="$DB2_LIB" -Dx.libs="db2" \
     -Dx.define="DB2"
 Similarly for generating the client:
-$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c db2.c cutil.c" \
+$BLACKTIE_HOME/bin/generate_client.sh -Dclient.includes="client.c request.c db2.c cutil.c" \
     -Dx.inc.dir="$DB2DIR/include" \
     -Dx.lib.dir="$DB2_LIB" -Dx.libs="db2" \
     -Dx.define="DB2"
 On Windows:
-%BLACKTIE_BIN_DIR%/bin/generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c db2.c DbService.c" \
+%BLACKTIE_HOME%/bin/generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c db2.c DbService.c" \
     -Dx.inc.dir="%DB2DIR%\include" \
     -Dx.lib.dir="%DB2_LIB%" -Dx.libs="db2api" \
     -Dx.define="DB2"
 Similarly for generating the client:
-%BLACKTIE_BIN_DIR%/bin/generate_client.bat -Dclient.includes="client.c request.c db2.c cutil.c" \
+%BLACKTIE_HOME%/bin/generate_client.bat -Dclient.includes="client.c request.c db2.c cutil.c" \
     -Dx.inc.dir="%DB2DIR%\include" \
     -Dx.lib.dir="%DB2_LIB%" -Dx.libs="db2api" \
     -Dx.define="DB2"
@@ -144,23 +144,23 @@ Similarly for generating the client:
 DB2 and ORACLE together
 -----------------------
 On Linux:
-$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c db2.c ora.c DbService.c" \
+$BLACKTIE_HOME/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c db2.c ora.c DbService.c" \
     -Dx.inc.dir="$ORACLE_HOME/rdbms/public" \
     -Dx.inc.dir2="$DB2DIR/include" \
     -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" \
     -Dx.lib.dir2="$DB2_LIB" -Dx.libs2="db2" \
     -Dx.define="ORACLE,DB2"
 Similarly for generating the client:
-$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c db2.c ora.c cutil.c" \
+$BLACKTIE_HOME/bin/generate_client.sh -Dclient.includes="client.c request.c db2.c ora.c cutil.c" \
     -Dx.inc.dir="$ORACLE_HOME/rdbms/public" \
     -Dx.inc.dir2="$DB2DIR/include" \
     -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" \
     -Dx.lib.dir2="$DB2_LIB" -Dx.libs2="db2" \
     -Dx.define="ORACLE,DB2"
 On Windows:
-%BLACKTIE_BIN_DIR%/bin/generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.inc.dir2="%DB2DIR%\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.lib.dir2="%DB2_LIB%" -Dx.libs2="db2api" -Dx.define="ORACLE,DB2"
+%BLACKTIE_HOME%/bin/generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.inc.dir2="%DB2DIR%\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.lib.dir2="%DB2_LIB%" -Dx.libs2="db2api" -Dx.define="ORACLE,DB2"
 Similarly for generating the client:
-%BLACKTIE_BIN_DIR%/bin/generate_client.bat -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.inc.dir2="%DB2DIR%\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.lib.dir2="%DB2_LIB%" -Dx.libs2="db2api" -Dx.define="ORACLE,DB2"
+%BLACKTIE_HOME%/bin/generate_client.bat -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.inc.dir2="%DB2DIR%\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.lib.dir2="%DB2_LIB%" -Dx.libs2="db2api" -Dx.define="ORACLE,DB2"
 
 NOTE: If you get the following error you have not edited or executed setenv correctly:
 java org.apache.tools.ant.launch.Launcher -f /bin/generate-executables.xml -Dconfiguration.type=debug -Dbasedir=. -Dtoolchain.compiler=msvc server -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="C:/<ora include dir>" -Dx.lib.dir="<ora lib dir>" -Dx.libs="occi.dll clntsh.dll" -Dx.define="ORACLE"
@@ -185,7 +185,7 @@ C:\blacktie\dist\blacktie-1.0-MR6-SNAPSHOT\bin\generate-executables.xml:144: Cou
 3. RUNNING THE EXAMPLE
 ======================
 Undeploy any older versions of the blacktie admin service
-Copy the file $BLACKTIE_BIN_DIR/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all/deploy
+Copy the file $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all/deploy
 Start the JBoss server (<JBOSS_HOME>/bin/run.sh|bat -c all)
 
 Make sure all required libraries are on the library path:
@@ -325,14 +325,14 @@ Example command line for compiling and linking the server and client (defines th
 dummy XA resource library):
 
 On Linux:
-$BLACKTIE_BIN_DIR/bin/generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" \
+$BLACKTIE_HOME/bin/generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" \
      -Dx.inc.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
      -Dx.inc.dir2="$ORACLE_HOME/rdbms/public" \
      -Dx.lib.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="tx-test-utilities" \
      -Dx.lib.dir2="$ORACLE_HOME/lib" -Dx.libs2="occi clntsh" \
      -Dx.define="ORACLE, TX_RC"
 
-$BLACKTIE_BIN_DIR/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" \
+$BLACKTIE_HOME/bin/generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" \
      -Dx.inc.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
      -Dx.inc.dir2="$ORACLE_HOME/rdbms/public" \
      -Dx.lib.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="tx-test-utilities" \
@@ -346,9 +346,9 @@ XA_RESOURCE_MGR_ID setting for the DummyDb resource manager):
 
 
 On Windows:
-%BLACKTIE_BIN_DIR%/bin/generate_client.bat -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci"      -Dx.inc.dir2="c:/blacktie/trunk/atmibroker-tx/target/cxx/test/include"      -Dx.lib.dir2="c:/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs2="tx-test-utilities"     -Dx.define="ORACLE, TX_RC"
+%BLACKTIE_HOME%/bin/generate_client.bat -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci"      -Dx.inc.dir2="c:/blacktie/trunk/atmibroker-tx/target/cxx/test/include"      -Dx.lib.dir2="c:/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs2="tx-test-utilities"     -Dx.define="ORACLE, TX_RC"
 
-%BLACKTIE_BIN_DIR%/bin/generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci"           -Dx.inc.dir2="C:/blacktie/trunk/atmibroker-tx/target/cxx/test/include"      -Dx.lib.dir2="c:/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs2="tx-test-utilities"      -Dx.define="ORACLE, TX_RC"
+%BLACKTIE_HOME%/bin/generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci"           -Dx.inc.dir2="C:/blacktie/trunk/atmibroker-tx/target/cxx/test/include"      -Dx.lib.dir2="c:/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs2="tx-test-utilities"      -Dx.define="ORACLE, TX_RC"
 
 Note that the library path needs to include the location of the tx-test-utilities library. For example:
 On Linux:
