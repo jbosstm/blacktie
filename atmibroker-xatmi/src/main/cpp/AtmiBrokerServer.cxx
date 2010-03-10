@@ -170,19 +170,6 @@ int serverinit(int argc, char** argv) {
 				toReturn = -1;
 				setSpecific(TPE_KEY, TSS_TPESYSTEM);
 			} else {
-				// make ADMIN service mandatory for server
-				char adm[XATMI_SERVICE_NAME_LENGTH + 1];
-				ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1,
-						"%s_ADMIN_%d", server, serverid);
-				if (tpadvertise(adm, ADMIN) == -1)
-					return -1;
-
-				if (errorBootAdminService == 2) {
-					LOG4CXX_WARN(loggerAtmiBrokerServer,
-							(char*) "Maybe the same server id running");
-					throw std::exception();
-				}
-
 				ptrServer->advertiseAtBootime();
 
 				// install a handler for the default set of signals (namely, SIGINT and SIGTERM)
@@ -371,6 +358,19 @@ AtmiBrokerServer::AtmiBrokerServer() {
 					serverName
 							<< (char *) " transaction configuration error, aborting server startup");
 		} else {
+			// make ADMIN service mandatory for server
+			char adm[XATMI_SERVICE_NAME_LENGTH + 1];
+			ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1,
+					"%s_ADMIN_%d", server, serverid);
+			if (!advertiseService(adm, ADMIN)) {
+				return;
+			}
+
+			if (errorBootAdminService == 2) {
+				LOG4CXX_WARN(loggerAtmiBrokerServer,
+						(char*) "Maybe the same server id running");
+				throw std::exception();
+			}
 			serverInitialized = true;
 
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
@@ -792,13 +792,15 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 		tpfree(response);
 		return false;
 	} else if (response[0] != 1) {
-		if (!isadm || (errorBootAdminService = response[0]) == 2) {
-			LOG4CXX_ERROR(loggerAtmiBrokerServer,
-					"Service returned with error: " << command);
-			tpfree(command);
-			tpfree(response);
-			return false;
-		}
+		// REMOVED BY TOM, NOT CLEAR WHAT THIS IS REQUIRED FOR,
+		// IF COMMENTED BACK IN, PLEASE PROVIDE A COMMENT
+		//		if (!isadm || (errorBootAdminService = response[0]) == 2) {
+		LOG4CXX_ERROR(loggerAtmiBrokerServer, "Service returned with error: "
+				<< command);
+		tpfree(command);
+		tpfree(response);
+		return false;
+		//		}
 	}
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "Created admin queue for: "
 			<< serviceName);
