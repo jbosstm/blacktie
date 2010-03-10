@@ -44,6 +44,10 @@ JNIEXPORT jint JNICALL Java_org_jboss_blacktie_btadmin_server_RunServer_serverin
 	exit_status = serverinit(argc, argv);
 	exit_status = tpadvertise((char*) "BAR", BAR);
 
+	if (exit_status != 0) {
+		// Try to shut down the server
+		serverdone();
+	}
 	(env)->ReleaseStringUTFChars(serverNameIn , serverName); // release jstring
 	(env)->ReleaseStringUTFChars(idIn , id); // release jstring
 	userlogc((char*) "serverinit returning");
