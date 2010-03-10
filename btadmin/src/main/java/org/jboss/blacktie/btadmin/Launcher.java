@@ -17,6 +17,7 @@
  */
 package org.jboss.blacktie.btadmin;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
@@ -27,6 +28,7 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -39,6 +41,11 @@ public class Launcher {
 	private static Logger log = LogManager.getLogger(Launcher.class);
 
 	public static void main(String[] args) {
+		if (System.getProperty("log4cxx.configuration") == null
+				&& !new File("log4cxx.properties").exists()
+				&& !new File("log4j.xml").exists()) {
+			BasicConfigurator.configure();
+		}
 		String url = "service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector";
 		String mbeanName = "jboss.blacktie:service=Admin";
 		boolean commandSuccessful = false;

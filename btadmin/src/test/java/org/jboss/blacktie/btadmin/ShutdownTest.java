@@ -61,6 +61,14 @@ public class ShutdownTest extends TestCase {
 		}
 	}
 
+	public void testShutdown() throws IOException,
+			MalformedObjectNameException, NullPointerException {
+		String command = "shutdown default 1";
+		if (!handleCommand(command.split(" "))) {
+			fail("Command was not successful");
+		}
+	}
+
 	private boolean handleCommand(String[] command) throws IOException,
 			MalformedObjectNameException, NullPointerException {
 		String url = "service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector";
