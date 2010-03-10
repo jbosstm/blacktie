@@ -78,6 +78,11 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.3</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-clean-plugin</artifactId>
 				<version>2.3</version>
 			</plugin>
@@ -129,18 +134,22 @@
 								<mkdir dir="target/${project.artifactId}-${project.version}/lib" />
 								<echo message="copying symlinks from atmibroker-xatmi runtime library" />
 								<exec executable="find" dir="target">
-									<arg line="../../atmibroker-xatmi/target/cxx/runtime/lib -type l -exec cp -d {} ${project.artifactId}-${project.version}/lib ;" />
+									<arg
+										line="../../atmibroker-xatmi/target/cxx/runtime/lib -type l -exec cp -d {} ${project.artifactId}-${project.version}/lib ;" />
 								</exec>
 								<echo message="update symlinks to zip" />
 								<exec executable="/bin/sh" dir="target">
-									<arg line="-c 'zip -q -u -y ${project.artifactId}-${project.version}-${bpa}-bin.zip ${project.artifactId}-${project.version}/lib/*'"/>
+									<arg
+										line="-c 'zip -q -u -y ${project.artifactId}-${project.version}-${bpa}-bin.zip ${project.artifactId}-${project.version}/lib/*'" />
 								</exec>
 								<echo message="update symlinks to tar.gz" />
 								<exec executable="gunzip" dir="target">
-									<arg line="${project.artifactId}-${project.version}-${bpa}-bin.tar.gz" />
+									<arg
+										line="${project.artifactId}-${project.version}-${bpa}-bin.tar.gz" />
 								</exec>
 								<exec executable="tar" dir="target">
-									<arg line="uf ${project.artifactId}-${project.version}-${bpa}-bin.tar ${project.artifactId}-${project.version}/lib" />
+									<arg
+										line="uf ${project.artifactId}-${project.version}-${bpa}-bin.tar ${project.artifactId}-${project.version}/lib" />
 								</exec>
 								<exec executable="gzip" dir="target">
 									<arg line="${project.artifactId}-${project.version}-${bpa}-bin.tar" />
@@ -154,7 +163,7 @@
 	</profiles>
 
 	<modules>
-		<module>../blacktie-utils</module>
+		<module>../blacktie-utils/cpp-plugin</module>
 		<module>../blacktie-common</module>
 		<module>../blacktie-xsd</module>
 		<module>../atmibroker-idl</module>
