@@ -17,16 +17,25 @@
  */
 package org.jboss.blacktie.btadmin;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import javax.management.MBeanServerConnection;
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.btadmin.commands.ListRunningServers;
 import org.jboss.blacktie.btadmin.commands.Shutdown;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
+import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
 
 /**
  * Handle the command
@@ -36,10 +45,21 @@ public class CommandHandler {
 	private MBeanServerConnection beanServerConnection;
 	private ObjectName blacktieAdmin;
 
-	public CommandHandler(MBeanServerConnection beanServerConnection,
-			ObjectName blacktieAdmin) {
-		this.beanServerConnection = beanServerConnection;
-		this.blacktieAdmin = blacktieAdmin;
+	public CommandHandler() throws ConfigurationException, IOException,
+			MalformedObjectNameException, NullPointerException {
+		// Obtain the JMXURL from the Environment.xml
+		Properties prop = new Properties();
+		XMLEnvHandler handler = new XMLEnvHandler("", prop);
+		XMLParser xmlenv;
+		xmlenv = new XMLParser(handler, "Environment.xsd");
+		xmlenv.parse("Environment.xml", true);
+		String url = (String) prop.get("JMXURL");
+
+		// Initialize the connection to the mbean server
+		JMXServiceURL u = new JMXServiceURL(url);
+		JMXConnector c = JMXConnectorFactory.connect(u);
+		this.beanServerConnection = c.getMBeanServerConnection();
+		this.blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
 	}
 
 	public boolean handleCommand(String[] args) {
@@ -71,6 +91,7 @@ public class CommandHandler {
 				char[] charArray = exampleUsage.toCharArray();
 				int expectedArgsLength = 0;
 				int optionalArgs = 0;
+				// Note this does assume that each word is a parameter
 				for (int i = 0; i < exampleUsage.length(); i++) {
 					if (charArray[i] == ' ') {
 						expectedArgsLength++;
@@ -78,13 +99,24 @@ public class CommandHandler {
 						optionalArgs++;
 					}
 				}
+				// Add the last parameter
 				if (charArray.length > 0) {
 					expectedArgsLength++;
 				}
-				if (commandArgs.length != expectedArgsLength) {
-					log.trace("Arguments incompatible, expected "
-							+ expectedArgsLength + ", received: "
-							+ commandArgs.length);
+				// Check if the number of parameters is in an expected range
+				if (commandArgs.length > expectedArgsLength
+						|| commandArgs.length < expectedArgsLength
+								- optionalArgs) {
+					if (optionalArgs == 0) {
+						log.trace("Arguments incompatible, expected "
+								+ expectedArgsLength + ", received: "
+								+ commandArgs.length);
+					} else {
+						log.trace("Arguments incompatible, expected at least "
+								+ optionalArgs + " and no more than "
+								+ expectedArgsLength + ", received: "
+								+ commandArgs.length);
+					}
 					log
 							.error(("Expected Usage: " + commandName + " " + exampleUsage)
 									.trim());
@@ -104,6 +136,9 @@ public class CommandHandler {
 						}
 					} catch (IncompatibleArgsException e) {
 						log.error("Arguments invalid: " + e.getMessage());
+						log
+								.error(("Expected Usage: " + commandName + " " + exampleUsage)
+										.trim());
 						log.trace("Arguments invalid: " + e.getMessage(), e);
 					}
 				}

@@ -21,16 +21,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 
 /**
  * Launcher for the btadmin tool.
@@ -46,33 +42,24 @@ public class Launcher {
 				&& !new File("log4j.xml").exists()) {
 			BasicConfigurator.configure();
 		}
-		String url = "service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector";
-		String mbeanName = "jboss.blacktie:service=Admin";
+
 		boolean commandSuccessful = false;
 		try {
-			// Initialize the connection to the mbean server
-			JMXServiceURL u = new JMXServiceURL(url);
-			JMXConnector c = JMXConnectorFactory.connect(u);
-			MBeanServerConnection beanServerConnection = c
-					.getMBeanServerConnection();
-			ObjectName blacktieAdmin = new ObjectName(mbeanName);
-
-			CommandHandler commandHandler = new CommandHandler(
-					beanServerConnection, blacktieAdmin);
+			CommandHandler commandHandler = new CommandHandler();
 			commandSuccessful = commandHandler.handleCommand(args);
 		} catch (MalformedURLException e) {
-			log.error("JMX URL (" + url + ") was incorrect: " + e.getMessage(),
-					e);
+			log.error("JMXURL was incorrect: " + e.getMessage(), e);
 		} catch (IOException e) {
 			log
 					.error("Could not connect to mbean server: "
 							+ e.getMessage(), e);
 		} catch (MalformedObjectNameException e) {
-			log.error("MBean name (" + mbeanName + ") was badly structured: "
-					+ e.getMessage(), e);
+			log.error("MBean name was badly structured: " + e.getMessage(), e);
 		} catch (NullPointerException e) {
-			log.error("MBean name (" + mbeanName + ") was raised an NPE: "
-					+ e.getMessage(), e);
+			log.error("MBean name raised an NPE: " + e.getMessage(), e);
+		} catch (ConfigurationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 
 		// Check whether we need to exit the launcher

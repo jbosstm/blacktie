@@ -19,20 +19,21 @@ package org.jboss.blacktie.btadmin;
 
 import java.io.IOException;
 
-import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
 
 import junit.framework.TestCase;
 
 public class ShutdownTest extends TestCase {
+	private CommandHandler commandHandler;
+
+	public void setUp() throws Exception {
+		this.commandHandler = new CommandHandler();
+	}
+
 	public void testShutdownWithoutArgs() throws IOException,
 			MalformedObjectNameException, NullPointerException {
 		String command = "shutdown";
-		if (handleCommand(command.split(" "))) {
+		if (commandHandler.handleCommand(command.split(" "))) {
 			fail("Command was successful");
 		}
 	}
@@ -40,7 +41,7 @@ public class ShutdownTest extends TestCase {
 	public void testShutdownWithoutId() throws IOException,
 			MalformedObjectNameException, NullPointerException {
 		String command = "shutdown default";
-		if (handleCommand(command.split(" "))) {
+		if (commandHandler.handleCommand(command.split(" "))) {
 			fail("Command was successful");
 		}
 	}
@@ -48,7 +49,7 @@ public class ShutdownTest extends TestCase {
 	public void testShutdownWithNonIntId() throws IOException,
 			MalformedObjectNameException, NullPointerException {
 		String command = "shutdown default one";
-		if (handleCommand(command.split(" "))) {
+		if (commandHandler.handleCommand(command.split(" "))) {
 			fail("Command was successful");
 		}
 	}
@@ -56,7 +57,7 @@ public class ShutdownTest extends TestCase {
 	public void testShutdownWithoutServerName() throws IOException,
 			MalformedObjectNameException, NullPointerException {
 		String command = "shutdown 1";
-		if (handleCommand(command.split(" "))) {
+		if (commandHandler.handleCommand(command.split(" "))) {
 			fail("Command was successful");
 		}
 	}
@@ -64,25 +65,8 @@ public class ShutdownTest extends TestCase {
 	public void testShutdown() throws IOException,
 			MalformedObjectNameException, NullPointerException {
 		String command = "shutdown default 1";
-		if (!handleCommand(command.split(" "))) {
+		if (!commandHandler.handleCommand(command.split(" "))) {
 			fail("Command was not successful");
 		}
 	}
-
-	private boolean handleCommand(String[] command) throws IOException,
-			MalformedObjectNameException, NullPointerException {
-		String url = "service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector";
-		String mbeanName = "jboss.blacktie:service=Admin";
-		// Initialize the connection to the mbean server
-		JMXServiceURL u = new JMXServiceURL(url);
-		JMXConnector c = JMXConnectorFactory.connect(u);
-		MBeanServerConnection beanServerConnection = c
-				.getMBeanServerConnection();
-		ObjectName blacktieAdmin = new ObjectName(mbeanName);
-
-		CommandHandler commandHandler = new CommandHandler(
-				beanServerConnection, blacktieAdmin);
-		return commandHandler.handleCommand(command);
-	}
-
 }

@@ -99,6 +99,10 @@
 	</build>
 	<dependencies>
 		<dependency>
+			<groupId>org.jboss.blacktie</groupId>
+			<artifactId>jatmibroker-xatmi</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.15</version>
