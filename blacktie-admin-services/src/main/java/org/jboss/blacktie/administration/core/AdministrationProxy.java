@@ -392,7 +392,7 @@ public class AdministrationProxy {
 		return result;
 	}
 
-	public void shutdown(String serverName, int id) {
+	public Boolean shutdown(String serverName, int id) {
 		log.trace("shutdown");
 		String command = "serverdone";
 		try {
@@ -404,9 +404,11 @@ public class AdministrationProxy {
 			} else {
 				callAdminService(serverName, id, command);
 			}
+			return true;
 		} catch (ConnectionException e) {
 			log.error("call server " + serverName + " id " + id
 					+ " failed with " + e.getTperrno(), e);
+			return false;
 		} catch (RuntimeException e) {
 			log.error("Could not shutdown server: " + e.getMessage(), e);
 			throw e;

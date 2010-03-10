@@ -61,7 +61,7 @@ public class ListRunningInstanceIds implements Command {
 		serverName = args[0];
 	}
 
-	public void invoke(MBeanServerConnection beanServerConnection,
+	public boolean invoke(MBeanServerConnection beanServerConnection,
 			ObjectName blacktieAdmin) throws InstanceNotFoundException,
 			MBeanException, ReflectionException, IOException {
 		List<Integer> ids = (List<Integer>) beanServerConnection.invoke(
@@ -69,6 +69,7 @@ public class ListRunningInstanceIds implements Command {
 				new Object[] { serverName },
 				new String[] { "java.lang.String" });
 		CommandHandler.output("listRunningInstanceIds", ids);
+		return true;
 	}
 
 }

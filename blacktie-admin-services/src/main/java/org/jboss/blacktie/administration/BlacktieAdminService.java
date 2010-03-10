@@ -66,7 +66,7 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 	public String getSoftwareVersion() {
 		return administrationProxy.getSoftwareVersion();
 	}
-	
+
 	/**
 	 * Get domain status
 	 */
@@ -163,8 +163,8 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 	 * @param id
 	 *            The id of the server
 	 */
-	public void shutdown(String serverName, int id) {
-		administrationProxy.shutdown(serverName, id);
+	public Boolean shutdown(String serverName, int id) {
+		return administrationProxy.shutdown(serverName, id);
 	}
 
 	/**
@@ -240,10 +240,9 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 	}
 
 	public String getResponseTime(String serverName, String serviceName) {
-		return administrationProxy.getResponseTime(serverName, 
-				serviceName);
+		return administrationProxy.getResponseTime(serverName, serviceName);
 	}
-	
+
 	/**
 	 * Get message queue depth
 	 */
@@ -267,7 +266,8 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 
 	public long getErrorCounterById(String serverName, int id,
 			String serviceName) {
-		return administrationProxy.getErrorCounterById(serverName, id, serviceName);
+		return administrationProxy.getErrorCounterById(serverName, id,
+				serviceName);
 	}
 
 	public String getServerVersionById(String serverName, int id) {

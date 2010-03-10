@@ -67,11 +67,17 @@ public class Shutdown implements Command {
 		}
 	}
 
-	public void invoke(MBeanServerConnection beanServerConnection,
+	public boolean invoke(MBeanServerConnection beanServerConnection,
 			ObjectName blacktieAdmin) throws InstanceNotFoundException,
 			MBeanException, ReflectionException, IOException {
-		beanServerConnection.invoke(blacktieAdmin, "shutdown", new Object[] {
-				serverName, id }, new String[] { "java.lang.String", "int" });
-		log.info("Server shutdown successfully");
+		Boolean result = (Boolean) beanServerConnection.invoke(blacktieAdmin,
+				"shutdown", new Object[] { serverName, id }, new String[] {
+						"java.lang.String", "int" });
+		if (result) {
+			log.info("Server shutdown successfully");
+		} else {
+			log.error("Server could not be shutdown (may already be stopped)");
+		}
+		return result;
 	}
 }

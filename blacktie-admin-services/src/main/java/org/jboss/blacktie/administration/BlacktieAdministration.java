@@ -127,7 +127,7 @@ public interface BlacktieAdministration {
 	/**
 	 * Shutdown server
 	 */
-	public void shutdown(String serverName, int id);
+	public Boolean shutdown(String serverName, int id);
 
 	/**
 	 * Get service response time

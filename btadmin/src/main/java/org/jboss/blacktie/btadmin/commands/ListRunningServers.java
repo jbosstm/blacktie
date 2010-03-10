@@ -56,11 +56,12 @@ public class ListRunningServers implements Command {
 	/**
 	 * List the running servers to console and log file
 	 */
-	public void invoke(MBeanServerConnection beanServerConnection,
+	public boolean invoke(MBeanServerConnection beanServerConnection,
 			ObjectName blacktieAdmin) throws InstanceNotFoundException,
 			MBeanException, ReflectionException, IOException {
 		List<String> listRunningServers = (ArrayList<String>) beanServerConnection
 				.invoke(blacktieAdmin, "listRunningServers", null, null);
 		CommandHandler.output("listRunningServers", listRunningServers);
+		return true;
 	}
 }

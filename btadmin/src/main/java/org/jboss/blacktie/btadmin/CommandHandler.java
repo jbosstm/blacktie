@@ -95,8 +95,8 @@ public class CommandHandler {
 						log.trace("Arguments initialized");
 						try {
 							// Try to invoke the command
-							command.invoke(beanServerConnection, blacktieAdmin);
-							commandSuccessful = true;
+							commandSuccessful = command.invoke(
+									beanServerConnection, blacktieAdmin);
 							log.trace("Command invoked");
 						} catch (Exception e) {
 							log.error("Could not invoke the command: "

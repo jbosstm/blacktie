@@ -161,7 +161,7 @@
 		<module>../jatmibroker-xatmi</module>
 		<module>../blacktie-admin-services</module>
 		<module>../blacktie-rhq-plugin</module>
-		<module>../btadmin</module>
+		<!-- <module>../btadmin</module> -->
 		<module>../tx-test-utilities</module>
 		<module>../atmibroker-core</module>
 		<module>../atmibroker-tx</module>

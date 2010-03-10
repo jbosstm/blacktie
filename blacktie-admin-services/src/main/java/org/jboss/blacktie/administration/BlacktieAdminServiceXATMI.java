@@ -344,8 +344,8 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 	 * @param id
 	 *            The id of the server
 	 */
-	public void shutdown(String serverName, int id) {
-		administrationProxy.shutdown(serverName, id);
+	public Boolean shutdown(String serverName, int id) {
+		return administrationProxy.shutdown(serverName, id);
 	}
 
 	/**
