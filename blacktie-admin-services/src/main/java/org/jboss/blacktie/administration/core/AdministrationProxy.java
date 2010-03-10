@@ -31,7 +31,6 @@ import java.util.Set;
 import javax.jms.Destination;
 import javax.jms.Queue;
 import javax.management.MBeanServerConnection;
-import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
@@ -394,24 +393,29 @@ public class AdministrationProxy {
 
 	public Boolean shutdown(String serverName, int id) {
 		log.trace("shutdown");
-		String command = "serverdone";
-		try {
-			if (id == 0) {
-				List<Integer> ids = listRunningInstanceIds(serverName);
-				for (int i = 0; i < ids.size(); i++) {
-					callAdminService(serverName, ids.get(i), command);
+		if (servers.contains(serverName)) {
+			String command = "serverdone";
+			try {
+				if (id == 0) {
+					List<Integer> ids = listRunningInstanceIds(serverName);
+					for (int i = 0; i < ids.size(); i++) {
+						callAdminService(serverName, ids.get(i), command);
+					}
+				} else {
+					callAdminService(serverName, id, command);
 				}
-			} else {
-				callAdminService(serverName, id, command);
+				return true;
+			} catch (ConnectionException e) {
+				log.error("call server " + serverName + " id " + id
+						+ " failed with " + e.getTperrno(), e);
+				return false;
+			} catch (RuntimeException e) {
+				log.error("Could not shutdown server: " + e.getMessage(), e);
+				throw e;
 			}
-			return true;
-		} catch (ConnectionException e) {
-			log.error("call server " + serverName + " id " + id
-					+ " failed with " + e.getTperrno(), e);
+		} else {
+			log.error("Server not configured: " + serverName);
 			return false;
-		} catch (RuntimeException e) {
-			log.error("Could not shutdown server: " + e.getMessage(), e);
-			throw e;
 		}
 	}
 
@@ -511,13 +515,13 @@ public class AdministrationProxy {
 
 		return counter;
 	}
-	
+
 	public long getErrorCounterById(String serverName, int id,
 			String serviceName) {
 		log.trace("getErrorCounterById");
 		long counter = 0;
 		String command = "error_counter," + serviceName + ",";
-		
+
 		try {
 			Response buf = callAdminService(serverName, id, command);
 			if (buf != null) {
@@ -532,15 +536,14 @@ public class AdministrationProxy {
 
 		return counter;
 	}
-	
+
 	public long getErrorCounter(String serverName, String serviceName) {
 		log.trace("getErrorCounter");
 		long counter = 0;
 		List<Integer> ids = listRunningInstanceIds(serverName);
 
 		for (int i = 0; i < ids.size(); i++) {
-			counter += getErrorCounterById(serverName, ids.get(i),
-					serviceName);
+			counter += getErrorCounterById(serverName, ids.get(i), serviceName);
 		}
 
 		return counter;
@@ -633,13 +636,13 @@ public class AdministrationProxy {
 	public String getServerName(String serviceName) {
 		return prop.getProperty("blacktie." + serviceName + ".server");
 	}
-	
+
 	public String getServerVersionById(String serverName, int id) {
 		log.trace("getServerVersionById");
 		String command = "version";
 		Response buf = null;
 		String version = null;
-		
+
 		try {
 			buf = callAdminService(serverName, id, command);
 			if (buf != null) {

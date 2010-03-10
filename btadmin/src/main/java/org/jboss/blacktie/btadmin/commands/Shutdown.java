@@ -45,25 +45,27 @@ public class Shutdown implements Command {
 	private String serverName;
 
 	/**
-	 * The ID of the server
+	 * The ID of the server, will be 0 (all) if not provided
 	 */
-	private int id;
+	private int id = 0;
 
 	/**
 	 * Show the usage of the command
 	 */
 	public String getExampleUsage() {
-		return "<serverName> <serverId>";
+		return "<serverName> [<serverId>]";
 	}
 
 	public void initializeArgs(String[] args) throws IncompatibleArgsException {
 		serverName = args[0];
-		try {
-			id = Integer.parseInt(args[1]);
-			log.trace("Successfully parsed: " + args[1]);
-		} catch (NumberFormatException nfe) {
-			throw new IncompatibleArgsException(
-					"The third argument was expected to be the (integer) instance id to shutdown");
+		if (args.length == 2) {
+			try {
+				id = Integer.parseInt(args[1]);
+				log.trace("Successfully parsed: " + args[1]);
+			} catch (NumberFormatException nfe) {
+				throw new IncompatibleArgsException(
+						"The third argument was expected to be the (integer) instance id to shutdown");
+			}
 		}
 	}
 
