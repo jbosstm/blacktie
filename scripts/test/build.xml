@@ -1,0 +1,16 @@
+<project name="foo">
+	<target name="dist">
+		<delete dir="../../dist"/>
+		<mkdir dir="../../dist"/>
+		<unzip dest="../../dist">
+			<fileset dir="../../blacktie/target/">
+				<include name="blacktie-*-bin.zip"/>
+			</fileset>
+		</unzip>
+		<replaceregexp byline="true" match="REPLACE_WITH_INSTALL_LOCATION" replace="${BT_HOME}">
+			<fileset dir="../../dist/">
+				<include name="*/setenv.bat"/>
+			</fileset>
+		</replaceregexp>
+	</target>
+</project>
