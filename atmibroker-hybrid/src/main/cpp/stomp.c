@@ -461,8 +461,8 @@ apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_p
 		  char* content_length = apr_hash_get(f->headers, "content-length", APR_HASH_KEY_STRING);
 		  if(content_length) {
 			  char endbuffer[2];
-			  userlogc_debug("Content-length detected");
 			  apr_size_t length = 2;
+			  userlogc_debug("Content-length detected");
 
 			  f->body_length = atoi(content_length);
 			  f->body = apr_pcalloc(pool, f->body_length);
