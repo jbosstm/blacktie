@@ -8,7 +8,7 @@ sed -i "s=REPLACE_WITH_INSTALL_LOCATION=$VAR=g" setenv.sh
 
 # RUN THE FOOAPP SERVER
 cd $BLACKTIE_HOME/examples/xatmi/fooapp
-generate_server.sh -Dservice.names=BAR -Dserver.includes=BarService.c
+. generate_server.sh -Dservice.names=BAR -Dserver.includes=BarService.c
 if [ "$?" != "0" ]; then
 	exit -1
 fi
@@ -16,7 +16,7 @@ fi
 sleep 3
 
 # RUN THE C CLIENT
-generate_client.sh -Dclient.includes=client.c
+. generate_client.sh -Dclient.includes=client.c
 ./client
 if [ "$?" != "0" ]; then
 	exit -1
@@ -49,7 +49,7 @@ sleep 3
 
 # SHUTDOWN THE SERVER RUNNING THE XATMI ADMIN CLIENT
 cd $BLACKTIE_HOME/examples/admin/xatmi
-generate_client.sh -Dclient.includes=client.c
+. generate_client.sh -Dclient.includes=client.c
 echo '0
 0
 0
@@ -60,7 +60,7 @@ fg
 
 # RUN THE SECURE SERVER
 cd $BLACKTIE_HOME/examples/security
-generate_server.sh -Dservice.names=SECURE -Dserver.includes=BarService.c
+. generate_server.sh -Dservice.names=SECURE -Dserver.includes=BarService.c
 if [ "$?" != "0" ]; then
 	exit -1
 fi
@@ -70,7 +70,7 @@ sleep 3
 unset BLACKTIE_CONFIGURATION_DIR
 
 # RUN THE "guest" USER CLIENT
-generate_client.sh -Dclient.includes=client.c
+. generate_client.sh -Dclient.includes=client.c
 export BLACKTIE_CONFIGURATION_DIR=guest
 ./client
 # This test is expected to fail so make sure the exit status was not 0
@@ -89,7 +89,7 @@ unset BLACKTIE_CONFIGURATION_DIR
 
 # SHUTDOWN THE SERVER RUNNING THE XATMI ADMIN CLIENT
 cd $BLACKTIE_HOME/examples/admin/xatmi
-generate_client.sh -Dclient.includes=client.c
+. generate_client.sh -Dclient.includes=client.c
 unset BLACKTIE_CONFIGURATION_DIR
 echo '0
 0

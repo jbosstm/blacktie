@@ -104,12 +104,12 @@ to compile the client for use with Oracle11g:
 ORACLE ONLY
 -----------
 On Linux:
-generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" \
+. generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" \
     -Dx.inc.dir="$ORACLE_HOME/rdbms/public" \
     -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" \
     -Dx.define="ORACLE"
 Similarly for generating the client:
-generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" \
+. generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" \
     -Dx.inc.dir="$ORACLE_HOME/rdbms/public" \
     -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" \
     -Dx.define="ORACLE"
@@ -121,12 +121,12 @@ generate_client -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir
 DB2 ONLY
 --------
 On Linux:
-generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c db2.c DbService.c" \
+. generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c db2.c DbService.c" \
     -Dx.inc.dir="$DB2DIR/include" \
     -Dx.lib.dir="$DB2_LIB" -Dx.libs="db2" \
     -Dx.define="DB2"
 Similarly for generating the client:
-generate_client.sh -Dclient.includes="client.c request.c db2.c cutil.c" \
+. generate_client.sh -Dclient.includes="client.c request.c db2.c cutil.c" \
     -Dx.inc.dir="$DB2DIR/include" \
     -Dx.lib.dir="$DB2_LIB" -Dx.libs="db2" \
     -Dx.define="DB2"
@@ -144,14 +144,14 @@ generate_client -Dclient.includes="client.c request.c db2.c cutil.c" \
 DB2 and ORACLE together
 -----------------------
 On Linux:
-generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c db2.c ora.c DbService.c" \
+. generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c db2.c ora.c DbService.c" \
     -Dx.inc.dir="$ORACLE_HOME/rdbms/public" \
     -Dx.inc.dir2="$DB2DIR/include" \
     -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" \
     -Dx.lib.dir2="$DB2_LIB" -Dx.libs2="db2" \
     -Dx.define="ORACLE,DB2"
 Similarly for generating the client:
-generate_client.sh -Dclient.includes="client.c request.c db2.c ora.c cutil.c" \
+. generate_client.sh -Dclient.includes="client.c request.c db2.c ora.c cutil.c" \
     -Dx.inc.dir="$ORACLE_HOME/rdbms/public" \
     -Dx.inc.dir2="$DB2DIR/include" \
     -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" \
@@ -325,14 +325,14 @@ Example command line for compiling and linking the server and client (defines th
 dummy XA resource library):
 
 On Linux:
-generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" \
+. generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" \
      -Dx.inc.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
      -Dx.inc.dir2="$ORACLE_HOME/rdbms/public" \
      -Dx.lib.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="tx-test-utilities" \
      -Dx.lib.dir2="$ORACLE_HOME/lib" -Dx.libs2="occi clntsh" \
      -Dx.define="ORACLE, TX_RC"
 
-generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" \
+. generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" \
      -Dx.inc.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/include" \
      -Dx.inc.dir2="$ORACLE_HOME/rdbms/public" \
      -Dx.lib.dir="$HOME/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs="tx-test-utilities" \

@@ -21,9 +21,9 @@ In order to run the example you need to make sure that you have set the environm
 appropriately. You will need to make sure that you edit the variables with values 
 starting with REPLACE_WITH_: 
 On Linux you need to edit:
-	$BLACKTIE_HOMEtenv.sh
+	$BLACKTIE_HOME/setenv.sh
 On Windows:
-	%BLABLACKTIE_HOMEnv.bat
+	%BLACKTIE_HOME%\setenv.bat
 Then, execute the script setenv
 
 2. RUN THE EXAMPLE
