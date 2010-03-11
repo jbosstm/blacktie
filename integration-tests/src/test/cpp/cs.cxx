@@ -35,6 +35,20 @@
 #include "tx.h"
 #endif
 
+#ifdef WIN32
+#define TX_OK              0   /* normal execution */
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern BLACKTIE_TX_DLL int tx_begin(void);
+extern BLACKTIE_TX_DLL int tx_close(void);
+extern BLACKTIE_TX_DLL int tx_commit(void);
+extern BLACKTIE_TX_DLL int tx_open(void);
+#ifdef __cplusplus
+}
+#endif
+#endif
+
 static ACE_Mutex mutex_;
 const char *MSG1 = "CLIENT REQUEST		";
 const char *MSG2 = "PAUSE - CLIENT REQUEST";
@@ -402,17 +416,13 @@ static int t8() {
 }
 
 static int startTx(int enable) {
-#ifndef WIN32
 	if (enable && (tx_open() != TX_OK || tx_begin() != TX_OK))
 		return 1;
-#endif
 	return 0;
 }
 static int endTx(int enable) {
-#ifndef WIN32
 	if (enable && (tx_commit() != TX_OK || tx_close() != TX_OK))
 		return 1;
-#endif
 	return 0;
 }
 
