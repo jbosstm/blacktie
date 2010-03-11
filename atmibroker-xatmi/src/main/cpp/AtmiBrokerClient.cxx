@@ -148,7 +148,7 @@ Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
 	Session* session = NULL;
 
 	Connection* clientConnection = NULL;
-	clientConnection = clientConnectionManager.getClientConnection(serviceName);
+	clientConnection = clientConnectionManager.getClientConnection();
 
 	if (clientConnection != NULL) {
 		lock->lock();

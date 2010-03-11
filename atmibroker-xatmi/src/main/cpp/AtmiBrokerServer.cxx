@@ -657,7 +657,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 		}
 	}
 
-	Connection* connection = connections.getServerConnection(serviceName);
+	Connection* connection = connections.getServerConnection();
 	if (connection == NULL) {
 		setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		free(serviceName);
@@ -719,7 +719,7 @@ void AtmiBrokerServer::unadvertiseService(char * svcname) {
 	memset(serviceName, '\0', XATMI_SERVICE_NAME_LENGTH + 1);
 	strncat(serviceName, svcname, XATMI_SERVICE_NAME_LENGTH);
 
-	Connection* connection = connections.getServerConnection(serviceName);
+	Connection* connection = connections.getServerConnection();
 	if (connection == NULL) {
 		return;
 	}
@@ -860,8 +860,7 @@ void AtmiBrokerServer::addDestination(Destination* destination, void(*func)(
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "constructor: "
 			<< destination->getName());
 
-	Connection* connection = connections.getServerConnection(
-			(char*) service->serviceName);
+	Connection* connection = connections.getServerConnection();
 	if (connection == NULL) {
 		return;
 	}

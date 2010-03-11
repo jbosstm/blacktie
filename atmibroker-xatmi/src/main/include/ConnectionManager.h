@@ -30,15 +30,15 @@ public:
 	ConnectionManager();
 	~ConnectionManager();
 
-	Connection* getClientConnection(char* serviceName);
-	Connection* getServerConnection(char* serviceName);
+	Connection* getClientConnection();
+	Connection* getServerConnection();
 
 	void closeConnections();
 
 private:
 	ConnectionMap manager;
 	SynchronizableObject* lock;
-	Connection* getConnection(char* serviceName, char* side);
+	Connection* getConnection(char* side);
 };
 
 #endif

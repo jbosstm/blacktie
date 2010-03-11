@@ -60,7 +60,7 @@ void ConnectionManager::closeConnections() {
 }
 
 Connection*
-ConnectionManager::getConnection(char* serviceName, char* side) {
+ConnectionManager::getConnection(char* side) {
 	char* transportLibrary;
 	char adm[XATMI_SERVICE_NAME_LENGTH + 1];
 	ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server,
@@ -71,8 +71,7 @@ ConnectionManager::getConnection(char* serviceName, char* side) {
 #else
 		transportLibrary = (char*) "libatmibroker-hybrid.so";
 #endif
-	LOG4CXX_DEBUG(loggerConnectionManager, (char*) "service " << serviceName
-			<< " transport is " << transportLibrary);
+	LOG4CXX_DEBUG(loggerConnectionManager, (char*) "transport is " << transportLibrary);
 	std::string key = side;
 	key.append("/");
 	key.append(transportLibrary);
@@ -82,8 +81,7 @@ ConnectionManager::getConnection(char* serviceName, char* side) {
 	it = manager.find(key);
 
 	if (it != manager.end()) {
-		LOG4CXX_DEBUG(loggerConnectionManager, (char*) "find " << serviceName
-				<< " Connection in map " << (*it).second);
+		LOG4CXX_DEBUG(loggerConnectionManager, (char*) "Found Connection in map " << (*it).second);
 		lock->unlock();
 		return (*it).second;
 	} else {
@@ -109,17 +107,17 @@ ConnectionManager::getConnection(char* serviceName, char* side) {
 	}
 
 	LOG4CXX_WARN(loggerConnectionManager,
-			(char*) "can not create connection for service " << serviceName);
+			(char*) "can not create connection for service " << side);
 	lock->unlock();
 	return NULL;
 }
 
 Connection*
-ConnectionManager::getClientConnection(char* serviceName) {
-	return getConnection(serviceName, (char*) "client");
+ConnectionManager::getClientConnection() {
+	return getConnection((char*) "client");
 }
 
 Connection*
-ConnectionManager::getServerConnection(char* serviceName) {
-	return getConnection(serviceName, (char*) "server");
+ConnectionManager::getServerConnection() {
+	return getConnection((char*) "server");
 }
