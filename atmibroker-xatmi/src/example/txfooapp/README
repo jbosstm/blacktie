@@ -114,9 +114,9 @@ generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" \
     -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" \
     -Dx.define="ORACLE"
 On Windows:
-generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.define="ORACLE"
+generate_server -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.define="ORACLE"
 Similarly for generating the client:
-generate_client.bat -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.define="ORACLE"
+generate_client -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.define="ORACLE"
 
 DB2 ONLY
 --------
@@ -131,12 +131,12 @@ generate_client.sh -Dclient.includes="client.c request.c db2.c cutil.c" \
     -Dx.lib.dir="$DB2_LIB" -Dx.libs="db2" \
     -Dx.define="DB2"
 On Windows:
-generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c db2.c DbService.c" \
+generate_server -Dservice.names=BAR -Dserver.includes="request.c db2.c DbService.c" \
     -Dx.inc.dir="%DB2DIR%\include" \
     -Dx.lib.dir="%DB2_LIB%" -Dx.libs="db2api" \
     -Dx.define="DB2"
 Similarly for generating the client:
-generate_client.bat -Dclient.includes="client.c request.c db2.c cutil.c" \
+generate_client -Dclient.includes="client.c request.c db2.c cutil.c" \
     -Dx.inc.dir="%DB2DIR%\include" \
     -Dx.lib.dir="%DB2_LIB%" -Dx.libs="db2api" \
     -Dx.define="DB2"
@@ -158,9 +158,9 @@ generate_client.sh -Dclient.includes="client.c request.c db2.c ora.c cutil.c" \
     -Dx.lib.dir2="$DB2_LIB" -Dx.libs2="db2" \
     -Dx.define="ORACLE,DB2"
 On Windows:
-generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.inc.dir2="%DB2DIR%\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.lib.dir2="%DB2_LIB%" -Dx.libs2="db2api" -Dx.define="ORACLE,DB2"
+generate_server -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.inc.dir2="%DB2DIR%\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.lib.dir2="%DB2_LIB%" -Dx.libs2="db2api" -Dx.define="ORACLE,DB2"
 Similarly for generating the client:
-generate_client.bat -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.inc.dir2="%DB2DIR%\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.lib.dir2="%DB2_LIB%" -Dx.libs2="db2api" -Dx.define="ORACLE,DB2"
+generate_client -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.inc.dir2="%DB2DIR%\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.lib.dir2="%DB2_LIB%" -Dx.libs2="db2api" -Dx.define="ORACLE,DB2"
 
 NOTE: If you get the following error you have not edited or executed setenv correctly:
 java org.apache.tools.ant.launch.Launcher -f /bin/generate-executables.xml -Dconfiguration.type=debug -Dbasedir=. -Dtoolchain.compiler=msvc server -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="C:/<ora include dir>" -Dx.lib.dir="<ora lib dir>" -Dx.libs="occi.dll clntsh.dll" -Dx.define="ORACLE"
@@ -346,9 +346,9 @@ XA_RESOURCE_MGR_ID setting for the DummyDb resource manager):
 
 
 On Windows:
-generate_client.bat -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci"      -Dx.inc.dir2="c:/blacktie/trunk/atmibroker-tx/target/cxx/test/include"      -Dx.lib.dir2="c:/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs2="tx-test-utilities"     -Dx.define="ORACLE, TX_RC"
+generate_client -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci"      -Dx.inc.dir2="c:/blacktie/trunk/atmibroker-tx/target/cxx/test/include"      -Dx.lib.dir2="c:/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs2="tx-test-utilities"     -Dx.define="ORACLE, TX_RC"
 
-generate_server.bat -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci"           -Dx.inc.dir2="C:/blacktie/trunk/atmibroker-tx/target/cxx/test/include"      -Dx.lib.dir2="c:/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs2="tx-test-utilities"      -Dx.define="ORACLE, TX_RC"
+generate_server -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci"           -Dx.inc.dir2="C:/blacktie/trunk/atmibroker-tx/target/cxx/test/include"      -Dx.lib.dir2="c:/blacktie/trunk/atmibroker-tx/target/cxx/test/lib" -Dx.libs2="tx-test-utilities"      -Dx.define="ORACLE, TX_RC"
 
 Note that the library path needs to include the location of the tx-test-utilities library. For example:
 On Linux:

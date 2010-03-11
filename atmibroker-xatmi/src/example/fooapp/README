@@ -35,7 +35,7 @@ C:\Program Files\Microsoft Visual Studio 9.0\VC\vcvarsall.bat
 On Linux:
 	generate_server.sh -Dservice.names=BAR -Dserver.includes=BarService.c
 On Windows:
-	generate_server.bat -Dservice.names=BAR -Dserver.includes=BarService.c
+	generate_server -Dservice.names=BAR -Dserver.includes=BarService.c
 NOTE: If you get the following error you have not installed ant-contrib into your ANT distribution:
 	BUILD FAILED
 	/home/tom/blacktie/dist/blacktie-1.0-M4-SNAPSHOT/bin/generate-executables.xml:160: Problem: failed to create task or type propertycopy
@@ -66,7 +66,7 @@ C:\blacktie\dist\blacktie-1.0-MR6-SNAPSHOT\bin\generate-executables.xml:144: Cou
 On Linux:
 	generate_client.sh -Dclient.includes=client.c
 On Windows:
-	generate_client.bat -Dclient.includes=client.c
+	generate_client -Dclient.includes=client.c
 
 
 4. DEPLOY THE BLACKTIE ADMIN SERVICE
