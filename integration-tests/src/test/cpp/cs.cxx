@@ -36,6 +36,7 @@
 #endif
 
 #ifdef WIN32
+#include "atmiBrokerTxMacro.h"
 #define TX_OK              0   /* normal execution */
 #ifdef __cplusplus
 extern "C" {
