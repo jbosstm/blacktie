@@ -44,7 +44,7 @@ C:\Program Files\Microsoft Visual Studio 9.0\VC\vcvarsall.bat
 
 2. CREATE THE SERVER
 On Linux:
-	. generate_server.sh -Dservice.names=SECURE -Dserver.includes=BarService.c
+	generate_server.sh -Dservice.names=SECURE -Dserver.includes=BarService.c
 On Windows:
 	generate_server -Dservice.names=SECURE -Dserver.includes=BarService.c
 NOTE: If you get the following error you have not installed ant-contrib into your ANT distribution:
@@ -75,7 +75,7 @@ C:\blacktie\dist\blacktie-1.0-MR6-SNAPSHOT\bin\generate-executables.xml:144: Cou
 
 3. CREATE THE CLIENT
 On Linux:
-	. generate_client.sh -Dclient.includes=client.c
+	generate_client.sh -Dclient.includes=client.c
 On Windows:
 	generate_client -Dclient.includes=client.c
 
