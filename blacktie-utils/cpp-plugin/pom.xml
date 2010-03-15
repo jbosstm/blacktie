@@ -74,6 +74,21 @@
 		</license>
 	</licenses>
 
+	<distributionManagement>
+		<repository>
+			<id>jboss-releases</id>
+			<name>JBoss Release Repository</name>
+			<url>scm:svn:https://svn.jboss.org/repos/repository.jboss.org/maven2</url>
+		</repository>
+
+		<snapshotRepository>
+			<id>snapshots.jboss.org</id>
+			<name>JBoss Snapshot Repository</name>
+			<url>dav:https://snapshots.jboss.org/maven2</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
