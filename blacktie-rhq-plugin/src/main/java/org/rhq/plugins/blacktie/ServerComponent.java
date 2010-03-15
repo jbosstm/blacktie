@@ -122,7 +122,7 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 	public void start(ResourceContext context) {
 		try {
 			Properties prop = new Properties();
-			XMLEnvHandler handler = new XMLEnvHandler("", prop);
+			XMLEnvHandler handler = new XMLEnvHandler(prop);
 			XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 			xmlenv.parse("Environment.xml", true);
 			JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));

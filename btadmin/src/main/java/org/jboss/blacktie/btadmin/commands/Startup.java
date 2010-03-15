@@ -17,7 +17,10 @@
  */
 package org.jboss.blacktie.btadmin.commands;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import javax.management.InstanceNotFoundException;
@@ -30,15 +33,17 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.btadmin.Command;
 import org.jboss.blacktie.btadmin.IncompatibleArgsException;
+import org.jboss.blacktie.jatmibroker.core.conf.Machine;
+import org.jboss.blacktie.jatmibroker.core.conf.Server;
 
 /**
  * The shutdown command will shutdown the server specified
  */
-public class Shutdown implements Command {
+public class Startup implements Command {
 	/**
 	 * The logger to use for output
 	 */
-	private static Logger log = LogManager.getLogger(Shutdown.class);
+	private static Logger log = LogManager.getLogger(Startup.class);
 
 	/**
 	 * The name of the server.
@@ -46,45 +51,42 @@ public class Shutdown implements Command {
 	private String serverName;
 
 	/**
-	 * The ID of the server, will be 0 (all) if not provided
-	 */
-	private int id = 0;
-
-	/**
 	 * Show the usage of the command
 	 */
 	public String getExampleUsage() {
-		return "<serverName> [<serverId>]";
+		return "[<serverName>]";
 	}
 
 	public void initializeArgs(String[] args) throws IncompatibleArgsException {
 		serverName = args[0];
-		if (args.length == 2) {
-			try {
-				id = Integer.parseInt(args[1]);
-				log.trace("Successfully parsed: " + args[1]);
-			} catch (NumberFormatException nfe) {
-				throw new IncompatibleArgsException(
-						"The third argument was expected to be the (integer) instance id to shutdown");
-			}
-		}
 	}
 
 	public int invoke(MBeanServerConnection beanServerConnection,
 			ObjectName blacktieAdmin, Properties configuration)
 			throws InstanceNotFoundException, MBeanException,
 			ReflectionException, IOException {
+		List<Server> serverLaunchers = (List<Server>) configuration
+				.get("blacktie.domain.serverLaunchers");
 		int exitStatus = -1;
-		Boolean result = (Boolean) beanServerConnection.invoke(blacktieAdmin,
-				"shutdown", new Object[] { serverName, id }, new String[] {
-						"java.lang.String", "int" });
-		if (result) {
-			log.info("Server shutdown successfully");
-		} else {
-			log.error("Server could not be shutdown (may already be stopped)");
-		}
-		if (result) {
-			exitStatus = 0;
+		Iterator<Server> iterator = serverLaunchers.iterator();
+		while (iterator.hasNext()) {
+			Server next = iterator.next();
+			if (serverName == null || serverName.equals(next.getName())) {
+				Machine localMachine = next.getLocalMachine();
+				if (localMachine == null) {
+					String pathToExecutable = localMachine
+							.getPathToExecutable();
+					String argLine = localMachine.getArgLine();
+					String[] split = argLine.split(" ");
+					String[] cmdarray = new String[split.length + 1];
+					cmdarray[0] = pathToExecutable;
+					System.arraycopy(split, 0, cmdarray, 1, split.length);
+					String[] envp = null;
+					File dir = null;
+					Process exec = Runtime.getRuntime().exec(cmdarray, envp,
+							dir);
+				}
+			}
 		}
 		return exitStatus;
 	}

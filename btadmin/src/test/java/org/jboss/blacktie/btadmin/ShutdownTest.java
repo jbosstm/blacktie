@@ -41,7 +41,9 @@ public class ShutdownTest extends TestCase {
 	}
 
 	public void testShutdownWithoutArgs() throws IOException,
-			MalformedObjectNameException, NullPointerException {
+			MalformedObjectNameException, NullPointerException,
+			InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
 		String command = "shutdown";
 		if (commandHandler.handleCommand(command.split(" ")) != -1) {
 			fail("Command was successful");
@@ -49,7 +51,9 @@ public class ShutdownTest extends TestCase {
 	}
 
 	public void testShutdownWithNonIntId() throws IOException,
-			MalformedObjectNameException, NullPointerException {
+			MalformedObjectNameException, NullPointerException,
+			InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
 		String command = "shutdown default one";
 		if (commandHandler.handleCommand(command.split(" ")) != -1) {
 			fail("Command was successful");
@@ -57,7 +61,9 @@ public class ShutdownTest extends TestCase {
 	}
 
 	public void testShutdownUnknownServer() throws IOException,
-			MalformedObjectNameException, NullPointerException {
+			MalformedObjectNameException, NullPointerException,
+			InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
 		String command = "shutdown UNKNOWN";
 		if (commandHandler.handleCommand(command.split(" ")) != -1) {
 			fail("Command was successful");
@@ -65,7 +71,9 @@ public class ShutdownTest extends TestCase {
 	}
 
 	public void testShutdownStoppedServer() throws IOException,
-			MalformedObjectNameException, NullPointerException {
+			MalformedObjectNameException, NullPointerException,
+			InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
 		String command = "shutdown default 1";
 		if (commandHandler.handleCommand(command.split(" ")) != -1) {
 			fail("Command was successful");
@@ -73,7 +81,9 @@ public class ShutdownTest extends TestCase {
 	}
 
 	public void testShutdownWithoutId() throws IOException,
-			MalformedObjectNameException, NullPointerException {
+			MalformedObjectNameException, NullPointerException,
+			InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
 		if (runServer.serverinit("default", "1") != 0) {
 			fail("Could not start the server");
 		}
@@ -84,7 +94,9 @@ public class ShutdownTest extends TestCase {
 	}
 
 	public void testShutdownWithId() throws IOException,
-			MalformedObjectNameException, NullPointerException {
+			MalformedObjectNameException, NullPointerException,
+			InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
 		if (runServer.serverinit("default", "1") != 0) {
 			fail("Could not start the server");
 		}

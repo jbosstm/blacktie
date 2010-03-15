@@ -17,45 +17,41 @@
  */
 package org.jboss.blacktie.jatmibroker.core.conf;
 
-import java.util.Properties;
+public class Machine {
+	private String id;
+	private String hostname;
+	private String pathToExecutable;
+	private String argLine;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-public class AtmiBrokerServerXML {
-	private static final Logger log = LogManager
-			.getLogger(AtmiBrokerServerXML.class);
-	private Properties prop;
-
-	public AtmiBrokerServerXML() {
-		prop = new Properties();
+	public String getId() {
+		return id;
 	}
 
-	public AtmiBrokerServerXML(Properties prop) {
-		this.prop = prop;
+	public void setId(String id) {
+		this.id = id;
 	}
 
-	public Properties getProperties() throws Exception {
-		return getProperties(null);
+	public String getHostname() {
+		return hostname;
 	}
 
-	public Properties getProperties(String configDir)
-			throws ConfigurationException {
-		String envXML;
-		if (configDir == null) {
-			configDir = System.getenv("BLACKTIE_CONFIGURATION_DIR");
-		}
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
+	}
 
-		if (configDir != null && !configDir.equals("")) {
-			envXML = configDir + "/" + "Environment.xml";
-		} else {
-			envXML = "Environment.xml";
-		}
+	public String getPathToExecutable() {
+		return pathToExecutable;
+	}
 
-		XMLEnvHandler env = new XMLEnvHandler(prop);
-		XMLParser xmlenv = new XMLParser(env, "Environment.xsd");
-		xmlenv.parse(envXML, true);
+	public void setPathToExecutable(String pathToExecutable) {
+		this.pathToExecutable = pathToExecutable;
+	}
 
-		return prop;
+	public String getArgLine() {
+		return argLine;
+	}
+
+	public void setArgLine(String argLine) {
+		this.argLine = argLine;
 	}
 }

@@ -45,8 +45,7 @@ import org.w3c.dom.Element;
 
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTDomainAdmin") },
-		messageListenerInterface=javax.jms.MessageListener.class)
+		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTDomainAdmin") }, messageListenerInterface = javax.jms.MessageListener.class)
 @Depends("jboss.messaging.destination:service=Queue,name=BTDomainAdmin")
 @javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
@@ -159,12 +158,13 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 				String serviceName = getString(parameters);
 				String times = getResponseTime(serverName, serviceName);
 				toReturn = times.getBytes();
-			} else if( operation.equals("getQueueDepth")) {
+			} else if (operation.equals("getQueueDepth")) {
 				String serverName = getString(parameters);
 				String serviceName = getString(parameters);
 				int depth = getQueueDepth(serverName, serviceName);
-				toReturn = (new StringBuffer().append(depth)).toString().getBytes();
-			} else if( operation.equals("getServerVersionById")) {
+				toReturn = (new StringBuffer().append(depth)).toString()
+						.getBytes();
+			} else if (operation.equals("getServerVersionById")) {
 				String serverName = getString(parameters);
 				int id = getInt(parameters);
 				String response = getServerVersionById(serverName, id);
@@ -428,7 +428,7 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 
 	public String getResponseTimeById(String serverName, int id,
 			String serviceName) {
-		return administrationProxy.getResponseTimeById(serverName, id, 
+		return administrationProxy.getResponseTimeById(serverName, id,
 				serviceName);
 	}
 
@@ -439,14 +439,15 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 	public String getServerName(String serviceName) {
 		return administrationProxy.getServerName(serviceName);
 	}
-	
+
 	public long getErrorCounter(String serverName, String serviceName) {
 		return administrationProxy.getErrorCounter(serverName, serviceName);
 	}
 
 	public long getErrorCounterById(String serverName, int id,
 			String serviceName) {
-		return administrationProxy.getErrorCounterById(serverName, id, serviceName);
+		return administrationProxy.getErrorCounterById(serverName, id,
+				serviceName);
 	}
 
 	public String getServerVersionById(String serverName, int id) {

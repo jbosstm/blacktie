@@ -18,8 +18,18 @@
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
+	<MACHINES>
+		<MACHINE id="secure1" hostname="localhost"
+			pathToExecutable="/home/tom/blacktie/trunk/dist/blacktie-2.0.0.M3-SNAPSHOT/examples/xatmi/fooapp"
+			argLine="-i 1" />
+		<MACHINE id="secure2" hostname="localhost"
+			pathToExecutable="/home/tom/blacktie/trunk/dist/blacktie-2.0.0.M3-SNAPSHOT/examples/xatmi/fooapp"
+			argLine="-i 2" />
+	</MACHINES>
 	<SERVERS>
 		<SERVER name="secure">
+			<MACHINE-REF id="doo" />
+			<MACHINE-REF id="doo2" />
 			<security>
 				<role name="guest" read="false" write="true" />
 				<role name="publisher" read="true" write="false" />
@@ -88,11 +98,8 @@
 	<MQ HOST="localhost" PORT="61613" USER="guest" PASSWORD="guest"
 		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10"
 		NAMING_URL="jnp://localhost:1099" />
+	<JMX url="service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector"/>
 	<ENV_VARIABLES>
-		<ENV_VARIABLE>
-			<NAME>JMXURL</NAME>
-			<VALUE>service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector</VALUE>
-		</ENV_VARIABLE>
 		<ENV_VARIABLE>
 			<NAME>QueueReaperInterval</NAME>
 			<VALUE>30</VALUE>

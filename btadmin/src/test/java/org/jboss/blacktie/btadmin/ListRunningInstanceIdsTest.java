@@ -42,7 +42,8 @@ public class ListRunningInstanceIdsTest extends TestCase {
 
 	public void testListRunningInstanceIdsWithoutServerName()
 			throws IOException, MalformedObjectNameException,
-			NullPointerException {
+			NullPointerException, InstantiationException,
+			IllegalAccessException, ClassNotFoundException {
 		String command = "listRunningInstanceIds";
 		if (commandHandler.handleCommand(command.split(" ")) != -1) {
 			fail("Command was successful");
@@ -51,7 +52,8 @@ public class ListRunningInstanceIdsTest extends TestCase {
 
 	public void testListRunningInstanceIdsWithAdditionalParameters()
 			throws IOException, MalformedObjectNameException,
-			NullPointerException {
+			NullPointerException, InstantiationException,
+			IllegalAccessException, ClassNotFoundException {
 		String command = "listRunningInstanceIds default 1";
 		if (commandHandler.handleCommand(command.split(" ")) != -1) {
 			fail("Command was successful");
@@ -60,7 +62,8 @@ public class ListRunningInstanceIdsTest extends TestCase {
 
 	public void testListRunningInstanceIdsWithNonRunningServer()
 			throws IOException, MalformedObjectNameException,
-			NullPointerException {
+			NullPointerException, InstantiationException,
+			IllegalAccessException, ClassNotFoundException {
 		String command = "listRunningInstanceIds foo";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command was not successful");
@@ -69,7 +72,8 @@ public class ListRunningInstanceIdsTest extends TestCase {
 
 	public void testListRunningInstanceIdsWithRunningServer()
 			throws IOException, MalformedObjectNameException,
-			NullPointerException {
+			NullPointerException, InstantiationException,
+			IllegalAccessException, ClassNotFoundException {
 		if (runServer.serverinit("default", "1") != 0) {
 			fail("Could not start the server");
 		}

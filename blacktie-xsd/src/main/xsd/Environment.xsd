@@ -67,12 +67,32 @@
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="DOMAIN" type="xsd:string" />
+				<xsd:element name="MACHINES" minOccurs="0" maxOccurs="1">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="MACHINE" minOccurs="1" maxOccurs="unbounded">
+								<xsd:complexType>
+									<xsd:attribute name="id" type="xsd:string" />
+									<xsd:attribute name="hostname" type="xsd:string" />
+									<xsd:attribute name="pathToExecutable" type="xsd:string" />
+									<xsd:attribute name="argLine" type="xsd:string" />
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
 				<xsd:element name="SERVERS" minOccurs="0" maxOccurs="1">
 					<xsd:complexType>
 						<xsd:sequence>
 							<xsd:element name="SERVER" minOccurs="1" maxOccurs="unbounded">
 								<xsd:complexType>
 									<xsd:sequence>
+										<xsd:element name="MACHINE-REF" minOccurs="0"
+											maxOccurs="unbounded">
+											<xsd:complexType>
+												<xsd:attribute name="id" type="xsd:string" />
+											</xsd:complexType>
+										</xsd:element>
 										<xsd:element name="security" minOccurs="0"
 											maxOccurs="1">
 											<xsd:complexType>
@@ -182,6 +202,11 @@
 							use="required" />
 						<xsd:attribute name="NAMING_URL" type="xsd:string"
 							use="optional" />
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="JMX" minOccurs="0" maxOccurs="1">
+					<xsd:complexType>
+						<xsd:attribute name="url" type="xsd:string" use="required" />
 					</xsd:complexType>
 				</xsd:element>
 

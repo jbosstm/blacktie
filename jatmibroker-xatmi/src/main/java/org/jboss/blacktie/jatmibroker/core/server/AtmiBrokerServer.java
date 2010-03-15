@@ -47,7 +47,7 @@ public class AtmiBrokerServer {
 
 	public AtmiBrokerServer(String serverName, String configurationDir)
 			throws ConfigurationException, ConnectionException {
-		AtmiBrokerServerXML server = new AtmiBrokerServerXML(serverName);
+		AtmiBrokerServerXML server = new AtmiBrokerServerXML();
 		properties = server.getProperties(configurationDir);
 
 		try {

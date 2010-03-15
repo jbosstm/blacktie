@@ -128,8 +128,9 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 		return m_default_poa;
 	}
 
-	public synchronized void send(String replyto_ior, short rval, int rcode, byte[] idata,
-			int ilen, int cd, int flags, String type, String subtype) {
+	public synchronized void send(String replyto_ior, short rval, int rcode,
+			byte[] idata, int ilen, int cd, int flags, String type,
+			String subtype) {
 		if (callbackIOR != null) {
 			log.debug("Received: " + callbackIOR);
 		}

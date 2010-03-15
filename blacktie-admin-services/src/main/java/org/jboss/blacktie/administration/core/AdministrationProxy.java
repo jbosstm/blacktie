@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 import javax.jms.Destination;
 import javax.jms.Queue;
@@ -64,17 +63,17 @@ public class AdministrationProxy {
 	private JMXConnector c;
 	private MBeanServerConnection beanServerConnection;
 	private Connection connection;
-	private Set<String> servers;
+	private List<String> servers;
 
 	public static Boolean isDomainPause = false;
 
 	public AdministrationProxy() throws IOException, ConfigurationException,
 			ConnectionException {
 		log.debug("Administration Proxy");
-		XMLEnvHandler handler = new XMLEnvHandler("", prop);
+		XMLEnvHandler handler = new XMLEnvHandler(prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 		xmlenv.parse("Environment.xml", true);
-		servers = (Set<String>) prop.get("blacktie.domain.servers");
+		servers = (List<String>) prop.get("blacktie.domain.servers");
 		ConnectionFactory cf = ConnectionFactory.getConnectionFactory();
 		connection = cf.getConnection();
 		JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));

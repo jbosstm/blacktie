@@ -18,6 +18,7 @@
 package org.jboss.blacktie.btadmin;
 
 import java.io.IOException;
+import java.util.Properties;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
@@ -66,6 +67,7 @@ public interface Command {
 	 *             IPC errors
 	 */
 	public int invoke(MBeanServerConnection beanServerConnection,
-			ObjectName blacktieAdmin) throws InstanceNotFoundException,
-			MBeanException, ReflectionException, IOException;
+			ObjectName blacktieAdmin, Properties configuration)
+			throws InstanceNotFoundException, MBeanException,
+			ReflectionException, IOException;
 }

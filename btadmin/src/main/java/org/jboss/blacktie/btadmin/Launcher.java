@@ -62,6 +62,12 @@ public class Launcher {
 			log.error("MBean name raised an NPE: " + e.getMessage(), e);
 		} catch (ConfigurationException e) {
 			log.error("BlackTie Configuration invalid: " + e.getMessage(), e);
+		} catch (InstantiationException e) {
+			log.error("Command could not be loaded: " + e.getMessage(), e);
+		} catch (IllegalAccessException e) {
+			log.error("Command could not be loaded: " + e.getMessage(), e);
+		} catch (ClassNotFoundException e) {
+			log.error("Command could not be loaded: " + e.getMessage(), e);
 		}
 
 		// Exit the launcher with the value of the command

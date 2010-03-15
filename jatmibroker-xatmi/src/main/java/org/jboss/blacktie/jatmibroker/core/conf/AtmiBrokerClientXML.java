@@ -55,7 +55,7 @@ public class AtmiBrokerClientXML {
 
 		log.debug("read configuration from " + configDir + " directory");
 
-		XMLEnvHandler env = new XMLEnvHandler(configDir, prop);
+		XMLEnvHandler env = new XMLEnvHandler(prop);
 		XMLParser xmlenv = new XMLParser(env, "Environment.xsd");
 		xmlenv.parse(envXML, true);
 

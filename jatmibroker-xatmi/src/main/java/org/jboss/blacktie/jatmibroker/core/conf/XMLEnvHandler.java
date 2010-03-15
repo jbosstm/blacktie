@@ -17,11 +17,11 @@
  */
 package org.jboss.blacktie.jatmibroker.core.conf;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -44,6 +44,9 @@ public class XMLEnvHandler extends DefaultHandler {
 	private final String VALUE = "VALUE";
 	private final String ORB = "ORB";
 	private final String MQ = "MQ";
+	private final String JMX = "JMX";
+	private final String MACHINE = "MACHINE";
+	private final String MACHINE_REF = "MACHINE-REF";
 	private final String ROLE = "role";
 
 	private Properties prop;
@@ -53,13 +56,16 @@ public class XMLEnvHandler extends DefaultHandler {
 
 	private String serverName;
 	private String serviceName;
-	private String configDir;
 
 	private String jbossasIpAddr = System.getenv("JBOSSAS_IP_ADDR");
 
-	private Set<String> servers = new HashSet<String>();
+	private List<String> servers = new ArrayList<String>();
 
 	private Map<String, BufferStructure> buffers = new HashMap<String, BufferStructure>();
+
+	private Map<String, Machine> machines = new HashMap<String, Machine>();
+
+	private List<Server> serverLaunchers = new ArrayList<Server>();
 
 	private String currentBufferName;
 
@@ -70,11 +76,11 @@ public class XMLEnvHandler extends DefaultHandler {
 	static int FLOAT_SIZE = 4;
 	static int DOUBLE_SIZE = 8;
 
-	public XMLEnvHandler(String configDir, Properties prop) {
+	public XMLEnvHandler(Properties prop) {
 		this.prop = prop;
 		prop.put("blacktie.domain.servers", servers);
 		prop.put("blacktie.domain.buffers", buffers);
-		this.configDir = configDir;
+		prop.put("blacktie.domain.serverLaunchers", servers);
 	}
 
 	public void characters(char[] ch, int start, int length)
@@ -97,7 +103,29 @@ public class XMLEnvHandler extends DefaultHandler {
 				if (serverName == null) {
 					serverName = "default";
 				}
+				if (servers.contains(serverName)) {
+					throw new SAXException("Duplicate server detected: "
+							+ serverName);
+				}
 				servers.add(serverName);
+				serverLaunchers.add(new Server(serverName));
+			}
+		} else if (MACHINE_REF.equals(localName)) {
+			String value = null;
+			Machine machine = null;
+			for (int i = 0; i < atts.getLength(); i++) {
+				if (atts.getLocalName(i).equals("id")) {
+					value = atts.getValue(i);
+					// Get the machine out of the list
+					machine = machines.get(value);
+				}
+			}
+			if (machine == null) {
+				throw new SAXException("Machine did not exist: " + value);
+			} else {
+				// This will be the last server added
+				Server server = serverLaunchers.get(serverLaunchers.size() - 1);
+				server.addMachine(machine);
 			}
 		} else if (BUFFER.equals(localName)) {
 			currentBufferName = atts.getValue(0);
@@ -297,6 +325,31 @@ public class XMLEnvHandler extends DefaultHandler {
 								jbossasIpAddr);
 					}
 					prop.setProperty("java.naming.provider.url", value);
+				}
+			}
+		} else if (MACHINE.equals(localName)) {
+			Machine machine = new Machine();
+			for (int i = 0; i < atts.getLength(); i++) {
+				if (atts.getLocalName(i).equals("id")) {
+					String value = atts.getValue(i);
+					machine.setId(value);
+				} else if (atts.getLocalName(i).equals("hostname")) {
+					String value = atts.getValue(i);
+					machine.setHostname(value);
+				} else if (atts.getLocalName(i).equals("pathToExecutable")) {
+					String value = atts.getValue(i);
+					machine.setPathToExecutable(value);
+				} else if (atts.getLocalName(i).equals("argLine")) {
+					String value = atts.getValue(i);
+					machine.setArgLine(value);
+				}
+			}
+			machines.put(machine.getId(), machine);
+		} else if (JMX.equals(localName)) {
+			for (int i = 0; i < atts.getLength(); i++) {
+				if (atts.getLocalName(i).equals("url")) {
+					String value = atts.getValue(i);
+					prop.setProperty("JMXURL", value);
 				}
 			}
 		} else if (SERVICE_NAME.equals(localName)) {

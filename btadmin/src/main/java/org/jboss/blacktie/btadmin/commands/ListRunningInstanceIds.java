@@ -19,6 +19,7 @@ package org.jboss.blacktie.btadmin.commands;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
@@ -62,8 +63,9 @@ public class ListRunningInstanceIds implements Command {
 	}
 
 	public int invoke(MBeanServerConnection beanServerConnection,
-			ObjectName blacktieAdmin) throws InstanceNotFoundException,
-			MBeanException, ReflectionException, IOException {
+			ObjectName blacktieAdmin, Properties configuration)
+			throws InstanceNotFoundException, MBeanException,
+			ReflectionException, IOException {
 		List<Integer> ids = (List<Integer>) beanServerConnection.invoke(
 				blacktieAdmin, "listRunningInstanceIds",
 				new Object[] { serverName },

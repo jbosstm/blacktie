@@ -90,7 +90,7 @@ public class QueueReaper implements Runnable {
 						.getAttribute(objName, "Destinations");
 
 				Properties prop = new Properties();
-				XMLEnvHandler handler = new XMLEnvHandler("", prop);
+				XMLEnvHandler handler = new XMLEnvHandler(prop);
 				XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 				xmlenv.parse("Environment.xml", true);
 

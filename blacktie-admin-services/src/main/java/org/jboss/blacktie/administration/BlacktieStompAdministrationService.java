@@ -23,8 +23,8 @@ import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.ejb.ActivationConfigProperty;
@@ -83,7 +83,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			ConfigurationException, ConnectionException {
 		super("BTStompAdmin");
 
-		XMLEnvHandler handler = new XMLEnvHandler("", prop);
+		XMLEnvHandler handler = new XMLEnvHandler(prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 		xmlenv.parse("Environment.xml", true);
 		JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
@@ -298,13 +298,13 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 		try {
 			Properties prop = new Properties();
-			XMLEnvHandler handler = new XMLEnvHandler("", prop);
+			XMLEnvHandler handler = new XMLEnvHandler(prop);
 			XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 			xmlenv.parse("Environment.xml", true);
 
 			if ((k = serviceName.indexOf("_ADMIN_")) > 0) {
 				server = serviceName.substring(0, k);
-				Set<String> servers = (Set<String>) prop
+				List<String> servers = (List<String>) prop
 						.get("blacktie.domain.servers");
 				if (servers.contains(server) == false) {
 					log.warn("Could not find the server to advertise for: "

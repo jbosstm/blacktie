@@ -34,9 +34,9 @@ public interface BlacktieAdministration {
 	 * Retrieve the software version of domain
 	 */
 	public String getSoftwareVersion();
-	
+
 	/**
-	 * Retrieve the server version 
+	 * Retrieve the server version
 	 */
 	public String getServerVersionById(String serverName, int id);
 
@@ -141,7 +141,7 @@ public interface BlacktieAdministration {
 	 * Get message queue depth
 	 */
 	public int getQueueDepth(String serverName, String serviceName);
-	
+
 	/**
 	 * Retrieves the error counter for a service from all servers
 	 */

@@ -35,7 +35,7 @@ public class XMLParserTest extends TestCase {
 
 	public void testWrongEnvironmentXML() throws ConfigurationException {
 		Properties prop = new Properties();
-		XMLEnvHandler handler = new XMLEnvHandler("", prop);
+		XMLEnvHandler handler = new XMLEnvHandler(prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 		try {
 			xmlenv.parse("WrongEnvironment.xml", true);
@@ -47,9 +47,9 @@ public class XMLParserTest extends TestCase {
 
 	public void testAdminEnvironmentXML() throws Exception {
 		Properties prop = new Properties();
-		XMLEnvHandler handler = new XMLEnvHandler("", prop);
+		XMLEnvHandler handler = new XMLEnvHandler(prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
-		
+
 		try {
 			xmlenv.parse("AdminEnvironment.xml", true);
 			fail("Should have thrown a exception");
@@ -60,9 +60,9 @@ public class XMLParserTest extends TestCase {
 
 	public void testSameService() throws Exception {
 		Properties prop = new Properties();
-		XMLEnvHandler handler = new XMLEnvHandler("", prop);
+		XMLEnvHandler handler = new XMLEnvHandler(prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
-		
+
 		try {
 			xmlenv.parse("SameEnvironment.xml", true);
 			fail("Should have thrown a exception");
@@ -73,7 +73,7 @@ public class XMLParserTest extends TestCase {
 
 	public void testEnvironmentXML() throws Exception {
 		Properties prop = new Properties();
-		XMLEnvHandler handler = new XMLEnvHandler("", prop);
+		XMLEnvHandler handler = new XMLEnvHandler(prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 		xmlenv.parse("Environment.xml", true);
 
@@ -112,6 +112,7 @@ public class XMLParserTest extends TestCase {
 				.endsWith(arg3));
 
 		assertTrue(size.equals(prop.getProperty("blacktie.JAVA_Converse.size")));
-		assertTrue(userlist.equals(prop.getProperty("blacktie.JAVA_Converse.security")));
+		assertTrue(userlist.equals(prop
+				.getProperty("blacktie.JAVA_Converse.security")));
 	}
 }

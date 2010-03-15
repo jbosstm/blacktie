@@ -20,6 +20,7 @@ package org.jboss.blacktie.btadmin.commands;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
@@ -57,8 +58,9 @@ public class ListRunningServers implements Command {
 	 * List the running servers to console and log file
 	 */
 	public int invoke(MBeanServerConnection beanServerConnection,
-			ObjectName blacktieAdmin) throws InstanceNotFoundException,
-			MBeanException, ReflectionException, IOException {
+			ObjectName blacktieAdmin, Properties configuration)
+			throws InstanceNotFoundException, MBeanException,
+			ReflectionException, IOException {
 		List<String> listRunningServers = (ArrayList<String>) beanServerConnection
 				.invoke(blacktieAdmin, "listRunningServers", null, null);
 		CommandHandler.output("listRunningServers", listRunningServers);
