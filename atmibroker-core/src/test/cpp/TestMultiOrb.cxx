@@ -27,6 +27,7 @@
 #include "userlogc.h"
 
 void TestMultiOrb::setUp() {
+	AtmiBrokerInitSingleton::instance();
 	// Perform set up
 	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=xmltest");
 

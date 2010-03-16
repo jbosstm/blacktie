@@ -25,6 +25,7 @@
 #include "malloc.h"
 
 void TestBufferConverterImpl::setUp() {
+	AtmiBrokerInitSingleton::instance();
 	AtmiBrokerEnv::get_instance();
 
 	// Perform global set up

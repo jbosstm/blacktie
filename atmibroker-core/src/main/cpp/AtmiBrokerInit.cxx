@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2008, Red Hat, Inc., and others contributors as indicated
+ * Copyright 2010, Red Hat, Inc., and others contributors as indicated
  * by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -15,20 +15,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "TestAssert.h"
 
-#include "TestConnection.h"
+#include "ace/ACE.h"
+#include "AtmiBrokerInit.h"
+#include <log4cxx/propertyconfigurator.h>
 
-#include "Connection.h"
+static bool isLogInitialised = false;
+static log4cxx::LoggerPtr logger;
 
-static Connection* createConnection(char* connectionName) {
-	return NULL;
+AtmiBrokerInit::AtmiBrokerInit() {
+    if (!isLogInitialised) {
+        char* config = ACE_OS::getenv("LOG4CXXCONFIG");
+
+        if (config != NULL)
+            log4cxx::PropertyConfigurator::configure(config);
+        else
+            log4cxx::PropertyConfigurator::configure("log4cxx.properties");
+
+        isLogInitialised = true;
+    }
+
+	logger = log4cxx::Logger::getLogger("AtmiBrokerInit");
+	LOG4CXX_DEBUG(logger, (char*) "Constructed");
+	ACE::init();
 }
 
-struct connection_factory_t connectionFactory = { createConnection };
-
-void TestConnection::test() {
-	AtmiBrokerInitSingleton::instance();
-
-	BT_ASSERT(connectionFactory.create_connection((char*) "foo") == NULL);
+AtmiBrokerInit::~AtmiBrokerInit() {
+	ACE::fini();
+	LOG4CXX_DEBUG(logger, (char*) "Destroying");
 }

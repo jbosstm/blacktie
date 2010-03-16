@@ -18,6 +18,7 @@
 #ifndef _TEST_ASSERT_H_
 #define _TEST_ASSERT_H_
 
+#include "AtmiBrokerInit.h"
 #include <cppunit/extensions/HelperMacros.h>
 #include "userlogc.h"
 

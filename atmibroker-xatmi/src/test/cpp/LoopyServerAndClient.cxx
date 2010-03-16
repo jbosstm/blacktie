@@ -25,6 +25,7 @@
 #include "AtmiBrokerClientControl.h"
 
 void LoopyServerAndClient::setUp() {
+	AtmiBrokerInitSingleton::instance();
 	userlogc((char*) "LoopyServerAndClient::setUp");
 	// Perform global set up
 	TestFixture::setUp();

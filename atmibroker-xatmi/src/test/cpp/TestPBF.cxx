@@ -26,6 +26,7 @@
 extern void pbf_service(TPSVCINFO *svcinfo);
 
 void TestPBF::setUp() {
+	AtmiBrokerInitSingleton::instance();
 	userlogc((char*) "TestPBF::setUp");
 	BaseServerTest::setUp();
 

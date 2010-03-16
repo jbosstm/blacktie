@@ -36,6 +36,7 @@ extern void test_tprecv_TPEV_SVCFAIL_service(TPSVCINFO *svcinfo);
 extern void test_no_tpreturn_service(TPSVCINFO *svcinfo);
 
 void TestRollbackOnly::setUp() {
+	AtmiBrokerInitSingleton::instance();
 	BaseServerTest::setUp();
 
 	// previous tests may have left a txn on the thread

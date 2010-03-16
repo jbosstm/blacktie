@@ -51,6 +51,8 @@
 
 void TestTransactions::setUp()
 {
+	AtmiBrokerInitSingleton::instance();
+
 	txx_stop();
 #ifdef WIN32
 	::putenv("BLACKTIE_CONFIGURATION=win32");

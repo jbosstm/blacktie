@@ -59,6 +59,7 @@ void TestSpecExampleOne::tearDown() {
 /* this test is taken from the XATMI specification */
 
 void TestSpecExampleOne::test_specexampleone() {
+	AtmiBrokerInitSingleton::instance();
 	userlogc((char*) "TestSpecExampleOne::test_specexampleone");
 	DATA_BUFFER *dptr; /* DATA_BUFFER is a typed buffer of type */
 	DATA_BUFFER *cptr; /* X_C_TYPE and subtype dc_buf. The structure */
@@ -87,6 +88,7 @@ void TestSpecExampleOne::test_specexampleone() {
 
 /* this routine is used for DEBIT and CREDIT */
 void debit_credit_svc(TPSVCINFO *svcinfo) {
+	AtmiBrokerInitSingleton::instance();
 	userlogc((char*) "debit_credit_svc");
 	DATA_BUFFER *dc_ptr;
 	int rval;

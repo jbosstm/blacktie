@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2008, Red Hat, Inc., and others contributors as indicated
+ * Copyright 2010, Red Hat, Inc., and others contributors as indicated
  * by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -15,20 +15,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "TestAssert.h"
+#include "AtmiBrokerSingleton.h"
 
-#include "TestConnection.h"
-
-#include "Connection.h"
-
-static Connection* createConnection(char* connectionName) {
-	return NULL;
+AtmiBrokerSingleton::AtmiBrokerSingleton() {
 }
 
-struct connection_factory_t connectionFactory = { createConnection };
-
-void TestConnection::test() {
-	AtmiBrokerInitSingleton::instance();
-
-	BT_ASSERT(connectionFactory.create_connection((char*) "foo") == NULL);
+AtmiBrokerSingleton::~AtmiBrokerSingleton() {
 }

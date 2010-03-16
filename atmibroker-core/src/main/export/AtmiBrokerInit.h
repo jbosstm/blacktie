@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2008, Red Hat, Inc., and others contributors as indicated
+ * Copyright 2010, Red Hat, Inc., and others contributors as indicated
  * by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -15,20 +15,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "TestAssert.h"
+#ifndef _ATMIBROKERINIT_H
+#define _ATMIBROKERINIT_H
 
-#include "TestConnection.h"
+#include "AtmiBrokerSingleton.h"
 
-#include "Connection.h"
+class AtmiBrokerInit : public AtmiBrokerSingleton {
 
-static Connection* createConnection(char* connectionName) {
-	return NULL;
-}
+private:
+    AtmiBrokerInit();
+    ~AtmiBrokerInit();
+	friend class ACE_Singleton<AtmiBrokerInit, ACE_Recursive_Thread_Mutex>;
+};
 
-struct connection_factory_t connectionFactory = { createConnection };
+typedef ACE_Singleton<AtmiBrokerInit, ACE_Recursive_Thread_Mutex> AtmiBrokerInitSingleton;
+#if defined (ACE_HAS_EXPLICIT_TEMPLATE_INSTANTIATION)
+template class ACE_Singleton<AtmiBrokerInit, ACE_Recursive_Thread_Mutex>;
+#elif defined (ACE_HAS_TEMPLATE_INSTANTIATION_PRAGMA)
+pragma instantiate ACE_Singleton<AtmiBrokerInit, ACE_Recursive_Thread_Mutex>;
+#endif /* ACE_HAS_EXPLICIT_TEMPLATE_INSTANTIATION */
 
-void TestConnection::test() {
-	AtmiBrokerInitSingleton::instance();
-
-	BT_ASSERT(connectionFactory.create_connection((char*) "foo") == NULL);
-}
+#endif  /* _ATMIBROKERINIT_H */

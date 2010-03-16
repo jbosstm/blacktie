@@ -24,6 +24,7 @@
 #endif
 
 #include "log4cxx/logger.h"
+#include "AtmiBrokerInit.h"
 #include "AtmiBrokerServer.h"
 #include "AtmiBrokerPoaFac.h"
 #include "AtmiBrokerEnv.h"
@@ -134,6 +135,7 @@ const char* getConfiguration() {
 }
 
 int serverinit(int argc, char** argv) {
+	AtmiBrokerInitSingleton::instance();
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = 0;
 

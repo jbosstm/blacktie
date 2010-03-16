@@ -21,6 +21,7 @@
 #include "log4cxx/logger.h"
 #include "log4cxx/logmanager.h"
 
+#include "AtmiBrokerInit.h"
 #include "AtmiBrokerClient.h"
 #include "xatmi.h"
 #include "AtmiBrokerClientControl.h"
@@ -54,6 +55,7 @@ int client_sigint_handler_callback(int sig_type) {
 }
 
 int clientinit() {
+	AtmiBrokerInitSingleton::instance();
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = -1;
 
