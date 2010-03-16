@@ -186,6 +186,7 @@ C:\blacktie\dist\blacktie-1.0-MR6-SNAPSHOT\bin\generate-executables.xml:144: Cou
 ======================
 Undeploy any older versions of the blacktie admin service
 Copy the file $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all/deploy
+Copy the file $BLACKTIE_HOME/blacktie-admin-services/Environment.xml into $JBOSS_HOME/server/all/conf
 Start the JBoss server (<JBOSS_HOME>/bin/run.sh|bat -c all)
 
 Make sure all required libraries are on the library path:
