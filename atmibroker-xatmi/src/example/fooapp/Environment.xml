@@ -18,6 +18,14 @@
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
+	<MACHINES>
+		<MACHINE id="default1" hostname="localhost.localdomain"
+			pathToExecutable="/home/tom/blacktie/trunk/dist/blacktie-2.0.0.M3-SNAPSHOT/examples/xatmi/fooapp/server"
+			argLine="-i 1" />
+		<MACHINE id="default2" hostname="localhost.localdomain"
+			pathToExecutable="/home/tom/blacktie/trunk/dist/blacktie-2.0.0.M3-SNAPSHOT/examples/xatmi/fooapp/server"
+			argLine="-i 2" />
+	</MACHINES>
 	<SERVERS>
 		<SERVER name="jboss">
 			<SERVICE_NAMES>
@@ -26,6 +34,8 @@
 			</SERVICE_NAMES>
 		</SERVER>
 		<SERVER name='default'>
+			<MACHINE-REF id="default1" />
+			<MACHINE-REF id="default2" />
 			<SERVICE_NAMES>
 				<SERVICE name='BAR' advertised="false" size="5" />
 			</SERVICE_NAMES>
@@ -35,4 +45,5 @@
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
 	<MQ HOST="localhost" PORT="61613" USER="guest" PASSWORD="guest"
 		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" />
+	<JMX url="service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector" />
 </ENVIRONMENT>
