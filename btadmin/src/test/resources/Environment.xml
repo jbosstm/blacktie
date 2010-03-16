@@ -20,10 +20,10 @@
 	<DOMAIN>fooapp</DOMAIN>
 	<MACHINES>
 		<MACHINE id="secure1" hostname="localhost.localdomain"
-			pathToExecutable="/home/tom/blacktie/trunk/btadmin/target/cs"
+			pathToExecutable="../cs"
 			argLine="-i 1" />
 		<MACHINE id="secure2" hostname="localhost.localdomain"
-			pathToExecutable="/home/tom/blacktie/trunk/btadmin/target/cs"
+			pathToExecutable="../cs"
 			argLine="-i 2" />
 	</MACHINES>
 	<SERVERS>

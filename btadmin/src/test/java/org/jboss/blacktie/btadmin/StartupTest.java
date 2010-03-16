@@ -40,7 +40,6 @@ public class StartupTest extends TestCase {
 	public void testStartup() throws IOException, MalformedObjectNameException,
 			NullPointerException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
-		if (1==1) return;
 		String command = "startup";
 		if (commandHandler.handleCommand(command.split(" ")) == -1) {
 			fail("Command was unsuccessful");
