@@ -52,6 +52,7 @@ extern BLACKTIE_TX_DLL int tx_open(void);
 #endif
 
 extern void ADMIN(TPSVCINFO* svcinfo);
+extern const char* version;
 
 log4cxx::LoggerPtr loggerAtmiBrokerServer(log4cxx::Logger::getLogger(
 		"AtmiBrokerServer"));
@@ -769,13 +770,13 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 	long commandLength;
 	long responseLength = 1;
 
-	commandLength = strlen(serverName) + strlen(serviceName) + 15;
+	commandLength = strlen(serverName) + strlen(serviceName) + strlen(version) + 15;
 
 	char* command = (char*) ::tpalloc((char*) "X_OCTET", NULL, commandLength);
 	char* response = (char*) ::tpalloc((char*) "X_OCTET", NULL, responseLength);
 	memset(command, '\0', commandLength);
 
-	sprintf(command, "tpadvertise,%s,%s,", serverName, serviceName);
+	sprintf(command, "tpadvertise,%s,%s,%s,", serverName, serviceName, version);
 
 	if (tpcall((char*) "BTStompAdmin", command, commandLength, &response,
 			&responseLength, TPNOTRAN) != 0) {
