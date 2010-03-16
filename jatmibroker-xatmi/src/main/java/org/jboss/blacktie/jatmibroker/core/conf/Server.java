@@ -23,7 +23,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 public class Server {
+	/**
+	 * The logger to use for output
+	 */
+	private static Logger log = LogManager.getLogger(Server.class);
 
 	private List<Machine> machines = new ArrayList<Machine>();
 	private String name;
@@ -57,15 +64,15 @@ public class Server {
 		return toReturn;
 	}
 
-	public Machine getLocalMachine() throws UnknownHostException {
-		Machine toReturn = null;
+	public List<Machine> getLocalMachine() throws UnknownHostException {
+		List<Machine> toReturn = new ArrayList<Machine>();
 		String hostname = InetAddress.getLocalHost().getHostName();
+		log.debug("Checking for host: " + hostname);
 		Iterator<Machine> iterator = machines.iterator();
 		while (iterator.hasNext()) {
 			Machine next = iterator.next();
 			if (next.getHostname().equals(hostname)) {
-				toReturn = next;
-				break;
+				toReturn.add(next);
 			}
 		}
 		return toReturn;

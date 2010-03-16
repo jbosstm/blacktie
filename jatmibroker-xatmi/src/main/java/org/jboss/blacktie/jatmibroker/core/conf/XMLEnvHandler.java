@@ -80,7 +80,7 @@ public class XMLEnvHandler extends DefaultHandler {
 		this.prop = prop;
 		prop.put("blacktie.domain.servers", servers);
 		prop.put("blacktie.domain.buffers", buffers);
-		prop.put("blacktie.domain.serverLaunchers", servers);
+		prop.put("blacktie.domain.serverLaunchers", serverLaunchers);
 	}
 
 	public void characters(char[] ch, int start, int length)
