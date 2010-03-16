@@ -18,8 +18,18 @@
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
+	<MACHINES>
+		<MACHINE id="secure1" hostname="localhost.localdomain"
+			pathToExecutable="/home/tom/blacktie/trunk/btadmin/target/cs"
+			argLine="-i 1" />
+		<MACHINE id="secure2" hostname="localhost.localdomain"
+			pathToExecutable="/home/tom/blacktie/trunk/btadmin/target/cs"
+			argLine="-i 2" />
+	</MACHINES>
 	<SERVERS>
 		<SERVER name="default">
+			<MACHINE-REF id="secure1" />
+			<MACHINE-REF id="secure2" />
 			<SERVICE_NAMES>
 				<SERVICE name="BAR" />
 			</SERVICE_NAMES>

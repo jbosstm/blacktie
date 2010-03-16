@@ -37,10 +37,12 @@ public class Launcher {
 	private static Logger log = LogManager.getLogger(Launcher.class);
 
 	public static void main(String[] args) {
-		if (System.getProperty("log4cxx.configuration") == null
+		if (System.getProperty("log4j.configuration") == null
 				&& !new File("log4cxx.properties").exists()
 				&& !new File("log4j.xml").exists()) {
 			BasicConfigurator.configure();
+			log.info("BasicConfigurator ran");
+			System.out.print("DOING");
 		}
 
 		int exitStatus = -1;
@@ -71,6 +73,10 @@ public class Launcher {
 		}
 
 		// Exit the launcher with the value of the command
-		System.exit(exitStatus);
+		// This must be a halt so that any executed servers are not reaped by
+		// the JVM. If spawned servers die when launcher does we will need to
+		// investigate using setppid or something to set the spawned process as
+		// daemons
+		Runtime.getRuntime().halt(exitStatus);
 	}
 }

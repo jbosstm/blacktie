@@ -80,12 +80,27 @@
 		</license>
 	</licenses>
 
-	<properties>
-		<test.output.type>shared</test.output.type>
-	</properties>
-
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.jboss.blacktie.plugins</groupId>
+				<artifactId>cpp-plugin</artifactId>
+
+				<configuration>
+					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
+					<src.main.file>cs</src.main.file>
+				</configuration>
+				<executions>
+					<execution>
+						<id>generate-exe</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>generate-exe</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -99,6 +114,28 @@
 						<BLACKTIE_SCHEMA_DIR>${project.build.directory}/cxx/test/</BLACKTIE_SCHEMA_DIR>
 						<JBOSSAS_IP_ADDR>${jbossas.ip.addr}</JBOSSAS_IP_ADDR>
 					</environmentVariables>
+					<systemProperties>
+						<property>
+							<name>Path</name>
+							<value>${ld_library_path}</value>
+						</property>
+						<property>
+							<name>LD_LIBRARY_PATH</name>
+							<value>${ld_library_path}</value>
+						</property>
+						<property>
+							<name>BLACKTIE_CONFIGURATION_DIR</name>
+							<value>${atmibroker.configuration.dir}</value>
+						</property>
+						<property>
+							<name>BLACKTIE_SCHEMA_DIR</name>
+							<value>${project.build.directory}/cxx/test</value>
+						</property>
+						<property>
+							<name>JBOSSAS_IP_ADDR</name>
+							<value>${jbossas.ip.addr}</value>
+						</property>
+					</systemProperties>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -163,4 +200,9 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<properties>
+		<test.output.type>shared</test.output.type>
+		<test.excludes>**/cs.cxx</test.excludes>
+	</properties>
 </project>

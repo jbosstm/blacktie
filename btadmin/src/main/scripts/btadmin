@@ -1,4 +1,4 @@
-java org.jboss.blacktie.btadmin.Launcher "$@"
+java -Dlog4j.configuration=log4j.xml org.jboss.blacktie.btadmin.Launcher "$@"
 if [ "$?" != "0" ]; then
 	exit -1
 fi
