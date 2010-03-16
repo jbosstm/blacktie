@@ -20,7 +20,7 @@
 
 #include "AtmiBrokerSingleton.h"
 
-class AtmiBrokerInit : public AtmiBrokerSingleton {
+class BLACKTIE_CORE_DLL AtmiBrokerInit : public AtmiBrokerSingleton {
 
 private:
     AtmiBrokerInit();
