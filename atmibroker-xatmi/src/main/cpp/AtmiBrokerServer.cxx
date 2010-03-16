@@ -772,7 +772,7 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 	long commandLength;
 	long responseLength = 1;
 
-	commandLength = strlen(serverName) + strlen(serviceName) + strlen(version) + 15;
+	commandLength = strlen(serverName) + strlen(serviceName) + strlen(version) + 15 + 1;
 
 	char* command = (char*) ::tpalloc((char*) "X_OCTET", NULL, commandLength);
 	char* response = (char*) ::tpalloc((char*) "X_OCTET", NULL, responseLength);
