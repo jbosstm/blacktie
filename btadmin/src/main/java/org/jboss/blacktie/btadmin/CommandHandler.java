@@ -52,6 +52,9 @@ public class CommandHandler {
 		xmlenv = new XMLParser(handler, "Environment.xsd");
 		xmlenv.parse("Environment.xml", true);
 		String url = (String) prop.get("JMXURL");
+		if (url == null) {
+			throw new ConfigurationException("No JMX url configuration in Environment.xml");
+		}
 
 		// Initialize the connection to the mbean server
 		JMXServiceURL u = new JMXServiceURL(url);
