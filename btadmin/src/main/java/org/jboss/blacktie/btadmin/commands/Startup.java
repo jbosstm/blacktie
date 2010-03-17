@@ -79,23 +79,28 @@ public class Startup implements Command {
 				} else {
 					log.debug("Listing machines");
 				}
-				Iterator<Machine> localMachines = next.getLocalMachine()
-						.iterator();
-				while (localMachines.hasNext()) {
-					log.debug("Found machine");
-					Machine localMachine = localMachines.next();
-					String pathToExecutable = localMachine
-							.getPathToExecutable();
-					String argLine = localMachine.getArgLine();
-					String[] split = argLine.split(" ");
-					String[] cmdarray = new String[split.length + 1 + 0];
-					cmdarray[0] = pathToExecutable;
-					System.arraycopy(split, 0, cmdarray, 1, split.length);
-					String[] envp = null;
-					File dir = null;
-					Runtime.getRuntime().exec(cmdarray, envp, dir);
-					log.info("Launched server: " + pathToExecutable);
-					exitStatus = 0;
+				List<Machine> localMachinesList = next.getLocalMachine();
+				if (localMachinesList.size() == 0) {
+					log.error("No machines configured for host: " + serverName);
+				} else {
+					Iterator<Machine> localMachines = localMachinesList
+							.iterator();
+					while (localMachines.hasNext()) {
+						log.debug("Found machine");
+						Machine localMachine = localMachines.next();
+						String pathToExecutable = localMachine
+								.getPathToExecutable();
+						String argLine = localMachine.getArgLine();
+						String[] split = argLine.split(" ");
+						String[] cmdarray = new String[split.length + 1 + 0];
+						cmdarray[0] = pathToExecutable;
+						System.arraycopy(split, 0, cmdarray, 1, split.length);
+						String[] envp = null;
+						File dir = null;
+						Runtime.getRuntime().exec(cmdarray, envp, dir);
+						log.info("Launched server: " + pathToExecutable);
+						exitStatus = 0;
+					}
 				}
 			}
 		}
