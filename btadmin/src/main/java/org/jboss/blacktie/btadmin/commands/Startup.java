@@ -81,7 +81,7 @@ public class Startup implements Command {
 				}
 				List<Machine> localMachinesList = next.getLocalMachine();
 				if (localMachinesList.size() == 0) {
-					log.error("No machines configured for host: " + serverName);
+					log.error("No machines configured for host");
 				} else {
 					Iterator<Machine> localMachines = localMachinesList
 							.iterator();
