@@ -81,7 +81,7 @@ void ADMIN(TPSVCINFO* svcinfo) {
 		}
 	} else if (strncmp(req, "version", 7) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get version command");
-		toReturn = tprealloc(toReturn, strlen(version) + 1);
+		toReturn = tprealloc(toReturn, strlen(version) + 1 + 1);
 		len += ACE_OS::sprintf(&toReturn[1], "%s", version);
 		toReturn[0] = '1';
 	} else if (strncmp(req, "counter", 7) == 0) {
