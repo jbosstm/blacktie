@@ -47,7 +47,7 @@ public class StartupTest extends TestCase {
 		
 		// TODO CHECK THE OUTPUT BEFORE RETURNING
 		try {
-			Thread.currentThread().sleep(2000);
+			Thread.currentThread().sleep(5000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -60,7 +60,7 @@ public class StartupTest extends TestCase {
 		
 		// TODO SHUTDOWN SHOULD RETURN WHEN THERE ARE NO MORE CONSUMERS?
 		try {
-			Thread.currentThread().sleep(2000);
+			Thread.currentThread().sleep(5000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
