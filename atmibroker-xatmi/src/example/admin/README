@@ -16,6 +16,8 @@ MA  02110-1301, USA.
 
 NOTE: You may like to create a backup of this folder before starting!
 
+NOTE: If you are using IPv6 you will need to change any references to localhost in the Environment.xml files to be localhost4 or 127.0.0.1
+
 1. SET ENVIRONMENT VARIABLES
 In order to run the example you need to make sure that you have set the environment
 appropriately. You will need to make sure that you edit the variables with values 

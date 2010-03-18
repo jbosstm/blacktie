@@ -16,7 +16,9 @@ MA  02110-1301, USA.
 
 NOTE: You may like to create a backup of this folder before starting!
 
-0. INTRODUCTION
+NOTE: If you are using IPv6 you will need to change any references to localhost in the Environment.xml files to be localhost4 or 127.0.0.1
+
+1. INTRODUCTION
 This example shows how the services may be secured using the <security> element
 in the Environment.xml
 
@@ -27,7 +29,7 @@ These users are provided out of the box for JBM 1.4 and were chosen as they have
 non-overlapping roles so we can show how to excluded "guest" users from certain 
 queues.
 
-1. SET ENVIRONMENT VARIABLES
+2. SET ENVIRONMENT VARIABLES
 In order to run the example you need to make sure that you have set the environment
 appropriately. You will need to make sure that you edit the variables with values 
 starting with REPLACE_WITH_: 
@@ -42,7 +44,7 @@ You MUST use an environment configured with the VC++ development tools, e.g. lau
 C:\Program Files\Microsoft Visual Studio 9.0\VC\vcvarsall.bat
 
 
-2. CREATE THE SERVER
+3. CREATE THE SERVER
 On Linux:
 	generate_server.sh -Dservice.names=SECURE -Dserver.includes=BarService.c
 On Windows:
@@ -73,26 +75,26 @@ C:\blacktie\dist\blacktie-1.0-MR6-SNAPSHOT\bin\generate-executables.xml:117: The
 C:\blacktie\dist\blacktie-1.0-MR6-SNAPSHOT\bin\generate-executables.xml:144: Could not launch cl: java.io.IOException: Cannot run program "cl" (in directory "C:
 \blacktie\dist\blacktie-1.0-MR6-SNAPSHOT\examples\xatmi\fooapp\target\classes"): CreateProcess error=2, The system cannot find the file specified
 
-3. CREATE THE CLIENT
+4. CREATE THE CLIENT
 On Linux:
 	generate_client.sh -Dclient.includes=client.c
 On Windows:
 	generate_client -Dclient.includes=client.c
 
 
-4. DEPLOY THE STOMPCONNECTSERVICE
+5. DEPLOY THE STOMPCONNECTSERVICE
 Undeploy any older versions of the blacktie admin service
 Copy the file $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all/deploy
 Copy the file $BLACKTIE_HOME/blacktie-admin-services/Environment.xml into $JBOSS_HOME/server/all/conf
 
 
 
-5. RUN THE APPLICATION SERVER
+6. RUN THE APPLICATION SERVER
 Make sure that the naming, messaging and transaction services are running, by running the JBoss server:
 <JBOSS_HOME>/bin/run.sh|bat -c all
 
 
-6 RUN THE APPLICATIONS
+7. RUN THE APPLICATIONS
 As the username/password is encoded in the Environment.xml file, for this 
 example we have separated the configuration for the server and each of the
 clients. Therefore the BLACKTIE_CONFIGURATION_DIR environment variable 
@@ -100,19 +102,19 @@ will need to be exported.
 NOTE: If you get the following error you have not sourced setenv.sh|bat
 ./<EXECUTABLE>: error while loading shared libraries: libTAO_CosNaming.so.1.6.7: cannot open shared object file: No such file or directoryI
 
-6.1 RUN THE SERVER
+7.1 RUN THE SERVER
 export BLACKTIE_CONFIGURATION_DIR=serv
 ./server -c <win32|linux> -i <unique_id - e.g. 1> secure
 NOTE: If you get the following error you have not started the JBoss server:
 2009-06-23 08:51:51,270 [0x7f627be63750] ERROR AtmiBrokerServer          - serverinit - Unexpected CORBA exception: TRANSIENT
 2009-06-23 08:51:51,270 [0x7f627be63750] INFO  AtmiBrokerLogc            - main Unexpected exception in serverrun()
 
-6.2 RUN THE CLIENT WITH INVALID CREDENTIALS
+7.2 RUN THE CLIENT WITH INVALID CREDENTIALS
 export BLACKTIE_CONFIGURATION_DIR=guest
 ./client
 If you echo $? you will see the application returned an error
 
-6.3 RUN THE CLIENT WITH VALID CREDENTIALS
+7.3 RUN THE CLIENT WITH VALID CREDENTIALS
 export BLACKTIE_CONFIGURATION_DIR=dynsub
 ./client
 If you echo $? you will see the application completed successfully
