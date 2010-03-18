@@ -15,6 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#ifndef WIN32
 #include <string>
 #include <sstream>
 
@@ -404,3 +405,4 @@ void TestTransactions::test_tx_set()
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
 	userlogc("TestTransactions::test_tx_set pass");
 }
+#endif
