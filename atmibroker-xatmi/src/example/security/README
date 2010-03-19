@@ -123,7 +123,7 @@ If you echo $? you will see the application completed successfully
 7.4 SHUTDOWN THE SERVER
 btadmin shutdown
 
-7.5 CREATE A NEW USER AND RUN THE TEST AGAIN
+8. CREATE A NEW USER AND RUN THE TEST AGAIN
 Duplicate the "dynsub" folder as "bt"
 Edit bt/Environment.xml and change "dynsub" to "bt", with password "pwd"
 Edit serv/Environment.xml and change "dynsub" to "bt", with password "pwd"
@@ -141,10 +141,11 @@ POPULATE.TABLES.16 = INSERT INTO JBM_ROLE (ROLE_ID, USER_ID) VALUES ('blacktie',
 Edit: <JBOSS_HOME>/server/all/conf/Environment.xml
 Change the user from "guest"/"guest" to "bt"/"pwd"
 
-Run step 6.1 above
-Run step 6.2 above
-Run step 6.3 above (this time the dynsub test will fail)
+Run step 7.1 above
+Run step 7.2 above
+Run step 7.3 above (this time the dynsub test will fail)
 
 export BLACKTIE_CONFIGURATION_DIR=bt
 ./client
 If you echo $? you will see the application completed successfully
+Run step 7.4 above
