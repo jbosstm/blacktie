@@ -17,8 +17,6 @@
  */
 #include "AtmiBrokerServerControl.h"
 
-#include "userlogc.h"
-
 #include "xatmi.h"
 
 //SERVICE_DEFINITIONS
@@ -29,8 +27,6 @@ int main(int argc, char **argv) {
 	if (exit_status != -1) {
 		//SERVICE_ADVERTISEMENTS
 		exit_status = serverrun();
-	} else {
-		userlogc((char*) "error initialising server");
 	}
 	serverdone();
 	return exit_status;
