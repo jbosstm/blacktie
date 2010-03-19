@@ -61,8 +61,9 @@ public class Help implements Command {
 			ObjectName blacktieAdmin, Properties configuration)
 			throws CommandFailedException {
 		String[] commands = new String[] { "startup", "shutdown",
-				"listRunningServers", "listRunningInstanceIds", "advertise",
-				"unadvertise", "version", "help", "quit" };
+				"pauseDomain", "resumeDomain", "listRunningServers",
+				"listRunningInstanceIds", "advertise", "unadvertise",
+				"version", "help", "quit" };
 
 		for (int i = 0; i < commands.length; i++) {
 			if (command != null && !command.equals(commands[i])) {
