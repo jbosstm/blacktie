@@ -51,40 +51,48 @@ public class BTAdmin {
 		}
 
 		boolean interactive = args.length == 0;
-		do {
-			if (interactive) {
-				log.info(">");
-				args = br.readLine().split(" ");
-			}
-
-			try {
-				CommandHandler commandHandler = new CommandHandler();
-				exitStatus = commandHandler.handleCommand(args);
-				if (exitStatus == 0) {
-					log.trace("Command was successful");
-				} else {
-					log.trace("Command failed");
+		boolean done = false;
+		try {
+			CommandHandler commandHandler = new CommandHandler();
+			do {
+				if (interactive) {
+					System.out.print("> ");
+					args = br.readLine().split(" ");
 				}
-			} catch (MalformedURLException e) {
-				log.error("JMXURL was incorrect: " + e.getMessage(), e);
-			} catch (IOException e) {
-				log.error("No connect to mbean server: " + e.getMessage(), e);
-			} catch (MalformedObjectNameException e) {
-				log.error("MBean name was badly structured: " + e.getMessage(),
-						e);
-			} catch (NullPointerException e) {
-				log.error("MBean name raised an NPE: " + e.getMessage(), e);
-			} catch (ConfigurationException e) {
-				log.error("BlackTie Configuration invalid: " + e.getMessage(),
-						e);
-			} catch (InstantiationException e) {
-				log.error("Command could not be loaded: " + e.getMessage(), e);
-			} catch (IllegalAccessException e) {
-				log.error("Command could not be loaded: " + e.getMessage(), e);
-			} catch (ClassNotFoundException e) {
-				log.error("Command could not be loaded: " + e.getMessage(), e);
-			}
-		} while (interactive && !args.equals("quit"));
+
+				try {
+					exitStatus = commandHandler.handleCommand(args);
+					if (exitStatus == 0) {
+						log.trace("Command was successful");
+					} else {
+						log.trace("Command failed");
+					}
+					if (args.length > 0 && args[0].equals("quit")) {
+						done = true;
+					}
+				} catch (MalformedURLException e) {
+					log.error("JMXURL was incorrect: " + e.getMessage(), e);
+				} catch (IOException e) {
+					log.error("No connect to mbean server: " + e.getMessage(),
+							e);
+				} catch (NullPointerException e) {
+					log.error("MBean name raised an NPE: " + e.getMessage(), e);
+				} catch (InstantiationException e) {
+					log.error("Command could not be loaded: " + e.getMessage(),
+							e);
+				} catch (IllegalAccessException e) {
+					log.error("Command could not be loaded: " + e.getMessage(),
+							e);
+				} catch (ClassNotFoundException e) {
+					log.error("Command could not be loaded: " + e.getMessage(),
+							e);
+				}
+			} while (interactive && !done);
+		} catch (MalformedObjectNameException e) {
+			log.error("MBean name was badly structured: " + e.getMessage(), e);
+		} catch (ConfigurationException e) {
+			log.error("BlackTie Configuration invalid: " + e.getMessage(), e);
+		}
 
 		if (!interactive) {
 			// Exit the launcher with the value of the command

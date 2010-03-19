@@ -396,14 +396,17 @@ public class AdministrationProxy {
 			String command = "serverdone";
 			try {
 				if (id == 0) {
+					boolean called = false;
 					List<Integer> ids = listRunningInstanceIds(serverName);
 					for (int i = 0; i < ids.size(); i++) {
 						callAdminService(serverName, ids.get(i), command);
+						called = true;
 					}
+					return called;
 				} else {
 					callAdminService(serverName, id, command);
+					return true;
 				}
-				return true;
 			} catch (ConnectionException e) {
 				log.error("call server " + serverName + " id " + id
 						+ " failed with " + e.getTperrno(), e);

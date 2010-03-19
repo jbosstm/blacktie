@@ -87,9 +87,7 @@ public class Startup implements Command {
 					log.debug("Listing machines");
 				}
 				List<Machine> localMachinesList = next.getLocalMachine();
-				if (localMachinesList.size() == 0) {
-					log.error("No machines configured for host");
-				} else {
+				if (localMachinesList.size() != 0) {
 					Iterator<Machine> localMachines = localMachinesList
 							.iterator();
 					while (localMachines.hasNext()) {
@@ -127,6 +125,7 @@ public class Startup implements Command {
 			}
 		}
 		if (!found) {
+			log.error("No machines configured for host");
 			throw new CommandFailedException(-1);
 		}
 	}
