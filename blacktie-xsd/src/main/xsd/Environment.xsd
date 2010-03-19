@@ -67,6 +67,7 @@
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="DOMAIN" type="xsd:string" />
+				<xsd:element name="VERSION" minOccurs="0" maxOccurs="1" />
 				<xsd:element name="MACHINES" minOccurs="0" maxOccurs="1">
 					<xsd:complexType>
 						<xsd:sequence>

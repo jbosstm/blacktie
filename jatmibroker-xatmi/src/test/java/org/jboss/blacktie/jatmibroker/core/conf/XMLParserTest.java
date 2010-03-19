@@ -92,6 +92,7 @@ public class XMLParserTest extends TestCase {
 
 		String adminTransport = "hybrid";
 		String userlist = "guest:true:true,blacktie:true:true";
+		String version = "2.0.0.M3-SNAPSHOT";
 
 		assertTrue(server.equals(prop.getProperty("blacktie.TestOne.server")));
 		assertTrue(transport.equals(prop
@@ -103,6 +104,7 @@ public class XMLParserTest extends TestCase {
 		assertTrue(advertised.equals(prop
 				.getProperty("blacktie.JAVA_Converse.advertised")));
 		assertTrue(domain.equals(prop.getProperty("blacktie.domain.name")));
+		assertTrue(version.equals(prop.getProperty("blacktie.domain.version")));
 		assertTrue(transid.equals(prop.getProperty("blacktie.trans.factoryid")));
 		assertTrue(args.equals(prop.getProperty("blacktie.orb.args")));
 		assertTrue(arg1.equals(prop.getProperty("blacktie.orb.arg.1")));

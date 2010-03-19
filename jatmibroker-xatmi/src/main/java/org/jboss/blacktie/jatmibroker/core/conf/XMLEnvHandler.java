@@ -48,6 +48,7 @@ public class XMLEnvHandler extends DefaultHandler {
 	private final String MACHINE = "MACHINE";
 	private final String MACHINE_REF = "MACHINE-REF";
 	private final String ROLE = "role";
+	private final String VERSION = "VERSION";
 
 	private Properties prop;
 
@@ -493,6 +494,8 @@ public class XMLEnvHandler extends DefaultHandler {
 			if (serviceName != null) {
 				serviceName = null;
 			}
+		} else if (VERSION.equals(localName)) {
+			prop.setProperty("blacktie.domain.version", value);
 		}
 	}
 }
