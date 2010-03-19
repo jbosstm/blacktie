@@ -661,6 +661,11 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 			free(serviceName);
 			return false;
 		}
+	} else if (serviceFunction == NULL && func == NULL) {
+		LOG4CXX_WARN(loggerAtmiBrokerServer,
+				(char*) "Could not advertise service, no function available: "
+						<< svcname);
+		return false;
 	}
 
 	Connection* connection = connections.getServerConnection();

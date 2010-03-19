@@ -364,11 +364,13 @@ public class AdministrationProxy {
 		Boolean result = true;
 
 		if (ids.size() == 0) {
+			log.warn("Server was not running: " + serverName);
 			return false;
 		}
 
 		for (int i = 0; i < ids.size(); i++) {
 			result = advertise(serverName, ids.get(i), serviceName) && result;
+			log.warn("Failed to advertise service at: " + ids.get(i));
 		}
 
 		return result;
@@ -380,11 +382,13 @@ public class AdministrationProxy {
 		Boolean result = true;
 
 		if (ids.size() == 0) {
+			log.warn("Server was not running: " + serverName);
 			return false;
 		}
 
 		for (int i = 0; i < ids.size(); i++) {
 			result = unadvertise(serverName, ids.get(i), serviceName) && result;
+			log.warn("Failed to unadvertise service at: " + ids.get(i));
 		}
 
 		return result;

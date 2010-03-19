@@ -55,7 +55,11 @@
 			<MACHINE-REF id="secure7" />
 			<MACHINE-REF id="secure8" />
 			<SERVICE_NAMES>
-				<SERVICE name="BAR" />
+				<SERVICE name='PBF' />
+				<SERVICE name='BAR' advertised="false" size="1">
+					<LIBRARY_NAME configuration="linux" value="../libtestsuite.so" />
+					<LIBRARY_NAME configuration="win32" value="../testsuite.dll" />
+				</SERVICE>
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>

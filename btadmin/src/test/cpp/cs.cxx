@@ -35,7 +35,6 @@ int main(int argc, char **argv) {
 	int exit_status = serverinit(argc, argv);
 
 	if (exit_status != -1) {
-		tpadvertise("BAR", BAR);
         //SERVICE_ADVERTISEMENTS
 		exit_status = serverrun();
 	} else {

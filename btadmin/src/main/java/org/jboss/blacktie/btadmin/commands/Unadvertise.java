@@ -17,64 +17,75 @@
  */
 package org.jboss.blacktie.btadmin.commands;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanException;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
+import javax.management.ReflectionException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.btadmin.Command;
 import org.jboss.blacktie.btadmin.CommandFailedException;
-import org.jboss.blacktie.btadmin.CommandHandler;
 import org.jboss.blacktie.btadmin.IncompatibleArgsException;
+import org.jboss.blacktie.jatmibroker.core.conf.Server;
 
 /**
- * The shutdown command will quit the terminal
+ * The shutdown command will shutdown the server specified
  */
-public class Help implements Command {
+public class Unadvertise implements Command {
 	/**
 	 * The logger to use for output
 	 */
-	private static Logger log = LogManager.getLogger(Help.class);
+	private static Logger log = LogManager.getLogger(Unadvertise.class);
 
 	/**
-	 * The command to get help for
+	 * The name of the server.
 	 */
-	private String command;
+	private String serverName;
 
+	/**
+	 * The name of the service.
+	 */
+	private String serviceName;
+
+	/**
+	 * Does the command require the admin connection.
+	 */
 	public boolean requiresAdminConnection() {
-		return false;
+		return true;
 	}
 
+	/**
+	 * Show the usage of the command
+	 */
 	public String getExampleUsage() {
-		return "[command]";
+		return "<serverName> <serviceName>";
 	}
 
 	public void initializeArgs(String[] args) throws IncompatibleArgsException {
-		if (args.length > 0) {
-			command = args[0];
-		}
+		serverName = args[0];
+		serviceName = args[1];
 	}
 
 	public void invoke(MBeanServerConnection beanServerConnection,
 			ObjectName blacktieAdmin, Properties configuration)
-			throws CommandFailedException {
-		String[] commands = new String[] { "startup", "shutdown",
-				"listRunningServers", "listRunningInstanceIds", "advertise",
-				"unadvertise", "version", "help", "quit" };
-
-		for (int i = 0; i < commands.length; i++) {
-			if (command != null && !command.equals(commands[i])) {
-				continue;
-			}
-			try {
-				Command command = CommandHandler.loadCommand(commands[i]);
-				log.info(commands[i] + " " + command.getExampleUsage());
-			} catch (Exception e) {
-				log.error("Could not get help for command: " + commands[i], e);
-				throw new CommandFailedException(-1);
-			}
+			throws InstanceNotFoundException, MBeanException,
+			ReflectionException, IOException, CommandFailedException {
+		Boolean result = (Boolean) beanServerConnection.invoke(blacktieAdmin,
+				"unadvertise", new Object[] { serverName, serviceName },
+				new String[] { "java.lang.String", "java.lang.String" });
+		if (result) {
+			log.info("Service unadvertised");
+		} else {
+			log.error("Service could not be unadvertised");
+			throw new CommandFailedException(-1);
 		}
 	}
 }
