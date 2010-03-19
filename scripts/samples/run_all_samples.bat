@@ -3,14 +3,14 @@
 rem RUN THE FOOAPP SERVER
 cd %BLACKTIE_HOME%\examples\xatmi\fooapp
 call generate_server -Dservice.names=BAR -Dserver.includes=BarService.c
-IF %ERRORLEVEL% NEQ 0 exit 1
+IF %ERRORLEVEL% NEQ 0 exit -1
 server -c win32 -i 1&
 @ping 127.0.0.1 -n 3 -w 1000 > nul
 
 rem RUN THE C CLIENT
 call generate_client -Dclient.includes=client.c
 client
-IF %ERRORLEVEL% NEQ 0 exit 1
+IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem RUN THE JAVA CLIENT
 cd %BLACKTIE_HOME%\examples\jab
