@@ -33,6 +33,13 @@ import javax.management.ReflectionException;
 public interface Command {
 
 	/**
+	 * If the commands requires an admin connection.
+	 * 
+	 * @return True, if a connection to JMX is required.
+	 */
+	public boolean requiresAdminConnection();
+
+	/**
 	 * Get an example of the usage of the command.
 	 * 
 	 * @return A string showing the usage of the command
@@ -66,8 +73,8 @@ public interface Command {
 	 * @throws IOException
 	 *             IPC errors
 	 */
-	public int invoke(MBeanServerConnection beanServerConnection,
+	public void invoke(MBeanServerConnection beanServerConnection,
 			ObjectName blacktieAdmin, Properties configuration)
 			throws InstanceNotFoundException, MBeanException,
-			ReflectionException, IOException;
+			ReflectionException, IOException, CommandFailedException;
 }

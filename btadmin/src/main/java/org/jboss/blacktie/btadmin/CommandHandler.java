@@ -43,28 +43,26 @@ public class CommandHandler {
 	private MBeanServerConnection beanServerConnection;
 	private ObjectName blacktieAdmin;
 	private Properties prop = new Properties();
+	private String url;
 
-	public CommandHandler() throws ConfigurationException, IOException,
+	public CommandHandler() throws ConfigurationException,
 			MalformedObjectNameException, NullPointerException {
 		// Obtain the JMXURL from the Environment.xml
 		XMLEnvHandler handler = new XMLEnvHandler(prop);
 		XMLParser xmlenv;
 		xmlenv = new XMLParser(handler, "Environment.xsd");
 		xmlenv.parse("Environment.xml", true);
-		String url = (String) prop.get("JMXURL");
+		url = (String) prop.get("JMXURL");
 		if (url == null) {
-			throw new ConfigurationException("No JMX url configuration in Environment.xml");
+			throw new ConfigurationException(
+					"No JMX url configuration in Environment.xml");
 		}
-
-		// Initialize the connection to the mbean server
-		JMXServiceURL u = new JMXServiceURL(url);
-		JMXConnector c = JMXConnectorFactory.connect(u);
-		this.beanServerConnection = c.getMBeanServerConnection();
 		this.blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
 	}
 
 	public int handleCommand(String[] args) throws InstantiationException,
-			IllegalAccessException, ClassNotFoundException {
+			IllegalAccessException, ClassNotFoundException,
+			NullPointerException, IOException {
 		int exitStatus = -1;
 		if (args.length < 1) {
 			log.error("No command was provided");
@@ -120,15 +118,21 @@ public class CommandHandler {
 						.error(("Expected Usage: " + commandName + " " + exampleUsage)
 								.trim());
 			} else {
+				if (command.requiresAdminConnection()) {
+					initializeAdminConnection();
+				}
 				try {
 					// Try to initialize the arguments
 					command.initializeArgs(commandArgs);
 					log.trace("Arguments initialized");
 					try {
 						// Try to invoke the command
-						exitStatus = command.invoke(beanServerConnection,
-								blacktieAdmin, prop);
+						command.invoke(beanServerConnection, blacktieAdmin,
+								prop);
+						exitStatus = 0;
 						log.trace("Command invoked");
+					} catch (CommandFailedException e) {
+						exitStatus = e.getExitCode();
 					} catch (Exception e) {
 						log.error("Could not invoke the command: "
 								+ e.getMessage(), e);
@@ -145,13 +149,22 @@ public class CommandHandler {
 		return exitStatus;
 	}
 
+	public void initializeAdminConnection() throws IOException {
+		if (beanServerConnection == null) {
+			// Initialize the connection to the mbean server
+			JMXServiceURL u = new JMXServiceURL(url);
+			JMXConnector c = JMXConnectorFactory.connect(u);
+			this.beanServerConnection = c.getMBeanServerConnection();
+		}
+	}
+
 	/**
 	 * Utility function to output the list
 	 * 
 	 * @param operationName
 	 * @param list
 	 */
-	public static void output(String operationName, List list) {
+	public static String convertList(String operationName, List list) {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("Output from: " + operationName);
 		int i = 0;
@@ -160,6 +173,6 @@ public class CommandHandler {
 			buffer.append("\nElement: " + i + " Value: " + iterator.next());
 			i++;
 		}
-		log.info(buffer);
+		return buffer.toString();
 	}
 }

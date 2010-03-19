@@ -17,21 +17,22 @@
  */
 package org.jboss.blacktie.btadmin.commands;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanException;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-import javax.management.ReflectionException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.btadmin.Command;
+import org.jboss.blacktie.btadmin.CommandFailedException;
 import org.jboss.blacktie.btadmin.IncompatibleArgsException;
 import org.jboss.blacktie.jatmibroker.core.conf.Machine;
 import org.jboss.blacktie.jatmibroker.core.conf.Server;
@@ -51,6 +52,13 @@ public class Startup implements Command {
 	private String serverName;
 
 	/**
+	 * Does the command require the admin connection.
+	 */
+	public boolean requiresAdminConnection() {
+		return false;
+	}
+
+	/**
 	 * Show the usage of the command
 	 */
 	public String getExampleUsage() {
@@ -63,13 +71,12 @@ public class Startup implements Command {
 		}
 	}
 
-	public int invoke(MBeanServerConnection beanServerConnection,
+	public void invoke(MBeanServerConnection beanServerConnection,
 			ObjectName blacktieAdmin, Properties configuration)
-			throws InstanceNotFoundException, MBeanException,
-			ReflectionException, IOException {
+			throws CommandFailedException, IOException {
 		List<Server> serverLaunchers = (List<Server>) configuration
 				.get("blacktie.domain.serverLaunchers");
-		int exitStatus = -1;
+		boolean found = false;
 		Iterator<Server> iterator = serverLaunchers.iterator();
 		while (iterator.hasNext()) {
 			Server next = iterator.next();
@@ -97,13 +104,30 @@ public class Startup implements Command {
 						System.arraycopy(split, 0, cmdarray, 1, split.length);
 						String[] envp = null;
 						File dir = null;
-						Runtime.getRuntime().exec(cmdarray, envp, dir);
-						log.info("Launched server: " + pathToExecutable);
-						exitStatus = 0;
+						Process exec = Runtime.getRuntime().exec(cmdarray,
+								envp, dir);
+						log.debug("Launched server: " + pathToExecutable);
+						InputStream inputStream = exec.getInputStream();
+						BufferedReader reader = new BufferedReader(
+								new InputStreamReader(inputStream));
+						while (true) {
+							String readLine = reader.readLine();
+							log.info(readLine);
+							if (readLine
+									.endsWith("Server waiting for requests...")) {
+								found = true;
+								break;
+
+							} else if (readLine.endsWith("serverinit failed")) {
+								throw new CommandFailedException(-2);
+							}
+						}
 					}
 				}
 			}
 		}
-		return exitStatus;
+		if (!found) {
+			throw new CommandFailedException(-1);
+		}
 	}
 }

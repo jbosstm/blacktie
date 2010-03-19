@@ -23,11 +23,7 @@ import javax.management.MalformedObjectNameException;
 
 import junit.framework.TestCase;
 
-import org.jboss.blacktie.btadmin.server.RunServer;
-
-public class StartupTest extends TestCase {
-	private RunServer runServer = new RunServer();
-
+public class VersionTest extends TestCase {
 	private CommandHandler commandHandler;
 
 	public void setUp() throws Exception {
@@ -37,25 +33,12 @@ public class StartupTest extends TestCase {
 	public void tearDown() {
 	}
 
-	public void testStartup() throws IOException, MalformedObjectNameException,
+	public void testVersion() throws IOException, MalformedObjectNameException,
 			NullPointerException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
-		String command = "startup";
+		String command = "version";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command was unsuccessful");
-		}
-
-		command = "shutdown default";
-		if (commandHandler.handleCommand(command.split(" ")) != 0) {
-			fail("Command was unsuccessful");
-		}
-		
-		// TODO SHUTDOWN SHOULD RETURN WHEN THERE ARE NO MORE CONSUMERS?
-		try {
-			Thread.currentThread().sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 }

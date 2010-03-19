@@ -41,15 +41,19 @@ public class ListRunningServersTest extends TestCase {
 	}
 
 	public void testListRunningServersWithAdditionalArgs() throws IOException,
-			MalformedObjectNameException, NullPointerException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+			MalformedObjectNameException, NullPointerException,
+			InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
 		String command = "listRunningServers foo";
-		if (commandHandler.handleCommand(command.split(" ")) != -1) {
+		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was successful");
 		}
 	}
 
 	public void testListRunningServersWithoutServers() throws IOException,
-			MalformedObjectNameException, NullPointerException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+			MalformedObjectNameException, NullPointerException,
+			InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
 		String command = "listRunningServers";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command was not successful");
@@ -58,7 +62,8 @@ public class ListRunningServersTest extends TestCase {
 
 	public void testListRunningServersWithServers() throws IOException,
 			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException, ClassNotFoundException {
+			InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
 		if (runServer.serverinit("default", "1") != 0) {
 			fail("Could not start the server");
 		}

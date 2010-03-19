@@ -29,67 +29,31 @@ import javax.management.ReflectionException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.btadmin.Command;
-import org.jboss.blacktie.btadmin.CommandFailedException;
 import org.jboss.blacktie.btadmin.IncompatibleArgsException;
 
 /**
  * The shutdown command will shutdown the server specified
  */
-public class Shutdown implements Command {
+public class Version implements Command {
 	/**
 	 * The logger to use for output
 	 */
-	private static Logger log = LogManager.getLogger(Shutdown.class);
+	private static Logger log = LogManager.getLogger(Version.class);
 
-	/**
-	 * The name of the server.
-	 */
-	private String serverName;
-
-	/**
-	 * The ID of the server, will be 0 (all) if not provided
-	 */
-	private int id = 0;
-
-	/**
-	 * Does the command require the admin connection.
-	 */
 	public boolean requiresAdminConnection() {
-		return true;
+		return false;
 	}
 
-	/**
-	 * Show the usage of the command
-	 */
 	public String getExampleUsage() {
-		return "<serverName> [<serverId>]";
+		return "";
 	}
 
 	public void initializeArgs(String[] args) throws IncompatibleArgsException {
-		serverName = args[0];
-		if (args.length == 2) {
-			try {
-				id = Integer.parseInt(args[1]);
-				log.trace("Successfully parsed: " + args[1]);
-			} catch (NumberFormatException nfe) {
-				throw new IncompatibleArgsException(
-						"The third argument was expected to be the (integer) instance id to shutdown");
-			}
-		}
+		// NO-OP
 	}
 
 	public void invoke(MBeanServerConnection beanServerConnection,
-			ObjectName blacktieAdmin, Properties configuration)
-			throws InstanceNotFoundException, MBeanException,
-			ReflectionException, IOException, CommandFailedException {
-		Boolean result = (Boolean) beanServerConnection.invoke(blacktieAdmin,
-				"shutdown", new Object[] { serverName, id }, new String[] {
-						"java.lang.String", "int" });
-		if (result) {
-			log.info("Server shutdown successfully");
-		} else {
-			log.error("Server could not be shutdown (may already be stopped)");
-			throw new CommandFailedException(-1);
-		}
+			ObjectName blacktieAdmin, Properties configuration) {
+		log.info("JBoss BlackTie 2.0.0.M3-SNAPSHOT");
 	}
 }

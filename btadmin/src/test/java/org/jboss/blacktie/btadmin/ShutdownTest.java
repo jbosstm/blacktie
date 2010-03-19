@@ -45,7 +45,7 @@ public class ShutdownTest extends TestCase {
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		String command = "shutdown";
-		if (commandHandler.handleCommand(command.split(" ")) != -1) {
+		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was successful");
 		}
 	}
@@ -55,7 +55,7 @@ public class ShutdownTest extends TestCase {
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		String command = "shutdown default one";
-		if (commandHandler.handleCommand(command.split(" ")) != -1) {
+		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was successful");
 		}
 	}
@@ -65,7 +65,7 @@ public class ShutdownTest extends TestCase {
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		String command = "shutdown UNKNOWN";
-		if (commandHandler.handleCommand(command.split(" ")) != -1) {
+		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was successful");
 		}
 	}
@@ -75,7 +75,7 @@ public class ShutdownTest extends TestCase {
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		String command = "shutdown default 1";
-		if (commandHandler.handleCommand(command.split(" ")) != -1) {
+		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was successful");
 		}
 	}

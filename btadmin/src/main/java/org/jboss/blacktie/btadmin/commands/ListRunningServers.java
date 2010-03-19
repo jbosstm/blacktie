@@ -38,7 +38,14 @@ public class ListRunningServers implements Command {
 	/**
 	 * The logger to use for output
 	 */
-	private static Logger log = LogManager.getLogger(Shutdown.class);
+	private static Logger log = LogManager.getLogger(ListRunningServers.class);
+
+	/**
+	 * Does the command require the admin connection.
+	 */
+	public boolean requiresAdminConnection() {
+		return true;
+	}
 
 	/**
 	 * Show the usage of the command
@@ -57,13 +64,13 @@ public class ListRunningServers implements Command {
 	/**
 	 * List the running servers to console and log file
 	 */
-	public int invoke(MBeanServerConnection beanServerConnection,
+	public void invoke(MBeanServerConnection beanServerConnection,
 			ObjectName blacktieAdmin, Properties configuration)
 			throws InstanceNotFoundException, MBeanException,
 			ReflectionException, IOException {
 		List<String> listRunningServers = (ArrayList<String>) beanServerConnection
 				.invoke(blacktieAdmin, "listRunningServers", null, null);
-		CommandHandler.output("listRunningServers", listRunningServers);
-		return 0;
+		log.info(CommandHandler.convertList("listRunningServers",
+				listRunningServers));
 	}
 }

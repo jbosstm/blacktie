@@ -27,6 +27,8 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.jboss.blacktie.btadmin.Command;
 import org.jboss.blacktie.btadmin.CommandHandler;
 import org.jboss.blacktie.btadmin.IncompatibleArgsException;
@@ -35,11 +37,23 @@ import org.jboss.blacktie.btadmin.IncompatibleArgsException;
  * List the running instance ids of a server.
  */
 public class ListRunningInstanceIds implements Command {
+	/**
+	 * The logger to use for output
+	 */
+	private static Logger log = LogManager
+			.getLogger(ListRunningInstanceIds.class);
 
 	/**
 	 * The server name.
 	 */
 	private String serverName;
+
+	/**
+	 * Does the command require the admin connection.
+	 */
+	public boolean requiresAdminConnection() {
+		return true;
+	}
 
 	/**
 	 * Get the usage of the command.
@@ -62,7 +76,7 @@ public class ListRunningInstanceIds implements Command {
 		serverName = args[0];
 	}
 
-	public int invoke(MBeanServerConnection beanServerConnection,
+	public void invoke(MBeanServerConnection beanServerConnection,
 			ObjectName blacktieAdmin, Properties configuration)
 			throws InstanceNotFoundException, MBeanException,
 			ReflectionException, IOException {
@@ -70,8 +84,7 @@ public class ListRunningInstanceIds implements Command {
 				blacktieAdmin, "listRunningInstanceIds",
 				new Object[] { serverName },
 				new String[] { "java.lang.String" });
-		CommandHandler.output("listRunningInstanceIds", ids);
-		return 0;
+		log.info(CommandHandler.convertList("listRunningInstanceIds", ids));
 	}
 
 }

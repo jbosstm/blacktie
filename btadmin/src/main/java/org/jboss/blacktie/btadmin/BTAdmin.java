@@ -33,8 +33,8 @@ import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
  * 
  * @author tomjenkinson
  */
-public class Launcher {
-	private static Logger log = LogManager.getLogger(Launcher.class);
+public class BTAdmin {
+	private static Logger log = LogManager.getLogger(BTAdmin.class);
 
 	public static void main(String[] args) {
 		if (System.getProperty("log4j.configuration") == null
