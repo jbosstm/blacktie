@@ -18,7 +18,6 @@
 package org.jboss.blacktie.btadmin.commands;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Properties;
 
 import javax.management.InstanceNotFoundException;
@@ -31,7 +30,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.btadmin.Command;
 import org.jboss.blacktie.btadmin.CommandFailedException;
-import org.jboss.blacktie.btadmin.CommandHandler;
 import org.jboss.blacktie.btadmin.IncompatibleArgsException;
 import org.w3c.dom.Document;
 import org.w3c.dom.ls.DOMImplementationLS;

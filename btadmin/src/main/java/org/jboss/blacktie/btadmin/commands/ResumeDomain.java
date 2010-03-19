@@ -18,9 +18,6 @@
 package org.jboss.blacktie.btadmin.commands;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
 import javax.management.InstanceNotFoundException;
@@ -34,8 +31,6 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.btadmin.Command;
 import org.jboss.blacktie.btadmin.CommandFailedException;
 import org.jboss.blacktie.btadmin.IncompatibleArgsException;
-import org.jboss.blacktie.btadmin.server.RunServer;
-import org.jboss.blacktie.jatmibroker.core.conf.Server;
 
 /**
  * The command
