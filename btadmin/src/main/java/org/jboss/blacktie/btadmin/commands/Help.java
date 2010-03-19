@@ -38,16 +38,23 @@ public class Help implements Command {
 	 */
 	private static Logger log = LogManager.getLogger(Help.class);
 
+	/**
+	 * The command to get help for
+	 */
+	private String command;
+
 	public boolean requiresAdminConnection() {
 		return false;
 	}
 
 	public String getExampleUsage() {
-		return "";
+		return "[command]";
 	}
 
 	public void initializeArgs(String[] args) throws IncompatibleArgsException {
-		// NO-OP
+		if (args.length > 0) {
+			command = args[0];
+		}
 	}
 
 	public void invoke(MBeanServerConnection beanServerConnection,
@@ -58,6 +65,9 @@ public class Help implements Command {
 				"help", "quit" };
 
 		for (int i = 0; i < commands.length; i++) {
+			if (command != null && !command.equals(commands[i])) {
+				continue;
+			}
 			try {
 				Command command = CommandHandler.loadCommand(commands[i]);
 				log.info(commands[i] + " " + command.getExampleUsage());
