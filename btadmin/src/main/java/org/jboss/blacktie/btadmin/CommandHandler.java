@@ -67,16 +67,8 @@ public class CommandHandler {
 		if (args.length < 1) {
 			log.error("No command was provided");
 		} else {
-			String commandName = args[0];
-			String firstLetter = commandName.substring(0, 1);
-			String remainder = commandName.substring(1);
-			String capitalized = firstLetter.toUpperCase() + remainder;
 
-			String className = "org.jboss.blacktie.btadmin.commands."
-					+ capitalized;
-			log.trace("Will execute the " + className + " command");
-			Command command = (Command) Class.forName(className).newInstance();
-			log.debug("Command was known");
+			Command command = loadCommand(args[0]);
 
 			// Create an new array for the commands arguments
 			String[] commandArgs = new String[args.length - 1];
@@ -114,9 +106,8 @@ public class CommandHandler {
 							+ expectedArgsLength + ", received: "
 							+ commandArgs.length);
 				}
-				log
-						.error(("Expected Usage: " + commandName + " " + exampleUsage)
-								.trim());
+				log.error(("Expected Usage: " + args[0] + " " + exampleUsage)
+						.trim());
 			} else {
 				if (command.requiresAdminConnection()) {
 					initializeAdminConnection();
@@ -138,7 +129,7 @@ public class CommandHandler {
 								+ e.getMessage(), e);
 					}
 				} catch (IncompatibleArgsException e) {
-					String usage = "Expected Usage: " + commandName + " "
+					String usage = "Expected Usage: " + args[0] + " "
 							+ exampleUsage;
 					log.error("Arguments invalid: " + e.getMessage());
 					log.error(usage.trim());
@@ -147,6 +138,19 @@ public class CommandHandler {
 			}
 		}
 		return exitStatus;
+	}
+
+	public static Command loadCommand(String commandName)
+			throws InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
+		String firstLetter = commandName.substring(0, 1);
+		String remainder = commandName.substring(1);
+		String capitalized = firstLetter.toUpperCase() + remainder;
+		String className = "org.jboss.blacktie.btadmin.commands." + capitalized;
+		log.trace("Will execute the " + className + " command");
+		Command command = (Command) Class.forName(className).newInstance();
+		log.debug("Command was known");
+		return command;
 	}
 
 	public void initializeAdminConnection() throws IOException {
