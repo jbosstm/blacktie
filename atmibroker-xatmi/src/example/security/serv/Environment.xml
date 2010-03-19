@@ -18,8 +18,14 @@
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
+	<MACHINES>
+		<MACHINE id="secure1" hostname="localhost.localdomain"
+			pathToExecutable="REPLACE_WITH_INSTALL_LOCATION/examples/security/server"
+			argLine="-i 1" />
+	</MACHINES>
 	<SERVERS>
 		<SERVER name="secure">
+			<MACHINE-REF id="secure1" />
 			<security>
 				<role name="blacktie" read="true" write="true" />
 			</security>

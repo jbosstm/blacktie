@@ -18,14 +18,14 @@
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
+	<MACHINES>
+		<MACHINE id="default1" hostname="localhost.localdomain"
+			pathToExecutable="REPLACE_WITH_INSTALL_LOCATION/examples/xatmi/txfooapp/server"
+			argLine="-i 1" />
+	</MACHINES>
 	<SERVERS>
-		<SERVER name="jboss">
-			<SERVICE_NAMES>
-				<SERVICE name='BTStompAdmin' />
-				<SERVICE name='BTDomainAdmin' />
-			</SERVICE_NAMES>
-		</SERVER>
 		<SERVER name='default'>
+			<MACHINE-REF id="default1" />
 			<SERVICE_NAMES>
 				<SERVICE name='BAR' size="5" />
 			</SERVICE_NAMES>

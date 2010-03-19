@@ -103,8 +103,9 @@ NOTE: If you get the following error you have not sourced setenv.sh|bat
 ./<EXECUTABLE>: error while loading shared libraries: libTAO_CosNaming.so.1.6.7: cannot open shared object file: No such file or directoryI
 
 7.1 RUN THE SERVER
+Edit the Environment.xml to set REPLACE_WITH_INSTALL_LOCATION as appropriate
 export BLACKTIE_CONFIGURATION_DIR=serv
-./server -c <win32|linux> -i <unique_id - e.g. 1> secure
+btadmin startup secure
 NOTE: If you get the following error you have not started the JBoss server:
 2009-06-23 08:51:51,270 [0x7f627be63750] ERROR AtmiBrokerServer          - serverinit - Unexpected CORBA exception: TRANSIENT
 2009-06-23 08:51:51,270 [0x7f627be63750] INFO  AtmiBrokerLogc            - main Unexpected exception in serverrun()
@@ -118,7 +119,11 @@ If you echo $? you will see the application returned an error
 export BLACKTIE_CONFIGURATION_DIR=dynsub
 ./client
 If you echo $? you will see the application completed successfully
-6.4 CREATE A NEW USER AND RUN THE TEST AGAIN
+
+7.4 SHUTDOWN THE SERVER
+btadmin shutdown
+
+7.5 CREATE A NEW USER AND RUN THE TEST AGAIN
 Duplicate the "dynsub" folder as "bt"
 Edit bt/Environment.xml and change "dynsub" to "bt", with password "pwd"
 Edit serv/Environment.xml and change "dynsub" to "bt", with password "pwd"

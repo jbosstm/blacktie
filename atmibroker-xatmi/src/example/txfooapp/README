@@ -219,7 +219,10 @@ As above with:
 3.1 START THE SERVER
 ====================
 NOTE: You must NOT have ORACLE_SID set as we are using two resource managers in this example
-    ./server -c <win32|linux> -i <unique_id - e.g. 1>
+Edit the Environment.xml to set REPLACE_WITH_INSTALL_LOCATION as appropriate
+export BLACKTIE_CONFIGURATION=<win32|linux>
+export BLACKTIE_CONFIGURATION_DIR=serv
+btadmin startup
 
 3.2 START THE CLIENT
 ====================
@@ -242,8 +245,12 @@ NOTE: If you get the following error it means you have not exported BLACKTIE_CON
 2010-01-25 18:11:32,723 [0x7f805f2f5750] WARN  (AtmiBrokerLogc           :91  ) - TxLog BAD REQ -1 db name: ORCL
 2010-01-25 18:11:32,730 [0x7f805f2f5750] INFO  (AtmiBrokerLogc           :67  ) - TxLog Test failed (-1)
 
+3.3 STOP THE SERVER
+===================
+btadmin shutdown
 
-3.3 WHAT IF THE TESTS HANG
+
+3.4 WHAT IF THE TESTS HANG
 ==========================
 
 The most likely cause is that the test is waiting on a Database lock held by in doubt transactions. Try resolving them

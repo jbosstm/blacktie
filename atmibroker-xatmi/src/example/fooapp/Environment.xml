@@ -20,10 +20,10 @@
 	<DOMAIN>fooapp</DOMAIN>
 	<MACHINES>
 		<MACHINE id="default1" hostname="localhost.localdomain"
-			pathToExecutable="/home/tom/blacktie/trunk/dist/blacktie-2.0.0.M3-SNAPSHOT/examples/xatmi/fooapp/server"
+			pathToExecutable="REPLACE_WITH_INSTALL_LOCATION/examples/xatmi/fooapp/server"
 			argLine="-i 1" />
 		<MACHINE id="default2" hostname="localhost.localdomain"
-			pathToExecutable="/home/tom/blacktie/trunk/dist/blacktie-2.0.0.M3-SNAPSHOT/examples/xatmi/fooapp/server"
+			pathToExecutable="REPLACE_WITH_INSTALL_LOCATION/examples/xatmi/fooapp/server"
 			argLine="-i 2" />
 	</MACHINES>
 	<SERVERS>
