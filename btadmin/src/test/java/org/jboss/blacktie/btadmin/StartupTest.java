@@ -45,11 +45,11 @@ public class StartupTest extends TestCase {
 			fail("Command was unsuccessful");
 		}
 
-		command = "shutdown default";
+		command = "shutdown";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command was unsuccessful");
 		}
-		
+
 		// TODO SHUTDOWN SHOULD RETURN WHEN THERE ARE NO MORE CONSUMERS?
 		try {
 			Thread.currentThread().sleep(5000);

@@ -89,7 +89,7 @@ public class ShutdownTest extends TestCase {
 		}
 		String command = "shutdown default";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
-			fail("Command was successful");
+			fail("Command was not successful");
 		}
 	}
 
@@ -101,6 +101,23 @@ public class ShutdownTest extends TestCase {
 			fail("Could not start the server");
 		}
 		String command = "shutdown default 1";
+		if (commandHandler.handleCommand(command.split(" ")) != 0) {
+			fail("Command was not successful");
+		}
+	}
+
+	public void testShutdownWithInvalidId() throws IOException,
+			MalformedObjectNameException, NullPointerException,
+			InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
+		if (runServer.serverinit("default", "1") != 0) {
+			fail("Could not start the server");
+		}
+		String command = "shutdown default 2";
+		if (commandHandler.handleCommand(command.split(" ")) == 0) {
+			fail("Command was successful");
+		}
+		command = "shutdown default 1";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command was not successful");
 		}
