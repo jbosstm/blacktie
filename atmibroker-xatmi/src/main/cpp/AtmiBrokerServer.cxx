@@ -191,6 +191,9 @@ int serverinit(int argc, char** argv) {
 	}
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverinit returning: "
 			<< toReturn);
+	if (toReturn != 0) {
+		LOG4CXX_FATAL(loggerAtmiBrokerServer, (char*) "serverinit failed");
+	}
 	return toReturn;
 }
 
@@ -363,8 +366,8 @@ AtmiBrokerServer::AtmiBrokerServer() {
 		} else {
 			// make ADMIN service mandatory for server
 			char adm[XATMI_SERVICE_NAME_LENGTH + 1];
-			ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1,
-					"%s_ADMIN_%d", server, serverid);
+			ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d",
+					server, serverid);
 			if (!advertiseService(adm, ADMIN)) {
 				return;
 			}
@@ -772,7 +775,8 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 	long commandLength;
 	long responseLength = 1;
 
-	commandLength = strlen(serverName) + strlen(serviceName) + strlen(version) + 15 + 1;
+	commandLength = strlen(serverName) + strlen(serviceName) + strlen(version)
+			+ 15 + 1;
 
 	char* command = (char*) ::tpalloc((char*) "X_OCTET", NULL, commandLength);
 	char* response = (char*) ::tpalloc((char*) "X_OCTET", NULL, responseLength);
