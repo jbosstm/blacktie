@@ -17,8 +17,10 @@
  */
 package org.jboss.blacktie.btadmin;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 
 import javax.management.MalformedObjectNameException;
@@ -36,47 +38,61 @@ import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 public class BTAdmin {
 	private static Logger log = LogManager.getLogger(BTAdmin.class);
 
-	public static void main(String[] args) {
+	private static InputStreamReader isr = new InputStreamReader(System.in);
+	private static BufferedReader br = new BufferedReader(isr);
+
+	public static void main(String[] args) throws IOException {
+		int exitStatus = -1;
 		if (System.getProperty("log4j.configuration") == null
 				&& !new File("log4cxx.properties").exists()
 				&& !new File("log4j.xml").exists()) {
 			BasicConfigurator.configure();
 			log.info("BasicConfigurator ran");
-			System.out.print("DOING");
 		}
 
-		int exitStatus = -1;
-		try {
-			CommandHandler commandHandler = new CommandHandler();
-			exitStatus = commandHandler.handleCommand(args);
-			if (exitStatus == 0) {
-				log.trace("Command was successful");
-			} else {
-				log.trace("Command failed");
+		boolean interactive = args.length == 0;
+		do {
+			if (interactive) {
+				log.info(">");
+				args = br.readLine().split(" ");
 			}
-		} catch (MalformedURLException e) {
-			log.error("JMXURL was incorrect: " + e.getMessage(), e);
-		} catch (IOException e) {
-			log.error("No connect to mbean server: " + e.getMessage(), e);
-		} catch (MalformedObjectNameException e) {
-			log.error("MBean name was badly structured: " + e.getMessage(), e);
-		} catch (NullPointerException e) {
-			log.error("MBean name raised an NPE: " + e.getMessage(), e);
-		} catch (ConfigurationException e) {
-			log.error("BlackTie Configuration invalid: " + e.getMessage(), e);
-		} catch (InstantiationException e) {
-			log.error("Command could not be loaded: " + e.getMessage(), e);
-		} catch (IllegalAccessException e) {
-			log.error("Command could not be loaded: " + e.getMessage(), e);
-		} catch (ClassNotFoundException e) {
-			log.error("Command could not be loaded: " + e.getMessage(), e);
-		}
 
-		// Exit the launcher with the value of the command
-		// This must be a halt so that any executed servers are not reaped by
-		// the JVM. If spawned servers die when launcher does we will need to
-		// investigate using setppid or something to set the spawned process as
-		// daemons
-		Runtime.getRuntime().halt(exitStatus);
+			try {
+				CommandHandler commandHandler = new CommandHandler();
+				exitStatus = commandHandler.handleCommand(args);
+				if (exitStatus == 0) {
+					log.trace("Command was successful");
+				} else {
+					log.trace("Command failed");
+				}
+			} catch (MalformedURLException e) {
+				log.error("JMXURL was incorrect: " + e.getMessage(), e);
+			} catch (IOException e) {
+				log.error("No connect to mbean server: " + e.getMessage(), e);
+			} catch (MalformedObjectNameException e) {
+				log.error("MBean name was badly structured: " + e.getMessage(),
+						e);
+			} catch (NullPointerException e) {
+				log.error("MBean name raised an NPE: " + e.getMessage(), e);
+			} catch (ConfigurationException e) {
+				log.error("BlackTie Configuration invalid: " + e.getMessage(),
+						e);
+			} catch (InstantiationException e) {
+				log.error("Command could not be loaded: " + e.getMessage(), e);
+			} catch (IllegalAccessException e) {
+				log.error("Command could not be loaded: " + e.getMessage(), e);
+			} catch (ClassNotFoundException e) {
+				log.error("Command could not be loaded: " + e.getMessage(), e);
+			}
+		} while (interactive && !args.equals("quit"));
+
+		if (!interactive) {
+			// Exit the launcher with the value of the command
+			// This must be a halt so that any executed servers are not reaped
+			// by the JVM. If spawned servers die when launcher does we will
+			// need to investigate using setppid or something to set the
+			// spawned process as daemons
+			Runtime.getRuntime().halt(exitStatus);
+		}
 	}
 }

@@ -17,14 +17,10 @@
  */
 package org.jboss.blacktie.btadmin.commands;
 
-import java.io.IOException;
 import java.util.Properties;
 
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanException;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-import javax.management.ReflectionException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
