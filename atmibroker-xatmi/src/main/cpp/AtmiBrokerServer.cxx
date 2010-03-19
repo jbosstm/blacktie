@@ -803,7 +803,20 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 		tpfree(command);
 		tpfree(response);
 		return false;
-	} else if (response[0] != 1) {
+	} else if (response[0] == 3) {
+		// Dispatcher needs to be paused
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+				(char*) "Created paused admin queue for: " << serviceName);
+		tpfree(command);
+		tpfree(response);
+		return true;
+	} else if (response[0] == 1) {
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+				(char*) "Created admin queue for: " << serviceName);
+		tpfree(command);
+		tpfree(response);
+		return true;
+	} else {
 		// REMOVED BY TOM, NOT CLEAR WHAT THIS IS REQUIRED FOR,
 		// IF COMMENTED BACK IN, PLEASE PROVIDE A COMMENT
 		//		if (!isadm || (errorBootAdminService = response[0]) == 2) {
@@ -814,11 +827,6 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 		return false;
 		//		}
 	}
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "Created admin queue for: "
-			<< serviceName);
-	tpfree(command);
-	tpfree(response);
-	return true;
 }
 
 void AtmiBrokerServer::removeAdminDestination(char* serviceName) {
