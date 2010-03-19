@@ -18,7 +18,6 @@
 package org.jboss.blacktie.btadmin.commands;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Properties;
 
 import javax.management.InstanceNotFoundException;
@@ -30,23 +29,19 @@ import javax.management.ReflectionException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.btadmin.Command;
-import org.jboss.blacktie.btadmin.CommandHandler;
 import org.jboss.blacktie.btadmin.IncompatibleArgsException;
+import org.w3c.dom.Document;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
 
 /**
- * List the running instance ids of a server.
+ * The command.
  */
-public class ListRunningInstanceIds implements Command {
+public class GetServersStatus implements Command {
 	/**
 	 * The logger to use for output
 	 */
-	private static Logger log = LogManager
-			.getLogger(ListRunningInstanceIds.class);
-
-	/**
-	 * The server name.
-	 */
-	private String serverName;
+	private static Logger log = LogManager.getLogger(GetServersStatus.class);
 
 	/**
 	 * Does the command require the admin connection.
@@ -56,28 +51,33 @@ public class ListRunningInstanceIds implements Command {
 	}
 
 	/**
-	 * Get the usage of the command.
+	 * Show the usage of the command
 	 */
 	public String getExampleUsage() {
-		return "<serverName>";
+		return "";
 	}
 
 	/**
-	 * Initialize the arguments for the command
+	 * This is a no-op for this command
 	 */
 	public void initializeArgs(String[] args) throws IncompatibleArgsException {
-		serverName = args[0];
+		// NO-OP as no arguments
 	}
 
+	/**
+	 * List the running servers to console and log file
+	 */
 	public void invoke(MBeanServerConnection beanServerConnection,
 			ObjectName blacktieAdmin, Properties configuration)
 			throws InstanceNotFoundException, MBeanException,
 			ReflectionException, IOException {
-		List<Integer> ids = (List<Integer>) beanServerConnection.invoke(
-				blacktieAdmin, "listRunningInstanceIds",
-				new Object[] { serverName },
-				new String[] { "java.lang.String" });
-		log.info(CommandHandler.convertList("listRunningInstanceIds", ids));
+		org.w3c.dom.Element output = (org.w3c.dom.Element) beanServerConnection
+				.invoke(blacktieAdmin, "getServersStatus", null, null);
+		Document document = output.getOwnerDocument();
+		DOMImplementationLS domImplLS = (DOMImplementationLS) document
+				.getImplementation();
+		LSSerializer serializer = domImplLS.createLSSerializer();
+		String str = serializer.writeToString(output);
+		log.info(str);
 	}
-
 }

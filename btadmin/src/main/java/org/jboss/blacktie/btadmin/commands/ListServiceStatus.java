@@ -30,23 +30,31 @@ import javax.management.ReflectionException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.btadmin.Command;
+import org.jboss.blacktie.btadmin.CommandFailedException;
 import org.jboss.blacktie.btadmin.CommandHandler;
 import org.jboss.blacktie.btadmin.IncompatibleArgsException;
+import org.w3c.dom.Document;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
 
 /**
  * List the running instance ids of a server.
  */
-public class ListRunningInstanceIds implements Command {
+public class ListServiceStatus implements Command {
 	/**
 	 * The logger to use for output
 	 */
-	private static Logger log = LogManager
-			.getLogger(ListRunningInstanceIds.class);
+	private static Logger log = LogManager.getLogger(ListServiceStatus.class);
 
 	/**
 	 * The server name.
 	 */
 	private String serverName;
+
+	/**
+	 * The service name.
+	 */
+	private String serviceName;
 
 	/**
 	 * Does the command require the admin connection.
@@ -59,7 +67,7 @@ public class ListRunningInstanceIds implements Command {
 	 * Get the usage of the command.
 	 */
 	public String getExampleUsage() {
-		return "<serverName>";
+		return "<serverName> <serviceName>";
 	}
 
 	/**
@@ -67,17 +75,27 @@ public class ListRunningInstanceIds implements Command {
 	 */
 	public void initializeArgs(String[] args) throws IncompatibleArgsException {
 		serverName = args[0];
+		serviceName = args[1];
 	}
 
 	public void invoke(MBeanServerConnection beanServerConnection,
 			ObjectName blacktieAdmin, Properties configuration)
 			throws InstanceNotFoundException, MBeanException,
-			ReflectionException, IOException {
-		List<Integer> ids = (List<Integer>) beanServerConnection.invoke(
-				blacktieAdmin, "listRunningInstanceIds",
-				new Object[] { serverName },
-				new String[] { "java.lang.String" });
-		log.info(CommandHandler.convertList("listRunningInstanceIds", ids));
+			ReflectionException, IOException, CommandFailedException {
+		org.w3c.dom.Element output = (org.w3c.dom.Element) beanServerConnection
+				.invoke(blacktieAdmin, "listServiceStatus", new Object[] {
+						serverName, serviceName }, new String[] {
+						"java.lang.String", "java.lang.String" });
+		if (output == null) {
+			log.error("Server/service was not running: " + serverName + "/"
+					+ serviceName);
+			throw new CommandFailedException(-1);
+		}
+		Document document = output.getOwnerDocument();
+		DOMImplementationLS domImplLS = (DOMImplementationLS) document
+				.getImplementation();
+		LSSerializer serializer = domImplLS.createLSSerializer();
+		String str = serializer.writeToString(output);
+		log.info(str);
 	}
-
 }

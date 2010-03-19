@@ -301,23 +301,23 @@ public class AdministrationProxy {
 	public Element getServersStatus() {
 		log.trace("getServersStatus");
 		try {
-			String status = "<servers>";
+			String status = "<servers>\n";
 
 			for (String server : servers) {
-				status += "<server>";
-				status += "<name>" + server + "</name>";
+				status += "\t<server>\n";
+				status += "\t\t<name>" + server + "</name>\n";
 				List<Integer> ids = listRunningInstanceIds(server);
 				if (ids.size() > 0) {
-					status += "<instances>";
+					status += "\t\t<instances>\n";
 					for (int i = 0; i < ids.size(); i++) {
-						status += "<instance>";
-						status += "<id>" + ids.get(i) + "</id>";
-						status += "<status>1</status>";
-						status += "</instance>";
+						status += "\t\t\t<instance>\n";
+						status += "\t\t\t\t<id>" + ids.get(i) + "</id>\n";
+						status += "\t\t\t\t<status>1</status>\n";
+						status += "\t\t\t</instance>\n";
 					}
-					status += "</instances>";
+					status += "\t\t</instances>\n";
 				}
-				status += "</server>";
+				status += "\t</server>\n";
 			}
 
 			status += "</servers>";

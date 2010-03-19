@@ -25,17 +25,13 @@ import junit.framework.TestCase;
 
 import org.jboss.blacktie.btadmin.server.RunServer;
 
-public class AdvertiseTest extends TestCase {
+public class ListServiceStatusTest extends TestCase {
 	private RunServer runServer = new RunServer();
 
 	private CommandHandler commandHandler;
 
 	public void setUp() throws Exception {
 		this.commandHandler = new CommandHandler();
-
-		if (runServer.serverinit("default", "1") != 0) {
-			fail("Could not start the server");
-		}
 	}
 
 	public void tearDown() {
@@ -44,53 +40,60 @@ public class AdvertiseTest extends TestCase {
 		}
 	}
 
-	public void testAdvertise() throws IOException,
+	public void testListServiceStatusWithoutServerName() throws IOException,
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
+		String command = "listServiceStatus";
+		if (commandHandler.handleCommand(command.split(" ")) == 0) {
+			fail("Command was successful");
+		}
+	}
+
+	public void testListServiceStatusWithoutServiceName() throws IOException,
+			MalformedObjectNameException, NullPointerException,
+			InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
+		String command = "listServiceStatus default";
+		if (commandHandler.handleCommand(command.split(" ")) == 0) {
+			fail("Command was successful");
+		}
+	}
+
+	public void testListServiceStatusWithAdditionalParameters()
+			throws IOException, MalformedObjectNameException,
+			NullPointerException, InstantiationException,
+			IllegalAccessException, ClassNotFoundException {
+		String command = "listServiceStatus default 1 BAR";
+		if (commandHandler.handleCommand(command.split(" ")) == 0) {
+			fail("Command was successful");
+		}
+	}
+
+	public void testListServiceStatusWithNonRunningServer() throws IOException,
+			MalformedObjectNameException, NullPointerException,
+			InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
+		String command = "listServiceStatus foo BAR";
+		if (commandHandler.handleCommand(command.split(" ")) == 0) {
+			fail("Command was not successful");
+		}
+	}
+
+	public void testListServiceStatusWithRunningServer() throws IOException,
+			MalformedObjectNameException, NullPointerException,
+			InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
+		if (runServer.serverinit("default", "1") != 0) {
+			fail("Could not start the server");
+		}
 		String command = "advertise default BAR";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command failed");
 		}
-	}
-
-	public void testAdvertiseWithoutService() throws IOException,
-			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		String command = "advertise default";
-		if (commandHandler.handleCommand(command.split(" ")) == 0) {
-			fail("Command was successful");
-		}
-	}
-
-	public void testAdvertiseWithoutServer() throws IOException,
-			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		String command = "advertise BAR";
-		if (commandHandler.handleCommand(command.split(" ")) == 0) {
-			fail("Command was successful");
-		}
-	}
-
-	public void testAdvertiseNoArgs() throws IOException,
-			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		String command = "advertise";
-		if (commandHandler.handleCommand(command.split(" ")) == 0) {
-			fail("Command was successful");
-		}
-	}
-
-	public void testAdvertiseNoFunctionConfig() throws IOException,
-			MalformedObjectNameException, NullPointerException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		String command = "advertise default PBF";
-		if (commandHandler.handleCommand(command.split(" ")) == 0) {
-			fail("Command was successful");
+		command = "listServiceStatus default BAR";
+		if (commandHandler.handleCommand(command.split(" ")) != 0) {
+			fail("Command was not successful");
 		}
 	}
 }
