@@ -96,7 +96,7 @@ if [ "$?" != "0" ]; then
 fi
 unset BLACKTIE_CONFIGURATION_DIR
 
-# SHUTDOWN THE SERVER RUNNING THE XATMI ADMIN CLIENT
+# SHUTDOWN THE SERVER RUNNING THE btadmin TOOL
 export BLACKTIE_CONFIGURATION=linux
 btadmin shutdown secure
 if [ "$?" != "0" ]; then
