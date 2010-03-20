@@ -101,7 +101,7 @@ public class Startup implements Command {
 						cmdarray[0] = pathToExecutable;
 						System.arraycopy(split, 0, cmdarray, 1, split.length);
 						String[] envp = null;
-						File dir = null;
+						File dir = new File(localMachine.getWorkingDirectory());
 						Process exec = Runtime.getRuntime().exec(cmdarray,
 								envp, dir);
 						log.debug("Launched server: " + pathToExecutable);

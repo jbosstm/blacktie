@@ -76,6 +76,7 @@
 									<xsd:attribute name="id" type="xsd:string" />
 									<xsd:attribute name="hostname" type="xsd:string" />
 									<xsd:attribute name="pathToExecutable" type="xsd:string" />
+									<xsd:attribute name="workingDirectory" type="xsd:string" />
 									<xsd:attribute name="argLine" type="xsd:string" />
 								</xsd:complexType>
 							</xsd:element>

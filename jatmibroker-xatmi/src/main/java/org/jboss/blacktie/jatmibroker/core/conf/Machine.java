@@ -21,6 +21,7 @@ public class Machine {
 	private String id;
 	private String hostname;
 	private String pathToExecutable;
+	private String workingDirectory;
 	private String argLine;
 
 	public String getId() {
@@ -45,6 +46,14 @@ public class Machine {
 
 	public void setPathToExecutable(String pathToExecutable) {
 		this.pathToExecutable = pathToExecutable;
+	}
+
+	public String getWorkingDirectory() {
+		return workingDirectory;
+	}
+
+	public void setWorkingDirectory(String workingDirectory) {
+		this.workingDirectory = workingDirectory;
 	}
 
 	public String getArgLine() {
