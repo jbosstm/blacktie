@@ -85,6 +85,7 @@ Make sure that the naming, messaging and transaction services are running, by ru
 6 RUN THE APPLICATIONS
 6.1 RUN THE SERVER
 Edit the Environment.xml to set REPLACE_WITH_INSTALL_LOCATION as appropriate
+Edit the Environment.xml to set REPLACE_WITH_HOSTNAME as appropriate
 btadmin startup
 NOTE: If you get the following error you have not started the JBoss server:
 2009-06-23 08:51:51,270 [0x7f627be63750] ERROR AtmiBrokerServer          - serverinit - Unexpected CORBA exception: TRANSIENT

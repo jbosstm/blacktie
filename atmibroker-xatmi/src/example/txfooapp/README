@@ -220,6 +220,7 @@ As above with:
 ====================
 NOTE: You must NOT have ORACLE_SID set as we are using two resource managers in this example
 Edit the Environment.xml to set REPLACE_WITH_INSTALL_LOCATION as appropriate
+Edit the Environment.xml to set REPLACE_WITH_HOSTNAME as appropriate
 export BLACKTIE_CONFIGURATION=<win32|linux>
 export BLACKTIE_CONFIGURATION_DIR=serv
 btadmin startup

@@ -19,7 +19,7 @@
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
 	<MACHINES>
-		<MACHINE id="default1" hostname="localhost.localdomain"
+		<MACHINE id="default1" hostname="REPLACE_WITH_HOSTNAME"
 			pathToExecutable="REPLACE_WITH_INSTALL_LOCATION/examples/xatmi/txfooapp/server"
 			argLine="-i 1" />
 	</MACHINES>

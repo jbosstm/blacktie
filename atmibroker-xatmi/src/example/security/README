@@ -104,6 +104,7 @@ NOTE: If you get the following error you have not sourced setenv.sh|bat
 
 7.1 RUN THE SERVER
 Edit the Environment.xml to set REPLACE_WITH_INSTALL_LOCATION as appropriate
+Edit the Environment.xml to set REPLACE_WITH_HOSTNAME as appropriate
 export BLACKTIE_CONFIGURATION_DIR=serv
 btadmin startup secure
 NOTE: If you get the following error you have not started the JBoss server:
