@@ -9,10 +9,10 @@ if [ "$?" != "0" ]; then
 fi
 export BLACKTIE_CONFIGURATION=linux
 btadmin startup
-unset BLACKTIE_CONFIGURATION
 if [ "$?" != "0" ]; then
 	exit -1
 fi
+unset BLACKTIE_CONFIGURATION
 
 # RUN THE JAVA CLIENT
 cd $BLACKTIE_HOME/examples/jab
@@ -47,10 +47,10 @@ sleep 3
 cd $BLACKTIE_HOME/examples/xatmi/fooapp
 export BLACKTIE_CONFIGURATION=linux
 btadmin startup
-unset BLACKTIE_CONFIGURATION
 if [ "$?" != "0" ]; then
 	exit -1
 fi
+unset BLACKTIE_CONFIGURATION
 
 # SHUTDOWN THE SERVER RUNNING THE XATMI ADMIN CLIENT
 cd $BLACKTIE_HOME/examples/admin/xatmi
@@ -72,10 +72,10 @@ fi
 export BLACKTIE_CONFIGURATION_DIR=serv
 export BLACKTIE_CONFIGURATION=linux
 btadmin startup secure
-unset BLACKTIE_CONFIGURATION
 if [ "$?" != "0" ]; then
 	exit -1
 fi
+unset BLACKTIE_CONFIGURATION
 unset BLACKTIE_CONFIGURATION_DIR
 
 # RUN THE "guest" USER CLIENT
@@ -99,10 +99,10 @@ unset BLACKTIE_CONFIGURATION_DIR
 # SHUTDOWN THE SERVER RUNNING THE XATMI ADMIN CLIENT
 export BLACKTIE_CONFIGURATION=linux
 btadmin shutdown secure
-unset BLACKTIE_CONFIGURATION
 if [ "$?" != "0" ]; then
 	exit -1
 fi
+unset BLACKTIE_CONFIGURATION
 
 # RUN THE MDB EXAMPLE
 cd $BLACKTIE_HOME/examples/mdb
