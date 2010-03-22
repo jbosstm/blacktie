@@ -196,8 +196,16 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		}
 	}
 
-	int deployQueue(String serviceName) {
-		log.trace("deployQueue: " + serviceName);
+	int deployQueue(String serviceName, String version) {
+		log.trace("deployQueue: " + serviceName + " version: " + version);
+		
+		if(version == null || !version.equals(prop.getProperty("blacktie.domain.version"))) {
+			log.warn("Blacktie Domain version " + 
+					  prop.getProperty("blacktie.domain.version") + 
+					  " not match server " + version);
+			return 4;
+		}
+		
 		int result = 0;
 		Long currentTime = QUEUE_CREATION_TIMES.get(serviceName);
 
@@ -292,6 +300,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		String operation = st.nextToken();
 		String serverName = st.nextToken();
 		String serviceName = st.nextToken();
+		String version = st.nextToken();
 		byte[] success = new byte[1];
 		String server = null;
 		int k = -1;
@@ -326,7 +335,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 					success[0] = (byte) undeployQueue(serviceName);
 				} else if (operation.equals("tpadvertise")) {
 					log.trace("Advertising: " + serviceName);
-					success[0] = (byte) deployQueue(serviceName);
+					success[0] = (byte) deployQueue(serviceName, version);
 				} else if (operation.equals("decrementconsumer")) {
 					log.trace("Decrement consumer: " + serviceName);
 					success[0] = (byte) decrementConsumer(serviceName);

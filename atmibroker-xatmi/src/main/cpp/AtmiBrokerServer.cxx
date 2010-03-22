@@ -803,6 +803,12 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 		tpfree(command);
 		tpfree(response);
 		return false;
+	} else if (response[0] == 4) {
+		LOG4CXX_WARN(loggerAtmiBrokerServer,
+				(char*) "Server vresion " << version << " can not main Domain version");
+		tpfree(command);
+		tpfree(response);
+		return false;
 	} else if (response[0] == 3) {
 		// Dispatcher needs to be paused
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
