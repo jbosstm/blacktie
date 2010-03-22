@@ -23,7 +23,6 @@
 static bool isLogInitialised = false;
 static log4cxx::LoggerPtr logger;
 
-extern "C"BLACKTIE_CORE_DLL
 void init_ace() {
 	(void) AtmiBrokerInitSingleton::instance();
 }
