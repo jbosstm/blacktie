@@ -28,7 +28,7 @@ static Connection* createConnection(char* connectionName) {
 struct connection_factory_t connectionFactory = { createConnection };
 
 void TestConnection::test() {
-	AtmiBrokerInitSingleton::instance();
+	init_ace();
 
 	BT_ASSERT(connectionFactory.create_connection((char*) "foo") == NULL);
 }

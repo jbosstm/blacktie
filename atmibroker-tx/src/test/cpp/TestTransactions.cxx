@@ -52,7 +52,7 @@
 
 void TestTransactions::setUp()
 {
-	AtmiBrokerInitSingleton::instance();
+	init_ace();
 
 	txx_stop();
 #ifdef WIN32

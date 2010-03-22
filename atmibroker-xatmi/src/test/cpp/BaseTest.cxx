@@ -26,7 +26,7 @@ extern "C" {
 }
 
 void BaseTest::setUp() {
-	AtmiBrokerInitSingleton::instance();
+	init_ace();
 	// Perform global set up
 	TestFixture::setUp();
 	// previous tests may have left a txn on the thread

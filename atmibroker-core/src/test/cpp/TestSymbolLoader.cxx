@@ -27,7 +27,7 @@
 #include "userlogc.h"
 
 void TestSymbolLoader::setUp() {
-	AtmiBrokerInitSingleton::instance();
+	init_ace();
 
 	// Perform global set up
 	TestFixture::setUp();

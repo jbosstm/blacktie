@@ -18,9 +18,10 @@
 #ifndef _TEST_ASSERT_H_
 #define _TEST_ASSERT_H_
 
-#include "AtmiBrokerInit.h"
 #include <cppunit/extensions/HelperMacros.h>
 #include "userlogc.h"
+
+extern BLACKTIE_CORE_DLL void init_ace();
 
 #define	BTDBGPOST	\
 	userlogc_debug("POST ASSERT %s:%d", __FILE__, __LINE__)

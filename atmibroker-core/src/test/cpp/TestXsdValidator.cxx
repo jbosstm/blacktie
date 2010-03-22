@@ -24,7 +24,7 @@ void TestXsdValidator::test() {
 	XsdValidator va;
 	bool result;
 
-	AtmiBrokerInitSingleton::instance();
+	init_ace();
 	result = va.validate(NULL, NULL);
 	BT_ASSERT(result == false);
 	

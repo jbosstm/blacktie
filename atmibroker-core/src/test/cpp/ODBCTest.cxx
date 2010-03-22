@@ -28,7 +28,7 @@
 #include "ODBCTest.h"
 
 void ODBCTest::setUp() {
-	AtmiBrokerInitSingleton::instance();
+	init_ace();
 	// Perform global set up
 	TestFixture::setUp();
 

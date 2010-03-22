@@ -20,7 +20,6 @@
 #include "malloc.h"
 
 void TestAdmin::setUp() {
-	AtmiBrokerInitSingleton::instance();
 	userlogc((char*) "TestAdmin::setUp");
 	BaseAdminTest::setUp();
 }

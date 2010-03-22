@@ -28,7 +28,6 @@ extern "C" {
 }
 
 void TestClientInit::test_clientinit() {
-	AtmiBrokerInitSingleton::instance();
 	userlogc((char*) "TestClientInit::test_clientinit");
 	BT_ASSERT(tperrno == 0);
 	int valToTest = ::clientinit();
@@ -41,7 +40,6 @@ void TestClientInit::test_clientinit() {
 }
 
 void TestClientInit::test_config_env() {
-	AtmiBrokerInitSingleton::instance();
 	userlogc((char*) "TestClientInit::test_config_env");
 
 	BT_ASSERT(tperrno == 0);

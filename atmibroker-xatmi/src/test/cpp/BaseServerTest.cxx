@@ -26,7 +26,6 @@ extern "C" {
 #include "xatmi.h"
 
 void BaseServerTest::setUp() {
-	AtmiBrokerInitSingleton::instance();
 	// Perform initial start up
 	BaseTest::setUp();
 

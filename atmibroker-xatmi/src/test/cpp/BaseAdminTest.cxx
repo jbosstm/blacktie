@@ -25,7 +25,6 @@
 #include "BaseAdminTest.h"
 
 void BaseAdminTest::setUp() {
-	AtmiBrokerInitSingleton::instance();
 	BaseServerTest::setUp();
 }
 

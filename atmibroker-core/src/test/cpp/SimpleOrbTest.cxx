@@ -26,7 +26,7 @@
 #include "Worker.h"
 
 void SimpleOrbTest::setUp() {
-	AtmiBrokerInitSingleton::instance();
+	init_ace();
 	// Perform global set up
 	TestFixture::setUp();
 

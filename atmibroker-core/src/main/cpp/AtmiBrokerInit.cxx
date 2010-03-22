@@ -23,6 +23,11 @@
 static bool isLogInitialised = false;
 static log4cxx::LoggerPtr logger;
 
+extern "C"BLACKTIE_CORE_DLL
+void init_ace() {
+	(void) AtmiBrokerInitSingleton::instance();
+}
+
 AtmiBrokerInit::AtmiBrokerInit() {
     if (!isLogInitialised) {
         char* config = ACE_OS::getenv("LOG4CXXCONFIG");

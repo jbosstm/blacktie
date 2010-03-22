@@ -19,7 +19,6 @@
 #include "TestAdvertise.h"
 
 void TestAdvertise::setUp() {
-	AtmiBrokerInitSingleton::instance();
 	userlogc((char*) "TestAdvertise::setUp");
 	BaseAdminTest::setUp();
 }

@@ -23,7 +23,7 @@
 #include "AtmiBrokerPoaFac.h"
 
 void TestOrbAdditions::test_initorb() {
-	AtmiBrokerInitSingleton::instance();
+	init_ace();
 
 	for (int i = 0; i < 10; i++) {
 		CORBA_CONNECTION* serverConnection = (CORBA_CONNECTION *) initOrb((char*) "server");

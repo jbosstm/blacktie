@@ -23,7 +23,7 @@
 #include "AtmiBrokerEnv.h"
 
 void TestStompConnection::setUp() {
-	AtmiBrokerInitSingleton::instance();
+	init_ace();
 	userlogc("TestStompConnection::setUp");
 
 	serverConnection = NULL;
