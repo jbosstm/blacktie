@@ -27,6 +27,14 @@ echo '0
 0
 1' | mvn test
 IF %ERRORLEVEL% NEQ 0 exit -1
+rem RUN THE ADMIN JMX CLIENT
+cd %BLACKTIE_HOME%\examples\admin\jmx
+echo '0
+0
+0
+0
+2' | mvn test
+IF %ERRORLEVEL% NEQ 0 exit -1
 rem PICK UP THE CLOSING SERVER
 @ping 127.0.0.1 -n 3 -w 1000 > nul
 
@@ -45,6 +53,14 @@ echo '0
 0
 0
 1' | client
+rem SHUTDOWN THE SERVER RUNNING THE XATMI ADMIN CLIENT
+cd %BLACKTIE_HOME%\examples\admin\xatmi
+call generate_client -Dclient.includes=client.c
+echo '0
+0
+0
+0
+2' | client
 rem PICK UP THE CLOSING SERVER
 @ping 127.0.0.1 -n 3 -w 1000 > nul
 
