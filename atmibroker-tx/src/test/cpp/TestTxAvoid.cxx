@@ -24,6 +24,22 @@
 #include "TxManager.h"
 #include "userlogc.h"
 
+#include "AtmiBrokerEnv.h"
+
+void initEnv() {	
+#ifdef WIN32
+	::putenv("BLACKTIE_CONFIGURATION=win32");
+#else
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION=linux");
+#endif
+	AtmiBrokerEnv::get_instance();
+}
+
+void destroyEnv(){
+	::putenv((char*) "BLACKTIE_CONFIGURATION=");
+	AtmiBrokerEnv::discard_instance();
+}
+
 void doOne() {
 try {
 		XARecoveryLog log("test_recovery_log");

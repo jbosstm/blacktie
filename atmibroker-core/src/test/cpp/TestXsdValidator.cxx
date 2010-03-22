@@ -16,6 +16,13 @@
  * MA  02110-1301, USA.
  */
 #include "TestAssert.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern BLACKTIE_CORE_DLL void init_ace();
+#ifdef __cplusplus
+}
+#endif
 
 #include "TestXsdValidator.h"
 #include "XsdValidator.h"

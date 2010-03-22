@@ -18,6 +18,9 @@
 #ifndef _TESTTXAVOID_H
 #define _TESTTXAVOID_H
 
+void initEnv();
+void destroyEnv();
+
 void doOne();
 void doTwo();
 void doThree(long timeout);

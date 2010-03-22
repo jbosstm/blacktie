@@ -21,7 +21,13 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include "userlogc.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern BLACKTIE_CORE_DLL void init_ace();
+#ifdef __cplusplus
+}
+#endif
 
 #define	BTDBGPOST	\
 	userlogc_debug("POST ASSERT %s:%d", __FILE__, __LINE__)

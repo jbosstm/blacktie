@@ -15,12 +15,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef WIN32
+
 #include <string>
 #include <sstream>
 
 #include "TestAssert.h"
-#include "AtmiBrokerEnv.h"
 #include "TestTransactions.h"
 #include "txi.h"
 #include "tx.h"
@@ -55,12 +54,7 @@ void TestTransactions::setUp()
 	init_ace();
 
 	txx_stop();
-#ifdef WIN32
-	::putenv("BLACKTIE_CONFIGURATION=win32");
-#else
-	ACE_OS::putenv("BLACKTIE_CONFIGURATION=linux");
-#endif
-	AtmiBrokerEnv::get_instance();
+	initEnv();
 
 	TestFixture::setUp();
 
@@ -73,8 +67,7 @@ void TestTransactions::tearDown()
 	txx_stop();
 	TestFixture::tearDown();
 
-	::putenv((char*) "BLACKTIE_CONFIGURATION=");
-	AtmiBrokerEnv::discard_instance();
+	destroyEnv();
 }
 
 void TestTransactions::test_rclog()
@@ -405,4 +398,3 @@ void TestTransactions::test_tx_set()
 	BT_ASSERT_EQUAL(TX_OK, tx_close());
 	userlogc("TestTransactions::test_tx_set pass");
 }
-#endif

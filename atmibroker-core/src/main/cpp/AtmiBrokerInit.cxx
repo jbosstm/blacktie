@@ -18,14 +18,21 @@
 
 #include "ace/ACE.h"
 #include "AtmiBrokerInit.h"
+
 #include <log4cxx/propertyconfigurator.h>
 
 static bool isLogInitialised = false;
 static log4cxx::LoggerPtr logger;
 
-void init_ace() {
+#ifdef __cplusplus
+extern "C" {
+#endif
+BLACKTIE_CORE_DLL void init_ace() {
 	(void) AtmiBrokerInitSingleton::instance();
 }
+#ifdef __cplusplus
+}
+#endif
 
 AtmiBrokerInit::AtmiBrokerInit() {
     if (!isLogInitialised) {

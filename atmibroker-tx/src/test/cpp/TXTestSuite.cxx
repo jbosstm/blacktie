@@ -20,7 +20,5 @@
 #include "TestOrbAdditions.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestOrbAdditions);
 
-#ifndef WIN32
 #include "TestTransactions.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTransactions);
-#endif
