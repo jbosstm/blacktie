@@ -300,7 +300,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		String operation = st.nextToken();
 		String serverName = st.nextToken();
 		String serviceName = st.nextToken();
-		String version = st.nextToken();
+		
 		byte[] success = new byte[1];
 		String server = null;
 		int k = -1;
@@ -335,6 +335,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 					success[0] = (byte) undeployQueue(serviceName);
 				} else if (operation.equals("tpadvertise")) {
 					log.trace("Advertising: " + serviceName);
+					String version = st.nextToken();
 					success[0] = (byte) deployQueue(serviceName, version);
 				} else if (operation.equals("decrementconsumer")) {
 					log.trace("Decrement consumer: " + serviceName);
