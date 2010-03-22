@@ -41,6 +41,7 @@ AtmiBrokerInit::AtmiBrokerInit() {
 }
 
 AtmiBrokerInit::~AtmiBrokerInit() {
+	// NB cannot log from ACE singleton destructors since the ACE_Object_Manager calls
+	// finalizers after log4cxx has been finalized.
 	ACE::fini();
-	LOG4CXX_DEBUG(logger, (char*) "Destroying");
 }
