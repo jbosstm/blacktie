@@ -17,7 +17,9 @@
  */
 #include "TestAssert.h"
 
+#ifndef WIN32
 #include "ace/OS_NS_unistd.h"
+#endif
 
 #include "ThreadLocalStorage.h"
 #include "BaseServerTest.h"
@@ -27,6 +29,7 @@
 #include "tx.h"
 
 #include "TestTxTPCall.h"
+#include "Sleeper.h"
 
 /* service routines */
 static void tx_fill_buf_rtn(TPSVCINFO *svcinfo) {
@@ -43,7 +46,7 @@ static void tx_fill_buf_rtn(TPSVCINFO *svcinfo) {
 
 void test_tx_tpcall_x_octet_service_tardy(TPSVCINFO *svcinfo) {
 	userlogc((char*) "TxLog: service running: test_tx_tpcall_x_octet_service_tardy");
-	ACE_OS::sleep(6L);
+	::sleeper(6);//ACE_OS::sleep(6L);
 	tx_fill_buf_rtn(svcinfo);
 }
 
