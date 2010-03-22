@@ -40,6 +40,16 @@ echo '0
 if [ "$?" != "0" ]; then
 	exit -1
 fi
+# RUN THE ADMIN JMX CLIENT
+cd $BLACKTIE_HOME/examples/admin/jmx
+echo '0
+0
+0
+0
+2' | mvn test
+if [ "$?" != "0" ]; then
+	exit -1
+fi
 # PICK UP THE CLOSING SERVER
 sleep 3
 
@@ -60,6 +70,14 @@ echo '0
 0
 0
 1' | ./client
+# SHUTDOWN THE SERVER RUNNING THE XATMI ADMIN CLIENT
+cd $BLACKTIE_HOME/examples/admin/xatmi
+generate_client.sh -Dclient.includes=client.c
+echo '0
+0
+0
+0
+2' | ./client
 # PICK UP THE CLOSING SERVER
 sleep 3
 
