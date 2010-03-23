@@ -54,8 +54,7 @@ public class JABClientTestCase extends TestCase {
 	}
 
 	public void test_tpcall_x_octet() throws Exception {
-		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
-				null);
+		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes();
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
 		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet",
@@ -75,8 +74,7 @@ public class JABClientTestCase extends TestCase {
 	}
 
 	public void test_tpcall_x_octet_commit_tx_rollback_only() throws Exception {
-		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
-				null);
+		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes();
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
 		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet",
@@ -105,8 +103,7 @@ public class JABClientTestCase extends TestCase {
 
 	public void test_tpcall_x_octet_rollback_tx_rollback_only()
 			throws Exception {
-		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
-				null);
+		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes();
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
 		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet",
@@ -130,8 +127,7 @@ public class JABClientTestCase extends TestCase {
 	}
 
 	public void test_tpcall_x_octet_no_tx() throws Exception {
-		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
-				null);
+		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes();
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet",
 				aJabSession, "X_OCTET", null);
@@ -147,8 +143,7 @@ public class JABClientTestCase extends TestCase {
 	}
 
 	public void test_tpcall_x_octet_suspend_tx() throws Exception {
-		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
-				null);
+		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes();
 		JABSession aJabSession = new JABSession(aJabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
 		JABRemoteService aJabService = new JABRemoteService("tpcall_x_octet",

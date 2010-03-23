@@ -35,26 +35,10 @@ public class AtmiBrokerServerXML {
 		this.prop = prop;
 	}
 
-	public Properties getProperties() throws Exception {
-		return getProperties(null);
-	}
-
-	public Properties getProperties(String configDir)
-			throws ConfigurationException {
-		String envXML;
-		if (configDir == null) {
-			configDir = System.getenv("BLACKTIE_CONFIGURATION_DIR");
-		}
-
-		if (configDir != null && !configDir.equals("")) {
-			envXML = configDir + "/" + "Environment.xml";
-		} else {
-			envXML = "Environment.xml";
-		}
-
+	public Properties getProperties() throws ConfigurationException {
 		XMLEnvHandler env = new XMLEnvHandler(prop);
 		XMLParser xmlenv = new XMLParser(env, "Environment.xsd");
-		xmlenv.parse(envXML, true);
+		xmlenv.parse("Environment.xml");
 
 		return prop;
 	}

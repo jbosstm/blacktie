@@ -24,23 +24,7 @@ public class ConnectionFactory {
 	 */
 	public static synchronized ConnectionFactory getConnectionFactory()
 			throws ConnectionException {
-		return new ConnectionFactory((String) null);
-	}
-
-	/**
-	 * Get a connection factory using non-default connections.
-	 * 
-	 * @return The connection factory
-	 * @throws ConnectionException
-	 */
-	public static synchronized ConnectionFactory getConnectionFactory(
-			String configurationDirectory) throws ConnectionException {
-		return new ConnectionFactory(configurationDirectory);
-	}
-
-	public static synchronized ConnectionFactory getConnectionFactory(
-			Properties prop) throws ConnectionException {
-		return new ConnectionFactory(prop);
+		return new ConnectionFactory();
 	}
 
 	/**
@@ -49,11 +33,10 @@ public class ConnectionFactory {
 	 * @throws ConnectionException
 	 *             In case the configuration could not be loaded
 	 */
-	private ConnectionFactory(String configurationDirectory)
-			throws ConnectionException {
+	private ConnectionFactory() throws ConnectionException {
 		try {
 			AtmiBrokerClientXML xml = new AtmiBrokerClientXML();
-			properties = xml.getProperties(configurationDirectory);
+			properties = xml.getProperties();
 		} catch (Exception e) {
 			throw new ConnectionException(-1, "Could not load properties", e);
 		}

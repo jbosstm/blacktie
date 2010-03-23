@@ -51,7 +51,7 @@ public class TxBlacktieServiceTestCase extends TestCase {
 	}
 
 	private JABTransaction startTx() throws JABException {
-		JABSessionAttributes attrs = new JABSessionAttributes(null);
+		JABSessionAttributes attrs = new JABSessionAttributes();
 		JABSession session = new JABSession(attrs);
 
 		// for (Map.Entry e : attrs.getProperties().entrySet())

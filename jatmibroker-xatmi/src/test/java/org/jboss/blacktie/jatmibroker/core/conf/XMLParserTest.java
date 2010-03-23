@@ -38,7 +38,7 @@ public class XMLParserTest extends TestCase {
 		XMLEnvHandler handler = new XMLEnvHandler(prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 		try {
-			xmlenv.parse("WrongEnvironment.xml", true);
+			xmlenv.parse("WrongEnvironment.xml");
 			fail("Should have thrown a parser exception or found the file");
 		} catch (ConfigurationException e) {
 			// THIS IS OK
@@ -51,7 +51,7 @@ public class XMLParserTest extends TestCase {
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 
 		try {
-			xmlenv.parse("AdminEnvironment.xml", true);
+			xmlenv.parse("AdminEnvironment.xml");
 			fail("Should have thrown a exception");
 		} catch (ConfigurationException e) {
 			// THIS IS OK
@@ -64,7 +64,7 @@ public class XMLParserTest extends TestCase {
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
 
 		try {
-			xmlenv.parse("SameEnvironment.xml", true);
+			xmlenv.parse("SameEnvironment.xml");
 			fail("Should have thrown a exception");
 		} catch (ConfigurationException e) {
 			// THIS IS OK
@@ -75,7 +75,7 @@ public class XMLParserTest extends TestCase {
 		Properties prop = new Properties();
 		XMLEnvHandler handler = new XMLEnvHandler(prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
-		xmlenv.parse("Environment.xml", true);
+		xmlenv.parse("Environment.xml");
 
 		String domain = "fooapp";
 		String transid = "TransactionManagerService.OTS";

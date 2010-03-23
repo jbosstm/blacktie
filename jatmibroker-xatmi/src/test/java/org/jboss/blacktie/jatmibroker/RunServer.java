@@ -50,7 +50,7 @@ public class RunServer {
 	private AtmiBrokerServer server;
 
 	public void serverinit() throws ConfigurationException, ConnectionException {
-		this.server = new AtmiBrokerServer("standalone-server", null);
+		this.server = new AtmiBrokerServer("standalone-server");
 	}
 
 	public void serverdone() throws ConnectionException {

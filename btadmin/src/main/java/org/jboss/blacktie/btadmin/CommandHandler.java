@@ -51,7 +51,7 @@ public class CommandHandler {
 		XMLEnvHandler handler = new XMLEnvHandler(prop);
 		XMLParser xmlenv;
 		xmlenv = new XMLParser(handler, "Environment.xsd");
-		xmlenv.parse("Environment.xml", true);
+		xmlenv.parse("Environment.xml");
 		url = (String) prop.get("JMXURL");
 		if (url == null) {
 			throw new ConfigurationException(

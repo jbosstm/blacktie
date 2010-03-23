@@ -22,7 +22,7 @@
 		<MACHINE id="secure1" hostname="REPLACE_WITH_HOSTNAME"
 			pathToExecutable="REPLACE_WITH_INSTALL_LOCATION/examples/security/server"
 			workingDirectory="REPLACE_WITH_INSTALL_LOCATION/examples/security"
-			serverId="1" />
+			serverId="1" argLine="secure" />
 	</MACHINES>
 	<SERVERS>
 		<SERVER name="secure">
@@ -43,4 +43,5 @@
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
 	<MQ HOST="localhost" PORT="61613" USER="dynsub" PASSWORD="dynsub"
 		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" />
+	<JMX url="service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector" />
 </ENVIRONMENT>

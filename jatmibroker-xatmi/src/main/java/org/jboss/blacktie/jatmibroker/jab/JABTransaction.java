@@ -88,7 +88,7 @@ public class JABTransaction {
 	}
 
 	public JABTransaction(String controlIOR) throws JABException {
-		JABSessionAttributes sessionAttrs = new JABSessionAttributes(null);
+		JABSessionAttributes sessionAttrs = new JABSessionAttributes();
 		JABTransaction curr = current();
 
 		jabSession = new JABSession(sessionAttrs);

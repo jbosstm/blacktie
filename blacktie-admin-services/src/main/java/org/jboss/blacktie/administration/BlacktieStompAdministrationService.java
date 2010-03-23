@@ -85,7 +85,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 		XMLEnvHandler handler = new XMLEnvHandler(prop);
 		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
-		xmlenv.parse("Environment.xml", true);
+		xmlenv.parse("Environment.xml");
 		JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
 		JMXConnector c = JMXConnectorFactory.connect(u);
 		beanServerConnection = c.getMBeanServerConnection();
@@ -309,7 +309,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			Properties prop = new Properties();
 			XMLEnvHandler handler = new XMLEnvHandler(prop);
 			XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
-			xmlenv.parse("Environment.xml", true);
+			xmlenv.parse("Environment.xml");
 
 			if ((k = serviceName.indexOf("_ADMIN_")) > 0) {
 				server = serviceName.substring(0, k);

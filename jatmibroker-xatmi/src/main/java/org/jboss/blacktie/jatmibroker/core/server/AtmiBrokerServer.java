@@ -45,10 +45,10 @@ public class AtmiBrokerServer {
 	private Properties properties;
 	private static final String DEFAULT_POOL_SIZE = "1";
 
-	public AtmiBrokerServer(String serverName, String configurationDir)
-			throws ConfigurationException, ConnectionException {
+	public AtmiBrokerServer(String serverName) throws ConfigurationException,
+			ConnectionException {
 		AtmiBrokerServerXML server = new AtmiBrokerServerXML();
-		properties = server.getProperties(configurationDir);
+		properties = server.getProperties();
 
 		try {
 			orbManagement = new OrbManagement(properties, true);

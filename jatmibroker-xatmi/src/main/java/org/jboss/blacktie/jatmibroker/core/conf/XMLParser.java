@@ -107,8 +107,14 @@ public class XMLParser {
 	 * @param envXML
 	 *            - File
 	 */
-	public void parse(String env, boolean throwException)
-			throws ConfigurationException {
+	public void parse(String env) throws ConfigurationException {
+		String configDir = System.getenv("BLACKTIE_CONFIGURATION_DIR");
+		if (configDir != null && !configDir.equals("")) {
+			env = configDir + "/" + env;
+		}
+
+		log.debug("read configuration from " + configDir + " directory");
+
 		InputStream resource = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream(env);
 		if (resource != null) {
@@ -120,7 +126,7 @@ public class XMLParser {
 				throw new ConfigurationException("Errors parse : " + env
 						+ " due to: " + t.getMessage(), t);
 			}
-		} else if (throwException) {
+		} else {
 			throw new ConfigurationException(
 					"Could not load the configuration file: " + env
 							+ " from directory: "

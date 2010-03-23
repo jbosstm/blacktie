@@ -48,22 +48,9 @@ public class JABSessionAttributes {
 	 *             In case the configuration file cannot be accessed
 	 */
 	public JABSessionAttributes() throws JABException {
-		this(null);
-	}
-
-	/**
-	 * Create the session attributes using a non-default directory
-	 * 
-	 * @param configurationDirectory
-	 *            The directory to use
-	 * @throws JABException
-	 *             In case the configuration file cannot be accessed
-	 */
-	public JABSessionAttributes(String configurationDirectory)
-			throws JABException {
 		try {
 			AtmiBrokerClientXML client = new AtmiBrokerClientXML();
-			this.properties = client.getProperties(configurationDirectory);
+			this.properties = client.getProperties();
 		} catch (Exception e) {
 			log.error("Could not load the configuration", e);
 			throw new JABException("Could not load the configuration", e);

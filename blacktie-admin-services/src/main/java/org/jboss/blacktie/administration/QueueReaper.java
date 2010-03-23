@@ -92,7 +92,7 @@ public class QueueReaper implements Runnable {
 				Properties prop = new Properties();
 				XMLEnvHandler handler = new XMLEnvHandler(prop);
 				XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
-				xmlenv.parse("Environment.xml", true);
+				xmlenv.parse("Environment.xml");
 
 				Iterator<Destination> it = dests.iterator();
 				while (it.hasNext()) {

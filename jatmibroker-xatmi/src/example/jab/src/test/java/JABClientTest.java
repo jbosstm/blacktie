@@ -37,23 +37,22 @@ public class JABClientTest extends TestCase {
 	private BufferedReader br = new BufferedReader(isr);
 
 	public void test() throws Exception {
-			log.info("JABClient");
-			String message = prompt("Enter a message to send");
-			JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes(
-					null);
-			JABSession aJabSession = new JABSession(aJabSessionAttributes);
-			JABTransaction transaction = new JABTransaction(aJabSession, 5000);
-			JABRemoteService aJabService = new JABRemoteService("BAR",
-					aJabSession, "X_OCTET", null);
-			aJabService.getRequest()
-					.setByteArray("X_OCTET", message.getBytes());
-			log.info("Calling call with input: " + message);
-			aJabService.call(null);
-			log.info("Called call with output: "
-					+ new String(aJabService.getResponse().getByteArray(
-							"X_OCTET")));
-			transaction.commit();
-			aJabSession.closeSession();
+		log.info("JABClient");
+		String message = prompt("Enter a message to send");
+		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes();
+		JABSession aJabSession = new JABSession(aJabSessionAttributes);
+		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
+		JABRemoteService aJabService = new JABRemoteService("BAR", aJabSession,
+				"X_OCTET", null);
+		aJabService.getRequest().setByteArray("X_OCTET", message.getBytes());
+		log.info("Calling call with input: " + message);
+		aJabService.call(null);
+		log
+				.info("Called call with output: "
+						+ new String(aJabService.getResponse().getByteArray(
+								"X_OCTET")));
+		transaction.commit();
+		aJabSession.closeSession();
 	}
 
 	private String prompt(String prompt) throws IOException {
