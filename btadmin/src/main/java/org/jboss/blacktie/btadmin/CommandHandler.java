@@ -64,10 +64,9 @@ public class CommandHandler {
 			IllegalAccessException, ClassNotFoundException,
 			NullPointerException, IOException {
 		int exitStatus = -1;
-		if (args.length < 1) {
+		if (args.length < 1 || args[0] == null || args[0].trim().length() == 0) {
 			log.error("No command was provided");
 		} else {
-
 			Command command = loadCommand(args[0]);
 
 			// Create an new array for the commands arguments
