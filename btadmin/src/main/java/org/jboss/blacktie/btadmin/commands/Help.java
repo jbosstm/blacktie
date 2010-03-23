@@ -72,7 +72,8 @@ public class Help implements Command {
 			}
 			try {
 				Command command = CommandHandler.loadCommand(commands[i]);
-				log.info(commands[i] + " " + command.getExampleUsage());
+				log.info("Example usage: " + commands[i] + " "
+						+ command.getExampleUsage());
 			} catch (Exception e) {
 				log.error("Could not get help for command: " + commands[i], e);
 				throw new CommandFailedException(-1);
