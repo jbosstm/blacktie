@@ -134,7 +134,6 @@
 	<target name="client" depends="init,clean-client">
 		<fail unless="client.includes" />
 		<delete file="log4cxx.properties" />
-		<echo message="hi"/>
 		<unzip src="${env.BLACKTIE_HOME}/codeGeneration/codeGeneration.jar" dest=".">
 			<patternset>
 				<include name="log4cxx.properties" />
