@@ -21,8 +21,6 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestAtmiBrokerXml );
 CPPUNIT_TEST_SUITE_REGISTRATION( TestXsdValidator );
 #include "TestSymbolLoader.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestSymbolLoader);
-#include "SimpleOrbTest.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( SimpleOrbTest);
 #include "ExceptionCase.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( ExceptionCase);
 #include "ODBCTest.h"
