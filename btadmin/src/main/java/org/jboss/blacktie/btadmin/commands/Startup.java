@@ -95,7 +95,10 @@ public class Startup implements Command {
 						Machine localMachine = localMachines.next();
 						String pathToExecutable = localMachine
 								.getPathToExecutable();
-						String argLine = localMachine.getArgLine();
+						String argLine = "-i " + localMachine.getServerId();
+						if (localMachine.getArgLine() != null) {
+							argLine = argLine + " " + localMachine.getArgLine();
+						}
 						String[] split = argLine.split(" ");
 						String[] cmdarray = new String[split.length + 1 + 0];
 						cmdarray[0] = pathToExecutable;

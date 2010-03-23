@@ -115,12 +115,14 @@ fi
 unset BLACKTIE_CONFIGURATION_DIR
 
 # SHUTDOWN THE SERVER RUNNING THE btadmin TOOL
+export BLACKTIE_CONFIGURATION_DIR=serv
 export BLACKTIE_CONFIGURATION=linux
 btadmin shutdown secure
 if [ "$?" != "0" ]; then
 	exit -1
 fi
 unset BLACKTIE_CONFIGURATION
+unset BLACKTIE_CONFIGURATION_DIR
 
 # RUN THE MDB EXAMPLE
 cd $BLACKTIE_HOME/examples/mdb

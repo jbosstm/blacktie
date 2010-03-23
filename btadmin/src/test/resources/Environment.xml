@@ -22,35 +22,35 @@
 		<MACHINE id="secure1" hostname="albany"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			argLine="-i 1" />
+			serverId="1" />
 		<MACHINE id="secure2" hostname="albany"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			argLine="-i 2" />
+			serverId="2" />
 		<MACHINE id="secure3" hostname="localhost.localdomain"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			argLine="-i 3" />
+			serverId="3" />
 		<MACHINE id="secure4" hostname="localhost.localdomain"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			argLine="-i 4" />
+			serverId="4" />
 		<MACHINE id="secure5" hostname="beacon"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			argLine="-i 5" />
+			serverId="5" />
 		<MACHINE id="secure6" hostname="beacon"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			argLine="-i 6" />
+			serverId="6" />
 		<MACHINE id="secure7" hostname="catskill"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			argLine="-i 7" />
+			serverId="7" />
 		<MACHINE id="secure8" hostname="catskill"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			argLine="-i 8" />
+			serverId="8" />
 	</MACHINES>
 	<SERVERS>
 		<SERVER name="default">

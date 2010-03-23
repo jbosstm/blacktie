@@ -343,6 +343,9 @@ public class XMLEnvHandler extends DefaultHandler {
 				} else if (atts.getLocalName(i).equals("workingDirectory")) {
 					String value = atts.getValue(i);
 					machine.setWorkingDirectory(value);
+				} else if (atts.getLocalName(i).equals("serverId")) {
+					String value = atts.getValue(i);
+					machine.setServerId(Integer.parseInt(value));
 				} else if (atts.getLocalName(i).equals("argLine")) {
 					String value = atts.getValue(i);
 					machine.setArgLine(value);

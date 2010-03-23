@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.btadmin.Command;
 import org.jboss.blacktie.btadmin.CommandFailedException;
 import org.jboss.blacktie.btadmin.IncompatibleArgsException;
+import org.jboss.blacktie.jatmibroker.core.conf.Machine;
 import org.jboss.blacktie.jatmibroker.core.conf.Server;
 
 /**
@@ -88,33 +89,71 @@ public class Shutdown implements Command {
 			ObjectName blacktieAdmin, Properties configuration)
 			throws InstanceNotFoundException, MBeanException,
 			ReflectionException, IOException, CommandFailedException {
-		List<String> serversToStop = new ArrayList<String>();
+		List<ServerToStop> serversToStop = new ArrayList<ServerToStop>();
+
+		List<Server> serverLaunchers = (List<Server>) configuration
+				.get("blacktie.domain.serverLaunchers");
 		if (serverName == null) {
-			List<Server> serverLaunchers = (List<Server>) configuration
-					.get("blacktie.domain.serverLaunchers");
-			Iterator<Server> iterator = serverLaunchers.iterator();
-			while (iterator.hasNext()) {
-				Server next = iterator.next();
-				if (next.getLocalMachine().size() > 0) {
-					serversToStop.add(next.getName());
+			Iterator<Server> launchers = serverLaunchers.iterator();
+			while (launchers.hasNext()) {
+				Server server = launchers.next();
+				Iterator<Machine> iterator2 = server.getLocalMachine()
+						.iterator();
+				while (iterator2.hasNext()) {
+					Machine machine = iterator2.next();
+					ServerToStop serverToStop = new ServerToStop();
+					serverToStop.setName(server.getName());
+					serverToStop.setId(machine.getServerId());
+					serversToStop.add(serverToStop);
 				}
 			}
 		} else {
-			serversToStop.add(serverName);
+			ServerToStop serverToStop = new ServerToStop();
+			serverToStop.setName(serverName);
+			serverToStop.setId(id);
+			serversToStop.add(serverToStop);
 		}
-		Iterator<String> iterator = serversToStop.iterator();
-		while (iterator.hasNext()) {
-			String next = iterator.next();
-			Boolean result = (Boolean) beanServerConnection.invoke(
-					blacktieAdmin, "shutdown", new Object[] { next, id },
-					new String[] { "java.lang.String", "int" });
-			if (result) {
-				log.info("Server shutdown successfully: " + next);
-			} else {
-				log
-						.error("Server could not be shutdown (may already be stopped)");
-				throw new CommandFailedException(-1);
+		if (serversToStop.size() != 0) {
+			Iterator<ServerToStop> iterator = serversToStop.iterator();
+			while (iterator.hasNext()) {
+				ServerToStop next = iterator.next();
+				Boolean result = (Boolean) beanServerConnection.invoke(
+						blacktieAdmin, "shutdown", new Object[] {
+								next.getName(), next.getId() }, new String[] {
+								"java.lang.String", "int" });
+				if (result) {
+					log.info("Server shutdown successfully: " + next);
+				} else {
+					log
+							.error("Server could not be shutdown (may already be stopped)");
+					throw new CommandFailedException(-1);
+				}
 			}
+		} else {
+			log.error("No servers were configured for shutdown");
+			throw new CommandFailedException(-1);
+
+		}
+	}
+
+	private class ServerToStop {
+		private String name;
+		private int id;
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public void setId(int id) {
+			this.id = id;
 		}
 	}
 }

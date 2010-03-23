@@ -22,7 +22,7 @@
 		<MACHINE id="secure1" hostname="REPLACE_WITH_HOSTNAME"
 			pathToExecutable="REPLACE_WITH_INSTALL_LOCATION/examples/security/server"
 			workingDirectory="REPLACE_WITH_INSTALL_LOCATION/examples/security"
-			argLine="-i 1" />
+			serverId="1" />
 	</MACHINES>
 	<SERVERS>
 		<SERVER name="secure">
