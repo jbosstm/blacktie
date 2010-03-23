@@ -71,8 +71,8 @@ public class AdministrationProxy {
 			ConnectionException {
 		log.debug("Administration Proxy");
 		XMLEnvHandler handler = new XMLEnvHandler(prop);
-		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
-		xmlenv.parse("Environment.xml");
+		XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
+		xmlenv.parse("btconfig.xml");
 		servers = (List<String>) prop.get("blacktie.domain.servers");
 		ConnectionFactory cf = ConnectionFactory.getConnectionFactory();
 		connection = cf.getConnection();

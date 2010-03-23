@@ -36,9 +36,9 @@ public class XMLParserTest extends TestCase {
 	public void testWrongEnvironmentXML() throws ConfigurationException {
 		Properties prop = new Properties();
 		XMLEnvHandler handler = new XMLEnvHandler(prop);
-		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
+		XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
 		try {
-			xmlenv.parse("WrongEnvironment.xml");
+			xmlenv.parse("Wrongbtconfig.xml");
 			fail("Should have thrown a parser exception or found the file");
 		} catch (ConfigurationException e) {
 			// THIS IS OK
@@ -48,10 +48,10 @@ public class XMLParserTest extends TestCase {
 	public void testAdminEnvironmentXML() throws Exception {
 		Properties prop = new Properties();
 		XMLEnvHandler handler = new XMLEnvHandler(prop);
-		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
+		XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
 
 		try {
-			xmlenv.parse("AdminEnvironment.xml");
+			xmlenv.parse("Adminbtconfig.xml");
 			fail("Should have thrown a exception");
 		} catch (ConfigurationException e) {
 			// THIS IS OK
@@ -61,10 +61,10 @@ public class XMLParserTest extends TestCase {
 	public void testSameService() throws Exception {
 		Properties prop = new Properties();
 		XMLEnvHandler handler = new XMLEnvHandler(prop);
-		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
+		XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
 
 		try {
-			xmlenv.parse("SameEnvironment.xml");
+			xmlenv.parse("Samebtconfig.xml");
 			fail("Should have thrown a exception");
 		} catch (ConfigurationException e) {
 			// THIS IS OK
@@ -74,8 +74,8 @@ public class XMLParserTest extends TestCase {
 	public void testEnvironmentXML() throws Exception {
 		Properties prop = new Properties();
 		XMLEnvHandler handler = new XMLEnvHandler(prop);
-		XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
-		xmlenv.parse("Environment.xml");
+		XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
+		xmlenv.parse("btconfig.xml");
 
 		String domain = "fooapp";
 		String transid = "TransactionManagerService.OTS";

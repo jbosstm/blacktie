@@ -260,7 +260,7 @@
 			</directory>
 			<outputDirectory>blacktie-admin-services</outputDirectory>
 			<includes>
-				<include>Environment.xml</include>
+				<include>btconfig.xml</include>
 			</includes>
 		</fileSet>
 	</fileSets>

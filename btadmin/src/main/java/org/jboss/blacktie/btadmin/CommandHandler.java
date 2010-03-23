@@ -47,15 +47,15 @@ public class CommandHandler {
 
 	public CommandHandler() throws ConfigurationException,
 			MalformedObjectNameException, NullPointerException {
-		// Obtain the JMXURL from the Environment.xml
+		// Obtain the JMXURL from the btconfig.xml
 		XMLEnvHandler handler = new XMLEnvHandler(prop);
 		XMLParser xmlenv;
-		xmlenv = new XMLParser(handler, "Environment.xsd");
-		xmlenv.parse("Environment.xml");
+		xmlenv = new XMLParser(handler, "btconfig.xsd");
+		xmlenv.parse("btconfig.xml");
 		url = (String) prop.get("JMXURL");
 		if (url == null) {
 			throw new ConfigurationException(
-					"No JMX url configuration in Environment.xml");
+					"No JMX url configuration in btconfig.xml");
 		}
 		this.blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
 	}

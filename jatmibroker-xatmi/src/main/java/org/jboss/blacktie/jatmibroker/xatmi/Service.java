@@ -53,7 +53,7 @@ public abstract class Service implements BlacktieService {
 
 	/**
 	 * The service needs the name of the service so that it can be resolved in
-	 * the Environment.xml file
+	 * the btconfig.xml file
 	 * 
 	 * @param name
 	 *            The name of the service

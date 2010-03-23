@@ -90,8 +90,8 @@ public class BlacktiePluginDiscoveryComponent implements
 		try {
 			Properties prop = new Properties();
 			XMLEnvHandler handler = new XMLEnvHandler(prop);
-			XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
-			xmlenv.parse("Environment.xml");
+			XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
+			xmlenv.parse("btconfig.xml");
 
 			String domainName = prop.getProperty("blacktie.domain.name");
 			String key = domainName + " key";

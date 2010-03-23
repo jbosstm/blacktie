@@ -332,10 +332,10 @@ int AtmiBrokerEnv::readenv() {
 		} else {
 			if (ENVIRONMENT_DIR != NULL) {
 				LOG4CXX_ERROR(loggerAtmiBrokerEnv, (char*) "can not parse "
-						<< ENVIRONMENT_DIR << "/Environment.xml");
+						<< ENVIRONMENT_DIR << "/btconfig.xml");
 			} else {
 				LOG4CXX_ERROR(loggerAtmiBrokerEnv,
-						(char*) "can not parse Environment.xml");
+						(char*) "can not parse btconfig.xml");
 			}
 			throw std::exception();
 		}

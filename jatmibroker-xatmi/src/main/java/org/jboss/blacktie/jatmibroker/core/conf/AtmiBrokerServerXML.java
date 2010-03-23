@@ -37,8 +37,8 @@ public class AtmiBrokerServerXML {
 
 	public Properties getProperties() throws ConfigurationException {
 		XMLEnvHandler env = new XMLEnvHandler(prop);
-		XMLParser xmlenv = new XMLParser(env, "Environment.xsd");
-		xmlenv.parse("Environment.xml");
+		XMLParser xmlenv = new XMLParser(env, "btconfig.xsd");
+		xmlenv.parse("btconfig.xml");
 
 		return prop;
 	}

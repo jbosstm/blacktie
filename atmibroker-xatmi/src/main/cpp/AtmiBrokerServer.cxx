@@ -614,7 +614,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname) {
 	}
 	LOG4CXX_WARN(
 			loggerAtmiBrokerServer,
-			(char*) "Could not advertise service, was not registered in Environment.xml: "
+			(char*) "Could not advertise service, was not registered in btconfig.xml: "
 					<< svcname);
 	return false;
 }
@@ -645,7 +645,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 	if (!found) {
 		LOG4CXX_WARN(
 				loggerAtmiBrokerServer,
-				(char*) "Could not advertise service, was not registered for server in Environment.xml: "
+				(char*) "Could not advertise service, was not registered for server in btconfig.xml: "
 						<< svcname);
 		setSpecific(TPE_KEY, TSS_TPELIMIT);
 		free(serviceName);

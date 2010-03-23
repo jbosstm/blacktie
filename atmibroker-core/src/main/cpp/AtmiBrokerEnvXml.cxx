@@ -613,14 +613,14 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(
 	if (configurationDir != NULL) {
 		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "read env from dir: "
 				<< configurationDir);
-		ACE_OS::snprintf(aDescriptorFileName, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"Environment.xml",
+		ACE_OS::snprintf(aDescriptorFileName, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"btconfig.xml",
 				configurationDir);
 		LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml,
 				(char*) "in parseXmlDescriptor() " << aDescriptorFileName);
 	} else {
 		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml,
 				(char*) "read env from default file");
-		ACE_OS::strcpy(aDescriptorFileName, "Environment.xml");
+		ACE_OS::strcpy(aDescriptorFileName, "btconfig.xml");
 	}
 	configuration = conf;
 
@@ -632,7 +632,7 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(
 
 	schemaDir = ACE_OS::getenv("BLACKTIE_SCHEMA_DIR");
 	if (schemaDir) {
-		ACE_OS::snprintf(schemaPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"Environment.xsd", schemaDir);
+		ACE_OS::snprintf(schemaPath, 256, "%s"ACE_DIRECTORY_SEPARATOR_STR_A"btconfig.xsd", schemaDir);
 	} else {
 		LOG4CXX_ERROR(loggerAtmiBrokerEnvXml,
 				(char*) "BLACKTIE_SCHEMA_DIR is not set, cannot validate configuration");
@@ -645,7 +645,7 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(
 	XsdValidator validator;
 	if (validator.validate(schemaPath, aDescriptorFileName) == false) {
 		LOG4CXX_ERROR(loggerAtmiBrokerEnvXml,
-				(char*) "Environment.xml did not validate against Environment.xsd");
+				(char*) "btconfig.xml did not validate against btconfig.xsd");
 		return false;
 	}
 	struct stat s; /* file stats */

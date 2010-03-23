@@ -16,7 +16,7 @@ MA  02110-1301, USA.
 
 NOTE: You may like to create a backup of this folder before starting!
 
-NOTE: If you are using IPv6 you will need to change any references to localhost in the Environment.xml files to be localhost4 or 127.0.0.1
+NOTE: If you are using IPv6 you will need to change any references to localhost in the btconfig.xml files to be localhost4 or 127.0.0.1
 
 1. SET ENVIRONMENT VARIABLES
 In order to run the example you need to make sure that you have set the environment
@@ -74,7 +74,7 @@ On Windows:
 4. DEPLOY THE BLACKTIE ADMIN SERVICE
 Undeploy any older versions of the blacktie admin service
 Copy the file $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all/deploy
-Copy the file $BLACKTIE_HOME/blacktie-admin-services/Environment.xml into $JBOSS_HOME/server/all/conf
+Copy the file $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml into $JBOSS_HOME/server/all/conf
 
 
 5. RUN THE APPLICATION SERVER
@@ -84,8 +84,8 @@ Make sure that the naming, messaging and transaction services are running, by ru
 
 6 RUN THE APPLICATIONS
 6.1 RUN THE SERVER
-Edit the Environment.xml to set REPLACE_WITH_INSTALL_LOCATION as appropriate
-Edit the Environment.xml to set REPLACE_WITH_HOSTNAME as appropriate
+Edit the btconfig.xml to set REPLACE_WITH_INSTALL_LOCATION as appropriate
+Edit the btconfig.xml to set REPLACE_WITH_HOSTNAME as appropriate
 btadmin startup
 NOTE: If you get the following error you have not started the JBoss server:
 2009-06-23 08:51:51,270 [0x7f627be63750] ERROR AtmiBrokerServer          - serverinit - Unexpected CORBA exception: TRANSIENT

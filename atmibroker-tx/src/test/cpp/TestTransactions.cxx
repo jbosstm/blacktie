@@ -361,7 +361,7 @@ void TestTransactions::test_RM_recovery_scan()
  * This test attempts to simulate what XAResourceManager does.
  * The real test for interacting with resource managers happens as a side effect
  * of begining and completing a transactions provided some Resouce Managers
- * have been configured in Environment.xml
+ * have been configured in btconfig.xml
  */
 void TestTransactions::test_register_resource()
 {

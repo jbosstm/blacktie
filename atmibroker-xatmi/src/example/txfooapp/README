@@ -17,7 +17,7 @@
 
 NOTE: You may like to create a backup of this folder before starting!
 
-NOTE: If you are using IPv6 you will need to change any references to localhost in the Environment.xml files to be localhost4 or 127.0.0.1
+NOTE: If you are using IPv6 you will need to change any references to localhost in the btconfig.xml files to be localhost4 or 127.0.0.1
 
 1. INTRODUCTION
 ===============
@@ -33,10 +33,10 @@ that generates executables (as explained below).
 The preprocessor symbol is purely for the examples use, BlackTie does not require this symbol in its
 internal libraries.
 
-To include a particular database during runtime you will need to update the BlackTie Environment.xml file
+To include a particular database during runtime you will need to update the BlackTie btconfig.xml file
 with information specific to the required database. The example xml files (in the linux and win32 directories)
 includes notes and examples on how to configure ORACLE and DB2 support. The instance names of databases
-refered to in Environment.xml (specified in the open string) must match the names in the products
+refered to in btconfig.xml (specified in the open string) must match the names in the products
 array in the source file request.c.
 
 ORACLE ONLY
@@ -67,7 +67,7 @@ then use
 (if your application needs to use different server environments then you should run seperate blacktie servers for
 each target DB2 server environment.
 The example references two databases using alias names of BTDB1 and BTDB2 (if you are using different database aliases
-then remember to change them in Environment.xml and reqest.c). Also note that aliases are case sensitive (in fact
+then remember to change them in btconfig.xml and reqest.c). Also note that aliases are case sensitive (in fact
 DB2 converts them to upper case) and 8 characters or less.
 
 For example, to create the DB2 databases using the DB2 command line tools:
@@ -190,7 +190,7 @@ C:\blacktie\dist\blacktie-1.0-MR6-SNAPSHOT\bin\generate-executables.xml:144: Cou
 ======================
 Undeploy any older versions of the blacktie admin service
 Copy the file $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all/deploy
-Copy the file $BLACKTIE_HOME/blacktie-admin-services/Environment.xml into $JBOSS_HOME/server/all/conf
+Copy the file $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml into $JBOSS_HOME/server/all/conf
 Start the JBoss server (<JBOSS_HOME>/bin/run.sh|bat -c all)
 
 Make sure all required libraries are on the library path:
@@ -219,8 +219,8 @@ As above with:
 3.1 START THE SERVER
 ====================
 NOTE: You must NOT have ORACLE_SID set as we are using two resource managers in this example
-Edit the Environment.xml to set REPLACE_WITH_INSTALL_LOCATION as appropriate
-Edit the Environment.xml to set REPLACE_WITH_HOSTNAME as appropriate
+Edit the btconfig.xml to set REPLACE_WITH_INSTALL_LOCATION as appropriate
+Edit the btconfig.xml to set REPLACE_WITH_HOSTNAME as appropriate
 export BLACKTIE_CONFIGURATION=<win32|linux>
 export BLACKTIE_CONFIGURATION_DIR=serv
 btadmin startup
@@ -297,7 +297,7 @@ and another message that indicates successful recovery of the pending transactio
 Required Configuration Changes:
 -------------------------------
 
-The XA resource that generates the segmentation fault needs to be included in Environment.xml as follows:
+The XA resource that generates the segmentation fault needs to be included in btconfig.xml as follows:
             <XA_RESOURCE configuration="linux">
                 <XA_RESOURCE_MGR_ID>202</XA_RESOURCE_MGR_ID>
                 <XA_RESOURCE_NAME>DummyDb</XA_RESOURCE_NAME>
@@ -311,7 +311,7 @@ Make sure that the XA_RESOURCE_MGR_ID lies between the two ORACLE Resource Manag
 ORACLE instance with the lower id will commit but the one with the higher id will not have committed.
 
 Similarly, if you need to test against DB2 then set the XA_RESOURCE_MGR_ID appropriately. For example, the default
-XA_RESOURCE_MGR_ID for testing against DB2 are 302 and 304 (see Environment.xml) then use the value 303.
+XA_RESOURCE_MGR_ID for testing against DB2 are 302 and 304 (see btconfig.xml) then use the value 303.
 
 The example needs to be compiled with the preprocessor definition TX_RC_RMID set to the correct XA_RESOURCE_MGR_ID
 (the default is 202).

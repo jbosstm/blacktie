@@ -116,8 +116,8 @@ CreateChildResourceFacet {
 		try {
 			Properties prop = new Properties();
 			XMLEnvHandler handler = new XMLEnvHandler(prop);
-			XMLParser xmlenv = new XMLParser(handler, "Environment.xsd");
-			xmlenv.parse("Environment.xml");
+			XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
+			xmlenv.parse("btconfig.xml");
 			JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
 			JMXConnector c = JMXConnectorFactory.connect(u);
 			beanServerConnection = c.getMBeanServerConnection();
