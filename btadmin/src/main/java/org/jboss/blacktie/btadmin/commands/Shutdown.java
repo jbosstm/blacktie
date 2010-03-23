@@ -122,7 +122,7 @@ public class Shutdown implements Command {
 								next.getName(), next.getId() }, new String[] {
 								"java.lang.String", "int" });
 				if (result) {
-					log.info("Server shutdown successfully: " + next);
+					log.info("Server shutdown successfully: " + next.getName() + " with id: " + next.getId());
 				} else {
 					log
 							.error("Server could not be shutdown (may already be stopped)");
