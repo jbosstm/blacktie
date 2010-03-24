@@ -33,12 +33,8 @@ int interationCount = 100;
 
 #include "ace/OS_NS_unistd.h"
 
-
-
-
 #include "xatmi.h"
 #include "userlogc.h"
-
 
 extern void test_tpcall_TPETIME_service(TPSVCINFO *svcinfo);
 extern void test_tpcall_TPEOTYPE_service(TPSVCINFO *svcinfo);
@@ -49,7 +45,6 @@ extern void test_no_tpreturn_service(TPSVCINFO *svcinfo);
 
 extern void test_tx_tpcall_x_octet_service_without_tx(TPSVCINFO *svcinfo);
 extern void test_tx_tpcall_x_octet_service_with_tx(TPSVCINFO *svcinfo);
-
 
 extern "C" void BAR(TPSVCINFO * svcinfo) {
 	int sendlen = 14;
@@ -240,14 +235,13 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 	strcpy(expectedResult, "conversate");
 	userlogc((char*) "testTPConversation_service expected: %s", expectedResult);
 
+	/*	int errorMessageLen = 10 + 1 + svcinfo->len + 1;
+	 userlogc((char*) "testTPConversation_service errorMessageLen: %d", errorMessageLen);
 
-/*	int errorMessageLen = 10 + 1 + svcinfo->len + 1;
-	userlogc((char*) "testTPConversation_service errorMessageLen: %d", errorMessageLen);
-	
-	char* errorMessage = (char*) malloc(errorMessageLen);
-	sprintf(errorMessage, "%s/%s", expectedResult, svcinfo->data);
-	userlogc((char*) "testTPConversation_service errorMessage will be: %s", errorMessage);
-*/
+	 char* errorMessage = (char*) malloc(errorMessageLen);
+	 sprintf(errorMessage, "%s/%s", expectedResult, svcinfo->data);
+	 userlogc((char*) "testTPConversation_service errorMessage will be: %s", errorMessage);
+	 */
 	if (strncmp(expectedResult, svcinfo->data, 10) != 0) {
 		userlogc((char*) "Fail");
 		if (svcinfo->data != NULL) {
@@ -270,16 +264,16 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 				if (result == -1 && revent == TPEV_SENDONLY) {
 					char* expectedResult = (char*) malloc(svcinfo->len);
 					sprintf(expectedResult, "yo%d", i);
-//					char* errorMessage = (char*) malloc(svcinfo->len * 2 + 1);
-//					sprintf(errorMessage, "%s/%s", expectedResult, rcvbuf);
+					//					char* errorMessage = (char*) malloc(svcinfo->len * 2 + 1);
+					//					sprintf(errorMessage, "%s/%s", expectedResult, rcvbuf);
 					if (strcmp(expectedResult, rcvbuf) != 0) {
 						free(expectedResult);
-//						free(errorMessage);
+						//						free(errorMessage);
 						fail = true;
 						break;
 					}
 					free(expectedResult);
-//					free(errorMessage);
+					//					free(errorMessage);
 				} else {
 					fail = true;
 					break;
@@ -301,7 +295,7 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 
 	::tpfree(rcvbuf);
 	free(expectedResult);
-//	free(errorMessage);
+	//	free(errorMessage);
 }
 
 void testTPConversation_short_service(TPSVCINFO *svcinfo) {
@@ -371,9 +365,24 @@ void testtpreturn_service_tpurcode(TPSVCINFO *svcinfo) {
 		tpreturn(TPSUCCESS, 77, toReturn, len, 0);
 	}
 }
+
 void testtpsend_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "testtpsend_service");
 }
+
+void testtpsend_tpsendonly_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "testtpsend_tpsendonly_service");
+
+	long event = 0;
+	int result = ::tpsend(svcinfo->cd, svcinfo->data, svcinfo->len, TPRECVONLY,
+			&event);
+
+	long revent = 0;
+	long rcvlen;
+	char* rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
+	result = ::tprecv(svcinfo->cd, &rcvbuf, &rcvlen, 0, &revent);
+}
+
 void testtpservice_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "testtpservice_service");
 }
@@ -527,6 +536,11 @@ extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPReturn2(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPReturn",
 			testtpreturn_service_tpurcode);
+}
+
+extern "C"
+JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPSendTPSendOnly(JNIEnv *, jobject) {
+	tpadvertise((char*) "TestTPSend", testtpsend_tpsendonly_service);
 }
 
 extern "C"

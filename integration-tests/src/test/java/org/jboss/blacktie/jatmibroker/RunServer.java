@@ -199,4 +199,10 @@ public class RunServer {
 	public native void tpadvertiseTestRollbackOnlyNoTpreturnService();
 
 	public native void tpadvertiseTTL();
+
+	public native void tpadvertiseTestTPSendTPSendOnly();
+
+	public String getServiceNameTestTPSendTPSendOnly() {
+		return "TestTPSend";
+	}
 }
