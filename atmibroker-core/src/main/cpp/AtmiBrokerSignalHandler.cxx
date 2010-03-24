@@ -185,8 +185,11 @@ int AtmiBrokerSignalHandler::block_sigs(sigset_t* mask, sigset_t* pending, bool 
 
 	LOG4CXX_DEBUG(logger_, (char*) "blocksigs=" << block << " informational=" << informational << " rval=" << sigcnt);
 	if (!informational) {
+#ifndef WIN32
+		// TODO figure out how to handle signals on windows
     	if (ACE_OS::pthread_sigmask((block ? SIG_BLOCK : SIG_UNBLOCK), mask, NULL) != 0)
 			err = -1;
+#endif
 	}
 
 	return (err != 0 ? err : sigcnt);
