@@ -47,6 +47,7 @@ public:
 	Session* createSession(int id, const char* temporaryQueueName);
 	Session* getSession(int id);
 	void closeSession(int id);
+	void disconnectSession(int id);
 
 	static stomp_connection* connect(apr_pool_t* pool, int timeout);
 	static void disconnect(stomp_connection* connection, apr_pool_t* pool);

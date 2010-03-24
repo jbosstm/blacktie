@@ -59,7 +59,7 @@ void TestServerinit::test_config_env() {
 	BT_ASSERT(result != -1);
 	BT_ASSERT(tperrno == 0);
 
-	clientdone();
+	clientdone(0);
 
 	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=nosuch_conf");
 	result = serverinit(argc, argv);

@@ -218,3 +218,28 @@ void HybridConnectionImpl::closeSession(int id) {
 		sessionMap[id] = NULL;
 	}
 }
+
+void HybridConnectionImpl::disconnectSession(int id) {
+	LOG4CXX_DEBUG(logger, (char*) "disconnectSession " << id);
+
+	if (id < 0) {
+		std::map<int, HybridSessionImpl*>::iterator i;
+
+		for (i = sessionMap.begin(); i != sessionMap.end(); ++i) {
+			Session* session = (*i).second;
+			// need to check for NULL because closeSession sets sessionMap[id] to NULL
+			if (session != NULL) {  // need to check because closeSession sessionMap[id] = NULL
+				LOG4CXX_DEBUG(logger, (char*) "disconnecting session " << session->getId());
+				session->disconnect();
+			}
+		}
+	} else if (sessionMap[id]) {
+		Session* session = sessionMap[id];
+		if (session != NULL) {
+			LOG4CXX_DEBUG(logger, (char*) "disconnecting session " << session->getId());
+			session->disconnect();
+		}
+	} else {
+		LOG4CXX_DEBUG(logger, (char*) "disconnectSession - no such session");
+	}
+}

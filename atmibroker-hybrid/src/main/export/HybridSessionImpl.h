@@ -44,6 +44,7 @@ public:
 	MESSAGE receive(long time);
 
 	bool send(MESSAGE message);
+	void disconnect();
 
 	int getId();
 private:

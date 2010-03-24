@@ -34,7 +34,7 @@ void TestClientInit::test_clientinit() {
 	BT_ASSERT(valToTest != -1);
 	BT_ASSERT(tperrno == 0);
 
-	valToTest = ::clientdone();
+	valToTest = ::clientdone(0);
 	BT_ASSERT(valToTest != -1);
 	BT_ASSERT(tperrno == 0);
 }
@@ -47,7 +47,7 @@ void TestClientInit::test_config_env() {
 	BT_ASSERT(valToTest != -1);
 	BT_ASSERT(tperrno == 0);
 
-	valToTest = ::clientdone();
+	valToTest = ::clientdone(0);
 	BT_ASSERT(valToTest != -1);
 	BT_ASSERT(tperrno == 0);
 

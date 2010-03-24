@@ -46,11 +46,11 @@ bool clientInitialized = false;
 SynchronizableObject client_lock;
 
 int client_sigint_handler_callback(int sig_type) {
-	LOG4CXX_WARN(
+	LOG4CXX_INFO(
 			loggerAtmiBrokerClient,
 			(char*) "SIGINT Detected: Shutting down client this may take several minutes");
-	clientdone();
-	LOG4CXX_WARN(loggerAtmiBrokerClient, (char*) "Shutdown complete");
+	clientdone(sig_type);
+	LOG4CXX_INFO(loggerAtmiBrokerClient, (char*) "Shutdown complete");
 	return -1;
 }
 
@@ -98,18 +98,26 @@ int clientinit() {
 	return toReturn;
 }
 
-int clientdone() {
+int clientdone(int reason = 0) {
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientdone called");
 
 	client_lock.lock();
 	if (ptrAtmiBrokerClient) {
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient,
+		if (reason == 0) {
+			LOG4CXX_DEBUG(loggerAtmiBrokerClient,
 				(char*) "clientdone deleting Corba Client");
-		delete ptrAtmiBrokerClient;
-		ptrAtmiBrokerClient = NULL;
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient,
+			delete ptrAtmiBrokerClient;
+			ptrAtmiBrokerClient = NULL;
+			LOG4CXX_DEBUG(loggerAtmiBrokerClient,
 				(char*) "clientdone deleted Corba Client");
+		} else {
+			// cannot use closeSession since it deletes the underlying queue - instead
+			// we need to interrupt any threads waiting on the underlying queues:
+			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientdone interrupting connections");
+			ptrAtmiBrokerClient->disconnectSessions();
+			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientdone connections interrupted");
+		}
 	}
 	client_lock.unlock();
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientdone returning 0");
@@ -192,5 +200,13 @@ void AtmiBrokerClient::closeSession(int id) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "close session: " << id);
 	if (currentConnection != NULL) {
 		currentConnection->closeSession(id);
+	}
+}
+
+void AtmiBrokerClient::disconnectSessions() {
+	if (currentConnection != NULL) {
+		currentConnection->disconnectSession(-1);
+	} else {
+		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "AtmiBrokerClient no connections to disconnect");
 	}
 }

@@ -32,6 +32,7 @@ public:
 
 	virtual MESSAGE receive(long time) = 0;
 	virtual bool send(MESSAGE message) = 0;
+	virtual void disconnect() = 0;
 
 	virtual int getId() = 0;
 

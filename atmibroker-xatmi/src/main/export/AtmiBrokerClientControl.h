@@ -26,7 +26,7 @@
 extern "C" {
 #endif
 extern BLACKTIE_XATMI_DLL int clientinit();
-extern BLACKTIE_XATMI_DLL int clientdone();
+extern BLACKTIE_XATMI_DLL int clientdone(int sig);
 #ifdef __cplusplus
 }
 #endif

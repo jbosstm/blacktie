@@ -35,7 +35,7 @@ void BaseTest::setUp() {
 
 void BaseTest::tearDown() {
 	// Perform clean up
-	::clientdone();
+	::clientdone(0);
 	BT_ASSERT(tperrno == 0);
 	// previous tests may have left a txn on the thread
 	destroySpecific(TSS_KEY);

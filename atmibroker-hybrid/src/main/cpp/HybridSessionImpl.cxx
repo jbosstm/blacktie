@@ -289,6 +289,10 @@ bool HybridSessionImpl::send(MESSAGE message) {
 	return toReturn;
 }
 
+void HybridSessionImpl::disconnect() {
+	temporaryQueue->disconnect();
+}
+
 const char* HybridSessionImpl::getReplyTo() {
 	return replyTo;
 }
