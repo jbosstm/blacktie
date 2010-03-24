@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="oci.lib ACEd.lib TAO_AnyTypeCoded.lib TAO_CodecFactoryd.lib TAO_CosNamingd.lib TAO_IDL_BEd.lib TAO_IDL_FEd.lib TAO_IORInterceptord.lib TAO_ObjRefTemplated.lib TAO_PI_Serverd.lib TAO_PId.lib TAO_PortableServerd.lib TAO_Valuetyped.lib TAOd.lib libapr-1.lib libexpat.lib log4cxx.lib xerces-c_3D.lib atmibroker-idl.lib cppunitd_dll.lib libstomp.lib"
+				AdditionalDependencies="ACEd.lib TAO_AnyTypeCoded.lib TAO_CodecFactoryd.lib TAO_CosNamingd.lib TAO_IDL_BEd.lib TAO_IDL_FEd.lib TAO_IORInterceptord.lib TAO_ObjRefTemplated.lib TAO_PI_Serverd.lib TAO_PId.lib TAO_PortableServerd.lib TAO_Valuetyped.lib TAOd.lib libapr-1.lib libexpat.lib log4cxx.lib xerces-c_3D.lib atmibroker-idl-cxx.lib cppunitd_dll.lib"
 				AdditionalLibraryDirectories="C:\app\BlackHat\product\11.1.0\db_1\OCI\lib\MSVC;&quot;..\..\atmibroker-xatmi\target\cxx\runtime\lib&quot;;&quot;..\..\atmibroker-xatmi\target\cxx\test\lib&quot;"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
@@ -178,7 +178,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\atmibroker-core\src\main\cpp\AtmiBrokerLoggerc.cxx"
+					RelativePath="..\..\atmibroker-core\src\main\cpp\AtmiBrokerInit.cxx"
 					>
 				</File>
 				<File
@@ -186,7 +186,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\atmibroker-core\src\main\cpp\AtmiBrokerServiceXml.cxx"
+					RelativePath="..\..\atmibroker-core\src\main\cpp\AtmiBrokerSignalHandler.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\..\atmibroker-core\src\main\cpp\AtmiBrokerSingleton.cxx"
 					>
 				</File>
 				<File
@@ -194,7 +198,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\atmibroker-core\src\main\cpp\SymbolLoader.cpp"
+					RelativePath="..\..\atmibroker-core\src\main\cpp\SymbolLoader.cxx"
 					>
 				</File>
 				<File
@@ -206,7 +210,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\atmibroker-core\src\main\cpp\Worker.cpp"
+					RelativePath="..\..\atmibroker-core\src\main\cpp\userlogc.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\..\atmibroker-core\src\main\cpp\Worker.cxx"
 					>
 				</File>
 				<File
@@ -242,6 +250,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\main\cpp\Version.cxx"
+					>
+				</File>
+				<File
 					RelativePath="..\src\main\cpp\XATMIc.cxx"
 					>
 				</File>
@@ -271,6 +283,10 @@
 				</File>
 				<File
 					RelativePath="..\..\atmibroker-hybrid\src\main\cpp\HybridStompEndpointQueue.cxx"
+					>
+				</File>
+				<File
+					RelativePath="..\..\atmibroker-hybrid\src\main\cpp\stomp.c"
 					>
 				</File>
 			</Filter>
@@ -322,18 +338,6 @@
 				Name="test"
 				>
 				<File
-					RelativePath="..\src\test\cpp\AdminTestSuite.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\BAR.c"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\BaseAdminTest.cxx"
-					>
-				</File>
-				<File
 					RelativePath="..\src\test\cpp\BaseServerTest.cxx"
 					>
 				</File>
@@ -342,155 +346,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\src\test\cpp\tx\cutil.c"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\tx\DbService.c"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\LoopyServerAndClient.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\tx\ora.c"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\tx\request.c"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\Sleeper.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestAdmin.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestAdvertise.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestClientInit.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestPBF.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestRollbackOnly.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestRollbackOnlyServices.cxx"
-					>
-				</File>
-				<File
 					RelativePath="..\target\generated-sources\TestRunner.cxx"
 					>
 				</File>
 				<File
-					RelativePath="..\src\test\cpp\TestServerinit.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestSpecExampleOne.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestSpecExampleTwo.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTimeToLive.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPACall.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPAdvertise.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPAlloc.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPCall.cxx"
-					>
-				</File>
-				<File
 					RelativePath="..\src\test\cpp\TestTPCancel.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPConnect.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPConversation.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPDiscon.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPFree.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPFreeService.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPGetRply.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPRealloc.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPRecv.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPReturn.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPSend.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPService.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPTypes.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTPUnadvertise.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\tx\TestTxRMTPCall.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestTxTPCall.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\TestUnadvertise.cxx"
 					>
 				</File>
 				<File
