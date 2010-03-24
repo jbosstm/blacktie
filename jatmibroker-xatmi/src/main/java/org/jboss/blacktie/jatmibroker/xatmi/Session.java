@@ -215,10 +215,7 @@ public class Session {
 					flags, 0, type, subtype);
 
 			// Sort out session state
-			if ((flags & Connection.TPSENDONLY) == Connection.TPSENDONLY) {
-				canSend = true;
-				canRecv = false;
-			} else if ((flags & Connection.TPRECVONLY) == Connection.TPRECVONLY) {
+			if ((flags & Connection.TPRECVONLY) == Connection.TPRECVONLY) {
 				canSend = false;
 				canRecv = true;
 			}
@@ -275,10 +272,7 @@ public class Session {
 		log.debug("Prepared and ready to launch");
 
 		// Sort out session state
-		if ((m.flags & Connection.TPSENDONLY) == Connection.TPSENDONLY) {
-			canSend = false;
-			canRecv = true;
-		} else if ((m.flags & Connection.TPRECVONLY) == Connection.TPRECVONLY) {
+		if ((m.flags & Connection.TPRECVONLY) == Connection.TPRECVONLY) {
 			canSend = true;
 			canRecv = false;
 		}
