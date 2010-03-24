@@ -17,7 +17,17 @@
  */
 package org.jboss.blacktie.btadmin.commands;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
@@ -60,24 +70,93 @@ public class Help implements Command {
 	public void invoke(MBeanServerConnection beanServerConnection,
 			ObjectName blacktieAdmin, Properties configuration)
 			throws CommandFailedException {
-		String[] commands = new String[] { "startup", "shutdown",
-				"pauseDomain", "resumeDomain", "getServersStatus",
-				"listServiceStatus", "listRunningServers",
-				"listRunningInstanceIds", "advertise", "unadvertise",
-				"version", "help", "quit" };
 
-		for (int i = 0; i < commands.length; i++) {
-			if (command != null && !command.equals(commands[i])) {
+		List<String> commands = new ArrayList<String>();
+		try {
+			Class cls = this.getClass();
+			ProtectionDomain pDomain = cls.getProtectionDomain();
+			CodeSource cSource = pDomain.getCodeSource();
+			URL loc = cSource.getLocation(); // file:/c:/almanac14/examples/
+
+			JarFile jar = new JarFile(new File(loc.toURI()));
+			Enumeration<JarEntry> entries = jar.entries();
+			while (entries.hasMoreElements()) {
+				JarEntry nextElement = entries.nextElement();
+				String jarEntry = nextElement.getName();
+				if (jarEntry
+						.matches("org/jboss/blacktie/btadmin/commands/\\w+.class")) {
+					String commandName = jarEntry.substring(jarEntry
+							.lastIndexOf('/') + 1, jarEntry.indexOf('.'));
+					String firstLetter = commandName.substring(0, 1);
+					String remainder = commandName.substring(1);
+					String capitalized = firstLetter.toLowerCase() + remainder;
+					commands.add(capitalized);
+				}
+			}
+			if (commands.size() == 0) {
+				log.error("Could not find any commands");
+				throw new CommandFailedException(-1);
+			}
+		} catch (Throwable e) {
+			log.debug("Was not loaded from a jar");
+			try {
+				// Get the location of this class
+				Class[] classes = getClasses("org.jboss.blacktie.btadmin.commands");
+				for (int i = 0; i < classes.length; i++) {
+					String commandName = classes[i].getName().substring(
+							classes[i].getName().lastIndexOf('.') + 1);
+					String firstLetter = commandName.substring(0, 1);
+					String remainder = commandName.substring(1);
+					String capitalized = firstLetter.toLowerCase() + remainder;
+					commands.add(capitalized);
+				}
+			} catch (Throwable e2) {
+				log.error("Could not find any commands");
+				throw new CommandFailedException(-1);
+			}
+		}
+		for (int i = 0; i < commands.size(); i++) {
+			if (command != null && !command.equals(commands.get(i))) {
 				continue;
 			}
 			try {
-				Command command = CommandHandler.loadCommand(commands[i]);
-				log.info("Example usage: " + commands[i] + " "
+				Command command = CommandHandler.loadCommand(commands.get(i));
+				log.info("Example usage: " + commands.get(i) + " "
 						+ command.getExampleUsage());
 			} catch (Exception e) {
-				log.error("Could not get help for command: " + commands[i], e);
+				log.error("Could not get help for command: " + commands.get(i),
+						e);
 				throw new CommandFailedException(-1);
 			}
 		}
 	}
+
+	private static Class[] getClasses(String packageName)
+			throws ClassNotFoundException, IOException {
+		ClassLoader classLoader = Thread.currentThread()
+				.getContextClassLoader();
+		assert classLoader != null;
+		String path = packageName.replace('.', '/');
+		Enumeration<URL> resources = classLoader.getResources(path);
+		List<File> dirs = new ArrayList<File>();
+		while (resources.hasMoreElements()) {
+			URL resource = resources.nextElement();
+			dirs.add(new File(resource.getFile()));
+		}
+		ArrayList<Class> classes = new ArrayList<Class>();
+		for (File directory : dirs) {
+			File[] files = directory.listFiles();
+			for (File file : files) {
+				if (file.getName().endsWith(".class")
+						&& file.getName().indexOf('$') < 0) {
+					classes.add(Class.forName(packageName
+							+ '.'
+							+ file.getName().substring(0,
+									file.getName().length() - 6)));
+				}
+			}
+		}
+		return classes.toArray(new Class[classes.size()]);
+	}
+
 }
