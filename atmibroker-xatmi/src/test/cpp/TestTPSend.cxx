@@ -107,7 +107,7 @@ void testtpsend_service(TPSVCINFO *svcinfo) {
 }
 
 void testtpsend_tpsendonly_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpsend_service");
+	userlogc((char*) "testtpsend_tpsendonly_service");
 
 	long event = 0;
 	int result = ::tpsend(svcinfo->cd, svcinfo->data, svcinfo->len, TPRECVONLY,
