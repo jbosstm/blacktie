@@ -34,7 +34,6 @@ public class TestTPSend extends TestCase {
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		server.serverinit();
-		server.tpadvertiseTestTPSend();
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -57,6 +56,8 @@ public class TestTPSend extends TestCase {
 
 	public void test_tpsend_recvonly() throws ConnectionException {
 		log.info("test_tpsend_recvonly");
+		server.tpadvertiseTestTPSend();
+
 		cd = connection.tpconnect(server.getServiceNameTestTPSend(), sendbuf,
 				sendlen, Connection.TPRECVONLY);
 		try {
@@ -65,5 +66,27 @@ public class TestTPSend extends TestCase {
 			assertTrue((e.getEvent() == Connection.TPEV_SVCERR)
 					|| (e.getTperrno() == Connection.TPEPROTO));
 		}
+	}
+
+	public void test_tpsend_tpsendonly() throws ConnectionException {
+		log.info("test_tpsend_tpsendonly");
+		server.tpadvertiseTestTPSendTPSendOnly();
+
+		cd = connection.tpconnect(server.getServiceNameTestTPSendTPSendOnly(),
+				sendbuf, sendlen, Connection.TPRECVONLY);
+
+		try {
+			cd.tprecv(0);
+		} catch (ConnectionException e) {
+			assertTrue(e.getTperrno() == Connection.TPEEVENT);
+			assertTrue(e.getEvent() == Connection.TPEV_SENDONLY);
+		}
+		try {
+			cd.tprecv(0);
+		} catch (ConnectionException e) {
+			assertTrue(e.getTperrno() == Connection.TPEPROTO);
+		}
+
+		cd.tpsend(sendbuf, sendlen, 0);
 	}
 }

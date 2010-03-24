@@ -42,6 +42,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.TestTPRecvService;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPReturnService;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPReturnServiceTpurcode;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPSendService;
+import org.jboss.blacktie.jatmibroker.xatmi.TestTPSendTPSendOnlyService;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPServiceService;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTTLService;
 
@@ -148,6 +149,11 @@ public class RunServer {
 		this.server.tpadvertise("TestOne", TestTPSendService.class.getName());
 	}
 
+	public void tpadvertiseTestTPSendTPSendOnly() throws ConnectionException {
+		this.server.tpadvertise("TestOne", TestTPSendTPSendOnlyService.class
+				.getName());
+	}
+
 	public void tpadvertiseTestTPService() throws ConnectionException {
 		this.server
 				.tpadvertise("TestOne", TestTPServiceService.class.getName());
@@ -248,6 +254,10 @@ public class RunServer {
 	}
 
 	public String getServiceNameTestTPSend() {
+		return "TestOne";
+	}
+
+	public String getServiceNameTestTPSendTPSendOnly() {
 		return "TestOne";
 	}
 
