@@ -181,6 +181,13 @@ public class Session {
 			throws ConnectionException {
 		int toReturn = -1;
 		log.debug("tpsend invoked");
+		
+		int toCheck = flags & ~(Connection.TPRECVONLY | Connection.TPNOBLOCK | Connection.TPNOTIME | Connection.TPSIGRSTRT);
+		if (toCheck != 0) {
+			log.trace("invalid flags remain: " + toCheck);
+			throw new ConnectionException(Connection.TPEINVAL, "Invalid flags remain: " + toCheck);
+		}
+
 		if (this.lastEvent > -1) {
 			throw new ConnectionException(Connection.TPEEVENT, lastEvent,
 					lastRCode, "Event existed on descriptor: " + lastEvent,
@@ -234,6 +241,13 @@ public class Session {
 	 */
 	public Buffer tprecv(int flags) throws ConnectionException {
 		log.debug("Receiving");
+
+		int toCheck = flags & ~(Connection.TPNOCHANGE | Connection.TPNOBLOCK | Connection.TPNOTIME | Connection.TPSIGRSTRT);
+		if (toCheck != 0) {
+			log.trace("invalid flags remain: " + toCheck);
+			throw new ConnectionException(Connection.TPEINVAL, "Invalid flags remain: " + toCheck);
+		}
+
 		if (!canRecv) {
 			throw new ConnectionException(Connection.TPEPROTO,
 					"Session can't receive");
