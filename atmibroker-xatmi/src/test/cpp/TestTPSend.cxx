@@ -24,6 +24,7 @@
 #include "TestTPSend.h"
 
 extern void testtpsend_service(TPSVCINFO *svcinfo);
+extern void testtpsend_tpsendonly_service(TPSVCINFO *svcinfo);
 
 void TestTPSend::setUp() {
 	userlogc((char*) "TestTPSend::setUp");
@@ -35,16 +36,12 @@ void TestTPSend::setUp() {
 
 	// Do local work
 	cd = -1;
-	int toCheck = tpadvertise((char*) "TestTPSend", testtpsend_service);
-	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toCheck != -1);
 
 	sendlen = strlen("tpsend") + 1;
-	BT_ASSERT((sendbuf
-			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	BT_ASSERT(
-			(rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen))
-					!= NULL);
+	BT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen))
+			!= NULL);
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen))
+			!= NULL);
 	strcpy(sendbuf, "tpsend");
 	BT_ASSERT(tperrno == 0);
 }
@@ -53,10 +50,10 @@ void TestTPSend::tearDown() {
 	userlogc((char*) "TestTPSend::tearDown");
 	// Do local work
 	if (cd != -1) {
-		::tpdiscon(cd);
+		::tpdiscon( cd);
 	}
-	::tpfree(sendbuf);
-	::tpfree(rcvbuf);
+	::tpfree( sendbuf);
+	::tpfree( rcvbuf);
 	int toCheck = tpunadvertise((char*) "TestTPSend");
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toCheck != -1);
@@ -67,6 +64,11 @@ void TestTPSend::tearDown() {
 
 void TestTPSend::test_tpsend_recvonly() {
 	userlogc((char*) "test_tpsend_recvonly");
+
+	int toCheck = tpadvertise((char*) "TestTPSend", testtpsend_service);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
+
 	cd = ::tpconnect((char*) "TestTPSend", sendbuf, sendlen, TPRECVONLY);
 	long event = 0;
 	int result = ::tpsend(cd, sendbuf, sendlen, 0, &event);
@@ -74,6 +76,45 @@ void TestTPSend::test_tpsend_recvonly() {
 	BT_ASSERT(result == -1);
 }
 
+void TestTPSend::test_tpsend_tpsendonly() {
+	userlogc((char*) "test_tpsend_tpsendonly");
+	int toCheck = tpadvertise((char*) "TestTPSend",
+			testtpsend_tpsendonly_service);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
+
+	cd = ::tpconnect((char*) "TestTPSend", sendbuf, sendlen, TPRECVONLY);
+
+	long revent = 0;
+	int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
+	BT_ASSERT(revent & TPEV_SENDONLY);
+	BT_ASSERT(tperrno == TPEEVENT);
+	BT_ASSERT(result == -1);
+
+	result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
+	BT_ASSERT(tperrno == TPEPROTO);
+	BT_ASSERT(result == -1);
+
+	long event = 0;
+	result = ::tpsend(cd, sendbuf, sendlen, 0, &event);
+	BT_ASSERT(event == 0);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(result != -1);
+}
+
 void testtpsend_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "testtpsend_service");
+}
+
+void testtpsend_tpsendonly_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "testtpsend_service");
+
+	long event = 0;
+	int result = ::tpsend(svcinfo->cd, svcinfo->data, svcinfo->len, TPRECVONLY,
+			&event);
+
+	long revent = 0;
+	long rcvlen;
+	char* rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
+	result = ::tprecv(svcinfo->cd, &rcvbuf, &rcvlen, 0, &revent);
 }

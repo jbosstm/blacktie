@@ -292,17 +292,6 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 											<< session->getCanSend()
 											<< " recv: "
 											<< session->getCanRecv());
-						} else if (message.flags & TPSENDONLY) {
-							toReturn = 0;
-							session->setCanSend(true);
-							session->setCanRecv(false);
-							LOG4CXX_DEBUG(
-									loggerXATMI,
-									(char*) "receive TPSENDONLY set constraints session: "
-											<< session->getId() << " send: "
-											<< session->getCanSend()
-											<< " recv: "
-											<< session->getCanRecv());
 						} else if (message.correlationId >= 0) {
 							toReturn = 0;
 						} else {
@@ -808,6 +797,7 @@ int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tprecv " << id);
 	int toReturn = -1;
 	setSpecific(TPE_KEY, TSS_TPERESET);
+	*event = 0;
 
 	long toCheck = flags & ~(TPNOCHANGE | TPNOBLOCK | TPNOTIME | TPSIGRSTRT);
 

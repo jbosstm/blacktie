@@ -26,15 +26,16 @@
 class TestTPSend: public BaseServerTest {
 	CPPUNIT_TEST_SUITE( TestTPSend);
 	CPPUNIT_TEST( test_tpsend_recvonly);
-CPPUNIT_TEST_SUITE_END();
+	CPPUNIT_TEST( test_tpsend_tpsendonly);CPPUNIT_TEST_SUITE_END();
 public:
-void test_tpsend_recvonly();
-virtual void setUp();
-virtual void tearDown();
+	void test_tpsend_recvonly();
+	void test_tpsend_tpsendonly();
+	virtual void setUp();
+	virtual void tearDown();
 private:
-int cd;
-char *sendbuf, *rcvbuf;
-long sendlen, rcvlen;
+	int cd;
+	char *sendbuf, *rcvbuf;
+	long sendlen, rcvlen;
 };
 
 #endif
