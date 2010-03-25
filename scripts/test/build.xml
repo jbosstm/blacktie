@@ -10,6 +10,12 @@
 		<replaceregexp byline="true" match="REPLACE_WITH_INSTALL_LOCATION" replace="${BT_HOME}">
 			<fileset dir="../../dist/">
 				<include name="*/setenv.bat"/>
+				<include name="**/btconfig.xml"/>
+			</fileset>
+		</replaceregexp>
+		<replaceregexp byline="true" match="REPLACE_WITH_HOSTNAME" replace="${JBOSSAS_IP_ADDR}">
+			<fileset dir="../../dist/">
+				<include name="**/btconfig.xml"/>
 			</fileset>
 		</replaceregexp>
 	</target>
