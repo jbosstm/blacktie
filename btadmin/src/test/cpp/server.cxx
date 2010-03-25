@@ -21,8 +21,6 @@
 #include "xatmi.h"
 #include "userlogc.h"
 
-extern "C" void BAR(TPSVCINFO *svcinfo);
-
 extern "C"
 JNIEXPORT jint JNICALL Java_org_jboss_blacktie_btadmin_server_RunServer_serverinit(JNIEnv * env, jobject, jstring serverNameIn, jstring idIn) {
 	int exit_status = -1;

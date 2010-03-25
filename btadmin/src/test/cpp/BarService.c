@@ -20,7 +20,14 @@
 #include "xatmi.h"
 #include "tx.h"
 
-extern void BAR(TPSVCINFO * svcinfo) {
+#ifdef WIN32
+#define EXPORT_SVC __declspec(dllexport)
+#else
+#define EXPORT_SVC
+#endif
+
+
+EXPORT_SVC void BAR(TPSVCINFO * svcinfo) {
 	int sendlen;
 	char* buffer;
 	sendlen = 14;

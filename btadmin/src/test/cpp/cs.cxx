@@ -21,16 +21,6 @@
 
 #include "xatmi.h"
 
-void BAR(TPSVCINFO * svcinfo) {
-	int sendlen;
-	char* buffer;
-	sendlen = 14;
-	buffer = tpalloc((char*) "X_OCTET", NULL, sendlen);
-	strncpy(buffer, "BAR SAYS HELLO", 14);
-	tpreturn(TPSUCCESS, 1, buffer, sendlen, 0);
-}
-//SERVICE_DEFINITIONS
-
 int main(int argc, char **argv) {
 	int exit_status = serverinit(argc, argv);
 
