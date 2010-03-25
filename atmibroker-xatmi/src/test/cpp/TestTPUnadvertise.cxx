@@ -49,8 +49,8 @@ void TestTPUnadvertise::setUp() {
 void TestTPUnadvertise::tearDown() {
 	userlogc((char*) "TestTPUnadvertise::tearDown");
 	// Do local work
-	::tpfree(sendbuf);
-	::tpfree(rcvbuf);
+	::tpfree( sendbuf);
+	::tpfree( rcvbuf);
 
 	tpunadvertise((char*) "TestTPUnadvertise");
 
@@ -71,7 +71,10 @@ void TestTPUnadvertise::test_tpunadvertise() {
 
 	id = ::tpcall((char*) "TestTPUnadvertise", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, (long) 0);
-	BT_ASSERT(tperrno == TPENOENT);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPENOENT);
+	free(tperrnoS);
 	BT_ASSERT(id == -1);
 	BT_ASSERT(strcmp(rcvbuf, "testtpunadvertise_service") != 0);
 }

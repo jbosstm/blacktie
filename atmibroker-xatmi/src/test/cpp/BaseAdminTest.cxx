@@ -75,9 +75,15 @@ int BaseAdminTest::callBAR(int r, char* buf) {
 
 	int cd = ::tpcall((char*) "BAR", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, 0);
 	if (r == 0) {
-		BT_ASSERT(cd != -1);
+		char* tperrnoS = (char*) malloc(110);
+		sprintf(tperrnoS, "%d", tperrno);
+		BT_ASSERT_MESSAGE(tperrnoS, cd != -1);
+		free(tperrnoS);
 	} else {
-		BT_ASSERT(cd == -1);
+		char* tperrnoS = (char*) malloc(110);
+		sprintf(tperrnoS, "%d", tperrno);
+		BT_ASSERT_MESSAGE(tperrnoS, cd == -1);
+		free(tperrnoS);
 	}
 	userlogc((char*) "r = %d, tperrno = %d", r, tperrno);
 	BT_ASSERT(r == tperrno);
