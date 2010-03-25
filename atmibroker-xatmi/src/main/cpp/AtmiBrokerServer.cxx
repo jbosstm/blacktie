@@ -986,11 +986,6 @@ Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
 void AtmiBrokerServer::server_done() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_done()");
 
-	Connection* connection = connections.getServerConnection();
-
-	if (connection == NULL)
-		connection->disconnectSession(-1);
-
 	for (int i = serverInfo.serviceVector.size() - 1; i >= 0; i--) {
 		char* svcname = (char*) serverInfo.serviceVector[i].serviceName;
 		if (isAdvertised(svcname)) {
