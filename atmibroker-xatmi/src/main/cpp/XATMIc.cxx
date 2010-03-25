@@ -858,6 +858,12 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 					rcode = TPESVCERR;
 					rval = TPFAIL;
 				}
+				if (rcode == TPESVCERR || len == -1) {
+					rval = TPFAIL;
+				}
+				if (!session->getCanSend()) {
+					rval = DISCON;
+				}
 				session->setCanRecv(false);
 
 				if (rcode == TPESVCERR || len == -1) {
@@ -868,7 +874,7 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 					if (idata != NULL) {
 						::tpfree(idata);
 					}
-					::send(session, "", NULL, 0, 0, flags, TPFAIL, TPESVCERR);
+					::send(session, "", NULL, 0, 0, flags, rval, TPESVCERR);
 					LOG4CXX_TRACE(loggerXATMI, (char*) "sent TPESVCERR");
 					if(dispatcher != NULL) {
 						LOG4CXX_TRACE(loggerXATMI, (char*) "update error counter");
