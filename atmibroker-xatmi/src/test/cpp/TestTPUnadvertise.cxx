@@ -20,6 +20,7 @@
 #include "BaseServerTest.h"
 
 #include "xatmi.h"
+#include "malloc.h"
 
 #include "TestTPUnadvertise.h"
 
