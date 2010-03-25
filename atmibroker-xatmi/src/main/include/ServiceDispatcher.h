@@ -62,6 +62,7 @@ private:
 	unsigned long avgResponseTime;
 	unsigned long maxResponseTime;
 	SynchronizableObject* reconnect;
+	SynchronizableObject* pauseLock;
 };
 
 #endif

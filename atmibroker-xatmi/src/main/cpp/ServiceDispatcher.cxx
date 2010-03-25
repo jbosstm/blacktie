@@ -48,6 +48,7 @@ ServiceDispatcher::ServiceDispatcher(AtmiBrokerServer* server,
 	this->minResponseTime = 0;
 	this->avgResponseTime = 0;
 	this->maxResponseTime = 0;
+	pauseLock = new SynchronizableObject();
 }
 
 ServiceDispatcher::~ServiceDispatcher() {
@@ -57,7 +58,9 @@ ServiceDispatcher::~ServiceDispatcher() {
 int ServiceDispatcher::pause(void) {
 	LOG4CXX_TRACE(logger, "ServiceDispatcher pause");
 	if (isPause == false) {
+		pauseLock->lock();
 		isPause = true;
+		pauseLock->unlock();
 	}
 	return 0;
 }
@@ -65,15 +68,27 @@ int ServiceDispatcher::pause(void) {
 int ServiceDispatcher::resume(void) {
 	LOG4CXX_TRACE(logger, "ServiceDispatcher resume");
 	if (isPause) {
+		pauseLock->lock();
 		isPause = false;
+		pauseLock->notifyAll();
+		pauseLock->unlock();
 	}
 	return 0;
 }
 
 int ServiceDispatcher::svc(void) {
 	while (!stop) {
+		// This will wait while the server is paused
+		pauseLock->lock();
+		while (!stop && isPause) {
+			LOG4CXX_DEBUG(logger, (char*) "pausing");
+			pauseLock->wait(0);
+			LOG4CXX_DEBUG(logger, (char*) "paused");
+		}
+		pauseLock->unlock();
+
 		MESSAGE message = destination->receive(this->timeout);
-		if (!isPause && !stop && message.received) {
+		if (message.received) {
 			try {
 				counter += 1;
 				ACE_Time_Value start = ACE_OS::gettimeofday();
@@ -136,8 +151,6 @@ int ServiceDispatcher::svc(void) {
 				}
 			}
 			reconnect->unlock();
-		} else {
-			free (message.data);
 		}
 	}
 	return 0;
@@ -221,7 +234,8 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 	// HANDLE THE CLIENT INVOCATION
 	if (message.control != NULL && strcmp((char*) message.control, "null") != 0) {
-		if (txx_associate_serialized((char*) message.control, message.ttl) != XA_OK) {
+		if (txx_associate_serialized((char*) message.control, message.ttl)
+				!= XA_OK) {
 			LOG4CXX_ERROR(logger, "Unable to handle control");
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		}
@@ -275,7 +289,11 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 }
 
 void ServiceDispatcher::shutdown() {
+	pauseLock->lock();
 	stop = true;
+	isPause = false;
+	pauseLock->notify();
+	pauseLock->unlock();
 }
 
 long ServiceDispatcher::getCounter() {
@@ -287,7 +305,7 @@ long ServiceDispatcher::getErrorCounter() {
 }
 
 void ServiceDispatcher::updateErrorCounter() {
-	error_counter ++;
+	error_counter++;
 }
 
 void ServiceDispatcher::getResponseTime(unsigned long* min, unsigned long* avg,
