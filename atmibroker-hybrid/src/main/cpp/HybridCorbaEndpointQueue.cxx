@@ -189,6 +189,8 @@ MESSAGE HybridCorbaEndpointQueue::receive(long time) {
 			message = returnData.front();
 			returnData.pop();
 			LOG4CXX_DEBUG(logger, (char*) "returning message");
+		} else {
+			LOG4CXX_DEBUG(logger, (char*) "no message");
 		}
 	}
 	lock->unlock();
