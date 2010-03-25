@@ -51,7 +51,7 @@ int client_sigint_handler_callback(int sig_type) {
 			(char*) "SIGINT Detected: Shutting down client this may take several minutes");
 	clientdone(sig_type);
 	LOG4CXX_INFO(loggerAtmiBrokerClient, (char*) "Shutdown complete");
-	return -1;
+	return 0;
 }
 
 int clientinit() {

@@ -34,6 +34,11 @@ public abstract class CSControl extends TestCase
 	private TestProcess client;
 	private String CS_EXE;
 	private String REPORT_DIR;
+	private static int sid = 1;
+
+	static String nextSid() {
+		return Integer.toString(sid % 10);
+	}
 
 	public void tearDown() {
 		try {
@@ -47,6 +52,7 @@ public abstract class CSControl extends TestCase
 	}
 
 	public void setUp() {
+		log.debug("setup server process");
 		REPORT_DIR = System.getProperty("TEST_REPORTS_DIR", ".");
 		CS_EXE = System.getProperty("CLIENT_SERVER_EXE", "./cs");
 		clientBuilder = new ProcessBuilder();
@@ -62,9 +68,10 @@ public abstract class CSControl extends TestCase
 		environment.put("JBOSSAS_IP_ADDR", System.getenv("JBOSSAS_IP_ADDR"));
 		environment.put("PATH", System.getenv("PATH"));
 		clientBuilder.environment().putAll(environment);
-		serverBuilder.command(CS_EXE, "-c", "linux", "-i", "1");
+		serverBuilder.command(CS_EXE, "-c", "linux", "-i", nextSid());
 
 		try {
+			log.debug("start server process");
 			server = startServer(serverBuilder);
 		} catch (IOException e) {
 			throw new RuntimeException("Server io exception: ", e);
@@ -114,6 +121,7 @@ public abstract class CSControl extends TestCase
 		synchronized (server) {
 			// start the C server and wait for it to indicate that it has advertised its services
 			thread.start();
+			log.debug("startServer waiting for process to finish ...");
 			server.wait();
 		}
 
@@ -122,7 +130,6 @@ public abstract class CSControl extends TestCase
 
 	class TestProcess implements Runnable {
 		private String type;
-		private String command;
 		private Process proc;
 		private FileOutputStream ostream;
 		private FileOutputStream estream;
@@ -133,7 +140,6 @@ public abstract class CSControl extends TestCase
 			this.ostream = ostream;
 			this.estream = estream;
 			this.type = type;
-			this.command = command;
 			this.builder = builder;
 		}
 
@@ -168,6 +174,7 @@ public abstract class CSControl extends TestCase
 						ostream.write(buf, 0, len);
 					}
 */
+					log.debug("server monitoring process I/O ...");
 					int pos = 0;
 					while ((len = is.read(buf, pos, buf.length - pos)) > 0) {
 						ostream.write(buf, pos, len);
@@ -200,6 +207,8 @@ public abstract class CSControl extends TestCase
 				if (!thread.interrupted())
 					log.warn(builder.command() + ": IO error on stream write: " + e);
 			}
+
+			log.debug("server process: read termination byte sequence");
 
 			try {
 				ostream.close();

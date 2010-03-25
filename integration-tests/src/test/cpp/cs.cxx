@@ -536,7 +536,9 @@ int run_server(int argc, char **argv) {
 	} else {
 		userlogc((char*) "main Unexpected exception in serverrun()");
 	}
+	userlogc((char*) "Test Server: calling serverdone()");
 	serverdone();
+	userlogc((char*) "Test Server: returning status %d", exit_status);
 	return exit_status;
 }
 

@@ -70,7 +70,8 @@ int server_sigint_handler_callback(int sig_type) {
 	LOG4CXX_INFO(
 			loggerAtmiBrokerServer,
 			(char*) "SIGINT Detected: Shutting down server this may take several minutes");
-	ptrServer->shutdown();
+	if (ptrServer != NULL)
+		ptrServer->shutdown();
 	LOG4CXX_INFO(loggerAtmiBrokerServer,
 			(char*) "SIGINT Detected: Shutdown complete");
 	return -1;
