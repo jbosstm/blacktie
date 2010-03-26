@@ -23,10 +23,7 @@ import javax.management.MalformedObjectNameException;
 
 import junit.framework.TestCase;
 
-import org.jboss.blacktie.btadmin.server.RunServer;
-
 public class ListRunningInstanceIdsTest extends TestCase {
-	private RunServer runServer = new RunServer();
 
 	private CommandHandler commandHandler;
 
@@ -34,10 +31,7 @@ public class ListRunningInstanceIdsTest extends TestCase {
 		this.commandHandler = new CommandHandler();
 	}
 
-	public void tearDown() {
-		if (runServer.serverdone() != 0) {
-			fail("Could not stop the server");
-		}
+	public void tearDown() throws Exception {
 	}
 
 	public void testListRunningInstanceIdsWithoutServerName()
@@ -74,12 +68,23 @@ public class ListRunningInstanceIdsTest extends TestCase {
 			throws IOException, MalformedObjectNameException,
 			NullPointerException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
-		if (runServer.serverinit("default", "1") != 0) {
+		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
 			fail("Could not start the server");
 		}
 		String command = "listRunningInstanceIds default";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command was not successful");
+		}
+
+		if (commandHandler.handleCommand("shutdown".split(" ")) != 0) {
+			fail("Could not stop the server");
+		}
+		// TODO SHUTDOWN SHOULD RETURN WHEN THERE ARE NO MORE CONSUMERS?
+		try {
+			Thread.currentThread().sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

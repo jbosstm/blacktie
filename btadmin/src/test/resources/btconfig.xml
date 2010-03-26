@@ -30,27 +30,27 @@
 		<MACHINE id="secure3" hostname="localhost.localdomain"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="3" />
+			serverId="1" />
 		<MACHINE id="secure4" hostname="localhost.localdomain"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="4" />
+			serverId="2" />
 		<MACHINE id="secure5" hostname="beacon"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="5" />
+			serverId="1" />
 		<MACHINE id="secure6" hostname="beacon"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="6" />
+			serverId="2" />
 		<MACHINE id="secure7" hostname="catskill"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="7" />
+			serverId="1" />
 		<MACHINE id="secure8" hostname="catskill"
 			pathToExecutable="../cs"
 			workingDirectory="."
-			serverId="8" />
+			serverId="2" />
 		<MACHINE id="secure9" hostname="winxp08"
 			pathToExecutable="../cs"
 			workingDirectory="."

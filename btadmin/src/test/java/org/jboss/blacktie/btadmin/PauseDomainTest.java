@@ -23,10 +23,7 @@ import javax.management.MalformedObjectNameException;
 
 import junit.framework.TestCase;
 
-import org.jboss.blacktie.btadmin.server.RunServer;
-
 public class PauseDomainTest extends TestCase {
-	private RunServer runServer = new RunServer();
 
 	private CommandHandler commandHandler;
 
@@ -34,7 +31,7 @@ public class PauseDomainTest extends TestCase {
 
 		this.commandHandler = new CommandHandler();
 
-		if (runServer.serverinit("default", "1") != 0) {
+		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
 			fail("Could not start the server");
 		}
 
@@ -50,9 +47,16 @@ public class PauseDomainTest extends TestCase {
 	}
 
 	public void tearDown() throws Exception {
-
-		if (runServer.serverdone() != 0) {
+		if (commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
 			fail("Could not stop the server");
+		}
+
+		// TODO SHUTDOWN SHOULD RETURN WHEN THERE ARE NO MORE CONSUMERS?
+		try {
+			Thread.currentThread().sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

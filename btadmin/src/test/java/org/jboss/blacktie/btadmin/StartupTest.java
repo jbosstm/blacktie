@@ -23,11 +23,7 @@ import javax.management.MalformedObjectNameException;
 
 import junit.framework.TestCase;
 
-import org.jboss.blacktie.btadmin.server.RunServer;
-
 public class StartupTest extends TestCase {
-	private RunServer runServer = new RunServer();
-
 	private CommandHandler commandHandler;
 
 	public void setUp() throws Exception {

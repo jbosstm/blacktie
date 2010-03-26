@@ -21,11 +21,24 @@
 
 #include "xatmi.h"
 
+#include "ace/DLL.h"
+#include "ace/OS_NS_stdlib.h"
+#include "ace/OS_NS_stdio.h"
+#include "ace/OS_NS_string.h"
+
+
 int main(int argc, char **argv) {
+
+#ifdef WIN32
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION=win32");
+#else
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION=linux");
+#endif
+
 	int exit_status = serverinit(argc, argv);
 
 	if (exit_status != -1) {
-        //SERVICE_ADVERTISEMENTS
+		//SERVICE_ADVERTISEMENTS
 		exit_status = serverrun();
 	} else {
 		userlogc((char*) "error initialising server");

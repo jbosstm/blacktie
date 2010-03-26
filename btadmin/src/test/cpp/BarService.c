@@ -27,7 +27,7 @@
 #endif
 
 
-EXPORT_SVC void BAR(TPSVCINFO * svcinfo) {
+extern EXPORT_SVC void BAR(TPSVCINFO * svcinfo) {
 	int sendlen;
 	char* buffer;
 	sendlen = 14;
