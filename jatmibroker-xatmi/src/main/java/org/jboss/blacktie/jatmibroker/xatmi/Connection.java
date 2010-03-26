@@ -363,18 +363,24 @@ public class Connection {
 	 * @throws ConnectionException
 	 */
 	public void close() throws ConnectionException {
+		log.debug("Close connection called");
 		Iterator<Receiver> receivers = temporaryQueues.values().iterator();
 		while (receivers.hasNext()) {
 			Receiver receiver = receivers.next();
+			log.debug("closing receiver");
 			receiver.close();
+			log.debug("closed receiver");
 		}
 		temporaryQueues.clear();
 		Iterator<Transport> transports = this.transports.values().iterator();
 		while (transports.hasNext()) {
 			Transport transport = transports.next();
+			log.debug("closing transport");
 			transport.close();
+			log.debug("closed transport");
 		}
 		this.transports.clear();
+		log.debug("Close connection finished");
 	}
 
 	private Transport getTransport(String serviceName)
