@@ -404,12 +404,49 @@ public class AdministrationProxy {
 					List<Integer> ids = listRunningInstanceIds(serverName);
 					for (int i = 0; i < ids.size(); i++) {
 						callAdminService(serverName, ids.get(i), command);
-						called = true;
 					}
+					int timeout = 10;
+					while (true) {
+						ids = listRunningInstanceIds(serverName);
+						if (ids.size() > 0) {
+							try {
+								Thread.currentThread().sleep(1000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							timeout--;
+						} else {
+							called = true;
+							break;
+						}
+						if (timeout == 0) {
+							break;
+						}
+					}
+
 					return called;
 				} else {
+					boolean called = false;
 					callAdminService(serverName, id, command);
-					return true;
+					int timeout = 10;
+					while (true) {
+						List<Integer> ids = listRunningInstanceIds(serverName);
+						if (ids.contains(id)) {
+							try {
+								Thread.currentThread().sleep(1000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							timeout--;
+						} else {
+							called = true;
+							break;
+						}
+						if (timeout == 0) {
+							break;
+						}
+					}
+					return called;
 				}
 			} catch (ConnectionException e) {
 				log.error("call server " + serverName + " id " + id

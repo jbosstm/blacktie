@@ -482,6 +482,8 @@ int AtmiBrokerServer::block() {
 
 void AtmiBrokerServer::shutdown() {
 	LOG4CXX_INFO(loggerAtmiBrokerServer, "Server prepare to shutdown");
+	//	server_done(); You can't do this here as the service dispatcher will be cleaned up that is handling
+	// the cleanup for an admin call
 	finish->lock();
 	finish->notify();
 	finish->unlock();

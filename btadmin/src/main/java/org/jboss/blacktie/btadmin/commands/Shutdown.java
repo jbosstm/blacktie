@@ -38,7 +38,9 @@ import org.jboss.blacktie.jatmibroker.core.conf.Machine;
 import org.jboss.blacktie.jatmibroker.core.conf.Server;
 
 /**
- * The shutdown command will shutdown the server specified
+ * The shutdown command will shutdown the server specified. This method is
+ * non-blocking, i.e. the server is requested to shutdown, it will still be
+ * alive possibly
  */
 public class Shutdown implements Command {
 	/**
@@ -122,7 +124,8 @@ public class Shutdown implements Command {
 								next.getName(), next.getId() }, new String[] {
 								"java.lang.String", "int" });
 				if (result) {
-					log.info("Server shutdown successfully: " + next.getName() + " with id: " + next.getId());
+					log.info("Server shutdown successfully: " + next.getName()
+							+ " with id: " + next.getId());
 				} else {
 					log
 							.error("Server could not be shutdown (may already be stopped)");
