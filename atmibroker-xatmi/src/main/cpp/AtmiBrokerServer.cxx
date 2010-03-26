@@ -846,7 +846,7 @@ void AtmiBrokerServer::removeAdminDestination(char* serviceName, bool decrement)
 		sprintf(command, "decrementconsumer,%s,%s,", serverName, serviceName);
 	} else {
 		commandLength = strlen(serverName) + strlen(serviceName) + strlen(
-				"tpunadvertise,, ");
+				"tpunadvertise,,, ");
 		command = (char*) ::tpalloc((char*) "X_OCTET", NULL, commandLength);
 		sprintf(command, "tpunadvertise,%s,%s,", serverName, serviceName);
 	}

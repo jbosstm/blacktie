@@ -53,6 +53,7 @@ ServiceDispatcher::ServiceDispatcher(AtmiBrokerServer* server,
 
 ServiceDispatcher::~ServiceDispatcher() {
 	free(this->serviceName);
+	delete pauseLock();
 }
 
 int ServiceDispatcher::pause(void) {
