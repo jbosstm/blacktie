@@ -374,7 +374,7 @@ int tpunadvertise(char * svcname) {
 	if (ptrServer != NULL) {
 		if (svcname && strcmp(svcname, "") != 0) {
 			if (ptrServer->isAdvertised(svcname)) {
-				ptrServer->unadvertiseService(svcname);
+				ptrServer->unadvertiseService(svcname, false);
 				toReturn = 0;
 			} else {
 				setSpecific(TPE_KEY, TSS_TPENOENT);

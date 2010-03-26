@@ -54,7 +54,7 @@ public:
 
 	virtual bool advertiseService(char * serviceName, void(*func)(TPSVCINFO *));
 
-	virtual void unadvertiseService(char * serviceName);
+	virtual void unadvertiseService(char * serviceName, bool decrement);
 
 	BLACKTIE_XATMI_DLL bool isAdvertised(char * serviceName);
 	bool advertiseService(char* serviceName);
@@ -74,7 +74,7 @@ private:
 	void (*getServiceMethod(const char * aServiceName))(TPSVCINFO *);
 	void addDestination(Destination* destination, void(*func)(TPSVCINFO *), ServiceInfo* service);
 	Destination* removeDestination(const char * aServiceName);
-	void removeAdminDestination(char* svcname);
+	void removeAdminDestination(char* svcname, bool decrement);
 	void updateServiceStatus(ServiceInfo* service, SVCFUNC func, bool status);
 
 	ConnectionManager connections;

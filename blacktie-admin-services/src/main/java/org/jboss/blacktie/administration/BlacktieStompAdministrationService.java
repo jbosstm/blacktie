@@ -198,14 +198,15 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 	int deployQueue(String serviceName, String version) {
 		log.trace("deployQueue: " + serviceName + " version: " + version);
-		
-		if(version == null || !version.equals(prop.getProperty("blacktie.domain.version"))) {
-			log.warn("Blacktie Domain version " + 
-					  prop.getProperty("blacktie.domain.version") + 
-					  " not match server " + version);
+
+		if (version == null
+				|| !version.equals(prop.getProperty("blacktie.domain.version"))) {
+			log.warn("Blacktie Domain version "
+					+ prop.getProperty("blacktie.domain.version")
+					+ " not match server " + version);
 			return 4;
 		}
-		
+
 		int result = 0;
 		Long currentTime = QUEUE_CREATION_TIMES.get(serviceName);
 
@@ -278,13 +279,14 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 		try {
 			consumerCounts = consumerCount(serviceName);
-			log.debug("Service " + serviceName + " has " + consumerCounts
-					+ " consumers");
-			if (consumerCounts == 1) {
+			if (consumerCounts <= 1) {
 				result = undeployQueue(serviceName);
+				log.info(serviceName + " undeployed");
 			} else {
 				// THERE ARE OTHER SERVERS STILL ALIVE
 				result = 1;
+				log.info(serviceName + " still has " + consumerCounts
+						+ " consumers");
 			}
 		} catch (Throwable t) {
 			log.error("Could not get consumer counts of " + serviceName, t);
@@ -300,7 +302,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		String operation = st.nextToken();
 		String serverName = st.nextToken();
 		String serviceName = st.nextToken();
-		
+
 		byte[] success = new byte[1];
 		String server = null;
 		int k = -1;

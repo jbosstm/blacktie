@@ -705,7 +705,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 						<< serviceName << " Exception: " << e._name());
 		setSpecific(TPE_KEY, TSS_TPEMATCH);
 		try {
-			removeAdminDestination(serviceName);
+			removeAdminDestination(serviceName, true);
 		} catch (...) {
 			LOG4CXX_ERROR(loggerAtmiBrokerServer,
 					(char*) "Could not remove the destination: " << serviceName);
@@ -716,7 +716,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 				(char*) "Could not create the destination: " << serviceName);
 		setSpecific(TPE_KEY, TSS_TPEMATCH);
 		try {
-			removeAdminDestination(serviceName);
+			removeAdminDestination(serviceName, true);
 		} catch (...) {
 			LOG4CXX_ERROR(loggerAtmiBrokerServer,
 					(char*) "Could not remove the destination: " << serviceName);
@@ -726,7 +726,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 	return toReturn;
 }
 
-void AtmiBrokerServer::unadvertiseService(char * svcname) {
+void AtmiBrokerServer::unadvertiseService(char * svcname, bool decrement) {
 	char* serviceName = (char*) ::malloc(XATMI_SERVICE_NAME_LENGTH + 1);
 	memset(serviceName, '\0', XATMI_SERVICE_NAME_LENGTH + 1);
 	strncat(serviceName, svcname, XATMI_SERVICE_NAME_LENGTH);
@@ -743,8 +743,6 @@ void AtmiBrokerServer::unadvertiseService(char * svcname) {
 			!= advertisedServices.end(); i++) {
 		char* name = (*i);
 		if (strcmp(serviceName, name) == 0) {
-			removeAdminDestination(serviceName);
-
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "remove_service_queue: " << serviceName);
 			Destination * destination = removeDestination(serviceName);
@@ -756,6 +754,7 @@ void AtmiBrokerServer::unadvertiseService(char * svcname) {
 					<< serviceName);
 			advertisedServices.erase(i);
 			free(name);
+			removeAdminDestination(serviceName, decrement);
 			LOG4CXX_INFO(loggerAtmiBrokerServer,
 					(char*) "unadvertised service " << serviceName);
 			break;
@@ -805,8 +804,8 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 		tpfree(response);
 		return false;
 	} else if (response[0] == 4) {
-		LOG4CXX_WARN(loggerAtmiBrokerServer,
-				(char*) "Server vresion " << version << " can not main Domain version");
+		LOG4CXX_WARN(loggerAtmiBrokerServer, (char*) "Server vresion "
+				<< version << " can not main Domain version");
 		tpfree(command);
 		tpfree(response);
 		return false;
@@ -836,22 +835,30 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 	}
 }
 
-void AtmiBrokerServer::removeAdminDestination(char* serviceName) {
+void AtmiBrokerServer::removeAdminDestination(char* serviceName, bool decrement) {
 	long commandLength;
 	long responseLength = 1;
+	char* command;
 
-	commandLength = strlen(serverName) + strlen(serviceName) + 21;
+	if (decrement) {
+		commandLength = strlen(serverName) + strlen(serviceName) + 21;
+		command = (char*) ::tpalloc((char*) "X_OCTET", NULL, commandLength);
+		sprintf(command, "decrementconsumer,%s,%s,", serverName, serviceName);
+	} else {
+		commandLength = strlen(serverName) + strlen(serviceName) + strlen(
+				"tpunadvertise,, ");
+		command = (char*) ::tpalloc((char*) "X_OCTET", NULL, commandLength);
+		sprintf(command, "tpunadvertise,%s,%s,", serverName, serviceName);
+	}
 
-	char* command = (char*) ::tpalloc((char*) "X_OCTET", NULL, commandLength);
 	char* response = (char*) ::tpalloc((char*) "X_OCTET", NULL, responseLength);
-	memset(command, '\0', commandLength);
 
-	sprintf(command, "decrementconsumer,%s,%s,", serverName, serviceName);
-
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, "Unadvertise with command: "
+			<< command);
 	if (tpcall((char*) "BTStompAdmin", command, commandLength, &response,
 			&responseLength, TPNOTRAN) != 0) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer,
-				"Could not advertise service with command: " << command);
+				"Could not unadvertise service with command: " << command);
 	} else if (responseLength != 1) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer,
 				"Service returned with unexpected response: " << response
@@ -859,8 +866,11 @@ void AtmiBrokerServer::removeAdminDestination(char* serviceName) {
 	} else if (response[0] == 0) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer, "Service returned with error: "
 				<< command);
+	} else {
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, "Unadvertise ok");
 	}
 	tpfree(command);
+	tpfree(response);
 }
 
 bool AtmiBrokerServer::isAdvertised(char * serviceName) {
@@ -990,7 +1000,7 @@ void AtmiBrokerServer::server_done() {
 	for (int i = serverInfo.serviceVector.size() - 1; i >= 0; i--) {
 		char* svcname = (char*) serverInfo.serviceVector[i].serviceName;
 		if (isAdvertised(svcname)) {
-			unadvertiseService(svcname);
+			unadvertiseService(svcname, true);
 		}
 	}
 
