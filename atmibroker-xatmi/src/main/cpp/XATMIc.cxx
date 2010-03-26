@@ -155,7 +155,7 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 	int toReturn = -1;
 	int len = ::bufferSize(*odata, *olen);
 	if (len != -1) {
-		LOG4CXX_DEBUG(loggerXATMI, (char*) "tprecv session: "
+		LOG4CXX_DEBUG(loggerXATMI, (char*) "receive session: "
 				<< session->getId() << " olen: " << olen << " flags: " << flags);
 		if (flags & TPGETANY && !warnedTPGETANY) {
 			LOG4CXX_ERROR(loggerXATMI,
