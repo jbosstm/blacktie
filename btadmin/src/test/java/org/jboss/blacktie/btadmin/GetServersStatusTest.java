@@ -23,7 +23,11 @@ import javax.management.MalformedObjectNameException;
 
 import junit.framework.TestCase;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 public class GetServersStatusTest extends TestCase {
+	private static Logger log = LogManager.getLogger(GetServersStatusTest.class);
 
 	private CommandHandler commandHandler;
 
@@ -61,18 +65,21 @@ public class GetServersStatusTest extends TestCase {
 		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
 			fail("Could not start the server");
 		}
+		log.info("Started");
 		String command = "advertise default BAR";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command failed");
 		}
+		log.info("advertised");
 		command = "getServersStatus";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command was not successful");
 		}
+		log.info("got status");
 		if (commandHandler.handleCommand("shutdown".split(" ")) != 0) {
 			fail("Could not stop the server");
 		}
-
+		log.info("shutdown");
 //		// TODO SHUTDOWN SHOULD RETURN WHEN THERE ARE NO MORE CONSUMERS?
 //		try {
 //			Thread.currentThread().sleep(5000);

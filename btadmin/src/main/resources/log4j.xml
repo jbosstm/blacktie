@@ -30,7 +30,7 @@
 	</appender>
 
 	<appender name="ROLLING" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="blacktie.log" />
+		<param name="File" value="blacktie-J.log" />
 		<param name="Threshold" value="ALL" />
 		<param name="MaxFileSize" value="10000KB" />
 		<param name="MaxBackupIndex" value="10" />
