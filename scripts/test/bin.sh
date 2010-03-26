@@ -1,10 +1,8 @@
 cd ../../
 rm -rf dist
 mkdir dist
-cp blacktie/target/blacktie-*-bin.tar.gz dist
-cd dist
-tar xfz blacktie-*-bin.tar.gz
-cd blacktie*/
+tar xfz blacktie/target/blacktie-*-bin.tar.gz -C dist
+cd dist/blacktie*/
 
 # MAKE SURE THE ENVIRONMENT VARIABLES ARE SET
 export HOSTNAME_TO_USE=`hostname`
