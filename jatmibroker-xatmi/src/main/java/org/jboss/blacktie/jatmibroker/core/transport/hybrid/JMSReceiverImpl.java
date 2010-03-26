@@ -91,14 +91,18 @@ public class JMSReceiverImpl implements Receiver {
 	}
 
 	public void close() throws ConnectionException {
+		log.debug("close");
 		try {
+			log.debug("closing consumer");
 			receiver.close();
+			log.debug("consumer closed");
 			if (isTemporary) {
 				log.debug("Deleting: " + destination.getQueueName());
 				((TemporaryQueue) destination).delete();
 				log.debug("Deleted: " + destination.getQueueName());
 			}
 		} catch (Throwable t) {
+			log.debug("consumer could not be closed");
 			throw new ConnectionException(-1, "Could not delete the queue", t);
 		}
 	}

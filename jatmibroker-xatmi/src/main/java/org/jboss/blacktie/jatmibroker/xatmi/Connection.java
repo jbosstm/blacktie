@@ -209,6 +209,7 @@ public class Connection {
 		if ((flags & Connection.TPNOREPLY) == Connection.TPNOREPLY) {
 			correlationId = 0;
 		}
+		log.debug("Returning cd: " + correlationId);
 		return correlationId;
 	}
 
@@ -221,15 +222,20 @@ public class Connection {
 	 *            The flags to use
 	 */
 	public int tpcancel(int cd) throws ConnectionException {
+		log.debug("tpcancel: " + cd);
 		int toReturn = -1;
 		Receiver endpoint = temporaryQueues.remove(cd);
 		if (endpoint != null) {
+			log.debug("closing endpoint");
 			endpoint.close();
+			log.debug("endpoint closed");
 			toReturn = 0;
 		} else {
+			log.debug("No endpoint available");
 			throw new ConnectionException(Connection.TPEBADDESC, "cd " + cd
 					+ " does not exist");
 		}
+		log.debug("tpcancel returning: " + toReturn);
 		return toReturn;
 	}
 
@@ -243,6 +249,7 @@ public class Connection {
 	 * @return The response from the server
 	 */
 	public Response tpgetrply(int cd, int flags) throws ConnectionException {
+		log.debug("tpgetrply: " + cd);
 		boolean hasTPSIGSTRT = (flags & TPSIGRSTRT) == TPSIGRSTRT;
 		if (hasTPSIGSTRT && !warnedTPSIGRSTRT) {
 			log.error("TPSIGRSTRT NOT SUPPORTED FOR SENDS OR RECEIVES");
@@ -252,8 +259,11 @@ public class Connection {
 		Response toReturn = receive(cd, flags);
 		Session session = sessions.remove(cd);
 		if (session != null) {
+			log.debug("closing session");
 			session.close();
+			log.debug("closed session");
 		}
+		log.debug("tpgetrply returning: " + toReturn);
 		return toReturn;
 	}
 
@@ -384,6 +394,7 @@ public class Connection {
 	}
 
 	private Response receive(int cd, int flags) throws ConnectionException {
+		log.debug("receive: " + cd);
 		Receiver endpoint = temporaryQueues.remove(cd);
 		if (endpoint == null) {
 			throw new ConnectionException(Connection.TPEBADDESC,
@@ -416,6 +427,9 @@ public class Connection {
 		} else {
 			Response response = new Response(message.rval, message.rcode,
 					buffer, message.len, message.flags);
+
+			log.debug("received returned a response? "
+					+ (response == null ? "false" : "true"));
 			return response;
 		}
 	}

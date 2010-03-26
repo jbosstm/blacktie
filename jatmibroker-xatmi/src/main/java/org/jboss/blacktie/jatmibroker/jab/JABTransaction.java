@@ -167,6 +167,7 @@ public class JABTransaction {
 	}
 
 	public static JABTransaction current() {
+		log.trace("Getting current");
 		return ThreadActionData.currentAction();
 	}
 

@@ -330,10 +330,12 @@ public class Session {
 	}
 
 	private void setLastEvent(long lastEvent) {
+		log.debug("Set lastEvent: " + lastEvent);
 		this.lastEvent = lastEvent;
 	}
 
 	public void setLastRCode(int rcode) {
+		log.debug("Set lastRCode: " + lastRCode);
 		this.lastRCode = rcode;
 	}
 

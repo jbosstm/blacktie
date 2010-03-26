@@ -131,9 +131,7 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 	public synchronized void send(String replyto_ior, short rval, int rcode,
 			byte[] idata, int ilen, int cd, int flags, String type,
 			String subtype) {
-		if (callbackIOR != null) {
-			log.debug("Received: " + callbackIOR);
-		}
+		log.debug("Received: " + callbackIOR);
 		Message message = new Message();
 		message.cd = cd;
 		message.replyTo = replyto_ior;
@@ -152,6 +150,7 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 		}
 
 		if (eventListener != null) {
+			log.debug("Event listener will be called back");
 			if (message.rval == EventListener.DISCON_CODE) {
 				eventListener.setLastEvent(Connection.TPEV_DISCONIMM);
 			} else if (message.rcode == Connection.TPESVCERR) {
@@ -163,7 +162,9 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 		}
 
 		returnData.add(message);
+		log.trace("notifying");
 		notify();
+		log.trace("notifed");
 	}
 
 	public java.lang.Object getReplyTo() {
@@ -171,12 +172,11 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 	}
 
 	public Message receive(long flags) throws ConnectionException {
+		log.debug("Receiving");
 		synchronized (this) {
 			if (returnData.isEmpty()) {
 				try {
-					if (callbackIOR != null) {
-						log.debug("Waiting: " + callbackIOR);
-					}
+					log.debug("Waiting: " + callbackIOR);
 					wait(timeout);
 					log.debug("Waited: " + callbackIOR);
 				} catch (InterruptedException e) {
@@ -187,6 +187,7 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 				log.debug("Empty return data: " + callbackIOR);
 				if (JABTransaction.current() != null) {
 					try {
+						log.debug("Marking rollbackOnly");
 						JABTransaction.current().rollback_only();
 					} catch (JABException e) {
 						throw new ConnectionException(Connection.TPESYSTEM,
@@ -198,9 +199,11 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 			} else {
 				Message message = returnData.remove(0);
 				if (message != null) {
+					log.debug("Message was available");
 					if (message.rval == EventListener.DISCON_CODE) {
 						if (JABTransaction.current() != null) {
 							try {
+								log.debug("Marking rollbackOnly as disconnection");
 								JABTransaction.current().rollback_only();
 							} catch (JABException e) {
 								throw new ConnectionException(
@@ -211,6 +214,7 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 					} else if (message.rcode == Connection.TPESVCERR) {
 						if (JABTransaction.current() != null) {
 							try {
+								log.debug("Marking rollbackOnly as svc err");
 								JABTransaction.current().rollback_only();
 							} catch (JABException e) {
 								throw new ConnectionException(
@@ -229,6 +233,8 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 							}
 						}
 					}
+				} else {
+					log.debug("message was null");
 				}
 				return message;
 			}
@@ -236,27 +242,36 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 	}
 
 	public void disconnect() {
+		log.debug("disconnect");
 		if (queueName != null) {
+			log.debug("queue name: " + queueName);
 			try {
 				NameComponent[] name = orbManagement.getNamingContextExt()
 						.to_name(queueName);
 				orbManagement.getNamingContext().unbind(name);
 				queueName = null;
+				log.debug("unbound");
 			} catch (Throwable t) {
 				log.error("Could not unbind service factory" + queueName, t);
 			}
 		}
 		try {
+			log.debug("deactivating");
 			m_default_poa.deactivate_object(activate_object);
+			log.debug("deactivated");
 		} catch (Throwable t) {
 			log.error("Could not unbind service factory" + queueName, t);
 		}
+		log.trace("synchronizing");
 		synchronized (this) {
+			log.trace("notifying");
 			notify();
+			log.trace("notified");
 		}
 	}
 
 	public void close() {
+		log.debug("close");
 		disconnect();
 	}
 }
