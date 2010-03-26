@@ -356,6 +356,10 @@ public class XMLEnvHandler extends DefaultHandler {
 			for (int i = 0; i < atts.getLength(); i++) {
 				if (atts.getLocalName(i).equals("url")) {
 					String value = atts.getValue(i);
+					if (jbossasIpAddr != null) {
+						value = value.replace("${JBOSSAS_IP_ADDR}",
+								jbossasIpAddr);
+					}
 					prop.setProperty("JMXURL", value);
 				}
 			}
