@@ -135,7 +135,7 @@ public class Shutdown implements Command {
 
 			// TODO SHUTDOWN SHOULD RETURN WHEN THERE ARE NO MORE CONSUMERS?
 			try {
-				Thread.currentThread().sleep(10000);
+				Thread.currentThread().sleep(15000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
