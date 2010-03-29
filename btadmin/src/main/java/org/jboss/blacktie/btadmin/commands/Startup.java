@@ -108,14 +108,17 @@ public class Startup implements Command {
 						Process exec = Runtime.getRuntime().exec(cmdarray,
 								envp, dir);
 						log.debug("Launched server: " + pathToExecutable);
-						InputStream inputStream = exec.getInputStream();
-						BufferedReader reader = new BufferedReader(
-								new InputStreamReader(inputStream));
+						BufferedReader output = new BufferedReader(
+								new InputStreamReader(exec.getInputStream()));
 						while (true) {
-							String readLine = reader.readLine();
+							String readLine = output.readLine();
 							log.info(readLine);
 							if (readLine
 									.endsWith("Server waiting for requests...")) {
+								new Thread(new EatIO(exec.getInputStream()))
+										.start();
+								new Thread(new EatIO(exec.getErrorStream()))
+										.start();
 								found = true;
 								break;
 
@@ -130,6 +133,26 @@ public class Startup implements Command {
 		if (!found) {
 			log.error("No machines configured for host");
 			throw new CommandFailedException(-1);
+		}
+	}
+
+	private class EatIO implements Runnable {
+		private InputStream is;
+
+		public EatIO(InputStream is) {
+			this.is = is;
+		}
+
+		public void run() {
+			int len;
+			byte[] buf = new byte[1024];
+			try {
+				while ((len = is.read(buf)) > 0) {
+					// DO NOTHING
+				}
+			} catch (IOException e) {
+				log.error("Could not write output");
+			}
 		}
 	}
 }
