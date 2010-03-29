@@ -71,7 +71,7 @@ int ServiceDispatcher::resume(void) {
 	if (isPause) {
 		pauseLock->lock();
 		isPause = false;
-		pauseLock->notifyAll();
+		pauseLock->notify();
 		pauseLock->unlock();
 	}
 	return 0;

@@ -42,6 +42,7 @@ bool SynchronizableObject::lock() {
 
 bool SynchronizableObject::wait(long timeout) {
 	LOG4CXX_TRACE(logger, (char*) "Waiting for cond: " << this);
+	waiterCount++;
 	bool toReturn = false;
 	if (timeout > 0) {
 		ACE_Time_Value timeoutval = ACE_OS::gettimeofday();
@@ -53,14 +54,20 @@ bool SynchronizableObject::wait(long timeout) {
 		LOG4CXX_TRACE(logger, (char*) "Blocking wait: " << this);
 		toReturn = cond.wait();
 	}
+	waiterCount--;
 	LOG4CXX_TRACE(logger, (char*) "waited: " << this);
 	return toReturn;
 }
 
 bool SynchronizableObject::notify() {
 	LOG4CXX_TRACE(logger, (char*) "Notifying cond: " << this);
-	bool toReturn = cond.signal();
-	LOG4CXX_TRACE(logger, (char*) "notified: " << this);
+	bool toReturn = false;
+	if (waiterCount > 0) {
+		toReturn = cond.signal();
+		LOG4CXX_TRACE(logger, (char*) "notified: " << this);
+	} else {
+		LOG4CXX_TRACE(logger, (char*) "no waiters: " << this);
+	}
 	return toReturn;
 }
 
