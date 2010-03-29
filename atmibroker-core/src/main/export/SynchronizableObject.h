@@ -68,7 +68,7 @@ private:
 	static log4cxx::LoggerPtr logger;
 	ACE_Thread_Mutex mutex;
 	ACE_Condition<ACE_Thread_Mutex> cond;
-	int waiterCount = 0;
+	int waiterCount;
 };
 
 #endif
