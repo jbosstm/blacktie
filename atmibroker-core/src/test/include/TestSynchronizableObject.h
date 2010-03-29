@@ -43,6 +43,7 @@ class TestSynchronizableObject: public CppUnit::TestFixture {
 CPPUNIT_TEST_SUITE( TestSynchronizableObject)
 	;
 		CPPUNIT_TEST( testWaitNotify);
+		CPPUNIT_TEST( testNotifyWaitWithTimeout);
 	CPPUNIT_TEST_SUITE_END()
 	;
 
@@ -50,6 +51,7 @@ public:
 	void setUp();
 	void tearDown();
 	void testWaitNotify();
+	void testNotifyWaitWithTimeout();
 private:
 	Waiter* waiter;
 	CORBA::ORB_var orbRef;

@@ -27,7 +27,8 @@ log4cxx::LoggerPtr SynchronizableObject::logger(log4cxx::Logger::getLogger(
 
 SynchronizableObject::SynchronizableObject() :
 	mutex(), cond(mutex) {
-	waiterCount = 0;
+	waitingCount = 0;
+	notifiedCount = 0;
 }
 
 SynchronizableObject::~SynchronizableObject() {
@@ -43,7 +44,7 @@ bool SynchronizableObject::lock() {
 
 bool SynchronizableObject::wait(long timeout) {
 	LOG4CXX_TRACE(logger, (char*) "Waiting for cond: " << this);
-	waiterCount++;
+	waitingCount++;
 	bool toReturn = false;
 	if (timeout > 0) {
 		ACE_Time_Value timeoutval = ACE_OS::gettimeofday();
@@ -55,7 +56,10 @@ bool SynchronizableObject::wait(long timeout) {
 		LOG4CXX_TRACE(logger, (char*) "Blocking wait: " << this);
 		toReturn = cond.wait();
 	}
-	waiterCount--;
+	waitingCount--;
+	if (notifiedCount > 0) {
+		notifiedCount--;
+	}
 	LOG4CXX_TRACE(logger, (char*) "waited: " << this);
 	return toReturn;
 }
@@ -63,8 +67,9 @@ bool SynchronizableObject::wait(long timeout) {
 bool SynchronizableObject::notify() {
 	LOG4CXX_TRACE(logger, (char*) "Notifying cond: " << this);
 	bool toReturn = false;
-	if (waiterCount > 0) {
+	if (notifiedCount < waitingCount) {
 		toReturn = cond.signal();
+		notifiedCount++;
 		LOG4CXX_TRACE(logger, (char*) "notified: " << this);
 	} else {
 		LOG4CXX_TRACE(logger, (char*) "no waiters: " << this);

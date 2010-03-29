@@ -99,3 +99,17 @@ void TestSynchronizableObject::testWaitNotify() {
 	userlogc("main done");
 	BT_ASSERT_MESSAGE("Was not notified", notified == true);
 }
+
+void TestSynchronizableObject::testNotifyWaitWithTimeout() {
+	ACE_OS::sleep(1);
+	SynchronizableObject* lock = waiter->getLock();
+	lock->lock();
+	lock->notify();
+	lock->unlock();
+	lock->lock();
+	userlogc("waiting for 3 seconds");
+	lock->wait(3);
+	userlogc("waited");
+	lock->unlock();
+	userlogc("main done");
+}
