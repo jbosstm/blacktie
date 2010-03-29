@@ -82,9 +82,9 @@ int ServiceDispatcher::svc(void) {
 		// This will wait while the server is paused
 		pauseLock->lock();
 		while (!stop && isPause) {
-			LOG4CXX_DEBUG(logger, (char*) "pausing");
+			LOG4CXX_DEBUG(logger, (char*) "pausing: " << serviceName);
 			pauseLock->wait(0);
-			LOG4CXX_DEBUG(logger, (char*) "paused");
+			LOG4CXX_DEBUG(logger, (char*) "paused: " << serviceName);
 		}
 		pauseLock->unlock();
 

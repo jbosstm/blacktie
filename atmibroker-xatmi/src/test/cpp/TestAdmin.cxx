@@ -114,6 +114,7 @@ void TestAdmin::testServerPauseAndResume() {
 	userlogc((char*)"resume server OK");
 
 	::sleeper(3);
+	userlogc((char*)"call BAR should OK");
 	BT_ASSERT(callBAR(0) == 0);
 	userlogc((char*)"call BAR OK");
 }
