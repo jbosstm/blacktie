@@ -18,6 +18,7 @@
 #include "TestAssert.h"
 #include "TestAdmin.h"
 #include "malloc.h"
+#include "Sleeper.h"
 
 void TestAdmin::setUp() {
 	userlogc((char*) "TestAdmin::setUp");
@@ -112,6 +113,7 @@ void TestAdmin::testServerPauseAndResume() {
 	BT_ASSERT(cd == 0);
 	userlogc((char*)"resume server OK");
 
+	::sleeper(3);
 	BT_ASSERT(callBAR(0) == 0);
 	userlogc((char*)"call BAR OK");
 }
