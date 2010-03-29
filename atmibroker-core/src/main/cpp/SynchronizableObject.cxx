@@ -27,6 +27,7 @@ log4cxx::LoggerPtr SynchronizableObject::logger(log4cxx::Logger::getLogger(
 
 SynchronizableObject::SynchronizableObject() :
 	mutex(), cond(mutex) {
+	waiterCount = 0;
 }
 
 SynchronizableObject::~SynchronizableObject() {
