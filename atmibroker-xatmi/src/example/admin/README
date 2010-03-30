@@ -45,6 +45,7 @@ On Windows:
 
 
 4 RUN THE CLIENT
+Edit the btconfig.xml to set REPLACE_WITH_HOSTNAME as appropriate
 ./client
 NOTE: If you get the following error you have not sourced setenv.sh|bat
 ./client: error while loading shared libraries: libTAO_CosNaming.so.1.6.7: cannot open shared object file: No such file or directory

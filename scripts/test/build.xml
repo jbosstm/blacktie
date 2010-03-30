@@ -18,5 +18,10 @@
 				<include name="**/btconfig.xml"/>
 			</fileset>
 		</replaceregexp>
+		<replaceregexp byline="true" match="REPLACE_WITH_HOSTNAME" replace="${JBOSSAS_IP_ADDR}">
+			<fileset dir="../../dist/">
+				<include name="**/pom.xml"/>
+			</fileset>
+		</replaceregexp>
 	</target>
 </project>
