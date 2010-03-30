@@ -36,9 +36,6 @@ public class ServiceDispatcher extends Service implements Runnable {
 	private Receiver receiver;
 	private Thread thread;
 	private volatile boolean closed;
-	private Object closer = new Object();
-	private Object dier = new Object();
-	private boolean dead;
 
 	ServiceDispatcher(String serviceName, BlacktieService callback,
 			Receiver receiver) throws ConfigurationException,
@@ -86,26 +83,6 @@ public class ServiceDispatcher extends Service implements Runnable {
 						+ t.getMessage(), t);
 			}
 		}
-
-		synchronized (closer) {
-			synchronized (dier) {
-				if (!closed) {
-					try {
-						log.trace("Waiting dier");
-						dier.wait();
-						log.trace("Waited dier");
-					} catch (InterruptedException e) {
-						log.warn("Could not wait");
-					}
-				} else {
-					log.trace("Not waiting dier");
-				}
-			}
-			log.trace("Notifying closer");
-			closer.notify();
-			log.trace("Notified closer");
-			dead = true;
-		}
 	}
 
 	public void startClose() {
@@ -114,24 +91,16 @@ public class ServiceDispatcher extends Service implements Runnable {
 	}
 
 	public void close() throws ConnectionException {
-		log.trace("close");
-		synchronized (dier) {
-			log.trace("Notifying dier");
-			dier.notify();
-			log.trace("Notified dier");
-		}
-		synchronized (closer) {
-			if (!dead) {
-				try {
-					log.trace("Waiting closer");
-					closer.wait();
-					log.trace("Waited closer");
-				} catch (InterruptedException e) {
-					log.error("Could not wait for the responder", e);
-				}
-			}
+		log.trace("closing");
+		try {
+			log.trace("Joining");
+			thread.join();
+			log.trace("Joined");
+		} catch (InterruptedException e) {
+			log.error("Could not join the dispatcher", e);
 		}
 		super.close();
+		log.trace("closed");
 	}
 
 	public Response tpservice(TPSVCINFO svcinfo) {
