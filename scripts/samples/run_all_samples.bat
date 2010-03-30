@@ -19,26 +19,14 @@ cd %BLACKTIE_HOME%\examples\jab
 echo hello | mvn test
 IF %ERRORLEVEL% NEQ 0 exit -1
 
-rem SHUTDOWN USING btadmin
-cd %BLACKTIE_HOME%\examples\xatmi\fooapp
-call btadmin shutdown
+rem RUN THE ADMIN JMX CLIENT
+cd %BLACKTIE_HOME%\examples\admin\jmx
+(echo 0& echo 0& echo 0& echo 0& echo 1) | mvn test
 IF %ERRORLEVEL% NEQ 0 exit -1
 rem RUN THE ADMIN JMX CLIENT
-rem cd %BLACKTIE_HOME%\examples\admin\jmx
-rem echo '0
-rem 0
-rem 0
-rem 0
-rem 1' | mvn test
-rem IF %ERRORLEVEL% NEQ 0 exit -1
-rem RUN THE ADMIN JMX CLIENT
-rem cd %BLACKTIE_HOME%\examples\admin\jmx
-rem echo '0
-rem 0
-rem 0
-rem 0
-rem 2' | mvn test
-rem IF %ERRORLEVEL% NEQ 0 exit -1
+cd %BLACKTIE_HOME%\examples\admin\jmx
+(echo 0& echo 0& echo 0& echo 0& echo 2) | mvn test
+IF %ERRORLEVEL% NEQ 0 exit -1
 rem PICK UP THE CLOSING SERVER
 @ping 127.0.0.1 -n 3 -w 1000 > nul
 
@@ -49,26 +37,14 @@ call btadmin startup
 IF %ERRORLEVEL% NEQ 0 exit -1
 set BLACKTIE_CONFIGURATION=
 
-rem SHUTDOWN USING btadmin
-cd %BLACKTIE_HOME%\examples\xatmi\fooapp
-call btadmin shutdown
-IF %ERRORLEVEL% NEQ 0 exit -1
 rem SHUTDOWN THE SERVER RUNNING THE XATMI ADMIN CLIENT
-rem cd %BLACKTIE_HOME%\examples\admin\xatmi
-rem call generate_client -Dclient.includes=client.c
-rem echo '0
-rem 0
-rem 0
-rem 0
-rem 1' | client
+cd %BLACKTIE_HOME%\examples\admin\xatmi
+call generate_client -Dclient.includes=client.c
+(echo 0& echo 0& echo 0& echo 0& echo 1) | client
 rem SHUTDOWN THE SERVER RUNNING THE XATMI ADMIN CLIENT
-rem cd %BLACKTIE_HOME%\examples\admin\xatmi
-rem call generate_client -Dclient.includes=client.c
-rem echo '0
-rem 0
-rem 0
-rem 0
-rem 2' | client
+cd %BLACKTIE_HOME%\examples\admin\xatmi
+call generate_client -Dclient.includes=client.c
+(echo 0& echo 0& echo 0& echo 0& echo 2) | client
 rem PICK UP THE CLOSING SERVER
 @ping 127.0.0.1 -n 3 -w 1000 > nul
 
