@@ -30,6 +30,7 @@ void TestTPSend::setUp() {
 	userlogc((char*) "TestTPSend::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
+	rcvlen = -1;
 
 	// Setup server
 	BaseServerTest::setUp();
@@ -114,7 +115,7 @@ void testtpsend_tpsendonly_service(TPSVCINFO *svcinfo) {
 			&event);
 
 	long revent = 0;
-	long rcvlen;
+	long rcvlen = svcinfo->len;
 	char* rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
 	result = ::tprecv(svcinfo->cd, &rcvbuf, &rcvlen, 0, &revent);
 }
