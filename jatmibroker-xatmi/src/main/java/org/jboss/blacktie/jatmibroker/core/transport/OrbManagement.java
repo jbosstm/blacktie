@@ -102,6 +102,7 @@ public class OrbManagement {
 		log.debug("Closing");
 		orb.shutdown(true);
 		orb.destroy();
+		log.debug("Closed");
 	}
 
 	public POA getRootPoa() {
