@@ -43,10 +43,12 @@ public class AtmiBrokerServer {
 	private Map<String, ServiceData> serviceData = new HashMap<String, ServiceData>();
 	private OrbManagement orbManagement;
 	private Properties properties;
+	private String serverName;
 	private static final String DEFAULT_POOL_SIZE = "1";
 
 	public AtmiBrokerServer(String serverName) throws ConfigurationException,
 			ConnectionException {
+		this.serverName = serverName;
 		AtmiBrokerServerXML server = new AtmiBrokerServerXML();
 		properties = server.getProperties();
 
@@ -71,12 +73,14 @@ public class AtmiBrokerServer {
 	}
 
 	public void close() throws ConnectionException {
+		log.debug("Close server called: " + serverName);
 		Iterator<String> names = serviceData.keySet().iterator();
 		while (names.hasNext()) {
 			ServiceData next = serviceData.get(names.next());
 			next.close();
 			names.remove();
 		}
+		log.debug("Close server finished: " + serverName);
 	}
 
 	/**

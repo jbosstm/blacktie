@@ -114,6 +114,7 @@ public class ServiceDispatcher extends Service implements Runnable {
 	}
 
 	public void close() throws ConnectionException {
+		log.trace("close");
 		synchronized (dier) {
 			log.trace("Notifying dier");
 			dier.notify();

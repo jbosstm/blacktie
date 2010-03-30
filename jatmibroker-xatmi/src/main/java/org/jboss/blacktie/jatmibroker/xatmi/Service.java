@@ -226,6 +226,7 @@ public abstract class Service implements BlacktieService {
 						len = data.length;
 					}
 				}
+				log.debug("Returning desired message");
 				sender.send("", rval, rcode, data, len, response.getFlags(), 0,
 						0, type, subtype);
 
@@ -241,7 +242,7 @@ public abstract class Service implements BlacktieService {
 								"Could not mark transaction for rollback only");
 					}
 				}
-
+				log.debug("Returning failed message");
 				sender.send("", Connection.TPFAIL, Connection.TPESVCERR, null,
 						0, 0, 0, 0, null, null);
 
