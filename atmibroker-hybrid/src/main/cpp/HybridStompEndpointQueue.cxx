@@ -142,10 +142,15 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 						frame = NULL;
 						this->_connected = false;
 					} else {
-						LOG4CXX_DEBUG(logger, "Handling old receipt");
+						LOG4CXX_DEBUG(logger, "Handling old receipt: " << receipt);
 						this->receipt = NULL;
 						rc = stomp_read(connection, &frame, pool);
-						if (rc != APR_SUCCESS) {
+						if (rc == APR_TIMEUP || rc == 730060) {
+							LOG4CXX_TRACE(logger, "Could not read frame for " << name
+									<< ": as the time limit expired");
+							setSpecific(TPE_KEY, TSS_TPETIME);
+							frame = NULL;
+						} else if (rc != APR_SUCCESS) {
 							LOG4CXX_ERROR(logger, "Could not read frame for "
 									<< name);
 							char errbuf[256];
