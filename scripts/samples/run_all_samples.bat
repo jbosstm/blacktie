@@ -5,7 +5,7 @@ cd %BLACKTIE_HOME%\examples\xatmi\fooapp
 call generate_server -Dservice.names=BAR -Dserver.includes=BarService.c
 IF %ERRORLEVEL% NEQ 0 exit -1
 set BLACKTIE_CONFIGURATION=win32
-btadmin startup
+call btadmin startup
 IF %ERRORLEVEL% NEQ 0 exit -1
 set BLACKTIE_CONFIGURATION=
 
@@ -19,48 +19,56 @@ cd %BLACKTIE_HOME%\examples\jab
 echo hello | mvn test
 IF %ERRORLEVEL% NEQ 0 exit -1
 
-rem RUN THE ADMIN JMX CLIENT
-cd %BLACKTIE_HOME%\examples\admin\jmx
-echo '0
-0
-0
-0
-1' | mvn test
+rem SHUTDOWN USING btadmin
+cd %BLACKTIE_HOME%\examples\xatmi\fooapp
+call btadmin shutdown
 IF %ERRORLEVEL% NEQ 0 exit -1
 rem RUN THE ADMIN JMX CLIENT
-cd %BLACKTIE_HOME%\examples\admin\jmx
-echo '0
-0
-0
-0
-2' | mvn test
-IF %ERRORLEVEL% NEQ 0 exit -1
+rem cd %BLACKTIE_HOME%\examples\admin\jmx
+rem echo '0
+rem 0
+rem 0
+rem 0
+rem 1' | mvn test
+rem IF %ERRORLEVEL% NEQ 0 exit -1
+rem RUN THE ADMIN JMX CLIENT
+rem cd %BLACKTIE_HOME%\examples\admin\jmx
+rem echo '0
+rem 0
+rem 0
+rem 0
+rem 2' | mvn test
+rem IF %ERRORLEVEL% NEQ 0 exit -1
 rem PICK UP THE CLOSING SERVER
 @ping 127.0.0.1 -n 3 -w 1000 > nul
 
 rem RUN THE FOOAPP SERVER AGAIN
 cd %BLACKTIE_HOME%\examples\xatmi\fooapp
 set BLACKTIE_CONFIGURATION=win32
-btadmin startup
+call btadmin startup
 IF %ERRORLEVEL% NEQ 0 exit -1
 set BLACKTIE_CONFIGURATION=
 
+rem SHUTDOWN USING btadmin
+cd %BLACKTIE_HOME%\examples\xatmi\fooapp
+call btadmin shutdown
+IF %ERRORLEVEL% NEQ 0 exit -1
 rem SHUTDOWN THE SERVER RUNNING THE XATMI ADMIN CLIENT
-cd %BLACKTIE_HOME%\examples\admin\xatmi
-call generate_client -Dclient.includes=client.c
-echo '0
-0
-0
-0
-1' | client
+rem cd %BLACKTIE_HOME%\examples\admin\xatmi
+rem call generate_client -Dclient.includes=client.c
+rem echo '0
+rem 0
+rem 0
+rem 0
+rem 1' | client
 rem SHUTDOWN THE SERVER RUNNING THE XATMI ADMIN CLIENT
-cd %BLACKTIE_HOME%\examples\admin\xatmi
-call generate_client -Dclient.includes=client.c
-echo '0
-0
-0
-0
-2' | client
+rem cd %BLACKTIE_HOME%\examples\admin\xatmi
+rem call generate_client -Dclient.includes=client.c
+rem echo '0
+rem 0
+rem 0
+rem 0
+rem 2' | client
 rem PICK UP THE CLOSING SERVER
 @ping 127.0.0.1 -n 3 -w 1000 > nul
 
@@ -70,7 +78,7 @@ call generate_server -Dservice.names=SECURE -Dserver.includes=BarService.c
 IF %ERRORLEVEL% NEQ 0 exit -1
 set BLACKTIE_CONFIGURATION_DIR=serv
 set BLACKTIE_CONFIGURATION=win32
-btadmin startup secure
+call btadmin startup secure
 IF %ERRORLEVEL% NEQ 0 exit -1
 set BLACKTIE_CONFIGURATION=
 set BLACKTIE_CONFIGURATION_DIR=
@@ -92,7 +100,7 @@ set BLACKTIE_CONFIGURATION_DIR=
 rem SHUTDOWN THE SERVER RUNNING THE btadmin TOOL
 set BLACKTIE_CONFIGURATION_DIR=serv
 set BLACKTIE_CONFIGURATION=win32
-btadmin shutdown secure
+call btadmin shutdown secure
 IF %ERRORLEVEL% NEQ 0 exit -1
 set BLACKTIE_CONFIGURATION=
 set BLACKTIE_CONFIGURATION_DIR=
