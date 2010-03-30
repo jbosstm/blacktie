@@ -29,7 +29,7 @@ class TestAdmin: public BaseAdminTest {
 	CPPUNIT_TEST( testStatus );
 	CPPUNIT_TEST( testMessageCounter );
 	CPPUNIT_TEST( testErrorCounter );
-	CPPUNIT_TEST( testServerPauseAndResume );
+	//CPPUNIT_TEST( testServerPauseAndResume );
 	CPPUNIT_TEST( testVersion );
 	CPPUNIT_TEST_SUITE_END();
 
