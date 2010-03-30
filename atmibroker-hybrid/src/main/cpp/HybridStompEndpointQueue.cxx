@@ -280,7 +280,7 @@ bool HybridStompEndpointQueue::connect() {
 					fullName);
 			frame.body_length = -1;
 			frame.body = NULL;
-			LOG4CXX_DEBUG(logger, "Send SUB: " << fullName);
+			LOG4CXX_DEBUG(logger, "Sending SUB: " << fullName);
 			apr_status_t rc = stomp_write(connection, &frame, pool);
 			if (rc != APR_SUCCESS) {
 				LOG4CXX_ERROR(logger, (char*) "Could not send frame");
