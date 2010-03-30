@@ -46,6 +46,8 @@ public abstract class CSControl extends TestCase
 			server.interrupt();
 			server.getProcess().destroy();
 			log.debug("destroyed server process");
+			server.getProcess().waitFor();
+			log.debug("waited for server process");
 		} catch(Throwable e) {
 			throw new RuntimeException("Server shutdown error: ", e);
 		}
