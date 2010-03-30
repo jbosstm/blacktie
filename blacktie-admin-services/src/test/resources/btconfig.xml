@@ -84,12 +84,12 @@
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>
-	<ORB OPT="-ORBInitRef NameService=corbaloc::REPLACE_WITH_HOSTNAME:3528/NameService"
+	<ORB OPT="-ORBInitRef NameService=corbaloc::localhost:3528/NameService"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
-	<MQ HOST="REPLACE_WITH_HOSTNAME" PORT="61613" USER="guest" PASSWORD="guest"
+	<MQ HOST="localhost" PORT="61613" USER="guest" PASSWORD="guest"
 		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10"
-		NAMING_URL="jnp://REPLACE_WITH_HOSTNAME:1099" />
-	<JMX url="service:jmx:rmi:///jndi/rmi://REPLACE_WITH_HOSTNAME:1090/jmxconnector"/>
+		NAMING_URL="jnp://localhost:1099" />
+	<JMX url="service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector"/>
 	<ENV_VARIABLES>
 		<ENV_VARIABLE>
 			<NAME>QueueReaperInterval</NAME>
