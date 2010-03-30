@@ -168,6 +168,7 @@ int serverinit(int argc, char** argv) {
 
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverinit called");
 			ptrServer = new AtmiBrokerServer();
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverInitialized=" << serverInitialized);
 
 			if (!serverInitialized) {
 				::serverdone();
@@ -370,6 +371,7 @@ AtmiBrokerServer::AtmiBrokerServer() {
 			ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d",
 					server, serverid);
 			if (!advertiseService(adm, ADMIN)) {
+				LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "advertise admin service failed");
 				return;
 			}
 
@@ -627,6 +629,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 
 	if (!svcname || strlen(svcname) == 0) {
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "advertiseService invalid service name");
 		return false;
 	}
 
@@ -662,6 +665,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 		} else {
 			setSpecific(TPE_KEY, TSS_TPEMATCH);
 			free(serviceName);
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "advertiseService same service function");
 			return false;
 		}
 	} else if (serviceFunction == NULL && func == NULL) {
@@ -675,6 +679,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 	if (connection == NULL) {
 		setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		free(serviceName);
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "advertiseService no server connection");
 		return false;
 	}
 
@@ -686,6 +691,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 	// create reference for Service Queue and cache
 	try {
 		toReturn = createAdminDestination(serviceName);
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "advertiseService status=" << toReturn);
 		if (toReturn) {
 			Destination* destination;
 			destination = connection->createDestination(serviceName);
@@ -791,6 +797,8 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 
 	sprintf(command, "tpadvertise,%s,%s,%s,", serverName, serviceName, version);
 
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "createAdminDestination with command " << command);
+
 	if (tpcall((char*) "BTStompAdmin", command, commandLength, &response,
 			&responseLength, TPNOTRAN) != 0) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer,
@@ -825,11 +833,13 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 		tpfree(response);
 		return true;
 	} else {
+int r = (int) response[0];
+char c = response[0];
 		// REMOVED BY TOM, NOT CLEAR WHAT THIS IS REQUIRED FOR,
 		// IF COMMENTED BACK IN, PLEASE PROVIDE A COMMENT
 		//		if (!isadm || (errorBootAdminService = response[0]) == 2) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer, "Service returned with error: "
-				<< command);
+				<< response[0] << " command was " << command << " r=" << r << " c=" << c);
 		tpfree(command);
 		tpfree(response);
 		return false;

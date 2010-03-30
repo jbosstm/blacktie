@@ -78,6 +78,7 @@ int AtmiBrokerSignalHandler::handle_signal(int sig, siginfo_t *, ucontext_t *)
 
 	if (ACE_OS::sigismember(&hss_, sig)) {
 		LOG4CXX_DEBUG(logger_, (char*) "handling signal " << sig);
+
 		for (it = handlers_.begin(); it < handlers_.end(); it++) {
 			LOG4CXX_DEBUG(logger_, (char*) "running handler " << (*it));
 			if ((*it)(sig) == -1)
@@ -89,10 +90,9 @@ int AtmiBrokerSignalHandler::handle_signal(int sig, siginfo_t *, ucontext_t *)
 
 	if (doexit) {
 		LOG4CXX_INFO(logger_, (char*) "Unregistering signal handler after signal " << sig);
-		exit(0);
 	}
 
-	return (doexit ? -1 : 0);	// -1 unregisters this handler
+	return 0;	// -1 unregisters this handler
 }
 
 int AtmiBrokerSignalHandler::blockSignals(bool sigRestart) {
