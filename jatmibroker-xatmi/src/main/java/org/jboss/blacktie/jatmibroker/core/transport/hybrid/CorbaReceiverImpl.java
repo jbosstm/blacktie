@@ -176,9 +176,15 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 		synchronized (this) {
 			if (returnData.isEmpty()) {
 				try {
-					log.debug("Waiting: " + callbackIOR);
-					wait(timeout);
-					log.debug("Waited: " + callbackIOR);
+					if ((flags & Connection.TPNOTIME) == Connection.TPNOTIME) {
+						log.debug("blocking");
+						wait();
+						log.debug("woke up");
+					} else {
+						log.debug("Waiting: " + callbackIOR);
+						wait(timeout);
+						log.debug("Waited: " + callbackIOR);
+					}
 				} catch (InterruptedException e) {
 					log.error("Caught exception", e);
 				}
@@ -203,7 +209,8 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 					if (message.rval == EventListener.DISCON_CODE) {
 						if (JABTransaction.current() != null) {
 							try {
-								log.debug("Marking rollbackOnly as disconnection");
+								log
+										.debug("Marking rollbackOnly as disconnection");
 								JABTransaction.current().rollback_only();
 							} catch (JABException e) {
 								throw new ConnectionException(
