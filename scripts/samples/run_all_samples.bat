@@ -64,7 +64,7 @@ call generate_client -Dclient.includes=client.c
 set BLACKTIE_CONFIGURATION_DIR=guest
 client
 rem This test is expected to fail so make sure the exit status was not 0
-IF %ERRORLEVEL% NEQ 0 exit -1
+IF %ERRORLEVEL% EQU 0 exit -1
 set BLACKTIE_CONFIGURATION_DIR=
 
 rem RUN THE "dynsub" USER CLIENT
