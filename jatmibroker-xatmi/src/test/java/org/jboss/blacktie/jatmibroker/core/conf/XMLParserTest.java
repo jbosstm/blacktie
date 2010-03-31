@@ -92,7 +92,7 @@ public class XMLParserTest extends TestCase {
 
 		String adminTransport = "hybrid";
 		String userlist = "guest:true:true,blacktie:true:true";
-		String version = "2.0.0.M3-SNAPSHOT";
+		String version = "2.0.0.M3";
 
 		assertTrue(server.equals(prop.getProperty("blacktie.TestOne.server")));
 		assertTrue(transport.equals(prop
