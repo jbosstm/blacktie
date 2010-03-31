@@ -23,5 +23,10 @@
 				<include name="**/pom.xml"/>
 			</fileset>
 		</replaceregexp>
+		<replaceregexp byline="true" match="localhost" replace="${JBOSSAS_IP_ADDR}">
+			<fileset dir="../../dist/*/examples/admin/jmx/src/test/java/org/jboss/blacktie/examples/jmx">
+				<include name="**/*.java"/>
+			</fileset>
+		</replaceregexp>
 	</target>
 </project>

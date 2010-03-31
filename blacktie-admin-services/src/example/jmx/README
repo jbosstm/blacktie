@@ -29,6 +29,8 @@ mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=jatmibroker-x
 mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=blacktie-xsd -Dversion=2.0-MR1-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=blacktie-xsd-2.0.jar
 mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=atmibroker-idl -Dversion=2.0-MR1-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=atmibroker-idl-java-2.0-MR2.jar
 
+NOTE: If you are hosting the JBoss server on a different binding address than localhost you will need to edit src/test/java/org/jboss/blacktie/examples/jmx/JMXAdministrationTest.java to change the word localhost to whatever address you bound the AS on
+
 After the dependencies are installed you can then run the example using the following command:
 mvn test
 

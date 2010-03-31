@@ -90,7 +90,7 @@ public class JMXAdministrationTest extends TestCase {
 
 	private String prompt(String prompt) throws IOException {
 		System.out.println("Please press return after you: " + prompt + "...");
-		return br.readLine();
+		return br.readLine().trim();
 	}
 
 	private void output(String operationName, List list) {
