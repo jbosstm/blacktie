@@ -153,7 +153,7 @@ public class Connection {
 	 */
 	public Response tpcall(String svc, Buffer buffer, int len, int flags)
 			throws ConnectionException {
-		log.info("tpcall");
+		log.debug("tpcall");
 		int tpacallFlags = flags;
 		tpacallFlags &= ~TPNOCHANGE;		
 		int cd = tpacall(svc, buffer, len, tpacallFlags);
@@ -173,7 +173,7 @@ public class Connection {
 	 */
 	public int tpacall(String svc, Buffer toSend, int len, int flags)
 			throws ConnectionException {
-		log.info("tpacall");
+		log.debug("tpacall");
 		int toCheck = flags & ~(TPNOTRAN | TPNOREPLY | TPNOBLOCK | TPNOTIME | TPSIGRSTRT);
 		if (toCheck != 0) {
 			log.trace("invalid flags remain: " + toCheck);
