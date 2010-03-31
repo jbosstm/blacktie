@@ -153,7 +153,10 @@ public class Connection {
 	 */
 	public Response tpcall(String svc, Buffer buffer, int len, int flags)
 			throws ConnectionException {
-		int cd = tpacall(svc, buffer, len, flags);
+		log.info("tpcall");
+		int tpacallFlags = flags;
+		tpacallFlags &= ~TPNOCHANGE;		
+		int cd = tpacall(svc, buffer, len, tpacallFlags);
 		return receive(cd, flags);
 	}
 
