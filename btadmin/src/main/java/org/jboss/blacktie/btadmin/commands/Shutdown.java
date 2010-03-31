@@ -133,13 +133,13 @@ public class Shutdown implements Command {
 				}
 			}
 
-			// TODO SHUTDOWN SHOULD RETURN WHEN THERE ARE NO MORE CONSUMERS?
-			try {
-				Thread.currentThread().sleep(7000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			// TODO SHUTDOWN SHOULD RETURN WHEN THERE ARE NO MORE CONSUMERS?
+//			try {
+//				Thread.currentThread().sleep(7000);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 		} else {
 			log.error("No servers were configured for shutdown");
 			throw new CommandFailedException(-1);

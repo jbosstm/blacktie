@@ -398,58 +398,37 @@ public class AdministrationProxy {
 		log.trace("shutdown");
 		if (servers.contains(serverName)) {
 			String command = "serverdone";
+			boolean shutdown = false;
 			try {
 				if (id == 0) {
-					boolean called = false;
 					List<Integer> ids = listRunningInstanceIds(serverName);
 					for (int i = 0; i < ids.size(); i++) {
 						callAdminService(serverName, ids.get(i), command);
-						called = true;
 					}
-//					int timeout = 10;
-//					while (true) {
-//						ids = listRunningInstanceIds(serverName);
-//						if (ids.size() > 0) {
-//							try {
-//								Thread.currentThread().sleep(1000);
-//							} catch (InterruptedException e) {
-//								e.printStackTrace();
-//							}
-//							timeout--;
-//						} else {
-//							called = true;
-//							break;
-//						}
-//						if (timeout == 0) {
-//							break;
-//						}
-//					}
-
-					return called;
 				} else {
-					boolean called = false;
 					callAdminService(serverName, id, command);
-					called = true;
-//					int timeout = 10;
-//					while (true) {
-//						List<Integer> ids = listRunningInstanceIds(serverName);
-//						if (ids.contains(id)) {
-//							try {
-//								Thread.currentThread().sleep(1000);
-//							} catch (InterruptedException e) {
-//								e.printStackTrace();
-//							}
-//							timeout--;
-//						} else {
-//							called = true;
-//							break;
-//						}
-//						if (timeout == 0) {
-//							break;
-//						}
-//					}
-					return called;
 				}
+				int timeout = 120;
+				while (true) {
+					List<Integer> ids = listRunningInstanceIds(serverName);
+					if (id == 0 && ids.size() > 0 || ids.contains(id)) {
+						try {
+							Thread.currentThread().sleep(3000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						timeout--;
+					} else {
+						shutdown = true;
+						break;
+					}
+					if (timeout == 0) {
+						log.warn("Server did not shutdown in time: "
+								+ serverName + ": " + id);
+						break;
+					}
+				}
+				return shutdown;
 			} catch (ConnectionException e) {
 				log.error("call server " + serverName + " id " + id
 						+ " failed with " + e.getTperrno(), e);
