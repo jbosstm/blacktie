@@ -281,7 +281,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			consumerCounts = consumerCount(serviceName);
 			if (consumerCounts <= 1) {
 				result = undeployQueue(serviceName);
-				log.info(serviceName + " undeployed");
+				log.debug(serviceName + " undeployed");
 			} else {
 				// THERE ARE OTHER SERVERS STILL ALIVE
 				result = 1;
