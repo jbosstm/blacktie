@@ -408,7 +408,7 @@ public class AdministrationProxy {
 				} else {
 					callAdminService(serverName, id, command);
 				}
-				int timeout = 120;
+				int timeout = 40;
 				while (true) {
 					List<Integer> ids = listRunningInstanceIds(serverName);
 					if (id == 0 && ids.size() > 0 || ids.contains(id)) {
