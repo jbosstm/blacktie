@@ -46,7 +46,7 @@ static void tx_fill_buf_rtn(TPSVCINFO *svcinfo) {
 
 void test_tx_tpcall_x_octet_service_tardy(TPSVCINFO *svcinfo) {
 	userlogc((char*) "TxLog: service running: test_tx_tpcall_x_octet_service_tardy");
-	::sleeper(6);//ACE_OS::sleep(6L);
+	::sleeper(8);//ACE_OS::sleep(6L);
 	tx_fill_buf_rtn(svcinfo);
 }
 
@@ -62,6 +62,7 @@ void test_tx_tpcall_x_octet_service_with_tx(TPSVCINFO *svcinfo) {
 
 /* test setup */
 void TestTxTPCall::setUp() {
+	userlogc((char*) "TestTxTPCall::setUp");
 	BaseServerTest::setUp();
 
 	BT_ASSERT(tx_open() == TX_OK);
@@ -75,6 +76,7 @@ void TestTxTPCall::setUp() {
 
 /* test teardown */
 void TestTxTPCall::tearDown() {
+	userlogc((char*) "TestTxTPCall::tearDown");
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
 
@@ -91,7 +93,7 @@ void TestTxTPCall::tearDown() {
 
 /* client routines */
 void TestTxTPCall::test_timeout_no_tx() {
-	userlogc((char*) "TxLog: test_timeout_no_tx");
+	userlogc((char*) "TestTxTPCall: test_timeout_no_tx");
 	int rc = tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_tardy);
 	BT_ASSERT(tperrno == 0 && rc != -1);
 	int cd = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
@@ -101,10 +103,10 @@ void TestTxTPCall::test_timeout_no_tx() {
 }
 
 void TestTxTPCall::test_timeout_with_tx() {
-	userlogc((char*) "TxLog: test_timeout_with_tx");
+	userlogc((char*) "TestTxTPCall: test_timeout_with_tx");
 	int rv1 = tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_tardy);
 	// the service will sleep for 4 seconds so set the timeout to be less that 4
-	int rv2 = tx_set_transaction_timeout(2);
+	int rv2 = tx_set_transaction_timeout(4);
 	BT_ASSERT(rv1 != 1 && rv2 == TX_OK && tx_begin() == TX_OK);
 	int rv3 = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
 	userlogc((char*) "TxLog: test_timeout_with_tx tpcall=%d tperrno=%d", rv3, tperrno);
@@ -115,7 +117,7 @@ void TestTxTPCall::test_timeout_with_tx() {
 }
 
 void TestTxTPCall::test_tpcall_without_tx() {
-	userlogc((char*) "TxLog: test_tpcall_without_tx");
+	userlogc((char*) "TestTxTPCall: test_tpcall_without_tx");
 	int rc = tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_without_tx);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(rc != -1);
@@ -129,7 +131,7 @@ void TestTxTPCall::test_tpcall_without_tx() {
 }
 
 void TestTxTPCall::test_tpcall_with_tx() {
-	userlogc((char*) "TxLog: test_tpcall_with_tx");
+	userlogc((char*) "TestTxTPCall: test_tpcall_with_tx");
 	int rc = tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_with_tx);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(rc != -1);
@@ -147,7 +149,7 @@ void TestTxTPCall::test_tpcall_with_tx() {
 }
 
 void TestTxTPCall::test_tpcancel_with_tx() {
-	userlogc((char*) "TxLog: test_tpcancel_with_tx");
+	userlogc((char*) "TestTxTPCall: test_tpcancel_with_tx");
 	int rc = tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_with_tx);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(rc != -1);
