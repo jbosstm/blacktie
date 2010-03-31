@@ -174,20 +174,24 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 	public Message receive(long flags) throws ConnectionException {
 		log.debug("Receiving");
 		synchronized (this) {
-			if (returnData.isEmpty()) {
-				try {
-					if ((flags & Connection.TPNOTIME) == Connection.TPNOTIME) {
-						log.debug("blocking");
-						wait();
-						log.debug("woke up");
-					} else {
-						log.debug("Waiting: " + callbackIOR);
-						wait(timeout);
-						log.debug("Waited: " + callbackIOR);
+			if ((flags & Connection.TPNOBLOCK) != Connection.TPNOBLOCK) {
+				if (returnData.isEmpty()) {
+					try {
+						if ((flags & Connection.TPNOTIME) == Connection.TPNOTIME) {
+							log.debug("blocking");
+							wait();
+							log.debug("woke up");
+						} else {
+							log.debug("Waiting: " + callbackIOR);
+							wait(timeout);
+							log.debug("Waited: " + callbackIOR);
+						}
+					} catch (InterruptedException e) {
+						log.error("Caught exception", e);
 					}
-				} catch (InterruptedException e) {
-					log.error("Caught exception", e);
 				}
+			} else {
+				log.debug("Not waiting for the response, hope its there!");
 			}
 			if (returnData.isEmpty()) {
 				log.debug("Empty return data: " + callbackIOR);

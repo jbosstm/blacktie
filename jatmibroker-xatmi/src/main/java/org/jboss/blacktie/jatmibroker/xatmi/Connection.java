@@ -170,6 +170,12 @@ public class Connection {
 	 */
 	public int tpacall(String svc, Buffer toSend, int len, int flags)
 			throws ConnectionException {
+		log.info("tpacall");
+		int toCheck = flags & ~(TPNOTRAN | TPNOREPLY | TPNOBLOCK | TPNOTIME | TPSIGRSTRT);
+		if (toCheck != 0) {
+			log.trace("invalid flags remain: " + toCheck);
+			throw new ConnectionException(Connection.TPEINVAL, "Invalid flags remain: " + toCheck);
+		}
 
 		boolean hasTPSIGSTRT = (flags & TPSIGRSTRT) == TPSIGRSTRT;
 		if (hasTPSIGSTRT && !warnedTPSIGRSTRT) {
@@ -250,6 +256,12 @@ public class Connection {
 	 */
 	public Response tpgetrply(int cd, int flags) throws ConnectionException {
 		log.debug("tpgetrply: " + cd);
+		int toCheck = flags & ~(TPGETANY | TPNOCHANGE | TPNOBLOCK | TPNOTIME | TPSIGRSTRT);
+		if (toCheck != 0) {
+			log.trace("invalid flags remain: " + toCheck);
+			throw new ConnectionException(Connection.TPEINVAL, "Invalid flags remain: " + toCheck);
+		}
+		
 		boolean hasTPSIGSTRT = (flags & TPSIGRSTRT) == TPSIGRSTRT;
 		if (hasTPSIGSTRT && !warnedTPSIGRSTRT) {
 			log.error("TPSIGRSTRT NOT SUPPORTED FOR SENDS OR RECEIVES");
