@@ -116,7 +116,7 @@ set MAVEN_HOME=C:\hudson\tools\apache-maven-2.0.10
 set MAVEN_OPTS=-Xmx200m
 set PATH=%PATH%;%MAVEN_HOME%\bin
 cd trunk\scripts\test
-call ant dist -DBT_HOME=C:\\\\hudson\\\\workspace\\\\blacktie-windows2003\\\\trunk\\\\dist\\\\blacktie-2.0.0.M3 -DJBOSSAS_IP_ADDR=catskill
+call ant dist -DBT_HOME=C:\\\\hudson\\\\workspace\\\\blacktie-windows2003\\\\trunk\\\\dist\\\\blacktie-2.0.0.M4-SNAPSHOT -DJBOSSAS_IP_ADDR=catskill
 cd ..\..\dist\blacktie-*
 call setenv.bat
 call run_all_samples.bat
@@ -128,7 +128,7 @@ call run_all_samples.bat
   </builders>
   <publishers>
     <hudson.tasks.ArtifactArchiver>
-      <artifacts>trunk/*/target/*test-classes/*.log*,trunk/*/target/surefire-reports/*.txt</artifacts>
+      <artifacts>trunk/*/target/*test-classes/*.log*,trunk/*/target/surefire-reports/*.txt,trunk/blacktie/target/blacktie-*-vc9x32-bin.zip</artifacts>
       <latestOnly>false</latestOnly>
     </hudson.tasks.ArtifactArchiver>
     <hudson.plugins.emailext.ExtendedEmailPublisher>

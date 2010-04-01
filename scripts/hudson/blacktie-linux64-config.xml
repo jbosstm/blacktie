@@ -78,7 +78,6 @@ cp trunk/blacktie-admin-services/src/test/resources/btconfig.xml jboss-5.1.0.GA/
 
 
 cd jboss-5.1.0.GA/bin
-export BUILD_ID=dontKillMe
 ./run.sh -c all -b localhost&amp;
 sleep 60</command>
     </hudson.tasks.Shell>
@@ -101,7 +100,7 @@ cd trunk/scripts/test
   </builders>
   <publishers>
     <hudson.tasks.ArtifactArchiver>
-      <artifacts>trunk/*/target/*test-classes/*.log*,trunk/*/target/surefire-reports/*.txt</artifacts>
+      <artifacts>trunk/*/target/*test-classes/*.log*,trunk/*/target/surefire-reports/*.txt,trunk/blacktie/target/blacktie-*-centos54x64-bin.tar.gz</artifacts>
       <latestOnly>false</latestOnly>
     </hudson.tasks.ArtifactArchiver>
     <hudson.plugins.emailext.ExtendedEmailPublisher>
