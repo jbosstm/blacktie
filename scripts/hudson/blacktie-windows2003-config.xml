@@ -1,0 +1,166 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>DON&apos;T FORGET TO UPDATE THE VERSION NUMBER AT THE BOTTOM OF THE PAGE IN THE CALL TO call ant dist -DBT_HOME=......</description>
+  <logRotator>
+    <daysToKeep>30</daysToKeep>
+    <numToKeep>-1</numToKeep>
+  </logRotator>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.SubversionSCM">
+    <locations>
+      <hudson.scm.SubversionSCM_-ModuleLocation>
+        <remote>http://anonsvn.jboss.org/repos/blacktie/trunk</remote>
+      </hudson.scm.SubversionSCM_-ModuleLocation>
+    </locations>
+    <useUpdate>true</useUpdate>
+    <doRevert>true</doRevert>
+    <excludedRegions></excludedRegions>
+    <excludedUsers></excludedUsers>
+    <excludedRevprop></excludedRevprop>
+    <excludedCommitMessages></excludedCommitMessages>
+  </scm>
+  <assignedNode>windows2003</assignedNode>
+  <canRoam>false</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>jdk1.5.0_19 (x32)</jdk>
+  <triggers class="vector">
+    <hudson.triggers.SCMTrigger>
+      <spec>*/15 * * * *</spec>
+    </hudson.triggers.SCMTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.BatchFile>
+      <command>if exist build.xml del build.xml
+if exist jboss-5.1.0.GA echo foo | call jboss-5.1.0.GA\bin\shutdown.bat -s 172.17.131.5:1099 -S &amp;&amp; cd .
+if exist jboss-5.1.0.GA @ping 127.0.0.1 -n 30 -w 1000 &gt; nul
+
+echo ^&lt;project name=&quot;blacktie-dependencies&quot;^&gt; &gt;&gt; build.xml
+echo	^&lt;target name=&quot;download&quot;^&gt; &gt;&gt; build.xml
+echo		^&lt;get src=&quot;http://albany/userContent/blacktie/${BT_REPO}&quot; dest=&quot;./${BT_REPO}&quot; verbose=&quot;true&quot; usetimestamp=&quot;true&quot;/^&gt; &gt;&gt; build.xml
+echo		^&lt;unzip src=&quot;./${BT_REPO}&quot; dest=&quot;C:/Documents and Settings/hudson/.m2/repository/&quot;/^&gt; &gt;&gt; build.xml
+echo		^&lt;get src=&quot;http://albany/userContent/blacktie/jboss-5.1.0.GA.zip&quot; dest=&quot;./jboss-5.1.0.GA.zip&quot; verbose=&quot;true&quot; usetimestamp=&quot;true&quot;/^&gt; &gt;&gt; build.xml
+echo		^&lt;delete dir=&quot;jboss-5.1.0.GA&quot;/^&gt; &gt;&gt; build.xml
+echo		^&lt;unzip src=&quot;./jboss-5.1.0.GA.zip&quot; dest=&quot;.&quot;/^&gt; &gt;&gt; build.xml
+echo	^&lt;/target^&gt; &gt;&gt; build.xml
+echo	^&lt;target name=&quot;replace&quot;^&gt; &gt;&gt; build.xml
+echo        ^&lt;replaceregexp byline=&quot;true&quot; file=&quot;jboss-5.1.0.GA/server/all/conf/jbossts-properties.xml&quot; match=&quot;CONFIGURATION_FILE&quot; replace=&quot;NAME_SERVICE&quot;  /^&gt; &gt;&gt; build.xml
+echo	^&lt;/target^&gt; &gt;&gt; build.xml
+echo	^&lt;target name=&quot;replaceLocalhost&quot;^&gt; &gt;&gt; build.xml
+echo        ^&lt;replaceregexp byline=&quot;true&quot; file=&quot;jboss-5.1.0.GA/server/all/conf/jacorb.properties&quot; match=&quot;localhost&quot; replace=&quot;${JBOSSAS_IP_ADDR}&quot;  /^&gt; &gt;&gt; build.xml
+echo        ^&lt;replaceregexp byline=&quot;true&quot; file=&quot;jboss-5.1.0.GA/server/all/conf/btconfig.xml&quot; match=&quot;localhost&quot; replace=&quot;${JBOSSAS_IP_ADDR}&quot;  /^&gt; &gt;&gt; build.xml
+echo	^&lt;/target^&gt; &gt;&gt; build.xml
+echo ^&lt;/project^&gt; &gt;&gt; build.xml
+
+set ANT_HOME=C:\hudson\tools\apache-ant-1.7.1
+set PATH=%PATH%;%ANT_HOME%\bin
+call ant download -DBT_REPO=bt-repo-vc9x32.zip
+
+cd jboss-5.1.0.GA/docs/examples/transactions
+call ant jts
+
+cd ../../../../
+call ant replace</command>
+    </hudson.tasks.BatchFile>
+    <hudson.tasks.Maven>
+      <targets>install</targets>
+      <mavenName>apache-maven-2.1.0</mavenName>
+      <jvmOptions>-Xmx200m</jvmOptions>
+      <pom>blacktie-utils/cpp-plugin/pom.xml</pom>
+      <usePrivateRepository>false</usePrivateRepository>
+    </hudson.tasks.Maven>
+    <hudson.tasks.BatchFile>
+      <command>call &quot;C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat&quot;
+set JAVA_HOME=C:\Program Files (x86)\Java\jdk1.5.0_19
+set MAVEN_HOME=C:\hudson\tools\apache-maven-2.0.10
+set MAVEN_OPTS=-Xmx200m
+set PATH=%PATH%;%MAVEN_HOME%\bin
+cd trunk/blacktie
+mvn clean install -Dbpa=vc9x32 -DskipTests
+</command>
+    </hudson.tasks.BatchFile>
+    <hudson.tasks.BatchFile>
+      <command>copy trunk\blacktie-admin-services\target\blacktie-admin-services-*-jar-with-dependencies.jar jboss-5.1.0.GA\server\all\deploy
+copy trunk\blacktie-rhq-plugin\target\blacktie-rhq-plugin-*.jar jboss-5.1.0.GA\server\all\deploy\admin-console.war\plugins\
+copy trunk\jatmibroker-xatmi\src\test\resources\jatmibroker-xatmi-test-service.xml jboss-5.1.0.GA\server\all\deploy
+copy trunk\blacktie-admin-services\src\test\resources\btconfig.xml jboss-5.1.0.GA\server\all\conf
+
+set ANT_HOME=C:\hudson\tools\apache-ant-1.7.1
+set PATH=%PATH%;%ANT_HOME%\bin
+call ant replaceLocalhost -DJBOSSAS_IP_ADDR=172.17.131.5</command>
+    </hudson.tasks.BatchFile>
+    <hudson.tasks.BatchFile>
+      <command>cd jboss-5.1.0.GA\bin
+set BUILD_ID=dontKillMe
+start /B run.bat -c all -b 172.17.131.5&amp;
+@ping 127.0.0.1 -n 60 -w 1000 &gt; nul</command>
+    </hudson.tasks.BatchFile>
+    <hudson.tasks.BatchFile>
+      <command>call &quot;C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat&quot;
+set JAVA_HOME=C:\Program Files (x86)\Java\jdk1.5.0_19
+set MAVEN_HOME=C:\hudson\tools\apache-maven-2.0.10
+set MAVEN_OPTS=-Xmx200m
+set PATH=%PATH%;%MAVEN_HOME%\bin
+cd trunk/blacktie
+call mvn install -Dbpa=vc9x32 -Duse.valgrind=false -Djbossas.ip.addr=172.17.131.5</command>
+    </hudson.tasks.BatchFile>
+    <hudson.tasks.BatchFile>
+      <command>call &quot;C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat&quot;
+set ANT_HOME=C:\hudson\tools\apache-ant-1.7.1
+set PATH=%PATH%;%ANT_HOME%\bin
+set JAVA_HOME=C:\Program Files (x86)\Java\jdk1.5.0_19
+set MAVEN_HOME=C:\hudson\tools\apache-maven-2.0.10
+set MAVEN_OPTS=-Xmx200m
+set PATH=%PATH%;%MAVEN_HOME%\bin
+cd trunk\scripts\test
+call ant dist -DBT_HOME=C:\\\\hudson\\\\workspace\\\\blacktie-windows2003\\\\trunk\\\\dist\\\\blacktie-2.0.0.M3 -DJBOSSAS_IP_ADDR=catskill
+cd ..\..\dist\blacktie-*
+call setenv.bat
+call run_all_samples.bat
+</command>
+    </hudson.tasks.BatchFile>
+    <hudson.tasks.BatchFile>
+      <command>echo foo | call jboss-5.1.0.GA\bin\shutdown.bat -s 172.17.131.5:1099 -S &amp;&amp; cd .</command>
+    </hudson.tasks.BatchFile>
+  </builders>
+  <publishers>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>trunk/*/target/*test-classes/*.log*,trunk/*/target/surefire-reports/*.txt</artifacts>
+      <latestOnly>false</latestOnly>
+    </hudson.tasks.ArtifactArchiver>
+    <hudson.plugins.emailext.ExtendedEmailPublisher>
+      <recipientList>tom.jenkinson@redhat.com,mmusgrov@redhat.com,zfeng@redhat.com</recipientList>
+      <configuredTriggers>
+        <hudson.plugins.emailext.plugins.trigger.FailureTrigger>
+          <email>
+            <recipientList></recipientList>
+            <subject>$PROJECT_DEFAULT_SUBJECT</subject>
+            <body>$PROJECT_DEFAULT_CONTENT&#xd;
+$CHANGES_SINCE_LAST_SUCCESS&#xd;
+$BUILD_LOG</body>
+            <sendToDevelopers>false</sendToDevelopers>
+            <includeCulprits>false</includeCulprits>
+            <sendToRecipientList>true</sendToRecipientList>
+          </email>
+        </hudson.plugins.emailext.plugins.trigger.FailureTrigger>
+        <hudson.plugins.emailext.plugins.trigger.SuccessTrigger>
+          <email>
+            <recipientList></recipientList>
+            <subject>$PROJECT_DEFAULT_SUBJECT</subject>
+            <body>$PROJECT_DEFAULT_CONTENT</body>
+            <sendToDevelopers>false</sendToDevelopers>
+            <includeCulprits>false</includeCulprits>
+            <sendToRecipientList>true</sendToRecipientList>
+          </email>
+        </hudson.plugins.emailext.plugins.trigger.SuccessTrigger>
+      </configuredTriggers>
+      <defaultSubject>$DEFAULT_SUBJECT</defaultSubject>
+      <defaultContent>$DEFAULT_CONTENT&#xd;
+$CHANGES</defaultContent>
+    </hudson.plugins.emailext.ExtendedEmailPublisher>
+  </publishers>
+  <buildWrappers/>
+</project>
