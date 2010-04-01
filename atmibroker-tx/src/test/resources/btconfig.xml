@@ -18,6 +18,7 @@
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
+	<VERSION>2.0.0.M4-SNAPSHOT</VERSION>
 	<XA_RESOURCES>
 		<XA_RESOURCE configuration="linux">
 			<XA_RESOURCE_MGR_ID>100</XA_RESOURCE_MGR_ID>
