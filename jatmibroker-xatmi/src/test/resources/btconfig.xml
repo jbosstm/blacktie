@@ -18,7 +18,7 @@
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
-	<VERSION>2.0.0.M3</VERSION>
+	<VERSION>2.0.0.M4-SNAPSHOT</VERSION>
 	<SERVERS>
 		<SERVER name='myserv'>
 			<SERVICE_NAMES>
