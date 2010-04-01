@@ -19,6 +19,7 @@ Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 	xmlns="http://www.jboss.org/blacktie">
 	<ENVIRONMENT_DESCRIPTION>
 		<DOMAIN>fooapp</DOMAIN>
+		<VERSION>2.0.0.M4-SNAPSHOT</VERSION>
 		<SERVERSTOM>
 			<SERVERTOM>
 				<SERVICE_NAMESTOM>

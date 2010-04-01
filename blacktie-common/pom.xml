@@ -83,15 +83,14 @@
 		<repository>
 			<id>jboss-releases</id>
 			<name>JBoss Release Repository</name>
-			<url>scm:svn:https://svn.jboss.org/repos/repository.jboss.org/maven2</url>
+			<url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
 		</repository>
 
 		<snapshotRepository>
-			<id>snapshots.jboss.org</id>
+			<id>jboss-snapshots</id>
 			<name>JBoss Snapshot Repository</name>
-			<url>dav:https://snapshots.jboss.org/maven2</url>
+			<url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
-
 	</distributionManagement>
 
 	<repositories>
