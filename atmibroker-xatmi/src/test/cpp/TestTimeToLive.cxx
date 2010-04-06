@@ -17,10 +17,7 @@
  */
 #include "TestAssert.h"
 
-#include "ace/OS_NS_stdlib.h"
-#include "ace/OS_NS_stdio.h"
-#include "ace/OS_NS_string.h"
-#include "ace/OS_NS_unistd.h"
+#include "Sleeper.h"
 #include "xatmi.h"
 #include "userlogc.h"
 #include "TestTimeToLive.h"
@@ -28,7 +25,7 @@
 void test_TTL_service(TPSVCINFO *svcinfo) {
 	long timeout = 45;
 
-	ACE_OS::sleep(timeout);
+	::sleeper(timeout);
 	userlogc((char*) "TTL sleep timeout %d seconds", timeout);
 
 	int len = 60;
@@ -63,7 +60,7 @@ void TestTimeToLive::testTTL() {
 	BT_ASSERT(tperrno == TPETIME);
 	userlogc((char*)"send second message");
 
-	ACE_OS::sleep(30);
+	::sleeper(30);
 	long n = getTTLCounter();	
 	userlogc((char*)"TTL get message counter is %d", n);
 	//BT_ASSERT(n == 1);
