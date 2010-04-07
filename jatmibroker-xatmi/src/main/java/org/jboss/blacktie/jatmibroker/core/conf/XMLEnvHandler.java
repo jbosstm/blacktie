@@ -48,7 +48,6 @@ public class XMLEnvHandler extends DefaultHandler {
 	private final String MACHINE = "MACHINE";
 	private final String MACHINE_REF = "MACHINE-REF";
 	private final String ROLE = "role";
-	private final String VERSION = "VERSION";
 
 	private Properties prop;
 
@@ -82,6 +81,7 @@ public class XMLEnvHandler extends DefaultHandler {
 		prop.put("blacktie.domain.servers", servers);
 		prop.put("blacktie.domain.buffers", buffers);
 		prop.put("blacktie.domain.serverLaunchers", serverLaunchers);
+		prop.setProperty("blacktie.domain.version", "2.0.0.M4-SNAPSHOT");
 	}
 
 	public void characters(char[] ch, int start, int length)
@@ -504,8 +504,6 @@ public class XMLEnvHandler extends DefaultHandler {
 			if (serviceName != null) {
 				serviceName = null;
 			}
-		} else if (VERSION.equals(localName)) {
-			prop.setProperty("blacktie.domain.version", value);
 		}
 	}
 }
