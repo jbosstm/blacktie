@@ -35,6 +35,8 @@ extern BLACKTIE_CORE_DLL void init_ace();
 	userlogc_debug("PRE ASSERT %s:%d", __FILE__, __LINE__)
 #define	CHKCOND(cond)	\
 	if (!(cond)) userlogc_debug("CHKCOND ASSERT FAILED %s:%d", __FILE__, __LINE__)
+#define	CHKCOND_MESSAGE(message,cond)	\
+	if (!(cond)) userlogc_debug("CHKCOND ASSERT FAILED %s:%d - %s", __FILE__, __LINE__, message)
 
 #define	BT_ASSERT(cond)	{\
 	bool _w12pq_u = (cond);	\
@@ -43,7 +45,7 @@ extern BLACKTIE_CORE_DLL void init_ace();
 
 #define	BT_ASSERT_MESSAGE(message,cond)	{\
 	bool _w12pq_u = (cond);	\
-	CHKCOND(_w12pq_u);	\
+	CHKCOND_MESSAGE(message, _w12pq_u);	\
 	CPPUNIT_ASSERT_MESSAGE((message),_w12pq_u);} 
 
 #define BT_ASSERT_EQUAL(expected,actual)	\

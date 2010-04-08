@@ -92,7 +92,11 @@ void TestPBF::test_tpalloc_nonzero() {
 	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == sizeof(ACCT_INFO));
+
+	char* toTestS = (char*) malloc(110);
+	sprintf(toTestS, "%d", tperrno);
+
+	BT_ASSERT_MESSAGE(toTestS, toTest == sizeof(ACCT_INFO));
 	BT_ASSERT(toTest != 10);
 	BT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
 	BT_ASSERT(strcmp(subtype, "acct_info") == 0);
@@ -131,7 +135,11 @@ void TestPBF::test_tptypes() {
 	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == sizeof(ACCT_INFO));
+
+	char* toTestS = (char*) malloc(110);
+	sprintf(toTestS, "%d", tperrno);
+
+	BT_ASSERT_MESSAGE(toTestS, toTest == sizeof(ACCT_INFO));
 	BT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
 	BT_ASSERT(strcmp(subtype, "acct_info") == 0);
 	free(type);
@@ -154,7 +162,9 @@ void TestPBF::test_tpfree() {
 void TestPBF::test_tpcall() {
 	userlogc((char*) "test_tpcall");
 	tpadvertise((char*) "PBF", pbf_service);
-	BT_ASSERT(tperrno == 0);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 
 	ACCT_INFO *aptr;
 	aptr = (ACCT_INFO*) tpalloc((char*) "X_COMMON", (char*) "acct_info", 0);

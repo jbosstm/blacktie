@@ -17,11 +17,11 @@
  */
 
 #include "Sleeper.h"
-#include "ace/OS_NS_unistd.h"
+#include "unistd.h"
 #include "userlogc.h"
 
 void sleeper(int timeout) {
 	userlogc((char*) "sleeper, sleeping for %d seconds", timeout);
-	ACE_OS::sleep(timeout);
+	::sleep(timeout);
 	userlogc((char*) "sleeper, slept for %d seconds", timeout);
 }

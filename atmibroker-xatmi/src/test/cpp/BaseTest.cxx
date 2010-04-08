@@ -36,7 +36,9 @@ void BaseTest::setUp() {
 void BaseTest::tearDown() {
 	// Perform clean up
 	::clientdone(0);
-	BT_ASSERT(tperrno == 0);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 	// previous tests may have left a txn on the thread
 	destroySpecific(TSS_KEY);
 
