@@ -18,7 +18,8 @@
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>jboss</DOMAIN>
-	t'>
+	<SERVERS>
+		<SERVER name='ejbtest'>
 			<SERVICE_NAMES>
 				<SERVICE name='EchoService' />
 				<SERVICE name='TxEchoService' />
