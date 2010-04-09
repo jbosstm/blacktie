@@ -92,6 +92,11 @@ public class ServiceDispatcher extends Service implements Runnable {
 
 	public void close() throws ConnectionException {
 		log.trace("closing");
+
+		log.trace("Interrupting");
+		thread.interrupt();
+		log.trace("Interrupted");
+
 		try {
 			log.trace("Joining");
 			thread.join();
