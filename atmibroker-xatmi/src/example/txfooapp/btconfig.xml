@@ -53,6 +53,7 @@
 			<XA_SWITCH>testxasw</XA_SWITCH>
 			<XA_LIB_NAME>libtx-test-utilities.so</XA_LIB_NAME> </XA_RESOURCE>
 		-->
+		<!-- DB2 support -->
 		<XA_RESOURCE configuration="linux">
 			<XA_RESOURCE_MGR_ID>301</XA_RESOURCE_MGR_ID>
 			<XA_RESOURCE_NAME>DB2_XA</XA_RESOURCE_NAME>
@@ -70,6 +71,7 @@
 			<XA_SWITCH>db2xa_switch_std</XA_SWITCH>
 			<XA_LIB_NAME>${DB2_LIB}/libdb2.so</XA_LIB_NAME>
 		</XA_RESOURCE>
+		<!-- END DB2 support -->
 		<!--
 			Configuration for including ORACLE databases in the example. The open
 			string includes all the inforamtion needed for making XA connections.

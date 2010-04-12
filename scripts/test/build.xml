@@ -28,5 +28,22 @@
 				<include name="**/*.java"/>
 			</fileset>
 		</replaceregexp>
+
+		<replaceregexp byline="true" match="<!-- DB2 support -->" replace="<!--">
+			<fileset dir="../../dist/">
+				<include name="**/btconfig.xml"/>
+			</fileset>
+		</replaceregexp>
+		<replaceregexp byline="true" match="<!-- END DB2 support -->" replace="-->">
+			<fileset dir="../../dist/">
+				<include name="**/btconfig.xml"/>
+			</fileset>
+		</replaceregexp>
+		<replaceregexp byline="true" match="DB=blacktie" replace="DB=orcl112">
+			<fileset dir="../../dist/">
+				<include name="**/btconfig.xml"/>
+			</fileset>
+		</replaceregexp>
+
 	</target>
 </project>

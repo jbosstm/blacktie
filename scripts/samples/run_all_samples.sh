@@ -2,6 +2,37 @@
 set -m
 
 # RUN THE FOOAPP SERVER
+cd $BLACKTIE_HOME/examples/xatmi/txfooapp
+generate_server -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="$ORACLE_HOME/rdbms/public" -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" -Dx.define="ORACLE"
+if [ "$?" != "0" ]; then
+	exit -1
+fi
+export BLACKTIE_CONFIGURATION=linux
+btadmin startup
+if [ "$?" != "0" ]; then
+	exit -1
+fi
+unset BLACKTIE_CONFIGURATION
+
+# RUN THE C CLIENT
+cd $BLACKTIE_HOME/examples/xatmi/txfooapp
+generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="$ORACLE_HOME/rdbms/public" -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" -Dx.define="ORACLE"
+./client
+if [ "$?" != "0" ]; then
+	killall -9 server
+	exit -1
+fi
+
+# SHUTDOWN THE SERVER RUNNING THE btadmin TOOL
+export BLACKTIE_CONFIGURATION=linux
+btadmin shutdown
+if [ "$?" != "0" ]; then
+	exit -1
+fi
+unset BLACKTIE_CONFIGURATION
+
+
+# RUN THE FOOAPP SERVER
 cd $BLACKTIE_HOME/examples/xatmi/fooapp
 generate_server.sh -Dservice.names=BAR -Dserver.includes=BarService.c
 if [ "$?" != "0" ]; then
