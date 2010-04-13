@@ -37,15 +37,19 @@ void TestTPRealloc::tearDown() {
 	userlogc((char*) "TestTPRealloc::tearDown");
 	if (m_allocated) {
 		// Do local work
+		userlogc((char*) "TestTPRealloc::tearDown free 1");
 		::tpfree( m_allocated);
 		m_allocated = NULL;
+		userlogc((char*) "TestTPRealloc::tearDown freed 1");
 	}
 	if (m_nonallocated != NULL) {
-
+		userlogc((char*) "TestTPRealloc::tearDown free 2");
 		free( m_nonallocated);
 		m_nonallocated = NULL;
+		userlogc((char*) "TestTPRealloc::tearDown freed 2");
 	}
 	BaseTest::tearDown();
+	userlogc((char*) "TestTPRealloc::tornDown");
 }
 
 // X_OCTET
@@ -99,10 +103,10 @@ void TestTPRealloc::test_tprealloc_larger_x_octet() {
 
 void TestTPRealloc::test_tprealloc_smaller_x_octet() {
 	userlogc("test_tprealloc_smaller_x_octet");
-	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
+	m_allocated = tpalloc((char*) "X_OCTET", NULL, 50);
 	BT_ASSERT(m_allocated != NULL);
 
-	m_allocated = ::tprealloc(m_allocated, 5);
+	m_allocated = ::tprealloc(m_allocated, 32);
 	BT_ASSERT(tperrno == 0);
 
 	char* type = (char*) malloc(8);
@@ -113,15 +117,19 @@ void TestTPRealloc::test_tprealloc_smaller_x_octet() {
 	free(type);
 	free(subtype);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == 5);
+
+	char* toTestS = (char*) malloc(110);
+	sprintf(toTestS, "%d", toTest);
+	BT_ASSERT_MESSAGE(toTestS, toTest == 32);
+	free(toTestS);
 }
 
 void TestTPRealloc::test_tprealloc_samesize_x_octet() {
 	userlogc("test_tprealloc_samesize_x_octet");
-	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
+	m_allocated = tpalloc((char*) "X_OCTET", NULL, 100);
 	BT_ASSERT(m_allocated != NULL);
 
-	m_allocated = ::tprealloc(m_allocated, 10);
+	m_allocated = ::tprealloc(m_allocated, 100);
 	BT_ASSERT(tperrno == 0);
 
 	char* type = (char*) malloc(8);
@@ -132,13 +140,18 @@ void TestTPRealloc::test_tprealloc_samesize_x_octet() {
 	free(type);
 	free(subtype);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == 10);
+	char* toTestS = (char*) malloc(110);
+	sprintf(toTestS, "%d", toTest);
+	BT_ASSERT_MESSAGE(toTestS, toTest == 100);
+	free(toTestS);
 }
 
 void TestTPRealloc::test_tprealloc_multi_x_octet() {
 	userlogc("test_tprealloc_multi_x_octet");
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
 	BT_ASSERT(m_allocated != NULL);
+
+	char* toTestS = (char*) malloc(110);
 
 	for (int i = 32; i <= 128; i++) {
 		m_allocated = ::tprealloc(m_allocated, i);
@@ -152,8 +165,11 @@ void TestTPRealloc::test_tprealloc_multi_x_octet() {
 		free(type);
 		free(subtype);
 		BT_ASSERT(tperrno == 0);
-		BT_ASSERT(toTest == i);
+
+		sprintf(toTestS, "%d %d", toTest, i);
+		BT_ASSERT_MESSAGE(toTestS, toTest == i);
 	}
+	free(toTestS);
 }
 
 // 8.2
@@ -179,7 +195,10 @@ void TestTPRealloc::test_tprealloc_negative_x_common() {
 	BT_ASSERT(m_allocated != NULL);
 
 	::tprealloc(m_allocated, -1);
-	BT_ASSERT(tperrno == TPEINVAL);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEINVAL);
+	free(tperrnoS);
 }
 
 void TestTPRealloc::test_tprealloc_zero_x_common() {
@@ -188,7 +207,10 @@ void TestTPRealloc::test_tprealloc_zero_x_common() {
 	BT_ASSERT(m_allocated != NULL);
 
 	::tprealloc(m_allocated, 0);
-	BT_ASSERT(tperrno == TPEINVAL);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEINVAL);
+	free(tperrnoS);
 
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);
@@ -207,7 +229,10 @@ void TestTPRealloc::test_tprealloc_larger_x_common() {
 	BT_ASSERT(m_allocated != NULL);
 
 	::tprealloc(m_allocated, 3027);
-	BT_ASSERT(tperrno == TPEINVAL);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEINVAL);
+	free(tperrnoS);
 
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);

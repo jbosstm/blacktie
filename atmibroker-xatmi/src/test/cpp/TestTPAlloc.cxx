@@ -67,7 +67,7 @@ void TestTPAlloc::test_tpalloc_x_octet_subtype_ignored() {
 // 9.1.1
 void TestTPAlloc::test_tpalloc_x_octet() {
 	userlogc((char*) "test_tpalloc_x_octet");
-	m_allocated = tpalloc((char*) "X_OCTET", NULL, 25);
+	m_allocated = tpalloc((char*) "X_OCTET", NULL, 28);
 	BT_ASSERT(m_allocated != NULL);
 	BT_ASSERT(tperrno == 0);
 
@@ -75,7 +75,10 @@ void TestTPAlloc::test_tpalloc_x_octet() {
 	char subtype[16];
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == 25);
+	char* toTestS = (char*) malloc(110);
+	sprintf(toTestS, "%d", toTest);
+	BT_ASSERT_MESSAGE(toTestS, toTest == 28);
+	free(toTestS);
 	BT_ASSERT(strncmp(type, "X_OCTET", 8) == 0);
 	BT_ASSERT(strcmp(subtype, "") == 0);
 
@@ -161,13 +164,19 @@ void TestTPAlloc::test_tpalloc_unknowntype() {
 void TestTPAlloc::test_tpalloc_x_common_subtype_required() {
 	userlogc((char*) "test_tpalloc_x_common_subtype_required");
 	m_allocated = tpalloc((char*) "X_COMMON", NULL, 0);
-	BT_ASSERT(tperrno == TPEINVAL);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEINVAL);
+	free(tperrnoS);
 	BT_ASSERT(m_allocated == NULL);
 }
 
 void TestTPAlloc::test_tpalloc_x_c_type_subtype_required() {
 	userlogc((char*) "test_tpalloc_x_c_type_subtype_required");
 	m_allocated = tpalloc((char*) "X_C_TYPE", NULL, 0);
-	BT_ASSERT(tperrno == TPEINVAL);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEINVAL);
+	free(tperrnoS);
 	BT_ASSERT(m_allocated == NULL);
 }

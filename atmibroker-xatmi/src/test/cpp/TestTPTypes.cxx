@@ -42,7 +42,7 @@ void TestTPTypes::tearDown() {
 
 void TestTPTypes::test_tptypes_x_octet() {
 	userlogc((char*) "test_tptypes_x_octet");
-	m_allocated = ::tpalloc((char*) "X_OCTET", NULL, 10);
+	m_allocated = ::tpalloc((char*) "X_OCTET", NULL, 20);
 	BT_ASSERT(m_allocated != NULL);
 
 	char* type = (char*) malloc(8);
@@ -53,7 +53,10 @@ void TestTPTypes::test_tptypes_x_octet() {
 	free(type);
 	free(subtype);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == 10);
+	char* toTestS = (char*) malloc(110);
+	sprintf(toTestS, "%d", toTest);
+	BT_ASSERT_MESSAGE(toTestS, toTest == 20);
+	free(toTestS);
 }
 
 void TestTPTypes::test_tptypes_x_common() {
@@ -66,7 +69,10 @@ void TestTPTypes::test_tptypes_x_common() {
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	userlogc("DEPOSITSIZE%d", sizeof(DEPOSIT));
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == sizeof(DEPOSIT));
+	char* toTestS = (char*) malloc(110);
+	sprintf(toTestS, "%d", toTest);
+	BT_ASSERT_MESSAGE(toTestS, toTest == sizeof(DEPOSIT));
+	free(toTestS);
 	BT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
 	BT_ASSERT(strcmp(subtype, "deposit") == 0);
 	free(type);
@@ -82,7 +88,10 @@ void TestTPTypes::test_tptypes_x_common_bigdata() {
 	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == sizeof(DEPOSIT));
+	char* toTestS = (char*) malloc(110);
+	sprintf(toTestS, "%d", toTest);
+	BT_ASSERT_MESSAGE(toTestS, toTest == sizeof(DEPOSIT));
+	free(toTestS);
 	BT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
 	BT_ASSERT(strcmp(subtype, "deposit") == 0);
 	free(type);
@@ -99,7 +108,10 @@ void TestTPTypes::test_tptypes_x_c_type() {
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	userlogc("acct_info SIZE%d", sizeof(ACCT_INFO));
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == sizeof(ACCT_INFO));
+	char* toTestS = (char*) malloc(110);
+	sprintf(toTestS, "%d", toTest);
+	BT_ASSERT_MESSAGE(toTestS, toTest == sizeof(ACCT_INFO));
+	free(toTestS);
 	BT_ASSERT(strncmp(type, "X_C_TYPE", 8) == 0);
 	BT_ASSERT(strcmp(subtype, "acct_info") == 0);
 	free(type);
@@ -115,7 +127,10 @@ void TestTPTypes::test_tptypes_x_c_type_bigdata() {
 	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == sizeof(ACCT_INFO));
+	char* toTestS = (char*) malloc(110);
+	sprintf(toTestS, "%d", toTest);
+	BT_ASSERT_MESSAGE(toTestS, toTest == sizeof(ACCT_INFO));
+	free(toTestS);
 	BT_ASSERT(strncmp(type, "X_C_TYPE", 8) == 0);
 	BT_ASSERT(strcmp(subtype, "acct_info") == 0);
 	free(type);
@@ -154,7 +169,10 @@ void TestTPTypes::test_tptypes_null_type() {
 	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, NULL, subtype);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == sizeof(DEPOSIT));
+	char* toTestS = (char*) malloc(110);
+	sprintf(toTestS, "%d", toTest);
+	BT_ASSERT_MESSAGE(toTestS, toTest == sizeof(DEPOSIT));
+	free(toTestS);
 	BT_ASSERT(strcmp(subtype, "deposit") == 0);
 	free(subtype);
 }
@@ -167,7 +185,10 @@ void TestTPTypes::test_tptypes_null_subtype() {
 	char* type = (char*) malloc(8);
 	int toTest = ::tptypes(m_allocated, type, NULL);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == sizeof(DEPOSIT));
+	char* toTestS = (char*) malloc(110);
+	sprintf(toTestS, "%d", toTest);
+	BT_ASSERT_MESSAGE(toTestS, toTest == sizeof(DEPOSIT));
+	free(toTestS);
 	BT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
 	free(type);
 }
@@ -180,7 +201,10 @@ void TestTPTypes::test_tptypes_max_type() {
 	char* type = (char*) malloc(8);
 	int toTest = ::tptypes(m_allocated, type, NULL);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == sizeof(DEPOSIT));
+	char* toTestS = (char*) malloc(110);
+	sprintf(toTestS, "%d", toTest);
+	BT_ASSERT_MESSAGE(toTestS, toTest == sizeof(DEPOSIT));
+	free(toTestS);
 	BT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
 	free(type);
 }
@@ -235,7 +259,10 @@ void TestTPTypes::test_tptypes_large_type() {
 	char* type = (char*) malloc(9);
 	int toTest = ::tptypes(m_allocated, type, NULL);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == sizeof(DEPOSIT));
+	char* toTestS = (char*) malloc(110);
+	sprintf(toTestS, "%d", toTest);
+	BT_ASSERT_MESSAGE(toTestS, toTest == sizeof(DEPOSIT));
+	free(toTestS);
 	BT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
 	free(type);
 }

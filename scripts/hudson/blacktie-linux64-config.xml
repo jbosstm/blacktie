@@ -39,12 +39,24 @@
   sleep 30
 fi
 
+wget http://albany/userContent/blacktie/instantclient-basic-linuxAMD64-32-10.1.0.5.0-20060519.zip
+if [ -d instantclient10_1 ]; then
+  rm -rf instantclient10_1
+fi
+unzip instantclient-basic-linuxAMD64-32-10.1.0.5.0-20060519.zip
+mkdir -p instantclient10_1/network/admin
+(cd instantclient10_1/network/admin; wget http://albany/userContent/blacktie/tnsnames.ora)
+mkdir -p instantclient10_1/rdbms 
+(cd instantclient10_1/rdbms; ln -s ../instantclient10_1/sdk/include public)
+mkdir instantclient10_1/lib
+mv instantclient10_1/*.so* instantclient10_1/lib
+
 wget http://albany/userContent/blacktie/bt-repo-centos54x64.tgz
 tar xzf bt-repo-centos54x64.tgz -C $HUDSON_HOME/.m2/repository
 
 wget http://albany/userContent/blacktie/jboss-5.1.0.GA.zip
 if [ -d jboss-5.1.0.GA ]; then
-  rm -r jboss-5.1.0.GA
+  rm -rf jboss-5.1.0.GA
 fi
 unzip jboss-5.1.0.GA.zip
 cd jboss-5.1.0.GA/docs/examples/transactions
@@ -90,9 +102,9 @@ mvn install -Dbpa=centos54x64</command>
     <hudson.tasks.Shell>
       <command>export PATH=$PATH:/usr/local/apache-maven-2.0.9/bin/
 export JBOSSAS_IP_ADDR=localhost
+export ORACLE_HOME=`pwd`/instantclient10_1
 cd trunk/scripts/test
-./bin.sh
-</command>
+./bin.sh</command>
     </hudson.tasks.Shell>
     <hudson.tasks.Shell>
       <command>echo foo | jboss-5.1.0.GA/bin/shutdown.sh -S &amp;&amp; cd .</command>

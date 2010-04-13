@@ -72,12 +72,13 @@ void TestPBF::test_tpalloc() {
 	strcpy(aptr->name, "1234567890123456789012345678901234567890123456789");
 	aptr->balances[0] = 0;
 	aptr->balances[1] = 0;
+	strcpy(aptr->address, "");
 
 	// CHECK THE ASSIGNATIONS
 	BT_ASSERT(aptr->acct_no == 12345678);
 	BT_ASSERT(strcmp(aptr->name,
 			"1234567890123456789012345678901234567890123456789") == 0);
-	BT_ASSERT(aptr->address == NULL || strcmp(aptr->address, "") == 0);
+	BT_ASSERT(strcmp(aptr->address, "") == 0);
 	BT_ASSERT(aptr->balances[0] == 0);
 	BT_ASSERT(aptr->balances[1] == 0);
 }
@@ -94,9 +95,9 @@ void TestPBF::test_tpalloc_nonzero() {
 	BT_ASSERT(tperrno == 0);
 
 	char* toTestS = (char*) malloc(110);
-	sprintf(toTestS, "%d", tperrno);
-
+	sprintf(toTestS, "%d", toTest);
 	BT_ASSERT_MESSAGE(toTestS, toTest == sizeof(ACCT_INFO));
+	free (toTestS);
 	BT_ASSERT(toTest != 10);
 	BT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
 	BT_ASSERT(strcmp(subtype, "acct_info") == 0);
@@ -107,7 +108,10 @@ void TestPBF::test_tpalloc_nonzero() {
 void TestPBF::test_tpalloc_subtype_required() {
 	userlogc((char*) "test_tpalloc_subtype_required");
 	m_allocated = tpalloc((char*) "X_COMMON", NULL, 0);
-	BT_ASSERT(tperrno == TPEINVAL);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEINVAL);
+	free (tperrnoS);
 	BT_ASSERT(m_allocated == NULL);
 }
 
@@ -123,7 +127,10 @@ void TestPBF::test_tprealloc() {
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "acct_info", 0);
 	BT_ASSERT(m_allocated != NULL);
 	m_allocated = ::tprealloc(m_allocated, 10);
-	BT_ASSERT(tperrno == TPEINVAL);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEINVAL);
+	free (tperrnoS);
 }
 
 void TestPBF::test_tptypes() {
@@ -138,8 +145,8 @@ void TestPBF::test_tptypes() {
 
 	char* toTestS = (char*) malloc(110);
 	sprintf(toTestS, "%d", tperrno);
-
 	BT_ASSERT_MESSAGE(toTestS, toTest == sizeof(ACCT_INFO));
+	free (toTestS);
 	BT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
 	BT_ASSERT(strcmp(subtype, "acct_info") == 0);
 	free(type);
@@ -165,6 +172,7 @@ void TestPBF::test_tpcall() {
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free (tperrnoS);
 
 	ACCT_INFO *aptr;
 	aptr = (ACCT_INFO*) tpalloc((char*) "X_COMMON", (char*) "acct_info", 0);
@@ -184,11 +192,23 @@ void TestPBF::test_tpcall() {
 	aptr->balances[0] = 1.1;
 	aptr->balances[1] = 2.2;
 
+
+	BT_ASSERT(aptr->acct_no == 12345678);
+	BT_ASSERT(strcmp(aptr->name,
+			"1234567890123456789012345678901234567890123456789") == 0);
+	BT_ASSERT(strcmp(
+							aptr->address,
+							"123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789")
+							== 0);
+	BT_ASSERT(aptr->foo[0] == 1.1F && aptr->foo[1] == 2.2F);
+	BT_ASSERT(aptr->balances[0] == 1.1 && aptr->balances[1] == 2.2);
+
 	int id = ::tpcall((char*) "PBF", (char*) aptr, 0, (char**) &rcvbuf,
 			&rcvlen, TPNOCHANGE);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(tpurcode == 23);
 	BT_ASSERT(id != -1);
+	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "fail") != 0);
 	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "pbf_service") == 0);
 }
 
@@ -207,6 +227,9 @@ void pbf_service(TPSVCINFO *svcinfo) {
 							== 0;
 	bool fooEq = aptr->foo[0] == 1.1F && aptr->foo[1] == 2.2F;
 	bool balsEq = aptr->balances[0] == 1.1 && aptr->balances[1] == 2.2;
+	userlogc((char*) "pbf_service tests: %s", aptr->address);
+	userlogc((char*) "pbf_service fooEq: %d %d", aptr->foo[0], aptr->foo[1]);
+	userlogc((char*) "pbf_service balsEq: %d %d", aptr->balances[0], aptr->balances[1]);
 	if (acctEq && nameEq && addressEq && fooEq && balsEq) {
 		ok = true;
 	}
