@@ -29,12 +29,12 @@
 			</fileset>
 		</replaceregexp>
 
-		<replaceregexp byline="true" match="<!-- DB2 support -->" replace="<!--">
+		<replaceregexp byline="true" match="&lt;!-- DB2 support -->" replace="&lt;!--">
 			<fileset dir="../../dist/">
 				<include name="**/btconfig.xml"/>
 			</fileset>
 		</replaceregexp>
-		<replaceregexp byline="true" match="<!-- END DB2 support -->" replace="-->">
+		<replaceregexp byline="true" match="&lt;!-- END DB2 support -->" replace="-->">
 			<fileset dir="../../dist/">
 				<include name="**/btconfig.xml"/>
 			</fileset>
