@@ -5,6 +5,7 @@ set ORIGINAL_PATH=%PATH%
 set PATH=%ORIGINAL_PATH%;%ORACLE_HOME%\bin
 
 rem RUN THE TXFOOAPP SERVER
+set LD_LIBRARY_PATH=%LD_LIBRARY_PATH%;%ORACLE_HOME%\lib
 cd %BLACKTIE_HOME%\examples\xatmi\txfooapp
 call generate_server -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.define="ORACLE"
 

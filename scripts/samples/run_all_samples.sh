@@ -3,6 +3,7 @@ set -m
 
 # RUN THE FOOAPP SERVER
 cd $BLACKTIE_HOME/examples/xatmi/txfooapp
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib
 generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="$ORACLE_HOME/rdbms/public" -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" -Dx.define="ORACLE"
 if [ "$?" != "0" ]; then
 	exit -1
