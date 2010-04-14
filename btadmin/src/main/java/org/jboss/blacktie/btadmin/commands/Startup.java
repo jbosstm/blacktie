@@ -110,8 +110,13 @@ public class Startup implements Command {
 						log.debug("Launched server: " + pathToExecutable);
 						BufferedReader output = new BufferedReader(
 								new InputStreamReader(exec.getInputStream()));
+						BufferedReader error = new BufferedReader(
+								new InputStreamReader(exec.getErrorStream()));
 						while (true) {
-							String readLine = output.readLine();
+							String readLine = error.readLine();
+							if (readLine == null) {
+								readLine = output.readLine();
+							}
 							log.info(readLine);
 							if (readLine
 									.endsWith("Server waiting for requests...")) {
