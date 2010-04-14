@@ -8,7 +8,7 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 export BLACKTIE_CONFIGURATION=linux
-btadmin startup
+LD_LIBRARY_PATH=/home/tom/app/tom/product/11.1.0/db_1/lib:$LD_LIBRARY_PATH btadmin startup
 if [ "$?" != "0" ]; then
 	exit -1
 fi
@@ -17,7 +17,7 @@ unset BLACKTIE_CONFIGURATION
 # RUN THE C CLIENT
 cd $BLACKTIE_HOME/examples/xatmi/txfooapp
 generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="$ORACLE_HOME/rdbms/public" -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" -Dx.define="ORACLE"
-./client
+LD_LIBRARY_PATH=/home/tom/app/tom/product/11.1.0/db_1/lib:$LD_LIBRARY_PATH ./client
 if [ "$?" != "0" ]; then
 	killall -9 server
 	exit -1
