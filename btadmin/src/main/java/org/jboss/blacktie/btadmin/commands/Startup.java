@@ -113,9 +113,9 @@ public class Startup implements Command {
 						BufferedReader error = new BufferedReader(
 								new InputStreamReader(exec.getErrorStream()));
 						while (true) {
-							String readLine = error.readLine();
+							String readLine = output.readLine();
 							if (readLine == null) {
-								readLine = output.readLine();
+								readLine = error.readLine();
 							}
 							log.info(readLine);
 							if (readLine
