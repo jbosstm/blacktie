@@ -68,6 +68,20 @@
 		</license>
 	</licenses>
 
+	<distributionManagement>
+		<repository>
+			<id>jboss-releases</id>
+			<name>JBoss Release Repository</name>
+			<url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
+		</repository>
+
+		<snapshotRepository>
+			<id>jboss-snapshots</id>
+			<name>JBoss Snapshot Repository</name>
+			<url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<scm>
 		<connection>scm:svn:http://anonsvn.jboss.org/repos/blacktie/trunk/blacktie</connection>
 		<developerConnection>scm:svn:https://svn.jboss.org/repos/blacktie/trunk/blacktie</developerConnection>
