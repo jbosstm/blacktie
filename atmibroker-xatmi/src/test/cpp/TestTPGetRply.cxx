@@ -72,7 +72,7 @@ void TestTPGetRply::test_tpgetrply() {
 	BT_ASSERT(tperrno == 0);
 
 	// RETRIEVE THE RESPONSE
-	int valToTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
+	int toTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
 	BT_ASSERT(tperrno != TPEINVAL);
 	BT_ASSERT(tperrno != TPEBADDESC);
 	BT_ASSERT(tperrno != TPEOTYPE);
@@ -81,8 +81,11 @@ void TestTPGetRply::test_tpgetrply() {
 	BT_ASSERT(tperrno != TPESVCERR);
 	BT_ASSERT(tperrno != TPEBLOCK);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(valToTest == 0);
 	BT_ASSERT(strcmp(rcvbuf, "testtpgetrply_service") == 0);
+	char* toTestS = (char*) malloc(110);
+	sprintf(toTestS, "%d", toTest);
+	BT_ASSERT_MESSAGE(toTestS, toTest == 0);
+	free(toTestS);
 }
 
 // 8.5
@@ -185,7 +188,10 @@ void TestTPGetRply::test_tpgetrply_with_TPNOBLOCK() {
 
 	// RETRIEVE THE RESPONSE
 	int valToTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, TPNOBLOCK);
-	BT_ASSERT(tperrno == 0);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
 	BT_ASSERT(valToTest == -1);
 	BT_ASSERT(strcmp(rcvbuf, "test_tpgetrply_TPNOBLOCK") == -1);
 }
@@ -199,10 +205,13 @@ void TestTPGetRply::test_tpgetrply_without_TPNOBLOCK() {
 	BT_ASSERT(tperrno == 0);
 
 	// RETRIEVE THE RESPONSE
-	int valToTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
+	int toTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(valToTest == 0);
-	BT_ASSERT(strcmp(rcvbuf, "test_tpgetrply_TPNOBLOCK") == 0);
+	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "test_tpgetrply_TPNOBLOCK") == 0);
+	char* toTestS = (char*) malloc(110);
+	sprintf(toTestS, "%d", toTest);
+	BT_ASSERT_MESSAGE(toTestS, toTest == 0);
+	free(toTestS);
 }
 
 void test_tpgetrply_TPNOBLOCK(TPSVCINFO *svcinfo) {

@@ -102,7 +102,10 @@ void TestTPCall::test_tpcall_null_service() {
 	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
 	(void) strcpy(sendbuf, "test_tpcall_x_octet");
-	BT_ASSERT(tperrno == 0);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
 
 	int id = ::tpcall(NULL, (char *) sendbuf, sendlen, (char **) &rcvbuf,
 			&rcvlen, (long) 0);
@@ -122,7 +125,10 @@ void TestTPCall::test_tpcall_x_octet() {
 	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
 	(void) strcpy(sendbuf, "test_tpcall_x_octet");
-	BT_ASSERT(tperrno == 0);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
 
 	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, (long) 0);
@@ -265,7 +271,12 @@ void TestTPCall::test_tpcall_with_TPNOCHANGE() {
 	long toTest = ::tptypes(rcvbuf, type, subtype);
 	BT_ASSERT(strncmp(type, "X_C_TYPE", 8) == 0);
 	BT_ASSERT(strncmp(subtype, "acct_info", 16) == 0);
-	BT_ASSERT(toTest == sizeof(ACCT_INFO));
+
+	char* toTestS = (char*) malloc(110);
+	sprintf(toTestS, "%d", toTest);
+	BT_ASSERT_MESSAGE(toTestS, toTest == sizeof(ACCT_INFO));
+	free(toTestS);
+
 	free(type);
 	free(subtype);
 
@@ -302,7 +313,12 @@ void TestTPCall::test_tpcall_without_TPNOCHANGE() {
 	long toTest = ::tptypes(rcvbuf, type, subtype);
 	BT_ASSERT(strcmp(type, "X_OCTET") == 0);
 	BT_ASSERT(strcmp(subtype, "") == 0);
-	BT_ASSERT(toTest == 60);
+
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
+
 	free(type);
 	free(subtype);
 }
@@ -410,7 +426,10 @@ void TestTPCall::test_tpcall_without_TPNOBLOCK() {
 	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
 	(void) strcpy(sendbuf, toTest);
-	BT_ASSERT(tperrno == 0);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
 
 	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, (long) 0);
@@ -431,7 +450,10 @@ void TestTPCall::test_tpcall_without_TPNOTIME() {
 	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
 	(void) strcpy(sendbuf, toTest);
-	BT_ASSERT(tperrno == 0);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
 
 	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, 0);
@@ -452,7 +474,10 @@ void TestTPCall::test_tpcall_with_TPNOTIME() {
 	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
 	(void) strcpy(sendbuf, toTest);
-	BT_ASSERT(tperrno == 0);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
 
 	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, TPNOTIME);

@@ -129,8 +129,15 @@ void TestTPConversation::test_short_conversation() {
 
 	userlogc((char*) "test_short_conversation");
 	cd = ::tpconnect((char*) "TestTPConversation", NULL, 0, TPRECVONLY);
-	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(cd != -1);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
+
+	char* cdS = (char*) malloc(110);
+	sprintf(cdS, "%d", cd);
+	BT_ASSERT_MESSAGE(cdS, cd != -1);
+	free(cdS);
 
 	long revent = 0;
 	int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);

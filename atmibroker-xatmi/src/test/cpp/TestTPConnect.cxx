@@ -72,34 +72,46 @@ void TestTPConnect::tearDown() {
 void TestTPConnect::test_tpconnect() {
 	userlogc((char*) "test_tpconnect");
 	cd = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, TPRECVONLY);
-	BT_ASSERT(cd != -1);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
+
+	char* cdS = (char*) malloc(110);
+	sprintf(cdS, "%d", cd);
+	BT_ASSERT_MESSAGE(cdS, cd != -1);
+	free(cdS);
 }
 
 void TestTPConnect::test_tpconnect_double_connect() {
 	userlogc((char*) "test_tpconnect_double_connect");
 	cd = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, TPRECVONLY);
 	cd2 = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, TPRECVONLY);
-	BT_ASSERT(cd != -1);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
+
+	char* cdS = (char*) malloc(110);
+	sprintf(cdS, "%d", cd);
+	BT_ASSERT_MESSAGE(cdS, cd != -1);
+	free(cdS);
 	BT_ASSERT(cd2 != -1);
 	BT_ASSERT(cd != cd2);
-	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(tperrno != TPEINVAL);
-	BT_ASSERT(tperrno != TPENOENT);
-	BT_ASSERT(tperrno != TPEITYPE);
-	BT_ASSERT(tperrno != TPELIMIT);
-	BT_ASSERT(tperrno != TPETRAN);
-	BT_ASSERT(tperrno != TPETIME);
-	BT_ASSERT(tperrno != TPEBLOCK);
-	BT_ASSERT(tperrno != TPGOTSIG);
-	BT_ASSERT(tperrno != TPEPROTO);
-	BT_ASSERT(tperrno != TPESYSTEM);
-	BT_ASSERT(tperrno != TPEOS);
 }
 
 void TestTPConnect::test_tpconnect_nodata() {
 	userlogc((char*) "test_tpconnect_nodata");
 	cd = ::tpconnect((char*) "TestTPConnect", NULL, 0, TPRECVONLY);
-	BT_ASSERT(cd != -1);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
+
+	char* cdS = (char*) malloc(110);
+	sprintf(cdS, "%d", cd);
+	BT_ASSERT_MESSAGE(cdS, cd != -1);
+	free(cdS);
 }
 
 void testtpconnect_service(TPSVCINFO *svcinfo) {
