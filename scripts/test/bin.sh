@@ -17,7 +17,8 @@ for i in `find . -name btconfig.xml`; do sed -i "s=$HOSTNAME_TO_USE:109=$JBOSSAS
 for i in `find . -name btconfig.xml`; do sed -i "s/<!-- DB2 support -->/<!--/g" $i; done
 for i in `find . -name btconfig.xml`; do sed -i "s/<!-- END DB2 support -->/-->/g" $i; done
 
-for i in `find . -name btconfig.xml`; do sed -i "s/DB=blacktie/DB=orcl112/g" $i; done
+for i in `find . -name btconfig.xml`; do sed -i "s/SqlNet=blacktie+DB=blacktie/SqlNet=orcl112+DB=ORCL.NCL/g" $i; done
+for i in `find . -name request.c`; do sed -i "s/blacktie/ORCL.NCL/g" $i; done
 
 . setenv.sh
 

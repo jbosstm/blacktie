@@ -3,26 +3,24 @@ set -m
 
 # RUN THE FOOAPP SERVER
 cd $BLACKTIE_HOME/examples/xatmi/txfooapp
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib
-generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="$ORACLE_HOME/rdbms/public" -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" -Dx.define="ORACLE"
+export ORA_LIBS=/usr/lib/oracle/11.2/client64/lib
+export ORA_INCS=/usr/include/oracle/11.2/client64
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORA_LIBS
+generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="$ORA_INCS" -Dx.lib.dir="$ORA_LIBS" -Dx.libs="occi clntsh" -Dx.define="ORACLE"
 if [ "$?" != "0" ]; then
-	exit -1
+        exit -1
 fi
 export BLACKTIE_CONFIGURATION=linux
-LD_LIBRARY_PATH=/home/tom/app/tom/product/11.1.0/db_1/lib:$LD_LIBRARY_PATH btadmin startup
+btadmin startup
 if [ "$?" != "0" ]; then
-	exit -1
+        exit -1
 fi
-unset BLACKTIE_CONFIGURATION
+#unset BLACKTIE_CONFIGURATION
 
 # RUN THE C CLIENT
 cd $BLACKTIE_HOME/examples/xatmi/txfooapp
-generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="$ORACLE_HOME/rdbms/public" -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" -Dx.define="ORACLE"
-LD_LIBRARY_PATH=/home/tom/app/tom/product/11.1.0/db_1/lib:$LD_LIBRARY_PATH ./client
-if [ "$?" != "0" ]; then
-	killall -9 server
-	exit -1
-fi
+generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="$ORA_INCS" -Dx.lib.dir="$ORA_LIBS" -Dx.libs="occi clntsh" -Dx.define="ORACLE"
+./client
 
 # SHUTDOWN THE SERVER RUNNING THE btadmin TOOL
 export BLACKTIE_CONFIGURATION=linux

@@ -93,7 +93,7 @@
 		<XA_RESOURCE configuration="linux">
 			<XA_RESOURCE_MGR_ID>203</XA_RESOURCE_MGR_ID>
 			<XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
-			<XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger1+SesTm=60+DbgFl=15+SqlNet=blacktie+DB=blacktie+LogDir=.
+			<XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+SqlNet=blacktie+DB=blacktie+LogDir=.
 			</XA_OPEN_STRING>
 			<XA_CLOSE_STRING></XA_CLOSE_STRING>
 			<XA_SWITCH>xaosw</XA_SWITCH>
