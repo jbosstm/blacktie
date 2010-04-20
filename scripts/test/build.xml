@@ -45,5 +45,15 @@
 			</fileset>
 		</replaceregexp>
 
+		<replaceregexp byline="true" match="SqlNet=blacktie+DB=blacktie" replace="SqlNet=orcl112+DB=ORCL.NCL">
+			<fileset dir="../../dist/">
+				<include name="**/btconfig.xml"/>
+			</fileset>
+		</replaceregexp>
+		<replaceregexp byline="true" match="blacktie" replace="ORCL.NCL">
+			<fileset dir="../../dist/">
+				<include name="**/request.c"/>
+			</fileset>
+		</replaceregexp>
 	</target>
 </project>

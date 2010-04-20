@@ -39,17 +39,12 @@
   sleep 30
 fi
 
-wget http://albany/userContent/blacktie/instantclient-basic-linuxAMD64-32-10.1.0.5.0-20060519.zip
-if [ -d instantclient10_1 ]; then
-  rm -rf instantclient10_1
-fi
-unzip instantclient-basic-linuxAMD64-32-10.1.0.5.0-20060519.zip
-mkdir -p instantclient10_1/network/admin
-(cd instantclient10_1/network/admin; wget http://albany/userContent/blacktie/tnsnames.ora)
-mkdir -p instantclient10_1/rdbms 
-(cd instantclient10_1/rdbms; ln -s ../instantclient10_1/sdk/include public)
-mkdir instantclient10_1/lib
-mv instantclient10_1/*.so* instantclient10_1/lib
+TNS_ADMIN=$WORKSPACE/instantclient_11_2/network/admin
+
+mkdir -p $TNS_ADMIN
+
+[[ -f $TNS_ADMIN/tnsnames.ora ]] &amp;&amp; rm -f $TNS_ADMIN/tnsnames.ora
+(cd $TNS_ADMIN; wget http://albany/userContent/blacktie/tnsnames.ora)
 
 wget http://albany/userContent/blacktie/bt-repo-centos54x64.tgz
 tar xzf bt-repo-centos54x64.tgz -C $HUDSON_HOME/.m2/repository
@@ -88,7 +83,6 @@ cp trunk/blacktie-rhq-plugin/target/blacktie-rhq-plugin-*.jar jboss-5.1.0.GA/ser
 cp trunk/jatmibroker-xatmi/src/test/resources/jatmibroker-xatmi-test-service.xml jboss-5.1.0.GA/server/all/deploy
 cp trunk/blacktie-admin-services/src/test/resources/btconfig.xml jboss-5.1.0.GA/server/all/conf
 
-
 cd jboss-5.1.0.GA/bin
 ./run.sh -c all -b localhost&amp;
 sleep 60</command>
@@ -102,7 +96,8 @@ mvn install -Dbpa=centos54x64</command>
     <hudson.tasks.Shell>
       <command>export PATH=$PATH:/usr/local/apache-maven-2.0.9/bin/
 export JBOSSAS_IP_ADDR=localhost
-export ORACLE_HOME=`pwd`/instantclient10_1
+export ORACLE_HOME=/usr/lib/oracle/11.2/client64
+export TNS_ADMIN=$WORKSPACE/instantclient_11_2/network/admin
 cd trunk/scripts/test
 ./bin.sh</command>
     </hudson.tasks.Shell>
@@ -146,5 +141,10 @@ $BUILD_LOG</body>
 $CHANGES</defaultContent>
     </hudson.plugins.emailext.ExtendedEmailPublisher>
   </publishers>
-  <buildWrappers/>
+  <buildWrappers>
+    <hudson.plugins.build__timeout.BuildTimeoutWrapper>
+      <timeoutMinutes>120</timeoutMinutes>
+      <failBuild>true</failBuild>
+    </hudson.plugins.build__timeout.BuildTimeoutWrapper>
+  </buildWrappers>
 </project>

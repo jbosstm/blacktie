@@ -37,28 +37,33 @@
       <command>if exist build.xml del build.xml
 if exist jboss-5.1.0.GA echo foo | call jboss-5.1.0.GA\bin\shutdown.bat -s 172.17.131.5:1099 -S &amp;&amp; cd .
 if exist jboss-5.1.0.GA @ping 127.0.0.1 -n 30 -w 1000 &gt; nul
-
 echo ^&lt;project name=&quot;blacktie-dependencies&quot;^&gt; &gt;&gt; build.xml
-echo	^&lt;target name=&quot;download&quot;^&gt; &gt;&gt; build.xml
-echo		^&lt;get src=&quot;http://albany/userContent/blacktie/instantclient-basiclite-win32-11.2.0.1.0.zip&quot; dest=&quot;./instantclient-basiclite-win32-11.2.0.1.0.zip&quot; verbose=&quot;true&quot; usetimestamp=&quot;true&quot;/^&gt; &gt;&gt; build.xml
-echo		^&lt;get src=&quot;http://albany/userContent/blacktie/instantclient-sdk-win32-11.2.0.1.0.zip&quot; dest=&quot;./instantclient-sdk-win32-11.2.0.1.0.zip&quot; verbose=&quot;true&quot; usetimestamp=&quot;true&quot;/^&gt; &gt;&gt; build.xml
-echo		^&lt;delete dir=&quot;instantclient_11_2&quot;/^&gt; &gt;&gt; build.xml
-echo		^&lt;unzip src=&quot;./instantclient-basiclite-win32-11.2.0.1.0.zip&quot; dest=&quot;.&quot;/^&gt; &gt;&gt; build.xml
-echo		^&lt;unzip src=&quot;./instantclient-sdk-win32-11.2.0.1.0.zip&quot; dest=&quot;.&quot;/^&gt; &gt;&gt; build.xml
-echo		^&lt;mkdir dir=&quot;./instantclient_11_2/network/admin&quot;/^&gt; &gt;&gt; build.xml
-echo		^&lt;get src=&quot;http://albany/userContent/blacktie/tnsnames.ora&quot; dest=&quot;./instantclient_11_2/network/admin/tnsnames.ora&quot; verbose=&quot;true&quot; usetimestamp=&quot;true&quot;/^&gt; &gt;&gt; build.xml
-echo		^&lt;move tofile=&quot;./instantclient_11_2/OCI&quot; file=&quot;./instantclient_11_2/sdk&quot;/^&gt; &gt;&gt; build.xml
-echo		^&lt;move tofile=&quot;./instantclient_11_2/OCI/lib/MSVC2&quot; file=&quot;./instantclient_11_2/OCI/lib/msvc&quot;/^&gt; &gt;&gt; build.xml
-echo		^&lt;move tofile=&quot;./instantclient_11_2/OCI/lib/MSVC&quot; file=&quot;./instantclient_11_2/OCI/lib/MSVC2&quot;/^&gt; &gt;&gt; build.xml
-echo		^&lt;get src=&quot;http://albany/userContent/blacktie/${BT_REPO}&quot; dest=&quot;./${BT_REPO}&quot; verbose=&quot;true&quot; usetimestamp=&quot;true&quot;/^&gt; &gt;&gt; build.xml
-echo		^&lt;unzip src=&quot;./${BT_REPO}&quot; dest=&quot;C:/Documents and Settings/hudson/.m2/repository/&quot;/^&gt; &gt;&gt; build.xml
-echo		^&lt;get src=&quot;http://albany/userContent/blacktie/jboss-5.1.0.GA.zip&quot; dest=&quot;./jboss-5.1.0.GA.zip&quot; verbose=&quot;true&quot; usetimestamp=&quot;true&quot;/^&gt; &gt;&gt; build.xml
-echo		^&lt;delete dir=&quot;jboss-5.1.0.GA&quot;/^&gt; &gt;&gt; build.xml
-echo		^&lt;unzip src=&quot;./jboss-5.1.0.GA.zip&quot; dest=&quot;.&quot;/^&gt; &gt;&gt; build.xml
-echo	^&lt;/target^&gt; &gt;&gt; build.xml
-echo	^&lt;target name=&quot;replace&quot;^&gt; &gt;&gt; build.xml
+echo    ^&lt;target name=&quot;download&quot;^&gt; &gt;&gt; build.xml
+echo        ^&lt;get src=&quot;http://albany/userContent/blacktie/instantclient-basiclite-win32-11.2.0.1.0.zip&quot; dest=&quot;./instantclient-basiclite-win32-11.2.0.1.0.zip&quot; verbose=&quot;true&quot; usetimestamp=&quot;true&quot;/^&gt; &gt;&gt; build.xml
+echo        ^&lt;get src=&quot;http://albany/userContent/blacktie/instantclient-sdk-win32-11.2.0.1.0.zip&quot; dest=&quot;./instantclient-sdk-win32-11.2.0.1.0.zip&quot; verbose=&quot;true&quot; usetimestamp=&quot;true&quot;/^&gt; &gt;&gt; build.xml
+echo        ^&lt;delete dir=&quot;instantclient_11_2&quot;/^&gt; &gt;&gt; build.xml
+echo        ^&lt;unzip src=&quot;./instantclient-basiclite-win32-11.2.0.1.0.zip&quot; dest=&quot;.&quot;/^&gt; &gt;&gt; build.xml
+echo        ^&lt;unzip src=&quot;./instantclient-sdk-win32-11.2.0.1.0.zip&quot; dest=&quot;.&quot;/^&gt; &gt;&gt; build.xml
+echo        ^&lt;mkdir dir=&quot;./instantclient_11_2/network/admin&quot;/^&gt; &gt;&gt; build.xml
+echo        ^&lt;get src=&quot;http://albany/userContent/blacktie/tnsnames.ora&quot; dest=&quot;./instantclient_11_2/network/admin/tnsnames.ora&quot; verbose=&quot;true&quot; usetimestamp=&quot;true&quot;/^&gt; &gt;&gt; build.xml
+echo        ^&lt;move tofile=&quot;./instantclient_11_2/OCI&quot; file=&quot;./instantclient_11_2/sdk&quot;/^&gt; &gt;&gt; build.xml
+echo        ^&lt;move tofile=&quot;./instantclient_11_2/OCI/lib/MSVC2&quot; file=&quot;./instantclient_11_2/OCI/lib/msvc&quot;/^&gt; &gt;&gt; build.xml
+echo        ^&lt;move tofile=&quot;./instantclient_11_2/OCI/lib/MSVC&quot; file=&quot;./instantclient_11_2/OCI/lib/MSVC2&quot;/^&gt; &gt;&gt; build.xml
+echo        ^&lt;mkdir dir=&quot;./instantclient_11_2/bin&quot;/^&gt; &gt;&gt; build.xml
+echo        ^&lt;move todir=&quot;./instantclient_11_2/bin&quot;^&gt; &gt;&gt; build.xml
+echo            ^&lt;fileset dir=&quot;./instantclient_11_2/&quot;^&gt; &gt;&gt; build.xml
+echo                ^&lt;include name=&quot;*.dll&quot;/^&gt; &gt;&gt; build.xml
+echo            ^&lt;/fileset^&gt; &gt;&gt; build.xml
+echo        ^&lt;/move^&gt; &gt;&gt; build.xml
+echo        ^&lt;get src=&quot;http://albany/userContent/blacktie/${BT_REPO}&quot; dest=&quot;./${BT_REPO}&quot; verbose=&quot;true&quot; usetimestamp=&quot;true&quot;/^&gt; &gt;&gt; build.xml
+echo        ^&lt;unzip src=&quot;./${BT_REPO}&quot; dest=&quot;C:/Documents and Settings/hudson/.m2/repository/&quot;/^&gt; &gt;&gt; build.xml
+echo        ^&lt;get src=&quot;http://albany/userContent/blacktie/jboss-5.1.0.GA.zip&quot; dest=&quot;./jboss-5.1.0.GA.zip&quot; verbose=&quot;true&quot; usetimestamp=&quot;true&quot;/^&gt; &gt;&gt; build.xml
+echo        ^&lt;delete dir=&quot;jboss-5.1.0.GA&quot;/^&gt; &gt;&gt; build.xml
+echo        ^&lt;unzip src=&quot;./jboss-5.1.0.GA.zip&quot; dest=&quot;.&quot;/^&gt; &gt;&gt; build.xml
+echo    ^&lt;/target^&gt; &gt;&gt; build.xml
+echo    ^&lt;target name=&quot;replace&quot;^&gt; &gt;&gt; build.xml
 echo        ^&lt;replaceregexp byline=&quot;true&quot; file=&quot;jboss-5.1.0.GA/server/all/conf/jbossts-properties.xml&quot; match=&quot;CONFIGURATION_FILE&quot; replace=&quot;NAME_SERVICE&quot;  /^&gt; &gt;&gt; build.xml
-echo	^&lt;/target^&gt; &gt;&gt; build.xml
+echo    ^&lt;/target^&gt; &gt;&gt; build.xml
 echo	^&lt;target name=&quot;replaceLocalhost&quot;^&gt; &gt;&gt; build.xml
 echo        ^&lt;replaceregexp byline=&quot;true&quot; file=&quot;jboss-5.1.0.GA/server/all/conf/jacorb.properties&quot; match=&quot;localhost&quot; replace=&quot;${JBOSSAS_IP_ADDR}&quot;  /^&gt; &gt;&gt; build.xml
 echo        ^&lt;replaceregexp byline=&quot;true&quot; file=&quot;jboss-5.1.0.GA/server/all/conf/btconfig.xml&quot; match=&quot;localhost&quot; replace=&quot;${JBOSSAS_IP_ADDR}&quot;  /^&gt; &gt;&gt; build.xml
@@ -125,7 +130,8 @@ set JAVA_HOME=C:\Program Files (x86)\Java\jdk1.5.0_19
 set MAVEN_HOME=C:\hudson\tools\apache-maven-2.0.10
 set MAVEN_OPTS=-Xmx200m
 set ORACLE_HOME=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2
-set PATH=%PATH%;%MAVEN_HOME%\bin;%ORACLE_HOME%\vc9
+set TNS_ADMIN=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2\network\admin
+set PATH=%PATH%;%MAVEN_HOME%\bin;%ORACLE_HOME%\bin;%ORACLE_HOME%\vc9
 cd trunk\scripts\test
 call ant dist -DBT_HOME=C:\\\\hudson\\\\workspace\\\\blacktie-windows2003\\\\trunk\\\\dist\\\\blacktie-2.0.0.M4-SNAPSHOT -DJBOSSAS_IP_ADDR=catskill
 cd ..\..\dist\blacktie-*
@@ -173,5 +179,10 @@ $BUILD_LOG</body>
 $CHANGES</defaultContent>
     </hudson.plugins.emailext.ExtendedEmailPublisher>
   </publishers>
-  <buildWrappers/>
+  <buildWrappers>
+    <hudson.plugins.build__timeout.BuildTimeoutWrapper>
+      <timeoutMinutes>120</timeoutMinutes>
+      <failBuild>true</failBuild>
+    </hudson.plugins.build__timeout.BuildTimeoutWrapper>
+  </buildWrappers>
 </project>
