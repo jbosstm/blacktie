@@ -39,7 +39,7 @@
 				<include name="**/btconfig.xml"/>
 			</fileset>
 		</replaceregexp>
-		<replaceregexp byline="true" match="DB=blacktie" replace="DB=orcl112">
+		<replaceregexp byline="true" match="DB=blacktie" replace="DB=ORCL.NCL">
 			<fileset dir="../../dist/">
 				<include name="**/btconfig.xml"/>
 			</fileset>
