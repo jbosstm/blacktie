@@ -28,8 +28,10 @@ BLACKTIE_XATMI_DLL void BAR(TPSVCINFO * svcinfo) {
 
 	userlogc((char*) "BAR Invoked");
 	if(strcmp(svcinfo->data, "error_counter_test") == 0) {
+		userlogc((char*) "BAR fail");
 		tpreturn(TPFAIL, 1, buffer, sendlen, 0);
 	} else {
+		userlogc((char*) "BAR success");
 		tpreturn(TPSUCCESS, 1, buffer, sendlen, 0);
 	}
 }
