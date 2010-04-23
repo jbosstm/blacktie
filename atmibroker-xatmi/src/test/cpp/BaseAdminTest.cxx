@@ -88,7 +88,7 @@ int BaseAdminTest::callBAR(int r, char* buf) {
 	userlogc((char*) "r = %d, tperrno = %d", r, tperrno);
 	BT_ASSERT(r == tperrno);
 	if(tperrno == 0) {
-		BT_ASSERT(recvbuf[0] == '1');
+		BT_ASSERT_MESSAGE(recvbuf, recvbuf[0] == '1');
 	}
 
 	tpfree(sendbuf);
