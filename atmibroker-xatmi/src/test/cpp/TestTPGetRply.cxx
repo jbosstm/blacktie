@@ -24,6 +24,8 @@
 #include "TestTPGetRply.h"
 #include "Sleeper.h"
 
+#include "malloc.h"
+
 extern void testtpgetrply_service(TPSVCINFO *svcinfo);
 
 extern void test_tpgetrply_TPNOBLOCK(TPSVCINFO *svcinfo);

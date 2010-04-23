@@ -23,6 +23,8 @@
 
 #include "TestTPConnect.h"
 
+#include "malloc.h"
+
 extern void testtpconnect_service(TPSVCINFO *svcinfo);
 
 void TestTPConnect::setUp() {

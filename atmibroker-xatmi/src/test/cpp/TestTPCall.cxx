@@ -24,6 +24,7 @@
 
 #include "TestTPCall.h"
 #include "Sleeper.h"
+#include "malloc.h"
 
 extern void test_tpcall_x_octet_service(TPSVCINFO *svcinfo);
 extern void test_tpcall_x_octet_service_zero(TPSVCINFO *svcinfo);

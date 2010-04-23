@@ -21,6 +21,8 @@
 #include "xatmi.h"
 #include "userlogc.h"
 #include "TestTimeToLive.h"
+#include "ace/OS_NS_unistd.h"
+
 
 void test_TTL_service(TPSVCINFO *svcinfo) {
 	long timeout = 45;

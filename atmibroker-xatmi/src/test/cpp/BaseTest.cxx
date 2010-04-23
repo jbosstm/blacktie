@@ -25,6 +25,8 @@ extern "C" {
 #include "AtmiBrokerClientControl.h"
 }
 
+#include "malloc.h"
+
 void BaseTest::setUp() {
 	init_ace();
 	// Perform global set up

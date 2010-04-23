@@ -19,12 +19,14 @@
 #include "string.h"
 #include "xatmi.h"
 #include "atmiBrokerXatmiMacro.h"
+#include "userlogc.h"
 
 BLACKTIE_XATMI_DLL void BAR(TPSVCINFO * svcinfo) {
 	int sendlen = 1;
 	char* buffer = tpalloc((char*) "X_OCTET", NULL, sendlen);
 	buffer[0] = '1';
 
+	userlogc((char*) "BAR Invoked");
 	if(strcmp(svcinfo->data, "error_counter_test") == 0) {
 		tpreturn(TPFAIL, 1, buffer, sendlen, 0);
 	} else {
