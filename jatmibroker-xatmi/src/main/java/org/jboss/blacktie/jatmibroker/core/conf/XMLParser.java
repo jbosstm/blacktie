@@ -129,8 +129,7 @@ public class XMLParser {
 		} else {
 			throw new ConfigurationException(
 					"Could not load the configuration file: " + env
-							+ " from directory: "
-							+ System.getProperty("user.dir"));
+							+ " please update your CLASSPATH");
 		}
 	}
 }

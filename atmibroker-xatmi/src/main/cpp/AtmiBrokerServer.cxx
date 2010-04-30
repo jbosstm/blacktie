@@ -814,8 +814,8 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 		tpfree(response);
 		return false;
 	} else if (response[0] == 4) {
-		LOG4CXX_WARN(loggerAtmiBrokerServer, (char*) "Server vresion "
-				<< version << " can not main Domain version");
+		LOG4CXX_WARN(loggerAtmiBrokerServer, (char*) "Software version mismatch: domain version "
+				<< version << " must match the version of the deployed admin service (please upgrade)");
 		tpfree(command);
 		tpfree(response);
 		return false;
