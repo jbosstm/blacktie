@@ -43,16 +43,20 @@ AtmiBrokerSignalHandler::AtmiBrokerSignalHandler(int* hsignals, int* bsignals)
 	for (sigp = bsignals; *sigp != 0; sigp++) {
 		SIGCHK(ACE_OS::sigaddset(&bss_, *sigp), "sigaddset");
 	}
+#ifndef WIN32
 	for (int i = 1; i < ACE_NSIG; i++)
 		if (ACE_OS::sigismember(&bss_, i))
 			handler_.register_handler(i, this);
+#endif
 }
 
 AtmiBrokerSignalHandler::~AtmiBrokerSignalHandler()
 {
+#ifndef WIN32
 	for (int i = 1; i < ACE_NSIG; i++)
 		if (ACE_OS::sigismember(&bss_, i))
 			handler_.remove_handler(i);
+#endif
 }
 
 void AtmiBrokerSignalHandler::addSignalHandler(int (*handler)(int signum), bool front)
