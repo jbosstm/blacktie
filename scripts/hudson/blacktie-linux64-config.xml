@@ -98,9 +98,9 @@ mvn install -Dbpa=centos54x64</command>
 export JBOSSAS_IP_ADDR=localhost
 export ORACLE_HOME=/usr/lib/oracle/11.2/client64
 export TNS_ADMIN=$WORKSPACE/instantclient_11_2/network/admin
-cd trunk/scripts/test
-./bin.sh
+(cd trunk &amp;&amp; ./scripts/test/bin.sh)
 
+cd trunk/dist/blacktie*/
 . setenv.sh
 ./run_all_samples.sh</command>
     </hudson.tasks.Shell>
