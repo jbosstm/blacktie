@@ -1,4 +1,3 @@
-cd ../../
 rm -rf dist
 mkdir dist
 tar xfz blacktie/target/blacktie-*-bin.tar.gz -C dist
