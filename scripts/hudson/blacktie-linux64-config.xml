@@ -15,7 +15,7 @@
       </hudson.scm.SubversionSCM_-ModuleLocation>
     </locations>
     <useUpdate>true</useUpdate>
-    <doRevert>false</doRevert>
+    <doRevert>true</doRevert>
     <excludedRegions></excludedRegions>
     <excludedUsers></excludedUsers>
     <excludedRevprop></excludedRevprop>
@@ -99,7 +99,10 @@ export JBOSSAS_IP_ADDR=localhost
 export ORACLE_HOME=/usr/lib/oracle/11.2/client64
 export TNS_ADMIN=$WORKSPACE/instantclient_11_2/network/admin
 cd trunk/scripts/test
-./bin.sh</command>
+./bin.sh
+
+. setenv.sh
+./run_all_samples.sh</command>
     </hudson.tasks.Shell>
     <hudson.tasks.Shell>
       <command>echo foo | jboss-5.1.0.GA/bin/shutdown.sh -S &amp;&amp; cd .</command>

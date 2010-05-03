@@ -19,7 +19,3 @@ for i in `find . -name btconfig.xml`; do sed -i "s/<!-- END DB2 support -->/-->/
 
 for i in `find . -name btconfig.xml`; do sed -i "s/SqlNet=blacktie+DB=blacktie/SqlNet=orcl112+DB=ORCL.NCL/g" $i; done
 for i in `find . -name request.c`; do sed -i "s/blacktie/ORCL.NCL/g" $i; done
-
-. setenv.sh
-
-./run_all_samples.sh
