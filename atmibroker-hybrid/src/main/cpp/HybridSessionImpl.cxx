@@ -37,19 +37,19 @@ log4cxx::LoggerPtr HybridSessionImpl::logger(log4cxx::Logger::getLogger(
 
 HybridSessionImpl::HybridSessionImpl(char* connectionName,
 		CORBA_CONNECTION* connection, apr_pool_t* pool, int id,
-		char* serviceName) {
+		char* serviceName, void(*messagesAvailableCallback)(int, bool)) {
 	LOG4CXX_TRACE(logger, (char*) "constructor service");
 	long ttl;
 
 	switch (txx_ttl(&ttl)) {
-	case -1:	// no txn bound to thread so use XATMI timeouts
+	case -1: // no txn bound to thread so use XATMI timeouts
 		ttl = mqConfig.requestTimeout;
 		break;
-	default:	/*FALLTHRU - txx_ttl can only return -1, 0 or 1*/
-	case 0:	// will create a non-blocking socket that times out after ttl seconds
+	default: /*FALLTHRU - txx_ttl can only return -1, 0 or 1*/
+	case 0: // will create a non-blocking socket that times out after ttl seconds
 		break;
 	case 1:
-		ttl = 0;	// will create a blocking socket
+		ttl = 0; // will create a blocking socket
 		break;
 	}
 
@@ -76,7 +76,7 @@ HybridSessionImpl::HybridSessionImpl(char* connectionName,
 	char * poaName = (char*) malloc(30);
 	::sprintf(poaName, "%s%d", connectionName, id);
 	this->temporaryQueue = new HybridCorbaEndpointQueue(this, corbaConnection,
-			poaName);
+			poaName, id, messagesAvailableCallback);
 	this->replyTo = temporaryQueue->getName();
 	this->lastEvent = 0;
 	this->lastRCode = 0;
@@ -86,7 +86,8 @@ HybridSessionImpl::HybridSessionImpl(char* connectionName,
 
 HybridSessionImpl::HybridSessionImpl(char* connectionName,
 		CORBA_CONNECTION* connection, apr_pool_t* pool, int id,
-		const char* temporaryQueueName) {
+		const char* temporaryQueueName, void(*messagesAvailableCallback)(int,
+				bool)) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor corba");
 	this->id = id;
 	this->corbaConnection = connection;
@@ -109,7 +110,7 @@ HybridSessionImpl::HybridSessionImpl(char* connectionName,
 	char * poaName = (char*) malloc(30);
 	::sprintf(poaName, "%s%d", connectionName, id);
 	this->temporaryQueue = new HybridCorbaEndpointQueue(this, corbaConnection,
-			poaName);
+			poaName, id, messagesAvailableCallback);
 	this->replyTo = temporaryQueue->getName();
 	this->lastEvent = 0;
 	this->lastRCode = 0;
@@ -222,7 +223,8 @@ bool HybridSessionImpl::send(MESSAGE message) {
 
 		LOG4CXX_DEBUG(logger, "Send to: " << sendTo << " Command: "
 				<< frame.command << " Size: " << frame.body_length);
-		apr_status_t rc = stompConnection == NULL ? APR_ENOSOCKET : stomp_write(stompConnection, &frame, pool);
+		apr_status_t rc = stompConnection == NULL ? APR_ENOSOCKET
+				: stomp_write(stompConnection, &frame, pool);
 
 		if (rc != APR_SUCCESS) {
 			LOG4CXX_ERROR(logger, "Could not send frame");

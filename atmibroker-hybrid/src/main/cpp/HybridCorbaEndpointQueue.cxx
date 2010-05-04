@@ -49,14 +49,15 @@ long TPEV_SVCFAIL = 0x0004;
 // require arguments, even those that we inherit indirectly.
 //
 HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(HybridSessionImpl* session,
-		CORBA_CONNECTION* connection, char* id) {
+		CORBA_CONNECTION* connection, char* poaName, int id,
+		void(*messagesAvailableCallback)(int, bool)) {
 	LOG4CXX_DEBUG(logger, (char*) "Creating corba endpoint queue");
 	shutdown = false;
 	lock = new SynchronizableObject();
 
 	CORBA::PolicyList policies;
 	policies.length(0);
-	thePoa = connection->callback_poa->create_POA(id,
+	thePoa = connection->callback_poa->create_POA(poaName,
 			connection->root_poa_manager, policies);
 
 	LOG4CXX_DEBUG(logger, (char*) "tmp_servant " << this);
@@ -69,7 +70,9 @@ HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(HybridSessionImpl* session,
 	this->name = connection->orbRef->object_to_string(queue);
 	this->connection = connection;
 	this->session = session;
-	this->poaName = id;
+	this->poaName = poaName;
+	this->id = id;
+	this->messagesAvailableCallback = messagesAvailableCallback;
 }
 
 // ~EndpointQueue destructor.
@@ -86,6 +89,8 @@ HybridCorbaEndpointQueue::~HybridCorbaEndpointQueue() {
 	while (returnData.size() > 0) {
 		MESSAGE message = returnData.front();
 		returnData.pop();
+		this->messagesAvailableCallback(id, true);
+		LOG4CXX_DEBUG(logger, (char*) "updated listener");
 		LOG4CXX_DEBUG(logger, (char*) "Freeing data message");
 		if (message.data != NULL) {
 			free(message.data);
@@ -164,6 +169,8 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 			session->setLastRCode(message.rcode);
 		}
 		returnData.push(message);
+		this->messagesAvailableCallback(id, false);
+		LOG4CXX_DEBUG(logger, (char*) "informed watchers");
 		LOG4CXX_DEBUG(logger, (char*) "notifying");
 		lock->notify();
 		LOG4CXX_DEBUG(logger, (char*) "notified");
@@ -176,7 +183,8 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 MESSAGE HybridCorbaEndpointQueue::receive(long time) {
 	LOG4CXX_DEBUG(logger, (char*) "service_response(): " << time);
 
-	MESSAGE message = {NULL, -1, NULL, NULL, -1, -1, -1, -1, -1, NULL, NULL, false, NULL};
+	MESSAGE message = { NULL, -1, NULL, NULL, -1, -1, -1, -1, -1, NULL, NULL,
+			false, NULL };
 
 	lock->lock();
 	if (!shutdown) {
@@ -189,6 +197,8 @@ MESSAGE HybridCorbaEndpointQueue::receive(long time) {
 			message = returnData.front();
 			returnData.pop();
 			LOG4CXX_DEBUG(logger, (char*) "returning message");
+			this->messagesAvailableCallback(id, true);
+			LOG4CXX_DEBUG(logger, (char*) "updated listener");
 		} else {
 			LOG4CXX_DEBUG(logger, (char*) "no message");
 		}

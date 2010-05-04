@@ -40,7 +40,7 @@ class HybridSessionImpl;
 
 class BLACKTIE_HYBRID_DLL HybridConnectionImpl: public virtual Connection {
 public:
-	HybridConnectionImpl(char* connectionName);
+	HybridConnectionImpl(char* connectionName, void(*messagesAvailableCallback)(int,bool));
 	virtual ~HybridConnectionImpl();
 
 	Session* createSession(int id, char* serviceName);
@@ -61,6 +61,7 @@ private:
 	std::map<int, HybridSessionImpl*> sessionMap;
 	apr_pool_t* pool;
 	CORBA_CONNECTION* connection;
+	void(*messagesAvailableCallback)(int,bool);
 };
 
 #ifdef __cplusplus

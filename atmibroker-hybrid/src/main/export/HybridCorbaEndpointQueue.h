@@ -39,8 +39,7 @@ class HybridSessionImpl;
 
 class BLACKTIE_HYBRID_DLL HybridCorbaEndpointQueue: public virtual Destination, public virtual POA_AtmiBroker::EndpointQueue {
 public:
-	HybridCorbaEndpointQueue(HybridSessionImpl* session, CORBA_CONNECTION* connection, char* poaName);
-	HybridCorbaEndpointQueue(CORBA_CONNECTION* connection, PortableServer::POA_ptr poa, char* serviceName);
+	HybridCorbaEndpointQueue(HybridSessionImpl* session, CORBA_CONNECTION* connection, char* poaName, int id, void(*messagesAvailableCallback)(int, bool));
 	virtual ~HybridCorbaEndpointQueue();
 
 	virtual void send(const char* replyto_ior, CORBA::Short rval, CORBA::Long rcode, const AtmiBroker::octetSeq& idata, CORBA::Long ilen, CORBA::Long correlationId, CORBA::Long flags, const char* type, const char* subtype) throw (CORBA::SystemException );
@@ -68,6 +67,8 @@ private:
 	CORBA_CONNECTION* connection;
 	PortableServer::ObjectId_var oid;
 	char* poaName;
+	int id;
+	void(*messagesAvailableCallback)(int, bool);
 
 	// The following are not implemented
 	HybridCorbaEndpointQueue(const HybridCorbaEndpointQueue &);

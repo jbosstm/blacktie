@@ -27,13 +27,15 @@
 #include "malloc.h"
 
 extern void testtpgetrply_service(TPSVCINFO *svcinfo);
-
 extern void test_tpgetrply_TPNOBLOCK(TPSVCINFO *svcinfo);
+extern void test_tpgetrply_TPGETANY_one(TPSVCINFO *svcinfo);
+extern void test_tpgetrply_TPGETANY_two(TPSVCINFO *svcinfo);
 
 void TestTPGetRply::setUp() {
 	userlogc((char*) "TestTPGetRply::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
+	testingTPGETANY = false;
 
 	// Setup server
 	BaseServerTest::setUp();
@@ -41,8 +43,8 @@ void TestTPGetRply::setUp() {
 	// Do local work
 	sendlen = strlen("grply") + 1;
 	rcvlen = 22;
-	BT_ASSERT((sendbuf
-			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	BT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen))
+			!= NULL);
 	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
 	strcpy(sendbuf, "grply");
@@ -54,9 +56,18 @@ void TestTPGetRply::tearDown() {
 	// Do local work
 	::tpfree( sendbuf);
 	::tpfree( rcvbuf);
-	int toCheck = tpunadvertise((char*) "TestTPGetrply");
-	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toCheck != -1);
+	if (testingTPGETANY) {
+		int toCheck = tpunadvertise((char*) "DEBIT");
+		BT_ASSERT(tperrno == 0);
+		BT_ASSERT(toCheck != -1);
+		toCheck = tpunadvertise((char*) "CREDIT");
+		BT_ASSERT(tperrno == 0);
+		BT_ASSERT(toCheck != -1);
+	} else {
+		int toCheck = tpunadvertise((char*) "TestTPGetrply");
+		BT_ASSERT(tperrno == 0);
+		BT_ASSERT(toCheck != -1);
+	}
 
 	// Clean up server
 	BaseServerTest::tearDown();
@@ -173,13 +184,6 @@ void TestTPGetRply::test_tpgetrply_nullrcvlen() {
 	BT_ASSERT(tperrno == TPEINVAL);
 }
 
-void testtpgetrply_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpgetrply_service");
-	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, 22);
-	strcpy(toReturn, "testtpgetrply_service");
-	tpreturn(TPSUCCESS, 0, toReturn, 22, 0);
-}
-
 void TestTPGetRply::test_tpgetrply_with_TPNOBLOCK() {
 	userlogc((char*) "test_tpgetrply_with_TPNOBLOCK");
 	tpadvertise((char*) "TestTPGetrply", test_tpgetrply_TPNOBLOCK);
@@ -216,6 +220,75 @@ void TestTPGetRply::test_tpgetrply_without_TPNOBLOCK() {
 	free(toTestS);
 }
 
+void TestTPGetRply::test_tpgetrply_with_TPGETANY() {
+	userlogc((char*) "test_tpgetrply_with_TPGETANY");
+	testingTPGETANY = true;
+	tpadvertise((char*) "DEBIT", test_tpgetrply_TPGETANY_one);
+	tpadvertise((char*) "CREDIT", test_tpgetrply_TPGETANY_two);
+
+	int cd1 = ::tpacall((char*) "DEBIT", (char *) sendbuf, sendlen, 0);
+	BT_ASSERT(cd1 != -1);
+	BT_ASSERT(tperrno == 0);
+
+	int cd2 = ::tpacall((char*) "CREDIT", (char *) sendbuf, sendlen, 0);
+	BT_ASSERT(cd2 != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(cd1 != cd2);
+
+	// RETRIEVE THE RESPONSE
+	int cdToGet = cd1;
+	int toTest = ::tpgetrply(&cdToGet, (char **) &rcvbuf, &rcvlen, TPGETANY);
+	BT_ASSERT(tperrno == 0);
+	char* toTestS = (char*) malloc(110);
+	sprintf(toTestS, "%d", toTest);
+	BT_ASSERT_MESSAGE(toTestS, toTest == 0);
+	free(toTestS);
+	char* gotCdS = (char*) malloc(110);
+	sprintf(gotCdS, "got %d expected %d", cdToGet, cd2);
+	BT_ASSERT_MESSAGE(gotCdS, cdToGet == cd2);
+	free(toTestS);
+	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "test_tpgetrply_TPGETANY_two")
+			== 0);
+}
+
+void TestTPGetRply::test_tpgetrply_without_TPGETANY() {
+	userlogc((char*) "test_tpgetrply_without_TPGETANY");
+	testingTPGETANY = true;
+	tpadvertise((char*) "DEBIT", test_tpgetrply_TPGETANY_one);
+	tpadvertise((char*) "CREDIT", test_tpgetrply_TPGETANY_two);
+
+	int cd1 = ::tpacall((char*) "DEBIT", (char *) sendbuf, sendlen, 0);
+	BT_ASSERT(cd1 != -1);
+	BT_ASSERT(tperrno == 0);
+
+	int cd2 = ::tpacall((char*) "CREDIT", (char *) sendbuf, sendlen, 0);
+	BT_ASSERT(cd2 != -1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(cd1 != cd2);
+
+	// RETRIEVE THE RESPONSE
+	int cdToGet = cd1;
+	int toTest = ::tpgetrply(&cdToGet, (char **) &rcvbuf, &rcvlen, 0);
+	BT_ASSERT(tperrno == 0);
+	char* toTestS = (char*) malloc(110);
+	sprintf(toTestS, "%d", toTest);
+	BT_ASSERT_MESSAGE(toTestS, toTest == 0);
+	free(toTestS);
+	char* gotCdS = (char*) malloc(110);
+	sprintf(gotCdS, "%d", cdToGet);
+	BT_ASSERT_MESSAGE(gotCdS, cdToGet == cd1);
+	free(toTestS);
+	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "test_tpgetrply_TPGETANY_one")
+			== 0);
+}
+
+void testtpgetrply_service(TPSVCINFO *svcinfo) {
+	userlogc((char*) "testtpgetrply_service");
+	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, 22);
+	strcpy(toReturn, "testtpgetrply_service");
+	tpreturn(TPSUCCESS, 0, toReturn, 22, 0);
+}
+
 void test_tpgetrply_TPNOBLOCK(TPSVCINFO *svcinfo) {
 	char* response = (char*) "test_tpgetrply_TPNOBLOCK";
 	userlogc(response);
@@ -227,3 +300,24 @@ void test_tpgetrply_TPNOBLOCK(TPSVCINFO *svcinfo) {
 	tpreturn(TPSUCCESS, 0, toReturn, sendlen, 0);
 }
 
+void test_tpgetrply_TPGETANY_one(TPSVCINFO *svcinfo) {
+	char* response = (char*) "test_tpgetrply_TPGETANY_one";
+	userlogc(response);
+
+	long sendlen = strlen(response) + 1;
+	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, sendlen);
+	strcpy(toReturn, response);
+	::sleeper(10);
+	tpreturn(TPSUCCESS, 0, toReturn, sendlen, 0);
+}
+
+void test_tpgetrply_TPGETANY_two(TPSVCINFO *svcinfo) {
+	char* response = (char*) "test_tpgetrply_TPGETANY_two";
+	userlogc(response);
+
+	long sendlen = strlen(response) + 1;
+	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, sendlen);
+	strcpy(toReturn, response);
+	::sleeper(5);
+	tpreturn(TPSUCCESS, 0, toReturn, sendlen, 0);
+}

@@ -21,7 +21,12 @@
 
 #include "Connection.h"
 
-static Connection* createConnection(char* connectionName) {
+void foo(int bar, bool remove) {
+
+}
+
+static Connection* createConnection(char* connectionName,
+		void(*func)(int, bool)) {
 	return NULL;
 }
 
@@ -30,5 +35,5 @@ struct connection_factory_t connectionFactory = { createConnection };
 void TestConnection::test() {
 	init_ace();
 
-	BT_ASSERT(connectionFactory.create_connection((char*) "foo") == NULL);
+	BT_ASSERT(connectionFactory.create_connection((char*) "foo", foo) == NULL);
 }

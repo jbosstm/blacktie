@@ -36,11 +36,11 @@
 #include "AtmiBrokerEnv.h"
 #include "ServiceDispatcher.h"
 
-#include "txx.h"
+std::vector<int> sessionIds;
+SynchronizableObject lock;
 
 long DISCON = 0x00000003;
 bool warnedTPNOBLOCK = false;
-bool warnedTPGETANY = false;
 
 // Logger for XATMIc
 log4cxx::LoggerPtr loggerXATMI(log4cxx::Logger::getLogger("XATMIc"));
@@ -116,7 +116,8 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			if (message.subtype == NULL) {
 				message.subtype = (char*) "";
 			}
-			message.control = (TPNOTRAN & flags) ? NULL : txx_serialize(&(message.ttl));
+			message.control = (TPNOTRAN & flags) ? NULL : txx_serialize(
+					&(message.ttl));
 			if (message.control == NULL)
 				message.ttl = mqConfig.timeToLive * 1000;
 
@@ -148,6 +149,31 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 	return toReturn;
 }
 
+long determineTimeout(long flags) {
+	long time = 0;
+	if (TPNOBLOCK & flags) { // NB flags override any XATMI or transaction timeouts
+		time = 1;
+		LOG4CXX_DEBUG(loggerXATMI, (char*) "Setting timeout to 1");
+	} else if (TPNOTIME & flags) {
+		time = 0;
+		LOG4CXX_DEBUG(loggerXATMI, (char*) "TPNOTIME = BLOCKING CALL");
+	} else {
+		switch (txx_ttl(&time)) {
+		case -1: // No transaction so use XATMI timeouts
+			time = (long) mqConfig.requestTimeout + (long) mqConfig.timeToLive;
+			break;
+		case 1: // txn not subject to a timeout so block
+			time = 0;
+			break;
+		case 0: // time has already been updated
+		default: /*FALLTHRU txx_ttl will only returns -1, 0 or 1*/
+			break;
+		}
+		LOG4CXX_TRACE(loggerXATMI, (char*) "receive txx_ttl time=" << time);
+	}
+	return time;
+}
+
 int receive(int id, Session* session, char ** odata, long *olen, long flags,
 		long* event, bool closeSession) {
 	LOG4CXX_DEBUG(loggerXATMI, (char*) "Receive invoked");
@@ -157,36 +183,9 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 	if (len != -1) {
 		LOG4CXX_DEBUG(loggerXATMI, (char*) "receive session: "
 				<< session->getId() << " olen: " << olen << " flags: " << flags);
-		if (flags & TPGETANY && !warnedTPGETANY) {
-			LOG4CXX_ERROR(loggerXATMI,
-					(char*) "TPGETANY NOT SUPPORTED FOR RECEIVES");
-			warnedTPGETANY = true;
-		}
 		if (session->getCanRecv()) {
 			// TODO Make configurable Default wait time is blocking (x1000 in SynchronizableObject)
-			long time;
-			if (TPNOBLOCK & flags) {	// NB flags override any XATMI or transaction timeouts
-				time = 1;
-				LOG4CXX_DEBUG(loggerXATMI, (char*) "Setting timeout to 1");
-			} else if (TPNOTIME & flags) {
-				time = 0;
-				LOG4CXX_DEBUG(loggerXATMI, (char*) "TPNOTIME = BLOCKING CALL");
-			} else {
-				switch (txx_ttl(&time)) {
-				case -1:	// No transaction so use XATMI timeouts
-					time = (long) mqConfig.requestTimeout + (long) mqConfig.timeToLive;
-					{LOG4CXX_TRACE(loggerXATMI, (char*) "receive txx_ttl returned -1 time=" << time)};
-					break;
-				case 1:	// txn not subject to a timeout so block
-					time = 0;
-					{LOG4CXX_TRACE(loggerXATMI, (char*) "receive txx_ttl returned 1 time=0"<< time)};
-					break;
-				default:	/*FALLTHRU txx_ttl will only returns -1, 0 or 1*/
-				case 0:	// time has already been updated
-					{LOG4CXX_TRACE(loggerXATMI, (char*) "receive txx_ttl returned 0 time=" << time)};
-					break;
-				}
-			}
+			long time = determineTimeout(flags);
 
 			LOG4CXX_DEBUG(loggerXATMI, (char*) "Setting timeout to: " << time);
 			try {
@@ -451,7 +450,8 @@ int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen,
 	int toReturn = -1;
 	setSpecific(TPE_KEY, TSS_TPERESET);
 
-	long toCheck = flags & ~(TPNOTRAN | TPNOCHANGE | TPNOBLOCK | TPNOTIME | TPSIGRSTRT);
+	long toCheck = flags & ~(TPNOTRAN | TPNOCHANGE | TPNOBLOCK | TPNOTIME
+			| TPSIGRSTRT);
 
 	if (toCheck != 0) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
@@ -481,7 +481,8 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 	int toReturn = -1;
 	setSpecific(TPE_KEY, TSS_TPERESET);
 
-	long toCheck = flags & ~(TPNOTRAN | TPNOREPLY | TPNOBLOCK | TPNOTIME | TPSIGRSTRT);
+	long toCheck = flags & ~(TPNOTRAN | TPNOREPLY | TPNOBLOCK | TPNOTIME
+			| TPSIGRSTRT);
 
 	if (toCheck != 0) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
@@ -569,7 +570,8 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 	int toReturn = -1;
 	setSpecific(TPE_KEY, TSS_TPERESET);
 
-	long toCheck = flags & ~(TPNOTRAN | TPSENDONLY | TPRECVONLY | TPNOBLOCK | TPNOTIME | TPSIGRSTRT);
+	long toCheck = flags & ~(TPNOTRAN | TPSENDONLY | TPRECVONLY | TPNOBLOCK
+			| TPNOTIME | TPSIGRSTRT);
 
 	if (toCheck != 0) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
@@ -654,6 +656,30 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 	return toReturn;
 }
 
+void tpgetanyCallback(int sessionId, bool remove) {
+	lock.lock();
+	if (!remove) {
+		LOG4CXX_TRACE(loggerXATMI, (char*) "tpgetanyCallback adding: "
+				<< sessionId);
+		sessionIds.push_back(sessionId);
+		lock.notify();
+	} else {
+		LOG4CXX_TRACE(loggerXATMI, (char*) "tpgetanyCallback removing: "
+				<< sessionId);
+		for (std::vector<int>::iterator it = sessionIds.begin(); it
+				!= sessionIds.end(); it++) {
+			int id = (*it);
+			if (id == sessionId) {
+				sessionIds.erase(it);
+				LOG4CXX_TRACE(loggerXATMI, (char*) "tpgetanyCallback removed: "
+						<< sessionId);
+				break;
+			}
+		}
+	}
+	lock.unlock();
+}
+
 int tpgetrply(int *id, char ** odata, long *olen, long flags) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpgetrply " << id);
 	int toReturn = -1;
@@ -664,14 +690,29 @@ int tpgetrply(int *id, char ** odata, long *olen, long flags) {
 		return toReturn;
 	}
 
-	long toCheck = flags & ~(TPGETANY | TPNOCHANGE | TPNOBLOCK | TPNOTIME | TPSIGRSTRT);
+	long toCheck = flags & ~(TPGETANY | TPNOCHANGE | TPNOBLOCK | TPNOTIME
+			| TPSIGRSTRT);
 
 	if (toCheck != 0) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	} else {
 		if (clientinit() != -1) {
-			if (id && olen) {
+			if (flags & TPGETANY) {
+				lock.lock();
+				if (sessionIds.size() == 0) {
+					lock.wait(determineTimeout(flags));
+				}
+				if (sessionIds.size() == 0) {
+					LOG4CXX_TRACE(loggerXATMI,
+							(char*) "tpgetany no message available");
+					setSpecific(TPE_KEY, TSS_TPETIME);
+				} else {
+					*id = sessionIds.front();
+					sessionIds.erase(sessionIds.begin());
+				}
+			}
+			if (tperrno == 0 && id && olen) {
 				Session* session = ptrAtmiBrokerClient->getSession(*id);
 				if (session == NULL) {
 					setSpecific(TPE_KEY, TSS_TPEBADDESC);
@@ -683,6 +724,9 @@ int tpgetrply(int *id, char ** odata, long *olen, long flags) {
 				}
 			} else {
 				setSpecific(TPE_KEY, TSS_TPEINVAL);
+			}
+			if (flags & TPGETANY) {
+				lock.unlock();
 			}
 		}
 	}
@@ -850,7 +894,8 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 				len = ::bufferSize(idata, ilen);
 			}
 			Session* session = (Session*) getSpecific(SVC_SES);
-			ServiceDispatcher* dispatcher = (ServiceDispatcher*) getSpecific(SVC_KEY);
+			ServiceDispatcher* dispatcher = (ServiceDispatcher*) getSpecific(
+					SVC_KEY);
 			if (session != NULL) {
 				if (!session->getCanSend()
 						&& !(rval == TPFAIL && idata == NULL)) {
@@ -876,8 +921,9 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 					}
 					::send(session, "", NULL, 0, 0, flags, rval, TPESVCERR);
 					LOG4CXX_TRACE(loggerXATMI, (char*) "sent TPESVCERR");
-					if(dispatcher != NULL) {
-						LOG4CXX_TRACE(loggerXATMI, (char*) "update error counter");
+					if (dispatcher != NULL) {
+						LOG4CXX_TRACE(loggerXATMI,
+								(char*) "update error counter");
 						dispatcher->updateErrorCounter();
 					}
 				} else {
@@ -888,8 +934,9 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 					if (rval == TPFAIL) {
 						txx_rollback_only();
 						LOG4CXX_TRACE(loggerXATMI, (char*) "will send TPFAIL");
-						if(dispatcher != NULL) {
-							LOG4CXX_TRACE(loggerXATMI, (char*) "update error counter");
+						if (dispatcher != NULL) {
+							LOG4CXX_TRACE(loggerXATMI,
+									(char*) "update error counter");
 							dispatcher->updateErrorCounter();
 						}
 					}

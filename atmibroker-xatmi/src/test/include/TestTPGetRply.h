@@ -32,6 +32,8 @@ class TestTPGetRply: public BaseServerTest {
 	CPPUNIT_TEST( test_tpgetrply_nullcd);
 	CPPUNIT_TEST( test_tpgetrply_nullrcvbuf);
 	CPPUNIT_TEST( test_tpgetrply_nullrcvlen);
+	CPPUNIT_TEST( test_tpgetrply_with_TPGETANY);
+	CPPUNIT_TEST( test_tpgetrply_without_TPGETANY);
 CPPUNIT_TEST_SUITE_END();
 public:
 void test_tpgetrply();
@@ -41,12 +43,15 @@ void test_tpgetrply_baddesc();
 void test_tpgetrply_nullcd();
 void test_tpgetrply_nullrcvbuf();
 void test_tpgetrply_nullrcvlen();
+void test_tpgetrply_without_TPGETANY();
+void test_tpgetrply_with_TPGETANY();
 virtual void setUp();
 virtual void tearDown();
 
 private:
 char *sendbuf, *rcvbuf;
 long sendlen, rcvlen;
+bool testingTPGETANY;
 };
 
 #endif

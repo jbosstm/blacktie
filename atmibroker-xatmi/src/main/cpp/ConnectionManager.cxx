@@ -32,6 +32,8 @@ log4cxx::LoggerPtr loggerConnectionManager(log4cxx::Logger::getLogger(
 extern char server[30];
 extern int serverid;
 
+extern void tpgetanyCallback(int sessionId, bool remove);
+
 #ifdef IDE_DEBUG
 #include "HybridConnectionImpl.h"
 #endif
@@ -86,7 +88,7 @@ ConnectionManager::getConnection(char* side) {
 		return (*it).second;
 	} else {
 #ifdef IDE_DEBUG
-		Connection* connection = new HybridConnectionImpl(side);
+		Connection* connection = new HybridConnectionImpl(side, tpgetanyCallback);
 		manager.insert(ConnectionMap::value_type(key, connection));
 		LOG4CXX_DEBUG(loggerConnectionManager, (char*) "insert service " << key << " connection " << connection);
 		lock->unlock();
@@ -96,7 +98,7 @@ ConnectionManager::getConnection(char* side) {
 				(connection_factory_t*) ::lookup_symbol(transportLibrary,
 						"connectionFactory");
 		if (connectionFactory != NULL) {
-			Connection* connection = connectionFactory->create_connection(side);
+			Connection* connection = connectionFactory->create_connection(side, tpgetanyCallback);
 			manager.insert(ConnectionMap::value_type(key, connection));
 			LOG4CXX_DEBUG(loggerConnectionManager, (char*) "insert service "
 					<< key << " connection " << connection);

@@ -22,14 +22,20 @@
 #include "userlogc.h"
 #include "AtmiBrokerEnv.h"
 
+void messagesAvailableCallback(int bar, bool remove) {
+
+}
+
 void TestStompConnection::setUp() {
 	init_ace();
 	userlogc("TestStompConnection::setUp");
 
 	serverConnection = NULL;
 	clientConnection = NULL;
-	serverConnection = new HybridConnectionImpl((char*) "server");
-	clientConnection = new HybridConnectionImpl((char*) "client");
+	serverConnection = new HybridConnectionImpl((char*) "server",
+			messagesAvailableCallback);
+	clientConnection = new HybridConnectionImpl((char*) "client",
+			messagesAvailableCallback);
 }
 
 void TestStompConnection::tearDown() {

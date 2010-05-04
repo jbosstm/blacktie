@@ -31,7 +31,8 @@
 log4cxx::LoggerPtr HybridConnectionImpl::logger(log4cxx::Logger::getLogger(
 		"HybridConnectionImpl"));
 
-HybridConnectionImpl::HybridConnectionImpl(char* connectionName) {
+HybridConnectionImpl::HybridConnectionImpl(char* connectionName,
+		void(*messagesAvailableCallback)(int, bool)) {
 	// Make sure the logger is initialized
 	AtmiBrokerEnv::get_instance();
 	LOG4CXX_DEBUG(logger, (char*) "constructor: " << connectionName);
@@ -51,6 +52,7 @@ HybridConnectionImpl::HybridConnectionImpl(char* connectionName) {
 	LOG4CXX_TRACE(logger, (char*) "Pool created");
 
 	this->connection = (CORBA_CONNECTION *) initOrb(connectionName);
+	this->messagesAvailableCallback = messagesAvailableCallback;
 }
 
 HybridConnectionImpl::~HybridConnectionImpl() {
@@ -183,7 +185,7 @@ void HybridConnectionImpl::disconnect(stomp_connection* connection,
 Session* HybridConnectionImpl::createSession(int id, char * serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession serviceName: " << serviceName);
 	sessionMap[id] = new HybridSessionImpl(this->connectionName,
-			this->connection, pool, id, serviceName);
+			this->connection, pool, id, serviceName, messagesAvailableCallback);
 	return sessionMap[id];
 }
 
@@ -192,7 +194,8 @@ Session* HybridConnectionImpl::createSession(int id,
 	LOG4CXX_DEBUG(logger, (char*) "createSession temporaryQueueName: "
 			<< temporaryQueueName);
 	sessionMap[id] = new HybridSessionImpl(this->connectionName,
-			this->connection, this->pool, id, temporaryQueueName);
+			this->connection, this->pool, id, temporaryQueueName,
+			messagesAvailableCallback);
 	return sessionMap[id];
 }
 
@@ -228,15 +231,17 @@ void HybridConnectionImpl::disconnectSession(int id) {
 		for (i = sessionMap.begin(); i != sessionMap.end(); ++i) {
 			Session* session = (*i).second;
 			// need to check for NULL because closeSession sets sessionMap[id] to NULL
-			if (session != NULL) {  // need to check because closeSession sessionMap[id] = NULL
-				LOG4CXX_DEBUG(logger, (char*) "disconnecting session " << session->getId());
+			if (session != NULL) { // need to check because closeSession sessionMap[id] = NULL
+				LOG4CXX_DEBUG(logger, (char*) "disconnecting session "
+						<< session->getId());
 				session->disconnect();
 			}
 		}
 	} else if (sessionMap[id]) {
 		Session* session = sessionMap[id];
 		if (session != NULL) {
-			LOG4CXX_DEBUG(logger, (char*) "disconnecting session " << session->getId());
+			LOG4CXX_DEBUG(logger, (char*) "disconnecting session "
+					<< session->getId());
 			session->disconnect();
 		}
 	} else {

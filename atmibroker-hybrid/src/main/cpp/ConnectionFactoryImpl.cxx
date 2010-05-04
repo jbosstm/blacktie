@@ -18,8 +18,9 @@
 
 #include "HybridConnectionImpl.h"
 
-static Connection* createConnection(char* connectionName) {
-	return new HybridConnectionImpl(connectionName);
+static Connection* createConnection(char* connectionName,
+		void(*messagesAvailableCallback)(int, bool)) {
+	return new HybridConnectionImpl(connectionName, messagesAvailableCallback);
 }
 
 struct connection_factory_t connectionFactory = { createConnection };

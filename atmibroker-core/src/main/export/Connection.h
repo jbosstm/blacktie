@@ -39,7 +39,7 @@ public:
 };
 
 struct connection_factory_t {
-	Connection* (*create_connection)(char * connectionName);
+	Connection* (*create_connection)(char * connectionName, void(*messagesAvailableCallback)(int, bool));
 };
 
 #endif
