@@ -227,9 +227,8 @@ public abstract class Service implements BlacktieService {
 					}
 				}
 				log.debug("Returning desired message");
-				sender.send("", rval, rcode, data, len, response.getFlags(), 0,
-						0, type, subtype);
-
+				sender.send("", rval, rcode, data, len, message.cd, response
+						.getFlags(), 0, type, subtype);
 			} else if (sender == null && response != null) {
 				log.error("No sender avaible but message to be sent");
 			} else if (sender != null && response == null) {

@@ -37,7 +37,9 @@ import org.jboss.blacktie.jatmibroker.xatmi.TestTPConnectService;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPConversationService;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPConversationServiceShort;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPDisconService;
+import org.jboss.blacktie.jatmibroker.xatmi.TestTPGetRplyOneService;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPGetRplyService;
+import org.jboss.blacktie.jatmibroker.xatmi.TestTPGetRplyTwoService;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPRecvService;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPReturnService;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPReturnServiceTpurcode;
@@ -286,6 +288,14 @@ public class RunServer {
 		// return "TestRbkOnly";
 	}
 
+	public String getServiceNameTestTPGetrplyOne() {
+		return "TestOne";
+	}
+
+	public String getServiceNameTestTPGetrplyTwo() {
+		return "TestTwo";
+	}
+
 	public void tpadvertiseTestRollbackOnlyTpcallTPETIMEService()
 			throws ConnectionException {
 		this.server.tpadvertise(getServiceNameTestRollbackOnly(),
@@ -321,5 +331,17 @@ public class RunServer {
 			throws ConnectionException {
 		this.server.tpadvertise(getServiceNameTestRollbackOnly(),
 				TestRollbackOnlyNoTpreturnService.class.getName());
+	}
+
+	public void tpadvertiseTestTPGetrplyOne() throws ConnectionException {
+		this.server.tpadvertise(getServiceNameTestTPGetrplyOne(),
+				TestTPGetRplyOneService.class.getName());
+
+	}
+
+	public void tpadvertiseTestTPGetrplyTwo() throws ConnectionException {
+		this.server.tpadvertise(getServiceNameTestTPGetrplyTwo(),
+				TestTPGetRplyTwoService.class.getName());
+
 	}
 }

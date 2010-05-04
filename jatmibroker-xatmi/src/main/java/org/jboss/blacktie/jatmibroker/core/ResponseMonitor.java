@@ -15,16 +15,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core.transport;
+package org.jboss.blacktie.jatmibroker.core;
 
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
+public interface ResponseMonitor {
+	void responseReceived(int sessionId, boolean remove);
 
-public interface Receiver {
-	public Message receive(long flags) throws ConnectionException;
-
-	public Object getReplyTo() throws ConnectionException;
-
-	public void close() throws ConnectionException;
-	
-	public int determineTimeout(long flags) throws ConnectionException;
 }

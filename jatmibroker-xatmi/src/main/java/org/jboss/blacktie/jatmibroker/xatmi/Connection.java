@@ -17,14 +17,17 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.ResponseMonitor;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.transport.Message;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
@@ -99,7 +102,11 @@ public class Connection {
 
 	private Map<Integer, Session> sessions = new HashMap<Integer, Session>();
 
-	private static boolean warnedTPSIGRSTRT;
+	private final Object tpgetany = new Object();
+
+	private List<Integer> sessionIds = new ArrayList<Integer>();
+
+	private ResponseMonitor responseMonitor;
 
 	/**
 	 * The connection
@@ -111,6 +118,7 @@ public class Connection {
 	 */
 	Connection(Properties properties) {
 		this.properties = properties;
+		responseMonitor = new ResponseMonitorImpl();
 	}
 
 	/**
@@ -155,7 +163,7 @@ public class Connection {
 			throws ConnectionException {
 		log.debug("tpcall");
 		int tpacallFlags = flags;
-		tpacallFlags &= ~TPNOCHANGE;		
+		tpacallFlags &= ~TPNOCHANGE;
 		int cd = tpacall(svc, buffer, len, tpacallFlags);
 		return receive(cd, flags);
 	}
@@ -174,17 +182,14 @@ public class Connection {
 	public int tpacall(String svc, Buffer toSend, int len, int flags)
 			throws ConnectionException {
 		log.debug("tpacall");
-		int toCheck = flags & ~(TPNOTRAN | TPNOREPLY | TPNOBLOCK | TPNOTIME | TPSIGRSTRT);
+		int toCheck = flags
+				& ~(TPNOTRAN | TPNOREPLY | TPNOBLOCK | TPNOTIME | TPSIGRSTRT);
 		if (toCheck != 0) {
 			log.trace("invalid flags remain: " + toCheck);
-			throw new ConnectionException(Connection.TPEINVAL, "Invalid flags remain: " + toCheck);
+			throw new ConnectionException(Connection.TPEINVAL,
+					"Invalid flags remain: " + toCheck);
 		}
 
-		boolean hasTPSIGSTRT = (flags & TPSIGRSTRT) == TPSIGRSTRT;
-		if (hasTPSIGSTRT && !warnedTPSIGRSTRT) {
-			log.error("TPSIGRSTRT NOT SUPPORTED FOR SENDS OR RECEIVES");
-			warnedTPSIGRSTRT = true;
-		}
 		svc = svc.substring(0, Math.min(Connection.XATMI_SERVICE_NAME_LENGTH,
 				svc.length()));
 		int correlationId = 0;
@@ -192,7 +197,8 @@ public class Connection {
 			correlationId = ++nextId;
 		}
 		Transport transport = getTransport(svc);
-		Receiver endpoint = transport.createReceiver();
+		Receiver endpoint = transport.createReceiver(correlationId,
+				responseMonitor);
 		temporaryQueues.put(correlationId, endpoint);
 		// TODO HANDLE TRANSACTION
 		String type = null;
@@ -259,19 +265,43 @@ public class Connection {
 	 */
 	public Response tpgetrply(int cd, int flags) throws ConnectionException {
 		log.debug("tpgetrply: " + cd);
-		int toCheck = flags & ~(TPGETANY | TPNOCHANGE | TPNOBLOCK | TPNOTIME | TPSIGRSTRT);
+		int toCheck = flags
+				& ~(TPGETANY | TPNOCHANGE | TPNOBLOCK | TPNOTIME | TPSIGRSTRT);
 		if (toCheck != 0) {
 			log.trace("invalid flags remain: " + toCheck);
-			throw new ConnectionException(Connection.TPEINVAL, "Invalid flags remain: " + toCheck);
+			throw new ConnectionException(Connection.TPEINVAL,
+					"Invalid flags remain: " + toCheck);
 		}
-		
-		boolean hasTPSIGSTRT = (flags & TPSIGRSTRT) == TPSIGRSTRT;
-		if (hasTPSIGSTRT && !warnedTPSIGRSTRT) {
-			log.error("TPSIGRSTRT NOT SUPPORTED FOR SENDS OR RECEIVES");
-			warnedTPSIGRSTRT = true;
+
+		synchronized (tpgetany) {
+			if ((flags & Connection.TPGETANY) == Connection.TPGETANY) {
+				int timeout = 0;
+				if ((flags & Connection.TPNOTIME) != Connection.TPNOTIME) {
+					timeout = Integer.parseInt(properties
+							.getProperty("RequestTimeout"))
+							* 1000
+							+ Integer.parseInt(properties
+									.getProperty("TimeToLive")) * 1000;
+				}
+				if (sessionIds.size() == 0) {
+					try {
+						tpgetany.wait(timeout);
+					} catch (InterruptedException e) {
+						throw new ConnectionException(Connection.TPESYSTEM,
+								"Could not wait", e);
+					}
+				}
+				if (sessionIds.size() == 0) {
+					throw new ConnectionException(Connection.TPETIME,
+							"No message arrived");
+				} else {
+					cd = sessionIds.remove(0);
+				}
+			}
 		}
 
 		Response toReturn = receive(cd, flags);
+		toReturn.setCd(cd);
 		Session session = sessions.remove(cd);
 		if (session != null) {
 			log.debug("closing session");
@@ -300,11 +330,6 @@ public class Connection {
 		svc = svc.substring(0, Math.min(Connection.XATMI_SERVICE_NAME_LENGTH,
 				svc.length()));
 		// Initiate the session
-		boolean hasTPSIGSTRT = (flags & TPSIGRSTRT) == TPSIGRSTRT;
-		if (hasTPSIGSTRT && !warnedTPSIGRSTRT) {
-			log.error("TPSIGRSTRT NOT SUPPORTED FOR SENDS OR RECEIVES");
-			warnedTPSIGRSTRT = true;
-		}
 		svc = svc.substring(0, Math.min(Connection.XATMI_SERVICE_NAME_LENGTH,
 				svc.length()));
 		int correlationId = 0;
@@ -419,7 +444,7 @@ public class Connection {
 		Receiver endpoint = temporaryQueues.remove(cd);
 		if (endpoint == null) {
 			throw new ConnectionException(Connection.TPEBADDESC,
-					"Session does not exist");
+					"Session does not exist: " + cd);
 		}
 		Message message = endpoint.receive(flags);
 		// TODO WE SHOULD BE SENDING THE CONNECTION ID?
@@ -452,6 +477,27 @@ public class Connection {
 			log.debug("received returned a response? "
 					+ (response == null ? "false" : "true"));
 			return response;
+		}
+	}
+
+	private class ResponseMonitorImpl implements ResponseMonitor {
+		public void responseReceived(int sessionId, boolean remove) {
+			synchronized (tpgetany) {
+				if (!remove) {
+					log.trace("tpgetanyCallback adding: " + sessionId);
+					sessionIds.add(sessionId);
+					tpgetany.notify();
+				} else {
+					log.trace("tpgetanyCallback removing: " + sessionId);
+					for (int i = 0; i < sessionIds.size(); i++) {
+						if (sessionId == sessionIds.get(i)) {
+							sessionIds.remove(i);
+							log.trace("tpgetanyCallback removed: " + sessionId);
+							break;
+						}
+					}
+				}
+			}
 		}
 	}
 }

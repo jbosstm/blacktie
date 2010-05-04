@@ -181,11 +181,14 @@ public class Session {
 			throws ConnectionException {
 		int toReturn = -1;
 		log.debug("tpsend invoked");
-		
-		int toCheck = flags & ~(Connection.TPRECVONLY | Connection.TPNOBLOCK | Connection.TPNOTIME | Connection.TPSIGRSTRT);
+
+		int toCheck = flags
+				& ~(Connection.TPRECVONLY | Connection.TPNOBLOCK
+						| Connection.TPNOTIME | Connection.TPSIGRSTRT);
 		if (toCheck != 0) {
 			log.trace("invalid flags remain: " + toCheck);
-			throw new ConnectionException(Connection.TPEINVAL, "Invalid flags remain: " + toCheck);
+			throw new ConnectionException(Connection.TPEINVAL,
+					"Invalid flags remain: " + toCheck);
 		}
 
 		if (this.lastEvent > -1) {
@@ -239,10 +242,13 @@ public class Session {
 	public Buffer tprecv(int flags) throws ConnectionException {
 		log.debug("Receiving");
 
-		int toCheck = flags & ~(Connection.TPNOCHANGE | Connection.TPNOBLOCK | Connection.TPNOTIME | Connection.TPSIGRSTRT);
+		int toCheck = flags
+				& ~(Connection.TPNOCHANGE | Connection.TPNOBLOCK
+						| Connection.TPNOTIME | Connection.TPSIGRSTRT);
 		if (toCheck != 0) {
 			log.trace("invalid flags remain: " + toCheck);
-			throw new ConnectionException(Connection.TPEINVAL, "Invalid flags remain: " + toCheck);
+			throw new ConnectionException(Connection.TPEINVAL,
+					"Invalid flags remain: " + toCheck);
 		}
 
 		if (!canRecv) {

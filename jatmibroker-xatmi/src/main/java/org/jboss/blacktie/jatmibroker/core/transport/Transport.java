@@ -17,6 +17,7 @@
  */
 package org.jboss.blacktie.jatmibroker.core.transport;
 
+import org.jboss.blacktie.jatmibroker.core.ResponseMonitor;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
@@ -55,7 +56,8 @@ public interface Transport {
 	 * @return The receiver
 	 * @throws ConfigurationException
 	 */
-	public Receiver createReceiver() throws ConnectionException;
+	public Receiver createReceiver(int cd, ResponseMonitor responseMonitor)
+			throws ConnectionException;
 
 	/**
 	 * Create a receiver giving it the session to receive events upon.
@@ -66,8 +68,7 @@ public interface Transport {
 	 * @throws ConnectionException
 	 *             Incase the received cannot be created
 	 */
-	public Receiver createReceiver(EventListener session)
-			throws ConnectionException;
+	public Receiver createReceiver(EventListener session) throws ConnectionException;
 
 	public void close() throws ConnectionException;
 

@@ -33,7 +33,7 @@ public class ConnectionException extends Exception {
 	 *            The message
 	 */
 	public ConnectionException(int tperrno, String string) {
-		super(string + ": " + tperrno);
+		super("tperrno: " + tperrno + " reason: " + string);
 		this.tperrno = tperrno;
 	}
 

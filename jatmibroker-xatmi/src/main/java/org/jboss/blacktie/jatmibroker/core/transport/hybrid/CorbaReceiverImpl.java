@@ -23,6 +23,7 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.ResponseMonitor;
 import org.jboss.blacktie.jatmibroker.core.transport.EventListener;
 import org.jboss.blacktie.jatmibroker.core.transport.Message;
 import org.jboss.blacktie.jatmibroker.core.transport.OrbManagement;
@@ -32,12 +33,10 @@ import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.omg.CORBA.ORB;
-import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
 import org.omg.CosNaming.NameComponent;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAPackage.AdapterAlreadyExists;
-import org.omg.PortableServer.POAPackage.AdapterNonExistent;
 
 import AtmiBroker.EndpointQueuePOA;
 
@@ -54,45 +53,18 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 	private EventListener eventListener;
 
 	private int pad = 0;
-
-	CorbaReceiverImpl(OrbManagement orbManagement, String queueName)
-			throws ConnectionException {
-		this.queueName = queueName;
-
-		try {
-			Policy[] policies = new Policy[0];
-			this.m_default_poa = orbManagement.getRootPoa().create_POA(
-					queueName, orbManagement.getRootPoa().the_POAManager(),
-					policies);
-		} catch (Throwable t) {
-			try {
-				this.m_default_poa = orbManagement.getRootPoa().find_POA(
-						queueName, true);
-			} catch (AdapterNonExistent e) {
-				throw new ConnectionException(-1, "Could not find POA:"
-						+ queueName, e);
-			}
-		}
-		try {
-			activate_object = m_default_poa.activate_object(this);
-			Object servant_to_reference = m_default_poa
-					.servant_to_reference(this);
-			NameComponent[] name = orbManagement.getNamingContextExt().to_name(
-					queueName);
-			orbManagement.getNamingContext().bind(name, servant_to_reference);
-		} catch (Throwable t) {
-			throw new ConnectionException(-1, "Could not bind service factory"
-					+ queueName, t);
-		}
-		this.orbManagement = orbManagement;
-	}
+	private ResponseMonitor responseMonitor;
+	private int cd;
 
 	CorbaReceiverImpl(EventListener eventListener, OrbManagement orbManagement,
-			Properties properties) throws ConnectionException {
+			Properties properties, int cd, ResponseMonitor responseMonitor)
+			throws ConnectionException {
 		log.debug("ClientCallbackImpl constructor");
 		ORB orb = orbManagement.getOrb();
 		POA poa = orbManagement.getRootPoa();
 		this.eventListener = eventListener;
+		this.cd = cd;
+		this.responseMonitor = responseMonitor;
 
 		try {
 			try {
@@ -162,6 +134,9 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 		}
 
 		returnData.add(message);
+		if (responseMonitor != null) {
+			responseMonitor.responseReceived(cd, false);
+		}
 		log.trace("notifying");
 		notify();
 		log.trace("notifed");
@@ -177,15 +152,9 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 			if ((flags & Connection.TPNOBLOCK) != Connection.TPNOBLOCK) {
 				if (returnData.isEmpty()) {
 					try {
-						if ((flags & Connection.TPNOTIME) == Connection.TPNOTIME) {
-							log.debug("blocking");
-							wait();
-							log.debug("woke up");
-						} else {
-							log.debug("Waiting: " + callbackIOR);
-							wait(timeout);
-							log.debug("Waited: " + callbackIOR);
-						}
+						log.debug("Waiting: " + callbackIOR);
+						wait(determineTimeout(flags));
+						log.debug("Waited: " + callbackIOR);
 					} catch (InterruptedException e) {
 						log.error("Caught exception", e);
 					}
@@ -247,6 +216,9 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 				} else {
 					log.debug("message was null");
 				}
+				if (responseMonitor != null) {
+					responseMonitor.responseReceived(cd, true);
+				}
 				return message;
 			}
 		}
@@ -284,5 +256,13 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 	public void close() {
 		log.debug("close");
 		disconnect();
+	}
+
+	public int determineTimeout(long flags) throws ConnectionException {
+		if ((flags & Connection.TPNOTIME) == Connection.TPNOTIME) {
+			return 0;
+		} else {
+			return timeout;
+		}
 	}
 }

@@ -45,14 +45,14 @@ public class TestConnection extends TestCase {
 		Receiver serviceDispatcher = serviceTransport
 				.getReceiver("JAVA_Converse");
 		Sender clientSender = clientTransport.getSender("JAVA_Converse");
-		Receiver clientReceiver = clientTransport.createReceiver();
+		Receiver clientReceiver = clientTransport.createReceiver(1, null);
 		clientSender.send(clientReceiver.getReplyTo(), (short) 1, 1, "hi"
 				.getBytes(), 2, 0, 0, 0, "X_OCTET", null);
 		Message receive = serviceDispatcher.receive(0);
 		assertTrue(receive.len == 2);
 
 		Sender serviceSender = serviceTransport.createSender(receive.replyTo);
-		Receiver serviceReceiver = serviceTransport.createReceiver();
+		Receiver serviceReceiver = serviceTransport.createReceiver(1, null);
 
 		log.info("Chatting");
 		for (int i = 0; i < 100; i++) {

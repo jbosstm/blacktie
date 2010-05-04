@@ -31,6 +31,11 @@ public class Response implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * The connection descriptor that the response was received for.
+	 */
+	private int cd;
+
+	/**
 	 * The return value
 	 */
 	short rval;
@@ -61,6 +66,16 @@ public class Response implements Serializable {
 	}
 
 	/**
+	 * Set the cd that the message was received for.
+	 * 
+	 * @param cd
+	 *            The cd id.
+	 */
+	void setCd(int cd) {
+		this.cd = cd;
+	}
+
+	/**
 	 * Get the return value
 	 * 
 	 * @return The return value
@@ -88,5 +103,9 @@ public class Response implements Serializable {
 
 	public int getLen() {
 		return len;
+	}
+
+	public int getCd() {
+		return cd;
 	}
 }

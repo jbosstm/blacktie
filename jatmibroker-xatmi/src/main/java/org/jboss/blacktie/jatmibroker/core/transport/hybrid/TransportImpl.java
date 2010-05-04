@@ -28,6 +28,7 @@ import javax.naming.NameNotFoundException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.ResponseMonitor;
 import org.jboss.blacktie.jatmibroker.core.transport.EventListener;
 import org.jboss.blacktie.jatmibroker.core.transport.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
@@ -150,15 +151,18 @@ public class TransportImpl implements Runnable, Transport {
 
 	}
 
-	public Receiver createReceiver() throws ConnectionException {
+	public Receiver createReceiver(int cd, ResponseMonitor responseMonitor)
+			throws ConnectionException {
 		log.debug("Creating a receiver");
-		return new CorbaReceiverImpl(null, orbManagement, properties);
+		return new CorbaReceiverImpl(null, orbManagement, properties, cd,
+				responseMonitor);
 	}
 
 	public Receiver createReceiver(EventListener eventListener)
 			throws ConnectionException {
 		log.debug("Creating a receiver with event listener");
-		return new CorbaReceiverImpl(eventListener, orbManagement, properties);
+		return new CorbaReceiverImpl(eventListener, orbManagement, properties,
+				-1, null);
 	}
 
 	public OrbManagement getOrbManagement() {
