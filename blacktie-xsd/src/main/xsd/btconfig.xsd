@@ -23,7 +23,7 @@
 		<xsd:restriction base="xsd:string">
 			<xsd:minLength value="1" />
 			<xsd:maxLength value="15" />
-			<xsd:pattern value="[A-Za-z]+[A-Za-z0-9_]*" />
+			<xsd:pattern value="[A-Za-z_]+[A-Za-z0-9_]*" />
 		</xsd:restriction>
 	</xsd:simpleType>
 	<!-- The server name cannot use a number as the numbers are 
@@ -41,7 +41,7 @@
 		<xsd:restriction base="xsd:string">
 			<xsd:minLength value="1" />
 			<xsd:maxLength value="16" />
-			<xsd:pattern value="[A-Za-z]+[A-Za-z0-9_]*" />
+			<xsd:pattern value="[A-Za-z_]+[A-Za-z0-9_]*" />
 		</xsd:restriction>
 	</xsd:simpleType>
 	<xsd:simpleType name="attributeType">
