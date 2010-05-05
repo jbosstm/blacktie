@@ -47,7 +47,7 @@
 				<SERVICE name='TestTPRecv' />
 				<SERVICE name='TestTPService' />
 				<SERVICE name='TestTPReturn' />
-				<SERVICE name='123456789012345' />
+				<SERVICE name='a12345678901234' />
 				<SERVICE name='TestTPUnadverti' />
 				<SERVICE name='tpcall_x_octet' />
 				<SERVICE name='tpcall_x_common' />
@@ -67,7 +67,7 @@
 		NAMING_URL="jnp://${JBOSSAS_IP_ADDR}:1099" />
 
 	<BUFFERS>
-		<BUFFER name="1234567890123456">
+		<BUFFER name="a123456789012345">
 			<ATTRIBUTE id="key" type="char[]" arrayLength="10" />
 		</BUFFER>
 		<BUFFER name="test">

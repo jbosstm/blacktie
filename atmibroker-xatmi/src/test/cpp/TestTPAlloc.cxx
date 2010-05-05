@@ -112,7 +112,7 @@ void TestTPAlloc::test_tpalloc_x_common() {
 void TestTPAlloc::test_tpalloc_x_common_bigsubtype() {
 	userlogc((char*) "test_tpalloc_x_common_bigsubtype");
 	DEPOSIT *dptr;
-	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "1234567890123456",
+	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "a123456789012345",
 			0);
 	m_allocated = (char*) dptr;
 	BT_ASSERT(m_allocated != NULL);
@@ -123,8 +123,8 @@ void TestTPAlloc::test_tpalloc_x_common_bigsubtype() {
 	memset(subtype, '\0', 20);
 	tptypes(m_allocated, type, subtype);
 	BT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
-	BT_ASSERT(strncmp(subtype, "12345678901234567", 17) != 0);
-	BT_ASSERT(strncmp(subtype, "1234567890123456", 16) == 0);
+	BT_ASSERT(strncmp(subtype, "a1234567890123456", 17) != 0);
+	BT_ASSERT(strncmp(subtype, "a123456789012345", 16) == 0);
 	free(type);
 	free(subtype);
 }

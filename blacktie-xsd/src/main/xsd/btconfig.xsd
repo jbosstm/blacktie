@@ -36,10 +36,12 @@
 			<xsd:pattern value="[A-Za-z]+" />
 		</xsd:restriction>
 	</xsd:simpleType>
+	<!-- The buffer name must be a valid C identifier -->
 	<xsd:simpleType name="buffername">
 		<xsd:restriction base="xsd:string">
 			<xsd:minLength value="1" />
 			<xsd:maxLength value="16" />
+			<xsd:pattern value="[A-Za-z]+[A-Za-z0-9_]*" />
 		</xsd:restriction>
 	</xsd:simpleType>
 	<xsd:simpleType name="attributeType">
