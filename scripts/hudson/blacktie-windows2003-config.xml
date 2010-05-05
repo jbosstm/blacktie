@@ -136,7 +136,6 @@ cd trunk\scripts\test
 call ant dist -DBT_HOME=C:\\\\hudson\\\\workspace\\\\blacktie-windows2003\\\\trunk\\\\dist\\\\blacktie-2.0.0.M4-SNAPSHOT -DJBOSSAS_IP_ADDR=catskill
 cd ..\..\dist\blacktie-*
 call setenv.bat
-rem set BUILD_ID=dontKillMe
 run_all_samples.bat
 </command>
     </hudson.tasks.BatchFile>
