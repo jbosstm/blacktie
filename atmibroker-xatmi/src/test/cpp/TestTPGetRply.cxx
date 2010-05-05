@@ -246,7 +246,7 @@ void TestTPGetRply::test_tpgetrply_with_TPGETANY() {
 	char* gotCdS = (char*) malloc(110);
 	sprintf(gotCdS, "got %d expected %d", cdToGet, cd2);
 	BT_ASSERT_MESSAGE(gotCdS, cdToGet == cd2);
-	free(toTestS);
+	free(gotCdS);
 	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "test_tpgetrply_TPGETANY_two")
 			== 0);
 }
@@ -277,7 +277,7 @@ void TestTPGetRply::test_tpgetrply_without_TPGETANY() {
 	char* gotCdS = (char*) malloc(110);
 	sprintf(gotCdS, "%d", cdToGet);
 	BT_ASSERT_MESSAGE(gotCdS, cdToGet == cd1);
-	free(toTestS);
+	free(gotCdS);
 	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "test_tpgetrply_TPGETANY_one")
 			== 0);
 }
