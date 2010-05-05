@@ -164,6 +164,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 					+ ".server");
 			if (server == null && serviceName.indexOf(".") > -1) {
 				server = serviceName.substring(1);
+				server = server.replaceAll("[0-9]", "");
 				log.trace("Using server name of: " + server);
 			}
 			roleList = (String) prop.getProperty("blacktie." + server

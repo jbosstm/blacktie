@@ -250,13 +250,12 @@ public class AdministrationProxy {
 				Destination dest = it.next();
 				if (dest instanceof Queue) {
 					String qname = ((Queue) dest).getQueueName();
-					for (String server : servers) {
-						// int index = qname.indexOf("." + server);
-						// log.debug("server is " + server + " qname is " +
-						// qname + " index is " + index);
-						if (qname.indexOf("." + server) >= 0
-								&& !runningServerList.contains(server)) {
-							runningServerList.add(server);
+					if (qname.startsWith(".")) {
+						String sname = qname.substring(1);
+						sname = sname.replaceAll("[0-9]", "");
+						if (servers.contains(sname)
+								&& !runningServerList.contains(sname)) {
+							runningServerList.add(sname);
 						}
 					}
 				}
@@ -283,14 +282,14 @@ public class AdministrationProxy {
 				Destination dest = it.next();
 				if (dest instanceof Queue) {
 					String qname = ((Queue) dest).getQueueName();
-					int index = qname.indexOf("." + serverName);
-
-					if (index >= 0) {
-						
-						qname = qname.substring(1);
-						qname = qname.replaceAll("[A-Za-z]", "");
-						
-						ids.add(new Integer(qname));
+					if (qname.startsWith(".")) {
+						String server = qname.substring(1);
+						server = server.replaceAll("[0-9]", "");
+						if (server.equals(serverName)) {
+							qname = qname.substring(1);
+							qname = qname.replaceAll("[A-Za-z]", "");
+							ids.add(new Integer(qname));
+						}
 					}
 				}
 			}
