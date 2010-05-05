@@ -262,7 +262,7 @@ public class AdministrationProxy {
 				}
 			}
 		} catch (Exception e) {
-			log.error(e);
+			log.error("Caught an exception: " + e.getMessage(), e);
 		}
 		return runningServerList;
 	}
@@ -286,13 +286,16 @@ public class AdministrationProxy {
 					int index = qname.indexOf("." + serverName);
 
 					if (index >= 0) {
-						ids.add(new Integer(qname.substring(index
-								+ serverName.length() + 7)));
+						
+						qname = qname.substring(1);
+						qname = qname.replaceAll("[A-Za-z]", "");
+						
+						ids.add(new Integer(qname));
 					}
 				}
 			}
 		} catch (Exception e) {
-			log.error(e);
+			log.error("Caught an exception: " + e.getMessage(), e);
 		}
 
 		return ids;
@@ -323,7 +326,7 @@ public class AdministrationProxy {
 			status += "</servers>";
 			return stringToElement(status);
 		} catch (Exception e) {
-			log.error(e);
+			log.error("Caught an exception: " + e.getMessage(), e);
 			return null;
 		}
 	}
@@ -352,7 +355,7 @@ public class AdministrationProxy {
 			servers += "</servers>";
 			status = stringToElement(servers);
 		} catch (Exception e) {
-			log.error(e);
+			log.error("Caught an exception: " + e.getMessage(), e);
 		}
 
 		return status;
