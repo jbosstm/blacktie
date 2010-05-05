@@ -18,16 +18,22 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://www.jboss.org/blacktie" xmlns="http://www.jboss.org/blacktie"
 	elementFormDefault="qualified">
+	<!-- The service name must be a valid C identifier -->
 	<xsd:simpleType name="svcstring">
 		<xsd:restriction base="xsd:string">
 			<xsd:minLength value="1" />
 			<xsd:maxLength value="15" />
+			<xsd:pattern value="[A-Za-z]+[A-Za-z0-9_]*" />
 		</xsd:restriction>
 	</xsd:simpleType>
+	<!-- The server name cannot use a number as the numbers are 
+             allocated by the core engine and the name can be determined
+             by the portion of text between a period and a number -->
 	<xsd:simpleType name="svrstring">
 		<xsd:restriction base="xsd:string">
 			<xsd:minLength value="1" />
 			<xsd:maxLength value="7" />
+			<xsd:pattern value="[A-Za-z]+" />
 		</xsd:restriction>
 	</xsd:simpleType>
 	<xsd:simpleType name="buffername">

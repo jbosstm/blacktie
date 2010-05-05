@@ -48,8 +48,8 @@ void TestTPAdvertise::tearDown() {
 	::tpfree(rcvbuf);
 
 	::tpunadvertise((char*) "TestTPAdvertise");
-	::tpunadvertise((char*) "1234567890123456");
-	::tpunadvertise((char*) "1234567890123457");
+	::tpunadvertise((char*) "a123456789012345");
+	::tpunadvertise((char*) "a123456789012346");
 
 	// Clean up server
 	BaseServerTest::tearDown();
@@ -110,10 +110,10 @@ void TestTPAdvertise::test_tpadvertise_different_method() {
 
 void TestTPAdvertise::test_tpadvertise_length_15() {
 	userlogc((char*) "test_tpadvertise_length_15");
-	int id = ::tpadvertise((char*) "12345678901234567", testtpadvertise_service);
+	int id = ::tpadvertise((char*) "a123456789012345", testtpadvertise_service);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(id != -1);
-	id = ::tpadvertise((char*) "1234567890123456", testtpadvertise_service_2);
+	id = ::tpadvertise((char*) "a123456789012346", testtpadvertise_service_2);
 	BT_ASSERT(tperrno== TPEMATCH);
 	BT_ASSERT(id == -1);
 }

@@ -47,7 +47,7 @@
 				<SERVICE name='TestTPRecv' />
 				<SERVICE name='TestTPService' />
 				<SERVICE name='TestTPReturn' />
-				<SERVICE name='123456789012345' />
+				<SERVICE name='a12345678901234' />
 				<SERVICE name='TestTPUnadverti' />
 				<SERVICE name='tpcall_x_octet' />
 				<SERVICE name='tpcall_x_common' />
