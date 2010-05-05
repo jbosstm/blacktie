@@ -102,7 +102,7 @@ public class QueueReaper implements Runnable {
 						String server = (String) prop.get("blacktie."
 								+ serviceName + ".server");
 						long queueReapCheck = System.currentTimeMillis();
-						if ((server != null || serviceName.contains("_ADMIN_"))
+						if ((server != null || serviceName.contains("."))
 								&& isCreatedProgrammatically(serviceName)
 								&& consumerCount(serviceName) == 0) {
 							log

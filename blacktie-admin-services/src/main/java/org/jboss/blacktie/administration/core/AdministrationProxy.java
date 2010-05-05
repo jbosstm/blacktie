@@ -111,7 +111,7 @@ public class AdministrationProxy {
 		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
 		sendbuf.setByteArray(command.getBytes());
 
-		String service = serverName + "_ADMIN_" + id;
+		String service = "." + serverName + id;
 
 		Response rcvbuf = connection.tpcall(service, sendbuf, sendlen, 0);
 		return rcvbuf;
@@ -251,10 +251,10 @@ public class AdministrationProxy {
 				if (dest instanceof Queue) {
 					String qname = ((Queue) dest).getQueueName();
 					for (String server : servers) {
-						// int index = qname.indexOf(server + "_ADMIN_");
+						// int index = qname.indexOf("." + server);
 						// log.debug("server is " + server + " qname is " +
 						// qname + " index is " + index);
-						if (qname.indexOf(server + "_ADMIN_") >= 0
+						if (qname.indexOf("." + server) >= 0
 								&& !runningServerList.contains(server)) {
 							runningServerList.add(server);
 						}
@@ -283,7 +283,7 @@ public class AdministrationProxy {
 				Destination dest = it.next();
 				if (dest instanceof Queue) {
 					String qname = ((Queue) dest).getQueueName();
-					int index = qname.indexOf(serverName + "_ADMIN_");
+					int index = qname.indexOf("." + serverName);
 
 					if (index >= 0) {
 						ids.add(new Integer(qname.substring(index

@@ -21,8 +21,8 @@
 	<SERVERS>
 		<SERVER name='default'>
 			<SERVICE_NAMES>
-				<SERVICE name='default_ADMIN_1' />
-				<SERVICE name='foo_ADMIN_1' />
+				<SERVICE name='.default1' />
+				<SERVICE name='.foo1' />
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>

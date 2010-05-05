@@ -443,7 +443,7 @@ static void XMLCALL startElement
 
 			server = servers.back()->serverName;
 			memset(&service, 0, sizeof(ServiceInfo));
-			ACE_OS::strcpy(adm, "_ADMIN");
+			ACE_OS::strcpy(adm, ".");
 
 			service.transportLib = NULL;
 			service.advertised = false;

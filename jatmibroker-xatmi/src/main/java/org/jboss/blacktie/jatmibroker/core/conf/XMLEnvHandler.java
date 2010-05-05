@@ -390,7 +390,7 @@ public class XMLEnvHandler extends DefaultHandler {
 									"Can not define the same service");
 						}
 
-						if (serviceName.indexOf("_ADMIN") >= 0) {
+						if (serviceName.indexOf(".") >= 0) {
 							log.warn("service " + serviceName
 									+ " is admin service");
 							serviceName = null;

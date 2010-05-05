@@ -65,7 +65,7 @@ Connection*
 ConnectionManager::getConnection(char* side) {
 	char* transportLibrary;
 	char adm[XATMI_SERVICE_NAME_LENGTH + 1];
-	ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server,
+	ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, ".%s%d", server,
 			serverid);
 
 #ifdef WIN32

@@ -309,7 +309,7 @@ AtmiBrokerServer::AtmiBrokerServer() {
 				// add service ADMIN
 				char adm[XATMI_SERVICE_NAME_LENGTH + 1];
 				ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1,
-						"%s_ADMIN_%d", server, serverid);
+						".%s%d", server, serverid);
 				ServiceInfo service;
 				memset(&service, 0, sizeof(ServiceInfo));
 				service.serviceName = strdup(adm);
@@ -368,7 +368,7 @@ AtmiBrokerServer::AtmiBrokerServer() {
 		} else {
 			// make ADMIN service mandatory for server
 			char adm[XATMI_SERVICE_NAME_LENGTH + 1];
-			ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d",
+			ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, ".%s%d",
 					server, serverid);
 			if (!advertiseService(adm, ADMIN)) {
 				LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "advertise admin service failed");
@@ -494,7 +494,7 @@ void AtmiBrokerServer::shutdown() {
 int AtmiBrokerServer::pause() {
 	if (!isPause) {
 		char adm[XATMI_SERVICE_NAME_LENGTH + 1];
-		ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d",
+		ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, ".%s%d",
 				server, serverid);
 		for (std::vector<ServiceData>::iterator i = serviceData.begin(); i
 				!= serviceData.end(); i++) {
@@ -555,7 +555,7 @@ int AtmiBrokerServer::getServiceStatus(char** toReturn, char* svc) {
 	char* str;
 	int size = sizeof(char) * (9 + 14 + strlen(serverName) + 11 + 12 + 10);
 	char adm[XATMI_SERVICE_NAME_LENGTH + 1];
-	ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server,
+	ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, ".%s%d", server,
 			serverid);
 
 	str = (char*) malloc(size);
@@ -777,7 +777,7 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 
 	bool isadm = false;
 	char adm[XATMI_SERVICE_NAME_LENGTH + 1];
-	ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, "%s_ADMIN_%d", server,
+	ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, ".%s%d", server,
 			serverid);
 	if (strcmp(adm, serviceName) == 0) {
 		isadm = true;

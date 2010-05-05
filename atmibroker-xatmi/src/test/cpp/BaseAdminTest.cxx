@@ -41,7 +41,7 @@ int BaseAdminTest::callADMIN(char* command, char expect, int r, char** n) {
 	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
 	long  recvlen = 1;
 
-	int cd = ::tpcall((char*) "default_ADMIN_1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
+	int cd = ::tpcall((char*) ".default1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, TPNOTRAN);
 	BT_ASSERT(r != -1);
 	BT_ASSERT(recvbuf[0] == expect);
 	BT_ASSERT(r == tperrno);

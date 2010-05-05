@@ -162,9 +162,8 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			log.debug("Will use servers default security if present");
 			String server = (String) prop.getProperty("blacktie." + serviceName
 					+ ".server");
-			if (server == null && serviceName.indexOf("_ADMIN_") > 0) {
-				server = serviceName.substring(0, serviceName
-						.indexOf("_ADMIN_"));
+			if (server == null && serviceName.indexOf(".") > -1) {
+				server = serviceName.substring(1);
 				log.trace("Using server name of: " + server);
 			}
 			roleList = (String) prop.getProperty("blacktie." + server
@@ -230,15 +229,17 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 				}
 			}
 
-			if (queue == false || !serviceName.contains("_ADMIN_")) {
+			if (queue == false || !serviceName.contains(".")) {
 				result = 1;
 				if (AdministrationProxy.isDomainPause
-						&& serviceName.contains("_ADMIN_")) {
+						&& serviceName.contains(".")) {
 					log.info("Domain is pause");
 					result = 3;
 				}
 			} else if (consumerCount(serviceName) > 0) {
-				log.warn("can not advertise ADMIN with same id: " + serviceName);
+				log
+						.warn("can not advertise ADMIN with same id: "
+								+ serviceName);
 				result = 2;
 			} else if (AdministrationProxy.isDomainPause) {
 				log.info("Domain is pause");
@@ -305,7 +306,6 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 		byte[] success = new byte[1];
 		String server = null;
-		int k = -1;
 
 		try {
 			Properties prop = new Properties();
@@ -313,8 +313,9 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
 			xmlenv.parse("btconfig.xml");
 
-			if ((k = serviceName.indexOf("_ADMIN_")) > 0) {
-				server = serviceName.substring(0, k);
+			if (serviceName.indexOf(".") > -1) {
+				server = serviceName.substring(1);
+				server = server.replaceAll("[0-9]", "");
 				List<String> servers = (List<String>) prop
 						.get("blacktie.domain.servers");
 				if (servers.contains(server) == false) {

@@ -35,7 +35,7 @@ public abstract class TransportFactory {
 		log.debug("Loading transport for: " + serviceName);
 		String transportLibrary;
 
-		if (serviceName.indexOf("_ADMIN_") > 0) {
+		if (serviceName.indexOf(".") >= 0) {
 			transportLibrary = "hybrid";
 		} else {
 			transportLibrary = (String) properties.getProperty("blacktie."
