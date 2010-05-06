@@ -32,7 +32,7 @@ class AtmiBrokerClient {
 public:
 	AtmiBrokerClient();
 	virtual ~AtmiBrokerClient();
-	Session* createSession(int& id, char* serviceName);
+	Session* createSession(bool isConv, int& id, char* serviceName);
 	Session* getSession(int id);
 	void closeSession(int id);
 	void disconnectSessions();

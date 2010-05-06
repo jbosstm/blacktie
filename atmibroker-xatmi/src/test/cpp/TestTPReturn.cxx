@@ -26,6 +26,8 @@
 
 extern void testtpreturn_service(TPSVCINFO *svcinfo);
 extern void testtpreturn_service_tpurcode(TPSVCINFO *svcinfo);
+extern void testtpreturn_service_opensession1(TPSVCINFO *svcinfo);
+extern void testtpreturn_service_opensession2(TPSVCINFO *svcinfo);
 
 void TestTPReturn::setUp() {
 	userlogc((char*) "TestTPReturn::setUp");
@@ -39,8 +41,8 @@ void TestTPReturn::setUp() {
 void TestTPReturn::tearDown() {
 	userlogc((char*) "TestTPReturn::tearDown");
 	// Do local work
-	::tpfree(sendbuf);
-	::tpfree(rcvbuf);
+	::tpfree( sendbuf);
+	::tpfree( rcvbuf);
 	int toCheck = tpunadvertise((char*) "TestTPReturn");
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toCheck != -1);
@@ -74,8 +76,8 @@ void TestTPReturn::test_tpreturn_nonbuffer() {
 
 	sendlen = strlen("tprnb") + 1;
 	rcvlen = sendlen;
-	BT_ASSERT((sendbuf
-			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	BT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen))
+			!= NULL);
 	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
 	(void) strcpy(sendbuf, "tprnb");
@@ -99,8 +101,8 @@ void TestTPReturn::test_tpreturn_tpurcode() {
 
 	sendlen = 3;
 	rcvlen = 1;
-	BT_ASSERT((sendbuf
-			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
+	BT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen))
+			!= NULL);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
@@ -121,6 +123,35 @@ void TestTPReturn::test_tpreturn_tpurcode() {
 	BT_ASSERT(tpurcode == 77);
 }
 
+void TestTPReturn::test_tpreturn_opensession() {
+	userlogc((char*) "test_tpreturn_opensession");
+
+	// Do local work
+	int toCheck = tpadvertise((char*) "TestTPReturn",
+			testtpreturn_service_opensession1);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
+
+	toCheck = tpadvertise((char*) "CREDIT", testtpreturn_service_opensession2);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(toCheck != -1);
+
+	sendlen = 2;
+	rcvlen = 1;
+	BT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen))
+			!= NULL);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+			!= NULL);
+	BT_ASSERT(tperrno == 0);
+
+	strcpy(sendbuf, "X");
+	int success = ::tpcall((char*) "TestTPReturn", (char *) sendbuf, sendlen,
+			(char **) &rcvbuf, &rcvlen, (long) 0);
+	BT_ASSERT(success == -1);
+	BT_ASSERT(tperrno == TPESVCERR);
+}
+
 void testtpreturn_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "testtpreturn_service");
 	char *toReturn = (char*) malloc(21);
@@ -138,4 +169,16 @@ void testtpreturn_service_tpurcode(TPSVCINFO *svcinfo) {
 	} else {
 		tpreturn(TPSUCCESS, 77, toReturn, len, 0);
 	}
+}
+
+void testtpreturn_service_opensession1(TPSVCINFO *svcinfo) {
+	userlogc((char*) "testtpreturn_service_opensession1");
+	int cd = ::tpacall((char*) "CREDIT", (char *) svcinfo->data, svcinfo->len,
+			0);
+	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
+}
+
+void testtpreturn_service_opensession2(TPSVCINFO *svcinfo) {
+	userlogc((char*) "testtpreturn_service_opensession2");
+	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
 }

@@ -35,10 +35,11 @@
 log4cxx::LoggerPtr HybridSessionImpl::logger(log4cxx::Logger::getLogger(
 		"HybridSessionImpl"));
 
-HybridSessionImpl::HybridSessionImpl(char* connectionName,
+HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 		CORBA_CONNECTION* connection, apr_pool_t* pool, int id,
 		char* serviceName, void(*messagesAvailableCallback)(int, bool)) {
 	LOG4CXX_TRACE(logger, (char*) "constructor service");
+	this->isConv = isConv;
 	long ttl;
 
 	switch (txx_ttl(&ttl)) {
@@ -84,11 +85,12 @@ HybridSessionImpl::HybridSessionImpl(char* connectionName,
 	LOG4CXX_TRACE(logger, "OK service session created");
 }
 
-HybridSessionImpl::HybridSessionImpl(char* connectionName,
+HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 		CORBA_CONNECTION* connection, apr_pool_t* pool, int id,
 		const char* temporaryQueueName, void(*messagesAvailableCallback)(int,
 				bool)) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor corba");
+	this->isConv = isConv;
 	this->id = id;
 	this->corbaConnection = connection;
 	this->temporaryQueueName = temporaryQueueName;

@@ -148,7 +148,7 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "Client Shutdown");
 }
 
-Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
+Session* AtmiBrokerClient::createSession(bool isConv, int& id, char* serviceName) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "creating session: "
 			<< serviceName);
 	if (serviceName == NULL) {
@@ -166,7 +166,7 @@ Session* AtmiBrokerClient::createSession(int& id, char* serviceName) {
 		id = nextSessionId++;
 		lock->unlock();
 
-		session = clientConnection->createSession(id, serviceName);
+		session = clientConnection->createSession(isConv, id, serviceName);
 
 		session->setSigHandler(
 				&(AtmiBrokerEnv::get_instance()->getSignalHandler()));

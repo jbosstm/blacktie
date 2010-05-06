@@ -57,7 +57,7 @@ void TestStompConnection::testLibStomp() {
 	// THIS IS THE INITIAL EXCHANCE
 	userlogc("Iterating");
 	for (int i = 0; i < 100; i++) {
-		Session* client = clientConnection->createSession(1,
+		Session* client = clientConnection->createSession(false, 1,
 				(char*) "JAVA_Converse");
 		MESSAGE clientSend;
 		char* clientData = (char*) malloc(6);
@@ -95,7 +95,7 @@ void TestStompConnection::test() {
 
 	Destination* destination = serverConnection->createDestination(
 			(char*) "JAVA_Converse");
-	Session* client = clientConnection->createSession(1,
+	Session* client = clientConnection->createSession(false, 1,
 			(char*) "JAVA_Converse");
 
 	// THIS IS THE INITIAL EXCHANCE
@@ -128,7 +128,7 @@ void TestStompConnection::test() {
 		clientAddress = serviceReceived.replyto;
 	}
 
-	Session* service = serverConnection->createSession(1, clientAddress);
+	Session* service = serverConnection->createSession(false, 1, clientAddress);
 	userlogc("Iterating");
 	int iterations = 100;
 	for (int i = 0; i < iterations; i++) {

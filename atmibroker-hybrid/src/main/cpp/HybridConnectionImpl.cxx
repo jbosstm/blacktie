@@ -182,18 +182,18 @@ void HybridConnectionImpl::disconnect(stomp_connection* connection,
 	}
 }
 
-Session* HybridConnectionImpl::createSession(int id, char * serviceName) {
+Session* HybridConnectionImpl::createSession(bool isConv, int id, char * serviceName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession serviceName: " << serviceName);
-	sessionMap[id] = new HybridSessionImpl(this->connectionName,
+	sessionMap[id] = new HybridSessionImpl(isConv, this->connectionName,
 			this->connection, pool, id, serviceName, messagesAvailableCallback);
 	return sessionMap[id];
 }
 
-Session* HybridConnectionImpl::createSession(int id,
+Session* HybridConnectionImpl::createSession(bool isConv, int id,
 		const char* temporaryQueueName) {
 	LOG4CXX_DEBUG(logger, (char*) "createSession temporaryQueueName: "
 			<< temporaryQueueName);
-	sessionMap[id] = new HybridSessionImpl(this->connectionName,
+	sessionMap[id] = new HybridSessionImpl(isConv, this->connectionName,
 			this->connection, this->pool, id, temporaryQueueName,
 			messagesAvailableCallback);
 	return sessionMap[id];

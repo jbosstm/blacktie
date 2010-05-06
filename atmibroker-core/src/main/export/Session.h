@@ -34,7 +34,9 @@ public:
 	virtual bool send(MESSAGE message) = 0;
 	virtual void disconnect() = 0;
 
-	virtual int getId() = 0;
+	int getId() {
+		return id;
+	}
 
 	/**
 	 * Can this session send
@@ -105,12 +107,38 @@ public:
 		return (sigHandler_ != NULL ? sigHandler_->unblockSignals() : 0);
 	}
 
+	void addChildSession(Session* childSession) {
+		childSessions.push_back(childSession);
+	}
+
+	void removeChildSession(Session* childSession) {
+		for (std::vector<Session*>::iterator it = childSessions.begin(); it
+				!= childSessions.end(); it++) {
+			Session* session = (*it);
+			if (session->getId() == childSession->getId()) {
+				childSessions.erase(it);
+				break;
+			}
+		}
+	}
+
+	std::vector<Session*> getChildSessions() {
+		return childSessions;
+	}
+
+	bool getIsConv() {
+		return isConv;
+	}
+
 protected:
 	bool canSend;
 	bool canRecv;
 	long lastEvent;
 	long lastRCode;
 	AtmiBrokerSignalHandler* sigHandler_;
+	std::vector<Session*> childSessions;
+	bool isConv;
+	int id;
 };
 
 #endif

@@ -228,6 +228,15 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 							free(message.subtype);
 							free((char*) message.replyto);
 							if (closeSession) {
+								// Remove the child session
+								Session* svcSession = (Session*) getSpecific(
+										SVC_SES);
+								if (svcSession != NULL) {
+									svcSession->removeChildSession(session);
+									LOG4CXX_TRACE(
+											loggerXATMI,
+											(char*) "receive closed child session");
+								}
 								ptrAtmiBrokerClient->closeSession(id);
 								LOG4CXX_TRACE(loggerXATMI,
 										(char*) "receive session closed: "
@@ -264,6 +273,14 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 							*event = TPEV_SVCERR;
 							setSpecific(TPE_KEY, TSS_TPESVCERR);
 							txx_rollback_only();
+							// Remove the child session
+							Session* svcSession = (Session*) getSpecific(
+									SVC_SES);
+							if (svcSession != NULL) {
+								svcSession->removeChildSession(session);
+								LOG4CXX_TRACE(loggerXATMI,
+										(char*) "receive triggered close");
+							}
 							ptrAtmiBrokerClient->closeSession(id);
 							closeSession = false;
 						} else if (message.rval == TPFAIL) {
@@ -271,12 +288,28 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 							*event = TPEV_SVCFAIL;
 							setSpecific(TPE_KEY, TSS_TPESVCFAIL);
 							txx_rollback_only();
+							// Remove the child session
+							Session* svcSession = (Session*) getSpecific(
+									SVC_SES);
+							if (svcSession != NULL) {
+								svcSession->removeChildSession(session);
+								LOG4CXX_TRACE(loggerXATMI,
+										(char*) "receive triggered close");
+							}
 							ptrAtmiBrokerClient->closeSession(id);
 							closeSession = false;
 						} else if (message.rval == TPSUCCESS) {
 							toReturn = 0;
 							setTpurcode(message.rcode);
 							*event = TPEV_SVCSUCC;
+							// Remove the child session
+							Session* svcSession = (Session*) getSpecific(
+									SVC_SES);
+							if (svcSession != NULL) {
+								svcSession->removeChildSession(session);
+								LOG4CXX_TRACE(loggerXATMI,
+										(char*) "receive triggered close");
+							}
 							ptrAtmiBrokerClient->closeSession(id);
 							closeSession = false;
 						} else if (message.flags & TPRECVONLY) {
@@ -318,6 +351,12 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 	}
 
 	if (closeSession) {
+		// Remove the child session
+		Session* svcSession = (Session*) getSpecific(SVC_SES);
+		if (svcSession != NULL) {
+			svcSession->removeChildSession(session);
+			LOG4CXX_TRACE(loggerXATMI, (char*) "receive child session closed");
+		}
 		ptrAtmiBrokerClient->closeSession(id);
 		LOG4CXX_TRACE(loggerXATMI, (char*) "receive session closed: " << id);
 	}
@@ -509,7 +548,8 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 					Session* session = NULL;
 					int cd = -1;
 					try {
-						session = ptrAtmiBrokerClient->createSession(cd, svc);
+						session = ptrAtmiBrokerClient->createSession(false, cd,
+								svc);
 						LOG4CXX_TRACE(loggerXATMI, (char*) "new session: "
 								<< session << " cd: " << cd
 								<< " transactional: " << transactional);
@@ -525,17 +565,30 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 								if (TPNOREPLY & flags) {
 									toReturn = 0;
 									ptrAtmiBrokerClient->closeSession(cd);
+									// Remove the child session not required as not added
 								} else {
 									toReturn = cd;
+									Session* svcSession =
+											(Session*) getSpecific(SVC_SES);
+									if (svcSession != NULL) {
+										svcSession->addChildSession(session);
+										LOG4CXX_TRACE(
+												loggerXATMI,
+												(char*) "tpacall child session added");
+									}
 								}
 							} else {
 								LOG4CXX_DEBUG(loggerXATMI,
 										(char*) "Session got dudded: " << cd);
 								ptrAtmiBrokerClient->closeSession(cd);
+								// Remove the child session not required as not added
 							}
 						} else if (tperrno == 0) {
+							LOG4CXX_TRACE(loggerXATMI,
+									(char*) "tpacall unknown error");
 							setSpecific(TPE_KEY, TSS_TPESYSTEM);
 							ptrAtmiBrokerClient->closeSession(cd);
+							// Remove the child session not required as not added
 						}
 					} catch (...) {
 						LOG4CXX_ERROR(
@@ -543,6 +596,15 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 								(char*) "tpacall failed to connect to service queue");
 						setSpecific(TPE_KEY, TSS_TPENOENT);
 						if (cd != -1) {
+							// Remove the child session
+							Session* svcSession = (Session*) getSpecific(
+									SVC_SES);
+							if (svcSession != NULL) {
+								svcSession->removeChildSession(session);
+								LOG4CXX_TRACE(
+										loggerXATMI,
+										(char*) "tpacall failed child session closed");
+							}
 							ptrAtmiBrokerClient->closeSession(cd);
 						}
 					}
@@ -589,7 +651,8 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 					int cd = -1;
 					Session* session = NULL;
 					try {
-						session = ptrAtmiBrokerClient->createSession(cd, svc);
+						session = ptrAtmiBrokerClient->createSession(true, cd,
+								svc);
 						if (cd != -1) {
 							int sendOk = ::send(session, session->getReplyTo(),
 									idata, len, cd, flags | TPCONV, 0, 0);
@@ -624,15 +687,43 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 														<< " recv: "
 														<< session->getCanRecv());
 									}
+
+									// Add the child session if this is a service invocation
+									Session* svcSession =
+											(Session*) getSpecific(SVC_SES);
+									if (svcSession != NULL) {
+										svcSession->addChildSession(session);
+										LOG4CXX_TRACE(
+												loggerXATMI,
+												(char*) "tpconnect child session opened");
+									}
 								} else {
 									LOG4CXX_DEBUG(loggerXATMI,
 											(char*) "COULD NOT CONNECT: " << cd);
+									// Remove the child session
+									Session* svcSession =
+											(Session*) getSpecific(SVC_SES);
+									if (svcSession != NULL) {
+										svcSession->removeChildSession(session);
+										LOG4CXX_TRACE(
+												loggerXATMI,
+												(char*) "tpconnect failed connect session closed");
+									}
 									ptrAtmiBrokerClient->closeSession(cd);
 									setSpecific(TPE_KEY, TSS_TPESYSTEM);
 								}
 							} else {
 								LOG4CXX_DEBUG(loggerXATMI,
 										(char*) "Session got dudded: " << cd);
+								// Remove the child session
+								Session* svcSession = (Session*) getSpecific(
+										SVC_SES);
+								if (svcSession != NULL) {
+									svcSession->removeChildSession(session);
+									LOG4CXX_TRACE(
+											loggerXATMI,
+											(char*) "tpconnect dudded child session closed");
+								}
 								ptrAtmiBrokerClient->closeSession(cd);
 							}
 						} else if (tperrno == 0) {
@@ -644,6 +735,15 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 								(char*) "tpconnect failed to connect to service queue");
 						setSpecific(TPE_KEY, TSS_TPENOENT);
 						if (cd != -1) {
+							// Remove the child session
+							Session* svcSession = (Session*) getSpecific(
+									SVC_SES);
+							if (svcSession != NULL) {
+								svcSession->removeChildSession(session);
+								LOG4CXX_TRACE(
+										loggerXATMI,
+										(char*) "tpconnect fail child session closed");
+							}
 							ptrAtmiBrokerClient->closeSession(cd);
 						}
 					}
@@ -747,7 +847,15 @@ int tpcancel(int id) {
 		if (getSpecific(TSS_KEY)) {
 			setSpecific(TPE_KEY, TSS_TPETRAN);
 		}
-		if (ptrAtmiBrokerClient->getSession(id) != NULL) {
+		Session* session = ptrAtmiBrokerClient->getSession(id);
+		if (session != NULL) {
+			// Remove the child session
+			Session* svcSession = (Session*) getSpecific(SVC_SES);
+			if (svcSession != NULL) {
+				svcSession->removeChildSession(session);
+				LOG4CXX_TRACE(loggerXATMI,
+						(char*) "tpcancel child session closed");
+			}
 			ptrAtmiBrokerClient->closeSession(id);
 			LOG4CXX_TRACE(loggerXATMI, (char*) "tpcancel session closed");
 			toReturn = 0;
@@ -810,6 +918,13 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 								|| session->getLastEvent() == TPEV_DISCONIMM) {
 							setSpecific(TPE_KEY, TSS_TPEEVENT);
 							toReturn = -1;
+						}
+						// Remove the child session
+						Session* svcSession = (Session*) getSpecific(SVC_SES);
+						if (svcSession != NULL) {
+							svcSession->removeChildSession(session);
+							LOG4CXX_TRACE(loggerXATMI,
+									(char*) "tpsend child session closed");
 						}
 						ptrAtmiBrokerClient->closeSession(id);
 						LOG4CXX_TRACE(loggerXATMI,
@@ -911,6 +1026,24 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 				}
 				session->setCanRecv(false);
 
+				std::vector<Session*> childSessions =
+						session->getChildSessions();
+				if (childSessions.size() > 0) {
+					LOG4CXX_ERROR(loggerXATMI,
+							(char*) "Open child sessions detected");
+					for (std::vector<Session*>::iterator it =
+							childSessions.begin(); it != childSessions.end(); it++) {
+						Session* session = (*it);
+						if (session->getIsConv()) {
+							::tpdiscon(session->getId());
+						} else {
+							::tpcancel(session->getId());
+						}
+					}
+					rcode = TPESVCERR;
+					rval = TPFAIL;
+				}
+
 				if (rcode == TPESVCERR || len == -1) {
 					// mark rollback only and disassociate tx if present
 					txx_rollback_only();
@@ -964,7 +1097,7 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 								<< session->getCanRecv());
 
 			} else {
-				LOG4CXX_DEBUG(loggerXATMI, (char*) "Session is null");
+				LOG4CXX_DEBUG(loggerXATMI, (char*) "Session is NULL");
 				setSpecific(TPE_KEY, TSS_TPEPROTO);
 			}
 		}
@@ -991,6 +1124,14 @@ int tpdiscon(int id) {
 			try {
 				if (getSpecific(TSS_KEY)) {
 					toReturn = txx_rollback_only();
+				}
+
+				// Remove the child session
+				Session* svcSession = (Session*) getSpecific(SVC_SES);
+				if (svcSession != NULL) {
+					svcSession->removeChildSession(session);
+					LOG4CXX_TRACE(loggerXATMI,
+							(char*) "tpdiscon child session closed");
 				}
 				ptrAtmiBrokerClient->closeSession(id);
 				LOG4CXX_TRACE(loggerXATMI, (char*) "tpdiscon session closed");

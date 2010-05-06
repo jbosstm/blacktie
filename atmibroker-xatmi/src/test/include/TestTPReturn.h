@@ -28,11 +28,13 @@ class TestTPReturn: public BaseServerTest {
 	CPPUNIT_TEST( test_tpreturn_nonservice);
 	CPPUNIT_TEST( test_tpreturn_nonbuffer);
 	CPPUNIT_TEST( test_tpreturn_tpurcode);
+	CPPUNIT_TEST( test_tpreturn_opensession);
 CPPUNIT_TEST_SUITE_END();
 public:
 void test_tpreturn_nonservice();
 void test_tpreturn_nonbuffer();
 void test_tpreturn_tpurcode();
+void test_tpreturn_opensession();
 virtual void setUp();
 virtual void tearDown();
 private:

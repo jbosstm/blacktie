@@ -168,7 +168,8 @@ int serverinit(int argc, char** argv) {
 
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverinit called");
 			ptrServer = new AtmiBrokerServer();
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverInitialized=" << serverInitialized);
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverInitialized="
+					<< serverInitialized);
 
 			if (!serverInitialized) {
 				::serverdone();
@@ -308,8 +309,8 @@ AtmiBrokerServer::AtmiBrokerServer() {
 				serverInfo.serverName = strdup(servers[i]->serverName);
 				// add service ADMIN
 				char adm[XATMI_SERVICE_NAME_LENGTH + 1];
-				ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1,
-						".%s%d", server, serverid);
+				ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, ".%s%d",
+						server, serverid);
 				ServiceInfo service;
 				memset(&service, 0, sizeof(ServiceInfo));
 				service.serviceName = strdup(adm);
@@ -371,7 +372,8 @@ AtmiBrokerServer::AtmiBrokerServer() {
 			ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, ".%s%d",
 					server, serverid);
 			if (!advertiseService(adm, ADMIN)) {
-				LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "advertise admin service failed");
+				LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+						(char*) "advertise admin service failed");
 				return;
 			}
 
@@ -494,8 +496,8 @@ void AtmiBrokerServer::shutdown() {
 int AtmiBrokerServer::pause() {
 	if (!isPause) {
 		char adm[XATMI_SERVICE_NAME_LENGTH + 1];
-		ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, ".%s%d",
-				server, serverid);
+		ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, ".%s%d", server,
+				serverid);
 		for (std::vector<ServiceData>::iterator i = serviceData.begin(); i
 				!= serviceData.end(); i++) {
 			if (ACE_OS::strcmp((*i).serviceInfo->serviceName, adm) != 0) {
@@ -629,7 +631,8 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 
 	if (!svcname || strlen(svcname) == 0) {
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "advertiseService invalid service name");
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+				(char*) "advertiseService invalid service name");
 		return false;
 	}
 
@@ -665,7 +668,8 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 		} else {
 			setSpecific(TPE_KEY, TSS_TPEMATCH);
 			free(serviceName);
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "advertiseService same service function");
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+					(char*) "advertiseService same service function");
 			return false;
 		}
 	} else if (serviceFunction == NULL && func == NULL) {
@@ -679,7 +683,8 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 	if (connection == NULL) {
 		setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		free(serviceName);
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "advertiseService no server connection");
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+				(char*) "advertiseService no server connection");
 		return false;
 	}
 
@@ -691,7 +696,8 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 	// create reference for Service Queue and cache
 	try {
 		toReturn = createAdminDestination(serviceName);
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "advertiseService status=" << toReturn);
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+				(char*) "advertiseService status=" << toReturn);
 		if (toReturn) {
 			Destination* destination;
 			destination = connection->createDestination(serviceName);
@@ -797,7 +803,8 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 
 	sprintf(command, "tpadvertise,%s,%s,%s,", serverName, serviceName, version);
 
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "createAdminDestination with command " << command);
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+			(char*) "createAdminDestination with command " << command);
 
 	if (tpcall((char*) "BTStompAdmin", command, commandLength, &response,
 			&responseLength, TPNOTRAN) != 0) {
@@ -814,8 +821,11 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 		tpfree(response);
 		return false;
 	} else if (response[0] == 4) {
-		LOG4CXX_WARN(loggerAtmiBrokerServer, (char*) "Software version mismatch: domain version "
-				<< version << " must match the version of the deployed admin service (please upgrade)");
+		LOG4CXX_WARN(
+				loggerAtmiBrokerServer,
+				(char*) "Version Mismatch Detected: The version of BlackTie used by this server: "
+						<< version
+						<< " does not match the version of BlackTie in the deployed admin service (please ensure the server, client and admin service are all using the same version of BlackTie)");
 		tpfree(command);
 		tpfree(response);
 		return false;
@@ -833,13 +843,14 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 		tpfree(response);
 		return true;
 	} else {
-int r = (int) response[0];
-char c = response[0];
+		int r = (int) response[0];
+		char c = response[0];
 		// REMOVED BY TOM, NOT CLEAR WHAT THIS IS REQUIRED FOR,
 		// IF COMMENTED BACK IN, PLEASE PROVIDE A COMMENT
 		//		if (!isadm || (errorBootAdminService = response[0]) == 2) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer, "Service returned with error: "
-				<< response[0] << " command was " << command << " r=" << r << " c=" << c);
+				<< response[0] << " command was " << command << " r=" << r
+				<< " c=" << c);
 		tpfree(command);
 		tpfree(response);
 		return false;

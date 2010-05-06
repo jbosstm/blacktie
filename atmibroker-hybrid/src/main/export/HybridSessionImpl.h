@@ -31,9 +31,9 @@ class HybridConnectionImpl;
 
 class BLACKTIE_HYBRID_DLL HybridSessionImpl: public virtual Session {
 public:
-	HybridSessionImpl(char* connectionName, CORBA_CONNECTION* connection, apr_pool_t* pool, int id, const char* temporaryQueueName, void(*messagesAvailableCallback)(int, bool));
+	HybridSessionImpl(bool isConv, char* connectionName, CORBA_CONNECTION* connection, apr_pool_t* pool, int id, const char* temporaryQueueName, void(*messagesAvailableCallback)(int, bool));
 
-	HybridSessionImpl(char* connectionName, CORBA_CONNECTION* connection, apr_pool_t* pool, int id, char* service, void(*messagesAvailableCallback)(int, bool));
+	HybridSessionImpl(bool isConv, char* connectionName, CORBA_CONNECTION* connection, apr_pool_t* pool, int id, char* service, void(*messagesAvailableCallback)(int, bool));
 
 	virtual ~HybridSessionImpl();
 
@@ -49,7 +49,6 @@ public:
 	int getId();
 private:
 	static log4cxx::LoggerPtr logger;
-	int id;
 	CORBA_CONNECTION* corbaConnection;
 	HybridCorbaEndpointQueue* temporaryQueue;
 	AtmiBroker::EndpointQueue_var remoteEndpoint;

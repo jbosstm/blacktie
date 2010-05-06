@@ -169,16 +169,10 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 		LOG4CXX_DEBUG(logger, (char*) "replyTo: NULL");
 	}
 	LOG4CXX_TRACE(logger, (char*) "Creating session: " << message.correlationId);
-	session = connection->createSession(message.correlationId, message.replyto);
+	session = connection->createSession(((message.flags & TPCONV) == TPCONV), message.correlationId, message.replyto);
 	LOG4CXX_TRACE(logger, (char*) "Created session: " << message.correlationId);
 
-	// EXTRACT THE DATA FROM THE INBOUND MESSAGE
-
-	int correlationId = message.correlationId;
-	long ilen = message.len;
-	long flags = message.flags;
-
-	LOG4CXX_DEBUG(logger, (char*) "ilen: " << ilen << " flags: " << flags
+	LOG4CXX_DEBUG(logger, (char*) "message.len: " << message.len << " message.flags: " << message.flags
 			<< "cd: " << message.correlationId << " message.control="
 			<< message.control);
 
@@ -187,14 +181,14 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	memcpy(tpsvcinfo.name, message.serviceName, XATMI_SERVICE_NAME_LENGTH);
 	memset(&tpsvcinfo, '\0', sizeof(tpsvcinfo));
 	strcpy(tpsvcinfo.name, this->serviceName);
-	tpsvcinfo.flags = flags;
-	tpsvcinfo.len = ilen;
+	tpsvcinfo.flags = message.flags;
+	tpsvcinfo.len = message.len;
 
 	if (message.data != NULL) {
 		tpsvcinfo.data = AtmiBrokerMem::get_instance()->tpalloc(message.type,
-				message.subtype, ilen, true);
+				message.subtype, message.len, true);
 		if (message.len > 0) {
-			memcpy(tpsvcinfo.data, message.data, ilen);
+			memcpy(tpsvcinfo.data, message.data, message.len);
 		}
 	} else {
 		tpsvcinfo.data = NULL;
@@ -204,7 +198,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	setSpecific(SVC_SES, session);
 
 	if (tpsvcinfo.flags & TPCONV) {
-		tpsvcinfo.cd = correlationId;
+		tpsvcinfo.cd = message.correlationId;
 		long olen = 4;
 		char* odata = (char*) tpalloc((char*) "X_OCTET", NULL, olen);
 		strcpy(odata, "ACK");
@@ -267,7 +261,9 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 						<< getSpecific(TSS_KEY));
 		::tpreturn(TPFAIL, TPESVCERR, NULL, 0, 0);
 		LOG4CXX_TRACE(logger, (char*) "Returned error");
-	} else if (getSpecific(TSS_KEY) != NULL) {
+	}
+
+	if (getSpecific(TSS_KEY) != NULL) {
 		txx_release_control(txx_unbind(true));
 	}
 

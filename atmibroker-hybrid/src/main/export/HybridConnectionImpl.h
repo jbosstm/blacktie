@@ -43,8 +43,8 @@ public:
 	HybridConnectionImpl(char* connectionName, void(*messagesAvailableCallback)(int,bool));
 	virtual ~HybridConnectionImpl();
 
-	Session* createSession(int id, char* serviceName);
-	Session* createSession(int id, const char* temporaryQueueName);
+	Session* createSession(bool isConv, int id, char* serviceName);
+	Session* createSession(bool isConv, int id, const char* temporaryQueueName);
 	Session* getSession(int id);
 	void closeSession(int id);
 	void disconnectSession(int id);
