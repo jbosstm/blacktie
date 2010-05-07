@@ -2,6 +2,7 @@ package org.jboss.blacktie.jatmibroker.tx;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyTprecvTPEVSVCFAILService;
 import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
@@ -12,7 +13,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 public class TestRollbackOnlyTprecvTPEVSVCFAILService implements
 		BlacktieService {
 	private static final Logger log = LogManager
-			.getLogger(TestRollbackOnlyTprecvTPEVSVCFAILService.class);
+			.getLogger(RollbackOnlyTprecvTPEVSVCFAILService.class);
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		try {
