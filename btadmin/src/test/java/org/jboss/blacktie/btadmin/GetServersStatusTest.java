@@ -27,7 +27,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 public class GetServersStatusTest extends TestCase {
-	private static Logger log = LogManager.getLogger(GetServersStatusTest.class);
+	private static Logger log = LogManager
+			.getLogger(GetServersStatusTest.class);
 
 	private CommandHandler commandHandler;
 
@@ -80,12 +81,12 @@ public class GetServersStatusTest extends TestCase {
 			fail("Could not stop the server");
 		}
 		log.info("shutdown");
-//		// TODO SHUTDOWN SHOULD RETURN WHEN THERE ARE NO MORE CONSUMERS?
-//		try {
-//			Thread.currentThread().sleep(5000);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		// // TODO SHUTDOWN SHOULD RETURN WHEN THERE ARE NO MORE CONSUMERS?
+		// try {
+		// Thread.currentThread().sleep(5000);
+		// } catch (InterruptedException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 	}
 }

@@ -88,21 +88,19 @@ public class RunServer {
 	}
 
 	public void tpadvertisetpcallXOctet() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TPCallXOctetService.class
-				.getName());
+		this.server.tpadvertise("TestOne", TPCallXOctetService.class.getName());
 	}
 
 	public void tpadvertisetpcallXOctetZero() throws ConnectionException {
 	}
 
 	public void tpadvertisetpcallXCommon() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TPCallXCommonService.class
-				.getName());
+		this.server
+				.tpadvertise("TestOne", TPCallXCommonService.class.getName());
 	}
 
 	public void tpadvertisetpcallXCType() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TPCallXCTypeService.class
-				.getName());
+		this.server.tpadvertise("TestOne", TPCallXCTypeService.class.getName());
 	}
 
 	public void tpadvertiseTestTPCancel() throws ConnectionException {
@@ -110,8 +108,7 @@ public class RunServer {
 	}
 
 	public void tpadvertiseTestTPConnect() throws ConnectionException {
-		this.server
-				.tpadvertise("TestOne", TPConnectService.class.getName());
+		this.server.tpadvertise("TestOne", TPConnectService.class.getName());
 	}
 
 	public void tpadvertiseTestTPConversation() throws ConnectionException {
@@ -132,8 +129,7 @@ public class RunServer {
 	}
 
 	public void tpadvertiseTestTPGetrply() throws ConnectionException {
-		this.server
-				.tpadvertise("TestOne", TPGetRplyService.class.getName());
+		this.server.tpadvertise("TestOne", TPGetRplyService.class.getName());
 	}
 
 	public void tpadvertiseTestTPRecv() throws ConnectionException {
@@ -172,8 +168,7 @@ public class RunServer {
 	}
 
 	public void tpadvertiseTestTPService() throws ConnectionException {
-		this.server
-				.tpadvertise("TestOne", TPServiceService.class.getName());
+		this.server.tpadvertise("TestOne", TPServiceService.class.getName());
 	}
 
 	public void tpadvertiseTestTPUnadvertise() throws ConnectionException {

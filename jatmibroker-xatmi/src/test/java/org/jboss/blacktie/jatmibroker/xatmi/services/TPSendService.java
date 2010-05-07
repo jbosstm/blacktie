@@ -7,8 +7,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 
 public class TPSendService implements BlacktieService {
-	private static final Logger log = LogManager
-			.getLogger(TPSendService.class);
+	private static final Logger log = LogManager.getLogger(TPSendService.class);
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		log.info("testtpsend_service");

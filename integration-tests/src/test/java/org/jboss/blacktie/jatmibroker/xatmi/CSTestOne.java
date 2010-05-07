@@ -17,8 +17,7 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
-public class CSTestOne extends CSControl
-{
+public class CSTestOne extends CSControl {
 	public void test_one() {
 		String testname = System.getProperty("TESTNAME", null);
 

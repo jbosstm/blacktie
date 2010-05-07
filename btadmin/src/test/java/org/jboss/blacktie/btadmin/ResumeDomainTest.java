@@ -49,13 +49,13 @@ public class ResumeDomainTest extends TestCase {
 			fail("Could not stop the server");
 		}
 
-//		// TODO SHUTDOWN SHOULD RETURN WHEN THERE ARE NO MORE CONSUMERS?
-//		try {
-//			Thread.currentThread().sleep(5000);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		// // TODO SHUTDOWN SHOULD RETURN WHEN THERE ARE NO MORE CONSUMERS?
+		// try {
+		// Thread.currentThread().sleep(5000);
+		// } catch (InterruptedException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 	}
 
 	public void testResumeDomain() throws IOException,

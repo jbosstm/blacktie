@@ -40,9 +40,10 @@ public class AdministrationProxyTest extends TestCase {
 		connection.close();
 	}
 
-	public void test() throws IOException, ConfigurationException, ConnectionException {
+	public void test() throws IOException, ConfigurationException,
+			ConnectionException {
 		AdministrationProxy proxy = new AdministrationProxy();
 		proxy.shutdown("foo", 0);
 	}
-	
+
 }

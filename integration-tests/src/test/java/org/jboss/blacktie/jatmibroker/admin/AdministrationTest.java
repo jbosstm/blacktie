@@ -31,11 +31,11 @@ import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 public class AdministrationTest extends TestCase {
 	private static final Logger log = LogManager
 			.getLogger(AdministrationTest.class);
-	
+
 	private RunServer runServer = new RunServer();
 	private Connection connection;
 	private String service = ".default1";
-	
+
 	private String callAdmin(String command, char expect) throws Exception {
 		int sendlen = command.length() + 1;
 		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
@@ -45,31 +45,31 @@ public class AdministrationTest extends TestCase {
 		assertTrue(buf != null);
 		byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
 		assertTrue(received[0] == expect);
-		
+
 		return new String(received, 1, received.length - 1);
 	}
-	
+
 	private void callBAR() throws ConnectionException {
 		connection.tpcall("BAR", null, 0, 0);
 		log.info("call BAR OK");
 	}
-	
+
 	public void setUp() throws Exception {
 		runServer.serverinit();
 		ConnectionFactory connectionFactory = ConnectionFactory
-		.getConnectionFactory();
+				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
 	}
-	
+
 	public void tearDown() {
 		runServer.serverdone();
 	}
-	
+
 	public void testShutdown() throws Exception {
 		log.info("testShutdown");
 		callAdmin("serverdone", '1');
 	}
-	
+
 	public void testAdvertiseAndUnadvertise() throws Exception {
 		log.info("testAdvertiseAndUnadvertise");
 		callBAR();
@@ -78,25 +78,25 @@ public class AdministrationTest extends TestCase {
 			callBAR();
 			fail("Should fail when unadvertise BAR");
 		} catch (ConnectionException e) {
-			assertTrue("Error was: " + e.getTperrno(), 
+			assertTrue("Error was: " + e.getTperrno(),
 					e.getTperrno() == Connection.TPENOENT);
 		}
 		callAdmin("advertise,BAR", '1');
 		callBAR();
-		
+
 		// can not (un)advertise ADMIN service
 		callAdmin("advertise,.default1", '0');
 		callAdmin("unadvertise,.default1", '0');
-		
+
 		// can not (un)advertise UNKNOW service
 		callAdmin("advertise,UNKNOW", '0');
 		callAdmin("unadvertise,UNKNOW", '0');
 	}
-	
+
 	public void testGetServiceCounter() throws Exception {
 		log.info("testGetServiceCounter");
 		int n = -1;
-		
+
 		callBAR();
 		n = Integer.parseInt(callAdmin("counter,BAR,", '1'));
 		assertTrue(n == 1);
@@ -106,7 +106,7 @@ public class AdministrationTest extends TestCase {
 		log.info("testGetServiceStatus");
 		String status = callAdmin("status", '1');
 		log.info("status is " + status);
-		
+
 		status = callAdmin("status,BAR,", '1');
 		log.info("status is " + status);
 	}
@@ -123,7 +123,7 @@ public class AdministrationTest extends TestCase {
 			log.info("call BAR should time out after 20 second");
 			callBAR();
 		} catch (ConnectionException e) {
-			assertTrue("Error was: " + e.getTperrno(), 
+			assertTrue("Error was: " + e.getTperrno(),
 					e.getTperrno() == Connection.TPETIME);
 		}
 

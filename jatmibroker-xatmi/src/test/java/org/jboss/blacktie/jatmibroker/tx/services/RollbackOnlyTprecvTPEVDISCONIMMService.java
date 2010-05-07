@@ -11,8 +11,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 
-public class RollbackOnlyTprecvTPEVDISCONIMMService implements
-		BlacktieService {
+public class RollbackOnlyTprecvTPEVDISCONIMMService implements BlacktieService {
 	private static final Logger log = LogManager
 			.getLogger(RollbackOnlyTprecvTPEVDISCONIMMService.class);
 

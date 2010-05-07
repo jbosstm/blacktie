@@ -17,40 +17,88 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
-public class CSTest extends CSControl
-{
-	private static final org.apache.log4j.Logger log = org.apache.log4j.LogManager.getLogger(CSTest.class);
-//	private static CSControl control = new CSControl();
+public class CSTest extends CSControl {
+	private static final org.apache.log4j.Logger log = org.apache.log4j.LogManager
+			.getLogger(CSTest.class);
+
+	// private static CSControl control = new CSControl();
 
 	// XsdValidator is not thread safe
-	public void test_211() { runTest("211"); }
-	// tpcall incorrectly returns TPNOTIME whenever the TPNOBLOCK or TPNOTIME flags are specified
-	public void test_2120() { runTest("2120"); }
-	// Similarly specifying TPNOBLOCK means that if a blocking condition does exist then the caller
+	public void test_211() {
+		runTest("211");
+	}
+
+	// tpcall incorrectly returns TPNOTIME whenever the TPNOBLOCK or TPNOTIME
+	// flags are specified
+	public void test_2120() {
+		runTest("2120");
+	}
+
+	// Similarly specifying TPNOBLOCK means that if a blocking condition does
+	// exist then the caller
 	// should get the error TPEBLOCK
-	public void test_2121() { runTest("2121"); }
+	public void test_2121() {
+		runTest("2121");
+	}
+
 	// tpcall should return TPEINVAL if the service name is invalid
-	public void test_213() { runTest("213"); }
-	// TPSIGRSTRT flag isn't supported on tpcall	
-	public void test_214() { runTest("214"); }
+	public void test_213() {
+		runTest("213");
+	}
+
+	// TPSIGRSTRT flag isn't supported on tpcall
+	public void test_214() {
+		runTest("214");
+	}
+
 	// tpcall failure with multiple threads
-	public void test_215() { runTest("215"); }
-	//tp bufs should morph if they're the wrong type
-	public void test_2160() { runTest("2160"); }
+	public void test_215() {
+		runTest("215");
+	}
+
+	// tp bufs should morph if they're the wrong type
+	public void test_2160() {
+		runTest("2160");
+	}
+
 	// passing the wrong return buffer type with TPNOCHANGE
-	public void test_2161() { runTest("2161"); }
+	public void test_2161() {
+		runTest("2161");
+	}
+
 	// make sure tpurcode works
-	public void test_217() { runTest("217"); }
+	public void test_217() {
+		runTest("217");
+	}
+
 	// sanity check
-	public void test_0() { runTest("0"); }
+	public void test_0() {
+		runTest("0");
+	}
+
 	// tell the server to set a flag on tpreturn (should generate TPESVCERR)
-	public void test_1() { runTest("1"); }
+	public void test_1() {
+		runTest("1");
+	}
+
 	// set flag on tpreturn should fail
-	public void test_2() { runTest("2"); }
+	public void test_2() {
+		runTest("2");
+	}
+
 	// telling the service to not tpreturn should generate an error
-	public void test_3() { runTest("3"); }
-	// telling service to call tpreturn outside service routine should have no effect
-	public void test_4() { runTest("4"); }
+	public void test_3() {
+		runTest("3");
+	}
+
+	// telling service to call tpreturn outside service routine should have no
+	// effect
+	public void test_4() {
+		runTest("4");
+	}
+
 	// tpreturn outside service routing
-	public void test_5() { runTest("5"); }
+	public void test_5() {
+		runTest("5");
+	}
 }

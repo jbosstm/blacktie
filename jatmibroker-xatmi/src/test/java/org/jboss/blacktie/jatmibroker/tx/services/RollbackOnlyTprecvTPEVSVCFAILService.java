@@ -9,8 +9,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
-public class RollbackOnlyTprecvTPEVSVCFAILService implements
-		BlacktieService {
+public class RollbackOnlyTprecvTPEVSVCFAILService implements BlacktieService {
 	private static final Logger log = LogManager
 			.getLogger(RollbackOnlyTprecvTPEVSVCFAILService.class);
 

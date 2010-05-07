@@ -10,8 +10,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class TTLService implements BlacktieService {
-	private static final Logger log = LogManager
-			.getLogger(TTLService.class);
+	private static final Logger log = LogManager.getLogger(TTLService.class);
 	private static int n = 0;
 
 	public Response tpservice(TPSVCINFO svcinfo) {

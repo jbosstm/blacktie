@@ -57,7 +57,7 @@ public class TestTPSend extends TestCase {
 	public void test_tpsend_recvonly() throws ConnectionException {
 		log.info("test_tpsend_recvonly");
 		server.tpadvertiseTestTPSend();
-		
+
 		cd = connection.tpconnect(server.getServiceNameTestTPSend(), sendbuf,
 				sendlen, Connection.TPRECVONLY);
 		try {
