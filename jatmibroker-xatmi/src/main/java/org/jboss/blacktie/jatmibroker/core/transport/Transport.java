@@ -68,7 +68,8 @@ public interface Transport {
 	 * @throws ConnectionException
 	 *             Incase the received cannot be created
 	 */
-	public Receiver createReceiver(EventListener session) throws ConnectionException;
+	public Receiver createReceiver(EventListener session)
+			throws ConnectionException;
 
 	public void close() throws ConnectionException;
 

@@ -44,12 +44,6 @@ public class X_C_TYPE extends Buffer {
 		super("X_C_TYPE", subtype, true, types, properties);
 	}
 
-	X_C_TYPE(String subtype, Properties properties, byte[] data)
-			throws ConnectionException {
-		super("X_C_TYPE", subtype, true, types, properties);
-		deserialize(data);
-	}
-
 	public short getShort(String key) throws ConnectionException {
 		return ((Short) getAttributeValue(key, short.class)).shortValue();
 	}

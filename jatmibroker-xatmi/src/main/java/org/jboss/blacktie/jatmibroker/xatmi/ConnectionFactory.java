@@ -2,7 +2,7 @@ package org.jboss.blacktie.jatmibroker.xatmi;
 
 import java.util.Properties;
 
-import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerClientXML;
+import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerEnvXML;
 
 /**
  * This is a factory that will create connections to remote Blacktie services.
@@ -11,10 +11,13 @@ import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerClientXML;
  * @see ConnectionException
  */
 public class ConnectionFactory {
+
 	/**
 	 * The properties inside the connection factory.
 	 */
-	private Properties properties = null;
+	private Properties properties = new Properties();
+
+	private static ThreadLocal<Connection> connections = new ThreadLocal<Connection>();
 
 	/**
 	 * Get the default connection factory
@@ -35,16 +38,12 @@ public class ConnectionFactory {
 	 */
 	private ConnectionFactory() throws ConnectionException {
 		try {
-			AtmiBrokerClientXML xml = new AtmiBrokerClientXML();
-			properties = xml.getProperties();
+			AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
+			properties.putAll(xml.getProperties());
 		} catch (Exception e) {
 			throw new ConnectionException(-1, "Could not load properties", e);
 		}
 
-	}
-
-	private ConnectionFactory(Properties prop) {
-		properties = prop;
 	}
 
 	/**
@@ -54,6 +53,15 @@ public class ConnectionFactory {
 	 * @throws ConnectionException
 	 */
 	public Connection getConnection() throws ConnectionException {
-		return new Connection(properties);
+		Connection connection = connections.get();
+		if (connection == null) {
+			connection = new Connection(this, properties);
+			connections.set(connection);
+		}
+		return connection;
+	}
+
+	void removeConnection(Connection connection) {
+		connections.set(null);
 	}
 }

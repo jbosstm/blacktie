@@ -66,16 +66,16 @@ public class TestTPConnect extends TestCase {
 
 	public void test_tpconnect() throws ConnectionException {
 		log.info("test_tpconnect");
-		cd = connection.tpconnect(server.getServiceNameTestTPConnect(),
+		cd = connection.tpconnect(RunServer.getServiceNameTestTPConnect(),
 				sendbuf, sendlen, Connection.TPRECVONLY);
 		assertTrue(cd != null);
 	}
 
 	public void test_tpconnect_double_connect() throws ConnectionException {
 		log.info("test_tpconnect_double_connect");
-		cd = connection.tpconnect(server.getServiceNameTestTPConnect(),
+		cd = connection.tpconnect(RunServer.getServiceNameTestTPConnect(),
 				sendbuf, sendlen, Connection.TPRECVONLY);
-		cd2 = connection.tpconnect(server.getServiceNameTestTPConnect(),
+		cd2 = connection.tpconnect(RunServer.getServiceNameTestTPConnect(),
 				sendbuf, sendlen, Connection.TPRECVONLY);
 		assertTrue(cd != null);
 		assertTrue(cd2 != null);
@@ -85,8 +85,8 @@ public class TestTPConnect extends TestCase {
 
 	public void test_tpconnect_nodata() throws ConnectionException {
 		log.info("test_tpconnect_nodata");
-		cd = connection.tpconnect(server.getServiceNameTestTPConnect(), null,
-				0, Connection.TPRECVONLY);
+		cd = connection.tpconnect(RunServer.getServiceNameTestTPConnect(),
+				null, 0, Connection.TPRECVONLY);
 		assertTrue(cd != null);
 	}
 }

@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerClientXML;
+import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerEnvXML;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.transport.Message;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
@@ -24,7 +24,7 @@ public class TestConnection extends TestCase {
 	private Transport clientTransport;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
-		AtmiBrokerClientXML xml = new AtmiBrokerClientXML();
+		AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
 		Properties properties = xml.getProperties();
 
 		serviceTransportFactory = TransportFactory.loadTransportFactory(

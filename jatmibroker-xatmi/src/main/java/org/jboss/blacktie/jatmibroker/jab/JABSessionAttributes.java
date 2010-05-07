@@ -21,7 +21,7 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerClientXML;
+import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerEnvXML;
 
 /**
  * Create a wrapper for the attributes to use for the sessions. The session
@@ -49,7 +49,7 @@ public class JABSessionAttributes {
 	 */
 	public JABSessionAttributes() throws JABException {
 		try {
-			AtmiBrokerClientXML client = new AtmiBrokerClientXML();
+			AtmiBrokerEnvXML client = new AtmiBrokerEnvXML();
 			this.properties = client.getProperties();
 		} catch (Exception e) {
 			log.error("Could not load the configuration", e);

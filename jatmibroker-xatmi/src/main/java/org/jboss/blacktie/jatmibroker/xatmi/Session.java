@@ -83,6 +83,8 @@ public class Session {
 
 	private Properties properties;
 
+	private Connection connection;
+
 	/**
 	 * Create a new session
 	 * 
@@ -92,8 +94,9 @@ public class Session {
 	 * @param b
 	 * @throws ConfigurationException
 	 */
-	Session(Properties properties, Transport transport, int cd)
-			throws ConnectionException {
+	Session(Connection connection, Properties properties, Transport transport,
+			int cd) throws ConnectionException {
+		this.connection = connection;
 		this.properties = properties;
 		this.transport = transport;
 		this.cd = cd;
@@ -112,14 +115,20 @@ public class Session {
 	 * @param receiver2
 	 * @throws ConfigurationException
 	 */
-	Session(Properties properties, Transport transport, int cd, Sender sender)
-			throws ConnectionException {
+	Session(Connection connection, Properties properties, Transport transport,
+			int cd, Object replyTo) throws ConnectionException {
+		this.connection = connection;
 		this.properties = properties;
 		this.transport = transport;
 		this.cd = cd;
-		this.sender = sender;
 		this.eventListener = new EventListenerImpl(this);
 		this.receiver = transport.createReceiver(eventListener);
+
+		if (replyTo != null && !replyTo.equals("")) {
+			this.sender = transport.createSender(replyTo);
+		} else {
+			log.trace("NO REPLY TO REQUIRED");
+		}
 
 		this.canRecv = false;
 		this.canSend = true;
@@ -164,6 +173,7 @@ public class Session {
 			receiver.close();
 			receiver = null;
 		}
+		connection.removeSession(this);
 		log.debug("Closed session");
 	}
 
@@ -285,6 +295,10 @@ public class Session {
 
 		// Check we didn't just get an event while waiting
 		if (this.lastEvent > -1) {
+			if ((lastEvent & Connection.TPEV_SENDONLY) != Connection.TPEV_SENDONLY) {
+				log.debug("Completed session is being closed");
+				close();
+			}
 			throw new ConnectionException(Connection.TPEEVENT, lastEvent,
 					lastRCode, "Event existed on descriptor: " + lastEvent,
 					received);
@@ -292,10 +306,23 @@ public class Session {
 			throw new ConnectionException(Connection.TPEEVENT,
 					Connection.TPEV_SENDONLY, 0, "Reporting send only event",
 					received);
-		} else if (m.rval == Connection.TPSUCCESS) {
-			throw new ConnectionException(Connection.TPEEVENT,
-					Connection.TPEV_SVCSUCC, 0,
-					"Service completed successfully event", received);
+		} else if (m.rval == Connection.TPSUCCESS
+				|| m.rval == Connection.TPFAIL) {
+			log.debug("Completed session is being closed");
+			close();
+			if (m.rval == Connection.TPSUCCESS) {
+				throw new ConnectionException(Connection.TPEEVENT,
+						Connection.TPEV_SVCSUCC, 0,
+						"Service completed successfully event", received);
+			} else if (m.rcode == Connection.TPESVCERR) {
+				throw new ConnectionException(Connection.TPEEVENT,
+						Connection.TPEV_SVCERR, 0, "Service received an error",
+						received);
+			} else {
+				throw new ConnectionException(Connection.TPEEVENT,
+						Connection.TPEV_SVCFAIL, 0, "Service received a fail",
+						received);
+			}
 		}
 		return received;
 	}
@@ -307,6 +334,10 @@ public class Session {
 	 *            The connection descriptor to use
 	 */
 	public void tpdiscon() throws ConnectionException {
+		if (sender == null) {
+			throw new ConnectionException(Connection.TPEPROTO,
+					"Session was not in write mode");
+		}
 		if (JABTransaction.current() != null) {
 			try {
 				JABTransaction.current().rollback_only();
@@ -323,7 +354,7 @@ public class Session {
 			log.debug("The disconnect called failed to notify the remote end",
 					one);
 		}
-
+		close();
 	}
 
 	/**
@@ -365,6 +396,10 @@ public class Session {
 
 	Receiver getReceiver() {
 		return receiver;
+	}
+
+	Sender getSender() {
+		return sender;
 	}
 
 	/**

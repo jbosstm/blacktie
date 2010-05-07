@@ -27,7 +27,7 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerServerXML;
+import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerEnvXML;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.transport.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
@@ -49,7 +49,7 @@ public class AtmiBrokerServer {
 	public AtmiBrokerServer(String serverName) throws ConfigurationException,
 			ConnectionException {
 		this.serverName = serverName;
-		AtmiBrokerServerXML server = new AtmiBrokerServerXML();
+		AtmiBrokerEnvXML server = new AtmiBrokerEnvXML();
 		properties = server.getProperties();
 
 		try {

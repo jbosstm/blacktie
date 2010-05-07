@@ -35,7 +35,7 @@ public class AtmiBrokerServerXMLTest extends TestCase {
 	}
 
 	public void test() throws Exception {
-		AtmiBrokerServerXML serverDesc = new AtmiBrokerServerXML();
+		AtmiBrokerEnvXML serverDesc = new AtmiBrokerEnvXML();
 		Properties prop = serverDesc.getProperties();
 
 		assertTrue("fooapp".equals(prop.getProperty("blacktie.domain.name")));
@@ -46,7 +46,7 @@ public class AtmiBrokerServerXMLTest extends TestCase {
 	}
 
 	public void testEnv() throws Exception {
-		AtmiBrokerServerXML serverDesc = new AtmiBrokerServerXML();
+		AtmiBrokerEnvXML serverDesc = new AtmiBrokerEnvXML();
 		Properties prop = serverDesc.getProperties();
 
 		assertTrue("fooapp".equals(prop.getProperty("blacktie.domain.name")));

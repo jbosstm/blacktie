@@ -52,7 +52,7 @@ public class TestTPService extends TestCase {
 	public void test_tpservice_notpreturn() {
 		log.info("test_tpservice_notpreturn");
 		try {
-			connection.tpcall(server.getServiceNameTestTPService(), sendbuf,
+			connection.tpcall(RunServer.getServiceNameTestTPService(), sendbuf,
 					sendlen, 0);
 			fail("Managed call");
 		} catch (ConnectionException e) {

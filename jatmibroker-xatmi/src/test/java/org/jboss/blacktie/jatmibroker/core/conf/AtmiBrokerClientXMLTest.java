@@ -35,7 +35,7 @@ public class AtmiBrokerClientXMLTest extends TestCase {
 	}
 
 	public void test() throws Exception {
-		AtmiBrokerClientXML clientDesc = new AtmiBrokerClientXML();
+		AtmiBrokerEnvXML clientDesc = new AtmiBrokerEnvXML();
 		Properties prop = clientDesc.getProperties();
 
 		String domain = "fooapp";

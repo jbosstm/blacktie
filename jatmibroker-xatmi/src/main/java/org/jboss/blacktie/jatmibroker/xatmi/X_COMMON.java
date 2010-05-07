@@ -42,12 +42,6 @@ public class X_COMMON extends Buffer {
 		super("X_COMMON", subtype, true, types, properties);
 	}
 
-	X_COMMON(String subtype, Properties properties, byte[] data)
-			throws ConnectionException {
-		super("X_COMMON", subtype, true, types, properties);
-		deserialize(data);
-	}
-
 	public short getShort(String key) throws ConnectionException {
 		return ((Short) getAttributeValue(key, short.class)).shortValue();
 	}

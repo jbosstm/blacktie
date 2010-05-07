@@ -84,7 +84,6 @@ public class TransportImpl implements Runnable, Transport {
 
 	public void close() throws ConnectionException {
 		log.debug("Close called");
-		orbManagement.close();
 		try {
 			session.close();
 		} catch (Throwable t) {

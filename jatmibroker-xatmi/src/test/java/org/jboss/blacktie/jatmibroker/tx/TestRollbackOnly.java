@@ -63,8 +63,8 @@ public class TestRollbackOnly extends TestCase {
 		assertTrue(TX.tx_begin() == TX.TX_OK);
 
 		try {
-			connection.tpcall(server.getServiceNameTestRollbackOnly(), sendbuf,
-					sendlen, 0);
+			connection.tpcall(RunServer.getServiceNameTestRollbackOnly(),
+					sendbuf, sendlen, 0);
 			fail("Expected e.getTperrno() == Connection.TPETIME");
 		} catch (ConnectionException e) {
 			assertTrue(e.getTperrno() == Connection.TPETIME);
@@ -85,8 +85,8 @@ public class TestRollbackOnly extends TestCase {
 		assertTrue(TX.tx_begin() == TX.TX_OK);
 
 		try {
-			connection.tpcall(server.getServiceNameTestRollbackOnly(), sendbuf,
-					sendlen, Connection.TPNOCHANGE);
+			connection.tpcall(RunServer.getServiceNameTestRollbackOnly(),
+					sendbuf, sendlen, Connection.TPNOCHANGE);
 			fail("Expected e.getTperrno() == TPEOTYPE");
 		} catch (ConnectionException e) {
 			assertTrue(e.getTperrno() == Connection.TPEOTYPE);
@@ -107,8 +107,8 @@ public class TestRollbackOnly extends TestCase {
 		assertTrue(TX.tx_begin() == TX.TX_OK);
 
 		try {
-			connection.tpcall(server.getServiceNameTestRollbackOnly(), sendbuf,
-					sendlen, 0);
+			connection.tpcall(RunServer.getServiceNameTestRollbackOnly(),
+					sendbuf, sendlen, 0);
 			fail("Expected e.getTperrno() == TPESVCFAIL");
 		} catch (ConnectionException e) {
 			assertTrue(TestTPConversation.strcmp(e.getReceived(),
@@ -179,8 +179,8 @@ public class TestRollbackOnly extends TestCase {
 		assertTrue(TX.tx_begin() == TX.TX_OK);
 
 		try {
-			connection.tpcall(server.getServiceNameTestRollbackOnly(), sendbuf,
-					sendlen, 0);
+			connection.tpcall(RunServer.getServiceNameTestRollbackOnly(),
+					sendbuf, sendlen, 0);
 			fail("Expected e.getTperrno() == Connection.TPESVCERR");
 		} catch (ConnectionException e) {
 			assertTrue(e.getTperrno() == Connection.TPESVCERR);

@@ -56,7 +56,7 @@ public class TestTimeToLive extends TestCase {
 			X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
 			sendbuf.setByteArray(toSend.getBytes());
 
-			Response rcvbuf = connection.tpcall(server.getServiceNameTTL(),
+			Response rcvbuf = connection.tpcall(RunServer.getServiceNameTTL(),
 					sendbuf, sendlen, 0);
 			fail("Expected TPETIME, got a buffer with rval: "
 					+ rcvbuf.getRval());
@@ -74,7 +74,7 @@ public class TestTimeToLive extends TestCase {
 			X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
 			sendbuf.setByteArray(toSend.getBytes());
 
-			Response rcvbuf = connection.tpcall(server.getServiceNameTTL(),
+			Response rcvbuf = connection.tpcall(RunServer.getServiceNameTTL(),
 					sendbuf, sendlen, 0);
 			fail("Expected TPETIME, got a buffer with rval: "
 					+ rcvbuf.getRval());
@@ -98,7 +98,7 @@ public class TestTimeToLive extends TestCase {
 			X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
 			sendbuf.setByteArray(toSend.getBytes());
 
-			Response rcvbuf = connection.tpcall(server.getServiceNameTTL(),
+			Response rcvbuf = connection.tpcall(RunServer.getServiceNameTTL(),
 					sendbuf, sendlen, 0);
 
 			assertTrue(rcvbuf != null);

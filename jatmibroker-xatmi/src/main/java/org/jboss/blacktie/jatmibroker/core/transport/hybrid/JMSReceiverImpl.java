@@ -75,7 +75,8 @@ public class JMSReceiverImpl implements Receiver {
 	public Message receive(long flagsIn) throws ConnectionException {
 		try {
 			log.debug("Receiving from: " + destination.getQueueName());
-			javax.jms.Message message = receiver.receive(determineTimeout(flagsIn));
+			javax.jms.Message message = receiver
+					.receive(determineTimeout(flagsIn));
 			if (message != null) {
 				BytesMessage bytesMessage = ((BytesMessage) message);
 				log.debug("Received from: " + destination.getQueueName());
@@ -140,5 +141,10 @@ public class JMSReceiverImpl implements Receiver {
 
 	public int determineTimeout(long flags) throws ConnectionException {
 		return timeout;
+	}
+
+	public int getCd() throws ConnectionException {
+		throw new ConnectionException(Connection.TPESYSTEM,
+				"Tried to retrieve the cd before it was set");
 	}
 }

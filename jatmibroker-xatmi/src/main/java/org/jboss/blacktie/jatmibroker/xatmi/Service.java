@@ -17,17 +17,11 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
-import java.util.Properties;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerClientXML;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.transport.JtsTransactionImple;
 import org.jboss.blacktie.jatmibroker.core.transport.Message;
-import org.jboss.blacktie.jatmibroker.core.transport.Sender;
-import org.jboss.blacktie.jatmibroker.core.transport.Transport;
-import org.jboss.blacktie.jatmibroker.core.transport.TransportFactory;
 import org.jboss.blacktie.jatmibroker.jab.JABException;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 
@@ -41,15 +35,7 @@ public abstract class Service implements BlacktieService {
 	 */
 	private static final Logger log = LogManager.getLogger(Service.class);
 
-	/**
-	 * The transport to use.
-	 */
-	private Transport transport;
-
-	/**
-	 * The properties to use
-	 */
-	private Properties properties;
+	private String name;
 
 	/**
 	 * The service needs the name of the service so that it can be resolved in
@@ -62,10 +48,7 @@ public abstract class Service implements BlacktieService {
 	 */
 	public Service(String name) throws ConfigurationException,
 			ConnectionException {
-		AtmiBrokerClientXML xml = new AtmiBrokerClientXML();
-		properties = xml.getProperties();
-		transport = TransportFactory.loadTransportFactory(name, properties)
-				.createTransport();
+		this.name = name;
 		log.debug("Service created: " + name);
 	}
 
@@ -75,7 +58,6 @@ public abstract class Service implements BlacktieService {
 	 * @throws ConnectionException
 	 */
 	public void close() throws ConnectionException {
-		transport.close();
 	}
 
 	/**
@@ -88,6 +70,8 @@ public abstract class Service implements BlacktieService {
 	 *             In case communication fails
 	 */
 	protected void processMessage(Message message) throws ConnectionException {
+		Connection connection = ConnectionFactory.getConnectionFactory()
+				.getConnection();
 		if (message.control != null) {
 			try {
 				JABTransaction.associateTx(message.control); // associate tx
@@ -104,32 +88,26 @@ public abstract class Service implements BlacktieService {
 			log.trace("Service invoked");
 		}
 		log.trace("obtained transport");
-		Sender sender = null;
 		boolean hasTPNOREPLY = (message.flags & Connection.TPNOREPLY) == Connection.TPNOREPLY;
-		if (!hasTPNOREPLY && message.replyTo != null
-				&& !message.replyTo.equals("")) {
-			sender = transport.createSender(message.replyTo);
-		} else {
-			log.trace("NO REPLY TO REQUIRED");
-		}
 
-		Session session = null;
+		Session serviceSession = null;
 		try {
+			serviceSession = connection.createServiceSession(name, message.cd,
+					message.replyTo);
+			log.debug("Created the session");
 			boolean hasTPCONV = (message.flags & Connection.TPCONV) == Connection.TPCONV;
 			if (hasTPCONV) {
-				session = new Session(properties, transport, message.cd, sender);
-				log.debug("Created the session");
 				int olen = 4;
 				X_OCTET odata = new X_OCTET();
 				odata.setByteArray("ACK".getBytes());
-				long result = session.tpsend(odata, olen, 0);
+				long result = serviceSession.tpsend(odata, olen, 0);
 				if (result == -1) {
 					log.debug("Could not send ack");
-					session.close();
+					serviceSession.close();
 					return;
 				} else {
 					log.debug("Sent ack");
-					session.setCreatedState(message.flags);
+					serviceSession.setCreatedState(message.flags);
 				}
 			} else {
 				log.debug("cd not being set");
@@ -138,23 +116,14 @@ public abstract class Service implements BlacktieService {
 			// THIS IS THE FIRST CALL
 			Buffer buffer = null;
 			if (message.type != null && !message.type.equals("")) {
-				if (message.type.equals("X_OCTET")) {
-					log.debug("Initializing a new X_OCTET");
-					buffer = new X_OCTET(message.data);
-				} else if (message.type.equals("X_C_TYPE")) {
-					log.debug("Initializing a new X_C_TYPE");
-					buffer = new X_C_TYPE(message.subtype, properties,
-							message.data);
-				} else {
-					log.debug("Initializing a new X_COMMON");
-					buffer = new X_COMMON(message.subtype, properties,
-							message.data);
-				}
+				buffer = connection.tpalloc(message.type, message.subtype);
+				buffer.deserialize(message.data);
 			}
 			// TODO NO SESSIONS
 			// NOT PASSING OVER THE SERVICE NAME
 			TPSVCINFO tpsvcinfo = new TPSVCINFO(message.serviceName, buffer,
-					message.flags, session, properties);
+					message.flags, (hasTPCONV ? serviceSession : null),
+					connection, message.len);
 			log.debug("Prepared the data for passing to the service");
 
 			boolean hasTx = (message.control != null && message.control
@@ -185,9 +154,14 @@ public abstract class Service implements BlacktieService {
 			if (hasTx) // and suspend it again
 				JtsTransactionImple.suspend();
 
-			if (sender != null && response != null) {
+			if (!hasTPNOREPLY && response != null) {
 				log.trace("Sending response");
+				short rval = response.getRval();
 				int rcode = response.rcode;
+				if (connection.hasOpenSessions()) {
+					rcode = Connection.TPESVCERR;
+					rval = Connection.TPFAIL;
+				}
 				if (rcode == Connection.TPESVCERR) {
 					if (JABTransaction.current() != null) {
 						try {
@@ -198,7 +172,6 @@ public abstract class Service implements BlacktieService {
 						}
 					}
 				}
-				short rval = response.getRval();
 				if (rval != Connection.TPSUCCESS && rval != Connection.TPFAIL) {
 					rval = Connection.TPFAIL;
 				}
@@ -227,11 +200,11 @@ public abstract class Service implements BlacktieService {
 					}
 				}
 				log.debug("Returning desired message");
-				sender.send("", rval, rcode, data, len, message.cd, response
-						.getFlags(), 0, type, subtype);
-			} else if (sender == null && response != null) {
+				serviceSession.getSender().send("", rval, rcode, data, len,
+						message.cd, response.getFlags(), 0, type, subtype);
+			} else if (serviceSession.getSender() == null && response != null) {
 				log.error("No sender avaible but message to be sent");
-			} else if (sender != null && response == null) {
+			} else if (serviceSession.getSender() != null && response == null) {
 				log.error("Returning error - marking tx as rollback only if ");
 				if (JABTransaction.current() != null) {
 					try {
@@ -242,19 +215,15 @@ public abstract class Service implements BlacktieService {
 					}
 				}
 				log.debug("Returning failed message");
-				sender.send("", Connection.TPFAIL, Connection.TPESVCERR, null,
-						0, 0, 0, 0, null, null);
+				serviceSession.getSender().send("", Connection.TPFAIL,
+						Connection.TPESVCERR, null, 0, 0, 0, 0, null, null);
 
 				log.error("Returned error");
 			} else {
 				log.debug("No need to send a response");
 			}
 		} finally {
-			if (session != null) {
-				session.close();
-			} else if (sender != null) {
-				sender.close();
-			}
+			connection.close();
 		}
 	}
 }

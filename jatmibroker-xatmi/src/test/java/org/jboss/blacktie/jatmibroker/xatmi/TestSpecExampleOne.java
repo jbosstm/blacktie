@@ -65,10 +65,10 @@ public class TestSpecExampleOne extends TestCase {
 		cptr.setByteArray("input", "credit account 456 by 50".getBytes());
 		// TODO tx_begin(); /* start global transaction */
 		/* issue asynchronous request to DEBIT, while it is processing... */
-		cd = connection.tpacall(server.getServiceNameDEBIT(), dptr, 0,
+		cd = connection.tpacall(RunServer.getServiceNameDEBIT(), dptr, 0,
 				Connection.TPSIGRSTRT);
 		/* ...issue synchronous request to CREDIT */
-		Response response = connection.tpcall(server.getServiceNameCREDIT(),
+		Response response = connection.tpcall(RunServer.getServiceNameCREDIT(),
 				cptr, 0, Connection.TPSIGRSTRT);
 		cptr = (X_C_TYPE) response.getBuffer();
 		clen = response.getLen();

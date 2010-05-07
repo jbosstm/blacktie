@@ -40,7 +40,8 @@ public class TransportFactoryImpl extends TransportFactory {
 	private Properties props;
 	private Context context;
 	private ConnectionFactory factory;
-	private Connection connection;
+	private String username;
+	private String password;
 
 	protected void setProperties(Properties properties)
 			throws ConfigurationException {
@@ -58,13 +59,8 @@ public class TransportFactoryImpl extends TransportFactory {
 			context = new InitialContext(props);
 			factory = (ConnectionFactory) context.lookup("ConnectionFactory");
 
-			String username = (String) props.get("StompConnectUsr");
-			String password = (String) props.get("StompConnectPwd");
-			if (username != null) {
-				connection = factory.createConnection(username, password);
-			} else {
-				connection = factory.createConnection();
-			}
+			this.username = (String) props.get("StompConnectUsr");
+			this.password = (String) props.get("StompConnectPwd");
 		} catch (Throwable t) {
 			throw new ConfigurationException(
 					"Could not create the required connection", t);
@@ -83,8 +79,13 @@ public class TransportFactoryImpl extends TransportFactory {
 	public Transport createTransport() throws ConnectionException {
 		log.debug("Creating");
 		TransportImpl instance = null;
-
 		try {
+			Connection connection;
+			if (username != null) {
+				connection = factory.createConnection(username, password);
+			} else {
+				connection = factory.createConnection();
+			}
 			instance = new TransportImpl(orbManagement, context, connection,
 					props);
 		} catch (Throwable t) {
@@ -92,5 +93,9 @@ public class TransportFactoryImpl extends TransportFactory {
 		}
 		log.debug("Created");
 		return instance;
+	}
+
+	public void close() {
+		orbManagement.close();
 	}
 }

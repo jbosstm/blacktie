@@ -54,8 +54,8 @@ public class TestTPRecv extends TestCase {
 
 	public void test_tprecv_sendonly() throws ConnectionException {
 		log.info("test_tprecv_sendonly");
-		cd = connection.tpconnect(server.getServiceNameTestTPRecv(), sendbuf,
-				sendlen, Connection.TPSENDONLY);
+		cd = connection.tpconnect(RunServer.getServiceNameTestTPRecv(),
+				sendbuf, sendlen, Connection.TPSENDONLY);
 		try {
 			cd.tprecv(0);
 			fail("expected proto error");

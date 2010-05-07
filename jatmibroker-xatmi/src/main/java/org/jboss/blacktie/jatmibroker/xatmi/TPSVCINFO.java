@@ -1,7 +1,6 @@
 package org.jboss.blacktie.jatmibroker.xatmi;
 
 import java.io.Serializable;
-import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -33,14 +32,16 @@ public class TPSVCINFO implements Serializable {
 	/**
 	 * The flags the service was called with
 	 */
-	private long flags;
+	private int flags;
 
 	/**
 	 * The connection descriptor
 	 */
 	private Session session;
 
-	private Properties properties;
+	private Connection connection;
+
+	private int len;
 
 	/**
 	 * Create a new tpsvcinfo wrapper class
@@ -57,14 +58,16 @@ public class TPSVCINFO implements Serializable {
 	 *            The connection descriptor used
 	 * @param properties
 	 *            The properties to use
+	 * @param len
 	 */
-	TPSVCINFO(String name, Buffer buffer, long flags, Session session,
-			Properties properties) {
+	TPSVCINFO(String name, Buffer buffer, int flags, Session session,
+			Connection connection, int len) {
 		this.name = name;
 		this.buffer = buffer;
 		this.flags = flags;
 		this.session = session;
-		this.properties = properties;
+		this.connection = connection;
+		this.len = len;
 	}
 
 	/**
@@ -86,11 +89,20 @@ public class TPSVCINFO implements Serializable {
 	}
 
 	/**
+	 * Get the length of the buffer that was sent
+	 * 
+	 * @return The length of the buffer
+	 */
+	public int getLen() {
+		return len;
+	}
+
+	/**
 	 * Get the flags that were issued
 	 * 
 	 * @return The flags
 	 */
-	public long getFlags() {
+	public int getFlags() {
 		return flags;
 	}
 
@@ -98,8 +110,13 @@ public class TPSVCINFO implements Serializable {
 	 * Get the connection descriptor
 	 * 
 	 * @return The connection descriptor
+	 * @throws ConnectionException
 	 */
-	public Session getSession() {
+	public Session getSession() throws ConnectionException {
+		if (session == null) {
+			throw new ConnectionException(Connection.TPEPROTO,
+					"Not a TPCONV session");
+		}
 		return session;
 	}
 
@@ -116,19 +133,7 @@ public class TPSVCINFO implements Serializable {
 	 */
 	public Buffer tpalloc(String type, String subtype)
 			throws ConnectionException {
-		if (type == null) {
-			throw new ConnectionException(Connection.TPEINVAL,
-					"No type provided");
-		} else if (type.equals("X_OCTET")) {
-			log.debug("Initializing a new X_OCTET");
-			return new X_OCTET();
-		} else if (type.equals("X_C_TYPE")) {
-			log.debug("Initializing a new X_C_TYPE");
-			return new X_C_TYPE(subtype, properties);
-		} else {
-			log.debug("Initializing a new X_COMMON");
-			return new X_COMMON(subtype, properties);
-		}
+		return connection.tpalloc(type, subtype);
 	}
 
 }

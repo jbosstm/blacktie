@@ -108,15 +108,25 @@ public class Connection {
 
 	private ResponseMonitor responseMonitor;
 
+	private ConnectionFactory connectionFactory;
+
+	/**
+	 * The list of service sessions
+	 */
+	private static Session serviceSession;
+
 	/**
 	 * The connection
+	 * 
+	 * @param connectionFactory
 	 * 
 	 * @param properties
 	 * @param username
 	 * @param password
 	 * @throws ConnectionException
 	 */
-	Connection(Properties properties) {
+	Connection(ConnectionFactory connectionFactory, Properties properties) {
+		this.connectionFactory = connectionFactory;
 		this.properties = properties;
 		responseMonitor = new ResponseMonitorImpl();
 	}
@@ -200,6 +210,7 @@ public class Connection {
 		Receiver endpoint = transport.createReceiver(correlationId,
 				responseMonitor);
 		temporaryQueues.put(correlationId, endpoint);
+		log.trace("Added a queue for: " + correlationId);
 		// TODO HANDLE TRANSACTION
 		String type = null;
 		String subtype = null;
@@ -337,9 +348,10 @@ public class Connection {
 			correlationId = nextId++;
 		}
 		Transport transport = getTransport(svc);
-		Session session = new Session(properties, transport, correlationId);
+		Session session = new Session(this, properties, transport,
+				correlationId);
 
-		Receiver endpoint = session.getReceiver();
+		Receiver receiver = session.getReceiver();
 		// TODO HANDLE TRANSACTION
 		String type = null;
 		String subtype = null;
@@ -360,7 +372,7 @@ public class Connection {
 			ttl = Integer.parseInt(timeToLive) * 1000;
 		}
 		log.debug("tpconnect sending data");
-		transport.getSender(svc).send(endpoint.getReplyTo(), (short) 0, 0,
+		transport.getSender(svc).send(receiver.getReplyTo(), (short) 0, 0,
 				data, len, correlationId, flags | TPCONV, ttl, type, subtype);
 
 		byte[] response = null;
@@ -390,8 +402,8 @@ public class Connection {
 					"Could not connect");
 		}
 		session.setCreatorState(flags);
-		temporaryQueues.put(correlationId, endpoint);
 		sessions.put(correlationId, session);
+		temporaryQueues.put(correlationId, session.getReceiver());
 
 		// Return a handle to allow the connection to send/receive data on
 		return session;
@@ -404,14 +416,36 @@ public class Connection {
 	 */
 	public void close() throws ConnectionException {
 		log.debug("Close connection called");
+
+		// MUST close the session first to remove the temporary queue
+		Iterator<Session> sessions = this.sessions.values().iterator();
+		while (sessions.hasNext()) {
+			Session session = sessions.next();
+			session.tpdiscon();
+			log.debug("closing session");
+			session.close();
+			log.debug("Closed open session");
+		}
+		this.sessions.clear();
+		log.trace("Sessions cleared");
+
 		Iterator<Receiver> receivers = temporaryQueues.values().iterator();
 		while (receivers.hasNext()) {
 			Receiver receiver = receivers.next();
+			tpcancel(receiver.getCd());
 			log.debug("closing receiver");
 			receiver.close();
-			log.debug("closed receiver");
+			log.warn("Closed open receiver");
 		}
 		temporaryQueues.clear();
+		log.trace("Temporary queues cleared");
+
+		if (serviceSession != null) {
+			log.debug("closing service session");
+			serviceSession.close();
+			log.debug("Closed open service session");
+		}
+
 		Iterator<Transport> transports = this.transports.values().iterator();
 		while (transports.hasNext()) {
 			Transport transport = transports.next();
@@ -420,6 +454,7 @@ public class Connection {
 			log.debug("closed transport");
 		}
 		this.transports.clear();
+		this.connectionFactory.removeConnection(this);
 		log.debug("Close connection finished");
 	}
 
@@ -450,16 +485,8 @@ public class Connection {
 		// TODO WE SHOULD BE SENDING THE CONNECTION ID?
 		Buffer buffer = null;
 		if (message.type != null && !message.type.equals("")) {
-			if (message.type.equals("X_OCTET")) {
-				log.debug("Initializing a new X_OCTET");
-				buffer = new X_OCTET(message.data);
-			} else if (message.type.equals("X_C_TYPE")) {
-				log.debug("Initializing a new X_C_TYPE");
-				buffer = new X_C_TYPE(message.subtype, properties, message.data);
-			} else {
-				log.debug("Initializing a new X_COMMON");
-				buffer = new X_COMMON(message.subtype, properties, message.data);
-			}
+			buffer = tpalloc(message.type, message.subtype);
+			buffer.deserialize(message.data);
 		}
 		if (message.rval == Connection.TPFAIL) {
 			if (message.rcode == Connection.TPESVCERR) {
@@ -499,5 +526,35 @@ public class Connection {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Used by the service side to create a session for handling the client
+	 * request.
+	 * 
+	 * @param properties
+	 * @param transport
+	 * @param cd
+	 * @param replyTo
+	 * @return
+	 * @throws ConnectionException
+	 */
+	Session createServiceSession(String name, int cd, Object replyTo)
+			throws ConnectionException {
+		log.trace("Creating the service session");
+		Transport transport = getTransport(name);
+		serviceSession = new Session(this, properties, transport, cd, replyTo);
+		log.trace("Created the service session");
+		return serviceSession;
+	}
+
+	boolean hasOpenSessions() {
+		return sessions.size() > 0 || temporaryQueues.size() > 0;
+	}
+
+	void removeSession(Session session) {
+		temporaryQueues.remove(session.getCd());
+		// May be a no-op
+		sessions.remove(session.getCd());
 	}
 }

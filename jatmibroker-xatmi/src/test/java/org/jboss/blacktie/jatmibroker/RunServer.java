@@ -42,6 +42,8 @@ import org.jboss.blacktie.jatmibroker.xatmi.TestTPGetRplyService;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPGetRplyTwoService;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPRecvService;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPReturnService;
+import org.jboss.blacktie.jatmibroker.xatmi.TestTPReturnServiceOpenSession1;
+import org.jboss.blacktie.jatmibroker.xatmi.TestTPReturnServiceOpenSession2;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPReturnServiceTpurcode;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPSendService;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPSendTPSendOnlyService;
@@ -77,8 +79,8 @@ public class RunServer {
 	}
 
 	public void tpadvertiseINQUIRY() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TestSpecExampleTwoService.class
-				.getName());
+		this.server.tpadvertise(getServiceNameINQUIRY(),
+				TestSpecExampleTwoService.class.getName());
 	}
 
 	public void tpadvertiseTestTPACall() throws ConnectionException {
@@ -139,12 +141,25 @@ public class RunServer {
 	}
 
 	public void tpadvertiseTestTPReturn() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TestTPReturnService.class.getName());
+		this.server.tpadvertise(getServiceNameTestTPReturn(),
+				TestTPReturnService.class.getName());
 	}
 
 	public void tpadvertiseTestTPReturn2() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TestTPReturnServiceTpurcode.class
-				.getName());
+		this.server.tpadvertise(getServiceNameTestTPReturn2(),
+				TestTPReturnServiceTpurcode.class.getName());
+	}
+
+	public void tpadvertiseTestTPReturn3() throws ConnectionException {
+		this.server.tpadvertise(getServiceNameTestTPReturn(),
+				TestTPReturnServiceOpenSession1.class.getName());
+
+	}
+
+	public void tpadvertiseTestTPReturn4() throws ConnectionException {
+		this.server.tpadvertise(getServiceNameTestTPReturn2(),
+				TestTPReturnServiceOpenSession2.class.getName());
+
 	}
 
 	public void tpadvertiseTestTPSend() throws ConnectionException {
@@ -175,124 +190,124 @@ public class RunServer {
 	}
 
 	// SERVICE NAMES
-	public String getServiceNameBAR() {
+	public static String getServiceNameBAR() {
 		throw new RuntimeException("NOT IMPLEMENTED");
 	}
 
-	public String getServiceNameLOOPY() {
+	public static String getServiceNameLOOPY() {
 		throw new RuntimeException("NOT IMPLEMENTED");
 	}
 
-	public String getServiceNameDEBIT() {
+	public static String getServiceNameDEBIT() {
 		return "TestOne";
 	}
 
-	public String getServiceNameCREDIT() {
+	public static String getServiceNameCREDIT() {
 		return "TestTwo";
 	}
 
-	public String getServiceNameINQUIRY() {
+	public static String getServiceNameINQUIRY() {
 		return "TestOne";
 	}
 
-	public String getServiceNameTestTPACall() {
+	public static String getServiceNameTestTPACall() {
 		return "TestOne";
 	}
 
-	public String getServiceNametpcallXOctet() {
+	public static String getServiceNametpcallXOctet() {
 		return "TestOne";
 	}
 
-	public String getServiceNametpcallXOctetZero() {
+	public static String getServiceNametpcallXOctetZero() {
 		throw new RuntimeException("NOT IMPLEMENTED");
 	}
 
-	public String getServiceNametpcallXCommon() {
+	public static String getServiceNametpcallXCommon() {
 		return "TestOne";
 	}
 
-	public String getServiceNametpcallXCType() {
+	public static String getServiceNametpcallXCType() {
 		return "TestOne";
 	}
 
-	public String getServiceNameTestTPCancel() {
+	public static String getServiceNameTestTPCancel() {
 		return "TestOne";
 	}
 
-	public String getServiceNameTestTPConnect() {
+	public static String getServiceNameTestTPConnect() {
 		return "TestOne";
 	}
 
-	public String getServiceNameTestTPConversation() {
+	public static String getServiceNameTestTPConversation() {
 		return "TestOne";
 	}
 
-	public String getServiceNameTestTPDiscon() {
+	public static String getServiceNameTestTPDiscon() {
 		return "TestOne";
 	}
 
-	public String getServiceNameTestTPConversa2() {
+	public static String getServiceNameTestTPConversa2() {
 		return "TestOne";
 	}
 
-	public String getServiceNameTestTPFree() {
+	public static String getServiceNameTestTPFree() {
 		throw new RuntimeException("NOT SUPPORTED");
 	}
 
-	public String getServiceNameTestTPGetrply() {
+	public static String getServiceNameTestTPGetrply() {
 		return "TestOne";
 	}
 
-	public String getServiceNameTestTPRecv() {
+	public static String getServiceNameTestTPRecv() {
 		return "TestOne";
 	}
 
-	public String getServiceNameTestTPReturn() {
+	public static String getServiceNameTestTPReturn() {
 		return "TestOne";
 	}
 
-	public String getServiceNameTestTPReturn2() {
+	public static String getServiceNameTestTPReturn2() {
+		return "TestTwo";
+	}
+
+	public static String getServiceNameTestTPSend() {
 		return "TestOne";
 	}
 
-	public String getServiceNameTestTPSend() {
+	public static String getServiceNameTestTPSendTPSendOnly() {
 		return "TestOne";
 	}
 
-	public String getServiceNameTestTPSendTPSendOnly() {
+	public static String getServiceNameTestTPService() {
 		return "TestOne";
 	}
 
-	public String getServiceNameTestTPService() {
-		return "TestOne";
-	}
-
-	public String getServiceNameTestTPUnadvertise() {
+	public static String getServiceNameTestTPUnadvertise() {
 		throw new RuntimeException("NOT SUPPORTED");
 	}
 
-	public String getServiceNameTX1() {
+	public static String getServiceNameTX1() {
 		throw new RuntimeException("NOT SUPPORTED");
 	}
 
-	public String getServiceNameTX2() {
+	public static String getServiceNameTX2() {
 		throw new RuntimeException("NOT SUPPORTED");
 	}
 
-	public String getServiceNameTTL() {
+	public static String getServiceNameTTL() {
 		return "TestOne";
 	}
 
-	public String getServiceNameTestRollbackOnly() {
+	public static String getServiceNameTestRollbackOnly() {
 		return "TestOne";
 		// return "TestRbkOnly";
 	}
 
-	public String getServiceNameTestTPGetrplyOne() {
+	public static String getServiceNameTestTPGetrplyOne() {
 		return "TestOne";
 	}
 
-	public String getServiceNameTestTPGetrplyTwo() {
+	public static String getServiceNameTestTPGetrplyTwo() {
 		return "TestTwo";
 	}
 

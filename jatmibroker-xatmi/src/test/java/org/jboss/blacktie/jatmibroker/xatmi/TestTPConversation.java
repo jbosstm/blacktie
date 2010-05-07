@@ -48,8 +48,8 @@ public class TestTPConversation extends TestCase {
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
-		connection.close();
 		server.serverdone();
+		connection.close();
 	}
 
 	public void test_conversation() throws ConnectionException {
@@ -57,7 +57,7 @@ public class TestTPConversation extends TestCase {
 		server.tpadvertiseTestTPConversation();
 
 		sendbuf.setByteArray("conversate".getBytes());
-		cd = connection.tpconnect(server.getServiceNameTestTPConversation(),
+		cd = connection.tpconnect(RunServer.getServiceNameTestTPConversation(),
 				sendbuf, sendlen, Connection.TPRECVONLY);
 		long revent = 0;
 		log.info("Started conversation");
@@ -91,8 +91,8 @@ public class TestTPConversation extends TestCase {
 		server.tpadvertiseTestTPConversa2();
 
 		log.info("test_short_conversation");
-		cd = connection.tpconnect(server.getServiceNameTestTPConversa2(), null,
-				0, Connection.TPRECVONLY);
+		cd = connection.tpconnect(RunServer.getServiceNameTestTPConversa2(),
+				null, 0, Connection.TPRECVONLY);
 		assertTrue(cd != null);
 
 		Buffer rcvbuf = cd.tprecv(0);

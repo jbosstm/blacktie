@@ -265,4 +265,8 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 			return timeout;
 		}
 	}
+
+	public int getCd() {
+		return cd;
+	}
 }

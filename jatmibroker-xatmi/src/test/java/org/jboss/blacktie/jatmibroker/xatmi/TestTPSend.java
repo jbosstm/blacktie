@@ -58,8 +58,8 @@ public class TestTPSend extends TestCase {
 		log.info("test_tpsend_recvonly");
 		server.tpadvertiseTestTPSend();
 
-		cd = connection.tpconnect(server.getServiceNameTestTPSend(), sendbuf,
-				sendlen, Connection.TPRECVONLY);
+		cd = connection.tpconnect(RunServer.getServiceNameTestTPSend(),
+				sendbuf, sendlen, Connection.TPRECVONLY);
 		try {
 			cd.tpsend(sendbuf, sendlen, 0);
 		} catch (ConnectionException e) {
@@ -72,8 +72,9 @@ public class TestTPSend extends TestCase {
 		log.info("test_tpsend_tpsendonly");
 		server.tpadvertiseTestTPSendTPSendOnly();
 
-		cd = connection.tpconnect(server.getServiceNameTestTPSendTPSendOnly(),
-				sendbuf, sendlen, Connection.TPRECVONLY);
+		cd = connection.tpconnect(RunServer
+				.getServiceNameTestTPSendTPSendOnly(), sendbuf, sendlen,
+				Connection.TPRECVONLY);
 
 		try {
 			cd.tprecv(0);

@@ -32,8 +32,8 @@ public abstract class MDBBlacktieService extends Service implements
 	 * @throws ConnectionException
 	 *             In case the connection cannot be established
 	 * @throws ConfigurationException
-	 *             In case the btconfig.xml is invalid or the transport does
-	 *             not exist
+	 *             In case the btconfig.xml is invalid or the transport does not
+	 *             exist
 	 */
 	public MDBBlacktieService(String name) throws ConfigurationException,
 			ConnectionException {

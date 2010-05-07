@@ -17,6 +17,8 @@
  */
 package org.jboss.blacktie.jatmibroker.core.transport;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.LogManager;
@@ -28,6 +30,7 @@ public abstract class TransportFactory {
 
 	private static final Logger log = LogManager
 			.getLogger(TransportFactory.class);
+	private static Map<String, TransportFactory> transportFactories = new HashMap<String, TransportFactory>();
 
 	public static TransportFactory loadTransportFactory(String serviceName,
 			Properties properties) throws ConfigurationException,
@@ -53,21 +56,26 @@ public abstract class TransportFactory {
 		}
 		log.debug("Transport class was: " + className);
 
-		try {
-			Class clazz = Class.forName(className);
-			TransportFactory newInstance = (TransportFactory) clazz
-					.newInstance();
-			newInstance.setProperties(properties);
-			log.debug("TransportFactory was prepared");
-			return newInstance;
-		} catch (Throwable t) {
-			throw new ConnectionException(-1,
-					"Could not load the connection factory", t);
+		if (!transportFactories.containsKey(className)) {
+			try {
+				Class clazz = Class.forName(className);
+				TransportFactory newInstance = (TransportFactory) clazz
+						.newInstance();
+				newInstance.setProperties(properties);
+				transportFactories.put(className, newInstance);
+				log.debug("TransportFactory was prepared");
+			} catch (Throwable t) {
+				throw new ConnectionException(-1,
+						"Could not load the connection factory", t);
+			}
 		}
+		return transportFactories.get(className);
 	}
 
 	protected abstract void setProperties(Properties properties)
 			throws ConfigurationException;
 
 	public abstract Transport createTransport() throws ConnectionException;
+
+	public abstract void close();
 }

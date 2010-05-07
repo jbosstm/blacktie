@@ -52,7 +52,7 @@ public class TestTPGetRply extends TestCase {
 	public void test_tpgetrply() throws ConnectionException {
 		log.info("test_tpgetrply");
 		server.tpadvertiseTestTPGetrply();
-		int cd = connection.tpacall(server.getServiceNameTestTPGetrply(),
+		int cd = connection.tpacall(RunServer.getServiceNameTestTPGetrply(),
 				sendbuf, sendlen, 0);
 		assertTrue(cd != -1);
 
@@ -126,12 +126,14 @@ public class TestTPGetRply extends TestCase {
 		server.tpadvertiseTestTPGetrplyOne();
 		server.tpadvertiseTestTPGetrplyTwo();
 
-		int cd1 = connection.tpacall(server.getServiceNameTestTPGetrplyOne(),
-				sendbuf, sendlen, 0);
+		int cd1 = connection
+				.tpacall(RunServer.getServiceNameTestTPGetrplyOne(), sendbuf,
+						sendlen, 0);
 		assertTrue(cd1 != -1);
 
-		int cd2 = connection.tpacall(server.getServiceNameTestTPGetrplyTwo(),
-				sendbuf, sendlen, 0);
+		int cd2 = connection
+				.tpacall(RunServer.getServiceNameTestTPGetrplyTwo(), sendbuf,
+						sendlen, 0);
 		assertTrue(cd2 != -1);
 		assertTrue(cd1 != cd2);
 
@@ -148,12 +150,14 @@ public class TestTPGetRply extends TestCase {
 		server.tpadvertiseTestTPGetrplyOne();
 		server.tpadvertiseTestTPGetrplyTwo();
 
-		int cd1 = connection.tpacall(server.getServiceNameTestTPGetrplyOne(),
-				sendbuf, sendlen, 0);
+		int cd1 = connection
+				.tpacall(RunServer.getServiceNameTestTPGetrplyOne(), sendbuf,
+						sendlen, 0);
 		assertTrue(cd1 != -1);
 
-		int cd2 = connection.tpacall(server.getServiceNameTestTPGetrplyTwo(),
-				sendbuf, sendlen, 0);
+		int cd2 = connection
+				.tpacall(RunServer.getServiceNameTestTPGetrplyTwo(), sendbuf,
+						sendlen, 0);
 		assertTrue(cd2 != -1);
 		assertTrue(cd1 != cd2);
 
