@@ -1,11 +1,16 @@
-package org.jboss.blacktie.jatmibroker.xatmi;
+package org.jboss.blacktie.jatmibroker.xatmi.services;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
+import org.jboss.blacktie.jatmibroker.xatmi.Response;
+import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
+import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
-public class TestTPGetRplyOneService implements BlacktieService {
+public class TPGetRplyOneService implements BlacktieService {
 	private static final Logger log = LogManager
-			.getLogger(TestTPGetRplyOneService.class);
+			.getLogger(TPGetRplyOneService.class);
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		try {

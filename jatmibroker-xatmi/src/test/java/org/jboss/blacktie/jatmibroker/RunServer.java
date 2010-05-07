@@ -19,36 +19,36 @@ package org.jboss.blacktie.jatmibroker;
 
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
-import org.jboss.blacktie.jatmibroker.tx.TestRollbackOnlyNoTpreturnService;
-import org.jboss.blacktie.jatmibroker.tx.TestRollbackOnlyTpcallTPEOTYPEService;
-import org.jboss.blacktie.jatmibroker.tx.TestRollbackOnlyTpcallTPESVCFAILService;
-import org.jboss.blacktie.jatmibroker.tx.TestRollbackOnlyTpcallTPETIMEService;
-import org.jboss.blacktie.jatmibroker.tx.TestRollbackOnlyTprecvTPEVDISCONIMMService;
-import org.jboss.blacktie.jatmibroker.tx.TestRollbackOnlyTprecvTPEVSVCFAILService;
+import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyNoTpreturnService;
+import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyTpcallTPEOTYPEService;
+import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyTpcallTPESVCFAILService;
+import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyTpcallTPETIMEService;
+import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyTprecvTPEVDISCONIMMService;
+import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyTprecvTPEVSVCFAILService;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.blacktie.jatmibroker.xatmi.TestSpecExampleOneService;
-import org.jboss.blacktie.jatmibroker.xatmi.TestSpecExampleTwoService;
-import org.jboss.blacktie.jatmibroker.xatmi.TestTPACallService;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPCallServiceXCType;
-import org.jboss.blacktie.jatmibroker.xatmi.TestTPCallServiceXCommon;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPCallServiceXOctet;
-import org.jboss.blacktie.jatmibroker.xatmi.TestTPCancelService;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPConnectService;
-import org.jboss.blacktie.jatmibroker.xatmi.TestTPConversationService;
-import org.jboss.blacktie.jatmibroker.xatmi.TestTPConversationServiceShort;
-import org.jboss.blacktie.jatmibroker.xatmi.TestTPDisconService;
-import org.jboss.blacktie.jatmibroker.xatmi.TestTPGetRplyOneService;
-import org.jboss.blacktie.jatmibroker.xatmi.TestTPGetRplyService;
-import org.jboss.blacktie.jatmibroker.xatmi.TestTPGetRplyTwoService;
-import org.jboss.blacktie.jatmibroker.xatmi.TestTPRecvService;
-import org.jboss.blacktie.jatmibroker.xatmi.TestTPReturnService;
-import org.jboss.blacktie.jatmibroker.xatmi.TestTPReturnServiceOpenSession1;
-import org.jboss.blacktie.jatmibroker.xatmi.TestTPReturnServiceOpenSession2;
-import org.jboss.blacktie.jatmibroker.xatmi.TestTPReturnServiceTpurcode;
-import org.jboss.blacktie.jatmibroker.xatmi.TestTPSendService;
-import org.jboss.blacktie.jatmibroker.xatmi.TestTPSendTPSendOnlyService;
-import org.jboss.blacktie.jatmibroker.xatmi.TestTPServiceService;
-import org.jboss.blacktie.jatmibroker.xatmi.TestTTLService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.SpecExampleOneService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.SpecExampleTwoService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPACallService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPCallXCommonService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPCancelService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPConversationService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPConversationShortService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPDisconService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPGetRplyOneService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPGetRplyService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPGetRplyTwoService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPRecvService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPReturnOpenSession1Service;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPReturnOpenSession2Service;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPReturnService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPReturnTpurcodeService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPSendService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPSendTPSendOnlyService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPServiceService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TTLService;
 
 public class RunServer {
 
@@ -69,22 +69,22 @@ public class RunServer {
 	}
 
 	public void tpadvertiseDEBIT() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TestSpecExampleOneService.class
+		this.server.tpadvertise("TestOne", SpecExampleOneService.class
 				.getName());
 	}
 
 	public void tpadvertiseCREDIT() throws ConnectionException {
-		this.server.tpadvertise("TestTwo", TestSpecExampleOneService.class
+		this.server.tpadvertise("TestTwo", SpecExampleOneService.class
 				.getName());
 	}
 
 	public void tpadvertiseINQUIRY() throws ConnectionException {
 		this.server.tpadvertise(getServiceNameINQUIRY(),
-				TestSpecExampleTwoService.class.getName());
+				SpecExampleTwoService.class.getName());
 	}
 
 	public void tpadvertiseTestTPACall() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TestTPACallService.class.getName());
+		this.server.tpadvertise("TestOne", TPACallService.class.getName());
 	}
 
 	public void tpadvertisetpcallXOctet() throws ConnectionException {
@@ -96,7 +96,7 @@ public class RunServer {
 	}
 
 	public void tpadvertisetpcallXCommon() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TestTPCallServiceXCommon.class
+		this.server.tpadvertise("TestOne", TPCallXCommonService.class
 				.getName());
 	}
 
@@ -106,7 +106,7 @@ public class RunServer {
 	}
 
 	public void tpadvertiseTestTPCancel() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TestTPCancelService.class.getName());
+		this.server.tpadvertise("TestOne", TPCancelService.class.getName());
 	}
 
 	public void tpadvertiseTestTPConnect() throws ConnectionException {
@@ -115,17 +115,17 @@ public class RunServer {
 	}
 
 	public void tpadvertiseTestTPConversation() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TestTPConversationService.class
+		this.server.tpadvertise("TestOne", TPConversationService.class
 				.getName());
 	}
 
 	public void tpadvertiseTestTPConversa2() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TestTPConversationServiceShort.class
+		this.server.tpadvertise("TestOne", TPConversationShortService.class
 				.getName());
 	}
 
 	public void tpadvertiseTestTPDiscon() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TestTPDisconService.class.getName());
+		this.server.tpadvertise("TestOne", TPDisconService.class.getName());
 	}
 
 	public void tpadvertiseTestTPFree() throws ConnectionException {
@@ -133,47 +133,47 @@ public class RunServer {
 
 	public void tpadvertiseTestTPGetrply() throws ConnectionException {
 		this.server
-				.tpadvertise("TestOne", TestTPGetRplyService.class.getName());
+				.tpadvertise("TestOne", TPGetRplyService.class.getName());
 	}
 
 	public void tpadvertiseTestTPRecv() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TestTPRecvService.class.getName());
+		this.server.tpadvertise("TestOne", TPRecvService.class.getName());
 	}
 
 	public void tpadvertiseTestTPReturn() throws ConnectionException {
 		this.server.tpadvertise(getServiceNameTestTPReturn(),
-				TestTPReturnService.class.getName());
+				TPReturnService.class.getName());
 	}
 
 	public void tpadvertiseTestTPReturn2() throws ConnectionException {
 		this.server.tpadvertise(getServiceNameTestTPReturn2(),
-				TestTPReturnServiceTpurcode.class.getName());
+				TPReturnTpurcodeService.class.getName());
 	}
 
 	public void tpadvertiseTestTPReturn3() throws ConnectionException {
 		this.server.tpadvertise(getServiceNameTestTPReturn(),
-				TestTPReturnServiceOpenSession1.class.getName());
+				TPReturnOpenSession1Service.class.getName());
 
 	}
 
 	public void tpadvertiseTestTPReturn4() throws ConnectionException {
 		this.server.tpadvertise(getServiceNameTestTPReturn2(),
-				TestTPReturnServiceOpenSession2.class.getName());
+				TPReturnOpenSession2Service.class.getName());
 
 	}
 
 	public void tpadvertiseTestTPSend() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TestTPSendService.class.getName());
+		this.server.tpadvertise("TestOne", TPSendService.class.getName());
 	}
 
 	public void tpadvertiseTestTPSendTPSendOnly() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TestTPSendTPSendOnlyService.class
+		this.server.tpadvertise("TestOne", TPSendTPSendOnlyService.class
 				.getName());
 	}
 
 	public void tpadvertiseTestTPService() throws ConnectionException {
 		this.server
-				.tpadvertise("TestOne", TestTPServiceService.class.getName());
+				.tpadvertise("TestOne", TPServiceService.class.getName());
 	}
 
 	public void tpadvertiseTestTPUnadvertise() throws ConnectionException {
@@ -186,7 +186,7 @@ public class RunServer {
 	}
 
 	public void tpadvertiseTTL() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TestTTLService.class.getName());
+		this.server.tpadvertise("TestOne", TTLService.class.getName());
 	}
 
 	// SERVICE NAMES
@@ -314,49 +314,49 @@ public class RunServer {
 	public void tpadvertiseTestRollbackOnlyTpcallTPETIMEService()
 			throws ConnectionException {
 		this.server.tpadvertise(getServiceNameTestRollbackOnly(),
-				TestRollbackOnlyTpcallTPETIMEService.class.getName());
+				RollbackOnlyTpcallTPETIMEService.class.getName());
 	}
 
 	public void tpadvertiseTestTpcallTPEOTYPEService()
 			throws ConnectionException {
 		this.server.tpadvertise(getServiceNameTestRollbackOnly(),
-				TestRollbackOnlyTpcallTPEOTYPEService.class.getName());
+				RollbackOnlyTpcallTPEOTYPEService.class.getName());
 
 	}
 
 	public void tpadvertiseTestRollbackOnlyTpcallTPESVCFAILService()
 			throws ConnectionException {
 		this.server.tpadvertise(getServiceNameTestRollbackOnly(),
-				TestRollbackOnlyTpcallTPESVCFAILService.class.getName());
+				RollbackOnlyTpcallTPESVCFAILService.class.getName());
 	}
 
 	public void tpadvertiseTestRollbackOnlyTprecvTPEVDISCONIMMService()
 			throws ConnectionException {
 		this.server.tpadvertise(getServiceNameTestRollbackOnly(),
-				TestRollbackOnlyTprecvTPEVDISCONIMMService.class.getName());
+				RollbackOnlyTprecvTPEVDISCONIMMService.class.getName());
 	}
 
 	public void tpadvertiseTestRollbackOnlyTprecvTPEVSVCFAILService()
 			throws ConnectionException {
 		this.server.tpadvertise(getServiceNameTestRollbackOnly(),
-				TestRollbackOnlyTprecvTPEVSVCFAILService.class.getName());
+				RollbackOnlyTprecvTPEVSVCFAILService.class.getName());
 	}
 
 	public void tpadvertiseTestRollbackOnlyNoTpreturnService()
 			throws ConnectionException {
 		this.server.tpadvertise(getServiceNameTestRollbackOnly(),
-				TestRollbackOnlyNoTpreturnService.class.getName());
+				RollbackOnlyNoTpreturnService.class.getName());
 	}
 
 	public void tpadvertiseTestTPGetrplyOne() throws ConnectionException {
 		this.server.tpadvertise(getServiceNameTestTPGetrplyOne(),
-				TestTPGetRplyOneService.class.getName());
+				TPGetRplyOneService.class.getName());
 
 	}
 
 	public void tpadvertiseTestTPGetrplyTwo() throws ConnectionException {
 		this.server.tpadvertise(getServiceNameTestTPGetrplyTwo(),
-				TestTPGetRplyTwoService.class.getName());
+				TPGetRplyTwoService.class.getName());
 
 	}
 }

@@ -22,16 +22,16 @@ import java.util.Properties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-public class AtmiBrokerServerXML {
+public class AtmiBrokerEnvXML {
 	private static final Logger log = LogManager
-			.getLogger(AtmiBrokerServerXML.class);
+			.getLogger(AtmiBrokerEnvXML.class);
 	private Properties prop;
 
-	public AtmiBrokerServerXML() {
+	public AtmiBrokerEnvXML() {
 		prop = new Properties();
 	}
 
-	public AtmiBrokerServerXML(Properties prop) {
+	public AtmiBrokerEnvXML(Properties prop) {
 		this.prop = prop;
 	}
 

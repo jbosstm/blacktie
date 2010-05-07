@@ -1,18 +1,23 @@
-package org.jboss.blacktie.jatmibroker.xatmi;
+package org.jboss.blacktie.jatmibroker.xatmi.services;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
+import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.blacktie.jatmibroker.xatmi.Response;
+import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 
-public class TestTPSendTPSendOnlyService implements BlacktieService {
+public class TPSendTPSendOnlyService implements BlacktieService {
 	private static final Logger log = LogManager
-			.getLogger(TestTPSendTPSendOnlyService.class);
+			.getLogger(TPSendTPSendOnlyService.class);
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		log.info("testtpsend_tpsendonly_service");
 		try {
 			int result = svcinfo.getSession().tpsend(svcinfo.getBuffer(),
-					svcinfo.getBuffer().getRawData().length,
-					Connection.TPRECVONLY);
+					svcinfo.getLen(), Connection.TPRECVONLY);
 		} catch (ConnectionException e) {
 			log.error("ConnectionException: ", e);
 		}

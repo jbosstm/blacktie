@@ -1,4 +1,4 @@
-package org.jboss.blacktie.jatmibroker.tx;
+package org.jboss.blacktie.jatmibroker.tx.services;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -9,9 +9,9 @@ import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.blacktie.jatmibroker.xatmi.X_COMMON;
 
-public class TestRollbackOnlyTpcallTPEOTYPEService implements BlacktieService {
+public class RollbackOnlyTpcallTPEOTYPEService implements BlacktieService {
 	private static final Logger log = LogManager
-			.getLogger(TestRollbackOnlyTpcallTPEOTYPEService.class);
+			.getLogger(RollbackOnlyTpcallTPEOTYPEService.class);
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		try {

@@ -34,7 +34,7 @@ public class TestTPConversation extends TestCase {
 	private X_OCTET sendbuf;
 	private Session cd;
 
-	static int interationCount = 100;
+	public static int interationCount = 100;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		server.serverinit();

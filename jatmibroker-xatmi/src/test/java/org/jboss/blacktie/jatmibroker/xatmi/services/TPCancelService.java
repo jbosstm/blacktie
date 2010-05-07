@@ -1,11 +1,17 @@
-package org.jboss.blacktie.jatmibroker.xatmi;
+package org.jboss.blacktie.jatmibroker.xatmi.services;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.blacktie.jatmibroker.xatmi.Response;
+import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
+import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
-public class TestTPCancelService implements BlacktieService {
+public class TPCancelService implements BlacktieService {
 	private static final Logger log = LogManager
-			.getLogger(TestTPCancelService.class);
+			.getLogger(TPCancelService.class);
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		log.info("testtpcancel_service");
