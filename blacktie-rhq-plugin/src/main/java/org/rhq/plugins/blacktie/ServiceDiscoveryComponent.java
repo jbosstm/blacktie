@@ -70,7 +70,7 @@ public class ServiceDiscoveryComponent implements ResourceDiscoveryComponent {
 		// auto-discovered processes using those process scan definitions.
 		// Process all those that were found.
 		List<ProcessScanResult> autoDiscoveryResults = context
-		.getAutoDiscoveredProcesses();
+				.getAutoDiscoveredProcesses();
 		for (ProcessScanResult autoDiscoveryResult : autoDiscoveryResults) {
 			// determine if you want to include the result in this method's
 			// returned set of discovered resources
@@ -88,7 +88,6 @@ public class ServiceDiscoveryComponent implements ResourceDiscoveryComponent {
 		// create a details object that describe the resource that you
 		// discovered.
 		HashSet<DiscoveredResourceDetails> set = new HashSet<DiscoveredResourceDetails>();
-
 
 		// key = this must be a unique string across all of your resources - see
 		// docs for uniqueness rules
@@ -110,20 +109,19 @@ public class ServiceDiscoveryComponent implements ResourceDiscoveryComponent {
 			blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
 
 			Element status;
-			status = (Element)beanServerConnection.invoke(blacktieAdmin, 
-					"listServiceStatus",
-					new Object[] { serverName, null}, 
-					new String[] {"java.lang.String", "java.lang.String"});
+			status = (Element) beanServerConnection.invoke(blacktieAdmin,
+					"listServiceStatus", new Object[] { serverName, null },
+					new String[] { "java.lang.String", "java.lang.String" });
 
 			NodeList services = status.getElementsByTagName("name");
-			for(int i = 0; i < services.getLength(); i++) {
+			for (int i = 0; i < services.getLength(); i++) {
 				Node node = services.item(i);
 				String serviceName = node.getTextContent();
 
-				if(!serviceName.equals(serverName)) {
+				if (!serviceName.equals(serverName)) {
 					DiscoveredResourceDetails resource = new DiscoveredResourceDetails(
-							context.getResourceType(), serviceName, serviceName, null,
-							null, null, null);
+							context.getResourceType(), serviceName,
+							serviceName, null, null, null, null);
 					set.add(resource);
 				}
 			}

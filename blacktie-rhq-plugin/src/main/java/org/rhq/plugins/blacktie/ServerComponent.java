@@ -85,22 +85,22 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 	 * managed.
 	 */
 	private Configuration resourceConfiguration;
-	
+
 	private ResourceContext resourceContext;
 
 	private MBeanServerConnection beanServerConnection;
 
 	private String serverName = null;
-	
+
 	private ObjectName blacktieAdmin = null;
 
 	@SuppressWarnings("unchecked")
 	private List getInstancesCount() throws Exception {
-		List<Integer> ids = (List<Integer>)beanServerConnection.invoke(blacktieAdmin, 
-				"listRunningInstanceIds",
-				new Object[] { serverName }, 
-				new String[] {"java.lang.String"});
-		
+		List<Integer> ids = (List<Integer>) beanServerConnection.invoke(
+				blacktieAdmin, "listRunningInstanceIds",
+				new Object[] { serverName },
+				new String[] { "java.lang.String" });
+
 		return ids;
 	}
 
@@ -121,7 +121,8 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 			JMXConnector c = JMXConnectorFactory.connect(u);
 			beanServerConnection = c.getMBeanServerConnection();
 
-			serverName = context.getResourceKey();;
+			serverName = context.getResourceKey();
+			;
 			blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
 		} catch (Exception e) {
 			log.error("start server " + serverName + " plugin error with " + e);
@@ -208,32 +209,35 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 
 		if (name.equals("shutdown")) {
 			try {
-				beanServerConnection.invoke(blacktieAdmin, 
-						"shutdown",
-						new Object[] { serverName, id}, 
-						new String[] {"java.lang.String", "int"});
+				beanServerConnection.invoke(blacktieAdmin, "shutdown",
+						new Object[] { serverName, id }, new String[] {
+								"java.lang.String", "int" });
 				result.setSimpleResult("OK");
 			} catch (Exception e) {
 				log.error("call shutdown servers failed with " + e);
-				result.setErrorMessage("call shutdown servers failed with " + e);
+				result
+						.setErrorMessage("call shutdown servers failed with "
+								+ e);
 			}
 		} else if (name.equals("listRunningInstanceIds")) {
 			try {
 				result.setSimpleResult(getInstancesCount().toString());
 			} catch (Exception e) {
 				log.error("call getInstancesCounter failed with " + e);
-				result.setErrorMessage("call getInstancesCounter failed with " + e);
+				result.setErrorMessage("call getInstancesCounter failed with "
+						+ e);
 			}
-		} else if(name.equals("getSoftwareVersion")) {
+		} else if (name.equals("getSoftwareVersion")) {
 			try {
-				String version = (String)beanServerConnection.invoke(blacktieAdmin, 
-						"getServerVersionById",
-						new Object[] { serverName, id}, 
-						new String[] {"java.lang.String", "int"});
+				String version = (String) beanServerConnection.invoke(
+						blacktieAdmin, "getServerVersionById", new Object[] {
+								serverName, id }, new String[] {
+								"java.lang.String", "int" });
 				result.setSimpleResult(version);
 			} catch (Exception e) {
 				log.error("call getServerVersionById failed with " + e);
-				result.setErrorMessage("call getServerVersionById failed with " + e);
+				result.setErrorMessage("call getServerVersionById failed with "
+						+ e);
 			}
 		}
 

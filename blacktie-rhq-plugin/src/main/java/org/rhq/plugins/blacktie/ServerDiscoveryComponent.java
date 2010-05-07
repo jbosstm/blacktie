@@ -107,8 +107,8 @@ public class ServerDiscoveryComponent implements ResourceDiscoveryComponent {
 			// Get this list from the MBean so that we only need one service
 			// with the list
 			java.util.List<String> servers = (java.util.List<String>) beanServerConnection
-					.invoke(blacktieAdmin, "getServerList",
-							new Object[] {}, new String[] {});
+					.invoke(blacktieAdmin, "getServerList", new Object[] {},
+							new String[] {});
 
 			for (String server : servers) {
 				DiscoveredResourceDetails resource = new DiscoveredResourceDetails(

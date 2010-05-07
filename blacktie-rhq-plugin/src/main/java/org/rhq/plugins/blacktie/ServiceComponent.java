@@ -84,8 +84,8 @@ import org.w3c.dom.Element;
  * @author John Mazzitelli
  */
 public class ServiceComponent implements ResourceComponent, MeasurementFacet,
-OperationFacet, ConfigurationFacet, ContentFacet, DeleteResourceFacet,
-CreateChildResourceFacet {
+		OperationFacet, ConfigurationFacet, ContentFacet, DeleteResourceFacet,
+		CreateChildResourceFacet {
 	private final Log log = LogFactory.getLog(ServiceComponent.class);
 
 	/**
@@ -102,8 +102,8 @@ CreateChildResourceFacet {
 	private String serviceName = null;
 
 	private ObjectName blacktieAdmin = null;
-	
-	private String[]  times = null;
+
+	private String[] times = null;
 
 	/**
 	 * This is called when your component has been started with the given
@@ -130,7 +130,9 @@ CreateChildResourceFacet {
 					"getServerName", new Object[] { serviceName },
 					new String[] { "java.lang.String" });
 		} catch (Exception e) {
-			log.error("start server " + serviceName + " plugin error with " + e);
+			log
+					.error("start server " + serviceName
+							+ " plugin error with " + e);
 		}
 		log.debug("start resource: " + serviceName);
 	}
@@ -158,8 +160,8 @@ CreateChildResourceFacet {
 
 		try {
 			ObjectName objName = new ObjectName(
-					"jboss.messaging.destination:service=Queue,name=" + 
-					serviceName);
+					"jboss.messaging.destination:service=Queue,name="
+							+ serviceName);
 			beanServerConnection.getAttribute(objName, "ConsumerCount");
 			status = AvailabilityType.UP;
 		} catch (Exception e) {
@@ -180,50 +182,50 @@ CreateChildResourceFacet {
 			Set<MeasurementScheduleRequest> requests) {
 		for (MeasurementScheduleRequest request : requests) {
 			String name = request.getName();
-			
+
 			try {
 				if (name.equals("messageCounter")) {
-					Number value = (Long)beanServerConnection.invoke(blacktieAdmin, 
-							"getServiceCounter",
-							new Object[] { serverName, serviceName}, 
-							new String[] {"java.lang.String", "java.lang.String"});
-					
+					Number value = (Long) beanServerConnection.invoke(
+							blacktieAdmin, "getServiceCounter", new Object[] {
+									serverName, serviceName }, new String[] {
+									"java.lang.String", "java.lang.String" });
+
 					report.addData(new MeasurementDataNumeric(request, value
 							.doubleValue()));
 				} else if (name.equals("errorCounter")) {
-					Number value = (Long)beanServerConnection.invoke(blacktieAdmin, 
-							"getErrorCounter",
-							new Object[] { serverName, serviceName}, 
-							new String[] {"java.lang.String", "java.lang.String"});
-					
+					Number value = (Long) beanServerConnection.invoke(
+							blacktieAdmin, "getErrorCounter", new Object[] {
+									serverName, serviceName }, new String[] {
+									"java.lang.String", "java.lang.String" });
+
 					report.addData(new MeasurementDataNumeric(request, value
 							.doubleValue()));
 				} else if (name.equals("minResponseTime")) {
-					String responseTime = (String)beanServerConnection.invoke(blacktieAdmin, 
-							"getResponseTime",
-							new Object[] { serverName, serviceName}, 
-							new String[] {"java.lang.String", "java.lang.String"});
+					String responseTime = (String) beanServerConnection.invoke(
+							blacktieAdmin, "getResponseTime", new Object[] {
+									serverName, serviceName }, new String[] {
+									"java.lang.String", "java.lang.String" });
 					times = responseTime.split(",");
 					Number value = Long.parseLong(times[0]);
 					report.addData(new MeasurementDataNumeric(request, value
 							.doubleValue()));
 				} else if (name.equals("avgResponseTime")) {
-					if(times != null) {
+					if (times != null) {
 						Number value = Long.parseLong(times[1]);
-						report.addData(new MeasurementDataNumeric(request, value
-								.doubleValue()));
+						report.addData(new MeasurementDataNumeric(request,
+								value.doubleValue()));
 					}
 				} else if (name.equals("maxResponseTime")) {
-					if(times != null) {
+					if (times != null) {
 						Number value = Long.parseLong(times[2]);
-						report.addData(new MeasurementDataNumeric(request, value
-								.doubleValue()));
+						report.addData(new MeasurementDataNumeric(request,
+								value.doubleValue()));
 					}
 				} else if (name.equals("queueDepth")) {
-					Number value = (Integer)beanServerConnection.invoke(blacktieAdmin, 
-							"getQueueDepth",
-							new Object[] { serverName, serviceName}, 
-							new String[] {"java.lang.String", "java.lang.String"});
+					Number value = (Integer) beanServerConnection.invoke(
+							blacktieAdmin, "getQueueDepth", new Object[] {
+									serverName, serviceName }, new String[] {
+									"java.lang.String", "java.lang.String" });
 					report.addData(new MeasurementDataNumeric(request, value
 							.doubleValue()));
 				}
@@ -249,16 +251,16 @@ CreateChildResourceFacet {
 		OperationResult result = new OperationResult();
 		int id = Integer.parseInt(params.getSimpleValue("id", "0"));
 
-		if (name.equals("advertise") || name.equals("unadvertise")) {		
-			if(serviceName == null) {
+		if (name.equals("advertise") || name.equals("unadvertise")) {
+			if (serviceName == null) {
 				result.setErrorMessage("service name can not empty");
 			} else {
-				try{
-					Boolean r =  (Boolean)beanServerConnection.invoke(blacktieAdmin, 
-							name,
-							new Object[] { serverName, serviceName}, 
-							new String[] {"java.lang.String", "java.lang.String"});
-					if(r){
+				try {
+					Boolean r = (Boolean) beanServerConnection.invoke(
+							blacktieAdmin, name, new Object[] { serverName,
+									serviceName }, new String[] {
+									"java.lang.String", "java.lang.String" });
+					if (r) {
 						result.setSimpleResult(name + " OK");
 					} else {
 						result.setErrorMessage(name + " FAIL");
@@ -266,38 +268,41 @@ CreateChildResourceFacet {
 				} catch (Exception e) {
 					log.error("call " + name + " service " + serviceName
 							+ " failed with " + e);
-					result.setErrorMessage("call " + name + " service " + serviceName
-							+ " failed with " + e);
+					result.setErrorMessage("call " + name + " service "
+							+ serviceName + " failed with " + e);
 				}
 			}
 		} else if (name.equals("listServiceStatus")) {
 			try {
 				Element status;
-				if(id == 0) {
-					status = (Element)beanServerConnection.invoke(blacktieAdmin, 
-							"listServiceStatus",
-							new Object[] { serverName, serviceName}, 
-							new String[] {"java.lang.String", "java.lang.String"});
+				if (id == 0) {
+					status = (Element) beanServerConnection.invoke(
+							blacktieAdmin, "listServiceStatus", new Object[] {
+									serverName, serviceName }, new String[] {
+									"java.lang.String", "java.lang.String" });
 				} else {
-					status = (Element)beanServerConnection.invoke(blacktieAdmin, 
-							"listServiceStatusById",
-							new Object[] { serverName, id, serviceName}, 
-							new String[] {"java.lang.String", "int", "java.lang.String"});
+					status = (Element) beanServerConnection.invoke(
+							blacktieAdmin, "listServiceStatusById",
+							new Object[] { serverName, id, serviceName },
+							new String[] { "java.lang.String", "int",
+									"java.lang.String" });
 				}
 
 				if (status != null) {
 					try {
 						// Set up the output transformer
-						TransformerFactory transfac = TransformerFactory.newInstance();
+						TransformerFactory transfac = TransformerFactory
+								.newInstance();
 						Transformer trans = transfac.newTransformer();
-						trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+						trans.setOutputProperty(
+								OutputKeys.OMIT_XML_DECLARATION, "yes");
 						trans.setOutputProperty(OutputKeys.INDENT, "yes");
 
 						StringWriter sw = new StringWriter();
 						StreamResult sr = new StreamResult(sw);
 						DOMSource source = new DOMSource(status);
 						trans.transform(source, sr);
-						result.setSimpleResult(sw.toString());					
+						result.setSimpleResult(sw.toString());
 					} catch (TransformerException e) {
 						log.error(e);
 					}
@@ -305,32 +310,34 @@ CreateChildResourceFacet {
 					result.setErrorMessage("no service status");
 				}
 			} catch (Exception e) {
-				log.error("call status failed with "+ e);
-				result.setErrorMessage("call status failed with "+ e);
+				log.error("call status failed with " + e);
+				result.setErrorMessage("call status failed with " + e);
 			}
 		} else if (name.equals("getServiceCounter")) {
 			try {
-				if(serviceName == null) {
+				if (serviceName == null) {
 					result.setErrorMessage("service name can not empty");
 				} else {
 					Long counter;
-					if(id == 0) {
-						counter = (Long)beanServerConnection.invoke(blacktieAdmin, 
-								"getServiceCounter",
-								new Object[] { serverName, serviceName}, 
-								new String[] {"java.lang.String", "java.lang.String"});
+					if (id == 0) {
+						counter = (Long) beanServerConnection.invoke(
+								blacktieAdmin, "getServiceCounter",
+								new Object[] { serverName, serviceName },
+								new String[] { "java.lang.String",
+										"java.lang.String" });
 					} else {
-						counter = (Long)beanServerConnection.invoke(blacktieAdmin, 
-								"getServiceCounterById",
-								new Object[] { serverName, id, serviceName}, 
-								new String[] {"java.lang.String", "int", "java.lang.String"});
+						counter = (Long) beanServerConnection.invoke(
+								blacktieAdmin, "getServiceCounterById",
+								new Object[] { serverName, id, serviceName },
+								new String[] { "java.lang.String", "int",
+										"java.lang.String" });
 					}
 					result.setSimpleResult(counter.toString());
 				}
 			} catch (Exception e) {
-				log.error("call get counter of " + serviceName 
+				log.error("call get counter of " + serviceName
 						+ " failed with " + e);
-				result.setErrorMessage("call get counter of " + serviceName 
+				result.setErrorMessage("call get counter of " + serviceName
 						+ " failed with " + e);
 			}
 		}

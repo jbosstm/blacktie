@@ -102,7 +102,7 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 	private MBeanServerConnection beanServerConnection;
 
 	private String domainName = null;
-	
+
 	private ObjectName blacktieAdmin = null;
 
 	/**
@@ -114,7 +114,7 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 	 */
 	public void start(ResourceContext context) {
 		resourceContext = context;
-		
+
 		try {
 			Properties prop = new Properties();
 			XMLEnvHandler handler = new XMLEnvHandler(prop);
@@ -124,7 +124,8 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 			JMXConnector c = JMXConnectorFactory.connect(u);
 			beanServerConnection = c.getMBeanServerConnection();
 
-			domainName = context.getResourceKey();;
+			domainName = context.getResourceKey();
+			;
 			blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
 		} catch (Exception e) {
 			log.error("start domain " + domainName + " plugin error with " + e);
@@ -155,8 +156,9 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 		// to determine if it is really up and running.
 		AvailabilityType status = AvailabilityType.UP;
 		try {
-			Object obj = beanServerConnection.invoke(blacktieAdmin, "getDomainStatus", null, null);
-			if((Boolean)obj) {
+			Object obj = beanServerConnection.invoke(blacktieAdmin,
+					"getDomainStatus", null, null);
+			if ((Boolean) obj) {
 				status = AvailabilityType.DOWN;
 			}
 		} catch (Exception e) {
@@ -209,12 +211,13 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 	public OperationResult invokeOperation(String name,
 			Configuration configuration) {
 		OperationResult result = new OperationResult();
-		
+
 		try {
-			Object obj = beanServerConnection.invoke(blacktieAdmin, name, null, null);
-						
-			if(name.equals("getServersStatus")) {
-				Element status = (Element)obj;
+			Object obj = beanServerConnection.invoke(blacktieAdmin, name, null,
+					null);
+
+			if (name.equals("getServersStatus")) {
+				Element status = (Element) obj;
 				// Set up the output transformer
 				TransformerFactory transfac = TransformerFactory.newInstance();
 				Transformer trans = transfac.newTransformer();
@@ -232,7 +235,7 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 		} catch (Exception e) {
 			result.setErrorMessage(e.toString());
 		}
-		
+
 		return result;
 	}
 

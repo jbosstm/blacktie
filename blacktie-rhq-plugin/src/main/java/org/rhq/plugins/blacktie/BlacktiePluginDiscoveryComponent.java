@@ -96,7 +96,8 @@ public class BlacktiePluginDiscoveryComponent implements
 			String domainName = prop.getProperty("blacktie.domain.name");
 			String key = domainName + " key";
 			String name = domainName;
-			String version = prop.getProperty("blacktie.domain.version");;
+			String version = prop.getProperty("blacktie.domain.version");
+			;
 			String description = "the blacktie domain";
 
 			DiscoveredResourceDetails resource = new DiscoveredResourceDetails(
