@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
@@ -21,8 +20,6 @@ import javax.management.remote.JMXServiceURL;
 import junit.framework.TestCase;
 
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
-import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
 
 /**
  * As this is an interactive test, the forkMode must be set to none is vital for
