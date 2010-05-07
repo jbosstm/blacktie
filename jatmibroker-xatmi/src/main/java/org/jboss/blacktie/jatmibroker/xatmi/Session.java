@@ -162,7 +162,7 @@ public class Session {
 	 * @throws ConnectionException
 	 */
 	void close() throws ConnectionException {
-		log.debug("Closing session");
+		log.debug("Closing session: " + cd);
 		if (sender != null) {
 			log.debug("Sender closing");
 			sender.close();
@@ -174,7 +174,7 @@ public class Session {
 			receiver = null;
 		}
 		connection.removeSession(this);
-		log.debug("Closed session");
+		log.debug("Closed session: " + cd);
 	}
 
 	/**
@@ -190,7 +190,7 @@ public class Session {
 	public int tpsend(Buffer toSend, int len, int flags)
 			throws ConnectionException {
 		int toReturn = -1;
-		log.debug("tpsend invoked");
+		log.debug("tpsend invoked: " + cd);
 
 		int toCheck = flags
 				& ~(Connection.TPRECVONLY | Connection.TPNOBLOCK
@@ -250,7 +250,7 @@ public class Session {
 	 * @return The next response
 	 */
 	public Buffer tprecv(int flags) throws ConnectionException {
-		log.debug("Receiving");
+		log.debug("Receiving: " + cd);
 
 		int toCheck = flags
 				& ~(Connection.TPNOCHANGE | Connection.TPNOBLOCK
@@ -334,6 +334,7 @@ public class Session {
 	 *            The connection descriptor to use
 	 */
 	public void tpdiscon() throws ConnectionException {
+		log.debug("tpdiscon: " + cd);
 		if (sender == null) {
 			throw new ConnectionException(Connection.TPEPROTO,
 					"Session was not in write mode");
@@ -367,12 +368,12 @@ public class Session {
 	}
 
 	private void setLastEvent(long lastEvent) {
-		log.debug("Set lastEvent: " + lastEvent);
+		log.debug("Set lastEvent: " + lastEvent + "cd: " + cd);
 		this.lastEvent = lastEvent;
 	}
 
 	public void setLastRCode(int rcode) {
-		log.debug("Set lastRCode: " + lastRCode);
+		log.debug("Set lastRCode: " + lastRCode + "cd: " + cd);
 		this.lastRCode = rcode;
 	}
 
@@ -415,6 +416,7 @@ public class Session {
 	 */
 	private Buffer tpalloc(String type, String subtype)
 			throws ConnectionException {
+		log.debug("tpalloc: " + cd);
 		if (type == null) {
 			throw new ConnectionException(Connection.TPEINVAL,
 					"No type provided");
