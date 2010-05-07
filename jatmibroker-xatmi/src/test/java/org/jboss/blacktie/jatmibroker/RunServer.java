@@ -26,14 +26,14 @@ import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyTpcallTPETIMEServi
 import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyTprecvTPEVDISCONIMMService;
 import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyTprecvTPEVSVCFAILService;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.blacktie.jatmibroker.xatmi.TestTPCallServiceXCType;
-import org.jboss.blacktie.jatmibroker.xatmi.TestTPCallServiceXOctet;
-import org.jboss.blacktie.jatmibroker.xatmi.TestTPConnectService;
 import org.jboss.blacktie.jatmibroker.xatmi.services.SpecExampleOneService;
 import org.jboss.blacktie.jatmibroker.xatmi.services.SpecExampleTwoService;
 import org.jboss.blacktie.jatmibroker.xatmi.services.TPACallService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPCallXCTypeService;
 import org.jboss.blacktie.jatmibroker.xatmi.services.TPCallXCommonService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPCallXOctetService;
 import org.jboss.blacktie.jatmibroker.xatmi.services.TPCancelService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPConnectService;
 import org.jboss.blacktie.jatmibroker.xatmi.services.TPConversationService;
 import org.jboss.blacktie.jatmibroker.xatmi.services.TPConversationShortService;
 import org.jboss.blacktie.jatmibroker.xatmi.services.TPDisconService;
@@ -88,7 +88,7 @@ public class RunServer {
 	}
 
 	public void tpadvertisetpcallXOctet() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TestTPCallServiceXOctet.class
+		this.server.tpadvertise("TestOne", TPCallXOctetService.class
 				.getName());
 	}
 
@@ -101,7 +101,7 @@ public class RunServer {
 	}
 
 	public void tpadvertisetpcallXCType() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TestTPCallServiceXCType.class
+		this.server.tpadvertise("TestOne", TPCallXCTypeService.class
 				.getName());
 	}
 
@@ -111,7 +111,7 @@ public class RunServer {
 
 	public void tpadvertiseTestTPConnect() throws ConnectionException {
 		this.server
-				.tpadvertise("TestOne", TestTPConnectService.class.getName());
+				.tpadvertise("TestOne", TPConnectService.class.getName());
 	}
 
 	public void tpadvertiseTestTPConversation() throws ConnectionException {

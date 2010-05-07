@@ -1,13 +1,19 @@
-package org.jboss.blacktie.jatmibroker.xatmi;
+package org.jboss.blacktie.jatmibroker.xatmi.services;
 
 import java.util.Arrays;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.blacktie.jatmibroker.xatmi.Response;
+import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
+import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
-public class TestTPCallServiceXOctet implements BlacktieService {
+public class TPCallXOctetService implements BlacktieService {
 	private static final Logger log = LogManager
-			.getLogger(TestTPCallServiceXOctet.class);
+			.getLogger(TPCallXOctetService.class);
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		log.info("test_tpcall_x_octet_service");
