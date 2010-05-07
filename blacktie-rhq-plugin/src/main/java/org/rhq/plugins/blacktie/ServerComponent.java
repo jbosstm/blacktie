@@ -19,7 +19,6 @@
 package org.rhq.plugins.blacktie;
 
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -29,12 +28,6 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -63,7 +56,6 @@ import org.rhq.core.pluginapi.inventory.ResourceContext;
 import org.rhq.core.pluginapi.measurement.MeasurementFacet;
 import org.rhq.core.pluginapi.operation.OperationFacet;
 import org.rhq.core.pluginapi.operation.OperationResult;
-import org.w3c.dom.Element;
 
 /**
  * This can be the start of your own custom plugin's server component. Review

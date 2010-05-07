@@ -38,7 +38,6 @@ import org.rhq.core.pluginapi.inventory.DiscoveredResourceDetails;
 import org.rhq.core.pluginapi.inventory.ProcessScanResult;
 import org.rhq.core.pluginapi.inventory.ResourceDiscoveryComponent;
 import org.rhq.core.pluginapi.inventory.ResourceDiscoveryContext;
-import org.w3c.dom.Element;
 
 /**
  * This can be the start of your own custom plugin's discovery component. Review
