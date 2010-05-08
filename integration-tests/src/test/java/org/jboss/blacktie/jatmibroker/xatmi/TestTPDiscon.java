@@ -38,8 +38,8 @@ public class TestTPDiscon extends TestCase {
 				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
 
-		cd = connection.tpconnect(server.getServiceNameTestTPDiscon(), null, 0,
-				Connection.TPSENDONLY);
+		cd = connection.tpconnect(RunServer.getServiceNameTestTPDiscon(), null,
+				0, Connection.TPSENDONLY);
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {

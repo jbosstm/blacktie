@@ -407,6 +407,40 @@ void test_TTL_service(TPSVCINFO *svcinfo) {
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }
 
+void test_tpgetrply_TPGETANY_one(TPSVCINFO *svcinfo) {
+	char* response = (char*) "test_tpgetrply_TPGETANY_one";
+	userlogc(response);
+
+	long sendlen = strlen(response) + 1;
+	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, sendlen);
+	strcpy(toReturn, response);
+	::sleeper(10);
+	tpreturn(TPSUCCESS, 0, toReturn, sendlen, 0);
+}
+
+void test_tpgetrply_TPGETANY_two(TPSVCINFO *svcinfo) {
+	char* response = (char*) "test_tpgetrply_TPGETANY_two";
+	userlogc(response);
+
+	long sendlen = strlen(response) + 1;
+	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, sendlen);
+	strcpy(toReturn, response);
+	::sleeper(5);
+	tpreturn(TPSUCCESS, 0, toReturn, sendlen, 0);
+}
+
+void testtpreturn_service_opensession1(TPSVCINFO *svcinfo) {
+	userlogc((char*) "testtpreturn_service_opensession1");
+	int cd = ::tpacall((char*) "CREDIT", (char *) svcinfo->data, svcinfo->len,
+			0);
+	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
+}
+
+void testtpreturn_service_opensession2(TPSVCINFO *svcinfo) {
+	userlogc((char*) "testtpreturn_service_opensession2");
+	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
+}
+
 extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_serverinit(JNIEnv *, jobject) {
 	int exit_status = -1;
@@ -602,4 +636,24 @@ JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertise
 extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTTL(JNIEnv *, jobject) {
 	tpadvertise((char*) "TTL", test_TTL_service);
+}
+
+extern "C"
+JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPGetrplyOne(JNIEnv *, jobject) {
+	tpadvertise((char*) "DEBIT", test_tpgetrply_TPGETANY_one);
+}
+
+extern "C"
+JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPGetrplyTwo(JNIEnv *, jobject) {
+	tpadvertise((char*) "CREDIT", test_tpgetrply_TPGETANY_two);
+}
+
+extern "C"
+JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPReturn3(JNIEnv *, jobject) {
+	tpadvertise((char*) "TestTPReturn", testtpreturn_service_opensession1);
+}
+
+extern "C"
+JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPReturn4(JNIEnv *, jobject) {
+	tpadvertise((char*) "CREDIT", testtpreturn_service_opensession2);
 }

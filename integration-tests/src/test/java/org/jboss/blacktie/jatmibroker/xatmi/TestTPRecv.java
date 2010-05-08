@@ -45,25 +45,21 @@ public class TestTPRecv extends TestCase {
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
-		if (cd != null) {
-			cd.tpdiscon();
-		}
 		connection.close();
 		server.serverdone();
 	}
 
 	public void test_tprecv_sendonly() throws ConnectionException {
 		log.info("test_tprecv_sendonly");
-		cd = connection.tpconnect(server.getServiceNameTestTPRecv(), sendbuf,
-				sendlen, Connection.TPSENDONLY);
+		cd = connection.tpconnect(RunServer.getServiceNameTestTPRecv(),
+				sendbuf, sendlen, Connection.TPSENDONLY);
 		try {
 			cd.tprecv(0);
 			fail("expected proto error");
 		} catch (ResponseException e) {
-			assertTrue((e.getEvent() == Connection.TPEV_SVCERR)
-					|| (e.getTperrno() == Connection.TPEPROTO));
+			assertTrue(e.getEvent() == Connection.TPEV_SVCERR);
 		} catch (ConnectionException e) {
-			fail("expected proto error");
+			assertTrue(e.getTperrno() == Connection.TPEPROTO);
 		}
 	}
 }

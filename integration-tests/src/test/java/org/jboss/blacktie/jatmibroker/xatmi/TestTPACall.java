@@ -50,7 +50,7 @@ public class TestTPACall extends TestCase {
 		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
 		sendbuf.setByteArray(toSend);
 
-		int cd = connection.tpacall(server.getServiceNameTestTPACall(),
+		int cd = connection.tpacall(RunServer.getServiceNameTestTPACall(),
 				sendbuf, sendlen, Connection.TPNOREPLY);
 		assertTrue(cd == 0);
 

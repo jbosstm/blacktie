@@ -59,7 +59,7 @@ public class TestSpecExampleTwo extends TestCase {
 				"retrieve all accounts with balances less than 0".getBytes());
 		// TODO tx_begin(); /* start global transaction */
 		/* connect to conversational service, send input data, & yield control */
-		cd = connection.tpconnect(server.getServiceNameINQUIRY(), ptr, 0,
+		cd = connection.tpconnect(RunServer.getServiceNameINQUIRY(), ptr, 0,
 				Connection.TPRECVONLY | Connection.TPSIGRSTRT);
 		do {
 

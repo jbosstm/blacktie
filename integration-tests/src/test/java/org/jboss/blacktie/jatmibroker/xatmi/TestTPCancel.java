@@ -50,7 +50,7 @@ public class TestTPCancel extends TestCase {
 		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
 		sendbuf.setByteArray(message);
 
-		int cd = connection.tpacall(server.getServiceNameTestTPCancel(),
+		int cd = connection.tpacall(RunServer.getServiceNameTestTPCancel(),
 				sendbuf, sendlen, 0);
 		assertTrue(cd != -1);
 		assertTrue(cd != 0);
@@ -76,7 +76,7 @@ public class TestTPCancel extends TestCase {
 		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
 		sendbuf.setByteArray(message);
 
-		int cd = connection.tpacall(server.getServiceNameTestTPCancel(),
+		int cd = connection.tpacall(RunServer.getServiceNameTestTPCancel(),
 				sendbuf, sendlen, Connection.TPNOREPLY);
 		assertTrue(cd == 0);
 

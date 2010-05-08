@@ -73,8 +73,8 @@ public class TestTPCall extends TestCase {
 		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
 		sendbuf.setByteArray(toSend.getBytes());
 
-		Response rcvbuf = connection.tpcall(
-				server.getServiceNametpcallXOctet(), sendbuf, sendlen, 0);
+		Response rcvbuf = connection.tpcall(RunServer
+				.getServiceNametpcallXOctet(), sendbuf, sendlen, 0);
 		assertTrue(rcvbuf != null);
 		assertTrue(rcvbuf.getBuffer() != null);
 		assertTrue(((X_OCTET) rcvbuf.getBuffer()).getByteArray() != null);
@@ -123,9 +123,8 @@ public class TestTPCall extends TestCase {
 		balances[1] = 2.2;
 		aptr.setDoubleArray("balances", balances);
 
-		Response rcvbuf = connection.tpcall(
-				server.getServiceNametpcallXCType(), aptr, 0,
-				Connection.TPNOCHANGE);
+		Response rcvbuf = connection.tpcall(RunServer
+				.getServiceNametpcallXCType(), aptr, 0, Connection.TPNOCHANGE);
 		assertTrue(rcvbuf.getRcode() == 23);
 		byte[] received = ((X_OCTET) rcvbuf.getBuffer()).getByteArray();
 		byte[] expected = new byte[received.length];

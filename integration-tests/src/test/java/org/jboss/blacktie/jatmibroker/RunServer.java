@@ -78,111 +78,111 @@ public class RunServer {
 	public native void tpadvertiseTX2();
 
 	// SERVICE NAMES
-	public String getServiceNameBAR() {
+	public static String getServiceNameBAR() {
 		return "BAR";
 	}
 
-	public String getServiceNameLOOPY() {
+	public static String getServiceNameLOOPY() {
 		return "LOOPY";
 	}
 
-	public String getServiceNameDEBIT() {
+	public static String getServiceNameDEBIT() {
 		return "DEBIT";
 	}
 
-	public String getServiceNameCREDIT() {
+	public static String getServiceNameCREDIT() {
 		return "CREDIT";
 	}
 
-	public String getServiceNameINQUIRY() {
+	public static String getServiceNameINQUIRY() {
 		return "INQUIRY";
 	}
 
-	public String getServiceNameTestTPACall() {
+	public static String getServiceNameTestTPACall() {
 		return "TestTPACall";
 	}
 
-	public String getServiceNametpcallXOctet() {
+	public static String getServiceNametpcallXOctet() {
 		return "tpcall_x_octet";
 	}
 
-	public String getServiceNametpcallXOctetZero() {
+	public static String getServiceNametpcallXOctetZero() {
 		return "tpcall_x_octet_zero";
 	}
 
-	public String getServiceNametpcallXCommon() {
+	public static String getServiceNametpcallXCommon() {
 		return "tpcall_x_common";
 	}
 
-	public String getServiceNametpcallXCType() {
+	public static String getServiceNametpcallXCType() {
 		return "tpcall_x_c_type";
 	}
 
-	public String getServiceNameTestTPCancel() {
+	public static String getServiceNameTestTPCancel() {
 		return "TestTPCancel";
 	}
 
-	public String getServiceNameTestTPConnect() {
+	public static String getServiceNameTestTPConnect() {
 		return "TestTPConnect";
 	}
 
-	public String getServiceNameTestTPConversation() {
+	public static String getServiceNameTestTPConversation() {
 		return "TestTPConversation";
 	}
 
-	public String getServiceNameTestTPDiscon() {
+	public static String getServiceNameTestTPDiscon() {
 		return "TestTPDiscon";
 	}
 
-	public String getServiceNameTestTPConversa2() {
+	public static String getServiceNameTestTPConversa2() {
 		return "TestTPConversation";
 	}
 
-	public String getServiceNameTestTPFree() {
+	public static String getServiceNameTestTPFree() {
 		return "TestTPFree";
 	}
 
-	public String getServiceNameTestTPGetrply() {
+	public static String getServiceNameTestTPGetrply() {
 		return "TestTPGetrply";
 	}
 
-	public String getServiceNameTestTPRecv() {
+	public static String getServiceNameTestTPRecv() {
 		return "TestTPRecv";
 	}
 
-	public String getServiceNameTestTPReturn() {
+	public static String getServiceNameTestTPReturn() {
 		return "TestTPReturn";
 	}
 
-	public String getServiceNameTestTPReturn2() {
+	public static String getServiceNameTestTPReturn2() {
 		return "TestTPReturn";
 	}
 
-	public String getServiceNameTestTPSend() {
+	public static String getServiceNameTestTPSend() {
 		return "TestTPSend";
 	}
 
-	public String getServiceNameTestTPService() {
+	public static String getServiceNameTestTPService() {
 		return "TestTPService";
 	}
 
-	public String getServiceNameTestTPUnadvertise() {
+	public static String getServiceNameTestTPUnadvertise() {
 		return "TestTPUnadvertise";
 	}
 
-	public String getServiceNameTX1() {
+	public static String getServiceNameTX1() {
 		throw new RuntimeException("NOT SUPPORTED");
 	}
 
-	public String getServiceNameTX2() {
+	public static String getServiceNameTX2() {
 		throw new RuntimeException("NOT SUPPORTED");
 	}
 
-	public String getServiceNameTestRollbackOnly() {
+	public static String getServiceNameTestRollbackOnly() {
 		return "TestRbkOnly";
 	}
 
-	public String getServiceNameTTL() {
+	public static String getServiceNameTTL() {
 		return "TTL";
 	}
 
@@ -202,7 +202,23 @@ public class RunServer {
 
 	public native void tpadvertiseTestTPSendTPSendOnly();
 
-	public String getServiceNameTestTPSendTPSendOnly() {
+	public static String getServiceNameTestTPSendTPSendOnly() {
 		return "TestTPSend";
 	}
+
+	public native void tpadvertiseTestTPGetrplyOne();
+
+	public native void tpadvertiseTestTPGetrplyTwo();
+
+	public static String getServiceNameTestTPGetrplyOne() {
+		return "DEBIT";
+	}
+
+	public static String getServiceNameTestTPGetrplyTwo() {
+		return "CREDIT";
+	}
+
+	public native void tpadvertiseTestTPReturn3();
+
+	public native void tpadvertiseTestTPReturn4();
 }

@@ -68,7 +68,7 @@ public class TestTPReturn extends TestCase {
 		sendbuf.setByteArray("tprnb".getBytes());
 
 		try {
-			connection.tpcall(server.getServiceNameTestTPReturn(), sendbuf,
+			connection.tpcall(RunServer.getServiceNameTestTPReturn(), sendbuf,
 					sendlen, 0);
 			fail("Managed to send call");
 		} catch (ConnectionException e) {
@@ -92,9 +92,31 @@ public class TestTPReturn extends TestCase {
 		assertTrue(success.getRcode() == 24);
 
 		sendbuf.setByteArray("77".getBytes());
-		success = connection.tpcall(server.getServiceNameTestTPReturn2(),
+		success = connection.tpcall(RunServer.getServiceNameTestTPReturn2(),
 				sendbuf, sendlen, 0);
 		assertTrue(success != null);
 		assertTrue(success.getRcode() == 77);
 	}
+
+	public void test_tpreturn_opensession() throws ConnectionException {
+		log.info("test_tpreturn_opensession");
+
+		// Do local work
+		server.tpadvertiseTestTPReturn3();
+		server.tpadvertiseTestTPReturn4();
+
+		int sendlen = 2;
+
+		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf.setByteArray("X".getBytes());
+		try {
+			connection.tpcall(RunServer.getServiceNameTestTPReturn(), sendbuf,
+					sendlen, 0);
+			fail("Did not receive the expected exception");
+		} catch (ConnectionException e) {
+			assertTrue(e.getTperrno() == Connection.TPESVCERR);
+		}
+
+	}
+
 }

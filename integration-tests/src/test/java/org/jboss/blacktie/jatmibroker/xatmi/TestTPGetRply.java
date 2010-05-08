@@ -33,7 +33,6 @@ public class TestTPGetRply extends TestCase {
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		server.serverinit();
-		server.tpadvertiseTestTPGetrply();
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -52,7 +51,8 @@ public class TestTPGetRply extends TestCase {
 
 	public void test_tpgetrply() throws ConnectionException {
 		log.info("test_tpgetrply");
-		int cd = connection.tpacall(server.getServiceNameTestTPGetrply(),
+		server.tpadvertiseTestTPGetrply();
+		int cd = connection.tpacall(RunServer.getServiceNameTestTPGetrply(),
 				sendbuf, sendlen, 0);
 		assertTrue(cd != -1);
 
@@ -62,8 +62,9 @@ public class TestTPGetRply extends TestCase {
 	}
 
 	// 8.5
-	public void test_tpgetrply_baddesc() {
+	public void test_tpgetrply_baddesc() throws ConnectionException {
 		log.info("test_tpgetrply_baddesc");
+		server.tpadvertiseTestTPGetrply();
 		int cd = 2;
 		try {
 			connection.tpgetrply(cd, 0);
@@ -119,4 +120,53 @@ public class TestTPGetRply extends TestCase {
 	// assertTrue(tperrno != TPEBLOCK);
 	// assertTrue(tperrno == TPEINVAL);
 	// }
+
+	public void test_tpgetrply_with_TPGETANY() throws ConnectionException {
+		log.info("test_tpgetrply_with_TPGETANY");
+		server.tpadvertiseTestTPGetrplyOne();
+		server.tpadvertiseTestTPGetrplyTwo();
+
+		int cd1 = connection
+				.tpacall(RunServer.getServiceNameTestTPGetrplyOne(), sendbuf,
+						sendlen, 0);
+		assertTrue(cd1 != -1);
+
+		int cd2 = connection
+				.tpacall(RunServer.getServiceNameTestTPGetrplyTwo(), sendbuf,
+						sendlen, 0);
+		assertTrue(cd2 != -1);
+		assertTrue(cd1 != cd2);
+
+		// RETRIEVE THE RESPONSE
+		int cdToGet = cd1;
+		Response response = connection.tpgetrply(cdToGet, Connection.TPGETANY);
+		assertTrue(response.getCd() == cd2);
+		assertTrue(TestTPConversation.strcmp(response.getBuffer(),
+				"test_tpgetrply_TPGETANY_two") == 0);
+	}
+
+	public void test_tpgetrply_without_TPGETANY() throws ConnectionException {
+		log.info("test_tpgetrply_without_TPGETANY");
+		server.tpadvertiseTestTPGetrplyOne();
+		server.tpadvertiseTestTPGetrplyTwo();
+
+		int cd1 = connection
+				.tpacall(RunServer.getServiceNameTestTPGetrplyOne(), sendbuf,
+						sendlen, 0);
+		assertTrue(cd1 != -1);
+
+		int cd2 = connection
+				.tpacall(RunServer.getServiceNameTestTPGetrplyTwo(), sendbuf,
+						sendlen, 0);
+		assertTrue(cd2 != -1);
+		assertTrue(cd1 != cd2);
+
+		// RETRIEVE THE RESPONSE
+		int cdToGet = cd1;
+		Response response = connection.tpgetrply(cdToGet, 0);
+		assertTrue(response.getCd() == cd1);
+		assertTrue(TestTPConversation.strcmp(response.getBuffer(),
+				"test_tpgetrply_TPGETANY_one") == 0);
+	}
+
 }

@@ -46,10 +46,6 @@ public class TestTPSend extends TestCase {
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
-		if (cd != null) {
-			cd.tpdiscon();
-		}
-
 		connection.close();
 		server.serverdone();
 	}
@@ -58,16 +54,15 @@ public class TestTPSend extends TestCase {
 		log.info("test_tpsend_recvonly");
 		server.tpadvertiseTestTPSend();
 
-		cd = connection.tpconnect(server.getServiceNameTestTPSend(), sendbuf,
-				sendlen, Connection.TPRECVONLY);
+		cd = connection.tpconnect(RunServer.getServiceNameTestTPSend(),
+				sendbuf, sendlen, Connection.TPRECVONLY);
 		try {
 			cd.tpsend(sendbuf, sendlen, 0);
 			fail("expected proto error");
 		} catch (ResponseException e) {
-			assertTrue((e.getEvent() == Connection.TPEV_SVCERR)
-					|| (e.getTperrno() == Connection.TPEPROTO));
+			assertTrue(e.getEvent() == Connection.TPEV_SVCERR);
 		} catch (ConnectionException e) {
-			fail("expected proto error");
+			assertTrue(e.getTperrno() == Connection.TPEPROTO);
 		}
 	}
 
@@ -75,15 +70,18 @@ public class TestTPSend extends TestCase {
 		log.info("test_tpsend_tpsendonly");
 		server.tpadvertiseTestTPSendTPSendOnly();
 
-		cd = connection.tpconnect(server.getServiceNameTestTPSendTPSendOnly(),
-				sendbuf, sendlen, Connection.TPRECVONLY);
+		cd = connection.tpconnect(RunServer
+				.getServiceNameTestTPSendTPSendOnly(), sendbuf, sendlen,
+				Connection.TPRECVONLY);
 
 		try {
 			cd.tprecv(0);
-			fail("Expected SENDONLY event");
+			fail("Expected sendonly event");
 		} catch (ResponseException e) {
 			assertTrue(e.getTperrno() == Connection.TPEEVENT);
 			assertTrue(e.getEvent() == Connection.TPEV_SENDONLY);
+		} catch (ConnectionException e) {
+			fail("expected sendonly error");
 		}
 		try {
 			cd.tprecv(0);
