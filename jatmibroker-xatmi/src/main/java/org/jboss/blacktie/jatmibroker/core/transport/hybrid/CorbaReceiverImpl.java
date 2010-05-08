@@ -55,6 +55,7 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 	private int pad = 0;
 	private ResponseMonitor responseMonitor;
 	private int cd;
+	private boolean closed;
 
 	CorbaReceiverImpl(EventListener eventListener, OrbManagement orbManagement,
 			Properties properties, int cd, ResponseMonitor responseMonitor)
@@ -87,7 +88,8 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 			callbackIOR = orb.object_to_string(clientCallback);
 			log.debug("Created:" + callbackIOR);
 		} catch (Throwable t) {
-			throw new ConnectionException(-1, "Cannot create the receiver", t);
+			throw new ConnectionException(Connection.TPESYSTEM,
+					"Cannot create the receiver", t);
 		}
 		timeout = Integer.parseInt(properties.getProperty("RequestTimeout"))
 				* 1000 + Integer.parseInt(properties.getProperty("TimeToLive"))
@@ -253,9 +255,14 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 		}
 	}
 
-	public void close() {
+	public void close() throws ConnectionException {
 		log.debug("close");
+		if (closed) {
+			throw new ConnectionException(Connection.TPEPROTO,
+					"Sender already closed");
+		}
 		disconnect();
+		closed = true;
 	}
 
 	public int determineTimeout(long flags) throws ConnectionException {

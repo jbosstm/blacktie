@@ -117,12 +117,16 @@ public class JMSSenderImpl implements Sender {
 			}
 			log.debug("sent message");
 		} catch (JMSException e) {
-			throw new ConnectionException(-1, "Could not send the message: "
-					+ e.getMessage(), e);
+			throw new ConnectionException(Connection.TPESYSTEM,
+					"Could not send the message: " + e.getMessage(), e);
 		}
 	}
 
 	public void close() throws ConnectionException {
+		if (closed) {
+			throw new ConnectionException(Connection.TPEPROTO,
+					"Sender already closed");
+		}
 		try {
 			log.debug("Sender closing: " + name);
 			sender.close();
@@ -130,7 +134,8 @@ public class JMSSenderImpl implements Sender {
 			closed = true;
 			log.debug("Sender closed: " + name);
 		} catch (Throwable t) {
-			throw new ConnectionException(-1, "Could not send the message", t);
+			throw new ConnectionException(Connection.TPESYSTEM,
+					"Could not send the message", t);
 		}
 	}
 

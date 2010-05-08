@@ -81,8 +81,12 @@ public class CorbaSenderImpl implements Sender {
 		log.debug("Sent the message");
 	}
 
-	public void close() {
+	public void close() throws ConnectionException {
 		log.debug("Close called");
+		if (closed) {
+			throw new ConnectionException(Connection.TPEPROTO,
+					"Sender already closed");
+		}
 		closed = true;
 		log.debug("Sender closed: " + name);
 	}

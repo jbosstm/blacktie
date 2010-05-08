@@ -42,6 +42,7 @@ public class JMSReceiverImpl implements Receiver {
 	private MessageConsumer receiver;
 	private boolean isTemporary;
 	private int timeout = 0;
+	private boolean closed;
 	private static int pad = 0;
 
 	JMSReceiverImpl(Session session, Properties properties) throws JMSException {
@@ -87,12 +88,17 @@ public class JMSReceiverImpl implements Receiver {
 			throw new ConnectionException(Connection.TPETIME,
 					"Did not receive a message");
 		} catch (JMSException t) {
-			throw new ConnectionException(-1, "Couldn't receive the message", t);
+			throw new ConnectionException(Connection.TPESYSTEM,
+					"Couldn't receive the message", t);
 		}
 	}
 
 	public void close() throws ConnectionException {
 		log.debug("close");
+		if (closed) {
+			throw new ConnectionException(Connection.TPEPROTO,
+					"Sender already closed");
+		}
 		try {
 			log.debug("closing consumer");
 			receiver.close();
@@ -102,9 +108,11 @@ public class JMSReceiverImpl implements Receiver {
 				((TemporaryQueue) destination).delete();
 				log.debug("Deleted: " + destination.getQueueName());
 			}
+			closed = true;
 		} catch (Throwable t) {
 			log.debug("consumer could not be closed");
-			throw new ConnectionException(-1, "Could not delete the queue", t);
+			throw new ConnectionException(Connection.TPESYSTEM,
+					"Could not delete the queue", t);
 		}
 	}
 

@@ -89,7 +89,9 @@ public class TransportFactoryImpl extends TransportFactory {
 			instance = new TransportImpl(orbManagement, context, connection,
 					props);
 		} catch (Throwable t) {
-			throw new ConnectionException(-1, "Could not connect to server", t);
+			throw new ConnectionException(
+					org.jboss.blacktie.jatmibroker.xatmi.Connection.TPESYSTEM,
+					"Could not connect to server", t);
 		}
 		log.debug("Created");
 		return instance;

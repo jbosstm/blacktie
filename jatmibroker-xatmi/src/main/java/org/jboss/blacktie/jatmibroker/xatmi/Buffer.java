@@ -161,7 +161,7 @@ public abstract class Buffer implements Serializable {
 			int[] counts) throws ConnectionException {
 		structure.clear();
 		if (keys.length != types.length || types.length != lengths.length) {
-			throw new ConnectionException(-1,
+			throw new ConnectionException(Connection.TPEINVAL,
 					"Invalid format, each array description should be same length");
 		}
 		this.keys = keys;

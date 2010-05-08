@@ -235,7 +235,8 @@ public class Session {
 
 			toReturn = 0;
 		} else {
-			throw new ConnectionException(-1, "Session in receive mode", null);
+			throw new ConnectionException(Connection.TPEPROTO,
+					"Session in receive mode");
 		}
 		return toReturn;
 	}

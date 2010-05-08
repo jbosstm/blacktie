@@ -51,6 +51,7 @@ public class TransportImpl implements Runnable, Transport {
 	private Connection connection;
 	private Session session;
 	private Properties properties;
+	private boolean closed;
 
 	TransportImpl(OrbManagement orbManagement, Context context,
 			Connection connection, Properties properties) throws InvalidName,
@@ -84,16 +85,26 @@ public class TransportImpl implements Runnable, Transport {
 
 	public void close() throws ConnectionException {
 		log.debug("Close called");
+		if (closed) {
+			throw new ConnectionException(
+					org.jboss.blacktie.jatmibroker.xatmi.Connection.TPEPROTO,
+					"Transport already closed");
+		}
 		try {
 			session.close();
-		} catch (Throwable t) {
-			throw new ConnectionException(-1, "Could not close the session", t);
+		} catch (JMSException e) {
+			throw new ConnectionException(
+					org.jboss.blacktie.jatmibroker.xatmi.Connection.TPESYSTEM,
+					"Could not close the session", e);
 		} finally {
 			try {
 				connection.close();
 			} catch (Throwable t) {
-				throw new ConnectionException(-1,
+				throw new ConnectionException(
+						org.jboss.blacktie.jatmibroker.xatmi.Connection.TPESYSTEM,
 						"Could not close the connection", t);
+			} finally {
+				closed = true;
 			}
 		}
 		log.debug("Closed");
@@ -116,7 +127,8 @@ public class TransportImpl implements Runnable, Transport {
 					org.jboss.blacktie.jatmibroker.xatmi.Connection.TPENOENT,
 					"Could not resolve destination: " + serviceName, e);
 		} catch (Throwable t) {
-			throw new ConnectionException(-1,
+			throw new ConnectionException(
+					org.jboss.blacktie.jatmibroker.xatmi.Connection.TPESYSTEM,
 					"Could not create a service sender: " + t.getMessage(), t);
 		}
 	}
@@ -144,7 +156,8 @@ public class TransportImpl implements Runnable, Transport {
 					org.jboss.blacktie.jatmibroker.xatmi.Connection.TPENOENT,
 					"Could not resolve destination: " + serviceName, e);
 		} catch (Throwable t) {
-			throw new ConnectionException(-1,
+			throw new ConnectionException(
+					org.jboss.blacktie.jatmibroker.xatmi.Connection.TPESYSTEM,
 					"Could not create the receiver on: " + serviceName, t);
 		}
 

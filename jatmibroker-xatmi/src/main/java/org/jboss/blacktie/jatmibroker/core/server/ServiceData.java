@@ -28,8 +28,8 @@ import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.core.transport.Transport;
 import org.jboss.blacktie.jatmibroker.core.transport.TransportFactory;
-import org.jboss.blacktie.jatmibroker.xatmi.Service;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.blacktie.jatmibroker.xatmi.Service;
 
 public class ServiceData {
 
