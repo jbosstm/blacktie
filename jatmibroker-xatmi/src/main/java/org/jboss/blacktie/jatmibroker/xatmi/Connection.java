@@ -343,12 +343,6 @@ public class Connection {
 		}
 
 		Response toReturn = receive(cd, flags);
-		Session session = sessions.remove(cd);
-		if (session != null) {
-			log.debug("closing session");
-			session.close();
-			log.debug("closed session");
-		}
 		log.debug("tpgetrply returning: " + toReturn);
 		return toReturn;
 	}

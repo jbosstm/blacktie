@@ -345,7 +345,7 @@ public class Session {
 		// Check we didn't just get an event while waiting
 		if (this.lastEvent > -1) {
 			if ((lastEvent & Connection.TPEV_SENDONLY) != Connection.TPEV_SENDONLY) {
-				log.debug("Completed session is being closed");
+				log.debug("Completed session is being closed: " + cd);
 				close();
 			}
 			throw new ResponseException(Connection.TPEEVENT,
@@ -357,7 +357,7 @@ public class Session {
 					m.rcode, received);
 		} else if (m.rval == Connection.TPSUCCESS
 				|| m.rval == Connection.TPFAIL) {
-			log.debug("Completed session is being closed");
+			log.debug("Completed session is being closed: " + cd);
 			close();
 			if (m.rval == Connection.TPSUCCESS) {
 				throw new ResponseException(Connection.TPEEVENT,
