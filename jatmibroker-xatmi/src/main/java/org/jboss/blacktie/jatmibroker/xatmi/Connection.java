@@ -444,21 +444,21 @@ public class Connection {
 		log.debug("Close connection called");
 
 		// MUST close the session first to remove the temporary queue
-		Iterator<Session> sessions = this.sessions.values().iterator();
-		while (sessions.hasNext()) {
-			Session session = sessions.next();
-			log.debug("closing session: " + session.getCd());
-			session.tpdiscon();
-			log.debug("Closed open session: " + session.getCd());
+		Session[] sessions = new Session[this.sessions.size()];
+		sessions = this.sessions.values().toArray(sessions);
+		for (int i = 0; i < sessions.length; i++) {
+			log.debug("closing session: " + sessions[i].getCd());
+			sessions[i].tpdiscon();
+			log.debug("Closed open session: " + sessions[i].getCd());
 		}
 		this.sessions.clear();
 		log.trace("Sessions cleared");
 
-		Iterator<Receiver> receivers = temporaryQueues.values().iterator();
-		while (receivers.hasNext()) {
-			Receiver receiver = receivers.next();
+		Receiver[] receivers = new Receiver[temporaryQueues.size()];
+		receivers = temporaryQueues.values().toArray(receivers);
+		for (int i = 0; i < receivers.length; i++) {
 			log.debug("closing receiver");
-			tpcancel(receiver.getCd());
+			tpcancel(receivers[i].getCd());
 			log.warn("Closed open receiver");
 		}
 		temporaryQueues.clear();
@@ -467,6 +467,7 @@ public class Connection {
 		if (serviceSession != null) {
 			log.debug("closing service session");
 			serviceSession.close();
+			serviceSession = null;
 			log.debug("Closed open service session");
 		}
 
@@ -590,8 +591,19 @@ public class Connection {
 		log.debug("Removing session: " + session.getCd());
 		temporaryQueues.remove(session.getCd());
 		// May be a no-op
-		Session remove = sessions.remove(session.getCd());
-		if (remove == null) {
+		boolean remove = false;
+		Iterator<Integer> iterator = sessions.keySet().iterator();
+		while (iterator.hasNext()) {
+			Integer next = iterator.next();
+			if (next.intValue() == session.getCd()) {
+				iterator.remove();
+				remove = true;
+				break;
+			} else {
+				log.trace("Ignoring: " + next);
+			}
+		}
+		if (!remove) {
 			log.debug("Session did not exist: " + session.getCd());
 		}
 
