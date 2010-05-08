@@ -19,12 +19,7 @@ package org.jboss.blacktie.jatmibroker.core.conf;
 
 import java.util.Properties;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 public class AtmiBrokerEnvXML {
-	private static final Logger log = LogManager
-			.getLogger(AtmiBrokerEnvXML.class);
 	private Properties prop;
 
 	public AtmiBrokerEnvXML() {

@@ -46,10 +46,6 @@ public class TestTPSend extends TestCase {
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
-		if (cd != null) {
-			cd.tpdiscon();
-		}
-
 		connection.close();
 		server.serverdone();
 	}

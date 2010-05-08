@@ -76,8 +76,7 @@ public class AdministrationProxy {
 		XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
 		xmlenv.parse("btconfig.xml");
 		servers = (List<String>) prop.get("blacktie.domain.servers");
-		ConnectionFactory cf = ConnectionFactory.getConnectionFactory()
-				.getConnectionFactory();
+		ConnectionFactory cf = ConnectionFactory.getConnectionFactory();
 		connection = cf.getConnection();
 		JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
 		c = JMXConnectorFactory.connect(u);
@@ -418,7 +417,7 @@ public class AdministrationProxy {
 					List<Integer> ids = listRunningInstanceIds(serverName);
 					if (id == 0 && ids.size() > 0 || ids.contains(id)) {
 						try {
-							Thread.currentThread().sleep(3000);
+							Thread.sleep(3000);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}

@@ -18,8 +18,6 @@
 package org.jboss.blacktie.jatmibroker.xatmi;
 
 public class CSTest extends CSControl {
-	private static final org.apache.log4j.Logger log = org.apache.log4j.LogManager
-			.getLogger(CSTest.class);
 
 	// private static CSControl control = new CSControl();
 

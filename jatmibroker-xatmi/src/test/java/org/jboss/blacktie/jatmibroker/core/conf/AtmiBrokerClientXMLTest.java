@@ -21,25 +21,13 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 public class AtmiBrokerClientXMLTest extends TestCase {
-	private static final Logger log = LogManager
-			.getLogger(AtmiBrokerClientXMLTest.class);
-
-	public void setUp() throws InterruptedException {
-	}
-
-	public void tearDown() {
-	}
 
 	public void test() throws Exception {
 		AtmiBrokerEnvXML clientDesc = new AtmiBrokerEnvXML();
 		Properties prop = clientDesc.getProperties();
 
 		String domain = "fooapp";
-		String server = "foo";
 		String transid = "TransactionManagerService.OTS";
 		String args = "2";
 		String arg1 = "-ORBInitRef";
@@ -47,7 +35,6 @@ public class AtmiBrokerClientXMLTest extends TestCase {
 		String arg3 = ":3528/NameService";
 
 		assertTrue(domain.equals(prop.getProperty("blacktie.domain.name")));
-		// assertTrue(server.equals(prop.getProperty("blacktie.server.name")));
 		assertTrue(transid.equals(prop.getProperty("blacktie.trans.factoryid")));
 		assertTrue(args.equals(prop.getProperty("blacktie.orb.args")));
 		assertTrue(arg1.equals(prop.getProperty("blacktie.orb.arg.1")));

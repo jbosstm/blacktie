@@ -18,6 +18,14 @@
 package org.jboss.blacktie.btadmin;
 
 public class CommandFailedException extends Exception {
+	/**
+	 * Non default serialization id.
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * The return code
+	 */
 	private int exitCode;
 
 	/**

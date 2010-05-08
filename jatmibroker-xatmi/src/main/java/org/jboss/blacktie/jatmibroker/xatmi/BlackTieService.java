@@ -68,7 +68,7 @@ public abstract class BlackTieService implements Service {
 	protected void processMessage(Message message) throws ConnectionException,
 			ConfigurationException {
 		Connection connection = ConnectionFactory.getConnectionFactory()
-				.getConnectionFactory().getConnection();
+				.getConnection();
 		if (message.control != null) {
 			try {
 				JABTransaction.associateTx(message.control); // associate tx

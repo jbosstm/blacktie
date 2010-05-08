@@ -36,7 +36,6 @@ public abstract class CSControl extends TestCase {
 	private ProcessBuilder serverBuilder;
 	private ProcessBuilder clientBuilder;
 	private TestProcess server;
-	private TestProcess client;
 	private String CS_EXE;
 	private String REPORT_DIR;
 	private static int sid = 1;
@@ -239,7 +238,7 @@ public abstract class CSControl extends TestCase {
 				while ((len = es.read(buf)) > 0)
 					estream.write(buf, 0, len);
 			} catch (IOException e) {
-				if (!thread.interrupted())
+				if (!Thread.interrupted())
 					log.warn(builder.command() + ": IO error on stream write: "
 							+ e);
 			}

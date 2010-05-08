@@ -17,7 +17,21 @@
  */
 package org.jboss.blacktie.btadmin;
 
+/**
+ * If the arguments are not compatible then this exception is raised.
+ */
 public class IncompatibleArgsException extends Exception {
+	/**
+	 * Non-default serial UID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * If the arguments are not compatible with this command.
+	 * 
+	 * @param message
+	 *            The description of the problem.
+	 */
 	public IncompatibleArgsException(String message) {
 		super(message);
 	}
