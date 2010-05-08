@@ -558,7 +558,10 @@ public class Connection {
 	void removeSession(Session session) {
 		temporaryQueues.remove(session.getCd());
 		// May be a no-op
-		sessions.remove(session.getCd());
+		Session remove = sessions.remove(session.getCd());
+		if (remove == null) {
+			log.debug("Session did not exist: " + session.getCd());
+		}
 
 		if (session.equals(serviceSession)) {
 			serviceSession = null;
