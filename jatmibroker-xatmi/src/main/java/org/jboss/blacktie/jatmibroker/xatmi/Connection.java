@@ -529,13 +529,13 @@ public class Connection {
 		}
 		if (message.rval == Connection.TPFAIL) {
 			if (message.rcode == Connection.TPESVCERR) {
-				throw new ResponseException(Connection.TPESVCERR, "Got an error back from the remote service",
-						0L,
+				throw new ResponseException(Connection.TPESVCERR,
+						"Got an error back from the remote service", -1,
 						message.rcode, buffer);
 			}
-			throw new ResponseException(Connection.TPESVCFAIL, "Got a fail back from the remote service",
-					0L, message.rcode,
-					buffer);
+			throw new ResponseException(Connection.TPESVCFAIL,
+					"Got a fail back from the remote service", -1,
+					message.rcode, buffer);
 		} else {
 			Response response = new Response(cd, message.rval, message.rcode,
 					buffer, message.len, message.flags);
