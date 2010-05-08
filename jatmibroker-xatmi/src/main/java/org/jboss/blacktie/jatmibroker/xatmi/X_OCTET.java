@@ -20,6 +20,9 @@ package org.jboss.blacktie.jatmibroker.xatmi;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The X_OCTET buffer is used to send byte arrays in an XATMI application
+ */
 public class X_OCTET extends Buffer {
 
 	/**
@@ -27,8 +30,15 @@ public class X_OCTET extends Buffer {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Populated by the list of supported types for this buffer, in this case
+	 * byte[]
+	 */
 	private static List<Class> types = new ArrayList<Class>();
 
+	/**
+	 * Populate the list
+	 */
 	static {
 		Class[] x_octetType = new Class[] { byte[].class };
 		for (int i = 0; i < x_octetType.length; i++) {
@@ -36,14 +46,31 @@ public class X_OCTET extends Buffer {
 		}
 	}
 
+	/**
+	 * The constructor is hidden as it should be created from the Connection
+	 * factory method.
+	 * 
+	 * @throws ConnectionException
+	 */
 	X_OCTET() throws ConnectionException {
 		super("X_OCTET", null, false, types, null);
 	}
 
+	/**
+	 * Set the data of the buffer.
+	 * 
+	 * @param bytes
+	 *            The data to set.
+	 */
 	public void setByteArray(byte[] bytes) {
 		super.setRawData(bytes);
 	}
 
+	/**
+	 * Get the content of the buffer.
+	 * 
+	 * @return The content of the buffer.
+	 */
 	public byte[] getByteArray() {
 		return super.getRawData();
 	}

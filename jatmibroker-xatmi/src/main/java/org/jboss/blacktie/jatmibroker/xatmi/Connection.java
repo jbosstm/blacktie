@@ -312,7 +312,6 @@ public class Connection {
 		}
 
 		Response toReturn = receive(cd, flags);
-		toReturn.setCd(cd);
 		Session session = sessions.remove(cd);
 		if (session != null) {
 			log.debug("closing session");
@@ -348,8 +347,7 @@ public class Connection {
 			correlationId = nextId++;
 		}
 		Transport transport = getTransport(svc);
-		Session session = new Session(this, properties, transport,
-				correlationId);
+		Session session = new Session(this, transport, correlationId);
 
 		Receiver receiver = session.getReceiver();
 		// TODO HANDLE TRANSACTION
@@ -381,14 +379,11 @@ public class Connection {
 			X_OCTET odata = (X_OCTET) session.tprecv(0);
 			response = odata.getByteArray();
 			log.debug("tpconnect received data");
+		} catch (ResponseException e) {
+			response = ((X_OCTET) e.getReceived()).getByteArray();
+			log.debug("Caught an exception with data", e);
 		} catch (ConnectionException e) {
-			if (e.getReceived() != null) {
-				response = ((X_OCTET) e.getReceived()).getByteArray();
-				log.debug("Caught an exception with data", e);
-			} else {
-				throw new ConnectionException(e.getTperrno(),
-						"Could not connect");
-			}
+			throw new ConnectionException(e.getTperrno(), "Could not connect");
 		}
 		byte[] ack = new byte[4];
 		byte[] bytes = "ACK".getBytes();
@@ -488,15 +483,15 @@ public class Connection {
 		}
 		if (message.rval == Connection.TPFAIL) {
 			if (message.rcode == Connection.TPESVCERR) {
-				throw new ConnectionException(Connection.TPESVCERR, 0L,
+				throw new ResponseException(Connection.TPESVCERR, 0L,
 						message.rcode,
 						"Got an error back from the remote service", buffer);
 			}
-			throw new ConnectionException(Connection.TPESVCFAIL, 0L,
+			throw new ResponseException(Connection.TPESVCFAIL, 0L,
 					message.rcode, "Got a fail back from the remote service",
 					buffer);
 		} else {
-			Response response = new Response(message.rval, message.rcode,
+			Response response = new Response(cd, message.rval, message.rcode,
 					buffer, message.len, message.flags);
 
 			log.debug("received returned a response? "
@@ -546,7 +541,7 @@ public class Connection {
 							+ serviceSession.getCd() + " new: " + cd);
 		}
 		Transport transport = getTransport(name);
-		serviceSession = new Session(this, properties, transport, cd, replyTo);
+		serviceSession = new Session(this, transport, cd, replyTo);
 		log.trace("Created the service session");
 		return serviceSession;
 	}

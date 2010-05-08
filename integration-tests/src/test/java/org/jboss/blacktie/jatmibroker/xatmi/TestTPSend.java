@@ -62,9 +62,12 @@ public class TestTPSend extends TestCase {
 				sendlen, Connection.TPRECVONLY);
 		try {
 			cd.tpsend(sendbuf, sendlen, 0);
-		} catch (ConnectionException e) {
+			fail("expected proto error");
+		} catch (ResponseException e) {
 			assertTrue((e.getEvent() == Connection.TPEV_SVCERR)
 					|| (e.getTperrno() == Connection.TPEPROTO));
+		} catch (ConnectionException e) {
+			fail("expected proto error");
 		}
 	}
 
@@ -77,12 +80,14 @@ public class TestTPSend extends TestCase {
 
 		try {
 			cd.tprecv(0);
-		} catch (ConnectionException e) {
+			fail("Expected SENDONLY event");
+		} catch (ResponseException e) {
 			assertTrue(e.getTperrno() == Connection.TPEEVENT);
 			assertTrue(e.getEvent() == Connection.TPEV_SENDONLY);
 		}
 		try {
 			cd.tprecv(0);
+			fail("Expected TPEPROTO");
 		} catch (ConnectionException e) {
 			assertTrue(e.getTperrno() == Connection.TPEPROTO);
 		}

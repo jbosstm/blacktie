@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * The X_C_TYPE buffer supports the broadest set of parameter types.
+ */
 public class X_C_TYPE extends Buffer {
 
 	/**
@@ -28,8 +31,15 @@ public class X_C_TYPE extends Buffer {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * The list of types, to contain, int, short, long, byte, float, double and
+	 * arrays of those types
+	 */
 	private static List<Class> types = new ArrayList<Class>();
 
+	/**
+	 * Populate the types
+	 */
 	static {
 		Class[] x_c_typeType = new Class[] { int.class, short.class,
 				long.class, byte.class, float.class, double.class, int[].class,
@@ -40,14 +50,45 @@ public class X_C_TYPE extends Buffer {
 		}
 	}
 
+	/**
+	 * The constructor is hidden as the <code>Connection</code> factory method
+	 * should be used instead.
+	 * 
+	 * @param subtype
+	 *            The subtype of the buffer
+	 * @param properties
+	 *            The properties to read
+	 * @throws ConnectionException
+	 *             In case the buffer does not exist
+	 * @see {@link Connection#tpalloc(String, String)}
+	 */
 	X_C_TYPE(String subtype, Properties properties) throws ConnectionException {
 		super("X_C_TYPE", subtype, true, types, properties);
 	}
 
+	/**
+	 * Get the short value identified by the key.
+	 * 
+	 * @param key
+	 *            The key to use
+	 * @return The short value
+	 * @throws ConnectionException
+	 *             In case the key is not part of the structure.
+	 */
 	public short getShort(String key) throws ConnectionException {
 		return ((Short) getAttributeValue(key, short.class)).shortValue();
 	}
 
+	/**
+	 * Set the short value
+	 * 
+	 * @param key
+	 *            The value to set
+	 * @param value
+	 *            The value to use
+	 * @throws ConnectionException
+	 *             In case the key is unknown.
+	 */
 	public void setShort(String key, short value) throws ConnectionException {
 		setAttributeValue(key, short.class, value);
 	}

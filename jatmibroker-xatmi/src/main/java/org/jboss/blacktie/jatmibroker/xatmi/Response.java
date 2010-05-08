@@ -26,7 +26,7 @@ import java.io.Serializable;
 public class Response implements Serializable {
 
 	/**
-	 * 
+	 * A non-default serialized id.
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -38,25 +38,42 @@ public class Response implements Serializable {
 	/**
 	 * The return value
 	 */
-	short rval;
+	private short rval;
 
 	/**
 	 * The return code
 	 */
-	int rcode;
+	private int rcode;
 
 	/**
 	 * The flags to return
 	 */
-	int flags;
+	private int flags;
 
 	/**
 	 * The response from the server
 	 */
 	private Buffer buffer;
 
+	/**
+	 * The length of the response.
+	 */
 	private int len;
 
+	/**
+	 * Services construct their responses using this constructor.
+	 * 
+	 * @param rval
+	 *            The value the service wishes to use.
+	 * @param rcode
+	 *            The code the service wants to respond with.
+	 * @param buffer
+	 *            The buffer to return.
+	 * @param len
+	 *            The amount of data to respond with.
+	 * @param flags
+	 *            The flags to respond with.
+	 */
 	public Response(short rval, int rcode, Buffer buffer, int len, int flags) {
 		this.rval = rval;
 		this.rcode = rcode;
@@ -66,13 +83,30 @@ public class Response implements Serializable {
 	}
 
 	/**
-	 * Set the cd that the message was received for.
+	 * When a client receives a response this is the method that is used by the
+	 * core framework to assemble the response.
 	 * 
 	 * @param cd
-	 *            The cd id.
+	 *            The connection that actually received the response (may be
+	 *            different to expected if {@link Connection#TPGETANY} was used.
+	 * @param rval
+	 *            The return value.
+	 * @param rcode
+	 *            The return code.
+	 * @param buffer
+	 *            The buffer response.
+	 * @param len
+	 *            The length of the response.
+	 * @param flags
+	 *            The flags the service used.
 	 */
-	void setCd(int cd) {
+	Response(int cd, short rval, int rcode, Buffer buffer, int len, int flags) {
 		this.cd = cd;
+		this.rval = rval;
+		this.rcode = rcode;
+		this.buffer = buffer;
+		this.len = len;
+		this.flags = flags;
 	}
 
 	/**
@@ -93,18 +127,39 @@ public class Response implements Serializable {
 		return rcode;
 	}
 
+	/**
+	 * Get the flags that the service responded with.
+	 * 
+	 * @return The flags
+	 */
 	public int getFlags() {
 		return flags;
 	}
 
+	/**
+	 * Get the buffer that the service responded with.
+	 * 
+	 * @return The buffer
+	 */
 	public Buffer getBuffer() {
 		return buffer;
 	}
 
+	/**
+	 * Retrieve the length of the buffer.
+	 * 
+	 * @return The size of the buffer.
+	 */
 	public int getLen() {
 		return len;
 	}
 
+	/**
+	 * Get the cd of the service that responded (may vary based on
+	 * <code>Connection#TPGETANY</code>)
+	 * 
+	 * @return
+	 */
 	public int getCd() {
 		return cd;
 	}

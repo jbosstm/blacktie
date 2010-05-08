@@ -45,7 +45,7 @@ public class EchoServiceTestService extends MDBBlacktieService implements
 	public Response tpservice(TPSVCINFO svcinfo) {
 		X_OCTET rcvd = (X_OCTET) svcinfo.getBuffer();
 		try {
-			X_OCTET buffer = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
+			X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null);
 			buffer.setByteArray(rcvd.getByteArray());
 			return new Response(Connection.TPSUCCESS, 0, buffer, rcvd
 					.getByteArray().length, 0);

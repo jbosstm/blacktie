@@ -159,7 +159,8 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 			resp = e.getMessage();
 		}
 		try {
-			X_OCTET buffer = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
+			X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc(
+					"X_OCTET", null);
 			buffer.setByteArray(resp.getBytes());
 			return new Response(Connection.TPSUCCESS, 0, buffer, resp.length(),
 					0);

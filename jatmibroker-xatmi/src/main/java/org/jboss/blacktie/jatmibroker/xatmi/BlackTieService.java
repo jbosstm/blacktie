@@ -71,7 +71,7 @@ public abstract class BlackTieService implements Service {
 	protected void processMessage(Message message) throws ConnectionException,
 			ConfigurationException {
 		Connection connection = ConnectionFactory.getConnectionFactory()
-				.getConnection();
+				.getConnectionFactory().getConnection();
 		if (message.control != null) {
 			try {
 				JABTransaction.associateTx(message.control); // associate tx
@@ -157,7 +157,7 @@ public abstract class BlackTieService implements Service {
 			if (!hasTPNOREPLY && response != null) {
 				log.trace("Sending response");
 				short rval = response.getRval();
-				int rcode = response.rcode;
+				int rcode = response.getRcode();
 				if (connection.hasOpenSessions()) {
 					rcode = Connection.TPESVCERR;
 					rval = Connection.TPFAIL;

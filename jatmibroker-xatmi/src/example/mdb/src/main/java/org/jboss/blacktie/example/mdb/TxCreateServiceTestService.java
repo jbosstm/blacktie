@@ -69,7 +69,7 @@ public class TxCreateServiceTestService extends MDBBlacktieService implements
 		String resp = serviceRequest(rcv);
 		X_OCTET buffer = null;
 		try {
-			buffer = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
+			buffer = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null);
 			buffer.setByteArray(resp.getBytes());
 			return new Response(Connection.TPSUCCESS, 0, buffer, resp.length(),
 					0);

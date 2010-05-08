@@ -6,6 +6,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
+import org.jboss.blacktie.jatmibroker.xatmi.ResponseException;
 import org.jboss.blacktie.jatmibroker.xatmi.Service;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPConversation;
@@ -19,7 +20,8 @@ public class TPConversationService implements Service {
 		try {
 			log.info("testTPConversation_service");
 			boolean fail = false;
-			X_OCTET sendbuf = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
+			X_OCTET sendbuf = (X_OCTET) svcinfo.getConnection().tpalloc(
+					"X_OCTET", null);
 
 			if (TestTPConversation.strcmp((X_OCTET) svcinfo.getBuffer(),
 					"conversate") != 0) {
@@ -46,10 +48,9 @@ public class TPConversationService implements Service {
 							svcinfo.getSession().tprecv(0);
 							fail = true;
 							break;
-						} catch (ConnectionException e) {
-							Buffer rcvbuf = e.getReceived();
-							if (rcvbuf != null
-									&& e.getEvent() == Connection.TPEV_SENDONLY) {
+						} catch (ResponseException e) {
+							if (e.getEvent() == Connection.TPEV_SENDONLY) {
+								Buffer rcvbuf = e.getReceived();
 								if (TestTPConversation.strcmp("yo" + i, rcvbuf) != 0) {
 									fail = true;
 									break;
@@ -58,6 +59,9 @@ public class TPConversationService implements Service {
 								fail = true;
 								break;
 							}
+						} catch (ConnectionException e) {
+							fail = true;
+							break;
 						}
 					} else {
 						fail = true;

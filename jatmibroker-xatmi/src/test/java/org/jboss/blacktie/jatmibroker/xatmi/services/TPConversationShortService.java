@@ -17,7 +17,8 @@ public class TPConversationShortService implements Service {
 		try {
 			log.info("testTPConversation_short_service");
 			int sendlen = 4;
-			X_OCTET sendbuf = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
+			X_OCTET sendbuf = (X_OCTET) svcinfo.getConnection().tpalloc(
+					"X_OCTET", null);
 			sendbuf.setByteArray("hi0".getBytes());
 			svcinfo.getSession().tpsend(sendbuf, sendlen, 0);
 			sendbuf.setByteArray("hi1".getBytes());

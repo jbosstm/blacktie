@@ -27,6 +27,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
+import org.jboss.blacktie.jatmibroker.xatmi.ResponseException;
 import org.jboss.blacktie.jatmibroker.xatmi.Session;
 import org.jboss.blacktie.jatmibroker.xatmi.TestTPConversation;
 import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
@@ -110,11 +111,13 @@ public class TestRollbackOnly extends TestCase {
 			connection.tpcall(server.getServiceNameTestRollbackOnly(), sendbuf,
 					sendlen, 0);
 			fail("Expected e.getTperrno() == TPESVCFAIL");
-		} catch (ConnectionException e) {
+		} catch (ResponseException e) {
 			assertTrue(new String(((X_OCTET) e.getReceived()).getByteArray()),
 					TestTPConversation.strcmp(e.getReceived(),
 							"test_tpcall_TPESVCFAIL_service") == 0);
 			assertTrue(e.getTperrno() == Connection.TPESVCFAIL);
+		} catch (ConnectionException e) {
+			fail("Expected e.getTperrno() == TPESVCFAIL");
 		}
 
 		TXINFO txinfo = new TXINFO();
@@ -157,13 +160,15 @@ public class TestRollbackOnly extends TestCase {
 		try {
 			cd.tprecv(0);
 			fail("Expected e.getEvent() == Connection.TPEV_SVCFAIL");
-		} catch (ConnectionException e) {
+		} catch (ResponseException e) {
 			assertTrue(e.getEvent() == Connection.TPEV_SVCFAIL);
 			assertTrue(e.getTperrno() == Connection.TPEEVENT);
 			Buffer rcvbuf = e.getReceived();
 			assertTrue(new String(((X_OCTET) rcvbuf).getByteArray()),
 					TestTPConversation.strcmp(rcvbuf,
 							"test_tprecv_TPEV_SVCFAIL_service") == 0);
+		} catch (ConnectionException e) {
+			fail("Expected e.getEvent() == Connection.TPEV_SVCFAIL");
 		}
 
 		TXINFO txinfo = new TXINFO();

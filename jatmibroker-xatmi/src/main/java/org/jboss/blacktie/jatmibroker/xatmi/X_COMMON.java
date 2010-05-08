@@ -21,6 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * The X_COMMON buffer type supports a subset of the types provided by the
+ * X_C_TYPE buffer in order to support more language portable data exchange.
+ */
 public class X_COMMON extends Buffer {
 
 	/**
@@ -28,8 +32,15 @@ public class X_COMMON extends Buffer {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * The list of types supported by X_COMMON, short, long, byte and arrays of
+	 * these types.
+	 */
 	private static List<Class> types = new ArrayList<Class>();
 
+	/**
+	 * Populate the list of supported types
+	 */
 	static {
 		Class[] x_commonType = new Class[] { short.class, long.class,
 				byte.class, short[].class, long[].class, byte[].class };
@@ -38,14 +49,46 @@ public class X_COMMON extends Buffer {
 		}
 	}
 
+	/**
+	 * The constructor is hidden as a <code>Connection</code> should be used to
+	 * allocate the object.
+	 * 
+	 * @param subtype
+	 *            The subtype of the buffer, must be registered in the
+	 *            configuration
+	 * @param properties
+	 *            The properties to use
+	 * @throws ConnectionException
+	 *             In case the buffer cannot be created.
+	 * @see {@link Connection#tpalloc(String, String)}
+	 */
 	X_COMMON(String subtype, Properties properties) throws ConnectionException {
 		super("X_COMMON", subtype, true, types, properties);
 	}
 
+	/**
+	 * Get the short value identified by the key.
+	 * 
+	 * @param key
+	 *            The key to use
+	 * @return The short value
+	 * @throws ConnectionException
+	 *             In case the key is not part of the structure.
+	 */
 	public short getShort(String key) throws ConnectionException {
 		return ((Short) getAttributeValue(key, short.class)).shortValue();
 	}
 
+	/**
+	 * Set the short value
+	 * 
+	 * @param key
+	 *            The value to set
+	 * @param value
+	 *            The value to use
+	 * @throws ConnectionException
+	 *             In case the key is unknown.
+	 */
 	public void setShort(String key, short value) throws ConnectionException {
 		setAttributeValue(key, short.class, value);
 	}

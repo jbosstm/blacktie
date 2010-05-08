@@ -126,12 +126,14 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 		if (eventListener != null) {
 			log.debug("Event listener will be called back");
 			if (message.rval == EventListener.DISCON_CODE) {
-				eventListener.setLastEvent(Connection.TPEV_DISCONIMM);
+				eventListener.setLastEvent(Connection.TPEV_DISCONIMM,
+						message.rcode);
 			} else if (message.rcode == Connection.TPESVCERR) {
-				eventListener.setLastEvent(Connection.TPEV_SVCERR);
+				eventListener.setLastEvent(Connection.TPEV_SVCERR,
+						message.rcode);
 			} else if (message.rval == Connection.TPFAIL) {
-				eventListener.setLastEvent(Connection.TPEV_SVCFAIL);
-				eventListener.setLastRCode(message.rcode);
+				eventListener.setLastEvent(Connection.TPEV_SVCFAIL,
+						message.rcode);
 			}
 		}
 

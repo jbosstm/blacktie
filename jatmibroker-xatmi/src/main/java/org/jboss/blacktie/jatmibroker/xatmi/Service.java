@@ -1,12 +1,12 @@
 package org.jboss.blacktie.jatmibroker.xatmi;
 
 /**
- * All extending classes must override the tpservice template method.
+ * All XATMI services must implement the tpservice method.
  */
 public interface Service {
 	/**
-	 * This is a template method that should be implemented by classes to
-	 * provide the service behaviour
+	 * This is a method that should be implemented by classes to provide the
+	 * service behavior
 	 * 
 	 * @param svcinfo
 	 *            The inbound parameters

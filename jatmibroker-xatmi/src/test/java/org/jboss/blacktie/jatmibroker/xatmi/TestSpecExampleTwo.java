@@ -69,7 +69,7 @@ public class TestSpecExampleTwo extends TestCase {
 				/*
 				 * Format & display in AP-specific manner the accounts returned.
 				 */
-			} catch (ConnectionException e) {
+			} catch (ResponseException e) {
 				if (e.getTperrno() == Connection.TPEEVENT
 						&& e.getEvent() == Connection.TPEV_SVCSUCC) {
 					break;

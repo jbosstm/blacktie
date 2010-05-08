@@ -18,6 +18,9 @@ public class ConnectionFactory {
 	 */
 	private Properties properties = new Properties();
 
+	/**
+	 * The connection factory will allocate a connection per thread.
+	 */
 	private static ThreadLocal<Connection> connections = new ThreadLocal<Connection>();
 
 	/**
@@ -25,7 +28,7 @@ public class ConnectionFactory {
 	 * 
 	 * @return The connection factory
 	 * @throws ConfigurationException
-	 * @throws ConnectionException
+	 *             If the configuration cannot be parsed.
 	 */
 	public static synchronized ConnectionFactory getConnectionFactory()
 			throws ConfigurationException {
@@ -41,13 +44,12 @@ public class ConnectionFactory {
 	private ConnectionFactory() throws ConfigurationException {
 		AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
 		properties.putAll(xml.getProperties());
-
 	}
 
 	/**
-	 * Get the connection.
+	 * Get the connection for this thread.
 	 * 
-	 * @return The connection
+	 * @return The connection for this thread.
 	 */
 	public Connection getConnection() {
 		Connection connection = connections.get();
@@ -58,6 +60,12 @@ public class ConnectionFactory {
 		return connection;
 	}
 
+	/**
+	 * Remove the connection from the factory after closure.
+	 * 
+	 * @param connection
+	 *            The connection to remove.
+	 */
 	void removeConnection(Connection connection) {
 		connections.set(null);
 	}

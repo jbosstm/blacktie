@@ -6,7 +6,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 /**
- * This is the inbound service data struct
+ * This structure contains the data that the client presented for processing to
+ * the service during its invocation from either tpcall, tpacall or tpconnect.
  */
 public class TPSVCINFO implements Serializable {
 	/**
@@ -15,7 +16,7 @@ public class TPSVCINFO implements Serializable {
 	private static final Logger log = LogManager.getLogger(TPSVCINFO.class);
 
 	/**
-	 * 
+	 * A non default id
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -39,8 +40,14 @@ public class TPSVCINFO implements Serializable {
 	 */
 	private Session session;
 
+	/**
+	 * The connection for the service to use.
+	 */
 	private Connection connection;
 
+	/**
+	 * The length of the buffer provided.
+	 */
 	private int len;
 
 	/**
@@ -48,17 +55,16 @@ public class TPSVCINFO implements Serializable {
 	 * 
 	 * @param name
 	 *            The name of the service
-	 * @param data
+	 * @param buffer
 	 *            The data sent by the client
-	 * @param len
-	 *            The length of the said data
 	 * @param flags
 	 *            The flags that the client issued
 	 * @param session
 	 *            The connection descriptor used
-	 * @param properties
-	 *            The properties to use
+	 * @param connection
+	 *            The connection to use
 	 * @param len
+	 *            The length of the said data
 	 */
 	TPSVCINFO(String name, Buffer buffer, int flags, Session session,
 			Connection connection, int len) {
@@ -71,7 +77,7 @@ public class TPSVCINFO implements Serializable {
 	}
 
 	/**
-	 * Get the services name
+	 * Get the name of the service the client thought it invoked
 	 * 
 	 * @return The name
 	 */
@@ -121,19 +127,12 @@ public class TPSVCINFO implements Serializable {
 	}
 
 	/**
-	 * Allocate a new buffer
+	 * Get a reference to the connection that the service holds.
 	 * 
-	 * @param type
-	 *            The type of the buffer
-	 * @param subtype
-	 *            The subtype of the buffer
-	 * @return The new buffer
-	 * @throws ConnectionException
-	 *             If the buffer cannot be created or the subtype located
+	 * @return The connection
 	 */
-	public Buffer tpalloc(String type, String subtype)
-			throws ConnectionException {
-		return connection.tpalloc(type, subtype);
+	public Connection getConnection() {
+		return connection;
 	}
 
 }

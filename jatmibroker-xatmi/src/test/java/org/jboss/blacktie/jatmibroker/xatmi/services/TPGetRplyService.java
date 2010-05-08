@@ -16,7 +16,8 @@ public class TPGetRplyService implements Service {
 	public Response tpservice(TPSVCINFO svcinfo) {
 		try {
 			log.info("testtpgetrply_service");
-			X_OCTET toReturn = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
+			X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc(
+					"X_OCTET", null);
 			toReturn.setByteArray("testtpgetrply_service".getBytes());
 			return new Response(Connection.TPSUCCESS, 0, toReturn, 22, 0);
 		} catch (ConnectionException e) {

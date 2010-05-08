@@ -21,7 +21,5 @@ public interface EventListener {
 
 	public static final short DISCON_CODE = 0x00000003;
 
-	public void setLastEvent(long lastEvent);
-
-	public void setLastRCode(int rcode);
+	public void setLastEvent(long lastEvent, int rcode);
 }

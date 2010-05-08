@@ -62,9 +62,12 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 	 * Create the proxy, it will forward all requests to the "core" proxy who is
 	 * responsible for invoking the individual XATMI services.
 	 * 
-	 * @throws IOException In case a required JMX connection cannot be established. 
-	 * @throws ConfigurationException In case the configuration is invalid. 
-	 * @throws ConnectionException In case required BlackTie connections cannot be established.
+	 * @throws IOException
+	 *             In case a required JMX connection cannot be established.
+	 * @throws ConfigurationException
+	 *             In case the configuration is invalid.
+	 * @throws ConnectionException
+	 *             In case required BlackTie connections cannot be established.
 	 */
 	public BlacktieAdminServiceXATMI() throws IOException,
 			ConfigurationException, ConnectionException {
@@ -182,7 +185,8 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 				toReturn = response.getBytes();
 			}
 
-			X_OCTET buffer = (X_OCTET) svcinfo.tpalloc("X_OCTET", null);
+			X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc(
+					"X_OCTET", null);
 			buffer.setByteArray(toReturn);
 			log.debug("Responding");
 			return new Response(Connection.TPSUCCESS, 0, buffer,

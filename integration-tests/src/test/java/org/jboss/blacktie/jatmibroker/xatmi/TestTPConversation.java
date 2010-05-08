@@ -65,7 +65,7 @@ public class TestTPConversation extends TestCase {
 			try {
 				Buffer result = cd.tprecv(0);
 				fail("Did not get sendonly event");
-			} catch (ConnectionException e) {
+			} catch (ResponseException e) {
 				assertTrue(e.getTperrno() == Connection.TPEEVENT);
 				assertTrue(e.getEvent() == Connection.TPEV_SENDONLY);
 				Buffer rcvbuf = e.getReceived();

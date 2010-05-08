@@ -74,7 +74,8 @@ public class JABConnectionFactory {
 	 */
 	private JABConnectionFactory() throws JABException {
 		try {
-			connectionFactory = ConnectionFactory.getConnectionFactory();
+			connectionFactory = ConnectionFactory.getConnectionFactory()
+					.getConnectionFactory();
 		} catch (ConfigurationException e) {
 			throw new JABException("Could not create the connection factory: "
 					+ e.getMessage(), e);

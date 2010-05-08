@@ -17,11 +17,8 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
-import java.util.Properties;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.transport.EventListener;
 import org.jboss.blacktie.jatmibroker.core.transport.Message;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
@@ -31,15 +28,27 @@ import org.jboss.blacktie.jatmibroker.jab.JABException;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 
 /**
- * This is the session to send data on.
+ * A session reference may either be obtained from the tpconnect
+ * <code>Connection</code> invocation for a client or retrieved from the
+ * TPSVCINFO structure for a service (assuming the service was invoked within
+ * the scope of a tpconnect).
+ * 
+ * It is used to send and retrieve data
+ * 
+ * @see {@link Connection#tpconnect(String, Buffer, int, int)}
+ * @see {@link TPSVCINFO#getSession()}
  */
 public class Session {
+	/**
+	 * A logger to use.
+	 */
 	private static final Logger log = LogManager.getLogger(Session.class);
 
 	/**
 	 * The transport to manage data on
 	 */
 	private Transport transport;
+
 	/**
 	 * The descriptor
 	 */
@@ -81,23 +90,29 @@ public class Session {
 	 */
 	private boolean canRecv = true;
 
-	private Properties properties;
-
+	/**
+	 * The connection to use.
+	 */
 	private Connection connection;
 
+	private boolean closed;
+
 	/**
-	 * Create a new session
+	 * Create a new session.
 	 * 
+	 * @param connection
+	 *            The connection that created the session
 	 * @param transport
+	 *            The transport to create actors on.
 	 * @param cd
-	 * @param c
-	 * @param b
-	 * @throws ConfigurationException
+	 *            The cd of the session
+	 * 
+	 * @throws ConnectionException
+	 *             In case the receiver cannot be created.
 	 */
-	Session(Connection connection, Properties properties, Transport transport,
-			int cd) throws ConnectionException {
+	Session(Connection connection, Transport transport, int cd)
+			throws ConnectionException {
 		this.connection = connection;
-		this.properties = properties;
 		this.transport = transport;
 		this.cd = cd;
 		this.eventListener = new EventListenerImpl(this);
@@ -108,17 +123,22 @@ public class Session {
 	}
 
 	/**
-	 * Create a new session
+	 * Create a service side session for a pre-established client connection.
 	 * 
+	 * @param connection
+	 *            The connection to use.
 	 * @param transport
+	 *            The transport to use.
 	 * @param cd
-	 * @param receiver2
-	 * @throws ConfigurationException
+	 *            The connection descriptor to use.
+	 * @param replyTo
+	 *            The client to reply to.
+	 * @throws ConnectionException
+	 *             In case the receiver or sender cannot be established.
 	 */
-	Session(Connection connection, Properties properties, Transport transport,
-			int cd, Object replyTo) throws ConnectionException {
+	Session(Connection connection, Transport transport, int cd, Object replyTo)
+			throws ConnectionException {
 		this.connection = connection;
-		this.properties = properties;
 		this.transport = transport;
 		this.cd = cd;
 		this.eventListener = new EventListenerImpl(this);
@@ -134,23 +154,36 @@ public class Session {
 		this.canSend = true;
 	}
 
-	void setCreatorState(long sentFlags) {
+	/**
+	 * Client side initialization during tpconnect.
+	 * 
+	 * @param flags
+	 *            The flags
+	 */
+	void setCreatorState(long flags) {
 		// Sort out session state
-		if ((sentFlags & Connection.TPSENDONLY) == Connection.TPSENDONLY) {
+		if ((flags & Connection.TPSENDONLY) == Connection.TPSENDONLY) {
 			canSend = true;
 			canRecv = false;
-		} else if ((sentFlags & Connection.TPRECVONLY) == Connection.TPRECVONLY) {
+		} else if ((flags & Connection.TPRECVONLY) == Connection.TPRECVONLY) {
 			canSend = false;
 			canRecv = true;
 		}
 	}
 
-	void setCreatedState(long receivedFlags) {
+	/**
+	 * Set the state of the session using the flags. This is so we can respond
+	 * from the service easily with the <code>ACK</code> that the client expects
+	 * in initialization of the connection.
+	 * 
+	 * @param flags
+	 */
+	void setCreatedState(long flags) {
 		// Sort out session state
-		if ((receivedFlags & Connection.TPSENDONLY) == Connection.TPSENDONLY) {
+		if ((flags & Connection.TPSENDONLY) == Connection.TPSENDONLY) {
 			canSend = false;
 			canRecv = true;
-		} else if ((receivedFlags & Connection.TPRECVONLY) == Connection.TPRECVONLY) {
+		} else if ((flags & Connection.TPRECVONLY) == Connection.TPRECVONLY) {
 			canSend = true;
 			canRecv = false;
 		}
@@ -163,6 +196,10 @@ public class Session {
 	 */
 	void close() throws ConnectionException {
 		log.debug("Closing session: " + cd);
+		if (closed) {
+			throw new ConnectionException(Connection.TPEPROTO,
+					"Session already closed");
+		}
 		if (sender != null) {
 			log.debug("Sender closing");
 			sender.close();
@@ -174,23 +211,30 @@ public class Session {
 			receiver = null;
 		}
 		connection.removeSession(this);
+		closed = true;
 		log.debug("Closed session: " + cd);
 	}
 
 	/**
 	 * Send a buffer to a remote server in a conversation
 	 * 
-	 * @param cd
-	 *            The connection descriptor
-	 * @param idata
+	 * @param tosend
 	 *            The outbound data
+	 * @param len
+	 *            The length of the data
 	 * @param flags
 	 *            The flags to use
+	 * @throws ConnectionException
+	 *             If the message cannot be sent.
 	 */
 	public int tpsend(Buffer toSend, int len, int flags)
 			throws ConnectionException {
-		int toReturn = -1;
 		log.debug("tpsend invoked: " + cd);
+		if (closed) {
+			throw new ConnectionException(Connection.TPEPROTO,
+					"Session already closed");
+		}
+		int toReturn = -1;
 
 		int toCheck = flags
 				& ~(Connection.TPRECVONLY | Connection.TPNOBLOCK
@@ -202,7 +246,7 @@ public class Session {
 		}
 
 		if (this.lastEvent > -1) {
-			throw new ConnectionException(Connection.TPEEVENT, lastEvent,
+			throw new ResponseException(Connection.TPEEVENT, lastEvent,
 					lastRCode, "Event existed on descriptor: " + lastEvent,
 					null);
 		} else if (!canSend) {
@@ -244,14 +288,18 @@ public class Session {
 	/**
 	 * Received the next response in a conversation
 	 * 
-	 * @param cd
-	 *            The connection descriptor to use
 	 * @param flags
 	 *            The flags to use
 	 * @return The next response
+	 * @throws ConnectionException
+	 *             If the message cannot be received or the flags are incorrect
 	 */
 	public Buffer tprecv(int flags) throws ConnectionException {
 		log.debug("Receiving: " + cd);
+		if (closed) {
+			throw new ConnectionException(Connection.TPEPROTO,
+					"Session already closed");
+		}
 
 		int toCheck = flags
 				& ~(Connection.TPNOCHANGE | Connection.TPNOBLOCK
@@ -281,10 +329,10 @@ public class Session {
 			log.debug("Not setting the sender");
 		}
 
-		X_OCTET received = null;
+		Buffer received = null;
 		if (m.type != null) {
-			received = (X_OCTET) tpalloc("X_OCTET", null);
-			received.setByteArray(m.data);
+			received = connection.tpalloc(m.type, m.subtype);
+			received.deserialize(m.data);
 		}
 		log.debug("Prepared and ready to launch");
 
@@ -300,11 +348,11 @@ public class Session {
 				log.debug("Completed session is being closed");
 				close();
 			}
-			throw new ConnectionException(Connection.TPEEVENT, lastEvent,
+			throw new ResponseException(Connection.TPEEVENT, lastEvent,
 					lastRCode, "Event existed on descriptor: " + lastEvent,
 					received);
 		} else if ((m.flags & Connection.TPRECVONLY) == Connection.TPRECVONLY) {
-			throw new ConnectionException(Connection.TPEEVENT,
+			throw new ResponseException(Connection.TPEEVENT,
 					Connection.TPEV_SENDONLY, 0, "Reporting send only event",
 					received);
 		} else if (m.rval == Connection.TPSUCCESS
@@ -312,15 +360,15 @@ public class Session {
 			log.debug("Completed session is being closed");
 			close();
 			if (m.rval == Connection.TPSUCCESS) {
-				throw new ConnectionException(Connection.TPEEVENT,
+				throw new ResponseException(Connection.TPEEVENT,
 						Connection.TPEV_SVCSUCC, 0,
 						"Service completed successfully event", received);
 			} else if (m.rcode == Connection.TPESVCERR) {
-				throw new ConnectionException(Connection.TPEEVENT,
+				throw new ResponseException(Connection.TPEEVENT,
 						Connection.TPEV_SVCERR, 0, "Service received an error",
 						received);
 			} else {
-				throw new ConnectionException(Connection.TPEEVENT,
+				throw new ResponseException(Connection.TPEEVENT,
 						Connection.TPEV_SVCFAIL, 0, "Service received a fail",
 						received);
 			}
@@ -329,13 +377,18 @@ public class Session {
 	}
 
 	/**
-	 * Close the conversation with the remote service.
+	 * Close the conversation with the remote service. This will close the
+	 * session.
 	 * 
 	 * @param cd
 	 *            The connection descriptor to use
 	 */
 	public void tpdiscon() throws ConnectionException {
 		log.debug("tpdiscon: " + cd);
+		if (closed) {
+			throw new ConnectionException(Connection.TPEPROTO,
+					"Session already closed");
+		}
 		if (sender == null) {
 			throw new ConnectionException(Connection.TPEPROTO,
 					"Session had no endpoint to respond to for tpdiscon");
@@ -362,74 +415,70 @@ public class Session {
 	/**
 	 * Return the connection descriptor
 	 * 
-	 * @return
+	 * @return The connection descriptor id.
 	 */
 	public int getCd() {
 		return cd;
 	}
 
-	private void setLastEvent(long lastEvent) {
-		log.debug("Set lastEvent: " + lastEvent + "cd: " + cd);
-		this.lastEvent = lastEvent;
-	}
-
-	public void setLastRCode(int rcode) {
-		log.debug("Set lastRCode: " + lastRCode + "cd: " + cd);
-		this.lastRCode = rcode;
-	}
-
-	private class EventListenerImpl implements EventListener {
-
-		private Session session;
-
-		public EventListenerImpl(Session session) {
-			this.session = session;
-		}
-
-		public void setLastEvent(long lastEvent) {
-			session.setLastEvent(lastEvent);
-		}
-
-		public void setLastRCode(int rcode) {
-			session.setLastRCode(rcode);
-
-		}
-	}
-
+	/**
+	 * Get the receiver on this session.
+	 * 
+	 * @return The receiver
+	 */
 	Receiver getReceiver() {
 		return receiver;
 	}
 
+	/**
+	 * Get the sessions sender.
+	 * 
+	 * @return The sender
+	 */
 	Sender getSender() {
 		return sender;
 	}
 
 	/**
-	 * Allocate a new buffer
+	 * Set the last event seen on this session.
 	 * 
-	 * @param type
-	 *            The type of the buffer
-	 * @param subtype
-	 *            The subtype of the buffer
-	 * @return The new buffer
-	 * @throws ConnectionException
-	 *             If the buffer cannot be created or the subtype located
+	 * @param lastEvent
+	 *            The last event
+	 * @param rcode
+	 *            The last rcode
 	 */
-	private Buffer tpalloc(String type, String subtype)
-			throws ConnectionException {
-		log.debug("tpalloc: " + cd);
-		if (type == null) {
-			throw new ConnectionException(Connection.TPEINVAL,
-					"No type provided");
-		} else if (type.equals("X_OCTET")) {
-			log.debug("Initializing a new X_OCTET");
-			return new X_OCTET();
-		} else if (type.equals("X_C_TYPE")) {
-			log.debug("Initializing a new X_C_TYPE");
-			return new X_C_TYPE(subtype, properties);
-		} else {
-			log.debug("Initializing a new X_COMMON");
-			return new X_COMMON(subtype, properties);
+	private void setLastEvent(long lastEvent, int rcode) {
+		log.debug("Set lastEvent: " + lastEvent + "lastRCode: " + lastRCode
+				+ " cd: " + cd);
+		this.lastEvent = lastEvent;
+		this.lastRCode = rcode;
+	}
+
+	/**
+	 * A listener for events.
+	 */
+	private class EventListenerImpl implements EventListener {
+
+		/**
+		 * The session to return events to.
+		 */
+		private Session session;
+
+		/**
+		 * Create a new listener with a session to set events on.
+		 * 
+		 * @param session
+		 *            The session.
+		 */
+		public EventListenerImpl(Session session) {
+			this.session = session;
+		}
+
+		/**
+		 * Pass the last event through to the session.
+		 */
+		public void setLastEvent(long lastEvent, int rcode) {
+			session.setLastEvent(lastEvent, rcode);
 		}
 	}
 }
