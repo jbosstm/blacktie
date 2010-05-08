@@ -112,6 +112,7 @@ public class Session {
 	 */
 	Session(Connection connection, Transport transport, int cd)
 			throws ConnectionException {
+		log.debug("Creating a new client session: " + cd);
 		this.connection = connection;
 		this.transport = transport;
 		this.cd = cd;
@@ -138,6 +139,7 @@ public class Session {
 	 */
 	Session(Connection connection, Transport transport, int cd, Object replyTo)
 			throws ConnectionException {
+		log.debug("Connecting a client session for the service: " + cd);
 		this.connection = connection;
 		this.transport = transport;
 		this.cd = cd;
