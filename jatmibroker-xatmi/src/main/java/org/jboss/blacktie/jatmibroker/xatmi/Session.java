@@ -330,7 +330,7 @@ public class Session {
 		}
 
 		Buffer received = null;
-		if (m.type != null) {
+		if (m.type != null && !m.type.equals("")) {
 			received = connection.tpalloc(m.type, m.subtype);
 			received.deserialize(m.data);
 		}
