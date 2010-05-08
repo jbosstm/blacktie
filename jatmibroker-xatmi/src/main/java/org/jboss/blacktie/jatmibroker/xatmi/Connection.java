@@ -113,7 +113,7 @@ public class Connection {
 	/**
 	 * The list of service sessions
 	 */
-	private static Session serviceSession;
+	private Session serviceSession;
 
 	/**
 	 * The connection
@@ -540,6 +540,11 @@ public class Connection {
 	Session createServiceSession(String name, int cd, Object replyTo)
 			throws ConnectionException {
 		log.trace("Creating the service session");
+		if (serviceSession != null) {
+			throw new ConnectionException(Connection.TPEPROTO,
+					"Second service session creation attempt, was: "
+							+ serviceSession.getCd() + " new: " + cd);
+		}
 		Transport transport = getTransport(name);
 		serviceSession = new Session(this, properties, transport, cd, replyTo);
 		log.trace("Created the service session");
@@ -554,5 +559,9 @@ public class Connection {
 		temporaryQueues.remove(session.getCd());
 		// May be a no-op
 		sessions.remove(session.getCd());
+
+		if (session.equals(serviceSession)) {
+			serviceSession = null;
+		}
 	}
 }
