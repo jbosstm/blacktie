@@ -64,10 +64,9 @@ public class TestTPSend extends TestCase {
 			cd.tpsend(sendbuf, sendlen, 0);
 			fail("expected proto error");
 		} catch (ResponseException e) {
-			assertTrue((e.getEvent() == Connection.TPEV_SVCERR)
-					|| (e.getTperrno() == Connection.TPEPROTO));
+			assertTrue(e.getEvent() == Connection.TPEV_SVCERR);
 		} catch (ConnectionException e) {
-			fail("expected proto error");
+			assertTrue(e.getTperrno() == Connection.TPEPROTO);
 		}
 	}
 

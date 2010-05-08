@@ -118,9 +118,7 @@ public class TxBlacktieServiceTestCase extends TestCase {
 
 	/*
 	 * Test that the AS can create a transaction and propagate it too another
-	 * blacktie service. TODO Disabled until we can resolve the clash between
-	 * the JMS transaction the Blacktie clients transaction (JMS queues have
-	 * local transactions)
+	 * blacktie service.
 	 */
 	public void test5() throws ConnectionException, JABException {
 		byte[] args = "test=test5,tx=create".getBytes();

@@ -116,8 +116,6 @@ public abstract class BlackTieService implements Service {
 				buffer = connection.tpalloc(message.type, message.subtype);
 				buffer.deserialize(message.data);
 			}
-			// TODO NO SESSIONS
-			// NOT PASSING OVER THE SERVICE NAME
 			TPSVCINFO tpsvcinfo = new TPSVCINFO(message.serviceName, buffer,
 					message.flags, (hasTPCONV ? serviceSession : null),
 					connection, message.len);

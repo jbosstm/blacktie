@@ -522,7 +522,6 @@ public class Connection {
 					"Session does not exist: " + cd);
 		}
 		Message message = endpoint.receive(flags);
-		// TODO WE SHOULD BE SENDING THE CONNECTION ID?
 		Buffer buffer = null;
 		if (message.type != null && !message.type.equals("")) {
 			buffer = tpalloc(message.type, message.subtype);
