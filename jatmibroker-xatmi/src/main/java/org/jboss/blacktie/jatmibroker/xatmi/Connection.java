@@ -35,13 +35,16 @@ import org.jboss.blacktie.jatmibroker.core.transport.Transport;
 import org.jboss.blacktie.jatmibroker.core.transport.TransportFactory;
 
 /**
- * This is the connection to remote Blacktie services. It must be created using
- * the ConnectionFactory
+ * This is the connection to remote BlackTie services. It must be created using
+ * the ConnectionFactory.
  * 
- * @see ConnectionFactory
+ * @see ConnectionFactory#getConnection()
  */
 public class Connection {
 
+	/**
+	 * The logger to use.
+	 */
 	private static final Logger log = LogManager.getLogger(Connection.class);
 
 	// AVAILABLE FLAGS
@@ -89,8 +92,14 @@ public class Connection {
 
 	public static final int XATMI_SERVICE_NAME_LENGTH = 15;
 
+	/**
+	 * The next id to use for session connection descriptors.
+	 */
 	private static int nextId;
 
+	/**
+	 * The transports created for each service.
+	 */
 	private Map<String, Transport> transports = new HashMap<String, Transport>();
 
 	/**
@@ -98,20 +107,33 @@ public class Connection {
 	 */
 	private Map<java.lang.Integer, Receiver> temporaryQueues = new HashMap<java.lang.Integer, Receiver>();
 
+	/**
+	 * The properties that this connection was created with.
+	 */
 	private Properties properties;
 
+	/**
+	 * The open sessions from this connection/
+	 */
 	private Map<Integer, Session> sessions = new HashMap<Integer, Session>();
 
-	private final Object tpgetany = new Object();
+	/**
+	 * The list of sessionids that have received a message.
+	 */
+	private List<Integer> tpGetAnySessions = new ArrayList<Integer>();
 
-	private List<Integer> sessionIds = new ArrayList<Integer>();
-
+	/**
+	 * The monitor of responses.
+	 */
 	private ResponseMonitor responseMonitor;
 
+	/**
+	 * The connection factory that created this connection.
+	 */
 	private ConnectionFactory connectionFactory;
 
 	/**
-	 * The list of service sessions
+	 * The service sessions for this connection.
 	 */
 	private Session serviceSession;
 
@@ -119,11 +141,9 @@ public class Connection {
 	 * The connection
 	 * 
 	 * @param connectionFactory
-	 * 
+	 *            The connection factory that created this connection.
 	 * @param properties
-	 * @param username
-	 * @param password
-	 * @throws ConnectionException
+	 *            The properties that this connection was created with.
 	 */
 	Connection(ConnectionFactory connectionFactory, Properties properties) {
 		this.connectionFactory = connectionFactory;
@@ -140,6 +160,7 @@ public class Connection {
 	 *            The subtype of the buffer
 	 * @return The new buffer
 	 * @throws ConnectionException
+	 *             If the buffer was unknown or invalid.
 	 */
 	public Buffer tpalloc(String type, String subtype)
 			throws ConnectionException {
@@ -159,15 +180,19 @@ public class Connection {
 	}
 
 	/**
-	 * Synchronous call
+	 * Synchronous call.
 	 * 
 	 * @param svc
 	 *            The name of the service to call
-	 * @param idata
+	 * @param buffer
 	 *            The inbound data
+	 * @param len
+	 *            The length of the data
 	 * @param flags
 	 *            The flags to use
 	 * @return The returned buffer
+	 * @throws ConnectionException
+	 *             If the service cannot be contacted.
 	 */
 	public Response tpcall(String svc, Buffer buffer, int len, int flags)
 			throws ConnectionException {
@@ -183,11 +208,15 @@ public class Connection {
 	 * 
 	 * @param svc
 	 *            The name of the service to call
-	 * @param idata
+	 * @param toSend
 	 *            The inbound data
+	 * @param len
+	 *            The length of the data
 	 * @param flags
 	 *            The flags to use
 	 * @return The connection descriptor
+	 * @throws ConnectionException
+	 *             If the service cannot be contacted.
 	 */
 	public int tpacall(String svc, Buffer toSend, int len, int flags)
 			throws ConnectionException {
@@ -246,6 +275,8 @@ public class Connection {
 	 *            The connection descriptor
 	 * @param flags
 	 *            The flags to use
+	 * @throws ConnectionException
+	 *             If the client cannot be cleaned up.
 	 */
 	public int tpcancel(int cd) throws ConnectionException {
 		log.debug("tpcancel: " + cd);
@@ -266,13 +297,15 @@ public class Connection {
 	}
 
 	/**
-	 * Get the reply from the server
+	 * Get the reply for an asynchronous call.
 	 * 
 	 * @param cd
 	 *            The connection descriptor to use
 	 * @param flags
 	 *            The flags to use
 	 * @return The response from the server
+	 * @throws ConnectionException
+	 *             If the service cannot be contacted.
 	 */
 	public Response tpgetrply(int cd, int flags) throws ConnectionException {
 		log.debug("tpgetrply: " + cd);
@@ -284,7 +317,7 @@ public class Connection {
 					"Invalid flags remain: " + toCheck);
 		}
 
-		synchronized (tpgetany) {
+		synchronized (tpGetAnySessions) {
 			if ((flags & Connection.TPGETANY) == Connection.TPGETANY) {
 				int timeout = 0;
 				if ((flags & Connection.TPNOTIME) != Connection.TPNOTIME) {
@@ -294,19 +327,19 @@ public class Connection {
 							+ Integer.parseInt(properties
 									.getProperty("TimeToLive")) * 1000;
 				}
-				if (sessionIds.size() == 0) {
+				if (tpGetAnySessions.size() == 0) {
 					try {
-						tpgetany.wait(timeout);
+						tpGetAnySessions.wait(timeout);
 					} catch (InterruptedException e) {
 						throw new ConnectionException(Connection.TPESYSTEM,
 								"Could not wait", e);
 					}
 				}
-				if (sessionIds.size() == 0) {
+				if (tpGetAnySessions.size() == 0) {
 					throw new ConnectionException(Connection.TPETIME,
 							"No message arrived");
 				} else {
-					cd = sessionIds.remove(0);
+					cd = tpGetAnySessions.remove(0);
 				}
 			}
 		}
@@ -323,15 +356,19 @@ public class Connection {
 	}
 
 	/**
-	 * Handle the initiation of a conversation with the server
+	 * Handle the initiation of a conversation with the server.
 	 * 
 	 * @param svc
 	 *            The name of the service
-	 * @param idata
+	 * @param toSend
 	 *            The outbound buffer
+	 * @param len
+	 *            The length of the data
 	 * @param flags
 	 *            The flags to use
 	 * @return The connection descriptor
+	 * @throws ConnectionException
+	 *             If the service cannot be contacted.
 	 */
 	public Session tpconnect(String svc, Buffer toSend, int len, int flags)
 			throws ConnectionException {
@@ -408,6 +445,7 @@ public class Connection {
 	 * Close any resources associated with this connection
 	 * 
 	 * @throws ConnectionException
+	 *             If an open session cannot be cancelled or disconnected.
 	 */
 	public void close() throws ConnectionException {
 		log.debug("Close connection called");
@@ -467,6 +505,17 @@ public class Connection {
 		return toReturn;
 	}
 
+	/**
+	 * Retrieve a response.
+	 * 
+	 * @param cd
+	 *            The connection descriptor
+	 * @param flags
+	 *            The flags to use
+	 * @return The response
+	 * @throws ConnectionException
+	 *             If the response cannot be retrieved.
+	 */
 	private Response receive(int cd, int flags) throws ConnectionException {
 		log.debug("receive: " + cd);
 		Receiver endpoint = temporaryQueues.remove(cd);
@@ -500,37 +549,19 @@ public class Connection {
 		}
 	}
 
-	private class ResponseMonitorImpl implements ResponseMonitor {
-		public void responseReceived(int sessionId, boolean remove) {
-			synchronized (tpgetany) {
-				if (!remove) {
-					log.trace("tpgetanyCallback adding: " + sessionId);
-					sessionIds.add(sessionId);
-					tpgetany.notify();
-				} else {
-					log.trace("tpgetanyCallback removing: " + sessionId);
-					for (int i = 0; i < sessionIds.size(); i++) {
-						if (sessionId == sessionIds.get(i)) {
-							sessionIds.remove(i);
-							log.trace("tpgetanyCallback removed: " + sessionId);
-							break;
-						}
-					}
-				}
-			}
-		}
-	}
-
 	/**
 	 * Used by the service side to create a session for handling the client
 	 * request.
 	 * 
-	 * @param properties
-	 * @param transport
+	 * @param name
+	 *            The name of the service.
 	 * @param cd
+	 *            The connection descriptor
 	 * @param replyTo
-	 * @return
+	 *            The client to respond to
+	 * @return The session to use for the service invocation
 	 * @throws ConnectionException
+	 *             In case the transport cannot be established.
 	 */
 	Session createServiceSession(String name, int cd, Object replyTo)
 			throws ConnectionException {
@@ -546,10 +577,23 @@ public class Connection {
 		return serviceSession;
 	}
 
+	/**
+	 * Does this connection have any open sessions? Used to determine if a
+	 * service has unanswered requests prior to a tpreturn.
+	 * 
+	 * @return True, if there are open conversations or asynchronous XATMI calls
+	 *         open.
+	 */
 	boolean hasOpenSessions() {
 		return sessions.size() > 0 || temporaryQueues.size() > 0;
 	}
 
+	/**
+	 * Detach the open session, called during {@link Session#close()}
+	 * 
+	 * @param session
+	 *            The session that is closing.
+	 */
 	void removeSession(Session session) {
 		temporaryQueues.remove(session.getCd());
 		// May be a no-op
@@ -560,6 +604,34 @@ public class Connection {
 
 		if (session.equals(serviceSession)) {
 			serviceSession = null;
+		}
+	}
+
+	/**
+	 * This class allows the session to notify the connection when a response is
+	 * delivered or consumed.
+	 */
+	private class ResponseMonitorImpl implements ResponseMonitor {
+		/**
+		 * Handle the response update.
+		 */
+		public void responseReceived(int sessionId, boolean remove) {
+			synchronized (tpGetAnySessions) {
+				if (!remove) {
+					log.trace("tpgetanyCallback adding: " + sessionId);
+					tpGetAnySessions.add(sessionId);
+					tpGetAnySessions.notify();
+				} else {
+					log.trace("tpgetanyCallback removing: " + sessionId);
+					for (int i = 0; i < tpGetAnySessions.size(); i++) {
+						if (sessionId == tpGetAnySessions.get(i)) {
+							tpGetAnySessions.remove(i);
+							log.trace("tpgetanyCallback removed: " + sessionId);
+							break;
+						}
+					}
+				}
+			}
 		}
 	}
 }

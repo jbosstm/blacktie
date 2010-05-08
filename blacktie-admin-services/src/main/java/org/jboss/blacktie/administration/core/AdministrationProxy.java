@@ -76,7 +76,8 @@ public class AdministrationProxy {
 		XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
 		xmlenv.parse("btconfig.xml");
 		servers = (List<String>) prop.get("blacktie.domain.servers");
-		ConnectionFactory cf = ConnectionFactory.getConnectionFactory().getConnectionFactory();
+		ConnectionFactory cf = ConnectionFactory.getConnectionFactory()
+				.getConnectionFactory();
 		connection = cf.getConnection();
 		JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
 		c = JMXConnectorFactory.connect(u);

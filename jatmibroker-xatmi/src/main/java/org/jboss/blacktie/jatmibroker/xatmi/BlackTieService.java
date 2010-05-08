@@ -48,11 +48,8 @@ public abstract class BlackTieService implements Service {
 	 * 
 	 * @param name
 	 *            The name of the service
-	 * @throws ConfigurationException
-	 * @throws ConnectionException
 	 */
-	public BlackTieService(String name) throws ConfigurationException,
-			ConnectionException {
+	public BlackTieService(String name) {
 		this.name = name;
 		log.debug("Service created: " + name);
 	}
@@ -64,7 +61,7 @@ public abstract class BlackTieService implements Service {
 	 * @param message
 	 *            The message to process
 	 * @throws ConfigurationException
-	 * @throws ConnectionException
+	 *             If the connection factory cannot be created
 	 * @throws ConnectionException
 	 *             In case communication fails
 	 */

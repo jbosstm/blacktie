@@ -31,19 +31,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.AttributeStructure;
 import org.jboss.blacktie.jatmibroker.core.conf.BufferStructure;
 import org.jboss.blacktie.jatmibroker.jab.JABException;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 
 /**
- * This class encapsulates the response from the remote service and the return
- * code
+ * This class is used to send and receive data to and from clients to services.
+ * 
+ * @see {@link X_OCTET}
+ * @see {@link X_C_TYPE}
+ * @see {@link X_COMMON}
  */
 public abstract class Buffer implements Serializable {
-	private static final Logger log = LogManager.getLogger(Buffer.class);
+	/**
+	 * A none-default id.
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * The agreed size of a byte.
@@ -76,41 +80,98 @@ public abstract class Buffer implements Serializable {
 	public static final int DOUBLE_SIZE = LONG_SIZE;
 
 	/**
-	 * 
+	 * The structure of the buffer.
 	 */
-	private static final long serialVersionUID = 1L;
-
 	private Map<String, Object> structure = new HashMap<String, Object>();
+
+	/**
+	 * The supported keys.
+	 */
 	private String[] keys;
+
+	/**
+	 * The supported types
+	 */
 	private Class[] types;
+
+	/**
+	 * The length of each array in the buffer.
+	 */
 	private int[] lengths;
+
+	/**
+	 * Has the buffer been deserialized.
+	 */
 	private boolean deserialized;
+
+	/**
+	 * Is the buffer formatted.
+	 */
 	private boolean formatted;
 
+	/**
+	 * The current read position.
+	 */
 	int currentPos = 0;
 
+	/**
+	 * The list of types supported by this class of buffer.
+	 * 
+	 * @see {@link X_OCTET}
+	 * @see {@link X_C_TYPE}
+	 * @see {@link X_COMMON}
+	 */
 	private List<Class> supportedTypes;
 
+	/**
+	 * Does the buffer require serialization? i.e. is it not an X_OCTET
+	 */
 	private boolean requiresSerialization;
 
+	/**
+	 * The type of the buffer? X_OCTET, X_C_TYPE, X_COMMON
+	 */
 	private String type;
 
+	/**
+	 * The subtype
+	 */
 	private String subtype;
 
+	/**
+	 * The raw data.
+	 */
 	private byte[] data;
 
+	/**
+	 * The number of arrays arrays.
+	 */
 	private int[] counts;
 
+	/**
+	 * The structure of the message.
+	 */
 	private Map<String, Class> format = new HashMap<String, Class>();
 
 	/**
-	 * Create a new buffer
+	 * Create a new buffer.
 	 * 
+	 * @param type
+	 *            The type of the buffer
+	 * @param subtype
+	 *            The subtype of the buffer
+	 * @param requiresSerialization
+	 *            Is the buffer not an X_OCTET?
+	 * @param supportedTypes
+	 *            The types supported by the buffer, see the individual buffers
+	 *            for more details
 	 * @param properties
-	 * @param b
-	 * 
-	 * @param types
+	 *            The properties to use.
 	 * @throws ConnectionException
+	 *             If the buffer is not supported.
+	 * @see {@link X_OCTET}
+	 * @see {@link X_C_TYPE}
+	 * @see {@link X_COMMON}
 	 */
 	Buffer(String type, String subtype, boolean requiresSerialization,
 			List<Class> supportedTypes, Properties properties)
@@ -153,10 +214,29 @@ public abstract class Buffer implements Serializable {
 		}
 	}
 
+	/**
+	 * Get the format of the message.
+	 * 
+	 * @return The format of the message
+	 */
 	public Map<String, Class> getFormat() {
 		return format;
 	}
 
+	/**
+	 * Format the buffer.
+	 * 
+	 * @param keys
+	 *            The keys
+	 * @param types
+	 *            The types
+	 * @param lengths
+	 *            The lengths
+	 * @param counts
+	 *            The number of each array
+	 * @throws ConnectionException
+	 *             In case the buffer does not match the format.
+	 */
 	private void format(String[] keys, Class[] types, int[] lengths,
 			int[] counts) throws ConnectionException {
 		structure.clear();
@@ -175,6 +255,14 @@ public abstract class Buffer implements Serializable {
 		formatted = true;
 	}
 
+	/**
+	 * Deserialize the buffer.
+	 * 
+	 * @param data
+	 *            The data to deserialize.
+	 * @throws ConnectionException
+	 *             In case the data does not match the format defined.
+	 */
 	void deserialize(byte[] data) throws ConnectionException {
 		currentPos = 0;
 		if (requiresSerialization) {
@@ -270,6 +358,13 @@ public abstract class Buffer implements Serializable {
 		deserialized = true;
 	}
 
+	/**
+	 * Serialize the buffer.
+	 * 
+	 * @return The byte array for sending.
+	 * @throws ConnectionException
+	 *             In case the data cannot be formatted correctly
+	 */
 	byte[] serialize() throws ConnectionException {
 		currentPos = 0;
 		byte[] toReturn = null;
@@ -442,12 +537,31 @@ public abstract class Buffer implements Serializable {
 		return toReturn;
 	}
 
+	/**
+	 * Write a byte during serialization/
+	 * 
+	 * @param dos
+	 *            The output stream to write to.
+	 * @param b
+	 *            The byte to write.
+	 * @throws IOException
+	 *             In case the output stream fails.
+	 */
 	private void writeByte(DataOutputStream dos, byte b) throws IOException {
 		dos.writeByte(b);
 
 		currentPos += 1;
 	}
 
+	/**
+	 * Read a byte during deserialization.
+	 * 
+	 * @param dis
+	 *            The input stream to read from
+	 * @return The byte
+	 * @throws IOException
+	 *             In case the stream cannot be read.
+	 */
 	private byte readByte(DataInputStream dis) throws IOException {
 		currentPos += 1;
 
@@ -588,6 +702,17 @@ public abstract class Buffer implements Serializable {
 		data = null;
 	}
 
+	/**
+	 * Get the value of an attribute.
+	 * 
+	 * @param key
+	 *            The key
+	 * @param type
+	 *            The type
+	 * @return The value
+	 * @throws ConnectionException
+	 *             In case the message is not formatted yet.
+	 */
 	protected Object getAttributeValue(String key, Class type)
 			throws ConnectionException {
 		if (!formatted) {
@@ -611,6 +736,18 @@ public abstract class Buffer implements Serializable {
 		return structure.get(key);
 	}
 
+	/**
+	 * Set the value.
+	 * 
+	 * @param key
+	 *            The key to set
+	 * @param type
+	 *            The type of the value.
+	 * @param value
+	 *            The value to use
+	 * @throws ConnectionException
+	 *             In case the message is not formatted.
+	 */
 	protected void setAttributeValue(String key, Class type, Object value)
 			throws ConnectionException {
 		if (!formatted) {
@@ -634,10 +771,21 @@ public abstract class Buffer implements Serializable {
 		structure.put(key, value);
 	}
 
+	/**
+	 * Set the raw data, used by the X_OCTET buffer.
+	 * 
+	 * @param bytes
+	 *            The data to use.
+	 */
 	protected void setRawData(byte[] bytes) {
 		this.data = bytes;
 	}
 
+	/**
+	 * Get the raw data, used internally and by the X_OCTET buffer.
+	 * 
+	 * @return The data.
+	 */
 	protected byte[] getRawData() {
 		return data;
 	}

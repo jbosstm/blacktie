@@ -20,7 +20,6 @@ package org.jboss.blacktie.example.mdb;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 
-import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
@@ -37,15 +36,15 @@ import org.jboss.ejb3.annotation.Depends;
 public class EchoServiceTestService extends MDBBlacktieService implements
 		javax.jms.MessageListener {
 
-	public EchoServiceTestService() throws ConnectionException,
-			ConfigurationException {
+	public EchoServiceTestService() {
 		super("EchoService");
 	}
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		X_OCTET rcvd = (X_OCTET) svcinfo.getBuffer();
 		try {
-			X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null);
+			X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc(
+					"X_OCTET", null);
 			buffer.setByteArray(rcvd.getByteArray());
 			return new Response(Connection.TPSUCCESS, 0, buffer, rcvd
 					.getByteArray().length, 0);

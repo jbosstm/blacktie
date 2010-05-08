@@ -43,8 +43,7 @@ public class TxCreateServiceTestService extends MDBBlacktieService implements
 	private static final Logger log = LogManager
 			.getLogger(TxCreateServiceTestService.class);
 
-	public TxCreateServiceTestService() throws ConfigurationException,
-			ConnectionException {
+	public TxCreateServiceTestService() {
 		super("TxCreateService");
 	}
 

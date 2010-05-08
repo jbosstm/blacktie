@@ -80,7 +80,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 	public static Hashtable<String, Long> QUEUE_CREATION_TIMES = new Hashtable<String, Long>();
 
 	public BlacktieStompAdministrationService() throws IOException,
-			ConfigurationException, ConnectionException {
+			ConfigurationException {
 		super("BTStompAdmin");
 
 		XMLEnvHandler handler = new XMLEnvHandler(prop);
@@ -354,7 +354,8 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 				success[0] = 0;
 			}
 
-			X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null);
+			X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc(
+					"X_OCTET", null);
 			buffer.setByteArray(success);
 			log.debug("Responding");
 			return new Response(Connection.TPSUCCESS, 0, buffer, 1, 0);

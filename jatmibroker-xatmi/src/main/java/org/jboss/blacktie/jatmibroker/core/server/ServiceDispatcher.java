@@ -19,7 +19,6 @@ package org.jboss.blacktie.jatmibroker.core.server;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.transport.Message;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.xatmi.BlackTieService;
@@ -41,8 +40,7 @@ public class ServiceDispatcher extends BlackTieService implements Runnable {
 	private Thread thread;
 	private volatile boolean closed;
 
-	ServiceDispatcher(String serviceName, Service callback, Receiver receiver)
-			throws ConfigurationException, ConnectionException {
+	ServiceDispatcher(String serviceName, Service callback, Receiver receiver) {
 		super(serviceName);
 		this.callback = callback;
 		this.receiver = receiver;

@@ -6,10 +6,8 @@ import javax.jms.MessageListener;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.transport.hybrid.JMSReceiverImpl;
 import org.jboss.blacktie.jatmibroker.xatmi.BlackTieService;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
 /**
  * All BlackTie MDB services should extend this class so that they can be
@@ -29,14 +27,8 @@ public abstract class MDBBlacktieService extends BlackTieService implements
 	 * 
 	 * @param name
 	 *            The name of the service
-	 * @throws ConnectionException
-	 *             In case the connection cannot be established
-	 * @throws ConfigurationException
-	 *             In case the btconfig.xml is invalid or the transport does not
-	 *             exist
 	 */
-	public MDBBlacktieService(String name) throws ConfigurationException,
-			ConnectionException {
+	public MDBBlacktieService(String name) {
 		super(name);
 	}
 

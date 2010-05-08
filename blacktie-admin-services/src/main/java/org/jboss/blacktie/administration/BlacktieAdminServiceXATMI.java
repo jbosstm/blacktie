@@ -66,11 +66,9 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 	 *             In case a required JMX connection cannot be established.
 	 * @throws ConfigurationException
 	 *             In case the configuration is invalid.
-	 * @throws ConnectionException
-	 *             In case required BlackTie connections cannot be established.
 	 */
 	public BlacktieAdminServiceXATMI() throws IOException,
-			ConfigurationException, ConnectionException {
+			ConfigurationException {
 		super("BTDomainAdmin");
 		administrationProxy = new AdministrationProxy();
 	}
