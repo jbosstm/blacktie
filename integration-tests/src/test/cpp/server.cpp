@@ -36,6 +36,8 @@ int interationCount = 100;
 #include "xatmi.h"
 #include "userlogc.h"
 
+#include "Sleeper.h"
+
 extern void test_tpcall_TPETIME_service(TPSVCINFO *svcinfo);
 extern void test_tpcall_TPEOTYPE_service(TPSVCINFO *svcinfo);
 extern void test_tpcall_TPESVCFAIL_service(TPSVCINFO *svcinfo);
