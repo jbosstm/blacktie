@@ -48,14 +48,6 @@ public class ResumeDomainTest extends TestCase {
 		if (commandHandler.handleCommand("shutdown".split(" ")) != 0) {
 			fail("Could not stop the server");
 		}
-
-		// // TODO SHUTDOWN SHOULD RETURN WHEN THERE ARE NO MORE CONSUMERS?
-		// try {
-		// Thread.currentThread().sleep(5000);
-		// } catch (InterruptedException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
 	}
 
 	public void testResumeDomain() throws IOException,

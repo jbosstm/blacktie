@@ -45,13 +45,5 @@ public class StartupTest extends TestCase {
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command was unsuccessful");
 		}
-
-		// // TODO SHUTDOWN SHOULD RETURN WHEN THERE ARE NO MORE CONSUMERS?
-		// try {
-		// Thread.currentThread().sleep(5000);
-		// } catch (InterruptedException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
 	}
 }

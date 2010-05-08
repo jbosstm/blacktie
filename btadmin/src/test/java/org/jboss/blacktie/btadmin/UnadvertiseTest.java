@@ -44,13 +44,6 @@ public class UnadvertiseTest extends TestCase {
 		if (commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
 			fail("Could not stop the server");
 		}
-		// // TODO SHUTDOWN SHOULD RETURN WHEN THERE ARE NO MORE CONSUMERS?
-		// try {
-		// Thread.currentThread().sleep(5000);
-		// } catch (InterruptedException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
 	}
 
 	public void testUnadvertise() throws IOException,

@@ -119,12 +119,5 @@ public class ShutdownTest extends TestCase {
 		if (commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
 			fail("Command was not successful");
 		}
-		// // TODO SHUTDOWN SHOULD RETURN WHEN THERE ARE NO MORE CONSUMERS?
-		// try {
-		// Thread.currentThread().sleep(5000);
-		// } catch (InterruptedException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
 	}
 }

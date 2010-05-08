@@ -219,7 +219,6 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 						free(messageSubtype);
 
 						if (flags & TPNOCHANGE && typesChanged) {
-							// TODO rollback-only
 							setSpecific(TPE_KEY, TSS_TPEOTYPE);
 							setTpurcode(message.rcode);
 							txx_rollback_only();
@@ -1074,8 +1073,7 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 						}
 					}
 
-					// TODO send a fail if there are any outstanding replies or
-					// open connections, or if any work done within the service
+					// TODO send a fail if any work done within the service
 					// caused its transaction to be marked rollback-only
 
 
