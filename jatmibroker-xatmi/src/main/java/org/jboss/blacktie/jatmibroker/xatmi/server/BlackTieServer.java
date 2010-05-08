@@ -112,7 +112,7 @@ public class BlackTieServer {
 					serviceData.put(serviceName, data);
 					log.info("Advertised: " + serviceName);
 				} catch (Throwable t) {
-					throw new ConnectionException(-1,
+					throw new ConnectionException(Connection.TPESYSTEM,
 							"Could not create service factory for: "
 									+ serviceName, t);
 				}
