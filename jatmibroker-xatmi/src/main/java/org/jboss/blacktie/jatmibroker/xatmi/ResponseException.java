@@ -36,7 +36,7 @@ public class ResponseException extends ConnectionException {
 	 *            The event may be any from Connection
 	 * @param received
 	 *            A received buffer
-	 * @param rCode
+	 * @param rcode
 	 *            The rcode in case of TPFAIL
 	 */
 	public ResponseException(int tperrno, String string, long event, int rcode,

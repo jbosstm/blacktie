@@ -131,8 +131,6 @@ public class JABMessage implements Message {
 	 * 
 	 * @param key
 	 *            The content of the buffer to set
-	 * @param position
-	 *            The position to check
 	 * @throws JABException
 	 *             In case the content is malformed
 	 */

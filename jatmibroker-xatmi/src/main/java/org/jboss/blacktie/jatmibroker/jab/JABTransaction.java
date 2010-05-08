@@ -318,8 +318,8 @@ public class JABTransaction {
 	 * current thread is associated with a transaction then that association
 	 * will be lost.
 	 * 
-	 * @param JABTransaction
-	 *            act the transaction to associate.
+	 * @param act
+	 *            the transaction to associate.
 	 * @return <code>true</code> if association is successful,
 	 *         <code>false</code> otherwise.
 	 */

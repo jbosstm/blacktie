@@ -156,7 +156,7 @@ public class Connection {
 	 * 
 	 * @param type
 	 *            The type of the buffer
-	 * @param subType
+	 * @param subtype
 	 *            The subtype of the buffer
 	 * @return The new buffer
 	 * @throws ConnectionException
@@ -273,8 +273,6 @@ public class Connection {
 	 * 
 	 * @param cd
 	 *            The connection descriptor
-	 * @param flags
-	 *            The flags to use
 	 * @throws ConnectionException
 	 *             If the client cannot be cleaned up.
 	 */

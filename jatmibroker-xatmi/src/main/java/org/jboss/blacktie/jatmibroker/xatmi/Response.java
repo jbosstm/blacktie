@@ -158,7 +158,7 @@ public class Response implements Serializable {
 	 * Get the cd of the service that responded (may vary based on
 	 * <code>Connection#TPGETANY</code>)
 	 * 
-	 * @return
+	 * @return The connection descriptor
 	 */
 	public int getCd() {
 		return cd;

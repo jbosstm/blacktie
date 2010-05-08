@@ -39,9 +39,9 @@ import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 /**
  * This class is used to send and receive data to and from clients to services.
  * 
- * @see {@link X_OCTET}
- * @see {@link X_C_TYPE}
- * @see {@link X_COMMON}
+ * @see X_OCTET
+ * @see X_C_TYPE
+ * @see X_COMMON
  */
 public abstract class Buffer implements Serializable {
 	/**
@@ -117,9 +117,9 @@ public abstract class Buffer implements Serializable {
 	/**
 	 * The list of types supported by this class of buffer.
 	 * 
-	 * @see {@link X_OCTET}
-	 * @see {@link X_C_TYPE}
-	 * @see {@link X_COMMON}
+	 * @see X_OCTET
+	 * @see X_C_TYPE
+	 * @see X_COMMON
 	 */
 	private List<Class> supportedTypes;
 

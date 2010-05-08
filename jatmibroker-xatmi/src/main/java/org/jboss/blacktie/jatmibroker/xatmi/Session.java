@@ -35,8 +35,8 @@ import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
  * 
  * It is used to send and retrieve data
  * 
- * @see {@link Connection#tpconnect(String, Buffer, int, int)}
- * @see {@link TPSVCINFO#getSession()}
+ * @see Connection#tpconnect(String, Buffer, int, int)
+ * @see TPSVCINFO#getSession()
  */
 public class Session {
 	/**
@@ -218,7 +218,7 @@ public class Session {
 	/**
 	 * Send a buffer to a remote server in a conversation
 	 * 
-	 * @param tosend
+	 * @param toSend
 	 *            The outbound data
 	 * @param len
 	 *            The length of the data
@@ -246,9 +246,9 @@ public class Session {
 		}
 
 		if (this.lastEvent > -1) {
-			throw new ResponseException(Connection.TPEEVENT, "Event existed on descriptor: " + lastEvent,
-					lastEvent, lastRCode,
-					null);
+			throw new ResponseException(Connection.TPEEVENT,
+					"Event existed on descriptor: " + lastEvent, lastEvent,
+					lastRCode, null);
 		} else if (!canSend) {
 			throw new ConnectionException(Connection.TPEPROTO,
 					"Session can't send");
@@ -348,29 +348,29 @@ public class Session {
 				log.debug("Completed session is being closed");
 				close();
 			}
-			throw new ResponseException(Connection.TPEEVENT, "Event existed on descriptor: " + lastEvent,
-					lastEvent, lastRCode,
-					received);
+			throw new ResponseException(Connection.TPEEVENT,
+					"Event existed on descriptor: " + lastEvent, lastEvent,
+					lastRCode, received);
 		} else if ((m.flags & Connection.TPRECVONLY) == Connection.TPRECVONLY) {
 			throw new ResponseException(Connection.TPEEVENT,
-					"Reporting send only event", Connection.TPEV_SENDONLY, m.rcode,
-					received);
+					"Reporting send only event", Connection.TPEV_SENDONLY,
+					m.rcode, received);
 		} else if (m.rval == Connection.TPSUCCESS
 				|| m.rval == Connection.TPFAIL) {
 			log.debug("Completed session is being closed");
 			close();
 			if (m.rval == Connection.TPSUCCESS) {
 				throw new ResponseException(Connection.TPEEVENT,
-						"Service completed successfully event", Connection.TPEV_SVCSUCC,
-						0, received);
+						"Service completed successfully event",
+						Connection.TPEV_SVCSUCC, 0, received);
 			} else if (m.rcode == Connection.TPESVCERR) {
 				throw new ResponseException(Connection.TPEEVENT,
-						"Service received an error", Connection.TPEV_SVCERR, m.rcode,
-						received);
+						"Service received an error", Connection.TPEV_SVCERR,
+						m.rcode, received);
 			} else {
 				throw new ResponseException(Connection.TPEEVENT,
-						"Service received a fail", Connection.TPEV_SVCFAIL, m.rcode,
-						received);
+						"Service received a fail", Connection.TPEV_SVCFAIL,
+						m.rcode, received);
 			}
 		}
 		return received;
@@ -379,9 +379,6 @@ public class Session {
 	/**
 	 * Close the conversation with the remote service. This will close the
 	 * session.
-	 * 
-	 * @param cd
-	 *            The connection descriptor to use
 	 */
 	public void tpdiscon() throws ConnectionException {
 		log.debug("tpdiscon: " + cd);

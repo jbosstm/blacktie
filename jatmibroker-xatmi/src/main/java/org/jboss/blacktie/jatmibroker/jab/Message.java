@@ -58,7 +58,7 @@ public interface Message {
 	 * @throws JABException
 	 *             In case the key is not of required type/does not exist
 	 */
-	public void setInt(String key, int j) throws JABException;
+	public void setInt(String key, int data) throws JABException;
 
 	/**
 	 * Set part of the content to send. For non-array data types
