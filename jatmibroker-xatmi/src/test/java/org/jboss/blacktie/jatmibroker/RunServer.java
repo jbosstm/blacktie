@@ -18,7 +18,6 @@
 package org.jboss.blacktie.jatmibroker;
 
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.server.AtmiBrokerServer;
 import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyNoTpreturnService;
 import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyTpcallTPEOTYPEService;
 import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyTpcallTPESVCFAILService;
@@ -26,6 +25,7 @@ import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyTpcallTPETIMEServi
 import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyTprecvTPEVDISCONIMMService;
 import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyTprecvTPEVSVCFAILService;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.blacktie.jatmibroker.xatmi.server.BlackTieServer;
 import org.jboss.blacktie.jatmibroker.xatmi.services.SpecExampleOneService;
 import org.jboss.blacktie.jatmibroker.xatmi.services.SpecExampleTwoService;
 import org.jboss.blacktie.jatmibroker.xatmi.services.TPACallService;
@@ -52,14 +52,14 @@ import org.jboss.blacktie.jatmibroker.xatmi.services.TTLService;
 
 public class RunServer {
 
-	private AtmiBrokerServer server;
+	private BlackTieServer server;
 
 	public void serverinit() throws ConfigurationException, ConnectionException {
-		this.server = new AtmiBrokerServer("standalone-server");
+		this.server = new BlackTieServer("standalone-server");
 	}
 
 	public void serverdone() throws ConnectionException {
-		server.close();
+		server.shutdown();
 	}
 
 	public void tpadvertiseBAR() {

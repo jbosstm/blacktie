@@ -48,6 +48,9 @@ import org.w3c.dom.Element;
 		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTDomainAdmin") }, messageListenerInterface = javax.jms.MessageListener.class)
 @Depends("jboss.messaging.destination:service=Queue,name=BTDomainAdmin")
 @javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
+/**
+ * This is the administration service proxy to allow administration of the servers from XATMI clients.
+ */
 public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 		javax.jms.MessageListener, BlacktieAdministration {
 	private static final Logger log = LogManager
@@ -55,6 +58,14 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 
 	private AdministrationProxy administrationProxy;
 
+	/**
+	 * Create the proxy, it will forward all requests to the "core" proxy who is
+	 * responsible for invoking the individual XATMI services.
+	 * 
+	 * @throws IOException In case a required JMX connection cannot be established. 
+	 * @throws ConfigurationException In case the configuration is invalid. 
+	 * @throws ConnectionException In case required BlackTie connections cannot be established.
+	 */
 	public BlacktieAdminServiceXATMI() throws IOException,
 			ConfigurationException, ConnectionException {
 		super("BTDomainAdmin");

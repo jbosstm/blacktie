@@ -8,14 +8,14 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.transport.hybrid.JMSReceiverImpl;
+import org.jboss.blacktie.jatmibroker.xatmi.BlackTieService;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.blacktie.jatmibroker.xatmi.Service;
 
 /**
- * All blacktie MDB services should extend this class so that they can be
+ * All BlackTie MDB services should extend this class so that they can be
  * advertised
  */
-public abstract class MDBBlacktieService extends Service implements
+public abstract class MDBBlacktieService extends BlackTieService implements
 		MessageListener {
 	/**
 	 * A logger to log the output to.
@@ -40,12 +40,20 @@ public abstract class MDBBlacktieService extends Service implements
 		super(name);
 	}
 
+	/**
+	 * The onMessage method formats the JMS received bytes message into a format
+	 * understood by the XATMI API.
+	 * 
+	 * @param message
+	 *            The message received wrapping an XATMI invocation
+	 */
 	public void onMessage(Message message) {
 		try {
 			BytesMessage bytesMessage = ((BytesMessage) message);
 			org.jboss.blacktie.jatmibroker.core.transport.Message toProcess = JMSReceiverImpl
 					.convertFromBytesMessage(bytesMessage);
-			log.debug("SERVER onMessage: ior: " + toProcess.control);
+			log.debug("SERVER onMessage: transaction control ior: "
+					+ toProcess.control);
 			processMessage(toProcess);
 			log.debug("Processed message");
 		} catch (Throwable t) {

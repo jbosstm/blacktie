@@ -56,6 +56,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
+/**
+ * This is the core proxy to forward requests to the individual servers.
+ */
 public class AdministrationProxy {
 	private static final Logger log = LogManager
 			.getLogger(AdministrationProxy.class);
@@ -67,8 +70,7 @@ public class AdministrationProxy {
 
 	public static Boolean isDomainPause = false;
 
-	public AdministrationProxy() throws IOException, ConfigurationException,
-			ConnectionException {
+	public AdministrationProxy() throws IOException, ConfigurationException {
 		log.debug("Administration Proxy");
 		XMLEnvHandler handler = new XMLEnvHandler(prop);
 		XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");

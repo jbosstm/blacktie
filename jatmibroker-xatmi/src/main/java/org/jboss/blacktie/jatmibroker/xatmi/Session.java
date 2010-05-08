@@ -337,7 +337,7 @@ public class Session {
 		log.debug("tpdiscon: " + cd);
 		if (sender == null) {
 			throw new ConnectionException(Connection.TPEPROTO,
-					"Session was not in write mode");
+					"Session had no endpoint to respond to for tpdiscon");
 		}
 		if (JABTransaction.current() != null) {
 			try {

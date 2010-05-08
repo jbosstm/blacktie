@@ -20,11 +20,11 @@ package org.jboss.blacktie.jatmibroker.jab.factory;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.jab.JABException;
 import org.jboss.blacktie.jatmibroker.jab.JABSession;
 import org.jboss.blacktie.jatmibroker.jab.JABSessionAttributes;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
 
 /**
@@ -75,7 +75,7 @@ public class JABConnectionFactory {
 	private JABConnectionFactory() throws JABException {
 		try {
 			connectionFactory = ConnectionFactory.getConnectionFactory();
-		} catch (ConnectionException e) {
+		} catch (ConfigurationException e) {
 			throw new JABException("Could not create the connection factory: "
 					+ e.getMessage(), e);
 		}
@@ -96,14 +96,9 @@ public class JABConnectionFactory {
 			throws JABException {
 		JABConnection toReturn = connections.get(connectionName);
 		if (toReturn == null) {
-			try {
-				Connection connection = connectionFactory.getConnection();
-				toReturn = new JABConnection(connection, session);
-				connections.put(connectionName, toReturn);
-			} catch (ConnectionException e) {
-				throw new JABException("Could not create the connection: "
-						+ e.getMessage(), e);
-			}
+			Connection connection = connectionFactory.getConnection();
+			toReturn = new JABConnection(connection, session);
+			connections.put(connectionName, toReturn);
 		}
 		return toReturn;
 	}

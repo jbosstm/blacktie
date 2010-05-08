@@ -15,12 +15,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core.server;
+package org.jboss.blacktie.jatmibroker.xatmi.server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -29,35 +26,55 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerEnvXML;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.transport.OrbManagement;
-import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
-import org.jboss.blacktie.jatmibroker.core.transport.Transport;
-import org.jboss.blacktie.jatmibroker.core.transport.TransportFactory;
-import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
+import org.jboss.blacktie.jatmibroker.core.server.ServiceData;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
-public class AtmiBrokerServer {
+/**
+ * Create a server instance reading the configuration for the server defined by
+ * the name.
+ */
+public class BlackTieServer {
+	/**
+	 * A logger to use
+	 */
 	private static final Logger log = LogManager
-			.getLogger(AtmiBrokerServer.class);
-	private Map<String, ServiceData> serviceData = new HashMap<String, ServiceData>();
-	private OrbManagement orbManagement;
-	private Properties properties;
-	private String serverName;
-	private static final String DEFAULT_POOL_SIZE = "1";
+			.getLogger(BlackTieServer.class);
 
-	public AtmiBrokerServer(String serverName) throws ConfigurationException,
+	/**
+	 * The name of the server.
+	 */
+	private String serverName;
+
+	/**
+	 * The services currently advertised by this server.
+	 */
+	private Map<String, ServiceData> serviceData = new HashMap<String, ServiceData>();
+
+	/**
+	 * The properties the server was created with.
+	 */
+	private Properties properties;
+
+	/**
+	 * Initialize the server
+	 * 
+	 * @param serverName
+	 *            The name of the server
+	 * @throws ConfigurationException
+	 *             If the server does not exist
+	 * @throws ConnectionException
+	 *             If the server cannot connect to the infrastructure configured
+	 */
+	public BlackTieServer(String serverName) throws ConfigurationException,
 			ConnectionException {
 		this.serverName = serverName;
 		AtmiBrokerEnvXML server = new AtmiBrokerEnvXML();
 		properties = server.getProperties();
 
-		try {
-			orbManagement = new OrbManagement(properties, true);
-		} catch (Throwable t) {
-			throw new ConnectionException(-1, "Could not connect to orb", t);
-		}
-
+		/**
+		 * Launch all startup services.
+		 */
 		String services = (String) properties.get("blacktie." + serverName
 				+ ".services");
 		if (services != null) {
@@ -72,19 +89,8 @@ public class AtmiBrokerServer {
 
 	}
 
-	public void close() throws ConnectionException {
-		log.debug("Close server called: " + serverName);
-		Iterator<String> names = serviceData.keySet().iterator();
-		while (names.hasNext()) {
-			ServiceData next = serviceData.get(names.next());
-			next.close();
-			names.remove();
-		}
-		log.debug("Close server finished: " + serverName);
-	}
-
 	/**
-	 * Create a blacktie service with the specified name
+	 * Advertise a blacktie service with the specified name
 	 * 
 	 * @param serviceName
 	 *            The name of the service
@@ -101,7 +107,7 @@ public class AtmiBrokerServer {
 
 			if (!serviceData.containsKey(serviceName)) {
 				try {
-					ServiceData data = new ServiceData(serviceName,
+					ServiceData data = new ServiceData(properties, serviceName,
 							serviceClassName);
 					serviceData.put(serviceName, data);
 					log.info("Advertised: " + serviceName);
@@ -117,71 +123,40 @@ public class AtmiBrokerServer {
 		} catch (Throwable t) {
 			String message = "Could not advertise: " + serviceName;
 			log.error(message, t);
-			throw new ConnectionException(-1, message, t);
+			throw new ConnectionException(Connection.TPESYSTEM, message, t);
 		}
 	}
 
+	/**
+	 * Unadvertise the service by name.
+	 * 
+	 * @param serviceName
+	 *            The name of the service to unadverise.
+	 * @throws ConnectionException
+	 *             If the service cannot be unadvertised.
+	 */
 	public void tpunadvertise(String serviceName) throws ConnectionException {
 		serviceName = serviceName.substring(0, Math.min(
 				Connection.XATMI_SERVICE_NAME_LENGTH, serviceName.length()));
 		ServiceData data = serviceData.remove(serviceName);
 		if (data != null) {
-			try {
-				data.close();
-			} catch (Throwable t) {
-				log.error("Could not unadvertise: " + serviceName, t);
-			}
+			data.close();
 		}
 	}
 
-	private class ServiceData {
-		private Receiver receiver;
-		private List<ServiceDispatcher> dispatchers = new ArrayList<ServiceDispatcher>();
-		private Transport connection;
-		private String serviceName;
-
-		ServiceData(String serviceName, String serviceClassName)
-				throws ConnectionException, InstantiationException,
-				IllegalAccessException, ClassNotFoundException,
-				ConfigurationException {
-			this.serviceName = serviceName;
-
-			String sizeS = properties.getProperty("blacktie." + serviceName
-					+ ".size", DEFAULT_POOL_SIZE);
-			int size = Integer.parseInt(sizeS);
-
-			connection = TransportFactory.loadTransportFactory(serviceName,
-					properties).createTransport();
-			this.receiver = connection.getReceiver(serviceName);
-
-			Class callback = Class.forName(serviceClassName);
-			for (int i = 0; i < size; i++) {
-				dispatchers.add(new ServiceDispatcher(serviceName,
-						(BlacktieService) callback.newInstance(), receiver));
-			}
+	/**
+	 * Shutdown the server
+	 * 
+	 * @throws ConnectionException
+	 *             If one of the services cannot disconnect
+	 */
+	public void shutdown() throws ConnectionException {
+		log.debug("Close server called: " + serverName);
+		String[] array = new String[serviceData.size()];
+		array = serviceData.keySet().toArray(array);
+		for (int i = 0; i < array.length; i++) {
+			tpunadvertise(array[i]);
 		}
-
-		public void close() throws ConnectionException {
-			log.debug("Unadvertising: " + serviceName);
-
-			// Clean up the consumers
-			Iterator<ServiceDispatcher> iterator = dispatchers.iterator();
-			while (iterator.hasNext()) {
-				iterator.next().startClose();
-			}
-
-			// Disconnect the receiver
-			receiver.close();
-			// Disconnect the transport
-			connection.close();
-
-			// Clean up the consumers
-			iterator = dispatchers.iterator();
-			while (iterator.hasNext()) {
-				iterator.next().close();
-			}
-			dispatchers.clear();
-			log.info("Unadvertised: " + serviceName);
-		}
+		log.debug("Close server finished: " + serverName);
 	}
 }

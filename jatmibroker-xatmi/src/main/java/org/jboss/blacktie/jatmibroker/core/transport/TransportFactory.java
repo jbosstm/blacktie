@@ -33,8 +33,7 @@ public abstract class TransportFactory {
 	private static Map<String, TransportFactory> transportFactories = new HashMap<String, TransportFactory>();
 
 	public static TransportFactory loadTransportFactory(String serviceName,
-			Properties properties) throws ConfigurationException,
-			ConnectionException {
+			Properties properties) throws ConfigurationException {
 		log.debug("Loading transport for: " + serviceName);
 		String transportLibrary;
 
@@ -65,7 +64,7 @@ public abstract class TransportFactory {
 				transportFactories.put(className, newInstance);
 				log.debug("TransportFactory was prepared");
 			} catch (Throwable t) {
-				throw new ConnectionException(-1,
+				throw new ConfigurationException(
 						"Could not load the connection factory", t);
 			}
 		}

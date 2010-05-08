@@ -4,14 +4,14 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.tx.TX;
 import org.jboss.blacktie.jatmibroker.tx.TXINFO;
-import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
+import org.jboss.blacktie.jatmibroker.xatmi.Service;
 import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 
-public class RollbackOnlyTprecvTPEVDISCONIMMService implements BlacktieService {
+public class RollbackOnlyTprecvTPEVDISCONIMMService implements Service {
 	private static final Logger log = LogManager
 			.getLogger(RollbackOnlyTprecvTPEVDISCONIMMService.class);
 

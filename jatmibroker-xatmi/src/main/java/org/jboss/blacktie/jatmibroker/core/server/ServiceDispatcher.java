@@ -22,24 +22,27 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.transport.Message;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
-import org.jboss.blacktie.jatmibroker.xatmi.BlacktieService;
+import org.jboss.blacktie.jatmibroker.xatmi.BlackTieService;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.Service;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 
-public class ServiceDispatcher extends Service implements Runnable {
+/**
+ * This is the compatriot to the MDBBlacktieService found in the xatmi.mdb
+ * package. It is a wrapper for user services.
+ */
+public class ServiceDispatcher extends BlackTieService implements Runnable {
 	private static final Logger log = LogManager
 			.getLogger(ServiceDispatcher.class);
-	private BlacktieService callback;
+	private Service callback;
 	private Receiver receiver;
 	private Thread thread;
 	private volatile boolean closed;
 
-	ServiceDispatcher(String serviceName, BlacktieService callback,
-			Receiver receiver) throws ConfigurationException,
-			ConnectionException {
+	ServiceDispatcher(String serviceName, Service callback, Receiver receiver)
+			throws ConfigurationException, ConnectionException {
 		super(serviceName);
 		this.callback = callback;
 		this.receiver = receiver;
@@ -104,7 +107,6 @@ public class ServiceDispatcher extends Service implements Runnable {
 		} catch (InterruptedException e) {
 			log.error("Could not join the dispatcher", e);
 		}
-		super.close();
 		log.trace("closed");
 	}
 

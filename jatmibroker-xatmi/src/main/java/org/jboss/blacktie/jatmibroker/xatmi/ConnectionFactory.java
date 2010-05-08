@@ -3,6 +3,7 @@ package org.jboss.blacktie.jatmibroker.xatmi;
 import java.util.Properties;
 
 import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerEnvXML;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 
 /**
  * This is a factory that will create connections to remote Blacktie services.
@@ -23,10 +24,11 @@ public class ConnectionFactory {
 	 * Get the default connection factory
 	 * 
 	 * @return The connection factory
+	 * @throws ConfigurationException
 	 * @throws ConnectionException
 	 */
 	public static synchronized ConnectionFactory getConnectionFactory()
-			throws ConnectionException {
+			throws ConfigurationException {
 		return new ConnectionFactory();
 	}
 
@@ -36,13 +38,9 @@ public class ConnectionFactory {
 	 * @throws ConnectionException
 	 *             In case the configuration could not be loaded
 	 */
-	private ConnectionFactory() throws ConnectionException {
-		try {
-			AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
-			properties.putAll(xml.getProperties());
-		} catch (Exception e) {
-			throw new ConnectionException(-1, "Could not load properties", e);
-		}
+	private ConnectionFactory() throws ConfigurationException {
+		AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
+		properties.putAll(xml.getProperties());
 
 	}
 
@@ -50,9 +48,8 @@ public class ConnectionFactory {
 	 * Get the connection.
 	 * 
 	 * @return The connection
-	 * @throws ConnectionException
 	 */
-	public Connection getConnection() throws ConnectionException {
+	public Connection getConnection() {
 		Connection connection = connections.get();
 		if (connection == null) {
 			connection = new Connection(this, properties);
