@@ -246,8 +246,8 @@ public class Session {
 		}
 
 		if (this.lastEvent > -1) {
-			throw new ResponseException(Connection.TPEEVENT, lastEvent,
-					lastRCode, "Event existed on descriptor: " + lastEvent,
+			throw new ResponseException(Connection.TPEEVENT, "Event existed on descriptor: " + lastEvent,
+					lastEvent, lastRCode,
 					null);
 		} else if (!canSend) {
 			throw new ConnectionException(Connection.TPEPROTO,
@@ -348,12 +348,12 @@ public class Session {
 				log.debug("Completed session is being closed");
 				close();
 			}
-			throw new ResponseException(Connection.TPEEVENT, lastEvent,
-					lastRCode, "Event existed on descriptor: " + lastEvent,
+			throw new ResponseException(Connection.TPEEVENT, "Event existed on descriptor: " + lastEvent,
+					lastEvent, lastRCode,
 					received);
 		} else if ((m.flags & Connection.TPRECVONLY) == Connection.TPRECVONLY) {
 			throw new ResponseException(Connection.TPEEVENT,
-					Connection.TPEV_SENDONLY, 0, "Reporting send only event",
+					"Reporting send only event", Connection.TPEV_SENDONLY, m.rcode,
 					received);
 		} else if (m.rval == Connection.TPSUCCESS
 				|| m.rval == Connection.TPFAIL) {
@@ -361,15 +361,15 @@ public class Session {
 			close();
 			if (m.rval == Connection.TPSUCCESS) {
 				throw new ResponseException(Connection.TPEEVENT,
-						Connection.TPEV_SVCSUCC, 0,
-						"Service completed successfully event", received);
+						"Service completed successfully event", Connection.TPEV_SVCSUCC,
+						0, received);
 			} else if (m.rcode == Connection.TPESVCERR) {
 				throw new ResponseException(Connection.TPEEVENT,
-						Connection.TPEV_SVCERR, 0, "Service received an error",
+						"Service received an error", Connection.TPEV_SVCERR, m.rcode,
 						received);
 			} else {
 				throw new ResponseException(Connection.TPEEVENT,
-						Connection.TPEV_SVCFAIL, 0, "Service received a fail",
+						"Service received a fail", Connection.TPEV_SVCFAIL, m.rcode,
 						received);
 			}
 		}

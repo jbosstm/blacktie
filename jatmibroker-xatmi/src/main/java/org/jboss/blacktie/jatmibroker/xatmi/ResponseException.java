@@ -30,16 +30,16 @@ public class ResponseException extends ConnectionException {
 	 * 
 	 * @param tperrno
 	 *            This will always be TPEEVENT
-	 * @param event
-	 *            The event may be any from Connection
-	 * @param rCode
-	 *            The rcode in case of TPFAIL
 	 * @param string
 	 *            The message
+	 * @param event
+	 *            The event may be any from Connection
 	 * @param received
 	 *            A received buffer
+	 * @param rCode
+	 *            The rcode in case of TPFAIL
 	 */
-	public ResponseException(int tperrno, long event, int rcode, String string,
+	public ResponseException(int tperrno, String string, long event, int rcode,
 			Buffer received) {
 		super(tperrno, string);
 		this.event = event;
