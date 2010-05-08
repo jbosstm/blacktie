@@ -436,6 +436,7 @@ public class Connection {
 		temporaryQueues.put(correlationId, session.getReceiver());
 
 		// Return a handle to allow the connection to send/receive data on
+		log.debug("Created session: " + correlationId);
 		return session;
 	}
 
@@ -452,9 +453,9 @@ public class Connection {
 		Iterator<Session> sessions = this.sessions.values().iterator();
 		while (sessions.hasNext()) {
 			Session session = sessions.next();
-			log.debug("closing session");
+			log.debug("closing session: " + session.getCd());
 			session.tpdiscon();
-			log.debug("Closed open session");
+			log.debug("Closed open session: " + session.getCd());
 		}
 		this.sessions.clear();
 		log.trace("Sessions cleared");
@@ -570,7 +571,7 @@ public class Connection {
 		}
 		Transport transport = getTransport(name);
 		serviceSession = new Session(this, transport, cd, replyTo);
-		log.trace("Created the service session");
+		log.trace("Created the service session: " + cd);
 		return serviceSession;
 	}
 
@@ -592,6 +593,7 @@ public class Connection {
 	 *            The session that is closing.
 	 */
 	void removeSession(Session session) {
+		log.debug("Removing session: " + session.getCd());
 		temporaryQueues.remove(session.getCd());
 		// May be a no-op
 		Session remove = sessions.remove(session.getCd());
@@ -602,6 +604,7 @@ public class Connection {
 		if (session.equals(serviceSession)) {
 			serviceSession = null;
 		}
+		log.debug("Removed session: " + session.getCd());
 	}
 
 	/**
