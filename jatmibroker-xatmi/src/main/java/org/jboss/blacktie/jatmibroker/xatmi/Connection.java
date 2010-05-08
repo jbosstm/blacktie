@@ -421,9 +421,8 @@ public class Connection {
 		Iterator<Session> sessions = this.sessions.values().iterator();
 		while (sessions.hasNext()) {
 			Session session = sessions.next();
-			session.tpdiscon();
 			log.debug("closing session");
-			session.close();
+			session.tpdiscon();
 			log.debug("Closed open session");
 		}
 		this.sessions.clear();
@@ -432,9 +431,8 @@ public class Connection {
 		Iterator<Receiver> receivers = temporaryQueues.values().iterator();
 		while (receivers.hasNext()) {
 			Receiver receiver = receivers.next();
-			tpcancel(receiver.getCd());
 			log.debug("closing receiver");
-			receiver.close();
+			tpcancel(receiver.getCd());
 			log.warn("Closed open receiver");
 		}
 		temporaryQueues.clear();
