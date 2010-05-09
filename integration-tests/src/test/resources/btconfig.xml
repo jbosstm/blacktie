@@ -58,6 +58,7 @@
 				<SERVICE name='CREDIT' />
 				<SERVICE name='INQUIRY' />
 				<SERVICE name='TestRbkOnly' />
+				<SERVICE name='TTL' />
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>

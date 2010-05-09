@@ -397,15 +397,23 @@ void testtpunadvertise_service(TPSVCINFO *svcinfo) {
 	delete toReturn;
 }
 
+int n = 0;
+
 void test_TTL_service(TPSVCINFO *svcinfo) {
 	long timeout = 45;
-
-	ACE_OS::sleep(timeout);
-	userlogc((char*) "TTL sleep timeout %d seconds", timeout);
-
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
-	strcpy(toReturn, "test_tpcall_TTL_service");
+
+	userlogc("Data was %s", svcinfo->data);
+	if (strncmp(svcinfo->data, "counter", 7) == 0) {
+		sprintf(toReturn, "%d", n);
+	} else {
+		n++;
+		ACE_OS::sleep(timeout);
+		userlogc((char*) "TTL sleep timeout %d seconds", timeout);
+
+		strcpy(toReturn, "test_tpcall_TTL_service");
+	}
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }
 
