@@ -344,19 +344,15 @@ public class Session {
 			canRecv = false;
 		}
 
-		// Check we didn't just get an event while waiting
-		if (this.lastEvent > -1) {
-			if ((lastEvent & Connection.TPEV_SENDONLY) != Connection.TPEV_SENDONLY) {
-				log.debug("Completed session is being closed: " + cd
-						+ " lastEvent: " + lastEvent);
-				close();
-			}
-			throw new ResponseException(Connection.TPEEVENT,
-					"Event existed on descriptor: " + lastEvent, lastEvent,
-					lastRCode, received);
-		} else if ((m.flags & Connection.TPRECVONLY) == Connection.TPRECVONLY) {
+		// Check the condition of the response
+		if ((m.flags & Connection.TPRECVONLY) == Connection.TPRECVONLY) {
 			throw new ResponseException(Connection.TPEEVENT,
 					"Reporting send only event", Connection.TPEV_SENDONLY,
+					m.rcode, received);
+		} else if (m.rval == EventListener.DISCON_CODE) {
+			close();
+			throw new ResponseException(Connection.TPEEVENT,
+					"Received a disconnect event", Connection.TPEV_DISCONIMM,
 					m.rcode, received);
 		} else if (m.rval == Connection.TPSUCCESS
 				|| m.rval == Connection.TPFAIL) {
