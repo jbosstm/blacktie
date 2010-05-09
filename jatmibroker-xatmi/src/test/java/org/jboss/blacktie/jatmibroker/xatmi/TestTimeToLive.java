@@ -92,26 +92,22 @@ public class TestTimeToLive extends TestCase {
 			log.warn("sleep exception " + e);
 		}
 
-		try {
-			String toSend = "counter";
-			int sendlen = toSend.length() + 1;
-			X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
-			sendbuf.setByteArray(toSend.getBytes());
+		String toSend = "counter";
+		int sendlen = toSend.length() + 1;
+		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf.setByteArray(toSend.getBytes());
 
-			Response rcvbuf = connection.tpcall(RunServer.getServiceNameTTL(),
-					sendbuf, sendlen, 0);
+		Response rcvbuf = connection.tpcall(RunServer.getServiceNameTTL(),
+				sendbuf, sendlen, 0);
 
-			assertTrue(rcvbuf != null);
-			assertTrue(rcvbuf.getBuffer() != null);
-			assertTrue(((X_OCTET) rcvbuf.getBuffer()).getByteArray() != null);
-			byte[] received = ((X_OCTET) rcvbuf.getBuffer()).getByteArray();
+		assertTrue(rcvbuf != null);
+		assertTrue(rcvbuf.getBuffer() != null);
+		assertTrue(((X_OCTET) rcvbuf.getBuffer()).getByteArray() != null);
+		byte[] received = ((X_OCTET) rcvbuf.getBuffer()).getByteArray();
 
-			log.info("received length is " + received.length);
-			String counter = new String(received);
-			log.info("get message counter of TTL is " + counter);
-			assertTrue(received[0] == '1');
-		} catch (ConnectionException e) {
-			fail("UnExpected exception, got: " + e);
-		}
+		log.info("received length is " + received.length);
+		String counter = new String(received);
+		log.info("get message counter of TTL is " + counter);
+		assertTrue(received[0] == '1');
 	}
 }

@@ -234,6 +234,7 @@ public class Connection {
 		int correlationId = 0;
 		synchronized (this) {
 			correlationId = ++nextId;
+			log.trace("Allocated next sessionId: " + correlationId);
 		}
 		Transport transport = getTransport(svc);
 		Receiver endpoint = transport.createReceiver(correlationId,
@@ -604,7 +605,7 @@ public class Connection {
 			}
 		}
 		if (!remove) {
-			log.debug("Session did not exist: " + session.getCd());
+			log.debug("Session did not exist: " + session.getCd() + " size: " + sessions.size());
 		}
 
 		if (session.equals(serviceSession)) {

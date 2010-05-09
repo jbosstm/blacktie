@@ -26,6 +26,7 @@ public class TTLService implements Service {
 			X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc(
 					"X_OCTET", null);
 
+			log.info("Data was: " + data);
 			if (data.contains("counter")) {
 				String counter = String.valueOf(n);
 				toReturn.setByteArray(counter.getBytes());
