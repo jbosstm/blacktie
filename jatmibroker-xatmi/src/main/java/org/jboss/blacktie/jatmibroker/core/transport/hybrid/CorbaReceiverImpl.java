@@ -139,7 +139,7 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 
 		returnData.add(message);
 		if (responseMonitor != null) {
-			responseMonitor.responseReceived(cd, false);
+			responseMonitor.responseReceived(this.cd, false);
 		}
 		log.trace("notifying");
 		notify();

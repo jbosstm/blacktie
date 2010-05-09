@@ -195,8 +195,9 @@ public abstract class BlackTieService implements Service {
 					}
 				}
 				log.debug("Returning desired message");
+				// Even though we can provide the cd we don't as atmibroker-xatmi doesn't because tpreturn doesn't
 				serviceSession.getSender().send("", rval, rcode, data, len,
-						message.cd, response.getFlags(), 0, type, subtype);
+						0, response.getFlags(), 0, type, subtype);
 			} else if (serviceSession.getSender() == null && response != null) {
 				log.error("No sender avaible but message to be sent");
 			} else if (serviceSession.getSender() != null && response == null) {
