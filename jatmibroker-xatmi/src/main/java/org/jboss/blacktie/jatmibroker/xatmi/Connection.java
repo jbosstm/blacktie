@@ -428,6 +428,7 @@ public class Connection {
 		}
 		session.setCreatorState(flags);
 		sessions.put(correlationId, session);
+		log.trace("Added session: " + correlationId);
 		temporaryQueues.put(correlationId, session.getReceiver());
 
 		// Return a handle to allow the connection to send/receive data on
@@ -453,7 +454,7 @@ public class Connection {
 			log.debug("Closed open session: " + sessions[i].getCd());
 		}
 		this.sessions.clear();
-		log.trace("Sessions cleared");
+		log.trace("Removed all sessions");
 
 		Receiver[] receivers = new Receiver[temporaryQueues.size()];
 		receivers = temporaryQueues.values().toArray(receivers);
@@ -598,6 +599,7 @@ public class Connection {
 			Integer next = iterator.next();
 			if (next.intValue() == session.getCd()) {
 				iterator.remove();
+				log.trace("Removed session: " + session.getCd());
 				remove = true;
 				break;
 			} else {
