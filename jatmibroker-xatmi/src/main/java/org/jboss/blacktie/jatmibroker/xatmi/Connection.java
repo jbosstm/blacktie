@@ -377,7 +377,7 @@ public class Connection {
 			correlationId = nextId++;
 		}
 		Transport transport = getTransport(svc);
-		Session session = new Session(this, transport, correlationId);
+		Session session = new Session(this, svc, transport, correlationId);
 
 		Receiver receiver = session.getReceiver();
 		// TODO HANDLE TRANSACTION
@@ -400,8 +400,8 @@ public class Connection {
 			ttl = Integer.parseInt(timeToLive) * 1000;
 		}
 		log.debug("tpconnect sending data");
-		transport.getSender(svc).send(receiver.getReplyTo(), (short) 0, 0,
-				data, len, correlationId, flags | TPCONV, ttl, type, subtype);
+		session.getSender().send(receiver.getReplyTo(), (short) 0, 0, data,
+				len, correlationId, flags | TPCONV, ttl, type, subtype);
 
 		byte[] response = null;
 		try {
@@ -413,6 +413,7 @@ public class Connection {
 			response = ((X_OCTET) e.getReceived()).getByteArray();
 			log.debug("Caught an exception with data", e);
 		} catch (ConnectionException e) {
+			session.close();
 			throw new ConnectionException(e.getTperrno(), "Could not connect");
 		}
 		byte[] ack = new byte[4];
@@ -490,7 +491,7 @@ public class Connection {
 		Transport toReturn = transports.get(serviceName);
 		if (toReturn == null) {
 			try {
-				toReturn = TransportFactory.loadTransportFactory(serviceName,
+				toReturn = TransportFactory.getTransportFactory(serviceName,
 						properties).createTransport();
 			} catch (ConfigurationException e) {
 				throw new ConnectionException(Connection.TPENOENT,
@@ -607,7 +608,8 @@ public class Connection {
 			}
 		}
 		if (!remove) {
-			log.debug("Session did not exist: " + session.getCd() + " size: " + sessions.size());
+			log.debug("Session did not exist: " + session.getCd() + " size: "
+					+ sessions.size());
 		}
 
 		if (session.equals(serviceSession)) {

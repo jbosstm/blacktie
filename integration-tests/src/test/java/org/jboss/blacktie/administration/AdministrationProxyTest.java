@@ -36,12 +36,11 @@ public class AdministrationProxyTest extends TestCase {
 		connection = connectionFactory.getConnection();
 	}
 
-	public void tearDown() throws ConnectionException, ConfigurationException {
+	public void tearDown() throws ConnectionException {
 		connection.close();
 	}
 
-	public void test() throws IOException, ConfigurationException,
-			ConnectionException {
+	public void test() throws IOException, ConfigurationException {
 		AdministrationProxy proxy = new AdministrationProxy();
 		proxy.shutdown("foo", 0);
 	}

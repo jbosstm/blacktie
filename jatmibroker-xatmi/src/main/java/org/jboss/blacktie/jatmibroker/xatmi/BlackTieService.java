@@ -60,38 +60,25 @@ public abstract class BlackTieService implements Service {
 	 * 
 	 * @param message
 	 *            The message to process
-	 * @throws ConfigurationException
-	 *             If the connection factory cannot be created
+	 * @throws ConnectionException
 	 * @throws ConnectionException
 	 *             In case communication fails
+	 * @throws ConfigurationException
 	 */
 	protected void processMessage(Message message) throws ConnectionException,
 			ConfigurationException {
 		Connection connection = ConnectionFactory.getConnectionFactory()
 				.getConnection();
-		if (message.control != null) {
-			try {
-				JABTransaction.associateTx(message.control); // associate tx
-				// with current
-				// thread
-			} catch (JABException e) {
-				log.warn("Got an invalid tx from queue: " + e);
-			}
-		}
-		if (JtsTransactionImple.hasTransaction()) {
-			log
-					.error("Blacktie MDBs must not be called with a transactional context");
-		} else {
-			log.trace("Service invoked");
-		}
-		log.trace("obtained transport");
-		boolean hasTPNOREPLY = (message.flags & Connection.TPNOREPLY) == Connection.TPNOREPLY;
-
-		Session serviceSession = null;
 		try {
-			serviceSession = connection.createServiceSession(name, message.cd,
-					message.replyTo);
-			log.debug("Created the session");
+			if (JtsTransactionImple.hasTransaction()) {
+				throw new ConnectionException(Connection.TPEPROTO,
+						"Blacktie MDBs must not be called with a transactional context");
+			}
+			log.trace("Service invoked");
+			boolean hasTPNOREPLY = (message.flags & Connection.TPNOREPLY) == Connection.TPNOREPLY;
+
+			Session serviceSession = connection.createServiceSession(name,
+					message.cd, message.replyTo);
 			boolean hasTPCONV = (message.flags & Connection.TPCONV) == Connection.TPCONV;
 			if (hasTPCONV) {
 				int olen = 4;
@@ -107,116 +94,108 @@ public abstract class BlackTieService implements Service {
 					serviceSession.setCreatedState(message.flags);
 				}
 			} else {
-				log.debug("cd not being set");
+				log.debug("Session was not a TPCONV");
 			}
-
-			// THIS IS THE FIRST CALL
-			Buffer buffer = null;
-			if (message.type != null && !message.type.equals("")) {
-				buffer = connection.tpalloc(message.type, message.subtype);
-				buffer.deserialize(message.data);
-			}
-			TPSVCINFO tpsvcinfo = new TPSVCINFO(message.serviceName, buffer,
-					message.flags, (hasTPCONV ? serviceSession : null),
-					connection, message.len);
-			log.debug("Prepared the data for passing to the service");
-
-			boolean hasTx = (message.control != null && message.control
-					.length() != 0);
-
-			log.debug("hasTx=" + hasTx + " ior: " + message.control);
-
-			if (hasTx) // make sure any foreign tx is resumed before calling the
-				// service routine
-				JtsTransactionImple.resume(message.control);
-
-			log.debug("Invoking the XATMI service");
-			Response response = null;
+			log.debug("Created the session");
+			// To respond with
+			boolean hasTx = false;
+			boolean responseSendable = !hasTPNOREPLY;
+			short rval = Connection.TPFAIL;
+			int rcode = Connection.TPESVCERR;
+			byte[] data = null;
+			int len = 0;
+			int flags = 0;
+			String type = null;
+			String subtype = null;
 			try {
-				response = tpservice(tpsvcinfo);
-				log.debug("Service invoked");
-				if (!hasTPNOREPLY && response == null) {
-					log.error("Error, expected response but none returned");
-					response = new Response(Connection.TPFAIL,
-							Connection.TPESVCERR, null, 0, 0);
+				// THIS IS THE FIRST CALL
+				Buffer buffer = null;
+				if (message.type != null && !message.type.equals("")) {
+					buffer = connection.tpalloc(message.type, message.subtype);
+					buffer.deserialize(message.data);
 				}
-			} catch (Throwable t) {
-				log.error("Service error detected", t);
-				response = new Response(Connection.TPFAIL,
-						Connection.TPESVCERR, null, 0, 0);
-			}
+				TPSVCINFO tpsvcinfo = new TPSVCINFO(message.serviceName,
+						buffer, message.flags, (hasTPCONV ? serviceSession
+								: null), connection, message.len);
+				log.debug("Prepared the data for passing to the service");
 
-			if (hasTx) // and suspend it again
-				JtsTransactionImple.suspend();
+				hasTx = (message.control != null && message.control.length() != 0);
 
-			if (!hasTPNOREPLY && response != null) {
-				log.trace("Sending response");
-				short rval = response.getRval();
-				int rcode = response.getRcode();
-				if (connection.hasOpenSessions()) {
-					rcode = Connection.TPESVCERR;
-					rval = Connection.TPFAIL;
+				log.debug("hasTx=" + hasTx + " ior: " + message.control);
+
+				if (hasTx) // make sure any foreign tx is resumed before calling
+					// the
+					// service routine
+					JtsTransactionImple.resume(serviceSession.getTransport()
+							.getOrb(), message.control);
+
+				log.debug("Invoking the XATMI service");
+				Response response = null;
+				try {
+					response = tpservice(tpsvcinfo);
+					log.debug("Service invoked");
+					if (!hasTPNOREPLY && response == null) {
+						log.error("Error, expected response but none returned");
+					}
+				} catch (Throwable t) {
+					log.error("Service error detected", t);
 				}
-				if (rcode == Connection.TPESVCERR) {
-					if (JABTransaction.current() != null) {
-						try {
-							JABTransaction.current().rollback_only();
-						} catch (JABException e) {
-							throw new ConnectionException(Connection.TPESYSTEM,
-									"Could not mark transaction for rollback only");
+
+				if (!hasTPNOREPLY && serviceSession.getSender() != null) {
+					log.trace("Sending response");
+					if (response != null) {
+						rval = response.getRval();
+						rcode = response.getRcode();
+						if (rval != Connection.TPSUCCESS
+								&& rval != Connection.TPFAIL) {
+							rval = Connection.TPFAIL;
 						}
 					}
-				}
-				if (rval != Connection.TPSUCCESS && rval != Connection.TPFAIL) {
-					rval = Connection.TPFAIL;
-				}
-				if (rval == Connection.TPFAIL) {
-					if (JABTransaction.current() != null) {
-						try {
-							JABTransaction.current().rollback_only();
-						} catch (JABException e) {
-							throw new ConnectionException(Connection.TPESYSTEM,
-									"Could not mark transaction for rollback only");
+					if (connection.hasOpenSessions()) {
+						rcode = Connection.TPESVCERR;
+						rval = Connection.TPFAIL;
+					}
+					if (rval == Connection.TPFAIL) {
+						if (JABTransaction.current() != null) {
+							try {
+								JABTransaction.current().rollback_only();
+							} catch (JABException e) {
+								throw new ConnectionException(
+										Connection.TPESYSTEM,
+										"Could not mark transaction for rollback only");
+							}
 						}
 					}
-				}
 
-				Buffer toSend = response.getBuffer();
-				int len = response.getLen();
-				String type = null;
-				String subtype = null;
-				byte[] data = null;
-				if (toSend != null) {
-					data = toSend.serialize();
-					type = toSend.getType();
-					subtype = toSend.getSubtype();
-					if (!type.equals("X_OCTET")) {
-						len = data.length;
+					if (response != null) {
+						Buffer toSend = response.getBuffer();
+						len = response.getLen();
+						if (toSend != null) {
+							data = toSend.serialize();
+							type = toSend.getType();
+							subtype = toSend.getSubtype();
+							if (!type.equals("X_OCTET")) {
+								len = data.length;
+							}
+						}
+						flags = response.getFlags();
 					}
+					log.debug("Will return desired message");
+				} else if (!hasTPNOREPLY && serviceSession.getSender() == null) {
+					log.error("No sender avaible but message to be sent");
+					responseSendable = false;
+				} else {
+					log.debug("No need to send a response");
 				}
-				log.debug("Returning desired message");
-				// Even though we can provide the cd we don't as atmibroker-xatmi doesn't because tpreturn doesn't
-				serviceSession.getSender().send("", rval, rcode, data, len,
-						0, response.getFlags(), 0, type, subtype);
-			} else if (serviceSession.getSender() == null && response != null) {
-				log.error("No sender avaible but message to be sent");
-			} else if (serviceSession.getSender() != null && response == null) {
-				log.error("Returning error - marking tx as rollback only if ");
-				if (JABTransaction.current() != null) {
-					try {
-						JABTransaction.current().rollback_only();
-					} catch (JABException e) {
-						throw new ConnectionException(Connection.TPESYSTEM,
-								"Could not mark transaction for rollback only");
-					}
+			} finally {
+				if (hasTx) // and suspend it again
+					JtsTransactionImple.suspend();
+				if (responseSendable) {
+					// Even though we can provide the cd we don't as
+					// atmibroker-xatmi doesn't because tpreturn doesn't
+					serviceSession.getSender().send("", rval, rcode, data, len,
+							0, flags, 0, type, subtype);
 				}
-				log.debug("Returning failed message");
-				serviceSession.getSender().send("", Connection.TPFAIL,
-						Connection.TPESVCERR, null, 0, 0, 0, 0, null, null);
-
-				log.error("Returned error");
-			} else {
-				log.debug("No need to send a response");
 			}
 		} finally {
 			connection.close();

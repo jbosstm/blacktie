@@ -142,17 +142,6 @@ public class JABTransaction {
 		return false;
 	}
 
-	public static void associateTx(String controlIOR)
-			throws TransactionException {
-		try {
-			// TODO make sure this works in the AS and standalone
-			org.jboss.blacktie.jatmibroker.core.transport.JtsTransactionImple
-					.resume(controlIOR);
-		} catch (Throwable t) {
-			new TransactionException(controlIOR);
-		}
-	}
-
 	private void setTerminator(Control c) throws TransactionException {
 		try {
 			terminator = control.get_terminator();

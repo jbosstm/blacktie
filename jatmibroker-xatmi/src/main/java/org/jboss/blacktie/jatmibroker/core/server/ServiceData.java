@@ -50,7 +50,7 @@ public class ServiceData {
 				+ ".size", DEFAULT_POOL_SIZE);
 		int size = Integer.parseInt(sizeS);
 
-		connection = TransportFactory.loadTransportFactory(serviceName,
+		connection = TransportFactory.getTransportFactory(serviceName,
 				properties).createTransport();
 		this.receiver = connection.getReceiver(serviceName);
 

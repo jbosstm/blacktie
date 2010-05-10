@@ -112,6 +112,12 @@ public class OrbManagement implements Runnable {
 		log.debug("Closing");
 		orb.shutdown(true);
 		orb.destroy();
+		try {
+			// Wait for thread to join
+			callbackThread.join();
+		} catch (InterruptedException e) {
+			log.error("Could not join with callback: " + e, e);
+		}
 		log.debug("Closed");
 	}
 

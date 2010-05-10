@@ -32,8 +32,11 @@ public abstract class TransportFactory {
 			.getLogger(TransportFactory.class);
 	private static Map<String, TransportFactory> transportFactories = new HashMap<String, TransportFactory>();
 
-	public static TransportFactory loadTransportFactory(String serviceName,
-			Properties properties) throws ConfigurationException {
+	private boolean closed;
+
+	public static synchronized TransportFactory getTransportFactory(
+			String serviceName, Properties properties)
+			throws ConfigurationException {
 		log.debug("Loading transport for: " + serviceName);
 		String transportLibrary;
 
@@ -60,7 +63,7 @@ public abstract class TransportFactory {
 				Class clazz = Class.forName(className);
 				TransportFactory newInstance = (TransportFactory) clazz
 						.newInstance();
-				newInstance.setProperties(properties);
+				newInstance.initialize(properties);
 				transportFactories.put(className, newInstance);
 				log.debug("TransportFactory was prepared");
 			} catch (Throwable t) {
@@ -71,10 +74,24 @@ public abstract class TransportFactory {
 		return transportFactories.get(className);
 	}
 
-	protected abstract void setProperties(Properties properties)
+	protected abstract void initialize(Properties properties)
 			throws ConfigurationException;
 
 	public abstract Transport createTransport() throws ConnectionException;
 
-	public abstract void close();
+	protected abstract void closeFactory();
+
+	/**
+	 * Make sure that the
+	 */
+	public synchronized final void close() {
+		log.debug("Closing factory: " + getClass().getName());
+		if (!closed) {
+			log.debug("Going into shutdown");
+			closeFactory();
+			transportFactories.remove(getClass().getName());
+			closed = true;
+		}
+		log.debug("Closed factory: " + getClass().getName());
+	}
 }

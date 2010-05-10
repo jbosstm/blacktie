@@ -57,9 +57,19 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 	private int cd;
 	private boolean closed;
 
+	CorbaReceiverImpl(OrbManagement orbManagement, Properties properties,
+			int cd, ResponseMonitor responseMonitor) throws ConnectionException {
+		this(null, orbManagement, properties, cd, responseMonitor);
+	}
+
 	CorbaReceiverImpl(EventListener eventListener, OrbManagement orbManagement,
-			Properties properties, int cd, ResponseMonitor responseMonitor)
-			throws ConnectionException {
+			Properties properties) throws ConnectionException {
+		this(eventListener, orbManagement, properties, -1, null);
+	}
+
+	private CorbaReceiverImpl(EventListener eventListener,
+			OrbManagement orbManagement, Properties properties, int cd,
+			ResponseMonitor responseMonitor) throws ConnectionException {
 		log.debug("ClientCallbackImpl constructor");
 		ORB orb = orbManagement.getOrb();
 		POA poa = orbManagement.getRootPoa();

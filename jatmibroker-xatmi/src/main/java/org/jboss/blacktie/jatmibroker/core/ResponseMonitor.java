@@ -19,5 +19,4 @@ package org.jboss.blacktie.jatmibroker.core;
 
 public interface ResponseMonitor {
 	void responseReceived(int sessionId, boolean remove);
-
 }

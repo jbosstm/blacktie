@@ -30,7 +30,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 /**
  * The JABRequest class wraps the output parameter to the service.
  * 
- * @see JABRemoteService
+ * @see JABServiceInvoker
  */
 public class JABMessage implements Message {
 
@@ -500,6 +500,78 @@ public class JABMessage implements Message {
 			return xCommon.getFormat();
 		} else {
 			return xCType.getFormat();
+		}
+	}
+
+	public long getLong(String key) throws JABException {
+		if (xOctet != null) {
+			throw new JABException("Not supported for this buffer type");
+		} else if (xCommon != null) {
+			try {
+				return xCommon.getLong(key);
+			} catch (Throwable t) {
+				throw new JABException(t.getMessage(), t);
+			}
+		} else {
+			try {
+				return xCommon.getLong(key);
+			} catch (Throwable t) {
+				throw new JABException(t.getMessage(), t);
+			}
+		}
+	}
+
+	public long[] getLongArray(String key) throws JABException {
+		if (xOctet != null) {
+			throw new JABException("Not supported for this buffer type");
+		} else if (xCommon != null) {
+			try {
+				return xCommon.getLongArray(key);
+			} catch (Throwable t) {
+				throw new JABException(t.getMessage(), t);
+			}
+		} else {
+			try {
+				return xCType.getLongArray(key);
+			} catch (Throwable t) {
+				throw new JABException(t.getMessage(), t);
+			}
+		}
+	}
+
+	public void setLong(String key, long data) throws JABException {
+		if (xOctet != null) {
+			throw new JABException("Not supported for this buffer type");
+		} else if (xCommon != null) {
+			try {
+				xCommon.setLong(key, data);
+			} catch (Throwable t) {
+				throw new JABException(t.getMessage(), t);
+			}
+		} else {
+			try {
+				xCType.setLong(key, data);
+			} catch (Throwable t) {
+				throw new JABException(t.getMessage(), t);
+			}
+		}
+	}
+
+	public void setLongArray(String key, long[] data) throws JABException {
+		if (xOctet != null) {
+			throw new JABException("Not supported for this buffer type");
+		} else if (xCommon != null) {
+			try {
+				xCommon.setLongArray(key, data);
+			} catch (Throwable t) {
+				throw new JABException(t.getMessage(), t);
+			}
+		} else {
+			try {
+				xCType.setLongArray(key, data);
+			} catch (Throwable t) {
+				throw new JABException(t.getMessage(), t);
+			}
 		}
 	}
 }

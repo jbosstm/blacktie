@@ -59,6 +59,23 @@ public class JABClientTestCase extends TestCase {
 		runServer.tpadvertisetpcallXOctet();
 		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
+		JABServiceInvoker jabService = new JABServiceInvoker(RunServer
+				.getServiceNametpcallXOctet(), jabSession, "X_OCTET", null);
+		jabService.getRequest().setByteArray("X_OCTET",
+				"test_tpcall_x_octet".getBytes());
+		jabService.call(null);
+		byte[] expected = new byte[60];
+		System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0, 14);
+		byte[] received = jabService.getResponse().getByteArray("X_OCTET");
+		assertTrue(Arrays.equals(expected, received));
+
+		jabSession.closeSession();
+	}
+
+	public void xtest_tpcall_x_octet_with_tx() throws Exception {
+		runServer.tpadvertisetpcallXOctet();
+		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
+		JABSession jabSession = new JABSession(jabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(jabSession, 5000);
 		JABServiceInvoker jabService = new JABServiceInvoker(RunServer
 				.getServiceNametpcallXOctet(), jabSession, "X_OCTET", null);
@@ -76,7 +93,7 @@ public class JABClientTestCase extends TestCase {
 		jabSession.closeSession();
 	}
 
-	public void test_tpcall_x_octet_commit_tx_rollback_only() throws Exception {
+	public void xtest_tpcall_x_octet_commit_tx_rollback_only() throws Exception {
 		runServer.tpadvertisetpcallXOctet();
 		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
@@ -105,7 +122,7 @@ public class JABClientTestCase extends TestCase {
 		jabSession.closeSession();
 	}
 
-	public void test_tpcall_x_octet_rollback_tx_rollback_only()
+	public void xtest_tpcall_x_octet_rollback_tx_rollback_only()
 			throws Exception {
 		runServer.tpadvertisetpcallXOctet();
 		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
@@ -131,24 +148,7 @@ public class JABClientTestCase extends TestCase {
 		jabSession.closeSession();
 	}
 
-	public void test_tpcall_x_octet_no_tx() throws Exception {
-		runServer.tpadvertisetpcallXOctet();
-		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
-		JABSession jabSession = new JABSession(jabSessionAttributes);
-		JABServiceInvoker jabService = new JABServiceInvoker(RunServer
-				.getServiceNametpcallXOctet(), jabSession, "X_OCTET", null);
-		jabService.getRequest().setByteArray("X_OCTET",
-				"test_tpcall_x_octet".getBytes());
-		jabService.call(null);
-		byte[] expected = new byte[60];
-		System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0, 14);
-		byte[] received = jabService.getResponse().getByteArray("X_OCTET");
-		assertTrue(Arrays.equals(expected, received));
-
-		jabSession.closeSession();
-	}
-
-	public void test_tpcall_x_octet_suspend_tx() throws Exception {
+	public void xtest_tpcall_x_octet_suspend_tx() throws Exception {
 		runServer.tpadvertisetpcallXOctet();
 		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);

@@ -10,9 +10,9 @@ public class TX {
 	public static int tx_begin() {
 		return TX_OK;
 		/*
-		 * try { JABSessionAttributes aJabSessionAttributes = new
-		 * JABSessionAttributes( null); JABSession aJabSession = new
-		 * JABSession(aJabSessionAttributes); new JABTransaction(aJabSession,
+		 * try { JABSessionAttributes jabSessionAttributes = new
+		 * JABSessionAttributes( null); JABSession jabSession = new
+		 * JABSession(jabSessionAttributes); new JABTransaction(jabSession,
 		 * 5000); return TX_OK; } catch (Throwable t) { return -1; }
 		 */
 	}

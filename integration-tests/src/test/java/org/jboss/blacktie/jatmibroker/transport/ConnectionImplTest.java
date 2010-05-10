@@ -49,8 +49,9 @@ public class ConnectionImplTest extends TestCase {
 		Properties properties = null;
 		properties = xml.getProperties();
 
-		Transport proxy = TransportFactory.loadTransportFactory("BAR",
-				properties).createTransport();
+		TransportFactory factory = TransportFactory.getTransportFactory("BAR",
+				properties);
+		Transport proxy = factory.createTransport();
 		Sender serviceFactory = proxy.getSender("BAR");
 
 		String aString = "Hello from Java Land";
@@ -67,5 +68,6 @@ public class ConnectionImplTest extends TestCase {
 				+ receive.len);
 		assertEquals(string, expectedResponse);
 		proxy.close();
+		factory.close();
 	}
 }

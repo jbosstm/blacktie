@@ -19,67 +19,48 @@ package org.jboss.blacktie.jatmibroker.core.transport.hybrid;
 
 import java.util.Properties;
 
-import javax.jms.Connection;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
-import javax.naming.Context;
 import javax.naming.NameNotFoundException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.ResponseMonitor;
 import org.jboss.blacktie.jatmibroker.core.transport.EventListener;
+import org.jboss.blacktie.jatmibroker.core.transport.JMSManagement;
 import org.jboss.blacktie.jatmibroker.core.transport.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.core.transport.Sender;
 import org.jboss.blacktie.jatmibroker.core.transport.Transport;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.omg.CORBA.ORBPackage.InvalidName;
-import org.omg.CosNaming.NamingContextPackage.AlreadyBound;
-import org.omg.CosNaming.NamingContextPackage.CannotProceed;
-import org.omg.CosNaming.NamingContextPackage.NotFound;
-import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
+import org.omg.CORBA.ORB;
 
 public class TransportImpl implements Transport {
 
 	private static final Logger log = LogManager.getLogger(TransportImpl.class);
-
 	private OrbManagement orbManagement;
-	private Context context;
-	private Connection connection;
-	private Session session;
+	private JMSManagement jmsManagement;
 	private Properties properties;
+	private TransportFactoryImpl transportFactoryImpl;
+	private Session session;
 	private boolean closed;
 
-	TransportImpl(OrbManagement orbManagement, Context context,
-			Connection connection, Properties properties) throws InvalidName,
-			NotFound, CannotProceed,
-			org.omg.CosNaming.NamingContextPackage.InvalidName,
-			AdapterInactive, AlreadyBound, JMSException {
+	TransportImpl(OrbManagement orbManagement, JMSManagement jmsManagement,
+			Properties properties, TransportFactoryImpl transportFactoryImpl)
+			throws JMSException {
 		log.debug("Creating transport");
 		this.orbManagement = orbManagement;
-		this.connection = connection;
-
-		/*
-		 * String username = (String) properties.get("StompConnectUsr"); String
-		 * password = (String) properties.get("StompConnectPwd"); if (username
-		 * != null) { connection = factory.createConnection(username, password);
-		 * } else { connection = factory.createConnection(); }
-		 */
-
-		this.connection.start();
-
-		this.context = context;
-		this.session = this.connection.createSession(false,
-				Session.AUTO_ACKNOWLEDGE);
-
+		this.jmsManagement = jmsManagement;
 		this.properties = properties;
+		this.transportFactoryImpl = transportFactoryImpl;
+
+		this.session = jmsManagement.createSession();
 		log.debug("Created transport");
 	}
 
 	public void close() throws ConnectionException {
-		log.debug("Close called");
+		log.debug("Close called: " + this);
 		if (closed) {
 			throw new ConnectionException(
 					org.jboss.blacktie.jatmibroker.xatmi.Connection.TPEPROTO,
@@ -91,27 +72,17 @@ public class TransportImpl implements Transport {
 			throw new ConnectionException(
 					org.jboss.blacktie.jatmibroker.xatmi.Connection.TPESYSTEM,
 					"Could not close the session", e);
-		} finally {
-			try {
-				connection.close();
-			} catch (Throwable t) {
-				throw new ConnectionException(
-						org.jboss.blacktie.jatmibroker.xatmi.Connection.TPESYSTEM,
-						"Could not close the connection", t);
-			} finally {
-				closed = true;
-			}
 		}
-		log.debug("Closed");
+		transportFactoryImpl.removeTransport(this);
+		log.debug("Closed: " + this);
 	}
 
 	public Sender getSender(String serviceName) throws ConnectionException {
 		log.debug("Get sender: " + serviceName);
 		try {
-			Destination destination = (Destination) context.lookup("/queue/"
-					+ serviceName);
+			Destination destination = jmsManagement.lookup(serviceName);
 			log.trace("Resolved destination");
-			return new JMSSenderImpl(session, destination);
+			return new JMSSenderImpl(orbManagement, session, destination);
 		} catch (NameNotFoundException e) {
 			throw new ConnectionException(
 					org.jboss.blacktie.jatmibroker.xatmi.Connection.TPENOENT,
@@ -137,8 +108,7 @@ public class TransportImpl implements Transport {
 	public Receiver getReceiver(String serviceName) throws ConnectionException {
 		log.debug("Creating a receiver: " + serviceName);
 		try {
-			Destination destination = (Destination) context.lookup("/queue/"
-					+ serviceName);
+			Destination destination = jmsManagement.lookup(serviceName);
 			log.debug("Resolved destination");
 			return new JMSReceiverImpl(session, destination, properties);
 		} catch (NameNotFoundException e) {
@@ -156,18 +126,20 @@ public class TransportImpl implements Transport {
 	public Receiver createReceiver(int cd, ResponseMonitor responseMonitor)
 			throws ConnectionException {
 		log.debug("Creating a receiver");
-		return new CorbaReceiverImpl(null, orbManagement, properties, cd,
+		return new CorbaReceiverImpl(orbManagement, properties, cd,
 				responseMonitor);
 	}
 
 	public Receiver createReceiver(EventListener eventListener)
 			throws ConnectionException {
 		log.debug("Creating a receiver with event listener");
-		return new CorbaReceiverImpl(eventListener, orbManagement, properties,
-				-1, null);
+		return new CorbaReceiverImpl(eventListener, orbManagement, properties);
 	}
 
-	public OrbManagement getOrbManagement() {
-		return orbManagement;
+	/**
+	 * Get the orb.
+	 */
+	public ORB getOrb() {
+		return orbManagement.getOrb();
 	}
 }

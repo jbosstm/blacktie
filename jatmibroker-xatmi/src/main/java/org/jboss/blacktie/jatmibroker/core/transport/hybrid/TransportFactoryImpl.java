@@ -17,16 +17,14 @@
  */
 package org.jboss.blacktie.jatmibroker.core.transport.hybrid;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.naming.Context;
-import javax.naming.InitialContext;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.core.transport.JMSManagement;
 import org.jboss.blacktie.jatmibroker.core.transport.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.transport.Transport;
 import org.jboss.blacktie.jatmibroker.core.transport.TransportFactory;
@@ -36,31 +34,18 @@ public class TransportFactoryImpl extends TransportFactory {
 
 	private static final Logger log = LogManager
 			.getLogger(TransportFactoryImpl.class);
+	private Properties properties;
 	private OrbManagement orbManagement;
-	private Properties props;
-	private Context context;
-	private ConnectionFactory factory;
-	private String username;
-	private String password;
+	private JMSManagement jmsManagement;
+	private List<Transport> transports = new ArrayList<Transport>();
 
-	protected void setProperties(Properties properties)
+	protected void initialize(Properties properties)
 			throws ConfigurationException {
 		log.debug("Creating OrbManagement");
+		this.properties = properties;
 
 		try {
-			props = new Properties();
-			props.setProperty("java.naming.factory.initial",
-					"org.jnp.interfaces.NamingContextFactory");
-			props.setProperty("java.naming.factory.url.pkgs",
-					"org.jboss.naming:org.jnp.interfaces");
-			props.setProperty("java.naming.provider.url", (String) properties
-					.get("java.naming.provider.url"));
-			props.putAll(properties);
-			context = new InitialContext(props);
-			factory = (ConnectionFactory) context.lookup("ConnectionFactory");
-
-			this.username = (String) props.get("StompConnectUsr");
-			this.password = (String) props.get("StompConnectPwd");
+			jmsManagement = new JMSManagement(properties);
 		} catch (Throwable t) {
 			throw new ConfigurationException(
 					"Could not create the required connection", t);
@@ -76,28 +61,48 @@ public class TransportFactoryImpl extends TransportFactory {
 		log.debug("Created OrbManagement");
 	}
 
-	public Transport createTransport() throws ConnectionException {
-		log.debug("Creating");
+	public synchronized Transport createTransport() throws ConnectionException {
+		log.debug("Creating transport from factory: " + this);
 		TransportImpl instance = null;
 		try {
-			Connection connection;
-			if (username != null) {
-				connection = factory.createConnection(username, password);
-			} else {
-				connection = factory.createConnection();
-			}
-			instance = new TransportImpl(orbManagement, context, connection,
-					props);
+			instance = new TransportImpl(orbManagement, jmsManagement,
+					properties, this);
 		} catch (Throwable t) {
 			throw new ConnectionException(
 					org.jboss.blacktie.jatmibroker.xatmi.Connection.TPESYSTEM,
 					"Could not connect to server", t);
 		}
-		log.debug("Created");
+		transports.add(instance);
+		log.debug("Creating transport from factory: " + this + " transport: "
+				+ instance);
 		return instance;
 	}
 
-	public void close() {
+	public synchronized void closeFactory() {
+		log.debug("Closing factory: " + this);
+		Transport[] transport = new Transport[transports.size()];
+		transport = transports.toArray(transport);
+		for (int i = 0; i < transport.length; i++) {
+			try {
+				log.debug("Closing transport: " + transport[i]
+						+ " from factory: " + this);
+				transport[i].close();
+			} catch (ConnectionException e) {
+				log.warn("Transport could not be closed: " + e.getMessage(), e);
+			}
+		}
 		orbManagement.close();
+		jmsManagement.close();
+	}
+
+	public void removeTransport(TransportImpl transportImpl) {
+		boolean remove = transports.remove(transportImpl);
+		if (remove) {
+			log.debug("Transport was removed: " + transportImpl + " from: "
+					+ this);
+		} else {
+			log.error("Transport was not removed: " + transportImpl + " from: "
+					+ this);
+		}
 	}
 }

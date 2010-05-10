@@ -29,12 +29,12 @@ import org.jboss.blacktie.jatmibroker.xatmi.Response;
  * 
  * @see JABSession
  */
-public class JABRemoteService {
+public class JABServiceInvoker {
 	/**
 	 * The logger to debug using
 	 */
 	private static final Logger log = LogManager
-			.getLogger(JABRemoteService.class);
+			.getLogger(JABServiceInvoker.class);
 
 	/**
 	 * The real connection to the service
@@ -72,7 +72,7 @@ public class JABRemoteService {
 	 * @throws JABException
 	 *             In case the remote service cannot be accessed.
 	 */
-	public JABRemoteService(String aServiceName, JABSession aJABSession,
+	public JABServiceInvoker(String aServiceName, JABSession aJABSession,
 			String bufferType, String bufferSubType) throws JABException {
 		log.debug("JABService constructor");
 

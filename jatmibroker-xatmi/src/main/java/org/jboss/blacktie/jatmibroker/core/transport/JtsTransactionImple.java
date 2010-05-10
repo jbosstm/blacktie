@@ -12,6 +12,7 @@ import javax.transaction.TransactionManager;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
+import org.omg.CORBA.ORB;
 import org.omg.CosTransactions.Control;
 import org.omg.CosTransactions.Unavailable;
 
@@ -103,9 +104,9 @@ public class JtsTransactionImple extends TransactionImple {
 	 * @param ior
 	 *            IOR for the corresponding OTS transaction
 	 */
-	public static void resume(String ior) {
+	public static void resume(ORB orb, String ior) {
 		log.debug("resume control");
-		Transaction tx = controlToTx(ior);
+		Transaction tx = controlToTx(orb, ior);
 		resume(tx);
 	}
 
@@ -133,17 +134,19 @@ public class JtsTransactionImple extends TransactionImple {
 	/**
 	 * Convert an IOR representing an OTS transaction into a JTA transaction
 	 * 
+	 * @param orb
+	 * 
 	 * @param ior
 	 *            the CORBA reference for the OTS transaction
 	 * @return a JTA transaction that wraps the OTS transaction
 	 */
-	private static Transaction controlToTx(String ior) {
+	private static Transaction controlToTx(ORB orb, String ior) {
 		log.debug("controlToTx: ior: " + ior);
 
 		if (ior == null)
 			return null;
 
-		ControlWrapper cw = createControlWrapper(ior);
+		ControlWrapper cw = createControlWrapper(orb, ior);
 		TransactionImple tx = (TransactionImple) TransactionImple
 				.getTransactions().get(cw.get_uid());
 
@@ -182,7 +185,7 @@ public class JtsTransactionImple extends TransactionImple {
 	 * @return the IOR or null if the current transaction is not an OTS
 	 *         transaction
 	 */
-	public static String getTransactionIOR() {
+	public static String getTransactionIOR(ORB orb) {
 		log.debug("getTransactionIOR");
 
 		JABTransaction curr = JABTransaction.current();
@@ -202,12 +205,14 @@ public class JtsTransactionImple extends TransactionImple {
 					if (cw == null) {
 						log
 								.warn("getTransactionIOR transaction has no control wrapper");
-					} else if (haveORB()) {
+					} else if (haveORB(orb)) {
 						try {
 							log.debug("lookup control");
 							Control c = cw.get_control();
-							String ior = ORBManager.getORB().orb()
-									.object_to_string(c);
+							if (orb == null) {
+								orb = ORBManager.getORB().orb();
+							}
+							String ior = orb.object_to_string(c);
 
 							log.debug("getTransactionIOR: ior: " + ior);
 
@@ -228,10 +233,13 @@ public class JtsTransactionImple extends TransactionImple {
 		return null;
 	}
 
-	private static ControlWrapper createControlWrapper(String ior) {
-		if (haveORB() && ior.startsWith(IORTag)) {
-			org.omg.CORBA.Object obj = ORBManager.getORB().orb()
-					.string_to_object(ior);
+	private static ControlWrapper createControlWrapper(ORB orb, String ior) {
+		if (haveORB(orb) && ior.startsWith(IORTag)) {
+			if (orb == null) {
+				orb = ORBManager.getORB().orb();
+			}
+			org.omg.CORBA.Object obj = orb.string_to_object(ior);
+
 			Control control = org.omg.CosTransactions.ControlHelper.narrow(obj);
 
 			if (control == null)
@@ -243,17 +251,20 @@ public class JtsTransactionImple extends TransactionImple {
 		}
 	}
 
-	public static boolean haveORB() {
-		return (ORBManager.isInitialised());
+	public static boolean haveORB(ORB orb) {
+		if (orb == null) {
+			return (ORBManager.isInitialised());
+		}
+		return true;
 	}
 
-	public static org.omg.CORBA.ORB getDefaultORB() {
-		if (haveORB())
-			try {
-				return ORBManager.getORB().orb();
-			} catch (Throwable t) {
-			}
-
-		return null;
-	}
+	// public static org.omg.CORBA.ORB getDefaultORB() {
+	// if (haveORB())
+	// try {
+	// return ORBManager.getORB().orb();
+	// } catch (Throwable t) {
+	// }
+	//
+	// return null;
+	// }
 }

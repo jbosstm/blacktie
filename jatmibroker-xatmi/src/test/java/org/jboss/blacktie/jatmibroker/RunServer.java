@@ -88,7 +88,8 @@ public class RunServer {
 	}
 
 	public void tpadvertisetpcallXOctet() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TPCallXOctetService.class.getName());
+		this.server.tpadvertise(getServiceNametpcallXOctet(),
+				TPCallXOctetService.class.getName());
 	}
 
 	public void tpadvertisetpcallXOctetZero() throws ConnectionException {

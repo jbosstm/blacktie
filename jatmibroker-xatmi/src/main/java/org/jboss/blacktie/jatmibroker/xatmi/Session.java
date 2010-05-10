@@ -98,7 +98,7 @@ public class Session {
 	private boolean closed;
 
 	/**
-	 * Create a new session.
+	 * Create a new session during tpconnect.
 	 * 
 	 * @param connection
 	 *            The connection that created the session
@@ -109,15 +109,17 @@ public class Session {
 	 * 
 	 * @throws ConnectionException
 	 *             In case the receiver cannot be created.
+	 * @see Connection#tpconnect(String, Buffer, int, int)
 	 */
-	Session(Connection connection, Transport transport, int cd)
-			throws ConnectionException {
+	Session(Connection connection, String serviceName, Transport transport,
+			int cd) throws ConnectionException {
 		log.debug("Creating a new client session: " + cd);
 		this.connection = connection;
 		this.transport = transport;
 		this.cd = cd;
 		this.eventListener = new EventListenerImpl(this);
 		this.receiver = transport.createReceiver(eventListener);
+		this.sender = transport.getSender(serviceName);
 
 		this.canSend = false;
 		this.canRecv = true;
@@ -136,6 +138,7 @@ public class Session {
 	 *            The client to reply to.
 	 * @throws ConnectionException
 	 *             In case the receiver or sender cannot be established.
+	 * @see Connection#createServiceSession(String, int, Object)
 	 */
 	Session(Connection connection, Transport transport, int cd, Object replyTo)
 			throws ConnectionException {
@@ -476,5 +479,9 @@ public class Session {
 		public void setLastEvent(long lastEvent, int rcode) {
 			session.setLastEvent(lastEvent, rcode);
 		}
+	}
+
+	Transport getTransport() {
+		return transport;
 	}
 }

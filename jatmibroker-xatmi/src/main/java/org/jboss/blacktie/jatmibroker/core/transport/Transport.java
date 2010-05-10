@@ -20,11 +20,18 @@ package org.jboss.blacktie.jatmibroker.core.transport;
 import org.jboss.blacktie.jatmibroker.core.ResponseMonitor;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.omg.CORBA.ORB;
 
 public interface Transport {
+	/**
+	 * Get a reference to the orb for transactions.
+	 * 
+	 * @return The orb
+	 */
+	public ORB getOrb();
 
 	/**
-	 * Get the receiver
+	 * Get the sender
 	 * 
 	 * @param serviceName
 	 * @return

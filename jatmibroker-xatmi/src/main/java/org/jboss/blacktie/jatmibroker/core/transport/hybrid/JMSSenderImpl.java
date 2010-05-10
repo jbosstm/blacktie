@@ -29,6 +29,7 @@ import javax.naming.NamingException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.transport.JtsTransactionImple;
+import org.jboss.blacktie.jatmibroker.core.transport.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.transport.Sender;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
@@ -43,9 +44,11 @@ public class JMSSenderImpl implements Sender {
 	private Destination destination;
 
 	private int pad = 0;
+	private OrbManagement orbManagement;
 
-	JMSSenderImpl(Session session, Destination destination)
-			throws NamingException, JMSException {
+	JMSSenderImpl(OrbManagement orbManagement, Session session,
+			Destination destination) throws NamingException, JMSException {
+		this.orbManagement = orbManagement;
 		this.session = session;
 		sender = session.createProducer(destination);
 		if (destination instanceof Queue) {
@@ -80,7 +83,8 @@ public class JMSSenderImpl implements Sender {
 
 		try {
 			BytesMessage message = session.createBytesMessage();
-			String ior = JtsTransactionImple.getTransactionIOR();
+			String ior = JtsTransactionImple.getTransactionIOR(orbManagement
+					.getOrb());
 
 			message.setStringProperty("messagecontrol", ior);
 			log.debug("Sender sending IOR: " + ior);

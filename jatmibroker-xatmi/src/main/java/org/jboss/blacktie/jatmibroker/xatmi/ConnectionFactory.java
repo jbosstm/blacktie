@@ -38,7 +38,7 @@ public class ConnectionFactory {
 	/**
 	 * Create the connection factory
 	 * 
-	 * @throws ConnectionException
+	 * @throws ConfigurationException
 	 *             In case the configuration could not be loaded
 	 */
 	private ConnectionFactory() throws ConfigurationException {

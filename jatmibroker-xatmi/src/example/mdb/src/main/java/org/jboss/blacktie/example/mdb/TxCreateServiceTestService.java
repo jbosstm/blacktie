@@ -57,7 +57,7 @@ public class TxCreateServiceTestService extends MDBBlacktieService implements
 		if (!JtsTransactionImple.begin())
 			return "Service could not start a new transaction";
 
-		String ior = JtsTransactionImple.getTransactionIOR();
+		String ior = JtsTransactionImple.getTransactionIOR(null);
 		log.debug("TxCreateService ior: " + ior);
 		return args;
 	}

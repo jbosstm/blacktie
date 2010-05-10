@@ -66,6 +66,7 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 	 *             In case a required JMX connection cannot be established.
 	 * @throws ConfigurationException
 	 *             In case the configuration is invalid.
+	 * @throws ConnectionException
 	 */
 	public BlacktieAdminServiceXATMI() throws IOException,
 			ConfigurationException {

@@ -23,7 +23,7 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.jab.JABRemoteService;
+import org.jboss.blacktie.jatmibroker.jab.JABServiceInvoker;
 import org.jboss.blacktie.jatmibroker.jab.JABSession;
 import org.jboss.blacktie.jatmibroker.jab.JABSessionAttributes;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
@@ -37,20 +37,18 @@ public class JABClientTest extends TestCase {
 	public void test() throws Exception {
 		log.info("JABClient");
 		String message = prompt("Enter a message to send");
-		JABSessionAttributes aJabSessionAttributes = new JABSessionAttributes();
-		JABSession aJabSession = new JABSession(aJabSessionAttributes);
-		JABTransaction transaction = new JABTransaction(aJabSession, 5000);
-		JABRemoteService aJabService = new JABRemoteService("BAR", aJabSession,
+		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
+		JABSession jabSession = new JABSession(jabSessionAttributes);
+		JABTransaction transaction = new JABTransaction(jabSession, 5000);
+		JABServiceInvoker jabService = new JABServiceInvoker("BAR", jabSession,
 				"X_OCTET", null);
-		aJabService.getRequest().setByteArray("X_OCTET", message.getBytes());
+		jabService.getRequest().setByteArray("X_OCTET", message.getBytes());
 		log.info("Calling call with input: " + message);
-		aJabService.call(null);
-		log
-				.info("Called call with output: "
-						+ new String(aJabService.getResponse().getByteArray(
-								"X_OCTET")));
+		jabService.call(null);
+		log.info("Called call with output: "
+				+ new String(jabService.getResponse().getByteArray("X_OCTET")));
 		transaction.commit();
-		aJabSession.closeSession();
+		jabSession.closeSession();
 	}
 
 	private String prompt(String prompt) throws IOException {

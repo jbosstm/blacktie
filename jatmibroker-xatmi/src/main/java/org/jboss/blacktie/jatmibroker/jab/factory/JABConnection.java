@@ -26,7 +26,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.jab.JABException;
 import org.jboss.blacktie.jatmibroker.jab.JABMessage;
-import org.jboss.blacktie.jatmibroker.jab.JABRemoteService;
+import org.jboss.blacktie.jatmibroker.jab.JABServiceInvoker;
 import org.jboss.blacktie.jatmibroker.jab.JABSession;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 import org.jboss.blacktie.jatmibroker.jab.TransactionException;
@@ -119,7 +119,7 @@ public class JABConnection {
 
 		JABTransaction tx = transaction.getJABTransaction();
 
-		JABRemoteService remoteService = new JABRemoteService(serviceName,
+		JABServiceInvoker remoteService = new JABServiceInvoker(serviceName,
 				session, bufferType, bufferSubType);
 		serialize(toSend, remoteService.getRequest());
 		remoteService.call(tx);

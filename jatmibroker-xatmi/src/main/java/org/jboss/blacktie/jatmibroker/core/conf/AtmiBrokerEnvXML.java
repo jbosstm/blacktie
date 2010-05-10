@@ -26,10 +26,6 @@ public class AtmiBrokerEnvXML {
 		prop = new Properties();
 	}
 
-	public AtmiBrokerEnvXML(Properties prop) {
-		this.prop = prop;
-	}
-
 	public Properties getProperties() throws ConfigurationException {
 		XMLEnvHandler env = new XMLEnvHandler(prop);
 		XMLParser xmlenv = new XMLParser(env, "btconfig.xsd");

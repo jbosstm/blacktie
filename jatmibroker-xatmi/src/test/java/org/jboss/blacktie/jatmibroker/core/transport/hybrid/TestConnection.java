@@ -18,27 +18,24 @@ import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 public class TestConnection extends TestCase {
 	private static final Logger log = LogManager
 			.getLogger(TestConnection.class);
-	private TransportFactory serviceTransportFactory;
+	private TransportFactory transportFactory;
 	private Transport serviceTransport;
-	private TransportFactory clientTransportFactory;
 	private Transport clientTransport;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
 		Properties properties = xml.getProperties();
 
-		serviceTransportFactory = TransportFactory.loadTransportFactory(
+		transportFactory = TransportFactory.getTransportFactory(
 				"JAVA_Converse", properties);
-		serviceTransport = serviceTransportFactory.createTransport();
-
-		clientTransportFactory = TransportFactory.loadTransportFactory(
-				"JAVA_Converse", properties);
-		clientTransport = clientTransportFactory.createTransport();
+		serviceTransport = transportFactory.createTransport();
+		clientTransport = transportFactory.createTransport();
 	}
 
 	public void tearDown() throws ConnectionException {
 		clientTransport.close();
 		serviceTransport.close();
+		transportFactory.close();
 	}
 
 	public void test() throws ConnectionException {
