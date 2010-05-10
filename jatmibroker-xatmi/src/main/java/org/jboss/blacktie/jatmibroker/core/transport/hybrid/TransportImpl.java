@@ -41,10 +41,9 @@ import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
 import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 
-public class TransportImpl implements Runnable, Transport {
+public class TransportImpl implements Transport {
 
 	private static final Logger log = LogManager.getLogger(TransportImpl.class);
-	private Thread callbackThread;
 
 	private OrbManagement orbManagement;
 	private Context context;
@@ -61,10 +60,6 @@ public class TransportImpl implements Runnable, Transport {
 		log.debug("Creating transport");
 		this.orbManagement = orbManagement;
 		this.connection = connection;
-
-		callbackThread = new Thread(this);
-		callbackThread.setDaemon(true);
-		callbackThread.start();
 
 		/*
 		 * String username = (String) properties.get("StompConnectUsr"); String
@@ -108,11 +103,6 @@ public class TransportImpl implements Runnable, Transport {
 			}
 		}
 		log.debug("Closed");
-	}
-
-	public void run() {
-		log.debug("Running the orb");
-		orbManagement.getOrb().run();
 	}
 
 	public Sender getSender(String serviceName) throws ConnectionException {

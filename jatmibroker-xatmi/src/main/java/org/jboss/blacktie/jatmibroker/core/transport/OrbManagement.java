@@ -22,7 +22,7 @@ import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
 import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 
-public class OrbManagement {
+public class OrbManagement implements Runnable {
 	private static final Logger log = LogManager.getLogger(OrbManagement.class);
 	private static final String CorbaOrbClassProp = "org.omg.CORBA.ORBClass";
 	private static final String CorbaOrbClassValue = "org.jacorb.orb.ORB";
@@ -32,6 +32,7 @@ public class OrbManagement {
 	private NamingContextExt nce;
 	private NamingContext nc;
 	private POA root_poa;
+	private Thread callbackThread;
 
 	public OrbManagement(Properties properties, boolean createNC)
 			throws InvalidName, AdapterInactive, NotFound, CannotProceed,
@@ -95,7 +96,16 @@ public class OrbManagement {
 
 		nc = NamingContextHelper.narrow(aObject);
 
+		callbackThread = new Thread(this);
+		callbackThread.setDaemon(true);
+		callbackThread.start();
+
 		log.debug("NamingContext is " + nc);
+	}
+
+	public void run() {
+		log.debug("Running the orb");
+		orb.run();
 	}
 
 	public void close() {
