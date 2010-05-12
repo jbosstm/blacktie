@@ -29,7 +29,7 @@
  * $Id: ThreadActionData.java 2342 2006-03-30 13:06:17Z  $
  */
 
-package org.jboss.blacktie.jatmibroker.core.util;
+package org.jboss.blacktie.jatmibroker.core.tx;
 
 import java.util.EmptyStackException;
 import java.util.NoSuchElementException;

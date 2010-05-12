@@ -1,5 +1,7 @@
 package org.jboss.blacktie.jatmibroker.xatmi;
 
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
+
 /**
  * All XATMI services must implement the tpservice method.
  */
@@ -11,6 +13,11 @@ public interface Service {
 	 * @param svcinfo
 	 *            The inbound parameters
 	 * @return A response to the client
+	 * @throws ConnectionException
+	 *             If the service routine did not handle the request correctly
+	 * @throws ConfigurationException
+	 *             If the configuration cannot be read correctly
 	 */
-	public Response tpservice(TPSVCINFO svcinfo);
+	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException,
+			ConfigurationException;
 }

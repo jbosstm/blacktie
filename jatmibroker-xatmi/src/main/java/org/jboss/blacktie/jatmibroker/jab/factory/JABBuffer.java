@@ -39,6 +39,8 @@ public class JABBuffer {
 	 */
 	private Map<String, Object> items = new HashMap<String, Object>();
 
+	private int xOctetSize;
+
 	/**
 	 * Get the size of the data
 	 * 
@@ -48,9 +50,13 @@ public class JABBuffer {
 	 */
 	public synchronized int size(String key) {
 		int toReturn = 0;
-		Vector<Object> vector = arrays.get(key);
-		if (vector != null) {
-			toReturn = vector.size();
+		if (key.equals("X_OCTET")) {
+			toReturn = xOctetSize;
+		} else {
+			Vector<Object> vector = arrays.get(key);
+			if (vector != null) {
+				toReturn = vector.size();
+			}
 		}
 		return toReturn;
 	}
@@ -98,9 +104,10 @@ public class JABBuffer {
 		Vector<Object> vector = arrays.get(key);
 		if (vector == null) {
 			vector = new Vector<Object>();
+			arrays.put(key, vector);
 		}
-		if (vector.size() < index) {
-			vector.setSize(index);
+		if (vector.size() <= index) {
+			vector.setSize(index + 1);
 		}
 		vector.set(index, value);
 	}
@@ -118,6 +125,9 @@ public class JABBuffer {
 	}
 
 	void setArrayValue(String key, byte[] array) {
+		if (key.equals("X_OCTET")) {
+			xOctetSize = array.length;
+		}
 		for (int i = 0; i < array.length; i++) {
 			setValue(key, i, array[i]);
 		}
@@ -130,6 +140,12 @@ public class JABBuffer {
 	}
 
 	void setArrayValue(String key, int[] array) {
+		for (int i = 0; i < array.length; i++) {
+			setValue(key, i, array[i]);
+		}
+	}
+
+	void setArrayValue(String key, long[] array) {
 		for (int i = 0; i < array.length; i++) {
 			setValue(key, i, array[i]);
 		}
@@ -167,6 +183,14 @@ public class JABBuffer {
 		int[] toReturn = new int[size(key)];
 		for (int i = 0; i < toReturn.length; i++) {
 			toReturn[i] = (Integer) getValue(key, i);
+		}
+		return toReturn;
+	}
+
+	long[] getLongArray(String key) {
+		long[] toReturn = new long[size(key)];
+		for (int i = 0; i < toReturn.length; i++) {
+			toReturn[i] = (Long) getValue(key, i);
 		}
 		return toReturn;
 	}

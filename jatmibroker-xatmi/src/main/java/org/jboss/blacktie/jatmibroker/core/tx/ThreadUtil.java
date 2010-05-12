@@ -18,7 +18,7 @@
  * (C) 2005-2006,
  * @author JBoss Inc.
  */
-package org.jboss.blacktie.jatmibroker.core.util;
+package org.jboss.blacktie.jatmibroker.core.tx;
 
 /**
  * Provides utilities to manage thread ids.

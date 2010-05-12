@@ -7,20 +7,16 @@ import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.Service;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
-import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
-public class TPConversationShortService implements Service {
+public class TPSendNonTPCONVService implements Service {
 	private static final Logger log = LogManager
-			.getLogger(TPConversationShortService.class);
+			.getLogger(TPSendNonTPCONVService.class);
 
 	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException {
-		log.info("testTPConversation_short_service");
-		int sendlen = 4;
-		X_OCTET sendbuf = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
-				null);
-		sendbuf.setByteArray("hi0".getBytes());
-		svcinfo.getSession().tpsend(sendbuf, sendlen, 0);
-		sendbuf.setByteArray("hi1".getBytes());
-		return new Response(Connection.TPSUCCESS, 0, sendbuf, sendlen, 0);
+		log.info("testtpsend_tpsendonly_service");
+		svcinfo.getSession().tpsend(svcinfo.getBuffer(), svcinfo.getLen(), 0);
+		// This should not have reached here
+		return new Response(Connection.TPFAIL, -1, svcinfo.getBuffer(), svcinfo
+				.getLen(), 0);
 	}
 }

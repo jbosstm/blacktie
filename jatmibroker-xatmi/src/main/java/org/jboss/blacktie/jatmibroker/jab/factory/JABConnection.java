@@ -117,7 +117,10 @@ public class JABConnection {
 			throws TransactionException, JABException {
 		log.debug("call");
 
-		JABTransaction tx = transaction.getJABTransaction();
+		JABTransaction tx = null;
+		if (transaction != null) {
+			tx = transaction.getJABTransaction();
+		}
 
 		JABServiceInvoker remoteService = new JABServiceInvoker(serviceName,
 				session, bufferType, bufferSubType);
@@ -135,7 +138,7 @@ public class JABConnection {
 	 * @throws JABException
 	 *             In case associated state cannot be cleaned up
 	 */
-	public synchronized void close() throws JABException {
+	synchronized void close() throws JABException {
 		Iterator<Transaction> iterator = transactions.iterator();
 		while (iterator.hasNext()) {
 			Transaction next = iterator.next();
@@ -168,7 +171,7 @@ public class JABConnection {
 		while (iterator.hasNext()) {
 			String key = iterator.next();
 			Class type = messageFormat.get(key);
-			setBufferValue(buffer, message, key, type);
+			setMessageValue(buffer, message, key, type);
 		}
 	}
 
@@ -178,7 +181,7 @@ public class JABConnection {
 		while (iterator.hasNext()) {
 			String key = iterator.next();
 			Class type = messageFormat.get(key);
-			setMessageValue(buffer, message, key, type);
+			setBufferValue(buffer, message, key, type);
 		}
 
 	}
@@ -192,7 +195,9 @@ public class JABConnection {
 				buffer.setValue(key, message.getShort(key));
 			} else if (type == int.class) {
 				buffer.setValue(key, message.getInt(key));
-			} else if (type == double.class) {
+			} else if (type == long.class) {
+				buffer.setValue(key, message.getLong(key));
+			}else if (type == double.class) {
 				buffer.setValue(key, message.getDouble(key));
 			} else if (type == float.class) {
 				buffer.setValue(key, message.getFloat(key));
@@ -202,6 +207,8 @@ public class JABConnection {
 				buffer.setArrayValue(key, message.getShortArray(key));
 			} else if (type == int[].class) {
 				buffer.setArrayValue(key, message.getIntArray(key));
+			} else if (type == long[].class) {
+				buffer.setArrayValue(key, message.getLongArray(key));
 			} else if (type == double[].class) {
 				buffer.setArrayValue(key, message.getDoubleArray(key));
 			} else if (type == float[].class) {
@@ -221,6 +228,8 @@ public class JABConnection {
 				message.setShort(key, ((Short) buffer.getValue(key)));
 			} else if (type == int.class) {
 				message.setInt(key, ((Integer) buffer.getValue(key)));
+			} else if (type == long.class) {
+				message.setLong(key, ((Long) buffer.getValue(key)));
 			} else if (type == double.class) {
 				message.setDouble(key, ((Double) buffer.getValue(key)));
 			} else if (type == float.class) {
@@ -231,6 +240,8 @@ public class JABConnection {
 				message.setShortArray(key, buffer.getShortArray(key));
 			} else if (type == int[].class) {
 				message.setIntArray(key, buffer.getIntArray(key));
+			} else if (type == long[].class) {
+				message.setLongArray(key, buffer.getLongArray(key));
 			} else if (type == double[].class) {
 				message.setDoubleArray(key, buffer.getDoubleArray(key));
 			} else if (type == float[].class) {

@@ -17,15 +17,18 @@
  */
 package org.jboss.blacktie.jatmibroker.core.conf;
 
+import java.net.InetAddress;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import junit.framework.TestCase;
 
-public class AtmiBrokerClientXMLTest extends TestCase {
+public class AtmiBrokerEnvXMLTest extends TestCase {
 
-	public void test() throws Exception {
-		AtmiBrokerEnvXML clientDesc = new AtmiBrokerEnvXML();
-		Properties prop = clientDesc.getProperties();
+	public void testEnv() throws Exception {
+		AtmiBrokerEnvXML envXml = new AtmiBrokerEnvXML();
+		Properties prop = envXml.getProperties();
 
 		String domain = "fooapp";
 		String transid = "TransactionManagerService.OTS";
@@ -42,5 +45,36 @@ public class AtmiBrokerClientXMLTest extends TestCase {
 				.startsWith(arg2));
 		assertTrue(((String) prop.getProperty("blacktie.orb.arg.2"))
 				.endsWith(arg3));
+
+		List<Server> serverLaunchers = (List<Server>) prop
+				.get("blacktie.domain.serverLaunchers");
+		boolean found = false;
+		Iterator<Server> iterator = serverLaunchers.iterator();
+		while (iterator.hasNext()) {
+			Server next = iterator.next();
+			assertTrue("myserv".equals(next.getName()));
+			List<Machine> localMachinesList = next.getLocalMachine();
+			assertTrue(localMachinesList.size() == 2);
+			assertTrue(localMachinesList.get(0).getArgLine().equals("foo"));
+			assertTrue(localMachinesList.get(0).getHostname().equals(
+					InetAddress.getLocalHost().getHostName()));
+			assertTrue(localMachinesList.get(0).getId() != null);
+			assertTrue(localMachinesList.get(0).getPathToExecutable().equals(
+					"notExist"));
+			assertTrue(localMachinesList.get(0).getWorkingDirectory().equals(
+					"."));
+			assertTrue(localMachinesList.get(0).getServerId() == 1);
+
+			// Next index
+			assertTrue(localMachinesList.get(1).getArgLine().equals("foo"));
+			assertTrue(localMachinesList.get(1).getHostname().equals(
+					InetAddress.getLocalHost().getHostName()));
+			assertTrue(localMachinesList.get(1).getId() != null);
+			assertTrue(localMachinesList.get(1).getPathToExecutable().equals(
+					"notExist"));
+			assertTrue(localMachinesList.get(1).getWorkingDirectory().equals(
+					"."));
+			assertTrue(localMachinesList.get(1).getServerId() == 2);
+		}
 	}
 }

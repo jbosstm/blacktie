@@ -45,6 +45,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.services.TPReturnOpenSession1Service
 import org.jboss.blacktie.jatmibroker.xatmi.services.TPReturnOpenSession2Service;
 import org.jboss.blacktie.jatmibroker.xatmi.services.TPReturnService;
 import org.jboss.blacktie.jatmibroker.xatmi.services.TPReturnTpurcodeService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPSendNonTPCONVService;
 import org.jboss.blacktie.jatmibroker.xatmi.services.TPSendService;
 import org.jboss.blacktie.jatmibroker.xatmi.services.TPSendTPSendOnlyService;
 import org.jboss.blacktie.jatmibroker.xatmi.services.TPServiceService;
@@ -354,5 +355,15 @@ public class RunServer {
 		this.server.tpadvertise(getServiceNameTestTPGetrplyTwo(),
 				TPGetRplyTwoService.class.getName());
 
+	}
+
+	public void tpadvertiseTestTPSendNonTPCONVService()
+			throws ConnectionException {
+		this.server.tpadvertise(getServiceNameTPSendNonTPCONVService(),
+				TPSendNonTPCONVService.class.getName());
+	}
+
+	public static String getServiceNameTPSendNonTPCONVService() {
+		return "TestOne";
 	}
 }

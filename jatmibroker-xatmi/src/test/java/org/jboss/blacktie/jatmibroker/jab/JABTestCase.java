@@ -27,9 +27,9 @@ import org.jboss.blacktie.jatmibroker.RunServer;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
-public class JABClientTestCase extends TestCase {
+public class JABTestCase extends TestCase {
 	private static final Logger log = LogManager
-			.getLogger(JABClientTestCase.class);
+			.getLogger(JABTestCase.class);
 	private RunServer runServer = new RunServer();
 
 	// clean up any lingering transactions

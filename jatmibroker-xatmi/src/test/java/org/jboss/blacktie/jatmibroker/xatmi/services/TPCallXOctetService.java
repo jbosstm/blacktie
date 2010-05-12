@@ -13,7 +13,7 @@ public class TPCallXOctetService implements Service {
 	private static final Logger log = LogManager
 			.getLogger(TPCallXOctetService.class);
 
-	public Response tpservice(TPSVCINFO svcinfo) {
+	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException {
 		log.info("test_tpcall_x_octet_service");
 		boolean ok = false;
 		if (svcinfo.getBuffer() != null) {
@@ -38,7 +38,6 @@ public class TPCallXOctetService implements Service {
 
 		int len = 60;
 		X_OCTET toReturn;
-		try {
 			toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
 					null);
 			if (ok) {
@@ -54,9 +53,5 @@ public class TPCallXOctetService implements Service {
 				toReturn.setByteArray("fail".getBytes());
 			}
 			return new Response(Connection.TPSUCCESS, 20, toReturn, len, 0);
-		} catch (ConnectionException e) {
-			return new Response(Connection.TPFAIL, Connection.TPEOTYPE, null,
-					0, 0);
-		}
 	}
 }

@@ -14,7 +14,7 @@ public class SpecExampleOneService implements Service {
 	private static final Logger log = LogManager
 			.getLogger(SpecExampleOneService.class);
 
-	public Response tpservice(TPSVCINFO svcinfo) {
+	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException {
 		log.info("debit_credit_svc");
 		short rval;
 		/* extract request typed buffer */
@@ -34,17 +34,12 @@ public class SpecExampleOneService implements Service {
 			 */
 		}
 		// TODO MAKE TWO TESTS
-		try {
-			if (dc_ptr.getInt("failTest") == 0) {
-				rval = Connection.TPSUCCESS;
-				dc_ptr.setInt("output", TestSpecExampleOne.OK);
-			} else {
-				rval = Connection.TPFAIL; /* global transaction will not commit */
-				dc_ptr.setInt("output", TestSpecExampleOne.NOT_OK);
-			}
-		} catch (ConnectionException e) {
-			return new Response(Connection.TPFAIL, Connection.TPEITYPE, dc_ptr,
-					0, 0);
+		if (dc_ptr.getInt("failTest") == 0) {
+			rval = Connection.TPSUCCESS;
+			dc_ptr.setInt("output", TestSpecExampleOne.OK);
+		} else {
+			rval = Connection.TPFAIL; /* global transaction will not commit */
+			dc_ptr.setInt("output", TestSpecExampleOne.NOT_OK);
 		}
 		/* send reply and return from service routine */
 		return new Response(rval, 0, dc_ptr, 0, 0);

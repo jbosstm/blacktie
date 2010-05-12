@@ -13,19 +13,16 @@ public class TPSendTPSendOnlyService implements Service {
 	private static final Logger log = LogManager
 			.getLogger(TPSendTPSendOnlyService.class);
 
-	public Response tpservice(TPSVCINFO svcinfo) {
+	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException {
 		log.info("testtpsend_tpsendonly_service");
-		try {
-			int result = svcinfo.getSession().tpsend(svcinfo.getBuffer(),
-					svcinfo.getLen(), Connection.TPRECVONLY);
-		} catch (ConnectionException e) {
-			log.error("ConnectionException: ", e);
-		}
+		int result = svcinfo.getSession().tpsend(svcinfo.getBuffer(),
+				svcinfo.getLen(), Connection.TPRECVONLY);
 		try {
 			Buffer tprecv = svcinfo.getSession().tprecv(0);
 		} catch (ConnectionException e) {
 			if (e.getTperrno() != Connection.TPEEVENT) {
 				log.error("ConnectionException: ", e);
+				throw e;
 			}
 		}
 		return null;
