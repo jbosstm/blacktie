@@ -80,7 +80,7 @@ public class JABFactoryTestCase extends TestCase {
 		toSend.setArrayValue("balances", balances);
 
 		JABResponse call = connection.call(RunServer
-				.getServiceNametpcallXOctet(), toSend, null, "X_C_TYPE",
+				.getServiceNametpcallXCType(), toSend, null, "X_C_TYPE",
 				"acct_info");
 
 		byte[] expected = new byte[60];
