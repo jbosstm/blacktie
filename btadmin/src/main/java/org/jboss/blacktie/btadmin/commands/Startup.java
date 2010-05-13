@@ -118,7 +118,11 @@ public class Startup implements Command {
 								readLine = error.readLine();
 							}
 							log.info(readLine);
-							if (readLine
+							if (readLine == null) {
+								throw new CommandFailedException(-3);
+							} else if (readLine.endsWith("serverinit failed")) {
+								throw new CommandFailedException(-2);
+							} else if (readLine
 									.endsWith("Server waiting for requests...")) {
 								new Thread(new EatIO(exec.getInputStream()))
 										.start();
@@ -126,9 +130,6 @@ public class Startup implements Command {
 										.start();
 								found = true;
 								break;
-
-							} else if (readLine.endsWith("serverinit failed")) {
-								throw new CommandFailedException(-2);
 							}
 						}
 					}

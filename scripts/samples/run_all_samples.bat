@@ -1,5 +1,7 @@
 @echo off
 
+IF [%1] EQU ["tx"] (
+echo "Running txfooapp"
 rem SET THE PATH FOR ORACLE
 set PATH=%PATH%;%ORACLE_HOME%\bin
 
@@ -23,6 +25,7 @@ set BLACKTIE_CONFIGURATION=win32
 call btadmin shutdown
 IF %ERRORLEVEL% NEQ 0 exit -1
 set BLACKTIE_CONFIGURATION=
+)
 
 rem RUN THE FOOAPP SERVER
 cd %BLACKTIE_HOME%\examples\xatmi\fooapp
