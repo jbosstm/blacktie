@@ -34,24 +34,24 @@ public class JABFactoryTestCase extends TestCase {
 
 	public void setUp() throws InterruptedException, ConfigurationException,
 			ConnectionException {
+		log.debug("JABFactoryTestCase::setUp");
 		runServer.serverinit();
 	}
 
 	public void tearDown() throws ConnectionException {
+		log.debug("JABFactoryTestCase::tearDown");
 		runServer.serverdone();
 	}
 
 	public void test_tpcall_x_octet() throws Exception {
+		log.info("JABFactoryTestCase::test_tpcall_x_octet");
 		runServer.tpadvertisetpcallXOctet();
 		JABConnectionFactory factory = JABConnectionFactory.getInstance();
 		JABConnection connection = factory.getConnection("connection");
 		JABBuffer toSend = new JABBuffer();
 		toSend.setArrayValue("X_OCTET", "test_tpcall_x_octet".getBytes());
-		Transaction beginTransaction = connection.beginTransaction(10000);
 		JABResponse call = connection.call(RunServer
-				.getServiceNametpcallXOctet(), toSend, beginTransaction,
-				"X_OCTET", null);
-		beginTransaction.commit();
+				.getServiceNametpcallXOctet(), toSend, null, "X_OCTET", null);
 		byte[] expected = new byte[60];
 		System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0, 14);
 		byte[] received = call.getByteArray("X_OCTET");
@@ -60,6 +60,7 @@ public class JABFactoryTestCase extends TestCase {
 	}
 
 	public void test_tpcall_x_c_type() throws Exception {
+		log.info("JABFactoryTestCase::test_tpcall_x_c_type");
 		runServer.tpadvertisetpcallXCType();
 		JABConnectionFactory factory = JABConnectionFactory.getInstance();
 		JABConnection connection = factory.getConnection("connection");
@@ -78,11 +79,9 @@ public class JABFactoryTestCase extends TestCase {
 		balances[1] = 2.2;
 		toSend.setArrayValue("balances", balances);
 
-		Transaction beginTransaction = connection.beginTransaction(10000);
 		JABResponse call = connection.call(RunServer
-				.getServiceNametpcallXOctet(), toSend, beginTransaction,
-				"X_C_TYPE", "acct_info");
-		beginTransaction.commit();
+				.getServiceNametpcallXOctet(), toSend, null, "X_C_TYPE",
+				"acct_info");
 
 		byte[] expected = new byte[60];
 		System.arraycopy("tpcall_x_c_type".getBytes(), 0, expected, 0, 15);

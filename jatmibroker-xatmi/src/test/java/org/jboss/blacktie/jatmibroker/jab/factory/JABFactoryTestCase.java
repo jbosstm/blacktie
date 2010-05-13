@@ -34,14 +34,17 @@ public class JABFactoryTestCase extends TestCase {
 
 	public void setUp() throws InterruptedException, ConfigurationException,
 			ConnectionException {
+		log.debug("JABFactoryTestCase::setUp");
 		runServer.serverinit();
 	}
 
 	public void tearDown() throws ConnectionException {
+		log.debug("JABFactoryTestCase::tearDown");
 		runServer.serverdone();
 	}
 
 	public void test_tpcall_x_octet() throws Exception {
+		log.info("JABFactoryTestCase::test_tpcall_x_octet");
 		runServer.tpadvertisetpcallXOctet();
 		JABConnectionFactory factory = JABConnectionFactory.getInstance();
 		JABConnection connection = factory.getConnection("connection");
@@ -57,6 +60,7 @@ public class JABFactoryTestCase extends TestCase {
 	}
 
 	public void test_tpcall_x_c_type() throws Exception {
+		log.info("JABFactoryTestCase::test_tpcall_x_c_type");
 		runServer.tpadvertisetpcallXCType();
 		JABConnectionFactory factory = JABConnectionFactory.getInstance();
 		JABConnection connection = factory.getConnection("connection");
