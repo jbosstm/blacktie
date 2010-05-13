@@ -27,31 +27,21 @@ import org.jboss.blacktie.jatmibroker.RunServer;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
-public class JABClientTestCase extends TestCase {
-	private static final Logger log = LogManager
-			.getLogger(JABClientTestCase.class);
+public class JABTestCase extends TestCase {
+	private static final Logger log = LogManager.getLogger(JABTestCase.class);
 	private RunServer runServer = new RunServer();
 
 	// clean up any lingering transactions
-	private void cleanThread() {
-		JABTransaction tx = JABTransaction.current();
-
-		if (tx != null) {
-			try {
-				tx.rollback();
-			} catch (Exception e) {
-			}
-		}
-	}
-
 	public void setUp() throws InterruptedException, ConfigurationException,
 			ConnectionException {
-		cleanThread();
 		runServer.serverinit();
 	}
 
-	public void tearDown() throws ConnectionException {
-		cleanThread();
+	public void tearDown() throws ConnectionException, TransactionException {
+		if (JABTransaction.current() != null) {
+			JABTransaction.current().rollback();
+			fail();
+		}
 		runServer.serverdone();
 	}
 

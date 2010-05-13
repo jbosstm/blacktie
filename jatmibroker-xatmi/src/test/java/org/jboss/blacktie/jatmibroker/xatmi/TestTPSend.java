@@ -98,7 +98,8 @@ public class TestTPSend extends TestCase {
 
 		try {
 			Response rcvbuf = connection.tpcall(RunServer
-					.getServiceNameTPSendNonTPCONVService(), sendbuf, sendlen, 0);
+					.getServiceNameTPSendNonTPCONVService(), sendbuf, sendlen,
+					0);
 			fail("Received a rcvbuf: " + rcvbuf);
 		} catch (ConnectionException e) {
 			assertTrue(e.getTperrno() == Connection.TPESVCERR);

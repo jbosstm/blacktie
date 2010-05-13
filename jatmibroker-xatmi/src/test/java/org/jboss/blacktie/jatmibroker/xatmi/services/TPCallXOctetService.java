@@ -38,20 +38,19 @@ public class TPCallXOctetService implements Service {
 
 		int len = 60;
 		X_OCTET toReturn;
-			toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
-					null);
-			if (ok) {
-				toReturn.setByteArray("tpcall_x_octet".getBytes());
+		toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null);
+		if (ok) {
+			toReturn.setByteArray("tpcall_x_octet".getBytes());
+		} else {
+			StringBuffer buffer = new StringBuffer("fail");
+			if (svcinfo.getBuffer() != null) {
+				buffer.append(new String(((X_OCTET) svcinfo.getBuffer())
+						.getByteArray()));
 			} else {
-				StringBuffer buffer = new StringBuffer("fail");
-				if (svcinfo.getBuffer() != null) {
-					buffer.append(new String(((X_OCTET) svcinfo.getBuffer())
-							.getByteArray()));
-				} else {
-					buffer.append("dud");
-				}
-				toReturn.setByteArray("fail".getBytes());
+				buffer.append("dud");
 			}
-			return new Response(Connection.TPSUCCESS, 20, toReturn, len, 0);
+			toReturn.setByteArray("fail".getBytes());
+		}
+		return new Response(Connection.TPSUCCESS, 20, toReturn, len, 0);
 	}
 }

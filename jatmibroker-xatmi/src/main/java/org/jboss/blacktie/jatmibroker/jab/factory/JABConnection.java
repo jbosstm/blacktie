@@ -197,7 +197,7 @@ public class JABConnection {
 				buffer.setValue(key, message.getInt(key));
 			} else if (type == long.class) {
 				buffer.setValue(key, message.getLong(key));
-			}else if (type == double.class) {
+			} else if (type == double.class) {
 				buffer.setValue(key, message.getDouble(key));
 			} else if (type == float.class) {
 				buffer.setValue(key, message.getFloat(key));
