@@ -83,8 +83,4 @@ public class ServiceData {
 		dispatchers.clear();
 		log.info("Unadvertised: " + serviceName);
 	}
-
-	public String getServiceName() {
-		return serviceName;
-	}
 }

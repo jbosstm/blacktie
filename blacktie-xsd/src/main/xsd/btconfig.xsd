@@ -101,7 +101,7 @@
 										<xsd:element name="MACHINE-REF" minOccurs="0"
 											maxOccurs="unbounded">
 											<xsd:complexType>
-												<xsd:attribute name="id" type="xsd:string" />
+												<xsd:attribute name="id" type="xsd:string" use="required"/>
 											</xsd:complexType>
 										</xsd:element>
 										<xsd:element name="security" minOccurs="0"
