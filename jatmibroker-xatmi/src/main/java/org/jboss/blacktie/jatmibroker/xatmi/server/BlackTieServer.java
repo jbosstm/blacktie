@@ -119,28 +119,25 @@ public class BlackTieServer {
 		int min = Math.min(Connection.XATMI_SERVICE_NAME_LENGTH, serviceName
 				.length());
 		serviceName = serviceName.substring(0, min);
-		try {
-			log.debug("Advertising: " + serviceName);
+		log.debug("Advertising: " + serviceName);
 
-			if (!serviceData.containsKey(serviceName)) {
-				try {
-					ServiceData data = new ServiceData(properties, serviceName,
-							serviceClassName);
-					serviceData.put(serviceName, data);
-					log.info("Advertised: " + serviceName);
-				} catch (Throwable t) {
-					throw new ConnectionException(Connection.TPESYSTEM,
-							"Could not create service factory for: "
-									+ serviceName, t);
-				}
-			} else {
-				throw new ConnectionException(Connection.TPEMATCH,
-						"Service already registered");
+		ServiceData serviceData = this.serviceData.get(serviceName);
+		if (serviceData == null) {
+			try {
+				ServiceData data = new ServiceData(properties, serviceName,
+						serviceClassName);
+				this.serviceData.put(serviceName, data);
+				log.info("Advertised: " + serviceName);
+			} catch (Throwable t) {
+				throw new ConnectionException(Connection.TPESYSTEM,
+						"Could not create service factory for: " + serviceName,
+						t);
 			}
-		} catch (Throwable t) {
-			String message = "Could not advertise: " + serviceName;
-			log.error(message, t);
-			throw new ConnectionException(Connection.TPESYSTEM, message, t);
+		} else if (!serviceData.getServiceClassName().equals(serviceClassName)) {
+			throw new ConnectionException(Connection.TPEMATCH,
+					"Service already registered");
+		} else {
+			log.trace("This is a duplicate advertise");
 		}
 	}
 
@@ -156,9 +153,11 @@ public class BlackTieServer {
 		serviceName = serviceName.substring(0, Math.min(
 				Connection.XATMI_SERVICE_NAME_LENGTH, serviceName.length()));
 		ServiceData data = serviceData.remove(serviceName);
-		if (data != null) {
-			data.close();
+		if (data == null) {
+			throw new ConnectionException(Connection.TPENOENT,
+					"Service did not exist: " + serviceName);
 		}
+		data.close();
 	}
 
 	/**

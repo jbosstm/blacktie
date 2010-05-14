@@ -26,6 +26,7 @@ import junit.framework.TestCase;
 
 import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerEnvXML;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public class ConnectionTest extends TestCase {
 
@@ -46,4 +47,50 @@ public class ConnectionTest extends TestCase {
 		JMSManagement management = new JMSManagement(properties);
 		management.close();
 	}
+
+	public void testNoTransactionFactory() throws ConfigurationException {
+		AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
+		Properties properties = xml.getProperties();
+
+		try {
+			TransportFactory.getTransportFactory("UNKNOWN", properties);
+			fail("Should have received exception");
+		} catch (ConfigurationException e) {
+			// THIS IS OK
+		}
+	}
+
+	public void testDoubleCloseFactory() throws ConfigurationException {
+		AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
+		Properties properties = xml.getProperties();
+
+		TransportFactory transportFactory = TransportFactory
+				.getTransportFactory("JAVA_Converse", properties);
+		transportFactory.close();
+		transportFactory.close();
+	}
+
+	public void testDoubleCloseTransport() throws ConfigurationException,
+			ConnectionException {
+		AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
+		Properties properties = xml.getProperties();
+
+		TransportFactory transportFactory = TransportFactory
+				.getTransportFactory("JAVA_Converse", properties);
+		Transport createTransport = transportFactory.createTransport();
+		createTransport.close();
+		createTransport.close();
+	}
+
+	public void testCloseFactoryWithTransport() throws ConfigurationException,
+			ConnectionException {
+		AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
+		Properties properties = xml.getProperties();
+
+		TransportFactory transportFactory = TransportFactory
+				.getTransportFactory("JAVA_Converse", properties);
+		transportFactory.createTransport();
+		transportFactory.close();
+	}
+
 }

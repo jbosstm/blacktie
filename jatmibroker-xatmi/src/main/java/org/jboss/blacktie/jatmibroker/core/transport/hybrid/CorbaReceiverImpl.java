@@ -34,7 +34,6 @@ import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.Policy;
-import org.omg.CosNaming.NameComponent;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAPackage.AdapterAlreadyExists;
 
@@ -47,7 +46,6 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 	private String callbackIOR;
 	private List<Message> returnData = new ArrayList<Message>();
 	private byte[] activate_object;
-	private String queueName;
 	private OrbManagement orbManagement;
 	private int timeout = 0;
 	private EventListener eventListener;
@@ -240,24 +238,12 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 
 	public void disconnect() {
 		log.debug("disconnect");
-		if (queueName != null) {
-			log.debug("queue name: " + queueName);
-			try {
-				NameComponent[] name = orbManagement.getNamingContextExt()
-						.to_name(queueName);
-				orbManagement.getNamingContext().unbind(name);
-				queueName = null;
-				log.debug("unbound");
-			} catch (Throwable t) {
-				log.error("Could not unbind service factory" + queueName, t);
-			}
-		}
 		try {
 			log.debug("deactivating");
 			m_default_poa.deactivate_object(activate_object);
 			log.debug("deactivated");
 		} catch (Throwable t) {
-			log.error("Could not unbind service factory" + queueName, t);
+			log.error("Could not unbind service factory", t);
 		}
 		log.trace("synchronizing");
 		synchronized (this) {

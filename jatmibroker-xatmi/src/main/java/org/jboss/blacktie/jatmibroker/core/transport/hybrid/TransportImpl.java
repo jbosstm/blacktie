@@ -61,19 +61,17 @@ public class TransportImpl implements Transport {
 
 	public void close() throws ConnectionException {
 		log.debug("Close called: " + this);
-		if (closed) {
-			throw new ConnectionException(
-					org.jboss.blacktie.jatmibroker.xatmi.Connection.TPEPROTO,
-					"Transport already closed");
+		if (!closed) {
+			try {
+				session.close();
+			} catch (JMSException e) {
+				throw new ConnectionException(
+						org.jboss.blacktie.jatmibroker.xatmi.Connection.TPESYSTEM,
+						"Could not close the session", e);
+			}
+			transportFactoryImpl.removeTransport(this);
+			closed = true;
 		}
-		try {
-			session.close();
-		} catch (JMSException e) {
-			throw new ConnectionException(
-					org.jboss.blacktie.jatmibroker.xatmi.Connection.TPESYSTEM,
-					"Could not close the session", e);
-		}
-		transportFactoryImpl.removeTransport(this);
 		log.debug("Closed: " + this);
 	}
 

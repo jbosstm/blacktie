@@ -25,7 +25,6 @@ import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.Queue;
 import javax.jms.Session;
-import javax.jms.TemporaryQueue;
 import javax.naming.NamingException;
 
 import org.apache.log4j.LogManager;
@@ -40,20 +39,9 @@ public class JMSReceiverImpl implements Receiver {
 			.getLogger(JMSReceiverImpl.class);
 	private Queue destination;
 	private MessageConsumer receiver;
-	private boolean isTemporary;
 	private int timeout = 0;
 	private boolean closed;
 	private static int pad = 0;
-
-	JMSReceiverImpl(Session session, Properties properties) throws JMSException {
-		destination = session.createTemporaryQueue();
-		receiver = session.createConsumer(destination);
-		isTemporary = true;
-		timeout = Integer.parseInt(properties.getProperty("DestinationTimeout",
-				"10")) * 1000;
-		log.debug("Creating a consumer on: " + this.destination.getQueueName()
-				+ " with timeout: " + timeout);
-	}
 
 	JMSReceiverImpl(Session session, Destination destination,
 			Properties properties) throws JMSException, NamingException {
@@ -66,11 +54,7 @@ public class JMSReceiverImpl implements Receiver {
 	}
 
 	public Object getReplyTo() throws ConnectionException {
-		if (isTemporary) {
-			return destination;
-		} else {
-			return null;
-		}
+		return null;
 	}
 
 	public Message receive(long flagsIn) throws ConnectionException {
@@ -104,11 +88,11 @@ public class JMSReceiverImpl implements Receiver {
 			log.debug("closing consumer");
 			receiver.close();
 			log.debug("consumer closed");
-			if (isTemporary) {
-				log.debug("Deleting: " + destination.getQueueName());
-				((TemporaryQueue) destination).delete();
-				log.debug("Deleted: " + destination.getQueueName());
-			}
+			// if (isTemporary) {
+			// log.debug("Deleting: " + destination.getQueueName());
+			// ((TemporaryQueue) destination).delete();
+			// log.debug("Deleted: " + destination.getQueueName());
+			// }
 			closed = true;
 		} catch (Throwable t) {
 			log.debug("consumer could not be closed");
@@ -153,7 +137,7 @@ public class JMSReceiverImpl implements Receiver {
 	}
 
 	public int getCd() throws ConnectionException {
-		throw new ConnectionException(Connection.TPESYSTEM,
-				"Tried to retrieve the cd before it was set");
+		throw new ConnectionException(Connection.TPEPROTO,
+				"Tried to retrieve the cd on JMS receiver");
 	}
 }

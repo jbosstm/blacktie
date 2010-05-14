@@ -38,23 +38,17 @@ public abstract class TransportFactory {
 			String serviceName, Properties properties)
 			throws ConfigurationException {
 		log.debug("Loading transport for: " + serviceName);
-		String transportLibrary;
-
-		if (serviceName.indexOf(".") >= 0) {
-			transportLibrary = "hybrid";
-		} else {
-			transportLibrary = (String) properties.getProperty("blacktie."
-					+ serviceName + ".transportLib", "hybrid");
-		}
+		String transportLibrary = (String) properties.getProperty("blacktie."
+				+ serviceName + ".transportLib");
 		log.debug("Transport library was: " + transportLibrary);
+		if (transportLibrary == null) {
+			throw new ConfigurationException("TransportLibrary was not defined");
+		}
 		// Determine the transport class to load
 		String className = null;
 		if (transportLibrary.contains("hybrid")) {
 			className = org.jboss.blacktie.jatmibroker.core.transport.hybrid.TransportFactoryImpl.class
 					.getName();
-		}
-		if (className == null) {
-			throw new ConfigurationException("TransportLibrary was not defined");
 		}
 		log.debug("Transport class was: " + className);
 

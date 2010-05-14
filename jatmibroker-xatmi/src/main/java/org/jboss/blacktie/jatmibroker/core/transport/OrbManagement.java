@@ -48,15 +48,11 @@ public class OrbManagement implements Runnable {
 		}
 		String[] args = orbArgs.toArray(new String[orbArgs.size()]);
 
-		if (log.isDebugEnabled()) {
-			StringBuilder sb = new StringBuilder();
-
-			for (String s : args)
-				sb.append(s).append(", ");
-
-			log.debug("ServerProxy's connectToORB args: " + sb.toString()
-					+ " namingContext: " + namingContextExt);
-		}
+		StringBuilder sb = new StringBuilder();
+		for (String s : args)
+			sb.append(s).append(", ");
+		log.trace("ServerProxy's connectToORB args: " + sb.toString()
+				+ " namingContext: " + namingContextExt);
 
 		java.util.Properties p = new java.util.Properties();
 		log.debug("setting properities");

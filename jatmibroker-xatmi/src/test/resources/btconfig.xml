@@ -86,7 +86,7 @@
 				<SERVICE name='TestOne' />
 				<SERVICE name='TestTwo' />
 				<SERVICE name='JAVA_Converse'
-					java_class_name="org.jboss.blacktie.jatmibroker.xatmi.TestTPCallServiceXOctet"
+					java_class_name="org.jboss.blacktie.jatmibroker.xatmi.services.TPCallXOctetService"
 					advertised="true" size="1">
 					<security>
 						<role name="guest" read="true" write="true" />

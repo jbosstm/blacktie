@@ -38,6 +38,7 @@ public class ServiceData {
 	private Receiver receiver;
 	private List<ServiceDispatcher> dispatchers = new ArrayList<ServiceDispatcher>();
 	private Transport connection;
+	private String serviceClassName;
 	private String serviceName;
 
 	public ServiceData(Properties properties, String serviceName,
@@ -45,6 +46,7 @@ public class ServiceData {
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException, ConfigurationException {
 		this.serviceName = serviceName;
+		this.serviceClassName = serviceClassName;
 
 		String sizeS = properties.getProperty("blacktie." + serviceName
 				+ ".size", DEFAULT_POOL_SIZE);
@@ -82,5 +84,9 @@ public class ServiceData {
 		}
 		dispatchers.clear();
 		log.info("Unadvertised: " + serviceName);
+	}
+
+	public String getServiceClassName() {
+		return serviceClassName;
 	}
 }

@@ -138,9 +138,8 @@ public class XMLParserTest extends TestCase {
 		String transport = "hybrid";
 		String advertised = "true";
 		String size = "1";
-		String function = "org.jboss.blacktie.jatmibroker.xatmi.TestTPCallServiceXOctet";
+		String function = "org.jboss.blacktie.jatmibroker.xatmi.services.TPCallXOctetService";
 
-		String adminTransport = "hybrid";
 		String userlist = "guest:true:true,blacktie:true:true";
 		String version = "2.0.0.M4-SNAPSHOT";
 

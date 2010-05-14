@@ -23,7 +23,6 @@ import javax.jms.JMSException;
 import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
-import javax.jms.Topic;
 import javax.naming.NamingException;
 
 import org.apache.log4j.LogManager;
@@ -39,7 +38,6 @@ public class JMSSenderImpl implements Sender {
 	private MessageProducer sender;
 	private Session session;
 	private String name;
-	boolean service;
 	private boolean closed;
 	private Destination destination;
 
@@ -51,13 +49,8 @@ public class JMSSenderImpl implements Sender {
 		this.orbManagement = orbManagement;
 		this.session = session;
 		sender = session.createProducer(destination);
-		if (destination instanceof Queue) {
-			this.name = ((Queue) destination).getQueueName();
-		} else {
-			this.name = ((Topic) destination).getTopicName();
-		}
+		this.name = ((Queue) destination).getQueueName();
 		this.destination = destination;
-		service = true;
 		log.debug("Sender Created: " + name);
 	}
 
@@ -77,10 +70,7 @@ public class JMSSenderImpl implements Sender {
 					"Length of buffer must be greater than 0");
 		}
 
-		if (name != null) {
-			log.debug("Sender sending: " + name);
-		}
-
+		log.debug("Sender sending: " + name);
 		try {
 			BytesMessage message = session.createBytesMessage();
 			String ior = JtsTransactionImple.getTransactionIOR(orbManagement
@@ -91,10 +81,7 @@ public class JMSSenderImpl implements Sender {
 			if (replyTo != null) {
 				message.setStringProperty("messagereplyto", (String) replyTo);
 			}
-			if (service) {
-				message.setStringProperty("servicename", name);
-			}
-
+			message.setStringProperty("servicename", name);
 			message.setStringProperty("messagecorrelationId", String
 					.valueOf(correlationId));
 			message.setStringProperty("messageflags", String.valueOf(flags));

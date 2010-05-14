@@ -56,7 +56,7 @@ public class RunServer {
 	private BlackTieServer server;
 
 	public void serverinit() throws ConfigurationException, ConnectionException {
-		this.server = new BlackTieServer("standalone-server");
+		this.server = new BlackTieServer("myserv");
 	}
 
 	public void serverdone() throws ConnectionException {

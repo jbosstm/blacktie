@@ -97,12 +97,7 @@ public class TransportFactoryImpl extends TransportFactory {
 
 	public void removeTransport(TransportImpl transportImpl) {
 		boolean remove = transports.remove(transportImpl);
-		if (remove) {
-			log.debug("Transport was removed: " + transportImpl + " from: "
-					+ this);
-		} else {
-			log.error("Transport was not removed: " + transportImpl + " from: "
-					+ this);
-		}
+		log.debug("Transport was removed: " + transportImpl + " from: " + this
+				+ " result: " + remove);
 	}
 }
