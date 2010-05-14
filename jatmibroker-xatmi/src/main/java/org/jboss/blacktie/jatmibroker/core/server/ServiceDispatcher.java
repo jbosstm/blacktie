@@ -52,37 +52,31 @@ public class ServiceDispatcher extends BlackTieService implements Runnable {
 
 	public void run() {
 		log.debug("Running");
-		try {
-			while (!closed) {
-				try {
-					Message message = receiver.receive(0);
-					log.trace("Received");
-					try {
-						this.processMessage(message);
-						log.trace("Processed");
-					} catch (Throwable t) {
-						log.error("Can't process the message", t);
-					}
 
-				} catch (ConnectionException e) {
-					if (closed) {
-						throw e;
-					}
-					if (e.getTperrno() == Connection.TPETIME) {
-						log.debug("Got a timeout");
-					} else {
-						throw e;
-					}
+		while (!closed) {
+			Message message = null;
+			try {
+				message = receiver.receive(0);
+				log.trace("Received");
+			} catch (ConnectionException e) {
+				if (closed) {
+					break;
+				}
+				if (e.getTperrno() == Connection.TPETIME) {
+					log.debug("Got a timeout");
+				} else {
+					log.error("Could not receive the message: "
+							+ e.getMessage(), e);
+					break;
 				}
 			}
-		} catch (Throwable t) {
-			if (!closed) {
-				log
-						.error("Could not receive the message: "
-								+ t.getMessage(), t);
-			} else {
-				log.debug("Did not receive the message during shutdown: "
-						+ t.getMessage(), t);
+			if (message != null) {
+				try {
+					this.processMessage(message);
+					log.trace("Processed");
+				} catch (Throwable t) {
+					log.error("Can't process the message", t);
+				}
 			}
 		}
 	}

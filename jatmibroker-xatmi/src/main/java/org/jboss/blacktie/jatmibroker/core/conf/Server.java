@@ -43,27 +43,6 @@ public class Server {
 		machines.add(machine);
 	}
 
-	public List<Machine> getMachines() {
-		return machines;
-	}
-
-	public void setMachines(List<Machine> machines) {
-		this.machines = machines;
-	}
-
-	public boolean isHostedLocally() throws UnknownHostException {
-		boolean toReturn = false;
-		String hostname = InetAddress.getLocalHost().getHostName();
-		Iterator<Machine> iterator = machines.iterator();
-		while (iterator.hasNext()) {
-			if (iterator.next().getHostname().equals(hostname)) {
-				toReturn = true;
-				break;
-			}
-		}
-		return toReturn;
-	}
-
 	public List<Machine> getLocalMachine() throws UnknownHostException {
 		List<Machine> toReturn = new ArrayList<Machine>();
 		String hostname = InetAddress.getLocalHost().getHostName();

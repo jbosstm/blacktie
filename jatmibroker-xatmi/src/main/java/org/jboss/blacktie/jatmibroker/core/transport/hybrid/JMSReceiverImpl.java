@@ -75,9 +75,10 @@ public class JMSReceiverImpl implements Receiver {
 
 	public Message receive(long flagsIn) throws ConnectionException {
 		try {
-			log.debug("Receiving from: " + destination.getQueueName());
-			javax.jms.Message message = receiver
-					.receive(determineTimeout(flagsIn));
+			int determineTimeout = determineTimeout(flagsIn);
+			log.debug("Receiving from: " + destination.getQueueName()
+					+ " timeout: " + determineTimeout);
+			javax.jms.Message message = receiver.receive(determineTimeout);
 			if (message != null) {
 				BytesMessage bytesMessage = ((BytesMessage) message);
 				log.debug("Received from: " + destination.getQueueName());

@@ -85,6 +85,28 @@ public class TestTPCall extends TestCase {
 		assertTrue(Arrays.equals(received, expected));
 	}
 
+	public void test_tpcall_x_octet_after_delay() throws ConnectionException,
+			InterruptedException {
+		log.info("test_tpcall_x_octet_after_delay");
+		server.tpadvertisetpcallXOctet();
+		Thread.currentThread().sleep(3000);
+		String toSend = "test_tpcall_x_octet";
+		int sendlen = toSend.length() + 1;
+		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf.setByteArray(toSend.getBytes());
+
+		Response rcvbuf = connection.tpcall(RunServer
+				.getServiceNametpcallXOctet(), sendbuf, sendlen, 0);
+		assertTrue(rcvbuf != null);
+		assertTrue(rcvbuf.getBuffer() != null);
+		assertTrue(((X_OCTET) rcvbuf.getBuffer()).getByteArray() != null);
+		byte[] received = ((X_OCTET) rcvbuf.getBuffer()).getByteArray();
+		byte[] expected = new byte[received.length];
+		System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0,
+				"tpcall_x_octet".getBytes().length);
+		assertTrue(Arrays.equals(received, expected));
+	}
+
 	public void test_tpcall_x_common() throws ConnectionException {
 		log.info("test_tpcall_x_common");
 		server.tpadvertisetpcallXCommon();

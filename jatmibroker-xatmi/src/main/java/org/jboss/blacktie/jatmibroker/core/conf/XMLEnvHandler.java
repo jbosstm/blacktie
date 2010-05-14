@@ -40,8 +40,6 @@ public class XMLEnvHandler extends DefaultHandler {
 	private final String ATTRIBUTE = "ATTRIBUTE";
 	private final String SERVER_NAME = "SERVER";
 	private final String SERVICE_NAME = "SERVICE";
-	private final String NAME = "NAME";
-	private final String VALUE = "VALUE";
 	private final String ORB = "ORB";
 	private final String MQ = "MQ";
 	private final String JMX = "JMX";
@@ -52,8 +50,6 @@ public class XMLEnvHandler extends DefaultHandler {
 	private Properties prop;
 
 	private String value;
-	private String name;
-
 	private String serverName;
 	private String serviceName;
 
@@ -95,186 +91,164 @@ public class XMLEnvHandler extends DefaultHandler {
 		value = "";
 
 		if (SERVER_NAME.equals(localName)) {
-			if (atts != null) {
-				for (int i = 0; i < atts.getLength(); i++) {
-					if (atts.getLocalName(i).equals("name")) {
-						serverName = atts.getValue(i);
-					}
-				}
-				if (serverName == null) {
-					serverName = "default";
-				}
-				if (servers.contains(serverName)) {
-					throw new SAXException("Duplicate server detected: "
-							+ serverName);
-				}
-				servers.add(serverName);
-				serverLaunchers.add(new Server(serverName));
+			serverName = atts.getValue(0);
+			if (servers.contains(serverName)) {
+				throw new SAXException("Duplicate server detected: "
+						+ serverName);
 			}
+			servers.add(serverName);
+			serverLaunchers.add(new Server(serverName));
 		} else if (MACHINE_REF.equals(localName)) {
 			String value = null;
 			Machine machine = null;
-			for (int i = 0; i < atts.getLength(); i++) {
-				if (atts.getLocalName(i).equals("id")) {
-					value = atts.getValue(i);
-					// Get the machine out of the list
-					machine = machines.get(value);
-				}
-			}
+			value = atts.getValue(0);
+			// Get the machine out of the list
+			machine = machines.get(value);
 			if (machine == null) {
 				throw new SAXException("Machine did not exist: " + value);
-			} else {
-				// This will be the last server added
-				Server server = serverLaunchers.get(serverLaunchers.size() - 1);
-				server.addMachine(machine);
 			}
+			// This will be the last server added
+			Server server = serverLaunchers.get(serverLaunchers.size() - 1);
+			server.addMachine(machine);
 		} else if (BUFFER.equals(localName)) {
 			currentBufferName = atts.getValue(0);
 			BufferStructure buffer = buffers.get(currentBufferName);
-			if (buffer == null) {
-				buffer = new BufferStructure();
-				buffer.name = currentBufferName;
-				buffer.wireSize = 0;
-				buffer.memSize = 0;
-				buffer.lastPad = 0;
-				buffers.put(currentBufferName, buffer);
-			} else {
-				log.error("Duplicate buffer detected: " + currentBufferName);
-				currentBufferName = null;
+			if (buffer != null) {
+				throw new SAXException("Duplicate buffer detected: "
+						+ currentBufferName);
+			}
+			buffer = new BufferStructure();
+			buffer.name = currentBufferName;
+			buffer.wireSize = 0;
+			buffer.memSize = 0;
+			buffer.lastPad = 0;
+			buffers.put(currentBufferName, buffer);
+		} else if (ATTRIBUTE.equals(localName)) {
+			BufferStructure buffer = buffers.get(currentBufferName);
+			AttributeStructure attribute = new AttributeStructure();
+			attribute.id = null;
+			attribute.type = null;
+			attribute.count = 0;
+			attribute.length = 0;
+			attribute.wirePosition = 0;
+			attribute.memPosition = 0;
+			String type = null;
+			for (int i = 0; i < atts.getLength(); i++) {
+				if (atts.getLocalName(i).equals("id")) {
+					attribute.id = atts.getValue(i);
+				} else if (atts.getLocalName(i).equals("type")) {
+					type = atts.getValue(i);
+				} else if (atts.getLocalName(i).equals("arrayCount")) {
+					attribute.count = Integer.parseInt(atts.getValue(i));
+				} else if (atts.getLocalName(i).equals("arrayLength")) {
+					attribute.length = Integer.parseInt(atts.getValue(i));
+				}
 			}
 
-		} else if (ATTRIBUTE.equals(localName)) {
-			if (currentBufferName != null) {
-				BufferStructure buffer = buffers.get(currentBufferName);
-				AttributeStructure attribute = new AttributeStructure();
-				attribute.id = null;
-				attribute.type = null;
-				attribute.count = 0;
-				attribute.length = 0;
-				attribute.wirePosition = 0;
-				attribute.memPosition = 0;
-				String type = null;
-				for (int i = 0; i < atts.getLength(); i++) {
-					if (atts.getLocalName(i).equals("id")) {
-						attribute.id = atts.getValue(i);
-					} else if (atts.getLocalName(i).equals("type")) {
-						type = atts.getValue(i);
-					} else if (atts.getLocalName(i).equals("arrayCount")) {
-						attribute.count = Integer.parseInt(atts.getValue(i));
-					} else if (atts.getLocalName(i).equals("arrayLength")) {
-						attribute.length = Integer.parseInt(atts.getValue(i));
+			int typeSize = -1;
+			boolean contains = buffer.attributeNames.contains(attribute.id);
+			boolean fail = false;
+			if (!contains) {
+				// short, int, long, float, double, char
+				if (type.equals("short")) {
+					typeSize = SHORT_SIZE;
+					attribute.instanceSize = SHORT_SIZE;
+					attribute.type = short.class;
+				} else if (type.equals("int")) {
+					typeSize = INT_SIZE;
+					attribute.instanceSize = INT_SIZE;
+					attribute.type = int.class;
+				} else if (type.equals("long")) {
+					typeSize = LONG_SIZE;
+					attribute.instanceSize = LONG_SIZE;
+					attribute.type = long.class;
+				} else if (type.equals("float")) {
+					typeSize = FLOAT_SIZE;
+					attribute.instanceSize = FLOAT_SIZE;
+					attribute.type = float.class;
+				} else if (type.equals("double")) {
+					typeSize = DOUBLE_SIZE;
+					attribute.instanceSize = DOUBLE_SIZE;
+					attribute.type = double.class;
+				} else if (type.equals("char")) {
+					typeSize = CHAR_SIZE;
+					attribute.instanceSize = CHAR_SIZE;
+					attribute.type = byte.class;
+				} else if (type.equals("char[]")) {
+					if (attribute.length == 0) {
+						attribute.length = 1;
 					}
+					typeSize = CHAR_SIZE;
+					attribute.instanceSize = CHAR_SIZE * attribute.length;
+					attribute.type = byte[].class;
+				} else if (type.equals("short[]")) {
+					if (attribute.length == 0) {
+						attribute.length = 1;
+					}
+					typeSize = SHORT_SIZE;
+					attribute.instanceSize = SHORT_SIZE * attribute.length;
+					attribute.type = short[].class;
+				} else if (type.equals("int[]")) {
+					if (attribute.length == 0) {
+						attribute.length = 1;
+					}
+					typeSize = INT_SIZE;
+					attribute.instanceSize = INT_SIZE * attribute.length;
+					attribute.type = int[].class;
+				} else if (type.equals("long[]")) {
+					if (attribute.length == 0) {
+						attribute.length = 1;
+					}
+					typeSize = LONG_SIZE;
+					attribute.instanceSize = LONG_SIZE * attribute.length;
+					attribute.type = long[].class;
+				} else if (type.equals("float[]")) {
+					if (attribute.length == 0) {
+						attribute.length = 1;
+					}
+					typeSize = FLOAT_SIZE;
+					attribute.instanceSize = FLOAT_SIZE * attribute.length;
+					attribute.type = float[].class;
+				} else if (type.equals("double[]")) {
+					if (attribute.length == 0) {
+						attribute.length = 1;
+					}
+					typeSize = DOUBLE_SIZE;
+					attribute.instanceSize = DOUBLE_SIZE * attribute.length;
+					attribute.type = double[].class;
+				} else if (type.equals("char[][]")) {
+					if (attribute.length == 0) {
+						attribute.length = 1;
+					}
+					if (attribute.count == 0) {
+						attribute.count = 1;
+					}
+					typeSize = CHAR_SIZE;
+					attribute.instanceSize = CHAR_SIZE * attribute.length
+							* attribute.count;
+					attribute.type = byte[][].class;
+				} else {
+					log.error("Unknown attribute type: " + attribute.type);
+					fail = true;
 				}
 
-				int typeSize = -1;
-				boolean contains = buffer.attributeNames.contains(attribute.id);
-				boolean fail = false;
-				if (!contains) {
-					// short, int, long, float, double, char
-					if (type.equals("short")) {
-						typeSize = SHORT_SIZE;
-						attribute.instanceSize = SHORT_SIZE;
-						attribute.type = short.class;
-					} else if (type.equals("int")) {
-						typeSize = INT_SIZE;
-						attribute.instanceSize = INT_SIZE;
-						attribute.type = int.class;
-					} else if (type.equals("long")) {
-						typeSize = LONG_SIZE;
-						attribute.instanceSize = LONG_SIZE;
-						attribute.type = long.class;
-					} else if (type.equals("float")) {
-						typeSize = FLOAT_SIZE;
-						attribute.instanceSize = FLOAT_SIZE;
-						attribute.type = float.class;
-					} else if (type.equals("double")) {
-						typeSize = DOUBLE_SIZE;
-						attribute.instanceSize = DOUBLE_SIZE;
-						attribute.type = double.class;
-					} else if (type.equals("char")) {
-						typeSize = CHAR_SIZE;
-						attribute.instanceSize = CHAR_SIZE;
-						attribute.type = byte.class;
-					} else if (type.equals("char[]")) {
-						if (attribute.length == 0) {
-							attribute.length = 1;
-						}
-						typeSize = CHAR_SIZE;
-						attribute.instanceSize = CHAR_SIZE * attribute.length;
-						attribute.type = byte[].class;
-					} else if (type.equals("short[]")) {
-						if (attribute.length == 0) {
-							attribute.length = 1;
-						}
-						typeSize = SHORT_SIZE;
-						attribute.instanceSize = SHORT_SIZE * attribute.length;
-						attribute.type = short[].class;
-					} else if (type.equals("int[]")) {
-						if (attribute.length == 0) {
-							attribute.length = 1;
-						}
-						typeSize = INT_SIZE;
-						attribute.instanceSize = INT_SIZE * attribute.length;
-						attribute.type = int[].class;
-					} else if (type.equals("long[]")) {
-						if (attribute.length == 0) {
-							attribute.length = 1;
-						}
-						typeSize = LONG_SIZE;
-						attribute.instanceSize = LONG_SIZE * attribute.length;
-						attribute.type = long[].class;
-					} else if (type.equals("float[]")) {
-						if (attribute.length == 0) {
-							attribute.length = 1;
-						}
-						typeSize = FLOAT_SIZE;
-						attribute.instanceSize = FLOAT_SIZE * attribute.length;
-						attribute.type = float[].class;
-					} else if (type.equals("double[]")) {
-						if (attribute.length == 0) {
-							attribute.length = 1;
-						}
-						typeSize = DOUBLE_SIZE;
-						attribute.instanceSize = DOUBLE_SIZE * attribute.length;
-						attribute.type = double[].class;
-					} else if (type.equals("char[][]")) {
-						if (attribute.length == 0) {
-							attribute.length = 1;
-						}
-						if (attribute.count == 0) {
-							attribute.count = 1;
-						}
-						typeSize = CHAR_SIZE;
-						attribute.instanceSize = CHAR_SIZE * attribute.length
-								* attribute.count;
-						attribute.type = byte[][].class;
-					} else {
-						log.error("Unknown attribute type: " + attribute.type);
-						fail = true;
+				if (!fail) {
+					buffer.attributes.add(attribute);
+
+					// Extend the buffer by the required extra buffer size
+					if (buffer.lastPad < typeSize) {
+						buffer.lastPad = typeSize;
 					}
 
-					if (!fail) {
-						buffer.attributes.add(attribute);
-
-						// Extend the buffer by the required extra buffer size
-						if (buffer.lastPad < typeSize) {
-							buffer.lastPad = typeSize;
-						}
-
-						buffer.memSize = buffer.memSize
-								+ (buffer.memSize % typeSize);
-						attribute.memPosition = buffer.memSize;
-						attribute.wirePosition = buffer.wireSize;
-						buffer.wireSize = buffer.wireSize
-								+ attribute.instanceSize;
-						buffer.memSize = buffer.memSize
-								+ attribute.instanceSize;
-					}
-				} else {
-					log.error("Duplicate attribute detected: " + attribute.id);
+					buffer.memSize = buffer.memSize
+							+ (buffer.memSize % typeSize);
+					attribute.memPosition = buffer.memSize;
+					attribute.wirePosition = buffer.wireSize;
+					buffer.wireSize = buffer.wireSize + attribute.instanceSize;
+					buffer.memSize = buffer.memSize + attribute.instanceSize;
 				}
 			} else {
-				log.error("No buffer is being processed");
+				log.error("Duplicate attribute detected: " + attribute.id);
 			}
 		} else if (ORB.equals(localName)) {
 			for (int j = 0; j < atts.getLength(); j++) {
@@ -353,101 +327,70 @@ public class XMLEnvHandler extends DefaultHandler {
 			}
 			machines.put(machine.getId(), machine);
 		} else if (JMX.equals(localName)) {
-			for (int i = 0; i < atts.getLength(); i++) {
-				if (atts.getLocalName(i).equals("url")) {
-					String value = atts.getValue(i);
-					if (jbossasIpAddr != null) {
-						value = value.replace("${JBOSSAS_IP_ADDR}",
-								jbossasIpAddr);
-					}
-					prop.setProperty("JMXURL", value);
-				}
+			String value = atts.getValue(0);
+			if (jbossasIpAddr != null) {
+				value = value.replace("${JBOSSAS_IP_ADDR}", jbossasIpAddr);
 			}
+			prop.setProperty("JMXURL", value);
 		} else if (SERVICE_NAME.equals(localName)) {
-			if (atts != null) {
-				for (int i = 0; i < atts.getLength(); i++) {
-					String attsLocalName = atts.getLocalName(i);
-					if (attsLocalName.equals("name")) {
-						serviceName = atts.getValue(i);
-						if (serviceName.length() > 15) {
-							log
-									.warn("service "
-											+ serviceName
-											+ " is longer than XATMI_SERVICE_NAME_LENGTH and will be ignore");
-							serviceName = null;
-							break;
-						}
-
-						String serviceServer = (String) prop.get("blacktie."
-								+ serviceName + ".server");
-						if (serviceServer != null
-								&& !serviceServer.equals(serverName)) {
-							log.warn("service " + serviceName
-									+ " has already define in "
-									+ prop.get(serviceServer));
-							serviceName = null;
-							throw new SAXException(
-									"Can not define the same service");
-						}
-
-						if (serviceName.indexOf(".") >= 0) {
-							log.warn("service " + serviceName
-									+ " is admin service");
-							serviceName = null;
-							throw new SAXException(
-									"Can not define ADMIN service");
-						}
-					} else if (attsLocalName.equals("function_name")) {
-						String func_key = "blacktie." + serviceName
-								+ ".function_name";
-						String function_name = atts.getValue(i);
-						prop.put(func_key, function_name);
-					} else if (attsLocalName.equals("java_class_name")) {
-						String java_key = "blacktie." + serviceName
-								+ ".java_class_name";
-						String java_class_name = atts.getValue(i);
-						prop.put(java_key, java_class_name);
-					} else if (attsLocalName.equals("library_name")) {
-						String lib_key = "blacktie." + serviceName
-								+ ".library_name";
-						String library_name = atts.getValue(i);
-						prop.put(lib_key, library_name);
-					} else if (attsLocalName.equals("advertised")) {
-						String advertised = atts.getValue(i);
-						String ad_key = "blacktie." + serviceName
-								+ ".advertised";
-						prop.put(ad_key, advertised);
-						if (advertised.equals("true")) {
-							String skey = "blacktie." + serverName
-									+ ".services";
-							String object = (String) prop.get(skey);
-							if (object == null) {
-								object = serviceName;
-							} else {
-								object = new String(object + "," + serviceName);
-							}
-							prop.put(skey, object);
-						}
-					} else if (attsLocalName.equals("size")) {
-						String sizeKey = "blacktie." + serviceName + ".size";
-						String sizeVal = atts.getValue(i);
-						prop.setProperty(sizeKey, sizeVal);
+			for (int i = 0; i < atts.getLength(); i++) {
+				String attsLocalName = atts.getLocalName(i);
+				if (attsLocalName.equals("name")) {
+					serviceName = atts.getValue(i);
+					String serviceServer = (String) prop.get("blacktie."
+							+ serviceName + ".server");
+					if (serviceServer != null
+							&& !serviceServer.equals(serverName)) {
+						log.warn("service " + serviceName
+								+ " has already define in "
+								+ prop.get(serviceServer));
+						serviceName = null;
+						throw new SAXException(
+								"Can not define the same service");
 					}
-				}
-
-				if (serviceName != null) {
-					// If a function was not defined above
+					prop.put("blacktie." + serviceName + ".server", serverName);
+				} else if (attsLocalName.equals("function_name")) {
 					String func_key = "blacktie." + serviceName
 							+ ".function_name";
-					if (prop.get(func_key) == null) {
-						prop.put(func_key, serviceName);
+					String function_name = atts.getValue(i);
+					prop.put(func_key, function_name);
+				} else if (attsLocalName.equals("java_class_name")) {
+					String java_key = "blacktie." + serviceName
+							+ ".java_class_name";
+					String java_class_name = atts.getValue(i);
+					prop.put(java_key, java_class_name);
+				} else if (attsLocalName.equals("library_name")) {
+					String lib_key = "blacktie." + serviceName
+							+ ".library_name";
+					String library_name = atts.getValue(i);
+					prop.put(lib_key, library_name);
+				} else if (attsLocalName.equals("advertised")) {
+					String advertised = atts.getValue(i);
+					String ad_key = "blacktie." + serviceName + ".advertised";
+					prop.put(ad_key, advertised);
+					if (advertised.equals("true")) {
+						String skey = "blacktie." + serverName + ".services";
+						String object = (String) prop.get(skey);
+						if (object == null) {
+							object = serviceName;
+						} else {
+							object = new String(object + "," + serviceName);
+						}
+						prop.put(skey, object);
 					}
-
-					prop.put("blacktie." + serviceName + ".server", serverName);
-					prop.put("blacktie." + serviceName + ".transportLib",
-							"hybrid");
-					log.trace("Added the service: " + serviceName);
+				} else if (attsLocalName.equals("size")) {
+					String sizeKey = "blacktie." + serviceName + ".size";
+					String sizeVal = atts.getValue(i);
+					prop.setProperty(sizeKey, sizeVal);
 				}
+
+				// If a function was not defined above
+				String func_key = "blacktie." + serviceName + ".function_name";
+				if (prop.get(func_key) == null) {
+					prop.put(func_key, serviceName);
+				}
+				prop.put("blacktie." + serviceName + ".transportLib", "hybrid");
+				log.trace("Added the service: " + serviceName);
 			}
 		} else if (ROLE.equals(localName)) {
 			String key = null;
@@ -459,33 +402,29 @@ public class XMLEnvHandler extends DefaultHandler {
 				key = "blacktie." + serverName + ".security";
 			}
 
-			if (key != null) {
-				String roleList = prop.getProperty(key, "");
-				String name = null;
-				String read = "false";
-				String write = "false";
+			String roleList = prop.getProperty(key, "");
+			String name = null;
+			String read = "false";
+			String write = "false";
 
-				for (int i = 0; i < atts.getLength(); i++) {
-					String attsLocalName = atts.getLocalName(i);
-					if (attsLocalName.equals("name")) {
-						name = atts.getValue(i);
-					} else if (atts.getLocalName(i).equals("read")) {
-						read = atts.getValue(i);
-					} else {
-						write = atts.getValue(i);
-					}
-				}
-				String role = name + ':' + read + ':' + write;
-				if (roleList.length() > 0) {
-					roleList = roleList + ',' + role;
+			for (int i = 0; i < atts.getLength(); i++) {
+				String attsLocalName = atts.getLocalName(i);
+				if (attsLocalName.equals("name")) {
+					name = atts.getValue(i);
+				} else if (atts.getLocalName(i).equals("read")) {
+					read = atts.getValue(i);
 				} else {
-					roleList = role;
+					write = atts.getValue(i);
 				}
-				prop.put(key, roleList);
-				log.trace("Added the role: " + role);
-			} else {
-				log.error("Ignoring role as not processing service or server");
 			}
+			String role = name + ':' + read + ':' + write;
+			if (roleList.length() > 0) {
+				roleList = roleList + ',' + role;
+			} else {
+				roleList = role;
+			}
+			prop.put(key, roleList);
+			log.trace("Added the role: " + role);
 		}
 	}
 
@@ -493,17 +432,8 @@ public class XMLEnvHandler extends DefaultHandler {
 			throws SAXException {
 		if (DOMAIN.equals(localName)) {
 			prop.setProperty("blacktie.domain.name", value);
-		} else if (NAME.equals(localName)) {
-			name = value;
-		} else if (VALUE.equals(localName)) {
-			if (jbossasIpAddr != null) {
-				value = value.replace("${JBOSSAS_IP_ADDR}", jbossasIpAddr);
-			}
-			prop.setProperty(name, value);
 		} else if (SERVICE_NAME.equals(localName)) {
-			if (serviceName != null) {
-				serviceName = null;
-			}
+			serviceName = null;
 		}
 	}
 }

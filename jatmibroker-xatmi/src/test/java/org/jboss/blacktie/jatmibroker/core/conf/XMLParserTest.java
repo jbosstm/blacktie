@@ -45,13 +45,24 @@ public class XMLParserTest extends TestCase {
 		}
 	}
 
+	public void testWrongEnvironmentXsd() {
+		Properties prop = new Properties();
+		XMLEnvHandler handler = new XMLEnvHandler(prop);
+		try {
+			new XMLParser(handler, "btconfigERROR.xsd");
+			fail("Should have thrown a parser exception or found the file");
+		} catch (ConfigurationException e) {
+			// THIS IS OK
+		}
+	}
+
 	public void testAdminEnvironmentXML() throws Exception {
 		Properties prop = new Properties();
 		XMLEnvHandler handler = new XMLEnvHandler(prop);
 		XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
 
 		try {
-			xmlenv.parse("Adminbtconfig.xml");
+			xmlenv.parse("AdminEnvironment.xml");
 			fail("Should have thrown a exception");
 		} catch (ConfigurationException e) {
 			// THIS IS OK
@@ -64,7 +75,46 @@ public class XMLParserTest extends TestCase {
 		XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
 
 		try {
-			xmlenv.parse("Samebtconfig.xml");
+			xmlenv.parse("SameEnvironment.xml");
+			fail("Should have thrown a exception");
+		} catch (ConfigurationException e) {
+			// THIS IS OK
+		}
+	}
+
+	public void testUnknownMachine() throws Exception {
+		Properties prop = new Properties();
+		XMLEnvHandler handler = new XMLEnvHandler(prop);
+		XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
+
+		try {
+			xmlenv.parse("UnknownMachine.xml");
+			fail("Should have thrown a exception");
+		} catch (ConfigurationException e) {
+			// THIS IS OK
+		}
+	}
+
+	public void testSameServer() throws Exception {
+		Properties prop = new Properties();
+		XMLEnvHandler handler = new XMLEnvHandler(prop);
+		XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
+
+		try {
+			xmlenv.parse("SameServer.xml");
+			fail("Should have thrown a exception");
+		} catch (ConfigurationException e) {
+			// THIS IS OK
+		}
+	}
+
+	public void testSameBuffer() throws Exception {
+		Properties prop = new Properties();
+		XMLEnvHandler handler = new XMLEnvHandler(prop);
+		XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
+
+		try {
+			xmlenv.parse("SameBuffer.xml");
 			fail("Should have thrown a exception");
 		} catch (ConfigurationException e) {
 			// THIS IS OK

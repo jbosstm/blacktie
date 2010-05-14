@@ -24,7 +24,7 @@
 				<SERVICE name='BAR' />
 			</SERVICE_NAMES>
 		</SERVER>
-		<SERVER name='foo'>
+		<SERVER name='default'>
 			<SERVICE_NAMES>
 				<SERVICE name='BAR' />
 			</SERVICE_NAMES>
