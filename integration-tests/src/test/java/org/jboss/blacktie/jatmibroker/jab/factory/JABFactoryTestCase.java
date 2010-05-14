@@ -25,6 +25,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.RunServer;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
+import org.jboss.blacktie.jatmibroker.jab.TransactionException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public class JABFactoryTestCase extends TestCase {
@@ -38,8 +40,12 @@ public class JABFactoryTestCase extends TestCase {
 		runServer.serverinit();
 	}
 
-	public void tearDown() throws ConnectionException {
+	public void tearDown() throws ConnectionException, TransactionException {
 		log.debug("JABFactoryTestCase::tearDown");
+		if (JABTransaction.current() != null) {
+			JABTransaction.current().rollback();
+			fail();
+		}
 		runServer.serverdone();
 	}
 

@@ -25,6 +25,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.RunServer;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
+import org.jboss.blacktie.jatmibroker.jab.TransactionException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public class JABFactoryTestCase extends TestCase {
@@ -38,8 +40,12 @@ public class JABFactoryTestCase extends TestCase {
 		runServer.serverinit();
 	}
 
-	public void tearDown() throws ConnectionException {
+	public void tearDown() throws ConnectionException, TransactionException {
 		log.debug("JABFactoryTestCase::tearDown");
+		if (JABTransaction.current() != null) {
+			JABTransaction.current().rollback();
+			fail();
+		}
 		runServer.serverdone();
 	}
 
@@ -50,8 +56,13 @@ public class JABFactoryTestCase extends TestCase {
 		JABConnection connection = factory.getConnection("connection");
 		JABBuffer toSend = new JABBuffer();
 		toSend.setArrayValue("X_OCTET", "test_tpcall_x_octet".getBytes());
+
+		Transaction transaction = connection.beginTransaction(10000);
 		JABResponse call = connection.call(RunServer
-				.getServiceNametpcallXOctet(), toSend, null, "X_OCTET", null);
+				.getServiceNametpcallXOctet(), toSend, transaction, "X_OCTET",
+				null);
+		transaction.commit();
+
 		byte[] expected = new byte[60];
 		System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0, 14);
 		byte[] received = call.getByteArray("X_OCTET");
@@ -79,9 +90,11 @@ public class JABFactoryTestCase extends TestCase {
 		balances[1] = 2.2;
 		toSend.setArrayValue("balances", balances);
 
+		Transaction transaction = connection.beginTransaction(10000);
 		JABResponse call = connection.call(RunServer
-				.getServiceNametpcallXCType(), toSend, null, "X_C_TYPE",
+				.getServiceNametpcallXCType(), toSend, transaction, "X_C_TYPE",
 				"acct_info");
+		transaction.commit();
 
 		byte[] expected = new byte[60];
 		System.arraycopy("tpcall_x_c_type".getBytes(), 0, expected, 0, 15);

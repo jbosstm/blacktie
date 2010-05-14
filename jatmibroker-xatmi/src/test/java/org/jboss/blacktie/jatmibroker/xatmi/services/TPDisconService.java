@@ -13,7 +13,7 @@ public class TPDisconService implements Service {
 	public Response tpservice(TPSVCINFO svcinfo) {
 		log.info("testtpdiscon_service");
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			log.error("Was interrupted");
 		}

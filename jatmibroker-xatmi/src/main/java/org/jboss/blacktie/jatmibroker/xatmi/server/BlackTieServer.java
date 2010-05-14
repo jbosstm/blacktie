@@ -30,6 +30,10 @@ import org.jboss.blacktie.jatmibroker.core.server.ServiceData;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
+import com.arjuna.ats.internal.jts.ORBManager;
+import com.arjuna.orbportability.ORB;
+import com.arjuna.orbportability.RootOA;
+
 /**
  * Create a server instance reading the configuration for the server defined by
  * the name.
@@ -68,6 +72,19 @@ public class BlackTieServer {
 	 */
 	public BlackTieServer(String serverName) throws ConfigurationException,
 			ConnectionException {
+		ORB orb = com.arjuna.orbportability.ORB.getInstance("ClientSide");
+		RootOA oa = com.arjuna.orbportability.OA.getRootOA(orb);
+		orb.initORB(new String[] {}, null);
+
+		try {
+			oa.initOA();
+		} catch (Throwable t) {
+			throw new ConnectionException(Connection.TPESYSTEM,
+					"Could not connect to the orb", t);
+		}
+		ORBManager.setORB(orb);
+		ORBManager.setPOA(oa);
+
 		this.serverName = serverName;
 		AtmiBrokerEnvXML server = new AtmiBrokerEnvXML();
 		properties = server.getProperties();

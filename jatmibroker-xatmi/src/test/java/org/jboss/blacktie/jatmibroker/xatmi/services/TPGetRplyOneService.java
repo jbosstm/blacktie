@@ -21,7 +21,7 @@ public class TPGetRplyOneService implements Service {
 				null);
 		toReturn.setByteArray(response.getBytes());
 		try {
-			Thread.sleep(10 * 1000);
+			Thread.sleep(3 * 1000);
 		} catch (InterruptedException e) {
 			log.error("Could not sleep");
 		}

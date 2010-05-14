@@ -33,10 +33,12 @@ public class JABTestCase extends TestCase {
 
 	public void setUp() throws InterruptedException, ConfigurationException,
 			ConnectionException {
+		log.debug("JABTestCase::setUp");
 		runServer.serverinit();
 	}
 
 	public void tearDown() throws ConnectionException, TransactionException {
+		log.debug("JABTestCase::tearDown");
 		if (JABTransaction.current() != null) {
 			JABTransaction.current().rollback();
 			fail();
@@ -45,6 +47,7 @@ public class JABTestCase extends TestCase {
 	}
 
 	public void test_tpcall_x_octet() throws Exception {
+		log.debug("JABTestCase::test_tpcall_x_octet");
 		runServer.tpadvertisetpcallXOctet();
 		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
@@ -61,7 +64,8 @@ public class JABTestCase extends TestCase {
 		jabSession.closeSession();
 	}
 
-	public void xtest_tpcall_x_octet_with_tx() throws Exception {
+	public void test_tpcall_x_octet_with_tx() throws Exception {
+		log.debug("JABTestCase::test_tpcall_x_octet_with_tx");
 		runServer.tpadvertisetpcallXOctet();
 		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
@@ -82,7 +86,8 @@ public class JABTestCase extends TestCase {
 		jabSession.closeSession();
 	}
 
-	public void xtest_tpcall_x_octet_commit_tx_rollback_only() throws Exception {
+	public void test_tpcall_x_octet_commit_tx_rollback_only() throws Exception {
+		log.debug("JABTestCase::test_tpcall_x_octet_commit_tx_rollback_only");
 		runServer.tpadvertisetpcallXOctet();
 		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
@@ -92,7 +97,7 @@ public class JABTestCase extends TestCase {
 		transaction.rollback_only();
 		jabService.getRequest().setByteArray("X_OCTET",
 				"test_tpcall_x_octet".getBytes());
-		jabService.call(null);
+		jabService.call(transaction);
 		try {
 			transaction.commit();
 			fail("committing a tx marked rollback only succeeded");
@@ -111,8 +116,9 @@ public class JABTestCase extends TestCase {
 		jabSession.closeSession();
 	}
 
-	public void xtest_tpcall_x_octet_rollback_tx_rollback_only()
+	public void test_tpcall_x_octet_rollback_tx_rollback_only()
 			throws Exception {
+		log.debug("JABTestCase::test_tpcall_x_octet_rollback_tx_rollback_only");
 		runServer.tpadvertisetpcallXOctet();
 		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
@@ -122,7 +128,7 @@ public class JABTestCase extends TestCase {
 		transaction.rollback_only();
 		jabService.getRequest().setByteArray("X_OCTET",
 				"test_tpcall_x_octet".getBytes());
-		jabService.call(null);
+		jabService.call(transaction);
 		try {
 			transaction.rollback();
 		} catch (JABException e) {
@@ -137,7 +143,8 @@ public class JABTestCase extends TestCase {
 		jabSession.closeSession();
 	}
 
-	public void xtest_tpcall_x_octet_suspend_tx() throws Exception {
+	public void test_tpcall_x_octet_suspend_tx() throws Exception {
+		log.debug("JABTestCase::test_tpcall_x_octet_suspend_tx");
 		runServer.tpadvertisetpcallXOctet();
 		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
@@ -146,7 +153,7 @@ public class JABTestCase extends TestCase {
 				.getServiceNametpcallXOctet(), jabSession, "X_OCTET", null);
 		jabService.getRequest().setByteArray("X_OCTET",
 				"test_tpcall_x_octet".getBytes());
-		jabService.call(null);
+		jabService.call(transaction);
 		transaction.commit();
 		byte[] expected = new byte[60];
 		System.arraycopy("tpcall_x_octet".getBytes(), 0, expected, 0, 14);
@@ -157,6 +164,7 @@ public class JABTestCase extends TestCase {
 	}
 
 	public void test_tpcall_x_c_type() throws Exception {
+		log.debug("JABTestCase::test_tpcall_x_c_type");
 		runServer.tpadvertisetpcallXCType();
 		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
@@ -179,6 +187,41 @@ public class JABTestCase extends TestCase {
 		dos.setDoubleArray("balances", balances);
 
 		jabService.call(null);
+
+		JABMessage response = jabService.getResponse();
+		byte[] expected = new byte[60];
+		System.arraycopy("tpcall_x_c_type".getBytes(), 0, expected, 0, 15);
+		byte[] received = response.getByteArray("X_OCTET");
+		assertTrue(Arrays.equals(expected, received));
+		jabSession.closeSession();
+	}
+
+	public void test_tpcall_x_c_type_with_tx() throws Exception {
+		log.debug("JABTestCase::test_tpcall_x_c_type_with_tx");
+		runServer.tpadvertisetpcallXCType();
+		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
+		JABSession jabSession = new JABSession(jabSessionAttributes);
+		JABServiceInvoker jabService = new JABServiceInvoker(RunServer
+				.getServiceNametpcallXCType(), jabSession, "X_C_TYPE",
+				"acct_info");
+
+		// Assemble the message ByteArrayOutputStream baos = new
+		JABMessage dos = jabService.getRequest();
+		dos.setLong("acct_no", 12345678);
+		dos.setByteArray("name", "TOM".getBytes());
+		float[] foo = new float[2];
+		foo[0] = 1.1F;
+		foo[1] = 2.2F;
+		dos.setFloatArray("foo", foo);
+
+		double[] balances = new double[2];
+		balances[0] = 1.1;
+		balances[1] = 2.2;
+		dos.setDoubleArray("balances", balances);
+
+		JABTransaction transaction = new JABTransaction(jabSession, 5000);
+		jabService.call(transaction);
+		transaction.commit();
 
 		JABMessage response = jabService.getResponse();
 		byte[] expected = new byte[60];

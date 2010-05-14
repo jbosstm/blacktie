@@ -20,11 +20,6 @@ public class TPGetRplyTwoService implements Service {
 		X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
 				null);
 		toReturn.setByteArray(response.getBytes());
-		try {
-			Thread.sleep(5 * 1000);
-		} catch (InterruptedException e) {
-			log.error("Could not sleep");
-		}
 		return new Response(Connection.TPSUCCESS, 0, toReturn, response
 				.getBytes().length, 0);
 	}
