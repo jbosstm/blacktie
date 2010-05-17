@@ -135,7 +135,6 @@ public class XMLParserTest extends TestCase {
 		String arg3 = ":3528/NameService";
 
 		String server = "myserv";
-		String transport = "hybrid";
 		String advertised = "true";
 		String size = "1";
 		String function = "org.jboss.blacktie.jatmibroker.xatmi.services.TPCallXOctetService";
@@ -144,8 +143,6 @@ public class XMLParserTest extends TestCase {
 		String version = "2.0.0.M4-SNAPSHOT";
 
 		assertTrue(server.equals(prop.getProperty("blacktie.TestOne.server")));
-		assertTrue(transport.equals(prop
-				.getProperty("blacktie.XMLParserTest.transportLib")));
 		assertTrue(function.equals(prop
 				.getProperty("blacktie.JAVA_Converse.java_class_name")));
 		// assertTrue(library

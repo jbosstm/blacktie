@@ -17,20 +17,19 @@
  */
 package org.jboss.blacktie.jatmibroker.core.transport;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.blacktie.jatmibroker.core.transport.hybrid.TransportFactoryImpl;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public abstract class TransportFactory {
 
 	private static final Logger log = LogManager
 			.getLogger(TransportFactory.class);
-	private static Map<String, TransportFactory> transportFactories = new HashMap<String, TransportFactory>();
+	private static TransportFactory transportFactory;
 
 	private boolean closed;
 
@@ -38,34 +37,23 @@ public abstract class TransportFactory {
 			String serviceName, Properties properties)
 			throws ConfigurationException {
 		log.debug("Loading transport for: " + serviceName);
-		String transportLibrary = (String) properties.getProperty("blacktie."
-				+ serviceName + ".transportLib");
-		log.debug("Transport library was: " + transportLibrary);
-		if (transportLibrary == null) {
-			throw new ConfigurationException("TransportLibrary was not defined");
-		}
 		// Determine the transport class to load
-		String className = null;
-		if (transportLibrary.contains("hybrid")) {
-			className = org.jboss.blacktie.jatmibroker.core.transport.hybrid.TransportFactoryImpl.class
-					.getName();
-		}
+		String className = org.jboss.blacktie.jatmibroker.core.transport.hybrid.TransportFactoryImpl.class
+				.getName();
 		log.debug("Transport class was: " + className);
 
-		if (!transportFactories.containsKey(className)) {
+		if (transportFactory == null) {
 			try {
-				Class clazz = Class.forName(className);
-				TransportFactory newInstance = (TransportFactory) clazz
-						.newInstance();
-				newInstance.initialize(properties);
-				transportFactories.put(className, newInstance);
+				transportFactory = new TransportFactoryImpl();
+				transportFactory.initialize(properties);
 				log.debug("TransportFactory was prepared");
 			} catch (Throwable t) {
+				transportFactory = null;
 				throw new ConfigurationException(
 						"Could not load the connection factory", t);
 			}
 		}
-		return transportFactories.get(className);
+		return transportFactory;
 	}
 
 	protected abstract void initialize(Properties properties)
@@ -83,7 +71,7 @@ public abstract class TransportFactory {
 		if (!closed) {
 			log.debug("Going into shutdown");
 			closeFactory();
-			transportFactories.remove(getClass().getName());
+			transportFactory = null;
 			closed = true;
 		}
 		log.debug("Closed factory: " + getClass().getName());

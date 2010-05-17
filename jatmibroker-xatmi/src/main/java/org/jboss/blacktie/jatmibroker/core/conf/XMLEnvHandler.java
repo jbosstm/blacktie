@@ -110,10 +110,6 @@ public class XMLEnvHandler extends DefaultHandler {
 			// This will be the last server added
 			Server server = serverLaunchers.get(serverLaunchers.size() - 1);
 			server.addMachine(machine);
-			String serverAdminServiceName = "." + server.getName()
-					+ machine.getServerId();
-			prop.put("blacktie." + serverAdminServiceName + ".transportLib",
-					"hybrid");
 		} else if (BUFFER.equals(localName)) {
 			currentBufferName = atts.getValue(0);
 			BufferStructure buffer = buffers.get(currentBufferName);
@@ -392,7 +388,6 @@ public class XMLEnvHandler extends DefaultHandler {
 				if (prop.get(func_key) == null) {
 					prop.put(func_key, serviceName);
 				}
-				prop.put("blacktie." + serviceName + ".transportLib", "hybrid");
 				log.trace("Added the service: " + serviceName);
 			}
 		} else if (ROLE.equals(localName)) {
