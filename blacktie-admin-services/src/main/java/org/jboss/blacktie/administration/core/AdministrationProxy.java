@@ -682,7 +682,7 @@ public class AdministrationProxy {
 			}
 		} catch (ConnectionException e) {
 			log.error("call server " + serverName + " id " + id
-					+ " failed with " + e.getTperrno());
+					+ " failed with " + e.getTperrno(), e);
 		}
 		return version;
 	}

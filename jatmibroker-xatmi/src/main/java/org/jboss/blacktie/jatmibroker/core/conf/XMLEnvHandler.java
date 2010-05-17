@@ -110,6 +110,10 @@ public class XMLEnvHandler extends DefaultHandler {
 			// This will be the last server added
 			Server server = serverLaunchers.get(serverLaunchers.size() - 1);
 			server.addMachine(machine);
+			String serverAdminServiceName = "." + server.getName()
+					+ machine.getServerId();
+			prop.put("blacktie." + serverAdminServiceName + ".transportLib",
+					"hybrid");
 		} else if (BUFFER.equals(localName)) {
 			currentBufferName = atts.getValue(0);
 			BufferStructure buffer = buffers.get(currentBufferName);
@@ -339,14 +343,13 @@ public class XMLEnvHandler extends DefaultHandler {
 					serviceName = atts.getValue(i);
 					String serviceServer = (String) prop.get("blacktie."
 							+ serviceName + ".server");
-					if (serviceServer != null
-							&& !serviceServer.equals(serverName)) {
+					if (serviceServer != null) {
 						log.warn("service " + serviceName
 								+ " has already define in "
 								+ prop.get(serviceServer));
-						serviceName = null;
 						throw new SAXException(
-								"Can not define the same service");
+								"Can not define the same service: "
+										+ serviceName);
 					}
 					prop.put("blacktie." + serviceName + ".server", serverName);
 				} else if (attsLocalName.equals("function_name")) {
@@ -397,7 +400,7 @@ public class XMLEnvHandler extends DefaultHandler {
 			if (serviceName != null) {
 				log.debug("Processing role for service" + serviceName);
 				key = "blacktie." + serviceName + ".security";
-			} else if (serverName != null) {
+			} else {
 				log.debug("Processing role for server: " + serverName);
 				key = "blacktie." + serverName + ".security";
 			}
