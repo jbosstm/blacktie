@@ -6,8 +6,8 @@ if [ "$1" = "tx" ]; then
 echo "Running txfooapp"
 # RUN THE FOOAPP SERVER
 cd $BLACKTIE_HOME/examples/xatmi/txfooapp
-export ORA_LIBS=$ORACLE_HOME/lib
-export ORA_INCS=/usr/include/oracle/11.2/client64
+export ORA_LIBS=$ORACLE_LIB_DIR
+export ORA_INCS=$ORACLE_INC_DIR
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORA_LIBS
 generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="$ORA_INCS" -Dx.lib.dir="$ORA_LIBS" -Dx.libs="occi clntsh" -Dx.define="ORACLE"
 if [ "$?" != "0" ]; then
