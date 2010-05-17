@@ -52,7 +52,7 @@ apr_status_t stomp_connect(stomp_connection **connection_ref, const char *hostna
 #define CHECK_SUCCESS if( rc!=APR_SUCCESS ) { return rc; }
    
 	// Look up the remote address
-	rc = apr_sockaddr_info_get(&connection->remote_sa, hostname, APR_UNSPEC, port, 0, pool);
+	rc = apr_sockaddr_info_get(&connection->remote_sa, hostname, APR_INET, port, 0, pool);
 	CHECK_SUCCESS;
 	
 	// Create and Connect the socket.
