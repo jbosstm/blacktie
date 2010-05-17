@@ -48,18 +48,6 @@ public class ConnectionTest extends TestCase {
 		management.close();
 	}
 
-	public void testNoTransactionFactory() throws ConfigurationException {
-		AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
-		Properties properties = xml.getProperties();
-
-		try {
-			TransportFactory.getTransportFactory("UNKNOWN", properties);
-			fail("Should have received exception");
-		} catch (ConfigurationException e) {
-			// THIS IS OK
-		}
-	}
-
 	public void testDoubleCloseFactory() throws ConfigurationException {
 		AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
 		Properties properties = xml.getProperties();
