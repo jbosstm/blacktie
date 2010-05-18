@@ -67,7 +67,7 @@
 		NAMING_URL="jnp://${JBOSSAS_IP_ADDR}:1099" />
 
 	<BUFFERS>
-		<BUFFER name="a123456789012345">
+		<BUFFER name="abcdefghijklmnop">
 			<ATTRIBUTE id="key" type="char[]" arrayLength="10" />
 		</BUFFER>
 		<BUFFER name="test">

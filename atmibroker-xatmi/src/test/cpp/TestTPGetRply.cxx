@@ -57,10 +57,10 @@ void TestTPGetRply::tearDown() {
 	::tpfree( sendbuf);
 	::tpfree( rcvbuf);
 	if (testingTPGETANY) {
-		int toCheck = tpunadvertise((char*) "DEBIT");
+		int toCheck = tpunadvertise((char*) "TestTPGetAnyA");
 		BT_ASSERT(tperrno == 0);
 		BT_ASSERT(toCheck != -1);
-		toCheck = tpunadvertise((char*) "CREDIT");
+		toCheck = tpunadvertise((char*) "TestTPGetAnyB");
 		BT_ASSERT(tperrno == 0);
 		BT_ASSERT(toCheck != -1);
 	} else {
@@ -223,14 +223,14 @@ void TestTPGetRply::test_tpgetrply_without_TPNOBLOCK() {
 void TestTPGetRply::test_tpgetrply_with_TPGETANY() {
 	userlogc((char*) "test_tpgetrply_with_TPGETANY");
 	testingTPGETANY = true;
-	tpadvertise((char*) "DEBIT", test_tpgetrply_TPGETANY_one);
-	tpadvertise((char*) "CREDIT", test_tpgetrply_TPGETANY_two);
+	tpadvertise((char*) "TestTPGetAnyA", test_tpgetrply_TPGETANY_one);
+	tpadvertise((char*) "TestTPGetAnyB", test_tpgetrply_TPGETANY_two);
 
-	int cd1 = ::tpacall((char*) "DEBIT", (char *) sendbuf, sendlen, 0);
+	int cd1 = ::tpacall((char*) "TestTPGetAnyA", (char *) sendbuf, sendlen, 0);
 	BT_ASSERT(cd1 != -1);
 	BT_ASSERT(tperrno == 0);
 
-	int cd2 = ::tpacall((char*) "CREDIT", (char *) sendbuf, sendlen, 0);
+	int cd2 = ::tpacall((char*) "TestTPGetAnyB", (char *) sendbuf, sendlen, 0);
 	BT_ASSERT(cd2 != -1);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(cd1 != cd2);
@@ -254,14 +254,14 @@ void TestTPGetRply::test_tpgetrply_with_TPGETANY() {
 void TestTPGetRply::test_tpgetrply_without_TPGETANY() {
 	userlogc((char*) "test_tpgetrply_without_TPGETANY");
 	testingTPGETANY = true;
-	tpadvertise((char*) "DEBIT", test_tpgetrply_TPGETANY_one);
-	tpadvertise((char*) "CREDIT", test_tpgetrply_TPGETANY_two);
+	tpadvertise((char*) "TestTPGetAnyA", test_tpgetrply_TPGETANY_one);
+	tpadvertise((char*) "TestTPGetAnyB", test_tpgetrply_TPGETANY_two);
 
-	int cd1 = ::tpacall((char*) "DEBIT", (char *) sendbuf, sendlen, 0);
+	int cd1 = ::tpacall((char*) "TestTPGetAnyA", (char *) sendbuf, sendlen, 0);
 	BT_ASSERT(cd1 != -1);
 	BT_ASSERT(tperrno == 0);
 
-	int cd2 = ::tpacall((char*) "CREDIT", (char *) sendbuf, sendlen, 0);
+	int cd2 = ::tpacall((char*) "TestTPGetAnyB", (char *) sendbuf, sendlen, 0);
 	BT_ASSERT(cd2 != -1);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(cd1 != cd2);

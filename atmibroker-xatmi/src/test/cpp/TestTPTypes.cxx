@@ -211,13 +211,13 @@ void TestTPTypes::test_tptypes_max_type() {
 
 void TestTPTypes::test_tptypes_max_subtype() {
 	userlogc((char*) "test_tptypes_max_subtype");
-	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "a123456789012345", 0);
+	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "abcdefghijklmnop", 0);
 	BT_ASSERT(m_allocated != NULL);
 
 	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, NULL, subtype);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(strncmp(subtype, "a123456789012345", 16) == 0);
+	BT_ASSERT(strncmp(subtype, "abcdefghijklmnop", 16) == 0);
 	BT_ASSERT(toTest == 10);
 	free(subtype);
 }
@@ -238,14 +238,14 @@ void TestTPTypes::test_tptypes_small_type() { // cannot be tested as we can't fi
 
 void TestTPTypes::test_tptypes_small_subtype() { // cannot be tested as we can't find how big the memory is
 	userlogc((char*) "test_tptypes_small_subtype");
-	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "a123456789012345", 0);
+	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "abcdefghijklmnop", 0);
 	BT_ASSERT(m_allocated != NULL);
 
 	char* subtype = (char*) malloc(15);
 	int toTest = ::tptypes(m_allocated, NULL, subtype);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(strncmp(subtype, "a123456789012345", 16) == 0);
-	BT_ASSERT(strncmp(subtype, "a12345678901234", 15) == 0);
+	BT_ASSERT(strncmp(subtype, "abcdefghijklmnop", 16) != 0);
+	BT_ASSERT(strncmp(subtype, "abcdefghijklmno", 15) == 0);
 	BT_ASSERT(toTest == 10);
 	free(subtype);
 }
@@ -269,13 +269,13 @@ void TestTPTypes::test_tptypes_large_type() {
 
 void TestTPTypes::test_tptypes_large_subtype() {
 	userlogc((char*) "test_tptypes_large_subtype");
-	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "a123456789012345", 0);
+	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "abcdefghijklmnop", 0);
 	BT_ASSERT(m_allocated != NULL);
 
 	char* subtype = (char*) malloc(17);
 	int toTest = ::tptypes(m_allocated, NULL, subtype);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toTest == 10);
-	BT_ASSERT(strncmp(subtype, "a123456789012345", 16) == 0);
+	BT_ASSERT(strncmp(subtype, "abcdefghijklmnop", 16) == 0);
 	free(subtype);
 }

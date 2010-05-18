@@ -43,17 +43,13 @@ void TestTPReturn::tearDown() {
 	// Do local work
 	::tpfree( sendbuf);
 	::tpfree( rcvbuf);
-	int toCheck = tpunadvertise((char*) "TestTPReturn");
-	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toCheck != -1);
-
 	// Clean up server
 	BaseServerTest::tearDown();
 }
 
 // 8.1 8.3
 void TestTPReturn::test_tpreturn_nonservice() {
-	int toCheck = tpadvertise((char*) "TestTPReturn", testtpreturn_service);
+	int toCheck = tpadvertise((char*) "TestTPReturnA", testtpreturn_service);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toCheck != -1);
 
@@ -70,7 +66,7 @@ void TestTPReturn::test_tpreturn_nonbuffer() {
 	userlogc((char*) "test_tpreturn_nonbuffer");
 
 	// Do local work
-	int toCheck = tpadvertise((char*) "TestTPReturn", testtpreturn_service);
+	int toCheck = tpadvertise((char*) "TestTPReturnA", testtpreturn_service);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toCheck != -1);
 
@@ -83,7 +79,7 @@ void TestTPReturn::test_tpreturn_nonbuffer() {
 	(void) strcpy(sendbuf, "tprnb");
 	BT_ASSERT(tperrno == 0);
 
-	int id = ::tpcall((char*) "TestTPReturn", (char *) sendbuf, sendlen,
+	int id = ::tpcall((char*) "TestTPReturnA", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, 0);
 	long tperrnoS = tperrno;
 	BT_ASSERT(id == -1);
@@ -94,7 +90,7 @@ void TestTPReturn::test_tpreturn_tpurcode() {
 	userlogc((char*) "test_tpreturn_tpurcode");
 
 	// Do local work
-	int toCheck = tpadvertise((char*) "TestTPReturn",
+	int toCheck = tpadvertise((char*) "TestTPReturnA",
 			testtpreturn_service_tpurcode);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toCheck != -1);
@@ -109,14 +105,14 @@ void TestTPReturn::test_tpreturn_tpurcode() {
 	BT_ASSERT(tperrno == 0);
 
 	strcpy(sendbuf, "24");
-	int success = ::tpcall((char*) "TestTPReturn", (char *) sendbuf, sendlen,
+	int success = ::tpcall((char*) "TestTPReturnA", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, (long) 0);
 	BT_ASSERT(success != -1);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(tpurcode == 24);
 
 	strcpy(sendbuf, "77");
-	success = ::tpcall((char*) "TestTPReturn", (char *) sendbuf, sendlen,
+	success = ::tpcall((char*) "TestTPReturnA", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, (long) 0);
 	BT_ASSERT(success != -1);
 	BT_ASSERT(tperrno == 0);
@@ -127,12 +123,12 @@ void TestTPReturn::test_tpreturn_opensession() {
 	userlogc((char*) "test_tpreturn_opensession");
 
 	// Do local work
-	int toCheck = tpadvertise((char*) "TestTPReturn",
+	int toCheck = tpadvertise((char*) "TestTPReturnA",
 			testtpreturn_service_opensession1);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toCheck != -1);
 
-	toCheck = tpadvertise((char*) "CREDIT", testtpreturn_service_opensession2);
+	toCheck = tpadvertise((char*) "TestTPReturnB", testtpreturn_service_opensession2);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toCheck != -1);
 
@@ -146,7 +142,7 @@ void TestTPReturn::test_tpreturn_opensession() {
 	BT_ASSERT(tperrno == 0);
 
 	strcpy(sendbuf, "X");
-	int success = ::tpcall((char*) "TestTPReturn", (char *) sendbuf, sendlen,
+	int success = ::tpcall((char*) "TestTPReturnA", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, (long) 0);
 	BT_ASSERT(success == -1);
 	BT_ASSERT(tperrno == TPESVCERR);
@@ -173,7 +169,7 @@ void testtpreturn_service_tpurcode(TPSVCINFO *svcinfo) {
 
 void testtpreturn_service_opensession1(TPSVCINFO *svcinfo) {
 	userlogc((char*) "testtpreturn_service_opensession1");
-	int cd = ::tpacall((char*) "CREDIT", (char *) svcinfo->data, svcinfo->len,
+	int cd = ::tpacall((char*) "TestTPReturnB", (char *) svcinfo->data, svcinfo->len,
 			0);
 	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
 }
