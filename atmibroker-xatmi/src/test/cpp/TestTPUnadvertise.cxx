@@ -33,7 +33,7 @@ void TestTPUnadvertise::setUp() {
 
 	// Setup server
 	BaseServerTest::setUp();
-	int toCheck = tpadvertise((char*) "TestTPUnadvertise",
+	int toCheck = tpadvertise((char*) "TestTPUnadverti",
 			testtpunadvertise_service);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toCheck != -1);
@@ -53,7 +53,7 @@ void TestTPUnadvertise::tearDown() {
 	::tpfree( sendbuf);
 	::tpfree( rcvbuf);
 
-	tpunadvertise((char*) "TestTPUnadvertise");
+	tpunadvertise((char*) "TestTPUnadverti");
 
 	// Clean up server
 	BaseServerTest::tearDown();
@@ -61,7 +61,7 @@ void TestTPUnadvertise::tearDown() {
 
 void TestTPUnadvertise::test_tpunadvertise() {
 	userlogc((char*) "test_tpunadvertise");
-	int id = ::tpunadvertise((char*) "TestTPUnadvertise");
+	int id = ::tpunadvertise((char*) "TestTPUnadverti");
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(tperrno != TPEINVAL);
 	BT_ASSERT(tperrno != TPENOENT);
@@ -70,7 +70,7 @@ void TestTPUnadvertise::test_tpunadvertise() {
 	BT_ASSERT(tperrno != TPEOS);
 	BT_ASSERT(id != -1);
 
-	id = ::tpcall((char*) "TestTPUnadvertise", (char *) sendbuf, sendlen,
+	id = ::tpcall((char*) "TestTPUnadverti", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, (long) 0);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
@@ -82,7 +82,7 @@ void TestTPUnadvertise::test_tpunadvertise() {
 
 void TestTPUnadvertise::test_tpunadvertise_twice() {
 	userlogc((char*) "test_tpunadvertise_twice");
-	int id = ::tpunadvertise((char*) "TestTPUnadvertise");
+	int id = ::tpunadvertise((char*) "TestTPUnadverti");
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(tperrno != TPEINVAL);
 	BT_ASSERT(tperrno != TPENOENT);
@@ -91,7 +91,7 @@ void TestTPUnadvertise::test_tpunadvertise_twice() {
 	BT_ASSERT(tperrno != TPEOS);
 	BT_ASSERT(id != -1);
 
-	id = ::tpunadvertise((char*) "TestTPUnadvertise");
+	id = ::tpunadvertise((char*) "TestTPUnadverti");
 	BT_ASSERT(tperrno == TPENOENT);
 	BT_ASSERT(id == -1);
 }

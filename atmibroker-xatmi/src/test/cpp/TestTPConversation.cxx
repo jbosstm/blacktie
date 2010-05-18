@@ -57,7 +57,7 @@ void TestTPConversation::tearDown() {
 	// Do local work
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
-	int toCheck = tpunadvertise((char*) "TestTPConversation");
+	int toCheck = tpunadvertise((char*) "TestTPConversat");
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toCheck != -1);
 
@@ -67,7 +67,7 @@ void TestTPConversation::tearDown() {
 
 void TestTPConversation::test_conversation() {
 
-	int toCheck = tpadvertise((char*) "TestTPConversation",
+	int toCheck = tpadvertise((char*) "TestTPConversat",
 			testTPConversation_service);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toCheck != -1);
@@ -75,7 +75,7 @@ void TestTPConversation::test_conversation() {
 	userlogc((char*) "test_conversation");
 	strcpy(sendbuf, "conversate");
 	cd
-			= ::tpconnect((char*) "TestTPConversation", sendbuf, sendlen,
+			= ::tpconnect((char*) "TestTPConversat", sendbuf, sendlen,
 					TPRECVONLY);
 	long revent = 0;
 	char* tperrnoS = (char*) malloc(110);
@@ -122,13 +122,13 @@ void TestTPConversation::test_conversation() {
 
 void TestTPConversation::test_short_conversation() {
 
-	int toCheck = tpadvertise((char*) "TestTPConversation",
+	int toCheck = tpadvertise((char*) "TestTPConversat",
 			testTPConversation_short_service);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toCheck != -1);
 
 	userlogc((char*) "test_short_conversation");
-	cd = ::tpconnect((char*) "TestTPConversation", NULL, 0, TPRECVONLY);
+	cd = ::tpconnect((char*) "TestTPConversat", NULL, 0, TPRECVONLY);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
