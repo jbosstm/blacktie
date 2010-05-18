@@ -18,57 +18,6 @@
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
-	
-	<MACHINES>
-		<MACHINE id="secure1" hostname="albany"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="1" />
-		<MACHINE id="secure2" hostname="albany"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="2" />
-		<MACHINE id="secure3" hostname="localhost.localdomain"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="1" />
-		<MACHINE id="secure4" hostname="localhost.localdomain"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="2" />
-		<MACHINE id="secure5" hostname="beacon"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="1" />
-		<MACHINE id="secure6" hostname="beacon"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="2" />
-		<MACHINE id="secure7" hostname="catskill"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="1" />
-		<MACHINE id="secure8" hostname="catskill"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="2" />
-		<MACHINE id="secure9" hostname="winxp08"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="1" />
-		<MACHINE id="secure10" hostname="winxp08"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="2" />
-		<MACHINE id="secure11" hostname="dev1"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="1" />
-		<MACHINE id="secure12" hostname="dev1"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="2" />
-	</MACHINES>
 	<SERVERS>
 		<SERVER name="secure">
 			<security>
@@ -102,18 +51,6 @@
 			</SERVICE_NAMES>
 		</SERVER>
 		<SERVER name="default">
-			<MACHINE-REF id="secure1" />
-			<MACHINE-REF id="secure2" />
-			<MACHINE-REF id="secure3" />
-			<MACHINE-REF id="secure4" />
-			<MACHINE-REF id="secure5" />
-			<MACHINE-REF id="secure6" />
-			<MACHINE-REF id="secure7" />
-			<MACHINE-REF id="secure8" />
-			<MACHINE-REF id="secure9" />
-			<MACHINE-REF id="secure10" />
-			<MACHINE-REF id="secure11" />
-			<MACHINE-REF id="secure12" />
 			<SERVICE_NAMES>
 				<SERVICE name="PBF" />
 				<SERVICE name="BAR" />

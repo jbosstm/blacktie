@@ -18,30 +18,6 @@
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
-		<MACHINE id="default1" hostname="albany"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="1" />
-		<MACHINE id="default2" hostname="localhost.localdomain"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="1" />
-		<MACHINE id="default3" hostname="beacon"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="1" />
-		<MACHINE id="default4" hostname="catskill"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="1" />
-		<MACHINE id="default5" hostname="winxp08"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="1" />
-		<MACHINE id="default6" hostname="dev1"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="1" />
 	<SERVERS>
 		<SERVER name="jboss">
 			<SERVICE_NAMES>
@@ -55,12 +31,6 @@
 			</SERVICE_NAMES>
 		</SERVER>
 		<SERVER name='default'>
-			<MACHINE-REF id="default1" />
-			<MACHINE-REF id="default2" />
-			<MACHINE-REF id="default3" />
-			<MACHINE-REF id="default4" />
-			<MACHINE-REF id="default5" />
-			<MACHINE-REF id="default6" />		
 			<SERVICE_NAMES>
 				<SERVICE name='PBF' />
 				<SERVICE name='BAR' advertised='false' size='2' />
