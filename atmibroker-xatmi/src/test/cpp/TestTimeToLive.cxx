@@ -23,7 +23,9 @@
 #include "TestTimeToLive.h"
 #include "ace/OS_NS_unistd.h"
 
-
+#if defined(__cplusplus)
+extern "C" {
+#endif
 void test_TTL_service(TPSVCINFO *svcinfo) {
 	long timeout = 45;
 
@@ -35,6 +37,9 @@ void test_TTL_service(TPSVCINFO *svcinfo) {
 	strcpy(toReturn, "test_tpcall_TTL_service");
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 }
+#if defined(__cplusplus)
+}
+#endif
 
 void TestTimeToLive::setUp() {
 	userlogc((char*) "TestTimeToLive::setUp");

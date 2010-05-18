@@ -29,8 +29,14 @@
 
 int interationCount = 100;
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 extern void testTPConversation_service(TPSVCINFO *svcinfo);
 extern void testTPConversation_short_service(TPSVCINFO *svcinfo);
+#if defined(__cplusplus)
+}
+#endif
 
 void TestTPConversation::setUp() {
 	userlogc((char*) "TestTPConversation::setUp");

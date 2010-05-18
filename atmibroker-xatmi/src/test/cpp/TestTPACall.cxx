@@ -22,7 +22,13 @@
 #include "xatmi.h"
 #include "malloc.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 extern void testtpacall_service(TPSVCINFO *svcinfo);
+#if defined(__cplusplus)
+}
+#endif
 
 void TestTPACall::setUp() {
 	userlogc((char*) "TestTPACall::setUp");

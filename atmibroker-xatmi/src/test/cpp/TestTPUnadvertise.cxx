@@ -24,7 +24,13 @@
 
 #include "TestTPUnadvertise.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 extern void testtpunadvertise_service(TPSVCINFO *svcinfo);
+#if defined(__cplusplus)
+}
+#endif
 
 void TestTPUnadvertise::setUp() {
 	userlogc((char*) "TestTPUnadvertise::setUp");

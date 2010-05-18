@@ -151,11 +151,11 @@ public class RunServer {
 	}
 
 	public static String getServiceNameTestTPReturn() {
-		return "TestTPReturn";
+		return "TestTPReturnA";
 	}
 
 	public static String getServiceNameTestTPReturn2() {
-		return "TestTPReturn";
+		return "TestTPReturnB";
 	}
 
 	public static String getServiceNameTestTPSend() {
@@ -211,11 +211,11 @@ public class RunServer {
 	public native void tpadvertiseTestTPGetrplyTwo();
 
 	public static String getServiceNameTestTPGetrplyOne() {
-		return "DEBIT";
+		return "TestTPGetAnyA";
 	}
 
 	public static String getServiceNameTestTPGetrplyTwo() {
-		return "CREDIT";
+		return "TestTPGetAnyB";
 	}
 
 	public native void tpadvertiseTestTPReturn3();

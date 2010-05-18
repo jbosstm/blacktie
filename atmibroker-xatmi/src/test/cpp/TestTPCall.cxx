@@ -26,13 +26,18 @@
 #include "Sleeper.h"
 #include "malloc.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 extern void test_tpcall_x_octet_service(TPSVCINFO *svcinfo);
 extern void test_tpcall_x_octet_service_zero(TPSVCINFO *svcinfo);
 extern void test_tpcall_x_common_service(TPSVCINFO *svcinfo);
 extern void test_tpcall_x_c_type_service(TPSVCINFO *svcinfo);
-
 extern void test_tpcall_TPNOBLOCK(TPSVCINFO *svcinfo);
 extern void test_tpcall_TPNOTIME(TPSVCINFO *svcinfo);
+#if defined(__cplusplus)
+}
+#endif
 
 void TestTPCall::setUp() {
 	userlogc((char*) "TestTPCall::setUp");

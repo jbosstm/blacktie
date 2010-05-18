@@ -24,7 +24,13 @@
 
 #include "TestSpecExampleTwo.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 extern void inquiry_svc(TPSVCINFO *svcinfo);
+#if defined(__cplusplus)
+}
+#endif
 
 void TestSpecExampleTwo::setUp() {
 	userlogc((char*) "TestSpecExampleTwo::setUp");

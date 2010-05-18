@@ -28,12 +28,18 @@
 
 #include "TestRollbackOnly.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 extern void test_tpcall_TPETIME_service(TPSVCINFO *svcinfo);
 extern void test_tpcall_TPEOTYPE_service(TPSVCINFO *svcinfo);
 extern void test_tpcall_TPESVCFAIL_service(TPSVCINFO *svcinfo);
 extern void test_tprecv_TPEV_DISCONIMM_service(TPSVCINFO *svcinfo);
 extern void test_tprecv_TPEV_SVCFAIL_service(TPSVCINFO *svcinfo);
 extern void test_no_tpreturn_service(TPSVCINFO *svcinfo);
+#if defined(__cplusplus)
+}
+#endif
 
 void TestRollbackOnly::setUp() {
 	BaseServerTest::setUp();

@@ -23,7 +23,13 @@
 
 #include "TestTPCancel.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 extern void testtpcancel_service(TPSVCINFO *svcinfo);
+#if defined(__cplusplus)
+}
+#endif
 
 void TestTPCancel::setUp() {
 	userlogc((char*) "TestTPCancel::setUp");

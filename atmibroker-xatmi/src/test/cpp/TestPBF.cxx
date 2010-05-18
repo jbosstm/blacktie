@@ -23,6 +23,9 @@
 
 #include "TestPBF.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 extern void pbf_service(TPSVCINFO *svcinfo);
 
 void TestPBF::setUp() {
@@ -35,6 +38,9 @@ void TestPBF::setUp() {
 	rcvbuf = NULL;
 	BT_ASSERT(tperrno == 0);
 }
+#if defined(__cplusplus)
+}
+#endif
 
 void TestPBF::tearDown() {
 	userlogc((char*) "TestPBF::tearDown");

@@ -31,6 +31,9 @@
 #include "TestTxTPCall.h"
 #include "Sleeper.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 /* service routines */
 static void tx_fill_buf_rtn(TPSVCINFO *svcinfo) {
 	int len = 60;
@@ -59,6 +62,9 @@ void test_tx_tpcall_x_octet_service_with_tx(TPSVCINFO *svcinfo) {
 	userlogc((char*) "TxLog: service running: test_tx_tpcall_x_octet_service_with_tx");
 	tx_fill_buf_rtn(svcinfo);
 }
+#if defined(__cplusplus)
+}
+#endif
 
 /* test setup */
 void TestTxTPCall::setUp() {

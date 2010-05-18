@@ -23,7 +23,13 @@
 
 #include "TestTPService.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 extern void testtpservice_service(TPSVCINFO *svcinfo);
+#if defined(__cplusplus)
+}
+#endif
 
 void TestTPService::setUp() {
 	userlogc((char*) "TestTPService::setUp");

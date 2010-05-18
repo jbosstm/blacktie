@@ -24,7 +24,13 @@
 
 #include "TestTPDiscon.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 extern void testtpdiscon_service(TPSVCINFO *svcinfo);
+#if defined(__cplusplus)
+}
+#endif
 
 void TestTPDiscon::setUp() {
 	userlogc((char*) "TestTPDiscon::setUp");

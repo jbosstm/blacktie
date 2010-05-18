@@ -23,6 +23,9 @@
 #include "tx.h"
 #include "Sleeper.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 extern void test_tpcall_TPETIME_service(TPSVCINFO *svcinfo) {
 	::sleeper(8);
 
@@ -72,3 +75,7 @@ extern void test_tprecv_TPEV_SVCFAIL_service(TPSVCINFO *svcinfo) {
 extern void test_no_tpreturn_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "test_no_tpreturn_service");
 }
+#if defined(__cplusplus)
+}
+#endif
+

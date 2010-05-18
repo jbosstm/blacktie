@@ -23,8 +23,14 @@
 
 #include "TestTPSend.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 extern void testtpsend_service(TPSVCINFO *svcinfo);
 extern void testtpsend_tpsendonly_service(TPSVCINFO *svcinfo);
+#if defined(__cplusplus)
+}
+#endif
 
 void TestTPSend::setUp() {
 	userlogc((char*) "TestTPSend::setUp");

@@ -24,10 +24,16 @@
 
 #include "TestTPReturn.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 extern void testtpreturn_service(TPSVCINFO *svcinfo);
 extern void testtpreturn_service_tpurcode(TPSVCINFO *svcinfo);
 extern void testtpreturn_service_opensession1(TPSVCINFO *svcinfo);
 extern void testtpreturn_service_opensession2(TPSVCINFO *svcinfo);
+#if defined(__cplusplus)
+}
+#endif
 
 void TestTPReturn::setUp() {
 	userlogc((char*) "TestTPReturn::setUp");

@@ -26,10 +26,16 @@
 
 #include "malloc.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 extern void testtpgetrply_service(TPSVCINFO *svcinfo);
 extern void test_tpgetrply_TPNOBLOCK(TPSVCINFO *svcinfo);
 extern void test_tpgetrply_TPGETANY_one(TPSVCINFO *svcinfo);
 extern void test_tpgetrply_TPGETANY_two(TPSVCINFO *svcinfo);
+#if defined(__cplusplus)
+}
+#endif
 
 void TestTPGetRply::setUp() {
 	userlogc((char*) "TestTPGetRply::setUp");

@@ -23,7 +23,13 @@
 
 #include "TestTPFreeService.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 extern void testtpfreeservice_service(TPSVCINFO *svcinfo);
+#if defined(__cplusplus)
+}
+#endif
 
 void TestTPFreeService::setUp() {
 	userlogc((char*) "TestTPFreeService::setUp");

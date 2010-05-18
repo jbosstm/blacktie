@@ -24,7 +24,13 @@
 
 #include "TestSpecExampleOne.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 extern void debit_credit_svc(TPSVCINFO *svcinfo);
+#if defined(__cplusplus)
+}
+#endif
 
 void TestSpecExampleOne::setUp() {
 	userlogc((char*) "TestSpecExampleOne::setUp");

@@ -23,7 +23,13 @@
 #include "AtmiBrokerServer.h"
 #include "AtmiBrokerClientControl.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 extern void test_service(TPSVCINFO *svcinfo);
+#if defined(__cplusplus)
+}
+#endif
 
 void TestServerinit::test_serverinit() {
 	userlogc((char*) "test_serverinit");

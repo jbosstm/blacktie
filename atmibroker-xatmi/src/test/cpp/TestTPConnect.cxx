@@ -25,7 +25,13 @@
 
 #include "malloc.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 extern void testtpconnect_service(TPSVCINFO *svcinfo);
+#if defined(__cplusplus)
+}
+#endif
 
 void TestTPConnect::setUp() {
 	userlogc((char*) "TestTPConnect::setUp");
