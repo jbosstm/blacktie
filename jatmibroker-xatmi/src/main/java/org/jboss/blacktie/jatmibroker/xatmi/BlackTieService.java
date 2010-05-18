@@ -17,6 +17,10 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
+import javax.naming.NamingException;
+import javax.transaction.InvalidTransactionException;
+import javax.transaction.SystemException;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
@@ -64,16 +68,19 @@ public abstract class BlackTieService implements Service {
 	 * @throws ConnectionException
 	 *             In case communication fails
 	 * @throws ConfigurationException
+	 * @throws NamingException
+	 * @throws JABException
+	 * @throws SystemException
+	 * @throws IllegalStateException
+	 * @throws InvalidTransactionException
 	 */
 	protected void processMessage(Message message) throws ConnectionException,
-			ConfigurationException {
+			ConfigurationException, NamingException,
+			InvalidTransactionException, IllegalStateException,
+			SystemException, JABException {
 		Connection connection = ConnectionFactory.getConnectionFactory()
 				.getConnection();
 		try {
-			if (JtsTransactionImple.hasTransaction()) {
-				throw new ConnectionException(Connection.TPEPROTO,
-						"Blacktie MDBs must not be called with a transactional context");
-			}
 			log.trace("Service invoked");
 			boolean hasTPNOREPLY = (message.flags & Connection.TPNOREPLY) == Connection.TPNOREPLY;
 
@@ -126,8 +133,7 @@ public abstract class BlackTieService implements Service {
 				if (hasTx) // make sure any foreign tx is resumed before calling
 					// the
 					// service routine
-					JtsTransactionImple.resume(serviceSession.getTransport()
-							.getOrb(), message.control);
+					JtsTransactionImple.resume(message.control);
 
 				log.debug("Invoking the XATMI service");
 				Response response = null;

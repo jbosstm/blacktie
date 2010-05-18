@@ -25,6 +25,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.ResponseMonitor;
 import org.jboss.blacktie.jatmibroker.core.transport.EventListener;
+import org.jboss.blacktie.jatmibroker.core.transport.JtsTransactionImple;
 import org.jboss.blacktie.jatmibroker.core.transport.Message;
 import org.jboss.blacktie.jatmibroker.core.transport.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
@@ -176,7 +177,7 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 			}
 			if (returnData.isEmpty()) {
 				log.debug("Empty return data: " + callbackIOR);
-				if (JABTransaction.current() != null) {
+				if (JtsTransactionImple.hasTransaction()) {
 					try {
 						log.debug("Marking rollbackOnly");
 						JABTransaction.current().rollback_only();

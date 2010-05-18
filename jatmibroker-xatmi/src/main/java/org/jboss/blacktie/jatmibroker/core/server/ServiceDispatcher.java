@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.transport.Message;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
+import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 import org.jboss.blacktie.jatmibroker.xatmi.BlackTieService;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
@@ -70,8 +71,10 @@ public class ServiceDispatcher extends BlackTieService implements Runnable {
 					break;
 				}
 			}
+			
 			if (message != null) {
-				try {
+				try {		
+					
 					this.processMessage(message);
 					log.trace("Processed");
 				} catch (Throwable t) {

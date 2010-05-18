@@ -73,8 +73,7 @@ public class JMSSenderImpl implements Sender {
 		log.debug("Sender sending: " + name);
 		try {
 			BytesMessage message = session.createBytesMessage();
-			String ior = JtsTransactionImple.getTransactionIOR(orbManagement
-					.getOrb());
+			String ior = JtsTransactionImple.getTransactionIOR();
 
 			message.setStringProperty("messagecontrol", ior);
 			log.debug("Sender sending IOR: " + ior);
@@ -107,7 +106,7 @@ public class JMSSenderImpl implements Sender {
 				sender.send(message);
 			}
 			log.debug("sent message");
-		} catch (JMSException e) {
+		} catch (Throwable e) {
 			throw new ConnectionException(Connection.TPESYSTEM,
 					"Could not send the message: " + e.getMessage(), e);
 		}

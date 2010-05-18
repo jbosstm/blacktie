@@ -19,17 +19,16 @@ package org.jboss.blacktie.example.mdb;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.transaction.TransactionManager;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.transport.JtsTransactionImple;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
-import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 import org.jboss.blacktie.jatmibroker.xatmi.mdb.MDBBlacktieService;
 import org.jboss.ejb3.annotation.Depends;
 
@@ -47,35 +46,20 @@ public class TxCreateServiceTestService extends MDBBlacktieService implements
 		super("TxCreateService");
 	}
 
-	public void setUp() throws ConnectionException, ConfigurationException {
-		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
-		Connection connection = connectionFactory.getConnection();
-	}
-
-	public static String serviceRequest(String args) {
-		if (!JtsTransactionImple.begin())
-			return "Service could not start a new transaction";
-
-		String ior = JtsTransactionImple.getTransactionIOR(null);
-		log.debug("TxCreateService ior: " + ior);
-		return args;
-	}
-
 	public Response tpservice(TPSVCINFO svcinfo) {
-		X_OCTET rcvd = (X_OCTET) svcinfo.getBuffer();
-		String rcv = new String(rcvd.getByteArray());
-		String resp = serviceRequest(rcv);
-		X_OCTET buffer = null;
 		try {
-			buffer = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET", null);
-			buffer.setByteArray(resp.getBytes());
-			return new Response(Connection.TPSUCCESS, 0, buffer, resp.length(),
-					0);
-		} catch (ConnectionException e) {
-			resp = "";
+			Context context = new InitialContext();
+			TransactionManager tm = (TransactionManager) context
+					.lookup("java:/TransactionManager");
+			tm.begin();
+			String ior = JtsTransactionImple.getTransactionIOR();
+			log.info("TxCreateService ior: " + ior);
+		} catch (Exception e) {
 			log.error("Caught an exception", e);
 			return new Response(Connection.TPFAIL, 0, null, 0, 0);
 		}
+
+		return new Response(Connection.TPSUCCESS, 0, svcinfo.getBuffer(),
+				svcinfo.getLen(), 0);
 	}
 }

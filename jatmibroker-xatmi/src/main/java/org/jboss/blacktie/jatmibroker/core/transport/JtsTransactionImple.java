@@ -1,18 +1,19 @@
 package org.jboss.blacktie.jatmibroker.core.transport;
 
+import java.util.Properties;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.transaction.InvalidTransactionException;
-import javax.transaction.NotSupportedException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.jab.JABException;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
-import org.omg.CORBA.ORB;
 import org.omg.CosTransactions.Control;
 import org.omg.CosTransactions.Unavailable;
 
@@ -41,60 +42,28 @@ public class JtsTransactionImple extends TransactionImple {
 	}
 
 	/**
-	 * associate a new transaction with the calling thread
-	 * 
-	 * @return true if a new transaction is associated
-	 */
-	public static boolean begin() {
-		if (getTransactionManager() != null) {
-			try {
-				tm.begin();
-				return true;
-			} catch (NotSupportedException e) {
-				log.debug("Unable to start a new transaction: " + e);
-			} catch (SystemException e) {
-				log.debug("Unable to start a new transaction: " + e);
-			}
-		}
-
-		return false;
-	}
-
-	/**
 	 * check whether the calling thread is associated with a transaction
 	 * 
 	 * @return true if there is transaction on the callers thread
+	 * @throws NamingException
 	 */
 	public static boolean hasTransaction() {
-		try {
-			return (getTransactionManager() != null && tm.getTransaction() != null);
-		} catch (SystemException e) {
-			return false;
+		if (hasTransactionManager()) {
+			try {
+				return tm.getTransaction() != null;
+			} catch (SystemException e) {
+				return false;
+			}
+		} else {
+			return JABTransaction.current() != null;
 		}
 	}
 
-	/**
-	 * Re-associate a transaction with the callers thread
-	 * 
-	 * @param tx
-	 *            the transaction to associated
-	 */
-	public static void resume(Transaction tx) {
+	private static boolean hasTransactionManager() {
 		try {
-			if (tx != null && getTransactionManager() != null) {
-				log.debug("resuming " + tx);
-
-				tm.resume(tx);
-			} else {
-				log.debug("nothing to rusume: tm=" + tm);
-			}
-		} catch (SystemException e) {
-			log.info("resume error: " + e);
-		} catch (InvalidTransactionException e) { // invalid transaction.
-			log.info("resume error: " + e);
-		} catch (IllegalStateException e) { // the thread is already associated
-			// with another transaction.
-			log.info("resume error: " + e);
+			return (getTransactionManager() != null);
+		} catch (NamingException e) {
+			return false;
 		}
 	}
 
@@ -102,12 +71,22 @@ public class JtsTransactionImple extends TransactionImple {
 	 * Associated a transaction with the callers thread
 	 * 
 	 * @param ior
-	 *            IOR for the corresponding OTS transaction
+	 *            IOR for the corresponding OTS transaction, must not be null
+	 * @throws SystemException
+	 * @throws IllegalStateException
+	 * @throws InvalidTransactionException
+	 * @throws JABException
 	 */
-	public static void resume(ORB orb, String ior) {
+	public static void resume(String ior) throws InvalidTransactionException,
+			IllegalStateException, SystemException, JABException {
 		log.debug("resume control");
-		Transaction tx = controlToTx(orb, ior);
-		resume(tx);
+		if (hasTransactionManager()) {
+			Transaction tx = controlToTx(ior);
+			tm.resume(tx);
+		} else {
+			JABTransaction transaction = new JABTransaction(ior);
+			JABTransaction.resume(transaction);
+		}
 	}
 
 	/**
@@ -115,20 +94,16 @@ public class JtsTransactionImple extends TransactionImple {
 	 * thread
 	 * 
 	 * @return the dissassociated transaction
+	 * @throws SystemException
 	 */
-	public static Transaction suspend() {
+	public static void suspend() throws SystemException {
 		log.debug("suspend");
-
-		try {
-			if (getTransactionManager() != null) {
-				log.debug("suspending current");
-				return tm.suspend();
-			}
-		} catch (SystemException e) {
-			log.debug("suspend error: " + e);
+		if (hasTransactionManager()) {
+			log.debug("suspending current");
+			tm.suspend();
+		} else {
+			JABTransaction.current().suspend();
 		}
-
-		return null;
 	}
 
 	/**
@@ -140,13 +115,10 @@ public class JtsTransactionImple extends TransactionImple {
 	 *            the CORBA reference for the OTS transaction
 	 * @return a JTA transaction that wraps the OTS transaction
 	 */
-	private static Transaction controlToTx(ORB orb, String ior) {
+	private static Transaction controlToTx(String ior) {
 		log.debug("controlToTx: ior: " + ior);
 
-		if (ior == null)
-			return null;
-
-		ControlWrapper cw = createControlWrapper(orb, ior);
+		ControlWrapper cw = createControlWrapper(ior);
 		TransactionImple tx = (TransactionImple) TransactionImple
 				.getTransactions().get(cw.get_uid());
 
@@ -163,16 +135,13 @@ public class JtsTransactionImple extends TransactionImple {
 	 * Lookup the JTA transaction manager
 	 * 
 	 * @return the JTA transaction manager in the VM
+	 * @throws NamingException
 	 */
-	public static TransactionManager getTransactionManager() {
+	private synchronized static TransactionManager getTransactionManager()
+			throws NamingException {
 		if (tm == null) {
-			try {
-				Context ctx = new InitialContext();
-				tm = (TransactionManager) ctx
-						.lookup("java:/TransactionManager");
-			} catch (NamingException e) {
-				return null;
-			}
+			Context ctx = new InitialContext();
+			tm = (TransactionManager) ctx.lookup("java:/TransactionManager");
 		}
 
 		return tm;
@@ -184,78 +153,44 @@ public class JtsTransactionImple extends TransactionImple {
 	 * 
 	 * @return the IOR or null if the current transaction is not an OTS
 	 *         transaction
+	 * @throws NamingException
+	 * @throws org.omg.CORBA.SystemException
+	 * @throws SystemException
+	 * @throws Unavailable
 	 */
-	public static String getTransactionIOR(ORB orb) {
+	public static String getTransactionIOR()
+			throws org.omg.CORBA.SystemException, SystemException, Unavailable {
 		log.debug("getTransactionIOR");
 
 		JABTransaction curr = JABTransaction.current();
 		if (curr != null) {
 			log.debug("have JABTransaction");
 			return curr.getControlIOR();
-		} else if (getTransactionManager() != null) {
-			try {
-				log.debug("have tx mgr");
-				Transaction tx = tm.getTransaction();
-
-				if (tx instanceof TransactionImple) {
-					log.debug("have arjuna tx");
-					TransactionImple atx = (TransactionImple) tx;
-					ControlWrapper cw = atx.getControlWrapper();
-
-					if (cw == null) {
-						log
-								.warn("getTransactionIOR transaction has no control wrapper");
-					} else if (haveORB(orb)) {
-						try {
-							log.debug("lookup control");
-							Control c = cw.get_control();
-							if (orb == null) {
-								orb = ORBManager.getORB().orb();
-							}
-							String ior = orb.object_to_string(c);
-
-							log.debug("getTransactionIOR: ior: " + ior);
-
-							return ior;
-						} catch (Unavailable e) {
-							log
-									.warn("getTransactionIOR transaction has no control: "
-											+ e.getMessage());
-						}
-					}
-				}
-			} catch (SystemException e) {
-				log.debug("excpeption: " + e.getMessage());
-				e.printStackTrace();
-			}
-		}
-
-		return null;
-	}
-
-	private static ControlWrapper createControlWrapper(ORB orb, String ior) {
-		if (haveORB(orb) && ior.startsWith(IORTag)) {
-			if (orb == null) {
-				orb = ORBManager.getORB().orb();
-			}
-			org.omg.CORBA.Object obj = orb.string_to_object(ior);
-
-			Control control = org.omg.CosTransactions.ControlHelper.narrow(obj);
-
-			if (control == null)
-				log.debug("createProxy: ior not a control");
-
-			return new ControlWrapper(control);
+		} else if (hasTransaction()) {
+			log.debug("have tx mgr");
+			Transaction tx = tm.getTransaction();
+			log.debug("have arjuna tx");
+			TransactionImple atx = (TransactionImple) tx;
+			ControlWrapper cw = atx.getControlWrapper();
+			log.debug("lookup control");
+			Control c = cw.get_control();
+			String ior = ORBManager.getORB().orb().object_to_string(c);
+			log.debug("getTransactionIOR: ior: " + ior);
+			return ior;
 		} else {
 			return null;
 		}
 	}
 
-	public static boolean haveORB(ORB orb) {
-		if (orb == null) {
-			return (ORBManager.isInitialised());
-		}
-		return true;
+	private static ControlWrapper createControlWrapper(String ior) {
+		org.omg.CORBA.Object obj = ORBManager.getORB().orb().string_to_object(
+				ior);
+
+		Control control = org.omg.CosTransactions.ControlHelper.narrow(obj);
+		if (control == null)
+			log.warn("createProxy: ior not a control");
+
+		return new ControlWrapper(control);
 	}
 
 	// public static org.omg.CORBA.ORB getDefaultORB() {

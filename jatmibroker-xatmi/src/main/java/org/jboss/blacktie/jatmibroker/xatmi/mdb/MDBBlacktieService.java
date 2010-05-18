@@ -6,8 +6,11 @@ import javax.jms.MessageListener;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.transport.JtsTransactionImple;
 import org.jboss.blacktie.jatmibroker.core.transport.hybrid.JMSReceiverImpl;
 import org.jboss.blacktie.jatmibroker.xatmi.BlackTieService;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
+import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
 /**
  * All BlackTie MDB services should extend this class so that they can be
@@ -46,6 +49,10 @@ public abstract class MDBBlacktieService extends BlackTieService implements
 					.convertFromBytesMessage(bytesMessage);
 			log.debug("SERVER onMessage: transaction control ior: "
 					+ toProcess.control);
+			if (JtsTransactionImple.hasTransaction()) {
+				throw new ConnectionException(Connection.TPEPROTO,
+						"Blacktie MDBs must not be called with a transactional context");
+			}
 			processMessage(toProcess);
 			log.debug("Processed message");
 		} catch (Throwable t) {

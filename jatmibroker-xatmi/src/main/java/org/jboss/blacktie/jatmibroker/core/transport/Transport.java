@@ -23,12 +23,6 @@ import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.omg.CORBA.ORB;
 
 public interface Transport {
-	/**
-	 * Get a reference to the orb for transactions.
-	 * 
-	 * @return The orb
-	 */
-	public ORB getOrb();
 
 	/**
 	 * Get the sender
