@@ -1,6 +1,8 @@
 # ALLOW JOBS TO BE BACKGROUNDED
 set -m
 
+echo "Running all samples"
+
 if [ "$1" ]; then
 if [ "$1" = "tx" ]; then
 echo "Running txfooapp"
