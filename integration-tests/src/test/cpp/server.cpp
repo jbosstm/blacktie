@@ -441,7 +441,7 @@ void test_tpgetrply_TPGETANY_two(TPSVCINFO *svcinfo) {
 
 void testtpreturn_service_opensession1(TPSVCINFO *svcinfo) {
 	userlogc((char*) "testtpreturn_service_opensession1");
-	int cd = ::tpacall((char*) "CREDIT", (char *) svcinfo->data, svcinfo->len,
+	int cd = ::tpacall((char*) "TestTPReturnB", (char *) svcinfo->data, svcinfo->len,
 			0);
 	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
 }
@@ -573,12 +573,12 @@ JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertise
 
 extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPReturn(JNIEnv *, jobject) {
-	tpadvertise((char*) "TestTPReturn", testtpreturn_service);
+	tpadvertise((char*) "TestTPReturnA", testtpreturn_service);
 }
 
 extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPReturn2(JNIEnv *, jobject) {
-	tpadvertise((char*) "TestTPReturn",
+	tpadvertise((char*) "TestTPReturnA",
 			testtpreturn_service_tpurcode);
 }
 
@@ -650,20 +650,20 @@ JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertise
 
 extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPGetrplyOne(JNIEnv *, jobject) {
-	tpadvertise((char*) "DEBIT", test_tpgetrply_TPGETANY_one);
+	tpadvertise((char*) "TestTPGetAnyA", test_tpgetrply_TPGETANY_one);
 }
 
 extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPGetrplyTwo(JNIEnv *, jobject) {
-	tpadvertise((char*) "CREDIT", test_tpgetrply_TPGETANY_two);
+	tpadvertise((char*) "TestTPGetAnyB", test_tpgetrply_TPGETANY_two);
 }
 
 extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPReturn3(JNIEnv *, jobject) {
-	tpadvertise((char*) "TestTPReturn", testtpreturn_service_opensession1);
+	tpadvertise((char*) "TestTPReturnA", testtpreturn_service_opensession1);
 }
 
 extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPReturn4(JNIEnv *, jobject) {
-	tpadvertise((char*) "CREDIT", testtpreturn_service_opensession2);
+	tpadvertise((char*) "TestTPReturnB", testtpreturn_service_opensession2);
 }
