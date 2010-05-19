@@ -155,7 +155,7 @@ public class RunServer {
 	}
 
 	public static String getServiceNameTestTPReturn2() {
-		return "TestTPReturnB";
+		return "TestTPReturnA";
 	}
 
 	public static String getServiceNameTestTPSend() {
