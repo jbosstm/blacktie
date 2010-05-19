@@ -52,8 +52,6 @@ public class TxCreateServiceTestService extends MDBBlacktieService implements
 			TransactionManager tm = (TransactionManager) context
 					.lookup("java:/TransactionManager");
 			tm.begin();
-			String ior = JtsTransactionImple.getTransactionIOR();
-			log.info("TxCreateService ior: " + ior);
 		} catch (Exception e) {
 			log.error("Caught an exception", e);
 			return new Response(Connection.TPFAIL, 0, null, 0, 0);
