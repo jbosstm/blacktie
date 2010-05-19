@@ -207,10 +207,7 @@ void TestTPRealloc::test_tprealloc_zero_x_common() {
 	BT_ASSERT(m_allocated != NULL);
 
 	::tprealloc(m_allocated, 0);
-	char* tperrnoS = (char*) malloc(110);
-	sprintf(tperrnoS, "%d", tperrno);
-	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEINVAL);
-	free(tperrnoS);
+	BT_ASSERT(tperrno == TPEINVAL);
 
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);
@@ -397,7 +394,10 @@ void TestTPRealloc::test_tprealloc_multi_x_c_type() {
 
 	for (int i = 1024; i <= 1124; i++) {
 		::tprealloc(m_allocated, i);
-		BT_ASSERT(tperrno == TPEINVAL);
+		char* tperrnoS = (char*) malloc(110);
+		sprintf(tperrnoS, "%d", tperrno);
+		BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEINVAL);
+		free(tperrnoS);
 
 		char* type = (char*) malloc(8);
 		char* subtype = (char*) malloc(16);

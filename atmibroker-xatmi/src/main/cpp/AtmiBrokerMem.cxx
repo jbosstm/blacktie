@@ -106,12 +106,12 @@ AtmiBrokerMem::tpalloc(char* type, char* subtype, long size,
 	} else if ((strncmp(type, "X_COMMON", MAX_TYPE_SIZE) == 0 || strncmp(type,
 			"X_C_TYPE", MAX_TYPE_SIZE) == 0) && !subtype) {
 		LOG4CXX_ERROR(logger, (char*) "tpalloc - no subtype");
-		setSpecific(TPE_KEY, TSS_TPEINVAL);
+		setSpecific(TPE_KEY, TSS_TPEOS);
 	} else if ((strncmp(type, "X_COMMON", MAX_TYPE_SIZE) == 0 || strncmp(type,
 			"X_C_TYPE", MAX_TYPE_SIZE) == 0) && buffers[subtype] == NULL) {
-		LOG4CXX_ERROR(logger, (char*) "tpalloc - unknown buffer type: "
+		LOG4CXX_ERROR(logger, (char*) "tpalloc - unknown buffer subtype: "
 				<< subtype);
-		setSpecific(TPE_KEY, TSS_TPEINVAL);
+		setSpecific(TPE_KEY, TSS_TPEOS);
 	} else if (size < 0) {
 		LOG4CXX_ERROR(logger, (char*) "tpalloc - negative size");
 		setSpecific(TPE_KEY, TSS_TPEINVAL);

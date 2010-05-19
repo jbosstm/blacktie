@@ -21,6 +21,8 @@
 
 #include "xatmi.h"
 
+#include "malloc.h"
+
 #include "TestTPRecv.h"
 
 #if defined(__cplusplus)
@@ -75,7 +77,11 @@ void TestTPRecv::test_tprecv_sendonly() {
 	cd = ::tpconnect((char*) "TestTPRecv", sendbuf, sendlen, TPSENDONLY);
 	long revent = 0;
 	int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
-	BT_ASSERT(tperrno == TPEPROTO);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEPROTO);
+	free(tperrnoS);
+
 	BT_ASSERT(result == -1);
 }
 

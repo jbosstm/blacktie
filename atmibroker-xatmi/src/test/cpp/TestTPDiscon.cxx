@@ -22,6 +22,8 @@
 
 #include "xatmi.h"
 
+#include "malloc.h"
+
 #include "TestTPDiscon.h"
 
 #if defined(__cplusplus)
@@ -50,8 +52,11 @@ void TestTPDiscon::setUp() {
 	BT_ASSERT(toCheck != -1);
 
 	cd = ::tpconnect((char*) "TestTPDiscon", sendbuf, sendlen, TPSENDONLY);
-	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(cd != -1);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
 }
 
 void TestTPDiscon::tearDown() {

@@ -218,8 +218,11 @@ void TestTPTypes::test_tptypes_max_subtype() {
 	int toTest = ::tptypes(m_allocated, NULL, subtype);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(strncmp(subtype, "abcdefghijklmnop", 16) == 0);
-	BT_ASSERT(toTest == 10);
 	free(subtype);
+	char* toTestS = (char*) malloc(110);
+	sprintf(toTestS, "%d", toTest);
+	BT_ASSERT_MESSAGE(toTestS, toTest == 10);
+	free(toTestS);
 }
 
 void TestTPTypes::test_tptypes_small_type() { // cannot be tested as we can't find how big the memory is
@@ -275,7 +278,10 @@ void TestTPTypes::test_tptypes_large_subtype() {
 	char* subtype = (char*) malloc(17);
 	int toTest = ::tptypes(m_allocated, NULL, subtype);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == 10);
+	char* toTestS = (char*) malloc(110);
+	sprintf(toTestS, "%d", toTest);
+	BT_ASSERT_MESSAGE(toTestS, toTest == 10);
+	free(toTestS);
 	BT_ASSERT(strncmp(subtype, "abcdefghijklmnop", 16) == 0);
 	free(subtype);
 }

@@ -393,7 +393,7 @@ int tpadvertise(char * svcname, void(*func)(TPSVCINFO *)) {
 	int toReturn = -1;
 	if (ptrServer != NULL) {
 		if (ptrServer->advertiseService(svcname, func)) {
-			toReturn = 0;
+			toReturn = 1;
 		}
 	} else {
 		LOG4CXX_ERROR(loggerXATMI, (char*) "server not initialized");

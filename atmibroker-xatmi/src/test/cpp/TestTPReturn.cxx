@@ -49,6 +49,11 @@ void TestTPReturn::tearDown() {
 	// Do local work
 	::tpfree( sendbuf);
 	::tpfree( rcvbuf);
+
+	// These are allowed to fail as not every one is used for each test
+	tpunadvertise((char*) "TestTPReturnA");
+	tpunadvertise((char*) "TestTPReturnB");
+
 	// Clean up server
 	BaseServerTest::tearDown();
 }
@@ -98,7 +103,10 @@ void TestTPReturn::test_tpreturn_tpurcode() {
 	// Do local work
 	int toCheck = tpadvertise((char*) "TestTPReturnA",
 			testtpreturn_service_tpurcode);
-	BT_ASSERT(tperrno == 0);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
 	BT_ASSERT(toCheck != -1);
 
 	sendlen = 3;

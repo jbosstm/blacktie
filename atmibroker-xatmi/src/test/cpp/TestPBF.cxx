@@ -116,7 +116,7 @@ void TestPBF::test_tpalloc_subtype_required() {
 	m_allocated = tpalloc((char*) "X_COMMON", NULL, 0);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
-	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEINVAL);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEOS);
 	free (tperrnoS);
 	BT_ASSERT(m_allocated == NULL);
 }

@@ -21,6 +21,8 @@
 
 #include "xatmi.h"
 
+#include "malloc.h"
+
 #include "TestTPAdvertise.h"
 
 #if defined(__cplusplus)
@@ -91,10 +93,13 @@ void TestTPAdvertise::test_tpadvertise_idempotent() {
 	userlogc((char*) "test_tpadvertise_idempotent");
 	int id = ::tpadvertise((char*) "TestTPAdvertise", testtpadvertise_service);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(id == 0);
+	char* idS = (char*) malloc(110);
+	sprintf(idS, "%d", id);
+	BT_ASSERT_MESSAGE(idS, id == 1);
+	free(idS);
 	id = ::tpadvertise((char*) "TestTPAdvertise", testtpadvertise_service);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(id == 0);
+	BT_ASSERT(id == 1);
 }
 
 void TestTPAdvertise::test_tpadvertise_null_name_empty() {
@@ -108,7 +113,10 @@ void TestTPAdvertise::test_tpadvertise_different_method() {
 	userlogc((char*) "test_tpadvertise_different_method");
 	int id = ::tpadvertise((char*) "TestTPAdvertise", testtpadvertise_service);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(id == 0);
+	char* idS = (char*) malloc(110);
+	sprintf(idS, "%d", id);
+	BT_ASSERT_MESSAGE(idS, id == 1);
+	free(idS);
 	id = ::tpadvertise((char*) "TestTPAdvertise", testtpadvertise_service_2);
 	BT_ASSERT(tperrno== TPEMATCH);
 	BT_ASSERT(id == -1);

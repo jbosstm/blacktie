@@ -90,7 +90,7 @@ void TestServerinit::test_config_cmdline() {
 
 	int id = ::tpadvertise((char*) "TestTPAdvertise", test_service);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(id == 0);
+	BT_ASSERT(id != -1);
 
 	result = serverdone();
 	BT_ASSERT(result != -1);

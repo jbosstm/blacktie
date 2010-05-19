@@ -53,6 +53,11 @@ void TestTPCall::tearDown() {
 	::tpfree( sendbuf);
 	::tpfree( rcvbuf);
 
+	// These are allowed to fail as not every one is used for each test
+	tpunadvertise((char*) "tpcall_x_octet");
+	tpunadvertise((char*) "tpcall_x_common");
+	tpunadvertise((char*) "tpcall_x_c_type");
+
 	// Clean up server
 	BaseServerTest::tearDown();
 }
@@ -403,6 +408,10 @@ void TestTPCall::test_tpcall_with_TPNOBLOCK() {
 	char* toTest = (char*) "test_tpcall_TPNOBLOCK";
 	userlogc(toTest);
 	tpadvertise((char*) "tpcall_x_octet", test_tpcall_TPNOBLOCK);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
 
 	sendlen = strlen(toTest) + 1;
 	rcvlen = sendlen;
@@ -423,7 +432,14 @@ void TestTPCall::test_tpcall_with_TPNOBLOCK() {
 void TestTPCall::test_tpcall_without_TPNOBLOCK() {
 	char* toTest = (char*) "test_tpcall_no_TPNOBLOCK";
 	userlogc(toTest);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
 	tpadvertise((char*) "tpcall_x_octet", test_tpcall_TPNOBLOCK);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
 
 	sendlen = strlen(toTest) + 1;
 	rcvlen = sendlen;
@@ -432,10 +448,7 @@ void TestTPCall::test_tpcall_without_TPNOBLOCK() {
 	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
 	(void) strcpy(sendbuf, toTest);
-	char* tperrnoS = (char*) malloc(110);
-	sprintf(tperrnoS, "%d", tperrno);
-	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
-	free(tperrnoS);
+	BT_ASSERT(tperrno == 0);
 
 	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, (long) 0);
