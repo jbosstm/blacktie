@@ -435,7 +435,6 @@ void TestTPCall::test_tpcall_without_TPNOBLOCK() {
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
-	free(tperrnoS);
 	tpadvertise((char*) "tpcall_x_octet", test_tpcall_TPNOBLOCK);
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
