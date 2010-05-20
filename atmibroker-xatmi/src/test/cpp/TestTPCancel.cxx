@@ -66,8 +66,11 @@ void TestTPCancel::tearDown() {
 void TestTPCancel::test_tpcancel() {
 	userlogc((char*) "test_tpcancel");
 	int cd = ::tpacall((char*) "TestTPCancel", (char *) sendbuf, sendlen, 0);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
 	BT_ASSERT(cd != -1);
-	BT_ASSERT(tperrno == 0);
 
 	// CANCEL THE REQUEST
 	int cancelled = ::tpcancel(cd);
@@ -88,8 +91,11 @@ void TestTPCancel::test_tpcancel() {
 void TestTPCancel::test_tpcancel_noreply() {
 	userlogc((char*) "test_tpcancel_noreply");
 	int cd = ::tpacall((char*) "TestTPCancel", (char *) sendbuf, sendlen, TPNOREPLY);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
 	BT_ASSERT(cd != -1);
-	BT_ASSERT(tperrno == 0);
 
 	// CANCEL THE REQUEST
 	int cancelled = ::tpcancel(cd);

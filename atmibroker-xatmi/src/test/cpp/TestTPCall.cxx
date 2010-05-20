@@ -201,6 +201,9 @@ void TestTPCall::test_tpcall_x_octet_zero() {
 void TestTPCall::test_tpcall_x_common() {
 	userlogc((char*) "test_tpcall_x_common");
 	tpadvertise((char*) "tpcall_x_common", test_tpcall_x_common_service);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 
 	DEPOSIT *dptr;
 	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
@@ -220,7 +223,9 @@ void TestTPCall::test_tpcall_x_common() {
 
 	int id = ::tpcall((char*) "tpcall_x_common", (char*) dptr, 0,
 			(char**) &rcvbuf, &rcvlen, 0);
-	BT_ASSERT(tperrno == 0);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
 	BT_ASSERT(tpurcode == 22);
 	BT_ASSERT(id != -1);
 	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_common") == 0);
@@ -229,6 +234,9 @@ void TestTPCall::test_tpcall_x_common() {
 void TestTPCall::test_tpcall_x_c_type() {
 	userlogc((char*) "test_tpcall_x_c_type");
 	tpadvertise((char*) "tpcall_x_c_type", test_tpcall_x_c_type_service);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 
 	ACCT_INFO *aptr;
 	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
@@ -247,7 +255,9 @@ void TestTPCall::test_tpcall_x_c_type() {
 
 	int id = ::tpcall((char*) "tpcall_x_c_type", (char*) aptr, 0,
 			(char**) &rcvbuf, &rcvlen, TPNOCHANGE);
-	BT_ASSERT(tperrno == 0);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
 	BT_ASSERT(tpurcode == 23);
 	BT_ASSERT(id != -1);
 	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_c_type") == 0);
@@ -274,7 +284,10 @@ void TestTPCall::test_tpcall_with_TPNOCHANGE() {
 
 	int id = ::tpcall((char*) "tpcall_x_c_type", (char*) aptr, 0,
 			(char**) &rcvbuf, &rcvlen, TPNOCHANGE);
-	BT_ASSERT(tperrno == TPEOTYPE);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEOTYPE);
+	free(tperrnoS);
 	BT_ASSERT(id == -1);
 
 	char* type = (char*) malloc(8);
@@ -296,6 +309,9 @@ void TestTPCall::test_tpcall_with_TPNOCHANGE() {
 void TestTPCall::test_tpcall_without_TPNOCHANGE() {
 	userlogc((char*) "test_tpcall_without_TPNOCHANGE");
 	tpadvertise((char*) "tpcall_x_c_type", test_tpcall_x_c_type_service);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 
 	ACCT_INFO *aptr;
 	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
@@ -314,7 +330,8 @@ void TestTPCall::test_tpcall_without_TPNOCHANGE() {
 
 	int id = ::tpcall((char*) "tpcall_x_c_type", (char*) aptr, 0,
 			(char**) &rcvbuf, &rcvlen, 0);
-	BT_ASSERT(tperrno == 0);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 	BT_ASSERT(tpurcode == 23);
 	BT_ASSERT(id != -1);
 	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "tpcall_x_c_type") == 0);
@@ -325,7 +342,6 @@ void TestTPCall::test_tpcall_without_TPNOCHANGE() {
 	BT_ASSERT(strcmp(type, "X_OCTET") == 0);
 	BT_ASSERT(strcmp(subtype, "") == 0);
 
-	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 	free(tperrnoS);
@@ -471,11 +487,12 @@ void TestTPCall::test_tpcall_without_TPNOTIME() {
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
-	free(tperrnoS);
 
 	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, 0);
-	BT_ASSERT(tperrno == TPETIME);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPETIME);
+	free(tperrnoS);
 	BT_ASSERT(id == -1);
 	BT_ASSERT(strcmp(rcvbuf, toTest) == -1);
 }
