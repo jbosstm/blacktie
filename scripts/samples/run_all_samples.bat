@@ -5,7 +5,7 @@ echo "Running all samples"
 IF ["%1"] EQU ["tx"] (
 echo "Running txfooapp"
 rem SET THE PATH FOR ORACLE
-set PATH=%PATH%;%ORACLE_HOME%\bin
+set PATH="%PATH%;%ORACLE_HOME%\bin"
 
 rem RUN THE TXFOOAPP SERVER
 cd %BLACKTIE_HOME%\examples\xatmi\txfooapp
