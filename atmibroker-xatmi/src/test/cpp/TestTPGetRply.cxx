@@ -103,7 +103,7 @@ void TestTPGetRply::test_tpgetrply() {
 	BT_ASSERT(strcmp(rcvbuf, "testtpgetrply_service") == 0);
 	char* toTestS = (char*) malloc(110);
 	sprintf(toTestS, "%d", toTest);
-	BT_ASSERT_MESSAGE(toTestS, toTest == 0);
+	BT_ASSERT_MESSAGE(toTestS, toTest != -1);
 	free(toTestS);
 }
 
@@ -222,7 +222,7 @@ void TestTPGetRply::test_tpgetrply_without_TPNOBLOCK() {
 	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "test_tpgetrply_TPNOBLOCK") == 0);
 	char* toTestS = (char*) malloc(110);
 	sprintf(toTestS, "%d", toTest);
-	BT_ASSERT_MESSAGE(toTestS, toTest == 0);
+	BT_ASSERT_MESSAGE(toTestS, toTest != -1);
 	free(toTestS);
 }
 
@@ -247,7 +247,7 @@ void TestTPGetRply::test_tpgetrply_with_TPGETANY() {
 	BT_ASSERT(tperrno == 0);
 	char* toTestS = (char*) malloc(110);
 	sprintf(toTestS, "%d", toTest);
-	BT_ASSERT_MESSAGE(toTestS, toTest == 0);
+	BT_ASSERT_MESSAGE(toTestS, toTest != -1);
 	free(toTestS);
 	char* gotCdS = (char*) malloc(110);
 	sprintf(gotCdS, "got %d expected %d", cdToGet, cd2);
@@ -278,7 +278,7 @@ void TestTPGetRply::test_tpgetrply_without_TPGETANY() {
 	BT_ASSERT(tperrno == 0);
 	char* toTestS = (char*) malloc(110);
 	sprintf(toTestS, "%d", toTest);
-	BT_ASSERT_MESSAGE(toTestS, toTest == 0);
+	BT_ASSERT_MESSAGE(toTestS, toTest != -1);
 	free(toTestS);
 	char* gotCdS = (char*) malloc(110);
 	sprintf(gotCdS, "%d", cdToGet);
