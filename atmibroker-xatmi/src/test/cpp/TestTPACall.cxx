@@ -63,14 +63,17 @@ void TestTPACall::tearDown() {
 
 void TestTPACall::test_tpacall() {
 	userlogc((char*) "test_tpacall");
+
 	sendlen = strlen("test_tpacall") + 1;
 	sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
 	strcpy(sendbuf, "test_tpacall");
-
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
 	int cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, sendlen,
 			TPNOREPLY);
-	BT_ASSERT(cd == 0);
-	BT_ASSERT(tperrno == 0);
+
 	BT_ASSERT(tperrno != TPEINVAL);
 	BT_ASSERT(tperrno != TPENOENT);
 	BT_ASSERT(tperrno != TPEITYPE);
@@ -82,6 +85,12 @@ void TestTPACall::test_tpacall() {
 	BT_ASSERT(tperrno != TPEPROTO);
 	BT_ASSERT(tperrno != TPESYSTEM);
 	BT_ASSERT(tperrno != TPEOS);
+	BT_ASSERT(tperrno == 0);
+
+	char* cdS = (char*) malloc(110);
+	sprintf(cdS, "%d", cd);
+	BT_ASSERT_MESSAGE(cdS, cd == 0);
+	free(cdS);
 }
 
 void TestTPACall::test_tpacall_systemerr() {
@@ -106,13 +115,18 @@ void TestTPACall::test_tpacall_x_octet() {
 	strcpy(ptr1, "hello");
 	strcpy(ptr2, "goodbye");
 
-	tpacall((char*) "GREETSVC", sendbuf, 25, TPNOREPLY);
+	int cd = tpacall((char*) "GREETSVC", sendbuf, 25, TPNOREPLY);
+	BT_ASSERT(tperrno == TPENOENT);
+	char* cdS = (char*) malloc(110);
+	sprintf(cdS, "%d", cd);
+	BT_ASSERT_MESSAGE(cdS, cd == -1);
+	free(cdS);
 }
 
 void testtpacall_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "testtpacall_service");
 	int len = 20;
-	char *toReturn = (char*) malloc(len);
+	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	strcpy(toReturn, "testtpacall_service");
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
 	free(toReturn);
