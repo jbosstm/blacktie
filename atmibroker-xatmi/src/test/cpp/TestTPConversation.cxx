@@ -111,11 +111,12 @@ void TestTPConversation::test_conversation() {
 		BT_ASSERT(result != -1);
 	}
 	userlogc("Conversed");
-	int result = ::tpgetrply(&cd, &rcvbuf, &rcvlen, 0);
+	int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
 	sprintf(tperrnoS, "%d", tperrno);
-	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
-	BT_ASSERT(result != -1);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEEVENT);
 	free(tperrnoS);
+	BT_ASSERT(result == -1);
+	BT_ASSERT(revent == TPEV_SVCSUCC);
 
 	char* expectedResult = (char*) malloc(sendlen);
 	sprintf(expectedResult, "hi%d", interationCount);
@@ -138,7 +139,6 @@ void TestTPConversation::test_short_conversation() {
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
-	free(tperrnoS);
 
 	char* cdS = (char*) malloc(110);
 	sprintf(cdS, "%d", cd);
@@ -151,9 +151,12 @@ void TestTPConversation::test_short_conversation() {
 	BT_ASSERT(result != -1);
 	BT_ASSERT(strcmp("hi0", rcvbuf) == 0);
 
-	result = ::tpgetrply(&cd, &rcvbuf, &rcvlen, 0);
-	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(result != -1);
+	result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEEVENT);
+	free(tperrnoS);
+	BT_ASSERT(result == -1);
+	BT_ASSERT(revent == TPEV_SVCSUCC);
 	BT_ASSERT(strcmp("hi1", rcvbuf) == 0);
 }
 
