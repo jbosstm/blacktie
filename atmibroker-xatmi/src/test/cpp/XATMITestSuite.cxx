@@ -28,11 +28,13 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestTPFree);
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPFreeService);
 #include "TestTPRealloc.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPRealloc);
+/* End of Typed Buffer Functions */
 /* Dynamic Service Management */
 #include "TestTPUnadvertise.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPUnadvertise);
 #include "TestTPAdvertise.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPAdvertise);
+/* End of Dynamic Service Management */
 /* Request Response */
 #include "TestTPCall.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPCall);
@@ -42,11 +44,13 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestTPACall);
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPCancel);
 #include "TestTPGetRply.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPGetRply);
+/* End of Request Response */
 /* Service Routing*/
 #include "TestTPService.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPService);
 #include "TestTPReturn.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPReturn);
+/* End of Service Routing*/
 /* Conversation */
 #include "TestTPConnect.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPConnect);
@@ -58,17 +62,18 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestTPRecv);
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPSend);
 #include "TestTPConversation.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestTPConversation);
+/* End of Conversation */
 /* Examples from the specification */
 #include "TestSpecExampleOne.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestSpecExampleOne);
 #include "TestSpecExampleTwo.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestSpecExampleTwo);
-/* SERVER MANAGEMENT FUNCTIONS */
+/* End of Examples from the specification */
+/* Application Management Functions */
 #include "LoopyServerAndClient.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( LoopyServerAndClient);
-/* Server Init */
 #include "TestServerinit.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestServerinit);
-/* Client Init */
 #include "TestClientInit.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestClientInit);
+/* End of Application Management Functions */
