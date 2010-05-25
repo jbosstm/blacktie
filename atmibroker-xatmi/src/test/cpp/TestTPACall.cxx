@@ -129,5 +129,4 @@ void testtpacall_service(TPSVCINFO *svcinfo) {
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	strcpy(toReturn, "testtpacall_service");
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
-	free(toReturn);
 }
