@@ -8,10 +8,7 @@ if [ "$1" = "tx" ]; then
 echo "Running txfooapp"
 # RUN THE FOOAPP SERVER
 cd $BLACKTIE_HOME/examples/xatmi/txfooapp
-export ORA_LIBS=$ORACLE_LIB_DIR
-export ORA_INCS=$ORACLE_INC_DIR
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORA_LIBS
-generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="$ORA_INCS" -Dx.lib.dir="$ORA_LIBS" -Dx.libs="occi clntsh" -Dx.define="ORACLE"
+generate_server.sh -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="$ORACLE_INC_DIR" -Dx.lib.dir="$ORACLE_LIB_DIR" -Dx.libs="occi clntsh" -Dx.define="ORACLE"
 if [ "$?" != "0" ]; then
         exit -1
 fi
@@ -23,7 +20,7 @@ fi
 
 # RUN THE C CLIENT
 cd $BLACKTIE_HOME/examples/xatmi/txfooapp
-generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="$ORA_INCS" -Dx.lib.dir="$ORA_LIBS" -Dx.libs="occi clntsh" -Dx.define="ORACLE"
+generate_client.sh -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="$ORACLE_INC_DIR" -Dx.lib.dir="$ORACLE_LIB_DIR" -Dx.libs="occi clntsh" -Dx.define="ORACLE"
 ./client
 
 # SHUTDOWN THE SERVER RUNNING THE btadmin TOOL
