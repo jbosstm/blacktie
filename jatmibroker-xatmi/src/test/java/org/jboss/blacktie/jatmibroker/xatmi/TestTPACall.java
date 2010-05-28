@@ -31,7 +31,6 @@ public class TestTPACall extends TestCase {
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		server.serverinit();
-		server.tpadvertiseTestTPACall();
 
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
@@ -44,6 +43,7 @@ public class TestTPACall extends TestCase {
 	}
 
 	public void test_tpacall() throws ConnectionException {
+		server.tpadvertiseTestTPACall();
 		log.info("test_tpacall");
 		byte[] toSend = "test_tpacall".getBytes();
 		int sendlen = toSend.length;
@@ -63,7 +63,14 @@ public class TestTPACall extends TestCase {
 		}
 	}
 
-	public void xtest_tpacall_x_octet() {
-		// NOT REQUIRED AS IT IS A DUPLICATE OF ABOVE
+	public void test_tpacall_x_octet() throws ConnectionException {
+		log.info("test_tpacall_x_octet");
+		Buffer sendbuf = connection.tpalloc("X_OCTET", null, 25);
+
+		try {
+			connection.tpacall("GREETSVC", sendbuf, Connection.TPNOREPLY);
+		} catch (ConnectionException e) {
+			assertTrue(e.getTperrno() == Connection.TPENOENT);
+		}
 	}
 }

@@ -815,6 +815,10 @@ int tpgetrply(int *id, char ** odata, long *olen, long flags) {
 				Session* session = ptrAtmiBrokerClient->getSession(*id);
 				if (session == NULL) {
 					setSpecific(TPE_KEY, TSS_TPEBADDESC);
+				} else if (session->getIsConv()) {
+					setSpecific(TPE_KEY, TSS_TPEBADDESC);
+					LOG4CXX_WARN(loggerXATMI,
+							(char*) "Session was conversational: " << id);
 				} else {
 					long event = 0;
 					toReturn = ::receive(*id, session, odata, olen, flags,
@@ -975,6 +979,10 @@ int tprecv(int id, char ** odata, long *olen, long flags, long* event) {
 			}
 			if (session == NULL) {
 				setSpecific(TPE_KEY, TSS_TPEBADDESC);
+			} else if (!session->getIsConv()) {
+				setSpecific(TPE_KEY, TSS_TPEBADDESC);
+				LOG4CXX_WARN(loggerXATMI,
+						(char*) "Session was not conversational: " << id);
 			} else {
 				toReturn = ::receive(id, session, odata, olen, flags, event,
 						false);

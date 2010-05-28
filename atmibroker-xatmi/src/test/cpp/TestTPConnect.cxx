@@ -49,11 +49,10 @@ void TestTPConnect::setUp() {
 	BT_ASSERT(toCheck != -1);
 
 	sendlen = strlen("connect") + 1;
-	BT_ASSERT((sendbuf
-			= (char *) tpalloc((char*) "X_OCTET", NULL, sendlen)) != NULL);
-	BT_ASSERT(
-			(rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen))
-					!= NULL);
+	BT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen))
+			!= NULL);
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen))
+			!= NULL);
 	strcpy(sendbuf, "connect");
 	BT_ASSERT(tperrno == 0);
 }
@@ -62,13 +61,13 @@ void TestTPConnect::tearDown() {
 	userlogc((char*) "TestTPConnect::tearDown");
 	// Do local work
 	if (cd != -1) {
-		::tpdiscon(cd);
+		::tpdiscon( cd);
 	}
 	if (cd2 != -1) {
-		::tpdiscon(cd2);
+		::tpdiscon( cd2);
 	}
-	::tpfree(sendbuf);
-	::tpfree(rcvbuf);
+	::tpfree( sendbuf);
+	::tpfree( rcvbuf);
 	int toCheck = tpunadvertise((char*) "TestTPConnect");
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toCheck != -1);
@@ -120,6 +119,31 @@ void TestTPConnect::test_tpconnect_nodata() {
 	sprintf(cdS, "%d", cd);
 	BT_ASSERT_MESSAGE(cdS, cd != -1);
 	free(cdS);
+}
+
+void TestTPConnect::test_tpconnect_tpgetrply() {
+	userlogc((char*) "test_tpconnect");
+	cd = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, TPRECVONLY);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
+
+	char* cdS = (char*) malloc(110);
+	sprintf(cdS, "%d", cd);
+	BT_ASSERT_MESSAGE(cdS, cd != -1);
+	free(cdS);
+
+	int toTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
+	BT_ASSERT(tperrno == TPEBADDESC);
+
+	// Clean the pending message
+	long revent = 0;
+	int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEEVENT);
+	BT_ASSERT(revent & TPEV_SVCSUCC);
 }
 
 void testtpconnect_service(TPSVCINFO *svcinfo) {
