@@ -250,9 +250,7 @@ public class Connection {
 			data = toSend.serialize();
 			type = toSend.getType();
 			subtype = toSend.getSubtype();
-			if (!type.equals("X_OCTET")) {
-				len = data.length;
-			}
+			len = toSend.getLen();
 		}
 
 		String timeToLive = properties.getProperty("TimeToLive");
@@ -390,9 +388,7 @@ public class Connection {
 			data = toSend.serialize();
 			type = toSend.getType();
 			subtype = toSend.getSubtype();
-			if (!type.equals("X_OCTET")) {
-				len = data.length;
-			}
+			len = toSend.getLen();
 		}
 
 		String timeToLive = properties.getProperty("TimeToLive");

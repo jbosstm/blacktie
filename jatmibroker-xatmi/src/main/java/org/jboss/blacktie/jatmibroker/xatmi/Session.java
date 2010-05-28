@@ -268,9 +268,7 @@ public class Session {
 				data = toSend.serialize();
 				type = toSend.getType();
 				subtype = toSend.getSubtype();
-				if (!type.equals("X_OCTET")) {
-					len = data.length;
-				}
+				len = toSend.getLen();
 			}
 
 			sender.send(receiver.getReplyTo(), (short) 0, 0, data, len, cd,

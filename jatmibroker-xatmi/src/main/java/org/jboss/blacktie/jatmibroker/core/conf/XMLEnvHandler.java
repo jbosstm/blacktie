@@ -387,14 +387,18 @@ public class XMLEnvHandler extends DefaultHandler {
 					String sizeVal = atts.getValue(i);
 					prop.setProperty(sizeKey, sizeVal);
 				}
-
-				// If a function was not defined above
-				String func_key = "blacktie." + serviceName + ".function_name";
-				if (prop.get(func_key) == null) {
-					prop.put(func_key, serviceName);
-				}
-				log.trace("Added the service: " + serviceName);
 			}
+
+			// If a function was not defined above
+			String func_key = "blacktie." + serviceName + ".function_name";
+			if (prop.get(func_key) == null) {
+				prop.put(func_key, serviceName);
+			}
+			String ad_key = "blacktie." + serviceName + ".conversational";
+			if (prop.get(ad_key) == null) {
+				prop.put(ad_key, false);
+			}
+			log.trace("Added the service: " + serviceName);
 		} else if (ROLE.equals(localName)) {
 			String key = null;
 			if (serviceName != null) {
