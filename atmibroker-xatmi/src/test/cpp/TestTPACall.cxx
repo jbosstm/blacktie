@@ -91,6 +91,18 @@ void TestTPACall::test_tpacall() {
 	sprintf(cdS, "%d", cd);
 	BT_ASSERT_MESSAGE(cdS, cd == 0);
 	free(cdS);
+
+	// Make sure that there isn't a reply waiting
+	int toTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
+	BT_ASSERT(tperrno != TPEINVAL);
+	BT_ASSERT(tperrno != TPEOTYPE);
+	BT_ASSERT(tperrno != TPETIME);
+	BT_ASSERT(tperrno != TPESVCFAIL);
+	BT_ASSERT(tperrno != TPESVCERR);
+	BT_ASSERT(tperrno != TPEBLOCK);
+	BT_ASSERT(tperrno != 0);
+	BT_ASSERT(tperrno == TPEBADDESC);
+	BT_ASSERT(toTest == -1);
 }
 
 void TestTPACall::test_tpacall_systemerr() {
