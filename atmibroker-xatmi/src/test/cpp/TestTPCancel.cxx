@@ -21,6 +21,8 @@
 
 #include "xatmi.h"
 
+#include "malloc.h"
+
 #include "TestTPCancel.h"
 
 #if defined(__cplusplus)
