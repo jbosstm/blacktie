@@ -55,7 +55,7 @@ public class X_OCTET extends Buffer {
 	 * @throws ConnectionException
 	 */
 	X_OCTET(int len) throws ConnectionException {
-		super("X_OCTET", null, false, types, null, len);
+		super("X_OCTET", "", false, types, null, len);
 	}
 
 	/**

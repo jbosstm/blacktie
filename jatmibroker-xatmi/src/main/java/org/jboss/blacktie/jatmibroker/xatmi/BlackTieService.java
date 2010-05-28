@@ -191,9 +191,6 @@ public abstract class BlackTieService implements Service {
 							data = toSend.serialize();
 							type = toSend.getType();
 							subtype = toSend.getSubtype();
-							if (!type.equals("X_OCTET")) {
-								len = data.length;
-							}
 						}
 						flags = response.getFlags();
 					}

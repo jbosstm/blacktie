@@ -173,9 +173,12 @@ public class Connection {
 		} else if (type.equals("X_C_TYPE")) {
 			log.debug("Initializing a new X_C_TYPE");
 			return new X_C_TYPE(subtype, properties);
-		} else {
+		} else if (type.equals("X_COMMON")) {
 			log.debug("Initializing a new X_COMMON");
 			return new X_COMMON(subtype, properties);
+		} else {
+			throw new ConnectionException(Connection.TPENOENT,
+					"Type was not known: " + type);
 		}
 	}
 

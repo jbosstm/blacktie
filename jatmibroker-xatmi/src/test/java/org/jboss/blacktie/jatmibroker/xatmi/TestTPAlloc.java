@@ -88,17 +88,17 @@ public class TestTPAlloc extends TestCase {
 
 		// ASSIGN SOME VALUES
 		dptr.setLong("acct_no", 12345678);
-		dptr.setLong("amount", 50);
+		dptr.setShort("amount", (short) 50);
 		dptr.setShort("balance", (short) 0);
 		dptr.setByteArray("status", "c".getBytes());
-		dptr.setLong("status_len", 0);
+		dptr.setShort("status_len", (short) 0);
 
 		// CHECK THE ASSIGNATIONS
 		assertTrue(dptr.getLong("acct_no") == 12345678);
-		assertTrue(dptr.getLong("amount") == 50);
+		assertTrue(dptr.getShort("amount") == 50);
 		assertTrue(dptr.getShort("balance") == 0);
 		assertTrue(Arrays.equals(dptr.getByteArray("status"), "c".getBytes()));
-		assertTrue(dptr.getLong("status_len") == 0);
+		assertTrue(dptr.getShort("status_len") == 0);
 	}
 
 	public void test_tpalloc_x_common_bigsubtype() throws ConnectionException {
@@ -125,10 +125,10 @@ public class TestTPAlloc extends TestCase {
 				.setByteArray("name",
 						"12345678901234567890123456789012345678901234567890"
 								.getBytes());
-		float[] balances = new float[2];
+		double[] balances = new double[2];
 		balances[0] = 0;
 		balances[1] = 0;
-		aptr.setFloatArray("balances", balances);
+		aptr.setDoubleArray("balances", balances);
 
 		// CHECK THE ASSIGNATIONS
 		assertTrue(aptr.getLong("acct_no") == 12345678);
@@ -137,8 +137,8 @@ public class TestTPAlloc extends TestCase {
 						"12345678901234567890123456789012345678901234567890"
 								.getBytes()));
 		assertTrue(aptr.getByteArray("address") == null);
-		assertTrue(aptr.getFloatArray("balances")[0] == 0);
-		assertTrue(aptr.getFloatArray("balances")[1] == 0);
+		assertTrue(aptr.getDoubleArray("balances")[0] == 0);
+		assertTrue(aptr.getDoubleArray("balances")[1] == 0);
 	}
 
 	public void test_tpalloc_unknowntype() {
