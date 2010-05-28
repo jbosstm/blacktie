@@ -38,6 +38,17 @@ void TestTPACall::setUp() {
 	// Set up server
 	BaseServerTest::setUp();
 
+	sendlen = strlen("test_tpacall") + 1;
+	BT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen))
+			!= NULL);
+	strcpy(sendbuf, "test_tpacall");
+
+	rcvlen = 22;
+	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
+			!= NULL);
+
+	BT_ASSERT(tperrno == 0);
+
 	// Set up local
 	int toCheck = tpadvertise((char*) "TestTPACall", testtpacall_service);
 	BT_ASSERT(tperrno == 0);
@@ -73,27 +84,12 @@ void TestTPACall::tearDown() {
 void TestTPACall::test_tpacall() {
 	userlogc((char*) "test_tpacall");
 
-	sendlen = strlen("test_tpacall") + 1;
-	sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
-	strcpy(sendbuf, "test_tpacall");
-	char* tperrnoS = (char*) malloc(110);
-	sprintf(tperrnoS, "%d", tperrno);
-	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 	int cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, sendlen,
 			TPNOREPLY);
 
-	BT_ASSERT(tperrno != TPEINVAL);
-	BT_ASSERT(tperrno != TPENOENT);
-	BT_ASSERT(tperrno != TPEITYPE);
-	BT_ASSERT(tperrno != TPELIMIT);
-	BT_ASSERT(tperrno != TPETRAN);
-	BT_ASSERT(tperrno != TPETIME);
-	BT_ASSERT(tperrno != TPEBLOCK);
-	BT_ASSERT(tperrno != TPGOTSIG);
-	BT_ASSERT(tperrno != TPEPROTO);
-	BT_ASSERT(tperrno != TPESYSTEM);
-	BT_ASSERT(tperrno != TPEOS);
-	BT_ASSERT(tperrno == 0);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 
 	char* cdS = (char*) malloc(110);
 	sprintf(cdS, "%d", cd);
@@ -125,12 +121,6 @@ void TestTPACall::test_tpconnect_to_non_TPCONV_fails() {
 // 9.1.1
 void TestTPACall::test_tpacall_x_octet() {
 	userlogc((char*) "test_tpacall_x_octet");
-	char *ptr1, *ptr2;
-	sendbuf = tpalloc((char*) "X_OCTET", NULL, 25);
-	ptr1 = sendbuf;
-	ptr2 = sendbuf + 10;
-	strcpy(ptr1, "hello");
-	strcpy(ptr2, "goodbye");
 
 	int cd = tpacall((char*) "GREETSVC", sendbuf, 25, TPNOREPLY);
 	BT_ASSERT(tperrno == TPENOENT);
@@ -143,14 +133,10 @@ void TestTPACall::test_tpacall_x_octet() {
 void TestTPACall::test_tpacall_tprecv() {
 	userlogc((char*) "test_tpacall_tprecv");
 
-	sendlen = strlen("test_tpacall") + 1;
-	sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
-	strcpy(sendbuf, "test_tpacall");
+	cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, sendlen, 0);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
-	cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, sendlen, 0);
-	BT_ASSERT(tperrno == 0);
 
 	char* cdS = (char*) malloc(110);
 	sprintf(cdS, "%d", cd);

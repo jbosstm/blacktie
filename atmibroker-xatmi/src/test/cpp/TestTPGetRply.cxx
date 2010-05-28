@@ -48,12 +48,14 @@ void TestTPGetRply::setUp() {
 
 	// Do local work
 	sendlen = strlen("grply") + 1;
-	rcvlen = 22;
 	BT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen))
 			!= NULL);
+	strcpy(sendbuf, "grply");
+
+	rcvlen = 22;
 	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen))
 			!= NULL);
-	strcpy(sendbuf, "grply");
+
 	BT_ASSERT(tperrno == 0);
 
 	cd = -1;
