@@ -26,9 +26,11 @@
 			<xsd:pattern value="[A-Za-z_]+[A-Za-z0-9_]*" />
 		</xsd:restriction>
 	</xsd:simpleType>
-	<!-- The server name cannot use a number as the numbers are 
-             allocated by the core engine and the name can be determined
-             by the portion of text between a period and a number -->
+	<!--
+		The server name cannot use a number as the numbers are allocated by
+		the core engine and the name can be determined by the portion of text
+		between a period and a number
+	-->
 	<xsd:simpleType name="svrstring">
 		<xsd:restriction base="xsd:string">
 			<xsd:minLength value="1" />
@@ -101,7 +103,8 @@
 										<xsd:element name="MACHINE-REF" minOccurs="0"
 											maxOccurs="unbounded">
 											<xsd:complexType>
-												<xsd:attribute name="id" type="xsd:string" use="required"/>
+												<xsd:attribute name="id" type="xsd:string"
+													use="required" />
 											</xsd:complexType>
 										</xsd:element>
 										<xsd:element name="security" minOccurs="0"
@@ -156,6 +159,8 @@
 															<xsd:attribute name="function_name" type="xsd:string" />
 															<xsd:attribute name="java_class_name" type="xsd:string" />
 															<xsd:attribute name="advertised" type="xsd:boolean"
+																default="false" />
+															<xsd:attribute name="conversational" type="xsd:boolean"
 																default="false" />
 															<xsd:attribute name="size" type="xsd:integer" />
 														</xsd:complexType>
