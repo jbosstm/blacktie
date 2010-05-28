@@ -87,8 +87,9 @@ public abstract class BlackTieService implements Service {
 			Session serviceSession = connection.createServiceSession(name,
 					message.cd, message.replyTo);
 			boolean hasTPCONV = (message.flags & Connection.TPCONV) == Connection.TPCONV;
-			boolean isConversational = ((Boolean) connection.properties
-					.get("blacktie." + name + ".conversational")) == true;
+			Boolean conversational = (Boolean) connection.properties
+					.get("blacktie." + name + ".conversational");
+			boolean isConversational = conversational == true;
 			if (hasTPCONV && isConversational) {
 				int olen = 4;
 				X_OCTET odata = new X_OCTET(olen);

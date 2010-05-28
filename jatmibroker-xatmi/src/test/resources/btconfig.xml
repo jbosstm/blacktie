@@ -19,54 +19,32 @@
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
 	<MACHINES>
-		<MACHINE id="myserv1" hostname="albany"
-			pathToExecutable="notExist"
-			workingDirectory="." argLine="foo"
-			serverId="1"/>
-		<MACHINE id="myserv2" hostname="albany"
-			pathToExecutable="notExist"
-			workingDirectory="." argLine="foo"
-			serverId="2" />
+		<MACHINE id="myserv1" hostname="albany" pathToExecutable="notExist"
+			workingDirectory="." argLine="foo" serverId="1" />
+		<MACHINE id="myserv2" hostname="albany" pathToExecutable="notExist"
+			workingDirectory="." argLine="foo" serverId="2" />
 		<MACHINE id="myserv3" hostname="localhost.localdomain"
-			pathToExecutable="notExist"
-			workingDirectory="." argLine="foo"
+			pathToExecutable="notExist" workingDirectory="." argLine="foo"
 			serverId="1" />
 		<MACHINE id="myserv4" hostname="localhost.localdomain"
-			pathToExecutable="notExist"
-			workingDirectory="." argLine="foo"
+			pathToExecutable="notExist" workingDirectory="." argLine="foo"
 			serverId="2" />
-		<MACHINE id="myserv5" hostname="beacon"
-			pathToExecutable="notExist"
-			workingDirectory="." argLine="foo"
-			serverId="1" />
-		<MACHINE id="myserv6" hostname="beacon"
-			pathToExecutable="notExist"
-			workingDirectory="." argLine="foo"
-			serverId="2" />
-		<MACHINE id="myserv7" hostname="catskill"
-			pathToExecutable="notExist"
-			workingDirectory="." argLine="foo"
-			serverId="1" />
-		<MACHINE id="myserv8" hostname="catskill"
-			pathToExecutable="notExist"
-			workingDirectory="." argLine="foo"
-			serverId="2" />
-		<MACHINE id="myserv9" hostname="winxp08"
-			pathToExecutable="notExist"
-			workingDirectory="." argLine="foo"
-			serverId="1" />
-		<MACHINE id="myserv10" hostname="winxp08"
-			pathToExecutable="notExist"
-			workingDirectory="." argLine="foo"
-			serverId="2" />
-		<MACHINE id="myserv11" hostname="dev1"
-			pathToExecutable="notExist"
-			workingDirectory="." argLine="foo"
-			serverId="1" />
-		<MACHINE id="myserv12" hostname="dev1"
-			pathToExecutable="notExist"
-			workingDirectory="." argLine="foo"
-			serverId="2" />
+		<MACHINE id="myserv5" hostname="beacon" pathToExecutable="notExist"
+			workingDirectory="." argLine="foo" serverId="1" />
+		<MACHINE id="myserv6" hostname="beacon" pathToExecutable="notExist"
+			workingDirectory="." argLine="foo" serverId="2" />
+		<MACHINE id="myserv7" hostname="catskill" pathToExecutable="notExist"
+			workingDirectory="." argLine="foo" serverId="1" />
+		<MACHINE id="myserv8" hostname="catskill" pathToExecutable="notExist"
+			workingDirectory="." argLine="foo" serverId="2" />
+		<MACHINE id="myserv9" hostname="winxp08" pathToExecutable="notExist"
+			workingDirectory="." argLine="foo" serverId="1" />
+		<MACHINE id="myserv10" hostname="winxp08" pathToExecutable="notExist"
+			workingDirectory="." argLine="foo" serverId="2" />
+		<MACHINE id="myserv11" hostname="dev1" pathToExecutable="notExist"
+			workingDirectory="." argLine="foo" serverId="1" />
+		<MACHINE id="myserv12" hostname="dev1" pathToExecutable="notExist"
+			workingDirectory="." argLine="foo" serverId="2" />
 	</MACHINES>
 	<SERVERS>
 		<SERVER name='myserv'>
@@ -85,7 +63,7 @@
 			<SERVICE_NAMES>
 				<SERVICE name='TestOne' />
 				<SERVICE name='TestTwo' />
-				<SERVICE name='ConvService' />
+				<SERVICE name='ConvService' conversational='true' />
 				<SERVICE name='JAVA_Converse'
 					java_class_name="org.jboss.blacktie.jatmibroker.xatmi.services.TPCallXOctetService"
 					advertised="true" size="1">
@@ -104,7 +82,8 @@
 	<MQ HOST="${JBOSSAS_IP_ADDR}" PORT="61613" USER="guest" PASSWORD="guest"
 		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10"
 		NAMING_URL="jnp://${JBOSSAS_IP_ADDR}:1099" />
-	<JMX url="service:jmx:rmi:///jndi/rmi://${JBOSSAS_IP_ADDR}:1090/jmxconnector" />
+	<JMX
+		url="service:jmx:rmi:///jndi/rmi://${JBOSSAS_IP_ADDR}:1090/jmxconnector" />
 	<BUFFERS>
 		<BUFFER name="abcdefghijklmnop">
 			<ATTRIBUTE id="key" type="char[]" arrayLength="10" />
