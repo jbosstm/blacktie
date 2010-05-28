@@ -34,23 +34,24 @@ class TestTPAlloc: public BaseTest {
 	CPPUNIT_TEST( test_tpalloc_x_common_subtype_required);
 	CPPUNIT_TEST( test_tpalloc_x_c_type_subtype_required);
 	CPPUNIT_TEST( test_tpalloc_x_common_bigsubtype);
-	CPPUNIT_TEST( test_tpalloc_x_c_type);
-CPPUNIT_TEST_SUITE_END();
+	CPPUNIT_TEST( test_tpalloc_x_common_unknown_subtype);
+	CPPUNIT_TEST( test_tpalloc_x_c_type);CPPUNIT_TEST_SUITE_END();
 public:
-void test_tpalloc_zero();
-void test_tpalloc_negative();
-void test_tpalloc_x_octet_subtype_ignored();
-void test_tpalloc_unknowntype();
-void test_tpalloc_x_octet();
-void test_tpalloc_x_common();
-void test_tpalloc_x_common_bigsubtype();
-void test_tpalloc_x_c_type();
-void test_tpalloc_x_common_subtype_required();
-void test_tpalloc_x_c_type_subtype_required();
-virtual void setUp();
-virtual void tearDown();
+	void test_tpalloc_zero();
+	void test_tpalloc_negative();
+	void test_tpalloc_x_octet_subtype_ignored();
+	void test_tpalloc_unknowntype();
+	void test_tpalloc_x_octet();
+	void test_tpalloc_x_common();
+	void test_tpalloc_x_common_bigsubtype();
+	void test_tpalloc_x_c_type();
+	void test_tpalloc_x_common_subtype_required();
+	void test_tpalloc_x_c_type_subtype_required();
+	void test_tpalloc_x_common_unknown_subtype();
+	virtual void setUp();
+	virtual void tearDown();
 private:
-char * m_allocated;
+	char * m_allocated;
 };
 
 #endif
