@@ -137,7 +137,8 @@ public class RunServer {
 	}
 
 	public void tpadvertiseTestTPRecv() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TPRecvService.class.getName());
+		this.server.tpadvertise(getServiceNameTestTPRecv(), TPRecvService.class
+				.getName());
 	}
 
 	public void tpadvertiseTestTPReturn() throws ConnectionException {
@@ -255,7 +256,7 @@ public class RunServer {
 	}
 
 	public static String getServiceNameTestTPRecv() {
-		return "TestOne";
+		return "ConvService";
 	}
 
 	public static String getServiceNameTestTPReturn() {
