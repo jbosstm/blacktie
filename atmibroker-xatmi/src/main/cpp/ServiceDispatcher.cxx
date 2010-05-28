@@ -222,8 +222,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 		long olen = 4;
 		char* odata = (char*) tpalloc((char*) "X_OCTET", NULL, olen);
 		strcpy(odata, "ERR");
-		long revent = 0;
-		long result = tpsend(message.correlationId, odata, olen, 0, &revent);
+		::tpreturn(TPFAIL, TPESVCFAIL, odata, olen, 0);
 		connection->closeSession(message.correlationId);
 		destroySpecific( SVC_SES);
 		destroySpecific( SVC_KEY);
@@ -286,18 +285,14 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	LOG4CXX_TRACE(logger, (char*) "ServiceDispatcher closing session: "
 			<< message.correlationId);
 	connection->closeSession(message.correlationId);
-	//	session = NULL;
 	LOG4CXX_TRACE(logger, (char*) "ServiceDispatcher session closed: "
 			<< message.correlationId);
-	//	HybridConnectionImpl* instance = dynamic_cast<HybridConnectionImpl*> (connection);
-	//shutdownBindings(instance->connection);
 
 	destroySpecific( SVC_SES);
 	destroySpecific( SVC_KEY);
 
 	LOG4CXX_TRACE(logger,
 			(char*) "Freeing the data that was passed to the service");
-	//	free(idata);
 	LOG4CXX_TRACE(logger, (char*) "Freed the data");
 }
 

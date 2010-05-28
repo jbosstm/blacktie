@@ -93,17 +93,23 @@ void TestTPConnect::test_tpconnect() {
 void TestTPConnect::test_tpacall_to_TPCONV_fails() {
 	userlogc((char*) "test_tpacall_to_TPCONV_fails");
 
-	int cd = ::tpacall((char*) "TestTPConnect", (char *) sendbuf, sendlen,
-			TPNOREPLY);
+	int cd = ::tpacall((char*) "TestTPConnect", (char *) sendbuf, sendlen, 0);
+	//	char* tperrnoS = (char*) malloc(110);
+	//	sprintf(tperrnoS, "%d", tperrno);
+	//	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPENOENT);
+	//	free(tperrnoS);
+	//
+	//	char* cdS = (char*) malloc(110);
+	//	sprintf(cdS, "%d", cd);
+	//	BT_ASSERT_MESSAGE(cdS, cd == -1);
+	//	free(cdS);
+
+	int toTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
-	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPENOENT);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPESVCFAIL);
 	free(tperrnoS);
-
-	char* cdS = (char*) malloc(110);
-	sprintf(cdS, "%d", cd);
-	BT_ASSERT_MESSAGE(cdS, cd == -1);
-	free(cdS);
+	BT_ASSERT(strcmp(rcvbuf, "ERR") == 0);
 }
 
 void TestTPConnect::test_tpconnect_double_connect() {
