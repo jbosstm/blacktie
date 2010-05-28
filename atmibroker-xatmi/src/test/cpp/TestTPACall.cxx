@@ -110,7 +110,7 @@ void TestTPACall::test_tpconnect_to_non_TPCONV_fails() {
 	int cd = ::tpconnect((char*) "TestTPACall", sendbuf, sendlen, TPRECVONLY);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
-	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPENONT);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPENOENT);
 	free(tperrnoS);
 
 	char* cdS = (char*) malloc(110);
