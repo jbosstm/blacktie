@@ -336,6 +336,7 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 					LOG4CXX_DEBUG(loggerXATMI,
 							(char*) "Message not immediately available");
 					setSpecific(TPE_KEY, TSS_TPEBLOCK);
+					closeSession = false;
 				} else {
 					setSpecific(TPE_KEY, TSS_TPETIME);
 					txx_rollback_only();
