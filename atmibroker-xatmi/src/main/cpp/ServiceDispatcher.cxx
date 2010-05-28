@@ -201,18 +201,18 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 	bool hasTPCONV = tpsvcinfo.flags & TPCONV;
 	if (hasTPCONV && isConversational) {
-		tpsvcinfo.cd = message.correlationId;
 		long olen = 4;
 		char* odata = (char*) tpalloc((char*) "X_OCTET", NULL, olen);
 		strcpy(odata, "ACK");
 		long revent = 0;
-		long result = tpsend(tpsvcinfo.cd, odata, olen, 0, &revent);
+		long result = tpsend(message.correlationId, odata, olen, 0, &revent);
 		if (result == -1) {
 			connection->closeSession(message.correlationId);
 			destroySpecific( SVC_SES);
 			destroySpecific( SVC_KEY);
 			return;
 		}
+		tpsvcinfo.cd = message.correlationId;
 	} else if (!hasTPCONV && !isConversational) {
 		LOG4CXX_DEBUG(logger, (char*) "cd not being set");
 	} else {
@@ -223,7 +223,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 		char* odata = (char*) tpalloc((char*) "X_OCTET", NULL, olen);
 		strcpy(odata, "ERR");
 		long revent = 0;
-		long result = tpsend(tpsvcinfo.cd, odata, olen, 0, &revent);
+		long result = tpsend(message.correlationId, odata, olen, 0, &revent);
 		connection->closeSession(message.correlationId);
 		destroySpecific( SVC_SES);
 		destroySpecific( SVC_KEY);

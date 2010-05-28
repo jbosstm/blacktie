@@ -665,6 +665,7 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 								long event = 0;
 								::tprecv(cd, &odata, &olen, 0, &event);
 								bool connected = strcmp(odata, "ACK") == 0;
+								bool err = strcmp(odata, "ERR") == 0;
 								tpfree(odata);
 								if (connected) {
 									toReturn = cd;
@@ -699,6 +700,20 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 												loggerXATMI,
 												(char*) "tpconnect child session opened");
 									}
+								} else if (err) {
+									LOG4CXX_DEBUG(loggerXATMI,
+											(char*) "COULD NOT CONNECT: " << cd);
+									// Remove the child session
+									Session* svcSession =
+											(Session*) getSpecific(SVC_SES);
+									if (svcSession != NULL) {
+										svcSession->removeChildSession(session);
+										LOG4CXX_TRACE(
+												loggerXATMI,
+												(char*) "tpconnect failed connect session closed");
+									}
+									ptrAtmiBrokerClient->closeSession(cd);
+									setSpecific(TPE_KEY, TSS_TPENOENT);
 								} else {
 									LOG4CXX_DEBUG(loggerXATMI,
 											(char*) "COULD NOT CONNECT: " << cd);
