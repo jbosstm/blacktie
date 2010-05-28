@@ -78,12 +78,12 @@ public class TestTPConversation extends TestCase {
 			}
 		}
 		log.info("Conversed");
-		Response rcvbuf = connection.tpgetrply(cd.getCd(), 0);
+		Buffer rcvbuf = cd.tprecv(0);
 
 		String expectedResult = ("hi" + interationCount);
 		log.info("Expected: " + expectedResult + " Received: "
-				+ new String(((X_OCTET) rcvbuf.getBuffer()).getByteArray()));
-		assertTrue(strcmp(expectedResult, rcvbuf.getBuffer()) == 0);
+				+ new String(((X_OCTET) rcvbuf).getByteArray()));
+		assertTrue(strcmp(expectedResult, rcvbuf) == 0);
 	}
 
 	public void test_short_conversation() throws ConnectionException {
@@ -98,7 +98,7 @@ public class TestTPConversation extends TestCase {
 		assertTrue(rcvbuf != null);
 		assertTrue(strcmp("hi0", rcvbuf) == 0);
 
-		rcvbuf = connection.tpgetrply(cd.getCd(), 0).getBuffer();
+		rcvbuf = cd.tprecv(0);
 		assertTrue(strcmp("hi1", rcvbuf) == 0);
 	}
 
