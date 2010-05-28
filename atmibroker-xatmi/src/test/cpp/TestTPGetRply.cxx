@@ -210,7 +210,7 @@ void TestTPGetRply::test_tpgetrply_with_TPNOBLOCK() {
 	int valToTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, TPNOBLOCK);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
-	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEBLOCK);
 	free(tperrnoS);
 	BT_ASSERT(valToTest == -1);
 	BT_ASSERT(strcmp(rcvbuf, "test_tpgetrply_TPNOBLOCK") == -1);

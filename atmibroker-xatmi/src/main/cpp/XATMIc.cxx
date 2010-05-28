@@ -152,8 +152,9 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 long determineTimeout(long flags) {
 	long time = 0;
 	if (TPNOBLOCK & flags) { // NB flags override any XATMI or transaction timeouts
-		time = 1;
-		LOG4CXX_DEBUG(loggerXATMI, (char*) "Setting timeout to 1");
+		time = -1;
+		LOG4CXX_DEBUG(loggerXATMI,
+				(char*) "Setting timeout to -1 for TPNOBLOCK");
 	} else if (TPNOTIME & flags) {
 		time = 0;
 		LOG4CXX_DEBUG(loggerXATMI, (char*) "TPNOTIME = BLOCKING CALL");
@@ -334,6 +335,7 @@ int receive(int id, Session* session, char ** odata, long *olen, long flags,
 				} else if (TPNOBLOCK & flags) {
 					LOG4CXX_DEBUG(loggerXATMI,
 							(char*) "Message not immediately available");
+					setSpecific(TPE_KEY, TSS_TPEBLOCK);
 				} else {
 					setSpecific(TPE_KEY, TSS_TPETIME);
 					txx_rollback_only();
@@ -800,7 +802,10 @@ int tpgetrply(int *id, char ** odata, long *olen, long flags) {
 			if (flags & TPGETANY) {
 				lock.lock();
 				if (sessionIds.size() == 0) {
-					lock.wait(determineTimeout(flags));
+					long timeout = determineTimeout(flags);
+					if (timeout >= 0) {
+						lock.wait(timeout);
+					}
 				}
 				if (sessionIds.size() == 0) {
 					LOG4CXX_TRACE(loggerXATMI,

@@ -188,7 +188,9 @@ MESSAGE HybridCorbaEndpointQueue::receive(long time) {
 
 	lock->lock();
 	if (!shutdown) {
-		if (returnData.size() == 0) {
+		if (time == -1) {
+			LOG4CXX_DEBUG(logger, (char*) "TPNOBLOCK detected");
+		} else if (returnData.size() == 0) {
 			LOG4CXX_DEBUG(logger, (char*) "waiting for %d" << time);
 			lock->wait(time);
 			LOG4CXX_DEBUG(logger, (char*) "out of wait");
