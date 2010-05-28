@@ -70,7 +70,6 @@ void TestTPACall::test_tpacall() {
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
-	free(tperrnoS);
 	int cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, sendlen,
 			TPNOREPLY);
 
@@ -94,14 +93,9 @@ void TestTPACall::test_tpacall() {
 
 	// Make sure that there isn't a reply waiting
 	int toTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
-	BT_ASSERT(tperrno != TPEINVAL);
-	BT_ASSERT(tperrno != TPEOTYPE);
-	BT_ASSERT(tperrno != TPETIME);
-	BT_ASSERT(tperrno != TPESVCFAIL);
-	BT_ASSERT(tperrno != TPESVCERR);
-	BT_ASSERT(tperrno != TPEBLOCK);
-	BT_ASSERT(tperrno != 0);
-	BT_ASSERT(tperrno == TPEBADDESC);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEBADDESC);
+	free(tperrnoS);
 	BT_ASSERT(toTest == -1);
 }
 
@@ -117,18 +111,6 @@ void TestTPACall::test_tpconnect_to_non_TPCONV_fails() {
 	sprintf(cdS, "%d", cd);
 	BT_ASSERT_MESSAGE(cdS, cd == -1);
 	free(cdS);
-}
-
-void TestTPACall::test_tpacall_systemerr() {
-	userlogc((char*) "test_tpacall_systemerr");
-	sendlen = strlen("test_tpacall_systemerr") + 1;
-	sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
-	strcpy(sendbuf, "test_tpacall_systemerr");
-
-	int cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, sendlen,
-			TPNOREPLY);
-	BT_ASSERT(tperrno == TPESYSTEM);
-	BT_ASSERT(cd == -1);
 }
 
 // 9.1.1
@@ -163,7 +145,7 @@ void TestTPACall::test_tpacall_tprecv() {
 
 	char* cdS = (char*) malloc(110);
 	sprintf(cdS, "%d", cd);
-	BT_ASSERT_MESSAGE(cdS, cd == 0);
+	BT_ASSERT_MESSAGE(cdS, cd != -1);
 	free(cdS);
 
 	long revent = 0;
@@ -171,6 +153,12 @@ void TestTPACall::test_tpacall_tprecv() {
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEBADDESC);
 	free(tperrnoS);
+
+	// Drain the response
+	int toTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "testtpacall_service") == 0);
 }
 
 void testtpacall_service(TPSVCINFO *svcinfo) {
