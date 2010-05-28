@@ -97,7 +97,7 @@ void TestTPConnect::test_tpacall_to_TPCONV_fails() {
 			TPNOREPLY);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
-	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEPROTO);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPENOENT);
 	free(tperrnoS);
 
 	char* cdS = (char*) malloc(110);
