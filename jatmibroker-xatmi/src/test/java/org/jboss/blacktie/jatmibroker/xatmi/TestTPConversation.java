@@ -44,7 +44,6 @@ public class TestTPConversation extends TestCase {
 		connection = connectionFactory.getConnection();
 		sendlen = 11;
 		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
-
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {

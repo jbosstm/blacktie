@@ -221,4 +221,8 @@ public class RunServer {
 	public native void tpadvertiseTestTPReturn3();
 
 	public native void tpadvertiseTestTPReturn4();
+
+	public static String getServiceNameTestRollbackOnly2() {
+		return "TestRbkOnly2";
+	}
 }

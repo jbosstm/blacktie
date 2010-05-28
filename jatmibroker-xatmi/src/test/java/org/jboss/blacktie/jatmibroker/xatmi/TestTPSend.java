@@ -42,7 +42,6 @@ public class TestTPSend extends TestCase {
 		sendlen = "tpsend".length() + 1;
 		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
 		sendbuf.setByteArray("tpsend".getBytes());
-
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {

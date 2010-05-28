@@ -408,6 +408,8 @@ public class Connection {
 		try {
 			log.debug("tpconnect receiving data");
 			X_OCTET odata = (X_OCTET) session.tprecv(0);
+			// TODO THIS SHOULD BE A BETTER ERROR AND CHECKED IF TPCONV AND NOT
+			// CONV
 			response = odata.getByteArray();
 			log.debug("tpconnect received data");
 		} catch (ResponseException e) {

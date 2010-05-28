@@ -441,8 +441,8 @@ void test_tpgetrply_TPGETANY_two(TPSVCINFO *svcinfo) {
 
 void testtpreturn_service_opensession1(TPSVCINFO *svcinfo) {
 	userlogc((char*) "testtpreturn_service_opensession1");
-	int cd = ::tpacall((char*) "TestTPReturnB", (char *) svcinfo->data, svcinfo->len,
-			0);
+	int cd = ::tpacall((char*) "TestTPReturnB", (char *) svcinfo->data,
+			svcinfo->len, 0);
 	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
 }
 
@@ -630,12 +630,12 @@ JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertise
 
 extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestRollbackOnlyTprecvTPEVDISCONIMMService(JNIEnv *, jobject) {
-	tpadvertise((char*) "TestRbkOnly", test_tprecv_TPEV_DISCONIMM_service);
+	tpadvertise((char*) "TestRbkOnly2", test_tprecv_TPEV_DISCONIMM_service);
 }
 
 extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestRollbackOnlyTprecvTPEVSVCFAILService(JNIEnv *, jobject) {
-	tpadvertise((char*) "TestRbkOnly", test_tprecv_TPEV_SVCFAIL_service);
+	tpadvertise((char*) "TestRbkOnly2", test_tprecv_TPEV_SVCFAIL_service);
 }
 
 extern "C"

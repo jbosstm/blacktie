@@ -110,21 +110,23 @@ public class RunServer {
 	}
 
 	public void tpadvertiseTestTPConnect() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TPConnectService.class.getName());
+		this.server.tpadvertise(getServiceNameTestTPConnect(),
+				TPConnectService.class.getName());
 	}
 
 	public void tpadvertiseTestTPConversation() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TPConversationService.class
-				.getName());
+		this.server.tpadvertise(getServiceNameTestTPConversation(),
+				TPConversationService.class.getName());
 	}
 
 	public void tpadvertiseTestTPConversa2() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TPConversationShortService.class
-				.getName());
+		this.server.tpadvertise(getServiceNameTestTPConversa2(),
+				TPConversationShortService.class.getName());
 	}
 
 	public void tpadvertiseTestTPDiscon() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TPDisconService.class.getName());
+		this.server.tpadvertise(getServiceNameTestTPDiscon(),
+				TPDisconService.class.getName());
 	}
 
 	public void tpadvertiseTestTPFree() throws ConnectionException {
@@ -161,12 +163,13 @@ public class RunServer {
 	}
 
 	public void tpadvertiseTestTPSend() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TPSendService.class.getName());
+		this.server.tpadvertise(getServiceNameTestTPSend(), TPSendService.class
+				.getName());
 	}
 
 	public void tpadvertiseTestTPSendTPSendOnly() throws ConnectionException {
-		this.server.tpadvertise("TestOne", TPSendTPSendOnlyService.class
-				.getName());
+		this.server.tpadvertise(getServiceNameTestTPSendTPSendOnly(),
+				TPSendTPSendOnlyService.class.getName());
 	}
 
 	public void tpadvertiseTestTPService() throws ConnectionException {
@@ -204,7 +207,7 @@ public class RunServer {
 	}
 
 	public static String getServiceNameINQUIRY() {
-		return "TestOne";
+		return "ConvService";
 	}
 
 	public static String getServiceNameTestTPACall() {
@@ -232,23 +235,19 @@ public class RunServer {
 	}
 
 	public static String getServiceNameTestTPConnect() {
-		return "TestOne";
+		return "ConvService";
 	}
 
 	public static String getServiceNameTestTPConversation() {
-		return "TestOne";
+		return "ConvService";
 	}
 
 	public static String getServiceNameTestTPDiscon() {
-		return "TestOne";
+		return "ConvService";
 	}
 
 	public static String getServiceNameTestTPConversa2() {
-		return "TestOne";
-	}
-
-	public static String getServiceNameTestTPFree() {
-		throw new RuntimeException("NOT SUPPORTED");
+		return "ConvService";
 	}
 
 	public static String getServiceNameTestTPGetrply() {
@@ -268,11 +267,11 @@ public class RunServer {
 	}
 
 	public static String getServiceNameTestTPSend() {
-		return "TestOne";
+		return "ConvService";
 	}
 
 	public static String getServiceNameTestTPSendTPSendOnly() {
-		return "TestOne";
+		return "ConvService";
 	}
 
 	public static String getServiceNameTestTPService() {
@@ -329,13 +328,13 @@ public class RunServer {
 
 	public void tpadvertiseTestRollbackOnlyTprecvTPEVDISCONIMMService()
 			throws ConnectionException {
-		this.server.tpadvertise(getServiceNameTestRollbackOnly(),
+		this.server.tpadvertise(getServiceNameTestRollbackOnly2(),
 				RollbackOnlyTprecvTPEVDISCONIMMService.class.getName());
 	}
 
 	public void tpadvertiseTestRollbackOnlyTprecvTPEVSVCFAILService()
 			throws ConnectionException {
-		this.server.tpadvertise(getServiceNameTestRollbackOnly(),
+		this.server.tpadvertise(getServiceNameTestRollbackOnly2(),
 				RollbackOnlyTprecvTPEVSVCFAILService.class.getName());
 	}
 
@@ -365,5 +364,9 @@ public class RunServer {
 
 	public static String getServiceNameTPSendNonTPCONVService() {
 		return "TestOne";
+	}
+
+	public static String getServiceNameTestRollbackOnly2() {
+		return "ConvService";
 	}
 }

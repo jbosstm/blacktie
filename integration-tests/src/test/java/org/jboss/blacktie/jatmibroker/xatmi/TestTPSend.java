@@ -92,16 +92,16 @@ public class TestTPSend extends TestCase {
 
 		cd.tpsend(sendbuf, 0);
 	}
-
-	public void test_tpsend_non_TPCONV_session() throws ConnectionException {
-		server.tpadvertiseTestTPSendNonTPCONVService();
-
-		try {
-			Response rcvbuf = connection.tpcall(RunServer
-					.getServiceNameTPSendNonTPCONVService(), sendbuf, 0);
-			fail("Received a rcvbuf: " + rcvbuf);
-		} catch (ConnectionException e) {
-			assertTrue(e.getTperrno() == Connection.TPESVCERR);
-		}
-	}
+	// TODO
+	// public void test_tpsend_non_TPCONV_session() throws ConnectionException {
+	// server.tpadvertiseTestTPSendNonTPCONVService();
+	//
+	// try {
+	// Response rcvbuf = connection.tpcall(RunServer
+	// .getServiceNameTPSendNonTPCONVService(), sendbuf, 0);
+	// fail("Received a rcvbuf: " + rcvbuf);
+	// } catch (ConnectionException e) {
+	// assertTrue(e.getTperrno() == Connection.TPESVCERR);
+	// }
+	// }
 }

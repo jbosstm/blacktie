@@ -85,6 +85,7 @@
 			<SERVICE_NAMES>
 				<SERVICE name='TestOne' />
 				<SERVICE name='TestTwo' />
+				<SERVICE name='ConvService' />
 				<SERVICE name='JAVA_Converse'
 					java_class_name="org.jboss.blacktie.jatmibroker.xatmi.services.TPCallXOctetService"
 					advertised="true" size="1">
