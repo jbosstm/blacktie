@@ -191,7 +191,7 @@ public abstract class Buffer implements Serializable {
 				throw new ConnectionException(Connection.TPEOS,
 						"Subtype was not registered: " + subtype);
 			}
-			len = buffer.wireSize;
+			this.len = buffer.wireSize;
 			String[] ids = new String[buffer.attributes.size()];
 			Class[] types = new Class[buffer.attributes.size()];
 			int[] length = new int[buffer.attributes.size()];
@@ -213,6 +213,7 @@ public abstract class Buffer implements Serializable {
 			}
 			format(ids, types, length, count);
 		} else {
+			this.len = len;
 			format.put("X_OCTET", byte[].class);
 		}
 	}
