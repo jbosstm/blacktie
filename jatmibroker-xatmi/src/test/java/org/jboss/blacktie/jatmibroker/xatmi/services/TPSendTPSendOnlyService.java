@@ -16,7 +16,7 @@ public class TPSendTPSendOnlyService implements Service {
 	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException {
 		log.info("testtpsend_tpsendonly_service");
 		int result = svcinfo.getSession().tpsend(svcinfo.getBuffer(),
-				svcinfo.getLen(), Connection.TPRECVONLY);
+				Connection.TPRECVONLY);
 		try {
 			Buffer tprecv = svcinfo.getSession().tprecv(0);
 		} catch (ConnectionException e) {

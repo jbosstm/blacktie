@@ -19,6 +19,8 @@ package org.jboss.blacktie.jatmibroker.jab;
 
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
@@ -33,6 +35,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
  * @see JABServiceInvoker
  */
 public class JABMessage implements Message {
+	private static final Logger log = LogManager.getLogger(JABMessage.class);
 
 	/**
 	 * The rcode if this is a response
@@ -44,6 +47,8 @@ public class JABMessage implements Message {
 	private X_COMMON xCommon;
 
 	private X_C_TYPE xCType;
+
+	private Connection connection;
 
 	/**
 	 * The request should be created from the JABRemoteService getRequest
@@ -58,7 +63,8 @@ public class JABMessage implements Message {
 	JABMessage(Connection connection, String bufferType, String bufferSubType)
 			throws JABException {
 		try {
-			Buffer buffer = connection.tpalloc(bufferType, bufferSubType);
+			this.connection = connection;
+			Buffer buffer = connection.tpalloc(bufferType, bufferSubType, 0);
 			if (buffer.getType().equals("X_OCTET")) {
 				xOctet = (X_OCTET) buffer;
 			} else if (buffer.getType().equals("X_COMMON")) {
@@ -67,7 +73,7 @@ public class JABMessage implements Message {
 				xCType = (X_C_TYPE) buffer;
 			}
 		} catch (ConnectionException e) {
-			throw new JABException("Could not create an X_OCTET buffer", e);
+			throw new JABException("Could not create a buffer", e);
 		}
 	}
 
@@ -330,6 +336,15 @@ public class JABMessage implements Message {
 	public void setByteArray(String key, byte[] data) throws JABException {
 		if (xOctet != null) {
 			if (key.equals("X_OCTET")) {
+				if (data.length != xOctet.getLen()) {
+					try {
+						xOctet = (X_OCTET) connection.tpalloc("X_OCTET", null,
+								data.length);
+					} catch (ConnectionException e) {
+						throw new JABException(
+								"Could not allocate the X_OCTET buffer");
+					}
+				}
 				xOctet.setByteArray(data);
 			} else {
 				throw new JABException(
@@ -482,14 +497,6 @@ public class JABMessage implements Message {
 			} catch (Throwable t) {
 				throw new JABException(t.getMessage(), t);
 			}
-		}
-	}
-
-	int getLength() {
-		if (xOctet != null) {
-			return xOctet.getByteArray().length;
-		} else {
-			return 0;
 		}
 	}
 

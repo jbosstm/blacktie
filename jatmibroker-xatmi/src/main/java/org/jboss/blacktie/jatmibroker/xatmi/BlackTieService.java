@@ -89,9 +89,9 @@ public abstract class BlackTieService implements Service {
 			boolean hasTPCONV = (message.flags & Connection.TPCONV) == Connection.TPCONV;
 			if (hasTPCONV) {
 				int olen = 4;
-				X_OCTET odata = new X_OCTET();
+				X_OCTET odata = new X_OCTET(olen);
 				odata.setByteArray("ACK".getBytes());
-				long result = serviceSession.tpsend(odata, olen, 0);
+				long result = serviceSession.tpsend(odata, 0);
 				if (result == -1) {
 					log.debug("Could not send ack");
 					serviceSession.close();
@@ -118,7 +118,8 @@ public abstract class BlackTieService implements Service {
 				// THIS IS THE FIRST CALL
 				Buffer buffer = null;
 				if (message.type != null && !message.type.equals("")) {
-					buffer = connection.tpalloc(message.type, message.subtype);
+					buffer = connection.tpalloc(message.type, message.subtype,
+							message.len);
 					buffer.deserialize(message.data);
 				}
 				TPSVCINFO tpsvcinfo = new TPSVCINFO(message.serviceName,
@@ -175,8 +176,8 @@ public abstract class BlackTieService implements Service {
 
 					if (response != null) {
 						Buffer toSend = response.getBuffer();
-						len = response.getLen();
 						if (toSend != null) {
+							len = toSend.getLen();
 							data = toSend.serialize();
 							type = toSend.getType();
 							subtype = toSend.getSubtype();

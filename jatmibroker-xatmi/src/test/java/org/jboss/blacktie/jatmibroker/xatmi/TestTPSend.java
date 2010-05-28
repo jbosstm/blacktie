@@ -40,7 +40,7 @@ public class TestTPSend extends TestCase {
 		connection = connectionFactory.getConnection();
 
 		sendlen = "tpsend".length() + 1;
-		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
 		sendbuf.setByteArray("tpsend".getBytes());
 
 	}
@@ -55,9 +55,9 @@ public class TestTPSend extends TestCase {
 		server.tpadvertiseTestTPSend();
 
 		cd = connection.tpconnect(RunServer.getServiceNameTestTPSend(),
-				sendbuf, sendlen, Connection.TPRECVONLY);
+				sendbuf, Connection.TPRECVONLY);
 		try {
-			cd.tpsend(sendbuf, sendlen, 0);
+			cd.tpsend(sendbuf, 0);
 			fail("expected proto error");
 		} catch (ResponseException e) {
 			assertTrue(e.getEvent() == Connection.TPEV_SVCERR);
@@ -71,7 +71,7 @@ public class TestTPSend extends TestCase {
 		server.tpadvertiseTestTPSendTPSendOnly();
 
 		cd = connection.tpconnect(RunServer
-				.getServiceNameTestTPSendTPSendOnly(), sendbuf, sendlen,
+				.getServiceNameTestTPSendTPSendOnly(), sendbuf,
 				Connection.TPRECVONLY);
 
 		try {
@@ -90,7 +90,7 @@ public class TestTPSend extends TestCase {
 			assertTrue(e.getTperrno() == Connection.TPEPROTO);
 		}
 
-		cd.tpsend(sendbuf, sendlen, 0);
+		cd.tpsend(sendbuf, 0);
 	}
 
 	public void test_tpsend_non_TPCONV_session() throws ConnectionException {
@@ -98,8 +98,7 @@ public class TestTPSend extends TestCase {
 
 		try {
 			Response rcvbuf = connection.tpcall(RunServer
-					.getServiceNameTPSendNonTPCONVService(), sendbuf, sendlen,
-					0);
+					.getServiceNameTPSendNonTPCONVService(), sendbuf, 0);
 			fail("Received a rcvbuf: " + rcvbuf);
 		} catch (ConnectionException e) {
 			assertTrue(e.getTperrno() == Connection.TPESVCERR);

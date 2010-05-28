@@ -117,8 +117,7 @@ public class JABServiceInvoker {
 			Buffer request = requestMessage.getBuffer();
 			log.debug("service_request tpcall");
 			Response response = connection.tpcall(serviceName, request,
-					requestMessage.getLength(), noTimeout ? Connection.TPNOTIME
-							: 0);
+					noTimeout ? Connection.TPNOTIME : 0);
 			responseMessage = new JABMessage(response);
 			log.debug("service_request responsed");
 		} catch (Exception e) {

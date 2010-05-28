@@ -63,7 +63,7 @@ public class X_COMMON extends Buffer {
 	 * @see {@link Connection#tpalloc(String, String)}
 	 */
 	X_COMMON(String subtype, Properties properties) throws ConnectionException {
-		super("X_COMMON", subtype, true, types, properties);
+		super("X_COMMON", subtype, true, types, properties, 0);
 	}
 
 	/**

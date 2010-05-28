@@ -19,8 +19,6 @@ public class TPConversationService implements Service {
 	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException {
 		log.info("testTPConversation_service");
 		boolean fail = false;
-		X_OCTET sendbuf = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
-				null);
 
 		if (TestTPConversation.strcmp((X_OCTET) svcinfo.getBuffer(),
 				"conversate") != 0) {
@@ -37,10 +35,13 @@ public class TPConversationService implements Service {
 			log.info("Chatting");
 			for (int i = 0; i < TestTPConversation.interationCount; i++) {
 				byte[] bytes = ("hi" + i).getBytes();
+
+				X_OCTET sendbuf = (X_OCTET) svcinfo.getConnection().tpalloc(
+						"X_OCTET", null, bytes.length);
 				sendbuf.setByteArray(bytes);
 				// userlogc((char*) "testTPConversation_service:%s:",
 				// sendbuf);
-				int result = svcinfo.getSession().tpsend(sendbuf, bytes.length,
+				int result = svcinfo.getSession().tpsend(sendbuf,
 						Connection.TPRECVONLY);
 				if (result != -1) {
 					try {
@@ -71,13 +72,14 @@ public class TPConversationService implements Service {
 		}
 
 		if (fail) {
-			return new Response((short) Connection.TPESVCFAIL, 0, sendbuf, 0, 0);
+			return new Response((short) Connection.TPESVCFAIL, 0, null, 0);
 		} else {
 			byte[] bytes = ("hi" + TestTPConversation.interationCount)
 					.getBytes();
+			X_OCTET sendbuf = (X_OCTET) svcinfo.getConnection().tpalloc(
+					"X_OCTET", null, bytes.length);
 			sendbuf.setByteArray(bytes);
-			return new Response(Connection.TPSUCCESS, 0, sendbuf, bytes.length,
-					0);
+			return new Response(Connection.TPSUCCESS, 0, sendbuf, 0);
 		}
 	}
 }

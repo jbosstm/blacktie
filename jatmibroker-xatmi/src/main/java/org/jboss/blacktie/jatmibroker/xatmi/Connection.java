@@ -162,14 +162,14 @@ public class Connection {
 	 * @throws ConnectionException
 	 *             If the buffer was unknown or invalid.
 	 */
-	public Buffer tpalloc(String type, String subtype)
+	public Buffer tpalloc(String type, String subtype, int len)
 			throws ConnectionException {
 		if (type == null) {
 			throw new ConnectionException(Connection.TPEINVAL,
 					"No type provided");
 		} else if (type.equals("X_OCTET")) {
 			log.debug("Initializing a new X_OCTET");
-			return new X_OCTET();
+			return new X_OCTET(len);
 		} else if (type.equals("X_C_TYPE")) {
 			log.debug("Initializing a new X_C_TYPE");
 			return new X_C_TYPE(subtype, properties);
@@ -194,12 +194,12 @@ public class Connection {
 	 * @throws ConnectionException
 	 *             If the service cannot be contacted.
 	 */
-	public Response tpcall(String svc, Buffer buffer, int len, int flags)
+	public Response tpcall(String svc, Buffer buffer, int flags)
 			throws ConnectionException {
 		log.debug("tpcall");
 		int tpacallFlags = flags;
 		tpacallFlags &= ~TPNOCHANGE;
-		int cd = tpacall(svc, buffer, len, tpacallFlags);
+		int cd = tpacall(svc, buffer, tpacallFlags);
 		return receive(cd, flags);
 	}
 
@@ -218,7 +218,7 @@ public class Connection {
 	 * @throws ConnectionException
 	 *             If the service cannot be contacted.
 	 */
-	public int tpacall(String svc, Buffer toSend, int len, int flags)
+	public int tpacall(String svc, Buffer toSend, int flags)
 			throws ConnectionException {
 		log.debug("tpacall");
 		int toCheck = flags
@@ -244,6 +244,7 @@ public class Connection {
 		// TODO HANDLE TRANSACTION
 		String type = null;
 		String subtype = null;
+		int len = 0;
 		byte[] data = null;
 		if (toSend != null) {
 			data = toSend.serialize();
@@ -363,7 +364,7 @@ public class Connection {
 	 * @throws ConnectionException
 	 *             If the service cannot be contacted.
 	 */
-	public Session tpconnect(String svc, Buffer toSend, int len, int flags)
+	public Session tpconnect(String svc, Buffer toSend, int flags)
 			throws ConnectionException {
 		log.debug("tpconnect: " + svc);
 
@@ -383,6 +384,7 @@ public class Connection {
 		// TODO HANDLE TRANSACTION
 		String type = null;
 		String subtype = null;
+		int len = 0;
 		byte[] data = null;
 		if (toSend != null) {
 			data = toSend.serialize();
@@ -523,7 +525,7 @@ public class Connection {
 		Message message = endpoint.receive(flags);
 		Buffer buffer = null;
 		if (message.type != null && !message.type.equals("")) {
-			buffer = tpalloc(message.type, message.subtype);
+			buffer = tpalloc(message.type, message.subtype, message.len);
 			buffer.deserialize(message.data);
 		}
 		if (message.rval == Connection.TPFAIL) {
@@ -537,7 +539,7 @@ public class Connection {
 					message.rcode, buffer);
 		} else {
 			Response response = new Response(cd, message.rval, message.rcode,
-					buffer, message.len, message.flags);
+					buffer, message.flags);
 
 			log.debug("received returned a response? "
 					+ (response == null ? "false" : "true"));

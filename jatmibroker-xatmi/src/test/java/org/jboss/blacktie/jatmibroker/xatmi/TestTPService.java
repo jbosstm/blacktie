@@ -40,7 +40,7 @@ public class TestTPService extends TestCase {
 		connection = connectionFactory.getConnection();
 
 		sendlen = "TestTPService".length() + 1;
-		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
 		sendbuf.setByteArray("TestTPService".getBytes());
 	}
 
@@ -53,7 +53,7 @@ public class TestTPService extends TestCase {
 		log.info("test_tpservice_notpreturn");
 		try {
 			connection.tpcall(RunServer.getServiceNameTestTPService(), sendbuf,
-					sendlen, 0);
+					0);
 			fail("Managed call");
 		} catch (ConnectionException e) {
 			assertTrue("Error was: " + e.getTperrno(),

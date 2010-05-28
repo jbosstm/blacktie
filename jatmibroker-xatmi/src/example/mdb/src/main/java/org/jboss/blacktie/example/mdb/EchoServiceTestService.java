@@ -40,17 +40,11 @@ public class EchoServiceTestService extends MDBBlacktieService implements
 		super("EchoService");
 	}
 
-	public Response tpservice(TPSVCINFO svcinfo) {
+	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException {
 		X_OCTET rcvd = (X_OCTET) svcinfo.getBuffer();
-		try {
-			X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc(
-					"X_OCTET", null);
-			buffer.setByteArray(rcvd.getByteArray());
-			return new Response(Connection.TPSUCCESS, 0, buffer, rcvd
-					.getByteArray().length, 0);
-		} catch (ConnectionException e2) {
-			e2.printStackTrace();
-			return new Response(Connection.TPFAIL, 0, null, 0, 0);
-		}
+		X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
+				null, rcvd.getByteArray().length);
+		buffer.setByteArray(rcvd.getByteArray());
+		return new Response(Connection.TPSUCCESS, 0, buffer, 0);
 	}
 }

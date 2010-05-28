@@ -39,12 +39,12 @@ public class TPCallXCTypeService implements Service {
 		}
 		int len = 60;
 		X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
-				null);
+				null, len);
 		if (ok) {
 			toReturn.setByteArray("tpcall_x_c_type".getBytes());
 		} else {
 			toReturn.setByteArray("fail".getBytes());
 		}
-		return new Response(Connection.TPSUCCESS, 23, toReturn, len, 0);
+		return new Response(Connection.TPSUCCESS, 23, toReturn, 0);
 	}
 }

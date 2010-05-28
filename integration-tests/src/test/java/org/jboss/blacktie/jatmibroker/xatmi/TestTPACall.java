@@ -47,11 +47,12 @@ public class TestTPACall extends TestCase {
 		log.info("test_tpacall");
 		byte[] toSend = "test_tpacall".getBytes();
 		int sendlen = toSend.length;
-		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		X_OCTET sendbuf = (X_OCTET) connection
+				.tpalloc("X_OCTET", null, sendlen);
 		sendbuf.setByteArray(toSend);
 
 		int cd = connection.tpacall(RunServer.getServiceNameTestTPACall(),
-				sendbuf, sendlen, Connection.TPNOREPLY);
+				sendbuf, Connection.TPNOREPLY);
 		assertTrue(cd == 0);
 
 		try {

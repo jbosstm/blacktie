@@ -22,11 +22,11 @@ public class TPCancelService implements Service {
 					.getByteArray());
 			if (received.equals("cancel")) {
 				toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
-						null);
+						null, len);
 				toReturn.setByteArray("testtpcancel_service".getBytes());
-				return new Response(Connection.TPSUCCESS, 0, toReturn, len, 0);
+				return new Response(Connection.TPSUCCESS, 0, toReturn, 0);
 			} else {
-				return new Response(Connection.TPFAIL, 1, null, 0, 0);
+				return new Response(Connection.TPFAIL, 1, null, 0);
 			}
 		} else {
 			return null;

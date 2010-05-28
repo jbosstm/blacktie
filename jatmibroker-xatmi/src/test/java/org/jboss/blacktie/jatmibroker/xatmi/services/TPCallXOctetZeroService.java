@@ -20,8 +20,8 @@ public class TPCallXOctetZeroService implements Service {
 			toSend[i] = recv[--j];
 		}
 		X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
-				null);
+				null, toSend.length);
 		toReturn.setByteArray(toSend);
-		return new Response((short) 0, 0, toReturn, toSend.length, 0);
+		return new Response((short) 0, 0, toReturn, 0);
 	}
 }

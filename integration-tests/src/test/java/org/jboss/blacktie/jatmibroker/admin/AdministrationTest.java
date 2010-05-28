@@ -38,10 +38,11 @@ public class AdministrationTest extends TestCase {
 
 	private String callAdmin(String command, char expect) throws Exception {
 		int sendlen = command.length() + 1;
-		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		X_OCTET sendbuf = (X_OCTET) connection
+				.tpalloc("X_OCTET", null, sendlen);
 		sendbuf.setByteArray(command.getBytes());
 
-		Response buf = connection.tpcall(service, sendbuf, sendlen, 0);
+		Response buf = connection.tpcall(service, sendbuf, 0);
 		assertTrue(buf != null);
 		byte[] received = ((X_OCTET) buf.getBuffer()).getByteArray();
 		assertTrue(received[0] == expect);
@@ -50,7 +51,7 @@ public class AdministrationTest extends TestCase {
 	}
 
 	private void callBAR() throws ConnectionException {
-		connection.tpcall("BAR", null, 0, 0);
+		connection.tpcall("BAR", null, 0);
 		log.info("call BAR OK");
 	}
 

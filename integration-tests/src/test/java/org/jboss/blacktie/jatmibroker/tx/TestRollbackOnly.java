@@ -48,7 +48,7 @@ public class TestRollbackOnly extends TestCase {
 		connection = connectionFactory.getConnection();
 
 		sendlen = "TestRbkOnly".length() + 1;
-		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
 		sendbuf.setByteArray("TestRbkOnly".getBytes());
 	}
 
@@ -65,7 +65,7 @@ public class TestRollbackOnly extends TestCase {
 
 		try {
 			connection.tpcall(RunServer.getServiceNameTestRollbackOnly(),
-					sendbuf, sendlen, 0);
+					sendbuf, 0);
 			fail("Expected e.getTperrno() == Connection.TPETIME");
 		} catch (ConnectionException e) {
 			assertTrue(e.getTperrno() == Connection.TPETIME);
@@ -87,7 +87,7 @@ public class TestRollbackOnly extends TestCase {
 
 		try {
 			connection.tpcall(RunServer.getServiceNameTestRollbackOnly(),
-					sendbuf, sendlen, Connection.TPNOCHANGE);
+					sendbuf, Connection.TPNOCHANGE);
 			fail("Expected e.getTperrno() == TPEOTYPE");
 		} catch (ConnectionException e) {
 			assertTrue(e.getTperrno() == Connection.TPEOTYPE);
@@ -109,7 +109,7 @@ public class TestRollbackOnly extends TestCase {
 
 		try {
 			connection.tpcall(RunServer.getServiceNameTestRollbackOnly(),
-					sendbuf, sendlen, 0);
+					sendbuf, 0);
 			fail("Expected e.getTperrno() == TPESVCFAIL");
 		} catch (ResponseException e) {
 			assertTrue(TestTPConversation.strcmp(e.getReceived(),
@@ -133,8 +133,8 @@ public class TestRollbackOnly extends TestCase {
 		assertTrue(TX.tx_open() == TX.TX_OK);
 		assertTrue(TX.tx_begin() == TX.TX_OK);
 
-		Session cd = connection.tpconnect(server
-				.getServiceNameTestRollbackOnly(), sendbuf, sendlen,
+		Session cd = connection.tpconnect(RunServer
+				.getServiceNameTestRollbackOnly(), sendbuf,
 				Connection.TPSENDONLY);
 		cd.tpdiscon();
 
@@ -152,8 +152,8 @@ public class TestRollbackOnly extends TestCase {
 		assertTrue(TX.tx_open() == TX.TX_OK);
 		assertTrue(TX.tx_begin() == TX.TX_OK);
 
-		Session cd = connection.tpconnect(server
-				.getServiceNameTestRollbackOnly(), sendbuf, sendlen,
+		Session cd = connection.tpconnect(RunServer
+				.getServiceNameTestRollbackOnly(), sendbuf,
 				Connection.TPRECVONLY);
 
 		try {
@@ -185,7 +185,7 @@ public class TestRollbackOnly extends TestCase {
 
 		try {
 			connection.tpcall(RunServer.getServiceNameTestRollbackOnly(),
-					sendbuf, sendlen, 0);
+					sendbuf, 0);
 			fail("Expected e.getTperrno() == Connection.TPESVCERR");
 		} catch (ConnectionException e) {
 			assertTrue(e.getTperrno() == Connection.TPESVCERR);

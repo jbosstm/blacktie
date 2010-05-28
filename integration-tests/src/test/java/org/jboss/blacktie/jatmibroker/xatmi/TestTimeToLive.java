@@ -43,16 +43,7 @@ public class TestTimeToLive extends TestCase {
 		server.serverdone();
 	}
 
-	public void testTODO() {
-		// RE-ENABLE WHEN STOMP DROPS TTL MESSAGES
-	}
-
-	/**
-	 * This test will not work as stomp does not drop expired messages and they
-	 * are consumed immediately by StompConnect. It should be readded when we
-	 * move to HornetQ as that should behave consistently with the read
-	 */
-	public void xTODO_test_call_ttl() throws ConnectionException {
+	public void test_call_ttl() throws ConnectionException {
 		log.info("test_call_ttl");
 
 		server.tpadvertiseTTL();
@@ -62,11 +53,12 @@ public class TestTimeToLive extends TestCase {
 
 			String toSend = "test_call_ttl_1";
 			int sendlen = toSend.length() + 1;
-			X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+			X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null,
+					sendlen);
 			sendbuf.setByteArray(toSend.getBytes());
 
 			Response rcvbuf = connection.tpcall(RunServer.getServiceNameTTL(),
-					sendbuf, sendlen, 0);
+					sendbuf, 0);
 			fail("Expected TPETIME, got a buffer with rval: "
 					+ rcvbuf.getRval());
 		} catch (ConnectionException e) {
@@ -80,11 +72,12 @@ public class TestTimeToLive extends TestCase {
 
 			String toSend = "test_call_ttl_2";
 			int sendlen = toSend.length() + 1;
-			X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+			X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null,
+					sendlen);
 			sendbuf.setByteArray(toSend.getBytes());
 
 			Response rcvbuf = connection.tpcall(RunServer.getServiceNameTTL(),
-					sendbuf, sendlen, 0);
+					sendbuf, 0);
 			fail("Expected TPETIME, got a buffer with rval: "
 					+ rcvbuf.getRval());
 		} catch (ConnectionException e) {
@@ -103,11 +96,12 @@ public class TestTimeToLive extends TestCase {
 
 		String toSend = "counter";
 		int sendlen = toSend.length() + 1;
-		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		X_OCTET sendbuf = (X_OCTET) connection
+				.tpalloc("X_OCTET", null, sendlen);
 		sendbuf.setByteArray(toSend.getBytes());
 
 		Response rcvbuf = connection.tpcall(RunServer.getServiceNameTTL(),
-				sendbuf, sendlen, 0);
+				sendbuf, 0);
 
 		assertTrue(rcvbuf != null);
 		assertTrue(rcvbuf.getBuffer() != null);

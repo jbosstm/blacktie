@@ -18,14 +18,13 @@ public class TPGetRplyOneService implements Service {
 		log.info(response);
 
 		X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
-				null);
+				null, response.getBytes().length);
 		toReturn.setByteArray(response.getBytes());
 		try {
 			Thread.sleep(3 * 1000);
 		} catch (InterruptedException e) {
 			log.error("Could not sleep");
 		}
-		return new Response(Connection.TPSUCCESS, 0, toReturn, response
-				.getBytes().length, 0);
+		return new Response(Connection.TPSUCCESS, 0, toReturn, 0);
 	}
 }

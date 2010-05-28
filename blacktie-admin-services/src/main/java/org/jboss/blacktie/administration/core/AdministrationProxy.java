@@ -110,12 +110,13 @@ public class AdministrationProxy {
 			throws ConnectionException {
 		log.trace("callAdminService");
 		int sendlen = command.length() + 1;
-		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		X_OCTET sendbuf = (X_OCTET) connection
+				.tpalloc("X_OCTET", null, sendlen);
 		sendbuf.setByteArray(command.getBytes());
 
 		String service = "." + serverName + id;
 
-		Response rcvbuf = connection.tpcall(service, sendbuf, sendlen, 0);
+		Response rcvbuf = connection.tpcall(service, sendbuf, 0);
 		return rcvbuf;
 	}
 

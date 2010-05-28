@@ -24,7 +24,7 @@ public class BufferStructure {
 	String name;
 	public List<String> attributeNames = new ArrayList<String>();
 	public List<AttributeStructure> attributes = new ArrayList<AttributeStructure>();
-	long wireSize;
+	public int wireSize;
 	long memSize;
 	int lastPad;
 }

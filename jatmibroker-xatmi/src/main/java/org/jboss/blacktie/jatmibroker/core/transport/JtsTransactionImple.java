@@ -1,7 +1,5 @@
 package org.jboss.blacktie.jatmibroker.core.transport;
 
-import java.util.Properties;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;

@@ -64,12 +64,13 @@ public class TestTPReturn extends TestCase {
 		server.tpadvertiseTestTPReturn();
 
 		int sendlen = "tprnb".length() + 1;
-		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		X_OCTET sendbuf = (X_OCTET) connection
+				.tpalloc("X_OCTET", null, sendlen);
 		sendbuf.setByteArray("tprnb".getBytes());
 
 		try {
 			connection.tpcall(RunServer.getServiceNameTestTPReturn(), sendbuf,
-					sendlen, 0);
+					0);
 			fail("Managed to send call");
 		} catch (ConnectionException e) {
 			assertTrue("Error was: " + e.getTperrno(),
@@ -84,16 +85,17 @@ public class TestTPReturn extends TestCase {
 		server.tpadvertiseTestTPReturn2();
 
 		int sendlen = 3;
-		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		X_OCTET sendbuf = (X_OCTET) connection
+				.tpalloc("X_OCTET", null, sendlen);
 		sendbuf.setByteArray("24".getBytes());
-		Response success = connection.tpcall(server
-				.getServiceNameTestTPReturn2(), sendbuf, sendlen, 0);
+		Response success = connection.tpcall(RunServer
+				.getServiceNameTestTPReturn2(), sendbuf, 0);
 		assertTrue(success != null);
 		assertTrue(success.getRcode() == 24);
 
 		sendbuf.setByteArray("77".getBytes());
 		success = connection.tpcall(RunServer.getServiceNameTestTPReturn2(),
-				sendbuf, sendlen, 0);
+				sendbuf, 0);
 		assertTrue(success != null);
 		assertTrue(success.getRcode() == 77);
 	}
@@ -107,11 +109,12 @@ public class TestTPReturn extends TestCase {
 
 		int sendlen = 2;
 
-		X_OCTET sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		X_OCTET sendbuf = (X_OCTET) connection
+				.tpalloc("X_OCTET", null, sendlen);
 		sendbuf.setByteArray("X".getBytes());
 		try {
 			connection.tpcall(RunServer.getServiceNameTestTPReturn(), sendbuf,
-					sendlen, 0);
+					0);
 			fail("Did not receive the expected exception");
 		} catch (ConnectionException e) {
 			assertTrue(e.getTperrno() == Connection.TPESVCERR);

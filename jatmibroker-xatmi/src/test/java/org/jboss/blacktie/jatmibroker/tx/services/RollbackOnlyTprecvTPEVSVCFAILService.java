@@ -13,18 +13,12 @@ public class RollbackOnlyTprecvTPEVSVCFAILService implements Service {
 	private static final Logger log = LogManager
 			.getLogger(RollbackOnlyTprecvTPEVSVCFAILService.class);
 
-	public Response tpservice(TPSVCINFO svcinfo) {
-		try {
-			log.info("test_tprecv_TPEV_SVCFAIL_service");
-			int len = 60;
-			X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc(
-					"X_OCTET", null);
-			toReturn
-					.setByteArray("test_tprecv_TPEV_SVCFAIL_service".getBytes());
-			return new Response(Connection.TPFAIL, 0, toReturn, len, 0);
-		} catch (ConnectionException e) {
-			return new Response(Connection.TPFAIL, Connection.TPEITYPE, null,
-					0, 0);
-		}
+	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException {
+		log.info("test_tprecv_TPEV_SVCFAIL_service");
+		int len = 60;
+		X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
+				null, len);
+		toReturn.setByteArray("test_tprecv_TPEV_SVCFAIL_service".getBytes());
+		return new Response(Connection.TPFAIL, 0, toReturn, 0);
 	}
 }

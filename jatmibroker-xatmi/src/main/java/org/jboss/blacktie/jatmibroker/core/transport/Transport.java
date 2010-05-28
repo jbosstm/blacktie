@@ -20,7 +20,6 @@ package org.jboss.blacktie.jatmibroker.core.transport;
 import org.jboss.blacktie.jatmibroker.core.ResponseMonitor;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.omg.CORBA.ORB;
 
 public interface Transport {
 

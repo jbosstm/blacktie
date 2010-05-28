@@ -41,7 +41,7 @@ public class TestTPRecv extends TestCase {
 		connection = connectionFactory.getConnection();
 
 		sendlen = "recv".length() + 1;
-		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
@@ -52,7 +52,7 @@ public class TestTPRecv extends TestCase {
 	public void test_tprecv_sendonly() throws ConnectionException {
 		log.info("test_tprecv_sendonly");
 		cd = connection.tpconnect(RunServer.getServiceNameTestTPRecv(),
-				sendbuf, sendlen, Connection.TPSENDONLY);
+				sendbuf, Connection.TPSENDONLY);
 		try {
 			cd.tprecv(0);
 			fail("expected proto error");

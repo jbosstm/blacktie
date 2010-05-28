@@ -43,7 +43,7 @@ public class TestTPConnect extends TestCase {
 
 		byte[] message = "connect".getBytes();
 		sendlen = message.length + 1;
-		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
 		sendbuf.setByteArray(message);
 		cd = null;
 		cd2 = null;
@@ -67,16 +67,16 @@ public class TestTPConnect extends TestCase {
 	public void test_tpconnect() throws ConnectionException {
 		log.info("test_tpconnect");
 		cd = connection.tpconnect(RunServer.getServiceNameTestTPConnect(),
-				sendbuf, sendlen, Connection.TPRECVONLY);
+				sendbuf, Connection.TPRECVONLY);
 		assertTrue(cd != null);
 	}
 
 	public void test_tpconnect_double_connect() throws ConnectionException {
 		log.info("test_tpconnect_double_connect");
 		cd = connection.tpconnect(RunServer.getServiceNameTestTPConnect(),
-				sendbuf, sendlen, Connection.TPRECVONLY);
+				sendbuf, Connection.TPRECVONLY);
 		cd2 = connection.tpconnect(RunServer.getServiceNameTestTPConnect(),
-				sendbuf, sendlen, Connection.TPRECVONLY);
+				sendbuf, Connection.TPRECVONLY);
 		assertTrue(cd != null);
 		assertTrue(cd2 != null);
 		assertTrue(cd != cd2);
@@ -86,7 +86,7 @@ public class TestTPConnect extends TestCase {
 	public void test_tpconnect_nodata() throws ConnectionException {
 		log.info("test_tpconnect_nodata");
 		cd = connection.tpconnect(RunServer.getServiceNameTestTPConnect(),
-				null, 0, Connection.TPRECVONLY);
+				null, Connection.TPRECVONLY);
 		assertTrue(cd != null);
 	}
 }

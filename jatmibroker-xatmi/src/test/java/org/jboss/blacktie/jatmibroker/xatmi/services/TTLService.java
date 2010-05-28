@@ -23,7 +23,7 @@ public class TTLService implements Service {
 
 		int len = 60;
 		X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
-				null);
+				null, len);
 
 		log.info("Data was: " + data);
 		if (data.contains("counter")) {
@@ -41,6 +41,6 @@ public class TTLService implements Service {
 				log.error("sleep failed with " + e);
 			}
 		}
-		return new Response(Connection.TPSUCCESS, 22, toReturn, len, 0);
+		return new Response(Connection.TPSUCCESS, 22, toReturn, 0);
 	}
 }

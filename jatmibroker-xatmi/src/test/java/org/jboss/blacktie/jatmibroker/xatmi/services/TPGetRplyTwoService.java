@@ -18,9 +18,8 @@ public class TPGetRplyTwoService implements Service {
 		log.info(response);
 
 		X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
-				null);
+				null, response.getBytes().length);
 		toReturn.setByteArray(response.getBytes());
-		return new Response(Connection.TPSUCCESS, 0, toReturn, response
-				.getBytes().length, 0);
+		return new Response(Connection.TPSUCCESS, 0, toReturn, 0);
 	}
 }

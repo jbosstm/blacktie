@@ -17,10 +17,10 @@ public class TPConversationShortService implements Service {
 		log.info("testTPConversation_short_service");
 		int sendlen = 4;
 		X_OCTET sendbuf = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
-				null);
+				null, sendlen);
 		sendbuf.setByteArray("hi0".getBytes());
-		svcinfo.getSession().tpsend(sendbuf, sendlen, 0);
+		svcinfo.getSession().tpsend(sendbuf, 0);
 		sendbuf.setByteArray("hi1".getBytes());
-		return new Response(Connection.TPSUCCESS, 0, sendbuf, sendlen, 0);
+		return new Response(Connection.TPSUCCESS, 0, sendbuf, 0);
 	}
 }

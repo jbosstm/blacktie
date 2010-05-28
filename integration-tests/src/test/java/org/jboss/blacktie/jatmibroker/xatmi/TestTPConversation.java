@@ -43,7 +43,7 @@ public class TestTPConversation extends TestCase {
 				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
 		sendlen = 11;
-		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
 
 	}
 
@@ -58,7 +58,7 @@ public class TestTPConversation extends TestCase {
 
 		sendbuf.setByteArray("conversate".getBytes());
 		cd = connection.tpconnect(RunServer.getServiceNameTestTPConversation(),
-				sendbuf, sendlen, Connection.TPRECVONLY);
+				sendbuf, Connection.TPRECVONLY);
 		long revent = 0;
 		log.info("Started conversation");
 		for (int i = 0; i < interationCount; i++) {
@@ -74,7 +74,7 @@ public class TestTPConversation extends TestCase {
 
 				sendbuf.setByteArray(("yo" + i).getBytes());
 				// userlogc((char*) "test_conversation:%s:", sendbuf);
-				int result = cd.tpsend(sendbuf, sendlen, Connection.TPRECVONLY);
+				int result = cd.tpsend(sendbuf, Connection.TPRECVONLY);
 				assertTrue(result != -1);
 			}
 		}
@@ -92,7 +92,7 @@ public class TestTPConversation extends TestCase {
 
 		log.info("test_short_conversation");
 		cd = connection.tpconnect(RunServer.getServiceNameTestTPConversa2(),
-				null, 0, Connection.TPRECVONLY);
+				null, Connection.TPRECVONLY);
 		assertTrue(cd != null);
 
 		Buffer rcvbuf = cd.tprecv(0);

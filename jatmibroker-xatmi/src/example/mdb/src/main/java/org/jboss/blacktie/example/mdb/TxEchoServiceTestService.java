@@ -102,12 +102,13 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 			try {
 				Connection connection = getConnection();
 				byte[] echo = args.getBytes();
-				X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null);
+				X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null,
+						echo.length);
 				buffer.setByteArray(echo);
 
 				log.debug("Invoking TxCreateService...");
 				Response response = connection.tpcall("TxCreateService",
-						buffer, echo.length, 0);
+						buffer, 0);
 				X_OCTET rcvd = (X_OCTET) response.getBuffer();
 				String responseData = new String(rcvd.getByteArray());
 				log.debug("TxCreateService response: " + responseData);
@@ -147,7 +148,7 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 		}
 	}
 
-	public Response tpservice(TPSVCINFO svcinfo) {
+	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException {
 		X_OCTET rcv = (X_OCTET) svcinfo.getBuffer();
 		String rcvd = new String(rcv.getByteArray());
 		String resp;
@@ -157,16 +158,9 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 			log.warn("error: " + e);
 			resp = e.getMessage();
 		}
-		try {
-			X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc(
-					"X_OCTET", null);
-			buffer.setByteArray(resp.getBytes());
-			return new Response(Connection.TPSUCCESS, 0, buffer, resp.length(),
-					0);
-		} catch (ConnectionException e) {
-			resp = "";
-			log.error("Caught an exception", e);
-			return new Response(Connection.TPFAIL, 0, null, 0, 0);
-		}
+		X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
+				null, resp.length());
+		buffer.setByteArray(resp.getBytes());
+		return new Response(Connection.TPSUCCESS, 0, buffer, 0);
 	}
 }

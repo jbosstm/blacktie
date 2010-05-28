@@ -355,14 +355,14 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			}
 
 			X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc(
-					"X_OCTET", null);
+					"X_OCTET", null, 1);
 			buffer.setByteArray(success);
 			log.debug("Responding");
-			return new Response(Connection.TPSUCCESS, 0, buffer, 1, 0);
+			return new Response(Connection.TPSUCCESS, 0, buffer, 0);
 		} catch (ConnectionException e) {
-			return new Response(Connection.TPFAIL, 0, null, 0, 0);
+			return new Response(Connection.TPFAIL, 0, null, 0);
 		} catch (ConfigurationException e) {
-			return new Response(Connection.TPFAIL, 0, null, 0, 0);
+			return new Response(Connection.TPFAIL, 0, null, 0);
 		}
 	}
 }

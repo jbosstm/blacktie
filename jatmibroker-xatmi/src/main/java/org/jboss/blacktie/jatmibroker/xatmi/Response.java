@@ -56,11 +56,6 @@ public class Response implements Serializable {
 	private Buffer buffer;
 
 	/**
-	 * The length of the response.
-	 */
-	private int len;
-
-	/**
 	 * Services construct their responses using this constructor.
 	 * 
 	 * @param rval
@@ -69,16 +64,13 @@ public class Response implements Serializable {
 	 *            The code the service wants to respond with.
 	 * @param buffer
 	 *            The buffer to return.
-	 * @param len
-	 *            The amount of data to respond with.
 	 * @param flags
 	 *            The flags to respond with.
 	 */
-	public Response(short rval, int rcode, Buffer buffer, int len, int flags) {
+	public Response(short rval, int rcode, Buffer buffer, int flags) {
 		this.rval = rval;
 		this.rcode = rcode;
 		this.buffer = buffer;
-		this.len = len;
 		this.flags = flags;
 	}
 
@@ -95,17 +87,14 @@ public class Response implements Serializable {
 	 *            The return code.
 	 * @param buffer
 	 *            The buffer response.
-	 * @param len
-	 *            The length of the response.
 	 * @param flags
 	 *            The flags the service used.
 	 */
-	Response(int cd, short rval, int rcode, Buffer buffer, int len, int flags) {
+	Response(int cd, short rval, int rcode, Buffer buffer, int flags) {
 		this.cd = cd;
 		this.rval = rval;
 		this.rcode = rcode;
 		this.buffer = buffer;
-		this.len = len;
 		this.flags = flags;
 	}
 
@@ -143,15 +132,6 @@ public class Response implements Serializable {
 	 */
 	public Buffer getBuffer() {
 		return buffer;
-	}
-
-	/**
-	 * Retrieve the length of the buffer.
-	 * 
-	 * @return The size of the buffer.
-	 */
-	public int getLen() {
-		return len;
 	}
 
 	/**

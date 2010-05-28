@@ -153,6 +153,8 @@ public abstract class Buffer implements Serializable {
 	 */
 	private Map<String, Class> format = new HashMap<String, Class>();
 
+	private int len = -1;
+
 	/**
 	 * Create a new buffer.
 	 * 
@@ -174,7 +176,7 @@ public abstract class Buffer implements Serializable {
 	 * @see {@link X_COMMON}
 	 */
 	Buffer(String type, String subtype, boolean requiresSerialization,
-			List<Class> supportedTypes, Properties properties)
+			List<Class> supportedTypes, Properties properties, int len)
 			throws ConnectionException {
 		this.type = type;
 		this.subtype = subtype;
@@ -186,9 +188,10 @@ public abstract class Buffer implements Serializable {
 					.get("blacktie.domain.buffers");
 			BufferStructure buffer = buffers.get(subtype);
 			if (buffer == null) {
-				throw new ConnectionException(Connection.TPEITYPE,
+				throw new ConnectionException(Connection.TPEOS,
 						"Subtype was not registered: " + subtype);
 			}
+			len = buffer.wireSize;
 			String[] ids = new String[buffer.attributes.size()];
 			Class[] types = new Class[buffer.attributes.size()];
 			int[] length = new int[buffer.attributes.size()];
@@ -201,7 +204,7 @@ public abstract class Buffer implements Serializable {
 				ids[i] = attribute.id;
 				types[i] = attribute.type;
 				if (!supportedTypes.contains(types[i])) {
-					throw new ConnectionException(Connection.TPEITYPE,
+					throw new ConnectionException(Connection.TPEOS,
 							"Cannot use type configured in buffer " + types[i]);
 				}
 				length[i] = attribute.length;
@@ -788,5 +791,9 @@ public abstract class Buffer implements Serializable {
 	 */
 	protected byte[] getRawData() {
 		return data;
+	}
+
+	public int getLen() {
+		return len;
 	}
 }

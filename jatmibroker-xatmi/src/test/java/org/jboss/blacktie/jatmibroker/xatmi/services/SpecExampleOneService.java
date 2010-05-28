@@ -42,6 +42,6 @@ public class SpecExampleOneService implements Service {
 			dc_ptr.setInt("output", TestSpecExampleOne.NOT_OK);
 		}
 		/* send reply and return from service routine */
-		return new Response(rval, 0, dc_ptr, 0, 0);
+		return new Response(rval, 0, dc_ptr, 0);
 	}
 }

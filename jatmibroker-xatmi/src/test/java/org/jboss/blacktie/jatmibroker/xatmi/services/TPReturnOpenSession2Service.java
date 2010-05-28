@@ -13,7 +13,6 @@ public class TPReturnOpenSession2Service implements Service {
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		log.info("testtpreturn_service_opensession2");
-		return new Response(Connection.TPSUCCESS, 0, svcinfo.getBuffer(),
-				svcinfo.getLen(), 0);
+		return new Response(Connection.TPSUCCESS, 0, svcinfo.getBuffer(), 0);
 	}
 }

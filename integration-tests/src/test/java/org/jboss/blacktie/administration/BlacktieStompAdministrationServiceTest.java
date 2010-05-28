@@ -42,14 +42,14 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 	public void test() throws ConnectionException {
 		processCommand("tpadvertise,foo,FOOTest,2.0.0.M4-SNAPSHOT,", 1);
 		try {
-			connection.tpacall("FOOTest", null, 0, Connection.TPNOREPLY);
+			connection.tpacall("FOOTest", null, Connection.TPNOREPLY);
 		} catch (ConnectionException e) {
 			fail("Was not able to send the request : " + e.getMessage());
 		}
 
 		processCommand("tpunadvertise,foo,FOOTest,", 1);
 		try {
-			connection.tpcall("FOOTest", null, 0, Connection.TPNOREPLY);
+			connection.tpcall("FOOTest", null, Connection.TPNOREPLY);
 			fail("Was able to send the request");
 		} catch (ConnectionException e) {
 			// EXPECTED
@@ -58,7 +58,7 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 		processCommand("tpadvertise,foo,FOOTest,2.0.0.M4-SNAPSHOT,", 1);
 
 		try {
-			connection.tpacall("FOOTest", null, 0, Connection.TPNOREPLY);
+			connection.tpacall("FOOTest", null, Connection.TPNOREPLY);
 		} catch (ConnectionException e) {
 			fail("Was not able to send the request : " + e.getMessage());
 		}
@@ -76,11 +76,11 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 	private void processCommand(String command, int expectation)
 			throws ConnectionException {
 		byte[] toSend = command.getBytes();
-		X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null,
+				toSend.length);
 		buffer.setByteArray(toSend);
 
-		Response response = connection.tpcall("BTStompAdmin", buffer, buffer
-				.getByteArray().length, 0);
+		Response response = connection.tpcall("BTStompAdmin", buffer, 0);
 
 		byte[] responseData = ((X_OCTET) response.getBuffer()).getByteArray();
 		assertEquals(expectation, responseData[0]);

@@ -39,9 +39,8 @@ public class TestTPGetRply extends TestCase {
 		connection = connectionFactory.getConnection();
 
 		sendlen = "grply".length() + 1;
-		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null);
+		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
 		sendbuf.setByteArray("grply".getBytes());
-
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
@@ -53,7 +52,7 @@ public class TestTPGetRply extends TestCase {
 		log.info("test_tpgetrply");
 		server.tpadvertiseTestTPGetrply();
 		int cd = connection.tpacall(RunServer.getServiceNameTestTPGetrply(),
-				sendbuf, sendlen, 0);
+				sendbuf, 0);
 		assertTrue(cd != -1);
 
 		// RETRIEVE THE RESPONSE
@@ -126,14 +125,12 @@ public class TestTPGetRply extends TestCase {
 		server.tpadvertiseTestTPGetrplyOne();
 		server.tpadvertiseTestTPGetrplyTwo();
 
-		int cd1 = connection
-				.tpacall(RunServer.getServiceNameTestTPGetrplyOne(), sendbuf,
-						sendlen, 0);
+		int cd1 = connection.tpacall(
+				RunServer.getServiceNameTestTPGetrplyOne(), sendbuf, 0);
 		assertTrue(cd1 != -1);
 
-		int cd2 = connection
-				.tpacall(RunServer.getServiceNameTestTPGetrplyTwo(), sendbuf,
-						sendlen, 0);
+		int cd2 = connection.tpacall(
+				RunServer.getServiceNameTestTPGetrplyTwo(), sendbuf, 0);
 		assertTrue(cd2 != -1);
 		assertTrue(cd1 != cd2);
 
@@ -150,14 +147,12 @@ public class TestTPGetRply extends TestCase {
 		server.tpadvertiseTestTPGetrplyOne();
 		server.tpadvertiseTestTPGetrplyTwo();
 
-		int cd1 = connection
-				.tpacall(RunServer.getServiceNameTestTPGetrplyOne(), sendbuf,
-						sendlen, 0);
+		int cd1 = connection.tpacall(
+				RunServer.getServiceNameTestTPGetrplyOne(), sendbuf, 0);
 		assertTrue(cd1 != -1);
 
-		int cd2 = connection
-				.tpacall(RunServer.getServiceNameTestTPGetrplyTwo(), sendbuf,
-						sendlen, 0);
+		int cd2 = connection.tpacall(
+				RunServer.getServiceNameTestTPGetrplyTwo(), sendbuf, 0);
 		assertTrue(cd2 != -1);
 		assertTrue(cd1 != cd2);
 

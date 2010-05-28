@@ -25,7 +25,6 @@ import javax.transaction.TransactionManager;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.transport.JtsTransactionImple;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
@@ -54,10 +53,9 @@ public class TxCreateServiceTestService extends MDBBlacktieService implements
 			tm.begin();
 		} catch (Exception e) {
 			log.error("Caught an exception", e);
-			return new Response(Connection.TPFAIL, 0, null, 0, 0);
+			return new Response(Connection.TPFAIL, 0, null, 0);
 		}
 
-		return new Response(Connection.TPSUCCESS, 0, svcinfo.getBuffer(),
-				svcinfo.getLen(), 0);
+		return new Response(Connection.TPSUCCESS, 0, svcinfo.getBuffer(), 0);
 	}
 }

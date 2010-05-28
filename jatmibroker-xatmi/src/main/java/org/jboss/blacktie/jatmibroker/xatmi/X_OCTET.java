@@ -50,10 +50,12 @@ public class X_OCTET extends Buffer {
 	 * The constructor is hidden as it should be created from the Connection
 	 * factory method.
 	 * 
+	 * @param len
+	 * 
 	 * @throws ConnectionException
 	 */
-	X_OCTET() throws ConnectionException {
-		super("X_OCTET", null, false, types, null);
+	X_OCTET(int len) throws ConnectionException {
+		super("X_OCTET", null, false, types, null, len);
 	}
 
 	/**

@@ -13,6 +13,6 @@ public class TPConnectService implements Service {
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		log.info("testtpconnect_service");
-		return new Response(Connection.TPSUCCESS, 0, null, 0, 0);
+		return new Response(Connection.TPSUCCESS, 0, null, 0);
 	}
 }

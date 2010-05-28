@@ -27,12 +27,12 @@ public class TPCallXCommonService implements Service {
 
 		int len = 60;
 		X_OCTET toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
-				null);
+				null, len);
 		if (ok) {
 			toReturn.setByteArray("tpcall_x_common".getBytes());
 		} else {
 			toReturn.setByteArray("fail".getBytes());
 		}
-		return new Response(Connection.TPSUCCESS, 22, toReturn, len, 0);
+		return new Response(Connection.TPSUCCESS, 22, toReturn, 0);
 	}
 }

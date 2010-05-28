@@ -26,7 +26,7 @@ public class SpecExampleTwoService implements Service {
 		 */
 		for (int i = 0; i < 5; i++) {
 			/* gather from DBMS next 10 records into ptr->output array */
-			svcinfo.getSession().tpsend(ptr, 0, Connection.TPSIGRSTRT);
+			svcinfo.getSession().tpsend(ptr, Connection.TPSIGRSTRT);
 		}
 		// TODO DO OK AND FAIL
 		if (ptr.getInt("failTest") == 0) {
@@ -36,6 +36,6 @@ public class SpecExampleTwoService implements Service {
 		}
 		/* terminate service routine, send no data, and */
 		/* terminate connection */
-		return new Response(rval, 0, null, 0, 0);
+		return new Response(rval, 0, null, 0);
 	}
 }

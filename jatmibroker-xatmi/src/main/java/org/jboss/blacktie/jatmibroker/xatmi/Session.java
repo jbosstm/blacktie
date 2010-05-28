@@ -232,8 +232,7 @@ public class Session {
 	 * @throws ConnectionException
 	 *             If the message cannot be sent.
 	 */
-	public int tpsend(Buffer toSend, int len, int flags)
-			throws ConnectionException {
+	public int tpsend(Buffer toSend, int flags) throws ConnectionException {
 		log.debug("tpsend invoked: " + cd);
 		if (closed) {
 			throw new ConnectionException(Connection.TPEPROTO,
@@ -264,6 +263,7 @@ public class Session {
 			String type = null;
 			String subtype = null;
 			byte[] data = null;
+			int len = 0;
 			if (toSend != null) {
 				data = toSend.serialize();
 				type = toSend.getType();
@@ -336,7 +336,7 @@ public class Session {
 
 		Buffer received = null;
 		if (m.type != null && !m.type.equals("")) {
-			received = connection.tpalloc(m.type, m.subtype);
+			received = connection.tpalloc(m.type, m.subtype, m.len);
 			received.deserialize(m.data);
 		}
 		log.debug("Prepared and ready to launch");

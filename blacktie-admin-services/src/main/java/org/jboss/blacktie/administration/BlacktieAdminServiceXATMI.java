@@ -185,15 +185,14 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 			}
 
 			X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc(
-					"X_OCTET", null);
+					"X_OCTET", null, toReturn.length);
 			buffer.setByteArray(toReturn);
 			log.debug("Responding");
-			return new Response(Connection.TPSUCCESS, 0, buffer,
-					toReturn.length, 0);
+			return new Response(Connection.TPSUCCESS, 0, buffer, 0);
 		} catch (ConnectionException e) {
-			return new Response(Connection.TPFAIL, 0, null, 0, 0);
+			return new Response(Connection.TPFAIL, 0, null, 0);
 		} catch (IOException e) {
-			return new Response(Connection.TPFAIL, 0, null, 0, 0);
+			return new Response(Connection.TPFAIL, 0, null, 0);
 		}
 	}
 

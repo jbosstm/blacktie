@@ -63,7 +63,7 @@ public class X_C_TYPE extends Buffer {
 	 * @see {@link Connection#tpalloc(String, String)}
 	 */
 	X_C_TYPE(String subtype, Properties properties) throws ConnectionException {
-		super("X_C_TYPE", subtype, true, types, properties);
+		super("X_C_TYPE", subtype, true, types, properties, 0);
 	}
 
 	/**

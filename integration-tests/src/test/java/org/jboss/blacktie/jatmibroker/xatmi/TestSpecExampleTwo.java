@@ -52,14 +52,14 @@ public class TestSpecExampleTwo extends TestCase {
 		Session cd; /* contains a character array named input and an */
 		/* array of integers named output. */
 		/* allocate typed buffer */
-		Buffer ptr = connection.tpalloc("X_C_TYPE", "inq_buf");
+		Buffer ptr = connection.tpalloc("X_C_TYPE", "inq_buf", 0);
 
 		/* populate typed buffer with input data */
 		((X_C_TYPE) ptr).setByteArray("input",
 				"retrieve all accounts with balances less than 0".getBytes());
 		// TODO tx_begin(); /* start global transaction */
 		/* connect to conversational service, send input data, & yield control */
-		cd = connection.tpconnect(RunServer.getServiceNameINQUIRY(), ptr, 0,
+		cd = connection.tpconnect(RunServer.getServiceNameINQUIRY(), ptr,
 				Connection.TPRECVONLY | Connection.TPSIGRSTRT);
 		do {
 
