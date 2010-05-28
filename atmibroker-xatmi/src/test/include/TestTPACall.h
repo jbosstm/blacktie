@@ -41,7 +41,7 @@ public:
 private:
 	char *sendbuf, *rcvbuf;
 	long sendlen, rcvlen;
-
+	int cd;
 };
 
 #endif // TESTTPACALL_H

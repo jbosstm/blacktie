@@ -42,10 +42,19 @@ void TestTPACall::setUp() {
 	int toCheck = tpadvertise((char*) "TestTPACall", testtpacall_service);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toCheck != -1);
+
+	cd = -1;
 }
 
 void TestTPACall::tearDown() {
 	userlogc((char*) "TestTPACall::tearDown");
+
+	if (cd != -1) {
+		int cancelled = ::tpcancel(cd);
+		BT_ASSERT(cancelled != -1);
+		BT_ASSERT(tperrno == 0);
+	}
+
 	// Clean up local
 	if (sendbuf) {
 		::tpfree( sendbuf);
@@ -132,7 +141,7 @@ void TestTPACall::test_tpacall_x_octet() {
 }
 
 void TestTPACall::test_tpacall_tprecv() {
-	userlogc((char*) "test_tpacall");
+	userlogc((char*) "test_tpacall_tprecv");
 
 	sendlen = strlen("test_tpacall") + 1;
 	sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
@@ -140,7 +149,7 @@ void TestTPACall::test_tpacall_tprecv() {
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
-	int cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, sendlen, 0);
+	cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, sendlen, 0);
 	BT_ASSERT(tperrno == 0);
 
 	char* cdS = (char*) malloc(110);
@@ -159,6 +168,7 @@ void TestTPACall::test_tpacall_tprecv() {
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "testtpacall_service") == 0);
+	cd = -1;
 }
 
 void testtpacall_service(TPSVCINFO *svcinfo) {
