@@ -28,18 +28,19 @@ class TestTPACall: public BaseServerTest {
 	CPPUNIT_TEST( test_tpacall);
 	//TODO READD CPPUNIT_TEST( test_tpacall_systemerr);
 	CPPUNIT_TEST( test_tpacall_x_octet);
-CPPUNIT_TEST_SUITE_END();
+	CPPUNIT_TEST( test_tpconnect_to_non_TPCONV_fails);CPPUNIT_TEST_SUITE_END();
 
 public:
-void test_tpacall();
-void test_tpacall_systemerr();
-void test_tpacall_x_octet();
-virtual void setUp();
-virtual void tearDown();
+	void test_tpacall();
+	void test_tpacall_systemerr();
+	void test_tpacall_x_octet();
+	void test_tpconnect_to_non_TPCONV_fails();
+	virtual void setUp();
+	virtual void tearDown();
 
 private:
-char *sendbuf, *rcvbuf;
-long sendlen, rcvlen;
+	char *sendbuf, *rcvbuf;
+	long sendlen, rcvlen;
 
 };
 

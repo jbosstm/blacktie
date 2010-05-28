@@ -28,19 +28,20 @@ class TestTPConnect: public BaseServerTest {
 	CPPUNIT_TEST( test_tpconnect);
 	CPPUNIT_TEST( test_tpconnect_nodata);
 	CPPUNIT_TEST( test_tpconnect_double_connect);
-CPPUNIT_TEST_SUITE_END();
+	CPPUNIT_TEST( test_tpacall_to_TPCONV_fails);CPPUNIT_TEST_SUITE_END();
 
 public:
-void test_tpconnect();
-void test_tpconnect_double_connect();
-void test_tpconnect_nodata();
-virtual void setUp();
-virtual void tearDown();
+	void test_tpconnect();
+	void test_tpconnect_double_connect();
+	void test_tpconnect_nodata();
+	void test_tpacall_to_TPCONV_fails();
+	virtual void setUp();
+	virtual void tearDown();
 private:
-int cd;
-int cd2;
-char *sendbuf, *rcvbuf;
-long sendlen, rcvlen;
+	int cd;
+	int cd2;
+	char *sendbuf, *rcvbuf;
+	long sendlen, rcvlen;
 };
 
 #endif

@@ -105,6 +105,22 @@ void TestTPACall::test_tpacall() {
 	BT_ASSERT(toTest == -1);
 }
 
+void TestTPACall::test_tpconnect_to_non_TPCONV_fails() {
+	userlogc((char*) "test_tpconnect_to_non_TPCONV_fails");
+	int cd = ::tpconnect((char*) "TestTPACall", sendbuf, sendlen, TPRECVONLY);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEPROTO);
+	free(tperrnoS);
+
+	char* cdS = (char*) malloc(110);
+	sprintf(cdS, "%d", cd);
+	BT_ASSERT_MESSAGE(cdS, cd == -1);
+	free(cdS);
+}
+
+
+
 void TestTPACall::test_tpacall_systemerr() {
 	userlogc((char*) "test_tpacall_systemerr");
 	sendlen = strlen("test_tpacall_systemerr") + 1;

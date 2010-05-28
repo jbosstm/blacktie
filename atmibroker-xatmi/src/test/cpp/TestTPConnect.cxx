@@ -90,6 +90,22 @@ void TestTPConnect::test_tpconnect() {
 	free(cdS);
 }
 
+void TestTPConnect::test_tpacall_to_TPCONV_fails() {
+	userlogc((char*) "test_tpacall_to_TPCONV_fails");
+
+	int cd = ::tpacall((char*) "TestTPConnect", (char *) sendbuf, sendlen,
+			TPNOREPLY);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEPROTO);
+	free(tperrnoS);
+
+	char* cdS = (char*) malloc(110);
+	sprintf(cdS, "%d", cd);
+	BT_ASSERT_MESSAGE(cdS, cd == -1);
+	free(cdS);
+}
+
 void TestTPConnect::test_tpconnect_double_connect() {
 	userlogc((char*) "test_tpconnect_double_connect");
 	cd = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, TPRECVONLY);
