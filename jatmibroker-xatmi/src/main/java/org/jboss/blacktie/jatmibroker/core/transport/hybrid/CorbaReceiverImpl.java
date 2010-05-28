@@ -175,7 +175,11 @@ public class CorbaReceiverImpl extends EndpointQueuePOA implements Receiver {
 			} else {
 				log.debug("Not waiting for the response, hope its there!");
 			}
-			if (returnData.isEmpty()) {
+			if (returnData.isEmpty()
+					&& (flags & Connection.TPNOBLOCK) == Connection.TPNOBLOCK) {
+				throw new ConnectionException(Connection.TPEBLOCK,
+						"Did not receive a message");
+			} else if (returnData.isEmpty()) {
 				log.debug("Empty return data: " + callbackIOR);
 				if (JtsTransactionImple.hasTransaction()) {
 					try {

@@ -30,6 +30,7 @@ public class TestTPGetRply extends TestCase {
 	private Connection connection;
 	private int sendlen;
 	private X_OCTET sendbuf;
+	private int cd;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		server.serverinit();
@@ -41,9 +42,14 @@ public class TestTPGetRply extends TestCase {
 		sendlen = "grply".length() + 1;
 		sendbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, sendlen);
 		sendbuf.setByteArray("grply".getBytes());
+
+		cd = -1;
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
+		if (cd != -1) {
+			connection.tpcancel(cd);
+		}
 		connection.close();
 		server.serverdone();
 	}
@@ -119,6 +125,38 @@ public class TestTPGetRply extends TestCase {
 	// assertTrue(tperrno != TPEBLOCK);
 	// assertTrue(tperrno == TPEINVAL);
 	// }
+
+	public void test_tpgetrply_with_TPNOBLOCK() throws ConnectionException {
+		log.info("test_tpgetrply_with_TPNOBLOCK");
+		server.tpadvertiseTestTPGetRplyTPNOBLOCK();
+
+		cd = connection.tpacall(server.getServiceNameTPGetRplyTPNOBLOCK(),
+				sendbuf, 0);
+		assertTrue(cd != -1);
+
+		// RETRIEVE THE RESPONSE
+		try {
+			Response valToTest = connection.tpgetrply(cd, Connection.TPNOBLOCK);
+			fail("Expected exception");
+		} catch (ConnectionException e) {
+			assertTrue(e.getTperrno() == Connection.TPEBLOCK);
+		}
+	}
+
+	public void test_tpgetrply_without_TPNOBLOCK() throws ConnectionException {
+		log.info("test_tpgetrply_without_TPNOBLOCK");
+		server.tpadvertiseTestTPGetRplyTPNOBLOCK();
+
+		cd = connection.tpacall(server.getServiceNameTPGetRplyTPNOBLOCK(),
+				sendbuf, 0);
+		assertTrue(cd != -1);
+
+		// RETRIEVE THE RESPONSE
+		Response toTest = connection.tpgetrply(cd, 0);
+		assertTrue(TestTPConversation.strcmp(toTest.getBuffer(),
+				"test_tpgetrply_TPNOBLOCK") == 0);
+		cd = -1;
+	}
 
 	public void test_tpgetrply_with_TPGETANY() throws ConnectionException {
 		log.info("test_tpgetrply_with_TPGETANY");

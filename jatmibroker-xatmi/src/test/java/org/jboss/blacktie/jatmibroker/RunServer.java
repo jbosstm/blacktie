@@ -40,6 +40,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.services.TPDisconService;
 import org.jboss.blacktie.jatmibroker.xatmi.services.TPGetRplyOneService;
 import org.jboss.blacktie.jatmibroker.xatmi.services.TPGetRplyService;
 import org.jboss.blacktie.jatmibroker.xatmi.services.TPGetRplyTwoService;
+import org.jboss.blacktie.jatmibroker.xatmi.services.TPGetRplyTPNOBLOCKService;
 import org.jboss.blacktie.jatmibroker.xatmi.services.TPRecvService;
 import org.jboss.blacktie.jatmibroker.xatmi.services.TPReturnOpenSession1Service;
 import org.jboss.blacktie.jatmibroker.xatmi.services.TPReturnOpenSession2Service;
@@ -369,5 +370,16 @@ public class RunServer {
 
 	public static String getServiceNameTestRollbackOnly2() {
 		return "ConvService";
+	}
+
+	public void tpadvertiseTestTPGetRplyTPNOBLOCK()
+			throws ConnectionException {
+		this.server.tpadvertise(
+				getServiceNameTPGetRplyTPNOBLOCK(),
+				TPGetRplyTPNOBLOCKService.class.getName());
+	}
+
+	public String getServiceNameTPGetRplyTPNOBLOCK() {
+		return "TestOne";
 	}
 }

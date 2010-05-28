@@ -320,28 +320,32 @@ public class Connection {
 
 		synchronized (tpGetAnySessions) {
 			if ((flags & Connection.TPGETANY) == Connection.TPGETANY) {
-				int timeout = 0;
-				if ((flags & Connection.TPNOTIME) != Connection.TPNOTIME) {
-					timeout = Integer.parseInt(properties
-							.getProperty("RequestTimeout"))
-							* 1000
-							+ Integer.parseInt(properties
-									.getProperty("TimeToLive")) * 1000;
-				}
-				if (tpGetAnySessions.size() == 0) {
-					try {
-						tpGetAnySessions.wait(timeout);
-					} catch (InterruptedException e) {
-						throw new ConnectionException(Connection.TPESYSTEM,
-								"Could not wait", e);
+				if ((flags & Connection.TPNOBLOCK) != Connection.TPNOBLOCK) {
+					int timeout = 0;
+					if ((flags & Connection.TPNOTIME) != Connection.TPNOTIME) {
+						timeout = Integer.parseInt(properties
+								.getProperty("RequestTimeout"))
+								* 1000
+								+ Integer.parseInt(properties
+										.getProperty("TimeToLive")) * 1000;
 					}
-				}
-				if (tpGetAnySessions.size() == 0) {
-					throw new ConnectionException(Connection.TPETIME,
+					if (tpGetAnySessions.size() == 0) {
+						try {
+							tpGetAnySessions.wait(timeout);
+						} catch (InterruptedException e) {
+							throw new ConnectionException(Connection.TPESYSTEM,
+									"Could not wait", e);
+						}
+					}
+					if (tpGetAnySessions.size() == 0) {
+						throw new ConnectionException(Connection.TPETIME,
+								"No message arrived");
+					}
+				} else if (tpGetAnySessions.size() == 0) {
+					throw new ConnectionException(Connection.TPEBLOCK,
 							"No message arrived");
-				} else {
-					cd = tpGetAnySessions.remove(0);
 				}
+				cd = tpGetAnySessions.remove(0);
 			}
 		}
 
@@ -517,12 +521,13 @@ public class Connection {
 	 */
 	private Response receive(int cd, int flags) throws ConnectionException {
 		log.debug("receive: " + cd);
-		Receiver endpoint = temporaryQueues.remove(cd);
+		Receiver endpoint = temporaryQueues.get(cd);
 		if (endpoint == null) {
 			throw new ConnectionException(Connection.TPEBADDESC,
 					"Session does not exist: " + cd);
 		}
 		Message message = endpoint.receive(flags);
+		temporaryQueues.remove(cd);
 		Buffer buffer = null;
 		if (message.type != null && !message.type.equals("")) {
 			buffer = tpalloc(message.type, message.subtype, message.len);
