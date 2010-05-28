@@ -143,7 +143,6 @@ void TestTPConnect::test_tpconnect_tpgetrply() {
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
-	free(tperrnoS);
 
 	char* cdS = (char*) malloc(110);
 	sprintf(cdS, "%d", cd);
@@ -151,12 +150,12 @@ void TestTPConnect::test_tpconnect_tpgetrply() {
 	free(cdS);
 
 	int toTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
-	BT_ASSERT(tperrno == TPEBADDESC);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEBADDESC);
 
 	// Clean the pending message
 	long revent = 0;
 	int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
-	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEEVENT);
 	BT_ASSERT(revent & TPEV_SVCSUCC);

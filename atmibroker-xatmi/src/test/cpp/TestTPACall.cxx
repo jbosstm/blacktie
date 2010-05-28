@@ -119,8 +119,6 @@ void TestTPACall::test_tpconnect_to_non_TPCONV_fails() {
 	free(cdS);
 }
 
-
-
 void TestTPACall::test_tpacall_systemerr() {
 	userlogc((char*) "test_tpacall_systemerr");
 	sendlen = strlen("test_tpacall_systemerr") + 1;
@@ -160,7 +158,6 @@ void TestTPACall::test_tpacall_tprecv() {
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
-	free(tperrnoS);
 	int cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, sendlen, 0);
 	BT_ASSERT(tperrno == 0);
 
@@ -171,10 +168,9 @@ void TestTPACall::test_tpacall_tprecv() {
 
 	long revent = 0;
 	int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
-	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEBADDESC);
-
+	free(tperrnoS);
 }
 
 void testtpacall_service(TPSVCINFO *svcinfo) {

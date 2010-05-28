@@ -184,7 +184,7 @@ void TestTPAlloc::test_tpalloc_x_c_type_subtype_required() {
 
 void TestTPAlloc::test_tpalloc_x_common_unknown_subtype() {
 	userlogc((char*) "test_tpalloc_x_common_unknown_subtype");
-	m_allocated = tpalloc((char*) "X_COMMON", "UNKNOWN", 0);
+	m_allocated = tpalloc((char*) "X_COMMON", (char*) "UNKNOWN", 0);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEOS);
@@ -194,7 +194,7 @@ void TestTPAlloc::test_tpalloc_x_common_unknown_subtype() {
 
 void TestTPAlloc::test_tpalloc_x_c_type_unknown_subtype() {
 	userlogc((char*) "test_tpalloc_x_c_type_unknown_subtype");
-	m_allocated = tpalloc((char*) "X_C_TYPE", "UNKNOWN", 0);
+	m_allocated = tpalloc((char*) "X_C_TYPE", (char*) "UNKNOWN", 0);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEOS);

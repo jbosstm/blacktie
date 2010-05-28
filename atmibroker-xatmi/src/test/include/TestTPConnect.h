@@ -28,13 +28,15 @@ class TestTPConnect: public BaseServerTest {
 	CPPUNIT_TEST( test_tpconnect);
 	CPPUNIT_TEST( test_tpconnect_nodata);
 	CPPUNIT_TEST( test_tpconnect_double_connect);
-	CPPUNIT_TEST( test_tpacall_to_TPCONV_fails);CPPUNIT_TEST_SUITE_END();
+	CPPUNIT_TEST( test_tpacall_to_TPCONV_fails);
+	CPPUNIT_TEST( test_tpconnect_tpgetrply);CPPUNIT_TEST_SUITE_END();
 
 public:
 	void test_tpconnect();
 	void test_tpconnect_double_connect();
 	void test_tpconnect_nodata();
 	void test_tpacall_to_TPCONV_fails();
+	void test_tpconnect_tpgetrply();
 	virtual void setUp();
 	virtual void tearDown();
 private:
