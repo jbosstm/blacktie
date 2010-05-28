@@ -313,7 +313,7 @@ void TestTPGetRply::test_tpgetrply_without_TPGETANY() {
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT_MESSAGE(toTestS, toTest != -1);
 	BT_ASSERT_MESSAGE(gotCdS, cdToGet == cd2);
-	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "test_tpgetrply_TPGETANY_one")
+	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "test_tpgetrply_TPGETANY_two")
 			== 0);
 
 	free(toTestS);
