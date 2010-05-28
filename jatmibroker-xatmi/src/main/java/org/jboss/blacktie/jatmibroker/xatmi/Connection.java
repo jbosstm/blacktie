@@ -427,7 +427,7 @@ public class Connection {
 		if (!connected) {
 			log.error("Could not connect");
 			session.close();
-			throw new ConnectionException(Connection.TPETIME,
+			throw new ConnectionException(Connection.TPESYSTEM,
 					"Could not connect");
 		}
 		session.setCreatorState(flags);

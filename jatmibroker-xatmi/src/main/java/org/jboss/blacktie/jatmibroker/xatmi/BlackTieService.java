@@ -107,11 +107,16 @@ public abstract class BlackTieService implements Service {
 				log.debug("Session was not a TPCONV");
 			} else {
 				log.error("Session was invoked in an improper manner");
-				// Even though we can provide the cd we don't as
-				// atmibroker-xatmi doesn't because tpreturn doesn't
-				serviceSession.getSender().send("", Connection.TPFAIL,
-						Connection.TPESVCERR, null, 0, 0, 0, 0, null, null);
-				log.error("Error reported");
+				int olen = 4;
+				X_OCTET odata = new X_OCTET(olen);
+				odata.setByteArray("ERR".getBytes());
+				long result = serviceSession.tpsend(odata, 0);
+				if (result == -1) {
+					log.error("Could not send err");
+				} else {
+					log.error("Error reported");
+				}
+				serviceSession.close();
 				return;
 			}
 			log.debug("Created the session");

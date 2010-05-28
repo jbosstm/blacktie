@@ -218,7 +218,15 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	} else {
 		LOG4CXX_DEBUG(logger,
 				(char*) "Session was invoked in an improper manner");
-		::tpreturn(TPFAIL, TPESVCERR, NULL, 0, 0);
+
+		long olen = 4;
+		char* odata = (char*) tpalloc((char*) "X_OCTET", NULL, olen);
+		strcpy(odata, "ERR");
+		long revent = 0;
+		long result = tpsend(tpsvcinfo.cd, odata, olen, 0, &revent);
+		connection->closeSession(message.correlationId);
+		destroySpecific( SVC_SES);
+		destroySpecific( SVC_KEY);
 		LOG4CXX_DEBUG(logger, (char*) "Error reported");
 		return;
 	}
