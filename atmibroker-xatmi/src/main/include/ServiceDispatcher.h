@@ -33,7 +33,8 @@ class ServiceDispatcher: public ACE_Task_Base {
 public:
 	ServiceDispatcher(AtmiBrokerServer* server, Destination* destination,
 			Connection* connection, const char *serviceName, void(*func)(
-					TPSVCINFO *), bool isPause, SynchronizableObject* reconnect);
+					TPSVCINFO *), bool isPause,
+			SynchronizableObject* reconnect, bool isConversational);
 	~ServiceDispatcher();
 	int svc();
 	int pause();
@@ -42,7 +43,8 @@ public:
 	long getCounter();
 	long getErrorCounter();
 	void updateErrorCounter();
-	void getResponseTime(unsigned long* min, unsigned long* avg, unsigned long* max);
+	void getResponseTime(unsigned long* min, unsigned long* avg,
+			unsigned long* max);
 	SynchronizableObject* getReconnect();
 private:
 	void onMessage(MESSAGE message);
@@ -55,6 +57,7 @@ private:
 	Session* session;
 	bool stop;
 	bool isPause;
+	bool isConversational;
 	long timeout;
 	long counter;
 	long error_counter;

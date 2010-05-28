@@ -377,6 +377,11 @@ public class XMLEnvHandler extends DefaultHandler {
 						}
 						prop.put(skey, object);
 					}
+				} else if (attsLocalName.equals("conversational")) {
+					String conversational = atts.getValue(i);
+					String ad_key = "blacktie." + serviceName
+							+ ".conversational";
+					prop.put(ad_key, new Boolean(conversational));
 				} else if (attsLocalName.equals("size")) {
 					String sizeKey = "blacktie." + serviceName + ".size";
 					String sizeVal = atts.getValue(i);

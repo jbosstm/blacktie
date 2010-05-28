@@ -37,16 +37,16 @@
 				<SERVICE name='TestTPCall' />
 				<SERVICE name='TestTPAdvertise' size="2" />
 				<SERVICE name='LOOPY' />
-				<SERVICE name='TestTPConversat' />
+				<SERVICE name='TestTPConversat' conversational='true' />
 				<SERVICE name='TestTPACall' />
 				<SERVICE name='TestTPCancel' />
-				<SERVICE name='TestTPConnect' />
-				<SERVICE name='TestTPDiscon' />
+				<SERVICE name='TestTPConnect' conversational='true' />
+				<SERVICE name='TestTPDiscon' conversational='true' />
 				<SERVICE name='TestTPGetrply' />
 				<SERVICE name='TestTPGetAnyA' />
 				<SERVICE name='TestTPGetAnyB' />
-				<SERVICE name='TestTPSend' />
-				<SERVICE name='TestTPRecv' />
+				<SERVICE name='TestTPSend' conversational='true' />
+				<SERVICE name='TestTPRecv' conversational='true' />
 				<SERVICE name='TestTPService' />
 				<SERVICE name='TestTPReturnA' />
 				<SERVICE name='TestTPReturnB' />
@@ -57,8 +57,8 @@
 				<SERVICE name='tpcall_x_c_type' />
 				<SERVICE name='DEBIT' />
 				<SERVICE name='CREDIT' />
-				<SERVICE name='INQUIRY' />
-				<SERVICE name='TestRbkOnly' />
+				<SERVICE name='INQUIRY' conversational='true' />
+				<SERVICE name='TestRbkOnly' /> <SERVICE name='TestRbkOnly2' conversational='true' />
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>

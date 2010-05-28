@@ -135,7 +135,7 @@ void TestRollbackOnly::test_tpcall_TPESVCFAIL() {
 
 void TestRollbackOnly::test_tprecv_TPEV_DISCONIMM() {
 	userlogc((char*) "test_tprecv_TPEV_DISCONIMM");
-	int rc = tpadvertise((char*) "TestRbkOnly",
+	int rc = tpadvertise((char*) "TestRbkOnly2",
 			test_tprecv_TPEV_DISCONIMM_service);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(rc != -1);
@@ -143,7 +143,7 @@ void TestRollbackOnly::test_tprecv_TPEV_DISCONIMM() {
 	BT_ASSERT(tx_open() == TX_OK);
 	BT_ASSERT(tx_begin() == TX_OK);
 
-	int cd = ::tpconnect((char*) "TestRbkOnly", (char *) sendbuf, sendlen,
+	int cd = ::tpconnect((char*) "TestRbkOnly2", (char *) sendbuf, sendlen,
 			TPSENDONLY);
 	::tpdiscon(cd);
 	BT_ASSERT(tperrno == 0);
@@ -157,7 +157,7 @@ void TestRollbackOnly::test_tprecv_TPEV_DISCONIMM() {
 
 void TestRollbackOnly::test_tprecv_TPEV_SVCFAIL() {
 	userlogc((char*) "test_tprecv_TPEV_SVCFAIL");
-	int rc = tpadvertise((char*) "TestRbkOnly",
+	int rc = tpadvertise((char*) "TestRbkOnly2",
 			test_tprecv_TPEV_SVCFAIL_service);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(rc != -1);
@@ -165,7 +165,7 @@ void TestRollbackOnly::test_tprecv_TPEV_SVCFAIL() {
 	BT_ASSERT(tx_open() == TX_OK);
 	BT_ASSERT(tx_begin() == TX_OK);
 
-	int cd = ::tpconnect((char*) "TestRbkOnly", (char *) sendbuf, sendlen,
+	int cd = ::tpconnect((char*) "TestRbkOnly2", (char *) sendbuf, sendlen,
 			TPRECVONLY);
 	long revent = 0;
 	int status = ::tprecv(cd, (char **) &rcvbuf, &rcvlen, (long) 0, &revent);

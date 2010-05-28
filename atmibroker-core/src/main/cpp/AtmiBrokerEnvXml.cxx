@@ -447,6 +447,7 @@ static void XMLCALL startElement
 
 			service.transportLib = NULL;
 			service.advertised = false;
+			service.conversational = false;
 			service.poolSize = 1;
 
 			for(int i = 0; atts[i]; i += 2) {
@@ -470,6 +471,12 @@ static void XMLCALL startElement
 						service.advertised = true;
 					} else {
 						service.advertised = false;
+					}
+				} else if(strcmp(atts[i], "conversational") == 0) {
+					if(strcmp(atts[i+1], "true") == 0) {
+						service.conversational = true;
+					} else {
+						service.conversational = false;
 					}
 				} else if (strcmp(atts[i], "size") == 0) {
 					service.poolSize = (short) atol(atts[i+1]);

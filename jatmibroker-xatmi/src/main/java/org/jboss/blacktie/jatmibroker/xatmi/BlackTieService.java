@@ -87,21 +87,31 @@ public abstract class BlackTieService implements Service {
 			Session serviceSession = connection.createServiceSession(name,
 					message.cd, message.replyTo);
 			boolean hasTPCONV = (message.flags & Connection.TPCONV) == Connection.TPCONV;
-			if (hasTPCONV) {
+			boolean isConversational = ((Boolean) connection.properties
+					.get("blacktie." + name + ".conversational")) == true;
+			if (hasTPCONV && isConversational) {
 				int olen = 4;
 				X_OCTET odata = new X_OCTET(olen);
 				odata.setByteArray("ACK".getBytes());
 				long result = serviceSession.tpsend(odata, 0);
 				if (result == -1) {
-					log.debug("Could not send ack");
+					log.error("Could not send ack");
 					serviceSession.close();
 					return;
 				} else {
 					log.debug("Sent ack");
 					serviceSession.setCreatedState(message.flags);
 				}
-			} else {
+			} else if (!hasTPCONV && !isConversational) {
 				log.debug("Session was not a TPCONV");
+			} else {
+				log.error("Session was invoked in an improper manner");
+				// Even though we can provide the cd we don't as
+				// atmibroker-xatmi doesn't because tpreturn doesn't
+				serviceSession.getSender().send("", Connection.TPFAIL,
+						Connection.TPESVCERR, null, 0, 0, 0, 0, null, null);
+				log.error("Error reported");
+				return;
 			}
 			log.debug("Created the session");
 			// To respond with

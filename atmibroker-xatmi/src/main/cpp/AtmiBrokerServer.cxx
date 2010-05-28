@@ -346,6 +346,8 @@ AtmiBrokerServer::AtmiBrokerServer() {
 					service.poolSize = servers[i]->serviceVector[j].poolSize;
 					service.advertised
 							= servers[i]->serviceVector[j].advertised;
+					service.conversational
+							= servers[i]->serviceVector[j].conversational;
 					serverInfo.serviceVector.push_back(service);
 				}
 				break;
@@ -930,7 +932,7 @@ void AtmiBrokerServer::addDestination(Destination* destination, void(*func)(
 	for (int i = 0; i < entry.serviceInfo->poolSize; i++) {
 		ServiceDispatcher* dispatcher = new ServiceDispatcher(this,
 				destination, connection, destination->getName(), func, isPause,
-				reconnect);
+				reconnect, entry.serviceInfo->conversational);
 		if (dispatcher->activate(THR_NEW_LWP | THR_JOINABLE, 1, 0,
 				ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
 			delete dispatcher;

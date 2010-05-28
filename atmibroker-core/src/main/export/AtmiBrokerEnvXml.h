@@ -75,6 +75,7 @@ typedef BLACKTIE_CORE_DLL struct _service_info {
 	char* library_name;
 	int poolSize;
 	bool advertised;
+	bool conversational;
 }ServiceInfo;
 
 typedef BLACKTIE_CORE_DLL struct _server_info {

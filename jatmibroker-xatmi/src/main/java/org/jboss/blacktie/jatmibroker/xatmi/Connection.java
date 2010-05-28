@@ -110,7 +110,7 @@ public class Connection {
 	/**
 	 * The properties that this connection was created with.
 	 */
-	private Properties properties;
+	Properties properties;
 
 	/**
 	 * The open sessions from this connection/

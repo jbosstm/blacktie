@@ -32,7 +32,7 @@ extern void setTpurcode(long rcode);
 ServiceDispatcher::ServiceDispatcher(AtmiBrokerServer* server,
 		Destination* destination, Connection* connection,
 		const char *serviceName, void(*func)(TPSVCINFO *), bool isPause,
-		SynchronizableObject* reconnect) {
+		SynchronizableObject* reconnect, bool isConversational) {
 	this->reconnect = reconnect;
 	this->destination = destination;
 	this->connection = connection;
@@ -48,6 +48,7 @@ ServiceDispatcher::ServiceDispatcher(AtmiBrokerServer* server,
 	this->minResponseTime = 0;
 	this->avgResponseTime = 0;
 	this->maxResponseTime = 0;
+	this->isConversational = isConversational;
 	pauseLock = new SynchronizableObject();
 }
 
@@ -169,12 +170,13 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 		LOG4CXX_DEBUG(logger, (char*) "replyTo: NULL");
 	}
 	LOG4CXX_TRACE(logger, (char*) "Creating session: " << message.correlationId);
-	session = connection->createSession(((message.flags & TPCONV) == TPCONV), message.correlationId, message.replyto);
+	session = connection->createSession(((message.flags & TPCONV) == TPCONV),
+			message.correlationId, message.replyto);
 	LOG4CXX_TRACE(logger, (char*) "Created session: " << message.correlationId);
 
-	LOG4CXX_DEBUG(logger, (char*) "message.len: " << message.len << " message.flags: " << message.flags
-			<< "cd: " << message.correlationId << " message.control="
-			<< message.control);
+	LOG4CXX_DEBUG(logger, (char*) "message.len: " << message.len
+			<< " message.flags: " << message.flags << "cd: "
+			<< message.correlationId << " message.control=" << message.control);
 
 	// PREPARE THE STRUCT FOR SENDING TO THE CLIENT
 	TPSVCINFO tpsvcinfo;
@@ -197,7 +199,8 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	setSpecific(SVC_KEY, this);
 	setSpecific(SVC_SES, session);
 
-	if (tpsvcinfo.flags & TPCONV) {
+	bool hasTPCONV = tpsvcinfo.flags & TPCONV;
+	if (hasTPCONV && isConversational) {
 		tpsvcinfo.cd = message.correlationId;
 		long olen = 4;
 		char* odata = (char*) tpalloc((char*) "X_OCTET", NULL, olen);
@@ -210,9 +213,14 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 			destroySpecific( SVC_KEY);
 			return;
 		}
-
-	} else {
+	} else if (!hasTPCONV && !isConversational) {
 		LOG4CXX_DEBUG(logger, (char*) "cd not being set");
+	} else {
+		LOG4CXX_DEBUG(logger,
+				(char*) "Session was invoked in an improper manner");
+		::tpreturn(TPFAIL, TPESVCERR, NULL, 0, 0);
+		LOG4CXX_DEBUG(logger, (char*) "Error reported");
+		return;
 	}
 
 	if (tpsvcinfo.flags & TPRECVONLY) {

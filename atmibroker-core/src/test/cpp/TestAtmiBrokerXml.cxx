@@ -73,7 +73,8 @@ void TestAtmiBrokerXml::test_env() {
 	BT_ASSERT((*services)[0].poolSize == 5);
 	BT_ASSERT(strcmp((*services)[0].function_name, "BAR") == 0);
 	BT_ASSERT(strcmp((*services)[0].library_name, "libXMLTESTSERVICE.so") == 0);
-	BT_ASSERT((*services)[0].advertised == false);
+	BT_ASSERT((*services)[0].advertised == true);
+	BT_ASSERT((*services)[0].conversational == true);
 
 	char* transport = env->getTransportLibrary((char*) "BAR");
 #ifdef WIN32
