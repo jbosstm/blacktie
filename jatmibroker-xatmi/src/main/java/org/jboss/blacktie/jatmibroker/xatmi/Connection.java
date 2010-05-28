@@ -432,7 +432,6 @@ public class Connection {
 		session.setCreatorState(flags);
 		sessions.put(correlationId, session);
 		log.trace("Added session: " + correlationId);
-		temporaryQueues.put(correlationId, session.getReceiver());
 
 		// Return a handle to allow the connection to send/receive data on
 		log.debug("Created session: " + correlationId);
@@ -594,7 +593,6 @@ public class Connection {
 	 */
 	void removeSession(Session session) {
 		log.debug("Removing session: " + session.getCd());
-		temporaryQueues.remove(session.getCd());
 		// May be a no-op
 		boolean remove = false;
 		Iterator<Integer> iterator = sessions.keySet().iterator();

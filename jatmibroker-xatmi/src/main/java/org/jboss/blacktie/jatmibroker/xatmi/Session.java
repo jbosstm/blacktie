@@ -416,7 +416,7 @@ public class Session {
 	 * 
 	 * @return The connection descriptor id.
 	 */
-	public int getCd() {
+	int getCd() {
 		return cd;
 	}
 
