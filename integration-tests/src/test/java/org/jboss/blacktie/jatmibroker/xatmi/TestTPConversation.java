@@ -78,12 +78,17 @@ public class TestTPConversation extends TestCase {
 			}
 		}
 		log.info("Conversed");
-		Buffer rcvbuf = cd.tprecv(0);
-
-		String expectedResult = ("hi" + interationCount);
-		log.info("Expected: " + expectedResult + " Received: "
-				+ new String(((X_OCTET) rcvbuf).getByteArray()));
-		assertTrue(strcmp(expectedResult, rcvbuf) == 0);
+		try {
+			cd.tprecv(0);
+			fail("Expected event");
+		} catch (ResponseException e) {
+			assertTrue(e.getTperrno() == Connection.TPEEVENT);
+			Buffer rcvbuf = e.getReceived();
+			String expectedResult = ("hi" + interationCount);
+			log.info("Expected: " + expectedResult + " Received: "
+					+ new String(((X_OCTET) rcvbuf).getByteArray()));
+			assertTrue(strcmp(expectedResult, rcvbuf) == 0);
+		}
 	}
 
 	public void test_short_conversation() throws ConnectionException {
@@ -98,8 +103,17 @@ public class TestTPConversation extends TestCase {
 		assertTrue(rcvbuf != null);
 		assertTrue(strcmp("hi0", rcvbuf) == 0);
 
-		rcvbuf = cd.tprecv(0);
-		assertTrue(strcmp("hi1", rcvbuf) == 0);
+		try {
+			cd.tprecv(0);
+			fail("Expected event");
+		} catch (ResponseException e) {
+			assertTrue(e.getTperrno() == Connection.TPEEVENT);
+			rcvbuf = e.getReceived();
+			String expectedResult = ("hi1");
+			log.info("Expected: " + expectedResult + " Received: "
+					+ new String(((X_OCTET) rcvbuf).getByteArray()));
+			assertTrue(strcmp(expectedResult, rcvbuf) == 0);
+		}
 	}
 
 	public static int strcmp(String string, Buffer buffer) {
