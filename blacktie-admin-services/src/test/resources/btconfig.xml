@@ -81,6 +81,7 @@
 				<SERVICE name='INQUIRY' conversational='true' />
 				<SERVICE name='TestRbkOnly' />
 				<SERVICE name='TestRbkOnly2' conversational='true' />
+				<SERVICE name='TTL' />
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>
