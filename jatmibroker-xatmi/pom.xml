@@ -73,6 +73,7 @@
 	<reporting>
 		<plugins>
 			<plugin>
+				<!-- http://mojo.codehaus.org/emma-maven-plugin/ -->
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>emma-maven-plugin</artifactId>
 				<version>1.0-alpha-2</version>
