@@ -121,7 +121,7 @@ set MAVEN_OPTS=-Xmx200m
 set PATH=%PATH%;%MAVEN_HOME%\bin
 cd trunk/blacktie
 call mvn install -Dbpa=vc9x32 -Duse.valgrind=false -Djbossas.ip.addr=172.17.131.5
-cd jatmibroker-xatmi
+cd ../jatmibroker-xatmi
 call mvn clean site -Djbossas.ip.addr=172.17.131.5</command>
     </hudson.tasks.BatchFile>
     <hudson.tasks.BatchFile>

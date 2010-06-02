@@ -92,7 +92,7 @@ sleep 60</command>
 export MAVEN_OPTS=-Xmx200m
 cd trunk/blacktie
 mvn install -Dbpa=centos54x64
-cd jatmibroker-xatmi
+cd ../jatmibroker-xatmi
 mvn clean site</command>
     </hudson.tasks.Shell>
     <hudson.tasks.Shell>
