@@ -79,10 +79,7 @@
 				<inherited>true</inherited>
 				<configuration>
 					<metadataFile>${project.build.directory}/test-classes/coverage.em</metadataFile>
-					<!--
-						Configuring, doesn't work
-						<metrics>method:80,block:80,line:90,class:100</metrics>
-					-->
+					<metrics>method:70,block:70,line:80,class:100</metrics>
 					<dataFiles>
 						<dataFile>${project.build.directory}/test-classes/coverage.em</dataFile>
 						<dataFile>${project.build.directory}/test-classes/coverage.ec</dataFile>
