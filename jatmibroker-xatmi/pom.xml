@@ -70,7 +70,23 @@
 			<url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
 		</license>
 	</licenses>
-
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>emma-maven-plugin</artifactId>
+				<version>1.0-alpha-2</version>
+				<inherited>true</inherited>
+				<configuration>
+					<metadataFile>${project.build.directory}/test-classes/coverage.em</metadataFile>
+					<dataFiles>
+						<dataFile>/home/tom/blacktie/trunk/jatmibroker-xatmi/target/test-classes/coverage.em</dataFile>
+						<dataFile>/home/tom/blacktie/trunk/jatmibroker-xatmi/target/test-classes/coverage.ec</dataFile>
+					</dataFiles>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 	<build>
 		<plugins>
 			<plugin>
@@ -102,13 +118,44 @@
 				<configuration>
 					<forkMode>once</forkMode>
 					<workingDirectory>target/test-classes</workingDirectory>
+					<!-- <classesDirectory>${project.build.directory}/generated-classes/emma/classes</classesDirectory> -->
 					<environmentVariables>
-						<!-- <BLACKTIE_SCHEMA_DIR>xsd</BLACKTIE_SCHEMA_DIR> -->
 						<JBOSSAS_IP_ADDR>${jbossas.ip.addr}</JBOSSAS_IP_ADDR>
 					</environmentVariables>
-					<!--					<skip>false</skip>-->
+					<inherited>true</inherited>
 				</configuration>
 			</plugin>
+			<!-- 
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>emma-maven-plugin</artifactId>
+				<version>1.0-alpha-2</version>
+				<inherited>true</inherited>
+				<configuration>
+					<metadataFile>${project.build.directory}/test-classes/coverage.em</metadataFile>
+					<dataFiles>
+						<dataFile>/home/tom/blacktie/trunk/jatmibroker-xatmi/target/test-classes/coverage.em</dataFile>
+						<dataFile>/home/tom/blacktie/trunk/jatmibroker-xatmi/target/test-classes/coverage.ec</dataFile>
+					</dataFiles>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>instrument</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			 -->
+			<!--
+				<plugin> <groupId>org.codehaus.mojo</groupId>
+				<artifactId>emma-maven-plugin</artifactId>
+				<version>1.0-alpha-2</version> <inherited>true</inherited>
+				<executions> <execution> <phase>process-classes</phase> <goals>
+				<goal>instrument</goal> </goals> </execution> </executions>
+				</plugin>
+			-->
 		</plugins>
 	</build>
 	<dependencies>
