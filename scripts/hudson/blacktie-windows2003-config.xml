@@ -120,7 +120,9 @@ set MAVEN_HOME=C:\hudson\tools\apache-maven-2.0.10
 set MAVEN_OPTS=-Xmx200m
 set PATH=%PATH%;%MAVEN_HOME%\bin
 cd trunk/blacktie
-call mvn install -Dbpa=vc9x32 -Duse.valgrind=false -Djbossas.ip.addr=172.17.131.5</command>
+call mvn install -Dbpa=vc9x32 -Duse.valgrind=false -Djbossas.ip.addr=172.17.131.5
+cd jatmibroker-xatmi
+call mvn clean site -Djbossas.ip.addr=172.17.131.5</command>
     </hudson.tasks.BatchFile>
     <hudson.tasks.BatchFile>
       <command>call &quot;C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat&quot;
@@ -129,14 +131,16 @@ set PATH=%PATH%;%ANT_HOME%\bin
 set JAVA_HOME=C:\Program Files (x86)\Java\jdk1.5.0_19
 set MAVEN_HOME=C:\hudson\tools\apache-maven-2.0.10
 set MAVEN_OPTS=-Xmx200m
-set ORACLE_HOME=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2
-set TNS_ADMIN=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2\network\admin
-set PATH=%PATH%;%MAVEN_HOME%\bin;%ORACLE_HOME%\bin;%ORACLE_HOME%\vc9
+set PATH=%PATH%;%MAVEN_HOME%\bin
 cd trunk\scripts\test
 call ant dist -DBT_HOME=C:\\\\hudson\\\\workspace\\\\blacktie-windows2003\\\\trunk\\\\dist\\\\blacktie-2.0.0.M4-SNAPSHOT -DJBOSSAS_IP_ADDR=catskill
+
+set ORACLE_HOME=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2
+set TNS_ADMIN=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2\network\admin
+set PATH=%PATH%;%ORACLE_HOME%\bin;%ORACLE_HOME%\vc9
 cd ..\..\dist\blacktie-*
-call setenv.bat &amp;&amp; run_all_samples.bat tx
-</command>
+call setenv.bat
+run_all_samples.bat tx</command>
     </hudson.tasks.BatchFile>
     <hudson.tasks.BatchFile>
       <command>echo foo | call jboss-5.1.0.GA\bin\shutdown.bat -s 172.17.131.5:1099 -S &amp;&amp; cd .</command>
