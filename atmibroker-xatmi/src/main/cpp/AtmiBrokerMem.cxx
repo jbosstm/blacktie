@@ -196,16 +196,17 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size, char* type,
 				!= memoryInfoVector.end(); it++) {
 			LOG4CXX_TRACE(logger, (char*) "next memoryInfo id is with size: "
 					<< (*it).size);
-			if ((force == false) && (strncmp((*it).type, "X_COMMON",
-					MAX_TYPE_SIZE) == 0 || strncmp((*it).type, "X_C_TYPE",
-					MAX_TYPE_SIZE) == 0)) {
-				LOG4CXX_WARN(
-						logger,
-						(char*) "tprealloc - cannot resize a X_C_TYPE/X_COMMON buffer");
-				break;
-			} else if ((*it).memoryPtr == addr) {
+			if ((*it).memoryPtr == addr) {
 				LOG4CXX_DEBUG(logger, (char*) "found matching memory with size"
 						<< (*it).size);
+				if ((force == false) && (strncmp((*it).type, "X_COMMON",
+						MAX_TYPE_SIZE) == 0 || strncmp((*it).type, "X_C_TYPE",
+						MAX_TYPE_SIZE) == 0)) {
+					LOG4CXX_WARN(
+							logger,
+							(char*) "tprealloc - cannot resize a X_C_TYPE/X_COMMON buffer");
+					break;
+				}
 				char* memPtr = (char*) realloc((void*) addr, size);
 				(*it).memoryPtr = memPtr;
 				(*it).size = size;

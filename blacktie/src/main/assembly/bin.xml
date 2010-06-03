@@ -190,6 +190,16 @@
 			</excludes>
 		</fileSet>
 		<fileSet>
+			<directory>../examples/integration1
+			</directory>
+			<outputDirectory>examples/integration1
+			</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<excludes>
+				<exclude>**/target/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
 			<directory>../atmibroker-xatmi/src/main/export/
 			</directory>
 			<outputDirectory>include</outputDirectory>
