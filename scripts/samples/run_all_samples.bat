@@ -113,5 +113,24 @@ cd %BLACKTIE_HOME%\examples\mdb
 mvn install
 IF %ERRORLEVEL% NEQ 0 exit -1
 
+rem RUN THE INTEGRATION 1 EXAMPLE
+cd %BLACKTIE_HOME%\examples\integration1\ejb
+mvn install
+IF %ERRORLEVEL% NEQ 0 exit -1
+cp target\integration1-ejb-*.jar $JBOSS_HOME\server\all\deploy
+cd $BLACKTIE_HOME\examples\integration1\xatmi_adapter\
+mvn install
+IF %ERRORLEVEL% NEQ 0 exit -1
+cd $BLACKTIE_HOME\examples\integration1\xatmi_adapter\ear\
+rm $JBOSS_HOME\server\all\deploy\integration1-xatmi_adapter-ear-*.ear
+mvn install
+IF %ERRORLEVEL% NEQ 0 exit -1
+cp target\integration1-xatmi_adapter-ear-*.ear $JBOSS_HOME\server\all\deploy
+cd $BLACKTIE_HOME\examples\integration1\client\
+generate_client -Dclient.includes=client.c 
+@ping 127.0.0.1 -n 10 -w 1000 > nul
+.\client
+IF %ERRORLEVEL% NEQ 0 exit -1
+
 rem LET THE USER KNOW THE OUTPUT
 echo "All samples ran OK"
