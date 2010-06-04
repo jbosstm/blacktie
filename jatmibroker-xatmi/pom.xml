@@ -164,7 +164,7 @@
 		<dependency>
 			<groupId>org.jboss.javaee</groupId>
 			<artifactId>jboss-javaee</artifactId>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<!-- END EJB -->
 		<!-- START ORB -->
@@ -172,65 +172,71 @@
 			<groupId>apache-avalon</groupId>
 			<artifactId>avalon-framework</artifactId>
 			<version>4.1.5</version>
-			<scope>runtime</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>apache-avalon-logkit</groupId>
 			<artifactId>logkit</artifactId>
 			<version>1.2</version>
-			<scope>runtime</scope>
+			<scope>provided</scope>
 		</dependency>
 		<!-- END ORB -->
 		<!-- START JTS -->
 		<dependency>
 			<groupId>jboss.jbossts</groupId>
 			<artifactId>jbossjts</artifactId>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>jboss.jbossts</groupId>
 			<artifactId>jbossjts-jacorb</artifactId>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>jboss.jbossts</groupId>
 			<artifactId>jbossts-common</artifactId>
-			<scope>runtime</scope>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.1</version>
+			<scope>provided</scope>
 		</dependency>
 		<!-- END JTS -->
 		<!-- START JMS -->
 		<dependency>
 			<groupId>jboss.messaging</groupId>
 			<artifactId>jboss-messaging-client</artifactId>
-			<scope>runtime</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.naming</groupId>
 			<artifactId>jnp-client</artifactId>
-			<scope>runtime</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.aop</groupId>
 			<artifactId>jboss-aop</artifactId>
 			<classifier>client</classifier>
-			<scope>runtime</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.remoting</groupId>
 			<artifactId>jboss-remoting</artifactId>
-			<scope>runtime</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>concurrent</groupId>
 			<artifactId>concurrent</artifactId>
 			<version>1.3.4</version>
-			<scope>runtime</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.serialization</groupId>
 			<artifactId>jboss-serialization</artifactId>
 			<version>1.1.0.Beta1</version>
-			<scope>runtime</scope>
+			<scope>provided</scope>
 		</dependency>
 		<!-- END JMS -->
 		<!-- START TEST -->
@@ -239,12 +245,6 @@
 			<artifactId>junit</artifactId>
 			<version>3.8.1</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.1.1</version>
-			<scope>runtime</scope>
 		</dependency>
 		<!-- END TEST -->
 	</dependencies>

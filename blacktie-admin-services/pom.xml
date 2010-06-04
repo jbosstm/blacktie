@@ -142,71 +142,12 @@
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>jatmibroker-xatmi</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.jboss.javaee</groupId>
-					<artifactId>jboss-javaee</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>jboss.jbossts</groupId>
-					<artifactId>jbossjts</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>jboss.jbossts</groupId>
-					<artifactId>jbossjts-jacorb</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.integration</groupId>
-					<artifactId>jboss-corba-ots-spi</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>log4j</groupId>
-					<artifactId>log4j</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>apache-avalon</groupId>
-					<artifactId>avalon-framework</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>apache-avalon-logkit</groupId>
-					<artifactId>logkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>jboss.jbossts</groupId>
-					<artifactId>jbossts-common</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>jboss.messaging</groupId>
-					<artifactId>jboss-messaging-client</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.naming</groupId>
-					<artifactId>jnp-client</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.aop</groupId>
-					<artifactId>jboss-aop</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.remoting</groupId>
-					<artifactId>jboss-remoting</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>concurrent</groupId>
-					<artifactId>concurrent</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.serialization</groupId>
-					<artifactId>jboss-serialization</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.javaee</groupId>
 			<artifactId>jboss-javaee</artifactId>
 			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.jboss.ejb3</groupId>
 			<artifactId>jboss-ejb3-ext-api</artifactId>
@@ -218,24 +159,6 @@
 			<artifactId>log4j</artifactId>
 			<version>1.2.15</version>
 			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>com.sun.jmx</groupId>
-					<artifactId>jmxri</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.sun.jdmk</groupId>
-					<artifactId>jmxtools</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.jms</groupId>
-					<artifactId>jms</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.mail</groupId>
-					<artifactId>mail</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 	</dependencies>
 </project>

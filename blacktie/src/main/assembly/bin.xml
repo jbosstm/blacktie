@@ -49,10 +49,10 @@
 		</moduleSet>
 		<moduleSet>
 			<includes>
-				<include>org.jboss.blacktie:jatmibroker-xatmi</include>
+				<include>org.jboss.blacktie:jatmibroker-xatmi-client</include>
 			</includes>
 			<binaries>
-				<outputDirectory>jatmibroker-xatmi</outputDirectory>
+				<outputDirectory>jatmibroker-xatmi-client</outputDirectory>
 				<unpack>false</unpack>
 			</binaries>
 		</moduleSet>
@@ -71,7 +71,6 @@
 				<include>org.jboss.blacktie:blacktie-admin-services</include>
 			</includes>
 			<binaries>
-				<attachmentClassifier>jar-with-dependencies</attachmentClassifier>
 				<outputDirectory>blacktie-admin-services</outputDirectory>
 				<includeDependencies>false</includeDependencies>
 				<unpack>false</unpack>
