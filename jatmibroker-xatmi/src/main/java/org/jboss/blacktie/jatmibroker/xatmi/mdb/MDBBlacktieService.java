@@ -28,17 +28,6 @@ public abstract class MDBBlacktieService extends BlackTieService implements
 			.getLogger(MDBBlacktieService.class);
 
 	/**
-	 * MDB services should use this constructor with the name of the service
-	 * they are using.
-	 * 
-	 * @param name
-	 *            The name of the service
-	 */
-	public MDBBlacktieService(String name) {
-		super(name);
-	}
-
-	/**
 	 * The onMessage method formats the JMS received bytes message into a format
 	 * understood by the XATMI API.
 	 * 
@@ -50,9 +39,9 @@ public abstract class MDBBlacktieService extends BlackTieService implements
 			String serviceName = null;
 			Destination jmsDestination = message.getJMSDestination();
 			if (jmsDestination instanceof Queue) {
-				serviceName = ((Queue)jmsDestination).getQueueName();
+				serviceName = ((Queue) jmsDestination).getQueueName();
 			} else {
-				serviceName = ((Topic)jmsDestination).getTopicName();
+				serviceName = ((Topic) jmsDestination).getTopicName();
 			}
 			log.trace(serviceName);
 			BytesMessage bytesMessage = ((BytesMessage) message);
@@ -64,7 +53,7 @@ public abstract class MDBBlacktieService extends BlackTieService implements
 				throw new ConnectionException(Connection.TPEPROTO,
 						"Blacktie MDBs must not be called with a transactional context");
 			}
-			processMessage(toProcess);
+			processMessage(serviceName, toProcess);
 			log.debug("Processed message");
 		} catch (Throwable t) {
 			log.error("Could not service the request", t);

@@ -40,9 +40,10 @@ public class ServiceDispatcher extends BlackTieService implements Runnable {
 	private Receiver receiver;
 	private Thread thread;
 	private volatile boolean closed;
+	private String serviceName;
 
 	ServiceDispatcher(String serviceName, Service callback, Receiver receiver) {
-		super(serviceName);
+		this.serviceName = serviceName;
 		this.callback = callback;
 		this.receiver = receiver;
 		thread = new Thread(this, serviceName + "-Dispatcher");
@@ -74,7 +75,7 @@ public class ServiceDispatcher extends BlackTieService implements Runnable {
 			if (message != null) {
 				try {
 
-					this.processMessage(message);
+					this.processMessage(serviceName, message);
 					log.trace("Processed");
 				} catch (Throwable t) {
 					log.error("Can't process the message", t);

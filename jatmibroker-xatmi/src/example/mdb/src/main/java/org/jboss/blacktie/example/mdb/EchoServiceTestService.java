@@ -36,10 +36,6 @@ import org.jboss.ejb3.annotation.Depends;
 public class EchoServiceTestService extends MDBBlacktieService implements
 		javax.jms.MessageListener {
 
-	public EchoServiceTestService() {
-		super("EchoService");
-	}
-
 	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException {
 		X_OCTET rcvd = (X_OCTET) svcinfo.getBuffer();
 		X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",

@@ -81,8 +81,6 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 	public BlacktieStompAdministrationService() throws IOException,
 			ConfigurationException {
-		super("BTStompAdmin");
-
 		XMLEnvHandler handler = new XMLEnvHandler(prop);
 		XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
 		xmlenv.parse("btconfig.xml");

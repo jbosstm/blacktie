@@ -26,13 +26,11 @@ import javax.naming.NamingException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.example.ejb.eg1.BTTestRemote;
-import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.transport.JtsTransactionImple;
 import org.jboss.blacktie.jatmibroker.jab.JABException;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
@@ -51,18 +49,8 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 	private static final String[] names = { "FirstBTBean/remote",
 			"SecondBTBean/remote" };
 
-	public TxEchoServiceTestService() {
-		super("TxEchoService");
-	}
-
-	public static Connection getConnection() throws ConnectionException,
-			ConfigurationException {
-		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
-		return connectionFactory.getConnection();
-	}
-
-	public static String serviceRequest(String args) throws NamingException {
+	public static String serviceRequest(Connection connection, String args)
+			throws NamingException {
 		Context ctx = new InitialContext();
 		Object[] objs = new Object[names.length];
 		BTTestRemote[] beans = new BTTestRemote[names.length];
@@ -100,7 +88,6 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 			}
 		} else if (args.contains("tx=create")) {
 			try {
-				Connection connection = getConnection();
 				byte[] echo = args.getBytes();
 				X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null,
 						echo.length);
@@ -129,8 +116,6 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 				return responseData; // should be the same as args
 			} catch (ConnectionException e) {
 				return e.getMessage();
-			} catch (ConfigurationException e) {
-				return e.getMessage();
 			}
 			// if (!JtsTransactionImple.begin())
 			// return "Service could not start a new transaction";
@@ -153,7 +138,7 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 		String rcvd = new String(rcv.getByteArray());
 		String resp;
 		try {
-			resp = serviceRequest(new String(rcvd));
+			resp = serviceRequest(svcinfo.getConnection(), new String(rcvd));
 		} catch (javax.naming.NamingException e) {
 			log.warn("error: " + e);
 			resp = e.getMessage();

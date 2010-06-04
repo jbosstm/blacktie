@@ -41,10 +41,6 @@ public class TxCreateServiceTestService extends MDBBlacktieService implements
 	private static final Logger log = LogManager
 			.getLogger(TxCreateServiceTestService.class);
 
-	public TxCreateServiceTestService() {
-		super("TxCreateService");
-	}
-
 	public Response tpservice(TPSVCINFO svcinfo) {
 		try {
 			Context context = new InitialContext();

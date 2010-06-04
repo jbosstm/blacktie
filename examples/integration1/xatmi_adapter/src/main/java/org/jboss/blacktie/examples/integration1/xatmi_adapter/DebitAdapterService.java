@@ -26,7 +26,6 @@ import javax.naming.NamingException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.examples.integration1.ejb.DebitRemote;
-import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
@@ -45,10 +44,6 @@ public class DebitAdapterService extends MDBBlacktieService implements
 		javax.jms.MessageListener {
 	private static final Logger log = LogManager
 			.getLogger(DebitAdapterService.class);
-
-	public DebitAdapterService() throws ConfigurationException {
-		super("DEBIT");
-	}
 
 	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException {
 		X_COMMON rcv = (X_COMMON) svcinfo.getBuffer();

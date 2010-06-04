@@ -42,23 +42,6 @@ public abstract class BlackTieService implements Service {
 			.getLogger(BlackTieService.class);
 
 	/**
-	 * The name of the service.
-	 */
-	private String name;
-
-	/**
-	 * The service needs the name of the service so that it can be resolved in
-	 * the btconfig.xml file
-	 * 
-	 * @param name
-	 *            The name of the service
-	 */
-	public BlackTieService(String name) {
-		this.name = name;
-		log.debug("Service created: " + name);
-	}
-
-	/**
 	 * Entry points should pass control to this method as soon as reasonably
 	 * possible.
 	 * 
@@ -74,10 +57,10 @@ public abstract class BlackTieService implements Service {
 	 * @throws IllegalStateException
 	 * @throws InvalidTransactionException
 	 */
-	protected void processMessage(Message message) throws ConnectionException,
-			ConfigurationException, NamingException,
-			InvalidTransactionException, IllegalStateException,
-			SystemException, JABException {
+	protected void processMessage(String name, Message message)
+			throws ConnectionException, ConfigurationException,
+			NamingException, InvalidTransactionException,
+			IllegalStateException, SystemException, JABException {
 		log.trace("Service invoked");
 		Connection connection = ConnectionFactory.getConnectionFactory()
 				.getConnection();

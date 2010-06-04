@@ -26,7 +26,6 @@ import javax.naming.NamingException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.examples.integration1.ejb.CreditRemote;
-import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
@@ -46,10 +45,6 @@ public class CreditAdapterService extends MDBBlacktieService implements
 	private static final Logger log = LogManager
 			.getLogger(CreditAdapterService.class);
 
-	public CreditAdapterService() throws ConfigurationException {
-		super("CREDIT");
-	}
-
 	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException {
 		X_COMMON rcv = (X_COMMON) svcinfo.getBuffer();
 		long acct_no = rcv.getLong("acct_no");
@@ -66,14 +61,6 @@ public class CreditAdapterService extends MDBBlacktieService implements
 		}
 		log.info("Returning: " + resp);
 
-		/*
-		 * try { String s = beans[0].txNever("bean=" + names[1]);
-		 * log.info("Error should have got a Not Supported Exception"); return
-		 * "Error should have got a Not Supported Exception"; } catch
-		 * (javax.ejb.EJBException e) {
-		 * log.debug("Success got Exception calling txNever: " + e); return
-		 * args; }
-		 */
 		X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
 				null, resp.length() + 1);
 		buffer.setByteArray(resp.getBytes());
