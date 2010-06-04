@@ -36,15 +36,13 @@ public class DebitBean implements DebitRemote {
 	 * @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	 * 
 	 * @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+	 * 
+	 * @TransactionAttribute(TransactionAttributeType.NEVER)
 	 */
 
 	@TransactionAttribute(TransactionAttributeType.MANDATORY)
-	public String debitTxMandatory(long acct_no, short amount) {
+	public String debit(long acct_no, short amount) {
+		log.info("Debit called: acct_no: " + acct_no + " amount: " + amount);
 		return "DEBITTED";
-	}
-
-	@TransactionAttribute(TransactionAttributeType.NEVER)
-	public String debitTxNever(long acct_no, short amount) {
-		return "FAILED";
 	}
 }

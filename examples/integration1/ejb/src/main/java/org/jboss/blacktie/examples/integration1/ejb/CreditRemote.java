@@ -21,7 +21,5 @@ import javax.ejb.Remote;
 
 @Remote
 public interface CreditRemote {
-	public String creditTxMandatory(long acct_no, short amount);
-
-	public String creditTxNever(long acct_no, short amount);
+	public String credit(long acct_no, short amount);
 }

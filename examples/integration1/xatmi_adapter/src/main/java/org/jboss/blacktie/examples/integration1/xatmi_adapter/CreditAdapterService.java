@@ -48,7 +48,6 @@ public class CreditAdapterService extends MDBBlacktieService implements
 
 	public CreditAdapterService() {
 		super("CREDIT");
-
 	}
 
 	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException {
@@ -63,7 +62,7 @@ public class CreditAdapterService extends MDBBlacktieService implements
 			Context ctx = new InitialContext();
 			CreditRemote bean = (CreditRemote) ctx.lookup("CreditBean/remote");
 			log.debug("resolved CreditBean");
-			resp = bean.creditTxMandatory(acct_no, amount);
+			resp = bean.credit(acct_no, amount);
 		} catch (NamingException e) {
 			log.error("Got a naming error: " + e.getMessage(), e);
 		}

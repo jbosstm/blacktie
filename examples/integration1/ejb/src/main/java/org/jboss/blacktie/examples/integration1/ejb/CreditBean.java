@@ -36,15 +36,14 @@ public class CreditBean implements CreditRemote {
 	 * @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	 * 
 	 * @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+	 * 
+	 * @TransactionAttribute(TransactionAttributeType.NEVER)
 	 */
 
 	@TransactionAttribute(TransactionAttributeType.MANDATORY)
-	public String creditTxMandatory(long acct_no, short amount) {
+	public String credit(long acct_no, short amount) {
+		log.info("Credit called: acct_no: " + acct_no + " amount: " + amount);
 		return "CREDITTED";
 	}
 
-	@TransactionAttribute(TransactionAttributeType.NEVER)
-	public String creditTxNever(long acct_no, short amount) {
-		return "FAILED";
-	}
 }

@@ -48,7 +48,6 @@ public class DebitAdapterService extends MDBBlacktieService implements
 
 	public DebitAdapterService() {
 		super("DEBIT");
-
 	}
 
 	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException {
@@ -63,7 +62,7 @@ public class DebitAdapterService extends MDBBlacktieService implements
 			Context ctx = new InitialContext();
 			DebitRemote bean = (DebitRemote) ctx.lookup("DebitBean/remote");
 			log.debug("resolved DebitBean");
-			resp = bean.debitTxMandatory(acct_no, amount);
+			resp = bean.debit(acct_no, amount);
 		} catch (NamingException e) {
 			log.error("Got a naming error: " + e.getMessage(), e);
 		}
