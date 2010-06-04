@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
 	debitBuf->acct_no = 1L;
 	debitBuf->amount = 10;
 
-	creditBuf->acct_no = 1L;
+	creditBuf->acct_no = 2L;
 	creditBuf->amount = 10;
 
 	// Open the connection to the transaction manager

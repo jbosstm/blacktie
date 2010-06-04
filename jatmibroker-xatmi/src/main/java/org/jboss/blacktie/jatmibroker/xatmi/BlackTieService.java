@@ -78,51 +78,14 @@ public abstract class BlackTieService implements Service {
 			ConfigurationException, NamingException,
 			InvalidTransactionException, IllegalStateException,
 			SystemException, JABException {
+		log.trace("Service invoked");
 		Connection connection = ConnectionFactory.getConnectionFactory()
 				.getConnection();
 		try {
-			log.trace("Service invoked");
-			boolean hasTPNOREPLY = (message.flags & Connection.TPNOREPLY) == Connection.TPNOREPLY;
-
-			Session serviceSession = connection.createServiceSession(name,
-					message.cd, message.replyTo);
-			boolean hasTPCONV = (message.flags & Connection.TPCONV) == Connection.TPCONV;
-			Boolean conversational = (Boolean) connection.properties
-					.get("blacktie." + name + ".conversational");
-			boolean isConversational = conversational == true;
-			if (hasTPCONV && isConversational) {
-				int olen = 4;
-				X_OCTET odata = new X_OCTET(olen);
-				odata.setByteArray("ACK".getBytes());
-				long result = serviceSession.tpsend(odata, 0);
-				if (result == -1) {
-					log.error("Could not send ack");
-					serviceSession.close();
-					return;
-				} else {
-					log.debug("Sent ack");
-					serviceSession.setCreatedState(message.flags);
-				}
-			} else if (!hasTPCONV && !isConversational) {
-				log.debug("Session was not a TPCONV");
-			} else {
-				log.error("Session was invoked in an improper manner");
-				int olen = 4;
-				X_OCTET odata = new X_OCTET(olen);
-				odata.setByteArray("ERR".getBytes());
-				long result = serviceSession.tpsend(odata, 0);
-				if (result == -1) {
-					log.error("Could not send err");
-				} else {
-					log.error("Error reported");
-				}
-				serviceSession.close();
-				return;
-			}
-			log.debug("Created the session");
-			// To respond with
 			boolean hasTx = false;
+			boolean hasTPNOREPLY = (message.flags & Connection.TPNOREPLY) == Connection.TPNOREPLY;
 			boolean responseSendable = !hasTPNOREPLY;
+			// To respond with
 			short rval = Connection.TPFAIL;
 			int rcode = Connection.TPESVCERR;
 			byte[] data = null;
@@ -130,7 +93,43 @@ public abstract class BlackTieService implements Service {
 			int flags = 0;
 			String type = null;
 			String subtype = null;
+			Session serviceSession = connection.createServiceSession(name,
+					message.cd, message.replyTo);
 			try {
+				boolean hasTPCONV = (message.flags & Connection.TPCONV) == Connection.TPCONV;
+				Boolean conversational = (Boolean) connection.properties
+						.get("blacktie." + name + ".conversational");
+				boolean isConversational = conversational == true;
+				if (hasTPCONV && isConversational) {
+					int olen = 4;
+					X_OCTET odata = new X_OCTET(olen);
+					odata.setByteArray("ACK".getBytes());
+					long result = serviceSession.tpsend(odata, 0);
+					if (result == -1) {
+						log.error("Could not send ack");
+						serviceSession.close();
+						return;
+					} else {
+						log.debug("Sent ack");
+						serviceSession.setCreatedState(message.flags);
+					}
+				} else if (!hasTPCONV && !isConversational) {
+					log.debug("Session was not a TPCONV");
+				} else {
+					log.error("Session was invoked in an improper manner");
+					int olen = 4;
+					X_OCTET odata = new X_OCTET(olen);
+					odata.setByteArray("ERR".getBytes());
+					long result = serviceSession.tpsend(odata, 0);
+					if (result == -1) {
+						log.error("Could not send err");
+					} else {
+						log.error("Error reported");
+					}
+					serviceSession.close();
+					return;
+				}
+				log.debug("Created the session");
 				// THIS IS THE FIRST CALL
 				Buffer buffer = null;
 				if (message.type != null && !message.type.equals("")) {
