@@ -40,7 +40,6 @@ std::vector<int> sessionIds;
 SynchronizableObject lock;
 
 long DISCON = 0x00000003;
-bool warnedTPNOBLOCK = false;
 
 // Logger for XATMIc
 log4cxx::LoggerPtr loggerXATMI(log4cxx::Logger::getLogger("XATMIc"));
@@ -82,10 +81,6 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 		int correlationId, long flags, long rval, long rcode) {
 	LOG4CXX_DEBUG(loggerXATMI, (char*) "send - ilen: " << ilen << ": "
 			<< "cd: " << correlationId << "flags: " << flags);
-	if (flags & TPNOBLOCK && !warnedTPNOBLOCK) {
-		LOG4CXX_ERROR(loggerXATMI, (char*) "TPNOBLOCK NOT SUPPORTED FOR SENDS");
-		warnedTPNOBLOCK = true;
-	}
 	int toReturn = -1;
 
 	if (session->getCanSend() || rval == DISCON) {
@@ -149,7 +144,7 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 	return toReturn;
 }
 
-long determineTimeout(long flags) {
+static long determineTimeout(long flags) {
 	long time = 0;
 	if (TPNOBLOCK & flags) { // NB flags override any XATMI or transaction timeouts
 		time = -1;
@@ -491,8 +486,7 @@ int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen,
 	int toReturn = -1;
 	setSpecific(TPE_KEY, TSS_TPERESET);
 
-	long toCheck = flags & ~(TPNOTRAN | TPNOCHANGE | TPNOBLOCK | TPNOTIME
-			| TPSIGRSTRT);
+	long toCheck = flags & ~(TPNOTRAN | TPNOCHANGE | TPNOTIME | TPSIGRSTRT | TPNOBLOCK);
 
 	if (toCheck != 0) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
@@ -522,8 +516,8 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 	int toReturn = -1;
 	setSpecific(TPE_KEY, TSS_TPERESET);
 
-	long toCheck = flags & ~(TPNOTRAN | TPNOREPLY | TPNOBLOCK | TPNOTIME
-			| TPSIGRSTRT);
+	long toCheck = flags & ~(TPNOTRAN | TPNOREPLY | TPNOTIME
+			| TPSIGRSTRT | TPNOBLOCK);
 
 	if (toCheck != 0) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
@@ -634,8 +628,8 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 	int toReturn = -1;
 	setSpecific(TPE_KEY, TSS_TPERESET);
 
-	long toCheck = flags & ~(TPNOTRAN | TPSENDONLY | TPRECVONLY | TPNOBLOCK
-			| TPNOTIME | TPSIGRSTRT);
+	long toCheck = flags & ~(TPNOTRAN | TPSENDONLY | TPRECVONLY
+			| TPNOTIME | TPSIGRSTRT | TPNOBLOCK);
 
 	if (toCheck != 0) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
@@ -807,8 +801,7 @@ int tpgetrply(int *id, char ** odata, long *olen, long flags) {
 		return toReturn;
 	}
 
-	long toCheck = flags & ~(TPGETANY | TPNOCHANGE | TPNOBLOCK | TPNOTIME
-			| TPSIGRSTRT);
+	long toCheck = flags & ~(TPGETANY | TPNOCHANGE | TPNOBLOCK | TPNOTIME | TPSIGRSTRT);
 
 	if (toCheck != 0) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
@@ -897,7 +890,7 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 	int toReturn = -1;
 	setSpecific(TPE_KEY, TSS_TPERESET);
 
-	long toCheck = flags & ~(TPRECVONLY | TPNOBLOCK | TPNOTIME | TPSIGRSTRT);
+	long toCheck = flags & ~(TPRECVONLY | TPNOBLOCK | TPNOTIME | TPSIGRSTRT| TPNOBLOCK);
 
 	if (toCheck != 0) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);

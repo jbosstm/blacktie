@@ -225,10 +225,35 @@ bool HybridSessionImpl::send(MESSAGE message) {
 
 		LOG4CXX_DEBUG(logger, "Send to: " << sendTo << " Command: "
 				<< frame.command << " Size: " << frame.body_length);
-		apr_status_t rc = stompConnection == NULL ? APR_ENOSOCKET
-				: stomp_write(stompConnection, &frame, pool);
 
-		if (rc != APR_SUCCESS) {
+		apr_status_t rc;
+		/*
+		 * Determine whether the caller has requested non-blocking semantics. Unfortunately
+		 * the current module cannot depend on the xatmi module so we cannot pull in the
+		 * flag from xatmi.h that defines TPNOBLOCK
+		 * TODO figure out how we can access TPNOBLOCK without needing to depend on xatmi
+		 * Note that we had a similar issue with XATMI_SERVICE_NAME_LENGTH in the constructor
+		 */
+		bool isNonBlocking = (message.flags & 0x00000001); // TODO find a way to pull in TPNOBLOCK
+
+		if (stompConnection == NULL) {
+			 rc = APR_ENOSOCKET;
+		} else {
+			if (isNonBlocking) {
+				LOG4CXX_TRACE(logger, "Setting socket_opt to APR_SO_NONBLOCK");
+				apr_socket_opt_set(stompConnection->socket, APR_SO_NONBLOCK, 0);
+				apr_socket_timeout_set(stompConnection->socket, 0);
+				// Note: sockets are created on a per request basis so there is no
+				// need to clear the socket opt after sending the frame.
+			}
+
+			rc = stomp_write(stompConnection, &frame, pool);
+		}
+
+		if (isNonBlocking && APR_STATUS_IS_EAGAIN(rc)) {
+			LOG4CXX_DEBUG(logger, "Could not send frame due to blocking condition on socket");
+			setSpecific(TPE_KEY, TSS_TPEBLOCK);
+		} else if (rc != APR_SUCCESS) {
 			LOG4CXX_ERROR(logger, "Could not send frame");
 			char errbuf[256];
 			apr_strerror(rc, errbuf, sizeof(errbuf));

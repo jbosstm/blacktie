@@ -57,7 +57,7 @@ public class BTAdmin {
 			do {
 				if (interactive) {
 					System.out.print("> ");
-					args = br.readLine().split(" ");
+					args = br.readLine().split("\\s+");	// split on white space
 				}
 
 				try {

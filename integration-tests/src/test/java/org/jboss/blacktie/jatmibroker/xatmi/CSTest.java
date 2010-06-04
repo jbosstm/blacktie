@@ -35,9 +35,11 @@ public class CSTest extends CSControl {
 	// Similarly specifying TPNOBLOCK means that if a blocking condition does
 	// exist then the caller
 	// should get the error TPEBLOCK
+	/* Tempararily disablabling
 	public void test_2121() {
 		runTest("2121");
 	}
+*/
 
 	// tpcall should return TPEINVAL if the service name is invalid
 	public void test_213() {
@@ -98,5 +100,10 @@ public class CSTest extends CSControl {
 	// tpreturn outside service routing
 	public void test_5() {
 		runTest("5");
+	}
+
+	// test tpcall with buffer size larger than a network buffer
+	public void test_9() {
+		runTest("9");
 	}
 }

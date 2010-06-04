@@ -398,10 +398,7 @@ apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_p
    f = apr_pcalloc(pool, sizeof(stomp_frame));
    if( f == NULL ) {
       userlogc_warn("stomp_read returning APR_ENONMEM");
-      return APR_ENOMEM;
-   }
-   
-   f->headers = apr_hash_make(pool);
+      return APR_ENOMEM; } f->headers = apr_hash_make(pool);
    if( f->headers == NULL ) {
      userlogc_warn("stomp_read returning 2nd APR_ENONMEM");
      return APR_ENOMEM;
@@ -425,7 +422,7 @@ apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_p
       while( 1 ) {
          rc = stomp_read_line(connection, &p, &length, pool);
 		 CHECK_SUCCESS;
-         userlogc_trace("Read a header: %s", p);
+         userlogc_trace("Read a header: %s length: %d", p, length);
 		 
 		 // Done with headers
 		 if(length == 0)
@@ -452,6 +449,7 @@ apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_p
             value = p2+1;
             
             // Insert key/value into hash table.
+            userlogc_trace("Add key %s with value %s to stomp headers", key, value);
             apr_hash_set(f->headers, key, APR_HASH_KEY_STRING, value);            
          }
       }
@@ -462,18 +460,35 @@ apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_p
 		  if(content_length) {
 			  char endbuffer[2];
 			  apr_size_t length = 2;
-			  userlogc_debug("Content-length detected");
+			  apr_size_t bodysz;
+			  apr_size_t tlen = 0;	// number of bytes read
 
-			  f->body_length = atoi(content_length);
-			  f->body = apr_pcalloc(pool, f->body_length);
-			  rc = apr_socket_recv(connection->socket, f->body, &f->body_length);
-			  CHECK_SUCCESS;
+			  userlogc_debug("Content-length %s detected", content_length);
+
+			  bodysz = f->body_length = atoi(content_length);
+				if ((f->body = apr_pcalloc(pool, f->body_length)) == NULL) {
+					userlogc_warn("stomp_read insufficient memory for buffer");
+					return APR_ENOMEM;
+				}
+
+				/*
+				 * Cannot read the content in one go since network byte buffers are finite.
+				 * Keep reading from the socket until body_length bytes have been read.
+				 */
+				while (tlen < bodysz) {
+					char *bp = f->body + tlen;
+					apr_size_t len = bodysz - tlen;
+
+					rc = apr_socket_recv(connection->socket, bp, &len);
+					CHECK_SUCCESS;
+					tlen += len;
+				}
 
 			  // Expect a \n after the end
 			  rc = apr_socket_recv(connection->socket, endbuffer, &length);
 			  CHECK_SUCCESS;
 			  if(length != 2 || endbuffer[0] != '\0' || endbuffer[1] != '\n') {
-				  userlogc_warn("stomp_read returning 2nd APR_EGENERAL");
+				  userlogc_warn("stomp_read returning 2nd APR_EGENERAL %d %c %c", length, endbuffer[0], endbuffer[1]);
 				  return APR_EGENERAL;
                           }
 		  }

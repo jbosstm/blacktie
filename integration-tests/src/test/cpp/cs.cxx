@@ -37,7 +37,7 @@
 
 #ifdef WIN32
 #include "atmiBrokerTxMacro.h"
-#define TX_OK              0   /* normal execution */
+#define TX_OK			  0   /* normal execution */
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -121,14 +121,14 @@ static void do_assert(int failonerror, int* res, int cond, const char *fmt, ...)
  * 		non-zero otherwise
  */
 int decode_nvp(char *nvp, char** value, long* lvalue) {
-    char* v = strchr(nvp, '=');
+	char* v = strchr(nvp, '=');
 
-    *value = (v == NULL ? NULL : v + 1);
-    if (v != NULL) {
-        *v = '\0';
-        *lvalue = atol(*value);
+	*value = (v == NULL ? NULL : v + 1);
+	if (v != NULL) {
+		*v = '\0';
+		*lvalue = atol(*value);
 		return 0;
-    }
+	}
 
 	return 1;
 }
@@ -325,8 +325,19 @@ static int bug212b() {
 	// should get the error TPEBLOCK
 	// However if bug 212 is present then the call returns TPNOTIME
 	long flags3 = TPNOTRAN | TPNOBLOCK;
+	char huge_buf[0x100000]; 
+	const char *data = "T6=4";
 
-	thr_arg_t args = {1, MSG1, "bug212b: TPNOBLOCK", "BAR", X_OCTET, X_OCTET, flags3, 0, 99, 0};
+	// send a buffer large enough to fill the network buffers. TODO really we need the current sndbuf size
+	// getsockopt(socket, SOL_SOCKET, SO_SNDBUF, ...) and then make sure sizeof (huge_buf) is larger
+	memset(huge_buf, ' ', sizeof (huge_buf));
+	memcpy(huge_buf, data, strlen(data));
+	huge_buf[sizeof (huge_buf) - 1] = '\0';
+
+	// int sndbufsz = something small;
+	// setsockopt(socket, SOL_SOCKET, SO_SNDBUF, (char *) &sndbufsz, (int) sizeof(sndbufsz));
+
+	thr_arg_t args = {1, huge_buf, "bug212b: TPNOBLOCK", "BAR", X_OCTET, X_OCTET, flags3, TPEBLOCK, 99, 0};
 
 	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
 }
@@ -415,6 +426,20 @@ static int t8() {
 	thr_arg_t args = {1, "T8", "commit tx with active descriptors", "BAR", X_OCTET, X_OCTET, 0, TPEBADDESC, 99, 0};
 	return do_tpcall(&args);
 }
+static int t9() {
+	char huge_buf[0x100000]; 
+	const char *data = MSG1;
+
+	// send a buffer large enough to fill the network buffers. TODO really we need the current sndbuf size
+	// getsockopt(socket, SOL_SOCKET, SO_SNDBUF, ...) and then make sure sizeof (huge_buf) is larger
+	memset(huge_buf, ' ', sizeof (huge_buf));
+	memcpy(huge_buf, data, strlen(data));
+	huge_buf[sizeof (huge_buf) - 1] = '\0';
+
+	thr_arg_t args = {1, huge_buf, "large buffer test", "BAR", X_OCTET, X_OCTET, 0, 0, 99, 0};
+
+	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
+}
 
 static int startTx(int enable) {
 	if (enable && (tx_open() != TX_OK || tx_begin() != TX_OK))
@@ -460,6 +485,7 @@ int run_client(int argc, char **argv) {
 		case 6:		res = t6(); break;
 		case 7:		res = t7(); break;
 		case 8:		res = t8(); break;
+		case 9:		res = t9(); break;
 		default: break;
 		}
 
@@ -545,10 +571,10 @@ int run_server(int argc, char **argv) {
 int main(int argc, char **argv) {
 	int i;
 
-    for (i = 0; i < argc; i++) {
-        if (strcmp(argv[i], "-i") == 0)
-            return run_server(argc, argv);
-    }
+	for (i = 0; i < argc; i++) {
+		if (strcmp(argv[i], "-i") == 0)
+			return run_server(argc, argv);
+	}
 
-    return run_client(argc, argv);
+	return run_client(argc, argv);
 }
