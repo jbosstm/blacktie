@@ -68,7 +68,7 @@
 		</moduleSet>
 		<moduleSet>
 			<includes>
-				<include>org.jboss.blacktie:blacktie-admin-services</include>
+				<include>org.jboss.blacktie:blacktie-admin-services-ear</include>
 			</includes>
 			<binaries>
 				<outputDirectory>blacktie-admin-services</outputDirectory>
