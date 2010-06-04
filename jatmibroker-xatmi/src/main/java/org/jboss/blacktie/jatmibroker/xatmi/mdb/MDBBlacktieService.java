@@ -1,8 +1,11 @@
 package org.jboss.blacktie.jatmibroker.xatmi.mdb;
 
 import javax.jms.BytesMessage;
+import javax.jms.Destination;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import javax.jms.Queue;
+import javax.jms.Topic;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -44,6 +47,14 @@ public abstract class MDBBlacktieService extends BlackTieService implements
 	 */
 	public void onMessage(Message message) {
 		try {
+			String serviceName = null;
+			Destination jmsDestination = message.getJMSDestination();
+			if (jmsDestination instanceof Queue) {
+				serviceName = ((Queue)jmsDestination).getQueueName();
+			} else {
+				serviceName = ((Topic)jmsDestination).getTopicName();
+			}
+			log.trace(serviceName);
 			BytesMessage bytesMessage = ((BytesMessage) message);
 			org.jboss.blacktie.jatmibroker.core.transport.Message toProcess = JMSReceiverImpl
 					.convertFromBytesMessage(bytesMessage);
