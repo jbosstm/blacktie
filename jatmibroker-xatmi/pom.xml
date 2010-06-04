@@ -246,6 +246,14 @@
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- START TRANSACTIONS -->
+		<dependency>
+			<groupId>org.jboss.integration</groupId>
+			<artifactId>jboss-corba-ots-spi</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- END TRANSACTIONS -->
+
 		<!-- END TEST -->
 	</dependencies>
 	<properties>
