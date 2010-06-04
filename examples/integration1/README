@@ -19,8 +19,7 @@ NOTE: You may like to create a backup of this folder before starting!
 NOTE: If you are using IPv6 you will need to change any references to localhost in the btconfig.xml files to be localhost4 or 127.0.0.1
 
 
-OVERVIEW
-
+0. OVERVIEW
 This example shows how a C client can invoke an EJB within the scope of the same transaction.
 
 1. SET ENVIRONMENT VARIABLES
@@ -46,19 +45,19 @@ Copy the file $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml into $JBOSS_HO
 Make sure that the naming, messaging and transaction services are running, by running the JBoss server:
 <JBOSS_HOME>/bin/run.sh|bat -c all
 
-
 4. DEPLOY THE EJB
+cd ejb
+mvn install
+cp target/integration1-ejb-<VERSION>.jar <JBOSS_HOME>/server/all/deploy
 
 5. DEPLOY THE XATMI ADAPTER
-
-Edit the btconfig.xml to set REPLACE_WITH_INSTALL_LOCATION as appropriate
-Edit the btconfig.xml to set REPLACE_WITH_HOSTNAME as appropriate
-btadmin startup
-NOTE: If you get the following error you have not started the JBoss server:
-2009-06-23 08:51:51,270 [0x7f627be63750] ERROR AtmiBrokerServer          - serverinit - Unexpected CORBA exception: TRANSIENT
-2009-06-23 08:51:51,270 [0x7f627be63750] INFO  AtmiBrokerLogc            - main Unexpected exception in serverrun()
-
+cd xatmi_adapter
+mvn install
+cd ear
+mvn install
+cp target/integration1-xatmi_adapter-ear-<VERSION>.ear <JBOSS_HOME>/server/all/deploy
 
 6. BUILD AND RUN THE CLIENT
+Once the XATMI service and EJB are deployed fully into the application server, you can build the client@
 generate_client -Dclient.includes=client.c
 ./client
