@@ -190,6 +190,7 @@
 		<module>../blacktie-xsd</module>
 		<module>../atmibroker-idl</module>
 		<module>../jatmibroker-xatmi</module>
+		<module>../jatmibroker-xatmi/client</module>
 		<module>../blacktie-admin-services</module>
 		<module>../blacktie-admin-services/ear</module>
 		<module>../blacktie-rhq-plugin</module>
