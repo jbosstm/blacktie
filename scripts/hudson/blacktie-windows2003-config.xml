@@ -98,7 +98,7 @@ mvn clean install -Dbpa=vc9x32 -DskipTests
 </command>
     </hudson.tasks.BatchFile>
     <hudson.tasks.BatchFile>
-      <command>copy trunk\blacktie-admin-services\target\blacktie-admin-services-*-jar-with-dependencies.jar jboss-5.1.0.GA\server\all\deploy
+      <command>copy trunk\blacktie-admin-services\target\blacktie-admin-services-*.ear jboss-5.1.0.GA\server\all\deploy
 copy trunk\blacktie-rhq-plugin\target\blacktie-rhq-plugin-*.jar jboss-5.1.0.GA\server\all\deploy\admin-console.war\plugins\
 copy trunk\jatmibroker-xatmi\src\test\resources\jatmibroker-xatmi-test-service.xml jboss-5.1.0.GA\server\all\deploy
 copy trunk\blacktie-admin-services\src\test\resources\btconfig.xml jboss-5.1.0.GA\server\all\conf
