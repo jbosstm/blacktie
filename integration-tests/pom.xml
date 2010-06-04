@@ -154,7 +154,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>jatmibroker-xatmi</artifactId>
+			<artifactId>jatmibroker-xatmi-client</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
