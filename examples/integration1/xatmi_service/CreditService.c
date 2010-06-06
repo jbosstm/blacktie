@@ -15,15 +15,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#include <stdlib.h>
 
-#ifndef DEBIT_H
-#define DEBIT_H
+#include "xatmi.h"
+#include "userlogc.h"
+#include "string.h"
 
-struct debit_t {
-	long	acct_no;
-	short	amount;
-};
-typedef struct debit_t DEBIT_T;
+#include "credit.h"
 
-#endif
+void CREDIT(TPSVCINFO * svcinfo) {
+	char* buffer;
+	int sendlen;
+	CREDIT_T* creditBuf;
 
+	creditBuf = (CREDIT_T*) svcinfo->data;
+	userlogc((char*) "CREDIT called  - acct_no %d amount: %d", creditBuf->acct_no, creditBuf->amount);
+
+	sendlen = 10;
+	buffer = tpalloc("X_OCTET", 0, sendlen);
+	strcpy(buffer, "CREDITTED");
+	tpreturn(TPSUCCESS, 0, buffer, sendlen, 0);
+}

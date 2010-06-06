@@ -27,8 +27,8 @@
 
 int main(int argc, char **argv) {
 	int status;
-	DEBIT* debitBuf;
-	CREDIT* creditBuf;
+	DEBIT_T* debitBuf;
+	CREDIT_T* creditBuf;
 	char *retbuf;
 	long retbufsize;
 	char* debitted;
@@ -36,8 +36,8 @@ int main(int argc, char **argv) {
 	long callflags;
 
 	callflags = 0L;
-	debitBuf = (DEBIT*) tpalloc("X_COMMON", "debit", 0);
-	creditBuf = (CREDIT*) tpalloc("X_COMMON", "credit", 0);
+	debitBuf = (DEBIT_T*) tpalloc("X_COMMON", "debit", 0);
+	creditBuf = (CREDIT_T*) tpalloc("X_COMMON", "credit", 0);
 	retbuf = tpalloc("X_OCTET", NULL, 9);
 
 	debitBuf->acct_no = 1L;

@@ -114,6 +114,21 @@ mvn install
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem RUN THE INTEGRATION 1 EXAMPLE
+set BLACKTIE_CONFIGURATION=
+cd %BLACKTIE_HOME%\examples\integration1\xatmi_service\
+generate_server -Dservice.names=CREDIT,DEBIT -Dserver.includes="CreditService.c,DebitService.c"
+IF %ERRORLEVEL% NEQ 0 exit -1
+btadmin startup
+IF %ERRORLEVEL% NEQ 0 exit -1
+cd $BLACKTIE_HOME\examples\integration1\client\
+generate_client -Dclient.includes=client.c 
+@ping 127.0.0.1 -n 10 -w 1000 > nul
+.\client 
+IF %ERRORLEVEL% NEQ 0 exit -1
+cd $BLACKTIE_HOME\examples\integration1\xatmi_service\
+btadmin shutdown
+IF %ERRORLEVEL% NEQ 0 exit -1
+
 cd %BLACKTIE_HOME%\examples\integration1\ejb
 mvn install
 IF %ERRORLEVEL% NEQ 0 exit -1

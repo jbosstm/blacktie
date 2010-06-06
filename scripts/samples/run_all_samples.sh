@@ -165,6 +165,28 @@ if [ "$?" != "0" ]; then
 fi
 
 # RUN THE INTEGRATION 1 EXAMPLE
+unset BLACKTIE_CONFIGURATION
+cd $BLACKTIE_HOME/examples/integration1/xatmi_service/
+generate_server -Dservice.names=CREDIT,DEBIT -Dserver.includes="CreditService.c,DebitService.c"
+if [ "$?" != "0" ]; then
+        exit -1
+fi
+btadmin startup
+if [ "$?" != "0" ]; then
+        exit -1
+fi
+cd $BLACKTIE_HOME/examples/integration1/client/
+generate_client -Dclient.includes=client.c 
+sleep 10
+./client 
+if [ "$?" != "0" ]; then
+	exit -1
+fi
+cd $BLACKTIE_HOME/examples/integration1/xatmi_service/
+btadmin shutdown
+if [ "$?" != "0" ]; then
+	exit -1
+fi
 cd $BLACKTIE_HOME/examples/integration1/ejb
 mvn install
 if [ "$?" != "0" ]; then
