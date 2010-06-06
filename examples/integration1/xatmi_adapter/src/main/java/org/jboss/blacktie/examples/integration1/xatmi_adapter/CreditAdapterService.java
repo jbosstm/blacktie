@@ -59,7 +59,7 @@ public class CreditAdapterService extends MDBBlacktieService implements
 		} catch (NamingException e) {
 			log.error("Got a naming error: " + e.getMessage(), e);
 		}
-		log.info("Returning: " + resp);
+		log.trace("Returning: " + resp);
 
 		X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
 				null, resp.length() + 1);

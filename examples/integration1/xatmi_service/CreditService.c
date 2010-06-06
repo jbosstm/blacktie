@@ -29,7 +29,7 @@ void CREDIT(TPSVCINFO * svcinfo) {
 	CREDIT_T* creditBuf;
 
 	creditBuf = (CREDIT_T*) svcinfo->data;
-	userlogc((char*) "CREDIT called  - acct_no %d amount: %d", creditBuf->acct_no, creditBuf->amount);
+	userlogc((char*) "Credit called: acct_no: %d amount: %d", creditBuf->acct_no, creditBuf->amount);
 
 	sendlen = 10;
 	buffer = tpalloc("X_OCTET", 0, sendlen);

@@ -29,7 +29,7 @@ void DEBIT(TPSVCINFO * svcinfo) {
 	DEBIT_T* debitBuf;
 
 	debitBuf = (DEBIT_T*) svcinfo->data;
-	userlogc((char*) "DEBIT called  - acct_no %d amount: %d", debitBuf->acct_no, debitBuf->amount);
+	userlogc((char*) "Debit called: acct_no: %d amount: %d", debitBuf->acct_no, debitBuf->amount);
 
 	sendlen = 9;
 	buffer = tpalloc("X_OCTET", 0, sendlen);
