@@ -192,22 +192,23 @@ mvn install
 if [ "$?" != "0" ]; then
 	exit -1
 fi
-cp target/integration1-ejb-*.jar $JBOSS_HOME/server/all/deploy
+cd $BLACKTIE_HOME/examples/integration1/ejb/ear/
+mvn install jboss:deploy
+if [ "$?" != "0" ]; then
+	exit -1
+fi
 cd $BLACKTIE_HOME/examples/integration1/xatmi_adapter/
 mvn install
 if [ "$?" != "0" ]; then
 	exit -1
 fi
 cd $BLACKTIE_HOME/examples/integration1/xatmi_adapter/ear/
-rm $JBOSS_HOME/server/all/deploy/integration1-xatmi_adapter-ear-*.ear
-mvn install
+mvn install jboss:deploy
 if [ "$?" != "0" ]; then
 	exit -1
 fi
-cp target/integration1-xatmi_adapter-ear-*.ear $JBOSS_HOME/server/all/deploy
 cd $BLACKTIE_HOME/examples/integration1/client/
-generate_client -Dclient.includes=client.c 
-sleep 10
+generate_client -Dclient.includes=client.c
 ./client 
 if [ "$?" != "0" ]; then
 	exit -1

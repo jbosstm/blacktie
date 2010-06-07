@@ -104,17 +104,25 @@ NOTE: If you get the following error you have not started the JBoss server:
 5.1. DEPLOY THE EJB
 cd ejb
 mvn install
-cp target/integration1-ejb-<VERSION>.jar <JBOSS_HOME>/server/all/deploy
+cd ear
+mvn install
+mvn jboss:deploy
 
 5.2. DEPLOY THE XATMI ADAPTER
 cd xatmi_adapter
 mvn install
 cd ear
 mvn install
-cp target/integration1-xatmi_adapter-ear-<VERSION>.ear <JBOSS_HOME>/server/all/deploy
+mvn jboss:deploy
 
 5.3. BUILD AND RUN THE CLIENT
 cd into client
 Once the XATMI service and EJB are deployed fully into the application server, you can build the client@
 generate_client -Dclient.includes=client.c
 ./client
+
+5.4 UNDEPLOY THE SERVICES
+cd ejb/ear
+mvn jboss:undeploy
+cd xatmi_adapter/ear
+mvn jboss:undeploy

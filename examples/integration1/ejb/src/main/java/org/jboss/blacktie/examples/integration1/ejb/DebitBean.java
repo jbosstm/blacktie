@@ -24,7 +24,10 @@ import javax.ejb.TransactionAttributeType;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import org.jboss.ejb3.annotation.RemoteBinding;
+
 @Stateless
+@RemoteBinding(jndiBinding="DebitBean/remote")
 public class DebitBean implements DebitRemote {
 	private static final Logger log = LogManager.getLogger(DebitBean.class);
 
