@@ -21,8 +21,8 @@
 	
 	<MACHINES>
 		<MACHINE id="default1" hostname="REPLACE_WITH_HOSTNAME"
-			pathToExecutable="REPLACE_WITH_INSTALL_LOCATION/examples/xatmi/fooapp/server"
-			workingDirectory="REPLACE_WITH_INSTALL_LOCATION/examples/xatmi/fooapp"
+			pathToExecutable="REPLACE_WITH_INSTALL_LOCATION/examples/integration1/xatmi_service/server"
+			workingDirectory="REPLACE_WITH_INSTALL_LOCATION/examples/integration1/xatmi_service"
 			serverId="1" />
 	</MACHINES>
 	<SERVERS>
