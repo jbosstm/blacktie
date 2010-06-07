@@ -28,6 +28,10 @@
 	<SERVERS>
 		<SERVER name='default'>
 			<MACHINE-REF id="default1" />
+			<SERVICE_NAMES>
+				<SERVICE name='CREDIT' />
+				<SERVICE name='DEBIT' />
+			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>
 	<ORB OPT="-ORBInitRef NameService=corbaloc::REPLACE_WITH_HOSTNAME:3528/NameService"
