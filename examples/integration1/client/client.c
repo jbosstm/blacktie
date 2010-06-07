@@ -113,5 +113,5 @@ int main(int argc, char **argv) {
 	tpfree((char*) debitBuf);
 	tpfree((char*) creditBuf);
 	tpfree(retbuf);
-	return 0;
+	return status;
 }
