@@ -241,8 +241,9 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		} else {
 			if (isNonBlocking) {
 				LOG4CXX_TRACE(logger, "Setting socket_opt to APR_SO_NONBLOCK");
-				apr_socket_opt_set(stompConnection->socket, APR_SO_NONBLOCK, 0);
+				apr_socket_opt_set(stompConnection->socket, APR_SO_NONBLOCK, 1);
 				apr_socket_timeout_set(stompConnection->socket, 0);
+
 				// Note: sockets are created on a per request basis so there is no
 				// need to clear the socket opt after sending the frame.
 			}

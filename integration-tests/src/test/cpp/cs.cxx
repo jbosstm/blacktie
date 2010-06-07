@@ -53,6 +53,8 @@ extern BLACKTIE_TX_DLL int tx_open(void);
 static ACE_Mutex mutex_;
 const char *MSG1 = "CLIENT REQUEST		";
 const char *MSG2 = "PAUSE - CLIENT REQUEST";
+//static char huge_buf[0x100000]; 
+static char huge_buf[0xa00000]; 
 
 static int tx = 0;
 static int startTx(int);
@@ -156,8 +158,8 @@ static int do_tpcall(thr_arg_t *args) {
 	memset(rbuf, 0, rbufsz);
 
 	tptypes(sbuf, type, subtype);
-	userlogc((char *) "sbuf type: %s rbuf type: %s type: %s subtype: %s %d vrs %d",
-		args->sndtype, args->rcvtype, type, subtype, tpstatus, args->expect);
+	userlogc((char *) "sbuf type: %s sbufsz: %d rbuf type: %s type: %s subtype: %s %d vrs %d",
+		args->sndtype, sbufsz, args->rcvtype, type, subtype, tpstatus, args->expect);
 
 	if (strstr(args->data, "T8") == args->data) {
 		userlogc((char *) "T8: startTX");
@@ -277,6 +279,7 @@ static int lotsofwork(int nthreads, ACE_THR_FUNC tfunc, thr_arg_t* arg) {
 	for (i = 0; i < nthreads; i++)
 		handles[i] = 0;
 
+	userlogc("lotsofwork: spawning %d threads\n", nthreads);
 	// spawn nthreads threads
 	if (ACE_Thread::spawn_n(tids, // return thread id for each thread
 		nthreads,
@@ -291,9 +294,12 @@ static int lotsofwork(int nthreads, ACE_THR_FUNC tfunc, thr_arg_t* arg) {
 	if (arg->signum > 0)
 		signal_thread(tids[0], arg->signum);
 
+	userlogc("lotsofwork: joining ...\n");
 	for (int i = 0; i < nthreads; i++)
 		if (handles[i] != 0)
 			ACE_Thread::join(handles[i]);
+
+	userlogc("lotsofwork: joined res=%d\n", arg->result);
 
 	return arg->result;
 }
@@ -325,8 +331,8 @@ static int bug212b() {
 	// should get the error TPEBLOCK
 	// However if bug 212 is present then the call returns TPNOTIME
 	long flags3 = TPNOTRAN | TPNOBLOCK;
-	char huge_buf[0x100000]; 
-	const char *data = "T6=4";
+	const char *data = MSG1;
+	//const char *data = "T6=4";
 
 	// send a buffer large enough to fill the network buffers. TODO really we need the current sndbuf size
 	// getsockopt(socket, SOL_SOCKET, SO_SNDBUF, ...) and then make sure sizeof (huge_buf) is larger
@@ -427,7 +433,6 @@ static int t8() {
 	return do_tpcall(&args);
 }
 static int t9() {
-	char huge_buf[0x100000]; 
 	const char *data = MSG1;
 
 	// send a buffer large enough to fill the network buffers. TODO really we need the current sndbuf size
