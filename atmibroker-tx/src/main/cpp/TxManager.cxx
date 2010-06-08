@@ -466,7 +466,7 @@ int TxManager::tx_resume(TxControl *tx, int flags, int altflags)
 			LOG4CXX_WARN(txmlogger, (char *) "Resume tx: error: " << rc);
 		}
 	
-	} catch (PortableServer::POA::ObjectAlreadyActive &e) {
+	} catch (PortableServer::POA::ObjectAlreadyActive) {
 		// THIS COMES FROM XAResourceManager.cxx:204 poa_->activate_object_with_id(objId, ra);
 		LOG4CXX_WARN(txmlogger, (char *) "Resume tx: ObjectAlreadyActive");
 	} catch (...) {
