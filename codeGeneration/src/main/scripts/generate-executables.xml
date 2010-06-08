@@ -117,6 +117,9 @@
 		<propertycopy property="executable.file" from="server.executable.file" override="true" />
 		<propertycopy property="src.tobuild" from="server.src.tobuild" override="true" />
 		<antcall target="compile" />
+		<delete file="server.c" />
+		<delete file="history.xml" />
+		<delete dir="target" deleteonexit="true"/>
 	</target>
 
 
