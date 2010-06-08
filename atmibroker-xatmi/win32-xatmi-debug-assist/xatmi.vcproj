@@ -350,11 +350,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\src\test\cpp\TestTPCancel.cxx"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\cpp\XATMITestSuite.cxx"
+					RelativePath="..\src\test\cpp\TestTPCall.cxx"
 					>
 				</File>
 			</Filter>
@@ -584,135 +580,7 @@
 				Name="test"
 				>
 				<File
-					RelativePath="..\src\test\include\BaseServerTest.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\BaseTest.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\LoopyServerAndClient.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\tx\request.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\Sleeper.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestBufferAllocation.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestClientInit.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestPBF.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestRollbackOnly.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestServerinit.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestSpecExampleOne.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestSpecExampleTwo.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestTPACall.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestTPAdvertise.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestTPAlloc.h"
-					>
-				</File>
-				<File
 					RelativePath="..\src\test\include\TestTPCall.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestTPCancel.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestTPConnect.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestTPConversation.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestTPDiscon.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestTPFree.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestTPFreeService.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestTPGetRply.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestTPRealloc.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestTPRecv.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestTPReturn.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestTPSend.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestTPService.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestTPTypes.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestTPUnadvertise.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\tx\TestTxRMTPCall.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\TestTxTPCall.h"
-					>
-				</File>
-				<File
-					RelativePath="..\src\test\include\XATMITestSuite.h"
 					>
 				</File>
 			</Filter>
