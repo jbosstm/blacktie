@@ -97,6 +97,14 @@ char* BufferConverterImpl::convertToMemoryFormat(char* bufferType,
 		LOG4CXX_TRACE(logger, (char*) "Received a non X_OCTET buffer: "
 				<< bufferSubtype);
 		Buffer* buffer = buffers[bufferSubtype];
+		if (buffer == NULL) {
+			LOG4CXX_FATAL(
+					logger,
+					(char*) "Unknown buffer type: "
+							<< bufferSubtype);
+		}
+
+
 		if (*memoryFormatBufferLength != buffer->wireSize) {
 			LOG4CXX_ERROR(
 					logger,

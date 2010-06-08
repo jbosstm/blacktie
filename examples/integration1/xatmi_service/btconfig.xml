@@ -17,8 +17,7 @@
 	-->
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
-	<DOMAIN>fooapp</DOMAIN>
-	
+	<DOMAIN>integration</DOMAIN>
 	<MACHINES>
 		<MACHINE id="default1" hostname="REPLACE_WITH_HOSTNAME"
 			pathToExecutable="REPLACE_WITH_INSTALL_LOCATION/examples/integration1/xatmi_service/server"
@@ -39,4 +38,14 @@
 	<MQ HOST="REPLACE_WITH_HOSTNAME" PORT="61613" USER="guest" PASSWORD="guest"
 		DESTINATION_TIMEOUT="2" RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" />
 	<JMX url="service:jmx:rmi:///jndi/rmi://REPLACE_WITH_HOSTNAME:1090/jmxconnector" />
+	<BUFFERS>
+		<BUFFER name="debit">
+			<ATTRIBUTE id="acct_no" type="long" />
+			<ATTRIBUTE id="amount" type="short" />
+		</BUFFER>
+		<BUFFER name="credit">
+			<ATTRIBUTE id="acct_no" type="long" />
+			<ATTRIBUTE id="amount" type="short" />
+		</BUFFER>
+	</BUFFERS>
 </ENVIRONMENT>
