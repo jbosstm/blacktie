@@ -346,6 +346,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\test\cpp\Sleeper.cxx"
+					>
+				</File>
+				<File
 					RelativePath="..\target\generated-sources\TestRunner.cxx"
 					>
 				</File>
