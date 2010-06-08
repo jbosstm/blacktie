@@ -18,14 +18,12 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.blacktie.examples</groupId>
 	<artifactId>integration1-xatmi_adapter-ear</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>2.0.0.M4-SNAPSHOT</version>
 	<name>Blacktie Administration Services</name>
 	<packaging>ear</packaging>
-
 	<developers>
 		<developer>
 			<id>tomjenkinson</id>
@@ -61,23 +59,27 @@
 			<timezone>0</timezone>
 		</developer>
 	</developers>
-
 	<licenses>
 		<license>
 			<name>LGPL 2.1</name>
 			<url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
 		</license>
 	</licenses>
-
+	<repositories>
+		<repository>
+			<id>repository.jboss.org</id>
+			<name>JBoss Releases Repository</name>
+			<url>http://repository.jboss.org/maven2</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 	<build>
 		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-ear-plugin</artifactId>
@@ -109,7 +111,7 @@
 		<dependency>
 			<groupId>org.jboss.blacktie.examples</groupId>
 			<artifactId>integration1-xatmi_adapter</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>2.0.0.M4-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
