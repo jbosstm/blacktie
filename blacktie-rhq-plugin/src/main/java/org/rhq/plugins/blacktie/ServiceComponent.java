@@ -104,6 +104,7 @@ public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 	private ObjectName blacktieAdmin = null;
 
 	private String[] times = null;
+	private Properties prop = new Properties();
 
 	/**
 	 * This is called when your component has been started with the given
@@ -114,7 +115,6 @@ public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 	 */
 	public void start(ResourceContext context) {
 		try {
-			Properties prop = new Properties();
 			XMLEnvHandler handler = new XMLEnvHandler(prop);
 			XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
 			xmlenv.parse("btconfig.xml");
@@ -228,6 +228,14 @@ public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 									"java.lang.String", "java.lang.String" });
 					report.addData(new MeasurementDataNumeric(request, value
 							.doubleValue()));
+				} else if (name.equals("serviceLoad")) {
+					Number value = (Long) beanServerConnection.invoke(
+							blacktieAdmin, "getServiceCounter", new Object[] {
+									serverName, serviceName }, new String[] {
+									"java.lang.String", "java.lang.String" });
+					String load = prop.getProperty("blacktie." + serviceName + ".load", "50");
+					report.addData(new MeasurementDataNumeric(request, value
+							.doubleValue() * Double.parseDouble(load))); 
 				}
 			} catch (Exception e) {
 				log.error("Failed to obtain measurement [" + name
