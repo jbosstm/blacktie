@@ -41,7 +41,7 @@ public class TestSpecExampleTwo extends TestCase {
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
 		connection.close();
-		server.serverdone(); // server.close();
+		server.serverdone(); 
 	}
 
 	public void test() throws ConnectionException {
