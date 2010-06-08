@@ -147,6 +147,8 @@
 		<propertycopy property="executable.file" from="client.executable.file" override="true" />
 		<propertycopy property="src.tobuild" from="client.src.tobuild" override="true" />
 		<antcall target="compile" />
+		<delete file="history.xml" />
+		<delete dir="target" deleteonexit="true"/>
 	</target>
 
 	<target name="compile" depends="init">
