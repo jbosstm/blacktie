@@ -1,4 +1,4 @@
-export DIST=~/dist
+export DIST=dist
 
 rm -rf $DIST
 mkdir $DIST
