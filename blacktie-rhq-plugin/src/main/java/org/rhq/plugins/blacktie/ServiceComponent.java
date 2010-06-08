@@ -233,9 +233,11 @@ public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 							blacktieAdmin, "getServiceCounter", new Object[] {
 									serverName, serviceName }, new String[] {
 									"java.lang.String", "java.lang.String" });
-					String load = prop.getProperty("blacktie." + serviceName + ".load", "50");
+					String load = prop.getProperty("blacktie." + serviceName
+							+ ".load", "50");
 					report.addData(new MeasurementDataNumeric(request, value
-							.doubleValue() * Double.parseDouble(load))); 
+							.doubleValue()
+							* Double.parseDouble(load)));
 				}
 			} catch (Exception e) {
 				log.error("Failed to obtain measurement [" + name

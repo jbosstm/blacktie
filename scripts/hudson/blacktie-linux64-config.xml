@@ -2,10 +2,6 @@
 <project>
   <actions/>
   <description></description>
-  <logRotator>
-    <daysToKeep>30</daysToKeep>
-    <numToKeep>-1</numToKeep>
-  </logRotator>
   <keepDependencies>false</keepDependencies>
   <properties/>
   <scm class="hudson.scm.SubversionSCM">
@@ -21,7 +17,7 @@
     <excludedRevprop></excludedRevprop>
     <excludedCommitMessages></excludedCommitMessages>
   </scm>
-  <assignedNode>master</assignedNode>
+  <assignedNode>linux64</assignedNode>
   <canRoam>false</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>

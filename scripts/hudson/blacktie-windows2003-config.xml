@@ -2,10 +2,6 @@
 <project>
   <actions/>
   <description>DON&apos;T FORGET TO UPDATE THE VERSION NUMBER AT THE BOTTOM OF THE PAGE IN THE CALL TO call ant dist -DBT_HOME=......</description>
-  <logRotator>
-    <daysToKeep>30</daysToKeep>
-    <numToKeep>-1</numToKeep>
-  </logRotator>
   <keepDependencies>false</keepDependencies>
   <properties/>
   <scm class="hudson.scm.SubversionSCM">
@@ -186,7 +182,7 @@ $CHANGES</defaultContent>
   </publishers>
   <buildWrappers>
     <hudson.plugins.build__timeout.BuildTimeoutWrapper>
-      <timeoutMinutes>120</timeoutMinutes>
+      <timeoutMinutes>240</timeoutMinutes>
       <failBuild>true</failBuild>
     </hudson.plugins.build__timeout.BuildTimeoutWrapper>
   </buildWrappers>
