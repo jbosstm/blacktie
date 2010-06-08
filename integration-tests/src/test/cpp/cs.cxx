@@ -55,6 +55,7 @@ const char *MSG1 = "CLIENT REQUEST		";
 const char *MSG2 = "PAUSE - CLIENT REQUEST";
 //static char huge_buf[0x100000]; 
 static char huge_buf[0xa00000]; 
+static char large_buf[0x10000]; 
 
 static int tx = 0;
 static int startTx(int);
@@ -345,7 +346,12 @@ static int bug212b() {
 
 	thr_arg_t args = {1, huge_buf, "bug212b: TPNOBLOCK", "BAR", X_OCTET, X_OCTET, flags3, TPEBLOCK, 99, 0};
 
+#ifndef WIN32
 	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
+#else
+	userlogc((char*) "DISABLING TEST 2121");
+	return 0;
+#endif
 }
 
 // TPSIGRSTRT flag isn't supported on tpcall
@@ -436,12 +442,12 @@ static int t9() {
 	const char *data = MSG1;
 
 	// send a buffer large enough to fill the network buffers. TODO really we need the current sndbuf size
-	// getsockopt(socket, SOL_SOCKET, SO_SNDBUF, ...) and then make sure sizeof (huge_buf) is larger
-	memset(huge_buf, ' ', sizeof (huge_buf));
-	memcpy(huge_buf, data, strlen(data));
-	huge_buf[sizeof (huge_buf) - 1] = '\0';
+	// getsockopt(socket, SOL_SOCKET, SO_SNDBUF, ...) and then make sure sizeof (large_buf) is larger
+	memset(large_buf, ' ', sizeof (large_buf));
+	memcpy(large_buf, data, strlen(data));
+	large_buf[sizeof (large_buf) - 1] = '\0';
 
-	thr_arg_t args = {1, huge_buf, "large buffer test", "BAR", X_OCTET, X_OCTET, 0, 0, 99, 0};
+	thr_arg_t args = {1, large_buf, "large buffer test", "BAR", X_OCTET, X_OCTET, 0, 0, 99, 0};
 
 	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
 }
