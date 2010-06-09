@@ -164,6 +164,10 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 
+if [ "$2" ]; then
+if [ "$2" = "integration1" ]; then
+echo "Running Integration Example"
+
 # RUN THE INTEGRATION 1 EXAMPLE
 cd $BLACKTIE_HOME/examples/integration1/ejb
 mvn install
@@ -214,6 +218,8 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 
+fi
+fi
 
 # LET THE USER KNOW THE OUTPUT
 echo "All samples ran OK"

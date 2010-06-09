@@ -113,6 +113,9 @@ cd %BLACKTIE_HOME%\examples\mdb
 mvn install
 IF %ERRORLEVEL% NEQ 0 exit -1
 
+IF ["%1"] EQU ["integration1"] (
+echo "Running txfooapp"
+
 rem RUN THE INTEGRATION 1 EXAMPLE
 cd %BLACKTIE_HOME%\examples\integration1\ejb
 mvn install
@@ -150,6 +153,7 @@ IF %ERRORLEVEL% NEQ 0 exit -1
 cd $BLACKTIE_HOME\examples\integration1\xatmi_service\
 btadmin shutdown
 IF %ERRORLEVEL% NEQ 0 exit -1
+)
 
 rem LET THE USER KNOW THE OUTPUT
 echo "All samples ran OK"
