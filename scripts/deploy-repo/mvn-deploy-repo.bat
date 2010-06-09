@@ -1,7 +1,7 @@
-DEPLOY_SETTINGSset CLASSIFIER=vc9x32
+set CLASSIFIER=vc9x32
 set DEPLOY_SETTINGS="-s c:\blacktie\deploy-settings.xml"
 
-set J_ARTIFACT="mvn deploy:deploy-file -DrepositoryId=jboss-releases -Durl=https://repository.jboss.org/nexus/service/local/staging/deploy/maven2 %DEPLOY_SETTINGS%"
+set J_ARTIFACT="mvn %DEPLOY_SETTINGS% deploy:deploy-file -DrepositoryId=jboss-releases -Durl=https://repository.jboss.org/nexus/service/local/staging/deploy/maven2"
 set C_ARTIFACT="%J_ARTIFACT% -Dclassifier=%CLASSIFIER%"
 
 (cd c:\Documents and Settings\hudson\.m2\repository\apache-log4cxx\contrib\log4cxx\902683\ && %C_ARTIFACT% -Dfile=log4cxx-902683-%CLASSIFIER%.jar -DpomFile=log4cxx-902683.pom -Dversion=902683)
