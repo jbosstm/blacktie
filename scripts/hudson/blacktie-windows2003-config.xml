@@ -94,7 +94,7 @@ mvn clean install -Dbpa=vc9x32 -DskipTests
 </command>
     </hudson.tasks.BatchFile>
     <hudson.tasks.BatchFile>
-      <command>copy trunk\blacktie-admin-services\target\blacktie-admin-services-*.ear jboss-5.1.0.GA\server\all\deploy
+      <command>copy trunk\blacktie-admin-services\ear\target\blacktie-admin-services-*.ear jboss-5.1.0.GA\server\all\deploy
 copy trunk\blacktie-rhq-plugin\target\blacktie-rhq-plugin-*.jar jboss-5.1.0.GA\server\all\deploy\admin-console.war\plugins\
 copy trunk\jatmibroker-xatmi\src\test\resources\jatmibroker-xatmi-test-service.xml jboss-5.1.0.GA\server\all\deploy
 copy trunk\blacktie-admin-services\src\test\resources\btconfig.xml jboss-5.1.0.GA\server\all\conf
@@ -116,9 +116,16 @@ set MAVEN_HOME=C:\hudson\tools\apache-maven-2.0.10
 set MAVEN_OPTS=-Xmx200m
 set PATH=%PATH%;%MAVEN_HOME%\bin
 cd trunk/blacktie
-call mvn install -Dbpa=vc9x32 -Duse.valgrind=false -Djbossas.ip.addr=172.17.131.5
-cd ../jatmibroker-xatmi
-call mvn clean site -Djbossas.ip.addr=172.17.131.5</command>
+mvn install -Dbpa=vc9x32 -Duse.valgrind=false -Djbossas.ip.addr=172.17.131.5</command>
+    </hudson.tasks.BatchFile>
+    <hudson.tasks.BatchFile>
+      <command>call &quot;C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat&quot;
+set JAVA_HOME=C:\Program Files (x86)\Java\jdk1.5.0_19
+set MAVEN_HOME=C:\hudson\tools\apache-maven-2.0.10
+set MAVEN_OPTS=-Xmx200m
+set PATH=%PATH%;%MAVEN_HOME%\bin
+cd trunk\jatmibroker-xatmi
+mvn site -DskipTests</command>
     </hudson.tasks.BatchFile>
     <hudson.tasks.BatchFile>
       <command>call &quot;C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat&quot;
