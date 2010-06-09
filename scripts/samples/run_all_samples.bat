@@ -4,6 +4,7 @@ echo "Running all samples"
 
 IF ["%1"] EQU ["tx"] (
 echo "Running txfooapp"
+SHIFT
 
 rem RUN THE TXFOOAPP SERVER
 cd %BLACKTIE_HOME%\examples\xatmi\txfooapp

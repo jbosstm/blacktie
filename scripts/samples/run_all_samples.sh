@@ -6,6 +6,8 @@ echo "Running all samples"
 if [ "$1" ]; then
 if [ "$1" = "tx" ]; then
 echo "Running txfooapp"
+shift
+
 # RUN THE FOOAPP SERVER
 cd $BLACKTIE_HOME/examples/xatmi/txfooapp
 generate_server -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="$ORACLE_INC_DIR" -Dx.lib.dir="$ORACLE_LIB_DIR" -Dx.libs="occi clntsh" -Dx.define="ORACLE"
@@ -164,8 +166,8 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 
-if [ "$2" ]; then
-if [ "$2" = "integration1" ]; then
+if [ "$1" ]; then
+if [ "$1" = "integration1" ]; then
 echo "Running Integration Example"
 
 # RUN THE INTEGRATION 1 EXAMPLE
