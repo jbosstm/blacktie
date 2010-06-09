@@ -1,7 +1,7 @@
 CLASSIFIER=fc10x64
 DEPLOY_SETTINGS="-s ~/blacktie/deploy-settings.xml"
 
-J_ARTIFACT="mvn deploy:deploy-file -DrepositoryId=jboss-releases -Durl=https://repository.jboss.org/nexus/service/local/staging/deploy/maven2"
+J_ARTIFACT="mvn deploy:deploy-file -DrepositoryId=jboss-releases -Durl=https://repository.jboss.org/nexus/service/local/staging/deploy/maven2 $DEPLOY_SETTINGS"
 C_ARTIFACT="$J_ARTIFACT -Dclassifier=$CLASSIFIER"
 
 (cd ~/.m2/repository/apache-log4cxx/contrib/log4cxx/902683/ && $C_ARTIFACT -Dfile=log4cxx-902683-$CLASSIFIER.jar -DpomFile=log4cxx-902683.pom -Dversion=902683)
