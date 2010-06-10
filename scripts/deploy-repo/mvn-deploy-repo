@@ -1,5 +1,5 @@
-CLASSIFIER=fc10x64
-DEPLOY_SETTINGS="-s ~/blacktie/deploy-settings.xml"
+CLASSIFIER=vc9x32
+DEPLOY_SETTINGS="-s ~/.m2/settings.xml"
 
 J_ARTIFACT="mvn $DEPLOY_SETTINGS deploy:deploy-file -DrepositoryId=jboss-releases -Durl=https://repository.jboss.org/nexus/service/local/staging/deploy/maven2"
 C_ARTIFACT="$J_ARTIFACT -Dclassifier=$CLASSIFIER"
