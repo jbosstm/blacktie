@@ -346,12 +346,7 @@ static int bug212b() {
 
 	thr_arg_t args = {1, huge_buf, "bug212b: TPNOBLOCK", "BAR", X_OCTET, X_OCTET, flags3, TPEBLOCK, 99, 0};
 
-#ifndef WIN32
 	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
-#else
-	userlogc((char*) "DISABLING TEST 2121");
-	return 0;
-#endif
 }
 
 // TPSIGRSTRT flag isn't supported on tpcall
