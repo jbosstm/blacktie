@@ -50,6 +50,6 @@ public class Version implements Command {
 
 	public void invoke(MBeanServerConnection beanServerConnection,
 			ObjectName blacktieAdmin, Properties configuration) {
-		log.info("JBoss BlackTie 2.0.0.CR1");
+		log.info("JBoss BlackTie 2.0.0.CR1-SNAPSHOT");
 	}
 }
