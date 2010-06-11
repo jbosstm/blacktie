@@ -28,7 +28,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>example-jmx-admin</artifactId>
-	<version>2.0.0.M4</version>
+	<version>2.0.0.CR1</version>
 	<packaging>jar</packaging>
 
 	<name>Blacktie JMX Administration Example</name>
@@ -57,7 +57,7 @@
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>jatmibroker-xatmi</artifactId>
-			<version>2.0.0.M4</version>
+			<version>2.0.0.CR1</version>
 		</dependency>
 
 		<!--  Test -->
