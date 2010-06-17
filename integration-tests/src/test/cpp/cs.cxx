@@ -54,7 +54,7 @@ static ACE_Mutex mutex_;
 const char *MSG1 = "CLIENT REQUEST		";
 const char *MSG2 = "PAUSE - CLIENT REQUEST";
 //static char huge_buf[0x100000]; 
-static char huge_buf[0xa00000]; 
+static char huge_buf[0xf00000]; 
 static char large_buf[0x10000]; 
 
 static int tx = 0;
