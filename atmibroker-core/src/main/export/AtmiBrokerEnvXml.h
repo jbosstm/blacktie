@@ -76,6 +76,7 @@ typedef BLACKTIE_CORE_DLL struct _service_info {
 	int poolSize;
 	bool advertised;
 	bool conversational;
+	bool externally_managed_destination;
 }ServiceInfo;
 
 typedef BLACKTIE_CORE_DLL struct _server_info {

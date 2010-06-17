@@ -162,6 +162,8 @@
 																default="false" />
 															<xsd:attribute name="conversational" type="xsd:boolean"
 																default="false" />
+															<xsd:attribute name="externally-managed-destination" type="xsd:boolean"
+																default="false" />
 															<xsd:attribute name="size" type="xsd:integer" />
 														</xsd:complexType>
 													</xsd:element>

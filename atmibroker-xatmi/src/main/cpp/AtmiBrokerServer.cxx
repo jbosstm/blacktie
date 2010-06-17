@@ -348,6 +348,8 @@ AtmiBrokerServer::AtmiBrokerServer() {
 							= servers[i]->serviceVector[j].advertised;
 					service.conversational
 							= servers[i]->serviceVector[j].conversational;
+					service.externally_managed_destination
+							= servers[i]->serviceVector[j].externally_managed_destination;
 					serverInfo.serviceVector.push_back(service);
 				}
 				break;
@@ -697,9 +699,15 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 
 	// create reference for Service Queue and cache
 	try {
-		toReturn = createAdminDestination(serviceName);
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-				(char*) "advertiseService status=" << toReturn);
+		if(service->externally_managed_destination == false) {
+			toReturn = createAdminDestination(serviceName);
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+					(char*) "advertiseService status=" << toReturn);
+		} else {
+			toReturn = true;
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+					(char*) "service " << serviceName << " has extern managed destination");
+		}
 		if (toReturn) {
 			Destination* destination;
 			destination = connection->createDestination(serviceName);
@@ -721,7 +729,9 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 						<< serviceName << " Exception: " << e._name());
 		setSpecific(TPE_KEY, TSS_TPEMATCH);
 		try {
-			removeAdminDestination(serviceName, true);
+			if(service->externally_managed_destination == false) {
+				removeAdminDestination(serviceName, true);
+			}
 		} catch (...) {
 			LOG4CXX_ERROR(loggerAtmiBrokerServer,
 					(char*) "Could not remove the destination: " << serviceName);
@@ -732,7 +742,9 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 				(char*) "Could not create the destination: " << serviceName);
 		setSpecific(TPE_KEY, TSS_TPEMATCH);
 		try {
-			removeAdminDestination(serviceName, true);
+			if(service->externally_managed_destination == false) {
+				removeAdminDestination(serviceName, true);
+			}
 		} catch (...) {
 			LOG4CXX_ERROR(loggerAtmiBrokerServer,
 					(char*) "Could not remove the destination: " << serviceName);
@@ -770,7 +782,31 @@ void AtmiBrokerServer::unadvertiseService(char * svcname, bool decrement) {
 					<< serviceName);
 			advertisedServices.erase(i);
 			free(name);
-			removeAdminDestination(serviceName, decrement);
+
+			ServiceInfo* service;
+			unsigned int i;
+			bool found = false;
+			for (i = 0; i < serverInfo.serviceVector.size(); i++) {
+				if (strncmp(serverInfo.serviceVector[i].serviceName, serviceName,
+							XATMI_SERVICE_NAME_LENGTH) == 0) {
+					found = true;
+					service = &serverInfo.serviceVector[i];
+					break;
+				}
+			}
+
+			if(found) {
+				if(service->externally_managed_destination == false) {
+					removeAdminDestination(serviceName, decrement);
+				} else {
+					LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+						(char*) "found " << serviceName << " and externally managed destination is true");
+				}
+			} else {
+				LOG4CXX_WARN(loggerAtmiBrokerServer,
+						(char*) "can not found " << serviceName << " in btconfig.xml");
+			}
+
 			LOG4CXX_INFO(loggerAtmiBrokerServer,
 					(char*) "unadvertised service " << serviceName);
 			break;
@@ -835,6 +871,9 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 		// Dispatcher needs to be paused
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 				(char*) "Created paused admin queue for: " << serviceName);
+		if (isadm) {
+			errorBootAdminService = 3;
+		}
 		tpfree(command);
 		tpfree(response);
 		return true;
@@ -849,14 +888,18 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 		char c = response[0];
 		// REMOVED BY TOM, NOT CLEAR WHAT THIS IS REQUIRED FOR,
 		// IF COMMENTED BACK IN, PLEASE PROVIDE A COMMENT
-		//		if (!isadm || (errorBootAdminService = response[0]) == 2) {
-		LOG4CXX_ERROR(loggerAtmiBrokerServer, "Service returned with error: "
-				<< response[0] << " command was " << command << " r=" << r
-				<< " c=" << c);
+		//
+		// UNCOMENTED BY AMOS
+		// response[0] == 2 means start server with the same id.
+		// if errorBootAdminService equals 2, the server will output the same id error and quit.
+		if (!isadm || (errorBootAdminService = response[0]) == 2) {
+			LOG4CXX_ERROR(loggerAtmiBrokerServer, "Service returned with error: "
+					<< response[0] << " command was " << command << " r=" << r
+					<< " c=" << c);
+		}
 		tpfree(command);
 		tpfree(response);
 		return false;
-		//		}
 	}
 }
 

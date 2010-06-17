@@ -28,7 +28,7 @@
 		<SERVER name='foo'>
 			<SERVICE_NAMES>
 				<SERVICE name='BAR' function_name='BAR' advertised='true'
-					size='5' conversational='true'>
+					size='5' conversational='true' externally-managed-destination='true'>
 					<LIBRARY_NAME configuration="xmltest" value="libXMLTESTSERVICE.so" />
 					<LIBRARY_NAME configuration="win32" value="win32.dll" />
 					<LIBRARY_NAME configuration="linux" value="linux.so" />
