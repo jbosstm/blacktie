@@ -40,13 +40,14 @@ public class PauseDomainTest extends TestCase {
 			fail("Command failed");
 		}
 
-		command = "resumeDomain";
-		if (commandHandler.handleCommand(command.split(" ")) != 0) {
-			fail("Command failed");
-		}
 	}
 
 	public void tearDown() throws Exception {
+		String command = "resumeDomain";
+		if (commandHandler.handleCommand(command.split(" ")) != 0) {
+			fail("Command failed");
+		}
+
 		if (commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
 			fail("Could not stop the server");
 		}
