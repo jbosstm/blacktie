@@ -79,3 +79,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestServerinit);
 #include "TestClientInit.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestClientInit);
 /* End of Application Management Functions */
+/* Extern Managed Destination */
+#include "TestExternManageDestination.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestExternManageDestination);
+/* End of Extern Managed Destination*/
