@@ -184,12 +184,6 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size, char* type,
 	if (!addr) {
 		LOG4CXX_ERROR(logger, (char*) "tprealloc - no buffer");
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
-	} else if (size < 0) {
-		LOG4CXX_ERROR(logger, (char*) "tprealloc - negative size");
-		setSpecific(TPE_KEY, TSS_TPEINVAL);
-	} else if (size == 0) {
-		LOG4CXX_ERROR(logger, (char*) "tprealloc - requires positive size");
-		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	} else {
 		LOG4CXX_DEBUG(logger, (char*) "tprealloc hunting " << size);
 		for (std::vector<MemoryInfo>::iterator it = memoryInfoVector.begin(); it
@@ -199,40 +193,46 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size, char* type,
 			if ((*it).memoryPtr == addr) {
 				LOG4CXX_DEBUG(logger, (char*) "found matching memory with size"
 						<< (*it).size);
-				if ((force == false) && (strncmp((*it).type, "X_COMMON",
+				if (!force && (strncmp((*it).type, "X_COMMON",
 						MAX_TYPE_SIZE) == 0 || strncmp((*it).type, "X_C_TYPE",
 						MAX_TYPE_SIZE) == 0)) {
-					LOG4CXX_WARN(
+					LOG4CXX_INFO(
 							logger,
-							(char*) "tprealloc - cannot resize a X_C_TYPE/X_COMMON buffer");
-					break;
-				}
-				char* memPtr = (char*) realloc((void*) addr, size);
-				(*it).memoryPtr = memPtr;
-				(*it).size = size;
-				memset((*it).memoryPtr, '\0', (*it).size);
-				toReturn = memPtr;
+							(char*) "tprealloc - cannot resize a X_C_TYPE/X_COMMON buffer - leaving buffer unmodified");
+					// it does not make sense to reallocate these buffer types - treat it as a NOOP
+					toReturn = addr;
+				} else if (size <= 0) {
+					// can't have buffers of size less than or equal to zero - treat it as a NOOP
+					LOG4CXX_ERROR(logger, (char*) "tprealloc - zero or negative size");
+					setSpecific(TPE_KEY, TSS_TPEINVAL);
+				} else {
+					char* memPtr = (char*) realloc((void*) addr, size);
+					(*it).memoryPtr = memPtr;
+					(*it).size = size;
+					memset((*it).memoryPtr, '\0', (*it).size);
+					toReturn = memPtr;
 
-				if (type != NULL) {
-					free((*it).type);
-					(*it).type = (char*) malloc(MAX_TYPE_SIZE + 1);
-					memset((*it).type, '\0', MAX_TYPE_SIZE + 1);
-					LOG4CXX_TRACE(logger, (char*) "type prep");
-					strncpy((*it).type, type, MAX_TYPE_SIZE);
-					LOG4CXX_TRACE(logger, (char*) "tpalloc - copied type/"
-							<< (*it).type << "/");
-				}
+					if (type != NULL) {
+						free((*it).type);
+						(*it).type = (char*) malloc(MAX_TYPE_SIZE + 1);
+						memset((*it).type, '\0', MAX_TYPE_SIZE + 1);
+						LOG4CXX_TRACE(logger, (char*) "type prep");
+						strncpy((*it).type, type, MAX_TYPE_SIZE);
+						LOG4CXX_TRACE(logger, (char*) "tpalloc - copied type/"
+								<< (*it).type << "/");
+					}
 
-				if (subtype != NULL) {
-					free((*it).subtype);
-					(*it).subtype = (char*) malloc(MAX_SUBTYPE_SIZE + 1);
-					memset((*it).subtype, '\0', MAX_SUBTYPE_SIZE + 1);
-					strncpy((*it).subtype, subtype, MAX_SUBTYPE_SIZE);
-					LOG4CXX_TRACE(logger, (char*) "tpalloc - copied subtype/"
-							<< (*it).subtype << "/");
-				}
+					if (subtype != NULL) {
+						free((*it).subtype);
+						(*it).subtype = (char*) malloc(MAX_SUBTYPE_SIZE + 1);
+						memset((*it).subtype, '\0', MAX_SUBTYPE_SIZE + 1);
+						strncpy((*it).subtype, subtype, MAX_SUBTYPE_SIZE);
+						LOG4CXX_TRACE(logger, (char*) "tpalloc - copied subtype/"
+								<< (*it).subtype << "/");
+					}
 
-				LOG4CXX_DEBUG(logger, (char*) "updated - size: " << size);
+					LOG4CXX_DEBUG(logger, (char*) "updated - size: " << size);
+				}
 				break;
 			}
 		}

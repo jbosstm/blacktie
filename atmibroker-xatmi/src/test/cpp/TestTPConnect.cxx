@@ -94,6 +94,7 @@ void TestTPConnect::test_tpacall_to_TPCONV_fails() {
 	userlogc((char*) "test_tpacall_to_TPCONV_fails");
 
 	int cd = ::tpacall((char*) "TestTPConnect", (char *) sendbuf, sendlen, 0);
+	userlogc((char*) "test_tpacall_to_TPCONV_fails %d %d", tperrno, cd);
 	//	char* tperrnoS = (char*) malloc(110);
 	//	sprintf(tperrnoS, "%d", tperrno);
 	//	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPENOENT);

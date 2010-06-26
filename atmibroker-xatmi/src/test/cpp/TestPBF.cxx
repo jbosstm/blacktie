@@ -102,7 +102,7 @@ void TestPBF::test_tpalloc_nonzero() {
 
 	char* toTestS = (char*) malloc(110);
 	sprintf(toTestS, "%d", toTest);
-	BT_ASSERT_MESSAGE(toTestS, toTest == sizeof(ACCT_INFO));
+	BT_ASSERT_MESSAGE(toTestS, toTest >= (int) sizeof(ACCT_INFO));
 	free (toTestS);
 	BT_ASSERT(toTest != 10);
 	BT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
@@ -132,10 +132,11 @@ void TestPBF::test_tprealloc() {
 	userlogc("test_tprealloc");
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "acct_info", 0);
 	BT_ASSERT(m_allocated != NULL);
+	// tprealloc for X_COMMON buffer type should be treated as a NOOP
 	m_allocated = ::tprealloc(m_allocated, 10);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
-	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEINVAL);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 	free (tperrnoS);
 }
 
@@ -151,7 +152,7 @@ void TestPBF::test_tptypes() {
 
 	char* toTestS = (char*) malloc(110);
 	sprintf(toTestS, "%d", tperrno);
-	BT_ASSERT_MESSAGE(toTestS, toTest == sizeof(ACCT_INFO));
+	BT_ASSERT_MESSAGE(toTestS, toTest >= (int) sizeof(ACCT_INFO));
 	free (toTestS);
 	BT_ASSERT(strncmp(type, "X_COMMON", 8) == 0);
 	BT_ASSERT(strcmp(subtype, "acct_info") == 0);

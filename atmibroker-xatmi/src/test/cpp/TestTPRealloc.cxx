@@ -167,7 +167,7 @@ void TestTPRealloc::test_tprealloc_multi_x_octet() {
 		BT_ASSERT(tperrno == 0);
 
 		sprintf(toTestS, "%d %d", toTest, i);
-		BT_ASSERT_MESSAGE(toTestS, toTest == i);
+		BT_ASSERT_MESSAGE(toTestS, toTest >= i);
 	}
 	free(toTestS);
 }
@@ -194,10 +194,11 @@ void TestTPRealloc::test_tprealloc_negative_x_common() {
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	BT_ASSERT(m_allocated != NULL);
 
+	// tprealloc with a zero or negative size should be treated as a NOOP
 	::tprealloc(m_allocated, -1);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
-	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEINVAL);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 	free(tperrnoS);
 }
 
@@ -206,8 +207,9 @@ void TestTPRealloc::test_tprealloc_zero_x_common() {
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	BT_ASSERT(m_allocated != NULL);
 
+	// tprealloc for X_COMMON buffer type should be treated as a NOOP
 	::tprealloc(m_allocated, 0);
-	BT_ASSERT(tperrno == TPEINVAL);
+	BT_ASSERT(tperrno == 0);
 
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);
@@ -217,7 +219,7 @@ void TestTPRealloc::test_tprealloc_zero_x_common() {
 	free(type);
 	free(subtype);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == sizeof(DEPOSIT));
+	BT_ASSERT(toTest >= (int) sizeof(DEPOSIT));
 }
 
 void TestTPRealloc::test_tprealloc_larger_x_common() {
@@ -225,10 +227,11 @@ void TestTPRealloc::test_tprealloc_larger_x_common() {
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	BT_ASSERT(m_allocated != NULL);
 
+	// tprealloc for X_COMMON buffer type should be treated as a NOOP
 	::tprealloc(m_allocated, 3027);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
-	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEINVAL);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 	free(tperrnoS);
 
 	char* type = (char*) malloc(8);
@@ -239,7 +242,7 @@ void TestTPRealloc::test_tprealloc_larger_x_common() {
 	free(type);
 	free(subtype);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == sizeof(DEPOSIT));
+	BT_ASSERT(toTest >= (int) sizeof(DEPOSIT));
 }
 
 void TestTPRealloc::test_tprealloc_smaller_x_common() {
@@ -247,8 +250,9 @@ void TestTPRealloc::test_tprealloc_smaller_x_common() {
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	BT_ASSERT(m_allocated != NULL);
 
+	// tprealloc for X_COMMON buffer type should be treated as a NOOP
 	::tprealloc(m_allocated, 512);
-	BT_ASSERT(tperrno == TPEINVAL);
+	BT_ASSERT(tperrno == 0);
 
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);
@@ -258,7 +262,7 @@ void TestTPRealloc::test_tprealloc_smaller_x_common() {
 	free(type);
 	free(subtype);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == sizeof(DEPOSIT));
+	BT_ASSERT(toTest >= (int) sizeof(DEPOSIT));
 }
 
 void TestTPRealloc::test_tprealloc_samesize_x_common() {
@@ -266,8 +270,9 @@ void TestTPRealloc::test_tprealloc_samesize_x_common() {
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	BT_ASSERT(m_allocated != NULL);
 
+	// tprealloc for X_COMMON buffer type should be treated as a NOOP
 	::tprealloc(m_allocated, 2048);
-	BT_ASSERT(tperrno == TPEINVAL);
+	BT_ASSERT(tperrno == 0);
 
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);
@@ -277,7 +282,7 @@ void TestTPRealloc::test_tprealloc_samesize_x_common() {
 	free(type);
 	free(subtype);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == sizeof(DEPOSIT));
+	BT_ASSERT(toTest >= (int) sizeof(DEPOSIT));
 }
 
 void TestTPRealloc::test_tprealloc_multi_x_common() {
@@ -286,8 +291,12 @@ void TestTPRealloc::test_tprealloc_multi_x_common() {
 	BT_ASSERT(m_allocated != NULL);
 
 	for (int i = 1024; i <= 1124; i++) {
+		char msg[8];
+
+		sprintf(msg, "%d %d", tperrno, i);
+		// tprealloc for X_COMMON buffer type should be treated as a NOOP
 		::tprealloc(m_allocated, i);
-		BT_ASSERT(tperrno == TPEINVAL);
+		BT_ASSERT_MESSAGE((char *) msg, (tperrno == 0));
 
 		char* type = (char*) malloc(8);
 		char* subtype = (char*) malloc(16);
@@ -297,7 +306,7 @@ void TestTPRealloc::test_tprealloc_multi_x_common() {
 		free(type);
 		free(subtype);
 		BT_ASSERT(tperrno == 0);
-		BT_ASSERT(toTest == sizeof(DEPOSIT));
+		BT_ASSERT(toTest >= (int) sizeof(DEPOSIT));
 	}
 }
 
@@ -307,8 +316,9 @@ void TestTPRealloc::test_tprealloc_negative_x_c_type() {
 	m_allocated = tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	BT_ASSERT(m_allocated != NULL);
 
+	// tprealloc for X_C_TYPE buffer type should be treated as a NOOP
 	::tprealloc(m_allocated, -1);
-	BT_ASSERT(tperrno == TPEINVAL);
+	BT_ASSERT(tperrno == 0);
 }
 
 void TestTPRealloc::test_tprealloc_zero_x_c_type() {
@@ -316,8 +326,9 @@ void TestTPRealloc::test_tprealloc_zero_x_c_type() {
 	m_allocated = tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	BT_ASSERT(m_allocated != NULL);
 
+	// tprealloc for X_C_TYPE buffer type should be treated as a NOOP
 	::tprealloc(m_allocated, 0);
-	BT_ASSERT(tperrno == TPEINVAL);
+	BT_ASSERT(tperrno == 0);
 
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);
@@ -327,7 +338,7 @@ void TestTPRealloc::test_tprealloc_zero_x_c_type() {
 	free(type);
 	free(subtype);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == sizeof(ACCT_INFO));
+	BT_ASSERT(toTest >= (int) sizeof(ACCT_INFO));
 }
 
 void TestTPRealloc::test_tprealloc_larger_x_c_type() {
@@ -336,7 +347,7 @@ void TestTPRealloc::test_tprealloc_larger_x_c_type() {
 	BT_ASSERT(m_allocated != NULL);
 
 	::tprealloc(m_allocated, 3072);
-	BT_ASSERT(tperrno == TPEINVAL);
+	BT_ASSERT(tperrno == 0);
 
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);
@@ -346,7 +357,7 @@ void TestTPRealloc::test_tprealloc_larger_x_c_type() {
 	free(type);
 	free(subtype);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == sizeof(ACCT_INFO));
+	BT_ASSERT(toTest >= (int) sizeof(ACCT_INFO));
 }
 
 void TestTPRealloc::test_tprealloc_smaller_x_c_type() {
@@ -354,8 +365,9 @@ void TestTPRealloc::test_tprealloc_smaller_x_c_type() {
 	m_allocated = tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	BT_ASSERT(m_allocated != NULL);
 
+	// tprealloc for X_C_TYPE buffer type should be treated as a NOOP
 	::tprealloc(m_allocated, 512);
-	BT_ASSERT(tperrno == TPEINVAL);
+	BT_ASSERT(tperrno == 0);
 
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);
@@ -365,7 +377,7 @@ void TestTPRealloc::test_tprealloc_smaller_x_c_type() {
 	free(type);
 	free(subtype);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == sizeof(ACCT_INFO));
+	BT_ASSERT(toTest >= (int) sizeof(ACCT_INFO));
 }
 
 void TestTPRealloc::test_tprealloc_samesize_x_c_type() {
@@ -374,7 +386,7 @@ void TestTPRealloc::test_tprealloc_samesize_x_c_type() {
 	BT_ASSERT(m_allocated != NULL);
 
 	::tprealloc(m_allocated, 2048);
-	BT_ASSERT(tperrno == TPEINVAL);
+	BT_ASSERT(tperrno == 0);
 
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);
@@ -384,29 +396,31 @@ void TestTPRealloc::test_tprealloc_samesize_x_c_type() {
 	free(type);
 	free(subtype);
 	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toTest == sizeof(ACCT_INFO));
+	BT_ASSERT(toTest >= (int) sizeof(ACCT_INFO));
 }
 
 void TestTPRealloc::test_tprealloc_multi_x_c_type() {
+	char msg[1024];
 	userlogc("test_tprealloc_multi_x_c_type");
 	m_allocated = tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	BT_ASSERT(m_allocated != NULL);
 
 	for (int i = 1024; i <= 1124; i++) {
+		// tprealloc for X_C_TYPE buffer type should be treated as a NOOP
 		::tprealloc(m_allocated, i);
-		char* tperrnoS = (char*) malloc(110);
-		sprintf(tperrnoS, "%d", tperrno);
-		BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEINVAL);
-		free(tperrnoS);
+		sprintf(msg, "%d %d", i, tperrno);
+		BT_ASSERT_MESSAGE(msg, tperrno == 0);
 
-		char* type = (char*) malloc(8);
-		char* subtype = (char*) malloc(16);
+		char* type = (char*) calloc(9, 1);
+		char* subtype = (char*) calloc(17, 1);
 		int toTest = ::tptypes(m_allocated, type, subtype);
-		BT_ASSERT(strncmp(type, "X_C_TYPE", 8) == 0);
-		BT_ASSERT(strcmp(subtype, "acct_info") == 0);
+
+		sprintf(msg, "%d %d %d (%s, %s)", i, toTest, tperrno, type, subtype);
+		BT_ASSERT_MESSAGE(msg, strncmp(type, "X_C_TYPE", 8) == 0);
+		BT_ASSERT_MESSAGE(msg, strcmp(subtype, "acct_info") == 0);
 		free(type);
 		free(subtype);
 		BT_ASSERT(tperrno == 0);
-		BT_ASSERT(toTest == sizeof(ACCT_INFO));
+		BT_ASSERT(toTest >= (int) sizeof(ACCT_INFO));
 	}
 }

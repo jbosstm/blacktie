@@ -22,6 +22,7 @@
 #include "userlogc.h"
 #include "TestTimeToLive.h"
 #include "ace/OS_NS_unistd.h"
+#include "ace/OS_NS_stdlib.h"
 
 #if defined(__cplusplus)
 extern "C" {

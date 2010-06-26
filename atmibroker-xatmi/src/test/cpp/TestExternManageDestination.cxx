@@ -38,6 +38,7 @@ void TestExternManageDestination::setUp() {
 	BaseServerTest::setUp();
 
 	int toCheck = tpadvertise((char*) "TestOne", test_extern_service);
+	userlogc((char*) "TestExternManageDestination %d %d", toCheck, tperrno);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toCheck != -1);
 }
@@ -47,6 +48,7 @@ void TestExternManageDestination::tearDown() {
 
 	if(unadvertised == false) {
 		int toCheck = tpunadvertise((char*) "TestOne");
+		userlogc((char*) "TestExternManageDestination %d %d", toCheck, tperrno);
 		BT_ASSERT(tperrno == 0);
 		BT_ASSERT(toCheck != -1);
 	}
@@ -58,6 +60,7 @@ void TestExternManageDestination::tearDown() {
 void TestExternManageDestination::test_tpcall_with_service() {
 	userlogc((char*) "test_tpcall_with_service");
 
+	char msg[80];
 	char* buf = (char*) "test";
 	long  sendlen = strlen(buf) + 1;
 	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
@@ -67,12 +70,10 @@ void TestExternManageDestination::test_tpcall_with_service() {
 
 	int cd = ::tpcall((char*) "TestOne", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, 0);
 
-	char* tperrnoS = (char*) malloc(110);
-	sprintf(tperrnoS, "%d", tperrno);
-	BT_ASSERT_MESSAGE(tperrnoS, cd != -1);
-	free(tperrnoS);
-	BT_ASSERT(recvlen == 7);
-	BT_ASSERT(strcmp(recvbuf, "testone") == 0);
+	sprintf(msg, "%d %d (%s)", tperrno, cd, recvbuf);
+	BT_ASSERT_MESSAGE(msg, cd != -1);
+	BT_ASSERT_MESSAGE(msg, recvlen == 7);
+	BT_ASSERT_MESSAGE(msg, strncmp(recvbuf, "testone", recvlen) == 0);
 
 	tpfree(sendbuf);
 	tpfree(recvbuf);
@@ -91,7 +92,11 @@ void TestExternManageDestination::test_tpcall_without_service() {
 	tpunadvertise((char*) "TestOne");
 	unadvertised = true;
 	int cd = ::tpcall((char*) "TestOne", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, 0);
+	userlogc((char*) "test_tpcall_without_service %d %d", cd, tperrno);
 	BT_ASSERT(cd == -1);
+	/*
+	 * We don't return TPENOENT since we allow queuing even if the service is temporarily down.
+	 */
 	BT_ASSERT(tperrno == TPETIME);
 }
 

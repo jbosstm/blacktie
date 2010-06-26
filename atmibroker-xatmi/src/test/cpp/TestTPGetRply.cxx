@@ -214,8 +214,18 @@ void TestTPGetRply::test_tpgetrply_with_TPNOBLOCK() {
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEBLOCK);
 	free(tperrnoS);
+	userlogc((char*) "test_tpgetrply_with_TPNOBLOCK: %d %d %s", valToTest, tperrno, rcvbuf);
 	BT_ASSERT(valToTest == -1);
-	BT_ASSERT(strcmp(rcvbuf, "test_tpgetrply_TPNOBLOCK") == -1);
+
+	/*
+	 * Since the tpgetrply failed we cannot make any assumptions about the return buffer.
+	 * The specification does not explicitly prohibit the XATMI implementation from changing
+	 * the buffer so it is feasable, although unlikely, for it to change the buffer contents. 
+	 *
+	 * Since we have already asserted the error condition it therefore appears to be
+	 * of no benefit to test the buffer contents.
+	 */
+	//BT_ASSERT(strcmp(rcvbuf, "test_tpgetrply_TPNOBLOCK") == -1);
 }
 
 void TestTPGetRply::test_tpgetrply_without_TPNOBLOCK() {
