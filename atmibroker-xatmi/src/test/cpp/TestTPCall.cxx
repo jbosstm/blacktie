@@ -440,7 +440,7 @@ void TestTPCall::test_tpcall_with_TPNOBLOCK() {
 
 	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, TPNOBLOCK);
-#if 1
+#if 0
 	BT_ASSERT(tperrno == TPEBLOCK);
 #else
 	BT_ASSERT(tperrno == 0);
