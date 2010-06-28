@@ -26,6 +26,7 @@
 class TestExternManageDestination : public BaseServerTest {
 	CPPUNIT_TEST_SUITE( TestExternManageDestination);
 	CPPUNIT_TEST( test_tpcall_with_service);
+	CPPUNIT_TEST( test_tpcall_without_service);
 	CPPUNIT_TEST_SUITE_END();
 public:
 	void test_tpcall_with_service();
