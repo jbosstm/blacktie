@@ -79,27 +79,6 @@ void TestExternManageDestination::test_tpcall_with_service() {
 	tpfree(recvbuf);
 }
 
-void TestExternManageDestination::test_tpcall_without_service() {
-	userlogc((char*) "test_tpcall_without_service");
-
-	char* buf = (char*) "test";
-	long  sendlen = strlen(buf) + 1;
-	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
-	strcpy(sendbuf, buf);
-	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
-	long  recvlen = 1;
-
-	tpunadvertise((char*) "TestOne");
-	unadvertised = true;
-	int cd = ::tpcall((char*) "TestOne", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, 0);
-	userlogc((char*) "test_tpcall_without_service %d %d", cd, tperrno);
-	BT_ASSERT(cd == -1);
-	/*
-	 * We don't return TPENOENT since we allow queuing even if the service is temporarily down.
-	 */
-	BT_ASSERT(tperrno == TPETIME);
-}
-
 void test_extern_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "test_extern_service");
 	int len = 7;

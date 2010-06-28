@@ -293,9 +293,9 @@ void TestTPRealloc::test_tprealloc_multi_x_common() {
 	for (int i = 1024; i <= 1124; i++) {
 		char msg[8];
 
-		sprintf(msg, "%d %d", tperrno, i);
 		// tprealloc for X_COMMON buffer type should be treated as a NOOP
 		::tprealloc(m_allocated, i);
+		sprintf(msg, "%d %d", tperrno, i);
 		BT_ASSERT_MESSAGE((char *) msg, (tperrno == 0));
 
 		char* type = (char*) malloc(8);
