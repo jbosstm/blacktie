@@ -216,7 +216,7 @@
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
-					<classifier>${envClassifier}</classifier>
+					<classifier>${bpa}</classifier>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -233,7 +233,6 @@
 			</activation>
 			<properties>
 				<use.valgrind>false</use.valgrind>
-				<envClassifier>${bpa}</envClassifier>
 			</properties>
 		</profile>
 
@@ -246,7 +245,6 @@
 			</activation>
 			<properties>
 				<use.valgrind>true</use.valgrind>
-				<envClassifier>${bpa}</envClassifier>
 			</properties>
 			<build>
 				<plugins>
