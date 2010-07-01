@@ -62,7 +62,7 @@
 		<condition property="is-msvc">
 			<equals arg1="${toolchain.compiler}" arg2="msvc" />
 		</condition>
-		<condition property="lib.convert.pattern" value="*.lib" else="lib*.so">
+		<condition property="lib.convert.pattern" value="*.lib" else="lib*.so*">
 			<isset property="is-msvc"/>
 		</condition>
 		<condition property="export.dir">
@@ -94,6 +94,14 @@
 			</not>
 		</condition>
 		<condition property="lib.prefix" value="">
+			<isset property="is-msvc" />
+		</condition>
+		<condition property="lib.regexp" value="lib([\w-_+]*)\.so">
+			<not>
+				<isset property="is-msvc" />
+			</not>
+		</condition>
+		<condition property="lib.regexp" value="([\w-_+]*)\.lib">
 			<isset property="is-msvc" />
 		</condition>
 		<condition property="have.src.main.file">
@@ -228,9 +236,6 @@
 	<target name="compile" depends="fileset.main.check,package" if="have-srcs">
 		<mkdir dir="target/cpp-classes" />
 		<mkdir dir="target/${configuration.type}/${lib.type}" />
-		<!--
-        <echo message="${export.dll} ${define.dll}" />
-        -->
 
 		<!--
              create a comma separated list of libraries from all the libraries in target/cxx/compile/lib
@@ -531,7 +536,9 @@
 				<mapper>
 					<chainedmapper>
 						<flattenmapper/>
-						<globmapper from="${lib.convert.pattern}" to="*" casesensitive="no"/>
+						<regexpmapper from="${lib.regexp}" to="\1"/>
+
+<!--						<globmapper from="${lib.convert.pattern}" to="*" casesensitive="no"/>-->
 					</chainedmapper>
 				</mapper>
 			</pathconvert>
