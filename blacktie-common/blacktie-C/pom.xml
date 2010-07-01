@@ -256,13 +256,44 @@
 						<artifactId>maven-dependency-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>copy-dependencies</id>
+								<id>copy-test-dependencies</id>
 								<phase>initialize</phase>
 								<goals>
 									<goal>copy-dependencies</goal>
 								</goals>
 								<configuration>
-									<outputDirectory>${project.build.directory}/dependencies</outputDirectory>
+									<excludeScope>runtime</excludeScope>
+									<outputDirectory>${project.build.directory}/test-dependencies</outputDirectory>
+									<overWriteReleases>true</overWriteReleases>
+									<overWriteSnapshots>true</overWriteSnapshots>
+									<overWriteIfNewer>false</overWriteIfNewer>
+									<includeTypes>zip</includeTypes>
+								</configuration>
+							</execution>
+							<execution>
+								<id>copy-runtime-dependencies</id>
+								<phase>initialize</phase>
+								<goals>
+									<goal>copy-dependencies</goal>
+								</goals>
+								<configuration>
+									<includeScope>runtime</includeScope>
+									<outputDirectory>${project.build.directory}/runtime-dependencies</outputDirectory>
+									<overWriteReleases>true</overWriteReleases>
+									<overWriteSnapshots>true</overWriteSnapshots>
+									<overWriteIfNewer>false</overWriteIfNewer>
+									<includeTypes>zip</includeTypes>
+								</configuration>
+							</execution>
+							<execution>
+								<id>copy-compile-dependencies</id>
+								<phase>initialize</phase>
+								<goals>
+									<goal>copy-dependencies</goal>
+								</goals>
+								<configuration>
+									<includeScope>compile</includeScope>
+									<outputDirectory>${project.build.directory}/compile-dependencies</outputDirectory>
 									<overWriteReleases>true</overWriteReleases>
 									<overWriteSnapshots>true</overWriteSnapshots>
 									<overWriteIfNewer>false</overWriteIfNewer>
@@ -282,15 +313,20 @@
 								</goals>
 								<configuration>
 									<tasks>
-										<echo message="unzip dependencies to compile" />
+										<echo message="unzip dependencies to test" />
 										<exec executable="find">
 											<arg
-												line="${project.build.directory}/dependencies -name '*.zip' -exec unzip -q -uo '{}' -d ${project.build.directory}/cxx/compile ;" />
+												line="${project.build.directory}/test-dependencies -name '*.zip' -exec unzip -q -uo '{}' -d ${project.build.directory}/cxx/test ;" />
 										</exec>
 										<echo message="unzip dependencies to runtime" />
 										<exec executable="find">
 											<arg
-												line="${project.build.directory}/dependencies -name '*.zip' -exec unzip -q -uo '{}' -d ${project.build.directory}/cxx/runtime ;" />
+												line="${project.build.directory}/runtime-dependencies -name '*.zip' -exec unzip -q -uo '{}' -d ${project.build.directory}/cxx/runtime ;" />
+										</exec>
+										<echo message="unzip dependencies to compile" />
+										<exec executable="find">
+											<arg
+												line="${project.build.directory}/compile-dependencies -name '*.zip' -exec unzip -q -uo '{}' -d ${project.build.directory}/cxx/compile ;" />
 										</exec>
 									</tasks>
 								</configuration>
