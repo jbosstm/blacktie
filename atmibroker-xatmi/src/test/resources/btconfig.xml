@@ -20,12 +20,6 @@
 	<DOMAIN>fooapp</DOMAIN>
 	
 	<SERVERS>
-		<SERVER name="jboss">
-			<SERVICE_NAMES>
-				<SERVICE name='BTStompAdmin' />
-				<SERVICE name='BTDomainAdmin' />
-			</SERVICE_NAMES>
-		</SERVER>
 		<SERVER name='default'>
 			<SERVICE_NAMES>
 				<SERVICE name='PBF' />

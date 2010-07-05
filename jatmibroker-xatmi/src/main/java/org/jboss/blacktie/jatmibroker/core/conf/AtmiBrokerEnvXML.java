@@ -31,6 +31,13 @@ public class AtmiBrokerEnvXML {
 		XMLParser xmlenv = new XMLParser(env, "btconfig.xsd");
 		xmlenv.parse("btconfig.xml");
 
+		// define BTStompAdmin and BTDomainAdmin
+		prop.put("blacktie.BTStompAdmin.server", "jboss");
+		prop.put("blacktie.BTStompAdmin.conversational", false);
+
+		prop.put("blacktie.BTDomainAdmin.server", "jboss");
+		prop.put("blacktie.BTDomainAdmin.conversational", false);
+
 		return prop;
 	}
 }

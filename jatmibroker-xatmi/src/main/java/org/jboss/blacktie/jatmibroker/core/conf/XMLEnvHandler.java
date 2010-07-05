@@ -347,6 +347,13 @@ public class XMLEnvHandler extends DefaultHandler {
 								"Can not define the same service: "
 										+ serviceName);
 					}
+
+					if (serviceName.equals("BTStompAdmin") ||
+						serviceName.equals("BTDomainAdmin")) {
+						throw new SAXException (
+								"Can not define service: "
+										+ serviceName);
+					}
 					prop.put("blacktie." + serviceName + ".server", serverName);
 				} else if (attsLocalName.equals("function_name")) {
 					String func_key = "blacktie." + serviceName

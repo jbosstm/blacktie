@@ -453,7 +453,9 @@ static void XMLCALL startElement
 
 			for(int i = 0; atts[i]; i += 2) {
 				if(strcmp(atts[i], "name") == 0) {
-					if(ACE_OS::strstr(atts[i+1], adm)) {
+					if(ACE_OS::strstr(atts[i+1], adm) || 
+					   ACE_OS::strcmp(atts[i+1], "BTStompAdmin") == 0 ||
+					   ACE_OS::strcmp(atts[i+1], "BTDomainAdmin") == 0) {
 						LOG4CXX_WARN(loggerAtmiBrokerEnvXml, (char*) "Can not define " << atts[i+1]);
 						throw std::exception();
 					}
