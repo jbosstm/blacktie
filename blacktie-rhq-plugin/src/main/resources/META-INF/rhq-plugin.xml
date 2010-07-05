@@ -109,6 +109,8 @@
 		  	 </operation>
 		  	 <metric property="serviceLoad" measurementType="dynamic" displayType="summary" displayName="service load"
 			  defaultOn="true" defaultInterval="60000" dataType="measurement" description="The load of service"/>
+		  	 <metric property="conversational" measurementType="dynamic" displayType="summary" displayName="conversational"
+			  defaultOn="true" defaultInterval="60000" dataType="trait" description="identify services is conversational"/>
 		  	 <metric property="messageCounter" measurementType="dynamic" displayType="summary" displayName="service message counter"
 			  defaultOn="true" defaultInterval="60000" dataType="measurement" description="The number of messages"/>
 			 <metric property="errorCounter" measurementType="dynamic" displayType="summary" displayName="service failed message counter"

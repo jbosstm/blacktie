@@ -49,6 +49,7 @@ import org.rhq.core.domain.content.transfer.RemovePackagesResponse;
 import org.rhq.core.domain.content.transfer.ResourcePackageDetails;
 import org.rhq.core.domain.measurement.AvailabilityType;
 import org.rhq.core.domain.measurement.MeasurementDataNumeric;
+import org.rhq.core.domain.measurement.MeasurementDataTrait;
 import org.rhq.core.domain.measurement.MeasurementReport;
 import org.rhq.core.domain.measurement.MeasurementScheduleRequest;
 import org.rhq.core.pluginapi.configuration.ConfigurationFacet;
@@ -238,6 +239,14 @@ public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 					report.addData(new MeasurementDataNumeric(request, value
 							.doubleValue()
 							* Double.parseDouble(load)));
+				} else if (name.equals("conversational")) {
+					Boolean value = (Boolean) prop.get("blacktie." + serviceName
+							+ ".conversational");
+					if(value) {
+						report.addData(new MeasurementDataTrait(request, "true"));
+					} else {
+						report.addData(new MeasurementDataTrait(request, "false"));
+					}
 				}
 			} catch (Exception e) {
 				log.error("Failed to obtain measurement [" + name
