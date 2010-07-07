@@ -194,12 +194,12 @@
 		<module>../blacktie-admin-services</module>
 		<module>../blacktie-admin-services/ear</module>
 		<module>../blacktie-rhq-plugin</module>
-		<module>../btadmin</module>
 		<module>../tx-test-utilities</module>
 		<module>../atmibroker-core</module>
 		<module>../atmibroker-tx</module>
 		<module>../atmibroker-hybrid</module>
 		<module>../atmibroker-xatmi</module>
+		<module>../btadmin</module>
 		<module>../codeGeneration</module>
 		<module>../integration-tests</module>
 	</modules>
