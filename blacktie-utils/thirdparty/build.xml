@@ -237,6 +237,7 @@
 
 	<target name="cppunit-lib-linux" if="linux">
 		<copy file="${cppunit.lib.dir}/libcppunit-1.12.so.1.0.0" tofile="${build.dist}/lib/libcppunit-1.12.so.0" />
+		<copy file="${cppunit.lib.dir}/libcppunit-1.12.so.1.0.0" tofile="${build.dist}/lib/libcppunit-1.12.so.1" />
 		<exec executable="/bin/sh" dir="${build.dist}/lib">
 			<arg line="-c 'ln -s libcppunit-1.12.so.0 libcppunit.so'" />
 		</exec>
