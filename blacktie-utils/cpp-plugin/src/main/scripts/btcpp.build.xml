@@ -346,6 +346,7 @@
 			<libset dir="${project.build.directory}/cxx/compile/lib" libs="${compile.libs}" if="compile.libs"/>
 			<libset dir="${project.build.directory}/cxx/test/lib" libs="${test.libs}" if="test.libs"/>
 			<libset dir="target/${configuration.type}/${lib.type}" libs="${project.artifactId}" if="main.built" />
+			<libset libs="stdc++ pthread" />
 		</cc>
 	</target>
 
@@ -374,6 +375,7 @@
 
 			<libset dir="${project.build.directory}/cxx/compile/lib" libs="${compile.libs}" if="compile.libs"/>
 			<libset dir="${project.build.directory}/cxx/test/lib" libs="${test.libs}" if="test.libs"/>
+			<libset libs="stdc++ pthread" />
 		</cc>
 	</target>
 
@@ -436,6 +438,7 @@
 			<libset dir="${project.build.directory}/cxx/compile/lib" libs="${compile.libs}" if="compile.libs"/>
 			<libset dir="${project.build.directory}/cxx/test/lib" libs="${test.libs}" if="test.libs"/>
 			<libset dir="target/${configuration.type}/${lib.type}" libs="${project.artifactId}" if="main.built" />
+			<libset libs="stdc++ pthread" />
 		</cc>
 		<available file="target/testsuite.dll.manifest" property="manifest.towrap" />
 		<antcall target="_test-compile-msvc" />
