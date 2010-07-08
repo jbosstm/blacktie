@@ -17,7 +17,7 @@
 
 #if defined(__i386__)
 #include <unistd.h>
-//typedef off_t	off64_t;
+typedef off_t	off64_t;
 #endif
 
 #include <stdlib.h>
