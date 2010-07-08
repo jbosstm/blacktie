@@ -209,7 +209,10 @@
 	</target>
 
 	<target name="expat-lib-linux" if="linux">
-		<copy file="${expat.lib.dir}/libexpat.so" todir="${build.dist}/lib" />
+		<copy file="${expat.lib.dir}/libexpat.so" tofile="${build.dist}/lib/libexpat.so.0" />
+		<exec executable="/bin/sh" dir="${build.dist}/lib">
+			<arg line="-c 'ln -s libexpat.so.0 libexpat.so'" />
+		</exec>
 	</target>
 	<target name="expat-lib-windows" if="windows">
 		<copy file="${expat.lib.dir}/libexpat.dll" todir="${build.dist}/lib" />
@@ -229,11 +232,14 @@
 		</copy>
 		<copy file="../../blacktie/licence/expat.txt" tofile="${build.dist}/META-INF/LICENSE"/>
 
-		<install-artifact groupId="expat.contrib" artifactId="expat" name="expat" version="${expat.version}" description="repackage of expat, the C library for parsing XML, written by James Clark." />
+		<install-zip-artifact groupId="expat.contrib" artifactId="expat" name="expat" version="${expat.version}" description="repackage of expat, the C library for parsing XML, written by James Clark." />
 	</target>
 
 	<target name="cppunit-lib-linux" if="linux">
-		<copy file="${cppunit.lib.dir}/libcppunit.so" todir="${build.dist}/lib" />
+		<copy file="${cppunit.lib.dir}/libcppunit-1.12.so.1.0.0" tofile="${build.dist}/lib/libcppunit-1.12.so.0" />
+		<exec executable="/bin/sh" dir="${build.dist}/lib">
+			<arg line="-c 'ln -s libcppunit-1.12.so.0 libcppunit.so'" />
+		</exec>
 	</target>
 	<target name="cppunit-lib-windows" if="windows">
 		<copy file="${cppunit.lib.dir}/cppunitd_dll.dll" todir="${build.dist}/lib" />
@@ -250,7 +256,7 @@
 		</copy>
 		<copy file="../../blacktie/licence/cppunit.txt" tofile="${build.dist}/META-INF/LICENSE"/>
 
-		<install-artifact groupId="cppunit.contrib" artifactId="cppunit" name="cppunit" version="${cppunit.version}" description="repackage of CppUnit, the C++ port of the famous JUnit framework for unit testing" />
+		<install-zip-artifact groupId="cppunit.contrib" artifactId="cppunit" name="cppunit" version="${cppunit.version}" description="repackage of CppUnit, the C++ port of the famous JUnit framework for unit testing" />
 	</target>
 
 	<target name="apr-1-lib-linux" if="linux">
