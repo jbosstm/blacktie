@@ -176,6 +176,8 @@
 			<libset dir="${x.lib.dir}" libs="${x.libs}"/>
 			<libset dir="${x.lib.dir2}" libs="${x.libs2}"/>
 			<libset dir="${x.lib.dir3}" libs="${x.libs3}"/>
+
+			<libset libs="stdc++ pthread" />
 		</cc>
 	</target>
 
