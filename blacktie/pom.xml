@@ -157,7 +157,7 @@
 								<echo message="copying symlinks from atmibroker-xatmi runtime library" />
 								<exec executable="find" dir="target">
 									<arg
-										line="../../atmibroker-xatmi/target/cxx/runtime/lib -type l -exec cp -d {} ${project.artifactId}-${project.version}/lib ;" />
+										line="../../atmibroker-xatmi/target/cxx/runtime/lib -type l -exec cp -rpP {} ${project.artifactId}-${project.version}/lib ;" />
 								</exec>
 								<echo message="update symlinks to zip" />
 								<exec executable="/bin/sh" dir="target">
