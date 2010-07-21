@@ -1,0 +1,155 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.SubversionSCM">
+    <locations>
+      <hudson.scm.SubversionSCM_-ModuleLocation>
+        <remote>http://anonsvn.jboss.org/repos/blacktie/trunk</remote>
+      </hudson.scm.SubversionSCM_-ModuleLocation>
+    </locations>
+    <useUpdate>true</useUpdate>
+    <doRevert>true</doRevert>
+    <excludedRegions></excludedRegions>
+    <excludedUsers></excludedUsers>
+    <excludedRevprop></excludedRevprop>
+    <excludedCommitMessages></excludedCommitMessages>
+  </scm>
+  <assignedNode>linux32</assignedNode>
+  <canRoam>false</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>(Default)</jdk>
+  <triggers class="vector">
+    <hudson.triggers.SCMTrigger>
+      <spec>*/15 * * * *</spec>
+    </hudson.triggers.SCMTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>if [ -d jboss-5.1.0.GA ]; then
+  echo foo | jboss-5.1.0.GA/bin/shutdown.sh -S &amp;&amp; cd .
+  sleep 30
+fi
+
+TNS_ADMIN=$WORKSPACE/instantclient_11_2/network/admin
+
+mkdir -p $TNS_ADMIN
+
+[[ -f $TNS_ADMIN/tnsnames.ora ]] &amp;&amp; rm -f $TNS_ADMIN/tnsnames.ora
+(cd $TNS_ADMIN; wget http://albany/userContent/blacktie/tnsnames.ora)
+
+#wget http://albany/userContent/blacktie/bt-repo-centos55x32.tgz
+#tar xzf bt-repo-centos55x32.tgz -C $HUDSON_HOME/.m2/repository
+
+wget http://albany/userContent/blacktie/jboss-5.1.0.GA.zip
+if [ -d jboss-5.1.0.GA ]; then
+  rm -rf jboss-5.1.0.GA
+fi
+unzip jboss-5.1.0.GA.zip
+cd jboss-5.1.0.GA/docs/examples/transactions
+/usr/local/apache-ant-1.7.1/bin/ant jts
+cd ../../../server/all/conf
+cat jbossts-properties.xml | sed &quot;s/CONFIGURATION_FILE/NAME_SERVICE/g&quot; &gt; jbossts-properties.xml.bak
+mv jbossts-properties.xml.bak jbossts-properties.xml
+cd ../../../
+sed -i &quot;s=Xmx128=Xmx768=g&quot; bin/run.conf
+sed -i &quot;s=Xmx512=Xmx768=g&quot; bin/run.conf</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Maven>
+      <targets>install</targets>
+      <mavenName>apache-maven-2.0.9</mavenName>
+      <jvmOptions>-Xmx200m</jvmOptions>
+      <pom>blacktie-utils/cpp-plugin/pom.xml</pom>
+      <usePrivateRepository>false</usePrivateRepository>
+    </hudson.tasks.Maven>
+    <hudson.tasks.Maven>
+      <targets>clean install -DskipTests -Dbpa=centos55x32</targets>
+      <mavenName>apache-maven-2.0.9</mavenName>
+      <jvmOptions>-Xmx200m</jvmOptions>
+      <pom>blacktie/pom.xml</pom>
+      <usePrivateRepository>false</usePrivateRepository>
+    </hudson.tasks.Maven>
+    <hudson.tasks.Shell>
+      <command>cp trunk/blacktie-admin-services/ear/target/blacktie-admin-services-*.ear jboss-5.1.0.GA/server/all/deploy
+cp trunk/blacktie-rhq-plugin/target/blacktie-rhq-plugin-*.jar jboss-5.1.0.GA/server/all/deploy/admin-console.war/plugins/
+cp trunk/jatmibroker-xatmi/src/test/resources/jatmibroker-xatmi-test-service.xml jboss-5.1.0.GA/server/all/deploy
+cp trunk/blacktie-admin-services/src/test/resources/btconfig.xml jboss-5.1.0.GA/server/all/conf
+
+cd jboss-5.1.0.GA/bin
+./run.sh -c all -b localhost&amp;
+sleep 60</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>export PATH=$PATH:/usr/local/apache-maven-2.0.9/bin/:/usr/local/valgrind-3.5.0/bin
+export MAVEN_OPTS=-Xmx200m
+cd trunk/blacktie
+mvn install -Dbpa=centos55x32
+cd ../jatmibroker-xatmi
+mvn clean site</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>export PATH=$PATH:/usr/local/apache-maven-2.0.9/bin/
+export JBOSSAS_IP_ADDR=localhost
+(cd trunk &amp;&amp; ./scripts/test/bin.sh)
+
+cd trunk/dist/blacktie*/
+. setenv.sh
+export ORACLE_HOME=/usr/lib/oracle/11.2/client64
+export ORACLE_LIB_DIR=/usr/lib/oracle/11.2/client64/lib
+export ORACLE_INC_DIR=/usr/include/oracle/11.2/client64
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_LIB_DIR
+export TNS_ADMIN=$WORKSPACE/instantclient_11_2/network/admin
+export JBOSS_HOME=../../../jboss-5.1.0.GA
+./run_all_samples.sh tx</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>echo foo | jboss-5.1.0.GA/bin/shutdown.sh -S &amp;&amp; cd .</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>trunk/*/target/*test-classes/*.log*,trunk/*/target/surefire-reports/*.txt,trunk/blacktie/target/blacktie-*-centos55x32-bin.tar.gz</artifacts>
+      <latestOnly>false</latestOnly>
+    </hudson.tasks.ArtifactArchiver>
+    <hudson.plugins.emailext.ExtendedEmailPublisher>
+      <recipientList>tom.jenkinson@redhat.com,mmusgrov@redhat.com,zfeng@redhat.com</recipientList>
+      <configuredTriggers>
+        <hudson.plugins.emailext.plugins.trigger.FailureTrigger>
+          <email>
+            <recipientList></recipientList>
+            <subject>$PROJECT_DEFAULT_SUBJECT</subject>
+            <body>$PROJECT_DEFAULT_CONTENT&#xd;
+$CHANGES_SINCE_LAST_SUCCESS&#xd;
+$BUILD_LOG</body>
+            <sendToDevelopers>false</sendToDevelopers>
+            <includeCulprits>false</includeCulprits>
+            <sendToRecipientList>true</sendToRecipientList>
+          </email>
+        </hudson.plugins.emailext.plugins.trigger.FailureTrigger>
+        <hudson.plugins.emailext.plugins.trigger.SuccessTrigger>
+          <email>
+            <recipientList></recipientList>
+            <subject>$PROJECT_DEFAULT_SUBJECT</subject>
+            <body>$PROJECT_DEFAULT_CONTENT</body>
+            <sendToDevelopers>false</sendToDevelopers>
+            <includeCulprits>false</includeCulprits>
+            <sendToRecipientList>true</sendToRecipientList>
+          </email>
+        </hudson.plugins.emailext.plugins.trigger.SuccessTrigger>
+      </configuredTriggers>
+      <defaultSubject>$DEFAULT_SUBJECT</defaultSubject>
+      <defaultContent>$DEFAULT_CONTENT&#xd;
+$CHANGES</defaultContent>
+    </hudson.plugins.emailext.ExtendedEmailPublisher>
+  </publishers>
+  <buildWrappers>
+    <hudson.plugins.build__timeout.BuildTimeoutWrapper>
+      <timeoutMinutes>120</timeoutMinutes>
+      <failBuild>true</failBuild>
+    </hudson.plugins.build__timeout.BuildTimeoutWrapper>
+  </buildWrappers>
+</project>
