@@ -166,6 +166,8 @@ void TestTPConnect::test_tpconnect_tpgetrply() {
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEEVENT);
 	BT_ASSERT(revent & TPEV_SVCSUCC);
+
+	free(tperrnoS);
 }
 
 void testtpconnect_service(TPSVCINFO *svcinfo) {

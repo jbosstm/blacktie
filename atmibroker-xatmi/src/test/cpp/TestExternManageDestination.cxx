@@ -72,8 +72,8 @@ void TestExternManageDestination::test_tpcall_with_service() {
 
 	sprintf(msg, "%d %d (%s)", tperrno, cd, recvbuf);
 	BT_ASSERT_MESSAGE(msg, cd != -1);
-	BT_ASSERT_MESSAGE(msg, recvlen == 7);
-	BT_ASSERT_MESSAGE(msg, strncmp(recvbuf, "testone", recvlen) == 0);
+	BT_ASSERT_MESSAGE(msg, recvlen == 8);
+	BT_ASSERT_MESSAGE(msg, strncmp(recvbuf, "testone", 7) == 0);
 
 	tpfree(sendbuf);
 	tpfree(recvbuf);
@@ -102,7 +102,7 @@ void TestExternManageDestination::test_tpcall_without_service() {
 
 void test_extern_service(TPSVCINFO *svcinfo) {
 	userlogc((char*) "test_extern_service");
-	int len = 7;
+	int len = 8;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	strcpy(toReturn, "testone");
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
