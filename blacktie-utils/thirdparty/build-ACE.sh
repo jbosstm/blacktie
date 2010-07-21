@@ -1,6 +1,7 @@
 echo "Making ACE+TAO-$ACE_VER"
 rm -rf ACE+TAO-$ACE_VER
 mkdir ACE+TAO-$ACE_VER
+wget http://download.dre.vanderbilt.edu/previous_versions/ACE+TAO-$ACE_VER.tar.gz
 tar xfz ACE+TAO-$ACE_VER.tar.gz -C ACE+TAO-$ACE_VER
 export ACE_ROOT=/home/hudson/blacktie/utils/ACE+TAO-$ACE_VER/ACE_wrappers
 export TAO_ROOT=/home/hudson/blacktie/utils/ACE+TAO-$ACE_VER/ACE_wrappers/TAO
