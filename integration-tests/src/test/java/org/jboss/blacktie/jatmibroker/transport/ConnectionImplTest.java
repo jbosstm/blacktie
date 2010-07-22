@@ -51,7 +51,7 @@ public class ConnectionImplTest extends TestCase {
 		TransportFactory factory = TransportFactory.getTransportFactory("BAR",
 				properties);
 		Transport proxy = factory.createTransport();
-		Sender serviceFactory = proxy.getSender("BAR");
+		Sender serviceFactory = proxy.getSender("BAR", false);
 
 		String aString = "Hello from Java Land";
 		Receiver endpoint = proxy.createReceiver(1, null);

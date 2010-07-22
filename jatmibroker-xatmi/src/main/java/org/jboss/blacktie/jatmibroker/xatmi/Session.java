@@ -119,7 +119,7 @@ public class Session {
 		this.cd = cd;
 		this.eventListener = new EventListenerImpl(this);
 		this.receiver = transport.createReceiver(eventListener);
-		this.sender = transport.getSender(serviceName);
+		this.sender = transport.getSender(serviceName, true);
 
 		this.canSend = false;
 		this.canRecv = true;

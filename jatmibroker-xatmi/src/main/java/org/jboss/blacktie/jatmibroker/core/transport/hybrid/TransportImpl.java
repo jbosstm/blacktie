@@ -75,10 +75,10 @@ public class TransportImpl implements Transport {
 		log.debug("Closed: " + this);
 	}
 
-	public Sender getSender(String serviceName) throws ConnectionException {
+	public Sender getSender(String serviceName, boolean conversational) throws ConnectionException {
 		log.debug("Get sender: " + serviceName);
 		try {
-			Destination destination = jmsManagement.lookup(serviceName);
+			Destination destination = jmsManagement.lookup(serviceName, conversational);
 			log.trace("Resolved destination");
 			return new JMSSenderImpl(orbManagement, session, destination);
 		} catch (NameNotFoundException e) {
@@ -103,10 +103,10 @@ public class TransportImpl implements Transport {
 		return sender;
 	}
 
-	public Receiver getReceiver(String serviceName) throws ConnectionException {
+	public Receiver getReceiver(String serviceName, boolean conversational) throws ConnectionException {
 		log.debug("Creating a receiver: " + serviceName);
 		try {
-			Destination destination = jmsManagement.lookup(serviceName);
+			Destination destination = jmsManagement.lookup(serviceName, conversational);
 			log.debug("Resolved destination");
 			return new JMSReceiverImpl(session, destination, properties);
 		} catch (NameNotFoundException e) {
