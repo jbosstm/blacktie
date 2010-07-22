@@ -7,7 +7,8 @@ export ACE_ROOT=/home/hudson/blacktie/utils/ACE+TAO-$ACE_VER/ACE_wrappers
 export TAO_ROOT=/home/hudson/blacktie/utils/ACE+TAO-$ACE_VER/ACE_wrappers/TAO
 export LD_LIBRARY_PATH=$ACE_ROOT/lib
 cd $ACE_ROOT
-echo "#include \"ace/config-linux.h\"" > $ACE_ROOT/ace/config.h
+echo "#define ACE_INITIALIZE_MEMORY_BEFORE_USE 1
+#include \"ace/config-linux.h\"" > $ACE_ROOT/ace/config.h
 echo "include \$(ACE_ROOT)/include/makeinclude/platform_linux.GNU" > $ACE_ROOT/include/makeinclude/platform_macros.GNU
 for i in ace apps/gperf/src ACEXML $TAO_ROOT/TAO_IDL $TAO_ROOT/tao $TAO_ROOT/orbsvcs/ImplRepo_Service $TAO_ROOT/orbsvcs/orbsvcs
 do
