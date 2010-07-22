@@ -21,7 +21,7 @@
   <canRoam>false</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <jdk>(Default)</jdk>
+  <jdk>jdk1.6.0_20</jdk>
   <triggers class="vector">
     <hudson.triggers.SCMTrigger>
       <spec>*/15 * * * *</spec>
@@ -41,9 +41,6 @@ mkdir -p $TNS_ADMIN
 
 [[ -f $TNS_ADMIN/tnsnames.ora ]] &amp;&amp; rm -f $TNS_ADMIN/tnsnames.ora
 (cd $TNS_ADMIN; wget http://albany/userContent/blacktie/tnsnames.ora)
-
-#wget http://albany/userContent/blacktie/bt-repo-centos55x32.tgz
-#tar xzf bt-repo-centos55x32.tgz -C $HUDSON_HOME/.m2/repository
 
 wget http://albany/userContent/blacktie/jboss-5.1.0.GA.zip
 if [ -d jboss-5.1.0.GA ]; then
@@ -87,7 +84,7 @@ sleep 60</command>
       <command>export PATH=$PATH:/usr/local/apache-maven-2.0.9/bin/:/usr/local/valgrind-3.5.0/bin
 export MAVEN_OPTS=-Xmx200m
 cd trunk/blacktie
-mvn install -Dbpa=centos55x32
+mvn install -Dbpa=centos55x32 -Duse.valgrind=false
 cd ../jatmibroker-xatmi
 mvn clean site</command>
     </hudson.tasks.Shell>
@@ -104,7 +101,7 @@ export ORACLE_INC_DIR=/usr/include/oracle/11.2/client64
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_LIB_DIR
 export TNS_ADMIN=$WORKSPACE/instantclient_11_2/network/admin
 export JBOSS_HOME=../../../jboss-5.1.0.GA
-./run_all_samples.sh tx</command>
+./run_all_samples.sh notx</command>
     </hudson.tasks.Shell>
     <hudson.tasks.Shell>
       <command>echo foo | jboss-5.1.0.GA/bin/shutdown.sh -S &amp;&amp; cd .</command>
@@ -140,6 +137,17 @@ $BUILD_LOG</body>
             <sendToRecipientList>true</sendToRecipientList>
           </email>
         </hudson.plugins.emailext.plugins.trigger.SuccessTrigger>
+        <hudson.plugins.emailext.plugins.trigger.FixedTrigger>
+          <email>
+            <recipientList></recipientList>
+            <subject>$PROJECT_DEFAULT_SUBJECT</subject>
+            <body>$PROJECT_DEFAULT_CONTENT&#xd;
+$CHANGES</body>
+            <sendToDevelopers>true</sendToDevelopers>
+            <includeCulprits>false</includeCulprits>
+            <sendToRecipientList>true</sendToRecipientList>
+          </email>
+        </hudson.plugins.emailext.plugins.trigger.FixedTrigger>
       </configuredTriggers>
       <defaultSubject>$DEFAULT_SUBJECT</defaultSubject>
       <defaultContent>$DEFAULT_CONTENT&#xd;
