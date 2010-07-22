@@ -110,6 +110,11 @@ public class XMLEnvHandler extends DefaultHandler {
 			// This will be the last server added
 			Server server = serverLaunchers.get(serverLaunchers.size() - 1);
 			server.addMachine(machine);
+
+			// Make sure to record the administration services as not conversational
+			String ad_key = "blacktie.." + server.getName() + machine.getId()
+					+ ".conversational";
+			prop.put(ad_key, false);
 		} else if (BUFFER.equals(localName)) {
 			currentBufferName = atts.getValue(0);
 			BufferStructure buffer = buffers.get(currentBufferName);
@@ -269,11 +274,11 @@ public class XMLEnvHandler extends DefaultHandler {
 					}
 
 					log.debug("blacktie.orb.args is " + orbargs);
-					prop.setProperty("blacktie.orb.args", Integer
-							.toString(orbargs));
+					prop.setProperty("blacktie.orb.args",
+							Integer.toString(orbargs));
 				} else if (atts.getLocalName(j).equals("TRANS_FACTORY_ID")) {
-					prop.setProperty("blacktie.trans.factoryid", atts
-							.getValue(j));
+					prop.setProperty("blacktie.trans.factoryid",
+							atts.getValue(j));
 				}
 			}
 		} else if (MQ.equals(localName)) {
@@ -348,11 +353,10 @@ public class XMLEnvHandler extends DefaultHandler {
 										+ serviceName);
 					}
 
-					if (serviceName.equals("BTStompAdmin") ||
-						serviceName.equals("BTDomainAdmin")) {
-						throw new SAXException (
-								"Can not define service: "
-										+ serviceName);
+					if (serviceName.equals("BTStompAdmin")
+							|| serviceName.equals("BTDomainAdmin")) {
+						throw new SAXException("Can not define service: "
+								+ serviceName);
 					}
 					prop.put("blacktie." + serviceName + ".server", serverName);
 				} else if (attsLocalName.equals("function_name")) {
