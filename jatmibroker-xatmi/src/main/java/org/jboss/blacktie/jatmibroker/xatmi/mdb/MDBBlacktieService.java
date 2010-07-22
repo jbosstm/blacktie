@@ -43,7 +43,8 @@ public abstract class MDBBlacktieService extends BlackTieService implements
 			} else {
 				serviceName = ((Topic) jmsDestination).getTopicName();
 			}
-			log.trace(serviceName);
+			serviceName = serviceName.substring(serviceName.indexOf('_') + 1);
+			log.info(serviceName);
 			BytesMessage bytesMessage = ((BytesMessage) message);
 			org.jboss.blacktie.jatmibroker.core.transport.Message toProcess = JMSReceiverImpl
 					.convertFromBytesMessage(bytesMessage);

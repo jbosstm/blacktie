@@ -103,6 +103,7 @@ public class QueueReaper implements Runnable {
 					Destination dest = it.next();
 					if (dest instanceof Queue) {
 						String serviceName = ((Queue) dest).getQueueName();
+						serviceName = serviceName.substring(serviceName.indexOf('_') + 1);
 						String server = (String) prop.get("blacktie."
 								+ serviceName + ".server");
 						long queueReapCheck = System.currentTimeMillis();
@@ -199,10 +200,18 @@ public class QueueReaper implements Runnable {
 		int result = 0;
 
 		try {
+			boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
+			String prefix = null;
+			if (conversational) {
+				prefix = "BTC_";
+			} else {
+				prefix = "BTR_";
+			}
+
 			ObjectName objName = new ObjectName(
 					"jboss.messaging:service=ServerPeer");
 			beanServerConnection.invoke(objName, "undeployQueue",
-					new Object[] { serviceName },
+					new Object[] { prefix + serviceName },
 					new String[] { "java.lang.String" });
 			result = 1;
 		} catch (Throwable t) {

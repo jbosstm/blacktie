@@ -94,13 +94,20 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		HashSet dests = (HashSet) beanServerConnection.getAttribute(objName,
 				"Destinations");
 
+		boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
+		String prefix = null;
+		if (conversational) {
+			prefix = "BTC_";
+		} else {
+			prefix = "BTR_";
+		}
 		Iterator<Destination> it = dests.iterator();
 		while (it.hasNext()) {
 			Destination dest = it.next();
 			if (dest instanceof Queue) {
 				String qname = ((Queue) dest).getQueueName();
 				log.debug("destination is " + qname);
-				if (qname.equals(serviceName)) {
+				if (qname.equals(prefix+serviceName)) {
 					log.trace("find serviceName " + serviceName);
 					return true;
 				}
@@ -224,11 +231,6 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			queue = isDeployQueue(objName, serviceName);
 			if (queue == false) {
 				synchronized (QUEUE_CREATION_TIMES) {
-					QUEUE_CREATION_TIMES.put(serviceName, System
-							.currentTimeMillis());
-					beanServerConnection.invoke(objName, "deployQueue",
-							new Object[] { serviceName, null }, new String[] {
-									"java.lang.String", "java.lang.String" });
 					//jboss.messaging.destination:service=Queue,name=dynamic
 					boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
 					String prefix = null;
@@ -237,6 +239,11 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 					} else {
 						prefix = "BTR_";
 					}
+					QUEUE_CREATION_TIMES.put(serviceName, System
+							.currentTimeMillis());
+					beanServerConnection.invoke(objName, "deployQueue",
+							new Object[] { prefix + serviceName, null }, new String[] {
+									"java.lang.String", "java.lang.String" });
 					ObjectName queueName = new ObjectName(
 							"jboss.messaging.destination:service=Queue,name="
 									+ prefix + serviceName);
@@ -277,8 +284,15 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			ObjectName objName = new ObjectName(
 					"jboss.messaging:service=ServerPeer");
 			if (isDeployQueue(objName, serviceName)) {
+				boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
+				String prefix = null;
+				if (conversational) {
+					prefix = "BTC_";
+				} else {
+					prefix = "BTR_";
+				}
 				beanServerConnection.invoke(objName, "undeployQueue",
-						new Object[] { serviceName },
+						new Object[] { prefix + serviceName },
 						new String[] { "java.lang.String" });
 			}
 			result = 1;
