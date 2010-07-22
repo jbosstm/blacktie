@@ -82,7 +82,7 @@ public abstract class BlackTieService implements Service {
 				boolean hasTPCONV = (message.flags & Connection.TPCONV) == Connection.TPCONV;
 				Boolean conversational = (Boolean) connection.properties
 						.get("blacktie." + name + ".conversational");
-				log.info(name);
+				log.trace(name);
 				boolean isConversational = conversational == true;
 				if (hasTPCONV && isConversational) {
 					int olen = 4;
