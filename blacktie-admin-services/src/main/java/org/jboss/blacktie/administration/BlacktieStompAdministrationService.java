@@ -67,7 +67,7 @@ import org.xml.sax.InputSource;
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
 		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTStompAdmin") })
-@Depends("jboss.messaging.destination:service=Queue,name=rpc/BTStompAdmin")
+@Depends("jboss.messaging.destination:service=Queue,name=BTR_BTStompAdmin")
 @javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 public class BlacktieStompAdministrationService extends MDBBlacktieService
 		implements javax.jms.MessageListener {
@@ -115,9 +115,9 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
 		String prefix = null;
 		if (conversational) {
-			prefix = "con/";
+			prefix = "BTC_";
 		} else {
-			prefix = "rpc/";
+			prefix = "BTR_";
 		}
 		ObjectName objName = new ObjectName(
 				"jboss.messaging.destination:service=Queue,name=" + prefix + serviceName);
@@ -233,9 +233,9 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 					boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
 					String prefix = null;
 					if (conversational) {
-						prefix = "con/";
+						prefix = "BTC_";
 					} else {
-						prefix = "rpc/";
+						prefix = "BTR_";
 					}
 					ObjectName queueName = new ObjectName(
 							"jboss.messaging.destination:service=Queue,name="

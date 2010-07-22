@@ -66,9 +66,9 @@ public class JMSManagement {
 
 	public Destination lookup(String serviceName, boolean conversational) throws NamingException {
 		if (conversational) {
-			return (Destination) context.lookup("/queue/con/" + serviceName);
+			return (Destination) context.lookup("/queue/BTC_" + serviceName);
 		} else {
-			return (Destination) context.lookup("/queue/rpc/" + serviceName);
+			return (Destination) context.lookup("/queue/BTR_" + serviceName);
 		}
 	}
 }

@@ -164,9 +164,9 @@ public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 			boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
 			String prefix = null;
 			if (conversational) {
-				prefix = "con/";
+				prefix = "BTC_";
 			} else {
-				prefix = "rpc/";
+				prefix = "BTR_";
 			}
 			
 			ObjectName objName = new ObjectName(

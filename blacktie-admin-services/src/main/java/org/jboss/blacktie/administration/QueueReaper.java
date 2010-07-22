@@ -152,9 +152,9 @@ public class QueueReaper implements Runnable {
 		boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
 		String prefix = null;
 		if (conversational) {
-			prefix = "con/";
+			prefix = "BTC_";
 		} else {
-			prefix = "rpc/";
+			prefix = "BTR_";
 		}
 		ObjectName objName = new ObjectName(
 				"jboss.messaging.destination:service=Queue,name=" + prefix + serviceName);
@@ -168,9 +168,9 @@ public class QueueReaper implements Runnable {
 		boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
 		String prefix = null;
 		if (conversational) {
-			prefix = "con/";
+			prefix = "BTC_";
 		} else {
-			prefix = "rpc/";
+			prefix = "BTR_";
 		}
 		ObjectName objName = new ObjectName(
 				"jboss.messaging.destination:service=Queue,name=" + prefix + serviceName);

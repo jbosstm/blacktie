@@ -69,9 +69,9 @@ HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 	this->sendTo  = (char*) ::malloc(queueNameLength);
 	memset(this->sendTo, '\0', queueNameLength);
 	if (isConv) {
-		strcpy(this->sendTo, "/queue/con/");
+		strcpy(this->sendTo, "/queue/BTC_");
 	} else {
-		strcpy(this->sendTo, "/queue/rpc/");
+		strcpy(this->sendTo, "/queue/BTR_");
 	}
 	strncat(this->sendTo, serviceName, XATMI_SERVICE_NAME_LENGTH);
 

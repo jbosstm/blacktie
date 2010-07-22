@@ -46,7 +46,7 @@ import org.w3c.dom.Element;
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
 		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTDomainAdmin") }, messageListenerInterface = javax.jms.MessageListener.class)
-@Depends("jboss.messaging.destination:service=Queue,name=rpc/BTDomainAdmin")
+@Depends("jboss.messaging.destination:service=Queue,name=BTR_BTDomainAdmin")
 @javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 /**
  * This is the administration service proxy to allow administration of the servers from XATMI clients.

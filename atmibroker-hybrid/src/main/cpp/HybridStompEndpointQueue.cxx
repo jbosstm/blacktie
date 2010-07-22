@@ -46,9 +46,9 @@ HybridStompEndpointQueue::HybridStompEndpointQueue(apr_pool_t* pool,
 	char* queueName = (char*) ::malloc(queueNameLength);
 	memset(queueName, '\0', queueNameLength);
 	if (conversational) {
-		strcpy(queueName, "/queue/con/");
+		strcpy(queueName, "/queue/BTC_");
 	} else {
-		strcpy(queueName, "/queue/rpc/");
+		strcpy(queueName, "/queue/BTR_");
 	}
 	strncat(queueName, serviceName, XATMI_SERVICE_NAME_LENGTH);
 	this->fullName = queueName;

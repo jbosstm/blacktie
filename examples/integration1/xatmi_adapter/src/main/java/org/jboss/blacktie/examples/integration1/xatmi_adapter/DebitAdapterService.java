@@ -39,7 +39,7 @@ import org.jboss.ejb3.annotation.Depends;
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
 		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/DEBIT") })
-@Depends("jboss.messaging.destination:service=Queue,name=rpc/DEBIT")
+@Depends("jboss.messaging.destination:service=Queue,name=BTR_DEBIT")
 public class DebitAdapterService extends MDBBlacktieService implements
 		javax.jms.MessageListener {
 	private static final Logger log = LogManager
