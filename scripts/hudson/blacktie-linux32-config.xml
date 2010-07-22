@@ -81,10 +81,10 @@ cd jboss-5.1.0.GA/bin
 sleep 60</command>
     </hudson.tasks.Shell>
     <hudson.tasks.Shell>
-      <command>export PATH=$PATH:/usr/local/apache-maven-2.0.9/bin/:/usr/local/valgrind-3.5.0/bin
+      <command>export PATH=$PATH:/usr/local/apache-maven-2.0.9/bin/
 export MAVEN_OPTS=-Xmx200m
 cd trunk/blacktie
-mvn install -Dbpa=centos55x32 -Duse.valgrind=false
+mvn install -Dbpa=centos55x32 -Duse.valgrind=true
 cd ../jatmibroker-xatmi
 mvn clean site</command>
     </hudson.tasks.Shell>
@@ -95,13 +95,13 @@ export JBOSSAS_IP_ADDR=localhost
 
 cd trunk/dist/blacktie*/
 . setenv.sh
-export ORACLE_HOME=/usr/lib/oracle/11.2/client64
-export ORACLE_LIB_DIR=/usr/lib/oracle/11.2/client64/lib
-export ORACLE_INC_DIR=/usr/include/oracle/11.2/client64
+export ORACLE_HOME=/usr/lib/oracle/11.2/client
+export ORACLE_LIB_DIR=/usr/lib/oracle/11.2/client/lib
+export ORACLE_INC_DIR=/usr/include/oracle/11.2/client
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_LIB_DIR
 export TNS_ADMIN=$WORKSPACE/instantclient_11_2/network/admin
 export JBOSS_HOME=../../../jboss-5.1.0.GA
-./run_all_samples.sh notx</command>
+./run_all_samples.sh tx</command>
     </hudson.tasks.Shell>
     <hudson.tasks.Shell>
       <command>echo foo | jboss-5.1.0.GA/bin/shutdown.sh -S &amp;&amp; cd .</command>

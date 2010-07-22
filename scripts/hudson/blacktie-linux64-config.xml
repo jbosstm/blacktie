@@ -84,7 +84,7 @@ cd jboss-5.1.0.GA/bin
 sleep 60</command>
     </hudson.tasks.Shell>
     <hudson.tasks.Shell>
-      <command>export PATH=$PATH:/usr/local/apache-maven-2.0.9/bin/:/usr/local/valgrind-3.5.0/bin
+      <command>export PATH=$PATH:/usr/local/apache-maven-2.0.9/bin/
 export MAVEN_OPTS=-Xmx200m
 cd trunk/blacktie
 mvn install -Dbpa=centos54x64
