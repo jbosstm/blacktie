@@ -52,7 +52,7 @@ void TestStompConnection::testLibStomp() {
 	userlogc("TestStompConnection::test");
 
 	Destination* destination = serverConnection->createDestination(
-			(char*) "JAVA_Converse", true);
+			(char*) "JAVA_Converse", false);
 
 	// THIS IS THE INITIAL EXCHANCE
 	userlogc("Iterating");
@@ -94,8 +94,8 @@ void TestStompConnection::test() {
 	userlogc("TestStompConnection::test");
 
 	Destination* destination = serverConnection->createDestination(
-			(char*) "JAVA_Converse", true);
-	Session* client = clientConnection->createSession(true, 1,
+			(char*) "JAVA_Converse", false);
+	Session* client = clientConnection->createSession(false, 1,
 			(char*) "JAVA_Converse");
 
 	// THIS IS THE INITIAL EXCHANCE
