@@ -16,7 +16,7 @@ MA  02110-1301, USA.
 
 Installing Blacktie into JBoss AS
 
-   1 Configuring JBoss AS to use JTS. Download 5.1.0.GA
+   1 Download 5.1.0.GA and configure JBoss AS to use JTS:
    	- Extract into any location on your hard drive, and set the env variable JBOSS_HOME to this location;
    	- cd $JBOSS_HOME/docs/examples/transactions;
    	- Type: ant jts (this installs the JTS version of JBoss Transactions);
@@ -24,7 +24,7 @@ Installing Blacktie into JBoss AS
       (this cause JBossTS to make its TransactionFactory available as a CORBA object);
    2. Edit $BLACKTIE_HOME/setenv.sh|bat to enter the location of BLACKTIE_HOME and source the script
    3. Copy $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-ear-[VERSION].ear to $JBOSS_HOME/server/all/deploy
-   4. Copy $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml to <JBOSS_HOME>/server/all/conf
+   4. Copy $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml to $JBOSS_HOME/server/all/conf
    5. Copy $BLACKTIE_HOME/blacktie-admin-services/blacktie-rhq-plugin-[VERSION].jar to $JBOSS_HOME/server/all/deploy/admin-console.war/plugins
    6. Start the all configuration of the application server:
       cd $JBOSS_HOME; bin/run.sh -c all
@@ -32,8 +32,8 @@ Installing Blacktie into JBoss AS
 Configuring the Examples
 
    Out of the box, the examples need their configuration updating in order to specify the hostname and install
-   location of BlackTie. Update the following files (this includes one pom and all the btconfig.xml files with the exception
-   of $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml):
+   location of BlackTie. The files which need to be modified include one pom and all the btconfig.xml files
+   (with the exception of $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml):
  
    $BLACKTIE_HOME/examples/jab/src/test/resources/btconfig.xml
    $BLACKTIE_HOME/examples/security/dynsub/btconfig.xml
@@ -52,14 +52,14 @@ Configuring the Examples
 
 Running the Examples
 
-   1. cd to $BLACKTIE_HOME
+   1. cd $BLACKTIE_HOME
    2. Source the setenv.[sh|bat] script
    3. To run all the examples execute the samples script run_all_samples.[sh|bat]
 
 examples/xatmi/txfooapp
     Demonstrates updating multiple databases within a single transaction. To run the example follow the README.
 
-examples//xatmifooapp
+examples/xatmi/fooapp
     Starts a simple echo server and runs two clients (written in Java and C)
 
 examples/admin/jmx
