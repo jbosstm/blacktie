@@ -67,7 +67,7 @@ import org.xml.sax.InputSource;
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
 		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTStompAdmin") })
-@Depends("jboss.messaging.destination:service=Queue,name=BTStompAdmin")
+@Depends("jboss.messaging.destination:service=Queue,name=rpc/BTStompAdmin")
 @javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 public class BlacktieStompAdministrationService extends MDBBlacktieService
 		implements javax.jms.MessageListener {
@@ -111,8 +111,16 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 	}
 
 	int consumerCount(String serviceName) throws Exception {
+		//jboss.messaging.destination:service=Queue,name=dynamic
+		boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
+		String prefix = null;
+		if (conversational) {
+			prefix = "con/";
+		} else {
+			prefix = "rpc/";
+		}
 		ObjectName objName = new ObjectName(
-				"jboss.messaging.destination:service=Queue,name=" + serviceName);
+				"jboss.messaging.destination:service=Queue,name=" + prefix + serviceName);
 		Integer count = (Integer) beanServerConnection.getAttribute(objName,
 				"ConsumerCount");
 		Element security = (Element) beanServerConnection.getAttribute(objName,
@@ -221,9 +229,17 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 					beanServerConnection.invoke(objName, "deployQueue",
 							new Object[] { serviceName, null }, new String[] {
 									"java.lang.String", "java.lang.String" });
+					//jboss.messaging.destination:service=Queue,name=dynamic
+					boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
+					String prefix = null;
+					if (conversational) {
+						prefix = "con/";
+					} else {
+						prefix = "rpc/";
+					}
 					ObjectName queueName = new ObjectName(
 							"jboss.messaging.destination:service=Queue,name="
-									+ serviceName);
+									+ prefix + serviceName);
 					setSecurityConfig(queueName, serviceName);
 				}
 			}

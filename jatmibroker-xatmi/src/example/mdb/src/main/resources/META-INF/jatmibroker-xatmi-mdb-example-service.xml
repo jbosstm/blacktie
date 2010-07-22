@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <server>
    <mbean code="org.jboss.jms.server.destination.QueueService"
-      name="jboss.messaging.destination:service=Queue,name=EchoService"
+      name="jboss.messaging.destination:service=Queue,name=rpc/EchoService"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
    </mbean>
    <mbean code="org.jboss.jms.server.destination.QueueService"
-      name="jboss.messaging.destination:service=Queue,name=TxEchoService"
+      name="jboss.messaging.destination:service=Queue,name=rpc/TxEchoService"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>
    </mbean>
    <mbean code="org.jboss.jms.server.destination.QueueService"
-      name="jboss.messaging.destination:service=Queue,name=TxCreateService"
+      name="jboss.messaging.destination:service=Queue,name=rpc/TxCreateService"
       xmbean-dd="xmdesc/Queue-xmbean.xml">
       <depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
       <depends>jboss.messaging:service=PostOffice</depends>

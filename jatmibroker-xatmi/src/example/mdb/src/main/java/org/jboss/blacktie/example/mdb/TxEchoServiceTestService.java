@@ -41,7 +41,7 @@ import org.jboss.ejb3.annotation.Depends;
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
 		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/TxEchoService") })
-@Depends("jboss.messaging.destination:service=Queue,name=TxEchoService")
+@Depends("jboss.messaging.destination:service=Queue,name=rpc/TxEchoService")
 public class TxEchoServiceTestService extends MDBBlacktieService implements
 		javax.jms.MessageListener {
 	private static final Logger log = LogManager

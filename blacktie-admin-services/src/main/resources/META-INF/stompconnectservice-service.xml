@@ -9,7 +9,7 @@
 		name="jboss.blacktie:service=Admin">
 	</mbean>
 	<mbean code="org.jboss.jms.server.destination.QueueService"
-		name="jboss.messaging.destination:service=Queue,name=BTStompAdmin"
+		name="jboss.messaging.destination:service=Queue,name=rpc/BTStompAdmin"
 		xmbean-dd="xmdesc/Queue-xmbean.xml">
 		<depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
 		<depends>jboss.messaging:service=PostOffice</depends>
@@ -23,7 +23,7 @@
 		</attribute>
 	</mbean>
 	<mbean code="org.jboss.jms.server.destination.QueueService"
-		name="jboss.messaging.destination:service=Queue,name=BTDomainAdmin"
+		name="jboss.messaging.destination:service=Queue,name=rpc/BTDomainAdmin"
 		xmbean-dd="xmdesc/Queue-xmbean.xml">
 		<depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
 		<depends>jboss.messaging:service=PostOffice</depends>

@@ -650,9 +650,17 @@ public class AdministrationProxy {
 	public int getQueueDepth(String serverName, String serviceName) {
 		Integer depth;
 		try {
+			//jboss.messaging.destination:service=Queue,name=dynamic
+			boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
+			String prefix = null;
+			if (conversational) {
+				prefix = "con/";
+			} else {
+				prefix = "rpc/";
+			}
 			ObjectName objName = new ObjectName(
 					"jboss.messaging.destination:service=Queue,name="
-							+ serviceName);
+							+ prefix + serviceName);
 			depth = (Integer) beanServerConnection.getAttribute(objName,
 					"MessageCount");
 		} catch (Exception e) {

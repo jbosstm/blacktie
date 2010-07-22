@@ -28,6 +28,7 @@ import javax.management.ObjectName;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
 
@@ -46,11 +47,18 @@ public class QueueReaper implements Runnable {
 
 	private MBeanServerConnection beanServerConnection;
 
-	public QueueReaper(MBeanServerConnection conn) {
+	private Properties prop;
+
+	public QueueReaper(MBeanServerConnection conn) throws ConfigurationException {
 		this.thread = new Thread(this);
 		this.thread.setDaemon(true);
 		this.thread.setPriority(Thread.MIN_PRIORITY);
 		this.beanServerConnection = conn;
+		
+		prop = new Properties();
+		XMLEnvHandler handler = new XMLEnvHandler(prop);
+		XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
+		xmlenv.parse("btconfig.xml");
 	}
 
 	public void startThread() {
@@ -89,10 +97,6 @@ public class QueueReaper implements Runnable {
 				HashSet<Destination> dests = (HashSet<Destination>) beanServerConnection
 						.getAttribute(objName, "Destinations");
 
-				Properties prop = new Properties();
-				XMLEnvHandler handler = new XMLEnvHandler(prop);
-				XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
-				xmlenv.parse("btconfig.xml");
 
 				Iterator<Destination> it = dests.iterator();
 				while (it.hasNext()) {
@@ -144,16 +148,32 @@ public class QueueReaper implements Runnable {
 	}
 
 	int consumerCount(String serviceName) throws Exception {
+		//jboss.messaging.destination:service=Queue,name=dynamic
+		boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
+		String prefix = null;
+		if (conversational) {
+			prefix = "con/";
+		} else {
+			prefix = "rpc/";
+		}
 		ObjectName objName = new ObjectName(
-				"jboss.messaging.destination:service=Queue,name=" + serviceName);
+				"jboss.messaging.destination:service=Queue,name=" + prefix + serviceName);
 		Integer count = (Integer) beanServerConnection.getAttribute(objName,
 				"ConsumerCount");
 		return count.intValue();
 	}
 
 	Boolean isCreatedProgrammatically(String serviceName) throws Exception {
+		//jboss.messaging.destination:service=Queue,name=dynamic
+		boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
+		String prefix = null;
+		if (conversational) {
+			prefix = "con/";
+		} else {
+			prefix = "rpc/";
+		}
 		ObjectName objName = new ObjectName(
-				"jboss.messaging.destination:service=Queue,name=" + serviceName);
+				"jboss.messaging.destination:service=Queue,name=" + prefix + serviceName);
 		return (Boolean) beanServerConnection.getAttribute(objName,
 				"CreatedProgrammatically");
 	}

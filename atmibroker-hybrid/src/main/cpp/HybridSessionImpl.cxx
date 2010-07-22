@@ -62,11 +62,17 @@ HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 	stompConnection = NULL;
 	stompConnection = HybridConnectionImpl::connect(pool, ttl);
 	this->pool = pool;
+
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
 	int XATMI_SERVICE_NAME_LENGTH = 15;
-	this->sendTo = (char*) ::malloc(7 + XATMI_SERVICE_NAME_LENGTH + 1);
-	memset(this->sendTo, '\0', 7 + XATMI_SERVICE_NAME_LENGTH + 1);
-	strcpy(this->sendTo, "/queue/");
+	int queueNameLength = 11 + 15 + 1;
+	this->sendTo  = (char*) ::malloc(queueNameLength);
+	memset(this->sendTo, '\0', queueNameLength);
+	if (isConv) {
+		strcpy(this->sendTo, "/queue/con/");
+	} else {
+		strcpy(this->sendTo, "/queue/rpc/");
+	}
 	strncat(this->sendTo, serviceName, XATMI_SERVICE_NAME_LENGTH);
 
 	remoteEndpoint = NULL;

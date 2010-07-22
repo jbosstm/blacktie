@@ -30,7 +30,7 @@ log4cxx::LoggerPtr HybridStompEndpointQueue::logger(log4cxx::Logger::getLogger(
 		"HybridStompEndpointQueue"));
 
 HybridStompEndpointQueue::HybridStompEndpointQueue(apr_pool_t* pool,
-		char* serviceName) {
+		char* serviceName, bool conversational) {
 	LOG4CXX_DEBUG(logger, "Creating endpoint queue: " << serviceName);
 	this->message = NULL;
 	this->receipt = NULL;
@@ -42,9 +42,14 @@ HybridStompEndpointQueue::HybridStompEndpointQueue(apr_pool_t* pool,
 
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
 	int XATMI_SERVICE_NAME_LENGTH = 15;
-	char* queueName = (char*) ::malloc(8 + XATMI_SERVICE_NAME_LENGTH + 1);
-	memset(queueName, '\0', 8 + XATMI_SERVICE_NAME_LENGTH + 1);
-	strcpy(queueName, "/queue/");
+	int queueNameLength = 11 + 15 + 1;
+	char* queueName = (char*) ::malloc(queueNameLength);
+	memset(queueName, '\0', queueNameLength);
+	if (conversational) {
+		strcpy(queueName, "/queue/con/");
+	} else {
+		strcpy(queueName, "/queue/rpc/");
+	}
 	strncat(queueName, serviceName, XATMI_SERVICE_NAME_LENGTH);
 	this->fullName = queueName;
 	this->name = strdup(serviceName);

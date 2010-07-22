@@ -160,9 +160,18 @@ public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 		AvailabilityType status = AvailabilityType.DOWN;
 
 		try {
+			//jboss.messaging.destination:service=Queue,name=dynamic
+			boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
+			String prefix = null;
+			if (conversational) {
+				prefix = "con/";
+			} else {
+				prefix = "rpc/";
+			}
+			
 			ObjectName objName = new ObjectName(
 					"jboss.messaging.destination:service=Queue,name="
-							+ serviceName);
+							+ prefix + serviceName);
 			beanServerConnection.getAttribute(objName, "ConsumerCount");
 			status = AvailabilityType.UP;
 		} catch (Exception e) {
