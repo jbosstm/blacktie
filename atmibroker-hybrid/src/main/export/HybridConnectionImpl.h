@@ -52,7 +52,7 @@ public:
 	static stomp_connection* connect(apr_pool_t* pool, int timeout);
 	static void disconnect(stomp_connection* connection, apr_pool_t* pool);
 
-	Destination* createDestination(char* serviceName);
+	Destination* createDestination(char* serviceName, bool conversational);
 	void destroyDestination(Destination* destination);
 
 private:

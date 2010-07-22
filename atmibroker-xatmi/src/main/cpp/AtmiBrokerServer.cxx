@@ -659,7 +659,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 		LOG4CXX_WARN(
 				loggerAtmiBrokerServer,
 				(char*) "Could not advertise service, was not registered for server in btconfig.xml: "
-						<< svcname);
+				<< svcname);
 		setSpecific(TPE_KEY, TSS_TPELIMIT);
 		free(serviceName);
 		return false;
@@ -710,7 +710,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 		}
 		if (toReturn) {
 			Destination* destination;
-			destination = connection->createDestination(serviceName);
+			destination = connection->createDestination(serviceName, service->conversational);
 
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "created destination: " << serviceName);

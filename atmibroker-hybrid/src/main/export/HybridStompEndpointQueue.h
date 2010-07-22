@@ -37,7 +37,7 @@ extern "C" {
 
 class BLACKTIE_HYBRID_DLL HybridStompEndpointQueue: public virtual Destination {
 public:
-	HybridStompEndpointQueue(apr_pool_t* pool, char* serviceName);
+	HybridStompEndpointQueue(apr_pool_t* pool, char* serviceName, bool conversational);
 	virtual ~HybridStompEndpointQueue();
 
 	virtual bool connected();
