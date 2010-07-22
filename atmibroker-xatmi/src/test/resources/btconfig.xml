@@ -52,7 +52,8 @@
 				<SERVICE name='DEBIT' />
 				<SERVICE name='CREDIT' />
 				<SERVICE name='INQUIRY' conversational='true' />
-				<SERVICE name='TestRbkOnly' /> <SERVICE name='TestRbkOnly2' conversational='true' />
+				<SERVICE name='TestRbkOnly' />
+				<SERVICE name='TestRbkOnly2' conversational='true' />
 				<SERVICE name='TestOne' externally-managed-destination='true' />
 			</SERVICE_NAMES>
 		</SERVER>
