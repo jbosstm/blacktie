@@ -102,6 +102,9 @@
 			<source>../scripts/samples/run_all_samples.bat</source>
 			<fileMode>0755</fileMode>
 		</file>
+		<file>
+			<source>../scripts/samples/README</source>
+		</file>
 	</files>
 	<fileSets>
 		<fileSet>

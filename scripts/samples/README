@@ -1,0 +1,83 @@
+JBoss, Home of Professional Open Source
+Copyright 2010, Red Hat, Inc., and others contributors as indicated
+by the @authors tag. All rights reserved.
+See the copyright.txt in the distribution for a
+full listing of individual contributors.
+This copyrighted material is made available to anyone wishing to use,
+modify, copy, or redistribute it subject to the terms and conditions
+of the GNU Lesser General Public License, v. 2.1.
+This program is distributed in the hope that it will be useful, but WITHOUT A
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+You should have received a copy of the GNU Lesser General Public License,
+v.2.1 along with this distribution; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+MA  02110-1301, USA.
+
+Installing Blacktie into JBoss AS
+
+   1 Configuring JBoss AS to use JTS. Download 5.1.0.GA
+   	- Extract into any location on your hard drive, and set the env variable JBOSS_HOME to this location;
+   	- cd $JBOSS_HOME/docs/examples/transactions;
+   	- Type: ant jts (this installs the JTS version of JBoss Transactions);
+   	- Edit $JBOSS_HOME/server/all/conf/jbossts-properties.xml to change the CONFIGURATION_FILE to NAME_SERVICE
+      (this cause JBossTS to make its TransactionFactory available as a CORBA object);
+   2. Edit $BLACKTIE_HOME/setenv.sh|bat to enter the location of BLACKTIE_HOME and source the script
+   3. Copy $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-ear-[VERSION].ear to $JBOSS_HOME/server/all/deploy
+   4. Copy $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml to <JBOSS_HOME>/server/all/conf
+   5. Copy $BLACKTIE_HOME/blacktie-admin-services/blacktie-rhq-plugin-[VERSION].jar to $JBOSS_HOME/server/all/deploy/admin-console.war/plugins
+   6. Start the all configuration of the application server:
+      cd $JBOSS_HOME; bin/run.sh -c all
+
+Configuring the Examples
+
+   Out of the box, the examples need their configuration updating in order to specify the hostname and install
+   location of BlackTie. Update the following files (this includes one pom and all the btconfig.xml files with the exception
+   of $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml):
+ 
+   $BLACKTIE_HOME/examples/jab/src/test/resources/btconfig.xml
+   $BLACKTIE_HOME/examples/security/dynsub/btconfig.xml
+   $BLACKTIE_HOME/examples/security/guest/btconfig.xml
+   $BLACKTIE_HOME/examples/security/serv/btconfig.xml
+   $BLACKTIE_HOME/examples/mdb/src/main/resources/btconfig.xml
+   $BLACKTIE_HOME/examples/mdb/src/test/resources/btconfig.xml
+   $BLACKTIE_HOME/examples/admin/xatmi/btconfig.xml
+   $BLACKTIE_HOME/examples/xatmi/txfooapp/btconfig.xml
+   $BLACKTIE_HOME/examples/xatmi/fooapp/btconfig.xml
+   $BLACKTIE_HOME/examples/mdb/pom.xml
+
+   1. Open each of the files
+   2. Replace the text REPLACE_WITH_HOSTNAME with the value obtained from the operating systems "hostname" command - this assumes that JBoss is ran on the local machine, if not, the values for the <MQ> and <ORB> configuration will need to be the value passed to the JBoss run.sh|bat -b parameter
+   3. Replace the text REPLACE_WITH_INSTALL_LOCATION with the fully qualified pathname referred to by $BLACKTIE_HOME
+
+Running the Examples
+
+   1. cd to $BLACKTIE_HOME
+   2. Source the setenv.[sh|bat] script
+   3. To run all the examples execute the samples script run_all_samples.[sh|bat]
+
+examples/xatmi/txfooapp
+    Demonstrates updating multiple databases within a single transaction. To run the example follow the README.
+
+examples//xatmifooapp
+    Starts a simple echo server and runs two clients (written in Java and C)
+
+examples/admin/jmx
+    Starts a simple server and then stops the server using the JMX interface to the BlackTie mbean component
+
+examples/admin/xatmi
+    Starts a simple server and then stops the server by sending XATMI requests to the Administration service
+
+examples/security
+    Shows how services may be secured using the <security> element in the BlackTie configuration file (btconfig.xml)
+    Refer to the README file in the examples/security directory for more information
+
+examples/mdb
+    Demonstrates how to write BlackTie services as MDB's: starts a service (implemented as an MDB) running in the 
+    App Server. Then runs a client which uses the JAB api to send requests to the service. The example also shows 
+    the service making EJB calls to demonstrate transaction propagation.
+
+integration1
+    Shows how a C client can invoke an EJB (via a "BlackTie service adaptor") within the scope of a transaction
+    started at the client.
+
