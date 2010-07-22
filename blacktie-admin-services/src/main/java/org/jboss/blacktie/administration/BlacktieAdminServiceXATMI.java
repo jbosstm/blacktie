@@ -45,7 +45,7 @@ import org.w3c.dom.Element;
 
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTDomainAdmin") }, messageListenerInterface = javax.jms.MessageListener.class)
+		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTR_BTDomainAdmin") }, messageListenerInterface = javax.jms.MessageListener.class)
 @Depends("jboss.messaging.destination:service=Queue,name=BTR_BTDomainAdmin")
 @javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 /**

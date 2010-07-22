@@ -54,7 +54,7 @@ public class ServiceData {
 
 		connection = TransportFactory.getTransportFactory(serviceName,
 				properties).createTransport();
-		boolean conversational = Boolean.valueOf(properties.getProperty("blacktie." + serviceName + ".conversational"));
+		Boolean conversational = (Boolean) properties.get("blacktie." + serviceName + ".conversational");
 		this.receiver = connection.getReceiver(serviceName, conversational);
 
 		Class callback = Class.forName(serviceClassName);

@@ -66,7 +66,7 @@ import org.xml.sax.InputSource;
 
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTStompAdmin") })
+		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTR_BTStompAdmin") })
 @Depends("jboss.messaging.destination:service=Queue,name=BTR_BTStompAdmin")
 @javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 public class BlacktieStompAdministrationService extends MDBBlacktieService
