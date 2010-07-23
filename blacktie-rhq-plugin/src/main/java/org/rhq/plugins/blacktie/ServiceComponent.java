@@ -161,7 +161,7 @@ public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 
 		try {
 			//jboss.messaging.destination:service=Queue,name=dynamic
-			boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
+			boolean conversational = (Boolean)prop.get("blacktie." + serviceName + ".conversational");			
 			String prefix = null;
 			if (conversational) {
 				prefix = "BTC_";

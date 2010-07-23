@@ -94,7 +94,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		HashSet dests = (HashSet) beanServerConnection.getAttribute(objName,
 				"Destinations");
 
-		boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
+		boolean conversational = (Boolean)prop.get("blacktie." + serviceName + ".conversational");			
 		String prefix = null;
 		if (conversational) {
 			prefix = "BTC_";
@@ -119,7 +119,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 	int consumerCount(String serviceName) throws Exception {
 		//jboss.messaging.destination:service=Queue,name=dynamic
-		boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
+		boolean conversational = (Boolean)prop.get("blacktie." + serviceName + ".conversational");			
 		String prefix = null;
 		if (conversational) {
 			prefix = "BTC_";
@@ -232,7 +232,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			if (queue == false) {
 				synchronized (QUEUE_CREATION_TIMES) {
 					//jboss.messaging.destination:service=Queue,name=dynamic
-					boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
+					boolean conversational = (Boolean)prop.get("blacktie." + serviceName + ".conversational");			
 					String prefix = null;
 					if (conversational) {
 						prefix = "BTC_";
@@ -241,6 +241,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 					}
 					QUEUE_CREATION_TIMES.put(serviceName, System
 							.currentTimeMillis());
+					log.trace(serviceName);
 					beanServerConnection.invoke(objName, "deployQueue",
 							new Object[] { prefix + serviceName, null }, new String[] {
 									"java.lang.String", "java.lang.String" });
@@ -284,7 +285,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			ObjectName objName = new ObjectName(
 					"jboss.messaging:service=ServerPeer");
 			if (isDeployQueue(objName, serviceName)) {
-				boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
+				boolean conversational =(Boolean)prop.get("blacktie." + serviceName + ".conversational");			
 				String prefix = null;
 				if (conversational) {
 					prefix = "BTC_";

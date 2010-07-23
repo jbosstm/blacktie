@@ -150,7 +150,7 @@ public class QueueReaper implements Runnable {
 
 	int consumerCount(String serviceName) throws Exception {
 		//jboss.messaging.destination:service=Queue,name=dynamic
-		boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
+		boolean conversational =(Boolean)prop.get("blacktie." + serviceName + ".conversational");			
 		String prefix = null;
 		if (conversational) {
 			prefix = "BTC_";
@@ -166,7 +166,7 @@ public class QueueReaper implements Runnable {
 
 	Boolean isCreatedProgrammatically(String serviceName) throws Exception {
 		//jboss.messaging.destination:service=Queue,name=dynamic
-		boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
+		boolean conversational = (Boolean)prop.get("blacktie." + serviceName + ".conversational");			
 		String prefix = null;
 		if (conversational) {
 			prefix = "BTC_";
@@ -200,7 +200,7 @@ public class QueueReaper implements Runnable {
 		int result = 0;
 
 		try {
-			boolean conversational = Boolean.valueOf(prop.getProperty("blacktie." + serviceName + ".conversational"));			
+			boolean conversational = (Boolean)prop.get("blacktie." + serviceName + ".conversational");			
 			String prefix = null;
 			if (conversational) {
 				prefix = "BTC_";
