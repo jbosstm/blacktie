@@ -253,11 +253,14 @@ public class AdministrationProxy {
 				Destination dest = it.next();
 				if (dest instanceof Queue) {
 					String qname = ((Queue) dest).getQueueName();
-					if (qname.startsWith(".")) {
-						String sname = qname.substring(1);
+					log.trace(qname);
+					if (qname.startsWith("BTR_.")) {
+						String sname = qname.substring("BTR_.".length());
 						sname = sname.replaceAll("[0-9]", "");
+						log.trace("contains?: " + sname);
 						if (servers.contains(sname)
 								&& !runningServerList.contains(sname)) {
+							log.trace("contains!: " + sname);
 							runningServerList.add(sname);
 						}
 					}
@@ -285,12 +288,13 @@ public class AdministrationProxy {
 				Destination dest = it.next();
 				if (dest instanceof Queue) {
 					String qname = ((Queue) dest).getQueueName();
-					if (qname.startsWith(".")) {
-						String server = qname.substring(1);
+					log.trace(qname);
+					if (qname.startsWith("BTR_.")) {
+						String server = qname.substring("BTR_.".length());
 						server = server.replaceAll("[0-9]", "");
 						if (server.equals(serverName)) {
-							qname = qname.substring(1);
-							qname = qname.replaceAll("[A-Za-z]", "");
+							qname = qname.substring("BTR_.".length());
+							qname = qname.replaceAll("[A-Za-z]", ""); 
 							ids.add(new Integer(qname));
 						}
 					}
