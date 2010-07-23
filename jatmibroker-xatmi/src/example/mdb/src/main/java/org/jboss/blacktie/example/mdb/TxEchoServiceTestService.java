@@ -40,7 +40,7 @@ import org.jboss.ejb3.annotation.Depends;
 @javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/TxEchoService") })
+		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTR_TxEchoService") })
 @Depends("jboss.messaging.destination:service=Queue,name=BTR_TxEchoService")
 public class TxEchoServiceTestService extends MDBBlacktieService implements
 		javax.jms.MessageListener {
