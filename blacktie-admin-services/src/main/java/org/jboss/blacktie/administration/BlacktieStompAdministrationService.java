@@ -94,7 +94,12 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		HashSet dests = (HashSet) beanServerConnection.getAttribute(objName,
 				"Destinations");
 
-		boolean conversational = (Boolean)prop.get("blacktie." + serviceName + ".conversational");			
+		log.trace(serviceName);
+		boolean conversational = false;
+		if (!serviceName.startsWith(".")) {
+			conversational = (Boolean) prop.get("blacktie." + serviceName
+					+ ".conversational");
+		}
 		String prefix = null;
 		if (conversational) {
 			prefix = "BTC_";
@@ -107,7 +112,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			if (dest instanceof Queue) {
 				String qname = ((Queue) dest).getQueueName();
 				log.debug("destination is " + qname);
-				if (qname.equals(prefix+serviceName)) {
+				if (qname.equals(prefix + serviceName)) {
 					log.trace("find serviceName " + serviceName);
 					return true;
 				}
@@ -118,8 +123,13 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 	}
 
 	int consumerCount(String serviceName) throws Exception {
-		//jboss.messaging.destination:service=Queue,name=dynamic
-		boolean conversational = (Boolean)prop.get("blacktie." + serviceName + ".conversational");			
+		// jboss.messaging.destination:service=Queue,name=dynamic
+		log.trace(serviceName);
+		boolean conversational = false;
+		if (!serviceName.startsWith(".")) {
+			conversational = (Boolean) prop.get("blacktie." + serviceName
+					+ ".conversational");
+		}
 		String prefix = null;
 		if (conversational) {
 			prefix = "BTC_";
@@ -127,7 +137,8 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			prefix = "BTR_";
 		}
 		ObjectName objName = new ObjectName(
-				"jboss.messaging.destination:service=Queue,name=" + prefix + serviceName);
+				"jboss.messaging.destination:service=Queue,name=" + prefix
+						+ serviceName);
 		Integer count = (Integer) beanServerConnection.getAttribute(objName,
 				"ConsumerCount");
 		Element security = (Element) beanServerConnection.getAttribute(objName,
@@ -231,20 +242,26 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			queue = isDeployQueue(objName, serviceName);
 			if (queue == false) {
 				synchronized (QUEUE_CREATION_TIMES) {
-					//jboss.messaging.destination:service=Queue,name=dynamic
-					boolean conversational = (Boolean)prop.get("blacktie." + serviceName + ".conversational");			
+					// jboss.messaging.destination:service=Queue,name=dynamic
+					log.trace(serviceName);
+					boolean conversational = false;
+					if (!serviceName.startsWith(".")) {
+						conversational = (Boolean) prop.get("blacktie."
+								+ serviceName + ".conversational");
+					}
 					String prefix = null;
 					if (conversational) {
 						prefix = "BTC_";
 					} else {
 						prefix = "BTR_";
 					}
-					QUEUE_CREATION_TIMES.put(serviceName, System
-							.currentTimeMillis());
+					QUEUE_CREATION_TIMES.put(serviceName,
+							System.currentTimeMillis());
 					log.trace(serviceName);
 					beanServerConnection.invoke(objName, "deployQueue",
-							new Object[] { prefix + serviceName, null }, new String[] {
-									"java.lang.String", "java.lang.String" });
+							new Object[] { prefix + serviceName, null },
+							new String[] { "java.lang.String",
+									"java.lang.String" });
 					ObjectName queueName = new ObjectName(
 							"jboss.messaging.destination:service=Queue,name="
 									+ prefix + serviceName);
@@ -260,9 +277,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 					result = 3;
 				}
 			} else if (consumerCount(serviceName) > 0) {
-				log
-						.warn("can not advertise ADMIN with same id: "
-								+ serviceName);
+				log.warn("can not advertise ADMIN with same id: " + serviceName);
 				result = 2;
 			} else if (AdministrationProxy.isDomainPause) {
 				log.info("Domain is pause");
@@ -285,7 +300,12 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			ObjectName objName = new ObjectName(
 					"jboss.messaging:service=ServerPeer");
 			if (isDeployQueue(objName, serviceName)) {
-				boolean conversational =(Boolean)prop.get("blacktie." + serviceName + ".conversational");			
+				log.trace(serviceName);
+				boolean conversational = false;
+				if (!serviceName.startsWith(".")) {
+					conversational = (Boolean) prop.get("blacktie."
+							+ serviceName + ".conversational");
+				}
 				String prefix = null;
 				if (conversational) {
 					prefix = "BTC_";

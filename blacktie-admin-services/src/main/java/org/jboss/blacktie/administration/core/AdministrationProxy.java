@@ -651,7 +651,12 @@ public class AdministrationProxy {
 		Integer depth;
 		try {
 			//jboss.messaging.destination:service=Queue,name=dynamic
-			boolean conversational = (Boolean)prop.get("blacktie." + serviceName + ".conversational");			
+			log.trace(serviceName);
+			boolean conversational = false;
+			if (!serviceName.startsWith(".")) {
+				conversational = (Boolean) prop.get("blacktie." + serviceName
+						+ ".conversational");
+			}
 			String prefix = null;
 			if (conversational) {
 				prefix = "BTC_";
