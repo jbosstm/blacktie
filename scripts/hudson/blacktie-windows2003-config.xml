@@ -94,10 +94,10 @@ mvn clean install -Dbpa=vc9x32 -DskipTests
 </command>
     </hudson.tasks.BatchFile>
     <hudson.tasks.BatchFile>
-      <command>copy trunk\blacktie-admin-services\ear\target\blacktie-admin-services-*.ear jboss-5.1.0.GA\server\all\deploy
+      <command>copy trunk\blacktie-admin-services\src\test\resources\btconfig.xml jboss-5.1.0.GA\server\all\conf
+copy trunk\blacktie-admin-services\ear\target\blacktie-admin-services-*.ear jboss-5.1.0.GA\server\all\deploy
 copy trunk\blacktie-rhq-plugin\target\blacktie-rhq-plugin-*.jar jboss-5.1.0.GA\server\all\deploy\admin-console.war\plugins\
 copy trunk\jatmibroker-xatmi\src\test\resources\jatmibroker-xatmi-test-service.xml jboss-5.1.0.GA\server\all\deploy
-copy trunk\blacktie-admin-services\src\test\resources\btconfig.xml jboss-5.1.0.GA\server\all\conf
 
 set ANT_HOME=C:\hudson\tools\apache-ant-1.7.1
 set PATH=%PATH%;%ANT_HOME%\bin
@@ -106,7 +106,8 @@ call ant replaceLocalhost -DJBOSSAS_IP_ADDR=172.17.131.5</command>
     <hudson.tasks.BatchFile>
       <command>cd jboss-5.1.0.GA\bin
 set BUILD_ID=dontKillMe
-start /B run.bat -c all -b 172.17.131.5&amp;
+start /B run.bat -c all -b 172.17.131.5
+echo &quot;Started server&quot;
 @ping 127.0.0.1 -n 120 -w 1000 &gt; nul</command>
     </hudson.tasks.BatchFile>
     <hudson.tasks.BatchFile>
