@@ -247,8 +247,11 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		} else {
 			if (isNonBlocking) {
 				LOG4CXX_TRACE(logger, "Setting socket_opt to non-blocking for send");
+#if 1
+				apr_socket_timeout_set(stompConnection->socket, 1);
+#else
 				apr_socket_timeout_set(stompConnection->socket, 0);
-
+#endif
 				// Note: sockets are created on a per request basis so there is no
 				// need to clear the socket opt after sending the frame.
 			}

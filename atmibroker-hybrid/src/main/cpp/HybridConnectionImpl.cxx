@@ -88,6 +88,13 @@ stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 		disconnect(connection, pool);
 		connection = NULL;
 	} else {
+#if 1
+		if (timeout > 0) {
+			apr_socket_opt_set(connection->socket, APR_SO_NONBLOCK, 0);
+			apr_socket_timeout_set(connection->socket, 1000000 * timeout);
+			LOG4CXX_DEBUG(logger, (char*) "Set socket options");
+		}
+#else
 		// Set APR_SO_NONBLOCK to 0 due to portability issues between unix and windows
 		apr_socket_opt_set(connection->socket, APR_SO_NONBLOCK, 0);
 		/*
@@ -98,6 +105,7 @@ stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 		 */
 		LOG4CXX_DEBUG(logger, (char*) "Set socket timeout to " << timeout);
 		apr_socket_timeout_set(connection->socket, 1000000 * timeout);
+#endif
 
 		std::string usr = mqConfig.user;
 		std::string pwd = mqConfig.pwd;
