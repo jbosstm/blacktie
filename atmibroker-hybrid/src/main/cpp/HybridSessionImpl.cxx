@@ -246,11 +246,8 @@ bool HybridSessionImpl::send(MESSAGE message) {
 			 rc = APR_ENOSOCKET;
 		} else {
 			if (isNonBlocking) {
-				//LOG4CXX_TRACE(logger, "Setting socket_opt to APR_SO_NONBLOCK");
-				//apr_socket_opt_set(stompConnection->socket, APR_SO_NONBLOCK, 1);
-				//apr_socket_timeout_set(stompConnection->socket, 0);
-				LOG4CXX_TRACE(logger, "Setting socket_opt to timeout after 1 second for non-blocking IO");
-				apr_socket_timeout_set(stompConnection->socket, 1);
+				LOG4CXX_TRACE(logger, "Setting socket_opt to non-blocking for send");
+				apr_socket_timeout_set(stompConnection->socket, 0);
 
 				// Note: sockets are created on a per request basis so there is no
 				// need to clear the socket opt after sending the frame.
@@ -273,6 +270,14 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		} else {
 			LOG4CXX_TRACE(logger, "Sent frame");
 			stomp_frame *framed;
+			// now read back the acknowledgent that the message was received but first change the timeout on the socket
+			if (isNonBlocking) {
+				// enable blocking-with-timeout for 1 second to provide time for the response:
+				LOG4CXX_TRACE(logger, "Setting socket_opt to blocking for at most 1 second for ack");
+				apr_socket_opt_set(stompConnection->socket, APR_SO_NONBLOCK, 0);
+				apr_socket_timeout_set(stompConnection->socket, 1);
+			}
+
 			rc = stomp_read(stompConnection, &framed, pool);
 			if (isNonBlocking && rc == APR_TIMEUP) {
 				LOG4CXX_DEBUG(logger, "Could not send frame due to blocking condition on socket");

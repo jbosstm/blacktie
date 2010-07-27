@@ -439,10 +439,11 @@ void TestTPCall::test_tpcall_with_TPNOBLOCK() {
 
 	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, TPNOBLOCK);
-	sprintf(tperrnoS, "%d", tperrno);
-	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEBLOCK);
-	BT_ASSERT(id == -1);
-	BT_ASSERT(strcmp(rcvbuf, toTest) != 0);
+	userlogc((char*) "test_tpcall_TPNOBLOCK id=%d errno=%d", id, tperrno);
+	sprintf(tperrnoS, "%d %d", tperrno, id);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	BT_ASSERT(id != -1);
+	BT_ASSERT(strcmp(rcvbuf, toTest) == 0);
 
 	free(tperrnoS);
 }
@@ -526,7 +527,7 @@ void TestTPCall::test_tpcall_with_TPNOTIME() {
 
 void test_tpcall_TPNOBLOCK(TPSVCINFO *svcinfo) {
 	userlogc((char*) "test_tpcall_TPNOBLOCK");
-	::sleeper(15);
+	::sleeper(5);
 	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
 }
 
