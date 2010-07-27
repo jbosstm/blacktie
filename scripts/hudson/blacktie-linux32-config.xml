@@ -120,7 +120,6 @@ export JBOSS_HOME=../../../jboss-5.1.0.GA
             <recipientList></recipientList>
             <subject>$PROJECT_DEFAULT_SUBJECT</subject>
             <body>$PROJECT_DEFAULT_CONTENT&#xd;
-$CHANGES_SINCE_LAST_SUCCESS&#xd;
 $BUILD_LOG</body>
             <sendToDevelopers>false</sendToDevelopers>
             <includeCulprits>false</includeCulprits>
@@ -137,17 +136,6 @@ $BUILD_LOG</body>
             <sendToRecipientList>true</sendToRecipientList>
           </email>
         </hudson.plugins.emailext.plugins.trigger.SuccessTrigger>
-        <hudson.plugins.emailext.plugins.trigger.FixedTrigger>
-          <email>
-            <recipientList></recipientList>
-            <subject>$PROJECT_DEFAULT_SUBJECT</subject>
-            <body>$PROJECT_DEFAULT_CONTENT&#xd;
-$CHANGES</body>
-            <sendToDevelopers>true</sendToDevelopers>
-            <includeCulprits>false</includeCulprits>
-            <sendToRecipientList>true</sendToRecipientList>
-          </email>
-        </hudson.plugins.emailext.plugins.trigger.FixedTrigger>
       </configuredTriggers>
       <defaultSubject>$DEFAULT_SUBJECT</defaultSubject>
       <defaultContent>$DEFAULT_CONTENT&#xd;

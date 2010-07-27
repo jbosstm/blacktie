@@ -123,7 +123,6 @@ export JBOSS_HOME=../../../jboss-5.1.0.GA
             <recipientList></recipientList>
             <subject>$PROJECT_DEFAULT_SUBJECT</subject>
             <body>$PROJECT_DEFAULT_CONTENT&#xd;
-$CHANGES_SINCE_LAST_SUCCESS&#xd;
 $BUILD_LOG</body>
             <sendToDevelopers>false</sendToDevelopers>
             <includeCulprits>false</includeCulprits>

@@ -165,7 +165,6 @@ run_all_samples.bat tx</command>
             <recipientList></recipientList>
             <subject>$PROJECT_DEFAULT_SUBJECT</subject>
             <body>$PROJECT_DEFAULT_CONTENT&#xd;
-$CHANGES_SINCE_LAST_SUCCESS&#xd;
 $BUILD_LOG</body>
             <sendToDevelopers>false</sendToDevelopers>
             <includeCulprits>false</includeCulprits>
