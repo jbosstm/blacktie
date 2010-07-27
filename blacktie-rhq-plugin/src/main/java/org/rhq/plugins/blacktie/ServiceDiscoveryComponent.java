@@ -25,9 +25,6 @@ import java.util.Set;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,9 +35,6 @@ import org.rhq.core.pluginapi.inventory.DiscoveredResourceDetails;
 import org.rhq.core.pluginapi.inventory.ProcessScanResult;
 import org.rhq.core.pluginapi.inventory.ResourceDiscoveryComponent;
 import org.rhq.core.pluginapi.inventory.ResourceDiscoveryContext;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * This can be the start of your own custom plugin's discovery component. Review
@@ -102,27 +96,26 @@ public class ServiceDiscoveryComponent implements ResourceDiscoveryComponent {
 			XMLEnvHandler handler = new XMLEnvHandler(prop);
 			XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
 			xmlenv.parse("btconfig.xml");
-
-			JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
-			JMXConnector c = JMXConnectorFactory.connect(u);
-			beanServerConnection = c.getMBeanServerConnection();
-			blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
-
-			Element status;
-			status = (Element) beanServerConnection.invoke(blacktieAdmin,
-					"listServiceStatus", new Object[] { serverName, null },
-					new String[] { "java.lang.String", "java.lang.String" });
-
-			NodeList services = status.getElementsByTagName("name");
-			for (int i = 0; i < services.getLength(); i++) {
-				Node node = services.item(i);
-				String serviceName = node.getTextContent();
-
-				if (!serviceName.equals(serverName)) {
-					DiscoveredResourceDetails resource = new DiscoveredResourceDetails(
-							context.getResourceType(), serviceName,
-							serviceName, null, null, null, null);
-					set.add(resource);
+			
+			Set<Object> keys = prop.keySet();
+			Set<String> names = new HashSet<String>();
+			
+			for(Object key : keys) {
+				if(key instanceof String) {
+					names.add((String)key);
+				}
+			}
+			
+			for(String name : names) {
+				if(name.endsWith(".server")) {
+					String server = prop.getProperty(name);
+					if(server.equals(serverName)) {
+						String serviceName = name.split("\\.")[1];
+						DiscoveredResourceDetails resource = new DiscoveredResourceDetails(
+								context.getResourceType(), serviceName,
+								serviceName, null, null, null, null);
+						set.add(resource);
+					}
 				}
 			}
 		} catch (Exception e) {

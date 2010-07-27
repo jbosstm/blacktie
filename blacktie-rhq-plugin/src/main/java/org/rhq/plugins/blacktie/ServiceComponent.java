@@ -177,8 +177,10 @@ public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 			ObjectName objName = new ObjectName(
 					"jboss.messaging.destination:service=Queue,name="
 							+ prefix + serviceName);
-			beanServerConnection.getAttribute(objName, "ConsumerCount");
-			status = AvailabilityType.UP;
+			Integer count = (Integer)beanServerConnection.getAttribute(objName, "ConsumerCount");
+			if(count.intValue() > 0) {
+				status = AvailabilityType.UP;
+			}
 		} catch (Exception e) {
 
 		}
