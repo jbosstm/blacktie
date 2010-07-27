@@ -349,8 +349,9 @@ static int bug212b() {
 #ifndef WIN32
 	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
 #else
-	userlogc((char*) "DISABLING TEST 2121 for WIN32 build");
-	return 0;
+	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
+	/*userlogc((char*) "DISABLING TEST 2121 for WIN32 build");
+	return 0;*/
 #endif
 }
 
