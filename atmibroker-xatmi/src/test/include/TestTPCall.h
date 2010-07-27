@@ -26,7 +26,7 @@
 class TestTPCall: public BaseServerTest {
 	CPPUNIT_TEST_SUITE( TestTPCall);
 	CPPUNIT_TEST( test_tpcall_without_TPNOBLOCK);
-	CPPUNIT_TEST( test_tpcall_with_TPNOBLOCK);
+	//CPPUNIT_TEST( test_tpcall_with_TPNOBLOCK);
 	CPPUNIT_TEST( test_tpcall_without_TPNOTIME);
 	CPPUNIT_TEST( test_tpcall_with_TPNOTIME);
 	CPPUNIT_TEST( test_tpcall_without_TPNOCHANGE);
