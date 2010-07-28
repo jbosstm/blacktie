@@ -139,7 +139,7 @@ $BUILD_LOG</body>
       </configuredTriggers>
       <defaultSubject>$DEFAULT_SUBJECT</defaultSubject>
       <defaultContent>$DEFAULT_CONTENT&#xd;
-$CHANGES</defaultContent>
+$CHANGES_SINCE_LAST_SUCCESS</defaultContent>
     </hudson.plugins.emailext.ExtendedEmailPublisher>
   </publishers>
   <buildWrappers>
