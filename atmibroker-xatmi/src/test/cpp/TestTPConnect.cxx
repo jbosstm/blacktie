@@ -68,6 +68,8 @@ void TestTPConnect::tearDown() {
 	}
 	::tpfree( sendbuf);
 	::tpfree( rcvbuf);
+	sendbuf = NULL;
+	rcvbuf = NULL;
 	int toCheck = tpunadvertise((char*) "TestTPConnect");
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toCheck != -1);
