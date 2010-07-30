@@ -124,7 +124,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 	int consumerCount(String serviceName) throws Exception {
 		// jboss.messaging.destination:service=Queue,name=dynamic
-		log.trace(serviceName);
+		log.trace("consCount" + serviceName);
 		boolean conversational = false;
 		if (!serviceName.startsWith(".")) {
 			conversational = (Boolean) prop.get("blacktie." + serviceName
@@ -144,6 +144,8 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		Element security = (Element) beanServerConnection.getAttribute(objName,
 				"SecurityConfig");
 		log.debug(serviceName + " security config is " + printNode(security));
+
+		log.debug("consCount" + serviceName + " " + count.intValue());
 		return count.intValue();
 	}
 
@@ -325,18 +327,19 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 	}
 
 	int decrementConsumer(String serviceName) {
+		log.trace("decrement");
 		int consumerCounts;
 		int result = 0;
 
 		try {
 			consumerCounts = consumerCount(serviceName);
-			if (consumerCounts <= 1) {
+			if (consumerCounts < 1) {
 				result = undeployQueue(serviceName);
 				log.debug(serviceName + " undeployed");
 			} else {
 				// THERE ARE OTHER SERVERS STILL ALIVE
 				result = 1;
-				log.info(serviceName + " still has " + consumerCounts
+				log.debug(serviceName + " still has " + consumerCounts
 						+ " consumers");
 			}
 		} catch (Throwable t) {
