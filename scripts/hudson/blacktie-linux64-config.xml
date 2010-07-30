@@ -42,9 +42,6 @@ mkdir -p $TNS_ADMIN
 [[ -f $TNS_ADMIN/tnsnames.ora ]] &amp;&amp; rm -f $TNS_ADMIN/tnsnames.ora
 (cd $TNS_ADMIN; wget http://albany/userContent/blacktie/tnsnames.ora)
 
-wget http://albany/userContent/blacktie/bt-repo-centos54x64.tgz
-tar xzf bt-repo-centos54x64.tgz -C $HUDSON_HOME/.m2/repository
-
 wget http://albany/userContent/blacktie/jboss-5.1.0.GA.zip
 if [ -d jboss-5.1.0.GA ]; then
   rm -rf jboss-5.1.0.GA

@@ -51,8 +51,6 @@ echo            ^&lt;fileset dir=&quot;./instantclient_11_2/&quot;^&gt; &gt;&gt;
 echo                ^&lt;include name=&quot;*.dll&quot;/^&gt; &gt;&gt; build.xml
 echo            ^&lt;/fileset^&gt; &gt;&gt; build.xml
 echo        ^&lt;/move^&gt; &gt;&gt; build.xml
-echo        ^&lt;get src=&quot;http://albany/userContent/blacktie/${BT_REPO}&quot; dest=&quot;./${BT_REPO}&quot; verbose=&quot;true&quot; usetimestamp=&quot;true&quot;/^&gt; &gt;&gt; build.xml
-echo        ^&lt;unzip src=&quot;./${BT_REPO}&quot; dest=&quot;C:/Documents and Settings/hudson/.m2/repository/&quot;/^&gt; &gt;&gt; build.xml
 echo        ^&lt;get src=&quot;http://albany/userContent/blacktie/jboss-5.1.0.GA.zip&quot; dest=&quot;./jboss-5.1.0.GA.zip&quot; verbose=&quot;true&quot; usetimestamp=&quot;true&quot;/^&gt; &gt;&gt; build.xml
 echo        ^&lt;delete dir=&quot;jboss-5.1.0.GA&quot;/^&gt; &gt;&gt; build.xml
 echo        ^&lt;unzip src=&quot;./jboss-5.1.0.GA.zip&quot; dest=&quot;.&quot;/^&gt; &gt;&gt; build.xml
@@ -68,7 +66,7 @@ echo ^&lt;/project^&gt; &gt;&gt; build.xml
 
 set ANT_HOME=C:\hudson\tools\apache-ant-1.7.1
 set PATH=%PATH%;%ANT_HOME%\bin
-call ant download -DBT_REPO=bt-repo-vc9x32.zip
+call ant download
 
 cd jboss-5.1.0.GA/docs/examples/transactions
 call ant jts
@@ -189,7 +187,7 @@ $CHANGES_SINCE_LAST_SUCCESS</defaultContent>
   </publishers>
   <buildWrappers>
     <hudson.plugins.build__timeout.BuildTimeoutWrapper>
-      <timeoutMinutes>300</timeoutMinutes>
+      <timeoutMinutes>420</timeoutMinutes>
       <failBuild>true</failBuild>
     </hudson.plugins.build__timeout.BuildTimeoutWrapper>
   </buildWrappers>
