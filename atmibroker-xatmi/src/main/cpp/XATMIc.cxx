@@ -113,8 +113,10 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			}
 			message.control = (TPNOTRAN & flags) ? NULL : txx_serialize(
 					&(message.ttl));
-			if (message.control == NULL)
-				message.ttl = mqConfig.timeToLive * 1000;
+			if (message.control == NULL) {
+				// tapcalls with the TPNOREPLY flag set should live forever
+				message.ttl = (TPNOREPLY & flags) ? mqConfig.noReplyTimeToLive : mqConfig.timeToLive * 1000;
+			}
 
 			session->blockSignals((flags & TPSIGRSTRT));
 

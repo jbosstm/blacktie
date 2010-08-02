@@ -218,6 +218,8 @@
 							use="required" />
 						<xsd:attribute name="TIME_TO_LIVE" type="xsd:int"
 							use="required" />
+						<xsd:attribute name="NOREPLY_TIME_TO_LIVE" type="xsd:int"
+							use="optional" />
 						<xsd:attribute name="NAMING_URL" type="xsd:string"
 							use="optional" />
 					</xsd:complexType>

@@ -61,6 +61,7 @@ typedef BLACKTIE_CORE_DLL struct _mq_config {
 	int destinationTimeout;
 	int requestTimeout;
 	int timeToLive;
+	int noReplyTimeToLive;
 }MqConfig;
 
 typedef BLACKTIE_CORE_DLL struct _orb_config {

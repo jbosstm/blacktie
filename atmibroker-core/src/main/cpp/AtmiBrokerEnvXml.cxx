@@ -43,7 +43,16 @@ ServiceInfo service;
 Buffers buffers;
 
 OrbConfig orbConfig;
-MqConfig mqConfig;
+MqConfig mqConfig = {
+    NULL,	// host
+    0,	// port; 
+    NULL,	// user;
+    NULL,	// pwd;
+    0,	// destinationTimeout;
+    0,	// requestTimeout;
+    0,	// timeToLive;
+    0,	// noReplyTimeToLive;
+};
 
 char domain[30];
 char* queue_name;
@@ -203,6 +212,8 @@ static void XMLCALL startElement
 				mqConfig.requestTimeout = atoi(atts[i+1]);
 			} else if(strcmp(atts[i], "TIME_TO_LIVE") == 0) {
 				mqConfig.timeToLive = atoi(atts[i+1]);
+			} else if(strcmp(atts[i], "NOREPLY_TIME_TO_LIVE") == 0) {
+				mqConfig.noReplyTimeToLive = atoi(atts[i+1]);
 			}
 		}
 	} else if (strcmp(name, "SERVER") == 0) {
