@@ -554,8 +554,13 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 							if (transactional)
 								txx_suspend(cd, tpdiscon);
 
-							toReturn = ::send(session, session->getReplyTo(),
+							if (TPNOREPLY & flags) {
+								toReturn = ::send(session, "",
 									idata, len, cd, flags, 0, 0);
+							} else {
+								toReturn = ::send(session, session->getReplyTo(),
+										idata, len, cd, flags, 0, 0);
+							}
 
 							if (toReturn >= 0) {
 								if (TPNOREPLY & flags) {

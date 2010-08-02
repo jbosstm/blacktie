@@ -166,13 +166,13 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	// INITIALISE THE SENDER AND RECEIVER FOR THIS CONVERSATION
 	if (message.replyto) {
 		LOG4CXX_DEBUG(logger, (char*) "replyTo: " << message.replyto);
+		LOG4CXX_TRACE(logger, (char*) "Creating session: " << message.correlationId);
+		session = connection->createSession(((message.flags & TPCONV) == TPCONV),
+				message.correlationId, message.replyto);
+		LOG4CXX_TRACE(logger, (char*) "Created session: " << message.correlationId);
 	} else {
 		LOG4CXX_DEBUG(logger, (char*) "replyTo: NULL");
 	}
-	LOG4CXX_TRACE(logger, (char*) "Creating session: " << message.correlationId);
-	session = connection->createSession(((message.flags & TPCONV) == TPCONV),
-			message.correlationId, message.replyto);
-	LOG4CXX_TRACE(logger, (char*) "Created session: " << message.correlationId);
 
 	LOG4CXX_DEBUG(logger, (char*) "message.len: " << message.len
 			<< " message.flags: " << message.flags << "cd: "
@@ -270,7 +270,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	AtmiBrokerMem::get_instance()->tpfree(tpsvcinfo.data, true);
 
 	// CLEAN UP THE SENDER AND RECEIVER FOR THIS CLIENT
-	if (session->getCanSend()) {
+	if (message.replyto && session->getCanSend()) {
 		LOG4CXX_TRACE(logger,
 				(char*) "Returning error - marking tx as rollback only if "
 						<< getSpecific(TSS_KEY));
