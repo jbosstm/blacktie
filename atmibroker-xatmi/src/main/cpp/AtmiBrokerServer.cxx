@@ -376,7 +376,7 @@ AtmiBrokerServer::AtmiBrokerServer() {
 			ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, ".%s%d",
 					server, serverid);
 			if (!advertiseService(adm, ADMIN)) {
-				LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+				LOG4CXX_FATAL(loggerAtmiBrokerServer,
 						(char*) "advertise admin service failed");
 				return;
 			}
