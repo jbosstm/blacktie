@@ -391,7 +391,7 @@ int tpadvertise(char * svcname, void(*func)(TPSVCINFO *)) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpadvertise: " << svcname);
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = -1;
-	if (ptrServer != NULL) {
+	if (serverinit(0, NULL) != -1) {
 		if (ptrServer->advertiseService(svcname, func)) {
 			toReturn = 1;
 		}
@@ -408,7 +408,7 @@ int tpunadvertise(char * svcname) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpunadvertise: " << svcname);
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = -1;
-	if (ptrServer != NULL) {
+	if (serverinit(0, NULL) != -1) {
 		if (svcname && strcmp(svcname, "") != 0) {
 			if (ptrServer->isAdvertised(svcname)) {
 				ptrServer->unadvertiseService(svcname, false);

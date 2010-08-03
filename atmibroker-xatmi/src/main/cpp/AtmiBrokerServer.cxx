@@ -122,78 +122,82 @@ int serverinit(int argc, char** argv) {
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = 0;
 
-	const char* serverName = ACE_OS::getenv("BLACKTIE_SERVER_NAME");
-	if (serverName != NULL) {
-		ACE_OS::strncpy(server, serverName, 30);
-	} else {
-		ACE_OS::strncpy(server, "default", 30);
-	}
-	const char* serverId = ACE_OS::getenv("BLACKTIE_SERVER_ID");
-	if (serverId != NULL) {
-		serverid = atoi(serverId);
-	}
-
-	if (argc > 0) {
-		parsecmdline(argc, argv);
-	}
-
-	if (serverid == -1) {
-		fprintf(stderr,
-				"you must specify a server id with -i greater than 0 and less than 10\n");
-		fprintf(stderr, "usage:%s [-c config] -i id [-s server]\n", argv[0]);
-		toReturn = -1;
-		setSpecific(TPE_KEY, TSS_TPESYSTEM);
-	}
-
-	if (toReturn != -1 && ptrServer == NULL) {
-		const char* configuration = getConfiguration();
-		if (configuration != NULL) {
-			AtmiBrokerEnv::set_configuration(configuration);
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-					(char*) "set AtmiBrokerEnv configuration type "
-							<< configuration);
+	if (ptrServer == NULL) {
+		// Check the configuration
+		const char* serverName = ACE_OS::getenv("BLACKTIE_SERVER");
+		if (serverName != NULL) {
+			ACE_OS::strncpy(server, serverName, 30);
+		} else {
+			ACE_OS::strncpy(server, "default", 30);
 		}
-
-		try {
-			AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
-			std::stringstream sname;
-			std::stringstream sid;
-			sname << "BLACKTIE_SERVER_NAME=" << domain << server << serverid;
-			sid << "BLACKTIE_SERVER_ID=" << serverid;
-			env->putenv((char *) (sname.str().c_str()));
-			env->putenv((char *) (sid.str().c_str()));
-
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverinit called");
-			ptrServer = new AtmiBrokerServer();
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverInitialized="
-					<< serverInitialized);
-
-			if (!serverInitialized) {
-				::serverdone();
-				toReturn = -1;
-				setSpecific(TPE_KEY, TSS_TPESYSTEM);
-			} else {
-				ptrServer->advertiseAtBootime();
-
-				// install a handler for the default set of signals (namely, SIGINT and SIGTERM)
-				(env->getSignalHandler()).addSignalHandler(
-						server_sigint_handler_callback, true);
-
-				LOG4CXX_INFO(loggerAtmiBrokerServer, (char*) "Server "
-						<< serverid << " Running");
-			}
-		} catch (...) {
-			LOG4CXX_ERROR(loggerAtmiBrokerServer,
-					(char*) "Server startup failed");
+		const char* serverId = ACE_OS::getenv("BLACKTIE_SERVER_ID");
+		if (serverId != NULL) {
+			serverid = atoi(serverId);
+		}
+		if (argc > 0) {
+			parsecmdline(argc, argv);
+		}
+		if (serverid == -1) {
+			fprintf(stderr,
+					"you must specify a server id with -i greater than 0 and less than 10\n");
+			fprintf(stderr,
+					"example usage: ./server [-c config] -i id [-s server]\n");
 			toReturn = -1;
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		}
+
+		if (toReturn != -1) {
+			const char* configuration = getConfiguration();
+			if (configuration != NULL) {
+				AtmiBrokerEnv::set_configuration(configuration);
+				LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+						(char*) "set AtmiBrokerEnv configuration type "
+								<< configuration);
+			}
+
+			try {
+				AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
+				std::stringstream sname;
+				std::stringstream sid;
+				sname << "BLACKTIE_SERVER_NAME=" << domain << server
+						<< serverid;
+				sid << "BLACKTIE_SERVER_ID=" << serverid;
+				env->putenv((char *) (sname.str().c_str()));
+				env->putenv((char *) (sid.str().c_str()));
+
+				LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+						(char*) "serverinit called");
+				ptrServer = new AtmiBrokerServer();
+				LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+						(char*) "serverInitialized=" << serverInitialized);
+
+				if (!serverInitialized) {
+					::serverdone();
+					toReturn = -1;
+					setSpecific(TPE_KEY, TSS_TPESYSTEM);
+				} else {
+					ptrServer->advertiseAtBootime();
+
+					// install a handler for the default set of signals (namely, SIGINT and SIGTERM)
+					(env->getSignalHandler()).addSignalHandler(
+							server_sigint_handler_callback, true);
+
+					LOG4CXX_INFO(loggerAtmiBrokerServer, (char*) "Server "
+							<< serverid << " Running");
+				}
+			} catch (...) {
+				LOG4CXX_ERROR(loggerAtmiBrokerServer,
+						(char*) "Server startup failed");
+				toReturn = -1;
+				setSpecific(TPE_KEY, TSS_TPESYSTEM);
+			}
+		}
 	}
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverinit returning: "
-			<< toReturn);
 	if (toReturn != 0) {
 		LOG4CXX_FATAL(loggerAtmiBrokerServer, (char*) "serverinit failed");
 	}
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverinit returning: "
+			<< toReturn);
 	return toReturn;
 }
 
