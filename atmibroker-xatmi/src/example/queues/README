@@ -1,0 +1,53 @@
+JBoss, Home of Professional Open Source
+Copyright 2010, Red Hat, Inc., and others contributors as indicated
+by the @authors tag. All rights reserved.
+See the copyright.txt in the distribution for a
+full listing of individual contributors.
+This copyrighted material is made available to anyone wishing to use,
+modify, copy, or redistribute it subject to the terms and conditions
+of the GNU Lesser General Public License, v. 2.1.
+This program is distributed in the hope that it will be useful, but WITHOUT A
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+You should have received a copy of the GNU Lesser General Public License,
+v.2.1 along with this distribution; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+MA  02110-1301, USA.
+
+
+1. SET ENVIRONMENT VARIABLES
+In order to run the example you need to make sure that you have set the environment
+appropriately. You will need to make sure that you edit the variables with values 
+starting with REPLACE_WITH_: 
+On Linux you need to edit:
+	$BLACKTIE_HOME/setenv.sh
+On Windows:
+	%BLACKTIE_HOME%\setenv.bat
+Then, execute the script setenv
+
+On Windows: 
+You MUST use an environment configured with the VC++ development tools, e.g. launch:
+C:\Program Files\Microsoft Visual Studio 9.0\VC\vcvarsall.bat
+
+
+2. CREATE THE CLIENT
+On Linux:
+	generate_client -Dclient.includes=queues.c
+On Windows:
+	generate_client -Dclient.includes=queues.c
+
+
+4. DEPLOY THE BLACKTIE ADMIN SERVICE
+Undeploy any older versions of the blacktie admin service
+Copy the file $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all/deploy
+Copy the file $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml into $JBOSS_HOME/server/all/conf
+
+
+5. RUN THE APPLICATION SERVER
+Make sure that the naming, messaging and transaction services are running, by running the JBoss server:
+<JBOSS_HOME>/bin/run.sh|bat -c all
+
+
+6 RUN THE APPLICATION
+export BLACKTIE_SERVER_ID=1
+./client
