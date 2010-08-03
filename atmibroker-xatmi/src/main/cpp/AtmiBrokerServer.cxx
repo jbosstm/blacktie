@@ -123,6 +123,8 @@ int serverinit(int argc, char** argv) {
 	int toReturn = 0;
 
 	if (ptrServer == NULL) {
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+				(char*) "serverinit getting config");
 		// Check the configuration
 		const char* serverName = ACE_OS::getenv("BLACKTIE_SERVER");
 		if (serverName != NULL) {
@@ -147,6 +149,8 @@ int serverinit(int argc, char** argv) {
 		}
 
 		if (toReturn != -1) {
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+					(char*) "serverinit beginning configuration");
 			const char* configuration = getConfiguration();
 			if (configuration != NULL) {
 				AtmiBrokerEnv::set_configuration(configuration);
