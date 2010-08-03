@@ -24,6 +24,7 @@ public class Machine {
 	private String workingDirectory;
 	private int serverId;
 	private String argLine;
+	private Server server;
 
 	public String getId() {
 		return id;
@@ -71,5 +72,13 @@ public class Machine {
 
 	public void setArgLine(String argLine) {
 		this.argLine = argLine;
+	}
+
+	public void setServer(Server server) {
+		this.server = server;		
+	}
+
+	public Server getServer() {
+		return server;
 	}
 }

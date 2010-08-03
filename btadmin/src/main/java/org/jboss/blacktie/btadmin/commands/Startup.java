@@ -95,7 +95,8 @@ public class Startup implements Command {
 						Machine localMachine = localMachines.next();
 						String pathToExecutable = localMachine
 								.getPathToExecutable();
-						String argLine = "-i " + localMachine.getServerId();
+						String argLine = "-i " + localMachine.getServerId()
+								+ " -s " + localMachine.getServer().getName();
 						if (localMachine.getArgLine() != null) {
 							argLine = argLine + " " + localMachine.getArgLine();
 						}

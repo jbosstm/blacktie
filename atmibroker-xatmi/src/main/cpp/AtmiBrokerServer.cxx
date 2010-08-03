@@ -64,7 +64,7 @@ bool configFromCmdline = false;
 int errorBootAdminService = 0;
 char configDir[256];
 char server[30];
-int serverid = 0;
+int serverid = -1;
 
 int server_sigint_handler_callback(int sig_type) {
 	LOG4CXX_INFO(
@@ -83,11 +83,9 @@ int serverrun() {
 	return ptrServer->block();
 }
 
-int parsecmdline(int argc, char** argv) {
-	ACE_Get_Opt getopt(argc, argv, ACE_TEXT("c:i:"));
+void parsecmdline(int argc, char** argv) {
+	ACE_Get_Opt getopt(argc, argv, ACE_TEXT("c:i:s:"));
 	int c;
-	int r = 0;
-	bool isSetServerId = false;
 
 	configFromCmdline = false;
 	while ((c = getopt()) != -1) {
@@ -99,30 +97,14 @@ int parsecmdline(int argc, char** argv) {
 		case 'i':
 			serverid = atoi(getopt.opt_arg());
 			if (serverid <= 0 || serverid > 9) {
-				r = -1;
-			} else {
-				isSetServerId = true;
+				serverid = -1;
 			}
 			break;
-		default:
-			r = -1;
+		case 's':
+			ACE_OS::strncpy(server, getopt.opt_arg(), 30);
+			break;
 		}
 	}
-
-	int last = getopt.opt_ind();
-	if (r == 0 && last < argc) {
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "opt_ind is " << last
-				<< ", server is " << argv[last]);
-		ACE_OS::strncpy(server, argv[last], 30);
-	}
-
-	if (isSetServerId == false) {
-		fprintf(stderr,
-				"you must specify a server id with -i greater than 0 and less than 10\n");
-		r = -1;
-	}
-
-	return r;
 }
 
 const char* getConfiguration() {
@@ -140,10 +122,25 @@ int serverinit(int argc, char** argv) {
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = 0;
 
-	ACE_OS::strncpy(server, "default", 30);
+	const char* serverName = ACE_OS::getenv("BLACKTIE_SERVER_NAME");
+	if (serverName != NULL) {
+		ACE_OS::strncpy(server, serverName, 30);
+	} else {
+		ACE_OS::strncpy(server, "default", 30);
+	}
+	const char* serverId = ACE_OS::getenv("BLACKTIE_SERVER_ID");
+	if (serverId != NULL) {
+		serverid = atoi(serverId);
+	}
 
-	if (argc > 0 && parsecmdline(argc, argv) != 0) {
-		fprintf(stderr, "usage:%s [-c config] -i id [server]\n", argv[0]);
+	if (argc > 0) {
+		parsecmdline(argc, argv);
+	}
+
+	if (serverid == -1) {
+		fprintf(stderr,
+				"you must specify a server id with -i greater than 0 and less than 10\n");
+		fprintf(stderr, "usage:%s [-c config] -i id [-s server]\n", argv[0]);
 		toReturn = -1;
 		setSpecific(TPE_KEY, TSS_TPESYSTEM);
 	}
@@ -659,7 +656,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 		LOG4CXX_WARN(
 				loggerAtmiBrokerServer,
 				(char*) "Could not advertise service, was not registered for server in btconfig.xml: "
-				<< svcname);
+						<< svcname);
 		setSpecific(TPE_KEY, TSS_TPELIMIT);
 		free(serviceName);
 		return false;
@@ -699,18 +696,19 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 
 	// create reference for Service Queue and cache
 	try {
-		if(service->externally_managed_destination == false) {
+		if (service->externally_managed_destination == false) {
 			toReturn = createAdminDestination(serviceName);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "advertiseService status=" << toReturn);
 		} else {
 			toReturn = true;
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-					(char*) "service " << serviceName << " has extern managed destination");
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "service "
+					<< serviceName << " has extern managed destination");
 		}
 		if (toReturn) {
 			Destination* destination;
-			destination = connection->createDestination(serviceName, service->conversational);
+			destination = connection->createDestination(serviceName,
+					service->conversational);
 
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "created destination: " << serviceName);
@@ -729,7 +727,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 						<< serviceName << " Exception: " << e._name());
 		setSpecific(TPE_KEY, TSS_TPEMATCH);
 		try {
-			if(service->externally_managed_destination == false) {
+			if (service->externally_managed_destination == false) {
 				removeAdminDestination(serviceName, true);
 			}
 		} catch (...) {
@@ -742,7 +740,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 				(char*) "Could not create the destination: " << serviceName);
 		setSpecific(TPE_KEY, TSS_TPEMATCH);
 		try {
-			if(service->externally_managed_destination == false) {
+			if (service->externally_managed_destination == false) {
 				removeAdminDestination(serviceName, true);
 			}
 		} catch (...) {
@@ -787,24 +785,25 @@ void AtmiBrokerServer::unadvertiseService(char * svcname, bool decrement) {
 			unsigned int i;
 			bool found = false;
 			for (i = 0; i < serverInfo.serviceVector.size(); i++) {
-				if (strncmp(serverInfo.serviceVector[i].serviceName, serviceName,
-							XATMI_SERVICE_NAME_LENGTH) == 0) {
+				if (strncmp(serverInfo.serviceVector[i].serviceName,
+						serviceName, XATMI_SERVICE_NAME_LENGTH) == 0) {
 					found = true;
 					service = &serverInfo.serviceVector[i];
 					break;
 				}
 			}
 
-			if(found) {
-				if(service->externally_managed_destination == false) {
+			if (found) {
+				if (service->externally_managed_destination == false) {
 					removeAdminDestination(serviceName, decrement);
 				} else {
-					LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-						(char*) "found " << serviceName << " and externally managed destination is true");
+					LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "found "
+							<< serviceName
+							<< " and externally managed destination is true");
 				}
 			} else {
-				LOG4CXX_WARN(loggerAtmiBrokerServer,
-						(char*) "can not found " << serviceName << " in btconfig.xml");
+				LOG4CXX_WARN(loggerAtmiBrokerServer, (char*) "can not found "
+						<< serviceName << " in btconfig.xml");
 			}
 
 			LOG4CXX_INFO(loggerAtmiBrokerServer,
@@ -893,9 +892,10 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 		// response[0] == 2 means start server with the same id.
 		// if errorBootAdminService equals 2, the server will output the same id error and quit.
 		if (!isadm || (errorBootAdminService = response[0]) == 2) {
-			LOG4CXX_ERROR(loggerAtmiBrokerServer, "Service returned with error: "
-					<< response[0] << " command was " << command << " r=" << r
-					<< " c=" << c);
+			LOG4CXX_ERROR(loggerAtmiBrokerServer,
+					"Service returned with error: " << response[0]
+							<< " command was " << command << " r=" << r
+							<< " c=" << c);
 		}
 		tpfree(command);
 		tpfree(response);

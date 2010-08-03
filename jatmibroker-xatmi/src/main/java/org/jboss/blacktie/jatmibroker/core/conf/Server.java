@@ -41,6 +41,7 @@ public class Server {
 
 	public void addMachine(Machine machine) {
 		machines.add(machine);
+		machine.setServer(this);
 	}
 
 	public List<Machine> getLocalMachine() throws UnknownHostException {
