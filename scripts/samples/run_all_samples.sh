@@ -5,7 +5,7 @@ echo "Running all samples"
 
 if [ "$1" ]; then
 if [ "$1" = "tx" ]; then
-echo "Running txfooapp"
+echo "Test 1: Running txfooapp"
 shift
 
 # RUN THE FOOAPP SERVER
@@ -37,6 +37,7 @@ fi
 fi
 
 # RUN THE FOOAPP SERVER
+echo "Test 2: Running fooapp"
 cd $BLACKTIE_HOME/examples/xatmi/fooapp
 generate_server -Dservice.names=BAR -Dserver.includes=BarService.c
 if [ "$?" != "0" ]; then
@@ -65,7 +66,31 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 
+# RUN THE QUEUEING EXAMPLE
+echo "Test 3: Running externally managed queue example"
+cd $BLACKTIE_HOME/examples/xatmi/queues
+
+generate_client -Dclient.includes=queues.c
+./client put 10
+if [ "$?" != "0" ]; then
+    echo Unable to queue all messages
+    exit -1
+fi
+export BLACKTIE_SERVER_ID=1
+./client get 5
+if [ "$?" != "0" ]; then
+    echo Unable to retrieve first 5 queued messages
+    exit -1
+fi
+./client get 5
+if [ "$?" != "0" ]; then
+    echo Unable to retrieve last 5 queued messages
+    exit -1
+fi
+unset BLACKTIE_SERVER_ID
+
 # RUN THE ADMIN JMX CLIENT
+echo "Test 4: Running JMX Tests"
 cd $BLACKTIE_HOME/examples/admin/jmx
 echo '0
 0
@@ -117,6 +142,7 @@ echo '0
 sleep 3
 
 # RUN THE SECURE SERVER
+echo "Test 5: Running Security"
 cd $BLACKTIE_HOME/examples/security
 generate_server -Dservice.names=SECURE -Dserver.includes=BarService.c
 if [ "$?" != "0" ]; then
@@ -142,6 +168,7 @@ fi
 unset BLACKTIE_CONFIGURATION_DIR
 
 # RUN THE "dynsub" USER CLIENT
+echo "Test 6: Running MDB examples"
 export BLACKTIE_CONFIGURATION_DIR=dynsub
 ./client
 if [ "$?" != "0" ]; then
@@ -171,6 +198,7 @@ if [ "$1" = "integration1" ]; then
 echo "Running Integration Example"
 
 # RUN THE INTEGRATION 1 EXAMPLE
+echo "Test 7: Running EJB examples"
 cd $BLACKTIE_HOME/examples/integration1/ejb
 mvn install
 if [ "$?" != "0" ]; then

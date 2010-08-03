@@ -136,6 +136,15 @@
 			</includes>
 		</fileSet>
 		<fileSet>
+			<directory>../atmibroker-xatmi/src/example/queues/
+			</directory>
+			<outputDirectory>examples/xatmi/queues
+			</outputDirectory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
 			<directory>../atmibroker-xatmi/src/example/txfooapp/
 			</directory>
 			<outputDirectory>examples/xatmi/txfooapp

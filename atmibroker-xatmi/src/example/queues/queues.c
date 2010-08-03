@@ -39,7 +39,7 @@ static void qservice(TPSVCINFO *svcinfo) {
 	}
 }
 
-static void put_messages(unsigned int cnt) {
+static int put_messages(unsigned int cnt) {
 	while (cnt-- != 0) {
 		char msg[80];
 		sprintf(msg, (char*) "request %d", cnt);
@@ -48,22 +48,25 @@ static void put_messages(unsigned int cnt) {
 		(void) strcpy(sendbuf, msg);
 		int cd = tpacall(SERVICE, sendbuf, sendlen, TPNOREPLY);
 
-		userlogc((char*) "tpacall returned %d %d", cd, tperrno);
+		if (cd != 0 || tperrno != 0)
+			userlogc((char*) "tpacall returned %d %d", cd, tperrno);
 
 		tpfree(sendbuf);
 	}
+
+	return 0;
 }
 
-static void get_messages(unsigned int cnt) {
+static int get_messages(unsigned int cnt) {
 	int err = 0;
-	// Register a service listener for the queue. If the env variable BLACKTIE_SERVER_ID
-	// is set then the framework will automatically register a server listener for the
-	// queue during tpadvertise. Otherwise do it manually as follows:
+	int maxSleep = 10;
 
-	if (getenv("BLACKTIE_SERVER_ID") == NULL) {
-		char* argv[] = {(char*) "server", (char*) "-c", (char*) "linux", (char*) "-i", (char*) "1"};
-		serverinit(sizeof(argv)/sizeof(char*), argv);
-	}
+	/*
+	 * Register a service listener for the queue. If the env variable BLACKTIE_SERVER_ID
+	 * is set then the framework will automatically register a server listener for the
+	 * queue during tpadvertise. Otherwise do it manually using serverinit(argc, argv)
+	 * where argv includes, for example, server -c linux -i 1
+	 */
 
 	msgCnt = cnt;
 	err = tpadvertise(SERVICE, qservice);
@@ -71,13 +74,18 @@ static void get_messages(unsigned int cnt) {
 	if (tperrno != 0 || err == -1)
 		userlogc((char*) "advertise error: %d %d", err, tperrno);
 
-	// wait for the service routine, qservice, to clear msgCnt
-	while (msgCnt > 0)
+	// wait for the service routine, qservice, to consume the required number of messages (msgCnt)
+	while (msgCnt > 0 && maxSleep-- > 0)
 		if (sleep(1) != 0)
 			break;
 
 	// Manually shutdown the server. TODO have the framework shut it down on the final tpunadvertise
 	serverdone();
+
+	if (maxSleep == 0 || msgCnt > 0)
+		return -1;
+
+	return 0;
 }
 
 static void fatal(int argc, char **argv) {
@@ -86,15 +94,17 @@ static void fatal(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
+	int rc = -1;
+
 	if (argc < 3) {
-		fatal(argc, argv);
+		userlogc((char *) "usage: %s <put msgCnt | get msgCnt>", argv[0]);
 	} else if (strcmp(argv[1], "put") == 0) {
-		put_messages(atoi(argv[2]));
+		rc = put_messages(atoi(argv[2]));
 	} else if (strcmp(argv[1], "get") == 0) {
-		get_messages(atoi(argv[2]));
+		rc = get_messages(atoi(argv[2]));
 	} else {
-		fatal(argc, argv);
+		userlogc((char *) "usage: %s <put msgCnt | get msgCnt>", argv[0]);
 	}
 
-	return 0;
+	return rc;
 }
