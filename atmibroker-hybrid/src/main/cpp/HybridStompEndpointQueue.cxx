@@ -147,12 +147,13 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 						frame = NULL;
 						this->_connected = false;
 					} else {
-						LOG4CXX_DEBUG(logger, "Handling old receipt: " << receipt);
+						LOG4CXX_DEBUG(logger, "Handling old receipt: "
+								<< receipt);
 						this->receipt = NULL;
 						rc = stomp_read(connection, &frame, pool);
 						if (rc == APR_TIMEUP || rc == 730060) {
-							LOG4CXX_TRACE(logger, "Could not read frame for " << name
-									<< ": as the time limit expired");
+							LOG4CXX_TRACE(logger, "Could not read frame for "
+									<< name << ": as the time limit expired");
 							setSpecific(TPE_KEY, TSS_TPETIME);
 							frame = NULL;
 						} else if (rc != APR_SUCCESS) {
@@ -250,6 +251,27 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 				message.serviceName = serviceName;
 				LOG4CXX_TRACE(logger, "set serviceName");
 				message.received = true;
+
+				char* messageId = (char*) apr_hash_get(frame->headers,
+						"message-id", APR_HASH_KEY_STRING);
+				LOG4CXX_DEBUG(logger, "Sending ACK");
+				stomp_frame frame;
+				frame.command = (char*) "ACK";
+				frame.headers = apr_hash_make(pool);
+				apr_hash_set(frame.headers, "message-id", APR_HASH_KEY_STRING,
+						messageId);
+				frame.body = NULL;
+				frame.body_length = -1;
+				LOG4CXX_DEBUG(logger, "Acking: " << messageId);
+				int rc = stomp_write(connection, &frame, pool);
+				if (rc != APR_SUCCESS) {
+					LOG4CXX_ERROR(logger, (char*) "Could not send frame");
+					char errbuf[256];
+					apr_strerror(rc, errbuf, sizeof(errbuf));
+					LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc
+							<< ": " << errbuf);
+					connection = NULL;
+				}
 			}
 		} else {
 			LOG4CXX_ERROR(logger, "receive failed - not able to connect");
@@ -288,6 +310,8 @@ bool HybridStompEndpointQueue::connect() {
 					fullName);
 			apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING,
 					fullName);
+			apr_hash_set(frame.headers, "ack", APR_HASH_KEY_STRING,
+					"client");
 			frame.body_length = -1;
 			frame.body = NULL;
 			LOG4CXX_DEBUG(logger, "Sending SUB: " << fullName);
@@ -333,6 +357,7 @@ bool HybridStompEndpointQueue::connect() {
 					this->message = framed;
 					this->receipt = fullName;
 					this->_connected = true;
+
 					LOG4CXX_DEBUG(logger, "Connected: " << fullName);
 				} else {
 					setSpecific(TPE_KEY, TSS_TPESYSTEM);
