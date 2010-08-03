@@ -31,13 +31,10 @@ C:\Program Files\Microsoft Visual Studio 9.0\VC\vcvarsall.bat
 
 
 2. CREATE THE CLIENT
-On Linux:
-	generate_client -Dclient.includes=queues.c
-On Windows:
 	generate_client -Dclient.includes=queues.c
 
 
-4. DEPLOY THE BLACKTIE ADMIN SERVICE
+3. DEPLOY THE BLACKTIE ADMIN SERVICE
 Undeploy any older versions of the blacktie admin service
 Copy the file $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all/deploy
 Copy the file $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml into $JBOSS_HOME/server/all/conf

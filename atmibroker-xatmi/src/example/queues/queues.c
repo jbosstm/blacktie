@@ -59,8 +59,11 @@ static void get_messages(unsigned int cnt) {
 	// Register a service listener for the queue. If the env variable BLACKTIE_SERVER_ID
 	// is set then the framework will automatically register a server listener for the
 	// queue during tpadvertise. Otherwise do it manually as follows:
-	// char* argv[] = {(char*)"server", (char*)"-c", (char*)"linux", (char*)"-i", (char*)"1"};
-	// serverinit(sizeof(argv)/sizeof(char*), argv);
+
+	if (getenv("BLACKTIE_SERVER_ID") == NULL) {
+		char* argv[] = {(char*) "server", (char*) "-c", (char*) "linux", (char*) "-i", (char*) "1"};
+		serverinit(sizeof(argv)/sizeof(char*), argv);
+	}
 
 	msgCnt = cnt;
 	err = tpadvertise(SERVICE, qservice);
@@ -70,7 +73,8 @@ static void get_messages(unsigned int cnt) {
 
 	// wait for the service routine, qservice, to clear msgCnt
 	while (msgCnt > 0)
-		(void) sleep(1);
+		if (sleep(1) != 0)
+			break;
 
 	// Manually shutdown the server. TODO have the framework shut it down on the final tpunadvertise
 	serverdone();
