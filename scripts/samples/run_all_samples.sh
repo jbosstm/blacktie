@@ -66,31 +66,8 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 
-# RUN THE QUEUEING EXAMPLE
-echo "Test 3: Running externally managed queue example"
-cd $BLACKTIE_HOME/examples/xatmi/queues
-
-generate_client -Dclient.includes=queues.c
-./client put 10
-if [ "$?" != "0" ]; then
-    echo Unable to queue all messages
-    exit -1
-fi
-export BLACKTIE_SERVER_ID=1
-./client get 5
-if [ "$?" != "0" ]; then
-    echo Unable to retrieve first 5 queued messages
-    exit -1
-fi
-./client get 5
-if [ "$?" != "0" ]; then
-    echo Unable to retrieve last 5 queued messages
-    exit -1
-fi
-unset BLACKTIE_SERVER_ID
-
 # RUN THE ADMIN JMX CLIENT
-echo "Test 4: Running JMX Tests"
+echo "Test 3: Running Admin Tests"
 cd $BLACKTIE_HOME/examples/admin/jmx
 echo '0
 0
@@ -140,6 +117,29 @@ echo '0
 2' | ./client
 # PICK UP THE CLOSING SERVER
 sleep 3
+
+# RUN THE QUEUEING EXAMPLE
+echo "Test 4: Running externally managed queue example"
+cd $BLACKTIE_HOME/examples/xatmi/queues
+
+generate_client -Dclient.includes=queues.c
+./client put 10
+if [ "$?" != "0" ]; then
+    echo Unable to queue all messages
+    exit -1
+fi
+export BLACKTIE_SERVER_ID=1
+./client get 5
+if [ "$?" != "0" ]; then
+    echo Unable to retrieve first 5 queued messages
+    exit -1
+fi
+./client get 5
+if [ "$?" != "0" ]; then
+    echo Unable to retrieve last 5 queued messages
+    exit -1
+fi
+unset BLACKTIE_SERVER_ID
 
 # RUN THE SECURE SERVER
 echo "Test 5: Running Security"
