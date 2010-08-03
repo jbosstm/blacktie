@@ -90,7 +90,7 @@ set BLACKTIE_SERVER_ID=
 rem Test 3: Successful
 
 rem RUN THE SECURE SERVER
-cd %BLACKTIE_HOME%\examples\security
+cd %BLACKTIE_HOME%\examples\xatmi\security
 call generate_server -Dservice.names=SECURE -Dserver.includes=BarService.c
 IF %ERRORLEVEL% NEQ 0 exit -1
 set BLACKTIE_CONFIGURATION_DIR=serv

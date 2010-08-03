@@ -127,36 +127,9 @@
 			<fileMode>0775</fileMode>
 		</fileSet>
 		<fileSet>
-			<directory>../atmibroker-xatmi/src/example/fooapp/
+			<directory>../atmibroker-xatmi/src/example/
 			</directory>
-			<outputDirectory>examples/xatmi/fooapp
-			</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../atmibroker-xatmi/src/example/queues/
-			</directory>
-			<outputDirectory>examples/xatmi/queues
-			</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../atmibroker-xatmi/src/example/txfooapp/
-			</directory>
-			<outputDirectory>examples/xatmi/txfooapp
-			</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../atmibroker-xatmi/src/example/security/
-			</directory>
-			<outputDirectory>examples/security
+			<outputDirectory>examples/xatmi/
 			</outputDirectory>
 			<includes>
 				<include>**/*</include>

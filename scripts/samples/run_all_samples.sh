@@ -143,7 +143,7 @@ sleep 3
 
 # RUN THE SECURE SERVER
 echo "Test 5: Running Security"
-cd $BLACKTIE_HOME/examples/security
+cd $BLACKTIE_HOME/examples/xatmi/security
 generate_server -Dservice.names=SECURE -Dserver.includes=BarService.c
 if [ "$?" != "0" ]; then
 	exit -1

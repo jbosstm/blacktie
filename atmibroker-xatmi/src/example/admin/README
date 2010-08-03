@@ -38,10 +38,7 @@ Follow the instructions in $BLACKTIE_HOME/examples/xatmi/fooapp to start a serve
 
 
 3. CREATE THE CLIENT
-On Linux:
-	generate_client -Dclient.includes=client.c
-On Windows:
-	generate_client -Dclient.includes=client.c
+generate_client -Dclient.includes=client.c
 
 
 4 RUN THE CLIENT
