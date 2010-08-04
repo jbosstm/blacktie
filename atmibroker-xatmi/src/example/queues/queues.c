@@ -20,7 +20,7 @@
 #include <stdlib.h>
 
 #include "xatmi.h"
-#include "xxatmi.h"
+#include "btxatmi.h"
 
 #include "userlogc.h"
 

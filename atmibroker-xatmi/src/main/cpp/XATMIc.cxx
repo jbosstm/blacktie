@@ -27,7 +27,7 @@
 #include "ThreadLocalStorage.h"
 #include "txx.h"
 #include "xatmi.h"
-#include "xxatmi.h"
+#include "btxatmi.h"
 #include "Session.h"
 #include "AtmiBrokerClientControl.h"
 #include "AtmiBrokerServerControl.h"

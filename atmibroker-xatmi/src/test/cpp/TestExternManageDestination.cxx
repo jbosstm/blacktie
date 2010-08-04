@@ -22,7 +22,7 @@
 #include "AtmiBrokerServerControl.h"
 
 #include "xatmi.h"
-#include "xxatmi.h"
+#include "btxatmi.h"
 #include "malloc.h"
 
 #include "ace/OS_NS_stdlib.h"
