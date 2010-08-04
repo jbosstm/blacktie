@@ -37,8 +37,6 @@ extern void qservice(TPSVCINFO *svcinfo);
 }
 #endif
 
-static void qservice(TPSVCINFO *svcinfo);
-
 static char* SERVICE = (char*) "TestOne";
 static int msgId;
 static int msgCnt;
@@ -109,7 +107,7 @@ void TestExternManageDestination::test_tpcall_without_service() {
 	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
 	long recvlen = 1;
 
-	unadvertised = true;
+	qunadvertised = true;
 	int cd = ::tpcall((char*) "TestOne", (char *) sendbuf, sendlen,
 			(char**) &recvbuf, &recvlen, 0);
 	userlogc((char*) "test_tpcall_without_service %d %d", cd, tperrno);
@@ -141,6 +139,8 @@ static void send_one(int id, int pri) {
 
 	BT_ASSERT(tperrno == 0 && cd == 0);
 
+	userlogc("Sent %d %d", id, pri);
+
 	tpfree(buf);
 }
 
@@ -156,7 +156,7 @@ void TestExternManageDestination::test_stored_messages() {
 	for (i = 0; i < 2; i++) {
 		char msg[80];
 		// Advertise the service
-		int toCheck = tpadvertise((char*) "TestOne", qservice);
+		int toCheck = tpadvertise((char*) SERVICE, qservice);
 		sprintf(msg, "tpadvertise error: %d %d", tperrno, toCheck);
 		BT_ASSERT_MESSAGE(msg, tperrno == 0 && toCheck != -1);
 
@@ -197,7 +197,7 @@ void TestExternManageDestination::test_stored_message_priority() {
 	for (i = 0; i < 1; i++) {
 		char msg[80];
 		// Advertise the service
-		int toCheck = tpadvertise((char*) "TestOne", qservice);
+		int toCheck = tpadvertise((char*) SERVICE, qservice);
 		sprintf(msg, "tpadvertise error: %d %d", tperrno, toCheck);
 		BT_ASSERT_MESSAGE(msg, tperrno == 0 && toCheck != -1);
 
@@ -234,7 +234,7 @@ void qservice(TPSVCINFO *svcinfo) {
 	msgId += 1;
 
 	if (msgCnt == 0) {
-		int err = tpunadvertise("TestOne");
+		int err = tpunadvertise(SERVICE);
 		qunadvertised = true;
 
 		sprintf(msg, "unadvertise error: %d %d", tperrno, err);
