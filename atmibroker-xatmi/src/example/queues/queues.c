@@ -27,6 +27,10 @@
 static char* SERVICE = (char*) "TestOne";
 static int msgCnt = 0;
 
+/*
+ * keep servicing messages until the target msgCnt is reached after which disable message
+ * delivery by unadvertising SERVICE
+ */
 static void qservice(TPSVCINFO *svcinfo) {
 	userlogc((char*) "svc: %s data: %s len: %d flags: %d", svcinfo->name, svcinfo->data, svcinfo->len, svcinfo->flags);
 	msgCnt -= 1;
@@ -39,65 +43,60 @@ static void qservice(TPSVCINFO *svcinfo) {
 	}
 }
 
-static int put_messages2(unsigned int cnt, unsigned int pri) {
-	msg_opts_t opts;
-	int i;
+/**
+ * Send a single message with the given id at the requested priority.
+ * If pri is -1 then do not use priorities.
+ */
+static int send_one(int id, int pri) {
+    msg_opts_t mopts;
+    char msg[16];
+    char* buf;
+    long len;
+    int err = -1;
 
-	for (i = 0; i < cnt; i++) {
-		char msg[80];
+    mopts.priority = pri;
+    (void) sprintf(msg, (char*) "%d", id);
+    len = strlen(msg) + 1;
 
-		// Send messages in increasing order of priority. Thus sending 10 messages should
-		// be delivered in reverse order (since priorities range from 0 to 9 with 0 being the lowest
-		// so message number 10 will have the highest priority).
-		opts.priority = pri;
-		sprintf(msg, (char*) "msg %d: pri %d", i, opts.priority);
+    if (pri < 0)
+        buf = tpalloc((char*) "X_OCTET", NULL, len);
+    else
+        buf = btalloc(&mopts, (char*) "X_OCTET", NULL, len);
 
-		long sendlen = strlen(msg) + 1;
-		char* sendbuf = btalloc(&opts, (char*) "X_OCTET", NULL, sendlen);
-		(void) strcpy(sendbuf, msg);
-		userlogc((char*) "put msg: %s", msg);
-		int cd = tpacall(SERVICE, sendbuf, sendlen, TPNOREPLY);
+    if (tperrno != 0) {
+		userlogc((char*) "tp alloc error: %d", tperrno);
+	} else {
+    	(void) strcpy(buf, msg);
+    	err = tpacall((char*) "TestOne", buf, len, TPNOREPLY);
 
-		if (cd != 0 || tperrno != 0)
-			userlogc((char*) "tpacall returned %d %d", cd, tperrno);
+    	if (tperrno != 0 || err != 0)
+			userlogc((char*) "tpacall error: %d %d", err, tperrno);
 
-		tpfree(sendbuf);
+    	tpfree(buf);
 	}
+
+	return err;
+}
+
+/**
+ * Send cnt messages begining with message id msgid with the requested priority.
+ */
+static int put_messages(unsigned int cnt, unsigned int msgid, unsigned int pri) {
+	int i;
+	int err;
+
+	for (i = msgid; i < msgid + cnt; i++)
+		if ((err = send_one(i, pri)) != 0)
+			return err;
 
 	return 0;
 }
 
-static int put_messages(unsigned int cnt) {
-	msg_opts_t opts;
-	int i;
-
-	for (i = 0; i < cnt; i++) {
-		char msg[80];
-
-		// Send messages in increasing order of priority. Thus sending 10 messages should
-		// be delivered in reverse order (since priorities range from 0 to 9 with 0 being the lowest
-		// so message number 10 will have the highest priority).
-		opts.priority = i % 10;
-		sprintf(msg, (char*) "msg %d: pri %d", i, opts.priority);
-
-		long sendlen = strlen(msg) + 1;
-		char* sendbuf = btalloc(&opts, (char*) "X_OCTET", NULL, sendlen);
-		(void) strcpy(sendbuf, msg);
-		int cd = tpacall(SERVICE, sendbuf, sendlen, TPNOREPLY);
-
-		if (cd != 0 || tperrno != 0)
-			userlogc((char*) "tpacall returned %d %d", cd, tperrno);
-		else
-			userlogc((char*) "sent %d:", cnt);
-
-		tpfree(sendbuf);
-	}
-
-	return 0;
-}
-
+/**
+ * Take the next cnt messages off the service queue.
+ */
 static int get_messages(unsigned int cnt) {
-	int err = 0;
+	int err;
 	int maxSleep = 10;
 
 	/*
@@ -106,12 +105,13 @@ static int get_messages(unsigned int cnt) {
 	 * queue during tpadvertise. Otherwise do it manually using serverinit(argc, argv)
 	 * where argv includes, for example, server -c linux -i 1
 	 */
-
 	msgCnt = cnt;
 	err = tpadvertise(SERVICE, qservice);
 
-	if (tperrno != 0 || err == -1)
+	if (tperrno != 0 || err == -1) {
 		userlogc((char*) "advertise error: %d %d", err, tperrno);
+		return -1;
+	}
 
 	// wait for the service routine, qservice, to consume the required number of messages (msgCnt)
 	while (msgCnt > 0 && maxSleep-- > 0)
@@ -127,19 +127,20 @@ static int get_messages(unsigned int cnt) {
 	return 0;
 }
 
+/*
+ * An example showing how to decouple sender and receiver using queues with optional priorities.
+ */
 int main(int argc, char **argv) {
 	int rc = -1;
 
 	if (argc < 3) {
-		userlogc((char *) "usage: %s <put msgCnt | get msgCnt | put2>", argv[0]);
+		userlogc((char *) "usage: %s <put cnt [msgid priority] | get cnt>", argv[0]);
 	} else if (strcmp(argv[1], "put") == 0) {
-		rc = put_messages(atoi(argv[2]));
-	} else if (strcmp(argv[1], "put2") == 0) {
-		rc = put_messages2(atoi(argv[2]), (argc > 3 ? atoi(argv[3]) : 5));
+		rc = put_messages(atoi(argv[2]), argc > 3 ? atoi(argv[3]) : 0, argc > 4 ? atoi(argv[4]) : -1);
 	} else if (strcmp(argv[1], "get") == 0) {
 		rc = get_messages(atoi(argv[2]));
 	} else {
-		userlogc((char *) "usage: %s <put msgCnt | get msgCnt>", argv[0]);
+		userlogc((char *) "usage: %s <put cnt [priority] | get cnt>", argv[0]);
 	}
 
 	return rc;

@@ -134,6 +134,7 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 		message.type = NULL;
 		message.subtype = NULL;
 		message.len = 0;
+		message.priority = 0;
 		message.data = NULL;
 		message.correlationId = correlationId;
 		message.flags = flags;

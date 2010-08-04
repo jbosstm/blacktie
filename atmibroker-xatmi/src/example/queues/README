@@ -46,5 +46,13 @@ Make sure that the naming, messaging and transaction services are running, by ru
 
 
 6 RUN THE APPLICATION
-export BLACKTIE_SERVER_ID=1
+
+export BLACKTIE_SERVER_ID=1	# automatically starts a server running when tpadvertise is called
 ./client
+
+If you want to use priorities then try running the example with args of the form <put cnt msgid priority>
+./client put 2 0 9	# queue 2 messages at highest priority (9) starting with message id 0
+./client put 2 2 8	# queue 2 messages at next lower priority (8) starting with message id 2
+./client put 2 4 7	# queue 2 messages at next lower priority (7) starting with message id 4
+./client get 6		# retrieve all 6 messages - they should be received in increasing message id order
+

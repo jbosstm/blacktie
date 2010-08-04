@@ -90,6 +90,7 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 	message.correlationId = -1;
 	message.data = NULL;
 	message.len = -1;
+	message.priority = 0;
 	message.flags = -1;
 	message.control = NULL;
 	message.rval = -1;
