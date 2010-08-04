@@ -31,6 +31,7 @@
 extern "C" {
 #endif
 extern void test_extern_service(TPSVCINFO *svcinfo);
+extern void qservice(TPSVCINFO *svcinfo);
 #if defined(__cplusplus)
 }
 #endif
@@ -174,7 +175,7 @@ void qservice(TPSVCINFO *svcinfo) {
 	msgCnt -= 1;
 
 	if (msgCnt == 0) {
-		int err = tpunadvertise(SERVICE);
+		int err = tpunadvertise("TestOne");
 
 		if (tperrno != 0 || err == -1)
 			userlogc((char*) "unadvertise error: %d %d", err, tperrno);
