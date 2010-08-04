@@ -49,6 +49,8 @@ static int put_messages(unsigned int cnt) {
 
 		if (cd != 0 || tperrno != 0)
 			userlogc((char*) "tpacall returned %d %d", cd, tperrno);
+		else
+			userlogc((char*) "sent %d:", cnt);
 
 		tpfree(sendbuf);
 	}
