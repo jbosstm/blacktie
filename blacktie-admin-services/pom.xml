@@ -123,7 +123,7 @@
 		<dependency>
 			<groupId>org.codehaus.stomp</groupId>
 			<artifactId>stompconnect</artifactId>
-			<version>1.0-BT</version>
+			<version>1.0.1-BT</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.geronimo.specs</groupId>
