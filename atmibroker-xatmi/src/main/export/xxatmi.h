@@ -16,25 +16,21 @@
  * MA  02110-1301, USA.
  */
 
-#ifndef MESSAGE_H_
-#define MESSAGE_H_
+#ifndef XXATMI_H
+#define XXATMI_H
 
-struct message_t {
-	const char* replyto;
-	int correlationId;
-	int priority;
-	char* data;
-	void* control;
-	int rval;
-	long rcode;
-	long len;
-	long flags;
-	long ttl; /* the expiration time of the message */
-	char* type;
-	char* subtype;
-	bool received;
-	char* serviceName;
-};
-typedef struct message_t MESSAGE;
+#include "atmiBrokerXatmiMacro.h"
 
-#endif /* MESSAGE_H_ */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef struct msg_ctrl {
+	int priority;	/* msg priority from 0 (lowest) to 9 */
+} msg_ctrl_t;
+
+extern BLACKTIE_XATMI_DLL char* tpqalloc(msg_ctrl_t* ctrl, char* type, char* subtype, long size);
+#ifdef __cplusplus
+}
+#endif
+#endif // XATMI_H

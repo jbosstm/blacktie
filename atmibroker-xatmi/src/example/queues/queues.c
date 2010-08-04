@@ -20,6 +20,7 @@
 #include <stdlib.h>
 
 #include "xatmi.h"
+#include "xxatmi.h"
 
 #include "userlogc.h"
 
@@ -38,12 +39,49 @@ static void qservice(TPSVCINFO *svcinfo) {
 	}
 }
 
-static int put_messages(unsigned int cnt) {
-	while (cnt-- != 0) {
+static int put_messages2(unsigned int cnt, unsigned int pri) {
+	msg_ctrl_t ctrl;
+	int i;
+
+	for (i = 0; i < cnt; i++) {
 		char msg[80];
-		sprintf(msg, (char*) "request %d", cnt);
+
+		// Send messages in increasing order of priority. Thus sending 10 messages should
+		// be delivered in reverse order (since priorities range from 0 to 9 with 0 being the lowest
+		// so message number 10 will have the highest priority).
+		ctrl.priority = pri;
+		sprintf(msg, (char*) "msg %d: pri %d", i, ctrl.priority);
+
 		long sendlen = strlen(msg) + 1;
-		char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
+		char* sendbuf = tpqalloc(&ctrl, (char*) "X_OCTET", NULL, sendlen);
+		(void) strcpy(sendbuf, msg);
+		userlogc((char*) "put msg: %s", msg);
+		int cd = tpacall(SERVICE, sendbuf, sendlen, TPNOREPLY);
+
+		if (cd != 0 || tperrno != 0)
+			userlogc((char*) "tpacall returned %d %d", cd, tperrno);
+
+		tpfree(sendbuf);
+	}
+
+	return 0;
+}
+
+static int put_messages(unsigned int cnt) {
+	msg_ctrl_t ctrl;
+	int i;
+
+	for (i = 0; i < cnt; i++) {
+		char msg[80];
+
+		// Send messages in increasing order of priority. Thus sending 10 messages should
+		// be delivered in reverse order (since priorities range from 0 to 9 with 0 being the lowest
+		// so message number 10 will have the highest priority).
+		ctrl.priority = i % 10;
+		sprintf(msg, (char*) "msg %d: pri %d", i, ctrl.priority);
+
+		long sendlen = strlen(msg) + 1;
+		char* sendbuf = tpqalloc(&ctrl, (char*) "X_OCTET", NULL, sendlen);
 		(void) strcpy(sendbuf, msg);
 		int cd = tpacall(SERVICE, sendbuf, sendlen, TPNOREPLY);
 
@@ -89,18 +127,15 @@ static int get_messages(unsigned int cnt) {
 	return 0;
 }
 
-static void fatal(int argc, char **argv) {
-	userlogc((char *) "usage: %s <put msgCnt | get msgCnt>", argv[0]);
-	exit(0);
-}
-
 int main(int argc, char **argv) {
 	int rc = -1;
 
 	if (argc < 3) {
-		userlogc((char *) "usage: %s <put msgCnt | get msgCnt>", argv[0]);
+		userlogc((char *) "usage: %s <put msgCnt | get msgCnt | put2>", argv[0]);
 	} else if (strcmp(argv[1], "put") == 0) {
 		rc = put_messages(atoi(argv[2]));
+	} else if (strcmp(argv[1], "put2") == 0) {
+		rc = put_messages2(atoi(argv[2]), (argc > 3 ? atoi(argv[3]) : 5));
 	} else if (strcmp(argv[1], "get") == 0) {
 		rc = get_messages(atoi(argv[2]));
 	} else {

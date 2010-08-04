@@ -23,10 +23,12 @@
 #include <vector>
 #include "log4cxx/logger.h"
 #include "SynchronizableObject.h"
+#include "xxatmi.h"
 #define MAX_TYPE_SIZE 8
 #define MAX_SUBTYPE_SIZE 16
 struct _memory_info {
 	char* memoryPtr;
+	msg_ctrl_t* ctrl;
 	char* type;
 	char* subtype;
 	int size;
@@ -42,13 +44,14 @@ public:
 
 	~AtmiBrokerMem();
 
-	char* tpalloc(char* type, char* subtype, long size, bool serviceAllocated);
+	char* tpalloc(msg_ctrl_t* ctrl, char* type, char* subtype, long size, bool serviceAllocated);
 
 	char* tprealloc(char * addr, long size, char* type, char* subtype,
 			bool force);
 
 	void tpfree(char* ptr, bool force);
 
+	long tptypes(msg_ctrl_t** ctrl, char* ptr, char* type, char* subtype);
 	long tptypes(char* ptr, char* type, char* subtype);
 
 	static AtmiBrokerMem* get_instance();

@@ -202,9 +202,13 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		char * flags = apr_itoa(pool, message.flags);
 		char * rval = apr_itoa(pool, message.rval);
 		char * rcode = apr_itoa(pool, message.rcode);
+		char * priority = apr_itoa(pool, message.priority);
+
 		apr_hash_set(frame.headers, "messagecorrelationId",
 				APR_HASH_KEY_STRING, correlationId);
-		LOG4CXX_TRACE(logger, "Set the corrlationId: " << correlationId);
+		apr_hash_set(frame.headers, "priority", APR_HASH_KEY_STRING, priority);
+		LOG4CXX_TRACE(logger, "Set the corrlationId: " << correlationId << " and priority: "
+			<< priority);
 		apr_hash_set(frame.headers, "messageflags", APR_HASH_KEY_STRING, flags);
 		apr_hash_set(frame.headers, "messagerval", APR_HASH_KEY_STRING, rval);
 		apr_hash_set(frame.headers, "messagercode", APR_HASH_KEY_STRING, rcode);
