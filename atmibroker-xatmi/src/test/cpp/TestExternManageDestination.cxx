@@ -131,7 +131,7 @@ void TestExternManageDestination::test_stored_messages() {
 	}
 
 	// Advertise the service
-	int toCheck = tpadvertise((char*) "TestOne", test_extern_service);
+	int toCheck = tpadvertise((char*) "TestOne", qservice);
 	userlogc((char*) "TestExternManageDestination %d %d", toCheck, tperrno);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toCheck != -1);
@@ -140,13 +140,14 @@ void TestExternManageDestination::test_stored_messages() {
 	maxSleep = 10;
 	while (msgCnt > 0 && maxSleep-- > 0)
 		if (sleep(1) != 0)
-			break;
+		break;
+	BT_ASSERT(msgCnt == 0);
 
 	// Shutdown the server
 	serverdone();
 
 	// Advertise the service
-	toCheck = tpadvertise((char*) "TestOne", test_extern_service);
+	toCheck = tpadvertise((char*) "TestOne", qservice);
 	userlogc((char*) "TestExternManageDestination %d %d", toCheck, tperrno);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toCheck != -1);
@@ -156,6 +157,7 @@ void TestExternManageDestination::test_stored_messages() {
 	while (msgCnt > 0 && maxSleep-- > 0)
 		if (sleep(1) != 0)
 			break;
+	BT_ASSERT(msgCnt == 0);
 }
 
 void test_extern_service(TPSVCINFO *svcinfo) {
@@ -170,4 +172,11 @@ void qservice(TPSVCINFO *svcinfo) {
 	userlogc((char*) "svc: %s data: %s len: %d flags: %d", svcinfo->name,
 			svcinfo->data, svcinfo->len, svcinfo->flags);
 	msgCnt -= 1;
+
+	if (msgCnt == 0) {
+		int err = tpunadvertise(SERVICE);
+
+		if (tperrno != 0 || err == -1)
+			userlogc((char*) "unadvertise error: %d %d", err, tperrno);
+	}
 }
