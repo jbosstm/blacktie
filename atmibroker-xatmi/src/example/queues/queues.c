@@ -40,7 +40,7 @@ static void qservice(TPSVCINFO *svcinfo) {
 }
 
 static int put_messages2(unsigned int cnt, unsigned int pri) {
-	msg_ctrl_t ctrl;
+	msg_opts_t opts;
 	int i;
 
 	for (i = 0; i < cnt; i++) {
@@ -49,11 +49,11 @@ static int put_messages2(unsigned int cnt, unsigned int pri) {
 		// Send messages in increasing order of priority. Thus sending 10 messages should
 		// be delivered in reverse order (since priorities range from 0 to 9 with 0 being the lowest
 		// so message number 10 will have the highest priority).
-		ctrl.priority = pri;
-		sprintf(msg, (char*) "msg %d: pri %d", i, ctrl.priority);
+		opts.priority = pri;
+		sprintf(msg, (char*) "msg %d: pri %d", i, opts.priority);
 
 		long sendlen = strlen(msg) + 1;
-		char* sendbuf = tpqalloc(&ctrl, (char*) "X_OCTET", NULL, sendlen);
+		char* sendbuf = btalloc(&opts, (char*) "X_OCTET", NULL, sendlen);
 		(void) strcpy(sendbuf, msg);
 		userlogc((char*) "put msg: %s", msg);
 		int cd = tpacall(SERVICE, sendbuf, sendlen, TPNOREPLY);
@@ -68,7 +68,7 @@ static int put_messages2(unsigned int cnt, unsigned int pri) {
 }
 
 static int put_messages(unsigned int cnt) {
-	msg_ctrl_t ctrl;
+	msg_opts_t opts;
 	int i;
 
 	for (i = 0; i < cnt; i++) {
@@ -77,11 +77,11 @@ static int put_messages(unsigned int cnt) {
 		// Send messages in increasing order of priority. Thus sending 10 messages should
 		// be delivered in reverse order (since priorities range from 0 to 9 with 0 being the lowest
 		// so message number 10 will have the highest priority).
-		ctrl.priority = i % 10;
-		sprintf(msg, (char*) "msg %d: pri %d", i, ctrl.priority);
+		opts.priority = i % 10;
+		sprintf(msg, (char*) "msg %d: pri %d", i, opts.priority);
 
 		long sendlen = strlen(msg) + 1;
-		char* sendbuf = tpqalloc(&ctrl, (char*) "X_OCTET", NULL, sendlen);
+		char* sendbuf = btalloc(&opts, (char*) "X_OCTET", NULL, sendlen);
 		(void) strcpy(sendbuf, msg);
 		int cd = tpacall(SERVICE, sendbuf, sendlen, TPNOREPLY);
 

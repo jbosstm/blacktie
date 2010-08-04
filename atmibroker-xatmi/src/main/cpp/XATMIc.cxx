@@ -37,7 +37,7 @@
 #include "AtmiBrokerEnv.h"
 #include "ServiceDispatcher.h"
 
-static long tptypes(msg_ctrl_t** ctr, char* ptr, char* type, char* subtype);
+static long tptypes(msg_opts_t** ctr, char* ptr, char* type, char* subtype);
 
 std::vector<int> sessionIds;
 SynchronizableObject lock;
@@ -87,7 +87,8 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 	int toReturn = -1;
 
 	if (session->getCanSend() || rval == DISCON) {
-		msg_ctrl_t* ctrl = NULL;
+		msg_opts_t* mopts = NULL;
+
 		try {
 			LOG4CXX_TRACE(loggerXATMI, (char*) "allocating data to go: "
 					<< ilen);
@@ -108,7 +109,7 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 				memset(message.type, '\0', MAX_TYPE_SIZE + 1);
 				message.subtype = (char*) malloc(MAX_SUBTYPE_SIZE + 1);
 				memset(message.subtype, '\0', MAX_SUBTYPE_SIZE + 1);
-				tptypes(&ctrl, idata, message.type, message.subtype);
+				tptypes(&mopts, idata, message.type, message.subtype);
 			}
 			if (message.type == NULL) {
 				message.type = (char*) "";
@@ -123,8 +124,8 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 				if (TPNOREPLY & flags) {
 					message.ttl = mqConfig.noReplyTimeToLive;
 					// see if there are any extra headers
-					if (ctrl != NULL)
-						message.priority = ctrl->priority;
+					if (mopts != NULL)
+						message.priority = mopts->priority;
 				} else {
 					message.ttl = mqConfig.timeToLive * 1000;
 				}
@@ -441,10 +442,10 @@ int tpunadvertise(char * svcname) {
 }
 
 char* tpalloc(char* type, char* subtype, long size) {
-	return ::tpqalloc((msg_ctrl_t *) NULL, type, subtype, size);
+	return ::btalloc((msg_opts_t *) NULL, type, subtype, size);
 }
 
-char* tpqalloc(msg_ctrl_t* ctrl, char* type, char* subtype, long size) {
+char* btalloc(msg_opts_t* mopts, char* type, char* subtype, long size) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpalloc type: " << type << " size: "
 			<< size);
 	if (subtype) {
@@ -453,7 +454,7 @@ char* tpqalloc(msg_ctrl_t* ctrl, char* type, char* subtype, long size) {
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	char* toReturn = NULL;
 	if (clientinit() != -1) {
-		toReturn = AtmiBrokerMem::get_instance()->tpalloc(ctrl, type, subtype, size,
+		toReturn = AtmiBrokerMem::get_instance()->tpalloc(mopts, type, subtype, size,
 				false);
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpalloc returning" << " tperrno: "
@@ -488,13 +489,13 @@ long tptypes(char* ptr, char* type, char* subtype) {
 	return tptypes(NULL, ptr, type, subtype);
 }
 
-static long tptypes(msg_ctrl_t** ctrl, char* ptr, char* type, char* subtype) {
+static long tptypes(msg_opts_t** mopts, char* ptr, char* type, char* subtype) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tptypes called");
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	LOG4CXX_TRACE(loggerXATMI, (char*) "set the specific");
 	long toReturn = -1;
 	if (clientinit() != -1) {
-		toReturn = AtmiBrokerMem::get_instance()->tptypes(ctrl, ptr, type, subtype);
+		toReturn = AtmiBrokerMem::get_instance()->tptypes(mopts, ptr, type, subtype);
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tptypes return: " << toReturn
 			<< " tperrno: " << tperrno);

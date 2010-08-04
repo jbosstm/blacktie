@@ -22,6 +22,7 @@
 #include "AtmiBrokerServerControl.h"
 
 #include "xatmi.h"
+#include "xxatmi.h"
 #include "malloc.h"
 
 #include "ace/OS_NS_stdlib.h"
@@ -36,11 +37,16 @@ extern void qservice(TPSVCINFO *svcinfo);
 }
 #endif
 
+static void qservice(TPSVCINFO *svcinfo);
+
+static char* SERVICE = (char*) "TestOne";
+static int msgId;
 static int msgCnt;
+static bool qunadvertised = false;
 
 void TestExternManageDestination::setUp() {
 	userlogc((char*) "TestExternManageDestination::setUp");
-	unadvertised = false;
+	qunadvertised = false;
 
 	ACE_OS::putenv("BLACKTIE_SERVER_ID=1");
 
@@ -51,7 +57,7 @@ void TestExternManageDestination::setUp() {
 void TestExternManageDestination::tearDown() {
 	userlogc((char*) "TestTPACall::tearDown");
 
-	if (unadvertised == false) {
+	if (!qunadvertised) {
 		int toCheck = tpunadvertise((char*) "TestOne");
 		userlogc((char*) "TestExternManageDestination %d %d", toCheck, tperrno);
 		BT_ASSERT(tperrno == 0);
@@ -114,51 +120,98 @@ void TestExternManageDestination::test_tpcall_without_service() {
 	BT_ASSERT(tperrno == TPETIME);
 }
 
+static void send_one(int id, int pri) {
+	msg_opts_t mopts;
+	char msg[16];
+	char* buf;
+	long len;
+	int cd;
+
+	mopts.priority = pri;
+	sprintf(msg, (char*) "%d", id);
+	len = strlen(msg) + 1;
+
+	if (pri < 0)
+		buf = tpalloc((char*) "X_OCTET", NULL, len);
+	else
+		buf = btalloc(&mopts, (char*) "X_OCTET", NULL, len);
+
+	(void) strcpy(buf, msg);
+	cd = tpacall((char*) "TestOne", buf, len, TPNOREPLY);
+
+	BT_ASSERT(tperrno == 0 && cd == 0);
+
+	tpfree(buf);
+}
+
 void TestExternManageDestination::test_stored_messages() {
-	for (int i = 0; i < 10; i++) {
+	int i;
+
+	for (i = 0; i < 10; i++)
+		send_one(i, -1);
+
+	msgId = 0;
+
+	// retrieve the messages in two goes:
+	for (i = 0; i < 2; i++) {
 		char msg[80];
-		sprintf(msg, (char*) "request %d", i);
-		long sendlen = strlen(msg) + 1;
-		char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
-		(void) strcpy(sendbuf, msg);
-		int cd = tpacall("TestOne", sendbuf, sendlen, TPNOREPLY);
+		// Advertise the service
+		int toCheck = tpadvertise((char*) "TestOne", qservice);
+		sprintf(msg, "tpadvertise error: %d %d", tperrno, toCheck);
+		BT_ASSERT_MESSAGE(msg, tperrno == 0 && toCheck != -1);
 
-		if (cd != 0 || tperrno != 0)
-			userlogc((char*) "tpacall returned %d %d", cd, tperrno);
-		else
-			userlogc((char*) "sent %d:", i);
+		msgCnt = 5;
+		maxSleep = 10;
+		while (msgCnt > 0 && maxSleep-- > 0) {
+			if (sleep(1) != 0) {
+				userlogc((char*) "test_stored_messages interrupted");
+				break;
+			}
+		}
 
-		tpfree(sendbuf);
+		sprintf(msg, "not all messages were delivered: %d remaining", msgCnt);
+		BT_ASSERT_MESSAGE(msg, msgCnt == 0);
+
+		serverdone();
 	}
+}
 
-	// Advertise the service
-	int toCheck = tpadvertise((char*) "TestOne", qservice);
-	userlogc((char*) "TestExternManageDestination %d %d", toCheck, tperrno);
-	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toCheck != -1);
+void TestExternManageDestination::test_stored_message_priority() {
+	int i;
 
-	msgCnt = 5;
-	maxSleep = 10;
-	while (msgCnt > 0 && maxSleep-- > 0)
-		if (sleep(1) != 0)
-		break;
-	BT_ASSERT(msgCnt == 0);
+	// send messages with out of order ids - the qservice should receive them in order
+	send_one(8, 1);
+	send_one(6, 3);
+	send_one(4, 5);
+	send_one(2, 7);
+	send_one(0, 9);
+	send_one(9, 0);
+	send_one(7, 2);
+	send_one(5, 4);
+	send_one(3, 6);
+	send_one(1, 8);
 
-	// Shutdown the server
-	serverdone();
+	msgId = 0;
 
-	// Advertise the service
-	toCheck = tpadvertise((char*) "TestOne", qservice);
-	userlogc((char*) "TestExternManageDestination %d %d", toCheck, tperrno);
-	BT_ASSERT(tperrno == 0);
-	BT_ASSERT(toCheck != -1);
+	// retrieve the messages in two goes:
+	for (i = 0; i < 1; i++) {
+		char msg[80];
+		// Advertise the service
+		int toCheck = tpadvertise((char*) "TestOne", qservice);
+		sprintf(msg, "tpadvertise error: %d %d", tperrno, toCheck);
+		BT_ASSERT_MESSAGE(msg, tperrno == 0 && toCheck != -1);
 
-	msgCnt = 5;
-	maxSleep = 10;
-	while (msgCnt > 0 && maxSleep-- > 0)
-		if (sleep(1) != 0)
-			break;
-	BT_ASSERT(msgCnt == 0);
+		msgCnt = 10;
+		maxSleep = 10;
+		while (msgCnt > 0 && maxSleep-- > 0)
+			if (sleep(1) != 0)
+				break;
+
+		sprintf(msg, "not all messages were delivered: %d remaining", msgCnt);
+		BT_ASSERT_MESSAGE(msg, msgCnt == 0);
+
+		serverdone();
+	}
 }
 
 void test_extern_service(TPSVCINFO *svcinfo) {
@@ -170,14 +223,21 @@ void test_extern_service(TPSVCINFO *svcinfo) {
 }
 
 void qservice(TPSVCINFO *svcinfo) {
-	userlogc((char*) "svc: %s data: %s len: %d flags: %d", svcinfo->name,
-			svcinfo->data, svcinfo->len, svcinfo->flags);
+	char msg[80];
+	int id = atoi(svcinfo->data);
+
+	userlogc((char*) "qservice %d %d %d", id, msgCnt, msgId);
+	sprintf(msg, "Out of order messages: %d %d", msgId, id);
+	BT_ASSERT_MESSAGE(msg, msgId == id);
+
 	msgCnt -= 1;
+	msgId += 1;
 
 	if (msgCnt == 0) {
 		int err = tpunadvertise("TestOne");
+		qunadvertised = true;
 
-		if (tperrno != 0 || err == -1)
-			userlogc((char*) "unadvertise error: %d %d", err, tperrno);
+		sprintf(msg, "unadvertise error: %d %d", tperrno, err);
+		BT_ASSERT_MESSAGE(msg, tperrno == 0 && err != -1);
 	}
 }

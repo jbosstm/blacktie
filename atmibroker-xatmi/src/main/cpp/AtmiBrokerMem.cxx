@@ -94,7 +94,7 @@ AtmiBrokerMem::~AtmiBrokerMem() {
 }
 
 char*
-AtmiBrokerMem::tpalloc(msg_ctrl_t* ctrl, char* type, char* subtype, long size,
+AtmiBrokerMem::tpalloc(msg_opts_t* mopts, char* type, char* subtype, long size,
 		bool serviceAllocated) {
 	char* toReturn = NULL;
 	LOG4CXX_TRACE(logger, (char*) "tpalloc locking");
@@ -141,7 +141,7 @@ AtmiBrokerMem::tpalloc(msg_ctrl_t* ctrl, char* type, char* subtype, long size,
 		MemoryInfo memoryInfo;
 		LOG4CXX_TRACE(logger, (char*) "tpalloc - created memoryInfo");
 		memoryInfo.memoryPtr = (char*) malloc(size);
-		memoryInfo.ctrl = ctrl;
+		memoryInfo.mopts = mopts;
 		memoryInfo.size = size;
 		memset(memoryInfo.memoryPtr, '\0', memoryInfo.size);
 		LOG4CXX_TRACE(logger, (char*) "tpalloc - sized: " << size);
@@ -306,7 +306,7 @@ long AtmiBrokerMem::tptypes(char* ptr, char* type, char* subtype) {
 	return tptypes(NULL, ptr, type, subtype);
 }
 
-long AtmiBrokerMem::tptypes(msg_ctrl_t** ctrl, char* ptr, char* type, char* subtype) {
+long AtmiBrokerMem::tptypes(msg_opts_t** mopts, char* ptr, char* type, char* subtype) {
 	LOG4CXX_TRACE(logger, (char*) "tptypes locking");
 	lock->lock();
 	LOG4CXX_TRACE(logger, (char*) "tptypes locked");
@@ -328,8 +328,8 @@ long AtmiBrokerMem::tptypes(msg_ctrl_t** ctrl, char* ptr, char* type, char* subt
 					strncpy(subtype, memoryInfo.subtype, MAX_SUBTYPE_SIZE);
 				}
 
-				if (ctrl != NULL)
-					*ctrl = memoryInfo.ctrl;
+				if (mopts != NULL)
+					*mopts = memoryInfo.mopts;
 
 				toReturn = memoryInfo.size;
 				break;

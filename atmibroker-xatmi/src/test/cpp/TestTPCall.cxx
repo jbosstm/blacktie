@@ -298,7 +298,7 @@ void TestTPCall::test_tpcall_with_TPNOCHANGE() {
 
 	char* toTestS = (char*) malloc(110);
 	sprintf(toTestS, "%ld", toTest);
-	BT_ASSERT_MESSAGE(toTestS, toTest >= sizeof(ACCT_INFO));
+	BT_ASSERT_MESSAGE(toTestS, toTest >= (int) sizeof(ACCT_INFO));
 	free(toTestS);
 
 	free(type);

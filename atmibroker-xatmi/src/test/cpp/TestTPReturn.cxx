@@ -183,7 +183,7 @@ void testtpreturn_service_tpurcode(TPSVCINFO *svcinfo) {
 
 void testtpreturn_service_opensession1(TPSVCINFO *svcinfo) {
 	userlogc((char*) "testtpreturn_service_opensession1");
-	int cd = ::tpacall((char*) "TestTPReturnB", (char *) svcinfo->data, svcinfo->len,
+	(void) ::tpacall((char*) "TestTPReturnB", (char *) svcinfo->data, svcinfo->len,
 			0);
 	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
 }

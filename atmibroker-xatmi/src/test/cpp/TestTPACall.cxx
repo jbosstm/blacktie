@@ -144,12 +144,12 @@ void TestTPACall::test_tpacall_tprecv() {
 	free(cdS);
 
 	long revent = 0;
-	int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
+	(void) ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEBADDESC);
 
 	// Drain the response
-	int toTest = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
+	(void) ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "testtpacall_service") == 0);

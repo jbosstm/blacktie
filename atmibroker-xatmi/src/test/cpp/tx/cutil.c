@@ -380,6 +380,7 @@ static int test4(int *cnt)
 	return 0;
 }
 
+#if defined(TX_RC)   // test recovery
 /* cause the program to halt during phase 2 of the transaction 2PC protocol */
 static int testrc(int *cnt)
 {
@@ -407,6 +408,7 @@ static int testrc(int *cnt)
 
 	return 0;
 }
+#endif
 
 int run_tests(product_t *prod_array)
 {

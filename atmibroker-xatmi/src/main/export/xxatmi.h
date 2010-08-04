@@ -25,11 +25,11 @@
 extern "C" {
 #endif
 
-typedef struct msg_ctrl {
+typedef struct msg_opts {
 	int priority;	/* msg priority from 0 (lowest) to 9 */
-} msg_ctrl_t;
+} msg_opts_t;
 
-extern BLACKTIE_XATMI_DLL char* tpqalloc(msg_ctrl_t* ctrl, char* type, char* subtype, long size);
+extern BLACKTIE_XATMI_DLL char* btalloc(msg_opts_t* ctrl, char* type, char* subtype, long size);
 #ifdef __cplusplus
 }
 #endif

@@ -27,12 +27,15 @@ class TestExternManageDestination : public BaseServerTest {
 	CPPUNIT_TEST_SUITE( TestExternManageDestination);
 //	CPPUNIT_TEST( test_tpcall_with_service);
 //	CPPUNIT_TEST( test_tpcall_without_service);
-		CPPUNIT_TEST( test_stored_messages);
+	CPPUNIT_TEST( test_stored_messages);
+	CPPUNIT_TEST( test_stored_message_priority);
 	CPPUNIT_TEST_SUITE_END();
 public:
 	void test_tpcall_with_service();
 	void test_tpcall_without_service();
 	void test_stored_messages();
+	void test_stored_message_priority();
+
 	virtual void setUp();
 	virtual void tearDown();
 
