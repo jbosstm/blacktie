@@ -147,6 +147,7 @@ static void send_one(int id, int pri) {
 void TestExternManageDestination::test_stored_messages() {
 	int i;
 
+	userlogc((char*) "test_stored_messages");
 	for (i = 0; i < 10; i++)
 		send_one(i, -1);
 
@@ -156,6 +157,7 @@ void TestExternManageDestination::test_stored_messages() {
 	for (i = 0; i < 2; i++) {
 		char msg[80];
 		// Advertise the service
+		userlogc((char*) "test_stored_messages: retrieving 5");
 		int toCheck = tpadvertise((char*) SERVICE, qservice);
 		sprintf(msg, "tpadvertise error: %d %d", tperrno, toCheck);
 		BT_ASSERT_MESSAGE(msg, tperrno == 0 && toCheck != -1);
@@ -169,16 +171,19 @@ void TestExternManageDestination::test_stored_messages() {
 			}
 		}
 
-		sprintf(msg, "not all messages were delivered: %d remaining", msgCnt);
+		sprintf(msg, "not all messages were delivered: %d remaining sent %d", msgCnt, ((i + 1) * 5));
 		BT_ASSERT_MESSAGE(msg, msgCnt == 0);
 
 		serverdone();
 	}
+
+	userlogc((char*) "test_stored_message passed");
 }
 
 void TestExternManageDestination::test_stored_message_priority() {
 	int i;
 
+	userlogc((char*) "test_stored_message_priority");
 	// send messages with out of order ids - the qservice should receive them in order
 	send_one(8, 1);
 	send_one(6, 3);
@@ -212,6 +217,8 @@ void TestExternManageDestination::test_stored_message_priority() {
 
 		serverdone();
 	}
+
+	userlogc((char*) "test_stored_message_priority passed");
 }
 
 void test_extern_service(TPSVCINFO *svcinfo) {
