@@ -47,6 +47,10 @@ Make sure that the naming, messaging and transaction services are running, by ru
 4. RUN THE TRADITIONAL XATMI SERVICE
 
 4.1. CREATE THE SERVER
+NOTE: Alternatively you can try our (example) makefile
+cd into xatmi_service
+make clean log4cxx.properties server
+NOTE: Standard instructions
 cd into xatmi_service
 generate_server -Dservice.names=CREDIT,DEBIT -Dserver.includes=CreditService.c,DebitService.c
 NOTE: If you get the following error you have not installed ant-contrib into your ANT distribution:
@@ -89,6 +93,10 @@ cd into client
 Once the XATMI service and EJB are deployed fully into the application server, you can build the client.
 generate_client -Dclient.includes=client.c
 ./client
+NOTE: Alternatively you can try our (example) makefile
+cd into client
+make clean log4cxx.properties client
+./client
 
 4.3 SHUTDOWN THE SERVER
 cd into xatmi_service
@@ -119,6 +127,10 @@ mvn jboss:deploy
 cd into client
 Once the XATMI service and EJB are deployed fully into the application server, you can build the client@
 generate_client -Dclient.includes=client.c
+./client
+NOTE: Alternatively you can try our (example) makefile
+cd into client
+make clean log4cxx.properties client
 ./client
 
 5.4 UNDEPLOY THE SERVICES
