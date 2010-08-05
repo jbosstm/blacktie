@@ -195,10 +195,33 @@ fi
 
 if [ "$1" ]; then
 if [ "$1" = "integration1" ]; then
-echo "Running Integration Example"
+echo "Running integration 1 XATMI"
+cd $BLACKTIE_HOME/examples/integration1/xatmi_service/
+generate_server -Dservice.names=CREDIT,DEBIT -Dserver.includes="CreditService.c,DebitService.c"
+if [ "$?" != "0" ]; then
+        exit -1
+fi
+btadmin startup
+if [ "$?" != "0" ]; then
+        exit -1
+fi
+cd $BLACKTIE_HOME/examples/integration1/client/
+generate_client -Dclient.includes=client.c 
+sleep 10
+./client 
+if [ "$?" != "0" ]; then
+	exit -1
+fi
+cd $BLACKTIE_HOME/examples/integration1/xatmi_service/
+btadmin shutdown
+if [ "$?" != "0" ]; then
+	exit -1
+fi
+fi
+fi
 
 # RUN THE INTEGRATION 1 EXAMPLE
-echo "Test 7: Running EJB examples"
+echo "Test 7: Converted XATMI service"
 cd $BLACKTIE_HOME/examples/integration1/ejb
 mvn install
 if [ "$?" != "0" ]; then
@@ -225,30 +248,15 @@ generate_client -Dclient.includes=client.c
 if [ "$?" != "0" ]; then
 	exit -1
 fi
-
-cd $BLACKTIE_HOME/examples/integration1/xatmi_service/
-generate_server -Dservice.names=CREDIT,DEBIT -Dserver.includes="CreditService.c,DebitService.c"
-if [ "$?" != "0" ]; then
-        exit -1
-fi
-btadmin startup
-if [ "$?" != "0" ]; then
-        exit -1
-fi
-cd $BLACKTIE_HOME/examples/integration1/client/
-generate_client -Dclient.includes=client.c 
-sleep 10
-./client 
+cd $BLACKTIE_HOME/examples/integration1/xatmi_adapter/ear/
+mvn jboss:undeploy
 if [ "$?" != "0" ]; then
 	exit -1
 fi
-cd $BLACKTIE_HOME/examples/integration1/xatmi_service/
-btadmin shutdown
+cd $BLACKTIE_HOME/examples/integration1/ejb/ear/
+mvn jboss:undeploy
 if [ "$?" != "0" ]; then
 	exit -1
-fi
-
-fi
 fi
 
 # LET THE USER KNOW THE OUTPUT

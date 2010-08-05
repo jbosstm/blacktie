@@ -127,10 +127,24 @@ cd %BLACKTIE_HOME%\examples\mdb
 mvn install
 IF %ERRORLEVEL% NEQ 0 exit -1
 
-IF ["%1"] EQU ["integration1"] (
-echo "Running txfooapp"
 
 rem RUN THE INTEGRATION 1 EXAMPLE
+IF ["%1"] EQU ["integration1"] (
+echo "Running integration 1 XATMI"
+cd %BLACKTIE_HOME%\examples\integration1\xatmi_service\
+generate_server -Dservice.names=CREDIT,DEBIT -Dserver.includes="CreditService.c,DebitService.c"
+IF %ERRORLEVEL% NEQ 0 exit -1
+btadmin startup
+IF %ERRORLEVEL% NEQ 0 exit -1
+cd $BLACKTIE_HOME\examples\integration1\client\
+generate_client -Dclient.includes=client.c 
+@ping 127.0.0.1 -n 10 -w 1000 > nul
+.\client 
+IF %ERRORLEVEL% NEQ 0 exit -1
+cd $BLACKTIE_HOME\examples\integration1\xatmi_service\
+btadmin shutdown
+IF %ERRORLEVEL% NEQ 0 exit -1
+)
 cd %BLACKTIE_HOME%\examples\integration1\ejb
 mvn install
 IF %ERRORLEVEL% NEQ 0 exit -1
@@ -147,27 +161,12 @@ cd $BLACKTIE_HOME\examples\integration1\client\
 generate_client -Dclient.includes=client.c 
 .\client
 IF %ERRORLEVEL% NEQ 0 exit -1
-cd %BLACKTIE_HOME%\examples\integration1\ejb\ear
-mvn jboss:undeploy
-IF %ERRORLEVEL% NEQ 0 exit -1
 cd $BLACKTIE_HOME\examples\integration1\xatmi_adapter\ear\
 mvn jboss:undeploy
 IF %ERRORLEVEL% NEQ 0 exit -1
-
-cd %BLACKTIE_HOME%\examples\integration1\xatmi_service\
-generate_server -Dservice.names=CREDIT,DEBIT -Dserver.includes="CreditService.c,DebitService.c"
+cd %BLACKTIE_HOME%\examples\integration1\ejb\ear
+mvn jboss:undeploy
 IF %ERRORLEVEL% NEQ 0 exit -1
-btadmin startup
-IF %ERRORLEVEL% NEQ 0 exit -1
-cd $BLACKTIE_HOME\examples\integration1\client\
-generate_client -Dclient.includes=client.c 
-@ping 127.0.0.1 -n 10 -w 1000 > nul
-.\client 
-IF %ERRORLEVEL% NEQ 0 exit -1
-cd $BLACKTIE_HOME\examples\integration1\xatmi_service\
-btadmin shutdown
-IF %ERRORLEVEL% NEQ 0 exit -1
-)
 
 rem LET THE USER KNOW THE OUTPUT
 echo "All samples ran OK"
