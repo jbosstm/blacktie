@@ -163,7 +163,7 @@ void TestExternManageDestination::test_stored_messages() {
 		msgCnt = 5;
 		maxSleep = 10;
 		while (msgCnt > 0 && maxSleep-- > 0) {
-			if (sleep(1) != 0) {
+			if (ACE_OS::sleep(1) != 0) {
 				userlogc((char*) "test_stored_messages interrupted");
 				break;
 			}
@@ -204,7 +204,7 @@ void TestExternManageDestination::test_stored_message_priority() {
 		msgCnt = 10;
 		maxSleep = 10;
 		while (msgCnt > 0 && maxSleep-- > 0)
-			if (sleep(1) != 0)
+			if (ACE_OS::sleep(1) != 0)
 				break;
 
 		sprintf(msg, "not all messages were delivered: %d remaining", msgCnt);
