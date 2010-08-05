@@ -32,3 +32,5 @@ client: client.o
 
 clean:
 	rm -f client client.o
+
+all: log4cxx.properties client

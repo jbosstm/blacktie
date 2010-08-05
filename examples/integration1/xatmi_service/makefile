@@ -38,3 +38,5 @@ server: server.o DebitService.o CreditService.o
 
 clean:
 	rm -f server server.o DebitService.o CreditService.o server.c
+
+all: log4cxx.properties server
