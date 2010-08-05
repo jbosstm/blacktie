@@ -29,6 +29,8 @@
 #include "ace/OS_NS_stdlib.h"
 #include "ace/OS_NS_stdio.h"
 
+#include "Sleeper.h"
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
@@ -166,10 +168,7 @@ void TestExternManageDestination::test_stored_messages() {
 		msgCnt = 5;
 		maxSleep = 10;
 		while (msgCnt > 0 && maxSleep-- > 0) {
-			if (ACE_OS::sleep(1) != 0) {
-				userlogc((char*) "test_stored_messages interrupted");
-				break;
-			}
+			::sleeper(1);
 		}
 
 		sprintf(msg, "not all messages were delivered: %d remaining sent %d", msgCnt, ((i + 1) * 5));
@@ -210,8 +209,7 @@ void TestExternManageDestination::test_stored_message_priority() {
 		msgCnt = 10;
 		maxSleep = 10;
 		while (msgCnt > 0 && maxSleep-- > 0)
-			if (ACE_OS::sleep(1) != 0)
-				break;
+			::sleeper(1);
 
 		sprintf(msg, "not all messages were delivered: %d remaining", msgCnt);
 		BT_ASSERT_MESSAGE(msg, msgCnt == 0);
