@@ -135,6 +135,8 @@ int serverinit(int argc, char** argv) {
 		const char* serverId = ACE_OS::getenv("BLACKTIE_SERVER_ID");
 		if (serverId != NULL) {
 			serverid = atoi(serverId);
+		} else {
+			serverid = -1;
 		}
 		if (argc > 0) {
 			parsecmdline(argc, argv);
