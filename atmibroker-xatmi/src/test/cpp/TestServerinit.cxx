@@ -103,12 +103,14 @@ void TestServerinit::test_config_cmdline() {
 	result = serverinit(argc2, argv2);
 	BT_ASSERT(result == -1);
 	serverdone();
+}
 
+void TestServerinit::test_requires_id() {
 	/* make the -i paramenter mandatory */
 	char* argv3[] = {(char*)"server"};
 	int argc3 = sizeof(argv3)/sizeof(char*);
 
-	result = serverinit(argc3, argv3);
+	int result = serverinit(argc3, argv3);
 	BT_ASSERT(result == -1);
 
 	result = serverdone();

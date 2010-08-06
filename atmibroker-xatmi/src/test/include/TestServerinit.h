@@ -28,12 +28,14 @@ class TestServerinit: public BaseTest {
 	CPPUNIT_TEST_SUITE( TestServerinit);
 	CPPUNIT_TEST( test_serverinit);
 	CPPUNIT_TEST( test_config_cmdline);
+	CPPUNIT_TEST( test_requires_id);
 	CPPUNIT_TEST( test_config_env);
 	CPPUNIT_TEST_SUITE_END();
 
 public:
 	void test_serverinit();
 	void test_config_cmdline();
+	void test_requires_id();
 	void test_config_env();
 };
 
