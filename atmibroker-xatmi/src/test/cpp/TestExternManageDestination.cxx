@@ -56,7 +56,7 @@ void TestExternManageDestination::setUp() {
 }
 
 void TestExternManageDestination::tearDown() {
-	userlogc((char*) "TestTPACall::tearDown");
+	userlogc((char*) "TestExternManageDestination::tearDown");
 
 	if (!qunadvertised) {
 		int toCheck = tpunadvertise((char*) "TestOne");
