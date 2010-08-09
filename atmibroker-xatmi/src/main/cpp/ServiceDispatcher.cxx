@@ -180,9 +180,9 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 	// PREPARE THE STRUCT FOR SENDING TO THE CLIENT
 	TPSVCINFO tpsvcinfo;
-	memcpy(tpsvcinfo.name, message.serviceName, XATMI_SERVICE_NAME_LENGTH);
 	memset(&tpsvcinfo, '\0', sizeof(tpsvcinfo));
-	strcpy(tpsvcinfo.name, this->serviceName);
+	memcpy(tpsvcinfo.name, message.serviceName, XATMI_SERVICE_NAME_LENGTH);
+	//strdup(tpsvcinfo.name, this->serviceName);
 	tpsvcinfo.flags = message.flags;
 	tpsvcinfo.len = message.len;
 

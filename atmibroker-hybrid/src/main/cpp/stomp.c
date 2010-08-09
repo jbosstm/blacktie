@@ -181,7 +181,7 @@ apr_status_t stomp_read_line(stomp_connection *connection, char **data, int* len
          // Keep reading bytes till end of line
          if( tail->data[i-1]=='\n') {
             // Null terminate the string instead of having the newline
-        	userlogc_trace("Null terminating the string");
+        	//userlogc_trace("Null terminating the string");
 		    tail->data[i-1] = 0;
 			break;
          } else if( tail->data[i-1]==0 ) {
