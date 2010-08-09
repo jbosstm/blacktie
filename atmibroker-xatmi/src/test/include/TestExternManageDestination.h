@@ -40,7 +40,6 @@ public:
 	virtual void tearDown();
 
 private:
-	bool unadvertised;
 	int maxSleep;
 };
 

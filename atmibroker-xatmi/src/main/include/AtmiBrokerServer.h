@@ -80,11 +80,12 @@ private:
 	ConnectionManager connections;
 	std::vector<ServiceData> serviceData;
 	std::vector<ServiceStatus> serviceStatus;
-	std::vector<char*> advertisedServices;
 	char* serverName;
 	ServerInfo serverInfo;
 	SynchronizableObject* finish;
 	bool isPause;
+	
+	std::vector<ServiceDispatcher*> serviceDispatchersToDelete;
 
 	// The following are not implemented
 	//

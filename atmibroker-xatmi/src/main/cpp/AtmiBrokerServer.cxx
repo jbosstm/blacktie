@@ -413,6 +413,14 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	server_done();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "Server done");
 
+	for (std::vector<ServiceDispatcher*>::iterator dispatcher =
+			serviceDispatchersToDelete.begin(); dispatcher
+			!= serviceDispatchersToDelete.end(); dispatcher++) {
+		delete (*dispatcher);
+		LOG4CXX_WARN(loggerAtmiBrokerServer, (char*) "deleted dispatcher");
+	}
+	serviceDispatchersToDelete.clear();
+
 	if (finish != NULL) {
 		delete finish;
 		finish = NULL;
@@ -725,7 +733,6 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 
 			addDestination(destination, func, service);
 			updateServiceStatus(service, func, true);
-			advertisedServices.push_back(serviceName);
 			LOG4CXX_INFO(loggerAtmiBrokerServer, (char*) "advertised service "
 					<< serviceName);
 		} else {
@@ -759,6 +766,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 		}
 		free(serviceName);
 	}
+	free(serviceName);
 	return toReturn;
 }
 
@@ -775,10 +783,10 @@ void AtmiBrokerServer::unadvertiseService(char * svcname, bool decrement) {
 	//	Connection* connz = connections.getServerConnection("BAR");
 	//	delete connz;
 
-	for (std::vector<char*>::iterator i = advertisedServices.begin(); i
-			!= advertisedServices.end(); i++) {
-		char* name = (*i);
-		if (strcmp(serviceName, name) == 0) {
+	for (std::vector<ServiceData>::iterator i = serviceData.begin(); i
+			!= serviceData.end(); i++) {
+		if (strncmp((*i).serviceInfo->serviceName, svcname,
+				XATMI_SERVICE_NAME_LENGTH) == 0) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "remove_service_queue: " << serviceName);
 			Destination * destination = removeDestination(serviceName);
@@ -788,8 +796,6 @@ void AtmiBrokerServer::unadvertiseService(char * svcname, bool decrement) {
 			connection->destroyDestination(destination);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "destroyed"
 					<< serviceName);
-			advertisedServices.erase(i);
-			free(name);
 
 			ServiceInfo* service;
 			unsigned int i;
@@ -953,9 +959,10 @@ void AtmiBrokerServer::removeAdminDestination(char* serviceName, bool decrement)
 
 bool AtmiBrokerServer::isAdvertised(char * serviceName) {
 	bool toReturn = false;
-	for (std::vector<char*>::iterator i = advertisedServices.begin(); i
-			!= advertisedServices.end(); i++) {
-		if (strncmp(serviceName, (*i), XATMI_SERVICE_NAME_LENGTH) == 0) {
+	for (std::vector<ServiceData>::iterator i = serviceData.begin(); i
+			!= serviceData.end(); i++) {
+		if (strncmp((*i).serviceInfo->serviceName, serviceName,
+				XATMI_SERVICE_NAME_LENGTH) == 0) {
 			toReturn = true;
 		}
 	}
@@ -1032,7 +1039,7 @@ Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
 			SynchronizableObject* reconnect = NULL;
 
 			for (std::vector<ServiceDispatcher*>::iterator j =
-					(*i).dispatchers.begin(); j != (*i).dispatchers.end();) {
+					(*i).dispatchers.begin(); j != (*i).dispatchers.end(); j++) {
 				ServiceDispatcher* dispatcher = (*j);
 				if (dispatcher != NULL) {
 					LOG4CXX_TRACE(loggerAtmiBrokerServer,
@@ -1042,7 +1049,8 @@ Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
 					LOG4CXX_TRACE(loggerAtmiBrokerServer,
 							(char*) "Deleting dispatcher " << aServiceName);
 					reconnect = dispatcher->getReconnect();
-					delete dispatcher;
+					//delete dispatcher;
+					serviceDispatchersToDelete.push_back(dispatcher);
 					LOG4CXX_TRACE(loggerAtmiBrokerServer,
 							(char*) "Dispatcher deleted " << aServiceName);
 				} else {
@@ -1052,7 +1060,7 @@ Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
 				}
 				LOG4CXX_TRACE(loggerAtmiBrokerServer,
 						(char*) "Erasing dispatcher " << aServiceName);
-				j = (*i).dispatchers.erase(j);
+				//j = (*i).dispatchers.erase(j);
 			}
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "waited for dispatcher: " << aServiceName);

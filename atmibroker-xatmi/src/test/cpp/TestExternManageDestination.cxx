@@ -43,29 +43,16 @@ extern void qservice(TPSVCINFO *svcinfo);
 static char* SERVICE = (char*) "TestOne";
 static int msgId;
 static int msgCnt;
-static bool qunadvertised = false;
 
 void TestExternManageDestination::setUp() {
 	userlogc((char*) "TestExternManageDestination::setUp");
-	qunadvertised = false;
-
-	ACE_OS::putenv("BLACKTIE_SERVER_ID=1");
 
 	// Set up server
-	BaseTest::setUp();
+	BaseServerTest::setUp();
 }
 
 void TestExternManageDestination::tearDown() {
 	userlogc((char*) "TestExternManageDestination::tearDown");
-
-	if (!qunadvertised) {
-		int toCheck = tpunadvertise((char*) "TestOne");
-		userlogc((char*) "TestExternManageDestination %d %d", toCheck, tperrno);
-		BT_ASSERT(tperrno == 0);
-		BT_ASSERT(toCheck != -1);
-	}
-
-	ACE_OS::putenv("BLACKTIE_SERVER_ID=");
 
 	// Clean up server
 	BaseServerTest::tearDown();
@@ -110,7 +97,6 @@ void TestExternManageDestination::test_tpcall_without_service() {
 	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
 	long recvlen = 1;
 
-	qunadvertised = true;
 	int cd = ::tpcall((char*) "TestOne", (char *) sendbuf, sendlen,
 			(char**) &recvbuf, &recvlen, 0);
 	userlogc((char*) "test_tpcall_without_service %d %d", cd, tperrno);
@@ -236,14 +222,13 @@ void qservice(TPSVCINFO *svcinfo) {
 	sprintf(msg, "Out of order messages: %d %d", msgId, id);
 	BT_ASSERT_MESSAGE(msg, msgId == id);
 
-	msgCnt -= 1;
 	msgId += 1;
 
-	if (msgCnt == 0) {
+	if (msgCnt == 1) {
 		int err = tpunadvertise(SERVICE);
-		qunadvertised = true;
 
 		sprintf(msg, "unadvertise error: %d %d", tperrno, err);
 		BT_ASSERT_MESSAGE(msg, tperrno == 0 && err != -1);
 	}
+	msgCnt -= 1;
 }
