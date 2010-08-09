@@ -735,8 +735,6 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 			updateServiceStatus(service, func, true);
 			LOG4CXX_INFO(loggerAtmiBrokerServer, (char*) "advertised service "
 					<< serviceName);
-		} else {
-			free(serviceName);
 		}
 	} catch (CORBA::Exception& e) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer,
@@ -751,7 +749,6 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 			LOG4CXX_ERROR(loggerAtmiBrokerServer,
 					(char*) "Could not remove the destination: " << serviceName);
 		}
-		free(serviceName);
 	} catch (...) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer,
 				(char*) "Could not create the destination: " << serviceName);
@@ -764,7 +761,6 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 			LOG4CXX_ERROR(loggerAtmiBrokerServer,
 					(char*) "Could not remove the destination: " << serviceName);
 		}
-		free(serviceName);
 	}
 	free(serviceName);
 	return toReturn;

@@ -129,7 +129,6 @@ IF %ERRORLEVEL% NEQ 0 exit -1
 
 
 rem RUN THE INTEGRATION 1 EXAMPLE
-IF ["%1"] EQU ["integration1"] (
 echo "Running integration 1 XATMI"
 cd %BLACKTIE_HOME%\examples\integration1\xatmi_service\
 generate_server -Dservice.names=CREDIT,DEBIT -Dserver.includes="CreditService.c,DebitService.c"
@@ -144,7 +143,7 @@ IF %ERRORLEVEL% NEQ 0 exit -1
 cd $BLACKTIE_HOME\examples\integration1\xatmi_service\
 btadmin shutdown
 IF %ERRORLEVEL% NEQ 0 exit -1
-)
+IF ["%1"] EQU ["integration1"] (
 cd %BLACKTIE_HOME%\examples\integration1\ejb
 mvn install
 IF %ERRORLEVEL% NEQ 0 exit -1
@@ -167,6 +166,7 @@ IF %ERRORLEVEL% NEQ 0 exit -1
 cd %BLACKTIE_HOME%\examples\integration1\ejb\ear
 mvn jboss:undeploy
 IF %ERRORLEVEL% NEQ 0 exit -1
+)
 
 rem LET THE USER KNOW THE OUTPUT
 echo "All samples ran OK"

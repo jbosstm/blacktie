@@ -193,9 +193,8 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 
-if [ "$1" ]; then
-if [ "$1" = "integration1" ]; then
-echo "Running integration 1 XATMI"
+# RUN THE INTEGRATION 1 EXAMPLE
+echo "Test 7: Running integration 1 XATMI"
 cd $BLACKTIE_HOME/examples/integration1/xatmi_service/
 generate_server -Dservice.names=CREDIT,DEBIT -Dserver.includes="CreditService.c,DebitService.c"
 if [ "$?" != "0" ]; then
@@ -217,10 +216,9 @@ btadmin shutdown
 if [ "$?" != "0" ]; then
 	exit -1
 fi
-fi
-fi
 
-# RUN THE INTEGRATION 1 EXAMPLE
+if [ "$1" ]; then
+if [ "$1" = "integration1" ]; then
 echo "Test 7: Converted XATMI service"
 cd $BLACKTIE_HOME/examples/integration1/ejb
 mvn install
@@ -257,6 +255,8 @@ cd $BLACKTIE_HOME/examples/integration1/ejb/ear/
 mvn jboss:undeploy
 if [ "$?" != "0" ]; then
 	exit -1
+fi
+fi
 fi
 
 # LET THE USER KNOW THE OUTPUT
