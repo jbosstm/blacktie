@@ -143,21 +143,31 @@ IF %ERRORLEVEL% NEQ 0 exit -1
 cd $BLACKTIE_HOME\examples\integration1\xatmi_service\
 btadmin shutdown
 IF %ERRORLEVEL% NEQ 0 exit -1
-IF ["%1"] EQU ["integration1"] (
+
 cd %BLACKTIE_HOME%\examples\integration1\ejb
 mvn install
 IF %ERRORLEVEL% NEQ 0 exit -1
 cd %BLACKTIE_HOME%\examples\integration1\ejb\ear
-mvn install jboss:deploy
+mvn install
 IF %ERRORLEVEL% NEQ 0 exit -1
 cd $BLACKTIE_HOME\examples\integration1\xatmi_adapter\
 mvn install
 IF %ERRORLEVEL% NEQ 0 exit -1
 cd $BLACKTIE_HOME\examples\integration1\xatmi_adapter\ear\
-mvn install jboss:deploy
+mvn install
 IF %ERRORLEVEL% NEQ 0 exit -1
 cd $BLACKTIE_HOME\examples\integration1\client\
 generate_client -Dclient.includes=client.c 
+IF %ERRORLEVEL% NEQ 0 exit -1
+
+IF ["%1"] EQU ["integration1"] (
+cd %BLACKTIE_HOME%\examples\integration1\ejb\ear
+mvn jboss:deploy
+IF %ERRORLEVEL% NEQ 0 exit -1
+cd $BLACKTIE_HOME\examples\integration1\xatmi_adapter\ear\
+mvn jboss:deploy
+IF %ERRORLEVEL% NEQ 0 exit -1
+cd $BLACKTIE_HOME\examples\integration1\client\
 .\client
 IF %ERRORLEVEL% NEQ 0 exit -1
 cd $BLACKTIE_HOME\examples\integration1\xatmi_adapter\ear\

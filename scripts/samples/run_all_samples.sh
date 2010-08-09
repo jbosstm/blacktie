@@ -217,16 +217,14 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 
-if [ "$1" ]; then
-if [ "$1" = "integration1" ]; then
-echo "Test 7: Converted XATMI service"
+echo "Test 7: Build Converted XATMI service"
 cd $BLACKTIE_HOME/examples/integration1/ejb
 mvn install
 if [ "$?" != "0" ]; then
 	exit -1
 fi
 cd $BLACKTIE_HOME/examples/integration1/ejb/ear/
-mvn install jboss:deploy
+mvn install
 if [ "$?" != "0" ]; then
 	exit -1
 fi
@@ -236,12 +234,30 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 cd $BLACKTIE_HOME/examples/integration1/xatmi_adapter/ear/
-mvn install jboss:deploy
+mvn install
 if [ "$?" != "0" ]; then
 	exit -1
 fi
 cd $BLACKTIE_HOME/examples/integration1/client/
 generate_client -Dclient.includes=client.c
+if [ "$?" != "0" ]; then
+	exit -1
+fi
+
+if [ "$1" ]; then
+if [ "$1" = "integration1" ]; then
+echo "Test 7: Run Converted XATMI service"
+cd $BLACKTIE_HOME/examples/integration1/ejb/ear/
+mvn jboss:deploy
+if [ "$?" != "0" ]; then
+	exit -1
+fi
+cd $BLACKTIE_HOME/examples/integration1/xatmi_adapter/ear/
+mvn jboss:deploy
+if [ "$?" != "0" ]; then
+	exit -1
+fi
+cd $BLACKTIE_HOME/examples/integration1/client/
 ./client 
 if [ "$?" != "0" ]; then
 	exit -1
