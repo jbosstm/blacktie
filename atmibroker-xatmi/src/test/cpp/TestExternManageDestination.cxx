@@ -161,6 +161,7 @@ void TestExternManageDestination::test_stored_messages() {
 		BT_ASSERT_MESSAGE(msg, msgCnt == 0);
 
 		serverdone();
+		startServer();
 	}
 
 	userlogc((char*) "test_stored_message passed");

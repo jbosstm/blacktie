@@ -43,10 +43,17 @@ void loopy(TPSVCINFO* tpsvcinfo) {
 
 void LoopyServerAndClient::testLoopyAll() {
 	userlogc((char*) "testLoopyAll");
+
+#ifdef WIN32
+	char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"-i", (char*)"1"};
+#else
+	char* argv[] = {(char*)"server", (char*)"-c", (char*)"linux", (char*)"-i", (char*)"1"};
+#endif
+	int argc = sizeof(argv)/sizeof(char*);
 	int result = 0;
 
 	for (int i = 0; i < 3; i++) {
-		result = serverinit(0, NULL);
+		result = serverinit(argc, argv);
 		BT_ASSERT(result != -1);
 		BT_ASSERT(tperrno == 0);
 
@@ -70,10 +77,16 @@ void LoopyServerAndClient::testLoopyAll() {
 
 void LoopyServerAndClient::testLoopyAll2() {
 	userlogc((char*) "testLoopyAll2");
+#ifdef WIN32
+	char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"-i", (char*)"1"};
+#else
+	char* argv[] = {(char*)"server", (char*)"-c", (char*)"linux", (char*)"-i", (char*)"1"};
+#endif
+	int argc = sizeof(argv)/sizeof(char*);
 	int result = 0;
 
 	for (int i = 0; i < 3; i++) {
-		result = serverinit(0, NULL);
+		result = serverinit(argc, argv);
 		BT_ASSERT(result != -1);
 		BT_ASSERT(tperrno == 0);
 
@@ -97,8 +110,14 @@ void LoopyServerAndClient::testLoopyAll2() {
 
 void LoopyServerAndClient::testLoopyAdvertise() {
 	userlogc((char*) "testLoopyAdvertise");
+#ifdef WIN32
+	char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"-i", (char*)"1"};
+#else
+	char* argv[] = {(char*)"server", (char*)"-c", (char*)"linux", (char*)"-i", (char*)"1"};
+#endif
+	int argc = sizeof(argv)/sizeof(char*);
 	int result = 0;
-	result = serverinit(0, NULL);
+	result = serverinit(argc, argv);
 	BT_ASSERT(result != -1);
 	BT_ASSERT(tperrno == 0);
 

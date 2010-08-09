@@ -28,9 +28,10 @@ extern "C" {
 void BaseServerTest::setUp() {
 	// Perform initial start up
 	BaseTest::setUp();
+	startServer();
+}
 
-	int result;
-
+void BaseServerTest::startServer() {
 #ifdef WIN32
 		char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"-i", (char*)"1"};
 #else
@@ -38,7 +39,7 @@ void BaseServerTest::setUp() {
 #endif
 	int argc = sizeof(argv)/sizeof(char*);
 
-	result = serverinit(argc, argv);
+	int result = serverinit(argc, argv);
 	// Check that there is no error on server setup
 	BT_ASSERT(result != -1);
 	BT_ASSERT(tperrno == 0);

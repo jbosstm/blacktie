@@ -27,6 +27,7 @@ class BaseServerTest: public BaseTest {
 public:
 	virtual void setUp();
 	virtual void tearDown();
+	void startServer();
 };
 
 #endif // BaseServerTest_H
