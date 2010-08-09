@@ -44,8 +44,8 @@ void ADMIN(TPSVCINFO* svcinfo) {
 		toReturn[0] = '1';
 		server_sigint_handler_callback(0);
 	} else if (strncmp(req, "advertise", 9) == 0) {
-		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get advertise command");
-		if (svc != NULL && strcmp(svc, svcinfo->name) != 0 && advertiseByAdmin(
+		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get advertise command, " << svc << " " << svcinfo->name);
+		if (svc != NULL && strncmp(svc, ".", 1) != 0 && advertiseByAdmin(
 				svc) == 0) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "advertise service "
 					<< svc << " OK");
@@ -56,7 +56,7 @@ void ADMIN(TPSVCINFO* svcinfo) {
 		}
 	} else if (strncmp(req, "unadvertise", 11) == 0) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "get unadvertise command");
-		if (svc != NULL && strcmp(svc, svcinfo->name) != 0
+		if (svc != NULL && strncmp(svc, ".", 1) != 0
 				&& tpunadvertise(svc) == 0) {
 			toReturn[0] = '1';
 			LOG4CXX_DEBUG(loggerAtmiBrokerAdmin, (char*) "unadvertise service "

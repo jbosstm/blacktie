@@ -417,7 +417,7 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 			serviceDispatchersToDelete.begin(); dispatcher
 			!= serviceDispatchersToDelete.end(); dispatcher++) {
 		delete (*dispatcher);
-		LOG4CXX_WARN(loggerAtmiBrokerServer, (char*) "deleted dispatcher");
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted dispatcher");
 	}
 	serviceDispatchersToDelete.clear();
 
