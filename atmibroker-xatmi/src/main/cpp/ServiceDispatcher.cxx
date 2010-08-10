@@ -80,6 +80,22 @@ int ServiceDispatcher::resume(void) {
 
 int ServiceDispatcher::svc(void) {
 	while (!stop) {
+		MESSAGE message;
+		message.replyto = NULL;
+		message.correlationId = -1;
+		message.data = NULL;
+		message.len = -1;
+		message.priority = 0;
+		message.flags = -1;
+		message.control = NULL;
+		message.rval = -1;
+		message.rcode = -1;
+		message.type = NULL;
+		message.subtype = NULL;
+		message.received = false;
+		message.ttl = -1;
+		message.serviceName = NULL;
+
 		// This will wait while the server is paused
 		pauseLock->lock();
 		while (!stop && isPause) {
@@ -87,9 +103,12 @@ int ServiceDispatcher::svc(void) {
 			pauseLock->wait(0);
 			LOG4CXX_DEBUG(logger, (char*) "paused: " << serviceName);
 		}
+
+		if (!stop) {
+			message = destination->receive(this->timeout);
+		}
 		pauseLock->unlock();
 
-		MESSAGE message = destination->receive(this->timeout);
 		if (message.received) {
 			try {
 				counter += 1;

@@ -103,6 +103,7 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 
 	setSpecific(TPE_KEY, TSS_TPERESET);
 
+	if (!shutdown) {
 	lock->lock();
 	if (!shutdown) {
 		stomp_frame *frame = NULL;
@@ -281,6 +282,7 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 		LOG4CXX_DEBUG(logger, "receive failed - in shutdown");
 	}
 	lock->unlock();
+	}
 	return message;
 }
 

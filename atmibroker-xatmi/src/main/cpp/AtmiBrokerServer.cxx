@@ -1018,9 +1018,13 @@ Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
 			!= serviceData.end(); i++) {
 		if (strncmp((*i).serviceInfo->serviceName, aServiceName,
 				XATMI_SERVICE_NAME_LENGTH) == 0) {
-			toReturn = (*i).destination;
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "removing service "
 					<< aServiceName);
+			toReturn = (*i).destination;
+			toReturn->disconnect();
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+					(char*) "disconnect notified " << aServiceName);
+
 			for (std::vector<ServiceDispatcher*>::iterator j =
 					(*i).dispatchers.begin(); j != (*i).dispatchers.end(); j++) {
 				ServiceDispatcher* dispatcher = (*j);
@@ -1029,12 +1033,6 @@ Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "shutdown notified "
 					<< aServiceName);
 
-			for (std::vector<ServiceDispatcher*>::iterator j =
-					(*i).dispatchers.begin(); j != (*i).dispatchers.end(); j++) {
-				toReturn->disconnect();
-			}
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-					(char*) "disconnect notified " << aServiceName);
 
 			SynchronizableObject* reconnect = NULL;
 
