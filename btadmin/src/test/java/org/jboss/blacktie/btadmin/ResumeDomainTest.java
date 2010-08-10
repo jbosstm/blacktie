@@ -23,11 +23,16 @@ import javax.management.MalformedObjectNameException;
 
 import junit.framework.TestCase;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 public class ResumeDomainTest extends TestCase {
+	private static final Logger log = LogManager.getLogger(ResumeDomainTest.class);
 
 	private CommandHandler commandHandler;
 
 	public void setUp() throws Exception {
+		log.info("ResumeDomainTest::setUp");
 
 		this.commandHandler = new CommandHandler();
 		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
@@ -45,6 +50,7 @@ public class ResumeDomainTest extends TestCase {
 	}
 
 	public void tearDown() throws Exception {
+		log.info("ResumeDomainTest::tearDown");
 		if (commandHandler.handleCommand("shutdown".split(" ")) != 0) {
 			fail("Could not stop the server");
 		}
@@ -54,6 +60,7 @@ public class ResumeDomainTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
+		log.info("ResumeDomainTest::testResumeDomain");
 		String command = "resumeDomain";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command failed");
@@ -64,6 +71,7 @@ public class ResumeDomainTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
+		log.info("ResumeDomainTest::testResumeResumeDomain");
 		String command = "resumeDomain";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command failed");
@@ -77,6 +85,7 @@ public class ResumeDomainTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
+		log.info("ResumeDomainTest::testResumeDomainWithArg");
 		String command = "resumeDomain fooapp";
 		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was successful");
