@@ -23,7 +23,11 @@ import javax.management.MalformedObjectNameException;
 
 import junit.framework.TestCase;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 public class UnadvertiseTest extends TestCase {
+	private static final Logger log = LogManager.getLogger(UnadvertiseTest.class);
 
 	private CommandHandler commandHandler;
 
@@ -36,6 +40,9 @@ public class UnadvertiseTest extends TestCase {
 
 		String command = "advertise default BAR";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
+			if (commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
+				log.error("Could not stop the server");
+			}
 			fail("Command was not successful");
 		}
 	}

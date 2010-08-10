@@ -41,16 +41,25 @@ public class ResumeDomainTest extends TestCase {
 
 		String command = "advertise default BAR";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
+			if (commandHandler.handleCommand("shutdown".split(" ")) != 0) {
+				log.error("Could not stop the server");
+			}
 			fail("Command was not successful");
 		}
 		command = "pauseDomain";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
+			if (commandHandler.handleCommand("shutdown".split(" ")) != 0) {
+				log.error("Could not stop the server");
+			}
 			fail("Command was successful");
 		}
 	}
 
 	public void tearDown() throws Exception {
 		log.info("ResumeDomainTest::tearDown");
+		if (commandHandler.handleCommand("resumeDomain".split(" ")) != 0) {
+			fail("Command failed");
+		}
 		if (commandHandler.handleCommand("shutdown".split(" ")) != 0) {
 			fail("Could not stop the server");
 		}
