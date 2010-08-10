@@ -155,6 +155,7 @@ int ServiceDispatcher::svc(void) {
 			reconnect->unlock();
 		}
 	}
+	LOG4CXX_TRACE(logger, (char*) "Service dispatcher completed: " << this);
 	return 0;
 }
 
@@ -302,6 +303,7 @@ void ServiceDispatcher::shutdown() {
 	isPause = false;
 	pauseLock->notify();
 	pauseLock->unlock();
+	LOG4CXX_TRACE(logger, (char*) "Service dispatcher shutdown notified: " << this);
 }
 
 long ServiceDispatcher::getCounter() {

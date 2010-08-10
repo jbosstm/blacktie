@@ -417,11 +417,11 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 			serviceDispatchersToDelete.begin(); dispatcher
 			!= serviceDispatchersToDelete.end(); dispatcher++) {
 		LOG4CXX_TRACE(loggerAtmiBrokerServer,
-			(char*) "Waiting for dispatcher to be notified");
+			(char*) "Waiting for dispatcher to be notified: " << (*dispatcher));
 		(*dispatcher)->wait();
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleting dispatcher");
+		LOG4CXX_TRACE(loggerAtmiBrokerServer, (char*) "deleting dispatcher: " << (*dispatcher));
 		delete (*dispatcher);
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted dispatcher");
+		LOG4CXX_TRACE(loggerAtmiBrokerServer, (char*) "deleted dispatcher: " << (*dispatcher));
 	}
 	serviceDispatchersToDelete.clear();
 
