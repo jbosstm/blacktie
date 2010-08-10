@@ -50,31 +50,29 @@ ServiceDispatcher::ServiceDispatcher(AtmiBrokerServer* server,
 	this->maxResponseTime = 0;
 	this->isConversational = isConversational;
 	pauseLock = new SynchronizableObject();
+	stopLock = new SynchronizableObject();
 }
 
 ServiceDispatcher::~ServiceDispatcher() {
 	free(this->serviceName);
 	delete pauseLock;
+	delete stopLock;
 }
 
 int ServiceDispatcher::pause(void) {
 	LOG4CXX_TRACE(logger, "ServiceDispatcher pause");
-	if (isPause == false) {
-		pauseLock->lock();
-		isPause = true;
-		pauseLock->unlock();
-	}
+	pauseLock->lock();
+	isPause = true;
+	pauseLock->unlock();
 	return 0;
 }
 
 int ServiceDispatcher::resume(void) {
 	LOG4CXX_TRACE(logger, "ServiceDispatcher resume");
-	if (isPause) {
-		pauseLock->lock();
-		isPause = false;
-		pauseLock->notify();
-		pauseLock->unlock();
-	}
+	pauseLock->lock();
+	isPause = false;
+	pauseLock->notify();
+	pauseLock->unlock();
 	return 0;
 }
 
@@ -103,11 +101,13 @@ int ServiceDispatcher::svc(void) {
 			pauseLock->wait(0);
 			LOG4CXX_DEBUG(logger, (char*) "paused: " << serviceName);
 		}
+		pauseLock->unlock();
 
+		stopLock->lock();
 		if (!stop) {
 			message = destination->receive(this->timeout);
 		}
-		pauseLock->unlock();
+		stopLock->unlock();
 
 		if (message.received) {
 			try {
@@ -318,10 +318,14 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 
 void ServiceDispatcher::shutdown() {
 	pauseLock->lock();
-	stop = true;
 	isPause = false;
 	pauseLock->notify();
 	pauseLock->unlock();
+
+	stopLock->lock();
+	stop = true;
+	stopLock->unlock();
+
 	LOG4CXX_TRACE(logger, (char*) "Service dispatcher shutdown notified: " << this);
 }
 

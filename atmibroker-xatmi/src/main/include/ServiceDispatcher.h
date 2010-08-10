@@ -66,6 +66,7 @@ private:
 	unsigned long maxResponseTime;
 	SynchronizableObject* reconnect;
 	SynchronizableObject* pauseLock;
+	SynchronizableObject* stopLock;
 };
 
 #endif
