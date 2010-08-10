@@ -416,6 +416,10 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	for (std::vector<ServiceDispatcher*>::iterator dispatcher =
 			serviceDispatchersToDelete.begin(); dispatcher
 			!= serviceDispatchersToDelete.end(); dispatcher++) {
+		LOG4CXX_TRACE(loggerAtmiBrokerServer,
+			(char*) "Waiting for dispatcher to be notified");
+		(*dispatcher)->wait();
+		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleting dispatcher");
 		delete (*dispatcher);
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted dispatcher");
 	}
@@ -1038,10 +1042,11 @@ Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
 					(*i).dispatchers.begin(); j != (*i).dispatchers.end(); j++) {
 				ServiceDispatcher* dispatcher = (*j);
 				if (dispatcher != NULL) {
-					LOG4CXX_TRACE(loggerAtmiBrokerServer,
+/*					LOG4CXX_TRACE(loggerAtmiBrokerServer,
 							(char*) "Waiting for dispatcher notified "
 									<< aServiceName);
 					dispatcher->wait();
+*/
 					LOG4CXX_TRACE(loggerAtmiBrokerServer,
 							(char*) "Deleting dispatcher " << aServiceName);
 					reconnect = dispatcher->getReconnect();
