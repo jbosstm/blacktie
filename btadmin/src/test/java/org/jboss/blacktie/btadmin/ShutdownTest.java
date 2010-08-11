@@ -49,8 +49,8 @@ public class ShutdownTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
-		String command = "shutdown";
-		if (commandHandler.handleCommand(command.split(" ")) == 0) {
+		log.info("ShutdownTest::testShutdownWithoutArgs");
+		if (commandHandler.handleCommand("shutdown".split(" ")) == 0) {
 			fail("Command was successful");
 		}
 	}
@@ -59,8 +59,8 @@ public class ShutdownTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
-		String command = "shutdown default one";
-		if (commandHandler.handleCommand(command.split(" ")) == 0) {
+		log.info("ShutdownTest::testShutdownWithNonIntId");
+		if (commandHandler.handleCommand("shutdown default one".split(" ")) == 0) {
 			fail("Command was successful");
 		}
 	}
@@ -69,8 +69,8 @@ public class ShutdownTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
-		String command = "shutdown UNKNOWN";
-		if (commandHandler.handleCommand(command.split(" ")) == 0) {
+		log.info("ShutdownTest::testShutdownUnknownServer");
+		if (commandHandler.handleCommand("shutdown UNKNOWN".split(" ")) == 0) {
 			fail("Command was successful");
 		}
 	}
@@ -79,8 +79,8 @@ public class ShutdownTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
-		String command = "shutdown default 1";
-		if (commandHandler.handleCommand(command.split(" ")) == 0) {
+		log.info("ShutdownTest::testShutdownStoppedServer");
+		if (commandHandler.handleCommand("shutdown default 1".split(" ")) == 0) {
 			fail("Command was successful");
 		}
 	}
@@ -89,11 +89,11 @@ public class ShutdownTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
+		log.info("ShutdownTest::testShutdownWithoutId");
 		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
 			fail("Could not start the server");
 		}
-		String command = "shutdown default";
-		if (commandHandler.handleCommand(command.split(" ")) != 0) {
+		if (commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
 			shutdownRequired = true;
 			fail("Command was not successful");
 		}
@@ -103,16 +103,15 @@ public class ShutdownTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
+		log.info("ShutdownTest::testShutdownWithId");
 		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
 			fail("Could not start the server");
 		}
-		String command = "shutdown default 1";
-		if (commandHandler.handleCommand(command.split(" ")) != 0) {
+		if (commandHandler.handleCommand("shutdown default 1".split(" ")) != 0) {
 			shutdownRequired = true;
 			fail("Command was not successful");
 		}
-		command = "shutdown default 2";
-		if (commandHandler.handleCommand(command.split(" ")) != 0) {
+		if (commandHandler.handleCommand("shutdown default 2".split(" ")) != 0) {
 			shutdownRequired = true;
 			fail("Command was not successful");
 		}
@@ -122,15 +121,14 @@ public class ShutdownTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
+		log.info("ShutdownTest::testShutdownWithInvalidId");
 		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
 			fail("Could not start the server");
 		}
-		String command = "shutdown default 3";
-		if (commandHandler.handleCommand(command.split(" ")) == 0) {
+		if (commandHandler.handleCommand("shutdown default 3".split(" ")) == 0) {
 			shutdownRequired = true;
 			fail("Command was successful");
 		}
-
 		if (commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
 			shutdownRequired = true;
 			fail("Command was not successful");

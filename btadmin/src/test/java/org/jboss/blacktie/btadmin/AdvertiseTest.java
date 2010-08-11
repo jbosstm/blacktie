@@ -22,12 +22,15 @@ import java.io.IOException;
 import javax.management.MalformedObjectNameException;
 
 import junit.framework.TestCase;
-
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 public class AdvertiseTest extends TestCase {
+	private static final Logger log = LogManager.getLogger(AdvertiseTest.class);
 
 	private CommandHandler commandHandler;
 
 	public void setUp() throws Exception {
+		log.info("GetServersStatusTest::setUp");
 		this.commandHandler = new CommandHandler();
 
 		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
@@ -36,6 +39,7 @@ public class AdvertiseTest extends TestCase {
 	}
 
 	public void tearDown() throws Exception {
+		log.info("GetServersStatusTest::tearDown");
 		if (commandHandler.handleCommand("shutdown".split(" ")) != 0) {
 			fail("Could not stop the server");
 		}
@@ -45,6 +49,7 @@ public class AdvertiseTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
+		log.info("GetServersStatusTest::testAdvertise");
 		String command = "advertise default BAR";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command failed");
@@ -55,6 +60,7 @@ public class AdvertiseTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
+		log.info("GetServersStatusTest::testAdvertiseWithoutService");
 		String command = "advertise default";
 		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was successful");
@@ -65,6 +71,7 @@ public class AdvertiseTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
+		log.info("GetServersStatusTest::testAdvertiseWithoutServer");
 		String command = "advertise BAR";
 		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was successful");
@@ -75,6 +82,7 @@ public class AdvertiseTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
+		log.info("GetServersStatusTest::testAdvertiseNoArgs");
 		String command = "advertise";
 		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was successful");
@@ -85,6 +93,7 @@ public class AdvertiseTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
+		log.info("GetServersStatusTest::testAdvertiseNoFunctionConfig");
 		String command = "advertise default PBF";
 		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was successful");

@@ -22,22 +22,32 @@ import java.io.IOException;
 import javax.management.MalformedObjectNameException;
 
 import junit.framework.TestCase;
-
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 public class ListServiceStatusTest extends TestCase {
+	private static final Logger log = LogManager.getLogger(ListServiceStatusTest.class);
 
 	private CommandHandler commandHandler;
 
+	boolean shutdownRequired = false;
+
 	public void setUp() throws Exception {
 		this.commandHandler = new CommandHandler();
+		shutdownRequired = false;
 	}
 
 	public void tearDown() throws Exception {
+		log.info("ListServiceStatusTest::tearDown");
+		if (shutdownRequired && commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
+			fail("Could not stop the server");
+		}
 	}
 
 	public void testListServiceStatusWithoutServerName() throws IOException,
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
+		log.info("ListServiceStatusTest::testListServiceStatusWithoutServerName");
 		String command = "listServiceStatus";
 		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was successful");
@@ -48,6 +58,7 @@ public class ListServiceStatusTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
+		log.info("ListServiceStatusTest::testListRunningServersWithoutServers");
 		String command = "listServiceStatus default";
 		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was successful");
@@ -58,6 +69,7 @@ public class ListServiceStatusTest extends TestCase {
 			throws IOException, MalformedObjectNameException,
 			NullPointerException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
+		log.info("ListServiceStatusTest::testListServiceStatusWithAdditionalParameters");
 		String command = "listServiceStatus default 1 BAR";
 		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was successful");
@@ -68,6 +80,7 @@ public class ListServiceStatusTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
+		log.info("ListServiceStatusTest::testListServiceStatusWithNonRunningServer");
 		String command = "listServiceStatus foo BAR";
 		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was not successful");
@@ -78,9 +91,11 @@ public class ListServiceStatusTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
+		log.info("ListServiceStatusTest::testListServiceStatusWithRunningServer");
 		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
 			fail("Could not start the server");
 		}
+		shutdownRequired = true;
 		String command = "advertise default BAR";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command failed");
@@ -88,10 +103,6 @@ public class ListServiceStatusTest extends TestCase {
 		command = "listServiceStatus default BAR";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command was not successful");
-		}
-
-		if (commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
-			fail("Could not stop the server");
 		}
 	}
 }

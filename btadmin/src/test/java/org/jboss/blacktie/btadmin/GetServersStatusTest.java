@@ -43,6 +43,7 @@ public class GetServersStatusTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
+		log.info("GetServersStatusTest::testGetServersStatusWithAdditionalArgs");
 		String command = "getServersStatus foo";
 		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was successful");
@@ -53,6 +54,7 @@ public class GetServersStatusTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
+		log.info("GetServersStatusTest::testGetServersStatusWithoutServers");
 		String command = "listRunningServers";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command was not successful");
@@ -63,6 +65,7 @@ public class GetServersStatusTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
+		log.info("GetServersStatusTest::testGetServersStatusWithServers");
 		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
 			fail("Could not start the server");
 		}

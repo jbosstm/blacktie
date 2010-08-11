@@ -22,8 +22,10 @@ import java.io.IOException;
 import javax.management.MalformedObjectNameException;
 
 import junit.framework.TestCase;
-
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 public class ListRunningInstanceIdsTest extends TestCase {
+	private static final Logger log = LogManager.getLogger(ListRunningInstanceIdsTest.class);
 
 	private CommandHandler commandHandler;
 
@@ -38,6 +40,7 @@ public class ListRunningInstanceIdsTest extends TestCase {
 			throws IOException, MalformedObjectNameException,
 			NullPointerException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
+		log.info("ListRunningInstanceIdsTest::testListRunningInstanceIdsWithoutServerName");
 		String command = "listRunningInstanceIds";
 		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was successful");
@@ -48,6 +51,7 @@ public class ListRunningInstanceIdsTest extends TestCase {
 			throws IOException, MalformedObjectNameException,
 			NullPointerException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
+		log.info("ListRunningInstanceIdsTest::testListRunningInstanceIdsWithAdditionalParameters");
 		String command = "listRunningInstanceIds default 1";
 		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was successful");
@@ -58,6 +62,7 @@ public class ListRunningInstanceIdsTest extends TestCase {
 			throws IOException, MalformedObjectNameException,
 			NullPointerException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
+		log.info("ListRunningInstanceIdsTest::testListRunningInstanceIdsWithNonRunningServer");
 		String command = "listRunningInstanceIds foo";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command was not successful");
@@ -68,6 +73,7 @@ public class ListRunningInstanceIdsTest extends TestCase {
 			throws IOException, MalformedObjectNameException,
 			NullPointerException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
+		log.info("ListRunningInstanceIdsTest::testListRunningInstanceIdsWithRunningServer");
 		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
 			fail("Could not start the server");
 		}

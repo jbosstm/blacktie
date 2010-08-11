@@ -32,14 +32,14 @@ public class UnadvertiseTest extends TestCase {
 	private CommandHandler commandHandler;
 
 	public void setUp() throws Exception {
+		log.info("UnadvertiseTest::setUp");
 		this.commandHandler = new CommandHandler();
 
 		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
 			fail("Could not start the server");
 		}
 
-		String command = "advertise default BAR";
-		if (commandHandler.handleCommand(command.split(" ")) != 0) {
+		if (commandHandler.handleCommand("advertise default BAR".split(" ")) != 0) {
 			if (commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
 				log.error("Could not stop the server");
 			}
@@ -48,6 +48,7 @@ public class UnadvertiseTest extends TestCase {
 	}
 
 	public void tearDown() throws Exception {
+		log.info("UnadvertiseTest::tearDown");
 		if (commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
 			fail("Could not stop the server");
 		}
@@ -57,8 +58,8 @@ public class UnadvertiseTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
-		String command = "unadvertise default BAR";
-		if (commandHandler.handleCommand(command.split(" ")) != 0) {
+		log.info("UnadvertiseTest::testUnadvertise");
+		if (commandHandler.handleCommand("unadvertise default BAR".split(" ")) != 0) {
 			fail("Command was not successful");
 		}
 	}
@@ -67,8 +68,8 @@ public class UnadvertiseTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
-		String command = "unadvertise default";
-		if (commandHandler.handleCommand(command.split(" ")) == 0) {
+		log.info("UnadvertiseTest::testUnadvertiseWithoutService");
+		if (commandHandler.handleCommand("unadvertise default".split(" ")) == 0) {
 			fail("Command was successful");
 		}
 	}
@@ -77,8 +78,8 @@ public class UnadvertiseTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
-		String command = "unadvertise BAR";
-		if (commandHandler.handleCommand(command.split(" ")) == 0) {
+		log.info("UnadvertiseTest::testUnadvertiseWithoutServer");
+		if (commandHandler.handleCommand("unadvertise BAR".split(" ")) == 0) {
 			fail("Command was successful");
 		}
 	}
@@ -87,8 +88,8 @@ public class UnadvertiseTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
-		String command = "unadvertise";
-		if (commandHandler.handleCommand(command.split(" ")) == 0) {
+		log.info("UnadvertiseTest::testUnadvertiseNoArgs");
+		if (commandHandler.handleCommand("unadvertise".split(" ")) == 0) {
 			fail("Command was successful");
 		}
 	}
@@ -97,8 +98,8 @@ public class UnadvertiseTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
-		String command = "unadvertise default PBF";
-		if (commandHandler.handleCommand(command.split(" ")) == 0) {
+		log.info("UnadvertiseTest::testAdvertiseNotAdvertised");
+		if (commandHandler.handleCommand("unadvertise default PBF".split(" ")) == 0) {
 			fail("Command was successful");
 		}
 	}

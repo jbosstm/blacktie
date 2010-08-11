@@ -22,27 +22,29 @@ import java.io.IOException;
 import javax.management.MalformedObjectNameException;
 
 import junit.framework.TestCase;
-
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 public class StartupTest extends TestCase {
+	private static final Logger log = LogManager.getLogger(StartupTest.class);
+
 	private CommandHandler commandHandler;
 
 	public void setUp() throws Exception {
 		this.commandHandler = new CommandHandler();
 	}
 
-	public void tearDown() {
+	public void tearDown() throws Exception {
+		log.info("StartupTest::tearDown");
+		if (commandHandler.handleCommand("shutdown".split(" ")) != 0) {
+			fail("Command was unsuccessful");
+		}
 	}
 
 	public void testStartup() throws IOException, MalformedObjectNameException,
 			NullPointerException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
-		String command = "startup";
-		if (commandHandler.handleCommand(command.split(" ")) != 0) {
-			fail("Command was unsuccessful");
-		}
-
-		command = "shutdown";
-		if (commandHandler.handleCommand(command.split(" ")) != 0) {
+		log.info("StartupTest::testStartup");
+		if (commandHandler.handleCommand("startup".split(" ")) != 0) {
 			fail("Command was unsuccessful");
 		}
 	}

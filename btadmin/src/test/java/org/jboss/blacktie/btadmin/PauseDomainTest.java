@@ -32,6 +32,7 @@ public class PauseDomainTest extends TestCase {
 	private CommandHandler commandHandler;
 
 	public void setUp() throws Exception {
+		log.info("PauseDomainTest::setUp");
 
 		this.commandHandler = new CommandHandler();
 
@@ -50,6 +51,7 @@ public class PauseDomainTest extends TestCase {
 	}
 
 	public void tearDown() throws Exception {
+		log.info("PauseDomainTest::tearDown");
 		if (commandHandler.handleCommand("resumeDomain".split(" ")) != 0) {
 			fail("Command failed");
 		}
@@ -63,8 +65,8 @@ public class PauseDomainTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
-		String command = "pauseDomain";
-		if (commandHandler.handleCommand(command.split(" ")) != 0) {
+		log.info("PauseDomainTest::testPauseDomain");
+		if (commandHandler.handleCommand("pauseDomain".split(" ")) != 0) {
 			fail("Command failed");
 		}
 	}
@@ -73,11 +75,11 @@ public class PauseDomainTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
-		String command = "pauseDomain";
-		if (commandHandler.handleCommand(command.split(" ")) != 0) {
+		log.info("PauseDomainTest::testPausePauseDomain");
+		if (commandHandler.handleCommand("pauseDomain".split(" ")) != 0) {
 			fail("Command failed");
 		}
-		if (commandHandler.handleCommand(command.split(" ")) != 0) {
+		if (commandHandler.handleCommand("pauseDomain".split(" ")) != 0) {
 			fail("Command failed");
 		}
 	}
@@ -86,8 +88,8 @@ public class PauseDomainTest extends TestCase {
 			MalformedObjectNameException, NullPointerException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
-		String command = "pauseDomain fooapp";
-		if (commandHandler.handleCommand(command.split(" ")) == 0) {
+		log.info("PauseDomainTest::testPauseDomainWithArg");
+		if (commandHandler.handleCommand("pauseDomain fooapp".split(" ")) == 0) {
 			fail("Command successful");
 		}
 	}

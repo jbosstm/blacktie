@@ -22,8 +22,11 @@ import java.io.IOException;
 import javax.management.MalformedObjectNameException;
 
 import junit.framework.TestCase;
-
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 public class HelpTest extends TestCase {
+	private static final Logger log = LogManager.getLogger(HelpTest.class);
+
 	private CommandHandler commandHandler;
 
 	public void setUp() throws Exception {
@@ -36,6 +39,7 @@ public class HelpTest extends TestCase {
 	public void testVersion() throws IOException, MalformedObjectNameException,
 			NullPointerException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
+		log.info("HelpTest::testVersion");
 		String command = "help";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command was unsuccessful");

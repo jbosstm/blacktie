@@ -22,8 +22,11 @@ import java.io.IOException;
 import javax.management.MalformedObjectNameException;
 
 import junit.framework.TestCase;
-
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 public class VersionTest extends TestCase {
+	private static final Logger log = LogManager.getLogger(VersionTest.class);
+
 	private CommandHandler commandHandler;
 
 	public void setUp() throws Exception {
@@ -36,8 +39,8 @@ public class VersionTest extends TestCase {
 	public void testVersion() throws IOException, MalformedObjectNameException,
 			NullPointerException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
-		String command = "version";
-		if (commandHandler.handleCommand(command.split(" ")) != 0) {
+		log.info("VersionTest::testVersion");
+		if (commandHandler.handleCommand("version".split(" ")) != 0) {
 			fail("Command was unsuccessful");
 		}
 	}
