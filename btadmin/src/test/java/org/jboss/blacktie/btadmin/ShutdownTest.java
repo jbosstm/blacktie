@@ -23,15 +23,26 @@ import javax.management.MalformedObjectNameException;
 
 import junit.framework.TestCase;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 public class ShutdownTest extends TestCase {
+	private static final Logger log = LogManager.getLogger(ShutdownTest.class);
 
 	private CommandHandler commandHandler;
 
+	boolean shutdownRequired = false;
+
 	public void setUp() throws Exception {
 		this.commandHandler = new CommandHandler();
+		shutdownRequired = false;
 	}
 
 	public void tearDown() throws Exception {
+		log.info("ShutdownTest::tearDown");
+		if (shutdownRequired && commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
+			fail("Could not stop the server");
+		}
 	}
 
 	public void testShutdownWithoutArgs() throws IOException,
@@ -83,6 +94,7 @@ public class ShutdownTest extends TestCase {
 		}
 		String command = "shutdown default";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
+			shutdownRequired = true;
 			fail("Command was not successful");
 		}
 	}
@@ -96,10 +108,12 @@ public class ShutdownTest extends TestCase {
 		}
 		String command = "shutdown default 1";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
+			shutdownRequired = true;
 			fail("Command was not successful");
 		}
 		command = "shutdown default 2";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
+			shutdownRequired = true;
 			fail("Command was not successful");
 		}
 	}
@@ -113,10 +127,12 @@ public class ShutdownTest extends TestCase {
 		}
 		String command = "shutdown default 3";
 		if (commandHandler.handleCommand(command.split(" ")) == 0) {
+			shutdownRequired = true;
 			fail("Command was successful");
 		}
 
 		if (commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
+			shutdownRequired = true;
 			fail("Command was not successful");
 		}
 	}
