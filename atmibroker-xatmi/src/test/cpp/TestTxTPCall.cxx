@@ -122,7 +122,11 @@ void TestTxTPCall::test_timeout_with_tx() {
 	BT_ASSERT(rv3 == -1);
 	BT_ASSERT(tperrno == TPETIME);
 	// the transaction should have been marked as rollback only
-	BT_ASSERT(tx_commit() == TX_ROLLBACK);
+	char* commitS = (char*) malloc(110);
+	int commit = tx_commit();
+	sprintf(commitS, "%d", commit);
+	BT_ASSERT_MESSAGE(commitS, commit == TX_ROLLBACK);
+	free(commitS);
 }
 
 void TestTxTPCall::test_tpcall_without_tx() {
