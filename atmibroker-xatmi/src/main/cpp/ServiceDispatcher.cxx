@@ -164,7 +164,7 @@ int ServiceDispatcher::svc(void) {
 				ACE_OS::sleep(timeout);
 				LOG4CXX_DEBUG(logger, (char*) "sleeper, slept for " << timeout
 						<< " seconds");
-				if (this->server->createAdminDestination(serviceName)) {
+				if (!stop && this->server->createAdminDestination(serviceName)) {
 					LOG4CXX_INFO(logger,
 							(char*) "Service dispatcher recreated: "
 									<< serviceName);
