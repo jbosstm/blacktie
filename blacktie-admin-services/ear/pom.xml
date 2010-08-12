@@ -87,10 +87,10 @@
 				</configuration>
 				<executions>
 					<execution>
-						<id>deploy</id>
+						<id>redeploy</id>
 						<phase>test</phase>
 						<goals>
-							<goal>deploy</goal>
+							<goal>redeploy</goal>
 						</goals>
 					</execution>
 				</executions>
