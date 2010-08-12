@@ -124,57 +124,57 @@ set BLACKTIE_CONFIGURATION_DIR=
 
 rem RUN THE MDB EXAMPLE
 cd %BLACKTIE_HOME%\examples\mdb
-mvn install
+call mvn install
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 
 rem RUN THE INTEGRATION 1 EXAMPLE
 echo "Running integration 1 XATMI"
 cd %BLACKTIE_HOME%\examples\integration1\xatmi_service\
-generate_server -Dservice.names=CREDIT,DEBIT -Dserver.includes="CreditService.c,DebitService.c"
+call generate_server -Dservice.names=CREDIT,DEBIT -Dserver.includes="CreditService.c,DebitService.c"
 IF %ERRORLEVEL% NEQ 0 exit -1
-btadmin startup
+call btadmin startup
 IF %ERRORLEVEL% NEQ 0 exit -1
-cd $BLACKTIE_HOME\examples\integration1\client\
-generate_client -Dclient.includes=client.c 
+cd %BLACKTIE_HOME%\examples\integration1\client\
+call generate_client -Dclient.includes=client.c 
 @ping 127.0.0.1 -n 10 -w 1000 > nul
 .\client 
 IF %ERRORLEVEL% NEQ 0 exit -1
-cd $BLACKTIE_HOME\examples\integration1\xatmi_service\
-btadmin shutdown
+cd %BLACKTIE_HOME%\examples\integration1\xatmi_service\
+call btadmin shutdown
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 cd %BLACKTIE_HOME%\examples\integration1\ejb
-mvn install
+call mvn install
 IF %ERRORLEVEL% NEQ 0 exit -1
 cd %BLACKTIE_HOME%\examples\integration1\ejb\ear
-mvn install
+call mvn install
 IF %ERRORLEVEL% NEQ 0 exit -1
-cd $BLACKTIE_HOME\examples\integration1\xatmi_adapter\
-mvn install
+cd %BLACKTIE_HOME%\examples\integration1\xatmi_adapter\
+call mvn install
 IF %ERRORLEVEL% NEQ 0 exit -1
-cd $BLACKTIE_HOME\examples\integration1\xatmi_adapter\ear\
-mvn install
+cd %BLACKTIE_HOME%\examples\integration1\xatmi_adapter\ear\
+call mvn install
 IF %ERRORLEVEL% NEQ 0 exit -1
-cd $BLACKTIE_HOME\examples\integration1\client\
-generate_client -Dclient.includes=client.c 
+cd %BLACKTIE_HOME%\examples\integration1\client\
+call generate_client -Dclient.includes=client.c 
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 IF ["%1"] EQU ["integration1"] (
 cd %BLACKTIE_HOME%\examples\integration1\ejb\ear
-mvn jboss:deploy
+call mvn jboss:deploy
 IF %ERRORLEVEL% NEQ 0 exit -1
-cd $BLACKTIE_HOME\examples\integration1\xatmi_adapter\ear\
-mvn jboss:deploy
+cd %BLACKTIE_HOME%\examples\integration1\xatmi_adapter\ear\
+call mvn jboss:deploy
 IF %ERRORLEVEL% NEQ 0 exit -1
-cd $BLACKTIE_HOME\examples\integration1\client\
+cd %BLACKTIE_HOME%\examples\integration1\client\
 .\client
 IF %ERRORLEVEL% NEQ 0 exit -1
-cd $BLACKTIE_HOME\examples\integration1\xatmi_adapter\ear\
-mvn jboss:undeploy
+cd %BLACKTIE_HOME%\examples\integration1\xatmi_adapter\ear\
+call mvn jboss:undeploy
 IF %ERRORLEVEL% NEQ 0 exit -1
 cd %BLACKTIE_HOME%\examples\integration1\ejb\ear
-mvn jboss:undeploy
+call mvn jboss:undeploy
 IF %ERRORLEVEL% NEQ 0 exit -1
 )
 
