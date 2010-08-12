@@ -72,6 +72,14 @@
 		</license>
 	</licenses>
 
+	<profiles>
+	<profile>
+	<id>test</id>
+	<activation>
+		<property>
+			<name>!skipTests</name>
+		</property>
+	</activation>
 	<build>
 		<plugins>
 			<plugin>
@@ -95,6 +103,13 @@
 					</execution>
 				</executions>
 			</plugin>
+		</plugins>
+	</build>
+	</profile>
+	</profiles>
+
+	<build>
+		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
