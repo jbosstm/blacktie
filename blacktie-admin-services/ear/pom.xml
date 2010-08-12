@@ -79,7 +79,7 @@
 				<artifactId>jboss-maven-plugin</artifactId>
 				<version>1.4</version>
 				<configuration>
-					<hostName>localhost</hostName>
+					<hostName>${jbossas.ip.addr}</hostName>
 					<port>8080</port>
 					<fileNames>
 						<fileName>${project.build.directory}/${project.build.finalName}.${project.packaging}</fileName>
