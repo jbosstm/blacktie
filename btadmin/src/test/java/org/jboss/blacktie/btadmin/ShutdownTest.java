@@ -107,10 +107,12 @@ public class ShutdownTest extends TestCase {
 		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
 			fail("Could not start the server");
 		}
+		log.info("Shutting down default 1");
 		if (commandHandler.handleCommand("shutdown default 1".split(" ")) != 0) {
 			shutdownRequired = true;
 			fail("Command was not successful");
 		}
+		log.info("Shutting down default 2");
 		if (commandHandler.handleCommand("shutdown default 2".split(" ")) != 0) {
 			shutdownRequired = true;
 			fail("Command was not successful");
