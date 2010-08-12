@@ -75,6 +75,27 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jboss-maven-plugin</artifactId>
+				<version>1.4</version>
+				<configuration>
+					<hostName>localhost</hostName>
+					<port>8080</port>
+					<fileNames>
+						<fileName>${project.build.directory}/${project.build.finalName}.${project.packaging}</fileName>
+					</fileNames>
+				</configuration>
+				<executions>
+					<execution>
+						<id>deploy</id>
+						<phase>test</phase>
+						<goals>
+							<goal>deploy</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<source>1.5</source>

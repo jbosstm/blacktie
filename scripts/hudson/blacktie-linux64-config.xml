@@ -63,16 +63,9 @@ sed -i &quot;s=Xmx512=Xmx768=g&quot; bin/run.conf</command>
       <pom>blacktie-utils/cpp-plugin/pom.xml</pom>
       <usePrivateRepository>false</usePrivateRepository>
     </hudson.tasks.Maven>
-    <hudson.tasks.Maven>
-      <targets>clean install -DskipTests -Dbpa=centos54x64</targets>
-      <mavenName>apache-maven-2.0.9</mavenName>
-      <jvmOptions>-Xmx200m</jvmOptions>
-      <pom>blacktie/pom.xml</pom>
-      <usePrivateRepository>false</usePrivateRepository>
-    </hudson.tasks.Maven>
     <hudson.tasks.Shell>
-      <command>cp trunk/blacktie-admin-services/ear/target/blacktie-admin-services-*.ear jboss-5.1.0.GA/server/all/deploy
-cp trunk/blacktie-rhq-plugin/target/blacktie-rhq-plugin-*.jar jboss-5.1.0.GA/server/all/deploy/admin-console.war/plugins/
+      <command>#cp trunk/blacktie-admin-services/ear/target/blacktie-admin-services-*.ear jboss-5.1.0.GA/server/all/deploy
+#cp trunk/blacktie-rhq-plugin/target/blacktie-rhq-plugin-*.jar jboss-5.1.0.GA/server/all/deploy/admin-console.war/plugins/
 cp trunk/jatmibroker-xatmi/src/test/resources/jatmibroker-xatmi-test-service.xml jboss-5.1.0.GA/server/all/deploy
 cp trunk/blacktie-admin-services/src/test/resources/btconfig.xml jboss-5.1.0.GA/server/all/conf
 
@@ -86,7 +79,7 @@ export MAVEN_OPTS=-Xmx200m
 cd trunk/blacktie
 mvn install -Dbpa=centos54x64
 cd ../jatmibroker-xatmi
-mvn clean site</command>
+mvn site</command>
     </hudson.tasks.Shell>
     <hudson.tasks.Shell>
       <command>export PATH=$PATH:/usr/local/apache-maven-2.0.9/bin/
