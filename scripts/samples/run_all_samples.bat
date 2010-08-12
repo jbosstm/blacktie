@@ -78,7 +78,7 @@ rem PICK UP THE CLOSING SERVER
 
 rem Test 3: Running externally managed queue example
 cd %BLACKTIE_HOME%\examples\xatmi\queues
-call generate_client -Dclient.includes=queues.c
+call generate_client -Dclient.includes=queues.c -Dx.define=WIN32
 client put 10
 IF %ERRORLEVEL% NEQ 0 exit -1
 set BLACKTIE_SERVER_ID=1

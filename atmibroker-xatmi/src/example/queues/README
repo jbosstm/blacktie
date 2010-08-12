@@ -31,7 +31,10 @@ C:\Program Files\Microsoft Visual Studio 9.0\VC\vcvarsall.bat
 
 
 2. CREATE THE CLIENT
+On Linux:
 	generate_client -Dclient.includes=queues.c
+On Windows:
+	generate_client -Dclient.includes=queues.c -Dx.define=WIN32
 
 
 3. DEPLOY THE BLACKTIE ADMIN SERVICE
