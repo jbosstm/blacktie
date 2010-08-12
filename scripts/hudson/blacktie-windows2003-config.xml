@@ -106,7 +106,8 @@ set MAVEN_HOME=C:\hudson\tools\apache-maven-2.0.10
 set MAVEN_OPTS=-Xmx200m
 set PATH=%PATH%;%MAVEN_HOME%\bin
 cd trunk/blacktie
-mvn clean install -Dbpa=vc9x32 -Duse.valgrind=false -Djbossas.ip.addr=172.17.131.5
+call mvn clean 
+call mvn install -Dbpa=vc9x32 -Duse.valgrind=false -Djbossas.ip.addr=172.17.131.5
 </command>
     </hudson.tasks.BatchFile>
     <hudson.tasks.BatchFile>

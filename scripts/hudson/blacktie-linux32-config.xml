@@ -77,6 +77,7 @@ sleep 60</command>
       <command>export PATH=$PATH:/usr/local/apache-maven-2.0.9/bin/
 export MAVEN_OPTS=-Xmx200m
 cd trunk/blacktie
+mvn clean
 mvn install -Dbpa=centos55x32
 cd ../jatmibroker-xatmi
 mvn site</command>
