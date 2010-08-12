@@ -1,57 +1,65 @@
 <project name="foo">
 	<target name="dist">
-		<delete dir="../../dist"/>
-		<mkdir dir="../../dist"/>
-		<unzip dest="../../dist">
+		<delete dir="${BT_HOME}${VERSION}"/>
+		<mkdir dir="${BT_HOME}"/>
+		<unzip dest="${BT_HOME}">
 			<fileset dir="../../blacktie/target/">
 				<include name="blacktie-*-bin.zip"/>
 			</fileset>
 		</unzip>
-		<replaceregexp byline="true" match="REPLACE_WITH_INSTALL_LOCATION" replace="${BT_HOME}">
-			<fileset dir="../../dist/">
+		<replaceregexp byline="true" match="REPLACE_WITH_INSTALL_LOCATION" replace="${BT_HOME}${VERSION}">
+			<fileset dir="${BT_HOME}/">
 				<include name="*/setenv.bat"/>
 				<include name="**/btconfig.xml"/>
 			</fileset>
 		</replaceregexp>
-		<replaceregexp byline="true" match="REPLACE_WITH_HOSTNAME" replace="${JBOSSAS_IP_ADDR}">
-			<fileset dir="../../dist/">
+		<replaceregexp byline="true" match="REPLACE_WITH_HOSTNAME" replace="${MACHINE_ADDR}">
+			<fileset dir="${BT_HOME}${VERSION}/">
+				<include name="**/btconfig.xml"/>
+			</fileset>
+		</replaceregexp>
+		<replaceregexp byline="true" match="${MACHINE_ADDR}:" replace="${JBOSSAS_IP_ADDR}:">
+			<fileset dir="${BT_HOME}${VERSION}/">
+				<include name="**/btconfig.xml"/>
+			</fileset>
+		</replaceregexp>
+		<replaceregexp byline="true" match="HOST=&quot;${MACHINE_ADDR}&quot;" replace="HOST=&quot;${JBOSSAS_IP_ADDR}&quot;">
+			<fileset dir="${BT_HOME}${VERSION}/">
 				<include name="**/btconfig.xml"/>
 			</fileset>
 		</replaceregexp>
 		<replaceregexp byline="true" match="REPLACE_WITH_HOSTNAME" replace="${JBOSSAS_IP_ADDR}">
-			<fileset dir="../../dist/">
+			<fileset dir="${BT_HOME}${VERSION}/">
 				<include name="**/pom.xml"/>
 			</fileset>
 		</replaceregexp>
 		<replaceregexp byline="true" match="localhost" replace="${JBOSSAS_IP_ADDR}">
-			<fileset dir="${BT_HOME}/examples/admin/jmx/src/test/java/org/jboss/blacktie/examples/jmx">
-				<include name="**/*.java"/>
+			<fileset dir="${BT_HOME}${VERSION}">
+				<include name="**/examples/admin/jmx/src/test/java/org/jboss/blacktie/examples/jmx/*.java"/>
 			</fileset>
 		</replaceregexp>
-
 		<replaceregexp byline="true" match="&lt;!-- DB2 support -->" replace="&lt;!--">
-			<fileset dir="../../dist/">
+			<fileset dir="${BT_HOME}${VERSION}/">
 				<include name="**/btconfig.xml"/>
 			</fileset>
 		</replaceregexp>
 		<replaceregexp byline="true" match="&lt;!-- END DB2 support -->" replace="-->">
-			<fileset dir="../../dist/">
+			<fileset dir="${BT_HOME}${VERSION}/">
 				<include name="**/btconfig.xml"/>
 			</fileset>
 		</replaceregexp>
 		<replaceregexp byline="true" match="DB=blacktie" replace="DB=ORCL.NCL">
-			<fileset dir="../../dist/">
+			<fileset dir="${BT_HOME}${VERSION}/">
 				<include name="**/btconfig.xml"/>
 			</fileset>
 		</replaceregexp>
-
 		<replaceregexp byline="true" match="SqlNet=blacktie" replace="SqlNet=orcl112">
-			<fileset dir="../../dist/">
+			<fileset dir="${BT_HOME}${VERSION}/">
 				<include name="**/btconfig.xml"/>
 			</fileset>
 		</replaceregexp>
 		<replaceregexp byline="true" match="blacktie" replace="ORCL.NCL">
-			<fileset dir="../../dist/">
+			<fileset dir="${BT_HOME}${VERSION}/">
 				<include name="**/request.c"/>
 			</fileset>
 		</replaceregexp>

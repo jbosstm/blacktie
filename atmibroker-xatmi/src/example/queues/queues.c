@@ -24,6 +24,10 @@
 
 #include "userlogc.h"
 
+#ifdef WIN32
+#include "windows.h"
+#endif
+
 static char* SERVICE = (char*) "TestOne";
 static int msgCnt = 0;
 
@@ -115,8 +119,12 @@ static int get_messages(unsigned int cnt) {
 
 	// wait for the service routine, qservice, to consume the required number of messages (msgCnt)
 	while (msgCnt > 0 && maxSleep-- > 0)
+#ifndef WIN32
 		if (sleep(1) != 0)
 			break;
+#else
+		Sleep(1000);
+#endif
 
 	// Manually shutdown the server. TODO have the framework shut it down on the final tpunadvertise
 	serverdone();
