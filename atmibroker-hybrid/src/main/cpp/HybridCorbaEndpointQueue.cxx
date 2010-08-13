@@ -59,6 +59,7 @@ HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(HybridSessionImpl* session,
 	policies.length(0);
 	thePoa = connection->callback_poa->create_POA(poaName,
 			connection->root_poa_manager, policies);
+	LOG4CXX_DEBUG(logger, (char*) "created thePoa: " << thePoa << " with name " << poaName);
 
 	LOG4CXX_DEBUG(logger, (char*) "tmp_servant " << this);
 	oid = thePoa->activate_object(this);
