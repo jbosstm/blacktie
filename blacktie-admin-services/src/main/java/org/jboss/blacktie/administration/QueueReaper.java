@@ -143,7 +143,6 @@ public class QueueReaper implements Runnable {
 				this.run = false;
 			} catch (Exception e) {
 				log.error("run ping thread failed with " + e);
-				this.run = false;
 			}
 		}
 	}
