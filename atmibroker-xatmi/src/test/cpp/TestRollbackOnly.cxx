@@ -26,6 +26,8 @@
 #include "xatmi.h"
 #include "tx.h"
 
+#include "malloc.h"
+
 #include "TestRollbackOnly.h"
 
 #if defined(__cplusplus)
@@ -88,6 +90,7 @@ void TestRollbackOnly::test_tpcall_TPETIME() {
 	userlogc((char*) "inTx=%d tx status=%ld", inTx, txinfo.transaction_state);
 	BT_ASSERT(txinfo.transaction_state || TX_ROLLBACK_ONLY ||
 		txinfo.transaction_state == TX_TIMEOUT_ROLLBACK_ONLY);
+	char* commitS = (char*) malloc(110);
 	int commit = tx_commit();
 	sprintf(commitS, "%d", commit);
 	BT_ASSERT_MESSAGE(commitS, commit == TX_ROLLBACK);
