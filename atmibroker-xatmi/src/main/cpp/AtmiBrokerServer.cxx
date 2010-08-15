@@ -1001,7 +1001,7 @@ void AtmiBrokerServer::addDestination(Destination* destination, void(*func)(
 		} else {
 			entry.dispatchers.push_back(dispatcher);
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) " destination "
-					<< destination);
+					<< destination << " dispatcher " << dispatcher);
 		}
 	}
 
