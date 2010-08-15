@@ -51,9 +51,11 @@ ServiceDispatcher::ServiceDispatcher(AtmiBrokerServer* server,
 	this->isConversational = isConversational;
 	pauseLock = new SynchronizableObject();
 	stopLock = new SynchronizableObject();
+	LOG4CXX_TRACE(logger, (char*) "Created ServiceDispatcher: " << this);
 }
 
 ServiceDispatcher::~ServiceDispatcher() {
+	LOG4CXX_TRACE(logger, (char*) "Destroying ServiceDispatcher: " << this);
 	free(this->serviceName);
 	delete pauseLock;
 	delete stopLock;

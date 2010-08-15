@@ -413,6 +413,7 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	server_done();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "Server done");
 
+	finish->lock();
 	for (std::vector<ServiceDispatcher*>::iterator dispatcher =
 			serviceDispatchersToDelete.begin(); dispatcher
 			!= serviceDispatchersToDelete.end(); dispatcher++) {
@@ -424,11 +425,6 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 		LOG4CXX_TRACE(loggerAtmiBrokerServer, (char*) "deleted dispatcher: " << (*dispatcher));
 	}
 	serviceDispatchersToDelete.clear();
-
-	if (finish != NULL) {
-		delete finish;
-		finish = NULL;
-	}
 
 	serviceData.clear();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted service array");
@@ -455,6 +451,10 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted services");
 
 	connections.closeConnections();
+	finish->unlock();
+
+	delete finish;
+	finish = NULL;
 	serverInitialized = false;
 }
 
@@ -1039,27 +1039,10 @@ Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
 			for (std::vector<ServiceDispatcher*>::iterator j =
 					(*i).dispatchers.begin(); j != (*i).dispatchers.end(); j++) {
 				ServiceDispatcher* dispatcher = (*j);
-				if (dispatcher != NULL) {
-/*					LOG4CXX_TRACE(loggerAtmiBrokerServer,
-							(char*) "Waiting for dispatcher notified "
-									<< aServiceName);
-					dispatcher->wait();
-*/
-					LOG4CXX_TRACE(loggerAtmiBrokerServer,
-							(char*) "Deleting dispatcher " << aServiceName);
-					reconnect = dispatcher->getReconnect();
-					//delete dispatcher;
-					serviceDispatchersToDelete.push_back(dispatcher);
-					LOG4CXX_TRACE(loggerAtmiBrokerServer,
-							(char*) "Dispatcher deleted " << aServiceName);
-				} else {
-					LOG4CXX_TRACE(loggerAtmiBrokerServer,
-							(char*) "NULL Dispatcher detected for"
-									<< aServiceName);
-				}
+				reconnect = dispatcher->getReconnect();
+				serviceDispatchersToDelete.push_back(dispatcher);
 				LOG4CXX_TRACE(loggerAtmiBrokerServer,
-						(char*) "Erasing dispatcher " << aServiceName);
-				//j = (*i).dispatchers.erase(j);
+						(char*) "Registered dispatcher " << aServiceName << " " << dispatcher);
 			}
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "waited for dispatcher: " << aServiceName);
