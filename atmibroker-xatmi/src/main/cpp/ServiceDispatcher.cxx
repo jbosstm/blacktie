@@ -325,6 +325,9 @@ void ServiceDispatcher::shutdown() {
 	pauseLock->unlock();
 
 	stopLock->lock();
+	if (stop) {
+		LOG4CXX_TRACE(logger, (char*) "Double shutdown detected: " << this);
+	}
 	stop = true;
 	stopLock->unlock();
 
