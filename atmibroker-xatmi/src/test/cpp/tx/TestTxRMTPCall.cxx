@@ -27,12 +27,26 @@ extern int run_tests(product_t *prod_array);
 extern void tx_db_service(TPSVCINFO *svcinfo);
 }
 
+void TestTxRMTPCall::setUp() {
+	userlogc((char*) "TestTxRMTPCall::setUp");
+	BaseServerTest::setUp();
+
+	// Do local work
+	BT_ASSERT(tpadvertise((char*) "tpcall_x_octet", tx_db_service)  != -1);
+	BT_ASSERT(tperrno == 0);
+}
+
+void TestTxRMTPCall::tearDown() {
+	userlogc((char*) "TestTxRMTPCall::tearDown");
+
+	// Do local work
+	BT_ASSERT(tpunadvertise((char*) "tpcall_x_octet")!= -1);
+	BT_ASSERT(tperrno == 0);
+
+	// Clean up server
+	BaseServerTest::tearDown();
+}
+
 void TestTxRMTPCall::test0() {
-    BT_ASSERT(tpadvertise((char*) "tpcall_x_octet", tx_db_service)  != -1);
-    BT_ASSERT(tperrno == 0);
-
-    BT_ASSERT(run_tests(products) == 0);
-
-    BT_ASSERT(tpunadvertise((char*) "tpcall_x_octet")!= -1);
-    BT_ASSERT(tperrno == 0);
+	BT_ASSERT(run_tests(products) == 0);
 }

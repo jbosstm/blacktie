@@ -30,6 +30,8 @@ class TestTxRMTPCall: public BaseServerTest {
 
 public:
 	void test0();
+	virtual void setUp();
+	virtual void tearDown();
 };
 
 #endif	// TESTTXRMTPCALL_H
