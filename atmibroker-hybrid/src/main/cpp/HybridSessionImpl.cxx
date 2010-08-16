@@ -299,21 +299,23 @@ bool HybridSessionImpl::send(MESSAGE message) {
 				//				free(errbuf);
 			} else if (strcmp(framed->command, (const char*) "ERROR") == 0) {
 				LOG4CXX_DEBUG(logger, (char*) "Got an error: " << framed->body);
-				//setSpecific(TPE_KEY, TSS_TPENOENT);
 				setSpecific(TPE_KEY, TSS_TPENOENT); // TODO - clean up session
 			} else if (strcmp(framed->command, (const char*) "RECEIPT") == 0) {
 				LOG4CXX_DEBUG(logger, (char*) "SEND RECEIPT: "
 						<< (char*) apr_hash_get(framed->headers, "receipt-id",
 								APR_HASH_KEY_STRING));
+				LOG4CXX_DEBUG(logger, "Sent to: " << sendTo << " Command: "
+						<< frame.command << " Size: " << frame.body_length);
 				toReturn = true;
 			} else {
 				LOG4CXX_ERROR(logger, "Didn't get a receipt: "
 						<< framed->command << ", " << framed->body);
+				LOG4CXX_DEBUG(logger, "Sent: " << sendTo << " Command: "
+						<< frame.command << " Size: " << frame.body_length);
 				setSpecific(TPE_KEY, TSS_TPESYSTEM); // TODO - clean up session
 			}
-			LOG4CXX_DEBUG(logger, "Sent to: " << sendTo << " Command: "
-					<< frame.command << " Size: " << frame.body_length);
 			delete[] data_togo;
+			LOG4CXX_DEBUG(logger, "Will return: " << toReturn);
 		}
 		serviceInvokation = false;
 	} else {
