@@ -319,6 +319,9 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 }
 
 void ServiceDispatcher::shutdown() {
+	// DONT ALLOW SHUTDOWN TO HAPPEN DURING A RECONNECT
+	reconnect->lock();
+
 	pauseLock->lock();
 	isPause = false;
 	pauseLock->notify();
@@ -330,6 +333,8 @@ void ServiceDispatcher::shutdown() {
 	}
 	stop = true;
 	stopLock->unlock();
+
+	reconnect->unlock();
 
 	LOG4CXX_TRACE(logger, (char*) "Service dispatcher shutdown notified: " << this);
 }
