@@ -780,6 +780,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 		}
 		free(serviceName);
 	}
+	finish->unlock();
 	return toReturn;
 }
 
