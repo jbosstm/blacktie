@@ -411,9 +411,17 @@ AtmiBrokerServer::AtmiBrokerServer() {
 AtmiBrokerServer::~AtmiBrokerServer() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "destructor");
 
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_done()");
 	finish->lock();
-	server_done();
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "Server done");
+	for (int i = serverInfo.serviceVector.size() - 1; i >= 0; i--) {
+		char* svcname = (char*) serverInfo.serviceVector[i].serviceName;
+		if (isAdvertised(svcname)) {
+			unadvertiseService(svcname, true);
+		}
+	}
+	finish->unlock();
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_done(): returning.");
+
 
 	for (std::vector<ServiceDispatcher*>::iterator dispatcher =
 			serviceDispatchersToDelete.begin(); dispatcher
@@ -455,8 +463,6 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted services");
 
 	connections.closeConnections();
-	finish->unlock();
-
 	delete finish;
 	finish = NULL;
 	serverInitialized = false;
@@ -1056,19 +1062,6 @@ Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
 		}
 	}
 	return toReturn;
-}
-
-void AtmiBrokerServer::server_done() {
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_done()");
-
-	for (int i = serverInfo.serviceVector.size() - 1; i >= 0; i--) {
-		char* svcname = (char*) serverInfo.serviceVector[i].serviceName;
-		if (isAdvertised(svcname)) {
-			unadvertiseService(svcname, true);
-		}
-	}
-
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_done(): returning.");
 }
 
 long AtmiBrokerServer::getServiceMessageCounter(char* serviceName) {

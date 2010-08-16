@@ -63,7 +63,6 @@ public:
 	long getServiceMessageCounter(char* serviceName);
 	long getServiceErrorCounter(char* serviceName);
 	void getResponseTime(char* serviceName, unsigned long* min, unsigned long* avg, unsigned long* max);
-	void server_done();
 	int  block();
 	void shutdown();
 	int  pause();
