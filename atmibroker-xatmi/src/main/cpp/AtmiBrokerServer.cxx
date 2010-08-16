@@ -410,19 +410,23 @@ AtmiBrokerServer::AtmiBrokerServer() {
 //
 AtmiBrokerServer::~AtmiBrokerServer() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "destructor");
+
+	finish->lock();
 	server_done();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "Server done");
 
-	finish->lock();
 	for (std::vector<ServiceDispatcher*>::iterator dispatcher =
 			serviceDispatchersToDelete.begin(); dispatcher
 			!= serviceDispatchersToDelete.end(); dispatcher++) {
 		LOG4CXX_TRACE(loggerAtmiBrokerServer,
-			(char*) "Waiting for dispatcher to be notified: " << (*dispatcher));
+				(char*) "Waiting for dispatcher to be notified: "
+						<< (*dispatcher));
 		(*dispatcher)->wait();
-		LOG4CXX_TRACE(loggerAtmiBrokerServer, (char*) "deleting dispatcher: " << (*dispatcher));
+		LOG4CXX_TRACE(loggerAtmiBrokerServer, (char*) "deleting dispatcher: "
+				<< (*dispatcher));
 		delete (*dispatcher);
-		LOG4CXX_TRACE(loggerAtmiBrokerServer, (char*) "deleted dispatcher: " << (*dispatcher));
+		LOG4CXX_TRACE(loggerAtmiBrokerServer, (char*) "deleted dispatcher: "
+				<< (*dispatcher));
 	}
 	serviceDispatchersToDelete.clear();
 
@@ -652,136 +656,140 @@ bool AtmiBrokerServer::advertiseService(char * svcname) {
 bool AtmiBrokerServer::advertiseService(char * svcname,
 		void(*func)(TPSVCINFO *)) {
 
+	bool toReturn = false;
+	finish->lock();
 	if (!svcname || strlen(svcname) == 0) {
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 				(char*) "advertiseService invalid service name");
-		return false;
-	}
+	} else {
+		char* serviceName = (char*) ::malloc(XATMI_SERVICE_NAME_LENGTH + 1);
+		memset(serviceName, '\0', XATMI_SERVICE_NAME_LENGTH + 1);
+		strncat(serviceName, svcname, XATMI_SERVICE_NAME_LENGTH);
 
-	char* serviceName = (char*) ::malloc(XATMI_SERVICE_NAME_LENGTH + 1);
-	memset(serviceName, '\0', XATMI_SERVICE_NAME_LENGTH + 1);
-	strncat(serviceName, svcname, XATMI_SERVICE_NAME_LENGTH);
-
-	bool found = false;
-	unsigned int i;
-	ServiceInfo* service;
-	for (i = 0; i < serverInfo.serviceVector.size(); i++) {
-		if (strncmp(serverInfo.serviceVector[i].serviceName, serviceName,
-				XATMI_SERVICE_NAME_LENGTH) == 0) {
-			found = true;
-			service = &serverInfo.serviceVector[i];
-			break;
-		}
-	}
-	if (!found) {
-		LOG4CXX_WARN(
-				loggerAtmiBrokerServer,
-				(char*) "Could not advertise service, was not registered for server in btconfig.xml: "
-						<< svcname);
-		setSpecific(TPE_KEY, TSS_TPELIMIT);
-		free(serviceName);
-		return false;
-	}
-	void (*serviceFunction)(TPSVCINFO*) = getServiceMethod(serviceName);
-	if (serviceFunction != NULL) {
-		if (serviceFunction == func) {
-			free(serviceName);
-			return true;
-		} else {
-			setSpecific(TPE_KEY, TSS_TPEMATCH);
-			free(serviceName);
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-					(char*) "advertiseService same service function");
-			return false;
-		}
-	} else if (serviceFunction == NULL && func == NULL) {
-		LOG4CXX_WARN(loggerAtmiBrokerServer,
-				(char*) "Could not advertise service, no function available: "
-						<< svcname);
-		return false;
-	}
-
-	Connection* connection = connections.getServerConnection();
-	if (connection == NULL) {
-		setSpecific(TPE_KEY, TSS_TPESYSTEM);
-		free(serviceName);
-		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-				(char*) "advertiseService no server connection");
-		return false;
-	}
-
-	bool toReturn = false;
-
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "advertiseService(): "
-			<< serviceName);
-
-	// create reference for Service Queue and cache
-	try {
-		if (service->externally_managed_destination == false) {
-			toReturn = createAdminDestination(serviceName);
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-					(char*) "advertiseService status=" << toReturn);
-		} else {
-			toReturn = true;
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "service "
-					<< serviceName << " has extern managed destination");
-		}
-		if (toReturn) {
-			Destination* destination;
-			destination = connection->createDestination(serviceName,
-					service->conversational);
-
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-					(char*) "created destination: " << serviceName);
-
-			addDestination(destination, func, service);
-			updateServiceStatus(service, func, true);
-			LOG4CXX_INFO(loggerAtmiBrokerServer, (char*) "advertised service "
-					<< serviceName);
-		}
-	} catch (CORBA::Exception& e) {
-		LOG4CXX_ERROR(loggerAtmiBrokerServer,
-				(char*) "CORBA::Exception creating the destination: "
-						<< serviceName << " Exception: " << e._name());
-		setSpecific(TPE_KEY, TSS_TPEMATCH);
-		try {
-			if (service->externally_managed_destination == false) {
-				removeAdminDestination(serviceName, true);
+		bool found = false;
+		unsigned int i;
+		ServiceInfo* service;
+		for (i = 0; i < serverInfo.serviceVector.size(); i++) {
+			if (strncmp(serverInfo.serviceVector[i].serviceName, serviceName,
+					XATMI_SERVICE_NAME_LENGTH) == 0) {
+				found = true;
+				service = &serverInfo.serviceVector[i];
+				break;
 			}
-		} catch (...) {
-			LOG4CXX_ERROR(loggerAtmiBrokerServer,
-					(char*) "Could not remove the destination: " << serviceName);
 		}
-	} catch (...) {
-		LOG4CXX_ERROR(loggerAtmiBrokerServer,
-				(char*) "Could not create the destination: " << serviceName);
-		setSpecific(TPE_KEY, TSS_TPEMATCH);
-		try {
-			if (service->externally_managed_destination == false) {
-				removeAdminDestination(serviceName, true);
+		if (!found) {
+			LOG4CXX_WARN(
+					loggerAtmiBrokerServer,
+					(char*) "Could not advertise service, was not registered for server in btconfig.xml: "
+							<< svcname);
+			setSpecific(TPE_KEY, TSS_TPELIMIT);
+		} else {
+			void (*serviceFunction)(TPSVCINFO*) = getServiceMethod(serviceName);
+			if (serviceFunction != NULL) {
+				if (serviceFunction == func) {
+					toReturn = true;
+				} else {
+					setSpecific(TPE_KEY, TSS_TPEMATCH);
+					LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+							(char*) "advertiseService same service function");
+				}
+			} else if (serviceFunction == NULL && func == NULL) {
+				LOG4CXX_WARN(
+						loggerAtmiBrokerServer,
+						(char*) "Could not advertise service, no function available: "
+								<< svcname);
+			} else {
+				Connection* connection = connections.getServerConnection();
+				if (connection == NULL) {
+					setSpecific(TPE_KEY, TSS_TPESYSTEM);
+					LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+							(char*) "advertiseService no server connection");
+				} else {
+					LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+							(char*) "advertiseService(): " << serviceName);
+
+					// create reference for Service Queue and cache
+					try {
+						bool created = false;
+						if (service->externally_managed_destination == false) {
+							created = createAdminDestination(serviceName);
+							LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+									(char*) "advertiseService status="
+											<< toReturn);
+						} else {
+							created = true;
+							LOG4CXX_DEBUG(
+									loggerAtmiBrokerServer,
+									(char*) "service " << serviceName
+											<< " has extern managed destination");
+						}
+						if (created) {
+							Destination* destination;
+							destination = connection->createDestination(
+									serviceName, service->conversational);
+
+							LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+									(char*) "created destination: "
+											<< serviceName);
+
+							addDestination(destination, func, service);
+							updateServiceStatus(service, func, true);
+							LOG4CXX_INFO(loggerAtmiBrokerServer,
+									(char*) "advertised service "
+											<< serviceName);
+							toReturn = true;
+						}
+					} catch (CORBA::Exception& e) {
+						LOG4CXX_ERROR(
+								loggerAtmiBrokerServer,
+								(char*) "CORBA::Exception creating the destination: "
+										<< serviceName << " Exception: "
+										<< e._name());
+						setSpecific(TPE_KEY, TSS_TPEMATCH);
+						try {
+							if (service->externally_managed_destination
+									== false) {
+								removeAdminDestination(serviceName, true);
+							}
+						} catch (...) {
+							LOG4CXX_ERROR(
+									loggerAtmiBrokerServer,
+									(char*) "Could not remove the destination: "
+											<< serviceName);
+						}
+					} catch (...) {
+						LOG4CXX_ERROR(loggerAtmiBrokerServer,
+								(char*) "Could not create the destination: "
+										<< serviceName);
+						setSpecific(TPE_KEY, TSS_TPEMATCH);
+						try {
+							if (service->externally_managed_destination
+									== false) {
+								removeAdminDestination(serviceName, true);
+							}
+						} catch (...) {
+							LOG4CXX_ERROR(
+									loggerAtmiBrokerServer,
+									(char*) "Could not remove the destination: "
+											<< serviceName);
+						}
+					}
+				}
 			}
-		} catch (...) {
-			LOG4CXX_ERROR(loggerAtmiBrokerServer,
-					(char*) "Could not remove the destination: " << serviceName);
 		}
+		free(serviceName);
 	}
-	free(serviceName);
 	return toReturn;
 }
 
 void AtmiBrokerServer::unadvertiseService(char * svcname, bool decrement) {
+	finish->lock();
 	char* serviceName = (char*) ::malloc(XATMI_SERVICE_NAME_LENGTH + 1);
 	memset(serviceName, '\0', XATMI_SERVICE_NAME_LENGTH + 1);
 	strncat(serviceName, svcname, XATMI_SERVICE_NAME_LENGTH);
 
 	Connection* connection = connections.getServerConnection();
-	if (connection == NULL) {
-		return;
-	}
-
-	//	Connection* connz = connections.getServerConnection("BAR");
-	//	delete connz;
 
 	for (std::vector<ServiceData>::iterator i = serviceData.begin(); i
 			!= serviceData.end(); i++) {
@@ -828,11 +836,14 @@ void AtmiBrokerServer::unadvertiseService(char * svcname, bool decrement) {
 		}
 	}
 	free(serviceName);
+	finish->unlock();
 }
 
 bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "Creating admin queue for: "
 			<< serviceName);
+	bool toReturn = false;
+	finish->lock();
 
 	bool isadm = false;
 	char adm[XATMI_SERVICE_NAME_LENGTH + 1];
@@ -846,16 +857,12 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 
 	long commandLength;
 	long responseLength = 1;
-
 	commandLength = strlen(serverName) + strlen(serviceName) + strlen(version)
 			+ 15 + 1;
-
 	char* command = (char*) ::tpalloc((char*) "X_OCTET", NULL, commandLength);
 	char* response = (char*) ::tpalloc((char*) "X_OCTET", NULL, responseLength);
 	memset(command, '\0', commandLength);
-
 	sprintf(command, "tpadvertise,%s,%s,%s,", serverName, serviceName, version);
-
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 			(char*) "createAdminDestination with command " << command);
 
@@ -863,25 +870,16 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 			&responseLength, TPNOTRAN) != 0) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer,
 				"Could not advertise service with command: " << command);
-		tpfree(command);
-		tpfree(response);
-		return false;
 	} else if (responseLength != 1) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer,
 				"Service returned with unexpected response: " << response
 						<< " with length " << responseLength);
-		tpfree(command);
-		tpfree(response);
-		return false;
 	} else if (response[0] == 4) {
 		LOG4CXX_WARN(
 				loggerAtmiBrokerServer,
 				(char*) "Version Mismatch Detected: The version of BlackTie used by this server: "
 						<< version
 						<< " does not match the version of BlackTie in the deployed admin service (please ensure the server, client and admin service are all using the same version of BlackTie)");
-		tpfree(command);
-		tpfree(response);
-		return false;
 	} else if (response[0] == 3) {
 		// Dispatcher needs to be paused
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
@@ -889,15 +887,11 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 		if (isadm) {
 			errorBootAdminService = 3;
 		}
-		tpfree(command);
-		tpfree(response);
-		return true;
+		toReturn = true;
 	} else if (response[0] == 1) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 				(char*) "Created admin queue for: " << serviceName);
-		tpfree(command);
-		tpfree(response);
-		return true;
+		toReturn = true;
 	} else {
 		int r = (int) response[0];
 		char c = response[0];
@@ -913,10 +907,11 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 							<< " command was " << command << " r=" << r
 							<< " c=" << c);
 		}
-		tpfree(command);
-		tpfree(response);
-		return false;
 	}
+	tpfree(command);
+	tpfree(response);
+	finish->unlock();
+	return toReturn;
 }
 
 void AtmiBrokerServer::removeAdminDestination(char* serviceName, bool decrement) {
@@ -1033,7 +1028,6 @@ Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "shutdown notified "
 					<< aServiceName);
 
-
 			SynchronizableObject* reconnect = NULL;
 
 			for (std::vector<ServiceDispatcher*>::iterator j =
@@ -1042,7 +1036,8 @@ Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
 				reconnect = dispatcher->getReconnect();
 				serviceDispatchersToDelete.push_back(dispatcher);
 				LOG4CXX_TRACE(loggerAtmiBrokerServer,
-						(char*) "Registered dispatcher " << aServiceName << " " << dispatcher);
+						(char*) "Registered dispatcher " << aServiceName << " "
+								<< dispatcher);
 			}
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "waited for dispatcher: " << aServiceName);
