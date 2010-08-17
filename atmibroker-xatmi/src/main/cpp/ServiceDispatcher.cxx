@@ -98,7 +98,7 @@ int ServiceDispatcher::svc(void) {
 
 		// This will wait while the server is paused
 		pauseLock->lock();
-		while (!stop && isPause) {
+		while (isPause) {
 			LOG4CXX_DEBUG(logger, (char*) "pausing: " << serviceName);
 			pauseLock->wait(0);
 			LOG4CXX_DEBUG(logger, (char*) "paused: " << serviceName);
@@ -166,12 +166,14 @@ int ServiceDispatcher::svc(void) {
 				ACE_OS::sleep(timeout);
 				LOG4CXX_DEBUG(logger, (char*) "sleeper, slept for " << timeout
 						<< " seconds");
+				stopLock->lock();
 				if (!stop && this->server->createAdminDestination(serviceName)) {
 					LOG4CXX_INFO(logger,
 							(char*) "Service dispatcher recreated: "
 									<< serviceName);
 					destination->connect();
 				}
+				stopLock->unlock();
 			}
 			reconnect->unlock();
 		}
@@ -319,22 +321,13 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 }
 
 void ServiceDispatcher::shutdown() {
-	// DONT ALLOW SHUTDOWN TO HAPPEN DURING A RECONNECT
-	reconnect->lock();
-
-	pauseLock->lock();
-	isPause = false;
-	pauseLock->notify();
-	pauseLock->unlock();
-
+	// Stop the server
 	stopLock->lock();
-	if (stop) {
-		LOG4CXX_TRACE(logger, (char*) "Double shutdown detected: " << this);
-	}
 	stop = true;
 	stopLock->unlock();
 
-	reconnect->unlock();
+	// Unpause the server if it was paused
+	resume();
 
 	LOG4CXX_TRACE(logger, (char*) "Service dispatcher shutdown notified: " << this);
 }

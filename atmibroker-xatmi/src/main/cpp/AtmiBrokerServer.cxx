@@ -850,7 +850,6 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "Creating admin queue for: "
 			<< serviceName);
 	bool toReturn = false;
-	finish->lock();
 
 	bool isadm = false;
 	char adm[XATMI_SERVICE_NAME_LENGTH + 1];
@@ -917,7 +916,6 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 	}
 	tpfree(command);
 	tpfree(response);
-	finish->unlock();
 	return toReturn;
 }
 

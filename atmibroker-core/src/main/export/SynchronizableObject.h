@@ -38,6 +38,7 @@ public:
 
 	/**
 	 * This code will wait to be notified or for the specified timeout interval.
+	 * A timeout of zero (0) indicates wait until notified.
 	 *
 	 * lock MUST be called before executing this method
 	 * unlock MUST be called after executing this method

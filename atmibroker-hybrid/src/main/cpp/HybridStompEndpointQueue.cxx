@@ -301,7 +301,7 @@ void HybridStompEndpointQueue::disconnect() {
 }
 
 bool HybridStompEndpointQueue::connect() {
-	if (!_connected) {
+	if (!shutdown && !_connected) {
 		LOG4CXX_DEBUG(logger, (char*) "connecting: " << fullName);
 		this->connection = HybridConnectionImpl::connect(pool,
 				mqConfig.destinationTimeout);
