@@ -37,7 +37,8 @@ ServiceDispatcher::ServiceDispatcher(AtmiBrokerServer* server,
 	bool isadm = false;
 	if (strncmp(serviceName, ".", 1) == 0) {
 		isadm = true;
-		LOG4CXX_DEBUG(logger, (char*) "servicedispatcher is an admin one");
+		LOG4CXX_DEBUG(logger, (char*) "servicedispatcher is an admin one: "
+				<< this);
 	}
 
 	this->reconnect = reconnect;
@@ -58,7 +59,8 @@ ServiceDispatcher::ServiceDispatcher(AtmiBrokerServer* server,
 	this->isConversational = isConversational;
 	pauseLock = new SynchronizableObject();
 	stopLock = new SynchronizableObject();
-	LOG4CXX_TRACE(logger, (char*) "Created ServiceDispatcher: " << this);
+	LOG4CXX_TRACE(logger, (char*) "Created ServiceDispatcher: " << this
+			<< " isPause " << isPause);
 }
 
 ServiceDispatcher::~ServiceDispatcher() {
@@ -69,7 +71,7 @@ ServiceDispatcher::~ServiceDispatcher() {
 }
 
 int ServiceDispatcher::pause(void) {
-	LOG4CXX_TRACE(logger, "ServiceDispatcher pause");
+	LOG4CXX_TRACE(logger, "ServiceDispatcher pause: " << this);
 	pauseLock->lock();
 	isPause = true;
 	pauseLock->unlock();
@@ -77,7 +79,7 @@ int ServiceDispatcher::pause(void) {
 }
 
 int ServiceDispatcher::resume(void) {
-	LOG4CXX_TRACE(logger, "ServiceDispatcher resume");
+	LOG4CXX_TRACE(logger, "ServiceDispatcher resume: " << this);
 	pauseLock->lock();
 	isPause = false;
 	pauseLock->notify();
@@ -105,13 +107,15 @@ int ServiceDispatcher::svc(void) {
 		message.serviceName = NULL;
 
 		// This will wait while the server is paused
-		pauseLock->lock();
-		while (!isadm && isPause) {
-			LOG4CXX_DEBUG(logger, (char*) "pausing: " << serviceName);
-			pauseLock->wait(0);
-			LOG4CXX_DEBUG(logger, (char*) "paused: " << serviceName);
+		if (!isadm) {
+			pauseLock->lock();
+			while (isPause) {
+				LOG4CXX_DEBUG(logger, (char*) "pausing: " << this);
+				pauseLock->wait(0);
+				LOG4CXX_DEBUG(logger, (char*) "paused: " << this);
+			}
+			pauseLock->unlock();
 		}
-		pauseLock->unlock();
 
 		stopLock->lock();
 		if (!stop) {
@@ -332,6 +336,8 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 }
 
 void ServiceDispatcher::shutdown() {
+	LOG4CXX_TRACE(logger, (char*) "Service dispatcher shutting down: " << this);
+
 	// Stop the server
 	stopLock->lock();
 	stop = true;
@@ -340,8 +346,7 @@ void ServiceDispatcher::shutdown() {
 	// Unpause the server if it was paused
 	resume();
 
-	LOG4CXX_TRACE(logger, (char*) "Service dispatcher shutdown notified: "
-			<< this);
+	LOG4CXX_TRACE(logger, (char*) "Service dispatcher shutdown: " << this);
 }
 
 long ServiceDispatcher::getCounter() {

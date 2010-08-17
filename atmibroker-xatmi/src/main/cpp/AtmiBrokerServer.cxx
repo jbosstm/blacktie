@@ -787,9 +787,11 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 									entry.dispatchers.push_back(dispatcher);
 									LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 											(char*) " destination "
-													<< destination
+													<< destination->getName()
 													<< " dispatcher "
-													<< dispatcher);
+													<< dispatcher
+													<< " isPause "
+													<< isPause);
 								}
 							}
 
