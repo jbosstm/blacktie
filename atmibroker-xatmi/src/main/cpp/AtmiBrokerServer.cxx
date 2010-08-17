@@ -182,8 +182,6 @@ int serverinit(int argc, char** argv) {
 					toReturn = -1;
 					setSpecific(TPE_KEY, TSS_TPESYSTEM);
 				} else {
-					ptrServer->advertiseAtBootime();
-
 					// install a handler for the default set of signals (namely, SIGINT and SIGTERM)
 					(env->getSignalHandler()).addSignalHandler(
 							server_sigint_handler_callback, true);
@@ -220,10 +218,6 @@ int serverdone() {
 
 	}
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "serverdone returning 0");
-	//	if (configFromCmdline) {
-	//		char* toFree = ACE_OS::getenv("BLACKTIE_CONFIGURATION");
-	//		free(toFree);
-	//	}
 	return 0;
 }
 
@@ -393,6 +387,35 @@ AtmiBrokerServer::AtmiBrokerServer() {
 						(char*) "Maybe the same server id running");
 				throw std::exception();
 			}
+
+			// Advertise boottime services
+			for (unsigned int i = 0; i < serverInfo.serviceVector.size(); i++) {
+				ServiceInfo* service = &serverInfo.serviceVector[i];
+				SVCFUNC func = NULL;
+				bool status = false;
+
+				if (service->library_name != NULL) {
+					func = (SVCFUNC) ::lookup_symbol(service->library_name,
+							service->function_name);
+					if (func == NULL) {
+						LOG4CXX_WARN(loggerAtmiBrokerServer, "can not find "
+								<< service->function_name << " in "
+								<< service->library_name);
+					}
+				}
+
+				if (service->advertised && func != NULL) {
+					LOG4CXX_DEBUG(loggerAtmiBrokerServer, "begin advertise "
+							<< service->serviceName);
+					status = advertiseService((char*) service->serviceName,
+							func);
+					LOG4CXX_DEBUG(loggerAtmiBrokerServer, "end advertise "
+							<< service->serviceName);
+				}
+
+				updateServiceStatus(service, func, status);
+			}
+
 			serverInitialized = true;
 
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
@@ -422,7 +445,6 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	finish->unlock();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_done(): returning.");
 
-
 	for (std::vector<ServiceDispatcher*>::iterator dispatcher =
 			serviceDispatchersToDelete.begin(); dispatcher
 			!= serviceDispatchersToDelete.end(); dispatcher++) {
@@ -437,6 +459,18 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 				<< (*dispatcher));
 	}
 	serviceDispatchersToDelete.clear();
+
+	for (std::vector<SynchronizableObject*>::iterator reconnect =
+			reconnectsToDelete.begin(); reconnect
+			!= reconnectsToDelete.end(); reconnect++) {
+		LOG4CXX_TRACE(loggerAtmiBrokerServer, (char*) "deleting reconnect: "
+				<< (*reconnect));
+		delete (*reconnect);
+		LOG4CXX_TRACE(loggerAtmiBrokerServer, (char*) "deleted reconnect: "
+				<< (*reconnect));
+	}
+	reconnectsToDelete.clear();
+
 
 	serviceData.clear();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted service array");
@@ -468,40 +502,11 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	serverInitialized = false;
 }
 
-void AtmiBrokerServer::advertiseAtBootime() {
-	for (unsigned int i = 0; i < serverInfo.serviceVector.size(); i++) {
-		ServiceInfo* service = &serverInfo.serviceVector[i];
-		SVCFUNC func = NULL;
-		bool status = false;
-
-		if (service->library_name != NULL) {
-			func = (SVCFUNC) ::lookup_symbol(service->library_name,
-					service->function_name);
-			if (func == NULL) {
-				LOG4CXX_WARN(loggerAtmiBrokerServer, "can not find "
-						<< service->function_name << " in "
-						<< service->library_name);
-			}
-		}
-
-		if (service->advertised && func != NULL) {
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer, "begin advertise "
-					<< service->serviceName);
-			status = advertiseService((char*) service->serviceName, func);
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer, "end advertise "
-					<< service->serviceName);
-		}
-
-		updateServiceStatus(service, func, status);
-	}
-}
-
 int AtmiBrokerServer::block() {
 
 	int toReturn = 0;
 	if (errorBootAdminService == 3) {
 		LOG4CXX_INFO(loggerAtmiBrokerServer, "Domain is paused");
-		pause();
 	} else {
 		LOG4CXX_INFO(loggerAtmiBrokerServer, "Server waiting for requests...");
 	}
@@ -739,7 +744,59 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 									(char*) "created destination: "
 											<< serviceName);
 
-							addDestination(destination, func, service);
+							LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+									(char*) "addDestination: "
+											<< destination->getName());
+
+							ServiceData entry;
+							entry.destination = destination;
+							entry.func = func;
+							entry.serviceInfo = service;
+
+							LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+									(char*) "constructor: "
+											<< destination->getName());
+
+							Connection* connection =
+									connections.getServerConnection();
+							LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+									(char*) "createPool");
+							SynchronizableObject* reconnect =
+									new SynchronizableObject();
+							for (int i = 0; i < entry.serviceInfo->poolSize; i++) {
+								ServiceDispatcher
+										* dispatcher =
+												new ServiceDispatcher(
+														this,
+														destination,
+														connection,
+														destination->getName(),
+														func,
+														isPause,
+														reconnect,
+														entry.serviceInfo->conversational);
+								if (dispatcher->activate(THR_NEW_LWP
+										| THR_JOINABLE, 1, 0,
+										ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0,
+										0, 0, 0, 0) != 0) {
+									delete dispatcher;
+									LOG4CXX_ERROR(
+											loggerAtmiBrokerServer,
+											(char*) "Could not start thread pool");
+								} else {
+									entry.dispatchers.push_back(dispatcher);
+									LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+											(char*) " destination "
+													<< destination
+													<< " dispatcher "
+													<< dispatcher);
+								}
+							}
+
+							serviceData.push_back(entry);
+							LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+									(char*) "added: " << destination->getName());
+
 							updateServiceStatus(service, func, true);
 							LOG4CXX_INFO(loggerAtmiBrokerServer,
 									(char*) "advertised service "
@@ -804,7 +861,46 @@ void AtmiBrokerServer::unadvertiseService(char * svcname, bool decrement) {
 				XATMI_SERVICE_NAME_LENGTH) == 0) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "remove_service_queue: " << serviceName);
-			Destination * destination = removeDestination(serviceName);
+			Destination* destination = NULL;
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "removing service "
+					<< serviceName);
+			destination = (*i).destination;
+			destination->disconnect();
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+					(char*) "disconnect notified " << serviceName);
+
+			for (std::vector<ServiceDispatcher*>::iterator j =
+					(*i).dispatchers.begin(); j != (*i).dispatchers.end(); j++) {
+				ServiceDispatcher* dispatcher = (*j);
+				dispatcher->shutdown();
+			}
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "shutdown notified "
+					<< serviceName);
+
+			SynchronizableObject* reconnect = NULL;
+
+			for (std::vector<ServiceDispatcher*>::iterator j =
+					(*i).dispatchers.begin(); j != (*i).dispatchers.end(); j++) {
+				ServiceDispatcher* dispatcher = (*j);
+				reconnect = dispatcher->getReconnect();
+				serviceDispatchersToDelete.push_back(dispatcher);
+				LOG4CXX_TRACE(loggerAtmiBrokerServer,
+						(char*) "Registered dispatcher for delete: " << serviceName << " "
+								<< dispatcher);
+			}
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+					(char*) "Registered dispatchers for: " << serviceName);
+			if (reconnect != NULL) {
+				LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+						(char*) "Registered reconnect for delete: ");
+				reconnectsToDelete.push_back(reconnect);
+			}
+
+			updateServiceStatus((*i).serviceInfo, (*i).func, false);
+			serviceData.erase(i);
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "removed: "
+					<< serviceName);
+
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "preparing to destroy" << serviceName);
 
@@ -892,6 +988,7 @@ bool AtmiBrokerServer::createAdminDestination(char* serviceName) {
 				(char*) "Created paused admin queue for: " << serviceName);
 		if (isadm) {
 			errorBootAdminService = 3;
+			pause();
 		}
 		toReturn = true;
 	} else if (response[0] == 1) {
@@ -964,99 +1061,6 @@ bool AtmiBrokerServer::isAdvertised(char * serviceName) {
 		if (strncmp((*i).serviceInfo->serviceName, serviceName,
 				XATMI_SERVICE_NAME_LENGTH) == 0) {
 			toReturn = true;
-		}
-	}
-	return toReturn;
-}
-
-void AtmiBrokerServer::addDestination(Destination* destination, void(*func)(
-		TPSVCINFO *), ServiceInfo* service) {
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "addDestination: "
-			<< destination->getName());
-
-	ServiceData entry;
-	entry.destination = destination;
-	entry.func = func;
-	entry.serviceInfo = service;
-
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "constructor: "
-			<< destination->getName());
-
-	Connection* connection = connections.getServerConnection();
-	if (connection == NULL) {
-		return;
-	}
-
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "createPool");
-	SynchronizableObject* reconnect = new SynchronizableObject();
-	for (int i = 0; i < entry.serviceInfo->poolSize; i++) {
-		ServiceDispatcher* dispatcher = new ServiceDispatcher(this,
-				destination, connection, destination->getName(), func, isPause,
-				reconnect, entry.serviceInfo->conversational);
-		if (dispatcher->activate(THR_NEW_LWP | THR_JOINABLE, 1, 0,
-				ACE_DEFAULT_THREAD_PRIORITY, -1, 0, 0, 0, 0, 0, 0) != 0) {
-			delete dispatcher;
-			LOG4CXX_ERROR(loggerAtmiBrokerServer,
-					(char*) "Could not start thread pool");
-		} else {
-			entry.dispatchers.push_back(dispatcher);
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) " destination "
-					<< destination << " dispatcher " << dispatcher);
-		}
-	}
-
-	serviceData.push_back(entry);
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "added: "
-			<< destination->getName());
-}
-
-Destination* AtmiBrokerServer::removeDestination(const char * aServiceName) {
-	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "removeDestination: "
-			<< aServiceName);
-	Destination* toReturn = NULL;
-	for (std::vector<ServiceData>::iterator i = serviceData.begin(); i
-			!= serviceData.end(); i++) {
-		if (strncmp((*i).serviceInfo->serviceName, aServiceName,
-				XATMI_SERVICE_NAME_LENGTH) == 0) {
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "removing service "
-					<< aServiceName);
-			toReturn = (*i).destination;
-			toReturn->disconnect();
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-					(char*) "disconnect notified " << aServiceName);
-
-			for (std::vector<ServiceDispatcher*>::iterator j =
-					(*i).dispatchers.begin(); j != (*i).dispatchers.end(); j++) {
-				ServiceDispatcher* dispatcher = (*j);
-				dispatcher->shutdown();
-			}
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "shutdown notified "
-					<< aServiceName);
-
-			SynchronizableObject* reconnect = NULL;
-
-			for (std::vector<ServiceDispatcher*>::iterator j =
-					(*i).dispatchers.begin(); j != (*i).dispatchers.end(); j++) {
-				ServiceDispatcher* dispatcher = (*j);
-				reconnect = dispatcher->getReconnect();
-				serviceDispatchersToDelete.push_back(dispatcher);
-				LOG4CXX_TRACE(loggerAtmiBrokerServer,
-						(char*) "Registered dispatcher " << aServiceName << " "
-								<< dispatcher);
-			}
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-					(char*) "waited for dispatcher: " << aServiceName);
-			if (reconnect != NULL) {
-				LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-						(char*) "Deleting reconnect");
-				delete reconnect;
-			}
-
-			updateServiceStatus((*i).serviceInfo, (*i).func, false);
-			serviceData.erase(i);
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "removed: "
-					<< aServiceName);
-			break;
 		}
 	}
 	return toReturn;

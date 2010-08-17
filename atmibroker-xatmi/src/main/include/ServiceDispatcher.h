@@ -55,6 +55,7 @@ private:
 	char* serviceName;
 	void (*func)(TPSVCINFO *);
 	Session* session;
+	bool isadm;
 	bool stop;
 	bool isPause;
 	bool isConversational;

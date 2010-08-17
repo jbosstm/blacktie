@@ -33,6 +33,13 @@ ServiceDispatcher::ServiceDispatcher(AtmiBrokerServer* server,
 		Destination* destination, Connection* connection,
 		const char *serviceName, void(*func)(TPSVCINFO *), bool isPause,
 		SynchronizableObject* reconnect, bool isConversational) {
+
+	bool isadm = false;
+	if (strncmp(serviceName, ".", 1) == 0) {
+		isadm = true;
+		LOG4CXX_DEBUG(logger, (char*) "servicedispatcher is an admin one");
+	}
+
 	this->reconnect = reconnect;
 	this->destination = destination;
 	this->connection = connection;
@@ -79,6 +86,7 @@ int ServiceDispatcher::resume(void) {
 }
 
 int ServiceDispatcher::svc(void) {
+	LOG4CXX_TRACE(logger, (char*) "Service dispatcher started: " << this);
 	while (!stop) {
 		MESSAGE message;
 		message.replyto = NULL;
@@ -98,7 +106,7 @@ int ServiceDispatcher::svc(void) {
 
 		// This will wait while the server is paused
 		pauseLock->lock();
-		while (isPause) {
+		while (!isadm && isPause) {
 			LOG4CXX_DEBUG(logger, (char*) "pausing: " << serviceName);
 			pauseLock->wait(0);
 			LOG4CXX_DEBUG(logger, (char*) "paused: " << serviceName);
@@ -190,10 +198,13 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	// INITIALISE THE SENDER AND RECEIVER FOR THIS CONVERSATION
 	if (message.replyto) {
 		LOG4CXX_DEBUG(logger, (char*) "replyTo: " << message.replyto);
-		LOG4CXX_TRACE(logger, (char*) "Creating session: " << message.correlationId);
-		session = connection->createSession(((message.flags & TPCONV) == TPCONV),
-				message.correlationId, message.replyto);
-		LOG4CXX_TRACE(logger, (char*) "Created session: " << message.correlationId);
+		LOG4CXX_TRACE(logger, (char*) "Creating session: "
+				<< message.correlationId);
+		session = connection->createSession(
+				((message.flags & TPCONV) == TPCONV), message.correlationId,
+				message.replyto);
+		LOG4CXX_TRACE(logger, (char*) "Created session: "
+				<< message.correlationId);
 	} else {
 		LOG4CXX_DEBUG(logger, (char*) "replyTo: NULL");
 	}
@@ -211,8 +222,8 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	tpsvcinfo.len = message.len;
 
 	if (message.data != NULL) {
-		tpsvcinfo.data = AtmiBrokerMem::get_instance()->tpalloc(NULL, message.type,
-				message.subtype, message.len, true);
+		tpsvcinfo.data = AtmiBrokerMem::get_instance()->tpalloc(NULL,
+				message.type, message.subtype, message.len, true);
 		if (message.len > 0) {
 			memcpy(tpsvcinfo.data, message.data, message.len);
 		}
@@ -329,7 +340,8 @@ void ServiceDispatcher::shutdown() {
 	// Unpause the server if it was paused
 	resume();
 
-	LOG4CXX_TRACE(logger, (char*) "Service dispatcher shutdown notified: " << this);
+	LOG4CXX_TRACE(logger, (char*) "Service dispatcher shutdown notified: "
+			<< this);
 }
 
 long ServiceDispatcher::getCounter() {

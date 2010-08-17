@@ -58,7 +58,6 @@ public:
 
 	BLACKTIE_XATMI_DLL bool isAdvertised(char * serviceName);
 	bool advertiseService(char* serviceName);
-	void advertiseAtBootime();
 	int  getServiceStatus(char** str, char* svc);
 	long getServiceMessageCounter(char* serviceName);
 	long getServiceErrorCounter(char* serviceName);
@@ -71,8 +70,6 @@ public:
 
 private:
 	void (*getServiceMethod(const char * aServiceName))(TPSVCINFO *);
-	void addDestination(Destination* destination, void(*func)(TPSVCINFO *), ServiceInfo* service);
-	Destination* removeDestination(const char * aServiceName);
 	void removeAdminDestination(char* svcname, bool decrement);
 	void updateServiceStatus(ServiceInfo* service, SVCFUNC func, bool status);
 
@@ -83,8 +80,9 @@ private:
 	ServerInfo serverInfo;
 	SynchronizableObject* finish;
 	bool isPause;
-	
+
 	std::vector<ServiceDispatcher*> serviceDispatchersToDelete;
+	std::vector<SynchronizableObject*> reconnectsToDelete;
 
 	// The following are not implemented
 	//
