@@ -17,17 +17,17 @@ MA  02110-1301, USA.
 Installing Blacktie into JBoss AS
 
    1 Download 5.1.0.GA and configure JBoss AS to use JTS:
-   	- Extract into any location on your hard drive, and set the env variable JBOSS_HOME to this location;
-   	- cd $JBOSS_HOME/docs/examples/transactions;
+   	- Extract into any location on your hard drive, this will be referred to as JBOSS_HOME;
+   	- cd JBOSS_HOME/docs/examples/transactions;
    	- Type: ant jts (this installs the JTS version of JBoss Transactions);
-   	- Edit $JBOSS_HOME/server/all/conf/jbossts-properties.xml to change the CONFIGURATION_FILE to NAME_SERVICE
+   	- Edit JBOSS_HOME/server/all/conf/jbossts-properties.xml to change the CONFIGURATION_FILE to NAME_SERVICE
       (this cause JBossTS to make its TransactionFactory available as a CORBA object);
    2. Edit $BLACKTIE_HOME/setenv.sh|bat to enter the location of BLACKTIE_HOME and source the script
-   3. Copy $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-ear-[VERSION].ear to $JBOSS_HOME/server/all/deploy
-   4. Copy $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml to $JBOSS_HOME/server/all/conf
-   5. Copy $BLACKTIE_HOME/blacktie-admin-services/blacktie-rhq-plugin-[VERSION].jar to $JBOSS_HOME/server/all/deploy/admin-console.war/plugins
+   3. Copy $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-ear-[VERSION].ear to JBOSS_HOME/server/all/deploy
+   4. Copy $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml to JBOSS_HOME/server/all/conf
+   5. Copy $BLACKTIE_HOME/blacktie-admin-services/blacktie-rhq-plugin-[VERSION].jar to JBOSS_HOME/server/all/deploy/admin-console.war/plugins
    6. Start the all configuration of the application server:
-      cd $JBOSS_HOME; bin/run.sh -c all
+      cd JBOSS_HOME; bin/run.sh -c all
 
 Configuring the Examples
 
