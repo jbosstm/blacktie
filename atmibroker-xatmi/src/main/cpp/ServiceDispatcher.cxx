@@ -59,12 +59,12 @@ ServiceDispatcher::ServiceDispatcher(AtmiBrokerServer* server,
 	this->isConversational = isConversational;
 	pauseLock = new SynchronizableObject();
 	stopLock = new SynchronizableObject();
-	LOG4CXX_TRACE(logger, (char*) "Created ServiceDispatcher: " << this
+	LOG4CXX_TRACE(logger, (char*) "ServiceDispatcher created: " << this
 			<< " isPause " << isPause);
 }
 
 ServiceDispatcher::~ServiceDispatcher() {
-	LOG4CXX_TRACE(logger, (char*) "Destroying ServiceDispatcher: " << this);
+	LOG4CXX_TRACE(logger, (char*) "ServiceDispatcher destroyed: " << this);
 	free(this->serviceName);
 	delete pauseLock;
 	delete stopLock;
@@ -88,7 +88,8 @@ int ServiceDispatcher::resume(void) {
 }
 
 int ServiceDispatcher::svc(void) {
-	LOG4CXX_TRACE(logger, (char*) "Service dispatcher started: " << this);
+	LOG4CXX_TRACE(logger, (char*) "ServiceDispatcher started: " << this
+			<< " isPause " << isPause);
 	while (!stop) {
 		MESSAGE message;
 		message.replyto = NULL;
@@ -114,6 +115,7 @@ int ServiceDispatcher::svc(void) {
 				pauseLock->wait(0);
 				LOG4CXX_DEBUG(logger, (char*) "paused: " << this);
 			}
+			LOG4CXX_DEBUG(logger, (char*) "not paused: " << this);
 			pauseLock->unlock();
 		}
 
@@ -190,7 +192,7 @@ int ServiceDispatcher::svc(void) {
 			reconnect->unlock();
 		}
 	}
-	LOG4CXX_TRACE(logger, (char*) "Service dispatcher completed: " << this);
+	LOG4CXX_TRACE(logger, (char*) "ServiceDispatcher completed: " << this);
 	return 0;
 }
 
