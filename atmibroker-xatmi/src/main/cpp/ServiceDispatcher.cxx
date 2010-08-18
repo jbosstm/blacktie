@@ -34,11 +34,12 @@ ServiceDispatcher::ServiceDispatcher(AtmiBrokerServer* server,
 		const char *serviceName, void(*func)(TPSVCINFO *), bool isPause,
 		SynchronizableObject* reconnect, bool isConversational) {
 
-	bool isadm = false;
 	if (strncmp(serviceName, ".", 1) == 0) {
-		isadm = true;
+		this->isadm = true;
 		LOG4CXX_DEBUG(logger, (char*) "servicedispatcher is an admin one: "
 				<< this);
+	} else {
+		this->isadm = false;
 	}
 
 	this->reconnect = reconnect;
@@ -60,7 +61,7 @@ ServiceDispatcher::ServiceDispatcher(AtmiBrokerServer* server,
 	pauseLock = new SynchronizableObject();
 	stopLock = new SynchronizableObject();
 	LOG4CXX_TRACE(logger, (char*) "ServiceDispatcher created: " << this
-			<< " isPause " << isPause);
+		<< " isPause " << this->isPause << " isadm: " << this->isadm);
 }
 
 ServiceDispatcher::~ServiceDispatcher() {
@@ -110,12 +111,12 @@ int ServiceDispatcher::svc(void) {
 		// This will wait while the server is paused
 		if (!isadm) {
 			pauseLock->lock();
-			while (isPause) {
+			while (isPause == true) {
 				LOG4CXX_DEBUG(logger, (char*) "pausing: " << this);
 				pauseLock->wait(0);
 				LOG4CXX_DEBUG(logger, (char*) "paused: " << this);
 			}
-			LOG4CXX_DEBUG(logger, (char*) "not paused: " << this);
+			LOG4CXX_DEBUG(logger, (char*) "not paused: " << this << " isPause: " << isPause);
 			pauseLock->unlock();
 		}
 
