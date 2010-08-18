@@ -25,7 +25,9 @@
 
 class TestTxTPCall: public BaseServerTest {
 	CPPUNIT_TEST_SUITE( TestTxTPCall);
+#ifndef WIN32
 	CPPUNIT_TEST(test_timeout_with_tx);
+#endif
 	CPPUNIT_TEST(test_tpcall_without_tx);
 	CPPUNIT_TEST(test_tpcall_with_tx);
 	CPPUNIT_TEST(test_tpcancel_with_tx);
