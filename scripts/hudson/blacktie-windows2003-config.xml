@@ -96,6 +96,7 @@ rem START JBOSS
 cd jboss-5.1.0.GA\bin
 set BUILD_ID=dontKillMe
 start /B run.bat -c all -b 172.17.131.5
+set BUILD_ID=
 echo &quot;Started server&quot;
 @ping 127.0.0.1 -n 120 -w 1000 &gt; nul
 cd ..\..
