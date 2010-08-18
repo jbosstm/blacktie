@@ -67,12 +67,15 @@ echo ^&lt;/project^&gt; &gt;&gt; build.xml
 set ANT_HOME=C:\hudson\tools\apache-ant-1.7.1
 set PATH=%PATH%;%ANT_HOME%\bin
 call ant download
+IF %ERRORLEVEL% NEQ 0 exit -1
 
 cd jboss-5.1.0.GA/docs/examples/transactions
 call ant jts
+IF %ERRORLEVEL% NEQ 0 exit -1
 
 cd ../../../../
-call ant replaceJBoss -DJBOSSAS_IP_ADDR=172.17.131.5</command>
+call ant replaceJBoss -DJBOSSAS_IP_ADDR=172.17.131.5
+IF %ERRORLEVEL% NEQ 0 exit -1</command>
     </hudson.tasks.BatchFile>
     <hudson.tasks.BatchFile>
       <command>rem INITIALIZE C++ COMPILER
@@ -91,6 +94,7 @@ rem copy trunk\blacktie-admin-services\ear\target\blacktie-admin-services-*.ear 
 rem copy trunk\blacktie-rhq-plugin\target\blacktie-rhq-plugin-*.jar jboss-5.1.0.GA\server\all\deploy\admin-console.war\plugins\
 copy trunk\jatmibroker-xatmi\src\test\resources\jatmibroker-xatmi-test-service.xml jboss-5.1.0.GA\server\all\deploy
 call ant replaceBlackTie -DJBOSSAS_IP_ADDR=172.17.131.5
+IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem START JBOSS
 cd jboss-5.1.0.GA\bin
@@ -104,20 +108,25 @@ cd ..\..
 rem BUILD BLACKTIE CPP PLUGIN
 cd trunk\blacktie-utils\cpp-plugin\
 call mvn install
+IF %ERRORLEVEL% NEQ 0 exit -1
 cd ..\..\..\
 
 rem BUILD BLACKTIE
 cd trunk\blacktie
 call mvn clean 
+IF %ERRORLEVEL% NEQ 0 exit -1
 call mvn install -Dbpa=vc9x32 -Duse.valgrind=false -Djbossas.ip.addr=172.17.131.5
+IF %ERRORLEVEL% NEQ 0 exit -1
 cd ..\..\
 cd trunk\jatmibroker-xatmi
 call mvn site -DskipTests
+IF %ERRORLEVEL% NEQ 0 exit -1
 cd ..\..\
 
 rem CREATE BLACKTIE DISTRIBUTION
 cd trunk\scripts\test
 call ant dist -DBT_HOME=C:\\\\hudson\\\\workspace\\\\blacktie-windows2003\\\\trunk\\\\dist\\\\ -DVERSION=blacktie-2.0.0.CR1-SNAPSHOT -DJBOSSAS_IP_ADDR=catskill -DMACHINE_ADDR=catskill
+IF %ERRORLEVEL% NEQ 0 exit -1
 cd ..\..\..\
 
 rem RUN THE SAMPLES
@@ -126,7 +135,9 @@ set ORACLE_HOME=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2
 set TNS_ADMIN=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2\network\admin
 set PATH=%PATH%;%ORACLE_HOME%\bin;%ORACLE_HOME%\vc9
 call setenv.bat
+IF %ERRORLEVEL% NEQ 0 exit -1
 call run_all_samples.bat tx
+IF %ERRORLEVEL% NEQ 0 exit -1
 cd ..\..\..\..\
 
 rem SHUTDOWN JBOSS
