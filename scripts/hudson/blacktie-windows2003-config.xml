@@ -32,7 +32,7 @@
     <hudson.tasks.BatchFile>
       <command>if exist build.xml del build.xml
 if exist jboss-5.1.0.GA echo foo | call jboss-5.1.0.GA\bin\shutdown.bat -s 172.17.131.5:1099 -S &amp;&amp; cd .
-if exist jboss-5.1.0.GA @ping 127.0.0.1 -n 30 -w 1000 &gt; nul
+if exist jboss-5.1.0.GA @ping 127.0.0.1 -n 60 -w 1000 &gt; nul
 echo ^&lt;project name=&quot;blacktie-dependencies&quot;^&gt; &gt;&gt; build.xml
 echo    ^&lt;target name=&quot;download&quot;^&gt; &gt;&gt; build.xml
 rem echo        ^&lt;get src=&quot;http://albany/userContent/blacktie/instantclient-basiclite-win32-11.2.0.1.0.zip&quot; dest=&quot;./instantclient-basiclite-win32-11.2.0.1.0.zip&quot; verbose=&quot;true&quot; usetimestamp=&quot;true&quot;/^&gt; &gt;&gt; build.xml
@@ -74,81 +74,62 @@ call ant jts
 cd ../../../../
 call ant replaceJBoss -DJBOSSAS_IP_ADDR=172.17.131.5</command>
     </hudson.tasks.BatchFile>
-    <hudson.tasks.Maven>
-      <targets>install</targets>
-      <mavenName>apache-maven-2.1.0</mavenName>
-      <jvmOptions>-Xmx200m</jvmOptions>
-      <pom>blacktie-utils/cpp-plugin/pom.xml</pom>
-      <usePrivateRepository>false</usePrivateRepository>
-    </hudson.tasks.Maven>
     <hudson.tasks.BatchFile>
-      <command>copy trunk\blacktie-admin-services\src\test\resources\btconfig.xml jboss-5.1.0.GA\server\all\conf
+      <command>rem INITIALIZE C++ COMPILER
+call &quot;C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat&quot;
+rem INITIALIZE JAVA
+set JAVA_HOME=C:\Program Files (x86)\Java\jdk1.5.0_19
+rem INITIALIZE MAVEN
+set PATH=%PATH%;C:\hudson\tools\apache-maven-2.0.10\bin
+set MAVEN_OPTS=-Xmx200m
+rem INITIALIZE ANT
+set PATH=%PATH%;C:\hudson\tools\apache-ant-1.7.1\bin
+
+rem INITIALZE BLACKTIE JBOSS DEPENDENCIES
+copy trunk\blacktie-admin-services\src\test\resources\btconfig.xml jboss-5.1.0.GA\server\all\conf
 rem copy trunk\blacktie-admin-services\ear\target\blacktie-admin-services-*.ear jboss-5.1.0.GA\server\all\deploy
 rem copy trunk\blacktie-rhq-plugin\target\blacktie-rhq-plugin-*.jar jboss-5.1.0.GA\server\all\deploy\admin-console.war\plugins\
 copy trunk\jatmibroker-xatmi\src\test\resources\jatmibroker-xatmi-test-service.xml jboss-5.1.0.GA\server\all\deploy
+call ant replaceBlackTie -DJBOSSAS_IP_ADDR=172.17.131.5
 
-set ANT_HOME=C:\hudson\tools\apache-ant-1.7.1
-set PATH=%PATH%;%ANT_HOME%\bin
-call ant replaceBlackTie -DJBOSSAS_IP_ADDR=172.17.131.5</command>
-    </hudson.tasks.BatchFile>
-    <hudson.tasks.BatchFile>
-      <command>cd jboss-5.1.0.GA\bin
+rem START JBOSS
+cd jboss-5.1.0.GA\bin
 set BUILD_ID=dontKillMe
 start /B run.bat -c all -b 172.17.131.5
 echo &quot;Started server&quot;
 @ping 127.0.0.1 -n 120 -w 1000 &gt; nul
-</command>
-    </hudson.tasks.BatchFile>
-    <hudson.tasks.BatchFile>
-      <command>call &quot;C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat&quot;
-set JAVA_HOME=C:\Program Files (x86)\Java\jdk1.5.0_19
-set MAVEN_HOME=C:\hudson\tools\apache-maven-2.0.10
-set MAVEN_OPTS=-Xmx200m
-set PATH=%PATH%;%MAVEN_HOME%\bin
-cd trunk/blacktie
+cd ..\..
+
+rem BUILD BLACKTIE CPP PLUGIN
+cd trunk\blacktie-utils\cpp-plugin\
+call mvn install
+cd ..\..\..\
+
+rem BUILD BLACKTIE
+cd trunk\blacktie
 call mvn clean 
 call mvn install -Dbpa=vc9x32 -Duse.valgrind=false -Djbossas.ip.addr=172.17.131.5
-</command>
-    </hudson.tasks.BatchFile>
-    <hudson.tasks.BatchFile>
-      <command>rem call &quot;C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat&quot;
-rem set JAVA_HOME=C:\Program Files (x86)\Java\jdk1.5.0_19
-rem set MAVEN_HOME=C:\hudson\tools\apache-maven-2.0.10
-rem set MAVEN_OPTS=-Xmx200m
-rem set PATH=%PATH%;%MAVEN_HOME%\bin
-rem cd trunk/blacktie
-rem mvn install -Dbpa=vc9x32 -Duse.valgrind=false -Djbossas.ip.addr=172.17.131.5</command>
-    </hudson.tasks.BatchFile>
-    <hudson.tasks.BatchFile>
-      <command>call &quot;C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat&quot;
-set JAVA_HOME=C:\Program Files (x86)\Java\jdk1.5.0_19
-set MAVEN_HOME=C:\hudson\tools\apache-maven-2.0.10
-set MAVEN_OPTS=-Xmx200m
-set PATH=%PATH%;%MAVEN_HOME%\bin
+cd ..\..\
 cd trunk\jatmibroker-xatmi
-mvn site -DskipTests</command>
-    </hudson.tasks.BatchFile>
-    <hudson.tasks.BatchFile>
-      <command>call &quot;C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat&quot;
-set ANT_HOME=C:\hudson\tools\apache-ant-1.7.1
-set PATH=%PATH%;%ANT_HOME%\bin
-set JAVA_HOME=C:\Program Files (x86)\Java\jdk1.5.0_19
-set MAVEN_HOME=C:\hudson\tools\apache-maven-2.0.10
-set MAVEN_OPTS=-Xmx200m
-set PATH=%PATH%;%MAVEN_HOME%\bin
+call mvn site -DskipTests
+cd ..\..\
+
+rem CREATE BLACKTIE DISTRIBUTION
 cd trunk\scripts\test
 call ant dist -DBT_HOME=C:\\\\hudson\\\\workspace\\\\blacktie-windows2003\\\\trunk\\\\dist\\\\ -DVERSION=blacktie-2.0.0.CR1-SNAPSHOT -DJBOSSAS_IP_ADDR=catskill -DMACHINE_ADDR=catskill
+cd ..\..\..\
 
-
+rem RUN THE SAMPLES
 cd ..\..\dist\blacktie-*
 set ORACLE_HOME=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2
 set TNS_ADMIN=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2\network\admin
 set PATH=%PATH%;%ORACLE_HOME%\bin;%ORACLE_HOME%\vc9
 call setenv.bat
-run_all_samples.bat tx</command>
-    </hudson.tasks.BatchFile>
-    <hudson.tasks.BatchFile>
-      <command>echo foo | call jboss-5.1.0.GA\bin\shutdown.bat -s 172.17.131.5:1099 -S &amp;&amp; cd .</command>
+run_all_samples.bat tx
+cd ..\..\..\..\
+
+rem SHUTDOWN JBOSS
+echo foo | call jboss-5.1.0.GA\bin\shutdown.bat -s 172.17.131.5:1099 -S &amp;&amp; cd .</command>
     </hudson.tasks.BatchFile>
   </builders>
   <publishers>
