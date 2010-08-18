@@ -125,7 +125,7 @@ set ORACLE_HOME=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2
 set TNS_ADMIN=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2\network\admin
 set PATH=%PATH%;%ORACLE_HOME%\bin;%ORACLE_HOME%\vc9
 call setenv.bat
-run_all_samples.bat tx
+call run_all_samples.bat tx
 cd ..\..\..\..\
 
 rem SHUTDOWN JBOSS
