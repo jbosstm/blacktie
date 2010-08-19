@@ -77,10 +77,14 @@ public abstract class CSControl extends TestCase {
 		environment.put("PATH", System.getenv("PATH"));
 		clientBuilder.environment().putAll(environment);
 		serverBuilder.command(CS_EXE, "-c", "linux", "-i", nextSid());
+	}
+	
 
+
+	public void runServer(String string) {
 		try {
 			log.debug("start server process");
-			server = startServer(serverBuilder);
+			server = startServer(string, serverBuilder);
 		} catch (IOException e) {
 			throw new RuntimeException("Server io exception: ", e);
 		} catch (InterruptedException e) {
@@ -125,12 +129,12 @@ public abstract class CSControl extends TestCase {
 		return client;
 	}
 
-	private TestProcess startServer(ProcessBuilder builder) throws IOException,
+	private TestProcess startServer(String testname, ProcessBuilder builder) throws IOException,
 			InterruptedException {
 		FileOutputStream ostream = new FileOutputStream(REPORT_DIR
-				+ "/server-out.txt");
+				+ "/server-" + testname + "-out.txt");
 		FileOutputStream estream = new FileOutputStream(REPORT_DIR
-				+ "/server-err.txt");
+				+ "/server-" + testname + "-err.txt");
 		TestProcess server = new TestProcess(ostream, estream, "server",
 				builder);
 		Thread thread = new Thread(server);
