@@ -45,6 +45,7 @@ public abstract class CSControl extends TestCase {
 	}
 
 	public void tearDown() {
+		log.info("tearDown");
 		try {
 			if (server != null) {
 				log.debug("destroying server process");
@@ -60,6 +61,7 @@ public abstract class CSControl extends TestCase {
 	}
 
 	public void setUp() {
+		log.info("setUp");
 		log.debug("setup server process");
 		REPORT_DIR = System.getProperty("TEST_REPORTS_DIR", ".");
 		CS_EXE = System.getProperty("CLIENT_SERVER_EXE", "./cs");
@@ -81,10 +83,10 @@ public abstract class CSControl extends TestCase {
 		serverBuilder.command(CS_EXE, "-c", "linux", "-i", nextSid());
 	}
 
-	public void runServer(String string) {
+	public void runServer(String name) {
 		try {
-			log.debug("start server process");
-			server = startServer(string, serverBuilder);
+			log.info("start server process: " + name);
+			server = startServer(name, serverBuilder);
 		} catch (IOException e) {
 			throw new RuntimeException("Server io exception: ", e);
 		} catch (InterruptedException e) {
@@ -94,7 +96,7 @@ public abstract class CSControl extends TestCase {
 
 	public void runTest(String name) {
 		try {
-			log.debug("waiting for test " + name);
+			log.info("waiting for test " + name);
 			clientBuilder.command(CS_EXE, name);
 			TestProcess client = startClient(name, clientBuilder);
 			int res = client.exitValue();
