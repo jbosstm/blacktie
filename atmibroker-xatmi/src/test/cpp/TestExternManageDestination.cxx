@@ -152,9 +152,9 @@ void TestExternManageDestination::test_stored_messages() {
 		BT_ASSERT_MESSAGE(msg, tperrno == 0 && toCheck != -1);
 
 		msgCnt = 5;
-		maxSleep = 10;
+		maxSleep = 5;
 		while (msgCnt > 0 && maxSleep-- > 0) {
-			::sleeper(1);
+			::sleeper(5);
 		}
 
 		sprintf(msg, "not all messages were delivered: %d remaining sent %d", msgCnt, ((i + 1) * 5));
@@ -194,9 +194,9 @@ void TestExternManageDestination::test_stored_message_priority() {
 		BT_ASSERT_MESSAGE(msg, tperrno == 0 && toCheck != -1);
 
 		msgCnt = 10;
-		maxSleep = 10;
+		maxSleep = 5;
 		while (msgCnt > 0 && maxSleep-- > 0)
-			::sleeper(1);
+			::sleeper(5);
 
 		sprintf(msg, "not all messages were delivered: %d remaining", msgCnt);
 		BT_ASSERT_MESSAGE(msg, msgCnt == 0);
@@ -226,6 +226,9 @@ void qservice(TPSVCINFO *svcinfo) {
 	msgId += 1;
 
 	if (msgCnt == 1) {
+		// THIS CAN CAUSE THE TEST TO FAIL AS WE DONT SYNCHRONIZE AND UPDATE
+		// msgCnt FIRST BUT IF YOU UPDATE msgCnt THEN THE TEST CAN TRY TO SHUTDOWN
+		// THE SERVER AT THE SAME TIME AS tpunadvertise
 		int err = tpunadvertise(SERVICE);
 
 		sprintf(msg, "unadvertise error: %d %d", tperrno, err);
