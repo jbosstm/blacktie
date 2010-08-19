@@ -46,11 +46,13 @@ public abstract class CSControl extends TestCase {
 
 	public void tearDown() {
 		try {
-			log.debug("destroying server process");
-			server.interrupt();
-			server.getProcess().destroy();
-			log.debug("destroyed server process");
-			server.getProcess().waitFor();
+			if (server != null) {
+				log.debug("destroying server process");
+				server.interrupt();
+				server.getProcess().destroy();
+				log.debug("destroyed server process");
+				server.getProcess().waitFor();
+			}
 			log.debug("waited for server process");
 		} catch (Throwable e) {
 			throw new RuntimeException("Server shutdown error: ", e);
@@ -69,17 +71,15 @@ public abstract class CSControl extends TestCase {
 		java.util.Map<String, String> environment = serverBuilder.environment();
 		// environment.clear();
 		environment.put("LD_LIBRARY_PATH", System.getenv("LD_LIBRARY_PATH"));
-		environment.put("BLACKTIE_CONFIGURATION_DIR", System
-				.getenv("BLACKTIE_CONFIGURATION_DIR"));
-		environment.put("BLACKTIE_SCHEMA_DIR", System
-				.getenv("BLACKTIE_SCHEMA_DIR"));
+		environment.put("BLACKTIE_CONFIGURATION_DIR",
+				System.getenv("BLACKTIE_CONFIGURATION_DIR"));
+		environment.put("BLACKTIE_SCHEMA_DIR",
+				System.getenv("BLACKTIE_SCHEMA_DIR"));
 		environment.put("JBOSSAS_IP_ADDR", System.getenv("JBOSSAS_IP_ADDR"));
 		environment.put("PATH", System.getenv("PATH"));
 		clientBuilder.environment().putAll(environment);
 		serverBuilder.command(CS_EXE, "-c", "linux", "-i", nextSid());
 	}
-	
-
 
 	public void runServer(String string) {
 		try {
@@ -129,12 +129,12 @@ public abstract class CSControl extends TestCase {
 		return client;
 	}
 
-	private TestProcess startServer(String testname, ProcessBuilder builder) throws IOException,
-			InterruptedException {
-		FileOutputStream ostream = new FileOutputStream(REPORT_DIR
-				+ "/server-" + testname + "-out.txt");
-		FileOutputStream estream = new FileOutputStream(REPORT_DIR
-				+ "/server-" + testname + "-err.txt");
+	private TestProcess startServer(String testname, ProcessBuilder builder)
+			throws IOException, InterruptedException {
+		FileOutputStream ostream = new FileOutputStream(REPORT_DIR + "/server-"
+				+ testname + "-out.txt");
+		FileOutputStream estream = new FileOutputStream(REPORT_DIR + "/server-"
+				+ testname + "-err.txt");
 		TestProcess server = new TestProcess(ostream, estream, "server",
 				builder);
 		Thread thread = new Thread(server);
@@ -219,11 +219,9 @@ public abstract class CSControl extends TestCase {
 								}
 								pos = 0;
 							} else if (pos == buf.length) {
-								ostream
-										.write("missing synchronization sequence from service - force notify"
-												.getBytes("UTF-8"));
-								log
-										.warn("missing synchronization sequence from service");
+								ostream.write("missing synchronization sequence from service - force notify"
+										.getBytes("UTF-8"));
+								log.warn("missing synchronization sequence from service");
 								synchronized (this) {
 									this.notify();
 								}
