@@ -37,7 +37,7 @@ public class QueueReaper implements Runnable {
 	private static final Logger log = LogManager.getLogger(QueueReaper.class);
 
 	/** Interval at which to run */
-	private long interval = 30 * 1000; // TODO make this configurable
+	private long interval = -1; // TODO make this configurable
 
 	/** Thread to run */
 	private Thread thread;
@@ -59,6 +59,8 @@ public class QueueReaper implements Runnable {
 		XMLEnvHandler handler = new XMLEnvHandler(prop);
 		XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
 		xmlenv.parse("btconfig.xml");
+
+		this.interval = Integer.parseInt(prop.getProperty("QueueReaperInterval", "30")) * 1000;
 	}
 
 	public void startThread() {
@@ -114,9 +116,6 @@ public class QueueReaper implements Runnable {
 									.warn("undeploy service pending for "
 											+ serviceName
 											+ " as consumer count is 0, will check again in 30 seconds");
-
-							this.interval = Integer.parseInt(prop.getProperty(
-									"QueueReaperInterval", "30")) * 1000;
 							Thread.sleep(this.interval);
 
 							// double check consumer is 0
@@ -142,7 +141,13 @@ public class QueueReaper implements Runnable {
 				log.debug("Sleeping interrupted");
 				this.run = false;
 			} catch (Exception e) {
-				log.error("run ping thread failed with " + e);
+				log.error("run ping thread failed with (will wait for: " + interval + " seconds): " + e);
+				try {
+					Thread.sleep(this.interval);
+				} catch (InterruptedException e2) {
+					log.debug("Sleeping interrupted");
+					this.run = false;
+				} 
 			}
 		}
 	}
