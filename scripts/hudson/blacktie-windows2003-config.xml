@@ -182,7 +182,7 @@ $CHANGES_SINCE_LAST_SUCCESS</defaultContent>
   </publishers>
   <buildWrappers>
     <hudson.plugins.build__timeout.BuildTimeoutWrapper>
-      <timeoutMinutes>240</timeoutMinutes>
+      <timeoutMinutes>420</timeoutMinutes>
       <failBuild>true</failBuild>
     </hudson.plugins.build__timeout.BuildTimeoutWrapper>
   </buildWrappers>
