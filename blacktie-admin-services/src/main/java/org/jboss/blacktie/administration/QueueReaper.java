@@ -141,7 +141,7 @@ public class QueueReaper implements Runnable {
 				log.debug("Sleeping interrupted");
 				this.run = false;
 			} catch (Exception e) {
-				log.error("run ping thread failed with (will wait for: " + interval + " seconds): " + e);
+				log.error("run ping thread failed with (will wait for: " + interval + " seconds): " + e, e);
 				try {
 					Thread.sleep(this.interval);
 				} catch (InterruptedException e2) {
