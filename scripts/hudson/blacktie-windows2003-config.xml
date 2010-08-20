@@ -130,7 +130,8 @@ IF %ERRORLEVEL% NEQ 0 exit -1
 cd ..\..\..\
 
 rem RUN THE SAMPLES
-cd ..\..\dist\blacktie-*
+cd trunk\dist\blacktie-*
+IF %ERRORLEVEL% NEQ 0 exit -1
 set ORACLE_HOME=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2
 set TNS_ADMIN=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2\network\admin
 set PATH=%PATH%;%ORACLE_HOME%\bin;%ORACLE_HOME%\vc9
@@ -138,7 +139,7 @@ call setenv.bat
 IF %ERRORLEVEL% NEQ 0 exit -1
 call run_all_samples.bat tx
 IF %ERRORLEVEL% NEQ 0 exit -1
-cd ..\..\..\..\
+cd ..\..\..\
 
 rem SHUTDOWN JBOSS
 echo foo | call jboss-5.1.0.GA\bin\shutdown.bat -s 172.17.131.5:1099 -S &amp;&amp; cd .</command>
