@@ -179,4 +179,5 @@ IF %ERRORLEVEL% NEQ 0 exit -1
 )
 
 rem LET THE USER KNOW THE OUTPUT
+cd %BLACKTIE_HOME%
 echo "All samples ran OK"
