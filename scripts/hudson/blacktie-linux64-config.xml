@@ -62,10 +62,9 @@ mv jbossts-properties.xml.bak jbossts-properties.xml
 cd ../../../
 sed -i &quot;s=Xmx128=Xmx768=g&quot; bin/run.conf
 sed -i &quot;s=Xmx512=Xmx768=g&quot; bin/run.conf
+cd ../
 
 # INITIALIZE THE BLACKTIE JBOSS DEPENDENCIES
-#cp trunk/blacktie-admin-services/ear/target/blacktie-admin-services-*.ear jboss-5.1.0.GA/server/all/deploy
-#cp trunk/blacktie-rhq-plugin/target/blacktie-rhq-plugin-*.jar jboss-5.1.0.GA/server/all/deploy/admin-console.war/plugins/
 cp trunk/jatmibroker-xatmi/src/test/resources/jatmibroker-xatmi-test-service.xml jboss-5.1.0.GA/server/all/deploy
 cp trunk/blacktie-admin-services/src/test/resources/btconfig.xml jboss-5.1.0.GA/server/all/conf
 

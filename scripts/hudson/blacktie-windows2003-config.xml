@@ -91,8 +91,6 @@ IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem INITIALZE BLACKTIE JBOSS DEPENDENCIES
 copy trunk\blacktie-admin-services\src\test\resources\btconfig.xml jboss-5.1.0.GA\server\all\conf
-rem copy trunk\blacktie-admin-services\ear\target\blacktie-admin-services-*.ear jboss-5.1.0.GA\server\all\deploy
-rem copy trunk\blacktie-rhq-plugin\target\blacktie-rhq-plugin-*.jar jboss-5.1.0.GA\server\all\deploy\admin-console.war\plugins\
 copy trunk\jatmibroker-xatmi\src\test\resources\jatmibroker-xatmi-test-service.xml jboss-5.1.0.GA\server\all\deploy
 call ant replaceBlackTie -DJBOSSAS_IP_ADDR=172.17.131.5
 IF %ERRORLEVEL% NEQ 0 exit -1
