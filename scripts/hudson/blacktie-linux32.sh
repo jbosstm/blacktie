@@ -1,3 +1,11 @@
+# CHECK IF WORKSPACE IS SET
+if [ -n "${WORKSPACE+x}" ]; then
+  echo WORKSPACE is set
+else
+  echo WORKSPACE not set
+  cd $WORKSPACE
+fi
+
 # SHUTDOWN ANY RUNNING JBOSS
 if [ -d $WORKSPACE/jboss-5.1.0.GA ]; then
   echo foo | $WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
