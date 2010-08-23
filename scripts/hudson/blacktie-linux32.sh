@@ -1,9 +1,3 @@
-# CONFIGURE MAVEN
-export PATH=$PATH:/usr/local/apache-maven-2.0.9/bin/
-export MAVEN_OPTS=-Xmx200m
-# CONFIGURE ANT
-export PATH=$PATH:/usr/local/apache-ant-1.7.1/bin/
-
 # SHUTDOWN ANY RUNNING JBOSS
 if [ -d $WORKSPACE/jboss-5.1.0.GA ]; then
   echo foo | $WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
