@@ -95,4 +95,4 @@ call run_all_samples.bat tx
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem SHUTDOWN JBOSS
-echo foo | call jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S && cd .
+echo foo | call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S && cd .
