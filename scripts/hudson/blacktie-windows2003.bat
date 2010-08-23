@@ -70,11 +70,11 @@ rem BUILD BLACKTIE
 cd %WORKSPACE%\trunk\blacktie
 call mvn clean 
 IF %ERRORLEVEL% NEQ 0 exit -1
-call mvn install -Dbpa=vc9x32 -Duse.valgrind=false -Djbossas.ip.addr=%JBOSSAS_IP_ADDR%
+call mvn install -Dbpa=vc9x32 -Djbossas.ip.addr=%JBOSSAS_IP_ADDR%
 IF %ERRORLEVEL% NEQ 0 exit -1
 rem THIS IS TO RUN THE TESTS IN CODECOVERAGE
 cd %WORKSPACE%\trunk\jatmibroker-xatmi
-call mvn site
+call mvn site -Djbossas.ip.addr=%JBOSSAS_IP_ADDR%
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem CREATE BLACKTIE DISTRIBUTION
