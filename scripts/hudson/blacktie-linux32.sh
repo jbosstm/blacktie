@@ -53,9 +53,8 @@ cd $WORKSPACE/trunk/jatmibroker-xatmi
 mvn site -DskipTests
 
 # INITIALIZE THE BLACKTIE DISTRIBUTION
-BLACK_HOME=`pwd`
 cd $WORKSPACE/trunk/scripts/test
-ant dist -DBT_HOME=${BLACK_HOME}/dist/ -DVERSION=blacktie-2.0.0.CR1 -DMACHINE_ADDR=`hostname`-DJBOSSAS_IP_ADDR=localhost -Dbpa=centos55x32
+ant dist -DBT_HOME=$WORKSPACE/trunk/dist/ -DVERSION=blacktie-2.0.0.CR1 -DMACHINE_ADDR=`hostname`-DJBOSSAS_IP_ADDR=localhost -Dbpa=centos55x32
 
 # RUN ALL THE SAMPLES
 cd $WORKSPACE/trunk/dist/blacktie-2.0.0.CR1/
