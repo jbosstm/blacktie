@@ -61,8 +61,9 @@ mvn install -Dbpa=centos55x32
 if [ "$?" != "0" ]; then
 	exit -1
 fi
+# THIS IS TO RUN THE TESTS IN CODECOVERAGE
 cd $WORKSPACE/trunk/jatmibroker-xatmi
-mvn site -DskipTests
+mvn site
 if [ "$?" != "0" ]; then
 	exit -1
 fi

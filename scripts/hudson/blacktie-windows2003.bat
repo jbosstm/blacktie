@@ -40,55 +40,51 @@ call ant download
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem INITIALIZE JBOSS
-cd jboss-5.1.0.GA/docs/examples/transactions
+cd %WORKSPACE%\jboss-5.1.0.GA\docs\examples\transactions
 call ant jts
 IF %ERRORLEVEL% NEQ 0 exit -1
-cd ../../../../
+cd %WORKSPACE%
 call ant replaceJBoss -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR%
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem INITIALZE BLACKTIE JBOSS DEPENDENCIES
-copy trunk\blacktie-admin-services\src\test\resources\btconfig.xml jboss-5.1.0.GA\server\all\conf
-copy trunk\jatmibroker-xatmi\src\test\resources\jatmibroker-xatmi-test-service.xml jboss-5.1.0.GA\server\all\deploy
+copy %WORKSPACE%\trunk\blacktie-admin-services\src\test\resources\btconfig.xml %WORKSPACE%\jboss-5.1.0.GA\server\all\conf
+copy %WORKSPACE%\trunk\jatmibroker-xatmi\src\test\resources\jatmibroker-xatmi-test-service.xml %WORKSPACE%\jboss-5.1.0.GA\server\all\deploy
 call ant replaceBlackTie -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR%
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem START JBOSS
-cd jboss-5.1.0.GA\bin
+cd %WORKSPACE%\jboss-5.1.0.GA\bin
 set BUILD_ID=dontKillMe
 start /B run.bat -c all -b %JBOSSAS_IP_ADDR%
 set BUILD_ID=
 echo "Started server"
 @ping 127.0.0.1 -n 120 -w 1000 > nul
-cd ..\..
 
 rem BUILD BLACKTIE CPP PLUGIN
-cd trunk\blacktie-utils\cpp-plugin\
+cd %WORKSPACE%\trunk\blacktie-utils\cpp-plugin\
 call mvn install
 IF %ERRORLEVEL% NEQ 0 exit -1
-cd ..\..\..\
 
 rem BUILD BLACKTIE
-cd trunk\blacktie
+cd %WORKSPACE%\trunk\blacktie
 call mvn clean 
 IF %ERRORLEVEL% NEQ 0 exit -1
 call mvn install -Dbpa=vc9x32 -Duse.valgrind=false -Djbossas.ip.addr=%JBOSSAS_IP_ADDR%
 IF %ERRORLEVEL% NEQ 0 exit -1
-cd ..\..\
-cd trunk\jatmibroker-xatmi
-call mvn site -DskipTests
+rem THIS IS TO RUN THE TESTS IN CODECOVERAGE
+cd %WORKSPACE%\trunk\jatmibroker-xatmi
+call mvn site
 IF %ERRORLEVEL% NEQ 0 exit -1
-cd ..\..\
 
 rem CREATE BLACKTIE DISTRIBUTION
-cd trunk\scripts\test
+cd %WORKSPACE%\trunk\scripts\test
 for /f "delims=" %a in ('hostname') do @set MACHINE_ADDR=%a
 call ant dist -DBT_HOME=C:\\\\hudson\\\\workspace\\\\blacktie-windows2003\\\\trunk\\\\dist\\\\ -DVERSION=blacktie-2.0.0.CR1 -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR% -DMACHINE_ADDR=%MACHINE_ADDR%
 IF %ERRORLEVEL% NEQ 0 exit -1
-cd ..\..\..\
 
 rem RUN THE SAMPLES
-cd trunk\dist\blacktie-2.0.0.CR1
+cd %WORKSPACE%\trunk\dist\blacktie-2.0.0.CR1
 IF %ERRORLEVEL% NEQ 0 exit -1
 set ORACLE_HOME=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2
 set TNS_ADMIN=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2\network\admin
@@ -97,8 +93,6 @@ call setenv.bat
 IF %ERRORLEVEL% NEQ 0 exit -1
 call run_all_samples.bat tx
 IF %ERRORLEVEL% NEQ 0 exit -1
-cd ..\..\..\
-dir
 
 rem SHUTDOWN JBOSS
 echo foo | call jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S && cd .

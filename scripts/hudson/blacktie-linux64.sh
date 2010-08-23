@@ -49,8 +49,9 @@ cd $WORKSPACE/trunk/blacktie
 # THESE ARE SEPARATE SO WE DO NOT COPY THE OLD ARTIFACTS IF THE BUILD FAILS
 mvn clean
 mvn install -Dbpa=centos54x64
+# THIS IS TO RUN THE TESTS IN CODECOVERAGE
 cd $WORKSPACE/trunk/jatmibroker-xatmi
-mvn site -DskipTests
+mvn site
 
 # INITIALIZE THE BLACKTIE DISTRIBUTION
 cd $WORKSPACE/trunk/scripts/test
