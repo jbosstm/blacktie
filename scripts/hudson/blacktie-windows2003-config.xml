@@ -38,6 +38,9 @@ set MAVEN_OPTS=-Xmx200m
 rem INITIALIZE ANT
 set PATH=%PATH%;C:\hudson\tools\apache-ant-1.7.1\bin
 
+rem BUILD
+set MACHINE_ADDR=catskill
+set JBOSSAS_IP_ADDR=172.17.131.5
 call trunk\scripts\hudson\blacktie-windows2003.bat</command>
     </hudson.tasks.BatchFile>
   </builders>
