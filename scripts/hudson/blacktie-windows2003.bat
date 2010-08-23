@@ -79,7 +79,7 @@ IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem CREATE BLACKTIE DISTRIBUTION
 cd %WORKSPACE%\trunk\scripts\test
-for /f "delims=" %a in ('hostname') do @set MACHINE_ADDR=%a
+for /f "delims=" %%a in ('hostname') do @set MACHINE_ADDR=%%a
 call ant dist -DBT_HOME=C:\\\\hudson\\\\workspace\\\\blacktie-windows2003\\\\trunk\\\\dist\\\\ -DVERSION=blacktie-2.0.0.CR1 -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR% -DMACHINE_ADDR=%MACHINE_ADDR%
 IF %ERRORLEVEL% NEQ 0 exit -1
 
