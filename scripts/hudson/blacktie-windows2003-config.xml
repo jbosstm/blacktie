@@ -140,6 +140,7 @@ IF %ERRORLEVEL% NEQ 0 exit -1
 call run_all_samples.bat tx
 IF %ERRORLEVEL% NEQ 0 exit -1
 cd ..\..\..\
+dir
 
 rem SHUTDOWN JBOSS
 echo foo | call jboss-5.1.0.GA\bin\shutdown.bat -s 172.17.131.5:1099 -S &amp;&amp; cd .</command>
@@ -182,7 +183,7 @@ $CHANGES_SINCE_LAST_SUCCESS</defaultContent>
   </publishers>
   <buildWrappers>
     <hudson.plugins.build__timeout.BuildTimeoutWrapper>
-      <timeoutMinutes>420</timeoutMinutes>
+      <timeoutMinutes>300</timeoutMinutes>
       <failBuild>true</failBuild>
     </hudson.plugins.build__timeout.BuildTimeoutWrapper>
   </buildWrappers>
