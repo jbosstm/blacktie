@@ -44,6 +44,7 @@ extern void test_no_tpreturn_service(TPSVCINFO *svcinfo);
 #endif
 
 void TestRollbackOnly::setUp() {
+	userlogc((char*) "TestRollbackOnly::setUp");
 	BaseServerTest::setUp();
 
 	// previous tests may have left a txn on the thread
@@ -60,6 +61,7 @@ void TestRollbackOnly::setUp() {
 }
 
 void TestRollbackOnly::tearDown() {
+	userlogc((char*) "TestRollbackOnly::tearDown");
 	destroySpecific(TSS_KEY);
 	BT_ASSERT(tx_close() == TX_OK);
 
@@ -88,7 +90,7 @@ void TestRollbackOnly::test_tpcall_TPETIME() {
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
 	userlogc((char*) "inTx=%d tx status=%ld", inTx, txinfo.transaction_state);
-	BT_ASSERT(txinfo.transaction_state || TX_ROLLBACK_ONLY ||
+	BT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY ||
 		txinfo.transaction_state == TX_TIMEOUT_ROLLBACK_ONLY);
 	char* commitS = (char*) malloc(110);
 	int commit = tx_commit();

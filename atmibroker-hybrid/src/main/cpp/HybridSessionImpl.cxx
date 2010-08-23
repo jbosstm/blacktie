@@ -110,7 +110,7 @@ HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 	CORBA::Object_var tmp_ref = corbaConnection->orbRef->string_to_object(
 			temporaryQueueName);
 	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	LOG4CXX_DEBUG(logger, (char*) "QREM Connected: " << temporaryQueueName);
+	LOG4CXX_DEBUG(logger, (char*) "QREM Connected: " << temporaryQueueName << " ENDPONT: " << remoteEndpoint);
 
 	this->canSend = true;
 	this->canRecv = true;
@@ -159,7 +159,7 @@ void HybridSessionImpl::setSendTo(const char* destinationName) {
 		CORBA::Object_var tmp_ref = corbaConnection->orbRef->string_to_object(
 				destinationName);
 		remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-		LOG4CXX_DEBUG(logger, (char*) "connected to %s" << destinationName);
+		LOG4CXX_DEBUG(logger, (char*) "connected to %s" << destinationName << " REMOTE ENDPONT: " << remoteEndpoint);
 		this->sendTo = strdup((char*) destinationName);
 	}
 }
@@ -335,6 +335,12 @@ bool HybridSessionImpl::send(MESSAGE message) {
 			} catch (const CORBA::SystemException& ex) {
 				LOG4CXX_WARN(logger, (char*) "Caught SystemException: "
 						<< ex._name());
+			} catch (CORBA::Exception& e) {
+				LOG4CXX_WARN(logger, (char*) "Caught exception: "
+						<< e._name());
+			} catch (...) {
+				LOG4CXX_ERROR(logger,
+						(char*) "UNEXPECTED EXCEPTION RETURNING RESPONSE");
 			}
 		} else {
 			LOG4CXX_WARN(logger, (char*) "No remote endpoint to send to");

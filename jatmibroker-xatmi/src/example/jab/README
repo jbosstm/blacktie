@@ -22,13 +22,6 @@ NOTE: If you are using IPv6 you will need to change any references to localhost 
 Follow the instructions in $BLACKTIE_HOME/samples/xatmi/fooapp to start a server  
 
 2. COMPILE AND RUN THE JAB APPLICATION
-If you are running the test from a binary distribution you will need to ensure that 
-the JAtmiBroker XATMI library is installed in your .m2 Maven folder:
-cd BLACKTIE_HOME/jatmibroker-xatmi
-mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=jatmibroker-xatmi -Dversion=2.0-MR1-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=jatmibroker-xatmi-2.0.jar
-mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=blacktie-xsd -Dversion=2.0-MR1-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=blacktie-xsd-2.0.jar
-mvn install:install-file -DgroupId=org.jboss.blacktie -DartifactId=atmibroker-idl -Dversion=2.0-MR1-SNAPSHOT -Dpackaging=jar -DgeneratePom=true -Dfile=atmibroker-idl-java-2.0-MR2.jar
-
 Edit the src/test/resources/btconfig.xml to set REPLACE_WITH_HOSTNAME as appropriate
 After the dependencies are installed you can then run the example using the following command:
 mvn test
@@ -37,4 +30,6 @@ NOTE: forkMode MUST be set to none, if it is not, input will not be read by the
 application. We have configured the pom.xml with forkMode=none, alternatively you
 may try -DforkMode=none, if this still doesn't work, please send a message to our forum
 where we will try to help you (please let us know the version of BlackTie, Java and 
-Maven you are using)
+Maven you are using)
+
+
