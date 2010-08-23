@@ -40,7 +40,7 @@ set MAVEN_OPTS=-Xmx200m
 rem INITIALIZE ANT
 set PATH=%PATH%;C:\hudson\tools\apache-ant-1.7.1\bin
 
-call scripts/hudson/blacktie-windows2003.bat</command>
+call trunk\scripts\hudson\blacktie-windows2003.bat</command>
     </hudson.tasks.BatchFile>
   </builders>
   <publishers>

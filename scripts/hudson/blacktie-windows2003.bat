@@ -87,7 +87,7 @@ IF %ERRORLEVEL% NEQ 0 exit -1
 cd ..\..\..\
 
 rem RUN THE SAMPLES
-cd trunk\dist\blacktie-*
+cd trunk\dist\blacktie-2.0.0.CR1
 IF %ERRORLEVEL% NEQ 0 exit -1
 set ORACLE_HOME=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2
 set TNS_ADMIN=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2\network\admin

@@ -53,7 +53,7 @@ cd trunk/blacktie
 mvn clean
 mvn install -Dbpa=centos55x32
 cd ../jatmibroker-xatmi
-mvn site
+mvn site -DskipTests
 cd ../../
 
 # INITIALIZE THE BLACKTIE DISTRIBUTION
@@ -63,7 +63,7 @@ ant dist -DBT_HOME=${BLACK_HOME}/dist/ -DVERSION=blacktie-2.0.0.CR1 -DMACHINE_AD
 cd ../../..
 
 # RUN ALL THE SAMPLES
-cd trunk/dist/blacktie*/
+cd trunk/dist/blacktie-2.0.0.CR1/
 . setenv.sh
 export ORACLE_HOME=/usr/lib/oracle/11.2/client
 export ORACLE_LIB_DIR=/usr/lib/oracle/11.2/client/lib
