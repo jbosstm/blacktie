@@ -32,8 +32,6 @@
     <hudson.tasks.BatchFile>
       <command>rem INITIALIZE C++ COMPILER
 call &quot;C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat&quot;
-rem INITIALIZE JAVA
-set JAVA_HOME=C:\Program Files (x86)\Java\jdk1.5.0_19
 rem INITIALIZE MAVEN
 set PATH=%PATH%;C:\hudson\tools\apache-maven-2.0.10\bin
 set MAVEN_OPTS=-Xmx200m
