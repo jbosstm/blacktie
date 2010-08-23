@@ -1,5 +1,5 @@
 rem SHUTDOWN JBOSS
-if exist jboss-5.1.0.GA echo foo | call jboss-5.1.0.GA\bin\shutdown.bat -s 172.17.131.5:1099 -S && cd .
+if exist jboss-5.1.0.GA echo foo | call jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S && cd .
 if exist jboss-5.1.0.GA @ping 127.0.0.1 -n 60 -w 1000 > nul
 
 rem CREATE A FILE TO DOWNLOAD JBOSS AND ORACLE DRIVER
@@ -44,19 +44,19 @@ cd jboss-5.1.0.GA/docs/examples/transactions
 call ant jts
 IF %ERRORLEVEL% NEQ 0 exit -1
 cd ../../../../
-call ant replaceJBoss -DJBOSSAS_IP_ADDR=172.17.131.5
+call ant replaceJBoss -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR%
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem INITIALZE BLACKTIE JBOSS DEPENDENCIES
 copy trunk\blacktie-admin-services\src\test\resources\btconfig.xml jboss-5.1.0.GA\server\all\conf
 copy trunk\jatmibroker-xatmi\src\test\resources\jatmibroker-xatmi-test-service.xml jboss-5.1.0.GA\server\all\deploy
-call ant replaceBlackTie -DJBOSSAS_IP_ADDR=172.17.131.5
+call ant replaceBlackTie -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR%
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem START JBOSS
 cd jboss-5.1.0.GA\bin
 set BUILD_ID=dontKillMe
-start /B run.bat -c all -b 172.17.131.5
+start /B run.bat -c all -b %JBOSSAS_IP_ADDR%
 set BUILD_ID=
 echo "Started server"
 @ping 127.0.0.1 -n 120 -w 1000 > nul
@@ -72,7 +72,7 @@ rem BUILD BLACKTIE
 cd trunk\blacktie
 call mvn clean 
 IF %ERRORLEVEL% NEQ 0 exit -1
-call mvn install -Dbpa=vc9x32 -Duse.valgrind=false -Djbossas.ip.addr=172.17.131.5
+call mvn install -Dbpa=vc9x32 -Duse.valgrind=false -Djbossas.ip.addr=%JBOSSAS_IP_ADDR%
 IF %ERRORLEVEL% NEQ 0 exit -1
 cd ..\..\
 cd trunk\jatmibroker-xatmi
@@ -82,7 +82,7 @@ cd ..\..\
 
 rem CREATE BLACKTIE DISTRIBUTION
 cd trunk\scripts\test
-call ant dist -DBT_HOME=C:\\\\hudson\\\\workspace\\\\blacktie-windows2003\\\\trunk\\\\dist\\\\ -DVERSION=blacktie-2.0.0.CR1 -DJBOSSAS_IP_ADDR=catskill -DMACHINE_ADDR=catskill
+call ant dist -DBT_HOME=C:\\\\hudson\\\\workspace\\\\blacktie-windows2003\\\\trunk\\\\dist\\\\ -DVERSION=blacktie-2.0.0.CR1 -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR% -DMACHINE_ADDR=%MACHINE_ADDR%
 IF %ERRORLEVEL% NEQ 0 exit -1
 cd ..\..\..\
 
@@ -100,4 +100,4 @@ cd ..\..\..\
 dir
 
 rem SHUTDOWN JBOSS
-echo foo | call jboss-5.1.0.GA\bin\shutdown.bat -s 172.17.131.5:1099 -S && cd .
+echo foo | call jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S && cd .
