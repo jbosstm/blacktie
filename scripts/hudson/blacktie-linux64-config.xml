@@ -30,7 +30,13 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command># SHUTDOWN ANY RUNNING JBOSS
+      <command># CONFIGURE MAVEN
+export PATH=$PATH:/usr/local/apache-maven-2.0.9/bin/
+export MAVEN_OPTS=-Xmx200m
+# CONFIGURE ANT
+export PATH=$PATH:/usr/local/apache-ant-1.7.1/bin/
+
+# SHUTDOWN ANY RUNNING JBOSS
 if [ -d jboss-5.1.0.GA ]; then
   echo foo | jboss-5.1.0.GA/bin/shutdown.sh -S &amp;&amp; cd .
   sleep 30
@@ -49,20 +55,13 @@ if [ -d jboss-5.1.0.GA ]; then
 fi
 unzip jboss-5.1.0.GA.zip
 cd jboss-5.1.0.GA/docs/examples/transactions
-/usr/local/apache-ant-1.7.1/bin/ant jts
+ant jts
 cd ../../../server/all/conf
 cat jbossts-properties.xml | sed &quot;s/CONFIGURATION_FILE/NAME_SERVICE/g&quot; &gt; jbossts-properties.xml.bak
 mv jbossts-properties.xml.bak jbossts-properties.xml
 cd ../../../
 sed -i &quot;s=Xmx128=Xmx768=g&quot; bin/run.conf
-sed -i &quot;s=Xmx512=Xmx768=g&quot; bin/run.conf</command>
-    </hudson.tasks.Shell>
-    <hudson.tasks.Shell>
-      <command># CONFIGURE MAVEN
-export PATH=$PATH:/usr/local/apache-maven-2.0.9/bin/
-export MAVEN_OPTS=-Xmx200m
-# CONFIGURE ANT
-export PATH=$PATH:/usr/local/apache-ant-1.7.1/bin/
+sed -i &quot;s=Xmx512=Xmx768=g&quot; bin/run.conf
 
 # INITIALIZE THE BLACKTIE JBOSS DEPENDENCIES
 #cp trunk/blacktie-admin-services/ear/target/blacktie-admin-services-*.ear jboss-5.1.0.GA/server/all/deploy

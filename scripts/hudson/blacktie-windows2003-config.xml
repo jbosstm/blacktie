@@ -30,9 +30,22 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.BatchFile>
-      <command>if exist build.xml del build.xml
+      <command>rem INITIALIZE C++ COMPILER
+call &quot;C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat&quot;
+rem INITIALIZE JAVA
+set JAVA_HOME=C:\Program Files (x86)\Java\jdk1.5.0_19
+rem INITIALIZE MAVEN
+set PATH=%PATH%;C:\hudson\tools\apache-maven-2.0.10\bin
+set MAVEN_OPTS=-Xmx200m
+rem INITIALIZE ANT
+set PATH=%PATH%;C:\hudson\tools\apache-ant-1.7.1\bin
+
+rem SHUTDOWN JBOSS
 if exist jboss-5.1.0.GA echo foo | call jboss-5.1.0.GA\bin\shutdown.bat -s 172.17.131.5:1099 -S &amp;&amp; cd .
 if exist jboss-5.1.0.GA @ping 127.0.0.1 -n 60 -w 1000 &gt; nul
+
+rem CREATE A FILE TO DOWNLOAD JBOSS AND ORACLE DRIVER
+if exist build.xml del build.xml
 echo ^&lt;project name=&quot;blacktie-dependencies&quot;^&gt; &gt;&gt; build.xml
 echo    ^&lt;target name=&quot;download&quot;^&gt; &gt;&gt; build.xml
 rem echo        ^&lt;get src=&quot;http://albany/userContent/blacktie/instantclient-basiclite-win32-11.2.0.1.0.zip&quot; dest=&quot;./instantclient-basiclite-win32-11.2.0.1.0.zip&quot; verbose=&quot;true&quot; usetimestamp=&quot;true&quot;/^&gt; &gt;&gt; build.xml
@@ -64,29 +77,17 @@ echo        ^&lt;replaceregexp byline=&quot;true&quot; file=&quot;jboss-5.1.0.GA
 echo	^&lt;/target^&gt; &gt;&gt; build.xml
 echo ^&lt;/project^&gt; &gt;&gt; build.xml
 
-set ANT_HOME=C:\hudson\tools\apache-ant-1.7.1
-set PATH=%PATH%;%ANT_HOME%\bin
+rem DOWNLOAD THOSE DEPENDENCIES
 call ant download
 IF %ERRORLEVEL% NEQ 0 exit -1
 
+rem INITIALIZE JBOSS
 cd jboss-5.1.0.GA/docs/examples/transactions
 call ant jts
 IF %ERRORLEVEL% NEQ 0 exit -1
-
 cd ../../../../
 call ant replaceJBoss -DJBOSSAS_IP_ADDR=172.17.131.5
-IF %ERRORLEVEL% NEQ 0 exit -1</command>
-    </hudson.tasks.BatchFile>
-    <hudson.tasks.BatchFile>
-      <command>rem INITIALIZE C++ COMPILER
-call &quot;C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat&quot;
-rem INITIALIZE JAVA
-set JAVA_HOME=C:\Program Files (x86)\Java\jdk1.5.0_19
-rem INITIALIZE MAVEN
-set PATH=%PATH%;C:\hudson\tools\apache-maven-2.0.10\bin
-set MAVEN_OPTS=-Xmx200m
-rem INITIALIZE ANT
-set PATH=%PATH%;C:\hudson\tools\apache-ant-1.7.1\bin
+IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem INITIALZE BLACKTIE JBOSS DEPENDENCIES
 copy trunk\blacktie-admin-services\src\test\resources\btconfig.xml jboss-5.1.0.GA\server\all\conf
