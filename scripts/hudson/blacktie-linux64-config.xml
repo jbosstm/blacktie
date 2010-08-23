@@ -36,7 +36,7 @@ export MAVEN_OPTS=-Xmx200m
 # CONFIGURE ANT
 export PATH=$PATH:/usr/local/apache-ant-1.7.1/bin/
 
-./scripts/hudson/blacktie-linux64.sh</command>
+./trunk/scripts/hudson/blacktie-linux64.sh</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
