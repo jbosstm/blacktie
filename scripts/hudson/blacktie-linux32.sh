@@ -25,6 +25,9 @@ wget http://albany/userContent/blacktie/jboss-5.1.0.GA.zip
 unzip jboss-5.1.0.GA.zip
 cd $WORKSPACE/jboss-5.1.0.GA/docs/examples/transactions
 ant jts
+if [ "$?" != "0" ]; then
+	exit -1
+fi
 cd $WORKSPACE/jboss-5.1.0.GA/server/all/conf
 cat jbossts-properties.xml | sed 's/CONFIGURATION_FILE/NAME_SERVICE/g' > jbossts-properties.xml.bak
 mv jbossts-properties.xml.bak jbossts-properties.xml
@@ -43,28 +46,49 @@ sleep 53
 # BUILD BLACKTIE CPP PLUGIN
 cd $WORKSPACE/trunk/blacktie-utils/cpp-plugin
 mvn clean install
+if [ "$?" != "0" ]; then
+	exit -1
+fi
 
 # BUILD BLACKTIE
 cd $WORKSPACE/trunk/blacktie
 # THESE ARE SEPARATE SO WE DO NOT COPY THE OLD ARTIFACTS IF THE BUILD FAILS
 mvn clean
+if [ "$?" != "0" ]; then
+	exit -1
+fi
 mvn install -Dbpa=centos55x32
+if [ "$?" != "0" ]; then
+	exit -1
+fi
 cd $WORKSPACE/trunk/jatmibroker-xatmi
 mvn site -DskipTests
+if [ "$?" != "0" ]; then
+	exit -1
+fi
 
 # INITIALIZE THE BLACKTIE DISTRIBUTION
 cd $WORKSPACE/trunk/scripts/test
 ant dist -DBT_HOME=$WORKSPACE/trunk/dist/ -DVERSION=blacktie-2.0.0.CR1 -DMACHINE_ADDR=`hostname` -DJBOSSAS_IP_ADDR=localhost -Dbpa=centos55x32
+if [ "$?" != "0" ]; then
+	exit -1
+fi
 
 # RUN ALL THE SAMPLES
 cd $WORKSPACE/trunk/dist/blacktie-2.0.0.CR1/
 . setenv.sh
+if [ "$?" != "0" ]; then
+	exit -1
+fi
 export ORACLE_HOME=/usr/lib/oracle/11.2/client
 export ORACLE_LIB_DIR=/usr/lib/oracle/11.2/client/lib
 export ORACLE_INC_DIR=/usr/include/oracle/11.2/client
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_LIB_DIR
 export TNS_ADMIN=$WORKSPACE/instantclient_11_2/network/admin
 ./run_all_samples.sh tx
+if [ "$?" != "0" ]; then
+	exit -1
+fi
 
 # SHUTDOWN JBOSS (THIS SHOULD ALWAYS HAPPEN IDEALLY)
 echo foo | $WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .

@@ -21,7 +21,7 @@ mkdir -p $TNS_ADMIN
 
 # GET JBOSS AND INITIALIZE IT
 cd $WORKSPACE
-wget http://albany/userContent/blacktie/jboss-5.1.0.GA.zip
+#wget http://albany/userContent/blacktie/jboss-5.1.0.GA.zip
 unzip jboss-5.1.0.GA.zip
 cd $WORKSPACE/jboss-5.1.0.GA/docs/examples/transactions
 ant jts
