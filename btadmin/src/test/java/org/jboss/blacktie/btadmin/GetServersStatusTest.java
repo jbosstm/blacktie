@@ -32,11 +32,22 @@ public class GetServersStatusTest extends TestCase {
 
 	private CommandHandler commandHandler;
 
+	private boolean running = false;
+
 	public void setUp() throws Exception {
 		this.commandHandler = new CommandHandler();
 	}
 
 	public void tearDown() throws Exception {
+		log.info("GetServersStatusTest::tearDown");
+
+		if (running) {
+			if (commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
+				fail("Could not stop the server");
+			} else {
+				running = false;
+			}
+		}
 	}
 
 	public void testGetServersStatusWithAdditionalArgs() throws IOException,
@@ -69,6 +80,7 @@ public class GetServersStatusTest extends TestCase {
 		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
 			fail("Could not start the server");
 		}
+		running = true;
 		log.info("Started");
 		String command = "advertise default BAR";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
@@ -80,9 +92,5 @@ public class GetServersStatusTest extends TestCase {
 			fail("Command was not successful");
 		}
 		log.info("got status");
-		if (commandHandler.handleCommand("shutdown".split(" ")) != 0) {
-			fail("Could not stop the server");
-		}
-		log.info("shutdown");
 	}
 }
