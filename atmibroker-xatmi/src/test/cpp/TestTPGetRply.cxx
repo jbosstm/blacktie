@@ -304,6 +304,9 @@ void TestTPGetRply::test_tpgetrply_without_TPGETANY() {
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(cd1 != cd2);
 
+	// Make sure that both responses should be available
+	::sleeper(20);
+
 	// RETRIEVE THE RESPONSE
 	int cdToGet = cd1;
 	int toTest = ::tpgetrply(&cdToGet, (char **) &rcvbuf, &rcvlen, 0);
@@ -357,7 +360,7 @@ void test_tpgetrply_TPGETANY_one(TPSVCINFO *svcinfo) {
 	long sendlen = strlen(response) + 1;
 	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, sendlen);
 	strcpy(toReturn, response);
-	::sleeper(10);
+	::sleeper(13);
 	tpreturn(TPSUCCESS, 0, toReturn, sendlen, 0);
 }
 
@@ -368,6 +371,6 @@ void test_tpgetrply_TPGETANY_two(TPSVCINFO *svcinfo) {
 	long sendlen = strlen(response) + 1;
 	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, sendlen);
 	strcpy(toReturn, response);
-	::sleeper(5);
+	::sleeper(2);
 	tpreturn(TPSUCCESS, 0, toReturn, sendlen, 0);
 }
