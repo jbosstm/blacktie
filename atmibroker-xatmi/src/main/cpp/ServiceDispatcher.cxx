@@ -110,8 +110,12 @@ int ServiceDispatcher::svc(void) {
 		message.ttl = -1;
 		message.serviceName = NULL;
 
-		// Make sure we connect anyway
-		destination->connect();
+		// Make sure we connect anyway to the subscriber is registered (although not when we are stopped)
+		stopLock->lock();
+		if (!stop) {
+			destination->connect();
+		}
+		stopLock->unlock();
 
 		// This will wait while the server is paused
 		if (!isadm) {
