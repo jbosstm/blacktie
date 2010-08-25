@@ -49,6 +49,9 @@ public:
 	virtual MESSAGE receive(long time);
 
 	virtual const char* getName();
+
+	virtual bool isShutdown();
+
 	const char* getFullName();
 private:
 	static log4cxx::LoggerPtr logger;
@@ -56,12 +59,14 @@ private:
 	apr_pool_t* pool;
 	stomp_frame* message;
 	char* receipt;
-	SynchronizableObject* lock;
+	SynchronizableObject* shutdownLock;
+	SynchronizableObject* readLock;
 	bool shutdown;
 	char* name;
 	char* fullName;
 	bool transactional;
 	bool _connected;
+	bool requiresDisconnect;
 };
 
 #endif

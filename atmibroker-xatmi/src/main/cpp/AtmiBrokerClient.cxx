@@ -128,6 +128,7 @@ AtmiBrokerClient::AtmiBrokerClient() :
 	currentConnection(NULL), nextSessionId(0) {
 	try {
 		lock = new SynchronizableObject();
+		LOG4CXX_DEBUG(loggerAtmiBrokerClient, "Created lock: " << lock);
 		clientInitialized = true;
 	} catch (...) {
 		setSpecific(TPE_KEY, TSS_TPESYSTEM);

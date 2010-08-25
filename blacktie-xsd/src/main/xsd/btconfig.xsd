@@ -212,8 +212,6 @@
 						<xsd:attribute name="USER" type="xsd:string" use="required" />
 						<xsd:attribute name="PASSWORD" type="xsd:string"
 							use="required" />
-						<xsd:attribute name="DESTINATION_TIMEOUT" type="xsd:int"
-							use="required" />
 						<xsd:attribute name="RECEIVE_TIMEOUT" type="xsd:int"
 							use="required" />
 						<xsd:attribute name="TIME_TO_LIVE" type="xsd:int"

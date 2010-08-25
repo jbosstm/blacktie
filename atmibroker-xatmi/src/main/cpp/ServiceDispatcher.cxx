@@ -59,9 +59,11 @@ ServiceDispatcher::ServiceDispatcher(AtmiBrokerServer* server,
 	this->maxResponseTime = 0;
 	this->isConversational = isConversational;
 	pauseLock = new SynchronizableObject();
+	LOG4CXX_DEBUG(logger, "Created lock: " << pauseLock);
 	stopLock = new SynchronizableObject();
+	LOG4CXX_DEBUG(logger, "Created lock: " << stopLock);
 	LOG4CXX_TRACE(logger, (char*) "ServiceDispatcher created: " << this
-		<< " isPause " << this->isPause << " isadm: " << this->isadm);
+			<< " isPause " << this->isPause << " isadm: " << this->isadm);
 }
 
 ServiceDispatcher::~ServiceDispatcher() {
@@ -108,6 +110,9 @@ int ServiceDispatcher::svc(void) {
 		message.ttl = -1;
 		message.serviceName = NULL;
 
+		// Make sure we connect anyway
+		destination->connect();
+
 		// This will wait while the server is paused
 		if (!isadm) {
 			pauseLock->lock();
@@ -116,13 +121,16 @@ int ServiceDispatcher::svc(void) {
 				pauseLock->wait(0);
 				LOG4CXX_DEBUG(logger, (char*) "paused: " << this);
 			}
-			LOG4CXX_DEBUG(logger, (char*) "not paused: " << this << " isPause: " << isPause);
+			LOG4CXX_DEBUG(logger, (char*) "not paused: " << this
+					<< " isPause: " << isPause);
 			pauseLock->unlock();
 		}
 
+		bool stopped = false;
 		stopLock->lock();
 		if (!stop) {
 			message = destination->receive(this->timeout);
+			stopped = destination->isShutdown();
 		}
 		stopLock->unlock();
 
@@ -169,28 +177,37 @@ int ServiceDispatcher::svc(void) {
 				free(message.data);
 			}
 			setTpurcode(0);
-		} else if (tperrno == TPESYSTEM) {
-			LOG4CXX_WARN(
-					logger,
-					(char*) "Service dispatcher detected dead connection will reconnect after sleep");
-			reconnect->lock();
-			int timeout = 10;
-			while (!stop && !destination->connected()) {
-				LOG4CXX_DEBUG(logger, (char*) "sleeper, sleeping for "
-						<< timeout << " seconds");
-				ACE_OS::sleep(timeout);
-				LOG4CXX_DEBUG(logger, (char*) "sleeper, slept for " << timeout
-						<< " seconds");
-				stopLock->lock();
-				if (!stop && this->server->createAdminDestination(serviceName)) {
-					LOG4CXX_INFO(logger,
-							(char*) "Service dispatcher recreated: "
-									<< serviceName);
-					destination->connect();
-				}
-				stopLock->unlock();
+		} else {
+			if (stopped) {
+				LOG4CXX_DEBUG(logger,
+						(char*) "Service dispatcher detected closure");
+				shutdown();
 			}
-			reconnect->unlock();
+
+			if (!stop && tperrno == TPESYSTEM) {
+				LOG4CXX_WARN(
+						logger,
+						(char*) "Service dispatcher detected dead connection will reconnect after sleep");
+				reconnect->lock();
+				int timeout = 10;
+				while (!stop && !destination->connected()) {
+					LOG4CXX_DEBUG(logger, (char*) "sleeper, sleeping for "
+							<< timeout << " seconds");
+					ACE_OS::sleep(timeout);
+					LOG4CXX_DEBUG(logger, (char*) "sleeper, slept for "
+							<< timeout << " seconds");
+					stopLock->lock();
+					if (!stop && this->server->createAdminDestination(
+							serviceName)) {
+						LOG4CXX_INFO(logger,
+								(char*) "Service dispatcher recreated: "
+										<< serviceName);
+						destination->connect();
+					}
+					stopLock->unlock();
+				}
+				reconnect->unlock();
+			}
 		}
 	}
 	LOG4CXX_TRACE(logger, (char*) "ServiceDispatcher completed: " << this);
@@ -341,13 +358,15 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 void ServiceDispatcher::shutdown() {
 	LOG4CXX_TRACE(logger, (char*) "Service dispatcher shutting down: " << this);
 
-	// Stop the server
-	stopLock->lock();
-	stop = true;
-	stopLock->unlock();
+	if (!stop) {
+		// Stop the server
+		stopLock->lock();
+		stop = true;
+		stopLock->unlock();
 
-	// Unpause the server if it was paused
-	resume();
+		// Unpause the server if it was paused
+		resume();
+	}
 
 	LOG4CXX_TRACE(logger, (char*) "Service dispatcher shutdown: " << this);
 }

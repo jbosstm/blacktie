@@ -56,6 +56,8 @@ public:
 
 	PortableServer::POA_ptr getPoa();
 
+	virtual bool isShutdown();
+
 private:
 	HybridSessionImpl* session;
 	static log4cxx::LoggerPtr logger;

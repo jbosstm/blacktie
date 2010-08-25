@@ -54,6 +54,7 @@ HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(HybridSessionImpl* session,
 	LOG4CXX_DEBUG(logger, (char*) "Creating corba endpoint queue");
 	shutdown = false;
 	lock = new SynchronizableObject();
+	LOG4CXX_DEBUG(logger, "Created lock: " << lock);
 
 	CORBA::PolicyList policies;
 	policies.length(0);
@@ -237,4 +238,8 @@ const char * HybridCorbaEndpointQueue::getName() {
 
 PortableServer::POA_ptr HybridCorbaEndpointQueue::getPoa() {
 	return thePoa;
+}
+
+bool HybridCorbaEndpointQueue::isShutdown() {
+	return this->shutdown;
 }
