@@ -81,8 +81,8 @@ public class JMSSenderImpl implements Sender {
 				message.setStringProperty("messagereplyto", (String) replyTo);
 			}
 			message.setStringProperty("servicename", name);
-			message.setStringProperty("messagecorrelationId", String
-					.valueOf(correlationId));
+			message.setStringProperty("messagecorrelationId",
+					String.valueOf(correlationId));
 			message.setStringProperty("messageflags", String.valueOf(flags));
 			message.setStringProperty("messagerval", String.valueOf(rval));
 			message.setStringProperty("messagercode", String.valueOf(rcode));

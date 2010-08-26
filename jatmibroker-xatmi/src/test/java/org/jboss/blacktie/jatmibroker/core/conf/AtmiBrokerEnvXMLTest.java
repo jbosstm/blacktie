@@ -56,24 +56,24 @@ public class AtmiBrokerEnvXMLTest extends TestCase {
 			List<Machine> localMachinesList = next.getLocalMachine();
 			assertTrue(localMachinesList.size() == 2);
 			assertTrue(localMachinesList.get(0).getArgLine().equals("foo"));
-			assertTrue(localMachinesList.get(0).getHostname().equals(
-					InetAddress.getLocalHost().getHostName()));
+			assertTrue(localMachinesList.get(0).getHostname()
+					.equals(InetAddress.getLocalHost().getHostName()));
 			assertTrue(localMachinesList.get(0).getId() != null);
-			assertTrue(localMachinesList.get(0).getPathToExecutable().equals(
-					"notExist"));
-			assertTrue(localMachinesList.get(0).getWorkingDirectory().equals(
-					"."));
+			assertTrue(localMachinesList.get(0).getPathToExecutable()
+					.equals("notExist"));
+			assertTrue(localMachinesList.get(0).getWorkingDirectory()
+					.equals("."));
 			assertTrue(localMachinesList.get(0).getServerId() == 1);
 
 			// Next index
 			assertTrue(localMachinesList.get(1).getArgLine().equals("foo"));
-			assertTrue(localMachinesList.get(1).getHostname().equals(
-					InetAddress.getLocalHost().getHostName()));
+			assertTrue(localMachinesList.get(1).getHostname()
+					.equals(InetAddress.getLocalHost().getHostName()));
 			assertTrue(localMachinesList.get(1).getId() != null);
-			assertTrue(localMachinesList.get(1).getPathToExecutable().equals(
-					"notExist"));
-			assertTrue(localMachinesList.get(1).getWorkingDirectory().equals(
-					"."));
+			assertTrue(localMachinesList.get(1).getPathToExecutable()
+					.equals("notExist"));
+			assertTrue(localMachinesList.get(1).getWorkingDirectory()
+					.equals("."));
 			assertTrue(localMachinesList.get(1).getServerId() == 2);
 		}
 	}

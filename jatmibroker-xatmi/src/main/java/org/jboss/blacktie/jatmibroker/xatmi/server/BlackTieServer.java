@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerEnvXML;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.server.ServiceData;
+import org.jboss.blacktie.jatmibroker.core.transport.TransportFactory;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
@@ -59,6 +60,8 @@ public class BlackTieServer {
 	 * The properties the server was created with.
 	 */
 	private Properties properties;
+
+	private TransportFactory transportFactory;
 
 	/**
 	 * Initialize the server
@@ -103,7 +106,7 @@ public class BlackTieServer {
 				tpadvertise(serviceName, functionName);
 			}
 		}
-
+		transportFactory = TransportFactory.getTransportFactory(properties);
 	}
 
 	/**
@@ -116,8 +119,8 @@ public class BlackTieServer {
 	 */
 	public void tpadvertise(String serviceName, String serviceClassName)
 			throws ConnectionException {
-		int min = Math.min(Connection.XATMI_SERVICE_NAME_LENGTH, serviceName
-				.length());
+		int min = Math.min(Connection.XATMI_SERVICE_NAME_LENGTH,
+				serviceName.length());
 		serviceName = serviceName.substring(0, min);
 		log.debug("Advertising: " + serviceName);
 
@@ -150,8 +153,10 @@ public class BlackTieServer {
 	 *             If the service cannot be unadvertised.
 	 */
 	public void tpunadvertise(String serviceName) throws ConnectionException {
-		serviceName = serviceName.substring(0, Math.min(
-				Connection.XATMI_SERVICE_NAME_LENGTH, serviceName.length()));
+		serviceName = serviceName.substring(
+				0,
+				Math.min(Connection.XATMI_SERVICE_NAME_LENGTH,
+						serviceName.length()));
 		ServiceData data = serviceData.remove(serviceName);
 		if (data == null) {
 			throw new ConnectionException(Connection.TPENOENT,
@@ -173,6 +178,7 @@ public class BlackTieServer {
 		for (int i = 0; i < array.length; i++) {
 			tpunadvertise(array[i]);
 		}
+		transportFactory.close();
 		log.debug("Close server finished: " + serverName);
 	}
 }

@@ -71,13 +71,13 @@ public class RunServer {
 	}
 
 	public void tpadvertiseDEBIT() throws ConnectionException {
-		this.server.tpadvertise("TestOne", SpecExampleOneService.class
-				.getName());
+		this.server.tpadvertise("TestOne",
+				SpecExampleOneService.class.getName());
 	}
 
 	public void tpadvertiseCREDIT() throws ConnectionException {
-		this.server.tpadvertise("TestTwo", SpecExampleOneService.class
-				.getName());
+		this.server.tpadvertise("TestTwo",
+				SpecExampleOneService.class.getName());
 	}
 
 	public void tpadvertiseINQUIRY() throws ConnectionException {
@@ -138,8 +138,8 @@ public class RunServer {
 	}
 
 	public void tpadvertiseTestTPRecv() throws ConnectionException {
-		this.server.tpadvertise(getServiceNameTestTPRecv(), TPRecvService.class
-				.getName());
+		this.server.tpadvertise(getServiceNameTestTPRecv(),
+				TPRecvService.class.getName());
 	}
 
 	public void tpadvertiseTestTPReturn() throws ConnectionException {
@@ -165,8 +165,8 @@ public class RunServer {
 	}
 
 	public void tpadvertiseTestTPSend() throws ConnectionException {
-		this.server.tpadvertise(getServiceNameTestTPSend(), TPSendService.class
-				.getName());
+		this.server.tpadvertise(getServiceNameTestTPSend(),
+				TPSendService.class.getName());
 	}
 
 	public void tpadvertiseTestTPSendTPSendOnly() throws ConnectionException {

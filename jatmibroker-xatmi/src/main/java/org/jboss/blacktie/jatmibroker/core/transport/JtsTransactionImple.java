@@ -181,8 +181,8 @@ public class JtsTransactionImple extends TransactionImple {
 	}
 
 	private static ControlWrapper createControlWrapper(String ior) {
-		org.omg.CORBA.Object obj = ORBManager.getORB().orb().string_to_object(
-				ior);
+		org.omg.CORBA.Object obj = ORBManager.getORB().orb()
+				.string_to_object(ior);
 
 		Control control = org.omg.CosTransactions.ControlHelper.narrow(obj);
 		if (control == null)

@@ -48,15 +48,16 @@ public class ConnectionImplTest extends TestCase {
 		AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
 		Properties properties = xml.getProperties();
 
-		TransportFactory factory = TransportFactory.getTransportFactory("BAR",
-				properties);
+		TransportFactory factory = TransportFactory
+				.getTransportFactory(properties);
 		Transport proxy = factory.createTransport();
 		Sender serviceFactory = proxy.getSender("BAR", false);
 
 		String aString = "Hello from Java Land";
 		Receiver endpoint = proxy.createReceiver(1, null);
-		serviceFactory.send(endpoint.getReplyTo(), (short) 0, 0, aString
-				.getBytes(), aString.getBytes().length, 0, 0, 0, "X_OCTET", "");
+		serviceFactory.send(endpoint.getReplyTo(), (short) 0, 0,
+				aString.getBytes(), aString.getBytes().length, 0, 0, 0,
+				"X_OCTET", "");
 		Message receive = endpoint.receive(0);
 
 		assertNotNull(receive);

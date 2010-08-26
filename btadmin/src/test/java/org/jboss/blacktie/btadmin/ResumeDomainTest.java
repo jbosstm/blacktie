@@ -27,7 +27,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 public class ResumeDomainTest extends TestCase {
-	private static final Logger log = LogManager.getLogger(ResumeDomainTest.class);
+	private static final Logger log = LogManager
+			.getLogger(ResumeDomainTest.class);
 
 	private CommandHandler commandHandler;
 

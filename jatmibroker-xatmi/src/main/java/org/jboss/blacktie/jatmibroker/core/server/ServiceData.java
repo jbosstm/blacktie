@@ -52,9 +52,10 @@ public class ServiceData {
 				+ ".size", DEFAULT_POOL_SIZE);
 		int size = Integer.parseInt(sizeS);
 
-		connection = TransportFactory.getTransportFactory(serviceName,
-				properties).createTransport();
-		Boolean conversational = (Boolean) properties.get("blacktie." + serviceName + ".conversational");
+		connection = TransportFactory.getTransportFactory(properties)
+				.createTransport();
+		Boolean conversational = (Boolean) properties.get("blacktie."
+				+ serviceName + ".conversational");
 		this.receiver = connection.getReceiver(serviceName, conversational);
 
 		Class callback = Class.forName(serviceClassName);

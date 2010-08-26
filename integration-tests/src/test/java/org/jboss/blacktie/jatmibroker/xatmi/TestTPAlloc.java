@@ -121,10 +121,8 @@ public class TestTPAlloc extends TestCase {
 
 		// ASSIGN SOME VALUES
 		aptr.setLong("acct_no", 12345678);
-		aptr
-				.setByteArray("name",
-						"12345678901234567890123456789012345678901234567890"
-								.getBytes());
+		aptr.setByteArray("name",
+				"12345678901234567890123456789012345678901234567890".getBytes());
 		double[] balances = new double[2];
 		balances[0] = 0;
 		balances[1] = 0;

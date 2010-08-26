@@ -232,8 +232,8 @@ public class Connection {
 					"Invalid flags remain: " + toCheck);
 		}
 
-		svc = svc.substring(0, Math.min(Connection.XATMI_SERVICE_NAME_LENGTH,
-				svc.length()));
+		svc = svc.substring(0,
+				Math.min(Connection.XATMI_SERVICE_NAME_LENGTH, svc.length()));
 		int correlationId = 0;
 		synchronized (this) {
 			correlationId = ++nextId;
@@ -262,8 +262,8 @@ public class Connection {
 		if (timeToLive != null) {
 			ttl = Integer.parseInt(timeToLive) * 1000;
 		}
-		transport.getSender(svc, false).send(endpoint.getReplyTo(), (short) 0, 0,
-				data, len, correlationId, flags, ttl, type, subtype);
+		transport.getSender(svc, false).send(endpoint.getReplyTo(), (short) 0,
+				0, data, len, correlationId, flags, ttl, type, subtype);
 		if ((flags & Connection.TPNOREPLY) == Connection.TPNOREPLY) {
 			correlationId = 0;
 		}
@@ -373,11 +373,11 @@ public class Connection {
 			throws ConnectionException {
 		log.debug("tpconnect: " + svc);
 
-		svc = svc.substring(0, Math.min(Connection.XATMI_SERVICE_NAME_LENGTH,
-				svc.length()));
+		svc = svc.substring(0,
+				Math.min(Connection.XATMI_SERVICE_NAME_LENGTH, svc.length()));
 		// Initiate the session
-		svc = svc.substring(0, Math.min(Connection.XATMI_SERVICE_NAME_LENGTH,
-				svc.length()));
+		svc = svc.substring(0,
+				Math.min(Connection.XATMI_SERVICE_NAME_LENGTH, svc.length()));
 		int correlationId = 0;
 		synchronized (this) {
 			correlationId = nextId++;
@@ -497,8 +497,8 @@ public class Connection {
 		Transport toReturn = transports.get(serviceName);
 		if (toReturn == null) {
 			try {
-				toReturn = TransportFactory.getTransportFactory(serviceName,
-						properties).createTransport();
+				toReturn = TransportFactory.getTransportFactory(properties)
+						.createTransport();
 			} catch (ConfigurationException e) {
 				throw new ConnectionException(Connection.TPENOENT,
 						"Could not load transport for: " + serviceName, e);

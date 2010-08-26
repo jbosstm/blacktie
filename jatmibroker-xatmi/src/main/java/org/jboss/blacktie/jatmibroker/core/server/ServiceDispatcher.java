@@ -66,8 +66,9 @@ public class ServiceDispatcher extends BlackTieService implements Runnable {
 				if (e.getTperrno() == Connection.TPETIME) {
 					log.debug("Got a timeout");
 				} else {
-					log.error("Could not receive the message: "
-							+ e.getMessage(), e);
+					log.error(
+							"Could not receive the message: " + e.getMessage(),
+							e);
 					break;
 				}
 			}

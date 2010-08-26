@@ -30,7 +30,8 @@ public interface Transport {
 	 * @return
 	 * @throws ConfigurationException
 	 */
-	public Sender getSender(String serviceName, boolean conversational) throws ConnectionException;
+	public Sender getSender(String serviceName, boolean conversational)
+			throws ConnectionException;
 
 	/**
 	 * Create a sender to a service queue
@@ -48,7 +49,8 @@ public interface Transport {
 	 * @return
 	 * @throws ConfigurationException
 	 */
-	public Receiver getReceiver(String serviceName, boolean conversational) throws ConnectionException;
+	public Receiver getReceiver(String serviceName, boolean conversational)
+			throws ConnectionException;
 
 	/**
 	 * Create a receiver on a temporary queue.

@@ -120,15 +120,14 @@ public class Shutdown implements Command {
 			while (iterator.hasNext()) {
 				ServerToStop next = iterator.next();
 				Boolean result = (Boolean) beanServerConnection.invoke(
-						blacktieAdmin, "shutdown", new Object[] {
-								next.getName(), next.getId() }, new String[] {
-								"java.lang.String", "int" });
+						blacktieAdmin, "shutdown",
+						new Object[] { next.getName(), next.getId() },
+						new String[] { "java.lang.String", "int" });
 				if (result) {
 					log.info("Server shutdown successfully: " + next.getName()
 							+ " with id: " + next.getId());
 				} else {
-					log
-							.error("Server could not be shutdown (may already be stopped)");
+					log.error("Server could not be shutdown (may already be stopped)");
 					throw new CommandFailedException(-1);
 				}
 			}

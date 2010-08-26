@@ -22,10 +22,13 @@ import java.io.IOException;
 import javax.management.MalformedObjectNameException;
 
 import junit.framework.TestCase;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
 public class ListServiceStatusTest extends TestCase {
-	private static final Logger log = LogManager.getLogger(ListServiceStatusTest.class);
+	private static final Logger log = LogManager
+			.getLogger(ListServiceStatusTest.class);
 
 	private CommandHandler commandHandler;
 
@@ -38,7 +41,8 @@ public class ListServiceStatusTest extends TestCase {
 
 	public void tearDown() throws Exception {
 		log.info("ListServiceStatusTest::tearDown");
-		if (shutdownRequired && commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
+		if (shutdownRequired
+				&& commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
 			fail("Could not stop the server");
 		}
 	}

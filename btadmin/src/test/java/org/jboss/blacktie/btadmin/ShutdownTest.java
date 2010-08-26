@@ -40,7 +40,8 @@ public class ShutdownTest extends TestCase {
 
 	public void tearDown() throws Exception {
 		log.info("ShutdownTest::tearDown");
-		if (shutdownRequired && commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
+		if (shutdownRequired
+				&& commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
 			fail("Could not stop the server");
 		}
 	}

@@ -49,18 +49,20 @@ public class QueueReaper implements Runnable {
 
 	private Properties prop;
 
-	public QueueReaper(MBeanServerConnection conn) throws ConfigurationException {
+	public QueueReaper(MBeanServerConnection conn)
+			throws ConfigurationException {
 		this.thread = new Thread(this);
 		this.thread.setDaemon(true);
 		this.thread.setPriority(Thread.MIN_PRIORITY);
 		this.beanServerConnection = conn;
-		
+
 		prop = new Properties();
 		XMLEnvHandler handler = new XMLEnvHandler(prop);
 		XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
 		xmlenv.parse("btconfig.xml");
 
-		this.interval = Integer.parseInt(prop.getProperty("QueueReaperInterval", "30")) * 1000;
+		this.interval = Integer.parseInt(prop.getProperty(
+				"QueueReaperInterval", "30")) * 1000;
 	}
 
 	public void startThread() {
@@ -99,23 +101,22 @@ public class QueueReaper implements Runnable {
 				HashSet<Destination> dests = (HashSet<Destination>) beanServerConnection
 						.getAttribute(objName, "Destinations");
 
-
 				Iterator<Destination> it = dests.iterator();
 				while (it.hasNext()) {
 					Destination dest = it.next();
 					if (dest instanceof Queue) {
 						String serviceName = ((Queue) dest).getQueueName();
-						serviceName = serviceName.substring(serviceName.indexOf('_') + 1);
+						serviceName = serviceName.substring(serviceName
+								.indexOf('_') + 1);
 						String server = (String) prop.get("blacktie."
 								+ serviceName + ".server");
 						long queueReapCheck = System.currentTimeMillis();
 						if ((server != null || serviceName.contains("."))
 								&& isCreatedProgrammatically(serviceName)
 								&& consumerCount(serviceName) == 0) {
-							log
-									.warn("undeploy service pending for "
-											+ serviceName
-											+ " as consumer count is 0, will check again in 30 seconds");
+							log.warn("undeploy service pending for "
+									+ serviceName
+									+ " as consumer count is 0, will check again in 30 seconds");
 							Thread.sleep(this.interval);
 
 							// double check consumer is 0
@@ -141,19 +142,20 @@ public class QueueReaper implements Runnable {
 				log.debug("Sleeping interrupted");
 				this.run = false;
 			} catch (Exception e) {
-				log.error("run ping thread failed with (will wait for: " + interval + " seconds): " + e, e);
+				log.error("run ping thread failed with (will wait for: "
+						+ interval + " seconds): " + e, e);
 				try {
 					Thread.sleep(this.interval);
 				} catch (InterruptedException e2) {
 					log.debug("Sleeping interrupted");
 					this.run = false;
-				} 
+				}
 			}
 		}
 	}
 
 	int consumerCount(String serviceName) throws Exception {
-		//jboss.messaging.destination:service=Queue,name=dynamic
+		// jboss.messaging.destination:service=Queue,name=dynamic
 		log.trace(serviceName);
 		boolean conversational = false;
 		if (!serviceName.startsWith(".")) {
@@ -167,20 +169,21 @@ public class QueueReaper implements Runnable {
 			prefix = "BTR_";
 		}
 		ObjectName objName = new ObjectName(
-				"jboss.messaging.destination:service=Queue,name=" + prefix + serviceName);
+				"jboss.messaging.destination:service=Queue,name=" + prefix
+						+ serviceName);
 		Integer count = (Integer) beanServerConnection.getAttribute(objName,
 				"ConsumerCount");
 		return count.intValue();
 	}
 
 	Boolean isCreatedProgrammatically(String serviceName) throws Exception {
-		//jboss.messaging.destination:service=Queue,name=dynamic
+		// jboss.messaging.destination:service=Queue,name=dynamic
 		log.trace(serviceName);
 		boolean conversational = false;
 		if (!serviceName.startsWith(".")) {
 			conversational = (Boolean) prop.get("blacktie." + serviceName
 					+ ".conversational");
-		}		
+		}
 		String prefix = null;
 		if (conversational) {
 			prefix = "BTC_";
@@ -188,7 +191,8 @@ public class QueueReaper implements Runnable {
 			prefix = "BTR_";
 		}
 		ObjectName objName = new ObjectName(
-				"jboss.messaging.destination:service=Queue,name=" + prefix + serviceName);
+				"jboss.messaging.destination:service=Queue,name=" + prefix
+						+ serviceName);
 		return (Boolean) beanServerConnection.getAttribute(objName,
 				"CreatedProgrammatically");
 	}

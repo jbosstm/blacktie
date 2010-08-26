@@ -69,8 +69,8 @@ public class TestTPSend extends TestCase {
 		log.info("test_tpsend_tpsendonly");
 		server.tpadvertiseTestTPSendTPSendOnly();
 
-		cd = connection.tpconnect(RunServer
-				.getServiceNameTestTPSendTPSendOnly(), sendbuf,
+		cd = connection.tpconnect(
+				RunServer.getServiceNameTestTPSendTPSendOnly(), sendbuf,
 				Connection.TPRECVONLY);
 
 		try {
@@ -96,8 +96,9 @@ public class TestTPSend extends TestCase {
 		server.tpadvertiseTestTPSendNonTPCONVService();
 
 		try {
-			Response rcvbuf = connection.tpcall(RunServer
-					.getServiceNameTPSendNonTPCONVService(), sendbuf, 0);
+			Response rcvbuf = connection.tpcall(
+					RunServer.getServiceNameTPSendNonTPCONVService(), sendbuf,
+					0);
 			fail("Received a rcvbuf: " + rcvbuf);
 		} catch (ConnectionException e) {
 			assertTrue(e.getTperrno() == Connection.TPESVCERR);

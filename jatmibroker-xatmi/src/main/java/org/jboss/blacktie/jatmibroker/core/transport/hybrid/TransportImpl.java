@@ -33,8 +33,8 @@ import org.jboss.blacktie.jatmibroker.core.transport.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.core.transport.Sender;
 import org.jboss.blacktie.jatmibroker.core.transport.Transport;
+import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.omg.CORBA.ORB;
 
 public class TransportImpl implements Transport {
 
@@ -75,10 +75,15 @@ public class TransportImpl implements Transport {
 		log.debug("Closed: " + this);
 	}
 
-	public Sender getSender(String serviceName, boolean conversational) throws ConnectionException {
+	public Sender getSender(String serviceName, boolean conversational)
+			throws ConnectionException {
+		if (closed) {
+			throw new ConnectionException(Connection.TPEPROTO, "Already closed");
+		}
 		log.debug("Get sender: " + serviceName);
 		try {
-			Destination destination = jmsManagement.lookup(serviceName, conversational);
+			Destination destination = jmsManagement.lookup(serviceName,
+					conversational);
 			log.trace("Resolved destination");
 			return new JMSSenderImpl(orbManagement, session, destination);
 		} catch (NameNotFoundException e) {
@@ -92,7 +97,10 @@ public class TransportImpl implements Transport {
 		}
 	}
 
-	public Sender createSender(Object destination) {
+	public Sender createSender(Object destination) throws ConnectionException {
+		if (closed) {
+			throw new ConnectionException(Connection.TPEPROTO, "Already closed");
+		}
 		String callback_ior = (String) destination;
 		log.debug("Creating a sender for: " + callback_ior);
 		org.omg.CORBA.Object serviceFactoryObject = orbManagement.getOrb()
@@ -103,10 +111,15 @@ public class TransportImpl implements Transport {
 		return sender;
 	}
 
-	public Receiver getReceiver(String serviceName, boolean conversational) throws ConnectionException {
+	public Receiver getReceiver(String serviceName, boolean conversational)
+			throws ConnectionException {
+		if (closed) {
+			throw new ConnectionException(Connection.TPEPROTO, "Already closed");
+		}
 		log.debug("Creating a receiver: " + serviceName);
 		try {
-			Destination destination = jmsManagement.lookup(serviceName, conversational);
+			Destination destination = jmsManagement.lookup(serviceName,
+					conversational);
 			log.debug("Resolved destination");
 			return new JMSReceiverImpl(session, destination, properties);
 		} catch (NameNotFoundException e) {
@@ -123,6 +136,9 @@ public class TransportImpl implements Transport {
 
 	public Receiver createReceiver(int cd, ResponseMonitor responseMonitor)
 			throws ConnectionException {
+		if (closed) {
+			throw new ConnectionException(Connection.TPEPROTO, "Already closed");
+		}
 		log.debug("Creating a receiver");
 		return new CorbaReceiverImpl(orbManagement, properties, cd,
 				responseMonitor);
@@ -130,14 +146,10 @@ public class TransportImpl implements Transport {
 
 	public Receiver createReceiver(EventListener eventListener)
 			throws ConnectionException {
+		if (closed) {
+			throw new ConnectionException(Connection.TPEPROTO, "Already closed");
+		}
 		log.debug("Creating a receiver with event listener");
 		return new CorbaReceiverImpl(eventListener, orbManagement, properties);
-	}
-
-	/**
-	 * Get the orb.
-	 */
-	public ORB getOrb() {
-		return orbManagement.getOrb();
 	}
 }

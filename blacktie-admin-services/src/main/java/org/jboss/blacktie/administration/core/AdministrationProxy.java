@@ -294,7 +294,7 @@ public class AdministrationProxy {
 						server = server.replaceAll("[0-9]", "");
 						if (server.equals(serverName)) {
 							qname = qname.substring("BTR_.".length());
-							qname = qname.replaceAll("[A-Za-z]", ""); 
+							qname = qname.replaceAll("[A-Za-z]", "");
 							ids.add(new Integer(qname));
 						}
 					}
@@ -470,8 +470,9 @@ public class AdministrationProxy {
 			log.error("call server " + serverName + " id " + id
 					+ " failed with " + e.getTperrno(), e);
 		} catch (RuntimeException e) {
-			log.error("Could not get response time from server: "
-					+ e.getMessage(), e);
+			log.error(
+					"Could not get response time from server: "
+							+ e.getMessage(), e);
 			throw e;
 		}
 		return null;
@@ -654,7 +655,7 @@ public class AdministrationProxy {
 	public int getQueueDepth(String serverName, String serviceName) {
 		Integer depth;
 		try {
-			//jboss.messaging.destination:service=Queue,name=dynamic
+			// jboss.messaging.destination:service=Queue,name=dynamic
 			log.trace(serviceName);
 			boolean conversational = false;
 			if (!serviceName.startsWith(".")) {
@@ -668,8 +669,8 @@ public class AdministrationProxy {
 				prefix = "BTR_";
 			}
 			ObjectName objName = new ObjectName(
-					"jboss.messaging.destination:service=Queue,name="
-							+ prefix + serviceName);
+					"jboss.messaging.destination:service=Queue,name=" + prefix
+							+ serviceName);
 			depth = (Integer) beanServerConnection.getAttribute(objName,
 					"MessageCount");
 		} catch (Exception e) {

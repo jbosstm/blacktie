@@ -17,7 +17,6 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
-import java.io.IOException;
 
 public class CSTest extends CSControl {
 

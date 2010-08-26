@@ -27,7 +27,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 public class PauseDomainTest extends TestCase {
-	private static final Logger log = LogManager.getLogger(PauseDomainTest.class);
+	private static final Logger log = LogManager
+			.getLogger(PauseDomainTest.class);
 
 	private CommandHandler commandHandler;
 

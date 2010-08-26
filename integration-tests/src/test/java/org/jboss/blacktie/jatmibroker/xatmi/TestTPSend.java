@@ -70,8 +70,8 @@ public class TestTPSend extends TestCase {
 		log.info("test_tpsend_tpsendonly");
 		server.tpadvertiseTestTPSendTPSendOnly();
 
-		cd = connection.tpconnect(RunServer
-				.getServiceNameTestTPSendTPSendOnly(), sendbuf,
+		cd = connection.tpconnect(
+				RunServer.getServiceNameTestTPSendTPSendOnly(), sendbuf,
 				Connection.TPRECVONLY);
 
 		try {

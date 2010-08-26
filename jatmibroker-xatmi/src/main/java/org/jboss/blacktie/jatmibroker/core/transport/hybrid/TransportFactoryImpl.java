@@ -95,7 +95,7 @@ public class TransportFactoryImpl extends TransportFactory {
 		jmsManagement.close();
 	}
 
-	public void removeTransport(TransportImpl transportImpl) {
+	void removeTransport(TransportImpl transportImpl) {
 		boolean remove = transports.remove(transportImpl);
 		log.debug("Transport was removed: " + transportImpl + " from: " + this
 				+ " result: " + remove);

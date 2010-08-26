@@ -39,7 +39,7 @@ public class TestTPACall extends TestCase {
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
 		connection.close();
-		server.serverdone(); 
+		server.serverdone();
 	}
 
 	public void test_tpacall() throws ConnectionException {

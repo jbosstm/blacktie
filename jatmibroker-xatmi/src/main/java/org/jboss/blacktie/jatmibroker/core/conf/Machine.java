@@ -75,7 +75,7 @@ public class Machine {
 	}
 
 	public void setServer(Server server) {
-		this.server = server;		
+		this.server = server;
 	}
 
 	public Server getServer() {

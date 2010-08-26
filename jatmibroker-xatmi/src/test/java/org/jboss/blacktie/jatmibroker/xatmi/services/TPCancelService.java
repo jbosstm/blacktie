@@ -18,8 +18,8 @@ public class TPCancelService implements Service {
 		if ((svcinfo.getFlags() & Connection.TPNOREPLY) != Connection.TPNOREPLY) {
 			int len = 21;
 			X_OCTET toReturn;
-			String received = new String(((X_OCTET) svcinfo.getBuffer())
-					.getByteArray());
+			String received = new String(
+					((X_OCTET) svcinfo.getBuffer()).getByteArray());
 			if (received.equals("cancel")) {
 				toReturn = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",
 						null, len);

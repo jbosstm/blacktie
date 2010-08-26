@@ -133,8 +133,8 @@ public class TestRollbackOnly extends TestCase {
 		assertTrue(TX.tx_open() == TX.TX_OK);
 		assertTrue(TX.tx_begin() == TX.TX_OK);
 
-		Session cd = connection.tpconnect(RunServer
-				.getServiceNameTestRollbackOnly2(), sendbuf,
+		Session cd = connection.tpconnect(
+				RunServer.getServiceNameTestRollbackOnly2(), sendbuf,
 				Connection.TPSENDONLY);
 		cd.tpdiscon();
 
@@ -152,8 +152,8 @@ public class TestRollbackOnly extends TestCase {
 		assertTrue(TX.tx_open() == TX.TX_OK);
 		assertTrue(TX.tx_begin() == TX.TX_OK);
 
-		Session cd = connection.tpconnect(RunServer
-				.getServiceNameTestRollbackOnly2(), sendbuf,
+		Session cd = connection.tpconnect(
+				RunServer.getServiceNameTestRollbackOnly2(), sendbuf,
 				Connection.TPRECVONLY);
 
 		try {

@@ -27,7 +27,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 public class UnadvertiseTest extends TestCase {
-	private static final Logger log = LogManager.getLogger(UnadvertiseTest.class);
+	private static final Logger log = LogManager
+			.getLogger(UnadvertiseTest.class);
 
 	private CommandHandler commandHandler;
 

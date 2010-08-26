@@ -26,8 +26,7 @@ public class TestConnection extends TestCase {
 		AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
 		Properties properties = xml.getProperties();
 
-		transportFactory = TransportFactory.getTransportFactory(
-				"JAVA_Converse", properties);
+		transportFactory = TransportFactory.getTransportFactory(properties);
 		serviceTransport = transportFactory.createTransport();
 		clientTransport = transportFactory.createTransport();
 	}
@@ -39,12 +38,12 @@ public class TestConnection extends TestCase {
 	}
 
 	public void test() throws ConnectionException {
-		Receiver serviceDispatcher = serviceTransport
-				.getReceiver("JAVA_Converse", false);
+		Receiver serviceDispatcher = serviceTransport.getReceiver(
+				"JAVA_Converse", false);
 		Sender clientSender = clientTransport.getSender("JAVA_Converse", false);
 		Receiver clientReceiver = clientTransport.createReceiver(1, null);
-		clientSender.send(clientReceiver.getReplyTo(), (short) 1, 1, "hi"
-				.getBytes(), 2, 0, 0, 0, "X_OCTET", null);
+		clientSender.send(clientReceiver.getReplyTo(), (short) 1, 1,
+				"hi".getBytes(), 2, 0, 0, 0, "X_OCTET", null);
 		Message receive = serviceDispatcher.receive(0);
 		assertTrue(receive.len == 2);
 

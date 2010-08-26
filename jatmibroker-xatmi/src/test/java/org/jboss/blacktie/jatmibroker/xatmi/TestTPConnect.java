@@ -61,7 +61,7 @@ public class TestTPConnect extends TestCase {
 		}
 
 		connection.close();
-		server.serverdone(); 
+		server.serverdone();
 	}
 
 	public void test_tpconnect() throws ConnectionException {

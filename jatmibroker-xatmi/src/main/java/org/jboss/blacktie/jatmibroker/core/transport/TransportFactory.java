@@ -34,13 +34,13 @@ public abstract class TransportFactory {
 	private boolean closed;
 
 	public static synchronized TransportFactory getTransportFactory(
-			String serviceName, Properties properties)
-			throws ConfigurationException {
-		log.debug("Loading transport for: " + serviceName);
+			Properties properties) throws ConfigurationException {
+		log.debug("Loading transportfactory");
 		// Determine the transport class to load
-		String className = org.jboss.blacktie.jatmibroker.core.transport.hybrid.TransportFactoryImpl.class
-				.getName();
-		log.debug("Transport class was: " + className);
+		// String className =
+		// org.jboss.blacktie.jatmibroker.core.transport.hybrid.TransportFactoryImpl.class
+		// .getName();
+		// log.debug("Transport class was: " + className);
 
 		if (transportFactory == null) {
 			try {

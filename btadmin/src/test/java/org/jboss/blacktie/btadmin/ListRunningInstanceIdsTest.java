@@ -22,10 +22,13 @@ import java.io.IOException;
 import javax.management.MalformedObjectNameException;
 
 import junit.framework.TestCase;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
 public class ListRunningInstanceIdsTest extends TestCase {
-	private static final Logger log = LogManager.getLogger(ListRunningInstanceIdsTest.class);
+	private static final Logger log = LogManager
+			.getLogger(ListRunningInstanceIdsTest.class);
 
 	private CommandHandler commandHandler;
 

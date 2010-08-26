@@ -124,8 +124,9 @@ public class CommandHandler {
 					} catch (CommandFailedException e) {
 						exitStatus = e.getExitCode();
 					} catch (Exception e) {
-						log.error("Could not invoke the command: "
-								+ e.getMessage(), e);
+						log.error(
+								"Could not invoke the command: "
+										+ e.getMessage(), e);
 					}
 				} catch (IncompatibleArgsException e) {
 					String usage = "Expected Usage: " + args[0] + " "

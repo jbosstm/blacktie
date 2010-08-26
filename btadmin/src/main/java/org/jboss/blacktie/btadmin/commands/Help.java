@@ -85,8 +85,9 @@ public class Help implements Command {
 				String jarEntry = nextElement.getName();
 				if (jarEntry
 						.matches("org/jboss/blacktie/btadmin/commands/\\w+.class")) {
-					String commandName = jarEntry.substring(jarEntry
-							.lastIndexOf('/') + 1, jarEntry.indexOf('.'));
+					String commandName = jarEntry.substring(
+							jarEntry.lastIndexOf('/') + 1,
+							jarEntry.indexOf('.'));
 					String firstLetter = commandName.substring(0, 1);
 					String remainder = commandName.substring(1);
 					String capitalized = firstLetter.toLowerCase() + remainder;

@@ -51,8 +51,9 @@ public class JABTestCase extends TestCase {
 		runServer.tpadvertisetpcallXOctet();
 		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
-		JABServiceInvoker jabService = new JABServiceInvoker(RunServer
-				.getServiceNametpcallXOctet(), jabSession, "X_OCTET", null);
+		JABServiceInvoker jabService = new JABServiceInvoker(
+				RunServer.getServiceNametpcallXOctet(), jabSession, "X_OCTET",
+				null);
 		jabService.getRequest().setByteArray("X_OCTET",
 				"test_tpcall_x_octet".getBytes());
 		jabService.call(null);
@@ -70,8 +71,9 @@ public class JABTestCase extends TestCase {
 		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(jabSession, 5000);
-		JABServiceInvoker jabService = new JABServiceInvoker(RunServer
-				.getServiceNametpcallXOctet(), jabSession, "X_OCTET", null);
+		JABServiceInvoker jabService = new JABServiceInvoker(
+				RunServer.getServiceNametpcallXOctet(), jabSession, "X_OCTET",
+				null);
 		jabService.getRequest().setByteArray("X_OCTET",
 				"test_tpcall_x_octet".getBytes());
 		log.debug("calling tpcall_x_octet with tx");
@@ -92,8 +94,9 @@ public class JABTestCase extends TestCase {
 		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(jabSession, 5000);
-		JABServiceInvoker jabService = new JABServiceInvoker(RunServer
-				.getServiceNametpcallXOctet(), jabSession, "X_OCTET", null);
+		JABServiceInvoker jabService = new JABServiceInvoker(
+				RunServer.getServiceNametpcallXOctet(), jabSession, "X_OCTET",
+				null);
 		transaction.rollback_only();
 		jabService.getRequest().setByteArray("X_OCTET",
 				"test_tpcall_x_octet".getBytes());
@@ -123,8 +126,9 @@ public class JABTestCase extends TestCase {
 		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(jabSession, 5000);
-		JABServiceInvoker jabService = new JABServiceInvoker(RunServer
-				.getServiceNametpcallXOctet(), jabSession, "X_OCTET", null);
+		JABServiceInvoker jabService = new JABServiceInvoker(
+				RunServer.getServiceNametpcallXOctet(), jabSession, "X_OCTET",
+				null);
 		transaction.rollback_only();
 		jabService.getRequest().setByteArray("X_OCTET",
 				"test_tpcall_x_octet".getBytes());
@@ -149,8 +153,9 @@ public class JABTestCase extends TestCase {
 		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(jabSession, 5000);
-		JABServiceInvoker jabService = new JABServiceInvoker(RunServer
-				.getServiceNametpcallXOctet(), jabSession, "X_OCTET", null);
+		JABServiceInvoker jabService = new JABServiceInvoker(
+				RunServer.getServiceNametpcallXOctet(), jabSession, "X_OCTET",
+				null);
 		jabService.getRequest().setByteArray("X_OCTET",
 				"test_tpcall_x_octet".getBytes());
 		jabService.call(transaction);
@@ -168,8 +173,8 @@ public class JABTestCase extends TestCase {
 		runServer.tpadvertisetpcallXCType();
 		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
-		JABServiceInvoker jabService = new JABServiceInvoker(RunServer
-				.getServiceNametpcallXCType(), jabSession, "X_C_TYPE",
+		JABServiceInvoker jabService = new JABServiceInvoker(
+				RunServer.getServiceNametpcallXCType(), jabSession, "X_C_TYPE",
 				"acct_info");
 
 		// Assemble the message ByteArrayOutputStream baos = new
@@ -201,8 +206,8 @@ public class JABTestCase extends TestCase {
 		runServer.tpadvertisetpcallXCType();
 		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
-		JABServiceInvoker jabService = new JABServiceInvoker(RunServer
-				.getServiceNametpcallXCType(), jabSession, "X_C_TYPE",
+		JABServiceInvoker jabService = new JABServiceInvoker(
+				RunServer.getServiceNametpcallXCType(), jabSession, "X_C_TYPE",
 				"acct_info");
 
 		// Assemble the message ByteArrayOutputStream baos = new

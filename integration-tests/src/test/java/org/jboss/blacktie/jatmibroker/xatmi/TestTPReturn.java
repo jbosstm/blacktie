@@ -88,8 +88,8 @@ public class TestTPReturn extends TestCase {
 		X_OCTET sendbuf = (X_OCTET) connection
 				.tpalloc("X_OCTET", null, sendlen);
 		sendbuf.setByteArray("24".getBytes());
-		Response success = connection.tpcall(RunServer
-				.getServiceNameTestTPReturn2(), sendbuf, 0);
+		Response success = connection.tpcall(
+				RunServer.getServiceNameTestTPReturn2(), sendbuf, 0);
 		assertTrue(success != null);
 		assertTrue(success.getRcode() == 24);
 

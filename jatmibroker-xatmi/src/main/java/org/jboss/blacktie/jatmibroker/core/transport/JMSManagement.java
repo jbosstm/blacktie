@@ -32,8 +32,8 @@ public class JMSManagement {
 				"org.jnp.interfaces.NamingContextFactory");
 		props.setProperty("java.naming.factory.url.pkgs",
 				"org.jboss.naming:org.jnp.interfaces");
-		props.setProperty("java.naming.provider.url", (String) properties
-				.get("java.naming.provider.url"));
+		props.setProperty("java.naming.provider.url",
+				(String) properties.get("java.naming.provider.url"));
 		props.putAll(properties);
 		context = new InitialContext(props);
 		ConnectionFactory factory = (ConnectionFactory) context
@@ -52,19 +52,25 @@ public class JMSManagement {
 	}
 
 	public Session createSession() throws JMSException {
+		log.debug("createSession");
 		return connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 	}
 
 	public void close() {
+		log.debug("close");
 		try {
 			connection.close();
 		} catch (JMSException e) {
-			log.error("Could not close the connection to the JMS server: "
-					+ e.getMessage(), e);
+			log.error(
+					"Could not close the connection to the JMS server: "
+							+ e.getMessage(), e);
 		}
 	}
 
-	public Destination lookup(String serviceName, boolean conversational) throws NamingException {
+	public Destination lookup(String serviceName, boolean conversational)
+			throws NamingException {
+		log.debug("lookup: " + serviceName + " conversational: "
+				+ conversational);
 		if (conversational) {
 			return (Destination) context.lookup("/queue/BTC_" + serviceName);
 		} else {

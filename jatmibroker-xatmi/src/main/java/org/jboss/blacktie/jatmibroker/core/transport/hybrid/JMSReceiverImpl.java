@@ -47,8 +47,9 @@ public class JMSReceiverImpl implements Receiver {
 			Properties properties) throws JMSException, NamingException {
 		this.destination = (Queue) destination;
 		receiver = session.createConsumer(destination);
-		timeout = Integer.parseInt(properties.getProperty("DestinationTimeout",
-				"2")) * 1000;
+		// timeout =
+		// Integer.parseInt(properties.getProperty("DestinationTimeout",
+		// "2")) * 1000;
 		log.debug("Creating a consumer on: " + this.destination.getQueueName()
 				+ " with timeout: " + timeout);
 	}

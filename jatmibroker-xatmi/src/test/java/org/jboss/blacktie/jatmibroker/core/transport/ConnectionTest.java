@@ -53,7 +53,7 @@ public class ConnectionTest extends TestCase {
 		Properties properties = xml.getProperties();
 
 		TransportFactory transportFactory = TransportFactory
-				.getTransportFactory("JAVA_Converse", properties);
+				.getTransportFactory(properties);
 		transportFactory.close();
 		transportFactory.close();
 	}
@@ -64,7 +64,7 @@ public class ConnectionTest extends TestCase {
 		Properties properties = xml.getProperties();
 
 		TransportFactory transportFactory = TransportFactory
-				.getTransportFactory("JAVA_Converse", properties);
+				.getTransportFactory(properties);
 		Transport createTransport = transportFactory.createTransport();
 		createTransport.close();
 		createTransport.close();
@@ -76,7 +76,7 @@ public class ConnectionTest extends TestCase {
 		Properties properties = xml.getProperties();
 
 		TransportFactory transportFactory = TransportFactory
-				.getTransportFactory("JAVA_Converse", properties);
+				.getTransportFactory(properties);
 		transportFactory.createTransport();
 		transportFactory.close();
 	}

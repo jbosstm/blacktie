@@ -111,7 +111,8 @@ public class XMLEnvHandler extends DefaultHandler {
 			Server server = serverLaunchers.get(serverLaunchers.size() - 1);
 			server.addMachine(machine);
 
-			// Make sure to record the administration services as not conversational
+			// Make sure to record the administration services as not
+			// conversational
 			String ad_key = "blacktie.." + server.getName() + machine.getId()
 					+ ".conversational";
 			prop.put(ad_key, false);

@@ -58,9 +58,9 @@ public class JABFactoryTestCase extends TestCase {
 		toSend.setArrayValue("X_OCTET", "test_tpcall_x_octet".getBytes());
 
 		Transaction transaction = connection.beginTransaction(10000);
-		JABResponse call = connection.call(RunServer
-				.getServiceNametpcallXOctet(), toSend, transaction, "X_OCTET",
-				null);
+		JABResponse call = connection.call(
+				RunServer.getServiceNametpcallXOctet(), toSend, transaction,
+				"X_OCTET", null);
 		transaction.commit();
 
 		byte[] expected = new byte[60];
@@ -91,9 +91,9 @@ public class JABFactoryTestCase extends TestCase {
 		toSend.setArrayValue("balances", balances);
 
 		Transaction transaction = connection.beginTransaction(10000);
-		JABResponse call = connection.call(RunServer
-				.getServiceNametpcallXCType(), toSend, transaction, "X_C_TYPE",
-				"acct_info");
+		JABResponse call = connection.call(
+				RunServer.getServiceNametpcallXCType(), toSend, transaction,
+				"X_C_TYPE", "acct_info");
 		transaction.commit();
 
 		byte[] expected = new byte[60];
