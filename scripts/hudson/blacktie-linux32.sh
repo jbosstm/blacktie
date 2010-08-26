@@ -31,9 +31,9 @@ fi
 cd $WORKSPACE/jboss-5.1.0.GA/server/all/conf
 cat jbossts-properties.xml | sed 's/CONFIGURATION_FILE/NAME_SERVICE/g' > jbossts-properties.xml.bak
 mv jbossts-properties.xml.bak jbossts-properties.xml
-cd $WORKSPACE/jboss-5.1.0.GA/bin
-sed -i 's=Xmx128=Xmx768=g' run.conf
-sed -i 's=Xmx512=Xmx768=g' run.conf
+#cd $WORKSPACE/jboss-5.1.0.GA/bin
+#sed -i 's=Xmx128=Xmx768=g' run.conf
+#sed -i 's=Xmx512=Xmx768=g' run.conf
 
 # INITIALIZE THE BLACKTIE JBOSS DEPENDENCIES
 cp $WORKSPACE/trunk/jatmibroker-xatmi/src/test/resources/jatmibroker-xatmi-test-service.xml $WORKSPACE/jboss-5.1.0.GA/server/all/deploy
