@@ -348,7 +348,6 @@ void HybridStompEndpointQueue::disconnect() {
 	LOG4CXX_DEBUG(logger, (char*) "disconnecting: " << name);
 	shutdownLock->lock();
 	if (!this->shutdown && this->_connected) {
-		this->shutdown = true;
 		this->_connected = false;
 		LOG4CXX_DEBUG(logger, (char*) "Shutdown set: " << name);
 
@@ -381,6 +380,8 @@ void HybridStompEndpointQueue::disconnect() {
 		}
 		requiresDisconnect = true;
 	}
+	// Always set shutdown to true as we are shutting down
+	this->shutdown = true;
 	shutdownLock->unlock();
 	LOG4CXX_DEBUG(logger, (char*) "disconnected: " << name);
 }
