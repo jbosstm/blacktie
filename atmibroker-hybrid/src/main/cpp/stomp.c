@@ -342,6 +342,8 @@ apr_status_t stomp_write(stomp_connection *connection, stomp_frame *frame, apr_p
       void *value;
       for (i = apr_hash_first(NULL, frame->headers); i; i = apr_hash_next(i)) {
          apr_hash_this(i, &key, NULL, &value);
+
+	 userlogc_trace("stomp_write header %s:%s", key, value);
          
          rc = stomp_write_buffer(connection, key, strlen(key));
          CHECK_SUCCESS;
@@ -367,6 +369,7 @@ apr_status_t stomp_write(stomp_connection *connection, stomp_frame *frame, apr_p
 		  rc = stomp_write_buffer(connection, "\n", 1);
 		  CHECK_SUCCESS;
 
+		  userlogc_trace("stomp_write content-length %s", length_string);
 		  apr_pool_destroy(length_pool);
 	  }
    }
@@ -381,7 +384,9 @@ apr_status_t stomp_write(stomp_connection *connection, stomp_frame *frame, apr_p
       rc = stomp_write_buffer(connection, frame->body, body_length);
       CHECK_SUCCESS;
    }
+   userlogc_trace("stomp_write body");
    rc = stomp_write_buffer(connection, "\0\n", 2);
+   userlogc_trace("stomp_write post-amble");
    CHECK_SUCCESS;
       
 #undef CHECK_SUCCESS
