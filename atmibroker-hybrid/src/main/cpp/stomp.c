@@ -124,7 +124,7 @@ apr_status_t stomp_write_buffer(stomp_connection *connection, const char *data, 
 {
    apr_size_t remaining = size;
    size=0;
-   userlogc_trace("stomp_write_buffer");
+   userlogc_trace("stomp_write_buffer %d", size);
 	while( remaining>0 ) {
 		apr_size_t length = remaining;
 		apr_status_t rc = apr_socket_send(connection->socket, data, &length);
@@ -135,7 +135,9 @@ apr_status_t stomp_write_buffer(stomp_connection *connection, const char *data, 
          userlogc_warn("stomp_write_buffer could not apr_socket_send returning %d", rc);
          return rc;
       }
+   userlogc_trace("stomp_write_buffer %d", remaining);
 	}
+   userlogc_trace("stomp_write_buffer done");
 	return APR_SUCCESS;
 }
 
