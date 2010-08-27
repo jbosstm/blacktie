@@ -46,7 +46,7 @@ call trunk\scripts\hudson\blacktie-windows2003.bat</command>
   </builders>
   <publishers>
     <hudson.tasks.ArtifactArchiver>
-      <artifacts>trunk/*/target/*test-classes/*.log*,trunk/*/target/surefire-reports/*.txt,trunk/blacktie/target/blacktie-*-vc9x32-bin.zip</artifacts>
+      <artifacts>trunk/*/target/*test-classes/*.log*,trunk/*/target/surefire-reports/*.txt,trunk/blacktie/target/blacktie-*-vc9x32-bin.zip,trunk/blacktie/target/blacktie-*-src.zip,trunk/jatmibroker-xatmi/target/jatmibroker-xatmi-*-javadoc.jar</artifacts>
       <latestOnly>false</latestOnly>
     </hudson.tasks.ArtifactArchiver>
     <hudson.plugins.emailext.ExtendedEmailPublisher>

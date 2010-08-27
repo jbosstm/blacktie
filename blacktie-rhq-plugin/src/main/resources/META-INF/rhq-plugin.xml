@@ -2,7 +2,7 @@
 
 <plugin name="BlacktiePlugin"
         displayName="Blacktie Plugin"
-        version="2.0.0.CR1"
+        version="2.0.0.CR2-SNAPSHOT"
         package="org.rhq.plugins.blacktie"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="urn:xmlns:rhq-plugin"

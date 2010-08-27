@@ -15,6 +15,4 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#define QUOTEME_(x) #x
-#define QUOTEME(x) QUOTEME_(x)
-const char* version = QUOTEME(SOFTWARE_VERSION);
+const char* version = "2.0.0.CR2-SNAPSHOT"

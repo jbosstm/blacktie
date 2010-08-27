@@ -57,7 +57,7 @@ mvn clean
 if [ "$?" != "0" ]; then
 	exit -1
 fi
-mvn install -Dbpa=centos54x64 -Duse.valgrind=false
+mvn install -Dbpa=centos54x64 -Duse.valgrind=true
 if [ "$?" != "0" ]; then
 	exit -1
 fi
@@ -70,13 +70,13 @@ fi
 
 # INITIALIZE THE BLACKTIE DISTRIBUTION
 cd $WORKSPACE/trunk/scripts/test
-ant dist -DBT_HOME=$WORKSPACE/trunk/dist/ -DVERSION=blacktie-2.0.0.CR1 -DMACHINE_ADDR=`hostname` -DJBOSSAS_IP_ADDR=localhost -Dbpa=centos54x64
+ant dist -DBT_HOME=$WORKSPACE/trunk/dist/ -DVERSION=blacktie-2.0.0.CR2-SNAPSHOT -DMACHINE_ADDR=`hostname` -DJBOSSAS_IP_ADDR=localhost -Dbpa=centos54x64
 if [ "$?" != "0" ]; then
 	exit -1
 fi
 
 # RUN ALL THE SAMPLES
-cd $WORKSPACE/trunk/dist/blacktie-2.0.0.CR1/
+cd $WORKSPACE/trunk/dist/blacktie-2.0.0.CR2-SNAPSHOT/
 . setenv.sh
 if [ "$?" != "0" ]; then
 	exit -1
