@@ -29,7 +29,7 @@ LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.
 export LD_LIBRARY_PATH
 
 CLASSPATH=
-for i in $BLACKTIE_HOME/codeGeneration/*.jar $BLACKTIE_HOME/btadmin/*.jar
+for i in $BLACKTIE_HOME/lib-java/*.jar
 do
 CLASSPATH="$CLASSPATH:$i"
 done

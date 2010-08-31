@@ -26,7 +26,7 @@ LDFLAGS+=-lTAO_Valuetype
 LDFLAGS+=-lxerces-c
 
 log4cxx.properties:
-	jar xf ${BLACKTIE_HOME}/codeGeneration/codeGeneration.jar log4cxx.properties 
+	jar xf ${BLACKTIE_HOME}/lib-java/codeGeneration-2.0.0.CR2-SNAPSHOT.jar log4cxx.properties 
 
 client: client.o
 

@@ -26,6 +26,5 @@ set PATH=%PATH%;%BLACKTIE_HOME%\lib
 set PATH=%PATH%;.
 
 setlocal ENABLEDELAYEDEXPANSION
-FOR /R %BLACKTIE_HOME%\codeGeneration %%G IN (*.jar) DO set CLASSPATH=!CLASSPATH!;%%G
-FOR /R %BLACKTIE_HOME%\btadmin %%G IN (*.jar) DO set CLASSPATH=!CLASSPATH!;%%G
+FOR /R %BLACKTIE_HOME%\lib-java %%G IN (*.jar) DO set CLASSPATH=!CLASSPATH!;%%G
 endlocal & set CLASSPATH=%CLASSPATH%
