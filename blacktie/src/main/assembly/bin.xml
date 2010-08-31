@@ -29,7 +29,7 @@
 				</include>
 			</includes>
 			<binaries>
-				<outputDirectory>lib-java</outputDirectory>
+				<outputDirectory>lib/java</outputDirectory>
 				<unpack>false</unpack>
 			</binaries>
 		</moduleSet>
@@ -39,7 +39,7 @@
 				</include>
 			</includes>
 			<binaries>
-				<outputDirectory>lib-java</outputDirectory>
+				<outputDirectory>lib/java</outputDirectory>
 				<unpack>false</unpack>
 			</binaries>
 		</moduleSet>
@@ -48,7 +48,7 @@
 				<include>org.jboss.blacktie:jatmibroker-xatmi-client</include>
 			</includes>
 			<binaries>
-				<outputDirectory>lib-java</outputDirectory>
+				<outputDirectory>lib/java</outputDirectory>
 				<unpack>false</unpack>
 			</binaries>
 		</moduleSet>
@@ -217,7 +217,7 @@
 		<fileSet>
 			<directory>../atmibroker-xatmi/target/debug/shared
 			</directory>
-			<outputDirectory>lib</outputDirectory>
+			<outputDirectory>lib/cxx</outputDirectory>
 			<includes>
 				<include>*.dll</include>
 				<include>*.lib</include>
@@ -227,7 +227,7 @@
 		<fileSet>
 			<directory>../atmibroker-xatmi/target/cxx/runtime/lib
 			</directory>
-			<outputDirectory>lib</outputDirectory>
+			<outputDirectory>lib/cxx</outputDirectory>
 			<includes>
 				<include>*.dll</include>
 				<include>*.lib</include>
