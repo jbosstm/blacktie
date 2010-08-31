@@ -1,6 +1,6 @@
 CC=gcc 
 CFLAGS=-Wall -I${BLACKTIE_HOME}/include
-LDFLAGS=-L${BLACKTIE_HOME}/lib
+LDFLAGS=-L${BLACKTIE_HOME}/lib/cxx
 LDFLAGS+=-lACE_gperf_lib
 LDFLAGS+=-lACE
 LDFLAGS+=-lapr-1
@@ -26,10 +26,10 @@ LDFLAGS+=-lTAO_Valuetype
 LDFLAGS+=-lxerces-c
 
 log4cxx.properties:
-	jar xf ${BLACKTIE_HOME}/lib-java/codeGeneration-2.0.0.CR2-SNAPSHOT.jar log4cxx.properties 
+	jar xf ${BLACKTIE_HOME}/lib/java/codeGeneration-2.0.0.CR2-SNAPSHOT.jar log4cxx.properties 
 
 server.c:
-	jar xf ${BLACKTIE_HOME}/lib-java/codeGeneration-2.0.0.CR2-SNAPSHOT.jar server.c
+	jar xf ${BLACKTIE_HOME}/lib/java/codeGeneration-2.0.0.CR2-SNAPSHOT.jar server.c
 	sed -i "s=//SERVICE_DEFINITIONS=void DEBIT (TPSVCINFO *);void CREDIT (TPSVCINFO *);=g" server.c
 	sed -i "s=//SERVICE_ADVERTISEMENTS=tpadvertise(\"DEBIT\", DEBIT);tpadvertise(\"CREDIT\", CREDIT);=g" server.c
 	
