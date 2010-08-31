@@ -55,9 +55,9 @@ IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem START JBOSS
 cd %WORKSPACE%\jboss-5.1.0.GA\bin
-set BUILD_ID=dontKillMe
+rem set BUILD_ID=dontKillMe
 start /B run.bat -c all -b %JBOSSAS_IP_ADDR%
-set BUILD_ID=
+rem set BUILD_ID=
 echo "Started server"
 @ping 127.0.0.1 -n 120 -w 1000 > nul
 
