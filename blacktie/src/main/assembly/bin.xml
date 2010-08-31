@@ -196,7 +196,9 @@
 			</directory>
 			<outputDirectory>include</outputDirectory>
 			<includes>
-				<include>*</include>
+				<include>atmiBrokerTxMacro.h</include>
+				<include>xa.h</include>
+				<include>tx.h</include>
 			</includes>
 		</fileSet>
 		<fileSet>
