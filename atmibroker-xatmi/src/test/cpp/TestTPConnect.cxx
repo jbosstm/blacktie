@@ -49,6 +49,7 @@ void TestTPConnect::setUp() {
 	BT_ASSERT(toCheck != -1);
 
 	sendlen = strlen("connect") + 1;
+	rcvlen = 0;
 	BT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen))
 			!= NULL);
 	BT_ASSERT((rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen))

@@ -192,14 +192,6 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../atmibroker-xatmi/target/cxx/runtime/include/xercesc
-			</directory>
-			<outputDirectory>include/xercesc</outputDirectory>
-			<includes>
-				<include>*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
 			<directory>../atmibroker-tx/src/main/export/
 			</directory>
 			<outputDirectory>include</outputDirectory>
