@@ -106,11 +106,11 @@ HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 	this->pool = pool;
 	this->sendTo = NULL;
 
-	LOG4CXX_DEBUG(logger, (char*) "QREM Connecting: " << temporaryQueueName);
+	LOG4CXX_DEBUG(logger, (char*) "RemoteEndpoint: " << temporaryQueueName);
 	CORBA::Object_var tmp_ref = corbaConnection->orbRef->string_to_object(
 			temporaryQueueName);
 	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	LOG4CXX_DEBUG(logger, (char*) "QREM Connected: " << temporaryQueueName << " ENDPONT: " << remoteEndpoint);
+	LOG4CXX_DEBUG(logger, (char*) "RemoteEndpoint: " << temporaryQueueName << " ENDPONT: " << remoteEndpoint);
 
 	this->canSend = true;
 	this->canRecv = true;
@@ -128,7 +128,7 @@ HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 
 HybridSessionImpl::~HybridSessionImpl() {
 	setSendTo( NULL);
-	LOG4CXX_TRACE(logger, (char*) "QREM Closed: " << replyTo);
+	LOG4CXX_TRACE(logger, (char*) "TQ Closed: " << replyTo);
 	delete temporaryQueue;
 	temporaryQueue = NULL;
 
@@ -139,7 +139,7 @@ HybridSessionImpl::~HybridSessionImpl() {
 		stompConnection = NULL;
 	}
 	if (temporaryQueueName != NULL) {
-		LOG4CXX_TRACE(logger, (char*) "QREM Disconnected: "
+		LOG4CXX_TRACE(logger, (char*) "TQ Disconnected: "
 				<< temporaryQueueName);
 		temporaryQueueName = NULL;
 	}
@@ -155,11 +155,11 @@ void HybridSessionImpl::setSendTo(const char* destinationName) {
 
 	if (destinationName != NULL && strcmp(destinationName, "") != 0
 			&& this->sendTo == NULL) {
-		LOG4CXX_DEBUG(logger, (char*) "EndpointQueue: " << destinationName);
+		LOG4CXX_DEBUG(logger, (char*) "RemoteEndpoint: " << destinationName);
 		CORBA::Object_var tmp_ref = corbaConnection->orbRef->string_to_object(
 				destinationName);
 		remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-		LOG4CXX_DEBUG(logger, (char*) "connected to %s" << destinationName << " REMOTE ENDPONT: " << remoteEndpoint);
+		LOG4CXX_DEBUG(logger, (char*) "RemoteEndpoint: " << remoteEndpoint);
 		this->sendTo = strdup((char*) destinationName);
 	}
 }
@@ -320,8 +320,8 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		serviceInvokation = false;
 	} else {
 		if (remoteEndpoint != NULL) {
-			LOG4CXX_DEBUG(logger, (char*) "Sending to remote queue: "
-					<< remoteEndpoint);
+			LOG4CXX_DEBUG(logger, (char*) "Sending to RemoteEndpoint: "
+					<< remoteEndpoint << " : " << replyTo);
 			AtmiBroker::octetSeq_var aOctetSeq = new AtmiBroker::octetSeq(
 					message.len, message.len, (unsigned char*) data_togo, true);
 			try {

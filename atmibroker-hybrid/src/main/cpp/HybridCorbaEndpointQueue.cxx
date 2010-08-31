@@ -75,6 +75,7 @@ HybridCorbaEndpointQueue::HybridCorbaEndpointQueue(HybridSessionImpl* session,
 	this->poaName = poaName;
 	this->id = id;
 	this->messagesAvailableCallback = messagesAvailableCallback;
+	LOG4CXX_DEBUG(logger, (char*) "Created corba endpoint queue: " << this);
 }
 
 // ~EndpointQueue destructor.
@@ -184,7 +185,7 @@ void HybridCorbaEndpointQueue::send(const char* replyto_ior, CORBA::Short rval,
 }
 
 MESSAGE HybridCorbaEndpointQueue::receive(long time) {
-	LOG4CXX_DEBUG(logger, (char*) "service_response(): " << time);
+	LOG4CXX_DEBUG(logger, (char*) "HybridCorbaEndpointQueue::receive: " << time << " : " << this);
 
 	MESSAGE message = { NULL, -1, 0, NULL, NULL, -1, -1, -1, -1, -1, NULL, NULL,
 			false, NULL };
