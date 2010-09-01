@@ -28,12 +28,6 @@
 
 #include "AtmiBrokerPoaFac.h"
 
-#include "log4cxx/logger.h"
-
-log4cxx::LoggerPtr loggerAtmiBrokerPoaFac(log4cxx::Logger::getLogger(
-		"AtmiBrokerPoaFac"));
-
-
 AtmiBrokerPoaFac::AtmiBrokerPoaFac() {
 	// Intentionally empty.
 }
