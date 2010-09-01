@@ -49,7 +49,7 @@ static void tx_fill_buf_rtn(TPSVCINFO *svcinfo) {
 
 void test_tx_tpcall_x_octet_service_tardy(TPSVCINFO *svcinfo) {
 	userlogc((char*) "TxLog: service running: test_tx_tpcall_x_octet_service_tardy");
-	::sleeper(8);//ACE_OS::sleep(6L);
+	::sleeper(10);
 	tx_fill_buf_rtn(svcinfo);
 }
 
@@ -112,8 +112,8 @@ void TestTxTPCall::test_timeout_with_tx() {
 	userlogc((char*) "TestTxTPCall: test_timeout_with_tx");
 	int rv1 = tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_tardy);
 	BT_ASSERT(tperrno == 0 && rv1 != -1);
-	// the service will sleep for 4 seconds so set the timeout to be less that 4
-	int rv2 = tx_set_transaction_timeout(4);
+	// the service will sleep for 10 seconds so set the timeout to be less that 10
+	int rv2 = tx_set_transaction_timeout(6);
 	BT_ASSERT(rv2 == TX_OK);
 	int rv4 = tx_begin();
 	BT_ASSERT(rv4 == TX_OK);
