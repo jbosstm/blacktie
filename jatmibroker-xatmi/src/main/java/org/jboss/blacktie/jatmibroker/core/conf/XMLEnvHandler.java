@@ -34,6 +34,8 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class XMLEnvHandler extends DefaultHandler {
 	private static final Logger log = LogManager.getLogger(XMLEnvHandler.class);
+	private final static String envVarPatStr = "(.*)\\$\\{(.*)\\}(.*)";
+	private static java.util.regex.Matcher matcher;
 
 	private final String DOMAIN = "DOMAIN";
 	private final String BUFFER = "BUFFER";
@@ -52,8 +54,6 @@ public class XMLEnvHandler extends DefaultHandler {
 	private String value;
 	private String serverName;
 	private String serviceName;
-
-	private String jbossasIpAddr = System.getenv("JBOSSAS_IP_ADDR");
 
 	private List<String> servers = new ArrayList<String>();
 
@@ -78,6 +78,14 @@ public class XMLEnvHandler extends DefaultHandler {
 		prop.put("blacktie.domain.buffers", buffers);
 		prop.put("blacktie.domain.serverLaunchers", serverLaunchers);
 		prop.setProperty("blacktie.domain.version", "2.0.0.CR2-SNAPSHOT");
+
+		if (matcher == null) {
+			matcher = java.util.regex.Pattern.compile(envVarPatStr).matcher("");
+		}
+	}
+
+	public XMLEnvHandler() {
+		this(new Properties());
 	}
 
 	public void characters(char[] ch, int start, int length)
@@ -86,8 +94,52 @@ public class XMLEnvHandler extends DefaultHandler {
 		value += strValue;
 	}
 
+	/**
+	 * Search inputStr for sequences of the form ${VAR} and replace them with the result
+	 * of System.getenv("VAR"); If the enviromment variable VAR is not set then the literal
+	 * text "VAR" is used instead.
+	 *
+	 * @param inputStr	the pattern to match against
+	 * @return the same string with sequences of the form ${VAR} replaced by the result of
+	 * System.getenv("VAR") or "VAR" if that returns null
+	 */
+	public String getenv(CharSequence inputStr) {
+		String[] matches = new String[3];
+		matcher.reset(inputStr);
+
+		if (matcher.find()) {
+			StringBuilder sb = new StringBuilder();
+			boolean expanded = false;
+
+			for (int i = 0; i < matcher.groupCount(); i++) {
+				if ( i < matches.length) {
+					String val = matcher.group(i + 1);
+					String env = System.getenv(val);
+
+					if (env == null) {
+						matches[i] = val;
+					} else {
+						matches[i] = env;
+						expanded = true;
+					}
+				}
+			}
+
+			if (!expanded)
+				log.error("There is an unset environment variable within the configuration element/attribute: " + inputStr);
+
+			for (int i = 0; i < matches.length; i++)
+				sb.append(matches[i]);
+
+			return sb.toString();
+		}
+
+		return inputStr.toString();
+	}
+
 	public void startElement(String namespaceURI, String localName,
 			String qName, Attributes atts) throws SAXException {
+		String avalue;
 		value = "";
 
 		if (SERVER_NAME.equals(localName)) {
@@ -99,13 +151,12 @@ public class XMLEnvHandler extends DefaultHandler {
 			servers.add(serverName);
 			serverLaunchers.add(new Server(serverName));
 		} else if (MACHINE_REF.equals(localName)) {
-			String value = null;
 			Machine machine = null;
-			value = atts.getValue(0);
+			avalue = getenv(atts.getValue(0));
 			// Get the machine out of the list
-			machine = machines.get(value);
+			machine = machines.get(avalue);
 			if (machine == null) {
-				throw new SAXException("Machine did not exist: " + value);
+				throw new SAXException("Machine did not exist: " + avalue);
 			}
 			// This will be the last server added
 			Server server = serverLaunchers.get(serverLaunchers.size() - 1);
@@ -265,11 +316,8 @@ public class XMLEnvHandler extends DefaultHandler {
 
 					for (int i = 1; i <= orbargs; i++) {
 						String arg = "blacktie.orb.arg." + i;
-						String toSet = argv[i - 1];
-						if (jbossasIpAddr != null) {
-							toSet = toSet.replace("${JBOSSAS_IP_ADDR}",
-									jbossasIpAddr);
-						}
+						String toSet = getenv(argv[i - 1]);
+
 						prop.setProperty(arg, toSet);
 						log.debug(arg + " is " + toSet);
 					}
@@ -284,60 +332,45 @@ public class XMLEnvHandler extends DefaultHandler {
 			}
 		} else if (MQ.equals(localName)) {
 			for (int i = 0; i < atts.getLength(); i++) {
+				avalue = getenv(atts.getValue(i));
+
 				if (atts.getLocalName(i).equals("USER")) {
-					String value = atts.getValue(i);
-					prop.setProperty("StompConnectUsr", value);
+					prop.setProperty("StompConnectUsr", avalue);
 				} else if (atts.getLocalName(i).equals("PASSWORD")) {
-					String value = atts.getValue(i);
-					prop.setProperty("StompConnectPwd", value);
+					prop.setProperty("StompConnectPwd", avalue);
 				} else if (atts.getLocalName(i).equals("DESTINATION_TIMEOUT")) {
-					String value = atts.getValue(i);
-					prop.setProperty("DestinationTimeout", value);
+					prop.setProperty("DestinationTimeout", avalue);
 				} else if (atts.getLocalName(i).equals("RECEIVE_TIMEOUT")) {
-					String value = atts.getValue(i);
-					prop.setProperty("RequestTimeout", value);
+					prop.setProperty("RequestTimeout", avalue);
 				} else if (atts.getLocalName(i).equals("TIME_TO_LIVE")) {
-					String value = atts.getValue(i);
-					prop.setProperty("TimeToLive", value);
+					prop.setProperty("TimeToLive", avalue);
 				} else if (atts.getLocalName(i).equals("NAMING_URL")) {
-					String value = atts.getValue(i);
-					if (jbossasIpAddr != null) {
-						value = value.replace("${JBOSSAS_IP_ADDR}",
-								jbossasIpAddr);
-					}
-					prop.setProperty("java.naming.provider.url", value);
+					prop.setProperty("java.naming.provider.url", avalue);
 				}
 			}
 		} else if (MACHINE.equals(localName)) {
 			Machine machine = new Machine();
 			for (int i = 0; i < atts.getLength(); i++) {
+				avalue = getenv(atts.getValue(i));
+
 				if (atts.getLocalName(i).equals("id")) {
-					String value = atts.getValue(i);
-					machine.setId(value);
+					machine.setId(avalue);
 				} else if (atts.getLocalName(i).equals("hostname")) {
-					String value = atts.getValue(i);
-					machine.setHostname(value);
+					machine.setHostname(avalue);
 				} else if (atts.getLocalName(i).equals("pathToExecutable")) {
-					String value = atts.getValue(i);
-					machine.setPathToExecutable(value);
+					machine.setPathToExecutable(avalue);
 				} else if (atts.getLocalName(i).equals("workingDirectory")) {
-					String value = atts.getValue(i);
-					machine.setWorkingDirectory(value);
+					machine.setWorkingDirectory(avalue);
 				} else if (atts.getLocalName(i).equals("serverId")) {
-					String value = atts.getValue(i);
-					machine.setServerId(Integer.parseInt(value));
+					machine.setServerId(Integer.parseInt(avalue));
 				} else if (atts.getLocalName(i).equals("argLine")) {
-					String value = atts.getValue(i);
-					machine.setArgLine(value);
+					machine.setArgLine(avalue);
 				}
 			}
 			machines.put(machine.getId(), machine);
 		} else if (JMX.equals(localName)) {
-			String value = atts.getValue(0);
-			if (jbossasIpAddr != null) {
-				value = value.replace("${JBOSSAS_IP_ADDR}", jbossasIpAddr);
-			}
-			prop.setProperty("JMXURL", value);
+			avalue = getenv(atts.getValue(0));
+			prop.setProperty("JMXURL", avalue);
 		} else if (SERVICE_NAME.equals(localName)) {
 			for (int i = 0; i < atts.getLength(); i++) {
 				String attsLocalName = atts.getLocalName(i);
@@ -450,7 +483,7 @@ public class XMLEnvHandler extends DefaultHandler {
 	public void endElement(String namespaceURI, String localName, String qName)
 			throws SAXException {
 		if (DOMAIN.equals(localName)) {
-			prop.setProperty("blacktie.domain.name", value);
+			prop.setProperty("blacktie.domain.name", getenv(value));
 		} else if (SERVICE_NAME.equals(localName)) {
 			serviceName = null;
 		}
