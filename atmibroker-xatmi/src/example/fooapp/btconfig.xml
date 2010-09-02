@@ -20,13 +20,13 @@
 	<DOMAIN>fooapp</DOMAIN>
 	
 	<MACHINES>
-		<MACHINE id="default1" hostname="REPLACE_WITH_HOSTNAME"
-			pathToExecutable="REPLACE_WITH_INSTALL_LOCATION/examples/xatmi/fooapp/server"
-			workingDirectory="REPLACE_WITH_INSTALL_LOCATION/examples/xatmi/fooapp"
+		<MACHINE id="default1" hostname="${HOSTNAME}"
+			pathToExecutable="${BLACKTIE_HOME}/examples/xatmi/fooapp/server"
+			workingDirectory="${BLACKTIE_HOME}/examples/xatmi/fooapp"
 			serverId="1" />
-		<MACHINE id="default2" hostname="REPLACE_WITH_HOSTNAME"
-			pathToExecutable="REPLACE_WITH_INSTALL_LOCATION/examples/xatmi/fooapp/server"
-			workingDirectory="REPLACE_WITH_INSTALL_LOCATION/examples/xatmi/fooapp"
+		<MACHINE id="default2" hostname="${HOSTNAME}"
+			pathToExecutable="${BLACKTIE_HOME}/examples/xatmi/fooapp/server"
+			workingDirectory="${BLACKTIE_HOME}/examples/xatmi/fooapp"
 			serverId="2" />
 	</MACHINES>
 	<SERVERS>
@@ -38,9 +38,9 @@
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>
-	<ORB OPT="-ORBInitRef NameService=corbaloc::REPLACE_WITH_HOSTNAME:3528/NameService"
+	<ORB OPT="-ORBInitRef NameService=corbaloc::${HOSTNAME}:3528/NameService"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
-	<MQ HOST="REPLACE_WITH_HOSTNAME" PORT="61613" USER="guest" PASSWORD="guest"
+	<MQ HOST="${HOSTNAME}" PORT="61613" USER="guest" PASSWORD="guest"
 		 RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" />
-	<JMX url="service:jmx:rmi:///jndi/rmi://REPLACE_WITH_HOSTNAME:1090/jmxconnector" />
+	<JMX url="service:jmx:rmi:///jndi/rmi://${HOSTNAME}:1090/jmxconnector" />
 </ENVIRONMENT>

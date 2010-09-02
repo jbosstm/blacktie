@@ -19,9 +19,9 @@
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>integration</DOMAIN>
 	<MACHINES>
-		<MACHINE id="default1" hostname="REPLACE_WITH_HOSTNAME"
-			pathToExecutable="REPLACE_WITH_INSTALL_LOCATION/examples/integration1/xatmi_service/server"
-			workingDirectory="REPLACE_WITH_INSTALL_LOCATION/examples/integration1/xatmi_service"
+		<MACHINE id="default1" hostname="${HOSTNAME}"
+			pathToExecutable="${BLACKTIE_HOME}/examples/integration1/xatmi_service/server"
+			workingDirectory="${BLACKTIE_HOME}/examples/integration1/xatmi_service"
 			serverId="1" />
 	</MACHINES>
 	<SERVERS>
@@ -34,12 +34,12 @@
 		</SERVER>
 	</SERVERS>
 	<ORB
-		OPT="-ORBInitRef NameService=corbaloc::REPLACE_WITH_HOSTNAME:3528/NameService"
+		OPT="-ORBInitRef NameService=corbaloc::${HOSTNAME}:3528/NameService"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
-	<MQ HOST="REPLACE_WITH_HOSTNAME" PORT="61613" USER="guest" PASSWORD="guest"
+	<MQ HOST="${HOSTNAME}" PORT="61613" USER="guest" PASSWORD="guest"
 		 RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" />
 	<JMX
-		url="service:jmx:rmi:///jndi/rmi://REPLACE_WITH_HOSTNAME:1090/jmxconnector" />
+		url="service:jmx:rmi:///jndi/rmi://${HOSTNAME}:1090/jmxconnector" />
 	<BUFFERS>
 		<BUFFER name="debit">
 			<ATTRIBUTE id="acct_no" type="long" />

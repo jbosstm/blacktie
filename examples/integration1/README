@@ -24,8 +24,7 @@ This example shows how a C client can invoke an EJB within the scope of the same
 
 1. SET ENVIRONMENT VARIABLES
 In order to run the example you need to make sure that you have set the environment
-appropriately. You will need to make sure that you edit the variables with values 
-starting with REPLACE_WITH_: 
+variables HOSTNAME and BLACKTIE_HOME appropriately.
 On Linux you need to edit:
 	$BLACKTIE_HOME/setenv.sh
 On Windows:
@@ -81,8 +80,6 @@ C:\blacktie\dist\blacktie-2.0.0.CR2-SNAPSHOT\bin\generate-executables.xml:144: C
 
 4.2. RUN THE SERVER
 cd into xatmi_service
-Edit the btconfig.xml to set REPLACE_WITH_INSTALL_LOCATION as appropriate
-Edit the btconfig.xml to set REPLACE_WITH_HOSTNAME as appropriate
 btadmin startup
 NOTE: If you get the following error you have not started the JBoss server:
 2009-06-23 08:51:51,270 [0x7f627be63750] ERROR AtmiBrokerServer          - serverinit - Unexpected CORBA exception: TRANSIENT
@@ -100,8 +97,6 @@ make clean log4cxx.properties client
 
 4.3 SHUTDOWN THE SERVER
 cd into xatmi_service
-Edit the btconfig.xml to set REPLACE_WITH_INSTALL_LOCATION as appropriate
-Edit the btconfig.xml to set REPLACE_WITH_HOSTNAME as appropriate
 btadmin shutdown
 NOTE: If you get the following error you have not started the JBoss server:
 2009-06-23 08:51:51,270 [0x7f627be63750] ERROR AtmiBrokerServer          - serverinit - Unexpected CORBA exception: TRANSIENT

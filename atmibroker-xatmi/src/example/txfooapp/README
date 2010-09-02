@@ -85,7 +85,8 @@ db2 => quit
 =======================
 
 Make sure your environment is suitable for running BlackTie applications by sourcing the setenv scripts
-that came with the BlackTie distribution. On linux systems source:
+that came with the BlackTie distribution (this includes setting the evironment variables 
+HOSTNAME and BLACKTIE_HOME). On linux systems source:
     $BLACKTIE_HOME/setenv
 and on windows execute:
     %BLACKTIE_HOME%\setenv.bat
@@ -219,8 +220,6 @@ As above with:
 3.1 START THE SERVER
 ====================
 NOTE: You must NOT have ORACLE_SID set as we are using two resource managers in this example
-Edit the btconfig.xml to set REPLACE_WITH_INSTALL_LOCATION as appropriate
-Edit the btconfig.xml to set REPLACE_WITH_HOSTNAME as appropriate
 export BLACKTIE_CONFIGURATION=<win32|linux>
 export BLACKTIE_CONFIGURATION_DIR=serv
 btadmin startup
@@ -329,7 +328,7 @@ or needs to use a CORBA implementaton repository:
 - to use the same end point add something similar to the following in the ORBOPT environment entry (the portspan is required
 since the server can start more than one orb so a range of ports is necessary):
 	<NAME>ORBOPT</NAME>
-    <VALUE>-ORBListenEndpoints iiop://REPLACE_WITH_HOSTNAME:9032/portspan=10 -ORBInitRef ...</VALUE>
+    <VALUE>-ORBListenEndpoints iiop://${HOSTNAME}:9032/portspan=10 -ORBInitRef ...</VALUE>
 - or to use an implementation repository:
 	<NAME>ORBOPT</NAME>
 	<VALUE>-ORBUseImR 1 -ORBInitRef ...</VALUE>

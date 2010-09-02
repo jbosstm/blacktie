@@ -20,8 +20,7 @@ NOTE: If you are using IPv6 you will need to change any references to localhost 
 
 1. SET ENVIRONMENT VARIABLES
 In order to run the example you need to make sure that you have set the environment
-appropriately. You will need to make sure that you edit the variables with values 
-starting with REPLACE_WITH_: 
+variables HOSTNAME and BLACKTIE_HOME appropriately.
 On Linux you need to edit:
 	$BLACKTIE_HOME/setenv.sh
 On Windows:
@@ -42,7 +41,6 @@ generate_client -Dclient.includes=client.c
 
 
 4 RUN THE CLIENT
-Edit the btconfig.xml to set REPLACE_WITH_HOSTNAME as appropriate
 ./client
 NOTE: If you get the following error you have not sourced setenv.sh|bat
 ./client: error while loading shared libraries: libTAO_CosNaming.so.1.6.7: cannot open shared object file: No such file or directory

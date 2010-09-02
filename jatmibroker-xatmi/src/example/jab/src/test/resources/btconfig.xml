@@ -18,9 +18,9 @@
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
-	<ORB OPT="-ORBInitRef NameService=corbaloc::REPLACE_WITH_HOSTNAME:3528/NameService"
+	<ORB OPT="-ORBInitRef NameService=corbaloc::${HOSTNAME}:3528/NameService"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
-	<MQ HOST="REPLACE_WITH_HOSTNAME" PORT="61613" USER="guest" PASSWORD="guest"
+	<MQ HOST="${HOSTNAME}" PORT="61613" USER="guest" PASSWORD="guest"
 		 RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10"
-		NAMING_URL="jnp://REPLACE_WITH_HOSTNAME:1099" />
+		NAMING_URL="jnp://${HOSTNAME}:1099" />
 </ENVIRONMENT>

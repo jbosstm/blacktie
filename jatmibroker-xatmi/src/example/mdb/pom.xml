@@ -108,7 +108,7 @@
 						</goals>
 						<configuration>
 							<fileName>${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar</fileName>
-							<hostName>REPLACE_WITH_HOSTNAME</hostName>
+							<hostName>${env.HOSTNAME}</hostName>
 						</configuration>
 					</execution>
 					<execution>
@@ -119,7 +119,7 @@
 						</goals>
 						<configuration>
 							<fileName>${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar</fileName>
-							<hostName>REPLACE_WITH_HOSTNAME</hostName>
+							<hostName>${env.HOSTNAME}</hostName>
 						</configuration>
 					</execution>
 				</executions>

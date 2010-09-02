@@ -31,8 +31,7 @@ queues.
 
 2. SET ENVIRONMENT VARIABLES
 In order to run the example you need to make sure that you have set the environment
-appropriately. You will need to make sure that you edit the variables with values 
-starting with REPLACE_WITH_: 
+variables HOSTNAME and BLACKTIE_HOME appropriately.
 On Linux you need to edit:
 	$BLACKTIE_HOME/setenv.sh
 On Windows:
@@ -97,8 +96,6 @@ NOTE: If you get the following error you have not sourced setenv.sh|bat
 ./<EXECUTABLE>: error while loading shared libraries: libTAO_CosNaming.so.1.6.7: cannot open shared object file: No such file or directoryI
 
 7.1 RUN THE SERVER
-Edit the btconfig.xml to set REPLACE_WITH_INSTALL_LOCATION as appropriate
-Edit the btconfig.xml to set REPLACE_WITH_HOSTNAME as appropriate
 export BLACKTIE_CONFIGURATION_DIR=serv
 btadmin startup secure
 NOTE: If you get the following error you have not started the JBoss server:

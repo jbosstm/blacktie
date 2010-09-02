@@ -20,9 +20,9 @@
 	<DOMAIN>fooapp</DOMAIN>
 	
 	<MACHINES>
-		<MACHINE id="default1" hostname="REPLACE_WITH_HOSTNAME"
-			pathToExecutable="REPLACE_WITH_INSTALL_LOCATION/examples/xatmi/txfooapp/server"
-			workingDirectory="REPLACE_WITH_INSTALL_LOCATION/examples/xatmi/txfooapp"
+		<MACHINE id="default1" hostname="${HOSTNAME}"
+			pathToExecutable="${BLACKTIE_HOME}/examples/xatmi/txfooapp/server"
+			workingDirectory="${BLACKTIE_HOME}/examples/xatmi/txfooapp"
 			serverId="1" />
 	</MACHINES>
 	<SERVERS>
@@ -117,17 +117,17 @@
 			<XA_LIB_NAME>${ORACLE_HOME}/BIN/oci.dll</XA_LIB_NAME>
 		</XA_RESOURCE>
 	</XA_RESOURCES>
-	<ORB OPT="-ORBInitRef NameService=corbaloc::REPLACE_WITH_HOSTNAME:3528/NameService"
+	<ORB OPT="-ORBInitRef NameService=corbaloc::${HOSTNAME}:3528/NameService"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
 	<!--
-		OPT="-ORBListenEndpoints iiop://REPLACE_WITH_HOSTNAME:9032/portspan=10 -ORBInitRef
-		NameService=corbaloc::REPLACE_WITH_HOSTNAME:3528/NameService"
+		OPT="-ORBListenEndpoints iiop://${HOSTNAME}:9032/portspan=10 -ORBInitRef
+		NameService=corbaloc::${HOSTNAME}:3528/NameService"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" /> to start the ORB
 		on a fixed endpoint to test recovery use the following:
 	-->
-	<MQ HOST="REPLACE_WITH_HOSTNAME" PORT="61613" USER="guest" PASSWORD="guest"
+	<MQ HOST="${HOSTNAME}" PORT="61613" USER="guest" PASSWORD="guest"
 		 RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" />
-	<JMX url="service:jmx:rmi:///jndi/rmi://REPLACE_WITH_HOSTNAME:1090/jmxconnector"/>
+	<JMX url="service:jmx:rmi:///jndi/rmi://${HOSTNAME}:1090/jmxconnector"/>
 
 	<BUFFERS>
 		<BUFFER name="test_req">

@@ -22,7 +22,7 @@ NOTE: If you are using IPv6 you will need to change any references to localhost 
 Follow the instructions in $BLACKTIE_HOME/samples/xatmi/fooapp to start a server  
 
 2. COMPILE AND RUN THE JAB APPLICATION
-Edit the src/test/resources/btconfig.xml to set REPLACE_WITH_HOSTNAME as appropriate
+Make sure the environment variables HOSTNAME and BLACKTIE_HOME are set as appropriate.
 After the dependencies are installed you can then run the example using the following command:
 mvn test
 
