@@ -28,6 +28,13 @@
 				<include name="*/setenv.*"/>
 			</fileset>
 		</replaceregexp>
+		<replaceregexp byline="true" match="REPLACE_WITH_JBOSSAS_IP_ADDR" replace="${JBOSSAS_IP_ADDR}">
+			<fileset dir="${BT_HOME}/">
+				<include name="*/setenv.*"/>
+			</fileset>
+		</replaceregexp>
+
+		<!--
 		<replaceregexp byline="true" match="\$\{BLACKTIE_HOME\}" replace="${BT_HOME}${VERSION}">
 			<fileset dir="${BT_HOME}/">
 				<include name="**/btconfig.xml"/>
@@ -48,11 +55,7 @@
 				<include name="**/btconfig.xml"/>
 			</fileset>
 		</replaceregexp>
-		<replaceregexp byline="true" match="\$\{HOSTNAME\}" replace="${JBOSSAS_IP_ADDR}">
-			<fileset dir="${BT_HOME}${VERSION}/">
-				<include name="**/pom.xml"/>
-			</fileset>
-		</replaceregexp>
+		-->
 		<replaceregexp byline="true" match="localhost" replace="${JBOSSAS_IP_ADDR}">
 			<fileset dir="${BT_HOME}${VERSION}">
 				<include name="**/examples/admin/jmx/src/test/java/org/jboss/blacktie/examples/jmx/*.java"/>

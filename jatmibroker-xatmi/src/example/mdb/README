@@ -16,11 +16,12 @@ MA  02110-1301, USA.
 
 NOTE: You may like to create a backup of this folder before starting!
 
-NOTE: If you are using IPv6 you will need to change any references to localhost in the btconfig.xmlles to be localhost4 or 127.0.0.1
+NOTE: If you are using IPv6 you will need to change any references to localhost in the btconfig.xml
+config files to be localhost4 or 127.0.0.1
 
 1. SET ENVIRONMENT VARIABLES
 In order to run the example you need to make sure that you have set the environment
-variables HOSTNAME and BLACKTIE_HOME appropriately.
+variables BLACKTIE_HOME and JBOSSAS_IP_ADDR appropriately.
 On Linux you need to edit:
 	$BLACKTIE_HOME/setenv.sh
 On Windows:
@@ -30,9 +31,6 @@ Then, execute the script setenv
 2. RUN THE EXAMPLE
 This example makes use of maven to build, deploy and test an XATMI service deployed 
 as an MDB.
-
-Edit the following files to set REPLACE_WITH_HOSTNAME as appropriate:
-	pom.xml
 
 After the dependencies are installed you can then run the example using the following command:
 	mvn install

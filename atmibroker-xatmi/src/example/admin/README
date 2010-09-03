@@ -20,7 +20,7 @@ NOTE: If you are using IPv6 you will need to change any references to localhost 
 
 1. SET ENVIRONMENT VARIABLES
 In order to run the example you need to make sure that you have set the environment
-variables HOSTNAME and BLACKTIE_HOME appropriately.
+variables JBOSSAS_IP_ADDR and BLACKTIE_HOME appropriately.
 On Linux you need to edit:
 	$BLACKTIE_HOME/setenv.sh
 On Windows:
