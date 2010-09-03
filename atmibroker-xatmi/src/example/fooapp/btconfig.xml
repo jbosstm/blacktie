@@ -38,9 +38,9 @@
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>
-	<ORB OPT="-ORBInitRef NameService=corbaloc::${HOSTNAME}:3528/NameService"
+	<ORB OPT="-ORBInitRef NameService=corbaloc::${JBOSSAS_IP_ADDR}:3528/NameService"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
-	<MQ HOST="${HOSTNAME}" PORT="61613" USER="guest" PASSWORD="guest"
+	<MQ HOST="${JBOSSAS_IP_ADDR}" PORT="61613" USER="guest" PASSWORD="guest"
 		 RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" />
-	<JMX url="service:jmx:rmi:///jndi/rmi://${HOSTNAME}:1090/jmxconnector" />
+	<JMX url="service:jmx:rmi:///jndi/rmi://${JBOSSAS_IP_ADDR}:1090/jmxconnector" />
 </ENVIRONMENT>
