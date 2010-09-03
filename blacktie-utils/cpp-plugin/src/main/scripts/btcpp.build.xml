@@ -468,6 +468,7 @@
 			<arg value="--leak-check=full" />
 			<arg value="--log-file=${project.artifactId}-valgrind.log" />
 			<arg value="-v" />
+			<arg value="-d" />
 			<arg value="--track-origins=yes" />
 			<arg value="--show-reachable=false" />
 			<arg value="--leak-resolution=low" />
