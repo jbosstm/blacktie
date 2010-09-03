@@ -23,9 +23,13 @@
 	</target>
 
 	<target name="dist" depends="_extract-msvc,_extract-gcc">
-		<replaceregexp byline="true" match="\$\{BLACKTIE_HOME\}" replace="${BT_HOME}${VERSION}">
+		<replaceregexp byline="true" match="REPLACE_WITH_INSTALL_LOCATION" replace="${BT_HOME}${VERSION}">
 			<fileset dir="${BT_HOME}/">
 				<include name="*/setenv.*"/>
+			</fileset>
+		</replaceregexp>
+		<replaceregexp byline="true" match="\$\{BLACKTIE_HOME\}" replace="${BT_HOME}${VERSION}">
+			<fileset dir="${BT_HOME}/">
 				<include name="**/btconfig.xml"/>
 			</fileset>
 		</replaceregexp>
