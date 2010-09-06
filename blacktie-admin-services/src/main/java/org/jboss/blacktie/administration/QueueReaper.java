@@ -28,6 +28,7 @@ import javax.management.ObjectName;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.administration.core.AdministrationProxy;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
@@ -45,16 +46,16 @@ public class QueueReaper implements Runnable {
 	/** Whether the thread is executing */
 	private boolean run;
 
-	private MBeanServerConnection beanServerConnection;
-
 	private Properties prop;
 
-	public QueueReaper(MBeanServerConnection conn)
+	private AdministrationProxy administrationProxy;
+
+	public QueueReaper(AdministrationProxy administrationProxy)
 			throws ConfigurationException {
 		this.thread = new Thread(this);
 		this.thread.setDaemon(true);
 		this.thread.setPriority(Thread.MIN_PRIORITY);
-		this.beanServerConnection = conn;
+		this.administrationProxy = administrationProxy;
 
 		prop = new Properties();
 		XMLEnvHandler handler = new XMLEnvHandler(prop);
@@ -98,8 +99,9 @@ public class QueueReaper implements Runnable {
 			try {
 				ObjectName objName = new ObjectName(
 						"jboss.messaging:service=ServerPeer");
-				HashSet<Destination> dests = (HashSet<Destination>) beanServerConnection
-						.getAttribute(objName, "Destinations");
+				HashSet<Destination> dests = (HashSet<Destination>) administrationProxy
+						.getBeanServerConnection().getAttribute(objName,
+								"Destinations");
 
 				Iterator<Destination> it = dests.iterator();
 				while (it.hasNext()) {
@@ -171,8 +173,8 @@ public class QueueReaper implements Runnable {
 		ObjectName objName = new ObjectName(
 				"jboss.messaging.destination:service=Queue,name=" + prefix
 						+ serviceName);
-		Integer count = (Integer) beanServerConnection.getAttribute(objName,
-				"ConsumerCount");
+		Integer count = (Integer) administrationProxy.getBeanServerConnection()
+				.getAttribute(objName, "ConsumerCount");
 		return count.intValue();
 	}
 
@@ -193,8 +195,8 @@ public class QueueReaper implements Runnable {
 		ObjectName objName = new ObjectName(
 				"jboss.messaging.destination:service=Queue,name=" + prefix
 						+ serviceName);
-		return (Boolean) beanServerConnection.getAttribute(objName,
-				"CreatedProgrammatically");
+		return (Boolean) administrationProxy.getBeanServerConnection()
+				.getAttribute(objName, "CreatedProgrammatically");
 	}
 
 	private boolean isOlderThanReapCheck(String serviceName, long queueReapCheck) {
@@ -233,8 +235,8 @@ public class QueueReaper implements Runnable {
 
 			ObjectName objName = new ObjectName(
 					"jboss.messaging:service=ServerPeer");
-			beanServerConnection.invoke(objName, "undeployQueue",
-					new Object[] { prefix + serviceName },
+			administrationProxy.getBeanServerConnection().invoke(objName,
+					"undeployQueue", new Object[] { prefix + serviceName },
 					new String[] { "java.lang.String" });
 			result = 1;
 		} catch (Throwable t) {

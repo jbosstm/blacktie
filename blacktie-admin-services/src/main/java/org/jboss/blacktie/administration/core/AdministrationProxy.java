@@ -245,7 +245,7 @@ public class AdministrationProxy {
 		try {
 			ObjectName objName = new ObjectName(
 					"jboss.messaging:service=ServerPeer");
-			HashSet dests = (HashSet) beanServerConnection.getAttribute(
+			HashSet dests = (HashSet) getBeanServerConnection().getAttribute(
 					objName, "Destinations");
 
 			Iterator<Destination> it = dests.iterator();
@@ -280,7 +280,7 @@ public class AdministrationProxy {
 		try {
 			ObjectName objName = new ObjectName(
 					"jboss.messaging:service=ServerPeer");
-			HashSet dests = (HashSet) beanServerConnection.getAttribute(
+			HashSet dests = (HashSet) getBeanServerConnection().getAttribute(
 					objName, "Destinations");
 
 			Iterator<Destination> it = dests.iterator();
@@ -647,7 +647,7 @@ public class AdministrationProxy {
 	}
 
 	public void close() throws ConnectionException, IOException {
-		log.debug("Closed Administration Proxy");
+		log.info("Closed Administration Proxy");
 		connection.close();
 		c.close();
 	}
@@ -671,7 +671,7 @@ public class AdministrationProxy {
 			ObjectName objName = new ObjectName(
 					"jboss.messaging.destination:service=Queue,name=" + prefix
 							+ serviceName);
-			depth = (Integer) beanServerConnection.getAttribute(objName,
+			depth = (Integer) getBeanServerConnection().getAttribute(objName,
 					"MessageCount");
 		} catch (Exception e) {
 			log.error("getQueueDepth failed with " + e);

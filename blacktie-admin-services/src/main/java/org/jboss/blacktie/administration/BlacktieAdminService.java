@@ -38,7 +38,7 @@ public class BlacktieAdminService implements BlacktieAdminServiceMBean {
 	 */
 	public void start() throws Exception {
 		administrationProxy = new AdministrationProxy();
-		reaper = new QueueReaper(administrationProxy.getBeanServerConnection());
+		reaper = new QueueReaper(administrationProxy);
 		reaper.startThread();
 
 		log.info("Admin Server Started");
