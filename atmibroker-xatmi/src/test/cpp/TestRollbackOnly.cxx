@@ -79,7 +79,7 @@ void TestRollbackOnly::test_tpcall_TPETIME() {
 	BT_ASSERT(rc != -1);
 
 	BT_ASSERT(tx_open() == TX_OK);
-	// the TPETIME service sleeps for 8 so set the txn time to something smaller
+	// the TPETIME service sleeps for 10 so set the txn time to something smaller
 	BT_ASSERT(tx_set_transaction_timeout(8l) == TX_OK);
 	BT_ASSERT(tx_begin() == TX_OK);
 
