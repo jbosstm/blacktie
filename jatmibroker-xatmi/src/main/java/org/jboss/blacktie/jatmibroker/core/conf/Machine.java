@@ -20,6 +20,7 @@ package org.jboss.blacktie.jatmibroker.core.conf;
 public class Machine {
 	private String id;
 	private String hostname;
+	private String ipAddress;
 	private String pathToExecutable;
 	private String workingDirectory;
 	private int serverId;
@@ -44,6 +45,14 @@ public class Machine {
 
 	public String getPathToExecutable() {
 		return pathToExecutable;
+	}
+
+	public String getIpAddress() {
+		return ipAddress;
+	}
+
+	public void setIpAddress(String ipAddress) {
+		this.ipAddress = ipAddress;
 	}
 
 	public void setPathToExecutable(String pathToExecutable) {

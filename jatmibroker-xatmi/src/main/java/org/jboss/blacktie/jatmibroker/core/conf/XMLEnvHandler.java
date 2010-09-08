@@ -357,6 +357,8 @@ public class XMLEnvHandler extends DefaultHandler {
 					machine.setId(avalue);
 				} else if (atts.getLocalName(i).equals("hostname")) {
 					machine.setHostname(avalue);
+				} else if (atts.getLocalName(i).equals("ipAddress")) {
+					machine.setIpAddress(avalue);
 				} else if (atts.getLocalName(i).equals("pathToExecutable")) {
 					machine.setPathToExecutable(avalue);
 				} else if (atts.getLocalName(i).equals("workingDirectory")) {

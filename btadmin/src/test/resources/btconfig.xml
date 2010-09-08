@@ -28,11 +28,11 @@
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="2" />
-		<MACHINE id="secure3" hostname="localhost.localdomain"
+		<MACHINE id="secure3" ipAddress="127.0.0.1"
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="1" />
-		<MACHINE id="secure4" hostname="localhost.localdomain"
+		<MACHINE id="secure4" ipAddress="127.0.0.1"
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="2" />
@@ -60,27 +60,11 @@
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="2" />
-		<MACHINE id="secure11" hostname="dev1"
+		<MACHINE id="secure11" hostname="tarrytown"
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="1" />
-		<MACHINE id="secure12" hostname="dev1"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="2" />
-		<MACHINE id="secure13" hostname="tarrytown"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="1" />
-		<MACHINE id="secure14" hostname="tarrytown"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="2" />
-		<MACHINE id="secure15" hostname="clance"
-			pathToExecutable="../cs"
-			workingDirectory="."
-			serverId="1" />
-		<MACHINE id="secure16" hostname="clance"
+		<MACHINE id="secure12" hostname="tarrytown"
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="2" />
@@ -99,10 +83,6 @@
 			<MACHINE-REF id="secure10" />
 			<MACHINE-REF id="secure11" />
 			<MACHINE-REF id="secure12" />
-			<MACHINE-REF id="secure13" />
-			<MACHINE-REF id="secure14" />
-			<MACHINE-REF id="secure15" />
-			<MACHINE-REF id="secure16" />
 			<SERVICE_NAMES>
 				<SERVICE name='PBF' />
 				<SERVICE name='BAR' advertised="false" size="1">

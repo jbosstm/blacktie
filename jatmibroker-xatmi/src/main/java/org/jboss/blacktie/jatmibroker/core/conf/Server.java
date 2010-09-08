@@ -47,11 +47,12 @@ public class Server {
 	public List<Machine> getLocalMachine() throws UnknownHostException {
 		List<Machine> toReturn = new ArrayList<Machine>();
 		String hostname = InetAddress.getLocalHost().getHostName();
-		log.debug("Checking for host: " + hostname);
+		String ipAddress = InetAddress.getLocalHost().getHostAddress();
+		log.info("Checking for host: " + hostname + " or ip: " + ipAddress);
 		Iterator<Machine> iterator = machines.iterator();
 		while (iterator.hasNext()) {
 			Machine next = iterator.next();
-			if (next.getHostname().equals(hostname)) {
+			if (next.getHostname().equals(hostname) || next.getIpAddress().equals(ipAddress)) {
 				toReturn.add(next);
 			}
 		}
