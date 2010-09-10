@@ -71,8 +71,6 @@
 		</license>
 	</licenses>
 	<repositories>
-
-	<repositories>
 		<repository>
 			<id>jboss-public-repository-group</id>
 			<name>JBoss Public Repository Group</name>
