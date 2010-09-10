@@ -80,11 +80,11 @@ IF %ERRORLEVEL% NEQ 0 exit -1
 rem CREATE BLACKTIE DISTRIBUTION
 cd %WORKSPACE%\trunk\scripts\test
 for /f "delims=" %%a in ('hostname') do @set MACHINE_ADDR=%%a
-call ant dist -DBT_HOME=%BT_HOME% -DVERSION=blacktie-2.0.0.CR2 -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR% -DMACHINE_ADDR=%MACHINE_ADDR%
+call ant dist -DBT_HOME=%BT_HOME% -DVERSION=blacktie-3.0.0.M1-SNAPSHOT -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR% -DMACHINE_ADDR=%MACHINE_ADDR%
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem RUN THE SAMPLES
-cd %WORKSPACE%\trunk\dist\blacktie-2.0.0.CR2
+cd %WORKSPACE%\trunk\dist\blacktie-3.0.0.M1-SNAPSHOT
 IF %ERRORLEVEL% NEQ 0 exit -1
 set ORACLE_HOME=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2
 set TNS_ADMIN=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2\network\admin

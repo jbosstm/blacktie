@@ -70,13 +70,13 @@ fi
 
 # INITIALIZE THE BLACKTIE DISTRIBUTION
 cd $WORKSPACE/trunk/scripts/test
-ant dist -DBT_HOME=$WORKSPACE/trunk/dist/ -DVERSION=blacktie-2.0.0.CR2 -DMACHINE_ADDR=`hostname` -DJBOSSAS_IP_ADDR=localhost -Dbpa=centos54x64
+ant dist -DBT_HOME=$WORKSPACE/trunk/dist/ -DVERSION=blacktie-3.0.0.M1-SNAPSHOT -DMACHINE_ADDR=`hostname` -DJBOSSAS_IP_ADDR=localhost -Dbpa=centos54x64
 if [ "$?" != "0" ]; then
 	exit -1
 fi
 
 # RUN ALL THE SAMPLES
-cd $WORKSPACE/trunk/dist/blacktie-2.0.0.CR2/
+cd $WORKSPACE/trunk/dist/blacktie-3.0.0.M1-SNAPSHOT/
 . setenv.sh
 if [ "$?" != "0" ]; then
 	exit -1
@@ -86,7 +86,7 @@ export ORACLE_LIB_DIR=/usr/lib/oracle/11.2/client64/lib
 export ORACLE_INC_DIR=/usr/include/oracle/11.2/client64
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_LIB_DIR
 export TNS_ADMIN=$WORKSPACE/instantclient_11_2/network/admin
-./run_all_samples.sh tx
+./run_all_samples.sh
 if [ "$?" != "0" ]; then
 	exit -1
 fi
