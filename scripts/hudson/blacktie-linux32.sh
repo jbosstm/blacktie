@@ -70,13 +70,13 @@ fi
 
 # INITIALIZE THE BLACKTIE DISTRIBUTION
 cd $WORKSPACE/trunk/scripts/test
-ant dist -DBT_HOME=$WORKSPACE/trunk/dist/ -DVERSION=blacktie-2.0.0.CR2-SNAPSHOT -DMACHINE_ADDR=`hostname` -DJBOSSAS_IP_ADDR=localhost -Dbpa=centos55x32
+ant dist -DBT_HOME=$WORKSPACE/trunk/dist/ -DVERSION=blacktie-2.0.0.CR2 -DMACHINE_ADDR=`hostname` -DJBOSSAS_IP_ADDR=localhost -Dbpa=centos55x32
 if [ "$?" != "0" ]; then
 	exit -1
 fi
 
 # RUN ALL THE SAMPLES
-cd $WORKSPACE/trunk/dist/blacktie-2.0.0.CR2-SNAPSHOT/
+cd $WORKSPACE/trunk/dist/blacktie-2.0.0.CR2/
 . setenv.sh
 if [ "$?" != "0" ]; then
 	exit -1

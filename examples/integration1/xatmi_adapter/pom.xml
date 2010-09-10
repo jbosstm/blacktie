@@ -26,7 +26,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.blacktie.examples</groupId>
 	<artifactId>integration1-xatmi_adapter</artifactId>
-	<version>2.0.0.CR2-SNAPSHOT</version>
+	<version>2.0.0.CR2</version>
 	<packaging>ejb</packaging>
 	<name>Integration 1 - Example XATMI Adapter</name>
 	<developers>
@@ -105,13 +105,13 @@
 		<dependency>
 			<groupId>org.jboss.blacktie.examples</groupId>
 			<artifactId>integration1-ejb</artifactId>
-			<version>2.0.0.CR2-SNAPSHOT</version>
+			<version>2.0.0.CR2</version>
 			<classifier>client</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>jatmibroker-xatmi</artifactId>
-			<version>2.0.0.CR2-SNAPSHOT</version>
+			<version>2.0.0.CR2</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>

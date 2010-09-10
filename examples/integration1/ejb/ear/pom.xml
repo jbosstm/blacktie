@@ -21,7 +21,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.blacktie.examples</groupId>
 	<artifactId>integration1-ejb-ear</artifactId>
-	<version>2.0.0.CR2-SNAPSHOT</version>
+	<version>2.0.0.CR2</version>
 	<name>Integration1 - Example EJB Ear</name>
 	<packaging>ear</packaging>
 	<developers>
@@ -111,7 +111,7 @@
 		<dependency>
 			<groupId>org.jboss.blacktie.examples</groupId>
 			<artifactId>integration1-ejb</artifactId>
-			<version>2.0.0.CR2-SNAPSHOT</version>
+			<version>2.0.0.CR2</version>
 		</dependency>
 	</dependencies>
 </project>
