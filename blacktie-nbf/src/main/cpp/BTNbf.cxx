@@ -15,32 +15,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef NBF_PARSER_H
-#define NBF_PARSER_H
-#include <xercesc/util/PlatformUtils.hpp>
-#include <xercesc/parsers/SAXParser.hpp>
-#include <log4cxx/logger.h>
+#include "btnbf.h"
+#include "log4cxx/logger.h"
+#include "NBFParser.h"
 
-#if defined(XERCES_NEW_IOSTREAMS)
-#include <iostream>
-#include <fstream>
-#else
-#include <iostream.h>
-#include <fstream.h>
-#endif
+log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("BTNbf"));
 
-#include <NBFParserHandlers.h>
+int btgetattribute(char* buf, char* attributeId, int attributeIndex, char* attributeValue, int* len) {
+	LOG4CXX_TRACE(logger, (char*) "btgetattribute");
+	int rc = -1;
+	bool result;
+	NBFParser nbf;
+	NBFParserHandlers handler(attributeId, attributeIndex);
 
-class NBFParser {
-public:
-	NBFParser();
-	~NBFParser();
-	bool parse(const char* buf, const char* id, NBFParserHandlers* handler);
+	result = nbf.parse(buf, "btnbf", &handler);
+	if(result) {
+		LOG4CXX_DEBUG(logger, (char*) "find attributeId:" << attributeId
+					<< " at " << attributeIndex);
 
-private:
-	bool isInitial;
-	SAXParser* parser;
-	static log4cxx::LoggerPtr logger;
-};
+		const char* value = handler.getValue();
+		strcpy(attributeValue, value);
+		*len = strlen(value);
+		rc = 0;
+	}
 
-#endif
+	return rc;
+}

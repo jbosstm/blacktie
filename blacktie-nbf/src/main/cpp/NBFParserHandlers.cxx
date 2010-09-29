@@ -24,18 +24,57 @@
 log4cxx::LoggerPtr NBFParserHandlers::logger(
 		log4cxx::Logger::getLogger("NBFParserHandlers"));
 
-NBFParserHandlers::NBFParserHandlers() {
+NBFParserHandlers::NBFParserHandlers(const char* attrName, int index) {
+	if(attrName != NULL) {
+		this->attrName = strdup(attrName);
+	} else {
+		this->attrName = NULL;
+	}
+	this->attrValue = NULL;
+	this->index = index;
+	this->curIndex = -1;
+	this->found = false;
 }
 
 NBFParserHandlers::~NBFParserHandlers() {
+	if(attrName != NULL) {
+		free(attrName);
+	}
+
+	if(attrValue != NULL) {
+		free(attrValue);
+	}
 }
 
-void NBFParserHandlers::startElement(const XMLCh* const name,
-									 AttributeList& attributes) {
+char* NBFParserHandlers::getValue() {
+	return attrValue;
+}
+
+void NBFParserHandlers::startElement(const XMLCh* const name, AttributeList& attributes) {
+	const char* qname = StrX(name).localForm();
+	LOG4CXX_DEBUG(logger, "name:" << qname);
+	if(strcmp(qname, attrName) == 0) {
+		found = true;
+		curIndex ++;
+	}
+}
+
+void NBFParserHandlers::endElement( const XMLCh* const name) {
+	const char* qname = StrX(name).localForm();
+	LOG4CXX_DEBUG(logger, "name:" << qname);
+	if(strcmp(qname, attrName) == 0) {
+		found = false;
+	}
 }
 
 void NBFParserHandlers::characters(const XMLCh* const name,
 								  const XMLSize_t length) {
+	const char* value = StrX(name).localForm();
+
+	if(found && curIndex == index) {
+		LOG4CXX_DEBUG(logger, "find value " << value << " at index " << index);
+		attrValue = strdup(value);
+	}
 }
 
 void NBFParserHandlers::resetDocument() {

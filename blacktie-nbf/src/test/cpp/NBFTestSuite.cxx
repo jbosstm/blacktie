@@ -15,32 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef NBF_PARSER_H
-#define NBF_PARSER_H
-#include <xercesc/util/PlatformUtils.hpp>
-#include <xercesc/parsers/SAXParser.hpp>
-#include <log4cxx/logger.h>
-
-#if defined(XERCES_NEW_IOSTREAMS)
-#include <iostream>
-#include <fstream>
-#else
-#include <iostream.h>
-#include <fstream.h>
-#endif
-
-#include <NBFParserHandlers.h>
-
-class NBFParser {
-public:
-	NBFParser();
-	~NBFParser();
-	bool parse(const char* buf, const char* id, NBFParserHandlers* handler);
-
-private:
-	bool isInitial;
-	SAXParser* parser;
-	static log4cxx::LoggerPtr logger;
-};
-
-#endif
+#include "TestNBFParser.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestNBFParser );
+#include "TestBTNbf.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestBTNbf );

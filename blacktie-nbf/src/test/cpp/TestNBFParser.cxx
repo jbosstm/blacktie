@@ -15,32 +15,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef NBF_PARSER_H
-#define NBF_PARSER_H
-#include <xercesc/util/PlatformUtils.hpp>
-#include <xercesc/parsers/SAXParser.hpp>
-#include <log4cxx/logger.h>
+#include "userlogc.h"
+#include "TestAssert.h"
 
-#if defined(XERCES_NEW_IOSTREAMS)
-#include <iostream>
-#include <fstream>
-#else
-#include <iostream.h>
-#include <fstream.h>
-#endif
+#include "TestNBFParser.h"
+#include "NBFParser.h"
 
-#include <NBFParserHandlers.h>
-
-class NBFParser {
-public:
-	NBFParser();
-	~NBFParser();
-	bool parse(const char* buf, const char* id, NBFParserHandlers* handler);
-
-private:
-	bool isInitial;
-	SAXParser* parser;
-	static log4cxx::LoggerPtr logger;
-};
-
-#endif
+void TestNBFParser::test_string_buf() {
+	userlogc((char*) "test_string_buf");
+	char* buf = (char*)
+		"<?xml version='1.0' ?> \
+			<employee xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\
+				xmlns=\"http://www.jboss.org/blacktie\" \
+				xsi:schemaLocation=\"http://www.jboss.org/blacktie buffers/employee.xsd\"> \
+				<name>zhfeng</name> \
+			</employee>";
+	NBFParser nbf;
+	NBFParserHandlers handler("name", 0);
+	BT_ASSERT(nbf.parse(buf, "employee", &handler));
+}

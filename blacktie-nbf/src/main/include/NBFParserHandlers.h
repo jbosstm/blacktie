@@ -51,11 +51,12 @@ XERCES_CPP_NAMESPACE_END
 
 class NBFParserHandlers : public HandlerBase {
 public:
-	NBFParserHandlers();
+	NBFParserHandlers(const char* attrName, int index);
 	~NBFParserHandlers();
 
 	// Handlers for the SAX DocumentHandler interface
 	void startElement(const XMLCh* const name, AttributeList& attributes);
+	void endElement(const XMLCh* const name);
 	void characters(const XMLCh* const chars, const XMLSize_t length);
 	void resetDocument();
 	
@@ -64,7 +65,14 @@ public:
 	void error(const SAXParseException& exc);
 	void fatalError(const SAXParseException& exc);
 
+	char* getValue();
+
 private:
 	static log4cxx::LoggerPtr logger;
+	char* attrName;
+	char* attrValue;
+	int   index;
+	int   curIndex;
+	bool  found;
 };
 #endif

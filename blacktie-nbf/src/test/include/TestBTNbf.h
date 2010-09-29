@@ -15,32 +15,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#ifndef NBF_PARSER_H
-#define NBF_PARSER_H
-#include <xercesc/util/PlatformUtils.hpp>
-#include <xercesc/parsers/SAXParser.hpp>
-#include <log4cxx/logger.h>
+#ifndef _TEST_BTNBF_H
+#define _TEST_BTNBF_H
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFixture.h>
 
-#if defined(XERCES_NEW_IOSTREAMS)
-#include <iostream>
-#include <fstream>
-#else
-#include <iostream.h>
-#include <fstream.h>
-#endif
-
-#include <NBFParserHandlers.h>
-
-class NBFParser {
+class TestBTNbf: public CppUnit::TestFixture {
+	CPPUNIT_TEST_SUITE( TestBTNbf );
+	CPPUNIT_TEST( test_getattribute );
+	CPPUNIT_TEST_SUITE_END();
 public:
-	NBFParser();
-	~NBFParser();
-	bool parse(const char* buf, const char* id, NBFParserHandlers* handler);
-
-private:
-	bool isInitial;
-	SAXParser* parser;
-	static log4cxx::LoggerPtr logger;
+	void test_getattribute();
 };
 
 #endif

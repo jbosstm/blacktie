@@ -27,7 +27,8 @@ NBFParser::NBFParser() {
 	try {
 		XMLPlatformUtils::Initialize();
 		isInitial = true;
-		SAXParser* parser = new SAXParser;
+		parser = new SAXParser;
+
 		parser->setValidationScheme(SAXParser::Val_Auto);
 		parser->setDoNamespaces(true);
 		parser->setDoSchema(true);
@@ -42,13 +43,41 @@ NBFParser::NBFParser() {
 }
 
 NBFParser::~NBFParser() {
-	XMLPlatformUtils::Terminate();
 	if(parser != NULL) {
 		delete parser;
 		LOG4CXX_DEBUG(logger, "release parser");
 	}
+	XMLPlatformUtils::Terminate();
 }
 
-bool NBFParser::parse(const char* buf) {
-	return false;
+bool NBFParser::parse(const char* buf, const char* id, NBFParserHandlers* handler) {
+	bool result = false;
+
+	if(isInitial && parser != NULL) {
+		parser->setDocumentHandler(handler);
+		parser->setErrorHandler(handler);
+		MemBufInputSource* memBufIS = new MemBufInputSource (
+				(const XMLByte*) buf,
+				strlen(buf),
+				id,
+				false);
+		int errorCount = 0;
+		try {
+			parser->parse(*memBufIS);
+			errorCount = parser->getErrorCount();
+			if (!errorCount) {
+				LOG4CXX_DEBUG(logger, "parse buf OK");
+				result = true;
+			}
+		} catch (const OutOfMemoryException&) {
+			LOG4CXX_ERROR(logger, (char*) "OutOfMemoryException");
+		} catch (const XMLException& e) {
+			LOG4CXX_ERROR(logger, (char*) "parsing exception message is "
+					<< StrX(e.getMessage()));
+		}
+
+		delete memBufIS;
+	}
+
+	return result;
 }

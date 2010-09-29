@@ -25,7 +25,7 @@
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>blacktie-pbf</artifactId>
+	<artifactId>blacktie-nbf</artifactId>
 	<name>Blacktie Nested Buffer Format</name>
 	<packaging>jar</packaging>
 
