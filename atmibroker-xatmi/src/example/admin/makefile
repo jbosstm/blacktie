@@ -1,6 +1,6 @@
 all: client
 
-client: 	
+client: 
 	$($(shell generate_client -Dclient.includes=client.c))
 
 clean:
