@@ -42,15 +42,15 @@ Undeploy any older versions of the blacktie admin service
 Copy the file $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all/deploy
 Copy the file $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml into $JBOSS_HOME/server/all/conf
 
-
-5. RUN THE APPLICATION SERVER
+4. RUN THE APPLICATION SERVER
 Make sure that the naming, messaging and transaction services are running, by running the JBoss server:
 <JBOSS_HOME>/bin/run.sh|bat -c all
 
-6. DEPLOY THE QUEUE
-Copy TestOne-service.xml into $JBOSS_HOME/server/all/deploy
+5. DEPLOY THE QUEUE
+Since the server will not be available when the client runs the queue must be deployed beforehand:
+	copy TestOne-service.xml into $JBOSS_HOME/server/all/deploy
 
-7 RUN THE APPLICATION
+6 RUN THE APPLICATION
 
 export BLACKTIE_SERVER_ID=1	# automatically starts a server running when tpadvertise is called
 ./client
