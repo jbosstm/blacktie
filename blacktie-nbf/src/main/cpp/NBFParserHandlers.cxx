@@ -51,7 +51,8 @@ char* NBFParserHandlers::getValue() {
 }
 
 void NBFParserHandlers::startElement(const XMLCh* const name, AttributeList& attributes) {
-	const char* qname = StrX(name).localForm();
+	StrX str(name);
+	const char* qname = str.localForm();
 	LOG4CXX_DEBUG(logger, "name:" << qname);
 	if(strcmp(qname, attrName) == 0) {
 		found = true;
@@ -60,7 +61,8 @@ void NBFParserHandlers::startElement(const XMLCh* const name, AttributeList& att
 }
 
 void NBFParserHandlers::endElement( const XMLCh* const name) {
-	const char* qname = StrX(name).localForm();
+	StrX str(name);
+	const char* qname = str.localForm();
 	LOG4CXX_DEBUG(logger, "name:" << qname);
 	if(strcmp(qname, attrName) == 0) {
 		found = false;
@@ -69,7 +71,8 @@ void NBFParserHandlers::endElement( const XMLCh* const name) {
 
 void NBFParserHandlers::characters(const XMLCh* const name,
 								  const XMLSize_t length) {
-	const char* value = StrX(name).localForm();
+	StrX str(name);
+	const char* value = str.localForm();
 
 	if(found && curIndex == index) {
 		LOG4CXX_DEBUG(logger, "find value " << value << " at index " << index);
