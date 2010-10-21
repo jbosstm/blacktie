@@ -27,6 +27,7 @@ void TestBTNbf::test_getattribute() {
 	int rc;
 	char name[16];
 	int len = 16;
+	long id = 0;
 	char* buf = (char*)
 		"<?xml version='1.0' ?> \
 			<employee xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\
@@ -34,6 +35,8 @@ void TestBTNbf::test_getattribute() {
 				xsi:schemaLocation=\"http://www.jboss.org/blacktie buffers/employee.xsd\"> \
 				<name>zhfeng</name> \
 				<name>test</name> \
+				<id>1001</id> \
+				<id>1002</id> \
 			</employee>";
 
 	userlogc((char*) "getattribute of name at index 0");
@@ -47,4 +50,19 @@ void TestBTNbf::test_getattribute() {
 	BT_ASSERT(rc == 0);
 	BT_ASSERT(len == 4);
 	BT_ASSERT(strcmp(name, "test") == 0);
+
+	len = 0;
+	userlogc((char*) "getattribute of id at index 0");
+	rc = btgetattribute(buf, (char*)"id", 0, (char*)&id, &len);
+	BT_ASSERT(rc == 0);
+	userlogc((char*)"len is %d, id is %lu", len, id);
+	BT_ASSERT(len == sizeof(long));
+	BT_ASSERT(id == 1001);
+
+	len = 0;
+	userlogc((char*) "getattribute of id at index 1");
+	rc = btgetattribute(buf, (char*)"id", 1, (char*)&id, &len);
+	BT_ASSERT(rc == 0);
+	BT_ASSERT(len == sizeof(long));
+	BT_ASSERT(id == 1002);
 }

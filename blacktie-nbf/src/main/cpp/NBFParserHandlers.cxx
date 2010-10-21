@@ -20,6 +20,9 @@
 #include <xercesc/sax/AttributeList.hpp>
 #include <xercesc/sax/SAXParseException.hpp>
 #include <xercesc/sax/SAXException.hpp>
+#include <xercesc/framework/psvi/XSTypeDefinition.hpp>
+#include <xercesc/framework/psvi/PSVIElement.hpp>
+#include <xercesc/framework/psvi/XSConstants.hpp>
 
 log4cxx::LoggerPtr NBFParserHandlers::logger(
 		log4cxx::Logger::getLogger("NBFParserHandlers"));
@@ -31,6 +34,7 @@ NBFParserHandlers::NBFParserHandlers(const char* attrName, int index) {
 		this->attrName = NULL;
 	}
 	this->attrValue = NULL;
+	this->attrType = NULL;
 	this->index = index;
 	this->curIndex = -1;
 	this->found = false;
@@ -44,10 +48,18 @@ NBFParserHandlers::~NBFParserHandlers() {
 	if(attrValue != NULL) {
 		free(attrValue);
 	}
+
+	if(attrType != NULL) {
+		free(attrType);
+	}
 }
 
 char* NBFParserHandlers::getValue() {
 	return attrValue;
+}
+
+char* NBFParserHandlers::getType() {
+	return attrType;
 }
 
 void NBFParserHandlers::startElement(const XMLCh* const name, AttributeList& attributes) {
@@ -102,4 +114,46 @@ void NBFParserHandlers::warning(const SAXParseException& e) {
 			<< ", line " << e.getLineNumber()
 			<< ", char " << e.getColumnNumber()
 			<< "): " << StrX(e.getMessage()));
+}
+
+void NBFParserHandlers::handleElementPSVI(const XMLCh* const localName, 
+		const XMLCh* const uri,
+		PSVIElement* elementInfo) {
+	LOG4CXX_DEBUG(logger, "handleElementPSVI " << StrX(localName));
+	StrX str(localName);
+	const char* qname = str.localForm();
+	if(strcmp(qname, attrName) == 0) {
+		XSTypeDefinition* typeInfo = elementInfo->getTypeDefinition();
+		const char* typeStr;
+
+		while(typeInfo) {
+			StrX type(typeInfo->getName());
+			LOG4CXX_DEBUG(logger, "typeInfo type of " << type);
+			typeStr = type.localForm();
+
+			if (strcmp(typeStr, "string") == 0 ||
+					strcmp(typeStr, "long") == 0 ||
+					strcmp(typeStr, "integer") == 0 ||
+					strcmp(typeStr, "float") == 0) {
+				if(attrType == NULL) {
+					attrType = strdup(typeStr);
+					LOG4CXX_INFO(logger, attrName << " has type of " << attrType);
+				}
+				break;
+			}
+			typeInfo = typeInfo->getBaseType();
+		}
+	}
+}
+
+void NBFParserHandlers::handlePartialElementPSVI(const XMLCh* const localName, 
+		const XMLCh* const uri,
+		PSVIElement* elementInfo) {
+	LOG4CXX_DEBUG(logger, "handlePartialElementPSVI " << StrX(localName));
+}
+
+void NBFParserHandlers::handleAttributesPSVI(const XMLCh* const localName, 
+		const XMLCh* const uri,  
+		PSVIAttributeList* elementInfo) {
+	LOG4CXX_DEBUG(logger, "handleAttributesPSVI " << StrX(localName));
 }

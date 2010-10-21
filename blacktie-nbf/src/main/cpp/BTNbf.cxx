@@ -34,9 +34,19 @@ int btgetattribute(char* buf, char* attributeId, int attributeIndex, char* attri
 					<< " at " << attributeIndex);
 
 		const char* value = handler.getValue();
-		strcpy(attributeValue, value);
-		*len = strlen(value);
+		const char* type = handler.getType();
+
 		rc = 0;
+		if(type == NULL || strcmp(type, "string") == 0) {
+			strncpy(attributeValue, value, *len);
+			*len = strlen(attributeValue);
+		} else if(strcmp(type, "long") == 0) {
+			*((long*)attributeValue) = atol(value);
+			*len = sizeof(long);
+		} else {
+			LOG4CXX_WARN(logger, "can not support type of " << type);
+			rc = -1;
+		}
 	}
 
 	return rc;

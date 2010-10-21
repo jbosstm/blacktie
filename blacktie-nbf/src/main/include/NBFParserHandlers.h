@@ -19,6 +19,7 @@
 #define _NBF_PARSER_HANDLERS_H
 #include <log4cxx/logger.h>
 #include <xercesc/sax/HandlerBase.hpp>
+#include <xercesc/framework/psvi/PSVIHandler.hpp>
 
 XERCES_CPP_NAMESPACE_USE
 
@@ -49,7 +50,7 @@ XERCES_CPP_NAMESPACE_BEGIN
 class AttributeList;
 XERCES_CPP_NAMESPACE_END
 
-class NBFParserHandlers : public HandlerBase {
+class NBFParserHandlers : public HandlerBase, public PSVIHandler {
 public:
 	NBFParserHandlers(const char* attrName, int index);
 	~NBFParserHandlers();
@@ -65,12 +66,19 @@ public:
 	void error(const SAXParseException& exc);
 	void fatalError(const SAXParseException& exc);
 
+	// Handlers for the PSVI interface
+	void handleElementPSVI(const XMLCh* const localName, const XMLCh* const uri,  PSVIElement* elementInfo);
+	void handlePartialElementPSVI(const XMLCh* const localName, const XMLCh* const uri,  PSVIElement* elementInfo);
+	void handleAttributesPSVI(const XMLCh* const localName, const XMLCh* const uri,  PSVIAttributeList* elementInfo);
+
 	char* getValue();
+	char* getType();
 
 private:
 	static log4cxx::LoggerPtr logger;
 	char* attrName;
 	char* attrValue;
+	char* attrType;
 	int   index;
 	int   curIndex;
 	bool  found;
