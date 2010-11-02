@@ -31,6 +31,7 @@ void TestAdmin::tearDown() {
 }
 
 char* TestAdmin::getBARCounter(char* command) {
+	userlogc((char*) "TestAdmin::getBARCounter");
 	char* n = NULL;
 	int cd;
 
@@ -41,6 +42,7 @@ char* TestAdmin::getBARCounter(char* command) {
 }
 
 void TestAdmin::testStatus() {
+	userlogc((char*) "TestAdmin::testStatus");
 	int cd;
 
 	cd = callADMIN((char*)"status", '1', 0, NULL);
@@ -50,6 +52,7 @@ void TestAdmin::testStatus() {
 }
 
 void TestAdmin::testVersion() {
+	userlogc((char*) "TestAdmin::testVersion");
 	int cd;
 	char* ver = NULL;
 
@@ -61,6 +64,7 @@ void TestAdmin::testVersion() {
 }
 
 void TestAdmin::testMessageCounter() {
+	userlogc((char*) "TestAdmin::testMessageCounter");
 	char* barCounter = getBARCounter((char*)"counter,BAR,");
 	BT_ASSERT(strncmp(barCounter, "0", 1) == 0);
 	free (barCounter);
@@ -71,6 +75,7 @@ void TestAdmin::testMessageCounter() {
 }
 
 void TestAdmin::testErrorCounter() {
+	userlogc((char*) "TestAdmin::testErrorCounter");
 	char* barCounter = getBARCounter((char*)"error_counter,BAR,");
 	BT_ASSERT(strncmp(barCounter, "0", 1) == 0);
 	free (barCounter);
@@ -82,6 +87,7 @@ void TestAdmin::testErrorCounter() {
 }
 
 void TestAdmin::testServerdone() {
+	userlogc((char*) "TestAdmin::testServerdone");
 	int cd;
 
 	cd = callADMIN((char*)"serverdone", '1', 0, NULL);
@@ -89,6 +95,7 @@ void TestAdmin::testServerdone() {
 }
 
 void TestAdmin::testServerPauseAndResume() {
+	userlogc((char*) "TestAdmin::testServerPauseAndResume");
 	int cd;
 
 	BT_ASSERT(callBAR(0) == 0);
