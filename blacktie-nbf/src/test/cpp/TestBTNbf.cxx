@@ -15,12 +15,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#include <stdlib.h>
 #include "btnbf.h"
 #include "xatmi.h"
 #include "userlogc.h"
 
 #include "TestAssert.h"
 #include "TestBTNbf.h"
+
+void TestBTNbf::test_addattribute() {
+	userlogc((char*) "test_addattribute");
+	int rc;
+	char* s = (char*)
+		"<?xml version='1.0' ?> \
+			<employee xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\
+				xmlns=\"http://www.jboss.org/blacktie\" \
+				xsi:schemaLocation=\"http://www.jboss.org/blacktie buffers/employee.xsd\"> \
+			</employee>";
+	char* buf = (char*) malloc (sizeof(char) * (strlen(s) + 1));
+	strcpy(buf, s);
+
+	char name[16];
+	strcpy(name, "test");
+	rc = btaddattribute(&buf, (char*)"name", name, strlen(name));	
+	BT_ASSERT(rc == 0);
+	free(buf);
+}
 
 void TestBTNbf::test_getattribute() {
 	userlogc((char*) "test_getattribute");

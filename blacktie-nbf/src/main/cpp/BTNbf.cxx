@@ -21,6 +21,50 @@
 
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("BTNbf"));
 
+int btaddattribute(char** buf, char* attributeId, char* attributeValue, int len) {
+	LOG4CXX_TRACE(logger, (char*) "btaddattribute");
+	int rc = -1;
+	char* p = *buf;
+	char* q = rindex(p, '<');
+
+	if(q == NULL) {
+		LOG4CXX_WARN(logger, (char*) "buffer not validate");
+	} else {
+		int n = q - p;
+		int size = strlen(p);
+
+		LOG4CXX_DEBUG(logger, (char*) "n is " << n << ", size is " << size);
+		char* tmp = (char*) malloc (sizeof(char) * (size - n + 1));
+		strcpy(tmp, q);
+
+		int tagsize = strlen(attributeId) * 2 + 5 + 1;
+		char* tag = (char*) malloc (sizeof(char) * tagsize);
+		sprintf(tag, "<%s></%s>", attributeId, attributeId);
+
+		p = (char*) realloc(p, sizeof(char) * (size + tagsize + 1));
+		p[n] = '\0';
+		strcat(p, tag);
+		strcat(p, tmp);
+		*buf = p;
+
+		free(tag);
+		free(tmp);
+
+		NBFParser nbf;
+		NBFParserHandlers handler(attributeId, 0);
+		bool result;
+
+		result = nbf.parse(p, "btnbf", &handler);
+		if(result) {
+			rc = 0;
+			const char* type = handler.getType();
+			LOG4CXX_INFO(logger, (char*) "type is " << type);
+		}
+	}
+
+	return rc;
+}
+
 int btgetattribute(char* buf, char* attributeId, int attributeIndex, char* attributeValue, int* len) {
 	LOG4CXX_TRACE(logger, (char*) "btgetattribute");
 	int rc = -1;

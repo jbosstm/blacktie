@@ -22,9 +22,11 @@
 
 class TestBTNbf: public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE( TestBTNbf );
+	CPPUNIT_TEST( test_addattribute );
 	CPPUNIT_TEST( test_getattribute );
 	CPPUNIT_TEST_SUITE_END();
 public:
+	void test_addattribute();
 	void test_getattribute();
 };
 

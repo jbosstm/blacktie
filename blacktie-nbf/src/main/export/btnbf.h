@@ -33,7 +33,7 @@ extern "C" {
  * @len The length of the attribute
  * @returns 0 on succcess
  */
-extern BLACKTIE_NBF_DLL int btaddattribute(char* buf, char* attributeId, char* attributeValue, int len);
+extern BLACKTIE_NBF_DLL int btaddattribute(char** buf, char* attributeId, char* attributeValue, int len);
 
 /**
  * This method is used to retrieve a set attribute
