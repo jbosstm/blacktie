@@ -71,7 +71,7 @@ static int send_one(int id, int pri) {
 		userlogc((char*) "tp alloc error: %d", tperrno);
 	} else {
     	(void) strcpy(buf, msg);
-    	err = tpacall((char*) "TestOne", buf, len, TPNOREPLY);
+    	err = tpacall(SERVICE, buf, len, TPNOREPLY);
 
     	if (tperrno != 0 || err != 0)
 			userlogc((char*) "tpacall error: %d %d", err, tperrno);
