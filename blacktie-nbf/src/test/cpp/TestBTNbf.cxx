@@ -36,9 +36,27 @@ void TestBTNbf::test_addattribute() {
 	strcpy(buf, s);
 
 	char name[16];
+	char value[16];
+	int len = 16;;
+
 	strcpy(name, "test");
 	rc = btaddattribute(&buf, (char*)"name", name, strlen(name));	
 	BT_ASSERT(rc == 0);
+
+	rc = btgetattribute(buf, (char*)"name", 0, (char*)value, &len);
+	BT_ASSERT(rc == 0);
+	BT_ASSERT(len == 4);
+	BT_ASSERT(strcmp(value, "test") == 0);
+
+	long empid = 1234;
+	long id = 0;
+	rc = btaddattribute(&buf, (char*)"id", (char*)&empid, sizeof(empid));
+	BT_ASSERT(rc == 0);
+
+	rc = btgetattribute(buf, (char*)"id", 0, (char*)&id, &len);
+	BT_ASSERT(rc == 0);
+	BT_ASSERT(len == sizeof(long));
+	BT_ASSERT(id == empid);
 	free(buf);
 }
 
@@ -60,13 +78,13 @@ void TestBTNbf::test_getattribute() {
 			</employee>";
 
 	userlogc((char*) "getattribute of name at index 0");
-	rc = btgetattribute(buf, (char*)"name", 0, (char*)&name, &len);
+	rc = btgetattribute(buf, (char*)"name", 0, (char*)name, &len);
 	BT_ASSERT(rc == 0);
 	BT_ASSERT(len == 6);
 	BT_ASSERT(strcmp(name, "zhfeng") == 0);
 
 	userlogc((char*) "getattribute of name at index 1");
-	rc = btgetattribute(buf, (char*)"name", 1, (char*)&name, &len);
+	rc = btgetattribute(buf, (char*)"name", 1, (char*)name, &len);
 	BT_ASSERT(rc == 0);
 	BT_ASSERT(len == 4);
 	BT_ASSERT(strcmp(name, "test") == 0);
