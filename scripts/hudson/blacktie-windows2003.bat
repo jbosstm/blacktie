@@ -23,40 +23,59 @@ rem echo                ^<include name="*.dll"/^> >> build.xml
 rem echo            ^</fileset^> >> build.xml
 rem echo        ^</move^> >> build.xml
 rem echo        ^<get src="http://albany/userContent/blacktie/jboss-5.1.0.GA.zip" dest="./jboss-5.1.0.GA.zip" verbose="true" usetimestamp="true"/^> >> build.xml
+echo        ^<get src="http://albany/userContent/blacktie/hornetq-2.1.2.Final.zip" dest="./hornetq-2.1.2.Final.zip" verbose="true" usetimestamp="true"/^> >> build.xml
 echo        ^<delete dir="jboss-5.1.0.GA"/^> >> build.xml
 echo        ^<unzip src="./jboss-5.1.0.GA.zip" dest="."/^> >> build.xml
+echo        ^<delete dir="hornetq-2.1.2.Final"/^> >> build.xml
+echo        ^<unzip src="./hornetq-2.1.2.Final.zip" dest="."/^> >> build.xml
 echo    ^</target^> >> build.xml
 echo    ^<target name="replaceJBoss"^> >> build.xml
-echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all/conf/jbossts-properties.xml" match="CONFIGURATION_FILE" replace="NAME_SERVICE"  /^> >> build.xml
-echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all/conf/jacorb.properties" match="localhost" replace="${JBOSSAS_IP_ADDR}"  /^> >> build.xml
+echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/conf/jbossts-properties.xml" match="CONFIGURATION_FILE" replace="NAME_SERVICE"  /^> >> build.xml
+echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/conf/jacorb.properties" match="localhost" replace="${JBOSSAS_IP_ADDR}"  /^> >> build.xml
 echo    ^</target^> >> build.xml
 echo	^<target name="replaceBlackTie"^> >> build.xml
-echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all/conf/btconfig.xml" match="localhost" replace="${JBOSSAS_IP_ADDR}"  /^> >> build.xml
+echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/conf/btconfig.xml" match="localhost" replace="${JBOSSAS_IP_ADDR}"  /^> >> build.xml
+echo	^</target^> >> build.xml
+echo	^<target name="initializeBlackTieAdminSecurity"^> >> build.xml
+echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq.sar/hornetq-configuration.xml" match="</security-settings>" replace="<security-setting match=\"jms.queue.BTR_BTDomainAdmin\">         <permission type=\"send\" roles=\"blacktie,guest\"/>         <permission type=\"consume\" roles=\"blacktie,guest\"/>      </security-setting>      <security-setting match=\"jms.queue.BTR_BTStompAdmin\">         <permission type=\"send\" roles=\"blacktie,guest\"/>         <permission type=\"consume\" roles=\"blacktie,guest\"/>      </security-setting></security-settings>"  /^> >> build.xml
+echo	^</target^> >> build.xml
+echo	^<target name="initializeBlackTieSampleSecurity"^> >> build.xml
+echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq.sar/hornetq-configuration.xml" match="</security-settings>" replace="      <security-setting match=\"jms.queue.BTR_SECURE\">         <permission type=\"send\" roles=\"blacktie\"/>         <permission type=\"consume\" roles=\"blacktie\"/>      </security-setting></security-settings>"  /^> >> build.xml
 echo	^</target^> >> build.xml
 echo ^</project^> >> build.xml
 
 rem DOWNLOAD THOSE DEPENDENCIES
+cd %WORKSPACE%
 call ant download
 IF %ERRORLEVEL% NEQ 0 exit -1
 
+rem INITIALIZE HORNETQ
+cd %WORKSPACE%\hornetq-2.1.2.Final\config\jboss-as-5\
+set JBOSS_HOME=%WORKSPACE%\jboss-5.1.0.GA
+call build.bat
+set JBOSS_HOME=
+cd %WORKSPACE
+
 rem INITIALIZE JBOSS
 cd %WORKSPACE%\jboss-5.1.0.GA\docs\examples\transactions
-call ant jts
+call ant jts -Dtarget.server.dir=../../../server/all-with-hornetq
 IF %ERRORLEVEL% NEQ 0 exit -1
 cd %WORKSPACE%
 call ant replaceJBoss -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR%
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem INITIALZE BLACKTIE JBOSS DEPENDENCIES
-copy %WORKSPACE%\trunk\blacktie-admin-services\src\test\resources\btconfig.xml %WORKSPACE%\jboss-5.1.0.GA\server\all\conf
-copy %WORKSPACE%\trunk\jatmibroker-xatmi\src\test\resources\jatmibroker-xatmi-test-service.xml %WORKSPACE%\jboss-5.1.0.GA\server\all\deploy
+copy %WORKSPACE%\trunk\blacktie-admin-services\src\test\resources\btconfig.xml %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\conf
+copy %WORKSPACE%\trunk\jatmibroker-xatmi\src\test\resources\hornetq-jms.xml %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\conf
+cd %WORKSPACE%
 call ant replaceBlackTie -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR%
+call ant initializeBlackTieAdminSecurity
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem START JBOSS
 cd %WORKSPACE%\jboss-5.1.0.GA\bin
 rem set BUILD_ID=dontKillMe
-start /B run.bat -c all -b %JBOSSAS_IP_ADDR%
+start /B run.bat -c all-with-hornetq -b %JBOSSAS_IP_ADDR%
 rem set BUILD_ID=
 echo "Started server"
 @ping 127.0.0.1 -n 120 -w 1000 > nul
@@ -84,12 +103,16 @@ call ant dist -DBT_HOME=%BT_HOME% -DVERSION=blacktie-3.0.0.M1-SNAPSHOT -DJBOSSAS
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem RUN THE SAMPLES
+cd %WORKSPACE%
+call ant initializeBlackTieSampleSecurity
 cd %WORKSPACE%\trunk\dist\blacktie-3.0.0.M1-SNAPSHOT
 IF %ERRORLEVEL% NEQ 0 exit -1
 set ORACLE_HOME=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2
 set TNS_ADMIN=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2\network\admin
 set PATH=%PATH%;%ORACLE_HOME%\bin;%ORACLE_HOME%\vc9
 call setenv.bat
+IF %ERRORLEVEL% NEQ 0 exit -1
+cp %WORKSPACE%\trunk\dist\blacktie-3.0.0.M1-SNAPSHOT\examples\xatmi\security\hornetq-*.properties %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\conf\props
 IF %ERRORLEVEL% NEQ 0 exit -1
 call run_all_samples.bat tx
 IF %ERRORLEVEL% NEQ 0 exit -1

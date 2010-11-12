@@ -52,7 +52,8 @@ public class Server {
 		Iterator<Machine> iterator = machines.iterator();
 		while (iterator.hasNext()) {
 			Machine next = iterator.next();
-			if (hostname.equals(next.getHostname()) || ipAddress.equals(next.getIpAddress())) {
+			if (hostname.equals(next.getHostname())
+					|| ipAddress.equals(next.getIpAddress())) {
 				toReturn.add(next);
 			}
 		}

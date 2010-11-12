@@ -1,0 +1,10 @@
+<configuration xmlns="urn:hornetq"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="urn:hornetq /schema/hornetq-jms.xsd">
+   <queue name="BTR_CREDIT">
+      <entry name="/queue/BTR_CREDIT"/>
+   </queue>
+   <queue name="BTR_DEBIT">
+      <entry name="/queue/BTR_DEBIT"/>
+   </queue>
+</configuration>

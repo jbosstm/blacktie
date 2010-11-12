@@ -50,11 +50,12 @@ public:
 
 	virtual ~AtmiBrokerServer();
 
-	virtual char * getServerName();
+	char * getServerName();
 
-	virtual bool advertiseService(char * serviceName, void(*func)(TPSVCINFO *));
+	bool advertiseService(char * serviceName, void(*func)(TPSVCINFO *));
 
-	virtual void unadvertiseService(char * serviceName, bool decrement);
+	void unadvertiseService(char * serviceName, bool decrement);
+	void removeAdminDestination(char* svcname, bool decrement);
 
 	BLACKTIE_XATMI_DLL bool isAdvertised(char * serviceName);
 	bool advertiseService(char* serviceName);
@@ -70,7 +71,6 @@ public:
 
 private:
 	void (*getServiceMethod(const char * aServiceName))(TPSVCINFO *);
-	void removeAdminDestination(char* svcname, bool decrement);
 	void updateServiceStatus(ServiceInfo* service, SVCFUNC func, bool status);
 
 	ConnectionManager connections;

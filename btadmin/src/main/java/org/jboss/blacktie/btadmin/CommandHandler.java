@@ -32,7 +32,6 @@ import javax.management.remote.JMXServiceURL;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
 
 /**
@@ -48,10 +47,7 @@ public class CommandHandler {
 	public CommandHandler() throws ConfigurationException,
 			MalformedObjectNameException, NullPointerException {
 		// Obtain the JMXURL from the btconfig.xml
-		XMLEnvHandler handler = new XMLEnvHandler(prop);
-		XMLParser xmlenv;
-		xmlenv = new XMLParser(handler, "btconfig.xsd");
-		xmlenv.parse("btconfig.xml");
+		XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
 		url = (String) prop.get("JMXURL");
 		if (url == null) {
 			throw new ConfigurationException(

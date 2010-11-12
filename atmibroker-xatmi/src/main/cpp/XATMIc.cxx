@@ -424,7 +424,7 @@ int tpunadvertise(char * svcname) {
 	if (serverinit(0, NULL) != -1) {
 		if (svcname && strcmp(svcname, "") != 0) {
 			if (ptrServer->isAdvertised(svcname)) {
-				ptrServer->unadvertiseService(svcname, false);
+				ptrServer->removeAdminDestination(svcname, false);
 				toReturn = 0;
 			} else {
 				setSpecific(TPE_KEY, TSS_TPENOENT);
@@ -454,8 +454,8 @@ char* btalloc(msg_opts_t* mopts, char* type, char* subtype, long size) {
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	char* toReturn = NULL;
 	if (clientinit() != -1) {
-		toReturn = AtmiBrokerMem::get_instance()->tpalloc(mopts, type, subtype, size,
-				false);
+		toReturn = AtmiBrokerMem::get_instance()->tpalloc(mopts, type, subtype,
+				size, false);
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tpalloc returning" << " tperrno: "
 			<< tperrno);
@@ -495,7 +495,8 @@ static long tptypes(msg_opts_t** mopts, char* ptr, char* type, char* subtype) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "set the specific");
 	long toReturn = -1;
 	if (clientinit() != -1) {
-		toReturn = AtmiBrokerMem::get_instance()->tptypes(mopts, ptr, type, subtype);
+		toReturn = AtmiBrokerMem::get_instance()->tptypes(mopts, ptr, type,
+				subtype);
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "tptypes return: " << toReturn
 			<< " tperrno: " << tperrno);
@@ -509,7 +510,8 @@ int tpcall(char * svc, char* idata, long ilen, char ** odata, long *olen,
 	int toReturn = -1;
 	setSpecific(TPE_KEY, TSS_TPERESET);
 
-	long toCheck = flags & ~(TPNOTRAN | TPNOCHANGE | TPNOTIME | TPSIGRSTRT | TPNOBLOCK);
+	long toCheck = flags & ~(TPNOTRAN | TPNOCHANGE | TPNOTIME | TPSIGRSTRT
+			| TPNOBLOCK);
 
 	if (toCheck != 0) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
@@ -539,8 +541,8 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 	int toReturn = -1;
 	setSpecific(TPE_KEY, TSS_TPERESET);
 
-	long toCheck = flags & ~(TPNOTRAN | TPNOREPLY | TPNOTIME
-			| TPSIGRSTRT | TPNOBLOCK);
+	long toCheck = flags & ~(TPNOTRAN | TPNOREPLY | TPNOTIME | TPSIGRSTRT
+			| TPNOBLOCK);
 
 	if (toCheck != 0) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
@@ -578,11 +580,12 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 								txx_suspend(cd, tpdiscon);
 
 							if (TPNOREPLY & flags) {
-								toReturn = ::send(session, "",
-									idata, len, cd, flags, 0, 0);
+								toReturn = ::send(session, "", idata, len, cd,
+										flags, 0, 0);
 							} else {
-								toReturn = ::send(session, session->getReplyTo(),
-										idata, len, cd, flags, 0, 0);
+								toReturn = ::send(session,
+										session->getReplyTo(), idata, len, cd,
+										flags, 0, 0);
 							}
 
 							if (toReturn >= 0) {
@@ -656,8 +659,8 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 	int toReturn = -1;
 	setSpecific(TPE_KEY, TSS_TPERESET);
 
-	long toCheck = flags & ~(TPNOTRAN | TPSENDONLY | TPRECVONLY
-			| TPNOTIME | TPSIGRSTRT | TPNOBLOCK);
+	long toCheck = flags & ~(TPNOTRAN | TPSENDONLY | TPRECVONLY | TPNOTIME
+			| TPSIGRSTRT | TPNOBLOCK);
 
 	if (toCheck != 0) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
@@ -829,7 +832,8 @@ int tpgetrply(int *id, char ** odata, long *olen, long flags) {
 		return toReturn;
 	}
 
-	long toCheck = flags & ~(TPGETANY | TPNOCHANGE | TPNOBLOCK | TPNOTIME | TPSIGRSTRT);
+	long toCheck = flags & ~(TPGETANY | TPNOCHANGE | TPNOBLOCK | TPNOTIME
+			| TPSIGRSTRT);
 
 	if (toCheck != 0) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
@@ -918,7 +922,8 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 	int toReturn = -1;
 	setSpecific(TPE_KEY, TSS_TPERESET);
 
-	long toCheck = flags & ~(TPRECVONLY | TPNOBLOCK | TPNOTIME | TPSIGRSTRT| TPNOBLOCK);
+	long toCheck = flags & ~(TPRECVONLY | TPNOBLOCK | TPNOTIME | TPSIGRSTRT
+			| TPNOBLOCK);
 
 	if (toCheck != 0) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);

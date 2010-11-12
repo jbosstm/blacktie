@@ -17,20 +17,20 @@
  */
 package org.jboss.blacktie.administration;
 
-import java.util.HashSet;
-import java.util.Iterator;
+import java.io.IOException;
 import java.util.Properties;
 
-import javax.jms.Destination;
-import javax.jms.Queue;
-import javax.management.MBeanServerConnection;
+import javax.management.AttributeNotFoundException;
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanException;
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
+import javax.management.ReflectionException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.administration.core.AdministrationProxy;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
 
 public class QueueReaper implements Runnable {
@@ -58,9 +58,7 @@ public class QueueReaper implements Runnable {
 		this.administrationProxy = administrationProxy;
 
 		prop = new Properties();
-		XMLEnvHandler handler = new XMLEnvHandler(prop);
-		XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
-		xmlenv.parse("btconfig.xml");
+		XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
 
 		this.interval = Integer.parseInt(prop.getProperty(
 				"QueueReaperInterval", "30")) * 1000;
@@ -98,44 +96,43 @@ public class QueueReaper implements Runnable {
 		while (this.run) {
 			try {
 				ObjectName objName = new ObjectName(
-						"jboss.messaging:service=ServerPeer");
-				HashSet<Destination> dests = (HashSet<Destination>) administrationProxy
+						"org.hornetq:module=JMS,type=Server");
+				String[] dests = (String[]) administrationProxy
 						.getBeanServerConnection().getAttribute(objName,
-								"Destinations");
-
-				Iterator<Destination> it = dests.iterator();
-				while (it.hasNext()) {
-					Destination dest = it.next();
-					if (dest instanceof Queue) {
-						String serviceName = ((Queue) dest).getQueueName();
-						serviceName = serviceName.substring(serviceName
-								.indexOf('_') + 1);
-						String server = (String) prop.get("blacktie."
-								+ serviceName + ".server");
+								"QueueNames");
+				for (int i = 0; i < dests.length; i++) {
+					String serviceName = dests[i];
+					serviceName = serviceName.substring(serviceName
+							.indexOf('_') + 1);
+					String server = (String) prop.get("blacktie." + serviceName
+							+ ".server");
+					log.trace("Checking for: "
+							+ serviceName
+							+ " "
+							+ prop.get("blacktie." + serviceName
+									+ ".externally-managed-destination"));
+					if (((server != null && !(Boolean) prop.get("blacktie."
+							+ serviceName + ".externally-managed-destination")) || serviceName
+							.contains(".")) && consumerCount(serviceName) == 0) {
+						log.warn("undeploy service pending for "
+								+ serviceName
+								+ " as consumer count is 0, will check again in 30 seconds");
 						long queueReapCheck = System.currentTimeMillis();
-						if ((server != null || serviceName.contains("."))
-								&& isCreatedProgrammatically(serviceName)
-								&& consumerCount(serviceName) == 0) {
-							log.warn("undeploy service pending for "
-									+ serviceName
-									+ " as consumer count is 0, will check again in 30 seconds");
-							Thread.sleep(this.interval);
+						Thread.sleep(this.interval);
 
-							// double check consumer is 0
-							if (isOlderThanReapCheck(serviceName,
-									queueReapCheck)
-									&& consumerCount(serviceName) == 0) {
-								undeployQueue(serviceName);
-								log.warn("undeploy service " + serviceName
-										+ " for consumer is 0");
-							} else {
-								log.info("undeploy service not required for "
-										+ serviceName);
-							}
+						// double check consumer is 0
+						if (isOlderThanReapCheck(serviceName, queueReapCheck)
+								&& consumerCount(serviceName) == 0) {
+							undeployQueue(serviceName);
+							log.warn("undeploy service " + serviceName
+									+ " for consumer is 0");
 						} else {
-							log.debug("Could not determine the server for: "
+							log.info("Undeploy not required for: "
 									+ serviceName + " at: " + server);
 						}
+					} else {
+						log.debug("Undeploy not required for: " + serviceName
+								+ " at: " + server);
 					}
 				}
 				log.debug("Sleeping for " + this.interval + " ms");
@@ -156,8 +153,9 @@ public class QueueReaper implements Runnable {
 		}
 	}
 
-	int consumerCount(String serviceName) throws Exception {
-		// jboss.messaging.destination:service=Queue,name=dynamic
+	int consumerCount(String serviceName) throws MalformedObjectNameException,
+			NullPointerException, AttributeNotFoundException,
+			InstanceNotFoundException, ReflectionException, IOException, MBeanException {
 		log.trace(serviceName);
 		boolean conversational = false;
 		if (!serviceName.startsWith(".")) {
@@ -170,33 +168,18 @@ public class QueueReaper implements Runnable {
 		} else {
 			prefix = "BTR_";
 		}
-		ObjectName objName = new ObjectName(
-				"jboss.messaging.destination:service=Queue,name=" + prefix
-						+ serviceName);
-		Integer count = (Integer) administrationProxy.getBeanServerConnection()
-				.getAttribute(objName, "ConsumerCount");
-		return count.intValue();
-	}
 
-	Boolean isCreatedProgrammatically(String serviceName) throws Exception {
-		// jboss.messaging.destination:service=Queue,name=dynamic
-		log.trace(serviceName);
-		boolean conversational = false;
-		if (!serviceName.startsWith(".")) {
-			conversational = (Boolean) prop.get("blacktie." + serviceName
-					+ ".conversational");
+		ObjectName objName = new ObjectName("org.hornetq:module=JMS,name=\""
+				+ prefix + serviceName + "\",type=Queue");
+		try {
+			Integer count = (Integer) administrationProxy
+					.getBeanServerConnection().getAttribute(objName,
+							"ConsumerCount");
+			return count.intValue();
+		} catch (javax.management.InstanceNotFoundException e) {
+			log.debug("Instance not found: " + objName);
+			return -1;
 		}
-		String prefix = null;
-		if (conversational) {
-			prefix = "BTC_";
-		} else {
-			prefix = "BTR_";
-		}
-		ObjectName objName = new ObjectName(
-				"jboss.messaging.destination:service=Queue,name=" + prefix
-						+ serviceName);
-		return (Boolean) administrationProxy.getBeanServerConnection()
-				.getAttribute(objName, "CreatedProgrammatically");
 	}
 
 	private boolean isOlderThanReapCheck(String serviceName, long queueReapCheck) {
@@ -234,9 +217,9 @@ public class QueueReaper implements Runnable {
 			}
 
 			ObjectName objName = new ObjectName(
-					"jboss.messaging:service=ServerPeer");
+					"org.hornetq:module=JMS,type=Server");
 			administrationProxy.getBeanServerConnection().invoke(objName,
-					"undeployQueue", new Object[] { prefix + serviceName },
+					"destroyQueue", new Object[] { prefix + serviceName },
 					new String[] { "java.lang.String" });
 			result = 1;
 		} catch (Throwable t) {

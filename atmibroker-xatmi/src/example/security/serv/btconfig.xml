@@ -28,15 +28,8 @@
 	<SERVERS>
 		<SERVER name="secure">
 			<MACHINE-REF id="secure1" />
-			<security>
-				<role name="blacktie" read="true" write="true" />
-			</security>
 			<SERVICE_NAMES>
-				<SERVICE name="SECURE" size="5">
-					<security>
-						<role name="blacktie" read="true" write="true" />
-					</security>
-				</SERVICE>
+				<SERVICE name="SECURE" size="5"/>
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>

@@ -20,17 +20,13 @@ package org.jboss.blacktie.administration;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
-import javax.jms.Destination;
-import javax.jms.Queue;
 import javax.management.Attribute;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
@@ -50,7 +46,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.administration.core.AdministrationProxy;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
@@ -58,7 +53,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 import org.jboss.blacktie.jatmibroker.xatmi.mdb.MDBBlacktieService;
-import org.jboss.ejb3.annotation.Depends;
+import org.jboss.ejb3.annotation.ResourceAdapter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -67,8 +62,9 @@ import org.xml.sax.InputSource;
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
 		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTR_BTStompAdmin") })
-@Depends("jboss.messaging.destination:service=Queue,name=BTR_BTStompAdmin")
+// @Depends("org.hornetq:module=JMS,name=\"BTR_BTStompAdmin\",type=Queue")
 @javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
+@ResourceAdapter("hornetq-ra.rar")
 public class BlacktieStompAdministrationService extends MDBBlacktieService
 		implements javax.jms.MessageListener {
 	private static final Logger log = LogManager
@@ -81,18 +77,17 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 	public BlacktieStompAdministrationService() throws IOException,
 			ConfigurationException {
-		XMLEnvHandler handler = new XMLEnvHandler(prop);
-		XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
-		xmlenv.parse("btconfig.xml");
+		XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
 		JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
 		JMXConnector c = JMXConnectorFactory.connect(u);
 		beanServerConnection = c.getMBeanServerConnection();
 	}
 
-	boolean isDeployQueue(ObjectName objName, String serviceName)
-			throws Exception {
-		HashSet dests = (HashSet) beanServerConnection.getAttribute(objName,
-				"Destinations");
+	boolean isDeployQueue(String serviceName) throws Exception {
+		ObjectName objName = new ObjectName(
+				"org.hornetq:module=JMS,type=Server");
+		String[] dests = (String[]) beanServerConnection.getAttribute(objName,
+				"QueueNames");
 
 		log.trace(serviceName);
 		boolean conversational = false;
@@ -106,16 +101,12 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		} else {
 			prefix = "BTR_";
 		}
-		Iterator<Destination> it = dests.iterator();
-		while (it.hasNext()) {
-			Destination dest = it.next();
-			if (dest instanceof Queue) {
-				String qname = ((Queue) dest).getQueueName();
-				log.debug("destination is " + qname);
-				if (qname.equals(prefix + serviceName)) {
-					log.trace("find serviceName " + serviceName);
-					return true;
-				}
+		for (int i = 0; i < dests.length; i++) {
+			String qname = dests[i];
+			log.debug("destination is " + qname);
+			if (qname.equals(prefix + serviceName)) {
+				log.trace("find serviceName " + serviceName);
+				return true;
 			}
 		}
 		log.trace("did not find serviceName " + serviceName);
@@ -123,7 +114,6 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 	}
 
 	int consumerCount(String serviceName) throws Exception {
-		// jboss.messaging.destination:service=Queue,name=dynamic
 		log.trace("consCount" + serviceName);
 		boolean conversational = false;
 		if (!serviceName.startsWith(".")) {
@@ -136,15 +126,10 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		} else {
 			prefix = "BTR_";
 		}
-		ObjectName objName = new ObjectName(
-				"jboss.messaging.destination:service=Queue,name=" + prefix
-						+ serviceName);
+		ObjectName objName = new ObjectName("org.hornetq:module=JMS,name=\""
+				+ prefix + serviceName + "\",type=Queue");
 		Integer count = (Integer) beanServerConnection.getAttribute(objName,
 				"ConsumerCount");
-		Element security = (Element) beanServerConnection.getAttribute(objName,
-				"SecurityConfig");
-		log.debug(serviceName + " security config is " + printNode(security));
-
 		log.debug("consCount" + serviceName + " " + count.intValue());
 		return count.intValue();
 	}
@@ -180,48 +165,6 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		return null;
 	}
 
-	void setSecurityConfig(ObjectName objName, String serviceName) {
-		log.debug("Get security configuration from xml");
-		String roleList = (String) prop.getProperty("blacktie." + serviceName
-				+ ".security");
-		if (roleList == null) {
-			log.debug("Will use servers default security if present");
-			String server = (String) prop.getProperty("blacktie." + serviceName
-					+ ".server");
-			if (server == null && serviceName.indexOf(".") > -1) {
-				server = serviceName.substring(1);
-				server = server.replaceAll("[0-9]", "");
-				log.trace("Using server name of: " + server);
-			}
-			roleList = (String) prop.getProperty("blacktie." + server
-					+ ".security");
-			if (roleList == null) {
-				log.warn("No security set for service: " + serviceName);
-				roleList = "";
-			}
-		}
-
-		if (roleList.length() > 0) {
-			String security = "<security>\n";
-			String[] roles = roleList.split(",");
-			for (int i = 0; i < roles.length; i++) {
-				String[] details = roles[i].split(":");
-				security += "<role name=\"" + details[0] + "\" read=\""
-						+ details[1] + "\" write=\"" + details[2] + "\"/>\n";
-			}
-			security += "</security>";
-
-			log.trace("access security is " + security);
-			try {
-				Element element = stringToElement(security);
-				Attribute attr = new Attribute("SecurityConfig", element);
-				beanServerConnection.setAttribute(objName, attr);
-			} catch (Throwable t) {
-				log.error("Could not set security config " + t);
-			}
-		}
-	}
-
 	int deployQueue(String serviceName, String version) {
 		log.trace("deployQueue: " + serviceName + " version: " + version);
 
@@ -234,17 +177,15 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		}
 
 		int result = 0;
-		Long currentTime = QUEUE_CREATION_TIMES.get(serviceName);
+		// Long currentTime = QUEUE_CREATION_TIMES.get(serviceName);
 
 		try {
-			ObjectName objName = new ObjectName(
-					"jboss.messaging:service=ServerPeer");
 			boolean queue = false;
 
-			queue = isDeployQueue(objName, serviceName);
+			queue = isDeployQueue(serviceName);
+			boolean created = queue;
 			if (queue == false) {
 				synchronized (QUEUE_CREATION_TIMES) {
-					// jboss.messaging.destination:service=Queue,name=dynamic
 					log.trace(serviceName);
 					boolean conversational = false;
 					if (!serviceName.startsWith(".")) {
@@ -260,25 +201,24 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 					QUEUE_CREATION_TIMES.put(serviceName,
 							System.currentTimeMillis());
 					log.trace(serviceName);
-					beanServerConnection.invoke(objName, "deployQueue",
-							new Object[] { prefix + serviceName, null },
+					ObjectName objName = new ObjectName(
+							"org.hornetq:module=JMS,type=Server");
+					created = (Boolean) beanServerConnection.invoke(objName,
+							"createQueue", new Object[] { prefix + serviceName,
+									"/queue/" + prefix + serviceName },
 							new String[] { "java.lang.String",
 									"java.lang.String" });
-					ObjectName queueName = new ObjectName(
-							"jboss.messaging.destination:service=Queue,name="
-									+ prefix + serviceName);
-					setSecurityConfig(queueName, serviceName);
 				}
 			}
-
-			if (queue == false || !serviceName.contains(".")) {
+			// QUEUE_CREATION_TIMES.put(serviceName, currentTime);
+			if (!queue || !serviceName.contains(".")) {
 				result = 1;
 				if (AdministrationProxy.isDomainPause
 						&& serviceName.contains(".")) {
 					log.info("Domain is pause");
 					result = 3;
 				}
-			} else if (consumerCount(serviceName) > 0) {
+			} else if (!queue && consumerCount(serviceName) > 0) {
 				log.warn("can not advertise ADMIN with same id: " + serviceName);
 				result = 2;
 			} else if (AdministrationProxy.isDomainPause) {
@@ -289,7 +229,6 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			}
 		} catch (Throwable t) {
 			log.error("Could not deploy queue of " + serviceName, t);
-			QUEUE_CREATION_TIMES.put(serviceName, currentTime);
 		}
 
 		return result;
@@ -299,9 +238,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		int result = 0;
 
 		try {
-			ObjectName objName = new ObjectName(
-					"jboss.messaging:service=ServerPeer");
-			if (isDeployQueue(objName, serviceName)) {
+			if (isDeployQueue(serviceName)) {
 				log.trace(serviceName);
 				boolean conversational = false;
 				if (!serviceName.startsWith(".")) {
@@ -314,7 +251,9 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 				} else {
 					prefix = "BTR_";
 				}
-				beanServerConnection.invoke(objName, "undeployQueue",
+				ObjectName objName = new ObjectName(
+						"org.hornetq:module=JMS,type=Server");
+				beanServerConnection.invoke(objName, "destroyQueue",
 						new Object[] { prefix + serviceName },
 						new String[] { "java.lang.String" });
 			}
@@ -362,9 +301,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 		try {
 			Properties prop = new Properties();
-			XMLEnvHandler handler = new XMLEnvHandler(prop);
-			XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
-			xmlenv.parse("btconfig.xml");
+			XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
 
 			if (serviceName.indexOf(".") > -1) {
 				server = serviceName.substring(1);
@@ -386,10 +323,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			if (server != null && server.equals(serverName)) {
 				log.trace("Service " + serviceName + " exists for server: "
 						+ server);
-				if (operation.equals("tpunadvertise")) {
-					log.trace("Unadvertising: " + serviceName);
-					success[0] = (byte) undeployQueue(serviceName);
-				} else if (operation.equals("tpadvertise")) {
+				if (operation.equals("tpadvertise")) {
 					log.trace("Advertising: " + serviceName);
 					String version = st.nextToken();
 					success[0] = (byte) deployQueue(serviceName, version);
@@ -397,7 +331,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 					log.trace("Decrement consumer: " + serviceName);
 					success[0] = (byte) decrementConsumer(serviceName);
 				} else {
-					log.error("Unknow operation " + operation);
+					log.error("Unknown operation " + operation);
 					success[0] = 0;
 				}
 			} else {

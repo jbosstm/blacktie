@@ -27,12 +27,14 @@ import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 import org.jboss.blacktie.jatmibroker.xatmi.mdb.MDBBlacktieService;
 import org.jboss.ejb3.annotation.Depends;
+import org.jboss.ejb3.annotation.ResourceAdapter;
 
 @javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
 		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTR_EchoService") })
-@Depends("jboss.messaging.destination:service=Queue,name=BTR_EchoService")
+// @Depends("org.hornetq:module=JMS,name=\"BTR_EchoService\",type=Queue")
+@ResourceAdapter("hornetq-ra.rar")
 public class EchoServiceTestService extends MDBBlacktieService implements
 		javax.jms.MessageListener {
 

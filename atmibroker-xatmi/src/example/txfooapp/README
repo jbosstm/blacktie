@@ -190,9 +190,9 @@ C:\blacktie\dist\blacktie-3.0.0.M1-SNAPSHOT\bin\generate-executables.xml:144: Co
 3. RUNNING THE EXAMPLE
 ======================
 Undeploy any older versions of the blacktie admin service
-Copy the file $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all/deploy
-Copy the file $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml into $JBOSS_HOME/server/all/conf
-Start the JBoss server (<JBOSS_HOME>/bin/run.sh|bat -c all)
+Copy the file $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all-with-hornetq/deploy
+Copy the file $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml into $JBOSS_HOME/server/all-with-hornetq/conf
+Start the JBoss server (<JBOSS_HOME>/bin/run.sh|bat -c all-with-hornetq)
 
 Make sure all required libraries are on the library path:
 

@@ -40,14 +40,15 @@ import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
 import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 import org.jboss.blacktie.jatmibroker.xatmi.mdb.MDBBlacktieService;
-import org.jboss.ejb3.annotation.Depends;
+import org.jboss.ejb3.annotation.ResourceAdapter;
 import org.w3c.dom.Element;
 
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
 		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTR_BTDomainAdmin") }, messageListenerInterface = javax.jms.MessageListener.class)
-@Depends("jboss.messaging.destination:service=Queue,name=BTR_BTDomainAdmin")
+// @Depends("org.hornetq:module=JMS,name=\"BTR_BTDomainAdmin\",type=Queue")
 @javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
+@ResourceAdapter("hornetq-ra.rar")
 /**
  * This is the administration service proxy to allow administration of the servers from XATMI clients.
  */
@@ -181,6 +182,9 @@ public class BlacktieAdminServiceXATMI extends MDBBlacktieService implements
 				int id = getInt(parameters);
 				String response = getServerVersionById(serverName, id);
 				toReturn = response.getBytes();
+			} else {
+				log.error("Unknown operation: " + operation);
+				return new Response(Connection.TPFAIL, 0, null, 0);
 			}
 
 			X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc(

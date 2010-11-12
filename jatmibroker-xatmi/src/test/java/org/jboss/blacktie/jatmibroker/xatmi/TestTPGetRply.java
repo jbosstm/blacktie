@@ -137,7 +137,7 @@ public class TestTPGetRply extends TestCase {
 			// DRAIN THE RESPONSE
 			Response toTest = connection.tpgetrply(cd, 0);
 			assertTrue(TestTPConversation.strcmp(toTest.getBuffer(),
-				"test_tpgetrply_TPNOBLOCK") == 0);
+					"test_tpgetrply_TPNOBLOCK") == 0);
 		}
 	}
 

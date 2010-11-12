@@ -1,20 +1,16 @@
 <?xml version="1.0"?>
-	<!--
-		JBoss, Home of Professional Open Source Copyright 2008, Red Hat
-		Middleware LLC, and others contributors as indicated by the @authors
-		tag. All rights reserved. See the copyright.txt in the distribution
-		for a full listing of individual contributors. This copyrighted
-		material is made available to anyone wishing to use, modify, copy, or
-		redistribute it subject to the terms and conditions of the GNU Lesser
-		General Public License, v. 2.1. This program is distributed in the
-		hope that it will be useful, but WITHOUT A WARRANTY; without even the
-		implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-		PURPOSE. See the GNU Lesser General Public License for more details.
-		You should have received a copy of the GNU Lesser General Public
-		License, v.2.1 along with this distribution; if not, write to the Free
-		Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-		02110-1301, USA.
-	-->
+<!-- JBoss, Home of Professional Open Source Copyright 2008, Red Hat Middleware 
+	LLC, and others contributors as indicated by the @authors tag. All rights 
+	reserved. See the copyright.txt in the distribution for a full listing of 
+	individual contributors. This copyrighted material is made available to anyone 
+	wishing to use, modify, copy, or redistribute it subject to the terms and 
+	conditions of the GNU Lesser General Public License, v. 2.1. This program 
+	is distributed in the hope that it will be useful, but WITHOUT A WARRANTY; 
+	without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+	PURPOSE. See the GNU Lesser General Public License for more details. You 
+	should have received a copy of the GNU Lesser General Public License, v.2.1 
+	along with this distribution; if not, write to the Free Software Foundation, 
+	Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. -->
 <ENVIRONMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
@@ -79,10 +75,6 @@
 				<SERVICE name='JAVA_Converse'
 					java_class_name="org.jboss.blacktie.jatmibroker.xatmi.services.TPCallXOctetService"
 					advertised="true" size="1">
-					<security>
-						<role name="guest" read="true" write="true" />
-						<role name="blacktie" read="true" write="true" />
-					</security>
 				</SERVICE>
 				<SERVICE name='XMLParserTest' />
 			</SERVICE_NAMES>
@@ -92,8 +84,7 @@
 		OPT="-ORBInitRef NameService=corbaloc::${JBOSSAS_IP_ADDR}:3528/NameService"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
 	<MQ HOST="${JBOSSAS_IP_ADDR}" PORT="61613" USER="guest" PASSWORD="guest"
-		 RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10"
-		NAMING_URL="jnp://${JBOSSAS_IP_ADDR}:1099" />
+		RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" NAMING_URL="jnp://${JBOSSAS_IP_ADDR}:1099" />
 	<JMX
 		url="service:jmx:rmi:///jndi/rmi://${JBOSSAS_IP_ADDR}:1090/jmxconnector" />
 	<BUFFERS>

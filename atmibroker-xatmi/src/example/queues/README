@@ -39,16 +39,26 @@ On Windows:
 
 3. DEPLOY THE BLACKTIE ADMIN SERVICE
 Undeploy any older versions of the blacktie admin service
-Copy the file $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all/deploy
-Copy the file $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml into $JBOSS_HOME/server/all/conf
+Copy the file $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all-with-hornetq/deploy
+Copy the file $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml into $JBOSS_HOME/server/all-with-hornetq/conf
 
 4. RUN THE APPLICATION SERVER
 Make sure that the naming, messaging and transaction services are running, by running the JBoss server:
-<JBOSS_HOME>/bin/run.sh|bat -c all
+<JBOSS_HOME>/bin/run.sh|bat -c all-with-hornetq
 
 5. DEPLOY THE QUEUE
-Since the server will not be available when the client runs the queue must be deployed beforehand:
-	copy TestOne-service.xml into $JBOSS_HOME/server/all/deploy
+As this queue is externally managed you will need to add the TestOne queue to the HornetQ configuration.
+The easiest way to do this is to edit the file:
+<JBOSS_HOME>/server/all-with-hornetq/deploy/hornetq.sar/hornetq-jms.xml and add:
+   <queue name="BTR_TestOne">
+      <entry name="/queue/BTR_TestOne"/>
+   </queue>
+NOTE: The name of the queue is either prefixed with BTR_ or BTC_ dependent upon whether this queue will be accessed
+      from a tpcall/tpacall (i.e. RPC) which leads to a prefix of BTR_ - Alternatively it will be prefixed BTC_ if
+      it is accessed from the conversational tpconnect method.
+NOTE: If you have already ran the unit tests (i.e. you are building from source) you will already find that this queue
+      has been deployed into an alternative file:
+      <JBOSS_HOME>/server/all-with-hornetq/conf/hornetq-jms.xml
 
 6 RUN THE APPLICATION
 

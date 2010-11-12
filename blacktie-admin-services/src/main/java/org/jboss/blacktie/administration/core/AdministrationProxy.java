@@ -22,13 +22,9 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-import javax.jms.Destination;
-import javax.jms.Queue;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
@@ -45,7 +41,6 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
@@ -72,9 +67,7 @@ public class AdministrationProxy {
 
 	public AdministrationProxy() throws IOException, ConfigurationException {
 		log.debug("Administration Proxy");
-		XMLEnvHandler handler = new XMLEnvHandler(prop);
-		XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
-		xmlenv.parse("btconfig.xml");
+		XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
 		servers = (List<String>) prop.get("blacktie.domain.servers");
 		ConnectionFactory cf = ConnectionFactory.getConnectionFactory();
 		connection = cf.getConnection();
@@ -244,25 +237,20 @@ public class AdministrationProxy {
 
 		try {
 			ObjectName objName = new ObjectName(
-					"jboss.messaging:service=ServerPeer");
-			HashSet dests = (HashSet) getBeanServerConnection().getAttribute(
-					objName, "Destinations");
-
-			Iterator<Destination> it = dests.iterator();
-			while (it.hasNext()) {
-				Destination dest = it.next();
-				if (dest instanceof Queue) {
-					String qname = ((Queue) dest).getQueueName();
-					log.trace(qname);
-					if (qname.startsWith("BTR_.")) {
-						String sname = qname.substring("BTR_.".length());
-						sname = sname.replaceAll("[0-9]", "");
-						log.trace("contains?: " + sname);
-						if (servers.contains(sname)
-								&& !runningServerList.contains(sname)) {
-							log.trace("contains!: " + sname);
-							runningServerList.add(sname);
-						}
+					"org.hornetq:module=JMS,type=Server");
+			String[] dests = (String[]) beanServerConnection.getAttribute(
+					objName, "QueueNames");
+			for (int i = 0; i < dests.length; i++) {
+				String qname = dests[i];
+				log.trace(qname);
+				if (qname.startsWith("BTR_.")) {
+					String sname = qname.substring("BTR_.".length());
+					sname = sname.replaceAll("[0-9]", "");
+					log.trace("contains?: " + sname);
+					if (servers.contains(sname)
+							&& !runningServerList.contains(sname)) {
+						log.trace("contains!: " + sname);
+						runningServerList.add(sname);
 					}
 				}
 			}
@@ -279,24 +267,19 @@ public class AdministrationProxy {
 
 		try {
 			ObjectName objName = new ObjectName(
-					"jboss.messaging:service=ServerPeer");
-			HashSet dests = (HashSet) getBeanServerConnection().getAttribute(
-					objName, "Destinations");
-
-			Iterator<Destination> it = dests.iterator();
-			while (it.hasNext()) {
-				Destination dest = it.next();
-				if (dest instanceof Queue) {
-					String qname = ((Queue) dest).getQueueName();
-					log.trace(qname);
-					if (qname.startsWith("BTR_.")) {
-						String server = qname.substring("BTR_.".length());
-						server = server.replaceAll("[0-9]", "");
-						if (server.equals(serverName)) {
-							qname = qname.substring("BTR_.".length());
-							qname = qname.replaceAll("[A-Za-z]", "");
-							ids.add(new Integer(qname));
-						}
+					"org.hornetq:module=JMS,type=Server");
+			String[] dests = (String[]) beanServerConnection.getAttribute(
+					objName, "QueueNames");
+			for (int i = 0; i < dests.length; i++) {
+				String qname = dests[i];
+				log.trace(qname);
+				if (qname.startsWith("BTR_.")) {
+					String server = qname.substring("BTR_.".length());
+					server = server.replaceAll("[0-9]", "");
+					if (server.equals(serverName)) {
+						qname = qname.substring("BTR_.".length());
+						qname = qname.replaceAll("[A-Za-z]", "");
+						ids.add(new Integer(qname));
 					}
 				}
 			}
@@ -378,8 +361,12 @@ public class AdministrationProxy {
 		}
 
 		for (int i = 0; i < ids.size(); i++) {
-			result = advertise(serverName, ids.get(i), serviceName) && result;
-			log.warn("Failed to advertise service at: " + ids.get(i));
+			boolean advertised = advertise(serverName, ids.get(i), serviceName);
+			result = advertised && result;
+			if (!advertised) {
+				log.warn("Failed to advertise service: " + serviceName
+						+ " at: " + serverName + ids.get(i));
+			}
 		}
 
 		return result;
@@ -396,8 +383,13 @@ public class AdministrationProxy {
 		}
 
 		for (int i = 0; i < ids.size(); i++) {
-			result = unadvertise(serverName, ids.get(i), serviceName) && result;
-			log.warn("Failed to unadvertise service at: " + ids.get(i));
+			boolean unadvertised = unadvertise(serverName, ids.get(i),
+					serviceName);
+			result = unadvertised && result;
+			if (!unadvertised) {
+				log.warn("Failed to unadvertise service: " + serviceName
+						+ " at: " + serverName + ids.get(i));
+			}
 		}
 
 		return result;
@@ -655,7 +647,6 @@ public class AdministrationProxy {
 	public int getQueueDepth(String serverName, String serviceName) {
 		Integer depth;
 		try {
-			// jboss.messaging.destination:service=Queue,name=dynamic
 			log.trace(serviceName);
 			boolean conversational = false;
 			if (!serviceName.startsWith(".")) {
@@ -669,8 +660,8 @@ public class AdministrationProxy {
 				prefix = "BTR_";
 			}
 			ObjectName objName = new ObjectName(
-					"jboss.messaging.destination:service=Queue,name=" + prefix
-							+ serviceName);
+					"org.hornetq:module=JMS,name=\"" + prefix + serviceName
+							+ "\",type=Queue");
 			depth = (Integer) getBeanServerConnection().getAttribute(objName,
 					"MessageCount");
 		} catch (Exception e) {

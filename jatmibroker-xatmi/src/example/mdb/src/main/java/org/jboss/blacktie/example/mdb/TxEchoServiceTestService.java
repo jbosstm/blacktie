@@ -18,6 +18,7 @@
 package org.jboss.blacktie.example.mdb;
 
 import javax.ejb.ActivationConfigProperty;
+import org.jboss.ejb3.annotation.ResourceAdapter;
 import javax.ejb.MessageDriven;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -41,7 +42,8 @@ import org.jboss.ejb3.annotation.Depends;
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
 		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTR_TxEchoService") })
-@Depends("jboss.messaging.destination:service=Queue,name=BTR_TxEchoService")
+// @Depends("org.hornetq:module=JMS,name=\"BTR_TxEchoService\",type=Queue")
+@ResourceAdapter("hornetq-ra.rar")
 public class TxEchoServiceTestService extends MDBBlacktieService implements
 		javax.jms.MessageListener {
 	private static final Logger log = LogManager
@@ -79,8 +81,7 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 		} else if (args.contains("tx=false")) {
 			try {
 				String s = beans[0].txMandatory("bean=" + names[1]);
-				log
-						.info("Error should have got an EJBTransactionRequiredException exception");
+				log.info("Error should have got an EJBTransactionRequiredException exception");
 				return "Error should have got an EJBTransactionRequiredException exception";
 			} catch (javax.ejb.EJBTransactionRequiredException e) {
 				log.debug("Success got EJBTransactionRequiredException");
@@ -125,8 +126,7 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 			try {
 				return beans[0].echo("bean=" + names[1]);
 			} catch (javax.ejb.EJBException e) {
-				log
-						.warn("Failure got Exception calling method with default transaction attribute");
+				log.warn("Failure got Exception calling method with default transaction attribute");
 				return "Failure got Exception calling method with default transaction attribute: "
 						+ e;
 			}

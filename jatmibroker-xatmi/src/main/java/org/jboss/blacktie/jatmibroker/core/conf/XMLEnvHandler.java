@@ -47,7 +47,6 @@ public class XMLEnvHandler extends DefaultHandler {
 	private final String JMX = "JMX";
 	private final String MACHINE = "MACHINE";
 	private final String MACHINE_REF = "MACHINE-REF";
-	private final String ROLE = "role";
 
 	private Properties prop;
 
@@ -72,7 +71,7 @@ public class XMLEnvHandler extends DefaultHandler {
 	static int FLOAT_SIZE = 4;
 	static int DOUBLE_SIZE = 8;
 
-	public XMLEnvHandler(Properties prop) {
+	XMLEnvHandler(Properties prop) {
 		this.prop = prop;
 		prop.put("blacktie.domain.servers", servers);
 		prop.put("blacktie.domain.buffers", buffers);
@@ -95,13 +94,14 @@ public class XMLEnvHandler extends DefaultHandler {
 	}
 
 	/**
-	 * Search inputStr for sequences of the form ${VAR} and replace them with the result
-	 * of System.getenv("VAR"); If the enviromment variable VAR is not set then the literal
-	 * text "VAR" is used instead.
-	 *
-	 * @param inputStr	the pattern to match against
-	 * @return the same string with sequences of the form ${VAR} replaced by the result of
-	 * System.getenv("VAR") or "VAR" if that returns null
+	 * Search inputStr for sequences of the form ${VAR} and replace them with
+	 * the result of System.getenv("VAR"); If the enviromment variable VAR is
+	 * not set then the literal text "VAR" is used instead.
+	 * 
+	 * @param inputStr
+	 *            the pattern to match against
+	 * @return the same string with sequences of the form ${VAR} replaced by the
+	 *         result of System.getenv("VAR") or "VAR" if that returns null
 	 */
 	public String getenv(CharSequence inputStr) {
 		String[] matches = new String[3];
@@ -112,7 +112,7 @@ public class XMLEnvHandler extends DefaultHandler {
 			boolean expanded = false;
 
 			for (int i = 0; i < matcher.groupCount(); i++) {
-				if ( i < matches.length) {
+				if (i < matches.length) {
 					String val = matcher.group(i + 1);
 					String env = System.getenv(val);
 
@@ -126,7 +126,8 @@ public class XMLEnvHandler extends DefaultHandler {
 			}
 
 			if (!expanded)
-				log.error("There is an unset environment variable within the configuration element/attribute: " + inputStr);
+				log.error("There is an unset environment variable within the configuration element/attribute: "
+						+ inputStr);
 
 			for (int i = 0; i < matches.length; i++)
 				sb.append(matches[i]);
@@ -433,6 +434,12 @@ public class XMLEnvHandler extends DefaultHandler {
 					String sizeKey = "blacktie." + serviceName + ".size";
 					String sizeVal = atts.getValue(i);
 					prop.setProperty(sizeKey, sizeVal);
+				} else if (attsLocalName
+						.equals("externally-managed-destination")) {
+					String external = atts.getValue(i);
+					String ad_key = "blacktie." + serviceName
+							+ ".externally-managed-destination";
+					prop.put(ad_key, new Boolean(external));
 				}
 			}
 
@@ -445,40 +452,21 @@ public class XMLEnvHandler extends DefaultHandler {
 			if (prop.get(ad_key) == null) {
 				prop.put(ad_key, false);
 			}
+
+			String ex_key = "blacktie." + serviceName
+					+ ".externally-managed-destination";
+			if (prop.get(ex_key) == null) {
+				prop.put(ex_key, false);
+			}
+			log.trace("Externally managed: "
+					+ prop.get("blacktie." + serviceName
+							+ ".externally-managed-destination"));
 			log.trace("Added the service: " + serviceName);
-		} else if (ROLE.equals(localName)) {
-			String key = null;
-			if (serviceName != null) {
-				log.debug("Processing role for service" + serviceName);
-				key = "blacktie." + serviceName + ".security";
-			} else {
-				log.debug("Processing role for server: " + serverName);
-				key = "blacktie." + serverName + ".security";
-			}
-
-			String roleList = prop.getProperty(key, "");
-			String name = null;
-			String read = "false";
-			String write = "false";
-
-			for (int i = 0; i < atts.getLength(); i++) {
-				String attsLocalName = atts.getLocalName(i);
-				if (attsLocalName.equals("name")) {
-					name = atts.getValue(i);
-				} else if (atts.getLocalName(i).equals("read")) {
-					read = atts.getValue(i);
-				} else {
-					write = atts.getValue(i);
-				}
-			}
-			String role = name + ':' + read + ':' + write;
-			if (roleList.length() > 0) {
-				roleList = roleList + ',' + role;
-			} else {
-				roleList = role;
-			}
-			prop.put(key, roleList);
-			log.trace("Added the role: " + role);
+			log.trace("Adding for: "
+					+ serviceName
+					+ " "
+					+ prop.get("blacktie." + serviceName
+							+ ".externally-managed-destination"));
 		}
 	}
 

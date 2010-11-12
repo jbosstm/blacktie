@@ -25,7 +25,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
 import org.rhq.core.domain.configuration.Configuration;
 import org.rhq.core.pluginapi.inventory.DiscoveredResourceDetails;
@@ -89,9 +88,7 @@ public class BlacktiePluginDiscoveryComponent implements
 		// default description for your resource
 		try {
 			Properties prop = new Properties();
-			XMLEnvHandler handler = new XMLEnvHandler(prop);
-			XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
-			xmlenv.parse("btconfig.xml");
+			XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
 
 			String domainName = prop.getProperty("blacktie.domain.name");
 			String key = domainName + " key";

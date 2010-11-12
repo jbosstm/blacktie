@@ -32,8 +32,12 @@
 
 #include "BufferConverterImpl.h"
 
+#include <time.h>
+
 log4cxx::LoggerPtr HybridSessionImpl::logger(log4cxx::Logger::getLogger(
 		"HybridSessionImpl"));
+
+static int receiptCounter = 0;
 
 HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 		CORBA_CONNECTION* connection, apr_pool_t* pool, int id,
@@ -65,7 +69,7 @@ HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
 	int XATMI_SERVICE_NAME_LENGTH = 15;
-	int queueNameLength = 11 + 15 + 1;
+	int queueNameLength = 14 + 15 + 1;
 	this->sendTo  = (char*) ::malloc(queueNameLength);
 	memset(this->sendTo, '\0', queueNameLength);
 	if (isConv) {
@@ -186,7 +190,6 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		frame.command = (char*) "SEND";
 		frame.headers = apr_hash_make(pool);
 		apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, sendTo);
-		apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING, "send");
 
 		frame.body_length = message.len;
 		frame.body = data_togo;
@@ -213,7 +216,9 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		apr_hash_set(frame.headers, "messagerval", APR_HASH_KEY_STRING, rval);
 		apr_hash_set(frame.headers, "messagercode", APR_HASH_KEY_STRING, rcode);
 		if (message.ttl > 0) {
-			char * ttl = apr_itoa(pool, message.ttl);
+			long epoch = time(NULL) * 1000;
+			long longTTL = epoch + message.ttl;
+			char * ttl = apr_ltoa(pool, longTTL);
 			apr_hash_set(frame.headers, "expires", APR_HASH_KEY_STRING, ttl);
 			LOG4CXX_TRACE(logger, "Set the expires time to live: " << ttl);
 		}
@@ -259,8 +264,11 @@ bool HybridSessionImpl::send(MESSAGE message) {
 				// Note: sockets are created on a per request basis so there is no
 				// need to clear the socket opt after sending the frame.
 			}
-
+			char * receiptId = (char*) malloc(10);
+			::sprintf(receiptId, "send-%d", receiptCounter);
+			apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING, receiptId);
 			rc = stomp_write(stompConnection, &frame, pool);
+			free(receiptId);
 		}
 
 		if (isNonBlocking && rc == APR_TIMEUP) {

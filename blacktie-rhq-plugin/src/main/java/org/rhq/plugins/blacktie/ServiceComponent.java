@@ -38,7 +38,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
 import org.rhq.core.domain.configuration.Configuration;
 import org.rhq.core.domain.configuration.ConfigurationUpdateStatus;
@@ -116,9 +115,7 @@ public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 	 */
 	public void start(ResourceContext context) {
 		try {
-			XMLEnvHandler handler = new XMLEnvHandler(prop);
-			XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
-			xmlenv.parse("btconfig.xml");
+			XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
 			JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
 			JMXConnector c = JMXConnectorFactory.connect(u);
 			beanServerConnection = c.getMBeanServerConnection();
@@ -131,9 +128,7 @@ public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 					"getServerName", new Object[] { serviceName },
 					new String[] { "java.lang.String" });
 		} catch (Exception e) {
-			log
-					.error("start server " + serviceName
-							+ " plugin error with " + e);
+			log.error("start server " + serviceName + " plugin error with " + e);
 		}
 		log.debug("start resource: " + serviceName);
 	}
@@ -160,7 +155,6 @@ public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 		AvailabilityType status = AvailabilityType.DOWN;
 
 		try {
-			//jboss.messaging.destination:service=Queue,name=dynamic
 			log.trace(serviceName);
 			boolean conversational = false;
 			if (!serviceName.startsWith(".")) {
@@ -173,12 +167,13 @@ public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 			} else {
 				prefix = "BTR_";
 			}
-			
+
 			ObjectName objName = new ObjectName(
-					"jboss.messaging.destination:service=Queue,name="
-							+ prefix + serviceName);
-			Integer count = (Integer)beanServerConnection.getAttribute(objName, "ConsumerCount");
-			if(count.intValue() > 0) {
+					"org.hornetq:module=JMS,name=\"" + prefix + serviceName
+							+ "\",type=Queue");
+			Integer count = (Integer) beanServerConnection.getAttribute(
+					objName, "ConsumerCount");
+			if (count.intValue() > 0) {
 				status = AvailabilityType.UP;
 			}
 		} catch (Exception e) {
@@ -253,15 +248,15 @@ public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 					String load = prop.getProperty("blacktie." + serviceName
 							+ ".load", "50");
 					report.addData(new MeasurementDataNumeric(request, value
-							.doubleValue()
-							* Double.parseDouble(load)));
+							.doubleValue() * Double.parseDouble(load)));
 				} else if (name.equals("conversational")) {
-					Boolean value = (Boolean) prop.get("blacktie." + serviceName
-							+ ".conversational");
-					if(value) {
+					Boolean value = (Boolean) prop.get("blacktie."
+							+ serviceName + ".conversational");
+					if (value) {
 						report.addData(new MeasurementDataTrait(request, "true"));
 					} else {
-						report.addData(new MeasurementDataTrait(request, "false"));
+						report.addData(new MeasurementDataTrait(request,
+								"false"));
 					}
 				}
 			} catch (Exception e) {

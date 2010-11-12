@@ -37,7 +37,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
 import org.rhq.core.domain.configuration.Configuration;
 import org.rhq.core.domain.configuration.ConfigurationUpdateStatus;
@@ -117,9 +116,7 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 
 		try {
 			Properties prop = new Properties();
-			XMLEnvHandler handler = new XMLEnvHandler(prop);
-			XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
-			xmlenv.parse("btconfig.xml");
+			XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
 			JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
 			JMXConnector c = JMXConnectorFactory.connect(u);
 			beanServerConnection = c.getMBeanServerConnection();

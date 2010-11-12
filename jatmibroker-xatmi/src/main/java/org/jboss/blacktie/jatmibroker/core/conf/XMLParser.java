@@ -20,6 +20,9 @@ package org.jboss.blacktie.jatmibroker.core.conf;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
@@ -45,15 +48,17 @@ public class XMLParser {
 	private SAXParser saxParser;
 	private Schema schema;
 
+	private static Map<String, Map<String, Properties>> loadedProperties = new HashMap<String, Map<String, Properties>>();
+
 	/**
 	 * Constructor
 	 * 
 	 * @param handler
 	 *            - DefaultHandler for the SAX parser
 	 */
-	public XMLParser(DefaultHandler handler, String xsdFilename)
+	private XMLParser(Properties properties, String xsdFilename)
 			throws ConfigurationException {
-		this.handler = handler;
+		this.handler = new XMLEnvHandler(properties);
 		create(xsdFilename);
 	}
 
@@ -107,7 +112,7 @@ public class XMLParser {
 	 * @param envXML
 	 *            - File
 	 */
-	public void parse(String env) throws ConfigurationException {
+	private void parse(String env) throws ConfigurationException {
 		String configDir = System.getenv("BLACKTIE_CONFIGURATION_DIR");
 		if (configDir != null && !configDir.equals("")) {
 			env = configDir + "/" + env;
@@ -115,6 +120,7 @@ public class XMLParser {
 
 		log.debug("read configuration from " + configDir + " directory");
 
+		// File file = new File(env);
 		InputStream resource = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream(env);
 		if (resource != null) {
@@ -131,5 +137,34 @@ public class XMLParser {
 					"Could not load the configuration file: " + env
 							+ " please update your CLASSPATH");
 		}
+	}
+
+	public static synchronized void loadProperties(String schema,
+			String configFile, Properties prop) throws ConfigurationException {
+		Properties properties = null;
+		log.debug("Loading the properties from: " + configFile);
+		if (loadedProperties.containsKey(schema)) {
+			log.debug("Schema was located");
+			Map<String, Properties> map = loadedProperties.get(schema);
+			if (map.containsKey(configFile)) {
+				log.debug("Properties will be copied as already loaded");
+				properties = map.get(configFile);
+			} else {
+				log.debug("Properties will be read from file as not already loaded");
+				properties = new Properties();
+				XMLParser xmlenv = new XMLParser(properties, schema);
+				xmlenv.parse(configFile);
+				map.put(configFile, properties);
+			}
+		} else {
+			log.debug("Properties will be read from file as schema not already loaded");
+			Map<String, Properties> map = new HashMap<String, Properties>();
+			properties = new Properties();
+			XMLParser xmlenv = new XMLParser(properties, schema);
+			xmlenv.parse(configFile);
+			map.put(configFile, properties);
+			loadedProperties.put(schema, map);
+		}
+		prop.putAll(properties);
 	}
 }

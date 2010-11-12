@@ -28,7 +28,6 @@ import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.blacktie.jatmibroker.core.conf.XMLEnvHandler;
 import org.jboss.blacktie.jatmibroker.core.conf.XMLParser;
 import org.rhq.core.domain.configuration.Configuration;
 import org.rhq.core.pluginapi.inventory.DiscoveredResourceDetails;
@@ -93,23 +92,21 @@ public class ServiceDiscoveryComponent implements ResourceDiscoveryComponent {
 		// default description for your resource
 		try {
 			Properties prop = new Properties();
-			XMLEnvHandler handler = new XMLEnvHandler(prop);
-			XMLParser xmlenv = new XMLParser(handler, "btconfig.xsd");
-			xmlenv.parse("btconfig.xml");
-			
+			XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
+
 			Set<Object> keys = prop.keySet();
 			Set<String> names = new HashSet<String>();
-			
-			for(Object key : keys) {
-				if(key instanceof String) {
-					names.add((String)key);
+
+			for (Object key : keys) {
+				if (key instanceof String) {
+					names.add((String) key);
 				}
 			}
-			
-			for(String name : names) {
-				if(name.endsWith(".server")) {
+
+			for (String name : names) {
+				if (name.endsWith(".server")) {
 					String server = prop.getProperty(name);
-					if(server.equals(serverName)) {
+					if (server.equals(serverName)) {
 						String serviceName = name.split("\\.")[1];
 						DiscoveredResourceDetails resource = new DiscoveredResourceDetails(
 								context.getResourceType(), serviceName,

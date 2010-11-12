@@ -39,15 +39,21 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 		connection.close();
 	}
 
-	public void test() throws ConnectionException {
-		processCommand("tpadvertise,foo,FOOTest,3.0.0.M1-SNAPSHOT,", 1);
+	/**
+	 * Cannot test this without using a C server as unadvertise checks for a
+	 * running server
+	 * 
+	 * @throws ConnectionException
+	 */
+	public void xtest() throws ConnectionException {
+		processStompCommand("tpadvertise,foo,FOOTest,3.0.0.M1-SNAPSHOT,", 1);
 		try {
 			connection.tpacall("FOOTest", null, Connection.TPNOREPLY);
 		} catch (ConnectionException e) {
 			fail("Was not able to send the request : " + e.getMessage());
 		}
 
-		processCommand("tpunadvertise,foo,FOOTest,", 1);
+		processDomainCommand("unadvertise,foo,FOOTest,", 1);
 		try {
 			connection.tpcall("FOOTest", null, Connection.TPNOREPLY);
 			fail("Was able to send the request");
@@ -55,25 +61,26 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 			// EXPECTED
 		}
 
-		processCommand("tpadvertise,foo,FOOTest,3.0.0.M1-SNAPSHOT,", 1);
+		processStompCommand("tpadvertise,foo,FOOTest,3.0.0.M1-SNAPSHOT,", 1);
 
 		try {
 			connection.tpacall("FOOTest", null, Connection.TPNOREPLY);
 		} catch (ConnectionException e) {
 			fail("Was not able to send the request : " + e.getMessage());
 		}
-		processCommand("tpunadvertise,foo,FOOTest,", 1);
+		processDomainCommand("unadvertise,foo,FOOTest,", 1);
 	}
 
 	public void testUnknownService() throws ConnectionException {
-		processCommand("tpadvertise,foo,UNKNOWN_SERVICE,3.0.0.M1-SNAPSHOT,", 0);
+		processStompCommand(
+				"tpadvertise,foo,UNKNOWN_SERVICE,3.0.0.M1-SNAPSHOT,", 0);
 	}
 
 	public void testWrongVersionService() throws ConnectionException {
-		processCommand("tpadvertise,foo,FOOTest,WrongVersion,", 4);
+		processStompCommand("tpadvertise,foo,FOOTest,WrongVersion,", 4);
 	}
 
-	private void processCommand(String command, int expectation)
+	private void processStompCommand(String command, int expectation)
 			throws ConnectionException {
 		byte[] toSend = command.getBytes();
 		X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null,
@@ -81,6 +88,19 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 		buffer.setByteArray(toSend);
 
 		Response response = connection.tpcall("BTStompAdmin", buffer, 0);
+
+		byte[] responseData = ((X_OCTET) response.getBuffer()).getByteArray();
+		assertEquals(expectation, responseData[0]);
+	}
+
+	private void processDomainCommand(String command, int expectation)
+			throws ConnectionException {
+		byte[] toSend = command.getBytes();
+		X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null,
+				toSend.length);
+		buffer.setByteArray(toSend);
+
+		Response response = connection.tpcall("BTDomainAdmin", buffer, 0);
 
 		byte[] responseData = ((X_OCTET) response.getBuffer()).getByteArray();
 		assertEquals(expectation, responseData[0]);

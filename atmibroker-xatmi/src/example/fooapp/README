@@ -67,13 +67,13 @@ generate_client -Dclient.includes=client.c
 
 4. DEPLOY THE BLACKTIE ADMIN SERVICE
 Undeploy any older versions of the blacktie admin service
-Copy the file $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all/deploy
-Copy the file $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml into $JBOSS_HOME/server/all/conf
+Copy the file $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all-with-hornetq/deploy
+Copy the file $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml into $JBOSS_HOME/server/all-with-hornetq/conf
 
 
 5. RUN THE APPLICATION SERVER
 Make sure that the naming, messaging and transaction services are running, by running the JBoss server:
-<JBOSS_HOME>/bin/run.sh|bat -c all
+<JBOSS_HOME>/bin/run.sh|bat -c all-with-hornetq
 
 
 6 RUN THE APPLICATIONS

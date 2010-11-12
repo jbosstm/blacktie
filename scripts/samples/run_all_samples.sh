@@ -3,41 +3,8 @@ set -m
 
 echo "Running all samples"
 
-if [ "$1" ]; then
-if [ "$1" = "tx" ]; then
-echo "Test 1: Running txfooapp"
-shift
-
 # RUN THE FOOAPP SERVER
-cd $BLACKTIE_HOME/examples/xatmi/txfooapp
-generate_server -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="$ORACLE_INC_DIR" -Dx.lib.dir="$ORACLE_LIB_DIR" -Dx.libs="occi clntsh" -Dx.define="ORACLE"
-if [ "$?" != "0" ]; then
-        exit -1
-fi
-export BLACKTIE_CONFIGURATION=linux
-btadmin startup
-if [ "$?" != "0" ]; then
-        exit -1
-fi
-
-# RUN THE C CLIENT
-cd $BLACKTIE_HOME/examples/xatmi/txfooapp
-generate_client -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="$ORACLE_INC_DIR" -Dx.lib.dir="$ORACLE_LIB_DIR" -Dx.libs="occi clntsh" -Dx.define="ORACLE"
-./client
-
-# SHUTDOWN THE SERVER RUNNING THE btadmin TOOL
-export BLACKTIE_CONFIGURATION=linux
-btadmin shutdown
-if [ "$?" != "0" ]; then
-	exit -1
-fi
-unset BLACKTIE_CONFIGURATION
-
-fi
-fi
-
-# RUN THE FOOAPP SERVER
-echo "Test 2: Running fooapp"
+echo "Example 1: Running fooapp"
 cd $BLACKTIE_HOME/examples/xatmi/fooapp
 generate_server -Dservice.names=BAR -Dserver.includes=BarService.c
 if [ "$?" != "0" ]; then
@@ -67,7 +34,7 @@ if [ "$?" != "0" ]; then
 fi
 
 # RUN THE ADMIN JMX CLIENT
-echo "Test 3: Running Admin Tests"
+echo "Example 2: Running Admin Tests"
 cd $BLACKTIE_HOME/examples/admin/jmx
 echo '0
 0
@@ -119,7 +86,7 @@ echo '0
 sleep 3
 
 # RUN THE QUEUEING EXAMPLE
-echo "Test 4: Running externally managed queue example"
+echo "Example 3: Running externally managed queue example"
 cd $BLACKTIE_HOME/examples/xatmi/queues
 
 generate_client -Dclient.includes=queues.c
@@ -142,7 +109,7 @@ fi
 unset BLACKTIE_SERVER_ID
 
 # RUN THE SECURE SERVER
-echo "Test 5: Running Security"
+echo "Example 4: Running Security"
 cd $BLACKTIE_HOME/examples/xatmi/security
 generate_server -Dservice.names=SECURE -Dserver.includes=BarService.c
 if [ "$?" != "0" ]; then
@@ -168,7 +135,7 @@ fi
 unset BLACKTIE_CONFIGURATION_DIR
 
 # RUN THE "dynsub" USER CLIENT
-echo "Test 6: Running MDB examples"
+echo "Example 5: Running MDB examples"
 export BLACKTIE_CONFIGURATION_DIR=dynsub
 ./client
 if [ "$?" != "0" ]; then
@@ -194,7 +161,7 @@ if [ "$?" != "0" ]; then
 fi
 
 # RUN THE INTEGRATION 1 EXAMPLE
-echo "Test 7: Running integration 1 XATMI"
+echo "Example 6: Running integration 1 XATMI"
 cd $BLACKTIE_HOME/examples/integration1/xatmi_service/
 generate_server -Dservice.names=CREDIT,DEBIT -Dserver.includes="CreditService.c,DebitService.c"
 if [ "$?" != "0" ]; then
@@ -217,7 +184,7 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 
-echo "Test 7: Build Converted XATMI service"
+echo "Example 7: Build Converted XATMI service"
 cd $BLACKTIE_HOME/examples/integration1/ejb
 mvn install
 if [ "$?" != "0" ]; then
@@ -246,7 +213,7 @@ fi
 
 if [ "$1" ]; then
 if [ "$1" = "integration1" ]; then
-echo "Test 7: Run Converted XATMI service"
+echo "Example 8: Run Converted XATMI service"
 cd $BLACKTIE_HOME/examples/integration1/ejb/ear/
 mvn jboss:deploy
 if [ "$?" != "0" ]; then
@@ -272,6 +239,39 @@ mvn jboss:undeploy
 if [ "$?" != "0" ]; then
 	exit -1
 fi
+fi
+fi
+
+if [ "$1" ]; then
+if [ "$1" = "tx" ]; then
+echo "Example 9: Running txfooapp"
+shift
+
+# RUN THE FOOAPP SERVER
+cd $BLACKTIE_HOME/examples/xatmi/txfooapp
+generate_server -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="$ORACLE_INC_DIR" -Dx.lib.dir="$ORACLE_LIB_DIR" -Dx.libs="occi clntsh" -Dx.define="ORACLE"
+if [ "$?" != "0" ]; then
+        exit -1
+fi
+export BLACKTIE_CONFIGURATION=linux
+btadmin startup
+if [ "$?" != "0" ]; then
+        exit -1
+fi
+
+# RUN THE C CLIENT
+cd $BLACKTIE_HOME/examples/xatmi/txfooapp
+generate_client -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="$ORACLE_INC_DIR" -Dx.lib.dir="$ORACLE_LIB_DIR" -Dx.libs="occi clntsh" -Dx.define="ORACLE"
+./client
+
+# SHUTDOWN THE SERVER RUNNING THE btadmin TOOL
+export BLACKTIE_CONFIGURATION=linux
+btadmin shutdown
+if [ "$?" != "0" ]; then
+	exit -1
+fi
+unset BLACKTIE_CONFIGURATION
+
 fi
 fi
 

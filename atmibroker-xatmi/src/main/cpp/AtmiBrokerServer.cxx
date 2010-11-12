@@ -274,6 +274,26 @@ int advertiseByAdmin(char* name) {
 	return -1;
 }
 
+int unadvertiseByAdmin(char* svcname) {
+	LOG4CXX_TRACE(loggerAtmiBrokerServer, (char*) "unadvertiseByAdmin: "
+			<< svcname);
+	int toReturn = -1;
+	if (ptrServer) {
+		if (ptrServer->isAdvertised(svcname)) {
+			ptrServer->unadvertiseService(svcname, true);
+			toReturn = 0;
+		} else {
+			LOG4CXX_ERROR(loggerAtmiBrokerServer, (char*) "was not advertised");
+		}
+	} else {
+		LOG4CXX_ERROR(loggerAtmiBrokerServer, (char*) "server not initialized");
+		setSpecific(TPE_KEY, TSS_TPESYSTEM);
+	}
+	LOG4CXX_TRACE(loggerAtmiBrokerServer, (char*) "unadvertiseByAdmin return: "
+			<< toReturn << " tperrno: " << tperrno);
+	return toReturn;
+}
+
 int pauseServerByAdmin() {
 	if (ptrServer) {
 		return ptrServer->pause();
@@ -461,8 +481,7 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	serviceDispatchersToDelete.clear();
 
 	for (std::vector<SynchronizableObject*>::iterator reconnect =
-			reconnectsToDelete.begin(); reconnect
-			!= reconnectsToDelete.end(); reconnect++) {
+			reconnectsToDelete.begin(); reconnect != reconnectsToDelete.end(); reconnect++) {
 		LOG4CXX_TRACE(loggerAtmiBrokerServer, (char*) "deleting reconnect: "
 				<< (*reconnect));
 		delete (*reconnect);
@@ -470,7 +489,6 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 				<< (*reconnect));
 	}
 	reconnectsToDelete.clear();
-
 
 	serviceData.clear();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted service array");
@@ -790,8 +808,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 													<< destination->getName()
 													<< " dispatcher "
 													<< dispatcher
-													<< " isPause "
-													<< isPause);
+													<< " isPause " << isPause);
 								}
 							}
 
@@ -887,8 +904,8 @@ void AtmiBrokerServer::unadvertiseService(char * svcname, bool decrement) {
 				reconnect = dispatcher->getReconnect();
 				serviceDispatchersToDelete.push_back(dispatcher);
 				LOG4CXX_TRACE(loggerAtmiBrokerServer,
-						(char*) "Registered dispatcher for delete: " << serviceName << " "
-								<< dispatcher);
+						(char*) "Registered dispatcher for delete: "
+								<< serviceName << " " << dispatcher);
 			}
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 					(char*) "Registered dispatchers for: " << serviceName);
@@ -1022,24 +1039,28 @@ void AtmiBrokerServer::removeAdminDestination(char* serviceName, bool decrement)
 	long commandLength;
 	long responseLength = 1;
 	char* command;
+	char* service;
 
 	if (decrement) {
-		commandLength = strlen(serverName) + strlen(serviceName) + 21;
+		service = (char*) "BTStompAdmin";
+		commandLength = strlen(serverName) + strlen(serviceName) + strlen(
+				"decrementconsumer,,, ");
 		command = (char*) ::tpalloc((char*) "X_OCTET", NULL, commandLength);
 		sprintf(command, "decrementconsumer,%s,%s,", serverName, serviceName);
 	} else {
+		service = (char*) "BTDomainAdmin";
 		commandLength = strlen(serverName) + strlen(serviceName) + strlen(
-				"tpunadvertise,,, ");
+				"unadvertise,,, ");
 		command = (char*) ::tpalloc((char*) "X_OCTET", NULL, commandLength);
-		sprintf(command, "tpunadvertise,%s,%s,", serverName, serviceName);
+		sprintf(command, "unadvertise,%s,%s,", serverName, serviceName);
 	}
 
 	char* response = (char*) ::tpalloc((char*) "X_OCTET", NULL, responseLength);
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, "Unadvertise with command: "
 			<< command);
-	if (tpcall((char*) "BTStompAdmin", command, commandLength, &response,
-			&responseLength, TPNOTRAN) != 0) {
+	if (tpcall(service, command, commandLength, &response, &responseLength,
+			TPNOTRAN) != 0) {
 		LOG4CXX_ERROR(loggerAtmiBrokerServer,
 				"Could not unadvertise service with command: " << command);
 	} else if (responseLength != 1) {

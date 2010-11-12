@@ -2,38 +2,10 @@
 <server>   
 	<mbean code="org.jboss.blacktie.stompconnect.StompConnectService" 
 		name="jboss.blacktie:service=StompConnect">
-		<attribute name="ConnectionFactoryName">ConnectionFactory</attribute>
+		<attribute name="ConnectionFactoryName">java:/ConnectionFactory</attribute>
 		<attribute name="Uri">tcp://${jboss.bind.address}:61613</attribute>
 	</mbean>
 	<mbean code="org.jboss.blacktie.administration.BlacktieAdminService"
 		name="jboss.blacktie:service=Admin">
-	</mbean>
-	<mbean code="org.jboss.jms.server.destination.QueueService"
-		name="jboss.messaging.destination:service=Queue,name=BTR_BTStompAdmin"
-		xmbean-dd="xmdesc/Queue-xmbean.xml">
-		<depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
-		<depends>jboss.messaging:service=PostOffice</depends>
-		<attribute name="SecurityConfig">
-			<security>
-				<role name="blacktie" read="true" write="true"/>
-				<role name="guest" read="true" write="true"/>
-				<role name="publisher" read="true" write="true" create="false"/>
-				<role name="durpublisher" read="true" write="true" create="true"/>
-			</security>
-		</attribute>
-	</mbean>
-	<mbean code="org.jboss.jms.server.destination.QueueService"
-		name="jboss.messaging.destination:service=Queue,name=BTR_BTDomainAdmin"
-		xmbean-dd="xmdesc/Queue-xmbean.xml">
-		<depends optional-attribute-name="ServerPeer">jboss.messaging:service=ServerPeer</depends>
-		<depends>jboss.messaging:service=PostOffice</depends>
-		<attribute name="SecurityConfig">
-			<security>
-				<role name="blacktie" read="true" write="true"/>
-				<role name="guest" read="true" write="true"/>
-				<role name="publisher" read="true" write="true" create="false"/>
-				<role name="durpublisher" read="true" write="true" create="true"/>
-			</security>
-		</attribute>
 	</mbean>
 </server>

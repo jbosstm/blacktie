@@ -77,14 +77,26 @@ generate_client -Dclient.includes=client.c
 
 5. DEPLOY THE STOMPCONNECTSERVICE
 Undeploy any older versions of the blacktie admin service
-Copy the file $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all/deploy
-Copy the file $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml into $JBOSS_HOME/server/all/conf
+Copy the file $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all-with-hornetq/deploy
+Copy the file $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml into $JBOSS_HOME/server/all-with-hornetq/conf
 
 
 
-6. RUN THE APPLICATION SERVER
+6. RUN AND CONFIGURE THE APPLICATION SERVER
 Make sure that the naming, messaging and transaction services are running, by running the JBoss server:
-<JBOSS_HOME>/bin/run.sh|bat -c all
+<JBOSS_HOME>/bin/run.sh|bat -c all-with-hornetq
+You will need to configure the security settings at the HornetQ level in this release of BlackTie and moving forward.
+What you will need to do is:
+6.1 CONFIGURE USERS AND ROLES
+Edit <JBOSS_HOME>/server/all-with-hornetq/conf/props/hornetq-users.properties to add the user dynsub with password dynsub
+Edit <JBOSS_HOME>/server/all-with-hornetq/conf/props/hornetq-roles.properties to give the user dynsub the role blacktie
+6.2 CONFIGURE THE SECURITY SETTINGS FOR THIS SERVER
+Edit <JBOSS_HOME>/server/all-with-hornetq/deploy/hornetq.sar/hornetq-configuration.xml to add the following security-settings:
+      <security-setting match="jms.queue.BTR_SECURE">
+         <permission type="send" roles="blacktie"/>
+         <permission type="consume" roles="blacktie"/>
+      </security-setting>
+NOTE: The security settings are done before the queue is even deployed, this is a feature of HornetQ
 
 
 7. RUN THE APPLICATIONS
@@ -120,17 +132,17 @@ Duplicate the "dynsub" folder as "bt"
 Edit bt/btconfig.xml and change "dynsub" to "bt", with password "pwd"
 Edit serv/btconfig.xml and change "dynsub" to "bt", with password "pwd"
 
-Edit: "serv/btconfig.xml" and <JBOSS_HOME>/server/all/conf/btconfig.xml
+Edit: "serv/btconfig.xml" and <JBOSS_HOME>/server/all-with-hornetq/conf/btconfig.xml
 Change the roles with name "publisher" to "blacktie"
 Remove the "guest" role
 
-Open:  <JBOSS_HOME>/server/all/deploy/messaging/hsqldb-persistence-service.xml
+Open:  <JBOSS_HOME>/server/all-with-hornetq/deploy/messaging/hsqldb-persistence-service.xml
 Add:
 POPULATE.TABLES.15  = INSERT INTO JBM_USER (USER_ID, PASSWD) VALUES ('bt', 'pwd')
 POPULATE.TABLES.16 = INSERT INTO JBM_ROLE (ROLE_ID, USER_ID) VALUES ('blacktie','bt')
 
 
-Edit: <JBOSS_HOME>/server/all/conf/btconfig.xml
+Edit: <JBOSS_HOME>/server/all-with-hornetq/conf/btconfig.xml
 Change the user from "guest"/"guest" to "bt"/"pwd"
 
 Run step 7.1 above

@@ -45,7 +45,7 @@ HybridStompEndpointQueue::HybridStompEndpointQueue(apr_pool_t* pool,
 
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
 	int XATMI_SERVICE_NAME_LENGTH = 15;
-	int queueNameLength = 11 + 15 + 1;
+	int queueNameLength = 14 + 15 + 1;
 	char* queueName = (char*) ::malloc(queueNameLength);
 	memset(queueName, '\0', queueNameLength);
 	if (conversational) {
@@ -396,7 +396,7 @@ bool HybridStompEndpointQueue::connect() {
 				mqConfig.destinationTimeout);
 		if (this->connection != NULL) {
 			stomp_frame frame;
-			frame.command = (char*) "SUB";
+			frame.command = (char*) "SUBSCRIBE";
 			frame.headers = apr_hash_make(pool);
 			apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING,
 					fullName);
@@ -430,7 +430,7 @@ bool HybridStompEndpointQueue::connect() {
 					requiresDisconnect = false;
 				} else if (strcmp(framed->command, (const char*) "ERROR") == 0) {
 					setSpecific(TPE_KEY, TSS_TPENOENT);
-					LOG4CXX_DEBUG(logger, (char*) "Got an error: "
+					LOG4CXX_ERROR(logger, (char*) "Got an error: "
 							<< framed->body);
 					HybridConnectionImpl::disconnect(connection, pool);
 					requiresDisconnect = false;
