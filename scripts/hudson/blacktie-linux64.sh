@@ -9,7 +9,7 @@ fi
 # SHUTDOWN ANY RUNNING JBOSS
 if [ -d $WORKSPACE/jboss-5.1.0.GA ]; then
   echo foo | $WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
-#  sleep 30
+  sleep 30
   rm -rf $WORKSPACE/jboss-5.1.0.GA
 fi
 
