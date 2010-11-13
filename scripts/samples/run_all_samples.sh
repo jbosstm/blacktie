@@ -135,7 +135,6 @@ fi
 unset BLACKTIE_CONFIGURATION_DIR
 
 # RUN THE "dynsub" USER CLIENT
-echo "Example 5: Running MDB examples"
 export BLACKTIE_CONFIGURATION_DIR=dynsub
 ./client
 if [ "$?" != "0" ]; then
@@ -153,15 +152,8 @@ fi
 unset BLACKTIE_CONFIGURATION
 unset BLACKTIE_CONFIGURATION_DIR
 
-# RUN THE MDB EXAMPLE
-cd $BLACKTIE_HOME/examples/mdb
-mvn install
-if [ "$?" != "0" ]; then
-	exit -1
-fi
-
 # RUN THE INTEGRATION 1 EXAMPLE
-echo "Example 6: Running integration 1 XATMI"
+echo "Example 5: Running integration 1 XATMI"
 cd $BLACKTIE_HOME/examples/integration1/xatmi_service/
 generate_server -Dservice.names=CREDIT,DEBIT -Dserver.includes="CreditService.c,DebitService.c"
 if [ "$?" != "0" ]; then
@@ -184,7 +176,7 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 
-echo "Example 7: Build Converted XATMI service"
+echo "Example 6: Build Converted XATMI service"
 cd $BLACKTIE_HOME/examples/integration1/ejb
 mvn install
 if [ "$?" != "0" ]; then
@@ -211,9 +203,7 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 
-if [ "$1" ]; then
-if [ "$1" = "integration1" ]; then
-echo "Example 8: Run Converted XATMI service"
+echo "Example 7: Run Converted XATMI service"
 cd $BLACKTIE_HOME/examples/integration1/ejb/ear/
 mvn jboss:deploy
 if [ "$?" != "0" ]; then
@@ -239,7 +229,13 @@ mvn jboss:undeploy
 if [ "$?" != "0" ]; then
 	exit -1
 fi
-fi
+
+# RUN THE MDB EXAMPLE
+echo "Example 8: Running MDB examples"
+cd $BLACKTIE_HOME/examples/mdb
+mvn install
+if [ "$?" != "0" ]; then
+	exit -1
 fi
 
 if [ "$1" ]; then
