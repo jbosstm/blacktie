@@ -57,6 +57,10 @@ void TestBTNbf::test_addattribute() {
 	BT_ASSERT(rc == 0);
 	BT_ASSERT(len == sizeof(long));
 	BT_ASSERT(id == empid);
+
+	rc = btaddattribute(&buf, (char*)"unknow", NULL, 0);
+	BT_ASSERT(rc == -1);
+
 	free(buf);
 }
 
