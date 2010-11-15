@@ -87,6 +87,15 @@ static int WIRE_SHORT_SIZE = 2;
 static int WIRE_FLOAT_SIZE = 4;
 static int WIRE_DOUBLE_SIZE = 8;
 
+static XML_Parser parser;
+static enum XML_Error parseErr = XML_ERROR_NONE;
+
+static void abortParser() {
+	// disable further parsing
+	XML_SetElementHandler (parser, NULL, NULL);
+	XML_SetCharacterDataHandler(parser, NULL);
+	parseErr = XML_ERROR_ABORTED;
+}
 
 AtmiBrokerEnvXml::AtmiBrokerEnvXml() {
 	depth = 0;
@@ -468,12 +477,18 @@ static void XMLCALL startElement
 					   ACE_OS::strcmp(atts[i+1], "BTStompAdmin") == 0 ||
 					   ACE_OS::strcmp(atts[i+1], "BTDomainAdmin") == 0) {
 						LOG4CXX_WARN(loggerAtmiBrokerEnvXml, (char*) "Can not define " << atts[i+1]);
-						throw std::exception();
+						// disable further parsing
+						abortParser();
+
+						return;
 					}
 
 					if(checkService(server, atts[i+1])) {
 						LOG4CXX_WARN(loggerAtmiBrokerEnvXml, (char*) "Can not define Same Service " << atts[i+1]);
-						throw std::exception();
+						// disable further parsing
+						abortParser();
+
+						return;
 					}
 
 					service.serviceName = copy_value(atts[i+1]);
@@ -716,7 +731,9 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(
 			(char*) "loadfile: Allocated enough memory to load file %d"
 					<< s.st_size);
 
-	XML_Parser parser = XML_ParserCreate(NULL);
+	parser = XML_ParserCreate(NULL);
+	parseErr = XML_ERROR_NONE;
+
 	int done;
 	strcpy(element, "");
 	strcpy(value, "");
@@ -731,7 +748,8 @@ bool AtmiBrokerEnvXml::parseXmlDescriptor(
 			if (len > 0) {
 				LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "buf is " << buf);
 
-				if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR) {
+				if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR ||
+					parseErr != XML_ERROR_NONE) {
 					LOG4CXX_ERROR(loggerAtmiBrokerEnvXml, (char*) "%d at line %d"
 							<< XML_ErrorString(XML_GetErrorCode(parser))
 							<< XML_GetCurrentLineNumber(parser));
