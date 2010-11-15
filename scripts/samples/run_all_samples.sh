@@ -215,6 +215,7 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 cd $BLACKTIE_HOME/examples/integration1/client/
+sleep 10
 ./client 
 if [ "$?" != "0" ]; then
 	exit -1
