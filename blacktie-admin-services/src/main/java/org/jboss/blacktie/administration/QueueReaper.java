@@ -155,7 +155,8 @@ public class QueueReaper implements Runnable {
 
 	int consumerCount(String serviceName) throws MalformedObjectNameException,
 			NullPointerException, AttributeNotFoundException,
-			InstanceNotFoundException, ReflectionException, IOException, MBeanException {
+			InstanceNotFoundException, ReflectionException, IOException,
+			MBeanException {
 		log.trace(serviceName);
 		boolean conversational = false;
 		if (!serviceName.startsWith(".")) {
