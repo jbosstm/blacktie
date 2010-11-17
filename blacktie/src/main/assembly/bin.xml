@@ -250,13 +250,5 @@
 				<exclude>libxerces-c.so</exclude>
 			</excludes>
 		</fileSet>
-		<fileSet>
-			<directory>../blacktie-admin-services/src/test/resources
-			</directory>
-			<outputDirectory>blacktie-admin-services</outputDirectory>
-			<includes>
-				<include>btconfig.xml</include>
-			</includes>
-		</fileSet>
 	</fileSets>
 </assembly> 

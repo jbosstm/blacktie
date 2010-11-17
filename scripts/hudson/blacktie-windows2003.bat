@@ -34,7 +34,7 @@ echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-h
 echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/conf/jacorb.properties" match="localhost" replace="${JBOSSAS_IP_ADDR}"  /^> >> build.xml
 echo    ^</target^> >> build.xml
 echo	^<target name="replaceBlackTie"^> >> build.xml
-echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/conf/btconfig.xml" match="localhost" replace="${JBOSSAS_IP_ADDR}"  /^> >> build.xml
+echo        ^<replaceregexp byline="true" file="trunk/blacktie-admin-services/src/main/resources/btconfig.xml" match="localhost" replace="${JBOSSAS_IP_ADDR}"  /^> >> build.xml
 echo	^</target^> >> build.xml
 echo	^<target name="initializeBlackTieAdminSecurity"^> >> build.xml
 echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq.sar/hornetq-configuration.xml" match="</security-settings>" replace="<security-setting match=\"jms.queue.BTR_BTDomainAdmin\">         <permission type=\"send\" roles=\"blacktie,guest\"/>         <permission type=\"consume\" roles=\"blacktie,guest\"/>      </security-setting>      <security-setting match=\"jms.queue.BTR_BTStompAdmin\">         <permission type=\"send\" roles=\"blacktie,guest\"/>         <permission type=\"consume\" roles=\"blacktie,guest\"/>      </security-setting></security-settings>"  /^> >> build.xml
@@ -65,7 +65,7 @@ call ant replaceJBoss -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR%
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem INITIALZE BLACKTIE JBOSS DEPENDENCIES
-copy %WORKSPACE%\trunk\blacktie-admin-services\src\test\resources\btconfig.xml %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\conf
+rem copy %WORKSPACE%\trunk\blacktie-admin-services\src\test\resources\btconfig.xml %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\conf
 copy %WORKSPACE%\trunk\jatmibroker-xatmi\src\test\resources\hornetq-jms.xml %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\conf
 cd %WORKSPACE%
 call ant replaceBlackTie -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR%

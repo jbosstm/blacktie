@@ -45,7 +45,6 @@ sed -i 's/CONFIGURATION_FILE/NAME_SERVICE/g' jbossts-properties.xml
 
 # INITIALIZE THE BLACKTIE JBOSS DEPENDENCIES
 cp $WORKSPACE/trunk/jatmibroker-xatmi/src/test/resources/hornetq-jms.xml $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/conf
-cp $WORKSPACE/trunk/blacktie-admin-services/src/test/resources/btconfig.xml $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/conf
 
 # CONFIGURE SECURITY FOR THE ADMIN SERVICES
 sed -i 's?</security-settings>?      <security-setting match="jms.queue.BTR_BTDomainAdmin">\
