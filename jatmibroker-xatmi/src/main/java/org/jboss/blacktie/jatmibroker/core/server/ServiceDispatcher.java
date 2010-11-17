@@ -17,6 +17,8 @@
  */
 package org.jboss.blacktie.jatmibroker.core.server;
 
+import java.io.IOException;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
@@ -41,12 +43,15 @@ public class ServiceDispatcher extends BlackTieService implements Runnable {
 	private Thread thread;
 	private volatile boolean closed;
 	private String serviceName;
+	private int index;
 
-	ServiceDispatcher(String serviceName, Service callback, Receiver receiver) {
+	ServiceDispatcher(String serviceName, Service callback, Receiver receiver,
+			int index) {
+		this.index = index;
 		this.serviceName = serviceName;
 		this.callback = callback;
 		this.receiver = receiver;
-		thread = new Thread(this, serviceName + "-Dispatcher");
+		thread = new Thread(this, serviceName + "-Dispatcher-" + index);
 		thread.start();
 		log.debug("Created: " + thread.getName());
 	}
@@ -80,6 +85,14 @@ public class ServiceDispatcher extends BlackTieService implements Runnable {
 					log.trace("Processed");
 				} catch (Throwable t) {
 					log.error("Can't process the message", t);
+				}
+
+				try {
+					// Assumes the message was received from stomp - fair
+					// assumption outside of an MDB
+					message.ack();
+				} catch (IOException t) {
+					log.error("Can't ack the message", t);
 				}
 			}
 		}

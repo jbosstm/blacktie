@@ -17,22 +17,24 @@
  */
 package org.jboss.blacktie.jatmibroker.core.transport.hybrid;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
-
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Session;
-import javax.naming.NameNotFoundException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.ResponseMonitor;
 import org.jboss.blacktie.jatmibroker.core.transport.EventListener;
-import org.jboss.blacktie.jatmibroker.core.transport.JMSManagement;
 import org.jboss.blacktie.jatmibroker.core.transport.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
 import org.jboss.blacktie.jatmibroker.core.transport.Sender;
 import org.jboss.blacktie.jatmibroker.core.transport.Transport;
+import org.jboss.blacktie.jatmibroker.core.transport.TransportFactory;
+import org.jboss.blacktie.jatmibroker.core.transport.hybrid.stomp.StompManagement;
+import org.jboss.blacktie.jatmibroker.core.transport.hybrid.stomp.StompReceiverImpl;
+import org.jboss.blacktie.jatmibroker.core.transport.hybrid.stomp.StompSenderImpl;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
@@ -40,34 +42,51 @@ public class TransportImpl implements Transport {
 
 	private static final Logger log = LogManager.getLogger(TransportImpl.class);
 	private OrbManagement orbManagement;
-	private JMSManagement jmsManagement;
+	private StompManagement momManagement;
 	private Properties properties;
-	private TransportFactoryImpl transportFactoryImpl;
-	private Session session;
+	private TransportFactory transportFactoryImpl;
 	private boolean closed;
 
-	TransportImpl(OrbManagement orbManagement, JMSManagement jmsManagement,
-			Properties properties, TransportFactoryImpl transportFactoryImpl)
-			throws JMSException {
+	private Map<Boolean, Map<String, Sender>> senders = new HashMap<Boolean, Map<String, Sender>>();
+	private Map<Boolean, Map<String, Receiver>> receivers = new HashMap<Boolean, Map<String, Receiver>>();
+
+	public TransportImpl(OrbManagement orbManagement,
+			StompManagement momManagement, Properties properties,
+			TransportFactory transportFactoryImpl) {
 		log.debug("Creating transport");
 		this.orbManagement = orbManagement;
-		this.jmsManagement = jmsManagement;
+		this.momManagement = momManagement;
 		this.properties = properties;
 		this.transportFactoryImpl = transportFactoryImpl;
-
-		this.session = jmsManagement.createSession();
 		log.debug("Created transport");
 	}
 
 	public void close() throws ConnectionException {
 		log.debug("Close called: " + this);
 		if (!closed) {
-			try {
-				session.close();
-			} catch (JMSException e) {
-				throw new ConnectionException(
-						org.jboss.blacktie.jatmibroker.xatmi.Connection.TPESYSTEM,
-						"Could not close the session", e);
+			// SENDERS
+			{
+				Collection<Map<String, Sender>> values = senders.values();
+				Iterator<Map<String, Sender>> iterator = values.iterator();
+				while (iterator.hasNext()) {
+					Collection<Sender> next = iterator.next().values();
+					Iterator<Sender> iterator2 = next.iterator();
+					while (iterator2.hasNext()) {
+						iterator2.next().close();
+					}
+				}
+			}
+			// RECEIVERS
+			{
+				Collection<Map<String, Receiver>> values = receivers.values();
+				Iterator<Map<String, Receiver>> iterator = values.iterator();
+				while (iterator.hasNext()) {
+					Collection<Receiver> next = iterator.next().values();
+					Iterator<Receiver> iterator2 = next.iterator();
+					while (iterator2.hasNext()) {
+						iterator2.next().close();
+					}
+				}
 			}
 			transportFactoryImpl.removeTransport(this);
 			closed = true;
@@ -78,27 +97,37 @@ public class TransportImpl implements Transport {
 	public Sender getSender(String serviceName, boolean conversational)
 			throws ConnectionException {
 		if (closed) {
+			log.error("Already closed");
 			throw new ConnectionException(Connection.TPEPROTO, "Already closed");
 		}
 		log.debug("Get sender: " + serviceName);
-		try {
-			Destination destination = jmsManagement.lookup(serviceName,
-					conversational);
-			log.trace("Resolved destination");
-			return new JMSSenderImpl(orbManagement, session, destination);
-		} catch (NameNotFoundException e) {
-			throw new ConnectionException(
-					org.jboss.blacktie.jatmibroker.xatmi.Connection.TPENOENT,
-					"Could not resolve destination: " + serviceName, e);
-		} catch (Throwable t) {
-			throw new ConnectionException(
-					org.jboss.blacktie.jatmibroker.xatmi.Connection.TPESYSTEM,
-					"Could not create a service sender: " + t.getMessage(), t);
+		Map<String, Sender> conversationalMap = senders.get(conversational);
+		if (conversationalMap == null) {
+			conversationalMap = new HashMap<String, Sender>();
+			senders.put(conversational, conversationalMap);
 		}
+
+		Sender toReturn = conversationalMap.get(serviceName);
+		if (toReturn == null) {
+			try {
+				toReturn = new StompSenderImpl(momManagement, serviceName,
+						conversational, conversationalMap);
+				conversationalMap.put(serviceName, toReturn);
+			} catch (ConnectionException e) {
+				throw e;
+			} catch (Throwable t) {
+				throw new ConnectionException(
+						org.jboss.blacktie.jatmibroker.xatmi.Connection.TPESYSTEM,
+						"Could not create a service sender: " + t.getMessage(),
+						t);
+			}
+		}
+		return toReturn;
 	}
 
 	public Sender createSender(Object destination) throws ConnectionException {
 		if (closed) {
+			log.error("Already closed");
 			throw new ConnectionException(Connection.TPEPROTO, "Already closed");
 		}
 		String callback_ior = (String) destination;
@@ -114,29 +143,37 @@ public class TransportImpl implements Transport {
 	public Receiver getReceiver(String serviceName, boolean conversational)
 			throws ConnectionException {
 		if (closed) {
+			log.error("Already closed");
 			throw new ConnectionException(Connection.TPEPROTO, "Already closed");
 		}
 		log.debug("Creating a receiver: " + serviceName);
-		try {
-			Destination destination = jmsManagement.lookup(serviceName,
-					conversational);
-			log.debug("Resolved destination");
-			return new JMSReceiverImpl(session, destination, properties);
-		} catch (NameNotFoundException e) {
-			throw new ConnectionException(
-					org.jboss.blacktie.jatmibroker.xatmi.Connection.TPENOENT,
-					"Could not resolve destination: " + serviceName, e);
-		} catch (Throwable t) {
-			throw new ConnectionException(
-					org.jboss.blacktie.jatmibroker.xatmi.Connection.TPESYSTEM,
-					"Could not create the receiver on: " + serviceName, t);
+		Map<String, Receiver> conversationalMap = receivers.get(conversational);
+		if (conversationalMap == null) {
+			conversationalMap = new HashMap<String, Receiver>();
+			receivers.put(conversational, conversationalMap);
 		}
 
+		Receiver toReturn = conversationalMap.get(serviceName);
+		if (toReturn == null) {
+			try {
+				log.debug("Resolved destination");
+				return new StompReceiverImpl(momManagement, serviceName,
+						conversational, properties);
+			} catch (ConnectionException e) {
+				throw e;
+			} catch (Throwable t) {
+				throw new ConnectionException(
+						org.jboss.blacktie.jatmibroker.xatmi.Connection.TPESYSTEM,
+						"Could not create the receiver on: " + serviceName, t);
+			}
+		}
+		return toReturn;
 	}
 
 	public Receiver createReceiver(int cd, ResponseMonitor responseMonitor)
 			throws ConnectionException {
 		if (closed) {
+			log.error("Already closed");
 			throw new ConnectionException(Connection.TPEPROTO, "Already closed");
 		}
 		log.debug("Creating a receiver");
@@ -147,6 +184,7 @@ public class TransportImpl implements Transport {
 	public Receiver createReceiver(EventListener eventListener)
 			throws ConnectionException {
 		if (closed) {
+			log.error("Already closed");
 			throw new ConnectionException(Connection.TPEPROTO, "Already closed");
 		}
 		log.debug("Creating a receiver with event listener");

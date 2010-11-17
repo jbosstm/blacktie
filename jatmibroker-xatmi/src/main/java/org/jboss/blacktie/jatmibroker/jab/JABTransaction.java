@@ -22,6 +22,7 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.transport.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.tx.ThreadActionData;
 import org.jboss.blacktie.jatmibroker.core.tx.ThreadUtil;
@@ -58,7 +59,7 @@ public class JABTransaction {
 	public JABTransaction(JABSession aJABSession, int aTimeout)
 			throws TransactionException, NotFound, CannotProceed,
 			org.omg.CosNaming.NamingContextPackage.InvalidName, InvalidName,
-			AdapterInactive {
+			AdapterInactive, ConfigurationException {
 		log.debug("JABTransaction constructor");
 
 		if (current() != null)
@@ -73,7 +74,7 @@ public class JABTransaction {
 
 		Properties properties = jabSession.getJABSessionAttributes()
 				.getProperties();
-		orbManagement = new OrbManagement(properties, true);
+		orbManagement = OrbManagement.getInstance();
 		String toLookup = (String) properties.get("blacktie.trans.factoryid");
 		org.omg.CORBA.Object aObject = orbManagement.getNamingContextExt()
 				.resolve_str(toLookup);
@@ -87,7 +88,8 @@ public class JABTransaction {
 		setTerminator(control);
 	}
 
-	public JABTransaction(String controlIOR) throws JABException {
+	public JABTransaction(String controlIOR) throws JABException,
+			ConfigurationException {
 		JABSessionAttributes sessionAttrs = new JABSessionAttributes();
 		JABTransaction curr = current();
 
@@ -95,8 +97,7 @@ public class JABTransaction {
 		timeout = -1;
 
 		try {
-			orbManagement = new OrbManagement(sessionAttrs.getProperties(),
-					true);
+			orbManagement = OrbManagement.getInstance();
 		} catch (org.omg.CORBA.UserException cue) {
 			throw new TransactionException(cue.getMessage(), cue);
 		}

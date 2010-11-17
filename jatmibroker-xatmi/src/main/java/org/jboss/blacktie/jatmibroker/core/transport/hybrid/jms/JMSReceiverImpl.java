@@ -15,12 +15,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core.transport.hybrid;
+package org.jboss.blacktie.jatmibroker.core.transport.hybrid.jms;
 
 import java.util.Properties;
 
 import javax.jms.BytesMessage;
-import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.Queue;
@@ -41,11 +40,16 @@ public class JMSReceiverImpl implements Receiver {
 	private MessageConsumer receiver;
 	private int timeout = 0;
 	private boolean closed;
+	private Session session;
 	private static int pad = 0;
 
-	JMSReceiverImpl(Session session, Destination destination,
-			Properties properties) throws JMSException, NamingException {
-		this.destination = (Queue) destination;
+	public JMSReceiverImpl(JMSManagement jmsManagement, String serviceName,
+			boolean conversational, Properties properties) throws JMSException,
+			NamingException {
+
+		this.destination = (Queue) jmsManagement.lookup(serviceName,
+				conversational);
+		this.session = jmsManagement.createSession();
 		receiver = session.createConsumer(destination);
 		// timeout =
 		// Integer.parseInt(properties.getProperty("DestinationTimeout",
@@ -88,12 +92,8 @@ public class JMSReceiverImpl implements Receiver {
 		try {
 			log.debug("closing consumer");
 			receiver.close();
+			session.close();
 			log.debug("consumer closed");
-			// if (isTemporary) {
-			// log.debug("Deleting: " + destination.getQueueName());
-			// ((TemporaryQueue) destination).delete();
-			// log.debug("Deleted: " + destination.getQueueName());
-			// }
 			closed = true;
 		} catch (Throwable t) {
 			log.debug("consumer could not be closed");

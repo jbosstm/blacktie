@@ -17,51 +17,67 @@
  */
 package org.jboss.blacktie.jatmibroker.core.transport;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.transport.hybrid.TransportFactoryImpl;
+import org.jboss.blacktie.jatmibroker.core.transport.hybrid.TransportImpl;
+import org.jboss.blacktie.jatmibroker.core.transport.hybrid.stomp.StompManagement;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 
-public abstract class TransportFactory {
+public class TransportFactory {
 
 	private static final Logger log = LogManager
 			.getLogger(TransportFactory.class);
-	private static TransportFactory transportFactory;
+	private Properties properties;
+	private OrbManagement orbManagement;
+	private StompManagement momManagement;
+	private List<Transport> transports = new ArrayList<Transport>();
 
 	private boolean closed;
 
-	public static synchronized TransportFactory getTransportFactory(
-			Properties properties) throws ConfigurationException {
+	public TransportFactory(Properties properties)
+			throws ConfigurationException {
 		log.debug("Loading transportfactory");
-		// Determine the transport class to load
-		// String className =
-		// org.jboss.blacktie.jatmibroker.core.transport.hybrid.TransportFactoryImpl.class
-		// .getName();
-		// log.debug("Transport class was: " + className);
+		log.debug("Creating OrbManagement");
+		this.properties = properties;
 
-		if (transportFactory == null) {
-			try {
-				transportFactory = new TransportFactoryImpl();
-				transportFactory.initialize(properties);
-				log.debug("TransportFactory was prepared");
-			} catch (Throwable t) {
-				transportFactory = null;
-				throw new ConfigurationException(
-						"Could not load the connection factory", t);
-			}
+		try {
+			momManagement = new StompManagement(properties);
+		} catch (Throwable t) {
+			throw new ConfigurationException(
+					"Could not create the required connection", t);
 		}
-		return transportFactory;
+
+		try {
+			orbManagement = OrbManagement.getInstance();
+		} catch (Throwable t) {
+			throw new ConfigurationException(
+					"Could not create the orb management function", t);
+		}
+
+		log.debug("Created OrbManagement");
+		log.debug("TransportFactory was prepared");
 	}
 
-	protected abstract void initialize(Properties properties)
-			throws ConfigurationException;
+	public synchronized Transport createTransport() {
+		log.debug("Creating transport from factory: " + this);
+		TransportImpl instance = new TransportImpl(orbManagement,
+				momManagement, properties, this);
+		transports.add(instance);
+		log.debug("Creating transport from factory: " + this + " transport: "
+				+ instance);
+		return instance;
+	}
 
-	public abstract Transport createTransport() throws ConnectionException;
-
-	protected abstract void closeFactory();
+	public void removeTransport(TransportImpl transportImpl) {
+		boolean remove = transports.remove(transportImpl);
+		log.debug("Transport was removed: " + transportImpl + " from: " + this
+				+ " result: " + remove);
+	}
 
 	/**
 	 * Make sure that the
@@ -70,8 +86,22 @@ public abstract class TransportFactory {
 		log.debug("Closing factory: " + getClass().getName());
 		if (!closed) {
 			log.debug("Going into shutdown");
-			closeFactory();
-			transportFactory = null;
+			log.debug("Closing factory: " + this);
+			Transport[] transport = new Transport[transports.size()];
+			transport = transports.toArray(transport);
+			for (int i = 0; i < transport.length; i++) {
+				try {
+					log.debug("Closing transport: " + transport[i]
+							+ " from factory: " + this);
+					transport[i].close();
+				} catch (ConnectionException e) {
+					log.warn(
+							"Transport could not be closed: " + e.getMessage(),
+							e);
+				}
+			}
+			transports.clear();
+			momManagement.close();
 			closed = true;
 		}
 		log.debug("Closed factory: " + getClass().getName());

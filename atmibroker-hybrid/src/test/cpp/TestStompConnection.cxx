@@ -49,7 +49,7 @@ void TestStompConnection::tearDown() {
 }
 
 void TestStompConnection::testLibStomp() {
-	userlogc("TestStompConnection::test");
+	userlogc("TestStompConnection::testLibStomp");
 
 	Destination* destination = serverConnection->createDestination(
 			(char*) "JAVA_Converse", false);

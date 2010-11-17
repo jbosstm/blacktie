@@ -1,5 +1,6 @@
 package org.jboss.blacktie.jatmibroker.core.transport.hybrid;
 
+import java.io.IOException;
 import java.util.Properties;
 
 import junit.framework.TestCase;
@@ -26,7 +27,7 @@ public class TestConnection extends TestCase {
 		AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
 		Properties properties = xml.getProperties();
 
-		transportFactory = TransportFactory.getTransportFactory(properties);
+		transportFactory = new TransportFactory(properties);
 		serviceTransport = transportFactory.createTransport();
 		clientTransport = transportFactory.createTransport();
 	}
@@ -37,7 +38,7 @@ public class TestConnection extends TestCase {
 		transportFactory.close();
 	}
 
-	public void test() throws ConnectionException {
+	public void test() throws ConnectionException, IOException {
 		Receiver serviceDispatcher = serviceTransport.getReceiver(
 				"JAVA_Converse", false);
 		Sender clientSender = clientTransport.getSender("JAVA_Converse", false);
@@ -45,6 +46,7 @@ public class TestConnection extends TestCase {
 		clientSender.send(clientReceiver.getReplyTo(), (short) 1, 1,
 				"hi".getBytes(), 2, 0, 0, 0, "X_OCTET", null);
 		Message receive = serviceDispatcher.receive(0);
+		receive.ack();
 		assertTrue(receive.len == 2);
 
 		Sender serviceSender = serviceTransport.createSender(receive.replyTo);
@@ -52,10 +54,14 @@ public class TestConnection extends TestCase {
 
 		log.info("Chatting");
 		for (int i = 0; i < 100; i++) {
+			String toSend = String.valueOf(i);
 			serviceSender.send(serviceReceiver.getReplyTo(), (short) 1, 1,
-					"chat".getBytes(), 4, 0, 0, 0, "X_OCTET", null);
+					toSend.getBytes(), toSend.length(), 0, 0, 0, "X_OCTET",
+					null);
 			Message receive2 = clientReceiver.receive(0);
-			assertTrue(receive2.len == 4);
+			assertTrue(receive2.len == toSend.length());
+			String received = new String(receive2.data);
+			assertTrue(received + " " + toSend, received.equals(toSend));
 		}
 		log.info("Chatted");
 	}

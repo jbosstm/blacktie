@@ -10,7 +10,7 @@ import javax.jms.Topic;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.transport.JtsTransactionImple;
-import org.jboss.blacktie.jatmibroker.core.transport.hybrid.JMSReceiverImpl;
+import org.jboss.blacktie.jatmibroker.core.transport.hybrid.jms.JMSReceiverImpl;
 import org.jboss.blacktie.jatmibroker.xatmi.BlackTieService;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;

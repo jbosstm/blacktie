@@ -96,9 +96,13 @@ public class JABConnectionFactory {
 			throws JABException {
 		JABConnection toReturn = connections.get(connectionName);
 		if (toReturn == null) {
-			Connection connection = connectionFactory.getConnection();
-			toReturn = new JABConnection(connection, session);
-			connections.put(connectionName, toReturn);
+			try {
+				Connection connection = connectionFactory.getConnection();
+				toReturn = new JABConnection(connection, session);
+				connections.put(connectionName, toReturn);
+			} catch (ConfigurationException e) {
+				throw new JABException(e.getMessage());
+			}
 		}
 		return toReturn;
 	}

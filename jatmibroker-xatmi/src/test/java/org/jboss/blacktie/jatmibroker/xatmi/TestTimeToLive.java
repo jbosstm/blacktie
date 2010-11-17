@@ -87,8 +87,8 @@ public class TestTimeToLive extends TestCase {
 		}
 
 		try {
-			log.info("wait 10 second for first message process");
-			Thread.sleep(10 * 1000);
+			log.info("wait 30 second for first message process");
+			Thread.sleep(30 * 1000);
 			log.info("wait done");
 		} catch (Exception e) {
 			log.warn("sleep exception " + e);

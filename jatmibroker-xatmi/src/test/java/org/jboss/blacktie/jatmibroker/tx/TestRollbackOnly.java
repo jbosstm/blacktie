@@ -116,7 +116,7 @@ public class TestRollbackOnly extends TestCase {
 					"test_tpcall_TPESVCFAIL_service") == 0);
 			assertTrue(e.getTperrno() == Connection.TPESVCFAIL);
 		} catch (ConnectionException e) {
-			fail("Expected e.getTperrno() == TPESVCFAIL");
+			fail("Expected e.getTperrno() == TPESVCFAIL: " + e.getTperrno());
 		}
 
 		TXINFO txinfo = new TXINFO();

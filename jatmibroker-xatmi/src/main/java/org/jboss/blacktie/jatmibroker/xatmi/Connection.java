@@ -137,6 +137,8 @@ public class Connection {
 	 */
 	private Session serviceSession;
 
+	private TransportFactory transportFactory;
+
 	/**
 	 * The connection
 	 * 
@@ -144,11 +146,14 @@ public class Connection {
 	 *            The connection factory that created this connection.
 	 * @param properties
 	 *            The properties that this connection was created with.
+	 * @throws ConfigurationException
 	 */
-	Connection(ConnectionFactory connectionFactory, Properties properties) {
+	Connection(ConnectionFactory connectionFactory, Properties properties)
+			throws ConfigurationException {
 		this.connectionFactory = connectionFactory;
 		this.properties = properties;
 		responseMonitor = new ResponseMonitorImpl();
+		transportFactory = new TransportFactory(properties);
 	}
 
 	/**
@@ -203,7 +208,11 @@ public class Connection {
 		int tpacallFlags = flags;
 		tpacallFlags &= ~TPNOCHANGE;
 		int cd = tpacall(svc, buffer, tpacallFlags);
-		return receive(cd, flags);
+		try {
+			return receive(cd, flags);
+		} finally {
+			tpcancel(cd);
+		}
 	}
 
 	/**
@@ -324,7 +333,7 @@ public class Connection {
 					int timeout = 0;
 					if ((flags & Connection.TPNOTIME) != Connection.TPNOTIME) {
 						timeout = Integer.parseInt(properties
-								.getProperty("RequestTimeout"))
+								.getProperty("ReceiveTimeout"))
 								* 1000
 								+ Integer.parseInt(properties
 										.getProperty("TimeToLive")) * 1000;
@@ -350,6 +359,7 @@ public class Connection {
 		}
 
 		Response toReturn = receive(cd, flags);
+		tpcancel(cd);
 		log.debug("tpgetrply returning: " + toReturn);
 		return toReturn;
 	}
@@ -489,6 +499,7 @@ public class Connection {
 		}
 		this.transports.clear();
 		this.connectionFactory.removeConnection(this);
+		transportFactory.close();
 		log.debug("Close connection finished");
 	}
 
@@ -496,13 +507,7 @@ public class Connection {
 			throws ConnectionException {
 		Transport toReturn = transports.get(serviceName);
 		if (toReturn == null) {
-			try {
-				toReturn = TransportFactory.getTransportFactory(properties)
-						.createTransport();
-			} catch (ConfigurationException e) {
-				throw new ConnectionException(Connection.TPENOENT,
-						"Could not load transport for: " + serviceName, e);
-			}
+			toReturn = transportFactory.createTransport();
 			transports.put(serviceName, toReturn);
 		}
 		return toReturn;
@@ -527,7 +532,6 @@ public class Connection {
 					"Session does not exist: " + cd);
 		}
 		Message message = endpoint.receive(flags);
-		temporaryQueues.remove(cd);
 		Buffer buffer = null;
 		if (message.type != null && !message.type.equals("")) {
 			buffer = tpalloc(message.type, message.subtype, message.len);

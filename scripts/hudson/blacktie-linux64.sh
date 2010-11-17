@@ -16,13 +16,13 @@ fi
 # GET THE TNS NAMES
 TNS_ADMIN=$WORKSPACE/instantclient_11_2/network/admin
 mkdir -p $TNS_ADMIN
-(cd $TNS_ADMIN; wget http://albany/userContent/blacktie/tnsnames.ora)
+#(cd $TNS_ADMIN; wget http://albany/userContent/blacktie/tnsnames.ora)
 
 # GET JBOSS AND INITIALIZE IT
 cd $WORKSPACE
-wget http://albany/userContent/blacktie/jboss-5.1.0.GA.zip
+#wget http://albany/userContent/blacktie/jboss-5.1.0.GA.zip
 unzip jboss-5.1.0.GA.zip
-wget http://albany/userContent/blacktie/hornetq-2.1.2.Final.zip
+#wget http://albany/userContent/blacktie/hornetq-2.1.2.Final.zip
 echo 'A
 ' | unzip hornetq-2.1.2.Final.zip
 # INSTALL HORNETQ

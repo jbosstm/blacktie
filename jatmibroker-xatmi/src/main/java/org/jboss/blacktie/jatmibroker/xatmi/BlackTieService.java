@@ -17,6 +17,8 @@
  */
 package org.jboss.blacktie.jatmibroker.xatmi;
 
+import java.io.IOException;
+
 import javax.naming.NamingException;
 import javax.transaction.InvalidTransactionException;
 import javax.transaction.SystemException;

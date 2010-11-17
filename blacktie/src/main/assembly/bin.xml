@@ -72,6 +72,16 @@
 				<unpack>false</unpack>
 			</binaries>
 		</moduleSet>
+		<moduleSet>
+			<includes>
+				<include>org.jboss.blacktie:stompconnectservice-ear</include>
+			</includes>
+			<binaries>
+				<outputDirectory>blacktie-admin-services</outputDirectory>
+				<includeDependencies>false</includeDependencies>
+				<unpack>false</unpack>
+			</binaries>
+		</moduleSet>
 	</moduleSets>
 	<files>
 		<file>

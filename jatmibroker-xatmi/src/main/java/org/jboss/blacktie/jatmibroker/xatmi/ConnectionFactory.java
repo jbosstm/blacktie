@@ -50,8 +50,9 @@ public class ConnectionFactory {
 	 * Get the connection for this thread.
 	 * 
 	 * @return The connection for this thread.
+	 * @throws ConfigurationException
 	 */
-	public Connection getConnection() {
+	public Connection getConnection() throws ConfigurationException {
 		Connection connection = connections.get();
 		if (connection == null) {
 			connection = new Connection(this, properties);

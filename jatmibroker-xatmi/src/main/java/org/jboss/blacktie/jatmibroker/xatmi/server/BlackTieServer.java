@@ -63,6 +63,8 @@ public class BlackTieServer {
 
 	private TransportFactory transportFactory;
 
+	private boolean shutdown;
+
 	/**
 	 * Initialize the server
 	 * 
@@ -91,6 +93,7 @@ public class BlackTieServer {
 		this.serverName = serverName;
 		AtmiBrokerEnvXML server = new AtmiBrokerEnvXML();
 		properties = server.getProperties();
+		transportFactory = new TransportFactory(properties);
 
 		/**
 		 * Launch all startup services.
@@ -106,7 +109,6 @@ public class BlackTieServer {
 				tpadvertise(serviceName, functionName);
 			}
 		}
-		transportFactory = TransportFactory.getTransportFactory(properties);
 	}
 
 	/**
@@ -127,10 +129,12 @@ public class BlackTieServer {
 		ServiceData serviceData = this.serviceData.get(serviceName);
 		if (serviceData == null) {
 			try {
-				ServiceData data = new ServiceData(properties, serviceName,
-						serviceClassName);
+				ServiceData data = new ServiceData(transportFactory,
+						properties, serviceName, serviceClassName);
 				this.serviceData.put(serviceName, data);
 				log.info("Advertised: " + serviceName);
+			} catch (ConnectionException e) {
+				throw e;
 			} catch (Throwable t) {
 				throw new ConnectionException(Connection.TPESYSTEM,
 						"Could not create service factory for: " + serviceName,
@@ -179,6 +183,17 @@ public class BlackTieServer {
 			tpunadvertise(array[i]);
 		}
 		transportFactory.close();
+		synchronized (this) {
+			shutdown = true;
+			notify();
+		}
 		log.debug("Close server finished: " + serverName);
+	}
+
+	public synchronized void block() throws InterruptedException {
+		if (!shutdown) {
+			log.info("Server waiting for requests...");
+			wait();
+		}
 	}
 }

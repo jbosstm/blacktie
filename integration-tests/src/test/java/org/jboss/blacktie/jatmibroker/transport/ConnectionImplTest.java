@@ -48,8 +48,7 @@ public class ConnectionImplTest extends TestCase {
 		AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
 		Properties properties = xml.getProperties();
 
-		TransportFactory factory = TransportFactory
-				.getTransportFactory(properties);
+		TransportFactory factory = new TransportFactory(properties);
 		Transport proxy = factory.createTransport();
 		Sender serviceFactory = proxy.getSender("BAR", false);
 

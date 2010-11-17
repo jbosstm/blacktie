@@ -6,6 +6,8 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerEnvXML;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CosNaming.NameComponent;
@@ -28,15 +30,29 @@ public class OrbManagement implements Runnable {
 	private static final String CorbaOrbClassValue = "org.jacorb.orb.ORB";
 	private static final String CorbaSingletonClassProp = "org.omg.CORBA.ORBSingletonClass";
 	private static final String CorbaSingletonClassValue = "org.jboss.system.ORBSingleton";
+	private static OrbManagement instance;
 	private ORB orb;
 	private NamingContextExt nce;
 	private NamingContext nc;
 	private POA root_poa;
 	private Thread callbackThread;
 
-	public OrbManagement(Properties properties, boolean createNC)
-			throws InvalidName, AdapterInactive, NotFound, CannotProceed,
-			org.omg.CosNaming.NamingContextPackage.InvalidName {
+	public static synchronized OrbManagement getInstance() throws InvalidName,
+			AdapterInactive, NotFound, CannotProceed,
+			org.omg.CosNaming.NamingContextPackage.InvalidName,
+			ConfigurationException {
+		if (instance == null) {
+			instance = new OrbManagement();
+		}
+		return instance;
+	}
+
+	private OrbManagement() throws InvalidName, AdapterInactive, NotFound,
+			CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName,
+			ConfigurationException {
+
+		AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
+		Properties properties = xml.getProperties();
 
 		String namingContextExt = properties
 				.getProperty("blacktie.domain.name");
@@ -104,7 +120,7 @@ public class OrbManagement implements Runnable {
 		orb.run();
 	}
 
-	public void close() {
+	public void finalize() {
 		log.debug("Closing");
 		orb.shutdown(true);
 		orb.destroy();

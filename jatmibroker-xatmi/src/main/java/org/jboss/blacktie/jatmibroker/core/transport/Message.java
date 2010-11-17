@@ -17,7 +17,18 @@
  */
 package org.jboss.blacktie.jatmibroker.core.transport;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.transport.hybrid.stomp.StompManagement;
+
 public class Message {
+	private static final Logger log = LogManager.getLogger(Message.class);
+
 	public Object replyTo;
 	public byte[] data;
 	public int len;
@@ -29,4 +40,31 @@ public class Message {
 	public String serviceName;
 	public String type;
 	public String subtype;
+
+	private String messageId;
+	private StompManagement management;
+	private OutputStream outputStream;
+
+	public void ack() throws IOException {
+		log.debug("Acking message: " + messageId);
+		org.jboss.blacktie.jatmibroker.core.transport.hybrid.stomp.Message ack = new org.jboss.blacktie.jatmibroker.core.transport.hybrid.stomp.Message();
+		ack.setCommand("ACK");
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put("message-id", messageId);
+		ack.setHeaders(headers);
+		management.send(ack, outputStream);
+		log.debug("Acked message: " + messageId);
+	}
+
+	public void setMessageId(String messageId) {
+		this.messageId = messageId;
+	}
+
+	public void setManagement(StompManagement management) {
+		this.management = management;
+	}
+
+	public void setOutputStream(OutputStream outputStream) {
+		this.outputStream = outputStream;
+	}
 }

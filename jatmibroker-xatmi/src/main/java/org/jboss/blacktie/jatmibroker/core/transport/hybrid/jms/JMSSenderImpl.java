@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core.transport.hybrid;
+package org.jboss.blacktie.jatmibroker.core.transport.hybrid.jms;
 
 import javax.jms.BytesMessage;
 import javax.jms.Destination;
@@ -28,7 +28,6 @@ import javax.naming.NamingException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.transport.JtsTransactionImple;
-import org.jboss.blacktie.jatmibroker.core.transport.OrbManagement;
 import org.jboss.blacktie.jatmibroker.core.transport.Sender;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
@@ -42,12 +41,14 @@ public class JMSSenderImpl implements Sender {
 	private Destination destination;
 
 	private int pad = 0;
-	private OrbManagement orbManagement;
 
-	JMSSenderImpl(OrbManagement orbManagement, Session session,
-			Destination destination) throws NamingException, JMSException {
-		this.orbManagement = orbManagement;
-		this.session = session;
+	public JMSSenderImpl(JMSManagement management, String serviceName,
+			boolean conversational) throws NamingException, JMSException {
+		Destination destination = management
+				.lookup(serviceName, conversational);
+		log.trace("Resolved destination");
+
+		this.session = management.createSession();
 		sender = session.createProducer(destination);
 		this.name = ((Queue) destination).getQueueName();
 		this.destination = destination;
@@ -120,6 +121,7 @@ public class JMSSenderImpl implements Sender {
 		try {
 			log.debug("Sender closing: " + name);
 			sender.close();
+			session.close();
 			sender = null;
 			closed = true;
 			log.debug("Sender closed: " + name);

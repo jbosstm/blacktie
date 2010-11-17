@@ -342,11 +342,15 @@ public class XMLEnvHandler extends DefaultHandler {
 				} else if (atts.getLocalName(i).equals("DESTINATION_TIMEOUT")) {
 					prop.setProperty("DestinationTimeout", avalue);
 				} else if (atts.getLocalName(i).equals("RECEIVE_TIMEOUT")) {
-					prop.setProperty("RequestTimeout", avalue);
+					prop.setProperty("ReceiveTimeout", avalue);
 				} else if (atts.getLocalName(i).equals("TIME_TO_LIVE")) {
 					prop.setProperty("TimeToLive", avalue);
 				} else if (atts.getLocalName(i).equals("NAMING_URL")) {
 					prop.setProperty("java.naming.provider.url", avalue);
+				} else if (atts.getLocalName(i).equals("HOST")) {
+					prop.setProperty("StompConnectHost", avalue);
+				} else if (atts.getLocalName(i).equals("PORT")) {
+					prop.setProperty("StompConnectPort", avalue);
 				}
 			}
 		} else if (MACHINE.equals(localName)) {

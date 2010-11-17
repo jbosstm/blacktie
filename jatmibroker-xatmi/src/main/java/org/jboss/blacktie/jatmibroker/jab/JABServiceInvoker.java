@@ -121,7 +121,7 @@ public class JABServiceInvoker {
 			responseMessage = new JABMessage(response);
 			log.debug("service_request responsed");
 		} catch (Exception e) {
-			log.warn("service_request exception: " + e.getMessage());
+			log.warn("service_request exception: " + e.getMessage(), e);
 			throw new JABException("Could not send tpcall", e);
 		} finally {
 			if (prev != null) {

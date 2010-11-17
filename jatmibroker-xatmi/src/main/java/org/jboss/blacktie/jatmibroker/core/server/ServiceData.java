@@ -41,10 +41,11 @@ public class ServiceData {
 	private String serviceClassName;
 	private String serviceName;
 
-	public ServiceData(Properties properties, String serviceName,
-			String serviceClassName) throws ConnectionException,
-			InstantiationException, IllegalAccessException,
-			ClassNotFoundException, ConfigurationException {
+	public ServiceData(TransportFactory transportFactory,
+			Properties properties, String serviceName, String serviceClassName)
+			throws ConnectionException, InstantiationException,
+			IllegalAccessException, ClassNotFoundException,
+			ConfigurationException {
 		this.serviceName = serviceName;
 		this.serviceClassName = serviceClassName;
 
@@ -52,8 +53,7 @@ public class ServiceData {
 				+ ".size", DEFAULT_POOL_SIZE);
 		int size = Integer.parseInt(sizeS);
 
-		connection = TransportFactory.getTransportFactory(properties)
-				.createTransport();
+		connection = transportFactory.createTransport();
 		Boolean conversational = (Boolean) properties.get("blacktie."
 				+ serviceName + ".conversational");
 		this.receiver = connection.getReceiver(serviceName, conversational);
@@ -61,7 +61,7 @@ public class ServiceData {
 		Class callback = Class.forName(serviceClassName);
 		for (int i = 0; i < size; i++) {
 			dispatchers.add(new ServiceDispatcher(serviceName,
-					(Service) callback.newInstance(), receiver));
+					(Service) callback.newInstance(), receiver, i));
 		}
 	}
 
@@ -78,6 +78,7 @@ public class ServiceData {
 		receiver.close();
 		// Disconnect the transport
 		connection.close();
+		connection = null;
 
 		// Clean up the consumers
 		iterator = dispatchers.iterator();
