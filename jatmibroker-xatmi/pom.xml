@@ -93,15 +93,6 @@
 				<configuration>
 					<excludePackageNames>org.jboss.blacktie.jatmibroker.core</excludePackageNames>
 				</configuration>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<phase>install</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
