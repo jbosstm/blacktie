@@ -32,6 +32,7 @@ public class TestTPCall extends TestCase {
 	private Connection connection;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
+		log.info("TestTPCall::setUp");
 		server.serverinit();
 
 		ConnectionFactory connectionFactory = ConnectionFactory
@@ -40,12 +41,13 @@ public class TestTPCall extends TestCase {
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
+		log.info("TestTPCall::tearDown");
 		connection.close();
 		server.serverdone();
 	}
 
 	public void test_tpcall_unknown_service() throws ConnectionException {
-		log.info("test_tpcall_unknown_service");
+		log.info("TestTPCall::test_tpcall_unknown_service");
 
 		String message = "test_tpcall_unknown_service";
 		int sendlen = message.length() + 1;
@@ -65,7 +67,7 @@ public class TestTPCall extends TestCase {
 	}
 
 	public void test_tpcall_x_octet() throws ConnectionException {
-		log.info("test_tpcall_x_octet");
+		log.info("TestTPCall::test_tpcall_x_octet");
 		server.tpadvertisetpcallXOctet();
 
 		String toSend = "test_tpcall_x_octet";
@@ -88,7 +90,7 @@ public class TestTPCall extends TestCase {
 
 	public void test_tpcall_x_octet_after_delay() throws ConnectionException,
 			InterruptedException {
-		log.info("test_tpcall_x_octet_after_delay");
+		log.info("TestTPCall::test_tpcall_x_octet_after_delay");
 		server.tpadvertisetpcallXOctet();
 		Thread.currentThread().sleep(3000);
 		String toSend = "test_tpcall_x_octet";
@@ -110,7 +112,7 @@ public class TestTPCall extends TestCase {
 	}
 
 	public void test_tpcall_x_common() throws ConnectionException {
-		log.info("test_tpcall_x_common");
+		log.info("TestTPCall::test_tpcall_x_common");
 		server.tpadvertisetpcallXCommon();
 
 		X_COMMON dptr = (X_COMMON) connection.tpalloc("X_COMMON", "deposit", 0);
@@ -129,7 +131,7 @@ public class TestTPCall extends TestCase {
 	}
 
 	public void test_tpcall_x_c_type() throws ConnectionException {
-		log.info("test_tpcall_x_c_type");
+		log.info("TestTPCall::test_tpcall_x_c_type");
 		server.tpadvertisetpcallXCType();
 
 		X_C_TYPE aptr = (X_C_TYPE) connection.tpalloc("X_C_TYPE", "acct_info",
