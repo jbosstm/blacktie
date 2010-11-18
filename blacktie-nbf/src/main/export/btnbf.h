@@ -55,7 +55,7 @@ extern BLACKTIE_NBF_DLL int btgetattribute(char* buf, char* attributeId, int att
  * @len The length of the attribute
  * @returns 0 on succcess
  */
-extern BLACKTIE_NBF_DLL int btsetattribute(char* buf, char* attributeId, int attributeIndex, char* attributeValue, int len);
+extern BLACKTIE_NBF_DLL int btsetattribute(char** buf, char* attributeId, int attributeIndex, char* attributeValue, int len);
 
 /**
  * This method is used to remove an existing attribute

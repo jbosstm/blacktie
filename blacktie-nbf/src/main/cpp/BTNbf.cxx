@@ -21,6 +21,35 @@
 
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("BTNbf"));
 
+int find_string(char* buf, const char* str, int index) {
+	int i;
+	int found = 0;
+	char* p = buf;
+	char* q = buf;
+
+	if(buf == NULL || str == NULL) {
+		return 0;
+	}
+	int n = strlen(str);
+
+	for(i = 0; i <= index; i++) {
+		p = strstr(q, str);
+		if(p == NULL) {
+			found = 0;
+			break;
+		} else {
+			found = 1;
+		}
+		q = p + n;
+	}
+
+	if(found) {
+		return p - buf;
+	}
+
+	return 0;
+}
+
 void del_string(char* buf, int pos, int len) {
 	int i, j;
 	int n = strlen(buf);
@@ -81,17 +110,20 @@ int btaddattribute(char** buf, char* attributeId, char* attributeValue, int len)
 			rc = 0;
 			const char* type = handler.getType();
 			LOG4CXX_INFO(logger, (char*) "type is " << type);
-			char* value;
+			char* value = NULL;
 			if(strcmp(type, "string") == 0) {
-				value = attributeValue;
+				value = (char*) malloc (sizeof(char) * (len + 1));
+				memset(value, 0 , len + 1);
+				strncpy(value, attributeValue, len);
 			} else if(strcmp(type, "long") == 0) {
 				value = (char*) malloc (sizeof(char) * 64);
+				memset(value, 0 , 64);
 				sprintf(value, "%ld", *((long*)attributeValue));
 			}
 
 			insert_string(buf, value, startPos);
-			if(value != attributeValue) {
-				LOG4CXX_DEBUG(logger, (char*) "release value for not string");
+			if(value != NULL) {
+				LOG4CXX_DEBUG(logger, (char*) "release value");
 				free(value);
 			}
 		} else {
@@ -113,23 +145,98 @@ int btgetattribute(char* buf, char* attributeId, int attributeIndex, char* attri
 	result = nbf.parse(buf, "btnbf", &handler);
 	if(result) {
 		LOG4CXX_DEBUG(logger, (char*) "find attributeId:" << attributeId
-					<< " at " << attributeIndex);
+				<< " at " << attributeIndex);
 
 		const char* value = handler.getValue();
 		const char* type = handler.getType();
 
-		rc = 0;
-		if(type == NULL || strcmp(type, "string") == 0) {
-			strncpy(attributeValue, value, *len);
-			*len = strlen(attributeValue);
-		} else if(strcmp(type, "long") == 0) {
-			*((long*)attributeValue) = atol(value);
-			*len = sizeof(long);
-		} else {
-			LOG4CXX_WARN(logger, "can not support type of " << type);
-			rc = -1;
+		if(value != NULL) {
+			rc = 0;
+			if(type == NULL || strcmp(type, "string") == 0) {
+				strncpy(attributeValue, value, *len);
+				*len = strlen(attributeValue);
+			} else if(strcmp(type, "long") == 0) {
+				*((long*)attributeValue) = atol(value);
+				*len = sizeof(long);
+			} else {
+				LOG4CXX_WARN(logger, "can not support type of " << type);
+				rc = -1;
+			}
 		}
 	}
 
 	return rc;
+}
+
+int btsetattribute(char** buf, char* attributeId, int attributeIndex, char* attributeValue, int len) {
+	LOG4CXX_TRACE(logger, (char*) "btsetattribute");
+	int rc = -1;
+	bool result;
+	NBFParser nbf;
+	NBFParserHandlers handler(attributeId, attributeIndex);
+	int pos;
+
+	result = nbf.parse(*buf, "btnbf", &handler);
+	if(result) {
+		LOG4CXX_DEBUG(logger, (char*) "find attributeId:" << attributeId
+				<< " at " << attributeIndex);
+
+		const char* value = handler.getValue();
+		const char* type = handler.getType();
+
+		pos = find_string(*buf, value, attributeIndex);
+		if(pos > 0 ) {
+			int size = strlen(value);
+			del_string(*buf, pos, size);
+
+			char* value;
+			if(strcmp(type, "string") == 0) {
+				value = (char*) malloc (sizeof(char) * (len + 1));
+				memset(value, 0, len + 1);
+				strncpy(value, attributeValue, len);
+			} else if(strcmp(type, "long") == 0) {
+				value = (char*) malloc (sizeof(char) * 64);
+				memset(value, 0, 64);
+				sprintf(value, "%ld", *((long*)attributeValue));
+			}
+
+			insert_string(buf, value, pos);
+			if(value != NULL) {
+				free(value);
+			}
+
+			rc = 0;
+		}
+	}
+
+	return rc;
+}
+
+int btdelattribute(char* buf, char* attributeId, int attributeIndex) {
+	LOG4CXX_TRACE(logger, (char*) "btdelattribute");
+	int rc = -1;
+	bool result;
+	NBFParser nbf;
+	NBFParserHandlers handler(attributeId, attributeIndex);
+	int pos;
+
+	result = nbf.parse(buf, "btnbf", &handler);
+	if(result) {
+		LOG4CXX_DEBUG(logger, (char*) "find attributeId:" << attributeId
+				<< " at " << attributeIndex);
+
+		const char* value = handler.getValue();
+
+		if(value != NULL) {
+			pos = find_string(buf, value, attributeIndex);
+			pos -= strlen(attributeId) + 2;
+			if(pos > 0 ) {
+				int size = strlen(attributeId) * 2 + 5 + strlen(value);
+				del_string(buf, pos, size);
+				rc = 0;
+			}
+		}
+	}
+
+	return rc;	
 }
