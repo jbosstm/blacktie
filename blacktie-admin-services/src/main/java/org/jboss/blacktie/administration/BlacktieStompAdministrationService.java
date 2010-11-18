@@ -76,7 +76,8 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 	public BlacktieStompAdministrationService() throws IOException,
 			ConfigurationException {
-		XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
+		XMLParser.loadProperties("BlacktieStompAdministrationService",
+				"btconfig.xsd", "btconfig.xml", prop);
 		JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
 		JMXConnector c = JMXConnectorFactory.connect(u);
 		beanServerConnection = c.getMBeanServerConnection();
@@ -299,9 +300,6 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		String server = null;
 
 		try {
-			Properties prop = new Properties();
-			XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
-
 			if (serviceName.indexOf(".") > -1) {
 				server = serviceName.substring(1);
 				server = server.replaceAll("[0-9]", "");
@@ -345,8 +343,6 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			log.debug("Responding");
 			return new Response(Connection.TPSUCCESS, 0, buffer, 0);
 		} catch (ConnectionException e) {
-			return new Response(Connection.TPFAIL, 0, null, 0);
-		} catch (ConfigurationException e) {
 			return new Response(Connection.TPFAIL, 0, null, 0);
 		}
 	}

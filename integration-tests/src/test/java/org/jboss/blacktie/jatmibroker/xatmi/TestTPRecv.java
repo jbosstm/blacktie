@@ -37,7 +37,7 @@ public class TestTPRecv extends TestCase {
 		server.tpadvertiseTestTPRecv();
 
 		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
+				.getConnectionFactory("test");
 		connection = connectionFactory.getConnection();
 
 		sendlen = "recv".length() + 1;

@@ -58,7 +58,8 @@ public class QueueReaper implements Runnable {
 		this.administrationProxy = administrationProxy;
 
 		prop = new Properties();
-		XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
+		XMLParser.loadProperties("QueueReaper", "btconfig.xsd", "btconfig.xml",
+				prop);
 
 		this.interval = Integer.parseInt(prop.getProperty(
 				"QueueReaperInterval", "30")) * 1000;

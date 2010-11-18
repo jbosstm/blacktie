@@ -34,7 +34,7 @@ public class AbstractBlacktieServiceTestCase extends TestCase {
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
+				.getConnectionFactory("test");
 		connection = connectionFactory.getConnection();
 	}
 
@@ -47,8 +47,8 @@ public class AbstractBlacktieServiceTestCase extends TestCase {
 		buffer.setByteArray("echo".getBytes());
 
 		Response response = connection.tpcall("EchoService", buffer, 0);
-		String responseData = new String(((X_OCTET) response.getBuffer())
-				.getByteArray());
+		String responseData = new String(
+				((X_OCTET) response.getBuffer()).getByteArray());
 		assertEquals("echo", responseData);
 	}
 }

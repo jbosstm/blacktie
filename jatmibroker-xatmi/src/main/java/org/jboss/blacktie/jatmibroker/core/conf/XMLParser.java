@@ -48,7 +48,7 @@ public class XMLParser {
 	private SAXParser saxParser;
 	private Schema schema;
 
-	private static Map<String, Map<String, Properties>> loadedProperties = new HashMap<String, Map<String, Properties>>();
+	private static Map<String, Map<String, Map<String, Properties>>> loadedProperties = new HashMap<String, Map<String, Map<String, Properties>>>();
 
 	/**
 	 * Constructor
@@ -118,7 +118,8 @@ public class XMLParser {
 			env = configDir + "/" + env;
 		}
 
-		log.debug("read configuration from " + configDir + " directory");
+		log.debug("read " + env + " configuration from " + configDir
+				+ " directory");
 
 		// File file = new File(env);
 		InputStream resource = Thread.currentThread().getContextClassLoader()
@@ -139,32 +140,35 @@ public class XMLParser {
 		}
 	}
 
-	public static synchronized void loadProperties(String schema,
-			String configFile, Properties prop) throws ConfigurationException {
-		Properties properties = null;
-		log.debug("Loading the properties from: " + configFile);
-		if (loadedProperties.containsKey(schema)) {
-			log.debug("Schema was located");
-			Map<String, Properties> map = loadedProperties.get(schema);
-			if (map.containsKey(configFile)) {
-				log.debug("Properties will be copied as already loaded");
-				properties = map.get(configFile);
-			} else {
-				log.debug("Properties will be read from file as not already loaded");
-				properties = new Properties();
-				XMLParser xmlenv = new XMLParser(properties, schema);
-				xmlenv.parse(configFile);
-				map.put(configFile, properties);
-			}
-		} else {
-			log.debug("Properties will be read from file as schema not already loaded");
-			Map<String, Properties> map = new HashMap<String, Properties>();
-			properties = new Properties();
-			XMLParser xmlenv = new XMLParser(properties, schema);
-			xmlenv.parse(configFile);
-			map.put(configFile, properties);
-			loadedProperties.put(schema, map);
+	public static synchronized void loadProperties(String applicationKey,
+			String schema, String configFile, Properties prop)
+			throws ConfigurationException {
+		log.debug("Loading the properties from: " + applicationKey + "/"
+				+ schema + "/" + configFile);
+		Map<String, Map<String, Properties>> applicationMap = loadedProperties
+				.get(applicationKey);
+		if (applicationMap == null) {
+			log.trace("Application was not located");
+			applicationMap = new HashMap<String, Map<String, Properties>>();
+			loadedProperties.put(applicationKey, applicationMap);
 		}
-		prop.putAll(properties);
+		Map<String, Properties> schemaMap = applicationMap.get(schema);
+		if (schemaMap == null) {
+			log.trace("Schema was not located");
+			schemaMap = new HashMap<String, Properties>();
+			applicationMap.put(schema, schemaMap);
+		}
+		Properties configProperties = schemaMap.get(configFile);
+		if (configProperties == null) {
+			log.debug("Properties will be read from file as not already loaded: "
+					+ applicationKey);
+			configProperties = new Properties();
+			XMLParser xmlenv = new XMLParser(configProperties, schema);
+			xmlenv.parse(configFile);
+			schemaMap.put(configFile, configProperties);
+		}
+
+		log.trace("Assigning properties");
+		prop.putAll(configProperties);
 	}
 }

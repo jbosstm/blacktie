@@ -92,7 +92,8 @@ public class ServiceDiscoveryComponent implements ResourceDiscoveryComponent {
 		// default description for your resource
 		try {
 			Properties prop = new Properties();
-			XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
+			XMLParser.loadProperties("blacktie-rhq-plugin", "btconfig.xsd",
+					"btconfig.xml", prop);
 
 			Set<Object> keys = prop.keySet();
 			Set<String> names = new HashSet<String>();

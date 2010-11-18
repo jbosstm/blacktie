@@ -92,7 +92,7 @@ public class BlackTieServer {
 
 		this.serverName = serverName;
 		AtmiBrokerEnvXML server = new AtmiBrokerEnvXML();
-		properties = server.getProperties();
+		properties = server.getProperties(serverName);
 		transportFactory = new TransportFactory(properties);
 
 		/**

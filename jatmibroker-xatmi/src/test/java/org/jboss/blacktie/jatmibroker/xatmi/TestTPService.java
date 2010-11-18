@@ -36,7 +36,7 @@ public class TestTPService extends TestCase {
 		server.tpadvertiseTestTPService();
 
 		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
+				.getConnectionFactory("test");
 		connection = connectionFactory.getConnection();
 
 		sendlen = "TestTPService".length() + 1;

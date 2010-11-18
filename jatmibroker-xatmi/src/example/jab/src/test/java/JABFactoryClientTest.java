@@ -36,7 +36,8 @@ public class JABFactoryClientTest {
 		}
 		String message = args[0];
 		try {
-			JABConnectionFactory jcf = JABConnectionFactory.getInstance();
+			JABConnectionFactory jcf = new JABConnectionFactory(
+					"JABFactoryClientTest");
 			JABConnection c = jcf.getConnection("connection");
 			Transaction t = c.beginTransaction(-1);
 			JABBuffer b = new JABBuffer();

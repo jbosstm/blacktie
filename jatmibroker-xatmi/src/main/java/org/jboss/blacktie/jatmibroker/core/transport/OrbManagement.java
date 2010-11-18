@@ -6,7 +6,6 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerEnvXML;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.ORBPackage.InvalidName;
@@ -37,23 +36,20 @@ public class OrbManagement implements Runnable {
 	private POA root_poa;
 	private Thread callbackThread;
 
-	public static synchronized OrbManagement getInstance() throws InvalidName,
-			AdapterInactive, NotFound, CannotProceed,
+	public static synchronized OrbManagement getInstance(Properties properties)
+			throws InvalidName, AdapterInactive, NotFound, CannotProceed,
 			org.omg.CosNaming.NamingContextPackage.InvalidName,
 			ConfigurationException {
 		if (instance == null) {
-			instance = new OrbManagement();
+			instance = new OrbManagement(properties);
 		}
 		return instance;
 	}
 
-	private OrbManagement() throws InvalidName, AdapterInactive, NotFound,
-			CannotProceed, org.omg.CosNaming.NamingContextPackage.InvalidName,
+	private OrbManagement(Properties properties) throws InvalidName,
+			AdapterInactive, NotFound, CannotProceed,
+			org.omg.CosNaming.NamingContextPackage.InvalidName,
 			ConfigurationException {
-
-		AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
-		Properties properties = xml.getProperties();
-
 		String namingContextExt = properties
 				.getProperty("blacktie.domain.name");
 		int numberOfOrbArgs = Integer.parseInt(properties.getProperty(

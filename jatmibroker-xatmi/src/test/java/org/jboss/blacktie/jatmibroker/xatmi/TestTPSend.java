@@ -36,7 +36,7 @@ public class TestTPSend extends TestCase {
 		server.serverinit();
 
 		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
+				.getConnectionFactory("test");
 		connection = connectionFactory.getConnection();
 
 		sendlen = "tpsend".length() + 1;

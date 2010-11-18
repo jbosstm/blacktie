@@ -30,7 +30,7 @@ public class JavaClient {
 	public static void main(String[] args) throws Exception {
 		log.info("JavaClient");
 		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
+				.getConnectionFactory("JavaClient");
 		Connection connection = connectionFactory.getConnection();
 		X_OCTET sbuf = (X_OCTET) connection.tpalloc("X_OCTET", null, 29);
 		sbuf.setByteArray("THIS IS YOUR CLIENT SPEAKING".getBytes());

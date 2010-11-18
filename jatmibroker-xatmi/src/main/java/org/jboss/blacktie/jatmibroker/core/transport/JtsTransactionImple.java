@@ -71,21 +71,22 @@ public class JtsTransactionImple extends TransactionImple {
 	 * 
 	 * @param ior
 	 *            IOR for the corresponding OTS transaction, must not be null
+	 * @param control
 	 * @throws SystemException
 	 * @throws IllegalStateException
 	 * @throws InvalidTransactionException
 	 * @throws JABException
 	 * @throws ConfigurationException
 	 */
-	public static void resume(String ior) throws InvalidTransactionException,
-			IllegalStateException, SystemException, JABException,
-			ConfigurationException {
+	public static void resume(String serviceName, String ior)
+			throws InvalidTransactionException, IllegalStateException,
+			SystemException, JABException, ConfigurationException {
 		log.debug("resume control");
 		if (hasTransactionManager()) {
 			Transaction tx = controlToTx(ior);
 			tm.resume(tx);
 		} else {
-			JABTransaction transaction = new JABTransaction(ior);
+			JABTransaction transaction = new JABTransaction(serviceName, ior);
 			JABTransaction.resume(transaction);
 		}
 	}

@@ -53,7 +53,7 @@ public class TransportFactory {
 		}
 
 		try {
-			orbManagement = OrbManagement.getInstance();
+			orbManagement = OrbManagement.getInstance(properties);
 		} catch (Throwable t) {
 			throw new ConfigurationException(
 					"Could not create the orb management function", t);

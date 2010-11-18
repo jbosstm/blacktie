@@ -36,7 +36,7 @@ public class TestTPCall extends TestCase {
 		server.serverinit();
 
 		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
+				.getConnectionFactory("test");
 		connection = connectionFactory.getConnection();
 	}
 

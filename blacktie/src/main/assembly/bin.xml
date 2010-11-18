@@ -142,28 +142,9 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../jatmibroker-xatmi/src/example/jab/
+			<directory>../jatmibroker-xatmi/src/example/
 			</directory>
-			<outputDirectory>examples/jab
-			</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../jatmibroker-xatmi/src/example/mdb/
-			</directory>
-			<outputDirectory>examples/mdb
-			</outputDirectory>
-			<useDefaultExcludes>true</useDefaultExcludes>
-			<excludes>
-				<exclude>target/**</exclude>
-			</excludes>
-		</fileSet>
-		<fileSet>
-			<directory>../atmibroker-xatmi/src/example/admin/
-			</directory>
-			<outputDirectory>examples/admin/xatmi
+			<outputDirectory>examples/
 			</outputDirectory>
 			<includes>
 				<include>**/*</include>

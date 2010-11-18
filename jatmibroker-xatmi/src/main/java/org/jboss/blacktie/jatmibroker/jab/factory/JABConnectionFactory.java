@@ -51,35 +51,21 @@ public class JABConnectionFactory {
 	private JABSession session;
 
 	/**
-	 * Obtain a reference to the single instance of JABConnectionFactory per
-	 * classloader.
-	 * 
-	 * @return The instance
-	 * @throws JABException
-	 *             In case the connection factory cannot be loaded
-	 */
-	public synchronized static JABConnectionFactory getInstance()
-			throws JABException {
-		if (instance == null) {
-			instance = new JABConnectionFactory();
-		}
-		return instance;
-	}
-
-	/**
 	 * The constructor is not intended to be invoked by clients of the factory
 	 * 
 	 * @throws JABException
 	 *             In case the connection factory cannot be created
 	 */
-	private JABConnectionFactory() throws JABException {
+	public JABConnectionFactory(String applicationName) throws JABException {
 		try {
-			connectionFactory = ConnectionFactory.getConnectionFactory();
+			connectionFactory = ConnectionFactory
+					.getConnectionFactory(applicationName);
 		} catch (ConfigurationException e) {
 			throw new JABException("Could not create the connection factory: "
 					+ e.getMessage(), e);
 		}
-		JABSessionAttributes attributes = new JABSessionAttributes();
+		JABSessionAttributes attributes = new JABSessionAttributes(
+				applicationName);
 		session = new JABSession(attributes);
 	}
 

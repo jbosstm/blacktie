@@ -35,7 +35,7 @@ public class TestTPDiscon extends TestCase {
 		server.tpadvertiseTestTPDiscon();
 
 		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
+				.getConnectionFactory("test");
 		connection = connectionFactory.getConnection();
 
 		cd = connection.tpconnect(RunServer.getServiceNameTestTPDiscon(), null,

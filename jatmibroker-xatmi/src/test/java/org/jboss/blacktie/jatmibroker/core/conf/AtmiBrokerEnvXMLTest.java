@@ -28,7 +28,7 @@ public class AtmiBrokerEnvXMLTest extends TestCase {
 
 	public void testEnv() throws Exception {
 		AtmiBrokerEnvXML envXml = new AtmiBrokerEnvXML();
-		Properties prop = envXml.getProperties();
+		Properties prop = envXml.getProperties("test");
 
 		String domain = "fooapp";
 		String transid = "TransactionManagerService.OTS";

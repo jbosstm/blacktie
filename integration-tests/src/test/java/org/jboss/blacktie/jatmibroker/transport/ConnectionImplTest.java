@@ -46,7 +46,7 @@ public class ConnectionImplTest extends TestCase {
 
 	public void test() throws Exception {
 		AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
-		Properties properties = xml.getProperties();
+		Properties properties = xml.getProperties("test");
 
 		TransportFactory factory = new TransportFactory(properties);
 		Transport proxy = factory.createTransport();

@@ -34,7 +34,7 @@ public class TestTPAlloc extends TestCase {
 		log.info("TestTPAlloc::setUp");
 		m_allocated = null;
 		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
+				.getConnectionFactory("test");
 		connection = connectionFactory.getConnection();
 
 	}

@@ -34,7 +34,7 @@ public class TestTPCancel extends TestCase {
 		server.tpadvertiseTestTPCancel();
 
 		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
+				.getConnectionFactory("test");
 		connection = connectionFactory.getConnection();
 	}
 

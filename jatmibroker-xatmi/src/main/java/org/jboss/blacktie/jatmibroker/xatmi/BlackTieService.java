@@ -45,6 +45,8 @@ public abstract class BlackTieService implements Service {
 	 * Entry points should pass control to this method as soon as reasonably
 	 * possible.
 	 * 
+	 * @param serviceName
+	 *            The name of the service
 	 * @param message
 	 *            The message to process
 	 * @throws ConnectionException
@@ -57,13 +59,13 @@ public abstract class BlackTieService implements Service {
 	 * @throws IllegalStateException
 	 * @throws InvalidTransactionException
 	 */
-	protected void processMessage(String name, Message message)
+	protected void processMessage(String serviceName, Message message)
 			throws ConnectionException, ConfigurationException,
 			NamingException, InvalidTransactionException,
 			IllegalStateException, SystemException, JABException {
 		log.trace("Service invoked");
-		Connection connection = ConnectionFactory.getConnectionFactory()
-				.getConnection();
+		Connection connection = ConnectionFactory.getConnectionFactory(
+				serviceName).getConnection();
 		try {
 			boolean hasTx = false;
 			boolean hasTPNOREPLY = (message.flags & Connection.TPNOREPLY) == Connection.TPNOREPLY;
@@ -76,13 +78,13 @@ public abstract class BlackTieService implements Service {
 			int flags = 0;
 			String type = null;
 			String subtype = null;
-			Session serviceSession = connection.createServiceSession(name,
-					message.cd, message.replyTo);
+			Session serviceSession = connection.createServiceSession(
+					serviceName, message.cd, message.replyTo);
 			try {
 				boolean hasTPCONV = (message.flags & Connection.TPCONV) == Connection.TPCONV;
 				Boolean conversational = (Boolean) connection.properties
-						.get("blacktie." + name + ".conversational");
-				log.trace(name);
+						.get("blacktie." + serviceName + ".conversational");
+				log.trace(serviceName);
 				boolean isConversational = conversational == true;
 				if (hasTPCONV && isConversational) {
 					int olen = 4;
@@ -133,7 +135,7 @@ public abstract class BlackTieService implements Service {
 				if (hasTx) // make sure any foreign tx is resumed before calling
 					// the
 					// service routine
-					JtsTransactionImple.resume(message.control);
+					JtsTransactionImple.resume(serviceName, message.control);
 
 				log.debug("Invoking the XATMI service");
 				Response response = null;

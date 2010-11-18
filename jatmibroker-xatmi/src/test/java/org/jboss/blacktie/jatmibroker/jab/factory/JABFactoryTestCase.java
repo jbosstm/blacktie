@@ -52,7 +52,7 @@ public class JABFactoryTestCase extends TestCase {
 	public void test_tpcall_x_octet() throws Exception {
 		log.info("JABFactoryTestCase::test_tpcall_x_octet");
 		runServer.tpadvertisetpcallXOctet();
-		JABConnectionFactory factory = JABConnectionFactory.getInstance();
+		JABConnectionFactory factory = new JABConnectionFactory("test");
 		JABConnection connection = factory.getConnection("connection");
 		JABBuffer toSend = new JABBuffer();
 		toSend.setArrayValue("X_OCTET", "test_tpcall_x_octet".getBytes());
@@ -73,7 +73,7 @@ public class JABFactoryTestCase extends TestCase {
 	public void test_tpcall_x_c_type() throws Exception {
 		log.info("JABFactoryTestCase::test_tpcall_x_c_type");
 		runServer.tpadvertisetpcallXCType();
-		JABConnectionFactory factory = JABConnectionFactory.getInstance();
+		JABConnectionFactory factory = new JABConnectionFactory("test");
 		JABConnection connection = factory.getConnection("connection");
 
 		// Assemble the message ByteArrayOutputStream baos = new

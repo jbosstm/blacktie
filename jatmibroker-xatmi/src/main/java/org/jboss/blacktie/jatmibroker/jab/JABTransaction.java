@@ -74,7 +74,7 @@ public class JABTransaction {
 
 		Properties properties = jabSession.getJABSessionAttributes()
 				.getProperties();
-		orbManagement = OrbManagement.getInstance();
+		orbManagement = OrbManagement.getInstance(properties);
 		String toLookup = (String) properties.get("blacktie.trans.factoryid");
 		org.omg.CORBA.Object aObject = orbManagement.getNamingContextExt()
 				.resolve_str(toLookup);
@@ -88,16 +88,18 @@ public class JABTransaction {
 		setTerminator(control);
 	}
 
-	public JABTransaction(String controlIOR) throws JABException,
-			ConfigurationException {
-		JABSessionAttributes sessionAttrs = new JABSessionAttributes();
+	public JABTransaction(String applicationName, String controlIOR)
+			throws JABException, ConfigurationException {
+		JABSessionAttributes sessionAttrs = new JABSessionAttributes(
+				applicationName);
 		JABTransaction curr = current();
 
 		jabSession = new JABSession(sessionAttrs);
 		timeout = -1;
 
 		try {
-			orbManagement = OrbManagement.getInstance();
+			orbManagement = OrbManagement.getInstance(sessionAttrs
+					.getProperties());
 		} catch (org.omg.CORBA.UserException cue) {
 			throw new TransactionException(cue.getMessage(), cue);
 		}

@@ -47,10 +47,11 @@ public class JABSessionAttributes {
 	 * @throws JABException
 	 *             In case the configuration file cannot be accessed
 	 */
-	public JABSessionAttributes() throws JABException {
+	public JABSessionAttributes(String applicationName) throws JABException {
 		try {
 			AtmiBrokerEnvXML client = new AtmiBrokerEnvXML();
-			this.properties = client.getProperties();
+			this.properties = client.getProperties(applicationName);
+			this.properties.put("applicationName", applicationName);
 		} catch (Exception e) {
 			log.error("Could not load the configuration", e);
 			throw new JABException("Could not load the configuration", e);

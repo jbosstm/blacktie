@@ -39,7 +39,7 @@ public class TestTPConnect extends TestCase {
 		server.tpadvertiseTestTPConnect();
 
 		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory();
+				.getConnectionFactory("test");
 		connection = connectionFactory.getConnection();
 
 		byte[] message = "connect".getBytes();
