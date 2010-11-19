@@ -19,6 +19,8 @@ package org.jboss.blacktie.jatmibroker.ejb.connector.ejb;
 
 import junit.framework.TestCase;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
@@ -27,22 +29,24 @@ import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class AbstractBlacktieServiceTestCase extends TestCase {
+	private static final Logger log = LogManager
+			.getLogger(AbstractBlacktieServiceTestCase.class);
 	private Connection connection;
 
-	public AbstractBlacktieServiceTestCase() throws ConnectionException {
-	}
-
 	public void setUp() throws ConnectionException, ConfigurationException {
+		log.info("AbstractBlacktieServiceTestCase::setUp");
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
+		log.info("AbstractBlacktieServiceTestCase::tearDown");
 		connection.close();
 	}
 
 	public void test() throws ConnectionException {
+		log.info("AbstractBlacktieServiceTestCase::test");
 		X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null, 4);
 		buffer.setByteArray("echo".getBytes());
 

@@ -68,10 +68,10 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 			beans[i] = (BTTestRemote) objs[i];
 			// results[i] = beans[i].echo("bean=" + names[(i + 1) %
 			// names.length]);
-			// log.debug(names[i] + " result: " + results[i]);
+			// log.info(names[i] + " result: " + results[i]);
 		}
 
-		log.debug(args + " hasTransaction: "
+		log.info(args + " hasTransaction: "
 				+ JtsTransactionImple.hasTransaction());
 
 		if (args.contains("tx=true")) {
@@ -80,7 +80,7 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 				log.info("Error should have got a Not Supported Exception");
 				return "Error should have got a Not Supported Exception";
 			} catch (javax.ejb.EJBException e) {
-				log.debug("Success got Exception calling txNever: " + e);
+				log.info("Success got Exception calling txNever: " + e);
 				return args;
 			}
 		} else if (args.contains("tx=false")) {
@@ -89,7 +89,7 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 				log.info("Error should have got an EJBTransactionRequiredException exception");
 				return "Error should have got an EJBTransactionRequiredException exception";
 			} catch (javax.ejb.EJBTransactionRequiredException e) {
-				log.debug("Success got EJBTransactionRequiredException");
+				log.info("Success got EJBTransactionRequiredException");
 				return args;
 			}
 		} else if (args.contains("tx=create")) {
@@ -99,12 +99,12 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 						echo.length);
 				buffer.setByteArray(echo);
 
-				log.debug("Invoking TxCreateService...");
+				log.info("Invoking TxCreateService...");
 				Response response = connection.tpcall("TxCreateService",
 						buffer, 0);
 				X_OCTET rcvd = (X_OCTET) response.getBuffer();
 				String responseData = new String(rcvd.getByteArray());
-				log.debug("TxCreateService response: " + responseData);
+				log.info("TxCreateService response: " + responseData);
 
 				// check that the remote service created a transaction
 				JABTransaction tx = JABTransaction.current();
@@ -114,6 +114,7 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 					} catch (JABException e) {
 						args = "Service create a transaction but commit failed: "
 								+ e;
+						log.error(args, e);
 					}
 				} else {
 					args = "Service should have propagated a new transaction back to caller";
@@ -121,6 +122,7 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 
 				return responseData; // should be the same as args
 			} catch (ConnectionException e) {
+				log.error("Caught a connection exception: " + e.getMessage(), e);
 				return e.getMessage();
 			}
 			// if (!JtsTransactionImple.begin())
@@ -131,7 +133,7 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 			try {
 				return beans[0].echo("bean=" + names[1]);
 			} catch (javax.ejb.EJBException e) {
-				log.warn("Failure got Exception calling method with default transaction attribute");
+				log.warn("Failure got Exception calling method with default transaction attribute", e);
 				return "Failure got Exception calling method with default transaction attribute: "
 						+ e;
 			}
@@ -145,7 +147,7 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 		try {
 			resp = serviceRequest(svcinfo.getConnection(), new String(rcvd));
 		} catch (javax.naming.NamingException e) {
-			log.warn("error: " + e);
+			log.warn("error: " + e, e);
 			resp = e.getMessage();
 		}
 		X_OCTET buffer = (X_OCTET) svcinfo.getConnection().tpalloc("X_OCTET",

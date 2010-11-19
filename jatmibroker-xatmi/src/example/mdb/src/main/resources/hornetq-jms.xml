@@ -7,7 +7,7 @@
    <queue name="BTR_TxEchoService">
       <entry name="/queue/BTR_TxEchoService"/>
    </queue>
-   <queue name="TxCreateService">
+   <queue name="BTR_TxCreateService">
       <entry name="/queue/BTR_TxCreateService"/>
    </queue>
 </configuration>

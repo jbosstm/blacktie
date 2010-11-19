@@ -37,20 +37,20 @@ public class TxBlacktieServiceTestCase extends TestCase {
 			.getLogger(TxBlacktieServiceTestCase.class);
 	private Connection connection;
 
-	public TxBlacktieServiceTestCase() throws ConnectionException {
-	}
-
 	public void setUp() throws ConnectionException, ConfigurationException {
+		log.info("TxBlacktieServiceTestCase::setUp");
 		ConnectionFactory connectionFactory = ConnectionFactory
 				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
 	}
 
 	public void tearDown() throws ConnectionException, ConfigurationException {
+		log.info("TxBlacktieServiceTestCase::tearDown");
 		connection.close();
 	}
 
 	private JABTransaction startTx() throws JABException {
+		log.info("TxBlacktieServiceTestCase::startTx");
 		JABSessionAttributes attrs = new JABSessionAttributes();
 		JABSession session = new JABSession(attrs);
 
@@ -65,6 +65,7 @@ public class TxBlacktieServiceTestCase extends TestCase {
 	}
 
 	public void test1() throws ConnectionException, JABException {
+		log.info("TxBlacktieServiceTestCase::test1");
 		byte[] args = "test=test1,tx=true".getBytes();
 		X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null,
 				args.length);
@@ -79,6 +80,7 @@ public class TxBlacktieServiceTestCase extends TestCase {
 	}
 
 	public void test2() throws ConnectionException, JABException {
+		log.info("TxBlacktieServiceTestCase::test2");
 		byte[] args = "test=test2,tx=true".getBytes();
 		X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null,
 				args.length);
@@ -91,6 +93,7 @@ public class TxBlacktieServiceTestCase extends TestCase {
 	}
 
 	public void test3() throws ConnectionException, JABException {
+		log.info("TxBlacktieServiceTestCase::test3");
 		byte[] args = "test=test3,tx=false".getBytes();
 		X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null,
 				args.length);
@@ -103,6 +106,7 @@ public class TxBlacktieServiceTestCase extends TestCase {
 	}
 
 	public void test4() throws ConnectionException, JABException {
+		log.info("TxBlacktieServiceTestCase::test4");
 		byte[] args = "test=test4,tx=false".getBytes();
 		X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null,
 				args.length);
@@ -121,6 +125,7 @@ public class TxBlacktieServiceTestCase extends TestCase {
 	 * blacktie service.
 	 */
 	public void test5() throws ConnectionException, JABException {
+		log.info("TxBlacktieServiceTestCase::test5");
 		byte[] args = "test=test5,tx=create".getBytes();
 		X_OCTET buffer = (X_OCTET) connection.tpalloc("X_OCTET", null,
 				args.length);
