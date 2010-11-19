@@ -48,7 +48,7 @@ public class DebitAdapterService extends MDBBlacktieService implements
 	private static final Logger log = LogManager
 			.getLogger(DebitAdapterService.class);
 
-	protected DebitAdapterService() throws ConfigurationException {
+	public DebitAdapterService() throws ConfigurationException {
 		super();
 	}
 

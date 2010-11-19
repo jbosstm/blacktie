@@ -47,7 +47,7 @@ public class CreditAdapterService extends MDBBlacktieService implements
 	private static final Logger log = LogManager
 			.getLogger(CreditAdapterService.class);
 
-	protected CreditAdapterService() throws ConfigurationException {
+	public CreditAdapterService() throws ConfigurationException {
 		super();
 	}
 
