@@ -38,7 +38,7 @@ import org.jboss.ejb3.annotation.ResourceAdapter;
 public class EchoServiceTestService extends MDBBlacktieService implements
 		javax.jms.MessageListener {
 
-	protected EchoServiceTestService() throws ConfigurationException {
+	public EchoServiceTestService() throws ConfigurationException {
 		super();
 	}
 

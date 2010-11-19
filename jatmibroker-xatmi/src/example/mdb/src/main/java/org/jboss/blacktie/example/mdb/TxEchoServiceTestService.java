@@ -52,7 +52,7 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 	private static final String[] names = { "FirstBTBean/remote",
 			"SecondBTBean/remote" };
 
-	protected TxEchoServiceTestService() throws ConfigurationException {
+	public TxEchoServiceTestService() throws ConfigurationException {
 		super();
 	}
 
