@@ -46,7 +46,8 @@ public class ServiceDispatcher extends BlackTieService implements Runnable {
 	private int index;
 
 	ServiceDispatcher(String serviceName, Service callback, Receiver receiver,
-			int index) {
+			int index) throws ConfigurationException {
+		super();
 		this.index = index;
 		this.serviceName = serviceName;
 		this.callback = callback;

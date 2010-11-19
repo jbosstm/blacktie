@@ -88,8 +88,7 @@ public class BlacktiePluginDiscoveryComponent implements
 		// default description for your resource
 		try {
 			Properties prop = new Properties();
-			XMLParser.loadProperties("blacktie-rhq-plugin", "btconfig.xsd",
-					"btconfig.xml", prop);
+			XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
 
 			String domainName = prop.getProperty("blacktie.domain.name");
 			String key = domainName + " key";

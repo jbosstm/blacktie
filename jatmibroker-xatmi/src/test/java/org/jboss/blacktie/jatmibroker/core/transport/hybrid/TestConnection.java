@@ -25,7 +25,7 @@ public class TestConnection extends TestCase {
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
-		Properties properties = xml.getProperties("test");
+		Properties properties = xml.getProperties();
 
 		transportFactory = new TransportFactory(properties);
 		serviceTransport = transportFactory.createTransport();

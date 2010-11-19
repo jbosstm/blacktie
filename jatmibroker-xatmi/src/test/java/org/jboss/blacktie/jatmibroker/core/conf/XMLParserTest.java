@@ -36,8 +36,7 @@ public class XMLParserTest extends TestCase {
 	public void testWrongEnvironmentXML() throws ConfigurationException {
 		Properties prop = new Properties();
 		try {
-			XMLParser.loadProperties("test", "btconfig.xsd",
-					"Wrongbtconfig.xml", prop);
+			XMLParser.loadProperties("btconfig.xsd", "Wrongbtconfig.xml", prop);
 			fail("Should have thrown a parser exception or found the file");
 		} catch (ConfigurationException e) {
 			// THIS IS OK
@@ -47,8 +46,7 @@ public class XMLParserTest extends TestCase {
 	public void testWrongEnvironmentXsd() {
 		Properties prop = new Properties();
 		try {
-			XMLParser.loadProperties("test", "btconfigERROR.xsd",
-					"btconfig.xml", prop);
+			XMLParser.loadProperties("btconfigERROR.xsd", "btconfig.xml", prop);
 			fail("Should have thrown a parser exception or found the file");
 		} catch (ConfigurationException e) {
 			// THIS IS OK
@@ -59,8 +57,7 @@ public class XMLParserTest extends TestCase {
 		Properties prop = new Properties();
 
 		try {
-			XMLParser.loadProperties("test", "btconfig.xsd",
-					"AdminEnvironment", prop);
+			XMLParser.loadProperties("btconfig.xsd", "AdminEnvironment", prop);
 			fail("Should have thrown a exception");
 		} catch (ConfigurationException e) {
 			// THIS IS OK
@@ -71,8 +68,8 @@ public class XMLParserTest extends TestCase {
 		Properties prop = new Properties();
 
 		try {
-			XMLParser.loadProperties("test", "btconfig.xsd",
-					"SameEnvironment.xml", prop);
+			XMLParser.loadProperties("btconfig.xsd", "SameEnvironment.xml",
+					prop);
 			fail("Should have thrown a exception");
 		} catch (ConfigurationException e) {
 			// THIS IS OK
@@ -82,8 +79,8 @@ public class XMLParserTest extends TestCase {
 	public void testUnknownMachine() throws Exception {
 		Properties prop = new Properties();
 		try {
-			XMLParser.loadProperties("test", "btconfig.xsd",
-					"UnknownMachine.xml", prop);
+			XMLParser
+					.loadProperties("btconfig.xsd", "UnknownMachine.xml", prop);
 			fail("Should have thrown a exception");
 		} catch (ConfigurationException e) {
 			// THIS IS OK
@@ -93,8 +90,7 @@ public class XMLParserTest extends TestCase {
 	public void testSameServer() throws Exception {
 		Properties prop = new Properties();
 		try {
-			XMLParser.loadProperties("test", "btconfig.xsd", "SameServer.xml",
-					prop);
+			XMLParser.loadProperties("btconfig.xsd", "SameServer.xml", prop);
 			fail("Should have thrown a exception");
 		} catch (ConfigurationException e) {
 			// THIS IS OK
@@ -105,8 +101,7 @@ public class XMLParserTest extends TestCase {
 		Properties prop = new Properties();
 
 		try {
-			XMLParser.loadProperties("test", "btconfig.xsd", "SameBuffer.xml",
-					prop);
+			XMLParser.loadProperties("btconfig.xsd", "SameBuffer.xml", prop);
 			fail("Should have thrown a exception");
 		} catch (ConfigurationException e) {
 			// THIS IS OK
@@ -115,7 +110,7 @@ public class XMLParserTest extends TestCase {
 
 	public void testEnvironmentXML() throws Exception {
 		Properties prop = new Properties();
-		XMLParser.loadProperties("test", "btconfig.xsd", "btconfig.xml", prop);
+		XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
 
 		String domain = "fooapp";
 		String transid = "TransactionManagerService.OTS";

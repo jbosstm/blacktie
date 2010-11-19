@@ -26,6 +26,7 @@ import javax.naming.NamingException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.example.ejb.eg1.BTTestRemote;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.transport.JtsTransactionImple;
 import org.jboss.blacktie.jatmibroker.jab.JABException;
 import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
@@ -45,10 +46,15 @@ import org.jboss.ejb3.annotation.ResourceAdapter;
 @ResourceAdapter("hornetq-ra.rar")
 public class TxEchoServiceTestService extends MDBBlacktieService implements
 		javax.jms.MessageListener {
+
 	private static final Logger log = LogManager
 			.getLogger(TxEchoServiceTestService.class);
 	private static final String[] names = { "FirstBTBean/remote",
 			"SecondBTBean/remote" };
+
+	protected TxEchoServiceTestService() throws ConfigurationException {
+		super();
+	}
 
 	public static String serviceRequest(Connection connection, String args)
 			throws NamingException {

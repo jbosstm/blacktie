@@ -10,6 +10,7 @@ import javax.jms.Topic;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.core.transport.JtsTransactionImple;
 import org.jboss.blacktie.jatmibroker.xatmi.BlackTieService;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
@@ -21,11 +22,21 @@ import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
  */
 public abstract class MDBBlacktieService extends BlackTieService implements
 		MessageListener {
+
 	/**
 	 * A logger to log the output to.
 	 */
 	private static final Logger log = LogManager
 			.getLogger(MDBBlacktieService.class);
+
+	/**
+	 * This will allow the connection factory to be failed
+	 * 
+	 * @throws ConfigurationException
+	 */
+	protected MDBBlacktieService() throws ConfigurationException {
+		super();
+	}
 
 	/**
 	 * The onMessage method formats the JMS received bytes message into a format

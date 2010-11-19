@@ -58,8 +58,7 @@ public class JABSession {
 		try {
 			jabSessionAttributes = attributes;
 			ConnectionFactory connectionFactory = ConnectionFactory
-					.getConnectionFactory((String) attributes.getProperties()
-							.get("applicationName"));
+					.getConnectionFactory();
 			connection = connectionFactory.getConnection();
 		} catch (Exception e) {
 			throw new JABException("Error connect to domain: "

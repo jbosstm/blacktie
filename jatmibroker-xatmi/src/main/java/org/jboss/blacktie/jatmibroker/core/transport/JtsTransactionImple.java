@@ -86,7 +86,7 @@ public class JtsTransactionImple extends TransactionImple {
 			Transaction tx = controlToTx(ior);
 			tm.resume(tx);
 		} else {
-			JABTransaction transaction = new JABTransaction(serviceName, ior);
+			JABTransaction transaction = new JABTransaction(ior);
 			JABTransaction.resume(transaction);
 		}
 	}

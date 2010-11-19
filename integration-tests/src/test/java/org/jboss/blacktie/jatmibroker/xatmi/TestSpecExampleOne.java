@@ -41,7 +41,7 @@ public class TestSpecExampleOne extends TestCase {
 		server.tpadvertiseDEBIT();
 
 		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory("test");
+				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
 	}
 

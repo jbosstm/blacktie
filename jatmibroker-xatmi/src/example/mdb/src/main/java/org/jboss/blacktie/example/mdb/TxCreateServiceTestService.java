@@ -25,6 +25,7 @@ import javax.transaction.TransactionManager;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
 import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
@@ -41,6 +42,10 @@ public class TxCreateServiceTestService extends MDBBlacktieService implements
 		javax.jms.MessageListener {
 	private static final Logger log = LogManager
 			.getLogger(TxCreateServiceTestService.class);
+
+	protected TxCreateServiceTestService() throws ConfigurationException {
+		super();
+	}
 
 	public Response tpservice(TPSVCINFO svcinfo) {
 		try {

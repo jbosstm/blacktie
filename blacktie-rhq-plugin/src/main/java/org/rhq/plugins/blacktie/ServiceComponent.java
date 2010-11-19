@@ -115,8 +115,7 @@ public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 	 */
 	public void start(ResourceContext context) {
 		try {
-			XMLParser.loadProperties("blacktie-rhq-plugin", "btconfig.xsd",
-					"btconfig.xml", prop);
+			XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
 			JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
 			JMXConnector c = JMXConnectorFactory.connect(u);
 			beanServerConnection = c.getMBeanServerConnection();

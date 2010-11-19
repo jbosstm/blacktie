@@ -67,11 +67,9 @@ public class AdministrationProxy {
 
 	public AdministrationProxy() throws IOException, ConfigurationException {
 		log.debug("Administration Proxy");
-		XMLParser.loadProperties("AdministrationProxy", "btconfig.xsd",
-				"btconfig.xml", prop);
+		XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
 		servers = (List<String>) prop.get("blacktie.domain.servers");
-		ConnectionFactory cf = ConnectionFactory
-				.getConnectionFactory("AdministrationProxy");
+		ConnectionFactory cf = ConnectionFactory.getConnectionFactory();
 		connection = cf.getConnection();
 		JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
 		c = JMXConnectorFactory.connect(u);

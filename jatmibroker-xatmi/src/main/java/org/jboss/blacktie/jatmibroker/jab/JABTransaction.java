@@ -88,10 +88,9 @@ public class JABTransaction {
 		setTerminator(control);
 	}
 
-	public JABTransaction(String applicationName, String controlIOR)
-			throws JABException, ConfigurationException {
-		JABSessionAttributes sessionAttrs = new JABSessionAttributes(
-				applicationName);
+	public JABTransaction(String controlIOR) throws JABException,
+			ConfigurationException {
+		JABSessionAttributes sessionAttrs = new JABSessionAttributes();
 		JABTransaction curr = current();
 
 		jabSession = new JABSession(sessionAttrs);

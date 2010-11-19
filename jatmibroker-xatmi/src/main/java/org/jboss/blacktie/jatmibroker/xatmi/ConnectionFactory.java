@@ -26,16 +26,13 @@ public class ConnectionFactory {
 	/**
 	 * Get the default connection factory
 	 * 
-	 * @param applicationName
-	 *            The name of the application (used to ensure new applications
-	 *            load their own btconfig.xml)
 	 * @return The connection factory
 	 * @throws ConfigurationException
 	 *             If the configuration cannot be parsed.
 	 */
-	public static synchronized ConnectionFactory getConnectionFactory(
-			String applicationName) throws ConfigurationException {
-		return new ConnectionFactory(applicationName);
+	public static synchronized ConnectionFactory getConnectionFactory()
+			throws ConfigurationException {
+		return new ConnectionFactory();
 	}
 
 	/**
@@ -44,10 +41,9 @@ public class ConnectionFactory {
 	 * @throws ConfigurationException
 	 *             In case the configuration could not be loaded
 	 */
-	private ConnectionFactory(String applicationName)
-			throws ConfigurationException {
+	private ConnectionFactory() throws ConfigurationException {
 		AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
-		properties.putAll(xml.getProperties(applicationName));
+		properties.putAll(xml.getProperties());
 	}
 
 	/**

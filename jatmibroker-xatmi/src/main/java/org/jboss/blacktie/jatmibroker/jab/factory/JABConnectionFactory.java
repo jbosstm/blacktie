@@ -58,14 +58,12 @@ public class JABConnectionFactory {
 	 */
 	public JABConnectionFactory(String applicationName) throws JABException {
 		try {
-			connectionFactory = ConnectionFactory
-					.getConnectionFactory(applicationName);
+			connectionFactory = ConnectionFactory.getConnectionFactory();
 		} catch (ConfigurationException e) {
 			throw new JABException("Could not create the connection factory: "
 					+ e.getMessage(), e);
 		}
-		JABSessionAttributes attributes = new JABSessionAttributes(
-				applicationName);
+		JABSessionAttributes attributes = new JABSessionAttributes();
 		session = new JABSession(attributes);
 	}
 

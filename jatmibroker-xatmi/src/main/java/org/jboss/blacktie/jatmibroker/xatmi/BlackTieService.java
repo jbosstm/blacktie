@@ -41,6 +41,12 @@ public abstract class BlackTieService implements Service {
 	private static final Logger log = LogManager
 			.getLogger(BlackTieService.class);
 
+	private ConnectionFactory connectionFactory;
+
+	protected BlackTieService() throws ConfigurationException {
+		connectionFactory = ConnectionFactory.getConnectionFactory();
+	}
+
 	/**
 	 * Entry points should pass control to this method as soon as reasonably
 	 * possible.
@@ -64,8 +70,7 @@ public abstract class BlackTieService implements Service {
 			NamingException, InvalidTransactionException,
 			IllegalStateException, SystemException, JABException {
 		log.trace("Service invoked");
-		Connection connection = ConnectionFactory.getConnectionFactory(
-				serviceName).getConnection();
+		Connection connection = connectionFactory.getConnection();
 		try {
 			boolean hasTx = false;
 			boolean hasTPNOREPLY = (message.flags & Connection.TPNOREPLY) == Connection.TPNOREPLY;

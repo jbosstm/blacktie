@@ -76,8 +76,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 
 	public BlacktieStompAdministrationService() throws IOException,
 			ConfigurationException {
-		XMLParser.loadProperties("BlacktieStompAdministrationService",
-				"btconfig.xsd", "btconfig.xml", prop);
+		XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
 		JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
 		JMXConnector c = JMXConnectorFactory.connect(u);
 		beanServerConnection = c.getMBeanServerConnection();

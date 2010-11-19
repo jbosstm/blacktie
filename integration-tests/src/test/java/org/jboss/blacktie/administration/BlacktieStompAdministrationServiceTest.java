@@ -31,7 +31,7 @@ public class BlacktieStompAdministrationServiceTest extends TestCase {
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory("test");
+				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
 	}
 

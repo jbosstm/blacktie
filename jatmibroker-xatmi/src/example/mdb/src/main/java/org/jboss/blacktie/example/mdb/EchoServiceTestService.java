@@ -20,6 +20,7 @@ package org.jboss.blacktie.example.mdb;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
@@ -36,6 +37,10 @@ import org.jboss.ejb3.annotation.ResourceAdapter;
 @ResourceAdapter("hornetq-ra.rar")
 public class EchoServiceTestService extends MDBBlacktieService implements
 		javax.jms.MessageListener {
+
+	protected EchoServiceTestService() throws ConfigurationException {
+		super();
+	}
 
 	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException {
 		X_OCTET rcvd = (X_OCTET) svcinfo.getBuffer();

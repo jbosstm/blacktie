@@ -56,7 +56,7 @@ public class XMLParser {
 	 * @param handler
 	 *            - DefaultHandler for the SAX parser
 	 */
-	private XMLParser(Properties properties, String xsdFilename)
+	public XMLParser(Properties properties, String xsdFilename)
 			throws ConfigurationException {
 		this.handler = new XMLEnvHandler(properties);
 		create(xsdFilename);
@@ -112,7 +112,7 @@ public class XMLParser {
 	 * @param envXML
 	 *            - File
 	 */
-	private void parse(String env) throws ConfigurationException {
+	public void parse(String env) throws ConfigurationException {
 		String configDir = System.getenv("BLACKTIE_CONFIGURATION_DIR");
 		if (configDir != null && !configDir.equals("")) {
 			env = configDir + "/" + env;
@@ -140,35 +140,9 @@ public class XMLParser {
 		}
 	}
 
-	public static synchronized void loadProperties(String applicationKey,
-			String schema, String configFile, Properties prop)
-			throws ConfigurationException {
-		log.debug("Loading the properties from: " + applicationKey + "/"
-				+ schema + "/" + configFile);
-		Map<String, Map<String, Properties>> applicationMap = loadedProperties
-				.get(applicationKey);
-		if (applicationMap == null) {
-			log.trace("Application was not located");
-			applicationMap = new HashMap<String, Map<String, Properties>>();
-			loadedProperties.put(applicationKey, applicationMap);
-		}
-		Map<String, Properties> schemaMap = applicationMap.get(schema);
-		if (schemaMap == null) {
-			log.trace("Schema was not located");
-			schemaMap = new HashMap<String, Properties>();
-			applicationMap.put(schema, schemaMap);
-		}
-		Properties configProperties = schemaMap.get(configFile);
-		if (configProperties == null) {
-			log.debug("Properties will be read from file as not already loaded: "
-					+ applicationKey);
-			configProperties = new Properties();
-			XMLParser xmlenv = new XMLParser(configProperties, schema);
-			xmlenv.parse(configFile);
-			schemaMap.put(configFile, configProperties);
-		}
-
-		log.trace("Assigning properties");
-		prop.putAll(configProperties);
+	public static void loadProperties(String schemaName, String configFile,
+			Properties prop) throws ConfigurationException {
+		XMLParser parser = new XMLParser(prop, schemaName);
+		parser.parse(configFile);
 	}
 }

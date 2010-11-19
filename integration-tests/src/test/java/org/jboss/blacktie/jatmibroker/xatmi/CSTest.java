@@ -22,7 +22,7 @@ public class CSTest extends CSControl {
 	// private static CSControl control = new CSControl();
 
 	// XsdValidator is not thread safe
-	public void test_211() {
+	public void xtest_211() {
 		runServer("211");
 		runTest("211");
 	}
@@ -55,7 +55,7 @@ public class CSTest extends CSControl {
 	}
 
 	// tpcall failure with multiple threads
-	public void test_215() {
+	public void xtest_215() {
 		runServer("215");
 		runTest("215");
 	}

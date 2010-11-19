@@ -35,7 +35,7 @@ public class TestTPGetRply extends TestCase {
 		server.serverinit();
 
 		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory("test");
+				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
 
 		sendlen = "grply".length() + 1;

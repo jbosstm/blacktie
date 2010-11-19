@@ -42,7 +42,7 @@ public class TxBlacktieServiceTestCase extends TestCase {
 
 	public void setUp() throws ConnectionException, ConfigurationException {
 		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory("test");
+				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
 	}
 
@@ -51,8 +51,7 @@ public class TxBlacktieServiceTestCase extends TestCase {
 	}
 
 	private JABTransaction startTx() throws JABException {
-		JABSessionAttributes attrs = new JABSessionAttributes(
-				"TxBlacktieServiceTest");
+		JABSessionAttributes attrs = new JABSessionAttributes();
 		JABSession session = new JABSession(attrs);
 
 		// for (Map.Entry e : attrs.getProperties().entrySet())

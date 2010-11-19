@@ -39,8 +39,7 @@ public class JABClientTest extends TestCase {
 		String message = prompt("Enter a message to send");
 		byte[] toSend = new byte[message.length() + 1];
 		System.arraycopy(message.getBytes(), 0, toSend, 0, message.length());
-		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes(
-				"JABClientTest");
+		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(jabSession, 5000);
 		JABServiceInvoker jabService = new JABServiceInvoker("BAR", jabSession,

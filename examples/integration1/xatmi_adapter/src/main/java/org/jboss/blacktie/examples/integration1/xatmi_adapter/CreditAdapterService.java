@@ -26,6 +26,7 @@ import javax.naming.NamingException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jboss.blacktie.examples.integration1.ejb.CreditRemote;
+import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.jboss.blacktie.jatmibroker.xatmi.Response;
@@ -45,6 +46,10 @@ public class CreditAdapterService extends MDBBlacktieService implements
 		javax.jms.MessageListener {
 	private static final Logger log = LogManager
 			.getLogger(CreditAdapterService.class);
+
+	protected CreditAdapterService() throws ConfigurationException {
+		super();
+	}
 
 	public Response tpservice(TPSVCINFO svcinfo) throws ConnectionException {
 		X_COMMON rcv = (X_COMMON) svcinfo.getBuffer();

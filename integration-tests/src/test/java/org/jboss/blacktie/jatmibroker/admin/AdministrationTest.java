@@ -58,7 +58,7 @@ public class AdministrationTest extends TestCase {
 	public void setUp() throws Exception {
 		runServer.serverinit();
 		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory("test");
+				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
 	}
 

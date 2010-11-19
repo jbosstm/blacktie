@@ -94,8 +94,7 @@ public class ServerDiscoveryComponent implements ResourceDiscoveryComponent {
 		// default description for your resource
 		try {
 			Properties prop = new Properties();
-			XMLParser.loadProperties("blacktie-rhq-plugin", "btconfig.xsd",
-					"btconfig.xml", prop);
+			XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
 
 			JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
 			JMXConnector c = JMXConnectorFactory.connect(u);

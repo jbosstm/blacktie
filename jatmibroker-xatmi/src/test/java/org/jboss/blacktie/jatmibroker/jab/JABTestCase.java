@@ -49,8 +49,7 @@ public class JABTestCase extends TestCase {
 	public void test_tpcall_x_octet() throws Exception {
 		log.debug("JABTestCase::test_tpcall_x_octet");
 		runServer.tpadvertisetpcallXOctet();
-		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes(
-				"test");
+		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
 		JABServiceInvoker jabService = new JABServiceInvoker(
 				RunServer.getServiceNametpcallXOctet(), jabSession, "X_OCTET",
@@ -69,8 +68,7 @@ public class JABTestCase extends TestCase {
 	public void test_tpcall_x_octet_with_tx() throws Exception {
 		log.debug("JABTestCase::test_tpcall_x_octet_with_tx");
 		runServer.tpadvertisetpcallXOctet();
-		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes(
-				"test");
+		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(jabSession, 5000);
 		JABServiceInvoker jabService = new JABServiceInvoker(
@@ -93,8 +91,7 @@ public class JABTestCase extends TestCase {
 	public void test_tpcall_x_octet_commit_tx_rollback_only() throws Exception {
 		log.debug("JABTestCase::test_tpcall_x_octet_commit_tx_rollback_only");
 		runServer.tpadvertisetpcallXOctet();
-		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes(
-				"test");
+		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(jabSession, 5000);
 		JABServiceInvoker jabService = new JABServiceInvoker(
@@ -126,8 +123,7 @@ public class JABTestCase extends TestCase {
 			throws Exception {
 		log.debug("JABTestCase::test_tpcall_x_octet_rollback_tx_rollback_only");
 		runServer.tpadvertisetpcallXOctet();
-		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes(
-				"test");
+		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(jabSession, 5000);
 		JABServiceInvoker jabService = new JABServiceInvoker(
@@ -154,8 +150,7 @@ public class JABTestCase extends TestCase {
 	public void test_tpcall_x_octet_suspend_tx() throws Exception {
 		log.debug("JABTestCase::test_tpcall_x_octet_suspend_tx");
 		runServer.tpadvertisetpcallXOctet();
-		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes(
-				"test");
+		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(jabSession, 5000);
 		JABServiceInvoker jabService = new JABServiceInvoker(
@@ -176,8 +171,7 @@ public class JABTestCase extends TestCase {
 	public void test_tpcall_x_c_type() throws Exception {
 		log.debug("JABTestCase::test_tpcall_x_c_type");
 		runServer.tpadvertisetpcallXCType();
-		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes(
-				"test");
+		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
 		JABServiceInvoker jabService = new JABServiceInvoker(
 				RunServer.getServiceNametpcallXCType(), jabSession, "X_C_TYPE",
@@ -210,8 +204,7 @@ public class JABTestCase extends TestCase {
 	public void test_tpcall_x_c_type_with_tx() throws Exception {
 		log.debug("JABTestCase::test_tpcall_x_c_type_with_tx");
 		runServer.tpadvertisetpcallXCType();
-		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes(
-				"test");
+		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
 		JABServiceInvoker jabService = new JABServiceInvoker(
 				RunServer.getServiceNametpcallXCType(), jabSession, "X_C_TYPE",

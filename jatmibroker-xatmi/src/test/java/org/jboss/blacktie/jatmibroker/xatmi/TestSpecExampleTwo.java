@@ -35,7 +35,7 @@ public class TestSpecExampleTwo extends TestCase {
 		server.tpadvertiseINQUIRY();
 
 		ConnectionFactory connectionFactory = ConnectionFactory
-				.getConnectionFactory("test");
+				.getConnectionFactory();
 		connection = connectionFactory.getConnection();
 	}
 

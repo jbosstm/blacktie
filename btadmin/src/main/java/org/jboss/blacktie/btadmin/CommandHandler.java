@@ -47,8 +47,7 @@ public class CommandHandler {
 	public CommandHandler() throws ConfigurationException,
 			MalformedObjectNameException, NullPointerException {
 		// Obtain the JMXURL from the btconfig.xml
-		XMLParser.loadProperties("btadmin", "btconfig.xsd", "btconfig.xml",
-				prop);
+		XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
 		url = (String) prop.get("JMXURL");
 		if (url == null) {
 			throw new ConfigurationException(
