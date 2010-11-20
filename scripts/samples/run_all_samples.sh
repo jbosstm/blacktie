@@ -165,7 +165,6 @@ if [ "$?" != "0" ]; then
 fi
 cd $BLACKTIE_HOME/examples/integration1/client/
 generate_client -Dclient.includes=client.c 
-sleep 10
 ./client 
 if [ "$?" != "0" ]; then
 	exit -1
@@ -215,7 +214,7 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 cd $BLACKTIE_HOME/examples/integration1/client/
-sleep 10
+sleep 5
 ./client 
 if [ "$?" != "0" ]; then
 	exit -1
@@ -234,7 +233,12 @@ fi
 # RUN THE MDB EXAMPLE
 echo "Example 8: Running MDB examples"
 cd $BLACKTIE_HOME/examples/mdb
-mvn install
+mvn package jboss:redeploy -DskipTests
+if [ "$?" != "0" ]; then
+	exit -1
+fi
+sleep 5
+mvn surefire:test
 if [ "$?" != "0" ]; then
 	exit -1
 fi

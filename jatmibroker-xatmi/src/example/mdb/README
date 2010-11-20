@@ -37,5 +37,12 @@ NOTE: Make sure you have stompconnectservice and blacktie-admin-services install
 This example makes use of maven to build, deploy and test an XATMI service deployed 
 as an MDB.
 
-After the dependencies are installed you can then run the example using the following command:
+Type:
+	mvn package jboss:redeploy -DskipTests
+	mvn surefire:test
+You need to do these in two seperate stages due to a bug in HornetQ which means that
+the call to deploy will return before the queues are created.
+
+After this bug was fixed you would be able to call:
 	mvn install
+But you will need to uncomment the call to skip in the pom.xml
