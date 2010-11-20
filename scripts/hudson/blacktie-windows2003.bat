@@ -65,7 +65,6 @@ call ant replaceJBoss -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR%
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem INITIALZE BLACKTIE JBOSS DEPENDENCIES
-rem copy %WORKSPACE%\trunk\blacktie-admin-services\src\test\resources\btconfig.xml %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\conf
 copy %WORKSPACE%\trunk\jatmibroker-xatmi\src\test\resources\hornetq-jms.xml %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\conf
 cd %WORKSPACE%
 call ant replaceBlackTie -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR%

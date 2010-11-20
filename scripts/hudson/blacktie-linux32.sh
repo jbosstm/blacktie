@@ -59,6 +59,7 @@ sed -i 's?</security-settings>?      <security-setting match="jms.queue.BTR_BTDo
 
 
 # START JBOSS
+export JBOSSAS_IP_ADDR=localhost
 $WORKSPACE/jboss-5.1.0.GA/bin/run.sh -c all-with-hornetq -b localhost&
 sleep 53
 

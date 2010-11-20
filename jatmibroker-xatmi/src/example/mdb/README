@@ -28,7 +28,12 @@ On Windows:
 	%BLACKTIE_HOME%\setenv.bat
 Then, execute the script setenv
 
-2. RUN THE EXAMPLE
+2. RUN JBOSS WITH JBOSSAS_IP_ADDR ENVIRONMENT VARIABLE SET
+export JBOSSAS_IP_ADDR=localhost
+<JBOSS_HOME>/bin/run.[sh|bat] -c all-with-hornetq
+NOTE: Make sure you have stompconnectservice and blacktie-admin-services installed
+
+3. RUN THE EXAMPLE
 This example makes use of maven to build, deploy and test an XATMI service deployed 
 as an MDB.
 
