@@ -67,8 +67,8 @@ generate_client -Dclient.includes=client.c
 
 4. DEPLOY THE BLACKTIE ADMIN SERVICE
 Undeploy any older versions of the blacktie admin service
-Copy the file $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-<VERSION>-jar-with-dependencies.jar into $JBOSS_HOME/server/all-with-hornetq/deploy
-Copy the file $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml into $JBOSS_HOME/server/all-with-hornetq/conf
+Copy the file $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-<VERSION>.ear into $JBOSS_HOME/server/all-with-hornetq/deploy
+Copy the file $BLACKTIE_HOME/blacktie-admin-services/stompconnectservice-<VERSION.ear into $JBOSS_HOME/server/all-with-hornetq/deploy
 
 
 5. RUN THE APPLICATION SERVER

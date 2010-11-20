@@ -41,8 +41,8 @@ Installing Blacktie into JBoss AS
    4. Edit $BLACKTIE_HOME/setenv.sh|bat:
       - make sure BLACKTIE_HOME is set to the BlackTie install location;
       - make sure JBOSSAS_IP_ADDR is set to the interface on which the application server is running (see step 6 below);
-   5. Copy $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-ear-[VERSION].ear to JBOSS_HOME/server/all-with-hornetq/deploy
-   6. Copy $BLACKTIE_HOME/blacktie-admin-services/btconfig.xml to JBOSS_HOME/server/all-with-hornetq/conf
+   5. Copy $BLACKTIE_HOME/blacktie-admin-services/blacktie-admin-services-[VERSION].ear to JBOSS_HOME/server/all-with-hornetq/deploy
+   6. Copy $BLACKTIE_HOME/blacktie-admin-services/stompconnectservice-[VERSION].ear to JBOSS_HOME/server/all-with-hornetq/deploy
    7. Copy $BLACKTIE_HOME/blacktie-admin-services/blacktie-rhq-plugin-[VERSION].jar to JBOSS_HOME/server/all-with-hornetq/deploy/admin-console.war/plugins
    8. Start the all configuration of the application server:
       cd JBOSS_HOME; bin/run.sh -c all-with-hornetq -b $JBOSSAS_IP_ADDR
