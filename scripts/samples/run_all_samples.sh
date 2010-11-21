@@ -237,7 +237,7 @@ mvn package jboss:redeploy -DskipTests
 if [ "$?" != "0" ]; then
 	exit -1
 fi
-sleep 5
+sleep 10
 mvn surefire:test
 if [ "$?" != "0" ]; then
 	exit -1
