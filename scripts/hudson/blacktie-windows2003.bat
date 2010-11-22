@@ -23,7 +23,7 @@ rem echo                ^<include name="*.dll"/^> >> build.xml
 rem echo            ^</fileset^> >> build.xml
 rem echo        ^</move^> >> build.xml
 rem echo        ^<get src="http://albany/userContent/blacktie/jboss-5.1.0.GA.zip" dest="./jboss-5.1.0.GA.zip" verbose="true" usetimestamp="true"/^> >> build.xml
-rem echo        ^<get src="http://albany/userContent/blacktie/hornetq-2.1.2.Final.zip" dest="./hornetq-2.1.2.Final.zip" verbose="true" usetimestamp="true"/^> >> build.xml
+echo        ^<get src="http://albany/userContent/blacktie/hornetq-2.1.2.Final.zip" dest="./hornetq-2.1.2.Final.zip" verbose="true" usetimestamp="true"/^> >> build.xml
 echo        ^<delete dir="jboss-5.1.0.GA"/^> >> build.xml
 echo        ^<unzip src="./jboss-5.1.0.GA.zip" dest="."/^> >> build.xml
 echo        ^<delete dir="hornetq-2.1.2.Final"/^> >> build.xml
