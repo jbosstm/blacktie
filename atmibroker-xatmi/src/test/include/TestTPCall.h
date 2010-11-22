@@ -25,7 +25,20 @@
 
 class TestTPCall: public BaseServerTest {
 	CPPUNIT_TEST_SUITE( TestTPCall);
+	CPPUNIT_TEST( test_tpcall_unknown_service);
+	CPPUNIT_TEST( test_tpcall_null_service);
+	CPPUNIT_TEST( test_tpcall_without_TPNOCHANGE);
+	CPPUNIT_TEST( test_tpcall_with_TPNOCHANGE);
+	CPPUNIT_TEST( test_tpcall_without_TPNOBLOCK);
+	CPPUNIT_TEST( test_tpcall_with_TPNOBLOCK);
+	CPPUNIT_TEST( test_tpcall_without_TPNOTIME);
+	CPPUNIT_TEST( test_tpcall_with_TPNOTIME);
+// TODO THIS REQUIRES TESTS TO BE ABLE TO STOP THE NAMING SERVICE CPPUNIT_TEST( test_tpcall_systemerr);
 	CPPUNIT_TEST( test_tpcall_x_octet);
+	// THIS IS REMOVED AS IT IS AGAINST THE SPEC CPPUNIT_TEST( test_tpcall_x_octet_zero);
+	CPPUNIT_TEST( test_tpcall_x_common);
+	CPPUNIT_TEST( test_tpcall_x_c_type);
+	// TODO THIS REQUIRES ME TO WORK OUT WHAT IT WAS ADDED FOR! CPPUNIT_TEST( test_tpcall_x_octet_lessdata);
 CPPUNIT_TEST_SUITE_END();
 
 public:
