@@ -37,10 +37,10 @@ echo	^<target name="replaceBlackTie"^> >> build.xml
 echo        ^<replaceregexp byline="true" file="trunk/blacktie-admin-services/src/main/resources/btconfig.xml" match="localhost" replace="${JBOSSAS_IP_ADDR}"  /^> >> build.xml
 echo	^</target^> >> build.xml
 echo	^<target name="initializeBlackTieAdminSecurity"^> >> build.xml
-echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq.sar/hornetq-configuration.xml" match="</security-settings>" replace="<security-setting match=\"jms.queue.BTR_BTDomainAdmin\">         <permission type=\"send\" roles=\"blacktie,guest\"/>         <permission type=\"consume\" roles=\"blacktie,guest\"/>      </security-setting>      <security-setting match=\"jms.queue.BTR_BTStompAdmin\">         <permission type=\"send\" roles=\"blacktie,guest\"/>         <permission type=\"consume\" roles=\"blacktie,guest\"/>      </security-setting></security-settings>"  /^> >> build.xml
+echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq.sar/hornetq-configuration.xml" match="&lt;/security-settings&gt;" replace="&lt;security-setting match=&quot;jms.queue.BTR_BTDomainAdmin&quot;&gt;         &lt;permission type=&quot;send&quot; roles=&quot;blacktie,guest&quot;/&gt;         &lt;permission type=&quot;consume&quot; roles=&quot;blacktie,guest&quot;/&gt;      &lt;/security-setting&gt;      &lt;security-setting match=&quot;jms.queue.BTR_BTStompAdmin&quot;&gt;         &lt;permission type=&quot;send&quot; roles=&quot;blacktie,guest&quot;/&gt;         &lt;permission type=&quot;consume&quot; roles=&quot;blacktie,guest&quot;/&gt;      &lt;/security-setting&gt;&lt;/security-settings&gt;"  /^> >> build.xml
 echo	^</target^> >> build.xml
 echo	^<target name="initializeBlackTieSampleSecurity"^> >> build.xml
-echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq.sar/hornetq-configuration.xml" match="</security-settings>" replace="      <security-setting match=\"jms.queue.BTR_SECURE\">         <permission type=\"send\" roles=\"blacktie\"/>         <permission type=\"consume\" roles=\"blacktie\"/>      </security-setting></security-settings>"  /^> >> build.xml
+echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq.sar/hornetq-configuration.xml" match="&lt;/security-settings&gt;" replace="      &lt;security-setting match=&quot;jms.queue.BTR_SECURE&quot;&gt;         &lt;permission type=&quot;send&quot; roles=&quot;blacktie&quot;/&gt;         &lt;permission type=&quot;consume&quot; roles=&quot;blacktie&quot;/&gt;      &lt;/security-setting&gt;&lt;/security-settings&gt;"  /^> >> build.xml
 echo	^</target^> >> build.xml
 echo ^</project^> >> build.xml
 
@@ -111,7 +111,7 @@ set TNS_ADMIN=C:\hudson\workspace\blacktie-windows2003\instantclient_11_2\networ
 set PATH=%PATH%;%ORACLE_HOME%\bin;%ORACLE_HOME%\vc9
 call setenv.bat
 IF %ERRORLEVEL% NEQ 0 exit -1
-cp %WORKSPACE%\trunk\dist\blacktie-3.0.0.M1-SNAPSHOT\examples\xatmi\security\hornetq-*.properties %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\conf\props
+copy /Y %WORKSPACE%\trunk\dist\blacktie-3.0.0.M1-SNAPSHOT\examples\xatmi\security\hornetq-*.properties %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\conf\props
 IF %ERRORLEVEL% NEQ 0 exit -1
 call run_all_samples.bat tx
 IF %ERRORLEVEL% NEQ 0 exit -1
