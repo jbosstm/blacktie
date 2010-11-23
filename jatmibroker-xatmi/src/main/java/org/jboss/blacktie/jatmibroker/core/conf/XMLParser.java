@@ -66,6 +66,7 @@ public class XMLParser {
 	 * Create the SAX parser
 	 */
 	private void create(String xsdFilename) throws ConfigurationException {
+		log.debug("Creating the parser: " + xsdFilename);
 		try {
 			String schemaDir = System.getenv("BLACKTIE_SCHEMA_DIR");
 			if (schemaDir != null) {
@@ -98,10 +99,19 @@ public class XMLParser {
 
 			saxParser = factory.newSAXParser();
 		} catch (SAXException e) {
+			log.error("Could not create a SAXParser: "
+					+ e.getMessage(), e);
 			throw new ConfigurationException("Could not create a SAXParser: "
 					+ e.getMessage(), e);
 		} catch (ParserConfigurationException e) {
+			log.error("Could not create a SAXParser: "
+					+ e.getMessage(), e);
 			throw new ConfigurationException("Could not create a SAXParser: "
+					+ e.getMessage(), e);
+		} catch (Throwable e) {
+			log.error("Could not parse configuration: "
+					+ e.getMessage(), e);
+			throw new ConfigurationException("Could not parse configuration: "
 					+ e.getMessage(), e);
 		}
 	}
