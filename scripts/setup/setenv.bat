@@ -23,10 +23,10 @@ for /f "delims=" %%a in ('hostname') do @set HOSTNAME=%%a
 
 set BLACKTIE_SCHEMA_DIR=%BLACKTIE_HOME%\schemas\xsd
 
-set PATH=%PATH%;%BLACKTIE_HOME%\bin
-set PATH=%PATH%;%BLACKTIE_HOME%\lib\cxx
-set PATH=%PATH%;.
+set PATH=%BLACKTIE_HOME%\bin;%PATH%
+set PATH=%BLACKTIE_HOME%\lib\cxx;%PATH%
+set PATH=.;%PATH%
 
 setlocal ENABLEDELAYEDEXPANSION
-FOR /R %BLACKTIE_HOME%\lib\java %%G IN (*.jar) DO set CLASSPATH=!CLASSPATH!;%%G
+FOR /R %BLACKTIE_HOME%\lib\java %%G IN (*.jar) DO set CLASSPATH=%%G;!CLASSPATH!
 endlocal & set CLASSPATH=%CLASSPATH%
