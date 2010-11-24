@@ -67,6 +67,7 @@ public class ServiceDispatcher extends BlackTieService implements Runnable {
 				log.trace("Received");
 			} catch (ConnectionException e) {
 				if (closed) {
+					log.trace("Got an exception during close: " + e.getMessage(), e);
 					break;
 				}
 				if (e.getTperrno() == Connection.TPETIME) {

@@ -33,4 +33,5 @@
 	<MQ HOST="localhost" PORT="61613" USER="guest" PASSWORD="guest"
 		 RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10"
 		NAMING_URL="jnp://localhost:1099" />
+	<JMX url="service:jmx:rmi:///jndi/rmi://localhost:1090/jmxconnector" />
 </ENVIRONMENT>

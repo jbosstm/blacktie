@@ -98,8 +98,10 @@ public class StompReceiverImpl implements Receiver {
 			convertFromBytesMessage.setOutputStream(outputStream);
 			convertFromBytesMessage.setMessageId(receive.getHeaders().get(
 					"message-id"));
+			log.debug("Returning message from: " + destinationName);
 			return convertFromBytesMessage;
 		} catch (IOException t) {
+			log.debug("Couldn't receive the message: " + t.getMessage(), t);
 			throw new ConnectionException(Connection.TPESYSTEM,
 					"Couldn't receive the message", t);
 		}
@@ -125,15 +127,24 @@ public class StompReceiverImpl implements Receiver {
 
 	public org.jboss.blacktie.jatmibroker.core.transport.Message convertFromBytesMessage(
 			org.jboss.blacktie.jatmibroker.core.transport.hybrid.stomp.Message receive) {
+		log.trace("convertFromBytesMessage");
 		String controlIOR = receive.getHeaders().get("messagecontrol");
+		log.trace("got messagecontrol: " + controlIOR);
 		String replyTo = receive.getHeaders().get("messagereplyto");
+		log.trace("got messagereplyto: " + replyTo);
 		int len = Integer.parseInt(receive.getHeaders().get("content-length"));
+		log.trace("gotcontent-length: " + len);
 		String serviceName = receive.getHeaders().get("servicename");
+		log.trace("got servicename: " + serviceName);
 		int flags = new Integer(receive.getHeaders().get("messageflags"));
+		log.trace("got messageflags: " + flags);
 		int cd = new Integer(receive.getHeaders().get("messagecorrelationId"));
+		log.trace("got messagecorrelationId: " + cd);
 
 		String type = receive.getHeaders().get("messagetype");
+		log.trace("got messagetype: " + type);
 		String subtype = receive.getHeaders().get("messagesubtype");
+		log.trace("got messagesubtype: " + subtype);
 		log.debug("type: " + type + " subtype: " + subtype);
 
 		org.jboss.blacktie.jatmibroker.core.transport.Message toProcess = new org.jboss.blacktie.jatmibroker.core.transport.Message();

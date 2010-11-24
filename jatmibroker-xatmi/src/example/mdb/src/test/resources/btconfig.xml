@@ -33,4 +33,5 @@
 	<MQ HOST="${JBOSSAS_IP_ADDR}" PORT="61613" USER="guest" PASSWORD="guest"
 		 RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10"
 		NAMING_URL="jnp://${JBOSSAS_IP_ADDR}:1099" />
+	<JMX url="service:jmx:rmi:///jndi/rmi://${JBOSSAS_IP_ADDR}:1090/jmxconnector" />
 </ENVIRONMENT>
