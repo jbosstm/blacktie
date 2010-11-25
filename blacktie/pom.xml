@@ -197,7 +197,6 @@
 	</profiles>
 
 	<modules>
-<!--
 		<module>../blacktie-utils/cpp-plugin</module>
 		<module>../blacktie-common</module>
 		<module>../blacktie-xsd</module>
@@ -211,7 +210,6 @@
 		<module>../blacktie-rhq-plugin</module>
 		<module>../tx-test-utilities</module>
 		<module>../atmibroker-core</module>
--->
 		<module>../atmibroker-tx</module>
 		<module>../atmibroker-hybrid</module>
 		<module>../atmibroker-xatmi</module>

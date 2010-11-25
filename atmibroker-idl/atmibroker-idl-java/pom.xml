@@ -22,7 +22,6 @@
 		<groupId>org.jboss.blacktie</groupId>
 		<artifactId>atmibroker-idl</artifactId>
 		<version>3.0.0.M1-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
