@@ -42,6 +42,8 @@ public class StompReceiverImpl implements Receiver {
 	private Socket socket;
 	private OutputStream outputStream;
 	private InputStream inputStream;
+	private org.jboss.blacktie.jatmibroker.core.transport.hybrid.stomp.Message pendingMessage;
+	private boolean ignoreSingleReceipt;
 
 	public StompReceiverImpl(StompManagement management, String serviceName,
 			boolean conversational, Properties properties)
@@ -73,12 +75,12 @@ public class StompReceiverImpl implements Receiver {
 			log.error(new String(receive.getBody()));
 			throw new ConnectionException(Connection.TPENOENT, new String(
 					receive.getBody()));
+		} else if (receive.getCommand().equals("MESSAGE")) {
+			// TODO remove when moving to HQStomp
+			log.trace("Received a message rather than a receipt");
+			this.pendingMessage = receive;
+			ignoreSingleReceipt = true;
 		}
-
-		// receiver = session.createConsumer(destination);
-		// timeout =
-		// Integer.parseInt(properties.getProperty("DestinationTimeout",
-		// "2")) * 1000;
 		log.debug("Created a consumer on: " + destinationName
 				+ " with timeout: " + timeout);
 	}
@@ -88,11 +90,23 @@ public class StompReceiverImpl implements Receiver {
 	}
 
 	public Message receive(long flagsIn) throws ConnectionException {
+		log.debug("Receiving from: " + destinationName);
+		org.jboss.blacktie.jatmibroker.core.transport.hybrid.stomp.Message receive = pendingMessage;
 		try {
-			log.debug("Receiving from: " + destinationName);
-			org.jboss.blacktie.jatmibroker.core.transport.hybrid.stomp.Message receive = management
-					.receive(inputStream);
-			log.debug("Received from: " + destinationName);
+			if (receive == null) {
+				receive = management.receive(inputStream);
+				// TODO remove when moving to HQStomp
+				if (receive.getCommand().equals("RECEIPT")
+						&& ignoreSingleReceipt) {
+					ignoreSingleReceipt = false;
+					receive = management.receive(inputStream);
+				}
+				log.debug("Received from: " + destinationName);
+			}
+			if (!receive.getCommand().equals("MESSAGE")) {
+				throw new ConnectionException(Connection.TPESYSTEM,
+						"Internal error, received unexpected receipt");
+			}
 			Message convertFromBytesMessage = convertFromBytesMessage(receive);
 			convertFromBytesMessage.setManagement(management);
 			convertFromBytesMessage.setOutputStream(outputStream);
@@ -100,6 +114,8 @@ public class StompReceiverImpl implements Receiver {
 					"message-id"));
 			log.debug("Returning message from: " + destinationName);
 			return convertFromBytesMessage;
+		} catch (ConnectionException e) {
+			throw e;
 		} catch (Exception t) {
 			log.debug("Couldn't receive the message: " + t.getMessage(), t);
 			throw new ConnectionException(Connection.TPESYSTEM,
