@@ -44,8 +44,13 @@ public class CSTest extends CSControl {
 
 	// tpcall should return TPEINVAL if the service name is invalid
 	public void test_213() {
-		runServer("213");
-		runTest("213");
+		log.info("test_213");
+		if (isSunOS) {
+			log.info("skipping test_213");
+		} else {
+			runServer("213");
+			runTest("213");
+		}
 	}
 
 	// TPSIGRSTRT flag isn't supported on tpcall
@@ -105,8 +110,12 @@ public class CSTest extends CSControl {
 	// telling service to call tpreturn outside service routine should have no
 	// effect
 	public void test_4() {
-		runServer("4");
-		runTest("4");
+		if (isSunOS) {
+			log.info("Skipping test_4");
+		} else {
+			runServer("4");
+			runTest("4");
+		}
 	}
 
 	// tpreturn outside service routing

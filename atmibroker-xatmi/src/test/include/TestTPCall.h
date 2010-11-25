@@ -30,7 +30,9 @@ class TestTPCall: public BaseServerTest {
 	CPPUNIT_TEST( test_tpcall_without_TPNOCHANGE);
 	CPPUNIT_TEST( test_tpcall_with_TPNOCHANGE);
 	CPPUNIT_TEST( test_tpcall_without_TPNOBLOCK);
+#ifndef SunOS
 	CPPUNIT_TEST( test_tpcall_with_TPNOBLOCK);
+#endif
 	CPPUNIT_TEST( test_tpcall_without_TPNOTIME);
 	CPPUNIT_TEST( test_tpcall_with_TPNOTIME);
 // TODO THIS REQUIRES TESTS TO BE ABLE TO STOP THE NAMING SERVICE CPPUNIT_TEST( test_tpcall_systemerr);

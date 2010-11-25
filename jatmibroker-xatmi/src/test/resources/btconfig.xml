@@ -49,6 +49,10 @@
 			workingDirectory="." argLine="foo" serverId="1" />
 		<MACHINE id="myserv16" hostname="clance" pathToExecutable="notExist"
 			workingDirectory="." argLine="foo" serverId="2" />
+		<MACHINE id="myserv17" hostname="sol2" pathToExecutable="notExist"
+			workingDirectory="." argLine="foo" serverId="1" />
+		<MACHINE id="myserv18" hostname="sol2" pathToExecutable="notExist"
+			workingDirectory="." argLine="foo" serverId="2" />
 	</MACHINES>
 	<SERVERS>
 		<SERVER name='myserv'>
@@ -68,6 +72,8 @@
 			<MACHINE-REF id="myserv14" />
 			<MACHINE-REF id="myserv15" />
 			<MACHINE-REF id="myserv16" />
+			<MACHINE-REF id="myserv17" />
+			<MACHINE-REF id="myserv18" />
 			<SERVICE_NAMES>
 				<SERVICE name='TestOne' />
 				<SERVICE name='TestTwo' />

@@ -68,6 +68,14 @@
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="2" />
+		<MACHINE id="secure13" hostname="sol2"
+			pathToExecutable="../cs"
+			workingDirectory="."
+			serverId="1" />
+		<MACHINE id="secure14" hostname="sol2"
+			pathToExecutable="../cs"
+			workingDirectory="."
+			serverId="2" />
 	</MACHINES>
 	<SERVERS>
 		<SERVER name="default">
@@ -83,6 +91,8 @@
 			<MACHINE-REF id="secure10" />
 			<MACHINE-REF id="secure11" />
 			<MACHINE-REF id="secure12" />
+			<MACHINE-REF id="secure13" />
+			<MACHINE-REF id="secure14" />
 			<SERVICE_NAMES>
 				<SERVICE name='PBF' />
 				<SERVICE name='BAR' advertised="false" size="1">

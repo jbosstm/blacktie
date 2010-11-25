@@ -59,6 +59,9 @@
 	<target name="init">
 		<fail unless="configuration.type" />
 		<fail unless="toolchain.compiler" />
+		<condition property="isSunOS">
+			<os name="SunOS" />
+		</condition>
 		<condition property="is-msvc">
 			<equals arg1="${toolchain.compiler}" arg2="msvc" />
 		</condition>
@@ -138,6 +141,9 @@
 		</condition>
 		<condition property="include-jni-linux">
 			<available file="${env.JAVA_HOME}/include/linux"/>
+		</condition>
+		<condition property="include-jni-solaris">
+			<available file="${env.JAVA_HOME}/include/solaris"/>
 		</condition>
 		<available file="${src.dir}" property="src.dir.exists"/>
 		<available file="${idl.src.dir}" property="idl.src.dir.exists"/>
@@ -257,6 +263,7 @@
 				<define name="TAO_COMP"/>
 				<define name="${export.dll}" if="define.dll" />
 				<define name="WIN32" if="is-msvc"/>
+				<define name="SunOS" if="isSunOS"/>
 			</defineset>
 
 			<includepath path="${src.export}" if="export.dir" />
@@ -341,11 +348,13 @@
 			<includepath path="${env.JAVA_HOME}/include/" if="include-jni-win32"/>
 			<includepath path="${env.JAVA_HOME}/include/linux" if="include-jni-linux"/>
 			<includepath path="${env.JAVA_HOME}/include/" if="include-jni-linux"/>
+			<includepath path="${env.JAVA_HOME}/include/solaris" if="include-jni-solaris"/>
+			<includepath path="${env.JAVA_HOME}/include/" if="include-jni-solaris"/>
 
 			<libset dir="${project.build.directory}/cxx/compile/lib" libs="${compile.libs}" if="compile.libs"/>
 			<libset dir="${project.build.directory}/cxx/test/lib" libs="${test.libs}" if="test.libs"/>
 			<libset dir="target/${configuration.type}/${lib.type}" libs="${project.artifactId}" if="main.built" />
-			<libset libs="stdc++ pthread" />
+			<libset libs="stdc++ pthread rt" />
 		</cc>
 	</target>
 
@@ -374,7 +383,7 @@
 
 			<libset dir="${project.build.directory}/cxx/compile/lib" libs="${compile.libs}" if="compile.libs"/>
 			<libset dir="${project.build.directory}/cxx/test/lib" libs="${test.libs}" if="test.libs"/>
-			<libset libs="stdc++ pthread" />
+			<libset libs="stdc++ pthread rt" />
 		</cc>
 	</target>
 
@@ -433,11 +442,13 @@
 			<includepath path="${env.JAVA_HOME}/include/" if="include-jni-win32"/>
 			<includepath path="${env.JAVA_HOME}/include/linux" if="include-jni-linux"/>
 			<includepath path="${env.JAVA_HOME}/include/" if="include-jni-linux"/>
+			<includepath path="${env.JAVA_HOME}/include/solaris" if="include-jni-solaris"/>
+			<includepath path="${env.JAVA_HOME}/include/" if="include-jni-solaris"/>
 
 			<libset dir="${project.build.directory}/cxx/compile/lib" libs="${compile.libs}" if="compile.libs"/>
 			<libset dir="${project.build.directory}/cxx/test/lib" libs="${test.libs}" if="test.libs"/>
 			<libset dir="target/${configuration.type}/${lib.type}" libs="${project.artifactId}" if="main.built" />
-			<libset libs="stdc++ pthread" />
+			<libset libs="stdc++ pthread rt" />
 		</cc>
 		<available file="target/testsuite.dll.manifest" property="manifest.towrap" />
 		<antcall target="_test-compile-msvc" />

@@ -261,7 +261,9 @@
 	</target>
 
 	<target name="apr-1-lib-linux" if="linux">
-		<copy file="${apr-1.lib.dir}/libapr-1.so" todir="${build.dist}/lib" />
+		<copy todir="${build.dist}/lib">
+			<fileset dir="${apr-1.lib.dir}" includes="libapr-1.so*"/>
+		</copy>
 	</target>
 	<target name="apr-1-lib-windows" if="windows">
 		<copy file="${apr-1.lib.dir}/libapr-1.dll" todir="${build.dist}/lib" />
@@ -296,7 +298,11 @@
 	</target>
 
 	<target name="log4cxx-lib-linux" if="linux">
-		<copy file="${log4cxx.lib.dir}/liblog4cxx.so" todir="${build.dist}/lib" />
+		<copy todir="${build.dist}/lib">
+			<fileset dir="${log4cxx.lib.dir}">
+				<include name="liblog4cxx.so*" />
+			</fileset>
+		</copy>
 	</target>
 	<target name="log4cxx-lib-windows" if="windows">
 		<copy file="${log4cxx.lib.dir}/log4cxx.dll" todir="${build.dist}/lib" />

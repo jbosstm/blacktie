@@ -21,6 +21,9 @@
 		<groupId>org.jboss.blacktie</groupId>
 		<artifactId>blacktie-C</artifactId>
 		<version>3.0.0.M1-SNAPSHOT</version>
+<!--
+		<relativePath>../blacktie-common/blacktie-C/pom.xml</relativePath>
+-->
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -99,6 +102,10 @@
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>blacktie-xsd</artifactId>
+<!--
+			<classifier>${bpa}</classifier>
+			<version>${project.version}</version>
+-->
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>

@@ -21,6 +21,7 @@
 		<groupId>org.jboss.blacktie</groupId>
 		<artifactId>blacktie-java</artifactId>
 		<version>3.0.0.M1-SNAPSHOT</version>
+		<relativePath>../blacktie-common/blacktie-java/pom.xml</relativePath>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
