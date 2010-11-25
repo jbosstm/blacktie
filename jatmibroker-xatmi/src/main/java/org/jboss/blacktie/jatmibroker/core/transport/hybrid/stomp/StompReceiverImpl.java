@@ -100,7 +100,7 @@ public class StompReceiverImpl implements Receiver {
 					"message-id"));
 			log.debug("Returning message from: " + destinationName);
 			return convertFromBytesMessage;
-		} catch (IOException t) {
+		} catch (Exception t) {
 			log.debug("Couldn't receive the message: " + t.getMessage(), t);
 			throw new ConnectionException(Connection.TPESYSTEM,
 					"Couldn't receive the message", t);
