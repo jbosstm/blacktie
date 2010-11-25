@@ -92,6 +92,7 @@ public class StompReceiverImpl implements Receiver {
 	public Message receive(long flagsIn) throws ConnectionException {
 		log.debug("Receiving from: " + destinationName);
 		org.jboss.blacktie.jatmibroker.core.transport.hybrid.stomp.Message receive = pendingMessage;
+		pendingMessage = null;
 		try {
 			if (receive == null) {
 				receive = management.receive(inputStream);
