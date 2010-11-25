@@ -92,6 +92,7 @@ public class StompManagement {
 	public Message receive(InputStream inputStream) throws IOException {
 		Message message = new Message();
 		message.setCommand(readLine(inputStream));
+		log.trace(message.getCommand());
 		Map<String, String> headers = new HashMap<String, String>();
 		String header;
 		while ((header = readLine(inputStream)).length() > 0) {
@@ -99,6 +100,7 @@ public class StompManagement {
 			String key = header.substring(0, sep);
 			String value = header.substring(sep + 1, header.length());
 			headers.put(key.trim(), value.trim());
+			log.trace("Header: " + key + ":" + value);
 		}
 		if (!message.getCommand().equals("ERROR")) {
 			message.setHeaders(headers);
