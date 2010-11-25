@@ -131,6 +131,7 @@ public class StompManagement {
 	}
 
 	private String readLine(InputStream inputStream) throws IOException {
+		String toReturn = null;
 		char[] read = new char[0];
 		char c = (char) inputStream.read();
 		while (!(c == '\n') && c != '\000') {
@@ -141,9 +142,11 @@ public class StompManagement {
 			c = (char) inputStream.read();
 		}
 		if (c == '\000') {
-			return null;
+			log.trace("returning null");
 		} else {
-			return new String(read);
+			toReturn = new String(read);
+			log.trace("returning: " + toReturn);
 		}
+		return toReturn;
 	}
 }
