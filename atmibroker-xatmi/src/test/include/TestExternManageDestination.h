@@ -38,9 +38,6 @@ public:
 
 	virtual void setUp();
 	virtual void tearDown();
-
-private:
-	int maxSleep;
 };
 
 #endif

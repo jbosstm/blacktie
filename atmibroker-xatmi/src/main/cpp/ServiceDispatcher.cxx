@@ -357,6 +357,7 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	LOG4CXX_TRACE(logger, (char*) "ServiceDispatcher session closed: "
 			<< message.correlationId);
 
+	session = NULL;
 	destroySpecific( SVC_SES);
 	destroySpecific( SVC_KEY);
 

@@ -31,6 +31,8 @@
 
 #include "Sleeper.h"
 
+#include "SynchronizableObject.h"
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
@@ -43,6 +45,8 @@ extern void qservice(TPSVCINFO *svcinfo);
 static char* SERVICE = (char*) "TestOne";
 static int msgId;
 static int msgCnt;
+
+static SynchronizableObject* lock = new SynchronizableObject();
 
 void TestExternManageDestination::setUp() {
 	userlogc((char*) "TestExternManageDestination::setUp");
@@ -152,14 +156,16 @@ void TestExternManageDestination::test_stored_messages() {
 		BT_ASSERT_MESSAGE(msg, tperrno == 0 && toCheck != -1);
 
 		msgCnt = 5;
-		maxSleep = 5;
-		while (msgCnt > 0 && maxSleep-- > 0) {
-			::sleeper(5);
+
+		lock->lock();
+		if (msgCnt > 0) {
+			lock->wait(25000);
 		}
+		lock->unlock();
 
-		sprintf(msg, "not all messages were delivered: %d remaining sent %d", msgCnt, ((i + 1) * 5));
+		sprintf(msg, "not all messages were delivered: %d remaining sent %d",
+				msgCnt, ((i + 1) * 5));
 		BT_ASSERT_MESSAGE(msg, msgCnt == 0);
-
 		serverdone();
 		startServer();
 	}
@@ -168,8 +174,6 @@ void TestExternManageDestination::test_stored_messages() {
 }
 
 void TestExternManageDestination::test_stored_message_priority() {
-	int i;
-
 	userlogc((char*) "test_stored_message_priority");
 	// send messages with out of order ids - the qservice should receive them in order
 	send_one(8, 1);
@@ -186,23 +190,24 @@ void TestExternManageDestination::test_stored_message_priority() {
 	msgId = 0;
 
 	// retrieve the messages in two goes:
-	for (i = 0; i < 1; i++) {
-		char msg[80];
-		// Advertise the service
-		int toCheck = tpadvertise((char*) SERVICE, qservice);
-		sprintf(msg, "tpadvertise error: %d %d", tperrno, toCheck);
-		BT_ASSERT_MESSAGE(msg, tperrno == 0 && toCheck != -1);
+	char msg[80];
+	// Advertise the service
+	int toCheck = tpadvertise((char*) SERVICE, qservice);
+	sprintf(msg, "tpadvertise error: %d %d", tperrno, toCheck);
+	BT_ASSERT_MESSAGE(msg, tperrno == 0 && toCheck != -1);
 
-		msgCnt = 10;
-		maxSleep = 5;
-		while (msgCnt > 0 && maxSleep-- > 0)
-			::sleeper(5);
+	msgCnt = 10;
 
-		sprintf(msg, "not all messages were delivered: %d remaining", msgCnt);
-		BT_ASSERT_MESSAGE(msg, msgCnt == 0);
-
-		serverdone();
+	lock->lock();
+	if (msgCnt > 0) {
+		lock->wait(25000);
 	}
+	lock->unlock();
+
+	sprintf(msg, "not all messages were delivered: %d remaining", msgCnt);
+	BT_ASSERT_MESSAGE(msg, msgCnt == 0);
+
+	serverdone();
 
 	userlogc((char*) "test_stored_message_priority passed");
 }
@@ -225,14 +230,16 @@ void qservice(TPSVCINFO *svcinfo) {
 
 	msgId += 1;
 
-	if (msgCnt == 1) {
-		// THIS CAN CAUSE THE TEST TO FAIL AS WE DONT SYNCHRONIZE AND UPDATE
-		// msgCnt FIRST BUT IF YOU UPDATE msgCnt THEN THE TEST CAN TRY TO SHUTDOWN
+	msgCnt -= 1;
+	if (msgCnt == 0) {
+		// IF YOU UPDATE msgCnt THEN THE TEST CAN TRY TO SHUTDOWN
 		// THE SERVER AT THE SAME TIME AS tpunadvertise
 		int err = tpunadvertise(SERVICE);
+		lock->lock();
+		lock->notify();
+		lock->unlock();
 
 		sprintf(msg, "unadvertise error: %d %d", tperrno, err);
 		BT_ASSERT_MESSAGE(msg, tperrno == 0 && err != -1);
 	}
-	msgCnt -= 1;
 }
