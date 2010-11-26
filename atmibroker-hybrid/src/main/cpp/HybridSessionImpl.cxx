@@ -218,7 +218,8 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		if (message.ttl > 0) {
 			long long epoch = time(NULL) * (long long)1000;
 			long long longTTL = epoch + message.ttl;
-			char * ttl = apr_ltoa(pool, longTTL);
+			char* ttl = (char*) malloc(sizeof(long long) * 3 + 2);
+			sprintf(ttl, "%lld", longTTL);
 			apr_hash_set(frame.headers, "expires", APR_HASH_KEY_STRING, ttl);
 			LOG4CXX_TRACE(logger, "Set the expires ttl: " << ttl);
 		}
