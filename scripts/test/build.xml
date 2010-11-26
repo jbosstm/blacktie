@@ -59,6 +59,10 @@
 		<replaceregexp byline="true" match="localhost" replace="${JBOSSAS_IP_ADDR}">
 			<fileset dir="${BT_HOME}${VERSION}">
 				<include name="**/examples/admin/jmx/src/test/java/org/jboss/blacktie/examples/jmx/*.java"/>
+				<include name="**/examples/integration1/ejb/ear/pom.xml"/>
+				<include name="**/examples/integration1/xatmi_adapter/ear/pom.xml"/>
+				<include name="**/examples/integration1/xatmi_adapter/src/main/resources/btconfig.xml"/>
+				<include name="**/examples/mdb/src/main/resources/btconfig.xml"/>
 			</fileset>
 		</replaceregexp>
 		<replaceregexp byline="true" match="&lt;!-- DB2 support -->" replace="&lt;!--">

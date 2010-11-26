@@ -19,6 +19,10 @@ NOTE: You may like to create a backup of this folder before starting!
 NOTE: If you are using IPv6 you will need to change any references to localhost in the btconfig.xml
 config files to be localhost4 or 127.0.0.1
 
+NOTE: If you have launched the JBoss AS on a different interface to localhost you will have to update the following files with the updated
+IP address:
+	<BLACKTIE_HOME>/examples/mdb/src/main/resources/btconfig.xml
+
 1. SET ENVIRONMENT VARIABLES
 In order to run the example you need to make sure that you have set the environment
 variables BLACKTIE_HOME and JBOSSAS_IP_ADDR appropriately.
@@ -28,8 +32,7 @@ On Windows:
 	%BLACKTIE_HOME%\setenv.bat
 Then, execute the script setenv
 
-2. RUN JBOSS WITH JBOSSAS_IP_ADDR ENVIRONMENT VARIABLE SET
-export JBOSSAS_IP_ADDR=localhost
+2. RUN JBOSS
 <JBOSS_HOME>/bin/run.[sh|bat] -c all-with-hornetq
 NOTE: Make sure you have stompconnectservice and blacktie-admin-services installed
 

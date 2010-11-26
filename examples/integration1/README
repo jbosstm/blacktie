@@ -18,6 +18,12 @@ NOTE: You may like to create a backup of this folder before starting!
 
 NOTE: If you are using IPv6 you will need to change any references to localhost in the btconfig.xml files to be localhost4 or 127.0.0.1
 
+NOTE: If you have launched the JBoss AS on a different interface to localhost you will have to update the following files with the updated
+IP address:
+	<BLACKTIE_HOME>/examples/integration1/ejb/ear/pom.xml
+	<BLACKTIE_HOME>/examples/integration1/xatmi_adapter/ear/pom.xml
+	<BLACKTIE_HOME>/examples/integration1/xatmi_adapter/src/main/resources/btconfig.xml
+
 
 0. OVERVIEW
 This example shows how a C client can invoke an EJB within the scope of the same transaction.
