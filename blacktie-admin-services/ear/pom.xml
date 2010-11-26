@@ -80,8 +80,33 @@
 			<name>!skipTests</name>
 		</property>
 	</activation>
+	</profile>
+	</profiles>
+
 	<build>
 		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-ear-plugin</artifactId>
+				<configuration>
+					<defaultLibBundleDir>lib</defaultLibBundleDir>
+					<earSourceDirectory>${basedir}/target/classes/</earSourceDirectory>
+					<modules>
+						<jarModule>
+							<groupId>org.jboss.blacktie</groupId>
+							<artifactId>blacktie-admin-services</artifactId>
+							<includeInApplicationXml>true</includeInApplicationXml>
+						</jarModule>
+					</modules>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jboss-maven-plugin</artifactId>
@@ -120,45 +145,13 @@
                 </execution>
             </executions>
             <configuration>
-                <file>src/main/application/btconfig.xml</file>
-                <outputFile>
-                    src/main/application/btconfig.xml
-                </outputFile>
+                <file>target/classes/btconfig.xml</file>
+                <outputFile>target/classes/btconfig.xml</outputFile>
                 <regex>false</regex>
                 <token>127.0.0.1</token>
                 <value>${jbossas.ip.addr}</value>
             </configuration>
 	</plugin>
-
-		</plugins>
-	</build>
-	</profile>
-	</profiles>
-
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-ear-plugin</artifactId>
-				<configuration>
-					<defaultLibBundleDir>lib</defaultLibBundleDir>
-					<modules>
-						<jarModule>
-							<groupId>org.jboss.blacktie</groupId>
-							<artifactId>blacktie-admin-services</artifactId>
-							<includeInApplicationXml>true</includeInApplicationXml>
-						</jarModule>
-					</modules>
-				</configuration>
-			</plugin>
-
 		</plugins>
 	</build>
 	<dependencies>
