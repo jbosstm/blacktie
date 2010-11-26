@@ -215,14 +215,6 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		apr_hash_set(frame.headers, "messageflags", APR_HASH_KEY_STRING, flags);
 		apr_hash_set(frame.headers, "messagerval", APR_HASH_KEY_STRING, rval);
 		apr_hash_set(frame.headers, "messagercode", APR_HASH_KEY_STRING, rcode);
-		if (message.ttl > 0) {
-			long long epoch = time(NULL) * (long long)1000;
-			long long longTTL = epoch + message.ttl;
-			char* ttl = (char*) malloc(sizeof(long long) * 3 + 2);
-			sprintf(ttl, "%lld", longTTL);
-			apr_hash_set(frame.headers, "expires", APR_HASH_KEY_STRING, ttl);
-			LOG4CXX_TRACE(logger, "Set the expires ttl: " << ttl);
-		}
 		if (serviceName != NULL) {
 			apr_hash_set(frame.headers, "servicename", APR_HASH_KEY_STRING,
 					serviceName);
@@ -265,11 +257,31 @@ bool HybridSessionImpl::send(MESSAGE message) {
 				// Note: sockets are created on a per request basis so there is no
 				// need to clear the socket opt after sending the frame.
 			}
+
+			// Check to set the ttl
+			char* ttl = NULL;
+			if (message.ttl > 0) {
+				long long epoch = time(NULL) * (long long)1000;
+				long long longTTL = epoch + message.ttl;
+				ttl = (char*) malloc(32); // #   define ULLONG_MAX	18446744073709551615ULL from /usr/include/limits.h
+				sprintf(ttl, "%lld", longTTL);
+				apr_hash_set(frame.headers, "expires", APR_HASH_KEY_STRING, ttl);
+				LOG4CXX_TRACE(logger, "Set the expires ttl: " << ttl);
+			}
+
+			// Create a receipt ID to send
 			char * receiptId = (char*) malloc(10);
 			::sprintf(receiptId, "send-%d", receiptCounter);
 			apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING, receiptId);
+	
+			// Send the data
 			rc = stomp_write(stompConnection, &frame, pool);
+			
+			// Free temporary storage
 			free(receiptId);
+			if (ttl != NULL) {
+				free(ttl);	
+			}
 		}
 
 		if (isNonBlocking && rc == APR_TIMEUP) {
