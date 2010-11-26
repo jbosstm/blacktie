@@ -82,6 +82,7 @@ public abstract class CSControl extends TestCase {
 				System.getenv("BLACKTIE_SCHEMA_DIR"));
 		environment.put("JBOSSAS_IP_ADDR", System.getenv("JBOSSAS_IP_ADDR"));
 		environment.put("PATH", System.getenv("PATH"));
+		environment.put("LOG4CXXCONFIG", "log4cxx-CSTest.properties");
 		clientBuilder.environment().putAll(environment);
 		serverBuilder.command(CS_EXE, "-c", "linux", "-i", nextSid());
 	}
