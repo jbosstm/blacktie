@@ -43,7 +43,7 @@ extern "C" {
 log4cxx::LoggerPtr loggerAtmiBrokerLogc(log4cxx::Logger::getLogger(
 		"AtmiBrokerLogc"));
 
-bool loggerInitialized;
+static bool loggerInitialized = false;
 
 extern "C"BLACKTIE_CORE_DLL
 int userlogc_snprintf(char *str, size_t size, const char * format, ...) {

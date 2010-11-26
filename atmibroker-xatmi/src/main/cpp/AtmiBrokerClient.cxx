@@ -65,7 +65,7 @@ int clientinit() {
 			// This must be in the try catch as the configuration may not exist
 			AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
 			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientinit called");
-			ptrAtmiBrokerClient = new AtmiBrokerClient();
+			ptrAtmiBrokerClient = new AtmiBrokerClient(env->getSignalHandler());
 			if (!clientInitialized) {
 				LOG4CXX_DEBUG(loggerAtmiBrokerClient,
 						(char*) "clientinit deleting Client");
@@ -124,8 +124,8 @@ int clientdone(int reason = 0) {
 	return 0;
 }
 
-AtmiBrokerClient::AtmiBrokerClient() :
-	currentConnection(NULL), nextSessionId(0) {
+AtmiBrokerClient::AtmiBrokerClient(AtmiBrokerSignalHandler& handler) :
+	currentConnection(NULL), nextSessionId(0), signalHandler(handler){
 	try {
 		lock = new SynchronizableObject();
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, "Created lock: " << lock);
@@ -169,9 +169,7 @@ Session* AtmiBrokerClient::createSession(bool isConv, int& id, char* serviceName
 
 		session = clientConnection->createSession(isConv, id, serviceName);
 
-		session->setSigHandler(
-				&(AtmiBrokerEnv::get_instance()->getSignalHandler()));
-		AtmiBrokerEnv::discard_instance();
+		session->setSigHandler(&(signalHandler));
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "created session: " << id
 				<< " send: " << session->getCanSend() << " recv: "
 				<< session->getCanRecv());

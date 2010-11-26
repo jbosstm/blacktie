@@ -21,7 +21,8 @@
 
 #include <log4cxx/propertyconfigurator.h>
 
-static bool isLogInitialised = false;
+#include "userlogc.h"
+
 static log4cxx::LoggerPtr logger;
 
 #ifdef __cplusplus
@@ -35,16 +36,7 @@ BLACKTIE_CORE_DLL void init_ace() {
 #endif
 
 AtmiBrokerInit::AtmiBrokerInit() {
-    if (!isLogInitialised) {
-        char* config = ACE_OS::getenv("LOG4CXXCONFIG");
-
-        if (config != NULL)
-            log4cxx::PropertyConfigurator::configure(config);
-        else
-            log4cxx::PropertyConfigurator::configure("log4cxx.properties");
-
-        isLogInitialised = true;
-    }
+    initializeLogger();
 
 	logger = log4cxx::Logger::getLogger("AtmiBrokerInit");
 	LOG4CXX_DEBUG(logger, (char*) "Constructed");

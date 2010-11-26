@@ -30,7 +30,7 @@
 
 class AtmiBrokerClient {
 public:
-	AtmiBrokerClient();
+	AtmiBrokerClient(AtmiBrokerSignalHandler& handler);
 	virtual ~AtmiBrokerClient();
 	Session* createSession(bool isConv, int& id, char* serviceName);
 	Session* getSession(int id);
@@ -43,6 +43,7 @@ protected:
 	ConnectionManager clientConnectionManager;
 	int nextSessionId;
 	SynchronizableObject* lock;
+	AtmiBrokerSignalHandler& signalHandler;
 };
 
 // CLIENT
