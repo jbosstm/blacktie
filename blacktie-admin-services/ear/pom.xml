@@ -126,7 +126,7 @@
                 </outputFile>
                 <regex>false</regex>
                 <token>127.0.0.1</token>
-                <value>barz</value>
+                <value>${jbossas.ip.addr}</value>
             </configuration>
 	</plugin>
 
