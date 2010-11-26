@@ -33,10 +33,6 @@ echo    ^<target name="replaceJBoss"^> >> build.xml
 echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/conf/jbossts-properties.xml" match="CONFIGURATION_FILE" replace="NAME_SERVICE"  /^> >> build.xml
 echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/conf/jacorb.properties" match="localhost" replace="${env.JBOSSAS_IP_ADDR}"  /^> >> build.xml
 echo    ^</target^> >> build.xml
-echo    ^<property environment="env"/^> >> build.xml
-echo	^<target name="replaceBlackTie"^> >> build.xml
-echo        ^<replaceregexp byline="true" file="trunk/blacktie-admin-services/ear/src/main/application/btconfig.xml" match="localhost" replace="${env.JBOSSAS_IP_ADDR}"  /^> >> build.xml
-echo	^</target^> >> build.xml
 echo	^<target name="initializeBlackTieAdminSecurity"^> >> build.xml
 echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq.sar/hornetq-configuration.xml" match="&lt;/security-settings&gt;" replace="&lt;security-setting match=&quot;jms.queue.BTR_BTDomainAdmin&quot;&gt;         &lt;permission type=&quot;send&quot; roles=&quot;blacktie,guest&quot;/&gt;         &lt;permission type=&quot;consume&quot; roles=&quot;blacktie,guest&quot;/&gt;      &lt;/security-setting&gt;      &lt;security-setting match=&quot;jms.queue.BTR_BTStompAdmin&quot;&gt;         &lt;permission type=&quot;send&quot; roles=&quot;blacktie,guest&quot;/&gt;         &lt;permission type=&quot;consume&quot; roles=&quot;blacktie,guest&quot;/&gt;      &lt;/security-setting&gt;&lt;/security-settings&gt;"  /^> >> build.xml
 echo	^</target^> >> build.xml
@@ -68,7 +64,6 @@ IF %ERRORLEVEL% NEQ 0 exit -1
 rem INITIALZE BLACKTIE JBOSS DEPENDENCIES
 copy %WORKSPACE%\trunk\jatmibroker-xatmi\src\test\resources\hornetq-jms.xml %WORKSPACE%\jboss-5.1.0.GA\server\all-with-hornetq\conf
 cd %WORKSPACE%
-call ant replaceBlackTie -DJBOSSAS_IP_ADDR=%JBOSSAS_IP_ADDR%
 call ant initializeBlackTieAdminSecurity
 IF %ERRORLEVEL% NEQ 0 exit -1
 
