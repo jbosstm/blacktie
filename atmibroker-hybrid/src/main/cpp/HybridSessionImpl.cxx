@@ -216,8 +216,8 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		apr_hash_set(frame.headers, "messagerval", APR_HASH_KEY_STRING, rval);
 		apr_hash_set(frame.headers, "messagercode", APR_HASH_KEY_STRING, rcode);
 		if (message.ttl > 0) {
-			long epoch = time(NULL) * 1000;
-			long longTTL = epoch + message.ttl;
+			long long epoch = time(NULL) * 1000;
+			long long longTTL = epoch + message.ttl;
 			char * ttl = apr_ltoa(pool, longTTL);
 			apr_hash_set(frame.headers, "expires", APR_HASH_KEY_STRING, ttl);
 			LOG4CXX_TRACE(logger, "Set the expires time to live: " << ttl);
