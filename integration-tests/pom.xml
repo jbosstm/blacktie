@@ -115,6 +115,10 @@
 							<name>JBOSSAS_IP_ADDR</name>
 							<value>${jbossas.ip.addr}</value>
 						</property>
+						<property>
+							<name>USE_VALGRIND</name>
+							<value>${use.valgrind}</value>
+						</property>
 					</systemProperties>
 
 				</configuration>

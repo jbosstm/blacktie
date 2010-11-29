@@ -16,6 +16,7 @@
  * MA  02110-1301, USA.
  */
 #include "AtmiBrokerServerControl.h"
+#include "AtmiBrokerClientControl.h"
 
 #include <stdlib.h>
 
@@ -181,6 +182,7 @@ static int do_tpcall(thr_arg_t *args) {
 		userlogc((char *) "T8: finished");
 
 	} else {
+		userlogc((char *) "Invoking test");
 		tpstatus = tpcall((char *) args->svc, sbuf, sbufsz, (char **) &rbuf, &rbufsz, args->flags);
 	}
 
@@ -302,6 +304,8 @@ static int lotsofwork(int nthreads, ACE_THR_FUNC tfunc, thr_arg_t* arg) {
 			ACE_Thread::join(handles[i]);
 
 	userlogc("lotsofwork: joined res=%d\n", arg->result);
+	delete[] tids;
+	delete[] handles;
 
 	return arg->result;
 }
@@ -506,6 +510,7 @@ int run_client(int argc, char **argv) {
 	}
 
 	userlogc((char*) "test %d %s with code %d", bug, (res == 0 ? "passed" : "failed"), res);
+	clientdone(0);
 
 	return res;
 }

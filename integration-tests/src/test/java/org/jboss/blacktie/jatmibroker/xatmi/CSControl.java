@@ -84,13 +84,28 @@ public abstract class CSControl extends TestCase {
 		environment.put("PATH", System.getenv("PATH"));
 		clientBuilder.environment().putAll(environment);
 		environment.put("LOG4CXXCONFIG", "log4cxx-CSTest-server.properties");
-		clientBuilder.environment().put("LOG4CXXCONFIG", "log4cxx-CSTest-client.properties");
-		serverBuilder.command(CS_EXE, "-c", "linux", "-i", nextSid());
+		clientBuilder.environment().put("LOG4CXXCONFIG",
+				"log4cxx-CSTest-client.properties");
 	}
 
 	public void runServer(String name) {
 		try {
 			log.info("start server process: " + name);
+
+
+			String property = System.getProperty("USE_VALGRIND");
+			String[] command = null;
+			String nextSid = nextSid();
+			if (property != null && new Boolean(property)) {
+				command = ("valgrind --tool=memcheck --leak-check=full --log-file=server-"
+						+ name
+						+ "-valgrind.log -v -d --track-origins=yes --show-reachable=false --leak-resolution=low --num-callers=40 "
+						+ CS_EXE + " -c linux -i " + nextSid).split(" ");
+			} else {
+				command = (CS_EXE + " -c linux -i " + nextSid).split(" ");
+			}
+			serverBuilder.command(command);
+			
 			server = startServer(name, serverBuilder);
 		} catch (IOException e) {
 			throw new RuntimeException("Server io exception: ", e);
@@ -107,7 +122,18 @@ public abstract class CSControl extends TestCase {
 
 		try {
 			log.info("waiting for test " + name);
-			clientBuilder.command(CS_EXE, name);
+
+			String property = System.getProperty("USE_VALGRIND");
+			String[] command = null;
+			if (property != null && new Boolean(property)) {
+				command = ("valgrind --tool=memcheck --leak-check=full --log-file=client-"
+						+ name
+						+ "-valgrind.log -v -d --track-origins=yes --show-reachable=false --leak-resolution=low --num-callers=40 "
+						+ CS_EXE + " " + name).split(" ");
+			} else {
+				command = (CS_EXE + " " + name).split(" ");
+			}
+			clientBuilder.command(command);
 			TestProcess client = startClient(name, clientBuilder);
 			int res = client.exitValue();
 

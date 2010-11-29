@@ -136,6 +136,9 @@
 					<family>windows</family>
 				</os>
 			</activation>
+			<properties>
+				<use.valgrind>false</use.valgrind>
+			</properties>
 		</profile>
 
 		<profile>
@@ -145,6 +148,9 @@
 					<family>unix</family>
 				</os>
 			</activation>
+			<properties>
+				<use.valgrind>true</use.valgrind>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>
