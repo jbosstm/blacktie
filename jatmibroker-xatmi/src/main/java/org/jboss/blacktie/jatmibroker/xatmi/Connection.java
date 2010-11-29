@@ -268,8 +268,11 @@ public class Connection {
 		String timeToLive = properties.getProperty("TimeToLive");
 		int ttl = 0;
 
-		if (timeToLive != null) {
+		// Don't set ttl when tpacall and TPNOREPLY set
+		if (timeToLive != null
+				&& ((flags & Connection.TPNOREPLY) != Connection.TPNOREPLY)) {
 			ttl = Integer.parseInt(timeToLive) * 1000;
+			log.debug("Set ttl: " + ttl);
 		}
 		transport.getSender(svc, false).send(endpoint.getReplyTo(), (short) 0,
 				0, data, len, correlationId, flags, ttl, type, subtype);
