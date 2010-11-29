@@ -335,9 +335,9 @@ bool HybridSessionImpl::send(MESSAGE message) {
 						<< frame.command << " Size: " << frame.body_length);
 				setSpecific(TPE_KEY, TSS_TPESYSTEM); // TODO - clean up session
 			}
-			delete[] data_togo;
 			LOG4CXX_DEBUG(logger, "Will return: " << toReturn);
 		}
+		delete[] data_togo;
 		serviceInvokation = false;
 	} else {
 		if (remoteEndpoint != NULL) {
