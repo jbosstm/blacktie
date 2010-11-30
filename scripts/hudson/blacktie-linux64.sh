@@ -77,7 +77,7 @@ mvn clean
 if [ "$?" != "0" ]; then
 	exit -1
 fi
-mvn install -Dbpa=centos54x64 -Duse.valgrind=true
+mvn install -Dbpa=centos54x64 -Duse.valgrind=false
 if [ "$?" != "0" ]; then
 	exit -1
 fi
