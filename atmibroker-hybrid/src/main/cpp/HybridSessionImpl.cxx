@@ -261,8 +261,10 @@ bool HybridSessionImpl::send(MESSAGE message) {
 			// Check to set the ttl
 			char* ttl = NULL;
 			if (message.ttl > 0) {
-				long long epoch = time(NULL) * (long long)1000;
-				long long longTTL = epoch + message.ttl;
+				// TODO this must be uncommented for hornetq and needs the epoch
+				//long long epoch = time(NULL) * (long long)1000;
+				//long long longTTL = epoch + message.ttl;
+				long long longTTL = message.ttl;
 				ttl = (char*) malloc(32); // #   define ULLONG_MAX	18446744073709551615ULL from /usr/include/limits.h
 				sprintf(ttl, "%lld", longTTL);
 				apr_hash_set(frame.headers, "expires", APR_HASH_KEY_STRING, ttl);

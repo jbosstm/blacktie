@@ -34,6 +34,7 @@ struct message_t {
 	char* subtype;
 	bool received;
 	char* serviceName;
+	char* messageId;
 };
 typedef struct message_t MESSAGE;
 

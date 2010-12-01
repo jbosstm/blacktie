@@ -51,6 +51,7 @@ public:
 	virtual void disconnect() throw (CORBA::SystemException );
 
 	virtual MESSAGE receive(long time);
+	virtual void ack(MESSAGE message);
 
 	virtual const char* getName();
 

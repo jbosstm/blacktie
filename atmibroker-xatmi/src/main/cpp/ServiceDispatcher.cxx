@@ -109,6 +109,7 @@ int ServiceDispatcher::svc(void) {
 		message.received = false;
 		message.ttl = -1;
 		message.serviceName = NULL;
+		message.messageId = NULL;
 
 		// Make sure we connect anyway to the subscriber is registered (although not when we are stopped)
 		stopLock->lock();
@@ -143,6 +144,7 @@ int ServiceDispatcher::svc(void) {
 				counter += 1;
 				ACE_Time_Value start = ACE_OS::gettimeofday();
 				onMessage(message);
+				destination->ack(message);
 				ACE_Time_Value end = ACE_OS::gettimeofday();
 				ACE_Time_Value tv = end - start;
 				unsigned long responseTime = tv.msec();

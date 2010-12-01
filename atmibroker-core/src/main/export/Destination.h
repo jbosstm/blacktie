@@ -25,6 +25,7 @@ public:
 	virtual ~Destination() {
 	}
 	virtual MESSAGE receive(long timeout) = 0;
+	virtual void ack(MESSAGE message) = 0;
 	virtual const char* getName() = 0;
 	virtual bool connected() = 0;
 	virtual bool connect() = 0;

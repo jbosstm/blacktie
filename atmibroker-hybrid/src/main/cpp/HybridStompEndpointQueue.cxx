@@ -116,6 +116,7 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 	message.received = false;
 	message.ttl = -1;
 	message.serviceName = NULL;
+	message.messageId = NULL;
 
 	setSpecific(TPE_KEY, TSS_TPERESET);
 
@@ -226,101 +227,78 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 					shutdownLock->lock();
 					// WONT BE ABLE TO SEND AN ACK SO IGNORE MESSAGE
 					if (!shutdown) {
-						char* messageId = (char*) apr_hash_get(frame->headers,
-								"message-id", APR_HASH_KEY_STRING);
-						LOG4CXX_DEBUG(logger, "Sending ACK");
-						stomp_frame ackFrame;
-						ackFrame.command = (char*) "ACK";
-						ackFrame.headers = apr_hash_make(pool);
-						apr_hash_set(ackFrame.headers, "message-id",
-								APR_HASH_KEY_STRING, messageId);
-						ackFrame.body = NULL;
-						ackFrame.body_length = -1;
-						LOG4CXX_DEBUG(logger, "Acking: " << messageId);
-						int rc = stomp_write(connection, &ackFrame, pool);
-						if (rc != APR_SUCCESS) {
-							LOG4CXX_ERROR(logger,
-									(char*) "Could not send frame");
-							char errbuf[256];
-							apr_strerror(rc, errbuf, sizeof(errbuf));
-							LOG4CXX_FATAL(logger, (char*) "APR Error was: "
-									<< rc << ": " << errbuf);
-							connection = NULL;
-						} else {
-							LOG4CXX_DEBUG(logger, "Received from: " << name
-									<< " Command: " << frame->command);
-							message.control = (char*) apr_hash_get(
-									frame->headers, "messagecontrol",
-									APR_HASH_KEY_STRING);
-							LOG4CXX_TRACE(logger, "Extracted control: "
-									<< message.control);
+						LOG4CXX_DEBUG(logger, "Received from: " << name
+								<< " Command: " << frame->command);
+						message.messageId = (char*) apr_hash_get(
+								frame->headers, "message-id",
+								APR_HASH_KEY_STRING);
+						message.control = (char*) apr_hash_get(frame->headers,
+								"messagecontrol", APR_HASH_KEY_STRING);
+						LOG4CXX_TRACE(logger, "Extracted control: "
+								<< message.control);
 
-							LOG4CXX_TRACE(logger, "Ready to handle message");
-							char * correlationId = (char*) apr_hash_get(
-									frame->headers, "messagecorrelationId",
-									APR_HASH_KEY_STRING);
-							LOG4CXX_TRACE(logger, "Read a correlation ID"
-									<< correlationId);
-							LOG4CXX_TRACE(logger, "Extracted correlationID");
-							char * flags = (char*) apr_hash_get(frame->headers,
-									"messageflags", APR_HASH_KEY_STRING);
-							LOG4CXX_TRACE(logger, "Extracted flags");
-							char * rval = (char*) apr_hash_get(frame->headers,
-									"messagerval", APR_HASH_KEY_STRING);
-							LOG4CXX_TRACE(logger, "Extracted rval");
-							char * rcode = (char*) apr_hash_get(frame->headers,
-									"messagercode", APR_HASH_KEY_STRING);
-							LOG4CXX_TRACE(logger, "Extracted rcode");
+						LOG4CXX_TRACE(logger, "Ready to handle message");
+						char * correlationId = (char*) apr_hash_get(
+								frame->headers, "messagecorrelationId",
+								APR_HASH_KEY_STRING);
+						LOG4CXX_TRACE(logger, "Read a correlation ID"
+								<< correlationId);
+						LOG4CXX_TRACE(logger, "Extracted correlationID");
+						char * flags = (char*) apr_hash_get(frame->headers,
+								"messageflags", APR_HASH_KEY_STRING);
+						LOG4CXX_TRACE(logger, "Extracted flags");
+						char * rval = (char*) apr_hash_get(frame->headers,
+								"messagerval", APR_HASH_KEY_STRING);
+						LOG4CXX_TRACE(logger, "Extracted rval");
+						char * rcode = (char*) apr_hash_get(frame->headers,
+								"messagercode", APR_HASH_KEY_STRING);
+						LOG4CXX_TRACE(logger, "Extracted rcode");
 
-							char * type = (char*) apr_hash_get(frame->headers,
-									"messagetype", APR_HASH_KEY_STRING);
-							LOG4CXX_TRACE(logger, "Extracted messagetype");
-							message.type = type;
+						char * type = (char*) apr_hash_get(frame->headers,
+								"messagetype", APR_HASH_KEY_STRING);
+						LOG4CXX_TRACE(logger, "Extracted messagetype");
+						message.type = type;
 
-							char * subtype = (char*) apr_hash_get(
-									frame->headers, "messagesubtype",
-									APR_HASH_KEY_STRING);
-							LOG4CXX_TRACE(logger, "Extracted messagesubtype");
-							message.subtype = subtype;
+						char * subtype = (char*) apr_hash_get(frame->headers,
+								"messagesubtype", APR_HASH_KEY_STRING);
+						LOG4CXX_TRACE(logger, "Extracted messagesubtype");
+						message.subtype = subtype;
 
-							char * serviceName = (char*) apr_hash_get(
-									frame->headers, "servicename",
-									APR_HASH_KEY_STRING);
-							LOG4CXX_TRACE(logger, "Extracted servicename");
+						char * serviceName = (char*) apr_hash_get(
+								frame->headers, "servicename",
+								APR_HASH_KEY_STRING);
+						LOG4CXX_TRACE(logger, "Extracted servicename");
 
-							message.len = frame->body_length;
-							message.data
-									= BufferConverterImpl::convertToMemoryFormat(
-											message.type, message.subtype,
-											frame->body, &message.len);
-							LOG4CXX_TRACE(logger, "Set body and length: "
-									<< message.len);
+						message.len = frame->body_length;
+						message.data
+								= BufferConverterImpl::convertToMemoryFormat(
+										message.type, message.subtype,
+										frame->body, &message.len);
+						LOG4CXX_TRACE(logger, "Set body and length: "
+								<< message.len);
 
-							message.replyto = (const char*) apr_hash_get(
-									frame->headers, "messagereplyto",
-									APR_HASH_KEY_STRING);
-							LOG4CXX_TRACE(logger, "Set replyto: "
-									<< message.replyto);
-							message.correlationId = apr_atoi64(correlationId);
-							LOG4CXX_TRACE(logger, "Set correlationId: "
-									<< message.correlationId);
-							message.flags = apr_atoi64(flags);
-							LOG4CXX_TRACE(logger, "Set flags: "
-									<< message.flags);
-							message.rval = apr_atoi64(rval);
-							LOG4CXX_TRACE(logger, "Set rval: " << message.rval);
-							message.rcode = apr_atoi64(rcode);
-							LOG4CXX_TRACE(logger, "Set rcode: "
-									<< message.rcode);
-							LOG4CXX_TRACE(logger, "Set control: "
-									<< message.control);
-							message.serviceName = serviceName;
-							LOG4CXX_TRACE(logger, "set serviceName");
-							message.received = true;
-						}
+						message.replyto = (const char*) apr_hash_get(
+								frame->headers, "messagereplyto",
+								APR_HASH_KEY_STRING);
+						LOG4CXX_TRACE(logger, "Set replyto: "
+								<< message.replyto);
+						message.correlationId = apr_atoi64(correlationId);
+						LOG4CXX_TRACE(logger, "Set correlationId: "
+								<< message.correlationId);
+						message.flags = apr_atoi64(flags);
+						LOG4CXX_TRACE(logger, "Set flags: " << message.flags);
+						message.rval = apr_atoi64(rval);
+						LOG4CXX_TRACE(logger, "Set rval: " << message.rval);
+						message.rcode = apr_atoi64(rcode);
+						LOG4CXX_TRACE(logger, "Set rcode: " << message.rcode);
+						LOG4CXX_TRACE(logger, "Set control: "
+								<< message.control);
+						message.serviceName = serviceName;
+						LOG4CXX_TRACE(logger, "set serviceName");
+						message.received = true;
 					} else {
 						LOG4CXX_WARN(logger,
-								"Receive message not acked as disconnect occured during receive");
+								"Receive message not returned as shutdown");
 					}
 					shutdownLock->unlock();
 
@@ -468,6 +446,35 @@ bool HybridStompEndpointQueue::connect() {
 	shutdownLock->unlock();
 
 	return _connected;
+}
+
+void HybridStompEndpointQueue::ack(MESSAGE message) {
+	if (!shutdown) {
+		char* messageId = message.messageId;
+		LOG4CXX_DEBUG(logger, "Sending ACK: " << messageId);
+		stomp_frame ackFrame;
+		ackFrame.command = (char*) "ACK";
+		ackFrame.headers = apr_hash_make(pool);
+		apr_hash_set(ackFrame.headers, "message-id", APR_HASH_KEY_STRING,
+				messageId);
+		ackFrame.body = NULL;
+		ackFrame.body_length = -1;
+		LOG4CXX_DEBUG(logger, "Acking: " << messageId);
+		int rc = stomp_write(connection, &ackFrame, pool);
+		if (rc != APR_SUCCESS) {
+			LOG4CXX_ERROR(logger, (char*) "Could not send frame");
+			char errbuf[256];
+			apr_strerror(rc, errbuf, sizeof(errbuf));
+			LOG4CXX_FATAL(logger, (char*) "APR Error was: " << rc << ": "
+					<< errbuf);
+			connection = NULL;
+		} else {
+			LOG4CXX_DEBUG(logger, "Acked: " << messageId);
+		}
+	} else {
+		LOG4CXX_WARN(logger,
+				"Receive message not acked as disconnect occured during receive");
+	}
 }
 
 const char * HybridStompEndpointQueue::getName() {

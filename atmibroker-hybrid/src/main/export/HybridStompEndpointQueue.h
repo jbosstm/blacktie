@@ -47,6 +47,7 @@ public:
 	virtual void disconnect();
 
 	virtual MESSAGE receive(long time);
+	virtual void ack(MESSAGE message);
 
 	virtual const char* getName();
 

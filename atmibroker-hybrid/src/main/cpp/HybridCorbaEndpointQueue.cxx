@@ -213,6 +213,10 @@ MESSAGE HybridCorbaEndpointQueue::receive(long time) {
 	return message;
 }
 
+void HybridCorbaEndpointQueue::ack(MESSAGE message) {
+	// NO-OP
+}
+
 bool HybridCorbaEndpointQueue::connected() {
 	LOG4CXX_ERROR(logger, (char*) "connected NO-OP");
 	return false;

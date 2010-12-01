@@ -83,6 +83,7 @@ private:
 
 	std::vector<ServiceDispatcher*> serviceDispatchersToDelete;
 	std::vector<SynchronizableObject*> reconnectsToDelete;
+	std::vector<Destination*> destinationsToDelete;
 
 	// The following are not implemented
 	//

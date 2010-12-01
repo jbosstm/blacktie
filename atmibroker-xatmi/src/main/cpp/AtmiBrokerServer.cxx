@@ -490,6 +490,16 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	}
 	reconnectsToDelete.clear();
 
+	for (std::vector<Destination*>::iterator destination =
+			destinationsToDelete.begin(); destination != destinationsToDelete.end(); destination++) {
+		LOG4CXX_TRACE(loggerAtmiBrokerServer, (char*) "deleting destination: "
+				<< (*destination));
+		delete (*destination);
+		LOG4CXX_TRACE(loggerAtmiBrokerServer, (char*) "deleted destination: "
+				<< (*destination));
+	}
+	destinationsToDelete.clear();
+
 	serviceData.clear();
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleted service array");
 
@@ -921,10 +931,11 @@ void AtmiBrokerServer::unadvertiseService(char * svcname, bool decrement) {
 					<< serviceName);
 
 			LOG4CXX_DEBUG(loggerAtmiBrokerServer,
-					(char*) "preparing to destroy" << serviceName);
+					(char*) "preparing to disconnect" << serviceName);
 
-			connection->destroyDestination(destination);
-			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "destroyed"
+			destination->disconnect();
+			destinationsToDelete.push_back(destination);
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "disconnected"
 					<< serviceName);
 
 			ServiceInfo* service;
