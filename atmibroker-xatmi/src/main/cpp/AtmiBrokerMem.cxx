@@ -104,7 +104,7 @@ AtmiBrokerMem::tpalloc(msg_opts_t* mopts, char* type, char* subtype, long size,
 		LOG4CXX_ERROR(logger, (char*) "tpalloc - no type");
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	} else if ((strncmp(type, "X_COMMON", MAX_TYPE_SIZE) == 0 || strncmp(type,
-			"X_C_TYPE", MAX_TYPE_SIZE) == 0) && !subtype) {
+			"X_C_TYPE", MAX_TYPE_SIZE) == 0 || strncmp(type, "BT_NBF", MAX_TYPE_SIZE) == 0) && !subtype) {
 		LOG4CXX_ERROR(logger, (char*) "tpalloc - no subtype");
 		setSpecific(TPE_KEY, TSS_TPEOS);
 	} else if ((strncmp(type, "X_COMMON", MAX_TYPE_SIZE) == 0 || strncmp(type,
@@ -120,7 +120,7 @@ AtmiBrokerMem::tpalloc(msg_opts_t* mopts, char* type, char* subtype, long size,
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	} else if (strncmp(type, "X_OCTET", MAX_TYPE_SIZE) != 0 && strncmp(type,
 			"X_COMMON", MAX_TYPE_SIZE) != 0 && strncmp(type, "X_C_TYPE",
-			MAX_TYPE_SIZE) != 0) {
+			MAX_TYPE_SIZE) != 0 && strncmp(type, "BT_NBF", MAX_TYPE_SIZE) != 0) {
 		LOG4CXX_ERROR(logger, (char*) "tpalloc DONT YET know type: " << type);
 		setSpecific(TPE_KEY, TSS_TPENOENT);
 	} else {
@@ -135,7 +135,11 @@ AtmiBrokerMem::tpalloc(msg_opts_t* mopts, char* type, char* subtype, long size,
 			}
 			LOG4CXX_DEBUG(logger, (char*) "tpalloc X_C_TYPE/X_COMMON");
 			size = buffers[subtype]->memSize;
+		} else if(strcmp(type, "BT_NBF") == 0) {
+			LOG4CXX_DEBUG(logger, (char*) "tpalloc BT_NBF");
+			size = 512;
 		}
+
 		LOG4CXX_DEBUG(logger, (char*) "tpalloc - type: subtype: size:" << type
 				<< ":" << subtype << ":" << size);
 		MemoryInfo memoryInfo;
@@ -170,6 +174,19 @@ AtmiBrokerMem::tpalloc(msg_opts_t* mopts, char* type, char* subtype, long size,
 		LOG4CXX_DEBUG(logger, (char*) "added MemoryInfo to vector: "
 				<< memoryInfoVector.size());
 		toReturn = (char*) memoryInfo.memoryPtr;
+		if(strcmp(type, "BT_NBF") == 0) {
+			strcpy(toReturn, "<?xml version='1.0'?>");
+			strcat(toReturn, "<");
+			strcat(toReturn, subtype);
+			strcat(toReturn, " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
+			strcat(toReturn, " xmlns=\"http://www.jboss.org/blacktie\"");
+			strcat(toReturn, " xsi:schemaLocation=\"http://www.jboss.org/blacktie buffers/");
+			strcat(toReturn, subtype);
+			strcat(toReturn, ".xsd\">");
+			strcat(toReturn, "</");
+			strcat(toReturn, subtype);
+			strcat(toReturn, ">");
+		}
 	}
 	lock->unlock();
 	LOG4CXX_TRACE(logger, (char*) "tpalloc unlocked");
@@ -210,7 +227,9 @@ char* AtmiBrokerMem::tprealloc(char * addr, long size, char* type,
 					char* memPtr = (char*) realloc((void*) addr, size);
 					(*it).memoryPtr = memPtr;
 					(*it).size = size;
-					memset((*it).memoryPtr, '\0', (*it).size);
+					if(force) {
+						memset((*it).memoryPtr, '\0', (*it).size);
+					}
 					toReturn = memPtr;
 
 					if (type != NULL) {

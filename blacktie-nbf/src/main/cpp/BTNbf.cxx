@@ -16,6 +16,7 @@
  * MA  02110-1301, USA.
  */
 #include "btnbf.h"
+#include "xatmi.h"
 #include "log4cxx/logger.h"
 #include "NBFParser.h"
 
@@ -71,10 +72,11 @@ void insert_string(char** buf, const char* s, int pos) {
 	if(pos >= 0 && pos <= n) {
 		char* q = p + pos;
 		char* tmp = (char*) malloc (sizeof(char) * (n - pos + 1));
+		memset(tmp, '\0', n-pos+1);
 		strcpy(tmp, q);
 
-		int size = strlen(s);
-		p = (char*) realloc (p, sizeof(char) * (n + size + 1));
+		int size = strlen(s) + n + 1;
+		p = tprealloc (p, sizeof(char) * size);
 		p[pos] = '\0';
 		strcat(p, s);
 		strcat(p, tmp);

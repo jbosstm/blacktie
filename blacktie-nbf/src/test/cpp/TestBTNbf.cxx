@@ -20,12 +20,24 @@
 #include "xatmi.h"
 #include "userlogc.h"
 
+extern "C" {
+#include "AtmiBrokerClientControl.h"
+}
+
 #include "TestAssert.h"
 #include "TestBTNbf.h"
+
+void TestBTNbf::setUp() {
+}
+
+void TestBTNbf::tearDown() {
+	::clientdone(0);
+}
 
 void TestBTNbf::test_addattribute() {
 	userlogc((char*) "test_addattribute");
 	int rc;
+	/*
 	char* s = (char*)
 		"<?xml version='1.0' ?> \
 			<employee xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\
@@ -34,11 +46,13 @@ void TestBTNbf::test_addattribute() {
 			</employee>";
 	char* buf = (char*) malloc (sizeof(char) * (strlen(s) + 1));
 	strcpy(buf, s);
-
+	*/
 	char name[16];
 	char value[16];
 	int len = 16;;
+	char* buf = tpalloc((char*)"BT_NBF", (char*)"employee", 0);
 
+	BT_ASSERT(buf != NULL);
 	strcpy(name, "test");
 	rc = btaddattribute(&buf, (char*)"name", name, strlen(name));	
 	BT_ASSERT(rc == 0);
@@ -61,7 +75,7 @@ void TestBTNbf::test_addattribute() {
 	rc = btaddattribute(&buf, (char*)"unknow", NULL, 0);
 	BT_ASSERT(rc == -1);
 
-	free(buf);
+	tpfree(buf);
 }
 
 void TestBTNbf::test_getattribute() {
@@ -70,6 +84,7 @@ void TestBTNbf::test_getattribute() {
 	char name[16];
 	int len = 16;
 	long id = 0;
+	/*
 	char* buf = (char*)
 		"<?xml version='1.0' ?> \
 			<employee xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\
@@ -80,6 +95,14 @@ void TestBTNbf::test_getattribute() {
 				<id>1001</id> \
 				<id>1002</id> \
 			</employee>";
+	*/
+	char* buf = tpalloc((char*)"BT_NBF", (char*)"employee", 0);
+	btaddattribute(&buf, (char*)"name", (char*)"zhfeng", 6);
+	btaddattribute(&buf, (char*)"name", (char*)"test", 4);
+	id = 1001;
+	btaddattribute(&buf, (char*)"id", (char*)&id, sizeof(id));
+	id = 1002;
+	btaddattribute(&buf, (char*)"id", (char*)&id, sizeof(id));
 
 	userlogc((char*) "getattribute of name at index 0");
 	rc = btgetattribute(buf, (char*)"name", 0, (char*)name, &len);
@@ -107,11 +130,14 @@ void TestBTNbf::test_getattribute() {
 	BT_ASSERT(rc == 0);
 	BT_ASSERT(len == sizeof(long));
 	BT_ASSERT(id == 1002);
+
+	tpfree(buf);
 }
 
 void TestBTNbf::test_setattribute() {
 	userlogc((char*) "test_setattribute");
 	int rc;
+	/*
 	char* s = (char*)
 		"<?xml version='1.0' ?> \
 			<employee xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\
@@ -122,6 +148,10 @@ void TestBTNbf::test_setattribute() {
 			</employee>";
 	char* buf = (char*) malloc (sizeof(char) * (strlen(s) + 1));
 	strcpy(buf, s);
+	*/
+	char* buf = tpalloc((char*)"BT_NBF", (char*)"employee", 0);
+	btaddattribute(&buf, (char*)"name", (char*)"test1", 5);
+	btaddattribute(&buf, (char*)"name", (char*)"test2", 5);
 
 	long id = 1234;
 	char name[16];
@@ -147,15 +177,15 @@ void TestBTNbf::test_setattribute() {
 	rc = btsetattribute(&buf, (char*) "name", 2, (char*)name, 8);
 	BT_ASSERT(rc != 0);
 
-	free(buf);
+	tpfree(buf);
 }
 
 void TestBTNbf::test_delattribute() {
 	userlogc((char*) "test_delattribute");
 	int rc;
 	char name[16];
-	int len = 16;
-	//long id = 0;
+	int  len = 16;
+	/*
 	char* s = (char*)
 		"<?xml version='1.0' ?> \
 			<employee xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\
@@ -168,6 +198,10 @@ void TestBTNbf::test_delattribute() {
 			</employee>";
 	char* buf = (char*) malloc (sizeof(char) * (strlen(s) + 1));
 	strcpy(buf, s);
+	*/
+	char* buf = tpalloc((char*)"BT_NBF", (char*)"employee", 0);
+	btaddattribute(&buf, (char*)"name", (char*)"zhfeng", 6);
+	btaddattribute(&buf, (char*)"name", (char*)"test", 4);
 
 	rc = btgetattribute(buf, (char*) "name", 0, (char*)name, &len);
 	BT_ASSERT(rc == 0);
@@ -189,4 +223,6 @@ void TestBTNbf::test_delattribute() {
 	// no such attribute id
 	rc = btdelattribute(buf, (char*) "name", 2);
 	BT_ASSERT(rc != 0);
+
+	tpfree(buf);
 }

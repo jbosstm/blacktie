@@ -32,6 +32,9 @@ public:
 	void test_getattribute();
 	void test_setattribute();
 	void test_delattribute();
+
+	virtual void setUp();
+	virtual void tearDown();
 };
 
 #endif
