@@ -29,6 +29,7 @@ SynchronizableObject::SynchronizableObject() :
 	mutex(), cond(mutex) {
 	waitingCount = 0;
 	notifiedCount = 0;
+	LOG4CXX_DEBUG(logger, (char*) "SynchronizableObject created: " << this);
 }
 
 SynchronizableObject::~SynchronizableObject() {
