@@ -89,6 +89,8 @@
 				<configuration>
 					<hostName>${jbossas.ip.addr}</hostName>
 					<port>8080</port>
+					<jbossHome>${JBOSS_HOME}</jbossHome>
+					<serverName>all-with-hornetq</serverName>
 					<fileNames>
 						<fileName>${project.build.directory}/${project.build.finalName}.${project.packaging}</fileName>
 					</fileNames>
