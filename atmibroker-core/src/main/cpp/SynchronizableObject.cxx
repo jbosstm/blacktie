@@ -29,7 +29,9 @@ SynchronizableObject::SynchronizableObject() :
 	mutex(), cond(mutex) {
 	waitingCount = 0;
 	notifiedCount = 0;
+#ifndef WIN32
 	LOG4CXX_DEBUG(logger, (char*) "SynchronizableObject created: " << this);
+#endif
 }
 
 SynchronizableObject::~SynchronizableObject() {
