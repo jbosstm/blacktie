@@ -92,7 +92,7 @@ HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 	this->lastEvent = 0;
 	this->lastRCode = 0;
 	this->serviceName = serviceName;
-	LOG4CXX_TRACE(logger, "OK service session created");
+	LOG4CXX_TRACE(logger, "OK service session created: " << id);
 }
 
 HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,

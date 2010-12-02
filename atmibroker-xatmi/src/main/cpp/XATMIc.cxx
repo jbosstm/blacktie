@@ -580,12 +580,16 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 								txx_suspend(cd, tpdiscon);
 
 							if (TPNOREPLY & flags) {
+								LOG4CXX_TRACE(loggerXATMI, (char*) "TPNOREPLY send");
 								toReturn = ::send(session, "", idata, len, cd,
 										flags, 0, 0);
+								LOG4CXX_TRACE(loggerXATMI, (char*) "TPNOREPLY sent");
 							} else {
+								LOG4CXX_TRACE(loggerXATMI, (char*) "expect reply send");
 								toReturn = ::send(session,
 										session->getReplyTo(), idata, len, cd,
 										flags, 0, 0);
+								LOG4CXX_TRACE(loggerXATMI, (char*) "expect reply sent");
 							}
 
 							if (toReturn >= 0) {

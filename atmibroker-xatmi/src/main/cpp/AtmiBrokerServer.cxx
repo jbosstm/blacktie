@@ -882,8 +882,6 @@ void AtmiBrokerServer::unadvertiseService(char * svcname, bool decrement) {
 	memset(serviceName, '\0', XATMI_SERVICE_NAME_LENGTH + 1);
 	strncat(serviceName, svcname, XATMI_SERVICE_NAME_LENGTH);
 
-	Connection* connection = connections.getServerConnection();
-
 	for (std::vector<ServiceData>::iterator i = serviceData.begin(); i
 			!= serviceData.end(); i++) {
 		if (strncmp((*i).serviceInfo->serviceName, svcname,
