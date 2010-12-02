@@ -181,7 +181,6 @@ void TestStompConnection::test() {
 		BT_ASSERT(serviceReceived.received);
 		BT_ASSERT(strcmp(clientSend.type, serviceReceived.type) == 0);
 		BT_ASSERT(clientSend.len == serviceReceived.len);
-		destination->ack(serviceReceived);
 		free(clientData);
 		free(serviceReceived.data);
 		free((char*) serviceReceived.replyto);
