@@ -80,6 +80,61 @@
 			<name>!skipTests</name>
 		</property>
 	</activation>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jboss-maven-plugin</artifactId>
+				<version>1.4</version>
+				<configuration>
+					<hostName>${jbossas.ip.addr}</hostName>
+					<port>8080</port>
+					<jbossHome>${JBOSS_HOME}</jbossHome>
+					<serverName>all-with-hornetq</serverName>
+					<unpack>true</unpack>
+					<fileNames>
+						<fileName>${project.build.directory}/${project.build.finalName}.${project.packaging}</fileName>
+					</fileNames>
+				</configuration>
+				<executions>
+					<execution>
+						<id>redeploy</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>redeploy</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>surefire-it</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <configuration>
+                                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                                    <trimStackTrace>false</trimStackTrace>
+                                    <printSummary>true</printSummary>
+                                    <includes>
+                                        <include>**/*IntegrationTest.java</include>
+                                    </includes>
+                                    <forkMode>always</forkMode>
+                                    <skip>false</skip>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+		</plugins>
+	</build>
 	</profile>
 	</profiles>
 
@@ -106,30 +161,6 @@
 						</jarModule>
 					</modules>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jboss-maven-plugin</artifactId>
-				<version>1.4</version>
-				<configuration>
-					<hostName>${jbossas.ip.addr}</hostName>
-					<port>8080</port>
-					<jbossHome>${JBOSS_HOME}</jbossHome>
-					<serverName>all-with-hornetq</serverName>
-					<unpack>true</unpack>
-					<fileNames>
-						<fileName>${project.build.directory}/${project.build.finalName}.${project.packaging}</fileName>
-					</fileNames>
-				</configuration>
-				<executions>
-					<execution>
-						<id>redeploy</id>
-						<phase>integration-test</phase>
-						<goals>
-							<goal>redeploy</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 
 			<plugin>
