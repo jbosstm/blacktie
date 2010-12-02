@@ -125,7 +125,7 @@ int clientdone(int reason = 0) {
 }
 
 AtmiBrokerClient::AtmiBrokerClient(AtmiBrokerSignalHandler& handler) :
-	currentConnection(NULL), nextSessionId(0), signalHandler(handler){
+	currentConnection(NULL), signalHandler(handler){
 	try {
 		lock = new SynchronizableObject();
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, "Created lock: " << lock);
@@ -164,11 +164,15 @@ Session* AtmiBrokerClient::createSession(bool isConv, int& id, char* serviceName
 	if (clientConnection != NULL) {
 		lock->lock();
 		currentConnection = clientConnection;
-		id = nextSessionId++;
 		lock->unlock();
 
-		session = clientConnection->createSession(isConv, id, serviceName);
+		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "created session: " << id);
+		session = clientConnection->createSession(isConv, serviceName);
 
+		if (session == NULL) {
+			LOG4CXX_ERROR(loggerAtmiBrokerClient, (char*) "null session created: " << id);
+		}
+		id = session->getId();
 		session->setSigHandler(&(signalHandler));
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "created session: " << id
 				<< " send: " << session->getCanSend() << " recv: "

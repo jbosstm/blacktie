@@ -35,6 +35,7 @@ extern "C" {
 #include "Connection.h"
 #include "Destination.h"
 #include "HybridSessionImpl.h"
+#include "SynchronizableObject.h"
 
 class HybridSessionImpl;
 
@@ -43,7 +44,7 @@ public:
 	HybridConnectionImpl(char* connectionName, void(*messagesAvailableCallback)(int,bool));
 	virtual ~HybridConnectionImpl();
 
-	Session* createSession(bool isConv, int id, char* serviceName);
+	Session* createSession(bool isConv, char* serviceName);
 	Session* createSession(bool isConv, int id, const char* temporaryQueueName);
 	Session* getSession(int id);
 	void closeSession(int id);
@@ -56,12 +57,14 @@ public:
 	void destroyDestination(Destination* destination);
 
 private:
+	int nextSessionId;
 	static log4cxx::LoggerPtr logger;
 	char* connectionName;
 	std::map<int, HybridSessionImpl*> sessionMap;
 	apr_pool_t* pool;
 	CORBA_CONNECTION* connection;
 	void(*messagesAvailableCallback)(int,bool);
+	SynchronizableObject* sessionMapLock;
 };
 
 #ifdef __cplusplus

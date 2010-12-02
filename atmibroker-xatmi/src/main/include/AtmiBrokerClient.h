@@ -41,7 +41,6 @@ protected:
 	Connection* currentConnection;
 	//std::map<std::string, Connection*> clientConnectionMap;
 	ConnectionManager clientConnectionManager;
-	int nextSessionId;
 	SynchronizableObject* lock;
 	AtmiBrokerSignalHandler& signalHandler;
 };
