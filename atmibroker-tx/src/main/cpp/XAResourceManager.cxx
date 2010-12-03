@@ -438,6 +438,7 @@ void XAResourceManager::set_complete(XID * xid)
 			poa_->deactivate_object(id.in());
 			branches_.erase(i->first);
 
+			branchLock->unlock();
 			return;
 		}
 	}
