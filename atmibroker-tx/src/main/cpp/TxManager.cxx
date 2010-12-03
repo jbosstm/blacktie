@@ -57,10 +57,13 @@ TxManager *TxManager::get_instance()
 void TxManager::discard_instance()
 {
 	FTRACE(txmlogger, "ENTER");
+	lock_.lock();
 	if (_instance != NULL) {
 		delete _instance;
 		_instance = NULL;
 	}
+	lock_.unlock();
+
 }
 
 TxManager::TxManager() :
@@ -76,6 +79,7 @@ TxManager::TxManager() :
 	} catch (...) {
 		LOG4CXX_WARN(txmlogger, (char*) "Unknown error looking up ORB for TM");
 	}
+	rmLock = new SynchronizableObject();
 }
 
 TxManager::~TxManager()
@@ -87,6 +91,7 @@ TxManager::~TxManager()
 		shutdownBindings(_connection);
 		AtmiBrokerEnv::discard_instance();
 	}
+	delete rmLock;
 }
 
 CORBA::ORB_ptr TxManager::getOrb() {
@@ -350,17 +355,22 @@ int TxManager::open_trans_factory(void)
 int TxManager::open(void)
 {
 	TX_GUARD((true));
-
-	if (_isOpen)
+	rmLock->lock();
+	if (_isOpen) {
+		rmLock->unlock();
 		return TX_OK;
+	}
 
-	if (open_trans_factory() != TX_OK)
+	if (open_trans_factory() != TX_OK) {
+		rmLock->unlock();
 		return TX_ERROR;
+	}
 
 	if (rm_open() != 0) {
 		LOG4CXX_ERROR(txmlogger, (char*) "At least one resource manager failed");
 		(void) rm_close();
 
+		rmLock->unlock();
 		return TX_ERROR;
 	}
 
@@ -370,20 +380,29 @@ int TxManager::open(void)
 
 	_isOpen = true;
 
+	rmLock->unlock();
 	return TX_OK;
 }
 
 int TxManager::close(void)
 {
 	FTRACE(txmlogger, "ENTER");
-	if (!_isOpen)
+	rmLock->lock();
+	if (!_isOpen) {
+		rmLock->unlock();
 		return TX_OK;
+	}
 
-	TX_GUARD((getSpecific(TSS_KEY) == NULL));
+	if (getSpecific(TSS_KEY) != NULL) {
+		LOG4CXX_WARN(txmlogger, (char*) "protocol error: open: " << _isOpen << " transaction: " << getSpecific(TSS_KEY));
+		rmLock->unlock();
+		return TX_PROTOCOL_ERROR;
+	}
 
 	_isOpen = false;
 	rm_close();
 
+	rmLock->unlock();
 	return TX_OK;
 }
 

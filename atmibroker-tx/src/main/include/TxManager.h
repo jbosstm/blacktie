@@ -24,6 +24,7 @@
 #include "CorbaConnection.h"
 #include "TxControl.h"
 #include "XAResourceManagerFactory.h"
+#include "SynchronizableObject.h"
 
 #define TX_NOT_SUPPORTED   1   /* normal execution */
 #define TX_OK              0   /* normal execution */
@@ -143,6 +144,7 @@ private:
 	TRANSACTION_TIMEOUT _timeout;
 	bool _isOpen;
 	CORBA_CONNECTION *_connection;
+	SynchronizableObject* rmLock;
 
 private:
 	static TxManager *_instance;
