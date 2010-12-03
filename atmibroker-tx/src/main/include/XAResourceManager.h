@@ -20,6 +20,7 @@
 
 #include "CorbaConnection.h"
 #include "XAResourceAdaptorImpl.h"
+#include "SynchronizableObject.h"
 
 class XAResourceAdaptorImpl;
 
@@ -54,6 +55,7 @@ public:
 private:
 	typedef std::map<XID, XAResourceAdaptorImpl *, xid_cmp> XABranchMap;
 	XABranchMap branches_;
+	SynchronizableObject* branchLock;
 
 	PortableServer::POA_ptr poa_;
 	CORBA_CONNECTION* connection_;

@@ -38,10 +38,11 @@ void XAResourceManager::show_branches(const char *msg, XID * xid)
 {
 	FTRACE(xarmlogger, "ENTER " << *xid);
 
+	branchLock->lock();
 	for (XABranchMap::iterator i = branches_.begin(); i != branches_.end(); ++i) {
-
 		LOG4CXX_TRACE(xarmlogger, (char *) "XID: " << (i->first)); 
 	}
+	branchLock->unlock();
 }
 
 static int compareXids(const XID& xid1, const XID& xid2)
@@ -95,6 +96,7 @@ XAResourceManager::XAResourceManager(
 		throw ex;
 	}
 
+	branchLock = new SynchronizableObject();
 	// each RM has its own POA
 //	createPOA();
 }
@@ -107,6 +109,8 @@ XAResourceManager::~XAResourceManager() {
 
 	if (rv != XA_OK)
 		LOG4CXX_WARN(xarmlogger, (char *) " close RM " << name_ << " failed: " << rv);
+
+	delete branchLock;
 }
 
 /**
@@ -138,10 +142,12 @@ bool XAResourceManager::recover(XID& bid, const char* rc)
 
 			ra = new XAResourceAdaptorImpl(this, bid, bid, rmid_, xa_switch_, rclog_);
 
+			branchLock->lock();
 			if (branches_[bid] != NULL) {
 				// log an error since we forgot to clean up the previous servant
 				LOG4CXX_ERROR(xarmlogger, (char *) "Recovery: branch already exists: " << bid);
 			}
+			branchLock->unlock();
 
 			// activate the servant
 			std::string s = (char *) (bid.data + bid.gtrid_length);
@@ -219,7 +225,9 @@ bool XAResourceManager::recover(XID& bid, const char* rc)
 					// the XAResourceAdapterImpl corresponding to the branch will remove the recovery record
 					LOG4CXX_INFO(xarmlogger,
 						(char *) "Recovery: replaying transaction (TM reports prepared/preparing or completing)");
+					branchLock->lock();
 					branches_[bid] = ra;
+					branchLock->unlock();
 					delRecoveryRec = false;
 					break;
 				default:
@@ -370,7 +378,9 @@ int XAResourceManager::createServant(XID& xid)
 			ra->set_recovery_coordinator(ACE_OS::strdup(rcref));
 	   		CORBA::release(rc);
 
+			branchLock->lock();
 			branches_[xid] = ra;
+			branchLock->unlock();
 			res = XA_OK;
 			ra = NULL;
 		}
@@ -417,6 +427,7 @@ void XAResourceManager::set_complete(XID * xid)
 		LOG4CXX_TRACE(xarmlogger, (char*) "branch completion notification with out a corresponding log entry: " << *xid);
 	}
 
+	branchLock->lock();
 	for (XABranchMap::iterator i = branches_.begin(); i != branches_.end(); ++i)
 	{
 		if (compareXids(i->first, (const XID&) (*xid)) == 0) {
@@ -430,6 +441,7 @@ void XAResourceManager::set_complete(XID * xid)
 			return;
 		}
 	}
+	branchLock->unlock();
 
 	LOG4CXX_TRACE(xarmlogger, (char*) "... unknown branch");
 }
@@ -474,13 +486,16 @@ XAResourceAdaptorImpl * XAResourceManager::locateBranch(XID * xid)
 	FTRACE(xarmlogger, "ENTER");
 	XABranchMap::iterator iter;
 
+	branchLock->lock();
 	for (iter = branches_.begin(); iter != branches_.end(); ++iter) {
 		LOG4CXX_TRACE(xarmlogger, (char *) "compare: " << *xid << " with " << (iter->first));
 
 		if (compareXids(iter->first, (const XID&) (*xid)) == 0) {
+			branchLock->unlock();
 			return (*iter).second;
 		}
 	}
+	branchLock->unlock();
 
 	LOG4CXX_DEBUG(xarmlogger, (char *) " branch not found");
 	return NULL;
