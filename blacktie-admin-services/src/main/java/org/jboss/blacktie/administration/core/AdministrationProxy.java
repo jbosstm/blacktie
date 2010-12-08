@@ -22,17 +22,11 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
-import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -61,7 +55,7 @@ public class AdministrationProxy {
 	private static final Logger log = LogManager
 			.getLogger(AdministrationProxy.class);
 	private Properties prop = new Properties();
-//	private JMXConnector c;
+	// private JMXConnector c;
 	private MBeanServerConnection beanServerConnection;
 	private Connection connection;
 	private List<String> servers;
@@ -74,11 +68,12 @@ public class AdministrationProxy {
 		servers = (List<String>) prop.get("blacktie.domain.servers");
 		ConnectionFactory cf = ConnectionFactory.getConnectionFactory();
 		connection = cf.getConnection();
-		
-		beanServerConnection = org.jboss.mx.util.MBeanServerLocator.locateJBoss();
-//		JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
-//		c = JMXConnectorFactory.connect(u);
-//		beanServerConnection = c.getMBeanServerConnection();
+
+		beanServerConnection = org.jboss.mx.util.MBeanServerLocator
+				.locateJBoss();
+		// JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
+		// c = JMXConnectorFactory.connect(u);
+		// beanServerConnection = c.getMBeanServerConnection();
 		log.debug("Created Administration Proxy");
 	}
 
@@ -646,7 +641,7 @@ public class AdministrationProxy {
 	public void close() throws ConnectionException, IOException {
 		log.info("Closed Administration Proxy");
 		connection.close();
-//		c.close();
+		// c.close();
 	}
 
 	public int getQueueDepth(String serverName, String serviceName) {

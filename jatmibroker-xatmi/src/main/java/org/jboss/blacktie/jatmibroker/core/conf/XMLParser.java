@@ -99,18 +99,15 @@ public class XMLParser {
 
 			saxParser = factory.newSAXParser();
 		} catch (SAXException e) {
-			log.error("Could not create a SAXParser: "
-					+ e.getMessage(), e);
+			log.error("Could not create a SAXParser: " + e.getMessage(), e);
 			throw new ConfigurationException("Could not create a SAXParser: "
 					+ e.getMessage(), e);
 		} catch (ParserConfigurationException e) {
-			log.error("Could not create a SAXParser: "
-					+ e.getMessage(), e);
+			log.error("Could not create a SAXParser: " + e.getMessage(), e);
 			throw new ConfigurationException("Could not create a SAXParser: "
 					+ e.getMessage(), e);
 		} catch (Throwable e) {
-			log.error("Could not parse configuration: "
-					+ e.getMessage(), e);
+			log.error("Could not parse configuration: " + e.getMessage(), e);
 			throw new ConfigurationException("Could not parse configuration: "
 					+ e.getMessage(), e);
 		}

@@ -133,7 +133,9 @@ public class TxEchoServiceTestService extends MDBBlacktieService implements
 			try {
 				return beans[0].echo("bean=" + names[1]);
 			} catch (javax.ejb.EJBException e) {
-				log.warn("Failure got Exception calling method with default transaction attribute", e);
+				log.warn(
+						"Failure got Exception calling method with default transaction attribute",
+						e);
 				return "Failure got Exception calling method with default transaction attribute: "
 						+ e;
 			}

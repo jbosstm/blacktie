@@ -92,7 +92,6 @@ public abstract class CSControl extends TestCase {
 		try {
 			log.info("start server process: " + name);
 
-
 			String property = System.getProperty("USE_VALGRIND");
 			String[] command = null;
 			String nextSid = nextSid();
@@ -105,7 +104,7 @@ public abstract class CSControl extends TestCase {
 				command = (CS_EXE + " -c linux -i " + nextSid).split(" ");
 			}
 			serverBuilder.command(command);
-			
+
 			server = startServer(name, serverBuilder);
 		} catch (IOException e) {
 			throw new RuntimeException("Server io exception: ", e);
