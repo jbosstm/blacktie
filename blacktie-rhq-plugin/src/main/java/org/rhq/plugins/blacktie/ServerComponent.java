@@ -25,9 +25,6 @@ import java.util.Set;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -114,12 +111,11 @@ public class ServerComponent implements ResourceComponent, MeasurementFacet,
 		try {
 			Properties prop = new Properties();
 			XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
-			JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
-			JMXConnector c = JMXConnectorFactory.connect(u);
-			beanServerConnection = c.getMBeanServerConnection();
 
+			beanServerConnection = org.jboss.mx.util.MBeanServerLocator
+					.locateJBoss();
 			serverName = context.getResourceKey();
-			;
+
 			blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
 		} catch (Exception e) {
 			log.error("start server " + serverName + " plugin error with " + e);

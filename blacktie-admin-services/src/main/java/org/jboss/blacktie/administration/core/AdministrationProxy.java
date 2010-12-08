@@ -71,9 +71,6 @@ public class AdministrationProxy {
 
 		beanServerConnection = org.jboss.mx.util.MBeanServerLocator
 				.locateJBoss();
-		// JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
-		// c = JMXConnectorFactory.connect(u);
-		// beanServerConnection = c.getMBeanServerConnection();
 		log.debug("Created Administration Proxy");
 	}
 

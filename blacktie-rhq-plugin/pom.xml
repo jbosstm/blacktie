@@ -178,6 +178,12 @@
 			<artifactId>jatmibroker-xatmi</artifactId>
 		</dependency>
 
+		<dependency>
+        	<groupId>org.jboss.jbossas</groupId>
+        	<artifactId>jboss-as-j2se</artifactId>
+			<version>5.1.0.GA</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

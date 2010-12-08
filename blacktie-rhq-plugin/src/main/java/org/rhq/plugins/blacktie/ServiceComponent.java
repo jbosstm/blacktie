@@ -26,9 +26,6 @@ import java.util.Set;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -116,9 +113,9 @@ public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 	public void start(ResourceContext context) {
 		try {
 			XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
-			JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
-			JMXConnector c = JMXConnectorFactory.connect(u);
-			beanServerConnection = c.getMBeanServerConnection();
+
+			beanServerConnection = org.jboss.mx.util.MBeanServerLocator
+					.locateJBoss();
 
 			serviceName = context.getResourceKey();
 

@@ -25,9 +25,6 @@ import java.util.Set;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -96,9 +93,8 @@ public class ServerDiscoveryComponent implements ResourceDiscoveryComponent {
 			Properties prop = new Properties();
 			XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
 
-			JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
-			JMXConnector c = JMXConnectorFactory.connect(u);
-			beanServerConnection = c.getMBeanServerConnection();
+			beanServerConnection = org.jboss.mx.util.MBeanServerLocator
+					.locateJBoss();
 			blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
 
 			// Get this list from the MBean so that we only need one service

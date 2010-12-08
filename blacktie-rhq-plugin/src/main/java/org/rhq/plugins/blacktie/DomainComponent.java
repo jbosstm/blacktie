@@ -26,9 +26,6 @@ import java.util.Set;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -117,12 +114,9 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 		try {
 			Properties prop = new Properties();
 			XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
-			JMXServiceURL u = new JMXServiceURL((String) prop.get("JMXURL"));
-			JMXConnector c = JMXConnectorFactory.connect(u);
-			beanServerConnection = c.getMBeanServerConnection();
-
+			beanServerConnection = org.jboss.mx.util.MBeanServerLocator
+					.locateJBoss();
 			domainName = context.getResourceKey();
-			;
 			blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
 		} catch (Exception e) {
 			log.error("start domain " + domainName + " plugin error with " + e);
