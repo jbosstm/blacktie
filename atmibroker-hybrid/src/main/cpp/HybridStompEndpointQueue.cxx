@@ -57,6 +57,7 @@ HybridStompEndpointQueue::HybridStompEndpointQueue(apr_pool_t* pool,
 	this->fullName = queueName;
 	this->name = strdup(serviceName);
 	this->transactional = true;
+	this->unackedMessages = 0;
 }
 
 // ~EndpointQueue destructor.
@@ -68,20 +69,6 @@ HybridStompEndpointQueue::~HybridStompEndpointQueue() {
 
 	// Read
 	readLock->lock();
-	if (requiresDisconnect) {
-		LOG4CXX_DEBUG(logger, "Disconnecting...");
-		apr_status_t rc = stomp_disconnect(&connection);
-		if (rc != APR_SUCCESS) {
-			LOG4CXX_ERROR(logger, "Could not disconnect");
-			char errbuf[256];
-			apr_strerror(rc, errbuf, sizeof(errbuf));
-			LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc << ": "
-					<< errbuf);
-			//			free(errbuf);
-		} else {
-			LOG4CXX_DEBUG(logger, "Disconnected");
-		}
-	}
 
 	LOG4CXX_TRACE(logger, (char*) "deleting lock");
 	delete readLock;
@@ -296,6 +283,7 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 						message.serviceName = serviceName;
 						LOG4CXX_TRACE(logger, "set serviceName");
 						message.received = true;
+						unackedMessages++;
 					} else {
 						LOG4CXX_WARN(logger,
 								"Receive message not returned as shutdown");
@@ -331,6 +319,74 @@ void HybridStompEndpointQueue::disconnect() {
 		this->_connected = false;
 		LOG4CXX_DEBUG(logger, (char*) "Shutdown set: " << name);
 
+		// This can be ommitted if we know we are calling disconnect
+		if (unackedMessages != 0) {
+			// Unsubscribe from the queue
+			stomp_frame frame;
+			frame.command = (char*) "UNSUBSCRIBE";
+			frame.headers = apr_hash_make(pool);
+			apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING,
+					fullName);
+			apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING,
+					fullName);
+			frame.body_length = -1;
+			frame.body = NULL;
+			LOG4CXX_DEBUG(logger, "Sending UNSUB: " << fullName);
+			apr_status_t rc = stomp_write(connection, &frame, pool);
+			if (rc != APR_SUCCESS) {
+				LOG4CXX_ERROR(logger, (char*) "Could not send frame");
+				char errbuf[256];
+				apr_strerror(rc, errbuf, sizeof(errbuf));
+				LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc << ": "
+						<< errbuf);
+				HybridConnectionImpl::disconnect(connection, pool);
+			} else {
+				stomp_frame *framed;
+				LOG4CXX_DEBUG(logger, "Reading response: " << fullName);
+				rc = stomp_read(connection, &framed, pool);
+				if (rc != APR_SUCCESS) {
+					setSpecific(TPE_KEY, TSS_TPESYSTEM);
+					LOG4CXX_ERROR(logger, "Could not read frame for " << name);
+					char errbuf[256];
+					apr_strerror(rc, errbuf, sizeof(errbuf));
+					LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc
+							<< ": " << errbuf);
+					HybridConnectionImpl::disconnect(connection, pool);
+				} else if (strcmp(framed->command, (const char*) "ERROR") == 0) {
+					setSpecific(TPE_KEY, TSS_TPENOENT);
+					LOG4CXX_ERROR(logger, (char*) "Got an error: "
+							<< framed->body);
+					HybridConnectionImpl::disconnect(connection, pool);
+				} else if (strcmp(framed->command, (const char*) "RECEIPT")
+						== 0) {
+					LOG4CXX_DEBUG(logger, (char*) "Got a receipt: "
+							<< (char*) apr_hash_get(framed->headers,
+									"receipt-id", APR_HASH_KEY_STRING));
+					LOG4CXX_DEBUG(logger, "UNSUBSCRIBED: " << fullName);
+				} else {
+					setSpecific(TPE_KEY, TSS_TPESYSTEM);
+					LOG4CXX_ERROR(logger, "Didn't get a receipt : "
+							<< framed->command << ", " << framed->body);
+					HybridConnectionImpl::disconnect(connection, pool);
+				}
+			}
+
+		}
+
+		// This will only disconnect after the last message is consumed
+		requiresDisconnect = true;
+		disconnectImpl();
+	}
+	// Always set shutdown to true as we are shutting down
+	this->shutdown = true;
+	shutdownLock->unlock();
+	LOG4CXX_DEBUG(logger, (char*) "disconnected: " << name);
+}
+
+void HybridStompEndpointQueue::disconnectImpl() {
+	LOG4CXX_DEBUG(logger, (char*) "disconnecting: " << name);
+	//	shutdownLock->lock(); NOT REQUIRED AS WE SHOULD ALWAYS HAVE THE LOCK
+	if (requiresDisconnect && unackedMessages == 0) {
 		stomp_frame frame;
 		frame.command = (char*) "DISCONNECT";
 		frame.headers = NULL;
@@ -358,11 +414,22 @@ void HybridStompEndpointQueue::disconnect() {
 					<< errbuf);
 			//			free(errbuf);
 		}
-		requiresDisconnect = true;
+
+		LOG4CXX_DEBUG(logger, "Disconnecting...");
+		rc = stomp_disconnect(&connection);
+		if (rc != APR_SUCCESS) {
+			LOG4CXX_ERROR(logger, "Could not disconnect");
+			char errbuf[256];
+			apr_strerror(rc, errbuf, sizeof(errbuf));
+			LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc << ": "
+					<< errbuf);
+			//			free(errbuf);
+		} else {
+			LOG4CXX_DEBUG(logger, "Disconnected");
+		}
+		requiresDisconnect = false;
 	}
-	// Always set shutdown to true as we are shutting down
-	this->shutdown = true;
-	shutdownLock->unlock();
+	//	shutdownLock->unlock(); SEE NOTE ABOVE RE ALWAYS HAVING THE LOCK
 	LOG4CXX_DEBUG(logger, (char*) "disconnected: " << name);
 }
 
@@ -392,7 +459,6 @@ bool HybridStompEndpointQueue::connect() {
 				LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc << ": "
 						<< errbuf);
 				HybridConnectionImpl::disconnect(connection, pool);
-				requiresDisconnect = false;
 			} else {
 				stomp_frame *framed;
 				LOG4CXX_DEBUG(logger, "Reading response: " << fullName);
@@ -405,13 +471,11 @@ bool HybridStompEndpointQueue::connect() {
 					LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc
 							<< ": " << errbuf);
 					HybridConnectionImpl::disconnect(connection, pool);
-					requiresDisconnect = false;
 				} else if (strcmp(framed->command, (const char*) "ERROR") == 0) {
 					setSpecific(TPE_KEY, TSS_TPENOENT);
 					LOG4CXX_ERROR(logger, (char*) "Got an error: "
 							<< framed->body);
 					HybridConnectionImpl::disconnect(connection, pool);
-					requiresDisconnect = false;
 				} else if (strcmp(framed->command, (const char*) "RECEIPT")
 						== 0) {
 					LOG4CXX_DEBUG(logger, (char*) "Got a receipt: "
@@ -435,7 +499,6 @@ bool HybridStompEndpointQueue::connect() {
 							"Didn't get a receipt or message unexpected error: "
 									<< framed->command << ", " << framed->body);
 					HybridConnectionImpl::disconnect(connection, pool);
-					requiresDisconnect = false;
 				}
 			}
 		} else {
@@ -449,32 +512,31 @@ bool HybridStompEndpointQueue::connect() {
 }
 
 void HybridStompEndpointQueue::ack(MESSAGE message) {
-	if (!shutdown) {
-		char* messageId = message.messageId;
-		LOG4CXX_DEBUG(logger, "Sending ACK: " << messageId);
-		stomp_frame ackFrame;
-		ackFrame.command = (char*) "ACK";
-		ackFrame.headers = apr_hash_make(pool);
-		apr_hash_set(ackFrame.headers, "message-id", APR_HASH_KEY_STRING,
-				messageId);
-		ackFrame.body = NULL;
-		ackFrame.body_length = -1;
-		LOG4CXX_DEBUG(logger, "Acking: " << messageId);
-		int rc = stomp_write(connection, &ackFrame, pool);
-		if (rc != APR_SUCCESS) {
-			LOG4CXX_ERROR(logger, (char*) "Could not send frame");
-			char errbuf[256];
-			apr_strerror(rc, errbuf, sizeof(errbuf));
-			LOG4CXX_FATAL(logger, (char*) "APR Error was: " << rc << ": "
-					<< errbuf);
-			connection = NULL;
-		} else {
-			LOG4CXX_DEBUG(logger, "Acked: " << messageId);
-		}
+	shutdownLock->lock();
+
+	char* messageId = message.messageId;
+	LOG4CXX_DEBUG(logger, "Sending ACK: " << messageId);
+	stomp_frame ackFrame;
+	ackFrame.command = (char*) "ACK";
+	ackFrame.headers = apr_hash_make(pool);
+	apr_hash_set(ackFrame.headers, "message-id", APR_HASH_KEY_STRING, messageId);
+	ackFrame.body = NULL;
+	ackFrame.body_length = -1;
+	LOG4CXX_DEBUG(logger, "Acking: " << messageId);
+	int rc = stomp_write(connection, &ackFrame, pool);
+	if (rc != APR_SUCCESS) {
+		LOG4CXX_ERROR(logger, (char*) "Could not send frame");
+		char errbuf[256];
+		apr_strerror(rc, errbuf, sizeof(errbuf));
+		LOG4CXX_FATAL(logger, (char*) "APR Error was: " << rc << ": " << errbuf);
+		connection = NULL;
 	} else {
-		LOG4CXX_WARN(logger,
-				"Receive message not acked as disconnect occured during receive");
+		LOG4CXX_DEBUG(logger, "Acked: " << messageId);
 	}
+	unackedMessages--;
+	// This will clean up the queue if we require the disconnect
+	disconnectImpl();
+	shutdownLock->unlock();
 }
 
 const char * HybridStompEndpointQueue::getName() {

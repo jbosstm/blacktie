@@ -143,8 +143,9 @@ int ServiceDispatcher::svc(void) {
 			try {
 				counter += 1;
 				ACE_Time_Value start = ACE_OS::gettimeofday();
+				LOG4CXX_DEBUG(logger, (char*) "calling onmessage");
 				onMessage(message);
-				destination->ack(message);
+				LOG4CXX_DEBUG(logger, (char*) "called onmessage");
 				ACE_Time_Value end = ACE_OS::gettimeofday();
 				ACE_Time_Value tv = end - start;
 				unsigned long responseTime = tv.msec();
@@ -178,6 +179,8 @@ int ServiceDispatcher::svc(void) {
 						logger,
 						(char*) "Service Dispatcher caught error running during onMessage");
 			}
+			// Always ack the message as this is what closes the socket
+			destination->ack(message);
 
 			if (message.data != NULL) {
 				free(message.data);

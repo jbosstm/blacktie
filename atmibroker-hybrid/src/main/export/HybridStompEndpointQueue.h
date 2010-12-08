@@ -55,6 +55,8 @@ public:
 
 	const char* getFullName();
 private:
+	void disconnectImpl();
+
 	static log4cxx::LoggerPtr logger;
 	stomp_connection* connection;
 	apr_pool_t* pool;
@@ -68,6 +70,7 @@ private:
 	bool transactional;
 	bool _connected;
 	bool requiresDisconnect;
+	int unackedMessages;
 };
 
 #endif
