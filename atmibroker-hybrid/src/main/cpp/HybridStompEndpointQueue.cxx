@@ -319,60 +319,6 @@ void HybridStompEndpointQueue::disconnect() {
 		this->_connected = false;
 		LOG4CXX_DEBUG(logger, (char*) "Shutdown set: " << name);
 
-		// This can be ommitted if we know we are calling disconnect
-		if (unackedMessages != 0) {
-			// Unsubscribe from the queue
-			stomp_frame frame;
-			frame.command = (char*) "UNSUBSCRIBE";
-			frame.headers = apr_hash_make(pool);
-			apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING,
-					fullName);
-			apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING,
-					fullName);
-			frame.body_length = -1;
-			frame.body = NULL;
-			LOG4CXX_DEBUG(logger, "Sending UNSUB: " << fullName);
-			apr_status_t rc = stomp_write(connection, &frame, pool);
-			if (rc != APR_SUCCESS) {
-				LOG4CXX_ERROR(logger, (char*) "Could not send frame");
-				char errbuf[256];
-				apr_strerror(rc, errbuf, sizeof(errbuf));
-				LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc << ": "
-						<< errbuf);
-				HybridConnectionImpl::disconnect(connection, pool);
-			} else {
-				stomp_frame *framed;
-				LOG4CXX_DEBUG(logger, "Reading response: " << fullName);
-				rc = stomp_read(connection, &framed, pool);
-				if (rc != APR_SUCCESS) {
-					setSpecific(TPE_KEY, TSS_TPESYSTEM);
-					LOG4CXX_ERROR(logger, "Could not read frame for " << name);
-					char errbuf[256];
-					apr_strerror(rc, errbuf, sizeof(errbuf));
-					LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc
-							<< ": " << errbuf);
-					HybridConnectionImpl::disconnect(connection, pool);
-				} else if (strcmp(framed->command, (const char*) "ERROR") == 0) {
-					setSpecific(TPE_KEY, TSS_TPENOENT);
-					LOG4CXX_ERROR(logger, (char*) "Got an error: "
-							<< framed->body);
-					HybridConnectionImpl::disconnect(connection, pool);
-				} else if (strcmp(framed->command, (const char*) "RECEIPT")
-						== 0) {
-					LOG4CXX_DEBUG(logger, (char*) "Got a receipt: "
-							<< (char*) apr_hash_get(framed->headers,
-									"receipt-id", APR_HASH_KEY_STRING));
-					LOG4CXX_DEBUG(logger, "UNSUBSCRIBED: " << fullName);
-				} else {
-					setSpecific(TPE_KEY, TSS_TPESYSTEM);
-					LOG4CXX_ERROR(logger, "Didn't get a receipt : "
-							<< framed->command << ", " << framed->body);
-					HybridConnectionImpl::disconnect(connection, pool);
-				}
-			}
-
-		}
-
 		// This will only disconnect after the last message is consumed
 		requiresDisconnect = true;
 		disconnectImpl();
@@ -404,6 +350,8 @@ void HybridStompEndpointQueue::disconnectImpl() {
 					<< errbuf);
 			//			free(errbuf);
 		}
+
+		// Disconnect existing receivers
 		rc = apr_socket_shutdown(connection->socket, APR_SHUTDOWN_WRITE);
 		LOG4CXX_TRACE(logger, (char*) "Sent SHUTDOWN");
 		if (rc != APR_SUCCESS) {
@@ -415,6 +363,7 @@ void HybridStompEndpointQueue::disconnectImpl() {
 			//			free(errbuf);
 		}
 
+		readLock->lock();
 		LOG4CXX_DEBUG(logger, "Disconnecting...");
 		rc = stomp_disconnect(&connection);
 		if (rc != APR_SUCCESS) {
@@ -427,6 +376,7 @@ void HybridStompEndpointQueue::disconnectImpl() {
 		} else {
 			LOG4CXX_DEBUG(logger, "Disconnected");
 		}
+		readLock->unlock();
 		requiresDisconnect = false;
 	}
 	//	shutdownLock->unlock(); SEE NOTE ABOVE RE ALWAYS HAVING THE LOCK
@@ -440,6 +390,7 @@ bool HybridStompEndpointQueue::connect() {
 		this->connection = HybridConnectionImpl::connect(pool,
 				mqConfig.destinationTimeout);
 		if (this->connection != NULL) {
+			readLock->lock();
 			stomp_frame frame;
 			frame.command = (char*) "SUBSCRIBE";
 			frame.headers = apr_hash_make(pool);
@@ -501,6 +452,7 @@ bool HybridStompEndpointQueue::connect() {
 					HybridConnectionImpl::disconnect(connection, pool);
 				}
 			}
+			readLock->unlock();
 		} else {
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 			LOG4CXX_DEBUG(logger, "Not connected");
@@ -512,10 +464,10 @@ bool HybridStompEndpointQueue::connect() {
 }
 
 void HybridStompEndpointQueue::ack(MESSAGE message) {
-	shutdownLock->lock();
-
 	char* messageId = message.messageId;
 	LOG4CXX_DEBUG(logger, "Sending ACK: " << messageId);
+	shutdownLock->lock();
+
 	stomp_frame ackFrame;
 	ackFrame.command = (char*) "ACK";
 	ackFrame.headers = apr_hash_make(pool);
