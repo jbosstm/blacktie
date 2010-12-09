@@ -128,7 +128,7 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 					} else if (rc != APR_SUCCESS) { // win32 70014 on disconnect
 						LOG4CXX_DEBUG(logger, "Could not read frame for "
 								<< name);
-//						shutdownLock->lock(); NOT CLEAR WHY WE NEED TO LOCK SHUTDOWN - IS IT REALLY TO CHECK THE SHUTDOWN FLAG FOR LOGGING??
+						//						shutdownLock->lock(); NOT CLEAR WHY WE NEED TO LOCK SHUTDOWN - IS IT REALLY TO CHECK THE SHUTDOWN FLAG FOR LOGGING??
 						char errbuf[256];
 						apr_strerror(rc, errbuf, sizeof(errbuf));
 						if (!shutdown) {
@@ -142,7 +142,7 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 						setSpecific(TPE_KEY, TSS_TPESYSTEM);
 						frame = NULL;
 						this->_connected = false;
-//						shutdownLock->unlock();
+						//						shutdownLock->unlock();
 					} else if (strcmp(frame->command, (const char*) "ERROR")
 							== 0) {
 						LOG4CXX_ERROR(logger, (char*) "Got an error: "
@@ -315,16 +315,17 @@ bool HybridStompEndpointQueue::connected() {
 void HybridStompEndpointQueue::disconnect() {
 	LOG4CXX_DEBUG(logger, (char*) "disconnecting: " << name);
 	shutdownLock->lock();
-	if (!this->shutdown && this->_connected) {
-		this->_connected = false;
+	if (!this->shutdown) {
+		// Always set shutdown to true as we are shutting down
+		this->shutdown = true;
 		LOG4CXX_DEBUG(logger, (char*) "Shutdown set: " << name);
-
-		// This will only disconnect after the last message is consumed
-		requiresDisconnect = true;
-		disconnectImpl();
+		if (this->_connected) {
+			this->_connected = false;
+			// This will only disconnect after the last message is consumed
+			requiresDisconnect = true;
+			disconnectImpl();
+		}
 	}
-	// Always set shutdown to true as we are shutting down
-	this->shutdown = true;
 	shutdownLock->unlock();
 	LOG4CXX_DEBUG(logger, (char*) "disconnected: " << name);
 }
