@@ -69,7 +69,6 @@ HybridStompEndpointQueue::~HybridStompEndpointQueue() {
 
 	// Read
 	readLock->lock();
-
 	LOG4CXX_TRACE(logger, (char*) "deleting lock");
 	delete readLock;
 	readLock = NULL;
@@ -79,14 +78,17 @@ HybridStompEndpointQueue::~HybridStompEndpointQueue() {
 	LOG4CXX_TRACE(logger, (char*) "deleting lock");
 	delete shutdownLock;
 	shutdownLock = NULL;
+
 	LOG4CXX_TRACE(logger, (char*) "freeing name" << name);
 	free( name);
 	free( fullName);
 	LOG4CXX_TRACE(logger, (char*) "freed name");
+
 	LOG4CXX_TRACE(logger, (char*) "destroyed");
 }
 
 MESSAGE HybridStompEndpointQueue::receive(long time) {
+	LOG4CXX_TRACE(logger, (char*) "receive from: " << name);
 	// TODO TIME NOT RESPECTED
 	MESSAGE message;
 	message.replyto = NULL;
@@ -108,201 +110,176 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 	setSpecific(TPE_KEY, TSS_TPERESET);
 
 	if (!shutdown) {
+		connect();
+		LOG4CXX_TRACE(logger, (char*) "readLock: " << name);
 		readLock->lock();
-		if (!shutdown) {
-			stomp_frame *frame = NULL;
-			connect();
+		LOG4CXX_TRACE(logger, (char*) "readLocked: " << name);
+		stomp_frame *frame = this->message;
+		if (frame == NULL) {
 			if (_connected) {
-				if (this->message) {
-					LOG4CXX_DEBUG(logger, "Handing off old message");
-					frame = this->message;
-					this->message = NULL;
-				} else {
-					LOG4CXX_TRACE(logger, (char*) "Receiving from: " << name);
-					apr_status_t rc = stomp_read(connection, &frame, pool);
-					if (rc == APR_TIMEUP || rc == 730060) {
-						LOG4CXX_TRACE(logger, "Could not read frame for "
-								<< name << ": as the time limit expired");
-						setSpecific(TPE_KEY, TSS_TPETIME);
-						frame = NULL;
-					} else if (rc != APR_SUCCESS) { // win32 70014 on disconnect
-						LOG4CXX_DEBUG(logger, "Could not read frame for "
-								<< name);
-						//						shutdownLock->lock(); NOT CLEAR WHY WE NEED TO LOCK SHUTDOWN - IS IT REALLY TO CHECK THE SHUTDOWN FLAG FOR LOGGING??
-						char errbuf[256];
-						apr_strerror(rc, errbuf, sizeof(errbuf));
-						if (!shutdown) {
-							LOG4CXX_WARN(logger, (char*) "APR Error was: "
-									<< rc << ": " << errbuf);
-						} else {
-							LOG4CXX_DEBUG(logger, (char*) "APR Error was: "
-									<< rc << ": " << errbuf);
-						}
-						//					free(errbuf);
+				LOG4CXX_TRACE(logger, (char*) "Receiving from: " << name);
+				apr_status_t rc = stomp_read(connection, &frame, pool);
+				if (rc == APR_TIMEUP || rc == 730060) {
+					LOG4CXX_TRACE(logger, "Could not read frame for " << name
+							<< ": as the time limit expired");
+					setSpecific(TPE_KEY, TSS_TPETIME);
+					frame = NULL;
+				} else if (rc != APR_SUCCESS) { // win32 70014 on disconnect
+					LOG4CXX_DEBUG(logger, "Could not read frame for " << name);
+					// shutdownLock NOT CLEAR WHY WE NEED TO LOCK SHUTDOWN - IS IT REALLY TO CHECK THE SHUTDOWN FLAG FOR LOGGING??
+					char errbuf[256];
+					apr_strerror(rc, errbuf, sizeof(errbuf));
+					if (!shutdown) {
+						LOG4CXX_WARN(logger, (char*) "APR Error was: " << rc
+								<< ": " << errbuf);
+					} else {
+						LOG4CXX_DEBUG(logger, (char*) "APR Error was: " << rc
+								<< ": " << errbuf);
+					}
+					//					free(errbuf);
+					setSpecific(TPE_KEY, TSS_TPESYSTEM);
+					frame = NULL;
+					this->_connected = false;
+				} else if (strcmp(frame->command, (const char*) "ERROR") == 0) {
+					LOG4CXX_ERROR(logger, (char*) "Got an error: "
+							<< frame->body);
+					setSpecific(TPE_KEY, TSS_TPENOENT);
+					frame = NULL;
+				} else if (strcmp(frame->command, (const char*) "RECEIPT") == 0) {
+					char * receipt = (char*) apr_hash_get(frame->headers,
+							"receipt-id", APR_HASH_KEY_STRING);
+					if (this->receipt == NULL || strcmp(this->receipt, receipt)
+							!= 0) {
+						LOG4CXX_ERROR(logger,
+								(char*) "read an unexpected receipt for: "
+										<< name << ": " << receipt);
 						setSpecific(TPE_KEY, TSS_TPESYSTEM);
 						frame = NULL;
 						this->_connected = false;
-						//						shutdownLock->unlock();
-					} else if (strcmp(frame->command, (const char*) "ERROR")
-							== 0) {
-						LOG4CXX_ERROR(logger, (char*) "Got an error: "
-								<< frame->body);
-						setSpecific(TPE_KEY, TSS_TPENOENT);
-						frame = NULL;
-					} else if (strcmp(frame->command, (const char*) "RECEIPT")
-							== 0) {
-						char * receipt = (char*) apr_hash_get(frame->headers,
-								"receipt-id", APR_HASH_KEY_STRING);
-						if (this->receipt == NULL || strcmp(this->receipt,
-								receipt) != 0) {
+					} else {
+						LOG4CXX_DEBUG(logger, "Handling old receipt: "
+								<< receipt);
+						this->receipt = NULL;
+						rc = stomp_read(connection, &frame, pool);
+						if (rc == APR_TIMEUP || rc == 730060) {
+							LOG4CXX_TRACE(logger, "Could not read frame for "
+									<< name << ": as the time limit expired");
+							setSpecific(TPE_KEY, TSS_TPETIME);
+							frame = NULL;
+						} else if (rc != APR_SUCCESS) {
+							LOG4CXX_ERROR(logger, "Could not read frame for "
+									<< name);
+							char errbuf[256];
+							apr_strerror(rc, errbuf, sizeof(errbuf));
+							LOG4CXX_DEBUG(logger, (char*) "APR Error was: "
+									<< rc << ": " << errbuf);
+							//							free(errbuf);
+							setSpecific(TPE_KEY, TSS_TPESYSTEM);
+							frame = NULL;
+							this->_connected = false;
+						} else if (strcmp(frame->command, (const char*) "ERROR")
+								== 0) {
+							LOG4CXX_ERROR(logger, (char*) "Got an error: "
+									<< frame->body);
+							setSpecific(TPE_KEY, TSS_TPENOENT);
+							frame = NULL;
+						} else if (strcmp(frame->command,
+								(const char*) "RECEIPT") == 0) {
+							char * receipt = (char*) apr_hash_get(
+									frame->headers, "receipt-id",
+									APR_HASH_KEY_STRING);
 							LOG4CXX_ERROR(logger,
-									(char*) "read an unexpected receipt for: "
-											<< name << ": " << receipt);
+									(char*) "read a RECEIPT for: " << name
+											<< ": " << receipt);
 							setSpecific(TPE_KEY, TSS_TPESYSTEM);
 							frame = NULL;
 							this->_connected = false;
 						} else {
-							LOG4CXX_DEBUG(logger, "Handling old receipt: "
-									<< receipt);
-							this->receipt = NULL;
-							rc = stomp_read(connection, &frame, pool);
-							if (rc == APR_TIMEUP || rc == 730060) {
-								LOG4CXX_TRACE(
-										logger,
-										"Could not read frame for " << name
-												<< ": as the time limit expired");
-								setSpecific(TPE_KEY, TSS_TPETIME);
-								frame = NULL;
-							} else if (rc != APR_SUCCESS) {
-								LOG4CXX_ERROR(logger,
-										"Could not read frame for " << name);
-								char errbuf[256];
-								apr_strerror(rc, errbuf, sizeof(errbuf));
-								LOG4CXX_DEBUG(logger, (char*) "APR Error was: "
-										<< rc << ": " << errbuf);
-								//							free(errbuf);
-								setSpecific(TPE_KEY, TSS_TPESYSTEM);
-								frame = NULL;
-								this->_connected = false;
-							} else if (strcmp(frame->command,
-									(const char*) "ERROR") == 0) {
-								LOG4CXX_ERROR(logger, (char*) "Got an error: "
-										<< frame->body);
-								setSpecific(TPE_KEY, TSS_TPENOENT);
-								frame = NULL;
-							} else if (strcmp(frame->command,
-									(const char*) "RECEIPT") == 0) {
-								char * receipt = (char*) apr_hash_get(
-										frame->headers, "receipt-id",
-										APR_HASH_KEY_STRING);
-								LOG4CXX_ERROR(logger,
-										(char*) "read a RECEIPT for: " << name
-												<< ": " << receipt);
-								setSpecific(TPE_KEY, TSS_TPESYSTEM);
-								frame = NULL;
-								this->_connected = false;
-							} else {
-								LOG4CXX_DEBUG(logger,
-										"Message received 2nd attempt");
-							}
+							LOG4CXX_DEBUG(logger,
+									"Message received 2nd attempt");
 						}
-					} else {
-						LOG4CXX_DEBUG(logger, "Message received 1st attempt");
 					}
-				}
-				if (frame != NULL) {
-					shutdownLock->lock();
-					// WONT BE ABLE TO SEND AN ACK SO IGNORE MESSAGE
-					if (!shutdown) {
-						LOG4CXX_DEBUG(logger, "Received from: " << name
-								<< " Command: " << frame->command);
-						message.messageId = (char*) apr_hash_get(
-								frame->headers, "message-id",
-								APR_HASH_KEY_STRING);
-						message.control = (char*) apr_hash_get(frame->headers,
-								"messagecontrol", APR_HASH_KEY_STRING);
-						LOG4CXX_TRACE(logger, "Extracted control: "
-								<< message.control);
-
-						LOG4CXX_TRACE(logger, "Ready to handle message");
-						char * correlationId = (char*) apr_hash_get(
-								frame->headers, "messagecorrelationId",
-								APR_HASH_KEY_STRING);
-						LOG4CXX_TRACE(logger, "Read a correlation ID"
-								<< correlationId);
-						LOG4CXX_TRACE(logger, "Extracted correlationID");
-						char * flags = (char*) apr_hash_get(frame->headers,
-								"messageflags", APR_HASH_KEY_STRING);
-						LOG4CXX_TRACE(logger, "Extracted flags");
-						char * rval = (char*) apr_hash_get(frame->headers,
-								"messagerval", APR_HASH_KEY_STRING);
-						LOG4CXX_TRACE(logger, "Extracted rval");
-						char * rcode = (char*) apr_hash_get(frame->headers,
-								"messagercode", APR_HASH_KEY_STRING);
-						LOG4CXX_TRACE(logger, "Extracted rcode");
-
-						char * type = (char*) apr_hash_get(frame->headers,
-								"messagetype", APR_HASH_KEY_STRING);
-						LOG4CXX_TRACE(logger, "Extracted messagetype");
-						message.type = type;
-
-						char * subtype = (char*) apr_hash_get(frame->headers,
-								"messagesubtype", APR_HASH_KEY_STRING);
-						LOG4CXX_TRACE(logger, "Extracted messagesubtype");
-						message.subtype = subtype;
-
-						char * serviceName = (char*) apr_hash_get(
-								frame->headers, "servicename",
-								APR_HASH_KEY_STRING);
-						LOG4CXX_TRACE(logger, "Extracted servicename");
-
-						message.len = frame->body_length;
-						message.data
-								= BufferConverterImpl::convertToMemoryFormat(
-										message.type, message.subtype,
-										frame->body, &message.len);
-						LOG4CXX_TRACE(logger, "Set body and length: "
-								<< message.len);
-
-						message.replyto = (const char*) apr_hash_get(
-								frame->headers, "messagereplyto",
-								APR_HASH_KEY_STRING);
-						LOG4CXX_TRACE(logger, "Set replyto: "
-								<< message.replyto);
-						message.correlationId = apr_atoi64(correlationId);
-						LOG4CXX_TRACE(logger, "Set correlationId: "
-								<< message.correlationId);
-						message.flags = apr_atoi64(flags);
-						LOG4CXX_TRACE(logger, "Set flags: " << message.flags);
-						message.rval = apr_atoi64(rval);
-						LOG4CXX_TRACE(logger, "Set rval: " << message.rval);
-						message.rcode = apr_atoi64(rcode);
-						LOG4CXX_TRACE(logger, "Set rcode: " << message.rcode);
-						LOG4CXX_TRACE(logger, "Set control: "
-								<< message.control);
-						message.serviceName = serviceName;
-						LOG4CXX_TRACE(logger, "set serviceName");
-						message.received = true;
-						unackedMessages++;
-					} else {
-						LOG4CXX_WARN(logger,
-								"Receive message not returned as shutdown");
-					}
-					shutdownLock->unlock();
-
-				}
-			} else {
-				if (!shutdown) {
-					LOG4CXX_ERROR(logger,
-							"receive failed - not able to connect");
 				} else {
-					LOG4CXX_DEBUG(logger, "receive failed - in shutdown");
+					LOG4CXX_DEBUG(logger, "Message received 1st attempt");
 				}
+
+			} else if (!shutdown) {
+				LOG4CXX_ERROR(logger, "receive failed - not able to connect");
+			} else {
+				LOG4CXX_DEBUG(logger, "receive failed - in shutdown");
 			}
 		} else {
-			LOG4CXX_DEBUG(logger, "receive failed - in shutdown");
+			LOG4CXX_DEBUG(logger, "Handing off old message");
+			this->message = NULL;
 		}
+		LOG4CXX_TRACE(logger, (char*) "readUnlock: " << name);
 		readLock->unlock();
+		LOG4CXX_TRACE(logger, (char*) "readUnlocked: " << name);
+		if (frame != NULL) {
+			LOG4CXX_DEBUG(logger, "Received from: " << name << " Command: "
+					<< frame->command);
+			message.messageId = (char*) apr_hash_get(frame->headers,
+					"message-id", APR_HASH_KEY_STRING);
+			message.control = (char*) apr_hash_get(frame->headers,
+					"messagecontrol", APR_HASH_KEY_STRING);
+			LOG4CXX_TRACE(logger, "Extracted control: " << message.control);
+
+			LOG4CXX_TRACE(logger, "Ready to handle message");
+			char * correlationId = (char*) apr_hash_get(frame->headers,
+					"messagecorrelationId", APR_HASH_KEY_STRING);
+			LOG4CXX_TRACE(logger, "Read a correlation ID" << correlationId);
+			LOG4CXX_TRACE(logger, "Extracted correlationID");
+			char * flags = (char*) apr_hash_get(frame->headers, "messageflags",
+					APR_HASH_KEY_STRING);
+			LOG4CXX_TRACE(logger, "Extracted flags");
+			char * rval = (char*) apr_hash_get(frame->headers, "messagerval",
+					APR_HASH_KEY_STRING);
+			LOG4CXX_TRACE(logger, "Extracted rval");
+			char * rcode = (char*) apr_hash_get(frame->headers, "messagercode",
+					APR_HASH_KEY_STRING);
+			LOG4CXX_TRACE(logger, "Extracted rcode");
+
+			char * type = (char*) apr_hash_get(frame->headers, "messagetype",
+					APR_HASH_KEY_STRING);
+			LOG4CXX_TRACE(logger, "Extracted messagetype");
+			message.type = type;
+
+			char * subtype = (char*) apr_hash_get(frame->headers,
+					"messagesubtype", APR_HASH_KEY_STRING);
+			LOG4CXX_TRACE(logger, "Extracted messagesubtype");
+			message.subtype = subtype;
+
+			char * serviceName = (char*) apr_hash_get(frame->headers,
+					"servicename", APR_HASH_KEY_STRING);
+			LOG4CXX_TRACE(logger, "Extracted servicename");
+
+			message.len = frame->body_length;
+			message.data = BufferConverterImpl::convertToMemoryFormat(
+					message.type, message.subtype, frame->body, &message.len);
+			LOG4CXX_TRACE(logger, "Set body and length: " << message.len);
+
+			message.replyto = (const char*) apr_hash_get(frame->headers,
+					"messagereplyto", APR_HASH_KEY_STRING);
+			LOG4CXX_TRACE(logger, "Set replyto: " << message.replyto);
+			message.correlationId = apr_atoi64(correlationId);
+			LOG4CXX_TRACE(logger, "Set correlationId: "
+					<< message.correlationId);
+			message.flags = apr_atoi64(flags);
+			LOG4CXX_TRACE(logger, "Set flags: " << message.flags);
+			message.rval = apr_atoi64(rval);
+			LOG4CXX_TRACE(logger, "Set rval: " << message.rval);
+			message.rcode = apr_atoi64(rcode);
+			LOG4CXX_TRACE(logger, "Set rcode: " << message.rcode);
+			LOG4CXX_TRACE(logger, "Set control: " << message.control);
+			message.serviceName = serviceName;
+			LOG4CXX_TRACE(logger, "set serviceName");
+			message.received = true;
+			unackedMessages++;
+		} else if (!shutdown) {
+			LOG4CXX_WARN(logger, "No message was read");
+		}
+	} else {
+		LOG4CXX_DEBUG(logger, "receive failed - in shutdown");
 	}
 	return message;
 }
@@ -314,7 +291,9 @@ bool HybridStompEndpointQueue::connected() {
 
 void HybridStompEndpointQueue::disconnect() {
 	LOG4CXX_DEBUG(logger, (char*) "disconnecting: " << name);
+	LOG4CXX_TRACE(logger, (char*) "shutdownLock: " << name);
 	shutdownLock->lock();
+	LOG4CXX_TRACE(logger, (char*) "shutdownLocked: " << name);
 	if (!this->shutdown) {
 		// Always set shutdown to true as we are shutting down
 		this->shutdown = true;
@@ -326,13 +305,15 @@ void HybridStompEndpointQueue::disconnect() {
 			disconnectImpl();
 		}
 	}
+	LOG4CXX_TRACE(logger, (char*) "shutdownUnlock: " << name);
 	shutdownLock->unlock();
+	LOG4CXX_TRACE(logger, (char*) "shutdownUnlocked: " << name);
 	LOG4CXX_DEBUG(logger, (char*) "disconnected: " << name);
 }
 
 void HybridStompEndpointQueue::disconnectImpl() {
 	LOG4CXX_DEBUG(logger, (char*) "disconnecting: " << name);
-	//	shutdownLock->lock(); NOT REQUIRED AS WE SHOULD ALWAYS HAVE THE LOCK
+	//	shutdownLock NOT REQUIRED AS WE SHOULD ALWAYS HAVE THE LOCK
 	if (requiresDisconnect && unackedMessages == 0) {
 		stomp_frame frame;
 		frame.command = (char*) "DISCONNECT";
@@ -364,7 +345,9 @@ void HybridStompEndpointQueue::disconnectImpl() {
 			//			free(errbuf);
 		}
 
+		LOG4CXX_TRACE(logger, (char*) "readLock: " << name);
 		readLock->lock();
+		LOG4CXX_TRACE(logger, (char*) "readLocked: " << name);
 		LOG4CXX_DEBUG(logger, "Disconnecting...");
 		rc = stomp_disconnect(&connection);
 		if (rc != APR_SUCCESS) {
@@ -377,21 +360,26 @@ void HybridStompEndpointQueue::disconnectImpl() {
 		} else {
 			LOG4CXX_DEBUG(logger, "Disconnected");
 		}
+		LOG4CXX_TRACE(logger, (char*) "readUnlock: " << name);
 		readLock->unlock();
+		LOG4CXX_TRACE(logger, (char*) "readUnlocked: " << name);
 		requiresDisconnect = false;
 	}
-	//	shutdownLock->unlock(); SEE NOTE ABOVE RE ALWAYS HAVING THE LOCK
 	LOG4CXX_DEBUG(logger, (char*) "disconnected: " << name);
 }
 
 bool HybridStompEndpointQueue::connect() {
+	LOG4CXX_TRACE(logger, (char*) "shutdownLock: " << name);
 	shutdownLock->lock();
+	LOG4CXX_TRACE(logger, (char*) "shutdownLocked: " << name);
 	if (!shutdown && !_connected) {
 		LOG4CXX_DEBUG(logger, (char*) "connecting: " << fullName);
 		this->connection = HybridConnectionImpl::connect(pool,
 				mqConfig.destinationTimeout);
 		if (this->connection != NULL) {
+			LOG4CXX_TRACE(logger, (char*) "readLock: " << name);
 			readLock->lock();
+			LOG4CXX_TRACE(logger, (char*) "readLocked: " << name);
 			stomp_frame frame;
 			frame.command = (char*) "SUBSCRIBE";
 			frame.headers = apr_hash_make(pool);
@@ -453,13 +441,17 @@ bool HybridStompEndpointQueue::connect() {
 					HybridConnectionImpl::disconnect(connection, pool);
 				}
 			}
+			LOG4CXX_TRACE(logger, (char*) "readUnlock: " << name);
 			readLock->unlock();
+			LOG4CXX_TRACE(logger, (char*) "readUnlocked: " << name);
 		} else {
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 			LOG4CXX_DEBUG(logger, "Not connected");
 		}
 	}
+	LOG4CXX_TRACE(logger, (char*) "shutdownUnlock: " << name);
 	shutdownLock->unlock();
+	LOG4CXX_TRACE(logger, (char*) "shutdownUnlocked: " << name);
 
 	return _connected;
 }
@@ -467,7 +459,9 @@ bool HybridStompEndpointQueue::connect() {
 void HybridStompEndpointQueue::ack(MESSAGE message) {
 	char* messageId = message.messageId;
 	LOG4CXX_DEBUG(logger, "Sending ACK: " << messageId);
+	LOG4CXX_TRACE(logger, (char*) "shutdownLock: " << name);
 	shutdownLock->lock();
+	LOG4CXX_TRACE(logger, (char*) "shutdownLocked: " << name);
 
 	stomp_frame ackFrame;
 	ackFrame.command = (char*) "ACK";
@@ -489,7 +483,9 @@ void HybridStompEndpointQueue::ack(MESSAGE message) {
 	unackedMessages--;
 	// This will clean up the queue if we require the disconnect
 	disconnectImpl();
+	LOG4CXX_TRACE(logger, (char*) "shutdownUnlock: " << name);
 	shutdownLock->unlock();
+	LOG4CXX_TRACE(logger, (char*) "shutdownUnlocked: " << name);
 }
 
 const char * HybridStompEndpointQueue::getName() {
@@ -501,9 +497,5 @@ const char * HybridStompEndpointQueue::getFullName() {
 }
 
 bool HybridStompEndpointQueue::isShutdown() {
-	bool toReturn = false;
-	shutdownLock->lock();
-	toReturn = this->shutdown;
-	shutdownLock->unlock();
-	return toReturn;
+	return this->shutdown;
 }

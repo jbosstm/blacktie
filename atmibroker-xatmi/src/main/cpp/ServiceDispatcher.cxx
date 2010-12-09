@@ -111,7 +111,7 @@ int ServiceDispatcher::svc(void) {
 		message.serviceName = NULL;
 		message.messageId = NULL;
 
-		// Make sure we connect anyway to the subscriber is registered (although not when we are stopped)
+		// Make sure we connect anyway to the subscriber is registered (although not when we are stopped) in the case where the server is paused
 		stopLock->lock();
 		if (!stop) {
 			destination->connect();
@@ -211,7 +211,7 @@ int ServiceDispatcher::svc(void) {
 						LOG4CXX_INFO(logger,
 								(char*) "Service dispatcher recreated: "
 										<< serviceName);
-						destination->connect();
+						destination->connect(); // Attempt to reconnect
 					}
 					stopLock->unlock();
 				}
