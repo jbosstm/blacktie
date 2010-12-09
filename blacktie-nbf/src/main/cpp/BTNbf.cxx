@@ -69,7 +69,7 @@ void insert_string(char** buf, const char* s, int pos) {
 	char* p = *buf;
 	int n = strlen(p);
 
-	if(pos >= 0 && pos <= n) {
+	if(s != NULL && pos >= 0 && pos <= n) {
 		char* q = p + pos;
 		char* tmp = (char*) malloc (sizeof(char) * (n - pos + 1));
 		memset(tmp, '\0', n-pos+1);
@@ -121,6 +121,14 @@ int btaddattribute(char** buf, char* attributeId, char* attributeValue, int len)
 				value = (char*) malloc (sizeof(char) * 64);
 				memset(value, 0 , 64);
 				sprintf(value, "%ld", *((long*)attributeValue));
+			} else if(strstr(type, "_type") != NULL) {
+				int pos = find_string(attributeValue, ".xsd\">", 0);
+				if(pos > 0) {
+					int size = strlen(attributeValue);
+					value = (char*) malloc (sizeof(char) * size);
+					memset(value, 0 , size);
+					strncpy(value, attributeValue + pos + 6, size - pos - strlen(attributeId) - 9);
+				}
 			}
 
 			insert_string(buf, value, startPos);
@@ -160,6 +168,8 @@ int btgetattribute(char* buf, char* attributeId, int attributeIndex, char* attri
 			} else if(strcmp(type, "long") == 0) {
 				*((long*)attributeValue) = atol(value);
 				*len = sizeof(long);
+			} else if(strstr(type, "_type") != NULL) {
+				printf("%s\n", value);
 			} else {
 				LOG4CXX_WARN(logger, "can not support type of " << type);
 				rc = -1;

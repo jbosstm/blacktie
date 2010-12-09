@@ -15,9 +15,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "TestNBFParser.h"
-//CPPUNIT_TEST_SUITE_REGISTRATION( TestNBFParser );
-#include "TestBTNbf.h"
-//CPPUNIT_TEST_SUITE_REGISTRATION( TestBTNbf );
-#include "TestComplex.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestComplex );
+#ifndef _TEST_COMPLEX_H
+#define _TEST_COMPLEX_H_
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFixture.h>
+
+class TestComplex: public CppUnit::TestFixture {
+	CPPUNIT_TEST_SUITE( TestComplex );
+	CPPUNIT_TEST( test_attribute );
+	CPPUNIT_TEST_SUITE_END();
+public:
+	void test_attribute();
+
+	virtual void setUp();
+	virtual void tearDown();
+};
+
+#endif

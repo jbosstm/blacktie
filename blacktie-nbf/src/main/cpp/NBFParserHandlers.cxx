@@ -134,7 +134,8 @@ void NBFParserHandlers::handleElementPSVI(const XMLCh* const localName,
 			if (strcmp(typeStr, "string") == 0 ||
 					strcmp(typeStr, "long") == 0 ||
 					strcmp(typeStr, "integer") == 0 ||
-					strcmp(typeStr, "float") == 0) {
+					strcmp(typeStr, "float") == 0 ||
+					strstr(typeStr, "type") != NULL) {
 				if(attrType == NULL) {
 					attrType = strdup(typeStr);
 					LOG4CXX_INFO(logger, attrName << " has type of " << attrType);
