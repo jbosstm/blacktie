@@ -2,6 +2,8 @@ package org.jboss.blacktie.jatmibroker.xatmi;
 
 import java.util.Properties;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerEnvXML;
 import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
 
@@ -12,6 +14,8 @@ import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
  * @see ConnectionException
  */
 public class ConnectionFactory {
+	private static final Logger log = LogManager
+			.getLogger(ConnectionFactory.class);
 
 	/**
 	 * The properties inside the connection factory.
@@ -42,8 +46,10 @@ public class ConnectionFactory {
 	 *             In case the configuration could not be loaded
 	 */
 	private ConnectionFactory() throws ConfigurationException {
+		log.debug("Creating connection factory: " + this);
 		AtmiBrokerEnvXML xml = new AtmiBrokerEnvXML();
 		properties.putAll(xml.getProperties());
+		log.debug("Created connection factory: " + this);
 	}
 
 	/**
@@ -57,6 +63,7 @@ public class ConnectionFactory {
 		if (connection == null) {
 			connection = new Connection(this, properties);
 			connections.set(connection);
+			log.debug("Returning connection: " + connection);
 		}
 		return connection;
 	}

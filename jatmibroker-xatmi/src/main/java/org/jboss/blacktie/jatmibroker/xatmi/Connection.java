@@ -150,6 +150,7 @@ public class Connection {
 	 */
 	Connection(ConnectionFactory connectionFactory, Properties properties)
 			throws ConfigurationException {
+		log.debug("Creating connection: " + this);
 		this.connectionFactory = connectionFactory;
 		this.properties = properties;
 		responseMonitor = new ResponseMonitorImpl();
@@ -463,7 +464,7 @@ public class Connection {
 	 *             If an open session cannot be cancelled or disconnected.
 	 */
 	public void close() throws ConnectionException {
-		log.debug("Close connection called");
+		log.debug("Close connection called: " + this);
 
 		// MUST close the session first to remove the temporary queue
 		Session[] sessions = new Session[this.sessions.size()];

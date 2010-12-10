@@ -131,9 +131,9 @@ public class StompReceiverImpl implements Receiver {
 					"Sender already closed");
 		}
 		try {
-			log.debug("closing consumer");
+			log.debug("closing socket: " + socket);
 			socket.close();
-			log.debug("consumer closed");
+			log.debug("closed socket: " + socket);
 			closed = true;
 		} catch (Throwable t) {
 			log.debug("consumer could not be closed");

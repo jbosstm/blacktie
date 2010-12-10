@@ -41,8 +41,7 @@ public class TransportFactory {
 
 	public TransportFactory(Properties properties)
 			throws ConfigurationException {
-		log.debug("Loading transportfactory");
-		log.debug("Creating OrbManagement");
+		log.debug("Creating Transportfactory: " + this);
 		this.properties = properties;
 
 		try {
@@ -60,7 +59,6 @@ public class TransportFactory {
 		}
 
 		log.debug("Created OrbManagement");
-		log.debug("TransportFactory was prepared");
 	}
 
 	public synchronized Transport createTransport() {
@@ -68,7 +66,7 @@ public class TransportFactory {
 		TransportImpl instance = new TransportImpl(orbManagement,
 				momManagement, properties, this);
 		transports.add(instance);
-		log.debug("Creating transport from factory: " + this + " transport: "
+		log.debug("Created transport from factory: " + this + " transport: "
 				+ instance);
 		return instance;
 	}
@@ -83,7 +81,7 @@ public class TransportFactory {
 	 * Make sure that the
 	 */
 	public synchronized final void close() {
-		log.debug("Closing factory: " + getClass().getName());
+		log.debug("Close called: " + this);
 		if (!closed) {
 			log.debug("Going into shutdown");
 			log.debug("Closing factory: " + this);

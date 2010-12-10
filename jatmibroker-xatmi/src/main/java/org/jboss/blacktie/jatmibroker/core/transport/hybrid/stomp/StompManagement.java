@@ -30,14 +30,14 @@ public class StompManagement {
 	private int port;
 
 	public StompManagement(Properties properties) throws NumberFormatException {
-		log.debug("Creating JMSManagement");
+		log.debug("Creating JMSManagement: " + this);
 
 		username = (String) properties.get("StompConnectUsr");
 		password = (String) properties.get("StompConnectPwd");
 		host = (String) properties.get("StompConnectHost");
 		port = Integer.parseInt((String) properties.get("StompConnectPort"));
 
-		log.debug("Created JMSManagement");
+		log.debug("Created JMSManagement: " + this);
 	}
 
 	public void close() {
@@ -62,11 +62,14 @@ public class StompManagement {
 					received.getBody()));
 		}
 
+		log.debug("Created socket: " + this + " input: " + inputStream
+				+ "output: " + outputStream);
 		return socket;
 	}
 
 	public void send(Message message, OutputStream outputStream)
 			throws IOException {
+		log.trace("Writing on: " + outputStream);
 		StringBuffer toSend = new StringBuffer(message.getCommand().toString());
 		toSend.append("\n");
 
@@ -87,9 +90,11 @@ public class StompManagement {
 		}
 
 		outputStream.write("\000\n\n".getBytes());
+		log.trace("Wrote on: " + outputStream);
 	}
 
 	public Message receive(InputStream inputStream) throws IOException {
+		log.trace("Reading from: " + inputStream);
 		Message message = new Message();
 		message.setCommand(readLine(inputStream));
 		log.trace(message.getCommand());
@@ -127,6 +132,7 @@ public class StompManagement {
 			} while (read != null);
 			readLine(inputStream);
 		}
+		log.trace("Read from: " + inputStream);
 		return message;
 	}
 

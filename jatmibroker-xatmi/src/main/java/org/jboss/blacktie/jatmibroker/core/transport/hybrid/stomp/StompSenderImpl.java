@@ -139,16 +139,17 @@ public class StompSenderImpl implements Sender {
 	}
 
 	public void close() throws ConnectionException {
+		log.debug("Sender closing: " + destinationName);
 		if (closed) {
 			throw new ConnectionException(Connection.TPEPROTO,
 					"Sender already closed");
 		}
+		closed = true;
 		try {
-			log.debug("Sender closing: " + destinationName);
-			closed = true;
+			log.debug("closing socket: " + socket);
 			socket.close();
+			log.debug("closed socket: " + socket);
 			conversationalMap.remove(serviceName);
-			log.debug("Sender closed: " + destinationName);
 		} catch (Throwable t) {
 			throw new ConnectionException(Connection.TPESYSTEM,
 					"Could not send the message", t);
