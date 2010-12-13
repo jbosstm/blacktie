@@ -252,3 +252,21 @@ int btdelattribute(char* buf, char* attributeId, int attributeIndex) {
 
 	return rc;	
 }
+
+int btgetoccurs(char* buf, char* attributeId) {
+	LOG4CXX_TRACE(logger, (char*) "btgetoccurs");
+	int rc = -1;
+	bool result;
+	NBFParser nbf;
+	NBFParserHandlers handler(attributeId, -1);
+
+	result = nbf.parse(buf, "btnbf", &handler);
+	if(result) {
+		LOG4CXX_DEBUG(logger, (char*) "find attr " << attributeId);
+		rc = handler.getOccurs();
+	} else {
+		LOG4CXX_WARN(logger, (char*) "can not find attr " << attributeId);
+	}
+
+	return rc;
+}

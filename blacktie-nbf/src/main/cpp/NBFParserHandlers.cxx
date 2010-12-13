@@ -62,6 +62,10 @@ char* NBFParserHandlers::getType() {
 	return attrType;
 }
 
+int NBFParserHandlers::getOccurs() {
+	return curIndex+1;
+}
+
 void NBFParserHandlers::startElement(const XMLCh* const name, AttributeList& attributes) {
 	StrX str(name);
 	const char* qname = str.localForm();

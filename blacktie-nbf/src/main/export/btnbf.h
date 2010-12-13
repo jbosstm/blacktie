@@ -66,6 +66,14 @@ extern BLACKTIE_NBF_DLL int btsetattribute(char** buf, char* attributeId, int at
  */
 extern BLACKTIE_NBF_DLL int btdelattribute(char* buf, char* attributeId, int attributeIndex);
 
+/**
+ * This method is used to get the max element count
+ * @buf The buffer to get
+ * @attributeId The attribute to get
+ * @returns max counts on success, -1 on failure
+ */
+extern BLACKTIE_NBF_DLL int btgetoccurs(char* buf, char* attributeId);
+
 #ifdef __cplusplus
 }
 #endif

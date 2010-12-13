@@ -226,3 +226,18 @@ void TestBTNbf::test_delattribute() {
 
 	tpfree(buf);
 }
+
+void TestBTNbf::test_getoccurs() {
+	userlogc((char*) "test_getoccurs");
+	char* buf = tpalloc((char*)"BT_NBF", (char*)"employee", 0);
+	int rc;
+
+	BT_ASSERT(buf != NULL);
+	rc = btaddattribute(&buf, (char*)"name", (char*)"zhfeng", 6);
+	BT_ASSERT(rc == 0);
+	rc = btaddattribute(&buf, (char*)"name", (char*)"test", 4);
+	BT_ASSERT(rc == 0);
+
+	rc = btgetoccurs(buf, (char*)"name");
+	BT_ASSERT(rc == 2);
+}

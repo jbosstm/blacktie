@@ -73,6 +73,7 @@ public:
 
 	char* getValue();
 	char* getType();
+	int   getOccurs();
 
 private:
 	static log4cxx::LoggerPtr logger;

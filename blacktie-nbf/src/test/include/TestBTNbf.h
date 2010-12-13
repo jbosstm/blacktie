@@ -26,12 +26,14 @@ class TestBTNbf: public CppUnit::TestFixture {
 	CPPUNIT_TEST( test_getattribute );
 	CPPUNIT_TEST( test_setattribute );
 	CPPUNIT_TEST( test_delattribute );
+	CPPUNIT_TEST( test_getoccurs );
 	CPPUNIT_TEST_SUITE_END();
 public:
 	void test_addattribute();
 	void test_getattribute();
 	void test_setattribute();
 	void test_delattribute();
+	void test_getoccurs();
 
 	virtual void setUp();
 	virtual void tearDown();
