@@ -44,6 +44,7 @@ public class ServiceDispatcher extends BlackTieService implements Runnable {
 	private volatile boolean closed;
 	private String serviceName;
 	private int index;
+	private Object closeLock = new Object();
 
 	ServiceDispatcher(String serviceName, Service callback, Receiver receiver,
 			int index) throws ConfigurationException {
@@ -82,29 +83,38 @@ public class ServiceDispatcher extends BlackTieService implements Runnable {
 				}
 			}
 
-			if (message != null) {
-				try {
+			synchronized (closeLock) {
+				if (message != null) {
+					if (closed) {
+						log.warn("Message will be ignored as closing");
+					} else {
+						try {
 
-					this.processMessage(serviceName, message);
-					log.trace("Processed");
-				} catch (Throwable t) {
-					log.error("Can't process the message", t);
-				}
+							this.processMessage(serviceName, message);
+							log.trace("Processed");
+						} catch (Throwable t) {
+							log.error("Can't process the message", t);
+						}
 
-				try {
-					// Assumes the message was received from stomp - fair
-					// assumption outside of an MDB
-					message.ack();
-				} catch (IOException t) {
-					log.error("Can't ack the message", t);
+						try {
+							// Assumes the message was received from stomp -
+							// fair
+							// assumption outside of an MDB
+							message.ack();
+						} catch (IOException t) {
+							log.error("Can't ack the message", t);
+						}
+					}
 				}
 			}
 		}
 	}
 
 	public void startClose() {
-		closed = true;
-		log.trace("Closed set");
+		synchronized (closeLock) {
+			closed = true;
+			log.trace("Closed set");
+		}
 	}
 
 	public void close() throws ConnectionException {
