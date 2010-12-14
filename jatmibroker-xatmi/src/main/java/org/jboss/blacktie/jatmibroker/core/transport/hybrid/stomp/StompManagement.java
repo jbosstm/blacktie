@@ -62,7 +62,7 @@ public class StompManagement {
 					received.getBody()));
 		}
 
-		log.debug("Created socket: " + this + " input: " + inputStream
+		log.debug("Created socket: " + socket + " input: " + inputStream
 				+ "output: " + outputStream);
 		return socket;
 	}
