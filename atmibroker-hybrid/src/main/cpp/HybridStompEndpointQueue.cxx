@@ -219,7 +219,9 @@ MESSAGE HybridStompEndpointQueue::receive(long time) {
 		shutdownLock->lock();
 		LOG4CXX_TRACE(logger, (char*) "shutdownUnlocked: " << name);
 		if (shutdown) {
-			LOG4CXX_WARN(logger, "Dropping message as shutdown in process");
+			if (frame != NULL) {
+				LOG4CXX_WARN(logger, "Dropping message from " << name << " as shutdown in process");
+			}
 		} else {
 			if (frame != NULL) {
 				LOG4CXX_DEBUG(logger, "Received from: " << name << " Command: "
