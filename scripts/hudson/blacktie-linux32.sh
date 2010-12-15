@@ -37,6 +37,7 @@ if [ "$?" != "0" ]; then
 fi
 cd $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/conf
 sed -i 's/CONFIGURATION_FILE/NAME_SERVICE/g' jbossts-properties.xml
+sed -i 's\<root>\<category name="org.jboss.blacktie"><priority value="ALL"/></category><root>\g' jboss-log4j.xml
 # SET MAXIMUM
 #cd $WORKSPACE/jboss-5.1.0.GA/bin
 #sed -i 's=Xmx128=Xmx768=g' run.conf
