@@ -25,7 +25,8 @@
 
 class TestRollbackOnly: public BaseServerTest {
 	CPPUNIT_TEST_SUITE( TestRollbackOnly);
-	CPPUNIT_TEST( test_tpcall_TPETIME);
+//https://issues.jboss.org/browse/BLACKTIE-311
+//CPPUNIT_TEST( test_tpcall_TPETIME);
 	CPPUNIT_TEST( test_tpcall_TPEOTYPE);
 	CPPUNIT_TEST( test_tpcall_TPESVCFAIL);
 	CPPUNIT_TEST( test_tprecv_TPEV_DISCONIMM);
