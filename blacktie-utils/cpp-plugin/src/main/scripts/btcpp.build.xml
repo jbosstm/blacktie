@@ -187,6 +187,7 @@
 			<env key="ACE_ROOT" path="${ace.lroot}" />
 			<env key="TAO_ROOT" path="${ace.iroot}" />
 			<env key="LD_LIBRARY_PATH" path="${ace.lroot}/lib:${ace.broot}" />
+			<env key="PATH" path="${env.PATH};${ace.lroot}/lib;${ace.broot}" />
 			<env key="Path" path="${env.Path};${ace.lroot}/lib;${ace.broot}" />
 
 			<arg line="-o ${idl.output.dir} -Wb,pre_include=ace/pre.h -Wb,post_include=ace/post.h -I${ace.iroot}/tao -I${ace.iroot}/orbsvcs -I${idl.src.dir} -Wb,export_macro=BLACKTIE_IDL_DLL -Wb,export_include=atmiBrokerIdlMacro.h -DTAO=1" />
