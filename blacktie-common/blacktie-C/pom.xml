@@ -162,7 +162,6 @@
 
 				<configuration>
 					<configuration.type>${configuration.type}</configuration.type>
-					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
 					<maven.test.skip>${maven.test.skip}</maven.test.skip>
 					<skipTests>${skipTests}</skipTests>
 					<src.main>${src.main}</src.main>

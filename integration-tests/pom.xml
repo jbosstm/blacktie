@@ -135,8 +135,7 @@
                 <artifactId>cpp-plugin</artifactId>
 
                 <configuration>
-                    <toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
-					<src.main.file>cs</src.main.file>
+			<src.main.file>cs</src.main.file>
                 </configuration>
                 <executions>
                     <execution>

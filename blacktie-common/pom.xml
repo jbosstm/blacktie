@@ -98,7 +98,7 @@
 			<id>jbossThirdParty</id>
 			<url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases/</url>
 		</repository>
-		<repository>
+ 		<repository>
 			<id>jboss-public-repository-group</id>
 			<url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
 	        </repository>
@@ -156,7 +156,6 @@
 				</os>
 			</activation>
 			<properties>
-				<toolchain.compiler>msvc</toolchain.compiler>
 				<ld_library_path>${env.Path};${project.build.directory}/cxx/runtime/lib;${project.build.directory}/cxx/test/lib;${project.build.directory}</ld_library_path>
 				<exclude_unpack_type></exclude_unpack_type>
 				<atmibroker.configuration.dir>.</atmibroker.configuration.dir>
@@ -170,7 +169,6 @@
 				</os>
 			</activation>
 			<properties>
-				<toolchain.compiler>gcc</toolchain.compiler>
 				<ld_library_path>${project.build.directory}/cxx/runtime/lib:${project.build.directory}/cxx/test/lib:${project.build.directory}</ld_library_path>
 				<export.dll></export.dll>
 				<atmibroker.configuration.dir>.</atmibroker.configuration.dir>
@@ -231,8 +229,8 @@
 				<artifactId>blacktie-admin-services</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>org.jboss.blacktie</groupId>
+ 			<dependency>
+ 				<groupId>org.jboss.blacktie</groupId>
 				<artifactId>stompconnectservice</artifactId>
 				<version>${project.version}</version>
 			</dependency>
@@ -284,7 +282,6 @@
 		<src.main>src/main/cpp</src.main>
 		<failOnErrorTests>true</failOnErrorTests>
 		<configuration.type>debug</configuration.type>
-		<toolchain.compiler>gcc</toolchain.compiler>
 		<jbossas.ip.addr>127.0.0.1</jbossas.ip.addr>
 	</properties>
 

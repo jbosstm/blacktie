@@ -63,15 +63,6 @@
           <description>location of main sources</description>
         </parameter>
         <parameter>
-          <name>toolchain.compiler</name>
-          <property>toolchain.compiler</property>
-          <required>true</required>
-          <readonly>false</readonly>
-          <defaultValue>gcc</defaultValue>
-          <type>java.lang.String</type>
-          <description>Build type. Tested values are gcc|msvc</description>
-        </parameter>
-        <parameter>
           <name>export.dll</name>
           <property>export.dll</property>
           <readonly>false</readonly>
@@ -151,15 +142,6 @@
           <description>The artifact name.</description>
         </parameter>
         <parameter>
-          <name>toolchain.compiler</name>
-          <property>toolchain.compiler</property>
-          <required>true</required>
-          <readonly>false</readonly>
-          <defaultValue>gcc</defaultValue>
-          <type>java.lang.String</type>
-          <description>Build type. Tested values are gcc|msvc</description>
-        </parameter>
-        <parameter>
           <name>configuration.type</name>
           <property>configuration.type</property>
           <required>true</required>
@@ -219,15 +201,6 @@
           <defaultValue></defaultValue>
           <type>java.lang.String</type>
           <description>Name of src file (without the .cxx extension) contain a C++ main</description>
-        </parameter>
-        <parameter>
-          <name>toolchain.compiler</name>
-          <property>toolchain.compiler</property>
-          <required>true</required>
-          <readonly>false</readonly>
-          <defaultValue>gcc</defaultValue>
-          <type>java.lang.String</type>
-          <description>Build type. Tested values are gcc|msvc</description>
         </parameter>
         <parameter>
           <name>configuration.type</name>
@@ -319,15 +292,6 @@
           <defaultValue>executable</defaultValue>
           <type>java.lang.String</type>
           <description>Control whether an executable or shared object is generated</description>
-        </parameter>
-        <parameter>
-          <name>toolchain.compiler</name>
-          <property>toolchain.compiler</property>
-          <required>true</required>
-          <readonly>false</readonly>
-          <defaultValue>gcc</defaultValue>
-          <type>java.lang.String</type>
-          <description>Build type. Tested values are gcc|msvc</description>
         </parameter>
         <parameter>
           <name>export.dll</name>
@@ -438,15 +402,6 @@
           <description>Whether to stop the build after test failure. Valid values are false|true</description>
         </parameter>
         <parameter>
-          <name>toolchain.compiler</name>
-          <property>toolchain.compiler</property>
-          <required>true</required>
-          <readonly>false</readonly>
-          <defaultValue>gcc</defaultValue>
-          <type>java.lang.String</type>
-          <description>Build type. Tested values are gcc|msvc</description>
-        </parameter>
-        <parameter>
           <name>export.dll</name>
           <property>export.dll</property>
           <readonly>false</readonly>
@@ -527,15 +482,6 @@
       <description>process compiled sources</description>
       <parameters>
         <parameter>
-          <name>toolchain.compiler</name>
-          <property>toolchain.compiler</property>
-          <required>true</required>
-          <readonly>false</readonly>
-          <defaultValue>gcc</defaultValue>
-          <type>java.lang.String</type>
-          <description>Build type. Tested values are gcc|msvc</description>
-        </parameter>
-        <parameter>
           <name>export.dll</name>
           <property>export.dll</property>
           <readonly>false</readonly>
@@ -597,15 +543,6 @@
       <requiresProject>true</requiresProject>
       <description>generate sources prior to compilation</description>
       <parameters>
-        <parameter>
-          <name>toolchain.compiler</name>
-          <property>toolchain.compiler</property>
-          <required>true</required>
-          <readonly>false</readonly>
-          <defaultValue>gcc</defaultValue>
-          <type>java.lang.String</type>
-          <description>Build type. Tested values are gcc|msvc</description>
-        </parameter>
         <parameter>
           <name>export.dll</name>
           <property>export.dll</property>

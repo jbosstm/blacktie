@@ -104,7 +104,6 @@
 
 				<configuration>
 					<configuration.type>${configuration.type}</configuration.type>
-					<toolchain.compiler>${toolchain.compiler}</toolchain.compiler>
 					<test.output.type>${test.output.type}</test.output.type>
 					<test.excludes>${test.excludes}</test.excludes>
 				</configuration>
@@ -136,9 +135,6 @@
 					<family>windows</family>
 				</os>
 			</activation>
-			<properties>
-				<use.valgrind>false</use.valgrind>
-			</properties>
 		</profile>
 
 		<profile>
@@ -148,9 +144,6 @@
 					<family>unix</family>
 				</os>
 			</activation>
-			<properties>
-				<use.valgrind>true</use.valgrind>
-			</properties>
 			<build>
 				<plugins>
 					<plugin>

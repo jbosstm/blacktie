@@ -25,6 +25,15 @@
 <compilerarg value="-fmessage-length=0" />
 <compilerarg value="-fPIC" />
 '>
+<!ENTITY compiler-args-xlC '
+<compilerarg value="-O0" if="debug" />
+<compilerarg value="-g3" if="debug" />
+<compilerarg value="-O3" unless="debug" />
+<compilerarg value="-Wall" />
+<compilerarg value="-c" />
+<compilerarg value="-fmessage-length=0" />
+<compilerarg value="-fPIC" />
+'>
 <!ENTITY compiler-args-msvc '
 <compilerarg value="/wd4820" />
 <compilerarg value="/wd4668" />
@@ -55,7 +64,23 @@
 	<target name="init">
 		<fail unless="env.BLACKTIE_HOME" />
 		<fail unless="configuration.type" />
-		<fail unless="toolchain.compiler" />
+
+		<condition property="toolchain.compiler" value="gcc">
+			<os name="Linux" />
+		</condition>
+		<condition property="toolchain.compiler" value="xlC">
+			<os name="AIX" />
+		</condition>
+		<condition property="toolchain.compiler" value="msvc">
+			<os family="windows" />
+		</condition>
+
+		<condition property="is-gcc">
+			<equals arg1="${toolchain.compiler}" arg2="gcc" />
+		</condition>
+		<condition property="is-xlC">
+			<equals arg1="${toolchain.compiler}" arg2="xlC" />
+		</condition>
 		<condition property="is-msvc">
 			<equals arg1="${toolchain.compiler}" arg2="msvc" />
 		</condition>
@@ -155,12 +180,9 @@
 		<mkdir dir="target/classes" />
 		<mkdir dir="target/${configuration.type}/${lib.type}" />
 		<cc name="${toolchain.compiler}" exceptions="true" outfile="${executable.file}" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="executable" objdir="target/classes" debug="${debug}">
-			<compiler name="${toolchain.compiler}" unless="is-msvc">
-				&compiler-args-gcc;
-			</compiler>
-			<compiler name="${toolchain.compiler}" if="is-msvc">
-				&compiler-args-msvc;
-			</compiler>
+			<compiler name="${toolchain.compiler}" if="is-gcc"> &compiler-args-gcc; </compiler>
+			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
+			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
 
 			<fileset dir="${src.main}" includes="${src.tobuild}" excludes="${src.excludes}" />
 

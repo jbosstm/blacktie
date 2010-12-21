@@ -25,6 +25,14 @@
 <compilerarg value="-fmessage-length=0" />
 <compilerarg value="-fPIC" />
 '>
+<!ENTITY compiler-args-xlC '
+<compilerarg value="-O0" if="debug" />
+<compilerarg value="-g3" if="debug" />
+<compilerarg value="-O3" unless="debug" />
+<compilerarg value="-c" />
+<compilerarg value="-fmessage-length=0" />
+<compilerarg value="-fPIC" />
+'>
 <!ENTITY compiler-args-msvc '
 <compilerarg value="/wd4820" />
 <compilerarg value="/wd4668" />
@@ -58,9 +66,25 @@
                -->
 	<target name="init">
 		<fail unless="configuration.type" />
-		<fail unless="toolchain.compiler" />
 		<condition property="isSunOS">
 			<os name="SunOS" />
+		</condition>
+
+		<condition property="toolchain.compiler" value="gcc">
+			<os name="Linux" />
+		</condition>
+		<condition property="toolchain.compiler" value="xlC">
+			<os name="AIX" />
+		</condition>
+		<condition property="toolchain.compiler" value="msvc">
+			<os family="windows" />
+		</condition>
+
+		<condition property="is-gcc">
+			<equals arg1="${toolchain.compiler}" arg2="gcc" />
+		</condition>
+		<condition property="is-xlC">
+			<equals arg1="${toolchain.compiler}" arg2="xlC" />
 		</condition>
 		<condition property="is-msvc">
 			<equals arg1="${toolchain.compiler}" arg2="msvc" />
@@ -118,7 +142,7 @@
 				<equals arg1="${use.valgrind}" arg2="1" />
 			</or>
 		</condition>
-		<condition property="gcc-valgrind">
+		<condition property="unix-valgrind">
 			<and>
 				<not>
 					<isset property="is-msvc"/>
@@ -126,7 +150,7 @@
 				<isset property="use-valgrind"/>
 			</and>
 		</condition>
-		<condition property="gcc-no-valgrind">
+		<condition property="unix-no-valgrind">
 			<and>
 				<not>
 					<isset property="is-msvc"/>
@@ -183,12 +207,11 @@
 		<chmod file="${gperf}" perm="755"/>
 
 		<mkdir dir="${idl.output.dir}" />
-		<apply executable="${idl.compiler}" parallel="false" failonerror="true">
+		<apply executable="${idl.compiler}" parallel="false" failonerror="true" newenvironment="true">
 			<env key="ACE_ROOT" path="${ace.lroot}" />
 			<env key="TAO_ROOT" path="${ace.iroot}" />
 			<env key="LD_LIBRARY_PATH" path="${ace.lroot}/lib:${ace.broot}" />
 			<env key="PATH" path="${env.PATH};${ace.lroot}/lib;${ace.broot}" />
-			<env key="Path" path="${env.Path};${ace.lroot}/lib;${ace.broot}" />
 
 			<arg line="-o ${idl.output.dir} -Wb,pre_include=ace/pre.h -Wb,post_include=ace/post.h -I${ace.iroot}/tao -I${ace.iroot}/orbsvcs -I${idl.src.dir} -Wb,export_macro=BLACKTIE_IDL_DLL -Wb,export_include=atmiBrokerIdlMacro.h -DTAO=1" />
 
@@ -251,12 +274,10 @@
 		<property name="xcompile.libs" value="${toString:fileset.compile.libs}"/>
 		<convert-libset libdir="${xcompile.libs}" propname="compile.libs"/>
 		<cc name="${toolchain.compiler}" rebuild="true" exceptions="true" outfile="target/${configuration.type}/${lib.type}/${project.artifactId}" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="${lib.type}" objdir="target/cpp-classes" debug="${debug}">
-			<compiler name="${toolchain.compiler}" unless="is-msvc">
-                &compiler-args-gcc;
-            </compiler>
-			<compiler name="${toolchain.compiler}" if="is-msvc">
-                &compiler-args-msvc;
-            </compiler>
+
+			<compiler name="${toolchain.compiler}" if="is-gcc"> &compiler-args-gcc; </compiler>
+			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
+			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
 
 			<fileset refid="fileset.main"/>
 
@@ -324,9 +345,9 @@
             subsystem="console" multithreaded="true" runtime="${runtime}" outtype="shared"
             objdir="target/cpp-test-classes" debug="${debug}">
 
-			<compiler name="${toolchain.compiler}" unless="is-msvc"> &compiler-args-gcc; </compiler>
+			<compiler name="${toolchain.compiler}" if="is-gcc"> &compiler-args-gcc; </compiler>
+			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
-
 
 			<fileset dir="${src.test}" includes="**/${src.main.file}.cxx **/${src.main.file}.c" excludes="${src.excludes}" />
 
@@ -364,7 +385,8 @@
             subsystem="console" multithreaded="true" runtime="${runtime}" outtype="executable"
             objdir="target/cpp-test-classes" debug="${debug}">
 
-			<compiler name="${toolchain.compiler}" unless="is-msvc"> &compiler-args-gcc; </compiler>
+			<compiler name="${toolchain.compiler}" if="is-gcc"> &compiler-args-gcc; </compiler>
+			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
 
 			<fileset dir="${src.test}" includes="**/${src.main.file}.cxx" excludes="${src.excludes}" />
@@ -415,12 +437,9 @@
             subsystem="console" multithreaded="true" runtime="${runtime}" outtype="${test.output.type}"
             objdir="target/cpp-test-classes" debug="${debug}">
 
-			<compiler name="${toolchain.compiler}" unless="is-msvc">
-                &compiler-args-gcc;
-            </compiler>
-			<compiler name="${toolchain.compiler}" if="is-msvc">
-                &compiler-args-msvc;
-            </compiler>
+			<compiler name="${toolchain.compiler}" if="is-gcc"> &compiler-args-gcc; </compiler>
+			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
+			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
 
 			<fileset refid="fileset.test"/>
 			<fileset refid="fileset.gen.test"/>
@@ -464,11 +483,11 @@
 
 	<target name="test" depends="fileset.test.check,init" if="have-tests">
 		<antcall target="_test-msvc"/>
-		<antcall target="_test-gcc-valgrind" />
-		<antcall target="_test-gcc-no-valgrind" />
+		<antcall target="_test-unix-valgrind" />
+		<antcall target="_test-unix-no-valgrind" />
 	</target>
 
-	<target name="_test-gcc-valgrind" depends="init" if="gcc-valgrind">
+	<target name="_test-unix-valgrind" depends="init" if="unix-valgrind">
 		<echo message="Executing tests under valgrind"/>
 		<exec dir="target/cpp-test-classes" newenvironment="true" resolveexecutable="true" executable="valgrind" failonerror="${failOnErrorTests}">
 			<env key="LD_LIBRARY_PATH" value="../cxx/runtime/lib:../cxx/test/lib:../${configuration.type}/${lib.type}" />
@@ -488,7 +507,7 @@
 			<arg value="../testsuite" />
 		</exec>
 	</target>
-	<target name="_test-gcc-no-valgrind" depends="init" if="gcc-no-valgrind">
+	<target name="_test-unix-no-valgrind" depends="init" if="unix-no-valgrind">
 		<echo message="Executing tests without valgrind"/>
 		<exec dir="target/cpp-test-classes" newenvironment="true" resolveexecutable="true" executable="../testsuite" failonerror="${failOnErrorTests}">
 			<env key="LD_LIBRARY_PATH" value="../cxx/runtime/lib:../cxx/test/lib:../${configuration.type}/${lib.type}" />
