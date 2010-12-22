@@ -34,6 +34,7 @@ public class TestTPConnect extends TestCase {
 	private Session cd2;
 
 	public void setUp() throws ConnectionException, ConfigurationException {
+		log.info("TestTPConnect::setUp");
 		server.serverinit();
 		server.tpadvertiseTestTPConnect();
 
@@ -47,9 +48,11 @@ public class TestTPConnect extends TestCase {
 		sendbuf.setByteArray(message);
 		cd = null;
 		cd2 = null;
+		log.info("TestTPConnect::setUp done");
 	}
 
 	public void tearDown() throws ConnectionException {
+		log.info("TestTPConnect::tearDown");
 		// Do local work
 		if (cd != null) {
 			cd.tpdiscon();
@@ -62,17 +65,19 @@ public class TestTPConnect extends TestCase {
 
 		connection.close();
 		server.serverdone();
+		log.info("TestTPConnect::tearDown done");
 	}
 
 	public void test_tpconnect() throws ConnectionException {
-		log.info("test_tpconnect");
+		log.info("test_tpconnect: " + RunServer.getServiceNameTestTPConnect());
 		cd = connection.tpconnect(RunServer.getServiceNameTestTPConnect(),
 				sendbuf, Connection.TPRECVONLY);
 		assertTrue(cd != null);
 	}
 
 	public void test_tpconnect_double_connect() throws ConnectionException {
-		log.info("test_tpconnect_double_connect");
+		log.info("test_tpconnect_double_connect: "
+				+ RunServer.getServiceNameTestTPConnect());
 		cd = connection.tpconnect(RunServer.getServiceNameTestTPConnect(),
 				sendbuf, Connection.TPRECVONLY);
 		cd2 = connection.tpconnect(RunServer.getServiceNameTestTPConnect(),
@@ -84,7 +89,8 @@ public class TestTPConnect extends TestCase {
 	}
 
 	public void test_tpconnect_nodata() throws ConnectionException {
-		log.info("test_tpconnect_nodata");
+		log.info("test_tpconnect_nodata: "
+				+ RunServer.getServiceNameTestTPConnect());
 		cd = connection.tpconnect(RunServer.getServiceNameTestTPConnect(),
 				null, Connection.TPRECVONLY);
 		assertTrue(cd != null);
