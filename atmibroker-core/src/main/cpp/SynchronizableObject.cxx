@@ -18,9 +18,8 @@
 
 #include "SynchronizableObject.h"
 
-#ifdef WIN32
-#include "ace/OS_NS_sys_time.h"
-#endif
+#include <ace/OS_NS_time.h>
+
 
 log4cxx::LoggerPtr SynchronizableObject::logger(log4cxx::Logger::getLogger(
 		"SynchronizableObject"));
