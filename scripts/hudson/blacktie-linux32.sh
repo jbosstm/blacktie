@@ -79,9 +79,13 @@ sed -i 's?<connection-factory name="InVMConnectionFactory">?<connection-factory 
       <consumer-window-size>0</consumer-window-size>?g' $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq.sar/hornetq-jms.xml
 
 #CONFIGURE HORNETQ TO NOT TIMEOUT INVM CONNECTIONS
-sed -i 's?InVMConnectionFactory">?InVMConnectionFactory">\
-      <connection-ttl>-1</connection-ttl>?g' $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq.sar/hornetq-jms.xml
-
+sed -i 's?<resourceadapter-class>org.hornetq.ra.HornetQResourceAdapter</resourceadapter-class>?<resourceadapter-class>org.hornetq.ra.HornetQResourceAdapter</resourceadapter-class>\
+      <config-property>\
+        <description>The connection TTL</description>\
+        <config-property-name>ConnectionTTL</config-property-name>\
+        <config-property-type>java.lang.Long</config-property-type>\
+        <config-property-value>-1</config-property-value>\
+      </config-property>?g' $WORKSPACE jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq-ra.rar/META-INF/ra.xml
 
 # START JBOSS
 export JBOSSAS_IP_ADDR=localhost
