@@ -33,6 +33,9 @@
 <compilerarg value="-fmessage-length=0" />
 <compilerarg value="-fPIC" />
 '>
+<!ENTITY linker-args-xlC '
+<linkerarg value="-brtl" />
+'>
 <!ENTITY compiler-args-msvc '
 <compilerarg value="/wd4820" />
 <compilerarg value="/wd4668" />
@@ -297,6 +300,8 @@
 			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
 
+			<linker name="${toolchain.compiler}" if="is-xlC"> &linker-args-xlC; </linker>
+
 			<fileset refid="fileset.main"/>
 
 			<defineset>
@@ -367,6 +372,8 @@
 			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
 
+			<linker name="${toolchain.compiler}" if="is-xlC"> &linker-args-xlC; </linker>
+
 			<fileset dir="${src.test}" includes="**/${src.main.file}.cxx **/${src.main.file}.c" excludes="${src.excludes}" />
 
 			<defineset define="TAO_COMP, UNITTEST"/>
@@ -406,6 +413,8 @@
 			<compiler name="${toolchain.compiler}" if="is-gcc"> &compiler-args-gcc; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
+
+			<linker name="${toolchain.compiler}" if="is-xlC"> &linker-args-xlC; </linker>
 
 			<fileset dir="${src.test}" includes="**/${src.main.file}.cxx" excludes="${src.excludes}" />
 
@@ -458,6 +467,8 @@
 			<compiler name="${toolchain.compiler}" if="is-gcc"> &compiler-args-gcc; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
+
+			<linker name="${toolchain.compiler}" if="is-xlC"> &linker-args-xlC; </linker>
 
 			<fileset refid="fileset.test"/>
 			<fileset refid="fileset.gen.test"/>
