@@ -10,7 +10,7 @@ fi
 if [ -d $WORKSPACE/jboss-5.1.0.GA ]; then
   echo foo | $WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
   sleep 30
-]
+fi
 
 # GET THE TNS NAMES
 TNS_ADMIN=$WORKSPACE/instantclient_11_2/network/admin
