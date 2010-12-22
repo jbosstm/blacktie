@@ -13,18 +13,32 @@ if [ -d $WORKSPACE/jboss-5.1.0.GA ]; then
   echo foo | $WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
   sleep 30
   rm -rf $WORKSPACE/jboss-5.1.0.GA
+  rm -rf $WORKSPACE/hornetq-2.1.2.Final.zip
 fi
 
 # GET THE TNS NAMES
 TNS_ADMIN=$WORKSPACE/instantclient_11_2/network/admin
 mkdir -p $TNS_ADMIN
-#(cd $TNS_ADMIN; wget http://albany/userContent/blacktie/tnsnames.ora)
+if [ -e $TNS_ADMIN/tnsnames.ora ]; then
+	echo "tnsnames.ora already downloaded"
+else
+	(cd $TNS_ADMIN; wget http://albany/userContent/blacktie/tnsnames.ora)
+fi
 
 # GET JBOSS AND INITIALIZE IT
 cd $WORKSPACE
-#wget http://albany/userContent/blacktie/jboss-5.1.0.GA.zip
+if [ -e $WORKSPACE/jboss-5.1.0.GA.zip ]; then
+	echo "JBoss already downloaded"
+else
+	wget http://albany/userContent/blacktie/jboss-5.1.0.GA.zip
+fi
 unzip jboss-5.1.0.GA.zip
-#wget http://albany/userContent/blacktie/hornetq-2.1.2.Final.zip
+if [ -e $WORKSPACE/hornetq-2.1.2.Final.zip ]; then
+	echo "HornetQ already downloaded"
+else
+	wget http://albany/userContent/blacktie/hornetq-2.1.2.Final.zip
+fi
+
 echo 'A
 ' | unzip hornetq-2.1.2.Final.zip
 # INSTALL HORNETQ
