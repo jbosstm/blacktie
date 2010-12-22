@@ -58,8 +58,6 @@ sed -i 's?</security-settings>?      <security-setting match="jms.queue.BTR_BTDo
 </security-settings>?g' $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq.sar/hornetq-configuration.xml
 
 # CONFIGURE HORNETQ TO NOT USE CONNECTION BUFFERING
-sed -i 's?<connection-factory name="NettyConnectionFactory">?<connection-factory name="NettyConnectionFactory">\
-      <consumer-window-size>0</consumer-window-size>?g' $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq.sar/hornetq-jms.xml
 sed -i 's?<connection-factory name="InVMConnectionFactory">?<connection-factory name="InVMConnectionFactory">\
       <consumer-window-size>0</consumer-window-size>?g' $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq.sar/hornetq-jms.xml
 
@@ -67,5 +65,3 @@ sed -i 's?<connection-factory name="InVMConnectionFactory">?<connection-factory 
 sed -i 's?<connection-factory name="InVMConnectionFactory">?<connection-factory name="InVMConnectionFactory">\
       <connection-ttl>-1</connection-ttl>\
       <client-failure-check-period>-1</client-failure-check-period>?g' $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq.sar/hornetq-jms.xml
-
-
