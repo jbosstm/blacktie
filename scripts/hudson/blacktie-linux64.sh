@@ -1,3 +1,5 @@
+ulimit -c unlimited
+
 # CHECK IF WORKSPACE IS SET
 if [ -n "${WORKSPACE+x}" ]; then
   echo WORKSPACE is set
