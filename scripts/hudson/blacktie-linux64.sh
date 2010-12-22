@@ -13,7 +13,7 @@ if [ -d $WORKSPACE/jboss-5.1.0.GA ]; then
   echo foo | $WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
   sleep 30
   rm -rf $WORKSPACE/jboss-5.1.0.GA
-  rm -rf $WORKSPACE/hornetq-2.1.2.Final.zip
+  rm -rf $WORKSPACE/hornetq-2.1.2.Final
 fi
 
 # GET THE TNS NAMES
