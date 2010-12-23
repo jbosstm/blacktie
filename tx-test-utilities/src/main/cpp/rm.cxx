@@ -137,11 +137,11 @@ static int apply_faults(XID *xid, enum XA_OP op, int rmid)
 	fault_t *f;
 	long *larg;
 
-	/*printf("dummy_rm: apply_faults: op=%d rmid=%d", op, rmid);*/
+	printf("dummy_rm: apply_faults: op=%d rmid=%d", op, rmid);
 
 	for (f = faults; f; f = f->next) {
 		if (f->rmid == rmid && f->op == op) {
-			/*printf("dummy_rm: applying fault to op %d rc %d\n", op, f->rc);*/
+			printf("dummy_rm: applying fault %d to op %d rc %d\n", f->xf, op, f->rc);
 			switch (f->xf) {
 			default:
 				break;
@@ -156,10 +156,12 @@ static int apply_faults(XID *xid, enum XA_OP op, int rmid)
 				break;
 			}
 
+			printf("dummy_rm: fault return: %d", f->rc);
 			return f->rc;
 		}
 	}
 
+	printf("dummy_rm: fault return: XA_OK");
 	return XA_OK;
 }
 

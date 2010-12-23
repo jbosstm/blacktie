@@ -288,6 +288,7 @@ int XAResourceAdaptorImpl::xa_end (long flags)
 //		return XA_OK;
 
 	int rv = xa_switch_->xa_end_entry(&bid_, rmid_, flags);
+	LOG4CXX_DEBUG(xaralogger, (char*) "XA_END res: " << rv);
 	return sm_.transition(bid_, XACALL_END, flags, rv);
 }
 int XAResourceAdaptorImpl::xa_rollback (long flags)
