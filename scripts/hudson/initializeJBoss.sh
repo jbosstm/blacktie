@@ -63,7 +63,8 @@ sed -i 's?<connection-factory name="InVMConnectionFactory">?<connection-factory 
 
 #CONFIGURE HORNETQ TO NOT TIMEOUT INVM CONNECTIONS
 sed -i 's?<connection-factory name="InVMConnectionFactory">?<connection-factory name="InVMConnectionFactory">\
-      <connection-ttl>-1</connection-ttl>?g' $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq.sar/hornetq-jms.xml
+      <connection-ttl>-1</connection-ttl>\
+      <client-failure-check-period>86400000</client-failure-check-period>?g' $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq.sar/hornetq-jms.xml
 sed -i 's?<resourceadapter-class>org.hornetq.ra.HornetQResourceAdapter</resourceadapter-class>?<resourceadapter-class>org.hornetq.ra.HornetQResourceAdapter</resourceadapter-class>\
       <config-property>\
         <description>The connection TTL</description>\
