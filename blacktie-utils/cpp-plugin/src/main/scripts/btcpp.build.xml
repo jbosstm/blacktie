@@ -92,7 +92,13 @@
 		<condition property="is-msvc">
 			<equals arg1="${toolchain.compiler}" arg2="msvc" />
 		</condition>
-		<condition property="lib.convert.pattern" value="*.lib" else="lib*.so*">
+		<condition property="lib.convert.pattern" value="lib*.so*">
+			<isset property="is-gcc"/>
+		</condition>
+		<condition property="lib.convert.pattern" value="lib*.a,lib*.so">
+			<isset property="is-xlC"/>
+		</condition>
+		<condition property="lib.convert.pattern" value="*.lib">
 			<isset property="is-msvc"/>
 		</condition>
 		<condition property="export.dir">
@@ -127,9 +133,10 @@
 			<isset property="is-msvc" />
 		</condition>
 		<condition property="lib.regexp" value="lib([\w-_+]*)\.so">
-			<not>
-				<isset property="is-msvc" />
-			</not>
+			<isset property="is-gcc" />
+		</condition>
+		<condition property="lib.regexp" value="lib([\w-_+]*)\.[a|so]">
+			<isset property="is-xlC" />
 		</condition>
 		<condition property="lib.regexp" value="([\w-_+]*)\.lib">
 			<isset property="is-msvc" />
@@ -300,7 +307,7 @@
 			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
 
-			<linker name="${toolchain.compiler}" if="is-xlC"> &linker-args-xlC; </linker>
+			<linker name="ld" if="is-xlC"> &linker-args-xlC; <linkerarg value="-bnoentry" /> </linker>
 
 			<fileset refid="fileset.main"/>
 
@@ -364,15 +371,13 @@
 
 	<target name="generate-test-lib" depends="init-cpp-test" if="have.src.main.file">
 		<available file="target/${configuration.type}/${lib.type}" type="dir" property="main.built" />
-		<cc name="${toolchain.compiler}" exceptions="true" outfile="target/${src.main.file}"
-            subsystem="console" multithreaded="true" runtime="${runtime}" outtype="shared"
-            objdir="target/cpp-test-classes" debug="${debug}">
+		<cc name="${toolchain.compiler}" exceptions="true" outfile="target/${src.main.file}" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="shared" objdir="target/cpp-test-classes" debug="${debug}">
 
 			<compiler name="${toolchain.compiler}" if="is-gcc"> &compiler-args-gcc; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
 
-			<linker name="${toolchain.compiler}" if="is-xlC"> &linker-args-xlC; </linker>
+			<linker name="ld" if="is-xlC"> &linker-args-xlC; <linkerarg value="-bnoentry" /></linker>
 
 			<fileset dir="${src.test}" includes="**/${src.main.file}.cxx **/${src.main.file}.c" excludes="${src.excludes}" />
 
@@ -406,15 +411,13 @@
 	</target>
 
 	<target name="generate-exe" depends="init-cpp-test" if="have.src.main.file">
-		<cc name="${toolchain.compiler}" exceptions="true" outfile="target/${src.main.file}"
-            subsystem="console" multithreaded="true" runtime="${runtime}" outtype="executable"
-            objdir="target/cpp-test-classes" debug="${debug}">
+		<cc name="${toolchain.compiler}" exceptions="true" outfile="target/${src.main.file}" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="executable" objdir="target/cpp-test-classes" debug="${debug}">
 
 			<compiler name="${toolchain.compiler}" if="is-gcc"> &compiler-args-gcc; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
 
-			<linker name="${toolchain.compiler}" if="is-xlC"> &linker-args-xlC; </linker>
+			<linker name="ld" if="is-xlC"> &linker-args-xlC; </linker>
 
 			<fileset dir="${src.test}" includes="**/${src.main.file}.cxx" excludes="${src.excludes}" />
 
@@ -460,15 +463,13 @@
 		<property name="xtest.libs" value="${toString:fileset.test.libs}"/>
 		<convert-libset libdir="${xtest.libs}" propname="test.libs"/>
 		<!-- rebuild="true" -->
-		<cc name="${toolchain.compiler}" exceptions="true" outfile="target/testsuite"
-            subsystem="console" multithreaded="true" runtime="${runtime}" outtype="${test.output.type}"
-            objdir="target/cpp-test-classes" debug="${debug}">
+		<cc name="${toolchain.compiler}" exceptions="true" outfile="target/testsuite" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="${test.output.type}" objdir="target/cpp-test-classes" debug="${debug}">
 
 			<compiler name="${toolchain.compiler}" if="is-gcc"> &compiler-args-gcc; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
 
-			<linker name="${toolchain.compiler}" if="is-xlC"> &linker-args-xlC; </linker>
+			<linker name="ld" if="is-xlC"> &linker-args-xlC; </linker>
 
 			<fileset refid="fileset.test"/>
 			<fileset refid="fileset.gen.test"/>
@@ -573,7 +574,7 @@
 	</target>
 	<target name="copy-libs" if="have-target-lib-dir">
 		<copy todir="target/classes/lib" overwrite="true" failonerror="false">
-			<fileset dir="target/${configuration.type}/${lib.type}/" includes="*.so,*.so.*,*.dll,*.lib"/>
+			<fileset dir="target/${configuration.type}/${lib.type}/" includes="*.so,*.so.*,*.dll,*.lib,*.a,*.a*"/>
 		</copy>
 	</target>
 
