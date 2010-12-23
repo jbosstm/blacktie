@@ -71,4 +71,10 @@ sed -i 's?<resourceadapter-class>org.hornetq.ra.HornetQResourceAdapter</resource
         <config-property-name>ConnectionTTL</config-property-name>\
         <config-property-type>java.lang.Long</config-property-type>\
         <config-property-value>-1</config-property-value>\
+      </config-property>\
+      <config-property>\
+        <description>The client failure check period</description>\
+        <config-property-name>ClientFailureCheckPeriod</config-property-name>\
+        <config-property-type>java.lang.Long</config-property-type>\
+        <config-property-value>86400000</config-property-value>\
       </config-property>?g' $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/deploy/hornetq-ra.rar/META-INF/ra.xml
