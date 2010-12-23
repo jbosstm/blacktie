@@ -144,7 +144,7 @@ static int apply_faults(XID *xid, enum XA_OP op, int rmid)
 		fc += 1;
 
 		if (fc == 100)
-			printf("dummy_rm: too many fault specifications\n")
+			printf("dummy_rm: too many fault specifications\n");
 		if (f->rmid == rmid && f->op == op) {
 			printf("dummy_rm: applying fault %d to op %d rc %d\n", f->xf, op, f->rc);
 			switch (f->xf) {
