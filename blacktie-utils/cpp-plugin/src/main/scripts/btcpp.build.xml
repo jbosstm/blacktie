@@ -120,9 +120,14 @@
 			</and>
 		</condition>
 		<condition property="lib.suffix" value="">
-			<not>
-				<equals arg1="lib.suffix" arg2="d" />
-			</not>
+			<and>
+				<not>
+					<isset property="is-msvc"/>
+				</not>
+				<not>
+					<isset property="debug" />
+				</not>
+			</and>
 		</condition>
 		<condition property="lib.prefix" value="lib">
 			<not>
