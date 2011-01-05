@@ -80,7 +80,7 @@
 		<mkdir dir="${build.dist}/lib" />
 	</target>
 
-	<target name="thirdparty" depends="log4cxx,cppunit,expat,apr-1,xercesc,ace,stompconnect" />
+	<target name="thirdparty" depends="ace,log4cxx,cppunit,expat,apr-1,xercesc,stompconnect" />
 	<target name="install" depends="thirdparty" />
 
 	<target name="ace-lib-linux" if="linux">
@@ -260,10 +260,14 @@
 		<install-zip-artifact groupId="cppunit.contrib" artifactId="cppunit" name="cppunit" version="${cppunit.version}" description="repackage of CppUnit, the C++ port of the famous JUnit framework for unit testing" />
 	</target>
 
-	<target name="apr-1-lib-linux" if="linux">
+	<target name="apr-1-lib-linux" if="linux" unless="aix">
 		<copy todir="${build.dist}/lib">
 			<fileset dir="${apr-1.lib.dir}" includes="libapr-1.so*"/>
 		</copy>
+	</target>
+	<target name="apr-1-lib-aix" if="aix">
+		<copy file="${apr-1.lib.dir}/libapr-1.a" todir="${build.dist}/lib" />
+		<copy file="${apr-1.lib.dir}/libaprutil-1.a" todir="${build.dist}/lib" />
 	</target>
 	<target name="apr-1-lib-windows" if="windows">
 		<copy file="${apr-1.lib.dir}/libapr-1.dll" todir="${build.dist}/lib" />
@@ -274,6 +278,7 @@
 		<validate-files inc.dir="${apr-1.include.dir}" lib.dir="${apr-1.lib.dir}" artifactId="apr-1" />
 
 		<antcall target="apr-1-lib-linux" />
+		<antcall target="apr-1-lib-aix" />
 		<antcall target="apr-1-lib-windows" />
 		<copy todir="${build.dist}/include/apr-1">
 			<fileset dir="${apr-1.include.dir}" includes="*.h" />
@@ -297,12 +302,19 @@
 		</exec>
 	</target>
 
-	<target name="log4cxx-lib-linux" if="linux">
+	<target name="log4cxx-lib-linux" if="linux" unless="aix">
 		<copy todir="${build.dist}/lib">
 			<fileset dir="${log4cxx.lib.dir}">
 				<include name="liblog4cxx.so*" />
 			</fileset>
 		</copy>
+	</target>
+	<target name="log4cxx-lib-aix" if="aix">
+		<copy file="${log4cxx.lib.dir}/liblog4cxx.a" todir="${build.dist}/lib" />
+
+		<validate-files inc.dir="${apr-1.include.dir}" lib.dir="${apr-1.lib.dir}" artifactId="apr-1" />
+		<copy file="${apr-1.lib.dir}/libapr-1.a" todir="${build.dist}/lib" />
+		<copy file="${apr-1.lib.dir}/libaprutil-1.a" todir="${build.dist}/lib" />
 	</target>
 	<target name="log4cxx-lib-windows" if="windows">
 		<copy file="${log4cxx.lib.dir}/log4cxx.dll" todir="${build.dist}/lib" />
@@ -314,6 +326,7 @@
 		<validate-files inc.dir="${log4cxx.include.dir}" lib.dir="${log4cxx.lib.dir}" artifactId="log4cxx" />
 
 		<antcall target="log4cxx-lib-linux" />
+		<antcall target="log4cxx-lib-aix" />
 		<antcall target="log4cxx-lib-windows" />
 		<copy todir="${build.dist}/include/log4cxx">
 			<fileset dir="${log4cxx.include.dir}" />
@@ -323,7 +336,7 @@
 		<install-artifact groupId="apache-log4cxx.contrib" artifactId="log4cxx" name="log4cxx" version="${log4cxx.version}" description="Re-packaging of log4cxx, a logging framework for C++ patterned after Apache log4j" />
 	</target>
 
-	<target name="xercesc-lib-linux" if="linux">
+	<target name="xercesc-lib-linux" if="linux" unless="aix">
 		<sync todir="${build.dist}/lib">
 			<fileset dir="${xercesc.lib.dir}" id="lib">
 				<include name="libxerces-c-*.so" />
@@ -331,6 +344,14 @@
 		</sync>
 		<property name="libxerces" refid="lib"/> 
 		<symlink link="${build.dist}/lib/libxerces-c.so" resource="${libxerces}" />
+	</target>
+	<target name="xercesc-lib-aix" if="aix">
+		<sync todir="${build.dist}/lib">
+			<fileset dir="${xercesc.lib.dir}" id="lib">
+				<include name="libxerces-c.a" />
+			</fileset>
+		</sync>
+		<property name="libxerces" refid="lib"/> 
 	</target>
 	<target name="xercesc-lib-windows" if="windows">
 		<copy file="${xercesc.lib.dir}/xerces-c_3_0D.dll" todir="${build.dist}/lib" />
@@ -341,6 +362,7 @@
 		<antcall target="purge"/>
 		<validate-files inc.dir="${xercesc.include.dir}/xercesc" lib.dir="${xercesc.lib.dir}" artifactId="xercesc" />
 		<antcall target="xercesc-lib-linux" />
+		<antcall target="xercesc-lib-aix" />
 		<antcall target="xercesc-lib-windows" />
 		<copy todir="${build.dist}/include/xercesc">
 			<fileset dir="${xercesc.include.dir}/xercesc">

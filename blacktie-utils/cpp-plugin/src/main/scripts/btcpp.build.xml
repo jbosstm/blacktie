@@ -119,11 +119,19 @@
 				<isset property="debug" />
 			</and>
 		</condition>
-		<property name="lib.suffix" value=""/>
+		<condition property="lib.suffix" value="">
+			<not>
+				<equals arg1="lib.suffix" arg2="d" />
+			</not>
+		</condition>
+		<condition property="lib.prefix" value="lib">
+			<not>
+				<isset property="is-msvc" />
+			</not>
+		</condition>
 		<condition property="lib.prefix" value="">
 			<isset property="is-msvc" />
 		</condition>
-		<property name="lib.prefix" value="lib"/>
 		<condition property="lib.regexp" value="lib([\w-_+]*)\.so">
 			<isset property="is-gcc" />
 		</condition>
@@ -299,7 +307,7 @@
 			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
 
-			<linker name="ld" if="is-xlC"> &linker-args-xlC; <linkerarg value="-bnoentry" /> </linker>
+			<linker name="${toolchain.compiler}" if="is-xlC"> &linker-args-xlC; <linkerarg value="-bnoentry" /> </linker>
 
 			<fileset refid="fileset.main"/>
 
@@ -369,7 +377,7 @@
 			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
 
-			<linker name="ld" if="is-xlC"> &linker-args-xlC; <linkerarg value="-bnoentry" /></linker>
+			<linker name="${toolchain.compiler}" if="is-xlC"> &linker-args-xlC; <linkerarg value="-bnoentry" /></linker>
 
 			<fileset dir="${src.test}" includes="**/${src.main.file}.cxx **/${src.main.file}.c" excludes="${src.excludes}" />
 
@@ -398,7 +406,8 @@
 			<libset dir="${project.build.directory}/cxx/compile/lib" libs="${compile.libs}" if="compile.libs"/>
 			<libset dir="${project.build.directory}/cxx/test/lib" libs="${test.libs}" if="test.libs"/>
 			<libset dir="target/${configuration.type}/${lib.type}" libs="${project.artifactId}" if="main.built" />
-			<libset libs="stdc++ pthread rt" />
+			<libset libs="stdc++ pthread rt" if="is-gcc" />
+			<libset libs="pthread" if="is-xlC" />
 		</cc>
 	</target>
 
@@ -409,7 +418,7 @@
 			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
 
-			<linker name="ld" if="is-xlC"> &linker-args-xlC; </linker>
+			<linker name="${toolchain.compiler}" if="is-xlC"> &linker-args-xlC; </linker>
 
 			<fileset dir="${src.test}" includes="**/${src.main.file}.cxx" excludes="${src.excludes}" />
 
@@ -428,7 +437,8 @@
 
 			<libset dir="${project.build.directory}/cxx/compile/lib" libs="${compile.libs}" if="compile.libs"/>
 			<libset dir="${project.build.directory}/cxx/test/lib" libs="${test.libs}" if="test.libs"/>
-			<libset libs="stdc++ pthread rt" />
+			<libset libs="stdc++ pthread rt" if="is-gcc" />
+			<libset libs="pthread" if="is-xlC" />
 		</cc>
 	</target>
 
@@ -461,7 +471,7 @@
 			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
 
-			<linker name="ld" if="is-xlC"> &linker-args-xlC; </linker>
+			<linker name="${toolchain.compiler}" if="is-xlC"> &linker-args-xlC; </linker>
 
 			<fileset refid="fileset.test"/>
 			<fileset refid="fileset.gen.test"/>
@@ -490,7 +500,8 @@
 			<libset dir="${project.build.directory}/cxx/compile/lib" libs="${compile.libs}" if="compile.libs"/>
 			<libset dir="${project.build.directory}/cxx/test/lib" libs="${test.libs}" if="test.libs"/>
 			<libset dir="target/${configuration.type}/${lib.type}" libs="${project.artifactId}" if="main.built" />
-			<libset libs="stdc++ pthread rt" />
+			<libset libs="stdc++ pthread rt" if="is-gcc" />
+			<libset libs="pthread" if="is-xlC" />
 		</cc>
 		<available file="target/testsuite.dll.manifest" property="manifest.towrap" />
 		<antcall target="_test-compile-msvc" />
