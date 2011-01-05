@@ -27,7 +27,7 @@
 '>
 <!ENTITY compiler-args-xlC '
 <compilerarg value="-O0" if="debug" />
-<compilerarg value="-g3" if="debug" />
+<compilerarg value="-g" if="debug" />
 <compilerarg value="-O3" unless="debug" />
 <compilerarg value="-c" />
 <compilerarg value="-fmessage-length=0" />
