@@ -27,8 +27,10 @@ class XAResourceAdaptorImpl;
 class xid_cmp
 {   
 public: 
-	bool operator()(const XID& xid1, const XID& xid2);
-};  
+	bool operator()(XID const& xid1, XID const& xid2) const;
+};
+
+bool operator< (XID const& xid1, XID const& xid2);
 
 class BLACKTIE_TX_DLL XAResourceManager
 {
@@ -53,7 +55,8 @@ public:
 	static XID gen_xid(long rmid, long sid, XID &gid);
 
 private:
-	typedef std::map<XID, XAResourceAdaptorImpl *, xid_cmp> XABranchMap;
+//	typedef std::map<XID, XAResourceAdaptorImpl *, xid_cmp> XABranchMap;
+	typedef std::map<XID, XAResourceAdaptorImpl *> XABranchMap;
 	XABranchMap branches_;
 	SynchronizableObject* branchLock;
 

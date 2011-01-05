@@ -60,7 +60,11 @@ static int compareXids(const XID& xid1, const XID& xid2)
 	return 0;
 }
 
-bool xid_cmp::operator()(const XID& xid1, const XID& xid2) {
+bool xid_cmp::operator()(XID const& xid1, XID const& xid2) const {
+	return (compareXids(xid1, xid2) < 0);
+}
+
+bool operator<(XID const& xid1, XID const& xid2) {
 	return (compareXids(xid1, xid2) < 0);
 }
 
