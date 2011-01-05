@@ -119,24 +119,11 @@
 				<isset property="debug" />
 			</and>
 		</condition>
-		<condition property="lib.suffix" value="">
-			<and>
-				<not>
-					<isset property="is-msvc"/>
-				</not>
-				<not>
-					<isset property="debug" />
-				</not>
-			</and>
-		</condition>
-		<condition property="lib.prefix" value="lib">
-			<not>
-				<isset property="is-msvc" />
-			</not>
-		</condition>
+		<property name="lib.suffix" value=""/>
 		<condition property="lib.prefix" value="">
 			<isset property="is-msvc" />
 		</condition>
+		<property name="lib.prefix" value="lib"/>
 		<condition property="lib.regexp" value="lib([\w-_+]*)\.so">
 			<isset property="is-gcc" />
 		</condition>
