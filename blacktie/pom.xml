@@ -208,8 +208,8 @@
 		<module>../blacktie-admin-services</module>
 		<module>../blacktie-admin-services/ear</module>
 		<module>../blacktie-rhq-plugin</module>
-		<module>../tx-test-utilities</module>
 		<module>../atmibroker-core</module>
+		<module>../tx-test-utilities</module>
 		<module>../atmibroker-tx</module>
 		<module>../atmibroker-hybrid</module>
 		<module>../atmibroker-xatmi</module>

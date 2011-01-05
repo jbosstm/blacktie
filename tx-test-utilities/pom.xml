@@ -72,6 +72,13 @@
 		</license>
 	</licenses>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.jboss.blacktie</groupId>
+            <classifier>${bpa}</classifier><artifactId>atmibroker-core</artifactId>
+        </dependency>
+    </dependencies>
+
 	<profiles>
 		<profile>
 			<id>windows</id>

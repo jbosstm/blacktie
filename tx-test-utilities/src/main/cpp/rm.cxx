@@ -17,7 +17,7 @@
  */
 #include "xa.h"
 #include "testrm.h"
-/*#include <userlogc.h>*/
+#include <userlogc.h>
 
 #include <stdlib.h>
 #include "ace/OS_NS_unistd.h"
@@ -63,7 +63,7 @@ int dummy_rm_del_fault(int id)
 {
 	fault_t *curr, *prev = 0;
 
-	/*printf("dummy_rm: del_fault: %d", id);*/
+	userlogc_debug("dummy_rm: del_fault: %d", id);
 	for (curr = faults; curr; prev = curr, curr = curr->next) {
 		if (curr->id == id) {
 			if (prev == NULL)
@@ -87,7 +87,7 @@ int dummy_rm_add_fault(fault_t *fault)
 {
 	fault_t *last;
 
-	/*printf("dummy_rm: del_fault:");*/
+	userlogc_debug("dummy_rm: del_fault:");
 
 	if (fault == 0)
 		return 1;
@@ -138,15 +138,15 @@ static int apply_faults(XID *xid, enum XA_OP op, int rmid)
 	long *larg;
 	long fc = 0L;
 
-	printf("dummy_rm: apply_faults: op=%d rmid=%d\n", op, rmid);
+	userlogc_debug("dummy_rm: apply_faults: op=%d rmid=%d\n", op, rmid);
 
 	for (f = faults; f; f = f->next) {
 		fc += 1;
 
 		if (fc == 100)
-			printf("dummy_rm: too many fault specifications\n");
+			userlogc_debug("dummy_rm: too many fault specifications\n");
 		if (f->rmid == rmid && f->op == op) {
-			printf("dummy_rm: applying fault %d to op %d rc %d\n", f->xf, op, f->rc);
+			userlogc_debug("dummy_rm: applying fault %d to op %d rc %d\n", f->xf, op, f->rc);
 			switch (f->xf) {
 			default:
 				break;
@@ -161,12 +161,12 @@ static int apply_faults(XID *xid, enum XA_OP op, int rmid)
 				break;
 			}
 
-			printf("dummy_rm: fault return: %d", f->rc);
+			userlogc_debug("dummy_rm: fault return: %d", f->rc);
 			return f->rc;
 		}
 	}
 
-	printf("dummy_rm: fault return: XA_OK\n");
+	userlogc_debug("dummy_rm: fault return: XA_OK\n");
 	return XA_OK;
 }
 

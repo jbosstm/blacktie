@@ -89,6 +89,7 @@
 			<classifier>${bpa}</classifier><artifactId>tx-test-utilities</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 	</dependencies>
 
 	<profiles>
