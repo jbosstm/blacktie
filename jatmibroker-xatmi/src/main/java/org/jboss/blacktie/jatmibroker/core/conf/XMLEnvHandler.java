@@ -114,13 +114,16 @@ public class XMLEnvHandler extends DefaultHandler {
 			for (int i = 0; i < matcher.groupCount(); i++) {
 				if (i < matches.length) {
 					String val = matcher.group(i + 1);
-					String env = System.getenv(val);
+					if (val.length() > 0) {
+						String env = System.getenv(val);
+						env = System.getProperty(val);
 
-					if (env == null) {
-						matches[i] = val;
-					} else {
-						matches[i] = env;
-						expanded = true;
+						if (env == null) {
+							matches[i] = val;
+						} else {
+							matches[i] = env;
+							expanded = true;
+						}
 					}
 				}
 			}
@@ -131,7 +134,6 @@ public class XMLEnvHandler extends DefaultHandler {
 
 			for (int i = 0; i < matches.length; i++)
 				sb.append(matches[i]);
-
 			return sb.toString();
 		}
 

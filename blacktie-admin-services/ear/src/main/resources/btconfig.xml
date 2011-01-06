@@ -82,11 +82,11 @@
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>
-	<ORB OPT="-ORBInitRef NameService=corbaloc::127.0.0.1:3528/NameService"
+	<ORB OPT="-ORBInitRef NameService=corbaloc::${jboss.bind.address}:3528/NameService"
 		TRANS_FACTORY_ID="TransactionManagerService.OTS" />
-	<MQ HOST="127.0.0.1" PORT="61613" USER="guest" PASSWORD="guest"
-		RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" NAMING_URL="jnp://127.0.0.1:1099" />
-	<JMX url="service:jmx:rmi:///jndi/rmi://127.0.0.1:1090/jmxconnector" />
+	<MQ HOST="${jboss.bind.address}" PORT="61613" USER="guest" PASSWORD="guest"
+		RECEIVE_TIMEOUT="10" TIME_TO_LIVE="10" NAMING_URL="jnp://${jboss.bind.address}:1099" />
+	<JMX url="service:jmx:rmi:///jndi/rmi://${jboss.bind.address}:1090/jmxconnector" />
 	<ENV_VARIABLES>
 		<ENV_VARIABLE>
 			<NAME>QueueReaperInterval</NAME>
