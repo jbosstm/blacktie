@@ -26,6 +26,7 @@
 #include "AtmiBrokerEnv.h"
 #include "SymbolLoader.h"
 #include "xatmi.h"
+#include "HybridConnectionImpl.h"
 
 log4cxx::LoggerPtr loggerConnectionManager(log4cxx::Logger::getLogger(
 		"ConnectionManager"));
@@ -34,9 +35,6 @@ extern int serverid;
 
 extern void tpgetanyCallback(int sessionId, bool remove);
 
-#ifdef IDE_DEBUG
-#include "HybridConnectionImpl.h"
-#endif
 ConnectionManager::ConnectionManager() {
 	LOG4CXX_TRACE(loggerConnectionManager, (char*) "constructor");
 	lock = new SynchronizableObject();
@@ -63,20 +61,11 @@ void ConnectionManager::closeConnections() {
 
 Connection*
 ConnectionManager::getConnection(char* side) {
-	char* transportLibrary;
 	char adm[XATMI_SERVICE_NAME_LENGTH + 1];
 	ACE_OS::snprintf(adm, XATMI_SERVICE_NAME_LENGTH + 1, ".%s%d", server,
 			serverid);
-
-#ifdef WIN32
-		transportLibrary = (char*) "atmibroker-hybrid.dll";
-#else
-		transportLibrary = (char*) "libatmibroker-hybrid.so";
-#endif
-	LOG4CXX_DEBUG(loggerConnectionManager, (char*) "transport is " << transportLibrary);
 	std::string key = side;
-	key.append("/");
-	key.append(transportLibrary);
+	key.append("/hybrid");
 
 	lock->lock();
 	ConnectionMap::iterator it;
@@ -87,25 +76,11 @@ ConnectionManager::getConnection(char* side) {
 		lock->unlock();
 		return (*it).second;
 	} else {
-#ifdef IDE_DEBUG
 		Connection* connection = new HybridConnectionImpl(side, tpgetanyCallback);
 		manager.insert(ConnectionMap::value_type(key, connection));
 		LOG4CXX_DEBUG(loggerConnectionManager, (char*) "insert service " << key << " connection " << connection);
 		lock->unlock();
 		return connection;
-#else
-		connection_factory_t* connectionFactory =
-				(connection_factory_t*) ::lookup_symbol(transportLibrary,
-						"connectionFactory");
-		if (connectionFactory != NULL) {
-			Connection* connection = connectionFactory->create_connection(side, tpgetanyCallback);
-			manager.insert(ConnectionMap::value_type(key, connection));
-			LOG4CXX_DEBUG(loggerConnectionManager, (char*) "insert service "
-					<< key << " connection " << connection);
-			lock->unlock();
-			return connection;
-		}
-#endif
 	}
 
 	LOG4CXX_WARN(loggerConnectionManager,

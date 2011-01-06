@@ -112,7 +112,6 @@
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<classifier>${bpa}</classifier><artifactId>atmibroker-hybrid</artifactId>
-			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 
