@@ -120,5 +120,11 @@
 			<classifier>${bpa}</classifier><artifactId>xercesc</artifactId>
 			<type>zip</type>
 		</dependency>
+		<dependency>
+			<groupId>org.jboss.blacktie</groupId>
+			<classifier>${bpa}</classifier>
+			<artifactId>tx-test-utilities</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>
