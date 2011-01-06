@@ -105,6 +105,8 @@ public class XMLEnvHandler extends DefaultHandler {
 	 */
 	public String getenv(CharSequence inputStr) {
 		String[] matches = new String[3];
+		matches[0] = "";
+		matches[2] = "";
 		matcher.reset(inputStr);
 
 		if (matcher.find()) {
