@@ -116,7 +116,9 @@ public class XMLEnvHandler extends DefaultHandler {
 					String val = matcher.group(i + 1);
 					if (val.length() > 0) {
 						String env = System.getenv(val);
-						env = System.getProperty(val);
+						if (env == null) {
+							env = System.getProperty(val);
+						}
 
 						if (env == null) {
 							matches[i] = val;
