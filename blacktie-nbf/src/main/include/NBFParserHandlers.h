@@ -77,6 +77,7 @@ public:
 
 private:
 	static log4cxx::LoggerPtr logger;
+	char* qName;
 	char* attrName;
 	char* attrValue;
 	char* attrType;

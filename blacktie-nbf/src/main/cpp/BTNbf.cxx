@@ -169,7 +169,21 @@ int btgetattribute(char* buf, char* attributeId, int attributeIndex, char* attri
 				*((long*)attributeValue) = atol(value);
 				*len = sizeof(long);
 			} else if(strstr(type, "_type") != NULL) {
-				printf("%s\n", value);
+				char* buf = tpalloc((char*)"BT_NBF", attributeId, 0);
+				if(buf != NULL) {
+					int pos = find_string(buf, ".xsd\">", 0);
+					if(pos > 0) {
+						printf("value = %s\n", value);
+						insert_string(&buf, value, pos + 6);
+						*((char**)attributeValue) = buf;
+					} else {
+						LOG4CXX_WARN(logger, "buffer format error: " << buf);
+						rc = -1;
+					}
+				} else {
+					LOG4CXX_WARN(logger, "can not tpalloc " << type);
+					rc = -1;
+				}
 			} else {
 				LOG4CXX_WARN(logger, "can not support type of " << type);
 				rc = -1;

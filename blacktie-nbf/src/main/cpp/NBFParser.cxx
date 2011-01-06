@@ -54,9 +54,9 @@ bool NBFParser::parse(const char* buf, const char* id, NBFParserHandlers* handle
 	bool result = false;
 
 	if(isInitial && parser != NULL) {
+		parser->setPSVIHandler(handler);
 		parser->setDocumentHandler(handler);
 		parser->setErrorHandler(handler);
-		parser->setPSVIHandler(handler);
 		MemBufInputSource* memBufIS = new MemBufInputSource (
 				(const XMLByte*) buf,
 				strlen(buf),

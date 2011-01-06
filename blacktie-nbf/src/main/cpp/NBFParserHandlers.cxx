@@ -33,6 +33,7 @@ NBFParserHandlers::NBFParserHandlers(const char* attrName, int index) {
 	} else {
 		this->attrName = NULL;
 	}
+	this->qName = NULL;
 	this->attrValue = NULL;
 	this->attrType = NULL;
 	this->index = index;
@@ -41,6 +42,10 @@ NBFParserHandlers::NBFParserHandlers(const char* attrName, int index) {
 }
 
 NBFParserHandlers::~NBFParserHandlers() {
+	if(qName != NULL) {
+		free(qName);
+	}
+
 	if(attrName != NULL) {
 		free(attrName);
 	}
@@ -74,6 +79,12 @@ void NBFParserHandlers::startElement(const XMLCh* const name, AttributeList& att
 		found = true;
 		curIndex ++;
 	}
+
+	if(qName != NULL) {
+		free(qName);
+	}
+
+	qName = strdup(qname);
 }
 
 void NBFParserHandlers::endElement( const XMLCh* const name) {
@@ -92,7 +103,23 @@ void NBFParserHandlers::characters(const XMLCh* const name,
 
 	if(found && curIndex == index) {
 		LOG4CXX_DEBUG(logger, "find value " << value << " at index " << index);
-		attrValue = strdup(value);
+		if (attrType != NULL && strstr(attrType, "_type") != NULL) {
+			int size = strlen(qName) * 2 + strlen(value) + 5 + 1;
+			char* tmp = (char*) malloc (sizeof(char) * size);
+			int len = 0;
+			memset(tmp, 0, size);
+			sprintf(tmp, "<%s>%s</%s>", qName, value, qName);
+			if(attrValue != NULL) {
+				len = strlen(attrValue);
+				size += len;
+			}
+			attrValue = (char*) realloc(attrValue, size);
+			memset(attrValue + len, 0, size - len);	
+			strcat(attrValue, tmp);
+			free(tmp);
+		} else {
+			attrValue = strdup(value);
+		}
 	}
 }
 
@@ -124,6 +151,14 @@ void NBFParserHandlers::handleElementPSVI(const XMLCh* const localName,
 		const XMLCh* const uri,
 		PSVIElement* elementInfo) {
 	LOG4CXX_DEBUG(logger, "handleElementPSVI " << StrX(localName));
+	
+}
+
+void NBFParserHandlers::handlePartialElementPSVI(const XMLCh* const localName, 
+		const XMLCh* const uri,
+		PSVIElement* elementInfo) {
+	LOG4CXX_DEBUG(logger, "handlePartialElementPSVI " << StrX(localName));
+
 	StrX str(localName);
 	const char* qname = str.localForm();
 	if(strcmp(qname, attrName) == 0) {
@@ -139,7 +174,7 @@ void NBFParserHandlers::handleElementPSVI(const XMLCh* const localName,
 					strcmp(typeStr, "long") == 0 ||
 					strcmp(typeStr, "integer") == 0 ||
 					strcmp(typeStr, "float") == 0 ||
-					strstr(typeStr, "type") != NULL) {
+					strstr(typeStr, "_type") != NULL) {
 				if(attrType == NULL) {
 					attrType = strdup(typeStr);
 					LOG4CXX_INFO(logger, attrName << " has type of " << attrType);
@@ -149,12 +184,6 @@ void NBFParserHandlers::handleElementPSVI(const XMLCh* const localName,
 			typeInfo = typeInfo->getBaseType();
 		}
 	}
-}
-
-void NBFParserHandlers::handlePartialElementPSVI(const XMLCh* const localName, 
-		const XMLCh* const uri,
-		PSVIElement* elementInfo) {
-	LOG4CXX_DEBUG(logger, "handlePartialElementPSVI " << StrX(localName));
 }
 
 void NBFParserHandlers::handleAttributesPSVI(const XMLCh* const localName, 

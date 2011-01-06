@@ -38,27 +38,43 @@ void TestComplex::test_attribute() {
 	userlogc((char*) "test_attribute");
 	int rc;
 	char name[16];
-	//char value[16];
+	long id;
 	int len = 0; 
 
 	char* employee = tpalloc((char*)"BT_NBF", (char*)"employee", 0);
 	BT_ASSERT(employee != NULL);
 	rc = btaddattribute(&employee, (char*)"name", (char*)"zhfeng", 6);	
 	BT_ASSERT(rc == 0);
-	long id = 1234;
+	id = 1001;
 	rc = btaddattribute(&employee, (char*)"id", (char*)&id, sizeof(long));
 	BT_ASSERT(rc == 0);
 
 	char* buf = tpalloc((char*)"BT_NBF", (char*)"test", 0);
 	BT_ASSERT(buf != NULL);
 	rc = btaddattribute(&buf, (char*)"employee", employee, 0);
-	printf("%s\n", buf);
 
 	rc = btsetattribute(&employee, (char*)"name", 0, (char*)"tom", 3);
+	id = 1002;
+	rc = btsetattribute(&employee, (char*)"id", 0, (char*)&id, sizeof(long));
 	rc = btaddattribute(&buf, (char*)"employee", employee, 0);
-	printf("%s\n", buf);
-
-	rc = btgetattribute(buf, (char*)"employee", 0, employee, &len);
 	tpfree(employee);
+
+	int n;
+	n = btgetoccurs(buf, (char*)"employee");
+
+	for(int i = 0; i < n; i++) {
+		userlogc((char*) "get employee for index %d", i);
+		char* tmp_employee;
+		rc = btgetattribute(buf, (char*)"employee", i, (char*) &tmp_employee, &len);
+		BT_ASSERT(rc == 0);
+
+		printf("%s\n", tmp_employee);
+		btgetattribute(tmp_employee, (char*)"id", 0, (char*) &id, &len);
+		len = 16;
+		btgetattribute(tmp_employee, (char*)"name", 0, (char*) name, &len);
+		userlogc((char*)"id = %d, name = %s", id, name);
+		tpfree(tmp_employee);
+	}
+	
 	tpfree(buf);
 }
