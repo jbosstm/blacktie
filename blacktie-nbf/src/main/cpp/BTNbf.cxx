@@ -224,6 +224,14 @@ int btsetattribute(char** buf, char* attributeId, int attributeIndex, char* attr
 				value = (char*) malloc (sizeof(char) * 64);
 				memset(value, 0, 64);
 				sprintf(value, "%ld", *((long*)attributeValue));
+			} else if(strstr(type, "_type") != NULL) {
+				int pos_value = find_string(attributeValue, ".xsd\">", 0);
+				if(pos_value > 0) {
+					int size = strlen(attributeValue);
+					value = (char*) malloc (sizeof(char) * size);
+					memset(value, 0 , size);
+					strncpy(value, attributeValue + pos_value + 6, size - pos_value - strlen(attributeId) - 9);
+				}
 			}
 
 			insert_string(buf, value, pos);

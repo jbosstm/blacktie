@@ -62,9 +62,9 @@ void TestComplex::test_attribute() {
 	int n;
 	n = btgetoccurs(buf, (char*)"employee");
 
+	char* tmp_employee;
 	for(int i = 0; i < n; i++) {
 		userlogc((char*) "get employee for index %d", i);
-		char* tmp_employee;
 		rc = btgetattribute(buf, (char*)"employee", i, (char*) &tmp_employee, &len);
 		BT_ASSERT(rc == 0);
 
@@ -75,6 +75,16 @@ void TestComplex::test_attribute() {
 		userlogc((char*)"id = %d, name = %s", id, name);
 		tpfree(tmp_employee);
 	}
+
+	rc = btdelattribute(buf, (char*)"employee", 0);
+	BT_ASSERT(rc == 0);
+	printf(buf);
+
+	btgetattribute(buf, (char*)"employee", 0, (char*) &tmp_employee, &len);
+	btsetattribute(&tmp_employee, (char*)"name", 0, (char*)"another_tom", 12);
+	rc = btsetattribute(&buf, (char*)"employee", 0, tmp_employee, 0);
+	printf(buf);
+	tpfree(tmp_employee);
 	
 	tpfree(buf);
 }
