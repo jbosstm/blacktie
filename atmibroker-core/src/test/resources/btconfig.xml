@@ -75,15 +75,15 @@
 	<ENV_VARIABLES>
 		<ENV_VARIABLE configuration="linux">
 			<NAME>test-lib</NAME>
-			<VALUE>libatmibroker-idl-cxx.so</VALUE>
+			<VALUE>libatmibroker-core.so</VALUE>
 		</ENV_VARIABLE>
 		<ENV_VARIABLE configuration="win32">
 			<NAME>test-lib</NAME>
-			<VALUE>libatmibroker-idl-cxx.dll</VALUE>
+			<VALUE>atmibroker-core.dll</VALUE>
 		</ENV_VARIABLE>
 		<ENV_VARIABLE>
 			<NAME>test-symbol</NAME>
-			<VALUE>_ZN15CosTransactions17_tc_NoTransactionE</VALUE>
+			<VALUE>userlogc</VALUE>
 		</ENV_VARIABLE>
 	</ENV_VARIABLES>
 </ENVIRONMENT>
