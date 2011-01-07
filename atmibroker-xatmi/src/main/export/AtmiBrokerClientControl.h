@@ -26,6 +26,10 @@
 extern "C" {
 #endif
 extern BLACKTIE_XATMI_DLL int clientinit();
+/**
+ * This should only be called after the serverdone, never before or you will clean up
+ * internal code such as AtmiBrokerMem
+ */
 extern BLACKTIE_XATMI_DLL int clientdone(int sig);
 #ifdef __cplusplus
 }

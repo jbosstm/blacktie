@@ -65,11 +65,11 @@ void LoopyServerAndClient::testLoopyAll() {
 		BT_ASSERT(result != -1);
 		BT_ASSERT(tperrno == 0);
 
-		result = clientdone(0);
+		result = serverdone();
 		BT_ASSERT(result != -1);
 		BT_ASSERT(tperrno == 0);
 
-		result = serverdone();
+		result = clientdone(0);
 		BT_ASSERT(result != -1);
 		BT_ASSERT(tperrno == 0);
 	}
@@ -98,11 +98,11 @@ void LoopyServerAndClient::testLoopyAll2() {
 		BT_ASSERT(result != -1);
 		BT_ASSERT(tperrno == 0);
 
-		result = clientdone(0);
+		result = serverdone();
 		BT_ASSERT(result != -1);
 		BT_ASSERT(tperrno == 0);
 
-		result = serverdone();
+		result = clientdone(0);
 		BT_ASSERT(result != -1);
 		BT_ASSERT(tperrno == 0);
 	}
@@ -135,11 +135,11 @@ void LoopyServerAndClient::testLoopyAdvertise() {
 		BT_ASSERT(tperrno == 0);
 	}
 
-	result = clientdone(0);
+	result = serverdone();
 	BT_ASSERT(result != -1);
 	BT_ASSERT(tperrno == 0);
 
-	result = serverdone();
+	result = clientdone(0);
 	BT_ASSERT(result != -1);
 	BT_ASSERT(tperrno == 0);
 }
