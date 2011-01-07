@@ -34,7 +34,7 @@ SynchronizableObject::SynchronizableObject() :
 }
 
 SynchronizableObject::~SynchronizableObject() {
-	LOG4CXX_DEBUG(logger, (char*) "SynchronizableObject destroyed: " << this);
+	//BLACKTIE-339 LOG4CXX_DEBUG(logger, (char*) "SynchronizableObject destroyed: " << this);
 }
 
 bool SynchronizableObject::lock() {
