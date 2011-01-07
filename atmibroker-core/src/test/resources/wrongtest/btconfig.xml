@@ -70,15 +70,15 @@
 	<ENV_VARIABLES>
 		<ENV_VARIABLE configuration="linux">
 			<NAME>test-lib</NAME>
-			<VALUE>libtx-test-utilities.so</VALUE>
+			<VALUE>libatmibroker-idl-cxx.so</VALUE>
 		</ENV_VARIABLE>
 		<ENV_VARIABLE configuration="win32">
 			<NAME>test-lib</NAME>
-			<VALUE>tx-test-utilities.dll</VALUE>
+			<VALUE>libatmibroker-idl-cxx.dll</VALUE>
 		</ENV_VARIABLE>
 		<ENV_VARIABLE>
 			<NAME>test-symbol</NAME>
-			<VALUE>testxasw</VALUE>
+			<VALUE>_ZN15CosTransactions17_tc_NoTransactionE</VALUE>
 		</ENV_VARIABLE>
 	</ENV_VARIABLES>
 </ENVIRONMENT>

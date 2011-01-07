@@ -17,7 +17,7 @@
  */
 #include "xa.h"
 #include "testrm.h"
-// REMOVED BY TOM AS THIS MODULE AND ATMIBROKER_CORE CREATE A CYCLIC DEPENDENCY #include <userlogc.h>
+#include <userlogc.h>
 
 #include <stdlib.h>
 #include "ace/OS_NS_unistd.h"
@@ -63,9 +63,7 @@ int dummy_rm_del_fault(int id)
 {
 	fault_t *curr, *prev = 0;
 
-	// REMOVED BY TOM AS THIS MODULE AND ATMIBROKER_CORE CREATE A CYCLIC DEPENDENCY 
-	//userlogc_debug("dummy_rm: del_fault: %d", id);
-	printf("dummy_rm: del_fault: %d", id);
+	userlogc_debug("dummy_rm: del_fault: %d", id);
 	for (curr = faults; curr; prev = curr, curr = curr->next) {
 		if (curr->id == id) {
 			if (prev == NULL)
@@ -89,9 +87,7 @@ int dummy_rm_add_fault(fault_t *fault)
 {
 	fault_t *last;
 
-	// REMOVED BY TOM AS THIS MODULE AND ATMIBROKER_CORE CREATE A CYCLIC DEPENDENCY 
-	//userlogc_debug("dummy_rm: del_fault:");
-	printf("dummy_rm: del_fault:");
+	userlogc_debug("dummy_rm: del_fault:");
 
 	if (fault == 0)
 		return 1;
@@ -142,21 +138,15 @@ static int apply_faults(XID *xid, enum XA_OP op, int rmid)
 	long *larg;
 	long fc = 0L;
 
-	// REMOVED BY TOM AS THIS MODULE AND ATMIBROKER_CORE CREATE A CYCLIC DEPENDENCY 
-	//userlogc_debug("dummy_rm: apply_faults: op=%d rmid=%d\n", op, rmid);
-	printf("dummy_rm: apply_faults: op=%d rmid=%d\n", op, rmid);
+	userlogc_debug("dummy_rm: apply_faults: op=%d rmid=%d\n", op, rmid);
 
 	for (f = faults; f; f = f->next) {
 		fc += 1;
 
 		if (fc == 100)
-			// REMOVED BY TOM AS THIS MODULE AND ATMIBROKER_CORE CREATE A CYCLIC DEPENDENCY 
-			//userlogc_debug("dummy_rm: too many fault specifications\n");
-			printf("dummy_rm: too many fault specifications\n");
+			userlogc_debug("dummy_rm: too many fault specifications\n");
 		if (f->rmid == rmid && f->op == op) {
-			// REMOVED BY TOM AS THIS MODULE AND ATMIBROKER_CORE CREATE A CYCLIC DEPENDENCY 
-			//userlogc_debug("dummy_rm: applying fault %d to op %d rc %d\n", f->xf, op, f->rc);
-			printf("dummy_rm: applying fault %d to op %d rc %d\n", f->xf, op, f->rc);
+			userlogc_debug("dummy_rm: applying fault %d to op %d rc %d\n", f->xf, op, f->rc);
 			switch (f->xf) {
 			default:
 				break;
@@ -171,16 +161,12 @@ static int apply_faults(XID *xid, enum XA_OP op, int rmid)
 				break;
 			}
 
-			// REMOVED BY TOM AS THIS MODULE AND ATMIBROKER_CORE CREATE A CYCLIC DEPENDENCY 
-			//userlogc_debug("dummy_rm: fault return: %d", f->rc);
-			printf("dummy_rm: fault return: %d", f->rc);
+			userlogc_debug("dummy_rm: fault return: %d", f->rc);
 			return f->rc;
 		}
 	}
 
-	// REMOVED BY TOM AS THIS MODULE AND ATMIBROKER_CORE CREATE A CYCLIC DEPENDENCY 
-	//userlogc_debug("dummy_rm: fault return: XA_OK\n");
-	printf("dummy_rm: fault return: XA_OK\n");
+	userlogc_debug("dummy_rm: fault return: XA_OK\n");
 	return XA_OK;
 }
 
