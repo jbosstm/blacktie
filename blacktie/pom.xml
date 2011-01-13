@@ -213,6 +213,7 @@
 		<module>../atmibroker-tx</module>
 		<module>../atmibroker-hybrid</module>
 		<module>../atmibroker-xatmi</module>
+		<module>../blacktie-nbf</module>
 		<module>../btadmin</module>
 		<module>../codeGeneration</module>
 		<module>../integration-tests</module>

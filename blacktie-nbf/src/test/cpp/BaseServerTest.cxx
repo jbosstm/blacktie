@@ -15,11 +15,40 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "TestNBFParser.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestNBFParser );
-#include "TestBTNbf.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestBTNbf );
-#include "TestComplex.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestComplex );
-#include "TestNBFCall.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestNBFCall );
+#include "TestAssert.h"
+#include "BaseServerTest.h"
+#include "BaseTest.h"
+
+extern "C" {
+#include "AtmiBrokerServerControl.h"
+}
+
+#include "xatmi.h"
+
+void BaseServerTest::setUp() {
+	// Perform initial start up
+	BaseTest::setUp();
+	startServer();
+}
+
+void BaseServerTest::startServer() {
+#ifdef WIN32
+		char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"-i", (char*)"1"};
+#else
+		char* argv[] = {(char*)"server", (char*)"-c", (char*)"linux", (char*)"-i", (char*)"1"};
+#endif
+	int argc = sizeof(argv)/sizeof(char*);
+
+	int result = serverinit(argc, argv);
+	// Check that there is no error on server setup
+	BT_ASSERT(result != -1);
+	BT_ASSERT(tperrno == 0);
+}
+
+void BaseServerTest::tearDown() {
+	// Stop the server
+	serverdone();
+
+	// Perform additional clean up
+	BaseTest::tearDown();
+}

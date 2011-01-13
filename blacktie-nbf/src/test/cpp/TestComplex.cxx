@@ -78,12 +78,12 @@ void TestComplex::test_attribute() {
 
 	rc = btdelattribute(buf, (char*)"employee", 0);
 	BT_ASSERT(rc == 0);
-	printf(buf);
+	printf("%s\n", buf);
 
 	btgetattribute(buf, (char*)"employee", 0, (char*) &tmp_employee, &len);
 	btsetattribute(&tmp_employee, (char*)"name", 0, (char*)"another_tom", 12);
 	rc = btsetattribute(&buf, (char*)"employee", 0, tmp_employee, 0);
-	printf(buf);
+	printf("%s\n", buf);
 	tpfree(tmp_employee);
 	
 	tpfree(buf);

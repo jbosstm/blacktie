@@ -37,6 +37,14 @@ char* BufferConverterImpl::convertToWireFormat(char* bufferType,
 		*wireFormatBufferLength = 1;
 		data_togo = new char[*wireFormatBufferLength];
 		data_togo[0] = NULL;
+	} else if (strncmp(bufferType, "BT_NBF", 6) == 0) {
+		data_togo = new char[*wireFormatBufferLength];
+		
+		LOG4CXX_TRACE(logger, (char*) "allocated: " << *wireFormatBufferLength);
+		if (*wireFormatBufferLength != 0) {
+			memcpy(data_togo, memoryFormatBuffer, *wireFormatBufferLength);
+			LOG4CXX_TRACE(logger, (char*) "copied: idata into: data_togo");
+		}
 	} else if (strncmp(bufferType, "X_OCTET", 8) == 0) {
 		data_togo = new char[*wireFormatBufferLength];
 
@@ -83,6 +91,16 @@ char* BufferConverterImpl::convertToMemoryFormat(char* bufferType,
 	if (strlen(bufferType) == 0) {
 		LOG4CXX_TRACE(logger, (char*) "Received NULL buffer");
 		*memoryFormatBufferLength = 0;
+	} else if (strncmp(bufferType, "BT_NBF", 6) == 0) {
+		LOG4CXX_TRACE(logger, (char*) "Received an BT_NBF buffer");
+		*memoryFormatBufferLength = *memoryFormatBufferLength;
+		LOG4CXX_TRACE(logger, (char*) "Allocating DATA");
+		data_tostay = (char*) malloc(*memoryFormatBufferLength);
+		LOG4CXX_TRACE(logger, (char*) "Allocated");
+		if (*memoryFormatBufferLength > 0) {
+			memcpy(data_tostay, memoryFormatBuffer, *memoryFormatBufferLength);
+			LOG4CXX_TRACE(logger, (char*) "Copied");
+		}
 	} else if (strncmp(bufferType, "X_OCTET", 8) == 0) {
 		LOG4CXX_TRACE(logger, (char*) "Received an X_OCTET buffer");
 		*memoryFormatBufferLength = *memoryFormatBufferLength;

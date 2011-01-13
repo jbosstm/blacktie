@@ -15,11 +15,37 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "TestNBFParser.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestNBFParser );
-#include "TestBTNbf.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestBTNbf );
-#include "TestComplex.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestComplex );
-#include "TestNBFCall.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestNBFCall );
+#include "TestAssert.h"
+
+#include "BaseTest.h"
+#include "ThreadLocalStorage.h"
+
+#include "xatmi.h"
+extern "C" {
+#include "AtmiBrokerClientControl.h"
+}
+
+#include "malloc.h"
+
+void BaseTest::setUp() {
+	init_ace();
+	// Perform global set up
+	TestFixture::setUp();
+	// previous tests may have left a txn on the thread
+	destroySpecific(TSS_KEY);
+}
+
+void BaseTest::tearDown() {
+	// Perform clean up
+	::clientdone(0);
+	char* tperrnoS = (char*) malloc(110);
+	sprintf(tperrnoS, "%d", tperrno);
+	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
+	free(tperrnoS);
+	// previous tests may have left a txn on the thread
+	destroySpecific(TSS_KEY);
+
+	// Perform global clean up
+	TestFixture::tearDown();
+}
+

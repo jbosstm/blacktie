@@ -15,11 +15,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "TestNBFParser.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestNBFParser );
-#include "TestBTNbf.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestBTNbf );
-#include "TestComplex.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestComplex );
-#include "TestNBFCall.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestNBFCall );
+#ifndef Test_NBFCall_H
+#define Test_NBFCall_H
+
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFixture.h>
+
+#include "BaseServerTest.h"
+
+class TestNBFCall: public BaseServerTest {
+	CPPUNIT_TEST_SUITE(TestNBFCall);
+	CPPUNIT_TEST(test_tpcall);
+	CPPUNIT_TEST_SUITE_END();
+public:
+	void test_tpcall();
+
+	virtual void setUp();
+	virtual void tearDown();
+};
+
+#endif

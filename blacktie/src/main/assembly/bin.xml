@@ -216,6 +216,16 @@
 			</includes>
 		</fileSet>
 		<fileSet>
+			<directory>../blacktie-nbf/target/debug/shared
+			</directory>
+			<outputDirectory>lib/cxx</outputDirectory>
+			<includes>
+				<include>*.dll</include>
+				<include>*.lib</include>
+				<include>*.so</include>
+			</includes>
+		</fileSet>
+		<fileSet>
 			<directory>../atmibroker-xatmi/target/cxx/runtime/lib
 			</directory>
 			<outputDirectory>lib/cxx</outputDirectory>
