@@ -89,7 +89,7 @@ int btaddattribute(char** buf, char* attributeId, char* attributeValue, int len)
 	LOG4CXX_TRACE(logger, (char*) "btaddattribute");
 	int rc = -1;
 	char* p = *buf;
-	char* q = rindex(p, '<');
+	char* q = strrchr(p, '<');
 
 	if(q == NULL) {
 		LOG4CXX_WARN(logger, (char*) "buffer not validate");
