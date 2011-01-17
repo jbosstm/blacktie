@@ -35,7 +35,7 @@ Installing Blacktie into JBoss AS
       </security-setting>
    3 Configure JBoss AS to use JTS:
    	- cd JBOSS_HOME/docs/examples/transactions;
-   	- Type: ant jts -Dtarget.server.dir=all-with-hornetq (this installs the JTS version of JBoss Transactions);
+   	- Type: ant jts -Dtarget.server.dir=../../../server/all-with-hornetq (this installs the JTS version of JBoss Transactions);
    	- Edit JBOSS_HOME/server/all-with-hornetq/conf/jbossts-properties.xml to change the CONFIGURATION_FILE to NAME_SERVICE
       (this cause JBossTS to make its TransactionFactory available as a CORBA object);
    4. Edit $BLACKTIE_HOME/setenv.sh|bat:
@@ -51,7 +51,9 @@ Running the Examples
 
    1. cd $BLACKTIE_HOME
    2. Make sure the setenv.[sh|bat] script has been sourced
-   3. To run all the examples execute the samples script run_all_samples.[sh|bat]
+   3. To run the queue example you need to deploy a special queue
+      (see examples/xatmi/queues/README for instruction on how to deploy the queue))
+   4. To run all the examples execute the samples script run_all_samples.[sh|bat]
 
 examples/xatmi/txfooapp
     Demonstrates updating multiple databases within a single transaction. To run the example follow the README.
@@ -64,6 +66,10 @@ examples/admin/jmx
 
 examples/admin/xatmi
     Starts a simple server and then stops the server by sending XATMI requests to the Administration service
+
+examples/xatmi/queues
+	Tests "externally managed queues" by sending asynchronous service requests before the service is running.
+	Then a service is started to process those requests.
 
 examples/security
     Shows how services may be secured using the <security> element in the BlackTie configuration file (btconfig.xml)

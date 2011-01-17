@@ -143,7 +143,7 @@ void TestTransactions::test_protocol()
 
 	BT_ASSERT_EQUAL(TX_OK, tx_open());
 	/* cause RM 102 start to fail */
-	fault_t fault = {0, 102, O_XA_START, XAER_RMERR};
+	fault_t fault = {0, 102, O_XA_START, XAER_RMERR, F_NONE};
 	(void) dummy_rm_add_fault(&fault);
 	// tx_begin should return TX_ERROR if rm return errors, and the caller is not in transaction mode
 	BT_ASSERT_EQUAL(TX_ERROR, tx_begin());
@@ -249,9 +249,9 @@ void TestTransactions::test_rollback()
 	// TODO check the behaviour when a real RM is used.
 	userlogc_debug("TestTransactions::test_rollback begin");
 
-	fault_t fault1 = {0, 102, O_XA_COMMIT, XA_HEURHAZ};
+	fault_t fault1 = {0, 102, O_XA_COMMIT, XA_HEURHAZ, F_NONE};
 	/* cause RM 102 start to fail */
-	fault_t fault2 = {0, 102, O_XA_START, XAER_RMERR};
+	fault_t fault2 = {0, 102, O_XA_START, XAER_RMERR, F_NONE};
 
 	BT_ASSERT_EQUAL(TX_OK, tx_open());
 	BT_ASSERT_EQUAL(TX_OK, tx_begin());
@@ -281,9 +281,9 @@ void TestTransactions::test_rollback()
 void TestTransactions::test_RM()
 {
 	/* cause RM 102 to generate a mixed heuristic */
-	fault_t fault1 = {0, 102, O_XA_COMMIT, XA_HEURMIX};
+	fault_t fault1 = {0, 102, O_XA_COMMIT, XA_HEURMIX, F_NONE};
 	/* cause RM 102 start to fail */
-	fault_t fault2 = {0, 102, O_XA_START, XAER_RMERR};
+	fault_t fault2 = {0, 102, O_XA_START, XAER_RMERR, F_NONE};
 
 	userlogc_debug("TestTransactions::test_RM begin");
 	/* inject a commit fault in Resource Manager with rmid 102 */

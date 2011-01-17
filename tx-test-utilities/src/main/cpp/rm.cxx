@@ -157,7 +157,13 @@ static int apply_faults(XID *xid, enum XA_OP op, int rmid)
 				break;
 			case F_DELAY:
 				larg = (long*) f->arg;
-				(void) ACE_OS::sleep(*larg);
+
+				if (larg == 0 || *larg < 0L || *larg > 3600L) {
+					userlogc_warn("dummy_rm: sleep period is invalid arg=%ld", larg == 0 ? 0 : *larg);
+				} else {
+					userlogc_debug("dummy_rm: delaying for %ld seconds\n", *larg);
+					(void) ACE_OS::sleep(*larg);
+				}
 				break;
 			}
 
