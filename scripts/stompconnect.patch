@@ -1,0 +1,1183 @@
+Index: src/main/java/org/codehaus/stomp/tcp/TcpTransport.java
+===================================================================
+--- src/main/java/org/codehaus/stomp/tcp/TcpTransport.java	(revision 90)
++++ src/main/java/org/codehaus/stomp/tcp/TcpTransport.java	(working copy)
+@@ -42,7 +42,7 @@
+ import java.util.Map;
+ 
+ /**
+- * @version $Revision: $
++ * @version $Revision$
+  */
+ public class TcpTransport extends ServiceSupport implements Runnable, StompHandler {
+     private static final Log log = LogFactory.getLog(TcpTransport.class);
+@@ -99,7 +99,9 @@
+     /**
+      * A one way asynchronous send
+      */
+-    public void onStompFrame(StompFrame command) throws Exception {
++    // PATCHED BY TOM - THIS CAN BE INVOKED BY THE RECEIPT FOR A SUBSCRIPTION AT THE SAME
++    // TIME AS THE FIRST MESSAGE IS RECEIVED
++    public synchronized void onStompFrame(StompFrame command) throws Exception {
+         checkStarted();
+         marshaller.marshal(command, dataOut);
+         dataOut.flush();
+@@ -391,10 +393,10 @@
+     }
+ 
+     protected void initializeStreams() throws Exception {
+-        TcpBufferedInputStream buffIn = new TcpBufferedInputStream(socket.getInputStream(), ioBufferSize);
+-        this.dataIn = new DataInputStream(buffIn);
+-        TcpBufferedOutputStream buffOut = new TcpBufferedOutputStream(socket.getOutputStream(), ioBufferSize);
+-        this.dataOut = new DataOutputStream(buffOut);
++//        TcpBufferedInputStream buffIn = new TcpBufferedInputStream(socket.getInputStream(), ioBufferSize);
++        this.dataIn = new DataInputStream(socket.getInputStream());//new DataInputStream(buffIn);
++  //      TcpBufferedOutputStream buffOut = new TcpBufferedOutputStream(socket.getOutputStream(), ioBufferSize);
++        this.dataOut = new DataOutputStream(socket.getOutputStream());//new DataOutputStream(buffOut);
+     }
+ 
+     protected void closeStreams() throws IOException {
+Index: src/main/java/org/codehaus/stomp/jms/StompSession.java
+===================================================================
+--- src/main/java/org/codehaus/stomp/jms/StompSession.java	(revision 90)
++++ src/main/java/org/codehaus/stomp/jms/StompSession.java	(working copy)
+@@ -17,6 +17,8 @@
+  */
+ package org.codehaus.stomp.jms;
+ 
++import org.apache.commons.logging.Log;
++import org.apache.commons.logging.LogFactory;
+ import org.codehaus.stomp.ProtocolException;
+ import org.codehaus.stomp.Stomp;
+ import org.codehaus.stomp.StompFrame;
+@@ -27,6 +29,8 @@
+ import java.util.HashMap;
+ import java.util.Iterator;
+ import java.util.Map;
++import java.util.List;
++import java.util.ArrayList;
+ 
+ /**
+  * Represents a logical session (a parallel unit of work) within a Stomp connection
+@@ -37,7 +41,9 @@
+     private final ProtocolConverter protocolConverter;
+     private final Session session;
+     private MessageProducer producer;
+-    private Map<String, Destination> temporaryDestinations = new HashMap<String, Destination>();
++    private static Map<String, Destination> temporaryDestinations = new HashMap<String, Destination>();
++    private List<String> created = new ArrayList<String>();
++    private static final Log log = LogFactory.getLog(StompSession.class);
+ 
+     public StompSession(ProtocolConverter protocolConverter, Session session) {
+         this.protocolConverter = protocolConverter;
+@@ -61,14 +67,20 @@
+ 
+     public void close() throws JMSException {
+         session.close();
++	synchronized (temporaryDestinations) {
++		Iterator<String> i = created.iterator();
++		while (i.hasNext()) {
++			temporaryDestinations.remove(i.next());
++		}
++	}
+     }
+ 
+     public void sendToJms(StompFrame command) throws JMSException, ProtocolException {
+         Map headers = command.getHeaders();
+         String destinationName = (String) headers.remove(Stomp.Headers.Send.DESTINATION);
+         Message message = convertFrame(command);
++        Destination destination = convertDestination(destinationName, false);
+ 
+-        Destination destination = convertDestination(destinationName);
+ 
+         int deliveryMode = getDeliveryMode(headers);
+         int priority = getPriority(headers);
+@@ -78,12 +90,13 @@
+     }
+ 
+     public void sendToStomp(Message message, StompSubscription subscription) throws Exception {
++    	log.debug("Sending to stomp");
+         StompFrame frame = convertMessage(message);
+         frame.getHeaders().put(Stomp.Headers.Message.SUBSCRIPTION, subscription.getSubscriptionId());
+         protocolConverter.sendToStomp(frame);
+     }
+ 
+-    public Destination convertDestination(String name) throws ProtocolException, JMSException {
++    public Destination convertDestination(String name, boolean forceNew) throws ProtocolException, JMSException {
+         if (name == null) {
+             throw new ProtocolException("No destination is specified!");
+         }
+@@ -97,11 +110,22 @@
+         }
+         else if (name.startsWith("/temp-queue/")) {
+             String tempName = name.substring("/temp-queue/".length(), name.length());
+-            return temporaryDestination(tempName, session.createTemporaryQueue());
++	    Destination answer = temporaryDestinations.get(tempName);
++
++            if (forceNew || answer == null) {
++	            return temporaryDestination(tempName, session.createTemporaryQueue());
++	    } else {
++		    return answer;
++	    }
+         }
+         else if (name.startsWith("/temp-topic/")) {
+             String tempName = name.substring("/temp-topic/".length(), name.length());
+-            return temporaryDestination(tempName, session.createTemporaryTopic());
++            Destination answer = temporaryDestinations.get(tempName);
++            if (forceNew || answer == null) {
++	            return temporaryDestination(tempName, session.createTemporaryTopic());
++	    } else {
++		    return answer;
++	    }
+         }
+         else {
+             throw new ProtocolException("Illegal destination name: [" + name + "] -- StompConnect destinations " +
+@@ -118,6 +142,7 @@
+             Topic topic = (Topic) d;
+             if (d instanceof TemporaryTopic) {
+                 buffer.append("/temp-topic/");
++                temporaryDestination(topic.getTopicName(), d);
+             }
+             else {
+                 buffer.append("/topic/");
+@@ -128,6 +153,7 @@
+             Queue queue = (Queue) d;
+             if (d instanceof TemporaryQueue) {
+                 buffer.append("/temp-queue/");
++                temporaryDestination(queue.getQueueName(), d);
+             }
+             else {
+                 buffer.append("/queue/");
+@@ -139,12 +165,17 @@
+ 
+ 
+     protected synchronized Destination temporaryDestination(String tempName, Destination temporaryDestination) {
+-        Destination answer = temporaryDestinations.get(tempName);
+-        if (answer == null) {
+-            temporaryDestinations.put(tempName, temporaryDestination);
+-            answer = temporaryDestination;
++        synchronized (temporaryDestinations) {
++                temporaryDestinations.put(tempName, temporaryDestination);
++	    	created.add(tempName);
++		try {
++//			System.out.println("Added: " + tempName + " for " + ((Queue)temporaryDestination).getQueueName());
++			//throw new Throwable();
++		} catch (Throwable t) {
++			//t.printStackTrace();
++		}
+         }
+-        return answer;
++	return temporaryDestination;
+     }
+ 
+     protected int getDeliveryMode(Map headers) throws JMSException {
+@@ -223,7 +254,7 @@
+ 
+         o = headers.remove(Stomp.Headers.Send.REPLY_TO);
+         if (o != null) {
+-            msg.setJMSReplyTo(convertDestination((String) o));
++            msg.setJMSReplyTo(convertDestination((String) o, false));
+         }
+ 
+         // now the general headers
+Index: src/main/java/org/codehaus/stomp/jms/StompSubscription.java
+===================================================================
+--- src/main/java/org/codehaus/stomp/jms/StompSubscription.java	(revision 90)
++++ src/main/java/org/codehaus/stomp/jms/StompSubscription.java	(working copy)
+@@ -53,7 +53,7 @@
+         Map headers = frame.getHeaders();
+         String selector = (String) headers.remove(Stomp.Headers.Subscribe.SELECTOR);
+         String destinationName = (String) headers.get(Stomp.Headers.Subscribe.DESTINATION);
+-        destination = session.convertDestination(destinationName);
++        destination = session.convertDestination(destinationName, true);
+         Session jmsSession = session.getSession();
+         boolean noLocal = false;
+ 
+@@ -82,14 +82,19 @@
+     }
+ 
+     public void onMessage(Message message) {
++    	log.debug("onMessage3");
+         try {
+             int ackMode = session.getSession().getAcknowledgeMode();
+-            if (ackMode == Session.CLIENT_ACKNOWLEDGE) {
+-                synchronized (this) {
+-                    session.getProtocolConverter().addMessageToAck(message);
+-                }
+-            }
+-            session.sendToStomp(message, this);
++			if (ackMode == Session.CLIENT_ACKNOWLEDGE) {
++				synchronized (consumer) {
++					boolean closing = session.getProtocolConverter()
++							.addMessageToAck(message, consumer);
++					if (!closing) {
++						session.sendToStomp(message, this);
++						consumer.wait();
++					}
++				}
++			}
+         }
+         catch (Exception e) {
+             log.error("Failed to process message due to: " + e + ". Message: " + message, e);
+Index: src/main/java/org/codehaus/stomp/jms/ProtocolConverter.java
+===================================================================
+--- src/main/java/org/codehaus/stomp/jms/ProtocolConverter.java	(revision 90)
++++ src/main/java/org/codehaus/stomp/jms/ProtocolConverter.java	(working copy)
+@@ -17,6 +17,23 @@
+  */
+ package org.codehaus.stomp.jms;
+ 
++import java.io.ByteArrayOutputStream;
++import java.io.OutputStreamWriter;
++import java.io.PrintWriter;
++import java.util.ArrayList;
++import java.util.Collection;
++import java.util.HashMap;
++import java.util.Iterator;
++import java.util.Map;
++import java.util.concurrent.ConcurrentHashMap;
++
++import javax.jms.Connection;
++import javax.jms.ConnectionFactory;
++import javax.jms.JMSException;
++import javax.jms.Message;
++import javax.jms.MessageConsumer;
++import javax.jms.Session;
++
+ import org.apache.commons.logging.Log;
+ import org.apache.commons.logging.LogFactory;
+ import org.codehaus.stomp.ProtocolException;
+@@ -26,451 +43,494 @@
+ import org.codehaus.stomp.StompHandler;
+ import org.codehaus.stomp.util.IntrospectionSupport;
+ 
+-import javax.jms.Connection;
+-import javax.jms.ConnectionFactory;
+-import javax.jms.JMSException;
+-import javax.jms.Message;
+-import javax.jms.Session;
+-import java.io.ByteArrayOutputStream;
+-import java.io.OutputStreamWriter;
+-import java.io.PrintWriter;
+-import java.util.HashMap;
+-import java.util.Map;
+-import java.util.Collection;
+-import java.util.ArrayList;
+-import java.util.concurrent.ConcurrentHashMap;
+-
+ /**
+  * A protocol switch between JMS and Stomp
+- *
++ * 
+  * @author <a href="http://people.apache.org/~jstrachan/">James Strachan</a>
+  * @author <a href="http://hiramchirino.com">chirino</a>
+  */
+ public class ProtocolConverter implements StompHandler {
+-    private static final transient Log log = LogFactory.getLog(ProtocolConverter.class);
+-    private ConnectionFactory connectionFactory;
+-    private final StompHandler outputHandler;
+-    private Connection connection;
+-    private StompSession defaultSession;
+-    private StompSession clientAckSession;
+-    private final Map<String,StompSession> transactedSessions = new ConcurrentHashMap<String,StompSession>();
+-    private final Map subscriptions = new ConcurrentHashMap();
+-    private final Map messages = new ConcurrentHashMap();
++	private static final transient Log log = LogFactory
++			.getLog(ProtocolConverter.class);
++	private ConnectionFactory connectionFactory;
++	private final StompHandler outputHandler;
++	private Connection connection;
++	private StompSession defaultSession;
++	private StompSession clientAckSession;
++	private final Map<String, StompSession> transactedSessions = new ConcurrentHashMap<String, StompSession>();
++	private final Map subscriptions = new ConcurrentHashMap();
++	private final Map messages = new ConcurrentHashMap();
++	private volatile boolean closing;
+ 
+-    public ProtocolConverter(ConnectionFactory connectionFactory, StompHandler outputHandler) {
+-        this.connectionFactory = connectionFactory;
+-        this.outputHandler = outputHandler;
+-    }
++	public ProtocolConverter(ConnectionFactory connectionFactory,
++			StompHandler outputHandler) {
++		this.connectionFactory = connectionFactory;
++		this.outputHandler = outputHandler;
++	}
+ 
+-    public ConnectionFactory getConnectionFactory() {
+-        return connectionFactory;
+-    }
++	public ConnectionFactory getConnectionFactory() {
++		return connectionFactory;
++	}
+ 
+-    public StompHandler getOutputHandler() {
+-        return outputHandler;
+-    }
++	public StompHandler getOutputHandler() {
++		return outputHandler;
++	}
+ 
+-    public synchronized void close() throws JMSException {
+-        try {
+-            // lets close all the sessions first
+-            JMSException firstException = null;
+-            Collection<StompSession> sessions = new ArrayList<StompSession>(transactedSessions.values());
+-            if (defaultSession != null) {
+-                sessions.add(defaultSession);
+-            }
+-            if (clientAckSession != null) {
+-                sessions.add(clientAckSession);
+-            }
+-            for (StompSession session : sessions) {
+-                try {
+-                    if (log.isDebugEnabled()) {
+-                        log.debug("Closing session: " + session + " with ack mode: " + session.getSession().getAcknowledgeMode());
+-                    }
+-                    session.close();
+-                }
+-                catch (JMSException e) {
+-                    if (firstException == null) {                                           
+-                        firstException = e;
+-                    }
+-                }
+-            }
++	public synchronized void close() throws JMSException {
++		closing = true;
++		try {
++			// PATCHED BY TOM FOR SINGLE MESSAGE DELIVERY
++			Iterator iterator = messages.values().iterator();
++			while (iterator.hasNext()) {
++				MSC msc = (MSC) iterator.next();
++				synchronized (msc.consumer) {
++					msc.consumer.setMessageListener(null);
++					msc.consumer.notify();
++				}
++			}
+ 
+-            // now the connetion
+-            if (connection != null) {
+-                connection.close();
+-            }
++			// lets close all the sessions first
++			JMSException firstException = null;
++			Collection<StompSession> sessions = new ArrayList<StompSession>(
++					transactedSessions.values());
++			if (defaultSession != null) {
++				sessions.add(defaultSession);
++			}
++			if (clientAckSession != null) {
++				sessions.add(clientAckSession);
++			}
++			for (StompSession session : sessions) {
++				try {
++					if (log.isDebugEnabled()) {
++						log.debug("Closing session: " + session
++								+ " with ack mode: "
++								+ session.getSession().getAcknowledgeMode());
++					}
++					session.close();
++				} catch (JMSException e) {
++					if (firstException == null) {
++						firstException = e;
++					}
++				}
++			}
+ 
+-            if (firstException != null) {
+-                throw firstException;
+-            }
+-        }
+-        finally {
+-            connection = null;
+-            defaultSession = null;
+-            clientAckSession = null;
+-            transactedSessions.clear();
+-            subscriptions.clear();
+-            messages.clear();
+-        }
+-    }
++			// now the connetion
++			if (connection != null) {
++				connection.close();
++			}
+ 
+-    /**
+-     * Process a Stomp Frame
+-     */
+-    public void onStompFrame(StompFrame command) throws Exception {
+-        try {
+-            if (log.isDebugEnabled()) {
+-                log.debug(">>>> " + command.getAction() + " headers: " + command.getHeaders());
+-            }
+-            
+-            if (command.getClass() == StompFrameError.class) {
+-                throw ((StompFrameError) command).getException();
+-            }
++			if (firstException != null) {
++				throw firstException;
++			}
++		} finally {
++			connection = null;
++			defaultSession = null;
++			clientAckSession = null;
++			transactedSessions.clear();
++			subscriptions.clear();
++			messages.clear();
++		}
++	}
+ 
+-            String action = command.getAction();
+-            if (action.startsWith(Stomp.Commands.SEND)) {
+-                onStompSend(command);
+-            }
+-            else if (action.startsWith(Stomp.Commands.ACK)) {
+-                onStompAck(command);
+-            }
+-            else if (action.startsWith(Stomp.Commands.BEGIN)) {
+-                onStompBegin(command);
+-            }
+-            else if (action.startsWith(Stomp.Commands.COMMIT)) {
+-                onStompCommit(command);
+-            }
+-            else if (action.startsWith(Stomp.Commands.ABORT)) {
+-                onStompAbort(command);
+-            }
+-            else if (action.startsWith(Stomp.Commands.SUBSCRIBE)) {
+-                onStompSubscribe(command);
+-            }
+-            else if (action.startsWith(Stomp.Commands.UNSUBSCRIBE)) {
+-                onStompUnsubscribe(command);
+-            }
+-            else if (action.startsWith(Stomp.Commands.CONNECT)) {
+-                onStompConnect(command);
+-            }
+-            else if (action.startsWith(Stomp.Commands.DISCONNECT)) {
+-                onStompDisconnect(command);
+-            }
+-            else {
+-                throw new ProtocolException("Unknown STOMP action: " + action);
+-            }
+-        }
+-        catch (Exception e) {
++	/**
++	 * Process a Stomp Frame
++	 */
++	public void onStompFrame(StompFrame command) throws Exception {
++		try {
++			if (log.isDebugEnabled()) {
++				log.debug(">>>> " + command.getAction() + " headers: "
++						+ command.getHeaders());
++			}
+ 
+-            // Let the stomp client know about any protocol errors.
+-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+-            PrintWriter stream = new PrintWriter(new OutputStreamWriter(baos, "UTF-8"));
+-            e.printStackTrace(stream);
+-            stream.close();
++			if (command.getClass() == StompFrameError.class) {
++				throw ((StompFrameError) command).getException();
++			}
+ 
+-            HashMap headers = new HashMap();
+-            headers.put(Stomp.Headers.Error.MESSAGE, e.getMessage());
++			String action = command.getAction();
++			if (action.startsWith(Stomp.Commands.SEND)) {
++				onStompSend(command);
++			} else if (action.startsWith(Stomp.Commands.ACK)) {
++				onStompAck(command);
++			} else if (action.startsWith(Stomp.Commands.BEGIN)) {
++				onStompBegin(command);
++			} else if (action.startsWith(Stomp.Commands.COMMIT)) {
++				onStompCommit(command);
++			} else if (action.startsWith(Stomp.Commands.ABORT)) {
++				onStompAbort(command);
++			} else if (action.startsWith(Stomp.Commands.SUBSCRIBE)) {
++				onStompSubscribe(command);
++			} else if (action.startsWith(Stomp.Commands.UNSUBSCRIBE)) {
++				onStompUnsubscribe(command);
++			} else if (action.startsWith(Stomp.Commands.CONNECT)) {
++				onStompConnect(command);
++			} else if (action.startsWith(Stomp.Commands.DISCONNECT)) {
++				onStompDisconnect(command);
++			} else {
++				throw new ProtocolException("Unknown STOMP action: " + action);
++			}
++		} catch (Exception e) {
+ 
+-            final String receiptId = (String) command.getHeaders().get(Stomp.Headers.RECEIPT_REQUESTED);
+-            if (receiptId != null) {
+-                headers.put(Stomp.Headers.Response.RECEIPT_ID, receiptId);
+-            }
++			// Let the stomp client know about any protocol errors.
++			ByteArrayOutputStream baos = new ByteArrayOutputStream();
++			PrintWriter stream = new PrintWriter(new OutputStreamWriter(baos,
++					"UTF-8"));
++			e.printStackTrace(stream);
++			stream.close();
+ 
+-            StompFrame errorMessage = new StompFrame(Stomp.Responses.ERROR, headers, baos.toByteArray());
+-            sendToStomp(errorMessage);
++			HashMap headers = new HashMap();
++			headers.put(Stomp.Headers.Error.MESSAGE, e.getMessage());
+ 
+-            // TODO need to do anything else? Should we close the connection?
+-        }
+-    }
++			final String receiptId = (String) command.getHeaders().get(
++					Stomp.Headers.RECEIPT_REQUESTED);
++			if (receiptId != null) {
++				headers.put(Stomp.Headers.Response.RECEIPT_ID, receiptId);
++			}
+ 
+-    public void onException(Exception e) {
+-        log.error("Caught: " + e, e);
+-    }
++			StompFrame errorMessage = new StompFrame(Stomp.Responses.ERROR,
++					headers, baos.toByteArray());
++			sendToStomp(errorMessage);
+ 
+-    public void addMessageToAck(Message message) throws JMSException {
+-        messages.put(message.getJMSMessageID(), message);
+-    }
++			// TODO need to do anything else? Should we close the connection?
++		}
++	}
+ 
+-    // Implemenation methods
+-    //-------------------------------------------------------------------------
+-    protected void onStompConnect(StompFrame command) throws Exception {
+-        if (connection != null) {
+-            throw new ProtocolException("Allready connected.");
+-        }
++	public void onException(Exception e) {
++		log.error("Caught: " + e, e);
++	}
+ 
+-        final Map headers = command.getHeaders();
+-        String login = (String) headers.get(Stomp.Headers.Connect.LOGIN);
+-        String passcode = (String) headers.get(Stomp.Headers.Connect.PASSCODE);
+-        String clientId = (String) headers.get(Stomp.Headers.Connect.CLIENT_ID);
++	public boolean addMessageToAck(Message message, MessageConsumer consumer) throws JMSException {
++		if (!closing) {
++			MSC ms = new MSC();
++			ms.message = message;
++			ms.consumer = consumer;
++			messages.put(message.getJMSMessageID(), ms);
++		}
++		return closing;
++	}
+ 
+-        ConnectionFactory factory = getConnectionFactory();
+-        IntrospectionSupport.setProperties(factory, headers, "factory.");
++	// Implemenation methods
++	// -------------------------------------------------------------------------
++	protected void onStompConnect(StompFrame command) throws Exception {
++		if (connection != null) {
++			throw new ProtocolException("Allready connected.");
++		}
+ 
+-        if (login != null) {
+-            connection = factory.createConnection(login, passcode);
+-        }
+-        else {
+-            connection = factory.createConnection();
+-        }
+-        if (clientId != null) {
+-            connection.setClientID(clientId);
+-        }
+-        IntrospectionSupport.setProperties(connection, headers, "connection.");
++		final Map headers = command.getHeaders();
++		String login = (String) headers.get(Stomp.Headers.Connect.LOGIN);
++		String passcode = (String) headers.get(Stomp.Headers.Connect.PASSCODE);
++		String clientId = (String) headers.get(Stomp.Headers.Connect.CLIENT_ID);
+ 
+-        connection.start();
++		ConnectionFactory factory = getConnectionFactory();
++		IntrospectionSupport.setProperties(factory, headers, "factory.");
+ 
+-        Map responseHeaders = new HashMap();
++		if (login != null) {
++			connection = factory.createConnection(login, passcode);
++		} else {
++			connection = factory.createConnection();
++		}
++		if (clientId != null) {
++			connection.setClientID(clientId);
++		}
++		IntrospectionSupport.setProperties(connection, headers, "connection.");
+ 
+-        responseHeaders.put(Stomp.Headers.Connected.SESSION, connection.getClientID());
+-        String requestId = (String) headers.get(Stomp.Headers.Connect.REQUEST_ID);
+-        if (requestId == null) {
+-            // TODO legacy
+-            requestId = (String) headers.get(Stomp.Headers.RECEIPT_REQUESTED);
+-        }
+-        if (requestId != null) {
+-            // TODO legacy
+-            responseHeaders.put(Stomp.Headers.Connected.RESPONSE_ID, requestId);
+-            responseHeaders.put(Stomp.Headers.Response.RECEIPT_ID, requestId);
+-        }
++		connection.start();
+ 
+-        StompFrame sc = new StompFrame();
+-        sc.setAction(Stomp.Responses.CONNECTED);
+-        sc.setHeaders(responseHeaders);
+-        sendToStomp(sc);
+-    }
++		Map responseHeaders = new HashMap();
+ 
+-    protected void onStompDisconnect(StompFrame command) throws Exception {
+-        checkConnected();
+-        close();
+-    }
++		responseHeaders.put(Stomp.Headers.Connected.SESSION,
++				connection.getClientID());
++		String requestId = (String) headers
++				.get(Stomp.Headers.Connect.REQUEST_ID);
++		if (requestId == null) {
++			// TODO legacy
++			requestId = (String) headers.get(Stomp.Headers.RECEIPT_REQUESTED);
++		}
++		if (requestId != null) {
++			// TODO legacy
++			responseHeaders.put(Stomp.Headers.Connected.RESPONSE_ID, requestId);
++			responseHeaders.put(Stomp.Headers.Response.RECEIPT_ID, requestId);
++		}
+ 
+-    protected void onStompSend(StompFrame command) throws Exception {
+-        checkConnected();
++		StompFrame sc = new StompFrame();
++		sc.setAction(Stomp.Responses.CONNECTED);
++		sc.setHeaders(responseHeaders);
++		sendToStomp(sc);
++	}
+ 
+-        Map headers = command.getHeaders();
+-        String stompTx = (String) headers.get(Stomp.Headers.TRANSACTION);
++	protected void onStompDisconnect(StompFrame command) throws Exception {
++		checkConnected();
++		close();
++	}
+ 
+-        StompSession session;
+-        if (stompTx != null) {
+-            session = getExistingTransactedSession(stompTx);
+-        }
+-        else {
+-            session = getDefaultSession();
+-        }
++	protected void onStompSend(StompFrame command) throws Exception {
++		checkConnected();
+ 
+-        session.sendToJms(command);
+-        sendResponse(command);
+-    }
++		Map headers = command.getHeaders();
++		String stompTx = (String) headers.get(Stomp.Headers.TRANSACTION);
+ 
+-    protected void onStompBegin(StompFrame command) throws Exception {
+-        checkConnected();
++		StompSession session;
++		if (stompTx != null) {
++			session = getExistingTransactedSession(stompTx);
++		} else {
++			session = getDefaultSession();
++		}
+ 
+-        Map headers = command.getHeaders();
++		session.sendToJms(command);
++		sendResponse(command);
++	}
+ 
+-        String stompTx = (String) headers.get(Stomp.Headers.TRANSACTION);
++	protected void onStompBegin(StompFrame command) throws Exception {
++		checkConnected();
+ 
+-        if (stompTx == null) {
+-            throw new ProtocolException("Must specify the transaction you are beginning");
+-        }
++		Map headers = command.getHeaders();
+ 
+-        StompSession session = getTransactedSession(stompTx);
+-        if (session != null) {
+-            throw new ProtocolException("The transaction was already started: " + stompTx);
+-        }
+-        session = createTransactedSession(stompTx);
+-        setTransactedSession(stompTx, session);
++		String stompTx = (String) headers.get(Stomp.Headers.TRANSACTION);
+ 
+-        sendResponse(command);
+-    }
++		if (stompTx == null) {
++			throw new ProtocolException(
++					"Must specify the transaction you are beginning");
++		}
+ 
+-    protected void onStompCommit(StompFrame command) throws Exception {
+-        checkConnected();
++		StompSession session = getTransactedSession(stompTx);
++		if (session != null) {
++			throw new ProtocolException("The transaction was already started: "
++					+ stompTx);
++		}
++		session = createTransactedSession(stompTx);
++		setTransactedSession(stompTx, session);
+ 
+-        Map headers = command.getHeaders();
+-        String stompTx = (String) headers.get(Stomp.Headers.TRANSACTION);
+-        if (stompTx == null) {
+-            throw new ProtocolException("Must specify the transaction you are committing");
+-        }
++		sendResponse(command);
++	}
+ 
+-        StompSession session = getExistingTransactedSession(stompTx);
+-        session.getSession().commit();
+-        considerClosingTransactedSession(session, stompTx);
+-        sendResponse(command);
+-    }
++	protected void onStompCommit(StompFrame command) throws Exception {
++		checkConnected();
+ 
+-    protected void onStompAbort(StompFrame command) throws Exception {
+-        checkConnected();
+-        Map headers = command.getHeaders();
++		Map headers = command.getHeaders();
++		String stompTx = (String) headers.get(Stomp.Headers.TRANSACTION);
++		if (stompTx == null) {
++			throw new ProtocolException(
++					"Must specify the transaction you are committing");
++		}
+ 
+-        String stompTx = (String) headers.get(Stomp.Headers.TRANSACTION);
+-        if (stompTx == null) {
+-            throw new ProtocolException("Must specify the transaction you are committing");
+-        }
++		StompSession session = getExistingTransactedSession(stompTx);
++		session.getSession().commit();
++		considerClosingTransactedSession(session, stompTx);
++		sendResponse(command);
++	}
+ 
+-        StompSession session = getExistingTransactedSession(stompTx);
+-        session.getSession().rollback();
+-        considerClosingTransactedSession(session, stompTx);
+-        sendResponse(command);
+-    }
++	protected void onStompAbort(StompFrame command) throws Exception {
++		checkConnected();
++		Map headers = command.getHeaders();
+ 
+-    protected void onStompSubscribe(StompFrame command) throws Exception {
+-        checkConnected();
++		String stompTx = (String) headers.get(Stomp.Headers.TRANSACTION);
++		if (stompTx == null) {
++			throw new ProtocolException(
++					"Must specify the transaction you are committing");
++		}
+ 
+-        Map headers = command.getHeaders();
+-        String stompTx = (String) headers.get(Stomp.Headers.TRANSACTION);
++		StompSession session = getExistingTransactedSession(stompTx);
++		session.getSession().rollback();
++		considerClosingTransactedSession(session, stompTx);
++		sendResponse(command);
++	}
+ 
+-        StompSession session;
+-        if (stompTx != null) {
+-            session = getExistingTransactedSession(stompTx);
+-        }
+-        else {
+-            String ackMode = (String) headers.get(Stomp.Headers.Subscribe.ACK_MODE);
+-            if (ackMode != null && Stomp.Headers.Subscribe.AckModeValues.CLIENT.equals(ackMode)) {
+-                session = getClientAckSession();
+-            }
+-            else {
+-                session = getDefaultSession();
+-            }
+-        }
++	protected void onStompSubscribe(StompFrame command) throws Exception {
++		checkConnected();
+ 
+-        String subscriptionId = (String) headers.get(Stomp.Headers.Subscribe.ID);
+-        if (subscriptionId == null) {
+-            subscriptionId = createSubscriptionId(headers);
+-        }
++		Map headers = command.getHeaders();
++		String stompTx = (String) headers.get(Stomp.Headers.TRANSACTION);
+ 
+-        StompSubscription subscription = (StompSubscription) subscriptions.get(subscriptionId);
+-        if (subscription != null) {
+-            throw new ProtocolException("There already is a subscription for: " + subscriptionId + ". Either use unique subscription IDs or do not create multiple subscriptions for the same destination");
+-        }
+-        subscription = new StompSubscription(session, subscriptionId, command);
+-        subscriptions.put(subscriptionId, subscription);
+-        sendResponse(command);
+-    }
++		StompSession session;
++		if (stompTx != null) {
++			session = getExistingTransactedSession(stompTx);
++		} else {
++			String ackMode = (String) headers
++					.get(Stomp.Headers.Subscribe.ACK_MODE);
++			if (ackMode != null
++					&& Stomp.Headers.Subscribe.AckModeValues.CLIENT
++							.equals(ackMode)) {
++				session = getClientAckSession();
++			} else {
++				session = getDefaultSession();
++			}
++		}
+ 
+-    protected void onStompUnsubscribe(StompFrame command) throws Exception {
+-        checkConnected();
+-        Map headers = command.getHeaders();
++		String subscriptionId = (String) headers
++				.get(Stomp.Headers.Subscribe.ID);
++		if (subscriptionId == null) {
++			subscriptionId = createSubscriptionId(headers);
++		}
+ 
+-        String destinationName = (String) headers.get(Stomp.Headers.Unsubscribe.DESTINATION);
+-        String subscriptionId = (String) headers.get(Stomp.Headers.Unsubscribe.ID);
++		StompSubscription subscription = (StompSubscription) subscriptions
++				.get(subscriptionId);
++		if (subscription != null) {
++			throw new ProtocolException(
++					"There already is a subscription for: "
++							+ subscriptionId
++							+ ". Either use unique subscription IDs or do not create multiple subscriptions for the same destination");
++		}
++		subscription = new StompSubscription(session, subscriptionId, command);
++		subscriptions.put(subscriptionId, subscription);
++		sendResponse(command);
++	}
+ 
+-        if (subscriptionId == null) {
+-            if (destinationName == null) {
+-                throw new ProtocolException("Must specify the subscriptionId or the destination you are unsubscribing from");
+-            }
+-            subscriptionId = createSubscriptionId(headers);
+-        }
++	protected void onStompUnsubscribe(StompFrame command) throws Exception {
++		checkConnected();
++		Map headers = command.getHeaders();
+ 
+-        StompSubscription subscription = (StompSubscription) subscriptions.remove(subscriptionId);
+-        if (subscription == null) {
+-            throw new ProtocolException("Cannot unsubscribe as mo subscription exists for id: " + subscriptionId);
+-        }
+-        subscription.close();
+-        sendResponse(command);
+-    }
++		String destinationName = (String) headers
++				.get(Stomp.Headers.Unsubscribe.DESTINATION);
++		String subscriptionId = (String) headers
++				.get(Stomp.Headers.Unsubscribe.ID);
+ 
+-    protected void onStompAck(StompFrame command) throws Exception {
+-        checkConnected();
++		if (subscriptionId == null) {
++			if (destinationName == null) {
++				throw new ProtocolException(
++						"Must specify the subscriptionId or the destination you are unsubscribing from");
++			}
++			subscriptionId = createSubscriptionId(headers);
++		}
+ 
+-        // TODO: acking with just a message id is very bogus
+-        // since the same message id could have been sent to 2 different subscriptions
+-        // on the same stomp connection. For example, when 2 subs are created on the same topic.
++		StompSubscription subscription = (StompSubscription) subscriptions
++				.remove(subscriptionId);
++		if (subscription == null) {
++			throw new ProtocolException(
++					"Cannot unsubscribe as mo subscription exists for id: "
++							+ subscriptionId);
++		}
++		subscription.close();
++		sendResponse(command);
++	}
+ 
+-        Map headers = command.getHeaders();
+-        String messageId = (String) headers.get(Stomp.Headers.Ack.MESSAGE_ID);
+-        if (messageId == null) {
+-            throw new ProtocolException("ACK received without a message-id to acknowledge!");
+-        }
++	protected void onStompAck(StompFrame command) throws Exception {
++		checkConnected();
+ 
+-        Message message = (Message) messages.remove(messageId);
+-        if (message == null) {
+-            throw new ProtocolException("No such message for message-id: " + messageId);
+-        }
+-        message.acknowledge();
+-        sendResponse(command);
+-    }
++		// TODO: acking with just a message id is very bogus
++		// since the same message id could have been sent to 2 different
++		// subscriptions
++		// on the same stomp connection. For example, when 2 subs are created on
++		// the same topic.
+ 
+-    protected void checkConnected() throws ProtocolException {
+-        if (connection == null) {
+-            throw new ProtocolException("Not connected.");
+-        }
+-    }
++		Map headers = command.getHeaders();
++		String messageId = (String) headers.get(Stomp.Headers.Ack.MESSAGE_ID);
++		if (messageId == null) {
++			throw new ProtocolException(
++					"ACK received without a message-id to acknowledge!");
++		}
+ 
+-    /**
+-     * Auto-create a subscription ID using the destination
+-     */
+-    protected String createSubscriptionId(Map headers) {
+-        return "/subscription-to/" + headers.get(Stomp.Headers.Subscribe.DESTINATION);
+-    }
++		MSC ms = (MSC) messages.remove(messageId);
++		if (ms == null) {
++			throw new ProtocolException("No such message for message-id: "
++					+ messageId);
++		}
+ 
+-    protected StompSession getDefaultSession() throws JMSException {
+-        if (defaultSession == null) {
+-            defaultSession = createSession(Session.AUTO_ACKNOWLEDGE);
+-        }
+-        return defaultSession;
+-    }
++		// PATCHED BY TOM FOR SINGLE MESSAGE DELIVERY
++		synchronized (ms.consumer) {
++			ms.message.acknowledge();
++			ms.consumer.notify();
++		}
++		sendResponse(command);
++	}
+ 
+-    protected StompSession getClientAckSession() throws JMSException {
+-        if (clientAckSession == null) {
+-            clientAckSession = createSession(Session.CLIENT_ACKNOWLEDGE);
+-        }
+-        return clientAckSession;
+-    }
++	protected void checkConnected() throws ProtocolException {
++		if (connection == null) {
++			throw new ProtocolException("Not connected.");
++		}
++	}
+ 
+-    /**
+-     * Returns the transacted session for the given ID or throws an exception if there is no such session
+-     */
+-    protected StompSession getExistingTransactedSession(String stompTx) throws ProtocolException, JMSException {
+-        StompSession session = getTransactedSession(stompTx);
+-        if (session == null) {
+-            throw new ProtocolException("Invalid transaction id: " + stompTx);
+-        }
+-        return session;
+-    }
++	/**
++	 * Auto-create a subscription ID using the destination
++	 */
++	protected String createSubscriptionId(Map headers) {
++		return "/subscription-to/"
++				+ headers.get(Stomp.Headers.Subscribe.DESTINATION);
++	}
+ 
+-    protected StompSession getTransactedSession(String stompTx) throws ProtocolException, JMSException {
+-        return (StompSession) transactedSessions.get(stompTx);
+-    }
++	protected StompSession getDefaultSession() throws JMSException {
++		if (defaultSession == null) {
++			defaultSession = createSession(Session.AUTO_ACKNOWLEDGE);
++		}
++		return defaultSession;
++	}
+ 
+-    protected void setTransactedSession(String stompTx, StompSession session) {
+-        transactedSessions.put(stompTx, session);
+-    }
++	protected StompSession getClientAckSession() throws JMSException {
++		if (clientAckSession == null) {
++			clientAckSession = createSession(Session.CLIENT_ACKNOWLEDGE);
++		}
++		return clientAckSession;
++	}
+ 
+-    protected StompSession createSession(int ackMode) throws JMSException {
+-        Session session = connection.createSession(false, ackMode);
+-        if (log.isDebugEnabled()) {
+-            log.debug("Created session with ack mode: " + session.getAcknowledgeMode());
+-        }
+-        return new StompSession(this, session);
+-    }
++	/**
++	 * Returns the transacted session for the given ID or throws an exception if
++	 * there is no such session
++	 */
++	protected StompSession getExistingTransactedSession(String stompTx)
++			throws ProtocolException, JMSException {
++		StompSession session = getTransactedSession(stompTx);
++		if (session == null) {
++			throw new ProtocolException("Invalid transaction id: " + stompTx);
++		}
++		return session;
++	}
+ 
+-    protected StompSession createTransactedSession(String stompTx) throws JMSException {
+-        Session session = connection.createSession(true, Session.SESSION_TRANSACTED);
+-        return new StompSession(this, session);
+-    }
++	protected StompSession getTransactedSession(String stompTx)
++			throws ProtocolException, JMSException {
++		return (StompSession) transactedSessions.get(stompTx);
++	}
+ 
+-    protected void sendResponse(StompFrame command) throws Exception {
+-        final String receiptId = (String) command.getHeaders().get(Stomp.Headers.RECEIPT_REQUESTED);
+-        // A response may not be needed.
+-        if (receiptId != null) {
+-            StompFrame sc = new StompFrame();
+-            sc.setAction(Stomp.Responses.RECEIPT);
+-            sc.setHeaders(new HashMap(1));
+-            sc.getHeaders().put(Stomp.Headers.Response.RECEIPT_ID, receiptId);
+-            sendToStomp(sc);
+-        }
+-    }
++	protected void setTransactedSession(String stompTx, StompSession session) {
++		transactedSessions.put(stompTx, session);
++	}
+ 
+-    protected void sendToStomp(StompFrame frame) throws Exception {
+-        if (log.isDebugEnabled()) {
+-            log.debug("<<<< " + frame.getAction() + " headers: " + frame.getHeaders());
+-        }
+-        outputHandler.onStompFrame(frame);
+-    }
++	protected StompSession createSession(int ackMode) throws JMSException {
++		Session session = connection.createSession(false, ackMode);
++		if (log.isDebugEnabled()) {
++			log.debug("Created session with ack mode: "
++					+ session.getAcknowledgeMode());
++		}
++		return new StompSession(this, session);
++	}
+ 
+-    /**
+-     * A provider may wish to eagerly close transacted sessions when they are no longer used.
+-     * Though a better option would be to just time them out after they have no longer been used.
+-     */
+-    protected void considerClosingTransactedSession(StompSession session, String stompTx) {
+-    }
++	protected StompSession createTransactedSession(String stompTx)
++			throws JMSException {
++		Session session = connection.createSession(true,
++				Session.SESSION_TRANSACTED);
++		return new StompSession(this, session);
++	}
++
++	protected void sendResponse(StompFrame command) throws Exception {
++		final String receiptId = (String) command.getHeaders().get(
++				Stomp.Headers.RECEIPT_REQUESTED);
++		// A response may not be needed.
++		if (receiptId != null) {
++			StompFrame sc = new StompFrame();
++			sc.setAction(Stomp.Responses.RECEIPT);
++			sc.setHeaders(new HashMap(1));
++			sc.getHeaders().put(Stomp.Headers.Response.RECEIPT_ID, receiptId);
++			sendToStomp(sc);
++		}
++	}
++
++	protected void sendToStomp(StompFrame frame) throws Exception {
++		if (log.isDebugEnabled()) {
++			log.debug("<<<< " + frame.getAction() + " headers: "
++					+ frame.getHeaders());
++		}
++		outputHandler.onStompFrame(frame);
++	}
++
++	/**
++	 * A provider may wish to eagerly close transacted sessions when they are no
++	 * longer used. Though a better option would be to just time them out after
++	 * they have no longer been used.
++	 */
++	protected void considerClosingTransactedSession(StompSession session,
++			String stompTx) {
++	}
++
++	private class MSC {
++		public Message message;
++		public Session session;
++		public MessageConsumer consumer;
++	}
+ }
+Index: pom.xml
+===================================================================
+--- pom.xml	(revision 90)
++++ pom.xml	(working copy)
+@@ -3,8 +3,14 @@
+   <groupId>org.codehaus.stomp</groupId>
+   <artifactId>stompconnect</artifactId>
+   <packaging>jar</packaging>
+-  <version>1.0</version>
++  <version>1.0.2-BT</version>
+ 
++  <developers>
++	<developer>
++		<id>one</id>
++      		<name>one</name>
++	</developer>
++  </developers>	
+   <name>StompConnect</name>
+   <description>
+     StompConnect allows any Message Orientated Middleware (MOM)
+@@ -33,6 +39,30 @@
+   </scm>
+ 
+   <dependencies>
++  		<dependency>
++			<groupId>log4j</groupId>
++			<artifactId>log4j</artifactId>
++			<version>1.2.15</version>
++			<exclusions>
++				<exclusion>
++					<groupId>com.sun.jmx</groupId>
++					<artifactId>jmxri</artifactId>
++				</exclusion>
++				<exclusion>
++					<groupId>com.sun.jdmk</groupId>
++					<artifactId>jmxtools</artifactId>
++				</exclusion>
++				<exclusion>
++					<groupId>javax.jms</groupId>
++					<artifactId>jms</artifactId>
++				</exclusion>
++				<exclusion>
++					<groupId>javax.mail</groupId>
++					<artifactId>mail</artifactId>
++				</exclusion>
++			</exclusions>
++		</dependency>
++  
+     <dependency>
+       <groupId>commons-logging</groupId>
+       <artifactId>commons-logging</artifactId>
+@@ -122,6 +152,11 @@
+     </extensions>
+ 
+     <plugins>
++ <plugin>
++ <!-- Entry needed to create, install and deploy sources jars -->
++ <groupId>org.apache.maven.plugins</groupId>
++ <artifactId>maven-source-plugin</artifactId>
++ </plugin>
+       <plugin>
+         <artifactId>maven-release-plugin</artifactId>
+         <configuration>
