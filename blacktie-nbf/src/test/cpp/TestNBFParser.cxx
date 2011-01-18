@@ -23,6 +23,7 @@
 
 void TestNBFParser::test_string_buf() {
 	userlogc((char*) "test_string_buf");
+#ifndef WIN32
 	char* buf = (char*)
 		"<?xml version='1.0' ?> \
 			<employee xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\
@@ -33,4 +34,5 @@ void TestNBFParser::test_string_buf() {
 	NBFParser nbf;
 	NBFParserHandlers handler("name", 0);
 	BT_ASSERT(nbf.parse(buf, "employee", &handler));
+#endif
 }
