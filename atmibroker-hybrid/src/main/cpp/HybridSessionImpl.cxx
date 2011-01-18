@@ -321,7 +321,7 @@ bool HybridSessionImpl::send(MESSAGE message) {
 				setSpecific(TPE_KEY, TSS_TPENOENT); // TODO - clean up session
 				//				free(errbuf);
 			} else if (strcmp(framed->command, (const char*) "ERROR") == 0) {
-				LOG4CXX_DEBUG(logger, (char*) "Got an error: " << framed->body);
+				LOG4CXX_WARN(logger, (char*) "Got an error: " << framed->body);
 				setSpecific(TPE_KEY, TSS_TPENOENT); // TODO - clean up session
 			} else if (strcmp(framed->command, (const char*) "RECEIPT") == 0) {
 				LOG4CXX_DEBUG(logger, (char*) "SEND RECEIPT: "

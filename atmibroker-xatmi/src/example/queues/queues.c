@@ -85,9 +85,14 @@ static int get_messages(unsigned int cnt) {
 		long olen = 10;
 		char* odata = (char*) tpalloc((char*) "X_OCTET", NULL, olen);
 		long flags = 0;
-		btdequeue((char*) "TestOne", &odata, &olen, flags);
-		msgCnt++;
-		userlogc("Received %s which was %d long", odata, olen);
+		int err = btdequeue((char*) "TestOne", &odata, &olen, flags);
+		if (err != -1 && tperrno == 0) {
+			msgCnt++;
+			userlogc("Received %s which was %d long", odata, olen);
+		} else {
+			userlogc("Got an error reading from the queue. tperrno: %d result %d", tperrno, err);
+			break;
+		}
 	}
 
 	// Manually shutdown the server
@@ -107,7 +112,7 @@ int main(int argc, char **argv) {
 				argv[0]);
 	} else if (strcmp(argv[1], "put") == 0) {
 		rc = put_messages(atoi(argv[2]), argc > 3 ? atoi(argv[3]) : 0,
-				argc > 4 ? atoi(argv[4]) : -1);
+				argc > 4 ? atoi(argv[4]) : 0);
 	} else if (strcmp(argv[1], "get") == 0) {
 		rc = get_messages(atoi(argv[2]));
 	} else {
