@@ -29,7 +29,9 @@ typedef struct msg_opts {
 	int priority;	/* msg priority from 0 (lowest) to 9 */
 } msg_opts_t;
 
-extern BLACKTIE_XATMI_DLL char* btalloc(msg_opts_t* ctrl, char* type, char* subtype, long size);
+extern BLACKTIE_XATMI_DLL int btenqueue(char * svc, msg_opts_t* ctrl, char* idata, long ilen, long flags); // COMMUNICATION
+extern BLACKTIE_XATMI_DLL int btdequeue(char * svc, char ** odata, long *olen, long flags); // COMMUNICATION
+
 #ifdef __cplusplus
 }
 #endif

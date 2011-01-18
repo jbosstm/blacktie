@@ -255,8 +255,8 @@ void ServiceDispatcher::onMessage(MESSAGE message) {
 	tpsvcinfo.len = message.len;
 
 	if (message.data != NULL) {
-		tpsvcinfo.data = AtmiBrokerMem::get_instance()->tpalloc(NULL,
-				message.type, message.subtype, message.len, true);
+		tpsvcinfo.data = AtmiBrokerMem::get_instance()->tpalloc(message.type,
+				message.subtype, message.len, true);
 		if (message.len > 0) {
 			memcpy(tpsvcinfo.data, message.data, message.len);
 		}

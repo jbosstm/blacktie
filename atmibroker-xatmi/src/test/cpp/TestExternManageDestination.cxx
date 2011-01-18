@@ -122,13 +122,10 @@ static void send_one(int id, int pri) {
 	sprintf(msg, (char*) "%d", id);
 	len = strlen(msg) + 1;
 
-	if (pri < 0)
-		buf = tpalloc((char*) "X_OCTET", NULL, len);
-	else
-		buf = btalloc(&mopts, (char*) "X_OCTET", NULL, len);
+	buf = tpalloc((char*) "X_OCTET", NULL, len);
 
 	(void) strcpy(buf, msg);
-	cd = tpacall((char*) "TestOne", buf, len, TPNOREPLY);
+	cd = btenqueue((char*) "TestOne", &mopts, buf, len, 0);
 
 	BT_ASSERT(tperrno == 0 && cd == 0);
 
@@ -142,30 +139,22 @@ void TestExternManageDestination::test_stored_messages() {
 
 	userlogc((char*) "test_stored_messages");
 	for (i = 0; i < 10; i++)
-		send_one(i, -1);
+		send_one(i, 0);
 
 	msgId = 0;
 
 	// retrieve the messages in two goes:
 	for (i = 0; i < 2; i++) {
-		char msg[80];
-		// Advertise the service
 		userlogc((char*) "test_stored_messages: retrieving 5");
-		int toCheck = tpadvertise((char*) SERVICE, qservice);
-		sprintf(msg, "tpadvertise error: %d %d", tperrno, toCheck);
-		BT_ASSERT_MESSAGE(msg, tperrno == 0 && toCheck != -1);
 
-		msgCnt = 5;
-
-		lock->lock();
-		if (msgCnt > 0) {
-			lock->wait(25000);
+		char* data = (char*) tpalloc((char*) "X_OCTET", NULL, 2);
+		long len = 2;
+		long flags = 0;
+		for (int j = 0; j < 5; j++) {
+			int toCheck = btdequeue((char*) "TestOne", &data, &len, flags);
+			BT_ASSERT(tperrno == 0 && toCheck != -1);
 		}
-		lock->unlock();
 
-		sprintf(msg, "not all messages were delivered: %d remaining sent %d",
-				msgCnt, ((i + 1) * 5));
-		BT_ASSERT_MESSAGE(msg, msgCnt == 0);
 		serverdone();
 		startServer();
 	}

@@ -28,7 +28,6 @@
 #define MAX_SUBTYPE_SIZE 16
 struct _memory_info {
 	char* memoryPtr;
-	msg_opts_t* mopts;
 	char* type;
 	char* subtype;
 	int size;
@@ -44,14 +43,13 @@ public:
 
 	~AtmiBrokerMem();
 
-	char* tpalloc(msg_opts_t* mopts, char* type, char* subtype, long size, bool serviceAllocated);
+	char* tpalloc(char* type, char* subtype, long size, bool serviceAllocated);
 
 	char* tprealloc(char * addr, long size, char* type, char* subtype,
 			bool force);
 
 	void tpfree(char* ptr, bool force);
 
-	long tptypes(msg_opts_t** mopts, char* ptr, char* type, char* subtype);
 	long tptypes(char* ptr, char* type, char* subtype);
 
 	static AtmiBrokerMem* get_instance();

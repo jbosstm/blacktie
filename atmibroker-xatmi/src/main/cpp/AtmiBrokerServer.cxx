@@ -491,7 +491,8 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	reconnectsToDelete.clear();
 
 	for (std::vector<Destination*>::iterator destination =
-			destinationsToDelete.begin(); destination != destinationsToDelete.end(); destination++) {
+			destinationsToDelete.begin(); destination
+			!= destinationsToDelete.end(); destination++) {
 		LOG4CXX_TRACE(loggerAtmiBrokerServer, (char*) "deleting destination: "
 				<< (*destination));
 		delete (*destination);
@@ -764,8 +765,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 											<< " has extern managed destination");
 						}
 						if (created) {
-							Destination* destination;
-							destination = connection->createDestination(
+							Destination* destination = createDestination(
 									serviceName, service->conversational);
 
 							LOG4CXX_DEBUG(loggerAtmiBrokerServer,
@@ -874,6 +874,22 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 	}
 	finish->unlock();
 	return toReturn;
+}
+
+Destination* AtmiBrokerServer::createDestination(char* serviceName, bool conversational) {
+	Destination* destination = NULL;
+	Connection* connection = connections.getServerConnection();
+	if (connection == NULL) {
+		setSpecific(TPE_KEY, TSS_TPESYSTEM);
+		LOG4CXX_ERROR(loggerAtmiBrokerServer,
+				(char*) "advertiseService no server connection");
+	} else {
+		destination = connection->createDestination(serviceName,
+				conversational);
+	}
+
+	return destination;
+
 }
 
 void AtmiBrokerServer::unadvertiseService(char * svcname, bool decrement) {
