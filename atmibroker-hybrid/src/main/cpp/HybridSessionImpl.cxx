@@ -231,6 +231,13 @@ bool HybridSessionImpl::send(MESSAGE message) {
 					message.control);
 		}
 
+		if (message.xid) {
+			LOG4CXX_TRACE(logger, "Sending serialized control: "
+					<< message.xid);
+			apr_hash_set(frame.headers, "messagexid", APR_HASH_KEY_STRING,
+					message.xid);
+		}
+
 		LOG4CXX_DEBUG(logger, "Send to: " << sendTo << " Command: "
 				<< frame.command << " Size: " << frame.body_length);
 

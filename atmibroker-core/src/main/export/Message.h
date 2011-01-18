@@ -25,6 +25,7 @@ struct message_t {
 	int priority;
 	char* data;
 	void* control;
+	void* xid;
 	int rval;
 	long rcode;
 	long len;

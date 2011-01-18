@@ -114,19 +114,27 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			if (message.subtype == NULL) {
 				message.subtype = (char*) "";
 			}
-			message.control = (TPNOTRAN & flags) ? NULL : txx_serialize(
-					&(message.ttl));
+			if (queue) {
+				message.xid = (TPNOTRAN & flags) ? NULL : txx_serialize(
+						&(message.ttl));
+				message.control = NULL;
+			} else {
+				message.xid = NULL;
+				message.control = (TPNOTRAN & flags) ? NULL : txx_serialize(
+						&(message.ttl));
+			}
 			if (message.control == NULL) {
 				// tapcalls with the TPNOREPLY flag set should live forever
 				if (TPNOREPLY & flags) {
 					message.ttl = mqConfig.noReplyTimeToLive;
-					// see if there are any extra headers
-					if (mopts != NULL)
-						message.priority = mopts->priority;
 				} else {
 					message.ttl = mqConfig.timeToLive * 1000;
 				}
 			}
+
+			// see if there are any extra headers
+			if (mopts != NULL)
+				message.priority = mopts->priority;
 
 			session->blockSignals((flags & TPSIGRSTRT));
 
