@@ -140,7 +140,7 @@ public abstract class BlackTieService implements Service {
 				if (hasTx) // make sure any foreign tx is resumed before calling
 					// the
 					// service routine
-					JtsTransactionImple.resume(serviceName, message.control);
+					JtsTransactionImple.resume(message.control);
 
 				log.debug("Invoking the XATMI service");
 				Response response = null;

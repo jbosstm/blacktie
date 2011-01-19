@@ -68,17 +68,17 @@ public class JtsTransactionImple extends TransactionImple {
 
 	/**
 	 * Associated a transaction with the callers thread
-	 * 
 	 * @param ior
 	 *            IOR for the corresponding OTS transaction, must not be null
 	 * @param control
+	 * 
 	 * @throws SystemException
 	 * @throws IllegalStateException
 	 * @throws InvalidTransactionException
 	 * @throws JABException
 	 * @throws ConfigurationException
 	 */
-	public static void resume(String serviceName, String ior)
+	public static void resume(String ior)
 			throws InvalidTransactionException, IllegalStateException,
 			SystemException, JABException, ConfigurationException {
 		log.debug("resume control");
