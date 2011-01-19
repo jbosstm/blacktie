@@ -182,6 +182,9 @@ public class Connection {
 		} else if (type.equals("X_COMMON")) {
 			log.debug("Initializing a new X_COMMON");
 			return new X_COMMON(subtype, properties);
+		} else if (type.equals("BT_NBF")) {
+			log.debug("Initializing a new BT_NBF");
+			return new BT_NBF(subtype);
 		} else {
 			throw new ConnectionException(Connection.TPENOENT,
 					"Type was not known: " + type);
