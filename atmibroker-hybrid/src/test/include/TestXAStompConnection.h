@@ -15,9 +15,27 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "TestBufferConverterImpl.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestBufferConverterImpl );
-#include "TestStompConnection.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestStompConnection );
-#include "TestXAStompConnection.h"
-CPPUNIT_TEST_SUITE_REGISTRATION( TestXAStompConnection );
+#ifndef TestXAStompConnection_H
+#define TestXAStompConnection_H
+
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFixture.h>
+#include "HybridConnectionImpl.h"
+
+class TestXAStompConnection: public CppUnit::TestFixture {
+	CPPUNIT_TEST_SUITE( TestXAStompConnection);
+	CPPUNIT_TEST( test);
+CPPUNIT_TEST_SUITE_END()
+;
+
+public:
+void test();
+virtual void setUp();
+virtual void tearDown();
+
+private:
+HybridConnectionImpl* serverConnection;
+HybridConnectionImpl* clientConnection;
+};
+
+#endif

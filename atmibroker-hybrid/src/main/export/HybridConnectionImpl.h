@@ -46,6 +46,7 @@ public:
 
 	Session* createSession(bool isConv, char* serviceName);
 	Session* createSession(bool isConv, int id, const char* temporaryQueueName);
+	Session* getQueueSession();
 	Session* getSession(int id);
 	void closeSession(int id);
 	void disconnectSession(int id);
@@ -65,6 +66,7 @@ private:
 	CORBA_CONNECTION* connection;
 	void(*messagesAvailableCallback)(int,bool);
 	SynchronizableObject* sessionMapLock;
+	HybridSessionImpl* queueSession;
 };
 
 #ifdef __cplusplus

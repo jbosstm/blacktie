@@ -39,6 +39,8 @@ extern "C" {
  */
 extern BLACKTIE_TX_DLL int txx_resume(int cd);
 extern BLACKTIE_TX_DLL int txx_suspend(int cd, int (*invalidate)(int cd));
+extern BLACKTIE_TX_DLL int txxx_resume();
+extern BLACKTIE_TX_DLL int txxx_suspend();
 /**
  * test wether the supplied xatmi call descriptor is transactional
  */

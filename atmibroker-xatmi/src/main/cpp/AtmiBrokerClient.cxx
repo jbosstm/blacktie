@@ -84,8 +84,7 @@ int clientinit() {
 				toReturn = 0;
 			}
 		} catch (...) {
-			LOG4CXX_ERROR(loggerAtmiBrokerClient,
-					(char*) "clientinit failed");
+			LOG4CXX_ERROR(loggerAtmiBrokerClient, (char*) "clientinit failed");
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		}
 
@@ -106,17 +105,19 @@ int clientdone(int reason = 0) {
 	if (ptrAtmiBrokerClient) {
 		if (reason == 0) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerClient,
-				(char*) "clientdone deleting Corba Client");
+					(char*) "clientdone deleting Corba Client");
 			delete ptrAtmiBrokerClient;
 			ptrAtmiBrokerClient = NULL;
 			LOG4CXX_DEBUG(loggerAtmiBrokerClient,
-				(char*) "clientdone deleted Corba Client");
+					(char*) "clientdone deleted Corba Client");
 		} else {
 			// cannot use closeSession since it deletes the underlying queue - instead
 			// we need to interrupt any threads waiting on the underlying queues:
-			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientdone interrupting connections");
+			LOG4CXX_DEBUG(loggerAtmiBrokerClient,
+					(char*) "clientdone interrupting connections");
 			ptrAtmiBrokerClient->disconnectSessions();
-			LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "clientdone connections interrupted");
+			LOG4CXX_DEBUG(loggerAtmiBrokerClient,
+					(char*) "clientdone connections interrupted");
 		}
 	}
 	client_lock.unlock();
@@ -125,7 +126,7 @@ int clientdone(int reason = 0) {
 }
 
 AtmiBrokerClient::AtmiBrokerClient(AtmiBrokerSignalHandler& handler) :
-	currentConnection(NULL), signalHandler(handler){
+	currentConnection(NULL), signalHandler(handler) {
 	try {
 		lock = new SynchronizableObject();
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, "Created lock: " << lock);
@@ -149,7 +150,8 @@ AtmiBrokerClient::~AtmiBrokerClient() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "Client Shutdown");
 }
 
-Session* AtmiBrokerClient::createSession(bool isConv, int& id, char* serviceName) {
+Session* AtmiBrokerClient::createSession(bool isConv, int& id,
+		char* serviceName) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "creating session: "
 			<< serviceName);
 	if (serviceName == NULL) {
@@ -170,7 +172,8 @@ Session* AtmiBrokerClient::createSession(bool isConv, int& id, char* serviceName
 		session = clientConnection->createSession(isConv, serviceName);
 
 		if (session == NULL) {
-			LOG4CXX_ERROR(loggerAtmiBrokerClient, (char*) "null session created: " << id);
+			LOG4CXX_ERROR(loggerAtmiBrokerClient,
+					(char*) "null session created: " << id);
 		}
 		id = session->getId();
 		session->setSigHandler(&(signalHandler));
@@ -179,6 +182,23 @@ Session* AtmiBrokerClient::createSession(bool isConv, int& id, char* serviceName
 				<< session->getCanRecv());
 	}
 
+	return session;
+}
+
+Session* AtmiBrokerClient::getQueueSession() {
+	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "get queue session");
+	Session* session = NULL;
+	if (currentConnection != NULL) {
+		session = currentConnection->getQueueSession();
+	}
+	if (session != NULL) {
+		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "got queue session"
+				<< " send: " << session->getCanSend() << " recv: "
+				<< session->getCanRecv());
+	} else {
+		LOG4CXX_ERROR(loggerAtmiBrokerClient,
+				(char*) "did not get queue session");
+	}
 	return session;
 }
 
@@ -210,6 +230,7 @@ void AtmiBrokerClient::disconnectSessions() {
 	if (currentConnection != NULL) {
 		currentConnection->disconnectSession(-1);
 	} else {
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "AtmiBrokerClient no connections to disconnect");
+		LOG4CXX_DEBUG(loggerAtmiBrokerClient,
+				(char*) "AtmiBrokerClient no connections to disconnect");
 	}
 }

@@ -115,26 +115,30 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 				message.subtype = (char*) "";
 			}
 			if (queue) {
+				long discardTTL = -1;
 				message.xid = (TPNOTRAN & flags) ? NULL : txx_serialize(
-						&(message.ttl));
+						&discardTTL);
 				message.control = NULL;
+
+				// see if there are any extra headers
+				if (mopts != NULL) {
+					message.priority = mopts->priority;
+					message.ttl = mopts->ttl;
+				}
 			} else {
 				message.xid = NULL;
 				message.control = (TPNOTRAN & flags) ? NULL : txx_serialize(
 						&(message.ttl));
-			}
-			if (message.control == NULL) {
-				// tapcalls with the TPNOREPLY flag set should live forever
-				if (TPNOREPLY & flags) {
-					message.ttl = mqConfig.noReplyTimeToLive;
-				} else {
-					message.ttl = mqConfig.timeToLive * 1000;
+
+				if (message.control == NULL) {
+					// tapcalls with the TPNOREPLY flag set should live forever
+					if (TPNOREPLY & flags) {
+						message.ttl = mqConfig.noReplyTimeToLive;
+					} else {
+						message.ttl = mqConfig.timeToLive * 1000;
+					}
 				}
 			}
-
-			// see if there are any extra headers
-			if (mopts != NULL)
-				message.priority = mopts->priority;
 
 			session->blockSignals((flags & TPSIGRSTRT));
 
@@ -1240,29 +1244,25 @@ int btenqueue(char * svc, msg_opts_t* mopts, char* idata, long ilen, long flags)
 		if (len != -1) {
 			if (clientinit() != -1) {
 				Session* session = NULL;
-				int cd = -1;
 				try {
-					session
-							= ptrAtmiBrokerClient->createSession(false, cd, svc);
+					session = ptrAtmiBrokerClient->getQueueSession();
 					LOG4CXX_TRACE(loggerXATMI, (char*) "new session: "
-							<< session << " cd: " << cd << " transactional: "
-							<< transactional);
+							<< session << " transactional: " << transactional);
 
-					if (cd != -1) {
+					if (tperrno != -1) {
 						if (transactional)
-							txx_suspend(cd, tpdiscon);
+							txxx_suspend();
 
 						LOG4CXX_TRACE(loggerXATMI, (char*) "TPNOREPLY send");
-						toReturn = ::send(session, "", idata, len, cd, flags,
-								0, 0, mopts, true);
+						toReturn = ::send(session, "", idata, len, 0, flags, 0,
+								0, mopts, true);
 						LOG4CXX_TRACE(loggerXATMI, (char*) "TPNOREPLY sent");
 
 						if (toReturn == -1) {
 							LOG4CXX_WARN(loggerXATMI,
-									(char*) "Session got dudded: " << cd);
+									(char*) "Queue Session failure");
 						}
-						ptrAtmiBrokerClient->closeSession(cd);
-					} else if (tperrno == 0) {
+					} else {
 						LOG4CXX_TRACE(loggerXATMI,
 								(char*) "tpacall unknown error");
 						setSpecific(TPE_KEY, TSS_TPESYSTEM);
@@ -1273,26 +1273,15 @@ int btenqueue(char * svc, msg_opts_t* mopts, char* idata, long ilen, long flags)
 							(char*) "tpacall failed to connect to service queue: "
 									<< svc);
 					setSpecific(TPE_KEY, TSS_TPENOENT);
-					if (cd != -1) {
-						// Remove the child session
-						Session* svcSession = (Session*) getSpecific(SVC_SES);
-						if (svcSession != NULL) {
-							svcSession->removeChildSession(session);
-							LOG4CXX_TRACE(
-									loggerXATMI,
-									(char*) "tpacall failed child session closed");
-						}
-						ptrAtmiBrokerClient->closeSession(cd);
-					}
 				}
 
 				if (transactional) {
 					// txx_suspend was called but there was an error so
 					// resume (note we didn't check for TPNOREPLY since we are in
 					// the else arm of if (transactional && (flags & TPNOREPLY))
-					LOG4CXX_DEBUG(loggerXATMI, (char*) "tpacall resume cd="
-							<< cd << " rv=" << toReturn);
-					txx_resume(cd);
+					LOG4CXX_DEBUG(loggerXATMI, (char*) "tpacall resume rv="
+							<< toReturn);
+					txxx_resume();
 				}
 
 			}

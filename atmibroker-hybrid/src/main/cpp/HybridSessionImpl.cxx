@@ -70,7 +70,7 @@ HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
 	int XATMI_SERVICE_NAME_LENGTH = 15;
 	int queueNameLength = 14 + 15 + 1;
-	this->sendTo  = (char*) ::malloc(queueNameLength);
+	this->sendTo = (char*) ::malloc(queueNameLength);
 	memset(this->sendTo, '\0', queueNameLength);
 	if (isConv) {
 		strcpy(this->sendTo, "/queue/BTC_");
@@ -114,7 +114,8 @@ HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 	CORBA::Object_var tmp_ref = corbaConnection->orbRef->string_to_object(
 			temporaryQueueName);
 	remoteEndpoint = AtmiBroker::EndpointQueue::_narrow(tmp_ref);
-	LOG4CXX_DEBUG(logger, (char*) "RemoteEndpoint: " << temporaryQueueName << " ENDPONT: " << remoteEndpoint);
+	LOG4CXX_DEBUG(logger, (char*) "RemoteEndpoint: " << temporaryQueueName
+			<< " ENDPONT: " << remoteEndpoint);
 
 	this->canSend = true;
 	this->canRecv = true;
@@ -130,11 +131,39 @@ HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 	LOG4CXX_DEBUG(logger, (char*) "constructor corba done");
 }
 
+HybridSessionImpl::HybridSessionImpl(apr_pool_t* pool) {
+	LOG4CXX_TRACE(logger, (char*) "constructor service");
+	this->isConv = false;
+	long ttl = mqConfig.requestTimeout;
+
+	this->id = -1;
+	this->corbaConnection = NULL;
+	this->temporaryQueueName = NULL;
+	serviceInvokation = true;
+
+	stompConnection = HybridConnectionImpl::connect(pool, ttl);
+	this->pool = pool;
+
+	remoteEndpoint = NULL;
+
+	this->canSend = true;
+	this->canRecv = true;
+
+	this->temporaryQueue = NULL;
+	this->replyTo = NULL;
+	this->lastEvent = 0;
+	this->lastRCode = 0;
+	this->serviceName = serviceName;
+	LOG4CXX_TRACE(logger, "OK service session created: " << id);
+}
+
 HybridSessionImpl::~HybridSessionImpl() {
 	setSendTo( NULL);
-	LOG4CXX_TRACE(logger, (char*) "TQ Closed: " << replyTo);
-	delete temporaryQueue;
-	temporaryQueue = NULL;
+	if (temporaryQueue) {
+		LOG4CXX_TRACE(logger, (char*) "TQ Closed: " << replyTo);
+		delete temporaryQueue;
+		temporaryQueue = NULL;
+	}
 
 	if (stompConnection) {
 		LOG4CXX_TRACE(logger, (char*) "destroying");
@@ -143,8 +172,7 @@ HybridSessionImpl::~HybridSessionImpl() {
 		stompConnection = NULL;
 	}
 	if (temporaryQueueName != NULL) {
-		LOG4CXX_TRACE(logger, (char*) "TQ Disconnected: "
-				<< temporaryQueueName);
+		LOG4CXX_TRACE(logger, (char*) "TQ Disconnected: " << temporaryQueueName);
 		temporaryQueueName = NULL;
 	}
 }
@@ -176,6 +204,27 @@ MESSAGE HybridSessionImpl::receive(long time) {
 		setSendTo( NULL);
 	}
 	return message;
+}
+
+bool HybridSessionImpl::send(char* serviceName, MESSAGE message) {
+	this->serviceInvokation = true;
+	this->serviceName = serviceName;
+	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
+	int XATMI_SERVICE_NAME_LENGTH = 15;
+	int queueNameLength = 14 + 15 + 1;
+	this->sendTo = (char*) ::malloc(queueNameLength);
+	memset(this->sendTo, '\0', queueNameLength);
+	if (isConv) {
+		strcpy(this->sendTo, "/queue/BTC_");
+	} else {
+		strcpy(this->sendTo, "/queue/BTR_");
+	}
+	strncat(this->sendTo, serviceName, XATMI_SERVICE_NAME_LENGTH);
+
+	bool result = send(message);
+	setSendTo( NULL);
+	this->serviceName = NULL;
+	return result;
 }
 
 bool HybridSessionImpl::send(MESSAGE message) {
@@ -210,8 +259,8 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		apr_hash_set(frame.headers, "messagecorrelationId",
 				APR_HASH_KEY_STRING, correlationId);
 		apr_hash_set(frame.headers, "priority", APR_HASH_KEY_STRING, priority);
-		LOG4CXX_TRACE(logger, "Set the corrlationId: " << correlationId << " and priority: "
-			<< priority);
+		LOG4CXX_TRACE(logger, "Set the corrlationId: " << correlationId
+				<< " and priority: " << priority);
 		apr_hash_set(frame.headers, "messageflags", APR_HASH_KEY_STRING, flags);
 		apr_hash_set(frame.headers, "messagerval", APR_HASH_KEY_STRING, rval);
 		apr_hash_set(frame.headers, "messagercode", APR_HASH_KEY_STRING, rcode);
@@ -232,8 +281,7 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		}
 
 		if (message.xid) {
-			LOG4CXX_TRACE(logger, "Sending serialized control: "
-					<< message.xid);
+			LOG4CXX_TRACE(logger, "Sending serialized control: " << message.xid);
 			apr_hash_set(frame.headers, "messagexid", APR_HASH_KEY_STRING,
 					message.xid);
 		}
@@ -252,10 +300,11 @@ bool HybridSessionImpl::send(MESSAGE message) {
 		bool isNonBlocking = (message.flags & 0x00000001); // TODO find a way to pull in TPNOBLOCK
 
 		if (stompConnection == NULL) {
-			 rc = APR_ENOSOCKET;
+			rc = APR_ENOSOCKET;
 		} else {
 			if (isNonBlocking) {
-				LOG4CXX_TRACE(logger, "Setting socket_opt to non-blocking for send");
+				LOG4CXX_TRACE(logger,
+						"Setting socket_opt to non-blocking for send");
 #if 1
 				apr_socket_timeout_set(stompConnection->socket, 1);
 #else
@@ -281,20 +330,22 @@ bool HybridSessionImpl::send(MESSAGE message) {
 			// Create a receipt ID to send
 			char * receiptId = (char*) malloc(10);
 			::sprintf(receiptId, "send-%d", receiptCounter);
-			apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING, receiptId);
-	
+			apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING,
+					receiptId);
+
 			// Send the data
 			rc = stomp_write(stompConnection, &frame, pool);
-			
+
 			// Free temporary storage
 			free(receiptId);
 			if (ttl != NULL) {
-				free(ttl);	
+				free(ttl);
 			}
 		}
 
 		if (isNonBlocking && rc == APR_TIMEUP) {
-			LOG4CXX_DEBUG(logger, "Could not send frame due to blocking condition on socket");
+			LOG4CXX_DEBUG(logger,
+					"Could not send frame due to blocking condition on socket");
 			setSpecific(TPE_KEY, TSS_TPEBLOCK);
 		} else if (rc != APR_SUCCESS) {
 			LOG4CXX_ERROR(logger, "Could not send frame");
@@ -310,14 +361,16 @@ bool HybridSessionImpl::send(MESSAGE message) {
 			// now read back the acknowledgent that the message was received but first change the timeout on the socket
 			if (isNonBlocking) {
 				// enable blocking-with-timeout for 1 second to provide time for the response:
-				LOG4CXX_TRACE(logger, "Setting socket_opt to blocking for at most 1 second for ack");
+				LOG4CXX_TRACE(logger,
+						"Setting socket_opt to blocking for at most 1 second for ack");
 				apr_socket_opt_set(stompConnection->socket, APR_SO_NONBLOCK, 0);
 				apr_socket_timeout_set(stompConnection->socket, 1);
 			}
 
 			rc = stomp_read(stompConnection, &framed, pool);
 			if (isNonBlocking && rc == APR_TIMEUP) {
-				LOG4CXX_DEBUG(logger, "Could not send frame due to blocking condition on socket");
+				LOG4CXX_DEBUG(logger,
+						"Could not send frame due to blocking condition on socket");
 				setSpecific(TPE_KEY, TSS_TPEBLOCK);
 			} else if (rc != APR_SUCCESS) {
 				LOG4CXX_ERROR(logger, "Could not send frame");
@@ -366,8 +419,7 @@ bool HybridSessionImpl::send(MESSAGE message) {
 				LOG4CXX_WARN(logger, (char*) "Caught SystemException: "
 						<< ex._name());
 			} catch (CORBA::Exception& e) {
-				LOG4CXX_WARN(logger, (char*) "Caught exception: "
-						<< e._name());
+				LOG4CXX_WARN(logger, (char*) "Caught exception: " << e._name());
 			} catch (...) {
 				LOG4CXX_ERROR(logger,
 						(char*) "UNEXPECTED EXCEPTION RETURNING RESPONSE");

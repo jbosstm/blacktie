@@ -32,8 +32,8 @@ class HybridConnectionImpl;
 class BLACKTIE_HYBRID_DLL HybridSessionImpl: public virtual Session {
 public:
 	HybridSessionImpl(bool isConv, char* connectionName, CORBA_CONNECTION* connection, apr_pool_t* pool, int id, const char* temporaryQueueName, void(*messagesAvailableCallback)(int, bool));
-
 	HybridSessionImpl(bool isConv, char* connectionName, CORBA_CONNECTION* connection, apr_pool_t* pool, int id, char* service, void(*messagesAvailableCallback)(int, bool));
+	HybridSessionImpl(apr_pool_t* pool);
 
 	virtual ~HybridSessionImpl();
 
@@ -43,6 +43,7 @@ public:
 
 	MESSAGE receive(long time);
 
+	bool send(char* destinationName, MESSAGE message);
 	bool send(MESSAGE message);
 	void disconnect();
 

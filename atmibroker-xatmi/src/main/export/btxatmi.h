@@ -27,6 +27,7 @@ extern "C" {
 
 typedef struct msg_opts {
 	int priority;	/* msg priority from 0 (lowest) to 9 */
+	long ttl;
 } msg_opts_t;
 
 extern BLACKTIE_XATMI_DLL int btenqueue(char * svc, msg_opts_t* ctrl, char* idata, long ilen, long flags); // COMMUNICATION

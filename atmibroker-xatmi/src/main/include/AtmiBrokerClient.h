@@ -33,6 +33,7 @@ public:
 	AtmiBrokerClient(AtmiBrokerSignalHandler& handler);
 	virtual ~AtmiBrokerClient();
 	Session* createSession(bool isConv, int& id, char* serviceName);
+	Session* getQueueSession();
 	Session* getSession(int id);
 	void closeSession(int id);
 	void disconnectSessions();

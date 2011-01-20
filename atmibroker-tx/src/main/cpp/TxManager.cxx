@@ -528,6 +528,30 @@ CosTransactions::Control_ptr TxManager::tx_suspend(TxControl *tx, int flags, int
 	 return NULL;
 }
 
+int TxManager::resume()
+{
+	FTRACE(txmlogger, "ENTER");
+	TxControl *tx = (TxControl *) getSpecific(TSS_KEY);
+
+	if (tx) {
+		return rm_start(TMRESUME);
+	}
+
+	return XA_OK;
+}
+
+int TxManager::suspend()
+{
+	FTRACE(txmlogger, "ENTER");
+	TxControl *tx = (TxControl *) getSpecific(TSS_KEY);
+
+	if (tx) {
+		return rm_end(TMSUSPEND | TMMIGRATE);
+	}
+
+	return XA_OK;
+}
+
 int TxManager::resume(int cd)
 {
 	FTRACE(txmlogger, "ENTER");

@@ -30,6 +30,7 @@ public:
 	}
 	virtual Session* createSession(bool isConv, char* serviceName) = 0;
 	virtual Session* createSession(bool isConv, int id, const char* temporaryQueueName) = 0;
+	virtual Session* getQueueSession() = 0;
 	virtual Session* getSession(int id) = 0;
 	virtual void closeSession(int id) = 0;
 	virtual void disconnectSession(int id) = 0;

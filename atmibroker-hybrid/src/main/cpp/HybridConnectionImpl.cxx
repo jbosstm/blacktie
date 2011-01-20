@@ -55,6 +55,8 @@ HybridConnectionImpl::HybridConnectionImpl(char* connectionName,
 
 	this->connection = (CORBA_CONNECTION *) initOrb(connectionName);
 	this->messagesAvailableCallback = messagesAvailableCallback;
+
+	this->queueSession = NULL;
 }
 
 HybridConnectionImpl::~HybridConnectionImpl() {
@@ -64,6 +66,9 @@ HybridConnectionImpl::~HybridConnectionImpl() {
 	for (i = sessionMap.begin(); i != sessionMap.end(); ++i) {
 		closeSession((*i).first);
 	}
+
+	delete queueSession;
+	queueSession = NULL;
 
 	LOG4CXX_DEBUG(logger, (char*) "destructor: " << connectionName);
 	shutdownBindings(this->connection);
@@ -197,6 +202,13 @@ void HybridConnectionImpl::disconnect(stomp_connection* connection,
 			LOG4CXX_DEBUG(logger, "Disconnected");
 		}
 	}
+}
+
+Session* HybridConnectionImpl::getQueueSession() {
+	if (queueSession == NULL) {
+		queueSession = new HybridSessionImpl(pool);
+	}
+	return queueSession;
 }
 
 Session* HybridConnectionImpl::createSession(bool isConv, char * serviceName) {

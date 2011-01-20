@@ -114,6 +114,9 @@ public:	// suspend and resume
 	CosTransactions::Control_ptr tx_suspend(int flags, int altflags = -1);
 	CosTransactions::Control_ptr tx_suspend(TxControl *, int flags, int altflags = -1);
 
+	int resume();
+	int suspend();
+
 	int resume(int cd);
 	int suspend(int cd, int (*invalidate)(int cd));
 	bool isCdTransactional(int cd);
