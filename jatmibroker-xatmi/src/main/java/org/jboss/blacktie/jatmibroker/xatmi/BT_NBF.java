@@ -24,17 +24,19 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.nbf.NestedBufferParser;
 
 public class BT_NBF extends Buffer {
-	
+
 	private static final Logger log = LogManager.getLogger(BT_NBF.class);
 	/**
 	 * The default ID
 	 */
 	private static final long serialVersionUID = 1L;
 	private NestedBufferParser parser;
-	
+	private String rootElement;
+
 	BT_NBF(String subtype) throws ConnectionException {
 		super("BT_NBF", subtype, false, null, null, 0);
-		
+
+		rootElement = subtype + ".xsd\">";
 		String xsd = "buffers/" + subtype + ".xsd";
 		File file = new File(xsd);
 		if(!file.exists()) {
@@ -53,11 +55,45 @@ public class BT_NBF extends Buffer {
 		buffer.append("</");
 		buffer.append(subtype);
 		buffer.append(">");
-		
+
 		setRawData(buffer.toString().getBytes());
-		parser = new NestedBufferParser(xsd);
-		
-		boolean rc = parser.parse(getRawData());
-		log.debug("parser buffer rc: " + rc);
+		parser = new NestedBufferParser(xsd);	
+		parser.parse(getRawData());
+	}
+	
+	private String insertString(String buffer, String attr) {
+		int k = buffer.indexOf(rootElement) + rootElement.length();
+		return buffer.substring(0, k) + attr + buffer.substring(k);
+	}
+
+	public boolean btaddattribute(String attrId, Object attrValue) {
+		boolean rc = false;
+		try {
+			parser.setId(attrId);
+			String buffer = new String(getRawData());
+			String attr = "<" + attrId + "></" + attrId + ">";
+
+			String newbuffer = insertString(buffer, attr);
+			//log.info(newbuffer);
+			rc = parser.parse(newbuffer.getBytes());
+			
+			if(rc) {
+				String type = parser.getType();
+				StringBuffer buf = new StringBuffer();
+				if(type.equals("long")) {
+					buf.append((Long)attrValue);	
+				}
+				String newattr = "<" + attrId + ">" + buf + "</" + attrId + ">";
+				String attrbuf = insertString(buffer, newattr);
+				//log.info(attrbuf);
+				rc = parser.parse(attrbuf.getBytes());
+				if(rc) {
+					setRawData(attrbuf.getBytes());
+				}
+			}
+		} catch (ConnectionException e) {
+			log.error("btaddattribute failed with " + e.getMessage());
+		}
+		return rc;
 	}
 }

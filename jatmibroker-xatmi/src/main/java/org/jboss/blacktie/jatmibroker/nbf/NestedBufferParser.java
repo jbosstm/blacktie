@@ -18,7 +18,6 @@ package org.jboss.blacktie.jatmibroker.nbf;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.InputStream;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
@@ -33,10 +32,11 @@ import org.apache.log4j.Logger;
 import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
+
+import com.sun.org.apache.xerces.internal.xs.PSVIProvider;
 
 public class NestedBufferParser {
-	private DefaultHandler handler;
+	private NestedBufferHandlers handler;
 	private SAXParser saxParser;
 	private Schema schema;
 
@@ -50,6 +50,8 @@ public class NestedBufferParser {
 			factory.setValidating(true);
 			SchemaFactory schemaFactory = SchemaFactory
 			.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+			factory.setFeature("http://apache.org/xml/features/validation/schema",
+					true);
 
 			File file = new File(xsdFilename);
 			if (file.exists()) {
@@ -61,7 +63,9 @@ public class NestedBufferParser {
 			
 			factory.setSchema(schema);
 			saxParser = factory.newSAXParser();
-			handler = new NestedBufferHandlers();
+			PSVIProvider p = (PSVIProvider) saxParser.getXMLReader();
+			
+			handler = new NestedBufferHandlers(p);
 
 		}catch (SAXException e) {
 			log.error("Could not create a SAXParser: " + e.getMessage(), e);
@@ -76,6 +80,14 @@ public class NestedBufferParser {
 			throw new ConnectionException(Connection.TPEOS, 
 						"Could not create a SAXParser: " + e.getMessage());
 		}
+	}
+	
+	public void setId(String id) {
+		handler.setId(id);
+	}
+	
+	public String getType() {
+		return handler.getType();
 	}
 	
 	public boolean parse(byte[] buffer) throws ConnectionException {
