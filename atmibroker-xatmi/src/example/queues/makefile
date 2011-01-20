@@ -12,13 +12,13 @@ endif
 LDIR=$(BLACKTIE_HOME)/lib/cxx
 LIBS=-L$(LDIR) -latmibroker-xatmi -latmibroker-core -latmibroker-tx
 
-all: queues
+all: queues txsender
 
-queues: 
-	$($(shell generate_client -Dclient.includes=queues.c))
+queues: queues.c
+	gcc -o $@ $^ $(CFLAGS) $(LIBS)
 
 txsender: txsender.c
 	gcc -o $@ $^ $(CFLAGS) $(LIBS)
 
 clean:
-	rm -f client txsender
+	rm -f queues txsender
