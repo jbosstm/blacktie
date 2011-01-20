@@ -75,6 +75,7 @@ void TestStompConnection::testLibStomp() {
 		clientSend.subtype = (char*) "";
 		clientSend.ttl = 10 * 1000;
 		clientSend.control = NULL;
+		clientSend.xid = NULL;
 		client->send(clientSend);
 		MESSAGE serviceReceived = destination->receive(0);
 		BT_ASSERT(serviceReceived.received == true);
@@ -119,6 +120,7 @@ void TestStompConnection::test() {
 		clientSend.subtype = (char*) "";
 		clientSend.ttl = 10 * 1000;
 		clientSend.control = NULL;
+		clientSend.xid = NULL;
 		client->send(clientSend);
 		MESSAGE serviceReceived = destination->receive(0);
 		BT_ASSERT(serviceReceived.received == true);
@@ -151,6 +153,7 @@ void TestStompConnection::test() {
 		serviceSend.type = (char*) "X_OCTET";
 		serviceSend.subtype = (char*) "";
 		serviceSend.control = NULL;
+		serviceSend.xid = NULL;
 		service->send(serviceSend);
 		MESSAGE clientReceived = client->receive(0);
 		BT_ASSERT(clientReceived.received == true);
@@ -176,6 +179,7 @@ void TestStompConnection::test() {
 		clientSend.replyto = client->getReplyTo();
 		clientSend.type = (char*) "X_OCTET";
 		clientSend.subtype = (char*) "";
+		clientSend.xid = NULL;
 		client->send(clientSend);
 		MESSAGE serviceReceived = service->receive(0);
 		BT_ASSERT(serviceReceived.received);
