@@ -80,7 +80,7 @@ void setTpurcode(long rcode) {
 
 int send(Session* session, const char* replyTo, char* idata, long ilen,
 		int correlationId, long flags, long rval, long rcode,
-		msg_opts_t* mopts, bool queue) {
+		msg_opts_t* mopts, bool queue, char* queueName) {
 	LOG4CXX_DEBUG(loggerXATMI, (char*) "send - ilen: " << ilen << ": "
 			<< "cd: " << correlationId << "flags: " << flags);
 	int toReturn = -1;
@@ -114,6 +114,9 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			if (message.subtype == NULL) {
 				message.subtype = (char*) "";
 			}
+
+			session->blockSignals((flags & TPSIGRSTRT));
+
 			if (queue) {
 				long discardTTL = -1;
 				message.xid = (TPNOTRAN & flags) ? NULL : txx_serialize(
@@ -125,6 +128,9 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 					message.priority = mopts->priority;
 					message.ttl = mopts->ttl;
 				}
+
+				if (session->send(queueName, message))
+					toReturn = 0;
 			} else {
 				message.xid = NULL;
 				message.control = (TPNOTRAN & flags) ? NULL : txx_serialize(
@@ -138,12 +144,11 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 						message.ttl = mqConfig.timeToLive * 1000;
 					}
 				}
+
+
+				if (session->send(message))
+					toReturn = 0;
 			}
-
-			session->blockSignals((flags & TPSIGRSTRT));
-
-			if (session->send(message))
-				toReturn = 0;
 
 			if (session->unblockSignals() != 0 && (flags & TPSIGRSTRT) == 0)
 				toReturn = -1;
@@ -589,7 +594,7 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 								LOG4CXX_TRACE(loggerXATMI,
 										(char*) "TPNOREPLY send");
 								toReturn = ::send(session, "", idata, len, cd,
-										flags, 0, 0, 0, false);
+										flags, 0, 0, 0, false, NULL);
 								LOG4CXX_TRACE(loggerXATMI,
 										(char*) "TPNOREPLY sent");
 							} else {
@@ -597,7 +602,7 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 										(char*) "expect reply send");
 								toReturn = ::send(session,
 										session->getReplyTo(), idata, len, cd,
-										flags, 0, 0, 0, false);
+										flags, 0, 0, 0, false, NULL);
 								LOG4CXX_TRACE(loggerXATMI,
 										(char*) "expect reply sent");
 							}
@@ -698,7 +703,7 @@ int tpconnect(char * svc, char* idata, long ilen, long flags) {
 						if (cd != -1) {
 							int sendOk = ::send(session, session->getReplyTo(),
 									idata, len, cd, flags | TPCONV, 0, 0, 0,
-									false);
+									false, NULL);
 							if (sendOk != -1) {
 								long olen = 4;
 								char* odata = (char*) tpalloc(
@@ -997,7 +1002,7 @@ int tpsend(int id, char* idata, long ilen, long flags, long *revent) {
 								(char*) "tpsend closed session");
 					} else {
 						toReturn = ::send(session, session->getReplyTo(),
-								idata, len, id, flags, 0, 0, 0, false);
+								idata, len, id, flags, 0, 0, 0, false, NULL);
 						if (toReturn != -1 && flags & TPRECVONLY) {
 							session->setCanSend(false);
 							session->setCanRecv(true);
@@ -1123,7 +1128,7 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 						::tpfree(idata);
 					}
 					::send(session, "", NULL, 0, 0, flags, rval, TPESVCERR, 0,
-							false);
+							false, NULL);
 					LOG4CXX_TRACE(loggerXATMI, (char*) "sent TPESVCERR");
 					if (dispatcher != NULL) {
 						LOG4CXX_TRACE(loggerXATMI,
@@ -1154,7 +1159,7 @@ void tpreturn(int rval, long rcode, char* idata, long ilen, long flags) {
 						txx_release_control(txx_unbind((rval == TPFAIL)));
 
 					::send(session, "", idata, len, 0, flags, rval, rcode, 0,
-							false);
+							false, NULL);
 					LOG4CXX_TRACE(loggerXATMI, (char*) "sent response");
 				}
 
@@ -1190,7 +1195,7 @@ int tpdiscon(int id) {
 			// CHECK TO MAKE SURE THE REMOTE SIDE IS "EXPECTING" DISCONNECTS STILL
 			if (session->getLastEvent() == 0) {
 				// SEND THE DISCONNECT TO THE REMOTE SIDE
-				::send(session, "", NULL, 0, id, TPNOTRAN, DISCON, 0, 0, false);
+				::send(session, "", NULL, 0, id, TPNOTRAN, DISCON, 0, 0, false, NULL);
 			}
 			try {
 				if (getSpecific(TSS_KEY)) {
@@ -1255,7 +1260,7 @@ int btenqueue(char * svc, msg_opts_t* mopts, char* idata, long ilen, long flags)
 
 						LOG4CXX_TRACE(loggerXATMI, (char*) "TPNOREPLY send");
 						toReturn = ::send(session, "", idata, len, 0, flags, 0,
-								0, mopts, true);
+								0, mopts, true, svc);
 						LOG4CXX_TRACE(loggerXATMI, (char*) "TPNOREPLY sent");
 
 						if (toReturn == -1) {
