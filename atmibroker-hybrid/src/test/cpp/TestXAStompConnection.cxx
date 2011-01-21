@@ -21,10 +21,14 @@
 
 #include "userlogc.h"
 #include "AtmiBrokerEnv.h"
-#include "tx.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
+extern BLACKTIE_TX_DLL int tx_begin(void);
+extern BLACKTIE_TX_DLL int tx_close(void);
+extern BLACKTIE_TX_DLL int tx_commit(void);
+extern BLACKTIE_TX_DLL int tx_open(void);
+extern BLACKTIE_TX_DLL int tx_rollback(void);
 extern BLACKTIE_TX_DLL char* txx_serialize(long* ttl);
 #ifdef __cplusplus
 }
