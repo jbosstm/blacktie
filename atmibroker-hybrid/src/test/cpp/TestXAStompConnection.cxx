@@ -22,7 +22,13 @@
 #include "userlogc.h"
 #include "AtmiBrokerEnv.h"
 #include "tx.h"
-#include "txx.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern BLACKTIE_TX_DLL char* txx_serialize(long* ttl);
+#ifdef __cplusplus
+}
+#endif
 
 void messagesAvailableCallbackXA(int bar, bool remove) {
 
