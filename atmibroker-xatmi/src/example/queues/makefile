@@ -12,16 +12,16 @@ endif
 LDIR=$(BLACKTIE_HOME)/lib/cxx
 LDFLAGS=-L$(LDIR) -latmibroker-xatmi -latmibroker-core -latmibroker-tx
 
-all: queues txsender log4cxx.properties
+all: client txsender log4cxx.properties
 
 log4cxx.properties:
 	jar xf $(BLACKTIE_HOME)/lib/java/codeGeneration-3.0.0.M1-SNAPSHOT.jar log4cxx.properties
 
-queues: queues.c 
+client: queues.c 
 	gcc -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
 txsender: txsender.c
 	gcc -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
 clean:
-	rm -f queues txsender log4cxx.properties
+	rm -f client txsender log4cxx.properties

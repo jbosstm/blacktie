@@ -136,6 +136,11 @@ AtmiBrokerClient::AtmiBrokerClient(AtmiBrokerSignalHandler& handler) :
 		LOG4CXX_ERROR(loggerAtmiBrokerClient,
 				(char*) "clientinit Unexpected exception");
 	}
+
+	lock->lock();
+	Connection* clientConnection = clientConnectionManager.getClientConnection();
+	currentConnection = clientConnection;
+	lock->unlock();
 }
 
 AtmiBrokerClient::~AtmiBrokerClient() {
@@ -160,16 +165,10 @@ Session* AtmiBrokerClient::createSession(bool isConv, int& id,
 	}
 	Session* session = NULL;
 
-	Connection* clientConnection = NULL;
-	clientConnection = clientConnectionManager.getClientConnection();
-
-	if (clientConnection != NULL) {
-		lock->lock();
-		currentConnection = clientConnection;
-		lock->unlock();
+	if (currentConnection != NULL) {
 
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "created session: " << id);
-		session = clientConnection->createSession(isConv, serviceName);
+		session = currentConnection->createSession(isConv, serviceName);
 
 		if (session == NULL) {
 			LOG4CXX_ERROR(loggerAtmiBrokerClient,
