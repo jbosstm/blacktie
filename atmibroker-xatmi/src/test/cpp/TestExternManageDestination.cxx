@@ -42,7 +42,6 @@ extern void qservice(TPSVCINFO *svcinfo);
 }
 #endif
 
-static char* SERVICE = (char*) "TestOne";
 static int msgId;
 static int msgCnt;
 
@@ -179,23 +178,27 @@ void TestExternManageDestination::test_stored_message_priority() {
 	msgId = 0;
 
 	// retrieve the messages in two goes:
-	char msg[80];
-	// Advertise the service
-	int toCheck = tpadvertise((char*) SERVICE, qservice);
-	sprintf(msg, "tpadvertise error: %d %d", tperrno, toCheck);
-	BT_ASSERT_MESSAGE(msg, tperrno == 0 && toCheck != -1);
 
 	msgCnt = 10;
 
-	lock->lock();
-	if (msgCnt > 0) {
-		lock->wait(25000);
+	for (int i = 0; i < 10; i++) {
+		char* data = (char*) tpalloc((char*) "X_OCTET", NULL, 2);
+		long len = 2;
+		long flags = 0;
+		int toCheck = btdequeue((char*) "TestOne", &data, &len, flags);
+		BT_ASSERT(tperrno == 0 && toCheck != -1);
+		
+		char msg[80];
+		int id = atoi(data);
+
+		userlogc((char*) "qservice %d %d %d", id, msgCnt, msgId);
+		sprintf(msg, "Out of order messages: %d %d", msgId, id);
+		BT_ASSERT_MESSAGE(msg, msgId == id);
+
+		msgId += 1;
+
+		msgCnt -= 1;
 	}
-	lock->unlock();
-
-	sprintf(msg, "not all messages were delivered: %d remaining", msgCnt);
-	BT_ASSERT_MESSAGE(msg, msgCnt == 0);
-
 	serverdone();
 
 	userlogc((char*) "test_stored_message_priority passed");
@@ -207,28 +210,4 @@ void test_extern_service(TPSVCINFO *svcinfo) {
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	strcpy(toReturn, "testone");
 	tpreturn(TPSUCCESS, 0, toReturn, len, 0);
-}
-
-void qservice(TPSVCINFO *svcinfo) {
-	char msg[80];
-	int id = atoi(svcinfo->data);
-
-	userlogc((char*) "qservice %d %d %d", id, msgCnt, msgId);
-	sprintf(msg, "Out of order messages: %d %d", msgId, id);
-	BT_ASSERT_MESSAGE(msg, msgId == id);
-
-	msgId += 1;
-
-	msgCnt -= 1;
-	if (msgCnt == 0) {
-		// IF YOU UPDATE msgCnt THEN THE TEST CAN TRY TO SHUTDOWN
-		// THE SERVER AT THE SAME TIME AS tpunadvertise
-		int err = tpunadvertise(SERVICE);
-		lock->lock();
-		lock->notify();
-		lock->unlock();
-
-		sprintf(msg, "unadvertise error: %d %d", tperrno, err);
-		BT_ASSERT_MESSAGE(msg, tperrno == 0 && err != -1);
-	}
 }
