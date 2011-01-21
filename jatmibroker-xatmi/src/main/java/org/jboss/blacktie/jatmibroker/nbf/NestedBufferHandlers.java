@@ -19,7 +19,7 @@ public class NestedBufferHandlers extends DefaultHandler {
 	public NestedBufferHandlers(PSVIProvider provider) {
 		this.provider = provider;
 	}
-	
+
 	public String getType() {
 		return type;
 	}
@@ -29,13 +29,22 @@ public class NestedBufferHandlers extends DefaultHandler {
 		if(qName.equals(id)) {
 			ElementPSVI psvi = provider.getElementPSVI();
 			if(psvi != null) {
-				XSTypeDefinition simpleType = psvi.getTypeDefinition();
-				if(simpleType.getAnonymous()) {
-					log.debug(qName + " anonymous type");
-					type = "SimpleType";
-				} else {
-					log.debug(qName + ":" + simpleType.getName());
-					type = simpleType.getName();
+				XSTypeDefinition typeInfo = psvi.getTypeDefinition();
+
+				while(typeInfo != null) {
+					String typeName = typeInfo.getName();
+					if(typeName != null &&(typeName.equals("long") || 
+							typeName.equals("string") ||
+							typeName.equals("integer") ||
+							typeName.equals("float") ||
+							typeName.endsWith("_type"))) {
+
+						type = typeName;
+						log.debug(qName + " has type of " + type);
+
+						break;
+					}
+					typeInfo = typeInfo.getBaseType();
 				}
 			}
 		}

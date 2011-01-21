@@ -42,7 +42,14 @@ public class TestNestedBuffer extends TestCase {
 	public void test() throws ConnectionException {
 		log.info("TestNestedBuffer::test");
 		BT_NBF buffer = (BT_NBF) connection.tpalloc("BT_NBF", "employee", 0);
-		buffer.btaddattribute("id", new Long(1001));
-		buffer.btaddattribute("name", "zhfeng");
+		assertFalse(buffer.btaddattribute("id", new Integer(1001)));
+		assertTrue(buffer.btaddattribute("name", "zhfeng"));
+		assertTrue(buffer.btaddattribute("id", new Long(1001)));
+		
+		log.info(new String(buffer.serialize()));
+		
+		BT_NBF test = (BT_NBF) connection.tpalloc("BT_NBF", "test", 0);
+		assertTrue(test.btaddattribute("employee", buffer));
+		log.info(new String(test.serialize()));
 	}
 }

@@ -36,7 +36,7 @@ public class BT_NBF extends Buffer {
 	BT_NBF(String subtype) throws ConnectionException {
 		super("BT_NBF", subtype, false, null, null, 0);
 
-		rootElement = subtype + ".xsd\">";
+		rootElement = "</" + subtype + ">";
 		String xsd = "buffers/" + subtype + ".xsd";
 		File file = new File(xsd);
 		if(!file.exists()) {
@@ -60,9 +60,9 @@ public class BT_NBF extends Buffer {
 		parser = new NestedBufferParser(xsd);	
 		parser.parse(getRawData());
 	}
-	
+
 	private String insertString(String buffer, String attr) {
-		int k = buffer.indexOf(rootElement) + rootElement.length();
+		int k = buffer.indexOf(rootElement);
 		return buffer.substring(0, k) + attr + buffer.substring(k);
 	}
 
@@ -74,24 +74,49 @@ public class BT_NBF extends Buffer {
 			String attr = "<" + attrId + "></" + attrId + ">";
 
 			String newbuffer = insertString(buffer, attr);
-			//log.info(newbuffer);
 			rc = parser.parse(newbuffer.getBytes());
-			
+
 			if(rc) {
 				String type = parser.getType();
 				StringBuffer buf = new StringBuffer();
 				if(type.equals("long")) {
 					buf.append((Long)attrValue);	
+				} else if(type.equals("string")) {
+					buf.append((String)attrValue);
+				} else if(type.equals("integer")) {
+					buf.append((Integer)attrValue);
+				} else if(type.equals("short")) {
+					buf.append((Short)attrValue);
+				} else if(type.equals("float")) {
+					buf.append((Float)attrValue);
+				} else if(type.endsWith("_type")) {
+					String nbf = new String(((BT_NBF)attrValue).getRawData());
+					int k = nbf.indexOf(".xsd\">");
+					int size = nbf.length();
+					String test =nbf.substring(k + 6, size - attrId.length() - 3);
+					buf.append(test);
+				} else {
+					log.error("Can not support type " + type);
+					rc = false;
 				}
-				String newattr = "<" + attrId + ">" + buf + "</" + attrId + ">";
-				String attrbuf = insertString(buffer, newattr);
-				//log.info(attrbuf);
-				rc = parser.parse(attrbuf.getBytes());
-				if(rc) {
-					setRawData(attrbuf.getBytes());
+
+				if(buf.length() > 0) {
+					String newattr = "<" + attrId + ">" + buf + "</" + attrId + ">";
+					String attrbuf = insertString(buffer, newattr);
+
+					rc = parser.parse(attrbuf.getBytes());
+					if(rc) {
+						setRawData(attrbuf.getBytes());
+					}
 				}
 			}
 		} catch (ConnectionException e) {
+			log.error("btaddattribute failed with " + e.getMessage());
+		} catch (ClassCastException e) {
+			rc = false;
+			log.warn("type is " + parser.getType() + 
+					 " but attrValue type is " + attrValue.getClass().getName());
+		} catch (Throwable e) {
 			log.error("btaddattribute failed with " + e.getMessage());
 		}
 		return rc;
