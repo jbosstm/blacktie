@@ -21,6 +21,8 @@
 
 #include "userlogc.h"
 #include "AtmiBrokerEnv.h"
+
+#include "atmiBrokerTxMacro.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
