@@ -174,7 +174,7 @@ void TestExternManageDestination::test_stored_message_priority() {
 
 	// retrieve the messages in two goes:
 
-	for (int msgCnt = 10; msgCnt >0; msgCnt++) {
+	for (int msgCnt = 0; msgCnt < 10; msgCnt++) {
 		char* data = (char*) tpalloc((char*) "X_OCTET", NULL, 2);
 		long len = 2;
 		long flags = 0;
