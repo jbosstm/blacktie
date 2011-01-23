@@ -445,7 +445,40 @@ bool HybridStompEndpointQueue::connect() {
 					this->receipt = fullName;
 					this->_connected = true;
 
+					rc = stomp_read(connection, &framed, pool);
+				if (rc != APR_SUCCESS) {
+					setSpecific(TPE_KEY, TSS_TPESYSTEM);
+					LOG4CXX_ERROR(logger, "Could not read frame for " << name);
+					char errbuf[256];
+					apr_strerror(rc, errbuf, sizeof(errbuf));
+					LOG4CXX_ERROR(logger, (char*) "APR Error was: " << rc
+							<< ": " << errbuf);
+					HybridConnectionImpl::disconnect(connection, pool);
+				} else if (strcmp(framed->command, (const char*) "ERROR") == 0) {
+					setSpecific(TPE_KEY, TSS_TPENOENT);
+					LOG4CXX_ERROR(logger, (char*) "Got an error: "
+							<< framed->body);
+					HybridConnectionImpl::disconnect(connection, pool);
+				} else if (strcmp(framed->command, (const char*) "RECEIPT")
+						== 0) {
+					LOG4CXX_DEBUG(logger, (char*) "Got a receipt: "
+							<< (char*) apr_hash_get(framed->headers,
+									"receipt-id", APR_HASH_KEY_STRING));
+					this->_connected = true;
 					LOG4CXX_DEBUG(logger, "Connected: " << fullName);
+				} else if (strcmp(framed->command, (const char*) "MESSAGE")
+						== 0) {
+					LOG4CXX_FATAL(
+							logger,
+							(char*) "Got message before receipt, second time");
+					HybridConnectionImpl::disconnect(connection, pool);
+				} else {
+					setSpecific(TPE_KEY, TSS_TPESYSTEM);
+					LOG4CXX_ERROR(logger,
+							"Didn't get a receipt or message unexpected error: "
+									<< framed->command << ", " << framed->body);
+					HybridConnectionImpl::disconnect(connection, pool);
+					}
 				} else {
 					setSpecific(TPE_KEY, TSS_TPESYSTEM);
 					LOG4CXX_ERROR(logger,
