@@ -134,23 +134,29 @@ void TestExternManageDestination::test_stored_messages() {
 	int i;
 
 	userlogc((char*) "test_stored_messages");
-	for (i = 0; i < 10; i++)
+	for (i = 30; i < 40; i++)
 		send_one(i, 0);
 
 	// retrieve the messages in two goes:
-	for (i = 0; i < 2; i++) {
+	for (i = 30; i < 40; i++) {
 		userlogc((char*) "test_stored_messages: retrieving 5");
 
 		char* data = (char*) tpalloc((char*) "X_OCTET", NULL, 2);
 		long len = 2;
 		long flags = 0;
-		for (int j = 0; j < 5; j++) {
-			int toCheck = btdequeue((char*) "TestOne", &data, &len, flags);
-			BT_ASSERT(tperrno == 0 && toCheck != -1);
-		}
+		int toCheck = btdequeue((char*) "TestOne", &data, &len, flags);
+		BT_ASSERT(tperrno == 0 && toCheck != -1);
 
-		serverdone();
-		startServer();
+		char msg[80];
+		int id = atoi(data);
+		userlogc((char*) "qservice expected: %d received: %d", i, id);
+		
+
+		if (i % 5 == 0) {
+			userlogc((char*) "Restart server");
+			serverdone();
+			startServer();
+		}
 	}
 
 	userlogc((char*) "test_stored_message passed");
