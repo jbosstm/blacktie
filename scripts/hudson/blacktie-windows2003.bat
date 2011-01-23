@@ -1,3 +1,5 @@
+set NOPAUSE=true
+
 rem SHUTDOWN JBOSS
 if exist jboss-5.1.0.GA echo foo | call jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S && cd .
 if exist jboss-5.1.0.GA @ping 127.0.0.1 -n 60 -w 1000 > nul
