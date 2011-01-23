@@ -147,7 +147,6 @@ void TestExternManageDestination::test_stored_messages() {
 		int toCheck = btdequeue((char*) "TestOne", &data, &len, flags);
 		BT_ASSERT(tperrno == 0 && toCheck != -1);
 
-		char msg[80];
 		int id = atoi(data);
 		userlogc((char*) "qservice expected: %d received: %d", i, id);
 		
@@ -165,18 +164,19 @@ void TestExternManageDestination::test_stored_messages() {
 void TestExternManageDestination::test_stored_message_priority() {
 	userlogc((char*) "test_stored_message_priority");
 	// send messages with out of order ids - the qservice should receive them in order
-	send_one(8, 1);
-	send_one(6, 3);
-	send_one(4, 5);
-	send_one(2, 7);
-	send_one(0, 9);
-	send_one(9, 0);
-	send_one(7, 2);
-	send_one(5, 4);
-	send_one(3, 6);
-	send_one(1, 8);
+	int prefix = 70;
+	send_one(prefix + 8, 1);
+	send_one(prefix + 6, 3);
+	send_one(prefix + 4, 5);
+	send_one(prefix + 2, 7);
+	send_one(prefix + 0, 9);
+	send_one(prefix + 9, 0);
+	send_one(prefix + 7, 2);
+	send_one(prefix + 5, 4);
+	send_one(prefix + 3, 6);
+	send_one(prefix + 1, 8);
 
-	int msgId = 0;
+	int msgId = prefix;
 
 	// retrieve the messages in two goes:
 
