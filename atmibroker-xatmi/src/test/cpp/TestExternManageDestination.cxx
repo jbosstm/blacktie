@@ -42,9 +42,6 @@ extern void qservice(TPSVCINFO *svcinfo);
 }
 #endif
 
-static int msgId;
-static int msgCnt;
-
 static SynchronizableObject* lock = new SynchronizableObject();
 
 void TestExternManageDestination::setUp() {
@@ -140,8 +137,6 @@ void TestExternManageDestination::test_stored_messages() {
 	for (i = 0; i < 10; i++)
 		send_one(i, 0);
 
-	msgId = 0;
-
 	// retrieve the messages in two goes:
 	for (i = 0; i < 2; i++) {
 		userlogc((char*) "test_stored_messages: retrieving 5");
@@ -175,13 +170,11 @@ void TestExternManageDestination::test_stored_message_priority() {
 	send_one(3, 6);
 	send_one(1, 8);
 
-	msgId = 0;
+	int msgId = 0;
 
 	// retrieve the messages in two goes:
 
-	msgCnt = 10;
-
-	for (int i = 0; i < 10; i++) {
+	for (int msgCnt = 10; msgCnt >0; msgCnt++) {
 		char* data = (char*) tpalloc((char*) "X_OCTET", NULL, 2);
 		long len = 2;
 		long flags = 0;
@@ -191,13 +184,11 @@ void TestExternManageDestination::test_stored_message_priority() {
 		char msg[80];
 		int id = atoi(data);
 
-		userlogc((char*) "qservice %d %d %d", id, msgCnt, msgId);
+		userlogc((char*) "qservice iteration: %d expected: %d received: %d", msgCnt, msgId, id);
 		sprintf(msg, "Out of order messages: %d %d", msgId, id);
 		BT_ASSERT_MESSAGE(msg, msgId == id);
 
 		msgId += 1;
-
-		msgCnt -= 1;
 	}
 	serverdone();
 
