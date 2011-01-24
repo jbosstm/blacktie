@@ -78,7 +78,8 @@ If you want to use priorities then try running the example with args of the form
 
 In a different window:
 
-./txsender # This will send two messages in a transaction, then pause waiting for you to press enter to commit the transaction
+./txsender # This will send two messages in a transaction, then pause waiting for you to press 1 and 
+           # enter to commit the transaction or 2 and enter to rollback the transaction
            # At this point you could view the JMX browser (http://localhost:8080/jmx-console/) and check the BTR_TestOne mbean 
            # http://localhost:8080/jmx-console/HtmlAdaptor?action=inspectMBean&name=org.hornetq%3Amodule%3DJMS%2Ctype%3DQueue%2Cname%3D%22BTR_TestOne%22
            # Observe the MessagesAdded attribute before and after committing the transaction

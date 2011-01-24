@@ -113,8 +113,8 @@ echo "Example 3: Running externally managed queue example"
 cd $BLACKTIE_HOME/examples/xatmi/queues
 generate_client -Dclient.includes=txsender.c -Dclient.executable.file=txsender
 generate_client -Dclient.includes=queues.c
-echo '0
-' | txsender
+echo '1
+' | ./txsender
 if [ "$?" != "0" ]; then
     echo Unable to queue all messages
     exit -1

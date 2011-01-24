@@ -67,7 +67,7 @@ rem Running txsender queue example
 cd %BLACKTIE_HOME%\examples\xatmi\queues
 call generate_client -Dclient.includes=txsender.c -Dclient.executable.file=txsender -Dx.define=WIN32
 call generate_client -Dclient.includes=queues.c -Dx.define=WIN32
-(echo 0& echo 0& echo 0& echo 0& echo 2) | txsender
+(echo 1) | txsender
 IF %ERRORLEVEL% NEQ 0 exit -1
 set BLACKTIE_SERVER_ID=1
 client get 2
