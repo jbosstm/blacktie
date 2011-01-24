@@ -112,7 +112,13 @@ unset BLACKTIE_SERVER_ID
 echo "Example 3: Running externally managed queue example"
 cd $BLACKTIE_HOME/examples/xatmi/queues
 generate_client -Dclient.includes=txsender.c -Dclient.executable.file=txsender
+if [ "$?" != "0" ]; then
+	exit -1
+fi
 generate_client -Dclient.includes=queues.c
+if [ "$?" != "0" ]; then
+	exit -1
+fi
 echo '1
 ' | ./txsender
 if [ "$?" != "0" ]; then
