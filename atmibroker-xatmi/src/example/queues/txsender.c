@@ -37,6 +37,8 @@ int main(int argc, char **argv) {
 	char* buf;
 	long len;
 	msg_opts_t mopts;
+	char response;
+	int index;
 
 	int rc = -1;
 
@@ -76,8 +78,8 @@ int main(int argc, char **argv) {
 				tpfree(buf);
 			}
 
-			char response = prompt("Press 1 to commit or 2 to rollback");
-			int index = atoi(&response);
+			response = prompt("Press 1 to commit or 2 to rollback");
+			index = atoi(&response);
 
 			if (index == 1) {
 				rc = tx_commit();
