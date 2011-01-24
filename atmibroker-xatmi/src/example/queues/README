@@ -33,8 +33,10 @@ C:\Program Files\Microsoft Visual Studio 9.0\VC\vcvarsall.bat
 2. CREATE THE CLIENT
 On Linux:
 	generate_client -Dclient.includes=queues.c
+	generate_client -Dclient.includes=txsender.c -Dclient.executable.file=txsender
 On Windows:
 	generate_client -Dclient.includes=queues.c -Dx.define=WIN32
+	generate_client -Dclient.includes=txsender.c -Dclient.executable.file=txsender -Dx.define=WIN32
 
 
 3. DEPLOY THE BLACKTIE ADMIN SERVICE
@@ -60,7 +62,7 @@ NOTE: If you have already ran the unit tests (i.e. you are building from source)
       has been deployed into an alternative file:
       <JBOSS_HOME>/server/all-with-hornetq/conf/hornetq-jms.xml
 
-6 RUN THE APPLICATION
+6 RUN THE EXAMPLE (STANDARD)
 
 export BLACKTIE_SERVER_ID=1	# automatically starts a server running when tpadvertise is called
 ./client
@@ -71,3 +73,14 @@ If you want to use priorities then try running the example with args of the form
 ./client put 2 4 7	# queue 2 messages at next lower priority (7) starting with message id 4
 ./client get 6		# retrieve all 6 messages - they should be received in increasing message id order
 
+7. ALTERNATIVE: RUN THE EXAMPLE (TRANSACTIONAL SEND)
+./client get 2 # Run the receiver waiting for messages, this will pause waiting for messages
+
+In a different window:
+
+./txsender # This will send two messages in a transaction, then pause waiting for you to press enter to commit the transaction
+           # At this point you could view the JMX browser (http://localhost:8080/jmx-console/) and check the BTR_TestOne mbean 
+           # http://localhost:8080/jmx-console/HtmlAdaptor?action=inspectMBean&name=org.hornetq%3Amodule%3DJMS%2Ctype%3DQueue%2Cname%3D%22BTR_TestOne%22
+           # Observe the MessagesAdded attribute before and after committing the transaction
+
+After you commit the transaction the client process will receive the two messages sent by txsender

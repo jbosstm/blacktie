@@ -50,7 +50,7 @@ call generate_client -Dclient.includes=client.c
 rem PICK UP THE CLOSING SERVER
 @ping 127.0.0.1 -n 3 -w 1000 > nul
 
-rem Test 3: Running externally managed queue example
+rem Running externally managed queue example
 cd %BLACKTIE_HOME%\examples\xatmi\queues
 call generate_client -Dclient.includes=queues.c -Dx.define=WIN32
 client put 10
@@ -61,7 +61,19 @@ IF %ERRORLEVEL% NEQ 0 exit -1
 client get 5
 IF %ERRORLEVEL% NEQ 0 exit -1
 set BLACKTIE_SERVER_ID=
-rem Test 3: Successful
+rem Successful
+
+rem Running txsender queue example
+cd %BLACKTIE_HOME%\examples\xatmi\queues
+call generate_client -Dclient.includes=txsender.c -Dclient.executable.file=txsender -Dx.define=WIN32
+call generate_client -Dclient.includes=queues.c -Dx.define=WIN32
+(echo 0& echo 0& echo 0& echo 0& echo 2) | txsender
+IF %ERRORLEVEL% NEQ 0 exit -1
+set BLACKTIE_SERVER_ID=1
+client get 2
+IF %ERRORLEVEL% NEQ 0 exit -1
+set BLACKTIE_SERVER_ID=
+rem Successful
 
 rem RUN THE SECURE SERVER
 cd %BLACKTIE_HOME%\examples\xatmi\security

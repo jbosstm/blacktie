@@ -108,6 +108,25 @@ if [ "$?" != "0" ]; then
 fi
 unset BLACKTIE_SERVER_ID
 
+# RUN THE TXSENDER EXAMPLE
+echo "Example 3: Running externally managed queue example"
+cd $BLACKTIE_HOME/examples/xatmi/queues
+generate_client -Dclient.includes=txsender.c -Dclient.executable.file=txsender
+generate_client -Dclient.includes=queues.c
+echo '0
+' | txsender
+if [ "$?" != "0" ]; then
+    echo Unable to queue all messages
+    exit -1
+fi
+export BLACKTIE_SERVER_ID=1
+./client get 2
+if [ "$?" != "0" ]; then
+    echo Unable to retrieve the queued messages
+    exit -1
+fi
+unset BLACKTIE_SERVER_ID
+
 # RUN THE SECURE SERVER
 echo "Example 4: Running Security"
 cd $BLACKTIE_HOME/examples/xatmi/security
