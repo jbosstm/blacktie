@@ -21,7 +21,7 @@
   <canRoam>false</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <jdk>jdk1.5.0_19 (x32)</jdk>
+  <jdk>jdk1.6.0_18 (x32)</jdk>
   <triggers class="vector">
     <hudson.triggers.SCMTrigger>
       <spec>*/15 * * * *</spec>
@@ -33,7 +33,7 @@
       <command>rem INITIALIZE C++ COMPILER
 call &quot;C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat&quot;
 rem INITIALIZE MAVEN
-set PATH=%PATH%;C:\hudson\tools\apache-maven-2.0.10\bin
+set PATH=%PATH%;C:\hudson\tools\apache-maven-2.2.1\bin
 set MAVEN_OPTS=-Xmx200m
 rem INITIALIZE ANT
 set PATH=%PATH%;C:\hudson\tools\apache-ant-1.7.1\bin
@@ -46,7 +46,7 @@ call trunk\scripts\hudson\blacktie-windows2003.bat</command>
   </builders>
   <publishers>
     <hudson.tasks.ArtifactArchiver>
-      <artifacts>trunk/*/target/*test-classes/*.log*,trunk/*/target/surefire-reports/*.txt,trunk/blacktie/target/blacktie-*-vc9x32-bin.zip,trunk/blacktie/target/blacktie-*-src.zip,trunk/jatmibroker-xatmi/target/jatmibroker-xatmi-*-javadoc.jar</artifacts>
+      <artifacts>trunk/*/target/*test-classes/*.log*,trunk/*/target/surefire-reports/*.txt,trunk/blacktie/target/blacktie-*-vc9x32-bin.zip,trunk/blacktie/target/blacktie-*-src.zip,trunk/jatmibroker-xatmi/target/jatmibroker-xatmi-*-javadoc.jar,jboss-5.1.0.GA/server/all-with-hornetq/log/server.log*,dist/*/examples/xatmi/*/blacktie*.log,dist/*/examples/xatmi/*/*.trc,</artifacts>
       <latestOnly>false</latestOnly>
     </hudson.tasks.ArtifactArchiver>
     <hudson.plugins.emailext.ExtendedEmailPublisher>
