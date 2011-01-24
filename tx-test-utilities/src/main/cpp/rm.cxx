@@ -59,11 +59,39 @@ static fault_t *last_fault() {
 	return 0;
 }
 
+int dummy_rm_del_faults()
+{
+	fault_t *curr, *prev = 0;
+	int rv = 0;
+
+	userlogc_debug("dummy_rm: del_faults:");
+	for (curr = faults; curr; prev = curr, curr = curr->next) {
+		if (prev == NULL)
+			faults = curr->next;
+		else
+			prev->next = curr->next;
+
+		if (curr->rmstate != NULL)
+			free(curr->rmstate);
+
+		free(curr);
+		rv += 1;
+	}
+
+	userlogc_debug("dummy_rm: deleted %d faults", rv);
+
+	return rv;
+}
+
 int dummy_rm_del_fault(int id)
 {
 	fault_t *curr, *prev = 0;
 
 	userlogc_debug("dummy_rm: del_fault: %d", id);
+
+	if (id == -1)
+		return dummy_rm_del_faults();
+
 	for (curr = faults; curr; prev = curr, curr = curr->next) {
 		if (curr->id == id) {
 			if (prev == NULL)

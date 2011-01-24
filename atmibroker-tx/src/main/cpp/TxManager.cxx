@@ -117,11 +117,17 @@ CosTransactions::Control_ptr TxManager::create_tx(TRANSACTION_TIMEOUT timeout)
 
 	if (!CORBA::is_nil(_txfac)) {
 		try {
+			LOG4CXX_TRACE(txmlogger, (char*) "Creating an OTS transaction");
 			ctrl = _txfac->create((long) timeout);
+			LOG4CXX_TRACE(txmlogger, (char*) "Created OTS transaction - ctrl: " << ctrl);
 		} catch (CORBA::SystemException & e) {
-			LOG4CXX_DEBUG(txmlogger, (char*) "Could not create tx: "
+			LOG4CXX_DEBUG(txmlogger, (char*) "Could not create OTS transaction: "
 				<< e._name() << " minor code: " << e.minor());
+		} catch (...) {
+			LOG4CXX_WARN(txmlogger, (char*) "Could not new OTS transaction (generic exception)");
 		}
+	} else {
+		LOG4CXX_INFO(txmlogger, (char*) "Unable to create OTS transaction - factory is nill");
 	}
 
 	return ctrl;

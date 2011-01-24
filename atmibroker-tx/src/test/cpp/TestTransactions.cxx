@@ -60,6 +60,7 @@ void TestTransactions::setUp()
 
 	// previous tests may have left a txn on the thread
 	destroySpecific(TSS_KEY);
+	(void) dummy_rm_del_fault(-1);
 }
 
 void TestTransactions::tearDown()
