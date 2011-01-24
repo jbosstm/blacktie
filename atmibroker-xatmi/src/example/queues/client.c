@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2010, Red Hat, Inc., and others contributors as indicated
+ * Copyright 2008, Red Hat, Inc., and others contributors as indicated
  * by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -17,10 +17,9 @@
  */
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 
 #include "xatmi.h"
-#include "btxatmi.h"
+#include "tx.h"
 
 #include "userlogc.h"
 
@@ -29,17 +28,18 @@ char prompt(char* prompt) {
 	return getchar();
 }
 
-/*
- * An example showing how to decouple sender and receiver using queues with optional priorities.
- */
 int main(int argc, char **argv) {
-	int id;
-	char* buf;
-	long len;
-	msg_opts_t mopts;
-	char response;
+	int tpstatus;
+	char *retbuf;
+	char type[20];
+	char subtype[20];
+	long retbufsize;
+	char *sbuf;
+	long sbufsize;
+	long callflags;
+	int i;
+	int response;
 	int index;
-
 	int rc = -1;
 
 	rc = tx_open();
@@ -50,33 +50,25 @@ int main(int argc, char **argv) {
 		if (rc != 0) {
 			userlogc((char*) "begin error: %d", rc);
 		} else {
-			mopts.priority = 0;
+			callflags = 0L;
+			sbufsize = 29;
+			sbuf = tpalloc("X_OCTET", 0, sbufsize);
+			memset(sbuf, 0, sbufsize);
+			strcpy(sbuf, "Queue me please!");
+			retbufsize = 15;
+			retbuf = tpalloc("X_OCTET", 0, retbufsize);
+			memset(retbuf, 0, retbufsize);
 
-			len = 2;
-			buf = tpalloc((char*) "X_OCTET", NULL, len);
+			// tptypes
+			tptypes(sbuf, type, subtype);
 
-			if (tperrno != 0) {
-				userlogc((char*) "tpalloc error: %d", tperrno);
-			} else {
-				(void) strcpy(buf, (char*) "1");
-				rc = btenqueue((char*) "TestOne", &mopts, buf, len, 0);
-
-				if (tperrno != 0 || rc != 0) {
-					userlogc((char*) "tpacall error: %d %d", rc, tperrno);
-				} else {
-					userlogc((char*) "Sent message 1");
-					(void) strcpy(buf, (char*) "2");
-					rc = btenqueue((char*) "TestOne", &mopts, buf, len, 0);
-
-					if (tperrno != 0 || rc != 0) {
-						userlogc((char*) "tpacall error: %d %d", rc, tperrno);
-					} else {
-						userlogc((char*) "Sent message 2");
-					}
-				}
-
-				tpfree(buf);
-			}
+			// tpcall
+			userlogc((char*) "Calling tpcall with input: %s", sbuf);
+			tpstatus = tpcall("BAR", sbuf, sbufsize, (char **) &retbuf,
+					&retbufsize, callflags);
+			userlogc(
+					(char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
+					retbufsize, retbuf, tpstatus, tperrno);
 
 			response = prompt("Press 1 to commit or 2 to rollback");
 			index = atoi(&response);
@@ -92,9 +84,11 @@ int main(int argc, char **argv) {
 					userlogc((char*) "rollback error: %d", rc);
 				}
 			}
+
+			tpfree(sbuf);
+			tpfree(retbuf);
 		}
 	}
-
 	rc = tx_close();
 	if (rc != 0) {
 		userlogc((char*) "close error: %d", rc);

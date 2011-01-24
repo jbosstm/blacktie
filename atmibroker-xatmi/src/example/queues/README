@@ -85,3 +85,26 @@ In a different window:
            # Observe the MessagesAdded attribute before and after committing the transaction
 
 After you commit the transaction the client process will receive the two messages sent by txsender
+
+8. ALTERNATIVE TWO: RUN THE PROPAGATED TRANSACTION QUEUE EXAMPLE
+generate_client -Dclient.includes=queues.c -Dclient.executable.file=client
+generate_server -Dserver.includes=BarService.c  -Dservice.names=BAR
+generate_client -Dclient.includes=client.c -Dclient.executable.file=clientSender
+
+You will then end up with three executables:
+client (we will use this as above to dequeue messages
+clientSender (we will use this to invoke a standard xatmi service)
+server (we will use this as a standard XATMI service which transactionally enqueues a message)
+
+1. In the first window type:
+	btadmin startup
+2. In the second window type:
+	export BLACKTIE_SERVER_NAME=myserv
+	export BLACKTIE_SERVER_ID=1
+	./client get 1
+3. In the third window type:
+	./clientSender
+	Then press either 1 to commit the transaction or 2 to roll it back
+	You can observer the JMX browser as per the transactional sender example above
+4. Shutdown the server:
+	btadmin shutdown

@@ -39,6 +39,8 @@ static int put_messages(unsigned int cnt, unsigned int msgid, unsigned int pri) 
 		err = -1;
 
 		mopts.priority = pri;
+		mopts.ttl = 0;
+
 		(void) sprintf(msg, (char*) "%d", id);
 		len = strlen(msg) + 1;
 
@@ -72,6 +74,8 @@ static int put_messages(unsigned int cnt, unsigned int msgid, unsigned int pri) 
 static int get_messages(unsigned int cnt) {
 	int err;
 	int msgCnt = 0;
+
+	userlogc((char*) "Preparing to dequeue the messages: %d", cnt);
 
 	/*
 	 * Register a service listener for the queue. If the env variable BLACKTIE_SERVER_ID

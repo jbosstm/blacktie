@@ -19,8 +19,20 @@
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>queues</DOMAIN>
 	
+	<MACHINES>
+		<MACHINE id="default1" hostname="${HOSTNAME}"
+			pathToExecutable="${BLACKTIE_HOME}/examples/xatmi/queues/server"
+			workingDirectory="${BLACKTIE_HOME}/examples/xatmi/queues"
+			serverId="1" />
+	</MACHINES>
 	<SERVERS>
 		<SERVER name='default'>
+			<MACHINE-REF id="default1" />
+			<SERVICE_NAMES>
+				<SERVICE name='BAR' advertised="false" size="5" />
+			</SERVICE_NAMES>
+		</SERVER>
+		<SERVER name='myserv'>
 			<SERVICE_NAMES>
 				 <SERVICE name='TestOne' externally-managed-destination='true' size="1" />
 			</SERVICE_NAMES>
