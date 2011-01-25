@@ -48,6 +48,7 @@ public:
 	Session* createSession(bool isConv, int id, const char* temporaryQueueName);
 	Session* getQueueSession();
 	Session* getSession(int id);
+	void cleanupThread();
 	void closeSession(int id);
 	void disconnectSession(int id);
 
@@ -57,7 +58,6 @@ public:
 	Destination* createDestination(char* serviceName, bool conversational);
 	void destroyDestination(Destination* destination);
 
-	void cleanupThread();
 
 private:
 	int nextSessionId;

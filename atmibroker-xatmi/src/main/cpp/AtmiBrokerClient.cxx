@@ -145,6 +145,9 @@ AtmiBrokerClient::AtmiBrokerClient(AtmiBrokerSignalHandler& handler) :
 
 AtmiBrokerClient::~AtmiBrokerClient() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "destructor");
+
+	currentConnection->cleanupThread();
+
 	AtmiBrokerMem::discard_instance();
 	txx_stop();
 	clientConnectionManager.closeConnections();
@@ -165,8 +168,6 @@ Session* AtmiBrokerClient::createSession(bool isConv, int& id,
 	}
 	Session* session = NULL;
 
-	if (currentConnection != NULL) {
-
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "created session: " << id);
 		session = currentConnection->createSession(isConv, serviceName);
 
@@ -179,17 +180,14 @@ Session* AtmiBrokerClient::createSession(bool isConv, int& id,
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "created session: " << id
 				<< " send: " << session->getCanSend() << " recv: "
 				<< session->getCanRecv());
-	}
 
 	return session;
 }
 
 Session* AtmiBrokerClient::getQueueSession() {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "get queue session");
-	Session* session = NULL;
-	if (currentConnection != NULL) {
-		session = currentConnection->getQueueSession();
-	}
+	Session* session = currentConnection->getQueueSession();
+
 	if (session != NULL) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "got queue session"
 				<< " send: " << session->getCanSend() << " recv: "
@@ -203,10 +201,8 @@ Session* AtmiBrokerClient::getQueueSession() {
 
 Session* AtmiBrokerClient::getSession(int id) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "get session: " << id);
-	Session* session = NULL;
-	if (currentConnection != NULL) {
-		session = currentConnection->getSession(id);
-	}
+	Session* session = currentConnection->getSession(id);
+
 	if (session != NULL) {
 		LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "got session: " << id
 				<< " send: " << session->getCanSend() << " recv: "
@@ -220,16 +216,9 @@ Session* AtmiBrokerClient::getSession(int id) {
 
 void AtmiBrokerClient::closeSession(int id) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerClient, (char*) "close session: " << id);
-	if (currentConnection != NULL) {
-		currentConnection->closeSession(id);
-	}
+	currentConnection->closeSession(id);
 }
 
 void AtmiBrokerClient::disconnectSessions() {
-	if (currentConnection != NULL) {
-		currentConnection->disconnectSession(-1);
-	} else {
-		LOG4CXX_DEBUG(loggerAtmiBrokerClient,
-				(char*) "AtmiBrokerClient no connections to disconnect");
-	}
+	currentConnection->disconnectSession(-1);
 }

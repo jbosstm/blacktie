@@ -34,6 +34,7 @@ public:
 	virtual Session* getSession(int id) = 0;
 	virtual void closeSession(int id) = 0;
 	virtual void disconnectSession(int id) = 0;
+	virtual void cleanupThread() = 0;
 
 	virtual Destination* createDestination(char* serviceName, bool conversational) = 0;
 	virtual void destroyDestination(Destination* destination) = 0;
