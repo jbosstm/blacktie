@@ -326,7 +326,9 @@ btadmin startup
 if [ "$?" != "0" ]; then
         exit -1
 fi
-unset BLACKTIE_CONFIGURATION
+
+#the client for this test needs to act as a server
+#unset BLACKTIE_CONFIGURATION
 
 # RUN THE C CLIENT
 cd $BLACKTIE_HOME/examples/xatmi/txfooapp
