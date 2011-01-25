@@ -178,6 +178,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			boolean queue = false;
 
 			queue = isDeployQueue(serviceName);
+			log.trace("Queue was created: " + queue);
 			boolean created = queue;
 			if (queue == false) {
 				synchronized (QUEUE_CREATION_TIMES) {
@@ -213,7 +214,7 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 					log.info("Domain is pause");
 					result = 3;
 				}
-			} else if (!queue && consumerCount(serviceName) > 0) {
+			} else if (serviceName.contains(".") && created && consumerCount(serviceName) > 0) {
 				log.warn("can not advertise ADMIN with same id: " + serviceName);
 				result = 2;
 			} else if (AdministrationProxy.isDomainPause) {
