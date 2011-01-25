@@ -11,9 +11,7 @@ IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem START JBOSS
 cd %WORKSPACE%\jboss-5.1.0.GA\bin
-rem set BUILD_ID=dontKillMe
 start /B run.bat -c all-with-hornetq -b %JBOSSAS_IP_ADDR%
-rem set BUILD_ID=
 echo "Started server"
 @ping 127.0.0.1 -n 120 -w 1000 > nul
 
@@ -58,6 +56,6 @@ rem SHUTDOWN JBOSS
 tasklist
 call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S && cd .
 @ping 127.0.0.1 -n 60 -w 1000 > nul
+taskkill /F /IM mspdbsrv.exe
 tasklist
-
 echo "Finished build"
