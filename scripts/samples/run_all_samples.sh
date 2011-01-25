@@ -109,7 +109,7 @@ fi
 unset BLACKTIE_SERVER_ID
 
 # RUN THE TXSENDER EXAMPLE
-echo "Example 3: Running externally managed queue example"
+echo "Example 3.2: Running transactional queue example"
 cd $BLACKTIE_HOME/examples/xatmi/queues
 generate_client -Dclient.includes=txsender.c -Dclient.executable.file=txsender
 if [ "$?" != "0" ]; then
@@ -132,6 +132,42 @@ if [ "$?" != "0" ]; then
     exit -1
 fi
 unset BLACKTIE_SERVER_ID
+
+# RUN THE PROPAGATED TRANSACTION EXAMPLE
+echo "Example 3.3: Running propagated transaction queue example"
+cd $BLACKTIE_HOME/examples/xatmi/queues
+generate_client -Dclient.includes=queues.c -Dclient.executable.file=client
+if [ "$?" != "0" ]; then
+	exit -1
+fi
+generate_server -Dserver.includes=BarService.c  -Dservice.names=BAR
+if [ "$?" != "0" ]; then
+	exit -1
+fi
+generate_client -Dclient.includes=client.c -Dclient.executable.file=clientSender
+if [ "$?" != "0" ]; then
+	exit -1
+fi
+
+btadmin startup
+if [ "$?" != "0" ]; then
+	exit -1
+fi
+echo '1
+' | ./clientSender
+if [ "$?" != "0" ]; then
+    echo Unable to invoke queue proxy
+    exit -1
+fi
+export BLACKTIE_SERVER=myserv
+export BLACKTIE_SERVER_ID=1
+./client get 1
+if [ "$?" != "0" ]; then
+    echo Unable to retrieve the queued message
+    exit -1
+fi
+unset BLACKTIE_SERVER_ID
+unset BLACKTIE_SERVER
 
 # RUN THE SECURE SERVER
 echo "Example 4: Running Security"

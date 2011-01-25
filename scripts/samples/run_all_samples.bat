@@ -77,6 +77,25 @@ IF %ERRORLEVEL% NEQ 0 exit -1
 set BLACKTIE_SERVER_ID=
 rem Successful
 
+rem Running propagated transaction queue example
+cd %BLACKTIE_HOME%\examples\xatmi\queues
+call generate_client -Dclient.includes=queues.c -Dclient.executable.file=client
+IF %ERRORLEVEL% NEQ 0 exit -1
+call generate_server -Dserver.includes=BarService.c  -Dservice.names=BAR
+IF %ERRORLEVEL% NEQ 0 exit -1
+call generate_client -Dclient.includes=client.c -Dclient.executable.file=clientSender
+call btadmin startup
+IF %ERRORLEVEL% NEQ 0 exit -1
+(echo 1) | clientSender
+IF %ERRORLEVEL% NEQ 0 exit -1
+set BLACKTIE_SERVER=myserv
+set BLACKTIE_SERVER_ID=1
+client get 1
+IF %ERRORLEVEL% NEQ 0 exit -1
+set BLACKTIE_SERVER_ID=
+set BLACKTIE_SERVER=
+rem Successful
+
 rem RUN THE SECURE SERVER
 cd %BLACKTIE_HOME%\examples\xatmi\security
 call generate_server -Dservice.names=SECURE -Dserver.includes=BarService.c
