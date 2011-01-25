@@ -320,6 +320,8 @@ if [ "$?" != "0" ]; then
         exit -1
 fi
 export BLACKTIE_CONFIGURATION=linux
+# use a different logfile for the server
+export LOG4CXXCONFIG=log4cxx.server.properties
 btadmin startup
 if [ "$?" != "0" ]; then
         exit -1
@@ -329,6 +331,8 @@ unset BLACKTIE_CONFIGURATION
 # RUN THE C CLIENT
 cd $BLACKTIE_HOME/examples/xatmi/txfooapp
 generate_client -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="$ORACLE_INC_DIR" -Dx.lib.dir="$ORACLE_LIB_DIR" -Dx.libs="occi clntsh" -Dx.define="ORACLE"
+# use the default logfile for the client
+unset LOG4CXXCONFIG
 ./client
 
 # SHUTDOWN THE SERVER RUNNING THE btadmin TOOL
