@@ -28,6 +28,8 @@
 #include "txx.h"
 #include "AtmiBrokerPoaFac.h"
 
+#include "ThreadLocalStorage.h"
+
 log4cxx::LoggerPtr HybridConnectionImpl::logger(log4cxx::Logger::getLogger(
 		"HybridConnectionImpl"));
 
@@ -56,7 +58,7 @@ HybridConnectionImpl::HybridConnectionImpl(char* connectionName,
 	this->connection = (CORBA_CONNECTION *) initOrb(connectionName);
 	this->messagesAvailableCallback = messagesAvailableCallback;
 
-	this->queueSession = NULL;
+	//	this->queueSession = NULL;
 }
 
 HybridConnectionImpl::~HybridConnectionImpl() {
@@ -67,8 +69,8 @@ HybridConnectionImpl::~HybridConnectionImpl() {
 		closeSession((*i).first);
 	}
 
-	delete queueSession;
-	queueSession = NULL;
+	//	delete queueSession;
+	//	queueSession = NULL;
 
 	LOG4CXX_DEBUG(logger, (char*) "destructor: " << connectionName);
 	shutdownBindings(this->connection);
@@ -78,6 +80,14 @@ HybridConnectionImpl::~HybridConnectionImpl() {
 	LOG4CXX_TRACE(logger, "Destroyed");
 	AtmiBrokerEnv::discard_instance();
 	delete sessionMapLock;
+}
+
+void HybridConnectionImpl::cleanupThread() {
+	Session* queueSession = (Session*) getSpecific(QCN_KEY);
+	if (queueSession != NULL) {
+		delete queueSession;
+		setSpecific(QCN_KEY, NULL);
+	}
 }
 
 stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
@@ -205,21 +215,28 @@ void HybridConnectionImpl::disconnect(stomp_connection* connection,
 }
 
 Session* HybridConnectionImpl::getQueueSession() {
+	Session* queueSession = (Session*) getSpecific(QCN_KEY);
 	if (queueSession == NULL) {
 		queueSession = new HybridSessionImpl(pool);
+		setSpecific(QCN_KEY, queueSession);
 	}
 	return queueSession;
 }
 
 Session* HybridConnectionImpl::createSession(bool isConv, char * serviceName) {
 	sessionMapLock->lock();
-	int id = nextSessionId++;;
-	LOG4CXX_DEBUG(logger, (char*) "creating session: " << serviceName << ":" << id);
-	HybridSessionImpl* session = new HybridSessionImpl(isConv, this->connectionName,
-			this->connection, pool, id, serviceName, messagesAvailableCallback);
-	LOG4CXX_DEBUG(logger, (char*) "session established: " << serviceName << ":" << id << ":" << session);
+	int id = nextSessionId++;
+	;
+	LOG4CXX_DEBUG(logger, (char*) "creating session: " << serviceName << ":"
+			<< id);
+	HybridSessionImpl* session = new HybridSessionImpl(isConv,
+			this->connectionName, this->connection, pool, id, serviceName,
+			messagesAvailableCallback);
+	LOG4CXX_DEBUG(logger, (char*) "session established: " << serviceName << ":"
+			<< id << ":" << session);
 	sessionMap[id] = session;
-	LOG4CXX_DEBUG(logger, (char*) "session assigned: " << serviceName << ":" << id << ":" << session << ":" << sessionMap[id]);
+	LOG4CXX_DEBUG(logger, (char*) "session assigned: " << serviceName << ":"
+			<< id << ":" << session << ":" << sessionMap[id]);
 	sessionMapLock->unlock();
 	return sessionMap[id];
 }
@@ -236,7 +253,8 @@ Session* HybridConnectionImpl::createSession(bool isConv, int id,
 	return sessionMap[id];
 }
 
-Destination* HybridConnectionImpl::createDestination(char* serviceName, bool conversational) {
+Destination* HybridConnectionImpl::createDestination(char* serviceName,
+		bool conversational) {
 	LOG4CXX_DEBUG(logger, (char*) "createDestination" << serviceName);
 	return new HybridStompEndpointQueue(this->pool, serviceName, conversational);
 }

@@ -57,6 +57,8 @@ public:
 	Destination* createDestination(char* serviceName, bool conversational);
 	void destroyDestination(Destination* destination);
 
+	void cleanupThread();
+
 private:
 	int nextSessionId;
 	static log4cxx::LoggerPtr logger;
@@ -66,7 +68,7 @@ private:
 	CORBA_CONNECTION* connection;
 	void(*messagesAvailableCallback)(int,bool);
 	SynchronizableObject* sessionMapLock;
-	HybridSessionImpl* queueSession;
+//	HybridSessionImpl* queueSession;
 };
 
 #ifdef __cplusplus

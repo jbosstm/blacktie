@@ -32,6 +32,7 @@ extern BLACKTIE_TX_DLL int tx_commit(void);
 extern BLACKTIE_TX_DLL int tx_open(void);
 extern BLACKTIE_TX_DLL int tx_rollback(void);
 extern BLACKTIE_TX_DLL char* txx_serialize(long* ttl);
+extern BLACKTIE_TX_DLL void txx_stop();
 #ifdef __cplusplus
 }
 #endif
@@ -54,9 +55,15 @@ void TestXAStompConnection::setUp() {
 
 void TestXAStompConnection::tearDown() {
 	userlogc("TestXAStompConnection::tearDown");
+
+	serverConnection->cleanupThread();
+
 	if (serverConnection) {
 		delete serverConnection;
 	}
+
+	txx_stop();
+
 	if (clientConnection) {
 		delete clientConnection;
 	}
@@ -93,6 +100,7 @@ void TestXAStompConnection::test() {
 		long discardTxTTL = -1;
 		clientSend.xid = txx_serialize(&discardTxTTL);;
 		BT_ASSERT(client->send((char*) "JAVA_Converse", clientSend));
+		free (clientData);
 	}
 
 	tx_commit();
