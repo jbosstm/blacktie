@@ -16,7 +16,7 @@ if [ -d $WORKSPACE/jboss-5.1.0.GA ]; then
   sleep 30
 fi
 
-top -b -n 1
+ps -f
 
 # GET THE TNS NAMES
 TNS_ADMIN=$WORKSPACE/instantclient_11_2/network/admin
@@ -42,7 +42,7 @@ sleep 53
 cd $WORKSPACE/trunk/blacktie-utils/cpp-plugin
 mvn clean install
 if [ "$?" != "0" ]; then
-	top -b -n 1
+	ps -f
 	$WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
 	killall -9 testsuite
 	killall -9 server
@@ -56,7 +56,7 @@ cd $WORKSPACE/trunk/blacktie
 # THESE ARE SEPARATE SO WE DO NOT COPY THE OLD ARTIFACTS IF THE BUILD FAILS
 mvn clean
 if [ "$?" != "0" ]; then
-	top -b -n 1
+	ps -f
 	$WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
 	killall -9 testsuite
 	killall -9 server
@@ -66,7 +66,7 @@ if [ "$?" != "0" ]; then
 fi
 mvn install -Dbpa=centos54x64 -Duse.valgrind=false
 if [ "$?" != "0" ]; then
-	top -b -n 1
+	ps -f
 	$WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
 	killall -9 testsuite
 	killall -9 server
@@ -78,7 +78,7 @@ fi
 cd $WORKSPACE/trunk/jatmibroker-xatmi
 mvn site
 if [ "$?" != "0" ]; then
-	top -b -n 1
+	ps -f
 	$WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
 	killall -9 testsuite
 	killall -9 server
@@ -91,7 +91,7 @@ fi
 cd $WORKSPACE/trunk/scripts/test
 ant dist -DBT_HOME=$WORKSPACE/trunk/dist/ -DVERSION=blacktie-3.0.0.M1-SNAPSHOT -DMACHINE_ADDR=`hostname` -DJBOSSAS_IP_ADDR=localhost -Dbpa=centos54x64
 if [ "$?" != "0" ]; then
-	top -b -n 1
+	ps -f
 	$WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
 	killall -9 testsuite
 	killall -9 server
@@ -104,7 +104,7 @@ fi
 cd $WORKSPACE/trunk/dist/blacktie-3.0.0.M1-SNAPSHOT/
 . setenv.sh
 if [ "$?" != "0" ]; then
-	top -b -n 1
+	ps -f
 	$WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
 	killall -9 testsuite
 	killall -9 server
@@ -127,7 +127,7 @@ sed -i 's?</security-settings>?      <security-setting match="jms.queue.BTR_SECU
 
 ./run_all_samples.sh tx
 if [ "$?" != "0" ]; then
-	top -b -n 1
+	ps -f
 	$WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
 	killall -9 testsuite
 	killall -9 server
@@ -136,6 +136,6 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 
-top -b -n 1
+ps -f
 # SHUTDOWN JBOSS
 $WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
