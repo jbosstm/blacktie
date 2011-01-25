@@ -42,7 +42,7 @@ export PATH=$PATH:/usr/local/apache-ant-1.7.1/bin/
   </builders>
   <publishers>
     <hudson.tasks.ArtifactArchiver>
-      <artifacts>trunk/*/target/*test-classes/*.log*,trunk/*/target/surefire-reports/*.txt,trunk/blacktie/target/blacktie-*-centos55x32-bin.tar.gz,trunk/blacktie/target/blacktie-*-src.zip,trunk/jatmibroker-xatmi/target/jatmibroker-xatmi-*-javadoc.jar</artifacts>
+      <artifacts>trunk/dist/*/examples/xatmi/*/*.log,trunk/*/target/*test-classes/*.log*,trunk/*/target/surefire-reports/*.txt,trunk/blacktie/target/blacktie-*-centos55x32-bin.tar.gz,trunk/blacktie/target/blacktie-*-src.zip,trunk/jatmibroker-xatmi/target/jatmibroker-xatmi-*-javadoc.jar,jboss-5.1.0.GA/server/all-with-hornetq/log/server.log*,dist/*/examples/xatmi/*/blacktie*.log</artifacts>
       <latestOnly>false</latestOnly>
     </hudson.tasks.ArtifactArchiver>
     <hudson.plugins.emailext.ExtendedEmailPublisher>
