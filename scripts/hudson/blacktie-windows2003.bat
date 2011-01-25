@@ -57,4 +57,7 @@ IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5
 rem SHUTDOWN JBOSS
 tasklist
 call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S && cd .
+@ping 127.0.0.1 -n 60 -w 1000 > nul
+tasklist
+
 echo "Finished build"
