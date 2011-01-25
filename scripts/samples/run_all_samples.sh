@@ -168,6 +168,10 @@ if [ "$?" != "0" ]; then
 fi
 unset BLACKTIE_SERVER_ID
 unset BLACKTIE_SERVER
+btadmin shutdown
+if [ "$?" != "0" ]; then
+	exit -1
+fi
 
 # RUN THE SECURE SERVER
 echo "Example 4: Running Security"

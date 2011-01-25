@@ -94,6 +94,8 @@ client get 1
 IF %ERRORLEVEL% NEQ 0 exit -1
 set BLACKTIE_SERVER_ID=
 set BLACKTIE_SERVER=
+call btadmin shutdown
+IF %ERRORLEVEL% NEQ 0 exit -1
 rem Successful
 
 rem RUN THE SECURE SERVER
