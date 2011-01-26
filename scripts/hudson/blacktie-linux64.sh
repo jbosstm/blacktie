@@ -89,7 +89,7 @@ fi
 
 # INITIALIZE THE BLACKTIE DISTRIBUTION
 cd $WORKSPACE/trunk/scripts/test
-ant dist -DBT_HOME=$WORKSPACE/trunk/dist/ -DVERSION=blacktie-3.0.0.M1-SNAPSHOT -DMACHINE_ADDR=`hostname` -DJBOSSAS_IP_ADDR=localhost -Dbpa=centos54x64
+ant dist -DBT_HOME=$WORKSPACE/trunk/dist/ -DVERSION=blacktie-3.0.0.M1 -DMACHINE_ADDR=`hostname` -DJBOSSAS_IP_ADDR=localhost -Dbpa=centos54x64
 if [ "$?" != "0" ]; then
 	ps -f
 	$WORKSPACE/jboss-5.1.0.GA/bin/shutdown.sh -S && cd .
@@ -101,7 +101,7 @@ if [ "$?" != "0" ]; then
 fi
 
 # RUN ALL THE SAMPLES
-cd $WORKSPACE/trunk/dist/blacktie-3.0.0.M1-SNAPSHOT/
+cd $WORKSPACE/trunk/dist/blacktie-3.0.0.M1/
 . setenv.sh
 if [ "$?" != "0" ]; then
 	ps -f
@@ -118,7 +118,7 @@ export ORACLE_INC_DIR=/usr/include/oracle/11.2/client64
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_LIB_DIR
 export TNS_ADMIN=$WORKSPACE/instantclient_11_2/network/admin
 
-cp $WORKSPACE/trunk/dist/blacktie-3.0.0.M1-SNAPSHOT/examples/xatmi/security/hornetq-*.properties $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/conf/props
+cp $WORKSPACE/trunk/dist/blacktie-3.0.0.M1/examples/xatmi/security/hornetq-*.properties $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/conf/props
 sed -i 's?</security-settings>?      <security-setting match="jms.queue.BTR_SECURE">\
          <permission type="send" roles="blacktie"/>\
          <permission type="consume" roles="blacktie"/>\
