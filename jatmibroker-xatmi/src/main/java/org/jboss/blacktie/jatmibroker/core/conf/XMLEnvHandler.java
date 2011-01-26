@@ -76,7 +76,7 @@ public class XMLEnvHandler extends DefaultHandler {
 		prop.put("blacktie.domain.servers", servers);
 		prop.put("blacktie.domain.buffers", buffers);
 		prop.put("blacktie.domain.serverLaunchers", serverLaunchers);
-		prop.setProperty("blacktie.domain.version", "3.0.0.M1");
+		prop.setProperty("blacktie.domain.version", "3.0.0.M2-SNAPSHOT");
 
 		if (matcher == null) {
 			matcher = java.util.regex.Pattern.compile(envVarPatStr).matcher("");

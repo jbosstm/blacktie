@@ -21,7 +21,7 @@
 
 	<groupId>org.jboss.blacktie.plugins</groupId>
 	<artifactId>cpp-plugin</artifactId>
-	<version>3.0.0.M1</version>
+	<version>3.0.0.M2-SNAPSHOT</version>
 	<name>Blacktie C++ Plugin</name>
 	<packaging>maven-plugin</packaging>
 	<url>http://www.jboss.org/blacktie/</url>

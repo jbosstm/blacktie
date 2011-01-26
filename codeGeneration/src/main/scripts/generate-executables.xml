@@ -129,7 +129,7 @@
 		<fail unless="server.includes" />
 		<delete file="server.c" />
 		<delete file="log4cxx.properties" />
-		<unzip src="${env.BLACKTIE_HOME}/lib/java/codeGeneration-3.0.0.M1.jar" dest=".">
+		<unzip src="${env.BLACKTIE_HOME}/lib/java/codeGeneration-3.0.0.M2-SNAPSHOT.jar" dest=".">
 			<patternset>
 				<include name="server.c" />
 				<include name="log4cxx.properties" />
@@ -162,7 +162,7 @@
 	<target name="client" depends="init,clean-client">
 		<fail unless="client.includes" />
 		<delete file="log4cxx.properties" />
-		<unzip src="${env.BLACKTIE_HOME}/lib/java/codeGeneration-3.0.0.M1.jar" dest=".">
+		<unzip src="${env.BLACKTIE_HOME}/lib/java/codeGeneration-3.0.0.M2-SNAPSHOT.jar" dest=".">
 			<patternset>
 				<include name="log4cxx.properties" />
 			</patternset>

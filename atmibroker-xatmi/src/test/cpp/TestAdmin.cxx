@@ -59,7 +59,7 @@ void TestAdmin::testVersion() {
 	cd = callADMIN((char*)"version", '1', 0, &ver);
 	BT_ASSERT(cd == 0);
 	userlogc((char*)"version is %s", ver);
-	BT_ASSERT(strcmp(ver, "3.0.0.M1") == 0);
+	BT_ASSERT(strcmp(ver, "3.0.0.M2-SNAPSHOT") == 0);
 	free(ver);
 }
 
