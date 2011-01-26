@@ -33,6 +33,41 @@ Installing Blacktie into JBoss AS
          <permission type="send" roles="blacktie,guest"/>
          <permission type="consume" roles="blacktie,guest"/>
       </security-setting>
+     - Configure HQ to not use connection buffering
+        In:
+           JBOSS_HOME/server/all-with-hornetq/deploy/hornetq.sar/hornetq-jms.xml
+        Replace:
+           <connection-factory name="InVMConnectionFactory">
+        With:
+           <connection-factory name="InVMConnectionFactory">
+              <consumer-window-size>0</consumer-window-size>
+     - Configure HornetQ to not timeout InVM connections
+        In:
+           JBOSS_HOME/server/all-with-hornetq/deploy/hornetq.sar/hornetq-jms.xml
+        Replace:
+           <connection-factory name="InVMConnectionFactory">
+        With: 
+           <connection-factory name="InVMConnectionFactory">
+              <connection-ttl>-1</connection-ttl>
+              <client-failure-check-period>86400000</client-failure-check-period>
+        And in:
+           JBOSS_HOME/server/all-with-hornetq/deploy/hornetq-ra.rar/META-INF/ra.xml
+        Replace:
+           <resourceadapter-class>org.hornetq.ra.HornetQResourceAdapter</resourceadapter-class>
+        With:
+           <resourceadapter-class>org.hornetq.ra.HornetQResourceAdapter</resourceadapter-class>
+              <config-property>
+              <description>The connection TTL</description>
+              <config-property-name>ConnectionTTL</config-property-name>
+              <config-property-type>java.lang.Long</config-property-type>
+              <config-property-value>-1</config-property-value>
+           </config-property>
+           <config-property>
+              <description>The client failure check period</description>
+              <config-property-name>ClientFailureCheckPeriod</config-property-name>
+              <config-property-type>java.lang.Long</config-property-type>
+              <config-property-value>86400000</config-property-value>
+           </config-property>
    3 Configure JBoss AS to use JTS:
    	- cd JBOSS_HOME/docs/examples/transactions;
    	- Type: ant jts -Dtarget.server.dir=../../../server/all-with-hornetq (this installs the JTS version of JBoss Transactions);
