@@ -116,6 +116,13 @@
 		</plugins>
 	</build>
 	<dependencies>
+		<!-- REQUIRED FOR AIX TO GET JAXP-RI -->
+		<dependency>
+		    <groupId>org.apache.servicemix.bundles</groupId>
+		    <artifactId>org.apache.servicemix.bundles.jaxp-ri</artifactId>
+		    <version>1.4.2_1</version>
+		</dependency>
+		<!-- END OF AIX REQUIREMENT -->
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>stompconnectservice</artifactId>
