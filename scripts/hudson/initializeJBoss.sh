@@ -6,7 +6,7 @@ fi
 # GET JBOSS AND INITIALIZE IT
 if [ -d $WORKSPACE/jboss-5.1.0.GA ]; then
   rm -rf $WORKSPACE/jboss-5.1.0.GA
-  rm -rf $WORKSPACE/hornetq-2.0.0.GA
+  rm -rf $WORKSPACE/hornetq-2.1.2.Final
 fi
 
 cd $WORKSPACE
@@ -16,16 +16,16 @@ else
 	wget http://albany/userContent/blacktie/jboss-5.1.0.GA.zip
 fi
 unzip jboss-5.1.0.GA.zip
-if [ -e $WORKSPACE/hornetq-2.0.0.GA.zip ]; then
+if [ -e $WORKSPACE/hornetq-2.1.2.Final.zip ]; then
 	echo "HornetQ already downloaded"
 else
-	wget http://albany/userContent/blacktie/hornetq-2.0.0.GA.zip
+	wget http://albany/userContent/blacktie/hornetq-2.1.2.Final.zip
 fi
 
 echo 'A
-' | unzip hornetq-2.0.0.GA.zip
+' | unzip hornetq-2.1.2.Final.zip
 # INSTALL HORNETQ
-cd $WORKSPACE/hornetq-2.0.0.GA/config/jboss-as/
+cd $WORKSPACE/hornetq-2.1.2.Final/config/jboss-as-5/
 chmod 775 build.sh
 export JBOSS_HOME=$WORKSPACE/jboss-5.1.0.GA && ./build.sh && export JBOSS_HOME=
 # INSTALL TRANSACTIONS
