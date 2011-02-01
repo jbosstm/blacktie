@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
 	long sbufsize;
 	long callflags;
 	int i;
-	int response;
+	char response;
 	int index;
 	int rc = -1;
 
