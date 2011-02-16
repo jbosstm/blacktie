@@ -31,8 +31,8 @@ public:
 	virtual const char* getReplyTo() = 0;
 
 	virtual MESSAGE receive(long time) = 0;
-	virtual bool send(char* destinationName, MESSAGE message) = 0;
-	virtual bool send(MESSAGE message) = 0;
+	virtual bool send(char* destinationName, MESSAGE &message) = 0;
+	virtual bool send(MESSAGE &message) = 0;
 	virtual void disconnect() = 0;
 
 	int getId() {

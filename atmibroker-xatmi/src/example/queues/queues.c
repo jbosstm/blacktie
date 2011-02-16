@@ -19,10 +19,21 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "tx.h"
 #include "xatmi.h"
 #include "btxatmi.h"
 
 #include "userlogc.h"
+
+extern BLACKTIE_XATMI_DLL int serverdone();
+static int txopen = 0;
+
+#define TEST_ERROR(msg, err)	\
+	if (err != 0) {	\
+		userlogc((char*) "%s error %d", msg, err);	\
+		if (txopen) tx_close();	\
+		return -1;	\
+	} //else {userlogc((char*) "%s ok", msg);}
 
 /**
  * Send cnt messages begining with message id msgid with the requested priority.
@@ -40,6 +51,7 @@ static int put_messages(unsigned int cnt, unsigned int msgid, unsigned int pri) 
 
 		mopts.priority = pri;
 		mopts.ttl = 0;
+		mopts.syncRcv = 0;
 
 		(void) sprintf(msg, (char*) "%d", id);
 		len = strlen(msg) + 1;
@@ -71,11 +83,16 @@ static int put_messages(unsigned int cnt, unsigned int msgid, unsigned int pri) 
 /**
  * Take the next cnt messages off the service queue.
  */
-static int get_messages(unsigned int cnt) {
-	int err;
+static int get_messages(unsigned int cnt, int txmode) {
 	int msgCnt = 0;
 
 	userlogc((char*) "Preparing to dequeue the messages: %d", cnt);
+
+	if (txmode) {
+		TEST_ERROR("open", tx_open());
+		txopen = 1;
+		TEST_ERROR("begin", tx_begin());
+	}
 
 	/*
 	 * Register a service listener for the queue. If the env variable BLACKTIE_SERVER_ID
@@ -99,6 +116,10 @@ static int get_messages(unsigned int cnt) {
 		}
 	}
 
+	if (txmode) {
+		TEST_ERROR("end", (txmode == 1 ? tx_commit() : tx_rollback()));
+	}
+
 	// Manually shutdown the server
 	serverdone();
 
@@ -112,13 +133,17 @@ int main(int argc, char **argv) {
 	int rc = -1;
 
 	if (argc < 3) {
-		userlogc((char *) "usage: %s <put cnt [msgid priority] | get cnt>",
+		userlogc((char *) "usage: %s <put cnt [msgid priority] | get cnt | getcommit cnt | getabort cnt>",
 				argv[0]);
 	} else if (strcmp(argv[1], "put") == 0) {
 		rc = put_messages(atoi(argv[2]), argc > 3 ? atoi(argv[3]) : 0,
 				argc > 4 ? atoi(argv[4]) : 0);
 	} else if (strcmp(argv[1], "get") == 0) {
-		rc = get_messages(atoi(argv[2]));
+		rc = get_messages(atoi(argv[2]), 0);
+	} else if (strcmp(argv[1], "getcommit") == 0) {
+		rc = get_messages(atoi(argv[2]), 1);
+	} else if (strcmp(argv[1], "getabort") == 0) {
+		rc = get_messages(atoi(argv[2]), 2);
 	} else {
 		userlogc((char *) "usage: %s <put cnt [priority] | get cnt>", argv[0]);
 	}

@@ -99,6 +99,7 @@ void TestXAStompConnection::test() {
 		clientSend.control = NULL;
 		long discardTxTTL = -1;
 		clientSend.xid = txx_serialize(&discardTxTTL);;
+		clientSend.syncRcv = 0;
 		BT_ASSERT(client->send((char*) "JAVA_Converse", clientSend));
 		free (clientData);
 	}

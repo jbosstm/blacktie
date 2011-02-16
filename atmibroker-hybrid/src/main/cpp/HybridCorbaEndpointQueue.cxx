@@ -188,7 +188,7 @@ MESSAGE HybridCorbaEndpointQueue::receive(long time) {
 	LOG4CXX_DEBUG(logger, (char*) "HybridCorbaEndpointQueue::receive: " << time << " : " << this);
 
 	MESSAGE message = { NULL, -1, 0, NULL, NULL, NULL, -1, -1, -1, -1, -1, NULL, NULL,
-			false, NULL };
+			false, NULL, NULL, false };
 
 	lock->lock();
 	if (!shutdown) {

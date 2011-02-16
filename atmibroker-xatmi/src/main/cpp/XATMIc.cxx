@@ -79,7 +79,7 @@ void setTpurcode(long rcode) {
 }
 
 int send(Session* session, const char* replyTo, char* idata, long ilen,
-		int correlationId, long flags, long rval, long rcode,
+		int correlationId, long flags, long rval, MESSAGE& message, long rcode,
 		msg_opts_t* mopts, bool queue, char* queueName) {
 	LOG4CXX_DEBUG(loggerXATMI, (char*) "send - ilen: " << ilen << ": "
 			<< "cd: " << correlationId << "flags: " << flags);
@@ -90,7 +90,6 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			LOG4CXX_TRACE(loggerXATMI, (char*) "allocating data to go: "
 					<< ilen);
 
-			MESSAGE message;
 			message.replyto = replyTo;
 			message.data = idata;
 			message.len = ilen;
@@ -101,18 +100,13 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			message.rval = rval;
 			message.type = NULL;
 			message.subtype = NULL;
+			message.syncRcv = 0;
 			if (message.data != NULL) {
 				message.type = (char*) malloc(MAX_TYPE_SIZE + 1);
 				memset(message.type, '\0', MAX_TYPE_SIZE + 1);
 				message.subtype = (char*) malloc(MAX_SUBTYPE_SIZE + 1);
 				memset(message.subtype, '\0', MAX_SUBTYPE_SIZE + 1);
 				tptypes(idata, message.type, message.subtype);
-			}
-			if (message.type == NULL) {
-				message.type = (char*) "";
-			}
-			if (message.subtype == NULL) {
-				message.subtype = (char*) "";
 			}
 
 			session->blockSignals((flags & TPSIGRSTRT));
@@ -127,6 +121,7 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 				if (mopts != NULL) {
 					message.priority = mopts->priority;
 					message.ttl = mopts->ttl;
+					message.syncRcv = mopts->syncRcv;
 				}
 
 				if (session->send(queueName, message))
@@ -173,6 +168,15 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 	return toReturn;
 }
 
+int send(Session* session, const char* replyTo, char* idata, long ilen,
+		int correlationId, long flags, long rval, long rcode,
+		msg_opts_t* mopts, bool queue, char* queueName) {
+	MESSAGE message;
+	return send(session, replyTo, idata, ilen,
+		correlationId, flags, rval, message, rcode,
+		mopts, queue, queueName);
+}
+
 static long determineTimeout(long flags) {
 	long time = 0;
 	if (TPNOBLOCK & flags) { // NB flags override any XATMI or transaction timeouts
@@ -199,9 +203,9 @@ static long determineTimeout(long flags) {
 	return time;
 }
 
-int convertMessage(MESSAGE message, int len, char** odata, long* olen,
+int convertMessage(MESSAGE &message, int len, char** odata, long* olen,
 		long flags) {
-	int toReturn = -1;
+	LOG4CXX_TRACE(loggerXATMI, (char*) "convertMessage");
 	char* type = message.type;
 	if (type == NULL) {
 		type = (char*) "";
@@ -219,11 +223,12 @@ int convertMessage(MESSAGE message, int len, char** odata, long* olen,
 	free(messageSubtype);
 
 	if (flags & TPNOCHANGE && typesChanged) {
+		LOG4CXX_TRACE(loggerXATMI, (char*) "convertMessage TPNOCHANGE");
 		setSpecific(TPE_KEY, TSS_TPEOTYPE);
 		setTpurcode(message.rcode);
 		txx_rollback_only();
 		free(message.data);
-		return toReturn;
+		return -1;
 	}
 
 	if (len < message.len && !typesChanged) {
@@ -232,7 +237,7 @@ int convertMessage(MESSAGE message, int len, char** odata, long* olen,
 	} else if (len < message.len && typesChanged) {
 		*odata = AtmiBrokerMem::get_instance()->tprealloc(*odata, message.len,
 				message.type, message.subtype, true);
-	} else if (typesChanged) {
+	} else if (typesChanged && message.len > 0) {
 		*odata = AtmiBrokerMem::get_instance()->tprealloc(*odata, message.len,
 				message.type, message.subtype, true);
 	}
@@ -244,8 +249,8 @@ int convertMessage(MESSAGE message, int len, char** odata, long* olen,
 		*odata = NULL;
 	}
 	free(message.data);
-	toReturn = 0;
-	return toReturn;
+	LOG4CXX_TRACE(loggerXATMI, (char*) "convertMessage ok");
+	return 0;
 }
 
 int receive(int id, Session* session, char ** odata, long *olen, long flags,
@@ -1228,6 +1233,7 @@ int btenqueue(char * svc, msg_opts_t* mopts, char* idata, long ilen, long flags)
 	int toReturn = -1;
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	flags = flags | TPNOREPLY | TPNOTIME;
+	mopts->syncRcv = 0;
 
 	long toCheck = flags & ~(TPNOTRAN | TPNOREPLY | TPNOTIME | TPSIGRSTRT
 			| TPNOBLOCK);
@@ -1297,7 +1303,7 @@ int btenqueue(char * svc, msg_opts_t* mopts, char* idata, long ilen, long flags)
 	return toReturn;
 }
 
-int btdequeue(char * svcname, char ** odata, long *olen, long flags) {
+int async_btdequeue(char * svcname, char ** odata, long *olen, long flags) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "btdequeue: " << svcname);
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	int toReturn = -1;
@@ -1324,6 +1330,7 @@ int btdequeue(char * svcname, char ** odata, long *olen, long flags) {
 			message.subtype = NULL;
 			message.received = false;
 			message.ttl = -1;
+			message.syncRcv = 0;
 			message.serviceName = NULL;
 			message.messageId = NULL;
 			message = destination->receive(determineTimeout(flags));
@@ -1352,5 +1359,89 @@ int btdequeue(char * svcname, char ** odata, long *olen, long flags) {
 	}
 	LOG4CXX_TRACE(loggerXATMI, (char*) "btqueue return: " << toReturn
 			<< " tperrno: " << tperrno);
+	return toReturn;
+}
+
+
+int btdequeue(char * svc, char ** odata, long *olen, long flags) {
+	LOG4CXX_TRACE(loggerXATMI, (char*) "btdequeue: " << svc <<
+		" flags: 0x" << std::hex << flags);
+	int toReturn = -1;
+	setSpecific(TPE_KEY, TSS_TPERESET);
+	//flags = flags | TPNOREPLY | TPNOTIME;
+	flags = flags | TPNOREPLY;
+
+	//long toCheck = flags & ~(TPNOTRAN | TPNOREPLY | TPNOTIME | TPSIGRSTRT | TPNOBLOCK);
+	long toCheck = flags & ~(TPNOREPLY | TPSIGRSTRT);
+
+	if (toCheck != 0) {
+		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
+		setSpecific(TPE_KEY, TSS_TPEINVAL);
+	} else {
+		bool transactional = !(flags & TPNOTRAN);
+		if (transactional) {
+			void *ctrl = txx_get_control();
+			if (ctrl == NULL) {
+				transactional = false;
+				return async_btdequeue(svc, odata, olen, flags);
+			}
+			txx_release_control(ctrl);
+		}
+
+		int len = ::bufferSize(*odata, *olen);
+		if (len != -1) {
+			if (clientinit() != -1) {
+				Session* session = NULL;
+				try {
+					session = ptrAtmiBrokerClient->getQueueSession();
+					LOG4CXX_TRACE(loggerXATMI, (char*) "new session: "
+							<< session << " transactional: " << transactional);
+
+					if (tperrno != -1) {
+						msg_opts_t mopts = {0, 0L, 1};
+						MESSAGE message;
+
+						if (transactional)
+							txxx_suspend();
+
+						LOG4CXX_TRACE(loggerXATMI, (char*) "TPNOREPLY send");
+						toReturn = send(session, "", NULL, 0, 0, flags, 0,
+								message, 0, &mopts, true, svc);
+						LOG4CXX_TRACE(loggerXATMI, (char*) "TPNOREPLY sent - converting message response");
+						(void) convertMessage(message, len, odata, olen, 0L);
+
+						if (toReturn == -1) {
+							LOG4CXX_WARN(loggerXATMI,
+									(char*) "Queue Session failure");
+						}
+					} else {
+						LOG4CXX_TRACE(loggerXATMI,
+								(char*) "tpacall unknown error");
+						setSpecific(TPE_KEY, TSS_TPESYSTEM);
+					}
+				} catch (...) {
+					LOG4CXX_ERROR(
+							loggerXATMI,
+							(char*) "tpacall failed to connect to service queue: "
+									<< svc);
+					setSpecific(TPE_KEY, TSS_TPENOENT);
+				}
+
+				if (transactional) {
+					// txx_suspend was called but there was an error so
+					// resume (note we didn't check for TPNOREPLY since we are in
+					// the else arm of if (transactional && (flags & TPNOREPLY))
+					LOG4CXX_DEBUG(loggerXATMI, (char*) "tpacall resume rv="
+							<< toReturn);
+					txxx_resume();
+				}
+
+			}
+		}
+	}
+
+	LOG4CXX_TRACE(loggerXATMI, (char*) "tpacall return: " << toReturn
+			<< " tperrno: " << tperrno);
+
 	return toReturn;
 }

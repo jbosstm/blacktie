@@ -36,6 +36,7 @@ struct message_t {
 	bool received;
 	char* serviceName;
 	char* messageId;
+	bool syncRcv;
 };
 typedef struct message_t MESSAGE;
 

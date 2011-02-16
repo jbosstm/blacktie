@@ -43,8 +43,8 @@ public:
 
 	MESSAGE receive(long time);
 
-	bool send(char* destinationName, MESSAGE message);
-	bool send(MESSAGE message);
+	bool send(char* destinationName, MESSAGE &message);
+	bool send(MESSAGE &message);
 	void disconnect();
 
 	int getId();

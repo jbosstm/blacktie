@@ -206,7 +206,7 @@ MESSAGE HybridSessionImpl::receive(long time) {
 	return message;
 }
 
-bool HybridSessionImpl::send(char* serviceName, MESSAGE message) {
+bool HybridSessionImpl::send(char* serviceName, MESSAGE& message) {
 	this->serviceInvokation = true;
 	this->serviceName = serviceName;
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
@@ -227,16 +227,21 @@ bool HybridSessionImpl::send(char* serviceName, MESSAGE message) {
 	return result;
 }
 
-bool HybridSessionImpl::send(MESSAGE message) {
-	LOG4CXX_DEBUG(logger, "HybridSessionImpl::send");
+bool HybridSessionImpl::send(MESSAGE& message) {
+	LOG4CXX_DEBUG(logger, "HybridSessionImpl::send syncRcv=" << message.syncRcv);
 
-	char* data_togo = BufferConverterImpl::convertToWireFormat(message.type,
+	char* data_togo = NULL;
+
+	if (message.len !=0)
+		data_togo = BufferConverterImpl::convertToWireFormat(message.type,
 			message.subtype, message.data, &message.len);
+	else
+		LOG4CXX_TRACE(logger, "syncRcv: zero size message");
 
 	bool toReturn = false;
 	if (serviceInvokation) {
 		stomp_frame frame;
-		frame.command = (char*) "SEND";
+		frame.command = (message.syncRcv ? (char *) "RECEIVE" :(char*) "SEND");
 		frame.headers = apr_hash_make(pool);
 		apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, sendTo);
 
@@ -365,6 +370,11 @@ bool HybridSessionImpl::send(MESSAGE message) {
 						"Setting socket_opt to blocking for at most 1 second for ack");
 				apr_socket_opt_set(stompConnection->socket, APR_SO_NONBLOCK, 0);
 				apr_socket_timeout_set(stompConnection->socket, 1);
+			} else if (message.syncRcv) {
+				// enable blocking receive
+				LOG4CXX_TRACE(logger, "Setting socket_opt to blocking for synchronous receive");
+				apr_socket_opt_set(stompConnection->socket, APR_SO_NONBLOCK, 0);
+				apr_socket_timeout_set(stompConnection->socket, -1);
 			}
 
 			rc = stomp_read(stompConnection, &framed, pool);
@@ -383,13 +393,27 @@ bool HybridSessionImpl::send(MESSAGE message) {
 			} else if (strcmp(framed->command, (const char*) "ERROR") == 0) {
 				LOG4CXX_WARN(logger, (char*) "Got an error: " << framed->body);
 				setSpecific(TPE_KEY, TSS_TPENOENT); // TODO - clean up session
-			} else if (strcmp(framed->command, (const char*) "RECEIPT") == 0) {
+			} else if (strcmp(framed->command, (const char*) "RECEIPT") == 0 ||
+				strcmp(framed->command, (const char*) "MESSAGE") == 0 ) {
 				LOG4CXX_DEBUG(logger, (char*) "SEND RECEIPT: "
 						<< (char*) apr_hash_get(framed->headers, "receipt-id",
 								APR_HASH_KEY_STRING));
 				LOG4CXX_DEBUG(logger, "Sent to: " << sendTo << " Command: "
 						<< frame.command << " Size: " << frame.body_length);
+
 				toReturn = true;
+
+				if (message.syncRcv) {
+					LOG4CXX_TRACE(logger, "syncRcv: copying message body response: len=" << framed->body_length
+						<< " data=" << framed->body);
+					message.len = framed->body_length;
+					if ((message.data = (char*) ::malloc(message.len)) == 0) {
+						LOG4CXX_WARN(logger, (char*) "Out of memory");
+						toReturn = false;
+					} else {
+						memcpy(message.data, framed->body, message.len);
+					}
+				}
 			} else {
 				LOG4CXX_ERROR(logger, "Didn't get a receipt: "
 						<< framed->command << ", " << framed->body);
