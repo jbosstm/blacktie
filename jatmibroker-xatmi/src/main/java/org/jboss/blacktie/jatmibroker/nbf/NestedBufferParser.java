@@ -33,7 +33,7 @@ import org.jboss.blacktie.jatmibroker.xatmi.Connection;
 import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
 import org.xml.sax.SAXException;
 
-import com.sun.org.apache.xerces.internal.xs.PSVIProvider;
+import org.apache.xerces.xs.PSVIProvider;
 
 public class NestedBufferParser {
 	private NestedBufferHandlers handler;

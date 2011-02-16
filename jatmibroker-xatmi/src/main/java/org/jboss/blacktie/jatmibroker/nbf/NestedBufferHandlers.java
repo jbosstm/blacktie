@@ -4,10 +4,10 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+import org.apache.xerces.xs.ElementPSVI;
+import org.apache.xerces.xs.PSVIProvider;
+import org.apache.xerces.xs.XSTypeDefinition;
 
-import com.sun.org.apache.xerces.internal.xs.ElementPSVI;
-import com.sun.org.apache.xerces.internal.xs.PSVIProvider;
-import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
 
 public class NestedBufferHandlers extends DefaultHandler {
 	private static final Logger log = LogManager.getLogger(NestedBufferHandlers.class);

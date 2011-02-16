@@ -121,4 +121,21 @@ public class BT_NBF extends Buffer {
 		}
 		return rc;
 	}
+	
+	public Object btgetattribute(String attrId, int index) {
+		Object toReturn = null;
+		
+		try {
+			boolean rc = false;
+			parser.setId(attrId);
+			rc = parser.parse(getRawData());
+			
+			if(rc) {
+			}
+		} catch (ConnectionException e) {
+			log.error("btgetattribute failed with " + e.getMessage());
+		}
+		
+		return toReturn;
+	}
 }
