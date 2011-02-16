@@ -86,8 +86,16 @@ public class NestedBufferParser {
 		handler.setId(id);
 	}
 	
+	public void setIndex(int index) {
+		handler.setIndex(index);
+	}
+	
 	public String getType() {
 		return handler.getType();
+	}
+	
+	public String getValue() {
+		return handler.getValue();
 	}
 	
 	public boolean parse(byte[] buffer) throws ConnectionException {

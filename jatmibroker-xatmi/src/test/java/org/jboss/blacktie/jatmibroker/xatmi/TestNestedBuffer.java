@@ -48,6 +48,17 @@ public class TestNestedBuffer extends TestCase {
 		
 		log.info(new String(buffer.serialize()));
 		
+		Object obj = buffer.btgetattribute("id", 0);
+		assertTrue("java.lang.Long".equals(obj.getClass().getName()));
+		assertTrue(((Long)obj).longValue() == 1001);
+		
+		obj = buffer.btgetattribute("id", 1);
+		assertTrue(obj == null);
+		
+		obj = buffer.btgetattribute("name", 0);
+		assertTrue("java.lang.String".equals(obj.getClass().getName()));
+		assertTrue("zhfeng".equals((String)(obj)));
+		
 		BT_NBF test = (BT_NBF) connection.tpalloc("BT_NBF", "test", 0);
 		assertTrue(test.btaddattribute("employee", buffer));
 		log.info(new String(test.serialize()));

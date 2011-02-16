@@ -115,27 +115,51 @@ public class BT_NBF extends Buffer {
 		} catch (ClassCastException e) {
 			rc = false;
 			log.warn("type is " + parser.getType() + 
-					 " but attrValue type is " + attrValue.getClass().getName());
+					" but attrValue type is " + attrValue.getClass().getName());
 		} catch (Throwable e) {
 			log.error("btaddattribute failed with " + e.getMessage());
 		}
 		return rc;
 	}
-	
+
 	public Object btgetattribute(String attrId, int index) {
 		Object toReturn = null;
-		
+
 		try {
 			boolean rc = false;
 			parser.setId(attrId);
+			parser.setIndex(index);
 			rc = parser.parse(getRawData());
-			
+
 			if(rc) {
+				String type = parser.getType();
+				String value = parser.getValue();
+
+				log.debug("vlaue is " + value);
+				if(value == null) {
+					log.error("can not find " + attrId + " at index " + index);
+				} else {
+					if(type.equals("long")) {
+						toReturn = Long.parseLong(value);
+					} else if(type.equals("string")) {
+						toReturn = value;
+					} else if(type.equals("integer")) {
+						toReturn = Integer.parseInt(value);
+					} else if(type.equals("short")) {
+						toReturn = Short.parseShort(value);
+					} else if(type.equals("float")) {
+						toReturn = Float.parseFloat(value);
+					} else if(type.equals("_type")) {
+						log.info(value);
+					} else {
+						log.error("Can not support type " + type);
+					}
+				}
 			}
 		} catch (ConnectionException e) {
 			log.error("btgetattribute failed with " + e.getMessage());
 		}
-		
+
 		return toReturn;
 	}
 }
