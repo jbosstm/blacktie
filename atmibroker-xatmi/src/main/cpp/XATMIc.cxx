@@ -98,8 +98,8 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 			message.flags = flags;
 			message.rcode = rcode;
 			message.rval = rval;
-			message.type = NULL;
-			message.subtype = NULL;
+			message.type = (char *) "";
+			message.subtype = (char *) "";
 			message.syncRcv = 0;
 			if (message.data != NULL) {
 				message.type = (char*) malloc(MAX_TYPE_SIZE + 1);
@@ -1367,6 +1367,8 @@ int btdequeue(char * svc, char ** odata, long *olen, long flags) {
 	LOG4CXX_TRACE(loggerXATMI, (char*) "btdequeue: " << svc <<
 		" flags: 0x" << std::hex << flags);
 	int toReturn = -1;
+//TODO delete this line when the stompconnect changes have been uploaded
+return async_btdequeue(svc, odata, olen, flags);
 	setSpecific(TPE_KEY, TSS_TPERESET);
 	//flags = flags | TPNOREPLY | TPNOTIME;
 	flags = flags | TPNOREPLY;
