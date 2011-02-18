@@ -83,9 +83,11 @@ static int put_messages(unsigned int cnt, unsigned int msgid, unsigned int pri) 
 /**
  * Take the next cnt messages off the service queue.
  */
-static int get_messages(unsigned int cnt, int txmode) {
+static int get_messages(unsigned int cnt, int txmode, long millis) {
 	int msgCnt = 0;
+	msg_opts_t mopts = {0, 0L, 1};
 
+	mopts.ttl = millis;
 	userlogc((char*) "Preparing to dequeue the messages: %d", cnt);
 
 	if (txmode) {
@@ -106,12 +108,15 @@ static int get_messages(unsigned int cnt, int txmode) {
 		long olen = 10;
 		char* odata = (char*) tpalloc((char*) "X_OCTET", NULL, olen);
 		long flags = 0;
-		int err = btdequeue((char*) "TestOne", &odata, &olen, flags);
+		int err = btdequeue((char*) "TestOne", &mopts, &odata, &olen, flags);
 		if (err != -1 && tperrno == 0) {
 			msgCnt++;
 			userlogc("Received %s which was %d long", odata, olen);
 		} else {
-			userlogc("Got an error reading from the queue. tperrno: %d result %d", tperrno, err);
+			if (tperrno == TPETIME)
+				userlogc("timed out waiting for messages");
+			else
+				userlogc("Got an error reading from the queue. tperrno: %d result %d", tperrno, err);
 			break;
 		}
 	}
@@ -131,19 +136,21 @@ static int get_messages(unsigned int cnt, int txmode) {
  */
 int main(int argc, char **argv) {
 	int rc = -1;
+	int arg2 = (argc > 2 ? atoi(argv[2]) : 0);
+	int arg3 = (argc > 3 ? atoi(argv[3]) : 0);
 
 	if (argc < 3) {
-		userlogc((char *) "usage: %s <put cnt [msgid priority] | get cnt | getcommit cnt | getabort cnt>",
+		userlogc((char *) "usage: %s <put cnt [msgid priority] | get cnt [timeout (ms)] " \
+			"| getcommit cnt [timeout (ms)] | getabort cnt [timeout (ms)]>",
 				argv[0]);
 	} else if (strcmp(argv[1], "put") == 0) {
-		rc = put_messages(atoi(argv[2]), argc > 3 ? atoi(argv[3]) : 0,
-				argc > 4 ? atoi(argv[4]) : 0);
+		rc = put_messages(arg2, arg3, argc > 4 ? atoi(argv[4]) : 0);
 	} else if (strcmp(argv[1], "get") == 0) {
-		rc = get_messages(atoi(argv[2]), 0);
+		rc = get_messages(arg2, 0, (long) arg3);
 	} else if (strcmp(argv[1], "getcommit") == 0) {
-		rc = get_messages(atoi(argv[2]), 1);
+		rc = get_messages(arg2, 1, (long) arg3);
 	} else if (strcmp(argv[1], "getabort") == 0) {
-		rc = get_messages(atoi(argv[2]), 2);
+		rc = get_messages(arg2, 2, (long) arg3);
 	} else {
 		userlogc((char *) "usage: %s <put cnt [priority] | get cnt>", argv[0]);
 	}

@@ -26,13 +26,13 @@ extern "C" {
 #endif
 
 typedef struct msg_opts {
-	int priority;	/* msg priority from 0 (lowest) to 9 */
-	long ttl;
-	int syncRcv;
+	int priority;	/* msg priority from 0 (lowest) to 9 - only used with btenqueue */
+	long ttl;	/* maximum no of milliseconds before giving up */
+	int syncRcv; /* will be internally set to true (non-zero) when called within a transaction */
 } msg_opts_t;
 
 extern BLACKTIE_XATMI_DLL int btenqueue(char * svc, msg_opts_t* ctrl, char* idata, long ilen, long flags); // COMMUNICATION
-extern BLACKTIE_XATMI_DLL int btdequeue(char * svc, char ** odata, long *olen, long flags); // COMMUNICATION
+extern BLACKTIE_XATMI_DLL int btdequeue(char * svc, msg_opts_t* ctrl, char ** odata, long *olen, long flags); // COMMUNICATION
 
 #ifdef __cplusplus
 }

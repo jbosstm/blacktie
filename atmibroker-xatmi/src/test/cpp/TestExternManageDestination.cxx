@@ -21,6 +21,7 @@
 
 #include "AtmiBrokerServerControl.h"
 
+#include "tx.h"
 #include "xatmi.h"
 #include "btxatmi.h"
 #include "malloc.h"
@@ -42,7 +43,7 @@ extern void qservice(TPSVCINFO *svcinfo);
 }
 #endif
 
-static SynchronizableObject* lock = new SynchronizableObject();
+//static SynchronizableObject* lock = new SynchronizableObject();
 
 void TestExternManageDestination::setUp() {
 	userlogc((char*) "TestExternManageDestination::setUp");
@@ -108,7 +109,7 @@ void TestExternManageDestination::test_tpcall_without_service() {
 }
 
 static void send_one(int id, int pri) {
-	msg_opts_t mopts;
+	msg_opts_t mopts = {0, 0L, 0};
 	char msg[16];
 	char* buf;
 	long len;
@@ -130,8 +131,21 @@ static void send_one(int id, int pri) {
 	tpfree(buf);
 }
 
+static void recv_one(msg_opts_t *mopts, long len, long flags, int expect, int expected_tperrno) {
+	char* data = (char*) tpalloc((char*) "X_OCTET", NULL, len);
+	int toCheck = btdequeue((char*) "TestOne", mopts, &data, &len, 0L);
+
+	userlogc((char*) "recv_one: tperrno=%d expected_tperrno=%d toCheck=%d",
+		tperrno, expected_tperrno, toCheck);
+	BT_ASSERT(tperrno == expected_tperrno && toCheck != -1);
+
+	if (expect >= 0)
+		BT_ASSERT(atoi(data) == expect);
+}
+
 void TestExternManageDestination::test_stored_messages() {
 	int i;
+	msg_opts_t mopts = {0, 0L, 0};
 
 	userlogc((char*) "test_stored_messages");
 	for (i = 30; i < 40; i++)
@@ -144,7 +158,7 @@ void TestExternManageDestination::test_stored_messages() {
 		char* data = (char*) tpalloc((char*) "X_OCTET", NULL, 2);
 		long len = 2;
 		long flags = 0;
-		int toCheck = btdequeue((char*) "TestOne", &data, &len, flags);
+		int toCheck = btdequeue((char*) "TestOne", &mopts, &data, &len, flags);
 		BT_ASSERT(tperrno == 0 && toCheck != -1);
 
 		int id = atoi(data);
@@ -165,6 +179,8 @@ void TestExternManageDestination::test_stored_message_priority() {
 	userlogc((char*) "test_stored_message_priority");
 	// send messages with out of order ids - the qservice should receive them in order
 	int prefix = 70;
+	msg_opts_t mopts = {0, 0L, 0};
+
 	send_one(prefix + 8, 1);
 	send_one(prefix + 6, 3);
 	send_one(prefix + 4, 5);
@@ -184,7 +200,7 @@ void TestExternManageDestination::test_stored_message_priority() {
 		char* data = (char*) tpalloc((char*) "X_OCTET", NULL, 2);
 		long len = 2;
 		long flags = 0;
-		int toCheck = btdequeue((char*) "TestOne", &data, &len, flags);
+		int toCheck = btdequeue((char*) "TestOne", &mopts, &data, &len, flags);
 		BT_ASSERT(tperrno == 0 && toCheck != -1);
 		
 		char msg[80];
@@ -199,6 +215,107 @@ void TestExternManageDestination::test_stored_message_priority() {
 	serverdone();
 
 	userlogc((char*) "test_stored_message_priority passed");
+}
+
+void TestExternManageDestination::test_btenqueue_with_txn_abort() {
+	int i;
+	msg_opts_t mopts = {0, 500L, 1};
+
+	userlogc((char*) "test_btenqueue_with_txn_abort");
+	BT_ASSERT(tx_open() == TX_OK);
+	BT_ASSERT(tx_begin() == TX_OK);
+
+	// enqueue messages within a transaction but then abort it
+	for (i = 30; i < 40; i++)
+		send_one(i, 0);
+
+	BT_ASSERT(tx_rollback() == TX_OK);
+
+	// since the txn aborted the queue will be empty and btdequeue should fail with TPETIME
+	userlogc((char*) "testing that btdequeue returns TPETIME");
+	recv_one(&mopts, 2L, 0L, i, TPETIME);
+
+	BT_ASSERT(tx_close() == TX_OK);
+
+	userlogc((char*) "test_btenqueue_with_txn_abort passed");
+}
+
+void TestExternManageDestination::test_btenqueue_with_txn_commit() {
+	int i;
+	msg_opts_t mopts = {0, 0L, 1};
+
+	userlogc((char*) "test_btenqueue_with_txn_commit");
+	BT_ASSERT(tx_open() == TX_OK);
+	BT_ASSERT(tx_begin() == TX_OK);
+
+	// enqueue messages within a transaction and then commit it
+	for (i = 30; i < 40; i++)
+		send_one(i, 0);
+
+	BT_ASSERT(tx_commit() == TX_OK);
+
+	// since the txn commited btdequeue should retrieve them all
+	for (i = 30; i < 40; i++)
+		recv_one(&mopts, 2L, 0L, i, 0);
+
+	BT_ASSERT(tx_close() == TX_OK);
+
+	userlogc((char*) "test_btenqueue_with_txn_commit passed");
+}
+
+void TestExternManageDestination::test_btdequeue_with_txn_abort() {
+	msg_opts_t mopts = {0, 0L, 1};
+	int i;
+
+	userlogc((char*) "test_btdequeue_with_txn_abort");
+	BT_ASSERT(tx_open() == TX_OK);
+
+	// enqueue messages
+	for (i = 30; i < 40; i++)
+		send_one(i, 0);
+
+	// dequeue messages within a transaction and then abort it
+	BT_ASSERT(tx_begin() == TX_OK);
+	for (i = 30; i < 40; i++)
+		recv_one(&mopts, 2L, 0L, i, 0);
+
+	BT_ASSERT(tx_rollback() == TX_OK);
+
+	// since the txn was abort the queue will still contains the messages
+	for (i = 30; i < 40; i++)
+		recv_one(&mopts, 2L, 0L, i, 0);
+
+	BT_ASSERT(tx_close() == TX_OK);
+
+	userlogc((char*) "test_btdequeue_with_txn_abort passed");
+}
+
+void TestExternManageDestination::test_btdequeue_with_txn_commit() {
+	msg_opts_t mopts = {0, 0L, 1};
+	int i;
+
+	userlogc((char*) "test_btdequeue_with_txn_commit");
+	BT_ASSERT(tx_open() == TX_OK);
+
+	// enqueue messages
+	for (i = 30; i < 40; i++)
+		send_one(i, 0);
+
+	// and dequeue them within a transaction and then commit it
+	BT_ASSERT(tx_begin() == TX_OK);
+	for (i = 30; i < 40; i++)
+		recv_one(&mopts, 2L, 0L, i, 0);
+
+	BT_ASSERT(tx_commit() == TX_OK);
+
+	// test that all the messages were dequeued
+	userlogc((char*) "testing that btdequeue returns TPETIME");
+	mopts.ttl = 500L;
+	recv_one(&mopts, 2L, 0L, i, TPETIME);
+
+	BT_ASSERT(tx_close() == TX_OK);
+
+	userlogc((char*) "test_btdequeue_with_txn_commit passed");
 }
 
 void test_extern_service(TPSVCINFO *svcinfo) {

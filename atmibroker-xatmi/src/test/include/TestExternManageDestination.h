@@ -30,6 +30,11 @@ class TestExternManageDestination : public BaseServerTest {
 	CPPUNIT_TEST( test_tpcall_without_service);
 	CPPUNIT_TEST( test_stored_messages);
 	CPPUNIT_TEST( test_stored_message_priority);
+
+//	CPPUNIT_TEST( test_btenqueue_with_txn_abort);
+//	CPPUNIT_TEST( test_btenqueue_with_txn_commit);
+//	CPPUNIT_TEST( test_btdequeue_with_txn_abort);
+//	CPPUNIT_TEST( test_btdequeue_with_txn_commit);
 #endif
 	CPPUNIT_TEST_SUITE_END();
 public:
@@ -37,6 +42,10 @@ public:
 	void test_tpcall_without_service();
 	void test_stored_messages();
 	void test_stored_message_priority();
+	void test_btenqueue_with_txn_abort();
+	void test_btenqueue_with_txn_commit();
+	void test_btdequeue_with_txn_abort();
+	void test_btdequeue_with_txn_commit();
 
 	virtual void setUp();
 	virtual void tearDown();

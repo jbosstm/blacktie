@@ -391,8 +391,16 @@ bool HybridSessionImpl::send(MESSAGE& message) {
 				setSpecific(TPE_KEY, TSS_TPENOENT); // TODO - clean up session
 				//				free(errbuf);
 			} else if (strcmp(framed->command, (const char*) "ERROR") == 0) {
-				LOG4CXX_WARN(logger, (char*) "Got an error: " << framed->body);
-				setSpecific(TPE_KEY, TSS_TPENOENT); // TODO - clean up session
+				// look for lower case message header
+				char *reason = (char *) apr_hash_get(framed->headers, "message", APR_HASH_KEY_STRING);
+
+				if (reason != 0 && strcmp(reason, "timeout") == 0) {
+					LOG4CXX_DEBUG(logger, (char*) "timeout waiting for messages: " << framed->body);
+					setSpecific(TPE_KEY, TSS_TPETIME); // TODO - clean up session
+				} else {
+					LOG4CXX_WARN(logger, (char*) "Got an error: " << framed->body);
+					setSpecific(TPE_KEY, TSS_TPENOENT); // TODO - clean up session
+				}
 			} else if (strcmp(framed->command, (const char*) "RECEIPT") == 0 ||
 				strcmp(framed->command, (const char*) "MESSAGE") == 0 ) {
 				LOG4CXX_DEBUG(logger, (char*) "SEND RECEIPT: "
