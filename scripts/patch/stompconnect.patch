@@ -24,6 +24,18 @@ Index: src/test/java/org/codehaus/stomp/ActiveMQStompConnect.java
              connect.start();
              connect.join();
          }
+Index: src/main/java/org/codehaus/stomp/Stomp.java
+===================================================================
+--- src/main/java/org/codehaus/stomp/Stomp.java	(revision 90)
++++ src/main/java/org/codehaus/stomp/Stomp.java	(working copy)
+@@ -30,6 +30,7 @@
+     public static interface Commands {
+         String CONNECT = "CONNECT";
+         String SEND = "SEND";
++        String RECEIVE = "RECEIVE";
+         String DISCONNECT = "DISCONNECT";
+         String SUBSCRIBE = "SUB";
+         String UNSUBSCRIBE = "UNSUB";
 Index: src/main/java/org/codehaus/stomp/tcp/TcpTransport.java
 ===================================================================
 --- src/main/java/org/codehaus/stomp/tcp/TcpTransport.java	(revision 90)
@@ -246,7 +258,7 @@ Index: src/main/java/org/codehaus/stomp/jms/ProtocolConverter.java
 ===================================================================
 --- src/main/java/org/codehaus/stomp/jms/ProtocolConverter.java	(revision 90)
 +++ src/main/java/org/codehaus/stomp/jms/ProtocolConverter.java	(working copy)
-@@ -17,6 +17,28 @@
+@@ -17,6 +17,29 @@
   */
  package org.codehaus.stomp.jms;
  
@@ -261,6 +273,7 @@ Index: src/main/java/org/codehaus/stomp/jms/ProtocolConverter.java
 +import java.util.concurrent.ConcurrentHashMap;
 +
 +import javax.jms.JMSException;
++import javax.jms.Destination;
 +import javax.jms.Message;
 +import javax.jms.MessageConsumer;
 +import javax.jms.Session;
@@ -275,7 +288,7 @@ Index: src/main/java/org/codehaus/stomp/jms/ProtocolConverter.java
  import org.apache.commons.logging.Log;
  import org.apache.commons.logging.LogFactory;
  import org.codehaus.stomp.ProtocolException;
-@@ -25,21 +47,8 @@
+@@ -25,21 +48,8 @@
  import org.codehaus.stomp.StompFrameError;
  import org.codehaus.stomp.StompHandler;
  import org.codehaus.stomp.util.IntrospectionSupport;
@@ -298,7 +311,7 @@ Index: src/main/java/org/codehaus/stomp/jms/ProtocolConverter.java
  /**
   * A protocol switch between JMS and Stomp
   *
-@@ -48,21 +57,23 @@
+@@ -48,21 +58,23 @@
   */
  public class ProtocolConverter implements StompHandler {
      private static final transient Log log = LogFactory.getLog(ProtocolConverter.class);
@@ -327,7 +340,7 @@ Index: src/main/java/org/codehaus/stomp/jms/ProtocolConverter.java
          return connectionFactory;
      }
  
-@@ -72,6 +83,16 @@
+@@ -72,6 +84,16 @@
  
      public synchronized void close() throws JMSException {
          try {
@@ -344,7 +357,7 @@ Index: src/main/java/org/codehaus/stomp/jms/ProtocolConverter.java
              // lets close all the sessions first
              JMSException firstException = null;
              Collection<StompSession> sessions = new ArrayList<StompSession>(transactedSessions.values());
-@@ -81,6 +102,10 @@
+@@ -81,6 +103,10 @@
              if (clientAckSession != null) {
                  sessions.add(clientAckSession);
              }
@@ -355,7 +368,7 @@ Index: src/main/java/org/codehaus/stomp/jms/ProtocolConverter.java
              for (StompSession session : sessions) {
                  try {
                      if (log.isDebugEnabled()) {
-@@ -108,6 +133,7 @@
+@@ -108,6 +134,7 @@
              connection = null;
              defaultSession = null;
              clientAckSession = null;
@@ -363,7 +376,17 @@ Index: src/main/java/org/codehaus/stomp/jms/ProtocolConverter.java
              transactedSessions.clear();
              subscriptions.clear();
              messages.clear();
-@@ -185,11 +211,18 @@
+@@ -131,6 +158,9 @@
+             if (action.startsWith(Stomp.Commands.SEND)) {
+                 onStompSend(command);
+             }
++            else if (action.startsWith(Stomp.Commands.RECEIVE)) {
++                onStompReceive(command);
++            }
+             else if (action.startsWith(Stomp.Commands.ACK)) {
+                 onStompAck(command);
+             }
+@@ -185,11 +215,18 @@
      public void onException(Exception e) {
          log.error("Caught: " + e, e);
      }
@@ -386,7 +409,7 @@ Index: src/main/java/org/codehaus/stomp/jms/ProtocolConverter.java
      // Implemenation methods
      //-------------------------------------------------------------------------
      protected void onStompConnect(StompFrame command) throws Exception {
-@@ -202,14 +235,14 @@
+@@ -202,14 +239,14 @@
          String passcode = (String) headers.get(Stomp.Headers.Connect.PASSCODE);
          String clientId = (String) headers.get(Stomp.Headers.Connect.CLIENT_ID);
  
@@ -404,7 +427,7 @@ Index: src/main/java/org/codehaus/stomp/jms/ProtocolConverter.java
          }
          if (clientId != null) {
              connection.setClientID(clientId);
-@@ -243,24 +276,54 @@
+@@ -243,24 +280,120 @@
          close();
      }
  
@@ -470,10 +493,92 @@ Index: src/main/java/org/codehaus/stomp/jms/ProtocolConverter.java
 +		log.trace("Sent Response");
 +	}
 +
++	protected void onStompReceive(StompFrame command) throws Exception {
++		checkConnected();
++
++		Map headers = command.getHeaders();
++		String destinationName = (String) headers.remove(Stomp.Headers.Send.DESTINATION);
++		String ior = (String) headers.get("messagexid");
++		StompSession session = getSession(headers, ior != null);
++		Object o = headers.remove(Stomp.Headers.Send.EXPIRATION_TIME);
++		long ttl = (o != null ? Long.parseLong((String) o) : session.getProducer().getTimeToLive());
++		Destination destination = session.convertDestination(destinationName, true);
++		Message msg;
++        MessageConsumer consumer;
++
++		log.trace("Consuming message - ttl=" + ttl + " IOR=" + ior);
++
++		if (ior != null) {
++			TransactionManager txMgr = (TransactionManager) new InitialContext()
++				.lookup("java:/TransactionManager");
++
++			// resume the transaction
++			JtsTransactionImple.resume(ior);
++
++			// create an XA consumer
++			XASession xaSession = (XASession) session.getSession();
++			XAResource xaRes = xaSession.getXAResource();
++			consumer = xaSession.createConsumer(destination);
++
++			// make sure the message is transactionally consumed:
++			Transaction transaction = txMgr.getTransaction();
++			transaction.enlistResource(xaRes);
++			msg = (ttl > 0 ? consumer.receive(ttl) : consumer.receive());
++			transaction.delistResource(xaRes, XAResource.TMSUSPEND);
++			JtsTransactionImple.suspend();
++		} else {
++			javax.jms.Session ss = session.getSession();
++			consumer = ss.createConsumer(destination);
++			msg = (ttl > 0 ? consumer.receive(ttl) : consumer.receive());
++		}
++
++		log.trace("Consumed message: " + msg);
++        consumer.close();
++
++		StompFrame sf;
++
++		if (msg == null) {
++            ByteArrayOutputStream baos = new ByteArrayOutputStream();
++            PrintWriter stream = new PrintWriter(new OutputStreamWriter(baos, "UTF-8"));
++			stream.print("No messages available");
++            stream.close();
++
++            HashMap eheaders = new HashMap();
++            eheaders.put(Stomp.Headers.Error.MESSAGE, "timeout");
++
++            sf = new StompFrame(Stomp.Responses.ERROR, eheaders, baos.toByteArray());
++		} else {
++			// Don't use sendResponse since it uses Stomp.Responses.RECEIPT as the action
++			// which only allows zero length message bodies, Stomp.Responses.MESSAGE is correct:
++			sf = session.convertMessage(msg);
++		}
++
++		if (headers.containsKey(Stomp.Headers.RECEIPT_REQUESTED))
++			sf.getHeaders().put(Stomp.Headers.Response.RECEIPT_ID, headers.get(Stomp.Headers.RECEIPT_REQUESTED));
++
++		sendToStomp(sf);
++	}
++
      protected void onStompBegin(StompFrame command) throws Exception {
          checkConnected();
  
-@@ -379,14 +442,20 @@
+@@ -324,6 +457,7 @@
+         }
+         else {
+             String ackMode = (String) headers.get(Stomp.Headers.Subscribe.ACK_MODE);
++
+             if (ackMode != null && Stomp.Headers.Subscribe.AckModeValues.CLIENT.equals(ackMode)) {
+                 session = getClientAckSession();
+             }
+@@ -343,6 +477,7 @@
+         }
+         subscription = new StompSubscription(session, subscriptionId, command);
+         subscriptions.put(subscriptionId, subscription);
++
+         sendResponse(command);
+     }
+ 
+@@ -379,14 +514,20 @@
          String messageId = (String) headers.get(Stomp.Headers.Ack.MESSAGE_ID);
          if (messageId == null) {
              throw new ProtocolException("ACK received without a message-id to acknowledge!");
@@ -501,7 +606,7 @@ Index: src/main/java/org/codehaus/stomp/jms/ProtocolConverter.java
      }
  
      protected void checkConnected() throws ProtocolException {
-@@ -416,6 +485,20 @@
+@@ -416,6 +557,37 @@
          return clientAckSession;
      }
  
@@ -519,10 +624,27 @@ Index: src/main/java/org/codehaus/stomp/jms/ProtocolConverter.java
 +		return xaSession;
 +	}    
 +
++	protected StompSession getSession(Map headers, boolean isXA) throws JMSException, ProtocolException {
++		if (isXA) {
++			if (xaSession == null) {
++				xaSession = new StompSession(this, connection.createXASession());
++				log.trace("Created XA Session");
++			} else {
++				log.trace("Returned existing XA session");
++			}
++
++			return xaSession;
++		} else {
++			String stompTx = (String) headers.get(Stomp.Headers.TRANSACTION);
++
++			return (stompTx == null ? getDefaultSession() : getExistingTransactedSession(stompTx));
++		}
++	}
++
      /**
       * Returns the transacted session for the given ID or throws an exception if there is no such session
       */
-@@ -473,4 +556,10 @@
+@@ -473,4 +645,10 @@
       */
      protected void considerClosingTransactedSession(StompSession session, String stompTx) {
      }
