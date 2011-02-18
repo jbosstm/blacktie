@@ -137,10 +137,12 @@ static void recv_one(msg_opts_t *mopts, long len, long flags, int expect, int ex
 
 	userlogc((char*) "recv_one: tperrno=%d expected_tperrno=%d toCheck=%d",
 		tperrno, expected_tperrno, toCheck);
-	BT_ASSERT(tperrno == expected_tperrno && toCheck != -1);
-
-	if (expect >= 0)
-		BT_ASSERT(atoi(data) == expect);
+	BT_ASSERT(tperrno == expected_tperrno);
+	if (tperrno == 0) {
+		BT_ASSERT(toCheck != -1);
+		if (expect >= 0)
+			BT_ASSERT(atoi(data) == expect);
+	}
 }
 
 void TestExternManageDestination::test_stored_messages() {
