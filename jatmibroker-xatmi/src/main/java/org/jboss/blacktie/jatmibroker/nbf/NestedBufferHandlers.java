@@ -17,6 +17,7 @@ public class NestedBufferHandlers extends DefaultHandler {
 	private String id;
 	private String type;
 	private String value;
+	private String other_value;
 	private int index;
 	private int curIndex;
 	private boolean found;
@@ -33,7 +34,11 @@ public class NestedBufferHandlers extends DefaultHandler {
 	}
 	
 	public String getValue() {
-		return value;
+		if(type.endsWith("_type")) {
+			return other_value;
+		} else {
+			return value;
+		}
 	}
 	
 	public void setId(String id) {
@@ -67,12 +72,7 @@ public class NestedBufferHandlers extends DefaultHandler {
 				found = true;
 			}
 			curIndex ++;
-		}
-	}
-
-	public void endElement(String uri, String localName, String qName)  
-	throws SAXException   {
-		if(qName.equals(id)) {
+			
 			ElementPSVI psvi = provider.getElementPSVI();
 			if(psvi != null) {
 				XSTypeDefinition typeInfo = psvi.getTypeDefinition();
@@ -93,7 +93,23 @@ public class NestedBufferHandlers extends DefaultHandler {
 					typeInfo = typeInfo.getBaseType();
 				}
 			}
+		}
+	}
+
+	public void endElement(String uri, String localName, String qName)  
+	throws SAXException   {
+		if(qName.equals(id)) {
 			found = false;
+		}
+		
+		if(found && type != null && type.endsWith("_type") && value != null) {
+			String tmp = "<" + qName + ">" + value + "</" + qName + ">";
+			if(other_value == null) {
+				other_value =tmp;
+			} else {
+				other_value += tmp;
+			}
+			value = null;
 		}
 	}
 }

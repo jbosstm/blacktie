@@ -149,8 +149,17 @@ public class BT_NBF extends Buffer {
 						toReturn = Short.parseShort(value);
 					} else if(type.equals("float")) {
 						toReturn = Float.parseFloat(value);
-					} else if(type.equals("_type")) {
-						log.info(value);
+					} else if(type.endsWith("_type")) {
+						//log.info(value);
+						toReturn = new BT_NBF(attrId);
+						String nbf = new String(((BT_NBF)toReturn).getRawData());
+						int k = nbf.indexOf(".xsd\">") + 6;
+						int size = nbf.length();
+					
+						String buf = nbf.substring(0, k) + value + nbf.substring(k, size);
+						//log.info(buf);
+						((BT_NBF)toReturn).setRawData(buf.getBytes());
+						
 					} else {
 						log.error("Can not support type " + type);
 					}

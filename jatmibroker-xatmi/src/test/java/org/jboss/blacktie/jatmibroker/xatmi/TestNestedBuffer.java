@@ -61,6 +61,14 @@ public class TestNestedBuffer extends TestCase {
 		
 		BT_NBF test = (BT_NBF) connection.tpalloc("BT_NBF", "test", 0);
 		assertTrue(test.btaddattribute("employee", buffer));
-		log.info(new String(test.serialize()));
+		//log.info(new String(test.serialize()));
+		
+		obj = test.btgetattribute("employee", 0);
+		assertTrue("org.jboss.blacktie.jatmibroker.xatmi.BT_NBF".equals(obj.getClass().getName()));
+		BT_NBF employee = (BT_NBF)obj;
+		String name = (String)employee.btgetattribute("name", 0);
+		assertTrue("zhfeng".equals(name));
+		Long id = (Long)employee.btgetattribute("id", 0);
+		assertTrue(id.longValue() == 1001);
 	}
 }
