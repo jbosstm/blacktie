@@ -71,4 +71,15 @@ public class TestNestedBuffer extends TestCase {
 		Long id = (Long)employee.btgetattribute("id", 0);
 		assertTrue(id.longValue() == 1001);
 	}
+	
+	public void testDel() throws ConnectionException {
+		log.info("TestNestedBuffer::testDel");
+		BT_NBF buffer = (BT_NBF) connection.tpalloc("BT_NBF", "employee", 0);
+		buffer.btaddattribute("id", new Long(1001));
+		buffer.btaddattribute("id", new Long(1002));
+		
+		assertTrue(buffer.btdelattribute("id", 1));
+		
+		assertFalse(buffer.btdelattribute("unknow", 0));
+	}
 }

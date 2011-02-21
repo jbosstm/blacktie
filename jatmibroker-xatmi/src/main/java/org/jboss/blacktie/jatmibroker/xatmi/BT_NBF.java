@@ -155,11 +155,11 @@ public class BT_NBF extends Buffer {
 						String nbf = new String(((BT_NBF)toReturn).getRawData());
 						int k = nbf.indexOf(".xsd\">") + 6;
 						int size = nbf.length();
-					
+
 						String buf = nbf.substring(0, k) + value + nbf.substring(k, size);
 						//log.info(buf);
 						((BT_NBF)toReturn).setRawData(buf.getBytes());
-						
+
 					} else {
 						log.error("Can not support type " + type);
 					}
@@ -169,6 +169,47 @@ public class BT_NBF extends Buffer {
 			log.error("btgetattribute failed with " + e.getMessage());
 		}
 
+		return toReturn;
+	}
+
+	public boolean btdelattribute(String attrId, int index) {
+		boolean toReturn = false;
+
+		try {
+			boolean rc;
+			parser.setId(attrId);
+			parser.setIndex(index);
+			rc = parser.parse(getRawData());
+
+			if(rc) {
+				String value = parser.getValue();
+				if(value == null) {
+					log.error("can not find " + attrId + " at index " + index);
+				} else {
+					String buf = new String(getRawData());
+					String element = "<" + attrId + ">" + value + "</" + attrId + ">";
+					//log.info("element is " + element);
+					int n = 0;
+					for(int i = 0; i <= index; i++) {
+						int k = buf.indexOf(element);
+						if(k >= 0) {
+							String tmpbuf = buf.substring(k + element.length());
+							buf = tmpbuf;
+							//log.info("tmpbuf is " + tmpbuf);
+							n = k;
+						}
+					}
+
+					String newbuf = new String(getRawData());
+					int size = newbuf.length();
+					newbuf = newbuf.substring(0, n) + newbuf.substring(n + element.length(), size);
+					log.info(newbuf);
+					toReturn = true;
+				}
+			}
+		}catch (ConnectionException e) {
+			log.error("btgetattribute failed with " + e.getMessage());
+		}
 		return toReturn;
 	}
 }
