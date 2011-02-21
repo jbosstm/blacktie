@@ -52,9 +52,10 @@ HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 		break;
 	default: /*FALLTHRU - txx_ttl can only return -1, 0 or 1*/
 	case 0: // will create a non-blocking socket that times out after ttl seconds
+		// NB if ttl == 0 timeout has already expired (if there were no timeouts ttl would be negative)
 		break;
 	case 1:
-		ttl = 0; // will create a blocking socket
+		ttl = -1; // will create a blocking socket - don't use 0 since that is a valid timeout period
 		break;
 	}
 
@@ -364,16 +365,15 @@ bool HybridSessionImpl::send(MESSAGE& message) {
 			LOG4CXX_TRACE(logger, "Sent frame");
 			stomp_frame *framed;
 			// now read back the acknowledgent that the message was received but first change the timeout on the socket
+			apr_socket_opt_set(stompConnection->socket, APR_SO_NONBLOCK, 0);
 			if (isNonBlocking) {
 				// enable blocking-with-timeout for 1 second to provide time for the response:
 				LOG4CXX_TRACE(logger,
 						"Setting socket_opt to blocking for at most 1 second for ack");
-				apr_socket_opt_set(stompConnection->socket, APR_SO_NONBLOCK, 0);
 				apr_socket_timeout_set(stompConnection->socket, 1);
-			} else if (message.syncRcv) {
+			} else { //if (message.syncRcv) {
 				// enable blocking receive
 				LOG4CXX_TRACE(logger, "Setting socket_opt to blocking for synchronous receive");
-				apr_socket_opt_set(stompConnection->socket, APR_SO_NONBLOCK, 0);
 				apr_socket_timeout_set(stompConnection->socket, -1);
 			}
 
