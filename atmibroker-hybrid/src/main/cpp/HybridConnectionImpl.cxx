@@ -107,29 +107,15 @@ stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 		disconnect(connection, pool);
 		connection = NULL;
 	} else {
-		// Set APR_SO_NONBLOCK to 0 due to portability issues between unix and windows
-		apr_socket_opt_set(connection->socket, APR_SO_NONBLOCK, 0);
-
-		if (timeout >= 0) {
-#ifdef WIN32
-			/*
-			 * On windows if APR_SO_NONBLOCK is 0 then a timeout value of 0 means block forever. This
-			 * appears to be the behaviour:
-			 *   if APR_SO_NONBLOCK is set to 0 then
-			 *     timeout < 0 => blocking forever (not used: see HybridSessionImpl::HybridSessionImpl)
-			 *     timeout > 0 => blocking with timeout
-			 *     on UNUX timeout == 0 => non-blocking
-			 *     on WIN  timeout == 0 => blocking
-			 *   if APR_SO_NONBLOCK is set to 1 then
-			 *     on WIN  any timeout value => non-blocking
-			 */
-			if (timeout == 0)
-				apr_socket_opt_set(connection->socket, APR_SO_NONBLOCK, 1);
-#endif
+		/*
+		 *  Use the default socket opts during connect unless the caller explicitly changes
+		 *  the default timeout. After successfully connecting we'll reset the socket opts
+		 *  so that further IO respects the requested timeout
+		 */
+		if (timeout > 0) {
+			apr_socket_opt_set(connection->socket, APR_SO_NONBLOCK, 0);
 			apr_socket_timeout_set(connection->socket, 1000000 * timeout);
-			LOG4CXX_DEBUG(logger, (char*) "Set socket options timeout: " << timeout);
-		} else {	// blocking I/O
-			apr_socket_timeout_set(connection->socket, -1);
+			LOG4CXX_DEBUG(logger, (char*) "Set socket options");
 		}
 
 		std::string usr = mqConfig.user;
@@ -171,7 +157,32 @@ stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 				} else {
 					LOG4CXX_DEBUG(logger, "Response: " << frameRead->command
 							<< ", " << frameRead->body);
-					LOG4CXX_DEBUG(logger, "Connected");
+					LOG4CXX_DEBUG(logger, "Connected resetting socket timeout to " << timeout);
+#if 0	// temporarily disable 
+					// Set APR_SO_NONBLOCK to 0 due to portability issues between unix and windows
+					apr_socket_opt_set(connection->socket, APR_SO_NONBLOCK, 0);
+
+					if (timeout >= 0) {
+#ifdef WIN32
+						/*
+						 * On windows if APR_SO_NONBLOCK is 0 then a timeout value of 0 means block forever. This
+						 * appears to be the behaviour:
+						 *   if APR_SO_NONBLOCK is set to 0 then
+						 *     timeout < 0 => blocking forever (not used: see HybridSessionImpl::HybridSessionImpl)
+						 *     timeout > 0 => blocking with timeout
+						 *     on UNUX timeout == 0 => non-blocking
+						 *     on WIN  timeout == 0 => blocking
+						 *   if APR_SO_NONBLOCK is set to 1 then
+						 *     on WIN  any timeout value => non-blocking
+						 */
+						if (timeout == 0)
+							apr_socket_opt_set(connection->socket, APR_SO_NONBLOCK, 1);
+#endif
+							apr_socket_timeout_set(connection->socket, 1000000 * timeout);
+					} else {	// blocking I/O
+						apr_socket_timeout_set(connection->socket, -1);
+					}
+#endif
 				}
 			} catch (...) {
 				LOG4CXX_ERROR(logger, (char*) "Could not read from socket");
