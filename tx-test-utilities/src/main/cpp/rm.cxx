@@ -18,14 +18,17 @@
 #include "xa.h"
 #include "testrm.h"
 #include <userlogc.h>
+#include "SynchronizableObject.h"
 
 #include <stdlib.h>
 #include "ace/OS_NS_unistd.h"
 #include "ace/OS_NS_time.h"
 #include "ace/OS.h"
 
+static SynchronizableObject _lock;
 static long counter = 0;
 static fault_t *faults = 0;
+
 struct xid_array {
 	int count;
 	int cursor;
@@ -48,6 +51,7 @@ static XID gen_xid(long id, long sid, XID &gid)
 	return xid;
 }
 
+// caller should be holding _lock
 static fault_t *last_fault() {
 	fault_t *last;
 
@@ -65,6 +69,7 @@ int dummy_rm_del_faults()
 	int rv = 0;
 
 	userlogc_debug("dummy_rm: del_faults:");
+	_lock.lock();
 	for (curr = faults; curr; prev = curr, curr = curr->next) {
 		if (prev == NULL)
 			faults = curr->next;
@@ -77,6 +82,7 @@ int dummy_rm_del_faults()
 		free(curr);
 		rv += 1;
 	}
+	_lock.unlock();
 
 	userlogc_debug("dummy_rm: deleted %d faults", rv);
 
@@ -92,6 +98,7 @@ int dummy_rm_del_fault(int id)
 	if (id == -1)
 		return dummy_rm_del_faults();
 
+	_lock.lock();
 	for (curr = faults; curr; prev = curr, curr = curr->next) {
 		if (curr->id == id) {
 			if (prev == NULL)
@@ -103,10 +110,12 @@ int dummy_rm_del_fault(int id)
 				free(curr->rmstate);
 
 			free(curr);
+			_lock.unlock();
 
 			return 0;
 		}
 	}
+	_lock.unlock();
 
 	return -1;
 }
@@ -120,6 +129,7 @@ int dummy_rm_add_fault(fault_t *fault)
 	if (fault == 0)
 		return 1;
 
+	_lock.lock();
 	last = last_fault();
 
 	fault->next = 0;
@@ -133,8 +143,10 @@ int dummy_rm_add_fault(fault_t *fault)
 		struct xid_array *xids;
 		XID gid = {1L, 1L, 0L};
 
-		if (larg >= 10 || larg <= 0)
+		if (larg >= 10 || larg <= 0) {
+			_lock.unlock();
 			return 1;
+		}
 
 		xids = (struct xid_array *) calloc(1, sizeof(struct xid_array));
 		fault->rmstate = xids;
@@ -156,6 +168,7 @@ int dummy_rm_add_fault(fault_t *fault)
 		fault->id = last->id + 1;
 		*(last->next) = *fault;	// alternatively use the callers fault_t
 	}
+	_lock.unlock();
 
 	return 0;
 }
@@ -165,9 +178,11 @@ static int apply_faults(XID *xid, enum XA_OP op, int rmid)
 	fault_t *f;
 	long *larg;
 	long fc = 0L;
+	int rc = 0;
 
 	userlogc_debug("dummy_rm: apply_faults: op=%d rmid=%d\n", op, rmid);
 
+	_lock.lock();
 	for (f = faults; f; f = f->next) {
 		fc += 1;
 
@@ -180,8 +195,8 @@ static int apply_faults(XID *xid, enum XA_OP op, int rmid)
 				break;
 			case F_HALT:
 				/* generate a SEGV fault */
-				f->arg = 0;
-				*((char *) f->arg) = 0;
+				larg = 0;
+				*larg = 0;
 				break;
 			case F_DELAY:
 				larg = (long*) f->arg;
@@ -195,10 +210,14 @@ static int apply_faults(XID *xid, enum XA_OP op, int rmid)
 				break;
 			}
 
-			userlogc_debug("dummy_rm: fault return: %d", f->rc);
-			return f->rc;
+			rc = f->rc;
+			_lock.unlock();
+			userlogc_debug("dummy_rm: fault return: %d", rc);
+
+			return rc;
 		}
 	}
+	_lock.unlock();
 
 	userlogc_debug("dummy_rm: fault return: XA_OK\n");
 	return XA_OK;
@@ -226,6 +245,7 @@ static void end_check(XID *xid, int rmid) {
 	fault_t *f;
 
 	// TODO move this into apply_faults (ie generalise apply_faults)
+	_lock.lock();
 	for (f = faults; f; f = f->next) {
 		if (f->rmid == rmid && f->op == O_XA_RECOVER && f->xf == F_ADD_XIDS) {
 			struct xid_array *xids = (struct xid_array *) f->rmstate;
@@ -243,6 +263,7 @@ static void end_check(XID *xid, int rmid) {
 			}
 		}
 	}
+	_lock.unlock();
 }
 
 static int commit(XID *x, int rmid, long l) {
@@ -260,6 +281,7 @@ static int recover(XID *xid, long l1, int rmid, long flags) {
 	fault_t *f;
 	int rv = apply_faults(NULL, O_XA_RECOVER, rmid);
 
+	_lock.lock();
 	for (f = faults; f; f = f->next) {
 		if (f->rmid == rmid && f->op == O_XA_RECOVER && f->xf == F_ADD_XIDS) {
 			struct xid_array *xids = (struct xid_array *) f->rmstate;
@@ -268,8 +290,10 @@ static int recover(XID *xid, long l1, int rmid, long flags) {
 			// note a recovery scan than spans multiple calls must be done in the same thread
 			// - we don't check for this since this is only a dummy RM for testing particular
 			// behaviour. Likewise we don't validate the TMNOFLAGS flag
-			if ((xids == NULL && l1 > 0) || l1 < 0)
-				return XAER_INVAL;
+			if ((xids == NULL && l1 > 0) || l1 < 0) {
+				rv = XAER_INVAL;
+				break;
+			}
 
 			if (flags & TMSTARTRSCAN)
 				xids->cursor = 0;
@@ -284,9 +308,11 @@ static int recover(XID *xid, long l1, int rmid, long flags) {
 			f->orig->res = 0;
 			f->orig->res2 = xids->count;
 
-			return i > 0 ? i - 1 : i;
+			rv = (i > 0 ? i - 1 : i);
+			break;
 		}
 	}
+	_lock.unlock();
 
 	return rv;
 }
