@@ -158,7 +158,6 @@ stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 					LOG4CXX_DEBUG(logger, "Response: " << frameRead->command
 							<< ", " << frameRead->body);
 					LOG4CXX_DEBUG(logger, "Connected resetting socket timeout to " << timeout);
-#if 0	// temporarily disable 
 					// Set APR_SO_NONBLOCK to 0 due to portability issues between unix and windows
 					apr_socket_opt_set(connection->socket, APR_SO_NONBLOCK, 0);
 
@@ -182,7 +181,6 @@ stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 					} else {	// blocking I/O
 						apr_socket_timeout_set(connection->socket, -1);
 					}
-#endif
 				}
 			} catch (...) {
 				LOG4CXX_ERROR(logger, (char*) "Could not read from socket");

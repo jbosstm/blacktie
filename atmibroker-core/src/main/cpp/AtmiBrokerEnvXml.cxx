@@ -48,8 +48,8 @@ MqConfig mqConfig = {
     0,	// port; 
     NULL,	// user;
     NULL,	// pwd;
-    0,	// destinationTimeout;
-    0,	// requestTimeout;
+    1,	// destinationTimeout;
+    1,	// requestTimeout;
     0,	// timeToLive;
     0,	// noReplyTimeToLive;
 };
