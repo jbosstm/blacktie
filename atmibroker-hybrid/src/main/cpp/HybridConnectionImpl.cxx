@@ -112,8 +112,9 @@ stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 		 *  the default timeout. After successfully connecting we'll reset the socket opts
 		 *  so that further IO respects the requested timeout
 		 */
+		apr_socket_opt_set(connection->socket, APR_SO_NONBLOCK, 0);
+
 		if (timeout > 0) {
-			apr_socket_opt_set(connection->socket, APR_SO_NONBLOCK, 0);
 			apr_socket_timeout_set(connection->socket, 1000000 * timeout);
 			LOG4CXX_DEBUG(logger, (char*) "Set socket options");
 		}
@@ -158,8 +159,9 @@ stomp_connection* HybridConnectionImpl::connect(apr_pool_t* pool, int timeout) {
 					LOG4CXX_DEBUG(logger, "Response: " << frameRead->command
 							<< ", " << frameRead->body);
 					LOG4CXX_DEBUG(logger, "Connected resetting socket timeout to " << timeout);
-					// Set APR_SO_NONBLOCK to 0 due to portability issues between unix and windows
-					apr_socket_opt_set(connection->socket, APR_SO_NONBLOCK, 0);
+
+					// Very odd, but setting APR_SO_NONBLOCK a second time (was set during connect if timeout > 0)
+					// turns the socket into a blocking socket
 
 					if (timeout >= 0) {
 #ifdef WIN32
