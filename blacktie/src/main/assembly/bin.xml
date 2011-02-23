@@ -89,10 +89,6 @@
 			<fileMode>0644</fileMode>
 		</file>
 		<file>
-			<source>JBossORG-EULA.txt</source>
-			<fileMode>0644</fileMode>
-		</file>
-		<file>
 			<source>../scripts/setup/setenv.sh</source>
 			<fileMode>0755</fileMode>
 		</file>
