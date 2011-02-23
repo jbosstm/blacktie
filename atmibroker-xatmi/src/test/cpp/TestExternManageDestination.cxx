@@ -21,8 +21,8 @@
 
 #include "AtmiBrokerServerControl.h"
 
-#include "tx.h"
 #include "xatmi.h"
+#include "tx.h"
 #include "btxatmi.h"
 #include "malloc.h"
 
