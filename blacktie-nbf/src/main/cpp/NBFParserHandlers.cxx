@@ -178,7 +178,7 @@ void NBFParserHandlers::handlePartialElementPSVI(const XMLCh* const localName,
 					strstr(typeStr, "_type") != NULL) {
 				if(attrType == NULL) {
 					attrType = strdup(typeStr);
-					LOG4CXX_INFO(logger, attrName << " has type of " << attrType);
+					LOG4CXX_DEBUG(logger, attrName << " has type of " << attrType);
 				}
 				break;
 			}

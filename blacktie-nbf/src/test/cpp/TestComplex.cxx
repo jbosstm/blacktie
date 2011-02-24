@@ -68,7 +68,7 @@ void TestComplex::test_attribute() {
 		rc = btgetattribute(buf, (char*)"employee", i, (char*) &tmp_employee, &len);
 		BT_ASSERT(rc == 0);
 
-		printf("%s\n", tmp_employee);
+		//printf("%s\n", tmp_employee);
 		btgetattribute(tmp_employee, (char*)"id", 0, (char*) &id, &len);
 		len = 16;
 		btgetattribute(tmp_employee, (char*)"name", 0, (char*) name, &len);
@@ -78,13 +78,18 @@ void TestComplex::test_attribute() {
 
 	rc = btdelattribute(buf, (char*)"employee", 0);
 	BT_ASSERT(rc == 0);
+
+	rc = btgetattribute(buf, (char*)"employee", 0, (char*) &tmp_employee, &len);
+	BT_ASSERT(rc != 0);
+
+	rc = btgetattribute(buf, (char*)"employee", 1, (char*) &tmp_employee, &len);
+	BT_ASSERT(rc == 0);
+	rc = btsetattribute(&tmp_employee, (char*)"name", 0, (char*)"another_tom", 12);
+	BT_ASSERT(rc == 0);
+	rc = btsetattribute(&buf, (char*)"employee", 0, tmp_employee, 0);
+	BT_ASSERT(rc == 0);
 	printf("%s\n", buf);
 
-	btgetattribute(buf, (char*)"employee", 0, (char*) &tmp_employee, &len);
-	btsetattribute(&tmp_employee, (char*)"name", 0, (char*)"another_tom", 12);
-	rc = btsetattribute(&buf, (char*)"employee", 0, tmp_employee, 0);
-	printf("%s\n", buf);
 	tpfree(tmp_employee);
-	
 	tpfree(buf);
 }

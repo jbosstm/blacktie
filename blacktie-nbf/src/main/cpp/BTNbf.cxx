@@ -29,7 +29,7 @@ int find_string(char* buf, const char* str, int index) {
 	char* q = buf;
 
 	if(buf == NULL || str == NULL) {
-		return 0;
+		return -1;
 	}
 	int n = strlen(str);
 
@@ -48,7 +48,29 @@ int find_string(char* buf, const char* str, int index) {
 		return p - buf;
 	}
 
-	return 0;
+	return -1;
+}
+
+int find_element_string(char* buf, char* attributeId, const char* value, int attributeIndex, int isset) {
+	if(buf == NULL || attributeId == NULL || (value == NULL && isset == 0)) {
+		return -1;
+	}
+	int ele_size = strlen(attributeId) + 3;
+	char* element = (char*) malloc (sizeof(char) * ele_size);
+	memset(element, 0, ele_size);
+	element[0] = '\0';
+	strcpy(element, "<");
+	strcat(element, attributeId);
+	strcat(element, ">");
+
+	//printf("element is %s\n", element);
+	int pos = find_string(buf, element, attributeIndex);
+	free(element);
+
+	if(isset == 0 && strlen(value) > 0 && buf[pos + strlen(attributeId) + 3] == '/') {
+		return -1;
+	}
+	return pos;
 }
 
 void del_string(char* buf, int pos, int len) {
@@ -111,7 +133,7 @@ int btaddattribute(char** buf, char* attributeId, char* attributeValue, int len)
 		if(result) {
 			rc = 0;
 			const char* type = handler.getType();
-			LOG4CXX_INFO(logger, (char*) "type is " << type);
+			LOG4CXX_DEBUG(logger, (char*) "type is " << type);
 			char* value = NULL;
 			if(strcmp(type, "string") == 0) {
 				value = (char*) malloc (sizeof(char) * (len + 1));
@@ -166,14 +188,18 @@ int btgetattribute(char* buf, char* attributeId, int attributeIndex, char* attri
 				strncpy(attributeValue, value, *len);
 				*len = strlen(attributeValue);
 			} else if(strcmp(type, "long") == 0) {
-				*((long*)attributeValue) = atol(value);
-				*len = sizeof(long);
+				if(find_element_string(buf, attributeId, value, attributeIndex, 0) > 0) {
+					*((long*)attributeValue) = atol(value);
+					*len = sizeof(long);
+				} else {
+					rc = -1;
+				}
 			} else if(strstr(type, "_type") != NULL) {
 				char* buf = tpalloc((char*)"BT_NBF", attributeId, 0);
 				if(buf != NULL) {
 					int pos = find_string(buf, ".xsd\">", 0);
 					if(pos > 0) {
-						printf("value = %s\n", value);
+						//printf("value = %s\n", value);
 						insert_string(&buf, value, pos + 6);
 						*((char**)attributeValue) = buf;
 					} else {
@@ -210,10 +236,14 @@ int btsetattribute(char** buf, char* attributeId, int attributeIndex, char* attr
 		const char* value = handler.getValue();
 		const char* type = handler.getType();
 
-		pos = find_string(*buf, value, attributeIndex);
+		pos = find_element_string(*buf, attributeId, value, attributeIndex, 1);
+		//printf("value is %s, type is %s, pos is %d\n", value, type, pos);
 		if(pos > 0 ) {
-			int size = strlen(value);
-			del_string(*buf, pos, size);
+			pos += strlen(attributeId) + 2;
+			if(value != NULL && (*buf)[pos + 2] != '/') {
+				int size = strlen(value);
+				del_string(*buf, pos, size);
+			}
 
 			char* value;
 			if(strcmp(type, "string") == 0) {
@@ -262,10 +292,10 @@ int btdelattribute(char* buf, char* attributeId, int attributeIndex) {
 		const char* value = handler.getValue();
 
 		if(value != NULL) {
-			pos = find_string(buf, value, attributeIndex);
-			pos -= strlen(attributeId) + 2;
+			pos = find_element_string(buf, attributeId, value, attributeIndex, 0);
 			if(pos > 0 ) {
-				int size = strlen(attributeId) * 2 + 5 + strlen(value);
+				pos += strlen(attributeId) + 2;
+				int size = strlen(value);
 				del_string(buf, pos, size);
 				rc = 0;
 			}

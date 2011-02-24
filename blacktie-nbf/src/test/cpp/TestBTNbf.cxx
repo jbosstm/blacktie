@@ -104,6 +104,7 @@ void TestBTNbf::test_getattribute() {
 	id = 1002;
 	btaddattribute(&buf, (char*)"id", (char*)&id, sizeof(id));
 
+	printf("%s\n", buf);
 	userlogc((char*) "getattribute of name at index 0");
 	rc = btgetattribute(buf, (char*)"name", 0, (char*)name, &len);
 	BT_ASSERT(rc == 0);
@@ -202,6 +203,8 @@ void TestBTNbf::test_delattribute() {
 	char* buf = tpalloc((char*)"BT_NBF", (char*)"employee", 0);
 	btaddattribute(&buf, (char*)"name", (char*)"zhfeng", 6);
 	btaddattribute(&buf, (char*)"name", (char*)"test", 4);
+	long id = 1001;
+	btaddattribute(&buf, (char*)"id", (char*)&id, sizeof(id));
 
 	rc = btgetattribute(buf, (char*) "name", 0, (char*)name, &len);
 	BT_ASSERT(rc == 0);
@@ -211,7 +214,23 @@ void TestBTNbf::test_delattribute() {
 	rc = btdelattribute(buf, (char*) "name", 0);
 	BT_ASSERT(rc == 0);
 
+	rc = btdelattribute(buf, (char*) "id", 0);
+	BT_ASSERT(rc == 0);
+
+	// double delete failed
+	rc = btdelattribute(buf, (char*) "id", 0);
+	BT_ASSERT(rc != 0);
+
+	// can not get deleted index
 	rc = btgetattribute(buf, (char*) "name", 0, (char*)name, &len);
+	BT_ASSERT(rc != 0);
+
+	len = 0;
+	rc = btgetattribute(buf, (char*) "id", 0, (char*)&id, &len);
+	BT_ASSERT(rc != 0);
+
+	len = 16;
+	rc = btgetattribute(buf, (char*) "name", 1, (char*)name, &len);
 	BT_ASSERT(rc == 0);
 	BT_ASSERT(len == 4);
 	BT_ASSERT(strcmp(name, "test") == 0);
@@ -221,7 +240,7 @@ void TestBTNbf::test_delattribute() {
 	BT_ASSERT(rc != 0);
 
 	// no such attribute id
-	rc = btdelattribute(buf, (char*) "name", 2);
+	rc = btdelattribute(buf, (char*) "name", 3);
 	BT_ASSERT(rc != 0);
 
 	tpfree(buf);
