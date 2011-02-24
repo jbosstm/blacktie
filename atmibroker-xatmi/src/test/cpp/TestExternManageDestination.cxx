@@ -26,10 +26,6 @@
 #include "btxatmi.h"
 #include "malloc.h"
 
-#include "Sleeper.h"
-
-#include "SynchronizableObject.h"
-
 #if defined(__cplusplus)
 extern "C" {
 #endif
