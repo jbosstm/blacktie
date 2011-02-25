@@ -46,7 +46,7 @@ public class TestNestedBuffer extends TestCase {
 		assertTrue(buffer.btaddattribute("name", "zhfeng"));
 		assertTrue(buffer.btaddattribute("id", new Long(1001)));
 		
-		log.info(new String(buffer.serialize()));
+		//log.info(new String(buffer.serialize()));
 		
 		Object obj = buffer.btgetattribute("id", 0);
 		assertTrue("java.lang.Long".equals(obj.getClass().getName()));
@@ -75,11 +75,60 @@ public class TestNestedBuffer extends TestCase {
 	public void testDel() throws ConnectionException {
 		log.info("TestNestedBuffer::testDel");
 		BT_NBF buffer = (BT_NBF) connection.tpalloc("BT_NBF", "employee", 0);
+		buffer.btaddattribute("id", new Long(1234));
 		buffer.btaddattribute("id", new Long(1001));
-		buffer.btaddattribute("id", new Long(1002));
+		buffer.btaddattribute("id", new Long(1001));
 		
 		assertTrue(buffer.btdelattribute("id", 1));
+		log.info("delete attribute id at index 1");
 		
+		assertFalse(buffer.btdelattribute("id", 1));
+		log.info("double delete id failed");
+		
+		Long id = (Long)buffer.btgetattribute("id", 0);	
+		assertTrue(id.longValue() == 1234);
+		
+		assertTrue(buffer.btgetattribute("id", 1) == null);
+		
+		id = (Long)buffer.btgetattribute("id", 2);
+		assertTrue(id.longValue() == 1001);
+		
+		buffer.btaddattribute("name", "test");
+		assertTrue(buffer.btdelattribute("name", 0));
+		log.info("delete attribute name at index 0");
+		
+		String name = (String)buffer.btgetattribute("name", 0);
+		assertTrue(name == null);
 		assertFalse(buffer.btdelattribute("unknow", 0));
+	}
+	
+	public void testSet() throws ConnectionException {
+		log.info("TestNestedBuffer::testSet");
+		BT_NBF buffer = (BT_NBF) connection.tpalloc("BT_NBF", "employee", 0);
+		buffer.btaddattribute("id", new Long(1234));
+		buffer.btaddattribute("id", new Long(1001));
+		buffer.btaddattribute("name", "test");
+		
+		assertTrue(buffer.btdelattribute("id", 0));
+		
+		assertTrue(buffer.btsetattribute("id", 0, new Long(1002)));
+		Long id = (Long)buffer.btgetattribute("id", 0);
+		assertTrue(id.longValue() == 1002);
+		
+		assertTrue(buffer.btsetattribute("id", 1, new Long(1003)));
+		id = (Long)buffer.btgetattribute("id", 1);
+		assertTrue(id.longValue() == 1003);
+		
+		assertTrue(buffer.btsetattribute("name", 0, "test1"));
+		String name = (String)buffer.btgetattribute("name", 0);
+		assertTrue("test1".equals(name));
+		
+		assertTrue(buffer.btdelattribute("name", 0));
+		assertTrue(buffer.btsetattribute("name", 0, "test2"));
+		name = (String)buffer.btgetattribute("name", 0);
+		assertTrue("test2".equals(name));
+		
+		assertFalse(buffer.btsetattribute("name", 1, "other"));
+		assertFalse(buffer.btsetattribute("unknow", 0, "nothing"));
 	}
 }

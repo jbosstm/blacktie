@@ -137,8 +137,16 @@ public class BT_NBF extends Buffer {
 
 				log.debug("vlaue is " + value);
 				if(value == null) {
-					log.error("can not find " + attrId + " at index " + index);
+					log.warn("can not find " + attrId + " at index " + index);
 				} else {
+					String tmp = new String(getRawData());
+					int pos = find_element_string(tmp, attrId, index, false);
+
+					if(pos == -1) {
+						log.warn(attrId + " at index " + index + " has been deleted");
+						return null;
+					}
+
 					if(type.equals("long")) {
 						toReturn = Long.parseLong(value);
 					} else if(type.equals("string")) {
@@ -184,32 +192,114 @@ public class BT_NBF extends Buffer {
 			if(rc) {
 				String value = parser.getValue();
 				if(value == null) {
-					log.error("can not find " + attrId + " at index " + index);
+					log.warn("can not find " + attrId + " at index " + index);
 				} else {
 					String buf = new String(getRawData());
-					String element = "<" + attrId + ">" + value + "</" + attrId + ">";
-					//log.info("element is " + element);
-					int n = 0;
-					for(int i = 0; i <= index; i++) {
-						int k = buf.indexOf(element);
-						if(k >= 0) {
-							String tmpbuf = buf.substring(k + element.length());
-							buf = tmpbuf;
-							//log.info("tmpbuf is " + tmpbuf);
-							n = k;
-						}
-					}
+					int pos = find_element_string(buf, attrId, index, false);
 
-					String newbuf = new String(getRawData());
-					int size = newbuf.length();
-					newbuf = newbuf.substring(0, n) + newbuf.substring(n + element.length(), size);
-					log.info(newbuf);
-					toReturn = true;
+					if(pos > 0) {
+						int size = buf.length();
+						buf = buf.substring(0, pos + attrId.length() + 2)
+						+ buf.substring(pos + attrId.length() + 2 + value.length(), size);
+						log.debug(buf);
+						setRawData(buf.getBytes());
+						toReturn = true;
+					}
 				}
 			}
 		}catch (ConnectionException e) {
-			log.error("btgetattribute failed with " + e.getMessage());
+			log.error("btdelattribute failed with " + e.getMessage());
 		}
 		return toReturn;
+	}
+
+	public boolean btsetattribute(String attrId, int index, Object newValue) {
+		boolean rc = false;
+
+		try {
+			parser.setId(attrId);
+			parser.setIndex(index);
+			rc = parser.parse(getRawData());
+
+			String value = parser.getValue();
+			String buf = new String(getRawData());
+
+			int pos = find_element_string(buf, attrId, index, true);
+
+			if(value == null && pos == -1) {
+				log.warn("can not find " + attrId + " at index " + index);
+				rc = false;
+			} else {
+				String type = parser.getType();
+				StringBuffer tmp = new StringBuffer();
+				if(type.equals("long")) {
+					tmp.append((Long)newValue);	
+				} else if(type.equals("string")) {
+					tmp.append((String)newValue);
+				} else if(type.equals("integer")) {
+					tmp.append((Integer)newValue);
+				} else if(type.equals("short")) {
+					tmp.append((Short)newValue);
+				} else if(type.equals("float")) {
+					tmp.append((Float)newValue);
+				} else if(type.endsWith("_type")) {
+					String nbf = new String(((BT_NBF)newValue).getRawData());
+					int k = nbf.indexOf(".xsd\">");
+					int size = nbf.length();
+					String test =nbf.substring(k + 6, size - attrId.length() - 3);
+					tmp.append(test);
+				} else {
+					log.error("Can not support type " + type);
+					rc = false;
+				}
+
+				if(rc) {
+					int size = buf.length();
+					char ch = buf.charAt(pos + attrId.length() + 3);
+					int length;
+					if(ch == '/') {
+						length = 0;
+					} else {
+						length = value.length();
+					}
+					 buf = buf.substring(0, pos + attrId.length() + 2)
+					 + tmp.toString()
+					 + buf.substring(pos + attrId.length() + 2 + length, size);
+					//log.info(buf.substring(0, pos + attrId.length() + 2));
+					//log.info(tmp);
+					//log.info(buf.substring(pos + attrId.length() + 2 + length, size));
+					setRawData(buf.getBytes());
+				}
+			}
+		} catch (ConnectionException e) {
+			log.error("btsetattribute failed with " + e.getMessage());
+			rc = false;
+		} catch (ClassCastException e) {
+			rc = false;
+			log.warn("type is " + parser.getType() + 
+					" but newValue type is " + newValue.getClass().getName());
+		}
+
+		return rc;
+	}
+
+	private int find_element_string(String buf, String id, int index, boolean isset) {
+		int pos = -1;
+
+		String element = "<" + id + ">";
+		int fromIndex = 0;
+		for(int i = 0; i <= index; i++) {
+			pos = buf.indexOf(element, fromIndex);
+			if(pos > 0) {
+				fromIndex = pos + element.length();
+			}
+		}
+
+		char ch = buf.charAt(pos + id.length() + 3);
+		if(isset == false && ch == '/') {
+			pos = -1;
+		}
+
+		return pos;
 	}
 }

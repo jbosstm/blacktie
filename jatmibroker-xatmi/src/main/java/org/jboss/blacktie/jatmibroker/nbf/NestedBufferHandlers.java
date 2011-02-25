@@ -61,7 +61,7 @@ public class NestedBufferHandlers extends DefaultHandler {
 				value += strValue;
 			}
 			
-			log.debug("curIndex = " + curIndex + " value = " + value);
+			log.debug("index = " + index + " curIndex = " + curIndex + " value = " + value);
 		}
     }
 	
