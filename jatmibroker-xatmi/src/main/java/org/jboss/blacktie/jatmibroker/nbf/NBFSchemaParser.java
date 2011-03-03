@@ -16,7 +16,7 @@
  */
 package org.jboss.blacktie.jatmibroker.nbf;
 
-import java.util.Collection;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -88,16 +88,18 @@ public class NBFSchemaParser {
 			parser.parse(fname);
 			XSSchemaSet xsSchema = parser.getResult();
 			XSSchema schema = xsSchema.getSchema(1);
+			File file = new File(fname);
 
-			Collection<XSElementDecl> values = schema.getElementDecls().values();
+			XSElementDecl element = schema.getElementDecl(file.getName().replace(".xsd", ""));
 
-			XSElementDecl element = (XSElementDecl) values.toArray()[values.size()-1];
-			log.debug("element is " + element.getName());
-			bufferName = element.getName();
-			XSType xtype = element.getType();
-			if(xtype.isComplexType()) {
-				findElementType(xtype.asComplexType());
-				rc = true;
+			if(element != null) {
+				log.debug("element is " + element.getName());
+				bufferName = element.getName();
+				XSType xtype = element.getType();
+				if(xtype.isComplexType()) {
+					findElementType(xtype.asComplexType());
+					rc = true;
+				}
 			}
 		} catch (Exception e) {
 			log.error("parse " + fname + " failed with " + e.getMessage(), e);
@@ -105,11 +107,11 @@ public class NBFSchemaParser {
 
 		return rc;
 	}
-	
+
 	public String getBufferName() {
 		return bufferName;
 	}
-	
+
 	public Map<String, String> getFileds() {
 		return flds;
 	}
