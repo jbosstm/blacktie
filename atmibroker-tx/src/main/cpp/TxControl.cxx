@@ -79,10 +79,12 @@ int TxControl::end(bool commit, bool reportHeuristics)
 		LOG4CXX_DEBUG(txclogger, (char*) "end: term ex " << e._name() << " minor: " << e.minor());
 		// transaction no longer exists (presumed abort)
 		outcome = TX_ROLLBACK;
-	} catch (CORBA::INVALID_TRANSACTION & e) {	// TODO this is wrong (its a workaround for JBTM-748
+	} catch (CORBA::INVALID_TRANSACTION & e) {
 		LOG4CXX_WARN(txclogger, (char*) "end get terminater: ex: wrong exception type (see JBTM-748)"
 			<< e._name() << " minor: " << e.minor());
-		outcome = TX_ROLLBACK;
+		// cannot assume TX_ROLLBACK since the RMs will not have been told (must return TX_FAIL to indicate
+		// that the caller’s state with respect to the transaction is unknown)
+		outcome = TX_FAIL;
 	} catch (...) {
 		LOG4CXX_WARN(txclogger, (char*) "end: unknown error looking up terminator");
 		outcome = TX_FAIL; // TM failed temporarily
@@ -107,10 +109,12 @@ int TxControl::end(bool commit, bool reportHeuristics)
 			LOG4CXX_ERROR(txclogger, (char*) "end: HeuristicHazard: " << e._name());
 			// can be thrown if commit_return characteristic is TX_COMMIT_COMPLETED
 			outcome = TX_HAZARD;
-		} catch (CORBA::INVALID_TRANSACTION & e) {	// TODO this is wrong (its a workaround for JBTM-748
+		} catch (CORBA::INVALID_TRANSACTION & e) {
 			LOG4CXX_WARN(txclogger, (char*) "end: terminate ex: wrong exception type (see JBTM-748)"
 			<< e._name() << " minor: " << e.minor());
-			outcome = TX_ROLLBACK;
+			// cannot assume TX_ROLLBACK since the RMs will not have been told (must return TX_FAIL to indicate
+			// that the caller’s state with respect to the transaction is unknown)
+			outcome = TX_FAIL;
 		} catch (CORBA::SystemException & e) {
 			LOG4CXX_WARN(txclogger, (char*) "end: " << e._name() << " minor: " << e.minor());
 			outcome = TX_FAIL;
@@ -160,8 +164,8 @@ int TxControl::rollback_only()
 	} catch (CORBA::INVALID_TRANSACTION & e) {	// TODO this is wrong (its a workaround for JBTM-748
 		LOG4CXX_WARN(txclogger, (char*) "rollback_only: wrong exception type (see JBTM-748)"
 			<< e._name() << " minor: " << e.minor());
-		_rbonly = true;
-		return TX_OK;
+//		_rbonly = true;
+		return TX_FAIL;	// should not happen (see comments in TxControl::end)
 	} catch (CORBA::SystemException & e) {
 		LOG4CXX_WARN(txclogger, (char*) "rollback_only: " << e._name() << " minor: " << e.minor());
 	}
