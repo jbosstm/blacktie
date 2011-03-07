@@ -26,6 +26,9 @@
 #include "btxatmi.h"
 #include "malloc.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
