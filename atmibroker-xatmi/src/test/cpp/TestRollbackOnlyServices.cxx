@@ -61,7 +61,7 @@ extern void test_tprecv_TPEV_DISCONIMM_service(TPSVCINFO *svcinfo) {
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
 	bool rbkOnly = (txinfo.transaction_state == TX_ROLLBACK_ONLY);
-	userlogc((char*) "status=%d, inTx=%d, rbkOnly=%d", status, inTx, rbkOnly);
+	//userlogc((char*) "status=%d, inTx=%d, rbkOnly=%d", status, inTx, rbkOnly);
 }
 
 extern void test_tprecv_TPEV_SVCFAIL_service(TPSVCINFO *svcinfo) {
