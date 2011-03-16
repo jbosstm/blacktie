@@ -50,6 +50,7 @@
 		<SERVER name="default">
 			<SERVICE_NAMES>
 				<SERVICE name='PBF' />
+				<SERVICE name='NBF' />
 				<SERVICE name='BAR' />
 				<SERVICE name='TestTPFree' />
 				<SERVICE name='TestTPCall' />

@@ -133,6 +133,12 @@ int btaddattribute(char** buf, char* attributeId, char* attributeValue, int len)
 		if(result) {
 			rc = 0;
 			const char* type = handler.getType();
+			if(type == NULL) {
+				LOG4CXX_WARN(logger, (char*) "can not find type of attribute " << attributeId);
+				del_string(*buf, n, tagsize); 
+				return -1;
+			}
+
 			LOG4CXX_DEBUG(logger, (char*) "type is " << type);
 			char* value = NULL;
 			if(strcmp(type, "string") == 0) {
@@ -182,6 +188,7 @@ int btgetattribute(char* buf, char* attributeId, int attributeIndex, char* attri
 		const char* value = handler.getValue();
 		const char* type = handler.getType();
 
+		LOG4CXX_DEBUG(logger, (char*) "type is " << type);
 		if(value != NULL) {
 			rc = 0;
 			if(type == NULL || strcmp(type, "string") == 0) {
