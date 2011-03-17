@@ -27,6 +27,7 @@ int main(int argc, char **argv) {
 	char* sendbuf = NULL;
 	char* rcvbuf = NULL;
 	char name[16];
+	int toReturn = 0;
 
 	sendbuf = tpalloc((char*)"BT_NBF", (char*)"employee", 0);
 	if(sendbuf == NULL) {
@@ -65,10 +66,11 @@ int main(int argc, char **argv) {
 		}
 	} else {
 		userlogc((char*) "call failed with rc = %d, tperrno = %d", rc, tperrno);
+		toReturn = -1;
 	}
 
 	tpfree(sendbuf);
 	tpfree(rcvbuf);
 
-	return 0;
+	return toReturn;
 }

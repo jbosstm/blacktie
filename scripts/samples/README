@@ -119,3 +119,7 @@ integration1
     Shows how a C client can invoke an EJB (via a "BlackTie service adaptor") within the scope of a transaction
     started at the client.
 
+examples/nbf
+	Shows how to use nested buffer in blacktie
+	Refer to ther README file in examples/nbf directory for more information
+
