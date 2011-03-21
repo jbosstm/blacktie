@@ -29,7 +29,6 @@
 <compilerarg value="-O0" if="debug" />
 <compilerarg value="-g3" if="debug" />
 <compilerarg value="-O3" unless="debug" />
-<compilerarg value="-Wall" />
 <compilerarg value="-c" />
 <compilerarg value="-fmessage-length=0" />
 <compilerarg value="-fPIC" />
@@ -44,6 +43,9 @@
 <compilerarg value="/wd4619" />
 <compilerarg value="/wd4505" />
 <compilerarg value="/wd4640"/>
+'>
+<!ENTITY linker-args-xlC '
+<linkerarg value="-brtl" />
 '>
 <!ENTITY includepath-main-dependencies '
 	<includepath path="${env.BLACKTIE_HOME}/include"/>
@@ -183,6 +185,8 @@
 			<compiler name="${toolchain.compiler}" if="is-gcc"> &compiler-args-gcc; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
+            <linker name="${toolchain.compiler}" if="is-xlC"> &linker-args-xlC; </linker>
+
 
 			<fileset dir="${src.main}" includes="${src.tobuild}" excludes="${src.excludes}" />
 
