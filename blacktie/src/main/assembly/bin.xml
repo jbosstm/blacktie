@@ -226,6 +226,7 @@
 				<include>*.dll</include>
 				<include>*.lib</include>
 				<include>*.so</include>
+				<include>*.a</include>
 			</includes>
 		</fileSet>
 		<fileSet>
@@ -236,6 +237,7 @@
 				<include>*.dll</include>
 				<include>*.lib</include>
 				<include>*.so</include>
+				<include>*.a</include>
 			</includes>
 		</fileSet>
 		<fileSet>
@@ -247,6 +249,7 @@
 				<include>*.lib</include>
 				<include>*.so</include>
 				<include>*.so.*</include>
+				<include>*.a</include>
 			</includes>
 			<excludes>
 				<exclude>libACE*.so</exclude>
