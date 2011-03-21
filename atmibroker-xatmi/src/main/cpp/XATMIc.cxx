@@ -126,6 +126,9 @@ int send(Session* session, const char* replyTo, char* idata, long ilen,
 
 				if (session->send(queueName, message))
 					toReturn = 0;
+
+				if (message.xid)
+					free(message.xid);
 			} else {
 				message.xid = NULL;
 				message.control = (TPNOTRAN & flags) ? NULL : txx_serialize(
