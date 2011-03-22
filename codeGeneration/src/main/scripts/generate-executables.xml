@@ -202,7 +202,8 @@
 			<libset dir="${x.lib.dir2}" libs="${x.libs2}"/>
 			<libset dir="${x.lib.dir3}" libs="${x.libs3}"/>
 
-			<libset libs="stdc++ pthread" />
+			<libset libs="stdc++ pthread rt" if="is-gcc" />
+			<libset libs="pthread" if="is-xlC" />
 		</cc>
 	</target>
 
