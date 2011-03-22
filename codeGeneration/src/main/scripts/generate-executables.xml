@@ -203,7 +203,7 @@
 			<libset dir="${x.lib.dir3}" libs="${x.libs3}"/>
 
 			<libset libs="stdc++ pthread rt" if="is-gcc" />
-			<libset libs="pthread" if="is-xlC" />
+			<libset libs="apr-1 aprutil-1 pthread" if="is-xlC" />
 		</cc>
 	</target>
 
