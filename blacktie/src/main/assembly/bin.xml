@@ -108,7 +108,7 @@
 			<source>../scripts/samples/README</source>
 		</file>
 		<file>
-			<source>../blacktie-admin-services/target/config/btconfig.xml</source>
+			<source>../blacktie-admin-services/ear/target/config/btconfig.xml</source>
 			<outputDirectory>blacktie-admin-services</outputDirectory>
 		</file>
 	</files>
