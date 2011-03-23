@@ -412,8 +412,8 @@ bool HybridSessionImpl::send(MESSAGE& message) {
 				toReturn = true;
 
 				if (message.syncRcv) {
-					message.type = (char*) apr_hash_get(frame->headers, "messagetype", APR_HASH_KEY_STRING);
-					message.subtype = (char*) apr_hash_get(frame->headers, "messagesubtype", APR_HASH_KEY_STRING);
+					message.type = (char*) apr_hash_get(framed->headers, "messagetype", APR_HASH_KEY_STRING);
+					message.subtype = (char*) apr_hash_get(framed->headers, "messagesubtype", APR_HASH_KEY_STRING);
 					message.len = framed->body_length;
 
 					LOG4CXX_TRACE(logger, "syncRcv: copying message body response: len=" << message.len
