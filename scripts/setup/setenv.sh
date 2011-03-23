@@ -1,5 +1,5 @@
 #
-, Home of Professional Open Source
+# Home of Professional Open Source
 # Copyright 2008, Red Hat, Inc., and others contributors as indicated
 # by the @authors tag. All rights reserved.
 # See the copyright.txt in the distribution for a
