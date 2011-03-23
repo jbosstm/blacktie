@@ -412,9 +412,14 @@ bool HybridSessionImpl::send(MESSAGE& message) {
 				toReturn = true;
 
 				if (message.syncRcv) {
-					LOG4CXX_TRACE(logger, "syncRcv: copying message body response: len=" << framed->body_length
-						<< " data=" << framed->body);
+					message.type = (char*) apr_hash_get(frame->headers, "messagetype", APR_HASH_KEY_STRING);
+					message.subtype = (char*) apr_hash_get(frame->headers, "messagesubtype", APR_HASH_KEY_STRING);
 					message.len = framed->body_length;
+
+					LOG4CXX_TRACE(logger, "syncRcv: copying message body response: len=" << message.len
+						<< " type=" << message.type << " subtype=" << message.subtype
+						<< " data=" << framed->body);
+
 					if ((message.data = (char*) ::malloc(message.len)) == 0) {
 						LOG4CXX_WARN(logger, (char*) "Out of memory");
 						toReturn = false;
