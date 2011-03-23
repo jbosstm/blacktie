@@ -28,6 +28,10 @@ int main(int argc, char **argv) {
 	char* rcvbuf = NULL;
 	char name[16];
 	int toReturn = 0;
+	long id = 1001;
+	int rc;
+	long rcvlen;
+	int len;
 
 	sendbuf = tpalloc((char*)"BT_NBF", (char*)"employee", 0);
 	if(sendbuf == NULL) {
@@ -39,18 +43,17 @@ int main(int argc, char **argv) {
 	btaddattribute(&sendbuf, (char*)"name", (char*)name, 6);
 	userlogc((char*)"add name value is %s", name);
 
-	long id = 1001;
 	btaddattribute(&sendbuf, (char*)"id", (char*)&id, sizeof(id));
 	userlogc((char*)"add id value is %d", id);
 
 	rcvbuf = tpalloc((char*)"BT_NBF", (char*)"employee", 0);
-	long rcvlen = strlen(rcvbuf);
+	rcvlen = strlen(rcvbuf);
 
-	int rc = tpcall((char*)"NBF", (char*)sendbuf, strlen(sendbuf), (char**)&rcvbuf, &rcvlen, (long)0);
+	rc = tpcall((char*)"NBF", (char*)sendbuf, strlen(sendbuf), (char**)&rcvbuf, &rcvlen, (long)0);
 
 	if(rc == 0 && tperrno == 0) {
 		userlogc((char*) "call NBF service ok");
-		int len = 16;
+		len = 16;
 		rc = btgetattribute(rcvbuf, (char*)"name", 0, name, &len);
 		if(rc == 0) {
 			userlogc((char*)"recv name value is %s", name);
