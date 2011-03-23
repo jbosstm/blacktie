@@ -62,6 +62,7 @@ if [ "$?" != "0" ]; then
 	killall -9 cs
 	exit -1
 fi
+export JBOSS_HOME=$WORKSPACE/jboss-5.1.0.GA
 mvn install -Dbpa=centos55x32 -Duse.valgrind=true
 if [ "$?" != "0" ]; then
 	ps -f
@@ -72,6 +73,7 @@ if [ "$?" != "0" ]; then
 	killall -9 cs
 	exit -1
 fi
+export JBOSS_HOME=
 # THIS IS TO RUN THE TESTS IN CODECOVERAGE
 cd $WORKSPACE/trunk/jatmibroker-xatmi
 mvn site

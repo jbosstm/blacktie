@@ -24,8 +24,10 @@ rem BUILD BLACKTIE
 cd %WORKSPACE%\trunk\blacktie
 call mvn clean 
 IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
+set JBOSS_HOME=%WORKSPACE%\jboss-5.1.0.GA
 call mvn install -Dbpa=vc9x32 -Djbossas.ip.addr=%JBOSSAS_IP_ADDR%
 IF %ERRORLEVEL% NEQ 0 echo "Failing build" & tasklist & call %WORKSPACE%\jboss-5.1.0.GA\bin\shutdown.bat -s %JBOSSAS_IP_ADDR%:1099 -S & echo "Failed build" & exit -1
+set JBOSS_HOME=
 rem THIS IS TO RUN THE TESTS IN CODECOVERAGE
 cd %WORKSPACE%\trunk\jatmibroker-xatmi
 call mvn site -Djbossas.ip.addr=%JBOSSAS_IP_ADDR%
