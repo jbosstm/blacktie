@@ -25,10 +25,7 @@
 
 class TestTPCall: public BaseServerTest {
 	CPPUNIT_TEST_SUITE( TestTPCall);
-#ifndef WIN32
-	// temporarily disable to test the rest of the Win32 CI run
 	CPPUNIT_TEST( test_tpcall_unknown_service);
-#endif
 	CPPUNIT_TEST( test_tpcall_null_service);
 	CPPUNIT_TEST( test_tpcall_without_TPNOCHANGE);
 	CPPUNIT_TEST( test_tpcall_with_TPNOCHANGE);

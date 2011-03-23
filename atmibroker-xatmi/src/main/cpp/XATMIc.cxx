@@ -1405,7 +1405,7 @@ int btdequeue(char * svc, msg_opts_t *pmopts, char ** odata, long *olen, long fl
 
 			if (session != NULL) {
 				msg_opts_t mopts = {0, 0L, 1};
-				MESSAGE message;
+				MESSAGE message = {0, 0, 0, 0, 0, 0, 0};
 				char* tperr;
 
 				if (pmopts != NULL)
@@ -1416,6 +1416,7 @@ int btdequeue(char * svc, msg_opts_t *pmopts, char ** odata, long *olen, long fl
 					suspended = 1;
 				}
 
+				message.data = NULL;
 				toReturn = send(session, "", NULL, 0, 0, flags, 0, message, 0, &mopts, true, svc);
 				// save tperrno (convertMessage may mask it)
 				tperr = (char*) getSpecific(TPE_KEY);
