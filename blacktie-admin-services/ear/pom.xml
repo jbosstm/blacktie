@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	<!--
+<!--
 		JBoss, Home of Professional Open Source Copyright 2008, Red Hat
 		Middleware LLC, and others contributors as indicated by the @authors
 		tag. All rights reserved. See the copyright.txt in the distribution
@@ -15,97 +15,111 @@
 		Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 		02110-1301, USA.
 	-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.jboss.blacktie</groupId>
+        <artifactId>blacktie-common</artifactId>
+        <version>3.0.0.M2-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>blacktie-admin-services-ear</artifactId>
+    <name>Blacktie Administration Services</name>
+    <packaging>ear</packaging>
+    <developers>
+        <developer>
+            <id>tomjenkinson</id>
+            <name>Thomas Jenkinson</name>
+            <email>tom.jenkinson@redhat.com</email>
+            <organization>JBoss</organization>
+            <organizationUrl>http://www.jboss.org/</organizationUrl>
+            <roles>
+                <role>Project Lead</role>
+            </roles>
+            <timezone>0</timezone>
+        </developer>
+        <developer>
+            <id>mmusgrov</id>
+            <name>Michael Musgrove</name>
+            <email>mmusgrov@redhat.com</email>
+            <organization>JBoss</organization>
+            <organizationUrl>http://www.jboss.org/</organizationUrl>
+            <roles>
+                <role>Core Developer</role>
+            </roles>
+            <timezone>0</timezone>
+        </developer>
+        <developer>
+            <id>zfeng</id>
+            <name>Amos Feng</name>
+            <email>zfeng@redhat.com</email>
+            <organization>JBoss</organization>
+            <organizationUrl>http://www.jboss.org/</organizationUrl>
+            <roles>
+                <role>Core Developer</role>
+            </roles>
+            <timezone>0</timezone>
+        </developer>
+    </developers>
+    <licenses>
+        <license>
+            <name>LGPL 2.1</name>
+            <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+        </license>
+    </licenses>
+    <profiles>
+        <profile>
+            <id>test</id>
+            <activation>
+                <property>
+                    <name>!skipTests</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>jboss-maven-plugin</artifactId>
+                        <version>1.5.0</version>
+                        <executions>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
-		<groupId>org.jboss.blacktie</groupId>
-		<artifactId>blacktie-common</artifactId>
-		<version>3.0.0.M2-SNAPSHOT</version>
-	</parent>
+                            <execution>
+                                <id>harddeploy-config</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>hard-deploy</goal>
+                                </goals>
+                                <configuration>
+                                    <hostName>${jbossas.ip.addr}</hostName>
+                                    <port>8080</port>
+                                    <jbossHome>${JBOSS_HOME}</jbossHome>
+                                    <serverName>all-with-hornetq</serverName>
+                                    <unpack>false</unpack>
+                                    <deploySubDir>../conf</deploySubDir>
+                                    <fileNames>
+                                        <fileName>${project.build.directory}/config/btconfig.xml</fileName>
+                                    </fileNames>
+                                </configuration>
+                            </execution>
 
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>blacktie-admin-services-ear</artifactId>
-	<name>Blacktie Administration Services</name>
-	<packaging>ear</packaging>
-
-	<developers>
-		<developer>
-			<id>tomjenkinson</id>
-			<name>Thomas Jenkinson</name>
-			<email>tom.jenkinson@redhat.com</email>
-			<organization>JBoss</organization>
-			<organizationUrl>http://www.jboss.org/</organizationUrl>
-			<roles>
-				<role>Project Lead</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-		<developer>
-			<id>mmusgrov</id>
-			<name>Michael Musgrove</name>
-			<email>mmusgrov@redhat.com</email>
-			<organization>JBoss</organization>
-			<organizationUrl>http://www.jboss.org/</organizationUrl>
-			<roles>
-				<role>Core Developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-		<developer>
-			<id>zfeng</id>
-			<name>Amos Feng</name>
-			<email>zfeng@redhat.com</email>
-			<organization>JBoss</organization>
-			<organizationUrl>http://www.jboss.org/</organizationUrl>
-			<roles>
-				<role>Core Developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-	</developers>
-
-	<licenses>
-		<license>
-			<name>LGPL 2.1</name>
-			<url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
-		</license>
-	</licenses>
-
-	<profiles>
-	<profile>
-	<id>test</id>
-	<activation>
-		<property>
-			<name>!skipTests</name>
-		</property>
-	</activation>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jboss-maven-plugin</artifactId>
-				<version>1.4</version>
-				<configuration>
-					<hostName>${jbossas.ip.addr}</hostName>
-					<port>8080</port>
-					<jbossHome>${JBOSS_HOME}</jbossHome>
-					<serverName>all-with-hornetq</serverName>
-					<unpack>true</unpack>
-					<fileNames>
-						<fileName>${project.build.directory}/${project.build.finalName}.${project.packaging}</fileName>
-					</fileNames>
-				</configuration>
-				<executions>
-					<execution>
-						<id>redeploy</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>redeploy</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+                            <execution>
+                                <id>redeploy-ear</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>redeploy</goal>
+                                </goals>
+                                <configuration>
+                                    <hostName>${jbossas.ip.addr}</hostName>
+                                    <port>8080</port>
+                                    <jbossHome>${JBOSS_HOME}</jbossHome>
+                                    <serverName>all-with-hornetq</serverName>
+                                    <unpack>false</unpack>
+                                    <fileNames>
+                                        <fileName>${project.build.directory}/${project.build.finalName}.${project.packaging}</fileName>
+                                    </fileNames>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
@@ -132,63 +146,60 @@
                             </execution>
                         </executions>
                     </plugin>
-
-		</plugins>
-	</build>
-	</profile>
-	</profiles>
-
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-ear-plugin</artifactId>
-				<configuration>
-					<defaultLibBundleDir>lib</defaultLibBundleDir>
-					<earSourceDirectory>${basedir}/target/classes/</earSourceDirectory>
-					<modules>
-						<jarModule>
-							<groupId>org.jboss.blacktie</groupId>
-							<artifactId>blacktie-admin-services</artifactId>
-							<includeInApplicationXml>true</includeInApplicationXml>
-						</jarModule>
-					</modules>
-				</configuration>
-			</plugin>
-
-			<plugin>
-            <groupId>com.google.code.maven-replacer-plugin</groupId>
-           <artifactId>maven-replacer-plugin</artifactId>
-            <version>1.3.4</version>
-            <executions>
-                <execution>
-                    <phase>prepare-package</phase>
-                    <goals>
-                        <goal>replace</goal>
-                    </goals>                    
-                </execution>
-            </executions>
-            <configuration>
-                <file>target/classes/btconfig.xml</file>
-                <outputFile>target/classes/btconfig.xml</outputFile>
-                <regex>false</regex>
-                <token>127.0.0.1</token>
-                <value>${jbossas.ip.addr}</value>
-            </configuration>
-	</plugin>
-		</plugins>
-	</build>
-	<dependencies>
-		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
-			<artifactId>blacktie-admin-services</artifactId>
-		</dependency>
-	</dependencies>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ear-plugin</artifactId>
+                <configuration>
+                    <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    <earSourceDirectory>${basedir}/target/classes/</earSourceDirectory>
+                    <modules>
+                        <jarModule>
+                            <groupId>org.jboss.blacktie</groupId>
+                            <artifactId>blacktie-admin-services</artifactId>
+                            <includeInApplicationXml>true</includeInApplicationXml>
+                        </jarModule>
+                    </modules>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>maven-replacer-plugin</artifactId>
+                <version>1.3.4</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <file>src/main/config/btconfig.xml</file>
+                    <outputFile>target/config/btconfig.xml</outputFile>
+                    <regex>false</regex>
+                    <token>127.0.0.1</token>
+                    <value>${jbossas.ip.addr}</value>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.jboss.blacktie</groupId>
+            <artifactId>blacktie-admin-services</artifactId>
+        </dependency>
+    </dependencies>
 </project>
