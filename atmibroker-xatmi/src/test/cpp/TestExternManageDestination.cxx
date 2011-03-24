@@ -115,6 +115,7 @@ static void send_one(int id, int pri, const char *type, const char *subtype) {
 	len = strlen(msg) + 1;
 
 	buf = tpalloc((char *) type, (char *) subtype, len);
+	BT_ASSERT(buff != NULL);
 
 	(void) strcpy(buf, msg);
 	cd = btenqueue((char*) "TestOne", &mopts, buf, len, 0);
@@ -128,9 +129,11 @@ static void send_one(int id, int pri, const char *type, const char *subtype) {
 
 static void recv_one(msg_opts_t *mopts, long len, long flags, int expect, int expected_tperrno,
 	const char *type, const char *subtype) {
+	int toCheck;
 	char* data = (char*) tpalloc((char *) "X_OCTET", (char *) NULL, len);
-	int toCheck = btdequeue((char*) "TestOne", mopts, &data, &len, 0L);
 
+	BT_ASSERT(data != NULL);
+	toCheck = btdequeue((char*) "TestOne", mopts, &data, &len, 0L);
 	userlogc((char*) "recv_one: tperrno=%d expected_tperrno=%d toCheck=%d",
 		tperrno, expected_tperrno, toCheck);
 	BT_ASSERT(tperrno == expected_tperrno);
