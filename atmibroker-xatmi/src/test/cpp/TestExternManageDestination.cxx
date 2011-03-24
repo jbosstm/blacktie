@@ -151,8 +151,8 @@ static void recv_one(msg_opts_t *mopts, long len, long flags, int expect, int ex
 			BT_ASSERT(strncmp(subtype, tpsubtype, 16) == 0);
 		free(tptype);
 		free(tpsubtype);
+		tpfree(data);
 	}
-	tpfree(data);
 }
 
 void TestExternManageDestination::test_stored_messages() {
