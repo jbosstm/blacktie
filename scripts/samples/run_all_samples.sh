@@ -4,7 +4,7 @@ set -m
 echo "Running all samples"
 
 # RUN THE FOOAPP SERVER
-echo "Example 1: Running fooapp"
+echo "Example: Running fooapp"
 cd $BLACKTIE_HOME/examples/xatmi/fooapp
 generate_server -Dservice.names=BAR -Dserver.includes=BarService.c
 if [ "$?" != "0" ]; then
@@ -34,7 +34,7 @@ if [ "$?" != "0" ]; then
 fi
 
 # RUN THE ADMIN JMX CLIENT
-echo "Example 2: Running Admin Tests"
+echo "Example: Running Admin Tests"
 cd $BLACKTIE_HOME/examples/admin/jmx
 echo '0
 0
@@ -86,7 +86,7 @@ echo '0
 sleep 3
 
 # RUN THE QUEUEING EXAMPLE
-echo "Example 3: Running externally managed queue example"
+echo "Example: Running externally managed queue example"
 cd $BLACKTIE_HOME/examples/xatmi/queues
 
 generate_client -Dclient.includes=queues.c
@@ -109,7 +109,7 @@ fi
 unset BLACKTIE_SERVER_ID
 
 # RUN THE TXSENDER EXAMPLE
-echo "Example 3.2: Running transactional queue example"
+echo "Example: Running transactional queue example"
 cd $BLACKTIE_HOME/examples/xatmi/queues
 generate_client -Dclient.includes=txsender.c -Dclient.executable.file=txsender
 if [ "$?" != "0" ]; then
@@ -134,7 +134,7 @@ fi
 unset BLACKTIE_SERVER_ID
 
 # RUN THE PROPAGATED TRANSACTION EXAMPLE
-echo "Example 3.3: Running propagated transaction queue example"
+echo "Example: Running propagated transaction queue example"
 cd $BLACKTIE_HOME/examples/xatmi/queues
 generate_client -Dclient.includes=queues.c -Dclient.executable.file=client
 if [ "$?" != "0" ]; then
@@ -174,7 +174,7 @@ if [ "$?" != "0" ]; then
 fi
 
 # RUN THE SECURE SERVER
-echo "Example 4: Running Security"
+echo "Example: Running Security"
 cd $BLACKTIE_HOME/examples/xatmi/security
 generate_server -Dservice.names=SECURE -Dserver.includes=BarService.c
 if [ "$?" != "0" ]; then
@@ -218,7 +218,7 @@ unset BLACKTIE_CONFIGURATION
 unset BLACKTIE_CONFIGURATION_DIR
 
 # RUN THE INTEGRATION 1 EXAMPLE
-echo "Example 5: Running integration 1 XATMI"
+echo "Example: Running integration 1 XATMI"
 cd $BLACKTIE_HOME/examples/integration1/xatmi_service/
 generate_server -Dservice.names=CREDIT,DEBIT -Dserver.includes="CreditService.c,DebitService.c"
 if [ "$?" != "0" ]; then
@@ -240,7 +240,7 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 
-echo "Example 6: Build Converted XATMI service"
+echo "Build Converted XATMI service"
 cd $BLACKTIE_HOME/examples/integration1/ejb
 mvn install
 if [ "$?" != "0" ]; then
@@ -267,7 +267,7 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 
-echo "Example 7: Run Converted XATMI service"
+echo "Run Converted XATMI service"
 cd $BLACKTIE_HOME/examples/integration1/ejb/ear/
 mvn jboss:deploy
 if [ "$?" != "0" ]; then
@@ -296,7 +296,7 @@ if [ "$?" != "0" ]; then
 fi
 
 # RUN THE MDB EXAMPLE
-echo "Example 8: Running MDB examples"
+echo "Example: Running MDB examples"
 cd $BLACKTIE_HOME/examples/mdb
 mvn package jboss:redeploy -DskipTests
 if [ "$?" != "0" ]; then
@@ -308,9 +308,39 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 
+echo "Example: Running nbf"
+cd $BLACKTIE_HOME/examples/nbf
+generate_server -Dservice.names=NBF -Dserver.includes=NBFService.c
+if [ "$?" != "0" ]; then
+	exit -1
+fi
+
+export BLACKTIE_CONFIGURATION=linux
+btadmin startup
+if [ "$?" != "0" ]; then
+	exit -1
+fi
+unset BLACKTIE_CONFIGURATION
+
+# RUN THE C CLIENT
+cd $BLACKTIE_HOME/examples/nbf
+generate_client -Dclient.includes=client.c
+./client
+if [ "$?" != "0" ]; then
+	killall -9 server
+	exit -1
+fi
+
+export BLACKTIE_CONFIGURATION=linux
+btadmin shutdown
+if [ "$?" != "0" ]; then
+	exit -1
+fi
+unset BLACKTIE_CONFIGURATION
+
 if [ "$1" ]; then
 if [ "$1" = "tx" ]; then
-echo "Example 9: Running txfooapp"
+echo "Example: Running txfooapp"
 shift
 
 # RUN THE FOOAPP SERVER
@@ -347,36 +377,6 @@ unset BLACKTIE_CONFIGURATION
 
 fi
 fi
-
-echo "Example 10: Running nbf"
-cd $BLACKTIE_HOME/examples/nbf
-generate_server -Dservice.names=NBF -Dserver.includes=NBFService.c
-if [ "$?" != "0" ]; then
-	exit -1
-fi
-
-export BLACKTIE_CONFIGURATION=linux
-btadmin startup
-if [ "$?" != "0" ]; then
-	exit -1
-fi
-unset BLACKTIE_CONFIGURATION
-
-# RUN THE C CLIENT
-cd $BLACKTIE_HOME/examples/nbf
-generate_client -Dclient.includes=client.c
-./client
-if [ "$?" != "0" ]; then
-	killall -9 server
-	exit -1
-fi
-
-export BLACKTIE_CONFIGURATION=linux
-btadmin shutdown
-if [ "$?" != "0" ]; then
-	exit -1
-fi
-unset BLACKTIE_CONFIGURATION
 
 # LET THE USER KNOW THE OUTPUT
 echo "All samples ran OK"
