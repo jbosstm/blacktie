@@ -640,7 +640,7 @@ int AtmiBrokerServer::getServiceStatus(char** toReturn, char* svc) {
 			str = (char*) realloc(str, size);
 
 			len += ACE_OS::sprintf(str + len,
-					"<service><name>%.15s</name><status>%d</status></service>",
+					"<service><name>%.128s</name><status>%d</status></service>",
 					(*i).name, isPause && (*i).status ? 2 : (*i).status);
 			if (svc != NULL)
 				break;

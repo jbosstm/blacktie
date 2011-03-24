@@ -253,7 +253,7 @@ AtmiBrokerEnv::getTransportLibrary(char* serviceName) {
 			std::vector<ServiceInfo>* services = &(*server)->serviceVector;
 			for (std::vector<ServiceInfo>::iterator i = services->begin(); i
 					!= services->end(); i++) {
-				if (ACE_OS::strncmp((*i).serviceName, serviceName, 15) == 0) {
+				if (ACE_OS::strncmp((*i).serviceName, serviceName, 128) == 0) {
 					return (*i).transportLib;
 				}
 			}

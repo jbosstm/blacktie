@@ -44,8 +44,8 @@ HybridStompEndpointQueue::HybridStompEndpointQueue(apr_pool_t* pool,
 	this->pool = pool;
 
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
-	int XATMI_SERVICE_NAME_LENGTH = 15;
-	int queueNameLength = 14 + 15 + 1;
+	int XATMI_SERVICE_NAME_LENGTH = 128;
+	int queueNameLength = 14 + 128 + 1;
 	char* queueName = (char*) ::malloc(queueNameLength);
 	memset(queueName, '\0', queueNameLength);
 	if (conversational) {

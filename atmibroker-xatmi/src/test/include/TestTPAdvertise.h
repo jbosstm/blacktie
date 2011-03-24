@@ -31,7 +31,8 @@ class TestTPAdvertise: public BaseServerTest {
 	CPPUNIT_TEST( test_tpadvertise_null_name_empty);
 	CPPUNIT_TEST( test_tpadvertise_different_method);
 	CPPUNIT_TEST( test_tpadvertise_idempotent);
-	CPPUNIT_TEST( test_tpadvertise_length_15);
+	CPPUNIT_TEST( test_tpadvertise_length_128);
+	CPPUNIT_TEST( test_tpadvertise_underscore_name);
 CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -41,7 +42,8 @@ void test_tpadvertise_null_name_null();
 void test_tpadvertise_null_name_empty();
 void test_tpadvertise_different_method();
 void test_tpadvertise_idempotent();
-void test_tpadvertise_length_15();
+void test_tpadvertise_length_128();
+void test_tpadvertise_underscore_name();
 
 virtual void setUp();
 virtual void tearDown();

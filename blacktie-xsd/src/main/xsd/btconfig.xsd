@@ -22,7 +22,7 @@
 	<xsd:simpleType name="svcstring">
 		<xsd:restriction base="xsd:string">
 			<xsd:minLength value="1" />
-			<xsd:maxLength value="15" />
+			<xsd:maxLength value="128" />
 			<xsd:pattern value="[A-Za-z_]+[A-Za-z0-9_]*" />
 		</xsd:restriction>
 	</xsd:simpleType>

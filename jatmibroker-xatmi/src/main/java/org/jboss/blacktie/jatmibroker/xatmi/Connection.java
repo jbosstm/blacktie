@@ -90,7 +90,7 @@ public class Connection {
 	public static final long TPEV_SVCSUCC = 0x0008;
 	public static final long TPEV_SENDONLY = 0x0020;
 
-	public static final int XATMI_SERVICE_NAME_LENGTH = 15;
+	public static final int XATMI_SERVICE_NAME_LENGTH = 128;
 
 	/**
 	 * The next id to use for session connection descriptors.

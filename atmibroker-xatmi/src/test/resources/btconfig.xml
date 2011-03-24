@@ -45,6 +45,8 @@
 				<SERVICE name='TestTPReturnA' />
 				<SERVICE name='TestTPReturnB' />
 				<SERVICE name='a12345678901234' />
+				<SERVICE name='abcdefghij0123456789abcdefghij0123456789abcdefghij0123456789abcdefghij0123456789abcdefghij0123456789abcdefghij0123456789abcdefg' />
+				<SERVICE name='underscore_name' />
 				<SERVICE name='TestTPUnadverti' />
 				<SERVICE name='tpcall_x_octet' />
 				<SERVICE name='tpcall_x_common' />

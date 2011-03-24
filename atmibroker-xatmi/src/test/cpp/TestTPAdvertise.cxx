@@ -56,8 +56,9 @@ void TestTPAdvertise::tearDown() {
 	::tpfree(rcvbuf);
 
 	::tpunadvertise((char*) "TestTPAdvertise");
-	::tpunadvertise((char*) "a123456789012345");
-	::tpunadvertise((char*) "a123456789012346");
+	::tpunadvertise((char*) "a12345678901234");
+	::tpunadvertise((char*) "abcdefghij0123456789abcdefghij0123456789abcdefghij0123456789abcdefghij0123456789abcdefghij0123456789abcdefghij0123456789abcdefg");
+	::tpunadvertise((char*) "underscore_name");
 
 	// Clean up server
 	BaseServerTest::tearDown();
@@ -77,6 +78,25 @@ void TestTPAdvertise::test_tpadvertise_new_service() {
 
 	(void) strcpy(sendbuf, "test0");
 	id = ::tpcall((char*) "TestTPAdvertise", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(id != -1);
+	BT_ASSERT(strcmp(rcvbuf, "testtpadvertise_servicetest0") == 0);
+}
+
+void TestTPAdvertise::test_tpadvertise_underscore_name() {
+	userlogc((char*) "test_tpadvertise_underscore_name");
+	int id = ::tpadvertise((char*) "underscore_name", testtpadvertise_service);
+	BT_ASSERT(tperrno!= TPEINVAL);
+	BT_ASSERT(tperrno!= TPELIMIT);
+	BT_ASSERT(tperrno!= TPEMATCH);
+	BT_ASSERT(tperrno!= TPEPROTO);
+	BT_ASSERT(tperrno!= TPESYSTEM);
+	BT_ASSERT(tperrno!= TPEOS);
+	BT_ASSERT(tperrno == 0);
+	BT_ASSERT(id != -1);
+
+	(void) strcpy(sendbuf, "test0");
+	id = ::tpcall((char*) "underscore_name", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(id != -1);
 	BT_ASSERT(strcmp(rcvbuf, "testtpadvertise_servicetest0") == 0);
@@ -122,12 +142,12 @@ void TestTPAdvertise::test_tpadvertise_different_method() {
 	BT_ASSERT(id == -1);
 }
 
-void TestTPAdvertise::test_tpadvertise_length_15() {
-	userlogc((char*) "test_tpadvertise_length_15");
-	int id = ::tpadvertise((char*) "a123456789012345", testtpadvertise_service);
+void TestTPAdvertise::test_tpadvertise_length_128() {
+	userlogc((char*) "test_tpadvertise_length_128");
+	int id = ::tpadvertise((char*) "abcdefghij0123456789abcdefghij0123456789abcdefghij0123456789abcdefghij0123456789abcdefghij0123456789abcdefghij0123456789abcdefg", testtpadvertise_service);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(id != -1);
-	id = ::tpadvertise((char*) "a123456789012346", testtpadvertise_service_2);
+	id = ::tpadvertise((char*) "abcdefghij0123456789abcdefghij0123456789abcdefghij0123456789abcdefghij0123456789abcdefghij0123456789abcdefghij0123456789abcdefg", testtpadvertise_service_2);
 	BT_ASSERT(tperrno== TPEMATCH);
 	BT_ASSERT(id == -1);
 }

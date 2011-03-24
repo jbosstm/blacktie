@@ -37,7 +37,7 @@
 #define TPSUCCESS	0x00000002
 
 struct BLACKTIE_XATMI_DLL tpsvcinfo {
-#define XATMI_SERVICE_NAME_LENGTH  15
+#define XATMI_SERVICE_NAME_LENGTH  128
 	char name[XATMI_SERVICE_NAME_LENGTH];
 	char *data;
 	long len;

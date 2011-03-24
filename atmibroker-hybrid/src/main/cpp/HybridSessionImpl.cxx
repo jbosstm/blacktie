@@ -69,8 +69,8 @@ HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 	this->pool = pool;
 
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
-	int XATMI_SERVICE_NAME_LENGTH = 15;
-	int queueNameLength = 14 + 15 + 1;
+	int XATMI_SERVICE_NAME_LENGTH = 128;
+	int queueNameLength = 14 + XATMI_SERVICE_NAME_LENGTH + 1;
 	this->sendTo = (char*) ::malloc(queueNameLength);
 	memset(this->sendTo, '\0', queueNameLength);
 	if (isConv) {
@@ -211,8 +211,8 @@ bool HybridSessionImpl::send(char* serviceName, MESSAGE& message) {
 	this->serviceInvokation = true;
 	this->serviceName = serviceName;
 	// XATMI_SERVICE_NAME_LENGTH is in xatmi.h and therefore not accessible
-	int XATMI_SERVICE_NAME_LENGTH = 15;
-	int queueNameLength = 14 + 15 + 1;
+	int XATMI_SERVICE_NAME_LENGTH = 128;
+	int queueNameLength = 14 + XATMI_SERVICE_NAME_LENGTH + 1;
 	this->sendTo = (char*) ::malloc(queueNameLength);
 	memset(this->sendTo, '\0', queueNameLength);
 	if (isConv) {
