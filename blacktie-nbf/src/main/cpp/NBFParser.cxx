@@ -21,6 +21,8 @@
 #include <xercesc/util/OutOfMemoryException.hpp>
 #include <NBFParser.h>
 
+#include "xatmi.h"
+
 log4cxx::LoggerPtr NBFParser::logger(log4cxx::Logger::getLogger("NBFParser"));
 
 NBFParser::NBFParser() {
@@ -57,9 +59,12 @@ bool NBFParser::parse(const char* buf, const char* id, NBFParserHandlers* handle
 		parser->setPSVIHandler(handler);
 		parser->setDocumentHandler(handler);
 		parser->setErrorHandler(handler);
+
+		long bufferLength = ::tptypes((char*)buf, NULL, NULL);
+
 		MemBufInputSource* memBufIS = new MemBufInputSource (
 				(const XMLByte*) buf,
-				strlen(buf),
+				bufferLength,
 				id,
 				false);
 		int errorCount = 0;

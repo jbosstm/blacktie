@@ -85,6 +85,9 @@ void del_string(char* buf, int pos, int len) {
 	for(i = pos, j = pos + len; j <= n; i++, j++) {
 		buf[i] = buf[j];
 	}
+	for(i = n - len; i < n; i++) {
+		buf[i] = NULL;
+	}
 }
 
 void insert_string(char** buf, const char* s, int pos) {

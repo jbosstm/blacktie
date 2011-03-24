@@ -57,6 +57,7 @@ int main(int argc, char **argv) {
 		rc = btgetattribute(rcvbuf, (char*)"name", 0, name, &len);
 		if(rc == 0) {
 			userlogc((char*)"recv name value is %s", name);
+		    toReturn = -1;
 		} else {
 			userlogc((char*)"name removed");
 		}
@@ -66,6 +67,7 @@ int main(int argc, char **argv) {
 			userlogc((char*)"recv id value is %d", id);
 		} else {
 			userlogc((char*)"id removed");
+		    toReturn = -1;
 		}
 	} else {
 		userlogc((char*) "call failed with rc = %d, tperrno = %d", rc, tperrno);
