@@ -127,7 +127,7 @@ public class RunServer {
 	}
 
 	public static String getServiceNameTestTPConversation() {
-		return "TestTPConversation";
+		return "TestTPConversat";
 	}
 
 	public static String getServiceNameTestTPDiscon() {
@@ -135,7 +135,7 @@ public class RunServer {
 	}
 
 	public static String getServiceNameTestTPConversa2() {
-		return "TestTPConversation";
+		return "TestTPConversat";
 	}
 
 	public static String getServiceNameTestTPFree() {
