@@ -194,7 +194,7 @@ void TestExternManageDestination::test_stored_message_priority() {
 	userlogc((char*) "test_stored_message_priority");
 	// send messages with out of order ids - the qservice should receive them in order
 	int prefix = 70;
-	msg_opts_t mopts = {0, 0L, 0};
+	msg_opts_t mopts = {0, 10L, 0};
 
 	send_one(prefix + 8, 1, "X_OCTET", NULL);
 	send_one(prefix + 6, 3, "X_OCTET", NULL);
@@ -211,6 +211,7 @@ void TestExternManageDestination::test_stored_message_priority() {
 
 	// retrieve the messages in two goes:
 
+	bool orderOK = true;
 	for (int msgCnt = 0; msgCnt < 10; msgCnt++) {
 		char* data = (char*) tpalloc((char*) "X_OCTET", NULL, 2);
 		long len = 2;
@@ -218,15 +219,15 @@ void TestExternManageDestination::test_stored_message_priority() {
 		int toCheck = btdequeue((char*) "TestOne", &mopts, &data, &len, flags);
 		BT_ASSERT(tperrno == 0 && toCheck != -1);
 		
-		char msg[80];
 		int id = atoi(data);
 
 		userlogc((char*) "qservice iteration: %d expected: %d received: %d", msgCnt, msgId, id);
-		sprintf(msg, "Out of order messages: %d %d", msgId, id);
-		BT_ASSERT_MESSAGE(msg, msgId == id);
-
+		orderOK = orderOK & (msgId == id);
+		
 		msgId += 1;
 	}
+	BT_ASSERT(orderOK);
+
 	serverdone();
 
 	userlogc((char*) "test_stored_message_priority passed");
