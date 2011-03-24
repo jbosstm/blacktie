@@ -115,7 +115,7 @@ static void send_one(int id, int pri, const char *type, const char *subtype) {
 	len = strlen(msg) + 1;
 
 	buf = tpalloc((char *) type, (char *) subtype, len);
-	BT_ASSERT(buff != NULL);
+	BT_ASSERT(buf != NULL);
 
 	(void) strcpy(buf, msg);
 	cd = btenqueue((char*) "TestOne", &mopts, buf, len, 0);
