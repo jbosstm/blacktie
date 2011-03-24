@@ -20,19 +20,22 @@
 
 #include "TestNBFParser.h"
 #include "NBFParser.h"
+#include "btnbf.h"
+#include "xatmi.h"
 
 void TestNBFParser::test_string_buf() {
 	userlogc((char*) "test_string_buf");
-#ifndef WIN32
-	char* buf = (char*)
-		"<?xml version='1.0' ?> \
-			<employee xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\
-				xmlns=\"http://www.jboss.org/blacktie\" \
-				xsi:schemaLocation=\"http://www.jboss.org/blacktie buffers/employee.xsd\"> \
-				<name>zhfeng</name> \
-			</employee>";
+
+	char name[16];
+	char value[16];
+	int len = 16;
+	int rc;
+	char* buf = tpalloc((char*)"BT_NBF", (char*)"employee", 0);
+	BT_ASSERT(buf != NULL);
+	rc = btaddattribute(&buf, (char*)"name", (char*)"zhfeng", 6);	
+	BT_ASSERT(rc == 0);
+
 	NBFParser nbf;
 	NBFParserHandlers handler("name", 0);
 	BT_ASSERT(nbf.parse(buf, "employee", &handler));
-#endif
 }
