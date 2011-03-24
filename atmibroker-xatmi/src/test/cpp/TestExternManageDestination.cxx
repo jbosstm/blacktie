@@ -103,7 +103,7 @@ void TestExternManageDestination::test_tpcall_without_service() {
 	BT_ASSERT(tperrno == TPETIME);
 }
 
-static void send_one(int id, int pri) {
+static void send_one(int id, int pri, const char *type, const char *subtype) {
 	msg_opts_t mopts = {0, 0L, 0};
 	char msg[16];
 	char* buf;
@@ -114,7 +114,7 @@ static void send_one(int id, int pri) {
 	sprintf(msg, (char*) "%d", id);
 	len = strlen(msg) + 1;
 
-	buf = tpalloc((char*) "X_OCTET", NULL, len);
+	buf = tpalloc((char *) type, (char *) subtype, len);
 
 	(void) strcpy(buf, msg);
 	cd = btenqueue((char*) "TestOne", &mopts, buf, len, 0);
@@ -126,18 +126,33 @@ static void send_one(int id, int pri) {
 	tpfree(buf);
 }
 
-static void recv_one(msg_opts_t *mopts, long len, long flags, int expect, int expected_tperrno) {
-	char* data = (char*) tpalloc((char*) "X_OCTET", NULL, len);
+static void recv_one(msg_opts_t *mopts, long len, long flags, int expect, int expected_tperrno,
+	const char *type, const char *subtype) {
+	char* data = (char*) tpalloc((char *) "X_OCTET", (char *) NULL, len);
 	int toCheck = btdequeue((char*) "TestOne", mopts, &data, &len, 0L);
 
 	userlogc((char*) "recv_one: tperrno=%d expected_tperrno=%d toCheck=%d",
 		tperrno, expected_tperrno, toCheck);
 	BT_ASSERT(tperrno == expected_tperrno);
+
 	if (tperrno == 0) {
 		BT_ASSERT(toCheck != -1);
 		if (expect >= 0)
 			BT_ASSERT(atoi(data) == expect);
+
+		char* tptype = (char*) malloc(8);
+		char* tpsubtype = (char*) malloc(16);
+		BT_ASSERT(::tptypes(data, tptype, tpsubtype)  != -1);
+		BT_ASSERT(tptype != NULL && tpsubtype != NULL);
+		userlogc((char*) "recv_one: type=%s subtype=%s", tptype, tpsubtype);
+		if (type != NULL)
+			BT_ASSERT(strncmp(type, tptype, 8) == 0);
+		if (subtype != NULL)
+			BT_ASSERT(strncmp(subtype, tpsubtype, 16) == 0);
+		free(tptype);
+		free(tpsubtype);
 	}
+	tpfree(data);
 }
 
 void TestExternManageDestination::test_stored_messages() {
@@ -146,7 +161,7 @@ void TestExternManageDestination::test_stored_messages() {
 
 	userlogc((char*) "test_stored_messages");
 	for (i = 30; i < 40; i++)
-		send_one(i, 0);
+		send_one(i, 0, "X_OCTET", NULL);
 
 	// retrieve the messages in two goes:
 	for (i = 30; i < 40; i++) {
@@ -178,16 +193,16 @@ void TestExternManageDestination::test_stored_message_priority() {
 	int prefix = 70;
 	msg_opts_t mopts = {0, 0L, 0};
 
-	send_one(prefix + 8, 1);
-	send_one(prefix + 6, 3);
-	send_one(prefix + 4, 5);
-	send_one(prefix + 2, 7);
-	send_one(prefix + 0, 9);
-	send_one(prefix + 9, 0);
-	send_one(prefix + 7, 2);
-	send_one(prefix + 5, 4);
-	send_one(prefix + 3, 6);
-	send_one(prefix + 1, 8);
+	send_one(prefix + 8, 1, "X_OCTET", NULL);
+	send_one(prefix + 6, 3, "X_OCTET", NULL);
+	send_one(prefix + 4, 5, "X_OCTET", NULL);
+	send_one(prefix + 2, 7, "X_OCTET", NULL);
+	send_one(prefix + 0, 9, "X_OCTET", NULL);
+	send_one(prefix + 9, 0, "X_OCTET", NULL);
+	send_one(prefix + 7, 2, "X_OCTET", NULL);
+	send_one(prefix + 5, 4, "X_OCTET", NULL);
+	send_one(prefix + 3, 6, "X_OCTET", NULL);
+	send_one(prefix + 1, 8, "X_OCTET", NULL);
 
 	int msgId = prefix;
 
@@ -224,13 +239,13 @@ void TestExternManageDestination::test_btenqueue_with_txn_abort() {
 
 	// enqueue messages within a transaction but then abort it
 	for (i = 30; i < 40; i++)
-		send_one(i, 0);
+		send_one(i, 0, "X_OCTET", NULL);
 
 	BT_ASSERT(tx_rollback() == TX_OK);
 
 	// since the txn aborted the queue will be empty and btdequeue should fail with TPETIME
 	userlogc((char*) "testing that btdequeue returns TPETIME");
-	recv_one(&mopts, 2L, 0L, i, TPETIME);
+	recv_one(&mopts, 2L, 0L, i, TPETIME, "X_OCTET", NULL);
 
 	BT_ASSERT(tx_close() == TX_OK);
 
@@ -247,13 +262,13 @@ void TestExternManageDestination::test_btenqueue_with_txn_commit() {
 
 	// enqueue messages within a transaction and then commit it
 	for (i = 30; i < 40; i++)
-		send_one(i, 0);
+		send_one(i, 0, "X_OCTET", NULL);
 
 	BT_ASSERT(tx_commit() == TX_OK);
 
 	// since the txn commited btdequeue should retrieve them all
 	for (i = 30; i < 40; i++)
-		recv_one(&mopts, 2L, 0L, i, 0);
+		recv_one(&mopts, 2L, 0L, i, 0, "X_OCTET", NULL);
 
 	BT_ASSERT(tx_close() == TX_OK);
 
@@ -269,18 +284,18 @@ void TestExternManageDestination::test_btdequeue_with_txn_abort() {
 
 	// enqueue messages
 	for (i = 30; i < 40; i++)
-		send_one(i, 0);
+		send_one(i, 0, "X_OCTET", NULL);
 
 	// dequeue messages within a transaction and then abort it
 	BT_ASSERT(tx_begin() == TX_OK);
 	for (i = 30; i < 40; i++)
-		recv_one(&mopts, 2L, 0L, i, 0);
+		recv_one(&mopts, 2L, 0L, i, 0, "X_OCTET", NULL);
 
 	BT_ASSERT(tx_rollback() == TX_OK);
 
 	// since the txn was abort the queue will still contains the messages
 	for (i = 30; i < 40; i++)
-		recv_one(&mopts, 2L, 0L, i, 0);
+		recv_one(&mopts, 2L, 0L, i, 0, "X_OCTET", NULL);
 
 	BT_ASSERT(tx_close() == TX_OK);
 
@@ -296,23 +311,41 @@ void TestExternManageDestination::test_btdequeue_with_txn_commit() {
 
 	// enqueue messages
 	for (i = 30; i < 40; i++)
-		send_one(i, 0);
+		send_one(i, 0, "X_OCTET", NULL);
 
 	// and dequeue them within a transaction and then commit it
 	BT_ASSERT(tx_begin() == TX_OK);
 	for (i = 30; i < 40; i++)
-		recv_one(&mopts, 2L, 0L, i, 0);
+		recv_one(&mopts, 2L, 0L, i, 0, "X_OCTET", NULL);
 
 	BT_ASSERT(tx_commit() == TX_OK);
 
 	// test that all the messages were dequeued
 	userlogc((char*) "testing that btdequeue returns TPETIME");
 	mopts.ttl = 500L;
-	recv_one(&mopts, 2L, 0L, i, TPETIME);
+	recv_one(&mopts, 2L, 0L, i, TPETIME, "X_OCTET", NULL);
 
 	BT_ASSERT(tx_close() == TX_OK);
 
 	userlogc((char*) "test_btdequeue_with_txn_commit passed");
+}
+
+void TestExternManageDestination::test_btenqueue_with_tptypes() {
+	int id = 0;
+	msg_opts_t mopts = {0, 0L, 1};
+
+	userlogc((char*) "test_btenqueue_with_tptypes");
+
+	send_one(id, 0, "X_OCTET", NULL);
+	recv_one(&mopts, 2L, 0L, id, 0, "X_OCTET", NULL);
+
+	send_one(id, 0, "X_COMMON", "deposit");
+	recv_one(&mopts, 2L, 0L, id, 0, "X_COMMON", "deposit");
+
+	send_one(id, 0, "X_C_TYPE", "acct_info");
+	recv_one(&mopts, 2L, 0L, id, 0, "X_C_TYPE", "acct_info");
+
+	userlogc((char*) "test_btenqueue_with_txn_commit passed");
 }
 
 void test_extern_service(TPSVCINFO *svcinfo) {
