@@ -35,7 +35,12 @@ void TestNBFParser::test_string_buf() {
 	rc = btaddattribute(&buf, (char*)"name", (char*)"zhfeng", 6);	
 	BT_ASSERT(rc == 0);
 
+	// Cant do this on WIN32 as the parser isn't in src/main/export
+#ifndef WIN32
 	NBFParser nbf;
 	NBFParserHandlers handler("name", 0);
 	BT_ASSERT(nbf.parse(buf, "employee", &handler));
+#endif
+
+	::tpfree(buf);
 }
