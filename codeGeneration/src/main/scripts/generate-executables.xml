@@ -62,6 +62,7 @@
 	<property name="src.excludes" value="" />
 	<property name="lib.type" value="shared" />
 	<property name="runtime" value="dynamic" />
+    <property name="server.name" value="default"/>
 
 	<target name="init">
 		<fail unless="env.BLACKTIE_HOME" />
@@ -152,10 +153,12 @@
 
 	<target name="generate-server" depends="init">
 		<fail unless="service.names" />
+        <property file="server-services.properties"/>
 		<for list="${service.names}" param="service.name">
 			<sequential>
-				<replaceregexp file="server.c" match="//SERVICE_DEFINITIONS" replace="void @{service.name} (TPSVCINFO *);${line.separator}//SERVICE_DEFINITIONS" byline="true" />
-				<replaceregexp file="server.c" match="//SERVICE_ADVERTISEMENTS" replace="tpadvertise(&quot;@{service.name}&quot;, @{service.name});${line.separator}        //SERVICE_ADVERTISEMENTS" byline="true" />
+                <propertycopy override="true" name="serviceFunction" from="${server.name}.@{service.name}"/>
+				<replaceregexp file="server.c" match="//SERVICE_DEFINITIONS" replace="void ${serviceFunction} (TPSVCINFO *);${line.separator}//SERVICE_DEFINITIONS" byline="true" />
+				<replaceregexp file="server.c" match="//SERVICE_ADVERTISEMENTS" replace="tpadvertise(&quot;@{service.name}&quot;, ${serviceFunction});${line.separator}        //SERVICE_ADVERTISEMENTS" byline="true" />
 			</sequential>
 		</for>
 	</target>
