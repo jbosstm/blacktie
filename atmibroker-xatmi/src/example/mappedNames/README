@@ -88,8 +88,7 @@ NOTE: If you get the following error you have not started the JBoss server:
 6.2 RUN THE CLIENT
 ./client
 NOTE: If you get the following error you have not sourced setenv.sh|bat
-./client: error while loading shared libraries: libTAO_CosNaming.so.1.6.7: cannot open shared object file: No such file or directoryI
-NOTE: You may like to recompile the client to access the services named "TWO", "THREE" or "FOUR" to verify that the same service is being accessed
+./client: error while loading shared libraries: libTAO_CosNaming.so.1.6.7: cannot open shared object file: No such file or directory
 
 6.3 SHUTDOWN THE SERVER
 btadmin shutdown

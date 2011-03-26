@@ -33,36 +33,72 @@ int main(int argc, char **argv) {
 	long callflags;
 	int i;
 
-	for (i = 0; i < 10; i++) {
-		callflags = 0L;
-		sbufsize = 29;
-		sbuf = tpalloc("X_OCTET", 0, sbufsize);
-		memset(sbuf, 0, sbufsize);
-		strcpy(sbuf, "THIS IS YOUR CLIENT SPEAKING");
-		retbufsize = 15;
-		retbuf = tpalloc("X_OCTET", 0, retbufsize);
-		memset(retbuf, 0, retbufsize);
+	
+	callflags = 0L;
+	sbufsize = 29;
+	sbuf = tpalloc("X_OCTET", 0, sbufsize);
+	memset(sbuf, 0, sbufsize);
+	strcpy(sbuf, "THIS IS YOUR CLIENT SPEAKING");
+	retbufsize = 15;
+	retbuf = tpalloc("X_OCTET", 0, retbufsize);
+	memset(retbuf, 0, retbufsize);
 
-		// tptypes
-		tptypes(sbuf, type, subtype);
+	// tptypes
+	tptypes(sbuf, type, subtype);
 
-		// tpcall
-		userlogc((char*) "Calling tpcall with input: %s", sbuf);
-		tpstatus = tpcall("THREE", sbuf, sbufsize, (char **) &retbuf,
-				&retbufsize, callflags);
-		userlogc(
-				(char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
-				retbufsize, retbuf, tpstatus, tperrno);
+	// tpcall
+	userlogc((char*) "Calling tpcall with input: %s", sbuf);
+	tpstatus = tpcall("ONE", sbuf, sbufsize, (char **) &retbuf,
+		&retbufsize, callflags);
+	userlogc(
+		(char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
+		retbufsize, retbuf, tpstatus, tperrno);
 
-		if (tpstatus == -1 && tperrno == TPENOENT) {
-			tpfree(sbuf);
-			tpfree(retbuf);
-
-			return -1;
-		}
-
+	if (tpstatus == -1 && tperrno == TPENOENT) {
 		tpfree(sbuf);
 		tpfree(retbuf);
+
+		return -1;
 	}
+    tpstatus = tpcall("TWO", sbuf, sbufsize, (char **) &retbuf,
+		&retbufsize, callflags);
+	userlogc(
+		(char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
+		retbufsize, retbuf, tpstatus, tperrno);
+
+	if (tpstatus == -1 && tperrno == TPENOENT) {
+		tpfree(sbuf);
+		tpfree(retbuf);
+
+		return -1;
+	}
+    tpstatus = tpcall("THREE", sbuf, sbufsize, (char **) &retbuf,
+		&retbufsize, callflags);
+	userlogc(
+		(char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
+		retbufsize, retbuf, tpstatus, tperrno);
+
+	if (tpstatus == -1 && tperrno == TPENOENT) {
+		tpfree(sbuf);
+		tpfree(retbuf);
+
+		return -1;
+	}
+    tpstatus = tpcall("FOUR", sbuf, sbufsize, (char **) &retbuf,
+		&retbufsize, callflags);
+	userlogc(
+		(char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
+		retbufsize, retbuf, tpstatus, tperrno);
+
+	if (tpstatus == -1 && tperrno == TPENOENT) {
+		tpfree(sbuf);
+		tpfree(retbuf);
+
+		return -1;
+	}
+
+	tpfree(sbuf);
+	tpfree(retbuf);
+	
 	return 0;
 }
