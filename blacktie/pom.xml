@@ -21,7 +21,7 @@
 	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>blacktie</artifactId>
 	<packaging>pom</packaging>
-	<version>3.0.0.M2</version>
+	<version>3.0.0.M3-SNAPSHOT</version>
 	<name>Blacktie Distribution</name>
 	<url>http://www.jboss.org/blacktie</url>
 

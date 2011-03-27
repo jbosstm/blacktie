@@ -20,13 +20,13 @@
 	<parent>
 		<groupId>org.jboss.blacktie</groupId>
 		<artifactId>blacktie-common</artifactId>
-		<version>3.0.0.M2</version>
+		<version>3.0.0.M3-SNAPSHOT</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>codeGeneration</artifactId>
-	<version>3.0.0.M2</version>
+	<version>3.0.0.M3-SNAPSHOT</version>
 	<name>Blacktie Server Code Generation</name>
 	<packaging>jar</packaging>
 	<url>http://www.jboss.org/blacktie</url>

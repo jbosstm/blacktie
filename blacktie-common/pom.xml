@@ -27,7 +27,7 @@
 	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>blacktie-common</artifactId>
 	<packaging>pom</packaging>
-	<version>3.0.0.M2</version>
+	<version>3.0.0.M3-SNAPSHOT</version>
 	<name>Blacktie Defaults and Dependencies</name>
 	<url>http://www.jboss.org/blacktie</url>
 	<scm>

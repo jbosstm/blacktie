@@ -26,7 +26,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.blacktie.examples</groupId>
 	<artifactId>integration1-ejb</artifactId>
-	<version>3.0.0.M2</version>
+	<version>3.0.0.M3-SNAPSHOT</version>
 	<packaging>ejb</packaging>
 	<name>Integration 1 - Example EJB</name>
 	<developers>
