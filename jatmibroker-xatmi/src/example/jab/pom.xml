@@ -29,7 +29,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.blacktie</groupId>
 	<artifactId>example-jab</artifactId>
-	<version>3.0.0.M2-SNAPSHOT</version>
+	<version>3.0.0.M2</version>
 	<packaging>jar</packaging>
 
 	<name>Blacktie JAB Example</name>
@@ -81,7 +81,7 @@
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>jatmibroker-xatmi-client</artifactId>
-			<version>3.0.0.M2-SNAPSHOT</version>
+			<version>3.0.0.M2</version>
 		</dependency>
 
 		<!--  Test -->
