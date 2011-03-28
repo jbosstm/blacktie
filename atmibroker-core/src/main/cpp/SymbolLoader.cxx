@@ -14,32 +14,37 @@
 log4cxx::LoggerPtr symbolLoaderLogger(log4cxx::Logger::getLogger(
 		"symbolLoaderLogger"));
 
+
+#include "ace/OS.h"
+#include "ace/Lib_Find.h"
+
 void* lookup_symbol(const char *lib, const char *symbol) {
 	LOG4CXX_LOGLS(symbolLoaderLogger, log4cxx::Level::getTrace(),
 			(char *) "lookup_symbol " << symbol << (char *) " in library "
 					<< lib);
 
-	if (symbol == NULL || lib == NULL)
-		return 0;
+//	if (symbol == NULL || lib == NULL)
+//		return 0;
 
-	ACE_DLL dll;
-	int retval = dll.open(lib, ACE_DEFAULT_SHLIB_MODE, 0);
+	//void* dll = ::dlopen (NULL, RTLD_NOW);
+	void* dll = ACE_OS::dlopen(lib, ACE_DEFAULT_SHLIB_MODE);
 
-	if (retval != 0) {
+	if (dll == 0) {
 		LOG4CXX_ERROR(symbolLoaderLogger, (char*) "lookup_symbol: " << symbol
-				<< (char *) " dll.open error: " << dll.error());
+				<< (char *) " dll.open error");
 		return NULL;
 	}
 
 	void * sym = NULL;
 
 	try {
-		sym = dll.symbol(symbol);
+		//sym = ::dlsym (dll, symbol);//
+		sym = (void*) ACE_OS::dlsym(dll, symbol);
 
 		if (sym == NULL) {
 			LOG4CXX_ERROR(symbolLoaderLogger, (char*) "lookup_symbol: "
-					<< symbol << (char *) " dlsym error: " << dll.error());
-			dll.close();
+					<< symbol << (char *) " dlsym error");
+			//dll.close();
 			return NULL;
 		}
 

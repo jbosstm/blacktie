@@ -159,6 +159,7 @@
 				<inherited>true</inherited>
 				<groupId>org.jboss.blacktie.plugins</groupId>
 				<artifactId>cpp-plugin</artifactId>
+				<version>${project.version}</version>
 
 				<configuration>
 					<configuration.type>${configuration.type}</configuration.type>

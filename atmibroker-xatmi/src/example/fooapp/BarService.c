@@ -21,11 +21,15 @@
 #include "userlogc.h"
 #include "string.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 void BAR(TPSVCINFO * svcinfo) {
 	char* buffer;
 	int sendlen;
 
-	userlogc((char*) "bar called  - svc: %s data %s len: %d flags: %d", svcinfo->name, svcinfo->data, svcinfo->len, svcinfo->flags);
+	userlogc((char*) "bar called  - svc: %s data %s len: %d flags: %d",
+			svcinfo->name, svcinfo->data, svcinfo->len, svcinfo->flags);
 
 	sendlen = 15;
 	buffer = tpalloc("X_OCTET", 0, sendlen);
@@ -33,3 +37,6 @@ void BAR(TPSVCINFO * svcinfo) {
 
 	tpreturn(TPSUCCESS, 0, buffer, sendlen, 0);
 }
+#ifdef __cplusplus
+}
+#endif

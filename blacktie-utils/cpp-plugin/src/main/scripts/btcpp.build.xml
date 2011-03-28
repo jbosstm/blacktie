@@ -25,6 +25,9 @@
 <compilerarg value="-fmessage-length=0" />
 <compilerarg value="-fPIC" />
 '>
+<!ENTITY linker-args-gcc '
+<linkerarg value="-E" />
+'>
 <!ENTITY compiler-args-xlC '
 <compilerarg value="-O0" if="debug" />
 <compilerarg value="-g" if="debug" />
@@ -307,6 +310,7 @@
 			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
 
+            <linker name="${toolchain.compiler}" if="is-gcc"> &linker-args-gcc; </linker>
 			<linker name="${toolchain.compiler}" if="is-xlC"> &linker-args-xlC; <linkerarg value="-bnoentry" /> </linker>
 
 			<fileset refid="fileset.main"/>
@@ -377,6 +381,7 @@
 			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
 
+            <linker name="${toolchain.compiler}" if="is-gcc"> &linker-args-gcc; </linker>
 			<linker name="${toolchain.compiler}" if="is-xlC"> &linker-args-xlC; <linkerarg value="-bnoentry" /></linker>
 
 			<fileset dir="${src.test}" includes="**/${src.main.file}.cxx **/${src.main.file}.c" excludes="${src.excludes}" />
@@ -418,6 +423,7 @@
 			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
 
+            <linker name="${toolchain.compiler}" if="is-gcc"> &linker-args-gcc; </linker>
 			<linker name="${toolchain.compiler}" if="is-xlC"> &linker-args-xlC; </linker>
 
 			<fileset dir="${src.test}" includes="**/${src.main.file}.cxx" excludes="${src.excludes}" />
@@ -443,6 +449,7 @@
 	</target>
 
 	<target name="test-compile" depends="fileset.test.check,gen-test-runner,package,init" if="have-tests">
+		<echo message="DTOR time"/>
 		<mkdir dir="target/cpp-test-classes" />
 		<fail unless="test.output.type" />
 		<copy todir="target/cpp-test-classes" failonerror="false" overwrite="true">
@@ -471,6 +478,7 @@
 			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
 
+            <linker name="${toolchain.compiler}" if="is-gcc"> &linker-args-gcc; </linker>
 			<linker name="${toolchain.compiler}" if="is-xlC"> &linker-args-xlC; </linker>
 
 			<fileset refid="fileset.test"/>

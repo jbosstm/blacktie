@@ -34,7 +34,7 @@
 			<MACHINE-REF id="default1" />
 			<MACHINE-REF id="default2" />
 			<SERVICE_NAMES>
-				<SERVICE name='BAR' advertised="false" size="5" />
+				<SERVICE name='BAR' advertised="true" size="5" function_name="BAR"/>
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>

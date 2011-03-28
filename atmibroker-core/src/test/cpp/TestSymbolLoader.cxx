@@ -19,18 +19,22 @@
 
 #include "TestSymbolLoader.h"
 
-#include "ace/DLL.h"
-#include "ace/OS_NS_stdlib.h"
-#include "ace/OS_NS_stdio.h"
-#include "ace/OS_NS_string.h"
 #include "AtmiBrokerEnv.h"
 #include "userlogc.h"
+#include "SymbolLoader.h"
 
 void TestSymbolLoader::setUp() {
 	init_ace();
 
 	// Perform global set up
 	TestFixture::setUp();
+
+#ifdef WIN32
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION=win32");
+#else
+	ACE_OS::putenv("BLACKTIE_CONFIGURATION=linux");
+#endif
+
 }
 
 void TestSymbolLoader::tearDown() {
@@ -42,37 +46,28 @@ void TestSymbolLoader::tearDown() {
 }
 
 void TestSymbolLoader::test() {
-#ifdef WIN32
-	ACE_OS::putenv("BLACKTIE_CONFIGURATION=win32");
-#else
-	ACE_OS::putenv("BLACKTIE_CONFIGURATION=linux");
-#endif
-
 	AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
+
 	char* lib = (char *) env->getenv((char *) "test-lib");
 	char* symbol = (char *) env->getenv((char *) "test-symbol");
-	ACE_DLL dll;
-	int retval = dll.open(lib, ACE_DEFAULT_SHLIB_MODE, 0);
+	BT_ASSERT(::lookup_symbol(lib, symbol) != NULL);
+	userlogc((char*) "found symbol");
 
-	if (retval != 0) {
-		userlogc((char*) "lookup_dll- %s:%s", lib, dll.error());
-		BT_FAIL("lookup_dll");
-	}
-	void* sym = NULL;
-	try {
-		sym = dll.symbol(symbol);
+	AtmiBrokerEnv::discard_instance();
+}
 
-		if (sym == NULL) {
-			userlogc((char*) "lookup_symbol- %s:%s", symbol, dll.error());
-			dll.close();
-			BT_FAIL("lookup_symbol");
-		}
+#ifdef __cplusplus
+extern "C" {
+#endif
+void checkIfSymbolsCanBeLoadedFromMainExecutableOnAllPlatforms() {
+}
+#ifdef __cplusplus
+}
+#endif
 
-		userlogc((char*) "found symbol");
-		AtmiBrokerEnv::discard_instance();
-	} catch (std::exception& e) {
-		userlogc((char *) "symbol addr%s=%s", sym, e.what());
-		AtmiBrokerEnv::discard_instance();
-		BT_FAIL("exception");
-	}
+void TestSymbolLoader::test_executable() {
+	BT_ASSERT(::lookup_symbol(NULL,
+			"checkIfSymbolsCanBeLoadedFromMainExecutableOnAllPlatforms")
+			!= NULL);
+	userlogc((char*) "found symbol");
 }

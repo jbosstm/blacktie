@@ -25,11 +25,13 @@ class TestSymbolLoader: public CppUnit::TestFixture {
 CPPUNIT_TEST_SUITE( TestSymbolLoader)
 	;
 		CPPUNIT_TEST( test);
+		CPPUNIT_TEST( test_executable);
 	CPPUNIT_TEST_SUITE_END()
 	;
 
 public:
 	void test();
+	void test_executable();
 	virtual void setUp();
 	virtual void tearDown();
 };

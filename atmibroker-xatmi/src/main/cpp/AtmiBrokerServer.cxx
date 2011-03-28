@@ -414,7 +414,8 @@ AtmiBrokerServer::AtmiBrokerServer() {
 				SVCFUNC func = NULL;
 				bool status = false;
 
-				if (service->library_name != NULL) {
+				if (service->advertised) {
+					//				if (service->library_name != NULL) {
 					func = (SVCFUNC) ::lookup_symbol(service->library_name,
 							service->function_name);
 					if (func == NULL) {
@@ -422,18 +423,18 @@ AtmiBrokerServer::AtmiBrokerServer() {
 								<< service->function_name << " in "
 								<< service->library_name);
 					}
-				}
+					//				}
 
-				if (service->advertised && func != NULL) {
-					LOG4CXX_DEBUG(loggerAtmiBrokerServer, "begin advertise "
-							<< service->serviceName);
-					status = advertiseService((char*) service->serviceName,
-							func);
-					LOG4CXX_DEBUG(loggerAtmiBrokerServer, "end advertise "
-							<< service->serviceName);
+					if (func != NULL) {
+						LOG4CXX_DEBUG(loggerAtmiBrokerServer,
+								"begin advertise " << service->serviceName);
+						status = advertiseService((char*) service->serviceName,
+								func);
+						LOG4CXX_DEBUG(loggerAtmiBrokerServer, "end advertise "
+								<< service->serviceName);
+					}
+					updateServiceStatus(service, func, status);
 				}
-
-				updateServiceStatus(service, func, status);
 			}
 
 			serverInitialized = true;
@@ -639,9 +640,11 @@ int AtmiBrokerServer::getServiceStatus(char** toReturn, char* svc) {
 			size += svcsize;
 			str = (char*) realloc(str, size);
 
-			len += ACE_OS::sprintf(str + len,
-					"<service><name>%.128s</name><status>%d</status></service>",
-					(*i).name, isPause && (*i).status ? 2 : (*i).status);
+			len
+					+= ACE_OS::sprintf(
+							str + len,
+							"<service><name>%.128s</name><status>%d</status></service>",
+							(*i).name, isPause && (*i).status ? 2 : (*i).status);
 			if (svc != NULL)
 				break;
 		}
@@ -876,7 +879,8 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 	return toReturn;
 }
 
-Destination* AtmiBrokerServer::createDestination(char* serviceName, bool conversational) {
+Destination* AtmiBrokerServer::createDestination(char* serviceName,
+		bool conversational) {
 	Destination* destination = NULL;
 	Connection* connection = connections.getServerConnection();
 	if (connection == NULL) {
@@ -884,8 +888,8 @@ Destination* AtmiBrokerServer::createDestination(char* serviceName, bool convers
 		LOG4CXX_ERROR(loggerAtmiBrokerServer,
 				(char*) "advertiseService no server connection");
 	} else {
-		destination = connection->createDestination(serviceName,
-				conversational);
+		destination
+				= connection->createDestination(serviceName, conversational);
 	}
 
 	return destination;
