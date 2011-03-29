@@ -173,7 +173,6 @@
 			<sequential>
                 <var name="serviceFunction" value="@{service.name}"/>
                 <propertycopy override="true" silent="true" name="serviceFunction" from="${server.name}.@{service.name}"/>
-                <echo message="${serviceFunction}"/>
 				<replaceregexp file="server.c" match="//SERVICE_DEFINITIONS" replace="void ${serviceFunction} (TPSVCINFO *);${line.separator}//SERVICE_DEFINITIONS" byline="true" />
 				<replaceregexp file="server.c" match="//SERVICE_ADVERTISEMENTS" replace="tpadvertise(&quot;@{service.name}&quot;, ${serviceFunction});${line.separator}        //SERVICE_ADVERTISEMENTS" byline="true" />
 			</sequential>
