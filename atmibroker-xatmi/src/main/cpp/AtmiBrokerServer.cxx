@@ -413,9 +413,7 @@ AtmiBrokerServer::AtmiBrokerServer() {
 				ServiceInfo* service = &serverInfo.serviceVector[i];
 				SVCFUNC func = NULL;
 				bool status = false;
-
-				if (service->advertised) {
-					//				if (service->library_name != NULL) {
+				if (service->function_name != NULL) {
 					func = (SVCFUNC) ::lookup_symbol(service->library_name,
 							service->function_name);
 					if (func == NULL) {
@@ -423,7 +421,9 @@ AtmiBrokerServer::AtmiBrokerServer() {
 								<< service->function_name << " in "
 								<< service->library_name);
 					}
-					//				}
+				}
+
+				if (service->advertised) {
 
 					if (func != NULL) {
 						LOG4CXX_DEBUG(loggerAtmiBrokerServer,
@@ -433,8 +433,9 @@ AtmiBrokerServer::AtmiBrokerServer() {
 						LOG4CXX_DEBUG(loggerAtmiBrokerServer, "end advertise "
 								<< service->serviceName);
 					}
-					updateServiceStatus(service, func, status);
 				}
+				// This will overwrite the administration service as unadvertised but this seems to be a good thing
+				updateServiceStatus(service, func, status);
 			}
 
 			serverInitialized = true;
