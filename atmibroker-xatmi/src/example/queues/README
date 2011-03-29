@@ -33,10 +33,10 @@ C:\Program Files\Microsoft Visual Studio 9.0\VC\vcvarsall.bat
 2. CREATE THE CLIENT
 On Linux:
 	generate_client -Dclient.includes=queues.c
-	generate_client -Dclient.includes=txsender.c -Dclient.executable.file=txsender
+	generate_client -Dclient.includes=txsender.c -Dclient.output.file=txsender
 On Windows:
 	generate_client -Dclient.includes=queues.c -Dx.define=WIN32
-	generate_client -Dclient.includes=txsender.c -Dclient.executable.file=txsender -Dx.define=WIN32
+	generate_client -Dclient.includes=txsender.c -Dclient.output.file=txsender -Dx.define=WIN32
 
 
 3. DEPLOY THE BLACKTIE ADMIN SERVICE
@@ -96,9 +96,9 @@ If the client was started within a transaction and comitted ./client getcommit 2
 will not be available. You should verify this by running ./client get 2 and confirm that no messages are received.]
 
 8. ALTERNATIVE TWO: RUN THE PROPAGATED TRANSACTION QUEUE EXAMPLE
-generate_client -Dclient.includes=queues.c -Dclient.executable.file=client
+generate_client -Dclient.includes=queues.c -Dclient.output.file=client
 generate_server -Dserver.includes=BarService.c  -Dservice.names=BAR
-generate_client -Dclient.includes=client.c -Dclient.executable.file=clientSender
+generate_client -Dclient.includes=client.c -Dclient.output.file=clientSender
 
 You will then end up with three executables:
 client (we will use this as above to dequeue messages

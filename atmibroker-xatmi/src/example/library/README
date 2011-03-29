@@ -33,9 +33,7 @@ C:\Program Files\Microsoft Visual Studio 9.0\VC\vcvarsall.bat
 
 
 2. CREATE THE SERVER
-generate_server -Dservice.names=ONE,TWO -Dserver.output.file=hiprio  -Dserver.includes=BarService.c -Dserver.name=hiprio
-generate_server -Dservice.names=THREE,FOUR -Dserver.output.file=loprio  -Dserver.includes=BarService.c -Dserver.name=loprio
-
+generate_server
 NOTE: If you get the following error you have not installed ant-contrib into your ANT distribution:
 	BUILD FAILED
 	/home/tom/blacktie/dist/blacktie-3.0.0.M3-SNAPSHOT/bin/generate-executables.xml:160: Problem: failed to create task or type propertycopy
@@ -62,6 +60,8 @@ C:\blacktie\dist\blacktie-3.0.0.M3-SNAPSHOT\bin\generate-executables.xml:117: Th
 C:\blacktie\dist\blacktie-3.0.0.M3-SNAPSHOT\bin\generate-executables.xml:144: Could not launch cl: java.io.IOException: Cannot run program "cl" (in directory "C:
 \blacktie\dist\blacktie-3.0.0.M3-SNAPSHOT\examples\xatmi\fooapp\target\classes"): CreateProcess error=2, The system cannot find the file specified
 
+3. GENERATE THE SERVICE LIBRARY
+generate_library -Dlibrary.includes=BarService.c
 
 3. CREATE THE CLIENT
 generate_client -Dclient.includes=client.c
@@ -80,6 +80,10 @@ Make sure that the naming, messaging and transaction services are running, by ru
 
 6 RUN THE APPLICATIONS
 6.1 RUN THE SERVER
+ON LINUX:
+    export BLACKTIE_CONFIGURATION=linux
+ON WINDOWS:
+    export BLACKTIE_CONFIGURATION=win32
 btadmin startup
 NOTE: If you get the following error you have not started the JBoss server:
 2009-06-23 08:51:51,270 [0x7f627be63750] ERROR AtmiBrokerServer          - serverinit - Unexpected CORBA exception: TRANSIENT
@@ -88,8 +92,25 @@ NOTE: If you get the following error you have not started the JBoss server:
 6.2 RUN THE CLIENT
 ./client
 NOTE: If you get the following error you have not sourced setenv.sh|bat
-./client: error while loading shared libraries: libTAO_CosNaming.so.1.6.7: cannot open shared object file: No such file or directory
-
+./client: error while loading shared libraries: libTAO_CosNaming.so.1.6.7: cannot open shared object file: No such file or directoryI
 6.3 SHUTDOWN THE SERVER
 btadmin shutdown
 
+7. JAB CLIENTS
+If you would like to use a JAB Client to talk to the server, please see 
+<BLACKTIE_HOME>/examples/jab/fooapp
+
+
+8. ADMINISTRATION EXAMPLES
+If you would like to see administration in effect, please see
+<BLACKTIE_HOME>/examples/admin
+
+
+9. SECURITY EXAMPLES
+If you would like to see security in effect, please see
+<BLACKTIE_HOME>/examples/security
+
+
+10. TRANSACTION EXAMPLES
+If you would like to see transactions in effect, please see
+<BLACKTIE_HOME>/examples/xatmi/txfooapp

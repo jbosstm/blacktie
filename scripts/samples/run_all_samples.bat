@@ -65,7 +65,7 @@ rem Successful
 
 rem Running txsender queue example
 cd %BLACKTIE_HOME%\examples\xatmi\queues
-call generate_client -Dclient.includes=txsender.c -Dclient.executable.file=txsender -Dx.define=WIN32
+call generate_client -Dclient.includes=txsender.c -Dclient.output.file=txsender -Dx.define=WIN32
 IF %ERRORLEVEL% NEQ 0 exit -1
 call generate_client -Dclient.includes=queues.c -Dx.define=WIN32
 IF %ERRORLEVEL% NEQ 0 exit -1
@@ -79,11 +79,11 @@ rem Successful
 
 rem Running propagated transaction queue example
 cd %BLACKTIE_HOME%\examples\xatmi\queues
-call generate_client -Dclient.includes=queues.c -Dclient.executable.file=client
+call generate_client -Dclient.includes=queues.c -Dclient.output.file=client
 IF %ERRORLEVEL% NEQ 0 exit -1
 call generate_server -Dserver.includes=BarService.c  -Dservice.names=BAR
 IF %ERRORLEVEL% NEQ 0 exit -1
-call generate_client -Dclient.includes=client.c -Dclient.executable.file=clientSender
+call generate_client -Dclient.includes=client.c -Dclient.output.file=clientSender
 call btadmin startup
 IF %ERRORLEVEL% NEQ 0 exit -1
 (echo 1) | clientSender
@@ -209,9 +209,9 @@ set BLACKTIE_CONFIGURATION=
 
 rem RUN MAPPED SERVICE NAMES EXAMPLE 
 cd %BLACKTIE_HOME%\examples\xatmi\mappedNames
-call generate_server -Dservice.names=ONE,TWO -Dserver.executable.file=hiprio  -Dserver.includes=BarService.c -Dserver.name=hiprio
+call generate_server -Dservice.names=ONE,TWO -Dserver.output.file=hiprio  -Dserver.includes=BarService.c -Dserver.name=hiprio
 IF %ERRORLEVEL% NEQ 0 exit -1
-call generate_server -Dservice.names=THREE,FOUR -Dserver.executable.file=loprio  -Dserver.includes=BarService.c -Dserver.name=loprio
+call generate_server -Dservice.names=THREE,FOUR -Dserver.output.file=loprio  -Dserver.includes=BarService.c -Dserver.name=loprio
 IF %ERRORLEVEL% NEQ 0 exit -1
 set BLACKTIE_CONFIGURATION=win32
 call btadmin startup

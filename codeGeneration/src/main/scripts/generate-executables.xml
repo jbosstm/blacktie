@@ -131,8 +131,21 @@
 		<condition property="x.libs3" value="log4cxx"><not><isset property="x.libs3" /></not></condition>
 	</target>
 
+	<target name="library" depends="init,clean-library">
+        <property name="outtype" value="shared"/>
+		<fail unless="library.includes" />
+		
+		<property name="library.output.file" value="myxatmiservice" />
+		<property name="library.src.tobuild" value="${library.includes}" />
+		<propertycopy property="output.file" from="library.output.file" override="true" />
+		<propertycopy property="src.tobuild" from="library.src.tobuild" override="true" />
+		<antcall target="compile" />
+		<delete file="history.xml" />
+		<delete dir="target" deleteonexit="true"/>
+	</target>
+
 	<target name="server" depends="init,clean-server">
-		<fail unless="server.includes" />
+        <property name="outtype" value="executable"/>
 		<delete file="server.c" />
 		<delete file="log4cxx.properties" />
 		<unzip src="${env.BLACKTIE_HOME}/lib/java/codeGeneration-3.0.0.M3-SNAPSHOT.jar" dest=".">
@@ -143,9 +156,9 @@
 		</unzip>
 		<antcall target="generate-server" />
 
-		<property name="server.executable.file" value="server" />
+		<property name="server.output.file" value="server" />
 		<property name="server.src.tobuild" value="server.c ${server.includes}" />
-		<propertycopy property="executable.file" from="server.executable.file" override="true" />
+		<propertycopy property="output.file" from="server.output.file" override="true" />
 		<propertycopy property="src.tobuild" from="server.src.tobuild" override="true" />
 		<antcall target="compile" />
 		<delete file="history.xml" />
@@ -169,6 +182,7 @@
 
 
 	<target name="client" depends="init,clean-client">
+        <property name="outtype" value="executable"/>
 		<fail unless="client.includes" />
 		<delete file="log4cxx.properties" />
 		<unzip src="${env.BLACKTIE_HOME}/lib/java/codeGeneration-3.0.0.M3-SNAPSHOT.jar" dest=".">
@@ -176,9 +190,9 @@
 				<include name="log4cxx.properties" />
 			</patternset>
 		</unzip>
-		<property name="client.executable.file" value="client" />
+		<property name="client.output.file" value="client" />
 		<property name="client.src.tobuild" value="${client.includes}" />
-		<propertycopy property="executable.file" from="client.executable.file" override="true" />
+		<propertycopy property="output.file" from="client.output.file" override="true" />
 		<propertycopy property="src.tobuild" from="client.src.tobuild" override="true" />
 		<antcall target="compile" />
 		<delete file="history.xml" />
@@ -188,7 +202,7 @@
 	<target name="compile" depends="init">
 		<mkdir dir="target/classes" />
 		<mkdir dir="target/${configuration.type}/${lib.type}" />
-		<cc name="${toolchain.compiler}" exceptions="true" outfile="${executable.file}" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="executable" objdir="target/classes" debug="${debug}">
+		<cc name="${toolchain.compiler}" exceptions="true" outfile="${output.file}" subsystem="console" multithreaded="true" runtime="${runtime}" outtype="${outtype}" objdir="target/classes" debug="${debug}">
 			<compiler name="${toolchain.compiler}" if="is-gcc"> &compiler-args-gcc; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-xlC"> &compiler-args-xlC; </compiler>
 			<compiler name="${toolchain.compiler}" if="is-msvc"> &compiler-args-msvc; </compiler>
@@ -215,17 +229,24 @@
 		</cc>
 	</target>
 
+	<target name="clean-library" depends="init">
+		<property name="library.output.file" value="myxatmiservice" />
+		<propertycopy property="output.file" from="library.output.file" override="true" />
+		<delete file="${output.file}" />
+		<delete dir="target" />
+	</target>
+
 	<target name="clean-server" depends="init">
-		<property name="server.executable.file" value="server" />
-		<propertycopy property="executable.file" from="server.executable.file" override="true" />
-		<delete file="${executable.file}" />
+		<property name="server.output.file" value="server" />
+		<propertycopy property="output.file" from="server.output.file" override="true" />
+		<delete file="${output.file}" />
 		<delete dir="target" />
 	</target>
 
 	<target name="clean-client" depends="init">
-		<property name="client.executable.file" value="client" />
-		<propertycopy property="executable.file" from="client.executable.file" override="true" />
-		<delete file="${executable.file}" />
+		<property name="client.output.file" value="client" />
+		<propertycopy property="output.file" from="client.output.file" override="true" />
+		<delete file="${output.file}" />
 		<delete dir="target" />
 	</target>
 </project>
