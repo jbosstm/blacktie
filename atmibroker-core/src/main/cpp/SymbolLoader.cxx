@@ -19,9 +19,14 @@ log4cxx::LoggerPtr symbolLoaderLogger(log4cxx::Logger::getLogger(
 #include "ace/Lib_Find.h"
 
 void* lookup_symbol(const char *lib, const char *symbol) {
-	LOG4CXX_LOGLS(symbolLoaderLogger, log4cxx::Level::getTrace(),
-			(char *) "lookup_symbol " << symbol << (char *) " in library "
-					<< lib);
+	if (lib != NULL) {
+		LOG4CXX_LOGLS(symbolLoaderLogger, log4cxx::Level::getTrace(),
+				(char *) "lookup_symbol " << symbol << (char *) " in library "
+						<< lib);
+	} else {
+		LOG4CXX_LOGLS(symbolLoaderLogger, log4cxx::Level::getTrace(),
+				(char *) "lookup_symbol " << symbol << (char *) " in main executable");
+	}
 
 //	if (symbol == NULL || lib == NULL)
 //		return 0;
