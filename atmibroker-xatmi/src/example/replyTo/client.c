@@ -39,23 +39,29 @@ int main(int argc, char **argv) {
     if (argc < 4) {
         userlogc("Usage: %s <SERVER_NAME> <REPLY_TO> <MESSAGE>", argv[0]);
         return -1;
+    } else {
+        userlogc("Running: %s %s %s %s", argv[0], argv[1], argv[2], argv[3]);
     }
 	
     // THIS MUST BE DONE TO MAKE SURE THAT THE CLIENT CAN RECEIVE MESSAGES
     setenv("BLACKTIE_SERVER", argv[1], 1);
     setenv("BLACKTIE_SERVER_ID", "1", 1);
-    serverinit(0, NULL);
+    tpstatus = tpadvertise(argv[2], message_handler);
+    if (tpstatus == -1 && tperrno != 0) {
+        userlogc("Service failed to advertise");
+		return -1;
+	}
 
     // CREATE A MESSAGE WITH A REPLY_TO FIELD SET
 	message = (MESSAGE*) tpalloc((char*) "X_COMMON", (char*) "message", 0);
-	strcpy(message->reply_to, argv[2]);
-	strcpy(message->data, argv[3]);
+    memset(message, tptypes((char*)message, NULL, NULL), '\0');
+    memcpy (message->reply_to, argv[2], strlen(argv[2]));
+    memcpy (message->data, argv[3], strlen(argv[3]));
 
     retbufsize = 15;
     retbuf = (char *) tpalloc((char*) "X_OCTET", NULL, retbufsize);
 
-
-    userlogc("Please press return when you are ready to send a message");
+    userlogc("Please press return when you are ready to send the message: %s", message->data);
 	getchar();
 
 	tpstatus = tpacall((char*) "FOO", (char*) message, 0, 0);
@@ -69,6 +75,7 @@ int main(int argc, char **argv) {
 
     userlogc("Please press return after you have received a message");
 	getchar();
+    sleep(2);
 
 	tpfree((char*)message);
 	tpfree(retbuf);

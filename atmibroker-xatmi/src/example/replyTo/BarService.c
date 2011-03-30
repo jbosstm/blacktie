@@ -28,11 +28,12 @@ void BAR(TPSVCINFO * svcinfo) {
 
     MESSAGE* message = (MESSAGE*) svcinfo->data;
 
-	userlogc((char*) "bar called response expected by: %s data %s", message->reply_to, svcinfo->data);
+	userlogc((char*) "bar called response expected by: %s data %s", message->reply_to, message->data);
 
 	sendlen = 15;
 	buffer = tpalloc("X_OCTET", 0, sendlen);
-	strcpy(buffer, "PROCESSED DATA");
+	strcat(buffer, "PROC:");
+	strcat(buffer, message->data);
 
     tpacall(message->reply_to, buffer, sendlen, TPNOREPLY);
 }

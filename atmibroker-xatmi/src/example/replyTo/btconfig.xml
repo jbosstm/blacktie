@@ -34,12 +34,12 @@
 		</SERVER>
 		<SERVER name='clientA'>
 			<SERVICE_NAMES>
-				<SERVICE name='CLIENTRESPONSEHANDLER_1' advertised="true" size="1" function_name="message_handler"/>
+				<SERVICE name='CLIENTRESPONSEHANDLER_1' advertised="false" size="1" function_name="message_handler"/>
 			</SERVICE_NAMES>
 		</SERVER>
 		<SERVER name='clientB'>
 			<SERVICE_NAMES>
-				<SERVICE name='CLIENTRESPONSEHANDLER_2' advertised="true" size="1" function_name="message_handler"/>
+				<SERVICE name='CLIENTRESPONSEHANDLER_2' advertised="false" size="1" function_name="message_handler"/>
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>
@@ -50,7 +50,7 @@
 	<JMX url="service:jmx:rmi:///jndi/rmi://${JBOSSAS_IP_ADDR}:1090/jmxconnector" />
     <BUFFERS>
 		<BUFFER name="message">
-			<ATTRIBUTE id="reply_to" type="char[]" arrayLength="15" />
+			<ATTRIBUTE id="reply_to" type="char[]" arrayLength="128" />
 			<ATTRIBUTE id="data" type="char[]" arrayLength="15" />
 		</BUFFER>
 	</BUFFERS>
