@@ -39,7 +39,7 @@ void* lookup_symbol(const char *lib, const char *symbol) {
 
 	try {
 		//sym = ::dlsym (dll, symbol);//
-		sym = (void*) ACE_OS::dlsym(dll, symbol);
+		sym = (void*) ACE_OS::dlsym((ACE_SHLIB_HANDLE)dll, symbol);
 
 		if (sym == NULL) {
 			LOG4CXX_ERROR(symbolLoaderLogger, (char*) "lookup_symbol: "
