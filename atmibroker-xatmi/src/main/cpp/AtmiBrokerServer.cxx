@@ -408,23 +408,23 @@ AtmiBrokerServer::AtmiBrokerServer() {
 				throw std::exception();
 			}
 
-			// Advertise boottime services
 			for (unsigned int i = 0; i < serverInfo.serviceVector.size(); i++) {
 				ServiceInfo* service = &serverInfo.serviceVector[i];
 				SVCFUNC func = NULL;
 				bool status = false;
 
-				if (service->advertised) {
-				    if (service->function_name != NULL) {
-					    func = (SVCFUNC) ::lookup_symbol(service->library_name,
-					    		service->function_name);
-					    if (func == NULL) {
-					    	LOG4CXX_WARN(loggerAtmiBrokerServer, "can not find "
-					    			<< service->function_name << " in "
-					    			<< service->library_name);
-					    }
-    				}
+				if (service->function_name != NULL) {
+					func = (SVCFUNC) ::lookup_symbol(service->library_name,
+							service->function_name);
+					if (func == NULL) {
+						LOG4CXX_WARN(loggerAtmiBrokerServer, "can not find "
+								<< service->function_name << " in "
+								<< service->library_name);
+					}
+				}
 
+				// Advertise boottime services
+				if (service->advertised) {
 					if (func != NULL) {
 						LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 								"begin advertise " << service->serviceName);

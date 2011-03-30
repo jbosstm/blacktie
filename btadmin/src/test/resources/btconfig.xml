@@ -94,7 +94,7 @@
 			<MACHINE-REF id="secure13" />
 			<MACHINE-REF id="secure14" />
 			<SERVICE_NAMES>
-				<SERVICE name='BAR' size="1">
+				<SERVICE name='BAR' function_name='BAR' size="1">
 					<LIBRARY_NAME configuration="linux" value="../libtestsuite.so" />
 					<LIBRARY_NAME configuration="win32" value="../testsuite.dll" />
 				</SERVICE>

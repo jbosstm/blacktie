@@ -495,6 +495,7 @@ static void XMLCALL startElement
 					LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "set name: " << service.serviceName);
 				} else if(strcmp(atts[i], "function_name") == 0) {
 					service.function_name = strdup(atts[i+1]);
+					LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "set function_name: " << service.function_name);
 				} else if(strcmp(atts[i], "advertised") == 0) {
 					if(strcmp(atts[i+1], "true") == 0) {
 						service.advertised = true;
