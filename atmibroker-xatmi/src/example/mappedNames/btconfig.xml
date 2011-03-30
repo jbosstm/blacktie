@@ -33,15 +33,15 @@
 		<SERVER name='hiprio'>
 			<MACHINE-REF id="hiprio1" />
 			<SERVICE_NAMES>
-				<SERVICE name='ONE' advertised="false" size="5" />
-				<SERVICE name='TWO' advertised="false" size="5" />
+				<SERVICE name='ONE' size="5" />
+				<SERVICE name='TWO' size="5" />
 			</SERVICE_NAMES>
 		</SERVER>
 		<SERVER name='loprio'>
 			<MACHINE-REF id="loprio1" />
 			<SERVICE_NAMES>
-				<SERVICE name='THREE' advertised="false" size="5" />
-				<SERVICE name='FOUR' advertised="false" size="5" />
+				<SERVICE name='THREE' size="5" />
+				<SERVICE name='FOUR' size="5" />
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>

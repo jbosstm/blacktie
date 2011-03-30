@@ -27,7 +27,7 @@
 		<SERVER name='default'>
 			<SERVICE_NAMES>
 				<SERVICE name='PBF' />
-				<SERVICE name='BAR' advertised='false' size='2' />
+				<SERVICE name='BAR' size='2' />
 				<SERVICE name='TestTPFree' />
 				<SERVICE name='TestTPCall' />
 				<SERVICE name='TestTPAdvertise' size='2' />

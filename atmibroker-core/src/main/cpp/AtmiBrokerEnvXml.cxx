@@ -518,6 +518,16 @@ static void XMLCALL startElement
 					LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "storing size " << service.poolSize);
 				}
 			}
+
+
+			if(service.advertised && service.function_name == NULL) {
+				LOG4CXX_WARN(loggerAtmiBrokerEnvXml, (char*) "Can not mark a service as advertised if it does not define a function_name" << service.serviceName);
+				// disable further parsing
+				abortParser();
+
+				return;
+			}
+
 			LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "setting transportlib");
 #ifdef WIN32
 			service.transportLib = strdup("atmibroker-hybrid.dll");

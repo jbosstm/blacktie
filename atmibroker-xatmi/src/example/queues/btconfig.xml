@@ -29,7 +29,7 @@
 		<SERVER name='default'>
 			<MACHINE-REF id="default1" />
 			<SERVICE_NAMES>
-				<SERVICE name='BAR' advertised="false" size="5" />
+				<SERVICE name='BAR' size="5" />
 			</SERVICE_NAMES>
 		</SERVER>
 		<SERVER name='myserv'>
