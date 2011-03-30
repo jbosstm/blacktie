@@ -80,6 +80,13 @@
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>jboss-maven-plugin</artifactId>
                         <version>1.5.0</version>
+                        <configuration>
+                            <hostName>${jbossas.ip.addr}</hostName>
+                            <port>8080</port>
+                            <jbossHome>${JBOSS_HOME}</jbossHome>
+                            <serverName>all-with-hornetq</serverName>
+                            <unpack>false</unpack>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>harddeploy-config</id>
@@ -88,11 +95,6 @@
                                     <goal>hard-deploy</goal>
                                 </goals>
                                 <configuration>
-                                    <hostName>${jbossas.ip.addr}</hostName>
-                                    <port>8080</port>
-                                    <jbossHome>${JBOSS_HOME}</jbossHome>
-                                    <serverName>all-with-hornetq</serverName>
-                                    <unpack>false</unpack>
                                     <deploySubDir>../conf</deploySubDir>
                                     <fileNames>
                                         <fileName>${project.build.directory}/config/btconfig.xml</fileName>
@@ -106,11 +108,6 @@
                                     <goal>redeploy</goal>
                                 </goals>
                                 <configuration>
-                                    <hostName>${jbossas.ip.addr}</hostName>
-                                    <port>8080</port>
-                                    <jbossHome>${JBOSS_HOME}</jbossHome>
-                                    <serverName>all-with-hornetq</serverName>
-                                    <unpack>false</unpack>
                                     <fileNames>
                                         <fileName>${project.build.directory}/${project.build.finalName}.${project.packaging}</fileName>
                                     </fileNames>
