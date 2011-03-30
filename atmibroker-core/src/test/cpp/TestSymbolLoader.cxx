@@ -72,7 +72,7 @@ EXPORT_SYMBOL void checkIfSymbolsCanBeLoadedFromMainExecutableOnAllPlatforms() {
 
 void TestSymbolLoader::test_executable() {
 #ifdef WIN32
-	BT_ASSERT(::lookup_symbol("core.exe",
+	BT_ASSERT(::lookup_symbol("testsuite.exe",
 			"checkIfSymbolsCanBeLoadedFromMainExecutableOnAllPlatforms")
 			!= NULL);
 #else
