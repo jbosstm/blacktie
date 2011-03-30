@@ -55,19 +55,30 @@ void TestSymbolLoader::test() {
 
 	AtmiBrokerEnv::discard_instance();
 }
+#ifdef WIN32
+#define EXPORT_SYMBOL __declspec(dllexport)
+#else
+#define EXPORT_SYMBOL
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-void checkIfSymbolsCanBeLoadedFromMainExecutableOnAllPlatforms() {
+EXPORT_SYMBOL void checkIfSymbolsCanBeLoadedFromMainExecutableOnAllPlatforms() {
 }
 #ifdef __cplusplus
 }
 #endif
 
 void TestSymbolLoader::test_executable() {
+#ifdef WIN32
+	BT_ASSERT(::lookup_symbol("core.exe",
+			"checkIfSymbolsCanBeLoadedFromMainExecutableOnAllPlatforms")
+			!= NULL);
+#else
 	BT_ASSERT(::lookup_symbol(NULL,
 			"checkIfSymbolsCanBeLoadedFromMainExecutableOnAllPlatforms")
 			!= NULL);
+#endif
 	userlogc((char*) "found symbol");
 }
