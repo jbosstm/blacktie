@@ -193,8 +193,12 @@ void AtmiBrokerEnv::destroy() {
 					!= services->end(); i++) {
 				free((*i).serviceName);
 				free((*i).transportLib);
-				free((*i).function_name);
-				free((*i).library_name);
+                if ((*i).function_name != NULL) {
+    				free((*i).function_name);
+                }
+        		if ((*i).library_name != NULL) {
+				    free((*i).library_name);
+        		}
 			}
 			services->clear();
 

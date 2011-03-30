@@ -413,17 +413,17 @@ AtmiBrokerServer::AtmiBrokerServer() {
 				ServiceInfo* service = &serverInfo.serviceVector[i];
 				SVCFUNC func = NULL;
 				bool status = false;
-				if (service->function_name != NULL) {
-					func = (SVCFUNC) ::lookup_symbol(service->library_name,
-							service->function_name);
-					if (func == NULL) {
-						LOG4CXX_WARN(loggerAtmiBrokerServer, "can not find "
-								<< service->function_name << " in "
-								<< service->library_name);
-					}
-				}
 
 				if (service->advertised) {
+				    if (service->function_name != NULL) {
+					    func = (SVCFUNC) ::lookup_symbol(service->library_name,
+					    		service->function_name);
+					    if (func == NULL) {
+					    	LOG4CXX_WARN(loggerAtmiBrokerServer, "can not find "
+					    			<< service->function_name << " in "
+					    			<< service->library_name);
+					    }
+    				}
 
 					if (func != NULL) {
 						LOG4CXX_DEBUG(loggerAtmiBrokerServer,

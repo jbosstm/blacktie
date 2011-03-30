@@ -453,11 +453,7 @@ public class XMLEnvHandler extends DefaultHandler {
 				}
 			}
 
-			// If a function was not defined above
-			String func_key = "blacktie." + serviceName + ".function_name";
-			if (prop.get(func_key) == null) {
-				prop.put(func_key, serviceName);
-			}
+			// If conversational was not defined above
 			String ad_key = "blacktie." + serviceName + ".conversational";
 			if (prop.get(ad_key) == null) {
 				prop.put(ad_key, false);

@@ -525,10 +525,6 @@ static void XMLCALL startElement
 			service.transportLib = strdup("libatmibroker-hybrid.so");
 #endif
 			LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "set transportlib: " << service.transportLib);
-
-			if(service.function_name == NULL) {
-				service.function_name = copy_value(service.serviceName);
-			}
 		}
 	} else if (strcmp(name, "LIBRARY_NAME") == 0) {
 		if(atts != 0 && atts[0] && strcmp(atts[0], "configuration") == 0) {
