@@ -23,7 +23,7 @@
 		<SERVER name='default'>
 			<SERVICE_NAMES>
 				<SERVICE name='PBF' />
-				<SERVICE name='BAR' advertised="true" size="2">
+				<SERVICE name='BAR' advertised="true" function_name='BAR' size="2">
 					<LIBRARY_NAME configuration="linux" value="../libBAR.so" />
 					<LIBRARY_NAME configuration="win32" value="../BAR.dll" />
 				</SERVICE>
