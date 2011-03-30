@@ -3,11 +3,11 @@ set -m
 
 echo "Example: Running Mapped Service Names"
 cd $BLACKTIE_HOME/examples/xatmi/mappedNames
-generate_server -Dservice.names=ONE,TWO -Dserver.executable.file=hiprio  -Dserver.includes=BarService.c -Dserver.name=hiprio
+generate_server -Dservice.names=ONE,TWO -Dserver.output.file=hiprio  -Dserver.includes=BarService.c -Dserver.name=hiprio
 if [ "$?" != "0" ]; then
 	exit -1
 fi
-generate_server -Dservice.names=THREE,FOUR -Dserver.executable.file=loprio  -Dserver.includes=BarService.c -Dserver.name=loprio
+generate_server -Dservice.names=THREE,FOUR -Dserver.output.file=loprio  -Dserver.includes=BarService.c -Dserver.name=loprio
 if [ "$?" != "0" ]; then
 	exit -1
 fi

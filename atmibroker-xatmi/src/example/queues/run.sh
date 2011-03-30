@@ -27,7 +27,7 @@ unset BLACKTIE_SERVER_ID
 # RUN THE TXSENDER EXAMPLE
 echo "Example: Running transactional queue example"
 cd $BLACKTIE_HOME/examples/xatmi/queues
-generate_client -Dclient.includes=txsender.c -Dclient.executable.file=txsender
+generate_client -Dclient.includes=txsender.c -Dclient.output.file=txsender
 if [ "$?" != "0" ]; then
 	exit -1
 fi
@@ -52,7 +52,7 @@ unset BLACKTIE_SERVER_ID
 # RUN THE PROPAGATED TRANSACTION EXAMPLE
 echo "Example: Running propagated transaction queue example"
 cd $BLACKTIE_HOME/examples/xatmi/queues
-generate_client -Dclient.includes=queues.c -Dclient.executable.file=client
+generate_client -Dclient.includes=queues.c -Dclient.output.file=client
 if [ "$?" != "0" ]; then
 	exit -1
 fi
@@ -60,7 +60,7 @@ generate_server -Dserver.includes=BarService.c  -Dservice.names=BAR
 if [ "$?" != "0" ]; then
 	exit -1
 fi
-generate_client -Dclient.includes=client.c -Dclient.executable.file=clientSender
+generate_client -Dclient.includes=client.c -Dclient.output.file=clientSender
 if [ "$?" != "0" ]; then
 	exit -1
 fi
