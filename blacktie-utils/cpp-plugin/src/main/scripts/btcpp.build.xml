@@ -449,7 +449,6 @@
 	</target>
 
 	<target name="test-compile" depends="fileset.test.check,gen-test-runner,package,init" if="have-tests">
-		<echo message="DTOR time"/>
 		<mkdir dir="target/cpp-test-classes" />
 		<fail unless="test.output.type" />
 		<copy todir="target/cpp-test-classes" failonerror="false" overwrite="true">
