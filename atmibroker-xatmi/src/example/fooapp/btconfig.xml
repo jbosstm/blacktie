@@ -34,7 +34,9 @@
 			<MACHINE-REF id="default1" />
 			<MACHINE-REF id="default2" />
 			<SERVICE_NAMES>
-				<SERVICE name='BAR' advertised="true" size="5" function_name="BAR"/>
+				<SERVICE name='BAR' advertised="true" size="5" function_name="BAR">
+                    <LIBRARY_NAME configuration="win32" value="server.exe"/>
+                </SERVICE>
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>

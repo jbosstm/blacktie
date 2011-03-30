@@ -29,17 +29,19 @@
 		<SERVER name='server'>
 			<MACHINE-REF id="server1" />
 			<SERVICE_NAMES>
-				<SERVICE name='FOO' advertised="true" function_name="BAR" />
+				<SERVICE name='FOO' advertised="true" function_name="BAR">
+                    <LIBRARY_NAME configuration="win32" value="server.exe"/>
+                </SERVICE>
 			</SERVICE_NAMES>
 		</SERVER>
 		<SERVER name='clientA'>
 			<SERVICE_NAMES>
-				<SERVICE name='CLIENTRESPONSEHANDLER_1' size="1" function_name="message_handler"/>
+				<SERVICE name='CLIENTRESPONSEHANDLER_1' size="1"/>
 			</SERVICE_NAMES>
 		</SERVER>
 		<SERVER name='clientB'>
 			<SERVICE_NAMES>
-				<SERVICE name='CLIENTRESPONSEHANDLER_2' size="1" function_name="message_handler"/>
+				<SERVICE name='CLIENTRESPONSEHANDLER_2' size="1"/>
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>
