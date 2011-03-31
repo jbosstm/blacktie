@@ -21,10 +21,16 @@
 #include "userlogc.h"
 #include "string.h"
 
+#ifdef WIN32
+#define EXPORT_SYMBOL __declspec(dllexport)
+#else
+#define EXPORT_SYMBOL
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-void BAR(TPSVCINFO * svcinfo) {
+EXPORT_SYMBOL void BAR(TPSVCINFO * svcinfo) {
 	char* buffer;
 	int sendlen;
 

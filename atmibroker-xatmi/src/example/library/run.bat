@@ -7,7 +7,7 @@ IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem GENERATE A LIBRARY WITH THE BAR SERVICE IN IT
 cd %BLACKTIE_HOME%\examples\xatmi\library
-call generate_library -Dserver.includes=BarService.c
+call generate_library -Dlibrary.includes=BarService.c
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem START THE SERVER

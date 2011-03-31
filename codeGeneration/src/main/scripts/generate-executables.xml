@@ -227,6 +227,15 @@
 			<libset libs="stdc++ pthread rt" if="is-gcc" />
 			<libset libs="apr-1 aprutil-1 pthread" if="is-xlC" />
 		</cc>
+		<available file="${output.file}.dll.manifest" property="manifest.towrap" />
+		<antcall target="_compile-msvc" />
+	</target>
+	<target name="_compile-msvc" if="manifest.towrap">
+		<exec dir="." executable="mt">
+			<arg value="-outputresource:${output.file}.dll;#2" />
+			<arg value="-manifest" />
+			<arg value="${output.file}.dll.manifest" />
+		</exec>
 	</target>
 
 	<target name="clean-library" depends="init">
