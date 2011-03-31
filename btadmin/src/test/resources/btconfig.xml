@@ -76,6 +76,14 @@
 			pathToExecutable="../cs"
 			workingDirectory="."
 			serverId="2" />
+		<MACHINE id="secure15" hostname="clance"
+			pathToExecutable="../cs"
+			workingDirectory="."
+			serverId="1" />
+		<MACHINE id="secure16" hostname="clance"
+			pathToExecutable="../cs"
+			workingDirectory="."
+			serverId="2" />
 	</MACHINES>
 	<SERVERS>
 		<SERVER name="default">
@@ -93,6 +101,8 @@
 			<MACHINE-REF id="secure12" />
 			<MACHINE-REF id="secure13" />
 			<MACHINE-REF id="secure14" />
+			<MACHINE-REF id="secure15" />
+			<MACHINE-REF id="secure16" />
 			<SERVICE_NAMES>
 				<SERVICE name='BAR' function_name='BAR' size="1">
 					<LIBRARY_NAME configuration="linux" value="../libtestsuite.so" />
