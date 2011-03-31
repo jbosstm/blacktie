@@ -1,6 +1,7 @@
 # ALLOW JOBS TO BE BACKGROUNDED
 set -m
 
+# SET THE DIRECTORY FOR EASY CD'ING
 EXAMPLE_HOME=$BLACKTIE_HOME/examples/xatmi/replyTo
 
 echo "Example: Running example to show reply to"
@@ -8,7 +9,7 @@ echo "Example: Running example to show reply to"
 cd $EXAMPLE_HOME
 generate_server -Dserver.includes=BarService.c
 if [ "$?" != "0" ]; then
-	exit -1
+    exit -1
 fi
 
 # RUN THE SERVER - MUST PROVIDE BLACKTIE_CONFIGURATION
