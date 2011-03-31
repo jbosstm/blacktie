@@ -4,7 +4,7 @@ set -m
 EXAMPLE_HOME=$BLACKTIE_HOME/examples/xatmi/replyTo
 
 echo "Example: Running example to show reply to"
-# GENERATE AN EMPTY SERVER
+# GENERATE A SERVER
 cd $EXAMPLE_HOME
 generate_server -Dserver.includes=BarService.c
 if [ "$?" != "0" ]; then
