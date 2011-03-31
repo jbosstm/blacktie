@@ -400,9 +400,19 @@ public class AdministrationProxy {
 			try {
 				if (id == 0) {
 					List<Integer> ids = listRunningInstanceIds(serverName);
+                    ConnectionException toRethrow = null;
 					for (int i = 0; i < ids.size(); i++) {
-						callAdminService(serverName, ids.get(i), command);
+                        try {
+    						callAdminService(serverName, ids.get(i), command);
+			            } catch (ConnectionException e) {
+            				log.error("call server " + serverName + " id " + id
+			        			+ " failed with " + e.getTperrno(), e);
+                            toRethrow = e;
+            			}
 					}
+                    if (toRethrow != null) {
+                        throw toRethrow;
+                    }
 				} else {
 					callAdminService(serverName, id, command);
 				}
