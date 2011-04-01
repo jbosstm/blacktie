@@ -28,7 +28,7 @@ echo    ^</target^> >> build.xml
 echo    ^<target name="replaceJBoss"^> >> build.xml
 echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/conf/jbossts-properties.xml" match="CONFIGURATION_FILE" replace="NAME_SERVICE"  /^> >> build.xml
 echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/conf/jacorb.properties" match="localhost" replace="${JBOSSAS_IP_ADDR}"  /^> >> build.xml
-echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/conf/jboss-log4j.xml" match="&lt;root&gt;" replace="&lt;category name=&quot;org.jboss.blacktie&quot;&gt;&lt;priority value=&quot;ALL&quot; /&gt;&lt;/category&gt;&lt;root&gt;"  /^> >> build.xml
+echo        ^<replaceregexp byline="true" file="jboss-5.1.0.GA/server/all-with-hornetq/conf/jboss-log4j.xml" match="&lt;root&gt;" replace="&lt;category name=&quot;org.jboss.blacktie&quot;&gt;&lt;priority value=&quot;ALL&quot; /&gt;&lt;/category&gt;&lt;category name=&quot;org.codehaus.stomp&quot;&gt;&lt;priority value=&quot;ALL&quot; /&gt;&lt;/category&gt;&lt;root&gt;"  /^> >> build.xml
 echo    ^</target^> >> build.xml
 
 echo	^<target name="configureHornetQ"^> >> build.xml
