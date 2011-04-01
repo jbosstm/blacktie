@@ -45,6 +45,7 @@ public class StompSubscription implements MessageListener {
     private final String subscriptionId;
     private Destination destination;
     private MessageConsumer consumer;
+    private String destinationName;
 
     public StompSubscription(StompSession session, String subscriptionId, StompFrame frame) throws JMSException, ProtocolException {
         this.subscriptionId = subscriptionId;
@@ -52,8 +53,8 @@ public class StompSubscription implements MessageListener {
 
         Map headers = frame.getHeaders();
         String selector = (String) headers.remove(Stomp.Headers.Subscribe.SELECTOR);
-        String destinationName = (String) headers.get(Stomp.Headers.Subscribe.DESTINATION);
-        destination = session.convertDestination(destinationName);
+        destinationName = (String) headers.get(Stomp.Headers.Subscribe.DESTINATION);
+        destination = session.convertDestination(destinationName, true);
         Session jmsSession = session.getSession();
         boolean noLocal = false;
 
@@ -82,14 +83,19 @@ public class StompSubscription implements MessageListener {
     }
 
     public void onMessage(Message message) {
+    	log.debug("onMessage:" + destinationName);
         try {
             int ackMode = session.getSession().getAcknowledgeMode();
-            if (ackMode == Session.CLIENT_ACKNOWLEDGE) {
-                synchronized (this) {
-                    session.getProtocolConverter().addMessageToAck(message);
-                }
-            }
-            session.sendToStomp(message, this);
+			if (ackMode == Session.CLIENT_ACKNOWLEDGE) {
+				synchronized (consumer) {
+					boolean closing = session.getProtocolConverter()
+							.addMessageToAck(message, consumer);
+					if (!closing) {
+						session.sendToStomp(message, this);
+						consumer.wait();
+					}
+				}
+			}
         }
         catch (Exception e) {
             log.error("Failed to process message due to: " + e + ". Message: " + message, e);

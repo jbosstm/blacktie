@@ -30,6 +30,7 @@ public interface Stomp {
     public static interface Commands {
         String CONNECT = "CONNECT";
         String SEND = "SEND";
+        String RECEIVE = "RECEIVE";
         String DISCONNECT = "DISCONNECT";
         String SUBSCRIBE = "SUB";
         String UNSUBSCRIBE = "UNSUB";

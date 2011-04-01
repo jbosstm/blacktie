@@ -17,21 +17,23 @@
  */
 package org.codehaus.stomp.jms;
 
-import org.codehaus.stomp.StompHandler;
-import org.codehaus.stomp.StompHandlerFactory;
-import org.codehaus.stomp.tcp.TcpTransportServer;
-import org.codehaus.stomp.util.ServiceSupport;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import javax.jms.ConnectionFactory;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.net.ServerSocketFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Hashtable;
+
+import javax.jms.ConnectionFactory;
+import javax.jms.XAConnectionFactory;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.net.ServerSocketFactory;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.codehaus.stomp.StompHandler;
+import org.codehaus.stomp.StompHandlerFactory;
+import org.codehaus.stomp.tcp.TcpTransportServer;
+import org.codehaus.stomp.util.ServiceSupport;
 
 /**
  * This class represents a service which accepts STOMP socket connections and binds them to JMS operations
@@ -41,7 +43,7 @@ import java.util.Hashtable;
 public class StompConnect extends ServiceSupport implements StompHandlerFactory {
     private static final transient Log log = LogFactory.getLog(StompConnect.class);
 
-    private ConnectionFactory connectionFactory;
+    private XAConnectionFactory connectionFactory;
     private String uri = "tcp://localhost:61613";
     private URI location;
     private ServerSocketFactory serverSocketFactory;
@@ -53,12 +55,12 @@ public class StompConnect extends ServiceSupport implements StompHandlerFactory 
     public StompConnect() {
     }
 
-    public StompConnect(ConnectionFactory connectionFactory) {
+    public StompConnect(XAConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
     }
 
     public StompHandler createStompHandler(StompHandler outputHandler) throws NamingException {
-        ConnectionFactory factory = getConnectionFactory();
+        XAConnectionFactory factory = getConnectionFactory();
         if (factory == null) {
             throw new IllegalArgumentException("No ConnectionFactory is configured!");
         }
@@ -74,7 +76,7 @@ public class StompConnect extends ServiceSupport implements StompHandlerFactory 
 
     // Properties
     //-------------------------------------------------------------------------
-    public ConnectionFactory getConnectionFactory() throws NamingException {
+    public XAConnectionFactory getConnectionFactory() throws NamingException {
         if (connectionFactory == null) {
             connectionFactory = createConnectionFactory();
         }
@@ -84,7 +86,7 @@ public class StompConnect extends ServiceSupport implements StompHandlerFactory 
     /**
      * Sets the JMS connection factory to use to communicate with
      */
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+    public void setConnectionFactory(XAConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
     }
 
@@ -181,7 +183,7 @@ public class StompConnect extends ServiceSupport implements StompHandlerFactory 
     // Implementation methods
     //-------------------------------------------------------------------------
     protected void doStart() throws Exception {
-        ConnectionFactory factory = getConnectionFactory();
+        XAConnectionFactory factory = getConnectionFactory();
         if (factory == null) {
             throw new IllegalArgumentException("No ConnectionFactory has been configured!");
         }
@@ -201,7 +203,7 @@ public class StompConnect extends ServiceSupport implements StompHandlerFactory 
      * Factory method to lazily create a {@link ConnectionFactory} if one is not explicitly configured.
      * By default lets try looking in JNDI
      */
-    protected ConnectionFactory createConnectionFactory() throws NamingException {
+    protected XAConnectionFactory createConnectionFactory() throws NamingException {
         String name = getJndiName();
         log.info("Looking up name: " + name + " in JNDI InitialContext for JMS ConnectionFactory");
 
@@ -209,8 +211,8 @@ public class StompConnect extends ServiceSupport implements StompHandlerFactory 
         if (value == null) {
             throw new IllegalArgumentException("No ConnectionFactory object is available in JNDI at name: " + name);
         }
-        if (value instanceof ConnectionFactory) {
-            return (ConnectionFactory) value;
+        if (value instanceof XAConnectionFactory) {
+            return (XAConnectionFactory) value;
         }
         else {
             throw new IllegalArgumentException("The object in JNDI at name: " + name

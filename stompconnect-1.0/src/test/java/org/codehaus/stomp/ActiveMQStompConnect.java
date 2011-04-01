@@ -33,7 +33,7 @@ public class ActiveMQStompConnect {
             if (args.length > 0) {
                 url = args[0];
             }
-            connect.setConnectionFactory(new ActiveMQConnectionFactory(url));
+//            connect.setConnectionFactory(new ActiveMQConnectionFactory(url));
             connect.start();
             connect.join();
         }

@@ -99,7 +99,9 @@ public class TcpTransport extends ServiceSupport implements Runnable, StompHandl
     /**
      * A one way asynchronous send
      */
-    public void onStompFrame(StompFrame command) throws Exception {
+    // PATCHED BY TOM - THIS CAN BE INVOKED BY THE RECEIPT FOR A SUBSCRIPTION AT THE SAME
+    // TIME AS THE FIRST MESSAGE IS RECEIVED
+    public synchronized void onStompFrame(StompFrame command) throws Exception {
         checkStarted();
         marshaller.marshal(command, dataOut);
         dataOut.flush();
@@ -391,10 +393,10 @@ public class TcpTransport extends ServiceSupport implements Runnable, StompHandl
     }
 
     protected void initializeStreams() throws Exception {
-        TcpBufferedInputStream buffIn = new TcpBufferedInputStream(socket.getInputStream(), ioBufferSize);
-        this.dataIn = new DataInputStream(buffIn);
-        TcpBufferedOutputStream buffOut = new TcpBufferedOutputStream(socket.getOutputStream(), ioBufferSize);
-        this.dataOut = new DataOutputStream(buffOut);
+//        TcpBufferedInputStream buffIn = new TcpBufferedInputStream(socket.getInputStream(), ioBufferSize);
+        this.dataIn = new DataInputStream(socket.getInputStream());//new DataInputStream(buffIn);
+  //      TcpBufferedOutputStream buffOut = new TcpBufferedOutputStream(socket.getOutputStream(), ioBufferSize);
+        this.dataOut = new DataOutputStream(socket.getOutputStream());//new DataOutputStream(buffOut);
     }
 
     protected void closeStreams() throws IOException {

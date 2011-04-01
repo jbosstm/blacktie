@@ -695,7 +695,7 @@ public class StompTest extends TestCase {
     //-------------------------------------------------------------------------
     protected void setUp() throws Exception {
         connectionFactory = createConnectionFactory();
-        stompConnect = new StompConnect(connectionFactory);
+//        stompConnect = new StompConnect(connectionFactory);
         stompConnect.setUri("tcp://localhost:" + port);
         stompConnect.start();
 

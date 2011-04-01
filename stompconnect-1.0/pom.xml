@@ -3,8 +3,14 @@
   <groupId>org.codehaus.stomp</groupId>
   <artifactId>stompconnect</artifactId>
   <packaging>jar</packaging>
-  <version>1.0</version>
-
+  <version>1.0.6-BT-SNAPSHOT</version>
+  
+  <developers>
+	<developer>
+		<id>one</id>
+      		<name>one</name>
+	</developer>
+  </developers>	
   <name>StompConnect</name>
   <description>
     StompConnect allows any Message Orientated Middleware (MOM)
@@ -33,6 +39,50 @@
   </scm>
 
   <dependencies>
+  		<!-- Transactions START -->
+		<dependency>
+			<groupId>org.jboss.javaee</groupId>
+			<artifactId>jboss-javaee</artifactId>
+			<scope>provided</scope>
+		<version>5.0.1.GA</version>
+		</dependency>
+		<dependency>
+			<groupId>jboss.jbossts</groupId>
+			<artifactId>jbossjts</artifactId>
+			<scope>provided</scope>
+		<version>4.6.1.GA</version>
+		</dependency>
+		<dependency>
+			<groupId>jboss.jbossts</groupId>
+			<artifactId>jbossjts-jacorb</artifactId>
+			<scope>provided</scope>
+		<version>4.6.1.GA</version>
+		</dependency>
+		<!-- Transactions END -->
+  		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.15</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun.jmx</groupId>
+					<artifactId>jmxri</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jdmk</groupId>
+					<artifactId>jmxtools</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.jms</groupId>
+					<artifactId>jms</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.mail</groupId>
+					<artifactId>mail</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+  
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
@@ -44,7 +94,11 @@
       <version>1.0</version>
     </dependency>
 
-
+    <dependency>
+      <groupId>org.jboss.blacktie</groupId>
+      <artifactId>jatmibroker-xatmi</artifactId>
+      <version>3.0.0.M3-SNAPSHOT</version>
+    </dependency>
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-core</artifactId>
@@ -88,19 +142,15 @@
 
   <distributionManagement>
     <repository>
-      <id>codehaus.org</id>
-      <name>Stomp Central Repository</name>
-      <url>dav:https://dav.codehaus.org/repository/stomp/</url>
+      <id>jboss-releases-repository</id>
+      <name>JBoss Releases Repository</name>
+      <url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
     </repository>
     <snapshotRepository>
-      <id>codehaus.org</id>
-      <name>Stomp Central Development Repository</name>
-      <url>dav:https://dav.codehaus.org/snapshots.repository/stomp/</url>
+      <id>jboss-snapshots-repository</id>
+      <name>JBoss Snapshots Repository</name>
+      <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
     </snapshotRepository>
-    <site>
-      <id>codehaus.org</id>
-      <url>dav:https://dav.codehaus.org/stomp/maven/</url>
-    </site>
   </distributionManagement>
 
   <reporting>
@@ -122,6 +172,19 @@
     </extensions>
 
     <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <skipTests>true</skipTests>
+            </configuration>
+          </plugin>
+
+ <plugin>
+ <!-- Entry needed to create, install and deploy sources jars -->
+ <groupId>org.apache.maven.plugins</groupId>
+ <artifactId>maven-source-plugin</artifactId>
+ </plugin>
       <plugin>
         <artifactId>maven-release-plugin</artifactId>
         <configuration>

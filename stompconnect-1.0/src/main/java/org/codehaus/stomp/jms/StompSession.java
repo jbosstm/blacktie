@@ -17,6 +17,8 @@
  */
 package org.codehaus.stomp.jms;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.stomp.ProtocolException;
 import org.codehaus.stomp.Stomp;
 import org.codehaus.stomp.StompFrame;
@@ -27,6 +29,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Represents a logical session (a parallel unit of work) within a Stomp connection
@@ -37,7 +41,9 @@ public class StompSession {
     private final ProtocolConverter protocolConverter;
     private final Session session;
     private MessageProducer producer;
-    private Map<String, Destination> temporaryDestinations = new HashMap<String, Destination>();
+    private static Map<String, Destination> temporaryDestinations = new HashMap<String, Destination>();
+    private List<String> created = new ArrayList<String>();
+    private static final Log log = LogFactory.getLog(StompSession.class);
 
     public StompSession(ProtocolConverter protocolConverter, Session session) {
         this.protocolConverter = protocolConverter;
@@ -61,14 +67,20 @@ public class StompSession {
 
     public void close() throws JMSException {
         session.close();
+	synchronized (temporaryDestinations) {
+		Iterator<String> i = created.iterator();
+		while (i.hasNext()) {
+			temporaryDestinations.remove(i.next());
+		}
+	}
     }
 
     public void sendToJms(StompFrame command) throws JMSException, ProtocolException {
         Map headers = command.getHeaders();
         String destinationName = (String) headers.remove(Stomp.Headers.Send.DESTINATION);
         Message message = convertFrame(command);
+        Destination destination = convertDestination(destinationName, false);
 
-        Destination destination = convertDestination(destinationName);
 
         int deliveryMode = getDeliveryMode(headers);
         int priority = getPriority(headers);
@@ -78,12 +90,13 @@ public class StompSession {
     }
 
     public void sendToStomp(Message message, StompSubscription subscription) throws Exception {
+    	log.debug("Sending to stomp");
         StompFrame frame = convertMessage(message);
         frame.getHeaders().put(Stomp.Headers.Message.SUBSCRIPTION, subscription.getSubscriptionId());
         protocolConverter.sendToStomp(frame);
     }
 
-    public Destination convertDestination(String name) throws ProtocolException, JMSException {
+    public Destination convertDestination(String name, boolean forceNew) throws ProtocolException, JMSException {
         if (name == null) {
             throw new ProtocolException("No destination is specified!");
         }
@@ -97,11 +110,22 @@ public class StompSession {
         }
         else if (name.startsWith("/temp-queue/")) {
             String tempName = name.substring("/temp-queue/".length(), name.length());
-            return temporaryDestination(tempName, session.createTemporaryQueue());
+	    Destination answer = temporaryDestinations.get(tempName);
+
+            if (forceNew || answer == null) {
+	            return temporaryDestination(tempName, session.createTemporaryQueue());
+	    } else {
+		    return answer;
+	    }
         }
         else if (name.startsWith("/temp-topic/")) {
             String tempName = name.substring("/temp-topic/".length(), name.length());
-            return temporaryDestination(tempName, session.createTemporaryTopic());
+            Destination answer = temporaryDestinations.get(tempName);
+            if (forceNew || answer == null) {
+	            return temporaryDestination(tempName, session.createTemporaryTopic());
+	    } else {
+		    return answer;
+	    }
         }
         else {
             throw new ProtocolException("Illegal destination name: [" + name + "] -- StompConnect destinations " +
@@ -118,6 +142,7 @@ public class StompSession {
             Topic topic = (Topic) d;
             if (d instanceof TemporaryTopic) {
                 buffer.append("/temp-topic/");
+                temporaryDestination(topic.getTopicName(), d);
             }
             else {
                 buffer.append("/topic/");
@@ -128,6 +153,7 @@ public class StompSession {
             Queue queue = (Queue) d;
             if (d instanceof TemporaryQueue) {
                 buffer.append("/temp-queue/");
+                temporaryDestination(queue.getQueueName(), d);
             }
             else {
                 buffer.append("/queue/");
@@ -139,13 +165,12 @@ public class StompSession {
 
 
     protected synchronized Destination temporaryDestination(String tempName, Destination temporaryDestination) {
-        Destination answer = temporaryDestinations.get(tempName);
-        if (answer == null) {
-            temporaryDestinations.put(tempName, temporaryDestination);
-            answer = temporaryDestination;
-        }
-        return answer;
-    }
+		synchronized (temporaryDestinations) {
+			temporaryDestinations.put(tempName, temporaryDestination);
+			created.add(tempName);
+		}
+		return temporaryDestination;
+	}
 
     protected int getDeliveryMode(Map headers) throws JMSException {
         Object o = headers.remove(Stomp.Headers.Send.PERSISTENT);
@@ -223,7 +248,7 @@ public class StompSession {
 
         o = headers.remove(Stomp.Headers.Send.REPLY_TO);
         if (o != null) {
-            msg.setJMSReplyTo(convertDestination((String) o));
+            msg.setJMSReplyTo(convertDestination((String) o, false));
         }
 
         // now the general headers
