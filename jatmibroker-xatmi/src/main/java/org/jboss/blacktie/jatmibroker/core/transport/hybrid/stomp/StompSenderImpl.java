@@ -107,9 +107,11 @@ public class StompSenderImpl implements Sender {
 
 		if (ttl > 0) {
 			headers.put("expires", String.valueOf(ttl));
+            log.debug("EXPIRES: " + headers.get("expires")); 
 		}
 		synchronized (StompSenderImpl.class) {
 			headers.put("receipt", "send-J-" + counter);
+            log.debug("RECEIPT: " + headers.get("receipt")); 
 			counter++;
 		}
 		headers.put("destination", destinationName);
