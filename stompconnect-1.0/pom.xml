@@ -95,11 +95,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.jboss.blacktie</groupId>
-      <artifactId>jatmibroker-xatmi</artifactId>
-      <version>3.0.0.M3-SNAPSHOT</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-core</artifactId>
       <version>4.1.0-incubator</version>

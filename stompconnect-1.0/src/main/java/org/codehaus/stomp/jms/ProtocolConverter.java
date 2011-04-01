@@ -48,7 +48,27 @@ import org.codehaus.stomp.StompFrame;
 import org.codehaus.stomp.StompFrameError;
 import org.codehaus.stomp.StompHandler;
 import org.codehaus.stomp.util.IntrospectionSupport;
-import org.jboss.blacktie.jatmibroker.core.transport.JtsTransactionImple;
+
+
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.transaction.InvalidTransactionException;
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.omg.CosTransactions.Control;
+import org.omg.CosTransactions.Unavailable;
+
+import com.arjuna.ats.internal.jta.transaction.jts.AtomicTransaction;
+import com.arjuna.ats.internal.jta.transaction.jts.TransactionImple;
+import com.arjuna.ats.internal.jts.ControlWrapper;
+import com.arjuna.ats.internal.jts.ORBManager;
+
 
 /**
  * A protocol switch between JMS and Stomp
@@ -69,9 +89,12 @@ public class ProtocolConverter implements StompHandler {
     private final Map<String, MSC> messages = new ConcurrentHashMap<String, MSC>();
 	private boolean closing;
 
-    public ProtocolConverter(XAConnectionFactory connectionFactory, StompHandler outputHandler) {
+	private static TransactionManager tm;
+
+    public ProtocolConverter(XAConnectionFactory connectionFactory, StompHandler outputHandler) throws NamingException{
         this.connectionFactory = connectionFactory;
         this.outputHandler = outputHandler;
+		tm = (TransactionManager) new InitialContext().lookup("java:/TransactionManager");
     }
 
     public XAConnectionFactory getConnectionFactory() {
@@ -81,6 +104,55 @@ public class ProtocolConverter implements StompHandler {
     public StompHandler getOutputHandler() {
         return outputHandler;
     }
+
+    private static class JtsTransactionImple extends TransactionImple {
+
+	/**
+	 * Construct a transaction based on an OTS control
+	 * 
+	 * @param wrapper
+	 *            the wrapped OTS control
+	 */
+	public JtsTransactionImple(ControlWrapper wrapper) {
+		super(new AtomicTransaction(wrapper));
+        putTransaction(this);
+	}
+    }
+
+	/**
+	 * Convert an IOR representing an OTS transaction into a JTA transaction
+	 * 
+	 * @param orb
+	 * 
+	 * @param ior
+	 *            the CORBA reference for the OTS transaction
+	 * @return a JTA transaction that wraps the OTS transaction
+	 */
+	private static Transaction controlToTx(String ior) {
+		log.debug("controlToTx: ior: " + ior);
+
+		ControlWrapper cw = createControlWrapper(ior);
+		TransactionImple tx = (TransactionImple) TransactionImple
+				.getTransactions().get(cw.get_uid());
+
+		if (tx == null) {
+			log.debug("controlToTx: creating a new tx - wrapper: " + cw);
+			tx = new JtsTransactionImple(cw);
+		}
+
+		return tx;
+	}
+
+	private static ControlWrapper createControlWrapper(String ior) {
+		org.omg.CORBA.Object obj = ORBManager.getORB().orb()
+				.string_to_object(ior);
+
+		Control control = org.omg.CosTransactions.ControlHelper.narrow(obj);
+		if (control == null)
+			log.warn("createProxy: ior not a control");
+
+		return new ControlWrapper(control);
+	}
 
     public synchronized void close() throws JMSException {
         try {
@@ -289,7 +361,8 @@ public class ProtocolConverter implements StompHandler {
 
 		if (xid != null) {
 			log.trace("Transaction was propagated: " + xid);
-			JtsTransactionImple.resume(xid);
+            Transaction tx = controlToTx(xid);
+			tm.resume(tx);
 			log.trace("Resumed transaction");
 
 			javax.transaction.TransactionManager txMgr = (TransactionManager) new InitialContext()
@@ -307,7 +380,7 @@ public class ProtocolConverter implements StompHandler {
 			transaction.delistResource(xaRes, XAResource.TMSUCCESS);
 			
 			log.trace("Delisted resource");
-			JtsTransactionImple.suspend();
+			tm.suspend();
 			log.trace("Suspended transaction");
 		} else {
 			log.trace("WAS NULL XID");
@@ -348,7 +421,8 @@ public class ProtocolConverter implements StompHandler {
 				.lookup("java:/TransactionManager");
 
 			// resume the transaction
-			JtsTransactionImple.resume(ior);
+            Transaction tx = controlToTx(ior);
+			tm.resume(tx);
 
 			// create an XA consumer
 			XASession xaSession = (XASession) session.getSession();
@@ -360,7 +434,7 @@ public class ProtocolConverter implements StompHandler {
 			transaction.enlistResource(xaRes);
 			msg = (ttl > 0 ? consumer.receive(ttl) : consumer.receive());
 			transaction.delistResource(xaRes, XAResource.TMSUSPEND);
-			JtsTransactionImple.suspend();
+			tm.suspend();
 		} else {
 			javax.jms.Session ss = session.getSession();
 			consumer = ss.createConsumer(destination);

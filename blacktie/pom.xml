@@ -201,6 +201,7 @@
 		<module>../blacktie-common</module>
 		<module>../blacktie-xsd</module>
 		<module>../atmibroker-idl</module>
+		<module>../stompconnect-1.0</module>
 		<module>../stompconnectservice</module>
 		<module>../stompconnectservice/ear</module>
 		<module>../jatmibroker-xatmi</module>
