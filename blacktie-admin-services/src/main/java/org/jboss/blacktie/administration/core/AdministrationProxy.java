@@ -407,7 +407,11 @@ public class AdministrationProxy {
 			            } catch (ConnectionException e) {
             				log.error("call server " + serverName + " id " + id
 			        			+ " failed with " + e.getTperrno(), e);
-                            toRethrow = e;
+                            if (e.getTperrno() == org.jboss.blacktie.jatmibroker.xatmi.Connection.TPETIME) {
+    						    callAdminService(serverName, ids.get(i), command);
+                            } else {
+                                toRethrow = e;
+                            }
             			}
 					}
                     if (toRethrow != null) {
