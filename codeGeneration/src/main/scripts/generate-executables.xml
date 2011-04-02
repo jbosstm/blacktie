@@ -212,7 +212,11 @@
 
 			<fileset dir="${src.main}" includes="${src.tobuild}" excludes="${src.excludes}" />
 
-			<defineset define="${x.define}" if="x.define" />
+			<defineset>
+				<define name="WIN32" if="is-msvc"/>
+				<define name="SunOS" if="isSunOS"/>
+                <define name="${x.define}" if="x.define"/>
+			</defineset>
 
 			&includepath-main-dependencies;
 			<includepath path="${x.inc.dir}"/>
