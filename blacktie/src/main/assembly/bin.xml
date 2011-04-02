@@ -164,7 +164,6 @@
 			</directory>
 			<outputDirectory>examples/admin/
 			</outputDirectory>
-			<useDefaultExcludes>true</useDefaultExcludes>
 			<excludes>
 				<exclude>target/**</exclude>
 			</excludes>
@@ -174,7 +173,6 @@
 			</directory>
 			<outputDirectory>examples/integration1
 			</outputDirectory>
-			<useDefaultExcludes>true</useDefaultExcludes>
 			<excludes>
 				<exclude>**/target/**</exclude>
 			</excludes>
