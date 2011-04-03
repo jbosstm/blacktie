@@ -11,16 +11,19 @@ call generate_library -Dlibrary.includes=BarService.c
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem START THE SERVER
+cd %BLACKTIE_HOME%\examples\xatmi\library
 set BLACKTIE_CONFIGURATION=win32
 call btadmin startup
 set BLACKTIE_CONFIGURATION=
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem RUN THE C CLIENT
+cd %BLACKTIE_HOME%\examples\xatmi\library
 call generate_client -Dclient.includes=client.c
 client
 IF %ERRORLEVEL% NEQ 0 exit -1
 
-cd %BLACKTIE_HOME%\examples\xatmi\fooapp
+rem SHUTDOWN THE SERVER
+cd %BLACKTIE_HOME%\examples\xatmi\library
 call btadmin shutdown
 IF %ERRORLEVEL% NEQ 0 exit -1
