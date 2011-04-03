@@ -16,7 +16,7 @@ rem RUN THE C CLIENTB
 (echo 0& echo 0) | client clientB CLIENTRESPONSEHANDLER_2 hello2
 IF %ERRORLEVEL% NEQ 0 exit -1
 
-cd %BLACKTIE_HOME%\examples\xatmi\fooapp
+cd %BLACKTIE_HOME%\examples\xatmi\replyTo
 set BLACKTIE_SERVER=server
 call btadmin shutdown
 set BLACKTIE_SERVER=
