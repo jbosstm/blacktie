@@ -30,4 +30,5 @@
 				<exclude>dist/**</exclude>
 			</excludes>
 		</fileSet>
+    </fileSets>
 </assembly>
