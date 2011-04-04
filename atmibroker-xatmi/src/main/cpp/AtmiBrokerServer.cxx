@@ -66,6 +66,9 @@ char configDir[256];
 char server[30];
 int serverid = -1;
 
+int passedArgc = -1;
+char** passedArgv = NULL;
+
 int server_sigint_handler_callback(int sig_type) {
 	LOG4CXX_INFO(
 			loggerAtmiBrokerServer,
@@ -123,6 +126,8 @@ int serverinit(int argc, char** argv) {
 	int toReturn = 0;
 
 	if (ptrServer == NULL) {
+		passedArgc = argc;
+		passedArgv = argv;
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 				(char*) "serverinit getting config");
 		// Check the configuration
@@ -324,6 +329,8 @@ AtmiBrokerServer::AtmiBrokerServer() {
 		unsigned int i;
 
 		serverInfo.serverName = NULL;
+		serverInfo.function_name = NULL;
+		serverInfo.library_name = NULL;
 
 		for (i = 0; i < servers.size(); i++) {
 			if (strcmp(servers[i]->serverName, serverName) == 0) {
@@ -343,6 +350,8 @@ AtmiBrokerServer::AtmiBrokerServer() {
 				service.poolSize = 1;
 				service.advertised = false;
 				serverInfo.serviceVector.push_back(service);
+				serverInfo.function_name = servers[i]->function_name;
+				serverInfo.library_name = servers[i]->library_name;
 
 				for (unsigned int j = 0; j < servers[i]->serviceVector.size(); j++) {
 					ServiceInfo service;
@@ -406,6 +415,24 @@ AtmiBrokerServer::AtmiBrokerServer() {
 				LOG4CXX_WARN(loggerAtmiBrokerServer,
 						(char*) "Maybe the same server id running");
 				throw std::exception();
+			}
+
+			if (serverInfo.function_name != NULL) {
+				SVRSTART svrStartFunc = (SVRSTART) ::lookup_symbol(
+						serverInfo.library_name, serverInfo.function_name);
+				if (svrStartFunc == NULL) {
+					LOG4CXX_FATAL(loggerAtmiBrokerServer, "can not find "
+							<< serverInfo.function_name << " in "
+							<< serverInfo.library_name);
+					return;
+				} else {
+					int response = svrStartFunc(passedArgc, passedArgv);
+					if (response < 0) {
+						LOG4CXX_FATAL(loggerAtmiBrokerServer, "server init function returned less than zero: "
+								<< response);
+						return;
+					}
+				}
 			}
 
 			for (unsigned int i = 0; i < serverInfo.serviceVector.size(); i++) {

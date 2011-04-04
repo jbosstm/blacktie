@@ -23,6 +23,9 @@
 #include "atmiBrokerXatmiMacro.h"
 #include "xatmi.h"
 
+
+typedef int (*SVRSTART)(int argc, char** argv);
+
 typedef void (*SVCFUNC)(TPSVCINFO *);
 
 struct BLACKTIE_XATMI_DLL _service_status {

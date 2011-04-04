@@ -229,15 +229,28 @@ static void XMLCALL startElement
 		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processing SERVER");
 
 		ServerInfo* server = new ServerInfo;
-		if(atts != 0) {
-			if(atts[0] && strcmp(atts[0], "name") == 0) {
-				server->serverName = copy_value(atts[1]);
-			} else {
-				server->serverName = copy_value("default");
+		server->serverName = copy_value("default");
+		server->function_name = NULL;
+		server->library_name = NULL;
+		for(int i = 0; atts[i]; i += 2) {
+			if(atts[i] && strcmp(atts[i], "name") == 0) {
+				server->serverName = copy_value(atts[i+1]);
+			} else if(atts[i] && strcmp(atts[i], "init_function") == 0) {
+				server->function_name = copy_value(atts[i+1]);
 			}
 		}
 
 		servers.push_back(server);
+	} else if (strcmp(name, "INIT_FUNCTION_LIBRARY_NAME") == 0) {
+		if(atts != 0 && atts[0] && strcmp(atts[0], "configuration") == 0) {
+			LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "comparing" << atts[1] << " with " << configuration);
+			if (strcmp(atts[1], configuration) == 0) {
+				servers.back()->library_name = copy_value(atts[3]);
+				LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processed INIT_FUNCTION_LIBRARY_NAME: " << servers.back()->library_name);
+			} else {
+				LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "CONFIGURATION NOT APPLICABLE FOR LIBRARY_NAME: " << atts[1]);
+			}
+		}
 	} else if (strcmp(name, "XA_RESOURCE") == 0) {
 		if(strcmp(atts[0], "configuration") == 0 && applicable_config(configuration, atts[1])) {
 

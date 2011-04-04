@@ -87,6 +87,8 @@ typedef BLACKTIE_CORE_DLL struct _server_info {
 	short maxConsumers;
 	short maxReplicas;
 	short logLevel;
+	char* function_name;
+	char* library_name;
 
 	std::vector<ServiceInfo> serviceVector;
 }ServerInfo;
