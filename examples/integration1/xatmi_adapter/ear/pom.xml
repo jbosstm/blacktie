@@ -22,7 +22,7 @@
 	<groupId>org.jboss.blacktie.examples</groupId>
 	<artifactId>integration1-xatmi_adapter-ear</artifactId>
 	<version>3.0.0.M3-SNAPSHOT</version>
-	<name>Blacktie Administration Services</name>
+	<name>XATMI Adapter EAR</name>
 	<packaging>ear</packaging>
 	<developers>
 		<developer>
