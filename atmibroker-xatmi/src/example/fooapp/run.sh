@@ -3,8 +3,9 @@ set -m
 
 echo "Example: Running fooapp"
 
-# RUN THE FOOAPP SERVER
 cd $BLACKTIE_HOME/examples/xatmi/fooapp
+
+# RUN THE FOOAPP SERVER
 generate_server -Dservice.names=BAR -Dserver.includes=BarService.c
 if [ "$?" != "0" ]; then
 	exit -1
@@ -17,7 +18,6 @@ fi
 unset BLACKTIE_CONFIGURATION
 
 # RUN THE C CLIENT
-cd $BLACKTIE_HOME/examples/xatmi/fooapp
 generate_client -Dclient.includes=client.c
 ./client
 if [ "$?" != "0" ]; then

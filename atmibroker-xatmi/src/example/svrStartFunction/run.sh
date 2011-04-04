@@ -3,6 +3,8 @@ set -m
 
 echo "Example: Running svrStartFunction"
 
+cd $BLACKTIE_HOME/examples/xatmi/svrStartFunction
+
 # RUN THE FOOAPP SERVER
 generate_server -Dservice.names=BAR -Dserver.includes=BarService.c,SvrInit.c
 if [ "$?" != "0" ]; then
