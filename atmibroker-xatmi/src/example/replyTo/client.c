@@ -92,5 +92,7 @@ int main(int argc, char **argv) {
 
 	tpfree((char*)message);
 	tpfree(retbuf);
+    serverdone();
+
 	return 0;
 }
