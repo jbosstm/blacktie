@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package org.rhq.plugins.blacktie;
+package org.jboss.blacktie.rhq.plugins.blacktie;
 
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -28,6 +28,7 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -44,6 +45,7 @@ import org.rhq.core.domain.content.transfer.RemovePackagesResponse;
 import org.rhq.core.domain.content.transfer.ResourcePackageDetails;
 import org.rhq.core.domain.measurement.AvailabilityType;
 import org.rhq.core.domain.measurement.MeasurementDataNumeric;
+import org.rhq.core.domain.measurement.MeasurementDataTrait;
 import org.rhq.core.domain.measurement.MeasurementReport;
 import org.rhq.core.domain.measurement.MeasurementScheduleRequest;
 import org.rhq.core.pluginapi.configuration.ConfigurationFacet;
@@ -78,10 +80,10 @@ import org.w3c.dom.Element;
  * 
  * @author John Mazzitelli
  */
-public class DomainComponent implements ResourceComponent, MeasurementFacet,
+public class ServiceComponent implements ResourceComponent, MeasurementFacet,
 		OperationFacet, ConfigurationFacet, ContentFacet, DeleteResourceFacet,
 		CreateChildResourceFacet {
-	private final Log log = LogFactory.getLog(DomainComponent.class);
+	private final Log log = LogFactory.getLog(ServiceComponent.class);
 
 	/**
 	 * Represents the resource configuration of the custom product being
@@ -89,17 +91,17 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 	 */
 	private Configuration resourceConfiguration;
 
-	/**
-	 * All AMPS plugins are stateful - this context contains information that
-	 * your resource component can use when performing its processing.
-	 */
 	private ResourceContext resourceContext;
 
 	private MBeanServerConnection beanServerConnection;
 
-	private String domainName = null;
+	private String serverName = null;
+	private String serviceName = null;
 
 	private ObjectName blacktieAdmin = null;
+
+	private String[] times = null;
+	private Properties prop = new Properties();
 
 	/**
 	 * This is called when your component has been started with the given
@@ -109,18 +111,23 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 	 * @see ResourceComponent#start(ResourceContext)
 	 */
 	public void start(ResourceContext context) {
-		resourceContext = context;
-
 		try {
-			Properties prop = new Properties();
 			XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
+
 			beanServerConnection = org.jboss.mx.util.MBeanServerLocator
 					.locateJBoss();
-			domainName = context.getResourceKey();
+
+			serviceName = context.getResourceKey();
+
 			blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
+			// get name from MBean
+			serverName = (String) beanServerConnection.invoke(blacktieAdmin,
+					"getServerName", new Object[] { serviceName },
+					new String[] { "java.lang.String" });
 		} catch (Exception e) {
-			log.error("start domain " + domainName + " plugin error with " + e);
+			log.error("start server " + serviceName + " plugin error with " + e);
 		}
+		log.debug("start resource: " + serviceName);
 	}
 
 	/**
@@ -142,19 +149,32 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 	 * @see ResourceComponent#getAvailability()
 	 */
 	public AvailabilityType getAvailability() {
-		// TODO: here you normally make some type of connection attempt to the
-		// managed resource
-		// to determine if it is really up and running.
-		AvailabilityType status = AvailabilityType.UP;
+		AvailabilityType status = AvailabilityType.DOWN;
+
 		try {
-			Object obj = beanServerConnection.invoke(blacktieAdmin,
-					"getDomainStatus", null, null);
-			if ((Boolean) obj) {
-				status = AvailabilityType.DOWN;
+			log.trace(serviceName);
+			boolean conversational = false;
+			if (!serviceName.startsWith(".")) {
+				conversational = (Boolean) prop.get("blacktie." + serviceName
+						+ ".conversational");
+			}
+			String prefix = null;
+			if (conversational) {
+				prefix = "BTC_";
+			} else {
+				prefix = "BTR_";
+			}
+
+			ObjectName objName = new ObjectName(
+					"org.hornetq:module=JMS,name=\"" + prefix + serviceName
+							+ "\",type=Queue");
+			Integer count = (Integer) beanServerConnection.getAttribute(
+					objName, "ConsumerCount");
+			if (count.intValue() > 0) {
+				status = AvailabilityType.UP;
 			}
 		} catch (Exception e) {
-			log.warn("get domain status failed with " + e);
-			status = AvailabilityType.DOWN;
+
 		}
 		return status;
 	}
@@ -172,19 +192,74 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 		for (MeasurementScheduleRequest request : requests) {
 			String name = request.getName();
 
-			// TODO: based on the request information, you must collect the
-			// requested measurement(s)
-			// you can use the name of the measurement to determine what you
-			// actually need to collect
 			try {
-				Number value = new Integer(1); // dummy measurement value - this
-				// should come from the managed
-				// resource
-				report.addData(new MeasurementDataNumeric(request, value
-						.doubleValue()));
+				if (name.equals("messageCounter")) {
+					Number value = (Long) beanServerConnection.invoke(
+							blacktieAdmin, "getServiceCounter", new Object[] {
+									serverName, serviceName }, new String[] {
+									"java.lang.String", "java.lang.String" });
+
+					report.addData(new MeasurementDataNumeric(request, value
+							.doubleValue()));
+				} else if (name.equals("errorCounter")) {
+					Number value = (Long) beanServerConnection.invoke(
+							blacktieAdmin, "getErrorCounter", new Object[] {
+									serverName, serviceName }, new String[] {
+									"java.lang.String", "java.lang.String" });
+
+					report.addData(new MeasurementDataNumeric(request, value
+							.doubleValue()));
+				} else if (name.equals("minResponseTime")) {
+					String responseTime = (String) beanServerConnection.invoke(
+							blacktieAdmin, "getResponseTime", new Object[] {
+									serverName, serviceName }, new String[] {
+									"java.lang.String", "java.lang.String" });
+					times = responseTime.split(",");
+					Number value = Long.parseLong(times[0]);
+					report.addData(new MeasurementDataNumeric(request, value
+							.doubleValue()));
+				} else if (name.equals("avgResponseTime")) {
+					if (times != null) {
+						Number value = Long.parseLong(times[1]);
+						report.addData(new MeasurementDataNumeric(request,
+								value.doubleValue()));
+					}
+				} else if (name.equals("maxResponseTime")) {
+					if (times != null) {
+						Number value = Long.parseLong(times[2]);
+						report.addData(new MeasurementDataNumeric(request,
+								value.doubleValue()));
+					}
+				} else if (name.equals("queueDepth")) {
+					Number value = (Integer) beanServerConnection.invoke(
+							blacktieAdmin, "getQueueDepth", new Object[] {
+									serverName, serviceName }, new String[] {
+									"java.lang.String", "java.lang.String" });
+					report.addData(new MeasurementDataNumeric(request, value
+							.doubleValue()));
+				} else if (name.equals("serviceLoad")) {
+					Number value = (Long) beanServerConnection.invoke(
+							blacktieAdmin, "getServiceCounter", new Object[] {
+									serverName, serviceName }, new String[] {
+									"java.lang.String", "java.lang.String" });
+					String load = prop.getProperty("blacktie." + serviceName
+							+ ".load", "50");
+					report.addData(new MeasurementDataNumeric(request, value
+							.doubleValue() * Double.parseDouble(load)));
+				} else if (name.equals("conversational")) {
+					Boolean value = (Boolean) prop.get("blacktie."
+							+ serviceName + ".conversational");
+					if (value) {
+						report.addData(new MeasurementDataTrait(request, "true"));
+					} else {
+						report.addData(new MeasurementDataTrait(request,
+								"false"));
+					}
+				}
 			} catch (Exception e) {
 				log.error("Failed to obtain measurement [" + name
 						+ "]. Cause: " + e);
+				e.printStackTrace();
 			}
 		}
 
@@ -199,34 +274,100 @@ public class DomainComponent implements ResourceComponent, MeasurementFacet,
 	 * 
 	 * @see OperationFacet#invokeOperation(String, Configuration)
 	 */
-	public OperationResult invokeOperation(String name,
-			Configuration configuration) {
+	public OperationResult invokeOperation(String name, Configuration params) {
 		OperationResult result = new OperationResult();
+		int id = Integer.parseInt(params.getSimpleValue("id", "0"));
 
-		try {
-			Object obj = beanServerConnection.invoke(blacktieAdmin, name, null,
-					null);
-
-			if (name.equals("getServersStatus")) {
-				Element status = (Element) obj;
-				// Set up the output transformer
-				TransformerFactory transfac = TransformerFactory.newInstance();
-				Transformer trans = transfac.newTransformer();
-				trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-				trans.setOutputProperty(OutputKeys.INDENT, "yes");
-
-				StringWriter sw = new StringWriter();
-				StreamResult sr = new StreamResult(sw);
-				DOMSource source = new DOMSource(status);
-				trans.transform(source, sr);
-				result.setSimpleResult(sw.toString());
+		if (name.equals("advertise") || name.equals("unadvertise")) {
+			if (serviceName == null) {
+				result.setErrorMessage("service name can not empty");
 			} else {
-				result.setSimpleResult(obj.toString());
+				try {
+					Boolean r = (Boolean) beanServerConnection.invoke(
+							blacktieAdmin, name, new Object[] { serverName,
+									serviceName }, new String[] {
+									"java.lang.String", "java.lang.String" });
+					if (r) {
+						result.setSimpleResult(name + " OK");
+					} else {
+						result.setErrorMessage(name + " FAIL");
+					}
+				} catch (Exception e) {
+					log.error("call " + name + " service " + serviceName
+							+ " failed with " + e);
+					result.setErrorMessage("call " + name + " service "
+							+ serviceName + " failed with " + e);
+				}
 			}
-		} catch (Exception e) {
-			result.setErrorMessage(e.toString());
-		}
+		} else if (name.equals("listServiceStatus")) {
+			try {
+				Element status;
+				if (id == 0) {
+					status = (Element) beanServerConnection.invoke(
+							blacktieAdmin, "listServiceStatus", new Object[] {
+									serverName, serviceName }, new String[] {
+									"java.lang.String", "java.lang.String" });
+				} else {
+					status = (Element) beanServerConnection.invoke(
+							blacktieAdmin, "listServiceStatusById",
+							new Object[] { serverName, id, serviceName },
+							new String[] { "java.lang.String", "int",
+									"java.lang.String" });
+				}
 
+				if (status != null) {
+					try {
+						// Set up the output transformer
+						TransformerFactory transfac = TransformerFactory
+								.newInstance();
+						Transformer trans = transfac.newTransformer();
+						trans.setOutputProperty(
+								OutputKeys.OMIT_XML_DECLARATION, "yes");
+						trans.setOutputProperty(OutputKeys.INDENT, "yes");
+
+						StringWriter sw = new StringWriter();
+						StreamResult sr = new StreamResult(sw);
+						DOMSource source = new DOMSource(status);
+						trans.transform(source, sr);
+						result.setSimpleResult(sw.toString());
+					} catch (TransformerException e) {
+						log.error(e);
+					}
+				} else {
+					result.setErrorMessage("no service status");
+				}
+			} catch (Exception e) {
+				log.error("call status failed with " + e);
+				result.setErrorMessage("call status failed with " + e);
+			}
+		} else if (name.equals("getServiceCounter")) {
+			try {
+				if (serviceName == null) {
+					result.setErrorMessage("service name can not empty");
+				} else {
+					Long counter;
+					if (id == 0) {
+						counter = (Long) beanServerConnection.invoke(
+								blacktieAdmin, "getServiceCounter",
+								new Object[] { serverName, serviceName },
+								new String[] { "java.lang.String",
+										"java.lang.String" });
+					} else {
+						counter = (Long) beanServerConnection.invoke(
+								blacktieAdmin, "getServiceCounterById",
+								new Object[] { serverName, id, serviceName },
+								new String[] { "java.lang.String", "int",
+										"java.lang.String" });
+					}
+					result.setSimpleResult(counter.toString());
+				}
+			} catch (Exception e) {
+				log.error("call get counter of " + serviceName
+						+ " failed with " + e);
+				result.setErrorMessage("call get counter of " + serviceName
+						+ " failed with " + e);
+			}
+		}
 		return result;
 	}
 

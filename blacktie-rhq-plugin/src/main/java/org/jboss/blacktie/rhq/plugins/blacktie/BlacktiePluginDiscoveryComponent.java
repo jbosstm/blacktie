@@ -16,15 +16,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package org.rhq.plugins.blacktie;
+package org.jboss.blacktie.rhq.plugins.blacktie;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,10 +38,10 @@ import org.rhq.core.pluginapi.inventory.ResourceDiscoveryContext;
  * 
  * @author John Mazzitelli
  */
-public class ServiceDiscoveryComponent implements ResourceDiscoveryComponent {
-	private final Log log = LogFactory.getLog(ServiceDiscoveryComponent.class);
-	private MBeanServerConnection beanServerConnection;
-	private ObjectName blacktieAdmin = null;
+public class BlacktiePluginDiscoveryComponent implements
+		ResourceDiscoveryComponent {
+	private final Log log = LogFactory
+			.getLog(BlacktiePluginDiscoveryComponent.class);
 
 	/**
 	 * Review the javadoc for both {@link ResourceDiscoveryComponent} and
@@ -55,8 +52,7 @@ public class ServiceDiscoveryComponent implements ResourceDiscoveryComponent {
 	 */
 	public Set<DiscoveredResourceDetails> discoverResources(
 			ResourceDiscoveryContext context) {
-		String serverName = context.getParentResourceContext().getResourceKey();
-		log.debug("Discovering service of " + serverName);
+		log.info("Discovering my custom plugin's resources");
 
 		// if your plugin descriptor defined one or more <process-scan>s, then
 		// see if the plugin container
@@ -94,31 +90,21 @@ public class ServiceDiscoveryComponent implements ResourceDiscoveryComponent {
 			Properties prop = new Properties();
 			XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
 
-			Set<Object> keys = prop.keySet();
-			Set<String> names = new HashSet<String>();
+			String domainName = prop.getProperty("blacktie.domain.name");
+			String key = domainName + " key";
+			String name = domainName;
+			String version = prop.getProperty("blacktie.domain.version");
+			String description = "the blacktie domain";
 
-			for (Object key : keys) {
-				if (key instanceof String) {
-					names.add((String) key);
-				}
-			}
+			DiscoveredResourceDetails resource = new DiscoveredResourceDetails(
+					context.getResourceType(), key, name, version, description,
+					null, null);
 
-			for (String name : names) {
-				if (name.endsWith(".server")) {
-					String server = prop.getProperty(name);
-					if (server.equals(serverName)) {
-						String serviceName = name.split("\\.")[1];
-						DiscoveredResourceDetails resource = new DiscoveredResourceDetails(
-								context.getResourceType(), serviceName,
-								serviceName, null, null, null, null);
-						set.add(resource);
-					}
-				}
-			}
+			set.add(resource);
 		} catch (Exception e) {
-			log.error("get services error with " + e);
+			log.error("get domain name error with " + e);
+			e.printStackTrace();
 		}
-
 		return set;
 	}
 }

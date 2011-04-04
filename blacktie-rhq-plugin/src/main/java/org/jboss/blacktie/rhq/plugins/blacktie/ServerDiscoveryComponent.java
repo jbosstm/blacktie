@@ -16,12 +16,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package org.rhq.plugins.blacktie;
+package org.jboss.blacktie.rhq.plugins.blacktie;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,10 +41,10 @@ import org.rhq.core.pluginapi.inventory.ResourceDiscoveryContext;
  * 
  * @author John Mazzitelli
  */
-public class BlacktiePluginDiscoveryComponent implements
-		ResourceDiscoveryComponent {
-	private final Log log = LogFactory
-			.getLog(BlacktiePluginDiscoveryComponent.class);
+public class ServerDiscoveryComponent implements ResourceDiscoveryComponent {
+	private final Log log = LogFactory.getLog(ServerDiscoveryComponent.class);
+	private MBeanServerConnection beanServerConnection;
+	private ObjectName blacktieAdmin = null;
 
 	/**
 	 * Review the javadoc for both {@link ResourceDiscoveryComponent} and
@@ -90,20 +93,24 @@ public class BlacktiePluginDiscoveryComponent implements
 			Properties prop = new Properties();
 			XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
 
-			String domainName = prop.getProperty("blacktie.domain.name");
-			String key = domainName + " key";
-			String name = domainName;
-			String version = prop.getProperty("blacktie.domain.version");
-			String description = "the blacktie domain";
+			beanServerConnection = org.jboss.mx.util.MBeanServerLocator
+					.locateJBoss();
+			blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
 
-			DiscoveredResourceDetails resource = new DiscoveredResourceDetails(
-					context.getResourceType(), key, name, version, description,
-					null, null);
+			// Get this list from the MBean so that we only need one service
+			// with the list
+			java.util.List<String> servers = (java.util.List<String>) beanServerConnection
+					.invoke(blacktieAdmin, "getServerList", new Object[] {},
+							new String[] {});
 
-			set.add(resource);
+			for (String server : servers) {
+				DiscoveredResourceDetails resource = new DiscoveredResourceDetails(
+						context.getResourceType(), server, server, null, null,
+						null, null);
+				set.add(resource);
+			}
 		} catch (Exception e) {
-			log.error("get domain name error with " + e);
-			e.printStackTrace();
+			log.equals("get servers error with " + e);
 		}
 		return set;
 	}

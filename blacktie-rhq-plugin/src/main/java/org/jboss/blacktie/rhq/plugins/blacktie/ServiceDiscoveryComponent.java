@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package org.rhq.plugins.blacktie;
+package org.jboss.blacktie.rhq.plugins.blacktie;
 
 import java.util.HashSet;
 import java.util.List;
@@ -41,8 +41,8 @@ import org.rhq.core.pluginapi.inventory.ResourceDiscoveryContext;
  * 
  * @author John Mazzitelli
  */
-public class ServerDiscoveryComponent implements ResourceDiscoveryComponent {
-	private final Log log = LogFactory.getLog(ServerDiscoveryComponent.class);
+public class ServiceDiscoveryComponent implements ResourceDiscoveryComponent {
+	private final Log log = LogFactory.getLog(ServiceDiscoveryComponent.class);
 	private MBeanServerConnection beanServerConnection;
 	private ObjectName blacktieAdmin = null;
 
@@ -55,7 +55,8 @@ public class ServerDiscoveryComponent implements ResourceDiscoveryComponent {
 	 */
 	public Set<DiscoveredResourceDetails> discoverResources(
 			ResourceDiscoveryContext context) {
-		log.info("Discovering my custom plugin's resources");
+		String serverName = context.getParentResourceContext().getResourceKey();
+		log.debug("Discovering service of " + serverName);
 
 		// if your plugin descriptor defined one or more <process-scan>s, then
 		// see if the plugin container
@@ -93,25 +94,31 @@ public class ServerDiscoveryComponent implements ResourceDiscoveryComponent {
 			Properties prop = new Properties();
 			XMLParser.loadProperties("btconfig.xsd", "btconfig.xml", prop);
 
-			beanServerConnection = org.jboss.mx.util.MBeanServerLocator
-					.locateJBoss();
-			blacktieAdmin = new ObjectName("jboss.blacktie:service=Admin");
+			Set<Object> keys = prop.keySet();
+			Set<String> names = new HashSet<String>();
 
-			// Get this list from the MBean so that we only need one service
-			// with the list
-			java.util.List<String> servers = (java.util.List<String>) beanServerConnection
-					.invoke(blacktieAdmin, "getServerList", new Object[] {},
-							new String[] {});
+			for (Object key : keys) {
+				if (key instanceof String) {
+					names.add((String) key);
+				}
+			}
 
-			for (String server : servers) {
-				DiscoveredResourceDetails resource = new DiscoveredResourceDetails(
-						context.getResourceType(), server, server, null, null,
-						null, null);
-				set.add(resource);
+			for (String name : names) {
+				if (name.endsWith(".server")) {
+					String server = prop.getProperty(name);
+					if (server.equals(serverName)) {
+						String serviceName = name.split("\\.")[1];
+						DiscoveredResourceDetails resource = new DiscoveredResourceDetails(
+								context.getResourceType(), serviceName,
+								serviceName, null, null, null, null);
+						set.add(resource);
+					}
+				}
 			}
 		} catch (Exception e) {
-			log.equals("get servers error with " + e);
+			log.error("get services error with " + e);
 		}
+
 		return set;
 	}
 }
