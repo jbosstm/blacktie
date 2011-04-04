@@ -8,7 +8,7 @@
         xmlns="urn:xmlns:rhq-plugin"
         xmlns:c="urn:xmlns:rhq-configuration">
 
-   <server name="Blactkie Domain"
+   <server name="BlackTie Domain"
            discovery="BlacktiePluginDiscoveryComponent"
            class="DomainComponent"
            description="blacktie domain">
