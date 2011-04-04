@@ -1,9 +1,10 @@
 # ALLOW JOBS TO BE BACKGROUNDED
 set -m
 
+echo "Example: Running library example"
+
 EXAMPLE_HOME=$BLACKTIE_HOME/examples/xatmi/library
 
-echo "Example: Running library example"
 # GENERATE AN EMPTY SERVER
 cd $EXAMPLE_HOME
 generate_server

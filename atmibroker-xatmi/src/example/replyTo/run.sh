@@ -1,10 +1,11 @@
 # ALLOW JOBS TO BE BACKGROUNDED
 set -m
 
+echo "Example: Running example to show reply to"
+
 # SET THE DIRECTORY FOR EASY CD'ING
 EXAMPLE_HOME=$BLACKTIE_HOME/examples/xatmi/replyTo
 
-echo "Example: Running example to show reply to"
 # GENERATE A SERVER
 cd $EXAMPLE_HOME
 generate_server -Dserver.includes=BarService.c

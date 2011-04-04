@@ -1,7 +1,8 @@
 # ALLOW JOBS TO BE BACKGROUNDED
 set -m
 
-echo "Example: Running Mapped Service Names"
+echo "Running Mapped Service Names"
+
 cd $BLACKTIE_HOME/examples/xatmi/mappedNames
 generate_server -Dservice.names=ONE,TWO -Dserver.output.file=hiprio  -Dserver.includes=BarService.c -Dserver.name=hiprio
 if [ "$?" != "0" ]; then

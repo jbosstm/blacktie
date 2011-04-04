@@ -1,5 +1,7 @@
 @echo off
 
+echo "Example: Running example to show reply to"
+
 rem RUN THE FOOAPP SERVER
 cd %BLACKTIE_HOME%\examples\xatmi\replyTo
 call generate_server -Dserver.includes=BarService.c

@@ -1,8 +1,9 @@
 # ALLOW JOBS TO BE BACKGROUNDED
 set -m
 
-# RUN THE INTEGRATION 1 EXAMPLE
 echo "Example: Running integration 1 XATMI"
+
+# RUN THE INTEGRATION 1 EXAMPLE
 cd $BLACKTIE_HOME/examples/integration1/xatmi_service/
 generate_server -Dservice.names=CREDIT,DEBIT -Dserver.includes="CreditService.c,DebitService.c"
 if [ "$?" != "0" ]; then
@@ -24,7 +25,7 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 
-echo "Build Converted XATMI service"
+#rem "Build Converted XATMI service"
 cd $BLACKTIE_HOME/examples/integration1/ejb
 mvn install
 if [ "$?" != "0" ]; then
@@ -51,7 +52,7 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 
-echo "Run Converted XATMI service"
+#rem "Run Converted XATMI service"
 cd $BLACKTIE_HOME/examples/integration1/ejb/ear/
 mvn jboss:deploy
 if [ "$?" != "0" ]; then

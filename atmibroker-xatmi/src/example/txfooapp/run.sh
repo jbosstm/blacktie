@@ -3,8 +3,9 @@ set -m
 
 if [ "$1" ]; then
 if [ "$1" = "tx" ]; then
-echo "Example: Running txfooapp"
 shift
+
+echo "Example: Running txfooapp"
 
 # RUN THE FOOAPP SERVER
 cd $BLACKTIE_HOME/examples/xatmi/txfooapp
@@ -24,7 +25,6 @@ fi
 #unset BLACKTIE_CONFIGURATION
 
 # RUN THE C CLIENT
-cd $BLACKTIE_HOME/examples/xatmi/txfooapp
 generate_client -Dclient.includes="client.c request.c ora.c cutil.c" -Dx.inc.dir="$ORACLE_INC_DIR" -Dx.lib.dir="$ORACLE_LIB_DIR" -Dx.libs="occi clntsh" -Dx.define="ORACLE"
 # use the default logfile for the client
 unset LOG4CXXCONFIG

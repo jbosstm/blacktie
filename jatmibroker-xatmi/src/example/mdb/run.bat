@@ -1,5 +1,7 @@
 @echo off
 
+echo "Running MDB example"
+
 rem RUN THE MDB EXAMPLE
 cd %BLACKTIE_HOME%\examples\mdb
 call mvn package jboss:redeploy -DskipTests

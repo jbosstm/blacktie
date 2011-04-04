@@ -1,5 +1,7 @@
 @echo off
 
+echo "Example: Running externally managed queue example"
+
 rem Running externally managed queue example
 cd %BLACKTIE_HOME%\examples\xatmi\queues
 call generate_client -Dclient.includes=queues.c -Dx.define=WIN32

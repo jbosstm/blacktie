@@ -1,5 +1,7 @@
 @echo off
 
+echo "Example: Running library example"
+
 rem GENERATE AN EMPTY SERVER
 cd %BLACKTIE_HOME%\examples\xatmi\library
 call generate_server

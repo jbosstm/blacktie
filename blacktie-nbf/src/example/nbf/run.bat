@@ -1,7 +1,10 @@
 @echo off
 
-rem RUN NBF EXAMPLE 
+echo "Example: Running nbf example "
+
 cd %BLACKTIE_HOME%\examples\nbf
+
+rem RUN NBF EXAMPLE 
 call generate_server -Dservice.names=NBF -Dserver.includes=NBFService.c
 IF %ERRORLEVEL% NEQ 0 exit -1
 set BLACKTIE_CONFIGURATION=win32

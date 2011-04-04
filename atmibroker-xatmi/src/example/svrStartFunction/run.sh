@@ -1,8 +1,9 @@
 # ALLOW JOBS TO BE BACKGROUNDED
 set -m
 
+echo "Example: Running svrStartFunction"
+
 # RUN THE FOOAPP SERVER
-echo "Example: Running fooapp"
 generate_server -Dservice.names=BAR -Dserver.includes=BarService.c,SvrInit.c
 if [ "$?" != "0" ]; then
 	exit -1

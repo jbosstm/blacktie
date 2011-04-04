@@ -1,5 +1,7 @@
 @echo off
 
+echo "Running Mapped Service Names"
+
 rem RUN MAPPED SERVICE NAMES EXAMPLE 
 cd %BLACKTIE_HOME%\examples\xatmi\mappedNames
 call generate_server -Dservice.names=ONE,TWO -Dserver.output.file=hiprio  -Dserver.includes=BarService.c -Dserver.name=hiprio

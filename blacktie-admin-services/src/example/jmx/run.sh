@@ -1,8 +1,9 @@
 # ALLOW JOBS TO BE BACKGROUNDED
 set -m
 
+echo "Example: Running JMX example"
+
 # RUN THE FOOAPP SERVER
-echo "Example: Running fooapp"
 cd $BLACKTIE_HOME/examples/xatmi/fooapp
 generate_server -Dservice.names=BAR -Dserver.includes=BarService.c
 if [ "$?" != "0" ]; then
@@ -16,7 +17,6 @@ fi
 unset BLACKTIE_CONFIGURATION
 
 # RUN THE ADMIN JMX CLIENT
-echo "Example: Running Admin Tests"
 cd $BLACKTIE_HOME/examples/admin/jmx
 echo '0
 0

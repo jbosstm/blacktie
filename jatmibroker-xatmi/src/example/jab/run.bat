@@ -1,5 +1,7 @@
 @echo off
 
+echo "Running JAB example"
+
 rem RUN THE FOOAPP SERVER
 cd %BLACKTIE_HOME%\examples\xatmi\fooapp
 call generate_server -Dservice.names=BAR -Dserver.includes=BarService.c

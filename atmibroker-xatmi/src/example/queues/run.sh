@@ -1,8 +1,9 @@
 # ALLOW JOBS TO BE BACKGROUNDED
 set -m
 
-# RUN THE QUEUEING EXAMPLE
 echo "Example: Running externally managed queue example"
+
+# RUN THE QUEUEING EXAMPLE
 cd $BLACKTIE_HOME/examples/xatmi/queues
 
 generate_client -Dclient.includes=queues.c

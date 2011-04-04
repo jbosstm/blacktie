@@ -1,8 +1,9 @@
 # ALLOW JOBS TO BE BACKGROUNDED
 set -m
 
+echo "Example: Running Security example"
+
 # RUN THE SECURE SERVER
-echo "Example: Running Security"
 cd $BLACKTIE_HOME/examples/xatmi/security
 generate_server -Dservice.names=SECURE -Dserver.includes=BarService.c
 if [ "$?" != "0" ]; then

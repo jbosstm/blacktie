@@ -1,8 +1,9 @@
 # ALLOW JOBS TO BE BACKGROUNDED
 set -m
 
+echo "Running MDB example"
+
 # RUN THE MDB EXAMPLE
-echo "Example: Running MDB examples"
 cd $BLACKTIE_HOME/examples/mdb
 mvn package jboss:redeploy -DskipTests
 if [ "$?" != "0" ]; then

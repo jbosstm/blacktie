@@ -1,8 +1,9 @@
 # ALLOW JOBS TO BE BACKGROUNDED
 set -m
 
-# RUN THE FOOAPP SERVER
 echo "Example: Running fooapp"
+
+# RUN THE FOOAPP SERVER
 cd $BLACKTIE_HOME/examples/xatmi/fooapp
 generate_server -Dservice.names=BAR -Dserver.includes=BarService.c
 if [ "$?" != "0" ]; then
