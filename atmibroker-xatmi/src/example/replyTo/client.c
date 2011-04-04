@@ -26,6 +26,10 @@
 #include "message.h"
 #include "AtmiBrokerServerControl.h"
 
+#ifdef WIN32
+#include "windows.h"
+#endif
+
 void message_handler(TPSVCINFO * svcinfo) {
 	userlogc((char*) "client handler called %s", svcinfo->data);
 }
@@ -48,8 +52,8 @@ int main(int argc, char **argv) {
     setenv("BLACKTIE_SERVER", argv[1], 1);
     setenv("BLACKTIE_SERVER_ID", "1", 1);
 #else
-    _putenv_s("BLACKTIE_SERVER", argv[1], 1);
-    _putenv_s("BLACKTIE_SERVER_ID", "1", 1);
+    _putenv_s("BLACKTIE_SERVER", argv[1]);
+    _putenv_s("BLACKTIE_SERVER_ID", "1");
 #endif
     tpstatus = tpadvertise(argv[2], message_handler);
     if (tpstatus == -1 && tperrno != 0) {

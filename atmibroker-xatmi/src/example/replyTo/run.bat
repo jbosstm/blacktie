@@ -4,7 +4,9 @@ rem RUN THE FOOAPP SERVER
 cd %BLACKTIE_HOME%\examples\xatmi\replyTo
 call generate_server -Dserver.includes=BarService.c
 IF %ERRORLEVEL% NEQ 0 exit -1
+set BLACKTIE_CONFIGURATION=win32
 call btadmin startup
+set BLACKTIE_CONFIGURATION=
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem RUN THE C CLIENTA
