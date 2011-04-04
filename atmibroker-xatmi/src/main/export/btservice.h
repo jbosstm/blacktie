@@ -15,32 +15,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include <stdlib.h>
 
-#include "xatmi.h"
-#include "userlogc.h"
-#include "string.h"
-#include "message.h"
-#include "btservice.h"
-
-#ifdef __cplusplus
-extern "C" {
+#ifndef EXPORT_SERVICE
+#ifdef WIN32
+#define EXPORT_SERVICE __declspec(dllexport)
+#else
+#define EXPORT_SERVICE
 #endif
-EXPORT_SERVICE void BAR(TPSVCINFO * svcinfo) {
-	char* buffer;
-	int sendlen;
-
-    MESSAGE* message = (MESSAGE*) svcinfo->data;
-
-	userlogc((char*) "bar called response expected by: %s data %s", message->reply_to, message->data);
-
-	sendlen = 15;
-	buffer = tpalloc("X_OCTET", 0, sendlen);
-	strcat(buffer, "PROC:");
-	strcat(buffer, message->data);
-
-    tpacall(message->reply_to, buffer, sendlen, TPNOREPLY);
-}
-#ifdef __cplusplus
-}
-#endif
+#endif // EXPORT_SYMBOL

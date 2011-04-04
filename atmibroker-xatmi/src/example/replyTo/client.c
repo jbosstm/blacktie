@@ -44,8 +44,13 @@ int main(int argc, char **argv) {
     }
 	
     // THIS MUST BE DONE TO MAKE SURE THAT THE CLIENT CAN RECEIVE MESSAGES
+#ifndef WIN32
     setenv("BLACKTIE_SERVER", argv[1], 1);
     setenv("BLACKTIE_SERVER_ID", "1", 1);
+#else
+    _putenv_s("BLACKTIE_SERVER", argv[1], 1);
+    _putenv_s("BLACKTIE_SERVER_ID", "1", 1);
+#endif
     tpstatus = tpadvertise(argv[2], message_handler);
     if (tpstatus == -1 && tperrno != 0) {
         userlogc("Service failed to advertise");
@@ -75,7 +80,11 @@ int main(int argc, char **argv) {
 
     userlogc("Please press return after you have received a message");
 	getchar();
+#ifndef WIN32
     sleep(2);
+#else
+    Sleep(2000);
+#endif
 
 	tpfree((char*)message);
 	tpfree(retbuf);

@@ -20,17 +20,12 @@
 #include "xatmi.h"
 #include "userlogc.h"
 #include "string.h"
-
-#ifdef WIN32
-#define EXPORT_SYMBOL __declspec(dllexport)
-#else
-#define EXPORT_SYMBOL
-#endif
+#include "btservice.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-EXPORT_SYMBOL void BAR(TPSVCINFO * svcinfo) {
+EXPORT_SERVICE void BAR(TPSVCINFO * svcinfo) {
 	char* buffer;
 	int sendlen;
 
