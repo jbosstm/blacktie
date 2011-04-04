@@ -19,10 +19,10 @@
 			workingDirectory="." argLine="foo" serverId="1" />
 		<MACHINE id="myserv2" hostname="albany" pathToExecutable="notExist"
 			workingDirectory="." argLine="foo" serverId="2" />
-		<MACHINE id="myserv3" hostname="localhost.localdomain"
+		<MACHINE id="myserv3" ipAddress="127.0.0.1"
 			pathToExecutable="notExist" workingDirectory="." argLine="foo"
 			serverId="1" />
-		<MACHINE id="myserv4" hostname="localhost.localdomain"
+		<MACHINE id="myserv4" ipAddress="127.0.0.1"
 			pathToExecutable="notExist" workingDirectory="." argLine="foo"
 			serverId="2" />
 		<MACHINE id="myserv5" hostname="beacon" pathToExecutable="notExist"
