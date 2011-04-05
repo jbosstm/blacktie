@@ -18,7 +18,7 @@
 #include <stdlib.h>
 
 #include "xatmi.h"
-#include "userlogc.h"
+#include "btlogger.h"
 #include "string.h"
 #include "message.h"
 #include "btservice.h"
@@ -32,7 +32,7 @@ EXPORT_SERVICE void BAR(TPSVCINFO * svcinfo) {
 
     MESSAGE* message = (MESSAGE*) svcinfo->data;
 
-	userlogc((char*) "bar called response expected by: %s data %s", message->reply_to, message->data);
+	btlogger((char*) "bar called response expected by: %s data %s", message->reply_to, message->data);
 
 	sendlen = 15;
 	buffer = tpalloc("X_OCTET", 0, sendlen);

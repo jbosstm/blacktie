@@ -21,7 +21,7 @@
 #include "xatmi.h"
 #include "btnbf.h"
 
-#include "userlogc.h"
+#include "btlogger.h"
 
 int main(int argc, char **argv) {
 	char* sendbuf = NULL;
@@ -41,10 +41,10 @@ int main(int argc, char **argv) {
 	
 	strcpy(name, "zhfeng");
 	btaddattribute(&sendbuf, (char*)"name", (char*)name, 6);
-	userlogc((char*)"add name value is %s", name);
+	btlogger((char*)"add name value is %s", name);
 
 	btaddattribute(&sendbuf, (char*)"id", (char*)&id, sizeof(id));
-	userlogc((char*)"add id value is %d", id);
+	btlogger((char*)"add id value is %d", id);
 
 	rcvbuf = tpalloc((char*)"BT_NBF", (char*)"employee", 0);
 	rcvlen = strlen(rcvbuf);
@@ -52,25 +52,25 @@ int main(int argc, char **argv) {
 	rc = tpcall((char*)"NBF", (char*)sendbuf, strlen(sendbuf), (char**)&rcvbuf, &rcvlen, (long)0);
 
 	if(rc == 0 && tperrno == 0) {
-		userlogc((char*) "call NBF service ok");
+		btlogger((char*) "call NBF service ok");
 		len = 16;
 		rc = btgetattribute(rcvbuf, (char*)"name", 0, name, &len);
 		if(rc == 0) {
-			userlogc((char*)"recv name value is %s", name);
+			btlogger((char*)"recv name value is %s", name);
 		    toReturn = -1;
 		} else {
-			userlogc((char*)"name removed");
+			btlogger((char*)"name removed");
 		}
 
 		rc = btgetattribute(rcvbuf, (char*)"id", 0 , (char*)&id, &len);
 		if(rc == 0) {
-			userlogc((char*)"recv id value is %d", id);
+			btlogger((char*)"recv id value is %d", id);
 		} else {
-			userlogc((char*)"id removed");
+			btlogger((char*)"id removed");
 		    toReturn = -1;
 		}
 	} else {
-		userlogc((char*) "call failed with rc = %d, tperrno = %d", rc, tperrno);
+		btlogger((char*) "call failed with rc = %d, tperrno = %d", rc, tperrno);
 		toReturn = -1;
 	}
 

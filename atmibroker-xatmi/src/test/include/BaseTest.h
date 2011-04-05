@@ -20,7 +20,7 @@
 
 #include "cppunit/TestFixture.h"
 #include <string.h>
-#include "userlogc.h"
+#include "btlogger.h"
 
 class BaseTest: public CppUnit::TestFixture {
 public:

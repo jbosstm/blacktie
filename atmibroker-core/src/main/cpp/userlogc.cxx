@@ -28,7 +28,7 @@
 #include "log4cxx/logmanager.h"
 
 extern "C" {
-#include "userlogc.h"
+#include "btlogger.h"
 }
 #include "AtmiBrokerEnv.h"
 
@@ -46,7 +46,7 @@ log4cxx::LoggerPtr loggerAtmiBrokerLogc(log4cxx::Logger::getLogger(
 static bool loggerInitialized = false;
 
 extern "C"BLACKTIE_CORE_DLL
-int userlogc_snprintf(char *str, size_t size, const char * format, ...) {
+int btlogger_snprintf(char *str, size_t size, const char * format, ...) {
 	va_list args;
 	int ret;
 	va_start(args, format);
@@ -56,7 +56,7 @@ int userlogc_snprintf(char *str, size_t size, const char * format, ...) {
 }
 
 extern "C"BLACKTIE_CORE_DLL
-void userlogc(const char * format, ...) {
+void btlogger(const char * format, ...) {
 	if (loggerAtmiBrokerLogc->isEnabledFor(log4cxx::Level::getInfo())) {
 		char str[MAXLOGSIZE];
 		va_list args;
@@ -68,7 +68,7 @@ void userlogc(const char * format, ...) {
 }
 
 extern "C"BLACKTIE_CORE_DLL
-void userlogc_debug(const char * format, ...) {
+void btlogger_debug(const char * format, ...) {
 	if (loggerAtmiBrokerLogc->isEnabledFor(log4cxx::Level::getDebug())) {
 		char str[MAXLOGSIZE];
 		va_list args;
@@ -80,7 +80,7 @@ void userlogc_debug(const char * format, ...) {
 }
 
 extern "C"BLACKTIE_CORE_DLL
-void userlogc_trace(const char * format, ...) {
+void btlogger_trace(const char * format, ...) {
 	if (loggerAtmiBrokerLogc->isEnabledFor(log4cxx::Level::getTrace())) {
 		char str[MAXLOGSIZE];
 		va_list args;
@@ -92,7 +92,7 @@ void userlogc_trace(const char * format, ...) {
 }
 
 extern "C"BLACKTIE_CORE_DLL
-void userlogc_warn(const char * format, ...) {
+void btlogger_warn(const char * format, ...) {
 	if (loggerAtmiBrokerLogc->isEnabledFor(log4cxx::Level::getWarn())) {
 		char str[MAXLOGSIZE];
 		va_list args;
@@ -103,7 +103,7 @@ void userlogc_warn(const char * format, ...) {
 	}
 }
 
-extern void initializeLogger() {
+extern void btlogger_init() {
 	if (!loggerInitialized) {
 		char* config = ACE_OS::getenv("LOG4CXXCONFIG");
 		if (config != NULL) {

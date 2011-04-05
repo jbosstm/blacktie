@@ -28,7 +28,7 @@ extern void tx_db_service(TPSVCINFO *svcinfo);
 }
 
 void TestTxRMTPCall::setUp() {
-	userlogc((char*) "TestTxRMTPCall::setUp");
+	btlogger((char*) "TestTxRMTPCall::setUp");
 	BaseServerTest::setUp();
 
 	// Do local work
@@ -37,7 +37,7 @@ void TestTxRMTPCall::setUp() {
 }
 
 void TestTxRMTPCall::tearDown() {
-	userlogc((char*) "TestTxRMTPCall::tearDown");
+	btlogger((char*) "TestTxRMTPCall::tearDown");
 
 	// Do local work
 	BT_ASSERT(tpunadvertise((char*) "tpcall_x_octet")!= -1);

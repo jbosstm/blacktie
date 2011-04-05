@@ -23,10 +23,10 @@
 #include "tx.h"
 #include "btxatmi.h"
 
-#include "userlogc.h"
+#include "btlogger.h"
 
 char prompt(char* prompt) {
-	userlogc("Please press return after you: %s...", prompt);
+	btlogger("Please press return after you: %s...", prompt);
 	return getchar();
 }
 
@@ -39,9 +39,9 @@ static int send_one(msg_opts_t* mopts, const char* data) {
 		rc = btenqueue((char*) "TestOne", mopts, strcpy(buf, (char*) data), len, 0);
 
 		if (tperrno != 0 || rc != 0)
-			userlogc((char*) "tpacall error: %d %d", rc, tperrno);
+			btlogger((char*) "tpacall error: %d %d", rc, tperrno);
 		else
-			userlogc((char*) "Sent message %s", data);
+			btlogger((char*) "Sent message %s", data);
 
 		if (tperrno != 0)
 			rc = tperrno;
@@ -50,7 +50,7 @@ static int send_one(msg_opts_t* mopts, const char* data) {
 
 		return rc;
 	} else {
-		userlogc((char*) "tpalloc error: %d", tperrno);
+		btlogger((char*) "tpalloc error: %d", tperrno);
 		return tperrno;
 	}
 }
@@ -67,11 +67,11 @@ int main(int argc, char **argv) {
 
 	rc = tx_open();
 	if (rc != 0) {
-		userlogc((char*) "open error: %d", rc);
+		btlogger((char*) "open error: %d", rc);
 	} else {
 		rc = tx_begin();
 		if (rc != 0) {
-			userlogc((char*) "begin error: %d", rc);
+			btlogger((char*) "begin error: %d", rc);
 		} else {
 			mopts.priority = 0;
 
@@ -85,22 +85,22 @@ int main(int argc, char **argv) {
 			buf = tpalloc((char*) "X_OCTET", NULL, len);
 
 			if (tperrno != 0) {
-				userlogc((char*) "tpalloc error: %d", tperrno);
+				btlogger((char*) "tpalloc error: %d", tperrno);
 			} else {
 				(void) strcpy(buf, (char*) "1");
 				rc = btenqueue((char*) "TestOne", &mopts, buf, len, 0);
 
 				if (tperrno != 0 || rc != 0) {
-					userlogc((char*) "tpacall error: %d %d", rc, tperrno);
+					btlogger((char*) "tpacall error: %d %d", rc, tperrno);
 				} else {
-					userlogc((char*) "Sent message 1");
+					btlogger((char*) "Sent message 1");
 					(void) strcpy(buf, (char*) "2");
 					rc = btenqueue((char*) "TestOne", &mopts, buf, len, 0);
 
 					if (tperrno != 0 || rc != 0) {
-						userlogc((char*) "tpacall error: %d %d", rc, tperrno);
+						btlogger((char*) "tpacall error: %d %d", rc, tperrno);
 					} else {
-						userlogc((char*) "Sent message 2");
+						btlogger((char*) "Sent message 2");
 					}
 				}
 
@@ -113,12 +113,12 @@ int main(int argc, char **argv) {
 			if (index == 1) {
 				rc = tx_commit();
 				if (rc != 0) {
-					userlogc((char*) "commit error: %d", rc);
+					btlogger((char*) "commit error: %d", rc);
 				}
 			} else {
 				rc = tx_rollback();
 				if (rc != 0) {
-					userlogc((char*) "rollback error: %d", rc);
+					btlogger((char*) "rollback error: %d", rc);
 				}
 			}
 		}
@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
 
 	rc = tx_close();
 	if (rc != 0) {
-		userlogc((char*) "close error: %d", rc);
+		btlogger((char*) "close error: %d", rc);
 	}
 	return rc;
 }

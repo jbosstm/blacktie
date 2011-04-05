@@ -23,17 +23,17 @@
 #include "xatmi.h"
 #include "btxatmi.h"
 
-#include "userlogc.h"
+#include "btlogger.h"
 
 extern BLACKTIE_XATMI_DLL int serverdone();
 static int txopen = 0;
 
 #define TEST_ERROR(msg, err)	\
 	if (err != 0) {	\
-		userlogc((char*) "%s error %d", msg, err);	\
+		btlogger((char*) "%s error %d", msg, err);	\
 		if (txopen) tx_close();	\
 		return -1;	\
-	} //else {userlogc((char*) "%s ok", msg);}
+	} //else {btlogger((char*) "%s ok", msg);}
 
 /**
  * Send cnt messages begining with message id msgid with the requested priority.
@@ -59,15 +59,15 @@ static int put_messages(unsigned int cnt, unsigned int msgid, unsigned int pri) 
 		buf = tpalloc((char*) "X_OCTET", NULL, len);
 
 		if (tperrno != 0) {
-			userlogc((char*) "tpalloc error: %d", tperrno);
+			btlogger((char*) "tpalloc error: %d", tperrno);
 		} else {
 			(void) strcpy(buf, msg);
 			err = btenqueue((char*) "TestOne", &mopts, buf, len, 0);
 
 			if (tperrno != 0 || err != 0)
-				userlogc((char*) "tpacall error: %d %d", err, tperrno);
+				btlogger((char*) "tpacall error: %d %d", err, tperrno);
 			else
-				userlogc((char*) "Sent a message");
+				btlogger((char*) "Sent a message");
 
 			tpfree(buf);
 		}
@@ -88,7 +88,7 @@ static int get_messages(unsigned int cnt, int txmode, long millis) {
 	msg_opts_t mopts = {0, 0L, 1};
 
 	mopts.ttl = millis;
-	userlogc((char*) "Preparing to dequeue the messages: %d", cnt);
+	btlogger((char*) "Preparing to dequeue the messages: %d", cnt);
 
 	if (txmode) {
 		TEST_ERROR("open", tx_open());
@@ -111,12 +111,12 @@ static int get_messages(unsigned int cnt, int txmode, long millis) {
 		int err = btdequeue((char*) "TestOne", &mopts, &odata, &olen, flags);
 		if (err != -1 && tperrno == 0) {
 			msgCnt++;
-			userlogc("Received %s which was %d long", odata, olen);
+			btlogger("Received %s which was %d long", odata, olen);
 		} else {
 			if (tperrno == TPETIME)
-				userlogc("timed out waiting for messages");
+				btlogger("timed out waiting for messages");
 			else
-				userlogc("Got an error reading from the queue. tperrno: %d result %d", tperrno, err);
+				btlogger("Got an error reading from the queue. tperrno: %d result %d", tperrno, err);
 			break;
 		}
 	}
@@ -140,7 +140,7 @@ int main(int argc, char **argv) {
 	int arg3 = (argc > 3 ? atoi(argv[3]) : 0);
 
 	if (argc < 3) {
-		userlogc((char *) "usage: %s <put cnt [msgid priority] | get cnt [timeout (ms)] " \
+		btlogger((char *) "usage: %s <put cnt [msgid priority] | get cnt [timeout (ms)] " \
 			"| getcommit cnt [timeout (ms)] | getabort cnt [timeout (ms)]>",
 				argv[0]);
 	} else if (strcmp(argv[1], "put") == 0) {
@@ -152,7 +152,7 @@ int main(int argc, char **argv) {
 	} else if (strcmp(argv[1], "getabort") == 0) {
 		rc = get_messages(arg2, 2, (long) arg3);
 	} else {
-		userlogc((char *) "usage: %s <put cnt [priority] | get cnt>", argv[0]);
+		btlogger((char *) "usage: %s <put cnt [priority] | get cnt>", argv[0]);
 	}
 
 	return rc;

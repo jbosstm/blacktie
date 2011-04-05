@@ -65,7 +65,7 @@ static SQLRETURN doSelect(SQLHENV henv, SQLHDBC hdbc, SQLHSTMT shdl, SQLCHAR sql
 	*rcnt = 0;
 	while (SQLFetch(shdl) == SQL_SUCCESS) {
 		*rcnt += 1;
-/*		userlogc_debug("(%ld,%s)\n", empno, name);*/
+/*		btlogger_debug("(%ld,%s)\n", empno, name);*/
 	}
 
 	return SQL_SUCCESS;
@@ -75,7 +75,7 @@ static SQLRETURN doSql(SQLHENV henv, SQLHDBC hdbc, SQLHSTMT shdl, SQLCHAR sql[])
 {
 	SQLRETURN rc;
 
-	userlogc_debug("doSql %s\n", sql);
+	btlogger_debug("doSql %s\n", sql);
 	rc = SQLPrepare(shdl, sql, SQL_NTS);
 	CHECK_HANDLE(SQL_HANDLE_STMT, shdl, rc, "SQLPrepare", sql);
 	
@@ -138,7 +138,7 @@ static SQLRETURN doWork(char op, char *arg, SQLHENV henv, SQLHDBC hdbc, SQLHSTMT
 	} else if (op == '1') {
 		(void) strsub((const char*) SSQL, buf1, sizeof (buf1), "?", buf2);
 		status = doSelect(henv, hdbc, shdl, (SQLCHAR *) buf1, &rcnt);
-		userlogc_snprintf(resp->data, sizeof (resp->data), "%d", rcnt);
+		btlogger_snprintf(resp->data, sizeof (resp->data), "%d", rcnt);
 	} else if (op == '2') {
 		(void) strsub((const char*) USQL, buf1, sizeof (buf1), "?", buf2);
 		status = doSql(henv, hdbc, shdl, (SQLCHAR *) buf1);
@@ -157,7 +157,7 @@ int db2_access(test_req_t *req, test_req_t *resp)
 	SQLRETURN rc = SQL_ERROR;
 	SQLHSTMT shdl;
 
-	userlogc_debug("op=%c data=%s db=%s\n", req->op, req->data, req->db);
+	btlogger_debug("op=%c data=%s db=%s\n", req->op, req->data, req->db);
 
 	if (init(req->db, &henv, &hdbc) != SQL_SUCCESS)
 		return (int) rc;
@@ -197,20 +197,20 @@ static SQLRETURN check_error( SQLSMALLINT htype, /* A handle type */
 	case SQL_SUCCESS:	/* 0 */
 		return rc;
 	case SQL_SUCCESS_WITH_INFO:	/* 1 */
-		userlogc_warn("%s error:  SQL_SUCCESS_WITH_INFO: ...", msg);
+		btlogger_warn("%s error:  SQL_SUCCESS_WITH_INFO: ...", msg);
 		break;
 	case SQL_NO_DATA_FOUND:	/* 100 */
-		userlogc_warn("%s error: SQL_NO_DATA_FOUND: ...", msg);
+		btlogger_warn("%s error: SQL_NO_DATA_FOUND: ...", msg);
 		break;
 	case SQL_ERROR:	/* -1 */
-		userlogc_warn("%s error: SQL_ERROR: ...", msg);
+		btlogger_warn("%s error: SQL_ERROR: ...", msg);
 		break;
 	case SQL_INVALID_HANDLE:	/* -2 */
-		userlogc_warn("%s error: SQL_INVALID HANDLE: ...", msg);
+		btlogger_warn("%s error: SQL_INVALID HANDLE: ...", msg);
 		break;
 	default:
 		/* SQL_NEED_DATA, SQL_NO_DATA, SQL_STILL_EXECUTING */
-		userlogc_warn("%s error: code=%d: ...", msg, rc);
+		btlogger_warn("%s error: code=%d: ...", msg, rc);
 		break;
 	}
 
@@ -219,9 +219,9 @@ static SQLRETURN check_error( SQLSMALLINT htype, /* A handle type */
 	 */
 	while (SQLGetDiagRec(htype, hndl, i++, sqlstate, &sqlcode, buffer,
 		SQL_MAX_MESSAGE_LENGTH + 1, &length) == SQL_SUCCESS ) {
-	   userlogc_warn( "\t*** SQLSTATE: %s", sqlstate) ;
-	   userlogc_warn( "\t*** Native Error Code: %ld", sqlcode) ;
-	   userlogc_warn( "\t*** buffer: %s", buffer) ;
+	   btlogger_warn( "\t*** SQLSTATE: %s", sqlstate) ;
+	   btlogger_warn( "\t*** Native Error Code: %ld", sqlcode) ;
+	   btlogger_warn( "\t*** buffer: %s", buffer) ;
 	}
 
 	return rc;

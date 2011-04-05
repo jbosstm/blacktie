@@ -17,7 +17,7 @@
  */
 
 #include <string.h>
-#include "userlogc.h"
+#include "btlogger.h"
 
 #include "xatmi.h"
 #include "tx.h"
@@ -36,14 +36,14 @@ extern void test_tpcall_TPETIME_service(TPSVCINFO *svcinfo) {
 }
 
 extern void test_tpcall_TPEOTYPE_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tpcall_TPEOTYPE_service");
+	btlogger((char*) "test_tpcall_TPEOTYPE_service");
 	char *toReturn = ::tpalloc((char*) "X_C_TYPE", (char*) "test", 0);
 	strcpy(toReturn, "TPEOTYPE");
 	tpreturn(TPSUCCESS, 0, toReturn, 0, 0);
 }
 
 extern void test_tpcall_TPESVCFAIL_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tpcall_TPESVCFAIL_service");
+	btlogger((char*) "test_tpcall_TPESVCFAIL_service");
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	strcpy(toReturn, "test_tpcall_TPESVCFAIL_service");
@@ -51,7 +51,7 @@ extern void test_tpcall_TPESVCFAIL_service(TPSVCINFO *svcinfo) {
 }
 
 extern void test_tprecv_TPEV_DISCONIMM_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tprecv_TPEV_DISCONIMM_service");
+	btlogger((char*) "test_tprecv_TPEV_DISCONIMM_service");
 	long rcvlen = 60;
 	long revent = 0;
 	char* rcvbuf = (char *) tpalloc((char*) "X_OCTET", NULL, rcvlen);
@@ -61,11 +61,11 @@ extern void test_tprecv_TPEV_DISCONIMM_service(TPSVCINFO *svcinfo) {
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
 	bool rbkOnly = (txinfo.transaction_state == TX_ROLLBACK_ONLY);
-	//userlogc((char*) "status=%d, inTx=%d, rbkOnly=%d", status, inTx, rbkOnly);
+	//btlogger((char*) "status=%d, inTx=%d, rbkOnly=%d", status, inTx, rbkOnly);
 }
 
 extern void test_tprecv_TPEV_SVCFAIL_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tprecv_TPEV_SVCFAIL_service");
+	btlogger((char*) "test_tprecv_TPEV_SVCFAIL_service");
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	strcpy(toReturn, "test_tprecv_TPEV_SVCFAIL_service");
@@ -73,7 +73,7 @@ extern void test_tprecv_TPEV_SVCFAIL_service(TPSVCINFO *svcinfo) {
 }
 
 extern void test_no_tpreturn_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_no_tpreturn_service");
+	btlogger((char*) "test_no_tpreturn_service");
 }
 #if defined(__cplusplus)
 }

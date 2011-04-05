@@ -29,7 +29,7 @@ extern "C" {
 extern void pbf_service(TPSVCINFO *svcinfo);
 
 void TestPBF::setUp() {
-	userlogc((char*) "TestPBF::setUp");
+	btlogger((char*) "TestPBF::setUp");
 	BaseServerTest::setUp();
 
 	// Do local work
@@ -43,7 +43,7 @@ void TestPBF::setUp() {
 #endif
 
 void TestPBF::tearDown() {
-	userlogc((char*) "TestPBF::tearDown");
+	btlogger((char*) "TestPBF::tearDown");
 	// Do local work
 	if (m_allocated) {
 		::tpfree( m_allocated);
@@ -64,7 +64,7 @@ void TestPBF::tearDown() {
 }
 
 void TestPBF::test_tpalloc() {
-	userlogc((char*) "test_tpalloc");
+	btlogger((char*) "test_tpalloc");
 	ACCT_INFO *aptr;
 	aptr = (ACCT_INFO*) tpalloc((char*) "X_COMMON", (char*) "acct_info", 0);
 
@@ -90,7 +90,7 @@ void TestPBF::test_tpalloc() {
 }
 
 void TestPBF::test_tpalloc_nonzero() {
-	userlogc((char*) "test_tpalloc_nonzero");
+	btlogger((char*) "test_tpalloc_nonzero");
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "acct_info", 10);
 	BT_ASSERT(m_allocated != NULL);
 	BT_ASSERT(tperrno == 0);
@@ -112,7 +112,7 @@ void TestPBF::test_tpalloc_nonzero() {
 }
 
 void TestPBF::test_tpalloc_subtype_required() {
-	userlogc((char*) "test_tpalloc_subtype_required");
+	btlogger((char*) "test_tpalloc_subtype_required");
 	m_allocated = tpalloc((char*) "X_COMMON", NULL, 0);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
@@ -122,14 +122,14 @@ void TestPBF::test_tpalloc_subtype_required() {
 }
 
 void TestPBF::test_tpalloc_wrong_subtype() {
-	userlogc((char*) "test_tpalloc_subtype_required");
+	btlogger((char*) "test_tpalloc_subtype_required");
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "not_exist", 0);
 	BT_ASSERT(tperrno == TPEINVAL);
 	BT_ASSERT(m_allocated == NULL);
 }
 
 void TestPBF::test_tprealloc() {
-	userlogc("test_tprealloc");
+	btlogger("test_tprealloc");
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "acct_info", 0);
 	BT_ASSERT(m_allocated != NULL);
 	// tprealloc for X_COMMON buffer type should be treated as a NOOP
@@ -141,7 +141,7 @@ void TestPBF::test_tprealloc() {
 }
 
 void TestPBF::test_tptypes() {
-	userlogc((char*) "test_tptypes");
+	btlogger((char*) "test_tptypes");
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "acct_info", 0);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -161,7 +161,7 @@ void TestPBF::test_tptypes() {
 }
 
 void TestPBF::test_tpfree() {
-	userlogc((char*) "test_tpfree");
+	btlogger((char*) "test_tpfree");
 	ACCT_INFO *aptr;
 	aptr = (ACCT_INFO*) tpalloc((char*) "X_COMMON", (char*) "acct_info", 0);
 	m_allocated = (char*) aptr;
@@ -174,7 +174,7 @@ void TestPBF::test_tpfree() {
 }
 
 void TestPBF::test_tpcall() {
-	userlogc((char*) "test_tpcall");
+	btlogger((char*) "test_tpcall");
 	tpadvertise((char*) "PBF", pbf_service);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
@@ -220,7 +220,7 @@ void TestPBF::test_tpcall() {
 }
 
 void pbf_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "pbf_service");
+	btlogger((char*) "pbf_service");
 	bool ok = false;
 	ACCT_INFO *aptr = (ACCT_INFO*) svcinfo->data;
 	bool acctEq = aptr->acct_no == 12345678;
@@ -234,9 +234,9 @@ void pbf_service(TPSVCINFO *svcinfo) {
 							== 0;
 	bool fooEq = aptr->foo[0] == 1.1F && aptr->foo[1] == 2.2F;
 	bool balsEq = aptr->balances[0] == 1.1 && aptr->balances[1] == 2.2;
-	userlogc((char*) "pbf_service tests: %s", aptr->address);
-	userlogc((char*) "pbf_service fooEq: %d %d", aptr->foo[0], aptr->foo[1]);
-	userlogc((char*) "pbf_service balsEq: %d %d", aptr->balances[0], aptr->balances[1]);
+	btlogger((char*) "pbf_service tests: %s", aptr->address);
+	btlogger((char*) "pbf_service fooEq: %d %d", aptr->foo[0], aptr->foo[1]);
+	btlogger((char*) "pbf_service balsEq: %d %d", aptr->balances[0], aptr->balances[1]);
 	if (acctEq && nameEq && addressEq && fooEq && balsEq) {
 		ok = true;
 	}

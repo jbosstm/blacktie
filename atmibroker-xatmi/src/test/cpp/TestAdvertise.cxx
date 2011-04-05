@@ -19,12 +19,12 @@
 #include "TestAdvertise.h"
 
 void TestAdvertise::setUp() {
-	userlogc((char*) "TestAdvertise::setUp");
+	btlogger((char*) "TestAdvertise::setUp");
 	BaseAdminTest::setUp();
 }
 
 void TestAdvertise::tearDown() {
-	userlogc((char*) "TestAdvertise::tearDown");
+	btlogger((char*) "TestAdvertise::tearDown");
 	BaseAdminTest::tearDown();
 }
 
@@ -48,19 +48,19 @@ void TestAdvertise::testUnknowService() {
 void TestAdvertise::testAdvertise() {
 	int   cd;
 
-	userlogc((char*) "unadvertise BAR");
+	btlogger((char*) "unadvertise BAR");
 	cd = callADMIN((char*)"unadvertise,BAR,", '1', 0, NULL);
 	BT_ASSERT(cd == 0);
 
-	userlogc((char*) "tpcall BAR after unadvertise");
+	btlogger((char*) "tpcall BAR after unadvertise");
 	cd = callBAR(TPENOENT);
 	BT_ASSERT(cd != 0);
 
-	userlogc((char*) "advertise BAR again");
+	btlogger((char*) "advertise BAR again");
 	cd = callADMIN((char*)"advertise,BAR,", '1', 0, NULL);
 	BT_ASSERT(cd == 0);
 
-	userlogc((char*) "tpcall BAR after advertise");
+	btlogger((char*) "tpcall BAR after advertise");
 	cd = callBAR(0);
 	BT_ASSERT(cd == 0);
 }

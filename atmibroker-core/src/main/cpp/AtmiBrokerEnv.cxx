@@ -22,7 +22,7 @@
 #include <stdarg.h>
 #include <iostream>
 
-#include "userlogc.h"
+#include "btlogger.h"
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerEnvXml.h"
 #include "SynchronizableObject.h"
@@ -46,7 +46,7 @@ SynchronizableObject instance_lock;
 int referencesAtmiBrokerEnv = 0;
 
 AtmiBrokerEnv * AtmiBrokerEnv::get_instance() {
-	initializeLogger();
+	btlogger_init();
 	instance_lock.lock();
 	if (referencesAtmiBrokerEnv == 0) {
 		if (ptrAtmiBrokerEnv == NULL) {
@@ -112,7 +112,7 @@ void AtmiBrokerEnv::set_environment_dir(const char* dir) {
 
 void AtmiBrokerEnv::set_configuration(const char* dir) {
 	if (configuration == NULL) {
-		initializeLogger();
+		btlogger_init();
 		if (dir != NULL) {
 			LOG4CXX_DEBUG(loggerAtmiBrokerEnv,
 					(char*) "setting configuration type: " << dir);

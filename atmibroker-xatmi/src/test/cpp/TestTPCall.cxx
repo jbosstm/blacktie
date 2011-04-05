@@ -40,7 +40,7 @@ extern void test_tpcall_TPNOTIME(TPSVCINFO *svcinfo);
 #endif
 
 void TestTPCall::setUp() {
-	userlogc((char*) "TestTPCall::setUp");
+	btlogger((char*) "TestTPCall::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 	BaseServerTest::setUp();
@@ -48,7 +48,7 @@ void TestTPCall::setUp() {
 }
 
 void TestTPCall::tearDown() {
-	userlogc((char*) "TestTPCall::tearDown");
+	btlogger((char*) "TestTPCall::tearDown");
 	// Do local work
 	::tpfree( sendbuf);
 	::tpfree( rcvbuf);
@@ -63,7 +63,7 @@ void TestTPCall::tearDown() {
 }
 
 void TestTPCall::test_tpcall_systemerr() {
-	userlogc((char*) "test_tpcall_systemerr");
+	btlogger((char*) "test_tpcall_systemerr");
 	sendlen = strlen("test_tpcall_systemerr") + 1;
 	rcvlen = sendlen;
 	BT_ASSERT((sendbuf
@@ -83,7 +83,7 @@ void TestTPCall::test_tpcall_systemerr() {
 }
 
 void TestTPCall::test_tpcall_unknown_service() {
-	userlogc((char*) "test_tpcall_unknown_service");
+	btlogger((char*) "test_tpcall_unknown_service");
 	sendlen = strlen("test_tpcall_unknown_service") + 1;
 	rcvlen = sendlen;
 	sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, sendlen);
@@ -98,12 +98,12 @@ void TestTPCall::test_tpcall_unknown_service() {
 }
 
 void TestTPCall::test_tpcall_x_octet_lessdata() {
-	userlogc((char*) "test_tpcall_x_octet_lessdata");
+	btlogger((char*) "test_tpcall_x_octet_lessdata");
 	BT_FAIL("UNIMPLEMENTED");
 }
 
 void TestTPCall::test_tpcall_null_service() {
-	userlogc((char*) "test_tpcall_x_octet");
+	btlogger((char*) "test_tpcall_x_octet");
 	tpadvertise((char*) "tpcall_x_octet", test_tpcall_x_octet_service);
 
 	sendlen = strlen("test_tpcall_x_octet") + 1;
@@ -126,7 +126,7 @@ void TestTPCall::test_tpcall_null_service() {
 }
 
 void TestTPCall::test_tpcall_x_octet() {
-	userlogc((char*) "test_tpcall_x_octet");
+	btlogger((char*) "test_tpcall_x_octet");
 	tpadvertise((char*) "tpcall_x_octet", test_tpcall_x_octet_service);
 
 	sendlen = strlen("test_tpcall_x_octet") + 1;
@@ -163,7 +163,7 @@ void TestTPCall::test_tpcall_x_octet() {
 }
 
 void TestTPCall::test_tpcall_x_octet_zero() {
-	userlogc((char*) "test_tpcall_x_octet_zero");
+	btlogger((char*) "test_tpcall_x_octet_zero");
 	tpadvertise((char*) "tpcall_x_octet", test_tpcall_x_octet_service_zero);
 
 	BT_ASSERT((sendbuf = (char *) tpalloc((char*) "X_OCTET", NULL, 0))
@@ -199,7 +199,7 @@ void TestTPCall::test_tpcall_x_octet_zero() {
 #include "malloc.h"
 // 9.1.2
 void TestTPCall::test_tpcall_x_common() {
-	userlogc((char*) "test_tpcall_x_common");
+	btlogger((char*) "test_tpcall_x_common");
 	tpadvertise((char*) "tpcall_x_common", test_tpcall_x_common_service);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
@@ -215,7 +215,7 @@ void TestTPCall::test_tpcall_x_common() {
 	dptr->acct_no = 12345678;
 	dptr->amount = 50;
 
-	//	userlogc("%d %d %d", sizeof(long), sizeof(int), sizeof(short));
+	//	btlogger("%d %d %d", sizeof(long), sizeof(int), sizeof(short));
 	//	char foo[sizeof(short)]; // 8
 	//	memcpy(foo, &sendbuf[8], sizeof(short));
 	//	short* bar = (short*) foo;
@@ -232,7 +232,7 @@ void TestTPCall::test_tpcall_x_common() {
 }
 // 9.1.3
 void TestTPCall::test_tpcall_x_c_type() {
-	userlogc((char*) "test_tpcall_x_c_type");
+	btlogger((char*) "test_tpcall_x_c_type");
 	tpadvertise((char*) "tpcall_x_c_type", test_tpcall_x_c_type_service);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
@@ -264,7 +264,7 @@ void TestTPCall::test_tpcall_x_c_type() {
 }
 
 void TestTPCall::test_tpcall_with_TPNOCHANGE() {
-	userlogc((char*) "test_tpcall_with_TPNOCHANGE");
+	btlogger((char*) "test_tpcall_with_TPNOCHANGE");
 	tpadvertise((char*) "tpcall_x_c_type", test_tpcall_x_c_type_service);
 
 	ACCT_INFO *aptr;
@@ -307,7 +307,7 @@ void TestTPCall::test_tpcall_with_TPNOCHANGE() {
 }
 
 void TestTPCall::test_tpcall_without_TPNOCHANGE() {
-	userlogc((char*) "test_tpcall_without_TPNOCHANGE");
+	btlogger((char*) "test_tpcall_without_TPNOCHANGE");
 	tpadvertise((char*) "tpcall_x_c_type", test_tpcall_x_c_type_service);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
@@ -351,7 +351,7 @@ void TestTPCall::test_tpcall_without_TPNOCHANGE() {
 }
 
 void test_tpcall_x_octet_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tpcall_x_octet_service");
+	btlogger((char*) "test_tpcall_x_octet_service");
 	bool ok = false;
 	if (svcinfo->data) {
 		if (strncmp(svcinfo->data, "test_tpcall_x_octet", svcinfo->len) == 0) {
@@ -375,14 +375,14 @@ void test_tpcall_x_octet_service(TPSVCINFO *svcinfo) {
 }
 
 void test_tpcall_x_octet_service_zero(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tpcall_x_octet_service_zero");
+	btlogger((char*) "test_tpcall_x_octet_service_zero");
 	int len = 0;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	tpreturn(TPSUCCESS, 21, toReturn, len, 0);
 }
 
 void test_tpcall_x_common_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tpcall_x_common_service");
+	btlogger((char*) "test_tpcall_x_common_service");
 	bool ok = false;
 	DEPOSIT *dptr = (DEPOSIT*) svcinfo->data;
 	if (dptr->acct_no == 12345678 && dptr->amount == 50) {
@@ -400,7 +400,7 @@ void test_tpcall_x_common_service(TPSVCINFO *svcinfo) {
 }
 
 void test_tpcall_x_c_type_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tpcall_x_c_type_service");
+	btlogger((char*) "test_tpcall_x_c_type_service");
 	bool ok = false;
 	ACCT_INFO *aptr = (ACCT_INFO*) svcinfo->data;
 	bool acctEq = aptr->acct_no == 12345678;
@@ -422,7 +422,7 @@ void test_tpcall_x_c_type_service(TPSVCINFO *svcinfo) {
 
 void TestTPCall::test_tpcall_with_TPNOBLOCK() {
 	char* toTest = (char*) "test_tpcall_TPNOBLOCK";
-	userlogc(toTest);
+	btlogger(toTest);
 	tpadvertise((char*) "tpcall_x_octet", test_tpcall_TPNOBLOCK);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
@@ -439,7 +439,7 @@ void TestTPCall::test_tpcall_with_TPNOBLOCK() {
 
 	int id = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen,
 			(char **) &rcvbuf, &rcvlen, TPNOBLOCK);
-	userlogc((char*) "test_tpcall_TPNOBLOCK id=%d errno=%d", id, tperrno);
+	btlogger((char*) "test_tpcall_TPNOBLOCK id=%d errno=%d", id, tperrno);
 	sprintf(tperrnoS, "%d %d", tperrno, id);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 	BT_ASSERT(id != -1);
@@ -450,7 +450,7 @@ void TestTPCall::test_tpcall_with_TPNOBLOCK() {
 
 void TestTPCall::test_tpcall_without_TPNOBLOCK() {
 	char* toTest = (char*) "test_tpcall_no_TPNOBLOCK";
-	userlogc(toTest);
+	btlogger(toTest);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
@@ -477,7 +477,7 @@ void TestTPCall::test_tpcall_without_TPNOBLOCK() {
 
 void TestTPCall::test_tpcall_without_TPNOTIME() {
 	char* toTest = (char*) "test_tpcall_no_TPNOTIME";
-	userlogc(toTest);
+	btlogger(toTest);
 	tpadvertise((char*) "tpcall_x_octet", test_tpcall_TPNOTIME);
 
 	sendlen = strlen(toTest) + 1;
@@ -503,7 +503,7 @@ void TestTPCall::test_tpcall_without_TPNOTIME() {
 
 void TestTPCall::test_tpcall_with_TPNOTIME() {
 	char* toTest = (char*) "test_tpcall_TPNOTIME";
-	userlogc(toTest);
+	btlogger(toTest);
 	tpadvertise((char*) "tpcall_x_octet", test_tpcall_TPNOTIME);
 
 	sendlen = strlen(toTest) + 1;
@@ -526,13 +526,13 @@ void TestTPCall::test_tpcall_with_TPNOTIME() {
 }
 
 void test_tpcall_TPNOBLOCK(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tpcall_TPNOBLOCK");
+	btlogger((char*) "test_tpcall_TPNOBLOCK");
 	::sleeper(5);
 	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
 }
 
 void test_tpcall_TPNOTIME(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tpcall_TPNOTIME");
+	btlogger((char*) "test_tpcall_TPNOTIME");
 	::sleeper(31);
 	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
 }

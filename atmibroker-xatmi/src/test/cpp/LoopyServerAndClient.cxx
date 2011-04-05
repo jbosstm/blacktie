@@ -20,29 +20,29 @@
 #include "LoopyServerAndClient.h"
 
 #include "xatmi.h"
-#include "userlogc.h"
+#include "btlogger.h"
 #include "AtmiBrokerServerControl.h"
 #include "AtmiBrokerClientControl.h"
 
 void LoopyServerAndClient::setUp() {
 	init_ace();
-	userlogc((char*) "LoopyServerAndClient::setUp");
+	btlogger((char*) "LoopyServerAndClient::setUp");
 	// Perform global set up
 	TestFixture::setUp();
 }
 
 void LoopyServerAndClient::tearDown() {
-	userlogc((char*) "LoopyServerAndClient::tearDown");
+	btlogger((char*) "LoopyServerAndClient::tearDown");
 	// Perform global clean up
 	TestFixture::tearDown();
 }
 
 void loopy(TPSVCINFO* tpsvcinfo) {
-	userlogc((char*) "loopy");
+	btlogger((char*) "loopy");
 }
 
 void LoopyServerAndClient::testLoopyAll() {
-	userlogc((char*) "testLoopyAll");
+	btlogger((char*) "testLoopyAll");
 
 #ifdef WIN32
 	char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"-i", (char*)"1"};
@@ -76,7 +76,7 @@ void LoopyServerAndClient::testLoopyAll() {
 }
 
 void LoopyServerAndClient::testLoopyAll2() {
-	userlogc((char*) "testLoopyAll2");
+	btlogger((char*) "testLoopyAll2");
 #ifdef WIN32
 	char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"-i", (char*)"1"};
 #else
@@ -109,7 +109,7 @@ void LoopyServerAndClient::testLoopyAll2() {
 }
 
 void LoopyServerAndClient::testLoopyAdvertise() {
-	userlogc((char*) "testLoopyAdvertise");
+	btlogger((char*) "testLoopyAdvertise");
 #ifdef WIN32
 	char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"-i", (char*)"1"};
 #else

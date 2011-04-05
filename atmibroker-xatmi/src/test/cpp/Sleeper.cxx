@@ -18,10 +18,10 @@
 
 #include "Sleeper.h"
 #include "ace/OS_NS_unistd.h"
-#include "userlogc.h"
+#include "btlogger.h"
 
 void sleeper(int timeout) {
-	userlogc((char*) "sleeper, sleeping for %d seconds", timeout);
+	btlogger((char*) "sleeper, sleeping for %d seconds", timeout);
 	ACE_OS::sleep(timeout);
-	userlogc((char*) "sleeper, slept for %d seconds", timeout);
+	btlogger((char*) "sleeper, slept for %d seconds", timeout);
 }

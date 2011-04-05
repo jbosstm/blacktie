@@ -22,7 +22,7 @@ static char testid[16];
 static char *emps[] = {"8000", "8001", "8002", "8003", "8004", "8005", "8006", "8007"};
 
 static void set_test_id(const char *id) {
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	(void) strncpy(testid, id, sizeof (testid));
 }
 
@@ -32,27 +32,27 @@ static int send_req(test_req_t *req, char **prbuf) {
 	test_req_t *resp;
 	int rv = 0;
 
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	resp = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "test_req", 0);
 
-	userlogc_debug( "TxLog Invoke Service %s %4d: prod=%d op=%c data=%s dbf=%s tx=%d",
+	btlogger_debug( "TxLog Invoke Service %s %4d: prod=%d op=%c data=%s dbf=%s tx=%d",
 		TXTEST_SVC_NAME, req->id, req->prod, req->op, req->data, req->db, req->txtype);
 
 	if (tpcall((char *) TXTEST_SVC_NAME, (char *) req, sizeof (test_req_t), (char **) &resp, &rsz, callflags) == -1) {
-		userlogc_debug( "TxLog TP ERROR tperrno: %d", tperrno);
+		btlogger_debug( "TxLog TP ERROR tperrno: %d", tperrno);
 		rv = -1;
 	} else if (prbuf && *prbuf) {
 		strncpy(*prbuf, resp->data, sizeof (resp->data));
 	}
 
-	userlogc_debug( "TxLog %s:%d tpcall res=%d status=%d", __FUNCTION__, __LINE__, rv, resp->status);
+	btlogger_debug( "TxLog %s:%d tpcall res=%d status=%d", __FUNCTION__, __LINE__, rv, resp->status);
 	tpfree((char *) resp);
 	return rv;
 }
 
 static int count_records(const char *msg, char *key, int in_tx, int expect) {
 	int cnt = -1;
-	userlogc_debug( "TxLog %s:%d msg=%s key=%s in_tx=%d expect=%d", __FUNCTION__, __LINE__, msg, key, in_tx, expect);
+	btlogger_debug( "TxLog %s:%d msg=%s key=%s in_tx=%d expect=%d", __FUNCTION__, __LINE__, msg, key, in_tx, expect);
 
 	if (in_tx || start_tx(TX_TYPE_BEGIN) == TX_OK) {
 		int rv = 0;
@@ -64,7 +64,7 @@ static int count_records(const char *msg, char *key, int in_tx, int expect) {
 		for (p = prods; p->id != -1; p++) {
 			int remote = LOCAL_ACCESS;
 
-			userlogc_debug( "TxLog check product %s", p->pname);
+			btlogger_debug( "TxLog check product %s", p->pname);
 
 			if (p->pname == NULL)
 				continue;
@@ -73,27 +73,27 @@ static int count_records(const char *msg, char *key, int in_tx, int expect) {
 				remote = p->loc;
 
 			req = get_buf((remote & REMOTE_ACCESS), key, p->dbname, '1', p->id, TX_TYPE_NONE, expect);
-			userlogc_debug( "TxLog invoke prod %s (id=%d) remote=%d dbf=%s", p->pname, p->id, remote, p->dbname);
-			userlogc_debug( "TxLog xyz_access op=%c data=%s db=%s", req->op, req->data, req->db);
+			btlogger_debug( "TxLog invoke prod %s (id=%d) remote=%d dbf=%s", p->pname, p->id, remote, p->dbname);
+			btlogger_debug( "TxLog xyz_access op=%c data=%s db=%s", req->op, req->data, req->db);
 
 			rv = ((remote & REMOTE_ACCESS) ? send_req(req, &rbuf) : p->access(req, &res));
-			userlogc_debug( "TxLog invoked ok");
+			btlogger_debug( "TxLog invoked ok");
 
 			if (rv)
-				userlogc_warn( "TxLog BAD REQ %d", rv);
+				btlogger_warn( "TxLog BAD REQ %d", rv);
 
 			free_buf((remote & REMOTE_ACCESS), req);
 			rv = (rv == 0 ? atoi(res.data) : -1);
 
-			userlogc_debug( "TxLog and count is %d", rv);
+			btlogger_debug( "TxLog and count is %d", rv);
 			if (rv == -1) {
-				userlogc_warn( "TxLog Error: Db %d access error", p->id);
+				btlogger_warn( "TxLog Error: Db %d access error", p->id);
 			}
 
-			userlogc_debug( "TxLog product %s (id=%d) dbf=%s returned %d records", p->pname, p->id, p->dbname, rv);
+			btlogger_debug( "TxLog product %s (id=%d) dbf=%s returned %d records", p->pname, p->id, p->dbname, rv);
 
 			if (rv != cnt && cnt != -1) {
-				userlogc_warn( "TxLog All databases should have the same no of records: db %d cnt %d (prev was %d)", p->id, rv, cnt);
+				btlogger_warn( "TxLog All databases should have the same no of records: db %d cnt %d (prev was %d)", p->id, rv, cnt);
 				rv = -1;
 			}
 
@@ -110,22 +110,22 @@ static int count_records(const char *msg, char *key, int in_tx, int expect) {
 
 static int check_count(const char *msg, char *key, int in_tx, int expect) {
 	int rcnt;
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 
 	if ((rcnt = count_records(msg, key, 0, expect)) != expect) {
-		userlogc_warn( "TxLog WRONG NUMBER OF RECORDS: %d expected %d", rcnt, expect);
+		btlogger_warn( "TxLog WRONG NUMBER OF RECORDS: %d expected %d", rcnt, expect);
 		return -1;
 	}
 
-	userlogc( "TxLog %s: RECORD COUNT: %d expected %d", testid, rcnt, expect);
+	btlogger( "TxLog %s: RECORD COUNT: %d expected %d", testid, rcnt, expect);
 	return 0;
 }
 
 static int db_op(const char *msg, const char *data, char op, int txtype,
 				 char **prbuf, int remote, int migrating, int expect) {
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	if (msg)
-		userlogc( "TxLog %s: %s %s", testid, ((remote | REMOTE_ACCESS) ? "REMOTE" : "LOCAL"), msg);
+		btlogger( "TxLog %s: %s %s", testid, ((remote | REMOTE_ACCESS) ? "REMOTE" : "LOCAL"), msg);
 
 	if (start_tx(txtype) == TX_OK) {
 		int rv = 0;
@@ -137,7 +137,7 @@ static int db_op(const char *msg, const char *data, char op, int txtype,
 #if 0
 			if (migrating && (p->xaflags() & TMNOMIGRATE)) {
 				/* the RM does not support tx migration (see XA spec for explanation */
-				userlogc_warn( "TxLog Info: RM %d does not support tx migration (switching from remote)", p->id);
+				btlogger_warn( "TxLog Info: RM %d does not support tx migration (switching from remote)", p->id);
 				remote = !remote;
 			}
 #endif
@@ -146,13 +146,13 @@ static int db_op(const char *msg, const char *data, char op, int txtype,
 				remote = p->loc;
 
 			req = get_buf((remote & REMOTE_ACCESS), data, p->dbname, op, p->id, txtype, expect);
-			userlogc_debug( "TxLog invoke prod %s (id=%d) remote=%d dbf=%s", p->pname, p->id, remote, p->dbname);
-			userlogc_debug( "TxLog xyz_access op=%c data=%s db=%s", req->op, req->data, req->db);
+			btlogger_debug( "TxLog invoke prod %s (id=%d) remote=%d dbf=%s", p->pname, p->id, remote, p->dbname);
+			btlogger_debug( "TxLog xyz_access op=%c data=%s db=%s", req->op, req->data, req->db);
 
 			rv = ((remote & REMOTE_ACCESS) ? send_req(req, prbuf) : p->access(req, &res));
 
 			if (rv)
-				userlogc_warn( "TxLog BAD REQ %d", rv);
+				btlogger_warn( "TxLog BAD REQ %d", rv);
 
 			free_buf((remote & REMOTE_ACCESS), req);
 		}
@@ -169,7 +169,7 @@ static int db_op(const char *msg, const char *data, char op, int txtype,
  */
 static int setup() {
 	int rv;
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 
 	/* start off with no records */
 	if ((rv = db_op("DELETE AT SETUP", emps[0], '3', TX_TYPE_BEGIN_COMMIT, 0, LOCAL_ACCESS, 0, -1)) != 0)
@@ -187,7 +187,7 @@ static int setup() {
 static int teardown(int *cnt)
 {
 	int rv;
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 
 	/* delete records starting from emps[0], */
 	if ((rv = db_op("DELETE", emps[0], '3', TX_TYPE_BEGIN_COMMIT, 0, LOCAL_ACCESS, 0, -1)))
@@ -205,7 +205,7 @@ static int test0(int *cnt)
 {
 	int rv;
 
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 
 	set_test_id("Test 0");
 
@@ -251,23 +251,23 @@ static int test0(int *cnt)
 static int test1(int *cnt)
 {
 	int rv;
-	userlogc_debug( "TxLog ENTER %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog ENTER %s:%d", __FUNCTION__, __LINE__);
 
 	set_test_id("Test 1");
 	/* ask the remote service to insert a record */
 	if ((rv = db_op("INSERT 1", emps[5], '0', TX_TYPE_BEGIN, 0, REMOTE_ACCESS, 0, -1))) {
-		userlogc_warn( "TxLog LEAVE %s:%d res=%d", __FUNCTION__, __LINE__, rv);
+		btlogger_warn( "TxLog LEAVE %s:%d res=%d", __FUNCTION__, __LINE__, rv);
 		return rv;
 	}
 
 	/* ask the remote service to insert another record in the same transaction */
 	if ((rv = db_op("INSERT 2", emps[6], '0', TX_TYPE_NONE, 0, REMOTE_ACCESS, 0, -1))) {
-		userlogc_warn( "TxLog LEAVE %s:%d res=%d", __FUNCTION__, __LINE__, rv);
+		btlogger_warn( "TxLog LEAVE %s:%d res=%d", __FUNCTION__, __LINE__, rv);
 		return rv;
 	}
 	/* insert a record and end the already running transaction */
 	if ((rv = db_op("INSERT", emps[7], '0', TX_TYPE_COMMIT, 0, LOCAL_ACCESS, 1, -1))) {
-		userlogc_warn( "TxLog LEAVE %s:%d res=%d", __FUNCTION__, __LINE__, rv);
+		btlogger_warn( "TxLog LEAVE %s:%d res=%d", __FUNCTION__, __LINE__, rv);
 		return rv;
 	}
 
@@ -275,11 +275,11 @@ static int test1(int *cnt)
 
 	/* make sure the record count increases by 3 */
 	if ((rv = check_count("COUNT RECORDS", emps[0], 0, *cnt))) {
-		userlogc_warn( "TxLog LEAVE %s:%d res=%d", __FUNCTION__, __LINE__, rv);
+		btlogger_warn( "TxLog LEAVE %s:%d res=%d", __FUNCTION__, __LINE__, rv);
 		return -1;
 	}
 
-	userlogc_debug( "TxLog LEAVE %s:%d res=%d", __FUNCTION__, __LINE__, rv);
+	btlogger_debug( "TxLog LEAVE %s:%d res=%d", __FUNCTION__, __LINE__, rv);
 	return 0;
 }
 
@@ -293,7 +293,7 @@ static int test1(int *cnt)
 static int test2(int *cnt)
 {
 	int rv;
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 
 	set_test_id("Test 2");
 	/* ask the remote service to insert a record */
@@ -326,7 +326,7 @@ static int test2(int *cnt)
 static int test3(int *cnt)
 {
 	int rv;
-	userlogc_debug( "TxLog IN %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog IN %s:%d", __FUNCTION__, __LINE__);
 
 	set_test_id("Test 3");
 	/* ask the remote service to insert a record */
@@ -341,7 +341,7 @@ static int test3(int *cnt)
 	if ((rv = check_count("COUNT RECORDS", emps[0], 0, *cnt)))
 		return rv;
 
-	userlogc_debug( "TxLog OUT %s:%d success", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog OUT %s:%d success", __FUNCTION__, __LINE__);
 	return 0;
 }
 
@@ -354,7 +354,7 @@ static int test3(int *cnt)
 static int test4(int *cnt)
 {
 	int rv;
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 
 	set_test_id("Test 4");
 	/* ask the remote service to insert a record */
@@ -385,15 +385,15 @@ static int test4(int *cnt)
 static int testrc(int *cnt)
 {
 	int rv;
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 
 	set_test_id("Test 5");
 	/* ask the remote service to insert a record but to halt during commit */
 	if ((rv = tx_set_commit_return(TX_COMMIT_COMPLETED))) /* report heuristics */
-		userlogc_warn( "tx_set_commit_return error: %d" , rv);
+		btlogger_warn( "tx_set_commit_return error: %d" , rv);
 
 	if ((rv = db_op("INSERT 1", emps[4], '0', TX_TYPE_BEGIN_COMMIT_HALT, 0, REMOTE_ACCESS, 0, -1))) {
-		userlogc_warn( "tpcall error %d" , rv);
+		btlogger_warn( "tpcall error %d" , rv);
 		return rv;
 	}
 
@@ -403,7 +403,7 @@ static int testrc(int *cnt)
 	 * I also need to figure out why killing the server a number of times corrupts the
 	 * Berkeley DB (which makes recovery kind of useless)
 	 */
-	userlogc("tx status: %d (should be -1 meaning no transaction)", get_tx_status());
+	btlogger("tx status: %d (should be -1 meaning no transaction)", get_tx_status());
 	(void) tx_set_commit_return(TX_COMMIT_DECISION_LOGGED); /* return when the commit decision is logged */
 
 	return 0;
@@ -433,7 +433,7 @@ int run_tests(product_t *prod_array)
 #endif
 		{0, 0}
 	};
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 
 	prods = prod_array;
 
@@ -445,18 +445,18 @@ int run_tests(product_t *prod_array)
 
 	for (i = 0; tests[i].test != 0; i++) {
 		if ((rv = tests[i].test(&cnt))) {
-			userlogc_warn( (char*) "TxLog %s FAILED", tests[i].name);
+			btlogger_warn( (char*) "TxLog %s FAILED", tests[i].name);
 			return rv;
 		}
-		userlogc( (char*) "TxLog %s PASSED", tests[i].name);
+		btlogger( (char*) "TxLog %s PASSED", tests[i].name);
 	}
 
-	userlogc( (char*) "TxLog Tests complete");
+	btlogger( (char*) "TxLog Tests complete");
 	if ((rv = teardown(&cnt)))
 		return rv;
 
 	if (tx_close() != TX_OK) {
-		userlogc_warn( (char*) "TxLog ERROR - Could not close transaction: ");
+		btlogger_warn( (char*) "TxLog ERROR - Could not close transaction: ");
 		return fatal("ERROR - Could not close RMs");
 	}
 

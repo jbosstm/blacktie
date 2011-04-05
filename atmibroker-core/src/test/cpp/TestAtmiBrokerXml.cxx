@@ -22,7 +22,7 @@
 #include "AtmiBrokerEnv.h"
 #include "ace/OS_NS_stdlib.h"
 #include "ace/OS_NS_stdio.h"
-#include "userlogc.h"
+#include "btlogger.h"
 
 #include "malloc.h"
 #include <string.h>
@@ -39,7 +39,7 @@ void TestAtmiBrokerXml::tearDown() {
 	TestFixture::tearDown();
 }
 void TestAtmiBrokerXml::test_env() {
-	userlogc((char*) "RUNNING");
+	btlogger((char*) "RUNNING");
 	ACE_OS::putenv("BLACKTIE_CONFIGURATION_DIR=xmltest");
 	ACE_OS::putenv("BLACKTIE_CONFIGURATION=xmltest");
 	AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
@@ -139,7 +139,7 @@ void TestAtmiBrokerXml::test_env() {
 	Buffers::iterator it;
 	for (it = buffers.begin(); it != buffers.end(); ++it) {
 		Buffer* buffer = it->second;
-		userlogc((char*) "Buffer name: %s", buffer->name);
+		btlogger((char*) "Buffer name: %s", buffer->name);
 	}
 
 	AtmiBrokerEnv::discard_instance();
@@ -154,7 +154,7 @@ void TestAtmiBrokerXml::test_define_adminservice() {
 		AtmiBrokerEnv::discard_instance();
 		BT_FAIL("CAN NOT DEFINE ADMIN SERVICE");
 	} catch (std::exception& e) {
-		userlogc((char*) "define admin services test ok");
+		btlogger((char*) "define admin services test ok");
 	}
 }
 
@@ -166,6 +166,6 @@ void TestAtmiBrokerXml::test_same_service() {
 		AtmiBrokerEnv::discard_instance();
 		BT_FAIL("CAN NOT DEFINE SAME SERVICE IN DIFFERENT SERVER");
 	} catch (std::exception& e) {
-		userlogc((char*) "same services test ok");
+		btlogger((char*) "same services test ok");
 	}
 }

@@ -21,7 +21,7 @@
 
 #include <log4cxx/propertyconfigurator.h>
 
-#include "userlogc.h"
+#include "btlogger.h"
 
 static log4cxx::LoggerPtr logger;
 
@@ -36,7 +36,7 @@ BLACKTIE_CORE_DLL void init_ace() {
 #endif
 
 AtmiBrokerInit::AtmiBrokerInit() {
-    initializeLogger();
+    btlogger_init();
 
 	logger = log4cxx::Logger::getLogger("AtmiBrokerInit");
 	LOG4CXX_DEBUG(logger, (char*) "Constructed");

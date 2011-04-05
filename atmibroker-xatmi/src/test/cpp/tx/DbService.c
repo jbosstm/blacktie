@@ -22,11 +22,11 @@
 
 static void inject_fault(int xa_method, int type)
 {
-	userlogc( "TxLog inject_fault check type=0x%x", type);
+	btlogger( "TxLog inject_fault check type=0x%x", type);
 	if (type & TX_TYPE_HALT) {
 		fault_t fault1 = {0, 202, O_XA_COMMIT, XA_OK, F_HALT, (void*) 0};
 
-		userlogc( "TxLog inject_fault adding halt");
+		btlogger( "TxLog inject_fault adding halt");
 		(void) dummy_rm_add_fault(&fault1);
 	}
 }
@@ -44,7 +44,7 @@ void BAR(TPSVCINFO * svcinfo)
 	test_req_t *resp = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "test_req", 0);
 	product_t *p = products;
 
-	userlogc_debug( "TxLog %s service %s running", __FUNCTION__, TXTEST_SVC_NAME);
+	btlogger_debug( "TxLog %s service %s running", __FUNCTION__, TXTEST_SVC_NAME);
 	resp->status = -1;
 
 	inject_fault(O_XA_COMMIT, req->txtype);
@@ -53,10 +53,10 @@ void BAR(TPSVCINFO * svcinfo)
 		if (req->prod == p->id) {
 			int rv;
 			strncpy(req->db, p->dbname, sizeof(req->db));
-			userlogc_debug("TxLog Service %s %4d: prod=%8s (id=%d) op=%c tx=0x%x data=%s", TXTEST_SVC_NAME,
+			btlogger_debug("TxLog Service %s %4d: prod=%8s (id=%d) op=%c tx=0x%x data=%s", TXTEST_SVC_NAME,
 					req->id, p->pname, p->id, req->op, req->txtype, req->data);
 			rv = p->access(req, resp);
-			userlogc_debug("TxLog Service %s %4d: resp->status=%d rv=%d", TXTEST_SVC_NAME, req->id, resp->status, rv);
+			btlogger_debug("TxLog Service %s %4d: resp->status=%d rv=%d", TXTEST_SVC_NAME, req->id, resp->status, rv);
 
 			break;
 		}

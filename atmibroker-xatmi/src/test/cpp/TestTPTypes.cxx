@@ -24,14 +24,14 @@
 #include "TestTPTypes.h"
 
 void TestTPTypes::setUp() {
-	userlogc((char*) "TestTPTypes::setUp");
+	btlogger((char*) "TestTPTypes::setUp");
 	BaseTest::setUp();
 	// Do local work
 	m_allocated = NULL;
 }
 
 void TestTPTypes::tearDown() {
-	userlogc((char*) "TestTPTypes::tearDown");
+	btlogger((char*) "TestTPTypes::tearDown");
 	// Do local work
 	if (m_allocated != NULL) {
 		::tpfree( m_allocated);
@@ -41,7 +41,7 @@ void TestTPTypes::tearDown() {
 }
 
 void TestTPTypes::test_tptypes_x_octet() {
-	userlogc((char*) "test_tptypes_x_octet");
+	btlogger((char*) "test_tptypes_x_octet");
 	m_allocated = ::tpalloc((char*) "X_OCTET", NULL, 20);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -60,14 +60,14 @@ void TestTPTypes::test_tptypes_x_octet() {
 }
 
 void TestTPTypes::test_tptypes_x_common() {
-	userlogc((char*) "test_tptypes_x_common");
+	btlogger((char*) "test_tptypes_x_common");
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	BT_ASSERT(m_allocated != NULL);
 
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
-	userlogc("DEPOSITSIZE%d", sizeof(DEPOSIT));
+	btlogger("DEPOSITSIZE%d", sizeof(DEPOSIT));
 	BT_ASSERT(tperrno == 0);
 	char* toTestS = (char*) malloc(110);
 	sprintf(toTestS, "%d", toTest);
@@ -80,7 +80,7 @@ void TestTPTypes::test_tptypes_x_common() {
 }
 
 void TestTPTypes::test_tptypes_x_common_bigdata() {
-	userlogc((char*) "test_tptypes_x_common_bigdata");
+	btlogger((char*) "test_tptypes_x_common_bigdata");
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -99,14 +99,14 @@ void TestTPTypes::test_tptypes_x_common_bigdata() {
 }
 
 void TestTPTypes::test_tptypes_x_c_type() {
-	userlogc((char*) "test_tptypes_x_c_type");
+	btlogger((char*) "test_tptypes_x_c_type");
 	m_allocated = ::tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	BT_ASSERT(m_allocated != NULL);
 
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(m_allocated, type, subtype);
-	userlogc("acct_info SIZE%d", sizeof(ACCT_INFO));
+	btlogger("acct_info SIZE%d", sizeof(ACCT_INFO));
 	BT_ASSERT(tperrno == 0);
 	char* toTestS = (char*) malloc(110);
 	sprintf(toTestS, "%d", toTest);
@@ -119,7 +119,7 @@ void TestTPTypes::test_tptypes_x_c_type() {
 }
 
 void TestTPTypes::test_tptypes_x_c_type_bigdata() {
-	userlogc((char*) "test_tptypes_x_c_type_bigdata");
+	btlogger((char*) "test_tptypes_x_c_type_bigdata");
 	m_allocated = ::tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -139,7 +139,7 @@ void TestTPTypes::test_tptypes_x_c_type_bigdata() {
 
 // 8.2
 void TestTPTypes::test_tptypes_unallocated() {
-	userlogc((char*) "test_tptypes_unallocated");
+	btlogger((char*) "test_tptypes_unallocated");
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes((char*) "test", type, subtype);
@@ -150,7 +150,7 @@ void TestTPTypes::test_tptypes_unallocated() {
 }
 
 void TestTPTypes::test_tptypes_null_ptr() {
-	userlogc((char*) "test_tptypes_null_ptr");
+	btlogger((char*) "test_tptypes_null_ptr");
 	char* type = (char*) malloc(8);
 	char* subtype = (char*) malloc(16);
 	int toTest = ::tptypes(NULL, type, subtype);
@@ -161,7 +161,7 @@ void TestTPTypes::test_tptypes_null_ptr() {
 }
 
 void TestTPTypes::test_tptypes_null_type() {
-	userlogc((char*) "test_tptypes_null_type");
+	btlogger((char*) "test_tptypes_null_type");
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	BT_ASSERT(m_allocated != NULL);
 	BT_ASSERT(tperrno == 0);
@@ -178,7 +178,7 @@ void TestTPTypes::test_tptypes_null_type() {
 }
 
 void TestTPTypes::test_tptypes_null_subtype() {
-	userlogc((char*) "test_tptypes_null_subtype");
+	btlogger((char*) "test_tptypes_null_subtype");
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -194,7 +194,7 @@ void TestTPTypes::test_tptypes_null_subtype() {
 }
 
 void TestTPTypes::test_tptypes_max_type() {
-	userlogc((char*) "test_tptypes_max_type");
+	btlogger((char*) "test_tptypes_max_type");
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -210,7 +210,7 @@ void TestTPTypes::test_tptypes_max_type() {
 }
 
 void TestTPTypes::test_tptypes_max_subtype() {
-	userlogc((char*) "test_tptypes_max_subtype");
+	btlogger((char*) "test_tptypes_max_subtype");
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "abcdefghijklmnop", 0);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -226,7 +226,7 @@ void TestTPTypes::test_tptypes_max_subtype() {
 }
 
 void TestTPTypes::test_tptypes_small_type() { // cannot be tested as we can't find how big the memory is
-	userlogc((char*) "test_tptypes_small_type");
+	btlogger((char*) "test_tptypes_small_type");
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -240,7 +240,7 @@ void TestTPTypes::test_tptypes_small_type() { // cannot be tested as we can't fi
 }
 
 void TestTPTypes::test_tptypes_small_subtype() { // cannot be tested as we can't find how big the memory is
-	userlogc((char*) "test_tptypes_small_subtype");
+	btlogger((char*) "test_tptypes_small_subtype");
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "abcdefghijklmnop", 0);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -254,7 +254,7 @@ void TestTPTypes::test_tptypes_small_subtype() { // cannot be tested as we can't
 }
 
 void TestTPTypes::test_tptypes_large_type() {
-	userlogc((char*) "test_tptypes_large_type");
+	btlogger((char*) "test_tptypes_large_type");
 
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	BT_ASSERT(m_allocated != NULL);
@@ -271,7 +271,7 @@ void TestTPTypes::test_tptypes_large_type() {
 }
 
 void TestTPTypes::test_tptypes_large_subtype() {
-	userlogc((char*) "test_tptypes_large_subtype");
+	btlogger((char*) "test_tptypes_large_subtype");
 	m_allocated = ::tpalloc((char*) "X_COMMON", (char*) "abcdefghijklmnop", 0);
 	BT_ASSERT(m_allocated != NULL);
 

@@ -23,7 +23,7 @@
 #include <ace/Task.h>
 #include <tao/ORB.h>
 #include "SynchronizableObject.h"
-#include "userlogc.h"
+#include "btlogger.h"
 
 class Waiter: public ACE_Task_Base {
 public:

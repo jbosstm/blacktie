@@ -21,10 +21,10 @@
 #include "xatmi.h"
 #include "tx.h"
 
-#include "userlogc.h"
+#include "btlogger.h"
 
 char prompt(char* prompt) {
-	userlogc("Please press return after you: %s...", prompt);
+	btlogger("Please press return after you: %s...", prompt);
 	return getchar();
 }
 
@@ -44,11 +44,11 @@ int main(int argc, char **argv) {
 
 	rc = tx_open();
 	if (rc != 0) {
-		userlogc((char*) "open error: %d", rc);
+		btlogger((char*) "open error: %d", rc);
 	} else {
 		rc = tx_begin();
 		if (rc != 0) {
-			userlogc((char*) "begin error: %d", rc);
+			btlogger((char*) "begin error: %d", rc);
 		} else {
 			callflags = 0L;
 			sbufsize = 29;
@@ -63,10 +63,10 @@ int main(int argc, char **argv) {
 			tptypes(sbuf, type, subtype);
 
 			// tpcall
-			userlogc((char*) "Calling tpcall with input: %s", sbuf);
+			btlogger((char*) "Calling tpcall with input: %s", sbuf);
 			tpstatus = tpcall("BAR", sbuf, sbufsize, (char **) &retbuf,
 					&retbufsize, callflags);
-			userlogc(
+			btlogger(
 					(char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
 					retbufsize, retbuf, tpstatus, tperrno);
 
@@ -76,12 +76,12 @@ int main(int argc, char **argv) {
 			if (index == 1) {
 				rc = tx_commit();
 				if (rc != 0) {
-					userlogc((char*) "commit error: %d", rc);
+					btlogger((char*) "commit error: %d", rc);
 				}
 			} else {
 				rc = tx_rollback();
 				if (rc != 0) {
-					userlogc((char*) "rollback error: %d", rc);
+					btlogger((char*) "rollback error: %d", rc);
 				}
 			}
 
@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
 	}
 	rc = tx_close();
 	if (rc != 0) {
-		userlogc((char*) "close error: %d", rc);
+		btlogger((char*) "close error: %d", rc);
 	}
 	return rc;
 }

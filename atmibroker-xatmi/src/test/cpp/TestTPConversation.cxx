@@ -23,7 +23,7 @@
 
 #include "TestTPConversation.h"
 
-#include "userlogc.h"
+#include "btlogger.h"
 
 #include "malloc.h"
 
@@ -39,7 +39,7 @@ extern void testTPConversation_short_service(TPSVCINFO *svcinfo);
 #endif
 
 void TestTPConversation::setUp() {
-	userlogc((char*) "TestTPConversation::setUp");
+	btlogger((char*) "TestTPConversation::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 
@@ -59,7 +59,7 @@ void TestTPConversation::setUp() {
 }
 
 void TestTPConversation::tearDown() {
-	userlogc((char*) "TestTPConversation::tearDown");
+	btlogger((char*) "TestTPConversation::tearDown");
 	// Do local work
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
@@ -78,7 +78,7 @@ void TestTPConversation::test_conversation() {
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toCheck != -1);
 
-	userlogc((char*) "test_conversation");
+	btlogger((char*) "test_conversation");
 	strcpy(sendbuf, "conversate");
 	cd
 			= ::tpconnect((char*) "TestTPConversat", sendbuf, sendlen,
@@ -88,7 +88,7 @@ void TestTPConversation::test_conversation() {
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 	BT_ASSERT(cd != -1);
-	userlogc("Started conversation");
+	btlogger("Started conversation");
 	for (int i = 0; i < interationCount; i++) {
 		int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
 		sprintf(tperrnoS, "%d", tperrno);
@@ -104,13 +104,13 @@ void TestTPConversation::test_conversation() {
 		free(errorMessage);
 
 		sprintf(sendbuf, "yo%d", i);
-		//userlogc((char*) "test_conversation:%s:", sendbuf);
+		//btlogger((char*) "test_conversation:%s:", sendbuf);
 		result = ::tpsend(cd, sendbuf, sendlen, TPRECVONLY, &revent);
 		sprintf(tperrnoS, "%d", tperrno);
 		BT_ASSERT_MESSAGE(tperrnoS, tperrno == 0);
 		BT_ASSERT(result != -1);
 	}
-	userlogc("Conversed");
+	btlogger("Conversed");
 	int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEEVENT);
@@ -134,7 +134,7 @@ void TestTPConversation::test_short_conversation() {
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toCheck != -1);
 
-	userlogc((char*) "test_short_conversation");
+	btlogger((char*) "test_short_conversation");
 	cd = ::tpconnect((char*) "TestTPConversat", NULL, 0, TPRECVONLY);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
@@ -162,7 +162,7 @@ void TestTPConversation::test_short_conversation() {
 
 void testTPConversation_service(TPSVCINFO *svcinfo) {
 
-	userlogc((char*) "testTPConversation_service");
+	btlogger((char*) "testTPConversation_service");
 	bool fail = false;
 	char *sendbuf = ::tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
 	char *rcvbuf = ::tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
@@ -173,17 +173,17 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 	sprintf(errorMessage, "%s/%s", expectedResult, svcinfo->data);
 	if (strncmp(expectedResult, svcinfo->data, 10) != 0) {
 		if (svcinfo->data != NULL) {
-			userlogc("Got invalid data %s", svcinfo->data);
+			btlogger("Got invalid data %s", svcinfo->data);
 		} else {
-			userlogc("GOT A NULL");
+			btlogger("GOT A NULL");
 		}
 		fail = true;
 	} else {
 		long revent = 0;
-		userlogc("Chatting");
+		btlogger("Chatting");
 		for (int i = 0; i < interationCount; i++) {
 			sprintf(sendbuf, "hi%d", i);
-			//userlogc((char*) "testTPConversation_service:%s:", sendbuf);
+			//btlogger((char*) "testTPConversation_service:%s:", sendbuf);
 			int result = ::tpsend(svcinfo->cd, sendbuf, svcinfo->len,
 					TPRECVONLY, &revent);
 			if (result != -1) {
@@ -211,7 +211,7 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 				break;
 			}
 		}
-		userlogc("Chatted");
+		btlogger("Chatted");
 	}
 
 	if (fail) {
@@ -227,7 +227,7 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 }
 
 void testTPConversation_short_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testTPConversation_short_service");
+	btlogger((char*) "testTPConversation_short_service");
 	long sendlen = 4;
 	long revent = 0;
 	char *sendbuf = ::tpalloc((char*) "X_OCTET", NULL, sendlen);

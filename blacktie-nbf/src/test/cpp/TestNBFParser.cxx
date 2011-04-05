@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-#include "userlogc.h"
+#include "btlogger.h"
 #include "TestAssert.h"
 
 #include "TestNBFParser.h"
@@ -24,7 +24,7 @@
 #include "xatmi.h"
 
 void TestNBFParser::test_string_buf() {
-	userlogc((char*) "test_string_buf");
+	btlogger((char*) "test_string_buf");
 
 	char name[16];
 	char value[16];

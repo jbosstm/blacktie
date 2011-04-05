@@ -34,7 +34,7 @@ extern void testtpcancel_service(TPSVCINFO *svcinfo);
 #endif
 
 void TestTPCancel::setUp() {
-	userlogc((char*) "TestTPCancel::setUp");
+	btlogger((char*) "TestTPCancel::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 
@@ -53,7 +53,7 @@ void TestTPCancel::setUp() {
 }
 
 void TestTPCancel::tearDown() {
-	userlogc((char*) "TestTPCancel::tearDown");
+	btlogger((char*) "TestTPCancel::tearDown");
 	// Do local work
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
@@ -66,7 +66,7 @@ void TestTPCancel::tearDown() {
 }
 
 void TestTPCancel::test_tpcancel() {
-	userlogc((char*) "test_tpcancel");
+	btlogger((char*) "test_tpcancel");
 	int cd = ::tpacall((char*) "TestTPCancel", (char *) sendbuf, sendlen, 0);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
@@ -91,7 +91,7 @@ void TestTPCancel::test_tpcancel() {
 }
 
 void TestTPCancel::test_tpcancel_noreply() {
-	userlogc((char*) "test_tpcancel_noreply");
+	btlogger((char*) "test_tpcancel_noreply");
 	int cd = ::tpacall((char*) "TestTPCancel", (char *) sendbuf, sendlen, TPNOREPLY);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
@@ -108,7 +108,7 @@ void TestTPCancel::test_tpcancel_noreply() {
 
 // 8.5
 void TestTPCancel::test_tpcancel_baddesc() {
-	userlogc((char*) "test_tpcancel_baddesc");
+	btlogger((char*) "test_tpcancel_baddesc");
 	// CANCEL THE REQUEST
 	int cancelled = ::tpcancel(2);
 	BT_ASSERT(cancelled == -1);
@@ -116,7 +116,7 @@ void TestTPCancel::test_tpcancel_baddesc() {
 }
 
 void testtpcancel_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpcancel_service");
+	btlogger((char*) "testtpcancel_service");
 	if (!(svcinfo->flags && TPNOREPLY)) {
 		int len = 21;
 		char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);

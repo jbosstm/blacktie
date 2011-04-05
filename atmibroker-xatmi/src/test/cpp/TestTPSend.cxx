@@ -33,7 +33,7 @@ extern void testtpsend_tpsendonly_service(TPSVCINFO *svcinfo);
 #endif
 
 void TestTPSend::setUp() {
-	userlogc((char*) "TestTPSend::setUp");
+	btlogger((char*) "TestTPSend::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 	rcvlen = -1;
@@ -54,7 +54,7 @@ void TestTPSend::setUp() {
 }
 
 void TestTPSend::tearDown() {
-	userlogc((char*) "TestTPSend::tearDown");
+	btlogger((char*) "TestTPSend::tearDown");
 	// Do local work
 	if (cd != -1) {
 		::tpdiscon( cd);
@@ -70,7 +70,7 @@ void TestTPSend::tearDown() {
 }
 
 void TestTPSend::test_tpsend_recvonly() {
-	userlogc((char*) "test_tpsend_recvonly");
+	btlogger((char*) "test_tpsend_recvonly");
 
 	int toCheck = tpadvertise((char*) "TestTPSend", testtpsend_service);
 	BT_ASSERT(tperrno == 0);
@@ -84,7 +84,7 @@ void TestTPSend::test_tpsend_recvonly() {
 }
 
 void TestTPSend::test_tpsend_tpsendonly() {
-	userlogc((char*) "test_tpsend_tpsendonly");
+	btlogger((char*) "test_tpsend_tpsendonly");
 	int toCheck = tpadvertise((char*) "TestTPSend",
 			testtpsend_tpsendonly_service);
 	BT_ASSERT(tperrno == 0);
@@ -110,11 +110,11 @@ void TestTPSend::test_tpsend_tpsendonly() {
 }
 
 void testtpsend_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpsend_service");
+	btlogger((char*) "testtpsend_service");
 }
 
 void testtpsend_tpsendonly_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpsend_tpsendonly_service");
+	btlogger((char*) "testtpsend_tpsendonly_service");
 
 	long event = 0;
 	int result = ::tpsend(svcinfo->cd, svcinfo->data, svcinfo->len, TPRECVONLY,

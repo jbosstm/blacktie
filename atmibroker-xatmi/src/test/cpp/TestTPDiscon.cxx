@@ -35,7 +35,7 @@ extern void testtpdiscon_service(TPSVCINFO *svcinfo);
 #endif
 
 void TestTPDiscon::setUp() {
-	userlogc((char*) "TestTPDiscon::setUp");
+	btlogger((char*) "TestTPDiscon::setUp");
 	sendbuf = NULL;
 
 	// Setup server
@@ -60,7 +60,7 @@ void TestTPDiscon::setUp() {
 }
 
 void TestTPDiscon::tearDown() {
-	userlogc((char*) "TestTPDiscon::tearDown");
+	btlogger((char*) "TestTPDiscon::tearDown");
 	// Do local work
 	::tpfree(sendbuf);
 	if (cd != -1) {
@@ -75,25 +75,25 @@ void TestTPDiscon::tearDown() {
 }
 
 void TestTPDiscon::test_tpdiscon() {
-	userlogc((char*) "test_tpdiscon");
+	btlogger((char*) "test_tpdiscon");
 	::tpdiscon(cd);
 	BT_ASSERT(tperrno == 0);
 	cd = -1;
 }
 
 void TestTPDiscon::test_tpdiscon_baddescr() {
-	userlogc((char*) "test_tpdiscon_baddescr");
+	btlogger((char*) "test_tpdiscon_baddescr");
 	::tpdiscon(cd + 1);
 	BT_ASSERT(tperrno == TPEBADDESC);
 }
 
 void TestTPDiscon::test_tpdiscon_negdescr() {
-	userlogc((char*) "test_tpdiscon_negdescr");
+	btlogger((char*) "test_tpdiscon_negdescr");
 	::tpdiscon(-1);
 	BT_ASSERT(tperrno == TPEBADDESC);
 }
 
 void testtpdiscon_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpdiscon_service");
+	btlogger((char*) "testtpdiscon_service");
 	::sleeper(2);
 }

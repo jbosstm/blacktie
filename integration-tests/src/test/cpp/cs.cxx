@@ -21,7 +21,7 @@
 #include <stdlib.h>
 
 #include "xatmi.h"
-#include "userlogc.h"
+#include "btlogger.h"
 #include "string.h"
 
 #include "ace/Thread_Manager.h"
@@ -95,12 +95,12 @@ static void do_assert(int failonerror, int* res, int cond, const char *fmt, ...)
 
 	if (!cond) {
 		*res = 1;
-		userlogc((char*) "UNSUCCESSFULL assert %s", str);
+		btlogger((char*) "UNSUCCESSFULL assert %s", str);
 		if (failonerror)
 			_exit(1);
 	}
 
-//	userlogc((char*) "successful assert for: cond=%d (%s)", cond, str);
+//	btlogger((char*) "successful assert for: cond=%d (%s)", cond, str);
 }
 
 /**
@@ -161,34 +161,34 @@ static int do_tpcall(thr_arg_t *args) {
 	memset(rbuf, 0, rbufsz);
 
 	tptypes(sbuf, type, subtype);
-	userlogc((char *) "sbuf type: %s sbufsz: %d rbuf type: %s type: %s subtype: %s %d vrs %d",
+	btlogger((char *) "sbuf type: %s sbufsz: %d rbuf type: %s type: %s subtype: %s %d vrs %d",
 		args->sndtype, sbufsz, args->rcvtype, type, subtype, tpstatus, args->expect);
 
 	if (strstr(args->data, "T8") == args->data) {
-		userlogc((char *) "T8: startTX");
+		btlogger((char *) "T8: startTX");
 		if (startTx(true) != 0)
 			do_assert(args->failonerror, &res, false, "Could not open or begin transaction: ");
 
-		userlogc((char *) "T8: tpacall");
+		btlogger((char *) "T8: tpacall");
 		int cd = tpacall((char *) args->svc, sbuf, sbufsz, args->flags);
-		userlogc((char *) "T8: endTx");
+		btlogger((char *) "T8: endTx");
 		int txres = endTx(true);
 
-		userlogc((char *) "T8: check assert");
+		btlogger((char *) "T8: check assert");
 		do_assert(args->failonerror, &res, txres != TX_OK, "commit or close transaction succeeded with active descriptors");
 
-		userlogc((char *) "T8: tpgetrply");
+		btlogger((char *) "T8: tpgetrply");
 		tpstatus = tpgetrply(&cd, (char **) (char **) &rbuf, &rbufsz, args->flags);
-		userlogc((char *) "T8: finished");
+		btlogger((char *) "T8: finished");
 
 	} else {
-		userlogc((char *) "Invoking test");
+		btlogger((char *) "Invoking test");
 		tpstatus = tpcall((char *) args->svc, sbuf, sbufsz, (char **) &rbuf, &rbufsz, args->flags);
 	}
 
 	res = (tperrno == args->expect ? 0 : 1);
 	if (tpstatus)
-		userlogc((char *) "tpcall returned %d tperrno=%d expect=%d", tpstatus, tperrno, args->expect);
+		btlogger((char *) "tpcall returned %d tperrno=%d expect=%d", tpstatus, tperrno, args->expect);
 
 	// check that tperrno has the expected value
 	do_assert(args->failonerror, &args->result, tperrno == args->expect,
@@ -215,18 +215,18 @@ static void* work(void *args)
 
 static void signal_thread(ACE_thread_t& tid, int signum)
 {
-	userlogc((char*) "sleep 2 secs before sending signal %d to thread %d", signum, tid);
+	btlogger((char*) "sleep 2 secs before sending signal %d to thread %d", signum, tid);
 	// allow enough time for the thread to perform a tpcall request
 	ACE_OS::sleep(2);
-	userlogc((char*) "sending signal %d to thread %d", signum, tid);
+	btlogger((char*) "sending signal %d to thread %d", signum, tid);
 	int rv1 = ACE_Thread::kill (tid, signum);
-	userlogc((char*) "thread kill returned %d", rv1);
+	btlogger((char*) "thread kill returned %d", rv1);
 	// sending a signal to the process doesn't really test TPSIGRSTRT since the
 	// signal is unlikely to be sent to the thread that issued the tpcall with
 	// the TPSIGRSTRT flag set. But we test it anyway.
 #if 0
 	int rv2 = ACE_OS::kill(ACE_OS::getpid(), signum);
-	userlogc((char*) "process kill returned %d", rv2);
+	btlogger((char*) "process kill returned %d", rv2);
 #endif
 }
 
@@ -259,17 +259,17 @@ static void* work2(void *args)
 	for (int i = 0; i < ncalls; i++) {
 		params->svc = s1;
 		if ((rv = do_tpcall(params)))
-			userlogc((char*) "%s: tpcall %d error: %d", params->svc, i, rv);
+			btlogger((char*) "%s: tpcall %d error: %d", params->svc, i, rv);
 		else
 			okcalls += 1;
 		params->svc = s2;
 		if ((rv = do_tpcall(params)))
-			userlogc((char*) "%s: tpcall %d error: %d", params->svc, i, rv);
+			btlogger((char*) "%s: tpcall %d error: %d", params->svc, i, rv);
 		else
 			okcalls += 1;
 	}
 
-	userlogc("Thread (t) finished %d out of %d calls successful\n", okcalls, ncalls * 2);
+	btlogger("Thread (t) finished %d out of %d calls successful\n", okcalls, ncalls * 2);
 
 	params->result = ((okcalls == ncalls * 2)?0:1);
 	return args;
@@ -283,7 +283,7 @@ static int lotsofwork(int nthreads, ACE_THR_FUNC tfunc, thr_arg_t* arg) {
 	for (i = 0; i < nthreads; i++)
 		handles[i] = 0;
 
-	userlogc("lotsofwork: spawning %d threads\n", nthreads);
+	btlogger("lotsofwork: spawning %d threads\n", nthreads);
 	// spawn nthreads threads
 	if (ACE_Thread::spawn_n(tids, // return thread id for each thread
 		nthreads,
@@ -292,18 +292,18 @@ static int lotsofwork(int nthreads, ACE_THR_FUNC tfunc, thr_arg_t* arg) {
 		THR_JOINABLE | THR_NEW_LWP,
 		ACE_DEFAULT_THREAD_PRIORITY,
 		0, 0, handles) != (size_t) nthreads) {
-				userlogc("Unable to start request number of threads\n");
+				btlogger("Unable to start request number of threads\n");
 	}
 
 	if (arg->signum > 0)
 		signal_thread(tids[0], arg->signum);
 
-	userlogc("lotsofwork: joining ...\n");
+	btlogger("lotsofwork: joining ...\n");
 	for (int i = 0; i < nthreads; i++)
 		if (handles[i] != 0)
 			ACE_Thread::join(handles[i]);
 
-	userlogc("lotsofwork: joined res=%d\n", arg->result);
+	btlogger("lotsofwork: joined res=%d\n", arg->result);
 	delete[] tids;
 	delete[] handles;
 
@@ -354,7 +354,7 @@ static int bug212b() {
 #ifndef WIN32
 	return lotsofwork(1, ACE_THR_FUNC(&work), &args);
 #else
-	userlogc((char*) "DISABLING TEST 2121 for WIN32 build");
+	btlogger((char*) "DISABLING TEST 2121 for WIN32 build");
 	return 0;
 #endif
 }
@@ -475,10 +475,10 @@ int run_client(int argc, char **argv) {
 	if (argc > 1)
 		bug = atoi(argv[1]);
 
-	userlogc((char*) "starting test %d", bug);
+	btlogger((char*) "starting test %d", bug);
 
 	if (startTx(tx) != 0)
-		userlogc((char*) "ERROR - Could not open or begin transaction: ");
+		btlogger((char*) "ERROR - Could not open or begin transaction: ");
 	else {
 		switch (bug) {
 		case 211:	res = bug211(); break;
@@ -506,10 +506,10 @@ int run_client(int argc, char **argv) {
 		}
 
 		if (endTx(tx) != 0)
-			userlogc((char*) "ERROR - Could not commit or close transaction: ");
+			btlogger((char*) "ERROR - Could not commit or close transaction: ");
 	}
 
-	userlogc((char*) "test %d %s with code %d", bug, (res == 0 ? "passed" : "failed"), res);
+	btlogger((char*) "test %d %s with code %d", bug, (res == 0 ? "passed" : "failed"), res);
 	clientdone(0);
 
 	return res;
@@ -526,7 +526,7 @@ void BAR(TPSVCINFO * svcinfo) {
 	char *arg;
 	long larg;
 
-	userlogc((char*) "bar called  - svc=%s data=%s len=%d flags=%d rcode=%d tperrno=%d",
+	btlogger((char*) "bar called  - svc=%s data=%s len=%d flags=%d rcode=%d tperrno=%d",
 		svcinfo->name, svcinfo->data, svcinfo->len, svcinfo->flags, 99, tperrno);
 
 	decode_nvp(svcinfo->data, &arg, &larg);
@@ -538,7 +538,7 @@ void BAR(TPSVCINFO * svcinfo) {
 	} else if (strcmp(svcinfo->data, "T5") == 0) {
 		rval = TPFAIL;
 	} else if (strcmp(svcinfo->data, "T6") == 0 && arg != NULL) {
-		userlogc((char*) "bar sleeping for %d seconds", larg);
+		btlogger((char*) "bar sleeping for %d seconds", larg);
 		ACE_OS::sleep(larg);
 	}
 
@@ -552,7 +552,7 @@ void BAR(TPSVCINFO * svcinfo) {
 		tpreturn(TPFAIL, 99, buffer, sendlen, rflag);
 
 	if (tperrno)
-		userlogc((char*) "bar returned: tperrno=%d", tperrno);
+		btlogger((char*) "bar returned: tperrno=%d", tperrno);
 }
 
 void TestTPCall(TPSVCINFO * svcinfo) {
@@ -577,11 +577,11 @@ int run_server(int argc, char **argv) {
 		fprintf(stdout, "\n");
 		exit_status = serverrun();
 	} else {
-		userlogc((char*) "main Unexpected exception in serverrun()");
+		btlogger((char*) "main Unexpected exception in serverrun()");
 	}
-	userlogc((char*) "Test Server: calling serverdone()");
+	btlogger((char*) "Test Server: calling serverdone()");
 	serverdone();
-	userlogc((char*) "Test Server: returning status %d", exit_status);
+	btlogger((char*) "Test Server: returning status %d", exit_status);
 	return exit_status;
 }
 

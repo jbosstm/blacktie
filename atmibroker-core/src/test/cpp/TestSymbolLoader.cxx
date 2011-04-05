@@ -20,7 +20,7 @@
 #include "TestSymbolLoader.h"
 
 #include "AtmiBrokerEnv.h"
-#include "userlogc.h"
+#include "btlogger.h"
 #include "SymbolLoader.h"
 
 void TestSymbolLoader::setUp() {
@@ -51,7 +51,7 @@ void TestSymbolLoader::test() {
 	char* lib = (char *) env->getenv((char *) "test-lib");
 	char* symbol = (char *) env->getenv((char *) "test-symbol");
 	BT_ASSERT(::lookup_symbol(lib, symbol) != NULL);
-	userlogc((char*) "found symbol");
+	btlogger((char*) "found symbol");
 
 	AtmiBrokerEnv::discard_instance();
 }
@@ -80,5 +80,5 @@ void TestSymbolLoader::test_executable() {
 			"checkIfSymbolsCanBeLoadedFromMainExecutableOnAllPlatforms")
 			!= NULL);
 #endif
-	userlogc((char*) "found symbol");
+	btlogger((char*) "found symbol");
 }

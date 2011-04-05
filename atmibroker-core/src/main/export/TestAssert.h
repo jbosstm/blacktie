@@ -19,7 +19,7 @@
 #define _TEST_ASSERT_H_
 
 #include <cppunit/extensions/HelperMacros.h>
-#include "userlogc.h"
+#include "btlogger.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,13 +30,13 @@ extern BLACKTIE_CORE_DLL void init_ace();
 #endif
 
 #define	BTDBGPOST	\
-	userlogc_debug("POST ASSERT %s:%d", __FILE__, __LINE__)
+	btlogger_debug("POST ASSERT %s:%d", __FILE__, __LINE__)
 #define	BTDBGPRE	\
-	userlogc_debug("PRE ASSERT %s:%d", __FILE__, __LINE__)
+	btlogger_debug("PRE ASSERT %s:%d", __FILE__, __LINE__)
 #define	CHKCOND(cond)	\
-	if (!(cond)) userlogc_debug("CHKCOND ASSERT FAILED %s:%d", __FILE__, __LINE__)
+	if (!(cond)) btlogger_debug("CHKCOND ASSERT FAILED %s:%d", __FILE__, __LINE__)
 #define	CHKCOND_MESSAGE(message,cond)	\
-	if (!(cond)) userlogc_debug("CHKCOND ASSERT FAILED %s:%d - %s", __FILE__, __LINE__, message)
+	if (!(cond)) btlogger_debug("CHKCOND ASSERT FAILED %s:%d - %s", __FILE__, __LINE__, message)
 
 #define	BT_ASSERT(cond)	{\
 	bool _w12pq_u = (cond);	\
@@ -54,7 +54,7 @@ extern BLACKTIE_CORE_DLL void init_ace();
 	BTDBGPRE;CPPUNIT_ASSERT_EQUAL_MESSAGE((message),(expected),(actual));BTDBGPOST
 
 #define BT_FAIL(message)	\
-	userlogc_debug("ASSERT FAIL %s:%d", __FILE__, __LINE__);CPPUNIT_FAIL((message))
+	btlogger_debug("ASSERT FAIL %s:%d", __FILE__, __LINE__);CPPUNIT_FAIL((message))
 
 #define BT_ASSERT_DOUBLES_EQUAL(expected,actual,delta)	\
 	BTDBGPRE;CPPUNIT_ASSERT_DOUBLES_EQUAL((expected),(actual),(delta));BTDBGPOST

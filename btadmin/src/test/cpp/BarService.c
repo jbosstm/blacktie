@@ -16,7 +16,7 @@
  * MA  02110-1301, USA.
  */
 
-#include "userlogc.h"
+#include "btlogger.h"
 #include "xatmi.h"
 #include "tx.h"
 

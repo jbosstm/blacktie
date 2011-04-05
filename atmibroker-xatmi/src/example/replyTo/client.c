@@ -21,7 +21,7 @@
 
 #include "xatmi.h"
 
-#include "userlogc.h"
+#include "btlogger.h"
 
 #include "message.h"
 #include "AtmiBrokerServerControl.h"
@@ -31,7 +31,7 @@
 #endif
 
 void message_handler(TPSVCINFO * svcinfo) {
-	userlogc((char*) "client handler called %s", svcinfo->data);
+	btlogger((char*) "client handler called %s", svcinfo->data);
 }
 
 int main(int argc, char **argv) {
@@ -41,10 +41,10 @@ int main(int argc, char **argv) {
     MESSAGE *message;
 
     if (argc < 4) {
-        userlogc("Usage: %s <SERVER_NAME> <REPLY_TO> <MESSAGE>", argv[0]);
+        btlogger("Usage: %s <SERVER_NAME> <REPLY_TO> <MESSAGE>", argv[0]);
         return -1;
     } else {
-        userlogc("Running: %s %s %s %s", argv[0], argv[1], argv[2], argv[3]);
+        btlogger("Running: %s %s %s %s", argv[0], argv[1], argv[2], argv[3]);
     }
 	
     // THIS MUST BE DONE TO MAKE SURE THAT THE CLIENT CAN RECEIVE MESSAGES
@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
 #endif
     tpstatus = tpadvertise(argv[2], message_handler);
     if (tpstatus == -1 && tperrno != 0) {
-        userlogc("Service failed to advertise");
+        btlogger("Service failed to advertise");
 		return -1;
 	}
 
@@ -70,19 +70,19 @@ int main(int argc, char **argv) {
     retbufsize = 15;
     retbuf = (char *) tpalloc((char*) "X_OCTET", NULL, retbufsize);
 
-    userlogc("Please press return when you are ready to send the message: %s", message->data);
+    btlogger("Please press return when you are ready to send the message: %s", message->data);
 	getchar();
 
 	tpstatus = tpacall((char*) "FOO", (char*) message, 0, 0);
 	
 	if (tpstatus == -1 && tperrno == TPENOENT) {
-        userlogc("Service failed to operate");
+        btlogger("Service failed to operate");
 		tpfree((char*)message);
 		tpfree(retbuf);
 		return -1;
 	}
 
-    userlogc("Please press return after you have received a message");
+    btlogger("Please press return after you have received a message");
 	getchar();
 #ifndef WIN32
     sleep(2);

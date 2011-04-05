@@ -20,13 +20,13 @@
 #include "TestUserlog.h"
 
 extern "C" {
-#include "userlogc.h"
+#include "btlogger.h"
 }
 
 void TestUserlog::testLogString() {
-	userlogc("string: %s", "TestUserlog::testLogString");
+	btlogger("string: %s", "TestUserlog::testLogString");
 }
 
 void TestUserlog::testLogDecimal() {
-	userlogc("decimal: %d", 10);
+	btlogger("decimal: %d", 10);
 }

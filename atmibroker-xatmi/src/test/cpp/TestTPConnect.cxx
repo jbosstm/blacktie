@@ -34,7 +34,7 @@ extern void testtpconnect_service(TPSVCINFO *svcinfo);
 #endif
 
 void TestTPConnect::setUp() {
-	userlogc((char*) "TestTPConnect::setUp");
+	btlogger((char*) "TestTPConnect::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 
@@ -59,7 +59,7 @@ void TestTPConnect::setUp() {
 }
 
 void TestTPConnect::tearDown() {
-	userlogc((char*) "TestTPConnect::tearDown");
+	btlogger((char*) "TestTPConnect::tearDown");
 	// Do local work
 	if (cd != -1) {
 		::tpdiscon( cd);
@@ -80,7 +80,7 @@ void TestTPConnect::tearDown() {
 }
 
 void TestTPConnect::test_tpconnect() {
-	userlogc((char*) "test_tpconnect");
+	btlogger((char*) "test_tpconnect");
 	cd = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, TPRECVONLY);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
@@ -94,10 +94,10 @@ void TestTPConnect::test_tpconnect() {
 }
 
 void TestTPConnect::test_tpacall_to_TPCONV_fails() {
-	userlogc((char*) "test_tpacall_to_TPCONV_fails");
+	btlogger((char*) "test_tpacall_to_TPCONV_fails");
 
 	int cd = ::tpacall((char*) "TestTPConnect", (char *) sendbuf, sendlen, 0);
-	userlogc((char*) "test_tpacall_to_TPCONV_fails %d %d", tperrno, cd);
+	btlogger((char*) "test_tpacall_to_TPCONV_fails %d %d", tperrno, cd);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPENOENT);
@@ -110,7 +110,7 @@ void TestTPConnect::test_tpacall_to_TPCONV_fails() {
 }
 
 void TestTPConnect::test_tpconnect_double_connect() {
-	userlogc((char*) "test_tpconnect_double_connect");
+	btlogger((char*) "test_tpconnect_double_connect");
 	cd = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, TPRECVONLY);
 	cd2 = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, TPRECVONLY);
 	char* tperrnoS = (char*) malloc(110);
@@ -127,7 +127,7 @@ void TestTPConnect::test_tpconnect_double_connect() {
 }
 
 void TestTPConnect::test_tpconnect_nodata() {
-	userlogc((char*) "test_tpconnect_nodata");
+	btlogger((char*) "test_tpconnect_nodata");
 	cd = ::tpconnect((char*) "TestTPConnect", NULL, 0, TPRECVONLY);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
@@ -141,7 +141,7 @@ void TestTPConnect::test_tpconnect_nodata() {
 }
 
 void TestTPConnect::test_tpconnect_tpgetrply() {
-	userlogc((char*) "test_tpconnect");
+	btlogger((char*) "test_tpconnect");
 	cd = ::tpconnect((char*) "TestTPConnect", sendbuf, sendlen, TPRECVONLY);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
@@ -167,6 +167,6 @@ void TestTPConnect::test_tpconnect_tpgetrply() {
 }
 
 void testtpconnect_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpconnect_service");
+	btlogger((char*) "testtpconnect_service");
 	tpreturn(TPSUCCESS, 0, NULL, 0, 0);
 }

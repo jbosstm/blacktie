@@ -26,7 +26,7 @@ typedef off_t	off64_t;
 #include "apr_strings.h"
 #include "stomp.h"
 
-#include "userlogc.h"
+#include "btlogger.h"
 
 /********************************************************************************
  * 
@@ -39,13 +39,13 @@ apr_status_t stomp_connect(stomp_connection **connection_ref, const char *hostna
 	int socket_family;
 	stomp_connection *connection=NULL;
    
-	userlogc_trace("stomp_connect");
+	btlogger_trace("stomp_connect");
 	//
 	// Allocate the connection and a memory pool for the connection.
 	//
 	connection = apr_pcalloc(pool, sizeof(stomp_connection));
 	if( connection == NULL ) {
-		userlogc_warn("stomp_connect cannot allocate for pool APR_ENOMEM");
+		btlogger_warn("stomp_connect cannot allocate for pool APR_ENOMEM");
 		return APR_ENOMEM;
 	}
    
@@ -93,9 +93,9 @@ apr_status_t stomp_disconnect(stomp_connection **connection_ref)
    apr_status_t result, rc;
 	stomp_connection *connection = *connection_ref;
    
-	userlogc_trace("stomp_disconnect");
+	btlogger_trace("stomp_disconnect");
    if( connection_ref == NULL || *connection_ref==NULL ) {
-      userlogc_warn("stomp_disconnect no connection_ref APR_EGENERAL");
+      btlogger_warn("stomp_disconnect no connection_ref APR_EGENERAL");
       return APR_EGENERAL;
    }
    
@@ -124,7 +124,7 @@ apr_status_t stomp_write_buffer(stomp_connection *connection, const char *data, 
 {
    apr_size_t remaining = size;
    size=0;
-   userlogc_trace("stomp_write_buffer %d", remaining);
+   btlogger_trace("stomp_write_buffer %d", remaining);
    while( remaining>0 ) {
 	apr_size_t length = remaining;
 	apr_status_t rc = apr_socket_send(connection->socket, data, &length);
@@ -132,12 +132,12 @@ apr_status_t stomp_write_buffer(stomp_connection *connection, const char *data, 
       	remaining -= length;
       	//      size += length;
       	if( rc != APR_SUCCESS ) {
-         	userlogc_warn("stomp_write_buffer could not apr_socket_send returning %d", rc);
+         	btlogger_warn("stomp_write_buffer could not apr_socket_send returning %d", rc);
          	return rc;
       	}
-   	userlogc_trace("stomp_write_buffer rem %d", remaining);
+   	btlogger_trace("stomp_write_buffer rem %d", remaining);
    }
-   userlogc_trace("stomp_write_buffer done");
+   btlogger_trace("stomp_write_buffer done");
    return APR_SUCCESS;
 }
 
@@ -155,16 +155,16 @@ apr_status_t stomp_read_line(stomp_connection *connection, char **data, int* len
    apr_size_t bytesRead=0;
    char *p;
 
-   userlogc_trace("stomp_read_line");
+   btlogger_trace("stomp_read_line");
    rc = apr_pool_create(&tpool, pool);
    if( rc != APR_SUCCESS ) {
-      userlogc_warn("stomp_read_line could not apr_pool_create returning %d", rc);
+      btlogger_warn("stomp_read_line could not apr_pool_create returning %d", rc);
       return rc;
    }
       
    head = tail = apr_pcalloc(tpool, sizeof(data_block_list));
    if( head == NULL ) {
-      userlogc_warn("stomp_read_line could not apr_pcalloc returning APR_ENOMEM");
+      btlogger_warn("stomp_read_line could not apr_pcalloc returning APR_ENOMEM");
       return APR_ENOMEM;
    }
 
@@ -183,15 +183,15 @@ apr_status_t stomp_read_line(stomp_connection *connection, char **data, int* len
          // Keep reading bytes till end of line
          if( tail->data[i-1]=='\n') {
             // Null terminate the string instead of having the newline
-        	//userlogc_trace("Null terminating the string");
+        	//btlogger_trace("Null terminating the string");
 		    tail->data[i-1] = 0;
 			break;
          } else if( tail->data[i-1]==0 ) {
 			// Encountered 0 before end of line
 			apr_pool_destroy(tpool);
-			userlogc_warn("stomp_read_line tail->data[i-1]==0 returning APR_EGENERAL");
-			userlogc_warn("tail->data length was: %d", bytesRead);
-			userlogc_warn("tail->data was: %s", tail->data);
+			btlogger_warn("stomp_read_line tail->data[i-1]==0 returning APR_EGENERAL");
+			btlogger_warn("tail->data length was: %d", bytesRead);
+			btlogger_warn("tail->data was: %s", tail->data);
 			return APR_EGENERAL;
 		 }
          
@@ -200,7 +200,7 @@ apr_status_t stomp_read_line(stomp_connection *connection, char **data, int* len
             tail->next = apr_pcalloc(tpool, sizeof(data_block_list));
             if( tail->next == NULL ) {
                apr_pool_destroy(tpool);
-               userlogc_warn("stomp_read_line could not apr_pcalloc (2nd code block) returning APR_ENOMEM");
+               btlogger_warn("stomp_read_line could not apr_pcalloc (2nd code block) returning APR_ENOMEM");
                return APR_ENOMEM;
             }
             tail=tail->next;
@@ -215,7 +215,7 @@ apr_status_t stomp_read_line(stomp_connection *connection, char **data, int* len
    p = *data;
    if( p==NULL ) {
       apr_pool_destroy(tpool);
-      userlogc_warn("stomp_read_line could not apr_pcalloc (3rd code block) returning APR_ENOMEM");
+      btlogger_warn("stomp_read_line could not apr_pcalloc (3rd code block) returning APR_ENOMEM");
       return APR_ENOMEM;
    }
 
@@ -241,16 +241,16 @@ apr_status_t stomp_read_buffer(stomp_connection *connection, char **data, apr_po
    apr_size_t bytesRead=0;
    char *p;
 
-   userlogc_trace("stomp_read_buffer");
+   btlogger_trace("stomp_read_buffer");
    rc = apr_pool_create(&tpool, pool);
    if( rc != APR_SUCCESS ) {
-      userlogc_warn("stomp_read_buffer could not apr_pool_create returning %d", rc);
+      btlogger_warn("stomp_read_buffer could not apr_pool_create returning %d", rc);
       return rc;
    }
       
    head = tail = apr_pcalloc(tpool, sizeof(data_block_list));
    if( head == NULL ) {
-      userlogc_warn("stomp_read_buffer could not apr_pcalloc returning APR_ENONMEM");
+      btlogger_warn("stomp_read_buffer could not apr_pcalloc returning APR_ENONMEM");
       return APR_ENOMEM;
    }
    
@@ -275,9 +275,9 @@ apr_status_t stomp_read_buffer(stomp_connection *connection, char **data, apr_po
             rc = apr_socket_recv(connection->socket, endline, &length);
             CHECK_SUCCESS;
             if( endline[0] != '\n' ) {
-               userlogc_warn("stomp_read_buffer endline[0] != \\n returning APR_EGENERAL, character as a decimal: %d", endline[0]);
-               userlogc_warn("tail->data length was: %d", bytesRead);
-               userlogc_warn("tail->data was: %s", tail->data);
+               btlogger_warn("stomp_read_buffer endline[0] != \\n returning APR_EGENERAL, character as a decimal: %d", endline[0]);
+               btlogger_warn("tail->data length was: %d", bytesRead);
+               btlogger_warn("tail->data was: %s", tail->data);
                return APR_EGENERAL;
             }
             break;
@@ -288,7 +288,7 @@ apr_status_t stomp_read_buffer(stomp_connection *connection, char **data, apr_po
             tail->next = apr_pcalloc(tpool, sizeof(data_block_list));
             if( tail->next == NULL ) {
                apr_pool_destroy(tpool);
-               userlogc_warn("stomp_read_buffer could not apr_pcalloc (2nd block) returning APR_ENONMEM");
+               btlogger_warn("stomp_read_buffer could not apr_pcalloc (2nd block) returning APR_ENONMEM");
                return APR_ENOMEM;
             }
             tail=tail->next;
@@ -303,7 +303,7 @@ apr_status_t stomp_read_buffer(stomp_connection *connection, char **data, apr_po
    p = *data;
    if( p==NULL ) {
       apr_pool_destroy(tpool);
-      userlogc_warn("stomp_read_buffer could not apr_pcalloc (3rd block) returning APR_ENONMEM");
+      btlogger_warn("stomp_read_buffer could not apr_pcalloc (3rd block) returning APR_ENONMEM");
       return APR_ENOMEM;
    }
    
@@ -328,7 +328,7 @@ apr_status_t stomp_read_buffer(stomp_connection *connection, char **data, apr_po
 apr_status_t stomp_write(stomp_connection *connection, stomp_frame *frame, apr_pool_t* pool) {
    apr_status_t rc;
 
-   userlogc_trace("stomp_write");
+   btlogger_trace("stomp_write");
 #define CHECK_SUCCESS if( rc!=APR_SUCCESS ) { return rc; }
    // Write the command.
    rc = stomp_write_buffer(connection, frame->command, strlen(frame->command));
@@ -345,7 +345,7 @@ apr_status_t stomp_write(stomp_connection *connection, stomp_frame *frame, apr_p
       for (i = apr_hash_first(NULL, frame->headers); i; i = apr_hash_next(i)) {
          apr_hash_this(i, &key, NULL, &value);
 
-	 userlogc_trace("stomp_write header %s:%s", key, value);
+	 btlogger_trace("stomp_write header %s:%s", key, value);
          
          rc = stomp_write_buffer(connection, key, strlen(key));
          CHECK_SUCCESS;
@@ -371,7 +371,7 @@ apr_status_t stomp_write(stomp_connection *connection, stomp_frame *frame, apr_p
 		  rc = stomp_write_buffer(connection, "\n", 1);
 		  CHECK_SUCCESS;
 
-		  userlogc_trace("stomp_write content-length %s", length_string);
+		  btlogger_trace("stomp_write content-length %s", length_string);
 		  apr_pool_destroy(length_pool);
 	  }
    }
@@ -386,9 +386,9 @@ apr_status_t stomp_write(stomp_connection *connection, stomp_frame *frame, apr_p
       rc = stomp_write_buffer(connection, frame->body, body_length);
       CHECK_SUCCESS;
    }
-   userlogc_trace("stomp_write body");
+   btlogger_trace("stomp_write body");
    rc = stomp_write_buffer(connection, "\0\n", 2);
-   userlogc_trace("stomp_write post-amble");
+   btlogger_trace("stomp_write post-amble");
    CHECK_SUCCESS;
       
 #undef CHECK_SUCCESS
@@ -401,13 +401,13 @@ apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_p
    apr_status_t rc;
    stomp_frame *f;
 
-   userlogc_trace("stomp_read");
+   btlogger_trace("stomp_read");
    f = apr_pcalloc(pool, sizeof(stomp_frame));
    if( f == NULL ) {
-      userlogc_warn("stomp_read returning APR_ENONMEM");
+      btlogger_warn("stomp_read returning APR_ENONMEM");
       return APR_ENOMEM; } f->headers = apr_hash_make(pool);
    if( f->headers == NULL ) {
-     userlogc_warn("stomp_read returning 2nd APR_ENONMEM");
+     btlogger_warn("stomp_read returning 2nd APR_ENONMEM");
      return APR_ENOMEM;
    }
          
@@ -421,7 +421,7 @@ apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_p
       // Parse the command.
 	  rc = stomp_read_line(connection, &p, &length, pool);
 	  CHECK_SUCCESS;
-	  userlogc_trace("Read the command %s", p);
+	  btlogger_trace("Read the command %s", p);
 
       f->command = p;
       
@@ -429,7 +429,7 @@ apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_p
       while( 1 ) {
          rc = stomp_read_line(connection, &p, &length, pool);
 		 CHECK_SUCCESS;
-         userlogc_trace("Read a header: %s length: %d", p, length);
+         btlogger_trace("Read a header: %s length: %d", p, length);
 		 
 		 // Done with headers
 		 if(length == 0)
@@ -444,7 +444,7 @@ apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_p
             p2 = strstr(p,":");
             if( p2 == NULL ) {
                // Expected at 1 : to delimit the key from the value.
-               userlogc_warn("stomp_read returning APR_EGENERAL");
+               btlogger_warn("stomp_read returning APR_EGENERAL");
                return APR_EGENERAL;
             }
             
@@ -456,7 +456,7 @@ apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_p
             value = p2+1;
             
             // Insert key/value into hash table.
-            userlogc_trace("Add key %s with value %s to stomp headers", key, value);
+            btlogger_trace("Add key %s with value %s to stomp headers", key, value);
             apr_hash_set(f->headers, key, APR_HASH_KEY_STRING, value);            
          }
       }
@@ -470,11 +470,11 @@ apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_p
 			  apr_size_t bodysz;
 			  apr_size_t tlen = 0;	// number of bytes read
 
-			  userlogc_debug("Content-length %s detected", content_length);
+			  btlogger_debug("Content-length %s detected", content_length);
 
 			  bodysz = f->body_length = atoi(content_length);
 				if ((f->body = apr_pcalloc(pool, f->body_length)) == NULL) {
-					userlogc_warn("stomp_read insufficient memory for buffer");
+					btlogger_warn("stomp_read insufficient memory for buffer");
 					return APR_ENOMEM;
 				}
 
@@ -495,13 +495,13 @@ apr_status_t stomp_read(stomp_connection *connection, stomp_frame **frame, apr_p
 			  rc = apr_socket_recv(connection->socket, endbuffer, &length);
 			  CHECK_SUCCESS;
 			  if(length != 2 || endbuffer[0] != '\0' || endbuffer[1] != '\n') {
-				  userlogc_warn("stomp_read returning 2nd APR_EGENERAL %d %c %c", length, endbuffer[0], endbuffer[1]);
+				  btlogger_warn("stomp_read returning 2nd APR_EGENERAL %d %c %c", length, endbuffer[0], endbuffer[1]);
 				  return APR_EGENERAL;
                           }
 		  }
 		  else
 		  {
-			  userlogc_debug("No content-length detected");
+			  btlogger_debug("No content-length detected");
 			  // The remainder of the buffer (including the \n at the end) is the body)
 			  rc = stomp_read_buffer(connection, &f->body, pool);
 			  CHECK_SUCCESS;

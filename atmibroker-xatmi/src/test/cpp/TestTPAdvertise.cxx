@@ -35,7 +35,7 @@ extern void testtpadvertise_service_2(TPSVCINFO *svcinfo);
 #endif
 
 void TestTPAdvertise::setUp() {
-	userlogc((char*) "TestTPAdvertise::setUp");
+	btlogger((char*) "TestTPAdvertise::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 
@@ -50,7 +50,7 @@ void TestTPAdvertise::setUp() {
 }
 
 void TestTPAdvertise::tearDown() {
-	userlogc((char*) "TestTPAdvertise::tearDown");
+	btlogger((char*) "TestTPAdvertise::tearDown");
 	// Do local work
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
@@ -65,7 +65,7 @@ void TestTPAdvertise::tearDown() {
 }
 
 void TestTPAdvertise::test_tpadvertise_new_service() {
-	userlogc((char*) "test_tpadvertise_new_service");
+	btlogger((char*) "test_tpadvertise_new_service");
 	int id = ::tpadvertise((char*) "TestTPAdvertise", testtpadvertise_service);
 	BT_ASSERT(tperrno!= TPEINVAL);
 	BT_ASSERT(tperrno!= TPELIMIT);
@@ -84,7 +84,7 @@ void TestTPAdvertise::test_tpadvertise_new_service() {
 }
 
 void TestTPAdvertise::test_tpadvertise_underscore_name() {
-	userlogc((char*) "test_tpadvertise_underscore_name");
+	btlogger((char*) "test_tpadvertise_underscore_name");
 	int id = ::tpadvertise((char*) "underscore_name", testtpadvertise_service);
 	BT_ASSERT(tperrno!= TPEINVAL);
 	BT_ASSERT(tperrno!= TPELIMIT);
@@ -103,14 +103,14 @@ void TestTPAdvertise::test_tpadvertise_underscore_name() {
 }
 
 void TestTPAdvertise::test_tpadvertise_null_name_null() {
-	userlogc((char*) "test_tpadvertise_null_name_null");
+	btlogger((char*) "test_tpadvertise_null_name_null");
 	int id = ::tpadvertise(NULL, testtpadvertise_service);
 	BT_ASSERT(tperrno== TPEINVAL);
 	BT_ASSERT(id == -1);
 }
 
 void TestTPAdvertise::test_tpadvertise_idempotent() {
-	userlogc((char*) "test_tpadvertise_idempotent");
+	btlogger((char*) "test_tpadvertise_idempotent");
 	int id = ::tpadvertise((char*) "TestTPAdvertise", testtpadvertise_service);
 	BT_ASSERT(tperrno == 0);
 	char* idS = (char*) malloc(110);
@@ -123,14 +123,14 @@ void TestTPAdvertise::test_tpadvertise_idempotent() {
 }
 
 void TestTPAdvertise::test_tpadvertise_null_name_empty() {
-	userlogc((char*) "test_tpadvertise_null_name_empty");
+	btlogger((char*) "test_tpadvertise_null_name_empty");
 	int id = ::tpadvertise((char*) "", testtpadvertise_service);
 	BT_ASSERT(tperrno== TPEINVAL);
 	BT_ASSERT(id == -1);
 }
 
 void TestTPAdvertise::test_tpadvertise_different_method() {
-	userlogc((char*) "test_tpadvertise_different_method");
+	btlogger((char*) "test_tpadvertise_different_method");
 	int id = ::tpadvertise((char*) "TestTPAdvertise", testtpadvertise_service);
 	BT_ASSERT(tperrno == 0);
 	char* idS = (char*) malloc(110);
@@ -143,7 +143,7 @@ void TestTPAdvertise::test_tpadvertise_different_method() {
 }
 
 void TestTPAdvertise::test_tpadvertise_length_128() {
-	userlogc((char*) "test_tpadvertise_length_128");
+	btlogger((char*) "test_tpadvertise_length_128");
 	int id = ::tpadvertise((char*) "abcdefghij0123456789abcdefghij0123456789abcdefghij0123456789abcdefghij0123456789abcdefghij0123456789abcdefghij0123456789abcdefg", testtpadvertise_service);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(id != -1);
@@ -153,7 +153,7 @@ void TestTPAdvertise::test_tpadvertise_length_128() {
 }
 
 void TestTPAdvertise::test_tpadvertise_readvertise() {
-	userlogc((char*) "test_tpadvertise_readvertise");
+	btlogger((char*) "test_tpadvertise_readvertise");
 	int id = ::tpadvertise((char*) "TestTPAdvertise", testtpadvertise_service);
 	BT_ASSERT(id != -1);
 	BT_ASSERT(tperrno == 0);
@@ -179,7 +179,7 @@ void TestTPAdvertise::test_tpadvertise_readvertise() {
 }
 
 void testtpadvertise_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpadvertise_service");
+	btlogger((char*) "testtpadvertise_service");
 	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, 35);
 	sprintf(toReturn, "testtpadvertise_service%s", svcinfo->data);
 	// Changed length from 0L to svcinfo->len
@@ -187,7 +187,7 @@ void testtpadvertise_service(TPSVCINFO *svcinfo) {
 }
 
 void testtpadvertise_service_2(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpadvertise_service_2");
+	btlogger((char*) "testtpadvertise_service_2");
 	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, 25);
 	strcpy(toReturn, "testtpadvertise_service_2");
 	// Changed length from 0L to svcinfo->len

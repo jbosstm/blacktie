@@ -19,13 +19,13 @@
 #define __REQUEST_H
 
 #include "atmiBrokerCoreMacro.h"
-#include "userlogc.h"
+#include "btlogger.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <userlogc.h>
+#include <btlogger.h>
 #include <xatmi.h>
 #include <tx.h>
 

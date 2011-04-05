@@ -19,7 +19,7 @@
 
 #include "xatmi.h"
 #include "btnbf.h"
-#include "userlogc.h"
+#include "btlogger.h"
 #include "string.h"
 
 void NBF(TPSVCINFO * svcinfo) {
@@ -32,25 +32,25 @@ void NBF(TPSVCINFO * svcinfo) {
 
 	rc = btgetattribute(buf, (char*)"name", 0, (char*) name, &len);
 	if(rc == 0) {
-		userlogc((char*) "get name value is %s", name);
+		btlogger((char*) "get name value is %s", name);
 	}
 
 	len = 0;
 	rc = btgetattribute(buf, (char*)"id", 0, (char*)&id, &len);
 	if(rc == 0) {
-		userlogc((char*) "get id value is %d", id);
+		btlogger((char*) "get id value is %d", id);
 	}
 
-	userlogc((char*)"remove attr");
+	btlogger((char*)"remove attr");
 	rc = btdelattribute(buf, (char*)"name", 0);
 	if(rc == 0) {
-		userlogc((char*) "remove name");
+		btlogger((char*) "remove name");
 	}
 
 	id = 1234;
 	rc = btsetattribute(&buf, (char*)"id", 0, (char*)&id, sizeof(id));
 	if(rc == 0) {
-		userlogc((char*) "set id value to 1234");
+		btlogger((char*) "set id value to 1234");
 	}
 
 	tpreturn(TPSUCCESS, 0, buf, strlen(buf), 0);

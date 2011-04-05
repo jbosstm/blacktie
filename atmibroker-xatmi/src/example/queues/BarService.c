@@ -19,7 +19,7 @@
 
 #include "xatmi.h"
 #include "btxatmi.h"
-#include "userlogc.h"
+#include "btlogger.h"
 #include "string.h"
 
 void BAR(TPSVCINFO * svcinfo) {
@@ -28,7 +28,7 @@ void BAR(TPSVCINFO * svcinfo) {
 	int rc;
 	msg_opts_t mopts;
 	
-	userlogc((char*) "bar called  - svc: %s data %s len: %d flags: %d", svcinfo->name, svcinfo->data, svcinfo->len, svcinfo->flags);
+	btlogger((char*) "bar called  - svc: %s data %s len: %d flags: %d", svcinfo->name, svcinfo->data, svcinfo->len, svcinfo->flags);
 
 	mopts.priority = 0;
 	mopts.ttl = 0;

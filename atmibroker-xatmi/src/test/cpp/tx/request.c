@@ -28,45 +28,45 @@ product_t products[] = {
 
 /* helper methods for controling transactions */
 int is_begin(enum TX_TYPE txtype) {
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	return (txtype & TX_TYPE_BEGIN);
 }
 int is_commit(enum TX_TYPE txtype) {
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	return (txtype & TX_TYPE_COMMIT);
 }
 int is_abort(enum TX_TYPE txtype) {
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	return (txtype & TX_TYPE_ABORT);
 }
 int start_tx(enum TX_TYPE txtype) {
 	int rv = TX_OK;
 
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	if (is_begin(txtype)) {
-		userlogc_debug( "TxLog - Starting Transaction");
+		btlogger_debug( "TxLog - Starting Transaction");
 		rv = tx_begin();
 	}
 
 	if (rv != TX_OK)
-		userlogc_warn( "TxLog TX ERROR %d starting transaction", rv);
+		btlogger_warn( "TxLog TX ERROR %d starting transaction", rv);
 
 	return rv;
 }
 int end_tx(enum TX_TYPE txtype) {
 	int rv = TX_OK;
-	userlogc_debug( "%s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "%s:%d", __FUNCTION__, __LINE__);
 
 	if (is_commit(txtype)) {
-		userlogc_debug( "TxLog - Commiting transaction");
+		btlogger_debug( "TxLog - Commiting transaction");
 		rv = tx_commit();
 	} else if (is_abort(txtype)) {
-		userlogc_debug( "TxLog - Rolling back transaction");
+		btlogger_debug( "TxLog - Rolling back transaction");
 		rv = tx_rollback();
 	}
 
 	if (rv != TX_OK)
-		userlogc_warn( "TxLog TX finish error %d", rv);
+		btlogger_warn( "TxLog TX finish error %d", rv);
 
 	return rv;
 }
@@ -74,12 +74,12 @@ int end_tx(enum TX_TYPE txtype) {
 int is_tx_in_state(enum TX_TYPE txtype) {
 	int txs;
 	int ts;
-/*	userlogc_debug( "TxLog %s:%d %d", __FUNCTION__, __LINE__, txtype);*/
+/*	btlogger_debug( "TxLog %s:%d %d", __FUNCTION__, __LINE__, txtype);*/
 	
 	ts = (txtype == TX_TYPE_NONE ? -1 : TX_ACTIVE);
 	txs = get_tx_status();
 
-	userlogc_debug("TxLog validating tx status actual %d vrs desired %d", txs, ts);
+	btlogger_debug("TxLog validating tx status actual %d vrs desired %d", txs, ts);
 
 	return (txs == ts);
 }
@@ -90,18 +90,18 @@ int get_tx_status()
 	int rv = tx_info(&txinfo);
 
 	if (rv < 0) {
-		userlogc_warn("TxLog is_tx_in_state tx_info error: %d", rv);
+		btlogger_warn("TxLog is_tx_in_state tx_info error: %d", rv);
 		return rv;
 	}
 
-	userlogc_debug("TxLog tx status %d", txinfo.transaction_state);
+	btlogger_debug("TxLog tx status %d", txinfo.transaction_state);
 
 	return (txinfo.transaction_state);
 }
 
 static int reqid = 0;
 static void _init_req(test_req_t *req, int prodid, const char *dbfile, const char *data, char op, enum TX_TYPE txtype, int expect) {
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	req->prod = prodid;
 	req->txtype = txtype;
 	req->expect = expect;
@@ -119,7 +119,7 @@ static void _init_req(test_req_t *req, int prodid, const char *dbfile, const cha
 
 test_req_t * get_buf(int remote, const char *data, const char *dbfile, char op, int prod, enum TX_TYPE txtype, int expect) {
 	test_req_t *req;
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 
 	if (remote)
 		req = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "test_req", 0);
@@ -138,7 +138,7 @@ test_req_t * get_buf(int remote, const char *data, const char *dbfile, char op, 
 }
 
 void free_buf(int remote, test_req_t *req) {
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	if (remote)
 		tpfree((char *) req);
 	else
@@ -147,30 +147,30 @@ void free_buf(int remote, test_req_t *req) {
 
 int fail(const char *reason, int ret)
 {
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
-	userlogc_warn( "TxLog %s: %d\n", reason, ret);
+	btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	btlogger_warn( "TxLog %s: %d\n", reason, ret);
 	return ret;
 }
 
 int fatal(const char *msg)
 {
-	userlogc_debug( "TxLog %s:%d: %s", __FUNCTION__, __LINE__, msg);
+	btlogger_debug( "TxLog %s:%d: %s", __FUNCTION__, __LINE__, msg);
 	return -1;
 }
 
 long null_xaflags()
 {
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	return 0L;
 }
 
 int null_access(test_req_t *req, test_req_t *resp)
 {
-	userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+	btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 	resp->status = 0;
-	(void) userlogc_snprintf(resp->data, sizeof(resp->data), "%d", req->expect);
+	(void) btlogger_snprintf(resp->data, sizeof(resp->data), "%d", req->expect);
 
-	userlogc_debug( "TxLog null_access: prod id=%d (%s) op=%c res=%s", req->prod, req->db, req->op, resp->data);
+	btlogger_debug( "TxLog null_access: prod id=%d (%s) op=%c res=%s", req->prod, req->db, req->op, resp->data);
 
 	return 0;
 }

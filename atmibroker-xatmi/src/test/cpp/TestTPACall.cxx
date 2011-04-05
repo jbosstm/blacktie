@@ -31,7 +31,7 @@ extern void testtpacall_service(TPSVCINFO *svcinfo);
 #endif
 
 void TestTPACall::setUp() {
-	userlogc((char*) "TestTPACall::setUp");
+	btlogger((char*) "TestTPACall::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 
@@ -58,7 +58,7 @@ void TestTPACall::setUp() {
 }
 
 void TestTPACall::tearDown() {
-	userlogc((char*) "TestTPACall::tearDown");
+	btlogger((char*) "TestTPACall::tearDown");
 
 	if (cd != -1) {
 		int cancelled = ::tpcancel(cd);
@@ -82,7 +82,7 @@ void TestTPACall::tearDown() {
 }
 
 void TestTPACall::test_tpacall() {
-	userlogc((char*) "test_tpacall");
+	btlogger((char*) "test_tpacall");
 
 	int cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, sendlen,
 			TPNOREPLY);
@@ -105,7 +105,7 @@ void TestTPACall::test_tpacall() {
 }
 
 void TestTPACall::test_tpconnect_to_non_TPCONV_fails() {
-	userlogc((char*) "test_tpconnect_to_non_TPCONV_fails");
+	btlogger((char*) "test_tpconnect_to_non_TPCONV_fails");
 	int cd = ::tpconnect((char*) "TestTPACall", sendbuf, sendlen, TPRECVONLY);
 	char* tperrnoS = (char*) malloc(110);
 	sprintf(tperrnoS, "%d", tperrno);
@@ -120,7 +120,7 @@ void TestTPACall::test_tpconnect_to_non_TPCONV_fails() {
 
 // 9.1.1
 void TestTPACall::test_tpacall_x_octet() {
-	userlogc((char*) "test_tpacall_x_octet");
+	btlogger((char*) "test_tpacall_x_octet");
 
 	int cd = tpacall((char*) "GREETSVC", sendbuf, 25, TPNOREPLY);
 	BT_ASSERT(tperrno == TPENOENT);
@@ -131,7 +131,7 @@ void TestTPACall::test_tpacall_x_octet() {
 }
 
 void TestTPACall::test_tpacall_tprecv() {
-	userlogc((char*) "test_tpacall_tprecv");
+	btlogger((char*) "test_tpacall_tprecv");
 
 	cd = ::tpacall((char*) "TestTPACall", (char *) sendbuf, sendlen, 0);
 	char* tperrnoS = (char*) malloc(110);
@@ -159,7 +159,7 @@ void TestTPACall::test_tpacall_tprecv() {
 }
 
 void testtpacall_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpacall_service");
+	btlogger((char*) "testtpacall_service");
 	int len = 20;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	strcpy(toReturn, "testtpacall_service");

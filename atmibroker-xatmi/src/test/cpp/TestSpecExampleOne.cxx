@@ -33,7 +33,7 @@ extern void debit_credit_svc(TPSVCINFO *svcinfo);
 #endif
 
 void TestSpecExampleOne::setUp() {
-	userlogc((char*) "TestSpecExampleOne::setUp");
+	btlogger((char*) "TestSpecExampleOne::setUp");
 	// Setup server
 	BaseServerTest::setUp();
 
@@ -48,7 +48,7 @@ void TestSpecExampleOne::setUp() {
 }
 
 void TestSpecExampleOne::tearDown() {
-	userlogc((char*) "TestSpecExampleOne::tearDown");
+	btlogger((char*) "TestSpecExampleOne::tearDown");
 	// Do local work
 	int toCheck = tpunadvertise((char*) "DEBIT");
 	BT_ASSERT(tperrno == 0);
@@ -66,7 +66,7 @@ void TestSpecExampleOne::tearDown() {
 
 void TestSpecExampleOne::test_specexampleone() {
 	init_ace();
-	userlogc((char*) "TestSpecExampleOne::test_specexampleone");
+	btlogger((char*) "TestSpecExampleOne::test_specexampleone");
 	DATA_BUFFER *dptr; /* DATA_BUFFER is a typed buffer of type */
 	DATA_BUFFER *cptr; /* X_C_TYPE and subtype dc_buf. The structure */
 	long dlen = 0;
@@ -95,7 +95,7 @@ void TestSpecExampleOne::test_specexampleone() {
 /* this routine is used for DEBIT and CREDIT */
 void debit_credit_svc(TPSVCINFO *svcinfo) {
 	init_ace();
-	userlogc((char*) "debit_credit_svc");
+	btlogger((char*) "debit_credit_svc");
 	DATA_BUFFER *dc_ptr;
 	int rval;
 	/* extract request typed buffer */

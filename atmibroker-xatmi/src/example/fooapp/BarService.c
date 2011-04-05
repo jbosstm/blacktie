@@ -18,7 +18,7 @@
 #include <stdlib.h>
 
 #include "xatmi.h"
-#include "userlogc.h"
+#include "btlogger.h"
 #include "string.h"
 
 #ifdef __cplusplus
@@ -28,7 +28,7 @@ void BAR(TPSVCINFO * svcinfo) {
 	char* buffer;
 	int sendlen;
 
-	userlogc((char*) "bar called  - svc: %s data %s len: %d flags: %d",
+	btlogger((char*) "bar called  - svc: %s data %s len: %d flags: %d",
 			svcinfo->name, svcinfo->data, svcinfo->len, svcinfo->flags);
 
 	sendlen = 15;

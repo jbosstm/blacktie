@@ -32,7 +32,7 @@ extern void testtpservice_service(TPSVCINFO *svcinfo);
 #endif
 
 void TestTPService::setUp() {
-	userlogc((char*) "TestTPService::setUp");
+	btlogger((char*) "TestTPService::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 
@@ -52,7 +52,7 @@ void TestTPService::setUp() {
 }
 
 void TestTPService::tearDown() {
-	userlogc((char*) "TestTPService::tearDown");
+	btlogger((char*) "TestTPService::tearDown");
 	// Do local work
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
@@ -67,7 +67,7 @@ void TestTPService::tearDown() {
 
 #include "malloc.h"
 void TestTPService::test_tpservice_notpreturn() {
-	userlogc((char*) "test_tpservice_notpreturn");
+	btlogger((char*) "test_tpservice_notpreturn");
 
 	int id = ::tpcall((char*) "TestTPService", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
 
@@ -80,5 +80,5 @@ void TestTPService::test_tpservice_notpreturn() {
 }
 
 void testtpservice_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpservice_service");
+	btlogger((char*) "testtpservice_service");
 }

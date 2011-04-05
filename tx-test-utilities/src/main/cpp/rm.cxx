@@ -17,7 +17,7 @@
  */
 #include "xa.h"
 #include "testrm.h"
-#include <userlogc.h>
+#include <btlogger.h>
 #include "SynchronizableObject.h"
 
 #include <stdlib.h>
@@ -68,7 +68,7 @@ int dummy_rm_del_faults()
 	fault_t *curr, *prev = 0;
 	int rv = 0;
 
-	userlogc_debug("dummy_rm: del_faults:");
+	btlogger_debug("dummy_rm: del_faults:");
 	_lock.lock();
 	for (curr = faults; curr; prev = curr, curr = curr->next) {
 		if (prev == NULL)
@@ -84,7 +84,7 @@ int dummy_rm_del_faults()
 	}
 	_lock.unlock();
 
-	userlogc_debug("dummy_rm: deleted %d faults", rv);
+	btlogger_debug("dummy_rm: deleted %d faults", rv);
 
 	return rv;
 }
@@ -93,7 +93,7 @@ int dummy_rm_del_fault(int id)
 {
 	fault_t *curr, *prev = 0;
 
-	userlogc_debug("dummy_rm: del_fault: %d", id);
+	btlogger_debug("dummy_rm: del_fault: %d", id);
 
 	if (id == -1)
 		return dummy_rm_del_faults();
@@ -124,7 +124,7 @@ int dummy_rm_add_fault(fault_t *fault)
 {
 	fault_t *last;
 
-	userlogc_debug("dummy_rm: del_fault:");
+	btlogger_debug("dummy_rm: del_fault:");
 
 	if (fault == 0)
 		return 1;
@@ -180,16 +180,16 @@ static int apply_faults(XID *xid, enum XA_OP op, int rmid)
 	long fc = 0L;
 	int rc = 0;
 
-	userlogc_debug("dummy_rm: apply_faults: op=%d rmid=%d\n", op, rmid);
+	btlogger_debug("dummy_rm: apply_faults: op=%d rmid=%d\n", op, rmid);
 
 	_lock.lock();
 	for (f = faults; f; f = f->next) {
 		fc += 1;
 
 		if (fc == 100)
-			userlogc_debug("dummy_rm: too many fault specifications\n");
+			btlogger_debug("dummy_rm: too many fault specifications\n");
 		if (f->rmid == rmid && f->op == op) {
-			userlogc_debug("dummy_rm: applying fault %d to op %d rc %d\n", f->xf, op, f->rc);
+			btlogger_debug("dummy_rm: applying fault %d to op %d rc %d\n", f->xf, op, f->rc);
 			switch (f->xf) {
 			default:
 				break;
@@ -202,9 +202,9 @@ static int apply_faults(XID *xid, enum XA_OP op, int rmid)
 				larg = (long*) f->arg;
 
 				if (larg == 0 || *larg < 0L || *larg > 3600L) {
-					userlogc_warn("dummy_rm: sleep period is invalid arg=%ld", larg == 0 ? 0 : *larg);
+					btlogger_warn("dummy_rm: sleep period is invalid arg=%ld", larg == 0 ? 0 : *larg);
 				} else {
-					userlogc_debug("dummy_rm: delaying for %ld seconds\n", *larg);
+					btlogger_debug("dummy_rm: delaying for %ld seconds\n", *larg);
 					(void) ACE_OS::sleep(*larg);
 				}
 				break;
@@ -212,14 +212,14 @@ static int apply_faults(XID *xid, enum XA_OP op, int rmid)
 
 			rc = f->rc;
 			_lock.unlock();
-			userlogc_debug("dummy_rm: fault return: %d", rc);
+			btlogger_debug("dummy_rm: fault return: %d", rc);
 
 			return rc;
 		}
 	}
 	_lock.unlock();
 
-	userlogc_debug("dummy_rm: fault return: XA_OK\n");
+	btlogger_debug("dummy_rm: fault return: XA_OK\n");
 	return XA_OK;
 }
 

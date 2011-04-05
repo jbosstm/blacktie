@@ -25,7 +25,7 @@
 #include "malloc.h"
 
 void TestTPRealloc::setUp() {
-	userlogc((char*) "TestTPRealloc::setUp");
+	btlogger((char*) "TestTPRealloc::setUp");
 	m_allocated = NULL;
 	m_nonallocated = NULL;
 	BaseTest::setUp();
@@ -34,27 +34,27 @@ void TestTPRealloc::setUp() {
 }
 
 void TestTPRealloc::tearDown() {
-	userlogc((char*) "TestTPRealloc::tearDown");
+	btlogger((char*) "TestTPRealloc::tearDown");
 	if (m_allocated) {
 		// Do local work
-		userlogc((char*) "TestTPRealloc::tearDown free 1");
+		btlogger((char*) "TestTPRealloc::tearDown free 1");
 		::tpfree( m_allocated);
 		m_allocated = NULL;
-		userlogc((char*) "TestTPRealloc::tearDown freed 1");
+		btlogger((char*) "TestTPRealloc::tearDown freed 1");
 	}
 	if (m_nonallocated != NULL) {
-		userlogc((char*) "TestTPRealloc::tearDown free 2");
+		btlogger((char*) "TestTPRealloc::tearDown free 2");
 		free( m_nonallocated);
 		m_nonallocated = NULL;
-		userlogc((char*) "TestTPRealloc::tearDown freed 2");
+		btlogger((char*) "TestTPRealloc::tearDown freed 2");
 	}
 	BaseTest::tearDown();
-	userlogc((char*) "TestTPRealloc::tornDown");
+	btlogger((char*) "TestTPRealloc::tornDown");
 }
 
 // X_OCTET
 void TestTPRealloc::test_tprealloc_negative_x_octet() {
-	userlogc("test_tprealloc_negative_x_octet");
+	btlogger("test_tprealloc_negative_x_octet");
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -64,7 +64,7 @@ void TestTPRealloc::test_tprealloc_negative_x_octet() {
 
 // THIS DOES NOT WORK AS YOU CANNOT REALLOC A ZERO BUFFER AS IT CANT BE FOUND
 void TestTPRealloc::test_tprealloc_zero_x_octet() {
-	userlogc("test_tprealloc_zero_x_octet");
+	btlogger("test_tprealloc_zero_x_octet");
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -83,7 +83,7 @@ void TestTPRealloc::test_tprealloc_zero_x_octet() {
 }
 
 void TestTPRealloc::test_tprealloc_larger_x_octet() {
-	userlogc("test_tprealloc_larger_x_octet");
+	btlogger("test_tprealloc_larger_x_octet");
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -102,7 +102,7 @@ void TestTPRealloc::test_tprealloc_larger_x_octet() {
 }
 
 void TestTPRealloc::test_tprealloc_smaller_x_octet() {
-	userlogc("test_tprealloc_smaller_x_octet");
+	btlogger("test_tprealloc_smaller_x_octet");
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, 50);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -125,7 +125,7 @@ void TestTPRealloc::test_tprealloc_smaller_x_octet() {
 }
 
 void TestTPRealloc::test_tprealloc_samesize_x_octet() {
-	userlogc("test_tprealloc_samesize_x_octet");
+	btlogger("test_tprealloc_samesize_x_octet");
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, 100);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -147,7 +147,7 @@ void TestTPRealloc::test_tprealloc_samesize_x_octet() {
 }
 
 void TestTPRealloc::test_tprealloc_multi_x_octet() {
-	userlogc("test_tprealloc_multi_x_octet");
+	btlogger("test_tprealloc_multi_x_octet");
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -174,7 +174,7 @@ void TestTPRealloc::test_tprealloc_multi_x_octet() {
 
 // 8.2
 void TestTPRealloc::test_tprealloc_nonbuffer() {
-	userlogc("test_tprealloc_nonbuffer");
+	btlogger("test_tprealloc_nonbuffer");
 	m_nonallocated = (char*) malloc(10);
 	char* toFree = m_nonallocated;
 	m_nonallocated = ::tprealloc(m_nonallocated, 10);
@@ -183,14 +183,14 @@ void TestTPRealloc::test_tprealloc_nonbuffer() {
 }
 
 void TestTPRealloc::test_tprealloc_null() {
-	userlogc("test_tprealloc_null");
+	btlogger("test_tprealloc_null");
 	m_nonallocated = ::tprealloc(NULL, 10);
 	BT_ASSERT(tperrno == TPEINVAL);
 }
 
 // X_COMMON
 void TestTPRealloc::test_tprealloc_negative_x_common() {
-	userlogc("test_tprealloc_negative_x_common");
+	btlogger("test_tprealloc_negative_x_common");
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -203,7 +203,7 @@ void TestTPRealloc::test_tprealloc_negative_x_common() {
 }
 
 void TestTPRealloc::test_tprealloc_zero_x_common() {
-	userlogc("test_tprealloc_zero_x_common");
+	btlogger("test_tprealloc_zero_x_common");
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -223,7 +223,7 @@ void TestTPRealloc::test_tprealloc_zero_x_common() {
 }
 
 void TestTPRealloc::test_tprealloc_larger_x_common() {
-	userlogc("test_tprealloc_larger_x_common");
+	btlogger("test_tprealloc_larger_x_common");
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -246,7 +246,7 @@ void TestTPRealloc::test_tprealloc_larger_x_common() {
 }
 
 void TestTPRealloc::test_tprealloc_smaller_x_common() {
-	userlogc("test_tprealloc_smaller_x_common");
+	btlogger("test_tprealloc_smaller_x_common");
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -266,7 +266,7 @@ void TestTPRealloc::test_tprealloc_smaller_x_common() {
 }
 
 void TestTPRealloc::test_tprealloc_samesize_x_common() {
-	userlogc("test_tprealloc_samesize_x_common");
+	btlogger("test_tprealloc_samesize_x_common");
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -286,7 +286,7 @@ void TestTPRealloc::test_tprealloc_samesize_x_common() {
 }
 
 void TestTPRealloc::test_tprealloc_multi_x_common() {
-	userlogc("test_tprealloc_multi_x_common");
+	btlogger("test_tprealloc_multi_x_common");
 	m_allocated = tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -312,7 +312,7 @@ void TestTPRealloc::test_tprealloc_multi_x_common() {
 
 // X_C_TYPE
 void TestTPRealloc::test_tprealloc_negative_x_c_type() {
-	userlogc("test_tprealloc_negative_x_c_type");
+	btlogger("test_tprealloc_negative_x_c_type");
 	m_allocated = tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -322,7 +322,7 @@ void TestTPRealloc::test_tprealloc_negative_x_c_type() {
 }
 
 void TestTPRealloc::test_tprealloc_zero_x_c_type() {
-	userlogc("test_tprealloc_zero_x_c_type");
+	btlogger("test_tprealloc_zero_x_c_type");
 	m_allocated = tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -342,7 +342,7 @@ void TestTPRealloc::test_tprealloc_zero_x_c_type() {
 }
 
 void TestTPRealloc::test_tprealloc_larger_x_c_type() {
-	userlogc("test_tprealloc_larger_x_c_type");
+	btlogger("test_tprealloc_larger_x_c_type");
 	m_allocated = tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -361,7 +361,7 @@ void TestTPRealloc::test_tprealloc_larger_x_c_type() {
 }
 
 void TestTPRealloc::test_tprealloc_smaller_x_c_type() {
-	userlogc("test_tprealloc_smaller_x_c_type");
+	btlogger("test_tprealloc_smaller_x_c_type");
 	m_allocated = tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -381,7 +381,7 @@ void TestTPRealloc::test_tprealloc_smaller_x_c_type() {
 }
 
 void TestTPRealloc::test_tprealloc_samesize_x_c_type() {
-	userlogc("test_tprealloc_samesize_x_c_type");
+	btlogger("test_tprealloc_samesize_x_c_type");
 	m_allocated = tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	BT_ASSERT(m_allocated != NULL);
 
@@ -401,7 +401,7 @@ void TestTPRealloc::test_tprealloc_samesize_x_c_type() {
 
 void TestTPRealloc::test_tprealloc_multi_x_c_type() {
 	char msg[1024];
-	userlogc("test_tprealloc_multi_x_c_type");
+	btlogger("test_tprealloc_multi_x_c_type");
 	m_allocated = tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	BT_ASSERT(m_allocated != NULL);
 

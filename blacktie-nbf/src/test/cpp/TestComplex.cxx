@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include "btnbf.h"
 #include "xatmi.h"
-#include "userlogc.h"
+#include "btlogger.h"
 
 extern "C" {
 #include "AtmiBrokerClientControl.h"
@@ -35,7 +35,7 @@ void TestComplex::tearDown() {
 }
 
 void TestComplex::test_attribute() {
-	userlogc((char*) "test_attribute");
+	btlogger((char*) "test_attribute");
 	int rc;
 	char name[16];
 	long id;
@@ -64,7 +64,7 @@ void TestComplex::test_attribute() {
 
 	char* tmp_employee;
 	for(int i = 0; i < n; i++) {
-		userlogc((char*) "get employee for index %d", i);
+		btlogger((char*) "get employee for index %d", i);
 		rc = btgetattribute(buf, (char*)"employee", i, (char*) &tmp_employee, &len);
 		BT_ASSERT(rc == 0);
 
@@ -72,7 +72,7 @@ void TestComplex::test_attribute() {
 		btgetattribute(tmp_employee, (char*)"id", 0, (char*) &id, &len);
 		len = 16;
 		btgetattribute(tmp_employee, (char*)"name", 0, (char*) name, &len);
-		userlogc((char*)"id = %d, name = %s", id, name);
+		btlogger((char*)"id = %d, name = %s", id, name);
 		tpfree(tmp_employee);
 	}
 

@@ -24,12 +24,12 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern BLACKTIE_CORE_DLL void initializeLogger();
-extern BLACKTIE_CORE_DLL void userlogc(const char * format, ...);
-extern BLACKTIE_CORE_DLL void userlogc_trace(const char * format, ...);
-extern BLACKTIE_CORE_DLL void userlogc_debug(const char * format, ...);
-extern BLACKTIE_CORE_DLL void userlogc_warn(const char * format, ...);
-extern BLACKTIE_CORE_DLL int userlogc_snprintf(char *str, size_t size, const char * format, ...);
+extern BLACKTIE_CORE_DLL void btlogger_init();
+extern BLACKTIE_CORE_DLL void btlogger(const char * format, ...);
+extern BLACKTIE_CORE_DLL void btlogger_trace(const char * format, ...);
+extern BLACKTIE_CORE_DLL void btlogger_debug(const char * format, ...);
+extern BLACKTIE_CORE_DLL void btlogger_warn(const char * format, ...);
+extern BLACKTIE_CORE_DLL int btlogger_snprintf(char *str, size_t size, const char * format, ...);
 #ifdef __cplusplus
 }
 #endif

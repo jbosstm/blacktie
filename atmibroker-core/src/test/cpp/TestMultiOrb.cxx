@@ -24,7 +24,7 @@
 #include "OrbManagement.h"
 #include "AtmiBrokerEnv.h"
 #include "Worker.h"
-#include "userlogc.h"
+#include "btlogger.h"
 
 void TestMultiOrb::setUp() {
 	init_ace();

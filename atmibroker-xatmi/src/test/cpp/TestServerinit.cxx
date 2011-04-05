@@ -32,7 +32,7 @@ extern void test_service(TPSVCINFO *svcinfo);
 #endif
 
 void TestServerinit::test_serverinit() {
-	userlogc((char*) "test_serverinit");
+	btlogger((char*) "test_serverinit");
 	int result;
 #ifdef WIN32
 	char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"-i", (char*)"1"};
@@ -52,7 +52,7 @@ void TestServerinit::test_serverinit() {
 }
 
 void TestServerinit::test_config_env() {
-	userlogc((char*) "TestServerinit::test_config_env");
+	btlogger((char*) "TestServerinit::test_config_env");
 	int result;
 	char* argv[] = {(char*)"server", (char*)"-i", (char*)"1"};
 	int argc = sizeof(argv)/sizeof(char*);
@@ -74,7 +74,7 @@ void TestServerinit::test_config_env() {
 }
 
 void TestServerinit::test_config_cmdline() {
-	userlogc((char*) "TestServerinit::test_config_cmdline");
+	btlogger((char*) "TestServerinit::test_config_cmdline");
 	int result;
 
 #ifdef WIN32
@@ -119,5 +119,5 @@ void TestServerinit::test_requires_id() {
 }
 
 void test_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_service");
+	btlogger((char*) "test_service");
 }

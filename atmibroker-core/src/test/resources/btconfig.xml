@@ -83,7 +83,7 @@
 		</ENV_VARIABLE>
 		<ENV_VARIABLE>
 			<NAME>test-symbol</NAME>
-			<VALUE>userlogc</VALUE>
+			<VALUE>btlogger</VALUE>
 		</ENV_VARIABLE>
 	</ENV_VARIABLES>
 </ENVIRONMENT>

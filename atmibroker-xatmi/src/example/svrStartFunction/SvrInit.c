@@ -18,7 +18,7 @@
 #include <stdlib.h>
 
 #include "xatmi.h"
-#include "userlogc.h"
+#include "btlogger.h"
 #include "string.h"
 #include "btservice.h"
 
@@ -27,9 +27,9 @@ extern "C" {
 #endif
 EXPORT_SERVICE int myserverinit(int argc, char** argv) {
 	int i;
-	userlogc((char*) "server initialized with %d arguments", argc);
+	btlogger((char*) "server initialized with %d arguments", argc);
 	for (i = 0; i < argc; i++) {
-		userlogc((char*) "Argument: %d Value: %s", i, argv[i]);
+		btlogger((char*) "Argument: %d Value: %s", i, argv[i]);
 	}
 	return 0;
 }

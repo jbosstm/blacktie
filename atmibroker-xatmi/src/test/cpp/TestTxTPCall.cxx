@@ -48,18 +48,18 @@ static void tx_fill_buf_rtn(TPSVCINFO *svcinfo) {
 }
 
 void test_tx_tpcall_x_octet_service_tardy(TPSVCINFO *svcinfo) {
-	userlogc((char*) "TxLog: service running: test_tx_tpcall_x_octet_service_tardy");
+	btlogger((char*) "TxLog: service running: test_tx_tpcall_x_octet_service_tardy");
 	::sleeper(10);
 	tx_fill_buf_rtn(svcinfo);
 }
 
 void test_tx_tpcall_x_octet_service_without_tx(TPSVCINFO *svcinfo) {
-	userlogc((char*) "TxLog: service running: test_tx_tpcall_x_octet_service_without_tx");
+	btlogger((char*) "TxLog: service running: test_tx_tpcall_x_octet_service_without_tx");
 	tx_fill_buf_rtn(svcinfo);
 }
 
 void test_tx_tpcall_x_octet_service_with_tx(TPSVCINFO *svcinfo) {
-	userlogc((char*) "TxLog: service running: test_tx_tpcall_x_octet_service_with_tx");
+	btlogger((char*) "TxLog: service running: test_tx_tpcall_x_octet_service_with_tx");
 	tx_fill_buf_rtn(svcinfo);
 }
 #if defined(__cplusplus)
@@ -68,7 +68,7 @@ void test_tx_tpcall_x_octet_service_with_tx(TPSVCINFO *svcinfo) {
 
 /* test setup */
 void TestTxTPCall::setUp() {
-	userlogc((char*) "TestTxTPCall::setUp");
+	btlogger((char*) "TestTxTPCall::setUp");
 	BaseServerTest::setUp();
 
 	BT_ASSERT(tx_open() == TX_OK);
@@ -82,7 +82,7 @@ void TestTxTPCall::setUp() {
 
 /* test teardown */
 void TestTxTPCall::tearDown() {
-	userlogc((char*) "TestTxTPCall::tearDown");
+	btlogger((char*) "TestTxTPCall::tearDown");
 	::tpfree(sendbuf);
 	::tpfree(rcvbuf);
 
@@ -99,7 +99,7 @@ void TestTxTPCall::tearDown() {
 
 /* client routines */
 void TestTxTPCall::test_timeout_no_tx() {
-	userlogc((char*) "TestTxTPCall: test_timeout_no_tx");
+	btlogger((char*) "TestTxTPCall: test_timeout_no_tx");
 	int rc = tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_tardy);
 	BT_ASSERT(tperrno == 0 && rc != -1);
 	int cd = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
@@ -109,7 +109,7 @@ void TestTxTPCall::test_timeout_no_tx() {
 }
 
 void TestTxTPCall::test_timeout_with_tx() {
-	userlogc((char*) "TestTxTPCall: test_timeout_with_tx");
+	btlogger((char*) "TestTxTPCall: test_timeout_with_tx");
 	int rv1 = tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_tardy);
 	BT_ASSERT(tperrno == 0 && rv1 != -1);
 	// the service will sleep for 10 seconds so set the timeout to be less that 10
@@ -118,7 +118,7 @@ void TestTxTPCall::test_timeout_with_tx() {
 	int rv4 = tx_begin();
 	BT_ASSERT(rv4 == TX_OK);
 	int rv3 = ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
-	userlogc((char*) "TxLog: test_timeout_with_tx tpcall=%d tperrno=%d", rv3, tperrno);
+	btlogger((char*) "TxLog: test_timeout_with_tx tpcall=%d tperrno=%d", rv3, tperrno);
 	BT_ASSERT(rv3 == -1);
 	BT_ASSERT(tperrno == TPETIME);
 	// the transaction should have been marked as rollback only
@@ -130,7 +130,7 @@ void TestTxTPCall::test_timeout_with_tx() {
 }
 
 void TestTxTPCall::test_tpcall_without_tx() {
-	userlogc((char*) "TestTxTPCall: test_tpcall_without_tx");
+	btlogger((char*) "TestTxTPCall: test_tpcall_without_tx");
 	int rc = tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_without_tx);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(rc != -1);
@@ -140,21 +140,21 @@ void TestTxTPCall::test_tpcall_without_tx() {
 	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "inTx=false") == 0);
 	// make sure there is no active transaction
 	BT_ASSERT(tx_commit() != TX_OK);
-	userlogc_debug((char*) "TxLog: test_tpcall_without_tx: passed");
+	btlogger_debug((char*) "TxLog: test_tpcall_without_tx: passed");
 }
 
 void TestTxTPCall::test_tpcall_with_tx() {
-	userlogc((char*) "TestTxTPCall: test_tpcall_with_tx");
+	btlogger((char*) "TestTxTPCall: test_tpcall_with_tx");
 	int rc = tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_with_tx);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(rc != -1);
 
 	// start a transaction
-	userlogc_debug((char*) "TxLog: test_tpcall_with_tx: tx_open");
+	btlogger_debug((char*) "TxLog: test_tpcall_with_tx: tx_open");
 	BT_ASSERT(tx_begin() == TX_OK);
-	userlogc_debug((char*) "TxLog: test_tpcall_with_tx: tpcall");
+	btlogger_debug((char*) "TxLog: test_tpcall_with_tx: tpcall");
 	(void) ::tpcall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen, (char **) &rcvbuf, &rcvlen, (long) 0);
-	userlogc_debug((char*) "TxLog: test_tpcall_with_tx: tx_commit");
+	btlogger_debug((char*) "TxLog: test_tpcall_with_tx: tx_commit");
 	// make sure there is still an active transaction - ie starting a new one should fail
 /*	BT_ASSERT(tx_begin() != TX_OK);*/
 	BT_ASSERT(tx_commit() == TX_OK);
@@ -162,20 +162,20 @@ void TestTxTPCall::test_tpcall_with_tx() {
 }
 
 void TestTxTPCall::test_tpcancel_with_tx() {
-	userlogc((char*) "TestTxTPCall: test_tpcancel_with_tx");
+	btlogger((char*) "TestTxTPCall: test_tpcancel_with_tx");
 	int rc = tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_with_tx);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(rc != -1);
 
 	// start a transaction
-	userlogc_debug((char*) "TxLog: test_tpcancel_with_tx: tx_open");
+	btlogger_debug((char*) "TxLog: test_tpcancel_with_tx: tx_open");
 	BT_ASSERT(tx_begin() == TX_OK);
-	userlogc_debug((char*) "TxLog: test_tpcancel_with_tx: tpcall");
+	btlogger_debug((char*) "TxLog: test_tpcancel_with_tx: tpcall");
 	int cd = ::tpacall((char*) "tpcall_x_octet", (char *) sendbuf, sendlen, (long) 0);
 	BT_ASSERT(cd != -1);
 	BT_ASSERT(tperrno == 0);
 	// cancel should fail with TPETRAN since the outstanding call is transactional
-	userlogc_debug((char*) "TxLog: test_tpcancel_with_tx: tpcancel %d", cd);
+	btlogger_debug((char*) "TxLog: test_tpcancel_with_tx: tpcancel %d", cd);
 	int cancelled = ::tpcancel(cd);
 	BT_ASSERT(cancelled == -1);
 	BT_ASSERT(tperrno == TPETRAN);
@@ -183,7 +183,7 @@ void TestTxTPCall::test_tpcancel_with_tx() {
 	int res = ::tpgetrply(&cd, (char **) &rcvbuf, &rcvlen, 0);
 	BT_ASSERT(res != -1);
 	BT_ASSERT(tperrno == 0);
-	userlogc_debug((char*) "TxLog: test_tpcancel_with_tx: tx_commit");
+	btlogger_debug((char*) "TxLog: test_tpcancel_with_tx: tx_commit");
 	// commit should succeed since the failed tpcancel does not affect the callers tx
 	BT_ASSERT(tx_commit() == TX_OK);
 	BT_ASSERT_MESSAGE(rcvbuf, strcmp(rcvbuf, "inTx=true") == 0);

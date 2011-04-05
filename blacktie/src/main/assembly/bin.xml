@@ -201,7 +201,7 @@
 			<outputDirectory>include</outputDirectory>
 			<includes>
 				<include>atmiBrokerCoreMacro.h</include>
-				<include>userlogc.h</include>
+				<include>btlogger.h</include>
 			</includes>
 		</fileSet>
 		<fileSet>

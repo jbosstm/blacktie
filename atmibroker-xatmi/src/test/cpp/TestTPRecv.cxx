@@ -34,7 +34,7 @@ extern void testtprecv_service(TPSVCINFO *svcinfo);
 #endif
 
 void TestTPRecv::setUp() {
-	userlogc((char*) "TestTPRecv::setUp");
+	btlogger((char*) "TestTPRecv::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 
@@ -57,7 +57,7 @@ void TestTPRecv::setUp() {
 }
 
 void TestTPRecv::tearDown() {
-	userlogc((char*) "TestTPRecv::tearDown");
+	btlogger((char*) "TestTPRecv::tearDown");
 	// Do local work
 	if (cd != -1) {
 		::tpdiscon(cd);
@@ -73,7 +73,7 @@ void TestTPRecv::tearDown() {
 }
 
 void TestTPRecv::test_tprecv_sendonly() {
-	userlogc((char*) "test_tprecv_sendonly");
+	btlogger((char*) "test_tprecv_sendonly");
 	cd = ::tpconnect((char*) "TestTPRecv", sendbuf, sendlen, TPSENDONLY);
 	long revent = 0;
 	int result = ::tprecv(cd, &rcvbuf, &rcvlen, 0, &revent);
@@ -86,5 +86,5 @@ void TestTPRecv::test_tprecv_sendonly() {
 }
 
 void testtprecv_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtprecv_service");
+	btlogger((char*) "testtprecv_service");
 }

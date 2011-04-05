@@ -22,7 +22,7 @@
 #include "XAResourceAdaptorImpl.h"
 #include "ace/OS_NS_unistd.h"
 #include "TxManager.h"
-#include "userlogc.h"
+#include "btlogger.h"
 
 #include "AtmiBrokerEnv.h"
 
@@ -84,7 +84,7 @@ try {
 }
 
 void doTwo() {
-userlogc_debug( (char*) "TestTransactions::test_basic begin");
+btlogger_debug( (char*) "TestTransactions::test_basic begin");
 	atmibroker::tx::TxManager *txm = atmibroker::tx::TxManager::get_instance();
 	BT_ASSERT_EQUAL(TX_OK, txm->open());
 	BT_ASSERT_EQUAL(TX_OK, txm->begin());
@@ -94,7 +94,7 @@ userlogc_debug( (char*) "TestTransactions::test_basic begin");
 	BT_ASSERT_EQUAL(TX_OK, txm->commit());
 	BT_ASSERT_EQUAL(TX_OK, txm->close());
 	atmibroker::tx::TxManager::discard_instance();
-	userlogc( (char*) "TestTransactions::test_basic pass");
+	btlogger( (char*) "TestTransactions::test_basic pass");
 }
 
  

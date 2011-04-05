@@ -19,12 +19,12 @@
 #include "TestUnadvertise.h"
 
 void TestUnadvertise::setUp() {
-	userlogc((char*) "TestUnadvertise::setUp");
+	btlogger((char*) "TestUnadvertise::setUp");
 	BaseAdminTest::setUp();
 }
 
 void TestUnadvertise::tearDown() {
-	userlogc((char*) "TestUnadvertise::tearDown");
+	btlogger((char*) "TestUnadvertise::tearDown");
 	BaseAdminTest::tearDown();
 }
 
@@ -46,14 +46,14 @@ void TestUnadvertise::testUnknowService() {
 void TestUnadvertise::testUnadvertise() {
 	int   cd;
 
-	userlogc((char*) "tpcall BAR before unadvertise");
+	btlogger((char*) "tpcall BAR before unadvertise");
 	cd = callBAR(0);
 	BT_ASSERT(cd == 0);
 	
 	cd = callADMIN((char*)"unadvertise,BAR,", '1', 0, NULL);
 	BT_ASSERT(cd == 0);
 
-	userlogc((char*) "tpcall BAR after unadvertise");
+	btlogger((char*) "tpcall BAR after unadvertise");
 	cd = callBAR(TPENOENT);
 	BT_ASSERT(cd != 0);
 }

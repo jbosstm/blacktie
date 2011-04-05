@@ -41,25 +41,25 @@ extern void qservice(TPSVCINFO *svcinfo);
 //static SynchronizableObject* lock = new SynchronizableObject();
 
 void TestExternManageDestination::setUp() {
-	userlogc((char*) "TestExternManageDestination::setUp");
+	btlogger((char*) "TestExternManageDestination::setUp");
 
 	// Set up server
 	BaseServerTest::setUp();
 }
 
 void TestExternManageDestination::tearDown() {
-	userlogc((char*) "TestExternManageDestination::tearDown");
+	btlogger((char*) "TestExternManageDestination::tearDown");
 
 	// Clean up server
 	BaseServerTest::tearDown();
 }
 
 void TestExternManageDestination::test_tpcall_with_service() {
-	userlogc((char*) "test_tpcall_with_service");
+	btlogger((char*) "test_tpcall_with_service");
 
 	// Advertise the service
 	int toCheck = tpadvertise((char*) "TestOne", test_extern_service);
-	userlogc((char*) "TestExternManageDestination %d %d", toCheck, tperrno);
+	btlogger((char*) "TestExternManageDestination %d %d", toCheck, tperrno);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toCheck != -1);
 
@@ -84,7 +84,7 @@ void TestExternManageDestination::test_tpcall_with_service() {
 }
 
 void TestExternManageDestination::test_tpcall_without_service() {
-	userlogc((char*) "test_tpcall_without_service");
+	btlogger((char*) "test_tpcall_without_service");
 
 	char* buf = (char*) "test";
 	long sendlen = strlen(buf) + 1;
@@ -95,7 +95,7 @@ void TestExternManageDestination::test_tpcall_without_service() {
 
 	int cd = ::tpcall((char*) "TestOne", (char *) sendbuf, sendlen,
 			(char**) &recvbuf, &recvlen, 0);
-	userlogc((char*) "test_tpcall_without_service %d %d", cd, tperrno);
+	btlogger((char*) "test_tpcall_without_service %d %d", cd, tperrno);
 	BT_ASSERT(cd == -1);
 	/*
 	 * We don't return TPENOENT since we allow queuing even if the service is temporarily down.
@@ -122,7 +122,7 @@ static void send_one(int id, int pri, const char *type, const char *subtype) {
 
 	BT_ASSERT(tperrno == 0 && cd == 0);
 
-	userlogc("Sent %d %d", id, pri);
+	btlogger("Sent %d %d", id, pri);
 
 	tpfree(buf);
 }
@@ -134,7 +134,7 @@ static void recv_one(msg_opts_t *mopts, long len, long flags, int expect, int ex
 
 	BT_ASSERT(data != NULL);
 	toCheck = btdequeue((char*) "TestOne", mopts, &data, &len, 0L);
-	userlogc((char*) "recv_one: tperrno=%d expected_tperrno=%d toCheck=%d",
+	btlogger((char*) "recv_one: tperrno=%d expected_tperrno=%d toCheck=%d",
 		tperrno, expected_tperrno, toCheck);
 	BT_ASSERT(tperrno == expected_tperrno);
 
@@ -147,7 +147,7 @@ static void recv_one(msg_opts_t *mopts, long len, long flags, int expect, int ex
 		char* tpsubtype = (char*) malloc(16);
 		BT_ASSERT(::tptypes(data, tptype, tpsubtype)  != -1);
 		BT_ASSERT(tptype != NULL && tpsubtype != NULL);
-		userlogc((char*) "recv_one: type=%s subtype=%s", tptype, tpsubtype);
+		btlogger((char*) "recv_one: type=%s subtype=%s", tptype, tpsubtype);
 		if (type != NULL)
 			BT_ASSERT(strncmp(type, tptype, 8) == 0);
 		if (subtype != NULL)
@@ -162,13 +162,13 @@ void TestExternManageDestination::test_stored_messages() {
 	int i;
 	msg_opts_t mopts = {0, 0L, 0};
 
-	userlogc((char*) "test_stored_messages");
+	btlogger((char*) "test_stored_messages");
 	for (i = 30; i < 40; i++)
 		send_one(i, 0, "X_OCTET", NULL);
 
 	// retrieve the messages in two goes:
 	for (i = 30; i < 40; i++) {
-		userlogc((char*) "test_stored_messages: retrieving 5");
+		btlogger((char*) "test_stored_messages: retrieving 5");
 
 		char* data = (char*) tpalloc((char*) "X_OCTET", NULL, 2);
 		long len = 2;
@@ -177,21 +177,21 @@ void TestExternManageDestination::test_stored_messages() {
 		BT_ASSERT(tperrno == 0 && toCheck != -1);
 
 		int id = atoi(data);
-		userlogc((char*) "qservice expected: %d received: %d", i, id);
+		btlogger((char*) "qservice expected: %d received: %d", i, id);
 		
 
 		if (i % 5 == 0) {
-			userlogc((char*) "Restart server");
+			btlogger((char*) "Restart server");
 			serverdone();
 			startServer();
 		}
 	}
 
-	userlogc((char*) "test_stored_message passed");
+	btlogger((char*) "test_stored_message passed");
 }
 
 void TestExternManageDestination::test_stored_message_priority() {
-	userlogc((char*) "test_stored_message_priority");
+	btlogger((char*) "test_stored_message_priority");
 	// send messages with out of order ids - the qservice should receive them in order
 	int prefix = 70;
 	msg_opts_t mopts = {0, 10L, 0};
@@ -221,7 +221,7 @@ void TestExternManageDestination::test_stored_message_priority() {
 		
 		int id = atoi(data);
 
-		userlogc((char*) "qservice iteration: %d expected: %d received: %d", msgCnt, msgId, id);
+		btlogger((char*) "qservice iteration: %d expected: %d received: %d", msgCnt, msgId, id);
 		orderOK = orderOK & (msgId == id);
 		
 		msgId += 1;
@@ -230,14 +230,14 @@ void TestExternManageDestination::test_stored_message_priority() {
 
 	serverdone();
 
-	userlogc((char*) "test_stored_message_priority passed");
+	btlogger((char*) "test_stored_message_priority passed");
 }
 
 void TestExternManageDestination::test_btenqueue_with_txn_abort() {
 	int i;
 	msg_opts_t mopts = {0, 500L, 1};
 
-	userlogc((char*) "test_btenqueue_with_txn_abort");
+	btlogger((char*) "test_btenqueue_with_txn_abort");
 	BT_ASSERT(tx_open() == TX_OK);
 	BT_ASSERT(tx_begin() == TX_OK);
 
@@ -248,19 +248,19 @@ void TestExternManageDestination::test_btenqueue_with_txn_abort() {
 	BT_ASSERT(tx_rollback() == TX_OK);
 
 	// since the txn aborted the queue will be empty and btdequeue should fail with TPETIME
-	userlogc((char*) "testing that btdequeue returns TPETIME");
+	btlogger((char*) "testing that btdequeue returns TPETIME");
 	recv_one(&mopts, 2L, 0L, i, TPETIME, "X_OCTET", NULL);
 
 	BT_ASSERT(tx_close() == TX_OK);
 
-	userlogc((char*) "test_btenqueue_with_txn_abort passed");
+	btlogger((char*) "test_btenqueue_with_txn_abort passed");
 }
 
 void TestExternManageDestination::test_btenqueue_with_txn_commit() {
 	int i;
 	msg_opts_t mopts = {0, 0L, 1};
 
-	userlogc((char*) "test_btenqueue_with_txn_commit");
+	btlogger((char*) "test_btenqueue_with_txn_commit");
 	BT_ASSERT(tx_open() == TX_OK);
 	BT_ASSERT(tx_begin() == TX_OK);
 
@@ -276,14 +276,14 @@ void TestExternManageDestination::test_btenqueue_with_txn_commit() {
 
 	BT_ASSERT(tx_close() == TX_OK);
 
-	userlogc((char*) "test_btenqueue_with_txn_commit passed");
+	btlogger((char*) "test_btenqueue_with_txn_commit passed");
 }
 
 void TestExternManageDestination::test_btdequeue_with_txn_abort() {
 	msg_opts_t mopts = {0, 0L, 1};
 	int i;
 
-	userlogc((char*) "test_btdequeue_with_txn_abort");
+	btlogger((char*) "test_btdequeue_with_txn_abort");
 	BT_ASSERT(tx_open() == TX_OK);
 
 	// enqueue messages
@@ -303,14 +303,14 @@ void TestExternManageDestination::test_btdequeue_with_txn_abort() {
 
 	BT_ASSERT(tx_close() == TX_OK);
 
-	userlogc((char*) "test_btdequeue_with_txn_abort passed");
+	btlogger((char*) "test_btdequeue_with_txn_abort passed");
 }
 
 void TestExternManageDestination::test_btdequeue_with_txn_commit() {
 	msg_opts_t mopts = {0, 0L, 1};
 	int i;
 
-	userlogc((char*) "test_btdequeue_with_txn_commit");
+	btlogger((char*) "test_btdequeue_with_txn_commit");
 	BT_ASSERT(tx_open() == TX_OK);
 
 	// enqueue messages
@@ -325,20 +325,20 @@ void TestExternManageDestination::test_btdequeue_with_txn_commit() {
 	BT_ASSERT(tx_commit() == TX_OK);
 
 	// test that all the messages were dequeued
-	userlogc((char*) "testing that btdequeue returns TPETIME");
+	btlogger((char*) "testing that btdequeue returns TPETIME");
 	mopts.ttl = 500L;
 	recv_one(&mopts, 2L, 0L, i, TPETIME, "X_OCTET", NULL);
 
 	BT_ASSERT(tx_close() == TX_OK);
 
-	userlogc((char*) "test_btdequeue_with_txn_commit passed");
+	btlogger((char*) "test_btdequeue_with_txn_commit passed");
 }
 
 void TestExternManageDestination::test_btenqueue_with_tptypes() {
 	int id = 0;
 	msg_opts_t mopts = {0, 0L, 1};
 
-	userlogc((char*) "test_btenqueue_with_tptypes");
+	btlogger((char*) "test_btenqueue_with_tptypes");
 
 	send_one(id, 0, "X_OCTET", NULL);
 	recv_one(&mopts, 2L, 0L, id, 0, "X_OCTET", NULL);
@@ -349,11 +349,11 @@ void TestExternManageDestination::test_btenqueue_with_tptypes() {
 	send_one(id, 0, "X_C_TYPE", "acct_info");
 	recv_one(&mopts, 2L, 0L, id, 0, "X_C_TYPE", "acct_info");
 
-	userlogc((char*) "test_btenqueue_with_txn_commit passed");
+	btlogger((char*) "test_btenqueue_with_txn_commit passed");
 }
 
 void test_extern_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_extern_service");
+	btlogger((char*) "test_extern_service");
 	int len = 8;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	strcpy(toReturn, "testone");

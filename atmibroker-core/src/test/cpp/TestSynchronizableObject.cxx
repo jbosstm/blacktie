@@ -19,7 +19,7 @@
 
 #include "TestSynchronizableObject.h"
 
-#include "userlogc.h"
+#include "btlogger.h"
 #include "ace/OS_NS_unistd.h"
 
 Waiter::Waiter() {
@@ -48,12 +48,12 @@ bool Waiter::getNotified() {
 int Waiter::svc(void){
 	object2->lock();
 	object->lock();
-	userlogc("waiting");
+	btlogger("waiting");
 	object->wait(10);
-	userlogc("waited");
+	btlogger("waited");
 	notified = true;
 	object->unlock();
-	userlogc("svc done");
+	btlogger("svc done");
 	object2->unlock();
 	return 0;
 }
@@ -91,12 +91,12 @@ void TestSynchronizableObject::testWaitNotify() {
 	lock->lock();
 	lock->notify();
 	lock->unlock();
-	userlogc("done");
+	btlogger("done");
 	lock2->lock();
 	bool notified = waiter->getNotified();
-	userlogc("got notified");
+	btlogger("got notified");
 	lock2->unlock();
-	userlogc("main done");
+	btlogger("main done");
 	BT_ASSERT_MESSAGE("Was not notified", notified == true);
 }
 
@@ -107,9 +107,9 @@ void TestSynchronizableObject::testNotifyWaitWithTimeout() {
 	lock->notify();
 	lock->unlock();
 	lock->lock();
-	userlogc("waiting for 3 seconds");
+	btlogger("waiting for 3 seconds");
 	lock->wait(3);
-	userlogc("waited");
+	btlogger("waited");
 	lock->unlock();
-	userlogc("main done");
+	btlogger("main done");
 }

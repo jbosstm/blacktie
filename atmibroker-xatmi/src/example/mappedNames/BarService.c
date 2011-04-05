@@ -18,14 +18,14 @@
 #include <stdlib.h>
 
 #include "xatmi.h"
-#include "userlogc.h"
+#include "btlogger.h"
 #include "string.h"
 
 void BAR(TPSVCINFO * svcinfo) {
 	char* buffer;
 	int sendlen;
 
-	userlogc((char*) "bar called  - svc: %s data %s len: %d flags: %d", svcinfo->name, svcinfo->data, svcinfo->len, svcinfo->flags);
+	btlogger((char*) "bar called  - svc: %s data %s len: %d flags: %d", svcinfo->name, svcinfo->data, svcinfo->len, svcinfo->flags);
 
 	sendlen = 15;
 	buffer = tpalloc("X_OCTET", 0, sendlen);

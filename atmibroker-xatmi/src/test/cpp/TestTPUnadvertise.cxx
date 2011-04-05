@@ -33,7 +33,7 @@ extern void testtpunadvertise_service(TPSVCINFO *svcinfo);
 #endif
 
 void TestTPUnadvertise::setUp() {
-	userlogc((char*) "TestTPUnadvertise::setUp");
+	btlogger((char*) "TestTPUnadvertise::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 
@@ -54,7 +54,7 @@ void TestTPUnadvertise::setUp() {
 }
 
 void TestTPUnadvertise::tearDown() {
-	userlogc((char*) "TestTPUnadvertise::tearDown");
+	btlogger((char*) "TestTPUnadvertise::tearDown");
 	// Do local work
 	::tpfree( sendbuf);
 	::tpfree( rcvbuf);
@@ -66,7 +66,7 @@ void TestTPUnadvertise::tearDown() {
 }
 
 void TestTPUnadvertise::test_tpunadvertise() {
-	userlogc((char*) "test_tpunadvertise");
+	btlogger((char*) "test_tpunadvertise");
 	int id = ::tpunadvertise((char*) "TestTPUnadverti");
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(tperrno != TPEINVAL);
@@ -87,7 +87,7 @@ void TestTPUnadvertise::test_tpunadvertise() {
 }
 
 void TestTPUnadvertise::test_tpunadvertise_twice() {
-	userlogc((char*) "test_tpunadvertise_twice");
+	btlogger((char*) "test_tpunadvertise_twice");
 	int id = ::tpunadvertise((char*) "TestTPUnadverti");
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(tperrno != TPEINVAL);
@@ -103,14 +103,14 @@ void TestTPUnadvertise::test_tpunadvertise_twice() {
 }
 
 void TestTPUnadvertise::test_tpunadvertise_null() {
-	userlogc((char*) "test_tpunadvertise_null");
+	btlogger((char*) "test_tpunadvertise_null");
 	int id = ::tpunadvertise(NULL);
 	BT_ASSERT(tperrno == TPEINVAL);
 	BT_ASSERT(id == -1);
 }
 
 void TestTPUnadvertise::test_tpunadvertise_empty() {
-	userlogc((char*) "test_tpunadvertise_empty");
+	btlogger((char*) "test_tpunadvertise_empty");
 	int id = ::tpunadvertise((char*) "");
 	BT_ASSERT(tperrno == TPEINVAL);
 	BT_ASSERT(id == -1);
@@ -118,14 +118,14 @@ void TestTPUnadvertise::test_tpunadvertise_empty() {
 
 // 8.4
 void TestTPUnadvertise::test_tpunadvertise_not_advertised() {
-	userlogc((char*) "test_tpunadvertise_not_advertised");
+	btlogger((char*) "test_tpunadvertise_not_advertised");
 	int id = ::tpunadvertise((char*) "NONE");
 	BT_ASSERT(tperrno == TPENOENT);
 	BT_ASSERT(id == -1);
 }
 
 void testtpunadvertise_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpunadvertise_service");
+	btlogger((char*) "testtpunadvertise_service");
 	char * toReturn = new char[26];
 	strcpy(toReturn, "testtpunadvertise_service");
 	// Changed length from 0L to svcinfo->len

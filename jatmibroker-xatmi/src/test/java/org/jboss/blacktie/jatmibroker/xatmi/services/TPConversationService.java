@@ -39,7 +39,7 @@ public class TPConversationService implements Service {
 				X_OCTET sendbuf = (X_OCTET) svcinfo.getConnection().tpalloc(
 						"X_OCTET", null, bytes.length);
 				sendbuf.setByteArray(bytes);
-				// userlogc((char*) "testTPConversation_service:%s:",
+				// btlogger((char*) "testTPConversation_service:%s:",
 				// sendbuf);
 				int result = svcinfo.getSession().tpsend(sendbuf,
 						Connection.TPRECVONLY);

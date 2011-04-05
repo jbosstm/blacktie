@@ -19,7 +19,7 @@
 
 #include "TestXAStompConnection.h"
 
-#include "userlogc.h"
+#include "btlogger.h"
 #include "AtmiBrokerEnv.h"
 
 #include "atmiBrokerTxMacro.h"
@@ -43,7 +43,7 @@ void messagesAvailableCallbackXA(int bar, bool remove) {
 
 void TestXAStompConnection::setUp() {
 	init_ace();
-	userlogc("TestXAStompConnection::setUp");
+	btlogger("TestXAStompConnection::setUp");
 
 	serverConnection = NULL;
 	clientConnection = NULL;
@@ -54,7 +54,7 @@ void TestXAStompConnection::setUp() {
 }
 
 void TestXAStompConnection::tearDown() {
-	userlogc("TestXAStompConnection::tearDown");
+	btlogger("TestXAStompConnection::tearDown");
 
 	serverConnection->cleanupThread();
 
@@ -70,7 +70,7 @@ void TestXAStompConnection::tearDown() {
 }
 
 void TestXAStompConnection::test() {
-	userlogc("TestStompConnection::test");
+	btlogger("TestStompConnection::test");
 
 	int msgCount = 2;
 
@@ -111,7 +111,7 @@ void TestXAStompConnection::test() {
 	Destination* destination = serverConnection->createDestination(
 			(char*) "JAVA_Converse", false);
 
-	userlogc("Iterating");
+	btlogger("Iterating");
 	for (int i = 0; i < msgCount; i++) {
 		MESSAGE serviceReceived = destination->receive(0);
 		BT_ASSERT(serviceReceived.received);
@@ -119,6 +119,6 @@ void TestXAStompConnection::test() {
 		free(serviceReceived.data);
 	}
 
-	userlogc("Iterated");
+	btlogger("Iterated");
 	serverConnection->destroyDestination(destination);
 }

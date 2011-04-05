@@ -20,7 +20,7 @@
 #include "TestBufferConverterImpl.h"
 #include "BufferConverterImpl.h"
 #include "AtmiBrokerEnv.h"
-#include "userlogc.h"
+#include "btlogger.h"
 
 #include "malloc.h"
 
@@ -41,7 +41,7 @@ void TestBufferConverterImpl::tearDown() {
 }
 
 void TestBufferConverterImpl::test() {
-	userlogc("TestBufferConverterImpl::test");
+	btlogger("TestBufferConverterImpl::test");
 	DEPOSIT* deposit = (DEPOSIT*) malloc(sizeof(DEPOSIT));
 	deposit->acct_no = 1234567889;
 	deposit->amount = 100;

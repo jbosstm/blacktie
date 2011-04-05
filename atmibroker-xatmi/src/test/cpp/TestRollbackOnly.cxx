@@ -44,7 +44,7 @@ extern void test_no_tpreturn_service(TPSVCINFO *svcinfo);
 #endif
 
 void TestRollbackOnly::setUp() {
-	userlogc((char*) "TestRollbackOnly::setUp");
+	btlogger((char*) "TestRollbackOnly::setUp");
 	BaseServerTest::setUp();
 
 	// previous tests may have left a txn on the thread
@@ -61,7 +61,7 @@ void TestRollbackOnly::setUp() {
 }
 
 void TestRollbackOnly::tearDown() {
-	userlogc((char*) "TestRollbackOnly::tearDown");
+	btlogger((char*) "TestRollbackOnly::tearDown");
 	destroySpecific(TSS_KEY);
 	BT_ASSERT(tx_close() == TX_OK);
 
@@ -73,7 +73,7 @@ void TestRollbackOnly::tearDown() {
 }
 
 void TestRollbackOnly::test_tpcall_TPETIME() {
-	userlogc((char*) "test_tpcall_TPETIME");
+	btlogger((char*) "test_tpcall_TPETIME");
 	int rc = tpadvertise((char*) "TestRbkOnly", test_tpcall_TPETIME_service);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(rc != -1);
@@ -89,7 +89,7 @@ void TestRollbackOnly::test_tpcall_TPETIME() {
 
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
-	userlogc((char*) "inTx=%d tx status=%ld", inTx, txinfo.transaction_state);
+	btlogger((char*) "inTx=%d tx status=%ld", inTx, txinfo.transaction_state);
 	BT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY ||
 		txinfo.transaction_state == TX_TIMEOUT_ROLLBACK_ONLY);
 	char* commitS = (char*) malloc(110);
@@ -100,7 +100,7 @@ void TestRollbackOnly::test_tpcall_TPETIME() {
 }
 
 void TestRollbackOnly::test_tpcall_TPEOTYPE() {
-	userlogc((char*) "test_tpcall_TPEOTYPE");
+	btlogger((char*) "test_tpcall_TPEOTYPE");
 	int rc = tpadvertise((char*) "TestRbkOnly", test_tpcall_TPEOTYPE_service);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(rc != -1);
@@ -114,13 +114,13 @@ void TestRollbackOnly::test_tpcall_TPEOTYPE() {
 
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
-	userlogc((char*) "inTx=%d", inTx);
+	btlogger((char*) "inTx=%d", inTx);
 	BT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
 	BT_ASSERT(tx_commit() == TX_ROLLBACK);
 }
 
 void TestRollbackOnly::test_tpcall_TPESVCFAIL() {
-	userlogc((char*) "test_tpcall_TPESVCFAIL");
+	btlogger((char*) "test_tpcall_TPESVCFAIL");
 	int rc = tpadvertise((char*) "TestRbkOnly", test_tpcall_TPESVCFAIL_service);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(rc != -1);
@@ -136,13 +136,13 @@ void TestRollbackOnly::test_tpcall_TPESVCFAIL() {
 
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
-	userlogc((char*) "inTx=%d", inTx);
+	btlogger((char*) "inTx=%d", inTx);
 	BT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
 	BT_ASSERT(tx_commit() == TX_ROLLBACK);
 }
 
 void TestRollbackOnly::test_tprecv_TPEV_DISCONIMM() {
-	userlogc((char*) "test_tprecv_TPEV_DISCONIMM");
+	btlogger((char*) "test_tprecv_TPEV_DISCONIMM");
 	int rc = tpadvertise((char*) "TestRbkOnly2",
 			test_tprecv_TPEV_DISCONIMM_service);
 	BT_ASSERT(tperrno == 0);
@@ -158,13 +158,13 @@ void TestRollbackOnly::test_tprecv_TPEV_DISCONIMM() {
 
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
-	userlogc((char*) "inTx=%d", inTx);
+	btlogger((char*) "inTx=%d", inTx);
 	BT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
 	BT_ASSERT(tx_commit() == TX_ROLLBACK);
 }
 
 void TestRollbackOnly::test_tprecv_TPEV_SVCFAIL() {
-	userlogc((char*) "test_tprecv_TPEV_SVCFAIL");
+	btlogger((char*) "test_tprecv_TPEV_SVCFAIL");
 	int rc = tpadvertise((char*) "TestRbkOnly2",
 			test_tprecv_TPEV_SVCFAIL_service);
 	BT_ASSERT(tperrno == 0);
@@ -185,13 +185,13 @@ void TestRollbackOnly::test_tprecv_TPEV_SVCFAIL() {
 
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
-	userlogc((char*) "inTx=%d", inTx);
+	btlogger((char*) "inTx=%d", inTx);
 	BT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
 	BT_ASSERT(tx_commit() == TX_ROLLBACK);
 }
 
 void TestRollbackOnly::test_no_tpreturn() {
-	userlogc((char*) "test_no_tpreturn");
+	btlogger((char*) "test_no_tpreturn");
 	int rc = tpadvertise((char*) "TestRbkOnly", test_no_tpreturn_service);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(rc != -1);
@@ -205,7 +205,7 @@ void TestRollbackOnly::test_no_tpreturn() {
 
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
-	userlogc((char*) "inTx=%d", inTx);
+	btlogger((char*) "inTx=%d", inTx);
 	BT_ASSERT(txinfo.transaction_state == TX_ROLLBACK_ONLY);
 	BT_ASSERT(tx_commit() == TX_ROLLBACK);
 }

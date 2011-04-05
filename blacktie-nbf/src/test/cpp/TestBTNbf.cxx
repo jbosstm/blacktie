@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include "btnbf.h"
 #include "xatmi.h"
-#include "userlogc.h"
+#include "btlogger.h"
 
 extern "C" {
 #include "AtmiBrokerClientControl.h"
@@ -35,7 +35,7 @@ void TestBTNbf::tearDown() {
 }
 
 void TestBTNbf::test_addattribute() {
-	userlogc((char*) "test_addattribute");
+	btlogger((char*) "test_addattribute");
 	int rc;
 	/*
 	char* s = (char*)
@@ -79,7 +79,7 @@ void TestBTNbf::test_addattribute() {
 }
 
 void TestBTNbf::test_getattribute() {
-	userlogc((char*) "test_getattribute");
+	btlogger((char*) "test_getattribute");
 	int rc;
 	char name[16];
 	int len = 16;
@@ -105,28 +105,28 @@ void TestBTNbf::test_getattribute() {
 	btaddattribute(&buf, (char*)"id", (char*)&id, sizeof(id));
 
 	printf("%s\n", buf);
-	userlogc((char*) "getattribute of name at index 0");
+	btlogger((char*) "getattribute of name at index 0");
 	rc = btgetattribute(buf, (char*)"name", 0, (char*)name, &len);
 	BT_ASSERT(rc == 0);
 	BT_ASSERT(len == 6);
 	BT_ASSERT(strcmp(name, "zhfeng") == 0);
 
-	userlogc((char*) "getattribute of name at index 1");
+	btlogger((char*) "getattribute of name at index 1");
 	rc = btgetattribute(buf, (char*)"name", 1, (char*)name, &len);
 	BT_ASSERT(rc == 0);
 	BT_ASSERT(len == 4);
 	BT_ASSERT(strcmp(name, "test") == 0);
 
 	len = 0;
-	userlogc((char*) "getattribute of id at index 0");
+	btlogger((char*) "getattribute of id at index 0");
 	rc = btgetattribute(buf, (char*)"id", 0, (char*)&id, &len);
 	BT_ASSERT(rc == 0);
-	userlogc((char*)"len is %d, id is %lu", len, id);
+	btlogger((char*)"len is %d, id is %lu", len, id);
 	BT_ASSERT(len == sizeof(long));
 	BT_ASSERT(id == 1001);
 
 	len = 0;
-	userlogc((char*) "getattribute of id at index 1");
+	btlogger((char*) "getattribute of id at index 1");
 	rc = btgetattribute(buf, (char*)"id", 1, (char*)&id, &len);
 	BT_ASSERT(rc == 0);
 	BT_ASSERT(len == sizeof(long));
@@ -136,7 +136,7 @@ void TestBTNbf::test_getattribute() {
 }
 
 void TestBTNbf::test_setattribute() {
-	userlogc((char*) "test_setattribute");
+	btlogger((char*) "test_setattribute");
 	int rc;
 	/*
 	char* s = (char*)
@@ -169,7 +169,7 @@ void TestBTNbf::test_setattribute() {
 	BT_ASSERT(strcmp(value, name) == 0);
 	BT_ASSERT(len == 8);
 
-	userlogc((char*)"set no such id");
+	btlogger((char*)"set no such id");
 	// No such attribute
 	rc = btsetattribute(&buf, (char*) "id", 0, (char*)&id, sizeof(id));
 	BT_ASSERT(rc != 0);
@@ -182,7 +182,7 @@ void TestBTNbf::test_setattribute() {
 }
 
 void TestBTNbf::test_delattribute() {
-	userlogc((char*) "test_delattribute");
+	btlogger((char*) "test_delattribute");
 	int rc;
 	char name[16];
 	int  len = 16;
@@ -247,7 +247,7 @@ void TestBTNbf::test_delattribute() {
 }
 
 void TestBTNbf::test_getoccurs() {
-	userlogc((char*) "test_getoccurs");
+	btlogger((char*) "test_getoccurs");
 	char* buf = tpalloc((char*)"BT_NBF", (char*)"employee", 0);
 	int rc;
 

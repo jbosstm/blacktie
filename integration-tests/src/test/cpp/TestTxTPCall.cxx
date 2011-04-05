@@ -17,19 +17,19 @@
  */
 
 #include <string.h>
-#include "userlogc.h"
+#include "btlogger.h"
 
 #include "xatmi.h"
 #include "tx.h"
 
 extern void test_tx_tpcall_x_octet_service_without_tx(TPSVCINFO *svcinfo) {
-	userlogc(
+	btlogger(
 			(char*) (char*) "TxLog: service running: test_tx_tpcall_x_octet_service_without_tx");
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
-	userlogc(
+	btlogger(
 			(char*) (char*) "TxLog: service running: test_tx_tpcall_x_octet_service_without_tx inTx=%d",
 			inTx);
 	if (inTx == 0) { // or && txinfo.transaction_state != TX_ACTIVE
@@ -41,13 +41,13 @@ extern void test_tx_tpcall_x_octet_service_without_tx(TPSVCINFO *svcinfo) {
 }
 
 extern void test_tx_tpcall_x_octet_service_with_tx(TPSVCINFO *svcinfo) {
-	userlogc(
+	btlogger(
 			(char*) (char*) "TxLog: service running: test_tx_tpcall_x_octet_service_with_tx");
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	TXINFO txinfo;
 	int inTx = ::tx_info(&txinfo);
-	userlogc(
+	btlogger(
 			(char*) (char*) "TxLog: service running: test_tx_tpcall_x_octet_service_with_tx inTx=%d",
 			inTx);
 	if (inTx == 1) { // or && txinfo.transaction_state == TX_ACTIVE

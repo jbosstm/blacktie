@@ -28,19 +28,19 @@
  */
 static void inject_fault(int xa_method, int type)
 {
-	userlogc( "TxLog inject_fault check type=0x%x", type);
+	btlogger( "TxLog inject_fault check type=0x%x", type);
 
 	if (type & TX_TYPE_HALT) {
 		fault_t fault = {0, TX_RC_RMID, O_XA_NONE, XA_OK, F_HALT, (void*) 0};
 
 		if (type & TX_TYPE_PREPARE) {
 			fault.op = O_XA_PREPARE;
-			userlogc( "TxLog inject_fault adding halt on prepare");
+			btlogger( "TxLog inject_fault adding halt on prepare");
 		} else if (type & TX_TYPE_COMMIT) {
 			fault.op = O_XA_COMMIT;
-			userlogc( "TxLog inject_fault adding halt on commit");
+			btlogger( "TxLog inject_fault adding halt on commit");
 		} else {
-			userlogc( "TxLog inject_fault not adding fault ");
+			btlogger( "TxLog inject_fault not adding fault ");
 		}
 
 		(void) dummy_rm_add_fault(&fault);
@@ -60,7 +60,7 @@ void BAR(TPSVCINFO * svcinfo)
 	test_req_t *resp = (test_req_t *) tpalloc((char*) "X_C_TYPE", (char*) "test_req", 0);
 	product_t *p = products;
 
-	userlogc_debug( "TxLog %s service %s running", __FUNCTION__, TXTEST_SVC_NAME);
+	btlogger_debug( "TxLog %s service %s running", __FUNCTION__, TXTEST_SVC_NAME);
 	resp->status = -1;
 
 	// see if the client wishes to inject a fault during 2PC protocol processing
@@ -70,10 +70,10 @@ void BAR(TPSVCINFO * svcinfo)
 		if (req->prod == p->id) {
 			int rv;
 			strncpy(req->db, p->dbname, sizeof(req->db));
-			userlogc_debug("TxLog Service %s %4d: prod=%8s (id=%d) op=%c tx=0x%x data=%s", TXTEST_SVC_NAME,
+			btlogger_debug("TxLog Service %s %4d: prod=%8s (id=%d) op=%c tx=0x%x data=%s", TXTEST_SVC_NAME,
 					req->id, p->pname, p->id, req->op, req->txtype, req->data);
 			rv = p->access(req, resp);
-			userlogc_debug("TxLog Service %s %4d: resp->status=%d rv=%d", TXTEST_SVC_NAME, req->id, resp->status, rv);
+			btlogger_debug("TxLog Service %s %4d: resp->status=%d rv=%d", TXTEST_SVC_NAME, req->id, resp->status, rv);
 
 			break;
 		}

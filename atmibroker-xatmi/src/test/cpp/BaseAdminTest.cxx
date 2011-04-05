@@ -21,7 +21,7 @@
 #include "ace/OS_NS_stdio.h"
 #include "ace/OS_NS_string.h"
 #include "xatmi.h"
-#include "userlogc.h"
+#include "btlogger.h"
 #include "BaseAdminTest.h"
 
 void BaseAdminTest::setUp() {
@@ -33,7 +33,7 @@ void BaseAdminTest::tearDown() {
 }
 
 int BaseAdminTest::callADMIN(char* command, char expect, int r, char** n) {
-	userlogc("Command was %s", command);
+	btlogger("Command was %s", command);
 	long  sendlen = strlen(command) + 1;
 	char* sendbuf = tpalloc((char*) "X_OCTET", NULL, sendlen);
 	strcpy(sendbuf, command);
@@ -53,7 +53,7 @@ int BaseAdminTest::callADMIN(char* command, char expect, int r, char** n) {
 		memset(*n, 0, recvlen);
 		memcpy(*n, &recvbuf[1], recvlen -1);
 	} else if(ACE_OS::strncmp(command, "status", 6) == 0) {
-		userlogc((char*) "len is %d, service status: %s", recvlen, &recvbuf[1]);
+		btlogger((char*) "len is %d, service status: %s", recvlen, &recvbuf[1]);
 	}
 
 	tpfree(sendbuf);
@@ -85,7 +85,7 @@ int BaseAdminTest::callBAR(int r, char* buf) {
 		BT_ASSERT_MESSAGE(tperrnoS, cd == -1);
 		free(tperrnoS);
 	}
-	userlogc((char*) "r = %d, tperrno = %d", r, tperrno);
+	btlogger((char*) "r = %d, tperrno = %d", r, tperrno);
 	BT_ASSERT(r == tperrno);
 	if(tperrno == 0) {
 		BT_ASSERT(recvbuf[0] == '1');

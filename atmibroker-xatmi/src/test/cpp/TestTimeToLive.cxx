@@ -19,7 +19,7 @@
 
 #include "Sleeper.h"
 #include "xatmi.h"
-#include "userlogc.h"
+#include "btlogger.h"
 #include "TestTimeToLive.h"
 #include "ace/OS_NS_unistd.h"
 #include "ace/OS_NS_stdlib.h"
@@ -31,7 +31,7 @@ void test_TTL_service(TPSVCINFO *svcinfo) {
 	long timeout = 45;
 
 	::sleeper(timeout);
-	userlogc((char*) "TTL sleep timeout %d seconds", timeout);
+	btlogger((char*) "TTL sleep timeout %d seconds", timeout);
 
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
@@ -43,12 +43,12 @@ void test_TTL_service(TPSVCINFO *svcinfo) {
 #endif
 
 void TestTimeToLive::setUp() {
-	userlogc((char*) "TestTimeToLive::setUp");
+	btlogger((char*) "TestTimeToLive::setUp");
 	BaseServerTest::setUp();
 }
 
 void TestTimeToLive::tearDown() {
-	userlogc((char*) "TestTimeToLive::tearDown");
+	btlogger((char*) "TestTimeToLive::tearDown");
 	BaseServerTest::tearDown();
 }
 
@@ -61,16 +61,16 @@ void TestTimeToLive::testTTL() {
 	cd = callTTL();
 	BT_ASSERT(cd == -1);
 	BT_ASSERT(tperrno == TPETIME);
-	userlogc((char*)"send first message");
+	btlogger((char*)"send first message");
 
 	cd = callTTL();
 	BT_ASSERT(cd == -1);
 	BT_ASSERT(tperrno == TPETIME);
-	userlogc((char*)"send second message");
+	btlogger((char*)"send second message");
 
 	::sleeper(30);
 	long n = getTTLCounter();	
-	userlogc((char*)"TTL get message counter is %d", n);
+	btlogger((char*)"TTL get message counter is %d", n);
 	//BT_ASSERT(n == 1);
 }
 

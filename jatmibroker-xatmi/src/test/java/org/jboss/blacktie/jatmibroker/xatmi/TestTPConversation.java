@@ -72,7 +72,7 @@ public class TestTPConversation extends TestCase {
 				assertTrue(strcmp(expectedResult, rcvbuf) == 0);
 
 				sendbuf.setByteArray(("yo" + i).getBytes());
-				// userlogc((char*) "test_conversation:%s:", sendbuf);
+				// btlogger((char*) "test_conversation:%s:", sendbuf);
 				int result = cd.tpsend(sendbuf, Connection.TPRECVONLY);
 				assertTrue(result != -1);
 			}

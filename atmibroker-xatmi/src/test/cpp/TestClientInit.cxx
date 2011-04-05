@@ -28,7 +28,7 @@ extern "C" {
 }
 
 void TestClientInit::test_clientinit() {
-	userlogc((char*) "TestClientInit::test_clientinit");
+	btlogger((char*) "TestClientInit::test_clientinit");
 	BT_ASSERT(tperrno == 0);
 	int valToTest = ::clientinit();
 	BT_ASSERT(valToTest != -1);
@@ -40,7 +40,7 @@ void TestClientInit::test_clientinit() {
 }
 
 void TestClientInit::test_config_env() {
-	userlogc((char*) "TestClientInit::test_config_env");
+	btlogger((char*) "TestClientInit::test_config_env");
 
 	BT_ASSERT(tperrno == 0);
 	int valToTest = ::clientinit();

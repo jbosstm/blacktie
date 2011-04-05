@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     product_t prods[8];
 	int rv = -1;
 	int i;
-    userlogc_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
+    btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 
     if (argc > 1) {
         for (i = 1; i < argc; i++) {
@@ -65,13 +65,13 @@ int main(int argc, char **argv)
     }
 
 	for (i = 0; prods[i].id != -1; i++) {
-		userlogc_debug("TxLog INFO: %s (%s) id=%d flags=0x%x",
+		btlogger_debug("TxLog INFO: %s (%s) id=%d flags=0x%x",
             prods[i].pname, prods[i].dbname, prods[i].id, prods[i].xaflags());
     }
 
 	rv = run_tests(prods);
 
-	userlogc("TxLog Test %s (%d)\n", (rv ? "failed" : "passed"), rv);
+	btlogger("TxLog Test %s (%d)\n", (rv ? "failed" : "passed"), rv);
 
 	return rv;
 }

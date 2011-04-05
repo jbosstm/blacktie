@@ -19,7 +19,7 @@
 
 #include "TestStompConnection.h"
 
-#include "userlogc.h"
+#include "btlogger.h"
 #include "AtmiBrokerEnv.h"
 
 void messagesAvailableCallback(int bar, bool remove) {
@@ -28,7 +28,7 @@ void messagesAvailableCallback(int bar, bool remove) {
 
 void TestStompConnection::setUp() {
 	init_ace();
-	userlogc("TestStompConnection::setUp");
+	btlogger("TestStompConnection::setUp");
 
 	serverConnection = NULL;
 	clientConnection = NULL;
@@ -39,7 +39,7 @@ void TestStompConnection::setUp() {
 }
 
 void TestStompConnection::tearDown() {
-	userlogc("TestStompConnection::tearDown");
+	btlogger("TestStompConnection::tearDown");
 	if (serverConnection) {
 		delete serverConnection;
 	}
@@ -49,13 +49,13 @@ void TestStompConnection::tearDown() {
 }
 
 void TestStompConnection::testLibStomp() {
-	userlogc("TestStompConnection::testLibStomp");
+	btlogger("TestStompConnection::testLibStomp");
 
 	Destination* destination = serverConnection->createDestination(
 			(char*) "JAVA_Converse", false);
 
 	// THIS IS THE INITIAL EXCHANCE
-	userlogc("Iterating");
+	btlogger("Iterating");
 	for (int i = 0; i < 100; i++) {
 		Session* client = clientConnection->createSession(false,
 				(char*) "JAVA_Converse");
@@ -90,12 +90,12 @@ void TestStompConnection::testLibStomp() {
 		clientConnection->closeSession(1);
 	}
 
-	userlogc("Iterated");
+	btlogger("Iterated");
 	serverConnection->destroyDestination(destination);
 }
 
 void TestStompConnection::test() {
-	userlogc("TestStompConnection::test");
+	btlogger("TestStompConnection::test");
 
 	Destination* destination = serverConnection->createDestination(
 			(char*) "JAVA_Converse", false);
@@ -137,7 +137,7 @@ void TestStompConnection::test() {
 	}
 
 	Session* service = serverConnection->createSession(false, 1, clientAddress);
-	userlogc("Iterating");
+	btlogger("Iterating");
 	int iterations = 100;
 	for (int i = 0; i < iterations; i++) {
 		MESSAGE serviceSend;
@@ -195,6 +195,6 @@ void TestStompConnection::test() {
 		free(serviceReceived.type);
 		free(serviceReceived.subtype);
 	}
-	userlogc("Iterated");
+	btlogger("Iterated");
 	serverConnection->destroyDestination(destination);
 }

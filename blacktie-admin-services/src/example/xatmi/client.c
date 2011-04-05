@@ -21,12 +21,12 @@
 #include "xatmi.h"
 #include "tx.h"
 
-#include "userlogc.h"
+#include "btlogger.h"
 #include "malloc.h"
 #include <stdlib.h>
 
 char prompt(char* prompt) {
-	userlogc("Please press return after you: %s...", prompt);
+	btlogger("Please press return after you: %s...", prompt);
 	return getchar();
 }
 
@@ -34,13 +34,13 @@ void output(char* operationName, char* listIn) {
 	char* list;
 	char* nextToken;
 	int i = 0;
-	userlogc("Output from %s: ", operationName);
+	btlogger("Output from %s: ", operationName);
 	list = (char*) malloc(strlen(listIn) + 1);
 	list[strlen(listIn)] = '\0';
 	list = (char*) memcpy(list, listIn, strlen(listIn));
 	nextToken = strtok(list, ",");
 	while (nextToken != NULL) {
-		userlogc((char*) "Element: %d Value: %s", i, nextToken);
+		btlogger((char*) "Element: %d Value: %s", i, nextToken);
 		nextToken = strtok(NULL, " ");
 		i++;
 	}
@@ -131,7 +131,7 @@ int main(int argc, char **argv) {
 		tpstatus = tpcall("BTDomainAdmin", sbuf, sbufsize, (char **) &retbuf,
 				&retbufsize, callflags);
 	} else {
-		userlogc((char*) "ERROR: There were no running servers detected");
+		btlogger((char*) "ERROR: There were no running servers detected");
 	}
 
 	//tpfree(sbuf);

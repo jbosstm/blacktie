@@ -20,7 +20,7 @@
 
 #include "xatmi.h"
 
-#include "userlogc.h"
+#include "btlogger.h"
 
 int main(int argc, char **argv) {
 	int tpstatus;
@@ -47,10 +47,10 @@ int main(int argc, char **argv) {
 	tptypes(sbuf, type, subtype);
 
 	// tpcall
-	userlogc((char*) "Calling tpcall with input: %s", sbuf);
+	btlogger((char*) "Calling tpcall with input: %s", sbuf);
 	tpstatus = tpcall("ONE", sbuf, sbufsize, (char **) &retbuf,
 		&retbufsize, callflags);
-	userlogc(
+	btlogger(
 		(char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
 		retbufsize, retbuf, tpstatus, tperrno);
 
@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
 	}
     tpstatus = tpcall("TWO", sbuf, sbufsize, (char **) &retbuf,
 		&retbufsize, callflags);
-	userlogc(
+	btlogger(
 		(char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
 		retbufsize, retbuf, tpstatus, tperrno);
 
@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
 	}
     tpstatus = tpcall("THREE", sbuf, sbufsize, (char **) &retbuf,
 		&retbufsize, callflags);
-	userlogc(
+	btlogger(
 		(char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
 		retbufsize, retbuf, tpstatus, tperrno);
 
@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
 	}
     tpstatus = tpcall("FOUR", sbuf, sbufsize, (char **) &retbuf,
 		&retbufsize, callflags);
-	userlogc(
+	btlogger(
 		(char*) "Called tpcall with length: %d output: %s and status: %d and tperrno: %d",
 		retbufsize, retbuf, tpstatus, tperrno);
 

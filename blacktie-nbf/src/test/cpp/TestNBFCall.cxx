@@ -33,19 +33,19 @@ extern void nbf_service(TPSVCINFO *svcinfo);
 #endif
 
 void TestNBFCall::setUp() {
-	userlogc((char*) "TestNBFCall:setUp");
+	btlogger((char*) "TestNBFCall:setUp");
 	BaseServerTest::setUp();
 
 	BT_ASSERT(tperrno == 0);
 }
 
 void TestNBFCall::tearDown() {
-	userlogc((char*) "TestNBFCall::tearDown");
+	btlogger((char*) "TestNBFCall::tearDown");
 	BaseServerTest::tearDown();
 }
 
 void TestNBFCall::test_tpcall() {
-	userlogc((char*)"test_tpcall");
+	btlogger((char*)"test_tpcall");
 	tpadvertise((char*) "PBF", nbf_service);
 
 	char* buf = tpalloc((char*)"BT_NBF", (char*)"employee", 0);
@@ -67,10 +67,10 @@ void TestNBFCall::test_tpcall() {
 }
 
 void nbf_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "nbf_service");
+	btlogger((char*) "nbf_service");
 	char* buf = svcinfo->data;
 	
-	userlogc(buf);
+	btlogger(buf);
 
 	int rc;
 	char name[16];

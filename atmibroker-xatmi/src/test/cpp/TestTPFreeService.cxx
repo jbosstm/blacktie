@@ -32,7 +32,7 @@ extern void testtpfreeservice_service(TPSVCINFO *svcinfo);
 #endif
 
 void TestTPFreeService::setUp() {
-	userlogc((char*) "TestTPFreeService::setUp");
+	btlogger((char*) "TestTPFreeService::setUp");
 	m_allocated = NULL;
 	m_rcvbuf = NULL;
 
@@ -51,7 +51,7 @@ void TestTPFreeService::setUp() {
 }
 
 void TestTPFreeService::tearDown() {
-	userlogc((char*) "TestTPFreeService::tearDown");
+	btlogger((char*) "TestTPFreeService::tearDown");
 	// Do local work
 	::tpfree( m_allocated);
 	::tpfree( m_rcvbuf);
@@ -64,7 +64,7 @@ void TestTPFreeService::tearDown() {
 }
 
 void TestTPFreeService::test_tpfree_x_octet() {
-	userlogc((char*) "test_tpfree_x_octet");
+	btlogger((char*) "test_tpfree_x_octet");
 	m_allocated = tpalloc((char*) "X_OCTET", NULL, 10);
 	memset(m_allocated, '\0', 10);
 	BT_ASSERT(m_allocated != NULL);
@@ -77,7 +77,7 @@ void TestTPFreeService::test_tpfree_x_octet() {
 }
 
 void TestTPFreeService::test_tpfree_x_common() {
-	userlogc((char*) "test_tpfree_x_common");
+	btlogger((char*) "test_tpfree_x_common");
 	DEPOSIT *dptr;
 	dptr = (DEPOSIT*) tpalloc((char*) "X_COMMON", (char*) "deposit", 0);
 	m_allocated = (char*) dptr;
@@ -92,7 +92,7 @@ void TestTPFreeService::test_tpfree_x_common() {
 }
 
 void TestTPFreeService::test_tpfree_x_c_type() {
-	userlogc((char*) "test_tpfree_x_c_type");
+	btlogger((char*) "test_tpfree_x_c_type");
 	ACCT_INFO *aptr;
 	aptr = (ACCT_INFO*) tpalloc((char*) "X_C_TYPE", (char*) "acct_info", 0);
 	m_allocated = (char*) aptr;
@@ -107,7 +107,7 @@ void TestTPFreeService::test_tpfree_x_c_type() {
 }
 
 void testtpfreeservice_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpfreeservice_service");
+	btlogger((char*) "testtpfreeservice_service");
 	// Allocate a buffer to return
 	char *toReturn = tpalloc((char*) "X_OCTET", (char*) "acct_info", 1);
 

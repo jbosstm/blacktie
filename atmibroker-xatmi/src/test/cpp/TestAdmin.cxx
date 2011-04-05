@@ -21,17 +21,17 @@
 #include "Sleeper.h"
 
 void TestAdmin::setUp() {
-	userlogc((char*) "TestAdmin::setUp");
+	btlogger((char*) "TestAdmin::setUp");
 	BaseAdminTest::setUp();
 }
 
 void TestAdmin::tearDown() {
-	userlogc((char*) "TestAdmin::tearDown");
+	btlogger((char*) "TestAdmin::tearDown");
 	BaseAdminTest::tearDown();
 }
 
 char* TestAdmin::getBARCounter(char* command) {
-	userlogc((char*) "TestAdmin::getBARCounter");
+	btlogger((char*) "TestAdmin::getBARCounter");
 	char* n = NULL;
 	int cd;
 
@@ -42,7 +42,7 @@ char* TestAdmin::getBARCounter(char* command) {
 }
 
 void TestAdmin::testStatus() {
-	userlogc((char*) "TestAdmin::testStatus");
+	btlogger((char*) "TestAdmin::testStatus");
 	int cd;
 
 	cd = callADMIN((char*)"status", '1', 0, NULL);
@@ -52,19 +52,19 @@ void TestAdmin::testStatus() {
 }
 
 void TestAdmin::testVersion() {
-	userlogc((char*) "TestAdmin::testVersion");
+	btlogger((char*) "TestAdmin::testVersion");
 	int cd;
 	char* ver = NULL;
 
 	cd = callADMIN((char*)"version", '1', 0, &ver);
 	BT_ASSERT(cd == 0);
-	userlogc((char*)"version is %s", ver);
+	btlogger((char*)"version is %s", ver);
 	BT_ASSERT(strcmp(ver, "3.0.0.M3-SNAPSHOT") == 0);
 	free(ver);
 }
 
 void TestAdmin::testMessageCounter() {
-	userlogc((char*) "TestAdmin::testMessageCounter");
+	btlogger((char*) "TestAdmin::testMessageCounter");
 	char* barCounter = getBARCounter((char*)"counter,BAR,");
 	BT_ASSERT(strncmp(barCounter, "0", 1) == 0);
 	free (barCounter);
@@ -75,19 +75,19 @@ void TestAdmin::testMessageCounter() {
 }
 
 void TestAdmin::testErrorCounter() {
-	userlogc((char*) "TestAdmin::testErrorCounter");
+	btlogger((char*) "TestAdmin::testErrorCounter");
 	char* barCounter = getBARCounter((char*)"error_counter,BAR,");
 	BT_ASSERT(strncmp(barCounter, "0", 1) == 0);
 	free (barCounter);
 	BT_ASSERT(callBAR(TPESVCFAIL, (char*)"error_counter_test") == -1);
 	barCounter = getBARCounter((char*)"error_counter,BAR,");
-	userlogc("error counter = %s", barCounter);
+	btlogger("error counter = %s", barCounter);
 	BT_ASSERT(strncmp(barCounter, "1", 1) == 0);
 	free (barCounter);
 }
 
 void TestAdmin::testServerdone() {
-	userlogc((char*) "TestAdmin::testServerdone");
+	btlogger((char*) "TestAdmin::testServerdone");
 	int cd;
 
 	cd = callADMIN((char*)"serverdone", '1', 0, NULL);
@@ -95,33 +95,33 @@ void TestAdmin::testServerdone() {
 }
 
 void TestAdmin::testServerPauseAndResume() {
-	userlogc((char*) "TestAdmin::testServerPauseAndResume");
+	btlogger((char*) "TestAdmin::testServerPauseAndResume");
 	int cd;
 
 	BT_ASSERT(callBAR(0) == 0);
-	userlogc((char*)"call BAR OK");
+	btlogger((char*)"call BAR OK");
 
 	cd = callADMIN((char*)"pause", '1', 0, NULL);
 	BT_ASSERT(cd == 0);
-	userlogc((char*)"pause server OK");
+	btlogger((char*)"pause server OK");
 
-	userlogc((char*)"unadvertise on pause server should OK");
+	btlogger((char*)"unadvertise on pause server should OK");
 	cd = callADMIN((char*)"unadvertise,BAR,", '1', 0, NULL);
 	BT_ASSERT(cd == 0);
 
-	userlogc((char*)"advertise on pause server should OK, but service is still pause");
+	btlogger((char*)"advertise on pause server should OK, but service is still pause");
 	cd = callADMIN((char*)"advertise,BAR,", '1', 0, NULL);
 	BT_ASSERT(cd == 0);
 
-	userlogc((char*)"call BAR should time out after 20 seconds");
+	btlogger((char*)"call BAR should time out after 20 seconds");
 	BT_ASSERT(callBAR(TPETIME) == -1);
 
 	cd = callADMIN((char*)"resume", '1', 0, NULL);
 	BT_ASSERT(cd == 0);
-	userlogc((char*)"resume server OK");
+	btlogger((char*)"resume server OK");
 
 	::sleeper(3);
-	userlogc((char*)"call BAR should OK");
+	btlogger((char*)"call BAR should OK");
 	BT_ASSERT(callBAR(0) == 0);
-	userlogc((char*)"call BAR OK");
+	btlogger((char*)"call BAR OK");
 }

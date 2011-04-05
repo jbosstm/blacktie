@@ -38,7 +38,7 @@ extern void test_tpgetrply_TPGETANY_two(TPSVCINFO *svcinfo);
 #endif
 
 void TestTPGetRply::setUp() {
-	userlogc((char*) "TestTPGetRply::setUp");
+	btlogger((char*) "TestTPGetRply::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 	testingTPGETANY = false;
@@ -62,7 +62,7 @@ void TestTPGetRply::setUp() {
 }
 
 void TestTPGetRply::tearDown() {
-	userlogc((char*) "TestTPGetRply::tearDown");
+	btlogger((char*) "TestTPGetRply::tearDown");
 	if (cd != -1) {
 		int cancelled = ::tpcancel(cd);
 		BT_ASSERT(cancelled != -1);
@@ -89,7 +89,7 @@ void TestTPGetRply::tearDown() {
 }
 
 void TestTPGetRply::test_tpgetrply() {
-	userlogc((char*) "test_tpgetrply");
+	btlogger((char*) "test_tpgetrply");
 
 	int toCheck = tpadvertise((char*) "TestTPGetrply", testtpgetrply_service);
 	BT_ASSERT(tperrno == 0);
@@ -119,7 +119,7 @@ void TestTPGetRply::test_tpgetrply() {
 
 // 8.5
 void TestTPGetRply::test_tpgetrply_baddesc() {
-	userlogc((char*) "test_tpgetrply_baddesc");
+	btlogger((char*) "test_tpgetrply_baddesc");
 
 	int toCheck = tpadvertise((char*) "TestTPGetrply", testtpgetrply_service);
 	BT_ASSERT(tperrno == 0);
@@ -139,7 +139,7 @@ void TestTPGetRply::test_tpgetrply_baddesc() {
 }
 
 void TestTPGetRply::test_tpgetrply_nullcd() {
-	userlogc((char*) "test_tpgetrply_nullcd");
+	btlogger((char*) "test_tpgetrply_nullcd");
 
 	int toCheck = tpadvertise((char*) "TestTPGetrply", testtpgetrply_service);
 	BT_ASSERT(tperrno == 0);
@@ -158,7 +158,7 @@ void TestTPGetRply::test_tpgetrply_nullcd() {
 }
 
 void TestTPGetRply::test_tpgetrply_nullrcvbuf() {
-	userlogc((char*) "test_tpgetrply_nullrcvbuf");
+	btlogger((char*) "test_tpgetrply_nullrcvbuf");
 
 	int toCheck = tpadvertise((char*) "TestTPGetrply", testtpgetrply_service);
 	BT_ASSERT(tperrno == 0);
@@ -181,7 +181,7 @@ void TestTPGetRply::test_tpgetrply_nullrcvbuf() {
 }
 
 void TestTPGetRply::test_tpgetrply_nullrcvlen() {
-	userlogc((char*) "test_tpgetrply_nullrcvlen");
+	btlogger((char*) "test_tpgetrply_nullrcvlen");
 
 	int toCheck = tpadvertise((char*) "TestTPGetrply", testtpgetrply_service);
 	BT_ASSERT(tperrno == 0);
@@ -201,7 +201,7 @@ void TestTPGetRply::test_tpgetrply_nullrcvlen() {
 }
 
 void TestTPGetRply::test_tpgetrply_with_TPNOBLOCK() {
-	userlogc((char*) "test_tpgetrply_with_TPNOBLOCK");
+	btlogger((char*) "test_tpgetrply_with_TPNOBLOCK");
 	tpadvertise((char*) "TestTPGetrply", test_tpgetrply_TPNOBLOCK);
 
 	cd = ::tpacall((char*) "TestTPGetrply", (char *) sendbuf, sendlen, 0);
@@ -214,7 +214,7 @@ void TestTPGetRply::test_tpgetrply_with_TPNOBLOCK() {
 	sprintf(tperrnoS, "%d", tperrno);
 	BT_ASSERT_MESSAGE(tperrnoS, tperrno == TPEBLOCK);
 	free(tperrnoS);
-	userlogc((char*) "test_tpgetrply_with_TPNOBLOCK: %d %d %s", valToTest, tperrno, rcvbuf);
+	btlogger((char*) "test_tpgetrply_with_TPNOBLOCK: %d %d %s", valToTest, tperrno, rcvbuf);
 	BT_ASSERT(valToTest == -1);
 
 	/*
@@ -229,7 +229,7 @@ void TestTPGetRply::test_tpgetrply_with_TPNOBLOCK() {
 }
 
 void TestTPGetRply::test_tpgetrply_without_TPNOBLOCK() {
-	userlogc((char*) "test_tpgetrply_without_TPNOBLOCK");
+	btlogger((char*) "test_tpgetrply_without_TPNOBLOCK");
 	tpadvertise((char*) "TestTPGetrply", test_tpgetrply_TPNOBLOCK);
 
 	cd = ::tpacall((char*) "TestTPGetrply", (char *) sendbuf, sendlen, 0);
@@ -248,7 +248,7 @@ void TestTPGetRply::test_tpgetrply_without_TPNOBLOCK() {
 }
 
 void TestTPGetRply::test_tpgetrply_with_TPGETANY() {
-	userlogc((char*) "test_tpgetrply_with_TPGETANY");
+	btlogger((char*) "test_tpgetrply_with_TPGETANY");
 	testingTPGETANY = true;
 	tpadvertise((char*) "TestTPGetAnyA", test_tpgetrply_TPGETANY_one);
 	tpadvertise((char*) "TestTPGetAnyB", test_tpgetrply_TPGETANY_two);
@@ -290,7 +290,7 @@ void TestTPGetRply::test_tpgetrply_with_TPGETANY() {
 }
 
 void TestTPGetRply::test_tpgetrply_without_TPGETANY() {
-	userlogc((char*) "test_tpgetrply_without_TPGETANY");
+	btlogger((char*) "test_tpgetrply_without_TPGETANY");
 	testingTPGETANY = true;
 	tpadvertise((char*) "TestTPGetAnyA", test_tpgetrply_TPGETANY_one);
 	tpadvertise((char*) "TestTPGetAnyB", test_tpgetrply_TPGETANY_two);
@@ -336,7 +336,7 @@ void TestTPGetRply::test_tpgetrply_without_TPGETANY() {
 }
 
 void testtpgetrply_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpgetrply_service");
+	btlogger((char*) "testtpgetrply_service");
 	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, 22);
 	strcpy(toReturn, "testtpgetrply_service");
 	tpreturn(TPSUCCESS, 0, toReturn, 22, 0);
@@ -344,7 +344,7 @@ void testtpgetrply_service(TPSVCINFO *svcinfo) {
 
 void test_tpgetrply_TPNOBLOCK(TPSVCINFO *svcinfo) {
 	char* response = (char*) "test_tpgetrply_TPNOBLOCK";
-	userlogc(response);
+	btlogger(response);
 
 	long sendlen = strlen(response) + 1;
 	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, sendlen);
@@ -355,7 +355,7 @@ void test_tpgetrply_TPNOBLOCK(TPSVCINFO *svcinfo) {
 
 void test_tpgetrply_TPGETANY_one(TPSVCINFO *svcinfo) {
 	char* response = (char*) "test_tpgetrply_TPGETANY_one";
-	userlogc(response);
+	btlogger(response);
 
 	long sendlen = strlen(response) + 1;
 	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, sendlen);
@@ -366,7 +366,7 @@ void test_tpgetrply_TPGETANY_one(TPSVCINFO *svcinfo) {
 
 void test_tpgetrply_TPGETANY_two(TPSVCINFO *svcinfo) {
 	char* response = (char*) "test_tpgetrply_TPGETANY_two";
-	userlogc(response);
+	btlogger(response);
 
 	long sendlen = strlen(response) + 1;
 	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, sendlen);

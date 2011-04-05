@@ -36,7 +36,7 @@ extern void testtpreturn_service_opensession2(TPSVCINFO *svcinfo);
 #endif
 
 void TestTPReturn::setUp() {
-	userlogc((char*) "TestTPReturn::setUp");
+	btlogger((char*) "TestTPReturn::setUp");
 	sendbuf = NULL;
 	rcvbuf = NULL;
 
@@ -45,7 +45,7 @@ void TestTPReturn::setUp() {
 }
 
 void TestTPReturn::tearDown() {
-	userlogc((char*) "TestTPReturn::tearDown");
+	btlogger((char*) "TestTPReturn::tearDown");
 	// Do local work
 	::tpfree( sendbuf);
 	::tpfree( rcvbuf);
@@ -64,7 +64,7 @@ void TestTPReturn::test_tpreturn_nonservice() {
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(toCheck != -1);
 
-	userlogc((char*) "test_tpreturn_nonservice");
+	btlogger((char*) "test_tpreturn_nonservice");
 	// THIS IS ILLEGAL STATE TABLE
 	int len = 25;
 	char *toReturn = (char*) malloc(len);
@@ -74,7 +74,7 @@ void TestTPReturn::test_tpreturn_nonservice() {
 }
 
 void TestTPReturn::test_tpreturn_nonbuffer() {
-	userlogc((char*) "test_tpreturn_nonbuffer");
+	btlogger((char*) "test_tpreturn_nonbuffer");
 
 	// Do local work
 	int toCheck = tpadvertise((char*) "TestTPReturnA", testtpreturn_service);
@@ -98,7 +98,7 @@ void TestTPReturn::test_tpreturn_nonbuffer() {
 }
 
 void TestTPReturn::test_tpreturn_tpurcode() {
-	userlogc((char*) "test_tpreturn_tpurcode");
+	btlogger((char*) "test_tpreturn_tpurcode");
 
 	// Do local work
 	int toCheck = tpadvertise((char*) "TestTPReturnA",
@@ -134,7 +134,7 @@ void TestTPReturn::test_tpreturn_tpurcode() {
 }
 
 void TestTPReturn::test_tpreturn_opensession() {
-	userlogc((char*) "test_tpreturn_opensession");
+	btlogger((char*) "test_tpreturn_opensession");
 
 	// Do local work
 	int toCheck = tpadvertise((char*) "TestTPReturnA",
@@ -163,7 +163,7 @@ void TestTPReturn::test_tpreturn_opensession() {
 }
 
 void testtpreturn_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpreturn_service");
+	btlogger((char*) "testtpreturn_service");
 	char *toReturn = (char*) malloc(21);
 	strcpy(toReturn, "testtpreturn_service");
 	tpreturn(TPSUCCESS, 0, toReturn, 21, 0);
@@ -171,7 +171,7 @@ void testtpreturn_service(TPSVCINFO *svcinfo) {
 }
 
 void testtpreturn_service_tpurcode(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpreturn_service_tpurcode");
+	btlogger((char*) "testtpreturn_service_tpurcode");
 	int len = 1;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	if (strncmp(svcinfo->data, "24", 2) == 0) {
@@ -182,13 +182,13 @@ void testtpreturn_service_tpurcode(TPSVCINFO *svcinfo) {
 }
 
 void testtpreturn_service_opensession1(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpreturn_service_opensession1");
+	btlogger((char*) "testtpreturn_service_opensession1");
 	(void) ::tpacall((char*) "TestTPReturnB", (char *) svcinfo->data, svcinfo->len,
 			0);
 	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
 }
 
 void testtpreturn_service_opensession2(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpreturn_service_opensession2");
+	btlogger((char*) "testtpreturn_service_opensession2");
 	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
 }
