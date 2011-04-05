@@ -231,12 +231,15 @@ static void XMLCALL startElement
 		ServerInfo* server = new ServerInfo;
 		server->serverName = copy_value("default");
 		server->function_name = NULL;
+		server->done_function_name = NULL;
 		server->library_name = NULL;
 		for(int i = 0; atts[i]; i += 2) {
 			if(atts[i] && strcmp(atts[i], "name") == 0) {
 				server->serverName = copy_value(atts[i+1]);
 			} else if(atts[i] && strcmp(atts[i], "init_function") == 0) {
 				server->function_name = copy_value(atts[i+1]);
+			} else if(atts[i] && strcmp(atts[i], "done_function") == 0) {
+				server->done_function_name = copy_value(atts[i+1]);
 			}
 		}
 

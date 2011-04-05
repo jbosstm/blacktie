@@ -329,7 +329,7 @@ AtmiBrokerServer::AtmiBrokerServer() {
 		unsigned int i;
 
 		serverInfo.serverName = NULL;
-		serverInfo.function_name = NULL;
+		serverInfo.function_name = serverInfo.done_function_name = NULL;
 		serverInfo.library_name = NULL;
 
 		for (i = 0; i < servers.size(); i++) {
@@ -351,6 +351,7 @@ AtmiBrokerServer::AtmiBrokerServer() {
 				service.advertised = false;
 				serverInfo.serviceVector.push_back(service);
 				serverInfo.function_name = servers[i]->function_name;
+				serverInfo.done_function_name = servers[i]->done_function_name;
 				serverInfo.library_name = servers[i]->library_name;
 
 				for (unsigned int j = 0; j < servers[i]->serviceVector.size(); j++) {
@@ -491,7 +492,22 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 			unadvertiseService(svcname, true);
 		}
 	}
+
+	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "done_function_name: " << serverInfo.done_function_name);
+	if (serverInfo.done_function_name != NULL) {
+		SVRSTOP svrStopFunc = (SVRSTOP) ::lookup_symbol( serverInfo.library_name, serverInfo.done_function_name);
+		if (svrStopFunc == NULL) {
+			LOG4CXX_FATAL(loggerAtmiBrokerServer, "can not find "
+				<< serverInfo.done_function_name << " in "
+				<< serverInfo.library_name);
+		} else {
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, "invoking done_function");
+			svrStopFunc();
+			LOG4CXX_DEBUG(loggerAtmiBrokerServer, "invoked done_function");
+		}
+	}
 	finish->unlock();
+
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "server_done(): returning.");
 
 	for (std::vector<ServiceDispatcher*>::iterator dispatcher =

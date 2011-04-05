@@ -25,6 +25,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+EXPORT_SERVICE void myserverdone(void) {
+	btlogger((char*) "user server done");
+}
+
 EXPORT_SERVICE int myserverinit(int argc, char** argv) {
 	int i;
 	btlogger((char*) "server initialized with %d arguments", argc);

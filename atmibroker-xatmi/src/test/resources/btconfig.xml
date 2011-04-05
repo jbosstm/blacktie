@@ -20,7 +20,7 @@
 	<DOMAIN>fooapp</DOMAIN>
 	
 	<SERVERS>
-		<SERVER name='default'>
+		<SERVER name='default' init_function='dummyserverinit' done_function='dummyserverdone'>
 			<SERVICE_NAMES>
 				<SERVICE name='PBF' />
 				<SERVICE name='BAR' advertised="true" function_name='BAR' size="2">

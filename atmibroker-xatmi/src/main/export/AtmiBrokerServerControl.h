@@ -25,6 +25,7 @@
 
 
 typedef int (*SVRSTART)(int argc, char** argv);
+typedef void (*SVRSTOP)(void);
 
 typedef void (*SVCFUNC)(TPSVCINFO *);
 

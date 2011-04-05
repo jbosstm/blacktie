@@ -30,7 +30,7 @@
 			serverId="2" />
 	</MACHINES>
 	<SERVERS>
-		<SERVER name='default' init_function='myserverinit'>
+		<SERVER name='default' init_function='myserverinit' done_function='myserverdone'>
 			<INIT_FUNCTION_LIBRARY_NAME configuration="win32" value="server.exe"/>
 			<MACHINE-REF id="default1" />
 			<MACHINE-REF id="default2" />

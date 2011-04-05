@@ -19,8 +19,25 @@
 #include "BaseServerTest.h"
 #include "BaseTest.h"
 
+static int initcalled = 0;
+static int donecalled = 0;
+
 extern "C" {
 #include "AtmiBrokerServerControl.h"
+
+#ifndef EXPORT_SERVICE
+#define EXPORT_SERVICE __declspec(dllexport)
+#define EXPORT_SERVICE
+#endif
+EXPORT_SERVICE int dummyserverinit(int argc, char** argv) {
+    initcalled = 1;
+    return 0;
+}
+
+EXPORT_SERVICE void dummyserverdone(void) {
+    donecalled = 1;
+}
+
 }
 
 #include "xatmi.h"
@@ -28,7 +45,9 @@ extern "C" {
 void BaseServerTest::setUp() {
 	// Perform initial start up
 	BaseTest::setUp();
+	initcalled = donecalled = 0;
 	startServer();
+	BT_ASSERT(initcalled == 1);
 }
 
 void BaseServerTest::startServer() {
@@ -48,6 +67,7 @@ void BaseServerTest::startServer() {
 void BaseServerTest::tearDown() {
 	// Stop the server
 	serverdone();
+	BT_ASSERT(donecalled == 1);
 
 	// Perform additional clean up
 	BaseTest::tearDown();
