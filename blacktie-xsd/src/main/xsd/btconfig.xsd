@@ -177,22 +177,22 @@
 									</xsd:sequence>
 									<xsd:attribute name="name" type="svrstring" use="required" />
 									<xsd:attribute name="init_function" type="xsd:string" use="optional" >
-										<xs:annotation>
-											<xs:documentation>
+										<xsd:annotation>
+											<xsd:documentation>
 												The name of function that BlackTie will call just before a server begins
 												processing service requests. The name must correspond to a symbol
 												in the server executable or library and must have C linkage.
-											</xs:documentation>
-										</xs:annotation>
+											</xsd:documentation>
+										</xsd:annotation>
 									</xsd:attribute>
 									<xsd:attribute name="done_function" type="xsd:string" use="optional" >
-										<xs:annotation>
-											<xs:documentation>
+										<xsd:annotation>
+											<xsd:documentation>
 												The name of function that BlackTie will call just before a server exits
 												and just after it has unadvertised its services. The name must correspond
 												to a symbol in the server executable or library and must have C linkage.
-											</xs:documentation>
-										</xs:annotation>
+											</xsd:documentation>
+										</xsd:annotation>
 									</xsd:attribute>
 								</xsd:complexType>
 							</xsd:element>
