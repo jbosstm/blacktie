@@ -38,6 +38,7 @@
 '>
 <!ENTITY linker-args-xlC '
 <linkerarg value="-brtl" />
+<linkerarg value="-bexpall" />
 '>
 <!ENTITY compiler-args-msvc '
 <compilerarg value="/wd4820" />
@@ -397,6 +398,7 @@
 			<includepath path="target/cxx/compile/include" />
 			<includepath path="target/cxx/compile/include/apr-1" />
 			<includepath path="target/cxx/compile/include/stomp" />
+
 			<includepath path="target/cxx/compile/include/expat" />
 			<includepath path="target/cxx/test/include" />
 
