@@ -25,7 +25,6 @@
 
 #include "AtmiBrokerServerControl.h"
 #include "xatmi.h"
-#include "userlogc.h"
 
 extern "C"
 JNIEXPORT jboolean JNICALL Java_org_jboss_blacktie_jatmibroker_RunClient_test_1x_1octet

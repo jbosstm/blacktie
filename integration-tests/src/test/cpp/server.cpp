@@ -26,7 +26,6 @@
 #include "AtmiBrokerServerControl.h"
 #include "ace/OS_NS_unistd.h"
 #include "xatmi.h"
-#include "userlogc.h"
 #include "XATMITestSuite.h"
 
 int interationCount = 100;
@@ -34,7 +33,7 @@ int interationCount = 100;
 #include "ace/OS_NS_unistd.h"
 
 #include "xatmi.h"
-#include "userlogc.h"
+#include "btlogger.h"
 
 #include "Sleeper.h"
 
@@ -64,12 +63,12 @@ void tpcall_x_octet(TPSVCINFO * svcinfo) {
 }
 
 void loopy(TPSVCINFO* tpsvcinfo) {
-	userlogc((char*) "loopy");
+	btlogger((char*) "loopy");
 }
 
 /* this routine is used for DEBIT and CREDIT */
 void debit_credit_svc(TPSVCINFO *svcinfo) {
-	userlogc((char*) "debit_credit_svc: %d", svcinfo->len);
+	btlogger((char*) "debit_credit_svc: %d", svcinfo->len);
 	DATA_BUFFER *dc_ptr;
 	int rval;
 	/* extract request typed buffer */
@@ -99,12 +98,12 @@ void debit_credit_svc(TPSVCINFO *svcinfo) {
 	}
 	/* send reply and return from service routine */
 	tpreturn(rval, 0, (char *) dc_ptr, 0, 0);
-	userlogc((char*) "tpreturn 0 hmm: %d", svcinfo->len);
+	btlogger((char*) "tpreturn 0 hmm: %d", svcinfo->len);
 }
 
 /* this routine is used for INQUIRY */
 void inquiry_svc(TPSVCINFO *svcinfo) {
-	userlogc((char*) "inquiry_svc");
+	btlogger((char*) "inquiry_svc");
 	DATA_BUFFER *ptr;
 	long event;
 	int rval;
@@ -131,7 +130,7 @@ void inquiry_svc(TPSVCINFO *svcinfo) {
 }
 
 void testtpacall_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpacall_service");
+	btlogger((char*) "testtpacall_service");
 	int len = 20;
 	char *toReturn = (char*) malloc(len);
 	strcpy(toReturn, "testtpacall_service");
@@ -139,7 +138,7 @@ void testtpacall_service(TPSVCINFO *svcinfo) {
 	free(toReturn);
 }
 void test_tpcall_x_octet_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tpcall_x_octet_service");
+	btlogger((char*) "test_tpcall_x_octet_service");
 	bool ok = false;
 	if (svcinfo->data) {
 		if (strncmp(svcinfo->data, "test_tpcall_x_octet", svcinfo->len) == 0) {
@@ -163,14 +162,14 @@ void test_tpcall_x_octet_service(TPSVCINFO *svcinfo) {
 }
 
 void test_tpcall_x_octet_service_zero(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tpcall_x_octet_service_zero");
+	btlogger((char*) "test_tpcall_x_octet_service_zero");
 	int len = 0;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	tpreturn(TPSUCCESS, 21, toReturn, len, 0);
 }
 
 void test_tpcall_x_common_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tpcall_x_common_service");
+	btlogger((char*) "test_tpcall_x_common_service");
 	bool ok = false;
 	DEPOSIT *dptr = (DEPOSIT*) svcinfo->data;
 	if (dptr->acct_no == 12345678 && dptr->amount == 50) {
@@ -178,9 +177,9 @@ void test_tpcall_x_common_service(TPSVCINFO *svcinfo) {
 	} else {
 		char* foo = svcinfo->data;
 		for (int i = 0; i < svcinfo->len; i++) {
-			userlogc((char*) "Position: %d was: %o", i, foo[i]);
+			btlogger((char*) "Position: %d was: %o", i, foo[i]);
 		}
-		userlogc((char*) "Data was: %d/%d", dptr->acct_no, dptr->amount);
+		btlogger((char*) "Data was: %d/%d", dptr->acct_no, dptr->amount);
 	}
 
 	int len = 60;
@@ -194,7 +193,7 @@ void test_tpcall_x_common_service(TPSVCINFO *svcinfo) {
 }
 
 void test_tpcall_x_c_type_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "test_tpcall_x_c_type_service");
+	btlogger((char*) "test_tpcall_x_c_type_service");
 	bool ok = false;
 	ACCT_INFO *aptr = (ACCT_INFO*) svcinfo->data;
 	bool acctEq = aptr->acct_no == 12345678;
@@ -214,7 +213,7 @@ void test_tpcall_x_c_type_service(TPSVCINFO *svcinfo) {
 	tpreturn(TPSUCCESS, 23, toReturn, len, 0);
 }
 void testtpcancel_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpcancel_service");
+	btlogger((char*) "testtpcancel_service");
 	if (!(svcinfo->flags && TPNOREPLY)) {
 		int len = 21;
 		char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
@@ -223,41 +222,41 @@ void testtpcancel_service(TPSVCINFO *svcinfo) {
 	}
 }
 void testtpconnect_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpconnect_service");
+	btlogger((char*) "testtpconnect_service");
 	tpreturn(TPSUCCESS, 0, NULL, 0, 0);
 }
 void testTPConversation_service(TPSVCINFO *svcinfo) {
 
-	userlogc((char*) "testTPConversation_service ");
+	btlogger((char*) "testTPConversation_service ");
 	bool fail = false;
 	char *sendbuf = ::tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
 	char *rcvbuf = ::tpalloc((char*) "X_OCTET", NULL, svcinfo->len);
 
 	char* expectedResult = (char*) malloc(11);
 	strcpy(expectedResult, "conversate");
-	userlogc((char*) "testTPConversation_service expected: %s", expectedResult);
+	btlogger((char*) "testTPConversation_service expected: %s", expectedResult);
 
 	/*	int errorMessageLen = 10 + 1 + svcinfo->len + 1;
-	 userlogc((char*) "testTPConversation_service errorMessageLen: %d", errorMessageLen);
+	 btlogger((char*) "testTPConversation_service errorMessageLen: %d", errorMessageLen);
 
 	 char* errorMessage = (char*) malloc(errorMessageLen);
 	 sprintf(errorMessage, "%s/%s", expectedResult, svcinfo->data);
-	 userlogc((char*) "testTPConversation_service errorMessage will be: %s", errorMessage);
+	 btlogger((char*) "testTPConversation_service errorMessage will be: %s", errorMessage);
 	 */
 	if (strncmp(expectedResult, svcinfo->data, 10) != 0) {
-		userlogc((char*) "Fail");
+		btlogger((char*) "Fail");
 		if (svcinfo->data != NULL) {
-			userlogc((char*) "Got invalid data");
+			btlogger((char*) "Got invalid data");
 		} else {
-			userlogc((char*) "GOT A NULL");
+			btlogger((char*) "GOT A NULL");
 		}
 		fail = true;
 	} else {
-		userlogc((char*) "Chatting");
+		btlogger((char*) "Chatting");
 		long revent = 0;
 		for (int i = 0; i < interationCount; i++) {
 			sprintf(sendbuf, "hi%d", i);
-			//userlogc((char*) "testTPConversation_service:%s:", sendbuf);
+			//btlogger((char*) "testTPConversation_service:%s:", sendbuf);
 			int result = ::tpsend(svcinfo->cd, sendbuf, svcinfo->len,
 					TPRECVONLY, &revent);
 			if (result != -1) {
@@ -285,7 +284,7 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 				break;
 			}
 		}
-		userlogc((char*) "Chatted");
+		btlogger((char*) "Chatted");
 	}
 
 	if (fail) {
@@ -301,7 +300,7 @@ void testTPConversation_service(TPSVCINFO *svcinfo) {
 }
 
 void testTPConversation_short_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testTPConversation_short_service");
+	btlogger((char*) "testTPConversation_short_service");
 	long sendlen = 4;
 	long revent = 0;
 	char *sendbuf = ::tpalloc((char*) "X_OCTET", NULL, sendlen);
@@ -311,13 +310,13 @@ void testTPConversation_short_service(TPSVCINFO *svcinfo) {
 	tpreturn(TPSUCCESS, 0, sendbuf, sendlen, 0);
 }
 void testtpdiscon_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpdiscon_service");
+	btlogger((char*) "testtpdiscon_service");
 	long timeout = 2;
 	ACE_OS::sleep(timeout);
 }
 
 void testtpfreeservice_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpfreeservice_service");
+	btlogger((char*) "testtpfreeservice_service");
 	// Allocate a buffer to return
 	char *toReturn = tpalloc((char*) "X_OCTET", (char*) "acct_info", 1);
 
@@ -340,17 +339,17 @@ void testtpfreeservice_service(TPSVCINFO *svcinfo) {
 	tpreturn(TPSUCCESS, 0, toReturn, 1, 0);
 }
 void testtpgetrply_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpgetrply_service");
+	btlogger((char*) "testtpgetrply_service");
 	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, 22);
 	strcpy(toReturn, "testtpgetrply_service");
 	tpreturn(TPSUCCESS, 0, toReturn, 22, 0);
 }
 void testtprecv_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtprecv_service");
+	btlogger((char*) "testtprecv_service");
 }
 
 void testtpreturn_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpreturn_service");
+	btlogger((char*) "testtpreturn_service");
 	char *toReturn = (char*) malloc(21);
 	strcpy(toReturn, "testtpreturn_service");
 	tpreturn(TPSUCCESS, 0, toReturn, 21, 0);
@@ -358,7 +357,7 @@ void testtpreturn_service(TPSVCINFO *svcinfo) {
 }
 
 void testtpreturn_service_tpurcode(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpreturn_service_tpurcode");
+	btlogger((char*) "testtpreturn_service_tpurcode");
 	int len = 0;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 	if (strncmp(svcinfo->data, "24", 2) == 0) {
@@ -369,11 +368,11 @@ void testtpreturn_service_tpurcode(TPSVCINFO *svcinfo) {
 }
 
 void testtpsend_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpsend_service");
+	btlogger((char*) "testtpsend_service");
 }
 
 void testtpsend_tpsendonly_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpsend_tpsendonly_service");
+	btlogger((char*) "testtpsend_tpsendonly_service");
 
 	long event = 0;
 	int result = ::tpsend(svcinfo->cd, svcinfo->data, svcinfo->len, TPRECVONLY,
@@ -386,10 +385,10 @@ void testtpsend_tpsendonly_service(TPSVCINFO *svcinfo) {
 }
 
 void testtpservice_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpservice_service");
+	btlogger((char*) "testtpservice_service");
 }
 void testtpunadvertise_service(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpunadvertise_service");
+	btlogger((char*) "testtpunadvertise_service");
 	char * toReturn = new char[26];
 	strcpy(toReturn, "testtpunadvertise_service");
 	// Changed length from 0L to svcinfo->len
@@ -404,13 +403,13 @@ void test_TTL_service(TPSVCINFO *svcinfo) {
 	int len = 60;
 	char *toReturn = ::tpalloc((char*) "X_OCTET", NULL, len);
 
-	userlogc("Data was %s", svcinfo->data);
+	btlogger("Data was %s", svcinfo->data);
 	if (strncmp(svcinfo->data, "counter", 7) == 0) {
 		sprintf(toReturn, "%d", n);
 	} else {
 		n++;
 		ACE_OS::sleep(timeout);
-		userlogc((char*) "TTL sleep timeout %d seconds", timeout);
+		btlogger((char*) "TTL sleep timeout %d seconds", timeout);
 
 		strcpy(toReturn, "test_tpcall_TTL_service");
 	}
@@ -419,7 +418,7 @@ void test_TTL_service(TPSVCINFO *svcinfo) {
 
 void test_tpgetrply_TPGETANY_one(TPSVCINFO *svcinfo) {
 	char* response = (char*) "test_tpgetrply_TPGETANY_one";
-	userlogc(response);
+	btlogger(response);
 
 	long sendlen = strlen(response) + 1;
 	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, sendlen);
@@ -430,7 +429,7 @@ void test_tpgetrply_TPGETANY_one(TPSVCINFO *svcinfo) {
 
 void test_tpgetrply_TPGETANY_two(TPSVCINFO *svcinfo) {
 	char* response = (char*) "test_tpgetrply_TPGETANY_two";
-	userlogc(response);
+	btlogger(response);
 
 	long sendlen = strlen(response) + 1;
 	char * toReturn = ::tpalloc((char*) "X_OCTET", NULL, sendlen);
@@ -440,21 +439,21 @@ void test_tpgetrply_TPGETANY_two(TPSVCINFO *svcinfo) {
 }
 
 void testtpreturn_service_opensession1(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpreturn_service_opensession1");
+	btlogger((char*) "testtpreturn_service_opensession1");
 	int cd = ::tpacall((char*) "TestTPReturnB", (char *) svcinfo->data,
 			svcinfo->len, 0);
 	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
 }
 
 void testtpreturn_service_opensession2(TPSVCINFO *svcinfo) {
-	userlogc((char*) "testtpreturn_service_opensession2");
+	btlogger((char*) "testtpreturn_service_opensession2");
 	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
 }
 
 extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_serverinit(JNIEnv *, jobject) {
 	int exit_status = -1;
-	userlogc((char*) "serverinit called");
+	btlogger((char*) "serverinit called");
 #ifdef WIN32
 	char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"default", (char*)"-i", (char*)"1"};
 #else
@@ -464,16 +463,16 @@ JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_serverinit(
 
 	exit_status = serverinit(argc, argv);
 	exit_status = tpadvertise((char*) "BAR", BAR);
-	userlogc((char*) "serverinit returning");
+	btlogger((char*) "serverinit returning");
 	return;
 }
 
 extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_serverdone(JNIEnv *, jobject) {
 	int exit_status = -1;
-	userlogc((char*) "serverdone called");
+	btlogger((char*) "serverdone called");
 	exit_status = serverdone();
-	userlogc((char*) "serverdone returning");
+	btlogger((char*) "serverdone returning");
 	return;
 }
 
