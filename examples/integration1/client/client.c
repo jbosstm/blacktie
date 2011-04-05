@@ -20,7 +20,7 @@
 
 #include "xatmi.h"
 #include "tx.h"
-#include "userlogc.h"
+#include "btlogger.h"
 
 #include "debit.h"
 #include "credit.h"
@@ -47,40 +47,40 @@ int main(int argc, char **argv) {
 	creditBuf->amount = 10;
 
 	// Open the connection to the transaction manager
-	userlogc((char*) "Starting transaction");
+	btlogger((char*) "Starting transaction");
 	status = tx_open();
 	if (status == 0) {
 
 		// Start a transaction
-		userlogc((char*) "Starting transaction");
+		btlogger((char*) "Starting transaction");
 		status = tx_begin();
 		if (status == 0) {
 
 			// Debit the account
-			userlogc((char*) "Reallocate response buffer");
+			btlogger((char*) "Reallocate response buffer");
 			retbuf = tprealloc(retbuf, 9);
 			if (tperrno == 0 && tptypes(retbuf, NULL, NULL) == 9) {
 				memset(retbuf, 0, 9);
 
-				userlogc((char*) "Calling debit");
+				btlogger((char*) "Calling debit");
 				status = tpcall("DEBIT", (char*) debitBuf, 0,
 						(char **) &retbuf, &retbufsize, callflags);
 				if (status == 0) {
 					status = (tperrno != 0);
 					if (status == 0) {
 						debitted = (char*) "DEBITTED";
-						userlogc((char*) "Checking output");
+						btlogger((char*) "Checking output");
 						status = (strcmp(retbuf, debitted) != 0);
 						if (status == 0) {
 
 							// Credit the account
-							userlogc((char*) "Reallocate response buffer");
+							btlogger((char*) "Reallocate response buffer");
 							retbuf = tprealloc(retbuf, 10);
 
 							if (tperrno == 0 && tptypes(retbuf, NULL, NULL)
 									== 10) {
 								memset(retbuf, 0, 10);
-								userlogc((char*) "Calling credit");
+								btlogger((char*) "Calling credit");
 								status = tpcall("CREDIT", (char*) creditBuf, 0,
 										(char **) &retbuf, &retbufsize,
 										callflags);
@@ -88,12 +88,12 @@ int main(int argc, char **argv) {
 									status = (tperrno != 0);
 									if (status == 0) {
 										creditted = (char*) "CREDITTED";
-										userlogc((char*) "Checking output");
+										btlogger((char*) "Checking output");
 										status = (strcmp(retbuf, creditted)
 												!= 0);
 										if (status == 0) {
 											// Commit the transaction
-											userlogc(
+											btlogger(
 													(char*) "Committing transaction");
 											status = tx_commit();
 										}
@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	userlogc((char*) "Transfer Status: tperrno: %d, status: %d", tperrno,
+	btlogger((char*) "Transfer Status: tperrno: %d, status: %d", tperrno,
 			status);
 
 	tpfree((char*) debitBuf);

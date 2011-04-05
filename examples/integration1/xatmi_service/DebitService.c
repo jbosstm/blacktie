@@ -18,7 +18,7 @@
 #include <stdlib.h>
 
 #include "xatmi.h"
-#include "userlogc.h"
+#include "btlogger.h"
 #include "string.h"
 
 #include "debit.h"
@@ -29,7 +29,7 @@ void DEBIT(TPSVCINFO * svcinfo) {
 	DEBIT_T* debitBuf;
 
 	debitBuf = (DEBIT_T*) svcinfo->data;
-	userlogc((char*) "Debit called: acct_no: %d amount: %d", debitBuf->acct_no,
+	btlogger((char*) "Debit called: acct_no: %d amount: %d", debitBuf->acct_no,
 			debitBuf->amount);
 
 	sendlen = 9;
