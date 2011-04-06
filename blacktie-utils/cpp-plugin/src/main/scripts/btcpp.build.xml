@@ -38,7 +38,6 @@
 '>
 <!ENTITY linker-args-xlC '
 <linkerarg value="-brtl" />
-<linkerarg value="-bexpall" />
 '>
 <!ENTITY compiler-args-msvc '
 <compilerarg value="/wd4820" />
