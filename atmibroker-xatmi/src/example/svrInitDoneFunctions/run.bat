@@ -1,8 +1,8 @@
 @echo off
 
-echo "Example: Running svrStartFunction"
+echo "Example: Running svrInitDoneFunctions"
 
-cd %BLACKTIE_HOME%\examples\xatmi\svrStartfunction
+cd %BLACKTIE_HOME%\examples\xatmi\svrInitDoneFunctions
 
 rem RUN THE FOOAPP SERVER
 call generate_server -Dservice.names=BAR -Dserver.includes=BarService.c,SvrInit.c

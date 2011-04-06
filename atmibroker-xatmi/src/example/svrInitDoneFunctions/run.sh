@@ -1,9 +1,9 @@
 # ALLOW JOBS TO BE BACKGROUNDED
 set -m
 
-echo "Example: Running svrStartFunction"
+echo "Example: Running svrInitDoneFunctions"
 
-cd $BLACKTIE_HOME/examples/xatmi/svrStartFunction
+cd $BLACKTIE_HOME/examples/xatmi/svrInitDoneFunctions
 
 # RUN THE FOOAPP SERVER
 generate_server -Dservice.names=BAR -Dserver.includes=BarService.c,SvrInit.c
