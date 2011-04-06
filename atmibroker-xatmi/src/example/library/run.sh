@@ -12,7 +12,7 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 
-# GENERATE A LIBRARY WITH THE BAR SERVICE IN IT
+# GENERATE A LIBRARY WITH THE BarService.c IN IT
 cd $EXAMPLE_HOME
 generate_library -Dlibrary.includes=BarService.c
 if [ "$?" != "0" ]; then

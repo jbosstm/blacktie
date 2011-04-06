@@ -33,7 +33,7 @@ C:\Program Files\Microsoft Visual Studio 9.0\VC\vcvarsall.bat
 
 
 2. CREATE THE SERVER
-generate_server -Dservice.names=BAR -Dserver.includes=BarService.c,SvrInit.c
+generate_server -Dserver.includes=BarService.c,SvrInit.c
 NOTE: If you get the following error you have not installed ant-contrib into your ANT distribution:
 	BUILD FAILED
 	/home/tom/blacktie/dist/blacktie-3.0.0.M3-SNAPSHOT/bin/generate-executables.xml:160: Problem: failed to create task or type propertycopy
@@ -43,7 +43,7 @@ NOTE: If you get the following error you have not installed cpp-tasks into your 
 	/home/tom/blacktie/dist/blacktie-3.0.0.M3-SNAPSHOT/bin/generate-executables.xml:140: Problem: failed to create task or type cc
 NOTE: If you get the following error you have not edited or executed setenv correctly:
 java org.apache.tools.ant.launch.Launcher -f /bin/generate-executables.xml -Dconfiguration.type
-=debug -Dbasedir=. server -Dservice.names=BAR -Dserver.includes=BarService.c
+=debug -Dbasedir=. server -Dserver.includes=BarService.c
 Exception in thread "main" java.lang.NoClassDefFoundError: org/apache/tools/ant/launch/Launcher
 Caused by: java.lang.ClassNotFoundException: org.apache.tools.ant.launch.Launcher
         at java.net.URLClassLoader$1.run(URLClassLoader.java:200)
@@ -80,5 +80,8 @@ btadmin startup
 NOTE: If you get the following error you have not started the JBoss server:
 2009-06-23 08:51:51,270 [0x7f627be63750] ERROR AtmiBrokerServer          - serverinit - Unexpected CORBA exception: TRANSIENT
 2009-06-23 08:51:51,270 [0x7f627be63750] INFO  AtmiBrokerLogc            - main Unexpected exception in serverrun()
+
+When the server starts up you will see all the command line options that were specified in the btconfig.xml being printed out
+
 5.2 SHUTDOWN THE SERVER
 btadmin shutdown

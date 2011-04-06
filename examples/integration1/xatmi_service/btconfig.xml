@@ -19,17 +19,17 @@
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>integration</DOMAIN>
 	<MACHINES>
-		<MACHINE id="default1" hostname="${HOSTNAME}"
+		<MACHINE id="integra1" hostname="${HOSTNAME}"
 			pathToExecutable="${BLACKTIE_HOME}/examples/integration1/xatmi_service/server"
 			workingDirectory="${BLACKTIE_HOME}/examples/integration1/xatmi_service"
 			serverId="1" />
 	</MACHINES>
 	<SERVERS>
-		<SERVER name='default'>
-			<MACHINE-REF id="default1" />
+		<SERVER name='integra'>
+			<MACHINE-REF id="integra1" />
 			<SERVICE_NAMES>
-				<SERVICE name='CREDIT' />
-				<SERVICE name='DEBIT' />
+				<SERVICE name='CREDITEXAMPLE' />
+				<SERVICE name='DEBITEXAMPLE' />
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>

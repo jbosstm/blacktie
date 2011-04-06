@@ -57,7 +57,7 @@ generate_client -Dclient.includes=queues.c -Dclient.output.file=client
 if [ "$?" != "0" ]; then
 	exit -1
 fi
-generate_server -Dserver.includes=BarService.c  -Dservice.names=BAR
+generate_server -Dserver.includes=BarService.c  -Dservice.names=QUEUES
 if [ "$?" != "0" ]; then
 	exit -1
 fi

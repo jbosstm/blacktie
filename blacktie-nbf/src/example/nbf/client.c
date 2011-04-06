@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
 	rcvbuf = tpalloc((char*)"BT_NBF", (char*)"employee", 0);
 	rcvlen = strlen(rcvbuf);
 
-	rc = tpcall((char*)"NBF", (char*)sendbuf, strlen(sendbuf), (char**)&rcvbuf, &rcvlen, (long)0);
+	rc = tpcall((char*)"NBFEXAMPLE", (char*)sendbuf, strlen(sendbuf), (char**)&rcvbuf, &rcvlen, (long)0);
 
 	if(rc == 0 && tperrno == 0) {
 		btlogger((char*) "call NBF service ok");

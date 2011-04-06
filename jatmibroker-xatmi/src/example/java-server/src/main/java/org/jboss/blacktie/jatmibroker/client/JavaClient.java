@@ -36,7 +36,7 @@ public class JavaClient {
 		sbuf.setByteArray("THIS IS YOUR CLIENT SPEAKING".getBytes());
 		log.info("Calling tpcall with input: %s"
 				+ new String(sbuf.getByteArray()));
-		int cd = connection.tpacall("TestOne", sbuf, 0);
+		int cd = connection.tpacall("JAVASERV", sbuf, 0);
 		Response retbuf = connection.tpgetrply(cd, 0);
 		log.info("Called tpcall with length: %d output: %s"
 				+ retbuf.getBuffer().getLen() + " "

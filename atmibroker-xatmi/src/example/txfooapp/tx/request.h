@@ -32,7 +32,7 @@
 #ifdef UNITTEST
 static const char * const TXTEST_SVC_NAME = "tpcall_x_octet";
 #else
-static const char * const TXTEST_SVC_NAME = "BAR";
+static const char * const TXTEST_SVC_NAME = "TXFOOAPP";
 #endif
 
 enum TX_TYPE {

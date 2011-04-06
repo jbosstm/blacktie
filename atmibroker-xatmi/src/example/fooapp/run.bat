@@ -5,7 +5,7 @@ echo "Example: Running fooapp"
 cd %BLACKTIE_HOME%\examples\xatmi\fooapp
 
 rem RUN THE FOOAPP SERVER
-call generate_server -Dservice.names=BAR -Dserver.includes=BarService.c
+call generate_server -Dservice.names=FOOAPP -Dserver.includes=BarService.c
 IF %ERRORLEVEL% NEQ 0 exit -1
 set BLACKTIE_CONFIGURATION=win32
 call btadmin startup

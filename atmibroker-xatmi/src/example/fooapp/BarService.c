@@ -24,7 +24,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-void BAR(TPSVCINFO * svcinfo) {
+void FOOAPP(TPSVCINFO * svcinfo) {
 	char* buffer;
 	int sendlen;
 

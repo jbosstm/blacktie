@@ -23,7 +23,7 @@
 
 #include "credit.h"
 
-void CREDIT(TPSVCINFO * svcinfo) {
+void CREDITEXAMPLE(TPSVCINFO * svcinfo) {
 	char* buffer;
 	int sendlen;
 	CREDIT_T* creditBuf;

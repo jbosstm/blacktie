@@ -22,7 +22,7 @@
 #include "btlogger.h"
 #include "string.h"
 
-void BAR(TPSVCINFO * svcinfo) {
+void QUEUES(TPSVCINFO * svcinfo) {
 	char* buffer;
 	int sendlen;
 	int rc;

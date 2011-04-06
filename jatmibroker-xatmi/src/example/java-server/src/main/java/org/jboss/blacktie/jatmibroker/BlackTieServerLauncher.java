@@ -14,8 +14,8 @@ public class BlackTieServerLauncher {
 	 */
 	public static void main(String[] args) throws ConfigurationException,
 			ConnectionException, InterruptedException {
-		BlackTieServer server = new BlackTieServer("default");
-		server.tpadvertise("TestOne", BarService.class.getName());
+		BlackTieServer server = new BlackTieServer("javaser");
+		server.tpadvertise("JAVASERV", BarService.class.getName());
 		server.block();
 	}
 

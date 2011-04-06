@@ -16,31 +16,72 @@
 	<DOMAIN>fooapp</DOMAIN>
 	<SERVERS>
 
+		<SERVER name='nbfserv'>
+			<SERVICE_NAMES>
+				<SERVICE name='NBFEXAMPLE'/>
+			</SERVICE_NAMES>
+		</SERVER>
+		<SERVER name='integra'>
+			<SERVICE_NAMES>
+				<SERVICE name='CREDITEXAMPLE' />
+				<SERVICE name='DEBITEXAMPLE' />
+			</SERVICE_NAMES>
+		</SERVER>
+		<SERVER name='txfooap'>
+			<SERVICE_NAMES>
+				<SERVICE name='TXFOOAPP'/>
+			</SERVICE_NAMES>
+		</SERVER>
+		<SERVER name='queues'>
+			<SERVICE_NAMES>
+				<SERVICE name='QUEUES'/>
+			</SERVICE_NAMES>
+		</SERVER>
+		<SERVER name='iniDone'>
+			<SERVICE_NAMES>
+				<SERVICE name='INIDONE'/>
+			</SERVICE_NAMES>
+		</SERVER>
+		<SERVER name='library'>
+			<SERVICE_NAMES>
+				<SERVICE name='LIBRARY'/>         
+			</SERVICE_NAMES>
+		</SERVER>
+		<SERVER name='fooapp'>
+			<SERVICE_NAMES>
+				<SERVICE name='FOOAPP'/>
+			</SERVICE_NAMES>
+		</SERVER>
+		<SERVER name='javaser'>
+			<SERVICE_NAMES>
+				<SERVICE name='JAVASERV'/>
+			</SERVICE_NAMES>
+		</SERVER>
 		<SERVER name='server'>
 			<SERVICE_NAMES>
-				<SERVICE name='FOO' advertised="true"/>
+				<SERVICE name='FOO'/>
 			</SERVICE_NAMES>
 		</SERVER>
 		<SERVER name='clientA'>
 			<SERVICE_NAMES>
-				<SERVICE name='CLIENTRESPONSEHANDLER_1' size="1"/>
+				<SERVICE name='CLIENTRESPONSEHANDLER_1'/>
 			</SERVICE_NAMES>
 		</SERVER>
 		<SERVER name='clientB'>
 			<SERVICE_NAMES>
-				<SERVICE name='CLIENTRESPONSEHANDLER_2' size="1"/>
+				<SERVICE name='CLIENTRESPONSEHANDLER_2'/>
 			</SERVICE_NAMES>
 		</SERVER>
 		<SERVER name='hiprio'>
 			<SERVICE_NAMES>
-				<SERVICE name='ONE' size="5" />
-				<SERVICE name='TWO' size="5" />
+				<SERVICE name='ONE'/>
+				<SERVICE name='TWO'/>
 			</SERVICE_NAMES>
 		</SERVER>
 		<SERVER name='loprio'>
 			<SERVICE_NAMES>
-				<SERVICE name='THREE' size="5" />
-				<SERVICE name='FOUR' size="5" />
+				<SERVICE name='THREE'/>
+				<SERVICE name='FOUR'/>
 			</SERVICE_NAMES>
 		</SERVER>
 		<SERVER name="secure">
@@ -62,17 +103,11 @@
 		</SERVER>
 		<SERVER name="myserv">
 			<SERVICE_NAMES>
-				<SERVICE name='TestOne' externally-managed-destination='true'
-					size='1' />
-				<SERVICE name='TestTwo' externally-managed-destination='true' />
-				<SERVICE name='ConvService' conversational='true'
-					externally-managed-destination='true' />
-				<SERVICE name='JAVA_Converse'
-					java_class_name="org.jboss.blacktie.jatmibroker.xatmi.services.TPCallXOctetService"
-					advertised="true" size="1" externally-managed-destination='true'>
-				</SERVICE>
-				<SERVICE name='XMLParserTest'
-					externally-managed-destination='true' />
+				<SERVICE name='TestOne'/>
+				<SERVICE name='TestTwo'/>
+				<SERVICE name='ConvService' />
+				<SERVICE name='JAVA_Converse'/>
+				<SERVICE name='XMLParserTest'/>
 			</SERVICE_NAMES>
 		</SERVER>
 		<SERVER name="default">

@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+ <?xml version="1.0"?>
 <!-- JBoss, Home of Professional Open Source Copyright 2008, Red Hat Middleware 
 	LLC, and others contributors as indicated by the @authors tag. All rights 
 	reserved. See the copyright.txt in the distribution for a full listing of 
@@ -15,9 +15,9 @@
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>fooapp</DOMAIN>
 	<SERVERS>
-		<SERVER name='default'>
+		<SERVER name='javaser'>
 			<SERVICE_NAMES>
-				<SERVICE name='TestOne' externally-managed-destination='true'
+				<SERVICE name='JAVASERV' externally-managed-destination='true'
 					size="1" />
 			</SERVICE_NAMES>
 		</SERVER>

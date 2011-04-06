@@ -20,16 +20,16 @@
 	<DOMAIN>queues</DOMAIN>
 	
 	<MACHINES>
-		<MACHINE id="default1" hostname="${HOSTNAME}"
+		<MACHINE id="queues1" hostname="${HOSTNAME}"
 			pathToExecutable="${BLACKTIE_HOME}/examples/xatmi/queues/server"
 			workingDirectory="${BLACKTIE_HOME}/examples/xatmi/queues"
 			serverId="1" />
 	</MACHINES>
 	<SERVERS>
-		<SERVER name='default'>
+		<SERVER name='queues'>
 			<MACHINE-REF id="default1" />
 			<SERVICE_NAMES>
-				<SERVICE name='BAR' size="5" />
+				<SERVICE name='QUEUES' size="5" />
 			</SERVICE_NAMES>
 		</SERVER>
 		<SERVER name='myserv'>

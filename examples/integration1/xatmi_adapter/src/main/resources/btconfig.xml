@@ -19,10 +19,10 @@
 	xmlns="http://www.jboss.org/blacktie">
 	<DOMAIN>jboss</DOMAIN>
 	<SERVERS>
-		<SERVER name='integrA'>
+		<SERVER name='integra'>
 			<SERVICE_NAMES>
-				<SERVICE name='CREDIT' />
-				<SERVICE name='DEBIT' />
+				<SERVICE name='CREDITEXAMPLE' />
+				<SERVICE name='DEBITEXAMPLE' />
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>

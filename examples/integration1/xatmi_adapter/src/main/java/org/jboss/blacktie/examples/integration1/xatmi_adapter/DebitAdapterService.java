@@ -39,8 +39,8 @@ import org.jboss.ejb3.annotation.ResourceAdapter;
 @javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTR_DEBIT") })
-// @Depends("org.hornetq:module=JMS,name=\"BTR_DEBIT\",type=Queue")
+		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTR_DEBITEXAMPLE") })
+// @Depends("org.hornetq:module=JMS,name=\"BTR_DEBITEXAMPLE\",type=Queue")
 @ResourceAdapter("hornetq-ra.rar")
 public class DebitAdapterService extends MDBBlacktieService implements
 		javax.jms.MessageListener {

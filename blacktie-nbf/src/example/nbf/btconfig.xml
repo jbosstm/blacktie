@@ -20,16 +20,16 @@
 	<DOMAIN>fooapp</DOMAIN>
 	
 	<MACHINES>
-		<MACHINE id="default1" hostname="${HOSTNAME}"
+		<MACHINE id="nbfserv1" hostname="${HOSTNAME}"
 			pathToExecutable="${BLACKTIE_HOME}/examples/nbf/server"
 			workingDirectory="${BLACKTIE_HOME}/examples/nbf"
 			serverId="1" />
 	</MACHINES>
 	<SERVERS>
-		<SERVER name='default'>
-			<MACHINE-REF id="default1" />
+		<SERVER name='nbfserv'>
+			<MACHINE-REF id="nbfserv1" />
 			<SERVICE_NAMES>
-				<SERVICE name='NBF'/>
+				<SERVICE name='NBFEXAMPLE'/>
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>

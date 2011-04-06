@@ -43,7 +43,7 @@ public class JABFactoryClientTest {
 			JABBuffer b = new JABBuffer();
 			b.setValue("X_OCTET", message.getBytes());
 			log.info("Calling call with input: " + message);
-			JABResponse call = c.call("BAR", b, t, "X_OCTET", null);
+			JABResponse call = c.call("FOOAPP", b, t, "X_OCTET", null);
 			log.info("Called call with output: " + call.getValue("X_OCTET"));
 			t.commit();
 			jcf.closeConnection("connection");

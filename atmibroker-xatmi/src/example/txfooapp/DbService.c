@@ -53,7 +53,7 @@ static void inject_fault(int xa_method, int type)
 #ifdef UNITTEST
 void tx_db_service(TPSVCINFO *svcinfo)
 #else
-void BAR(TPSVCINFO * svcinfo)
+void TXFOOAPP(TPSVCINFO * svcinfo)
 #endif
 {
 	test_req_t *req = (test_req_t *) svcinfo->data;

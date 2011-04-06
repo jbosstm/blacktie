@@ -20,21 +20,21 @@
 	<DOMAIN>fooapp</DOMAIN>
 	
 	<MACHINES>
-		<MACHINE id="default1" hostname="${HOSTNAME}"
+		<MACHINE id="fooapp1" hostname="${HOSTNAME}"
 			pathToExecutable="${BLACKTIE_HOME}/examples/xatmi/fooapp/server"
 			workingDirectory="${BLACKTIE_HOME}/examples/xatmi/fooapp"
 			serverId="1" />
-		<MACHINE id="default2" hostname="${HOSTNAME}"
+		<MACHINE id="fooapp2" hostname="${HOSTNAME}"
 			pathToExecutable="${BLACKTIE_HOME}/examples/xatmi/fooapp/server"
 			workingDirectory="${BLACKTIE_HOME}/examples/xatmi/fooapp"
 			serverId="2" />
 	</MACHINES>
 	<SERVERS>
-		<SERVER name='default'>
-			<MACHINE-REF id="default1" />
-			<MACHINE-REF id="default2" />
+		<SERVER name='fooapp'>
+			<MACHINE-REF id="fooapp1" />
+			<MACHINE-REF id="fooapp2" />
 			<SERVICE_NAMES>
-				<SERVICE name='BAR' advertised="true" size="5" function_name="BAR">
+				<SERVICE name='FOOAPP' advertised="true" size="5" function_name="FOOAPP">
                     <LIBRARY_NAME configuration="win32" value="server.exe"/>
                 </SERVICE>
 			</SERVICE_NAMES>

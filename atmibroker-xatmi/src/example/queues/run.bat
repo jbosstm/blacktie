@@ -33,7 +33,7 @@ rem Running propagated transaction queue example
 cd %BLACKTIE_HOME%\examples\xatmi\queues
 call generate_client -Dclient.includes=queues.c -Dclient.output.file=client
 IF %ERRORLEVEL% NEQ 0 exit -1
-call generate_server -Dserver.includes=BarService.c  -Dservice.names=BAR
+call generate_server -Dserver.includes=BarService.c  -Dservice.names=QUEUES
 IF %ERRORLEVEL% NEQ 0 exit -1
 call generate_client -Dclient.includes=client.c -Dclient.output.file=clientSender
 call btadmin startup

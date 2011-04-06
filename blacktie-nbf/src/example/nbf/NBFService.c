@@ -22,7 +22,7 @@
 #include "btlogger.h"
 #include "string.h"
 
-void NBF(TPSVCINFO * svcinfo) {
+void NBFEXAMPLE(TPSVCINFO * svcinfo) {
 	char* buf = svcinfo->data;
 	int rc = 0;
 

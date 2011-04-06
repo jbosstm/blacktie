@@ -20,16 +20,16 @@
 	<DOMAIN>fooapp</DOMAIN>
 	
 	<MACHINES>
-		<MACHINE id="default1" hostname="${HOSTNAME}"
+		<MACHINE id="library1" hostname="${HOSTNAME}"
 			pathToExecutable="${BLACKTIE_HOME}/examples/xatmi/library/server"
 			workingDirectory="${BLACKTIE_HOME}/examples/xatmi/library"
 			serverId="1" />
 	</MACHINES>
 	<SERVERS>
-		<SERVER name='default'>
-			<MACHINE-REF id="default1" />
+		<SERVER name='library'>
+			<MACHINE-REF id="library1" />
 			<SERVICE_NAMES>
-				<SERVICE name='BAR' advertised="true" size="5" function_name="BAR">
+				<SERVICE name='LIBRARY' advertised="true" size="5" function_name="BAR">
                     <LIBRARY_NAME configuration="linux" value="libmyxatmiservice.so"/>
                     <LIBRARY_NAME configuration="win32" value="myxatmiservice.dll"/>
                 </SERVICE>                

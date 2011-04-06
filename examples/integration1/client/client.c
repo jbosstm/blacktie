@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
 				memset(retbuf, 0, 9);
 
 				btlogger((char*) "Calling debit");
-				status = tpcall("DEBIT", (char*) debitBuf, 0,
+				status = tpcall("DEBITEXAMPLE", (char*) debitBuf, 0,
 						(char **) &retbuf, &retbufsize, callflags);
 				if (status == 0) {
 					status = (tperrno != 0);
@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
 									== 10) {
 								memset(retbuf, 0, 10);
 								btlogger((char*) "Calling credit");
-								status = tpcall("CREDIT", (char*) creditBuf, 0,
+								status = tpcall("CREDITEXAMPLE", (char*) creditBuf, 0,
 										(char **) &retbuf, &retbufsize,
 										callflags);
 								if (status == 0) {

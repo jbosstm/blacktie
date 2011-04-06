@@ -20,16 +20,16 @@
 	<DOMAIN>fooapp</DOMAIN>
 	
 	<MACHINES>
-		<MACHINE id="default1" hostname="${HOSTNAME}"
+		<MACHINE id="txfooap1" hostname="${HOSTNAME}"
 			pathToExecutable="${BLACKTIE_HOME}/examples/xatmi/txfooapp/server"
 			workingDirectory="${BLACKTIE_HOME}/examples/xatmi/txfooapp"
 			serverId="1" />
 	</MACHINES>
 	<SERVERS>
-		<SERVER name='default'>
-			<MACHINE-REF id="default1" />
+		<SERVER name='txfooap'>
+			<MACHINE-REF id="txfooap1" />
 			<SERVICE_NAMES>
-				<SERVICE name='BAR' size="5" />
+				<SERVICE name='TXFOOAPP' size="5" />
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>

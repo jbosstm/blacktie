@@ -39,8 +39,8 @@ import org.jboss.ejb3.annotation.ResourceAdapter;
 @javax.ejb.TransactionAttribute(javax.ejb.TransactionAttributeType.NOT_SUPPORTED)
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTR_CREDIT") })
-// @Depends("org.hornetq:module=JMS,name=\"BTR_CREDIT\",type=Queue")
+		@ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/BTR_CREDITEXAMPLE") })
+// @Depends("org.hornetq:module=JMS,name=\"BTR_CREDITEXAMPLE\",type=Queue")
 @ResourceAdapter("hornetq-ra.rar")
 public class CreditAdapterService extends MDBBlacktieService implements
 		javax.jms.MessageListener {

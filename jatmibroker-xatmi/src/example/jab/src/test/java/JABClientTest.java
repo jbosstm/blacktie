@@ -42,7 +42,7 @@ public class JABClientTest extends TestCase {
 		JABSessionAttributes jabSessionAttributes = new JABSessionAttributes();
 		JABSession jabSession = new JABSession(jabSessionAttributes);
 		JABTransaction transaction = new JABTransaction(jabSession, 5000);
-		JABServiceInvoker jabService = new JABServiceInvoker("BAR", jabSession,
+		JABServiceInvoker jabService = new JABServiceInvoker("FOOAPP", jabSession,
 				"X_OCTET", null);
 		jabService.getRequest().setByteArray("X_OCTET", toSend);
 		log.info("Calling call with input: " + message);
