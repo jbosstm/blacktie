@@ -27,7 +27,7 @@
 	</MACHINES>
 	<SERVERS>
 		<SERVER name='queues'>
-			<MACHINE-REF id="default1" />
+			<MACHINE-REF id="queues1" />
 			<SERVICE_NAMES>
 				<SERVICE name='QUEUES' size="5" />
 			</SERVICE_NAMES>
