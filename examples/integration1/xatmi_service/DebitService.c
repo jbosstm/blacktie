@@ -23,7 +23,7 @@
 
 #include "debit.h"
 
-void DEBIT(TPSVCINFO * svcinfo) {
+void DEBITEXAMPLE(TPSVCINFO * svcinfo) {
 	char* buffer;
 	int sendlen;
 	DEBIT_T* debitBuf;
