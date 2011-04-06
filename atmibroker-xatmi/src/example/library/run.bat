@@ -4,7 +4,7 @@ echo "Example: Running library example"
 
 rem GENERATE AN EMPTY SERVER
 cd %BLACKTIE_HOME%\examples\xatmi\library
-call generate_server
+call generate_server -Dserver.name=library
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 rem GENERATE A LIBRARY WITH THE BarService SERVICE IN IT

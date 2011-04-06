@@ -66,7 +66,7 @@ public class ListRunningServersTest extends TestCase {
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		log.info("ListRunningServersTest::testListRunningServersWithServers");
-		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
+		if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
 			fail("Could not start the server");
 		}
 		String command = "listRunningServers";

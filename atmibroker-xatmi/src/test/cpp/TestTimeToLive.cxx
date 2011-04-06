@@ -94,7 +94,7 @@ long TestTimeToLive::getTTLCounter() {
 	char* recvbuf = tpalloc((char*) "X_OCTET", NULL, 1);
 	long  recvlen = 1;
 
-	int cd = ::tpcall((char*) ".default1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, 0);
+	int cd = ::tpcall((char*) ".testsui1", (char *) sendbuf, sendlen, (char**)&recvbuf, &recvlen, 0);
 	BT_ASSERT(cd == 0);
 	BT_ASSERT(tperrno == 0);
 	BT_ASSERT(recvbuf[0] == '1');

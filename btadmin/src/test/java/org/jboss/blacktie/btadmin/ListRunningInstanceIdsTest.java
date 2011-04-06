@@ -55,7 +55,7 @@ public class ListRunningInstanceIdsTest extends TestCase {
 			NullPointerException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
 		log.info("ListRunningInstanceIdsTest::testListRunningInstanceIdsWithAdditionalParameters");
-		String command = "listRunningInstanceIds default 1";
+		String command = "listRunningInstanceIds testsui 1";
 		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was successful");
 		}
@@ -77,10 +77,10 @@ public class ListRunningInstanceIdsTest extends TestCase {
 			NullPointerException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
 		log.info("ListRunningInstanceIdsTest::testListRunningInstanceIdsWithRunningServer");
-		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
+		if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
 			fail("Could not start the server");
 		}
-		String command = "listRunningInstanceIds default";
+		String command = "listRunningInstanceIds testsui";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command was not successful");
 		}

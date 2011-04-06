@@ -8,7 +8,7 @@ EXAMPLE_HOME=$BLACKTIE_HOME/examples/xatmi/replyTo
 
 # GENERATE A SERVER
 cd $EXAMPLE_HOME
-generate_server -Dserver.includes=BarService.c
+generate_server -Dserver.includes=BarService.c -Dserver.name=server
 if [ "$?" != "0" ]; then
     exit -1
 fi

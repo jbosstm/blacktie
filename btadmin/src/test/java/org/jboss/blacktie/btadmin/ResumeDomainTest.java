@@ -36,11 +36,11 @@ public class ResumeDomainTest extends TestCase {
 		log.info("ResumeDomainTest::setUp");
 
 		this.commandHandler = new CommandHandler();
-		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
+		if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
 			fail("Could not start the server");
 		}
 
-		String command = "advertise default BAR";
+		String command = "advertise testsui BAR";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			if (commandHandler.handleCommand("shutdown".split(" ")) != 0) {
 				log.error("Could not stop the server");

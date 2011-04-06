@@ -5,7 +5,7 @@ echo "Example: Running Security example"
 
 # RUN THE SECURE SERVER
 cd $BLACKTIE_HOME/examples/xatmi/security
-generate_server -Dservice.names=SECURE -Dserver.includes=BarService.c
+generate_server -Dservice.names=SECURE -Dserver.includes=BarService.c -Dserver.name=secure
 if [ "$?" != "0" ]; then
 	exit -1
 fi

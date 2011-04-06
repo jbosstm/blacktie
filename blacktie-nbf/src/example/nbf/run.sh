@@ -5,7 +5,7 @@ echo "Example: Running nbf example "
 
 cd $BLACKTIE_HOME/examples/nbf
 
-generate_server -Dservice.names=NBFEXAMPLE -Dserver.includes=NBFService.c
+generate_server -Dservice.names=NBFEXAMPLE -Dserver.includes=NBFService.c -Dserver.name=nbfserv
 if [ "$?" != "0" ]; then
 	exit -1
 fi

@@ -42,7 +42,7 @@ public class ListServiceStatusTest extends TestCase {
 	public void tearDown() throws Exception {
 		log.info("ListServiceStatusTest::tearDown");
 		if (shutdownRequired
-				&& commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
+				&& commandHandler.handleCommand("shutdown testsui".split(" ")) != 0) {
 			fail("Could not stop the server");
 		}
 	}
@@ -63,7 +63,7 @@ public class ListServiceStatusTest extends TestCase {
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		log.info("ListServiceStatusTest::testListRunningServersWithoutServers");
-		String command = "listServiceStatus default";
+		String command = "listServiceStatus testsui";
 		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was successful");
 		}
@@ -74,7 +74,7 @@ public class ListServiceStatusTest extends TestCase {
 			NullPointerException, InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
 		log.info("ListServiceStatusTest::testListServiceStatusWithAdditionalParameters");
-		String command = "listServiceStatus default 1 BAR";
+		String command = "listServiceStatus testsui 1 BAR";
 		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was successful");
 		}
@@ -96,15 +96,15 @@ public class ListServiceStatusTest extends TestCase {
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		log.info("ListServiceStatusTest::testListServiceStatusWithRunningServer");
-		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
+		if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
 			fail("Could not start the server");
 		}
 		shutdownRequired = true;
-		String command = "advertise default BAR";
+		String command = "advertise testsui BAR";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command failed");
 		}
-		command = "listServiceStatus default BAR";
+		command = "listServiceStatus testsui BAR";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command was not successful");
 		}

@@ -7,7 +7,7 @@ SHIFT
 echo "Example: Running txfooapp"
 
 cd %BLACKTIE_HOME%\examples\xatmi\txfooapp
-call generate_server -Dservice.names=TXFOOAPP -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.define="ORACLE"
+call generate_server -Dservice.names=TXFOOAPP -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="%ORACLE_HOME%\OCI\include" -Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci" -Dx.define="ORACLE" -Dserver.name=txfooap
 IF %ERRORLEVEL% NEQ 0 exit -1
 
 IF %ERRORLEVEL% NEQ 0 exit -1

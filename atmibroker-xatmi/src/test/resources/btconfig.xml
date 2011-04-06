@@ -20,7 +20,7 @@
 	<DOMAIN>fooapp</DOMAIN>
 	
 	<SERVERS>
-		<SERVER name='default' init_function='dummyserverinit' done_function='dummyserverdone'>
+		<SERVER name='testsui' init_function='dummyserverinit' done_function='dummyserverdone'>
 			<INIT_FUNCTION_LIBRARY_NAME configuration="win32" value="testsuite.exe"/>
 			<SERVICE_NAMES>
 				<SERVICE name='PBF' />

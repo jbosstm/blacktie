@@ -42,7 +42,7 @@ public class GetServersStatusTest extends TestCase {
 		log.info("GetServersStatusTest::tearDown");
 
 		if (running) {
-			if (commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
+			if (commandHandler.handleCommand("shutdown testsui".split(" ")) != 0) {
 				fail("Could not stop the server");
 			} else {
 				running = false;
@@ -77,12 +77,12 @@ public class GetServersStatusTest extends TestCase {
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		log.info("GetServersStatusTest::testGetServersStatusWithServers");
-		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
+		if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
 			fail("Could not start the server");
 		}
 		running = true;
 		log.info("Started");
-		String command = "advertise default BAR";
+		String command = "advertise testsui BAR";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command failed");
 		}

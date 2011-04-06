@@ -5,7 +5,7 @@ echo "Example: Running integration 1 XATMI"
 
 # RUN THE INTEGRATION 1 EXAMPLE
 cd $BLACKTIE_HOME/examples/integration1/xatmi_service/
-generate_server -Dservice.names=CREDITEXAMPLE,DEBITEXAMPLE -Dserver.includes="CreditService.c,DebitService.c"
+generate_server -Dservice.names=CREDITEXAMPLE,DEBITEXAMPLE -Dserver.includes="CreditService.c,DebitService.c" -Dserver.name=integra
 if [ "$?" != "0" ]; then
         exit -1
 fi

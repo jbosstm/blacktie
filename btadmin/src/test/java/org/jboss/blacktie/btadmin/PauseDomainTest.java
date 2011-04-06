@@ -37,13 +37,13 @@ public class PauseDomainTest extends TestCase {
 
 		this.commandHandler = new CommandHandler();
 
-		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
+		if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
 			fail("Could not start the server");
 		}
 
-		String command = "advertise default BAR";
+		String command = "advertise testsui BAR";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
-			if (commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
+			if (commandHandler.handleCommand("shutdown testsui".split(" ")) != 0) {
 				log.error("Could not stop the server");
 			}
 			fail("Command failed");
@@ -57,7 +57,7 @@ public class PauseDomainTest extends TestCase {
 			fail("Command failed");
 		}
 
-		if (commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
+		if (commandHandler.handleCommand("shutdown testsui".split(" ")) != 0) {
 			fail("Could not stop the server");
 		}
 	}

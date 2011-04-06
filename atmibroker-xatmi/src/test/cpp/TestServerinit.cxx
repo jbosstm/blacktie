@@ -35,9 +35,9 @@ void TestServerinit::test_serverinit() {
 	btlogger((char*) "test_serverinit");
 	int result;
 #ifdef WIN32
-	char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"-i", (char*)"1"};
+	char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"-i", (char*)"1", (char*)"-s", (char*)"testsui"};
 #else
-	char* argv[] = {(char*)"server", (char*)"-c", (char*)"linux", (char*)"-i", (char*)"1"};
+	char* argv[] = {(char*)"server", (char*)"-c", (char*)"linux", (char*)"-i", (char*)"1", (char*)"-s", (char*)"testsui"};
 #endif
 	int argc = sizeof(argv)/sizeof(char*);
 
@@ -54,7 +54,7 @@ void TestServerinit::test_serverinit() {
 void TestServerinit::test_config_env() {
 	btlogger((char*) "TestServerinit::test_config_env");
 	int result;
-	char* argv[] = {(char*)"server", (char*)"-i", (char*)"1"};
+	char* argv[] = {(char*)"server", (char*)"-i", (char*)"1", (char*)"-s", (char*)"testsui"};
 	int argc = sizeof(argv)/sizeof(char*);
 
 	result = serverinit(argc, argv);
@@ -78,9 +78,9 @@ void TestServerinit::test_config_cmdline() {
 	int result;
 
 #ifdef WIN32
-		char* argv1[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"-i", (char*)"1"};
+		char* argv1[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"-i", (char*)"1", (char*)"-s", (char*)"testsui"};
 #else
-		char* argv1[] = {(char*)"server", (char*)"-c", (char*)"linux", (char*)"-i", (char*)"1"};
+		char* argv1[] = {(char*)"server", (char*)"-c", (char*)"linux", (char*)"-i", (char*)"1", (char*)"-s", (char*)"testsui"};
 #endif
 	int argc1 = sizeof(argv1)/sizeof(char*);
 

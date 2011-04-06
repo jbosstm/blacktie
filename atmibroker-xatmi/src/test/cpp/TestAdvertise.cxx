@@ -34,7 +34,7 @@ void TestAdvertise::testService() {
 	cd = callADMIN((char*)"advertise,BAR,", '1', 0, NULL);
 	BT_ASSERT(cd == 0);
 
-	cd = callADMIN((char*)"advertise,.default1,", '0', 0, NULL);
+	cd = callADMIN((char*)"advertise,.testsui1,", '0', 0, NULL);
 	BT_ASSERT(cd == 0);
 }
 

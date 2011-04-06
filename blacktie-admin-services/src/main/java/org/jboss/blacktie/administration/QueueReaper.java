@@ -187,7 +187,7 @@ public class QueueReaper implements Runnable {
 		// TODO THIS WILL NOT CLUSTER AS IT ASSUMES THE QUEUE WAS CREATED BY
 		// THIS SERVER
 		synchronized (BlacktieStompAdministrationService.QUEUE_CREATION_TIMES) {
-			boolean toReturn = false;
+			boolean toReturn = true;
 			Long creationTime = BlacktieStompAdministrationService.QUEUE_CREATION_TIMES
 					.get(serviceName);
 			if (creationTime != null) {

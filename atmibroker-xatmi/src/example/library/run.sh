@@ -7,7 +7,7 @@ EXAMPLE_HOME=$BLACKTIE_HOME/examples/xatmi/library
 
 # GENERATE AN EMPTY SERVER
 cd $EXAMPLE_HOME
-generate_server
+generate_server -Dserver.name=library
 if [ "$?" != "0" ]; then
 	exit -1
 fi

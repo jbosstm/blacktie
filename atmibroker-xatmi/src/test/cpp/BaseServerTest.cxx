@@ -49,9 +49,9 @@ void BaseServerTest::setUp() {
 
 void BaseServerTest::startServer() {
 #ifdef WIN32
-		char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"-i", (char*)"1"};
+		char* argv[] = {(char*)"server", (char*)"-c", (char*)"win32", (char*)"-i", (char*)"1", (char*)"-s", (char*)"testsui"};
 #else
-		char* argv[] = {(char*)"server", (char*)"-c", (char*)"linux", (char*)"-i", (char*)"1"};
+		char* argv[] = {(char*)"server", (char*)"-c", (char*)"linux", (char*)"-i", (char*)"1", (char*)"-s", (char*)"testsui"};
 #endif
 	int argc = sizeof(argv)/sizeof(char*);
 

@@ -126,6 +126,7 @@ int serverinit(int argc, char** argv) {
 	int toReturn = 0;
 
 	if (ptrServer == NULL) {
+		memset(server, '\0', 30);
 		passedArgc = argc;
 		passedArgv = argv;
 		LOG4CXX_DEBUG(loggerAtmiBrokerServer,
@@ -134,8 +135,6 @@ int serverinit(int argc, char** argv) {
 		const char* serverName = ACE_OS::getenv("BLACKTIE_SERVER");
 		if (serverName != NULL) {
 			ACE_OS::strncpy(server, serverName, 30);
-		} else {
-			ACE_OS::strncpy(server, "default", 30);
 		}
 		const char* serverId = ACE_OS::getenv("BLACKTIE_SERVER_ID");
 		if (serverId != NULL) {
@@ -146,11 +145,13 @@ int serverinit(int argc, char** argv) {
 		if (argc > 0) {
 			parsecmdline(argc, argv);
 		}
-		if (serverid == -1) {
+		if (server == NULL || strcmp(server, "") == 0 || serverid == -1) {
 			fprintf(stderr,
 					"you must specify a server id with -i greater than 0 and less than 10\n");
 			fprintf(stderr,
-					"example usage: ./server [-c config] -i id [-s server]\n");
+					"you must specify a server name\n");
+			fprintf(stderr,
+					"example usage: ./server [-c config] -i id -s server\n");
 			toReturn = -1;
 			setSpecific(TPE_KEY, TSS_TPESYSTEM);
 		}

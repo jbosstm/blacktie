@@ -24,7 +24,7 @@
 				<SERVICE name='FOOTest' />
 			</SERVICE_NAMES>
 		</SERVER>
-		<SERVER name='default'>
+		<SERVER name='testsui'>
 			<SERVICE_NAMES>
 				<SERVICE name='PBF' />
 				<SERVICE name='BAR' size='2' />

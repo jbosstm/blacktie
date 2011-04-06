@@ -32,7 +32,7 @@ void TestUnadvertise::testAdminService() {
 	int cd;
 
 	// should not unadvertise ADMIN service by itself
-	cd = callADMIN((char*)"unadvertise,.default1", '0', 0, NULL);
+	cd = callADMIN((char*)"unadvertise,.testsui1", '0', 0, NULL);
 	BT_ASSERT(cd == 0);
 }
 

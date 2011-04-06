@@ -86,7 +86,7 @@
 			serverId="2" />
 	</MACHINES>
 	<SERVERS>
-		<SERVER name="default">
+		<SERVER name="testsui">
 			<MACHINE-REF id="secure1" />
 			<MACHINE-REF id="secure2" />
 			<MACHINE-REF id="secure3" />

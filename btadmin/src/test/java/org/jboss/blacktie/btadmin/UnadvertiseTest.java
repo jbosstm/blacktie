@@ -36,12 +36,12 @@ public class UnadvertiseTest extends TestCase {
 		log.info("UnadvertiseTest::setUp");
 		this.commandHandler = new CommandHandler();
 
-		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
+		if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
 			fail("Could not start the server");
 		}
 
-		if (commandHandler.handleCommand("advertise default BAR".split(" ")) != 0) {
-			if (commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
+		if (commandHandler.handleCommand("advertise testsui BAR".split(" ")) != 0) {
+			if (commandHandler.handleCommand("shutdown testsui".split(" ")) != 0) {
 				log.error("Could not stop the server");
 			}
 			fail("Command was not successful");
@@ -50,7 +50,7 @@ public class UnadvertiseTest extends TestCase {
 
 	public void tearDown() throws Exception {
 		log.info("UnadvertiseTest::tearDown");
-		if (commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
+		if (commandHandler.handleCommand("shutdown testsui".split(" ")) != 0) {
 			fail("Could not stop the server");
 		}
 	}
@@ -60,7 +60,7 @@ public class UnadvertiseTest extends TestCase {
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		log.info("UnadvertiseTest::testUnadvertise");
-		if (commandHandler.handleCommand("unadvertise default BAR".split(" ")) != 0) {
+		if (commandHandler.handleCommand("unadvertise testsui BAR".split(" ")) != 0) {
 			fail("Command was not successful");
 		}
 	}
@@ -70,7 +70,7 @@ public class UnadvertiseTest extends TestCase {
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		log.info("UnadvertiseTest::testUnadvertiseWithoutService");
-		if (commandHandler.handleCommand("unadvertise default".split(" ")) == 0) {
+		if (commandHandler.handleCommand("unadvertise testsui".split(" ")) == 0) {
 			fail("Command was successful");
 		}
 	}
@@ -100,7 +100,7 @@ public class UnadvertiseTest extends TestCase {
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		log.info("UnadvertiseTest::testAdvertiseNotAdvertised");
-		if (commandHandler.handleCommand("unadvertise default PBF".split(" ")) == 0) {
+		if (commandHandler.handleCommand("unadvertise testsui PBF".split(" ")) == 0) {
 			fail("Command was successful");
 		}
 	}

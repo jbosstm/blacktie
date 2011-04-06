@@ -34,7 +34,7 @@ public class AdministrationTest extends TestCase {
 
 	private RunServer runServer = new RunServer();
 	private Connection connection;
-	private String service = ".default1";
+	private String service = ".testsui1";
 
 	private String callAdmin(String command, char expect) throws Exception {
 		int sendlen = command.length() + 1;
@@ -86,8 +86,8 @@ public class AdministrationTest extends TestCase {
 		callBAR();
 
 		// can not (un)advertise ADMIN service
-		callAdmin("advertise,.default1", '0');
-		callAdmin("unadvertise,.default1", '0');
+		callAdmin("advertise,.testsui", '0');
+		callAdmin("unadvertise,.testsui1", '0');
 
 		// can not (un)advertise UNKNOW service
 		callAdmin("advertise,UNKNOW", '0');

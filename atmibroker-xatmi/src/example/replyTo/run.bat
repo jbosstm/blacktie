@@ -4,7 +4,7 @@ echo "Example: Running example to show reply to"
 
 rem RUN THE FOOAPP SERVER
 cd %BLACKTIE_HOME%\examples\xatmi\replyTo
-call generate_server -Dserver.includes=BarService.c
+call generate_server -Dserver.includes=BarService.c -Dserver.name=server
 IF %ERRORLEVEL% NEQ 0 exit -1
 set BLACKTIE_CONFIGURATION=win32
 call btadmin startup

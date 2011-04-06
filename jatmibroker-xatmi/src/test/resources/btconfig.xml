@@ -75,10 +75,10 @@
 			<MACHINE-REF id="myserv17" />
 			<MACHINE-REF id="myserv18" />
 			<SERVICE_NAMES>
-				<SERVICE name='TestOne' />
-				<SERVICE name='TestTwo' />
-				<SERVICE name='ConvService' conversational='true' />
-				<SERVICE name='JAVA_Converse'
+				<SERVICE name='TestOne'  externally-managed-destination='true'/>
+				<SERVICE name='TestTwo'  externally-managed-destination='true'/>
+				<SERVICE name='ConvService' conversational='true'  externally-managed-destination='true'/>
+				<SERVICE name='JAVA_Converse'  externally-managed-destination='true'
 					java_class_name="org.jboss.blacktie.jatmibroker.xatmi.services.TPCallXOctetService"
 					advertised="true" size="1">
 				</SERVICE>

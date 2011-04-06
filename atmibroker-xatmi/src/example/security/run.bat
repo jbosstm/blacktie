@@ -4,7 +4,7 @@ echo "Example: Running Security example"
 
 rem RUN THE SECURE SERVER
 cd %BLACKTIE_HOME%\examples\xatmi\security
-call generate_server -Dservice.names=SECURE -Dserver.includes=BarService.c
+call generate_server -Dservice.names=SECURE -Dserver.includes=BarService.c -Dserver.name=secure
 IF %ERRORLEVEL% NEQ 0 exit -1
 set BLACKTIE_CONFIGURATION_DIR=serv
 set BLACKTIE_CONFIGURATION=win32

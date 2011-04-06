@@ -4,7 +4,7 @@ echo "Example: Running integration 1 XATMI"
 
 rem RUN THE INTEGRATION 1 EXAMPLE
 cd %BLACKTIE_HOME%\examples\integration1\xatmi_service\
-call generate_server -Dservice.names=CREDITEXAMPLE,DEBITEXAMPLE -Dserver.includes="CreditService.c,DebitService.c"
+call generate_server -Dservice.names=CREDITEXAMPLE,DEBITEXAMPLE -Dserver.includes="CreditService.c,DebitService.c" -Dserver.name=integra
 IF %ERRORLEVEL% NEQ 0 exit -1
 call btadmin startup
 IF %ERRORLEVEL% NEQ 0 exit -1

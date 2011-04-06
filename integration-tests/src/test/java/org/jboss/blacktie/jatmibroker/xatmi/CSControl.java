@@ -99,9 +99,9 @@ public abstract class CSControl extends TestCase {
 				command = ("valgrind --tool=memcheck --leak-check=full --log-file=server-"
 						+ name
 						+ "-valgrind.log -v -d --track-origins=yes --show-reachable=false --leak-resolution=low --num-callers=40 "
-						+ CS_EXE + " -c linux -i " + nextSid).split(" ");
+						+ CS_EXE + " -s testsui -i " + nextSid).split(" ");
 			} else {
-				command = (CS_EXE + " -c linux -i " + nextSid).split(" ");
+				command = (CS_EXE + " -s testsui -i " + nextSid).split(" ");
 			}
 			serverBuilder.command(command);
 

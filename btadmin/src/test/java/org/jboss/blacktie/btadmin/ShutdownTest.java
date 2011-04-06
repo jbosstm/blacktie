@@ -41,7 +41,7 @@ public class ShutdownTest extends TestCase {
 	public void tearDown() throws Exception {
 		log.info("ShutdownTest::tearDown");
 		if (shutdownRequired
-				&& commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
+				&& commandHandler.handleCommand("shutdown testsui".split(" ")) != 0) {
 			fail("Could not stop the server");
 		}
 	}
@@ -61,7 +61,7 @@ public class ShutdownTest extends TestCase {
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		log.info("ShutdownTest::testShutdownWithNonIntId");
-		if (commandHandler.handleCommand("shutdown default one".split(" ")) == 0) {
+		if (commandHandler.handleCommand("shutdown testsui one".split(" ")) == 0) {
 			fail("Command was successful");
 		}
 	}
@@ -81,7 +81,7 @@ public class ShutdownTest extends TestCase {
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		log.info("ShutdownTest::testShutdownStoppedServer");
-		if (commandHandler.handleCommand("shutdown default 1".split(" ")) == 0) {
+		if (commandHandler.handleCommand("shutdown testsui 1".split(" ")) == 0) {
 			fail("Command was successful");
 		}
 	}
@@ -91,10 +91,10 @@ public class ShutdownTest extends TestCase {
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		log.info("ShutdownTest::testShutdownWithoutId");
-		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
+		if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
 			fail("Could not start the server");
 		}
-		if (commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
+		if (commandHandler.handleCommand("shutdown testsui".split(" ")) != 0) {
 			shutdownRequired = true;
 			fail("Command was not successful");
 		}
@@ -105,16 +105,16 @@ public class ShutdownTest extends TestCase {
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		log.info("ShutdownTest::testShutdownWithId");
-		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
+		if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
 			fail("Could not start the server");
 		}
-		log.info("Shutting down default 1");
-		if (commandHandler.handleCommand("shutdown default 1".split(" ")) != 0) {
+		log.info("Shutting down testsui 1");
+		if (commandHandler.handleCommand("shutdown testsui 1".split(" ")) != 0) {
 			shutdownRequired = true;
 			fail("Command was not successful");
 		}
-		log.info("Shutting down default 2");
-		if (commandHandler.handleCommand("shutdown default 2".split(" ")) != 0) {
+		log.info("Shutting down testsui 2");
+		if (commandHandler.handleCommand("shutdown testsui 2".split(" ")) != 0) {
 			shutdownRequired = true;
 			fail("Command was not successful");
 		}
@@ -125,14 +125,14 @@ public class ShutdownTest extends TestCase {
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		log.info("ShutdownTest::testShutdownWithInvalidId");
-		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
+		if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
 			fail("Could not start the server");
 		}
-		if (commandHandler.handleCommand("shutdown default 3".split(" ")) == 0) {
+		if (commandHandler.handleCommand("shutdown testsui 3".split(" ")) == 0) {
 			shutdownRequired = true;
 			fail("Command was successful");
 		}
-		if (commandHandler.handleCommand("shutdown default".split(" ")) != 0) {
+		if (commandHandler.handleCommand("shutdown testsui".split(" ")) != 0) {
 			shutdownRequired = true;
 			fail("Command was not successful");
 		}

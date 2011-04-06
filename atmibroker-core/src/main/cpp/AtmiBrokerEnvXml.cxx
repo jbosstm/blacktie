@@ -229,7 +229,6 @@ static void XMLCALL startElement
 		LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "processing SERVER");
 
 		ServerInfo* server = new ServerInfo;
-		server->serverName = copy_value("default");
 		server->function_name = NULL;
 		server->done_function_name = NULL;
 		server->library_name = NULL;

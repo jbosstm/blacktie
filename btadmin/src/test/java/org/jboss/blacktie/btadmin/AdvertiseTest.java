@@ -35,7 +35,7 @@ public class AdvertiseTest extends TestCase {
 		log.info("AdvertiseTest::setUp");
 		this.commandHandler = new CommandHandler();
 
-		if (commandHandler.handleCommand("startup default".split(" ")) != 0) {
+		if (commandHandler.handleCommand("startup testsui".split(" ")) != 0) {
 			fail("Could not start the server");
 		}
 	}
@@ -52,7 +52,7 @@ public class AdvertiseTest extends TestCase {
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		log.info("AdvertiseTest::testAdvertise");
-		String command = "advertise default BAR";
+		String command = "advertise testsui BAR";
 		if (commandHandler.handleCommand(command.split(" ")) != 0) {
 			fail("Command failed");
 		}
@@ -63,7 +63,7 @@ public class AdvertiseTest extends TestCase {
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		log.info("AdvertiseTest::testAdvertiseWithoutService");
-		String command = "advertise default";
+		String command = "advertise testsui";
 		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was successful");
 		}
@@ -96,7 +96,7 @@ public class AdvertiseTest extends TestCase {
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		log.info("AdvertiseTest::testAdvertiseNoFunctionConfig");
-		String command = "advertise default PBF";
+		String command = "advertise testsui PBF";
 		if (commandHandler.handleCommand(command.split(" ")) == 0) {
 			fail("Command was successful");
 		}

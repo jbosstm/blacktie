@@ -5,7 +5,7 @@ echo "Example: Running svrInitDoneFunctions"
 cd %BLACKTIE_HOME%\examples\xatmi\svrInitDoneFunctions
 
 rem RUN THE FOOAPP SERVER
-call generate_server -Dserver.includes=BarService.c,SvrInitDone.c
+call generate_server -Dserver.includes=BarService.c,SvrInitDone.c -Dserver.name=iniDone
 IF %ERRORLEVEL% NEQ 0 exit -1
 set BLACKTIE_CONFIGURATION=win32
 call btadmin startup

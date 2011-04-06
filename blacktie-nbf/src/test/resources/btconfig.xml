@@ -20,7 +20,7 @@
 	<DOMAIN>fooapp</DOMAIN>
 	
 	<SERVERS>
-		<SERVER name='default'>
+		<SERVER name='testsui'>
 			<SERVICE_NAMES>
 				<SERVICE name='PBF' />
 			</SERVICE_NAMES>

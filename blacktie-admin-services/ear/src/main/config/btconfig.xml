@@ -103,14 +103,14 @@
 		</SERVER>
 		<SERVER name="myserv">
 			<SERVICE_NAMES>
-				<SERVICE name='TestOne'/>
-				<SERVICE name='TestTwo'/>
-				<SERVICE name='ConvService' />
-				<SERVICE name='JAVA_Converse'/>
+				<SERVICE name='TestOne' externally-managed-destination='true'/>
+				<SERVICE name='TestTwo' externally-managed-destination='true'/>
+				<SERVICE name='ConvService'  externally-managed-destination='true'/>
+				<SERVICE name='JAVA_Converse' externally-managed-destination='true'/>
 				<SERVICE name='XMLParserTest'/>
 			</SERVICE_NAMES>
 		</SERVER>
-		<SERVER name="default">
+		<SERVER name="testsui">
 			<SERVICE_NAMES>
 				<SERVICE name='PBF' />
 				<SERVICE name='NBF' />
