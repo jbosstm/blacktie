@@ -225,4 +225,10 @@ public class RunServer {
 	public static String getServiceNameTestRollbackOnly2() {
 		return "TestRbkOnly2";
 	}
+
+	public static String getServiceNameNBF() {
+		return "NBF";
+	}
+
+	public native void tpadvertiseTestNBF();
 }

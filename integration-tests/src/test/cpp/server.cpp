@@ -26,6 +26,7 @@
 #include "AtmiBrokerServerControl.h"
 #include "ace/OS_NS_unistd.h"
 #include "xatmi.h"
+#include "btnbf.h"
 #include "XATMITestSuite.h"
 
 int interationCount = 100;
@@ -450,6 +451,41 @@ void testtpreturn_service_opensession2(TPSVCINFO *svcinfo) {
 	tpreturn(TPSUCCESS, 0, svcinfo->data, svcinfo->len, 0);
 }
 
+void test_service_nbf(TPSVCINFO *svcinfo) {
+	btlogger((char*) "test_service_nbf");
+	char* buf = svcinfo->data;
+	int rc = 0;
+
+	char name[16];
+	long id;
+	int  len = 16;
+
+	rc = btgetattribute(buf, (char*)"name", 0, (char*) name, &len);
+	if(rc == 0) {
+		btlogger((char*) "get name value is %s", name);
+	}
+
+	len = 0;
+	rc = btgetattribute(buf, (char*)"id", 0, (char*)&id, &len);
+	if(rc == 0) {
+		btlogger((char*) "get id value is %d", id);
+	}
+
+	btlogger((char*)"remove attr");
+	rc = btdelattribute(buf, (char*)"name", 0);
+	if(rc == 0) {
+		btlogger((char*) "remove name");
+	}
+
+	id = 1234;
+	rc = btsetattribute(&buf, (char*)"id", 0, (char*)&id, sizeof(id));
+	if(rc == 0) {
+		btlogger((char*) "set id value to 1234");
+	}
+
+	tpreturn(TPSUCCESS, 0, buf, strlen(buf), 0);
+}
+
 extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_serverinit(JNIEnv *, jobject) {
 	int exit_status = -1;
@@ -665,4 +701,9 @@ JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertise
 extern "C"
 JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPReturn4(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPReturnB", testtpreturn_service_opensession2);
+}
+
+extern "C"
+JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestNBF(JNIEnv *, jobject) {
+	tpadvertise((char*) "NBF", test_service_nbf);
 }
