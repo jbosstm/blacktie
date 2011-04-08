@@ -157,6 +157,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.blacktie</groupId>
+			<classifier>${bpa}</classifier><artifactId>blacktie-nbf</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.blacktie</groupId>
 			<artifactId>jatmibroker-xatmi-client</artifactId>
 			<scope>test</scope>
 		</dependency>
