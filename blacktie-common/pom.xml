@@ -275,6 +275,12 @@
 				<artifactId>atmibroker-xatmi</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.jboss.blacktie</groupId>
+				<classifier>${bpa}</classifier>
+				<artifactId>blacktie-nbf</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
