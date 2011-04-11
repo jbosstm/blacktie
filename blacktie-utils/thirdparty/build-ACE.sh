@@ -24,7 +24,7 @@ else
 fi
 (cd ACE+TAO-$ACE_VER && unzip ../ACE+TAO-$ACE_VER.zip)
 export ACE_ROOT=`pwd`/ACE+TAO-$ACE_VER/ACE_wrappers
-export TAO_ROOT=`pwd`/ACE+TAO-$ACE_VER/ACE_wrappers/TAO
+export TAO_ROOT=$ACE_ROOT/TAO
 export LD_LIBRARY_PATH=$ACE_ROOT/lib
 
 dos2unix $ACE_ROOT/bin/*.sh
