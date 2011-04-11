@@ -128,6 +128,7 @@ int main(int argc, char **argv) {
 		sbuf = tprealloc(sbuf, sbufsize);
 		memset(sbuf, 0, sbufsize);
 		sprintf(sbuf, "shutdown,%s,%d,", serverName, id);
+		btlogger((char*) "Shuttind down: %s (%d)", serverName, id);
 		tpstatus = tpcall("BTDomainAdmin", sbuf, sbufsize, (char **) &retbuf,
 				&retbufsize, callflags);
 	} else {
