@@ -33,9 +33,9 @@ echo "#define ACE_INITIALIZE_MEMORY_BEFORE_USE 1
 
 echo "include \$(ACE_ROOT)/include/makeinclude/platform_linux.GNU" > $ACE_ROOT/include/makeinclude/platform_macros.GNU
 
-for i in ace apps/gperf/src ACEXML $TAO_ROOT/TAO_IDL $TAO_ROOT/tao
+for i in $ACE_ROOT/ace $ACE_ROOT/apps/gperf/src $ACE_ROOT/ACEXML $TAO_ROOT/TAO_IDL $TAO_ROOT/tao
 do
-(cd $ACE_ROOT/$i && make)
+(cd $i && make)
 done
 
 (cd  $TAO_ROOT/orbsvcs/orbsvcs && make CosNaming_Serv)
