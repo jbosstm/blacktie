@@ -244,7 +244,7 @@
 			<env key="${neutral.path.key}" path="${neutral.path.value};${ace.lroot}/lib;${ace.broot}" />
 			<env key="SystemRoot" path="${env.SystemRoot}" />
 
-			<arg line="-o ${idl.output.dir} -Wb,pre_include=ace/pre.h -Wb,post_include=ace/post.h -I${ace.iroot}/tao -I${ace.iroot}/orbsvcs -I${idl.src.dir} -Wb,export_macro=BLACKTIE_IDL_DLL -Wb,export_include=atmiBrokerIdlMacro.h -DTAO=1" />
+			<arg line="-o ${idl.output.dir} -Wb,pre_include=ace/pre.h -Wb,post_include=ace/post.h -I${ace.iroot}/tao -I${ace.iroot}/orbsvcs -I${idl.src.dir} -Wb,export_macro=BLACKTIE_IDL_DLL -Wb,export_include=atmiBrokerIdlMacro.h -DTAO=1 -DNO_ANONYMOUS_SEQUENCES" />
 
 			<fileset dir="${idl.src.dir}" casesensitive="yes">
 				<patternset id="idl.sources">

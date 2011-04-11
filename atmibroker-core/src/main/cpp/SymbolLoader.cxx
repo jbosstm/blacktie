@@ -15,7 +15,7 @@ log4cxx::LoggerPtr symbolLoaderLogger(log4cxx::Logger::getLogger(
 		"symbolLoaderLogger"));
 
 
-#include "ace/OS.h"
+#include "ace/OS_NS_dlfcn.h"
 #include "ace/Lib_Find.h"
 
 void* lookup_symbol(const char *lib, const char *symbol) {

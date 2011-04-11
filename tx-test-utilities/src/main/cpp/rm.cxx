@@ -23,7 +23,6 @@
 #include <stdlib.h>
 #include "ace/OS_NS_unistd.h"
 #include "ace/OS_NS_time.h"
-#include "ace/OS.h"
 
 static SynchronizableObject _lock;
 static long counter = 0;

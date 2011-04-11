@@ -19,7 +19,6 @@
 #include "XAResourceManager.h"
 #include "ThreadLocalStorage.h"
 #include "ace/OS_NS_time.h"
-#include "ace/OS.h"
 
 #include "AtmiBrokerEnv.h"
 
