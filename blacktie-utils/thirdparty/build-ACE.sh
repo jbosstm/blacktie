@@ -25,7 +25,7 @@ export ACE_ROOT=`pwd`/ACE+TAO-$ACE_VER/ACE_wrappers
 export TAO_ROOT=`pwd`/ACE+TAO-$ACE_VER/ACE_wrappers/TAO
 export LD_LIBRARY_PATH=$ACE_ROOT/lib
 
-dos2unix $ACE_ROOT/ace/*.sh
+dos2unix $ACE_ROOT/bin/*.sh
 echo "#define ACE_INITIALIZE_MEMORY_BEFORE_USE 1
 #include \"ace/config-linux.h\"" > $ACE_ROOT/ace/config.h
 
