@@ -33,7 +33,7 @@ echo "include \$(ACE_ROOT)/include/makeinclude/platform_linux.GNU" > $ACE_ROOT/i
 
 for i in ace apps/gperf/src ACEXML $TAO_ROOT/TAO_IDL $TAO_ROOT/tao
 do
-(cd $i && make)
+(cd $ACE_VER/ACE_wrappers/$i && make)
 done
 
 (cd  $TAO_ROOT/orbsvcs/orbsvcs && make CosNaming_Serv)
