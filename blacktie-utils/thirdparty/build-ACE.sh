@@ -11,17 +11,21 @@ fi
 echo "Making ACE+TAO-$ACE_VER"
 rm -rf ACE+TAO-$ACE_VER
 mkdir ACE+TAO-$ACE_VER
-wget http://download.dre.vanderbilt.edu/previous_versions/ACE+TAO-$ACE_VER.zip
-if [ "$?" != 0 ]; then
-    echo could not download
-    exit -1
+if [ -e ACE+TAO-$ACE_VER.zip ]; then
+	echo "Already downloaded"
+else
+	wget http://download.dre.vanderbilt.edu/previous_versions/ACE+TAO-$ACE_VER.zip
+    if [ "$?" != 0 ]; then
+       echo could not download
+       exit -1
+    fi
 fi
 (cd ACE+TAO-$ACE_VER && unzip ../ACE+TAO-$ACE_VER.zip)
 export ACE_ROOT=`pwd`/ACE+TAO-$ACE_VER/ACE_wrappers
 export TAO_ROOT=`pwd`/ACE+TAO-$ACE_VER/ACE_wrappers/TAO
 export LD_LIBRARY_PATH=$ACE_ROOT/lib
 
-dos2unix $ACE_ROOT/ace/bin/*.sh
+dos2unix $ACE_ROOT/ace/*.sh
 echo "#define ACE_INITIALIZE_MEMORY_BEFORE_USE 1
 #include \"ace/config-linux.h\"" > $ACE_ROOT/ace/config.h
 
