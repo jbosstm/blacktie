@@ -24,6 +24,11 @@ echo '0
 0
 0
 1' | ./client
+if [ "$?" != "0" ]; then
+    killall -9 server
+    killall -9 client
+	exit -1
+fi
 # SHUTDOWN THE SERVER RUNNING THE XATMI ADMIN CLIENT
 cd $BLACKTIE_HOME/examples/admin/xatmi
 generate_client -Dclient.includes=client.c
@@ -32,5 +37,10 @@ echo '0
 0
 0
 2' | ./client
+if [ "$?" != "0" ]; then
+    killall -9 server
+    killall -9 client
+	exit -1
+fi
 # PICK UP THE CLOSING SERVER
 sleep 3
