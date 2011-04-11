@@ -18,9 +18,10 @@
 #include <string.h>
 #include "XAResourceManager.h"
 #include "ThreadLocalStorage.h"
-#include "ace/OS_NS_time.h"
-
 #include "AtmiBrokerEnv.h"
+
+#include "ace/OS_NS_time.h"
+#include "ace/OS_NS_sys_time.h"
 
 log4cxx::LoggerPtr xarmlogger(log4cxx::Logger::getLogger("TxLogXAManager"));
 

@@ -21,8 +21,10 @@
 #include "AtmiBrokerEnv.h"
 #include "AtmiBrokerMem.h"
 #include "txx.h"
-#include <tao/ORB.h>
-#include <ace/OS_NS_time.h>
+
+#include "tao/ORB.h"
+#include "ace/OS_NS_time.h"
+#include "ace/OS_NS_sys_time.h"
 
 log4cxx::LoggerPtr ServiceDispatcher::logger(log4cxx::Logger::getLogger(
 		"ServiceDispatcher"));

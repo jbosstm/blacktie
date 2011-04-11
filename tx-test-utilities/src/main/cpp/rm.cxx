@@ -17,12 +17,13 @@
  */
 #include "xa.h"
 #include "testrm.h"
-#include <btlogger.h>
+#include "btlogger.h"
 #include "SynchronizableObject.h"
 
 #include <stdlib.h>
 #include "ace/OS_NS_unistd.h"
 #include "ace/OS_NS_time.h"
+#include "ace/OS_NS_sys_time.h"
 
 static SynchronizableObject _lock;
 static long counter = 0;

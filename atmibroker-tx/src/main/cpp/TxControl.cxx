@@ -19,7 +19,9 @@
 #include "ThreadLocalStorage.h"
 #include "TxControl.h"
 #include "TxManager.h"
+
 #include "ace/OS_NS_time.h"
+#include "ace/OS_NS_sys_time.h"
 
 #define TX_GUARD(msg, expect) { \
 	FTRACE(txclogger, "ENTER"); \
