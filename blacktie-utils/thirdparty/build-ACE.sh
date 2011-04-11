@@ -8,6 +8,8 @@ if [ "${bpa}" == "" ]; then
     exit -1
 fi
 
+if [ "$1" = "build" ]; then
+shift
 echo "Making ACE+TAO-$ACE_VER"
 rm -rf ACE+TAO-$ACE_VER
 mkdir ACE+TAO-$ACE_VER
@@ -38,8 +40,9 @@ done
 
 (cd  $TAO_ROOT/orbsvcs/orbsvcs && make CosNaming_Serv)
 
-
 ant -Dlinux=true ace
+fi
+
 
 if [ "$1" = "deploy" ]; then
 mvn deploy:deploy-file -Durl=https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/ -DrepositoryId=jboss-releases -Dfile=`pwd`/build/lib/ace-$ACE_VER-$bpa.zip -DpomFile=`pwd`/poms/$i.pom -Dpackaging=zip -Dclassifier=$bpa
