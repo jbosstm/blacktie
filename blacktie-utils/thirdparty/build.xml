@@ -80,7 +80,7 @@
 		<mkdir dir="${build.dist}/lib" />
 	</target>
 
-	<target name="thirdparty" depends="ace,log4cxx,cppunit,expat,apr-1,xercesc,stompconnect" />
+	<target name="thirdparty" depends="ace,log4cxx,cppunit,expat,apr-1,xercesc" />
 	<target name="install" depends="thirdparty" />
 
 	<target name="ace-lib-linux" if="linux">
@@ -286,20 +286,6 @@
 		<copy file="../../blacktie/licence/apr.txt" tofile="${build.dist}/META-INF/LICENSE"/>
 
 		<install-artifact groupId="apr-1.contrib" artifactId="apr-1" name="apr-1" version="${apr-1.version}" description="Apache Portable Runtime (APR)" />
-	</target>
-
-	<target name="stomp-linux" if="linux">
-		<property name="mvn.exe" value="mvn"/>
-	</target>
-	<target name="stomp-windows" if="windows">
-		<property name="mvn.exe" value="mvn.bat"/>
-	</target>
-	<target name="stompconnect" depends="init,stomp-linux,stomp-windows">
-		<antcall target="purge"/>
-		<exec executable="${mvn.exe}" dir="${stompconnect.dir}" failonerror="true">
-			<arg value="install"/>
-			<arg value="-DskipTests"/>
-		</exec>
 	</target>
 
 	<target name="log4cxx-lib-linux" if="linux" unless="aix">
