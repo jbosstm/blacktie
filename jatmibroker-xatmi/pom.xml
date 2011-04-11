@@ -14,7 +14,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
-		<groupId>org.jboss.blacktie</groupId>
+		<groupId>org.jboss.narayana.blacktie</groupId>
 		<artifactId>blacktie-common</artifactId>
 		<version>3.0.0.M3-SNAPSHOT</version>
 	</parent>
@@ -91,7 +91,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
-					<excludePackageNames>org.jboss.blacktie.jatmibroker.core</excludePackageNames>
+					<excludePackageNames>org.jboss.narayana.blacktie.jatmibroker.core</excludePackageNames>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -126,16 +126,16 @@
 		-->
 		<!-- END OF AIX REQUIREMENT -->
 		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
+			<groupId>org.jboss.narayana.blacktie</groupId>
 			<artifactId>stompconnectservice</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
+			<groupId>org.jboss.narayana.blacktie</groupId>
 			<artifactId>blacktie-xsd</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
+			<groupId>org.jboss.narayana.blacktie</groupId>
 			<artifactId>atmibroker-idl-java</artifactId>
 		</dependency>
 		<dependency>

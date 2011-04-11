@@ -17,12 +17,12 @@
  */
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.jab.JABException;
-import org.jboss.blacktie.jatmibroker.jab.factory.JABBuffer;
-import org.jboss.blacktie.jatmibroker.jab.factory.JABConnection;
-import org.jboss.blacktie.jatmibroker.jab.factory.JABConnectionFactory;
-import org.jboss.blacktie.jatmibroker.jab.factory.JABResponse;
-import org.jboss.blacktie.jatmibroker.jab.factory.Transaction;
+import org.jboss.narayana.blacktie.jatmibroker.jab.JABException;
+import org.jboss.narayana.blacktie.jatmibroker.jab.factory.JABBuffer;
+import org.jboss.narayana.blacktie.jatmibroker.jab.factory.JABConnection;
+import org.jboss.narayana.blacktie.jatmibroker.jab.factory.JABConnectionFactory;
+import org.jboss.narayana.blacktie.jatmibroker.jab.factory.JABResponse;
+import org.jboss.narayana.blacktie.jatmibroker.jab.factory.Transaction;
 
 public class JABFactoryClientTest {
 	private static final Logger log = LogManager

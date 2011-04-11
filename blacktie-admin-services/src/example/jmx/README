@@ -20,7 +20,7 @@ NOTE: If you are using IPv6 you will need to change any references to localhost 
 
 NOTE: If you have launched the JBoss AS on a different interface to localhost you will have to update the following files with the updated
 IP address:
-	<BLACKTIE_HOME>/examples/admin/jmx/src/test/java/org/jboss/blacktie/examples/jmx/JMXAdministrationTest.java
+	<BLACKTIE_HOME>/examples/admin/jmx/src/test/java/org/jboss/narayana/blacktie/examples/jmx/JMXAdministrationTest.java
 
 1. RUN THE SERVER
 Follow the instructions in $BLACKTIE_HOME/samples/xatmi/fooapp to start a server  

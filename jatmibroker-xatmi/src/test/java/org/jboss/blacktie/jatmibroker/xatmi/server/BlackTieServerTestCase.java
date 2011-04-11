@@ -15,13 +15,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.xatmi.server;
+package org.jboss.narayana.blacktie.jatmibroker.xatmi.server;
 
 import junit.framework.TestCase;
 
-import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.xatmi.Connection;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.server.BlackTieServer;
 
 public class BlackTieServerTestCase extends TestCase {
 
@@ -50,7 +51,7 @@ public class BlackTieServerTestCase extends TestCase {
 
 	public void testAdvertiseAdvertised() throws ConnectionException {
 		server.tpadvertise("JAVA_Converse",
-				"org.jboss.blacktie.jatmibroker.xatmi.services.TPCallXOctetService");
+				"org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPCallXOctetService");
 	}
 
 	public void testAdvertiseMatch() {
@@ -63,7 +64,7 @@ public class BlackTieServerTestCase extends TestCase {
 
 	public void testUnadvertiseNewAdvertised() throws ConnectionException {
 		server.tpadvertise("TestOne",
-				"org.jboss.blacktie.jatmibroker.xatmi.services.TPCallXOctetService");
+				"org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPCallXOctetService");
 		server.tpunadvertise("TestOne");
 		try {
 			server.tpunadvertise("TestOne");

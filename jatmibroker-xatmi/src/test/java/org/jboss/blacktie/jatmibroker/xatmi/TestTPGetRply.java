@@ -15,14 +15,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.xatmi;
+package org.jboss.narayana.blacktie.jatmibroker.xatmi;
 
 import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.RunServer;
-import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.narayana.blacktie.jatmibroker.RunServer;
+import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.Buffer;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionFactory;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.Response;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class TestTPGetRply extends TestCase {
 	private static final Logger log = LogManager.getLogger(TestTPGetRply.class);

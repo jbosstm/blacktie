@@ -346,7 +346,7 @@
 	<target name="gen-test-runner1" if="need-testrunner">
 		<mkdir dir="${project.build.directory}/generated-sources" />
 		<fileset id="fileset.gen.test" dir="${project.build.directory}/generated-sources" includes="**/*.cxx"/>
-		<taskdef name="add.common.src" classname="org.jboss.blacktie.plugins.AddCommonSources"/>
+		<taskdef name="add.common.src" classname="org.jboss.narayana.blacktie.plugins.AddCommonSources"/>
 		<!-- For includes see java.util.regex.Pattern for valid pattern syntax -->
 		<add.common.src mavenProject="gen-common-sources" includes=".*.cxx" outputDir="${project.build.directory}/generated-sources"/>
 	</target>

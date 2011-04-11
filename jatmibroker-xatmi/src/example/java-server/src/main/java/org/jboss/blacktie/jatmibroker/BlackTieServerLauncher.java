@@ -1,8 +1,8 @@
-package org.jboss.blacktie.jatmibroker;
+package org.jboss.narayana.blacktie.jatmibroker;
 
-import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.blacktie.jatmibroker.xatmi.server.BlackTieServer;
+import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.server.BlackTieServer;
 
 public class BlackTieServerLauncher {
 

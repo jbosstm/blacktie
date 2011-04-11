@@ -79,7 +79,7 @@
 				<SERVICE name='TestTwo'  externally-managed-destination='true'/>
 				<SERVICE name='ConvService' conversational='true'  externally-managed-destination='true'/>
 				<SERVICE name='JAVA_Converse'  externally-managed-destination='true'
-					java_class_name="org.jboss.blacktie.jatmibroker.xatmi.services.TPCallXOctetService"
+					java_class_name="org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPCallXOctetService"
 					advertised="true" size="1">
 				</SERVICE>
 				<SERVICE name='XMLParserTest' />

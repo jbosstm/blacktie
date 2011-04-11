@@ -18,7 +18,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
-		<groupId>org.jboss.blacktie</groupId>
+		<groupId>org.jboss.narayana.blacktie</groupId>
 		<artifactId>blacktie-common</artifactId>
 		<version>3.0.0.M3-SNAPSHOT</version>
 	</parent>
@@ -99,7 +99,7 @@
 
 			<plugin>
 				<inherited>true</inherited>
-				<groupId>org.jboss.blacktie.plugins</groupId>
+				<groupId>org.jboss.narayana.blacktie.plugins</groupId>
 				<artifactId>cpp-plugin</artifactId>
 
 				<configuration>

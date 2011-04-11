@@ -1,4 +1,4 @@
-package org.jboss.blacktie.example.ejb.eg1;
+package org.jboss.narayana.blacktie.example.ejb.eg1;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;

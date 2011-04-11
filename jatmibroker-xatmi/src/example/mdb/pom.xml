@@ -22,7 +22,7 @@
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.jboss.blacktie</groupId>
+	<groupId>org.jboss.narayana.blacktie</groupId>
 	<artifactId>example-mdb-xatmi-service</artifactId>
 	<version>3.0.0.M3-SNAPSHOT</version>
 	<packaging>jar</packaging>
@@ -141,7 +141,7 @@
 	</reporting>
 	<dependencies>
 		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
+			<groupId>org.jboss.narayana.blacktie</groupId>
 			<artifactId>jatmibroker-xatmi</artifactId>
 			<version>3.0.0.M3-SNAPSHOT</version>
 		</dependency>

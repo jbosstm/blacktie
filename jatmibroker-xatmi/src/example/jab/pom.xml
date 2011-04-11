@@ -27,7 +27,7 @@
 
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.jboss.blacktie</groupId>
+	<groupId>org.jboss.narayana.blacktie</groupId>
 	<artifactId>example-jab</artifactId>
 	<version>3.0.0.M3-SNAPSHOT</version>
 	<packaging>jar</packaging>
@@ -79,7 +79,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
+			<groupId>org.jboss.narayana.blacktie</groupId>
 			<artifactId>jatmibroker-xatmi-client</artifactId>
 			<version>3.0.0.M3-SNAPSHOT</version>
 		</dependency>

@@ -18,7 +18,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
-		<groupId>org.jboss.blacktie</groupId>
+		<groupId>org.jboss.narayana.blacktie</groupId>
 		<artifactId>blacktie-C</artifactId>
 		<version>3.0.0.M3-SNAPSHOT</version>
 	</parent>
@@ -97,7 +97,7 @@
 			<type>zip</type>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
+			<groupId>org.jboss.narayana.blacktie</groupId>
 			<artifactId>blacktie-xsd</artifactId>
 <!--
 			<classifier>${bpa}</classifier>
@@ -105,7 +105,7 @@
 -->
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
+			<groupId>org.jboss.narayana.blacktie</groupId>
 			<classifier>${bpa}</classifier>
 			<artifactId>atmibroker-idl-cxx</artifactId>
 		</dependency>
@@ -122,7 +122,7 @@
 		</dependency>
 		<!--
 		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
+			<groupId>org.jboss.narayana.blacktie</groupId>
 			<classifier>${bpa}</classifier>
 			<artifactId>tx-test-utilities</artifactId>
 			<scope>test</scope>

@@ -266,7 +266,7 @@
         </parameter>
         <parameter>
           <name>projectHelper</name>
-          <expression>${org.jboss.blacktie.plugins.AddCommonSources}</expression>
+          <expression>${org.jboss.narayana.blacktie.plugins.AddCommonSources}</expression>
         </parameter>
         <parameter>
           <name>src.main</name>

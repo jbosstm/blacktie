@@ -1,4 +1,4 @@
-package org.jboss.blacktie.jatmibroker.core.transport.hybrid;
+package org.jboss.narayana.blacktie.jatmibroker.core.transport.hybrid;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -7,14 +7,14 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.conf.AtmiBrokerEnvXML;
-import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.core.transport.Message;
-import org.jboss.blacktie.jatmibroker.core.transport.Receiver;
-import org.jboss.blacktie.jatmibroker.core.transport.Sender;
-import org.jboss.blacktie.jatmibroker.core.transport.Transport;
-import org.jboss.blacktie.jatmibroker.core.transport.TransportFactory;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.narayana.blacktie.jatmibroker.core.conf.AtmiBrokerEnvXML;
+import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.narayana.blacktie.jatmibroker.core.transport.Message;
+import org.jboss.narayana.blacktie.jatmibroker.core.transport.Receiver;
+import org.jboss.narayana.blacktie.jatmibroker.core.transport.Sender;
+import org.jboss.narayana.blacktie.jatmibroker.core.transport.Transport;
+import org.jboss.narayana.blacktie.jatmibroker.core.transport.TransportFactory;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public class TestConnection extends TestCase {
 	private static final Logger log = LogManager

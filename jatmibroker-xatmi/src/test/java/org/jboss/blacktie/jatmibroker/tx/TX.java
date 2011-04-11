@@ -1,4 +1,4 @@
-package org.jboss.blacktie.jatmibroker.tx;
+package org.jboss.narayana.blacktie.jatmibroker.tx;
 
 public class TX {
 

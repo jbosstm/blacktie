@@ -15,22 +15,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.ejb.connector.ejb;
+package org.jboss.narayana.blacktie.jatmibroker.ejb.connector.ejb;
 
 import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.jab.JABException;
-import org.jboss.blacktie.jatmibroker.jab.JABSession;
-import org.jboss.blacktie.jatmibroker.jab.JABSessionAttributes;
-import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
-import org.jboss.blacktie.jatmibroker.xatmi.Connection;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
-import org.jboss.blacktie.jatmibroker.xatmi.Response;
-import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
+import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.narayana.blacktie.jatmibroker.jab.JABException;
+import org.jboss.narayana.blacktie.jatmibroker.jab.JABSession;
+import org.jboss.narayana.blacktie.jatmibroker.jab.JABSessionAttributes;
+import org.jboss.narayana.blacktie.jatmibroker.jab.JABTransaction;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionFactory;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.Response;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class TxBlacktieServiceTestCase extends TestCase {
 	private static final Logger log = LogManager

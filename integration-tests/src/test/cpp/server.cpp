@@ -487,7 +487,7 @@ void test_service_nbf(TPSVCINFO *svcinfo) {
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_serverinit(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_serverinit(JNIEnv *, jobject) {
 	int exit_status = -1;
 	btlogger((char*) "serverinit called");
 #ifdef WIN32
@@ -504,7 +504,7 @@ JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_serverinit(
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_serverdone(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_serverdone(JNIEnv *, jobject) {
 	int exit_status = -1;
 	btlogger((char*) "serverdone called");
 	exit_status = serverdone();
@@ -513,197 +513,197 @@ JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_serverdone(
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseBAR(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseBAR(JNIEnv *, jobject) {
 	// Do local work
 	tpadvertise((char*) "BAR", BAR);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseLOOPY(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseLOOPY(JNIEnv *, jobject) {
 	tpadvertise((char*) "LOOPY", loopy);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseDEBIT(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseDEBIT(JNIEnv *, jobject) {
 	tpadvertise((char*) "DEBIT", debit_credit_svc);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseCREDIT(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseCREDIT(JNIEnv *, jobject) {
 	tpadvertise((char*) "CREDIT", debit_credit_svc);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseINQUIRY(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseINQUIRY(JNIEnv *, jobject) {
 	tpadvertise((char*) "INQUIRY", inquiry_svc);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPACall(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestTPACall(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPACall", testtpacall_service);
 	// TODO tpadvertise exit_status =
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertisetpcallXOctet(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertisetpcallXOctet(JNIEnv *, jobject) {
 	tpadvertise((char*) "tpcall_x_octet", test_tpcall_x_octet_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertisetpcallXOctetZero(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertisetpcallXOctetZero(JNIEnv *, jobject) {
 	tpadvertise((char*) "tpcall_x_octet", test_tpcall_x_octet_service_zero);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertisetpcallXCommon(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertisetpcallXCommon(JNIEnv *, jobject) {
 	tpadvertise((char*) "tpcall_x_common", test_tpcall_x_common_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertisetpcallXCType(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertisetpcallXCType(JNIEnv *, jobject) {
 	tpadvertise((char*) "tpcall_x_c_type", test_tpcall_x_c_type_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPCancel(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestTPCancel(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPCancel", testtpcancel_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPConnect(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestTPConnect(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPConnect", testtpconnect_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPConversation(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestTPConversation(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPConversat",
 			testTPConversation_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPConversa2(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestTPConversa2(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPConversat",
 			testTPConversation_short_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPDiscon(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestTPDiscon(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPDiscon", testtpdiscon_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPFree(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestTPFree(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPFree", testtpfreeservice_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPGetrply(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestTPGetrply(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPGetrply", testtpgetrply_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPRecv(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestTPRecv(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPRecv", testtprecv_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPReturn(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestTPReturn(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPReturnA", testtpreturn_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPReturn2(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestTPReturn2(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPReturnA",
 			testtpreturn_service_tpurcode);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPSendTPSendOnly(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestTPSendTPSendOnly(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPSend", testtpsend_tpsendonly_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPSend(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestTPSend(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPSend", testtpsend_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPService(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestTPService(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPService", testtpservice_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPUnadvertise(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestTPUnadvertise(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPUnadvertise",
 			testtpunadvertise_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTX1(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTX1(JNIEnv *, jobject) {
 	tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_without_tx);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTX2(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTX2(JNIEnv *, jobject) {
 	tpadvertise((char*) "tpcall_x_octet", test_tx_tpcall_x_octet_service_with_tx);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestRollbackOnlyTpcallTPETIMEService(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestRollbackOnlyTpcallTPETIMEService(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestRbkOnly", test_tpcall_TPETIME_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestRollbackOnlyTpcallTPEOTYPEService(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestRollbackOnlyTpcallTPEOTYPEService(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestRbkOnly", test_tpcall_TPEOTYPE_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestRollbackOnlyTpcallTPESVCFAILService(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestRollbackOnlyTpcallTPESVCFAILService(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestRbkOnly", test_tpcall_TPESVCFAIL_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestRollbackOnlyTprecvTPEVDISCONIMMService(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestRollbackOnlyTprecvTPEVDISCONIMMService(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestRbkOnly2", test_tprecv_TPEV_DISCONIMM_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestRollbackOnlyTprecvTPEVSVCFAILService(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestRollbackOnlyTprecvTPEVSVCFAILService(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestRbkOnly2", test_tprecv_TPEV_SVCFAIL_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestRollbackOnlyNoTpreturnService(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestRollbackOnlyNoTpreturnService(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestRbkOnly", test_no_tpreturn_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTTL(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTTL(JNIEnv *, jobject) {
 	tpadvertise((char*) "TTL", test_TTL_service);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPGetrplyOne(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestTPGetrplyOne(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPGetAnyA", test_tpgetrply_TPGETANY_one);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPGetrplyTwo(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestTPGetrplyTwo(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPGetAnyB", test_tpgetrply_TPGETANY_two);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPReturn3(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestTPReturn3(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPReturnA", testtpreturn_service_opensession1);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestTPReturn4(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestTPReturn4(JNIEnv *, jobject) {
 	tpadvertise((char*) "TestTPReturnB", testtpreturn_service_opensession2);
 }
 
 extern "C"
-JNIEXPORT void JNICALL Java_org_jboss_blacktie_jatmibroker_RunServer_tpadvertiseTestNBF(JNIEnv *, jobject) {
+JNIEXPORT void JNICALL Java_org_jboss_narayana_blacktie_jatmibroker_RunServer_tpadvertiseTestNBF(JNIEnv *, jobject) {
 	tpadvertise((char*) "NBF", test_service_nbf);
 }

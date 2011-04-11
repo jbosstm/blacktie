@@ -15,11 +15,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.xatmi;
+package org.jboss.narayana.blacktie.jatmibroker.xatmi;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.BT_NBF;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionFactory;
 
 import junit.framework.TestCase;
 
@@ -64,7 +68,7 @@ public class TestNestedBuffer extends TestCase {
 		//log.info(new String(test.serialize()));
 		
 		obj = test.btgetattribute("employee", 0);
-		assertTrue("org.jboss.blacktie.jatmibroker.xatmi.BT_NBF".equals(obj.getClass().getName()));
+		assertTrue("org.jboss.narayana.blacktie.jatmibroker.xatmi.BT_NBF".equals(obj.getClass().getName()));
 		BT_NBF employee = (BT_NBF)obj;
 		String name = (String)employee.btgetattribute("name", 0);
 		assertTrue("zhfeng".equals(name));

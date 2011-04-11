@@ -1,14 +1,14 @@
-package org.jboss.blacktie.jatmibroker.tx.services;
+package org.jboss.narayana.blacktie.jatmibroker.tx.services;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.tx.TX;
-import org.jboss.blacktie.jatmibroker.tx.TXINFO;
-import org.jboss.blacktie.jatmibroker.xatmi.Buffer;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.blacktie.jatmibroker.xatmi.Response;
-import org.jboss.blacktie.jatmibroker.xatmi.Service;
-import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
+import org.jboss.narayana.blacktie.jatmibroker.tx.TX;
+import org.jboss.narayana.blacktie.jatmibroker.tx.TXINFO;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.Buffer;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.Response;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.Service;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.TPSVCINFO;
 
 public class RollbackOnlyTprecvTPEVDISCONIMMService implements Service {
 	private static final Logger log = LogManager

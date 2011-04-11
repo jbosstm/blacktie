@@ -15,12 +15,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core.conf;
+package org.jboss.narayana.blacktie.jatmibroker.core.conf;
 
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+
+import org.jboss.narayana.blacktie.jatmibroker.core.conf.AtmiBrokerEnvXML;
+import org.jboss.narayana.blacktie.jatmibroker.core.conf.Machine;
+import org.jboss.narayana.blacktie.jatmibroker.core.conf.Server;
 
 import junit.framework.TestCase;
 

@@ -1,4 +1,4 @@
-package org.jboss.blacktie.jatmibroker.client;
+package org.jboss.narayana.blacktie.jatmibroker.client;
 
 /*
  * JBoss, Home of Professional Open Source
@@ -19,10 +19,10 @@ package org.jboss.blacktie.jatmibroker.client;
  */
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.xatmi.Connection;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionFactory;
-import org.jboss.blacktie.jatmibroker.xatmi.Response;
-import org.jboss.blacktie.jatmibroker.xatmi.X_OCTET;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionFactory;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.Response;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.X_OCTET;
 
 public class JavaClient {
 	private static final Logger log = LogManager.getLogger(JavaClient.class);

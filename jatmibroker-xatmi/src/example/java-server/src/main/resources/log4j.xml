@@ -39,7 +39,7 @@
 		</layout>
 	</appender>
 
-	<logger name="org.jboss.blacktie">
+	<logger name="org.jboss.narayana.blacktie">
   		<level value="ALL"/> 
 	</logger>
 

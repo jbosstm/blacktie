@@ -23,10 +23,10 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.jab.JABServiceInvoker;
-import org.jboss.blacktie.jatmibroker.jab.JABSession;
-import org.jboss.blacktie.jatmibroker.jab.JABSessionAttributes;
-import org.jboss.blacktie.jatmibroker.jab.JABTransaction;
+import org.jboss.narayana.blacktie.jatmibroker.jab.JABServiceInvoker;
+import org.jboss.narayana.blacktie.jatmibroker.jab.JABSession;
+import org.jboss.narayana.blacktie.jatmibroker.jab.JABSessionAttributes;
+import org.jboss.narayana.blacktie.jatmibroker.jab.JABTransaction;
 
 public class JABClientTest extends TestCase {
 	private static final Logger log = LogManager.getLogger(JABClientTest.class);

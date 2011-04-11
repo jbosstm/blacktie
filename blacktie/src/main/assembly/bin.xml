@@ -25,7 +25,7 @@
 	<moduleSets>
 		<moduleSet>
 			<includes>
-				<include>org.jboss.blacktie:btadmin
+				<include>org.jboss.narayana.blacktie:btadmin
 				</include>
 			</includes>
 			<binaries>
@@ -35,7 +35,7 @@
 		</moduleSet>
 		<moduleSet>
 			<includes>
-				<include>org.jboss.blacktie:codeGeneration
+				<include>org.jboss.narayana.blacktie:codeGeneration
 				</include>
 			</includes>
 			<binaries>
@@ -45,7 +45,7 @@
 		</moduleSet>
 		<moduleSet>
 			<includes>
-				<include>org.jboss.blacktie:jatmibroker-xatmi-client</include>
+				<include>org.jboss.narayana.blacktie:jatmibroker-xatmi-client</include>
 			</includes>
 			<binaries>
 				<outputDirectory>lib/java</outputDirectory>
@@ -54,7 +54,7 @@
 		</moduleSet>
 		<moduleSet>
 			<includes>
-				<include>org.jboss.blacktie:blacktie-rhq-plugin</include>
+				<include>org.jboss.narayana.blacktie:blacktie-rhq-plugin</include>
 			</includes>
 			<binaries>
 				<outputDirectory>blacktie-admin-services</outputDirectory>
@@ -64,7 +64,7 @@
 		</moduleSet>
 		<moduleSet>
 			<includes>
-				<include>org.jboss.blacktie:blacktie-admin-services-ear</include>
+				<include>org.jboss.narayana.blacktie:blacktie-admin-services-ear</include>
 			</includes>
 			<binaries>
 				<outputDirectory>blacktie-admin-services</outputDirectory>
@@ -74,7 +74,7 @@
 		</moduleSet>
 		<moduleSet>
 			<includes>
-				<include>org.jboss.blacktie:stompconnectservice-ear</include>
+				<include>org.jboss.narayana.blacktie:stompconnectservice-ear</include>
 			</includes>
 			<binaries>
 				<outputDirectory>blacktie-admin-services</outputDirectory>

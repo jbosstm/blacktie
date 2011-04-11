@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.core.conf;
+package org.jboss.narayana.blacktie.jatmibroker.core.conf;
 
 import java.util.Properties;
 
@@ -23,6 +23,8 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.narayana.blacktie.jatmibroker.core.conf.XMLParser;
 
 public class XMLParserTest extends TestCase {
 	private static final Logger log = LogManager.getLogger(XMLParserTest.class);
@@ -122,7 +124,7 @@ public class XMLParserTest extends TestCase {
 		String server = "myserv";
 		String advertised = "true";
 		String size = "1";
-		String function = "org.jboss.blacktie.jatmibroker.xatmi.services.TPCallXOctetService";
+		String function = "org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPCallXOctetService";
 
 		String userlist = "guest:true:true,blacktie:true:true";
 		String version = "3.0.0.M3-SNAPSHOT";

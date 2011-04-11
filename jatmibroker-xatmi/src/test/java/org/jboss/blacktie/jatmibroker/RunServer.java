@@ -15,42 +15,42 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker;
+package org.jboss.narayana.blacktie.jatmibroker;
 
-import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyNoTpreturnService;
-import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyTpcallTPEOTYPEService;
-import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyTpcallTPESVCFAILService;
-import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyTpcallTPETIMEService;
-import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyTprecvTPEVDISCONIMMService;
-import org.jboss.blacktie.jatmibroker.tx.services.RollbackOnlyTprecvTPEVSVCFAILService;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
-import org.jboss.blacktie.jatmibroker.xatmi.server.BlackTieServer;
-import org.jboss.blacktie.jatmibroker.xatmi.services.SpecExampleOneService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.SpecExampleTwoService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPACallService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPCallXCTypeService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPCallXCommonService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPCallXOctetService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPCancelService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPConnectService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPConversationService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPConversationShortService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPDisconService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPGetRplyOneService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPGetRplyService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPGetRplyTPNOBLOCKService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPGetRplyTwoService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPRecvService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPReturnOpenSession1Service;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPReturnOpenSession2Service;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPReturnService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPReturnTpurcodeService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPSendNonTPCONVService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPSendService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPSendTPSendOnlyService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TPServiceService;
-import org.jboss.blacktie.jatmibroker.xatmi.services.TTLService;
+import org.jboss.narayana.blacktie.jatmibroker.tx.services.RollbackOnlyNoTpreturnService;
+import org.jboss.narayana.blacktie.jatmibroker.tx.services.RollbackOnlyTpcallTPEOTYPEService;
+import org.jboss.narayana.blacktie.jatmibroker.tx.services.RollbackOnlyTpcallTPESVCFAILService;
+import org.jboss.narayana.blacktie.jatmibroker.tx.services.RollbackOnlyTpcallTPETIMEService;
+import org.jboss.narayana.blacktie.jatmibroker.tx.services.RollbackOnlyTprecvTPEVDISCONIMMService;
+import org.jboss.narayana.blacktie.jatmibroker.tx.services.RollbackOnlyTprecvTPEVSVCFAILService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.SpecExampleOneService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.SpecExampleTwoService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPACallService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPCallXCTypeService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPCallXCommonService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPCallXOctetService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPCancelService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPConnectService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPConversationService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPConversationShortService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPDisconService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPGetRplyOneService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPGetRplyService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPGetRplyTPNOBLOCKService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPGetRplyTwoService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPRecvService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPReturnOpenSession1Service;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPReturnOpenSession2Service;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPReturnService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPReturnTpurcodeService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPSendNonTPCONVService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPSendService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPSendTPSendOnlyService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPServiceService;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TTLService;
+import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.server.BlackTieServer;
 
 public class RunServer {
 

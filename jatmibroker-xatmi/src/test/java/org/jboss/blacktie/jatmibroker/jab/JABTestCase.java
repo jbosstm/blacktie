@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.jab;
+package org.jboss.narayana.blacktie.jatmibroker.jab;
 
 import java.util.Arrays;
 
@@ -23,9 +23,16 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.RunServer;
-import org.jboss.blacktie.jatmibroker.core.conf.ConfigurationException;
-import org.jboss.blacktie.jatmibroker.xatmi.ConnectionException;
+import org.jboss.narayana.blacktie.jatmibroker.RunServer;
+import org.jboss.narayana.blacktie.jatmibroker.core.conf.ConfigurationException;
+import org.jboss.narayana.blacktie.jatmibroker.jab.JABException;
+import org.jboss.narayana.blacktie.jatmibroker.jab.JABMessage;
+import org.jboss.narayana.blacktie.jatmibroker.jab.JABServiceInvoker;
+import org.jboss.narayana.blacktie.jatmibroker.jab.JABSession;
+import org.jboss.narayana.blacktie.jatmibroker.jab.JABSessionAttributes;
+import org.jboss.narayana.blacktie.jatmibroker.jab.JABTransaction;
+import org.jboss.narayana.blacktie.jatmibroker.jab.TransactionException;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.ConnectionException;
 
 public class JABTestCase extends TestCase {
 	private static final Logger log = LogManager.getLogger(JABTestCase.class);

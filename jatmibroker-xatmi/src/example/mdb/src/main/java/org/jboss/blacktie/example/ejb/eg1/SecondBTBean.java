@@ -1,4 +1,4 @@
-package org.jboss.blacktie.example.ejb.eg1;
+package org.jboss.narayana.blacktie.example.ejb.eg1;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;

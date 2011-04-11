@@ -19,11 +19,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<artifactId>blacktie-java</artifactId>
-		<groupId>org.jboss.blacktie</groupId>
+		<groupId>org.jboss.narayana.blacktie</groupId>
 		<version>3.0.0.M3-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.jboss.blacktie</groupId>
+	<groupId>org.jboss.narayana.blacktie</groupId>
 	<artifactId>btadmin</artifactId>
 	<version>3.0.0.M3-SNAPSHOT</version>
 	<name>BlackTie Admin CLI Tool</name>
@@ -83,7 +83,7 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.jboss.blacktie.plugins</groupId>
+				<groupId>org.jboss.narayana.blacktie.plugins</groupId>
 				<artifactId>cpp-plugin</artifactId>
 
 				<configuration>
@@ -146,7 +146,7 @@
 							<addClasspath>true</addClasspath>
 						</manifest>
 						<manifestEntries>
-							<Main-Class>org.jboss.blacktie.btadmin.Launcher</Main-Class>
+							<Main-Class>org.jboss.narayana.blacktie.btadmin.Launcher</Main-Class>
 						</manifestEntries>
 					</archive>
 				</configuration>
@@ -155,16 +155,16 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
+			<groupId>org.jboss.narayana.blacktie</groupId>
 			<artifactId>jatmibroker-xatmi</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
+			<groupId>org.jboss.narayana.blacktie</groupId>
 			<artifactId>blacktie-xsd</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.blacktie</groupId>
+			<groupId>org.jboss.narayana.blacktie</groupId>
 			<classifier>${bpa}</classifier>
 			<artifactId>atmibroker-xatmi</artifactId>
 			<scope>test</scope>

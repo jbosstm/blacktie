@@ -14,10 +14,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
-package org.jboss.blacktie.jatmibroker.nbf;
+package org.jboss.narayana.blacktie.jatmibroker.nbf;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jboss.narayana.blacktie.jatmibroker.nbf.NBFToJavaBean;
 
 import junit.framework.TestCase;
 

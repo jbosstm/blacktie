@@ -1,11 +1,11 @@
-package org.jboss.blacktie.jatmibroker.xatmi.services;
+package org.jboss.narayana.blacktie.jatmibroker.xatmi.services;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jboss.blacktie.jatmibroker.xatmi.Connection;
-import org.jboss.blacktie.jatmibroker.xatmi.Response;
-import org.jboss.blacktie.jatmibroker.xatmi.Service;
-import org.jboss.blacktie.jatmibroker.xatmi.TPSVCINFO;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.Connection;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.Response;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.Service;
+import org.jboss.narayana.blacktie.jatmibroker.xatmi.TPSVCINFO;
 
 public class TPReturnOpenSession2Service implements Service {
 	private static final Logger log = LogManager
