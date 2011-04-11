@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
 		// listRunningInstanceIds
 		sbufsize = strlen("listRunningInstanceIds,,") + strlen(serverName) + 1;
 		sbuf = tprealloc(sbuf, sbufsize);
-		memset(sbuf, 0, sbufsize + 1);
+		memset(sbuf, 0, sbufsize);
 		sprintf(sbuf, "listRunningInstanceIds,%s,", serverName);
 		tpstatus = tpcall("BTDomainAdmin", sbuf, sbufsize, (char **) &retbuf,
 				&retbufsize, callflags);
@@ -110,7 +110,7 @@ int main(int argc, char **argv) {
 		// listRunningInstanceIds
 		sbufsize = strlen("listRunningInstanceIds,,") + strlen(serverName) + 1;
 		sbuf = tprealloc(sbuf, sbufsize);
-		memset(sbuf, 0, sbufsize + 1);
+		memset(sbuf, 0, sbufsize);
 		sprintf(sbuf, "listRunningInstanceIds,%s,", serverName);
 		tpstatus = tpcall("BTDomainAdmin", sbuf, sbufsize, (char **) &retbuf,
 				&retbufsize, callflags);
@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
 		// shutdown
 		sbufsize = strlen("shutdown,,,,") + strlen(serverName) + 1 + 1;
 		sbuf = tprealloc(sbuf, sbufsize);
-		memset(sbuf, 0, sbufsize + 1);
+		memset(sbuf, 0, sbufsize);
 		sprintf(sbuf, "shutdown,%s,%d,", serverName, id);
 		tpstatus = tpcall("BTDomainAdmin", sbuf, sbufsize, (char **) &retbuf,
 				&retbufsize, callflags);
