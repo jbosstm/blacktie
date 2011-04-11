@@ -45,5 +45,5 @@ fi
 
 
 if [ "$1" = "deploy" ]; then
-mvn deploy:deploy-file -Durl=https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/ -DrepositoryId=jboss-releases -Dfile=`pwd`/build/lib/ace-$ACE_VER-$bpa.zip -DpomFile=`pwd`/poms/$i.pom -Dpackaging=zip -Dclassifier=$bpa
+mvn deploy:deploy-file -Durl=https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/ -DrepositoryId=jboss-releases -Dfile=`pwd`/build/lib/ace-$ACE_VER-$bpa.zip -DpomFile=`pwd`/poms/ace-$ACE_VER.pom -Dpackaging=zip -Dclassifier=$bpa
 fi
