@@ -564,6 +564,12 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 	if (serverInfo.serverName != NULL) {
 		free(serverInfo.serverName);
 	}
+    if (serverInfo.function_name != NULL) {
+        free(serverInfo.function_name);
+    }
+    if ((*server)->done_function_name != NULL) {
+        free(serverInfo.done_function_name);
+    }
 
 	LOG4CXX_DEBUG(loggerAtmiBrokerServer, (char*) "deleting services");
 	AtmiBrokerMem::discard_instance();

@@ -187,6 +187,12 @@ void AtmiBrokerEnv::destroy() {
 		for (ServersInfo::iterator server = servers.begin(); server
 				!= servers.end(); server++) {
 			free((*server)->serverName);
+            if ((*server)->function_name != NULL) {
+    			free((*server)->function_name);
+            }
+            if ((*server)->done_function_name != NULL) {
+    			free((*server)->done_function_name);
+            }
 
 			std::vector<ServiceInfo>* services = &(*server)->serviceVector;
 			for (std::vector<ServiceInfo>::iterator i = services->begin(); i

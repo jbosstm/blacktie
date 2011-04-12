@@ -87,7 +87,7 @@ void TestStompConnection::testLibStomp() {
 		free(serviceReceived.data);
 		//		free(serviceReceived.type); - STOMP ALLOCATED - MUST NOT FREE
 		//		free(serviceReceived.subtype); - STOMP ALLOCATED - MUST NOT FREE
-		clientConnection->closeSession(1);
+		clientConnection->closeSession(client->getId());
 	}
 
 	btlogger("Iterated");

@@ -70,7 +70,7 @@ void TestXAStompConnection::tearDown() {
 }
 
 void TestXAStompConnection::test() {
-	btlogger("TestStompConnection::test");
+	btlogger("TestXAStompConnection::test");
 
 	int msgCount = 2;
 
@@ -102,6 +102,7 @@ void TestXAStompConnection::test() {
 		clientSend.syncRcv = 0;
 		BT_ASSERT(client->send((char*) "JAVA_Converse", clientSend));
 		free (clientData);
+        free (clientSend.xid);
 	}
 
 	tx_commit();
