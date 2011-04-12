@@ -547,6 +547,27 @@
 			<arg value="--num-callers=40" />
 			<arg value="../testsuite" />
 		</exec>
+
+        <loadfile property="noValgrindIssues" srcfile="target/cpp-test-classes/${project.artifactId}-valgrind.log">
+            <filterchain>
+                <striplinebreaks/>
+                <linecontainsregexp>
+                    <regexp pattern="definitely lost: 0 bytes in 0 blocks"/>
+                </linecontainsregexp>
+                <linecontainsregexp>
+                    <regexp pattern="indirectly lost: 0 bytes in 0 blocks"/>
+                </linecontainsregexp>
+                <linecontainsregexp>
+                    <regexp pattern="possibly lost: 0 bytes in 0 blocks"/>
+                </linecontainsregexp>
+                <linecontainsregexp>
+                    <regexp pattern="ERROR SUMMARY: 0 errors from 0 contexts"/>
+                </linecontainsregexp>
+            </filterchain>
+        </loadfile>
+        <!-- Can enable this after BLACKTIE-147 
+        <fail message="Found memory issues in target/cpp-test-classes/${project.artifactId}-valgrind.log" unless="noValgrindIssues"/>
+        -->
 	</target>
 	<target name="_test-unix-no-valgrind" depends="init" if="unix-no-valgrind">
 		<echo message="Executing tests without valgrind"/>
