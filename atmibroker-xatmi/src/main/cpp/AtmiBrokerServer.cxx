@@ -567,7 +567,7 @@ AtmiBrokerServer::~AtmiBrokerServer() {
     if (serverInfo.function_name != NULL) {
         free(serverInfo.function_name);
     }
-    if ((*server)->done_function_name != NULL) {
+    if (serverInfo.done_function_name != NULL) {
         free(serverInfo.done_function_name);
     }
 
