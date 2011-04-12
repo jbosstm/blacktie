@@ -139,8 +139,8 @@ static void recv_one(msg_opts_t *mopts, long len, long flags, int expect, int ex
 	BT_ASSERT(tperrno == expected_tperrno);
 
 	if (tperrno == 0) {
-		char tptype[16];
-		char tpsubtype[16];
+		char tptype[9];
+		char tpsubtype[17];
 
 		BT_ASSERT(toCheck != -1);
 		if (expect >= 0)
@@ -149,11 +149,11 @@ static void recv_one(msg_opts_t *mopts, long len, long flags, int expect, int ex
 		BT_ASSERT(::tptypes(data, tptype, tpsubtype)  != -1);
 
 		// make sure buffers are null terminated before passing to printf
-		*(tptype + 15) = *(tpsubtype + 15) = 0;
+		*(tptype + 8) = *(tpsubtype + 16) = 0;
 		btlogger((char*) "recv_one: type=%s subtype=%s", tptype, tpsubtype);
 
 		if (type != NULL)
-			BT_ASSERT(strncmp(type, tptype, 16) == 0);
+			BT_ASSERT(strncmp(type, tptype, 8) == 0);
 		if (subtype != NULL)
 			BT_ASSERT(strncmp(subtype, tpsubtype, 16) == 0);
 		tpfree(data);
