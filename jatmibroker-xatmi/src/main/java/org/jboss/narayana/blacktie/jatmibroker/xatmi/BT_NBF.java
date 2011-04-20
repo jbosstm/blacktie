@@ -302,4 +302,12 @@ public class BT_NBF extends Buffer {
 
 		return pos;
 	}
+	
+	public int getLen() {
+		return this.getRawData().length;
+	}
+	
+	public String toString() {
+		return new String(getRawData());
+	}
 }

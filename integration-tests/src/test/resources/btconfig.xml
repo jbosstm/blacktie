@@ -27,6 +27,7 @@
 		<SERVER name='testsui'>
 			<SERVICE_NAMES>
 				<SERVICE name='PBF' />
+				<SERVICE name='NBF' />
 				<SERVICE name='BAR' size='2' />
 				<SERVICE name='TestTPFree' />
 				<SERVICE name='TestTPCall' />
