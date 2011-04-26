@@ -41,6 +41,7 @@ public abstract class CSControl extends TestCase {
 	private static int sid = 1;
 
 	protected boolean isSunOS = false;
+	protected boolean isWinOS = false;
 
 	static String nextSid() {
 		return Integer.toString(sid % 10);
@@ -66,6 +67,7 @@ public abstract class CSControl extends TestCase {
 		log.info("setUp");
 		String osName = (System.getProperty("os.name"));
 		isSunOS = (osName != null && "SunOS".equals(osName));
+		isWinOS = (osName != null && osName.toLowerCase().indexOf("win") >= 0);
 		REPORT_DIR = System.getProperty("TEST_REPORTS_DIR", ".");
 		CS_EXE = System.getProperty("CLIENT_SERVER_EXE", "./cs");
 		clientBuilder = new ProcessBuilder();
@@ -114,7 +116,8 @@ public abstract class CSControl extends TestCase {
 	}
 
 	public void runTest(String name) {
-		if (isSunOS && ("213".equals(name) || "4".equals(name))) {
+		if ((isWinOS && ("2121".equals(name))) ||
+		    (isSunOS && ("213".equals(name) || "4".equals(name)))) {
 			log.info("skipping test " + name);
 			return;
 		}
