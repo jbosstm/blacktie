@@ -57,7 +57,7 @@
 		<XA_RESOURCE configuration="linux">
 			<XA_RESOURCE_MGR_ID>301</XA_RESOURCE_MGR_ID>
 			<XA_RESOURCE_NAME>DB2_XA</XA_RESOURCE_NAME>
-			<XA_OPEN_STRING>SREG=T,DB=BTDB1,CHAIN_END=F,TOC=P</XA_OPEN_STRING>
+			<XA_OPEN_STRING>SREG=T,DB=BTDB1,CHAIN_END=F,TOC=P,UID=db2,PWD=db2</XA_OPEN_STRING>
 			<XA_CLOSE_STRING></XA_CLOSE_STRING>
 			<XA_SWITCH>db2xa_switch_std</XA_SWITCH>
 			<XA_LIB_NAME>${DB2_LIB}/libdb2.so</XA_LIB_NAME>
@@ -66,7 +66,7 @@
 		<XA_RESOURCE configuration="linux">
 			<XA_RESOURCE_MGR_ID>303</XA_RESOURCE_MGR_ID>
 			<XA_RESOURCE_NAME>DB2_XA</XA_RESOURCE_NAME>
-			<XA_OPEN_STRING>SREG=T,DB=BTDB2,CHAIN_END=F,TOC=P</XA_OPEN_STRING>
+			<XA_OPEN_STRING>SREG=T,DB=BTDB2,CHAIN_END=F,TOC=P,UID=db2,PWD=db2</XA_OPEN_STRING>
 			<XA_CLOSE_STRING></XA_CLOSE_STRING>
 			<XA_SWITCH>db2xa_switch_std</XA_SWITCH>
 			<XA_LIB_NAME>${DB2_LIB}/libdb2.so</XA_LIB_NAME>
@@ -80,6 +80,8 @@
 			ORACLE the default database is ORCL (and a user called scott with
 			password tiger is created). For more information refer to:
 			http://download.oracle.com/docs/cd/B28359_01/appdev.111/b28424/adfns_xa.htm
+		-->
+<!--
 		-->
 		<XA_RESOURCE configuration="linux">
 			<XA_RESOURCE_MGR_ID>201</XA_RESOURCE_MGR_ID>

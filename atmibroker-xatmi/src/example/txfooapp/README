@@ -59,6 +59,7 @@ e.g. /home/blacktie/sqllib and that DB2_LIB is set correctly eg $DB2DIR/lib on 6
 IMPORTANT: For all stages of this example it is recommended that you have sourced the DB2DIR/db2profile script to initialize
 the environment
 IMPORTANT: DB2 requires additional shared memory to run "sysctl -w kernel.shmmax=1024000000"
+
 IMPORTANT: If you are using multiple DB2 databases make sure they belong to the same "DB2 instance". A "DB2 instance" is a
 logical database server environment. This environment is controlled by setting the environment variable DB2INSTANCE to
 the user account that owns the DB2 server. For example, in linux, if you installed DB2 using a user account called blacktie
@@ -79,6 +80,15 @@ db2 => create database BTDB1
 db2 => create database BTDB2
 db2 => quit
  
+To connect to a remote database you will need to catalog the node and database. For example if the remote
+database is called BTDB1 and runs on server <hostname> and the remote DB2 installation is listening on port
+50001 (using tcpip) then type:
+db2 => catalog tcpip node node1 remote <hostname> server 50001
+db2 => catalog database BTDB1 at node node1
+
+You will also need to make sure listening port is not blocked by any firewall rules. For example on RHEL add the
+following line to /etc/sysconfig/iptables :
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 50001 -j ACCEPT
 
 
 2. BUILDING THE EXAMPLE
