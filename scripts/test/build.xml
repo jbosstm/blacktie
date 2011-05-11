@@ -65,16 +65,6 @@
 				<include name="**/examples/mdb/src/main/resources/btconfig.xml"/>
 			</fileset>
 		</replaceregexp>
-		<replaceregexp byline="true" match="&lt;!-- DB2 support -->" replace="&lt;!--">
-			<fileset dir="${BT_HOME}${VERSION}/">
-				<include name="**/btconfig.xml"/>
-			</fileset>
-		</replaceregexp>
-		<replaceregexp byline="true" match="&lt;!-- END DB2 support -->" replace="-->">
-			<fileset dir="${BT_HOME}${VERSION}/">
-				<include name="**/btconfig.xml"/>
-			</fileset>
-		</replaceregexp>
 		<replaceregexp byline="true" match="DB=blacktie" replace="DB=ORCL.NCL">
 			<fileset dir="${BT_HOME}${VERSION}/">
 				<include name="**/btconfig.xml"/>
