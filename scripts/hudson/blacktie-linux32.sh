@@ -118,6 +118,9 @@ export ORACLE_INC_DIR=/usr/include/oracle/11.2/client
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_LIB_DIR
 export TNS_ADMIN=$WORKSPACE/instantclient_11_2/network/admin
 
+export DB2DIR=/opt/ibm/db2/V9.7
+export DB2_LIB=$DB2DIR/lib32
+
 cp $WORKSPACE/trunk/dist/blacktie-3.0.0.M3-SNAPSHOT/examples/xatmi/security/hornetq-*.properties $WORKSPACE/jboss-5.1.0.GA/server/all-with-hornetq/conf/props
 sed -i 's?</security-settings>?      <security-setting match="jms.queue.BTR_SECURE">\
          <permission type="send" roles="blacktie"/>\
