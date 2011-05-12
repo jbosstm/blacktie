@@ -38,7 +38,7 @@ fi
 # RUN THE C CLIENT
 # use the default logfile for the client
 unset LOG4CXXCONFIG
-./client
+./client 1 2
 
 # SHUTDOWN THE SERVER RUNNING THE btadmin TOOL
 export BLACKTIE_CONFIGURATION=linux

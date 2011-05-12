@@ -80,7 +80,11 @@ db2 => create database BTDB1
 db2 => create database BTDB2
 db2 => quit
  
-To connect to a remote database you will need to catalog the node and database. For example if the remote
+If you wish to connect to a remote instance you will need to create an instance for the client user id:
+on the client
+$DB2DIR/instance/db2icrt -s client <user>
+
+And then to connect to a remote database you will need to catalog the node and database. For example if the remote
 database is called BTDB1 and runs on server <hostname> and the remote DB2 installation is listening on port
 50001 (using tcpip) then type:
 db2 => catalog tcpip node node1 remote <hostname> server 50001
