@@ -48,8 +48,13 @@ int main(int argc, char **argv)
         for (i = 1; i < argc; i++) {
             product_t *p = get_product(argv[i]);
 
-            if (p == NULL)
-				return fatal("Requested db is not supported\n");
+            if (p == NULL) {
+    			btlogger_debug("TxLog product id %s not found", argv[i]);
+				product_t *prod;
+				for (prod = products; prod->id != -1; prod++)
+    				btlogger_debug("TxLog product id %d", prod->id);
+				//return fatal("Requested db is not supported\n");
+			}
 
             prods[i - 1] = *p;
         }
