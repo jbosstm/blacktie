@@ -12,45 +12,60 @@
 	along with this distribution; if not, write to the Free Software Foundation, 
 	Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
-		<groupId>org.jboss.narayana.blacktie</groupId>
-		<artifactId>blacktie-common</artifactId>
-		<version>3.0.0.M3-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>org.jboss.narayana.blacktie</groupId>
+        <artifactId>blacktie-common</artifactId>
+        <version>3.0.0.M3-SNAPSHOT</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>user_guide</artifactId>
-    <packaging>jar</packaging>
+    <packaging>jdocbook</packaging>
     <build>
-        <outputDirectory>target/publican</outputDirectory>
         <plugins>
             <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.6</version>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <configuration>
-                            <target unless="skipPublican">
-                                <exec dir="." executable="publican" failonerror="true">
-                                    <arg value="build"/>
-                                    <arg value="--langs=en-US"/>
-                                    <arg value="--formats=pdf"/>
-                                    <arg value="--config=publican.cfg"/>
-                                </exec>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
+                <groupId>org.jboss.maven.plugins</groupId>
+                <artifactId>maven-jdocbook-plugin</artifactId>
+                <extensions>true</extensions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jboss</groupId>
+                        <artifactId>jbossorg-docbook-xslt</artifactId>
+                        <version>1.1.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jboss</groupId>
+                        <artifactId>jbossorg-jdocbook-style</artifactId>
+                        <version>1.1.0</version>
+                        <type>jdocbook-style</type>
+                    </dependency>
+                </dependencies>
                 <configuration>
-                    <includes>
-                        <include>**/*.pdf</include>
-                    </includes>
+                    <sourceDocumentName>Development_Guide.xml</sourceDocumentName>
+                    <!--
+                                        <sourceDirectory>
+                                                ${project.build.directory}/docbook/resources
+                                        </sourceDirectory>
+                                        <imageResource>
+                                                <directory>
+                                                        ${project.build.directory}/docbook/resources/en-US
+                                                </directory>
+                                                <includes>
+                                                        <include>images/*</include>
+                                                </includes>
+                                        </imageResource>
+-->
+                    <formats>
+                        <format>
+                            <formatName>pdf</formatName>
+                            <stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
+                        </format>
+                    </formats>
+                    <options>
+                        <xincludeSupported>true</xincludeSupported>
+                        <!-- needed for uri-resolvers; can be ommitted if using 'current' uri scheme -->
+                        <!-- could also locate the docbook dependency and inspect its version... -->
+                        <docbookVersion>1.72.0</docbookVersion>
+                    </options>
                 </configuration>
             </plugin>
         </plugins>
