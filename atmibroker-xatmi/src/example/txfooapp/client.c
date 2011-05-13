@@ -42,6 +42,7 @@ int main(int argc, char **argv)
     product_t prods[8];
 	int rv = -1;
 	int i;
+	int rmCnt = 0;
     btlogger_debug( "TxLog %s:%d", __FUNCTION__, __LINE__);
 
     if (argc > 1) {
@@ -54,14 +55,14 @@ int main(int argc, char **argv)
 				for (prod = products; prod->id != -1; prod++)
     				btlogger_debug("TxLog product id %d", prod->id);
 				//return fatal("Requested db is not supported\n");
+			} else {
+            	prods[rmCnt++] = *p;
 			}
-
-            prods[i - 1] = *p;
         }
 
-        prods[i - 1].id = -1;
-        prods[i - 1].access = 0;
-        prods[i - 1].xaflags = 0;
+        prods[rmCnt].id = -1;
+        prods[rmCnt].access = 0;
+        prods[rmCnt].xaflags = 0;
     } else {
         for (i = 0; products[i].id != -1; i++)
             prods[i] = products[i];

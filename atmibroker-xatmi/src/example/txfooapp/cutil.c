@@ -354,6 +354,7 @@ static int test4(int *cnt)
  * insert a record into each db
  * rollback the transaction
  */
+#if defined(ONETEST)
 static int test5(int *cnt)
 {
 	int rv;
@@ -370,8 +371,10 @@ static int test5(int *cnt)
 	btlogger_debug( "TxLog OUT %s:%d success", __FUNCTION__, __LINE__);
 	return 0;
 }
+#endif
 
 /* cause the program to halt during phase 2 of the transaction 2PC protocol */
+#if defined(TX_RC)
 static int testrc(int *cnt)
 {
 	int rv;
@@ -405,6 +408,7 @@ static int testrc(int *cnt)
 
 	return 0;
 }
+#endif
 
 #define xONETEST test5
 int run_tests(product_t *prod_array)
