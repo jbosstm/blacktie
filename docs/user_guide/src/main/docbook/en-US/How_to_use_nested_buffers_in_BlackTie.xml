@@ -3,7 +3,7 @@
 <!ENTITY % BOOK_ENTITIES SYSTEM "User_Guide.ent">
 %BOOK_ENTITIES;
 ]>
-<chapter id="chap-configuration-options">
+<chapter id="chap-nested-buffers">
 	<title>How to use Nested Buffers in BlackTie</title>
 
 	<section>

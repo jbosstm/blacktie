@@ -1,0 +1,524 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "User_Guide.ent">
+%BOOK_ENTITIES;
+]>
+<chapter id="chap-command-line-admin">
+	<title>BlackTie Command Line Administration</title>
+	<section>
+		<title>Introduction</title>
+		<para>The following commands are supported by BlackTie:</para>
+		<table id="commands-overview">
+			<title>Commands</title>
+			<tgroup cols="2">
+				<thead>
+					<row>
+						<entry>
+							<para>Command</para>
+						</entry>
+						<entry>
+							<para>Description</para>
+						</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>
+							<xref linkend="btadmin-command" />
+						</entry>
+						<entry>
+							<para>The btadmin command is used to administer the BlackTie
+								serve process from the command line</para>
+						</entry>
+					</row>
+					<row>
+						<entry>
+							<xref linkend="generate_server-command" />
+						</entry>
+						<entry>
+							<para>The generate_server command is used to build a BlackTie
+								server</para>
+						</entry>
+					</row>
+					<row>
+						<entry>
+							<xref linkend="generate_client-command" />
+						</entry>
+						<entry>
+							<para>The generate_client command is used to build a client
+								application linked against the BlackTie libraries</para>
+						</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table>
+	</section>
+	<section id="btadmin-command">
+		<title>btadmin</title>
+		<section>
+			<title>Overview</title>
+			<para>The btadmin command is used to perform command line
+				administration of the BlackTie server processes. In a well
+				configured environment, the btadmin tool can be launched in either
+				interactive mode (by ommitting a command) or in non-interactive mode
+				by issues a command, for example: "btadmin startup". For the list of
+				commands type: "help"
+			</para>
+		</section>
+		<section>
+			<title>Expected Environment</title>
+			<para>
+				You must have called
+				<programlisting>&lt;BLACKTIE_HOME&gt;/setenv.[sh|bat]</programlisting>
+			</para>
+			<para>
+				You must, either set
+				<literal>BLACKTIE_CONFIGURATION_DIR</literal>
+				to
+				the directory containing a btconfig.xml for the domain that you
+				wish to
+				administer or ensure a valid btconfig.xml is in the working
+				directory
+			</para>
+		</section>
+		<section>
+			<title>Usage</title>
+			<para>
+				<programlisting>btadmin [&lt;command&gt;]</programlisting>
+			</para>
+		</section>
+		<section>
+			<title>Commands</title>
+			<table id="btadmin-commands-overview">
+				<title>btadmin commands</title>
+				<tgroup cols="2">
+					<thead>
+						<row>
+							<entry>
+								<para>Command</para>
+							</entry>
+							<entry>
+								<para>Description</para>
+							</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry>
+								<para>version</para>
+							</entry>
+							<entry>
+								<para>Print out the version of BlackTie that is linked against
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>startup [&lt;serverName&gt;]</para>
+							</entry>
+							<entry>
+								<para>Start the server, optionally constrained by the serverName
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>pauseDomain</para>
+							</entry>
+							<entry>
+								<para>Pause the domain
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>advertise &lt;serverName&gt; &lt;serviceName&gt;</para>
+							</entry>
+							<entry>
+								<para>Advertise the service indicated by the name at the server
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>help [command]</para>
+							</entry>
+							<entry>
+								<para>Get help on a command
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>getServersStatus</para>
+							</entry>
+							<entry>
+								<para>The status of the running servers
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>unadvertise &lt;serverName&gt; &lt;serviceName&gt;</para>
+							</entry>
+							<entry>
+								<para>Unadvertise the service at the specified server
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>resumeDomain</para>
+							</entry>
+							<entry>
+								<para>Resume the domain
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>listRunningServers</para>
+							</entry>
+							<entry>
+								<para>List all running servers in the domain
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>quit</para>
+							</entry>
+							<entry>
+								<para>Shutdown the btadmin tool, a no-op for a non-interactive
+									btadmin shell
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>listRunningInstanceIds &lt;serverName&gt;</para>
+							</entry>
+							<entry>
+								<para>List the running instance ids of a specific server
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>listServiceStatus &lt;serverName&gt; &lt;serviceName&gt;
+								</para>
+							</entry>
+							<entry>
+								<para>List the status of the service running on a particular
+									server group
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>shutdown [&lt;serverName&gt; [&lt;serverId&gt;]]</para>
+							</entry>
+							<entry>
+								<para>Shutdown items in the domain, optionally constrained by a
+									server name and (again, optionally) a serverId
+								</para>
+							</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+		</section>
+		<section>
+			<title>Credentials</title>
+			<para>The administration connection is assumed to be made within a
+				secure network</para>
+		</section>
+	</section>
+	<section id="generate_server-command">
+		<title>generate_server</title>
+		<section>
+			<title>Overview</title>
+
+			<para>The generate_server command is used to create a standalone
+				BlackTie server application linking the user code against the
+				BlackTie runtime libraries.</para>
+		</section>
+		<section>
+			<title>Expected Environment</title>
+
+			<para>&lt;BLACKTIE_HOME&gt;/setenv.[sh|bat] must be executed prior to
+				execution</para>
+		</section>
+		<section>
+			<title>Usage</title>
+			<para>
+				<programlisting>generate_server &lt;-Dservice.names=service[,service2,...]&gt; &lt;-Dserver.includes="source1[ source2 ..."]&gt; &lt;-Dx.inc.dir="directory"&gt; &lt;-Dx.inc.dir2="directory2"&gt;   &lt;-Dx.lib.dir="directory" -Dx.libs="library[ library2]"&gt; &lt;-Dx.lib.dir2="directory2"&gt; &lt;-Dx.libs2="library[ library2]"&gt; &lt;-Dx.define="symbol1[,symbol2]"&gt;</programlisting>
+			</para>
+		</section>
+		<section>
+			<title>
+				Parameters</title>
+
+			<table id="generate_server-parameters">
+				<title>generate_server parameter</title>
+				<tgroup cols="2">
+					<thead>
+						<row>
+							<entry>
+								<para>Parameter</para>
+							</entry>
+							<entry>
+								<para>Description</para>
+							</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry>
+								<para>-Dservice.names=service[,service2,...]</para>
+							</entry>
+							<entry>
+								<para>This is the comma seperated list of services that should
+									be advertised at boottime that were not coded in a DLL export
+									compatible manner and as such cannot be registered for
+									advertised in the btconfig.xml
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>-Dserver.includes="source1[ source2 ..."]</para>
+							</entry>
+							<entry>
+								<para>The list of files that should be compiled into this server
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>-Dx.inc.dir="directory"</para>
+							</entry>
+							<entry>
+								<para>A single additional directory for including
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>-Dx.lib.dir="directory"</para>
+							</entry>
+							<entry>
+								<para>A single additional directory for linking against
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>-Dx.libs="library[ library2]"</para>
+							</entry>
+							<entry>
+								<para>A space seperated list of libraries to link against in the
+									lib dir
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>-Dx.inc.dir2="directory"</para>
+							</entry>
+							<entry>
+								<para>A second additional directory to include headers from
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>-Dx.lib.dir2="directory"</para>
+							</entry>
+							<entry>
+								<para>A second additional directory to include libraries from
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>-Dx.libs2="library[ library2]"</para>
+							</entry>
+							<entry>
+								<para>The list of libraries to include from the second library
+									directory
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>-Dx.define="symbol1[,symbol2]"</para>
+							</entry>
+							<entry>
+								<para>The comma-seperated list of addtional pre-processor
+									symbols to define
+								</para>
+							</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+		</section>
+		<section>
+			<title>Example</title>
+			<para>To link against the Oracle database</para>
+			<para>On Linux:</para>
+			<para>
+				<programlisting>generate_server -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c"
+			-Dx.inc.dir="$ORACLE_HOME/rdbms/public"
+			-Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh"
+			-Dx.define="ORACLE"</programlisting>
+			</para>
+			<para>On Windows:</para>
+			<para>
+				<programlisting>generate_server -Dservice.names=BAR -Dserver.includes="request.c ora.c DbService.c"
+			-Dx.inc.dir="%ORACLE_HOME%\OCI\include"
+			-Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci"
+			-Dx.define="ORACLE"</programlisting>
+			</para>
+		</section>
+	</section>
+	<section id="generate_client-command">
+		<title>generate_client</title>
+		<section>
+			<title>Overview</title>
+			<para>The generate_client command is used to create a standalone
+				client application linking the user code against the BlackTie
+				runtime libraries.</para>
+		</section>
+		<section>
+			<title>Expected Environment</title>
+			<para>&lt;BLACKTIE_HOME&gt;/setenv.[sh|bat] must be executed prior to
+				execution</para>
+		</section>
+		<section>
+			<title>Usage</title>
+			<para>
+				<programlisting>generate_client &lt;-Dclient.includes="source1[ source2 ..."]&gt; &lt;-Dx.inc.dir="directory" &gt; &lt;-Dx.inc.dir2="directory2"&gt;   &lt;-Dx.lib.dir="directory" -Dx.libs="library[ library2]"&gt; &lt;-Dx.lib.dir2="directory2"&gt; &lt;-Dx.libs2="library[ library2]"&gt; &lt;-Dx.define="symbol1[,symbol2]"&gt;</programlisting>
+			</para>
+		</section>
+		<section>
+			<title>Parameters</title>
+			<table id="generate_client-parameters">
+				<title>generate_client parameter</title>
+				<tgroup cols="2">
+					<thead>
+						<row>
+							<entry>
+								<para>Parameter</para>
+							</entry>
+							<entry>
+								<para>Description</para>
+							</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry>
+								<para>-Dclient.includes="source1[ source2 ..."]</para>
+							</entry>
+							<entry>
+								<para>The list of files that should be compiled into this client
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>-Dx.inc.dir="directory"</para>
+							</entry>
+							<entry>
+								<para>A single additional directory for including
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>-Dx.lib.dir="directory"</para>
+							</entry>
+							<entry>
+								<para>A single additional directory for linking against
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>-Dx.libs="library[ library2]"</para>
+							</entry>
+							<entry>
+								<para>A space seperated list of libraries to link against in the
+									lib dir
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>-Dx.inc.dir2="directory"</para>
+							</entry>
+							<entry>
+								<para>A second additional directory to include headers from
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>-Dx.lib.dir2="directory"</para>
+							</entry>
+							<entry>
+								<para>A second additional directory to include libraries from
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>-Dx.libs2="library[ library2]"</para>
+							</entry>
+							<entry>
+								<para>The list of libraries to include from the second library
+									directory
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>-Dx.define="symbol1[,symbol2]"</para>
+							</entry>
+							<entry>
+								<para>The comma-seperated list of addtional pre-processor
+									symbols to define
+								</para>
+							</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+		</section>
+
+		<section>
+			<title>Example</title>
+
+			<para>To create a client which links against the Oracle database.
+			</para>
+
+			<para>On Linux:</para>
+
+			<para>
+				<programlisting>generate_client -Dclient.includes="client.c request.c ora.c cutil.c"
+		-Dx.inc.dir="$ORACLE_HOME/rdbms/public"
+		-Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh"
+		-Dx.define="ORACLE"</programlisting>
+			</para>
+			<para>On Windows:</para>
+			<para>
+				<programlisting>generate_client -Dclient.includes="client.c request.c ora.c cutil.c"
+		-Dx.inc.dir="%ORACLE_HOME%\OCI\include"
+		-Dx.lib.dir="%ORACLE_HOME%\OCI\lib\MSVC" -Dx.libs="oci"
+		-Dx.define="ORACLE"</programlisting>
+			</para>
+		</section>
+	</section>
+</chapter>
