@@ -126,7 +126,7 @@ On Linux:
 generate_server -Dservice.names=TXFOOAPP -Dserver.includes="request.c ora.c DbService.c" \
     -Dx.inc.dir="$ORACLE_HOME/rdbms/public" \
     -Dx.lib.dir="$ORACLE_HOME/lib" -Dx.libs="occi clntsh" \
-    -Dx.define="ORACLE"
+    -Dx.define="ORACLE" -Dserver.name=txfooap
 Similarly for generating the client:
 generate_client -Dclient.includes="client.c request.c ora.c cutil.c" \
     -Dx.inc.dir="$ORACLE_HOME/rdbms/public" \
