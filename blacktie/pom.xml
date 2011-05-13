@@ -218,5 +218,6 @@
 		<module>../btadmin</module>
 		<module>../codeGeneration</module>
 		<module>../integration-tests</module>
+		<module>../docs</module>
 	</modules>
 </project>
