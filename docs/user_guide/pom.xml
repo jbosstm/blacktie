@@ -40,20 +40,7 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <sourceDocumentName>Development_Guide.xml</sourceDocumentName>
-                    <!--
-                                        <sourceDirectory>
-                                                ${project.build.directory}/docbook/resources
-                                        </sourceDirectory>
-                                        <imageResource>
-                                                <directory>
-                                                        ${project.build.directory}/docbook/resources/en-US
-                                                </directory>
-                                                <includes>
-                                                        <include>images/*</include>
-                                                </includes>
-                                        </imageResource>
--->
+                    <sourceDocumentName>User_Guide.xml</sourceDocumentName>
                     <formats>
                         <format>
                             <formatName>pdf</formatName>

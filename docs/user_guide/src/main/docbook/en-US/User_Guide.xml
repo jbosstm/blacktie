@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
-<!ENTITY % BOOK_ENTITIES SYSTEM "Development_Guide.ent">
+<!ENTITY % BOOK_ENTITIES SYSTEM "User_Guide.ent">
 %BOOK_ENTITIES;
 ]>
 <book>
     <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Book_Info.xml"/>
     <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Preface.xml"/>
     <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="About_This_Guide.xml"/>
-    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Transactions.xml"/>
-    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="The_Resource_Manager.xml"/>
-    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="General_Transaction_Issues.xml"/>
-    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Tools.xml"/>
-    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Configuration_Options.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="How_to_use_nested_buffers_in_BlackTie.xml"/>
     <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Revision_History.xml"/>
     <!-- <index /> -->
 </book>

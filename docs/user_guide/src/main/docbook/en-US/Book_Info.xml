@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE bookinfo PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
-<!ENTITY % BOOK_ENTITIES SYSTEM "Development_Guide.ent">
+<!ENTITY % BOOK_ENTITIES SYSTEM "User_Guide.ent">
 %BOOK_ENTITIES;
 ]>
-<bookinfo id="book-Development_Guide-Development_Guide">
-    <title>Development Guide</title>
-    <subtitle> Development reference guide for the JBoss Transactions suite of software</subtitle>
-    <productname>JBoss Transactions</productname>
-    <productnumber>4.15.0</productnumber>
+<bookinfo id="book-User_Guide-User_Guide">
+    <title>User Guide</title>
+    <subtitle>Using &PRODUCT;</subtitle>
+    <productname>&PRODUCT;</productname>
+    <productnumber>&VERSION;</productnumber>
     <edition>0</edition>
     <pubsnumber>0</pubsnumber>
     <abstract>
         <para>
-        Development reference guide for the JBoss Transactions suite of software
+        User guide for &PRODUCT;
       </para>
     </abstract>
     <corpauthor>
