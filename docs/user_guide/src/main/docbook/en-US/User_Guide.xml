@@ -8,9 +8,11 @@
     <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Preface.xml"/>
     <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="About_This_Guide.xml"/>
     <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Standards.xml"/>
-    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="BlackTie_Configuration.xml"/>
-    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="BlackTie_Command_Line_Administration.xml"/>
-    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="How_to_use_nested_buffers_in_BlackTie.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Buffers.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Services.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Configuration.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Running.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Administration.xml"/>
     <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Revision_History.xml"/>
     <!-- <index /> -->
 </book>
