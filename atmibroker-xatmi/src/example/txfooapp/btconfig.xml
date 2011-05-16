@@ -54,7 +54,6 @@
 			<XA_LIB_NAME>libtx-test-utilities.so</XA_LIB_NAME> </XA_RESOURCE>
 		-->
 		<!-- DB2 support -->
-<!--
 		<XA_RESOURCE configuration="linux">
 			<XA_RESOURCE_MGR_ID>301</XA_RESOURCE_MGR_ID>
 			<XA_RESOURCE_NAME>DB2_XA</XA_RESOURCE_NAME>
@@ -64,6 +63,7 @@
 			<XA_LIB_NAME>${DB2_LIB}/libdb2.so</XA_LIB_NAME>
 		</XA_RESOURCE>
 
+<!--
 		<XA_RESOURCE configuration="linux">
 			<XA_RESOURCE_MGR_ID>303</XA_RESOURCE_MGR_ID>
 			<XA_RESOURCE_NAME>DB2_XA</XA_RESOURCE_NAME>
