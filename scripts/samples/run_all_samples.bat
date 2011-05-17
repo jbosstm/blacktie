@@ -7,7 +7,7 @@ set OLDPWD=%cd%
 for /R examples %%i in (.) do (
 	if exist %%i\run.sh (
  		cd %%i
- 		call run.bat
+ 		call run.bat %*
 		IF %ERRORLEVEL% NEQ 0 exit -1
 	)
 )
