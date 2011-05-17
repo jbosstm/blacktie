@@ -21,11 +21,11 @@ product_t products[] = {
 /*	{0, "null db", "null", ANY_ACCESS, null_access, null_xaflags},*/
 #ifdef DB2
 	{1, "db2 - BTDB1", "BTDB1", ANY_ACCESS, db2_access, db2_xaflags},
-/*	{2, "db2 - BTDB2", "BTDB2", ANY_ACCESS, db2_access, db2_xaflags},*/
+	{2, "db2 - BTDB2", "BTDB2", ANY_ACCESS, db2_access, db2_xaflags},
 #endif
 #ifdef ORACLE
-/*	{3, "ora - BT", "blacktie", ANY_ACCESS, ora_access, ora_xaflags},*/
-	{4, "ora - ORCL", "ORCL", ANY_ACCESS, ora_access, ora_xaflags},
+	//{3, "ora - BT", "ORCL.NCL", ANY_ACCESS, ora_access, ora_xaflags},
+	//{4, "ora - ORCL", "ORCL", ANY_ACCESS, ora_access, ora_xaflags},
 #endif
 	{-1, 0, 0, 0, 0},
 };

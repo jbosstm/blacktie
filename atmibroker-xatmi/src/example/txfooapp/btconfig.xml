@@ -54,6 +54,7 @@
 			<XA_LIB_NAME>libtx-test-utilities.so</XA_LIB_NAME> </XA_RESOURCE>
 		-->
 		<!-- DB2 support -->
+
 		<XA_RESOURCE configuration="linux">
 			<XA_RESOURCE_MGR_ID>301</XA_RESOURCE_MGR_ID>
 			<XA_RESOURCE_NAME>DB2_XA</XA_RESOURCE_NAME>
@@ -63,7 +64,6 @@
 			<XA_LIB_NAME>${DB2_LIB}/libdb2.so</XA_LIB_NAME>
 		</XA_RESOURCE>
 
-<!--
 		<XA_RESOURCE configuration="linux">
 			<XA_RESOURCE_MGR_ID>303</XA_RESOURCE_MGR_ID>
 			<XA_RESOURCE_NAME>DB2_XA</XA_RESOURCE_NAME>
@@ -72,6 +72,8 @@
 			<XA_SWITCH>db2xa_switch_std</XA_SWITCH>
 			<XA_LIB_NAME>${DB2_LIB}/libdb2.so</XA_LIB_NAME>
 		</XA_RESOURCE>
+<!--
+
 		-->
 		<!-- END DB2 support -->
 		<!--
@@ -83,6 +85,7 @@
 			password tiger is created). For more information refer to:
 			http://download.oracle.com/docs/cd/B28359_01/appdev.111/b28424/adfns_xa.htm
 		-->
+<!--
 		<XA_RESOURCE configuration="linux">
 			<XA_RESOURCE_MGR_ID>201</XA_RESOURCE_MGR_ID>
 			<XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
@@ -91,7 +94,9 @@
 			<XA_SWITCH>xaosw</XA_SWITCH>
 			<XA_LIB_NAME>${ORACLE_HOME}/lib/libclntsh.so</XA_LIB_NAME>
 		</XA_RESOURCE>
-		<!--
+-->
+<!--
+
 		<XA_RESOURCE configuration="linux">
 			<XA_RESOURCE_MGR_ID>203</XA_RESOURCE_MGR_ID>
 			<XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
