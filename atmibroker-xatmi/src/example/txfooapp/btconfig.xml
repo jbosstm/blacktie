@@ -93,10 +93,10 @@
 			<XA_LIB_NAME>${ORACLE_HOME}/lib/libclntsh.so</XA_LIB_NAME>
 		</XA_RESOURCE>
 
-		<XA_RESOURCE configuration="linux1">
+		<XA_RESOURCE configuration="linux">
 			<XA_RESOURCE_MGR_ID>203</XA_RESOURCE_MGR_ID>
 			<XA_RESOURCE_NAME>Oracle_XA</XA_RESOURCE_NAME>
-			<XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+SqlNet=orcl112+DB=ORCL.NCL+LogDir=.</XA_OPEN_STRING>
+			<XA_OPEN_STRING>Oracle_XA+Acc=P/scott/tiger+SesTm=60+DbgFl=15+SqlNet=ORCL112+DB=ORCL.NCL+LogDir=.</XA_OPEN_STRING>
 			<XA_CLOSE_STRING></XA_CLOSE_STRING>
 			<XA_SWITCH>xaosw</XA_SWITCH>
 			<XA_LIB_NAME>${ORACLE_HOME}/lib/libclntsh.so</XA_LIB_NAME>
