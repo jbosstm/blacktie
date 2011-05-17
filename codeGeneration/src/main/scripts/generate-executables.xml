@@ -216,7 +216,10 @@
 			<defineset>
 				<define name="WIN32" if="is-msvc"/>
 				<define name="SunOS" if="isSunOS"/>
+
                 <define name="${x.define}" if="x.define"/>
+                <define name="${x.define2}" if="x.define2"/>
+                <define name="${x.define3}" if="x.define3"/>
 			</defineset>
 
 			&includepath-main-dependencies;

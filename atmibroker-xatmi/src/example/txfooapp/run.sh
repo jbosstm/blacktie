@@ -25,10 +25,10 @@ elif [ "$1" = "ora" ]; then
 	[[ "$?" != "0" ]] && exit 1
 else
 	echo "using RMs for Oracle and DB2"
-    generate_server -Dservice.names=TXFOOAPP -Dserver.includes="request.c db2.c ora.c DbService.c" -Dx.inc.dir="$ORACLE_INC_DIR" -Dx.inc.dir2="$DB2DIR/include" -Dx.lib.dir="$ORACLE_LIB_DIR" -Dx.libs="occi clntsh" -Dx.lib.dir2="$DB2_LIB" -Dx.libs2="db2" -Dx.define="ORACLE,DB2" -Dserver.name=txfooap
+    generate_server -Dservice.names=TXFOOAPP -Dserver.includes="request.c db2.c ora.c DbService.c" -Dx.inc.dir="$ORACLE_INC_DIR" -Dx.inc.dir2="$DB2DIR/include" -Dx.lib.dir="$ORACLE_LIB_DIR" -Dx.libs="occi clntsh" -Dx.lib.dir2="$DB2_LIB" -Dx.libs2="db2" -Dx.define="DB2" -Dx.define2="ORACLE" -Dserver.name=txfooap
 	[[ "$?" != "0" ]] && exit 1
 
-	generate_client -Dclient.includes="client.c request.c db2.c ora.c cutil.c" -Dx.inc.dir="$ORACLE_INC_DIR" -Dx.inc.dir2="$DB2DIR/include" -Dx.lib.dir="$ORACLE_LIB_DIR" -Dx.libs="occi clntsh" -Dx.lib.dir2="$DB2_LIB" -Dx.libs2="db2" -Dx.define="ORACLE,DB2"
+	generate_client -Dclient.includes="client.c request.c db2.c ora.c cutil.c" -Dx.inc.dir="$ORACLE_INC_DIR" -Dx.inc.dir2="$DB2DIR/include" -Dx.lib.dir="$ORACLE_LIB_DIR" -Dx.libs="occi clntsh" -Dx.lib.dir2="$DB2_LIB" -Dx.libs2="db2" -Dx.define="DB2" -Dx.define2="ORACLE"
 	[[ "$?" != "0" ]] && exit 1
 fi
 
