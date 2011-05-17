@@ -17,7 +17,6 @@ if [ "$1" = "db2" ]; then
 
 	generate_client -Dclient.includes="client.c request.c db2.c cutil.c" -Dx.inc.dir2="$DB2DIR/include" -Dx.lib.dir2="$DB2_LIB" -Dx.libs2="db2" -Dx.define="DB2"
 	[[ "$?" != "0" ]] && exit 1
-	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DB2_LIB
 elif [ "$1" = "ora" ]; then
 	echo "using RMs for Oracle only"
 	generate_server -Dservice.names=TXFOOAPP -Dserver.includes="request.c ora.c DbService.c" -Dx.inc.dir="$ORACLE_INC_DIR" -Dx.lib.dir="$ORACLE_LIB_DIR" -Dx.libs="occi clntsh" -Dx.define="ORACLE" -Dserver.name=txfooap
@@ -31,7 +30,6 @@ else
 
 	generate_client -Dclient.includes="client.c request.c db2.c ora.c cutil.c" -Dx.inc.dir="$ORACLE_INC_DIR" -Dx.inc.dir2="$DB2DIR/include" -Dx.lib.dir="$ORACLE_LIB_DIR" -Dx.libs="occi clntsh" -Dx.lib.dir2="$DB2_LIB" -Dx.libs2="db2" -Dx.define="ORACLE,DB2"
 	[[ "$?" != "0" ]] && exit 1
-	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DB2_LIB
 fi
 
 export BLACKTIE_CONFIGURATION=linux
