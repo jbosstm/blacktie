@@ -167,7 +167,7 @@
 															<xsd:attribute name="name" type="svcstring"
 																use="required" />
 															<xsd:attribute name="type" type="svctype"
-																use="required" default="queue" />
+																default="queue" />
 															<xsd:attribute name="function_name" type="xsd:string" />
 															<xsd:attribute name="java_class_name" type="xsd:string" />
 															<xsd:attribute name="advertised" type="xsd:boolean"
