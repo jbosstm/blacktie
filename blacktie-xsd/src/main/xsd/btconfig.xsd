@@ -22,6 +22,12 @@
 			<xsd:pattern value="[A-Za-z_]+[A-Za-z0-9_]*" />
 		</xsd:restriction>
 	</xsd:simpleType>
+	<!-- The service type could be queue or topic -->
+	<xsd:simpleType name="svctype">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="queue|topic"/>
+		</xsd:restriction>
+	</xsd:simpleType>
 	<!-- The server name cannot use a number as the numbers are allocated by 
 		the core engine and the name can be determined by the portion of text between 
 		a period and a number -->
@@ -160,6 +166,8 @@
 															</xsd:sequence>
 															<xsd:attribute name="name" type="svcstring"
 																use="required" />
+															<xsd:attribute name="type" type="svctype"
+																use="required" default="queue" />
 															<xsd:attribute name="function_name" type="xsd:string" />
 															<xsd:attribute name="java_class_name" type="xsd:string" />
 															<xsd:attribute name="advertised" type="xsd:boolean"
