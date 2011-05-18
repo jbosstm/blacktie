@@ -59,7 +59,10 @@ void TestAtmiBrokerXml::test_env() {
 	BT_ASSERT(strcmp(server->serverName, "foo") == 0);
 	std::vector<ServiceInfo>* services = &server->serviceVector;
 	BT_ASSERT(strcmp((*services)[0].serviceName, "BAR") == 0);
+	BT_ASSERT(strcmp((*services)[0].serviceType, "queue") == 0);
+
 	BT_ASSERT(strcmp((*services)[1].serviceName, "ECHO") == 0);
+	BT_ASSERT(strcmp((*services)[1].serviceType, "topic") == 0);
 #ifdef WIN32
 	BT_ASSERT(strcmp((*services)[0].transportLib, "atmibroker-hybrid.dll") == 0);
 	BT_ASSERT(strcmp((*services)[1].transportLib, "atmibroker-hybrid.dll") == 0);

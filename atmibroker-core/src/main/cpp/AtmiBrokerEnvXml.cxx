@@ -480,6 +480,7 @@ static void XMLCALL startElement
 			memset(&service, 0, sizeof(ServiceInfo));
 			ACE_OS::strcpy(adm, ".");
 
+			service.serviceType = NULL;
 			service.transportLib = NULL;
 			service.advertised = false;
 			service.conversational = false;
@@ -532,6 +533,9 @@ static void XMLCALL startElement
 				} else if (strcmp(atts[i], "size") == 0) {
 					service.poolSize = (short) atol(atts[i+1]);
 					LOG4CXX_DEBUG(loggerAtmiBrokerEnvXml, (char*) "storing size " << service.poolSize);
+				} else if(strcmp(atts[i], "type") == 0) {
+					service.serviceType = copy_value(atts[i+1]);
+					LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "set type: " << service.serviceType);
 				}
 			}
 
@@ -542,6 +546,10 @@ static void XMLCALL startElement
 				abortParser();
 
 				return;
+			}
+
+			if(service.serviceType == NULL) {
+				service.serviceType = strdup("queue");
 			}
 
 			LOG4CXX_TRACE(loggerAtmiBrokerEnvXml, (char*) "setting transportlib");
