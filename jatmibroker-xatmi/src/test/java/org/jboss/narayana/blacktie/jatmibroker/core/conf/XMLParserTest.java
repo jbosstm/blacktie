@@ -149,5 +149,8 @@ public class XMLParserTest extends TestCase {
 		assertTrue(size.equals(prop.getProperty("blacktie.JAVA_Converse.size")));
 		assertTrue(Boolean.TRUE.equals(prop
 				.get("blacktie.ConvService.conversational")));
+		assertTrue("queue".equals(prop.getProperty("blacktie.JAVA_Converse.type")));
+		assertTrue("queue".equals(prop.getProperty("blacktie.XMLParserTest.type")));
+		assertTrue("topic".equals(prop.getProperty("blacktie.TOPIC.type")));
 	}
 }

@@ -82,7 +82,8 @@
 					java_class_name="org.jboss.narayana.blacktie.jatmibroker.xatmi.services.TPCallXOctetService"
 					advertised="true" size="1">
 				</SERVICE>
-				<SERVICE name='XMLParserTest' />
+				<SERVICE name='XMLParserTest' type='queue'/>
+				<SERVICE name='TOPIC' type='topic'/>
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>

@@ -450,7 +450,17 @@ public class XMLEnvHandler extends DefaultHandler {
 					String ad_key = "blacktie." + serviceName
 							+ ".externally-managed-destination";
 					prop.put(ad_key, new Boolean(external));
+				} else if (attsLocalName.equals("type")) {
+					String type = atts.getValue(i);
+					String type_key = "blacktie." + serviceName + ".type";
+					prop.setProperty(type_key, type);
 				}
+			}
+			
+			// If type was not defined above
+			String type_key = "blacktie." + serviceName + ".type";
+			if(prop.get(type_key) == null) {
+				prop.put(type_key, "queue");
 			}
 
 			// If conversational was not defined above
