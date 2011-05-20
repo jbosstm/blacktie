@@ -109,11 +109,37 @@ public class QueueReaper implements Runnable {
 					log.trace("Checking for: "
 							+ serviceName
 							+ " "
+							+ server
+							+ " "
 							+ prop.get("blacktie." + serviceName
 									+ ".externally-managed-destination"));
-					if (((server != null && !(Boolean) prop.get("blacktie."
-							+ serviceName + ".externally-managed-destination")) || serviceName
-							.contains(".")) && consumerCount(serviceName) == 0) {
+					
+//					boolean third = false;
+//					if (serviceName.startsWith(".")) {
+//						log.debug("first condition true");
+//						third = true;
+//					}
+//					if (((server != null && !(Boolean) prop
+//							.get("blacktie." + serviceName
+//									+ ".externally-managed-destination")))) {
+//						log.debug("second condition true");
+//						third = true;
+//					}
+//					
+//					if ((serviceName.startsWith(".") || ((server != null && !(Boolean) prop
+//							.get("blacktie." + serviceName
+//									+ ".externally-managed-destination"))))) {
+//						log.debug("double condition true");
+//						third = true;
+//					}
+//					
+//					if (third && consumerCount(serviceName) == 0) {
+//						log.debug("third condition true");
+//					}
+					if ((serviceName.startsWith(".") || ((server != null && !(Boolean) prop
+							.get("blacktie." + serviceName
+									+ ".externally-managed-destination"))))
+							&& consumerCount(serviceName) == 0) {
 						log.warn("undeploy service pending for "
 								+ serviceName
 								+ " as consumer count is 0, will check again in 30 seconds");
