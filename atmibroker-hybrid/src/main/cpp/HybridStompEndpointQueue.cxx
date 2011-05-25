@@ -30,7 +30,7 @@ log4cxx::LoggerPtr HybridStompEndpointQueue::logger(log4cxx::Logger::getLogger(
 		"HybridStompEndpointQueue"));
 
 HybridStompEndpointQueue::HybridStompEndpointQueue(apr_pool_t* pool,
-		char* serviceName, bool conversational) {
+		char* serviceName, bool conversational, char* type) {
 	LOG4CXX_DEBUG(logger, "Creating endpoint queue: " << serviceName);
 	this->message = NULL;
 	this->receipt = NULL;
@@ -48,13 +48,24 @@ HybridStompEndpointQueue::HybridStompEndpointQueue(apr_pool_t* pool,
 	int queueNameLength = 14 + 128 + 1;
 	char* queueName = (char*) ::malloc(queueNameLength);
 	memset(queueName, '\0', queueNameLength);
-	if (conversational) {
-		strcpy(queueName, "/queue/BTC_");
+
+	if(type == NULL) {
+		strcat(queueName, "/queue/");
 	} else {
-		strcpy(queueName, "/queue/BTR_");
+		strcat(queueName, "/");
+		strcat(queueName, type);
+		strcat(queueName, "/");
+	}
+
+	if (conversational) {
+		strcat(queueName, "BTC_");
+	} else {
+		strcat(queueName, "BTR_");
 	}
 	strncat(queueName, serviceName, XATMI_SERVICE_NAME_LENGTH);
 	this->fullName = queueName;
+	LOG4CXX_DEBUG(logger, "fullName " << this->fullName);
+
 	this->name = strdup(serviceName);
 	this->transactional = true;
 	this->unackedMessages = 0;

@@ -110,7 +110,7 @@ void TestXAStompConnection::test() {
 
 	// THIS IS THE RECEIVE
 	Destination* destination = serverConnection->createDestination(
-			(char*) "JAVA_Converse", false);
+			(char*) "JAVA_Converse", false, (char*) "queue");
 
 	btlogger("Iterating");
 	for (int i = 0; i < msgCount; i++) {

@@ -79,3 +79,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TestServerinit);
 #include "TestClientInit.h"
 CPPUNIT_TEST_SUITE_REGISTRATION( TestClientInit);
 /* End of Application Management Functions */
+/* Test of Service with topic */
+#include "TestTopic.h"
+CPPUNIT_TEST_SUITE_REGISTRATION( TestTopic);
+/* End of Test Topic*/

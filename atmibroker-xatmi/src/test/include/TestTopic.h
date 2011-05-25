@@ -15,33 +15,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301, USA.
  */
+#ifndef TestTopic_H
+#define TestTopic_H
 
-#ifndef CONNECTION_H
-#define CONNECTION_H
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestFixture.h>
 
-#include "atmiBrokerCoreMacro.h"
+#include "BaseServerTest.h"
 
-#include "Destination.h"
-#include "Session.h"
-
-class Connection {
+class TestTopic: public BaseServerTest {
+	CPPUNIT_TEST_SUITE( TestTopic);
+	CPPUNIT_TEST( test_tpacall_topic);
+	CPPUNIT_TEST_SUITE_END();
 public:
-	virtual ~Connection() {
-	}
-	virtual Session* createSession(bool isConv, char* serviceName) = 0;
-	virtual Session* createSession(bool isConv, int id, const char* temporaryQueueName) = 0;
-	virtual Session* getQueueSession() = 0;
-	virtual Session* getSession(int id) = 0;
-	virtual void closeSession(int id) = 0;
-	virtual void disconnectSession(int id) = 0;
-	virtual void cleanupThread() = 0;
+	void test_tpacall_topic();
 
-	virtual Destination* createDestination(char* serviceName, bool conversational, char* type) = 0;
-	virtual void destroyDestination(Destination* destination) = 0;
-};
-
-struct connection_factory_t {
-	Connection* (*create_connection)(char * connectionName, void(*messagesAvailableCallback)(int, bool));
+	virtual void setUp();
+	virtual void tearDown();
+private:
+	char* sendbuf;
+	long  sendlen;
 };
 
 #endif

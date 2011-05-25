@@ -274,6 +274,24 @@ AtmiBrokerEnv::getTransportLibrary(char* serviceName) {
 	return NULL;
 }
 
+char*
+AtmiBrokerEnv::getServiceType(char* serviceName) {
+	if (servers.size() != 0) {
+		for (ServersInfo::iterator server = servers.begin(); server
+				!= servers.end(); server++) {
+			std::vector<ServiceInfo>* services = &(*server)->serviceVector;
+			for (std::vector<ServiceInfo>::iterator i = services->begin(); i
+					!= services->end(); i++) {
+				if (ACE_OS::strncmp((*i).serviceName, serviceName, 128) == 0) {
+					return (*i).serviceType;
+				}
+			}
+		}
+	}
+
+	return NULL;
+}
+
 const char* AtmiBrokerEnv::getenv(const char* anEnvName, const char* defValue) {
 	LOG4CXX_DEBUG(loggerAtmiBrokerEnv, (char*) "getenv %s" << anEnvName);
 

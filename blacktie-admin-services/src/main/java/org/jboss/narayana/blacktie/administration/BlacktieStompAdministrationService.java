@@ -81,8 +81,10 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 	boolean isDeployQueue(String serviceName) throws Exception {
 		ObjectName objName = new ObjectName(
 				"org.hornetq:module=JMS,type=Server");
-		String[] dests = (String[]) beanServerConnection.getAttribute(objName,
+		String[] queues = (String[]) beanServerConnection.getAttribute(objName,
 				"QueueNames");
+		String[] topics = (String[]) beanServerConnection.getAttribute(objName,
+				"TopicNames");
 
 		log.trace(serviceName);
 		boolean conversational = false;
@@ -96,14 +98,24 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		} else {
 			prefix = "BTR_";
 		}
-		for (int i = 0; i < dests.length; i++) {
-			String qname = dests[i];
-			log.debug("destination is " + qname);
+		for (int i = 0; i < queues.length; i++) {
+			String qname = queues[i];
+			log.trace("queue is " + qname);
 			if (qname.equals(prefix + serviceName)) {
-				log.trace("find serviceName " + serviceName);
+				log.debug("find serviceName " + serviceName + " in Queues");
 				return true;
 			}
 		}
+		
+		for (int i = 0; i < topics.length; i++) {
+			String tname = topics[i];
+			log.trace("topic is " + tname);
+			if (tname.equals(prefix + serviceName)) {
+				log.debug("find serviceName " + serviceName + " in Topics");
+				return true;
+			}
+		}
+		
 		log.trace("did not find serviceName " + serviceName);
 		return false;
 	}
@@ -111,9 +123,13 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 	int consumerCount(String serviceName) throws Exception {
 		log.trace("consCount" + serviceName);
 		boolean conversational = false;
+		String type = "queue";
+		
 		if (!serviceName.startsWith(".")) {
 			conversational = (Boolean) prop.get("blacktie." + serviceName
 					+ ".conversational");
+			type = (String) prop.getProperty("blacktie." + serviceName
+					+ ".type");
 		}
 		String prefix = null;
 		if (conversational) {
@@ -121,10 +137,16 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 		} else {
 			prefix = "BTR_";
 		}
+		type = type.substring(0,1).toUpperCase() + type.substring(1);
+		
 		ObjectName objName = new ObjectName("org.hornetq:module=JMS,name=\""
-				+ prefix + serviceName + "\",type=Queue");
-		Integer count = (Integer) beanServerConnection.getAttribute(objName,
-				"ConsumerCount");
+				+ prefix + serviceName + "\",type=" + type);
+		
+		String attribute = "ConsumerCount";
+		if(type.equals("Topic")) {
+			attribute = "SubscriptionCount";
+		}
+		Integer count = (Integer) beanServerConnection.getAttribute(objName, attribute);
 		log.debug("consCount" + serviceName + " " + count.intValue());
 		return count.intValue();
 	}
@@ -178,15 +200,18 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			boolean queue = false;
 
 			queue = isDeployQueue(serviceName);
-			log.trace("Queue was created: " + queue);
+			log.debug("Queue " + serviceName + " was created: " + queue);
 			boolean created = queue;
 			if (queue == false) {
 				synchronized (QUEUE_CREATION_TIMES) {
 					log.trace(serviceName);
 					boolean conversational = false;
+					String type = "queue";
 					if (!serviceName.startsWith(".")) {
 						conversational = (Boolean) prop.get("blacktie."
 								+ serviceName + ".conversational");
+						type = (String) prop.get("blacktie." 
+								+ serviceName + ".type");
 					}
 					String prefix = null;
 					if (conversational) {
@@ -199,9 +224,14 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 					log.trace(serviceName);
 					ObjectName objName = new ObjectName(
 							"org.hornetq:module=JMS,type=Server");
+					
+					String op = "createQueue";
+					if(type.equals("topic")) {
+						op = "createTopic";
+					}
 					created = (Boolean) beanServerConnection.invoke(objName,
-							"createQueue", new Object[] { prefix + serviceName,
-									"/queue/" + prefix + serviceName },
+							op, new Object[] { prefix + serviceName,
+									"/" + type + "/" + prefix + serviceName },
 							new String[] { "java.lang.String",
 									"java.lang.String" });
 				}
@@ -237,9 +267,12 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 			if (isDeployQueue(serviceName)) {
 				log.trace(serviceName);
 				boolean conversational = false;
+				String type = "queue";
 				if (!serviceName.startsWith(".")) {
 					conversational = (Boolean) prop.get("blacktie."
 							+ serviceName + ".conversational");
+					type = (String) prop.get("blacktie." + serviceName
+							+ ".type");
 				}
 				String prefix = null;
 				if (conversational) {
@@ -247,9 +280,15 @@ public class BlacktieStompAdministrationService extends MDBBlacktieService
 				} else {
 					prefix = "BTR_";
 				}
+				
+				String op = "destroyQueue";
+				if(type.equals("topic")) {
+					op = "destroyTopic";
+				}
+				
 				ObjectName objName = new ObjectName(
 						"org.hornetq:module=JMS,type=Server");
-				beanServerConnection.invoke(objName, "destroyQueue",
+				beanServerConnection.invoke(objName, op,
 						new Object[] { prefix + serviceName },
 						new String[] { "java.lang.String" });
 			}

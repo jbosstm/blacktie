@@ -43,6 +43,7 @@ HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 		CORBA_CONNECTION* connection, apr_pool_t* pool, int id,
 		char* serviceName, void(*messagesAvailableCallback)(int, bool)) {
 	LOG4CXX_TRACE(logger, (char*) "constructor service");
+	AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
 	this->isConv = isConv;
 	long ttl;
 
@@ -73,12 +74,24 @@ HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 	int queueNameLength = 14 + XATMI_SERVICE_NAME_LENGTH + 1;
 	this->sendTo = (char*) ::malloc(queueNameLength);
 	memset(this->sendTo, '\0', queueNameLength);
-	if (isConv) {
-		strcpy(this->sendTo, "/queue/BTC_");
+
+	char* type = env->getServiceType(serviceName);
+	if(type == NULL) {
+		strcat(this->sendTo, "/queue/");
 	} else {
-		strcpy(this->sendTo, "/queue/BTR_");
+		strcat(this->sendTo, "/");
+		strcat(this->sendTo, type);
+		strcat(this->sendTo, "/");
 	}
+
+	if (isConv) {
+		strcat(this->sendTo, "BTC_");
+	} else {
+		strcat(this->sendTo, "BTR_");
+	}
+
 	strncat(this->sendTo, serviceName, XATMI_SERVICE_NAME_LENGTH);
+	LOG4CXX_DEBUG(logger, (char*) "sendTo is " << this->sendTo);
 
 	remoteEndpoint = NULL;
 
@@ -101,6 +114,7 @@ HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 		const char* temporaryQueueName, void(*messagesAvailableCallback)(int,
 				bool)) {
 	LOG4CXX_DEBUG(logger, (char*) "constructor corba");
+	AtmiBrokerEnv::get_instance();
 	this->isConv = isConv;
 	this->id = id;
 	this->corbaConnection = connection;
@@ -134,6 +148,7 @@ HybridSessionImpl::HybridSessionImpl(bool isConv, char* connectionName,
 
 HybridSessionImpl::HybridSessionImpl(apr_pool_t* pool) {
 	LOG4CXX_TRACE(logger, (char*) "constructor service");
+	AtmiBrokerEnv::get_instance();
 	this->isConv = false;
 	long ttl = mqConfig.requestTimeout;
 
@@ -176,6 +191,7 @@ HybridSessionImpl::~HybridSessionImpl() {
 		LOG4CXX_TRACE(logger, (char*) "TQ Disconnected: " << temporaryQueueName);
 		temporaryQueueName = NULL;
 	}
+	AtmiBrokerEnv::discard_instance();
 }
 
 void HybridSessionImpl::setSendTo(const char* destinationName) {

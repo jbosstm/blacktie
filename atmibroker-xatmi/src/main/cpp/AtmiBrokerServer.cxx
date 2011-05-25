@@ -382,6 +382,12 @@ AtmiBrokerServer::AtmiBrokerServer() {
 							= servers[i]->serviceVector[j].conversational;
 					service.externally_managed_destination
 							= servers[i]->serviceVector[j].externally_managed_destination;
+					if (servers[i]->serviceVector[j].serviceType) {
+						service.serviceType = strdup(
+								servers[i]->serviceVector[j].serviceType);
+					} else {
+						service.serviceType = NULL;
+					}
 					serverInfo.serviceVector.push_back(service);
 				}
 				break;
@@ -559,6 +565,9 @@ AtmiBrokerServer::~AtmiBrokerServer() {
 		}
 		if (service->library_name != NULL) {
 			free(service->library_name);
+		}
+		if (service->serviceType != NULL) {
+			free(service->serviceType);
 		}
 	}
 	if (serverInfo.serverName != NULL) {
@@ -814,7 +823,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 						}
 						if (created) {
 							Destination* destination = createDestination(
-									serviceName, service->conversational);
+									serviceName, service->conversational, service->serviceType);
 
 							LOG4CXX_DEBUG(loggerAtmiBrokerServer,
 									(char*) "created destination: "
@@ -925,7 +934,7 @@ bool AtmiBrokerServer::advertiseService(char * svcname,
 }
 
 Destination* AtmiBrokerServer::createDestination(char* serviceName,
-		bool conversational) {
+		bool conversational, char* type) {
 	Destination* destination = NULL;
 	Connection* connection = connections.getServerConnection();
 	if (connection == NULL) {
@@ -934,7 +943,7 @@ Destination* AtmiBrokerServer::createDestination(char* serviceName,
 				(char*) "advertiseService no server connection");
 	} else {
 		destination
-				= connection->createDestination(serviceName, conversational);
+				= connection->createDestination(serviceName, conversational, type);
 	}
 
 	return destination;

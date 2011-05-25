@@ -68,7 +68,7 @@ public:
 	int  pause();
 	int  resume();
 	bool createAdminDestination(char* svcname);
-	Destination* createDestination(char* svcname, bool conversational);
+	Destination* createDestination(char* svcname, bool conversational, char* type);
 
 private:
 	void (*getServiceMethod(const char * aServiceName))(TPSVCINFO *);

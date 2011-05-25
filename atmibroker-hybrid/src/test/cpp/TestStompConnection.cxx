@@ -52,7 +52,7 @@ void TestStompConnection::testLibStomp() {
 	btlogger("TestStompConnection::testLibStomp");
 
 	Destination* destination = serverConnection->createDestination(
-			(char*) "JAVA_Converse", false);
+			(char*) "JAVA_Converse", false, (char*) "queue");
 
 	// THIS IS THE INITIAL EXCHANCE
 	btlogger("Iterating");
@@ -98,7 +98,7 @@ void TestStompConnection::test() {
 	btlogger("TestStompConnection::test");
 
 	Destination* destination = serverConnection->createDestination(
-			(char*) "JAVA_Converse", false);
+			(char*) "JAVA_Converse", false, (char*) "queue");
 	Session* client = clientConnection->createSession(false,
 			(char*) "JAVA_Converse");
 

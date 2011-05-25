@@ -271,9 +271,9 @@ Session* HybridConnectionImpl::createSession(bool isConv, int id,
 }
 
 Destination* HybridConnectionImpl::createDestination(char* serviceName,
-		bool conversational) {
+		bool conversational, char* type) {
 	LOG4CXX_DEBUG(logger, (char*) "createDestination" << serviceName);
-	return new HybridStompEndpointQueue(this->pool, serviceName, conversational);
+	return new HybridStompEndpointQueue(this->pool, serviceName, conversational, type);
 }
 
 void HybridConnectionImpl::destroyDestination(Destination* destination) {

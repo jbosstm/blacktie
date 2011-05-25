@@ -42,6 +42,7 @@ public:
 	int putenv(char* anEnvNameValue);
 
 	char* getTransportLibrary(char* serviceName);
+	char* getServiceType(char* serviceName);
 
 	std::vector<envVar_t>& getEnvVariableInfoSeq();
 	AtmiBrokerSignalHandler& getSignalHandler() { return this->sigHandler; }

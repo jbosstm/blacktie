@@ -145,6 +145,7 @@
 				<SERVICE name='TestRbkOnly' />
 				<SERVICE name='TestRbkOnly2' conversational='true' />
 				<SERVICE name='TTL' />
+				<SERVICE name='TestTopic' type='topic'/>
 			</SERVICE_NAMES>
 		</SERVER>
 	</SERVERS>

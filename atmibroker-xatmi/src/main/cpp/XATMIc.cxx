@@ -1315,7 +1315,7 @@ int async_btdequeue(char * svcname, char ** odata, long *olen, long flags) {
 		if (serverinit(0, NULL) != -1) {
 			LOG4CXX_DEBUG(loggerXATMI, (char*) "btdequeue(): " << svcname);
 			Destination* destination;
-			destination = ptrServer->createDestination(svcname, false);
+			destination = ptrServer->createDestination(svcname, false, NULL);
 			LOG4CXX_DEBUG(loggerXATMI, (char*) "created destination: "
 					<< svcname);
 
