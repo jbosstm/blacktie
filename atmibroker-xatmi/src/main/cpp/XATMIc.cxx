@@ -567,110 +567,121 @@ int tpacall(char * svc, char* idata, long ilen, long flags) {
 		LOG4CXX_TRACE(loggerXATMI, (char*) "invalid flags remain: " << toCheck);
 		setSpecific(TPE_KEY, TSS_TPEINVAL);
 	} else {
-		bool transactional = !(flags & TPNOTRAN);
-		if (transactional) {
-			void *ctrl = txx_get_control();
-			if (ctrl == NULL) {
-				transactional = false;
-			}
-			txx_release_control(ctrl);
-		}
+		AtmiBrokerEnv* env = AtmiBrokerEnv::get_instance();
+		char* qtype = env->getServiceType(svc);
+		AtmiBrokerEnv::discard_instance();
 
-		if (transactional && (flags & TPNOREPLY)) {
-			LOG4CXX_ERROR(
+		if(qtype != NULL && strcmp(qtype, "topic") == 0 && !(flags & TPNOREPLY)) {
+			LOG4CXX_WARN(
 					loggerXATMI,
-					(char*) "TPNOREPLY CALLED WITHOUT TPNOTRAN DURING TRANSACTION");
+					(char*) "CALL TOPIC SERVICE MUST HAVE TPNOREPLY SET");
 			setSpecific(TPE_KEY, TSS_TPEINVAL);
 		} else {
-			int len = ::bufferSize(idata, ilen);
-			if (len != -1) {
-				if (clientinit() != -1) {
-					Session* session = NULL;
-					int cd = -1;
-					try {
-						session = ptrAtmiBrokerClient->createSession(false, cd,
-								svc);
-						LOG4CXX_TRACE(loggerXATMI, (char*) "new session: "
-								<< session << " cd: " << cd
-								<< " transactional: " << transactional);
+			bool transactional = !(flags & TPNOTRAN);
+			if (transactional) {
+				void *ctrl = txx_get_control();
+				if (ctrl == NULL) {
+					transactional = false;
+				}
+				txx_release_control(ctrl);
+			}
 
-						if (cd != -1) {
-							if (transactional)
-								txx_suspend(cd, tpdiscon);
+			if (transactional && (flags & TPNOREPLY)) {
+				LOG4CXX_ERROR(
+						loggerXATMI,
+						(char*) "TPNOREPLY CALLED WITHOUT TPNOTRAN DURING TRANSACTION");
+				setSpecific(TPE_KEY, TSS_TPEINVAL);
+			} else {
+				int len = ::bufferSize(idata, ilen);
+				if (len != -1) {
+					if (clientinit() != -1) {
+						Session* session = NULL;
+						int cd = -1;
+						try {
+							session = ptrAtmiBrokerClient->createSession(false, cd,
+									svc);
+							LOG4CXX_TRACE(loggerXATMI, (char*) "new session: "
+									<< session << " cd: " << cd
+									<< " transactional: " << transactional);
 
-							if (TPNOREPLY & flags) {
-								LOG4CXX_TRACE(loggerXATMI,
-										(char*) "TPNOREPLY send");
-								toReturn = ::send(session, "", idata, len, cd,
-										flags, 0, 0, 0, false, NULL);
-								LOG4CXX_TRACE(loggerXATMI,
-										(char*) "TPNOREPLY sent");
-							} else {
-								LOG4CXX_TRACE(loggerXATMI,
-										(char*) "expect reply send");
-								toReturn = ::send(session,
-										session->getReplyTo(), idata, len, cd,
-										flags, 0, 0, 0, false, NULL);
-								LOG4CXX_TRACE(loggerXATMI,
-										(char*) "expect reply sent");
-							}
+							if (cd != -1) {
+								if (transactional)
+									txx_suspend(cd, tpdiscon);
 
-							if (toReturn >= 0) {
 								if (TPNOREPLY & flags) {
-									toReturn = 0;
+									LOG4CXX_TRACE(loggerXATMI,
+											(char*) "TPNOREPLY send");
+									toReturn = ::send(session, "", idata, len, cd,
+											flags, 0, 0, 0, false, NULL);
+									LOG4CXX_TRACE(loggerXATMI,
+											(char*) "TPNOREPLY sent");
+								} else {
+									LOG4CXX_TRACE(loggerXATMI,
+											(char*) "expect reply send");
+									toReturn = ::send(session,
+											session->getReplyTo(), idata, len, cd,
+											flags, 0, 0, 0, false, NULL);
+									LOG4CXX_TRACE(loggerXATMI,
+											(char*) "expect reply sent");
+								}
+
+								if (toReturn >= 0) {
+									if (TPNOREPLY & flags) {
+										toReturn = 0;
+										ptrAtmiBrokerClient->closeSession(cd);
+										// Remove the child session not required as not added
+									} else {
+										toReturn = cd;
+										Session* svcSession =
+											(Session*) getSpecific(SVC_SES);
+										if (svcSession != NULL) {
+											svcSession->addChildSession(session);
+											LOG4CXX_TRACE(
+													loggerXATMI,
+													(char*) "tpacall child session added");
+										}
+									}
+								} else {
+									LOG4CXX_DEBUG(loggerXATMI,
+											(char*) "Session got dudded: " << cd);
 									ptrAtmiBrokerClient->closeSession(cd);
 									// Remove the child session not required as not added
-								} else {
-									toReturn = cd;
-									Session* svcSession =
-											(Session*) getSpecific(SVC_SES);
-									if (svcSession != NULL) {
-										svcSession->addChildSession(session);
-										LOG4CXX_TRACE(
-												loggerXATMI,
-												(char*) "tpacall child session added");
-									}
 								}
-							} else {
-								LOG4CXX_DEBUG(loggerXATMI,
-										(char*) "Session got dudded: " << cd);
+							} else if (tperrno == 0) {
+								LOG4CXX_TRACE(loggerXATMI,
+										(char*) "tpacall unknown error");
+								setSpecific(TPE_KEY, TSS_TPESYSTEM);
 								ptrAtmiBrokerClient->closeSession(cd);
 								// Remove the child session not required as not added
 							}
-						} else if (tperrno == 0) {
-							LOG4CXX_TRACE(loggerXATMI,
-									(char*) "tpacall unknown error");
-							setSpecific(TPE_KEY, TSS_TPESYSTEM);
-							ptrAtmiBrokerClient->closeSession(cd);
-							// Remove the child session not required as not added
-						}
-					} catch (...) {
-						LOG4CXX_ERROR(
-								loggerXATMI,
-								(char*) "tpacall failed to connect to service queue:"
-										<< svc);
-						setSpecific(TPE_KEY, TSS_TPENOENT);
-						if (cd != -1) {
-							// Remove the child session
-							Session* svcSession = (Session*) getSpecific(
-									SVC_SES);
-							if (svcSession != NULL) {
-								svcSession->removeChildSession(session);
-								LOG4CXX_TRACE(
-										loggerXATMI,
-										(char*) "tpacall failed child session closed");
+						} catch (...) {
+							LOG4CXX_ERROR(
+									loggerXATMI,
+									(char*) "tpacall failed to connect to service queue:"
+									<< svc);
+							setSpecific(TPE_KEY, TSS_TPENOENT);
+							if (cd != -1) {
+								// Remove the child session
+								Session* svcSession = (Session*) getSpecific(
+										SVC_SES);
+								if (svcSession != NULL) {
+									svcSession->removeChildSession(session);
+									LOG4CXX_TRACE(
+											loggerXATMI,
+											(char*) "tpacall failed child session closed");
+								}
+								ptrAtmiBrokerClient->closeSession(cd);
 							}
-							ptrAtmiBrokerClient->closeSession(cd);
 						}
-					}
 
-					if (transactional && toReturn < 0) {
-						// txx_suspend was called but there was an error so
-						// resume (note we didn't check for TPNOREPLY since we are in
-						// the else arm of if (transactional && (flags & TPNOREPLY))
-						LOG4CXX_DEBUG(loggerXATMI, (char*) "tpacall resume cd="
-								<< cd << " rv=" << toReturn);
-						txx_resume(cd);
+						if (transactional && toReturn < 0) {
+							// txx_suspend was called but there was an error so
+							// resume (note we didn't check for TPNOREPLY since we are in
+							// the else arm of if (transactional && (flags & TPNOREPLY))
+							LOG4CXX_DEBUG(loggerXATMI, (char*) "tpacall resume cd="
+									<< cd << " rv=" << toReturn);
+							txx_resume(cd);
+						}
 					}
 				}
 			}

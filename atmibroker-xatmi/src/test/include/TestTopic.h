@@ -26,9 +26,11 @@
 class TestTopic: public BaseServerTest {
 	CPPUNIT_TEST_SUITE( TestTopic);
 	CPPUNIT_TEST( test_tpacall_topic);
+	CPPUNIT_TEST( test_tpacall_topic_without_noreply);
 	CPPUNIT_TEST_SUITE_END();
 public:
 	void test_tpacall_topic();
+	void test_tpacall_topic_without_noreply();
 
 	virtual void setUp();
 	virtual void tearDown();

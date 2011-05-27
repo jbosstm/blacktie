@@ -69,6 +69,14 @@ void TestTopic::test_tpacall_topic() {
 	BT_ASSERT(tperrno == 0);
 }
 
+void TestTopic::test_tpacall_topic_without_noreply() {
+	btlogger((char*) "test_tpacall_topic_without_noreply");
+
+	int id = ::tpacall((char*) "TestTopic", (char *) sendbuf, sendlen, 0);
+	BT_ASSERT(id == -1);
+	BT_ASSERT(tperrno == TPEINVAL);
+}
+
 void test_topic_service(TPSVCINFO *svcinfo) {
 	btlogger((char*) "test_topic_service");
 }

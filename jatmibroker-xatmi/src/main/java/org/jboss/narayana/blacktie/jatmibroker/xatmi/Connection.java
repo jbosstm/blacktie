@@ -247,6 +247,15 @@ public class Connection {
 
 		svc = svc.substring(0,
 				Math.min(Connection.XATMI_SERVICE_NAME_LENGTH, svc.length()));
+		
+		String qtype = (String)properties.get("blacktie." + svc + ".type");
+		
+		log.debug(svc + " qtype is " + qtype + " and flags is " + flags);
+		if("topic".equals(qtype) && (flags & TPNOREPLY) == 0) {
+			log.warn(svc + " type is " + qtype + " and MUST have TPNOREPLY set");
+			throw new ConnectionException(Connection.TPEINVAL,
+					svc + " type is " + qtype + " and MUST have TPNOREPLY set");		
+		}
 		int correlationId = 0;
 		synchronized (this) {
 			correlationId = ++nextId;
@@ -485,7 +494,7 @@ public class Connection {
 		for (int i = 0; i < receivers.length; i++) {
 			log.debug("closing receiver");
 			tpcancel(receivers[i].getCd());
-			log.warn("Closed open receiver");
+			log.debug("Closed open receiver");
 		}
 		temporaryQueues.clear();
 		log.trace("Temporary queues cleared");

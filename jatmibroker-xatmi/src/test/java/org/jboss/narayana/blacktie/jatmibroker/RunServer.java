@@ -383,7 +383,7 @@ public class RunServer {
 	
 	public void tpadvertiseTestTopic() throws ConnectionException {
 		this.server.tpadvertise(getServiceNameTestTopic(), 
-				TPACallService.class.getName());
+				TPServiceService.class.getName());
 	}
 	
 	public static String getServiceNameTestTopic() {

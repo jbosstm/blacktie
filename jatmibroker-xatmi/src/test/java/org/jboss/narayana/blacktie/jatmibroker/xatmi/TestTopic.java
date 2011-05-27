@@ -54,16 +54,26 @@ public class TestTopic extends TestCase {
 				.tpalloc("X_OCTET", null, sendlen);
 		sendbuf.setByteArray(toSend.getBytes());
 		
-		Response rcvbuf = connection.tpcall(
-				RunServer.getServiceNameTestTopic(), sendbuf, 0);
-		assertTrue(rcvbuf != null);
-		assertTrue(rcvbuf.getBuffer() != null);
-		assertTrue(((X_OCTET) rcvbuf.getBuffer()).getByteArray() != null);
-		byte[] received = ((X_OCTET) rcvbuf.getBuffer()).getByteArray();
-		byte[] expected = new byte[received.length];
-		System.arraycopy("testtpacall_service".getBytes(), 0, expected, 0,
-				"testtpacall_service".getBytes().length);
-		assertTrue(Arrays.equals(received, expected));
+		try {
+			connection.tpcall(RunServer.getServiceNameTestTopic(), sendbuf, 0);
+			fail("Can not call tpcall topic");
+		} catch (ConnectionException e) {
+			// It's OK
+		}
+	}
+	
+	public void test_tpacall_topic() throws ConnectionException {
+		log.info("test_tpacall_topic");
+		server.tpadvertiseTestTopic();
+		
+		String toSend = "test_tpcall_topic";
+		int sendlen = toSend.length() + 1;
+		X_OCTET sendbuf = (X_OCTET) connection
+				.tpalloc("X_OCTET", null, sendlen);
+		sendbuf.setByteArray(toSend.getBytes());
+		int cd = connection.tpacall(RunServer.getServiceNameTestTopic(), 
+				sendbuf, Connection.TPNOREPLY);
+		assertTrue(cd == 0);
 	}
 
 }
